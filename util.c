@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.22 2004/02/26 00:59:11 wiz Exp $
+  $NiH: util.c,v 1.23 2004/02/26 02:26:12 wiz Exp $
 
   util.c -- utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -63,9 +63,14 @@ findfile(char *name, enum filetype what)
 		rompath[i],
 		(what == TYPE_SAMPLE ? "samples" : "roms"),
 		name,
-		(what == TYPE_DISK ? "" : ".zip"));
+		(what == TYPE_DISK ? ".chd" : ".zip"));
 	if (stat(b, &st) == 0)
 	    return xstrdup(b);
+	if (what == TYPE_DISK) {
+	    b[strlen(b)-4] = '\0';
+	    if (stat(b, &st) == 0)
+		return xstrdup(b);
+	}
     }
     
     return NULL;

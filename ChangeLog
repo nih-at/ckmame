@@ -1,3 +1,8 @@
+2004-04-21  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* util.c (findfile): search for disk images with extension .chd
+	and without extension.
+
 2004-04-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* zip-supp.c (readinfosfromzip): adapt to zip_open's changed error
