@@ -133,6 +133,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 	merge_match(me_m, me_g->nrom, all_z, parent_no, gparent_no);
 	if (fix_do || fix_print) {
 	    fix_game(me_g, all_z, me_m);
+	    me_z = all_z[0]; /* fix_do opens file if need be */
 	}
 
 	/* write warnings/errors for me */
