@@ -1,4 +1,4 @@
-fix superfluous so it doesn't warn about chd images
+"fix" extra files by moving the to a subdir
 use crctypes for roms
 use NOCRC for samples
 
@@ -16,7 +16,6 @@ add md5/sha1 support for roms
 implement full testing (calculate and check all checksum types)
 
 init rom structure for files from zips
-merge superfluous into ckmame
 fix 'should be in cloneof, is in zip'
 documentation
 use return value of w_game
