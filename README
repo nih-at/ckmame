@@ -16,32 +16,35 @@ the distribution site
 	http://ftp.giga.or.at/pub/nih/ckmame
 The latest version can always be found there.
 
-Usage:
-Use a recent MAME executable with the option `-listinfo' to create
-the database input file, e.g.
-xmame -listinfo > db.txt
-
-Then start `mkmamedb', which reads `db.txt' (if you don't tell it
-otherwise) and writes to `mame.db', or `mame.gdbm', depending on your
-database support (only, if you don't tell it otherwise, too).
-
-Set the environment variables `MAMEDB' to point to the database file
-mkmamedb just created, and `ROMPATH' to the directory above the one
-where your ROMs reside (`roms/' will be added automatically to each
-entry). If you don't set them, ckmame will use the current directory
-as default setting for both.
-
-Then just type `ckmame', and off you go. You should probably redirect
-the output to a file, as it can get rather big, if your ROMs haven't
-been tended very well. Or take a look at the output of `ckmame -h' to
-see some options which reduce the output.
-
-If you trust ckmame enough, start it with the parameter `-F' and it
-will fix your ROMs (or at least try to). Unrecognized ROMs will be
-saved in the directory `garbage' in the ROMs-directory, in zipfiles
-with the name of game.
-
   Mail suggestions and bug reports to <nih@giga.or.at>.
+
+
+Usage:
+
+  Use a recent MAME executable with the option `-listinfo' to create
+the database input file, e. g.
+	xmame -listinfo > db.txt
+
+  Then start `mkmamedb', which reads `db.txt' (if you don't name a
+different file on the command line) and writes to `mame.db', or
+`mame.gdbm', depending on which database routines you are using.  The
+name of the resulting database can be changed with the -o option.
+
+ Set the environment variables `MAMEDB' to point to the database file
+mkmamedb just created, and `ROMPATH' to the directory above the one
+where your ROMs reside (`/roms' will be added automatically to each
+entry, just like MAME does).  If you don't set them, ckmame will use
+the current directory as defaults for both.
+
+  Then just type `ckmame', and off you go.  You should probably
+redirect the output to a file, as it can get rather lengthy if your
+ROMs haven't been tended very well.  Or take a look at the output of
+`ckmame -h' to see some options which reduce the output.
+
+  If you trust ckmame enough, start it with the parameter `-F' and it
+will fix your ROMs (or at least try to).  Unrecognized files in your
+ROM sets will be saved in the directory `garbage' in the
+ROMs-directory, in zipfiles with the name of game.
 
 
 
