@@ -2,6 +2,7 @@
 #include <zlib.h>
 
 #include "dbl.h"
+#include "xmalloc.h"
 
 
 

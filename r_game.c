@@ -5,7 +5,7 @@
 
 #include "types.h"
 #include "dbl.h"
-#include "funcs.h"
+#include "xmalloc.h"
 #include "r.h"
 
 

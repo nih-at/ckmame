@@ -5,8 +5,9 @@
 #include <stdlib.h>
 
 #include "types.h"
-#include "dbl.h"
+#include "dbh.h"
 #include "util.h"
+#include "xmalloc.h"
 #include "w.h"
 
 

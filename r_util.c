@@ -3,7 +3,7 @@
 #include "dbl.h"
 #include "r.h"
 #include "types.h"
-#include "funcs.h"
+#include "xmalloc.h"
 
 #define BLKSIZE  1024
 

@@ -7,6 +7,7 @@
 #include "error.h"
 #include "dbl.h"
 #include "funcs.h"
+#include "xmalloc.h"
 
 #define MAXFNLEN 1024
 #define BUFSIZE 8192

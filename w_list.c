@@ -4,10 +4,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "dbl.h"
+#include "dbh.h"
 #include "w.h"
 #include "types.h"
-#include "funcs.h"
+#include "xmalloc.h"
 
 
 

@@ -4,7 +4,8 @@
 
 #include "types.h"
 #include "dbl.h"
-#include "funcs.h"
+#include "util.h"
+#include "xmalloc.h"
 #include "zip.h"
 
 #define MAXCOMLEN        65536

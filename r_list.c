@@ -4,7 +4,7 @@
 
 #include "dbl.h"
 #include "r.h"
-#include "funcs.h"
+#include "xmalloc.h"
 
 
 

@@ -27,5 +27,6 @@
 
 void *xrealloc(void *p, size_t size);
 void *xmalloc(size_t size);
+char *xstrdup(char *);
 
 #endif /* xmalloc.h */

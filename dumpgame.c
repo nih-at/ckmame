@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 #include "types.h"
-#include "dbl.h"
+#include "dbh.h"
 #include "error.h"
 #include "util.h"
-#include "r.h"
+#include "romutil.h"
 
 int dump_game(DB *db, char *name);
 
@@ -44,7 +44,7 @@ main(int argc, char **argv)
     for (i=optind; i<argc; i++) {
 	if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 	    if (bsearch(argv+i, list, nlist, sizeof(char *),
-			strpcasecmp) != NULL) {
+			(cmpfunc)strpcasecmp) != NULL) {
 		if (first)
 		    first = 0;
 		else

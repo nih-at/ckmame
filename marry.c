@@ -2,8 +2,8 @@
 
 #include "types.h"
 #include "dbl.h"
-
-#include "funcs.h"
+#include "xmalloc.h"
+#include "romutil.h"
 
 void
 marry (struct match *rm, int count, int *noz)

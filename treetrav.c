@@ -2,10 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include "types.h"
-#include "dbl.h"
+#include "dbh.h"
 #include "error.h"
 #include "funcs.h"
 #include "util.h"
+#include "romutil.h"
+#include "xmalloc.h"
 
 int tree_child_traverse(DB *db, struct tree *tree, int parentcheck,
 			struct zip *parent_z, struct zip *gparent_z,
@@ -65,7 +67,8 @@ tree_child_traverse(DB *db, struct tree *tree, int parentcheck,
 	if (tree->check) {
 	    /* find out, which clone it is (by number) */
 	    i =(int)((char **)bsearch(&(t->name), me_g->clone, me_g->nclone,
-			     sizeof(char *), strpcasecmp) - me_g->clone);
+				      sizeof(char *),
+				      (cmpfunc)strpcasecmp) - me_g->clone);
 	}
 	tree_child_traverse(db, t, tree->check, me_z, parent_z, i+1,
 			    parent_no);

@@ -5,7 +5,9 @@
 #include "types.h"
 #include "dbl.h"
 #include "error.h"
-#include "funcs.h"
+#include "util.h"
+#include "romutil.h"
+#include "xmalloc.h"
 
 extern char *prg;
 

@@ -40,7 +40,7 @@ memmem(const char *big, int biglen, const char *little, int littlelen)
     
     for (i=0; i<biglen-littlelen; i++)
 	if (memcmp(big+i, little, littlelen)==NULL)
-	    return big+i;
+	    return (char *)big+i;
 
     return NULL;
 }

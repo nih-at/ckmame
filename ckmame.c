@@ -7,11 +7,10 @@
 #include "config.h"
 
 #include "types.h"
-#include "dbl.h"
+#include "dbh.h"
 #include "util.h"
 #include "funcs.h"
 #include "error.h"
-#include "r.h"
 
 
 
@@ -137,7 +136,7 @@ main(int argc, char **argv)
 	for (i=optind; i<argc; i++) {
 	    if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 		if (bsearch(argv+i, list, nlist, sizeof(char *),
-			    strpcasecmp) != NULL)
+			    (cmpfunc)strpcasecmp) != NULL)
 		    tree_add(db, tree, argv[i]);
 		else
 		    myerror(ERRDEF, "game `%s' unknown", argv[i]);

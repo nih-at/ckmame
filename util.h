@@ -23,6 +23,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+typedef int (*cmpfunc)(const void *, const void *);
 
 char *memdup(const char *mem, int len);
 char *memmem(const char *big, int biglen, const char *little,
