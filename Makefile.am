@@ -6,6 +6,7 @@ AM_CFLAGS=@LIBZIP_CFLAGS@ @CFLAGS@
 SUBDIRS=regress
 
 bin_PROGRAMS=ckmame mkmamedb dumpgame
+dist_bin_SCRIPTS=mkmamedb-xmame.sh
 man_MANS=ckmame.1
 #info_TEXINFOS=  ckmame.texi
 ckmame_SOURCES=ckmame.c error.c zip-supp.c util.c marry.c \

@@ -1,4 +1,3 @@
-distribute and install mkmamedb-xmame.sh
 "fix" extra files by moving them to a subdir
 use crctypes for roms
 use NOCRC for samples
