@@ -56,8 +56,10 @@ dbread(DB* db, char *fname)
     struct game *g;
     struct game *parent;
     char **lostchildren;
+    int *lostchildren_to_do;
     int nlost, lostmax, stillost;
     int nr, ns, lineno;
+    int to_do;
 
     if ((fin=fopen(fname, "r")) == NULL) {
 	myerror(ERRSTR, "can\'t open romlist file `%s'", fname);
@@ -66,6 +68,7 @@ dbread(DB* db, char *fname)
 
     lostmax = 100;
     lostchildren = (char **)xmalloc(lostmax*sizeof(char *));
+    lostchildren_to_do = (int *)xmalloc(lostmax*sizeof(int));
     prog_name = prog_version = NULL;
 
     seterrinfo(NULL, fname);
@@ -184,7 +187,9 @@ dbread(DB* db, char *fname)
 	    else if (strcmp(cmd, "sample") == 0) {
 		s[ns].name = xstrdup(GET_TOK());
 		s[ns].merge = NULL;
-		s[ns].size = s[ns].crc = s[ns].where = 0;
+		s[ns].altname = NULL;
+		s[ns].naltname = s[ns].size = 0;
+		s[ns].crc = s[ns].where = 0;
 		ns++;
 	    }
 	    else if (strcmp(cmd, "archive") == 0) {
@@ -201,17 +206,12 @@ dbread(DB* db, char *fname)
 			free(g->cloneof[0]);
 			g->cloneof[0] = NULL;
 		    }
-		
+
+		to_do = 0;
 		if (g->cloneof[0]) {
 		    if (((parent=r_game(db, g->cloneof[0]))==NULL) || 
 			lost(parent)) {
-			if (nlost > lostmax - 2) {
-			    lostmax += 100;
-			    lostchildren = (char **)xrealloc(lostchildren,
-							     lostmax
-							     *sizeof(char *));
-			}
-			lostchildren[nlost++] = xstrdup(g->name);
+			to_do = 1;
 			if (parent)
 			    game_free(parent, 1);
 		    }
@@ -220,8 +220,44 @@ dbread(DB* db, char *fname)
 			w_game(db, parent);
 			game_free(parent, 1);
 		    }
-		    
 		}
+
+		if (g->sampleof[0])
+		    if (strcmp(g->sampleof[0], g->name) == 0) {
+			free(g->sampleof[0]);
+			g->sampleof[0] = NULL;
+		    }
+
+		if (g->sampleof[0]) {
+		    if (((parent=r_game(db, g->sampleof[0]))==NULL) || 
+			lost(parent)) {
+			to_do += 2;
+			if (parent)
+			    game_free(parent, 1);
+		    }
+		    else {
+			game_swap_rs(g);
+			game_swap_rs(parent);
+			familymeeting(db, parent, g);
+			game_swap_rs(g);
+			game_swap_rs(parent);
+			w_game(db, parent);
+			game_free(parent, 1);
+		    }
+		}
+
+		if (to_do) {
+		    if (nlost > lostmax - 2) {
+			lostmax += 100;
+			lostchildren = (char **)
+			    xrealloc(lostchildren, lostmax*sizeof(char *));
+			lostchildren_to_do = (int *)
+			    xrealloc(lostchildren_to_do, lostmax*sizeof(int));
+		    }
+		    lostchildren[nlost] = xstrdup(g->name);
+		    lostchildren_to_do[nlost++] = to_do;
+		}
+
 		game_add(db, g);
 		game_free(g, 0);
 
@@ -253,34 +289,65 @@ dbread(DB* db, char *fname)
 	       look if parent is still lost, if not, do child */
 	    if ((g=r_game(db, lostchildren[i]))==NULL) {
 		myerror(ERRDEF, "internal database error: "
-			"child really lost");
+			"child not in database");
 		return 1;
 	    }
-	    if ((parent=r_game(db, g->cloneof[0]))==NULL) {
-		myerror(ERRDEF, "input database not consistent: "
-			"parent %s not found", g->cloneof[0]);
-		return 1;
-	    }
-	    if (lost(parent)) {
-		stillost = 1;
-		if (parent)
+	    if (lostchildren_to_do[i] & 1) {
+		if ((parent=r_game(db, g->cloneof[0]))==NULL) {
+		    myerror(ERRDEF, "input database not consistent: "
+			    "parent %s not found", g->cloneof[0]);
+		    return 1;
+		}
+		if (lost(parent)) {
+		    stillost = 1;
 		    game_free(parent, 1);
-		game_free(g, 1);
-		continue;
+		} else {
+		    /* parent found */
+		    familymeeting(db, parent, g);
+		    w_game(db, parent);
+		    game_free(parent, 1);
+		    w_game(db, g);
+		    if (lostchildren_to_do[i] == 1) {
+			free(lostchildren[i]);
+			lostchildren[i] = NULL;
+			game_free(g, 1);
+		    }
+		    lostchildren_to_do[i] &= ~1;
+		}
 	    }
-	    else {
-		/* parent found */
-		familymeeting(db, parent, g);
-		w_game(db, parent);
-		game_free(parent, 1);
-		w_game(db, g);
+	    if (lostchildren_to_do[i] & 2) {
+		/* swap sample info with rom info */
+		game_swap_rs(g);
+		if ((parent=r_game(db, g->cloneof[0]))==NULL) {
+		    myerror(ERRDEF, "input database not consistent: "
+			    "parent %s not found", g->cloneof[0]);
+		    return 1;
+		}
+		game_swap_rs(parent);
+		if (lost(parent)) {
+		    stillost = 1;
+		    game_free(parent, 1);
+		} else {
+		    /* parent found */
+		    familymeeting(db, parent, g);
+		    /* swap back parent */
+		    game_swap_rs(parent);
+		    w_game(db, parent);
+		    game_free(parent, 1);
+		    /* swap back child */
+		    game_swap_rs(g);
+		    w_game(db, g);
+		    if (lostchildren_to_do[i] == 2) {
+			free(lostchildren[i]);
+			lostchildren[i] = NULL;
+		    }
+		    lostchildren_to_do[i] &= ~2;
+		}
 		game_free(g, 1);
-		free(lostchildren[i]);
-		lostchildren[i] = NULL;
 	    }
 	}
     }
-	 
+
     qsort(games, ngames, sizeof(char *),
 	  (int (*)(const void *, const void *))strpcasecmp);
     w_list(db, "/list", games, ngames);
