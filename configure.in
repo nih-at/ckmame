@@ -44,11 +44,11 @@ db=none
 AC_CHECK_FUNCS(dbopen, [db=db])
 if test "$db" = "none"
 then
-	AC_CHECK_LIB(db, db, [db=db; LIBS="$LIBS -ldb"])
+	AC_CHECK_LIB(db, dbopen, [db=db; LIBS="$LIBS -ldb"])
 fi
 if test "$db" = "none"
 then
-	AC_CHECK_LIB(gdbm_open, gdbm, [db=gdbm; LIBS="$LIBS -lgdbm"])
+	AC_CHECK_LIB(gdbm, gdbm_open, [db=gdbm; LIBS="$LIBS -lgdbm"])
 fi
 if test "$db" = "none"
 then
