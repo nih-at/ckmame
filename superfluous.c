@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.3 2004/04/21 10:38:38 dillo Exp $
+  $NiH: superfluous.c,v 1.4 2004/04/24 09:40:25 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -40,9 +40,9 @@ int
 handle_extra_files(DB *db, const char *dbname, int sample)
 {
     FILE *fin;
-    char b[8192], *p, bo[8192], *po, **list, **lists, **listx;
+    char b[8192], bo[8192], **list, **lists, **listx, *p, **lst;
     int i, l, nfound;
-    int nlist, nlists, nlistx;
+    int nlist, nlists, nlistx, nlst;
 
     nfound = 0;
 
@@ -65,8 +65,6 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 
     init_rompath();
 
-    p = b;
-    po = bo;
     for (i=0; rompath[i]; i++) {
 	/* XXX: use opendir */
 	sprintf(b, "ls %s/%s", rompath[i], sample ? "samples" : "roms");
@@ -79,21 +77,33 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 	    l = strlen(b);
 	    if (b[l-1] == '\n')
 		b[--l] = '\0';
-	    strncpy(bo, b, sizeof(bo));
-	    if (l > 4 && (strcmp(b+l-4, ".zip") == 0
-			  || strcmp(b+l-4, ".chd") == 0)) {
-		b[l-4] = '\0';
+
+	    if (l > 4 && strcmp(b+l-4, ".zip") == 0) {
+		strncpy(bo, b, sizeof(bo));
+		bo[l-4] = '\0';
+		p = bo;
+		lst = sample ? lists : list;
+		nlst = sample ? nlists : nlist;
 	    }
-	    if (bsearch(&p, sample ? lists : list,
-			sample ? nlists : nlist,
-			sizeof(char *),
-			(cmpfunc)strpcasecmp) == NULL
-		&& bsearch(&po, listx, nlistx, sizeof(char *),
-			   (cmpfunc)strpcasecmp) == NULL) {
+	    else if (l > 4 && strcmp(b+l-4, ".chd") == 0) {
+		strncpy(bo, b, sizeof(bo));
+		bo[l-4] = '\0';
+		p = bo;
+		lst = listx;
+		nlst = nlistx;
+	    }
+	    else {
+		p = b;
+		lst = listx;
+		nlst = nlistx;
+	    }
+
+	    if (bsearch(&p, lst, nlst, sizeof(char *),
+			(cmpfunc)strpcasecmp) == NULL) {
 		if (nfound++ == 0)
 		    printf("Extra files found:\n");
 		printf("%s/%s/%s\n", rompath[i],
-		       sample ? "samples" : "roms", bo);
+		       sample ? "samples" : "roms", b);
 	    }
 	}
 	pclose(fin);
