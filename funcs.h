@@ -32,5 +32,7 @@ int w_game(DB *db, struct game *game);
 int findcrc (char *zn, char *fn, int filesize, int romsize,
 	     unsigned long wcrc);
 int readinfosfromzip (struct rom **rompp, char *zipfile);
+void merge_match(struct match *m, int nrom, struct zip **zip,
+		 int pno, int gpno);
 
 #endif /* funcs.h */

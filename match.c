@@ -30,7 +30,7 @@ struct match *
 check_game(struct game *game, struct zip **zip, int pno, int gpno)
 {
     int i, zno[3];
-    struct match *m, *mm;
+    struct match *m;
 
     m = (struct match *)xmalloc(sizeof(struct match)*game->nrom);
 
@@ -50,16 +50,30 @@ check_game(struct game *game, struct zip **zip, int pno, int gpno)
 
     marry(m, game->nrom, zno);
 
+    return m;
+}
+
+
+
+void
+merge_match(struct match *m, int nrom, struct zip **zip, int pno, int gpno)
+{
+    int zno[3], i;
+    struct match *mm;
+    
     /* update zip structures */
+
     zno[0] = 0;
     zno[1] = pno;
     zno[2] = gpno;
 
-    for (i=0; i<game->nrom; i++) {
-	if (m[i].quality > ROM_UNKNOWN
-	    && zip[m[i].zno]->rom[m[i].fno].state < ROM_TAKEN) {
-	    zip[m[i].zno]->rom[m[i].fno].state = ROM_TAKEN;
-	    zip[m[i].zno]->rom[m[i].fno].where = zno[m[i].zno];
+    for (i=0; i<nrom; i++) {
+	if (m[i].quality > ROM_UNKNOWN) {
+	    if (zip[m[i].zno]->rom[m[i].fno].state < ROM_TAKEN
+		|| m[i].zno == 0) {
+		zip[m[i].zno]->rom[m[i].fno].state = ROM_TAKEN;
+		zip[m[i].zno]->rom[m[i].fno].where = zno[m[i].zno];
+	    }
 	}
 	for (mm=m->next; mm; mm=mm->next)
 	    if (mm->quality > ROM_UNKNOWN
@@ -68,8 +82,8 @@ check_game(struct game *game, struct zip **zip, int pno, int gpno)
 		zip[mm->zno]->rom[mm->fno].where = zno[mm->zno];
 	    }
     }
-    
-    return m;
+
+    return;
 }
 
 
@@ -283,14 +297,14 @@ warn_rom(struct rom *r, char *fmt, ...)
 
     if (r) {
 	if (r->crc)
-	    printf("rom  %-12s  size %6ld  crc %.8lx: ",
+	    printf("rom  %-12s  size %7ld  crc %.8lx: ",
 		   r->name, r->size, r->crc);
 	else
-	    printf("rom  %-12s  size %6ld  no good dump: ",
+	    printf("rom  %-12s  size %7ld  no good dump: ",
 		   r->name, r->size);
     }
     else
-	printf("game %-39s: ", gname);
+	printf("game %-40s: ", gname);
     
     va_start(va, fmt);
     vprintf(fmt, va);
@@ -313,7 +327,7 @@ warn_file(struct rom *r, char *fmt, ...)
 	gnamedone = 1;
     }
 
-    printf("file %-12s  size %6ld  crc %.8lx: ",
+    printf("file %-12s  size %7ld  crc %.8lx: ",
 	   r->name, r->size, r->crc);
     
     va_start(va, fmt);
