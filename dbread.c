@@ -131,9 +131,7 @@ dbread(DB* db, char *fname)
 
 	case r_sample:
 	    s[ns].name = extract(l, match[1]);
-	    p = extract(l, match[2]);
-	    s[ns].size = strtol(p, NULL, 10);
-	    free(p);
+	    s[ns].size = s[ns].crc = 0;
 	    ns++;
 	    break;
 
