@@ -414,6 +414,8 @@ int
 zip_entry_add(struct zf *dest, struct zf *src, int entry_no)
 {
     z_stream *zstr;
+    char *outbuf;
+    int ret, wrote;
     
     char buf[BUFSIZE];
     unsigned int len, remainder;
@@ -460,6 +462,64 @@ zip_entry_add(struct zf *dest, struct zf *src, int entry_no)
     deflateInit2(zstr, Z_BEST_COMPRESSION, Z_DEFLATED, -15, 9,
 		 Z_DEFAULT_STRATEGY);
 
+    if (src->entry[entry_no].ch_data_buf) {
+	outbuf = (char *)xmalloc(src->entry[entry_no].ch_data_len*1.01+12);
+	zstr->next_in = src->entry[entry_no].ch_data_buf;
+	zstr->avail_in = src->entry[entry_no].ch_data_len;
+	zstr->next_out = outbuf;
+	zstr->avail_out = src->entry[entry_no].ch_data_len*1.01+12;
+
+	ret = deflate(zstr, Z_FINISH);
+
+	switch(ret) {
+	case Z_STREAM_END:
+	    break;
+	default:
+	    myerror(ERRDEF, "zlib error while deflating buffer: %s",
+		    zstr->msg);
+	    return -1;
+	}
+	dest->entry[dest->nentry].crc =
+	    crc32(dest->entry[dest->nentry].crc,
+		  src->entry[entry_no].ch_data_buf,
+		  src->entry[entry_no].ch_data_len);
+	dest->entry[dest->nentry].uncomp_size =
+	    src->entry[entry_no].ch_data_len;
+	dest->entry[dest->nentry].comp_size = zstr->total_out;
+
+	wrote = 0;
+	if ((ret = fwrite(outbuf+wrote, 1, zstr->total_out-wrote, dest->zp))
+	    < zstr->total_out-wrote) {
+	    if (ferror(dest->zp)) {
+		zip_err = ZERR_WRITE;
+		return -1;
+	    }
+	    wrote += ret;
+	}
+
+	fseek(dest->zp, dest->entry[dest->nentry].local_offset,
+	      SEEK_SET);
+	if (ferror(dest->zp)) {
+	    zip_err = ZERR_SEEK;
+	    return -1;
+	}
+
+	if (writecdentry(dest->zp, dest->entry+dest->nentry, 1) != 0) {
+	    zip_err = ZERR_WRITE;
+	    return -1;
+	}
+
+	fseek(dest->zp, 0, SEEK_END);
+	if (ferror(dest->zp)) {
+	    zip_err = ZERR_SEEK;
+	    return -1;
+	}
+	
+	dest->nentry++;
+	return 0;
+    }
+
+    /* missing: fp, partial zf */
     /* XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX */
 #if 0	
 	/* XXX: ignore below  */
@@ -479,6 +539,7 @@ zip_entry_add(struct zf *dest, struct zf *src, int entry_no)
 	    remainder -= len;
 	}
 
+	fseek(dest->zp, 0, SEEK_END);
 	dest->nentry++;
 	return 0;
 #endif
