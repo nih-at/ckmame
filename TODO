@@ -1,3 +1,4 @@
+fix 'should be in cloneof, is in zip'
 fix fixing PONG -- dumps core if pong.zip contains a file (pong has no roms)
 documentation
 use return value of w_game
