@@ -10,6 +10,9 @@ mame.db location
 ROMPATH autoconf
 add error messages in ckmame with the zips (e.g. can't create file etc.)
 complete raine support (multiple archive names)
+handle following: zip file only contains unknown roms --
+  reports only that game is missing, doesn't tell that zip contains
+  unknown files
 
 get roms from a different location to fix sets
 
