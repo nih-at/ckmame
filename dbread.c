@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.27 2003/02/23 16:38:04 dillo Exp $
+  $NiH: dbread.c,v 1.28 2003/03/16 10:21:33 wiz Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -157,31 +157,57 @@ dbread(DB* db, char *fname)
 		    break;
 		}
 		r[nr].name = xstrdup(gettok(&l));
-		p = gettok(&l);
-		if (strcmp(p, "merge") == 0) {
-		    r[nr].merge = xstrdup(gettok(&l));
-		    p = gettok(&l);
-		}
-		else
-		    r[nr].merge = NULL;
-		if (strcmp(p, "size") != 0) {
-		    /* XXX: error */
-		    myerror(ERRFILE, "%d: expected token (size) not found",
-			    lineno);
-		    break;
-		}
-		r[nr].size = strtol(gettok(&l), NULL, 10);
-		p = gettok(&l);
-		if (strcmp(p, "crc") != 0 && strcmp(p, "crc32") != 0) {
-		    /* XXX: error */
-		    myerror(ERRFILE, "%d: expected token (crc) not found",
-			    lineno);
-		    break;
-		}
-		r[nr].crc = strtoul(gettok(&l), NULL, 16);
+		r[nr].size = 0;
+		r[nr].crc = 0;
+		r[nr].merge = NULL;
 		r[nr].where = ROM_INZIP;
 		r[nr].naltname = 0;
 		r[nr].altname = NULL;
+		r[nr].flags = FLAGS_OK;
+
+		/* read remaining tokens and look for known tokens */
+		while ((p=gettok(&l)) != NULL) {
+		    if (strcmp(p, "crc") == 0 || strcmp(p, "crc32") == 0) {
+			if ((p=gettok(&l)) == NULL) {
+			    /* XXX: error */
+			    myerror(ERRFILE, "%d: token crc missing argument",
+				    lineno);
+			    break;
+			}
+			r[nr].crc = strtoul(p, NULL, 16);
+		    } else if (strcmp(p, "flags") == 0) {
+			if ((p=gettok(&l)) == NULL) {
+			    /* XXX: error */
+			    myerror(ERRFILE, "%d: token flags missing argument",
+				    lineno);
+			    break;
+			}
+			if (strcmp(p, "baddump") == 0)
+			    r[nr].flags = FLAGS_BADDUMP;
+			else if (strcmp(p, "nodump") == 0)
+			    r[nr].flags = FLAGS_NODUMP;
+		    } else if (strcmp(p, "merge") == 0) {
+			if ((p=gettok(&l)) == NULL) {
+			    /* XXX: error */
+			    myerror(ERRFILE, "%d: token merge missing argument",
+				    lineno);
+			    break;
+			}
+			r[nr].merge = xstrdup(p);
+		    } else if (strcmp(p, "size") == 0) {
+			if ((p=gettok(&l)) == NULL) {
+			    /* XXX: error */
+			    myerror(ERRFILE, "%d: token size missing argument",
+				    lineno);
+			    break;
+			}
+			r[nr].size = strtol(p, NULL, 10);
+		    }
+		    /*
+		      else
+		      myerror(ERRFILE, "%d: ignoring token `%s'", lineno, p);
+		    */
+		}
 
 		/* omit duplicates */
 		deleted = 0;

@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.13 2003/02/23 15:08:19 dillo Exp $
+  $NiH: r_game.c,v 1.14 2003/03/16 10:21:34 wiz Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -83,6 +83,7 @@ r__rom(DBT *v, void *vr)
     r->naltname = r__array(v, r__pstring, (void *)&r->altname, sizeof(char *));
     r->size = r__ulong(v);
     r->crc = r__ulong(v);
+    r->flags = r__ushort(v);
     r->where = r__ushort(v);
     r->state = 0;
 }

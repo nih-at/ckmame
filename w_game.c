@@ -1,5 +1,5 @@
 /*
-  $NiH: w_game.c,v 1.12 2003/02/23 15:08:19 dillo Exp $
+  $NiH: w_game.c,v 1.13 2003/03/16 10:21:36 wiz Exp $
 
   w_game.c -- write game strcut to db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -87,5 +87,6 @@ w__rom(DBT *v, void *vr)
     w__array(v, w__pstring, r->altname, sizeof(char *), r->naltname);
     w__ulong(v, r->size);
     w__ulong(v, r->crc);
+    w__ushort(v, r->flags);
     w__ushort(v, r->where);
 }

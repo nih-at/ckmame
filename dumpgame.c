@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.24 2003/03/14 15:25:33 dillo Exp $
+  $NiH: dumpgame.c,v 1.25 2003/03/16 10:21:33 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -76,6 +76,10 @@ struct option options[] = {
 
 static char *where_name[] = {
     "zip", "cloneof", "grand-cloneof"
+};
+
+static char *flags_name[] = {
+    "ok", "baddump", "nogooddump"
 };
 
 
@@ -198,17 +202,18 @@ dump_game(DB *db, char *name)
     }
     printf("Roms:");
     for (i=0; i<game->nrom; i++) {
-	printf("\t\tfile %-12s  size %6ld  crc %.8lx  in %s",
+	printf("\t\tfile %-12s  size %7ld  crc %.8lx  flags %s  in %s",
 	       game->rom[i].name, game->rom[i].size, game->rom[i].crc,
-	       where_name[game->rom[i].where]);
+	       flags_name[game->rom[i].flags], where_name[game->rom[i].where]);
 	if (game->rom[i].merge
 	    && strcmp(game->rom[i].name, game->rom[i].merge) != 0)
 	    printf(" (%s)", game->rom[i].merge);
 	putc('\n', stdout);
 	for (j=0; j < game->rom[i].naltname; j++) {
-	    printf("\t\tfile %-12s  size %6ld  crc %.8lx  in %s",
+	    printf("\t\tfile %-12s  size %7ld  crc %.8lx  flags %s  in %s",
 		   game->rom[i].altname[j], game->rom[i].size,
-		   game->rom[i].crc, where_name[game->rom[i].where]);
+		   game->rom[i].crc, flags_name[game->rom[i].flags],
+		   where_name[game->rom[i].where]);
 	    if (game->rom[i].merge) {
 		if (strcmp(game->rom[i].altname[j], game->rom[i].merge) != 0)
 		    printf(" (%s)", game->rom[i].merge);

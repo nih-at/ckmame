@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.16 2002/06/06 09:27:00 dillo Exp $
+  $NiH: types.h,v 1.17 2003/03/16 10:21:35 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -56,6 +56,10 @@
 
 
 
+enum flags {
+    FLAGS_OK, FLAGS_BADDUMP, FLAGS_NODUMP
+};
+
 enum where {
     ROM_INZIP, ROM_INCO, ROM_INGCO
 };
@@ -69,6 +73,7 @@ enum state {
 struct rom {
     char *name, *merge;
     unsigned long size, crc;
+    enum flags flags;
     enum state state;
     enum where where;
     int naltname;

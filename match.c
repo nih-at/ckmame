@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.22 2002/06/06 09:26:56 dillo Exp $
+  $NiH: match.c,v 1.23 2003/03/16 10:21:34 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -227,7 +227,8 @@ diagnostics(struct game *game, struct match *m, struct zfile **zip)
 	    switch (m[i].quality) {
 	    case ROM_UNKNOWN:
 		if (output_options & WARN_MISSING) {
-		    if ((game->rom[i].crc != 0 || game->rom[i].size == 0)
+		    if ((game->rom[i].crc != 0 || game->rom[i].size == 0
+			 || game->rom[i].flags == FLAGS_NODUMP)
 			|| output_options & WARN_NO_GOOD_DUMP)
 			warn_rom(game->rom+i, "missing");
 		}
@@ -272,7 +273,8 @@ diagnostics(struct game *game, struct match *m, struct zfile **zip)
 		break;
 		
 	    case ROM_OK:
-		if (game->rom[i].crc == 0 && game->rom[i].size != 0) {
+		if ((game->rom[i].crc == 0 || game->rom[i].flags == FLAGS_NODUMP)
+		    && game->rom[i].size != 0) {
 		    if (output_options & WARN_NO_GOOD_DUMP)
 			warn_rom(game->rom+i, "exists");
 		}
@@ -344,10 +346,16 @@ warn_rom(struct rom *r, char *fmt, ...)
     if (r) {
 	printf("rom  %-12s  ", r->name);
 	if (r->size) {
-	    if (r->crc)
-		sprintf(buf, "size %7ld  crc %.8lx: ", r->size, r->crc);
-	    else
+	    if (r->crc) {
+		if (r->flags == FLAGS_OK)
+		    sprintf(buf, "size %7ld  crc %.8lx: ", r->size, r->crc);
+		else if (r->flags == FLAGS_BADDUMP)
+		    sprintf(buf, "size %7ld  bad dump    : ", r->size, r->crc);
+		else
+		    sprintf(buf, "size %7ld  no good dump: ", r->size);
+	    } else
 		sprintf(buf, "size %7ld  no good dump: ", r->size);
+
 	}
 	else
 	    sprintf(buf, "                          : ");
