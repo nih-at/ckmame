@@ -105,19 +105,3 @@ w__array(DBT *v, void (*fn)(DBT *, void *), void *a, size_t size, size_t n)
     for (i=0; i<n; i++)
 	fn(v, a+(size*i));
 }
-
-
-
-/* XXX: doesn't belong in this file */
-
-void
-w__rom(DBT *v, void *r)
-{
-    w__string(v, ((struct rom *)r)->name);
-    w__string(v, ((struct rom *)r)->merge);
-    w__array(v, w__pstring, ((struct rom *)r)->altname, sizeof(char *),
-	     ((struct rom *)r)->naltname);
-    w__ulong(v, ((struct rom *)r)->size);
-    w__ulong(v, ((struct rom *)r)->crc);
-    w__ushort(v, ((struct rom *)r)->where);
-}

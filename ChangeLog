@@ -1,1 +1,11 @@
+1999-09-27  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* romutil.c (romcmp): removed comment for already fixed behaviour
+
+	* w_game.c, w_util.c (w__rom): moved function from w_util.c to
+	w_game.c
+
+	* r_game.c, r_util.c (r__rom): moved function from r_util.c to
+	r_game.c 
+
 ckmame-0.4: first released version

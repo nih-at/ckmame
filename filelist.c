@@ -12,7 +12,7 @@ static int fdcomp(const void *s1, const void *s2);
 int
 list_all_files(char *path, struct file_dir **fp)
 {
-    sturct file_dir *f;
+    struct file_dir *f;
     struct dirent *de;
     int size, n;
     DIR *dir;

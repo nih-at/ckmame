@@ -121,21 +121,3 @@ r__array(DBT *v, void (*fn)(DBT *, void *), void **a, size_t size)
     *a = ap;
     return n;
 }
-
-
-
-/* XXX: doesn't belong in this file */
-
-void
-r__rom(DBT *v, void *r)
-{
-    ((struct rom *)r)->name = r__string(v);
-    ((struct rom *)r)->merge = r__string(v);
-    ((struct rom *)r)->naltname = r__array(v, r__pstring,
-					   (void *)&((struct rom *)r)->altname,
-					   sizeof(char *));
-    ((struct rom *)r)->size = r__ulong(v);
-    ((struct rom *)r)->crc = r__ulong(v);
-    ((struct rom *)r)->where = r__ushort(v);
-    ((struct rom *)r)->state = 0;
-}

@@ -44,7 +44,6 @@ rom_add_name(struct rom *r, char *name)
 enum state
 romcmp(struct rom *r1, struct rom *r2, int merge)
 {
-    /* XXX: return ROM_UNKNOWN, not ROM_NAMEERR, for samples */
     /* r1 is important */
     /* in match: r1 is from zip, r2 from rom */
     
