@@ -70,9 +70,10 @@ dbread(DB* db, char *fname)
 	
 	if (strcmp(cmd, "game") == 0 || strcmp(cmd, "resource") == 0) {
 	    g = (struct game *)xmalloc(sizeof(struct game));
-	    g->name = g->cloneof[0] = g->cloneof[1] = g->sampleof = NULL;
+	    g->name = g->cloneof[0] = g->cloneof[1]
+		= g->sampleof[0] = g->sampleof[1] = NULL;
 	    g->nrom = g->nsample = 0;
-	    g->nclone = 0;
+	    g->nclone = g->nsclone = 0;
 	    nr = ns = 0;
 	}
 	else if (strcmp(cmd, "name") == 0) {
@@ -119,7 +120,7 @@ dbread(DB* db, char *fname)
 	    nr++;
 	}
 	else if (strcmp(cmd, "sampleof") == 0)
-	    g->sampleof = xstrdup(GET_TOK());
+	    g->sampleof[0] = xstrdup(GET_TOK());
 	else if (strcmp(cmd, "sample") == 0) {
 	    s[ns].name = xstrdup(GET_TOK());
 	    s[ns].merge = NULL;

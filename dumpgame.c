@@ -115,8 +115,22 @@ dump_game(DB *db, char *name)
 	    printf(" (%s)", game->rom[i].merge);
 	putc('\n', stdout);
     }
-    if (game->sampleof)
-	printf("Sampleof:\t%s\n", game->sampleof);
+    if (game->sampleof[0])
+	printf("Sampleof:\t%s\n", game->sampleof[0]);
+    if (game->sampleof[1])
+	printf("Grand-Sampleof:\t%s\n", game->sampleof[1]);
+    if (game->nsclone) {
+	printf("Sample Clones:");
+	for (i=0; i<game->nsclone; i++) {
+	    if (i%6 == 0)
+		fputs("\t\t", stdout);
+	    printf("%-8s ", game->sclone[i]);
+	    if (i%6 == 5)
+		putc('\n', stdout);
+	}
+	if (game->nsclone % 6 != 5)
+	    putc('\n', stdout);
+    }
     if (game->nsample) {
 	printf("Samples:");
 	for (i=0; i<game->nsample; i++)

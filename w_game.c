@@ -29,12 +29,18 @@ w_game(DB *db, struct game *game)
 	qsort(game->clone, game->nclone, sizeof(char *),
 	      (int (*)(const void *, const void *))strpcasecmp);
     }
+    if (game->nsclone) {
+	qsort(game->sclone, game->nsclone, sizeof(char *),
+	      (int (*)(const void *, const void *))strpcasecmp);
+    }
     
     w__string(&v, game->cloneof[0]);
     w__string(&v, game->cloneof[1]);
     w__array(&v, w__pstring, game->clone, sizeof(char *), game->nclone);
     w__array(&v, w__rom, game->rom, sizeof(struct rom), game->nrom);
-    w__string(&v, game->sampleof);
+    w__string(&v, game->sampleof[0]);
+    w__string(&v, game->sampleof[1]);
+    w__array(&v, w__pstring, game->sclone, sizeof(char *), game->nsclone);
     w__array(&v, w__rom, game->sample, sizeof(struct rom), game->nsample);
 
     err = db_insert(db, &k, &v);

@@ -35,7 +35,10 @@ r_game(DB *db, char *name)
     game->nclone = r__array(&v, r__pstring, (void *)&game->clone,
 			    sizeof(char *));
     game->nrom = r__array(&v, r__rom, (void *)&game->rom, sizeof(struct rom));
-    game->sampleof = r__string(&v);
+    game->sampleof[0] = r__string(&v);
+    game->sampleof[1] = r__string(&v);
+    game->nsclone = r__array(&v, r__pstring, (void *)&game->sclone,
+			    sizeof(char *));
     game->nsample = r__array(&v, r__rom, (void *)&game->sample,
 			     sizeof(struct rom));
 

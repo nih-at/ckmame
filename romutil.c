@@ -34,7 +34,9 @@
 enum state
 romcmp(struct rom *r1, struct rom *r2, int merge)
 {
+    /* XXX: return ROM_UNKNOWN, not ROM_NAMEERR, for samples */
     /* r1 is important */
+    
     if (strcasecmp(r1->name,
 		   (merge ? (r2->merge ? r2->merge : r2->name)
 		    : r2->name)) == 0) {
@@ -65,7 +67,18 @@ game_free(struct game *g, int fullp)
     free(g->name);
     free(g->cloneof[0]);
     free(g->cloneof[1]);
-    free(g->sampleof);
+    if (g->nclone) {
+	for (i=0; i<g->nclone; i++)
+	    free(g->clone[i]);
+	free(g->clone);
+    }
+    free(g->sampleof[0]);
+    free(g->sampleof[1]);
+    if (g->nsclone) {
+	for (i=0; i<g->nsclone; i++)
+	    free(g->sclone[i]);
+	free(g->sclone);
+    }
     for (i=0; i<g->nrom; i++) {
 	free(g->rom[i].name);
 	free(g->rom[i].merge);
@@ -79,6 +92,36 @@ game_free(struct game *g, int fullp)
 	free(g->sample);
     }
     free(g);
+}
+
+
+
+void
+game_swap_rs(struct game *g)
+{
+    struct rom *rp;
+    char **sp, *s;
+    int i;
+    
+    for (i=0; i<2; i++) {
+	s = g->cloneof[i];
+	g->cloneof[i] = g->sampleof[i];
+	g->sampleof[i] = s;
+    }
+
+    i = g->nclone;
+    sp = g->clone;
+    g->nclone = g->nsclone;
+    g->clone = g->sclone;
+    g->nsclone = i;
+    g->sclone = sp;
+
+    i = g->nrom;
+    rp = g->rom;
+    g->nrom = g->nsample;
+    g->rom = g->sample;
+    g->nsample = i;
+    g->sample = rp;
 }
 
 

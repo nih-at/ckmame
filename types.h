@@ -52,7 +52,9 @@ struct game {
     char **clone;
     struct rom *rom;
     int nrom;
-    char  *sampleof;
+    char  *sampleof[2];
+    int nsclone;
+    char **sclone;
     struct rom *sample;
     int nsample;
 };
