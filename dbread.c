@@ -171,10 +171,6 @@ dbread(DB* db, char *fname)
 		    g->cloneof[0] = NULL;
 		}
 
-	    if (strcmp(g->name, "cawingj") == 0) {
-		g->rom = r;
-	    }
-
 	    if (g->cloneof[0]) {
 		if (((parent=r_game(db, g->cloneof[0]))==NULL) || 
 		    lost(parent)) {
