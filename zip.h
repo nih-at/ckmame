@@ -4,6 +4,17 @@
 
 enum zipstate { Z_UNCHANGED, Z_DELETED, Z_REPLACED, Z_ADDED, Z_RENAMED };
 
+int zip_err; /* global variable for errors returned by the low-level
+		library */
+
+/* 0 is no error */
+#define ZERR_MULTIDISK        1
+
+char * zip_err_str[]={
+    "no error",
+    "multi-disk zip-files not supported"
+};
+
 struct zipfile {
     char *name;
     unzFile zfp;
@@ -20,6 +31,8 @@ struct zipchange {
 };
 
 struct zf {
+    char *zn;
+    FILE *zp;
     u_short nentry, com_size;
     u_int cd_size, cd_offset;
     char *com;

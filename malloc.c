@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "error.h"
 
@@ -14,6 +15,23 @@ xmalloc(size_t size)
 	exit(1);
     }
 
+    return p;
+}
+
+
+
+char *
+xstrdup(char *str)
+{
+    char *p;
+
+    if ((p=malloc(strlen(str)+1)) == NULL) {
+	myerror(ERRDEF, "malloc failure");
+	exit(1);
+    }
+
+    strcpy(p, str);
+    
     return p;
 }
 
