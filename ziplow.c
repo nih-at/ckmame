@@ -466,21 +466,8 @@ writecdir(struct zf *zfp)
     write4(zfp->zp, cd_size);
     write4(zfp->zp, cd_offset);
     write2(zfp->zp, zfp->comlen);
-#if 0
-    fprintf(zfp->zp, "%c%c%c%c", (zfp->nentry>>8)&0xff, zfp->nentry&0xff,
-	    (zfp->nentry>>8)&0xff, zfp->nentry&0xff);
-    fprintf(zfp->zp, "%c%c%c%c", (int)(cd_size>>24)&0xff, 
-	    (int)(cd_size>>16)&0xff, (int)(cd_size>>8)&0xff, 
-	    (int)cd_size&0xff);
-    fprintf(zfp->zp, "%c%c%c%c", (int)(cd_offset>>24)&0xff, 
-	    (int)(cd_offset>>16)&0xff, (int)(cd_offset>>8)&0xff, 
-	    (int)cd_offset&0xff);
-    fprintf(zfp->zp, "%c%c", (zfp->comlen>>8)&0xff, zfp->comlen&0xff);
-#endif /* 0 */
     writestr(zfp->zp, zfp->com, zfp->comlen);
 
-    /* XXX: incomplete */
-    
     return 0;
 }
 
