@@ -37,7 +37,7 @@ marry (struct match *rm, int count, int *noz)
 	    else
 		while (c != NULL) {
 		    other = z[c->zno][c->fno];
-		    if (matchcmp(rm[other].next, rm[now].next) >= 0) {
+		    if (other != -1 && matchcmp(rm[other].next, rm[now].next) >= 0) {
 			/* other has the better grip on this file */
 			rm[now].next = c->next;
 			free(c);
@@ -51,11 +51,13 @@ marry (struct match *rm, int count, int *noz)
 			rm[now].quality = c->quality;
 			z[c->zno][c->fno] = now;
 			/* other has to let it go */
-			c = rm[other].next;
-			rm[other].next = c->next;
-			rm[other].quality = ROM_UNKNOWN;
-			free(c);
-			c = rm[other].next;
+			if (other != -1) {
+			    c = rm[other].next;
+			    rm[other].next = c->next;
+			    rm[other].quality = ROM_UNKNOWN;
+			    free(c);
+			    c = rm[other].next;
+			}
 			/* other has to go looking again */
 			now = other;
 			break;
