@@ -58,4 +58,11 @@ game (
 	rom ( name 04.rom size 4 crc32 00000000 )
 )
 
+game (
+	name norom
+	description "no rom"
+	manufacturer "synth"
+	year 2004
+)
+
 END

@@ -1,0 +1,6 @@
+# test no-rom game
+# $NiH: ok.test,v 1.2 2003/03/16 16:41:10 dillo Exp $
+return 0
+args -FKULvc norom
+stdout In game norom:
+stdout game norom                                   : correct

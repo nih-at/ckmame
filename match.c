@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.29 2004/02/26 00:58:04 wiz Exp $
+  $NiH: match.c,v 1.30 2004/02/26 02:26:10 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -221,7 +221,7 @@ diagnostics(struct game *game, struct match *m, struct disk_match *md,
 	 && (output_options & WARN_MISSING))) {
 	warn_rom(NULL, "not a single rom found");
     }
-    else if (allcorrect && game->nrom > 0 && output_options & WARN_CORRECT) {
+    else if (allcorrect && (output_options & WARN_CORRECT)) {
 	warn_rom(NULL, "correct");
     }
     else {

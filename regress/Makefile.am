@@ -16,6 +16,7 @@ TESTCASES=	baddump.test \
 		multi.test \
 		nogood.test \
 		nonexist.test \
+		norom.test \
 		ok.test \
 		punknown.test \
 		punused.test \
