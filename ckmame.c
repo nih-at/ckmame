@@ -16,13 +16,14 @@
 
 char *prg;
 
-char *usage = "Usage: %s [-hVnsfbcd] [game...]\n";
+char *usage = "Usage: %s [-hVnsfbcd] [-D dbfile] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
 char help[] = "\n\
   -h, --help           display this help message\n\
   -V, --version        display version number\n\
+  -D, --db DBFILE      use mame-db DBFILE\n\
   -n, --nowarnings     print only unfixable errors\n\
   -s, --nosuperfluous  don't report superfluous files\n\
   -f, --nofixable      don't report fixable errors\n\
@@ -38,11 +39,12 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hVnsfbcdx"
+#define OPTIONS "hVD:nsfbcdx"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
     { "version",       0, 0, 'V' },
+    { "db",            1, 0, 'D' },
     { "nowarnings",    0, 0, 'n' }, /* -SUP, -FIX */
     { "nosuperfluous", 0, 0, 's' }, /* -SUP */
     { "nofixable",     0, 0, 'f' }, /* -FIX */
@@ -62,8 +64,8 @@ main(int argc, char **argv)
 {
     int i, j;
     DB *db;
-    char **list;
-    int c, nlist, found;
+    char **list, *dbname;
+    int c, nlist, found, dbext;
     struct tree *tree;
     struct tree tree_root;
     
@@ -71,6 +73,8 @@ main(int argc, char **argv)
     tree = &tree_root;
     tree->child = NULL;
     output_options = WARN_ALL;
+    dbname = "mame";
+    dbext = 1;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -83,6 +87,10 @@ main(int argc, char **argv)
 	case 'V':
 	    fputs(version_string, stdout);
 	    exit(0);
+	case 'D':
+	    dbname = optarg;
+	    dbext = 0;
+	    break;
 	case 'x':
 	    /* XXX: fix */
 	    break;
@@ -110,7 +118,7 @@ main(int argc, char **argv)
 	}
     }
     
-    if ((db=db_open("mame", 1, 0))==NULL) {
+    if ((db=db_open(dbname, dbext, 0))==NULL) {
 	myerror(ERRSTR, "can't open database `mame.db'");
 	exit(1);
     }
