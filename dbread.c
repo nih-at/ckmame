@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.34 2004/02/26 01:08:53 wiz Exp $
+  $NiH: dbread.c,v 1.35 2004/02/26 02:26:08 wiz Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -412,9 +412,9 @@ dbread(DB* db, char *fname)
 	    
 	case st_prog:
 	    if (strcmp(cmd, "name") == 0)
-		prog_name = gettok(&l);
+		prog_name = xstrdup(gettok(&l));
 	    else if (strcmp(cmd, "version") == 0)
-		prog_version = gettok(&l);
+		prog_version = xstrdup(gettok(&l));
 	    else if (strcmp(cmd, ")") == 0)
 		state = st_top;
 	    break;
@@ -509,6 +509,8 @@ dbread(DB* db, char *fname)
     w_list(db, "/extra_list", extra, nextra);
 
     w_prog(db, prog_name, prog_version);
+    free(prog_name);
+    free(prog_version);
 
     free(lostchildren);
     return 0;

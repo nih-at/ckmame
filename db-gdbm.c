@@ -1,5 +1,5 @@
 /*
-  $NiH: db-gdbm.c,v 1.15 2004/01/28 11:53:57 dillo Exp $
+  $NiH: db-gdbm.c,v 1.16 2004/02/26 02:26:07 wiz Exp $
 
   db-gdbm.c -- low level routines for GNU gdbm
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -34,7 +34,7 @@
 
 
 DB*
-ddb_open(char *name, int flags)
+ddb_open(const char *name, int flags)
 {
     GDBM_FILE db;
     char *s;

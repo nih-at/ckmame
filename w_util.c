@@ -1,5 +1,5 @@
 /*
-  $NiH: w_util.c,v 1.14 2004/01/27 23:04:10 wiz Exp $
+  $NiH: w_util.c,v 1.15 2004/02/26 02:26:13 wiz Exp $
 
   w_util.c -- data base write utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -81,7 +81,7 @@ w__mem(DBT *v, const char *buf, int len)
 
 
 void
-w__string(DBT *v, char *s)
+w__string(DBT *v, const char *s)
 {
     int len;
 
@@ -100,7 +100,7 @@ w__string(DBT *v, char *s)
 
 
 void
-w__pstring(DBT *v, void *sp)
+w__pstring(DBT *v, const void *sp)
 {
     w__string(v, *(char **)sp);
 }
@@ -108,14 +108,15 @@ w__pstring(DBT *v, void *sp)
 
 
 void
-w__array(DBT *v, void (*fn)(DBT *, void *), void *a, size_t size, size_t n)
+w__array(DBT *v, void (*fn)(DBT *, void *), const void *a,
+	 size_t size, size_t n)
 {
     int i;
     
     w__ulong(v, n);
 
     for (i=0; i<n; i++)
-	fn(v, a+(size*i));
+	fn(v, (void *)a+(size*i));
 }
 
 

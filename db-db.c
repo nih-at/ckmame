@@ -1,5 +1,5 @@
 /*
-  $NiH: db-db.c,v 1.16 2004/01/28 11:53:57 dillo Exp $
+  $NiH: db-db.c,v 1.17 2004/02/26 02:26:07 wiz Exp $
 
   db-db.c -- low level routines for Berkley db 
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -36,11 +36,11 @@
 
 
 DB*
-ddb_open(char *name, int flags)
+ddb_open(const char *name, int flags)
 {
     DB* db;
     HASHINFO hi;
-    char *s;
+    const char *s;
 
     if (flags & DDB_EXT)
 	s = ddb_name(name);
@@ -58,7 +58,7 @@ ddb_open(char *name, int flags)
 		0666, DB_HASH, &hi);
 
     if (flags & DDB_EXT)
-	free(s);
+	free((void *)s);
 
     if (db && ddb_check_version(db, flags) != 0) {
 	ddb_close(db);

@@ -2,7 +2,7 @@
 #define _HAD_DBL_H
 
 /*
-  $NiH: dbl.h,v 1.14 2004/02/26 01:08:52 wiz Exp $
+  $NiH: dbl.h,v 1.15 2004/02/26 02:26:08 wiz Exp $
 
   dbl.h -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -34,14 +34,14 @@
 
 #define DDB_FORMAT_VERSION	3 /* version of ckmame database format */
 
-DB* ddb_open(char *name, int flags);
+DB* ddb_open(const char *name, int flags);
 int ddb_check_version(DB *db, int flags);
 int ddb_init_db(DB *db);
 int ddb_close(DB *db);
-int ddb_insert(DB *db, char *key, DBT *value);	/* API versions */
-int ddb_lookup(DB *db, char *key, DBT *value);
+int ddb_insert(DB *db, const char *key, DBT *value);	/* API versions */
+int ddb_lookup(DB *db, const char *key, DBT *value);
 const char *ddb_error(void);
-char *ddb_name(char *prefix);
+char *ddb_name(const char *prefix);
 
 int ddb_insert_l(DB *db, DBT *key, DBT *value);	/* backend versions */
 int ddb_lookup_l(DB *db, DBT *key, DBT *value);

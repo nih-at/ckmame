@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.1 2004/02/26 01:12:59 wiz Exp $
+  $NiH: superfluous.c,v 1.2 2004/02/26 02:26:12 wiz Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -80,7 +80,8 @@ handle_extra_files(DB *db, char *dbname, int sample)
 	    if (b[l-1] == '\n')
 		b[--l] = '\0';
 	    strncpy(bo, b, sizeof(bo));
-	    if (l > 4 && (strcmp(b+l-4, ".zip") == 0)) {
+	    if (l > 4 && (strcmp(b+l-4, ".zip") == 0
+			  || strcmp(b+l-4, ".chd") == 0)) {
 		b[l-4] = '\0';
 	    }
 	    if (bsearch(&p, sample ? lists : list,

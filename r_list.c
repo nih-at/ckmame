@@ -1,5 +1,5 @@
 /*
-  $NiH: r_list.c,v 1.10 2003/03/16 10:21:34 wiz Exp $
+  $NiH: r_list.c,v 1.11 2004/02/26 02:26:11 wiz Exp $
 
   r_list.c -- read list struct from db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -34,7 +34,7 @@
 
 
 int
-r_list(DB *db, char *key, char ***listp)
+r_list(DB *db, const char *key, char ***listp)
 {
     int n;
     DBT v;

@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.18 2004/02/05 17:32:31 dillo Exp $
+  $NiH: r_game.c,v 1.19 2004/02/26 02:26:10 wiz Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -36,7 +36,7 @@
 
 
 struct game *
-r_game(DB *db, char *name)
+r_game(DB *db, const char *name)
 {
     DBT v;
     struct game *game;

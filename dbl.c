@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.17 2004/01/28 11:53:58 dillo Exp $
+  $NiH: dbl.c,v 1.18 2004/02/26 02:26:08 wiz Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -44,7 +44,7 @@ static int ddb_errno;
 
 
 int
-ddb_insert(DB *db, char *key, DBT *value)
+ddb_insert(DB *db, const char *key, DBT *value)
 {
     DBT k, v;
     int ret;
@@ -79,7 +79,7 @@ ddb_insert(DB *db, char *key, DBT *value)
 
 
 int
-ddb_lookup(DB *db, char *key, DBT *value)
+ddb_lookup(DB *db, const char *key, DBT *value)
 {
     DBT k, v;
     int ret;
@@ -117,7 +117,7 @@ ddb_lookup(DB *db, char *key, DBT *value)
 
 
 char *
-ddb_name(char *prefix)
+ddb_name(const char *prefix)
 {
     char *s;
 

@@ -1,5 +1,5 @@
 /*
-  $NiH: r_prog.c,v 1.6 2003/03/16 10:21:35 wiz Exp $
+  $NiH: r_prog.c,v 1.7 2004/02/26 02:26:11 wiz Exp $
 
   r_prog.c -- read prog struct from db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -45,8 +45,8 @@ r_prog(DB *db, char **namep, char **versionp)
     
     data = v.data;
 
-    *name = r__string(&v);
-    *version = r__string(&v);
+    *namep = r__string(&v);
+    *versionp = r__string(&v);
 
     free(data);
 

@@ -1,5 +1,15 @@
 2004-04-21  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* r_prog.c (r_prog): make compile.
+
+	* dumpgame.c: allow dumping of /prog and lists.  make local
+	functions static, const poisoning.
+
+	* dbread.c (dbread): fix writing of /prog.
+
+	* superfluous.c (handle_extra_files): strip .chd extension from
+	file names.
+
 	* util.c (findfile): search for disk images with extension .chd
 	and without extension.
 

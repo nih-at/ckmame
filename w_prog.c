@@ -1,5 +1,5 @@
 /*
-  $NiH: w_prog.c,v 1.7 2004/02/26 02:26:13 wiz Exp $
+  $NiH: w_prog.c,v 1.8 2004/02/26 02:49:03 wiz Exp $
 
   w_prog.c -- write prog struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -37,7 +37,7 @@
 
 
 int
-w_prog(DB *db, char *name, char *version)
+w_prog(DB *db, const char *name, const char *version)
 {
     int err;
     DBT v;

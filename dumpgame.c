@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.29 2004/02/05 17:32:30 dillo Exp $
+  $NiH: dumpgame.c,v 1.30 2004/02/26 02:26:08 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -42,7 +42,10 @@
 #include "util.h"
 #include "romutil.h"
 
-int dump_game(DB *db, char *name);
+static int dump_game(DB *, const char *);
+static int dump_list(DB *, const char *);
+static int dump_prog(DB *);
+static int dump_special(DB *, const char *);
 
 char *prg;
 char *usage = "Usage: %s [-hV] [-D dbfile] [game ...]\n";
@@ -136,8 +139,15 @@ main(int argc, char **argv)
     first = 1;
     for (i=optind; i<argc; i++) {
 	if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-	    if (bsearch(argv+i, list, nlist, sizeof(char *),
-			(cmpfunc)strpcasecmp) != NULL) {
+	    if (argv[i][0] == '/') {
+		if (first)
+		    first = 0;
+		else
+		    putc('\n', stdout);
+		dump_special(db, argv[i]);
+	    }
+	    else if (bsearch(argv+i, list, nlist, sizeof(char *),
+			     (cmpfunc)strpcasecmp) != NULL) {
 		if (first)
 		    first = 0;
 		else
@@ -171,7 +181,7 @@ main(int argc, char **argv)
 
 
 int
-dump_game(DB *db, char *name)
+dump_game(DB *db, const char *name)
 {
     int i, j;
     struct game *game;
@@ -263,4 +273,64 @@ dump_game(DB *db, char *name)
     game_free(game, 1);
 
     return 0;
+}
+
+
+
+static int
+dump_list(DB *db, const char *key)
+{
+    int i, n;
+    char **l;
+
+    if ((n=r_list(db, key, &l)) < 0) {
+	myerror(ERRDEF, "db error reading list %s", key);
+	return -1;
+    }
+
+    for (i=0; i<n; i++) {
+	printf("%s\n", l[i]);
+	free(l[i]);
+    }
+    free(l);
+
+    return 0;
+}
+
+
+
+static int
+dump_prog(DB *db)
+{
+    char *name, *version;
+
+    if (r_prog(db, &name, &version) < 0) {
+	myerror(ERRDEF, "db error reading /prog");
+	return -1;
+    }
+
+    printf("%s (%s)\n",
+	   name ? name : "unknown",
+	   version ? version: "unknown");
+    free(name);
+    free(version);
+
+    return 0;
+}
+
+
+
+static int
+dump_special(DB *db, const char *name)
+{
+    if (strcmp(name, "/prog") == 0)
+	return dump_prog(db);
+    else if (strcmp(name, "/list") == 0
+	     || strcmp(name, "/sample_list") == 0
+	     || strcmp(name, "/extra_list") == 0)
+	return dump_list(db, name);
+    else {
+	myerror(ERRDEF, "unknown special: %s", name);
+	return -1;
+    }
 }
