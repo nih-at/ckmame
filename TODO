@@ -1,3 +1,4 @@
+fix superfluous so it doesn't warn about chd images
 use crctypes for roms
 use NOCRC for samples
 
