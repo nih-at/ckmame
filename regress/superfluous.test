@@ -1,7 +1,11 @@
 # test reporting superfluous files
-# $NiH$
+# $NiH: superfluous.test,v 1.1 2004/04/26 09:03:18 dillo Exp $
 return 0
 args -FKULvc --superfluous
 rom 1-4-ok.zip foo.zip 1-4-ok.zip
+disk 108-5.chd 1-8.chd
+disk 108-5.chd 1-4
 stdout Extra files found:
+stdout ./roms/1-4
+stdout ./roms/1-8.chd
 stdout ./roms/foo.zip

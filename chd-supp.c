@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.4 2004/04/26 12:28:55 dillo Exp $
+  $NiH: chd-supp.c,v 1.5 2004/04/26 21:29:19 wiz Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -24,21 +24,20 @@
 
 
 #include <errno.h>
+#include <md5.h>
+#include <sha1.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "types.h"
 #include "romutil.h"
-
-#define HEADERLEN	120
-#define TAG		"MComprHD"
-#define OFF_VERSION	12
-#define OFF_MD5		44
-#define OFF_SHA1	80
-
-#define GET_LONG(b)	(((b)[0]<<24)|((b)[1]<<16)|((b)[2]<<8)|(b)[3])
+#include "chd.h"
+#include "xmalloc.h"
 
 extern char *prg;
+
+static int get_hashes(struct chd *, struct hashes *);
 
 
 
@@ -50,50 +49,110 @@ extern char *prg;
 int
 read_infos_from_chd(struct disk *d, int hashtypes)
 {
-    FILE *f;
-    unsigned char b[HEADERLEN];
-    unsigned long version;
+    struct chd *chd;
+    int err;
 
     hashes_init(&d->hashes);
 
-    if ((f=fopen(d->name, "rb")) == NULL) {
+    if ((chd=chd_open(d->name, &err)) == NULL) {
 	/* no error if file doesn't exist */
-	if (errno != ENOENT) {
+	if (!(err == CHD_ERR_OPEN && errno == ENOENT)) {
+	    /* XXX: include err */
 	    fprintf(stderr, "%s: error opening '%s': %s\n",
 		    prg, d->name, strerror(errno));
 	}
 	return -1;
     }
 
-    if (fread(b, sizeof(b), 1, f) != 1) {
-	fprintf(stderr, "%s: error reading '%s': %s\n",
-		prg, d->name, strerror(errno));
-	fclose(f);
-	return -1;
+    if (hashtypes == 0) {
+	d->hashes.types |= GOT_MD5;
+	memcpy(d->hashes.md5, chd->md5, sizeof(d->hashes.md5));
+	if (chd->version >= 3) {
+	    d->hashes.types |= GOT_SHA1;
+	    memcpy(d->hashes.sha1, chd->sha1, sizeof(d->hashes.sha1));
+	}
     }
+    else {
+	d->hashes.types = hashtypes;
+	if (get_hashes(chd, &d->hashes) < 0) {
+	    chd_close(chd);
+	    return -1;
+	}
 
-    fclose(f);
+	if (hashtypes & GOT_MD5) {
+	    if (memcmp(d->hashes.md5, chd->md5, sizeof(d->hashes.md5)) != 0) {
+		fprintf(stderr, "%s: md5 mismatch in '%s'\n",
+		    prg, d->name);
+		chd_close(chd);
+		return -1;
+	    }
+	}
+	else
+	    memcpy(d->hashes.md5, chd->md5, sizeof(d->hashes.md5));
+
+	if (chd->version > 2) {
+	    if (hashtypes & GOT_SHA1) {
+		if (memcmp(d->hashes.sha1, chd->sha1,
+			   sizeof(d->hashes.sha1)) != 0) {
+		    fprintf(stderr, "%s: sha1 mismatch in '%s'\n",
+			    prg, d->name);
+		    chd_close(chd);
+		    return -1;
+		}
+	    }
+	    else
+		memcpy(d->hashes.sha1, chd->sha1, sizeof(d->hashes.sha1));
+	}		
+    }
     
-    if (strncmp(b, TAG, 8) != 0) {
-	fprintf(stderr, "%s: '%s' is not a chd file\n",
-		prg, d->name);
-	return -1;
+    chd_close(chd);
+
+    return 0;
+}
+
+
+
+static int
+get_hashes(struct chd *chd, struct hashes *h)
+{
+    MD5_CTX md5;
+    SHA1_CTX sha1;
+    unsigned int hunk, n;
+    uint64_t len;
+    char *buf;
+
+    /* XXX: support CRC? */
+    h->types &= ~GOT_CRC;
+
+    if (h->types & GOT_MD5)
+	MD5Init(&md5);
+    if (h->types & GOT_SHA1)
+	SHA1Init(&sha1);
+
+    buf = xmalloc(chd->hunk_len);
+    len = chd->total_len;
+    for (hunk=0; hunk<chd->total_hunks; hunk++) {
+	n = chd->hunk_len > len ? len : chd->hunk_len;
+
+	if (chd_read_hunk(chd, hunk, buf) != chd->hunk_len) {
+	    /* XXX: include chd->error */
+	    fprintf(stderr, "%s: error reading hunk %d in '%s': %s\n",
+		    prg, hunk, chd->name, strerror(errno));
+	}
+
+	if (h->types & GOT_MD5)
+	    MD5Update(&md5, buf, n);
+	if (h->types & GOT_SHA1)
+	    SHA1Update(&sha1, buf, n);
+	len -= n;
     }
-
-    version = GET_LONG(b+12);
-
-    if (version > 3)
-	fprintf(stderr, "%s: warning: chd file '%s' has unknown version %lu\n",
-		prg, d->name, version);
-
-    d->hashes.types |= GOT_MD5;
-    memcpy(d->hashes.md5, b+OFF_MD5, sizeof(d->hashes.md5));
-    if (version >= 3) {
-	d->hashes.types |= GOT_SHA1;
-	memcpy(d->hashes.sha1, b+OFF_SHA1, sizeof(d->hashes.sha1));
-    }
-
-    /* XXX: honour hashtypes */
     
+    if (h->types & GOT_MD5)
+	MD5Final(h->md5, &md5);
+    if (h->types & GOT_SHA1)
+	SHA1Final(h->sha1, &sha1);
+
+    free(buf);
+
     return 0;
 }

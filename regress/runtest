@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.11 2004/04/14 14:02:31 dillo Exp $
+#  $NiH: runtest,v 1.12 2004/04/16 11:32:10 wiz Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -49,21 +49,24 @@
 #	    multiple error commands are used, the messages are
 #	    expected in the order given.
 #
-#	rom TEST IN OUT
+#	rom IN TEST OUT
 #	    link zip file IN into roms directory with name TEST, check
 #	    against OUT after ckmame has run.
 #
 #	romnew CREATED EXPECTED
-#	    check that CREATEd has been created in roms directory and
-#	    equals EXPECTED
+#	    check that CREATED has been created in roms directory and
+#	    equals EXPECTED.
 #
-#	romdel TEST IN
+#	romdel IN TEST
 #	    link zip file IN into roms directory with name TEST, check
 #	    that it is deleted.
 #
 #	garbage CREATED-FILE EXPECTED-FILE
 #	    check that CREATED-FILE has been created in garbage
 #	    directory and equals EXPECTED-FILE.
+#
+#	disk IN TEST
+#	    link chd file IN into roms directory with name TEST.
 #
 #	XXX: allow for creation of rom files and existing garbage files
 #
@@ -218,6 +221,7 @@ cd ${DIR} || ( die "cannot cd to test directory ${DIR}" )
 RET=''
 ARGS=''
 FILES=''
+FILES_SHOULD=''
 
 mkdir roms
 
@@ -246,6 +250,11 @@ do
   garbage)
     set $arg
     FILES="${FILES} ${srcdir}/$2!roms/garbage/$1";;
+  disk)
+    set $arg
+    # XXX: check that $1 exists
+    cp "${srcdir}/$1" "roms/$2"
+    FILES_SHOULD="${FILES_SHOULD} roms/$2";;
   stdout)
     echo "$arg" >> stdout;;
   error)
@@ -276,7 +285,7 @@ then
     fail "unexpected exit status: got $ret, expected ${RET}"
 fi
 
-FILES_SHOULD="gotout goterr mamedb"
+FILES_SHOULD="${FILES_SHOULD} gotout goterr mamedb"
 
 if [ -f stdout ]
 then

@@ -7,6 +7,10 @@ ZIPCMP=@ZIPCMP@
 TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}"
 
 TESTCASES=	baddump.test \
+		disk-mis.test \
+		disk-noext.test \
+		disk-ok.test \
+		disk-wrong.test \
 		double.test \
 		garbage.test \
 		inchild.test \

@@ -1,6 +1,6 @@
 calculate chd hashes (read_infos_from_chd)
 add md5 and sha1 replacement functions
-regression tests for disk (correct, wrong, superfluous, w/+w/o extension, different crc types)
+regression tests for disk: different crc types, version 2
 "fix" extra files by moving them to a subdir
 use ROM_NOCRC for samples match quality
 
