@@ -1,3 +1,6 @@
+These instructions were for ckmame-0.4.1.
+I don't doubt they still work, but I haven't tested it.
+
 COMPILING CKMAME
 
   For compilation under DOS you will need a running DJGPP system (see
@@ -77,8 +80,8 @@ LEGAL STUFF
   For the license, take a look at the file COPYING.
 
   You can always get the latest version from
-        ftp.giga.or.at /pub/nih/ckmame
-        http://ftp.giga.or.at/pub/nih/ckmame
+        ftp.nih.at /pub/nih/ckmame
+        http://www.nih.at/pub/nih/ckmame
 
   Mail suggestions and bug reports to <nih@giga.or.at>.
 
