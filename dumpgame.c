@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.33 2004/04/26 21:29:19 wiz Exp $
+  $NiH: dumpgame.c,v 1.34 2004/04/28 17:05:52 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -27,6 +27,7 @@
 #include <fnmatch.h>
 #include <string.h>
 #include <stdlib.h>
+#include <xmalloc.h>
 
 #include "config.h"
 
@@ -50,15 +51,19 @@ static int dump_special(DB *, const char *);
 static void print_hashtypes(int);
 
 char *prg;
-char *usage = "Usage: %s [-hV] [-D dbfile] [game ...]\n";
+char *usage = "Usage: %s [-h|-V]\n\
+       %s [-D dbfile] [game ...]\n\
+       %s -c [-D dbfile] [-t type] [checksum ...]\n";
 
 char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
 char help[] = "\n\
-  -h, --help           display this help message\n\
-  -V, --version        display version number\n\
+  -c, --checksum       find games containing roms with given checksums\n\
   -D, --db DBFILE      use db DBFILE\n\
+  -h, --help           display this help message\n\
+  -t, --type type      checksum type (crc32 (default), md5, sha1)\n\
+  -V, --version        display version number\n\
 \n\
 Report bugs to <nih@giga.or.at>.\n";
 
@@ -69,12 +74,14 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hVD:"
+#define OPTIONS "hcD:t:V"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
     { "version",       0, 0, 'V' },
+    { "checksum",      0, 0, 'c' },
     { "db",            1, 0, 'D' },
+    { "type",          1, 0, 't' },
     { NULL,            0, 0, 0 },
 };
 
@@ -88,6 +95,164 @@ static char *flags_name[] = {
 
 
 
+static struct hashes *
+get_checksum(int type, char *checksumstr)
+{
+    struct hashes *newhash;
+
+    if ((newhash=xmalloc(sizeof(struct hashes))) == NULL)
+	return NULL;
+
+    newhash->types = type;
+    switch(type) {
+    case GOT_CRC:
+	newhash->crc = strtoul(checksumstr, NULL, 16);
+	break;
+    case GOT_MD5:
+	if (hex2bin(newhash->md5, checksumstr,
+		    sizeof(newhash->md5)) != 0) {
+	    fprintf(stderr, "invalid argument for md5: %s\n",
+		    checksumstr);
+	    free(newhash);
+	    return NULL;
+	}
+	break;
+    case GOT_SHA1:
+	if (hex2bin(newhash->sha1, checksumstr,
+		    sizeof(newhash->sha1)) != 0) {
+	    fprintf(stderr, "invalid argument for sha1: %s\n",
+		    checksumstr);
+	    free(newhash);
+	    return NULL;
+	}
+	break;
+    default:
+	return NULL;
+    }
+
+    return newhash;
+}
+
+
+
+static int
+parse_type(char *typestr)
+{
+    if (strcasecmp(typestr, "crc") == 0||
+	strcasecmp(typestr, "crc32") == 0)
+	return GOT_CRC;
+    else if (strcasecmp(typestr, "md5") == 0)
+	return GOT_MD5;
+    else if (strcasecmp(typestr, "sha1") == 0)
+	return GOT_SHA1;
+    else
+	return -1;
+}
+
+
+
+static void
+print_checksums(struct hashes *hashes)
+{
+    if (hashes->types & GOT_CRC)
+	printf("  crc %.8lx", hashes->crc);
+    if (hashes->types & GOT_MD5)
+	printf("  md5 %s", bin2hex(hashes->md5,
+				   sizeof(hashes->md5)));
+    if (hashes->types & GOT_SHA1)
+	printf("  sha1 %s", bin2hex(hashes->sha1,
+				    sizeof(hashes->sha1)));
+}
+
+
+
+static void
+print_romline(struct rom *rom)
+{
+    printf("\t\tfile %-12s  size %7ld",
+	   rom->name, rom->size);
+    print_checksums(&rom->hashes);
+    printf("  flags %s  in %s",
+	   flags_name[rom->flags], where_name[rom->where]);
+    if (rom->merge && strcmp(rom->name, rom->merge) != 0)
+	printf(" (%s)", rom->merge);
+    putc('\n', stdout);
+}
+
+
+
+static void
+print_match(struct game *game, int i, int type)
+{
+    static int first = 0;
+    static char *name = NULL;
+
+    if (name == NULL || strcmp(game->name, name) != 0) {
+	first = 1;
+	free(name);
+	name = xstrdup(game->name);
+    }
+
+    if (first) {
+	printf("In game %s:\n", game->name);
+	first = 0;
+    }
+
+    print_romline(game->rom+i);
+}
+
+
+
+static int
+match_checksum(DB *db, char *name, struct hashes *hashes)
+{
+    struct game *game;
+    int i, matches;
+
+    if ((game=r_game(db, name)) == NULL) {
+	myerror(ERRDEF, "db error: %s not found, though in list of games",
+		name);
+	exit(-1);
+    }
+
+    matches = 0;
+    for (i=0; i<game->nrom; i++) {
+	if ((hashes->types & game->rom[i].hashes.types) == 0)
+	    continue;
+	switch(hashes->types) {
+	case GOT_CRC:
+	    if (game->rom[i].hashes.crc == hashes->crc) {
+		matches++;
+		print_match(game, i, hashes->types);
+	    }
+	    break;
+	case GOT_MD5:
+	    if (memcmp(game->rom[i].hashes.md5, hashes->md5,
+			   sizeof(hashes->md5)) == 0) {
+		matches++;
+		print_match(game, i, hashes->types);
+	    }
+	    break;
+	case GOT_SHA1:
+	    if (memcmp(game->rom[i].hashes.sha1, hashes->sha1,
+			   sizeof(hashes->sha1)) == 0) {
+		matches++;
+		print_match(game, i, hashes->types);
+	    }
+	    break;
+	default:
+	    break;
+	}
+    }
+
+    /* XXX: disk matches */
+
+    game_free(game, 1);
+
+    return matches;
+}
+
+
 int
 main(int argc, char **argv)
 {
@@ -97,6 +262,8 @@ main(int argc, char **argv)
     char **list;
     int dbext;
     int c;
+    int type;
+    int find_checksum;
     
     prg = argv[0];
 
@@ -107,23 +274,36 @@ main(int argc, char **argv)
 	dbext = DDB_EXT;
     }
 
+    find_checksum = 0;
+    type = GOT_CRC;
+
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
-	case 'h':
-	    fputs(help_head, stdout);
-	    printf(usage, prg);
-	    fputs(help, stdout);
-	    exit(0);
-	case 'V':
-	    fputs(version_string, stdout);
-	    exit(0);
+	case 'c':
+	    find_checksum = 1;
+	    break;
 	case 'D':
 	    dbname = optarg;
 	    dbext = 0;
 	    break;
+	case 'h':
+	    fputs(help_head, stdout);
+	    printf(usage, prg, prg, prg);
+	    fputs(help, stdout);
+	    exit(0);
+	case 't':
+	    if ((type=parse_type(optarg)) == -1) {
+		fprintf(stderr, "unknown checksum type `%s'\n",
+			optarg);
+		exit(1);
+	    }
+	    break;
+	case 'V':
+	    fputs(version_string, stdout);
+	    exit(0);
     	default:
-	    fprintf(stderr, usage, prg);
+	    fprintf(stderr, usage, prg, prg, prg);
 	    exit(1);
 	}
     }
@@ -136,6 +316,29 @@ main(int argc, char **argv)
     if ((nlist=r_list(db, "/list", &list)) < 0) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
+    }
+
+    /* find matches for roms */
+    if (find_checksum != 0) {
+	int matches;
+	struct hashes *match;
+
+	for (i=optind; i<argc; i++) {
+	    /* checksum */
+	    if ((match=get_checksum(type, argv[i])) == NULL) {
+		fprintf(stderr, "error parsing checksum `%s'\n", argv[i]);
+		exit(2);
+	    }
+
+	    matches = 0;
+	    for (j=0; j<nlist; j++)
+		matches += match_checksum(db, list[j], match);
+
+	    printf("%d matches found for checksum", matches);
+	    print_checksums(match);
+	    putc('\n', stdout);
+	}
+	exit(0);
     }
 
     first = 1;
@@ -176,7 +379,6 @@ main(int argc, char **argv)
 	}
     }
 
-
     return 0;
 }
 
@@ -213,22 +415,7 @@ dump_game(DB *db, const char *name)
     }
     printf("Roms:");
     for (i=0; i<game->nrom; i++) {
-	printf("\t\tfile %-12s  size %7ld",
-	       game->rom[i].name, game->rom[i].size);
-	if (game->rom[i].hashes.types & GOT_CRC)
-	    printf("  crc %.8lx", game->rom[i].hashes.crc);
-	if (game->rom[i].hashes.types & GOT_MD5)
-	    printf("  md5 %s", bin2hex(game->rom[i].hashes.md5,
-				       sizeof(game->rom[i].hashes.md5)));
-	if (game->rom[i].hashes.types & GOT_SHA1)
-	    printf("  sha1 %s", bin2hex(game->rom[i].hashes.sha1,
-				       sizeof(game->rom[i].hashes.sha1)));
-	printf("  flags %s  in %s",
-	       flags_name[game->rom[i].flags], where_name[game->rom[i].where]);
-	if (game->rom[i].merge
-	    && strcmp(game->rom[i].name, game->rom[i].merge) != 0)
-	    printf(" (%s)", game->rom[i].merge);
-	putc('\n', stdout);
+	print_romline(game->rom+i);
 	for (j=0; j < game->rom[i].naltname; j++) {
 	    /* XXX: check hashes.types */
 	    printf("\t\tfile %-12s  size %7ld  crc %.8lx  flags %s  in %s",
@@ -271,14 +458,7 @@ dump_game(DB *db, const char *name)
 	printf("Disks:");
 	for (i=0; i<game->ndisk; i++) {
 	    printf("\t\tdisk %-12s", game->disk[i].name);
-	    if (game->disk[i].hashes.types & GOT_SHA1)
-		printf("  sha1 %s",
-		       bin2hex(game->disk[i].hashes.sha1,
-			       sizeof(game->disk[i].hashes.sha1)));
-	    if (game->disk[i].hashes.types & GOT_MD5)
-		printf("  md5 %s",
-		       bin2hex(game->disk[i].hashes.md5,
-			       sizeof(game->disk[i].hashes.md5)));
+	    print_checksums(&game->disk[i].hashes);
 	    putc('\n', stdout);
 	}
     }
