@@ -9,6 +9,14 @@ game (
 )
 
 game (
+	name 1-8
+	description "one eight byte file"
+	manufacturer "synth"
+	year 1991
+	rom ( name 08.rom size 8 crc32 3656897d )
+)
+
+game (
 	name parent-4
 	description "one four byte file, has clone"
 	manufacturer "synth"
@@ -24,6 +32,22 @@ game (
 	romof parent-4
 	rom ( name 04.rom merge 04.rom size 4 crc32 d87f7e0c )
 	rom ( name 08.rom size 8 crc32 3656897d )
+)
+
+game (
+	name baddump
+	description "1-4 with bad dump"
+	manufacturer "synth"
+	year 1994
+	rom ( name 04.rom size 4 crc32 278081F3 )
+)
+
+game (
+	name nogood
+	description "1-4 with no good dump"
+	manufacturer "synth"
+	year 1994
+	rom ( name 04.rom size 4 crc32 00000000 )
 )
 
 END

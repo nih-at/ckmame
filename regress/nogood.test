@@ -1,0 +1,8 @@
+# test single-rom game with bad dump
+# $NiH$
+return 0
+# XXX: -c reports game as correct
+args -FKULv nogood
+rom 1-4-ok.zip nogood.zip 1-4-ok.zip
+stdout In game nogood:
+stdout rom  04.rom        size       4  no good dump: exists

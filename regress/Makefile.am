@@ -2,12 +2,15 @@ EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS}
 
 CLEANFILES=mamedb
 
-TESTCASES=	double.test \
+TESTCASES=	baddump.test \
+		double.test \
 		garbage.test \
 		inchild.test \
 		inparent.test \
 		mid.test \
 		misnamed.test \
+		multi.test \
+		nogood.test \
 		nonexist.test \
 		ok.test \
 		punknown.test \

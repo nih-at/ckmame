@@ -1,0 +1,7 @@
+# test single-rom game with bad dump
+# $NiH$
+return 0
+args -FKULvc baddump
+rom 1-4-ok.zip baddump.zip 1-4-ok.zip
+stdout In game baddump:
+stdout rom  04.rom        size       4  crc 278081f3: best bad dump
