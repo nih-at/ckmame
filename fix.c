@@ -46,22 +46,24 @@ fix_game(struct game *g, struct zip **zip, struct match *m)
     for (i=0; i<zip[0]->nrom; i++) {
 	if (((zip[0]->rom[i].state == ROM_UNKNOWN
 	      || (zip[0]->rom[i].state < ROM_NAMERR
-		  && zip[0]->rom[i].where != 0))
-	     && (output_options & WARN_UNKNOWN))) {
+		  && zip[0]->rom[i].where != 0)))) {
 	    if (fix_print)
-		printf("%s: mv/rm unknown file %s\n",
-		       zip[0]->name, zip[0]->rom[i].name);
+		printf("%s: %s unknown file %s\n",
+		       zip[0]->name,
+		       (fix_keep_unknown ? "mv" : "rm"),
+		       zip[0]->rom[i].name);
 	    if (fix_do) {
 		if (fix_keep_unknown)
 		    fix_add_garbage(zip[0], i);
 		zip_delete(zip[0]->zf, i);
 	    }
 	}
-	else if ((zip[0]->rom[i].state < ROM_TAKEN)
-		 && (output_options & WARN_NOT_USED)) {
+	else if (zip[0]->rom[i].state < ROM_TAKEN) {
 	    if (fix_print)
-		printf("%s: mv/rm unused file %s\n",
-		       zip[0]->name, zip[0]->rom[i].name);
+		printf("%s: %s unused file %s\n",
+		       zip[0]->name,
+		       (fix_keep_unused ? "mv" : "rm"),
+		       zip[0]->rom[i].name);
 	    if (fix_do) {
 		if (fix_keep_unused)
 		    fix_add_garbage(zip[0], i);

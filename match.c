@@ -99,7 +99,7 @@ match(struct game *game, struct zip *zip, int zno, struct match *m)
     
     for (i=0; i<game->nrom; i++) {
 	for (j=0; j<zip->nrom; j++) {
-	    st = romcmp(zip->rom+j, game->rom+i, j);
+	    st = romcmp(zip->rom+j, game->rom+i, zno);
 	    if (st == ROM_LONG) {
 		offset = findcrc(zip, j, game->rom[i].size,
 				 game->rom[i].crc);

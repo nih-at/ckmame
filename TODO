@@ -1,6 +1,12 @@
+< <<<<<< TODO
+rom matched twice (route16b)
+
+| |||||| 1.17
+= ======
 Delete 0 zipfiles
 
 
+> >>>>>> 1.18
 gestoredes zippen beim kopieren
 
 CRC-check wenn uncompressen (unstoren?)
