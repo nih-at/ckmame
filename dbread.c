@@ -65,7 +65,7 @@ dbread(DB* db, char *fname)
     FILE *fin;
     regmatch_t match[6];
     char l[8192], *p;
-    int ingame, i;
+    int ingame, i, j;
     /* XXX: every game is only allowed 101 roms */
     struct rom r[1000], s[1000];
     struct game *g;
@@ -114,6 +114,13 @@ dbread(DB* db, char *fname)
 	    r[nr].crc = strtoul(p, NULL, 16);
 	    free(p);
 	    r[nr].where = ROM_INZIP;
+	    /* omit duplicates */
+	    for (j=0; j<nr; j++) {
+		if (romcmp(r+j, r+nr) == ROM_OK) {
+		    --nr;
+		    break;
+		}
+	    }
 	    nr++;
 	    break;
 
