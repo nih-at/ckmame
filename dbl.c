@@ -58,7 +58,7 @@ db_lookup(DB* db, DBT* key, DBT* value)
 	free(v.data);
 	return -1;
     }
-    v.size = len;
+    value->size = len;
 
     free(v.data);
 
