@@ -1,7 +1,5 @@
-search ROMPATH for roms
 create garbage directory
 mame.db location
-check return values of zip-functions
 add error messages in ckmame with the zips (e.g. can't create file etc.)
 
 add copyright notices

@@ -21,7 +21,7 @@
 
 char *prg;
 
-char *usage = "Usage: %s [-hVSwsfbdcFvn] [-D dbfile] [game...]\n";
+char *usage = "Usage: %s [-hVSwsfbdcFKkUuLlvn] [-D dbfile] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -37,6 +37,12 @@ char help[] = "\n\
   -d, --nonogooddumps  don't report roms with no good dumps\n\
   -c, --correct        report correct sets\n\
   -F, --fix            fix rom sets\n\
+  -K, --keep-unknown   keep unknown files when fixing (default)\n\
+  -k, --delete-unknown don't keep unknown files when fixing\n\
+  -U, --keep-unused    keep unused files when fixing\n\
+  -u, --delete-unused  don't keep unused files when fixing (default)\n\
+  -L, --keep-long      keep long files when fixing (default)\n\
+  -l, --delete-long    don't keep long files when fixing\n\
   -v, --verbose        print fixes made\n\
   -n, --dryrun         don't actually fix, only report what would be done\n\
 \n\
@@ -49,7 +55,7 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hVD:SwsfbcdxFvn"
+#define OPTIONS "hVD:SwsfbcdxFKkUuLlvn"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
@@ -63,6 +69,12 @@ struct option options[] = {
     { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
     { "correct",       0, 0, 'c' }, /* +CORRECT */
     { "fix",           0, 0, 'F' },
+    { "keep-unknown",  0, 0, 'K' },
+    { "delete-unknown",0, 0, 'k' },
+    { "keep-unused",   0, 0, 'U' },
+    { "delete-unused" ,0, 0, 'u' },
+    { "keep-long",     0, 0, 'L' },
+    { "delete-long",   0, 0, 'l' },
     { "verbose",       0, 0, 'v' },
     { "dryrun",        0, 0, 'n' },
     { NULL,            0, 0, 0 },
@@ -138,6 +150,24 @@ main(int argc, char **argv)
 	    break;
 	case 'F':
 	    fix_do = 1;
+	    break;
+	case 'K':
+	    fix_keep_unknown = 1;
+	    break;
+	case 'k':
+	    fix_keep_unknown = 0;
+	    break;
+	case 'U':
+	    fix_keep_unused = 1;
+	    break;
+	case 'u':
+	    fix_keep_unused = 0;
+	    break;
+	case 'L':
+	    fix_keep_long = 1;
+	    break;
+	case 'l':
+	    fix_keep_long = 0;
 	    break;
 	case 'n':
 	    fix_do = 0;
