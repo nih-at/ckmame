@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: chd.c,v 1.1 2004/04/28 16:59:48 dillo Exp $
 
   chd.c -- accessing chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -124,6 +124,9 @@ chd_read_hunk(struct chd *chd, int idx, char *b)
 	if (chd->buf == NULL) {
 	    chd->buf = xmalloc(chd->hunk_len);
 	    chd->z.avail_in = 0;
+	    chd->z.zalloc = Z_NULL;
+	    chd->z.zfree = Z_NULL;
+	    chd->z.opaque = NULL;
 	    err = inflateInit2(&chd->z, -MAX_WBITS);
 	}
 	else
@@ -147,7 +150,7 @@ chd_read_hunk(struct chd *chd, int idx, char *b)
 	chd->z.next_out = b;
 	chd->z.avail_out = chd->hunk_len;
 	/* XXX: should use Z_FINISH, but that returns Z_BUF_ERROR */
-	if ((err=inflate(&chd->z, 0)) != Z_OK) {
+	if ((err=inflate(&chd->z, 0)) != Z_OK && err != Z_STREAM_END) {
 	    chd->error = CHD_ERR_ZLIB;
 	    return -1;
 	}
