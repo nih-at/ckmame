@@ -1,3 +1,8 @@
+2001-10-28  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* superflouos.c (main), dumpgame.c (main), ckmame.c (main),
+	mkmamedb.c (main): don't initialize optind
+
 2001-10-28  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* dbread.c (dbread): handle names containing white space.

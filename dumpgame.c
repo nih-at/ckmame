@@ -97,7 +97,7 @@ main(int argc, char **argv)
 	dbext = 1;
     }
 
-    optind = opterr = 0;
+    opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
 	case 'h':
@@ -129,8 +129,6 @@ main(int argc, char **argv)
     }
 
     first = 1;
-    if (optind == 0)
-	optind = 1;
     for (i=optind; i<argc; i++) {
 	if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 	    if (bsearch(argv+i, list, nlist, sizeof(char *),

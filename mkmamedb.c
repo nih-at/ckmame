@@ -86,7 +86,7 @@ main(int argc, char **argv)
     }
     fname = "db.txt";
     
-    optind = opterr = 0;
+    opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
 	case 'h':
