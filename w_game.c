@@ -34,6 +34,7 @@ w_game(DB *db, struct game *game)
 	      (int (*)(const void *, const void *))strpcasecmp);
     }
     
+    w__string(&v, game->description);
     w__string(&v, game->cloneof[0]);
     w__string(&v, game->cloneof[1]);
     w__array(&v, w__pstring, game->clone, sizeof(char *), game->nclone);

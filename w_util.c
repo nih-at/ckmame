@@ -15,8 +15,9 @@ w__grow(DBT *v, int n)
     size = (v->size + BLKSIZE-1) / BLKSIZE;
     size *= BLKSIZE;
 
-    if (v->size+n > size)
+    if (v->size+n >= size) {
 	v->data = xrealloc(v->data, size+BLKSIZE);
+    }
 }
 
 

@@ -12,6 +12,7 @@ DB*
 db_open(char *name, int extp, int writep)
 {
     DB* db;
+    HASHINFO hi;
     char *s;
 
     if (extp) {
@@ -21,7 +22,13 @@ db_open(char *name, int extp, int writep)
     else
 	s = name;
 
-    db = dbopen(s, writep ? O_RDWR|O_CREAT : O_RDONLY, 0666, DB_HASH, NULL);
+    hi.bsize = 1024;
+    hi.ffactor = 8;
+    hi.nelem = 1500;
+    hi.hash = NULL;
+    hi.lorder = 0;
+
+    db = dbopen(s, writep ? O_RDWR|O_CREAT : O_RDONLY, 0666, DB_HASH, &hi);
 
     if (extp)
 	free(s);

@@ -68,6 +68,7 @@ game_free(struct game *g, int fullp)
     int i;
 
     free(g->name);
+    free(g->description);
     free(g->cloneof[0]);
     free(g->cloneof[1]);
     if (g->nclone) {

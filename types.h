@@ -47,6 +47,7 @@ struct rom {
     
 struct game {
     char *name;
+    char *description;
     char *cloneof[2];
     int nclone;
     char **clone;

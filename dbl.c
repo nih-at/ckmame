@@ -14,8 +14,8 @@ db_insert(DB* db, DBT* key, DBT* value)
     int ret;
     uLong len;
 
-    v.size = value->size*1.1+12;
-    v.data = xmalloc(v.size+2);
+    len = value->size*1.1+12;
+    v.data = xmalloc(len+2);
 
     ((unsigned char *)v.data)[0] = (value->size >> 8) & 0xff;
     ((unsigned char *)v.data)[1] = value->size & 0xff;

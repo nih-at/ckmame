@@ -44,7 +44,7 @@ int
 dbread(DB* db, char *fname)
 {
     FILE *fin;
-    char l[8192], *cmd, *p, *_P_;
+    char l[8192], *cmd, *p, *q, *_P_;
     int i, j;
     /* XXX: every game is only allowed 1000 roms */
     struct rom r[1000], s[1000];
@@ -88,7 +88,7 @@ dbread(DB* db, char *fname)
 	
 	if (strcmp(cmd, "game") == 0 || strcmp(cmd, "resource") == 0) {
 	    g = (struct game *)xmalloc(sizeof(struct game));
-	    g->name = g->cloneof[0] = g->cloneof[1]
+	    g->name = g->description = g->cloneof[0] = g->cloneof[1]
 		= g->sampleof[0] = g->sampleof[1] = NULL;
 	    g->nrom = g->nsample = 0;
 	    g->nclone = g->nsclone = 0;
@@ -96,6 +96,17 @@ dbread(DB* db, char *fname)
 	}
 	else if (strcmp(cmd, "name") == 0) {
 	    g->name = xstrdup(GET_TOK());
+	}
+	else if (strcmp(cmd, "description") == 0) {
+	    p = strtok(NULL, "\r\n");
+	    p = strchr(p, '\"');
+	    if (p == NULL)
+		continue;
+	    q = strchr(p+1, '\"');
+	    if (q == NULL)
+		continue;
+	    *q = '\0';
+	    g->description = xstrdup(p+1);
 	}
 	else if (strcmp(cmd, "romof") == 0) {
  	    g->cloneof[0] = xstrdup(GET_TOK());
@@ -159,7 +170,11 @@ dbread(DB* db, char *fname)
 		    free(g->cloneof[0]);
 		    g->cloneof[0] = NULL;
 		}
-	    
+
+	    if (strcmp(g->name, "cawingj") == 0) {
+		g->rom = r;
+	    }
+
 	    if (g->cloneof[0]) {
 		if (((parent=r_game(db, g->cloneof[0]))==NULL) || 
 		    lost(parent)) {

@@ -89,6 +89,7 @@ dump_game(DB *db, char *name)
     }
     
     printf("Name:\t\t%s\n", game->name);
+    printf("Description:\t%s\n", game->description);
     if (game->cloneof[0])
 	printf("Cloneof:\t%s\n", game->cloneof[0]);
     if (game->cloneof[1])

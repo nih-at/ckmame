@@ -29,7 +29,8 @@ r_game(DB *db, char *name)
 
     game = (struct game *)xmalloc(sizeof(struct game));
     
-    game->name = strdup(name);
+    game->name = xstrdup(name);
+    game->description = r__string(&v);
     game->cloneof[0] = r__string(&v);
     game->cloneof[1] = r__string(&v);
     game->nclone = r__array(&v, r__pstring, (void *)&game->clone,
