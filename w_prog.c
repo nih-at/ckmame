@@ -1,7 +1,7 @@
 /*
-  $NiH: w_prog.c,v 1.6 2003/03/16 10:21:36 wiz Exp $
+  $NiH: w_prog.c,v 1.7 2004/02/26 02:26:13 wiz Exp $
 
-  w_prog.c -- write prog strcut to db
+  w_prog.c -- write prog struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

@@ -1,7 +1,7 @@
 /*
-  $NiH: w_game.c,v 1.17 2004/02/05 17:32:32 dillo Exp $
+  $NiH: w_game.c,v 1.18 2004/02/26 02:26:13 wiz Exp $
 
-  w_game.c -- write game strcut to db
+  w_game.c -- write game struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

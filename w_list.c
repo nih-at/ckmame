@@ -1,7 +1,7 @@
 /*
-  $NiH: w_list.c,v 1.8 2003/03/16 10:21:36 wiz Exp $
+  $NiH: w_list.c,v 1.9 2004/02/26 02:26:13 wiz Exp $
 
-  w_list.c -- write list strcut to db
+  w_list.c -- write list struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
