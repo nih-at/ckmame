@@ -11,11 +11,10 @@ fix all XXXs
 zip-library:
 append to files (for self-extracting files)
 add custom compression function support
-compression method for new file from meta information, else old/default
+zip_replace_zip: remember compression method, recompress if different speced
 better closing of zip-files
 close even if error...
 update-zip (instead of close, reopen)
-unchange all
 support for old compression methods?????
 zip-comment functions
 better error handling, more verbose
