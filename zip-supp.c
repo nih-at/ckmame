@@ -114,8 +114,10 @@ readinfosfromzip (struct zfile *z)
     z->zf = NULL;
 
     if ((zf=zip_open(z->name, 0))==NULL) {
-	fprintf(stderr, "%s: error opening '%s': %s\n", prg,
-		z->name, zip_err_str[zip_err]);
+	/* no error if file doesn't exist */
+	if ((zip_err != ZERR_OPEN) || (errno != ENOENT))
+	    fprintf(stderr, "%s: error opening '%s': %s\n", prg,
+		    z->name, zip_err_str[zip_err]);
 	return -1;
     }
 
