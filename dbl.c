@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.15 2003/03/16 10:21:33 wiz Exp $
+  $NiH: dbl.c,v 1.16 2004/01/27 23:04:08 wiz Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -32,6 +32,15 @@
 #include "dbl.h"
 #include "r.h"
 #include "xmalloc.h"
+
+
+
+#define DDB_ENOERR	0
+#define DDB_EOLD	1	/* old db (no /ckmame entry) */
+#define DDB_EVERSION	2	/* version mismatch */
+#define DDB_EMAX	3
+
+static int ddb_errno;
 
 
 
@@ -128,12 +137,13 @@ int
 ddb_check_version(DB *db, int flags)
 {
     DBT v;
-    int err;
+    int version;
     void *data;
 
     if (ddb_lookup(db, "/ckmame", &v) != 0) {
 	if (!(flags & DDB_WRITE)) {
 	    /* reading database, version not found -> old */
+	    ddb_errno = DDB_EOLD;
 	    return -1;
 	}
 	else {
@@ -141,11 +151,13 @@ ddb_check_version(DB *db, int flags)
 		/* writing database, version not found, but list found
 		   -> old */
 		free(v.data);
+		ddb_errno = DDB_EOLD;
 		return -1;
 	    }
 	    else {
 		/* writing database, version and list not found ->
 		   creating database, ok */
+		ddb_errno = DDB_ENOERR;
 		return 0;
 	    }
 	}
@@ -154,8 +166,32 @@ ddb_check_version(DB *db, int flags)
     /* compare version numbers */
 
     data = v.data;
-    err = (r__ushort(&v) != DDB_FORMAT_VERSION);
+    version = r__ushort(&v);
     free(data);
+
+    if (version != DDB_FORMAT_VERSION) {
+	ddb_errno = DDB_EVERSION;
+	return -1;
+    }
     
-    return err;
+    ddb_errno = DDB_ENOERR;
+    return 0;
+}
+
+
+
+const char *
+ddb_error(void)
+{
+    static const char *str[] = {
+	"No error",
+	"Old (incompatible) database",
+	"Database format version mismatch",
+	"Unknown error"
+    };
+
+    if (ddb_errno == DDB_ENOERR)
+	return ddb_error_l();
+
+    return str[ddb_errno<0||ddb_errno>DDB_EMAX ? DDB_EMAX : ddb_errno];
 }

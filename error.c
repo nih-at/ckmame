@@ -1,5 +1,5 @@
 /*
-  $NiH: error.c,v 1.5 2003/02/23 16:38:04 dillo Exp $
+  $NiH: error.c,v 1.6 2003/03/16 10:21:33 wiz Exp $
 
   error.c -- error printing
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -60,6 +60,8 @@ myerror(int errtype, char *fmt, ...)
 
     if ((errno != 0) && (errtype & ERRSTR))
 	fprintf(stderr, ": %s", strerror(errno));
+    if (errtype & ERRDB)
+	fprintf(stderr, ": %s", ddb_error());
     
     putc('\n', stderr);
 

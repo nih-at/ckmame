@@ -1,3 +1,14 @@
+2004-01-28  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* dbl.c (ddb_error): report version mismatch errors.
+	* db-db.c, db-gdbm.c (ddb_error_l): renamed from ddb_error.
+	* error.c (myerror): new flag ERRDB for database errors.
+	* ckmame.c (main): use ERRDB.
+	* mkmamedb.c (main): use ERRDB.
+
+	* db-gdbm.c (ddb_open): don't check version if open failed.
+	* db-db.c (ddb_open): don't check version if open failed.
+
 2004-01-28  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* r_game.c (r_game): read disk image info from db.

@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.30 2003/03/16 10:21:32 wiz Exp $
+  $NiH: ckmame.c,v 1.31 2003/12/28 01:10:06 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -207,7 +207,7 @@ main(int argc, char **argv)
     }
     
     if ((db=ddb_open(dbname, DDB_READ|dbext))==NULL) {
-	myerror(ERRSTR, "can't open database `%s'", dbname);
+	myerror(ERRDB, "can't open database `%s'", dbname);
 	exit(1);
     }
 

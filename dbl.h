@@ -2,7 +2,7 @@
 #define _HAD_DBL_H
 
 /*
-  $NiH: dbl.h,v 1.10 2003/03/16 10:21:33 wiz Exp $
+  $NiH: dbl.h,v 1.11 2004/01/27 23:04:08 wiz Exp $
 
   dbl.h -- generic low level data base routines
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -41,11 +41,12 @@ int ddb_init_db(DB *db);
 int ddb_close(DB *db);
 int ddb_insert(DB *db, char *key, DBT *value);	/* API versions */
 int ddb_lookup(DB *db, char *key, DBT *value);
+const char *ddb_error(void);
+char *ddb_name(char *prefix);
 
 int ddb_insert_l(DB *db, DBT *key, DBT *value);	/* backend versions */
 int ddb_lookup_l(DB *db, DBT *key, DBT *value);
+const char *ddb_error_l(void);
 
-const char *ddb_error(void);
-char *ddb_name(char *prefix);
 
 #endif

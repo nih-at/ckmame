@@ -2,7 +2,7 @@
 #define _HAD_ERROR_H
 
 /*
-  $NiH: error.h,v 1.4 2003/02/23 16:38:04 dillo Exp $
+  $NiH: error.h,v 1.5 2003/03/16 10:21:33 wiz Exp $
 
   error.h -- error printing
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -31,6 +31,7 @@
 #define ERRZIP	0x1	/* prepend zipflie name */
 #define ERRFILE	0x2	/* prepend file name */
 #define ERRSTR	0x4	/* append strerror(errno) */
+#define ERRDB	0x8	/* append ddb_error() */
 
 #define ERRZIPFILE	(ERRZIP|ERRFILE)
 #define	ERRZIPSTR	(ERRZIP|ERRSTR)
