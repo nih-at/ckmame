@@ -258,16 +258,11 @@ readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen)
     cdp = eocd + 8;
     /* number of cdir-entries on this disk */
     i = read2(&cdp);
-    printf("i = %d\n", i);
     /* number of cdir-entries */
     zf->nentry = read2(&cdp);
-    printf("nentry = %d\n", zf->nentry);
     zf->cd_size = read4(&cdp);
-    printf("cd_size = %d\n", zf->cd_size);
     zf->cd_offset = read4(&cdp);
-    printf("cd_offset = %d\n", zf->cd_offset);
     zf->com_size = read2(&cdp);
-    printf("com_size = %d (%d)\n", zf->com_size, comlen);
     zf->entry = NULL;
 
     if ((zf->com_size != comlen) || (zf->nentry != i)) {
