@@ -1,4 +1,4 @@
-add tests for "flags nodump" and "flags baddump"
+New in 0.78u1: nodump sets
 
 add md5 support and check 'disks' (see latest mame db file in /pub/nih/ckmame for examples)
 
