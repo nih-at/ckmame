@@ -1,8 +1,8 @@
 /*
-  $NiH: dumpgame.c,v 1.23 2003/02/23 14:48:04 dillo Exp $
+  $NiH: dumpgame.c,v 1.24 2003/03/14 15:25:33 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

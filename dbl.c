@@ -1,8 +1,8 @@
 /*
-  $NiH: dbl.c,v 1.13 2003/02/23 14:48:04 dillo Exp $
+  $NiH: dbl.c,v 1.14 2003/02/23 15:08:19 dillo Exp $
 
   dbl.c -- generic low level data base routines
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

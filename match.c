@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: match.c,v 1.22 2002/06/06 09:26:56 dillo Exp $
 
   match.c -- find matches
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

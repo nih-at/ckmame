@@ -1,8 +1,8 @@
 /*
-  $NiH: error.c,v 1.4 2002/06/06 09:26:54 dillo Exp $
+  $NiH: error.c,v 1.5 2003/02/23 16:38:04 dillo Exp $
 
   error.c -- error printing
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

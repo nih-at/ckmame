@@ -2,10 +2,10 @@
 #define _HAD_DBL_INT_H
    
 /*
-  $NiH: db-gdbm.h,v 1.5 2002/06/06 09:26:52 dillo Exp $
+  $NiH: db-gdbm.h,v 1.6 2003/02/23 14:48:04 dillo Exp $
 
   db-gdbm.h -- low level routines for GNU gdbm
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH: r_util.c,v 1.11 2003/01/30 03:46:00 wiz Exp $
+  $NiH: r_util.c,v 1.12 2003/01/30 05:29:47 wiz Exp $
 
   r_util.c -- data base read utility functions
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

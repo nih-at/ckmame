@@ -1,8 +1,8 @@
 /*
-  $NiH: romutil.c,v 1.13 2002/06/06 09:26:58 dillo Exp $
+  $NiH: romutil.c,v 1.14 2003/02/27 07:32:46 dillo Exp $
 
   romutil.c -- miscellaneous utility functions for rom handling
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

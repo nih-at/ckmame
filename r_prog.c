@@ -1,8 +1,8 @@
 /*
-  $NiH: r_prog.c,v 1.4 2002/06/06 09:26:58 dillo Exp $
+  $NiH: r_prog.c,v 1.5 2003/02/23 15:08:19 dillo Exp $
 
   r_prog.c -- read prog struct from db
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

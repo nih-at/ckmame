@@ -1,8 +1,8 @@
 /*
-  $NiH: w_game.c,v 1.11 2003/02/23 14:20:02 dillo Exp $
+  $NiH: w_game.c,v 1.12 2003/02/23 15:08:19 dillo Exp $
 
   w_game.c -- write game strcut to db
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

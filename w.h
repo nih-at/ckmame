@@ -2,10 +2,10 @@
 #define _HAD_W_H
 
 /*
-  $NiH$
+  $NiH: w.h,v 1.4 2002/06/06 09:27:01 dillo Exp $
 
   w.h -- data base write functions
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH: dbread.c,v 1.26 2003/02/23 14:48:04 dillo Exp $
+  $NiH: dbread.c,v 1.27 2003/02/23 16:38:04 dillo Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

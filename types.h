@@ -2,10 +2,10 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH$
+  $NiH: types.h,v 1.16 2002/06/06 09:27:00 dillo Exp $
 
   types.h -- type definitions
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

@@ -2,10 +2,10 @@
 #define _HAD_ROMUTIL_H
 
 /*
-  $NiH$
+  $NiH: romutil.h,v 1.11 2002/06/06 09:26:59 dillo Exp $
 
   romutil.h -- miscellaneous utility functions for rom handling
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

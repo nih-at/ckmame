@@ -1,8 +1,8 @@
 /*
-  $NiH: superflouos.c,v 1.3 2002/06/06 09:26:59 dillo Exp $
+  $NiH: superflouos.c,v 1.4 2003/02/23 14:48:05 dillo Exp $
 
   superflouos.c -- check for unknown file in rom directories
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

@@ -1,8 +1,8 @@
 /*
-  $NiH: ckmame.c,v 1.28 2003/02/23 14:48:03 dillo Exp $
+  $NiH: ckmame.c,v 1.29 2003/03/14 15:25:33 dillo Exp $
 
   ckmame.c -- main routine for ckmame
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
