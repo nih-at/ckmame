@@ -1,5 +1,8 @@
 2003-01-30  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
+	* db-db.h: prefer db_185.h to db.h, if found.
+	* configure.ac: test for db_185.h.
+
 	* db-db.c,  db-gdbm.c, dbl.c, r_util.c, w_util.c: include <string.h>.
 	* libzip/tests/buffadd.c: include <string.h>.
 	* libzip/zip_replace_data.c: include <string.h>.

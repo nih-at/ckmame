@@ -74,6 +74,7 @@ fi
 
 if test "$check_db" = "yes"
 then
+    AC_CHECK_HEADERS([db_185.h])
     AC_CHECK_FUNCS(dbopen, [db=db])
     if test "$db" = "none"
     then

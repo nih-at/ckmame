@@ -2,7 +2,7 @@
 #define _HAD_DBL_INT_H
    
 /*
-  $NiH$
+  $NiH: db-db.h,v 1.6 2002/06/06 09:26:51 dillo Exp $
 
   db-db.h -- low level routines for Berkley db 
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
@@ -27,7 +27,13 @@
 
 
 
+#include "config.h"
+
+#ifdef HAVE_DB_185_H
+#include <db_185.h>
+#else
 #include <db.h>
+#endif
 #define DDB_EXT ".db"
 
 #endif
