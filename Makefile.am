@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS=dist-zip 
 
-INCLUDES=-I$(top_srcdir)/libzip
+AM_CPPFLAGS=-I$(top_srcdir)/libzip
 LDADD=@LIBOBJS@ libzip/libzip.la
 
 LIBS=@DBLIBS@ @LIBS@
