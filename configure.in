@@ -7,6 +7,7 @@ test -z "$CFLAGS" && CFLAGS='-Wall -g' auto_cflags=1
 
 
 AC_PROG_CC
+AC_PROG_RANLIB
 
 AC_ARG_WITH(zlib,
     [  --with-zlib=PREFIX  specify prefix for ZLIB library],,
@@ -63,4 +64,4 @@ AC_LINK_FILES(db-${db}.h db-${db}.c, dbl-int.h dbl-int.c)
 
 AC_EXEEXT
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile libzip/Makefile)

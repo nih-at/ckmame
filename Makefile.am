@@ -2,6 +2,8 @@ AUTOMAKE_OPTIONS=dist-zip
 
 LDADD=@LIBOBJS@
 
+SUBDIRS=libzip
+
 bin_PROGRAMS=ckmame mkmamedb dumpgame ziptest
 ckmame_SOURCES=ckmame.c error.c zip-supp.c util.c marry.c \
 		match.c malloc.c r_game.c r_list.c r_util.c dbl.c dbl-int.c \
