@@ -101,3 +101,92 @@ the Multiple Arcade Machine Emulator.  This edition documents version
 @node Introduction
 @chapter Introduction
 @cindex Introduction
+
+  ckmame is a program to check rom sets for MAME, the Multiple Arcade
+Machine Emulator (http://mame.retrogames.com).  It tells you which rom
+files are missing or have a wrong CRC, and can delete unknown and unused
+files from the romsets (zipped only).
+
+  MAME is an emulator for all kinds of historic and not so historic
+arcade machines (video games, ranging from the 1970s to today).  Since
+MAME is emulating the games, it uses the original roms from the arcade
+machines.  MAME's internal database contains extensive information on
+the roms, including the sizes and CRCs (checksums) of the used roms.
+Since some arcade games are variants of others and share some of the
+same roms, there are also some internal dependencies of these so called
+clones.  For space reasons the roms can be archived in zip files, and
+are dynamically unzipped by MAME itself when you play a game.  ckmame
+does not support rom sets not stored as zip files.
+
+  ckmame tries to create a ``split romset'' from your current
+collection.  This means that all files needed by the parent are kept in
+the parent's zip file, and only the files needed by the clone (or child)
+that are different from the parent's are kept in the child's zip.  For
+identifying the roms ckmame uses the sizes and CRCs; names are only used
+for verification, since the MAME team likes to change roms' names from
+version to version.
+
+@c ********************************************************************
+@node Preparation
+@chapter Preparation
+@cindex Preparation
+
+  ckmame uses MAME's rom database, but it must be converted into a more
+efficient format before the first use.
+
+  To get MAME's rom database, start your MAME executable with the
+command line option '-listinfo', and redirect the output into a file,
+here db.txt, since it gets rather big (about 4 MB):
+@example
+mame -listinfo > db.txt
+@end example
+or
+@example
+xmame -listinfo > db.txt
+@end example
+
+  Then use mkmamedb to convert db.txt into the internal database
+format. The default input file is db.txt, and the output file is mame.db
+or mame.gdb or mame.gdbm, depending on your version of the program and
+which database you're using.  The most simple call of mkmamedb therefore
+looks like this:
+@example
+mkmamedb
+@end example
+
+  Of course you can tell mkmamedb to use a different input or output
+file:
+@example
+mkmamedb -o mydb.db db0.36b6.txt
+@end example
+
+  --dillo--database location, env var
+  Set the environment variables `MAMEDB' to point to the database file
+mkmamedb just created, and `ROMPATH' to the directory above the one
+where your roms reside (`/roms' will be added automatically to each
+entry, just like MAME does).  If you don't set them, ckmame will use
+the current directory as defaults for both.
+
+
+@c ********************************************************************
+@node Invoking ckmame
+@chapter Invoking ckmame
+@cindex Invoking ckmame
+
+@example
+ckmame
+@end example
+
+  Then just type `ckmame', and off you go.  You should probably
+redirect the output to a file, as it can get rather lengthy if your
+roms haven't been tended very well.  Or take a look at the output of
+`ckmame -h' to see some options which reduce the output.
+
+  If you trust ckmame enough, start it with the parameter `-F' and it
+will fix your roms (or at least try to).  Unrecognized files in your
+rom sets will be saved in the directory `garbage' in the
+roms-directory, in zipfiles with the name of game.
+
+  Also included is `dumpgame', which outputs rom and sample
+information for all games specified on the command line (using the
+database).
