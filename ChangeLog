@@ -1,3 +1,34 @@
+2004-02-26  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* Makefile.am (ckmame_SOURCES): fix typo in filename.
+	* superfluous.c: rename from superflouos.c.
+
+	* dbread.c: make some more functions static.
+
+	* Makefile.am: include previous superflouos in ckmame itself.
+	* ckmame.c: add -X (ignore extra files in roms/samples dirs).
+	(main): handle -X; call handle_extra_files.
+	* funcs.h (handle_extra_files): add prototype. Remove variable
+	names from prototypes.
+	* superflouos.c (handle_extra_files): check for extra files in
+	roms or samples respectively dirs. Remove standalone code.
+
+	* dbl.h (DDB_FORMAT_VERSION): bump db version to 3 for new lists.
+	* dbread.c (dbread): write lists of samples and extra files (hard
+	disk images only, for now) to db.
+	(add_extra_list, add_extra_list) : new functions.
+
+	* util.h: add rompath var, and remove variable names from
+	prototypes.
+
+	* util.c (findfile): don't init rompath twice.
+
+	* match.c: include string.h for memcmp prototype.
+
+	* configure.ac: AC_PROG_RANLIB unnecessary when using libtool.
+
+	* config.guess, config.sub, ltmain.sh: update from libtool-1.5.2.
+
 2004-02-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* util.c (findfile): rename from findzip, allow to find disk
