@@ -1,25 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <regex.h>
 
 #include "error.h"
 #include "types.h"
+#include "dbl.h"
 
-char *extract(char *s, regmatch_t m);
+int ngames, sgames;
+char **games;
+
+static char *extract(char *s, regmatch_t m);
+static int game_add(DB* db, struct game *g);
+
+void game_free(struct game *g);
 
 enum regs { r_game, r_name, r_cloneof, r_romof, r_rom, r_sampleof, r_sample,
 	    r_gameend, r_END };
 
 static char *sregs[] = {
-    "[ \t]*game[ \t]*(",
-    "[ \t]*name[ \t]*([^ ]*)",
-    "[ \t]*cloneof[ \t]*([^ ]*)",
-    "[ \t]*romof[ \t]*([^ ]*)",
-    "[ \t]*romof[ \t]*\\([ \t]*name[ \t]*([^ ]*)[ \t]*size[ \t]*([^ ]*)[ \t]*crc[ \t]*([^ ]*)[ \t]*\\)",
-    "[ \t]*sampleof[ \t]*([^ ]*)",
-    "[ \t]*sample[ \t]*([^ ]*)",
-    "[ \t]*\\)"
+    "^[ \t]*game[ \t]*\\(",
+    "^[ \t]*name[ \t]*([^ \t\n]*)",
+    "^[ \t]*cloneof[ \t]*([^ \t\n]*)",
+    "^[ \t]*romof[ \t]*([^ \t\n]*)",
+    "^[ \t]*rom[ \t]+\\([ \t]+name[ \t]+([^ ]*)[ \t]+size[ \t]+([^ ]*)[ \t]+crc[ \t]+([^ ]*)[ \t]+\\)",
+    "^[ \t]*sampleof[ \t]*([^ \t\n]*)",
+    "^[ \t]*sample[ \t]*([^ \t\n]*)",
+    "^[ \t]*\\)",
 };
 
 regex_t regs[r_END];
@@ -39,19 +47,22 @@ dbread_init(void)
 	    return -1;
 	}
     }
-    
+
+    sgames = ngames = 0;
+
     return 0;
 }
 
 
 
 int
-dbread(char *fname)
+dbread(DB* db, char *fname)
 {
     FILE *fin;
     regmatch_t match[6];
     char l[8192], *p;
     int ingame, i;
+    /* XXX: Boese, sehr, sehr, boese. Es gibt nur 100 roms? Ha, ha. */
     struct rom r[100], s[100];
     struct game *g;
     int nr, ns;
@@ -70,7 +81,11 @@ dbread(char *fname)
 
 	switch (i) {
 	case r_game:
+	    g = (struct game *)xmalloc(sizeof(struct game));
+	    g->name = g->cloneof = g->romof = g->sampleof = NULL;
+	    g->nrom = g->nsample = 0;
 	    ingame = 1;
+	    nr = ns = 0;
 	    break;
 
 	case r_name:
@@ -95,8 +110,9 @@ dbread(char *fname)
 	    r[nr].size = strtol(p, NULL, 10);
 	    free(p);
 	    p = extract(l, match[3]);
-	    r[nr].crc = strtol(p, NULL, 16);
+	    r[nr].crc = strtoul(p, NULL, 16);
 	    free(p);
+	    r[nr].where = ROM_INZIP;
 	    nr++;
 	    break;
 
@@ -113,18 +129,14 @@ dbread(char *fname)
 	    break;
 
 	case r_gameend:
-	    if (nr) {
-		g->rom = (struct rom *)malloc(sizeof(struct rom)*nr);
-		if (g->rom)
-		    memcpy(g->rom, r, sizeof(struct rom)*nr);
-	    }
-	    if (ns) {
-		g->sample = (struct rom *)malloc(sizeof(struct rom)*ns);
-		if (g->sample)
-		    memcpy(g->sample, s, sizeof(struct rom)*ns);
-	    }
-	    
-	    game_add(g);
+	    g->nrom = nr;
+	    g->rom = r;
+	    g->nsample = ns;
+	    g->sample = s;
+	    	    
+	    game_add(db, g);
+	    game_free(g);
+	    break;
 	}
     }
 
@@ -133,18 +145,74 @@ dbread(char *fname)
 		
 
 
-char *
+static char *
 extract(char *s, regmatch_t m)
 {
     char *t;
     
-    if ((t=(char *)malloc(m.rm_eo-m.rm_so+1)) == NULL) {
-	myerror(ERRDEF, "malloc failure");
-	exit(1);
-    }
+    t=(char *)xmalloc(m.rm_eo-m.rm_so+1);
     
     strncpy(t, s+m.rm_so, m.rm_eo-m.rm_so);
     t[m.rm_eo-m.rm_so] = '\0';
     
     return t;
+}
+
+
+
+int
+game_add(DB* db, struct game *g)
+{
+    int err;
+    
+    /* XXX: check for roms in cloneof/romof */
+    /* XXX: add g to clones/roms list of parent */
+    
+    err = w_game(db, g);
+
+    if (err != 0) {
+	myerror(ERRDEF, "can't write game `%s' to db: %s",
+		g->name, strerror(errno));
+    }
+    else
+	add_name(g->name);
+
+    return err;
+}
+
+
+
+static int
+add_name(char *s)
+{
+    if (ngames >= sgames) {
+	sgames += 1024;
+	if (ngames == 0)
+	    games = (char **)xmalloc(sizeof(char *)*sgames);
+	else
+	    games = (char **)xrealloc(games, sizeof(char *)*sgames);
+    }
+
+    games[ngames++] = strdup(s);
+}
+
+
+
+void
+game_free(struct game *g)
+{
+    int i;
+
+    free(g->name);
+    free(g->cloneof);
+    free(g->romof);
+    free(g->sampleof);
+    for (i=0; i<g->nrom; i++)
+	free(g->rom[i].name);
+    /* XXX: dbread does'nt allocate this: free(g->rom); */
+    for (i=0; i<g->nsample; i++)
+	free(g->sample[i].name);
+    /* XXX: dbread does'nt allocate this: free(g->rom); */
+
+    free(g);
 }
