@@ -1,3 +1,5 @@
+mkmamedb: allow reading from stdin
+add script to create mamedb by calling xmame
 "fix" extra files by moving them to a subdir
 use crctypes for roms
 use NOCRC for samples
