@@ -1,5 +1,5 @@
 /*
-  $NiH: db-gdbm.c,v 1.12 2003/02/23 14:48:04 dillo Exp $
+  $NiH: db-gdbm.c,v 1.13 2003/03/16 10:21:32 wiz Exp $
 
   db-gdbm.c -- low level routines for GNU gdbm
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -51,6 +51,11 @@ ddb_open(char *name, int flags)
     if (flags & DDB_EXT)
 	free(s);
 
+    if (ddb_check_version((DB*)db, flags) != 0) {
+	ddb_close((DB*)db);
+	return NULL;
+    }
+    
     return (DB*)db;
 }
 

@@ -1,3 +1,18 @@
+2004-01-27  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* types.h: add struct disk to struct game, sha1 to struct rom.
+	* dbread.c (dbread): parse SHA1 for roms.
+	* dumpgame.c (dump_game): print SHA1 for roms.
+	* util.c (bin2hex, hex2bin): new functions.
+	* dbl.c (ddb_check_version): new function.
+	* dbl.h: define database format version.
+	* db-db.c, db-gdbm.c (ddb_open): call ddb_check_version.
+	* mkmamedb.c (main): initialize db (write format version).
+	* r_game.c (r__rom): read SHA1.
+	* w_game.c (w__rom): write SHA1.
+	* r_util.c (r__mem): new function.
+	* w_util.c (w__mem, w_version): new functions.
+	
 2003-12-30  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* fix.c (fix_game): test correct struct stat field.

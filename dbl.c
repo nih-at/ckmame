@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.14 2003/02/23 15:08:19 dillo Exp $
+  $NiH: dbl.c,v 1.15 2003/03/16 10:21:33 wiz Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -30,6 +30,7 @@
 #include <zlib.h>
 
 #include "dbl.h"
+#include "r.h"
 #include "xmalloc.h"
 
 
@@ -119,4 +120,42 @@ ddb_name(char *prefix)
     sprintf(s, "%s%s", prefix, DDB_FILEEXT);
 
     return s;
+}
+
+
+
+int
+ddb_check_version(DB *db, int flags)
+{
+    DBT v;
+    int err;
+    void *data;
+
+    if (ddb_lookup(db, "/ckmame", &v) != 0) {
+	if (!(flags & DDB_WRITE)) {
+	    /* reading database, version not found -> old */
+	    return -1;
+	}
+	else {
+	    if (ddb_lookup(db, "/list", &v) == 0) {
+		/* writing database, version not found, but list found
+		   -> old */
+		free(v.data);
+		return -1;
+	    }
+	    else {
+		/* writing database, version and list not found ->
+		   creating database, ok */
+		return 0;
+	    }
+	}
+    }
+
+    /* compare version numbers */
+
+    data = v.data;
+    err = (r__ushort(&v) != DDB_FORMAT_VERSION);
+    free(data);
+    
+    return err;
 }

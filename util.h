@@ -2,7 +2,7 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.8 2002/06/06 09:27:00 dillo Exp $
+  $NiH: util.h,v 1.9 2003/03/16 10:21:35 wiz Exp $
 
   util.h -- miscellaneous utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -25,6 +25,10 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#define IS_NUL(m, l)	(memcmp((m), _nul_mem, (l)) == 0)
+
+extern char _nul_mem[];
+
 typedef int (*cmpfunc)(const void *, const void *);
 
 char *findzip(char *name, int sample);
@@ -35,5 +39,7 @@ void *memdup(const void *mem, int len);
 unsigned char *memmem(const unsigned char *big, int biglen, 
 		      const unsigned char *little, int littlelen);
 int strpcasecmp(char **sp1, char **sp2);
+const char *bin2hex(const char *s, int len);
+int hex2bin(char *t, const char *s, int tlen);
 
 #endif

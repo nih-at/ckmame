@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.17 2003/03/16 10:21:35 wiz Exp $
+  $NiH: types.h,v 1.18 2003/09/12 23:18:52 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -73,13 +73,20 @@ enum state {
 struct rom {
     char *name, *merge;
     unsigned long size, crc;
+    char sha1[20];
     enum flags flags;
     enum state state;
     enum where where;
     int naltname;
     char **altname;
 };
-    
+
+struct disk {
+    char *name;
+    char md5[16];
+    char sha1[20];
+};
+
 struct game {
     char *name;
     char *description;
@@ -93,6 +100,8 @@ struct game {
     char **sclone;
     struct rom *sample;
     int nsample;
+    struct disk *disk;
+    int ndisk;
 };
 
 struct match {

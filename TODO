@@ -1,6 +1,8 @@
 New in 0.78u1: nodump sets
 
-add md5 support and check 'disks' (see latest mame db file in /pub/nih/ckmame for examples)
+better db error strings (e.g. version mismatch)
+
+add md5/sha1 support and check 'disks' (see latest mame db file in /pub/nih/ckmame for examples)
 
 init rom structure for files from zips
 merge superfluous into ckmame

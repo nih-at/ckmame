@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.18 2002/06/06 09:27:00 dillo Exp $
+  $NiH: util.c,v 1.19 2003/03/16 10:21:35 wiz Exp $
 
   util.c -- utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -41,6 +41,8 @@
 #else
 #define DEFAULT_ROMDIR "."
 #endif
+
+char _nul_mem[256];
 
 char *rompath[MAXROMPATH] = { NULL };
 static int rompath_init = 0;
@@ -110,4 +112,44 @@ int
 strpcasecmp(char **sp1, char **sp2)
 {
     return strcasecmp(*sp1, *sp2);
+}
+
+
+
+const char *
+bin2hex(const char *s, int len)
+{
+    static char b[257];
+
+    int i;
+
+    if (len > sizeof(b)/2)
+	len = sizeof(b)/2;
+
+    for (i=0; i<len; i++)
+	sprintf(b+2*i, "%02x", (unsigned char)s[i]);
+    b[2*i] = '\0';
+
+    return b;
+}
+
+
+
+#define HEX2BIN(c)	(((c)>='0' && (c)<='9') ? (c)-'0'	\
+			 : ((c)>='A' && (c)<='F') ? (c)-'A'+10	\
+			 : (c)-'a'+10)
+
+int
+hex2bin(char *t, const char *s, int tlen)
+{
+    int i;
+    
+    if (strspn(s, "0123456789AaBbCcDdEeFf") != tlen*2
+	|| s[tlen*2] != '\0')
+	return -1;
+
+    for (i=0; i<tlen; i++)
+	t[i] = HEX2BIN(s[i*2])<<4 | HEX2BIN(s[i*2+1]);
+    
+    return 0;
 }

@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.29 2003/09/12 23:18:51 wiz Exp $
+  $NiH: dbread.c,v 1.30 2003/10/02 15:49:24 wiz Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -131,6 +131,7 @@ dbread(DB* db, char *fname)
 		    = g->sampleof[0] = g->sampleof[1] = NULL;
 		g->nrom = g->nsample = 0;
 		g->nclone = g->nsclone = 0;
+		g->ndisk = 0;
 		nr = ns = 0;
 		state = st_game;
 	    }
@@ -159,6 +160,7 @@ dbread(DB* db, char *fname)
 		r[nr].name = xstrdup(gettok(&l));
 		r[nr].size = 0;
 		r[nr].crc = 0;
+		memset(r[nr].sha1, 0, sizeof(r[nr].sha1));
 		r[nr].merge = NULL;
 		r[nr].where = ROM_INZIP;
 		r[nr].naltname = 0;
@@ -194,7 +196,22 @@ dbread(DB* db, char *fname)
 			    break;
 			}
 			r[nr].merge = xstrdup(p);
-		    } else if (strcmp(p, "size") == 0) {
+		    }
+		    else if (strcmp(p, "sha1") == 0) {
+			if ((p=gettok(&l)) == NULL) {
+			    /* XXX: error */
+			    myerror(ERRFILE, "%d: token sha1 missing argument",
+				    lineno);
+			    break;
+			}
+			
+			if (hex2bin(r[nr].sha1, p, 20) != 0) {
+			    myerror(ERRFILE, "%d: token sha1 argument invalid",
+				    lineno);
+			    break;
+			}
+		    }
+		    else if (strcmp(p, "size") == 0) {
 			if ((p=gettok(&l)) == NULL) {
 			    /* XXX: error */
 			    myerror(ERRFILE, "%d: token size missing argument",

@@ -1,5 +1,5 @@
 /*
-  $NiH: w_util.c,v 1.12 2003/01/30 03:46:00 wiz Exp $
+  $NiH: w_util.c,v 1.13 2003/03/16 10:21:36 wiz Exp $
 
   w_util.c -- data base write utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -24,7 +24,7 @@
 
 
 
-#include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "dbl.h"
@@ -72,6 +72,16 @@ w__ulong(DBT *v, unsigned long l)
 
 
 void
+w__mem(DBT *v, const char *buf, int len)
+{
+    w__grow(v, len);
+    memcpy(((unsigned char *)v->data)+v->size, buf, len);
+    v->size += len;
+}
+
+
+
+void
 w__string(DBT *v, char *s)
 {
     int len;
@@ -107,4 +117,22 @@ w__array(DBT *v, void (*fn)(DBT *, void *), void *a, size_t size, size_t n)
 
     for (i=0; i<n; i++)
 	fn(v, a+(size*i));
+}
+
+
+
+int
+w_version(DB *db)
+{
+    DBT v;
+    int err;
+
+    v.data = NULL;
+    v.size = 0;
+
+    w__ushort(&v, DDB_FORMAT_VERSION);
+    err = ddb_insert(db, "/ckmame", &v);
+    free(v.data);
+
+    return err;
 }

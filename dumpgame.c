@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.25 2003/03/16 10:21:33 wiz Exp $
+  $NiH: dumpgame.c,v 1.26 2003/09/12 23:18:51 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -202,8 +202,11 @@ dump_game(DB *db, char *name)
     }
     printf("Roms:");
     for (i=0; i<game->nrom; i++) {
-	printf("\t\tfile %-12s  size %7ld  crc %.8lx  flags %s  in %s",
-	       game->rom[i].name, game->rom[i].size, game->rom[i].crc,
+	printf("\t\tfile %-12s  size %7ld  crc %.8lx",
+	       game->rom[i].name, game->rom[i].size, game->rom[i].crc);
+	if (!IS_NUL(game->rom[i].sha1, sizeof(game->rom[i].sha1)))
+	    printf("  sha1 %s", bin2hex(game->rom[i].sha1, sizeof(game->rom[i].sha1)));
+	printf("  flags %s  in %s",
 	       flags_name[game->rom[i].flags], where_name[game->rom[i].where]);
 	if (game->rom[i].merge
 	    && strcmp(game->rom[i].name, game->rom[i].merge) != 0)

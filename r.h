@@ -2,7 +2,7 @@
 #define _HAD_R_H
 
 /*
-  $NiH: r.h,v 1.5 2002/06/06 09:26:57 dillo Exp $
+  $NiH: r.h,v 1.6 2003/03/16 10:21:34 wiz Exp $
 
   r.h -- data base read functions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -29,6 +29,7 @@
 
 unsigned short r__ushort(DBT *v);
 unsigned long r__ulong(DBT *v);
+void r__mem(DBT *v, char *buf, int len);
 char *r__string(DBT *v);
 void r__pstring(DBT *v, void *sp);
 int r__array(DBT *v, void (*fn)(DBT *, void *), void **a, size_t size);
