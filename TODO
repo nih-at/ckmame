@@ -4,7 +4,6 @@ add error messages in ckmame with the zips (e.g. can't create file etc.)
 add copyright notices
 
 get roms from a different location to fix sets
-rom matched twice or more (route16b)
 
 samples: fill in where and sclone
 fix all XXXs
