@@ -93,8 +93,8 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 		all_z[1] = me_z;
 		all_z[2] = parent_z;
 		child_m = check_game(child_g, all_z, i+1, parent_no);
-		/* XXX: fix if clone-fix forced */
 		merge_match(child_m, child_g->nrom, all_z, i+1, parent_no);
+		/* XXX: fix if clone-fix forced */
 		match_free(child_m, child_g->nrom);
 		game_free(child_g, 1);
 		zip_free(child_z);
@@ -106,8 +106,11 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 	all_z[1] = parent_z;
 	all_z[2] = gparent_z;
 
-	/* XXX: fix */
 	merge_match(me_m, me_g->nrom, all_z, parent_no, gparent_no);
+	/* XXX: fix */
+/*	if (fix) { */
+	    fix_game(me_g, all_z, me_m);
+/*	}*/
 
 	/* write warnings/errors for me */
 	diagnostics(me_g, me_m, all_z);

@@ -45,5 +45,6 @@ int readinfosfromzip (struct zip *z);
 void merge_match(struct match *m, int nrom, struct zip **zip,
 		 int pno, int gpno);
 int findcrc(struct zip *zip, int idx, int romsize, unsigned long wcrc);
+int fix_game(struct game *g, struct zip **zip, struct match *m);
 
 #endif

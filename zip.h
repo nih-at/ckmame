@@ -73,7 +73,7 @@ struct zf_entry {
     unsigned int crc, comp_size, uncomp_size, extatt, local_offset;
     enum zip_state state;
     char *fn, *ef, *fcom;
-    char *ch_name;
+    char *fn_old;
     /* only use one of the following three for supplying new data
        listed in order of priority, if more than one is set */
     struct zf *ch_data_zf;

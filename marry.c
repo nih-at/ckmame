@@ -31,6 +31,7 @@ marry (struct match *rm, int count, int *noz)
 		rm[now].fno = c->fno;
 		rm[now].where = c->where;
 		rm[now].quality = c->quality;
+		rm[now].offset = c->offset;
 		z[c->zno][c->fno] = now;
 		now = -1;
 	    }
