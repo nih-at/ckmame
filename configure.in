@@ -71,10 +71,6 @@ then
 fi
 fi
 
-then
-    AC_ERROR([gdbm not found, please specify a path])
-fi
-
 
 if test "$check_db" = "yes"
 then
