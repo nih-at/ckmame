@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: fix.c,v 1.12 2002/06/06 09:26:55 dillo Exp $
 
   fix.c -- fix romsets
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
@@ -84,7 +84,7 @@ fix_game(struct game *g, struct zfile **zip, struct match *m)
     for (i=0; i<zip[0]->nrom; i++) {
 	if (((zip[0]->rom[i].state == ROM_UNKNOWN
 	      || (zip[0]->rom[i].state < ROM_NAMERR
-		  && zip[0]->rom[i].where != 0)))) {
+		  && zip[0]->rom[i].where != ROM_INZIP)))) {
 	    if (fix_print)
 		printf("%s: %s unknown file %s\n",
 		       zip[0]->name,
