@@ -1,5 +1,8 @@
 2003-12-28  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
+	* zip-supp.c: make compile with current external libzip.
+	* fix.c: make compile with current external libzip.
+
 	* malloc.c (xstrdup): constify.
 	* xmalloc.h (xstrdup): constify.
 

@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.18 2003/02/23 14:48:05 dillo Exp $
+  $NiH: zip-supp.c,v 1.19 2003/03/16 10:21:36 wiz Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -51,8 +51,8 @@ findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
 
     if ((zff = zip_fopen_index(zip->zf, idx)) == NULL) {
 	fprintf(stderr, "%s: %s: can't open file '%s': %s\n", prg,
-		zip->zf->zn, zip->zf->entry[idx].fn,
-		zip_err_str[zip_err]);
+		zip->name, zip_get_name(zip->zf, idx),
+		zip_strerror(zip->zf));
 	return -1;
     }
 
@@ -66,8 +66,8 @@ findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
 		left = n;
 	    if (zip_fread(zff, buf, left) != left) {
 		fprintf(stderr, "%s: %s: %s: read error: %s\n", prg,
-			zip->zf->zn, zip->zf->entry[idx].fn,
-			zip_err_str[zip_err]);
+			zip->name, zip_get_name(zip->zf, idx),
+			zip_strerror(zip->zf));
 		zip_fclose(zff);
 		return -1;
 	    }
@@ -83,8 +83,8 @@ findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
 
     if (zip_fclose(zff)) {
 	fprintf(stderr, "%s: %s: %s: close error: %s\n", prg,
-			zip->zf->zn, zip->zf->entry[idx].fn,
-			zip_err_str[zip_err]);
+			zip->name, zip_get_name(zip->zf, idx),
+			zip_strerror(zip->zf));
 	return -1;
     }
     
@@ -116,10 +116,10 @@ zfile_free(struct zfile *zip)
 	if ((ret=zip_close(zip->zf))) {
 	    /* error closing, so zip is still valid */
 	    fprintf(stderr, "%s: %s: close error: %s\n", prg,
-		    zip? (zip->zf? (zip->zf->zn? zip->zf->zn
+		    zip? (zip->zf? (zip->name ? zip->name
 				    : "(null)")
 			  :"(null)")
-		    :"(null)", zip_err_str[zip_err]);
+		    :"(null)", zip_strerror(zip->zf));
 	    /* discard all changes and close zipfile */
 	    zip_unchange_all(zip->zf);
 	    zip_close(zip->zf);
@@ -137,30 +137,52 @@ int
 readinfosfromzip (struct zfile *z)
 {
     struct zip *zf;
+    struct zip_stat zsb;
     int i;
+    /* number of valid entries found in zipfile */
+    int count;
+    int zerr = 0;
 
     z->nrom = 0;
     z->rom = NULL;
     z->zf = NULL;
 
-    if ((zf=zip_open(z->name, 0))==NULL) {
+    if ((zf=zip_open(z->name, 0, &zerr))==NULL) {
 	/* no error if file doesn't exist */
-	if (zip_err != ZERR_NOENT)
+	if (zip_err != ZERR_NOENT) {
+	    char errstr[1024];
+
+	    (void)zip_error_str(errstr, sizeof(errstr),
+				zerr, errno);
 	    fprintf(stderr, "%s: error opening '%s': %s\n", prg,
-		    z->name, zip_err_str[zip_err]);
+		    z->name, errstr);
+	}
+
 	return -1;
     }
 
-    z->rom = (struct rom *)xmalloc(sizeof(struct rom)*(zf->nentry));
-    z->nrom = zf->nentry;
+    z->nrom = zip_get_num_files(zf);
+    if (z->nrom < 0) {
+	(void)zip_close(zf);
+	return -1;
+    }
+    z->rom = (struct rom *)xmalloc(sizeof(struct rom)*z->nrom);
     z->zf = zf;
 
-    for (i=0; i<zf->nentry; i++) {
-	z->rom[i].name = xstrdup(zf->entry[i].fn);
-	z->rom[i].size = zf->entry[i].meta->uncomp_size;
-	z->rom[i].crc = zf->entry[i].meta->crc;
-	z->rom[i].state = ROM_0;
+    count = 0;
+    for (i=0; i<z->nrom; i++) {
+	if (zip_stat_index(zf, i, &zsb) == -1) {
+	    fprintf(stderr, "%s: error stat()ing index %d in `%s': %s\n",
+		    prg, i, z->name, zip_strerror(zf));
+	    continue;
+	}
+
+	z->rom[count].name = xstrdup(zip_get_name(zf, i));
+	z->rom[count].size = zsb.size;
+	z->rom[count].crc = zsb.crc;
+	z->rom[count].state = ROM_0;
+	count++;
     }	
 
-    return i;
+    return count;
 }

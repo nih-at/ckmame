@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.14 2003/03/16 10:21:33 wiz Exp $
+  $NiH: fix.c,v 1.15 2003/10/01 16:22:40 wiz Exp $
 
   fix.c -- fix romsets
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -24,6 +24,7 @@
 
 
 
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -45,6 +46,7 @@ static int fix_add_garbage(struct zfile *zip, int idx);
 static char *mkgarbage_name(char *name);
 
 static struct zip *zf_garbage;
+static char *zf_garbage_name = NULL;
 
 
 
@@ -65,8 +67,20 @@ fix_game(struct game *g, struct zfile **zip, struct match *m)
     }
     
     if (fix_do) 
-	if (zip[0]->zf == NULL)
-	    zip[0]->zf = zip_open(zip[0]->name, ZIP_CREATE);
+	if (zip[0]->zf == NULL) {
+	    int zerr;
+
+	    zerr = 0;
+	    zip[0]->zf = zip_open(zip[0]->name, ZIP_CREATE, &zerr);
+	    if (zip[0]->zf == NULL) {
+		char errstr[1024];
+
+		(void)zip_error_str(errstr, sizeof(errstr),
+				    zerr, errno);
+		fprintf(stderr, "%s: error opening '%s': %s\n", prg,
+			zip[0]->name, errstr);
+	    }
+	}
 
     for (i=0; i<g->nrom; i++) {
 	if (m[i].quality < ROM_NAMERR)
@@ -111,23 +125,29 @@ fix_game(struct game *g, struct zfile **zip, struct match *m)
     }
 
     if (zf_garbage) {
-	/* XXX: dillo doesn't like directly using nentry */
-	if (zf_garbage->nentry > 0) {
-	    s = strrchr(zf_garbage->zn, '/');
+	if (zip_get_num_files(zf_garbage) > 0) {
+	    s = strrchr(zf_garbage_name, '/');
 	    if (s) {
 		*s = 0;
-		if (stat(zf_garbage->zn, &st) < 0) {
-		    if (mkdir(zf_garbage->zn, 0777) < 0) {
+		if (stat(zf_garbage_name, &st) < 0) {
+		    if (mkdir(zf_garbage_name, 0777) < 0) {
+			fprintf(stderr, "%s: mkdir `%s' error failed: %s\n", prg,
+				zf_garbage_name, strerror(errno));
 			/* XXX: problem */
 		    }
 		} else {
 		    if (!(st.st_rdev & S_IFDIR)) {
+			fprintf(stderr, "%s: `%s' is not a directory", prg,
+				zf_garbage_name);
 			/* XXX: problem */
 		    }
 		}
 		*s = '/';
 	    } else {
 		/* XXX: internal error */
+		fprintf(stderr, "%s: internal error: no slash in "
+			"zf_garbage_name: `%s'",
+			prg, zf_garbage_name);
 	    }
 	}		    
 	zip_close(zf_garbage);
@@ -205,15 +225,16 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 static int
 fix_add_garbage(struct zfile *zip, int idx)
 {
-    char *name;
-
     if (!fix_do)
 	return 0;
 
     if (zf_garbage == NULL) {
-	name = mkgarbage_name(zip->name);
-	zf_garbage = zip_open(name, ZIP_CREATE);
-	free(name);
+	if (zf_garbage_name != NULL) {
+	    free(zf_garbage_name);
+	    zf_garbage_name = NULL;
+	}
+	zf_garbage_name = mkgarbage_name(zip->name);
+	zf_garbage = zip_open(zf_garbage_name, ZIP_CREATE, NULL);
     }
     if (zf_garbage)
 	zip_add_zip(zf_garbage, NULL, NULL, zip->zf, idx, 0, 0);
