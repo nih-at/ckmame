@@ -52,7 +52,7 @@ dbread(DB* db, char *fname)
     struct game *parent;
     char **lostchildren;
     int nlost, lostmax, stillost;
-    int nr, ns;
+    int nr, ns, lineno;
 
     if ((fin=fopen(fname, "r")) == NULL) {
 	myerror(ERRSTR, "can\'t open romlist file `%s'", fname);
@@ -61,9 +61,27 @@ dbread(DB* db, char *fname)
 
     lostmax = 100;
     lostchildren = (char **)xmalloc(lostmax*sizeof(char *));
+
+    seterrinfo(NULL, fname);
     
     nlost = nr = ns = 0;
+    lineno = 0;
     while (fgets(l, 8192, fin)) {
+	lineno++;
+	if (l[strlen(l)-1] != '\n') {
+	    cmd = strtok(l, " \t\n\r");
+	    if ((cmd == NULL) || (strcmp(cmd, "history"))) {
+		myerror(ERRZIP, "%d: warning: line too long (ignored)",
+			lineno);
+	    }
+	    while (fgets(l, 8192, fin)) {
+		if (l[strlen(l)-1] == '\n')
+		    break;
+	    }
+	    continue;
+	}
+		
+	    
 	cmd = strtok(l, " \t\n\r");
 	if (cmd == NULL)
 	    continue;
@@ -86,7 +104,8 @@ dbread(DB* db, char *fname)
 	    GET_TOK();
 	    if (strcmp(GET_TOK(), "name") != 0) {
 		/* XXX: error */
-		myerror(ERRDEF, "expected token not found");
+		myerror(ERRZIP, "%d: expected token (name) not found",
+			lineno);
 		continue;
 	    }
 	    r[nr].name = xstrdup(GET_TOK());
@@ -99,13 +118,15 @@ dbread(DB* db, char *fname)
 		r[nr].merge = NULL;
 	    if (strcmp(p, "size") != 0) {
 		/* XXX: error */
-		myerror(ERRDEF, "expected token not found");
+		myerror(ERRZIP, "%d: expected token (size) not found",
+			lineno);
 		continue;
 	    }
 	    r[nr].size = strtol(GET_TOK(), NULL, 10);
 	    if (strcmp(GET_TOK(), "crc") != 0) {
 		/* XXX: error */
-		myerror(ERRDEF, "expected token not found");
+		myerror(ERRZIP, "%d: expected token (crc) not found",
+			lineno);
 		continue;
 	    }
 	    r[nr].crc = strtoul(GET_TOK(), NULL, 16);
