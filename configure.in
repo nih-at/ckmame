@@ -28,6 +28,10 @@ then
     fi
 fi
 
+# AC_CHECK_TYPE(uint, [unsigned int])
+# AC_CHECK_TYPE(u_int, unsigned int)
+# AC_CHECK_TYPE(ushort, unsigned short)
+# AC_CHECK_TYPE(u_short, unsigned short)
 AC_CHECK_LIB(z, main)
 AC_CACHE_CHECK(new ZLIB version, id_cv_lib_zlib_ok, 
 	AC_TRY_COMPILE([#include <zlib.h>], 

@@ -3,6 +3,7 @@
 #include "dbl.h"
 #include "funcs.h"
 #include "mkmamedb.h"
+#include "error.h"
 
 char *prg;
 
@@ -16,6 +17,11 @@ main(int argc, char **argv)
 
     db = db_open("mame", 1, 1);
 
+    if (db==NULL) {
+	myerror(ERRSTR, "%s", db_error());
+	exit(1);
+    }
+    
     dbread_init();
     dbread(db, "db.txt");
 

@@ -60,3 +60,11 @@ db_lookup_l(DB* db, DBT* key, DBT* value)
 
     return 0;
 }
+
+
+
+char *
+db_error(void)
+{
+    return gdbm_error(gdbm_errno);
+}

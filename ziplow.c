@@ -21,12 +21,27 @@
 #define READ4(a)      (READ2(a)+READ2(a)*65536)
 
 struct zf *readcdir(FILE *fp, char *buf, char *eocd, int buflen);
-struct zf *zf_new();
+struct zf *zf_new(void);
 void zf_free(struct zf *zf);
 struct zf *zip_open(char *fn);
 char *readstr(char **str, int len);
 int readcdentry(FILE *fp, char **cdpp, struct zf_entry *zfe, int left);
 int checkcons(struct zf *zf, FILE *fp);
+
+
+
+char *
+readstr(char **str, int len)
+{
+    char *r;
+
+    r = (char *)xmalloc(len);
+    memcpy(r, *str, len);
+
+    *str += len;
+
+    return r;
+}
 
 
 
@@ -103,6 +118,60 @@ zip_open(char *fn)
     
     return cdir;
 }
+
+
+
+#ifdef 0
+
+int
+zip_close(struct zf *zf)
+{
+    int i, count, td;
+    FILE *tfp;
+
+    if (zf->changes == 0) {
+	zf_free(zf);
+	return 0;
+    }
+
+    /* XXX: create better random names */
+    if ((td=open("tempXxXx", O_RDWR|O_CREAT|O_BINARY, 0))==0)
+	return -1;
+
+    tfp = fdopen(td);
+    
+    count = 0;
+    if (zf->entry) {
+	for (i=0; i<zf->nentry; i++) {
+	    switch (zf->entry[i].state) {
+	    case Z_UNCHANGED:
+		/* XXX: syntax? */
+		copy_verbose(zf->fp, zf->entry[i], tfp);
+		break;
+	    case Z_DELETED:
+		/* XXX: ok? */
+		break;
+	    case Z_REPLACED:
+	    case Z_ADDED:
+		/* copy_verbose(zf->entry[i] */
+		/* XXX: don't know how to handle that nicely yet */
+		break;
+	    case Z_RENAMED:
+		/* XXX: something missing */
+		break;
+	    default:
+		/* shouldn't happen */
+		break;
+	    }
+	}
+    }
+    
+    zf_free(zf);
+
+    return 0;
+}
+
+#endif /* 0 */
 
 
 
@@ -231,7 +300,11 @@ readcdentry(FILE *fp, char **cdpp, struct zf_entry *zfe, int left)
     zfe->extatt = READ4(cur);
     zfe->local_offset = READ4(cur);
 
-    /* read extra data */
+    if (left < CDENTRYSIZE+zfe->fnlen+zfe->eflen+zfe->fcomlen) {
+	/* XXX: read in additional bytes */
+    }
+    
+    /* read variable len data */
     if (zfe->fnlen)
 	zfe->fn = readstr(&cur, zfe->fnlen);
     if (zfe->eflen)
@@ -259,30 +332,17 @@ checkcons(struct zf *zf, FILE *fp)
 
 
 
-char *
-readstr(char **str, int len)
-{
-    char *r;
-
-    r = (char *)xmalloc(len);
-    memcpy(r, *str, len);
-
-    *str += len;
-
-    return r;
-}
-
-
-
 struct zf *
-zf_new()
+zf_new(void)
 {
     struct zf *zf;
 
     zf = (struct zf *)xmalloc(sizeof(struct zf));
 
-    zf->nentry = zf->com_size = zf->cd_size = zf->cd_offset = 0;
-    zf->com = NULL;
+    zf->nentry = zf->com_size = zf->changes = 0;
+    zf->cd_size = zf->cd_offset = 0;
+    zf->zp = NULL;
+    zf->zn = zf->com = NULL;
     zf->entry = NULL;
 
     return zf;
@@ -298,14 +358,23 @@ zf_free(struct zf *zf)
     if (zf == NULL)
 	return;
 
+    if (zf->zn)
+	free(zf->zn);
+
+    /* XXX: perhaps return return value of fclose? */
+    if (zf->zp)
+	fclose(zf->zp);
+
     if (zf->com)
 	free(zf->com);
 
     if (zf->entry) {
 	for (i=0; i<zf->nentry; i++) {
-	    free(zf->entry[i].fn);
-	    free(zf->entry[i].ef);
-	    free(zf->entry[i].fcom);
+	    if (zf->entry+i) {
+		free(zf->entry[i].fn);
+		free(zf->entry[i].ef);
+		free(zf->entry[i].fcom);
+	    }
 	}
 	free (zf->entry);
     }

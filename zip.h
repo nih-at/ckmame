@@ -1,8 +1,9 @@
 #include <sys/types.h>
+#include <stdio.h>
 
 #include "unzip.h"
 
-enum zipstate { Z_UNCHANGED, Z_DELETED, Z_REPLACED, Z_ADDED, Z_RENAMED };
+enum zip_state { Z_UNCHANGED, Z_DELETED, Z_REPLACED, Z_ADDED, Z_RENAMED };
 
 int zip_err; /* global variable for errors returned by the low-level
 		library */
@@ -23,7 +24,7 @@ struct zipfile {
 };
 
 struct zipchange {
-    enum zipstate state;
+    enum zip_state state;
     char *name;
     struct zipfile *szf;
     int sindex; /* which file in zipfile */
@@ -33,7 +34,7 @@ struct zipchange {
 struct zf {
     char *zn;
     FILE *zp;
-    u_short nentry, com_size;
+    u_short nentry, com_size, changes;
     u_int cd_size, cd_offset;
     char *com;
     struct zf_entry *entry;
@@ -44,4 +45,6 @@ struct zf_entry {
 	lmtime, lmdate, fnlen, eflen, fcomlen, disknrstart, intatt;
     uint crc, comp_size, uncomp_size, extatt, local_offset;
     char *fn, *ef, *fcom;
+    enum zip_state state;
 };
+

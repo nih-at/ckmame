@@ -3,6 +3,7 @@
 #include <fcntl.h>
 
 #include "db-db.h"
+#include "dbl.h"
 #include "xmalloc.h"
 
 
@@ -51,4 +52,12 @@ int
 db_lookup_l(DB* db, DBT* key, DBT* value)
 {
     return (db->get)(db, key, value, 0);
+}
+
+
+
+char *
+db_error(void)
+{
+    return "";
 }
