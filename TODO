@@ -1,3 +1,4 @@
+zip: replace NUL with SP in fn
 myerror raushauen
 _zip_ dazu in aufrufen
 tempfile nachher auf gscheite permissions setzen
