@@ -17,6 +17,14 @@ game (
 )
 
 game (
+	name 1-8a
+	description "one eight byte file (alternate)"
+	manufacturer "synth"
+	year 2004
+	rom ( name 08.rom size 8 crc32 12345678 )
+)
+
+game (
 	name parent-4
 	description "one four byte file, has clone"
 	manufacturer "synth"
