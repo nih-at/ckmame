@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "types.h"
 #include "dbl.h"
 #include "funcs.h"
@@ -11,14 +12,15 @@ int
 main(int argc, char **argv)
 {
     DB *db;
-
+    char *dbname;
+    
     prg = argv[0];
-    remove("mame.gdbm");
-
-    db = db_open("mame", 1, 1);
+    dbname = db_name("mame");
+    
+    db = db_open(dbname, 0, 1);
 
     if (db==NULL) {
-	myerror(ERRSTR, "%s", db_error());
+	myerror(ERRSTR, "can't create db '%s': %s", dbname, db_error());
 	exit(1);
     }
 
@@ -27,5 +29,6 @@ main(int argc, char **argv)
 
     db_close(db);
 
+    free(dbname);
     return 0;
 }

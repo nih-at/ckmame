@@ -12,5 +12,6 @@ int db_insert_l(DB* db, DBT* key, DBT* value);	/* non-compressing versions */
 int db_lookup_l(DB* db, DBT* key, DBT* value);
 
 const char *db_error(void);
+char *db_name(char *prefix);
 
 #endif

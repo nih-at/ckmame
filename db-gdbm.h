@@ -9,5 +9,6 @@ typedef struct {
 } DBT;
 
 typedef void *DB;
+#define DB_EXT ".gdbm"
 
 #endif

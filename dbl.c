@@ -61,3 +61,19 @@ db_lookup(DB* db, DBT* key, DBT* value)
 
     return ret;
 }
+
+
+
+char *
+db_name(char *prefix)
+{
+    char *s;
+
+    if (prefix == NULL)
+	return DB_EXT;
+    
+    s = xmalloc(strlen(prefix)+strlen(DB_EXT)+1);
+    sprintf(s, "%s%s", prefix, DB_EXT);
+
+    return s;
+}
