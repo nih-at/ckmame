@@ -173,20 +173,29 @@ the current directory as defaults for both.
 @chapter Invoking ckmame
 @cindex Invoking ckmame
 
+   By default, ckmame is very simple to invoke.  The basic syntax is:
+
 @example
-ckmame
+ckmame @var{[options]} @var{[game]} @dots{}
 @end example
 
-  Then just type `ckmame', and off you go.  You should probably
-redirect the output to a file, as it can get rather lengthy if your
-roms haven't been tended very well.  Or take a look at the output of
-`ckmame -h' to see some options which reduce the output.
+  ckmame will check the games named, or all games if none are given.
+Shell wildcards are allowed in @var{game}.
 
-  If you trust ckmame enough, start it with the parameter `-F' and it
-will fix your roms (or at least try to).  Unrecognized files in your
-rom sets will be saved in the directory `garbage' in the
-roms-directory, in zipfiles with the name of game.
+  However, you may wish to specify the location of the data base or rom
+sets, change the diagnostics output, or fix romsets:
 
-  Also included is `dumpgame', which outputs rom and sample
-information for all games specified on the command line (using the
-database).
+@menu
+* Locations::          Specifying data base and rom set locations.
+* Diagnostics::        Changing which diagostics are printed.
+* Fixing::             Fixing rom sets.
+@end menu
+
+
+@c ====================================================================
+@node Locations
+@section locations
+@cindex locations
+
+  ckmame needs to find its data base (see @xref{Preparation}).  You can
+specify 

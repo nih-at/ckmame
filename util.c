@@ -40,10 +40,10 @@
 #define DEFAULT_ROMDIR "."
 #endif
 
-static char *rompath[MAXROMPATH] = { NULL };
+char *rompath[MAXROMPATH] = { NULL };
 static int rompath_init = 0;
 
-static void init_rompath(void);
+void init_rompath(void);
 
 
 
@@ -69,7 +69,7 @@ findzip(char *name, int sample)
 
 
 
-static void
+void
 init_rompath(void)
 {
     int i, after;
