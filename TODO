@@ -1,10 +1,8 @@
 get roms from a different location to fix sets
 rom matched twice or more (route16b)
 Delete 0 zipfiles
-gestoredes zippen beim kopieren
 Fehler melden (z.B. File nicht anlegen duerfen)
 
-zip-library huebschisieren
 test ziplibrary
 
 int, unsigned int abgleichen in zip.h
