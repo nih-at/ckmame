@@ -79,12 +79,10 @@ ddb_lookup(DB* db, DBT* key, DBT* value)
     len = value->size;
     if (uncompress(value->data, &len, ((unsigned char *)v.data)+2, 
 		   v.size-2) != 0) {
-	free(v.data);
+	free(value->data);
 	return -1;
     }
     value->size = len;
-
-    free(v.data);
 
     return ret;
 }
