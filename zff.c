@@ -95,7 +95,7 @@ struct zf_file *
 zff_open(struct zf *zf, int fileno)
 {
     unsigned char buf[4], *c;
-    int ret, len;
+    int len;
     struct zf_file *zff;
 
     if ((fileno < 0) || (fileno >= zf->nentry))

@@ -11,8 +11,8 @@ main(int argc, char *argv[])
 {
     int i;
     struct zf *zf;
-    struct zf_file *zff;
-    char buf[BUFSIZE];
+    struct zf_file *zff1, *zff2;
+    char buf1[BUFSIZE], buf2[BUFSIZE];
     
     prg = argv[0];
     
@@ -31,16 +31,32 @@ main(int argc, char *argv[])
     for (i=0; i<zf->nentry; i++)
 	printf("%8d %s\n", zf->entry[i].uncomp_size, zf->entry[i].fn);
 
-    zff = zff_open(zf, 1);
-    i = zff_read(zff, buf, BUFSIZE-1);
-    zff_close(zff);
-
+    zff1= zff_open(zf, 1);
+    i = zff_read(zff1, buf1, 100);
     if (i < 0)
-	fprintf(stderr, "read error: %s\n", zip_err_str[zff->flags]);
+	fprintf(stderr, "read error: %s\n", zip_err_str[zff1->flags]);
     else {
-	buf[i] = 0;
-	printf("read %d bytes: '%s'\n", i, buf);
+	buf1[i] = 0;
+	printf("read %d bytes: '%s'\n", i, buf1);
     }
+    zff2 = zff_open(zf, 1);
+    i = zff_read(zff2, buf2, 200);
+    if (i < 0)
+	fprintf(stderr, "read error: %s\n", zip_err_str[zff2->flags]);
+    else {
+	buf2[i] = 0;
+	printf("read %d bytes: '%s'\n", i, buf2);
+    }
+    i = zff_read(zff1, buf1, 100);
+    if (i < 0)
+	fprintf(stderr, "read error: %s\n", zip_err_str[zff1->flags]);
+    else {
+	buf1[i] = 0;
+	printf("read %d bytes: '%s'\n", i, buf1);
+    }
+    zff_close(zff1);
+    zff_close(zff2);
+
     
     if (zip_close(zf)!=0) {
 	myerror(ERRZIPSTR, "can't close file");
