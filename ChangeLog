@@ -1,3 +1,8 @@
+2003-03-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* ckmame.c (main), dumpgame.c (main): don't add extension when
+	database file is explicitly given.
+
 2003-02-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* romutil.c (rom_add_name): use xrealloc.

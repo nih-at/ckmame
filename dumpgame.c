@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.22 2003/02/23 14:25:06 dillo Exp $
+  $NiH: dumpgame.c,v 1.23 2003/02/23 14:48:04 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
@@ -96,7 +96,7 @@ main(int argc, char **argv)
     dbname = getenv("MAMEDB");
     if (dbname == NULL) {
 	dbname = "mame";
-	dbext = 1;
+	dbext = DDB_EXT;
     }
 
     opterr = 0;
@@ -120,7 +120,7 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=ddb_open(dbname, DDB_READ|DDB_EXT))==NULL) {
+    if ((db=ddb_open(dbname, DDB_READ|dbext))==NULL) {
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit (1);
     }
