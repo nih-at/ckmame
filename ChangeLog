@@ -1,3 +1,7 @@
+2004-01-29  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* chd-supp.c (readinfosfromchd): new function.
+
 2004-01-28  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* dbl.c (ddb_error): report version mismatch errors.
