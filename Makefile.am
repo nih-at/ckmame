@@ -10,7 +10,8 @@ mkmamedb_SOURCES=mkmamedb.c dbl.c dbread.c w_game.c w_list.c error.c malloc.c \
 	w_util.c r_game.c r_util.c util.c
 dumpgame_SOURCES=dumpgame.c error.c malloc.c r_game.c r_util.c r_list.c \
 	dbl.c util.c
-noinst_HEADERS=unzip.h error.h types.h w.h funcs.h r.h dbl.h db-db.h mkmamedb.h
+noinst_HEADERS=unzip.h error.h types.h w.h funcs.h r.h mkmamedb.h
 
+EXTRA_DIST=db-db.c db-db.h
 
 LIBS = -lz
