@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: zip-supp.c,v 1.17 2002/06/06 09:27:02 dillo Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
@@ -33,6 +33,7 @@
 #include "error.h"
 #include "dbl.h"
 #include "funcs.h"
+#include "romutil.h"
 #include "xmalloc.h"
 
 #define MAXFNLEN 1024

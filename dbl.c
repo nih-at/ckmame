@@ -1,8 +1,8 @@
 /*
-  $NiH: dbl.c,v 1.11 2002/06/06 09:26:53 dillo Exp $
+  $NiH: dbl.c,v 1.12 2003/01/30 03:46:00 wiz Exp $
 
   dbl.c -- generic low level data base routines
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -98,10 +98,10 @@ ddb_name(char *prefix)
     char *s;
 
     if (prefix == NULL)
-	return xstrdup(DDB_EXT);
+	return xstrdup(DDB_FILEEXT);
 
-    s = xmalloc(strlen(prefix)+strlen(DDB_EXT)+1);
-    sprintf(s, "%s%s", prefix, DDB_EXT);
+    s = xmalloc(strlen(prefix)+strlen(DDB_FILEEXT)+1);
+    sprintf(s, "%s%s", prefix, DDB_FILEEXT);
 
     return s;
 }

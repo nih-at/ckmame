@@ -1,8 +1,8 @@
 /*
-  $NiH: db-gdbm.c,v 1.10 2002/06/06 09:26:52 dillo Exp $
+  $NiH: db-gdbm.c,v 1.11 2003/01/30 03:46:00 wiz Exp $
 
   db-gdbm.c -- low level routines for GNU gdbm
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -35,25 +35,20 @@
 
 
 DB*
-ddb_open(char *name, int extp, int writep)
+ddb_open(char *name, int flags)
 {
     GDBM_FILE db;
     char *s;
 
-    if (extp) {
-	s = (char *)xmalloc(strlen(name)+6);
-#ifdef __DJGPP__
-	sprintf(s, "%s.gdb", name);
-#else
-	sprintf(s, "%s.gdbm", name);
-#endif
-    }
+    if (flags & DDB_EXT)
+	s = ddb_name(name);
     else
 	s = name;
 
-    db = gdbm_open(s, 0, writep ? GDBM_WRCREAT : GDBM_READER, 0666, NULL);
+    db = gdbm_open(s, 0, (flags & DDB_WRITE) ? GDBM_WRCREAT : GDBM_READER,
+		   0666, NULL);
 
-    if (extp)
+    if (flags & DDB_EXT)
 	free(s);
 
     return (DB*)db;

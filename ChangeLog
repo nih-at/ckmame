@@ -1,10 +1,23 @@
 2003-02-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* dbread.c, r_list.c, zip-supp.c: add include files to get
+	prototypes of functions defined here.
+	* mkmamedb.h: include dbl.h for definition of DB.
+	
+	* db-gdbm.c (ddb_open), db-db.c (ddb_open): change to take flag
+	argument (and adapt callers), use ddb_name to add file name
+	extension.
+	* db-db.h, db-gdbm.h: rename DDB_EXT to DDB_FILEEXT.
+	* db-gdbm.h: move platform dependent extension definition here.
+
 	* r_game.c: include dbh.h to get r_game() prototype.
 
 	* r_game.c (r__rom), w_game.c (w__rom): use variable of correct
 	type to minimize casts.
 
+	* ckmame.c, dumpgame.c, mkmamedb.c, superflouos.c: belatedly bump
+	copyright date.
+	
 2003-01-30  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* configure.ac: bump to 0.5.

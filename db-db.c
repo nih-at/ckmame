@@ -1,8 +1,8 @@
 /*
-  $NiH: db-db.c,v 1.11 2002/06/06 09:26:51 dillo Exp $
+  $NiH: db-db.c,v 1.12 2003/01/30 03:46:00 wiz Exp $
 
   db-db.c -- low level routines for Berkley db 
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -36,16 +36,14 @@
 
 
 DB*
-ddb_open(char *name, int extp, int writep)
+ddb_open(char *name, int flags)
 {
     DB* db;
     HASHINFO hi;
     char *s;
 
-    if (extp) {
-	s = (char *)xmalloc(strlen(name)+4);
-	sprintf(s, "%s.db", name);
-    }
+    if (flags & DDB_EXT)
+	s = ddb_name(name);
     else
 	s = name;
 
@@ -56,9 +54,10 @@ ddb_open(char *name, int extp, int writep)
     hi.hash = NULL;
     hi.lorder = 0;
 
-    db = dbopen(s, writep ? O_RDWR|O_CREAT : O_RDONLY, 0666, DB_HASH, &hi);
+    db = dbopen(s, (flags & DDB_WRITE) ? O_RDWR|O_CREAT : O_RDONLY,
+		0666, DB_HASH, &hi);
 
-    if (extp)
+    if (flags & DDB_EXT)
 	free(s);
 
     return db;

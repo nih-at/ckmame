@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.16 2002/06/06 09:26:56 dillo Exp $
+  $NiH: mkmamedb.c,v 1.17 2003/02/23 14:25:06 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
@@ -125,7 +125,7 @@ main(int argc, char **argv)
 	dbname = ddb_name(dbname);
 
     remove(dbname);
-    db = ddb_open(dbname, 0, 1);
+    db = ddb_open(dbname, DDB_WRITE);
 
     if (db==NULL) {
 	myerror(ERRSTR, "can't create db '%s': %s", dbname, ddb_error());

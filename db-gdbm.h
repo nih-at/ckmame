@@ -2,10 +2,10 @@
 #define _HAD_DBL_INT_H
    
 /*
-  $NiH$
+  $NiH: db-gdbm.h,v 1.5 2002/06/06 09:26:52 dillo Exp $
 
   db-gdbm.h -- low level routines for GNU gdbm
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -35,6 +35,11 @@ typedef struct {
 } DBT;
 
 typedef void *DB;
-#define DDB_EXT ".gdbm"
+
+#ifdef __DJGPP__
+#define DDB_FILEEXT ".gdb"
+#else
+#define DDB_FILEEXT ".gdbm"
+#endif
 
 #endif

@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: superflouos.c,v 1.3 2002/06/06 09:26:59 dillo Exp $
 
   superflouos.c -- check for unknown file in rom directories
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -59,7 +59,7 @@ char help[] = "\n\
 Report bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = "superflouos (" PACKAGE ") " VERSION "\n\
-Copyright (C) 1999 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2003 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
@@ -118,7 +118,7 @@ main(int argc, char **argv)
 	}
     }
     
-    if ((db=ddb_open(dbname, dbext, 0))==NULL) {
+    if ((db=ddb_open(dbname, DDB_READ|DDB_EXT))==NULL) {
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit(1);
     }
