@@ -2,7 +2,7 @@
 #define _HAD_DBL_H
 
 /*
-  $NiH: dbl.h,v 1.16 2004/04/21 10:38:37 dillo Exp $
+  $NiH: dbl.h,v 1.17 2004/04/24 09:40:24 dillo Exp $
 
   dbl.h -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -32,7 +32,7 @@
 #define DDB_WRITE	0x1	/* open for writing */
 #define DDB_EXT		0x2	/* append extension to filename */
 
-#define DDB_FORMAT_VERSION	3 /* version of ckmame database format */
+#define DDB_FORMAT_VERSION	4 /* version of ckmame database format */
 
 int ddb_check_version(DB *, int);
 int ddb_close(DB *);

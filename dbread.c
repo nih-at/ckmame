@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.36 2004/04/21 10:38:37 dillo Exp $
+  $NiH: dbread.c,v 1.37 2004/04/22 11:21:44 dillo Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -104,12 +104,12 @@ dbread(DB* db, const char *fname)
 	}
 	seterrinfo(fname, NULL);
     }
-
+    
     lostmax = 100;
     lostchildren = (char **)xmalloc(lostmax*sizeof(char *));
     lostchildren_to_do = (int *)xmalloc(lostmax*sizeof(int));
     prog_name = prog_version = NULL;
-
+    
     nlost = nr = ns = nd = 0;
     lineno = 0;
     state = st_top;
@@ -128,12 +128,12 @@ dbread(DB* db, const char *fname)
 	    }
 	    continue;
 	}
-		
-	    
+	
+	
 	cmd = gettok(&l);
 	if (cmd == NULL)
 	    continue;
-
+	
 	switch (state) {
 	case st_top:
 	    /* game/resource for MAME/Raine, machine for MESS */
@@ -172,15 +172,13 @@ dbread(DB* db, const char *fname)
 		}
 		r[nr].name = xstrdup(gettok(&l));
 		r[nr].size = 0;
-		r[nr].crctypes = 0;
-		r[nr].crc = 0;
-		memset(r[nr].sha1, 0, sizeof(r[nr].sha1));
+		hashes_init(&r[nr].hashes);
 		r[nr].merge = NULL;
 		r[nr].where = ROM_INZIP;
 		r[nr].naltname = 0;
 		r[nr].altname = NULL;
 		r[nr].flags = FLAGS_OK;
-
+		
 		/* read remaining tokens and look for known tokens */
 		while ((p=gettok(&l)) != NULL) {
 		    if (strcmp(p, "crc") == 0 || strcmp(p, "crc32") == 0) {
@@ -190,9 +188,10 @@ dbread(DB* db, const char *fname)
 				    lineno);
 			    break;
 			}
-			r[nr].crc = strtoul(p, NULL, 16);
-			r[nr].crctypes = GOT_CRC;
-		    } else if (strcmp(p, "flags") == 0) {
+			r[nr].hashes.crc = strtoul(p, NULL, 16);
+			r[nr].hashes.types |= GOT_CRC;
+		    }
+		    else if (strcmp(p, "flags") == 0) {
 			if ((p=gettok(&l)) == NULL) {
 			    /* XXX: error */
 			    myerror(ERRFILE, "%d: token flags missing argument",
@@ -203,7 +202,8 @@ dbread(DB* db, const char *fname)
 			    r[nr].flags = FLAGS_BADDUMP;
 			else if (strcmp(p, "nodump") == 0)
 			    r[nr].flags = FLAGS_NODUMP;
-		    } else if (strcmp(p, "merge") == 0) {
+		    }
+		    else if (strcmp(p, "merge") == 0) {
 			if ((p=gettok(&l)) == NULL) {
 			    /* XXX: error */
 			    myerror(ERRFILE, "%d: token merge missing argument",
@@ -220,12 +220,13 @@ dbread(DB* db, const char *fname)
 			    break;
 			}
 			
-			if (hex2bin(r[nr].sha1, p, sizeof(r[nr].sha1)) != 0) {
+			if (hex2bin(r[nr].hashes.sha1,
+				    p, sizeof(r[nr].hashes.sha1)) != 0) {
 			    myerror(ERRFILE, "%d: token sha1 argument invalid",
 				    lineno);
 			    break;
 			}
-			r[nr].crctypes = GOT_SHA1;
+			r[nr].hashes.types |= GOT_SHA1;
 		    }
 		    else if (strcmp(p, "size") == 0) {
 			if ((p=gettok(&l)) == NULL) {
@@ -243,8 +244,10 @@ dbread(DB* db, const char *fname)
 		}
 
 		/* CRC == 0 was old way of indication no-good-dumps */
-		if (r[nr].crc == 0)
+		if ((r[nr].hashes.types & GOT_CRC) && r[nr].hashes.crc == 0) {
+		    r[nr].hashes.types &= ~GOT_CRC;
 		    r[nr].flags = FLAGS_NODUMP;
+		}
 
 		/* omit duplicates */
 		deleted = 0;
@@ -283,9 +286,7 @@ dbread(DB* db, const char *fname)
 		d[nd].name = xstrdup(gettok(&l));
 		/* add to list of extra files */
 		add_extra_list(d[nd].name);
-		d[nd].crctypes = 0;
-		memset(d[nd].sha1, 0, sizeof(d[nd].sha1));
-		memset(d[nd].md5, 0, sizeof(d[nd].md5));
+		hashes_init(&d[nd].hashes);
 
 		/* read remaining tokens and look for known tokens */
 		while ((p=gettok(&l)) != NULL) {
@@ -297,12 +298,13 @@ dbread(DB* db, const char *fname)
 			    break;
 			}
 			
-			if (hex2bin(d[nd].sha1, p, sizeof(d[nd].sha1)) != 0) {
+			if (hex2bin(d[nd].hashes.sha1, p,
+				    sizeof(d[nd].hashes.sha1)) != 0) {
 			    myerror(ERRFILE, "%d: token sha1 argument invalid",
 				    lineno);
 			    break;
 			}
-			d[nd].crctypes |= GOT_SHA1;
+			d[nd].hashes.types |= GOT_SHA1;
 		    }
 		    else if (strcmp(p, "md5") == 0) {
 			if ((p=gettok(&l)) == NULL) {
@@ -312,12 +314,13 @@ dbread(DB* db, const char *fname)
 			    break;
 			}
 			
-			if (hex2bin(d[nd].md5, p, sizeof(d[nd].md5)) != 0) {
+			if (hex2bin(d[nd].hashes.md5, p,
+				    sizeof(d[nd].hashes.md5)) != 0) {
 			    myerror(ERRFILE, "%d: token md5 argument invalid",
 				    lineno);
 			    break;
 			}
-			d[nd].crctypes |= GOT_MD5;
+			d[nd].hashes.types |= GOT_MD5;
 		    }
 		    /*
 		      else
@@ -333,7 +336,8 @@ dbread(DB* db, const char *fname)
 		s[ns].merge = NULL;
 		s[ns].altname = NULL;
 		s[ns].naltname = s[ns].size = 0;
-		s[ns].crc = s[ns].where = 0;
+		hashes_init(&s[ns].hashes);
+		s[ns].where = 0;
 		ns++;
 	    }
 	    else if (strcmp(cmd, "archive") == 0) {

@@ -1,5 +1,5 @@
 /*
-  $NiH: w_game.c,v 1.19 2004/02/26 02:49:03 wiz Exp $
+  $NiH: w_game.c,v 1.20 2004/04/24 09:40:25 dillo Exp $
 
   w_game.c -- write game struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -34,6 +34,8 @@
 #include "util.h"
 #include "xmalloc.h"
 #include "w.h"
+
+static void w__hashes(DBT *, const struct hashes *);
 
 
 
@@ -83,9 +85,7 @@ w__disk(DBT *v, const void *vd)
     d = (const struct disk *)vd;
 
     w__string(v, d->name);
-    w__ushort(v, d->crctypes);
-    w__mem(v, d->sha1, sizeof(d->sha1));
-    w__mem(v, d->md5, sizeof(d->md5));
+    w__hashes(v, &d->hashes);
 }
 
 
@@ -100,10 +100,22 @@ w__rom(DBT *v, const void *vr)
     w__string(v, r->name);
     w__string(v, r->merge);
     w__array(v, w__pstring, r->altname, sizeof(char *), r->naltname);
+    w__hashes(v, &r->hashes);
     w__ulong(v, r->size);
-    w__ushort(v, r->crctypes);
-    w__ulong(v, r->crc);
-    w__mem(v, r->sha1, sizeof(r->sha1));
     w__ushort(v, r->flags);
     w__ushort(v, r->where);
+}
+
+
+
+static void
+w__hashes(DBT *v, const struct hashes *h)
+{
+    w__ushort(v, h->types);
+    if (h->types & GOT_CRC)
+	w__ulong(v, h->crc);
+    if (h->types & GOT_MD5)
+	w__mem(v, h->md5, sizeof(h->md5));
+    if (h->types & GOT_SHA1)
+	w__mem(v, h->sha1, sizeof(h->sha1));
 }

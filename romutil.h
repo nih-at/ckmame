@@ -2,7 +2,7 @@
 #define _HAD_ROMUTIL_H
 
 /*
-  $NiH: romutil.h,v 1.15 2004/02/26 02:26:11 wiz Exp $
+  $NiH: romutil.h,v 1.16 2004/04/24 09:40:25 dillo Exp $
 
   romutil.h -- miscellaneous utility functions for rom handling
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -31,6 +31,8 @@
 char **delchecked(const struct tree *, int, const char * const *);
 void game_free(struct game *, int);
 void game_swap_rs(struct game *);
+int hashes_cmp(const struct hashes *, const struct hashes *);
+void hashes_init(struct hashes *);
 void marry(struct match *, int, const int *);
 void rom_add_name(struct rom *, const char *);
 enum state romcmp(const struct rom *, const struct rom *, int);
@@ -46,7 +48,7 @@ int zfile_free(struct zfile *zip);
 int readinfosfromzip(struct zfile *z);
 void merge_match(struct match *m, int nrom, struct zfile **zip,
 		 int pno, int gpno);
-int findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc);
+int findcrc(struct zfile *zip, int idx, int romsize, const struct hashes *);
 int fix_game(struct game *g, struct zfile **zip, struct match *m);
 
 int readinfosfromchd(struct disk *);

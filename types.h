@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.20 2004/02/05 17:32:31 dillo Exp $
+  $NiH: types.h,v 1.21 2004/02/26 02:26:12 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -78,11 +78,17 @@ enum filetype {
     TYPE_ROM, TYPE_SAMPLE, TYPE_DISK
 };
 
+struct hashes {
+    int types;
+    unsigned long crc;
+    char md5[16];
+    char sha1[20];
+};
+
 struct rom {
     char *name, *merge;
-    int crctypes;
-    unsigned long size, crc;
-    char sha1[20];
+    struct hashes hashes;
+    unsigned long size;
     enum flags flags;
     enum state state;
     enum where where;
@@ -92,9 +98,7 @@ struct rom {
 
 struct disk {
     char *name;
-    int crctypes;
-    char md5[16];
-    char sha1[20];
+    struct hashes hashes;
 };
 
 struct game {

@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.30 2004/02/26 02:26:08 wiz Exp $
+  $NiH: dumpgame.c,v 1.31 2004/04/21 10:38:37 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -211,10 +211,16 @@ dump_game(DB *db, const char *name)
     }
     printf("Roms:");
     for (i=0; i<game->nrom; i++) {
-	printf("\t\tfile %-12s  size %7ld  crc %.8lx",
-	       game->rom[i].name, game->rom[i].size, game->rom[i].crc);
-	if (game->rom[i].crctypes & GOT_SHA1)
-	    printf("  sha1 %s", bin2hex(game->rom[i].sha1, sizeof(game->rom[i].sha1)));
+	printf("\t\tfile %-12s  size %7ld",
+	       game->rom[i].name, game->rom[i].size);
+	if (game->rom[i].hashes.types & GOT_CRC)
+	    printf("  crc %.8lx", game->rom[i].hashes.crc);
+	if (game->rom[i].hashes.types & GOT_MD5)
+	    printf("  md5 %s", bin2hex(game->rom[i].hashes.md5,
+				       sizeof(game->rom[i].hashes.md5)));
+	if (game->rom[i].hashes.types & GOT_SHA1)
+	    printf("  md5 %s", bin2hex(game->rom[i].hashes.sha1,
+				       sizeof(game->rom[i].hashes.sha1)));
 	printf("  flags %s  in %s",
 	       flags_name[game->rom[i].flags], where_name[game->rom[i].where]);
 	if (game->rom[i].merge
@@ -222,9 +228,10 @@ dump_game(DB *db, const char *name)
 	    printf(" (%s)", game->rom[i].merge);
 	putc('\n', stdout);
 	for (j=0; j < game->rom[i].naltname; j++) {
+	    /* XXX: check hashes.types */
 	    printf("\t\tfile %-12s  size %7ld  crc %.8lx  flags %s  in %s",
 		   game->rom[i].altname[j], game->rom[i].size,
-		   game->rom[i].crc, flags_name[game->rom[i].flags],
+		   game->rom[i].hashes.crc, flags_name[game->rom[i].flags],
 		   where_name[game->rom[i].where]);
 	    if (game->rom[i].merge) {
 		if (strcmp(game->rom[i].altname[j], game->rom[i].merge) != 0)
@@ -262,10 +269,14 @@ dump_game(DB *db, const char *name)
 	printf("Disks:");
 	for (i=0; i<game->ndisk; i++) {
 	    printf("\t\tdisk %-12s", game->disk[i].name);
-	    if (game->disk[i].crctypes & GOT_SHA1)
-		printf("  sha1 %s", bin2hex(game->disk[i].sha1, sizeof(game->disk[i].sha1)));
-	    if (game->disk[i].crctypes & GOT_MD5)
-		printf("  md5 %s", bin2hex(game->disk[i].md5, sizeof(game->disk[i].md5)));
+	    if (game->disk[i].hashes.types & GOT_SHA1)
+		printf("  sha1 %s",
+		       bin2hex(game->disk[i].hashes.sha1,
+			       sizeof(game->disk[i].hashes.sha1)));
+	    if (game->disk[i].hashes.types & GOT_MD5)
+		printf("  md5 %s",
+		       bin2hex(game->disk[i].hashes.md5,
+			       sizeof(game->disk[i].hashes.md5)));
 	    putc('\n', stdout);
 	}
     }

@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.19 2004/02/26 02:26:10 wiz Exp $
+  $NiH: r_game.c,v 1.20 2004/04/21 10:38:37 dillo Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -32,6 +32,8 @@
 #include "dbh.h"
 #include "xmalloc.h"
 #include "r.h"
+
+static void r__hashes(DBT *, struct hashes *);
 
 
 
@@ -80,9 +82,7 @@ r__disk(DBT *v, void *vd)
     d = (struct disk *)vd;
 
     d->name = r__string(v);
-    d->crctypes = r__ushort(v);
-    r__mem(v, d->sha1, sizeof(d->sha1));
-    r__mem(v, d->md5, sizeof(d->md5));
+    r__hashes(v, &d->hashes);
 }
 
 
@@ -97,11 +97,29 @@ r__rom(DBT *v, void *vr)
     r->name = r__string(v);
     r->merge = r__string(v);
     r->naltname = r__array(v, r__pstring, (void *)&r->altname, sizeof(char *));
+    r__hashes(v, &r->hashes);
     r->size = r__ulong(v);
-    r->crctypes = r__ushort(v);
-    r->crc = r__ulong(v);
-    r__mem(v, r->sha1, sizeof(r->sha1));
     r->flags = r__ushort(v);
     r->where = r__ushort(v);
     r->state = 0;
+}
+
+
+
+static void
+r__hashes(DBT *v, struct hashes *h)
+{
+    h->types = r__ushort(v);
+    if (h->types & GOT_CRC)
+	h->crc = r__ulong(v);
+    else
+	h->crc = 0;
+    if (h->types & GOT_MD5)
+	r__mem(v, h->md5, sizeof(h->md5));
+    else
+	memset(h->md5, 0, sizeof(h->md5));
+    if (h->types & GOT_SHA1)
+	r__mem(v, h->sha1, sizeof(h->sha1));
+    else
+	memset(h->sha1, 0, sizeof(h->sha1));
 }

@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.23 2004/04/14 14:02:45 dillo Exp $
+  $NiH: zip-supp.c,v 1.24 2004/04/16 09:09:13 dillo Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -41,12 +41,14 @@
 extern char *prg;
 
 int
-findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
+findcrc(struct zfile *zip, int idx, int romsize, const struct hashes *h)
 {
     struct zip_file *zff;
     unsigned long crc;
     char buf[BUFSIZE];
     int n, left, offset;
+
+    /* XXX: check all hash types */
 
     if ((zff = zip_fopen_index(zip->zf, idx, 0)) == NULL) {
 	fprintf(stderr, "%s: %s: can't open file '%s': %s\n", prg,
@@ -74,7 +76,7 @@ findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
 	    n -= left;
 	}
 
-	if (crc == wcrc)
+	if (crc == h->crc)
 	    break;
 
 	offset += romsize;
@@ -87,7 +89,7 @@ findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
 	return -1;
     }
     
-    if (crc == wcrc)
+    if (crc == h->crc)
 	return offset;
 	    
     return -1;
@@ -178,7 +180,9 @@ readinfosfromzip(struct zfile *z)
 
 	z->rom[count].name = xstrdup(zip_get_name(zf, i));
 	z->rom[count].size = zsb.size;
-	z->rom[count].crc = zsb.crc;
+	hashes_init(&z->rom[count].hashes);
+	z->rom[count].hashes.types = GOT_CRC;
+	z->rom[count].hashes.crc = zsb.crc;
 	z->rom[count].state = ROM_0;
 	count++;
     }	

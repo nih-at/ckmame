@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.1 2004/01/29 11:10:51 dillo Exp $
+  $NiH: chd-supp.c,v 1.2 2004/02/05 17:32:30 dillo Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -53,7 +53,7 @@ readinfosfromchd(struct disk *d)
     unsigned char b[HEADERLEN];
     unsigned long version;
 
-    d->crctypes = 0;
+    hashes_init(&d->hashes);
 
     if ((f=fopen(d->name, "rb")) == NULL) {
 	/* no error if file doesn't exist */
@@ -85,13 +85,11 @@ readinfosfromchd(struct disk *d)
 	fprintf(stderr, "%s: warning: chd file '%s' has unknown version %lu\n",
 		prg, d->name, version);
 
-    d->crctypes |= GOT_MD5;
-    memcpy(d->md5, b+OFF_MD5, sizeof(d->md5));
-    if (version < 3)
-	memset(d->sha1, 0, sizeof(d->sha1));
-    else {
-	d->crctypes |= GOT_SHA1;
-	memcpy(d->sha1, b+OFF_SHA1, sizeof(d->sha1));
+    d->hashes.types |= GOT_MD5;
+    memcpy(d->hashes.md5, b+OFF_MD5, sizeof(d->hashes.md5));
+    if (version >= 3) {
+	d->hashes.types |= GOT_SHA1;
+	memcpy(d->hashes.sha1, b+OFF_SHA1, sizeof(d->hashes.sha1));
     }
 
     return 0;

@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.30 2004/02/26 02:26:10 wiz Exp $
+  $NiH: match.c,v 1.31 2004/04/26 09:36:57 dillo Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -129,7 +129,7 @@ match(struct game *game, struct zfile *zip, int zno, struct match *m)
 	    st = romcmp(zip->rom+j, game->rom+i, zno);
 	    if (st == ROM_LONG) {
 		offset = findcrc(zip, j, game->rom[i].size,
-				 game->rom[i].crc);
+				 &game->rom[i].hashes);
 		if (offset != -1)
 		    st = ROM_LONGOK;
 	    }
@@ -229,7 +229,8 @@ diagnostics(struct game *game, struct match *m, struct disk_match *md,
 	    switch (m[i].quality) {
 	    case ROM_UNKNOWN:
 		if (output_options & WARN_MISSING) {
-		    if (((game->rom[i].crc != 0 && game->rom[i].flags != FLAGS_NODUMP)
+		    /* XXX */
+		    if (((game->rom[i].hashes.crc != 0 && game->rom[i].flags != FLAGS_NODUMP)
 			 || game->rom[i].size == 0)
 			|| output_options & WARN_NO_GOOD_DUMP)
 			warn_rom(game->rom+i, "missing");
@@ -252,7 +253,7 @@ diagnostics(struct game *game, struct match *m, struct disk_match *md,
 	    case ROM_CRCERR:
 		if (output_options & WARN_WRONG_CRC) {
 		    warn_rom(game->rom+i, "wrong crc (%0.8x)",
-			     zip[m[i].zno]->rom[m[i].fno].crc);
+			     zip[m[i].zno]->rom[m[i].fno].hashes.crc);
 		}
 		break;
 
@@ -275,7 +276,8 @@ diagnostics(struct game *game, struct match *m, struct disk_match *md,
 		break;
 		
 	    case ROM_OK:
-		if ((game->rom[i].crc == 0 || game->rom[i].flags == FLAGS_NODUMP)
+		/* XXX */
+		if ((game->rom[i].hashes.crc == 0 || game->rom[i].flags == FLAGS_NODUMP)
 		    && game->rom[i].size != 0) {
 		    if (output_options & WARN_NO_GOOD_DUMP)
 			warn_rom(game->rom+i, "exists");
@@ -384,9 +386,10 @@ warn_rom(struct rom *r, char *fmt, ...)
     if (r) {
 	printf("rom  %-12s  ", r->name);
 	if (r->size) {
-	    if (r->crc) {
+	    /* XXX */
+	    if (r->hashes.types & GOT_CRC) {
 		if (r->flags == FLAGS_OK)
-		    sprintf(buf, "size %7ld  crc %.8lx: ", r->size, r->crc);
+		    sprintf(buf, "size %7ld  crc %.8lx: ", r->size, r->hashes.crc);
 		else if (r->flags == FLAGS_BADDUMP)
 		    sprintf(buf, "size %7ld  bad dump    : ", r->size);
 		else
@@ -435,8 +438,9 @@ warn_file(struct rom *r, char *fmt, ...)
 	gnamedone = 1;
     }
 
+    /* XXX */
     printf("file %-12s  size %7ld  crc %.8lx: ",
-	   r->name, r->size, r->crc);
+	   r->name, r->size, r->hashes.crc);
     
     va_start(va, fmt);
     vprintf(fmt, va);
@@ -460,10 +464,11 @@ warn_disk(struct disk *d, char *fmt, ...)
     }
 
     printf("disk %-12s  ", d->name);
-    if (d->crctypes & GOT_SHA1)
-	printf("sha1 %s: ", bin2hex(d->sha1, sizeof(d->sha1)));
-    else if (d->crctypes & GOT_MD5)
-	printf("md5 %s         : ", bin2hex(d->sha1, sizeof(d->sha1)));
+    if (d->hashes.types & GOT_SHA1)
+	printf("sha1 %s: ", bin2hex(d->hashes.sha1, sizeof(d->hashes.sha1)));
+    else if (d->hashes.types & GOT_MD5)
+	printf("md5 %s         : ",
+	       bin2hex(d->hashes.md5, sizeof(d->hashes.md5)));
     else
 	printf("                         : ");
     
@@ -512,28 +517,23 @@ check_disks(struct game *game)
     
     for (i=0; i<game->ndisk; i++) {
 	m[i].d.name = findfile(game->disk[i].name, TYPE_DISK);
-	m[i].d.crctypes = 0;
+	hashes_init(&m[i].d.hashes);
 
 	if (m[i].d.name == NULL || readinfosfromchd(&m[i].d) < 0) {
 	    m[i].quality = ROM_UNKNOWN;
 	    continue;
 	}
 
-	if ((game->disk[i].crctypes & m[i].d.crctypes) == 0)
+	switch (hashes_cmp(&game->disk[i].hashes, &m[i].d.hashes)) {
+	case -1:
 	    m[i].quality = ROM_NOCRC;
-	else {
+	    break;
+	case 0:
 	    m[i].quality = ROM_OK;
-	    
-	    if (game->disk[i].crctypes & m[i].d.crctypes & GOT_MD5) {
-		if (memcmp(game->disk[i].md5, m[i].d.md5,
-			   sizeof(m[i].d.md5)) != 0)
-		    m[i].quality = ROM_CRCERR;
-	    }
-	    if (game->disk[i].crctypes & m[i].d.crctypes & GOT_SHA1) {
-		if (memcmp(game->disk[i].sha1, m[i].d.sha1,
-			   sizeof(m[i].d.sha1)) != 0)
-		    m[i].quality = ROM_CRCERR;
-	    }
+	    break;
+	case 1:
+	    m[i].quality = ROM_CRCERR;
+	    break;
 	}
     }
 

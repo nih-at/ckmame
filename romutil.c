@@ -1,5 +1,5 @@
 /*
-  $NiH: romutil.c,v 1.18 2004/02/26 02:26:11 wiz Exp $
+  $NiH: romutil.c,v 1.19 2004/04/24 09:40:24 dillo Exp $
 
   romutil.c -- miscellaneous utility functions for rom handling
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -56,10 +56,10 @@ romcmp(const struct rom *r1, const struct rom *r2, int merge)
 	if (r2->size == 0)
 	    return ROM_OK;
 	if (r1->size == r2->size) {
-	    if (r1->crc == r2->crc || r1->flags == FLAGS_NODUMP
-		|| r2->flags == FLAGS_NODUMP)
+	    if (r1->flags == FLAGS_NODUMP || r2->flags == FLAGS_NODUMP
+		|| hashes_cmp(&r1->hashes, &r2->hashes) == 0)
 		return ROM_OK;
-	    else if ((((r1->crc ^ r2->crc) & 0xffffffff) == 0xffffffff)
+	    else if ((((r1->hashes.crc ^ r2->hashes.crc) & 0xffffffff) == 0xffffffff)
 		     || r1->flags == FLAGS_BADDUMP || r2->flags == FLAGS_BADDUMP)
 		return ROM_BESTBADDUMP;
 	    else
@@ -70,7 +70,8 @@ romcmp(const struct rom *r1, const struct rom *r2, int merge)
 	else
 	    return ROM_SHORT;
     }
-    else if (r1->size == r2->size && r1->crc == r2->crc && r2->size != 0)
+    else if (r1->size == r2->size && r2->size != 0
+	     && hashes_cmp(&r1->hashes, &r2->hashes) == 0)
 	return ROM_NAMERR;
     else
 	return ROM_UNKNOWN;
