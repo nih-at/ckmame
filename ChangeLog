@@ -1,3 +1,9 @@
+1999-11-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* util.c: (rompath, init_rompath) declared non-static for access
+	in superflouos.c
+	* superflouos.c: new program
+
 1999-10-06  Wiz  <wiz@danbala.tuwien.ac.at>
 
 	* TODO, README.DOS, NEWS: updated
