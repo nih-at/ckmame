@@ -105,6 +105,8 @@ main(int argc, char **argv)
     }
 
     first = 1;
+    if (optind == 0)
+	optind = 1;
     for (i=optind; i<argc; i++) {
 	if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 	    if (bsearch(argv+i, list, nlist, sizeof(char *),
