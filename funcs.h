@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.9 2002/06/06 09:26:55 dillo Exp $
+  $NiH: funcs.h,v 1.10 2003/03/16 10:21:34 wiz Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -27,9 +27,11 @@
 
 
 
-int tree_add(DB *db, struct tree *tree, char *name, int sample);
-struct tree *tree_new(char *name, int check);
-void tree_free(struct tree *tree);
-void tree_traverse(DB *db, struct tree *tree, int sample);
+int tree_add(DB *, struct tree *, char *, int);
+struct tree *tree_new(char *, int);
+void tree_free(struct tree *);
+void tree_traverse(DB *, struct tree *, int);
+
+int handle_extra_files(DB *, char *, int);
 
 #endif /* funcs.h */
