@@ -30,21 +30,21 @@
 void game_swap_rs(struct game *g);
 
 enum state romcmp(struct rom *r1, struct rom *r2, int merge);
-struct zip *zip_new(char *name, int sample);
+struct zfile *zfile_new(char *name, int sample);
 void marry (struct match *rm, int count, int *noz);
-struct match *check_game(struct game *game, struct zip **zip,
+struct match *check_game(struct game *game, struct zfile **zip,
 			 int pno, int gpno);
 int matchcmp(struct match *m1, struct match *m2);
-void diagnostics(struct game *game, struct match *m, struct zip **zip);
+void diagnostics(struct game *game, struct match *m, struct zfile **zip);
 void match_free(struct match *m, int n);
-int countunused(struct zip *z);
+int countunused(struct zfile *z);
 void game_free(struct game *g, int fullp);
 char **delchecked(struct tree *t, int nclone, char **clone);
-int zip_free(struct zip *zip);
-int readinfosfromzip (struct zip *z);
-void merge_match(struct match *m, int nrom, struct zip **zip,
+int zfile_free(struct zfile *zip);
+int readinfosfromzip (struct zfile *z);
+void merge_match(struct match *m, int nrom, struct zfile **zip,
 		 int pno, int gpno);
-int findcrc(struct zip *zip, int idx, int romsize, unsigned long wcrc);
-int fix_game(struct game *g, struct zip **zip, struct match *m);
+int findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc);
+int fix_game(struct game *g, struct zfile **zip, struct match *m);
 
 #endif

@@ -12,14 +12,14 @@
 #define BUFSIZE 8192
 
 int
-findcrc(struct zip *zip, int idx, int romsize, unsigned long wcrc)
+findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
 {
-    struct zf_file *zff;
+    struct zip_file *zff;
     unsigned long crc;
     char buf[BUFSIZE];
     int n, left, offset;
 
-    if ((zff = zff_open_index(zip->zf, idx)) == NULL)
+    if ((zff = zip_fopen_index(zip->zf, idx)) == NULL)
 	return -1;
 
     offset = 0;
@@ -30,9 +30,9 @@ findcrc(struct zip *zip, int idx, int romsize, unsigned long wcrc)
 	while (n > 0) {
 	    if (left > n)
 		left = n;
-	    if (zff_read(zff, buf, left) != left) {
+	    if (zip_fread(zff, buf, left) != left) {
 		/* XXX: error */
-		zff_close(zff);
+		zip_fclose(zff);
 		return -1;
 	    }
 	    crc = crc32(crc, buf, left);
@@ -45,7 +45,7 @@ findcrc(struct zip *zip, int idx, int romsize, unsigned long wcrc)
 	offset += romsize;
     }
 
-    if (zff_close(zff))
+    if (zip_fclose(zff))
 	return -1;
     
     if (crc == wcrc)
@@ -58,7 +58,7 @@ findcrc(struct zip *zip, int idx, int romsize, unsigned long wcrc)
 
 
 int
-zip_free(struct zip *zip)
+zfile_free(struct zfile *zip)
 {
     int i, ret;
 
@@ -83,9 +83,9 @@ zip_free(struct zip *zip)
 
 
 int
-readinfosfromzip (struct zip *z)
+readinfosfromzip (struct zfile *z)
 {
-    struct zf *zf;
+    struct zip *zf;
     int i;
 
     z->nrom = 0;

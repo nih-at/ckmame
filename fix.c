@@ -11,16 +11,16 @@
 
 extern char *prg;
 
-static int fix_file(struct rom *rom, struct match *m, struct zip **zip);
-static int fix_add_garbage(struct zip *zip, int idx);
+static int fix_file(struct rom *rom, struct match *m, struct zfile **zip);
+static int fix_add_garbage(struct zfile *zip, int idx);
 static char *mkgarbage_name(char *name);
 
-static struct zf *zf_garbage;
+static struct zip *zf_garbage;
 
 
 
 int
-fix_game(struct game *g, struct zip **zip, struct match *m)
+fix_game(struct game *g, struct zfile **zip, struct match *m)
 {
     int i;
 
@@ -81,7 +81,7 @@ fix_game(struct game *g, struct zip **zip, struct match *m)
 
 
 static int
-fix_file(struct rom *rom, struct match *m, struct zip **zip)
+fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 {
     if (m->zno != 0) {
 	if (m->quality == ROM_LONGOK) {
@@ -144,7 +144,7 @@ fix_file(struct rom *rom, struct match *m, struct zip **zip)
 
 
 static int
-fix_add_garbage(struct zip *zip, int idx)
+fix_add_garbage(struct zfile *zip, int idx)
 {
     char *name;
 

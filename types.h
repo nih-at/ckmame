@@ -71,11 +71,11 @@ struct match {
     int offset;              /* offset of correct part if ROM_LONGOK */
 };
 
-struct zip {
+struct zfile {
     char *name;
     struct rom *rom;
     int nrom;
-    struct zf *zf;
+    struct zip *zf;
 };
 
 struct tree {

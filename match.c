@@ -11,7 +11,8 @@
 
 extern char *prg;
 
-static int match(struct game *game, struct zip *zip, int zno, struct match *m);
+static int match(struct game *game, struct zfile *zip, int zno,
+		 struct match *m);
 static int add_match(struct match *m, enum where where, int zno, int fno,
 		     enum state st, int offset);
 int matchcmp(struct match *m1, struct match *m2);
@@ -29,7 +30,7 @@ static char *zname[] = {
 
 
 struct match *
-check_game(struct game *game, struct zip **zip, int pno, int gpno)
+check_game(struct game *game, struct zfile **zip, int pno, int gpno)
 {
     /* XXX: pno, gpno unused */
     int i, zno[3];
@@ -59,7 +60,7 @@ check_game(struct game *game, struct zip **zip, int pno, int gpno)
 
 
 void
-merge_match(struct match *m, int nrom, struct zip **zip, int pno, int gpno)
+merge_match(struct match *m, int nrom, struct zfile **zip, int pno, int gpno)
 {
     int zno[3], i;
     struct match *mm;
@@ -92,7 +93,7 @@ merge_match(struct match *m, int nrom, struct zip **zip, int pno, int gpno)
 
 
 static int
-match(struct game *game, struct zip *zip, int zno, struct match *m)
+match(struct game *game, struct zfile *zip, int zno, struct match *m)
 {
     int i, j, offset;
     enum state st;
@@ -166,7 +167,7 @@ matchcmp(struct match *m1, struct match *m2)
 
 
 void
-diagnostics(struct game *game, struct match *m, struct zip **zip)
+diagnostics(struct game *game, struct match *m, struct zfile **zip)
 {
     int i, alldead, allcorrect;
     warn_game(game->name);

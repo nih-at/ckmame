@@ -11,7 +11,7 @@
 
 static int tree_child_traverse(DB *db, struct tree *tree, int sample,
 			       int parentcheck,
-			       struct zip *parent_z, struct zip *gparent_z,
+			       struct zfile *parent_z, struct zfile *gparent_z,
 			       int parent_no, int gparent_no);
 static struct tree *tree_add_node(struct tree *tree, char *name, int check);
 
@@ -32,17 +32,17 @@ tree_traverse(DB *db, struct tree *tree, int sample)
 
 static int
 tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
-		    struct zip *parent_z, struct zip *gparent_z,
+		    struct zfile *parent_z, struct zfile *gparent_z,
 		    int parent_no, int gparent_no)
 {
     int i;
     char **unchecked;
     struct tree *t;
-    struct zip *child_z, *me_z, *all_z[3];
+    struct zfile *child_z, *me_z, *all_z[3];
     struct game *child_g, *me_g;
     struct match *child_m, *me_m;
 
-    me_z = zip_new(tree->name, sample);
+    me_z = zfile_new(tree->name, sample);
 
     me_m = NULL;
     me_g = NULL;
@@ -87,7 +87,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 		}
 		if (sample)
 		    game_swap_rs(child_g);
-		child_z = zip_new(me_g->clone[i], sample);
+		child_z = zfile_new(me_g->clone[i], sample);
 		
 		all_z[0] = child_z;
 		all_z[1] = me_z;
@@ -97,7 +97,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 		/* XXX: fix if clone-fix forced */
 		match_free(child_m, child_g->nrom);
 		game_free(child_g, 1);
-		zip_free(child_z);
+		zfile_free(child_z);
 	    }
 	}
 	free(unchecked);
@@ -118,7 +118,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 	game_free(me_g, 1);
     }
 
-    zip_free(me_z);
+    zfile_free(me_z);
     
     return 0;
 }
@@ -126,7 +126,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 
 
 int
-countunused(struct zip *z)
+countunused(struct zfile *z)
 {
     int i;
 
@@ -248,13 +248,13 @@ tree_free(struct tree *tree)
 
 
 
-struct zip *
-zip_new(char *name, int sample)
+struct zfile *
+zfile_new(char *name, int sample)
 {
-    struct zip *z;
+    struct zfile *z;
     int i;
     
-    z = (struct zip *)xmalloc(sizeof(struct zip));
+    z = (struct zfile *)xmalloc(sizeof(struct zfile));
     
     z->name = findzip(name, sample);
     if (z->name == NULL) {
