@@ -1,3 +1,13 @@
+2002-11-15  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* fix.c	(fix_game): Use defined value instead of magic number.
+
+	* COPYING, INSTALL, config.guess, config.sub, configure.in, 
+	install-sh, ltcf-c.sh, ltconfig, ltmain.sh, missing,
+	mkinstalldirs: Update to autoconf-2.56/automake-1.7.1.
+
+	* depcomp: new file for above.
+
 2001-10-28  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* superflouos.c (main), dumpgame.c (main), ckmame.c (main),
