@@ -260,9 +260,10 @@ zip_new(char *name, int sample)
 	return NULL;
     }
     
-    z->nrom = readinfosfromzip(&(z->rom), z->name);
-    if (z->nrom < 0)
-	z->nrom = 0;
+    i = readinfosfromzip(z);
+    if (i < 0) {
+	/* XXX: error? */
+    }
 
     for (i=0; i<z->nrom; i++)
 	z->rom[i].state = ROM_UNKNOWN;

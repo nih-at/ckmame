@@ -1,6 +1,8 @@
 #ifndef _HAD_TYPES_H
 #define _HAD_TYPES_H
 
+#include "zip.h"
+
 #define WARN_CORRECT		0x1000
 
 #define WARN_UNKNOWN		0x0001
@@ -73,6 +75,7 @@ struct zip {
     char *name;
     struct rom *rom;
     int nrom;
+    struct zf *zf;
 };
 
 struct tree {

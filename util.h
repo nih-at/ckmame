@@ -31,7 +31,5 @@ void *memdup(const void *mem, int len);
 unsigned char *memmem(const unsigned char *big, int biglen, 
 		      const unsigned char *little, int littlelen);
 int strpcasecmp(char **sp1, char **sp2);
-int findcrc (char *zn, char *fn, int filesize, int romsize,
-	     unsigned long wcrc);
 
 #endif

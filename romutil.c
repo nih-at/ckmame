@@ -169,21 +169,3 @@ delchecked_r(struct tree *t, int nclone, char **clone)
     }
 }
 
-
-
-void
-zip_free(struct zip *zip)
-{
-    int i;
-
-    if (zip == NULL)
-	return;
-    
-    free(zip->name);
-    for (i=0; i<zip->nrom; i++)
-	free(zip->rom[i].name);
-
-    if (zip->nrom)
-	free(zip->rom);
-    free(zip);
-}

@@ -536,6 +536,7 @@ readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen)
     zf->entry = (struct zf_entry *)xmalloc(sizeof(struct zf_entry)
 					   *zf->nentry);
     for (i=0; i<zf->nentry; i++) {
+	zf->entry[i].state = Z_UNCHANGED;
 	zf->entry[i].fn = NULL;
 	zf->entry[i].ef = NULL;
 	zf->entry[i].fcom = NULL;
@@ -543,6 +544,9 @@ readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen)
 	zf->entry[i].ch_data_fp = NULL;
 	zf->entry[i].ch_data_buf = NULL;
 	zf->entry[i].ch_data_zf = NULL;
+	zf->entry[i].ch_data_offset = 0;
+	zf->entry[i].ch_data_len = 0;
+	zf->entry[i].ch_data_zf_fileno = -1;
     }
     
     for (i=0; i<zf->nentry; i++) {

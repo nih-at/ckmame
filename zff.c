@@ -82,7 +82,10 @@ zff_close(struct zf_file *zff)
 	}
     }
 
-    ret = (zff->crc_orig == zff->crc);
+    /* EOF is ok */
+    ret = (zff->flags == -1 ? 0 : zff->flags);
+    if (!ret)
+	ret = (zff->crc_orig == zff->crc);
 
     free(zff);
     return ret;

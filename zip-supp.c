@@ -2,7 +2,6 @@
 #include <string.h>
 #include <zlib.h>
 
-#include "unzip.h"
 #include "types.h"
 #include "error.h"
 #include "dbl.h"
@@ -12,53 +11,28 @@
 #define MAXFNLEN 1024
 #define BUFSIZE 8192
 
-void
-freeroms(struct rom *romp, int count)
-{
-    int i;
-    
-    for (i=0; i<count; i++)
-	free(romp[i].name);
-
-    free(romp);
-
-    return;
-}
-
-
-
 int
-findcrc (char *zn, char *fn, int filesize, int romsize, unsigned long wcrc)
+findcrc(struct zip *zip, int idx, int romsize, unsigned long wcrc)
 {
+    struct zf_file *zff;
     unsigned long crc;
-    unzFile zfp;
     char buf[BUFSIZE];
     int n, left, offset;
-    
-    if ((zfp=unzOpen(zn))==NULL)
-	return -1;
 
-    if (unzLocateFile(zfp, fn, 1)!=UNZ_OK) {
-	unzClose(zfp);
+    if ((zff = zff_open_index(zip->zf, idx)) == NULL)
 	return -1;
-    }
-
-    if (unzOpenCurrentFile(zfp)!=UNZ_OK) {
-	unzClose(zfp);
-	return -1;
-    }
 
     offset = 0;
-    while (offset+romsize <= filesize) {
+    while (offset+romsize <= zip->rom[idx].size) {
 	left = BUFSIZE;
 	crc = crc32(0, NULL, 0);
 	n = romsize;
 	while (n > 0) {
 	    if (left > n)
 		left = n;
-	    if (unzReadCurrentFile(zfp, buf, left)<left) {
-		unzCloseCurrentFile(zfp);
-		unzClose(zfp);
+	    if (zff_read(zff, buf, left) != left) {
+		/* XXX: error */
+		zff_close(zff);
 		return -1;
 	    }
 	    crc = crc32(crc, buf, left);
@@ -70,17 +44,10 @@ findcrc (char *zn, char *fn, int filesize, int romsize, unsigned long wcrc)
 
 	offset += romsize;
     }
-    
-    if (unzCloseCurrentFile(zfp)!=UNZ_OK) {
-	unzClose(zfp);
-	return -1;
-    }
-    
-    if (unzClose(zfp)!=UNZ_OK) {
-	myerror(ERRZIP, "error closing file");
-	return -1;
-    }
 
+    if (zff_close(zff))
+	return -1;
+    
     if (crc == wcrc)
 	return offset;
 	    
@@ -91,73 +58,53 @@ findcrc (char *zn, char *fn, int filesize, int romsize, unsigned long wcrc)
 
 
 int
-readinfosfromzip (struct rom **rompp, char *zipfile)
+zip_free(struct zip *zip)
 {
-    unzFile zfp;
-    unz_global_info globinfo;
-    unz_file_info fileinfo;
-    int count, a;
-    struct rom *romp;
-    char filename[MAXFNLEN+1];
+    int i, ret;
+
+    if (zip == NULL)
+	return 0;
     
-    if ((zfp=unzOpen(zipfile))==NULL)
+    free(zip->name);
+    for (i=0; i<zip->nrom; i++)
+	free(zip->rom[i].name);
+
+    if (zip->nrom)
+	free(zip->rom);
+
+    if (zip->zf)
+	ret = zip_close(zip->zf);
+
+    free(zip);
+
+    return ret;
+}
+
+
+
+int
+readinfosfromzip (struct zip *z)
+{
+    struct zf *zf;
+    int i;
+
+    z->nrom = 0;
+    z->rom = NULL;
+    z->zf = NULL;
+
+    if ((zf=zip_open(z->name, 0))==NULL)
 	return -1;
 
-    seterrinfo(NULL, zipfile);
-    
-    if (unzGetGlobalInfo(zfp, &globinfo)!=UNZ_OK) {
-	myerror(ERRZIP, "error getting global file info");
-	return -1;
-    }
+    z->rom = (struct rom *)xmalloc(sizeof(struct rom)*(zf->nentry));
+    z->nrom = zf->nentry;
+    z->zf = zf;
 
-    if (globinfo.number_entry > 0)
-	romp = (struct rom *)xmalloc(sizeof(struct rom)*globinfo.number_entry);
-    else {
-	myerror(ERRZIP, "%d roms in zipfile (?)", globinfo.number_entry);
-	return -1;
-    }
+    for (i=0; i<zf->nentry; i++) {
+	z->rom[i].name = xstrdup(zf->entry[i].fn);
+	z->rom[i].size = zf->entry[i].uncomp_size;
+	z->rom[i].crc = zf->entry[i].crc;
+	z->rom[i].state = ROM_0;
+    }	
 
-    for (a=0; a<globinfo.number_entry; a++)
-	romp[a].name = NULL;
-    
-    if (unzGoToFirstFile(zfp)!=UNZ_OK) {
-	myerror(ERRZIP, "can't go to first entry");
-	free(romp);
-	return -1;
-    }
-
-    count = -1;
-    do {
-	count++;
-	if (unzGetCurrentFileInfo(zfp, &fileinfo, filename, MAXFNLEN,
-				  NULL, 0, NULL, 0)!=UNZ_OK) {
-	    myerror(ERRZIP, "can't get file info for entry #%d", count);
-	    freeroms(romp, count);
-	    return -1;
-	}
-	if (fileinfo.size_filename > MAXFNLEN)
-	    fileinfo.size_filename = MAXFNLEN;
-	filename[fileinfo.size_filename] = 0;
-	romp[count].name = strdup(filename);
-	romp[count].size = fileinfo.uncompressed_size;
-	romp[count].crc = fileinfo.crc;
-	romp[count].state = ROM_0;
-    } while (((a=unzGoToNextFile(zfp))==UNZ_OK)
-	     && (count<globinfo.number_entry));
-    count++;
-    
-    if (a!=UNZ_END_OF_LIST_OF_FILE) {
-	myerror(ERRZIP, "can't go to next file after entry #%d", count);
-	freeroms(romp, count);
-	return -1;
-    }
-    
-    if (unzClose(zfp)!=UNZ_OK) {
-	myerror(ERRZIP, "error closing file");
-	free(romp);
-	return -1;
-    }
-
-    *rompp = romp;
-    return count;
+    return i;
 }

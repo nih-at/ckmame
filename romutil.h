@@ -40,9 +40,10 @@ void match_free(struct match *m, int n);
 int countunused(struct zip *z);
 void game_free(struct game *g, int fullp);
 char **delchecked(struct tree *t, int nclone, char **clone);
-void zip_free(struct zip *zip);
-int readinfosfromzip (struct rom **rompp, char *zipfile);
+int zip_free(struct zip *zip);
+int readinfosfromzip (struct zip *z);
 void merge_match(struct match *m, int nrom, struct zip **zip,
 		 int pno, int gpno);
+int findcrc(struct zip *zip, int idx, int romsize, unsigned long wcrc);
 
 #endif
