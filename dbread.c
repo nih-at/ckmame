@@ -123,7 +123,9 @@ dbread(DB* db, char *fname)
 
 	switch (state) {
 	case st_top:
-	    if (strcmp(cmd, "game") == 0 || strcmp(cmd, "resource") == 0) {
+	    /* game/resource for MAME/Raine, machine for MESS */
+	    if (strcmp(cmd, "game") == 0 || strcmp(cmd, "machine") == 0
+		||strcmp(cmd, "resource") == 0) {
 		g = (struct game *)xmalloc(sizeof(struct game));
 		g->name = g->description = g->cloneof[0] = g->cloneof[1]
 		    = g->sampleof[0] = g->sampleof[1] = NULL;
