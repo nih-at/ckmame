@@ -1,3 +1,8 @@
+1999-10-05  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* treetrav.c (zfile_new): zfile_new fixed, now returns useful zip
+	names, instead of just the name of the game
+
 1999-10-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* treetrav.c (tree_child_traverse): close zip files created in
