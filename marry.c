@@ -1,16 +1,15 @@
 /*
-  $NiH: marry.c,v 1.7 2002/06/06 09:26:55 dillo Exp $
+  $NiH: marry.c,v 1.8 2003/03/16 10:21:34 wiz Exp $
 
   marry.c -- pair matches with roms
-  Copyright (C) 1999 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
+  it under the terms of the GNU General Public License, version 2, as
+  published by the Free Software Foundation.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of

@@ -1,16 +1,15 @@
 /*
-  $NiH: w_game.c,v 1.16 2004/01/27 23:30:33 wiz Exp $
+  $NiH: w_game.c,v 1.17 2004/02/05 17:32:32 dillo Exp $
 
   w_game.c -- write game strcut to db
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
+  it under the terms of the GNU General Public License, version 2, as
+  published by the Free Software Foundation.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of

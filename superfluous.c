@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.6 2004/02/26 01:09:45 wiz Exp $
+  $NiH: superfluous.c,v 1.1 2004/02/26 01:12:59 wiz Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -8,9 +8,8 @@
   The authors can be contacted at <nih@giga.or.at>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
+  it under the terms of the GNU General Public License, version 2, as
+  published by the Free Software Foundation.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of

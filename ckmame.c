@@ -1,16 +1,15 @@
 /*
-  $NiH: ckmame.c,v 1.32 2004/01/28 11:53:57 dillo Exp $
+  $NiH: ckmame.c,v 1.33 2004/02/26 01:09:21 wiz Exp $
 
   ckmame.c -- main routine for ckmame
-  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
 
   This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
+  it under the terms of the GNU General Public License, version 2, as
+  published by the Free Software Foundation.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
