@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.9 2003/10/01 22:57:00 dillo Exp $
+#  $NiH: runtest,v 1.10 2003/10/03 09:46:28 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -151,7 +151,7 @@ checkzip() {
 	    die "cannot find input file $1"
 	fi
 	
-	${ZIPCMP} ${ZIPCMP_FLAGS} "$1" "$2"
+	${ZIPCMP} -t ${ZIPCMP_FLAGS} "$1" "$2"
 	if [ $? -ne 0 ]
 	then
 	    fail "$3"
