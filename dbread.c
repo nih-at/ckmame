@@ -7,22 +7,25 @@
 #include "error.h"
 #include "types.h"
 #include "dbl.h"
+#include "r.h"
 
 int ngames, sgames;
 char **games;
 
+static int add_name(char *s);
 static char *extract(char *s, regmatch_t m);
 static int game_add(DB* db, struct game *g);
+void familymeeting(DB* db, struct game *parent, struct game *child);
+int lost(struct game *a);
 
 void game_free(struct game *g);
 
-enum regs { r_game, r_name, r_cloneof, r_romof, r_rom, r_sampleof, r_sample,
+enum regs { r_gamestart, r_name, r_romof, r_rom, r_sampleof, r_sample,
 	    r_gameend, r_END };
 
 static char *sregs[] = {
     "^[ \t]*game[ \t]*\\(",
     "^[ \t]*name[ \t]*([^ \t\n]*)",
-    "^[ \t]*cloneof[ \t]*([^ \t\n]*)",
     "^[ \t]*romof[ \t]*([^ \t\n]*)",
     "^[ \t]*rom[ \t]+\\([ \t]+name[ \t]+([^ ]*)[ \t]+size[ \t]+([^ ]*)[ \t]+crc[ \t]+([^ ]*)[ \t]+\\)",
     "^[ \t]*sampleof[ \t]*([^ \t\n]*)",
@@ -62,27 +65,32 @@ dbread(DB* db, char *fname)
     regmatch_t match[6];
     char l[8192], *p;
     int ingame, i;
-    /* XXX: Boese, sehr, sehr, boese. Es gibt nur 100 roms? Ha, ha. */
+    /* XXX: every game is only allowed 101 roms */
     struct rom r[100], s[100];
     struct game *g;
+    struct game child, *parent;
+    char **lostchildren;
+    int nlost, lostmax;
     int nr, ns;
 
     if ((fin=fopen(fname, "r")) == NULL) {
-	myerror(ERRDEF, "can\'t open romlist file `%s': %s",
-		fname, strerror(errno));
+	myerror(ERRSTR, "can\'t open romlist file `%s'", fname);
 	return -1;
     }
 
-    nr = ns = ingame = 0;
+    lostmax = 100;
+    lostchildren = (char **)xmalloc(lostmax*sizeof(char *));
+    
+    nlost = nr = ns = ingame = 0;
     while (fgets(l, 8192, fin)) {
 	for (i=0; i<r_END; i++)
 	    if (regexec(&regs[i], l, 6, match, 0) == 0)
 		break;
 
 	switch (i) {
-	case r_game:
+	case r_gamestart:
 	    g = (struct game *)xmalloc(sizeof(struct game));
-	    g->name = g->cloneof = g->romof = g->sampleof = NULL;
+	    g->name = g->cloneof[0] = g->cloneof[1] = g->sampleof = NULL;
 	    g->nrom = g->nsample = 0;
 	    ingame = 1;
 	    nr = ns = 0;
@@ -91,17 +99,9 @@ dbread(DB* db, char *fname)
 	case r_name:
 	    g->name = extract(l, match[1]);
 	    break;
-
-	case r_cloneof:
-	    g->cloneof = extract(l, match[1]);
-	    break;
-
+ 
 	case r_romof:
-	    g->romof = extract(l, match[1]);
-	    if (g->cloneof && strcmp(g->cloneof, g->romof) == 0) {
-		free(g->romof);
-		g->romof = NULL;
-	    }
+	    g->cloneof[0] = extract(l, match[1]);
 	    break;
 
 	case r_rom:
@@ -133,16 +133,88 @@ dbread(DB* db, char *fname)
 	    g->rom = r;
 	    g->nsample = ns;
 	    g->sample = s;
-	    	    
+
+	    if (g->cloneof[0]) {
+		if (((parent=r_game(db, g->cloneof[0]))==NULL) || 
+		    lost(parent)) {
+		    if (nlost > lostmax - 2) {
+			lostmax += 100;
+			lostchildren = (char **)xrealloc(lostchildren,
+					lostmax*sizeof(char *));
+		    }
+		    lostchildren[nlost++] = strdup(g->name);
+		    if (parent)
+			game_free(parent);
+		}
+		else {
+		    familymeeting(db, parent, g);
+		    w_game(db, parent);
+		    game_free(parent);
+		}
+		
+	    }
 	    game_add(db, g);
 	    game_free(g);
 	    break;
 	}
     }
 
+    /* do lost children */
+    /* free lost children */
     return 0;
 }
-		
+
+
+
+void
+familymeeting(DB *db, struct game *parent, struct game *child)
+{
+    struct game *gparent;
+    int i, j;
+    
+    /* tell grandparent of his new grandchild */
+    if (parent->cloneof[0]) {
+	gparent = r_game(db, parent->cloneof[0]);
+	gparent->clone = (char **)xrealloc(gparent->clone,
+					   (gparent->nclone+1)*sizeof(char *));
+	gparent->clone[gparent->nclone++] = child->name;
+	w_game(db, gparent);
+	game_free(gparent);
+    }
+
+    /* tell child of his grandfather */
+    if (parent->cloneof[0])
+	child->cloneof[1] = strdup(parent->cloneof[0]);
+
+    /* tell father of his child */
+    parent->clone = (char **)xrealloc(parent->clone,
+				      sizeof (char *)*(parent->nclone+1));
+    parent->clone[parent->nclone++] = child->name;
+
+    /* look for roms in parent */
+    for (i=0; i<child->nrom; i++)
+	for (j=0; j<parent->nrom; j++)
+	    if (romcmp(child->rom+i, parent->rom+j)==ROM_OK) {
+		child->rom[i].where = parent->rom[j].where + 1;
+		break;
+	    }
+
+    return;
+}
+
+
+int
+lost(struct game *a)
+{
+    int i;
+    
+    for (i=0; i<a->nrom; i++)
+	if (a->rom[i].where != ROM_INZIP)
+	    return 0;
+
+    return 1;
+}
+    
 
 
 static char *
@@ -165,14 +237,10 @@ game_add(DB* db, struct game *g)
 {
     int err;
     
-    /* XXX: check for roms in cloneof/romof */
-    /* XXX: add g to clones/roms list of parent */
-    
     err = w_game(db, g);
 
     if (err != 0) {
-	myerror(ERRDEF, "can't write game `%s' to db: %s",
-		g->name, strerror(errno));
+	myerror(ERRSTR, "can't write game `%s' to db", g->name);
     }
     else
 	add_name(g->name);
@@ -204,15 +272,15 @@ game_free(struct game *g)
     int i;
 
     free(g->name);
-    free(g->cloneof);
-    free(g->romof);
+    free(g->cloneof[0]);
+    free(g->cloneof[1]);
     free(g->sampleof);
     for (i=0; i<g->nrom; i++)
 	free(g->rom[i].name);
-    /* XXX: dbread does'nt allocate this: free(g->rom); */
+    /* XXX: dbread doesn't allocate this: free(g->rom); */
     for (i=0; i<g->nsample; i++)
 	free(g->sample[i].name);
-    /* XXX: dbread does'nt allocate this: free(g->rom); */
+    /* XXX: dbread doesn't allocate this: free(g->sample); */
 
     free(g);
 }

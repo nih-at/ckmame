@@ -8,6 +8,8 @@
 extern char *prg;
 static char *myerrorfn, *myerrorzipn;
 
+
+
 void
 myerror(int errtype, char *fmt, ...)
 {
@@ -48,6 +50,4 @@ seterrinfo(char *fn, char *zipn)
     
     return;
 }
-
-
 

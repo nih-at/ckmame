@@ -1,0 +1,71 @@
+#include <stdlib.h>
+
+#include "types.h"
+
+void
+marry (struct match *rm, int count, int *noz)
+{
+    int i, j, now, other;
+    int *z[3];
+    struct match *c, *n;
+
+    for (i=0; i<3; i++)
+	if (noz[i] > 0) {
+	    z[i] = (int *)xmalloc(sizeof(int)*noz[i]);
+	    for (j=0; j<noz[i]; j++)
+		z[i][j] = -1;
+	}
+	else
+	    z[i] = NULL;
+
+    for (i=0; i<count; i++) {
+	now = i;
+	while ((now != -1) && (rm[now].next)) {
+	    /* sometimes now gets changed */
+	    c = rm[now].next;
+	    if (z[c->zno][c->fno] == -1) {
+		rm[now].zno = c->zno;
+		rm[now].fno = c->fno;
+		rm[now].where = c->where;
+		rm[now].quality = c->quality;
+		z[c->zno][c->fno] = now;
+		now = -1;
+	    }
+	    else
+		while (c != NULL) {
+		    other = z[c->zno][c->fno];
+		    if (matchcmp(rm[other].next, rm[now].next) >= 0) {
+			/* other has the better grip on this file */
+			rm[now].next = c->next;
+			free(c);
+			c = rm[now].next;
+		    }
+		    else {
+			/* now grabs other's file */
+			rm[now].zno = c->zno;
+			rm[now].fno = c->fno;
+			rm[now].where = c->where;
+			rm[now].quality = c->quality;
+			z[c->zno][c->fno] = now;
+			/* other has to let it go */
+			c = rm[other].next;
+			rm[other].next = c->next;
+			rm[other].quality = ROM_UNKNOWN;
+			free(c);
+			c = rm[other].next;
+			/* other has to go looking again */
+			now = other;
+			break;
+		    }
+		}
+	}
+    }
+
+    for (i=0; i<3; i++)
+	free(z[i]);
+
+    /* XXX: delete rest after the best matches out of the lists */
+    
+    return;
+    
+}
