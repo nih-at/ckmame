@@ -1,4 +1,4 @@
-"fix" extra files by moving the to a subdir
+"fix" extra files by moving them to a subdir
 use crctypes for roms
 use NOCRC for samples
 
@@ -28,4 +28,3 @@ complete raine support (multiple archive names)
 get roms from a different location to fix sets
 
 fix all XXXs
-
