@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.18 2004/02/26 02:26:09 wiz Exp $
+  $NiH: fix.c,v 1.19 2004/04/14 14:02:45 dillo Exp $
 
   fix.c -- fix romsets
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -74,8 +74,8 @@ fix_game(struct game *g, struct zfile **zip, struct match *m)
 	    if (zip[0]->zf == NULL) {
 		char errstr[1024];
 
-		(void)zip_error_str(errstr, sizeof(errstr),
-				    zerr, errno);
+		(void)zip_error_to_str(errstr, sizeof(errstr),
+				       zerr, errno);
 		fprintf(stderr, "%s: error opening '%s': %s\n", prg,
 			zip[0]->name, errstr);
 	    }
@@ -160,11 +160,18 @@ fix_game(struct game *g, struct zfile **zip, struct match *m)
 static int
 fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 {
+    struct zip_source *source;
+
     if (m->zno != 0) {
 	if (m->quality == ROM_LONGOK) {
 	    if (fix_do) {
-		zip_add_zip(zip[0]->zf, rom->name,
-			    zip[m->zno]->zf, m->fno, 0, m->offset, rom->size);
+		if ((source=zip_source_zip(zip[0]->zf, zip[m->zno]->zf, m->fno,
+					   0, m->offset, rom->size)) == NULL
+		    || zip_add(zip[0]->zf, rom->name, source) < 0) {
+		    zip_source_free(source);
+		    fprintf(stderr, "%s: error adding `%s' to `%s': %s\n", prg,
+			    rom->name, zip[0]->name, zip_strerror(zip[0]->zf));
+		}
 		if (fix_keep_long)
 		    fix_add_garbage(zip[m->zno], m->fno);
 	    }
@@ -175,9 +182,15 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 		       rom->name, m->offset, rom->size);
 	}
 	else {
-	    if (fix_do)
-		zip_add_zip(zip[0]->zf, rom->name,
-			    zip[m->zno]->zf, m->fno, 0, 0, 0);
+	    if (fix_do) {
+		if ((source=zip_source_zip(zip[0]->zf, zip[m->zno]->zf, m->fno,
+					   0, 0, 0)) == NULL
+		    || zip_add(zip[0]->zf, rom->name, source) < 0) {
+		    zip_source_free(source);
+		    fprintf(stderr, "%s: error adding `%s' to `%s': %s\n", prg,
+			    rom->name, zip[0]->name, zip_strerror(zip[0]->zf));
+		}
+	    }
 	    if (fix_print)
 		printf("%s: add `%s/%s' as %s\n",
 		       zip[0]->name,
@@ -199,8 +212,13 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 
 	case ROM_LONGOK:
 	    if (fix_do) {
-		zip_replace_zip(zip[0]->zf, m->fno,
-				zip[0]->zf, m->fno, 0, m->offset, rom->size);
+		if ((source=zip_source_zip(zip[0]->zf, zip[0]->zf, m->fno,
+					   0, m->offset, rom->size)) == NULL
+		    || zip_replace(zip[0]->zf, m->fno, source) < 0) {
+		    zip_source_free(source);
+		    fprintf(stderr, "%s: error shortening `%s' in `%s': %s\n", prg,
+			    rom->name, zip[0]->name, zip_strerror(zip[0]->zf));
+		}
 #if 0
 		/* XXX: rename? */
 		zip_rename(zip[0]->zf, m->fno, rom->name);
@@ -228,6 +246,8 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 static int
 fix_add_garbage(struct zfile *zip, int idx)
 {
+    struct zip_source *source;
+
     if (!fix_do)
 	return 0;
 
@@ -239,9 +259,15 @@ fix_add_garbage(struct zfile *zip, int idx)
 	zf_garbage_name = mkgarbage_name(zip->name);
 	zf_garbage = zip_open(zf_garbage_name, ZIP_CREATE, NULL);
     }
-    if (zf_garbage)
-	zip_add_zip(zf_garbage, zip->rom[idx].name, zip->zf, idx,
-		    ZIP_FL_UNCHANGED, 0, 0);
+    if (zf_garbage) {
+	if ((source=zip_source_zip(zf_garbage,
+				   zip->zf, idx, ZIP_FL_UNCHANGED, 0, 0)) == NULL
+	    || zip_add(zf_garbage, zip->rom[idx].name, source) < 0) {
+	    zip_source_free(source);
+	    fprintf(stderr, "%s: error adding `%s' to garbage file `%s': %s\n", prg,
+		    zip->rom[idx].name, zf_garbage_name, zip_strerror(zf_garbage));
+	}
+    }
 
     return 0;
 }
