@@ -23,12 +23,17 @@ int
 main(int argc, char **argv)
 {
     int i, j, optind, nlist, found, first;
+    char *dbname;
     DB *db;
     char **list;
     
     prg = argv[0];
 
-    if ((db=db_open("mame", 1, 0))==NULL) {
+    dbname = getenv("MAMEDB");
+    if (dbname == NULL)
+	dbname = "mame";
+
+    if ((db=db_open(dbname, 1, 0))==NULL) {
 	myerror(ERRSTR, "can't open database `mame.db'");
 	exit (1);
     }
@@ -103,7 +108,7 @@ dump_game(DB *db, char *name)
 	    if (i%6 == 5)
 		putc('\n', stdout);
 	}
-	if (game->nclone % 6 != 5)
+	if (game->nclone % 6 != 0)
 	    putc('\n', stdout);
     }
     printf("Roms:");

@@ -89,7 +89,9 @@ main(int argc, char **argv)
     tree->child = NULL;
     output_options = WARN_ALL;
     sample = 0;
-    dbname = "mame";
+    dbname = getenv("MAMEDB");
+    if (dbname == NULL)
+	dbname = "mame";
     dbext = 1;
     fix_do = fix_print = 0;
     fix_keep_long = fix_keep_unknown = 1;
