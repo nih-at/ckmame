@@ -11,6 +11,8 @@
 #define MAXFNLEN 1024
 #define BUFSIZE 8192
 
+extern char *prg;
+
 int
 findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
 {
@@ -19,8 +21,12 @@ findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
     char buf[BUFSIZE];
     int n, left, offset;
 
-    if ((zff = zip_fopen_index(zip->zf, idx)) == NULL)
+    if ((zff = zip_fopen_index(zip->zf, idx)) == NULL) {
+	fprintf(stderr, "%s: %s: can't open file '%s': %s\n", prg,
+		zip->zf->zn, zip->zf->entry[idx].fn,
+		zip_err_str[zip_err]);
 	return -1;
+    }
 
     offset = 0;
     while (offset+romsize <= zip->rom[idx].size) {
@@ -31,7 +37,9 @@ findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
 	    if (left > n)
 		left = n;
 	    if (zip_fread(zff, buf, left) != left) {
-		/* XXX: error */
+		fprintf(stderr, "%s: %s: %s: read error: %s\n", prg,
+			zip->zf->zn, zip->zf->entry[idx].fn,
+			zip_err_str[zip_err]);
 		zip_fclose(zff);
 		return -1;
 	    }
@@ -45,8 +53,12 @@ findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
 	offset += romsize;
     }
 
-    if (zip_fclose(zff))
+    if (zip_fclose(zff)) {
+	fprintf(stderr, "%s: %s: %s: close error: %s\n", prg,
+			zip->zf->zn, zip->zf->entry[idx].fn,
+			zip_err_str[zip_err]);
 	return -1;
+    }
     
     if (crc == wcrc)
 	return offset;
@@ -72,9 +84,18 @@ zfile_free(struct zfile *zip)
     if (zip->nrom)
 	free(zip->rom);
 
-    if (zip->zf)
-	ret = zip_close(zip->zf);
-
+    if (zip->zf) {
+	if ((ret=zip_close(zip->zf))) {
+	    /* error closing, so zip is still valid */
+	    fprintf(stderr, "%s: %s: close error: %s\n", prg,
+		    zip? (zip->zf? (zip->zf->zn? zip->zf->zn
+				    : "(null)")
+			  :"(null)")
+		    :"(null)", zip_err_str[zip_err]);
+	    /* XXX: really close zipfile */
+	}
+    }
+    
     free(zip);
 
     return ret;
@@ -92,8 +113,11 @@ readinfosfromzip (struct zfile *z)
     z->rom = NULL;
     z->zf = NULL;
 
-    if ((zf=zip_open(z->name, 0))==NULL)
+    if ((zf=zip_open(z->name, 0))==NULL) {
+	fprintf(stderr, "%s: error opening '%s': %s\n", prg,
+		z->name, zip_err_str[zip_err]);
 	return -1;
+    }
 
     z->rom = (struct rom *)xmalloc(sizeof(struct rom)*(zf->nentry));
     z->nrom = zf->nentry;

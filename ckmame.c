@@ -3,13 +3,13 @@
 #include <stdlib.h>
 #include <fnmatch.h>
 
-#ifdef _HAVE_GETOPT_LONG
+#include "config.h"
+
+#ifdef HAVE_GETOPT_LONG
 #include <getopt.h>
 #else
 #include "getopt.h"
 #endif
-
-#include "config.h"
 
 #include "types.h"
 #include "dbh.h"
