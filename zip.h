@@ -3,8 +3,9 @@
 
 #include <sys/types.h>
 #include <stdio.h>
+#include <zlib.h>
 
-#include "unzip.h"
+/* #include "unzip.h" */
 
 enum zip_state { Z_UNCHANGED, Z_DELETED, Z_REPLACED, Z_ADDED, Z_RENAMED };
 
@@ -21,28 +22,19 @@ int zip_err; /* global variable for errors returned by the low-level
 
 extern char * zip_err_str[];
 
-struct zipfile {
-    char *name;
-    unzFile zfp;
-    int entry_size, nentry;
-    struct zipchange *entry;
-};
-
-struct zipchange {
-    enum zip_state state;
-    char *name;
-    struct zipfile *szf;
-    int sindex; /* which file in zipfile */
-    int start, len;
-};
-
 struct zf {
     char *zn;
     FILE *zp;
     unsigned short comlen, changes;
     unsigned int nentry, nentry_alloc, cd_size, cd_offset;
-    unsigned char *com;
+    char *com;
     struct zf_entry *entry;
+    
+    /* for reading from this zip-file */
+    /* last opened file in this zip */
+    unsigned int unz_last;
+    char *unz_in;
+    z_stream *unz_zst;
 };
 
 struct zf_entry {
@@ -52,10 +44,26 @@ struct zf_entry {
     enum zip_state state;
     char *fn, *ef, *fcom;
     char *ch_name;
-    /* only use one of the following two for supplying new data */
-    FILE *ch_data_fp;
+    /* only use one of the following three for supplying new data
+       listed in order of priority, if more than one is set */
+    struct zf *ch_data_zf;
     char *ch_data_buf;
+    FILE *ch_data_fp;
+    /* offset & len of new data in ch_data_fp or ch_data_buf */
     unsigned int ch_data_offset, ch_data_len;
+    /* if source is another zipfile, number of file in zipfile */
+    unsigned int ch_data_zf_fileno;
 };
+
+int zip_unchange(struct zf *zf, int idx);
+int zip_rename(struct zf *zf, int idx, char *name);
+int zip_add_file(struct zf *zf, char *name, FILE *file, int start, int len);
+int zip_add_data(struct zf *zf, char *name, char *buf, int start, int len);
+int zip_replace_file(struct zf *zf, int idx, char *name, FILE *file,
+		     int start, int len);
+int zip_replace_data(struct zf *zf, int idx, char *name, char *buf,
+		     int start, int len);
+int zip_delete(struct zf *zf, int idx);
+
 
 #endif /* _HAD_ZIP_H */

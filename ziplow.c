@@ -5,6 +5,7 @@
 
 #include "ziplow.h"
 #include "zip.h"
+#include "error.h"
 
 #include "util.h"
 #include "xmalloc.h"
@@ -226,13 +227,26 @@ int
 zip_close(struct zf *zf)
 {
     int i, count, tfd;
-    char *temp;
+    char *temp, *keep;
     FILE *tfp;
     struct zf *tzf;
 
     if (zf->changes == 0)
 	return zf_free(zf);
 
+    /* look if there really are any changes */
+    count = 0;
+    for (i=0; i<zf->nentry; i++) {
+	if (zf->entry[i].state != Z_UNCHANGED) {
+	    count = 1;
+	    break;
+	}
+    }
+
+    /* no changes, all has been unchanged */
+    if (count == 0)
+	return zf_free(zf);
+    
     temp = (char *)xmalloc(strlen(zf->zn)+8);
     sprintf(temp, "%s.XXXXXX", zf->zn);
 
@@ -267,7 +281,31 @@ zip_close(struct zf *zf)
 	    case Z_REPLACED:
 		/* fallthrough */
 	    case Z_ADDED:
-		/* zip_entry_add(tzf, zf, i); */
+		if (zf->entry[i].ch_data_zf) {
+		    /* keep original ch_name in src struct zf */
+		    keep = zf->entry[i].ch_data_zf->entry[zf->entry[i].ch_data_zf_fileno].ch_name;
+		    zf->entry[i].ch_data_zf->entry[zf->entry[i].ch_data_zf_fileno].ch_name =
+			zf->entry[i].ch_name;
+		    zip_entry_copy(tzf, zf->entry[i].ch_data_zf,
+				   zf->entry[i].ch_data_zf_fileno);
+		    zf->entry[i].ch_data_zf->entry[zf->entry[i].ch_data_zf_fileno].ch_name =
+			keep;
+		} else if (zf->entry[i].ch_data_buf) {
+#if 0
+		    zip_entry_add(tzf, zf->entry[i], 0);
+#endif 0
+		} else if (zf->entry[i].ch_data_fp) {
+#if 0
+		    zip_entry_add(tzf, zf->entry[i], 0);
+#endif 0
+		} else {
+		    /* XXX: ? */
+		    myerror(ERRFILE, "Z_ADDED: no data");
+		    break;
+		}
+		free(tzf->entry[tzf->nentry-1].fn);
+		tzf->entry[tzf->nentry-1].fn =
+		    xstrdup(zf->entry[i].ch_name);
 		break;
 	    case Z_RENAMED:
 		zip_entry_copy(tzf, zf, i);
@@ -323,16 +361,14 @@ zip_entry_copy(struct zf *dest, struct zf *src, int entry_no)
     dest->entry[dest->nentry].comp_meth = src->entry[entry_no].comp_meth;
     dest->entry[dest->nentry].lmtime = src->entry[entry_no].lmtime;
     dest->entry[dest->nentry].lmdate = src->entry[entry_no].lmdate;
-    dest->entry[dest->nentry].fnlen = src->entry[entry_no].fnlen;
-    dest->entry[dest->nentry].eflen = src->entry[entry_no].eflen;
     dest->entry[dest->nentry].fcomlen = src->entry[entry_no].fcomlen;
+    dest->entry[dest->nentry].eflen = src->entry[entry_no].eflen;
     dest->entry[dest->nentry].disknrstart = src->entry[entry_no].disknrstart;
     dest->entry[dest->nentry].intatt = src->entry[entry_no].intatt;
     dest->entry[dest->nentry].crc = src->entry[entry_no].crc;
     dest->entry[dest->nentry].comp_size = src->entry[entry_no].comp_size;
     dest->entry[dest->nentry].uncomp_size = src->entry[entry_no].uncomp_size;
     dest->entry[dest->nentry].extatt = src->entry[entry_no].extatt;
-    dest->entry[dest->nentry].fn = xstrdup(src->entry[entry_no].fn);
     dest->entry[dest->nentry].ef = (char *)memdup(src->entry[entry_no].ef,
 				    src->entry[entry_no].eflen);
     dest->entry[dest->nentry].fcom = (char *)memdup(src->entry[entry_no].fcom,
@@ -340,12 +376,23 @@ zip_entry_copy(struct zf *dest, struct zf *src, int entry_no)
 
     dest->entry[dest->nentry].local_offset = ftell(dest->zp);
 
+    if (src->entry[entry_no].ch_name) {
+	dest->entry[dest->nentry].fn = xstrdup(src->entry[entry_no].ch_name);
+	dest->entry[dest->nentry].fnlen =
+	    strlen(src->entry[entry_no].ch_name);
+    } else {
+	dest->entry[dest->nentry].fn = xstrdup(src->entry[entry_no].fn);
+	dest->entry[dest->nentry].fnlen = src->entry[entry_no].fnlen;
+    }
+    
     dest->entry[dest->nentry].state = Z_UNCHANGED;
     dest->entry[dest->nentry].ch_name = NULL;
     dest->entry[dest->nentry].ch_data_fp = NULL;
     dest->entry[dest->nentry].ch_data_buf = NULL;
+    dest->entry[dest->nentry].ch_data_zf = NULL;
     dest->entry[dest->nentry].ch_data_offset = 0;
     dest->entry[dest->nentry].ch_data_len = 0;
+    dest->entry[dest->nentry].ch_data_zf_fileno = 0;
 
     if (fseek(src->zp, src->entry[entry_no].local_offset, SEEK_SET) != 0) {
 	zip_err = ZERR_SEEK;
@@ -355,6 +402,11 @@ zip_entry_copy(struct zf *dest, struct zf *src, int entry_no)
     if (readcdentry(src->zp, &tempzfe, &null, 0, 1, 1) != 0) {
 	zip_err = ZERR_READ;
 	return -1;
+    }
+    if (src->entry[entry_no].ch_name) {
+	free(tempzfe.fn);
+	tempzfe.fn = xstrdup(src->entry[entry_no].ch_name);
+	tempzfe.fnlen = strlen(src->entry[entry_no].ch_name);
     }
     if (writecdentry(dest->zp, &tempzfe, 1) != 0) {
 	zip_err = ZERR_WRITE;
@@ -494,6 +546,10 @@ readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen)
 	zf->entry[i].fn = NULL;
 	zf->entry[i].ef = NULL;
 	zf->entry[i].fcom = NULL;
+	zf->entry[i].ch_name = NULL;
+	zf->entry[i].ch_data_fp = NULL;
+	zf->entry[i].ch_data_buf = NULL;
+	zf->entry[i].ch_data_zf = NULL;
     }
     
     for (i=0; i<zf->nentry; i++) {
@@ -736,6 +792,10 @@ headercomp(struct zf_entry *h1, int local1p, struct zf_entry *h2,
 	|| (h1->fnlen && memcmp(h1->fn, h2->fn, h1->fnlen)))
 	return -1;
 
+    /* if they are different type, nothing more to check */
+    if (local1p != local2p)
+	return 0;
+
     if ((h1->version_made != h2->version_made)
 	|| (h1->disknrstart != h2->disknrstart)
 	|| (h1->intatt != h2->intatt)
@@ -745,10 +805,7 @@ headercomp(struct zf_entry *h1, int local1p, struct zf_entry *h2,
 	|| (h1->eflen && memcmp(h1->fn, h2->fn, h1->fnlen))
 	|| (h1->fcomlen != h2->fcomlen)
 	|| (h1->fcomlen && memcmp(h1->fcom, h2->fcom, h1->fcomlen))) {
-	/* these variables must only match if neither or both
-	   are local headers */
-	if (!(local1p || local2p) && (local1p && local2p))
-	    return -1;
+	return -1;
     }
 
     return 0;
@@ -773,7 +830,9 @@ zf_new(void)
     zf->nentry = zf->nentry_alloc = zf->cd_size = zf->cd_offset = 0;
     zf->com = NULL;
     zf->entry = NULL;
-
+    zf->unz_zst = NULL;
+    zf->unz_in = NULL;
+    
     return zf;
 }
 
@@ -806,9 +865,21 @@ zf_free(struct zf *zf)
 	    free(zf->entry[i].fn);
 	    free(zf->entry[i].ef);
 	    free(zf->entry[i].fcom);
+	    if (zf->entry[i].ch_name)
+		free(zf->entry[i].ch_name);
+	    if (zf->entry[i].ch_data_buf)
+		free(zf->entry[i].ch_data_buf);
+	    if (zf->entry[i].ch_data_fp)
+		(void)fclose(zf->entry[i].ch_data_fp);
 	}
 	free (zf->entry);
     }
+
+    if (zf->unz_zst)
+	free(zf->unz_zst);
+
+    if (zf->unz_in)
+	free(zf->unz_in);
 
     free(zf);
 
@@ -816,4 +887,49 @@ zf_free(struct zf *zf)
 	zip_err = ZERR_CLOSE;
     
     return ret;
+}
+
+
+
+int
+zf_read(struct zf *zf, int fileno, char *outbuf, int toread)
+{
+    int i, len;
+
+    if (fileno != zf->unz_last) {
+	/* go to start of actual compressed data */
+	fseek (zf->zp, zf->entry[i].local_offset+LENTRYSIZE
+	       +zf->entry[i].fnlen+zf->entry[i].fcomlen
+	       +zf->entry[i].eflen, SEEK_SET);
+	
+	/* remove remainder of last stream (if any) */
+	free(zf->unz_in);
+	free(zf->unz_zst);
+
+	zf->unz_zst = (z_stream *)xmalloc(sizeof(z_stream));
+	zf->unz_in = (char *)xmalloc(BUFSIZE);
+	zf->unz_zst->zalloc = Z_NULL;
+	zf->unz_zst->zfree = Z_NULL;
+	zf->unz_zst->opaque = NULL;
+
+	seterrinfo(zf->entry[i].fn, zf->zn);
+
+	len = fread (zf->unz_in, 1, BUFSIZE, zf->zp);
+	if (len <= 0) {
+	    myerror (ERRSTR, "read error");
+	    return -1;
+	}
+	
+	zf->unz_zst->next_in = zf->unz_in;
+	zf->unz_zst->avail_in = len;
+	if (inflateInit(zf->unz_zst) != Z_OK) {
+	    myerror(ERRFILE, zf->unz_zst->msg);
+	    return -1;
+	}
+    }
+
+
+    /* XXX: main part missing */
+
+    return 0;
 }

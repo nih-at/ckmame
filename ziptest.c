@@ -24,8 +24,10 @@ main(int argc, char *argv[])
     }
 
     for (i=0; i<zf->nentry; i++)
-	printf("%s\n", zf->entry[i].fn);
+	printf("%8d %s\n", zf->entry[i].uncomp_size, zf->entry[i].fn);
 
+    zip_delete(zf, 0);
+    
     if (zip_close(zf)!=0) {
 	myerror(ERRZIPSTR, "can't close file");
 	return 1;
