@@ -30,6 +30,8 @@
 
 int r_list(DB *db, char *key, char ***listp);
 int w_list(DB *db, char *key, char **list, int n);
+int r_prog(DB *db, char **prog, char **version);
+int w_prog(DB *db, char *prog, char *version);
 struct game *r_game(DB *db, char *name);
 int w_game(DB *db, struct game *game);
 

@@ -15,6 +15,7 @@
 int ngames, sgames;
 char **games;
 
+static char *get_string(void);
 static int add_name(char *s);
 static int game_add(DB* db, struct game *g);
 void familymeeting(DB* db, struct game *parent, struct game *child);
@@ -40,11 +41,15 @@ dbread_init(void)
 #define GET_TOK()	(_P_=strtok(NULL, " \t\n\r"),\
 			 (_P_==NULL ? /* XXX: error */ "" : _P_))
 
+enum parse_state { st_top, st_game, st_prog };
+
 int
 dbread(DB* db, char *fname)
 {
     FILE *fin;
-    char l[8192], *cmd, *p, *q, *_P_;
+    char l[8192], *cmd, *p, *_P_;
+    char *prog_name, *prog_version;
+    enum parse_state state;
     int i, j;
     /* XXX: every game is only allowed 1000 roms */
     struct rom r[1000], s[1000];
@@ -61,11 +66,14 @@ dbread(DB* db, char *fname)
 
     lostmax = 100;
     lostchildren = (char **)xmalloc(lostmax*sizeof(char *));
+    prog_name = prog_version = NULL;
 
     seterrinfo(NULL, fname);
     
     nlost = nr = ns = 0;
     lineno = 0;
+    state = st_top;
+    
     while (fgets(l, 8192, fin)) {
 	lineno++;
 	if (l[strlen(l)-1] != '\n') {
@@ -85,113 +93,128 @@ dbread(DB* db, char *fname)
 	cmd = strtok(l, " \t\n\r");
 	if (cmd == NULL)
 	    continue;
-	
-	if (strcmp(cmd, "game") == 0 || strcmp(cmd, "resource") == 0) {
-	    g = (struct game *)xmalloc(sizeof(struct game));
-	    g->name = g->description = g->cloneof[0] = g->cloneof[1]
-		= g->sampleof[0] = g->sampleof[1] = NULL;
-	    g->nrom = g->nsample = 0;
-	    g->nclone = g->nsclone = 0;
-	    nr = ns = 0;
-	}
-	else if (strcmp(cmd, "name") == 0) {
-	    g->name = xstrdup(GET_TOK());
-	}
-	else if (strcmp(cmd, "description") == 0) {
-	    p = strtok(NULL, "\r\n");
-	    p = strchr(p, '\"');
-	    if (p == NULL)
-		continue;
-	    q = strchr(p+1, '\"');
-	    if (q == NULL)
-		continue;
-	    *q = '\0';
-	    g->description = xstrdup(p+1);
-	}
-	else if (strcmp(cmd, "romof") == 0) {
- 	    g->cloneof[0] = xstrdup(GET_TOK());
-	}
-	else if (strcmp(cmd, "rom") == 0) {
-	    GET_TOK();
-	    if (strcmp(GET_TOK(), "name") != 0) {
-		/* XXX: error */
-		myerror(ERRZIP, "%d: expected token (name) not found",
-			lineno);
-		continue;
+
+	switch (state) {
+	case st_top:
+	    if (strcmp(cmd, "game") == 0 || strcmp(cmd, "resource") == 0) {
+		g = (struct game *)xmalloc(sizeof(struct game));
+		g->name = g->description = g->cloneof[0] = g->cloneof[1]
+		    = g->sampleof[0] = g->sampleof[1] = NULL;
+		g->nrom = g->nsample = 0;
+		g->nclone = g->nsclone = 0;
+		nr = ns = 0;
+		state = st_game;
 	    }
-	    r[nr].name = xstrdup(GET_TOK());
-	    p = GET_TOK();
-	    if (strcmp(p, "merge") == 0) {
-		r[nr].merge = xstrdup(GET_TOK());
-		p = GET_TOK();
+	    if (strcmp(cmd, "emulator") == 0)
+		state = st_prog;
+	    break;
+	    
+	case st_game:
+	    if (strcmp(cmd, "name") == 0) {
+		g->name = xstrdup(GET_TOK());
 	    }
-	    else
-		r[nr].merge = NULL;
-	    if (strcmp(p, "size") != 0) {
-		/* XXX: error */
-		myerror(ERRZIP, "%d: expected token (size) not found",
-			lineno);
-		continue;
+	    else if (strcmp(cmd, "description") == 0) {
+		g->description = get_string();
 	    }
-	    r[nr].size = strtol(GET_TOK(), NULL, 10);
-	    if (strcmp(GET_TOK(), "crc") != 0) {
-		/* XXX: error */
-		myerror(ERRZIP, "%d: expected token (crc) not found",
-			lineno);
-		continue;
+	    else if (strcmp(cmd, "romof") == 0) {
+		g->cloneof[0] = xstrdup(GET_TOK());
 	    }
-	    r[nr].crc = strtoul(GET_TOK(), NULL, 16);
-	    r[nr].where = ROM_INZIP;
-	    /* omit duplicates */
-	    for (j=0; j<nr; j++) {
-		if (romcmp(r+j, r+nr, 0) == ROM_OK) {
-		    --nr;
+	    else if (strcmp(cmd, "rom") == 0) {
+		GET_TOK();
+		if (strcmp(GET_TOK(), "name") != 0) {
+		    /* XXX: error */
+		    myerror(ERRZIP, "%d: expected token (name) not found",
+			    lineno);
 		    break;
 		}
-	    }
-	    nr++;
-	}
-	else if (strcmp(cmd, "sampleof") == 0)
-	    g->sampleof[0] = xstrdup(GET_TOK());
-	else if (strcmp(cmd, "sample") == 0) {
-	    s[ns].name = xstrdup(GET_TOK());
-	    s[ns].merge = NULL;
-	    s[ns].size = s[ns].crc = s[ns].where = 0;
-	    ns++;
-	}
-	else if (strcmp(cmd, ")") == 0) {
-	    g->nrom = nr;
-	    g->rom = r;
-	    g->nsample = ns;
-	    g->sample = s;
-
-	    if (g->cloneof[0])
-		if (strcmp(g->cloneof[0], g->name) == 0) {
-		    free(g->cloneof[0]);
-		    g->cloneof[0] = NULL;
+		r[nr].name = xstrdup(GET_TOK());
+		p = GET_TOK();
+		if (strcmp(p, "merge") == 0) {
+		    r[nr].merge = xstrdup(GET_TOK());
+		    p = GET_TOK();
 		}
-
-	    if (g->cloneof[0]) {
-		if (((parent=r_game(db, g->cloneof[0]))==NULL) || 
-		    lost(parent)) {
-		    if (nlost > lostmax - 2) {
-			lostmax += 100;
-			lostchildren = (char **)xrealloc(lostchildren,
-					lostmax*sizeof(char *));
+		else
+		    r[nr].merge = NULL;
+		if (strcmp(p, "size") != 0) {
+		    /* XXX: error */
+		    myerror(ERRZIP, "%d: expected token (size) not found",
+			    lineno);
+		    break;
+		}
+		r[nr].size = strtol(GET_TOK(), NULL, 10);
+		if (strncmp(GET_TOK(), "crc", 3) != 0) /* XXX: for raine */ {
+		    /* XXX: error */
+		    myerror(ERRZIP, "%d: expected token (crc) not found",
+			    lineno);
+		    break;
+		}
+		r[nr].crc = strtoul(GET_TOK(), NULL, 16);
+		r[nr].where = ROM_INZIP;
+		/* omit duplicates */
+		for (j=0; j<nr; j++) {
+		    if (romcmp(r+j, r+nr, 0) == ROM_OK) {
+			--nr;
+			break;
 		    }
-		    lostchildren[nlost++] = xstrdup(g->name);
-		    if (parent)
-			game_free(parent, 1);
 		}
-		else {
-		    familymeeting(db, parent, g);
-		    w_game(db, parent);
-		    game_free(parent, 1);
-		}
-		
+		nr++;
 	    }
-	    game_add(db, g);
-	    game_free(g, 0);
+	    else if (strcmp(cmd, "sampleof") == 0)
+		g->sampleof[0] = xstrdup(GET_TOK());
+	    else if (strcmp(cmd, "sample") == 0) {
+		s[ns].name = xstrdup(GET_TOK());
+		s[ns].merge = NULL;
+		s[ns].size = s[ns].crc = s[ns].where = 0;
+		ns++;
+	    }
+	    else if (strcmp(cmd, "archive") == 0) {
+		/* XXX: archive names */
+	    }
+	    else if (strcmp(cmd, ")") == 0) {
+		g->nrom = nr;
+		g->rom = r;
+		g->nsample = ns;
+		g->sample = s;
+		
+		if (g->cloneof[0])
+		    if (strcmp(g->cloneof[0], g->name) == 0) {
+			free(g->cloneof[0]);
+			g->cloneof[0] = NULL;
+		    }
+		
+		if (g->cloneof[0]) {
+		    if (((parent=r_game(db, g->cloneof[0]))==NULL) || 
+			lost(parent)) {
+			if (nlost > lostmax - 2) {
+			    lostmax += 100;
+			    lostchildren = (char **)xrealloc(lostchildren,
+							     lostmax
+							     *sizeof(char *));
+			}
+			lostchildren[nlost++] = xstrdup(g->name);
+			if (parent)
+			    game_free(parent, 1);
+		    }
+		    else {
+			familymeeting(db, parent, g);
+			w_game(db, parent);
+			game_free(parent, 1);
+		    }
+		    
+		}
+		game_add(db, g);
+		game_free(g, 0);
+
+		state = st_top;
+	    }
+	    break;
+	    
+	case st_prog:
+	    if (strcmp(cmd, "name") == 0)
+		prog_name = get_string();
+	    else if (strcmp(cmd, "version") == 0)
+		prog_version = get_string();
+	    break;
 	}
     }
 
@@ -239,9 +262,29 @@ dbread(DB* db, char *fname)
     qsort(games, ngames, sizeof(char *),
 	  (int (*)(const void *, const void *))strpcasecmp);
     w_list(db, "/list", games, ngames);
+    w_prog(db, prog_name, prog_version);
 
     free(lostchildren);
     return 0;
+}
+
+
+
+static char *
+get_string(void)
+{
+    char *p, *q;
+    
+    p = strtok(NULL, "\r\n");
+    p = strchr(p, '\"');
+    if (p == NULL)
+	return NULL;
+    q = strchr(p+1, '\"');
+    if (q == NULL)
+	return NULL;
+    *q = '\0';
+
+    return xstrdup(p+1);
 }
 
 
