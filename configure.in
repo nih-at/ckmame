@@ -40,4 +40,6 @@ fi
 AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
 AC_SUBST(LIBOBJS)
 
+AC_LINK_FILES(db-db.h db-db.c, dbl.h dbl.c)
+
 AC_OUTPUT(Makefile)

@@ -44,11 +44,6 @@ main(int argc, char **argv)
     tree->child = NULL;
     output_options = WARN_ALL;
 
-    if ((db=db_open("mame", 1, 0))==NULL)
-	myerror(ERRSTR, "can't open database `mame.db'");
-
-    nlist = r_list(db, "/list", &list);
-
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
@@ -74,11 +69,18 @@ main(int argc, char **argv)
 	    output_options |= WARN_CORRECT;
 	    break;
 	default:
-	    /* XXX: unknown option */
-	    break;
+	    myerror(ERRSTR, "unknown option");
+	    exit(1);
 	}
     }
     
+    if ((db=db_open("mame", 1, 0))==NULL) {
+	myerror(ERRSTR, "can't open database `mame.db'");
+	exit(1);
+    }
+
+    nlist = r_list(db, "/list", &list);
+
     if (optind == argc) {
 	for (i=0; i<nlist; i++)
 	    tree_add(db, tree, list[i]);
