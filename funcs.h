@@ -29,7 +29,7 @@ int strpcasecmp(char **sp1, char **sp2);
 char **delchecked(struct tree *t, int nclone, char **clone);
 void zip_free(struct zip *zip);
 int w_game(DB *db, struct game *game);
-long makencrc (char *zn, char *fn, int n);
+unsigned long makencrc (char *zn, char *fn, int n);
 int readinfosfromzip (struct rom **rompp, char *zipfile);
 
 #endif /* funcs.h */

@@ -14,7 +14,7 @@ char *prg;
 
 int output_options;
 
-#define OPTIONS "hVnsfbc"
+#define OPTIONS "hVnsfbcd"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
@@ -23,6 +23,7 @@ struct option options[] = {
     { "nosuperfluous", 0, 0, 's' }, /* -SUP */
     { "nofixable",     0, 0, 'f' }, /* -FIX */
     { "nobroken",      0, 0, 'b' }, /* -BROKEN */
+    { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
     { "correct",       0, 0, 'c' }, /* +CORRECT */
     { NULL,            0, 0, 0 },
 };
@@ -67,6 +68,9 @@ main(int argc, char **argv)
 	    break;
 	case 'c':
 	    output_options |= WARN_CORRECT;
+	    break;
+	case 'd':
+	    output_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
 	default:
 	    myerror(ERRSTR, "unknown option");

@@ -79,14 +79,17 @@ match(struct game *game, struct zip *zip, int zno, struct match *m)
 {
     int i, j;
     enum state st;
+    unsigned long crc;
     
     for (i=0; i<game->nrom; i++) {
 	for (j=0; j<zip->nrom; j++) {
 	    st = romcmp(zip->rom+j, game->rom+i);
-	    if ((st == ROM_LONG
-		 && (makencrc(zip->name, zip->rom[j].name, game->rom[i].size)
-		     == game->rom[i].crc)))
-		st = ROM_LONGOK;
+	    if (st == ROM_LONG) {
+		crc = makencrc(zip->name, zip->rom[j].name,
+			       game->rom[i].size);
+		if (crc == game->rom[i].crc)
+		    st = ROM_LONGOK;
+	    }
 	    
 	    if (st != ROM_UNKNOWN)
 		add_match(m+i, game->rom[i].where, zno, j, st);
@@ -147,28 +150,35 @@ matchcmp(struct match *m1, struct match *m2)
 void
 diagnostics(struct game *game, struct match *m, struct zip **zip)
 {
-    int i, a;
+    int i, alldead, allcorrect;
     warn_game(game->name);
 
     /* analyze result: roms */
-    a = 0;
+    alldead = allcorrect = 1;
     for (i=0; i<game->nrom; i++) {
 	if ((game->rom[i].where == ROM_INZIP)
-	    && (m[i].quality >= ROM_NAMERR)) {
-	    a = 1;
-	    break;
-	}
+	    && (m[i].quality >= ROM_NAMERR))
+	    alldead = 0;
+	if (!(m[i].where == game->rom[i].where
+	      && m[i].quality == ROM_OK))
+	    allcorrect = 0;
     }
 
-    if (!a && (output_options & WARN_MISSING)) {
+    if (alldead && game->nrom > 0 && (output_options & WARN_MISSING)) {
 	warn_rom(NULL, "not a single rom found");
+    }
+    else if (allcorrect && output_options & WARN_CORRECT) {
+	warn_rom(NULL, "correct");
     }
     else {
         for (i=0; i<game->nrom; i++) {
 	    switch (m[i].quality) {
 	    case ROM_UNKNOWN:
-		if (output_options & WARN_MISSING)
-		    warn_rom(game->rom+i, "missing");
+		if (output_options & WARN_MISSING) {
+		    if (game->rom[i].crc != 0
+			|| output_options & WARN_NO_GOOD_DUMP)
+			warn_rom(game->rom+i, "missing");
+		}
 		break;
 		
 	    case ROM_SHORT:
@@ -201,9 +211,18 @@ diagnostics(struct game *game, struct match *m, struct zip **zip)
 		    warn_rom(game->rom+i, "too long, truncating fixes (%d)",
 			     zip[m[i].zno]->rom[m[i].fno].size);
 		break;
-	    default:
-		if (output_options & WARN_CORRECT)
+		
+	    case ROM_OK:
+		if (game->rom[i].crc == 0) {
+		    if (output_options & WARN_NO_GOOD_DUMP)
+			warn_rom(game->rom+i, "exists");
+		}
+		else if (game->rom[i].where == m[i].zno &&
+			 (output_options & WARN_CORRECT))
 		    warn_rom(game->rom+i, "correct");
+		break;
+		
+	    default:
 		break;
 	    }
 	    
@@ -259,9 +278,14 @@ warn_rom(struct rom *r, char *fmt, ...)
 	gnamedone = 1;
     }
 
-    if (r)
-	printf("rom  %-12s  size %6ld  crc %.8lx: ",
-	       r->name, r->size, r->crc);
+    if (r) {
+	if (r->crc)
+	    printf("rom  %-12s  size %6ld  crc %.8lx: ",
+		   r->name, r->size, r->crc);
+	else
+	    printf("rom  %-12s  size %6ld  no good dump: ",
+		   r->name, r->size);
+    }
     else
 	printf("game %-39s: ", gname);
     

@@ -26,15 +26,15 @@ freeroms(struct rom *romp, int count)
 
 
 
-long
+unsigned long
 makencrc (char *zn, char *fn, int n)
 {
-    long crc;
+    unsigned long crc;
     unzFile zfp;
     char buf[BUFSIZE];
     int left;
     
-    if ((zfp=unzOpen(zfp))==NULL)
+    if ((zfp=unzOpen(zn))==NULL)
 	return -1;
 
     if (unzLocateFile(zfp, fn, 1)!=UNZ_OK) {
