@@ -1,3 +1,5 @@
+#include <sys/types.h>
+
 #include "types.h"
 #include "dbl.h"
 #include "funcs.h"

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <gdbm.h>
 
 #include "dbl.h"
@@ -38,7 +39,8 @@ db_close(DB* db)
 int
 db_insert_l(DB* db, DBT* key, DBT* value)
 {
-    return gdbm_store((GDBM_FILE)db, key, value, GDBM_REPLACE);
+    return gdbm_store((GDBM_FILE)db, *(datum *)key, *(datum *)value,
+		      GDBM_REPLACE);
 }
 
 
@@ -46,15 +48,15 @@ db_insert_l(DB* db, DBT* key, DBT* value)
 int
 db_lookup_l(DB* db, DBT* key, DBT* value)
 {
-    DBT v;
-    
-    v = gdbm_fetch((GDBM_FILE)db, key);
+    datum v;
 
-    if (v.data == NULL)
+    v = gdbm_fetch((GDBM_FILE)db, *(datum *)key);
+
+    if (v.dptr == NULL)
 	return 1;
 
-    value->data = v.data;
-    value->size = v.size;
+    value->data = v.dptr;
+    value->size = v.dsize;
 
     return 0;
 }
