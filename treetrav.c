@@ -290,7 +290,8 @@ zfile_new(char *name, int sample, char *parent)
 	else
 	    p++;
 	strcpy(p, name);
-	z->name = xstrdup(p);
+	strcat(p, ".zip");
+	z->name = xstrdup(b);
     }
     else {
 	z->name = findzip(name, sample);
