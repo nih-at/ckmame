@@ -192,7 +192,7 @@ tree_add_node(struct tree *tree, char *name, int check)
 		}
 		else if (cmp > 0) {
 		    t = tree_new(name, check);
-		    t->next = tree->next->next;
+		    t->next = tree->next;
 		    tree->next = t;
 		    return t;
 		}
