@@ -45,6 +45,7 @@ list_all_files(char *path, struct file_dir **fp)
     qsort(f, n, sizeeof(struct file_dir), fdcomp);
 
     *fp = (struct file_dir *)xmalloc(sizeof(struct file_dir)*n);
+    memcpy(*fp, f, sizeof(struct file_dir)*n);
     return n;
 }
 
