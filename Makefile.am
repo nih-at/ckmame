@@ -26,3 +26,9 @@ EXTRA_DIST=db-db.c db-db.h db-gdbm.c db-gdbm.h getopt.h fnmatch.h README.DOS \
 
 dist-hook:
 	rm -f $(distdir)/dbl-int.c $(distdir)/dbl-int.h
+
+update-man:
+	TEMPEXT=mk-$$$$; \
+	mdoc2man ckmame.mdoc > ckmame.$$TEMPEXT && diff -I NiH ckmame.$$TEMPEXT ckmame.man \
+		|| mv ckmame.$$TEMPEXT ckmame.man; \
+	rm -f ckmame.$$TEMPEXT
