@@ -50,7 +50,7 @@ dbread(DB* db, char *fname)
     char l[8192], *cmd, *p, *_P_;
     char *prog_name, *prog_version;
     enum parse_state state;
-    int i, j;
+    int i, j, deleted;
     /* XXX: every game is only allowed 1000 roms */
     struct rom r[1000], s[1000];
     struct game *g;
@@ -150,14 +150,35 @@ dbread(DB* db, char *fname)
 		}
 		r[nr].crc = strtoul(GET_TOK(), NULL, 16);
 		r[nr].where = ROM_INZIP;
+		r[nr].naltname = 0;
+		r[nr].altname = NULL;
+
 		/* omit duplicates */
+		deleted = 0;
 		for (j=0; j<nr; j++) {
 		    if (romcmp(r+j, r+nr, 0) == ROM_OK) {
-			--nr;
+			deleted = 1;
 			break;
 		    }
 		}
-		nr++;
+		if (!deleted) {
+		    for (j=0; j<nr; j++) {
+			if (romcmp(r+j, r+nr, 0) == ROM_NAMERR) {
+			    if (r[j].merge && r[nr].merge
+				&& !strcmp(r[j].merge, r[nr].merge)) {
+				rom_add_name(r+j, r[nr].name);
+				deleted = 1;
+				break;
+			    }
+			}
+		    }
+		}
+		if (deleted) {
+		    free(r[nr].merge);
+		    free(r[nr].name);
+		}
+		else
+		    nr++;
 	    }
 	    else if (strcmp(cmd, "sampleof") == 0)
 		g->sampleof[0] = xstrdup(GET_TOK());

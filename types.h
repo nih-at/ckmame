@@ -45,6 +45,8 @@ struct rom {
     unsigned long size, crc;
     enum state state;
     enum where where;
+    int naltname;
+    char **altname;
 };
     
 struct game {

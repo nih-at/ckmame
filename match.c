@@ -300,6 +300,8 @@ void
 warn_rom(struct rom *r, char *fmt, ...)
 {
     va_list va;
+    char buf[100];
+    int j;
 
     if (gnamedone == 0) {
 	printf("In game %s:\n", gname);
@@ -307,17 +309,16 @@ warn_rom(struct rom *r, char *fmt, ...)
     }
 
     if (r) {
+	printf("rom  %-12s  ", r->name);
 	if (r->size) {
 	    if (r->crc)
-		printf("rom  %-12s  size %7ld  crc %.8lx: ",
-		       r->name, r->size, r->crc);
+		sprintf(buf, "size %7ld  crc %.8lx: ", r->size, r->crc);
 	    else
-		printf("rom  %-12s  size %7ld  no good dump: ",
-		       r->name, r->size);
+		sprintf(buf, "size %7ld  no good dump: ", r->size);
 	}
 	else
-	    printf("rom  %-12s                            : ",
-		   r->name);
+	    sprintf(buf, "                          : ");
+	printf(buf);
     }
     else
 	printf("game %-40s: ", gname);
@@ -327,6 +328,18 @@ warn_rom(struct rom *r, char *fmt, ...)
     va_end(va);
 
     putc('\n', stdout);
+
+    if (r && r->naltname) {
+	for (j=0; j<r->naltname; j++) {
+	    printf("rom  %-12s  ", r->altname[j]);
+	    printf(buf);
+	    va_start(va, fmt);
+	    vprintf(fmt, va);
+	    va_end(va);
+
+	    printf(" (same as %s)\n", r->name);
+	}
+    }
 
     return;
 }

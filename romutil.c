@@ -31,6 +31,19 @@
 
 
 
+void
+rom_add_name(struct rom *r, char *name)
+{
+    r->altname = realloc(r->altname, (r->naltname+2)*sizeof(char *));
+
+    r->altname[r->naltname] = xstrdup(name);
+    r->altname[r->naltname+1] = NULL;
+
+    r->naltname++;
+
+    return;
+}
+
 enum state
 romcmp(struct rom *r1, struct rom *r2, int merge)
 {
@@ -67,7 +80,7 @@ romcmp(struct rom *r1, struct rom *r2, int merge)
 void
 game_free(struct game *g, int fullp)
 {
-    int i;
+    int i, j;
 
     free(g->name);
     free(g->description);
@@ -88,6 +101,9 @@ game_free(struct game *g, int fullp)
     for (i=0; i<g->nrom; i++) {
 	free(g->rom[i].name);
 	free(g->rom[i].merge);
+	for (j=0; j<g->rom[i].naltname; j++)
+	    free(g->rom[i].altname[j]);
+	free(g->rom[i].altname);
     }
     for (i=0; i<g->nsample; i++) {
 	free(g->sample[i].name);

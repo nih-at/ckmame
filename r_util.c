@@ -107,7 +107,7 @@ r__rom(DBT *v, void *r)
 {
     ((struct rom *)r)->name = r__string(v);
     ((struct rom *)r)->merge = r__string(v);
-    ((struct rom *)r)->naltname = r__array(&v, r__pstring,
+    ((struct rom *)r)->naltname = r__array(v, r__pstring,
 					   (void *)&((struct rom *)r)->altname,
 					   sizeof(char *));
     ((struct rom *)r)->size = r__ulong(v);

@@ -146,7 +146,7 @@ main(int argc, char **argv)
 int
 dump_game(DB *db, char *name)
 {
-    int i;
+    int i, j;
     struct game *game;
 
     if ((game=r_game(db, name)) == NULL) {
@@ -181,6 +181,17 @@ dump_game(DB *db, char *name)
 	    && strcmp(game->rom[i].name, game->rom[i].merge) != 0)
 	    printf(" (%s)", game->rom[i].merge);
 	putc('\n', stdout);
+	for (j=0; j < game->rom[i].naltname; j++) {
+	    printf("\t\tfile %-12s  size %6ld  crc %.8lx  in %s",
+		   game->rom[i].altname[j], game->rom[i].size,
+		   game->rom[i].crc, where_name[game->rom[i].where]);
+	    if (game->rom[i].merge) {
+		if (strcmp(game->rom[i].altname[j], game->rom[i].merge) != 0)
+		    printf(" (%s)", game->rom[i].merge);
+	    } else
+		printf(" (%s)", game->rom[i].name);
+	    putc('\n', stdout);
+	}
     }
     if (game->sampleof[0])
 	printf("Sampleof:\t%s\n", game->sampleof[0]);
