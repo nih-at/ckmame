@@ -7,7 +7,8 @@ unknown and unused files from the romsets.
 Berkeley db or GNU gdbm, as well as a current output of `mame
 -listinfo' (which you can find at the distribution site).  Please note
 that Berkeley db doesn't seem to work under Linux (tested with 2.4.14
-and 2.7.7).
+and 2.7.7).  Use `./configure --without-db' if you encounter problems
+with it.
 
   You can find zlib at ftp://ftp.cdrom.com/pub/infozip/zlib, and gdbm
 at your local GNU mirror
@@ -49,7 +50,7 @@ will fix your roms (or at least try to).  Unrecognized files in your
 rom sets will be saved in the directory `garbage' in the
 roms-directory, in zipfiles with the name of game.
 
-  Also included is 'dumpgame', which outputs rom and sample
+  Also included is `dumpgame', which outputs rom and sample
 information for all games specified on the command line (using the
 database).
 
