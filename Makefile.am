@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS=dist-bzip2
 
 LIBS=@DBLIBS@ @LIBZIP_LIBS@ @XML_LIBS@ @LIBS@
-AM_CFLAGS=@LIBZIP_CFLAGS@ @XML_CFLAGS@ @CFLAGS@
+AM_CFLAGS=@LIBZIP_CFLAGS@ @XML_CPPFLAGS@ @CFLAGS@
 
 SUBDIRS=regress
 
@@ -18,7 +18,7 @@ mkmamedb_SOURCES=mkmamedb.c dbl.c dbl-int.c parse.c parse-cm.c parse-xml.c \
 	error.c malloc.c w_util.c r_game.c r_util.c util.c romutil.c hashes.c
 dumpgame_SOURCES=dumpgame.c error.c malloc.c r_game.c r_util.c r_list.c r_prog.c \
 	dbl.c dbl-int.c util.c romutil.c hashes.c
-noinst_HEADERS=error.h types.h w.h funcs.h r.h mkmamedb.h dbl.h \
+noinst_HEADERS=error.h types.h w.h funcs.h r.h dbl.h \
 	dbh.h util.h xmalloc.h romutil.h chd.h parse.h
 
 DISTCLEANFILES=	ckmame.1 
