@@ -1,5 +1,5 @@
 /*
-  $NiH: romutil.c,v 1.15 2003/03/16 10:21:35 wiz Exp $
+  $NiH: romutil.c,v 1.16 2003/09/12 23:18:52 wiz Exp $
 
   romutil.c -- miscellaneous utility functions for rom handling
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -55,8 +55,8 @@ romcmp(struct rom *r1, struct rom *r2, int merge)
 	if (r2->size == 0)
 	    return ROM_OK;
 	if (r1->size == r2->size) {
-	    if (r1->crc == r2->crc || r2->crc == 0 || r1->crc == 0
-		|| r1->flags == FLAGS_NODUMP || r2->flags == FLAGS_NODUMP)
+	    if (r1->crc == r2->crc || r1->flags == FLAGS_NODUMP
+		|| r2->flags == FLAGS_NODUMP)
 		return ROM_OK;
 	    else if ((((r1->crc ^ r2->crc) & 0xffffffff) == 0xffffffff)
 		     || r1->flags == FLAGS_BADDUMP || r2->flags == FLAGS_BADDUMP)

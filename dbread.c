@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.28 2003/03/16 10:21:33 wiz Exp $
+  $NiH: dbread.c,v 1.29 2003/09/12 23:18:51 wiz Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -208,6 +208,10 @@ dbread(DB* db, char *fname)
 		      myerror(ERRFILE, "%d: ignoring token `%s'", lineno, p);
 		    */
 		}
+
+		/* CRC == 0 was old way of indication no-good-dumps */
+		if (r[nr].crc == 0)
+		    r[nr].flags = FLAGS_NODUMP;
 
 		/* omit duplicates */
 		deleted = 0;
