@@ -9,6 +9,7 @@ test -z "$CFLAGS" && CFLAGS='-Wall -g' auto_cflags=1
 AC_PROG_CC
 AC_PROG_RANLIB
 
+
 AC_ARG_WITH(zlib,
     [  --with-zlib=PREFIX  specify prefix for ZLIB library],,
     with_zlib=yes)
@@ -39,8 +40,36 @@ then
     AC_ERROR([ZLIB version too old, please install at least v1.1.2])
 fi
 
+
 # find usable db library
 db=none
+
+AC_ARG_WITH(gdbm,
+    [  --with-gdbm=PREFIX  specify prefix for GDBM library],,
+	 with_gdbm=unspec)
+
+if test "$with_gdbm" != "unspec"
+then
+    if test -f "$with_gdbm"/gdbm.h
+    then
+	# PREFIX is to uninstalled version in distribution directory
+	CFLAGS="$CFLAGS -I$with_gdbm"
+	LDFLAGS="$LDFLAGS -L$with_gdbm"
+    else if test -f "$with_gdbm"/include/gdbm.h
+    then
+	# PREFIX is installation prefix
+	CFLAGS="$CFLAGS -I$with_gdbm/include"
+	LDFLAGS="$LDFLAGS -L$with_gdbm/lib"
+    fi
+    fi
+fi
+
+AC_CHECK_LIB(gdbm, gdbm_open, [db=gdbm; LIBS="-lgdbm $LIBS"])
+if test "$db" = "none"
+then
+    AC_ERROR([gdbm not found, please specify a path])
+fi
+
 
 AC_CHECK_FUNCS(dbopen, [db=db])
 if test "$db" = "none"
