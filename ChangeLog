@@ -3,14 +3,14 @@
 	* libzip/zip_replace_zip.c (read_part): fix typo: pass correct
 	length to zip_read()
 
-2001-10-27  Wiz  <wiz@danbala.tuwien.ac.at>
+2001-10-27  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* dbread.c (dbread): add support for MESS (recognize "machine")
 
 	* mkmamedb.c (main): sync dbname resolution with ckmame and
 	dumpgame
 
-2001-10-20  Wiz  <wiz@danbala.tuwien.ac.at>
+2001-10-20  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* dbl.c (ddb_name): only free() stuff that was allocated
 	* mkmamedb.c (main): only free() stuff that was allocated
@@ -24,21 +24,21 @@
 	* libzip/zip_open.c (_zip_readcdir): Work around some broken zip
 	files.
 
-2001-08-20  Wiz  <wiz@danbala.tuwien.ac.at>
+2001-08-20  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* dbl.c (ddb_lookup): only free data we allocated
 
-2001-05-16  Wiz  <wiz@hiro.li>
+2001-05-16  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* configure.in, ltconfig, ltmain.sh: update libtool, and repair
 	libz test for NetBSD-current (no OF macro)
 	* ltcf-c.sh: new file for above
 
-2000-11-05  Wiz  <wiz@danbala.tuwien.ac.at>
+2000-11-05  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* libzip/Makefile.am: install public header file
 
-2000-11-04  Wiz  <wiz@danbala.tuwien.ac.at>
+2000-11-04  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* Makefile.am, configure.in, libzip/Makefile.am,
 	libzip/tests/Makefile.am: make libzip shared by using libtool
@@ -56,11 +56,11 @@
 	in superflouos.c
 	* superflouos.c: new program
 
-1999-10-06  Wiz  <wiz@danbala.tuwien.ac.at>
+1999-10-06  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* TODO, README.DOS, NEWS: updated
 
-1999-10-05  Wiz  <wiz@danbala.tuwien.ac.at>
+1999-10-05  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* treetrav.c (zfile_new): zfile_new fixed, now returns useful zip
 	names, instead of just the name of the game
@@ -70,12 +70,12 @@
 	* treetrav.c (tree_child_traverse): close zip files created in
 	fix_do (all_z[0]).
 
-1999-10-05  Wiz  <wiz@danbala.tuwien.ac.at>
+1999-10-05  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* libzip/zip_close.c (zip_close): make zip_close work under DOS,
 	free zip structure for temp file
 
-1999-09-27  Wiz  <wiz@danbala.tuwien.ac.at>
+1999-09-27  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* romutil.c (romcmp): removed comment for already fixed behaviour
 
