@@ -1,3 +1,22 @@
+2004-02-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* util.c (findfile): rename from findzip, allow to find disk
+	images; adapt callers.
+
+	* types.h (struct rom, struct disk): add field crctypes.
+	* dbl.h: bump database format version
+	* w_game.c (w__rom, w__disk): adapt.
+	* r_game.c (r__rom, r__disk): adapt.
+	* chd-supp.c (readinfosfromchd): fill in crctypes.
+	* dbread.c (dbread): fill in crctypes.
+	* dumpgame.c (dump_game): use crctypes.
+	* util.h: garbage collect IS_NUL.
+
+	* match.c (warn_disk, check_disks, disk_match_free): new
+	functions.
+	* match.c (diagnostics): analyze disks.
+	* treetrav.c (tree_child_traverse): check disks.
+	
 2004-01-29  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* chd-supp.c (readinfosfromchd): new function.

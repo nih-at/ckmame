@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.19 2003/03/16 10:21:35 wiz Exp $
+  $NiH: util.c,v 1.20 2004/01/27 23:04:10 wiz Exp $
 
   util.c -- utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -42,8 +42,6 @@
 #define DEFAULT_ROMDIR "."
 #endif
 
-char _nul_mem[256];
-
 char *rompath[MAXROMPATH] = { NULL };
 static int rompath_init = 0;
 
@@ -52,7 +50,7 @@ void init_rompath(void);
 
 
 char *
-findzip(char *name, int sample)
+findfile(char *name, enum filetype what)
 {
     int i;
     char b[8192];
@@ -62,8 +60,11 @@ findzip(char *name, int sample)
 	init_rompath();
 
     for (i=0; rompath[i]; i++) {
-	sprintf(b, "%s/%s/%s.zip",
-		rompath[i], (sample ? "samples" : "roms"), name);
+	sprintf(b, "%s/%s/%s%s",
+		rompath[i],
+		(what == TYPE_SAMPLE ? "samples" : "roms"),
+		name,
+		(what == TYPE_DISK ? "" : ".zip"));
 	if (stat(b, &st) == 0)
 	    return xstrdup(b);
     }

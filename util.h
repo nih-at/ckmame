@@ -2,7 +2,7 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.9 2003/03/16 10:21:35 wiz Exp $
+  $NiH: util.h,v 1.10 2004/01/27 23:04:10 wiz Exp $
 
   util.h -- miscellaneous utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -25,13 +25,11 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#define IS_NUL(m, l)	(memcmp((m), _nul_mem, (l)) == 0)
-
-extern char _nul_mem[];
+#include "types.h"
 
 typedef int (*cmpfunc)(const void *, const void *);
 
-char *findzip(char *name, int sample);
+char *findfile(char *name, enum filetype what);
 
 void init_rompath(void);
 

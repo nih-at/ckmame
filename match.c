@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.25 2003/09/13 00:36:33 wiz Exp $
+  $NiH: match.c,v 1.26 2003/10/01 16:22:40 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -46,6 +46,7 @@ int matchcmp(struct match *m1, struct match *m2);
 void warn_game(char *name);
 void warn_rom(struct rom *rom, char *fmt, ...);
 void warn_file(struct rom *r, char *fmt, ...);
+void warn_disk(struct disk *d, char *fmt, ...);
 
 static char *zname[] = {
     "zip",
@@ -192,7 +193,8 @@ matchcmp(struct match *m1, struct match *m2)
 
 
 void
-diagnostics(struct game *game, struct match *m, struct zfile **zip)
+diagnostics(struct game *game, struct match *m, struct disk_match *md,
+	    struct zfile **zip)
 {
     int i, alldead, allcorrect, allowndead, hasown;
     warn_game(game->name);
@@ -315,6 +317,40 @@ diagnostics(struct game *game, struct match *m, struct zfile **zip)
 			  game->clone[zip[0]->rom[i].where-1]);
 	}
     }
+
+    /* analyze result: disks */
+
+    for (i=0; i<game->ndisk; i++) {
+	switch (md[i].quality) {
+	case ROM_UNKNOWN:
+	    if (output_options & WARN_MISSING)
+		warn_disk(game->disk+i, "missing");
+	    break;
+		
+	case ROM_CRCERR:
+	    if (output_options & WARN_WRONG_CRC) {
+		/* XXX: display checksum(s) */
+		warn_disk(game->disk+i, "wrong checksum");
+	    }
+	    break;
+
+	case ROM_NOCRC:
+	    if (output_options & WARN_WRONG_CRC) {
+		/* XXX: display checksum(s) */
+		warn_disk(game->disk+i, "no common checksum types");
+	    }
+	    break;
+	    
+
+	case ROM_OK:
+	    if (output_options & WARN_CORRECT)
+		warn_disk(game->disk+i, "correct");
+	    break;
+		
+	default:
+	    break;
+	}
+    }
 }
 
 
@@ -412,6 +448,35 @@ warn_file(struct rom *r, char *fmt, ...)
 
 
 void
+warn_disk(struct disk *d, char *fmt, ...)
+{
+    va_list va;
+
+    if (gnamedone == 0) {
+	printf("In game %s:\n", gname);
+	gnamedone = 1;
+    }
+
+    printf("disk %-12s  ", d->name);
+    if (d->crctypes & GOT_SHA1)
+	printf("sha1 %s: ", bin2hex(d->sha1, sizeof(d->sha1)));
+    else if (d->crctypes & GOT_MD5)
+	printf("md5 %s         : ", bin2hex(d->sha1, sizeof(d->sha1)));
+    else
+	printf("                         : ");
+    
+    va_start(va, fmt);
+    vprintf(fmt, va);
+    va_end(va);
+
+    putc('\n', stdout);
+
+    return;
+}
+
+
+
+void
 match_free(struct match *m, int n)
 {
     struct match *mm;
@@ -427,5 +492,60 @@ match_free(struct match *m, int n)
 	    free(mm);
 	}
 
+    free(m);
+}
+
+
+
+struct disk_match *
+check_disks(struct game *game)
+{
+    struct disk_match *m;
+    int i;
+
+    if (game->ndisk == 0)
+	return NULL;
+
+    m = (struct disk_match *)xmalloc(sizeof(struct disk_match)*game->ndisk);
+    
+    for (i=0; i<game->ndisk; i++) {
+	m[i].d.name = findfile(game->disk[i].name, TYPE_DISK);
+	m[i].d.crctypes = 0;
+
+	if (m[i].d.name == NULL || readinfosfromchd(&m[i].d) < 0) {
+	    m[i].quality = ROM_UNKNOWN;
+	    continue;
+	}
+
+	if ((game->disk[i].crctypes & m[i].d.crctypes) == 0)
+	    m[i].quality = ROM_NOCRC;
+	else {
+	    m[i].quality = ROM_OK;
+	    
+	    if (game->disk[i].crctypes & m[i].d.crctypes & GOT_MD5) {
+		if (memcmp(game->disk[i].md5, m[i].d.md5,
+			   sizeof(m[i].d.md5)) != 0)
+		    m[i].quality = ROM_CRCERR;
+	    }
+	    if (game->disk[i].crctypes & m[i].d.crctypes & GOT_SHA1) {
+		if (memcmp(game->disk[i].sha1, m[i].d.sha1,
+			   sizeof(m[i].d.sha1)) != 0)
+		    m[i].quality = ROM_CRCERR;
+	    }
+	}
+    }
+
+    return m;
+}
+
+
+
+void
+disk_match_free(struct disk_match *m, int n)
+{
+    int i;
+    
+    for (i=0; i<n; i++)
+	free(m[i].d.name);
     free(m);
 }

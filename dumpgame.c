@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.27 2004/01/27 23:04:08 wiz Exp $
+  $NiH: dumpgame.c,v 1.28 2004/01/27 23:30:32 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -204,7 +204,7 @@ dump_game(DB *db, char *name)
     for (i=0; i<game->nrom; i++) {
 	printf("\t\tfile %-12s  size %7ld  crc %.8lx",
 	       game->rom[i].name, game->rom[i].size, game->rom[i].crc);
-	if (!IS_NUL(game->rom[i].sha1, sizeof(game->rom[i].sha1)))
+	if (game->rom[i].crctypes & GOT_SHA1)
 	    printf("  sha1 %s", bin2hex(game->rom[i].sha1, sizeof(game->rom[i].sha1)));
 	printf("  flags %s  in %s",
 	       flags_name[game->rom[i].flags], where_name[game->rom[i].where]);
@@ -253,9 +253,9 @@ dump_game(DB *db, char *name)
 	printf("Disks:");
 	for (i=0; i<game->ndisk; i++) {
 	    printf("\t\tdisk %-12s", game->disk[i].name);
-	    if (!IS_NUL(game->disk[i].sha1, sizeof(game->disk[i].sha1)))
+	    if (game->disk[i].crctypes & GOT_SHA1)
 		printf("  sha1 %s", bin2hex(game->disk[i].sha1, sizeof(game->disk[i].sha1)));
-	    if (!IS_NUL(game->disk[i].md5, sizeof(game->disk[i].md5)))
+	    if (game->disk[i].crctypes & GOT_MD5)
 		printf("  md5 %s", bin2hex(game->disk[i].md5, sizeof(game->disk[i].md5)));
 	    putc('\n', stdout);
 	}

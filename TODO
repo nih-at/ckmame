@@ -1,14 +1,22 @@
+use crctypes for roms
+use NOCRC for samples
+
+mkmamedb: no error message for missing newline in last line
+
+source cleanup: split into appropriate files
+
 New in 0.78u1: nodump sets
 
 mkmamedb: correct inconsistencies in input db (parent not found)
 
-add md5/sha1 support and check 'disks' (see latest mame db file in /pub/nih/ckmame for examples)
+games w/o roms: output `correct' with -c
+
+add md5/sha1 support for roms
+implement full testing (calculate and check all checksum types)
 
 init rom structure for files from zips
 merge superfluous into ckmame
-add option to completely test zip files (including 'unzip -t' replacement)
 fix 'should be in cloneof, is in zip'
-fix fixing PONG -- dumps core if pong.zip contains a file (pong has no roms)
 documentation
 use return value of w_game
 option to force fixing parents
@@ -16,12 +24,8 @@ mame.db location
 ROMPATH autoconf
 add error messages in ckmame with the zips (e.g. can't create file etc.)
 complete raine support (multiple archive names)
-handle following: zip file only contains unknown roms --
-  reports only that game is missing, doesn't tell that zip contains
-  unknown files
 
 get roms from a different location to fix sets
 
-create complete sets, and full-merge(?)
 fix all XXXs
 

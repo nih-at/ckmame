@@ -1,5 +1,5 @@
 /*
-  $NiH: w_game.c,v 1.15 2004/01/27 23:04:10 wiz Exp $
+  $NiH: w_game.c,v 1.16 2004/01/27 23:30:33 wiz Exp $
 
   w_game.c -- write game strcut to db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -84,6 +84,7 @@ w__disk(DBT *v, void *vd)
     d = (struct disk *)vd;
 
     w__string(v, d->name);
+    w__ushort(v, d->crctypes);
     w__mem(v, d->sha1, sizeof(d->sha1));
     w__mem(v, d->md5, sizeof(d->md5));
 }
@@ -101,6 +102,7 @@ w__rom(DBT *v, void *vr)
     w__string(v, r->merge);
     w__array(v, w__pstring, r->altname, sizeof(char *), r->naltname);
     w__ulong(v, r->size);
+    w__ushort(v, r->crctypes);
     w__ulong(v, r->crc);
     w__mem(v, r->sha1, sizeof(r->sha1));
     w__ushort(v, r->flags);

@@ -1,5 +1,5 @@
 /*
-  $NiH: treetrav.c,v 1.18 2002/06/06 09:26:59 dillo Exp $
+  $NiH: treetrav.c,v 1.19 2003/03/16 10:21:35 wiz Exp $
 
   treetrav.c -- traverse tree of games to check
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -67,6 +67,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
     struct zfile *child_z, *me_z, *all_z[3];
     struct game *child_g, *me_g;
     struct match *child_m, *me_m;
+    struct disk_match *me_d;
 
     me_z = zfile_new(tree->name, sample, NULL);
 
@@ -133,15 +134,23 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 	all_z[2] = gparent_z;
 
 	merge_match(me_m, me_g->nrom, all_z, parent_no, gparent_no);
+
+	/* check disks */
+	if (!sample) {
+	    me_d = check_disks(me_g);
+	}
+
 	if (fix_do || fix_print) {
 	    fix_game(me_g, all_z, me_m);
 	    me_z = all_z[0]; /* fix_do opens file if need be */
 	}
 
 	/* write warnings/errors for me */
-	diagnostics(me_g, me_m, all_z);
+	diagnostics(me_g, me_m, me_d, all_z);
+	
 	/* clean up */
 	match_free(me_m, me_g->nrom);
+	disk_match_free(me_d, me_g->ndisk);
 	game_free(me_g, 1);
     }
 
@@ -296,7 +305,7 @@ zfile_new(char *name, int sample, char *parent)
 	z->name = xstrdup(b);
     }
     else {
-	z->name = findzip(name, sample);
+	z->name = findfile(name, sample ? TYPE_SAMPLE : TYPE_ROM);
 	if (z->name == NULL) {
 	    free(z);
 	    return NULL;

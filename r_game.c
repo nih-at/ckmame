@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.16 2004/01/27 23:04:09 wiz Exp $
+  $NiH: r_game.c,v 1.17 2004/01/27 23:30:32 wiz Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -81,6 +81,7 @@ r__disk(DBT *v, void *vd)
     d = (struct disk *)vd;
 
     d->name = r__string(v);
+    d->crctypes = r__ushort(v);
     r__mem(v, d->sha1, sizeof(d->sha1));
     r__mem(v, d->md5, sizeof(d->md5));
 }
@@ -98,6 +99,7 @@ r__rom(DBT *v, void *vr)
     r->merge = r__string(v);
     r->naltname = r__array(v, r__pstring, (void *)&r->altname, sizeof(char *));
     r->size = r__ulong(v);
+    r->crctypes = r__ushort(v);
     r->crc = r__ulong(v);
     r__mem(v, r->sha1, sizeof(r->sha1));
     r->flags = r__ushort(v);

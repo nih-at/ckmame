@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.31 2004/01/27 23:04:08 wiz Exp $
+  $NiH: dbread.c,v 1.32 2004/01/27 23:30:32 wiz Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -160,6 +160,7 @@ dbread(DB* db, char *fname)
 		}
 		r[nr].name = xstrdup(gettok(&l));
 		r[nr].size = 0;
+		r[nr].crctypes = 0;
 		r[nr].crc = 0;
 		memset(r[nr].sha1, 0, sizeof(r[nr].sha1));
 		r[nr].merge = NULL;
@@ -178,6 +179,7 @@ dbread(DB* db, char *fname)
 			    break;
 			}
 			r[nr].crc = strtoul(p, NULL, 16);
+			r[nr].crctypes = GOT_CRC;
 		    } else if (strcmp(p, "flags") == 0) {
 			if ((p=gettok(&l)) == NULL) {
 			    /* XXX: error */
@@ -211,6 +213,7 @@ dbread(DB* db, char *fname)
 				    lineno);
 			    break;
 			}
+			r[nr].crctypes = GOT_SHA1;
 		    }
 		    else if (strcmp(p, "size") == 0) {
 			if ((p=gettok(&l)) == NULL) {
@@ -266,6 +269,7 @@ dbread(DB* db, char *fname)
 		    break;
 		}
 		d[nd].name = xstrdup(gettok(&l));
+		d[nd].crctypes = 0;
 		memset(d[nd].sha1, 0, sizeof(d[nd].sha1));
 		memset(d[nd].md5, 0, sizeof(d[nd].md5));
 
@@ -284,6 +288,7 @@ dbread(DB* db, char *fname)
 				    lineno);
 			    break;
 			}
+			d[nd].crctypes |= GOT_SHA1;
 		    }
 		    else if (strcmp(p, "md5") == 0) {
 			if ((p=gettok(&l)) == NULL) {
@@ -298,6 +303,7 @@ dbread(DB* db, char *fname)
 				    lineno);
 			    break;
 			}
+			d[nd].crctypes |= GOT_MD5;
 		    }
 		    /*
 		      else

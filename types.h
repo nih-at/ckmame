@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.18 2003/09/12 23:18:52 wiz Exp $
+  $NiH: types.h,v 1.19 2004/01/27 23:04:09 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -56,6 +56,11 @@
 
 
 
+/* what information is available */
+#define GOT_CRC		1
+#define GOT_MD5		2
+#define GOT_SHA1	4
+
 enum flags {
     FLAGS_OK, FLAGS_BADDUMP, FLAGS_NODUMP
 };
@@ -66,12 +71,17 @@ enum where {
 
 enum state {
     ROM_0,
-    ROM_UNKNOWN, ROM_SHORT, ROM_LONG, ROM_CRCERR,
+    ROM_UNKNOWN, ROM_SHORT, ROM_LONG, ROM_CRCERR, ROM_NOCRC,
     ROM_NAMERR, ROM_LONGOK, ROM_BESTBADDUMP, ROM_OK, ROM_TAKEN
+};
+
+enum filetype {
+    TYPE_ROM, TYPE_SAMPLE, TYPE_DISK
 };
 
 struct rom {
     char *name, *merge;
+    int crctypes;
     unsigned long size, crc;
     char sha1[20];
     enum flags flags;
@@ -83,6 +93,7 @@ struct rom {
 
 struct disk {
     char *name;
+    int crctypes;
     char md5[16];
     char sha1[20];
 };
@@ -111,6 +122,11 @@ struct match {
     int fno;
     enum state quality;
     int offset;              /* offset of correct part if ROM_LONGOK */
+};
+
+struct disk_match {
+    struct disk d;
+    enum state quality;
 };
 
 struct zfile {
