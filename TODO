@@ -1,6 +1,8 @@
 automatically fix renamed disks
+automatically fix superfluous zips that have been renamed
 fix mkmamedb-xmame.sh for removal of -li
 add option to check integrity for roms only (not for disks, they take forever)
+integrity check: remember which disks have already been checked (only check once each)
 support disks with parents
 add md5 and sha1 replacement functions
 regression tests for disk: different crc types, version 2
@@ -8,6 +10,7 @@ regression tests for disk: different crc types, version 2
 use ROM_NOCRC for samples match quality
 0.85.1: "bad dump" is reported as missing with -d
 "ls ./roms: No such file or directory" if roms/ does not exist
+-cd: do not print a line for each rom that is correct in sets that have nodump roms
 
 mkmamedb: no error message for missing newline in last line
 
