@@ -81,7 +81,7 @@ static char *where_name[] = {
 int
 main(int argc, char **argv)
 {
-    int i, j, optind, nlist, found, first;
+    int i, j, nlist, found, first;
     char *dbname;
     DB *db;
     char **list;
