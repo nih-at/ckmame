@@ -9,6 +9,8 @@ TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}"
 TESTCASES=	baddump.test \
 		disk-mis.test \
 		disk-noext.test \
+		disk-nogood.test \
+		disk-nogoodmis.test \
 		disk-ok.test \
 		disk-wrong.test \
 		double.test \

@@ -74,4 +74,13 @@ game (
 	year 2004
 )
 
+game (
+	name disk-nogood
+	description "1-4 with no good dump disk"
+	manufacturer "synth"
+	year 2004
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	disk ( name 108-5 )
+)
+
 END

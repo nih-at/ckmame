@@ -1,4 +1,3 @@
-mark disks without any hashes as no good dump
 support disks with parents
 add md5 and sha1 replacement functions
 regression tests for disk: different crc types, version 2

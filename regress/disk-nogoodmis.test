@@ -1,0 +1,8 @@
+# test single-rom game with no good dump disk, disk missing
+# $NiH: disk-mis.test,v 1.1 2004/04/28 16:59:51 dillo Exp $
+return 0
+args -FKULivc disk-nogood
+rom 1-4-ok.zip disk-nogood.zip 1-4-ok.zip
+stdout In game disk-nogood:
+stdout game disk-nogood                             : correct
+stdout disk 108-5         no good dump              : missing

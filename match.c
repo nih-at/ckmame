@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.33 2004/04/26 21:29:19 wiz Exp $
+  $NiH: match.c,v 1.34 2004/04/26 22:32:51 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -326,7 +326,9 @@ diagnostics(struct game *game, struct match *m, struct disk_match *md,
 	for (i=0; i<game->ndisk; i++) {
 	    switch (md[i].quality) {
 	    case ROM_UNKNOWN:
-		if (output_options & WARN_MISSING)
+		if ((game->disk[i].hashes.types != 0
+		     && (output_options & WARN_MISSING))
+		    || (output_options & WARN_NO_GOOD_DUMP))
 		    warn_disk(game->disk+i, "missing");
 		break;
 		
@@ -338,7 +340,10 @@ diagnostics(struct game *game, struct match *m, struct disk_match *md,
 		break;
 		
 	    case ROM_NOCRC:
-		if (output_options & WARN_WRONG_CRC) {
+		if (game->disk[i].hashes.types == 0
+		    && (output_options & WARN_NO_GOOD_DUMP))
+		    warn_disk(game->disk+i, "exists");
+		else if (output_options & WARN_WRONG_CRC) {
 		    /* XXX: display checksum(s) */
 		    warn_disk(game->disk+i, "no common checksum types");
 		}
@@ -470,7 +475,7 @@ warn_disk(struct disk *d, char *fmt, ...)
 	printf("md5 %s         : ",
 	       bin2hex(d->hashes.md5, sizeof(d->hashes.md5)));
     else
-	printf("                         : ");
+	printf("no good dump              : ");
     
     va_start(va, fmt);
     vprintf(fmt, va);
