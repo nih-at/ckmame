@@ -1,0 +1,5 @@
+# testing non-existing game
+return 0
+args nosuchgame
+error game `nosuchgame' unknown
+

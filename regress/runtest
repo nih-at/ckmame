@@ -1,0 +1,247 @@
+#!/bin/sh
+
+#  $NiH: runtest,v 1.6 2002/10/16 13:41:17 dillo Exp $
+#
+#  runtest -- run regression tests
+#  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
+#
+#  This file is part of ckmame, a program to check rom sets for MAME.
+#  The authors can be contacted at <nih@giga.or.at>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+# runtest TESTNAME
+#
+# files: 
+#   TESTNAME.test: test scenario
+#
+# test scenario:
+#    Lines beginning with # are comments.
+#
+#    The following commands are recognized; return and args must
+#    appear exactly once, the others are optional.
+#
+#	retrun RET
+#	    RET is the expected exit code
+#
+#	args ARGS
+#	    run ckmame with command line arguments ARGS
+#	
+#	stdout TEXT
+#	    img2pes is expected print TEXT to stdout.  If multiple
+#	    stdout commands are used, the messages are expected in
+#	    the order given. 
+#   
+#	error TEXT
+#	    img2pes is expected to produce the error message TEXT.  If
+#	    multiple error commands are used, the messages are
+#	    expected in the order given.
+#
+#	rom TEST IN OUT
+#	    link zip file IN into roms diretory with name TEST, check
+#	    against OUT after ckmame has run.
+#
+#	garbage CREATED-FILE EXPECTED-FILE
+#	    check that CREATED-FILE has been created in garbage
+#	    directory and equals EXPECTED-FILE.
+#
+#	XXX: allow for creation of rom files and existing garbage files
+#
+# exit status
+#	runtest uses the following exit codes:
+#	    0: test passed
+#	    1: test failed
+#	    2: other error
+#	   77: test was skipped
+# 
+# environment variables:
+#   VERBOSE: if set, be more verbose (e. g., output diffs)
+#   NOCLEANUP: if set, don't delete directory test is run in
+
+die() {
+	echo "$0: $*" >&2;
+	cleanup;
+	exit 2;
+}
+
+fail() {
+	if [ ! -z "${VERBOSE}" ]
+	then
+	    echo "${TEST} -- FAILED: $*";
+	fi;
+	cleanup;
+	exit 1;
+}
+
+skip() {
+	if [ ! -z "${VERBOSE}" ]
+	then
+		echo "${TEST} -- skipped: $*";
+	fi;
+	cleanup;
+	exit 77;
+}
+
+succeed() {
+	if [ ! -z "${VERBOSE}" ]
+	then
+		echo "${TEST} -- passed";
+	fi
+	cleanup;
+	exit 0;
+}
+
+cleanup() {
+	cd ..;
+	if [ -z "${NOCLEANUP}" ]
+	then
+		rm -r ${DIR};
+	fi
+}
+
+checkfile() {
+    if [ ! -f "$2" ]
+    then
+	fail "missing output file: '$2'"
+    else
+	if [ ! -f "$1" ]
+	then
+	    die "cannot find input file $1"
+	fi
+	
+	diff "$1" "$2" > /dev/null
+	if [ $? -ne 0 ]
+	then
+	    if [ ! -z "${VERBOSE}" ]
+	    then
+		diff -u "$1" "$2"
+	    fi
+	    fail "$3"
+	fi
+    fi
+}
+
+test_empty() {
+    if [ ! -z "$1" ]
+    then
+	die "directive $2 appeared twice in test file"
+    fi
+}
+
+test_set() {
+    if [ -z "$1" ]
+    then
+	die "required directive $2 missing in test file"
+    fi
+}
+
+TEST=`echo $1 | sed 's/\.test$//'`
+shift
+
+DIR=${TEST}.d$$
+if [ -z "${srcdir}" ]
+then
+    srcdir=..
+else
+	# XXX: fix for absolute srcdir?
+	srcdir=../${srcdir}
+fi
+
+if [ -z "${PROGRAM}" ]
+then
+    PROGRAM=../../ckmame
+fi
+
+# XXX: set up trap to cleanup
+
+mkdir ${DIR} || ( die "cannot create test directory ${DIR}" )
+cd ${DIR} || ( die "cannot cd to test directory ${DIR}" )
+
+{
+
+RET=''
+ARGS=''
+FILES=''
+
+mkdir roms
+
+while read cmd arg
+do
+  case $cmd in
+  #*) ;;
+  return)
+    test_empty "${RET}" return
+    RET="$arg";;
+  args)
+    test_empty "${ARGS}" args
+    ARGS="-D mamedb $arg";;
+  rom)
+    set $arg
+    # XXX: check that $1 exists
+    cp "${srcdir}/$1" "roms/$2"
+    FILES="${FILES} ${srcdir}/$3!roms/$2";;
+  garbage)
+    set $arg
+    FILES="${FILES} ${srcdir}/$2!garbage/$1";;
+  stdout)
+    echo "$arg" >> stdout;;
+  error)
+    echo "ckmame: $arg" >> errors
+  esac
+done
+
+test_set "${RET}" return
+test_set "${ARGS}" args
+
+cp ${srcdir}/mamedb .
+
+if [ ! -z "${VERBOSE}" ]
+then
+	echo "running: ${PROGRAM} ${ARGS}"
+fi
+${PROGRAM} ${ARGS} > gotout 2> goterr
+ret=$?
+
+if [ $ret -ne ${RET} ]
+then
+    if [ ! -z "${VERBOSE}" ]
+    then
+	cat gotout
+    fi
+    fail "unexpected exit status: got $ret, expected ${RET}"
+fi
+
+if [ -f stdout ]
+then
+    checkfile stdout gotout "unexpected output"
+fi
+
+if [ -f errors ]
+then
+    checkfile errors goterr "unexpected error output"
+fi
+
+if [ ! -z "${FILES}" ]
+then
+    for fs in ${FILES}
+    do
+        set -- `echo -n ${fs} | tr '!' ' '`
+	checkfile $1 $2 "zip file $2 wrong"
+    done
+fi
+
+succeed
+
+} < ${srcdir}/${TEST}.test

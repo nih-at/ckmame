@@ -1,0 +1,11 @@
+BEGIN
+
+game (
+	name 1-4
+	description "one four byte file"
+	manufacturer "synth"
+	year 1991
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+)
+
+END
