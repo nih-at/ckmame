@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.31 2004/04/26 09:36:57 dillo Exp $
+  $NiH: match.c,v 1.32 2004/04/26 11:49:37 dillo Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -519,7 +519,8 @@ check_disks(struct game *game)
 	m[i].d.name = findfile(game->disk[i].name, TYPE_DISK);
 	hashes_init(&m[i].d.hashes);
 
-	if (m[i].d.name == NULL || readinfosfromchd(&m[i].d) < 0) {
+	if (m[i].d.name == NULL
+	    || read_infos_from_chd(&m[i].d, diskhashtypes) < 0) {
 	    m[i].quality = ROM_UNKNOWN;
 	    continue;
 	}

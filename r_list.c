@@ -1,5 +1,5 @@
 /*
-  $NiH: r_list.c,v 1.11 2004/02/26 02:26:11 wiz Exp $
+  $NiH: r_list.c,v 1.12 2004/04/21 10:38:38 dillo Exp $
 
   r_list.c -- read list struct from db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -30,6 +30,27 @@
 #include "dbh.h"
 #include "r.h"
 #include "xmalloc.h"
+
+
+
+int
+r_hashtypes(DB *db, int *romhashtypesp, int *diskhashtypesp)
+{
+    DBT v;
+    void *data;
+
+    if (ddb_lookup(db, "/hashtypes", &v) != 0)
+	return -1;
+
+    data = v.data;
+
+    *romhashtypesp = r__ushort(&v);
+    *diskhashtypesp = r__ushort(&v);
+
+    free(data);
+
+    return 0;
+}
 
 
 

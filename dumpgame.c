@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.31 2004/04/21 10:38:37 dillo Exp $
+  $NiH: dumpgame.c,v 1.32 2004/04/26 11:49:37 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -43,9 +43,11 @@
 #include "romutil.h"
 
 static int dump_game(DB *, const char *);
+static int dump_hashtypes(DB *);
 static int dump_list(DB *, const char *);
 static int dump_prog(DB *);
 static int dump_special(DB *, const char *);
+static void print_hashtypes(int);
 
 char *prg;
 char *usage = "Usage: %s [-hV] [-D dbfile] [game ...]\n";
@@ -61,7 +63,7 @@ char help[] = "\n\
 Report bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2003 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2004 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
@@ -289,6 +291,26 @@ dump_game(DB *db, const char *name)
 
 
 static int
+dump_hashtypes(DB *db)
+{
+    int romhashtypes, diskhashtypes;
+
+    if (r_hashtypes(db, &romhashtypes, &diskhashtypes) < 0) {
+	myerror(ERRDEF, "db error reading hashtypes");
+	return -1;
+    }
+    printf("roms: ");
+    print_hashtypes(romhashtypes);
+    printf("\ndisks: ");
+    print_hashtypes(diskhashtypes);
+    putc('\n', stdout);
+
+    return 0;
+}
+
+
+
+static int
 dump_list(DB *db, const char *key)
 {
     int i, n;
@@ -340,8 +362,29 @@ dump_special(DB *db, const char *name)
 	     || strcmp(name, "/sample_list") == 0
 	     || strcmp(name, "/extra_list") == 0)
 	return dump_list(db, name);
+    else if (strcmp(name, "/hashtypes") == 0)
+	return dump_hashtypes(db);
     else {
 	myerror(ERRDEF, "unknown special: %s", name);
 	return -1;
     }
+}
+
+
+
+#define DO(ht, x, s)	(((ht) & (x)) ?					   \
+			 printf("%s%s", (first ? first=0, "" : ", "), (s)) \
+			 : 0)
+				
+
+static void
+print_hashtypes(int ht)
+{
+    int first;
+
+    first = 1;
+
+    DO(ht, GOT_CRC, "crc");
+    DO(ht, GOT_MD5, "md5");
+    DO(ht, GOT_SHA1, "sha1");
 }

@@ -1,8 +1,8 @@
+calculate chd hashes (read_infos_from_chd)
 add md5 and sha1 replacement functions
 regression tests for disk (correct, wrong, superfluous, w/+w/o extension, different crc types)
 "fix" extra files by moving them to a subdir
-use crctypes for roms
-use NOCRC for samples
+use ROM_NOCRC for samples match quality
 
 mkmamedb: no error message for missing newline in last line
 
@@ -12,19 +12,15 @@ New in 0.78u1: nodump sets
 
 mkmamedb: correct inconsistencies in input db (parent not found)
 
-add md5/sha1 support for roms
-implement full testing (calculate and check all checksum types)
-
-init rom structure for files from zips
 fix 'should be in cloneof, is in zip'
 documentation
 use return value of w_game
 option to force fixing parents
-mame.db location
-ROMPATH autoconf
 add error messages in ckmame with the zips (e.g. can't create file etc.)
-complete raine support (multiple archive names)
+complete raine support (multiple archive names: archive ( name "64th_street" name "64street" ))
 
 get roms from a different location to fix sets
 
 fix all XXXs
+
+init rom structure for files from zips

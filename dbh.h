@@ -2,7 +2,7 @@
 #define _HAD_DBH_H
 
 /*
-  $NiH: dbh.h,v 1.6 2004/04/21 10:38:37 dillo Exp $
+  $NiH: dbh.h,v 1.7 2004/04/24 09:40:24 dillo Exp $
 
   dbh.h -- high level db functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -30,10 +30,12 @@
 
 
 struct game *r_game(DB *, const char *);
-int w_game(DB *, const struct game *);
+int r_hashtypes(DB *, int *, int *);
 int r_list(DB *, const char *, char ***);
-int w_list(DB *, const char *, const char * const *, int);
 int r_prog(DB *, char **, char **);
+int w_game(DB *, const struct game *);
+int w_hashtypes(DB *, int, int);
+int w_list(DB *, const char *, const char * const *, int);
 int w_prog(DB *, const char *, const char *);
 
 #endif /* dbh.h */

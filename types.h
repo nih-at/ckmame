@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.21 2004/02/26 02:26:12 wiz Exp $
+  $NiH: types.h,v 1.22 2004/04/26 11:49:38 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -150,5 +150,6 @@ struct tree {
 extern int output_options;
 extern int fix_do, fix_print, fix_keep_long, fix_keep_unused,
     fix_keep_unknown;
+extern int romhashtypes, diskhashtypes;
 
 #endif /* types.h */

@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.35 2004/02/26 02:47:36 wiz Exp $
+  $NiH: ckmame.c,v 1.36 2004/04/26 09:03:17 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -58,6 +58,7 @@ char help[] = "\n"
 "  -F, --fix            fix rom sets\n"
 "  -f, --nofixable      don't report fixable errors\n"
 "  -h, --help           display this help message\n"
+"  -i, --integrity      check integrity of rom files\n"
 "  -K, --keep-unknown   keep unknown files when fixing (default)\n"
 "  -k, --delete-unknown don't keep unknown files when fixing\n"
 "  -L, --keep-long      keep long files when fixing (default)\n"
@@ -81,7 +82,7 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
 "For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "bcD:dFfhKkLlnSsxUuVvwX"
+#define OPTIONS "bcD:dFfhiKkLlnSsxUuVvwX"
 
 #define OPT_SF	256
 
@@ -97,6 +98,7 @@ struct option options[] = {
     { "dryrun",        0, 0, 'n' },
     { "fix",           0, 0, 'F' },
     { "ignoreextra",   0, 0, 'X' },
+    { "integrity",     0, 0, 'i' },
     { "keep-long",     0, 0, 'L' },
     { "keep-unknown",  0, 0, 'K' },
     { "keep-unused",   0, 0, 'U' },
@@ -115,6 +117,7 @@ struct option options[] = {
 int output_options;
 int fix_do, fix_print, fix_keep_long, fix_keep_unused, fix_keep_unknown;
 int ignore_extra;
+int romhashtypes, diskhashtypes;
 
 
 
@@ -127,7 +130,7 @@ main(int argc, char **argv)
     int c, nlist, found, dbext;
     struct tree *tree;
     struct tree tree_root;
-    int sample, superfluous_only;
+    int sample, superfluous_only, integrity;
     
     prg = argv[0];
     tree = &tree_root;
@@ -145,7 +148,8 @@ main(int argc, char **argv)
     fix_keep_long = fix_keep_unknown = 1;
     fix_keep_unused = 0;
     ignore_extra = 0;
-
+    integrity = 0;
+    
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
@@ -176,6 +180,9 @@ main(int argc, char **argv)
 	    break;
 	case 'f':
 	    output_options &= ~WARN_FIXABLE;
+	    break;
+	case 'i':
+	    integrity = 1;
 	    break;
 	case 'K':
 	    fix_keep_unknown = 1;
@@ -229,11 +236,6 @@ main(int argc, char **argv)
 	exit(1);
     }
 
-    if ((nlist=r_list(db, "/list", &list)) < 0) {
-	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
-	exit(1);
-    }
-
     if (superfluous_only) {
 	if (optind != argc) {
 	    fprintf(stderr, usage, prg);
@@ -242,6 +244,17 @@ main(int argc, char **argv)
 	
 	handle_extra_files(db, dbname, sample);
 	exit(0);
+    }
+
+    romhashtypes = diskhashtypes = 0;
+    if (integrity) {
+	/* XXX: check error */
+	r_hashtypes(db, &romhashtypes, &diskhashtypes);
+    }
+    
+    if ((nlist=r_list(db, "/list", &list)) < 0) {
+	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
+	exit(1);
     }
 
     if (optind == argc) {

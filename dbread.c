@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.37 2004/04/22 11:21:44 dillo Exp $
+  $NiH: dbread.c,v 1.38 2004/04/26 11:49:37 dillo Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -92,7 +92,8 @@ dbread(DB* db, const char *fname)
     int nlost, lostmax, stillost;
     int nr, ns, nd, lineno;
     int to_do;
-
+    int romhashtypes, diskhashtypes;
+    
     if (fname == NULL) {
 	fin = stdin;
 	seterrinfo("*stdin*", NULL);
@@ -109,7 +110,8 @@ dbread(DB* db, const char *fname)
     lostchildren = (char **)xmalloc(lostmax*sizeof(char *));
     lostchildren_to_do = (int *)xmalloc(lostmax*sizeof(int));
     prog_name = prog_version = NULL;
-    
+
+    romhashtypes = diskhashtypes = 0;
     nlost = nr = ns = nd = 0;
     lineno = 0;
     state = st_top;
@@ -190,6 +192,7 @@ dbread(DB* db, const char *fname)
 			}
 			r[nr].hashes.crc = strtoul(p, NULL, 16);
 			r[nr].hashes.types |= GOT_CRC;
+			romhashtypes |= GOT_CRC;
 		    }
 		    else if (strcmp(p, "flags") == 0) {
 			if ((p=gettok(&l)) == NULL) {
@@ -205,12 +208,27 @@ dbread(DB* db, const char *fname)
 		    }
 		    else if (strcmp(p, "merge") == 0) {
 			if ((p=gettok(&l)) == NULL) {
-			    /* XXX: error */
 			    myerror(ERRFILE, "%d: token merge missing argument",
 				    lineno);
 			    break;
 			}
 			r[nr].merge = xstrdup(p);
+		    }
+		    else if (strcmp(p, "md5") == 0) {
+			if ((p=gettok(&l)) == NULL) {
+			    myerror(ERRFILE, "%d: token md5 missing argument",
+				    lineno);
+			    break;
+			}
+			
+			if (hex2bin(r[nr].hashes.md5,
+				    p, sizeof(r[nr].hashes.md5)) != 0) {
+			    myerror(ERRFILE, "%d: token md5 argument invalid",
+				    lineno);
+			    break;
+			}
+			r[nr].hashes.types |= GOT_MD5;
+			romhashtypes |= GOT_MD5;
 		    }
 		    else if (strcmp(p, "sha1") == 0) {
 			if ((p=gettok(&l)) == NULL) {
@@ -227,6 +245,7 @@ dbread(DB* db, const char *fname)
 			    break;
 			}
 			r[nr].hashes.types |= GOT_SHA1;
+			romhashtypes |= GOT_SHA1;
 		    }
 		    else if (strcmp(p, "size") == 0) {
 			if ((p=gettok(&l)) == NULL) {
@@ -305,6 +324,7 @@ dbread(DB* db, const char *fname)
 			    break;
 			}
 			d[nd].hashes.types |= GOT_SHA1;
+			diskhashtypes |= GOT_SHA1;
 		    }
 		    else if (strcmp(p, "md5") == 0) {
 			if ((p=gettok(&l)) == NULL) {
@@ -321,6 +341,7 @@ dbread(DB* db, const char *fname)
 			    break;
 			}
 			d[nd].hashes.types |= GOT_MD5;
+			diskhashtypes |= GOT_MD5;
 		    }
 		    /*
 		      else
@@ -521,6 +542,8 @@ dbread(DB* db, const char *fname)
     free(prog_name);
     free(prog_version);
 
+    w_hashtypes(db, romhashtypes, diskhashtypes);
+    
     free(lostchildren);
     return 0;
 }

@@ -1,5 +1,5 @@
 /*
-  $NiH: treetrav.c,v 1.22 2004/02/26 02:26:12 wiz Exp $
+  $NiH: treetrav.c,v 1.23 2004/04/24 09:40:25 dillo Exp $
 
   treetrav.c -- traverse tree of games to check
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -315,7 +315,7 @@ zfile_new(const char *name, int sample, const char *parent)
 	}
     }
     
-    i = readinfosfromzip(z);
+    i = read_infos_from_zip(z, romhashtypes);
     if (i < 0) {
 	/* XXX: error? */
     }

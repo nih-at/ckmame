@@ -1,7 +1,7 @@
 # test single-rom game (no parent), zip is correct
-# $NiH$
+# $NiH: ok.test,v 1.2 2003/03/16 16:41:10 dillo Exp $
 return 0
-args -FKULvc 1-4
+args -FKULivc 1-4
 rom 1-4-ok.zip 1-4.zip 1-4-ok.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct

@@ -1,5 +1,5 @@
 /*
-  $NiH: w_list.c,v 1.11 2004/04/21 10:38:38 dillo Exp $
+  $NiH: w_list.c,v 1.12 2004/04/24 09:40:25 dillo Exp $
 
   w_list.c -- write list struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -33,6 +33,27 @@
 #include "w.h"
 #include "types.h"
 #include "xmalloc.h"
+
+
+
+int
+w_hashtypes(DB *db, int romhashtypes, int diskhashtypes)
+{
+    int err;
+    DBT v;
+
+    v.data = NULL;
+    v.size = 0;
+
+    w__ushort(&v, romhashtypes);
+    w__ushort(&v, diskhashtypes);
+
+    err = ddb_insert(db, "/hashtypes", &v);
+
+    free(v.data);
+
+    return err;
+}
 
 
 

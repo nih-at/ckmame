@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.25 2004/04/26 11:49:38 dillo Exp $
+  $NiH: zip-supp.c,v 1.26 2004/04/26 12:30:14 dillo Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -135,9 +135,10 @@ zfile_free(struct zfile *zip)
 
 
 int
-readinfosfromzip(struct zfile *z)
+read_infos_from_zip(struct zfile *z, int hashtypes)
 {
-    struct zip *zf;
+    struct zip *za;
+    struct zip_file *zf;
     struct zip_stat zsb;
     int i;
     /* number of valid entries found in zipfile */
@@ -148,7 +149,7 @@ readinfosfromzip(struct zfile *z)
     z->rom = NULL;
     z->zf = NULL;
 
-    if ((zf=zip_open(z->name, 0, &zerr))==NULL) {
+    if ((za=zip_open(z->name, 0, &zerr))==NULL) {
 	/* no error if file doesn't exist */
 	if (zerr != ZERR_OPEN && errno != ENOENT) {
 	    char errstr[1024];
@@ -162,27 +163,52 @@ readinfosfromzip(struct zfile *z)
 	return -1;
     }
 
-    z->nrom = zip_get_num_files(zf);
+    z->nrom = zip_get_num_files(za);
     if (z->nrom < 0) {
-	(void)zip_close(zf);
+	(void)zip_close(za);
 	return -1;
     }
     z->rom = (struct rom *)xmalloc(sizeof(struct rom)*z->nrom);
-    z->zf = zf;
+    z->zf = za;
 
     count = 0;
     for (i=0; i<z->nrom; i++) {
-	if (zip_stat_index(zf, i, 0, &zsb) == -1) {
+	if (zip_stat_index(za, i, 0, &zsb) == -1) {
 	    fprintf(stderr, "%s: error stat()ing index %d in `%s': %s\n",
-		    prg, i, z->name, zip_strerror(zf));
+		    prg, i, z->name, zip_strerror(za));
 	    continue;
 	}
-
-	z->rom[count].name = xstrdup(zip_get_name(zf, i));
 	z->rom[count].size = zsb.size;
+
 	hashes_init(&z->rom[count].hashes);
-	z->rom[count].hashes.types = GOT_CRC;
-	z->rom[count].hashes.crc = zsb.crc;
+	if (hashtypes == 0) {
+	    z->rom[count].hashes.types = GOT_CRC;
+	    z->rom[count].hashes.crc = zsb.crc;
+	}
+	else {
+	    if ((zf=zip_fopen_index(za, i, 0)) == NULL) {
+		fprintf(stderr, "%s: error open()ing index %d in `%s': %s\n",
+			prg, i, z->name, zip_strerror(za));
+		continue;
+	    }
+	    z->rom[count].hashes.types = hashtypes;
+	    get_hashes(zf, zsb.size, &z->rom[count].hashes);
+	    zip_fclose(zf);
+	    if (hashtypes & GOT_CRC) {
+		if (z->rom[count].hashes.crc != zsb.crc) {
+		    fprintf(stderr,
+			    "%s: CRC error at index %d in `%s': %x != %lx\n",
+			    prg, i, z->name, zsb.crc,
+			    z->rom[count].hashes.crc);
+		    continue;
+		}
+	    }
+	    else {
+		z->rom[count].hashes.types |= GOT_CRC;
+		z->rom[count].hashes.crc = zsb.crc;
+	    }
+	}
+	z->rom[count].name = xstrdup(zip_get_name(za, i));
 	z->rom[count].state = ROM_0;
 	count++;
     }	

@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.3 2004/04/26 11:49:37 dillo Exp $
+  $NiH: chd-supp.c,v 1.4 2004/04/26 12:28:55 dillo Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -48,7 +48,7 @@ extern char *prg;
 */
 
 int
-readinfosfromchd(struct disk *d)
+read_infos_from_chd(struct disk *d, int hashtypes)
 {
     FILE *f;
     unsigned char b[HEADERLEN];
@@ -93,5 +93,7 @@ readinfosfromchd(struct disk *d)
 	memcpy(d->hashes.sha1, b+OFF_SHA1, sizeof(d->hashes.sha1));
     }
 
+    /* XXX: honour hashtypes */
+    
     return 0;
 }
