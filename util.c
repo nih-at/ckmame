@@ -10,7 +10,11 @@
 
 #define MAXROMPATH 128
 
+#if 0
 #define DEFAULT_ROMDIR "/usr/local/share/games/xmame" /* XXX: autoconfed */
+#else
+#define DEFAULT_ROMDIR "."
+#endif
 
 static char *rompath[MAXROMPATH] = { NULL };
 static int rompath_init = 0;

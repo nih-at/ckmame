@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
 
 #include "types.h"
 #include "dbl.h"
@@ -23,6 +26,8 @@ int
 fix_game(struct game *g, struct zfile **zip, struct match *m)
 {
     int i;
+    char *s;
+    struct stat st;
 
     zf_garbage = NULL;
 
@@ -79,8 +84,28 @@ fix_game(struct game *g, struct zfile **zip, struct match *m)
 	}
     }
 
-    if (zf_garbage)
+    if (zf_garbage) {
+	/* XXX: dillo doesn't like directly using nentry */
+	if (zf_garbage->nentry > 0) {
+	    s = strrchr(zf_garbage->zn, '/');
+	    if (s) {
+		*s = 0;
+		if (stat(zf_garbage->zn, &st) < 0) {
+		    if (mkdir(zf_garbage->zn, 0777) < 0) {
+			/* XXX: problem */
+		    }
+		} else {
+		    if (!(st.st_rdev & S_IFDIR)) {
+			/* XXX: problem */
+		    }
+		}
+		*s = '/';
+	    } else {
+		/* XXX: internal error */
+	    }
+	}		    
 	zip_close(zf_garbage);
+    }
 
     return 0;
 }
@@ -175,12 +200,16 @@ static char *
 mkgarbage_name(char *name)
 {
     char *s;
+    char *t;
 
-    /* XXX: requires roms/ prefix; requires major rewrite */
+    if ((s=strrchr(name, '/')) == NULL)
+	s = name;
+    else
+	s++;
 
-    s = (char *)xmalloc(strlen(name+5)+strlen("garbage/")+1);
+    t = (char *)xmalloc(strlen(name)+strlen("garbage/")+1);
 
-    sprintf(s, "garbage/%s", name+5);
+    sprintf(t, "%.*sgarbage/%s", (int)(s-name), name, s);
 
-    return s;
+    return t;
 }
