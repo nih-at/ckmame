@@ -18,12 +18,6 @@
 #define DATADES_MAGIC "PK\7\8"
 #define CDENTRYSIZE        36
 
-#undef NEVER
-#ifdef NEVER
-#define READ2(a)      (*((a)++)+(*((a)++))*256)
-#define READ4(a)      (READ2(a)+READ2(a)*65536)
-#endif
-
 char * zip_err_str[]={
     "no error",
     "multi-disk zip-files not supported"
@@ -58,12 +52,16 @@ read4(unsigned char **a)
 
 
 char *
-readstr(unsigned char **buf, int len)
+readstr(unsigned char **buf, int len, nullp)
 {
     char *r;
 
-    r = memdup(*buf, len);
+    r = (char *)xmalloc(nullp?len+1:len);
+    memcpy(r, *buf, len);
     *buf += len;
+
+    if (nullp)
+	r[len] = 0;
 
     return r;
 }
@@ -71,16 +69,19 @@ readstr(unsigned char **buf, int len)
 
 
 char *
-readfpstr(FILE *fp, int len)
+readfpstr(FILE *fp, int len, int nullp)
 {
     char *r;
 
-    r = (char *)xmalloc(len);
+    r = (char *)xmalloc(nullp?len+1:len);
     if (fread(r, 1, len, fp)<len) {
 	free(r);
 	return NULL;
     }
 
+    if (nullp)
+	r[len] = 0;
+    
     return r;
 }
 
@@ -126,14 +127,11 @@ zip_open(char *fn)
     while ((match=memmem(match, buflen-(match-buf)-18, EOCD_MAGIC, 4))!=NULL) {
 	/* found match -- check, if good */
 	/* to avoid finding the same match all over again */
-	/* XXX: better way? */
 	match++;
 	if ((cdirnew=readcdir(fp, buf, match-1, buflen)) == NULL)
 	    continue;	    
 
 	if (cdir) {
-	    if (best == -2)
-		best = checkcons(cdir, fp);
 	    a = checkcons(cdirnew, fp);
 	    if (best < a) {
 		zf_free(cdir);
@@ -142,19 +140,16 @@ zip_open(char *fn)
 	    }
 	    else
 		zf_free(cdirnew);
-	    cdirnew = NULL;
 	}
 	else {
 	    cdir = cdirnew;
-	    cdirnew = NULL;
+	    best = checkcons(cdir, fp);
 	}
+	cdirnew = NULL;
     }
 
-    if (best == -2)
-      best = checkcons(cdir, fp);
-
     if (best < 0) {
-	/* no eocd found */
+	/* no consistent eocd found */
 	free(buf);
 	zf_free(cdir);
 	fclose(fp);
@@ -258,11 +253,16 @@ readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen)
     cdp = eocd + 8;
     /* number of cdir-entries on this disk */
     i = read2(&cdp);
+    printf("i = %d\n", i);
     /* number of cdir-entries */
     zf->nentry = read2(&cdp);
+    printf("nentry = %d\n", zf->nentry);
     zf->cd_size = read4(&cdp);
+    printf("cd_size = %d\n", zf->cd_size);
     zf->cd_offset = read4(&cdp);
+    printf("cd_offset = %d\n", zf->cd_offset);
     zf->com_size = read2(&cdp);
+    printf("com_size = %d (%d)\n", zf->com_size, comlen);
     zf->entry = NULL;
 
     if ((zf->com_size != comlen) || (zf->nentry != i)) {
@@ -363,11 +363,12 @@ readcdentry(FILE *fp, struct zf_entry *zfe, unsigned char **cdpp,
     if (left < CDENTRYSIZE+zfe->fnlen+zfe->eflen+zfe->fcomlen) {
 	if (readp) {
 	    if (zfe->fnlen)
-		zfe->fn = readfpstr(fp, zfe->fnlen);
+		zfe->fn = readfpstr(fp, zfe->fnlen, 1);
 	    if (zfe->eflen)
-		zfe->ef = readfpstr(fp, zfe->eflen);
+		zfe->ef = readfpstr(fp, zfe->eflen, 0);
+	    /* XXX: really null-terminate it? */
 	    if (zfe->fcomlen)
-		zfe->fcom = readfpstr(fp, zfe->fcomlen);
+		zfe->fcom = readfpstr(fp, zfe->fcomlen, 1);
 	}
 	else {
 	    /* can't get more bytes if not allowed to read */
@@ -376,11 +377,11 @@ readcdentry(FILE *fp, struct zf_entry *zfe, unsigned char **cdpp,
     }
     else {
         if (zfe->fnlen)
-	    zfe->fn = readstr(&cur, zfe->fnlen);
+	    zfe->fn = readstr(&cur, zfe->fnlen, 1);
         if (zfe->eflen)
-	    zfe->ef = readstr(&cur, zfe->eflen);
+	    zfe->ef = readstr(&cur, zfe->eflen, 0);
         if (zfe->fcomlen)
-	    zfe->fcom = readstr(&cur, zfe->fcomlen);
+	    zfe->fcom = readstr(&cur, zfe->fcomlen, 1);
     }
     if (!readp)
       *cdpp = cur;
