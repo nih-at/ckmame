@@ -33,7 +33,10 @@ main(int argc, char **argv)
 	exit (1);
     }
 
-    nlist = r_list(db, "/list", &list);
+    if ((nlist=r_list(db, "/list", &list)) < 0) {
+	myerror(ERRDEF, "list of games not found in database");
+	exit(1);
+    }
 
     optind = 1;
 
