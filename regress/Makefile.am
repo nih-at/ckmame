@@ -1,3 +1,7 @@
+noinst_PROGRAMS= cmpzip
+cmpzip_LDADD=@LIBZIP_LIBS@
+cmpzip_CFLAGS=@LIBZIP_CFLAGS@ @CFLAGS@
+
 EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS}
 
 CLEANFILES=mamedb

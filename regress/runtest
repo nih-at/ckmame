@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.5 2003/03/14 22:33:26 dillo Exp $
+#  $NiH: runtest,v 1.6 2003/03/17 04:44:01 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -194,7 +194,7 @@ fi
 
 if [ -z "${CMPZIP}" ]
 then
-    CMPZIP=../../libzip/cmpzip
+    CMPZIP=../cmpzip
 fi
 if [ -z "${VERBOSE}" ]
 then
