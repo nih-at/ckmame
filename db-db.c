@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: db-db.c,v 1.11 2002/06/06 09:26:51 dillo Exp $
 
   db-db.c -- low level routines for Berkley db 
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <fcntl.h>
 
 #include "db-db.h"

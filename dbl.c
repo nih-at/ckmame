@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: dbl.c,v 1.11 2002/06/06 09:26:53 dillo Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
@@ -26,6 +26,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <zlib.h>
 
 #include "dbl.h"

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: r_util.c,v 1.10 2002/06/06 09:26:58 dillo Exp $
 
   r_util.c -- data base read utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
@@ -25,6 +25,7 @@
 
 
 #include <stddef.h>
+#include <string.h>
 
 #include "dbl.h"
 #include "r.h"

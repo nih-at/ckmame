@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: w_util.c,v 1.11 2002/06/06 09:27:02 dillo Exp $
 
   w_util.c -- data base write utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
@@ -25,6 +25,7 @@
 
 
 #include <stddef.h>
+#include <string.h>
 
 #include "dbl.h"
 #include "types.h"

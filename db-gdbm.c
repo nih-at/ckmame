@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: db-gdbm.c,v 1.10 2002/06/06 09:26:52 dillo Exp $
 
   db-gdbm.c -- low level routines for GNU gdbm
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
@@ -25,6 +25,8 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <gdbm.h>
 
 #include "xmalloc.h"
