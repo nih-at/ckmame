@@ -1,5 +1,5 @@
 /*
-  $NiH: treetrav.c,v 1.19 2003/03/16 10:21:35 wiz Exp $
+  $NiH: treetrav.c,v 1.20 2004/02/05 17:32:31 dillo Exp $
 
   treetrav.c -- traverse tree of games to check
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -136,9 +136,10 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 	merge_match(me_m, me_g->nrom, all_z, parent_no, gparent_no);
 
 	/* check disks */
-	if (!sample) {
+	if (!sample)
 	    me_d = check_disks(me_g);
-	}
+	else
+	    me_d = NULL;
 
 	if (fix_do || fix_print) {
 	    fix_game(me_g, all_z, me_m);

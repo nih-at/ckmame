@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.26 2003/10/01 16:22:40 wiz Exp $
+  $NiH: match.c,v 1.27 2004/02/05 17:32:30 dillo Exp $
 
   match.c -- find matches
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -320,35 +320,37 @@ diagnostics(struct game *game, struct match *m, struct disk_match *md,
 
     /* analyze result: disks */
 
-    for (i=0; i<game->ndisk; i++) {
-	switch (md[i].quality) {
-	case ROM_UNKNOWN:
-	    if (output_options & WARN_MISSING)
-		warn_disk(game->disk+i, "missing");
-	    break;
+    if (md) {
+	for (i=0; i<game->ndisk; i++) {
+	    switch (md[i].quality) {
+	    case ROM_UNKNOWN:
+		if (output_options & WARN_MISSING)
+		    warn_disk(game->disk+i, "missing");
+		break;
 		
-	case ROM_CRCERR:
-	    if (output_options & WARN_WRONG_CRC) {
-		/* XXX: display checksum(s) */
-		warn_disk(game->disk+i, "wrong checksum");
-	    }
-	    break;
-
-	case ROM_NOCRC:
-	    if (output_options & WARN_WRONG_CRC) {
-		/* XXX: display checksum(s) */
-		warn_disk(game->disk+i, "no common checksum types");
-	    }
-	    break;
-	    
-
-	case ROM_OK:
-	    if (output_options & WARN_CORRECT)
-		warn_disk(game->disk+i, "correct");
-	    break;
+	    case ROM_CRCERR:
+		if (output_options & WARN_WRONG_CRC) {
+		    /* XXX: display checksum(s) */
+		    warn_disk(game->disk+i, "wrong checksum");
+		}
+		break;
 		
-	default:
-	    break;
+	    case ROM_NOCRC:
+		if (output_options & WARN_WRONG_CRC) {
+		    /* XXX: display checksum(s) */
+		    warn_disk(game->disk+i, "no common checksum types");
+		}
+		break;
+		
+		
+	    case ROM_OK:
+		if (output_options & WARN_CORRECT)
+		    warn_disk(game->disk+i, "correct");
+		break;
+		
+	    default:
+		break;
+	    }
 	}
     }
 }
@@ -544,6 +546,9 @@ void
 disk_match_free(struct disk_match *m, int n)
 {
     int i;
+
+    if (m == NULL)
+	return;
     
     for (i=0; i<n; i++)
 	free(m[i].d.name);
