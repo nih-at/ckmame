@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.27 2004/04/26 21:29:20 wiz Exp $
+  $NiH: zip-supp.c,v 1.28 2004/11/18 16:51:13 wiz Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -58,7 +58,7 @@ findcrc(struct zfile *zip, int idx, int romsize, const struct hashes *h)
 
     if ((zf = zip_fopen_index(zip->zf, idx, 0)) == NULL) {
 	fprintf(stderr, "%s: %s: can't open file '%s': %s\n", prg,
-		zip->name, zip_get_name(zip->zf, idx),
+		zip->name, zip_get_name(zip->zf, idx, 0),
 		zip_strerror(zip->zf));
 	return -1;
     }
@@ -68,7 +68,7 @@ findcrc(struct zfile *zip, int idx, int romsize, const struct hashes *h)
     while (offset+romsize <= zip->rom[idx].size) {
 	if (get_hashes(zf, romsize, &hn) < 0) {
 	    fprintf(stderr, "%s: %s: %s: read error: %s\n", prg,
-		    zip->name, zip_get_name(zip->zf, idx),
+		    zip->name, zip_get_name(zip->zf, idx, 0),
 		    zip_strerror(zip->zf));
 	    zip_fclose(zf);
 	    return -1;
@@ -84,7 +84,7 @@ findcrc(struct zfile *zip, int idx, int romsize, const struct hashes *h)
 
     if (zip_fclose(zf)) {
 	fprintf(stderr, "%s: %s: %s: close error: %s\n", prg,
-			zip->name, zip_get_name(zip->zf, idx),
+			zip->name, zip_get_name(zip->zf, idx, 0),
 			zip_strerror(zip->zf));
 	return -1;
     }
@@ -208,7 +208,7 @@ read_infos_from_zip(struct zfile *z, int hashtypes)
 		z->rom[count].hashes.crc = zsb.crc;
 	    }
 	}
-	z->rom[count].name = xstrdup(zip_get_name(za, i));
+	z->rom[count].name = xstrdup(zip_get_name(za, i, 0));
 	z->rom[count].state = ROM_0;
 	count++;
     }	
