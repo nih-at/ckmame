@@ -27,7 +27,7 @@
 
 /* not all of these are in romutil.c */
 
-enum state romcmp(struct rom *r1, struct rom *r2);
+enum state romcmp(struct rom *r1, struct rom *r2, int merge);
 struct zip *zip_new(char *name);
 void marry (struct match *rm, int count, int *noz);
 struct match *check_game(struct game *game, struct zip **zip,

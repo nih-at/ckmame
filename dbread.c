@@ -105,7 +105,7 @@ dbread(DB* db, char *fname)
 	    r[nr].where = ROM_INZIP;
 	    /* omit duplicates */
 	    for (j=0; j<nr; j++) {
-		if (romcmp(r+j, r+nr) == ROM_OK) {
+		if (romcmp(r+j, r+nr, 0) == ROM_OK) {
 		    --nr;
 		    break;
 		}
@@ -233,7 +233,7 @@ familymeeting(DB *db, struct game *parent, struct game *child)
     /* look for roms in parent */
     for (i=0; i<child->nrom; i++)
 	for (j=0; j<parent->nrom; j++)
-	    if (romcmp(child->rom+i, parent->rom+j)==ROM_OK) {
+	    if (romcmp(parent->rom+j, child->rom+i, 1)==ROM_OK) {
 		child->rom[i].where = parent->rom[j].where + 1;
 		break;
 	    }

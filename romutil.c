@@ -32,10 +32,12 @@
 
 
 enum state
-romcmp(struct rom *r1, struct rom *r2)
+romcmp(struct rom *r1, struct rom *r2, int merge)
 {
     /* r1 is important */
-    if (strcasecmp(r1->name, r2->name) == 0) {
+    if (strcasecmp(r1->name,
+		   (merge ? (r2->merge ? r2->merge : r2->name)
+		    : r2->name)) == 0) {
 	if (r1->size == r2->size) {
 	    if (r1->crc == r2->crc || r2->crc == 0 || r1->crc == 0)
 		return ROM_OK;
