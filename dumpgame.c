@@ -33,7 +33,7 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hVo:"
+#define OPTIONS "hVD:"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
@@ -97,8 +97,6 @@ main(int argc, char **argv)
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
     }
-
-    optind = 1;
 
     first = 1;
     for (i=optind; i<argc; i++) {

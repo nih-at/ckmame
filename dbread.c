@@ -105,7 +105,7 @@ dbread(DB* db, char *fname)
 		nr = ns = 0;
 		state = st_game;
 	    }
-	    if (strcmp(cmd, "emulator") == 0)
+	    else if (strcmp(cmd, "emulator") == 0)
 		state = st_prog;
 	    break;
 	    
@@ -214,6 +214,8 @@ dbread(DB* db, char *fname)
 		prog_name = get_string();
 	    else if (strcmp(cmd, "version") == 0)
 		prog_version = get_string();
+	    else if (strcmp(cmd, ")") == 0)
+		state = st_top;
 	    break;
 	}
     }
