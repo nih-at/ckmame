@@ -264,19 +264,21 @@ diagnostics(struct game *game, struct match *m, struct zfile **zip)
     }
 
     /* analyze result: files */
-    for (i=0; i<zip[0]->nrom; i++) {
-	if ((zip[0]->rom[i].state == ROM_UNKNOWN
-	    || (zip[0]->rom[i].state < ROM_NAMERR
-		&& zip[0]->rom[i].where != 0))
-	    && (output_options & WARN_UNKNOWN))
-	    warn_file(zip[0]->rom+i, "unknown");
-	else if ((zip[0]->rom[i].state < ROM_TAKEN)
-		 && (output_options & WARN_NOT_USED))
-	    warn_file(zip[0]->rom+i, "not used");
-	else if ((zip[0]->rom[i].where != 0)
-		 && (output_options & WARN_USED))
-	    warn_file(zip[0]->rom+i, "used in clone %s",
-		      game->clone[zip[0]->rom[i].where-1]);
+    if (zip[0]) {
+	for (i=0; i<zip[0]->nrom; i++) {
+	    if ((zip[0]->rom[i].state == ROM_UNKNOWN
+		 || (zip[0]->rom[i].state < ROM_NAMERR
+		     && zip[0]->rom[i].where != 0))
+		&& (output_options & WARN_UNKNOWN))
+		warn_file(zip[0]->rom+i, "unknown");
+	    else if ((zip[0]->rom[i].state < ROM_TAKEN)
+		     && (output_options & WARN_NOT_USED))
+		warn_file(zip[0]->rom+i, "not used");
+	    else if ((zip[0]->rom[i].where != 0)
+		     && (output_options & WARN_USED))
+		warn_file(zip[0]->rom+i, "used in clone %s",
+			  game->clone[zip[0]->rom[i].where-1]);
+	}
     }
 }
 
