@@ -38,7 +38,7 @@ ddb_open(char *name, int extp, int writep)
 
     if (extp) {
 	s = (char *)xmalloc(strlen(name)+6);
-#if __DJGPP__
+#ifdef __DJGPP__
 	sprintf(s, "%s.gdb", name);
 #else
 	sprintf(s, "%s.gdbm", name);
@@ -48,6 +48,9 @@ ddb_open(char *name, int extp, int writep)
 	s = name;
 
     db = gdbm_open(s, 0, writep ? GDBM_WRCREAT : GDBM_READER, 0666, NULL);
+
+    if (extp)
+	free(s);
 
     return (DB*)db;
 }
