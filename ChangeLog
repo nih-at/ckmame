@@ -1,3 +1,8 @@
+2004-04-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* match.c (match): only accept matches that are ROM_NAMERR or
+	better.
+
 2004-04-22  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* some const poisoning.

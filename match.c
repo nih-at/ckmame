@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.32 2004/04/26 11:49:37 dillo Exp $
+  $NiH: match.c,v 1.33 2004/04/26 21:29:19 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -134,7 +134,7 @@ match(struct game *game, struct zfile *zip, int zno, struct match *m)
 		    st = ROM_LONGOK;
 	    }
 	    
-	    if (st != ROM_UNKNOWN)
+	    if (st >= ROM_NAMERR)
 		add_match(m+i, game->rom[i].where, zno, j, st, offset);
 	}
     }

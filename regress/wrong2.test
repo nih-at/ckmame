@@ -1,5 +1,5 @@
 # test 1-rom game, only wrong roms in zip
-# $NiH: wrong.test,v 1.2 2003/03/16 16:41:11 dillo Exp $
+# $NiH: wrong2.test,v 1.1 2004/04/16 11:34:45 wiz Exp $
 return 0
 args -FKULvc 1-8a
 romdel 1-8-ok.zip 1-8a.zip
@@ -7,4 +7,4 @@ garbage 1-8a.zip 1-8-ok.zip
 stdout ./roms/1-8a.zip: mv unknown file 08.rom
 stdout In game 1-8a:
 stdout game 1-8a                                    : not a single rom found
-stdout rom  08.rom        size       8  crc 12345678: wrong crc (3656897d)
+stdout file 08.rom        size       8  crc 3656897d: unknown
