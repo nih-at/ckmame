@@ -150,3 +150,18 @@ fix_add_garbage(struct zip *zip, int idx)
     return 0;
 }
 
+
+
+static char *
+mkgarbage_name(char *name)
+{
+    char *s;
+
+    /* XXX: requires roms/ prefix; requires major rewrite */
+
+    s = (char *)xmalloc(strlen(name+5)+strlen("garbage/")+1);
+
+    sprintf(s, "garbage/%s", name+5);
+
+    return s;
+}
