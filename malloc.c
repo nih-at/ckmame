@@ -1,5 +1,5 @@
 /*
-  $NiH: malloc.c,v 1.8 2002/06/06 09:26:55 dillo Exp $
+  $NiH: malloc.c,v 1.9 2003/03/16 10:21:34 wiz Exp $
 
   malloc.c -- malloc routines with exit on failure
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -48,7 +48,7 @@ xmalloc(size_t size)
 
 
 char *
-xstrdup(char *str)
+xstrdup(const char *str)
 {
     char *p;
 

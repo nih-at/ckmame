@@ -1,3 +1,8 @@
+2003-12-28  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* malloc.c (xstrdup): constify.
+	* xmalloc.h (xstrdup): constify.
+
 2003-09-13  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* w_game.c (w__rom): write flags to db.
