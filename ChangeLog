@@ -1,3 +1,8 @@
+1999-10-05  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* libzip/zip_close.c (zip_close): make zip_close work under DOS,
+	free zip structure for temp file
+
 1999-09-27  Wiz  <wiz@danbala.tuwien.ac.at>
 
 	* romutil.c (romcmp): removed comment for already fixed behaviour
