@@ -1,3 +1,5 @@
+support "flags nodump" and "flags baddump" appearing in latest MESS/MAME
+
 add md5 support and check 'disks' (see latest mame db file in /pub/nih/ckmame for examples)
 
 init rom structure for files from zips
