@@ -19,7 +19,7 @@ zip_rename(struct zf *zf, int idx, char *name)
 	zf->entry[idx].state = Z_RENAMED;
     zf->changes = 1;
 
-    zip_set_name(zf, name);
+    zip_set_name(zf, idx, name);
 
     return idx;
 }
@@ -33,7 +33,7 @@ zip_add_file(struct zf *zf, char *name, FILE *file,
     zip_new_entry(zf);
 
     zf->changes = 1;
-    zip_set_name(zf, name ? name : "-");
+    zip_set_name(zf, zf->nentry, name ? name : "-");
     zf->entry[zf->nentry].ch_data_fp = file;
     zf->entry[zf->nentry].ch_data_offset = start;
     zf->entry[zf->nentry].ch_data_len = len;
@@ -51,7 +51,7 @@ zip_add_data(struct zf *zf, char *name, char *buf,
     zip_new_entry(zf);
 
     zf->changes = 1;
-    zip_set_name(zf, name ? name : "-");
+    zip_set_name(zf, zf->nentry, name ? name : "-");
     zf->entry[zf->nentry].ch_data_buf = buf;
     zf->entry[zf->nentry].ch_data_offset = start;
     zf->entry[zf->nentry].ch_data_len = len;
@@ -72,7 +72,7 @@ zip_add_zip(struct zf *zf, char *name, struct zf *srczf, int srcidx,
     zip_new_entry(zf);
 
     zf->changes = 1;
-    zip_set_name(zf, name ? name : srczf->entry[srcidx].fn);
+    zip_set_name(zf, zf->nentry, name ? name : srczf->entry[srcidx].fn);
     zf->entry[zf->nentry].ch_data_zf = srczf;
     zf->entry[zf->nentry].ch_data_zf_fileno = srcidx;
     zf->entry[zf->nentry].ch_data_offset = start;
@@ -95,7 +95,7 @@ zip_replace_file(struct zf *zf, int idx, char *name, FILE *file,
 
     zf->changes = 1;
     zf->entry[idx].state = Z_REPLACED;
-    zip_set_name(zf, name);
+    zip_set_name(zf, idx, name);
     
     zf->entry[idx].ch_data_fp = file;
     zf->entry[idx].ch_data_offset = start;
@@ -117,7 +117,7 @@ zip_replace_data(struct zf *zf, int idx, char *name, char *buf,
 
     zf->changes = 1;
     zf->entry[idx].state = Z_REPLACED;
-    zip_set_name(zf, name);
+    zip_set_name(zf, idx, name);
     
     zf->entry[idx].ch_data_buf = buf;
     zf->entry[idx].ch_data_offset = start;
@@ -142,7 +142,7 @@ zip_replace_zip(struct zf *zf, int idx, char *name, struct zf *srczf,
 
     zf->changes = 1;
     zf->entry[idx].state = Z_REPLACED;
-    zip_set_name(zf, name);
+    zip_set_name(zf, idx, name);
     
     zf->entry[idx].ch_data_zf = srczf;
     zf->entry[idx].ch_data_zf_fileno = srcidx;
@@ -178,7 +178,7 @@ zip_unchange(struct zf *zf, int idx)
 
     if (zf->entry[idx].fn_old) {
 	free(zf->entry[idx].fn);
-	zf->entry[idx].fn = fn_old;
+	zf->entry[idx].fn = zf->entry[idx].fn_old;
 	zf->entry[idx].fn_old = NULL;
 	zf->entry[idx].fnlen = strlen(zf->entry[idx].fn);
     }
@@ -223,7 +223,7 @@ zip_set_name(struct zf *zf, int idx, char *name)
 
     if (name != NULL) {
 	if (zf->entry[idx].fn_old == NULL)
-	    zf->entry[idx].fn_old == zf->entry[idx].fn;
+	    zf->entry[idx].fn_old = zf->entry[idx].fn;
 	else
 	    free(zf->entry[idx].fn);
 	zf->entry[idx].fn = xstrdup(name);
