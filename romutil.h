@@ -27,8 +27,10 @@
 
 /* not all of these are in romutil.c */
 
+void game_swap_rs(struct game *g);
+
 enum state romcmp(struct rom *r1, struct rom *r2, int merge);
-struct zip *zip_new(char *name);
+struct zip *zip_new(char *name, int sample);
 void marry (struct match *rm, int count, int *noz);
 struct match *check_game(struct game *game, struct zip **zip,
 			 int pno, int gpno);

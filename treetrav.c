@@ -9,33 +9,29 @@
 #include "romutil.h"
 #include "xmalloc.h"
 
-int tree_child_traverse(DB *db, struct tree *tree, int parentcheck,
-			struct zip *parent_z, struct zip *gparent_z,
-			int parent_no, int gparent_no);
-void tree_traverse(DB *db, struct tree *tree);
-int countunused(struct zip *z);
-int tree_add(DB *db, struct tree *tree, char *name);
-struct tree *tree_add_node(struct tree *tree, char *name, int check);
-struct tree *tree_new(char *name, int check);
-void tree_free(struct tree *tree);
+static int tree_child_traverse(DB *db, struct tree *tree, int sample,
+			       int parentcheck,
+			       struct zip *parent_z, struct zip *gparent_z,
+			       int parent_no, int gparent_no);
+static struct tree *tree_add_node(struct tree *tree, char *name, int check);
 
 
 
 void
-tree_traverse(DB *db, struct tree *tree)
+tree_traverse(DB *db, struct tree *tree, int sample)
 {
     struct tree *t;
     
     for (t=tree->child; t; t=t->next)
-	tree_child_traverse(db, t, 0, NULL, NULL, 0, 0);
+	tree_child_traverse(db, t, sample, 0, NULL, NULL, 0, 0);
 
     return;
 }
 
 
 
-int
-tree_child_traverse(DB *db, struct tree *tree, int parentcheck,
+static int
+tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 		    struct zip *parent_z, struct zip *gparent_z,
 		    int parent_no, int gparent_no)
 {
@@ -46,7 +42,7 @@ tree_child_traverse(DB *db, struct tree *tree, int parentcheck,
     struct game *child_g, *me_g;
     struct match *child_m, *me_m;
 
-    me_z = zip_new(tree->name);
+    me_z = zip_new(tree->name, sample);
 
     me_m = NULL;
     me_g = NULL;
@@ -57,6 +53,8 @@ tree_child_traverse(DB *db, struct tree *tree, int parentcheck,
 	    myerror(ERRDEF, "db error: %s not found", tree->name);
 	    return -1;
 	}
+	if (sample)
+	    game_swap_rs(me_g);
 	all_z[0] = me_z;
 	all_z[1] = parent_z;
 	all_z[2] = gparent_z;
@@ -70,12 +68,12 @@ tree_child_traverse(DB *db, struct tree *tree, int parentcheck,
 				      sizeof(char *),
 				      (cmpfunc)strpcasecmp) - me_g->clone);
 	}
-	tree_child_traverse(db, t, tree->check, me_z, parent_z, i+1,
+	tree_child_traverse(db, t, sample, tree->check, me_z, parent_z, i+1,
 			    parent_no);
     }
 
     if (parentcheck || tree->check) {
-	/* set names of checked childs and grandchildren in my list
+	/* set names of checked children and grandchildren in my list
 	   of clones to NULL */
 	unchecked = delchecked(tree, me_g->nclone, me_g->clone);
 
@@ -87,7 +85,9 @@ tree_child_traverse(DB *db, struct tree *tree, int parentcheck,
 		    myerror(ERRDEF, "db error: %s not found", me_g->clone[i]);
 		    return -1;
 		}
-		child_z = zip_new(me_g->clone[i]);
+		if (sample)
+		    game_swap_rs(child_g);
+		child_z = zip_new(me_g->clone[i], sample);
 		
 		all_z[0] = child_z;
 		all_z[1] = me_z;
@@ -141,12 +141,14 @@ countunused(struct zip *z)
 
 
 int
-tree_add(DB *db, struct tree *tree, char *name)
+tree_add(DB *db, struct tree *tree, char *name, int sample)
 {
     struct game *g;
 
     if ((g=r_game(db, name)) == NULL)
 	return -1;
+    if (sample)
+	game_swap_rs(g);
 
     if (g->cloneof[1])
 	tree = tree_add_node(tree, g->cloneof[1], 0);
@@ -162,7 +164,7 @@ tree_add(DB *db, struct tree *tree, char *name)
 
 
 
-struct tree *
+static struct tree *
 tree_add_node(struct tree *tree, char *name, int check)
 {
     struct tree *t;
@@ -245,14 +247,14 @@ tree_free(struct tree *tree)
 
 
 struct zip *
-zip_new(char *name)
+zip_new(char *name, int sample)
 {
     struct zip *z;
     int i;
     
     z = (struct zip *)xmalloc(sizeof(struct zip));
     
-    z->name = findzip(name, 0);
+    z->name = findzip(name, sample);
     if (z->name == NULL) {
 	free(z);
 	return NULL;

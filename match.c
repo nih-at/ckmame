@@ -233,7 +233,7 @@ diagnostics(struct game *game, struct match *m, struct zip **zip)
 		break;
 		
 	    case ROM_OK:
-		if (game->rom[i].crc == 0) {
+		if (game->rom[i].crc == 0 && game->rom[i].size != 0) {
 		    if (output_options & WARN_NO_GOOD_DUMP)
 			warn_rom(game->rom+i, "exists");
 		}
@@ -299,12 +299,17 @@ warn_rom(struct rom *r, char *fmt, ...)
     }
 
     if (r) {
-	if (r->crc)
-	    printf("rom  %-12s  size %7ld  crc %.8lx: ",
-		   r->name, r->size, r->crc);
+	if (r->size) {
+	    if (r->crc)
+		printf("rom  %-12s  size %7ld  crc %.8lx: ",
+		       r->name, r->size, r->crc);
+	    else
+		printf("rom  %-12s  size %7ld  no good dump: ",
+		       r->name, r->size);
+	}
 	else
-	    printf("rom  %-12s  size %7ld  no good dump: ",
-		   r->name, r->size);
+	    printf("rom  %-12s                            : ",
+		   r->name);
     }
     else
 	printf("game %-40s: ", gname);

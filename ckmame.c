@@ -21,7 +21,7 @@
 
 char *prg;
 
-char *usage = "Usage: %s [-hVnsfbcd] [-D dbfile] [game...]\n";
+char *usage = "Usage: %s [-hVSnsfbcd] [-D dbfile] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -29,6 +29,7 @@ char help[] = "\n\
   -h, --help           display this help message\n\
   -V, --version        display version number\n\
   -D, --db DBFILE      use mame-db DBFILE\n\
+  -S, --samples        check samples instead of roms\n\
   -n, --nowarnings     print only unfixable errors\n\
   -s, --nosuperfluous  don't report superfluous files\n\
   -f, --nofixable      don't report fixable errors\n\
@@ -45,12 +46,13 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hVD:nsfbcdx"
+#define OPTIONS "hVD:Snsfbcdx"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
     { "version",       0, 0, 'V' },
     { "db",            1, 0, 'D' },
+    { "samples",       0, 0, 'S' },
     { "nowarnings",    0, 0, 'n' }, /* -SUP, -FIX */
     { "nosuperfluous", 0, 0, 's' }, /* -SUP */
     { "nofixable",     0, 0, 'f' }, /* -FIX */
@@ -74,11 +76,13 @@ main(int argc, char **argv)
     int c, nlist, found, dbext;
     struct tree *tree;
     struct tree tree_root;
+    int sample;
     
     prg = argv[0];
     tree = &tree_root;
     tree->child = NULL;
     output_options = WARN_ALL;
+    sample = 0;
     dbname = "mame";
     dbext = 1;
 
@@ -96,6 +100,9 @@ main(int argc, char **argv)
 	case 'D':
 	    dbname = optarg;
 	    dbext = 0;
+	    break;
+	case 'S':
+	    sample = 1;
 	    break;
 	case 'x':
 	    /* XXX: fix */
@@ -136,14 +143,14 @@ main(int argc, char **argv)
 
     if (optind == argc) {
 	for (i=0; i<nlist; i++)
-	    tree_add(db, tree, list[i]);
+	    tree_add(db, tree, list[i], sample);
     }
     else {
 	for (i=optind; i<argc; i++) {
 	    if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 		if (bsearch(argv+i, list, nlist, sizeof(char *),
 			    (cmpfunc)strpcasecmp) != NULL)
-		    tree_add(db, tree, argv[i]);
+		    tree_add(db, tree, argv[i], sample);
 		else
 		    myerror(ERRDEF, "game `%s' unknown", argv[i]);
 	    }
@@ -151,7 +158,7 @@ main(int argc, char **argv)
 		found = 0;
 		for (j=0; j<nlist; j++) {
 		    if (fnmatch(argv[i], list[j], 0) == 0) {
-			tree_add(db, tree, list[j]);
+			tree_add(db, tree, list[j], sample);
 			found = 1;
 		    }
 		}
@@ -161,7 +168,7 @@ main(int argc, char **argv)
 	}
     }
 
-    tree_traverse(db, tree);
+    tree_traverse(db, tree, sample);
 
     return 0;
 }
