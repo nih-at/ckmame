@@ -35,8 +35,12 @@ main(int argc, char *argv[])
     i = zff_read(zff, buf, BUFSIZE-1);
     zff_close(zff);
 
-    buf[i] = 0;
-    printf("read %d bytes: '%s'\n", i, buf);
+    if (i < 0)
+	fprintf(stderr, "read error: %s\n", zip_err_str[zff->flags]);
+    else {
+	buf[i] = 0;
+	printf("read %d bytes: '%s'\n", i, buf);
+    }
     
     if (zip_close(zf)!=0) {
 	myerror(ERRZIPSTR, "can't close file");

@@ -133,8 +133,8 @@ zff_open(struct zf *zf, int fileno)
     
     zff->buffer = (char *)xmalloc(BUFSIZE);
 
-    ret = zff_fillbuf (zff->buffer, BUFSIZE, zff);
-    if (ret <= 0) {
+    len = zff_fillbuf (zff->buffer, BUFSIZE, zff);
+    if (len <= 0) {
 	/* XXX: error handling */
 	zff_close(zff);
 	return NULL;
@@ -173,9 +173,8 @@ zff_read(struct zf_file *zff, char *outbuf, int toread)
     if (toread == 0)
 	return 0;
 
-    if (zff->cbytes_left == 0) {
-	if (!zff->flags)
-	    zff->flags = -1;
+    if (zff->bytes_left == 0) {
+	zff->flags = -1;
 	if (zff->crc != zff->crc_orig) {
 	    zff->flags = ZERR_CRC;
 	    return -1;
@@ -185,8 +184,10 @@ zff_read(struct zf_file *zff, char *outbuf, int toread)
     
     if (zff->method == 0) {
 	ret = zff_fillbuf(outbuf, toread, zff);
-	if (ret > 0)
+	if (ret > 0) {
 	    zff->crc = crc32(zff->crc, outbuf, ret);
+	    zff->bytes_left -= ret;
+	}
 	return ret;
     }
     
@@ -205,9 +206,13 @@ zff_read(struct zf_file *zff, char *outbuf, int toread)
 	    /* XXX: STREAM_END probably won't happen, since we didn't
 	       have a header */
 	    len = zff->zstr->total_out - out_before;
-	    if (len > 0)
+	    if (len >= zff->bytes_left || len >= toread) {
 		zff->crc = crc32(zff->crc, outbuf, len);
-	    return(len);
+		zff->bytes_left -= len;
+	        return(len);
+	    }
+	    break;
+
 	case Z_BUF_ERROR:
 	    if (zff->zstr->avail_in == 0) {
 		/* read some more bytes */
@@ -222,12 +227,14 @@ zff_read(struct zf_file *zff, char *outbuf, int toread)
 		zff->zstr->avail_in = len;
 		continue;
 	    }
+	    /* XXX: set error */
 	    myerror(ERRFILE, "zlib error: buf_err: %s", zff->zstr->msg);
 	    return -1;
 	case Z_NEED_DICT:
 	case Z_DATA_ERROR:
 	case Z_STREAM_ERROR:
 	case Z_MEM_ERROR:
+	    /* XXX: set error */
 	    myerror(ERRFILE, "zlib error: %s", zff->zstr->msg);
 	    return -1;
 	}
