@@ -87,5 +87,7 @@ struct tree {
 
 
 extern int output_options;
+extern int fix_do, fix_print, fix_keep_long, fix_keep_unused,
+    fix_keep_unknown;
 
 #endif /* types.h */

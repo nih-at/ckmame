@@ -21,7 +21,7 @@
 
 char *prg;
 
-char *usage = "Usage: %s [-hVSnsfbdc] [-D dbfile] [game...]\n";
+char *usage = "Usage: %s [-hVSwsfbdcFvn] [-D dbfile] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -30,12 +30,15 @@ char help[] = "\n\
   -V, --version        display version number\n\
   -D, --db DBFILE      use mame-db DBFILE\n\
   -S, --samples        check samples instead of roms\n\
-  -n, --nowarnings     print only unfixable errors\n\
+  -w, --nowarnings     print only unfixable errors\n\
   -s, --nosuperfluous  don't report superfluous files\n\
   -f, --nofixable      don't report fixable errors\n\
   -b, --nobroken       don't report unfixable errors\n\
   -d, --nonogooddumps  don't report roms with no good dumps\n\
   -c, --correct        report correct sets\n\
+  -F, --fix            fix rom sets\n\
+  -v, --verbose        print fixes made\n\
+  -n, --dryrun         don't actually fix, only report what would be done\n\
 \n\
 Report bugs to <nih@giga.or.at>.\n";
 
@@ -46,24 +49,27 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hVD:Snsfbcdx"
+#define OPTIONS "hVD:SwsfbcdxFvn"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
     { "version",       0, 0, 'V' },
     { "db",            1, 0, 'D' },
     { "samples",       0, 0, 'S' },
-    { "nowarnings",    0, 0, 'n' }, /* -SUP, -FIX */
+    { "nowarnings",    0, 0, 'w' }, /* -SUP, -FIX */
     { "nosuperfluous", 0, 0, 's' }, /* -SUP */
     { "nofixable",     0, 0, 'f' }, /* -FIX */
     { "nobroken",      0, 0, 'b' }, /* -BROKEN */
     { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
     { "correct",       0, 0, 'c' }, /* +CORRECT */
-    { "fix",           0, 0, 'x' },
+    { "fix",           0, 0, 'F' },
+    { "verbose",       0, 0, 'v' },
+    { "dryrun",        0, 0, 'n' },
     { NULL,            0, 0, 0 },
 };
 
 int output_options;
+int fix_do, fix_print, fix_keep_long, fix_keep_unused, fix_keep_unknown;
 
 
 
@@ -85,6 +91,9 @@ main(int argc, char **argv)
     sample = 0;
     dbname = "mame";
     dbext = 1;
+    fix_do = fix_print = 0;
+    fix_keep_long = fix_keep_unknown = 1;
+    fix_keep_unused = 0;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -107,7 +116,7 @@ main(int argc, char **argv)
 	case 'x':
 	    /* XXX: fix */
 	    break;
-	case 'n':
+	case 'w':
 	    output_options &= WARN_BROKEN;
 	    break;
 	case 's':
@@ -124,6 +133,16 @@ main(int argc, char **argv)
 	    break;
 	case 'd':
 	    output_options &= ~WARN_NO_GOOD_DUMP;
+	    break;
+	case 'F':
+	    fix_do = 1;
+	    break;
+	case 'n':
+	    fix_do = 0;
+	    fix_print = 1;
+	    break;
+	case 'v':
+	    fix_print = 1;
 	    break;
 	default:
 	    fprintf(stderr, usage, prg);

@@ -404,7 +404,6 @@ zip_entry_copy(struct zf *dest, struct zf *src, int entry_no, char *name)
 	remainder -= len;
     }
 
-    dest->nentry++;
     return 0;
 }
 

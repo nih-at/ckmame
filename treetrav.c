@@ -107,10 +107,9 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 	all_z[2] = gparent_z;
 
 	merge_match(me_m, me_g->nrom, all_z, parent_no, gparent_no);
-	/* XXX: fix */
-/*	if (fix) { */
+	if (fix_do || fix_print) {
 	    fix_game(me_g, all_z, me_m);
-/*	}*/
+	}
 
 	/* write warnings/errors for me */
 	diagnostics(me_g, me_m, all_z);

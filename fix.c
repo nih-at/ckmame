@@ -13,6 +13,7 @@ extern char *prg;
 
 static int fix_file(struct rom *rom, struct match *m, struct zip **zip);
 static int fix_add_garbage(struct zip *zip, int idx);
+static char *mkgarbage_name(char *name);
 
 static struct zf *zf_garbage;
 
@@ -24,6 +25,10 @@ fix_game(struct game *g, struct zip **zip, struct match *m)
     int i;
 
     zf_garbage = NULL;
+
+    if (fix_do) 
+	if (zip[0]->zf == NULL)
+	    zip[0]->zf = zip_open(zip[0]->name, ZIP_CREATE);
 
     for (i=0; i<g->nrom; i++) {
 	if (m[i].quality < ROM_NAMERR)
@@ -39,27 +44,29 @@ fix_game(struct game *g, struct zip **zip, struct match *m)
     }
 
     for (i=0; i<zip[0]->nrom; i++) {
-	if ((zip[0]->rom[i].state == ROM_UNKNOWN
-	    || (zip[0]->rom[i].state < ROM_NAMERR
-		&& zip[0]->rom[i].where != 0))
-	    && (output_options & WARN_UNKNOWN)) {
-	    printf("%s: mv/rm unknown file %s\n",
-		   zip[0]->name, zip[0]->rom[i].name);
-#ifdef CHANGE_ZIP
-	    if (keep_unknown)
-		fix_add_garbage(*(zip[0]), i);
-	    zip_delete(zip[0]->zf, i);
-#endif
+	if (((zip[0]->rom[i].state == ROM_UNKNOWN
+	      || (zip[0]->rom[i].state < ROM_NAMERR
+		  && zip[0]->rom[i].where != 0))
+	     && (output_options & WARN_UNKNOWN))) {
+	    if (fix_print)
+		printf("%s: mv/rm unknown file %s\n",
+		       zip[0]->name, zip[0]->rom[i].name);
+	    if (fix_do) {
+		if (fix_keep_unknown)
+		    fix_add_garbage(zip[0], i);
+		zip_delete(zip[0]->zf, i);
+	    }
 	}
 	else if ((zip[0]->rom[i].state < ROM_TAKEN)
 		 && (output_options & WARN_NOT_USED)) {
-	    printf("%s: mv/rm unused file %s\n",
-		   zip[0]->name, zip[0]->rom[i].name);
-#ifdef CHANGE_ZIP
-	    if (keep_unused)
-		fix_add_garbage(*(zip[0]), i);
-	    zip_delete(zip[0]->zf, i);
-#endif
+	    if (fix_print)
+		printf("%s: mv/rm unused file %s\n",
+		       zip[0]->name, zip[0]->rom[i].name);
+	    if (fix_do) {
+		if (fix_keep_unused)
+		    fix_add_garbage(zip[0], i);
+		zip_delete(zip[0]->zf, i);
+	    }
 	}
     }
 
@@ -76,51 +83,53 @@ fix_file(struct rom *rom, struct match *m, struct zip **zip)
 {
     if (m->zno != 0) {
 	if (m->quality == ROM_LONGOK) {
-#ifdef CHANGE_ZIP
-	    zip_add_zip(zip[0]->zf, rom->name,
-			zip[m->zno]->zf, m->fno, m->offset, rom->size);
-	    if (keep_long)
-		fix_add_garbage(*(zip[m->zno]), m->fno);
-#endif
-	    printf("%s: add `%s/%s' as %s, shrinking to %d/%ld\n",
-		   zip[0]->name,
-		   zip[m->zno]->name, zip[m->zno]->rom[m->fno].name,
-		   rom->name, m->offset, rom->size);
+	    if (fix_do) {
+		zip_add_zip(zip[0]->zf, rom->name,
+			    zip[m->zno]->zf, m->fno, m->offset, rom->size);
+		if (fix_keep_long)
+		    fix_add_garbage(zip[m->zno], m->fno);
+	    }
+	    if (fix_print)
+		printf("%s: add `%s/%s' as %s, shrinking to %d/%ld\n",
+		       zip[0]->name,
+		       zip[m->zno]->name, zip[m->zno]->rom[m->fno].name,
+		       rom->name, m->offset, rom->size);
 	}
 	else {
-#ifdef CHANGE_ZIP
-	    zip_add_zip(zip[0]->zf, rom->name,
-			zip[m->zno]->zf, m->fno, 0, 0);
-#endif
-	    printf("%s: add `%s/%s' as %s\n",
-		   zip[0]->name,
-		   zip[m->zno]->name, zip[m->zno]->rom[m->fno].name,
-		   rom->name);
+	    if (fix_do)
+		zip_add_zip(zip[0]->zf, rom->name,
+			    zip[m->zno]->zf, m->fno, 0, 0);
+	    if (fix_print)
+		printf("%s: add `%s/%s' as %s\n",
+		       zip[0]->name,
+		       zip[m->zno]->name, zip[m->zno]->rom[m->fno].name,
+		       rom->name);
 	}
     }
     else {
 	switch (m->quality) {
 	case ROM_NAMERR:
-#ifdef CHANGE_ZIP
-	    zip_rename(zip[0]->zf, m->fno, rom->name);
-#endif
-	    printf("%s: rename `%s' to %s\n",
-		   zip[0]->name,
-		   zip[0]->rom[m->fno].name,
-		   rom->name);
+	    if (fix_do)
+		zip_rename(zip[0]->zf, m->fno, rom->name);
+	    if (fix_print)
+		printf("%s: rename `%s' to %s\n",
+		       zip[0]->name,
+		       zip[0]->rom[m->fno].name,
+		       rom->name);
 	    break;
 
 	case ROM_LONGOK:
-#ifdef CHANGE_ZIP
-	    zip_replace_zip(zip[0]->zf, m->fno, rom->name,
-			    zip[0]->zf, m->fno, m->offset, rom->size);
-	    if (keep_long)
-		fix_add_garbage(*(zip[m->zno]), m->fno);
-#endif
-	    printf("%s: shrink `%s' as %s to %d/%ld\n",
-		   zip[0]->name,
-		   zip[0]->rom[m->fno].name,
-		   rom->name, m->offset, rom->size);
+	    if (fix_do) {
+		zip_replace_zip(zip[0]->zf, m->fno, rom->name,
+				zip[0]->zf, m->fno, m->offset, rom->size);
+		if (fix_keep_long)
+		    fix_add_garbage(zip[m->zno], m->fno);
+	    }
+	    if (fix_print)
+		printf("%s: shrink `%s' as %s to %d/%ld\n",
+		       zip[0]->name,
+		       zip[0]->rom[m->fno].name,
+		       rom->name, m->offset, rom->size);
 	    break;
 
 	default:
@@ -135,8 +144,10 @@ fix_file(struct rom *rom, struct match *m, struct zip **zip)
 static int
 fix_add_garbage(struct zip *zip, int idx)
 {
-#ifdef CHANGE_ZIP
     char *name;
+
+    if (!fix_do)
+	return 0;
 
     if (zf_garbage == NULL) {
 	name = mkgarbage_name(zip->name);
@@ -145,7 +156,6 @@ fix_add_garbage(struct zip *zip, int idx)
     }
     if (zf_garbage)
 	zip_add_zip(zf_garbage, NULL, zip->zf, idx, 0, 0);
-#endif
 
     return 0;
 }

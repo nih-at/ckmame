@@ -37,11 +37,15 @@ main(int argc, char *argv[])
 	return 1;
     }
 
+#if 0
     for (i=0; i<zf->nentry; i++) {
 	printf("%8d %s\n", zf->entry[i].uncomp_size, zf->entry[i].fn);
 	zip_add_zip(destzf, zf->entry[i].fn, zf, i, 0, 0);
     }
-	
+#endif
+
+    zip_add_zip(destzf, NULL, zf, 1, 0, 0);
+
 #if 0
     zff1= zff_open_index(zf, 1);
     if (!zff1) {
