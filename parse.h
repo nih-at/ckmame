@@ -3,8 +3,11 @@
 
 #include <stdio.h>
 
+#include "dbl.h"
+
 /* parser functions */
 
+int parse(DB *, const char *);
 int parse_xml(FILE *f);
 int parse_cm(FILE *f);
 
