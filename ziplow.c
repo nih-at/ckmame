@@ -10,16 +10,6 @@
 #include "util.h"
 #include "xmalloc.h"
 
-#define MAXCOMLEN        65536
-#define EOCDLEN             22
-#define BUFSIZE       (MAXCOMLEN+EOCDLEN)
-#define LOCAL_MAGIC   "PK\3\4"
-#define CENTRAL_MAGIC "PK\1\2"
-#define EOCD_MAGIC    "PK\5\6"
-#define DATADES_MAGIC "PK\7\8"
-#define CDENTRYSIZE         46
-#define LENTRYSIZE          30
-
 #define ALLOC_SIZE         100
 
 char * zip_err_str[]={
@@ -890,90 +880,4 @@ zf_free(struct zf *zf)
 	zip_err = ZERR_CLOSE;
     
     return ret;
-}
-
-
-
-int
-zf_read(struct zf *zf, int fileno, char *outbuf, int toread)
-{
-    int len, out_before, inflate_return;
-
-    if (fileno != zf->unz_last) {
-	/* remove remainder of last stream (if any) */
-	if (zf->unz_zst)
-	    inflateEnd(zf->unz_zst);
-	free(zf->unz_in);
-	zf->unz_in = NULL;
-	free(zf->unz_zst);
-	zf->unz_zst = NULL;
-
-	/* if that was all, return */
-	if (fileno == -1)
-	    return 0;
-    
-	/* go to start of actual compressed data */
-	fseek (zf->zp, zf->entry[fileno].local_offset+LENTRYSIZE
-	       +zf->entry[fileno].fnlen+zf->entry[fileno].fcomlen
-	       +zf->entry[fileno].eflen, SEEK_SET);
-	
-	zf->unz_zst = (z_stream *)xmalloc(sizeof(z_stream));
-	zf->unz_in = (char *)xmalloc(BUFSIZE);
-	zf->unz_zst->zalloc = Z_NULL;
-	zf->unz_zst->zfree = Z_NULL;
-	zf->unz_zst->opaque = NULL;
-
-	seterrinfo(zf->entry[fileno].fn, zf->zn);
-
-	len = fread (zf->unz_in, 1, BUFSIZE, zf->zp);
-	if (len <= 0) {
-	    myerror (ERRSTR, "read error");
-	    return -1;
-	}
-	
-	zf->unz_zst->next_in = zf->unz_in;
-	zf->unz_zst->avail_in = len;
-	/* negative value to tell zlib that there is no header */
-	if (inflateInit2(zf->unz_zst, -MAX_WBITS) != Z_OK) {
-	    myerror(ERRFILE, zf->unz_zst->msg);
-	    return -1;
-	}
-    } else if (fileno == -1)
-	return 0;
-
-    zf->unz_zst->next_out = outbuf;
-    zf->unz_zst->avail_out = toread;
-    out_before = zf->unz_zst->total_out;
-    
-    /* endless loop until something has been accomplished */
-    for (;;) {
-	inflate_return = inflate(zf->unz_zst, Z_SYNC_FLUSH);
-
-	switch (inflate_return) {
-	case Z_OK:
-	case Z_STREAM_END:
-	    /* all ok */
-	    /* XXX: STREAM_END probably won't happen, since we didn't
-	       have a header */
-	    return(zf->unz_zst->total_out - out_before);
-	case Z_BUF_ERROR:
-	    if (zf->unz_zst->avail_in == 0) {
-		/* read some more bytes */
-		len = fread (zf->unz_in, 1, BUFSIZE, zf->zp);
-		if (len <= 0) {
-		    myerror (ERRSTR, "read error");
-		    return -1;
-		}
-		continue;
-	    }
-	    myerror(ERRFILE, "zlib error: %s", zf->unz_zst->msg);
-	    return -1;
-	case Z_NEED_DICT:
-	case Z_DATA_ERROR:
-	case Z_STREAM_ERROR:
-	case Z_MEM_ERROR:
-	    myerror(ERRFILE, "zlib error: %s", zf->unz_zst->msg);
-	    return -1;
-	}
-    }
 }

@@ -1,5 +1,8 @@
 stored/deflated/rest
 
+CRC-check wenn uncompressen (unstoren?)
+int, unsigned int abgleichen in zip.h
+
 procedures to change states in struct zf_entry's
 fixing
 samples: fill in where and sclone

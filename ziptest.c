@@ -1,6 +1,7 @@
 #include "zip.h"
 #include "error.h"
 #include "ziplow.h"
+#include "zipfile.h"
 
 char *prg;
 #define BUFSIZE 65536
@@ -29,7 +30,10 @@ main(int argc, char *argv[])
     for (i=0; i<zf->nentry; i++)
 	printf("%8d %s\n", zf->entry[i].uncomp_size, zf->entry[i].fn);
 
-    i = zf_read(zf, 1, buf, BUFSIZE-1);
+    zf_open(zf, 1);
+    i = zf_read(zf, buf, BUFSIZE-1);
+    zf_close(zf);
+    
     buf[i] = 0;
     printf("read %d bytes: '%s'\n", i, buf);
     

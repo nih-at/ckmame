@@ -214,9 +214,10 @@ diagnostics(struct game *game, struct match *m, struct zip **zip)
 		break;
 		
 	    case ROM_CRCERR:
-		if (output_options & WARN_WRONG_CRC)
+		if (output_options & WARN_WRONG_CRC) {
 		    warn_rom(game->rom+i, "wrong crc (%0.8x)",
 			     zip[m[i].zno]->rom[m[i].fno].crc);
+		}
 		break;
 		
 	    case ROM_NAMERR:

@@ -26,13 +26,17 @@ struct zf {
     char *zn;
     FILE *zp;
     unsigned short comlen, changes;
-    unsigned int nentry, nentry_alloc, cd_size, cd_offset;
+    int nentry, nentry_alloc;
+    unsigned int cd_size, cd_offset;
     char *com;
     struct zf_entry *entry;
     
     /* for reading from this zip-file */
     /* last opened file in this zip */
-    unsigned int unz_last;
+    int unz_last;
+    /* no of bytes already read (if comp_method == stored), -1 on error */
+    int unz_read;
+    /* input buffer for comp_method == deflated */
     char *unz_in;
     z_stream *unz_zst;
 };
