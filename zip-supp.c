@@ -92,7 +92,7 @@ readinfosfromzip (struct zfile *z)
     z->rom = NULL;
     z->zf = NULL;
 
-    if ((zf=zip_open(z->name, ZIP_CHECKCONS))==NULL)
+    if ((zf=zip_open(z->name, 0))==NULL)
 	return -1;
 
     z->rom = (struct rom *)xmalloc(sizeof(struct rom)*(zf->nentry));
