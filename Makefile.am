@@ -1,4 +1,4 @@
-AUTOMAKE_OPTIONS=dist-zip 
+AUTOMAKE_OPTIONS=dist-bzip2
 
 AM_CPPFLAGS=-I$(top_srcdir)/libzip
 LDADD=@LIBOBJS@ libzip/libzip.la
