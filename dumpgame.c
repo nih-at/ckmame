@@ -8,10 +8,39 @@
 #include "error.h"
 #include "util.h"
 #include "romutil.h"
+#include "getopt.h"
+#include "config.h"
 
 int dump_game(DB *db, char *name);
 
 char *prg;
+char *usage = "Usage: %s [-hV] [-D dbfile] [game ...]\n";
+
+char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and"
+                   " Thomas Klausner\n\n";
+
+char help[] = "\n\
+  -h, --help           display this help message\n\
+  -V, --version        display version number\n\
+  -D, --db DBFILE      use db DBFILE\n\
+\n\
+Report bugs to <nih@giga.or.at>.\n";
+
+char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
+Copyright (C) 1999 Dieter Baron and Thomas Klausner\n\
+" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
+You may redistribute copies of\n\
+" PACKAGE " under the terms of the GNU General Public License.\n\
+For more information about these matters, see the files named COPYING.\n";
+
+#define OPTIONS "hVo:"
+
+struct option options[] = {
+    { "help",          0, 0, 'h' },
+    { "version",       0, 0, 'V' },
+    { "db",            1, 0, 'D' },
+    { NULL,            0, 0, 0 },
+};
 
 static char *where_name[] = {
     "zip", "cloneof", "grand-cloneof"
@@ -26,20 +55,46 @@ main(int argc, char **argv)
     char *dbname;
     DB *db;
     char **list;
+    int dbext;
+    char c;
     
     prg = argv[0];
 
+    dbext = 0;
     dbname = getenv("MAMEDB");
-    if (dbname == NULL)
+    if (dbname == NULL) {
 	dbname = "mame";
+	dbext = 1;
+    }
 
-    if ((db=db_open(dbname, 1, 0))==NULL) {
-	myerror(ERRSTR, "can't open database `mame.db'");
+    opterr = 0;
+    while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
+	switch (c) {
+	case 'h':
+	    fputs(help_head, stdout);
+	    printf(usage, prg);
+	    fputs(help, stdout);
+	    exit(0);
+	case 'V':
+	    fputs(version_string, stdout);
+	    exit(0);
+	case 'D':
+	    dbname = optarg;
+	    dbext = 0;
+	    break;
+    	default:
+	    fprintf(stderr, usage, prg);
+	    exit(1);
+	}
+    }
+
+    if ((db=db_open(dbname, dbext, 0))==NULL) {
+	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit (1);
     }
 
     if ((nlist=r_list(db, "/list", &list)) < 0) {
-	myerror(ERRDEF, "list of games not found in database");
+	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
     }
 
