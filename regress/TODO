@@ -1,0 +1,6 @@
+- in parent: rom used by child (child also tested)
+- in parent: rom used by child (child not tested)
+- in parent: rom from child, unused
+- in parent: unknown file
+- test multiple games
+- best match for one rom used by another rom (marry)
