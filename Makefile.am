@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS=dist-zip 
 
-INCLUDES=-Ilibzip
+INCLUDES=-I$(top_srcdir)/libzip
 LDADD=@LIBOBJS@ libzip/libzip.a
 
 SUBDIRS=libzip
