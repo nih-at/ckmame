@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.19 2003/03/16 10:21:36 wiz Exp $
+  $NiH: zip-supp.c,v 1.20 2003/12/28 00:56:06 wiz Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -149,7 +149,7 @@ readinfosfromzip (struct zfile *z)
 
     if ((zf=zip_open(z->name, 0, &zerr))==NULL) {
 	/* no error if file doesn't exist */
-	if (zip_err != ZERR_NOENT) {
+	if (zerr != ZERR_NOENT) {
 	    char errstr[1024];
 
 	    (void)zip_error_str(errstr, sizeof(errstr),

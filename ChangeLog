@@ -1,5 +1,7 @@
 2003-12-28  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
+	* zip-supp.c (readinfosfromzip): bugfix for previous.
+
 	* ckmame.c: sort options alphabetically.
 
 	* config.guess, config.sub, depcomp, install-sh, missing,
