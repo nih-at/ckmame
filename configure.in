@@ -77,12 +77,12 @@ then
     AC_CHECK_FUNCS(dbopen, [db=db])
     if test "$db" = "none"
     then
-	AC_CHECK_LIB(db, dbopen, [db=db; LIBS="-ldb $LIBS"])
+	AC_CHECK_LIB(db, dbopen, [db=db; DBLIBS="-ldb"])
     fi
 fi
 if test "$db" = "none" -a "$check_gdbm" = "yes"
 then
-	AC_CHECK_LIB(gdbm, gdbm_open, [db=gdbm; LIBS="-lgdbm $LIBS"])
+	AC_CHECK_LIB(gdbm, gdbm_open, [db=gdbm; DBLIBS="-lgdbm"])
 fi
 if test "$db" = "none"
 then
@@ -92,6 +92,7 @@ fi
 AC_REPLACE_FUNCS(fnmatch)
 AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
 AC_SUBST(LIBOBJS)
+AC_SUBST(DBLIBS)
 
 AC_LINK_FILES(db-${db}.h db-${db}.c, dbl-int.h dbl-int.c)
 

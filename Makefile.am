@@ -3,6 +3,8 @@ AUTOMAKE_OPTIONS=dist-zip
 INCLUDES=-I$(top_srcdir)/libzip
 LDADD=@LIBOBJS@ libzip/libzip.a
 
+LIBS=@DBLIBS@ @LIBS@
+
 SUBDIRS=libzip
 
 bin_PROGRAMS=ckmame mkmamedb dumpgame
