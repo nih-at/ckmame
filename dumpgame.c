@@ -86,7 +86,7 @@ main(int argc, char **argv)
     DB *db;
     char **list;
     int dbext;
-    char c;
+    int c;
     
     prg = argv[0];
 

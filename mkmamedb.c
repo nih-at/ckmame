@@ -74,7 +74,7 @@ main(int argc, char **argv)
     DB *db;
     char *dbname, *fname;
     int dbext;
-    char c;
+    int c;
 
     prg = argv[0];
 
