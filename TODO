@@ -1,4 +1,4 @@
-support "flags nodump" and "flags baddump" appearing in latest MESS/MAME
+add tests for "flags nodump" and "flags baddump"
 
 add md5 support and check 'disks' (see latest mame db file in /pub/nih/ckmame for examples)
 
@@ -23,16 +23,3 @@ get roms from a different location to fix sets
 create complete sets, and full-merge(?)
 fix all XXXs
 
-zip-library:
-don't allow the same filename twice in a zip (when adding/replacing)
-append to files (for self-extracting files)
-add custom compression function support
-zip_replace_zip: remember compression method, recompress if different speced
-better closing of zip-files
-close even if error...
-update-zip (instead of close, reopen)
-support for old compression methods?????
-zip-comment functions
-better error handling, more verbose
-test
-add more tests
