@@ -25,6 +25,7 @@ void zf_free(struct zf *zf);
 struct zf *z_open(char *fn);
 char *readstr(char **str, int len);
 int readcdentry(FILE *fp, char **cdpp, struct zf_entry *zfe);
+int checkcons(struct zf *zf, FILE *fp);
 
 
 
@@ -163,6 +164,16 @@ readcdir(FILE *fp, char *buf, int j, char *match)
     }
     
     return zf;
+}
+
+
+
+int
+checkcons(struct zf *zf, FILE *fp)
+{
+    /* XXX: to be written */
+
+    return 0;
 }
 
 
