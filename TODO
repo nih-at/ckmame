@@ -5,9 +5,7 @@ gestoredes zippen beim kopieren
 CRC-check wenn uncompressen (unstoren?)
 int, unsigned int abgleichen in zip.h
 
-procedures to change states in struct zf_entry's
-fixing
+test fixing
 samples: fill in where and sclone
 GNU conventions for dumpgame, mkmamedb
-handle merge (done?)
 fix all XXXs

@@ -746,6 +746,8 @@ readcdentry(FILE *fp, struct zf_entry *zfe, unsigned char **cdpp,
 	if (readp) {
 	    if (zfe->fnlen)
 		zfe->fn = readfpstr(fp, zfe->fnlen, 1);
+	    else
+		zfe->fn = xstrdup("");
 	    if (zfe->eflen)
 		zfe->ef = readfpstr(fp, zfe->eflen, 0);
 	    /* XXX: really null-terminate comment? */
