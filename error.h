@@ -2,6 +2,8 @@
 #define _HAD_ERROR_H
 
 /*
+  $NiH$
+
   error.h -- error printing
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

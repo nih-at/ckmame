@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   r_util.c -- data base read utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

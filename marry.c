@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   marry.c -- pair matches with roms
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

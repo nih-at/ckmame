@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   superflouos.c -- check for unknown file in rom directories
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   fix.c -- fix romsets
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

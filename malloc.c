@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   malloc.c -- malloc routines with exit on failure
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

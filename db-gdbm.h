@@ -2,6 +2,8 @@
 #define _HAD_DBL_INT_H
    
 /*
+  $NiH$
+
   db-gdbm.h -- low level routines for GNU gdbm
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

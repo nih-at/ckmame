@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   w_game.c -- write game strcut to db
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

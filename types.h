@@ -2,6 +2,8 @@
 #define _HAD_TYPES_H
 
 /*
+  $NiH$
+
   types.h -- type definitions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

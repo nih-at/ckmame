@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   db-gdbm.c -- low level routines for GNU gdbm
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

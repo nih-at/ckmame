@@ -2,6 +2,8 @@
 #define _HAD_W_H
 
 /*
+  $NiH$
+
   w.h -- data base write functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

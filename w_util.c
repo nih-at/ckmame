@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   w_util.c -- data base write utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

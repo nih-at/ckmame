@@ -2,6 +2,8 @@
 #define _HAD_DBL_INT_H
    
 /*
+  $NiH$
+
   db-db.h -- low level routines for Berkley db 
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

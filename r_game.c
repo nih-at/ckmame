@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   r_game.c -- read game struct from db
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

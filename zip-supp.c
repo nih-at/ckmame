@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   zip-supp.c -- support code for zip files
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

@@ -2,6 +2,8 @@
 #define _HAD_FUNCS_H
 
 /*
+  $NiH$
+
   funcs.h -- tree functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

@@ -2,6 +2,8 @@
 #define _HAD_DBL_H
 
 /*
+  $NiH$
+
   dbl.h -- generic low level data base routines
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

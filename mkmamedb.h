@@ -2,6 +2,8 @@
 #define _HAD_MKMAMEDB_H
 
 /*
+  $NiH$
+
   mkmamedb.h -- create mamedb
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

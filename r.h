@@ -2,6 +2,8 @@
 #define _HAD_R_H
 
 /*
+  $NiH$
+
   r.h -- data base read functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

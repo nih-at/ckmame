@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   error.c -- error printing
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   dbl.c -- generic low level data base routines
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

@@ -2,6 +2,8 @@
 #define _HAD_ROMUTIL_H
 
 /*
+  $NiH$
+
   romutil.h -- miscellaneous utility functions for rom handling
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   r_prog.c -- read prog struct from db
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

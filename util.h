@@ -2,6 +2,8 @@
 #define _HAD_UTIL_H
 
 /*
+  $NiH$
+
   util.h -- miscellaneous utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

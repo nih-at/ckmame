@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   match.c -- find matches
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

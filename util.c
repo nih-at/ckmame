@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   util.c -- utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

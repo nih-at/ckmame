@@ -2,6 +2,8 @@
 #define _HAD_DBH_H
 
 /*
+  $NiH$
+
   dbh.h -- high level db functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   r_list.c -- read list struct from db
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

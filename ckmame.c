@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 

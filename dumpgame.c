@@ -1,4 +1,6 @@
 /*
+  $NiH$
+
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 
