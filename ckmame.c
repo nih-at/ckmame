@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.33 2004/02/26 01:09:21 wiz Exp $
+  $NiH: ckmame.c,v 1.34 2004/02/26 02:26:06 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -251,7 +251,7 @@ main(int argc, char **argv)
 
     tree_traverse(db, tree, sample);
 
-    if (!ignore_extra)
+    if (optind == argc && !ignore_extra)
 	handle_extra_files(db, dbname, sample);
 
     return 0;
