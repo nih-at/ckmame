@@ -5,7 +5,7 @@ LDADD=@LIBOBJS@ libzip/libzip.la
 
 LIBS=@DBLIBS@ @LIBS@
 
-SUBDIRS=libzip
+SUBDIRS=libzip regress
 
 bin_PROGRAMS=ckmame mkmamedb dumpgame superflouos
 man_MANS=ckmame.1

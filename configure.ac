@@ -109,5 +109,6 @@ AC_EXEEXT
 AM_DISABLE_STATIC
 AM_PROG_LIBTOOL
 
-AC_CONFIG_FILES([Makefile libzip/Makefile libzip/tests/Makefile])
+AC_CONFIG_FILES([Makefile libzip/Makefile libzip/tests/Makefile
+		 regress/Makefile])
 AC_OUTPUT
