@@ -78,6 +78,36 @@ zip_add_data(struct zf *zf, char *name, char *buf,
 
 
 int
+zip_add_zip(struct zf *zf, char *name, struct zf *zf1, int idx1,
+	    int start, int len)
+{
+    if (idx1 >= zf1->nentry || idx < 0)
+	return -1;
+
+    if (zf->nentry >= zf->nentry_alloc-1) {
+	zf->nentry_alloc += 16;
+	zf->entry = (struct zf_entry *)xrealloc(zf->entry,
+						 sizeof(struct zf_entry)
+						 * zf->nentry_alloc);
+    }
+
+    zf->changes = 1;
+    zf->entry[zf->nentry].state = Z_ADDED;
+    zf->entry[zf->nentry].ch_name = xstrdup(name);
+    zf->entry[zf->nentry].ch_data_fp = NULL;
+    zf->entry[zf->nentry].ch_data_buf = NULL;
+    zf->entry[zf->nentry].ch_data_zf = zf1;
+    zf->entry[zf->nentry].ch_data_zf_fileno = idx1;
+    zf->entry[zf->nentry].ch_data_offset = start;
+    zf->entry[zf->nentry].ch_data_len = len;
+    zf->nentry++;
+
+    return zf->nentry;
+}
+
+
+
+int
 zip_replace_file(struct zf *zf, int idx, char *name, FILE *file,
 	    int start, int len)
 {
@@ -120,6 +150,35 @@ zip_replace_data(struct zf *zf, int idx, char *name, char *buf,
 	zf->entry[idx].ch_name = xstrdup(name);
     }
     zf->entry[idx].ch_data_buf = buf;
+    zf->entry[idx].ch_data_offset = start;
+    zf->entry[idx].ch_data_len = len;
+
+    return idx;
+}
+
+
+
+int
+zip_replace_zip(struct zf *zf, int idx, char *name, struct zf *zf1, int idx1,
+	    int start, int len)
+{
+    if (idx >= zf->nentry || idx < 0)
+	return -1;
+
+    if (idx1 >= zf1->nentry || idx < 0)
+	return -1;
+
+    zip_unchange_data(zf, idx);
+
+    zf->changes = 1;
+    zf->entry[idx].state = Z_REPLACED;
+    if (name) {
+	if (zf->entry[idx].ch_name)
+	    free(zf->entry[idx].ch_name);
+	zf->entry[idx].ch_name = xstrdup(name);
+    }
+    zf->entry[idx].ch_data_zf = zf1;
+    zf->entry[idx].ch_data_zf_fileno = idx1;
     zf->entry[idx].ch_data_offset = start;
     zf->entry[idx].ch_data_len = len;
 
