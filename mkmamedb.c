@@ -78,9 +78,13 @@ main(int argc, char **argv)
 
     prg = argv[0];
 
-    dbname = "mame";
+    dbname = getenv("MAMEDB");
+    dbext = 0;
+    if (dbname == NULL) {
+	dbname = "mame";
+	dbext = 1;
+    }
     fname = "db.txt";
-    dbext = 1;
     
     optind = opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
