@@ -1,3 +1,4 @@
+init rom structure for files from zips
 merge superfluous into ckmame
 add option to completely test zip files (including 'unzip -t' replacement)
 fix 'should be in cloneof, is in zip'
