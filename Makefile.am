@@ -12,6 +12,6 @@ dumpgame_SOURCES=dumpgame.c error.c malloc.c r_game.c r_util.c r_list.c \
 	dbl.c util.c
 noinst_HEADERS=unzip.h error.h types.h w.h funcs.h r.h mkmamedb.h
 
-EXTRA_DIST=db-db.c db-db.h
+EXTRA_DIST=db-db.c db-db.h getopt.h fnmatch.h
 
 LIBS = -lz
