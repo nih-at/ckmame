@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.32 2004/01/27 23:30:32 wiz Exp $
+  $NiH: dbread.c,v 1.33 2004/02/05 17:32:30 dillo Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -39,14 +39,22 @@
 #include "funcs.h"
 #include "r.h"
 
-int ngames, sgames;
-char **games;
+static int ngames, sgames;
+static char **games;
+
+static int nextra, sextra;
+static char **extra;
+
+static int nsl, ssl;
+static char **sl;
 
 static char *gettok(char **p);
-static int add_name(char *s);
+static int add_name_list(char *s);
+static int add_extra_list(char *s);
+static int add_sample_list(char *s);
 static int game_add(DB* db, struct game *g);
-void familymeeting(DB* db, struct game *parent, struct game *child);
-int lost(struct game *a);
+static void familymeeting(DB* db, struct game *parent, struct game *child);
+static int lost(struct game *a);
 
 void game_free(struct game *g, int fullp);
 
@@ -269,6 +277,8 @@ dbread(DB* db, char *fname)
 		    break;
 		}
 		d[nd].name = xstrdup(gettok(&l));
+		/* add to list of extra files */
+		add_extra_list(d[nd].name);
 		d[nd].crctypes = 0;
 		memset(d[nd].sha1, 0, sizeof(d[nd].sha1));
 		memset(d[nd].md5, 0, sizeof(d[nd].md5));
@@ -332,7 +342,11 @@ dbread(DB* db, char *fname)
 		g->sample = s;
 		g->ndisk = nd;
 		g->disk = d;
-		
+
+		/* add to list of games with samples */
+		if (g->nsample > 0)
+		    add_sample_list(g->name);
+
 		if (g->cloneof[0])
 		    if (strcmp(g->cloneof[0], g->name) == 0) {
 			free(g->cloneof[0]);
@@ -480,9 +494,21 @@ dbread(DB* db, char *fname)
 	}
     }
 
+    /* write list of all known names to db */
     qsort(games, ngames, sizeof(char *),
 	  (int (*)(const void *, const void *))strpcasecmp);
     w_list(db, "/list", games, ngames);
+
+    /* write list of all games with samples to db */
+    qsort(sl, nsl, sizeof(char *),
+	  (int (*)(const void *, const void *))strpcasecmp);
+    w_list(db, "/sample_list", sl, nsl);
+
+    /* write list of all extra files to db */
+    qsort(extra, nextra, sizeof(char *),
+	  (int (*)(const void *, const void *))strpcasecmp);
+    w_list(db, "/extra_list", extra, nextra);
+
     w_prog(db, prog_name, prog_version);
 
     free(lostchildren);
@@ -491,7 +517,7 @@ dbread(DB* db, char *fname)
 
 
 
-void
+static void
 familymeeting(DB *db, struct game *parent, struct game *child)
 {
     struct game *gparent;
@@ -528,7 +554,7 @@ familymeeting(DB *db, struct game *parent, struct game *child)
 }
 
 
-int
+static int
 lost(struct game *a)
 {
     int i;
@@ -556,7 +582,7 @@ game_add(DB* db, struct game *g)
 	myerror(ERRSTR, "can't write game `%s' to db", g->name);
     }
     else
-	add_name(g->name);
+	add_name_list(g->name);
 
     return err;
 }
@@ -564,7 +590,7 @@ game_add(DB* db, struct game *g)
 
 
 static int
-add_name(char *s)
+add_name_list(char *s)
 {
     if (ngames >= sgames) {
 	sgames += 1024;
@@ -575,6 +601,40 @@ add_name(char *s)
     }
 
     games[ngames++] = xstrdup(s);
+
+    return 0;
+}
+
+static int
+add_sample_list(char *s)
+{
+    if (nsl >= ssl) {
+	ssl += 1024;
+	if (nsl == 0)
+	    sl = (char **)xmalloc(sizeof(char *)*ssl);
+	else
+	    sl = (char **)xrealloc(sl, sizeof(char *)*ssl);
+    }
+
+    sl[nsl++] = xstrdup(s);
+
+    return 0;
+}
+
+
+
+static int
+add_extra_list(char *s)
+{
+    if (nextra >= sextra) {
+	sextra += 1024;
+	if (nextra == 0)
+	    extra = (char **)xmalloc(sizeof(char *)*sextra);
+	else
+	    extra = (char **)xrealloc(extra, sizeof(char *)*sextra);
+    }
+
+    extra[nextra++] = xstrdup(s);
 
     return 0;
 }
