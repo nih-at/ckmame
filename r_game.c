@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.15 2003/09/12 23:18:51 wiz Exp $
+  $NiH: r_game.c,v 1.16 2004/01/27 23:04:09 wiz Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -63,10 +63,26 @@ r_game(DB *db, char *name)
 			    sizeof(char *));
     game->nsample = r__array(&v, r__rom, (void *)&game->sample,
 			     sizeof(struct rom));
-
+    game->ndisk = r__array(&v, r__disk, (void *)&game->disk,
+			   sizeof(struct disk));
+    
     free(data);
 
     return game;
+}
+
+
+
+void
+r__disk(DBT *v, void *vd)
+{
+    struct disk *d;
+    
+    d = (struct disk *)vd;
+
+    d->name = r__string(v);
+    r__mem(v, d->sha1, sizeof(d->sha1));
+    r__mem(v, d->md5, sizeof(d->md5));
 }
 
 

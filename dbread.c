@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.30 2003/10/02 15:49:24 wiz Exp $
+  $NiH: dbread.c,v 1.31 2004/01/27 23:04:08 wiz Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -77,12 +77,13 @@ dbread(DB* db, char *fname)
     int i, j, deleted;
     /* XXX: every game is only allowed 1000 roms */
     struct rom r[1000], s[1000];
+    struct disk d[10];
     struct game *g;
     struct game *parent;
     char **lostchildren;
     int *lostchildren_to_do;
     int nlost, lostmax, stillost;
-    int nr, ns, lineno;
+    int nr, ns, nd, lineno;
     int to_do;
 
     if ((fin=fopen(fname, "r")) == NULL) {
@@ -97,7 +98,7 @@ dbread(DB* db, char *fname)
 
     seterrinfo(fname, NULL);
     
-    nlost = nr = ns = 0;
+    nlost = nr = ns = nd = 0;
     lineno = 0;
     state = st_top;
     
@@ -132,7 +133,7 @@ dbread(DB* db, char *fname)
 		g->nrom = g->nsample = 0;
 		g->nclone = g->nsclone = 0;
 		g->ndisk = 0;
-		nr = ns = 0;
+		nr = ns = nd = 0;
 		state = st_game;
 	    }
 	    else if (strcmp(cmd, "emulator") == 0)
@@ -205,7 +206,7 @@ dbread(DB* db, char *fname)
 			    break;
 			}
 			
-			if (hex2bin(r[nr].sha1, p, 20) != 0) {
+			if (hex2bin(r[nr].sha1, p, sizeof(r[nr].sha1)) != 0) {
 			    myerror(ERRFILE, "%d: token sha1 argument invalid",
 				    lineno);
 			    break;
@@ -256,6 +257,55 @@ dbread(DB* db, char *fname)
 		else
 		    nr++;
 	    }
+	    else if (strcmp(cmd, "disk") == 0) {
+		gettok(&l);
+		if (strcmp(gettok(&l), "name") != 0) {
+		    /* XXX: error */
+		    myerror(ERRFILE, "%d: expected token (name) not found",
+			    lineno);
+		    break;
+		}
+		d[nd].name = xstrdup(gettok(&l));
+		memset(d[nd].sha1, 0, sizeof(d[nd].sha1));
+		memset(d[nd].md5, 0, sizeof(d[nd].md5));
+
+		/* read remaining tokens and look for known tokens */
+		while ((p=gettok(&l)) != NULL) {
+		    if (strcmp(p, "sha1") == 0) {
+			if ((p=gettok(&l)) == NULL) {
+			    /* XXX: error */
+			    myerror(ERRFILE, "%d: token sha1 missing argument",
+				    lineno);
+			    break;
+			}
+			
+			if (hex2bin(d[nd].sha1, p, sizeof(d[nd].sha1)) != 0) {
+			    myerror(ERRFILE, "%d: token sha1 argument invalid",
+				    lineno);
+			    break;
+			}
+		    }
+		    else if (strcmp(p, "md5") == 0) {
+			if ((p=gettok(&l)) == NULL) {
+			    /* XXX: error */
+			    myerror(ERRFILE, "%d: token md5 missing argument",
+				    lineno);
+			    break;
+			}
+			
+			if (hex2bin(d[nd].md5, p, sizeof(d[nd].md5)) != 0) {
+			    myerror(ERRFILE, "%d: token md5 argument invalid",
+				    lineno);
+			    break;
+			}
+		    }
+		    /*
+		      else
+		      myerror(ERRFILE, "%d: ignoring token `%s'", lineno, p);
+		    */
+		}
+		nd++;
+	    }
 	    else if (strcmp(cmd, "sampleof") == 0)
 		g->sampleof[0] = xstrdup(gettok(&l));
 	    else if (strcmp(cmd, "sample") == 0) {
@@ -274,6 +324,8 @@ dbread(DB* db, char *fname)
 		g->rom = r;
 		g->nsample = ns;
 		g->sample = s;
+		g->ndisk = nd;
+		g->disk = d;
 		
 		if (g->cloneof[0])
 		    if (strcmp(g->cloneof[0], g->name) == 0) {

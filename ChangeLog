@@ -1,3 +1,13 @@
+2004-01-28  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* r_game.c (r_game): read disk image info from db.
+	(r__disk): new function.
+	* w_game.c (w_game): write disk image info to db.
+	(w__disk): new function.
+
+	* dumpgame.c (dump_game): print disk image lines.
+	* dbread.c (dbread): parse disk image lines.
+
 2004-01-27  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* types.h: add struct disk to struct game, sha1 to struct rom.

@@ -1,5 +1,5 @@
 /*
-  $NiH: w_game.c,v 1.14 2003/09/12 23:18:52 wiz Exp $
+  $NiH: w_game.c,v 1.15 2004/01/27 23:04:10 wiz Exp $
 
   w_game.c -- write game strcut to db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -65,12 +65,27 @@ w_game(DB *db, struct game *game)
     w__string(&v, game->sampleof[1]);
     w__array(&v, w__pstring, game->sclone, sizeof(char *), game->nsclone);
     w__array(&v, w__rom, game->sample, sizeof(struct rom), game->nsample);
+    w__array(&v, w__disk, game->disk, sizeof(struct disk), game->ndisk);
 
     err = ddb_insert(db, game->name, &v);
 
     free(v.data);
 
     return err;
+}
+
+
+
+void
+w__disk(DBT *v, void *vd)
+{
+    struct disk *d;
+
+    d = (struct disk *)vd;
+
+    w__string(v, d->name);
+    w__mem(v, d->sha1, sizeof(d->sha1));
+    w__mem(v, d->md5, sizeof(d->md5));
 }
 
 

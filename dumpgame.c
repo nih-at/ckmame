@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.26 2003/09/12 23:18:51 wiz Exp $
+  $NiH: dumpgame.c,v 1.27 2004/01/27 23:04:08 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -244,12 +244,23 @@ dump_game(DB *db, char *name)
     if (game->nsample) {
 	printf("Samples:");
 	for (i=0; i<game->nsample; i++)
-	    printf("\t%s%-12s  in %s\n",
+	    printf("\t%sfile %-12s  in %s\n",
 		   (i==0 ? "" : "\t"),
 		   game->sample[i].name,
 		   where_name[game->sample[i].where]);
     }
-
+    if (game->ndisk) {
+	printf("Disks:");
+	for (i=0; i<game->ndisk; i++) {
+	    printf("\t\tdisk %-12s", game->disk[i].name);
+	    if (!IS_NUL(game->disk[i].sha1, sizeof(game->disk[i].sha1)))
+		printf("  sha1 %s", bin2hex(game->disk[i].sha1, sizeof(game->disk[i].sha1)));
+	    if (!IS_NUL(game->disk[i].md5, sizeof(game->disk[i].md5)))
+		printf("  md5 %s", bin2hex(game->disk[i].md5, sizeof(game->disk[i].md5)));
+	    putc('\n', stdout);
+	}
+    }
+    
     game_free(game, 1);
 
     return 0;
