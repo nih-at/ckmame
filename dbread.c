@@ -168,7 +168,8 @@ dbread(DB* db, char *fname)
 		    break;
 		}
 		r[nr].size = strtol(gettok(&l), NULL, 10);
-		if (strncmp(gettok(&l), "crc", 3) != 0) /* XXX: for raine */ {
+		p = gettok(&l);
+		if (strcmp(p, "crc") != 0 && strcmp(p, "crc32") != 0) {
 		    /* XXX: error */
 		    myerror(ERRZIP, "%d: expected token (crc) not found",
 			    lineno);

@@ -3,6 +3,8 @@
 	* dbread.c (dbread): handle names containing white space.
 	(gettok): new function.
 	
+	* dbread.c (dbread): stricter check for crc token.
+
 2001-10-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* libzip/zip_replace_zip.c (read_part): fix typo: pass correct
