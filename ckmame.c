@@ -21,7 +21,7 @@
 
 char *prg;
 
-char *usage = "Usage: %s [-hVSnsfbcd] [-D dbfile] [game...]\n";
+char *usage = "Usage: %s [-hVSnsfbdc] [-D dbfile] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 

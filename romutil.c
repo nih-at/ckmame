@@ -46,6 +46,8 @@ romcmp(struct rom *r1, struct rom *r2, int merge)
 	if (r1->size == r2->size) {
 	    if (r1->crc == r2->crc || r2->crc == 0 || r1->crc == 0)
 		return ROM_OK;
+	    else if (((r1->crc ^ r2->crc) & 0xffffffff) == 0xffffffff)
+		return ROM_BESTBADDUMP;
 	    else
 		return ROM_CRCERR;
 	}

@@ -218,7 +218,7 @@ diagnostics(struct game *game, struct match *m, struct zip **zip)
 			     zip[m[i].zno]->rom[m[i].fno].crc);
 		}
 		break;
-		
+
 	    case ROM_NAMERR:
 		if (output_options & WARN_WRONG_NAME)
 		    warn_rom(game->rom+i, "wrong name (%s)",
@@ -230,6 +230,11 @@ diagnostics(struct game *game, struct match *m, struct zip **zip)
 		    warn_rom(game->rom+i, "too long, valid subsection"
 			     " at byte %d (%d)", m[i].next->offset,
 			     zip[m[i].zno]->rom[m[i].fno].size);
+		break;
+		
+	    case ROM_BESTBADDUMP:
+		if (output_options & (WARN_NO_GOOD_DUMP|WARN_CORRECT))
+		    warn_rom(game->rom+i, "best bad dump");
 		break;
 		
 	    case ROM_OK:
