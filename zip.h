@@ -19,4 +19,12 @@ struct zf {
     u_short nentry, com_size;
     u_int cd_size, cd_offset;
     char *com;
+    struct zf_entry *entry;
+};
+
+struct zf_entry {
+    ushort version_made, version_need, bitflags, comp_meth,
+	lmtime, lmdate, fnlen, eflen, fcomlen, disknrstart, intatt;
+    uint crc, comp_size, uncomp_size, extatt, local_offset;
+    char *fn, *ef, *fcom;
 }
