@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.27 2004/02/05 17:32:30 dillo Exp $
+  $NiH: match.c,v 1.28 2004/02/05 18:01:47 dillo Exp $
 
   match.c -- find matches
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "types.h"
 #include "dbl.h"
