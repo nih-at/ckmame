@@ -40,8 +40,8 @@ zip_open(char *fn)
 
     if ((fp=fopen(fn, "r+b"))==NULL)
 	return NULL;
+
     clearerr(fp);
-    
     i = fseek(fp, -BUFSIZE, SEEK_END);
     if (i == -1 && errno != EFBIG) {
 	/* seek before start of file on my machine */
@@ -50,12 +50,14 @@ zip_open(char *fn)
     }
 
     buf = (char *)xmalloc(BUFSIZE);
-    
+
+    clearerr(fp);
     buflen = fread(buf, 1, BUFSIZE, fp);
 
     if (ferror(fp)) {
 	/* read error */
 	free(buf);
+	fclose(fp);
 	return NULL;
     }
     
@@ -90,6 +92,7 @@ zip_open(char *fn)
 	/* no eocd found */
 	free(buf);
 	zf_free(cdir);
+	fclose(fp);
 	return NULL;
     }
 
