@@ -93,6 +93,7 @@ dbread(DB* db, char *fname)
 	    g = (struct game *)xmalloc(sizeof(struct game));
 	    g->name = g->cloneof[0] = g->cloneof[1] = g->sampleof = NULL;
 	    g->nrom = g->nsample = 0;
+	    g->nclone = 0;
 	    ingame = 1;
 	    nr = ns = 0;
 	    break;
