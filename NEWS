@@ -1,3 +1,6 @@
+MESS and Impact support.
+Bug fixes.
+
 0.4.1
 
 If a a clone zip didn't exist, it was not created.
