@@ -7,6 +7,11 @@
 
 enum zip_state { Z_UNCHANGED, Z_DELETED, Z_REPLACED, Z_ADDED, Z_RENAMED };
 
+/* flags for zip_open */
+#define ZIP_CREATE           1
+#define ZIP_EXCL             2
+#define ZIP_CHECKCONS        4
+
 int zip_err; /* global variable for errors returned by the low-level
 		library */
 
@@ -19,6 +24,9 @@ int zip_err; /* global variable for errors returned by the low-level
 #define ZERR_WRITE            6
 #define ZERR_CRC              7
 #define ZERR_ZIPCLOSED        8
+#define ZERR_FILEEXISTS       9
+#define ZERR_FILENEXISTS     10
+#define ZERR_OPEN            11
 
 extern char *zip_err_str[];
 
@@ -99,10 +107,15 @@ int zip_unchange(struct zf *zf, int idx);
 int zip_rename(struct zf *zf, int idx, char *name);
 int zip_add_file(struct zf *zf, char *name, FILE *file, int start, int len);
 int zip_add_data(struct zf *zf, char *name, char *buf, int start, int len);
+int zip_add_zip(struct zf *zf, char *name, struct zf *srczf, int srcidx,
+		int start, int len);
 int zip_replace_file(struct zf *zf, int idx, char *name, FILE *file,
 		     int start, int len);
 int zip_replace_data(struct zf *zf, int idx, char *name, char *buf,
 		     int start, int len);
+int zip_replace_zip(struct zf *zf, int idx, char *name,
+		    struct zf *srczf, int srcidx, int start, int len);
+
 int zip_delete(struct zf *zf, int idx);
 
 
