@@ -1,5 +1,5 @@
-Adapt for MAME -listinfo output changes (honor flags baddump
-and nodump)
+Adapt for MAME -listinfo output changes (honor flags baddump and nodump).
+Check disk images (chd files).
 
 0.5
 
