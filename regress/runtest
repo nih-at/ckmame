@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.6 2003/03/17 04:44:01 dillo Exp $
+#  $NiH: runtest,v 1.7 2003/10/01 16:29:38 wiz Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -151,7 +151,7 @@ checkzip() {
 	    die "cannot find input file $1"
 	fi
 	
-	${CMPZIP} ${CMPZIP_FLAGS} "$1" "$2"
+	${ZIPCMP} ${ZIPCMP_FLAGS} "$1" "$2"
 	if [ $? -ne 0 ]
 	then
 	    fail "$3"
@@ -192,15 +192,15 @@ else
     PROGRAM="${CKMAME}"
 fi
 
-if [ -z "${CMPZIP}" ]
+if [ -z "${ZIPCMP}" ]
 then
-    CMPZIP=../cmpzip
+    ZIPCMP=zipcmp
 fi
 if [ -z "${VERBOSE}" ]
 then
-    CMPZIP_FLAGS='-q'
+    ZIPCMP_FLAGS='-q'
 else
-    CMPZIP_FLAGS='-v'
+    ZIPCMP_FLAGS='-v'
 fi
 
 # XXX: set up trap to cleanup
