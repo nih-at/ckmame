@@ -34,11 +34,8 @@
 void
 rom_add_name(struct rom *r, char *name)
 {
-    r->altname = realloc(r->altname, (r->naltname+2)*sizeof(char *));
-
+    r->altname = realloc(r->altname, (r->naltname+1)*sizeof(char *));
     r->altname[r->naltname] = xstrdup(name);
-    r->altname[r->naltname+1] = NULL;
-
     r->naltname++;
 
     return;

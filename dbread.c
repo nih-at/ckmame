@@ -163,13 +163,12 @@ dbread(DB* db, char *fname)
 		}
 		if (!deleted) {
 		    for (j=0; j<nr; j++) {
-			if (romcmp(r+j, r+nr, 0) == ROM_NAMERR) {
-			    if (r[j].merge && r[nr].merge
-				&& !strcmp(r[j].merge, r[nr].merge)) {
-				rom_add_name(r+j, r[nr].name);
-				deleted = 1;
-				break;
-			    }
+			if ((romcmp(r+j, r+nr, 0) == ROM_NAMERR
+			     && r[j].merge && r[nr].merge
+			     && !strcmp(r[j].merge, r[nr].merge))) {
+			    rom_add_name(r+j, r[nr].name);
+			    deleted = 1;
+			    break;
 			}
 		    }
 		}
