@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.25 2002/06/06 09:26:53 dillo Exp $
+  $NiH: dbread.c,v 1.26 2003/02/23 14:48:04 dillo Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
@@ -95,7 +95,7 @@ dbread(DB* db, char *fname)
     lostchildren_to_do = (int *)xmalloc(lostmax*sizeof(int));
     prog_name = prog_version = NULL;
 
-    seterrinfo(NULL, fname);
+    seterrinfo(fname, NULL);
     
     nlost = nr = ns = 0;
     lineno = 0;
@@ -106,7 +106,7 @@ dbread(DB* db, char *fname)
 	if (b[strlen(b)-1] != '\n') {
 	    cmd = gettok(&l);
 	    if ((cmd == NULL) || (strcmp(cmd, "history"))) {
-		myerror(ERRZIP, "%d: warning: line too long (ignored)",
+		myerror(ERRFILE, "%d: warning: line too long (ignored)",
 			lineno);
 	    }
 	    while (fgets(b, 8192, fin)) {
@@ -152,7 +152,7 @@ dbread(DB* db, char *fname)
 		gettok(&l);
 		if (strcmp(gettok(&l), "name") != 0) {
 		    /* XXX: error */
-		    myerror(ERRZIP, "%d: expected token (name) not found",
+		    myerror(ERRFILE, "%d: expected token (name) not found",
 			    lineno);
 		    break;
 		}
@@ -166,7 +166,7 @@ dbread(DB* db, char *fname)
 		    r[nr].merge = NULL;
 		if (strcmp(p, "size") != 0) {
 		    /* XXX: error */
-		    myerror(ERRZIP, "%d: expected token (size) not found",
+		    myerror(ERRFILE, "%d: expected token (size) not found",
 			    lineno);
 		    break;
 		}
@@ -174,7 +174,7 @@ dbread(DB* db, char *fname)
 		p = gettok(&l);
 		if (strcmp(p, "crc") != 0 && strcmp(p, "crc32") != 0) {
 		    /* XXX: error */
-		    myerror(ERRZIP, "%d: expected token (crc) not found",
+		    myerror(ERRFILE, "%d: expected token (crc) not found",
 			    lineno);
 		    break;
 		}

@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: error.c,v 1.4 2002/06/06 09:26:54 dillo Exp $
 
   error.c -- error printing
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -31,8 +31,12 @@
 
 #include <errno.h>
 
+#define DEFAULT_FN	"<unknown>"
+
 extern char *prg;
-static char *myerrorfn, *myerrorzipn;
+
+static char *myerrorfn = DEFAULT_FN;
+static char *myerrorzipn = DEFAULT_FN;
 
 
 
@@ -43,22 +47,18 @@ myerror(int errtype, char *fmt, ...)
 
     fprintf(stderr, "%s: ", prg);
 
-    if (((errtype==ERRFILE)||(errtype==ERRSTR)) && myerrorfn) {
-	if (myerrorzipn)
-	    fprintf(stderr, "%s (%s): ", myerrorfn, myerrorzipn);
-	else
+    if ((errtype & ERRZIPFILE) == ERRZIPFILE)
+	fprintf(stderr, "%s (%s): ", myerrorfn, myerrorzipn);
+    else if (errtype & ERRZIP)
+	    fprintf(stderr, "%s: ", myerrorzipn);
+    else if (errtype & ERRFILE)
 	    fprintf(stderr, "%s: ", myerrorfn);
-    }
 
-    if (((errtype==ERRZIP)||(errtype==ERRZIPSTR)) && myerrorzipn)
-	fprintf(stderr, "%s: ", myerrorzipn);
-    
     va_start(va, fmt);
     vfprintf(stderr, fmt, va);
     va_end(va);
 
-    if ((errno != 0) && (((errtype==ERRSTR) && (!myerrorzipn)) ||
-	((errtype==ERRZIPSTR) && (myerrorzipn))))
+    if ((errno != 0) && (errtype & ERRSTR))
 	fprintf(stderr, ": %s", strerror(errno));
     
     putc('\n', stderr);
@@ -71,8 +71,15 @@ myerror(int errtype, char *fmt, ...)
 void
 seterrinfo(char *fn, char *zipn)
 {
-    myerrorfn = fn;
-    myerrorzipn = zipn;
+    if (fn)
+	myerrorfn = fn;
+    else
+	myerrorfn = DEFAULT_FN;
+
+    if (zipn)
+	myerrorzipn = zipn;
+    else 
+	myerrorzipn = DEFAULT_FN;
     
     return;
 }

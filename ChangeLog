@@ -1,5 +1,8 @@
 2003-02-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* error.c (myerror): change error type to flags, adapt callers.
+	(seterrinfo): set to default (<unknown>) if name is NULL.
+	
 	* dbl.c (ddb_lookup, ddb_insert): make key argument a string;
 	adapt callers.
 

@@ -2,10 +2,10 @@
 #define _HAD_ERROR_H
 
 /*
-  $NiH$
+  $NiH: error.h,v 1.3 2002/06/06 09:26:54 dillo Exp $
 
   error.h -- error printing
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -27,16 +27,15 @@
 
 
 
-/* error types: default error message (no filename), */
-#define ERRDEF    0
-/* or file error, which also outputs filename (and zipfilename), */
-#define ERRFILE   1
-/* or zipfile error, which only outputs the zipfilename, */
-#define ERRZIP    2
-/* or file error with additional strerror(errno) output, */
-#define ERRSTR    3
-/* or zipfile error with additional strerror(errno) output */
-#define ERRZIPSTR 4
+#define ERRDEF	0x0	/* no additional info */
+#define ERRZIP	0x1	/* prepend zipflie name */
+#define ERRFILE	0x2	/* prepend file name */
+#define ERRSTR	0x4	/* append strerror(errno) */
+
+#define ERRZIPFILE	(ERRZIP|ERRFILE)
+#define	ERRZIPSTR	(ERRZIP|ERRSTR)
+#define ERRFILESTR	(ERRFILE|ERRSTR)
+#define ERRZIPFILESTR	(ERRZIPFILE|ERRSTR)
 
 void myerror(int errtype, char *fmt, ...);
 void seterrinfo(char *fn, char *zipn);
