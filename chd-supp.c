@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.5 2004/04/26 21:29:19 wiz Exp $
+  $NiH: chd-supp.c,v 1.6 2004/04/28 16:59:48 dillo Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -138,6 +138,8 @@ get_hashes(struct chd *chd, struct hashes *h)
 	    /* XXX: include chd->error */
 	    fprintf(stderr, "%s: error reading hunk %d in '%s': %s\n",
 		    prg, hunk, chd->name, strerror(errno));
+	    free(buf);
+	    return -1;
 	}
 
 	if (h->types & GOT_MD5)
