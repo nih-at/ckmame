@@ -169,24 +169,32 @@ matchcmp(struct match *m1, struct match *m2)
 void
 diagnostics(struct game *game, struct match *m, struct zfile **zip)
 {
-    int i, alldead, allcorrect;
+    int i, alldead, allcorrect, allowndead, hasown;
     warn_game(game->name);
 
     /* analyze result: roms */
-    alldead = allcorrect = 1;
+    alldead = allcorrect = allowndead = 1;
+    hasown = 0;
     for (i=0; i<game->nrom; i++) {
-	if ((game->rom[i].where == ROM_INZIP)
-	    && (m[i].quality >= ROM_NAMERR))
+	if (game->rom[i].where == ROM_INZIP) {
+	    hasown = 1;
+	    if (m[i].quality >= ROM_NAMERR) {
+		alldead = allowndead = 0;
+	    }
+	}
+	else if (m[i].quality >= ROM_NAMERR) {
 	    alldead = 0;
+	}
 	if (!(m[i].where == game->rom[i].where
 	      && m[i].quality == ROM_OK))
 	    allcorrect = 0;
     }
 
-    if (alldead && game->nrom > 0 && (output_options & WARN_MISSING)) {
+    if (((alldead || (hasown && allowndead)) && game->nrom > 0
+	 && (output_options & WARN_MISSING))) {
 	warn_rom(NULL, "not a single rom found");
     }
-    else if (allcorrect && output_options & WARN_CORRECT) {
+    else if (allcorrect && game->nrom > 0 && output_options & WARN_CORRECT) {
 	warn_rom(NULL, "correct");
     }
     else {
