@@ -16,6 +16,9 @@ AC_PROG_RANLIB
 # find libzip
 PKG_CHECK_MODULES(LIBZIP, libzip >= 0.5)
 
+ZIPCMP=`pkg-config --variable=zipcmp libzip`
+AC_SUBST(ZIPCMP, $ZIPCMP)
+
 # find usable db library
 db=none
 check_db=yes

@@ -2,6 +2,10 @@ EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS}
 
 CLEANFILES=mamedb
 
+ZIPCMP=@ZIPCMP@
+
+TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}"
+
 TESTCASES=	baddump.test \
 		double.test \
 		garbage.test \
