@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.24 2004/04/16 09:09:13 dillo Exp $
+  $NiH: zip-supp.c,v 1.25 2004/04/26 11:49:38 dillo Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -23,10 +23,12 @@
 
 
 
+#include <errno.h>
+#include <md5.h>
+#include <sha1.h>
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
-#include <errno.h>
 
 #include "types.h"
 #include "error.h"
@@ -40,56 +42,54 @@
 
 extern char *prg;
 
+static int get_hashes(struct zip_file *, off_t, struct hashes *);
+
+
+
 int
 findcrc(struct zfile *zip, int idx, int romsize, const struct hashes *h)
 {
-    struct zip_file *zff;
-    unsigned long crc;
-    char buf[BUFSIZE];
-    int n, left, offset;
+    struct zip_file *zf;
+    struct hashes hn;
+    int offset, found;
 
-    /* XXX: check all hash types */
+    hashes_init(&hn);
+    hn.types = h->types;
 
-    if ((zff = zip_fopen_index(zip->zf, idx, 0)) == NULL) {
+    if ((zf = zip_fopen_index(zip->zf, idx, 0)) == NULL) {
 	fprintf(stderr, "%s: %s: can't open file '%s': %s\n", prg,
 		zip->name, zip_get_name(zip->zf, idx),
 		zip_strerror(zip->zf));
 	return -1;
     }
 
+    found = 0;
     offset = 0;
     while (offset+romsize <= zip->rom[idx].size) {
-	left = BUFSIZE;
-	crc = crc32(0, NULL, 0);
-	n = romsize;
-	while (n > 0) {
-	    if (left > n)
-		left = n;
-	    if (zip_fread(zff, buf, left) != left) {
-		fprintf(stderr, "%s: %s: %s: read error: %s\n", prg,
-			zip->name, zip_get_name(zip->zf, idx),
-			zip_strerror(zip->zf));
-		zip_fclose(zff);
-		return -1;
-	    }
-	    crc = crc32(crc, buf, left);
-	    n -= left;
+	if (get_hashes(zf, romsize, &hn) < 0) {
+	    fprintf(stderr, "%s: %s: %s: read error: %s\n", prg,
+		    zip->name, zip_get_name(zip->zf, idx),
+		    zip_strerror(zip->zf));
+	    zip_fclose(zf);
+	    return -1;
 	}
-
-	if (crc == h->crc)
+	
+	if (hashes_cmp(h, &hn) == 0) {
+	    found = 1;
 	    break;
+	}
 
 	offset += romsize;
     }
 
-    if (zip_fclose(zff)) {
+    if (zip_fclose(zf)) {
 	fprintf(stderr, "%s: %s: %s: close error: %s\n", prg,
 			zip->name, zip_get_name(zip->zf, idx),
 			zip_strerror(zip->zf));
 	return -1;
     }
     
-    if (crc == h->crc)
+    if (found)
 	return offset;
 	    
     return -1;
@@ -188,4 +188,47 @@ readinfosfromzip(struct zfile *z)
     }	
 
     return count;
+}
+
+
+
+static int
+get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
+{
+    unsigned long crc;
+    MD5_CTX md5;
+    SHA1_CTX sha1;
+    char buf[BUFSIZE];
+    int n;
+
+    if (h->types & GOT_CRC)
+	crc = crc32(0, NULL, 0);
+    if (h->types & GOT_MD5)
+	MD5Init(&md5);
+    if (h->types & GOT_SHA1)
+	SHA1Init(&sha1);
+
+    while (len > 0) {
+	n = len > sizeof(buf) ? sizeof(buf) : len;
+
+	if (zip_fread(zf, buf, n) != n)
+	    return -1;
+
+	if (h->types & GOT_CRC)
+	    crc = crc32(crc, buf, n);
+	if (h->types & GOT_MD5)
+	    MD5Update(&md5, buf, n);
+	if (h->types & GOT_SHA1)
+	    SHA1Update(&sha1, buf, n);
+	len -= n;
+    }
+
+    if (h->types & GOT_CRC)
+	h->crc = crc;
+    if (h->types & GOT_MD5)
+	MD5Final(h->md5, &md5);
+    if (h->types & GOT_SHA1)
+	SHA1Final(h->sha1, &sha1);
+
+    return 0;
 }

@@ -5,7 +5,7 @@ game (
 	description "one four byte file"
 	manufacturer "synth"
 	year 1991
-	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
 )
 
 game (
