@@ -80,6 +80,7 @@ struct chd {
     struct chd_map_entry *map;	/* hunk map */
     char *buf;			/* decompression buffer */
     z_stream z;			/* decompressor */
+    int hno;			/* hunk currently in hbuf */
     char *hbuf;			/* hunk data buffer */
 };
 

@@ -92,6 +92,7 @@ chd_open(const char *name, int *errp)
     chd->error = 0;
     chd->map = NULL;
     chd->buf = NULL;
+    chd->hno = -1;
     chd->hbuf = NULL;
 
     if (read_header(chd) < 0) {
@@ -230,39 +231,42 @@ int
 chd_read_range(struct chd *chd, char *b, int off, int len)
 {
     int i, s, n;
+    int copied, o2, l2;
 
     /* XXX: error handling */
 
     s = off/chd->hunk_len;
     n = (off+len+chd->hunk_len-1)/chd->hunk_len - s;
 
-    if (off%chd->hunk_len == 0 && len%chd->hunk_len == 0) {
-	/* reading complete hunks */
-	for (i=0; i<n; i++)
-	    chd_read_hunk(chd, s+i, b+i*chd->hunk_len);
-    }
-    else {
-	int copied, o2, l2;
-	
-	if (chd->hbuf == NULL)
-	    if ((chd->hbuf=malloc(chd->hunk_len)) == NULL)
+    copied = 0;
+    o2 = off % chd->hunk_len;
+    l2 = chd->hunk_len - o2;
+
+    for (i=0; i<n; i++) {
+	if (i == 1) {
+	    o2 = 0;
+	    l2 = chd->hunk_len;
+	}
+	if (i == n-1) {
+	    if (l2 > len-copied)
+		l2 = len-copied;
+	}
+	if (o2 == 0 && l2 == chd->hunk_len && s+i != chd->hno) {
+	    if (chd_read_hunk(chd, s+i, b+copied) < 0)
 		return -1;
-
-	copied = 0;
-	o2 = off % chd->hunk_len;
-	l2 = chd->hunk_len - o2;
-
-	for (i=0; i<n; i++) {
-	    if (i == 1) {
-		o2 = 0;
-		l2 = chd->hunk_len;
+	    copied += chd->hunk_len;
+	}
+	else {
+	    if (chd->hbuf == NULL)
+		if ((chd->hbuf=malloc(chd->hunk_len)) == NULL) {
+		    chd->error = CHD_ERR_NOMEM;
+		    return -1;
+		}
+	    if (s+i != chd->hno) {
+		if (chd_read_hunk(chd, s+i, chd->hbuf) < 0)
+		    return  -1;
+		chd->hno = s+i;
 	    }
-	    if (i == n-1) {
-		if (l2 > len-copied)
-		    l2 = len-copied;
-	    }
-	    
-	    chd_read_hunk(chd, s+i, chd->hbuf);
 	    memcpy(b+copied, chd->hbuf+o2, l2);
 	    copied += l2;
 	}
