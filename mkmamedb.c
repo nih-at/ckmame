@@ -131,6 +131,8 @@ main(int argc, char **argv)
 
     ddb_close(db);
 
-    free(dbname);
+    if (dbext)
+	free(dbname);
+
     return 0;
 }

@@ -95,8 +95,8 @@ ddb_name(char *prefix)
     char *s;
 
     if (prefix == NULL)
-	return DDB_EXT;
-    
+	return xstrdup(DDB_EXT);
+
     s = xmalloc(strlen(prefix)+strlen(DDB_EXT)+1);
     sprintf(s, "%s%s", prefix, DDB_EXT);
 
