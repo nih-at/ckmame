@@ -1,1 +1,20 @@
-q
+  This is ckmame, a program to check rom sets for MAME, the Multiple
+Arcade Machine Emulator.
+
+  To use it, you need zlib (>=1.1.3) and either Berkeley db or GNU
+gdbm, as well as a current output of `mame -listinfo' (which you can
+also find on the distribution site).
+
+  You can find zlib at ftp://ftp.cdrom.com/pub/infozip/zlib, and gdbm
+at your local GNU mirror (cf. http://www.gnu.org/server/list-mirrors.html).
+
+  If you make a binary distribution, please include a pointer to
+the distribution site
+	ftp.giga.or.at /pub/nih/ckmame
+	http://ftp.giga.or.at/pub/nih/ckmame
+The latest version can always be found there.
+
+  Mail suggestions and bug reports to <nih@giga.or.at>.
+
+
+
