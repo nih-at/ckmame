@@ -81,7 +81,7 @@ int
 zip_add_zip(struct zf *zf, char *name, struct zf *zf1, int idx1,
 	    int start, int len)
 {
-    if (idx1 >= zf1->nentry || idx < 0)
+    if (idx1 >= zf1->nentry || idx1 < 0)
 	return -1;
 
     if (zf->nentry >= zf->nentry_alloc-1) {
@@ -165,7 +165,7 @@ zip_replace_zip(struct zf *zf, int idx, char *name, struct zf *zf1, int idx1,
     if (idx >= zf->nentry || idx < 0)
 	return -1;
 
-    if (idx1 >= zf1->nentry || idx < 0)
+    if (idx1 >= zf1->nentry || idx1 < 0)
 	return -1;
 
     zip_unchange_data(zf, idx);
