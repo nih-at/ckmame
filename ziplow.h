@@ -18,8 +18,6 @@ struct zf *readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd,
 int writecdir(struct zf *zfp);
 struct zf *zf_new(void);
 int zf_free(struct zf *zf);
-struct zf *zip_open(char *fn, int checkp);
-int zip_close(struct zf *zf);
 char *readstr(unsigned char **buf, int len, int nullp);
 char *readfpstr(FILE *fp, int len, int nullp);
 int read2(unsigned char **a);

@@ -3,7 +3,6 @@
 #include "xmalloc.h"
 #include "ziplow.h"
 #include "zip.h"
-#include "zff.h"
 
 struct zf_file *
 zff_new(struct zf *zf)
@@ -92,13 +91,30 @@ zff_close(struct zf_file *zff)
 
 
 struct zf_file *
-zff_open(struct zf *zf, int fileno)
+zff_open(struct zf *zf, char *fname, int case_sens)
+{
+    int idx;
+
+    if ((idx=zip_name_locate(zf, fname, case_sens)) < 0)
+	return NULL;
+
+    return zff_open_index(zf, idx);
+}
+
+
+
+struct zf_file *
+zff_open_index(struct zf *zf, int fileno)
 {
     unsigned char buf[4], *c;
     int len;
     struct zf_file *zff;
 
     if ((fileno < 0) || (fileno >= zf->nentry))
+	return NULL;
+
+    if (zf->entry[fileno].state != Z_UNCHANGED
+	&& zf->entry[fileno].state != Z_RENAMED)
 	return NULL;
 
     if ((zf->entry[fileno].comp_meth != 0)

@@ -1,7 +1,5 @@
 #include "zip.h"
 #include "error.h"
-#include "ziplow.h"
-#include "zff.h"
 
 char *prg;
 #define BUFSIZE 65536
@@ -31,7 +29,7 @@ main(int argc, char *argv[])
     for (i=0; i<zf->nentry; i++)
 	printf("%8d %s\n", zf->entry[i].uncomp_size, zf->entry[i].fn);
 
-    zff1= zff_open(zf, 1);
+    zff1= zff_open_index(zf, 1);
     i = zff_read(zff1, buf1, 100);
     if (i < 0)
 	fprintf(stderr, "read error: %s\n", zip_err_str[zff1->flags]);
@@ -39,7 +37,7 @@ main(int argc, char *argv[])
 	buf1[i] = 0;
 	printf("read %d bytes: '%s'\n", i, buf1);
     }
-    zff2 = zff_open(zf, 1);
+    zff2 = zff_open_index(zf, 1);
     i = zff_read(zff2, buf2, 200);
     if (i < 0)
 	fprintf(stderr, "read error: %s\n", zip_err_str[zff2->flags]);

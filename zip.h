@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <zlib.h>
 
-/* #include "unzip.h" */
-
 enum zip_state { Z_UNCHANGED, Z_DELETED, Z_REPLACED, Z_ADDED, Z_RENAMED };
 
 int zip_err; /* global variable for errors returned by the low-level
@@ -24,6 +22,8 @@ int zip_err; /* global variable for errors returned by the low-level
 
 extern char *zip_err_str[];
 
+/* zip file */
+
 struct zf {
     char *zn;
     FILE *zp;
@@ -35,6 +35,8 @@ struct zf {
     int nfile, nfile_alloc;
     struct zf_file **file;
 };
+
+/* file in zip file */
 
 struct zf_file {
     struct zf *zf;
@@ -55,6 +57,8 @@ struct zf_file {
     z_stream *zstr;
 };
 
+/* entry in zip file directory */
+
 struct zf_entry {
     unsigned short version_made, version_need, bitflags, comp_meth,
 	lmtime, lmdate, fnlen, eflen, fcomlen, disknrstart, intatt;
@@ -72,6 +76,24 @@ struct zf_entry {
     /* if source is another zipfile, number of file in zipfile */
     unsigned int ch_data_zf_fileno;
 };
+
+
+
+/* opening/closing zip files */
+
+struct zf *zip_open(char *fn, int checkp);
+int zip_close(struct zf *zf);
+
+int zip_name_locate(struct zf *zf, char *fn, int case_sens);
+
+/* read access to files in zip file */
+
+struct zf_file *zff_open(struct zf *zf, char *fn, int case_sens);
+struct zf_file *zff_open_index(struct zf *zf, int fileno);
+int zff_read(struct zf_file *zff, char *outbuf, int toread);
+int zff_close(struct zf_file *zff);
+
+/* high level routines to modify zip file */
 
 int zip_unchange(struct zf *zf, int idx);
 int zip_rename(struct zf *zf, int idx, char *name);
