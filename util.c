@@ -1,8 +1,8 @@
 /*
-  $NiH: util.c,v 1.20 2004/01/27 23:04:10 wiz Exp $
+  $NiH: util.c,v 1.21 2004/02/05 17:32:31 dillo Exp $
 
   util.c -- utility functions
-  Copyright (C) 1999 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -79,6 +79,9 @@ init_rompath(void)
 {
     int i, after;
     char *s, *e;
+
+    if (rompath_init)
+	return;
 
     /* skipping components placed via command line options */
     for (i=0; rompath[i]; i++)
