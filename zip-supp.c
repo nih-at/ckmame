@@ -101,8 +101,8 @@ readinfosfromzip (struct zfile *z)
 
     for (i=0; i<zf->nentry; i++) {
 	z->rom[i].name = xstrdup(zf->entry[i].fn);
-	z->rom[i].size = zf->entry[i].uncomp_size;
-	z->rom[i].crc = zf->entry[i].crc;
+	z->rom[i].size = zf->entry[i].meta->uncomp_size;
+	z->rom[i].crc = zf->entry[i].meta->crc;
 	z->rom[i].state = ROM_0;
     }	
 

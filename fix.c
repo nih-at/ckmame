@@ -86,7 +86,7 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
     if (m->zno != 0) {
 	if (m->quality == ROM_LONGOK) {
 	    if (fix_do) {
-		zip_add_zip(zip[0]->zf, rom->name,
+		zip_add_zip(zip[0]->zf, rom->name, NULL,
 			    zip[m->zno]->zf, m->fno, m->offset, rom->size);
 		if (fix_keep_long)
 		    fix_add_garbage(zip[m->zno], m->fno);
@@ -99,7 +99,7 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 	}
 	else {
 	    if (fix_do)
-		zip_add_zip(zip[0]->zf, rom->name,
+		zip_add_zip(zip[0]->zf, rom->name, NULL,
 			    zip[m->zno]->zf, m->fno, 0, 0);
 	    if (fix_print)
 		printf("%s: add `%s/%s' as %s\n",
@@ -122,7 +122,7 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 
 	case ROM_LONGOK:
 	    if (fix_do) {
-		zip_replace_zip(zip[0]->zf, m->fno, rom->name,
+		zip_replace_zip(zip[0]->zf, m->fno, rom->name, NULL,
 				zip[0]->zf, m->fno, m->offset, rom->size);
 		if (fix_keep_long)
 		    fix_add_garbage(zip[m->zno], m->fno);
@@ -157,7 +157,7 @@ fix_add_garbage(struct zfile *zip, int idx)
 	free(name);
     }
     if (zf_garbage)
-	zip_add_zip(zf_garbage, NULL, zip->zf, idx, 0, 0);
+	zip_add_zip(zf_garbage, NULL, NULL, zip->zf, idx, 0, 0);
 
     return 0;
 }
