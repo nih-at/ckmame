@@ -1,7 +1,54 @@
 2001-10-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* libzip/zip_replace_zip.c (read_part): fix typo: pass correct
-	length to zip_read().
+	length to zip_read()
+
+2001-10-27  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* dbread.c (dbread): add support for MESS (recognize "machine")
+
+	* mkmamedb.c (main): sync dbname resolution with ckmame and
+	dumpgame
+
+2001-10-20  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* dbl.c (ddb_name): only free() stuff that was allocated
+	* mkmamedb.c (main): only free() stuff that was allocated
+
+	* dumpgame.c (main): don't shadow global variable
+
+	* util.h: add prototype for init_rompath()
+
+	* db-gdbm.c (ddb_open): #if -> #ifdef; free() s if allocated
+
+	* libzip/zip_open.c (_zip_readcdir): Work around some broken zip
+	files.
+
+2001-08-20  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* dbl.c (ddb_lookup): only free data we allocated
+
+2001-05-16  Wiz  <wiz@hiro.li>
+
+	* configure.in, ltconfig, ltmain.sh: update libtool, and repair
+	libz test for NetBSD-current (no OF macro)
+	* ltcf-c.sh: new file for above
+
+2000-11-05  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* libzip/Makefile.am: install public header file
+
+2000-11-04  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* Makefile.am, configure.in, libzip/Makefile.am,
+	libzip/tests/Makefile.am: make libzip shared by using libtool
+	* config.guess, config.sub, libtool.m4, ltconfig, ltmain.sh: new
+	files for above
+
+	* libzip/Makefile.am, zip.h: add zip_get_name
+	* libzip/zip_get_name.c: new file
+
+	* libzip/tests/ziptest.c (main): add some '\n'
 
 1999-11-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
