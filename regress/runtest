@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.4 2003/03/14 15:37:57 wiz Exp $
+#  $NiH: runtest,v 1.5 2003/03/14 22:33:26 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -253,7 +253,7 @@ done
 test_set "${RET}" return
 test_set "${ARGS}" args
 
-cp ${srcdir}/mamedb .
+cp ../mamedb .
 
 if [ ! -z "${VERBOSE}" ]
 then
