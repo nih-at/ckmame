@@ -1,6 +1,6 @@
 New in 0.78u1: nodump sets
 
-better db error strings (e.g. version mismatch)
+mkmamedb: correct inconsistencies in input db (parent not found)
 
 add md5/sha1 support and check 'disks' (see latest mame db file in /pub/nih/ckmame for examples)
 
