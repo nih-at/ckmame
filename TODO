@@ -1,10 +1,14 @@
-yip?open check stat failure for ENOENT
-
+myerror raushauen
+_zip_ dazu in aufrufen
+tempfile nachher auf gscheite permissions setzen
 
 get roms from a different location to fix sets
 rom matched twice or more (route16b)
 Delete 0 zipfiles
 gestoredes zippen beim kopieren
+Fehler melden (z.B. File nicht anlegen duerfen)
+
+zip-library huebschisieren
 
 CRC-check wenn uncompressen (unstoren?)
 int, unsigned int abgleichen in zip.h
