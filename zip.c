@@ -33,13 +33,12 @@ zip_add_file(struct zf *zf, char *name, FILE *file,
     zip_new_entry(zf);
 
     zf->changes = 1;
-    zip_set_name(zf, zf->nentry, name ? name : "-");
-    zf->entry[zf->nentry].ch_data_fp = file;
-    zf->entry[zf->nentry].ch_data_offset = start;
-    zf->entry[zf->nentry].ch_data_len = len;
-    zf->nentry++;
+    zip_set_name(zf, zf->nentry-1, name ? name : "-");
+    zf->entry[zf->nentry-1].ch_data_fp = file;
+    zf->entry[zf->nentry-1].ch_data_offset = start;
+    zf->entry[zf->nentry-1].ch_data_len = len;
 
-    return zf->nentry;
+    return zf->nentry-1;
 }
 
 
@@ -51,13 +50,12 @@ zip_add_data(struct zf *zf, char *name, char *buf,
     zip_new_entry(zf);
 
     zf->changes = 1;
-    zip_set_name(zf, zf->nentry, name ? name : "-");
-    zf->entry[zf->nentry].ch_data_buf = buf;
-    zf->entry[zf->nentry].ch_data_offset = start;
-    zf->entry[zf->nentry].ch_data_len = len;
-    zf->nentry++;
+    zip_set_name(zf, zf->nentry-1, name ? name : "-");
+    zf->entry[zf->nentry-1].ch_data_buf = buf;
+    zf->entry[zf->nentry-1].ch_data_offset = start;
+    zf->entry[zf->nentry-1].ch_data_len = len;
 
-    return zf->nentry;
+    return zf->nentry-1;
 }
 
 
@@ -72,14 +70,13 @@ zip_add_zip(struct zf *zf, char *name, struct zf *srczf, int srcidx,
     zip_new_entry(zf);
 
     zf->changes = 1;
-    zip_set_name(zf, zf->nentry, name ? name : srczf->entry[srcidx].fn);
-    zf->entry[zf->nentry].ch_data_zf = srczf;
-    zf->entry[zf->nentry].ch_data_zf_fileno = srcidx;
-    zf->entry[zf->nentry].ch_data_offset = start;
-    zf->entry[zf->nentry].ch_data_len = len;
-    zf->nentry++;
+    zip_set_name(zf, zf->nentry-1, name ? name : srczf->entry[srcidx].fn);
+    zf->entry[zf->nentry-1].ch_data_zf = srczf;
+    zf->entry[zf->nentry-1].ch_data_zf_fileno = srcidx;
+    zf->entry[zf->nentry-1].ch_data_offset = start;
+    zf->entry[zf->nentry-1].ch_data_len = len;
 
-    return zf->nentry;
+    return zf->nentry-1;
 }
 
 
@@ -235,7 +232,7 @@ zip_set_name(struct zf *zf, int idx, char *name)
 
 
 
-static void
+void
 zip_entry_init(struct zf *zf, int idx)
 {
     zf->entry[idx].fn = zf->entry[idx].ef = zf->entry[idx].fcom =
@@ -250,7 +247,7 @@ zip_entry_init(struct zf *zf, int idx)
 
 
 
-static void
+void
 zip_new_entry(struct zf *zf)
 {
     if (zf->nentry >= zf->nentry_alloc-1) {
@@ -259,7 +256,6 @@ zip_new_entry(struct zf *zf)
 						 sizeof(struct zf_entry)
 						 * zf->nentry_alloc);
     }
-    /* XXX: initialize new entry */
     zip_entry_init(zf, zf->nentry);
 
     zf->entry[zf->nentry].fn_old = NULL;
