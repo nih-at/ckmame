@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.3 2003/03/14 15:21:41 dillo Exp $
+#  $NiH: runtest,v 1.4 2003/03/14 15:37:57 wiz Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -52,6 +52,14 @@
 #	rom TEST IN OUT
 #	    link zip file IN into roms diretory with name TEST, check
 #	    against OUT after ckmame has run.
+#
+#	romnew CREATED EXPECTED
+#	    check that CREATEd has been created in roms directory and
+#	    equals EXPECTED
+#
+#	romdel TEST IN
+#	    link zip file IN into roms directory with name TEST, check
+#	    that it is deleted.
 #
 #	garbage CREATED-FILE EXPECTED-FILE
 #	    check that CREATED-FILE has been created in garbage
@@ -223,6 +231,13 @@ do
     # XXX: check that $1 exists
     cp "${srcdir}/$1" "roms/$2"
     FILES="${FILES} ${srcdir}/$3!roms/$2";;
+  romnew)
+    set $arg
+    FILES="${FILES} ${srcdir}/$2!roms/$1";;
+  romdel)
+    set $arg
+    # XXX: check that $1 exists
+    cp "${srcdir}/$1" "roms/$2";;
   garbage)
     set $arg
     FILES="${FILES} ${srcdir}/$2!roms/garbage/$1";;
@@ -256,13 +271,17 @@ then
     fail "unexpected exit status: got $ret, expected ${RET}"
 fi
 
+FILES_SHOULD="gotout goterr mamedb"
+
 if [ -f stdout ]
 then
+    FILES_SHOULD="${FILES_SHOULD} stdout"
     checkfile stdout gotout "unexpected output"
 fi
 
 if [ -f errors ]
 then
+    FILES_SHOULD="${FILES_SHOULD} errors"
     checkfile errors goterr "unexpected error output"
 fi
 
@@ -271,11 +290,17 @@ then
     for fs in ${FILES}
     do
         set -- `echo -n ${fs} | tr '!' ' '`
+	FILES_SHOULD="${FILES_SHOULD} $2"
 	checkzip $1 $2 "zip file $2 wrong"
     done
 fi
 
 # XXX: check that no additional files exist
+echo gotfiles shouldfiles ${FILES_SHOULD} | tr ' ' '\012' | sort > shouldfiles
+touch gotfiles
+find . -type f -print | sed 's!^./!!' | sort > gotfiles
+
+checkfile shouldfiles gotfiles "unexpected/missing files"
 
 succeed
 

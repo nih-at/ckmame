@@ -1,9 +1,15 @@
 EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS}
 
-TESTCASES=	garbage.test \
+TESTCASES=	double.test \
+		garbage.test \
+		inchild.test \
+		inparent.test \
+		mid.test \
+		misnamed.test \
 		ok.test \
 		nonexist.test \
-		unused.test
+		unused.test \
+		wrong.test
 
 ZIPS=		1-4-ok.zip \
 		1-8-ok.zip \

@@ -1,0 +1,7 @@
+# test single-rom game (no parent), rom is in middle of long file
+return 0
+args -FL  1-4
+rom 1-4-mid.zip 1-4.zip 1-4-ok.zip
+garbage 1-4.zip 1-4-mid.zip
+stdout In game 1-4:
+stdout rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 4 (16)

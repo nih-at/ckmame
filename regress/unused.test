@@ -3,5 +3,6 @@ return 0
 args -FU clone-8
 rom 1-4-ok.zip parent-4.zip 1-4-ok.zip
 rom 2-48-ok.zip clone-8.zip 1-8-ok.zip
+garbage clone-8.zip 1-4-ok.zip
 stdout In game clone-8:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
