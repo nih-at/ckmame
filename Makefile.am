@@ -8,6 +8,7 @@ LIBS=@DBLIBS@ @LIBS@
 SUBDIRS=libzip
 
 bin_PROGRAMS=ckmame mkmamedb dumpgame superflouos
+man_MANS=ckmame.1
 #info_TEXINFOS=  ckmame.texi
 ckmame_SOURCES=ckmame.c error.c zip-supp.c util.c marry.c \
 		match.c malloc.c r_game.c r_list.c r_util.c dbl.c dbl-int.c \
@@ -22,7 +23,10 @@ superflouos_SOURCES=superflouos.c util.c dbl.c dbl-int.c r_list.c r_util.c \
 noinst_HEADERS=error.h types.h w.h funcs.h r.h mkmamedb.h dbl.h \
 	dbh.h util.h xmalloc.h romutil.h
 
-EXTRA_DIST=db-db.c db-db.h db-gdbm.c db-gdbm.h getopt.h fnmatch.h README.DOS
+DISTCLEANFILES=	ckmame.1 
+
+EXTRA_DIST=db-db.c db-db.h db-gdbm.c db-gdbm.h getopt.h fnmatch.h README.DOS \
+	ckmame.mdoc ckmame.man
 
 dist-hook:
-	rm -f $(distdir)/dbl-int.c
+	rm -f $(distdir)/dbl-int.c $(distdir)/dbl-int.h

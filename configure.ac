@@ -1,8 +1,10 @@
-AC_INIT
 AC_PREREQ(2.54)
+AC_INIT([ckmame],[0.5],[nih@giga.or.at])
 AC_CONFIG_SRCDIR([ckmame.c])
-AM_INIT_AUTOMAKE(ckmame,0.5)
 AC_CONFIG_HEADERS([config.h])
+AM_INIT_AUTOMAKE
+
+AC_CANONICAL_HOST
 
 # We want these before the checks, so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS='-Wall -g' auto_cflags=1
@@ -94,7 +96,13 @@ AC_REPLACE_FUNCS(fnmatch)
 AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ([getopt1]) AC_LIBOBJ([getopt])])
 AC_SUBST(DBLIBS)
 
-AC_CONFIG_LINKS([dbl-int.h:db-${db}.h dbl-int.c:db-${db}.c])
+case $host_os
+in
+	*bsd*) MANFMT=mdoc;;
+	*) MANFMT=man;;
+esac
+
+AC_CONFIG_LINKS([dbl-int.h:db-${db}.h dbl-int.c:db-${db}.c ckmame.1:ckmame.${MANFMT}])
 
 AC_EXEEXT
 
