@@ -1,5 +1,5 @@
 /*
-  $NiH: r_list.c,v 1.7 2002/06/06 09:26:58 dillo Exp $
+  $NiH: r_list.c,v 1.8 2003/02/23 14:48:05 dillo Exp $
 
   r_list.c -- read list struct from db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
@@ -38,22 +38,16 @@ int
 r_list(DB *db, char *key, char ***listp)
 {
     int n;
-    DBT k, v;
+    DBT v;
     void *data;
 
-    k.size = strlen(key);
-    k.data = xmalloc(k.size);
-    strncpy(k.data, key, k.size);
-
-    if (ddb_lookup(db, &k, &v) != 0) {
-	free(k.data);
+    if (ddb_lookup(db, key, &v) != 0)
 	return -1;
-    }
+
     data = v.data;
 
     n = r__array(&v, r__pstring, (void **)listp, sizeof(char *));
 
-    free(k.data);
     free(data);
 
     return n;

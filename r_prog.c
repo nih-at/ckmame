@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: r_prog.c,v 1.4 2002/06/06 09:26:58 dillo Exp $
 
   r_prog.c -- read prog struct from db
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "dbl.h"
+#include "dbh.h"
 #include "r.h"
 #include "xmalloc.h"
 
@@ -38,23 +38,17 @@ int
 r_prog(DB *db, char **namep, char **versionp)
 {
     int n;
-    DBT k, v;
+    DBT v;
     void *data;
 
-    k.size = 5;
-    k.data = xmalloc(k.size);
-    strncpy(k.data, "/prog", k.size);
-
-    if (ddb_lookup(db, &k, &v) != 0) {
-	free(k.data);
+    if (ddb_lookup(db, "/prog", &v) != 0)
 	return -1;
-    }
+    
     data = v.data;
 
     *name = r__string(&v);
     *version = r__string(&v);
 
-    free(k.data);
     free(data);
 
     return n;

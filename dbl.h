@@ -2,7 +2,7 @@
 #define _HAD_DBL_H
 
 /*
-  $NiH: dbl.h,v 1.7 2002/06/06 09:26:53 dillo Exp $
+  $NiH: dbl.h,v 1.8 2003/02/23 14:48:04 dillo Exp $
 
   dbl.h -- generic low level data base routines
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
@@ -34,12 +34,12 @@
 #define DDB_EXT		0x2	/* append extension to filename */
 
 DB* ddb_open(char *name, int flags);
-int ddb_close(DB* db);
-int ddb_insert(DB* db, DBT* key, DBT* value);	/* compressing versions */
-int ddb_lookup(DB* db, DBT* key, DBT* value);
+int ddb_close(DB *db);
+int ddb_insert(DB *db, char *key, DBT *value);	/* API versions */
+int ddb_lookup(DB *db, char *key, DBT *value);
 
-int ddb_insert_l(DB* db, DBT* key, DBT* value);	/* non-compressing versions */
-int ddb_lookup_l(DB* db, DBT* key, DBT* value);
+int ddb_insert_l(DB *db, DBT *key, DBT *value);	/* backend versions */
+int ddb_lookup_l(DB *db, DBT *key, DBT *value);
 
 const char *ddb_error(void);
 char *ddb_name(char *prefix);

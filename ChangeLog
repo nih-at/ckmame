@@ -1,5 +1,8 @@
 2003-02-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* dbl.c (ddb_lookup, ddb_insert): make key argument a string;
+	adapt callers.
+
 	* dbread.c, r_list.c, zip-supp.c: add include files to get
 	prototypes of functions defined here.
 	* mkmamedb.h: include dbl.h for definition of DB.

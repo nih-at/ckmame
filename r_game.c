@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.11 2003/02/23 14:20:02 dillo Exp $
+  $NiH: r_game.c,v 1.12 2003/02/23 14:24:51 dillo Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
@@ -39,18 +39,13 @@
 struct game *
 r_game(DB *db, char *name)
 {
-    DBT k, v;
+    DBT v;
     struct game *game;
     void *data;
 
-    k.size = strlen(name);
-    k.data = xmalloc(k.size);
-    strncpy(k.data, name, k.size);
-
-    if (ddb_lookup(db, &k, &v) != 0) {
-	free(k.data);
+    if (ddb_lookup(db, name, &v) != 0)
 	return NULL;
-    }
+
     data = v.data;
 
     game = (struct game *)xmalloc(sizeof(struct game));
@@ -69,7 +64,6 @@ r_game(DB *db, char *name)
     game->nsample = r__array(&v, r__rom, (void *)&game->sample,
 			     sizeof(struct rom));
 
-    free(k.data);
     free(data);
 
     return game;

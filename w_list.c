@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: w_list.c,v 1.6 2002/06/06 09:27:01 dillo Exp $
 
   w_list.c -- write list strcut to db
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -41,20 +41,15 @@ int
 w_list(DB *db, char *key, char **list, int n)
 {
     int err;
-    DBT k, v;
-
-    k.size = strlen(key);
-    k.data = xmalloc(k.size);
-    strncpy(k.data, key, k.size);
+    DBT v;
 
     v.data = NULL;
     v.size = 0;
 
     w__array(&v, w__pstring, list, sizeof(char *), n);
 
-    err = ddb_insert(db, &k, &v);
+    err = ddb_insert(db, key, &v);
 
-    free(k.data);
     free(v.data);
 
     return err;

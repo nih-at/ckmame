@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.12 2003/01/30 03:46:00 wiz Exp $
+  $NiH: dbl.c,v 1.13 2003/02/23 14:48:04 dillo Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
@@ -35,11 +35,15 @@
 
 
 int
-ddb_insert(DB* db, DBT* key, DBT* value)
+ddb_insert(DB *db, char *key, DBT *value)
 {
-    DBT v;
+    DBT k, v;
     int ret;
     uLong len;
+
+    k.size = strlen(key);
+    k.data = xmalloc(k.size);
+    strncpy(k.data, key, k.size);
 
     len = value->size*1.1+12;
     v.data = xmalloc(len+2);
@@ -49,13 +53,15 @@ ddb_insert(DB* db, DBT* key, DBT* value)
 
     if (compress2(((unsigned char *)v.data)+2, &len, value->data, 
 		  value->size, 9) != 0) {
+	free(k.data);
 	free(v.data);
 	return -1;
     }
     v.size = len + 2;
 
-    ret = ddb_insert_l(db, key, &v);
+    ret = ddb_insert_l(db, &k, &v);
 
+    free(k.data);
     free(v.data);
 
     return ret;
@@ -64,16 +70,22 @@ ddb_insert(DB* db, DBT* key, DBT* value)
 
 
 int
-ddb_lookup(DB* db, DBT* key, DBT* value)
+ddb_lookup(DB *db, char *key, DBT *value)
 {
-    DBT v;
+    DBT k, v;
     int ret;
     uLong len;
 
-    ret = ddb_lookup_l(db, key, &v);
+    k.size = strlen(key);
+    k.data = xmalloc(k.size);
+    strncpy(k.data, key, k.size);
 
-    if (ret != 0)
+    ret = ddb_lookup_l(db, &k, &v);
+
+    if (ret != 0) {
+	free(k.data);
 	return ret;
+    }
 
     value->size = ((((unsigned char *)v.data)[0] << 8)
 		   | (((unsigned char *)v.data)[1]));
@@ -83,10 +95,13 @@ ddb_lookup(DB* db, DBT* key, DBT* value)
     if (uncompress(value->data, &len, ((unsigned char *)v.data)+2, 
 		   v.size-2) != 0) {
 	free(value->data);
+	free(k.data);
 	return -1;
     }
     value->size = len;
 
+    free(k.data);
+    
     return ret;
 }
 

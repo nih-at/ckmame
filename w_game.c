@@ -1,5 +1,5 @@
 /*
-  $NiH: w_game.c,v 1.10 2002/06/06 09:27:01 dillo Exp $
+  $NiH: w_game.c,v 1.11 2003/02/23 14:20:02 dillo Exp $
 
   w_game.c -- write game strcut to db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
@@ -42,11 +42,7 @@ int
 w_game(DB *db, struct game *game)
 {
     int err;
-    DBT k, v;
-
-    k.size = strlen(game->name);
-    k.data = xmalloc(k.size);
-    strncpy(k.data, game->name, k.size);
+    DBT v;
 
     v.data = NULL;
     v.size = 0;
@@ -70,9 +66,8 @@ w_game(DB *db, struct game *game)
     w__array(&v, w__pstring, game->sclone, sizeof(char *), game->nsclone);
     w__array(&v, w__rom, game->sample, sizeof(struct rom), game->nsample);
 
-    err = ddb_insert(db, &k, &v);
+    err = ddb_insert(db, game->name, &v);
 
-    free(k.data);
     free(v.data);
 
     return err;

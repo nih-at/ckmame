@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: w_prog.c,v 1.4 2002/06/06 09:27:02 dillo Exp $
 
   w_prog.c -- write prog strcut to db
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -41,11 +41,7 @@ int
 w_prog(DB *db, char *name, char *version)
 {
     int err;
-    DBT k, v;
-
-    k.size = 5;
-    k.data = xmalloc(k.size);
-    strncpy(k.data, "/prog", k.size);
+    DBT v;
 
     v.data = NULL;
     v.size = 0;
@@ -53,9 +49,8 @@ w_prog(DB *db, char *name, char *version)
     w__string(&v, name);
     w__string(&v, version);
 
-    err = ddb_insert(db, &k, &v);
+    err = ddb_insert(db, "/prog", &v);
 
-    free(k.data);
     free(v.data);
 
     return err;
