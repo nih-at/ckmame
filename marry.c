@@ -1,5 +1,5 @@
 /*
-  $NiH: marry.c,v 1.8 2003/03/16 10:21:34 wiz Exp $
+  $NiH: marry.c,v 1.9 2004/02/26 02:26:09 wiz Exp $
 
   marry.c -- pair matches with roms
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -31,7 +31,7 @@
 #include "romutil.h"
 
 void
-marry (struct match *rm, int count, int *noz)
+marry (struct match *rm, int count, const int *noz)
 {
     int i, j, now, other;
     int *z[3];
@@ -98,5 +98,4 @@ marry (struct match *rm, int count, int *noz)
     /* worse choices are used for determining unused files */
     
     return;
-    
 }

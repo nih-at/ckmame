@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.23 2004/02/26 02:26:12 wiz Exp $
+  $NiH: util.c,v 1.24 2004/04/20 23:42:09 dillo Exp $
 
   util.c -- utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -49,7 +49,7 @@ void init_rompath(void);
 
 
 char *
-findfile(char *name, enum filetype what)
+findfile(const char *name, enum filetype what)
 {
     int i;
     char b[8192];
@@ -117,7 +117,7 @@ init_rompath(void)
 
 
 int
-strpcasecmp(char **sp1, char **sp2)
+strpcasecmp(const char * const *sp1, const char * const *sp2)
 {
     return strcasecmp(*sp1, *sp2);
 }

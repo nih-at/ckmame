@@ -2,7 +2,7 @@
 #define _HAD_W_H
 
 /*
-  $NiH: w.h,v 1.8 2004/02/26 02:26:13 wiz Exp $
+  $NiH: w.h,v 1.9 2004/04/21 10:38:38 dillo Exp $
 
   w.h -- data base write functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,17 +26,16 @@
 
 
 
+void w__array(DBT *, void (*)(DBT *, const void *),
+	      const void *, size_t, size_t);
+void w__disk(DBT *, const void *);
 void w__grow(DBT *, int);
+void w__mem(DBT *, const char *, int);
+void w__pstring(DBT *, const void *);
+void w__rom(DBT *, const void *);
+void w__string(DBT *, const char *);
 void w__ushort(DBT *, unsigned short);
 void w__ulong(DBT *, unsigned long);
-void w__mem(DBT *, const char *, int);
-void w__string(DBT *, const char *);
-void w__pstring(DBT *, const void *);
-void w__array(DBT *, void (*)(DBT *, void *), const void *, size_t, size_t);
-
-void w__rom(DBT *, void *);
-void w__disk(DBT *, void *);
-
 int w_version(DB *);
 
 #endif /* w.h */

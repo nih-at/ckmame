@@ -1,5 +1,5 @@
 /*
-  $NiH: db-db.c,v 1.17 2004/02/26 02:26:07 wiz Exp $
+  $NiH: db-db.c,v 1.18 2004/04/21 10:38:36 dillo Exp $
 
   db-db.c -- low level routines for Berkley db 
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -80,7 +80,7 @@ ddb_close(DB* db)
 
 
 int
-ddb_insert_l(DB* db, DBT* key, DBT* value)
+ddb_insert_l(DB* db, DBT* key, const DBT* value)
 {
     return (db->put)(db, key, value, 0);
 }

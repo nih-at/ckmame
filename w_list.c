@@ -1,5 +1,5 @@
 /*
-  $NiH: w_list.c,v 1.10 2004/02/26 02:49:03 wiz Exp $
+  $NiH: w_list.c,v 1.11 2004/04/21 10:38:38 dillo Exp $
 
   w_list.c -- write list struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -37,7 +37,7 @@
 
 
 int
-w_list(DB *db, const char *key, char **list, int n)
+w_list(DB *db, const char *key, const char * const *list, int n)
 {
     int err;
     DBT v;

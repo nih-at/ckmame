@@ -1,5 +1,5 @@
 /*
-  $NiH: romutil.c,v 1.17 2003/10/02 15:49:24 wiz Exp $
+  $NiH: romutil.c,v 1.18 2004/02/26 02:26:11 wiz Exp $
 
   romutil.c -- miscellaneous utility functions for rom handling
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -33,7 +33,7 @@
 
 
 void
-rom_add_name(struct rom *r, char *name)
+rom_add_name(struct rom *r, const char *name)
 {
     r->altname = xrealloc(r->altname, (r->naltname+1)*sizeof(char *));
     r->altname[r->naltname] = xstrdup(name);
@@ -42,8 +42,10 @@ rom_add_name(struct rom *r, char *name)
     return;
 }
 
+
+
 enum state
-romcmp(struct rom *r1, struct rom *r2, int merge)
+romcmp(const struct rom *r1, const struct rom *r2, int merge)
 {
     /* r1 is important */
     /* in match: r1 is from zip, r2 from rom */
@@ -147,10 +149,10 @@ game_swap_rs(struct game *g)
 
 
 
-static void delchecked_r(struct tree *t, int nclone, char **clone);
+static void delchecked_r(const struct tree *t, int nclone, char **clone);
 
 char **
-delchecked(struct tree *t, int nclone, char **clone)
+delchecked(const struct tree *t, int nclone, const char * const *clone)
 {
     char **need;
 
@@ -165,7 +167,7 @@ delchecked(struct tree *t, int nclone, char **clone)
 
 
 static void
-delchecked_r(struct tree *t, int nclone, char **clone)
+delchecked_r(const struct tree *t, int nclone, char **clone)
 {
     int i, cmp;
     
@@ -185,4 +187,3 @@ delchecked_r(struct tree *t, int nclone, char **clone)
 	    delchecked_r(t->child, nclone, clone);
     }
 }
-

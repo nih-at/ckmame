@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.2 2004/02/26 02:26:12 wiz Exp $
+  $NiH: superfluous.c,v 1.3 2004/04/21 10:38:38 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -37,7 +37,7 @@
 
 
 int
-handle_extra_files(DB *db, char *dbname, int sample)
+handle_extra_files(DB *db, const char *dbname, int sample)
 {
     FILE *fin;
     char b[8192], *p, bo[8192], *po, **list, **lists, **listx;

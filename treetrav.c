@@ -1,5 +1,5 @@
 /*
-  $NiH: treetrav.c,v 1.21 2004/02/05 18:01:47 dillo Exp $
+  $NiH: treetrav.c,v 1.22 2004/02/26 02:26:12 wiz Exp $
 
   treetrav.c -- traverse tree of games to check
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -34,16 +34,17 @@
 #include "romutil.h"
 #include "xmalloc.h"
 
-static int tree_child_traverse(DB *db, struct tree *tree, int sample,
+static int tree_child_traverse(DB *db, const struct tree *tree, int sample,
 			       int parentcheck,
 			       struct zfile *parent_z, struct zfile *gparent_z,
 			       int parent_no, int gparent_no);
-static struct tree *tree_add_node(struct tree *tree, char *name, int check);
+static struct tree *tree_add_node(struct tree *tree, const char *name,
+				  int check);
 
 
 
 void
-tree_traverse(DB *db, struct tree *tree, int sample)
+tree_traverse(DB *db, const struct tree *tree, int sample)
 {
     struct tree *t;
     
@@ -56,7 +57,8 @@ tree_traverse(DB *db, struct tree *tree, int sample)
 
 
 static int
-tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
+tree_child_traverse(DB *db, const struct tree *tree,
+		    int sample, int parentcheck,
 		    struct zfile *parent_z, struct zfile *gparent_z,
 		    int parent_no, int gparent_no)
 {
@@ -101,7 +103,8 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
     if (parentcheck || tree->check) {
 	/* set names of checked children and grandchildren in my list
 	   of clones to NULL */
-	unchecked = delchecked(tree, me_g->nclone, me_g->clone);
+	unchecked = delchecked(tree, me_g->nclone,
+			       (const char *const*)me_g->clone);
 
 	/* while files are left, check children until all files are needed
 	   somewhere, or children run out; also check children with check==1 */
@@ -179,7 +182,7 @@ countunused(struct zfile *z)
 
 
 int
-tree_add(DB *db, struct tree *tree, char *name, int sample)
+tree_add(DB *db, struct tree *tree, const char *name, int sample)
 {
     struct game *g;
 
@@ -203,7 +206,7 @@ tree_add(DB *db, struct tree *tree, char *name, int sample)
 
 
 static struct tree *
-tree_add_node(struct tree *tree, char *name, int check)
+tree_add_node(struct tree *tree, const char *name, int check)
 {
     struct tree *t;
     int cmp;
@@ -252,7 +255,7 @@ tree_add_node(struct tree *tree, char *name, int check)
 
 
 struct tree *
-tree_new(char *name, int check)
+tree_new(const char *name, int check)
 {
     struct tree *t;
 
@@ -285,7 +288,7 @@ tree_free(struct tree *tree)
 
 
 struct zfile *
-zfile_new(char *name, int sample, char *parent)
+zfile_new(const char *name, int sample, const char *parent)
 {
     struct zfile *z;
     char b[8192], *p;

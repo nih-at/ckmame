@@ -1,5 +1,5 @@
 /*
-  $NiH: w_game.c,v 1.18 2004/02/26 02:26:13 wiz Exp $
+  $NiH: w_game.c,v 1.19 2004/02/26 02:49:03 wiz Exp $
 
   w_game.c -- write game struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -38,7 +38,7 @@
 
 
 int
-w_game(DB *db, struct game *game)
+w_game(DB *db, const struct game *game)
 {
     int err;
     DBT v;
@@ -76,11 +76,11 @@ w_game(DB *db, struct game *game)
 
 
 void
-w__disk(DBT *v, void *vd)
+w__disk(DBT *v, const void *vd)
 {
-    struct disk *d;
+    const struct disk *d;
 
-    d = (struct disk *)vd;
+    d = (const struct disk *)vd;
 
     w__string(v, d->name);
     w__ushort(v, d->crctypes);
@@ -91,11 +91,11 @@ w__disk(DBT *v, void *vd)
 
 
 void
-w__rom(DBT *v, void *vr)
+w__rom(DBT *v, const void *vr)
 {
-    struct rom *r;
+    const struct rom *r;
 
-    r = (struct rom *)vr;
+    r = (const struct rom *)vr;
 
     w__string(v, r->name);
     w__string(v, r->merge);

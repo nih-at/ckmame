@@ -2,7 +2,7 @@
 #define _HAD_ERROR_H
 
 /*
-  $NiH: error.h,v 1.7 2004/02/26 02:26:09 wiz Exp $
+  $NiH: error.h,v 1.8 2004/04/22 11:21:44 dillo Exp $
 
   error.h -- error printing
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -37,7 +37,7 @@
 #define ERRFILESTR	(ERRFILE|ERRSTR)
 #define ERRZIPFILESTR	(ERRZIPFILE|ERRSTR)
 
-void myerror(int errtype, const char *fmt, ...);
-void seterrinfo(const char *fn, const char *zipn);
+void myerror(int, const char *, ...);
+void seterrinfo(const char *, const char *);
 
 #endif /* error.h */

@@ -2,7 +2,7 @@
 #define _HAD_ROMUTIL_H
 
 /*
-  $NiH: romutil.h,v 1.14 2004/02/05 17:32:31 dillo Exp $
+  $NiH: romutil.h,v 1.15 2004/02/26 02:26:11 wiz Exp $
 
   romutil.h -- miscellaneous utility functions for rom handling
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -28,20 +28,20 @@
 
 /* not all of these are in romutil.c */
 
-void game_swap_rs(struct game *g);
+char **delchecked(const struct tree *, int, const char * const *);
+void game_free(struct game *, int);
+void game_swap_rs(struct game *);
+void marry(struct match *, int, const int *);
+void rom_add_name(struct rom *, const char *);
+enum state romcmp(const struct rom *, const struct rom *, int);
+struct zfile *zfile_new(const char *, int, const char *);
 
-enum state romcmp(struct rom *r1, struct rom *r2, int merge);
-void rom_add_name(struct rom *r, char *name);
-struct zfile *zfile_new(char *name, int sample, char *parent);
-void marry (struct match *rm, int count, int *noz);
 struct match *check_game(struct game *game, struct zfile **zip);
 int matchcmp(struct match *m1, struct match *m2);
 void diagnostics(struct game *, struct match *, struct disk_match *,
 		 struct zfile **);
 void match_free(struct match *m, int n);
 int countunused(struct zfile *z);
-void game_free(struct game *g, int fullp);
-char **delchecked(struct tree *t, int nclone, char **clone);
 int zfile_free(struct zfile *zip);
 int readinfosfromzip(struct zfile *z);
 void merge_match(struct match *m, int nrom, struct zfile **zip,
