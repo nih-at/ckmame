@@ -1,10 +1,6 @@
-#include <stddef.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <db-db.h>
-#include <stdlib.h>
-#include <stdio.h>
-
-#include <zlib.h>
 
 
 
@@ -41,54 +37,15 @@ db_close(DB* db)
 
 
 int
-db_insert(DB* db, DBT* key, DBT* value)
+db_insert_l(DB* db, DBT* key, DBT* value)
 {
-    DBT v;
-    int ret;
-
-    v.size = value->size*1.1+12;
-    v.data = xmalloc(v.size+2);
-
-    ((unsigned char *)v.data)[0] = (value->size >> 8) & 0xff;
-    ((unsigned char *)v.data)[1] = value->size & 0xff;
-
-    if (compress2(v.data+2, &v.size, value->data, value->size, 9) != 0) {
-	free(v.data);
-	return -1;
-    }
-
-    v.size += 2;
-
-    ret = (db->put)(db, key, &v, 0);
-
-    free(v.data);
-
-    return ret;
+    return (db->put)(db, key, value, 0);
 }
 
 
 
 int
-db_lookup(DB* db, DBT* key, DBT* value)
+db_lookup_l(DB* db, DBT* key, DBT* value)
 {
-    DBT v;
-    int ret;
-
-    ret = (db->get)(db, key, &v, 0);
-
-    if (ret != 0)
-	return ret;
-
-    value->size = ((((unsigned char *)v.data)[0] << 8)
-		   | (((unsigned char *)v.data)[1]));
-    value->data = xmalloc(value->size);
-
-    if (uncompress(value->data, &value->size, v.data+2, v.size-2) != 0) {
-	free(v.data);
-	return -1;
-    }
-    
-    free(v.data);
-
-    return ret;
+    return (db->get)(db, key, value, 0);
 }

@@ -1,10 +1,6 @@
-/* should be in dbl-int.h */
+#ifndef _HAD_DBL_INT_H
+#define _HAD_DBL_INT_H
    
 #include <db.h>
 
-/* should stay in dbl.h */
-
-DB* db_open(char *name, int extp, int writep);
-int db_close(DB* db);
-int db_insert(DB* db, DBT* key, DBT* value);
-int db_lookup(DB* db, DBT* key, DBT* value);
+#endif
