@@ -22,7 +22,8 @@ TESTCASES=	baddump.test \
 		tochild.test \
 		tochildfix.test \
 		unused.test \
-		wrong.test
+		wrong.test \
+		wrong2.test
 
 ZIPS=		1-4-dup.zip \
 		1-4-mid.zip \
