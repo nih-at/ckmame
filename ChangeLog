@@ -1,3 +1,8 @@
+1999-10-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* treetrav.c (tree_child_traverse): close zip files created in
+	fix_do (all_z[0]).
+
 1999-10-05  Wiz  <wiz@danbala.tuwien.ac.at>
 
 	* libzip/zip_close.c (zip_close): make zip_close work under DOS,
