@@ -2,8 +2,6 @@ option to force fixing parents
 mame.db location
 add error messages in ckmame with the zips (e.g. can't create file etc.)
 
-add copyright notices
-
 get roms from a different location to fix sets
 
 fix all XXXs
