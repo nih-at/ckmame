@@ -1,3 +1,7 @@
+2003-02-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* romutil.c (rom_add_name): use xrealloc.
+
 2003-02-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* error.c (myerror): change error type to flags, adapt callers.

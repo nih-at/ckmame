@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: romutil.c,v 1.13 2002/06/06 09:26:58 dillo Exp $
 
   romutil.c -- miscellaneous utility functions for rom handling
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -36,7 +36,7 @@
 void
 rom_add_name(struct rom *r, char *name)
 {
-    r->altname = realloc(r->altname, (r->naltname+1)*sizeof(char *));
+    r->altname = xrealloc(r->altname, (r->naltname+1)*sizeof(char *));
     r->altname[r->naltname] = xstrdup(name);
     r->naltname++;
 
