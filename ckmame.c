@@ -29,6 +29,7 @@ char help[] = "\n\
   -f, --nofixable      don't report fixable errors\n\
   -b, --nobroken       don't report unfixable errors\n\
   -d, --nonogooddumps  don't report roms with no good dumps\n\
+  -c, --correct        report correct sets\n\
 \n\
 Report bugs to <nih@giga.or.at>.\n";
 
