@@ -15,6 +15,7 @@ zip_rename(struct zf *zf, int idx, char *name)
 
     if (zf->entry[idx].state == Z_UNCHANGED) 
 	zf->entry[idx].state = Z_RENAMED;
+    zf->changes = 1;
 
     if (zf->entry[idx].ch_name)
 	free(zf->entry[idx].ch_name);
@@ -37,6 +38,7 @@ zip_add_file(struct zf *zf, char *name, FILE *file,
 						 * zf->nentry_alloc);
     }
 
+    zf->changes = 1;
     zf->entry[zf->nentry].state = Z_ADDED;
     zf->entry[zf->nentry].ch_name = xstrdup(name);
     zf->entry[zf->nentry].ch_data_fp = file;
@@ -61,6 +63,7 @@ zip_add_data(struct zf *zf, char *name, char *buf,
 						 * zf->nentry_alloc);
     }
 
+    zf->changes = 1;
     zf->entry[zf->nentry].state = Z_ADDED;
     zf->entry[zf->nentry].ch_name = xstrdup(name);
     zf->entry[zf->nentry].ch_data_fp = NULL;
@@ -83,6 +86,7 @@ zip_replace_file(struct zf *zf, int idx, char *name, FILE *file,
 
     zip_unchange_data(zf, idx);
 
+    zf->changes = 1;
     zf->entry[idx].state = Z_REPLACED;
     if (name) {
 	if (zf->entry[idx].ch_name)
@@ -108,6 +112,7 @@ zip_replace_data(struct zf *zf, int idx, char *name, char *buf,
 
     zip_unchange_data(zf, idx);
 
+    zf->changes = 1;
     zf->entry[idx].state = Z_REPLACED;
     if (name) {
 	if (zf->entry[idx].ch_name)
@@ -131,6 +136,7 @@ zip_delete(struct zf *zf, int idx)
 
     zip_unchange(zf, idx);
 
+    zf->changes = 1;
     zf->entry[idx].state = Z_DELETED;
 
     return idx;
