@@ -14,14 +14,17 @@
 #define CENTRAL_MAGIC "PK\1\2"
 #define EOCD_MAGIC    "PK\5\6"
 #define DATADES_MAGIC "PK\7\8"
+#define CDENTRYSIZE        36
 
-#define READ2(a)      (*(a)+((a)[1])*256)
-#define READ4(a)      (READ2(a)+READ2(a)*65536)		       
+#define READ2(a)      (*((a)++)+(*((a)++))*256)
+#define READ4(a)      (READ2(a)+READ2(a)*65536)
 
 struct zf *readcdir(FILE *fp, char *buf, int j, char *match);
 struct zf *zf_new();
 void zf_free(struct zf *zf);
 struct zf *z_open(char *fn);
+char *readstr(char **str, int len);
+int readcdentry(FILE *fp, char **cdpp, struct zf_entry *zfe);
 
 
 
@@ -116,10 +119,11 @@ readcdir(FILE *fp, char *buf, int j, char *match)
 
     zf = zf_new();
 
-    zf->nentry = READ2(match+10);
-    zf->cd_size = READ4(match+12);
-    zf->cd_offset = READ4(match+16);
-    zf->com_size = READ2(match+20);
+    cdp = match + 10;
+    zf->nentry = READ2(cdp);
+    zf->cd_size = READ4(cdp);
+    zf->cd_offset = READ4(cdp);
+    zf->com_size = READ2(cdp);
     zf->entry = NULL;
 
     if (zf->com_size != j-(match+22-buf)) {
@@ -159,6 +163,89 @@ readcdir(FILE *fp, char *buf, int j, char *match)
     }
     
     return zf;
+}
+
+
+
+int
+readcdentry(FILE *fp, char **cdpp, struct zf_entry *zfe)
+{
+    char *cur;
+    int ret;
+
+    if (*cdpp == NULL) {
+	/* read entry from disk */
+	cur = (char *)xmalloc(BUFSIZE);
+	if ((fread(cur, 1, CDENTRYSIZE, fp)<CDENTRYSIZE)) {
+	    free(cur);
+	    return -1;
+	}
+    }
+    else
+	cur = *cdpp;
+
+    ret = 0;
+    /* convert char * to zf_entry */
+    if (memcmp(cur, CENTRAL_MAGIC, 4)!=0)
+	ret = -1;
+    cur += 4;
+    
+    if (ret == -1) {
+	if (*cdpp == NULL)
+	    free(cur);
+	return -1;
+    }
+
+    /* fill structure */
+    zfe->version_made = READ2(cur);
+    zfe->version_need = READ2(cur);
+    zfe->bitflags = READ2(cur);
+    zfe->comp_meth = READ2(cur);
+    zfe->lmtime = READ2(cur);
+    zfe->lmdate = READ2(cur);
+
+    zfe->crc = READ4(cur);
+    zfe->comp_size = READ4(cur);
+    zfe->uncomp_size = READ4(cur);
+    
+    zfe->fnlen = READ2(cur);
+    zfe->eflen = READ2(cur);
+    zfe->fcomlen = READ2(cur);
+    zfe->disknrstart = READ2(cur);
+    zfe->intatt = READ2(cur);
+
+    zfe->extatt = READ4(cur);
+    zfe->local_offset = READ4(cur);
+
+    /* read extra data */
+    if (zfe->fnlen)
+	zfe->fn = readstr(&cur, zfe->fnlen);
+    if (zfe->eflen)
+	zfe->ef = readstr(&cur, zfe->eflen);
+    if (zfe->fcomlen)
+	zfe->fcom = readstr(&cur, zfe->fcomlen);
+    
+    if (*cdpp != NULL)
+	*cdpp = cur;
+    else
+	free(cur);
+
+    return 0;
+}
+
+
+
+char *
+readstr(char **str, int len)
+{
+    char *r;
+
+    r = (char *)xmalloc(len);
+    memcpy(r, *str, len);
+
+    *str += len;
+
+    return r;
 }
 
 
