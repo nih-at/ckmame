@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.6 2002/10/16 13:41:17 dillo Exp $
+#  $NiH: runtest,v 1.1 2003/03/14 04:13:43 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -133,6 +133,24 @@ checkfile() {
     fi
 }
 
+checkzip() {
+    if [ ! -f "$2" ]
+    then
+	fail "missing output file: '$2'"
+    else
+	if [ ! -f "$1" ]
+	then
+	    die "cannot find input file $1"
+	fi
+	
+	${CMPZIP} ${CMPZIP_FLAGS} "$1" "$2"
+	if [ $? -ne 0 ]
+	then
+	    fail "$3"
+	fi
+    fi
+}
+
 test_empty() {
     if [ ! -z "$1" ]
     then
@@ -159,9 +177,22 @@ else
 	srcdir=../${srcdir}
 fi
 
-if [ -z "${PROGRAM}" ]
+if [ -z "${CKMAM}" ]
 then
     PROGRAM=../../ckmame
+else
+    PROGRAM="${CKMAME}"
+fi
+
+if [ -z "${CMPZIP}" ]
+then
+    CMPZIP=../../libzip/cmpzip
+fi
+if [ -z "${VERBOSE}" ]
+then
+    CMPZIP_FLAGS='-q'
+else
+    CMPZIP_FLAGS='-v'
 fi
 
 # XXX: set up trap to cleanup
@@ -194,7 +225,7 @@ do
     FILES="${FILES} ${srcdir}/$3!roms/$2";;
   garbage)
     set $arg
-    FILES="${FILES} ${srcdir}/$2!garbage/$1";;
+    FILES="${FILES} ${srcdir}/$2!roms/garbage/$1";;
   stdout)
     echo "$arg" >> stdout;;
   error)
@@ -238,9 +269,11 @@ then
     for fs in ${FILES}
     do
         set -- `echo -n ${fs} | tr '!' ' '`
-	checkfile $1 $2 "zip file $2 wrong"
+	checkzip $1 $2 "zip file $2 wrong"
     done
 fi
+
+# XXX: check that no additional files exist
 
 succeed
 
