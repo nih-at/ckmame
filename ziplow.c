@@ -24,7 +24,7 @@
 
 struct zf *readcdir(FILE *fp, char *buf, char *eocd, int buflen);
 struct zf *zf_new(void);
-void zf_free(struct zf *zf);
+int zf_free(struct zf *zf);
 struct zf *zip_open(char *fn);
 char *readstr(char **str, int len);
 int readcdentry(FILE *fp, char **cdpp, struct zf_entry *zfe, int left);
@@ -129,6 +129,7 @@ int
 zip_close(struct zf *zf)
 {
     int i, count, td;
+    char *temp;
     FILE *tfp;
 
     if (zf->changes == 0) {
@@ -173,7 +174,7 @@ zip_close(struct zf *zf)
     return 0;
 }
 
-#endif /* 0 */
+#endif /* NEVER */
 
 
 
@@ -182,17 +183,16 @@ readcdir(FILE *fp, char *buf, char *eocd, int buflen)
 {
     struct zf *zf;
     char *cdp;
-    int i, eocdlen;
+    int i, comlen;
 
-    eocdlen = buflen - (eocd - buf);
-    /* check and read in end-of-central-dir entry (eocd) */
-    if (eocdlen<22) {
-	/* not enough bytes left for eocd */
+    comlen = buf + buflen - eocd - EOCDLEN;
+    if (comlen < 0) {
+	/* not enough bytes left for comment */
 	return NULL;
     }
 
-    /* check for eocd magic */
-    if (memcmp(eocd, EOCD_MAGIC, 4)!=0)
+    /* check for end-of-central-dir magic */
+    if (memcmp(eocd, EOCD_MAGIC, 4) != 0)
 	return NULL;
 
     zf = zf_new();
@@ -202,21 +202,25 @@ readcdir(FILE *fp, char *buf, char *eocd, int buflen)
 	return NULL;
     }
 
-    cdp = eocd + 10;
+    cdp = eocd + 8;
+    /* number of cdir-entries on this disk */
+    i = READ2(cdp);
+    /* number of cdir-entries */
     zf->nentry = READ2(cdp);
     zf->cd_size = READ4(cdp);
     zf->cd_offset = READ4(cdp);
     zf->com_size = READ2(cdp);
     zf->entry = NULL;
 
-    if (zf->com_size != eocdlen-22) {
+    if ((zf->com_size != comlen) || (zf->nentry != i)) {
 	/* comment size wrong -- too few or too many left after central dir */
+	/* or number of cdir-entries on this disk != number of cdir-entries */
 	zf->nentry = 0;
 	zf_free(zf);
 	return NULL;
     }
 
-    zf->com = memdup(eocd+22, zf->com_size);
+    zf->com = memdup(eocd+EOCDLEN, zf->com_size);
 
     cdp = NULL;
     if (zf->cd_size < eocd-buf) {
@@ -224,19 +228,21 @@ readcdir(FILE *fp, char *buf, char *eocd, int buflen)
 	cdp = eocd - zf->cd_size;
     }
     else {
-	/* else go to start of cdir and read entry by entry */
+	/* go to start of cdir and read it entry by entry */
 	clearerr(fp);
-	fseek(fp, -(zf->cd_size+zf->com_size+22), SEEK_END);
+	fseek(fp, -(zf->cd_size+zf->com_size+EOCDLEN), SEEK_END);
 	if (ferror(fp)) {
 	    /* seek error */
 	    zf->nentry = 0;
 	    zf_free(zf);
 	    return NULL;
 	}
+	/* XXX: if(ftell(fp) != zf->cd_offset)) errorexit? */
     }
 
     for (i=0; i<zf->nentry; i++) {
-	if (readcdentry(fp, &cdp, zf->entry+i, eocd-cdp)!=0) {
+	if ((zf->entry[i]=readcdentry(fp, &cdp, zf->entry+i, eocd-cdp))
+	    == NULL) {
 	    /* i entries have already been filled, tell zf_free
 	       how many to free */
 	    zf->nentry = i+1;
@@ -341,10 +347,10 @@ zf_new(void)
 
     zf = (struct zf *)xmalloc(sizeof(struct zf));
 
+    zf->zn = zf->com = NULL;
+    zf->zp = NULL;
     zf->nentry = zf->com_size = zf->changes = 0;
     zf->cd_size = zf->cd_offset = 0;
-    zf->zp = NULL;
-    zf->zn = zf->com = NULL;
     zf->entry = NULL;
 
     return zf;
@@ -352,30 +358,30 @@ zf_new(void)
 
 
 
-void
+int
 zf_free(struct zf *zf)
 {
-    int i;
-    
+    int i, ret;
+
     if (zf == NULL)
 	return;
 
     if (zf->zn)
 	free(zf->zn);
 
-    /* XXX: perhaps return return value of fclose? */
     if (zf->zp)
-	fclose(zf->zp);
+	ret = fclose(zf->zp);
 
     if (zf->com)
 	free(zf->com);
 
     if (zf->entry) {
 	for (i=0; i<zf->nentry; i++) {
-	    if (zf->entry+i) {
+	    if (zf->entry[i]) {
 		free(zf->entry[i].fn);
 		free(zf->entry[i].ef);
 		free(zf->entry[i].fcom);
+		free(zf->entry[i]);
 	    }
 	}
 	free (zf->entry);
@@ -383,5 +389,5 @@ zf_free(struct zf *zf)
 
     free(zf);
 
-    return;
+    return ret;
 }
