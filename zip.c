@@ -236,6 +236,21 @@ zip_set_name(struct zf *zf, int idx, char *name)
 
 
 static void
+zip_entry_init(struct zf *zf, int idx)
+{
+    zf->entry[idx].fn = zf->entry[idx].ef = zf->entry[idx].fcom =
+	zf->entry[idx].fn_old = NULL;
+    zf->entry[idx].state = Z_UNCHANGED;
+    zf->entry[idx].ch_data_zf = NULL;
+    zf->entry[idx].ch_data_buf = NULL;
+    zf->entry[idx].ch_data_fp = NULL;
+    zf->entry[idx].ch_data_offset = zf->entry[idx].ch_data_len = 0;
+    zf->entry[idx].ch_data_zf_fileno = 0;
+}
+
+
+
+static void
 zip_new_entry(struct zf *zf)
 {
     if (zf->nentry >= zf->nentry_alloc-1) {
@@ -245,8 +260,10 @@ zip_new_entry(struct zf *zf)
 						 * zf->nentry_alloc);
     }
     /* XXX: initialize new entry */
-    zip_unchange_data(zf, zf->nentry);
+    zip_entry_init(zf, zf->nentry);
 
     zf->entry[zf->nentry].fn_old = NULL;
     zf->entry[zf->nentry].state = Z_ADDED;
+
+    zf->nentry++;
 }
