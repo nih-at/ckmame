@@ -1,7 +1,7 @@
 #ifndef HAD_CHD_H
 
 /*
-  $NiH$
+  $NiH: chd.h,v 1.1 2004/04/28 16:59:49 dillo Exp $
 
   chd.h -- accessing chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -24,6 +24,7 @@
 */
 
 #include <stdio.h>
+#include <zlib.h>
 
 #define CHD_ERR_NONE	0	/* N no error */
 #define CHD_ERR_OPEN	1	/* S cannot open file */
@@ -35,6 +36,7 @@
 #define CHD_ERR_NOTSUP	7	/* N unsupported chd feature */
 #define CHD_ERR_ZLIB	8	/* Z zlib error */
 #define CHD_ERR_CRC	9	/* N CRC mismatch */
+#define CHD_ERR_NOMEM	10	/* N out of memory */
 
 #define CHD_MAP_TYPE_COMPRESSED		0x01
 #define CHD_MAP_TYPE_UNCOMPRESSED	0x02
@@ -78,6 +80,7 @@ struct chd {
     struct chd_map_entry *map;	/* hunk map */
     char *buf;			/* decompression buffer */
     z_stream z;			/* decompressor */
+    char *hbuf;			/* hunk data buffer */
 };
 
 
@@ -85,5 +88,6 @@ struct chd {
 void chd_close(struct chd *);
 struct chd *chd_open(const char *, int *);
 int chd_read_hunk(struct chd *, int, char *);
+int chd_read_range(struct chd *, char *, int, int);
 
 #endif /* chd.h */

@@ -1,5 +1,5 @@
 /*
-  $NiH: chd.c,v 1.3 2004/04/28 18:36:18 dillo Exp $
+  $NiH: chd.c,v 1.4 2004/05/06 21:56:56 wiz Exp $
 
   chd.c -- accessing chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -29,7 +29,6 @@
 #include <zlib.h>
 
 #include "chd.h"
-#include "xmalloc.h"
 
 
 
@@ -60,6 +59,7 @@ chd_close(struct chd *chd)
     free(chd->name);
     free(chd->map);
     free(chd->buf);
+    free(chd->hbuf);
     free(chd);
 }   
 
@@ -72,19 +72,31 @@ chd_open(const char *name, int *errp)
     FILE *f;
 
     if ((f=fopen(name, "rb")) == NULL) {
-	*errp = CHD_ERR_OPEN;
+	if (errp)
+	    *errp = CHD_ERR_OPEN;
 	return NULL;
     }
 
-    chd = xmalloc(sizeof(*chd));
+    if ((chd=malloc(sizeof(*chd))) == NULL) {
+	if (errp)
+	    *errp = CHD_ERR_NOMEM;
+	return NULL;
+    }
     chd->f = f;
-    chd->name = xstrdup(name);
+    if ((chd->name=strdup(name)) == NULL) {
+	if (errp)
+	    *errp = CHD_ERR_NOMEM;
+	chd_close(chd);
+	return NULL;
+    }
     chd->error = 0;
     chd->map = NULL;
     chd->buf = NULL;
+    chd->hbuf = NULL;
 
     if (read_header(chd) < 0) {
-	*errp = chd->error;
+	if (errp)
+	    *errp = chd->error;
 	chd_close(chd);
 	return NULL;
     }
@@ -124,7 +136,10 @@ chd_read_hunk(struct chd *chd, int idx, char *b)
 	}
 
 	if (chd->buf == NULL) {
-	    chd->buf = xmalloc(chd->hunk_len);
+	    if ((chd->buf=malloc(chd->hunk_len)) == NULL) {
+		chd->error = CHD_ERR_NOMEM;
+		return -1;
+	    }
 	    chd->z.avail_in = 0;
 	    chd->z.zalloc = Z_NULL;
 	    chd->z.zfree = Z_NULL;
@@ -211,6 +226,53 @@ chd_read_hunk(struct chd *chd, int idx, char *b)
 
 
 
+int
+chd_read_range(struct chd *chd, char *b, int off, int len)
+{
+    int i, s, n;
+
+    /* XXX: error handling */
+
+    s = off/chd->hunk_len;
+    n = (off+len+chd->hunk_len-1)/chd->hunk_len - s;
+
+    if (off%chd->hunk_len == 0 && len%chd->hunk_len == 0) {
+	/* reading complete hunks */
+	for (i=0; i<n; i++)
+	    chd_read_hunk(chd, s+i, b+i*chd->hunk_len);
+    }
+    else {
+	int copied, o2, l2;
+	
+	if (chd->hbuf == NULL)
+	    if ((chd->hbuf=malloc(chd->hunk_len)) == NULL)
+		return -1;
+
+	copied = 0;
+	o2 = off % chd->hunk_len;
+	l2 = chd->hunk_len - o2;
+
+	for (i=0; i<n; i++) {
+	    if (i == 1) {
+		o2 = 0;
+		l2 = chd->hunk_len;
+	    }
+	    if (i == n-1) {
+		if (l2 > len-copied)
+		    l2 = len-copied;
+	    }
+	    
+	    chd_read_hunk(chd, s+i, chd->hbuf);
+	    memcpy(b+copied, chd->hbuf+o2, l2);
+	    copied += l2;
+	}
+    }
+
+    return len;
+}
+
+
+
 static int
 read_header(struct chd *chd)
 {
@@ -293,7 +355,10 @@ read_map(struct chd *chd)
     int i, len;
     uint64_t v;
 
-    chd->map = xmalloc(sizeof(*chd->map)*chd->total_hunks);
+    if ((chd->map=malloc(sizeof(*chd->map)*chd->total_hunks)) == NULL) {
+	chd->error = CHD_ERR_NOMEM;
+	return -1;
+    }
 
     if (chd->version < 3)
 	len = MAP_ENTRY_SIZE_V12;
