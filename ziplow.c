@@ -8,6 +8,8 @@
 #include "xmalloc.h"
 #include "zip.h"
 
+#undef NEVER 
+
 #define MAXCOMLEN        65536
 #define EOCDLEN             22
 #define BUFSIZE       (MAXCOMLEN+EOCDLEN)
@@ -121,7 +123,7 @@ zip_open(char *fn)
 
 
 
-#ifdef 0
+#ifdef NEVER
 
 int
 zip_close(struct zf *zf)

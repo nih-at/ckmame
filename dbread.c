@@ -65,6 +65,8 @@ dbread(DB* db, char *fname)
     nlost = nr = ns = ingame = 0;
     while (fgets(l, 8192, fin)) {
 	cmd = strtok(l, " \t\n\r");
+	if (cmd == NULL)
+	    continue;
 	
 	if (strcmp(cmd, "game") == 0 || strcmp(cmd, "resource") == 0) {
 	    g = (struct game *)xmalloc(sizeof(struct game));
@@ -74,31 +76,36 @@ dbread(DB* db, char *fname)
 	    ingame = 1;
 	    nr = ns = 0;
 	}
-	else if (strcmp(cmd, "name") == 0)
-	    g->name = strdup(GET_TOK());
-	else if (strcmp(cmd, "romof") == 0)
-	    g->cloneof[0] = strdup(GET_TOK());
+	else if (strcmp(cmd, "name") == 0) {
+	    g->name = xstrdup(GET_TOK());
+	}
+	else if (strcmp(cmd, "romof") == 0) {
+ 	    g->cloneof[0] = xstrdup(GET_TOK());
+	}
 	else if (strcmp(cmd, "rom") == 0) {
 	    GET_TOK();
 	    if (strcmp(GET_TOK(), "name") != 0) {
 		/* XXX: error */
+		myerror(ERRDEF, "expected token not found");
 		continue;
 	    }
-	    r[nr].name = strdup(GET_TOK());
+	    r[nr].name = xstrdup(GET_TOK());
 	    p = GET_TOK();
 	    if (strcmp(p, "merge") == 0) {
-		r[nr].merge = strdup(GET_TOK());
+		r[nr].merge = xstrdup(GET_TOK());
 		p = GET_TOK();
 	    }
 	    else
 		r[nr].merge = NULL;
 	    if (strcmp(p, "size") != 0) {
 		/* XXX: error */
+		myerror(ERRDEF, "expected token not found");
 		continue;
 	    }
 	    r[nr].size = strtol(GET_TOK(), NULL, 10);
 	    if (strcmp(GET_TOK(), "crc") != 0) {
 		/* XXX: error */
+		myerror(ERRDEF, "expected token not found");
 		continue;
 	    }
 	    r[nr].crc = strtoul(GET_TOK(), NULL, 16);
@@ -113,9 +120,10 @@ dbread(DB* db, char *fname)
 	    nr++;
 	}
 	else if (strcmp(cmd, "sampleof") == 0)
-	    g->sampleof = strdup(GET_TOK());
+	    g->sampleof = xstrdup(GET_TOK());
 	else if (strcmp(cmd, "sample") == 0) {
-	    s[ns].name = strdup(GET_TOK());
+	    s[ns].name = xstrdup(GET_TOK());
+	    s[ns].merge = NULL;
 	    s[ns].size = s[ns].crc = s[ns].where = 0;
 	    ns++;
 	}
@@ -139,7 +147,7 @@ dbread(DB* db, char *fname)
 			lostchildren = (char **)xrealloc(lostchildren,
 					lostmax*sizeof(char *));
 		    }
-		    lostchildren[nlost++] = strdup(g->name);
+		    lostchildren[nlost++] = xstrdup(g->name);
 		    if (parent)
 			game_free(parent, 1);
 		}
@@ -199,7 +207,8 @@ dbread(DB* db, char *fname)
     qsort(games, ngames, sizeof(char *),
 	  (int (*)(const void *, const void *))strpcasecmp);
     w_list(db, "/list", games, ngames);
-    
+
+    free(lostchildren);
     return 0;
 }
 
@@ -216,19 +225,19 @@ familymeeting(DB *db, struct game *parent, struct game *child)
 	gparent = r_game(db, parent->cloneof[0]);
 	gparent->clone = (char **)xrealloc(gparent->clone,
 					   (gparent->nclone+1)*sizeof(char *));
-	gparent->clone[gparent->nclone++] = strdup(child->name);
+	gparent->clone[gparent->nclone++] = xstrdup(child->name);
 	w_game(db, gparent);
 	game_free(gparent, 0);
     }
 
     /* tell child of his grandfather */
     if (parent->cloneof[0])
-	child->cloneof[1] = strdup(parent->cloneof[0]);
+	child->cloneof[1] = xstrdup(parent->cloneof[0]);
 
     /* tell father of his child */
     parent->clone = (char **)xrealloc(parent->clone,
 				      sizeof (char *)*(parent->nclone+1));
-    parent->clone[parent->nclone++] = strdup(child->name);
+    parent->clone[parent->nclone++] = xstrdup(child->name);
 
     /* look for roms in parent */
     for (i=0; i<child->nrom; i++)
@@ -288,7 +297,7 @@ add_name(char *s)
 	    games = (char **)xrealloc(games, sizeof(char *)*sgames);
     }
 
-    games[ngames++] = strdup(s);
+    games[ngames++] = xstrdup(s);
 
     return 0;
 }

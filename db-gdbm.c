@@ -1,7 +1,7 @@
-#include <stdlib.h>
 #include <stdio.h>
 #include <gdbm.h>
 
+#include "xmalloc.h"
 #include "dbl.h"
 
 
@@ -63,8 +63,8 @@ db_lookup_l(DB* db, DBT* key, DBT* value)
 
 
 
-char *
+const char *
 db_error(void)
 {
-    return gdbm_error(gdbm_errno);
+    return gdbm_strerror(gdbm_errno);
 }

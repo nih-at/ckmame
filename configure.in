@@ -28,10 +28,6 @@ then
     fi
 fi
 
-# AC_CHECK_TYPE(uint, [unsigned int])
-# AC_CHECK_TYPE(u_int, unsigned int)
-# AC_CHECK_TYPE(ushort, unsigned short)
-# AC_CHECK_TYPE(u_short, unsigned short)
 AC_CHECK_LIB(z, main)
 AC_CACHE_CHECK(new ZLIB version, id_cv_lib_zlib_ok, 
 	AC_TRY_COMPILE([#include <zlib.h>], 
@@ -64,5 +60,7 @@ AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
 AC_SUBST(LIBOBJS)
 
 AC_LINK_FILES(db-${db}.h db-${db}.c, dbl-int.h dbl-int.c)
+
+AC_EXEEXT
 
 AC_OUTPUT(Makefile)

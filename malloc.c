@@ -50,6 +50,9 @@ xstrdup(char *str)
 {
     char *p;
 
+    if (str==NULL)
+	return NULL;
+
     if ((p=malloc(strlen(str)+1)) == NULL) {
 	myerror(ERRDEF, "malloc failure");
 	exit(1);
@@ -59,7 +62,6 @@ xstrdup(char *str)
     
     return p;
 }
-
 
 
 void *

@@ -13,7 +13,7 @@ main(int argc, char **argv)
     DB *db;
 
     prg = argv[0];
-    remove("mame.db");
+    remove("mame.gdbm");
 
     db = db_open("mame", 1, 1);
 
@@ -21,7 +21,7 @@ main(int argc, char **argv)
 	myerror(ERRSTR, "%s", db_error());
 	exit(1);
     }
-    
+
     dbread_init();
     dbread(db, "db.txt");
 

@@ -66,15 +66,18 @@ game_free(struct game *g, int fullp)
     free(g->cloneof[0]);
     free(g->cloneof[1]);
     free(g->sampleof);
-    for (i=0; i<g->nrom; i++)
+    for (i=0; i<g->nrom; i++) {
 	free(g->rom[i].name);
-    for (i=0; i<g->nsample; i++)
+	free(g->rom[i].merge);
+    }
+    for (i=0; i<g->nsample; i++) {
 	free(g->sample[i].name);
+	free(g->sample[i].merge);
+    }
     if (fullp) {
 	free(g->rom);
 	free(g->sample);
     }
-
     free(g);
 }
 

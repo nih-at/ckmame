@@ -34,16 +34,16 @@ struct zipchange {
 struct zf {
     char *zn;
     FILE *zp;
-    u_short nentry, com_size, changes;
-    u_int cd_size, cd_offset;
+    unsigned short nentry, com_size, changes;
+    unsigned int cd_size, cd_offset;
     char *com;
     struct zf_entry *entry;
 };
 
 struct zf_entry {
-    ushort version_made, version_need, bitflags, comp_meth,
+    unsigned short version_made, version_need, bitflags, comp_meth,
 	lmtime, lmdate, fnlen, eflen, fcomlen, disknrstart, intatt;
-    uint crc, comp_size, uncomp_size, extatt, local_offset;
+    unsigned int crc, comp_size, uncomp_size, extatt, local_offset;
     char *fn, *ef, *fcom;
     enum zip_state state;
 };

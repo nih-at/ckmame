@@ -71,9 +71,9 @@ r__string(DBT *v)
 
 
 void
-r__pstring(DBT *v, char **sp)
+r__pstring(DBT *v, void *sp)
 {
-    *sp = r__string(v);
+    *(char **)sp = r__string(v);
 }
 
 int
@@ -103,12 +103,12 @@ r__array(DBT *v, void (*fn)(DBT *, void *), void **a, size_t size)
 /* XXX: doesn't belong in this file */
 
 void
-r__rom(DBT *v, struct rom *r)
+r__rom(DBT *v, void *r)
 {
-    r->name = r__string(v);
-    r->merge = r__string(v);
-    r->size = r__ulong(v);
-    r->crc = r__ulong(v);
-    r->where = r__ushort(v);
-    r->state = 0;
+    ((struct rom *)r)->name = r__string(v);
+    ((struct rom *)r)->merge = r__string(v);
+    ((struct rom *)r)->size = r__ulong(v);
+    ((struct rom *)r)->crc = r__ulong(v);
+    ((struct rom *)r)->where = r__ushort(v);
+    ((struct rom *)r)->state = 0;
 }

@@ -63,9 +63,9 @@ w__string(DBT *v, char *s)
 
 
 void
-w__pstring(DBT *v, char **sp)
+w__pstring(DBT *v, void *sp)
 {
-    w__string(v, *sp);
+    w__string(v, *(char **)sp);
 }
 
 
@@ -86,11 +86,11 @@ w__array(DBT *v, void (*fn)(DBT *, void *), void *a, size_t size, size_t n)
 /* XXX: doesn't belong in this file */
 
 void
-w__rom(DBT *v, struct rom *r)
+w__rom(DBT *v, void *r)
 {
-    w__string(v, r->name);
-    w__string(v, r->merge);
-    w__ulong(v, r->size);
-    w__ulong(v, r->crc);
-    w__ushort(v, r->where);
+    w__string(v, ((struct rom *)r)->name);
+    w__string(v, ((struct rom *)r)->merge);
+    w__ulong(v, ((struct rom *)r)->size);
+    w__ulong(v, ((struct rom *)r)->crc);
+    w__ushort(v, ((struct rom *)r)->where);
 }

@@ -25,7 +25,7 @@ r_list(DB *db, char *key, char ***listp)
     }
     data = v.data;
 
-    n = r__array(&v, r__pstring, listp, sizeof(char *));
+    n = r__array(&v, r__pstring, (void **)listp, sizeof(char *));
 
     free(k.data);
     free(data);
