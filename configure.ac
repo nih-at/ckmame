@@ -11,7 +11,6 @@ test -z "$CFLAGS" && CFLAGS='-Wall -g' auto_cflags=1
 
 
 AC_PROG_CC
-AC_PROG_RANLIB
 
 # find libzip
 PKG_CHECK_MODULES(LIBZIP, libzip >= 0.5)
