@@ -76,6 +76,39 @@ readstr(unsigned char **buf, int len, int nullp)
 
 
 
+void
+write2(FILE *fp, int i)
+{
+    fputc(i&0xff, fp);
+    fputc((i>>8)&0xff, fp);
+
+    return;
+}
+
+
+
+void
+write4(FILE *fp, int i)
+{
+    fputc(i&0xff, fp);
+    fputc((i>>8)&0xff, fp);
+    fputc((i>>16)&0xff, fp);
+    fputc((i>>24)&0xff, fp);
+    
+    return;
+}
+
+
+
+void
+writestr(FILE *fp, char *str, int len)
+{
+    fprintf(fp, "%.*s", len, str);
+    return;
+}
+
+
+
 char *
 readfpstr(FILE *fp, int len, int nullp)
 {
@@ -582,6 +615,53 @@ readcdentry(FILE *fp, struct zf_entry *zfe, unsigned char **cdpp,
     zfe->ch_data_offset = 0;
     zfe->ch_data_len = 0;
 
+    return 0;
+}
+
+
+/* writecdentry:
+   if localp, writes local header for zfe to zf->zp,
+   else write central directory entry for zfe to zf->zp.
+   if after writing ferror(fp), return -1, else return 0.*/
+   
+int
+writecdentry(FILE *fp, struct zf_entry *zfe, int localp)
+{
+    fprintf(fp, "%s", localp?LOCAL_MAGIC:CENTRAL_MAGIC);
+    
+    if (!localp)
+	write2(fp, zfe->version_made);
+    write2(fp, zfe->version_need);
+    write2(fp, zfe->bitflags);
+    write2(fp, zfe->comp_meth);
+    write2(fp, zfe->lmtime);
+    write2(fp, zfe->lmdate);
+
+    write4(fp, zfe->crc);
+    write4(fp, zfe->comp_size);
+    write4(fp, zfe->uncomp_size);
+    
+    write2(fp, zfe->fnlen);
+    write2(fp, zfe->eflen);
+    if (!localp) {
+	write2(fp, zfe->fcomlen);
+	write2(fp, zfe->disknrstart);
+	write2(fp, zfe->intatt);
+
+	write4(fp, zfe->extatt);
+	write4(fp, zfe->local_offset);
+    }
+    
+    if (zfe->fnlen)
+	writestr(fp, zfe->fn, zfe->fnlen);
+    if (zfe->eflen)
+	writestr(fp, zfe->ef, zfe->eflen);
+    if (zfe->fcomlen)
+	writestr(fp, zfe->fcom, zfe->fcomlen);
+
+    if (ferror(fp))
+	return -1;
+    
     return 0;
 }
 

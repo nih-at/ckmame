@@ -5,6 +5,7 @@
 
 struct zf *readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, 
 		    int buflen);
+int writecdir(struct zf *zfp);
 struct zf *zf_new(void);
 int zf_free(struct zf *zf);
 struct zf *zip_open(char *fn, int checkp);
@@ -15,6 +16,7 @@ int read2(unsigned char **a);
 int read4(unsigned char **a);
 int readcdentry(FILE *fp, struct zf_entry *zfe, unsigned char **cdpp, 
 		int left, int readp, int localp);
+int writecdentry(FILE *fp, struct zf_entry *zfe, int localp);
 int checkcons(FILE *fp, struct zf *zf);
 int headercomp(struct zf_entry *h1, int local1p, struct zf_entry *h2,
 	       int local2p);
