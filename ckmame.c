@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.29 2003/03/14 15:25:33 dillo Exp $
+  $NiH: ckmame.c,v 1.30 2003/03/16 10:21:32 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -51,37 +51,36 @@ char *usage = "Usage: %s [-hVSwsfbdcFKkUuLlvn] [-D dbfile] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
-char help[] = "\n\
-  -h, --help           display this help message\n\
-  -V, --version        display version number\n\
-  -D, --db DBFILE      use mame-db DBFILE\n\
-  -S, --samples        check samples instead of roms\n\
-  -w, --nowarnings     print only unfixable errors\n\
-  -s, --nosuperfluous  don't report superfluous files\n\
-  -f, --nofixable      don't report fixable errors\n\
-  -b, --nobroken       don't report unfixable errors\n\
-  -d, --nonogooddumps  don't report roms with no good dumps\n\
-  -c, --correct        report correct sets\n\
-  -F, --fix            fix rom sets\n\
-  -K, --keep-unknown   keep unknown files when fixing (default)\n\
-  -k, --delete-unknown don't keep unknown files when fixing\n\
-  -U, --keep-unused    keep unused files when fixing\n\
-  -u, --delete-unused  don't keep unused files when fixing (default)\n\
-  -L, --keep-long      keep long files when fixing (default)\n\
-  -l, --delete-long    don't keep long files when fixing\n\
-  -v, --verbose        print fixes made\n\
-  -n, --dryrun         don't actually fix, only report what would be done\n\
-\n\
-Report bugs to <nih@giga.or.at>.\n";
+char help[] = "\n"
+"  -b, --nobroken       don't report unfixable errors\n"
+"  -c, --correct        report correct sets\n"
+"  -D, --db DBFILE      use mame-db DBFILE\n"
+"  -d, --nonogooddumps  don't report roms with no good dumps\n"
+"  -F, --fix            fix rom sets\n"
+"  -f, --nofixable      don't report fixable errors\n"
+"  -h, --help           display this help message\n"
+"  -K, --keep-unknown   keep unknown files when fixing (default)\n"
+"  -k, --delete-unknown don't keep unknown files when fixing\n"
+"  -L, --keep-long      keep long files when fixing (default)\n"
+"  -l, --delete-long    don't keep long files when fixing\n"
+"  -n, --dryrun         don't actually fix, only report what would be done\n"
+"  -S, --samples        check samples instead of roms\n"
+"  -s, --nosuperfluous  don't report superfluous files\n"
+"  -U, --keep-unused    keep unused files when fixing\n"
+"  -u, --delete-unused  don't keep unused files when fixing (default)\n"
+"  -V, --version        display version number\n"
+"  -v, --verbose        print fixes made\n"
+"  -w, --nowarnings     print only unfixable errors\n"
+"\nReport bugs to <nih@giga.or.at>.\n";
 
-char version_string[] = PACKAGE " " VERSION "\n\
-Copyright (C) 2003 Dieter Baron and Thomas Klausner\n\
-" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
-You may redistribute copies of\n\
-" PACKAGE " under the terms of the GNU General Public License.\n\
-For more information about these matters, see the files named COPYING.\n";
+char version_string[] = PACKAGE " " VERSION "\n"
+"Copyright (C) 2003 Dieter Baron and Thomas Klausner\n"
+PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
+"You may redistribute copies of\n"
+PACKAGE " under the terms of the GNU General Public License.\n"
+"For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hVD:SwsfbcdxFKkUuLlvn"
+#define OPTIONS "bcdD:FfhKkLnlSsxUuVvw"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
