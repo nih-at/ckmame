@@ -1,14 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
 
-#include "types.h"
-#include "dbl.h"
-#include "util.h"
-#include "xmalloc.h"
+#include "ziplow.h"
 #include "zip.h"
 
-#undef NEVER 
+#include "util.h"
+#include "xmalloc.h"
 
 #define MAXCOMLEN        65536
 #define EOCDLEN             22
@@ -19,22 +18,60 @@
 #define DATADES_MAGIC "PK\7\8"
 #define CDENTRYSIZE        36
 
+#undef NEVER
+#ifdef NEVER
 #define READ2(a)      (*((a)++)+(*((a)++))*256)
 #define READ4(a)      (READ2(a)+READ2(a)*65536)
+#endif
 
-struct zf *readcdir(FILE *fp, char *buf, char *eocd, int buflen);
-struct zf *zf_new(void);
-int zf_free(struct zf *zf);
-struct zf *zip_open(char *fn);
-char *readstr(FILE *fp, int len);
-int readcdentry(FILE *fp, struct zf_entry *zfe, char **cdpp, int left,
-		int readp);
-int checkcons(struct zf *zf, FILE *fp);
+char * zip_err_str[]={
+    "no error",
+    "multi-disk zip-files not supported"
+};
+
+
+
+int
+read2(unsigned char **a)
+{
+    int ret;
+
+    ret = (*a)[0]+(*a)[1]*256;
+    *a += 2;
+
+    return ret;
+}
+
+
+
+int
+read4(unsigned char **a)
+{
+    int ret;
+
+    ret = (*a)[0]+(*a)[1]*256+(*a)[2]*65536+(*a)[3]*16777216;
+    *a += 4;
+
+    return ret;
+}
 
 
 
 char *
-readstr(FILE *fp, int len)
+readstr(unsigned char **buf, int len)
+{
+    char *r;
+
+    r = memdup(*buf, len);
+    *buf += len;
+
+    return r;
+}
+
+
+
+char *
+readfpstr(FILE *fp, int len)
 {
     char *r;
 
@@ -53,22 +90,25 @@ struct zf *
 zip_open(char *fn)
 {
     FILE *fp;
-    char *buf, *match;
+    unsigned char *buf, *match;
     int a, i, buflen, best;
     struct zf *cdir, *cdirnew;
+    long len;
 
     if ((fp=fopen(fn, "rb"))==NULL)
 	return NULL;
 
     clearerr(fp);
-    i = fseek(fp, -BUFSIZE, SEEK_END);
+    fseek(fp, 0, SEEK_END);
+    len = ftell(fp);
+    i = fseek(fp, -(len < BUFSIZE ? len : BUFSIZE), SEEK_END);
     if (i == -1 && errno != EFBIG) {
 	/* seek before start of file on my machine */
 	fclose(fp);
 	return NULL;
     }
 
-    buf = (char *)xmalloc(BUFSIZE);
+    buf = (unsigned char *)xmalloc(BUFSIZE);
 
     clearerr(fp);
     buflen = fread(buf, 1, BUFSIZE, fp);
@@ -85,7 +125,10 @@ zip_open(char *fn)
     match = buf;
     while ((match=memmem(match, buflen-(match-buf)-18, EOCD_MAGIC, 4))!=NULL) {
 	/* found match -- check, if good */
-	if ((cdirnew=readcdir(fp, buf, match, buflen)) == NULL)
+	/* to avoid finding the same match all over again */
+	/* XXX: better way? */
+	match++;
+	if ((cdirnew=readcdir(fp, buf, match-1, buflen)) == NULL)
 	    continue;	    
 
 	if (cdir) {
@@ -107,6 +150,9 @@ zip_open(char *fn)
 	}
     }
 
+    if (best == -2)
+      best = checkcons(cdir, fp);
+
     if (best < 0) {
 	/* no eocd found */
 	free(buf);
@@ -125,31 +171,34 @@ zip_open(char *fn)
 
 
 
-#ifdef NEVER
-
 int
 zip_close(struct zf *zf)
 {
-    int i, count, td;
+    int i, count, tfd;
     char *temp;
     FILE *tfp;
 
     if (zf->changes == 0)
 	return zf_free(zf);
 
-    /* XXX: create better random names */
-    if ((td=open("tempXxXx", O_RDWR|O_CREAT|O_BINARY, 0))==0)
-	return -1;
+    temp = (char *)xmalloc(strlen(zf->zn)+8);
+    sprintf(temp, "%s.XXXXXX", zf->zn);
 
-    tfp = fdopen(td);
-    
+    tfd = mkstemp(temp);
+
+    if ((tfp=fdopen(tfd, "r+b")) == NULL) {
+	free(temp);
+	/* XXX: close file, free struct? */
+	return -1;
+    }
+        
     count = 0;
     if (zf->entry) {
 	for (i=0; i<zf->nentry; i++) {
 	    switch (zf->entry[i].state) {
 	    case Z_UNCHANGED:
 		/* XXX: syntax? */
-		copy_verbose(zf->fp, zf->entry[i], tfp);
+		/* copy_verbose(zf->fp, zf->entry[i], tfp); */
 		break;
 	    case Z_DELETED:
 		/* XXX: ok? */
@@ -168,21 +217,25 @@ zip_close(struct zf *zf)
 	    }
 	}
     }
-    
+
+    if ((fclose(tfp)==0) && (fclose(zf->zp)==0)) {
+	remove(zf->zn);
+	rename(temp, zf->zn);
+    }
+
+    free(temp);
     zf_free(zf);
 
     return 0;
 }
 
-#endif /* NEVER */
-
 
 
 struct zf *
-readcdir(FILE *fp, char *buf, char *eocd, int buflen)
+readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen)
 {
     struct zf *zf;
-    char *cdp;
+    unsigned char *cdp;
     int i, comlen, readp;
 
     comlen = buf + buflen - eocd - EOCDLEN;
@@ -195,21 +248,26 @@ readcdir(FILE *fp, char *buf, char *eocd, int buflen)
     if (memcmp(eocd, EOCD_MAGIC, 4) != 0)
 	return NULL;
 
-    zf = zf_new();
-
-    if (memcmp(eocd+4, "\1\0\1\0", 4) != 0) {
+    if (memcmp(eocd+4, "\0\0\0\0", 4) != 0) {
 	zip_err = ZERR_MULTIDISK;
 	return NULL;
     }
 
+    zf = zf_new();
+
     cdp = eocd + 8;
     /* number of cdir-entries on this disk */
-    i = READ2(cdp);
+    i = read2(&cdp);
+    printf("i = %d\n", i);
     /* number of cdir-entries */
-    zf->nentry = READ2(cdp);
-    zf->cd_size = READ4(cdp);
-    zf->cd_offset = READ4(cdp);
-    zf->com_size = READ2(cdp);
+    zf->nentry = read2(&cdp);
+    printf("nentry = %d\n", zf->nentry);
+    zf->cd_size = read4(&cdp);
+    printf("cd_size = %d\n", zf->cd_size);
+    zf->cd_offset = read4(&cdp);
+    printf("cd_offset = %d\n", zf->cd_offset);
+    zf->com_size = read2(&cdp);
+    printf("com_size = %d (%d)\n", zf->com_size, comlen);
     zf->entry = NULL;
 
     if ((zf->com_size != comlen) || (zf->nentry != i)) {
@@ -219,7 +277,7 @@ readcdir(FILE *fp, char *buf, char *eocd, int buflen)
 	return NULL;
     }
 
-    zf->com = memdup(eocd+EOCDLEN, zf->com_size);
+    zf->com = (unsigned char *)memdup(eocd+EOCDLEN, zf->com_size);
 
     cdp = eocd;
     if (zf->cd_size < eocd-buf) {
@@ -248,7 +306,7 @@ readcdir(FILE *fp, char *buf, char *eocd, int buflen)
     }
     
     for (i=0; i<zf->nentry; i++) {
-	if ((readcdentry(fp, zf->entry+i, &cdp, eocd-cdp, readp)) == NULL) {
+	if ((readcdentry(fp, zf->entry+i, &cdp, eocd-cdp, readp)) < 0) {
 	    /* i entries have already been filled, tell zf_free
 	       how many to free */
 	    zf_free(zf);
@@ -262,10 +320,11 @@ readcdir(FILE *fp, char *buf, char *eocd, int buflen)
 
 
 int
-readcdentry(FILE *fp, struct zf_entry *zfe, char **cdpp, int left, int readp)
+readcdentry(FILE *fp, struct zf_entry *zfe, unsigned char **cdpp, 
+	    int left, int readp)
 {
-    char buf[CDENTRYSIZE];
-    char *cur;
+    unsigned char buf[CDENTRYSIZE];
+    unsigned char *cur;
     
     if (readp) {
 	/* read entry from disk */
@@ -286,41 +345,51 @@ readcdentry(FILE *fp, struct zf_entry *zfe, char **cdpp, int left, int readp)
     cur += 4;
 
     /* convert buffercontents to zf_entry */
-    zfe->version_made = READ2(cur);
-    zfe->version_need = READ2(cur);
-    zfe->bitflags = READ2(cur);
-    zfe->comp_meth = READ2(cur);
-    zfe->lmtime = READ2(cur);
-    zfe->lmdate = READ2(cur);
+    zfe->version_made = read2(&cur);
+    zfe->version_need = read2(&cur);
+    zfe->bitflags = read2(&cur);
+    zfe->comp_meth = read2(&cur);
+    zfe->lmtime = read2(&cur);
+    zfe->lmdate = read2(&cur);
 
-    zfe->crc = READ4(cur);
-    zfe->comp_size = READ4(cur);
-    zfe->uncomp_size = READ4(cur);
+    zfe->crc = read4(&cur);
+    zfe->comp_size = read4(&cur);
+    zfe->uncomp_size = read4(&cur);
     
-    zfe->fnlen = READ2(cur);
-    zfe->eflen = READ2(cur);
-    zfe->fcomlen = READ2(cur);
-    zfe->disknrstart = READ2(cur);
-    zfe->intatt = READ2(cur);
+    zfe->fnlen = read2(&cur);
+    zfe->eflen = read2(&cur);
+    zfe->fcomlen = read2(&cur);
+    zfe->disknrstart = read2(&cur);
+    zfe->intatt = read2(&cur);
 
-    zfe->extatt = READ4(cur);
-    zfe->local_offset = READ4(cur);
+    zfe->extatt = read4(&cur);
+    zfe->local_offset = read4(&cur);
 
     if (left < CDENTRYSIZE+zfe->fnlen+zfe->eflen+zfe->fcomlen) {
 	if (readp) {
 	    if (zfe->fnlen)
-		zfe->fn = readstr(fp, zfe->fnlen);
+		zfe->fn = readfpstr(fp, zfe->fnlen);
 	    if (zfe->eflen)
-		zfe->ef = readstr(fp, zfe->eflen);
+		zfe->ef = readfpstr(fp, zfe->eflen);
 	    if (zfe->fcomlen)
-		zfe->fcom = readstr(fp, zfe->fcomlen);
+		zfe->fcom = readfpstr(fp, zfe->fcomlen);
 	}
 	else {
 	    /* can't get more bytes if not allowed to read */
 	    return -1;
 	}
     }
-    
+    else {
+        if (zfe->fnlen)
+	    zfe->fn = readstr(&cur, zfe->fnlen);
+        if (zfe->eflen)
+	    zfe->ef = readstr(&cur, zfe->eflen);
+        if (zfe->fcomlen)
+	    zfe->fcom = readstr(&cur, zfe->fcomlen);
+    }
+    if (!readp)
+      *cdpp = cur;
+
     return 0;
 }
 
@@ -343,10 +412,11 @@ zf_new(void)
 
     zf = (struct zf *)xmalloc(sizeof(struct zf));
 
-    zf->zn = zf->com = NULL;
+    zf->zn = NULL;
     zf->zp = NULL;
     zf->nentry = zf->com_size = zf->changes = 0;
     zf->cd_size = zf->cd_offset = 0;
+    zf->com = NULL;
     zf->entry = NULL;
 
     return zf;

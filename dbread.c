@@ -45,7 +45,7 @@ dbread(DB* db, char *fname)
 {
     FILE *fin;
     char l[8192], *cmd, *p, *_P_;
-    int ingame, i, j;
+    int i, j;
     /* XXX: every game is only allowed 1000 roms */
     struct rom r[1000], s[1000];
     struct game *g;
@@ -62,7 +62,7 @@ dbread(DB* db, char *fname)
     lostmax = 100;
     lostchildren = (char **)xmalloc(lostmax*sizeof(char *));
     
-    nlost = nr = ns = ingame = 0;
+    nlost = nr = ns = 0;
     while (fgets(l, 8192, fin)) {
 	cmd = strtok(l, " \t\n\r");
 	if (cmd == NULL)
@@ -73,7 +73,6 @@ dbread(DB* db, char *fname)
 	    g->name = g->cloneof[0] = g->cloneof[1] = g->sampleof = NULL;
 	    g->nrom = g->nsample = 0;
 	    g->nclone = 0;
-	    ingame = 1;
 	    nr = ns = 0;
 	}
 	else if (strcmp(cmd, "name") == 0) {

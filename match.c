@@ -31,6 +31,7 @@ static char *zname[] = {
 struct match *
 check_game(struct game *game, struct zip **zip, int pno, int gpno)
 {
+    /* XXX: pno, gpno unused */
     int i, zno[3];
     struct match *m;
 

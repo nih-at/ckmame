@@ -1,3 +1,6 @@
+#ifndef _HAD_ZIP_H
+#define _HAD_ZIP_H
+
 #include <sys/types.h>
 #include <stdio.h>
 
@@ -11,10 +14,7 @@ int zip_err; /* global variable for errors returned by the low-level
 /* 0 is no error */
 #define ZERR_MULTIDISK        1
 
-char * zip_err_str[]={
-    "no error",
-    "multi-disk zip-files not supported"
-};
+extern char * zip_err_str[];
 
 struct zipfile {
     char *name;
@@ -36,7 +36,7 @@ struct zf {
     FILE *zp;
     unsigned short nentry, com_size, changes;
     unsigned int cd_size, cd_offset;
-    char *com;
+    unsigned char *com;
     struct zf_entry *entry;
 };
 
@@ -48,3 +48,4 @@ struct zf_entry {
     enum zip_state state;
 };
 
+#endif /* _HAD_ZIP_H */

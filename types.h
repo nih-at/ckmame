@@ -59,7 +59,7 @@ struct game {
 
 struct match {
     struct match *next;
-    enum state where;
+    enum where where;
     int zno;
     int fno;
     enum state quality;

@@ -26,8 +26,8 @@
 typedef int (*cmpfunc)(const void *, const void *);
 
 char *memdup(const char *mem, int len);
-char *memmem(const char *big, int biglen, const char *little,
-	     int littlelen);
+unsigned char *memmem(const unsigned char *big, int biglen, 
+		      const unsigned char *little, int littlelen);
 int strpcasecmp(char **sp1, char **sp2);
 int findcrc (char *zn, char *fn, int filesize, int romsize,
 	     unsigned long wcrc);
