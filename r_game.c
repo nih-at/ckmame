@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.10 2002/06/06 09:26:57 dillo Exp $
+  $NiH: r_game.c,v 1.11 2003/02/23 14:20:02 dillo Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
@@ -30,7 +30,7 @@
 #include <stdlib.h>
 
 #include "types.h"
-#include "dbl.h"
+#include "dbh.h"
 #include "xmalloc.h"
 #include "r.h"
 

@@ -1,5 +1,7 @@
 2003-02-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* r_game.c: include dbh.h to get r_game() prototype.
+
 	* r_game.c (r__rom), w_game.c (w__rom): use variable of correct
 	type to minimize casts.
 
