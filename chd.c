@@ -1,5 +1,5 @@
 /*
-  $NiH: chd.c,v 1.1 2004/04/28 16:59:48 dillo Exp $
+  $NiH: chd.c,v 1.2 2004/04/28 18:01:12 dillo Exp $
 
   chd.c -- accessing chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -43,7 +43,8 @@
 #define GET_LONG(b)	(b+=4,((b)[-4]<<24)|((b)[-3]<<16)|((b)[-2]<<8)|(b)[-1])
 #define GET_QUAD(b)	(b+=8,((uint64_t)(b)[-8]<<56)|((uint64_t)(b)[-7]<<48) \
 			 |((uint64_t)(b)[-6]<<40)|((uint64_t)(b)[-5]<<32)     \
-			 |((b)[-4]<<24)|((b)[-3]<<16)|((b)[-2]<<8)|(b)[-1])
+			 |((uint64_t)(b)[-4]<<24)|((uint64_t)(b)[-3]<<16)     \
+			 |((uint64_t)(b)[-2]<<8)|((uint64_t)(b)[-1]))
 #define GET_SHORT(b)	(b+=2,((b)[-2]<<8)|(b)[-1])
 
 static int read_header(struct chd *);
@@ -304,7 +305,10 @@ read_map(struct chd *chd)
 	    return -1;
 	}
 	p = b;
-	
+
+	if (i == 1832)
+	    chd->version = 3;
+
 	if (chd->version < 3) {
 	    v = GET_QUAD(p);
 	    chd->map[i].offset = v & 0xFFFFFFFFFFFLL;
