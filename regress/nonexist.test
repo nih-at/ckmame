@@ -2,4 +2,3 @@
 return 0
 args nosuchgame
 error game `nosuchgame' unknown
-

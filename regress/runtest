@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.1 2003/03/14 04:13:43 dillo Exp $
+#  $NiH: runtest,v 1.2 2003/03/14 14:54:05 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -211,7 +211,7 @@ mkdir roms
 while read cmd arg
 do
   case $cmd in
-  #*) ;;
+  \#*) ;;
   return)
     test_empty "${RET}" return
     RET="$arg";;
@@ -229,7 +229,9 @@ do
   stdout)
     echo "$arg" >> stdout;;
   error)
-    echo "ckmame: $arg" >> errors
+    echo "ckmame: $arg" >> errors;;
+  *)
+    die "unknown directive '$cmd'"
   esac
 done
 

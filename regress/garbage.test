@@ -3,7 +3,6 @@ return 0
 args -c -FK 1-4
 rom 2-48-ok.zip 1-4.zip 1-4-ok.zip
 garbage 1-4.zip 1-8-ok.zip
-output In game 1-4:
-output game 1-4                                     : correct
-outout file 08.rom        size       8  crc 3656897d: unknown
-
+stdout In game 1-4:
+stdout game 1-4                                     : correct
+stdout file 08.rom        size       8  crc 3656897d: unknown

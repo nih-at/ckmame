@@ -1,9 +1,13 @@
 EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS}
 
-TESTCASES=	1-4-ok.test \
-		nonexist.test
+TESTCASES=	garbage.test \
+		ok.test \
+		nonexist.test \
+		unused.test
 
-ZIPS=		1-4-ok.zip
+ZIPS=		1-4-ok.zip \
+		1-8-ok.zip \
+		2-48-ok.zip
 
 check: mamedb
 	@failed=0; all=0; \
