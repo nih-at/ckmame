@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.34 2004/02/26 02:26:06 wiz Exp $
+  $NiH: ckmame.c,v 1.35 2004/02/26 02:47:36 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -64,6 +64,7 @@ char help[] = "\n"
 "  -l, --delete-long    don't keep long files when fixing\n"
 "  -n, --dryrun         don't actually fix, only report what would be done\n"
 "  -S, --samples        check samples instead of roms\n"
+"      --superfuous     only check for superfluous files in rom sets\n"
 "  -s, --nosuperfluous  don't report superfluous files in rom sets\n"
 "  -U, --keep-unused    keep unused files when fixing\n"
 "  -u, --delete-unused  don't keep unused files when fixing (default)\n"
@@ -82,27 +83,32 @@ PACKAGE " under the terms of the GNU General Public License.\n"
 
 #define OPTIONS "bcD:dFfhKkLlnSsxUuVvwX"
 
+#define OPT_SF	256
+
 struct option options[] = {
     { "help",          0, 0, 'h' },
     { "version",       0, 0, 'V' },
-    { "db",            1, 0, 'D' },
-    { "samples",       0, 0, 'S' },
-    { "nowarnings",    0, 0, 'w' }, /* -SUP, -FIX */
-    { "nosuperfluous", 0, 0, 's' }, /* -SUP */
-    { "nofixable",     0, 0, 'f' }, /* -FIX */
-    { "nobroken",      0, 0, 'b' }, /* -BROKEN */
-    { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
+
     { "correct",       0, 0, 'c' }, /* +CORRECT */
-    { "fix",           0, 0, 'F' },
-    { "keep-unknown",  0, 0, 'K' },
-    { "delete-unknown",0, 0, 'k' },
-    { "keep-unused",   0, 0, 'U' },
-    { "delete-unused" ,0, 0, 'u' },
-    { "keep-long",     0, 0, 'L' },
+    { "db",            1, 0, 'D' },
     { "delete-long",   0, 0, 'l' },
-    { "verbose",       0, 0, 'v' },
+    { "delete-unknown",0, 0, 'k' },
+    { "delete-unused" ,0, 0, 'u' },
     { "dryrun",        0, 0, 'n' },
+    { "fix",           0, 0, 'F' },
     { "ignoreextra",   0, 0, 'X' },
+    { "keep-long",     0, 0, 'L' },
+    { "keep-unknown",  0, 0, 'K' },
+    { "keep-unused",   0, 0, 'U' },
+    { "nobroken",      0, 0, 'b' }, /* -BROKEN */
+    { "nofixable",     0, 0, 'f' }, /* -FIX */
+    { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
+    { "nosuperfluous", 0, 0, 's' }, /* -SUP */
+    { "nowarnings",    0, 0, 'w' }, /* -SUP, -FIX */
+    { "samples",       0, 0, 'S' },
+    { "superfluous",   0, 0, OPT_SF },
+    { "verbose",       0, 0, 'v' },
+
     { NULL,            0, 0, 0 },
 };
 
@@ -121,13 +127,14 @@ main(int argc, char **argv)
     int c, nlist, found, dbext;
     struct tree *tree;
     struct tree tree_root;
-    int sample;
+    int sample, superfluous_only;
     
     prg = argv[0];
     tree = &tree_root;
     tree->child = NULL;
     output_options = WARN_ALL;
     sample = 0;
+    superfluous_only = 0;
     dbext = 0;
     dbname = getenv("MAMEDB");
     if (dbname == NULL) {
@@ -150,27 +157,16 @@ main(int argc, char **argv)
 	case 'V':
 	    fputs(version_string, stdout);
 	    exit(0);
-	case 'D':
-	    dbname = optarg;
-	    dbext = 0;
-	    break;
-	case 'S':
-	    sample = 1;
-	    break;
-	case 'w':
-	    output_options &= WARN_BROKEN;
-	    break;
-	case 's':
-	    output_options &= ~WARN_SUPERFLUOUS;
-	    break;
-	case 'f':
-	    output_options &= ~WARN_FIXABLE;
-	    break;
+
 	case 'b':
 	    output_options &= ~WARN_BROKEN;
 	    break;
 	case 'c':
 	    output_options |= WARN_CORRECT;
+	    break;
+	case 'D':
+	    dbname = optarg;
+	    dbext = 0;
 	    break;
 	case 'd':
 	    output_options &= ~WARN_NO_GOOD_DUMP;
@@ -178,17 +174,14 @@ main(int argc, char **argv)
 	case 'F':
 	    fix_do = 1;
 	    break;
+	case 'f':
+	    output_options &= ~WARN_FIXABLE;
+	    break;
 	case 'K':
 	    fix_keep_unknown = 1;
 	    break;
 	case 'k':
 	    fix_keep_unknown = 0;
-	    break;
-	case 'U':
-	    fix_keep_unused = 1;
-	    break;
-	case 'u':
-	    fix_keep_unused = 0;
 	    break;
 	case 'L':
 	    fix_keep_long = 1;
@@ -200,12 +193,31 @@ main(int argc, char **argv)
 	    fix_do = 0;
 	    fix_print = 1;
 	    break;
+	case 'S':
+	    sample = 1;
+	    break;
+	case 's':
+	    output_options &= ~WARN_SUPERFLUOUS;
+	    break;
+	case 'U':
+	    fix_keep_unused = 1;
+	    break;
+	case 'u':
+	    fix_keep_unused = 0;
+	    break;
 	case 'v':
 	    fix_print = 1;
+	    break;
+	case 'w':
+	    output_options &= WARN_BROKEN;
 	    break;
 	case 'X':
 	    ignore_extra = 1;
 	    break;
+	case OPT_SF:
+	    superfluous_only = 1;
+	    break;
+
 	default:
 	    fprintf(stderr, usage, prg);
 	    exit(1);
@@ -220,6 +232,16 @@ main(int argc, char **argv)
     if ((nlist=r_list(db, "/list", &list)) < 0) {
 	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
 	exit(1);
+    }
+
+    if (superfluous_only) {
+	if (optind != argc) {
+	    fprintf(stderr, usage, prg);
+	    exit(1);
+	}
+	
+	handle_extra_files(db, dbname, sample);
+	exit(0);
     }
 
     if (optind == argc) {

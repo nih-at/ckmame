@@ -1,0 +1,7 @@
+# test reporting superfluous files
+# $NiH$
+return 0
+args -FKULvc --superfluous
+rom 1-4-ok.zip foo.zip 1-4-ok.zip
+stdout Extra files found:
+stdout ./roms/foo.zip

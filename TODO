@@ -1,3 +1,4 @@
+regression tests for disk (correct, wrong, superfluous, w/+w/o extension, different crc types)
 "fix" extra files by moving them to a subdir
 use crctypes for roms
 use NOCRC for samples

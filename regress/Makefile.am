@@ -19,6 +19,7 @@ TESTCASES=	baddump.test \
 		ok.test \
 		punknown.test \
 		punused.test \
+		superfluous.test \
 		tochild.test \
 		tochildfix.test \
 		unused.test \
