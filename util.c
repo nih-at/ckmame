@@ -10,7 +10,7 @@
 
 #define MAXROMPATH 128
 
-#define DEFAULT_ROMPATH "/usr/local/share/games/xmame" /* XXX: autoconfed */
+#define DEFAULT_ROMDIR "/usr/local/share/games/xmame" /* XXX: autoconfed */
 
 static char *rompath[MAXROMPATH] = { NULL };
 static int rompath_init = 0;
@@ -56,7 +56,7 @@ init_rompath(void)
 
 	after = 0;
 	if (s[0] == ':')
-	    rompath[i++] = DEFAULT_ROMPATH;
+	    rompath[i++] = DEFAULT_ROMDIR;
 	else if (s[strlen(s)-1] == ':')
 	    after = 1;
 	
@@ -64,10 +64,10 @@ init_rompath(void)
 	    rompath[i++] = e;
 
 	if (after)
-	    rompath[i++] = DEFAULT_ROMPATH;
+	    rompath[i++] = DEFAULT_ROMDIR;
     }
     else
-	rompath[i++] = DEFAULT_ROMPATH;
+	rompath[i++] = DEFAULT_ROMDIR;
 
     rompath[i] = NULL;
 
