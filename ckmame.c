@@ -101,10 +101,12 @@ main(int argc, char **argv)
     tree->child = NULL;
     output_options = WARN_ALL;
     sample = 0;
+    dbext = 0;
     dbname = getenv("MAMEDB");
-    if (dbname == NULL)
+    if (dbname == NULL) {
 	dbname = "mame";
-    dbext = 1;
+	dbext = 1;
+    }
     fix_do = fix_print = 0;
     fix_keep_long = fix_keep_unknown = 1;
     fix_keep_unused = 0;
@@ -126,9 +128,6 @@ main(int argc, char **argv)
 	    break;
 	case 'S':
 	    sample = 1;
-	    break;
-	case 'x':
-	    /* XXX: fix */
 	    break;
 	case 'w':
 	    output_options &= WARN_BROKEN;
@@ -183,12 +182,12 @@ main(int argc, char **argv)
     }
     
     if ((db=db_open(dbname, dbext, 0))==NULL) {
-	myerror(ERRSTR, "can't open database `mame.db'");
+	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit(1);
     }
 
     if ((nlist=r_list(db, "/list", &list)) < 0) {
-	myerror(ERRDEF, "list of games not found in database");
+	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
 	exit(1);
     }
 

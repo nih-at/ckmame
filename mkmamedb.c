@@ -41,13 +41,14 @@ int
 main(int argc, char **argv)
 {
     DB *db;
-    char *dbname;
+    char *dbname, *fname;
     int dbext;
     char c;
 
     prg = argv[0];
 
     dbname = "mame";
+    fname = "db.txt";
     dbext = 1;
     
     opterr = 0;
@@ -71,6 +72,17 @@ main(int argc, char **argv)
 	}
     }
 
+    switch (argc - optind) {
+    case 1:
+	fname = argv[optind];
+	break;
+    case 0:
+	break;
+    default:
+	fprintf(stderr, usage, prg);
+	exit(1);
+    }
+    
 
     if (dbext)
 	dbname = db_name(dbname);
@@ -84,7 +96,7 @@ main(int argc, char **argv)
     }
 
     dbread_init();
-    dbread(db, "db.txt");
+    dbread(db, fname);
 
     db_close(db);
 
