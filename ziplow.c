@@ -80,8 +80,8 @@ readstr(unsigned char **buf, int len, int nullp)
 void
 write2(FILE *fp, int i)
 {
-    fputc(i&0xff, fp);
-    fputc((i>>8)&0xff, fp);
+    putc(i&0xff, fp);
+    putc((i>>8)&0xff, fp);
 
     return;
 }
@@ -91,10 +91,10 @@ write2(FILE *fp, int i)
 void
 write4(FILE *fp, int i)
 {
-    fputc(i&0xff, fp);
-    fputc((i>>8)&0xff, fp);
-    fputc((i>>16)&0xff, fp);
-    fputc((i>>24)&0xff, fp);
+    putc(i&0xff, fp);
+    putc((i>>8)&0xff, fp);
+    putc((i>>16)&0xff, fp);
+    putc((i>>24)&0xff, fp);
     
     return;
 }
@@ -104,7 +104,10 @@ write4(FILE *fp, int i)
 void
 writestr(FILE *fp, char *str, int len)
 {
-    fprintf(fp, "%.*s", len, str);
+    int i;
+    for (i=0; i<len; i++)
+	putc(str[i], fp);
+    
     return;
 }
 
@@ -274,7 +277,8 @@ zip_close(struct zf *zf)
 	for (i=0; i<zf->nentry; i++) {
 	    switch (zf->entry[i].state) {
 	    case Z_UNCHANGED:
-		zip_entry_copy(tzf, zf, i);
+		if (zip_entry_copy(tzf, zf, i))
+		    myerror(ERRFILE, "zip_entry_copy failed");
 		break;
 	    case Z_DELETED:
 		break;
@@ -286,8 +290,9 @@ zip_close(struct zf *zf)
 		    keep = zf->entry[i].ch_data_zf->entry[zf->entry[i].ch_data_zf_fileno].ch_name;
 		    zf->entry[i].ch_data_zf->entry[zf->entry[i].ch_data_zf_fileno].ch_name =
 			zf->entry[i].ch_name;
-		    zip_entry_copy(tzf, zf->entry[i].ch_data_zf,
-				   zf->entry[i].ch_data_zf_fileno);
+		    if (zip_entry_copy(tzf, zf->entry[i].ch_data_zf,
+				       zf->entry[i].ch_data_zf_fileno))
+			myerror(ERRFILE, "zip_entry_copy failed");
 		    zf->entry[i].ch_data_zf->entry[zf->entry[i].ch_data_zf_fileno].ch_name =
 			keep;
 		} else if (zf->entry[i].ch_data_buf) {
@@ -308,7 +313,8 @@ zip_close(struct zf *zf)
 		    xstrdup(zf->entry[i].ch_name);
 		break;
 	    case Z_RENAMED:
-		zip_entry_copy(tzf, zf, i);
+		if (zip_entry_copy(tzf, zf, i))
+		    myerror(ERRFILE, "zip_entry_copy failed");
 		free(tzf->entry[tzf->nentry-1].fn);
 		tzf->entry[tzf->nentry-1].fn =
 		    xstrdup(zf->entry[i].ch_name);
@@ -416,7 +422,7 @@ zip_entry_copy(struct zf *dest, struct zf *src, int entry_no)
     remainder = src->entry[entry_no].comp_size;
     len = BUFSIZE;
     while (remainder) {
-	if (len < remainder)
+	if (len > remainder)
 	    len = remainder;
 	if (fread(buf, 1, len, src->zp)!=len) {
 	    zip_err = ZERR_READ;
@@ -455,6 +461,12 @@ writecdir(struct zf *zfp)
     clearerr(zfp->zp);
     fprintf(zfp->zp, EOCD_MAGIC);
     fprintf(zfp->zp, "%c%c%c%c", 0, 0, 0, 0);
+    write2(zfp->zp, zfp->nentry);
+    write2(zfp->zp, zfp->nentry);
+    write4(zfp->zp, cd_size);
+    write4(zfp->zp, cd_offset);
+    write2(zfp->zp, zfp->comlen);
+#if 0
     fprintf(zfp->zp, "%c%c%c%c", (zfp->nentry>>8)&0xff, zfp->nentry&0xff,
 	    (zfp->nentry>>8)&0xff, zfp->nentry&0xff);
     fprintf(zfp->zp, "%c%c%c%c", (int)(cd_size>>24)&0xff, 
@@ -464,7 +476,8 @@ writecdir(struct zf *zfp)
 	    (int)(cd_offset>>16)&0xff, (int)(cd_offset>>8)&0xff, 
 	    (int)cd_offset&0xff);
     fprintf(zfp->zp, "%c%c", (zfp->comlen>>8)&0xff, zfp->comlen&0xff);
-    fprintf(zfp->zp, "%.*s", zfp->comlen, zfp->com);
+#endif /* 0 */
+    writestr(zfp->zp, zfp->com, zfp->comlen);
 
     /* XXX: incomplete */
     
