@@ -194,7 +194,7 @@ diagnostics(struct game *game, struct match *m, struct zip **zip)
 	    switch (m[i].quality) {
 	    case ROM_UNKNOWN:
 		if (output_options & WARN_MISSING) {
-		    if (game->rom[i].crc != 0
+		    if ((game->rom[i].crc != 0 || game->rom[i].size == 0)
 			|| output_options & WARN_NO_GOOD_DUMP)
 			warn_rom(game->rom+i, "missing");
 		}
