@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.15 2003/10/01 16:22:40 wiz Exp $
+  $NiH: fix.c,v 1.16 2003/12/28 00:56:06 wiz Exp $
 
   fix.c -- fix romsets
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -136,8 +136,8 @@ fix_game(struct game *g, struct zfile **zip, struct match *m)
 			/* XXX: problem */
 		    }
 		} else {
-		    if (!(st.st_rdev & S_IFDIR)) {
-			fprintf(stderr, "%s: `%s' is not a directory", prg,
+		    if (!(st.st_mode & S_IFDIR)) {
+			fprintf(stderr, "%s: `%s' is not a directory\n", prg,
 				zf_garbage_name);
 			/* XXX: problem */
 		    }
@@ -146,7 +146,7 @@ fix_game(struct game *g, struct zfile **zip, struct match *m)
 	    } else {
 		/* XXX: internal error */
 		fprintf(stderr, "%s: internal error: no slash in "
-			"zf_garbage_name: `%s'",
+			"zf_garbage_name: `%s'\n",
 			prg, zf_garbage_name);
 	    }
 	}		    
