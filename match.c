@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.23 2003/03/16 10:21:34 wiz Exp $
+  $NiH: match.c,v 1.24 2003/09/12 23:18:51 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -227,8 +227,8 @@ diagnostics(struct game *game, struct match *m, struct zfile **zip)
 	    switch (m[i].quality) {
 	    case ROM_UNKNOWN:
 		if (output_options & WARN_MISSING) {
-		    if ((game->rom[i].crc != 0 || game->rom[i].size == 0
-			 || game->rom[i].flags == FLAGS_NODUMP)
+		    if (((game->rom[i].crc != 0 && game->rom[i].flags != FLAGS_NODUMP)
+			 || game->rom[i].size == 0)
 			|| output_options & WARN_NO_GOOD_DUMP)
 			warn_rom(game->rom+i, "missing");
 		}
