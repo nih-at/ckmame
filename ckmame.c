@@ -4,15 +4,39 @@
 #include <fnmatch.h>
 #include <getopt.h>
 
+#include "config.h"
+
 #include "types.h"
 #include "dbl.h"
 #include "funcs.h"
 #include "error.h"
 #include "r.h"
 
+
+
 char *prg;
 
-int output_options;
+char *usage = "Usage: %s [-hVnsfbcd] [game...]\n";
+
+char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
+
+char help[] = "\n\
+  -h, --help           display this help message\n\
+  -V, --version        display version number\n\
+  -n, --nowarnings     print only unfixable errors\n\
+  -s, --nosuperfluous  don't report superfluous files\n\
+  -f, --nofixable      don't report fixable errors\n\
+  -b, --nobroken       don't report unfixable errors\n\
+  -d, --nonogooddumps  don't report roms with no good dumps\n\
+\n\
+Report bugs to <nih@giga.or.at>.\n";
+
+char version_string[] = PACKAGE " " VERSION "\n\
+Copyright (C) 1999 Dieter Baron and Thomas Klausner\n\
+" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
+You may redistribute copies of\n\
+" PACKAGE " under the terms of the GNU General Public License.\n\
+For more information about these matters, see the files named COPYING.\n";
 
 #define OPTIONS "hVnsfbcdx"
 
@@ -28,6 +52,8 @@ struct option options[] = {
     { "fix",           0, 0, 'x' },
     { NULL,            0, 0, 0 },
 };
+
+int output_options;
 
 
 
@@ -50,11 +76,13 @@ main(int argc, char **argv)
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
 	case 'h':
-	    /* XXX: help */
-	    break;
+	    fputs(help_head, stdout);
+	    printf(usage, prg);
+	    fputs(help, stdout);
+	    exit(0);
 	case 'V':
-	    /* XXX: version */
-	    break;
+	    fputs(version_string, stdout);
+	    exit(0);
 	case 'x':
 	    /* XXX: fix */
 	    break;
@@ -77,7 +105,7 @@ main(int argc, char **argv)
 	    output_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
 	default:
-	    myerror(ERRSTR, "unknown option");
+	    fprintf(stderr, usage, prg);
 	    exit(1);
 	}
     }
