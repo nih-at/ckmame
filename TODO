@@ -8,7 +8,6 @@ get roms from a different location to fix sets
 rom matched twice or more (route16b)
 
 samples: fill in where and sclone
-GNU conventions for dumpgame, mkmamedb
 fix all XXXs
 
 zip-library:
