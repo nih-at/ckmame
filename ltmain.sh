@@ -258,7 +258,7 @@ if test -z "$show_help"; then
   # Infer the operation mode.
   if test -z "$mode"; then
     case $nonopt in
-    *cc | *++ | gcc* | *-gcc*)
+    *cc | *++ | gcc* | *-gcc* | *CC)
       mode=link
       for arg
       do
@@ -1638,9 +1638,9 @@ EOF
     # that are linked more than once (e.g. -la -lb -la)
     for deplib in $deplibs; do
       if test "X$duplicate_deps" = "Xyes" ; then
-	case "$libs " in
-	*" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
-	esac
+      case "$libs " in
+      *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
+      esac
       fi
       libs="$libs $deplib"
     done
@@ -1653,12 +1653,12 @@ EOF
       # not to be eliminated).
       pre_post_deps=
       if test "X$duplicate_deps" = "Xyes" ; then
-	for pre_post_dep in $predeps $postdeps; do
-	  case "$pre_post_deps " in
-	  *" $pre_post_dep "*) specialdeplibs="$specialdeplibs $pre_post_deps" ;;
-	  esac
-	  pre_post_deps="$pre_post_deps $pre_post_dep"
-	done
+      for pre_post_dep in $predeps $postdeps; do
+        case "$pre_post_deps " in
+	*" $pre_post_dep "*) specialdeplibs="$specialdeplibs $pre_post_deps" ;;
+	esac
+	pre_post_deps="$pre_post_deps $pre_post_dep"
+      done
       fi
       pre_post_deps=
     fi
@@ -1884,9 +1884,9 @@ EOF
 	    for deplib in $dependency_libs; do
 	      deplibs="$deplib $deplibs"
               if test "X$duplicate_deps" = "Xyes" ; then
-	        case "$tmp_libs " in
-	        *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
-	        esac
+	      case "$tmp_libs " in
+	      *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
+	      esac
               fi
 	      tmp_libs="$tmp_libs $deplib"
 	    done
@@ -2011,9 +2011,9 @@ EOF
 	      newdependency_libs="$deplib $newdependency_libs"
 	    fi
 	    if test "X$duplicate_deps" = "Xyes" ; then
-	      case "$tmp_libs " in
-	      *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
-	      esac
+	    case "$tmp_libs " in
+	    *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
+	    esac
 	    fi
 	    tmp_libs="$tmp_libs $deplib"
 	  done # for deplib
@@ -2314,9 +2314,9 @@ EOF
 	  for deplib in $dependency_libs; do
 	    newdependency_libs="$deplib $newdependency_libs"
 	    if test "X$duplicate_deps" = "Xyes" ; then
-	      case "$tmp_libs " in
-	      *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
-	      esac
+	    case "$tmp_libs " in
+	    *" $deplib "*) specialdeplibs="$specialdeplibs $deplib" ;;
+	    esac
 	    fi
 	    tmp_libs="$tmp_libs $deplib"
 	  done
@@ -2610,7 +2610,7 @@ EOF
 	  ;;
 
 	irix)
-	  major=`expr $current - $age + 1`
+	  major=`expr $current - $age`
 	  verstring="sgi$major.$revision"
 
 	  # Add in all the interfaces that we are compatible with.
