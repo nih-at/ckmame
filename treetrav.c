@@ -265,8 +265,10 @@ zip_new(char *name, int sample)
 	/* XXX: error? */
     }
 
-    for (i=0; i<z->nrom; i++)
+    for (i=0; i<z->nrom; i++) {
 	z->rom[i].state = ROM_UNKNOWN;
+	z->rom[i].where = -1;
+    }
 
     return z;
 }

@@ -78,7 +78,7 @@ merge_match(struct match *m, int nrom, struct zip **zip, int pno, int gpno)
 		zip[m[i].zno]->rom[m[i].fno].where = zno[m[i].zno];
 	    }
 	}
-	for (mm=m->next; mm; mm=mm->next)
+	for (mm=m[i].next; mm; mm=mm->next)
 	    if (mm->quality > ROM_UNKNOWN
 		&& mm->quality > zip[mm->zno]->rom[mm->fno].state) {
 		zip[mm->zno]->rom[mm->fno].state = mm->quality;
