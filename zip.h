@@ -19,8 +19,10 @@ int zip_err; /* global variable for errors returned by the low-level
 #define ZERR_SEEK             4
 #define ZERR_READ             5
 #define ZERR_WRITE            6
+#define ZERR_CRC              7
+#define ZERR_ZIPCLOSED        8
 
-extern char * zip_err_str[];
+extern char *zip_err_str[];
 
 struct zf {
     char *zn;
@@ -31,7 +33,7 @@ struct zf {
     int nentry, nentry_alloc;
     struct zf_entry *entry;
     int nfile, nfile_alloc;
-    struct zf_file *file;
+    struct zf_file **file;
 };
 
 struct zf_file {

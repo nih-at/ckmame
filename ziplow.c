@@ -19,7 +19,9 @@ char * zip_err_str[]={
     "closing zipfile failed",
     "seek error",
     "read error",
-    "write error"
+    "write error",
+    "CRC error",
+    "zip file closed without closing this file"    
 };
 
 
@@ -818,11 +820,10 @@ zf_new(void)
     zf->zp = NULL;
     zf->comlen = zf->changes = 0;
     zf->nentry = zf->nentry_alloc = zf->cd_size = zf->cd_offset = 0;
+    zf->nfile = zf->nfile_alloc = 0;
     zf->com = NULL;
     zf->entry = NULL;
-    zf->unz_zst = NULL;
-    zf->unz_in = NULL;
-    zf->unz_last = -1;
+    zf->file = NULL;
     
     return zf;
 }
@@ -866,14 +867,14 @@ zf_free(struct zf *zf)
 	free (zf->entry);
     }
 
-    if (zf->unz_zst) {
-	inflateEnd(zf->unz_zst);
-	free(zf->unz_zst);
+    for (i=0; i<zf->nfile; i++) {
+	zf->file[i]->flags = ZERR_ZIPCLOSED;
+	zf->file[i]->zf = NULL;
+	zf->file[i]->name = NULL;
     }
-    
-    if (zf->unz_in)
-	free(zf->unz_in);
 
+    free(zf->file);
+    
     free(zf);
 
     if (ret)
