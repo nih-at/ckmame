@@ -1,4 +1,6 @@
-enum zipstate = { Z_UNCHANGED, Z_DELETED, Z_REPLACED, Z_ADDED, Z_RENAMED };
+#include "unzip.h"
+
+enum zipstate { Z_UNCHANGED, Z_DELETED, Z_REPLACED, Z_ADDED, Z_RENAMED };
 
 struct zipfile {
     char *name;

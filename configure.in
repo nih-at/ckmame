@@ -37,7 +37,11 @@ if test "$id_cv_lib_zlib_ok" = "no"
 then
     AC_ERROR([ZLIB version too old, please install at least v1.1.2])
 fi
-    
+
+# find usable db library
+db=none
+
+
 AC_REPLACE_FUNCS(fnmatch)
 AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
 AC_SUBST(LIBOBJS)
