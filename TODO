@@ -1,3 +1,5 @@
+merge superfluous into ckmame
+add option to completely test zip files (including 'unzip -t' replacement)
 fix 'should be in cloneof, is in zip'
 fix fixing PONG -- dumps core if pong.zip contains a file (pong has no roms)
 documentation
