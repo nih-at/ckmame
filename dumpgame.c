@@ -3,12 +3,17 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef HAVE_GETOPT_LONG
+#include <getopt.h>
+#else
+#include "getopt.h"
+#endif
+
 #include "types.h"
 #include "dbh.h"
 #include "error.h"
 #include "util.h"
 #include "romutil.h"
-#include "getopt.h"
 #include "config.h"
 
 int dump_game(DB *db, char *name);
@@ -67,7 +72,7 @@ main(int argc, char **argv)
 	dbext = 1;
     }
 
-    opterr = 0;
+    optind = opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
 	case 'h':
