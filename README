@@ -52,3 +52,6 @@ roms-directory, in zipfiles with the name of game.
   Also included is `dumpgame', which outputs rom and sample
 information for all games specified on the command line (using the
 database).
+
+  For a complete list of options, please take a look at the
+man page.
