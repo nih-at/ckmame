@@ -1,5 +1,6 @@
 AC_INIT(ckmame.c)
 AM_INIT_AUTOMAKE(ckmame,0.1)
+AM_CONFIG_HEADER(config.h)
 
 # We want these before the checks, so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS='-Wall -g' auto_cflags=1
@@ -37,6 +38,7 @@ then
     AC_ERROR([ZLIB version too old, please install at least v1.1.2])
 fi
     
+AC_REPLACE_FUNCS(fnmatch)
 AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
 AC_SUBST(LIBOBJS)
 

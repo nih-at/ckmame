@@ -14,7 +14,7 @@ char *prg;
 
 int output_options;
 
-#define OPTIONS "hVnsfbcd"
+#define OPTIONS "hVnsfbcdx"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
@@ -25,6 +25,7 @@ struct option options[] = {
     { "nobroken",      0, 0, 'b' }, /* -BROKEN */
     { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
     { "correct",       0, 0, 'c' }, /* +CORRECT */
+    { "fix",           0, 0, 'x' },
     { NULL,            0, 0, 0 },
 };
 
@@ -53,6 +54,9 @@ main(int argc, char **argv)
 	    break;
 	case 'V':
 	    /* XXX: version */
+	    break;
+	case 'x':
+	    /* XXX: fix */
 	    break;
 	case 'n':
 	    output_options &= WARN_BROKEN;
