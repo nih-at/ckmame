@@ -1,3 +1,4 @@
+automatically fix renamed disks
 fix mkmamedb-xmame.sh for removal of -li
 add option to check integrity for roms only (not for disks, they take forever)
 support disks with parents
