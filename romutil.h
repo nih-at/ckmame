@@ -33,8 +33,7 @@ enum state romcmp(struct rom *r1, struct rom *r2, int merge);
 void rom_add_name(struct rom *r, char *name);
 struct zfile *zfile_new(char *name, int sample, char *parent);
 void marry (struct match *rm, int count, int *noz);
-struct match *check_game(struct game *game, struct zfile **zip,
-			 int pno, int gpno);
+struct match *check_game(struct game *game, struct zfile **zip);
 int matchcmp(struct match *m1, struct match *m2);
 void diagnostics(struct game *game, struct match *m, struct zfile **zip);
 void match_free(struct match *m, int n);

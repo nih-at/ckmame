@@ -117,7 +117,9 @@ zfile_free(struct zfile *zip)
 				    : "(null)")
 			  :"(null)")
 		    :"(null)", zip_err_str[zip_err]);
-	    /* XXX: really close zipfile */
+	    /* discard all changes and close zipfile */
+	    zip_unchange_all(zip->zf);
+	    zip_close(zip->zf);
 	}
     }
     

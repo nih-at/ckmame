@@ -5,16 +5,19 @@ unknown and unused files from the romsets.
 
   To use it, you need zlib (at least version 1.1.3) and either
 Berkeley db or GNU gdbm, as well as a current output of `mame
--listinfo' (which you can find at the distribution site).
+-listinfo' (which you can find at the distribution site).  Please note
+that Berkeley db doesn't seem to work under Linux (tested with 2.4.14
+and 2.7.7).
 
   You can find zlib at ftp://ftp.cdrom.com/pub/infozip/zlib, and gdbm
-at your local GNU mirror (cf. http://www.gnu.org/server/list-mirrors.html).
+at your local GNU mirror
+(cf. http://www.gnu.org/server/list-mirrors.html).
 
-  If you make a binary distribution, please include a pointer to
-the distribution site
+  If you make a binary distribution, please include a pointer to the
+distribution site
 	ftp.giga.or.at /pub/nih/ckmame
-	http://ftp.giga.or.at/pub/nih/ckmame
-The latest version can always be found there.
+	http://ftp.giga.or.at/pub/nih/ckmame The latest version can
+always be found there.
 
   Mail suggestions and bug reports to <nih@giga.or.at>.
 
@@ -30,21 +33,24 @@ different file on the command line) and writes to `mame.db', or
 `mame.gdbm', depending on which database routines you are using.  The
 name of the resulting database can be changed with the -o option.
 
- Set the environment variables `MAMEDB' to point to the database file
+  Set the environment variables `MAMEDB' to point to the database file
 mkmamedb just created, and `ROMPATH' to the directory above the one
-where your ROMs reside (`/roms' will be added automatically to each
+where your roms reside (`/roms' will be added automatically to each
 entry, just like MAME does).  If you don't set them, ckmame will use
 the current directory as defaults for both.
 
   Then just type `ckmame', and off you go.  You should probably
 redirect the output to a file, as it can get rather lengthy if your
-ROMs haven't been tended very well.  Or take a look at the output of
+roms haven't been tended very well.  Or take a look at the output of
 `ckmame -h' to see some options which reduce the output.
 
   If you trust ckmame enough, start it with the parameter `-F' and it
-will fix your ROMs (or at least try to).  Unrecognized files in your
-ROM sets will be saved in the directory `garbage' in the
-ROMs-directory, in zipfiles with the name of game.
+will fix your roms (or at least try to).  Unrecognized files in your
+rom sets will be saved in the directory `garbage' in the
+roms-directory, in zipfiles with the name of game.
 
+  Also included is 'dumpgame', which outputs rom and sample
+information for all games specified on the command line (using the
+database).
 
 

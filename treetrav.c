@@ -82,7 +82,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 	all_z[0] = me_z;
 	all_z[1] = parent_z;
 	all_z[2] = gparent_z;
-	me_m = check_game(me_g, all_z, parent_no, gparent_no);
+	me_m = check_game(me_g, all_z);
     }
     /* run through children & update zipstruct */
     for (t=tree->child; t; t=t->next) {
@@ -116,7 +116,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 		all_z[0] = child_z;
 		all_z[1] = me_z;
 		all_z[2] = parent_z;
-		child_m = check_game(child_g, all_z, i+1, parent_no);
+		child_m = check_game(child_g, all_z);
 		merge_match(child_m, child_g->nrom, all_z, i+1, parent_no);
 		/* XXX: fix if clone-fix forced */
 		match_free(child_m, child_g->nrom);

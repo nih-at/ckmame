@@ -54,9 +54,8 @@ static char *zname[] = {
 
 
 struct match *
-check_game(struct game *game, struct zfile **zip, int pno, int gpno)
+check_game(struct game *game, struct zfile **zip)
 {
-    /* XXX: pno, gpno unused */
     int i, zno[3];
     struct match *m;
 
