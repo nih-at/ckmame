@@ -2,7 +2,7 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.10 2004/01/27 23:04:10 wiz Exp $
+  $NiH: util.h,v 1.11 2004/02/05 17:32:32 dillo Exp $
 
   util.h -- miscellaneous utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -29,15 +29,16 @@
 
 typedef int (*cmpfunc)(const void *, const void *);
 
-char *findfile(char *name, enum filetype what);
+char *findfile(char *, enum filetype);
 
+extern char *rompath[];
 void init_rompath(void);
 
-void *memdup(const void *mem, int len);
-unsigned char *memmem(const unsigned char *big, int biglen, 
-		      const unsigned char *little, int littlelen);
-int strpcasecmp(char **sp1, char **sp2);
-const char *bin2hex(const char *s, int len);
-int hex2bin(char *t, const char *s, int tlen);
+void *memdup(const void *, int);
+unsigned char *memmem(const unsigned char *, int, 
+		      const unsigned char *, int);
+int strpcasecmp(char **, char **);
+const char *bin2hex(const char *, int);
+int hex2bin(char *, const char *, int);
 
 #endif
