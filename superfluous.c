@@ -1,7 +1,7 @@
 /*
-  $NiH: superflouos.c,v 1.5 2003/03/16 10:21:35 wiz Exp $
+  $NiH: superfluous.c,v 1.6 2004/02/26 01:09:45 wiz Exp $
 
-  superflouos.c -- check for unknown file in rom directories
+  superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
