@@ -16,7 +16,8 @@ main(int argc, char **argv)
     
     prg = argv[0];
     dbname = db_name("mame");
-    
+
+    remove(dbname);
     db = db_open(dbname, 0, 1);
 
     if (db==NULL) {

@@ -9,13 +9,15 @@
 
 
 char *
-findzip(char *name)
+findzip(char *name, int sample)
 {
     char *s;
 
-    s = xmalloc(strlen(name)+10);
+    /* XXX: search path */
 
-    sprintf(s, "roms/%s.zip", name);
+    s = xmalloc(strlen(name)+13);
+
+    sprintf(s, "%s/%s.zip", (sample ? "samples" : "roms"), name);
 
     return s;
 }

@@ -25,6 +25,8 @@
 
 typedef int (*cmpfunc)(const void *, const void *);
 
+char *findzip(char *name, int sample);
+
 void *memdup(const void *mem, int len);
 unsigned char *memmem(const unsigned char *big, int biglen, 
 		      const unsigned char *little, int littlelen);

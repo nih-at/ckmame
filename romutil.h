@@ -36,7 +36,6 @@ int matchcmp(struct match *m1, struct match *m2);
 void diagnostics(struct game *game, struct match *m, struct zip **zip);
 void match_free(struct match *m, int n);
 int countunused(struct zip *z);
-char *findzip(char *name);
 void game_free(struct game *g, int fullp);
 char **delchecked(struct tree *t, int nclone, char **clone);
 void zip_free(struct zip *zip);

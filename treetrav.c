@@ -252,7 +252,7 @@ zip_new(char *name)
     
     z = (struct zip *)xmalloc(sizeof(struct zip));
     
-    z->name = findzip(name);
+    z->name = findzip(name, 0);
     if (z->name == NULL) {
 	free(z);
 	return NULL;
