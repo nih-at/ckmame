@@ -1,4 +1,5 @@
 # testing non-existing game
+# $NiH$
 return 0
-args nosuchgame
+args -FKULvc nosuchgame
 error game `nosuchgame' unknown

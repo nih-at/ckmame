@@ -1,6 +1,8 @@
 # test single-rom game (no parent), rom has wrong name
+# $NiH$
 return 0
-args -Fc 1-4
+args -FKULvc 1-4
 rom 1-4-misnamed.zip 1-4.zip 1-4-ok.zip
+stdout ./roms/1-4.zip: rename `04' to 04.rom
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: wrong name (04)

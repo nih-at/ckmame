@@ -1,7 +1,9 @@
 # test 2-rom game (1 in parent), both roms in child
-# XXX: test fix also
+# $NiH$
 return 0
-args -U clone-8
+# XXX: test fix also
+# XXX: adding -c reports clone-8 as correct!
+args -KULv clone-8
 rom 2-48-ok.zip clone-8.zip 2-48-ok.zip
 stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: should be in cloneof, is in zip
