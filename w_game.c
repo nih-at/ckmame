@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: w_game.c,v 1.10 2002/06/06 09:27:01 dillo Exp $
 
   w_game.c -- write game strcut to db
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -81,13 +81,16 @@ w_game(DB *db, struct game *game)
 
 
 void
-w__rom(DBT *v, void *r)
+w__rom(DBT *v, void *vr)
 {
-    w__string(v, ((struct rom *)r)->name);
-    w__string(v, ((struct rom *)r)->merge);
-    w__array(v, w__pstring, ((struct rom *)r)->altname, sizeof(char *),
-	     ((struct rom *)r)->naltname);
-    w__ulong(v, ((struct rom *)r)->size);
-    w__ulong(v, ((struct rom *)r)->crc);
-    w__ushort(v, ((struct rom *)r)->where);
+    struct rom *r;
+
+    r = (struct rom *)vr;
+
+    w__string(v, r->name);
+    w__string(v, r->merge);
+    w__array(v, w__pstring, r->altname, sizeof(char *), r->naltname);
+    w__ulong(v, r->size);
+    w__ulong(v, r->crc);
+    w__ushort(v, r->where);
 }

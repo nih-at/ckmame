@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: r_game.c,v 1.10 2002/06/06 09:26:57 dillo Exp $
 
   r_game.c -- read game struct from db
-  Copyright (C) 1999 Dieter Baron and Thomas Klaunser
+  Copyright (C) 1999, 2003 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -78,15 +78,17 @@ r_game(DB *db, char *name)
 
 
 void
-r__rom(DBT *v, void *r)
+r__rom(DBT *v, void *vr)
 {
-    ((struct rom *)r)->name = r__string(v);
-    ((struct rom *)r)->merge = r__string(v);
-    ((struct rom *)r)->naltname = r__array(v, r__pstring,
-					   (void *)&((struct rom *)r)->altname,
-					   sizeof(char *));
-    ((struct rom *)r)->size = r__ulong(v);
-    ((struct rom *)r)->crc = r__ulong(v);
-    ((struct rom *)r)->where = r__ushort(v);
-    ((struct rom *)r)->state = 0;
+    struct rom *r;
+
+    r = (struct rom *)vr;
+
+    r->name = r__string(v);
+    r->merge = r__string(v);
+    r->naltname = r__array(v, r__pstring, (void *)&r->altname, sizeof(char *));
+    r->size = r__ulong(v);
+    r->crc = r__ulong(v);
+    r->where = r__ushort(v);
+    r->state = 0;
 }
