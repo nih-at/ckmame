@@ -8,6 +8,7 @@
 
 #include "types.h"
 #include "dbl.h"
+#include "util.h"
 #include "funcs.h"
 #include "error.h"
 #include "r.h"

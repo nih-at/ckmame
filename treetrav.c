@@ -5,6 +5,7 @@
 #include "dbl.h"
 #include "error.h"
 #include "funcs.h"
+#include "util.h"
 
 int tree_child_traverse(DB *db, struct tree *tree, int parentcheck,
 			struct zip *parent_z, struct zip *gparent_z,

@@ -89,6 +89,7 @@ void
 w__rom(DBT *v, struct rom *r)
 {
     w__string(v, r->name);
+    w__string(v, r->merge);
     w__ulong(v, r->size);
     w__ulong(v, r->crc);
     w__ushort(v, r->where);

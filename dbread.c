@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <regex.h>
 
 #include "error.h"
 #include "types.h"
-#include "dbl.h"
+#include "xmalloc.h"
+#include "romutil.h"
+#include "util.h"
+#include "dbh.h"
 #include "funcs.h"
 #include "r.h"
 
@@ -14,7 +16,6 @@ int ngames, sgames;
 char **games;
 
 static int add_name(char *s);
-static char *extract(char *s, regmatch_t m);
 static int game_add(DB* db, struct game *g);
 void familymeeting(DB* db, struct game *parent, struct game *child);
 int lost(struct game *a);
@@ -24,34 +25,11 @@ void game_free(struct game *g, int fullp);
 enum regs { r_gamestart, r_name, r_romof, r_rom, r_sampleof, r_sample,
 	    r_gameend, r_END };
 
-static char *sregs[] = {
-    "^[ \t]*(game|resource)[ \t]*\\(",
-    "^[ \t]*name[ \t]*([^ \t\n]*)",
-    "^[ \t]*romof[ \t]*([^ \t\n]*)",
-    "^[ \t]*rom[ \t]+\\([ \t]+name[ \t]+([^ ]*)[ \t]+size[ \t]+([^ ]*)[ \t]+crc[ \t]+([^ ]*)[ \t]+\\)",
-    "^[ \t]*sampleof[ \t]*([^ \t\n]*)",
-    "^[ \t]*sample[ \t]*([^ \t\n]*)",
-    "^[ \t]*\\)",
-};
-
-regex_t regs[r_END];
-
 
 
 int
 dbread_init(void)
 {
-    int i, err;
-    char b[8192];
-
-    for (i=0; i<r_END; i++) {
-        if ((err=regcomp(&regs[i], sregs[i], REG_EXTENDED|REG_ICASE)) != 0) {
-	    regerror(err, &regs[i], b, 8192);
-	    myerror(ERRDEF, "can't compile regex pattern %d: %s", i, b);
-	    return -1;
-	}
-    }
-
     sgames = ngames = 0;
 
     return 0;
@@ -59,14 +37,16 @@ dbread_init(void)
 
 
 
+#define GET_TOK()	(_P_=strtok(NULL, " \t\n\r"),\
+			 (_P_==NULL ? /* XXX: error */ "" : _P_))
+
 int
 dbread(DB* db, char *fname)
 {
     FILE *fin;
-    regmatch_t match[6];
-    char l[8192], *p;
+    char l[8192], *cmd, *p, *_P_;
     int ingame, i, j;
-    /* XXX: every game is only allowed 101 roms */
+    /* XXX: every game is only allowed 1000 roms */
     struct rom r[1000], s[1000];
     struct game *g;
     struct game *parent;
@@ -84,36 +64,44 @@ dbread(DB* db, char *fname)
     
     nlost = nr = ns = ingame = 0;
     while (fgets(l, 8192, fin)) {
-	for (i=0; i<r_END; i++)
-	    if (regexec(&regs[i], l, 6, match, 0) == 0)
-		break;
-
-	switch (i) {
-	case r_gamestart:
+	cmd = strtok(l, " \t\n\r");
+	
+	if (strcmp(cmd, "game") == 0 || strcmp(cmd, "resource") == 0) {
 	    g = (struct game *)xmalloc(sizeof(struct game));
 	    g->name = g->cloneof[0] = g->cloneof[1] = g->sampleof = NULL;
 	    g->nrom = g->nsample = 0;
 	    g->nclone = 0;
 	    ingame = 1;
 	    nr = ns = 0;
-	    break;
-
-	case r_name:
-	    g->name = extract(l, match[1]);
-	    break;
- 
-	case r_romof:
-	    g->cloneof[0] = extract(l, match[1]);
-	    break;
-
-	case r_rom:
-	    r[nr].name = extract(l, match[1]);
-	    p = extract(l, match[2]);
-	    r[nr].size = strtol(p, NULL, 10);
-	    free(p);
-	    p = extract(l, match[3]);
-	    r[nr].crc = strtoul(p, NULL, 16);
-	    free(p);
+	}
+	else if (strcmp(cmd, "name") == 0)
+	    g->name = strdup(GET_TOK());
+	else if (strcmp(cmd, "romof") == 0)
+	    g->cloneof[0] = strdup(GET_TOK());
+	else if (strcmp(cmd, "rom") == 0) {
+	    GET_TOK();
+	    if (strcmp(GET_TOK(), "name") != 0) {
+		/* XXX: error */
+		continue;
+	    }
+	    r[nr].name = strdup(GET_TOK());
+	    p = GET_TOK();
+	    if (strcmp(p, "merge") == 0) {
+		r[nr].merge = strdup(GET_TOK());
+		p = GET_TOK();
+	    }
+	    else
+		r[nr].merge = NULL;
+	    if (strcmp(p, "size") != 0) {
+		/* XXX: error */
+		continue;
+	    }
+	    r[nr].size = strtol(GET_TOK(), NULL, 10);
+	    if (strcmp(GET_TOK(), "crc") != 0) {
+		/* XXX: error */
+		continue;
+	    }
+	    r[nr].crc = strtoul(GET_TOK(), NULL, 16);
 	    r[nr].where = ROM_INZIP;
 	    /* omit duplicates */
 	    for (j=0; j<nr; j++) {
@@ -123,19 +111,15 @@ dbread(DB* db, char *fname)
 		}
 	    }
 	    nr++;
-	    break;
-
-	case r_sampleof:
-	    g->sampleof = extract(l, match[1]);
-	    break;
-
-	case r_sample:
-	    s[ns].name = extract(l, match[1]);
-	    s[ns].size = s[ns].crc = 0;
+	}
+	else if (strcmp(cmd, "sampleof") == 0)
+	    g->sampleof = strdup(GET_TOK());
+	else if (strcmp(cmd, "sample") == 0) {
+	    s[ns].name = strdup(GET_TOK());
+	    s[ns].size = s[ns].crc = s[ns].where = 0;
 	    ns++;
-	    break;
-
-	case r_gameend:
+	}
+	else if (strcmp(cmd, ")") == 0) {
 	    g->nrom = nr;
 	    g->rom = r;
 	    g->nsample = ns;
@@ -168,7 +152,6 @@ dbread(DB* db, char *fname)
 	    }
 	    game_add(db, g);
 	    game_free(g, 0);
-	    break;
 	}
     }
 
@@ -274,21 +257,6 @@ lost(struct game *a)
     return 1;
 }
     
-
-
-static char *
-extract(char *s, regmatch_t m)
-{
-    char *t;
-    
-    t=(char *)xmalloc(m.rm_eo-m.rm_so+1);
-    
-    strncpy(t, s+m.rm_so, m.rm_eo-m.rm_so);
-    t[m.rm_eo-m.rm_so] = '\0';
-    
-    return t;
-}
-
 
 
 static int

@@ -39,7 +39,7 @@ enum state {
 };
 
 struct rom {
-    char *name;
+    char *name, *merge;
     unsigned long size, crc;
     enum state state;
     enum where where;

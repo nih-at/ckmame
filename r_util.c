@@ -106,6 +106,7 @@ void
 r__rom(DBT *v, struct rom *r)
 {
     r->name = r__string(v);
+    r->merge = r__string(v);
     r->size = r__ulong(v);
     r->crc = r__ulong(v);
     r->where = r__ushort(v);

@@ -6,7 +6,7 @@
 #include "types.h"
 #include "dbl.h"
 #include "error.h"
-#include "funcs.h"
+#include "util.h"
 #include "r.h"
 
 int dump_game(DB *db, char *name);
@@ -106,10 +106,15 @@ dump_game(DB *db, char *name)
 	    putc('\n', stdout);
     }
     printf("Roms:");
-    for (i=0; i<game->nrom; i++)
-	printf("\t\tfile %-12s  size %6ld  crc %.8lx  in %s\n",
+    for (i=0; i<game->nrom; i++) {
+	printf("\t\tfile %-12s  size %6ld  crc %.8lx  in %s",
 	       game->rom[i].name, game->rom[i].size, game->rom[i].crc,
 	       where_name[game->rom[i].where]);
+	if (game->rom[i].merge
+	    && strcmp(game->rom[i].name, game->rom[i].merge) != 0)
+	    printf(" (%s)", game->rom[i].merge);
+	putc('\n', stdout);
+    }
     if (game->sampleof)
 	printf("Sampleof:\t%s\n", game->sampleof);
     if (game->nsample) {

@@ -1,5 +1,8 @@
+#ifndef _HAD_UTIL_H
+#define _HAD_UTIL_H
+
 /*
-  malloc.c -- malloc routines with exit on failure
+  util.h -- miscellaneous utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -20,58 +23,12 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 
-#include <stdlib.h>
-#include <string.h>
+char *memdup(const char *mem, int len);
+char *memmem(const char *big, int biglen, const char *little,
+	     int littlelen);
+int strpcasecmp(char **sp1, char **sp2);
+int findcrc (char *zn, char *fn, int filesize, int romsize,
+	     unsigned long wcrc);
 
-#include "error.h"
-#include "xmalloc.h"
-
-
-
-void *
-xmalloc(size_t size)
-{
-    void *p;
-
-    if ((p=malloc(size)) == NULL) {
-	myerror(ERRDEF, "malloc failure");
-	exit(1);
-    }
-
-    return p;
-}
-
-
-
-char *
-xstrdup(char *str)
-{
-    char *p;
-
-    if ((p=malloc(strlen(str)+1)) == NULL) {
-	myerror(ERRDEF, "malloc failure");
-	exit(1);
-    }
-
-    strcpy(p, str);
-    
-    return p;
-}
-
-
-
-void *
-xrealloc(void *p, size_t size)
-{
-    if (p == NULL)
-	return xmalloc(size);
-
-    if ((p=realloc(p, size)) == NULL) {
-	myerror(ERRDEF, "malloc failure");
-	exit(1);
-    }
-
-    return p;
-}
+#endif

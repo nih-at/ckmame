@@ -6,7 +6,7 @@
 
 #include "types.h"
 #include "dbl.h"
-#include "funcs.h"
+#include "util.h"
 #include "w.h"
 
 
