@@ -1,0 +1,156 @@
+.\" $NiH$
+.\"
+.\" Copyright (c) 2003 Thomas Klausner.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above
+.\"    copyright notice, this list of conditions and the following
+.\"    disclaimer in the documentation and/or other materials provided
+.\"    with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+.\" CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+.\" USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+.\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+.\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.Dd January 30, 2003
+.Dt CKMAME 1
+.Os
+.Sh NAME
+.Nm ckmame
+.Nd verify MAME rom sets
+.Sh SYNOPSIS
+.Nm ""
+.Op Fl bcdFfhKkLlnSsUuVvw
+.Op Fl D Ar dbfile
+.Op Ar game ...
+.Sh DESCRIPTION
+.Nm
+checks rom sets for MAME, the Multiple Arcade Machine Emulator.
+Actually, it now also supports more than that, you can also check
+sets for e.g. Raine, Impact, or other emulators.
+.Pp
+It uses
+.Ic mkmamedb
+to convert CMPro database files into an internal format that's faster
+to parse.
+.Pp
+Supported options:
+.Bl -tag -width XfXdbfileX
+.It Fl b
+Don't report unfixable errors.
+See also
+.Fl f
+and
+.Fl w .
+.It Fl c
+Report correct sets.
+Normally they are not mentioned.
+.It Fl D Ar dbfile
+Use
+.Ar dbfile
+as database file.
+.It Fl d
+Don't report roms with no known good dumps.
+.It Fl F
+Fix rom sets; do as much as possible, such as renaming and moving
+files.
+.It Fl f
+Don't report fixable errors.
+See also
+.Fl b
+and
+.Fl w .
+.It Fl h
+Display a short help message.
+.It Fl K
+Keep unknown files when fixing (default).
+They are moved into a zip file with the same name under
+.Pa roms/garbage .
+See also
+.Fl k .
+.It Fl k
+Don't keep unknown files when fixing.
+See also
+.Fl K .
+.It Fl L
+Keep too long files when fixing (default).
+See also
+.Fl K
+and
+.Fl l .
+.It Fl l
+Don't keep long files when fixing, delete them instead.
+See also
+.Fl L .
+.It Fl n
+Don't actually fix anything, just report what would be done.
+.It Fl S
+Check samples instead of roms.
+.It Fl s
+Don't report superfluous (unneeded) files.
+.It Fl U
+Keep unused files when fixing.
+Unused files are files that should, and do exist in other places.
+See also
+.Fl u .
+.It Fl u
+Don't keep unused files when fixing (default), delete them instead.
+See also
+.Fl U .
+.It Fl V
+Display program name and version number.
+.It Fl v
+Print fixes made.
+.It Fl w
+Print only unfixable error, like missing or completely incorrect roms.
+See also
+.Fl b
+and
+.Fl f .
+.El
+.Sh EXAMPLES
+Get an input file for
+.Ic mkmamedb :
+.Dl Ic xmame -listinfo > db.txt
+.Pp
+Convert the input file to the internal db format:
+.Dl Ic mkmamedb
+.Pp
+Print a report about the current state of your rom sets in the
+.Pa roms
+subdir of the current dir:
+.Dl Ic ckmame
+.Pp
+Fix all sets and only report unfixable errors, omitting those
+roms where no good dump exists:
+.Dl Ic ckmame -Fwd
+.Sh AUTHORS
+.Nm
+was written by
+Dieter Baron
+.Aq dillo@giga.or.at
+and
+Thomas Klausner
+.Aq tk@giga.or.at .
+.Sh BUGS
+Files that are in clone sets of a set, but would belong in the parent
+set, are not moved automatically.
+Add them to the parent set manually, then run
+.Ic ckmame -F
+to remove them from the clone set(s) automatically.
