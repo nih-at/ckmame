@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.13 2002/11/15 14:41:14 wiz Exp $
+  $NiH: fix.c,v 1.14 2003/03/16 10:21:33 wiz Exp $
 
   fix.c -- fix romsets
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -193,6 +193,7 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 	    break;
 
 	default:
+	    break;
 	}
     }
 

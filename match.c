@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.24 2003/09/12 23:18:51 wiz Exp $
+  $NiH: match.c,v 1.25 2003/09/13 00:36:33 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999 Dieter Baron and Thomas Klausner
@@ -350,7 +350,7 @@ warn_rom(struct rom *r, char *fmt, ...)
 		if (r->flags == FLAGS_OK)
 		    sprintf(buf, "size %7ld  crc %.8lx: ", r->size, r->crc);
 		else if (r->flags == FLAGS_BADDUMP)
-		    sprintf(buf, "size %7ld  bad dump    : ", r->size, r->crc);
+		    sprintf(buf, "size %7ld  bad dump    : ", r->size);
 		else
 		    sprintf(buf, "size %7ld  no good dump: ", r->size);
 	    } else
