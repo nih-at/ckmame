@@ -1,14 +1,26 @@
 search ROMPATH for roms
 create garbage directory
+mame.db location
+check return values of zip-functions
+add error messages in ckmame with the zips (e.g. can't create file etc.)
 
 add copyright notices
 
 get roms from a different location to fix sets
 rom matched twice or more (route16b)
-add error messages in ckmame with the zips (e.g. can't create file etc.)
-
-test zip-library
 
 samples: fill in where and sclone
 GNU conventions for dumpgame, mkmamedb
 fix all XXXs
+
+zip-library:
+append to files (for self-extracting files)
+add custom compression function support
+compression method for new file from meta information, else old/default
+better closing of zip-files
+update-zip (instead of close, reopen)
+unchange all
+support for old compression methods?????
+zip-comment functions
+test
+add more tests
