@@ -1,3 +1,13 @@
+2004-04-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* zip-supp.c (readinfosfromzip): adapt to zip_open's changed error
+	code for non-existing files.
+
+2004-04-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* fix.c (fix_add_garbage, fix_file), zip-supp.c (findcrc,
+	readinfosfromzip): adapt to libzip API changes.
+	
 2004-02-26  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* Makefile.am (ckmame_SOURCES): fix typo in filename.
