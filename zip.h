@@ -26,19 +26,31 @@ struct zf {
     char *zn;
     FILE *zp;
     unsigned short comlen, changes;
-    int nentry, nentry_alloc;
     unsigned int cd_size, cd_offset;
     char *com;
+    int nentry, nentry_alloc;
     struct zf_entry *entry;
+    int nfile, nfile_alloc;
+    struct zf_file *file;
+};
+
+struct zf_file {
+    struct zf *zf;
+    char *name;
+    int flags; /* -1: eof, >0: error */
+
+    int method;
+    /* position within zip file (fread/fwrite) */
+    long fpos;
+    /* no of bytes left to read */
+    unsigned long bytes_left;
+    /* no of bytes of compressed data left */
+    unsigned long cbytes_left;
+    /* crc so far */
+    unsigned long crc, crc_orig;
     
-    /* for reading from this zip-file */
-    /* last opened file in this zip */
-    int unz_last;
-    /* no of bytes already read (if comp_method == stored), -1 on error */
-    int unz_read;
-    /* input buffer for comp_method == deflated */
-    char *unz_in;
-    z_stream *unz_zst;
+    char *buffer;
+    z_stream *zstr;
 };
 
 struct zf_entry {
