@@ -1,0 +1,15 @@
+  For compilation under DOS you will need a running DJGPP system (see
+http://www.delorie.com) with long filename support (v2.01 or newer),
+as well as the bash, make, gdbm and autoconf packages (bsh1147b.zip,
+mak377b.zip, gdbm173b.zip and acnf213b.zip). I don't think compiling
+will work without long filename support, so compile in Windows, not
+plain DOS.
+
+  Then you start `bash' and type:
+
+  autoconf
+  ./configure
+  make
+
+  You should end up with three executables, ckmame.exe, dumpgame.exe
+and mkmamedb.exe. Now read README, if you haven't already done so :-)
