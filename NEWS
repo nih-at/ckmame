@@ -1,5 +1,7 @@
 Adapt for MAME -listinfo output changes (honor flags baddump and nodump).
 Check disk images (chd files).
+Superfluouos merged into ckmame. ckmame now by default reports
+extra files. Also works for samples.
 
 0.5
 
