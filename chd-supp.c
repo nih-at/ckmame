@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.2 2004/02/05 17:32:30 dillo Exp $
+  $NiH: chd-supp.c,v 1.3 2004/04/26 11:49:37 dillo Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "types.h"
+#include "romutil.h"
 
 #define HEADERLEN	120
 #define TAG		"MComprHD"
