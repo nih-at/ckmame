@@ -3,17 +3,20 @@
 #include "ziplow.h"
 
 char *prg;
+#define BUFSIZE 65536
 
 int
 main(int argc, char *argv[])
 {
     int i;
     struct zf *zf;
-
+    char buf[BUFSIZE];
+    
     prg = argv[0];
     
     if (argc != 2) {
-	myerror(ERRDEF, "call with one option, the zip-file to test");
+	myerror(ERRDEF, "call with one option: the zip-file to destroy"
+		"^H^H^H^H^H^H^Htest");
 	return 1;
     }
 
@@ -26,7 +29,9 @@ main(int argc, char *argv[])
     for (i=0; i<zf->nentry; i++)
 	printf("%8d %s\n", zf->entry[i].uncomp_size, zf->entry[i].fn);
 
-    zip_delete(zf, 0);
+    i = zf_read(zf, 1, buf, BUFSIZE-1);
+    buf[i] = 0;
+    printf("read %d bytes: '%s'\n", i, buf);
     
     if (zip_close(zf)!=0) {
 	myerror(ERRZIPSTR, "can't close file");
