@@ -1,0 +1,180 @@
+.\" $NiH$
+.\"
+.\" Copyright (c) 2003 Thomas Klausner.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above
+.\"    copyright notice, this list of conditions and the following
+.\"    disclaimer in the documentation and/or other materials provided
+.\"    with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+.\" CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+.\" USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+.\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+.\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.TH CKMAME 1 "January 30, 2003" NiH
+.SH "NAME"
+ckmame \- verify MAME rom sets
+.SH "SYNOPSIS"
+.B ckmame
+[\fB-bcdFfhKkLlnSsUuVvw\fR]
+[\fB-D\fR \fBdbfile\fR]
+[\fBgame ...\fR]
+.SH "DESCRIPTION"
+.B ckmame
+checks rom sets for MAME, the Multiple Arcade Machine Emulator.
+Actually, it now also supports more than that, you can also check
+sets for e.g. Raine, Impact, or other emulators.
+.PP
+It uses
+\fBmkmamedb\fR
+to convert CMPro database files into an internal format that's faster
+to parse.
+.PP
+Supported options:
+.RS
+.TP 12
+\fB-b\fR
+Don't report unfixable errors.
+See also
+\fB-f\fR
+and
+\fB-w\fR.
+.TP 12
+\fB-c\fR
+Report correct sets.
+Normally they are not mentioned.
+.TP 12
+\fB-D\fR \fBdbfile\fR
+Use
+\fBdbfile\fR
+as database file.
+.TP 12
+\fB-d\fR
+Don't report roms with no known good dumps.
+.TP 12
+\fB-F\fR
+Fix rom sets; do as much as possible, such as renaming and moving
+files.
+.TP 12
+\fB-f\fR
+Don't report fixable errors.
+See also
+\fB-b\fR
+and
+\fB-w\fR.
+.TP 12
+\fB-h\fR
+Display a short help message.
+.TP 12
+\fB-K\fR
+Keep unknown files when fixing (default).
+They are moved into a zip file with the same name under
+\fIroms/garbage.\fR
+See also
+\fB-k\fR.
+.TP 12
+\fB-k\fR
+Don't keep unknown files when fixing.
+See also
+\fB-K\fR.
+.TP 12
+\fB-L\fR
+Keep too long files when fixing (default).
+See also
+\fB-K\fR
+and
+\fB-l\fR.
+.TP 12
+\fB-l\fR
+Don't keep long files when fixing, delete them instead.
+See also
+\fB-L\fR.
+.TP 12
+\fB-n\fR
+Don't actually fix anything, just report what would be done.
+.TP 12
+\fB-S\fR
+Check samples instead of roms.
+.TP 12
+\fB-s\fR
+Don't report superfluous (unneeded) files.
+.TP 12
+\fB-U\fR
+Keep unused files when fixing.
+Unused files are files that should, and do exist in other places.
+See also
+\fB-u\fR.
+.TP 12
+\fB-u\fR
+Don't keep unused files when fixing (default), delete them instead.
+See also
+\fB-U\fR.
+.TP 12
+\fB-V\fR
+Display program name and version number.
+.TP 12
+\fB-v\fR
+Print fixes made.
+.TP 12
+\fB-w\fR
+Print only unfixable error, like missing or completely incorrect roms.
+See also
+\fB-b\fR
+and
+\fB-f\fR.
+.RE
+.SH "EXAMPLES"
+Get an input file for
+\fBmkmamedb :\fR
+.IP
+\fBxmame \-listinfo > db.txt\fR
+.PP
+.PP
+Convert the input file to the internal db format:
+.IP
+\fBmkmamedb\fR
+.PP
+.PP
+Print a report about the current state of your rom sets in the
+\fIroms\fR
+subdir of the current dir:
+.IP
+\fBckmame\fR
+.PP
+.PP
+Fix all sets and only report unfixable errors, omitting those
+roms where no good dump exists:
+.IP
+\fBckmame \-Fwd\fR
+.PP
+.SH "AUTHORS"
+.B ckmame
+was written by
+Dieter Baron
+<dillo@giga.or.at>
+and
+Thomas Klausner
+<tk@giga.or.at.>
+.SH "BUGS"
+Files that are in clone sets of a set, but would belong in the parent
+set, are not moved automatically.
+Add them to the parent set manually, then run
+\fBckmame \-F\fR
+to remove them from the clone set(s) automatically.
