@@ -26,13 +26,13 @@ freeroms(struct rom *romp, int count)
 
 
 
-unsigned long
-makencrc (char *zn, char *fn, int n)
+int
+findcrc (char *zn, char *fn, int filesize, int romsize, unsigned long wcrc)
 {
     unsigned long crc;
     unzFile zfp;
     char buf[BUFSIZE];
-    int left;
+    int n, left, offset;
     
     if ((zfp=unzOpen(zn))==NULL)
 	return -1;
@@ -47,19 +47,27 @@ makencrc (char *zn, char *fn, int n)
 	return -1;
     }
 
-    left = BUFSIZE;
-    crc = crc32(0, NULL, 0);
-
-    while (n > 0) {
-	if (left > n)
-	    left = n;
-	if (unzReadCurrentFile(zfp, buf, left)<left) {
-	    unzCloseCurrentFile(zfp);
-	    unzClose(zfp);
-	    return -1;
+    offset = 0;
+    while (offset+romsize <= filesize) {
+	left = BUFSIZE;
+	crc = crc32(0, NULL, 0);
+	n = romsize;
+	while (n > 0) {
+	    if (left > n)
+		left = n;
+	    if (unzReadCurrentFile(zfp, buf, left)<left) {
+		unzCloseCurrentFile(zfp);
+		unzClose(zfp);
+		return -1;
+	    }
+	    crc = crc32(crc, buf, left);
+	    n -= left;
 	}
-	crc = crc32(crc, buf, left);
-	n -= left;
+
+	if (crc == wcrc)
+	    break;
+
+	offset += romsize;
     }
     
     if (unzCloseCurrentFile(zfp)!=UNZ_OK) {
@@ -72,7 +80,10 @@ makencrc (char *zn, char *fn, int n)
 	return -1;
     }
 
-    return crc;
+    if (crc == wcrc)
+	return offset;
+	    
+    return -1;
 }
 
 

@@ -11,7 +11,7 @@ extern char *prg;
 
 static int match(struct game *game, struct zip *zip, int zno, struct match *m);
 static int add_match(struct match *m, enum where where, int zno, int fno,
-		     enum state st);
+		     enum state st, int offset);
 int matchcmp(struct match *m1, struct match *m2);
 
 void warn_game(char *name);
@@ -77,22 +77,22 @@ check_game(struct game *game, struct zip **zip, int pno, int gpno)
 static int
 match(struct game *game, struct zip *zip, int zno, struct match *m)
 {
-    int i, j;
+    int i, j, offset;
     enum state st;
-    unsigned long crc;
     
     for (i=0; i<game->nrom; i++) {
 	for (j=0; j<zip->nrom; j++) {
 	    st = romcmp(zip->rom+j, game->rom+i);
 	    if (st == ROM_LONG) {
-		crc = makencrc(zip->name, zip->rom[j].name,
-			       game->rom[i].size);
-		if (crc == game->rom[i].crc)
+		offset = findcrc(zip->name, zip->rom[j].name,
+				 zip->rom[j].size, game->rom[i].size,
+				 game->rom[i].crc);
+		if (offset != -1)
 		    st = ROM_LONGOK;
 	    }
 	    
 	    if (st != ROM_UNKNOWN)
-		add_match(m+i, game->rom[i].where, zno, j, st);
+		add_match(m+i, game->rom[i].where, zno, j, st, offset);
 	}
     }
 
@@ -102,7 +102,8 @@ match(struct game *game, struct zip *zip, int zno, struct match *m)
 
 
 static int
-add_match(struct match *m, enum where where, int zno, int fno, enum state st)
+add_match(struct match *m, enum where where, int zno, int fno,
+	  enum state st, int offset)
 {
     struct match *p, *q;
 
@@ -111,6 +112,7 @@ add_match(struct match *m, enum where where, int zno, int fno, enum state st)
     p->zno = zno;
     p->fno = fno;
     p->quality = st;
+    p->offset = (st == ROM_LONGOK ? offset : -1);
 
     for (q=m; q->next; q=q->next)
 	if (matchcmp(q->next, p) < 0)
@@ -190,7 +192,7 @@ diagnostics(struct game *game, struct match *m, struct zip **zip)
 	    case ROM_LONG:
 		if (output_options & WARN_LONG)
 		    warn_rom(game->rom+i,
-			     "too long, truncating won't help (%d)",
+			     "too long, unfixable (%d)",
 			     zip[m[i].zno]->rom[m[i].fno].size);
 		break;
 		
@@ -208,7 +210,8 @@ diagnostics(struct game *game, struct match *m, struct zip **zip)
 		
 	    case ROM_LONGOK:
 		if (output_options & WARN_LONGOK)
-		    warn_rom(game->rom+i, "too long, truncating fixes (%d)",
+		    warn_rom(game->rom+i, "too long, valid subsection"
+			     " at byte %d (%d)", m[i].next->offset,
 			     zip[m[i].zno]->rom[m[i].fno].size);
 		break;
 		

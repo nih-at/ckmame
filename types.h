@@ -63,6 +63,7 @@ struct match {
     int zno;
     int fno;
     enum state quality;
+    int offset;              /* offset of correct part if ROM_LONGOK */
 };
 
 struct zip {

@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <fnmatch.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "types.h"
 #include "dbl.h"
@@ -19,8 +22,9 @@ static char *where_name[] = {
 int
 main(int argc, char **argv)
 {
-    int i;
+    int i, j, optind, nlist, found, first;
     DB *db;
+    char **list;
     
     prg = argv[0];
 
@@ -29,8 +33,41 @@ main(int argc, char **argv)
 	exit (1);
     }
 
-    for (i=1; i<argc; i++)
-	dump_game(db, argv[i]);
+    nlist = r_list(db, "/list", &list);
+
+    optind = 1;
+
+    first = 1;
+    for (i=optind; i<argc; i++) {
+	if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
+	    if (bsearch(argv+i, list, nlist, sizeof(char *),
+			strpcasecmp) != NULL) {
+		if (first)
+		    first = 0;
+		else
+		    putc('\n', stdout);
+		dump_game(db, argv[i]);
+	    }
+	    else
+		myerror(ERRDEF, "game `%s' unknown", argv[i]);
+	}
+	else {
+	    found = 0;
+	    for (j=0; j<nlist; j++) {
+		if (fnmatch(argv[i], list[j], 0) == 0) {
+		    if (first)
+			first = 0;
+		    else
+			putc('\n', stdout);
+		    dump_game(db, list[j]);
+		    found = 1;
+		}
+	    }
+	    if (!found)
+		myerror(ERRDEF, "no game matching `%s' found", argv[i]);
+	}
+    }
+
 
     return 0;
 }

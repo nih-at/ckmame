@@ -63,7 +63,7 @@ main(int argc, char **argv)
     int i, j;
     DB *db;
     char **list;
-    int c, nlist;
+    int c, nlist, found;
     struct tree *tree;
     struct tree tree_root;
     
@@ -127,12 +127,19 @@ main(int argc, char **argv)
 		if (bsearch(argv+i, list, nlist, sizeof(char *),
 			    strpcasecmp) != NULL)
 		    tree_add(db, tree, argv[i]);
+		else
+		    myerror(ERRDEF, "game `%s' unknown", argv[i]);
 	    }
 	    else {
+		found = 0;
 		for (j=0; j<nlist; j++) {
-		    if (fnmatch(argv[i], list[j], 0) == 0)
+		    if (fnmatch(argv[i], list[j], 0) == 0) {
 			tree_add(db, tree, list[j]);
+			found = 1;
+		    }
 		}
+		if (!found)
+		    myerror(ERRDEF, "no game matching `%s' found", argv[i]);
 	    }
 	}
     }
