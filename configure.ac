@@ -84,8 +84,10 @@ AC_EXEEXT
 AM_DISABLE_STATIC
 AM_PROG_LIBTOOL
 
-AM_PATH_XML2([], [AC_DEFINE([HAVE_LIBXML2], [1],
-		 	    [Define if you have the xml2 library (-lxml2)])])
+PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= 2.0, 
+			   AC_DEFINE([HAVE_LIBXML2], [1],
+			   [Define if you have the xml2 library (-lxml2)]),
+			   AC_MSG_WARN(libxml2 not found))
 
 AC_CONFIG_FILES([Makefile regress/Makefile])
 AC_OUTPUT
