@@ -8,7 +8,7 @@ struct zf_file *
 zff_new(struct zf *zf)
 {
     struct zf_file *zff;
-    
+
     if (zf->nfile >= zf->nfile_alloc-1) {
 	zf->nfile_alloc += 10;
 	zf->file = (struct zf_file **)xrealloc(zf->file, zf->nfile_alloc
@@ -185,6 +185,9 @@ int
 zff_read(struct zf_file *zff, char *outbuf, int toread)
 {
     int len, out_before, ret;
+
+    if (!zff)
+	return -1;
 
     if (zff->flags != 0)
 	return -1;

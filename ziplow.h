@@ -28,6 +28,7 @@ int writecdentry(FILE *fp, struct zf_entry *zfe, int localp);
 int checkcons(FILE *fp, struct zf *zf);
 int headercomp(struct zf_entry *h1, int local1p, struct zf_entry *h2,
 	       int local2p);
-int zip_entry_copy(struct zf *dest, struct zf *src, int entry_no);
+int zip_entry_copy(struct zf *dest, struct zf *src, int entry_no,
+		   char *name);
 
 #endif /* _HAD_ZIPLOW_H */

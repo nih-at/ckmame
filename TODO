@@ -1,6 +1,8 @@
 unknown fixen (viele sind unknown, obwohl sie in_parent sein sollten
 und dort auch sind, aber auch im child sind)
 
+gestoredes zippen beim kopieren
+
 CRC-check wenn uncompressen (unstoren?)
 int, unsigned int abgleichen in zip.h
 
