@@ -92,20 +92,20 @@ main(int argc, char **argv)
     
 
     if (dbext)
-	dbname = db_name(dbname);
+	dbname = ddb_name(dbname);
 
     remove(dbname);
-    db = db_open(dbname, 0, 1);
+    db = ddb_open(dbname, 0, 1);
 
     if (db==NULL) {
-	myerror(ERRSTR, "can't create db '%s': %s", dbname, db_error());
+	myerror(ERRSTR, "can't create db '%s': %s", dbname, ddb_error());
 	exit(1);
     }
 
     dbread_init();
     dbread(db, fname);
 
-    db_close(db);
+    ddb_close(db);
 
     free(dbname);
     return 0;

@@ -8,7 +8,7 @@
 
 
 int
-db_insert(DB* db, DBT* key, DBT* value)
+ddb_insert(DB* db, DBT* key, DBT* value)
 {
     DBT v;
     int ret;
@@ -27,7 +27,7 @@ db_insert(DB* db, DBT* key, DBT* value)
     }
     v.size = len + 2;
 
-    ret = db_insert_l(db, key, &v);
+    ret = ddb_insert_l(db, key, &v);
 
     free(v.data);
 
@@ -37,13 +37,13 @@ db_insert(DB* db, DBT* key, DBT* value)
 
 
 int
-db_lookup(DB* db, DBT* key, DBT* value)
+ddb_lookup(DB* db, DBT* key, DBT* value)
 {
     DBT v;
     int ret;
     uLong len;
 
-    ret = db_lookup_l(db, key, &v);
+    ret = ddb_lookup_l(db, key, &v);
 
     if (ret != 0)
 	return ret;
@@ -68,15 +68,15 @@ db_lookup(DB* db, DBT* key, DBT* value)
 
 
 char *
-db_name(char *prefix)
+ddb_name(char *prefix)
 {
     char *s;
 
     if (prefix == NULL)
-	return DB_EXT;
+	return DDB_EXT;
     
-    s = xmalloc(strlen(prefix)+strlen(DB_EXT)+1);
-    sprintf(s, "%s%s", prefix, DB_EXT);
+    s = xmalloc(strlen(prefix)+strlen(DDB_EXT)+1);
+    sprintf(s, "%s%s", prefix, DDB_EXT);
 
     return s;
 }

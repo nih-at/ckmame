@@ -94,7 +94,7 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=db_open(dbname, dbext, 0))==NULL) {
+    if ((db=ddb_open(dbname, dbext, 0))==NULL) {
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit (1);
     }

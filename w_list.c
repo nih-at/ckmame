@@ -26,7 +26,7 @@ w_list(DB *db, char *key, char **list, int n)
 
     w__array(&v, w__pstring, list, sizeof(char *), n);
 
-    err = db_insert(db, &k, &v);
+    err = ddb_insert(db, &k, &v);
 
     free(k.data);
     free(v.data);

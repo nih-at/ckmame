@@ -44,7 +44,7 @@ w_game(DB *db, struct game *game)
     w__array(&v, w__pstring, game->sclone, sizeof(char *), game->nsclone);
     w__array(&v, w__rom, game->sample, sizeof(struct rom), game->nsample);
 
-    err = db_insert(db, &k, &v);
+    err = ddb_insert(db, &k, &v);
 
     free(k.data);
     free(v.data);

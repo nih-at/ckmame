@@ -7,7 +7,7 @@
 
 
 DB*
-db_open(char *name, int extp, int writep)
+ddb_open(char *name, int extp, int writep)
 {
     GDBM_FILE db;
     char *s;
@@ -27,7 +27,7 @@ db_open(char *name, int extp, int writep)
 
 
 int
-db_close(DB* db)
+ddb_close(DB* db)
 {
     gdbm_close((GDBM_FILE)db);
 
@@ -37,7 +37,7 @@ db_close(DB* db)
 
 
 int
-db_insert_l(DB* db, DBT* key, DBT* value)
+ddb_insert_l(DB* db, DBT* key, DBT* value)
 {
     return gdbm_store((GDBM_FILE)db, *(datum *)key, *(datum *)value,
 		      GDBM_REPLACE);
@@ -46,7 +46,7 @@ db_insert_l(DB* db, DBT* key, DBT* value)
 
 
 int
-db_lookup_l(DB* db, DBT* key, DBT* value)
+ddb_lookup_l(DB* db, DBT* key, DBT* value)
 {
     datum v;
 
@@ -64,7 +64,7 @@ db_lookup_l(DB* db, DBT* key, DBT* value)
 
 
 const char *
-db_error(void)
+ddb_error(void)
 {
     return gdbm_strerror(gdbm_errno);
 }

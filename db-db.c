@@ -9,7 +9,7 @@
 
 
 DB*
-db_open(char *name, int extp, int writep)
+ddb_open(char *name, int extp, int writep)
 {
     DB* db;
     HASHINFO hi;
@@ -39,7 +39,7 @@ db_open(char *name, int extp, int writep)
 
 
 int
-db_close(DB* db)
+ddb_close(DB* db)
 {
     (db->close)(db);
     return 0;
@@ -48,7 +48,7 @@ db_close(DB* db)
 
 
 int
-db_insert_l(DB* db, DBT* key, DBT* value)
+ddb_insert_l(DB* db, DBT* key, DBT* value)
 {
     return (db->put)(db, key, value, 0);
 }
@@ -56,7 +56,7 @@ db_insert_l(DB* db, DBT* key, DBT* value)
 
 
 int
-db_lookup_l(DB* db, DBT* key, DBT* value)
+ddb_lookup_l(DB* db, DBT* key, DBT* value)
 {
     return (db->get)(db, key, value, 0);
 }
@@ -64,7 +64,7 @@ db_lookup_l(DB* db, DBT* key, DBT* value)
 
 
 const char *
-db_error(void)
+ddb_error(void)
 {
     return "";
 }

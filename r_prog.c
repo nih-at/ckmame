@@ -19,7 +19,7 @@ r_prog(DB *db, char **namep, char **versionp)
     k.data = xmalloc(k.size);
     strncpy(k.data, "/prog", k.size);
 
-    if (db_lookup(db, &k, &v) != 0) {
+    if (ddb_lookup(db, &k, &v) != 0) {
 	free(k.data);
 	return -1;
     }

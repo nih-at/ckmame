@@ -27,7 +27,7 @@ w_prog(DB *db, char *name, char *version)
     w__string(&v, name);
     w__string(&v, version);
 
-    err = db_insert(db, &k, &v);
+    err = ddb_insert(db, &k, &v);
 
     free(k.data);
     free(v.data);

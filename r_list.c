@@ -19,7 +19,7 @@ r_list(DB *db, char *key, char ***listp)
     k.data = xmalloc(k.size);
     strncpy(k.data, key, k.size);
 
-    if (db_lookup(db, &k, &v) != 0) {
+    if (ddb_lookup(db, &k, &v) != 0) {
 	free(k.data);
 	return -1;
     }

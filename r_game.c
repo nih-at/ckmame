@@ -21,7 +21,7 @@ r_game(DB *db, char *name)
     k.data = xmalloc(k.size);
     strncpy(k.data, name, k.size);
 
-    if (db_lookup(db, &k, &v) != 0) {
+    if (ddb_lookup(db, &k, &v) != 0) {
 	free(k.data);
 	return NULL;
     }
