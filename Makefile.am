@@ -8,7 +8,7 @@ LIBS=@DBLIBS@ @LIBS@
 SUBDIRS=libzip
 
 bin_PROGRAMS=ckmame mkmamedb dumpgame
-info_TEXINFOS=  ckmame.texi
+#info_TEXINFOS=  ckmame.texi
 ckmame_SOURCES=ckmame.c error.c zip-supp.c util.c marry.c \
 		match.c malloc.c r_game.c r_list.c r_util.c dbl.c dbl-int.c \
 		treetrav.c fix.c romutil.c
