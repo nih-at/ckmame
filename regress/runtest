@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.7 2003/10/01 16:29:38 wiz Exp $
+#  $NiH: runtest,v 1.8 2003/10/01 18:06:04 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -244,7 +244,7 @@ do
   stdout)
     echo "$arg" >> stdout;;
   error)
-    echo "ckmame: $arg" >> errors;;
+    echo "${PROGRAM}: $arg" >> errors;;
   *)
     die "unknown directive '$cmd'"
   esac
