@@ -1,10 +1,11 @@
+fix fixing PONG -- dumps core if pong.zip contains a file (pong has no roms)
 documentation
 use return value of w_game
 option to force fixing parents
 mame.db location
 ROMPATH autoconf
 add error messages in ckmame with the zips (e.g. can't create file etc.)
-complete raine support (crc32 hack? archive names)
+complete raine support (crc32 anders parsen? multiple archive names)
 
 get roms from a different location to fix sets
 
