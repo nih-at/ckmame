@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.17 2003/12/30 01:47:57 wiz Exp $
+  $NiH: fix.c,v 1.18 2004/02/26 02:26:09 wiz Exp $
 
   fix.c -- fix romsets
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -163,8 +163,8 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
     if (m->zno != 0) {
 	if (m->quality == ROM_LONGOK) {
 	    if (fix_do) {
-		zip_add_zip(zip[0]->zf, rom->name, NULL,
-			    zip[m->zno]->zf, m->fno, m->offset, rom->size);
+		zip_add_zip(zip[0]->zf, rom->name,
+			    zip[m->zno]->zf, m->fno, 0, m->offset, rom->size);
 		if (fix_keep_long)
 		    fix_add_garbage(zip[m->zno], m->fno);
 	    }
@@ -176,8 +176,8 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 	}
 	else {
 	    if (fix_do)
-		zip_add_zip(zip[0]->zf, rom->name, NULL,
-			    zip[m->zno]->zf, m->fno, 0, 0);
+		zip_add_zip(zip[0]->zf, rom->name,
+			    zip[m->zno]->zf, m->fno, 0, 0, 0);
 	    if (fix_print)
 		printf("%s: add `%s/%s' as %s\n",
 		       zip[0]->name,
@@ -199,8 +199,12 @@ fix_file(struct rom *rom, struct match *m, struct zfile **zip)
 
 	case ROM_LONGOK:
 	    if (fix_do) {
-		zip_replace_zip(zip[0]->zf, m->fno, rom->name, NULL,
-				zip[0]->zf, m->fno, m->offset, rom->size);
+		zip_replace_zip(zip[0]->zf, m->fno,
+				zip[0]->zf, m->fno, 0, m->offset, rom->size);
+#if 0
+		/* XXX: rename? */
+		zip_rename(zip[0]->zf, m->fno, rom->name);
+#endif
 		if (fix_keep_long)
 		    fix_add_garbage(zip[m->zno], m->fno);
 	    }
@@ -236,7 +240,8 @@ fix_add_garbage(struct zfile *zip, int idx)
 	zf_garbage = zip_open(zf_garbage_name, ZIP_CREATE, NULL);
     }
     if (zf_garbage)
-	zip_add_zip(zf_garbage, NULL, NULL, zip->zf, idx, 0, 0);
+	zip_add_zip(zf_garbage, zip->rom[idx].name, zip->zf, idx,
+		    ZIP_FL_UNCHANGED, 0, 0);
 
     return 0;
 }

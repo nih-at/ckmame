@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.21 2003/12/28 01:16:39 wiz Exp $
+  $NiH: zip-supp.c,v 1.22 2004/02/26 02:26:14 wiz Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -48,7 +48,7 @@ findcrc(struct zfile *zip, int idx, int romsize, unsigned long wcrc)
     char buf[BUFSIZE];
     int n, left, offset;
 
-    if ((zff = zip_fopen_index(zip->zf, idx)) == NULL) {
+    if ((zff = zip_fopen_index(zip->zf, idx, 0)) == NULL) {
 	fprintf(stderr, "%s: %s: can't open file '%s': %s\n", prg,
 		zip->name, zip_get_name(zip->zf, idx),
 		zip_strerror(zip->zf));
@@ -170,7 +170,7 @@ readinfosfromzip (struct zfile *z)
 
     count = 0;
     for (i=0; i<z->nrom; i++) {
-	if (zip_stat_index(zf, i, &zsb) == -1) {
+	if (zip_stat_index(zf, i, 0, &zsb) == -1) {
 	    fprintf(stderr, "%s: error stat()ing index %d in `%s': %s\n",
 		    prg, i, z->name, zip_strerror(zf));
 	    continue;
