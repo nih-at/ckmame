@@ -15,3 +15,8 @@ struct zipchange {
     int start, len;
 };
 
+struct zf {
+    u_short nentry, com_size;
+    u_int cd_size, cd_offset;
+    char *com;
+}

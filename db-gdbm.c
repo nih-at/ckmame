@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <gdbm.h>
 
+#include "dbl.h"
+
 
 
 DB*
