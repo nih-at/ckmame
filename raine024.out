@@ -1,0 +1,3145 @@
+ 
+
+BEGIN
+
+emulator (
+	name "Raine"
+	version "v0.24a"
+	games 127
+)
+
+game (
+	name 64street
+	description "64th Street"
+	manufacturer "Jaleco"
+	year 1991
+	rom ( name 64th_01.rom size 524288 crc32 06222f90 )
+	rom ( name 64th_02.rom size 262144 crc32 0621ed1d )
+	rom ( name 64th_03.rom size 262144 crc32 ed6c6942 )
+	rom ( name 64th_04.rom size 524288 crc32 98f83ef6 )
+	rom ( name 64th_05.rom size 524288 crc32 a89a7020 )
+	rom ( name 64th_06.rom size 524288 crc32 2bfcdc75 )
+	rom ( name 64th_07.rom size 65536 crc32 13595d01 )
+	rom ( name 64th_08.rom size 65536 crc32 632be0c1 )
+	rom ( name 64th_09.rom size 131072 crc32 a4a97db4 )
+	rom ( name 64th_10.rom size 262144 crc32 a3390561 )
+	rom ( name 64th_11.rom size 131072 crc32 b0b8a65c )
+	archive ( name "64th_street" name "64street" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name 64streej
+	description "64th Street Japanese"
+	manufacturer "Jaleco"
+	year 1991
+	romof 64street
+	rom ( name 64th_01.rom merge 64th_01.rom size 524288 crc32 06222f90 )
+	rom ( name 91105-2.bin size 262144 crc32 27c1f436 )
+	rom ( name 91105-3.bin size 262144 crc32 a211a83b )
+	rom ( name 64th_04.rom merge 64th_04.rom size 524288 crc32 98f83ef6 )
+	rom ( name 64th_05.rom merge 64th_05.rom size 524288 crc32 a89a7020 )
+	rom ( name 64th_06.rom merge 64th_06.rom size 524288 crc32 2bfcdc75 )
+	rom ( name 64th_07.rom merge 64th_07.rom size 65536 crc32 13595d01 )
+	rom ( name 64th_08.rom merge 64th_08.rom size 65536 crc32 632be0c1 )
+	rom ( name 64th_09.rom merge 64th_09.rom size 131072 crc32 a4a97db4 )
+	rom ( name 64th_10.rom merge 64th_10.rom size 262144 crc32 a3390561 )
+	rom ( name 64th_11.rom merge 64th_11.rom size 131072 crc32 b0b8a65c )
+	archive ( name "64th_street_japanese" name "64streej" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name arabianm
+	description "Arabian Magic"
+	manufacturer "Taito"
+	year 1992
+	rom ( name d29-06.rom size 524288 crc32 eea07bf3 )
+	rom ( name d29-02.rom size 1048576 crc32 ed894fe1 )
+	rom ( name d29-03.rom size 1048576 crc32 aeaff456 )
+	rom ( name d29-04.rom size 1048576 crc32 01711cfe )
+	rom ( name d29-05.rom size 1048576 crc32 9b5f7a17 )
+	rom ( name d29-01.rom size 2097152 crc32 545ac4b3 )
+	rom ( name d29-07.rom size 524288 crc32 db3c094d )
+	rom ( name d29-08.rom size 524288 crc32 d7562851 )
+	rom ( name d29-18.rom size 131072 crc32 d97780df )
+	rom ( name d29-19.rom size 131072 crc32 b1ad365c )
+	rom ( name d29-21.rom size 262144 crc32 ac32eb38 )
+	rom ( name d29-22.rom size 262144 crc32 4afc22a4 )
+	rom ( name d29-23.rom size 262144 crc32 89a0c706 )
+	rom ( name d29-25.rom size 262144 crc32 b9b652ed )
+	archive ( name "arabian_magic" name "arabianm" )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name ark2us
+	description "Arkanoid 2 American"
+	manufacturer "Taito"
+	year 1987
+	romof arkanoi2
+	rom ( name a2-m01.bin size 131072 crc32 2ccc86b4 )
+	rom ( name a2-m02.bin merge a2-m02.bin size 131072 crc32 056a985f )
+	rom ( name a2-m03.bin size 131072 crc32 274a795f )
+	rom ( name a2-m04.bin size 131072 crc32 9754f703 )
+	rom ( name b08-07.bin merge b08-07.bin size 512 crc32 ea34d9f7 )
+	rom ( name b08-08.bin merge b08-08.bin size 512 crc32 a4f7ebd9 )
+	rom ( name b08-11.bin merge b08-11.bin size 65536 crc32 99555231 )
+	rom ( name b08-12.bin merge b08-12.bin size 65536 crc32 dc84e27d )
+	archive ( name "arkanoid_2_american" name "ark2us" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name arkanoi2
+	description "Arkanoid 2 Revenge of Doh"
+	manufacturer "Taito"
+	year 1987
+	rom ( name a2-m01.rom size 131072 crc32 70cc559d )
+	rom ( name a2-m02.bin size 131072 crc32 056a985f )
+	rom ( name a2-m03.rom size 131072 crc32 49a21c5e )
+	rom ( name a2-m04.rom size 131072 crc32 548117c6 )
+	rom ( name a2-05.rom size 65536 crc32 136edf9d )
+	rom ( name a2-13.rom size 65536 crc32 e8035ef1 )
+	rom ( name b08-07.bin size 512 crc32 ea34d9f7 )
+	rom ( name b08-08.bin size 512 crc32 a4f7ebd9 )
+	rom ( name b08-11.bin size 65536 crc32 99555231 )
+	rom ( name b08-12.bin size 65536 crc32 dc84e27d )
+	archive ( name "arkanoid_2_rev_of_doh" name "arkanoi2" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name arkretrn
+	description "Arkanoid Returns"
+	manufacturer "Taito"
+	year 1997
+	rom ( name e36.01 size 262144 crc32 54b9b2cd )
+	rom ( name e36.02 size 262144 crc32 694eda31 )
+	rom ( name e36.03 size 262144 crc32 1ea8558b )
+	rom ( name e36.04 size 2097152 crc32 2250959b )
+	rom ( name e36.05 size 524288 crc32 db18bce2 )
+	rom ( name e36.06 size 524288 crc32 110ab729 )
+	rom ( name e36.07 size 524288 crc32 266bf1c1 )
+	rom ( name e36.08 size 262144 crc32 aa699e1b )
+	rom ( name e36.09 size 262144 crc32 f16985e0 )
+	rom ( name e36.10 size 262144 crc32 c940dba1 )
+	rom ( name e36.11 size 262144 crc32 b50cfb92 )
+	rom ( name e36.12 size 262144 crc32 3bae39be )
+	rom ( name e36.13 size 262144 crc32 94448e82 )
+	archive ( name "arkanoid_returns" name "arkretrn" )
+	video ( screen raster x 320 y 232 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name armedf
+	description "Armed Formation"
+	manufacturer "Nichibutsu"
+	year 1988
+	rom ( name af_08.rom size 65536 crc32 d1d43600 )
+	rom ( name af_02.rom size 65536 crc32 214ef220 )
+	rom ( name af_03.rom size 65536 crc32 bbe1fe2d )
+	rom ( name af_04.rom size 65536 crc32 44d3af4f )
+	rom ( name af_05.rom size 65536 crc32 92076cab )
+	rom ( name af_06.rom size 65536 crc32 c5326603 )
+	rom ( name af_07.rom size 65536 crc32 cc8517f5 )
+	rom ( name af_01.rom size 65536 crc32 458e9542 )
+	rom ( name af_09.rom size 32768 crc32 7025e92d )
+	rom ( name af_10.rom size 65536 crc32 c5eacb87 )
+	rom ( name af_11.rom size 131072 crc32 b46c473c )
+	rom ( name af_12.rom size 131072 crc32 23cb6bfe )
+	rom ( name af_13.rom size 65536 crc32 136a58a3 )
+	rom ( name af_14.rom size 65536 crc32 8c5dc5a7 )
+	archive ( name "armed_formation" name "armedf" )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name ashura
+	description "Ashura Blaster"
+	manufacturer "Taito"
+	year 1990
+	rom ( name ashura0.bin size 524288 crc32 426606ba )
+	rom ( name ashura1.bin size 524288 crc32 105722ae )
+	rom ( name ashura2.bin size 524288 crc32 db953f37 )
+	rom ( name ashura37.bin size 65536 crc32 cb26fce1 )
+	rom ( name c4307-1.50 size 131072 crc32 d5ceb20f )
+	rom ( name c4305-1.31 size 131072 crc32 a6f3bb37 )
+	rom ( name c4306-1.49 size 131072 crc32 0f331802 )
+	rom ( name c4304-1.30 size 131072 crc32 e06a2414 )
+	archive ( name "ashura_blaster" name "ashura" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name astyanax
+	description "Astyanax"
+	manufacturer "Jaleco"
+	year 1989
+	rom ( name astyan3.bin size 65536 crc32 097b53a6 )
+	rom ( name astyan4.bin size 65536 crc32 1e1cbdb2 )
+	rom ( name astyan6.bin size 65536 crc32 eecd4b16 )
+	rom ( name astyan5.bin size 65536 crc32 11c74045 )
+	rom ( name astyan7.bin size 131072 crc32 319418cc )
+	rom ( name astyan8.bin size 131072 crc32 5e5d2a22 )
+	rom ( name astyan9.bin size 131072 crc32 a10b3f17 )
+	rom ( name astyan10.bin size 131072 crc32 4f704e7a )
+	rom ( name astyan1.bin size 131072 crc32 1a1ad3cf )
+	rom ( name astyan2.bin size 131072 crc32 1b598dcc )
+	rom ( name astyan19.bin size 131072 crc32 98158623 )
+	rom ( name astyan20.bin size 131072 crc32 c1ad9aa0 )
+	rom ( name astyan21.bin size 131072 crc32 0bf498ee )
+	rom ( name astyan22.bin size 131072 crc32 5f04d9b1 )
+	rom ( name astyan23.bin size 131072 crc32 7bd4d1e7 )
+	rom ( name astyan15.bin size 131072 crc32 0d316615 )
+	rom ( name astyan16.bin size 131072 crc32 ba96e8d9 )
+	rom ( name astyan17.bin size 131072 crc32 be60ba06 )
+	rom ( name astyan18.bin size 131072 crc32 3668da3d )
+	rom ( name astyan14.bin size 131072 crc32 29a09ec2 )
+	rom ( name astyan11.bin size 131072 crc32 5593fec9 )
+	rom ( name astyan12.bin size 131072 crc32 e8b313ec )
+	rom ( name astyan13.bin size 131072 crc32 5f3496c6 )
+	archive ( name "astyanax" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name asuka
+	description "Asuka and Asuka"
+	manufacturer "Taito"
+	year 1988
+	rom ( name asuka_02.rom size 524288 crc32 f5018cd3 )
+	rom ( name asuka_01.rom size 524288 crc32 89f32c94 )
+	rom ( name asuka_03.rom size 524288 crc32 d3a59b10 )
+	rom ( name asuka_06.rom size 65536 crc32 f517e64d )
+	rom ( name asuka_07.rom size 65536 crc32 c113acc8 )
+	rom ( name asuka_10.rom size 65536 crc32 387aaf40 )
+	rom ( name asuka_11.rom size 65536 crc32 c378b508 )
+	rom ( name asuka_12.rom size 131072 crc32 271eeee9 )
+	rom ( name asuka_13.rom size 131072 crc32 855efb3e )
+	archive ( name "asuka_and_asuka" name "asuka" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name robokid
+	description "Atomic Robo Kid"
+	manufacturer "UPL"
+	year 1988
+	rom ( name robokid.12a size 65536 crc32 e64d1c10 )
+	rom ( name robokid.12c size 65536 crc32 0ab45f94 )
+	rom ( name robokid.14a size 65536 crc32 8f9371e4 )
+	rom ( name robokid.14c size 65536 crc32 029bbd4a )
+	rom ( name robokid.15a size 65536 crc32 469204e7 )
+	rom ( name robokid.15c size 65536 crc32 7de67ebb )
+	rom ( name robokid.15d size 65536 crc32 cd632a4d )
+	rom ( name robokid.15f size 65536 crc32 ba61f5ab )
+	rom ( name robokid.16a size 65536 crc32 4e340815 )
+	rom ( name robokid.16c size 65536 crc32 53c0e582 )
+	rom ( name robokid.16d size 65536 crc32 18d92b2b )
+	rom ( name robokid.16f size 65536 crc32 d9b399ce )
+	rom ( name robokid.17a size 65536 crc32 f0863106 )
+	rom ( name robokid.17c size 65536 crc32 0cae5a1e )
+	rom ( name robokid.17d size 65536 crc32 2fa29b99 )
+	rom ( name robokid.17f size 65536 crc32 afe432b9 )
+	rom ( name robokid.18a size 65536 crc32 fdff7441 )
+	rom ( name robokid.18c size 65536 crc32 56ac7c8a )
+	rom ( name robokid.18d size 65536 crc32 ae15ce02 )
+	rom ( name robokid.18f size 65536 crc32 a0aa2a84 )
+	rom ( name robokid.19c size 65536 crc32 02220421 )
+	rom ( name robokid.19d size 65536 crc32 784b089e )
+	rom ( name robokid.19f size 65536 crc32 0f9071c6 )
+	rom ( name robokid.20c size 65536 crc32 02d59bc2 )
+	rom ( name robokid.20d size 65536 crc32 b0b395ed )
+	rom ( name robokid.b9 size 32768 crc32 fac59c3f )
+	rom ( name robokid.k7 size 65536 crc32 f490a2e9 )
+	rom ( name robokid1.18j size 65536 crc32 378c21fc )
+	rom ( name robokid2.18k size 65536 crc32 ddef8c5a )
+	rom ( name robokid3.15k size 65536 crc32 05295ec3 )
+	rom ( name robokid4.12k size 65536 crc32 3bc3977f )
+	archive ( name "atomic_robo_kid" name "robokid" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 192 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name avspirit
+	description "Avenging Spirit"
+	manufacturer "Jaleco"
+	year 1991
+	rom ( name spirit09.rom size 131072 crc32 0c37edf7 )
+	rom ( name spirit02.rom size 131072 crc32 30213390 )
+	rom ( name spirit05.rom size 262144 crc32 b26a341a )
+	rom ( name spirit06.rom size 262144 crc32 609f71fe )
+	rom ( name spirit01.rom size 131072 crc32 d02ec045 )
+	rom ( name spirit10.rom size 524288 crc32 2b1180b3 )
+	rom ( name spirit11.rom size 524288 crc32 7896f6b0 )
+	rom ( name spirit12.rom size 524288 crc32 728335d4 )
+	rom ( name spirit13.rom size 262144 crc32 05bc04d9 )
+	rom ( name spirit14.rom size 262144 crc32 13be9979 )
+	archive ( name "avenging_spirit" name "avspirit" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name balloonb
+	description "Balloon Brothers"
+	manufacturer "Seta"
+	year 1992
+	rom ( name 0 size 131072 crc32 1cc584e5 )
+	rom ( name 1 size 131072 crc32 8196d624 )
+	rom ( name 2 size 131072 crc32 bb441717 )
+	rom ( name 3 size 131072 crc32 ec3e0537 )
+	rom ( name 10a size 131072 crc32 4af0e858 )
+	rom ( name 5a size 131072 crc32 0b983a69 )
+	rom ( name 8d size 65536 crc32 d1c515af )
+	rom ( name east-10 size 524288 crc32 ca0ac419 )
+	rom ( name east-11 size 524288 crc32 92111f96 )
+	archive ( name "balloon_brothers" name "balloon_bros" name "balloonb" )
+	input ( dipswitches 2 )
+	video ( screen raster x 356 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name bshippal
+	description "Bio Ship Paladin"
+	manufacturer "UPL"
+	year 1990
+	rom ( name 1 size 131072 crc32 820ef303 )
+	rom ( name 2 size 131072 crc32 acf56afb )
+	rom ( name 6 size 65536 crc32 5f39a980 )
+	rom ( name 7 size 65536 crc32 2f3f5a10 )
+	rom ( name 8 size 65536 crc32 75a46fea )
+	rom ( name 9 size 65536 crc32 d91448ee )
+	rom ( name sbs-g.01 size 524288 crc32 21302e78 )
+	rom ( name sbs-g.02 size 524288 crc32 f31eb668 )
+	rom ( name sbs-g.03 size 524288 crc32 60e00d7b )
+	rom ( name sbs-g.04 size 524288 crc32 7c74cc4e )
+	rom ( name sbs-g.05 size 524288 crc32 f0a782e3 )
+	archive ( name "bio_ship_paladin" name "bshippal" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name bloodbro
+	description "Blood Bros"
+	manufacturer "Tad"
+	year 1990
+	rom ( name bb_03.bin size 131072 crc32 18d3c460 )
+	rom ( name bb_01.bin size 131072 crc32 2d7e0fdf )
+	rom ( name bb_02.bin size 131072 crc32 c0fdc3e4 )
+	rom ( name bb_04.bin size 131072 crc32 fd951c2c )
+	rom ( name bb_05.bin size 65536 crc32 04ba6d19 )
+	rom ( name bb_06.bin size 65536 crc32 7092e35b )
+	rom ( name bb_07.bin size 65536 crc32 411b94e8 )
+	rom ( name bb_08.bin size 131072 crc32 deb1b975 )
+	rom ( name bloodb.bk size 1048576 crc32 1aa87ee6 )
+	rom ( name bloodb.obj size 1048576 crc32 d27c3952 )
+	archive ( name "blood_bros" name "bloodbro" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name bjt
+	description "Bomb Jack Twin"
+	manufacturer "NMK"
+	year 1992
+	rom ( name bjt.100 size 1048576 crc32 bb06245d )
+	rom ( name bjt.127 size 1048576 crc32 8da67808 )
+	rom ( name bjt.130 size 1048576 crc32 372d46dd )
+	rom ( name bjt.32 size 1048576 crc32 8a4f26d0 )
+	rom ( name bjt.35 size 65536 crc32 aa13df7c )
+	rom ( name bjt.76 size 262144 crc32 7cd4e72a )
+	rom ( name bjt.77 size 262144 crc32 7830a465 )
+	archive ( name "bomb_jack_twin" name "bjt" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 384 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name bonzeadv
+	description "Bonze's Adventure"
+	manufacturer "Taito"
+	year 1988
+	rom ( name b41-09-1 size 65536 crc32 af821fbc )
+	rom ( name b41-10 size 65536 crc32 4ca94d77 )
+	rom ( name b41-11-1 size 65536 crc32 823fff00 )
+	rom ( name b41-15 size 65536 crc32 aed7a0d0 )
+	rom ( name b41-13 size 65536 crc32 9e464254 )
+	rom ( name b41-01 size 524288 crc32 5d072fa4 )
+	rom ( name b41-02 size 524288 crc32 29f205d9 )
+	rom ( name b41-03 size 524288 crc32 736d35d0 )
+	rom ( name b41-04 size 524288 crc32 c668638f )
+	archive ( name "bonze_adventure" name "bonzeadv" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name bublbobl
+	description "Bubble Bobble"
+	manufacturer "Taito"
+	year 1984
+	rom ( name a78_05.bin size 65536 crc32 53f4bc6e )
+	rom ( name a78_06.bin size 32768 crc32 32c8305b )
+	rom ( name a78_07.bin size 32768 crc32 4f9a26e8 )
+	rom ( name a78_08.bin size 32768 crc32 ae11a07b )
+	rom ( name a78_09.bin size 32768 crc32 20358c22 )
+	rom ( name a78_10.bin size 32768 crc32 930168a9 )
+	rom ( name a78_11.bin size 32768 crc32 9773e512 )
+	rom ( name a78_12.bin size 32768 crc32 d045549b )
+	rom ( name a78_13.bin size 32768 crc32 d0af35c5 )
+	rom ( name a78_14.bin size 32768 crc32 7b5369a8 )
+	rom ( name a78_15.bin size 32768 crc32 6b61a413 )
+	rom ( name a78_16.bin size 32768 crc32 b5492d97 )
+	rom ( name a78_17.bin size 32768 crc32 d69762d5 )
+	rom ( name a78_18.bin size 32768 crc32 9f243b68 )
+	rom ( name a78_19.bin size 32768 crc32 66e9438c )
+	rom ( name a78_20.bin size 32768 crc32 9ef863ad )
+	rom ( name 68705.bin size 2048 crc32 78caa635 )
+	archive ( name "bubble_bobble" name "bublbobl" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name bubblem
+	description "Bubble Memories"
+	manufacturer "Taito"
+	year 1995
+	rom ( name e21-07.rom size 1048576 crc32 7789bf7c )
+	rom ( name e21-02.rom size 2097152 crc32 b7cb9232 )
+	rom ( name e21-03.rom size 2097152 crc32 54c5f83d )
+	rom ( name e21-04.rom size 2097152 crc32 e5af2a2d )
+	rom ( name e21-05.rom size 1048576 crc32 07eab58f )
+	rom ( name e21-06.rom size 1048576 crc32 997fc0d7 )
+	rom ( name e21-01.rom size 2097152 crc32 a11f2f99 )
+	rom ( name e21-12.rom size 262144 crc32 34093de1 )
+	rom ( name e21-13.rom size 262144 crc32 9e9ec437 )
+	rom ( name e21-18.rom size 524288 crc32 d14e313a )
+	rom ( name e21-19.rom size 524288 crc32 be0b907d )
+	rom ( name e21-20.rom size 524288 crc32 7727c673 )
+	rom ( name e21-21.rom size 524288 crc32 cac4169c )
+	archive ( name "bubble_memories" name "bubblem" )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name bubsymph
+	description "Bubble Symphony"
+	manufacturer "Taito"
+	year 1994
+	rom ( name d90.01 size 1048576 crc32 8aedb9e5 )
+	rom ( name d90.02 size 1048576 crc32 5ab04ca2 )
+	rom ( name d90.03 size 1048576 crc32 6fa894a1 )
+	rom ( name d90.04 size 2097152 crc32 feee5fda )
+	rom ( name d90.05 size 2097152 crc32 c192331f )
+	rom ( name d90.06 size 1048576 crc32 166a72b8 )
+	rom ( name d90.07 size 1048576 crc32 b436b42d )
+	rom ( name d90.08 size 1048576 crc32 25a4fb2c )
+	rom ( name d90.09 size 262144 crc32 3f2090b7 )
+	rom ( name d90.10 size 262144 crc32 8e957d3d )
+	rom ( name d90.11 size 262144 crc32 edfdbb7f )
+	rom ( name d90.12 size 262144 crc32 9e523996 )
+	rom ( name d90.13 size 262144 crc32 6762bd90 )
+	rom ( name d90.14 size 262144 crc32 8e33357e )
+	archive ( name "bubble_symphony" name "bubsymph" )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name cabal
+	description "Cabal"
+	manufacturer "Tad"
+	year 1988
+	rom ( name cabal_01.bin size 65536 crc32 55c44764 )
+	rom ( name cabal_02.bin size 65536 crc32 0e1ec30e )
+	rom ( name cabal_03.bin size 65536 crc32 7065e840 )
+	rom ( name cabal_04.bin size 65536 crc32 34d3cac8 )
+	rom ( name cabal_05.bin size 65536 crc32 4e49c28e )
+	rom ( name cabal_08.bin size 65536 crc32 702735c9 )
+	rom ( name cabal_07.bin size 65536 crc32 581a50c1 )
+	rom ( name cabal_06.bin size 65536 crc32 6a0e739d )
+	rom ( name cabal_09.bin size 65536 crc32 4ffa7fe3 )
+	rom ( name cabal_10.bin size 65536 crc32 958789b6 )
+	rom ( name cabal_11.bin size 65536 crc32 d308a543 )
+	rom ( name cabal_12.bin size 65536 crc32 543fcb37 )
+	rom ( name cabal_13.bin size 65536 crc32 d28d921e )
+	rom ( name cabal_14.bin size 65536 crc32 420b0801 )
+	rom ( name cabal_15.bin size 65536 crc32 1023319b )
+	rom ( name cabal_16.bin size 65536 crc32 77bc7a60 )
+	rom ( name cabal_17.bin size 65536 crc32 3b6d2b09 )
+	rom ( name cabal_18.bin size 65536 crc32 0bc50075 )
+	rom ( name cabal_19.bin size 65536 crc32 67e4fe47 )
+	rom ( name cabal_21.bin size 65536 crc32 96d5e8af )
+	rom ( name cabal_22.bin size 65536 crc32 78c4af27 )
+	rom ( name cabal_23.bin size 65536 crc32 d763a47c )
+	rom ( name cabal_24.bin size 65536 crc32 00abbe0c )
+	rom ( name cabal_20.bin size 32768 crc32 189033fd )
+	archive ( name "cabal" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name cadash
+	description "Cadash"
+	manufacturer "Taito"
+	year 1989
+	rom ( name c21-01 size 524288 crc32 1ff6f39c )
+	rom ( name c21-02 size 524288 crc32 205883b9 )
+	rom ( name c21-07 size 32768 crc32 f02292bd )
+	rom ( name c21-08 size 65536 crc32 dca495a0 )
+	rom ( name c21-13 size 131072 crc32 6b9e0ee9 )
+	rom ( name c21-14 size 131072 crc32 5daf13fb )
+	rom ( name c21-16 size 131072 crc32 cbaa2e75 )
+	rom ( name c21-17 size 131072 crc32 bf9a578a )
+	archive ( name "cadash" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name cadashit
+	description "Cadash Italian"
+	manufacturer "Taito"
+	year 1989
+	romof cadash
+	rom ( name c21-01 merge c21-01 size 524288 crc32 1ff6f39c )
+	rom ( name c21-02 merge c21-02 size 524288 crc32 205883b9 )
+	rom ( name c21-07 merge c21-07 size 32768 crc32 f02292bd )
+	rom ( name c21-08 merge c21-08 size 65536 crc32 dca495a0 )
+	rom ( name c21-13 size 131072 crc32 c9cf6e30 )
+	rom ( name c21-14 size 131072 crc32 d1d9e613 )
+	rom ( name c21-16 size 131072 crc32 142256ef )
+	rom ( name c21-17 size 131072 crc32 641fc9dd )
+	archive ( name "cadash_italian" name "cadashit" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name cadashj
+	description "Cadash Japanese"
+	manufacturer "Taito"
+	year 1989
+	romof cadash
+	rom ( name c21-01 merge c21-01 size 524288 crc32 1ff6f39c )
+	rom ( name c21-02 merge c21-02 size 524288 crc32 205883b9 )
+	rom ( name c21-07 merge c21-07 size 32768 crc32 f02292bd )
+	rom ( name c21-08 merge c21-08 size 65536 crc32 dca495a0 )
+	rom ( name c21-03-1.10 size 131072 crc32 c54888ed )
+	rom ( name c21-04-1.11 size 131072 crc32 cc22ebe5 )
+	rom ( name c21-05-1.14 size 131072 crc32 834018d2 )
+	rom ( name c21-06-1.15 size 131072 crc32 26e03304 )
+	archive ( name "cadash_japanese" name "cadashj" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name cameltry
+	description "Camel Try"
+	manufacturer "Taito"
+	year 1989
+	rom ( name c38-01.bin size 524288 crc32 c170ff36 )
+	rom ( name c38-02.bin size 131072 crc32 1a11714b )
+	rom ( name c38-03.bin size 131072 crc32 59fa59a7 )
+	rom ( name c38-08.bin size 65536 crc32 7ff78873 )
+	rom ( name c38-09.bin size 131072 crc32 2ae01120 )
+	rom ( name c38-10.bin size 131072 crc32 48d8ff56 )
+	archive ( name "camel_try" name "cameltry" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name champwr
+	description "Champion Wrestler"
+	manufacturer "Taito"
+	year 1989
+	rom ( name c01-08.rom size 65536 crc32 810efff8 )
+	rom ( name c01-02.rom size 524288 crc32 1e0476c4 )
+	rom ( name c01-03.rom size 524288 crc32 2a142dbc )
+	rom ( name c01-04.rom size 131072 crc32 358bd076 )
+	rom ( name c01-05.rom size 131072 crc32 22efad4a )
+	rom ( name c01-07.rom size 131072 crc32 5117c98f )
+	rom ( name c01-01.rom size 524288 crc32 f302e6e9 )
+	rom ( name c01-13.rom size 131072 crc32 7ef47525 )
+	archive ( name "champion_wrestler" name "champwr" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name chasehq
+	description "Chase HQ"
+	manufacturer "Taito"
+	year 1988
+	rom ( name b52-130.rom size 131072 crc32 4e7beb46 )
+	rom ( name b52-m29.rom size 524288 crc32 8366d27c )
+	rom ( name b52-m116.rom size 524288 crc32 ad46983c )
+	rom ( name b52-m115.rom size 524288 crc32 4e117e93 )
+	rom ( name b52-m114.rom size 524288 crc32 3a73d6b1 )
+	rom ( name b52-m113.rom size 524288 crc32 2c6a3a05 )
+	rom ( name b52-133.rom size 65536 crc32 12232f95 )
+	rom ( name b52-132.rom size 65536 crc32 a2f54789 )
+	rom ( name b52-m28.rom size 524288 crc32 963bc82b )
+	rom ( name b52-136.rom size 131072 crc32 2f414df0 )
+	rom ( name b52-131.rom size 131072 crc32 aa945d83 )
+	rom ( name b52-129.rom size 131072 crc32 0eaebc08 )
+	rom ( name b52-137.rom size 65536 crc32 37abb74a )
+	rom ( name b52-m30.rom size 524288 crc32 1b8cc647 )
+	rom ( name b52-m34.rom size 524288 crc32 7d8dce36 )
+	rom ( name b52-m31.rom size 524288 crc32 f1998e20 )
+	rom ( name b52-m35.rom size 524288 crc32 78eeec0d )
+	rom ( name b52-m32.rom size 524288 crc32 8620780c )
+	rom ( name b52-m36.rom size 524288 crc32 61e89e91 )
+	rom ( name b52-m33.rom size 524288 crc32 e6f4b8c4 )
+	rom ( name b52-m37.rom size 524288 crc32 f02e47b9 )
+	rom ( name b52-51.rom size 65536 crc32 30cc1f79 )
+	rom ( name b52-50.rom size 65536 crc32 c189781c )
+	rom ( name b52-m38.fix size 524288 crc32 5b5bf7f6 )
+	archive ( name "chase_hq" name "chasehq" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name chasehqj
+	description "Chase HQ Japanese"
+	manufacturer "Taito"
+	year 1988
+	romof chasehq
+	rom ( name b52-29 merge b52-m29.rom size 524288 crc32 8366d27c )
+	rom ( name b52-129 merge b52-129.rom size 131072 crc32 0eaebc08 )
+	rom ( name b52-131 merge b52-131.rom size 131072 crc32 aa945d83 )
+	rom ( name b52-132 merge b52-132.rom size 65536 crc32 a2f54789 )
+	rom ( name b52-133 merge b52-133.rom size 65536 crc32 12232f95 )
+	rom ( name b52-134 size 65536 crc32 91faac7f )
+	rom ( name b52-139 size 131072 crc32 997f732e )
+	rom ( name b52-140 size 131072 crc32 c1298a4b )
+	rom ( name b52-28 merge b52-m28.rom size 524288 crc32 963bc82b )
+	rom ( name b52-30 merge b52-m30.rom size 524288 crc32 1b8cc647 )
+	rom ( name b52-31 merge b52-m31.rom size 524288 crc32 f1998e20 )
+	rom ( name b52-32 merge b52-m32.rom size 524288 crc32 8620780c )
+	rom ( name b52-33 merge b52-m33.rom size 524288 crc32 e6f4b8c4 )
+	rom ( name b52-34 merge b52-m34.rom size 524288 crc32 7d8dce36 )
+	rom ( name b52-35 merge b52-m35.rom size 524288 crc32 78eeec0d )
+	rom ( name b52-36 merge b52-m36.rom size 524288 crc32 61e89e91 )
+	rom ( name b52-37 merge b52-m37.rom size 524288 crc32 f02e47b9 )
+	rom ( name b52-38 merge b52-m38.fix size 524288 crc32 5b5bf7f6 )
+	rom ( name b52-39 size 524288 crc32 ac9cbbd3 )
+	rom ( name b52-40 size 524288 crc32 f0551055 )
+	rom ( name b52-41 size 524288 crc32 8204880c )
+	rom ( name b52-42 size 524288 crc32 6e617df1 )
+	rom ( name b52-49 size 8192 crc32 60dd2ed1 )
+	rom ( name b52-50 merge b52-50.rom size 65536 crc32 c189781c )
+	rom ( name b52-51 merge b52-51.rom size 65536 crc32 30cc1f79 )
+	archive ( name "chase_hq_japanese" name "chasehqj" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name cleofort
+	description "Cleopatra's Fortune"
+	manufacturer "Taito"
+	year 1996
+	rom ( name e28-01.bin size 524288 crc32 4440e659 )
+	rom ( name e28-02.bin size 524288 crc32 b20d47cb )
+	rom ( name e28-03.bin size 2097152 crc32 15c7989d )
+	rom ( name e28-04.bin size 1048576 crc32 57aef029 )
+	rom ( name e28-05.bin size 1048576 crc32 2870dbbc )
+	rom ( name e28-06.bin size 1048576 crc32 21d0c454 )
+	rom ( name e28-07.bin size 524288 crc32 a507797b )
+	rom ( name e28-08.bin size 524288 crc32 7564f199 )
+	rom ( name e28-09.bin size 524288 crc32 1c48a1f9 )
+	rom ( name e28-10.bin size 524288 crc32 013fbc39 )
+	rom ( name e28-11.bin size 131072 crc32 01a06950 )
+	rom ( name e28-12.bin size 131072 crc32 dc19260f )
+	archive ( name "cleopatras_fortune" name "cleofort" )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name ctribebl
+	description "Combatribes"
+	manufacturer "Bootleg"
+	year 1990
+	rom ( name ct_mr2.rom size 524288 crc32 8c796707 )
+	rom ( name ct_ep2.rom size 65536 crc32 8c2c6dbd )
+	rom ( name ct_ep3.rom size 131072 crc32 2ece8681 )
+	rom ( name ct_ep4.rom size 32768 crc32 4346de13 )
+	rom ( name ct_ep5.rom size 65536 crc32 972faddb )
+	rom ( name ct_ep6.rom size 65536 crc32 eb3ab374 )
+	rom ( name ct_ep7.rom size 65536 crc32 c602ac97 )
+	rom ( name ct_ep8.rom size 65536 crc32 4da1d8e5 )
+	rom ( name ct_mr0.rom size 524288 crc32 ba73c49e )
+	rom ( name ct_mr001.rom size 131072 crc32 753a4f53 )
+	rom ( name ct_mr002.rom size 131072 crc32 a69ab4f3 )
+	rom ( name ct_mr003.rom size 131072 crc32 2719d7ce )
+	rom ( name ct_mr004.rom size 131072 crc32 59e01fe1 )
+	rom ( name ct_mr1.rom size 524288 crc32 1c9badbd )
+	rom ( name ct_ep1.rom size 131072 crc32 9cfa997f )
+	rom ( name ct_mr3.rom size 524288 crc32 1ac2a461 )
+	rom ( name ct_mr4.rom size 262144 crc32 b84fda09 )
+	rom ( name ct_mr5.rom size 262144 crc32 cef0a821 )
+	rom ( name ct_mr6.rom size 262144 crc32 617530fc )
+	rom ( name ct_mr7.rom size 262144 crc32 a8b773f1 )
+	rom ( name ct_mr8.rom size 262144 crc32 9963a6be )
+	archive ( name "combatribes" name "ctribebl" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name crimec
+	description "Crime City"
+	manufacturer "Taito"
+	year 1989
+	rom ( name b99-01.ch0 size 524288 crc32 a19e373a )
+	rom ( name b99-02.ch1 size 524288 crc32 2a5d4a26 )
+	rom ( name b99-03.roa size 524288 crc32 dda10df7 )
+	rom ( name b99-05 size 131072 crc32 ff7f9a9d )
+	rom ( name b99-06 size 131072 crc32 1f26aa92 )
+	rom ( name b99-07 size 131072 crc32 26e886e6 )
+	rom ( name b99-08 size 65536 crc32 26135451 )
+	rom ( name b99_14-2 size 131072 crc32 06cf8441 )
+	archive ( name "crime_city" name "crimec" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name cybattlr
+	description "Cybattler"
+	manufacturer "Jaleco"
+	year 1993
+	rom ( name cb_m03.rom size 524288 crc32 4cd49f58 )
+	rom ( name cb_m01.rom size 524288 crc32 1109337f )
+	rom ( name cb_m02.rom size 524288 crc32 882825db )
+	rom ( name cb_m04.rom size 524288 crc32 0c91798e )
+	rom ( name cb_02.rom size 262144 crc32 2ed14c50 )
+	rom ( name cb_03.rom size 262144 crc32 bee20587 )
+	rom ( name cb_07.rom size 65536 crc32 85d219d7 )
+	rom ( name cb_08.rom size 65536 crc32 bf7b3558 )
+	rom ( name cb_09.rom size 131072 crc32 37b1f195 )
+	rom ( name cb_10.rom size 262144 crc32 8af95eed )
+	rom ( name cb_11.rom size 262144 crc32 59d62d1f )
+	archive ( name "cybattler" name "cybattlr" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name darius
+	description "Darius"
+	manufacturer "Taito"
+	year 1986
+	rom ( name a96_28-1.152 size 65536 crc32 fb34d400 )
+	rom ( name a96_29-1.185 size 65536 crc32 75486f62 )
+	rom ( name a96_30.154 size 65536 crc32 9eb5e127 )
+	rom ( name a96_31.187 size 65536 crc32 e9bb5d89 )
+	rom ( name a96_32-1.157 size 65536 crc32 d9719de8 )
+	rom ( name a96_33-1.190 size 65536 crc32 ff186048 )
+	rom ( name a96_34-1.158 size 65536 crc32 ca3b2573 )
+	rom ( name a96_35-1.191 size 65536 crc32 b3280193 )
+	rom ( name a96_36.175 size 65536 crc32 af598141 )
+	rom ( name a96_37.196 size 65536 crc32 b48137c8 )
+	rom ( name a96_38.176 size 65536 crc32 e4f3e3a7 )
+	rom ( name a96_39.197 size 65536 crc32 ea30920f )
+	rom ( name a96_40.177 size 65536 crc32 b699a51e )
+	rom ( name a96_41.198 size 65536 crc32 97128a3a )
+	rom ( name a96_42.178 size 65536 crc32 7f55ee0f )
+	rom ( name a96_43.199 size 65536 crc32 c7cad469 )
+	rom ( name a96_44.179 size 65536 crc32 bbc18878 )
+	rom ( name a96_45.200 size 65536 crc32 616cdd8b )
+	rom ( name a96_46.180 size 65536 crc32 fec35418 )
+	rom ( name a96_47.201 size 65536 crc32 8df9286a )
+	rom ( name a96_48.24 size 65536 crc32 39c9b3aa )
+	rom ( name a96_49.25 size 65536 crc32 37a7d88a )
+	rom ( name a96_50.26 size 65536 crc32 75d738e4 )
+	rom ( name a96_51.47 size 65536 crc32 1bf8f0d3 )
+	rom ( name a96_52.48 size 65536 crc32 2d9b2128 )
+	rom ( name a96_53.49 size 65536 crc32 0173484c )
+	rom ( name a96_54.143 size 16384 crc32 51c02ae2 )
+	rom ( name a96_55.144 size 16384 crc32 771e4d98 )
+	rom ( name a96_56.18 size 65536 crc32 292ef55c )
+	rom ( name a96_57.33 size 65536 crc32 33ceb730 )
+	archive ( name "darius" )
+	input ( dipswitches 2 )
+	video ( screen raster x 864 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name darius2
+	description "Darius 2"
+	manufacturer "Taito"
+	year 1989
+	rom ( name c07-01 size 524288 crc32 3cf0f050 )
+	rom ( name c07-02 size 524288 crc32 75d16d4b )
+	rom ( name c07-03 size 524288 crc32 189bafce )
+	rom ( name c07-04 size 524288 crc32 50421e81 )
+	rom ( name c07-10 size 524288 crc32 4bbe0ed9 )
+	rom ( name c07-11 size 524288 crc32 3c815699 )
+	rom ( name c07-12 size 524288 crc32 e0b71258 )
+	rom ( name c07-24 size 131072 crc32 486c9c20 )
+	rom ( name c07-25 size 131072 crc32 059f40ce )
+	rom ( name c07-26 size 131072 crc32 1f411242 )
+	rom ( name c07-27 size 131072 crc32 0a6f7b6c )
+	rom ( name c07-28 size 131072 crc32 da304bc5 )
+	rom ( name c07-29-1 size 65536 crc32 48de567f )
+	rom ( name c07-30-1 size 65536 crc32 6122e400 )
+	rom ( name c07-31-1 size 65536 crc32 8279d2f8 )
+	rom ( name c07-32-1 size 65536 crc32 216c8f6a )
+	rom ( name c07-33-1 size 65536 crc32 2da03a3f )
+	rom ( name c07-34-1 size 65536 crc32 296984b8 )
+	rom ( name c07-35-1 size 65536 crc32 dd8c4723 )
+	rom ( name c07-36-1 size 65536 crc32 02cf2b1c )
+	rom ( name c07-37-1 size 65536 crc32 8b7d461f )
+	rom ( name c07-38-1 size 65536 crc32 46afb85c )
+	archive ( name "darius_2" name "darius2" )
+	input ( dipswitches 2 )
+	video ( screen raster x 864 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name darius2d
+	description "Darius 2 Dual Screen"
+	manufacturer "Taito"
+	year 1989
+	romof darius2
+	rom ( name c07-03.bin merge c07-03 size 524288 crc32 189bafce )
+	rom ( name c07-04.bin merge c07-04 size 524288 crc32 50421e81 )
+	rom ( name c07-05.bin size 262144 crc32 e10715f4 )
+	rom ( name c07-06.bin size 262144 crc32 7ca7fc52 )
+	rom ( name c07-07.bin size 262144 crc32 632b0a85 )
+	rom ( name c07-08.bin size 262144 crc32 1de7f1d7 )
+	rom ( name c07-09.bin size 524288 crc32 cc69c2ce )
+	rom ( name c07-10.bin merge c07-10 size 524288 crc32 4bbe0ed9 )
+	rom ( name c07-11.bin merge c07-11 size 524288 crc32 3c815699 )
+	rom ( name c07-12.bin merge c07-12 size 524288 crc32 e0b71258 )
+	rom ( name c07-17.bin size 131072 crc32 ae16c905 )
+	rom ( name c07-18-1.bin size 131072 crc32 c552e42f )
+	rom ( name c07-19-1.bin size 131072 crc32 1f9a4f83 )
+	rom ( name c07-20-1.bin size 131072 crc32 48b0804a )
+	rom ( name c07-21-1.bin size 131072 crc32 b491b0ca )
+	archive ( name "darius_2_dual_screen" name "darius2d" )
+	input ( dipswitches 2 )
+	video ( screen raster x 640 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name dariusex
+	description "Darius Extra"
+	manufacturer "Taito"
+	year 1986
+	romof darius
+	rom ( name darext68.bin size 65536 crc32 ed721127 )
+	rom ( name darext67.bin size 65536 crc32 b99aea8c )
+	rom ( name darext69.bin merge a96_30.154 size 65536 crc32 9eb5e127 )
+	rom ( name darext70.bin size 65536 crc32 54590b31 )
+	rom ( name darext71.bin size 65536 crc32 65dd0403 )
+	rom ( name darext72.bin size 65536 crc32 248ca2cc )
+	rom ( name darext73.bin size 65536 crc32 27036a4d )
+	rom ( name darext74.bin size 65536 crc32 0ea31f60 )
+	rom ( name a96_36.175 merge a96_36.175 size 65536 crc32 af598141 )
+	rom ( name a96_37.196 merge a96_37.196 size 65536 crc32 b48137c8 )
+	rom ( name a96_38.176 merge a96_38.176 size 65536 crc32 e4f3e3a7 )
+	rom ( name a96_39.197 merge a96_39.197 size 65536 crc32 ea30920f )
+	rom ( name a96_40.177 merge a96_40.177 size 65536 crc32 b699a51e )
+	rom ( name a96_41.198 merge a96_41.198 size 65536 crc32 97128a3a )
+	rom ( name a96_42.178 merge a96_42.178 size 65536 crc32 7f55ee0f )
+	rom ( name a96_43.199 merge a96_43.199 size 65536 crc32 c7cad469 )
+	rom ( name a96_44.179 merge a96_44.179 size 65536 crc32 bbc18878 )
+	rom ( name a96_45.200 merge a96_45.200 size 65536 crc32 616cdd8b )
+	rom ( name a96_46.180 merge a96_46.180 size 65536 crc32 fec35418 )
+	rom ( name a96_47.201 merge a96_47.201 size 65536 crc32 8df9286a )
+	rom ( name a96_48.24 merge a96_48.24 size 65536 crc32 39c9b3aa )
+	rom ( name a96_49.25 merge a96_49.25 size 65536 crc32 37a7d88a )
+	rom ( name a96_50.26 merge a96_50.26 size 65536 crc32 75d738e4 )
+	rom ( name a96_51.47 merge a96_51.47 size 65536 crc32 1bf8f0d3 )
+	rom ( name a96_52.48 merge a96_52.48 size 65536 crc32 2d9b2128 )
+	rom ( name a96_53.49 merge a96_53.49 size 65536 crc32 0173484c )
+	rom ( name a96_54.143 merge a96_54.143 size 16384 crc32 51c02ae2 )
+	rom ( name a96_55.144 merge a96_55.144 size 16384 crc32 771e4d98 )
+	rom ( name a96_56.18 merge a96_56.18 size 65536 crc32 292ef55c )
+	rom ( name a96_57.33 merge a96_57.33 size 65536 crc32 33ceb730 )
+	archive ( name "darius_extra" name "dariusex" )
+	input ( dipswitches 2 )
+	video ( screen raster x 864 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name dariusg
+	description "Darius Gaiden"
+	manufacturer "Taito"
+	year 1994
+	rom ( name d87-01.bin size 2097152 crc32 3848a110 )
+	rom ( name d87-02.bin size 2097152 crc32 9250abae )
+	rom ( name d87-03.bin size 2097152 crc32 4be1666e )
+	rom ( name d87-04.bin size 2097152 crc32 2616002c )
+	rom ( name d87-05.bin size 2097152 crc32 4e5891a9 )
+	rom ( name d87-06.bin size 2097152 crc32 3b97a07c )
+	rom ( name d87-08.bin size 2097152 crc32 76d23602 )
+	rom ( name d87-09.bin size 524288 crc32 6170382d )
+	rom ( name d87-10.bin size 524288 crc32 4149f66f )
+	rom ( name d87-11.bin size 524288 crc32 f7bed18e )
+	rom ( name d87-12.bin size 524288 crc32 de78f328 )
+	rom ( name d87-13.bin size 262144 crc32 15b1fff4 )
+	rom ( name d87-14.bin size 262144 crc32 eecda29a )
+	rom ( name d87-17.bin size 2097152 crc32 e601d63e )
+	archive ( name "darius_gaiden" name "dariusg" )
+	video ( screen raster x 320 y 232 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name dinorex
+	description "Dino Rex"
+	manufacturer "Taito"
+	year 1992
+	rom ( name drex_06m.rom size 1048576 crc32 52f62835 )
+	rom ( name drex_02m.rom size 2097152 crc32 6c304403 )
+	rom ( name drex_03m.rom size 2097152 crc32 fc9cdab4 )
+	rom ( name drex_04m.rom size 1048576 crc32 3800506d )
+	rom ( name drex_05m.rom size 1048576 crc32 e2ec3b5d )
+	rom ( name drex_01m.rom size 2097152 crc32 d10e9c7d )
+	rom ( name drex_07m.rom size 1048576 crc32 28262816 )
+	rom ( name drex_08m.rom size 524288 crc32 377b8b7b )
+	rom ( name drex_12.rom size 65536 crc32 8292c7c1 )
+	rom ( name drex_14.rom size 524288 crc32 e6aafdac )
+	rom ( name drex_16.rom size 524288 crc32 cedc8537 )
+	archive ( name "dino_rex" name "dinorex" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name dondokod
+	description "Don Doko Don"
+	manufacturer "Taito"
+	year 1989
+	rom ( name b95-01.bin size 524288 crc32 51c176ce )
+	rom ( name b95-02.bin size 524288 crc32 67b4e979 )
+	rom ( name b95-03.bin size 524288 crc32 9b34acf4 )
+	rom ( name b95-04.bin size 524288 crc32 ac4c1716 )
+	rom ( name b95-08.bin size 65536 crc32 b5aa49e1 )
+	rom ( name b95-09.bin size 131072 crc32 d8c86d39 )
+	rom ( name b95-10.bin size 131072 crc32 a46e1f0b )
+	rom ( name b95-11-1.bin size 131072 crc32 dad40cd3 )
+	rom ( name b95-12.bin size 131072 crc32 d0fce87a )
+	rom ( name b95_03.bin size 524288 crc32 543aa0d1 )
+	archive ( name "don_doko_don" name "dondokod" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name doubled3
+	description "Double Dragon 3"
+	manufacturer "Technos"
+	year 1990
+	rom ( name dd3.01 size 131072 crc32 68321d8b )
+	rom ( name dd3.02 size 131072 crc32 38d9ae75 )
+	rom ( name dd3.03 size 131072 crc32 bc05763b )
+	rom ( name dd3.j8 size 262144 crc32 c28b53cd )
+	rom ( name dd3.3e size 131072 crc32 726c49b7 )
+	rom ( name dd3.3d size 131072 crc32 37a1c335 )
+	rom ( name dd3.3c size 131072 crc32 2bcfe63c )
+	rom ( name dd3.3b size 131072 crc32 b864cf17 )
+	rom ( name dd3.2e size 131072 crc32 8c71eb06 )
+	rom ( name dd3.2d size 131072 crc32 3e134be9 )
+	rom ( name dd3.2c size 131072 crc32 b4115ef0 )
+	rom ( name dd3.2b size 131072 crc32 4639333d )
+	rom ( name dd3.1e size 131072 crc32 04420cc8 )
+	rom ( name dd3.1d size 131072 crc32 33f97b2f )
+	rom ( name dd3.1c size 131072 crc32 0f9a8f2a )
+	rom ( name dd3.1b size 131072 crc32 15c91772 )
+	rom ( name dd3.0e size 131072 crc32 894734b3 )
+	rom ( name dd3.0d size 131072 crc32 cd504584 )
+	rom ( name dd3.0c size 131072 crc32 38e8a9ad )
+	rom ( name dd3.0b size 131072 crc32 80c1cb74 )
+	rom ( name dd3.e size 262144 crc32 9bf1538e )
+	rom ( name dd3.f size 262144 crc32 89d58d32 )
+	rom ( name dd3.g size 262144 crc32 9bf1538e )
+	rom ( name dd3.h size 262144 crc32 89d58d32 )
+	rom ( name dd3.a size 262144 crc32 0f74ea1c )
+	rom ( name dd3.b size 262144 crc32 8f671a62 )
+	rom ( name dd3.c size 262144 crc32 0f74ea1c )
+	rom ( name dd3.d size 262144 crc32 8f671a62 )
+	rom ( name dd3.0a size 65536 crc32 5a47e7a4 )
+	rom ( name dd3.1a size 65536 crc32 15e43d12 )
+	rom ( name dd3.2a size 65536 crc32 785d71b0 )
+	rom ( name dd3.3a size 65536 crc32 20d64bea )
+	rom ( name dd3.06 size 65536 crc32 1e974d9b )
+	rom ( name dd3.j7 size 262144 crc32 3af21dbe )
+	archive ( name "double_dragon_3" name "doubled3" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name driftout
+	description "Drift Out"
+	manufacturer "Visco"
+	year 1991
+	rom ( name do_50.rom size 65536 crc32 ffe10124 )
+	rom ( name do_46.rom size 524288 crc32 f960363e )
+	rom ( name do_45.rom size 524288 crc32 e3fe66b9 )
+	rom ( name do_obj.rom size 524288 crc32 5491f1c4 )
+	rom ( name do_piv.rom size 524288 crc32 a3fda55f )
+	rom ( name do_snd.rom size 524288 crc32 f2deb82b )
+	archive ( name "drift_out" name "driftout" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name edf
+	description "Earth Defence Force"
+	manufacturer "Jaleco"
+	year 1991
+	rom ( name edf_09.rom size 131072 crc32 96e38983 )
+	rom ( name edf_02.rom size 131072 crc32 ce93643e )
+	rom ( name edf_05.rom size 262144 crc32 105094d1 )
+	rom ( name edf_06.rom size 262144 crc32 94da2f0c )
+	rom ( name edf_01.rom size 131072 crc32 2290ea19 )
+	rom ( name edf_m01.rom size 262144 crc32 9149286b )
+	rom ( name edf_m02.rom size 262144 crc32 fc4281d2 )
+	rom ( name edf_m03.rom size 524288 crc32 ef469449 )
+	rom ( name edf_m04.rom size 524288 crc32 6744f406 )
+	rom ( name edf_m05.rom size 524288 crc32 6f47e456 )
+	archive ( name "earth_defense_force" name "earth_defence_force" name "edf" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name earthjkr
+	description "Earth Joker"
+	manufacturer "Visco"
+	year 1993
+	rom ( name ej_30e.rom size 524288 crc32 49d1f77f )
+	rom ( name ej_1.rom size 65536 crc32 cb4891db )
+	rom ( name ej_2.rom size 65536 crc32 42ba2566 )
+	rom ( name ej_0.rom size 65536 crc32 b612086f )
+	rom ( name ej_3a.rom size 131072 crc32 9c8050c6 )
+	rom ( name ej_3b.rom size 131072 crc32 bdd86fc2 )
+	rom ( name ej_chr.rom size 524288 crc32 ac675297 )
+	rom ( name ej_obj.rom size 524288 crc32 5f21ac47 )
+	archive ( name "earth_joker" name "earthjkr" )
+	input ( dipswitches 2 )
+	video ( screen raster x 240 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name eaction2
+	description "Elevator Action 2"
+	manufacturer "Taito"
+	year 1994
+	rom ( name ea2.b33 size 524288 crc32 7d2ae25b )
+	rom ( name ea2.b63 size 524288 crc32 ba9028bd )
+	rom ( name ea2.b62 size 524288 crc32 72f1b952 )
+	rom ( name ea2.b61 size 524288 crc32 bcced8ff )
+	rom ( name ea2.b60 size 524288 crc32 ea5f5a32 )
+	rom ( name ea2.b6 size 524288 crc32 d6d2d7f3 )
+	rom ( name ea2.b5 size 524288 crc32 b10a553e )
+	rom ( name ea2.b46 size 524288 crc32 518db521 )
+	rom ( name ea2.b45 size 524288 crc32 938b6ada )
+	rom ( name ea2.b44 size 524288 crc32 d5127f0c )
+	rom ( name ea2.b43 size 524288 crc32 ab4a38cd )
+	rom ( name ea2.b4 size 524288 crc32 3c2d8e1c )
+	rom ( name ea2.b7 size 524288 crc32 eb6cc4d2 )
+	rom ( name ea2.b32 size 524288 crc32 2b5f5d06 )
+	rom ( name ea2.b3 size 524288 crc32 80f8a286 )
+	rom ( name ea2.b19 size 524288 crc32 cbbc6fe6 )
+	rom ( name ea2.b18 size 524288 crc32 4c7b857e )
+	rom ( name ea2.b17 size 524288 crc32 1b675e3c )
+	rom ( name ea2.b16 size 524288 crc32 38c3f35d )
+	rom ( name ea2.b15 size 524288 crc32 174bc4d2 )
+	rom ( name ea2.b11 size 524288 crc32 34425fdd )
+	rom ( name ea2.b10 size 524288 crc32 846846c9 )
+	rom ( name ea2.a8 size 524288 crc32 b1ceac62 )
+	rom ( name ea2.a7 size 524288 crc32 5e309478 )
+	rom ( name ea2.a6 size 524288 crc32 7947774a )
+	rom ( name ea2.a32 size 524288 crc32 3609c105 )
+	rom ( name ea2.a31 size 524288 crc32 595a01b8 )
+	rom ( name ea2.a30 size 524288 crc32 9d0a742f )
+	rom ( name ea2.a20 size 524288 crc32 93d4ef32 )
+	rom ( name ea2.a19 size 524288 crc32 821e2763 )
+	rom ( name ea2.a18 size 524288 crc32 2f35f530 )
+	rom ( name ea2.b66 size 262144 crc32 80932702 )
+	rom ( name ea2.b65 size 262144 crc32 706671a5 )
+	archive ( name "elevator_action_2" name "eaction2" name "elevator_action_returns" )
+	video ( screen raster x 320 y 232 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name extrmatn
+	description "Extermination"
+	manufacturer "Taito"
+	year 1987
+	rom ( name b06-01.bin size 131072 crc32 d2afbf7e )
+	rom ( name b06-02.bin size 131072 crc32 e0c2757a )
+	rom ( name b06-03.bin size 131072 crc32 ee80ab9d )
+	rom ( name b06-04.bin size 131072 crc32 3697ace4 )
+	rom ( name b06-06.bin size 65536 crc32 744f2c84 )
+	rom ( name b06-08.bin size 512 crc32 10c9aac3 )
+	rom ( name b06-09.bin size 512 crc32 f388b361 )
+	rom ( name b06-20.bin size 65536 crc32 04e3fc1f )
+	rom ( name b06-21.bin size 65536 crc32 1614d6a2 )
+	archive ( name "extermination" name "extrmatn" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name fhawk
+	description "Fighting Hawk"
+	manufacturer "Taito"
+	year 1988
+	rom ( name b70-01.bin size 524288 crc32 fcdf67e2 )
+	rom ( name b70-02.bin size 524288 crc32 35f7172e )
+	rom ( name b70-03.bin size 524288 crc32 42d5a9b8 )
+	rom ( name b70-07.bin size 131072 crc32 939114af )
+	rom ( name b70-08.bin size 131072 crc32 4d795f48 )
+	rom ( name b70-09.bin size 65536 crc32 85cccaa2 )
+	archive ( name "fighting_hawk" name "fhawk" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name finalb
+	description "Final Blow"
+	manufacturer "Taito"
+	year 1988
+	rom ( name fb_09.rom size 131072 crc32 632f1ecd )
+	rom ( name fb_10.rom size 65536 crc32 a38aaaed )
+	rom ( name fb_17.rom size 131072 crc32 e91b2ec9 )
+	rom ( name fb_m01.rom size 524288 crc32 f0eb6846 )
+	rom ( name fb_m02.rom size 524288 crc32 5dd06bdd )
+	rom ( name fb_m03.rom size 524288 crc32 daa11561 )
+	rom ( name fb_m04.rom size 524288 crc32 6346f98e )
+	rom ( name fb_m05.rom size 524288 crc32 aa90b93a )
+	rom ( name fb_m06.rom size 131072 crc32 fc450a25 )
+	rom ( name fb_m07.rom size 131072 crc32 ec3df577 )
+	archive ( name "final_blow" name "finalb" name "finalbl" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name galmedes
+	description "Galmedes"
+	manufacturer "Taito"
+	year 1992
+	rom ( name gm-obj.bin size 524288 crc32 7a4a1315 )
+	rom ( name gm-prg0.bin size 131072 crc32 fae546a4 )
+	rom ( name gm-prg1.bin size 131072 crc32 32a70753 )
+	rom ( name gm-scn.bin size 524288 crc32 3bab0581 )
+	rom ( name gm-snd.bin size 65536 crc32 d6f56c21 )
+	rom ( name gm-m30.fix size 524288 crc32 4da2a407 )
+	archive ( name "galmedes" )
+	input ( dipswitches 2 )
+	video ( screen raster x 240 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name gcpball
+	description "Grand Cross Pinball"
+	manufacturer "Excellent System"
+	year 1994
+	rom ( name u1 size 1048576 crc32 afa459bb )
+	rom ( name u10.1 size 131072 crc32 79321550 )
+	rom ( name u13 size 2097152 crc32 62f3952f )
+	rom ( name u43.2 size 524288 crc32 d174bd7f )
+	rom ( name u45.3 size 524288 crc32 0511ad56 )
+	rom ( name u46.4 size 524288 crc32 e0f3a1b4 )
+	rom ( name u55 size 524288 crc32 b3063351 )
+	rom ( name u56 size 2097152 crc32 092b2c0f )
+	rom ( name u6 size 1048576 crc32 c3f024e5 )
+	archive ( name "grand_cross_pinball" name "gcpball" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name growl
+	description "Growl"
+	manufacturer "Taito"
+	year 1990
+	rom ( name growl_04.rom size 1048576 crc32 2d97edf2 )
+	rom ( name growl_02.rom size 1048576 crc32 15a21506 )
+	rom ( name growl_03.rom size 1048576 crc32 1a0d8951 )
+	rom ( name growl_01.rom size 1048576 crc32 3434ce80 )
+	rom ( name growl_05.rom size 524288 crc32 e29c0828 )
+	rom ( name growl_08.rom size 262144 crc32 aa35dd9e )
+	rom ( name growl_10.rom size 262144 crc32 ca81a20b )
+	rom ( name growl_11.rom size 262144 crc32 ee3bd6d5 )
+	rom ( name growl_12.rom size 65536 crc32 bb6ed668 )
+	rom ( name growl_14.rom size 262144 crc32 b6c24ec7 )
+	archive ( name "growl" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name hachoo
+	description "Hachoo"
+	manufacturer "Jaleco"
+	year 1989
+	rom ( name hacho08.rom size 131072 crc32 888a6df1 )
+	rom ( name hacho02.rom size 131072 crc32 49489c27 )
+	rom ( name hacho05.rom size 65536 crc32 6271f74f )
+	rom ( name hacho06.rom size 65536 crc32 db9e743c )
+	rom ( name hacho07.rom size 131072 crc32 06e6ca7f )
+	rom ( name hacho01.rom size 131072 crc32 97fc9515 )
+	rom ( name hacho09.rom size 131072 crc32 e9f35c90 )
+	rom ( name hacho10.rom size 131072 crc32 1aeaa188 )
+	rom ( name hacho14.rom size 524288 crc32 10188483 )
+	rom ( name hacho15.rom size 131072 crc32 e559347e )
+	rom ( name hacho16.rom size 131072 crc32 105fd8b5 )
+	rom ( name hacho17.rom size 131072 crc32 77f46174 )
+	rom ( name hacho18.rom size 131072 crc32 0be21111 )
+	rom ( name hacho19.rom size 131072 crc32 33bc9de3 )
+	rom ( name hacho20.rom size 131072 crc32 2ae2011e )
+	rom ( name hacho21.rom size 131072 crc32 6dcfb8d5 )
+	rom ( name hacho22.rom size 131072 crc32 ccabf0e0 )
+	rom ( name hacho23.rom size 131072 crc32 ff5f77aa )
+	archive ( name "hachoo" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name hitice
+	description "Hit the Ice"
+	manufacturer "Taito"
+	year 1990
+	rom ( name c59-08.rom size 65536 crc32 d3cbc10b )
+	rom ( name c59-02.rom size 524288 crc32 affb5e07 )
+	rom ( name c59-03.rom size 524288 crc32 9e513048 )
+	rom ( name ad-pcm01.rom size 131072 crc32 46ae291d )
+	rom ( name c59-09.rom size 65536 crc32 e243e3b0 )
+	rom ( name c59-10.rom size 131072 crc32 e4ffad15 )
+	rom ( name c59-11.rom size 65536 crc32 4d4dfa52 )
+	rom ( name c59-12.rom size 131072 crc32 a080d7af )
+	archive ( name "hit_the_ice" name "hitice" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name insectx
+	description "Insector X"
+	manufacturer "Taito"
+	year 1989
+	rom ( name b97-02.rom size 524288 crc32 db5a7434 )
+	rom ( name b97-01.rom size 524288 crc32 d00294b1 )
+	rom ( name b97-03.rom size 131072 crc32 18eef387 )
+	rom ( name b97-07.rom size 65536 crc32 324b28c9 )
+	archive ( name "insector_x" name "insectrx" name "insectx" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name jigoku
+	description "Jigoku Meguri"
+	manufacturer "Taito"
+	year 1988
+	romof bonzeadv
+	rom ( name b41-01 merge b41-01 size 524288 crc32 5d072fa4 )
+	rom ( name b41-02 merge b41-02 size 524288 crc32 29f205d9 )
+	rom ( name b41-03 merge b41-03 size 524288 crc32 736d35d0 )
+	rom ( name b41-04 merge b41-04 size 524288 crc32 c668638f )
+	rom ( name b41-09-1 merge b41-09-1 size 65536 crc32 af821fbc )
+	rom ( name b41-10 merge b41-10 size 65536 crc32 4ca94d77 )
+	rom ( name b41-11-1 merge b41-11-1 size 65536 crc32 823fff00 )
+	rom ( name b41-12 size 65536 crc32 40d9c1fc )
+	rom ( name b41-13 merge b41-13 size 65536 crc32 9e464254 )
+	archive ( name "jigoku_meguri" name "jigoku" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name jumping
+	description "Jumping Islands"
+	manufacturer "Bootleg"
+	year 1989
+	romof rainbow
+	rom ( name jb1_cd67 size 65536 crc32 8527c00e )
+	rom ( name jb1_f89 merge jb1_f89 size 65536 crc32 0810d327 )
+	rom ( name jb1_h23 merge b22-03 size 65536 crc32 00bf8a91 )
+	rom ( name jb1_h4 size 65536 crc32 3fab6b31 )
+	rom ( name jb1_h7 merge b22-04 size 65536 crc32 e3d7a844 )
+	rom ( name jb1_h8 size 65536 crc32 8c878827 )
+	rom ( name jb1_i23 size 65536 crc32 a3ab61c6 )
+	rom ( name jb1_i4 size 65536 crc32 443492cf )
+	rom ( name jb1_i7 size 65536 crc32 c1c4c701 )
+	rom ( name jb1_i8 size 65536 crc32 ed33bae1 )
+	rom ( name jb2_ic14 size 65536 crc32 9fdc6c8e )
+	rom ( name jb2_ic13 size 65536 crc32 06226492 )
+	rom ( name jb2_ic12 size 65536 crc32 312700ca )
+	rom ( name jb2_ic11 size 65536 crc32 de3b0b88 )
+	rom ( name jb2_ic10 size 65536 crc32 e61933fb )
+	rom ( name jb2_ic9 size 65536 crc32 ed031eb2 )
+	rom ( name jb2_ic8 size 65536 crc32 65b76309 )
+	rom ( name jb2_ic7 size 65536 crc32 43a94283 )
+	rom ( name jb2_ic78 size 65536 crc32 925865e1 )
+	rom ( name jb2_ic77 size 65536 crc32 b09695d1 )
+	rom ( name jb2_ic76 size 32768 crc32 41937743 )
+	rom ( name jb2_i119 size 32768 crc32 7e1d58d8 )
+	rom ( name jb2_i120 size 65536 crc32 7c4e893b )
+	rom ( name jb2_i121 size 65536 crc32 93df1e4d )
+	rom ( name jb2_ic62 size 65536 crc32 8548db6c )
+	rom ( name jb2_ic61 size 65536 crc32 37c5923b )
+	rom ( name jb2_ic93 size 65536 crc32 f644eeab )
+	rom ( name jb2_ic92 size 65536 crc32 3fbccd33 )
+	rom ( name jb2_ic91 size 32768 crc32 d886c014 )
+	rom ( name jb2_ic60 size 32768 crc32 662a2f1e )
+	archive ( name "jumping_islands" name "jumping" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name kaiserkn
+	description "Kaiser Knuckle"
+	manufacturer "Taito"
+	year 1994
+	rom ( name d84-08.rom size 2097152 crc32 07347bf1 )
+	rom ( name d84-02.rom size 2097152 crc32 9e1827e4 )
+	rom ( name d84-03.rom size 2097152 crc32 d786f552 )
+	rom ( name d84-04.rom size 2097152 crc32 d1f32b5d )
+	rom ( name d84-05.rom size 2097152 crc32 31a3c75d )
+	rom ( name d84-06.rom size 2097152 crc32 fa924dab )
+	rom ( name d84-07.rom size 2097152 crc32 54517a6b )
+	rom ( name d84-01.rom size 2097152 crc32 9ad22149 )
+	rom ( name d84-09.rom size 2097152 crc32 faa78d98 )
+	rom ( name d84-10.rom size 2097152 crc32 b84b7320 )
+	rom ( name d84-11.rom size 2097152 crc32 a062c1d4 )
+	rom ( name d84-12.rom size 2097152 crc32 66a7a9aa )
+	rom ( name d84-13.rom size 2097152 crc32 ae125516 )
+	rom ( name d84-14.rom size 2097152 crc32 2b2e693e )
+	rom ( name d84-15.rom size 1048576 crc32 31ceb152 )
+	rom ( name d84-16.rom size 1048576 crc32 bcff9b2d )
+	rom ( name d84-17.rom size 1048576 crc32 0be37cc3 )
+	rom ( name d84-18.rom size 1048576 crc32 e812bcc5 )
+	rom ( name d84-19.rom size 524288 crc32 6ddf77e5 )
+	rom ( name d84-20.rom size 524288 crc32 f85041e5 )
+	rom ( name d84-21.rom size 524288 crc32 89f68b66 )
+	rom ( name d84-23.rom size 524288 crc32 39f12a9b )
+	rom ( name d84-24.rom size 524288 crc32 bf20c755 )
+	rom ( name d84-25.rom size 524288 crc32 2840893f )
+	rom ( name d84-26.rom size 262144 crc32 4f5b8563 )
+	rom ( name d84-27.rom size 262144 crc32 fb0cb1ba )
+	rom ( name d84-29.rom size 524288 crc32 9821f17a )
+	archive ( name "kaiser_knuckle" name "kaiserkn" )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name kbash
+	description "Knuckle Bash"
+	manufacturer "Toaplan"
+	year 1993
+	rom ( name kbash01.bin size 524288 crc32 2965f81d )
+	rom ( name kbash02.bin size 32768 crc32 4cd882a1 )
+	rom ( name kbash03.bin size 2097152 crc32 32ad508b )
+	rom ( name kbash04.bin size 2097152 crc32 e493c077 )
+	rom ( name kbash05.bin size 2097152 crc32 b84c90eb )
+	rom ( name kbash06.bin size 2097152 crc32 9084b50a )
+	rom ( name kbash07.bin size 262144 crc32 3732318f )
+	archive ( name "knuckle_bash" name "kbash" )
+	input ( dipswitches 3 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name lomakaj
+	description "Legend of Makaj"
+	manufacturer "Jaleco"
+	year 1988
+	rom ( name lom_01.rom size 65536 crc32 46e85e90 )
+	rom ( name lom_05.rom size 131072 crc32 d04fc713 )
+	rom ( name lom_06.rom size 131072 crc32 f33b6eed )
+	rom ( name lom_08.rom size 65536 crc32 bdb15e67 )
+	rom ( name lom_20.rom size 131072 crc32 56a00dc2 )
+	rom ( name lom_30.rom size 131072 crc32 ba6d65b8 )
+	archive ( name "legend_of_makaj" name "lomakaj" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name liquidk
+	description "Liquid Kids"
+	manufacturer "Taito"
+	year 1990
+	rom ( name lk_obj0.bin size 524288 crc32 67cc3163 )
+	rom ( name lk_obj1.bin size 524288 crc32 d2400710 )
+	rom ( name lk_scr.bin size 524288 crc32 c3364f9b )
+	rom ( name lk_snd.bin size 524288 crc32 474d45a4 )
+	rom ( name lq09.bin size 131072 crc32 6ae09eb9 )
+	rom ( name lq10.bin size 131072 crc32 50bef2e0 )
+	rom ( name lq11.bin size 131072 crc32 42d2be6e )
+	rom ( name lq12.bin size 131072 crc32 cb16bad5 )
+	rom ( name lq08.bin size 65536 crc32 413c310c )
+	archive ( name "liquid_kids" name "liquidk" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name mj12
+	description "Majestic Twelve"
+	manufacturer "Taito"
+	year 1990
+	romof ssi
+	rom ( name c64-01.bin merge ssi_m01.rom size 1048576 crc32 a1b4f486 )
+	rom ( name c64-02.bin merge ssi_m02.rom size 131072 crc32 3cb0b907 )
+	rom ( name c64-05.bin size 131072 crc32 b61866c0 )
+	rom ( name c64-06.bin size 131072 crc32 18dc71ac )
+	rom ( name c64-07.bin size 131072 crc32 f29ed5c9 )
+	rom ( name c64-08.bin size 131072 crc32 ddfd33d5 )
+	rom ( name c64-09.bin merge ssi_09.rom size 65536 crc32 88d7f65c )
+	archive ( name "majestic_twelve" name "mj12" name "majest12" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name masterw
+	description "Master of Weapons"
+	manufacturer "Taito"
+	year 1989
+	rom ( name b72-07.rom size 65536 crc32 2b1a946f )
+	rom ( name b72-04.rom size 131072 crc32 141e964c )
+	rom ( name b72-06.rom size 131072 crc32 ae848eff )
+	rom ( name b72-12.rom size 131072 crc32 7176ce70 )
+	rom ( name b72-03.rom size 131072 crc32 f4523496 )
+	rom ( name mow-m01.rom size 524288 crc32 a24ac26e )
+	rom ( name mow-m02.rom size 524288 crc32 c519f65a )
+	archive ( name "master_of_weapons" name "masterw" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name mofflott
+	description "Maze of Flott"
+	manufacturer "Taito"
+	year 1989
+	rom ( name c17-06.bin size 65536 crc32 5c332125 )
+	rom ( name c17-07.bin size 65536 crc32 cdb7bc2c )
+	rom ( name c17-04.bin size 65536 crc32 f4250410 )
+	rom ( name c17-05.bin size 65536 crc32 57ac4741 )
+	rom ( name c17-01.bin size 524288 crc32 e9466d42 )
+	rom ( name c17-02.bin size 524288 crc32 8860a8db )
+	rom ( name c17-03.bin size 524288 crc32 27047fc3 )
+	rom ( name c17-09.bin size 131072 crc32 05ee110f )
+	rom ( name c17-08.bin size 131072 crc32 d0aacffd )
+	archive ( name "maze_of_flott" name "mofflott" )
+	input ( dipswitches 2 )
+	video ( screen raster x 240 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name megab
+	description "Mega Blast"
+	manufacturer "Taito"
+	year 1989
+	rom ( name c11-01 size 524288 crc32 fd1ea532 )
+	rom ( name c11-02 size 524288 crc32 451cc187 )
+	rom ( name c11-03 size 524288 crc32 46718c7a )
+	rom ( name c11-04 size 524288 crc32 663f33cc )
+	rom ( name c11-05 size 524288 crc32 733e6d8e )
+	rom ( name c11-06 size 131072 crc32 7c249894 )
+	rom ( name c11-07 size 131072 crc32 11d228b6 )
+	rom ( name c11-08 size 131072 crc32 a79d4dca )
+	rom ( name c11-11 size 131072 crc32 263ecbf9 )
+	rom ( name c11-12 size 65536 crc32 b11094f1 )
+	archive ( name "mega_blast" name "megab" name "megabl" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name mnight
+	description "Mutant Night"
+	manufacturer "UPL"
+	year 1987
+	rom ( name mn13-b23.bin size 65536 crc32 65714070 )
+	rom ( name mn11-b20.bin size 65536 crc32 4d37e0f4 )
+	rom ( name mn12-b22.bin size 65536 crc32 b22cbbd3 )
+	rom ( name mn10-b10.bin size 32768 crc32 37b8221f )
+	rom ( name mn1-j7.bin size 65536 crc32 a0782a31 )
+	rom ( name mn2-j12.bin size 32768 crc32 9c391d1b )
+	rom ( name mn3-j14.bin size 32768 crc32 df6a4f7a )
+	rom ( name mn4-j16.bin size 32768 crc32 c5e42bb4 )
+	rom ( name mn5-j17.bin size 32768 crc32 2a73f88e )
+	rom ( name mn6-j19.bin size 32768 crc32 56678d14 )
+	rom ( name mn7-e11.bin size 65536 crc32 4883059c )
+	rom ( name mn8-e12.bin size 65536 crc32 02b91445 )
+	rom ( name mn9-e14.bin size 65536 crc32 9f08d160 )
+	archive ( name "mutant_night" name "mnight" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 192 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name gaiden
+	description "Ninja Gaiden"
+	manufacturer "Tecmo"
+	year 1988
+	rom ( name gaiden.10 size 131072 crc32 a6451dec )
+	rom ( name gaiden.11 size 131072 crc32 7fbfdf5e )
+	rom ( name gaiden.12 size 131072 crc32 90f1e13a )
+	rom ( name gaiden.13 size 131072 crc32 7d9f5c5e )
+	rom ( name gaiden.2 size 131072 crc32 454f7314 )
+	rom ( name gaiden.3 size 65536 crc32 75fd3e6a )
+	rom ( name gaiden.4 size 131072 crc32 b0e0faf9 )
+	rom ( name gaiden.6 size 131072 crc32 e7ccdf9f )
+	rom ( name gaiden.7 size 131072 crc32 016bec95 )
+	rom ( name gaiden.8 size 131072 crc32 7ef7f880 )
+	rom ( name gaiden.9 size 131072 crc32 6e9b7fd3 )
+	rom ( name 18.bin size 131072 crc32 3fadafd6 )
+	rom ( name 19.bin size 131072 crc32 ddae9d5b )
+	rom ( name gaiden.1 size 131072 crc32 e037ff7c )
+	rom ( name 20.bin size 131072 crc32 08cf7a93 )
+	rom ( name 21.bin size 131072 crc32 1ac892f5 )
+	rom ( name gaiden.5 size 65536 crc32 8d4035f7 )
+	rom ( name 14.bin size 131072 crc32 1ecfddaa )
+	rom ( name 15.bin size 131072 crc32 1291a696 )
+	rom ( name 16.bin size 131072 crc32 140b47ca )
+	rom ( name 17.bin size 131072 crc32 7638cccb )
+	archive ( name "ninja_gaiden" name "gaiden" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name ninjak
+	description "Ninja Kids"
+	manufacturer "Taito"
+	year 1991
+	rom ( name nk_sch-a.rom size 524288 crc32 5afb747e )
+	rom ( name nk_0l.rom size 131072 crc32 0ac2cba2 )
+	rom ( name nk_1lh.rom size 131072 crc32 3eccfd0a )
+	rom ( name nk_1ll.rom size 131072 crc32 d126ded1 )
+	rom ( name nk_obj-0.rom size 1048576 crc32 a711977c )
+	rom ( name nk_obj-1.rom size 1048576 crc32 a6ad0f3d )
+	rom ( name nk_0h.rom size 131072 crc32 ba7e6e74 )
+	rom ( name nk_sch-b.rom size 524288 crc32 3c1b0ed0 )
+	rom ( name nk_scrn.rom size 524288 crc32 4cc7b9df )
+	rom ( name nk_snd.rom size 65536 crc32 f2a52a51 )
+	archive ( name "ninja_kids" name "ninjak" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name ninjaw
+	description "Ninja Warriors"
+	manufacturer "Taito"
+	year 1987
+	rom ( name b31-27 size 65536 crc32 2f3ff642 )
+	rom ( name b31-29 size 65536 crc32 f2941a37 )
+	rom ( name b31-31 size 65536 crc32 837f47e2 )
+	rom ( name b31-32 size 65536 crc32 e6025fec )
+	rom ( name b31-33 size 65536 crc32 6ce9af44 )
+	rom ( name b31-34 size 65536 crc32 d6b5fb2a )
+	rom ( name b31-35 size 65536 crc32 70d9a89f )
+	rom ( name b31-36 size 65536 crc32 ba20b0d4 )
+	rom ( name b31-37 size 131072 crc32 0ca5799d )
+	rom ( name b31-38 size 131072 crc32 bc68cd99 )
+	rom ( name b31-39 size 131072 crc32 e9197c3c )
+	rom ( name b31-40 size 131072 crc32 2ce0f24e )
+	rom ( name b31-41 size 131072 crc32 0daef28a )
+	rom ( name b31-45 size 65536 crc32 107902c3 )
+	rom ( name b31-47 size 65536 crc32 bd536b1e )
+	rom ( name b31-01 size 524288 crc32 8e8237a7 )
+	rom ( name b31-02 size 524288 crc32 4c3b4e33 )
+	rom ( name b31-04 size 524288 crc32 2e1e4cb5 )
+	rom ( name b31-05 size 524288 crc32 0a1fc9fb )
+	rom ( name b31-06 size 524288 crc32 0d59439e )
+	rom ( name b31-07 size 524288 crc32 33568cdb )
+	rom ( name b31-08 size 524288 crc32 a0a1f87d )
+	rom ( name b31-09 size 524288 crc32 60a73382 )
+	rom ( name b31-10 size 524288 crc32 c6434aef )
+	rom ( name b31-11 size 524288 crc32 8da531d4 )
+	archive ( name "ninja_warriors" name "ninjaw" )
+	input ( dipswitches 2 )
+	video ( screen raster x 864 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name omegaf
+	description "Omega Fighter Special"
+	manufacturer "UPL"
+	year 1988
+	rom ( name 1back2.15b size 524288 crc32 6210ddcc )
+	rom ( name 2back1.27b size 524288 crc32 21f8a32e )
+	rom ( name 3back3.5f size 524288 crc32 c31cae56 )
+	rom ( name 4.18h size 32768 crc32 9e2d8152 )
+	rom ( name 5.3l size 131072 crc32 503a3e63 )
+	rom ( name 6.4l size 131072 crc32 6277735c )
+	rom ( name 7.7m size 65536 crc32 d40fc8d5 )
+	rom ( name 8.23m size 131072 crc32 0bd2a5d1 )
+	archive ( name "omega_fighter" name "omegaf" )
+	input ( dipswitches 2 )
+	video ( screen raster x 192 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name othunder
+	description "Operation Thunderbolt"
+	manufacturer "Taito"
+	year 1989
+	rom ( name b67-02 size 524288 crc32 c20cd2fb )
+	rom ( name b67-03 size 524288 crc32 bc9019ed )
+	rom ( name b67-04 size 524288 crc32 2af4c8af )
+	rom ( name b67-05 size 524288 crc32 9593e42b )
+	rom ( name b67-06 size 524288 crc32 b9a38d64 )
+	rom ( name b67-07 size 524288 crc32 4f834357 )
+	rom ( name b67-08 size 524288 crc32 458f41fb )
+	rom ( name b67-01 size 524288 crc32 81ad9acb )
+	rom ( name b67-13 size 65536 crc32 2936b4b1 )
+	rom ( name b67-14 size 131072 crc32 7f3dd724 )
+	rom ( name b67-15 size 131072 crc32 e84f62d0 )
+	rom ( name b67-20 size 131072 crc32 21439ea2 )
+	rom ( name b67-23 size 131072 crc32 789e9daa )
+	archive ( name "operation_thunderbolt" name "othunder" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name opwolf
+	description "Operation Wolf"
+	manufacturer "Taito"
+	year 1987
+	rom ( name opwlf.13 size 524288 crc32 f6acdab1 )
+	rom ( name opwlf.29 size 65536 crc32 b71bc44c )
+	rom ( name opwlf.30 size 65536 crc32 fdabd8a5 )
+	rom ( name opwlf.39 size 65536 crc32 216b4838 )
+	rom ( name opwlf.40 size 65536 crc32 3ffbfe3a )
+	rom ( name opwlf.72 size 524288 crc32 89f889e5 )
+	rom ( name opwlf_s.10 size 65536 crc32 45c7ace3 )
+	rom ( name opwlf_s.21 size 524288 crc32 f3e19c64 )
+	rom ( name operwolf.09 size 32768 crc32 ab27a3dd )
+	archive ( name "operation_wolf" name "opwolf" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name opwolfbl
+	description "Operation Wolf Bootleg"
+	manufacturer "Bootleg"
+	year 1987
+	romof opwolf
+	rom ( name operwolf.01 size 65536 crc32 0a65f256 )
+	rom ( name operwolf.02 size 65536 crc32 6231fdd0 )
+	rom ( name operwolf.03 size 65536 crc32 ccf8ba80 )
+	rom ( name operwolf.04 size 65536 crc32 de0ca98d )
+	rom ( name operwolf.05 size 65536 crc32 fd9e72c8 )
+	rom ( name operwolf.06 size 65536 crc32 317d0e66 )
+	rom ( name operwolf.07 size 65536 crc32 e1c4095e )
+	rom ( name operwolf.08 size 65536 crc32 134d294e )
+	rom ( name operwolf.09 merge operwolf.09 size 32768 crc32 ab27a3dd )
+	rom ( name operwolf.10 size 65536 crc32 9ab6f75c )
+	rom ( name operwolf.11 size 65536 crc32 342e318d )
+	rom ( name operwolf.12 size 65536 crc32 d87e4405 )
+	rom ( name operwolf.13 size 65536 crc32 61230c6e )
+	rom ( name operwolf.14 size 65536 crc32 663786eb )
+	rom ( name operwolf.15 size 65536 crc32 315b8aa9 )
+	rom ( name operwolf.16 size 65536 crc32 e01099e3 )
+	rom ( name operwolf.17 size 65536 crc32 56fbe61d )
+	rom ( name operwolf.18 size 65536 crc32 de9ab08e )
+	rom ( name operwolf.19 size 65536 crc32 645cf85e )
+	rom ( name operwolf.20 size 65536 crc32 d80b9cc6 )
+	rom ( name operwolf.21 size 65536 crc32 97d25157 )
+	rom ( name operwolf.22 size 65536 crc32 9228481f )
+	rom ( name operwolf.23 size 65536 crc32 a874c703 )
+	rom ( name operwolf.24 size 65536 crc32 8efc5d4d )
+	rom ( name operwolf.25 size 65536 crc32 85b87f58 )
+	rom ( name operwolf.26 size 65536 crc32 86d1d42d )
+	rom ( name operwolf.27 size 65536 crc32 441211a6 )
+	rom ( name operwolf.28 size 65536 crc32 281b2175 )
+	rom ( name operwolf.29 size 65536 crc32 05a9eac0 )
+	rom ( name operwolf.30 size 32768 crc32 0669b94c )
+	archive ( name "operation_wolf_bootleg" name "opwolfbl" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name p47
+	description "P47"
+	manufacturer "Jaleco"
+	year 1988
+	rom ( name p47us12.bin size 131072 crc32 5268395f )
+	rom ( name p47us16.bin size 65536 crc32 5a682c8f )
+	rom ( name p47us19.bin size 65536 crc32 adb8c12e )
+	rom ( name p47us26.bin size 131072 crc32 4d07581a )
+	rom ( name p47us3.bin size 131072 crc32 022e58b8 )
+	rom ( name p47us7.bin size 65536 crc32 f3b1850a )
+	rom ( name p47us9.bin size 65536 crc32 ffcf318e )
+	rom ( name p47us1.bin size 131072 crc32 ed926bd8 )
+	rom ( name p47j_27.bin size 131072 crc32 9e2bde8e )
+	rom ( name p47j_18.bin size 131072 crc32 29d8f676 )
+	rom ( name p47j_23.bin size 131072 crc32 6e9bc864 )
+	rom ( name p47j_5.bin size 131072 crc32 fe65b65c )
+	rom ( name p47j_6.bin size 131072 crc32 e191d2d2 )
+	rom ( name p47j_10.bin size 131072 crc32 b9d79c1e )
+	rom ( name p47j_11.bin size 131072 crc32 fa0d1887 )
+	rom ( name p47j_20.bin size 131072 crc32 2ed53624 )
+	rom ( name p47j_21.bin size 131072 crc32 6f56b56d )
+	archive ( name "p47" name "p47_american" name "p47_usa" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name p47j
+	description "P47 Japanese"
+	manufacturer "Jaleco"
+	year 1988
+	romof p47
+	rom ( name p47j_1.bin size 131072 crc32 0a5998de )
+	rom ( name p47j_10.bin merge p47j_10.bin size 131072 crc32 b9d79c1e )
+	rom ( name p47j_11.bin merge p47j_11.bin size 131072 crc32 fa0d1887 )
+	rom ( name p47j_12.bin merge p47us12.bin size 131072 crc32 5268395f )
+	rom ( name p47j_16.bin size 65536 crc32 30e44375 )
+	rom ( name p47j_18.bin merge p47j_18.bin size 131072 crc32 29d8f676 )
+	rom ( name p47j_19.bin merge p47us19.bin size 65536 crc32 adb8c12e )
+	rom ( name p47j_20.bin merge p47j_20.bin size 131072 crc32 2ed53624 )
+	rom ( name p47j_21.bin merge p47j_21.bin size 131072 crc32 6f56b56d )
+	rom ( name p47j_23.bin merge p47j_23.bin size 131072 crc32 6e9bc864 )
+	rom ( name p47j_26.bin merge p47us26.bin size 131072 crc32 4d07581a )
+	rom ( name p47j_27.bin merge p47j_27.bin size 131072 crc32 9e2bde8e )
+	rom ( name p47j_3.bin size 131072 crc32 11c655e5 )
+	rom ( name p47j_5.bin merge p47j_5.bin size 131072 crc32 fe65b65c )
+	rom ( name p47j_6.bin merge p47j_6.bin size 131072 crc32 e191d2d2 )
+	rom ( name p47j_7.bin size 131072 crc32 f77723b7 )
+	rom ( name p47j_9.bin merge p47us9.bin size 65536 crc32 ffcf318e )
+	archive ( name "p47_japanese" name "p47j" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name palamed
+	description "Palamedes"
+	manufacturer "Taito"
+	year 1990
+	rom ( name c63.02 size 131072 crc32 55a82bb2 )
+	rom ( name c63.03 size 131072 crc32 fcd86e44 )
+	rom ( name c63.04 size 131072 crc32 c7bbe460 )
+	archive ( name "palamedes" name "palamed" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name phantasm
+	description "Phantasm"
+	manufacturer "Jaleco"
+	year 1991
+	romof avspirit
+	rom ( name phntsm01.bin size 131072 crc32 a54b4b87 )
+	rom ( name phntsm02.bin size 131072 crc32 d96a3584 )
+	rom ( name phntsm03.bin size 65536 crc32 1d96ce20 )
+	rom ( name phntsm04.bin size 65536 crc32 dc0c4994 )
+	rom ( name phntsm05.bin size 65536 crc32 3b169b4a )
+	rom ( name phntsm06.bin size 65536 crc32 df2dfb2e )
+	rom ( name phntsm08.bin merge spirit13.rom size 262144 crc32 05bc04d9 )
+	rom ( name phntsm10.bin merge spirit14.rom size 262144 crc32 13be9979 )
+	rom ( name phntsm14.bin merge spirit12.rom size 524288 crc32 728335d4 )
+	rom ( name phntsm18.bin merge spirit11.rom size 524288 crc32 7896f6b0 )
+	rom ( name phntsm19.bin merge spirit09.rom size 131072 crc32 0c37edf7 )
+	rom ( name phntsm23.bin merge spirit10.rom size 524288 crc32 2b1180b3 )
+	archive ( name "phantasm" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name pipibibi
+	description "Pipi and Bibi's"
+	manufacturer "Bootleg"
+	year 1991
+	romof whoopee
+	rom ( name ppbb08.bin merge ppbb08.bin size 32768 crc32 101c0358 )
+	rom ( name ppbb01.bin merge ppbb01.bin size 524288 crc32 0fcae44b )
+	rom ( name ppbb02.bin merge ppbb02.bin size 524288 crc32 8bfcdf87 )
+	rom ( name ppbb03.bin merge ppbb03.bin size 524288 crc32 abdd2b8b )
+	rom ( name ppbb04.bin merge ppbb04.bin size 524288 crc32 70faa734 )
+	rom ( name ppbb05.bin size 131072 crc32 3d51133c )
+	rom ( name ppbb06.bin size 131072 crc32 14c92515 )
+	rom ( name ppbb07.bin merge ppbb07.bin size 32768 crc32 456dd16e )
+	archive ( name "pipi_and_bibi" name "pipibibi" )
+	input ( dipswitches 3 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name plotting
+	description "Plotting"
+	manufacturer "Taito"
+	year 1989
+	rom ( name plot01.bin size 65536 crc32 5b30bc25 )
+	rom ( name plot07.bin size 65536 crc32 6e0bad2a )
+	rom ( name plot08.bin size 65536 crc32 fb5f3ca4 )
+	archive ( name "plotting" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name plusalph
+	description "Plus Alpha"
+	manufacturer "Jaleco"
+	year 1989
+	rom ( name pa-rom1.bin size 131072 crc32 a32fdcae )
+	rom ( name pa-rom2.bin size 131072 crc32 33244799 )
+	rom ( name pa-rom3.bin size 65536 crc32 1b739835 )
+	rom ( name pa-rom4.bin size 65536 crc32 ff760e80 )
+	rom ( name pa-rom5.bin size 65536 crc32 ddc2739b )
+	rom ( name pa-rom6.bin size 65536 crc32 f6f8a167 )
+	rom ( name pa-rom7.bin size 131072 crc32 9f5d800e )
+	rom ( name pa-rom8.bin size 131072 crc32 ae007750 )
+	rom ( name pa-rom9.bin size 131072 crc32 065364bd )
+	rom ( name pa-rom10.bin size 131072 crc32 395df3b2 )
+	rom ( name pa-rom11.bin size 131072 crc32 eb709ae7 )
+	rom ( name pa-rom12.bin size 131072 crc32 cacbc350 )
+	rom ( name pa-rom13.bin size 131072 crc32 fad093dd )
+	rom ( name pa-rom14.bin size 131072 crc32 d3676cd1 )
+	rom ( name pa-rom15.bin size 131072 crc32 8787735b )
+	rom ( name pa-rom16.bin size 131072 crc32 a06b813b )
+	rom ( name pa-rom17.bin size 131072 crc32 c6b38a4b )
+	rom ( name pa-rom19.bin size 65536 crc32 39ef193c )
+	rom ( name pa-rom20.bin size 131072 crc32 86c557a8 )
+	rom ( name pa-rom21.bin size 131072 crc32 81140a88 )
+	rom ( name pa-rom22.bin size 131072 crc32 97e39886 )
+	rom ( name pa-rom23.bin size 131072 crc32 0383fb65 )
+	archive ( name "plus_alpha" name "plusalph" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name popnpop
+	description "Pop'n Pop"
+	manufacturer "Taito"
+	year 1997
+	rom ( name e51-01.4 size 1048576 crc32 70347e24 )
+	rom ( name e51-02.8 size 1048576 crc32 6aa8b96c )
+	rom ( name e51-03.12 size 1048576 crc32 a24c4607 )
+	rom ( name e51-04.38 size 2097152 crc32 66790f55 )
+	rom ( name e51-05.41 size 2097152 crc32 4d08b26d )
+	rom ( name e51-06.43 size 2097152 crc32 c240d6c8 )
+	rom ( name e51-07.45 size 2097152 crc32 95873e46 )
+	rom ( name e51-08.47 size 2097152 crc32 3ad41f02 )
+	rom ( name e51-09.17 size 524288 crc32 4a086017 )
+	rom ( name e51-10.18 size 524288 crc32 4bce68f8 )
+	rom ( name e51-11.19 size 524288 crc32 8a49f34f )
+	rom ( name e51-12.20 size 524288 crc32 86a237d5 )
+	rom ( name e51-13.32 size 262144 crc32 3b9e3986 )
+	rom ( name e51-14.33 size 262144 crc32 1f9a5015 )
+	archive ( name "pop_n_pop" name "popnpop" )
+	video ( screen raster x 320 y 232 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name puchicar
+	description "Puchi Carat"
+	manufacturer "Taito"
+	year 1997
+	rom ( name e46.01 size 2097152 crc32 34fc2103 )
+	rom ( name e46.02 size 2097152 crc32 fb046018 )
+	rom ( name e46.03 size 2097152 crc32 eb768193 )
+	rom ( name e46.14 size 524288 crc32 a154c300 )
+	rom ( name e46.15 size 524288 crc32 c32c6ed8 )
+	rom ( name e46.16 size 524288 crc32 cf2accdf )
+	rom ( name e46.19 size 262144 crc32 2624eba0 )
+	rom ( name e46.20 size 262144 crc32 065e934f )
+	rom ( name e46.04 size 2097152 crc32 463ecc4c )
+	rom ( name e46.05 size 2097152 crc32 83a32eee )
+	rom ( name e46.06 size 2097152 crc32 b74336f2 )
+	rom ( name e46.07 size 2097152 crc32 f20af91e )
+	rom ( name e46.08 size 2097152 crc32 f7f96e1d )
+	rom ( name e46.09 size 2097152 crc32 824135f8 )
+	rom ( name e46.10 size 1048576 crc32 1999b76a )
+	rom ( name e46.11 size 1048576 crc32 e9f10bf1 )
+	rom ( name e46.12 size 1048576 crc32 1f3a9851 )
+	rom ( name e46.13 size 524288 crc32 59fbdf3a )
+	archive ( name "puchi_carat" name "puchicar" )
+	video ( screen raster x 320 y 232 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name pulirula
+	description "Pulirula"
+	manufacturer "Taito"
+	year 1991
+	rom ( name c98-06.rom size 131072 crc32 64a71b45 )
+	rom ( name c98-02.rom size 1048576 crc32 4a2ad2b3 )
+	rom ( name c98-03.rom size 1048576 crc32 589a678f )
+	rom ( name c98-04.rom size 1048576 crc32 0e1fe3b2 )
+	rom ( name c98-05.rom size 524288 crc32 9ddd9c39 )
+	rom ( name c98-01.rom size 1048576 crc32 197f66f5 )
+	rom ( name c98-07.rom size 131072 crc32 90195bc0 )
+	rom ( name c98-12.rom size 262144 crc32 816d6cde )
+	rom ( name c98-14.rom size 131072 crc32 a858e17c )
+	rom ( name c98-16.rom size 262144 crc32 59df5c77 )
+	archive ( name "pulirula" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name pbobble2
+	description "Puzzle Bobble 2"
+	manufacturer "Taito"
+	year 1995
+	rom ( name e10-04.rom size 2097152 crc32 5c0862a6 )
+	rom ( name e10-01.rom size 1048576 crc32 8c26ff49 )
+	rom ( name e10-02.rom size 1048576 crc32 c0564490 )
+	rom ( name e10-03.rom size 2097152 crc32 46d68ac8 )
+	rom ( name e10-05.rom size 1048576 crc32 81266151 )
+	rom ( name e10-06.rom size 1048576 crc32 1b0f20e2 )
+	rom ( name e10-07.rom size 1048576 crc32 dcb3c29b )
+	rom ( name e10-09.rom size 262144 crc32 e0b1b599 )
+	rom ( name e10-10.rom size 262144 crc32 f432267a )
+	rom ( name e10-11.rom size 262144 crc32 b82f81da )
+	rom ( name e10-12.rom size 262144 crc32 b92dc8ad )
+	rom ( name e10-13.rom size 262144 crc32 87842c13 )
+	rom ( name e10-15.rom size 262144 crc32 a2c0a268 )
+	archive ( name "puzzle_bobble_2" name "pbobble2" )
+	video ( screen raster x 320 y 232 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name puzbob2x
+	description "Puzzle Bobble 2x"
+	manufacturer "Taito"
+	year 1995
+	romof pbobble2
+	rom ( name e10.01 merge e10-01.rom size 1048576 crc32 8c26ff49 )
+	rom ( name e10.02 merge e10-02.rom size 1048576 crc32 c0564490 )
+	rom ( name e10.03 merge e10-03.rom size 2097152 crc32 46d68ac8 )
+	rom ( name e10.04 merge e10-04.rom size 2097152 crc32 5c0862a6 )
+	rom ( name e10.05 merge e10-05.rom size 1048576 crc32 81266151 )
+	rom ( name e10.06 merge e10-06.rom size 1048576 crc32 1b0f20e2 )
+	rom ( name e10.07 merge e10-07.rom size 1048576 crc32 dcb3c29b )
+	rom ( name e10.26 size 262144 crc32 a5c24047 )
+	rom ( name e10.27 size 262144 crc32 88cc0b5c )
+	rom ( name e10.28 size 262144 crc32 412a3602 )
+	rom ( name e10.29 size 262144 crc32 f1e9ad3f )
+	rom ( name e10.30 size 262144 crc32 bb090c1e )
+	rom ( name e10.31 size 262144 crc32 f4b88d65 )
+	archive ( name "puzzle_bobble_2x" name "puzbob2x" )
+	video ( screen raster x 320 y 232 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name pbobble3
+	description "Puzzle Bobble 3"
+	manufacturer "Taito"
+	year 1996
+	rom ( name pb3_05.rom size 2097152 crc32 e33c1234 )
+	rom ( name pb3_02.rom size 1048576 crc32 437391d3 )
+	rom ( name pb3_03.rom size 2097152 crc32 a4371658 )
+	rom ( name pb3_04.rom size 2097152 crc32 d1f42457 )
+	rom ( name pb3_01.rom size 1048576 crc32 52547c77 )
+	rom ( name pb3_06.rom size 1048576 crc32 c16184f8 )
+	rom ( name pb3_07.rom size 1048576 crc32 fca2ea9b )
+	rom ( name pb3_08.rom size 1048576 crc32 7040a3d5 )
+	rom ( name pb3_10.rom size 524288 crc32 1502a122 )
+	rom ( name pb3_11.rom size 524288 crc32 e54ada97 )
+	rom ( name pb3_12.rom size 524288 crc32 9eb19a00 )
+	rom ( name pb3_13.rom size 262144 crc32 1ef551ef )
+	rom ( name pb3_14.rom size 262144 crc32 7ee7e688 )
+	rom ( name pb3_16.rom size 524288 crc32 aac293da )
+	archive ( name "puzzle_bobble_3" name "pbobble3" )
+	video ( screen raster x 320 y 232 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name puzznic
+	description "Puzznic"
+	manufacturer "Taito"
+	year 1989
+	rom ( name u09.rom size 131072 crc32 3c115f8b )
+	rom ( name u10.rom size 131072 crc32 4264056c )
+	rom ( name u11.rom size 131072 crc32 a4150b6c )
+	archive ( name "puzznic" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name quizhq
+	description "Quiz HQ"
+	manufacturer "Taito"
+	year 1990
+	romof qtorimon
+	rom ( name c53-01.bin size 131072 crc32 bf44c93e )
+	rom ( name c53-02.bin size 131072 crc32 d704c6f4 )
+	rom ( name c53-03.bin size 131072 crc32 47596e70 )
+	rom ( name c53-04.bin size 131072 crc32 99890ad4 )
+	rom ( name c53-05.bin size 131072 crc32 c798fc20 )
+	rom ( name c53-06.bin size 131072 crc32 f77f63fc )
+	rom ( name c53-07.bin size 131072 crc32 4f9fa82f )
+	rom ( name c53-08.bin size 65536 crc32 25187e81 )
+	rom ( name c53-051.bin merge mask-51.bin size 131072 crc32 12e14aca )
+	rom ( name c53-052.bin merge mask-52.bin size 131072 crc32 b3ef66f3 )
+	archive ( name "quiz_hq" name "quizhq" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name qtorimon
+	description "Quiz Torimonochou"
+	manufacturer "Taito"
+	year 1990
+	rom ( name c41-01.bin size 131072 crc32 39ff043c )
+	rom ( name c41-02.bin size 131072 crc32 05dcd36d )
+	rom ( name c41-03.bin size 131072 crc32 b2c18e89 )
+	rom ( name c41-04.bin size 131072 crc32 0fbf5223 )
+	rom ( name c41-05.bin size 131072 crc32 174bd5db )
+	rom ( name c41-06.bin size 65536 crc32 753a98d8 )
+	rom ( name mask-51.bin size 131072 crc32 12e14aca )
+	rom ( name mask-52.bin size 131072 crc32 b3ef66f3 )
+	archive ( name "quiz_torimonochou" name "qtorimon" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name raimais
+	description "Raimais"
+	manufacturer "Taito"
+	year 1988
+	rom ( name b36-01.bin size 524288 crc32 89355cb2 )
+	rom ( name b36-02.bin size 524288 crc32 e71da5db )
+	rom ( name b36-03.bin size 524288 crc32 96166516 )
+	rom ( name b36-06.bin size 65536 crc32 29bbc4f8 )
+	rom ( name b36-07.bin size 65536 crc32 4f3737e6 )
+	rom ( name b36-08-1.bin size 131072 crc32 6cc8f79f )
+	rom ( name b36-09.bin size 131072 crc32 9c466e43 )
+	archive ( name "raimais" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name rainbow
+	description "Rainbow Islands"
+	manufacturer "Taito"
+	year 1987
+	rom ( name b22-12 size 65536 crc32 67a76dc6 )
+	rom ( name b22-04 size 65536 crc32 e3d7a844 )
+	rom ( name b22-08 size 65536 crc32 962fb845 )
+	rom ( name b22-09 size 65536 crc32 f43efa27 )
+	rom ( name b22-10 size 65536 crc32 3b013495 )
+	rom ( name b22-11 size 65536 crc32 80041a3d )
+	rom ( name b22-03 size 65536 crc32 00bf8a91 )
+	rom ( name b22-13 size 65536 crc32 2fda099f )
+	rom ( name b22-14 size 65536 crc32 113c1a5b )
+	rom ( name jb1_f89 size 65536 crc32 0810d327 )
+	rom ( name ri_m01.rom size 524288 crc32 b76c9168 )
+	rom ( name ri_m02.rom size 524288 crc32 1b87ecf0 )
+	rom ( name ri_m03.rom size 131072 crc32 3ebb0fb8 )
+	rom ( name ri_m04.rom size 131072 crc32 91625e7f )
+	archive ( name "rainbow_islands" name "rainbow" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name rainbowe
+	description "Rainbow Islands Extra"
+	manufacturer "Taito"
+	year 1988
+	romof rainbow
+	rom ( name ri_m04.rom merge ri_m04.rom size 131072 crc32 91625e7f )
+	rom ( name ri_m03.rom merge ri_m03.rom size 131072 crc32 3ebb0fb8 )
+	rom ( name ri_m02.rom merge ri_m02.rom size 524288 crc32 1b87ecf0 )
+	rom ( name ri_m01.rom merge ri_m01.rom size 524288 crc32 b76c9168 )
+	rom ( name ri_14.rom merge b22-14 size 65536 crc32 113c1a5b )
+	rom ( name ri_13.rom merge b22-13 size 65536 crc32 2fda099f )
+	rom ( name ri_12.rom merge b22-12 size 65536 crc32 67a76dc6 )
+	rom ( name ri_04.rom size 65536 crc32 4caa53bd )
+	rom ( name ri_03.rom size 65536 crc32 4a4cb785 )
+	rom ( name ri_02.rom size 65536 crc32 4dead71f )
+	rom ( name ri_01.rom size 65536 crc32 50690880 )
+	rom ( name jb1_f89 merge jb1_f89 size 65536 crc32 0810d327 )
+	archive ( name "rainbow_islands_extra" name "rainbowe" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name rambo3
+	description "Rambo 3"
+	manufacturer "Taito"
+	year 1989
+	rom ( name r3-a4.rom size 131072 crc32 9cf4c21b )
+	rom ( name r3-0e.rom size 65536 crc32 3efa4177 )
+	rom ( name r3-0o.rom size 65536 crc32 55c38d92 )
+	rom ( name r3-1e.rom size 131072 crc32 40e363c7 )
+	rom ( name r3-1o.rom size 131072 crc32 7f1fe6ab )
+	rom ( name r3-a1.rom size 131072 crc32 4396fa19 )
+	rom ( name r3-a2.rom size 131072 crc32 41fe53a8 )
+	rom ( name r3-a3.rom size 131072 crc32 e89249ba )
+	rom ( name r3-00.rom size 65536 crc32 df7a6ed6 )
+	rom ( name r3-ch0hh.rom size 131072 crc32 4dc69751 )
+	rom ( name r3-ch0hl.rom size 131072 crc32 a4cad36d )
+	rom ( name r3-ch0lh.rom size 131072 crc32 76a330a2 )
+	rom ( name r3-ch0ll.rom size 131072 crc32 b416f1bf )
+	rom ( name r3-ch1hh.rom size 131072 crc32 e39cff37 )
+	rom ( name r3-ch1hl.rom size 131072 crc32 7525eb92 )
+	rom ( name r3-ch1lh.rom size 131072 crc32 75568cf0 )
+	rom ( name r3-ch1ll.rom size 131072 crc32 c86ea5fc )
+	rom ( name r3-ch2hh.rom size 131072 crc32 bf37dfac )
+	rom ( name r3-ch2hl.rom size 131072 crc32 837d8677 )
+	rom ( name r3-ch2lh.rom size 131072 crc32 df3bc48f )
+	rom ( name r3-ch2ll.rom size 131072 crc32 d0ce3051 )
+	rom ( name r3-ch3hh.rom size 131072 crc32 abe58fdb )
+	rom ( name r3-ch3hl.rom size 131072 crc32 80e5647e )
+	rom ( name r3-ch3lh.rom size 131072 crc32 5a155c04 )
+	rom ( name r3-ch3ll.rom size 131072 crc32 abe54b1e )
+	archive ( name "rambo_3" name "rambo3" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name rastan
+	description "Rastan"
+	manufacturer "Taito"
+	year 1987
+	rom ( name ic40_01.bin size 131072 crc32 cd30de19 )
+	rom ( name ic67_02.bin size 131072 crc32 54040fec )
+	rom ( name ic39_03.bin size 131072 crc32 ab67e064 )
+	rom ( name ic66_04.bin size 131072 crc32 94737e93 )
+	rom ( name ic15_05.bin size 131072 crc32 c22d94ac )
+	rom ( name ic28_06.bin size 131072 crc32 002ccf39 )
+	rom ( name ic14_07.bin size 131072 crc32 b5632a51 )
+	rom ( name ic27_08.bin size 131072 crc32 feafca05 )
+	rom ( name ic49_19.bin size 65536 crc32 ee81fdd8 )
+	rom ( name ic76_20.bin size 65536 crc32 fd1a34cc )
+	rom ( name ic07_37.bin size 65536 crc32 ecf20bdd )
+	rom ( name ic19_38.bin size 65536 crc32 1c91dbb1 )
+	rom ( name ic08_39.bin size 65536 crc32 d95ade5e )
+	rom ( name ic20_40.bin size 65536 crc32 0930d4b3 )
+	rom ( name ic21_42.bin size 65536 crc32 1857a7cb )
+	rom ( name ic09_43.bin size 65536 crc32 c34b9152 )
+	archive ( name "rastan" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name rastsaga
+	description "Rastan Saga"
+	manufacturer "Taito"
+	year 1987
+	romof rastan
+	rom ( name ic40_01.bin merge ic40_01.bin size 131072 crc32 cd30de19 )
+	rom ( name ic67_02.bin merge ic67_02.bin size 131072 crc32 54040fec )
+	rom ( name ic39_03.bin merge ic39_03.bin size 131072 crc32 ab67e064 )
+	rom ( name ic66_04.bin merge ic66_04.bin size 131072 crc32 94737e93 )
+	rom ( name ic15_05.bin merge ic15_05.bin size 131072 crc32 c22d94ac )
+	rom ( name ic28_06.bin merge ic28_06.bin size 131072 crc32 002ccf39 )
+	rom ( name ic14_07.bin merge ic14_07.bin size 131072 crc32 b5632a51 )
+	rom ( name ic27_08.bin merge ic27_08.bin size 131072 crc32 feafca05 )
+	rom ( name ic49_19.bin merge ic49_19.bin size 65536 crc32 ee81fdd8 )
+	rom ( name ic76_20.bin merge ic76_20.bin size 65536 crc32 fd1a34cc )
+	rom ( name ic07_37.bin size 65536 crc32 bad60872 )
+	rom ( name ic19_38.bin size 65536 crc32 a38ac909 )
+	rom ( name ic08_39.bin size 65536 crc32 8838ecc5 )
+	rom ( name ic20_40.bin size 65536 crc32 6bcf70dc )
+	rom ( name ic21_42.bin size 65536 crc32 b626c439 )
+	rom ( name ic09_43.bin size 65536 crc32 c928a516 )
+	archive ( name "rastan_saga" name "rastsaga" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name rastan2
+	description "Rastan Saga 2"
+	manufacturer "Taito"
+	year 1989
+	rom ( name b81-01.bin size 524288 crc32 b33f796b )
+	rom ( name b81-02.bin size 524288 crc32 20ec3b86 )
+	rom ( name b81-03.bin size 524288 crc32 551b75e6 )
+	rom ( name b81-04.bin size 524288 crc32 cf734e12 )
+	rom ( name b81-07.bin size 131072 crc32 8edf17d7 )
+	rom ( name b81-08.bin size 131072 crc32 d6da9169 )
+	rom ( name b81-09.bin size 131072 crc32 630d34af )
+	rom ( name b81-10.bin size 131072 crc32 53f34344 )
+	rom ( name b81-11.bin size 65536 crc32 3704bf09 )
+	archive ( name "rastan_saga_2" name "rastan2" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name rodland
+	description "Rodland"
+	manufacturer "Jaleco"
+	year 1990
+	rom ( name rl_04.rom size 65536 crc32 44163c86 )
+	rom ( name rl_01.rom size 131072 crc32 2e748ca1 )
+	rom ( name rl_03.rom size 65536 crc32 62fdf6d7 )
+	rom ( name rl_02.rom size 131072 crc32 c7e00593 )
+	rom ( name rl_05.rom size 65536 crc32 c1617c28 )
+	rom ( name rl_06.rom size 65536 crc32 663392b2 )
+	rom ( name rl_08.rom size 262144 crc32 8a49d3a7 )
+	rom ( name rl_10.rom size 262144 crc32 e1d1cd99 )
+	rom ( name rl_14.rom size 524288 crc32 08d01bf4 )
+	rom ( name rl_18.rom size 524288 crc32 f3b30ca6 )
+	rom ( name rl_23.rom size 524288 crc32 ac60e771 )
+	rom ( name rl_19.rom size 131072 crc32 1b718e2a )
+	archive ( name "rodland" name "rodland_english" name "rodlande" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name rodlandj
+	description "Rodland Japanese"
+	manufacturer "Jaleco"
+	year 1990
+	romof rodland
+	rom ( name rl31b.bin size 65536 crc32 fb2faa69 )
+	rom ( name rl31a.bin size 65536 crc32 a9bc5b84 )
+	rom ( name rl01.bin size 65536 crc32 04cf24bc )
+	rom ( name rl02.bin size 65536 crc32 d26eae8f )
+	rom ( name rl03.bin size 65536 crc32 f6a88efd )
+	rom ( name rl04.bin size 65536 crc32 cfcf9f97 )
+	rom ( name rl05.bin size 65536 crc32 38c05d15 )
+	rom ( name rl06.bin size 65536 crc32 90a78af1 )
+	rom ( name rl07.bin size 65536 crc32 e117cb72 )
+	rom ( name rl08.bin size 65536 crc32 2f9b40c3 )
+	rom ( name rl09.bin size 65536 crc32 427a0908 )
+	rom ( name rl10.bin size 65536 crc32 53cc2c11 )
+	rom ( name rl11.bin size 65536 crc32 9ec61048 )
+	rom ( name rl12.bin size 65536 crc32 c5b1075f )
+	rom ( name rl13.bin size 65536 crc32 1203cdf6 )
+	rom ( name rl14.bin size 65536 crc32 d53e094b )
+	rom ( name rl15.bin size 65536 crc32 38ac846e )
+	rom ( name rl16.bin size 65536 crc32 5e31f0b2 )
+	rom ( name rl17.bin size 65536 crc32 9c720046 )
+	rom ( name rl18.bin size 65536 crc32 5aa61717 )
+	rom ( name rl19.bin size 65536 crc32 028de21f )
+	rom ( name rl20.bin size 65536 crc32 3f536d07 )
+	rom ( name rl21.bin size 65536 crc32 32fc0bc6 )
+	rom ( name rl22.bin size 65536 crc32 0969daa9 )
+	rom ( name rl23.bin size 65536 crc32 70aa7e2c )
+	rom ( name rl24.bin size 65536 crc32 b04343e6 )
+	rom ( name rl25.bin size 65536 crc32 4ca57cb6 )
+	rom ( name rl26.bin size 65536 crc32 4d0a5c97 )
+	rom ( name rl27.bin size 65536 crc32 673a5986 )
+	rom ( name rl28.bin size 65536 crc32 523a731d )
+	rom ( name rl29a.bin size 65536 crc32 9fd628f1 )
+	rom ( name rl29b.bin size 65536 crc32 2279cb76 )
+	rom ( name rl30.bin size 65536 crc32 b155f39e )
+	rom ( name rl_08.rom merge rl_08.rom size 262144 crc32 8a49d3a7 )
+	rom ( name rl_10.rom merge rl_10.rom size 262144 crc32 e1d1cd99 )
+	archive ( name "rodland_japanese" name "rodlandj" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name stdragon
+	description "Saint Dragon"
+	manufacturer "Jaleco"
+	year 1989
+	rom ( name jsd-01.bin size 131072 crc32 67429a57 )
+	rom ( name jsd-02.bin size 131072 crc32 cc29ab19 )
+	rom ( name jsd-05.bin size 65536 crc32 8c04feaa )
+	rom ( name jsd-06.bin size 65536 crc32 0bb62f3a )
+	rom ( name jsd-07.bin size 131072 crc32 6a48e979 )
+	rom ( name jsd-08.bin size 131072 crc32 40704962 )
+	rom ( name jsd-09.bin size 131072 crc32 e366bc5a )
+	rom ( name jsd-10.bin size 131072 crc32 4a8f4fe6 )
+	rom ( name jsd-11.bin size 131072 crc32 2783b7b1 )
+	rom ( name jsd-12.bin size 131072 crc32 89466ab7 )
+	rom ( name jsd-13.bin size 131072 crc32 9896ae82 )
+	rom ( name jsd-14.bin size 131072 crc32 7e8da371 )
+	rom ( name jsd-15.bin size 131072 crc32 e296bf59 )
+	rom ( name jsd-16.bin size 131072 crc32 d8919c06 )
+	rom ( name jsd-17.bin size 131072 crc32 4f7ad563 )
+	rom ( name jsd-18.bin size 131072 crc32 1f4da822 )
+	rom ( name jsd-19.bin size 65536 crc32 25ce807d )
+	rom ( name jsd-20.bin size 131072 crc32 2c6e93bb )
+	rom ( name jsd-21.bin size 131072 crc32 864bcc61 )
+	rom ( name jsd-22.bin size 131072 crc32 44fe2547 )
+	rom ( name jsd-23.bin size 131072 crc32 6b010e1a )
+	archive ( name "saint_dragon" name "stdragon" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name silentd
+	description "Silent Dragon"
+	manufacturer "Taito"
+	year 1992
+	rom ( name sd_m05.rom size 1048576 crc32 e02472c5 )
+	rom ( name sd_m02.rom size 524288 crc32 e0de5c39 )
+	rom ( name sd_m03.rom size 1048576 crc32 1b9b2846 )
+	rom ( name sd_m04.rom size 1048576 crc32 53237217 )
+	rom ( name sd_m01.rom size 524288 crc32 b41fff1a )
+	rom ( name sd_m06.rom size 1048576 crc32 e6e6dfa7 )
+	rom ( name sr_09.rom size 131072 crc32 2f05b14a )
+	rom ( name sr_11.rom size 131072 crc32 35da4428 )
+	rom ( name sr_12-1.rom size 131072 crc32 5883d362 )
+	rom ( name sr_15-1.rom size 131072 crc32 8c0a72ae )
+	rom ( name sr_13.rom size 65536 crc32 651861ab )
+	archive ( name "silent_dragon" name "silentd" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name snowbros
+	description "Snow Bros"
+	manufacturer "Toaplan"
+	year 1990
+	rom ( name snowbros.4 size 32768 crc32 e6eab4e4 )
+	rom ( name snowbros.3a size 131072 crc32 10cb37e1 )
+	rom ( name snowbros.2a size 131072 crc32 ab91cc1e )
+	rom ( name ch3 size 131072 crc32 34024aef )
+	rom ( name ch2 size 131072 crc32 fdaa634c )
+	rom ( name ch1 size 131072 crc32 76347256 )
+	rom ( name ch0 size 131072 crc32 36d84dfe )
+	archive ( name "snow_bros" name "snowbros" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name snowbro2
+	description "Snow Bros 2"
+	manufacturer "Toaplan"
+	year 1994
+	rom ( name pro-4 size 524288 crc32 4c7ee341 )
+	rom ( name rom3-l size 1048576 crc32 eb06e332 )
+	rom ( name rom3-h size 524288 crc32 df4a952a )
+	rom ( name rom2-l size 1048576 crc32 e9d366a9 )
+	rom ( name rom2-h size 524288 crc32 9aab7a62 )
+	rom ( name rom4 size 524288 crc32 638f341e )
+	archive ( name "snow_bros_2" name "snowbro2" )
+	input ( dipswitches 3 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name spacegun
+	description "Space Gun"
+	manufacturer "Taito"
+	year 1990
+	rom ( name c57-16 size 131072 crc32 bfb5d1e7 )
+	rom ( name c57-07 size 524288 crc32 ad653dc1 )
+	rom ( name c57-06 size 524288 crc32 4ebadd5b )
+	rom ( name c57-05 size 524288 crc32 6a70eb2e )
+	rom ( name c57-03 size 1048576 crc32 fafca86f )
+	rom ( name c57-02 size 1048576 crc32 21ee4633 )
+	rom ( name c57-01 size 1048576 crc32 f901b04e )
+	rom ( name c57-15 size 131072 crc32 b36eb8f1 )
+	rom ( name c57-08 size 524288 crc32 22593550 )
+	rom ( name c57-17 size 131072 crc32 e197edb8 )
+	rom ( name c57-18 size 131072 crc32 19d7d52e )
+	rom ( name c57-22 size 131072 crc32 5855fde3 )
+	rom ( name c57-20 size 131072 crc32 2e58253f )
+	rom ( name c57-04 size 1048576 crc32 a9787090 )
+	archive ( name "space_gun" name "spacegun" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name spcinv95
+	description "Space Invaders 95"
+	manufacturer "Taito"
+	year 1995
+	rom ( name e06.05 size 2097152 crc32 f370ff15 )
+	rom ( name e06.09 size 262144 crc32 9bcafc87 )
+	rom ( name e06.10 size 262144 crc32 b752b61f )
+	rom ( name e06.11 size 131072 crc32 3fe550b9 )
+	rom ( name e06.12 size 131072 crc32 06cbd72b )
+	rom ( name e06.13 size 131072 crc32 f506ba4b )
+	rom ( name e06.14 size 131072 crc32 71ba7f00 )
+	rom ( name e06.01 size 1048576 crc32 51721b15 )
+	rom ( name e06.02 size 1048576 crc32 8f646dea )
+	rom ( name e06.03 size 1048576 crc32 a24070ef )
+	rom ( name e06.06 size 1048576 crc32 9380db3c )
+	rom ( name e06.07 size 1048576 crc32 4b02e8f5 )
+	rom ( name e06.08 size 1048576 crc32 72ae2fbf )
+	rom ( name e06.04 size 2097152 crc32 1dac29df )
+	archive ( name "space_invaders_95" name "spcinv95" )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name spacedx
+	description "Space Invaders DX"
+	manufacturer "Taito"
+	year 1994
+	rom ( name d89-01 size 524288 crc32 fffa0660 )
+	rom ( name d89-02 size 524288 crc32 c36544b9 )
+	rom ( name d89-03 size 524288 crc32 218f31a4 )
+	rom ( name d89-05 size 262144 crc32 be1638af )
+	rom ( name d89-06 size 262144 crc32 7122751e )
+	rom ( name d89-07 size 65536 crc32 bd743401 )
+	archive ( name "space_invaders_dx" name "spacedx" )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name strahl
+	description "Strahl"
+	manufacturer "UPL"
+	year 1992
+	rom ( name str6b1w1.776 size 524288 crc32 bb1bb155 )
+	rom ( name str7b2r0.275 size 262144 crc32 5769e3e1 )
+	rom ( name str8pmw1.540 size 524288 crc32 01d6bb6a )
+	rom ( name str9pew1.639 size 524288 crc32 6bb3eb9f )
+	rom ( name strahl-1.83 size 131072 crc32 afc3c4d6 )
+	rom ( name strahl-2.82 size 131072 crc32 c9d008ae )
+	rom ( name strahl-3.73 size 65536 crc32 2273b33e )
+	rom ( name strahl-4.66 size 65536 crc32 60a799c4 )
+	rom ( name strl3-01.32 size 524288 crc32 d8337f15 )
+	rom ( name strl4-02.57 size 524288 crc32 2a38552b )
+	rom ( name strl5-03.58 size 524288 crc32 a0e7d210 )
+	archive ( name "strahl" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name ssi
+	description "Super Space Invaders 91"
+	manufacturer "Taito"
+	year 1990
+	rom ( name ssi_m01.rom size 1048576 crc32 a1b4f486 )
+	rom ( name ssi_m02.rom size 131072 crc32 3cb0b907 )
+	rom ( name ssi_16-1.rom size 262144 crc32 470a483a )
+	rom ( name ssi_15-1.rom size 262144 crc32 ce9308a6 )
+	rom ( name ssi_09.rom size 65536 crc32 88d7f65c )
+	archive ( name "super_space_invaders_91" name "ssi" name "space_invaders_91" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name superman
+	description "Superman"
+	manufacturer "Taito"
+	year 1988
+	rom ( name a10_09.bin size 131072 crc32 640f1d58 )
+	rom ( name a08_08.bin size 131072 crc32 79fc028e )
+	rom ( name a05_07.bin size 131072 crc32 fddb9953 )
+	rom ( name a03_13.bin size 131072 crc32 9f446a44 )
+	rom ( name d18_10.bin size 65536 crc32 6efe79e8 )
+	rom ( name e18_01.bin size 524288 crc32 3cf99786 )
+	rom ( name f01_14.bin size 524288 crc32 89368c3e )
+	rom ( name h01_15.bin size 524288 crc32 910cc4f9 )
+	rom ( name j01_16.bin size 524288 crc32 3622ed2f )
+	rom ( name k01_17.bin size 524288 crc32 c34f27e0 )
+	archive ( name "superman" )
+	input ( dipswitches 2 )
+	video ( screen raster x 356 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name syvalion
+	description "Syvalion"
+	manufacturer "Taito"
+	year 1988
+	rom ( name b51-01.bin size 131072 crc32 8dab004a )
+	rom ( name b51-02.bin size 131072 crc32 906ba440 )
+	rom ( name b51-03.bin size 131072 crc32 8fd9b299 )
+	rom ( name b51-04.bin size 131072 crc32 03aea658 )
+	rom ( name b51-05.bin size 131072 crc32 47976ae9 )
+	rom ( name b51-06.bin size 131072 crc32 81bef4f0 )
+	rom ( name b51-07.bin size 131072 crc32 764d4dc8 )
+	rom ( name b51-08.bin size 131072 crc32 9f6a535c )
+	rom ( name b51-09.bin size 131072 crc32 cbb4f33d )
+	rom ( name b51-10.bin size 131072 crc32 6aa97fbc )
+	rom ( name b51-11.bin size 131072 crc32 ae9a9ac5 )
+	rom ( name b51-12.bin size 131072 crc32 6b36d358 )
+	rom ( name b51-13.bin size 131072 crc32 dab28958 )
+	rom ( name b51-14.bin size 131072 crc32 dea7216e )
+	rom ( name b51-15.bin size 131072 crc32 30b2ee02 )
+	rom ( name b51-16.bin size 131072 crc32 c0fcf7a5 )
+	rom ( name b51-17.bin size 524288 crc32 d85096aa )
+	rom ( name b51-18.bin size 524288 crc32 8b23ac83 )
+	rom ( name b51-19.bin size 131072 crc32 2abd762c )
+	rom ( name b51-20.bin size 131072 crc32 440b6418 )
+	rom ( name b51-21.bin size 131072 crc32 aa111f30 )
+	rom ( name b51-22.bin size 131072 crc32 e6c61079 )
+	rom ( name b51-23.bin size 65536 crc32 734662de )
+	archive ( name "syvalion" )
+	input ( dipswitches 2 )
+	video ( screen raster x 512 y 416 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name tetrist
+	description "Taito Tetris"
+	manufacturer "Taito"
+	year 1989
+	romof rastan2
+	rom ( name b81-01.bin merge b81-01.bin size 524288 crc32 b33f796b )
+	rom ( name b81-02.bin merge b81-02.bin size 524288 crc32 20ec3b86 )
+	rom ( name c12-02.bin size 131072 crc32 ed9530bc )
+	rom ( name c12-03.bin size 131072 crc32 38f1ed41 )
+	rom ( name c12-04.bin size 131072 crc32 5da7a319 )
+	rom ( name c12-05.bin size 131072 crc32 128e9927 )
+	rom ( name c12-06.bin size 65536 crc32 f2814b38 )
+	archive ( name "taito_tetris" name "taito_sega_tetris" name "tetrist" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name tatsujn2
+	description "Tatsujin 2"
+	manufacturer "Toaplan"
+	year 1992
+	rom ( name tsj2rom4.bin size 1048576 crc32 805c449e )
+	rom ( name tsj2rom1.bin size 524288 crc32 f5cfe6ee )
+	rom ( name tsj2rom2.bin size 524288 crc32 f2f6cae4 )
+	rom ( name tsj2rom3.bin size 1048576 crc32 47587164 )
+	archive ( name "tatsujin_2" name "tatsujn2" )
+	input ( dipswitches 3 )
+	video ( screen raster x 240 y 320 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name tknight
+	description "Tecmo Knight"
+	manufacturer "Tecmo"
+	year 1989
+	rom ( name tkni1.bin size 131072 crc32 9121daa8 )
+	rom ( name tkni2.bin size 131072 crc32 6669cd87 )
+	rom ( name tkni3.bin size 65536 crc32 15623ec7 )
+	rom ( name tkni4.bin size 131072 crc32 a7a1dbcf )
+	rom ( name tkni5.bin size 65536 crc32 5ed15896 )
+	rom ( name tkni6.bin size 524288 crc32 f68fafb1 )
+	rom ( name tkni7.bin size 524288 crc32 4b4d4286 )
+	rom ( name tkni8.bin size 524288 crc32 4931b184 )
+	rom ( name tkni9.bin size 524288 crc32 d22f4239 )
+	archive ( name "tecmo_knight" name "tknight" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name terracre
+	description "Terra Cresta"
+	manufacturer "Nichibutsu"
+	year 1985
+	rom ( name 1a_4b.rom size 16384 crc32 76f17479 )
+	rom ( name 1a_6b.rom size 16384 crc32 ba4b5822 )
+	rom ( name 1a_7b.rom size 16384 crc32 d0771bba )
+	rom ( name 1a_9b.rom size 16384 crc32 69227b56 )
+	rom ( name 1a_4d.rom size 16384 crc32 8119f06e )
+	rom ( name 1a_6d.rom size 16384 crc32 ca4852f6 )
+	rom ( name 1a_7d.rom size 16384 crc32 029d59d9 )
+	rom ( name 1a_9d.rom size 16384 crc32 5a672942 )
+	rom ( name 1a_15f.rom size 32768 crc32 984a597f )
+	rom ( name 1a_17f.rom size 32768 crc32 30e297ff )
+	rom ( name 2a_16b.rom size 8192 crc32 591a3804 )
+	rom ( name 2a_15b.rom size 16384 crc32 604c3b11 )
+	rom ( name 2a_17b.rom size 16384 crc32 affc898d )
+	rom ( name 2a_18b.rom size 16384 crc32 302dc0ab )
+	rom ( name 2a_6g.rom size 16384 crc32 4a9ec3e6 )
+	rom ( name 2a_7g.rom size 16384 crc32 450749fc )
+	rom ( name 2a_6e.rom size 16384 crc32 bcf7740b )
+	rom ( name 2a_7e.rom size 16384 crc32 a70b565c )
+	rom ( name tc2a_4e.bin size 256 crc32 2c43991f )
+	rom ( name tc2a_2g.bin size 256 crc32 08609bad )
+	rom ( name tc1a_12f.bin size 256 crc32 7ea63946 )
+	rom ( name tc1a_11f.bin size 256 crc32 566d323a )
+	rom ( name tc1a_10f.bin size 256 crc32 ce07c544 )
+	archive ( name "terra_cresta" name "terracre" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name terraf
+	description "Terra Force"
+	manufacturer "Nichibutsu"
+	year 1987
+	rom ( name terrafor.010 size 65536 crc32 58b5f43b )
+	rom ( name terrafor.002 size 65536 crc32 148aa0c5 )
+	rom ( name terrafor.003 size 65536 crc32 d74085a1 )
+	rom ( name terrafor.004 size 65536 crc32 2144d8e0 )
+	rom ( name terrafor.005 size 65536 crc32 744f5c9e )
+	rom ( name terrafor.006 size 65536 crc32 25d23dfd )
+	rom ( name terrafor.007 size 65536 crc32 b9b0fe27 )
+	rom ( name terrafor.008 size 32768 crc32 bc6f7cbc )
+	rom ( name terrafor.009 size 32768 crc32 d1014280 )
+	rom ( name terrafor.001 size 65536 crc32 eb6b4138 )
+	rom ( name terrafor.011 size 65536 crc32 5320162a )
+	rom ( name terrafor.012 size 32768 crc32 4f0e1d76 )
+	rom ( name terrafor.013 size 65536 crc32 a86951e0 )
+	rom ( name terrafor.014 size 65536 crc32 8e5f557f )
+	archive ( name "terra_force" name "terraf" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name tnzs
+	description "The New Zealand Story"
+	manufacturer "Taito"
+	year 1988
+	rom ( name nzsb5311.bin size 65536 crc32 9784d443 )
+	rom ( name nzsb5310.bin size 131072 crc32 a73745c6 )
+	rom ( name nzsb5316.bin size 131072 crc32 c3519c2a )
+	rom ( name nzsb5317.bin size 131072 crc32 2bf199e8 )
+	rom ( name nzsb5318.bin size 131072 crc32 92f35ed9 )
+	rom ( name nzsb5319.bin size 131072 crc32 edbb9581 )
+	rom ( name nzsb5320.bin size 131072 crc32 095d0dc0 )
+	rom ( name nzsb5321.bin size 131072 crc32 9800c54d )
+	rom ( name nzsb5322.bin size 131072 crc32 59d2aef6 )
+	rom ( name nzsb5323.bin size 131072 crc32 74acfb9b )
+	archive ( name "the_nz_story" name "tnzs" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name tnzs2
+	description "The New Zealand Story Extra"
+	manufacturer "Taito"
+	year 1988
+	romof tnzs
+	rom ( name ns_a13.rom size 131072 crc32 7e0bd5bb )
+	rom ( name ns_e-3.rom size 65536 crc32 c7662e96 )
+	rom ( name ns_c-11.rom size 131072 crc32 3c1dae7b )
+	rom ( name ns_a12.rom size 131072 crc32 95880726 )
+	rom ( name ns_a10.rom size 131072 crc32 2bc4c053 )
+	rom ( name ns_a08.rom size 131072 crc32 8ff8d88c )
+	rom ( name ns_a07.rom size 131072 crc32 291bcaca )
+	rom ( name ns_a05.rom size 131072 crc32 6e762e20 )
+	rom ( name ns_a04.rom size 131072 crc32 e1fd1b9d )
+	rom ( name ns_a02.rom size 131072 crc32 2ab06bda )
+	archive ( name "the_nz_story_extra" name "tnzs2" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name thunderd
+	description "Thunder Dragon"
+	manufacturer "NMK"
+	year 1991
+	rom ( name thund.1 size 65536 crc32 bf493d74 )
+	rom ( name thund.2 size 524288 crc32 ecfea43e )
+	rom ( name thund.3 size 524288 crc32 ae6875a8 )
+	rom ( name thund.4 size 1048576 crc32 3eedc2fe )
+	rom ( name thund.5 size 1048576 crc32 d0bde826 )
+	rom ( name thund.6 size 131072 crc32 fe365920 )
+	rom ( name thund.7 size 131072 crc32 52192fe5 )
+	rom ( name thund.8 size 131072 crc32 edd02831 )
+	archive ( name "thunder_dragon" name "thunderd" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name thndrdbl
+	description "Thunder Dragon Bootleg"
+	manufacturer "Bootleg"
+	year 1991
+	romof thunderd
+	rom ( name td_01.bin size 65536 crc32 f6f6c4bf )
+	rom ( name td_02.bin size 65536 crc32 99ee7505 )
+	rom ( name td_03.bin size 131072 crc32 2fa1aa04 )
+	rom ( name td_04.bin size 131072 crc32 e8a62d3e )
+	rom ( name td_06.bin size 524288 crc32 c1be8a4d )
+	rom ( name td_07.bin size 524288 crc32 2c3e371f )
+	rom ( name td_08.bin size 131072 crc32 5144dc69 )
+	rom ( name td_09.bin size 524288 crc32 b6e074eb )
+	rom ( name td_10.bin size 524288 crc32 bfd0ec5d )
+	archive ( name "thunder_dragon_bl" name "thndrdbl" )
+	input ( dipswitches 2 )
+	video ( screen raster x 224 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name thundfox
+	description "Thunder Fox"
+	manufacturer "Taito"
+	year 1989
+	rom ( name c28scr1.01 size 524288 crc32 6230a09d )
+	rom ( name c28lo.07 size 131072 crc32 24419abb )
+	rom ( name c28mainh.13 size 131072 crc32 acb07013 )
+	rom ( name c28mainl.12 size 131072 crc32 f04db477 )
+	rom ( name c28objh.04 size 524288 crc32 ba7ed535 )
+	rom ( name c28objl.03 size 524288 crc32 51bdc7af )
+	rom ( name c28hi.08 size 131072 crc32 38e038f1 )
+	rom ( name c28scr2.01 size 524288 crc32 44552b25 )
+	rom ( name c28snd.14 size 65536 crc32 45ef3616 )
+	rom ( name c28snda.06 size 524288 crc32 db6983db )
+	rom ( name c28sndb.05 size 524288 crc32 d3b238fa )
+	archive ( name "thunder_fox" name "thundfox" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name toki
+	description "Toki"
+	manufacturer "Bootleg"
+	year 1989
+	rom ( name toki.e9 size 65536 crc32 82ce27f6 )
+	rom ( name toki.e8 size 65536 crc32 46a1b821 )
+	rom ( name toki.e7 size 65536 crc32 d98812d1 )
+	rom ( name toki.e6 size 65536 crc32 6f4b878a )
+	rom ( name toki.e4 size 65536 crc32 a01a5b10 )
+	rom ( name toki.e38 size 131072 crc32 87f4e7fb )
+	rom ( name toki.e36 size 131072 crc32 96e8db8b )
+	rom ( name toki.e34 size 131072 crc32 e5f6e19b )
+	rom ( name toki.e32 size 131072 crc32 c289d246 )
+	rom ( name toki.e30 size 131072 crc32 770d2b1b )
+	rom ( name toki.e3 size 131072 crc32 ae9b3da4 )
+	rom ( name toki.e28 size 131072 crc32 29784948 )
+	rom ( name toki.e26 size 131072 crc32 a8ba71fc )
+	rom ( name toki.e25 size 65536 crc32 63026cad )
+	rom ( name toki.e24 size 65536 crc32 5b365637 )
+	rom ( name toki.e23 size 65536 crc32 feb13d35 )
+	rom ( name toki.e22 size 65536 crc32 99f26449 )
+	rom ( name toki.e21 size 65536 crc32 65605ed2 )
+	rom ( name toki.e20 size 65536 crc32 a7f2ce26 )
+	rom ( name toki.e2 size 65536 crc32 d6a82808 )
+	rom ( name toki.e19 size 65536 crc32 6cd22b18 )
+	rom ( name toki.e18 size 65536 crc32 4c2a72e1 )
+	rom ( name toki.e17 size 65536 crc32 fbc3d456 )
+	rom ( name toki.e16 size 65536 crc32 2a11c0f0 )
+	rom ( name toki.e15 size 65536 crc32 617c32e6 )
+	rom ( name toki.e14 size 65536 crc32 859e313a )
+	rom ( name toki.e13 size 65536 crc32 ca999b93 )
+	rom ( name toki.e12 size 65536 crc32 c2ad9342 )
+	rom ( name toki.e11 size 65536 crc32 48989aa0 )
+	rom ( name toki.e10 size 65536 crc32 e15c1d0f )
+	rom ( name toki.e1 size 65536 crc32 2832ef75 )
+	rom ( name toki.e5 size 131072 crc32 66a5a1d6 )
+	rom ( name toki.e40 size 131072 crc32 96e87350 )
+	archive ( name "toki" name "tokib" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name twinqix
+	description "Twin Qix"
+	manufacturer "Taito"
+	year 1995
+	rom ( name mpr0-0.b63 size 262144 crc32 a4c44c11 )
+	rom ( name mpr0-1.b62 size 262144 crc32 531f9447 )
+	rom ( name mpr0-2.b61 size 262144 crc32 45a70987 )
+	rom ( name mpr0-3.b60 size 262144 crc32 1a63d0de )
+	rom ( name obj0-0.a08 size 524288 crc32 c6ea845c )
+	rom ( name obj0-1.a20 size 524288 crc32 8c12b7fb )
+	rom ( name scr0-0.b07 size 524288 crc32 9a1b9b34 )
+	rom ( name scr0-1.b06 size 524288 crc32 e9bef879 )
+	rom ( name scr0-2.b05 size 524288 crc32 cac6854b )
+	rom ( name scr0-3.b04 size 524288 crc32 ce063034 )
+	rom ( name scr0-4.b03 size 524288 crc32 d32280fe )
+	rom ( name scr0-5.b02 size 524288 crc32 fdd1a85b )
+	rom ( name snd-0.b43 size 524288 crc32 ad5405a9 )
+	rom ( name snd-1.b44 size 524288 crc32 274864af )
+	rom ( name snd-14.b10 size 524288 crc32 26312451 )
+	rom ( name snd-15.b11 size 524288 crc32 2edaa9dc )
+	rom ( name spr0-0.b65 size 262144 crc32 2569eb30 )
+	rom ( name spr0-1.b66 size 262144 crc32 4b20e99d )
+	archive ( name "twin_qix" name "twinqix" )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name viofight
+	description "Violence Fight"
+	manufacturer "Taito"
+	year 1989
+	rom ( name c16-01.rom size 524288 crc32 7059ce83 )
+	rom ( name c16-02.rom size 524288 crc32 b458e905 )
+	rom ( name c16-03.rom size 524288 crc32 515a9431 )
+	rom ( name c16-04.rom size 524288 crc32 ebf285e2 )
+	rom ( name c16-05.rom size 524288 crc32 a49d064a )
+	rom ( name c16-06.rom size 131072 crc32 043761d8 )
+	rom ( name c16-07.rom size 131072 crc32 64d1d059 )
+	rom ( name c16-11.rom size 65536 crc32 23dbd388 )
+	rom ( name c16-12.rom size 65536 crc32 6fb028c7 )
+	rom ( name c16-14.rom size 65536 crc32 dc934f6a )
+	archive ( name "violence_fight" name "viofight" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name wwfsstar
+	description "WWF Super Stars"
+	manufacturer "Technos"
+	year 1989
+	rom ( name wwfs43.bin size 65536 crc32 aafc4a38 )
+	rom ( name wwfs02.bin size 65536 crc32 6e63c457 )
+	rom ( name wwfs03.bin size 65536 crc32 8a35a20e )
+	rom ( name wwfs04.bin size 65536 crc32 d7018a9c )
+	rom ( name wwfs05.bin size 65536 crc32 6df08962 )
+	rom ( name wwfs06.bin size 65536 crc32 154ca5ce )
+	rom ( name wwfs07.bin size 65536 crc32 369559e6 )
+	rom ( name wwfs08.bin size 65536 crc32 166fe8c8 )
+	rom ( name wwfs09.bin size 65536 crc32 8cbcd5aa )
+	rom ( name wwfs10.bin size 65536 crc32 a3382dfe )
+	rom ( name wwfs11.bin size 65536 crc32 3d4684dc )
+	rom ( name wwfs12.bin size 65536 crc32 242caff5 )
+	rom ( name wwfs13.bin size 65536 crc32 970b6e76 )
+	rom ( name wwfs14.bin size 65536 crc32 67eb7bea )
+	rom ( name wwfs15.bin size 65536 crc32 aac5a928 )
+	rom ( name wwfs16.bin size 65536 crc32 08343e7f )
+	rom ( name wwfs17.bin size 65536 crc32 ef12069f )
+	rom ( name wwfs18.bin size 65536 crc32 af11ad2a )
+	rom ( name wwfs19.bin size 65536 crc32 7426d444 )
+	rom ( name wwfs20.bin size 65536 crc32 b2a8050e )
+	rom ( name wwfs21.bin size 65536 crc32 c52eee5e )
+	rom ( name wwfs22.bin size 65536 crc32 81fe1bf7 )
+	rom ( name wwfs23.bin size 65536 crc32 681f5b5e )
+	rom ( name wwfs24.bin size 65536 crc32 76b08bcd )
+	rom ( name wwfs25.bin size 65536 crc32 bbf69c6a )
+	rom ( name wwfs26.bin size 65536 crc32 2ca91eaf )
+	rom ( name wwfs27.bin size 65536 crc32 f3eb8ab9 )
+	rom ( name wwfs28.bin size 65536 crc32 70fda626 )
+	rom ( name wwfs29.bin size 65536 crc32 7b5b9d83 )
+	rom ( name wwfs30.bin size 65536 crc32 94094518 )
+	rom ( name wwfs31.bin size 65536 crc32 f94c74d5 )
+	rom ( name wwfs32.bin size 65536 crc32 9becd621 )
+	rom ( name wwfs33.bin size 65536 crc32 f6923db6 )
+	rom ( name wwfs34.bin size 65536 crc32 742a79db )
+	rom ( name wwfs35.bin size 65536 crc32 9d648d82 )
+	rom ( name wwfs36.bin size 65536 crc32 9005e942 )
+	rom ( name wwfs37.bin size 65536 crc32 5e8d7407 )
+	rom ( name wwfs38.bin size 65536 crc32 d8ea94d3 )
+	rom ( name wwfs39.bin size 65536 crc32 d807b09a )
+	rom ( name wwfs40.bin size 65536 crc32 4d75fd89 )
+	rom ( name wwfs41.bin size 65536 crc32 ed7f69d5 )
+	rom ( name wwfs42.bin size 65536 crc32 e48b88fb )
+	rom ( name wwfs01.bin size 32768 crc32 1e44f8aa )
+	rom ( name wwfs44.bin size 65536 crc32 4f965fa9 )
+	rom ( name wwfs45.bin size 65536 crc32 b2fad792 )
+	rom ( name wwfs46.bin size 65536 crc32 985e5180 )
+	rom ( name wwfs47.bin size 65536 crc32 6fd7b6ea )
+	rom ( name wwfs48.bin size 65536 crc32 251372fd )
+	rom ( name wwfs49.bin size 65536 crc32 a14076b0 )
+	rom ( name wwfs50.bin size 65536 crc32 7fc79df5 )
+	rom ( name wwfs51.bin size 65536 crc32 51157385 )
+	archive ( name "wwf_super_stars" name "wwfsstar" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 256 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name warriorb
+	description "Warrior Blade"
+	manufacturer "Taito"
+	year 1992
+	rom ( name d24-01.bin size 1048576 crc32 326dcca9 )
+	rom ( name d24-02.bin size 1048576 crc32 9f50c271 )
+	rom ( name d24-03.bin size 1048576 crc32 46db9fd7 )
+	rom ( name d24-04.bin size 1048576 crc32 148e0493 )
+	rom ( name d24-05.bin size 1048576 crc32 9f414317 )
+	rom ( name d24-06.bin size 1048576 crc32 918486fe )
+	rom ( name d24-07.bin size 1048576 crc32 9f50c271 )
+	rom ( name d24-08.bin size 1048576 crc32 1e6d1528 )
+	rom ( name d24-09.bin size 1048576 crc32 ece5cc59 )
+	rom ( name d24-10.bin size 1048576 crc32 0e0c716d )
+	rom ( name d24-11.bin size 1048576 crc32 15362573 )
+	rom ( name d24-12.bin size 1048576 crc32 279203a1 )
+	rom ( name d24-17.bin size 131072 crc32 e41e4aae )
+	rom ( name d24-18-1.bin size 262144 crc32 4502db60 )
+	rom ( name d24-19-1.bin size 262144 crc32 15c16016 )
+	rom ( name d24-20-1.bin size 262144 crc32 4452dc25 )
+	rom ( name d24-21-1.bin size 262144 crc32 783ef8e1 )
+	archive ( name "warrior_blade" name "warriorb" )
+	input ( dipswitches 2 )
+	video ( screen raster x 640 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name weststry
+	description "West Story"
+	manufacturer "Bootleg"
+	year 1991
+	romof bloodbro
+	rom ( name ws20.bin size 131072 crc32 f1245c16 )
+	rom ( name ws21.bin size 131072 crc32 e23d7296 )
+	rom ( name ws22.bin size 131072 crc32 7150a060 )
+	rom ( name ws23.bin size 131072 crc32 43d58e24 )
+	rom ( name ws24.bin size 131072 crc32 20a867ea )
+	rom ( name ws25.bin size 131072 crc32 8092e8e9 )
+	rom ( name ws26.bin size 131072 crc32 f6a1f42c )
+	rom ( name ws01.bin size 131072 crc32 32bda4bc )
+	rom ( name ws02.bin size 131072 crc32 ed9d682e )
+	rom ( name ws03.bin size 131072 crc32 046b51f8 )
+	rom ( name ws04.bin size 131072 crc32 75f082e5 )
+	rom ( name ws05.bin size 131072 crc32 007c8dc0 )
+	rom ( name ws06.bin size 131072 crc32 459d075e )
+	rom ( name ws07.bin size 131072 crc32 0f0c8d9a )
+	rom ( name ws08.bin size 131072 crc32 4d6783b3 )
+	rom ( name ws13.bin size 131072 crc32 158e302a )
+	rom ( name ws14.bin merge bb_04.bin size 131072 crc32 fd951c2c )
+	rom ( name ws15.bin size 131072 crc32 672e9027 )
+	rom ( name ws16.bin merge bb_03.bin size 131072 crc32 18d3c460 )
+	rom ( name ws18.bin merge bb_08.bin size 131072 crc32 deb1b975 )
+	rom ( name ws19.bin size 131072 crc32 c5dd0a96 )
+	rom ( name ws09.bin size 65536 crc32 f05b2b3e )
+	rom ( name ws10.bin size 65536 crc32 efdf7c82 )
+	rom ( name ws11.bin size 65536 crc32 2b10e3d2 )
+	rom ( name ws12.bin size 65536 crc32 af993578 )
+	rom ( name ws17.bin size 65536 crc32 e00a8f09 )
+	archive ( name "west_story" name "weststry" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name whoopee
+	description "Whoopee"
+	manufacturer "Toaplan"
+	year 1991
+	rom ( name whoopee.1 size 131072 crc32 28882e7e )
+	rom ( name whoopee.2 size 131072 crc32 6796f133 )
+	rom ( name ppbb08.bin size 32768 crc32 101c0358 )
+	rom ( name ppbb01.bin size 524288 crc32 0fcae44b )
+	rom ( name ppbb02.bin size 524288 crc32 8bfcdf87 )
+	rom ( name ppbb03.bin size 524288 crc32 abdd2b8b )
+	rom ( name ppbb04.bin size 524288 crc32 70faa734 )
+	rom ( name ppbb07.bin size 32768 crc32 456dd16e )
+	archive ( name "whoopee" )
+	input ( dipswitches 3 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name wintbob
+	description "Winter Bobble"
+	manufacturer "Bootleg"
+	year 1990
+	romof snowbros
+	rom ( name wb01.bin size 65536 crc32 05722f17 )
+	rom ( name wb02.bin size 65536 crc32 fc8e292e )
+	rom ( name wb03.bin size 65536 crc32 df56e168 )
+	rom ( name wb04.bin size 65536 crc32 53be758d )
+	rom ( name wb06.bin size 65536 crc32 68204937 )
+	rom ( name wb07.bin size 65536 crc32 53f40978 )
+	rom ( name wb08.bin size 65536 crc32 9497b88c )
+	rom ( name wb09.bin size 65536 crc32 9be718ca )
+	rom ( name wb10.bin size 65536 crc32 5fa22b1e )
+	rom ( name wb11.bin size 65536 crc32 41cb4563 )
+	rom ( name wb12.bin size 65536 crc32 ef4e04c7 )
+	rom ( name wb13.bin size 65536 crc32 426921de )
+	rom ( name wb05.bin size 65536 crc32 53fe59df )
+	archive ( name "winter_bobble" name "wintbob" )
+	input ( dipswitches 2 )
+	video ( screen raster x 256 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name wrestlef
+	description "Wrestle Fest"
+	manufacturer "Technos"
+	year 1991
+	rom ( name wf_73a.rom size 524288 crc32 6c522edb )
+	rom ( name wf_42.rom size 65536 crc32 5ddebfea )
+	rom ( name wf_33.rom size 131072 crc32 06f22615 )
+	rom ( name wf_19.rom size 262144 crc32 bd02e3c4 )
+	rom ( name wf_18.rom size 262144 crc32 933ea1a0 )
+	rom ( name wf_15.rom size 1048576 crc32 dd387289 )
+	rom ( name wf_14.rom size 1048576 crc32 44abe127 )
+	rom ( name wf_13.rom size 1048576 crc32 74d774c3 )
+	rom ( name wf_12.rom size 1048576 crc32 79956cf8 )
+	rom ( name wf_11.rom size 1048576 crc32 2ce545e8 )
+	rom ( name wf_10.rom size 1048576 crc32 00edb66a )
+	rom ( name wf_09.rom size 1048576 crc32 e395cf1d )
+	rom ( name wf_08.rom size 1048576 crc32 b5a97465 )
+	rom ( name wf_02.rom size 262144 crc32 82ed7155 )
+	rom ( name wf_01.rom size 262144 crc32 8a12b450 )
+	archive ( name "wrestle_fest" name "wrestlef" )
+	input ( dipswitches 2 )
+	video ( screen raster x 320 y 240 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+game (
+	name zerozone
+	description "Zero Zone"
+	manufacturer "Comad"
+	year 1993
+	rom ( name zz-2.rom size 131072 crc32 c7551e81 )
+	rom ( name zz-1.rom size 32768 crc32 223ccce5 )
+	rom ( name zz-3.rom size 131072 crc32 e348ff5e )
+	rom ( name zz-4.rom size 65536 crc32 83718b9b )
+	rom ( name zz-5.rom size 65536 crc32 18557f41 )
+	rom ( name zz-6.rom size 524288 crc32 c8b906b9 )
+	archive ( name "zero_zone" name "zerozone" )
+	input ( dipswitches 2 )
+	video ( screen raster x 368 y 224 freq 60 )
+	driver ( status good color good colordeep 8 credits "Antiriad & Raine Team" )
+)
+
+END
+
