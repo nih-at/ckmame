@@ -30,7 +30,7 @@
 void game_swap_rs(struct game *g);
 
 enum state romcmp(struct rom *r1, struct rom *r2, int merge);
-struct zfile *zfile_new(char *name, int sample);
+struct zfile *zfile_new(char *name, int sample, char *parent);
 void marry (struct match *rm, int count, int *noz);
 struct match *check_game(struct game *game, struct zfile **zip,
 			 int pno, int gpno);

@@ -42,7 +42,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
     struct game *child_g, *me_g;
     struct match *child_m, *me_m;
 
-    me_z = zfile_new(tree->name, sample);
+    me_z = zfile_new(tree->name, sample, NULL);
 
     me_m = NULL;
     me_g = NULL;
@@ -87,7 +87,7 @@ tree_child_traverse(DB *db, struct tree *tree, int sample, int parentcheck,
 		}
 		if (sample)
 		    game_swap_rs(child_g);
-		child_z = zfile_new(me_g->clone[i], sample);
+		child_z = zfile_new(me_g->clone[i], sample, NULL);
 		
 		all_z[0] = child_z;
 		all_z[1] = me_z;
@@ -249,17 +249,30 @@ tree_free(struct tree *tree)
 
 
 struct zfile *
-zfile_new(char *name, int sample)
+zfile_new(char *name, int sample, char *parent)
 {
     struct zfile *z;
+    char b[8192], *p;
     int i;
     
     z = (struct zfile *)xmalloc(sizeof(struct zfile));
-    
-    z->name = findzip(name, sample);
-    if (z->name == NULL) {
-	free(z);
-	return NULL;
+
+    if (parent) {
+	strcpy(b, parent);
+	p = strrchr(b, '/');
+	if (p == NULL)
+	    p = b;
+	else
+	    p++;
+	strcpy(p, name);
+	z->name = xstrdup(p);
+    }
+    else {
+	z->name = findzip(name, sample);
+	if (z->name == NULL) {
+	    free(z);
+	    return NULL;
+	}
     }
     
     i = readinfosfromzip(z);

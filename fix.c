@@ -26,6 +26,13 @@ fix_game(struct game *g, struct zfile **zip, struct match *m)
 
     zf_garbage = NULL;
 
+    if (zip[0] == NULL) {
+	if (zip[1] == NULL && zip[2] == NULL)
+	    return 0;
+	
+	zip[0] = zfile_new(g->name, 0, (zip[1] ? zip[1] : zip[2])->name);
+    }
+    
     if (fix_do) 
 	if (zip[0]->zf == NULL)
 	    zip[0]->zf = zip_open(zip[0]->name, ZIP_CREATE);
