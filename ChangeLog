@@ -1,3 +1,8 @@
+2001-10-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* libzip/zip_replace_zip.c (read_part): fix typo: pass correct
+	length to zip_read().
+
 1999-11-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* util.c: (rompath, init_rompath) declared non-static for access
