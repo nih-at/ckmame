@@ -41,7 +41,8 @@ parse_xml(FILE *f)
     while ((ret=xmlTextReaderRead(reader)) == 1) {
 	name = xmlTextReaderConstName(reader);
 
-	if (strcmp(name, "game") == 0) {
+	if (strcmp(name, "game") == 0
+	    || strcmp(name, "machine") == 0) {
 	    if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT) {
 		parse_game_start();
 		do_attr(reader, "name", parse_game_name);

@@ -1,5 +1,4 @@
 fix mkmamedb-xmame.sh for removal of -li
-mkmamedb on mess-0.84.1 XML db produces an empty database
 add option to check integrity for roms only (not for disks, they take forever)
 support disks with parents
 add md5 and sha1 replacement functions
