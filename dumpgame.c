@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.32 2004/04/26 11:49:37 dillo Exp $
+  $NiH: dumpgame.c,v 1.33 2004/04/26 21:29:19 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -221,7 +221,7 @@ dump_game(DB *db, const char *name)
 	    printf("  md5 %s", bin2hex(game->rom[i].hashes.md5,
 				       sizeof(game->rom[i].hashes.md5)));
 	if (game->rom[i].hashes.types & GOT_SHA1)
-	    printf("  md5 %s", bin2hex(game->rom[i].hashes.sha1,
+	    printf("  sha1 %s", bin2hex(game->rom[i].hashes.sha1,
 				       sizeof(game->rom[i].hashes.sha1)));
 	printf("  flags %s  in %s",
 	       flags_name[game->rom[i].flags], where_name[game->rom[i].where]);
