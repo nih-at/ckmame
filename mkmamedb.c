@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.21 2004/01/28 11:53:58 dillo Exp $
+  $NiH: mkmamedb.c,v 1.22 2004/02/26 02:26:10 wiz Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -86,7 +86,7 @@ main(int argc, char **argv)
 	dbname = "mame";
 	dbext = 1;
     }
-    fname = "db.txt";
+    fname = NULL;
     
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {

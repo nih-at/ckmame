@@ -1,5 +1,5 @@
 /*
-  $NiH: error.c,v 1.8 2004/01/29 11:09:50 dillo Exp $
+  $NiH: error.c,v 1.9 2004/02/26 02:26:08 wiz Exp $
 
   error.c -- error printing
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -35,13 +35,13 @@
 
 extern char *prg;
 
-static char *myerrorfn = DEFAULT_FN;
-static char *myerrorzipn = DEFAULT_FN;
+static const char *myerrorfn = DEFAULT_FN;
+static const char *myerrorzipn = DEFAULT_FN;
 
 
 
 void
-myerror(int errtype, char *fmt, ...)
+myerror(int errtype, const char *fmt, ...)
 {
     va_list va;
 
@@ -71,7 +71,7 @@ myerror(int errtype, char *fmt, ...)
 
 
 void
-seterrinfo(char *fn, char *zipn)
+seterrinfo(const char *fn, const char *zipn)
 {
     if (fn)
 	myerrorfn = fn;

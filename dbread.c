@@ -1,5 +1,5 @@
 /*
-  $NiH: dbread.c,v 1.35 2004/02/26 02:26:08 wiz Exp $
+  $NiH: dbread.c,v 1.36 2004/04/21 10:38:37 dillo Exp $
 
   dbread.c -- parsing listinfo output, creating mamedb
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -75,7 +75,7 @@ dbread_init(void)
 enum parse_state { st_top, st_game, st_prog };
 
 int
-dbread(DB* db, char *fname)
+dbread(DB* db, const char *fname)
 {
     FILE *fin;
     char b[8192], *cmd, *p, *l;
@@ -93,9 +93,16 @@ dbread(DB* db, char *fname)
     int nr, ns, nd, lineno;
     int to_do;
 
-    if ((fin=fopen(fname, "r")) == NULL) {
-	myerror(ERRSTR, "can\'t open romlist file `%s'", fname);
-	return -1;
+    if (fname == NULL) {
+	fin = stdin;
+	seterrinfo("*stdin*", NULL);
+    }
+    else {
+	if ((fin=fopen(fname, "r")) == NULL) {
+	    myerror(ERRSTR, "can\'t open romlist file `%s'", fname);
+	    return -1;
+	}
+	seterrinfo(fname, NULL);
     }
 
     lostmax = 100;
@@ -103,8 +110,6 @@ dbread(DB* db, char *fname)
     lostchildren_to_do = (int *)xmalloc(lostmax*sizeof(int));
     prog_name = prog_version = NULL;
 
-    seterrinfo(fname, NULL);
-    
     nlost = nr = ns = nd = 0;
     lineno = 0;
     state = st_top;

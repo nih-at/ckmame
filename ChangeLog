@@ -1,3 +1,10 @@
+2004-04-22  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* some const poisoning.
+	
+	* mkmamedb.c (main): let no argument mean read from stdin.
+	* dbread.c (dbread): if fname is NULL, read from stdin.
+
 2004-04-21  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* r_prog.c (r_prog): make compile.

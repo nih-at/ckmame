@@ -2,7 +2,7 @@
 #define _HAD_MKMAMEDB_H
 
 /*
-  $NiH: mkmamedb.h,v 1.5 2003/03/16 10:21:34 wiz Exp $
+  $NiH: mkmamedb.h,v 1.6 2004/02/26 02:26:10 wiz Exp $
 
   mkmamedb.h -- create mamedb
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -29,6 +29,6 @@
 #include "dbl.h"
 
 int dbread_init(void);
-int dbread(DB* db, char *fname);
+int dbread(DB* db, const char *fname);
 
 #endif /* mkmamedb.h */
