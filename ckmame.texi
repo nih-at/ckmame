@@ -1,0 +1,103 @@
+\input texinfo	@c -*-texinfo-*-
+@c %**start of header
+@setfilename ckmame.info
+@settitle ckmame
+@setchapternewpage odd
+@c %**end of header
+@c @synindex tp vr
+
+@include version.texi
+
+@ifinfo
+@format
+START-INFO-DIR-ENTRY
+* ckmame: (ckmame).             Check and fix MAME rom sets (zip files).
+END-INFO-DIR-ENTRY
+@end format
+@end ifinfo
+
+@ifinfo
+This file documents ckmame @value{VERSION}
+
+Copyright 1999 Dieter Baron, Thomas Klausner
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation
+approved by the Free Software Foundation.
+@end ifinfo
+
+
+@titlepage
+@title @sc{ckmame} -- Check and Fix MAME ROM Sets
+@subtitle For version @value{VERSION}, @value{UPDATED}
+@author Dieter Baron
+@author Thomas Klausner
+@c copyright page
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1999 Dieter Baron, Thomas Klausner
+@sp 2
+This is a draft edition of the @sc{ckmame} documentation,@*
+and is consistent with @sc{ckmame} @value{VERSION}.@*
+@sp 2
+@ignore
+Published by the Free Software Foundation @*
+59 Template Place - Suite 330, @*
+Boston, MA 02111-1307 USA @*
+
+@end ignore
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation
+approved by the Free Software Foundation.
+@end titlepage
+
+@ifinfo
+@c ****************************************************************
+@node Top, , ,(dir)
+@top ckmame
+
+This file documents @sc{ckmame}, a command line rom checker for MAME,
+the Multiple Arcade Machine Emulator.  This edition documents version
+@value{VERSION}.
+
+@menu
+* Introduction::        An introduction to @sc{ckmame}
+* Preparation::         What you need to do before the first run
+* Invoking ckmame::     How to start @sc{ckmame}
+* Invoking dumpgame::   How to view the data base
+* Index::               Listing of all keywords
+@end menu
+@end ifinfo
+
+
+@c ********************************************************************
+@node Introduction
+@chapter Introduction
+@cindex Introduction
