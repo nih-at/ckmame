@@ -5,6 +5,8 @@
 #include "unzip.h"
 #include "types.h"
 #include "error.h"
+#include "dbl.h"
+#include "funcs.h"
 
 #define MAXFNLEN 1024
 #define BUFSIZE 8192
@@ -97,7 +99,7 @@ readinfosfromzip (struct rom **rompp, char *zipfile)
     }
 
     if (globinfo.number_entry > 0)
-	romp = xmalloc(sizeof(struct rom)*globinfo.number_entry);
+	romp = (struct rom *)xmalloc(sizeof(struct rom)*globinfo.number_entry);
     else {
 	myerror(ERRZIP, "%d roms in zipfile (?)", globinfo.number_entry);
 	return -1;

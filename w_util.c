@@ -1,6 +1,8 @@
 #include <stddef.h>
 
 #include "dbl.h"
+#include "types.h"
+#include "funcs.h"
 #include "w.h"
 
 #define BLKSIZE  1024
@@ -61,6 +63,14 @@ w__string(DBT *v, char *s)
 
 
 void
+w__pstring(DBT *v, char **sp)
+{
+    w__string(v, *sp);
+}
+
+
+
+void
 w__array(DBT *v, void (*fn)(DBT *, void *), void *a, size_t size, size_t n)
 {
     int i;
@@ -81,5 +91,5 @@ w__rom(DBT *v, struct rom *r)
     w__string(v, r->name);
     w__ulong(v, r->size);
     w__ulong(v, r->crc);
-    /* XXX: where */
+    w__ushort(v, r->where);
 }

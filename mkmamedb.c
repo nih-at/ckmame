@@ -1,5 +1,8 @@
+#include <stdio.h>
 #include "types.h"
 #include "dbl.h"
+#include "funcs.h"
+#include "mkmamedb.h"
 
 char *prg;
 
@@ -8,7 +11,8 @@ main(int argc, char **argv)
 {
     DB *db;
 
-    unlink("mame.db");
+    prg = argv[0];
+    remove("mame.db");
 
     db = db_open("mame", 1, 1);
 
@@ -16,4 +20,6 @@ main(int argc, char **argv)
     dbread(db, "db.txt");
 
     db_close(db);
+
+    return 0;
 }

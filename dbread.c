@@ -7,6 +7,7 @@
 #include "error.h"
 #include "types.h"
 #include "dbl.h"
+#include "funcs.h"
 #include "r.h"
 
 int ngames, sgames;
@@ -18,13 +19,13 @@ static int game_add(DB* db, struct game *g);
 void familymeeting(DB* db, struct game *parent, struct game *child);
 int lost(struct game *a);
 
-void game_free(struct game *g);
+void game_free(struct game *g, int fullp);
 
 enum regs { r_gamestart, r_name, r_romof, r_rom, r_sampleof, r_sample,
 	    r_gameend, r_END };
 
 static char *sregs[] = {
-    "^[ \t]*game[ \t]*\\(",
+    "^[ \t]*(game|resource)[ \t]*\\(",
     "^[ \t]*name[ \t]*([^ \t\n]*)",
     "^[ \t]*romof[ \t]*([^ \t\n]*)",
     "^[ \t]*rom[ \t]+\\([ \t]+name[ \t]+([^ ]*)[ \t]+size[ \t]+([^ ]*)[ \t]+crc[ \t]+([^ ]*)[ \t]+\\)",
@@ -66,11 +67,11 @@ dbread(DB* db, char *fname)
     char l[8192], *p;
     int ingame, i;
     /* XXX: every game is only allowed 101 roms */
-    struct rom r[100], s[100];
+    struct rom r[1000], s[1000];
     struct game *g;
-    struct game child, *parent;
+    struct game *parent;
     char **lostchildren;
-    int nlost, lostmax;
+    int nlost, lostmax, stillost;
     int nr, ns;
 
     if ((fin=fopen(fname, "r")) == NULL) {
@@ -134,6 +135,12 @@ dbread(DB* db, char *fname)
 	    g->nsample = ns;
 	    g->sample = s;
 
+	    if (g->cloneof[0])
+		if (strcmp(g->cloneof[0], g->name) == 0) {
+		    free(g->cloneof[0]);
+		    g->cloneof[0] = NULL;
+		}
+	    
 	    if (g->cloneof[0]) {
 		if (((parent=r_game(db, g->cloneof[0]))==NULL) || 
 		    lost(parent)) {
@@ -144,23 +151,66 @@ dbread(DB* db, char *fname)
 		    }
 		    lostchildren[nlost++] = strdup(g->name);
 		    if (parent)
-			game_free(parent);
+			game_free(parent, 1);
 		}
 		else {
 		    familymeeting(db, parent, g);
 		    w_game(db, parent);
-		    game_free(parent);
+		    game_free(parent, 1);
 		}
 		
 	    }
 	    game_add(db, g);
-	    game_free(g);
+	    game_free(g, 0);
 	    break;
 	}
     }
 
-    /* do lost children */
-    /* free lost children */
+    if (nlost > 0)
+	stillost = 1;
+    while (stillost > 0) {
+	stillost = 0;
+	for (i=0; i<nlost; i++) {
+	    if (lostchildren[i]==NULL) {
+		/* this child is already done */
+		continue;
+	    }
+	    /* get current lost child from database, get parent,
+	       look if parent is still lost, if not, do child */
+	    if ((g=r_game(db, lostchildren[i]))==NULL) {
+		myerror(ERRDEF, "internal database error: "
+			"child really lost");
+		return 1;
+	    }
+	    if ((parent=r_game(db, g->cloneof[0]))==NULL) {
+		myerror(ERRDEF, "input database not consistent: "
+			"parent %s not found", g->cloneof[0]);
+		return 1;
+	    }
+	    if (lost(parent)) {
+		stillost = 1;
+		if (parent)
+		    game_free(parent, 1);
+		game_free(g, 1);
+		continue;
+	    }
+	    else {
+		/* parent found */
+		familymeeting(db, parent, g);
+		w_game(db, parent);
+		game_free(parent, 1);
+		w_game(db, g);
+		game_free(g, 1);
+		free(lostchildren[i]);
+		lostchildren[i] = NULL;
+	    }
+	}
+    }
+	 
+    qsort(games, ngames, sizeof(char *),
+	  (int (*)(const void *, const void *))strpcasecmp);
+    w_list(db, "/list", games, ngames);
+    
     return 0;
 }
 
@@ -177,9 +227,9 @@ familymeeting(DB *db, struct game *parent, struct game *child)
 	gparent = r_game(db, parent->cloneof[0]);
 	gparent->clone = (char **)xrealloc(gparent->clone,
 					   (gparent->nclone+1)*sizeof(char *));
-	gparent->clone[gparent->nclone++] = child->name;
+	gparent->clone[gparent->nclone++] = strdup(child->name);
 	w_game(db, gparent);
-	game_free(gparent);
+	game_free(gparent, 0);
     }
 
     /* tell child of his grandfather */
@@ -189,7 +239,7 @@ familymeeting(DB *db, struct game *parent, struct game *child)
     /* tell father of his child */
     parent->clone = (char **)xrealloc(parent->clone,
 				      sizeof (char *)*(parent->nclone+1));
-    parent->clone[parent->nclone++] = child->name;
+    parent->clone[parent->nclone++] = strdup(child->name);
 
     /* look for roms in parent */
     for (i=0; i<child->nrom; i++)
@@ -207,7 +257,10 @@ int
 lost(struct game *a)
 {
     int i;
-    
+
+    if (a->cloneof[0] == NULL)
+	return 0;
+
     for (i=0; i<a->nrom; i++)
 	if (a->rom[i].where != ROM_INZIP)
 	    return 0;
@@ -232,7 +285,7 @@ extract(char *s, regmatch_t m)
 
 
 
-int
+static int
 game_add(DB* db, struct game *g)
 {
     int err;
@@ -262,25 +315,6 @@ add_name(char *s)
     }
 
     games[ngames++] = strdup(s);
-}
 
-
-
-void
-game_free(struct game *g)
-{
-    int i;
-
-    free(g->name);
-    free(g->cloneof[0]);
-    free(g->cloneof[1]);
-    free(g->sampleof);
-    for (i=0; i<g->nrom; i++)
-	free(g->rom[i].name);
-    /* XXX: dbread doesn't allocate this: free(g->rom); */
-    for (i=0; i<g->nsample; i++)
-	free(g->sample[i].name);
-    /* XXX: dbread doesn't allocate this: free(g->sample); */
-
-    free(g);
+    return 0;
 }

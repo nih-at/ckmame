@@ -1,6 +1,10 @@
 /* read list of strings from db */
+#include <stdlib.h>
+#include <string.h>
 
 #include "dbl.h"
+#include "r.h"
+#include "funcs.h"
 
 
 
@@ -15,13 +19,13 @@ r_list(DB *db, char *key, char ***listp)
     k.data = xmalloc(k.size);
     strncpy(k.data, key, k.size);
 
-    if (db_lookup(db, k, v) != 0) {
+    if (db_lookup(db, &k, &v) != 0) {
 	free(k.data);
 	return -1;
     }
     data = v.data;
 
-    n = r__array(v, r__string, listp, sizeof(char *));
+    n = r__array(&v, r__pstring, listp, sizeof(char *));
 
     free(k.data);
     free(data);

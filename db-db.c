@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <fcntl.h>
 #include <db-db.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include <zlib.h>
 
@@ -73,6 +75,9 @@ db_lookup(DB* db, DBT* key, DBT* value)
     int ret;
 
     ret = (db->get)(db, key, &v, 0);
+
+    if (ret != 0)
+	return ret;
 
     value->size = ((((unsigned char *)v.data)[0] << 8)
 		   | (((unsigned char *)v.data)[1]));

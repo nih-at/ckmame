@@ -1,13 +1,16 @@
 #include <stdlib.h>
 
 #include "types.h"
+#include "dbl.h"
+
+#include "funcs.h"
 
 void
 marry (struct match *rm, int count, int *noz)
 {
     int i, j, now, other;
     int *z[3];
-    struct match *c, *n;
+    struct match *c;
 
     for (i=0; i<3; i++)
 	if (noz[i] > 0) {
@@ -64,7 +67,7 @@ marry (struct match *rm, int count, int *noz)
     for (i=0; i<3; i++)
 	free(z[i]);
 
-    /* XXX: delete rest after the best matches out of the lists */
+    /* worse choices are used for determining unused files */
     
     return;
     

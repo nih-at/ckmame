@@ -2,6 +2,8 @@
 
 #include "dbl.h"
 #include "r.h"
+#include "types.h"
+#include "funcs.h"
 
 #define BLKSIZE  1024
 
@@ -68,6 +70,12 @@ r__string(DBT *v)
 
 
 
+void
+r__pstring(DBT *v, char **sp)
+{
+    *sp = r__string(v);
+}
+
 int
 r__array(DBT *v, void (*fn)(DBT *, void *), void **a, size_t size)
 {
@@ -100,5 +108,6 @@ r__rom(DBT *v, struct rom *r)
     r->name = r__string(v);
     r->size = r__ulong(v);
     r->crc = r__ulong(v);
-    /* XXX: where */
+    r->where = r__ushort(v);
+    r->state = 0;
 }
