@@ -17,6 +17,7 @@ filenames, so you probably will have to do the following:
   ./configure
   make
 
+
 RUNNING CKMAME
 
   You should end up with three executables, ckmame.exe, dumpgame.exe
@@ -26,6 +27,7 @@ To get going, you then need to type:
   mame -listinfo > db.txt
   mkmamedb
   ckmame -h
+  ckmame | more
 
   If you were unhappy about the sorry state of your romsets, tell ckmame
 to fix them:
@@ -36,23 +38,6 @@ to fix them:
 
   dumpgame 1942
 
-DOS USERS
-
-  If you're running ckmame in plain DOS (no long filenames), you will 
-have to use some commandline options:
-
-  mkmamedb -o mame.db
-  dumpgame -D mame.db 1942
-  ckmame -D mame.db 1942
-
-  Or you can set MAMEDB to the name of your database, or even add a line
-like the following to your autoexec.bat:
-
-  set MAMEDB=C:\MAME\mame.db
-
-  If you're running ckmame only from Windows, you can safely delete the
-included cwsdpmi.exe and cwsdpmi.doc, since Windows supplies DPMI
-services.
 
 HINTS
 
@@ -66,21 +51,38 @@ it can get rather big.
   When fixing with `ckmame -F', unknown files are saved in the directory
 roms/garbage in files with the same name as the archive they came from.
 
+  If you want to use a differently named database, or want to keep it
+somewhere else, you can set MAMEDB to the name of your database, or
+even add a line like the following to your autoexec.bat:
+
+  set MAMEDB=C:\MAME\mame.db
+
+  Or you can use some commandline options:
+
+  mkmamedb -o mame.db
+  dumpgame -D mame.db 1942
+  ckmame -D mame.db 1942
+
+  If you're running ckmame only from Windows, you can safely delete the
+included cwsdpmi.exe and cwsdpmi.doc, since Windows supplies DPMI
+services.
+
+
 LEGAL STUFF
 
   For the license, take a look at the file COPYING.
 
-  Please note that you can get the full version of cwsdpmi (by 
+  You can always get the latest version from
+        ftp.giga.or.at /pub/nih/ckmame
+        http://ftp.giga.or.at/pub/nih/ckmame
+
+  Mail suggestions and bug reports to <nih@giga.or.at>.
+
+
+  Please note that you can get the full version of cwsdpmi (by
 Charles W Sandmann), including source code, from every DJGPP site, see 
 http://www.delorie.com/djgpp/
 
-  The DOS executables are compressed by UPX (by Markus Oberhumer and 
+  The DOS executables are compressed by UPX (by Markus Oberhumer and
 Laszlo Molnar). UPX's homepage is at
 http://wildsau.idv.uni-linz.ac.at/mfx/upx.html
-
-
-  You can always get the latest version from
-  ftp.giga.or.at /pub/nih/ckmame
-  http://ftp.giga.or.at/pub/nih/ckmame
-
-  Mail suggestions and bug reports to <nih@giga.or.at>.

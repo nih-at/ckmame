@@ -38,7 +38,11 @@ ddb_open(char *name, int extp, int writep)
 
     if (extp) {
 	s = (char *)xmalloc(strlen(name)+6);
+#if __DJGPP__
+	sprintf(s, "%s.gdb", name);
+#else
 	sprintf(s, "%s.gdbm", name);
+#endif
     }
     else
 	s = name;
