@@ -1,5 +1,5 @@
 /*
-  $NiH: r_util.c,v 1.10 2002/06/06 09:26:58 dillo Exp $
+  $NiH: r_util.c,v 1.11 2003/01/30 03:46:00 wiz Exp $
 
   r_util.c -- data base read utility functions
   Copyright (C) 1999 Dieter Baron and Thomas Klaunser
@@ -61,10 +61,10 @@ r__ulong(DBT *v)
     if (v->size < 4)
 	return 0;
     
-    l = (((unsigned char *)v->data)[0] << 24)
-	| (((unsigned char *)v->data)[1] << 16)
-	| (((unsigned char *)v->data)[2] << 8)
-	| (((unsigned char *)v->data)[3]);
+    l = ((((unsigned char *)v->data)[0] << 24)
+	 | (((unsigned char *)v->data)[1] << 16)
+	 | (((unsigned char *)v->data)[2] << 8)
+	 | (((unsigned char *)v->data)[3])) & 0xffffffff;
 
     v->size -= 4;
     v->data += 4;
