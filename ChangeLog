@@ -12,6 +12,8 @@
 	names from prototypes.
 	* superflouos.c (handle_extra_files): check for extra files in
 	roms or samples respectively dirs. Remove standalone code.
+	* ckmame.mdoc: document -X.
+	* ckmame.man: regen.
 
 	* dbl.h (DDB_FORMAT_VERSION): bump db version to 3 for new lists.
 	* dbread.c (dbread): write lists of samples and extra files (hard
