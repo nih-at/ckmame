@@ -2,11 +2,10 @@ add copyright notices
 
 get roms from a different location to fix sets
 rom matched twice or more (route16b)
-Fehler melden (z.B. File nicht anlegen duerfen)
+add more verbose error messages in ckmame if there are problems with
+  the zips (e.g. can't create file etc.)
 
-test ziplibrary
-
-int, unsigned int abgleichen in zip.h
+test zip-library
 
 samples: fill in where and sclone
 GNU conventions for dumpgame, mkmamedb
