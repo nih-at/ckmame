@@ -33,7 +33,7 @@ fi
 AC_CHECK_LIB(z, main)
 AC_CACHE_CHECK(new ZLIB version, id_cv_lib_zlib_ok, 
 	AC_TRY_COMPILE([#include <zlib.h>], 
-		[extern ZEXPORT unzOpen OF((const char *path));],
+		[extern ZEXPORT unzOpen (const char *path);],
 		id_cv_lib_zlib_ok=yes, id_cv_lib_zlib_ok=no))
 if test "$id_cv_lib_zlib_ok" = "no"
 then
