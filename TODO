@@ -6,6 +6,8 @@ add md5 and sha1 replacement functions
 regression tests for disk: different crc types, version 2
 "fix" extra files by moving them to a subdir
 use ROM_NOCRC for samples match quality
+0.85.1: "bad dump" is reported as missing with -d
+"ls ./roms: No such file or directory" if roms/ does not exist
 
 mkmamedb: no error message for missing newline in last line
 
