@@ -1,12 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "config.h"
+
+#ifdef HAVE_GETOPT_LONG
+#include <getopt.h>
+#else
 #include "getopt.h"
+#endif
+
 #include "types.h"
 #include "dbl.h"
 #include "funcs.h"
 #include "mkmamedb.h"
 #include "error.h"
-#include "config.h"
 
 char *prg;
 char *usage = "Usage: %s [-hV] [-o dbfile] [rominfo-file]\n";
@@ -51,7 +58,7 @@ main(int argc, char **argv)
     fname = "db.txt";
     dbext = 1;
     
-    opterr = 0;
+    optind = opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
 	case 'h':

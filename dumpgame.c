@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "config.h"
+
 #ifdef HAVE_GETOPT_LONG
 #include <getopt.h>
 #else
@@ -14,7 +16,6 @@
 #include "error.h"
 #include "util.h"
 #include "romutil.h"
-#include "config.h"
 
 int dump_game(DB *db, char *name);
 
