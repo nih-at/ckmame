@@ -1,5 +1,5 @@
 /*
-  $NiH: error.c,v 1.6 2003/03/16 10:21:33 wiz Exp $
+  $NiH: error.c,v 1.7 2004/01/28 11:53:58 dillo Exp $
 
   error.c -- error printing
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -28,6 +28,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "error.h"
+#include "dbl.h"
 
 #include <errno.h>
 
