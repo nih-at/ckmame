@@ -25,6 +25,7 @@ ddb_open(char *name, int extp, int writep)
     hi.bsize = 1024;
     hi.ffactor = 8;
     hi.nelem = 1500;
+    hi.cachesize = 65536; /* taken from db's hash.h */
     hi.hash = NULL;
     hi.lorder = 0;
 
