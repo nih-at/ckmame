@@ -201,7 +201,7 @@ dump_game(DB *db, char *name)
 	printf("Sample Clones:");
 	for (i=0; i<game->nsclone; i++) {
 	    if (i%6 == 0)
-		fputs("\t\t", stdout);
+		printf("%s\t", (i==0 ? "" : "\t"));
 	    printf("%-8s ", game->sclone[i]);
 	    if (i%6 == 5)
 		putc('\n', stdout);
@@ -212,7 +212,10 @@ dump_game(DB *db, char *name)
     if (game->nsample) {
 	printf("Samples:");
 	for (i=0; i<game->nsample; i++)
-	    printf("\t%s%s\n", (i==0 ? "" : "\t"), game->sample[i].name);
+	    printf("\t%s%-12s  in %s\n",
+		   (i==0 ? "" : "\t"),
+		   game->sample[i].name,
+		   where_name[game->sample[i].where]);
     }
 
     game_free(game, 1);
