@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.31 2003/12/28 01:10:06 wiz Exp $
+  $NiH: ckmame.c,v 1.32 2004/01/28 11:53:57 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003 Dieter Baron and Thomas Klausner
@@ -65,22 +65,23 @@ char help[] = "\n"
 "  -l, --delete-long    don't keep long files when fixing\n"
 "  -n, --dryrun         don't actually fix, only report what would be done\n"
 "  -S, --samples        check samples instead of roms\n"
-"  -s, --nosuperfluous  don't report superfluous files\n"
+"  -s, --nosuperfluous  don't report superfluous files in rom sets\n"
 "  -U, --keep-unused    keep unused files when fixing\n"
 "  -u, --delete-unused  don't keep unused files when fixing (default)\n"
 "  -V, --version        display version number\n"
 "  -v, --verbose        print fixes made\n"
 "  -w, --nowarnings     print only unfixable errors\n"
+"  -X, --ignoreextra    ignore extra files in rom/samples dirs\n"
 "\nReport bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
-"Copyright (C) 2003 Dieter Baron and Thomas Klausner\n"
+"Copyright (C) 2003, 2004 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 "You may redistribute copies of\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
 "For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "bcdD:FfhKkLnlSsxUuVvw"
+#define OPTIONS "bcD:dFfhKkLlnSsxUuVvwX"
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
@@ -102,11 +103,13 @@ struct option options[] = {
     { "delete-long",   0, 0, 'l' },
     { "verbose",       0, 0, 'v' },
     { "dryrun",        0, 0, 'n' },
+    { "ignoreextra",   0, 0, 'X' },
     { NULL,            0, 0, 0 },
 };
 
 int output_options;
 int fix_do, fix_print, fix_keep_long, fix_keep_unused, fix_keep_unknown;
+int ignore_extra;
 
 
 
@@ -135,6 +138,7 @@ main(int argc, char **argv)
     fix_do = fix_print = 0;
     fix_keep_long = fix_keep_unknown = 1;
     fix_keep_unused = 0;
+    ignore_extra = 0;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -200,6 +204,9 @@ main(int argc, char **argv)
 	case 'v':
 	    fix_print = 1;
 	    break;
+	case 'X':
+	    ignore_extra = 1;
+	    break;
 	default:
 	    fprintf(stderr, usage, prg);
 	    exit(1);
@@ -244,6 +251,9 @@ main(int argc, char **argv)
     }
 
     tree_traverse(db, tree, sample);
+
+    if (!ignore_extra)
+	handle_extra_files(db, dbname, sample);
 
     return 0;
 }
