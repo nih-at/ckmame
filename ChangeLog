@@ -1,3 +1,22 @@
+2003-09-13  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* w_game.c (w__rom): write flags to db.
+
+	* types.h: add flags variable to rom structure; define values as
+	enum.
+
+	* romutil.c (romcmp): honor flags.
+
+	* r_game.c (r__rom): read in flags from db.
+
+	* match.c (diagnostics): honor flags.
+
+	* dumpgame.c: add strings for flags.
+	(dump_game): widen size column and add flags column.
+
+	* dbread.c (dbread): change token parser to be more flexible wrt
+	to order of the tokens; recognize flags nodump and baddump.
+
 2003-03-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ckmame.c (main), dumpgame.c (main): don't add extension when

@@ -1,3 +1,6 @@
+Adapt for MAME -listinfo output changes (honor flags baddump
+and nodump)
+
 0.5
 
 MESS, Impact, Raine, and others based on the CMPro format now supported.
