@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS=dist-bzip2
 
-LIBS=@DBLIBS@ @LIBZIP_LIBS@ @LIBS@
-AM_CFLAGS=@LIBZIP_CFLAGS@ @CFLAGS@
+LIBS=@DBLIBS@ @LIBZIP_LIBS@ @XML_LIBS@ @LIBS@
+AM_CFLAGS=@LIBZIP_CFLAGS@ @XML_CFLAGS@ @CFLAGS@
 
 SUBDIRS=regress
 
@@ -13,13 +13,13 @@ ckmame_SOURCES=ckmame.c error.c zip-supp.c util.c marry.c \
 		match.c malloc.c r_game.c r_list.c r_util.c dbl.c dbl-int.c \
 		treetrav.c fix.c romutil.c chd-supp.c superfluous.c hashes.c \
 		chd.c
-mkmamedb_SOURCES=mkmamedb.c dbl.c dbl-int.c dbread.c w_game.c w_list.c \
-	w_prog.c \
+mkmamedb_SOURCES=mkmamedb.c dbl.c dbl-int.c parse.c parse-cm.c parse-xml.c \
+	w_game.c w_list.c w_prog.c \
 	error.c malloc.c w_util.c r_game.c r_util.c util.c romutil.c hashes.c
 dumpgame_SOURCES=dumpgame.c error.c malloc.c r_game.c r_util.c r_list.c r_prog.c \
 	dbl.c dbl-int.c util.c romutil.c hashes.c
 noinst_HEADERS=error.h types.h w.h funcs.h r.h mkmamedb.h dbl.h \
-	dbh.h util.h xmalloc.h romutil.h chd.h
+	dbh.h util.h xmalloc.h romutil.h chd.h parse.h
 
 DISTCLEANFILES=	ckmame.1 
 

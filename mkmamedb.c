@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.22 2004/02/26 02:26:10 wiz Exp $
+  $NiH: mkmamedb.c,v 1.23 2004/04/22 11:21:44 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -37,9 +37,9 @@
 #include "types.h"
 #include "dbl.h"
 #include "funcs.h"
-#include "mkmamedb.h"
 #include "error.h"
 #include "w.h"
+#include "parse.h"
 
 char *prg;
 char *usage = "Usage: %s [-hV] [-o dbfile] [rominfo-file]\n";
@@ -133,8 +133,7 @@ main(int argc, char **argv)
     }
 
     w_version(db);
-    dbread_init();
-    dbread(db, fname);
+    parse(db, fname);
 
     ddb_close(db);
 

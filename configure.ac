@@ -84,5 +84,8 @@ AC_EXEEXT
 AM_DISABLE_STATIC
 AM_PROG_LIBTOOL
 
+AM_PATH_XML2([], [AC_DEFINE([HAVE_LIBXML2], [1],
+		 	    [Define if you have the xml2 library (-lxml2)])])
+
 AC_CONFIG_FILES([Makefile regress/Makefile])
 AC_OUTPUT
