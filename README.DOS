@@ -1,21 +1,22 @@
 COMPILING CKMAME
 
   For compilation under DOS you will need a running DJGPP system (see
-http://www.delorie.com/djgpp/) with long filename support (v2.01 or 
-newer), as well as the bash, make, gdbm, zlib and autoconf packages 
-(bsh1147b.zip, mak377b.zip, gdbm173b.zip, zlib113b.zip and acnf213b.zip).
-I don't think compiling will work without long filename support, so 
-compile in Windows, not plain DOS. `ln -s' always attaches .exe to the 
-filenames, so you probably will have to do the following:
+http://www.delorie.com/djgpp/) with long filename support (v2.01 or
+newer), as well as the bash, make, gdbm, sed, zlib and autoconf
+packages (bsh1147b.zip, mak377b.zip, gdbm173b.zip, sed302b.zip,
+zlib112b.zip and acnf213b.zip).  I don't think compiling will work
+without long filename support, so compile in Windows, not plain
+DOS. `ln -s' always attaches .exe to the filenames, so you probably
+will have to do the following:
 
-  copy db-gdbm.c dbl-int.c
-  copy db-gdbm.h dbl-int.h
+    copy db-gdbm.c dbl-int.c
+    copy db-gdbm.h dbl-int.h
 
   Then you start `bash' and type:
 
-  autoconf
-  ./configure
-  make
+    autoconf
+    ./configure
+    make
 
 
 RUNNING CKMAME
@@ -24,19 +25,19 @@ RUNNING CKMAME
 and mkmamedb.exe, which are probably best kept in your MAME directory.
 To get going, you then need to type:
 
-  mame -listinfo > db.txt
-  mkmamedb
-  ckmame -h
-  ckmame | more
+    mame -listinfo > db.txt
+    mkmamedb
+    ckmame -h
+    ckmame | more
 
   If you were unhappy about the sorry state of your romsets, tell ckmame
 to fix them:
 
-  ckmame -F
+    ckmame -F
 
   For information on a special romset, use dumpgame. E.g.
 
-  dumpgame 1942
+    dumpgame 1942
 
 
 HINTS
@@ -51,17 +52,20 @@ it can get rather big.
   When fixing with `ckmame -F', unknown files are saved in the directory
 roms/garbage in files with the same name as the archive they came from.
 
+  If you want to use wildcards, you will have to quote them:
+    ckmame -F "m*"
+
   If you want to use a differently named database, or want to keep it
 somewhere else, you can set MAMEDB to the name of your database, or
 even add a line like the following to your autoexec.bat:
 
-  set MAMEDB=C:\MAME\mame.db
+    set MAMEDB=C:\MAME\mame.db
 
   Or you can use some commandline options:
 
-  mkmamedb -o mame.db
-  dumpgame -D mame.db 1942
-  ckmame -D mame.db 1942
+    mkmamedb -o mame.db
+    dumpgame -D mame.db 1942
+    ckmame -D mame.db 1942
 
   If you're running ckmame only from Windows, you can safely delete the
 included cwsdpmi.exe and cwsdpmi.doc, since Windows supplies DPMI

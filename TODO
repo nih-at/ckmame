@@ -11,6 +11,7 @@ get roms from a different location to fix sets
 fix all XXXs
 
 zip-library:
+don't allow the same filename twice in a zip (when adding/replacing)
 append to files (for self-extracting files)
 add custom compression function support
 zip_replace_zip: remember compression method, recompress if different speced

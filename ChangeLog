@@ -1,3 +1,7 @@
+1999-10-06  Wiz  <wiz@danbala.tuwien.ac.at>
+
+	* TODO, README.DOS, NEWS: updated
+
 1999-10-05  Wiz  <wiz@danbala.tuwien.ac.at>
 
 	* treetrav.c (zfile_new): zfile_new fixed, now returns useful zip
