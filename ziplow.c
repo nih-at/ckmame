@@ -1,4 +1,10 @@
-#include "ziplow.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+
+#include "types.h"
+#include "dbl.h"
+#include "funcs.h"
 #include "zip.h"
 
 #define MAXCOMLEN        65536
@@ -6,8 +12,16 @@
 #define BUFSIZE       (MAXCOMLEN+EOCDLEN)
 #define LOCAL_MAGIC   "PK\3\4"
 #define CENTRAL_MAGIC "PK\1\2"
-#define EOCD_MAGIC  "PK\5\6"
+#define EOCD_MAGIC    "PK\5\6"
 #define DATADES_MAGIC "PK\7\8"
+
+#define READ2(a)      (*(a)+((a)[1])*256)
+#define READ4(a)      (READ2(a)+READ2(a)*65536)		       
+
+struct zf *readcdir(FILE *fp, char *buf, int j, char *match);
+struct zf *zf_new();
+void zf_free(struct zf *zf);
+struct zf *z_open(char *fn);
 
 
 
@@ -16,10 +30,9 @@ z_open(char *fn)
 {
     FILE *fp;
     char *buf, *match;
-    int best;
+    int a, i, j, best;
     long ft;
-    struct globinf *glob, *globnew;
-    struct zf *zf;
+    struct zf *cdir, *cdirnew;
 
     if ((fp=fopen(fn, "r+b"))==NULL)
 	return NULL;
@@ -47,7 +60,7 @@ z_open(char *fn)
     best = -2;
     cdir = NULL;
     match = buf;
-    while ((match=memmem(match, j-(match-buf)-18, EOCDMAGIC, 4)) != NULL) {
+    while ((match=memmem(match, j-(match-buf)-18, EOCD_MAGIC, 4)) != NULL) {
 	/* found match -- check, if good */
 	if ((cdirnew=readcdir(fp, buf, j, match)) == NULL)
 	    continue;	    
@@ -80,7 +93,7 @@ z_open(char *fn)
 
     free(buf);
 
-    return zf;
+    return cdir;
 }
 
 
@@ -90,7 +103,7 @@ readcdir(FILE *fp, char *buf, int j, char *match)
 {
     struct zf *zf;
     char *cdp;
-    zf = NULL;
+    int i;
 
     /* check and read in eocd */
     if (j-(match-buf)<22) {
@@ -116,7 +129,7 @@ readcdir(FILE *fp, char *buf, int j, char *match)
 	return NULL;
     }
 
-    memdup(zf->com, match+22, zf->com_size);
+    zf->com = memdup(match+22, zf->com_size);
 
     cdp = NULL;
     if (zf->cd_size < match-buf) {
@@ -136,7 +149,7 @@ readcdir(FILE *fp, char *buf, int j, char *match)
     }
 	    
     for (i=0; i<zf->nentry; i++) {
-	if (readcdentry(fp, &cdp, zfe+i)!=0) {
+	if (readcdentry(fp, &cdp, zf->entry+i)!=0) {
 	    /* i entries have already been filled, tell zf_free
 	       how many to free */
 	    zf->nentry = i+1;
@@ -148,3 +161,45 @@ readcdir(FILE *fp, char *buf, int j, char *match)
     return zf;
 }
 
+
+
+struct zf *
+zf_new()
+{
+    struct zf *zf;
+
+    zf = (struct zf *)xmalloc(sizeof(struct zf));
+
+    zf->nentry = zf->com_size = zf->cd_size = zf->cd_offset = 0;
+    zf->com = NULL;
+    zf->entry = NULL;
+
+    return zf;
+}
+
+
+
+void
+zf_free(struct zf *zf)
+{
+    int i;
+    
+    if (zf == NULL)
+	return;
+
+    if (zf->com)
+	free(zf->com);
+
+    if (zf->entry) {
+	for (i=0; i<zf->nentry; i++) {
+	    free(zf->entry[i].fn);
+	    free(zf->entry[i].ef);
+	    free(zf->entry[i].fcom);
+	}
+	free (zf->entry);
+    }
+
+    free(zf);
+
+    return;
+}

@@ -7,6 +7,9 @@ int w_list(DB *db, char *key, char **list, int n);
 struct zip *zip_new(char *name);
 void *xrealloc(void *p, size_t size);
 void *xmalloc(size_t size);
+char *memdup(const char *mem, int len);
+char *memmem(const char *big, int biglen, const char *little,
+	     int littlelen);
 void marry (struct match *rm, int count, int *noz);
 struct match *check_game(struct game *game, struct zip **zip,
 			 int pno, int gpno);

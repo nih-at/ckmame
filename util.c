@@ -137,3 +137,35 @@ zip_free(struct zip *zip)
 	free(zip->rom);
     free(zip);
 }
+
+
+
+char *
+memmem(const char *big, int biglen, const char *little, int littlelen)
+{
+    int i;
+    
+    if (biglen < littlelen)
+	return NULL;
+    
+    for (i=0; i<biglen-littlelen; i++)
+	if (memcmp(big+i, little, littlelen)==NULL)
+	    return big+i;
+
+    return NULL;
+}
+
+
+
+char *
+memdup(const char *mem, int len)
+{
+    char *ret;
+
+    ret = (char *)xmalloc(len);
+
+    if (memcpy(ret, mem, len)==NULL)
+	return NULL;
+
+    return ret;
+}

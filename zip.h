@@ -1,3 +1,5 @@
+#include <sys/types.h>
+
 #include "unzip.h"
 
 enum zipstate { Z_UNCHANGED, Z_DELETED, Z_REPLACED, Z_ADDED, Z_RENAMED };
@@ -29,4 +31,4 @@ struct zf_entry {
 	lmtime, lmdate, fnlen, eflen, fcomlen, disknrstart, intatt;
     uint crc, comp_size, uncomp_size, extatt, local_offset;
     char *fn, *ef, *fcom;
-}
+};
