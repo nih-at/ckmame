@@ -1,5 +1,5 @@
 /*
-  $NiH: chd.c,v 1.2 2004/04/28 18:01:12 dillo Exp $
+  $NiH: chd.c,v 1.3 2004/04/28 18:36:18 dillo Exp $
 
   chd.c -- accessing chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <zlib.h>
 
 #include "chd.h"
