@@ -1,3 +1,8 @@
+2001-10-28  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* dbread.c (dbread): handle names containing white space.
+	(gettok): new function.
+	
 2001-10-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* libzip/zip_replace_zip.c (read_part): fix typo: pass correct

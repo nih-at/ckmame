@@ -39,7 +39,7 @@
 int ngames, sgames;
 char **games;
 
-static char *get_string(void);
+static char *gettok(char **p);
 static int add_name(char *s);
 static int game_add(DB* db, struct game *g);
 void familymeeting(DB* db, struct game *parent, struct game *child);
@@ -62,16 +62,13 @@ dbread_init(void)
 
 
 
-#define GET_TOK()	(_P_=strtok(NULL, " \t\n\r"),\
-			 (_P_==NULL ? /* XXX: error */ "" : _P_))
-
 enum parse_state { st_top, st_game, st_prog };
 
 int
 dbread(DB* db, char *fname)
 {
     FILE *fin;
-    char l[8192], *cmd, *p, *_P_;
+    char b[8192], *cmd, *p, *l;
     char *prog_name, *prog_version;
     enum parse_state state;
     int i, j, deleted;
@@ -101,23 +98,23 @@ dbread(DB* db, char *fname)
     lineno = 0;
     state = st_top;
     
-    while (fgets(l, 8192, fin)) {
+    while (fgets(l=b, 8192, fin)) {
 	lineno++;
-	if (l[strlen(l)-1] != '\n') {
-	    cmd = strtok(l, " \t\n\r");
+	if (b[strlen(b)-1] != '\n') {
+	    cmd = gettok(&l);
 	    if ((cmd == NULL) || (strcmp(cmd, "history"))) {
 		myerror(ERRZIP, "%d: warning: line too long (ignored)",
 			lineno);
 	    }
-	    while (fgets(l, 8192, fin)) {
-		if (l[strlen(l)-1] == '\n')
+	    while (fgets(b, 8192, fin)) {
+		if (b[strlen(b)-1] == '\n')
 		    break;
 	    }
 	    continue;
 	}
 		
 	    
-	cmd = strtok(l, " \t\n\r");
+	cmd = gettok(&l);
 	if (cmd == NULL)
 	    continue;
 
@@ -140,27 +137,27 @@ dbread(DB* db, char *fname)
 	    
 	case st_game:
 	    if (strcmp(cmd, "name") == 0) {
-		g->name = xstrdup(GET_TOK());
+		g->name = xstrdup(gettok(&l));
 	    }
 	    else if (strcmp(cmd, "description") == 0) {
-		g->description = get_string();
+		g->description = xstrdup(gettok(&l));
 	    }
 	    else if (strcmp(cmd, "romof") == 0) {
-		g->cloneof[0] = xstrdup(GET_TOK());
+		g->cloneof[0] = xstrdup(gettok(&l));
 	    }
 	    else if (strcmp(cmd, "rom") == 0) {
-		GET_TOK();
-		if (strcmp(GET_TOK(), "name") != 0) {
+		gettok(&l);
+		if (strcmp(gettok(&l), "name") != 0) {
 		    /* XXX: error */
 		    myerror(ERRZIP, "%d: expected token (name) not found",
 			    lineno);
 		    break;
 		}
-		r[nr].name = xstrdup(GET_TOK());
-		p = GET_TOK();
+		r[nr].name = xstrdup(gettok(&l));
+		p = gettok(&l);
 		if (strcmp(p, "merge") == 0) {
-		    r[nr].merge = xstrdup(GET_TOK());
-		    p = GET_TOK();
+		    r[nr].merge = xstrdup(gettok(&l));
+		    p = gettok(&l);
 		}
 		else
 		    r[nr].merge = NULL;
@@ -170,14 +167,14 @@ dbread(DB* db, char *fname)
 			    lineno);
 		    break;
 		}
-		r[nr].size = strtol(GET_TOK(), NULL, 10);
-		if (strncmp(GET_TOK(), "crc", 3) != 0) /* XXX: for raine */ {
+		r[nr].size = strtol(gettok(&l), NULL, 10);
+		if (strncmp(gettok(&l), "crc", 3) != 0) /* XXX: for raine */ {
 		    /* XXX: error */
 		    myerror(ERRZIP, "%d: expected token (crc) not found",
 			    lineno);
 		    break;
 		}
-		r[nr].crc = strtoul(GET_TOK(), NULL, 16);
+		r[nr].crc = strtoul(gettok(&l), NULL, 16);
 		r[nr].where = ROM_INZIP;
 		r[nr].naltname = 0;
 		r[nr].altname = NULL;
@@ -209,9 +206,9 @@ dbread(DB* db, char *fname)
 		    nr++;
 	    }
 	    else if (strcmp(cmd, "sampleof") == 0)
-		g->sampleof[0] = xstrdup(GET_TOK());
+		g->sampleof[0] = xstrdup(gettok(&l));
 	    else if (strcmp(cmd, "sample") == 0) {
-		s[ns].name = xstrdup(GET_TOK());
+		s[ns].name = xstrdup(gettok(&l));
 		s[ns].merge = NULL;
 		s[ns].altname = NULL;
 		s[ns].naltname = s[ns].size = 0;
@@ -293,9 +290,9 @@ dbread(DB* db, char *fname)
 	    
 	case st_prog:
 	    if (strcmp(cmd, "name") == 0)
-		prog_name = get_string();
+		prog_name = gettok(&l);
 	    else if (strcmp(cmd, "version") == 0)
-		prog_version = get_string();
+		prog_version = gettok(&l);
 	    else if (strcmp(cmd, ")") == 0)
 		state = st_top;
 	    break;
@@ -381,25 +378,6 @@ dbread(DB* db, char *fname)
 
     free(lostchildren);
     return 0;
-}
-
-
-
-static char *
-get_string(void)
-{
-    char *p, *q;
-    
-    p = strtok(NULL, "\r\n");
-    p = strchr(p, '\"');
-    if (p == NULL)
-	return NULL;
-    q = strchr(p+1, '\"');
-    if (q == NULL)
-	return NULL;
-    *q = '\0';
-
-    return xstrdup(p+1);
 }
 
 
@@ -490,4 +468,41 @@ add_name(char *s)
     games[ngames++] = xstrdup(s);
 
     return 0;
+}
+
+
+
+static char *
+gettok(char **p)
+{
+    char *s, *e;
+
+    s = *p;
+    
+    if (s == NULL)
+	return NULL;
+
+    s += strspn(s, " \t");
+
+    switch (*s) {
+    case '\0':
+    case '\n':
+    case '\r':
+	*p = NULL;
+	return NULL;
+	
+    case '\"':
+	s++;
+	e = s+strcspn(s, "\"");
+	*e = 0;
+	break;
+
+    default:
+	e = s+strcspn(s, " \t\n\r");
+	*e = 0;
+	break;
+    }
+
+    *p = e+1;
+    return s;
 }
