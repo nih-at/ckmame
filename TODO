@@ -7,8 +7,6 @@ ROMPATH autoconf
 add error messages in ckmame with the zips (e.g. can't create file etc.)
 complete raine support (crc32 anders parsen? multiple archive names)
 
-allow spaces in rom/game names, like "example game", or "example rom 1"
-
 get roms from a different location to fix sets
 
 create complete sets, and full-merge(?)
