@@ -48,12 +48,12 @@ memmem(const unsigned char *big, int biglen, const unsigned char *little,
 
 
 
-char *
-memdup(const char *mem, int len)
+void *
+memdup(const void *mem, int len)
 {
-    char *ret;
+    void *ret;
 
-    ret = (char *)xmalloc(len);
+    ret = xmalloc(len);
 
     if (memcpy(ret, mem, len)==NULL)
 	return NULL;

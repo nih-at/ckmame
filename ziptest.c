@@ -18,7 +18,7 @@ main(int argc, char *argv[])
     }
 
     seterrinfo(NULL, argv[1]);
-    if ((zf=zip_open(argv[1]))==NULL) {
+    if ((zf=zip_open(argv[1], 0))==NULL) {
 	myerror(ERRZIPSTR, "can't open file");
 	return 1;
     }

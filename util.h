@@ -25,7 +25,7 @@
 
 typedef int (*cmpfunc)(const void *, const void *);
 
-char *memdup(const char *mem, int len);
+void *memdup(const void *mem, int len);
 unsigned char *memmem(const unsigned char *big, int biglen, 
 		      const unsigned char *little, int littlelen);
 int strpcasecmp(char **sp1, char **sp2);
