@@ -1,11 +1,9 @@
 AUTOMAKE_OPTIONS=dist-bzip2
 
-AM_CPPFLAGS=-I$(top_srcdir)/libzip
-LDADD=@LIBOBJS@ libzip/libzip.la
+LIBS=@DBLIBS@ @LIBZIP_LIBS@ @LIBS@
+CFLAGS+=@LIBZIP_CFLAGS@
 
-LIBS=@DBLIBS@ @LIBS@
-
-SUBDIRS=libzip regress
+SUBDIRS=regress
 
 bin_PROGRAMS=ckmame mkmamedb dumpgame superflouos
 man_MANS=ckmame.1

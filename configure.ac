@@ -42,6 +42,7 @@ then
     AC_MSG_ERROR([ZLIB version too old, please install at least v1.1.2])
 fi
 
+PKG_CHECK_MODULES(LIBZIP, libzip >= 0.5)
 
 # find usable db library
 db=none
@@ -109,6 +110,5 @@ AC_EXEEXT
 AM_DISABLE_STATIC
 AM_PROG_LIBTOOL
 
-AC_CONFIG_FILES([Makefile libzip/Makefile libzip/tests/Makefile
-		 regress/Makefile])
+AC_CONFIG_FILES([Makefile regress/Makefile])
 AC_OUTPUT
