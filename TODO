@@ -2,8 +2,7 @@ add copyright notices
 
 get roms from a different location to fix sets
 rom matched twice or more (route16b)
-add more verbose error messages in ckmame if there are problems with
-  the zips (e.g. can't create file etc.)
+add error messages in ckmame with the zips (e.g. can't create file etc.)
 
 test zip-library
 
