@@ -1,7 +1,7 @@
 #ifndef HAD_CHD_H
 
 /*
-  $NiH: chd.h,v 1.1 2004/04/28 16:59:49 dillo Exp $
+  $NiH: chd.h,v 1.3 2004/06/25 23:31:08 dillo Exp $
 
   chd.h -- accessing chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -23,6 +23,10 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "config.h"
+#if HAVE_INTTYPES_H
+# include <inttypes.h>
+#endif
 #include <stdio.h>
 #include <zlib.h>
 
@@ -53,7 +57,7 @@
 
 
 struct chd_map_entry {
-    uint64_t offset;	/* offse t within the file of the data */
+    uint64_t offset;	/* offset within the file of the data */
     uint32_t crc;	/* 32-bit CRC of the data */
     uint16_t length;	/* length of the data */
     uint16_t flags;	/* misc flags */
