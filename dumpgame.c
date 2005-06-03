@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.34 2004/04/28 17:05:52 dillo Exp $
+  $NiH: dumpgame.c,v 1.35 2004/08/23 00:52:17 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -182,7 +182,7 @@ print_romline(struct rom *rom)
 
 
 static void
-print_match(struct game *game, int i, int type)
+print_match(struct game *game, int i)
 {
     static int first = 0;
     static char *name = NULL;
@@ -223,21 +223,21 @@ match_checksum(DB *db, char *name, struct hashes *hashes)
 	case GOT_CRC:
 	    if (game->rom[i].hashes.crc == hashes->crc) {
 		matches++;
-		print_match(game, i, hashes->types);
+		print_match(game, i);
 	    }
 	    break;
 	case GOT_MD5:
 	    if (memcmp(game->rom[i].hashes.md5, hashes->md5,
 			   sizeof(hashes->md5)) == 0) {
 		matches++;
-		print_match(game, i, hashes->types);
+		print_match(game, i);
 	    }
 	    break;
 	case GOT_SHA1:
 	    if (memcmp(game->rom[i].hashes.sha1, hashes->sha1,
 			   sizeof(hashes->sha1)) == 0) {
 		matches++;
-		print_match(game, i, hashes->types);
+		print_match(game, i);
 	    }
 	    break;
 	default:
