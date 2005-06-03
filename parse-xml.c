@@ -5,6 +5,8 @@
 #include "parse.h"
 
 #ifndef HAVE_LIBXML2
+#include "error.h"
+
 int
 parse_xml(FILE *f)
 {
