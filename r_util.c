@@ -1,5 +1,5 @@
 /*
-  $NiH: r_util.c,v 1.14 2004/01/27 23:04:09 wiz Exp $
+  $NiH: r_util.c,v 1.15 2004/02/26 02:26:11 wiz Exp $
 
   r_util.c -- data base read utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -45,7 +45,7 @@ r__ushort(DBT *v)
 	| (((unsigned char *)v->data)[1]);
 
     v->size -= 2;
-    v->data += 2;
+    v->data = (char *)v->data + 2;
 
     return s;
 }
@@ -66,7 +66,7 @@ r__ulong(DBT *v)
 	 | (((unsigned char *)v->data)[3])) & 0xffffffff;
 
     v->size -= 4;
-    v->data += 4;
+    v->data = (char *)v->data + 4;
 
     return l;
 }
@@ -81,7 +81,7 @@ r__mem(DBT *v, char *buf, int len)
     
     memcpy(buf, (char *)v->data, len);
     v->size -= len;
-    v->data += len;
+    v->data = (char *)v->data + len;
 }
 
 
@@ -102,7 +102,7 @@ r__string(DBT *v)
     s = (char *)xmalloc(len);
 	memcpy(s, (unsigned char *)v->data, len);
     v->size -= len;
-    v->data += len;
+    v->data = (char *)v->data + len;
 
     return s;
 }
@@ -131,7 +131,7 @@ r__array(DBT *v, void (*fn)(DBT *, void *), void **a, size_t size)
     ap = xmalloc(n*size);
     
     for (i=0; i<n; i++)
-	fn(v, ap+(size*i));
+	fn(v, (char *)ap+(size*i));
 
     *a = ap;
     return n;
