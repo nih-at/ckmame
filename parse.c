@@ -666,7 +666,7 @@ parse_sample_start(void)
     s[ns].altname = NULL;
     s[ns].naltname = s[ns].size = 0;
     hashes_init(&s[ns].hashes);
-    s[ns].where = 0;
+    s[ns].where = (enum where)0;
 
     state = IN_SAMPLE;
 
@@ -756,7 +756,7 @@ familymeeting(DB *db, struct game *parent, struct game *child)
     for (i=0; i<child->nrom; i++)
 	for (j=0; j<parent->nrom; j++)
 	    if (romcmp(parent->rom+j, child->rom+i, 1)==ROM_OK) {
-		child->rom[i].where = parent->rom[j].where + 1;
+		child->rom[i].where = (enum where)(parent->rom[j].where + 1);
 		break;
 	    }
 

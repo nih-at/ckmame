@@ -1,5 +1,5 @@
 /*
-  $NiH: treetrav.c,v 1.23 2004/04/24 09:40:25 dillo Exp $
+  $NiH: treetrav.c,v 1.24 2004/04/26 21:29:20 wiz Exp $
 
   treetrav.c -- traverse tree of games to check
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -322,7 +322,7 @@ zfile_new(const char *name, int sample, const char *parent)
 
     for (i=0; i<z->nrom; i++) {
 	z->rom[i].state = ROM_UNKNOWN;
-	z->rom[i].where = -1;
+	z->rom[i].where = (enum where)-1;
     }
 
     return z;

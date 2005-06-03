@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.34 2004/04/26 22:32:51 wiz Exp $
+  $NiH: match.c,v 1.35 2004/05/16 15:58:51 dillo Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -102,14 +102,14 @@ merge_match(struct match *m, int nrom, struct zfile **zip, int pno, int gpno)
 	    if (zip[m[i].zno]->rom[m[i].fno].state < ROM_TAKEN
 		|| m[i].zno == 0) {
 		zip[m[i].zno]->rom[m[i].fno].state = ROM_TAKEN;
-		zip[m[i].zno]->rom[m[i].fno].where = zno[m[i].zno];
+		zip[m[i].zno]->rom[m[i].fno].where = (enum where)zno[m[i].zno];
 	    }
 	}
 	for (mm=m[i].next; mm; mm=mm->next)
 	    if (mm->quality > ROM_UNKNOWN
 		&& mm->quality > zip[mm->zno]->rom[mm->fno].state) {
 		zip[mm->zno]->rom[mm->fno].state = mm->quality;
-		zip[mm->zno]->rom[mm->fno].where = zno[mm->zno];
+		zip[mm->zno]->rom[mm->fno].where = (enum where)zno[mm->zno];
 	    }
     }
 
