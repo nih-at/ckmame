@@ -1,5 +1,5 @@
 /*
-  $NiH: r_prog.c,v 1.7 2004/02/26 02:26:11 wiz Exp $
+  $NiH: r_prog.c,v 1.8 2004/04/21 10:38:38 dillo Exp $
 
   r_prog.c -- read prog struct from db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -36,7 +36,6 @@
 int
 r_prog(DB *db, char **namep, char **versionp)
 {
-    int n;
     DBT v;
     void *data;
 
@@ -50,5 +49,5 @@ r_prog(DB *db, char **namep, char **versionp)
 
     free(data);
 
-    return n;
+    return 0;
 }
