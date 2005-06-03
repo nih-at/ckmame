@@ -9,7 +9,6 @@ AC_CANONICAL_HOST
 # We want these before the checks, so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS='-Wall -g' auto_cflags=1
 
-
 AC_PROG_CC
 
 # find libzip
