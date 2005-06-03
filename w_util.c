@@ -1,5 +1,5 @@
 /*
-  $NiH: w_util.c,v 1.16 2004/04/21 10:38:38 dillo Exp $
+  $NiH: w_util.c,v 1.17 2004/04/24 09:40:25 dillo Exp $
 
   w_util.c -- data base write utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -116,7 +116,7 @@ w__array(DBT *v, void (*fn)(DBT *, const void *), const void *a,
     w__ulong(v, n);
 
     for (i=0; i<n; i++)
-	fn(v, (void *)a+(size*i));
+	fn(v, (char *)a+(size*i));
 }
 
 
