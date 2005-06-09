@@ -1,3 +1,8 @@
+use cases:
+. child gets renamed (move zip to other zip name)
+. child becomes parent, parent becomes other child (move from now unknown child zip to parent)
+. missing rom is in a different (related or unrelated, but not parent/child) set
+
 automatically fix renamed disks
 automatically fix superfluous zips that have been renamed
 fix mkmamedb-xmame.sh for removal of -li
