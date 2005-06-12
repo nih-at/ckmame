@@ -1,3 +1,5 @@
+/* $NiH$ */ 
+
 /* Declarations for getopt.
    Copyright (C) 1989, 1990, 1991, 1992, 1993 Free Software Foundation, Inc.
 
