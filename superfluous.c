@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.5 2004/04/26 09:23:46 dillo Exp $
+  $NiH: superfluous.c,v 1.6 2005/06/12 15:21:42 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -34,6 +34,15 @@
 #include "util.h"
 #include "funcs.h"
 #include "error.h"
+#include "xmalloc.h"
+
+
+
+static int
+docmp(const void *a, const void *b)
+{
+    return strcmp(*(const char **)a, *(const char **)b);
+}
 
 
 
@@ -43,10 +52,11 @@ handle_extra_files(DB *db, const char *dbname, int sample)
     DIR *dir;
     struct dirent *de;
     char b[8192], **list, **lists, **listx, *p, **lst;
-    int i, l, nfound;
+    char **found;
+    int i, j, l, nfound, nalloced, first;
     int nlist, nlists, nlistx, nlst;
 
-    nfound = 0;
+    first = 1;
 
     if ((nlist=r_list(db, "/list", &list)) < 0) {
 	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
@@ -73,6 +83,9 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 	    /* XXX: error */
 	    continue;
 	}
+
+	found = NULL;
+	nalloced = nfound = 0;
 
 	while ((de=readdir(dir))) {
 	    l = de->d_namlen;
@@ -102,13 +115,34 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 
 	    if (bsearch(&p, lst, nlst, sizeof(char *),
 			(cmpfunc)strpcasecmp) == NULL) {
-		if (nfound++ == 0)
-		    printf("Extra files found:\n");
-		printf("%s/%s/%s\n", rompath[i],
-		       sample ? "samples" : "roms", de->d_name);
+		if (nfound >= nalloced) {
+		    if (nfound == 0)
+			nalloced = 16;
+		    else
+			nalloced *= 2;
+		    found = xrealloc(found, sizeof(*found)*nalloced);
+		}
+		found[nfound++] = xstrdup(de->d_name);
 	    }
 	}
 	closedir(dir);
+
+	if (nfound) {
+	    if (first) {
+		printf("Extra files found:\n");
+		first = 0;
+	    }
+
+	    qsort(found, nfound, sizeof(*found), docmp);
+
+	    for (j=0; j<nfound; j++) {
+		printf("%s/%s/%s\n", rompath[i],
+		       sample ? "samples" : "roms", found[j]);
+		free(found[i]);
+	    }
+
+	    free(found);
+	}
     }
 
     return 0;
