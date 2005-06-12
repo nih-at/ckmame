@@ -76,7 +76,7 @@ in
 	*) MANFMT=man;;
 esac
 
-AC_CONFIG_LINKS([dbl-int.h:db-${db}.h dbl-int.c:db-${db}.c ckmame.1:ckmame.${MANFMT}])
+AC_CONFIG_LINKS([dbl-int.h:db-${db}.h dbl-int.c:db-${db}.c ckmame.1:ckmame.${MANFMT} dumpgame.1:dumpgame.${MANFMT}])
 
 AC_EXEEXT
 
