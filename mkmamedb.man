@@ -1,0 +1,82 @@
+.\" Converted with mdoc2man 0.2
+.\" from NiH: mkmamedb.mdoc,v 1.1 2005/06/12 15:38:01 wiz Exp 
+.\" $NiH: mkmamedb.mdoc,v 1.1 2005/06/12 15:38:01 wiz Exp $
+.\"
+.\" Copyright (c) 2005 Thomas Klausner.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above
+.\"    copyright notice, this list of conditions and the following
+.\"    disclaimer in the documentation and/or other materials provided
+.\"    with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+.\" CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+.\" USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+.\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+.\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.TH MKMAMEDB 1 "June 12, 2005" NiH
+.SH "NAME"
+mkmamedb \- create database for use by ckmame
+.SH "SYNOPSIS"
+.B mkmamedb
+[\fB-hV\fR]
+[\fB-o\fR \fBdbfile\fR]
+[\fBrominfo-file\fR]
+.SH "DESCRIPTION"
+.B mkmamedb
+parses a rom set information file as e.g. provided by
+xmame(6)
+and converts it to an internal database format for use
+by
+ckmame(1).
+The rom set information is read
+\fBrominfo-file\fR
+or stdin, if no
+\fBrominfo-file\fR
+is given on the command line.
+.PP
+.B mkmamedb
+supports the following options:
+.RS
+.TP 11
+\fB-o\fR \fBdbfile, \fB--output\fR Ar dbfile\fR
+Write to database
+\fBdbfile\fR
+instead of the default
+``\fB./mame.db\fR.''
+.TP 11
+\fB-h\fR, \-help
+Display a short help message.
+.TP 11
+\fB-V\fR, \-version
+Display program name and version number.
+.RE
+.SH "EXAMPLES"
+If you have
+xmame(6)
+installed, you can create a database by:
+.Bd \-literal
+# xmame \-lx | mkmamedb
+.SH "AUTHORS"
+
+.B mkmamedb
+was written by
+Dieter Baron <dillo@giga.or.at>
+and
+Thomas Klausner <tk@giga.or.at.>
