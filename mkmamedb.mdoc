@@ -1,6 +1,6 @@
-.\" $NiH: mkmamedb.mdoc,v 1.2 2005/06/12 15:57:03 wiz Exp $
+.\" $NiH: mkmamedb.mdoc,v 1.3 2005/06/12 16:34:53 wiz Exp $
 .\"
-.\" Copyright (c) 2005 Thomas Klausner.
+.\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -41,12 +41,12 @@
 .Op Ar rominfo-file
 .Sh DESCRIPTION
 .Nm
-parses a rom set information file as e.g. provided by
+parses a ROM set description, as provided by e.g.
 .Xr xmame 6
 and converts it to an internal database format for use
 by
 .Xr ckmame 1 .
-The rom set information is read
+The ROM set description is read from
 .Ar rominfo-file
 or stdin, if no
 .Ar rominfo-file
@@ -58,7 +58,10 @@ You can override it with the
 option or the
 .Ev MAMEDB
 environment variable.
-.Pp
+.Pp 
+The following formats of ROM set description are supported: xmame
+-listinfo, also known as CMpro; and xmame -listxml.
+.Sh OPTIONS
 .Nm
 supports the following options:
 .Bl -tag -width XtXtypeXX
