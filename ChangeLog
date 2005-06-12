@@ -1,5 +1,8 @@
 2005-06-12  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
+	* config.guess, config.guess, ltmain.sh: Update from
+	libtool-1.5.18.
+
 	* dumpgame.man, dumpgame.mdoc: Add man page.
 
 2004-08-23  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
