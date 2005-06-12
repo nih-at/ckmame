@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.37 2004/04/26 21:29:19 wiz Exp $
+  $NiH: ckmame.c,v 1.38 2005/06/12 15:18:45 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -58,7 +58,7 @@ char help[] = "\n"
 "  -F, --fix            fix rom sets\n"
 "  -f, --nofixable      don't report fixable errors\n"
 "  -h, --help           display this help message\n"
-"  -i, --integrity      check integrity of rom files\n"
+"  -i, --integrity      check integrity of rom files and disk images\n"
 "  -K, --keep-unknown   keep unknown files when fixing (default)\n"
 "  -k, --delete-unknown don't keep unknown files when fixing\n"
 "  -L, --keep-long      keep long files when fixing (default)\n"
