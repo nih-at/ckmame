@@ -11,17 +11,17 @@ ckmame_SOURCES=ckmame.c error.c zip-supp.c util.c marry.c \
 		match.c malloc.c r_game.c r_list.c r_util.c dbl.c dbl-int.c \
 		treetrav.c fix.c romutil.c chd-supp.c superfluous.c hashes.c \
 		chd.c
-ckmame_LDADD=@DBLIBS@ @LIBZIP_LIBS@
+ckmame_LDADD=@DBLIBS@ @LIBZIP_LIBS@ @LIBOBJS@
 
 mkmamedb_SOURCES=mkmamedb.c dbl.c dbl-int.c parse.c parse-cm.c parse-xml.c \
 	w_game.c w_list.c w_prog.c \
 	error.c malloc.c w_util.c r_game.c r_util.c util.c romutil.c hashes.c
-mkmamedb_LDADD=@DBLIBS@ @LIBXML2_LIBS@
+mkmamedb_LDADD=@DBLIBS@ @LIBXML2_LIBS@ @LIBOBJS@
 
 dumpgame_SOURCES=dumpgame.c error.c malloc.c \
 	r_game.c r_util.c r_list.c r_prog.c \
 	dbl.c dbl-int.c util.c romutil.c hashes.c
-dumpgame_LDADD=@DBLIBS@
+dumpgame_LDADD=@DBLIBS@ @LIBOBJS@
 
 noinst_HEADERS=error.h types.h w.h funcs.h r.h dbl.h \
 	dbh.h util.h xmalloc.h romutil.h chd.h parse.h \
