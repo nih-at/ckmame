@@ -1,3 +1,7 @@
+2005-06-12  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* dumpgame.man, dumpgame.mdoc: Add man page.
+
 2004-08-23  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* dumpgame.c: Add -c, -t to find a game by looking for a rom
