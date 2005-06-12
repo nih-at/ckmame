@@ -27,10 +27,10 @@ noinst_HEADERS=error.h types.h w.h funcs.h r.h dbl.h \
 	dbh.h util.h xmalloc.h romutil.h chd.h parse.h \
 	uint32.h md5_own.h sha1_own.h
 
-DISTCLEANFILES=	${HTML}
+CLEANFILES=	${HTML} mkmamedb.1
 
 EXTRA_DIST=db-db.c db-db.h db-gdbm.c db-gdbm.h getopt.h fnmatch.h README.DOS \
-	${MANDOC} ${MAN}
+	${MANDOC} ${MANDOC2} ${MAN}
 
 dist-hook:
 	rm -f $(distdir)/dbl-int.c $(distdir)/dbl-int.h
@@ -39,11 +39,15 @@ MANFMT=@MANFMT@
 SUFFIXES=.man .mdoc .html
 .PHONY: update-man update-html
 
-man1_MANS=${MANDOC:.mdoc=.${MANFMT}}
+man1_MANS=${MANDOC:.mdoc=.${MANFMT}} mkmamedb.1
 
-MANDOC=ckmame.mdoc dumpgame.mdoc mkmamedb.mdoc
+MANDOC=ckmame.mdoc dumpgame.mdoc
+MANDOC2=mkmamedb.mdoc
 MAN=${MANDOC:.mdoc=.man}
 HTML=${MANDOC:.mdoc=.html}
+
+mkmamedb.1: mkmamedb.${MANFMT}
+	sed 's,PREFIX,${prefix},g' mkmamedb.${MANFMT} > $@
 
 .mdoc.man:
 	mdoc2man $< > $@.$$$$ && diff -I NiH $@.$$$$ $@ || mv $@.$$$$ $@
