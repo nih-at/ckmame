@@ -1,5 +1,8 @@
 2005-06-12  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
+	* INSTALL, depcomp, install-sh, missing, mkinstalldirs: Update
+	from automake-1.9.5.
+
 	* config.guess, config.guess, ltmain.sh: Update from
 	libtool-1.5.18.
 
