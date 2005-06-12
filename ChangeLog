@@ -1,5 +1,7 @@
 2005-06-12  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
+	* ckmame.mdoc: merge documentation from ckmame.texi.
+
 	* mkmamedb.mdoc, mkmamedb.man: add man page.
 
 	* INSTALL, depcomp, install-sh, missing, mkinstalldirs: update
