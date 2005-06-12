@@ -1,17 +1,23 @@
-  This is ckmame, a program to check rom sets for MAME, the Multiple
+  This is ckmame, a program to check ROM sets for MAME, the Multiple
 Arcade Machine Emulator (http://mame.retrogames.com).  It tells you
-which rom files are missing or have a wrong CRC, and can delete
-unknown and unused files from the romsets (zipped only).
+which ROM files are missing or have a wrong checksum, and can delete
+unknown and unused files from the ROM sets, and rename or move ROM
+files.
 
-  To use it, you need zlib (at least version 1.1.2) and either
-Berkeley db or GNU gdbm, as well as a current output of `mame
--listinfo' (which you can find at the distribution site).  Please note
-that there might be problems with Berkeley db under Linux -- use
-`./configure --without-db' if you encounter problems with it.
+  To use it, you need
+	- zlib (at least version 1.1.2)
+	- libzip
+	- either Berkley DB or GNU gdbm
+	- optionally libxml2 (for parsing xmame -listxml output)
+Please note that there might be problems with Berkeley db under Linux
+-- use `./configure --without-db' if you encounter problems with it.
 
-  You can find zlib at ftp://ftp.cdrom.com/pub/infozip/zlib, and gdbm
-at your local GNU mirror
-(cf. http://www.gnu.org/server/list-mirrors.html).
+  You will also need a description of the ROM set you want to check.
+For MAME, it can be obtained by running `mame -listxml'.
+
+  You can find zlib at ftp://ftp.cdrom.com/pub/infozip/zlib, gdbm at
+your local GNU mirror (http://www.gnu.org/server/list-mirrors.html),
+libzip at http:/www.nih.at/libzip/, and libxml2 at http://xmlsoft.org/
 
   If you make a binary distribution, please include a pointer to the
 distribution site
@@ -24,34 +30,32 @@ The latest version can always be found there.
 
 Usage:
 
-  Use a recent MAME executable with the option `-listinfo' to create
+  Use a recent MAME executable with the option `-listxml' to create
 the database input file, e. g.
-	xmame -listinfo > db.txt
+	xmame -listxml > db.xml
 
-  Then start `mkmamedb', which reads `db.txt' (if you don't name a
-different file on the command line) and writes to `mame.db', or
-`mame.gdbm', depending on which database routines you are using.  The
-name of the resulting database can be changed with the -o option.
+  Then start `mkmamedb db.xml', which writes to `mame.db'.  The name
+of the resulting database can be changed with the -o option.
 
   Set the environment variables `MAMEDB' to point to the database file
 mkmamedb just created, and `ROMPATH' to the directory above the one
-where your roms reside (`/roms' will be added automatically to each
+where your ROMs reside (`/roms' will be added automatically to each
 entry, just like MAME does).  If you don't set them, ckmame will use
 the current directory as defaults for both.
 
   Then just type `ckmame', and off you go.  You should probably
 redirect the output to a file, as it can get rather lengthy if your
-roms haven't been tended very well.  Or take a look at the output of
+ROMs haven't been tended very well.  Or take a look at the output of
 `ckmame -h' to see some options which reduce the output.
 
   If you trust ckmame enough, start it with the parameter `-F' and it
 will fix your roms (or at least try to).  Unrecognized files in your
 rom sets will be saved in the directory `garbage' in the
-roms-directory, in zipfiles with the name of game.
+roms-directory, in zip files with the name of game.
 
   Also included is `dumpgame', which outputs rom and sample
 information for all games specified on the command line (using the
 database).
 
   For a complete list of options, please take a look at the
-man page.
+man pages.
