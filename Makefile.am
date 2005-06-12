@@ -5,10 +5,11 @@ AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @CFLAGS@
 
 SUBDIRS=regress
 
+MAN1=ckmame.1 dumpgame.1
+
 bin_PROGRAMS=ckmame mkmamedb dumpgame
 dist_bin_SCRIPTS=mkmamedb-xmame.sh
-man_MANS=ckmame.1
-#info_TEXINFOS=  ckmame.texi
+man_MANS=${MAN1}
 ckmame_SOURCES=ckmame.c error.c zip-supp.c util.c marry.c \
 		match.c malloc.c r_game.c r_list.c r_util.c dbl.c dbl-int.c \
 		treetrav.c fix.c romutil.c chd-supp.c superfluous.c hashes.c \
@@ -22,16 +23,27 @@ dumpgame_SOURCES=dumpgame.c error.c malloc.c \
 noinst_HEADERS=error.h types.h w.h funcs.h r.h dbl.h \
 	dbh.h util.h xmalloc.h romutil.h chd.h parse.h
 
-DISTCLEANFILES=	ckmame.1 
+DISTCLEANFILES=	${man_MANS} ${HTML}
 
 EXTRA_DIST=db-db.c db-db.h db-gdbm.c db-gdbm.h getopt.h fnmatch.h README.DOS \
-	ckmame.mdoc ckmame.man
+	${MANDOC} ${MAN}
 
 dist-hook:
 	rm -f $(distdir)/dbl-int.c $(distdir)/dbl-int.h
 
-update-man:
-	TEMPEXT=mk-$$$$; \
-	mdoc2man ckmame.mdoc > ckmame.$$TEMPEXT && diff -I NiH ckmame.$$TEMPEXT ckmame.man \
-		|| mv ckmame.$$TEMPEXT ckmame.man; \
-	rm -f ckmame.$$TEMPEXT
+SUFFIXES=.man .mdoc .html
+.PHONY: update-man update-html
+
+MANDOC=${MAN1:.1=.mdoc}
+MAN=${MANDOC:.mdoc=.man}
+HTML=${MANDOC:.mdoc=.html}
+
+.mdoc.man:
+	mdoc2man $< > $@.$$$$ && diff -I NiH $@.$$$$ $@ || mv $@.$$$$ $@
+	rm -f $@.$$$$
+
+.mdoc.html:
+	nroff -mdoc2html $< | sed -e "s,../html1/,," > $@.$$$$ && mv $@.$$$$ $@
+
+update-man: ${MAN}
+update-html: ${HTML}
