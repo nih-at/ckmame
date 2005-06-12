@@ -43,8 +43,9 @@ man1_MANS=${MANDOC:.mdoc=.${MANFMT}} mkmamedb.1
 
 MANDOC=ckmame.mdoc dumpgame.mdoc
 MANDOC2=mkmamedb.mdoc
-MAN=${MANDOC:.mdoc=.man}
-HTML=${MANDOC:.mdoc=.html}
+ALLMANDOC=${MANDOC} ${MANDOC2}
+MAN=${ALLMANDOC:.mdoc=.man}
+HTML=${ALLMANDOC:.mdoc=.html}
 
 mkmamedb.1: mkmamedb.${MANFMT}
 	sed 's,PREFIX,${prefix},g' mkmamedb.${MANFMT} > $@
