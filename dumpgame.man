@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: dumpgame.mdoc,v 1.3 2005/06/12 15:18:45 wiz Exp 
-.\" $NiH: dumpgame.mdoc,v 1.3 2005/06/12 15:18:45 wiz Exp $
+.\" from NiH: dumpgame.mdoc,v 1.4 2005/06/12 15:57:03 wiz Exp 
+.\" $NiH: dumpgame.mdoc,v 1.4 2005/06/12 15:57:03 wiz Exp $
 .\"
 .\" Copyright (c) 2005 Thomas Klausner.
 .\" All rights reserved.
@@ -84,6 +84,17 @@ is the default.
 .TP 24
 \fB-V\fR, \-version
 Display program name and version number.
+.RE
+.SH "ENVIRONMENT"
+.RS
+.TP 12
+Ev MAMEDB
+Location for the database file.
+Can be overridden with the
+\fB-D\fR
+option.
+Defaults to
+``\fBmame.db\fR.''
 .RE
 .SH "EXAMPLES"
 Display rom information for the game

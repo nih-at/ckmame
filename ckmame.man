@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: ckmame.mdoc,v 1.6 2005/06/12 15:20:12 wiz Exp 
-.\" $NiH: ckmame.mdoc,v 1.6 2005/06/12 15:20:12 wiz Exp $
+.\" from NiH: ckmame.mdoc,v 1.7 2005/06/12 15:57:03 wiz Exp 
+.\" $NiH: ckmame.mdoc,v 1.7 2005/06/12 15:57:03 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Thomas Klausner.
 .\" All rights reserved.
@@ -45,7 +45,7 @@ Actually, it now also supports more than that, you can also check
 sets for e.g., Raine, Impact, or other emulators.
 .PP
 It uses
-\fBmkmamedb\fR
+mkmamedb(1)
 to convert CMPro database files into an internal format that is faster
 to parse.
 .PP
@@ -154,24 +154,23 @@ directory (see also
 \fB-K\fR ),
 which you will also be warned about.
 .RE
+.SH "ENVIRONMENT"
+.RS
+.TP 12
+Ev MAMEDB
+Location for the database file.
+Can be overridden with the
+\fB-D\fR
+option.
+Defaults to
+``\fBmame.db\fR.''
+.TP 12
+Ev ROMPATH
+Location for the rom zip files.
+Defaults to
+``\fB.\fR.''
+.RE
 .SH "EXAMPLES"
-Get an input file for
-\fBmkmamedb\fR
-from
-xmame(6)
-and convert it to the internal database format:
-.IP
-\fBxmame \-listinfo > db.txt\fR
-.PP
-.IP
-\fBmkmamedb db.txt\fR
-.PP
-.PP
-Alternatively, if you have xmame installed and in your
-\fBPATH\fR,
-you can just run
-\fBmkmamedb-xmame.sh\fR.
-.PP
 Print a report about the current state of your rom sets in the
 \fBroms\fR
 subdir of the current dir:

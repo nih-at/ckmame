@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: mkmamedb.mdoc,v 1.1 2005/06/12 15:38:01 wiz Exp 
-.\" $NiH: mkmamedb.mdoc,v 1.1 2005/06/12 15:38:01 wiz Exp $
+.\" from NiH: mkmamedb.mdoc,v 1.2 2005/06/12 15:57:03 wiz Exp 
+.\" $NiH: mkmamedb.mdoc,v 1.2 2005/06/12 15:57:03 wiz Exp $
 .\"
 .\" Copyright (c) 2005 Thomas Klausner.
 .\" All rights reserved.
@@ -67,12 +67,34 @@ Display a short help message.
 \fB-V\fR, \-version
 Display program name and version number.
 .RE
+.SH "ENVIRONMENT"
+.RS
+.TP 12
+Ev MAMEDB
+Location for the database file.
+Can be overridden with the
+\fB-o\fR
+option.
+Defaults to
+``\fBmame.db\fR.''
+.RE
 .SH "EXAMPLES"
-If you have
+Get an input file for
+mkmamedb(1)
+from
 xmame(6)
-installed, you can create a database by:
+and convert it to the internal database format:
 .Bd \-literal
-# xmame \-lx | mkmamedb
+# xmame \-listxml \*[Gt] db.txt
+# mkmamedb db.txt
+.Ed
+.PP
+Alternatively, if you have
+xmame(6)
+installed and in your
+\fBPATH\fR,
+you can just run
+\fBmkmamedb-xmame.sh\fR.
 .SH "AUTHORS"
 
 .B mkmamedb
