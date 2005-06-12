@@ -1,4 +1,4 @@
-.\" $NiH: ckmame.mdoc,v 1.6 2005/06/12 15:20:12 wiz Exp $
+.\" $NiH: ckmame.mdoc,v 1.7 2005/06/12 15:57:03 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Thomas Klausner.
 .\" All rights reserved.
@@ -28,7 +28,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd April 22, 2004
+.Dd June 12, 2005
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -41,15 +41,55 @@
 .Op Ar game ...
 .Sh DESCRIPTION
 .Nm
-checks rom sets for MAME, the Multiple Arcade Machine Emulator.
-Actually, it now also supports more than that, you can also check
-sets for e.g., Raine, Impact, or other emulators.
+is a program to check rom sets for MAME, the Multiple Arcade
+Machine Emulator (see
+.Lk http://www.mame.net/ ) .
+(Actually, it supports more than that, you can also check sets for
+e.g., Raine, Impact, or other emulators.)
+It tells you which rom files are missing or have a wrong CRC, and can
+delete unknown and unused files from the romsets (zipped only).
 .Pp
-It uses
+MAME is an emulator for all kinds of historic and not so historic
+arcade machines (video games, ranging from the 1970s to today).
+Since MAME is emulating the games, it uses the original roms from the
+arcade machines.
+MAME's internal database contains extensive information on the roms,
+including the sizes and CRCs (checksums) of the used roms.
+Since some arcade games are variants of others and share some of the
+same roms, there are also some internal dependencies of these so
+called clones.
+For space reasons the roms can be archived in zip files, and are
+dynamically unzipped by MAME itself when you play a game.
+.Nm
+does not support rom sets not stored as zip files.
+.Pp
+.Nm
+tries to create a
+.Dq split romset
+from your current collection.
+This means that all files needed by the parent are kept in the
+parent's zip file, and only the files needed by the clone (or child)
+that are different from the parent's are kept in the child's zip.
+For identifying the roms ckmame uses the sizes and CRCs; names are
+only used for verification, since the MAME team likes to change rom's
+names from version to version.
+.Pp
+.Nm
+uses MAME's rom database, but it must be converted into a more
+efficient format before the first use.
+See
 .Xr mkmamedb 1
-to convert CMPro database files into an internal format that is faster
-to parse.
+for details.
 .Pp
+By default,
+.Nm
+will check the games named, or all games if none are given.
+Shell wildcards are allowed.
+If you want to trim the output to particular details, 
+see the
+.Sx OPTIONS
+section below for details.
+.Ss OPTIONS
 Supported options:
 .Bl -tag -width XfXdbfileX
 .It Fl b
