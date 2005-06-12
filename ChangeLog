@@ -1,12 +1,14 @@
 2005-06-12  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
-	* INSTALL, depcomp, install-sh, missing, mkinstalldirs: Update
+	* mkmamedb.mdoc, mkmamedb.man: add man page.
+
+	* INSTALL, depcomp, install-sh, missing, mkinstalldirs: update
 	from automake-1.9.5.
 
-	* config.guess, config.guess, ltmain.sh: Update from
+	* config.guess, config.guess, ltmain.sh: update from
 	libtool-1.5.18.
 
-	* dumpgame.man, dumpgame.mdoc: Add man page.
+	* dumpgame.man, dumpgame.mdoc: add man page.
 
 2004-08-23  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 

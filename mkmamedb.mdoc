@@ -1,0 +1,80 @@
+.\" $NiH$
+.\"
+.\" Copyright (c) 2005 Thomas Klausner.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above
+.\"    copyright notice, this list of conditions and the following
+.\"    disclaimer in the documentation and/or other materials provided
+.\"    with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+.\" CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+.\" USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+.\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+.\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.Dd June 12, 2005
+.Dt MKMAMEDB 1
+.Os
+.Sh NAME
+.Nm mkmamedb
+.Nd create database for use by ckmame
+.Sh SYNOPSIS
+.Nm
+.Op Fl hV
+.Op Fl o Ar dbfile
+.Op Ar rominfo-file
+.Sh DESCRIPTION
+.Nm
+parses a rom set information file as e.g. provided by
+.Xr xmame 6
+and converts it to an internal database format for use
+by
+.Xr ckmame 1 .
+The rom set information is read
+.Ar rominfo-file
+or stdin, if no
+.Ar rominfo-file
+is given on the command line.
+.Pp
+.Nm
+supports the following options:
+.Bl -tag -width XtXtypeXX
+.It Fl o Ar dbfile , Fl -output Ar dbfile
+Write to database
+.Ar dbfile
+instead of the default
+.Dq Pa ./mame.db .
+.It Fl h , -help
+Display a short help message.
+.It Fl V , -version
+Display program name and version number.
+.El
+.Sh EXAMPLES
+If you have
+.Xr xmame 6
+installed, you can create a database by:
+.Bd -literal
+# xmame -lx | mkmamedb
+.Sh AUTHORS
+.An -nosplit
+.Nm
+was written by
+.An Dieter Baron Aq dillo@giga.or.at
+and
+.An Thomas Klausner Aq tk@giga.or.at .

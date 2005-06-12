@@ -5,7 +5,7 @@ AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @CFLAGS@
 
 SUBDIRS=regress
 
-MAN1=ckmame.1 dumpgame.1
+MAN1=ckmame.1 dumpgame.1 mkmamedb.1
 
 bin_PROGRAMS=ckmame mkmamedb dumpgame
 dist_bin_SCRIPTS=mkmamedb-xmame.sh
