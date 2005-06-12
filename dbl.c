@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.19 2004/04/21 10:38:37 dillo Exp $
+  $NiH: dbl.c,v 1.20 2004/04/24 09:40:24 dillo Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -38,6 +38,8 @@
 #define DDB_EOLD	1	/* old db (no /ckmame entry) */
 #define DDB_EVERSION	2	/* version mismatch */
 #define DDB_EMAX	3
+
+#define DDB_FILEEXT ".db"
 
 static int ddb_errno;
 

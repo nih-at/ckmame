@@ -1,5 +1,8 @@
 2005-06-12  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
+	* db-gdbm.h, db-db.h, dbl.c: move DDB_FILEEXT to dbl.c and make it
+	".db" independent of database type (easier to document).
+
 	* ckmame.mdoc: merge documentation from ckmame.texi.
 
 	* mkmamedb.mdoc, mkmamedb.man: add man page.

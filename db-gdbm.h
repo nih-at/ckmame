@@ -2,7 +2,7 @@
 #define _HAD_DBL_INT_H
    
 /*
-  $NiH: db-gdbm.h,v 1.7 2003/03/16 10:21:33 wiz Exp $
+  $NiH: db-gdbm.h,v 1.8 2004/02/26 02:26:07 wiz Exp $
 
   db-gdbm.h -- low level routines for GNU gdbm
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -34,11 +34,5 @@ typedef struct {
 } DBT;
 
 typedef void *DB;
-
-#ifdef __DJGPP__
-#define DDB_FILEEXT ".gdb"
-#else
-#define DDB_FILEEXT ".gdbm"
-#endif
 
 #endif
