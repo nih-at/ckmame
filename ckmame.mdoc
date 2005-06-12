@@ -1,4 +1,4 @@
-.\" $NiH: ckmame.mdoc,v 1.7 2005/06/12 15:57:03 wiz Exp $
+.\" $NiH: ckmame.mdoc,v 1.8 2005/06/12 16:34:40 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Thomas Klausner.
 .\" All rights reserved.
@@ -91,79 +91,85 @@ see the
 section below for details.
 .Ss OPTIONS
 Supported options:
-.Bl -tag -width XfXdbfileX
-.It Fl b
+.Bl -tag -width 22n
+.It Fl b, -nobroken
 Don't report unfixable errors.
 See also
 .Fl f
 and
 .Fl w .
-.It Fl c
+.It Fl c , -correct
 Report correct sets.
 Normally they are not mentioned.
-.It Fl D Ar dbfile
+.It Fl D Ar dbfile , Fl -db Ar dbfile
 Use
 .Ar dbfile
 as database file.
-.It Fl d
+.It Fl d , -nonogooddumps
 Don't report roms with no known good dumps.
-.It Fl F
+.It Fl F , -fix
 Fix rom sets; do as much as possible, such as renaming and moving
 files.
-.It Fl f
+.It Fl f , -nofixable
 Don't report fixable errors.
 See also
 .Fl b
 and
 .Fl w .
-.It Fl h
+.It Fl h , -help
 Display a short help message.
-.It Fl K
+.It Fl i , -integrity
+Check integrity of zip archives and disk images
+by computing checksums and comparing them with the
+internally saved ones.
+.It Fl K , -keep-unknown
 Keep unknown files when fixing (default).
 They are moved into a zip file with the same name under
 .Pa roms/garbage .
 See also
 .Fl k .
-.It Fl k
+.It Fl k , -delete-unknown
 Don't keep unknown files when fixing.
 See also
 .Fl K .
-.It Fl L
+.It Fl L , -keep-long
 Keep too long files when fixing (default).
 See also
 .Fl K
 and
 .Fl l .
-.It Fl l
+.It Fl l , -delete-long
 Don't keep long files when fixing, delete them instead.
 See also
 .Fl L .
-.It Fl n
+.It Fl n , -dryrun
 Don't actually fix anything, just report what would be done.
-.It Fl S
+.It Fl S , -samples
 Check samples instead of roms.
-.It Fl s
+.It Fl -superfluous
+Only check for superfluous files in rom sets.
+.It Fl s , -nosuperfluous
 Don't report superfluous (unneeded) files.
-.It Fl U
+.It Fl U , -keep-unused
 Keep unused files when fixing.
 Unused files are files that should, and do exist in other places.
 See also
 .Fl u .
-.It Fl u
+.It Fl u , -delete-unused
 Don't keep unused files when fixing (default), delete them instead.
 See also
 .Fl U .
-.It Fl V
+.It Fl V , -version
 Display program name and version number.
-.It Fl v
+.It Fl v , -verbose
 Print fixes made.
-.It Fl w
+.It Fl w , -nowarnings
 Print only unfixable error, like missing or completely incorrect roms.
 See also
 .Fl b
 and
 .Fl f .
-.It Fl X
+.It Fl X , -ignoreextra
 Do not mention extra files that are in the roms or samples dirs
 respectively.
 Most of the time these are romsets whose names have changed.
