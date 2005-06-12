@@ -29,7 +29,7 @@ noinst_HEADERS=error.h types.h w.h funcs.h r.h dbl.h \
 
 CLEANFILES=	${HTML} mkmamedb.1
 
-EXTRA_DIST=db-db.c db-db.h db-gdbm.c db-gdbm.h getopt.h fnmatch.h README.DOS \
+EXTRA_DIST=db-db.c db-db.h db-gdbm.c db-gdbm.h getopt.h fnmatch.h \
 	${MANDOC} ${MANDOC2} ${MAN}
 
 dist-hook:
