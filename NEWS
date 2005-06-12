@@ -1,9 +1,17 @@
-Adapt for MAME -listinfo output changes (honor flags baddump and nodump).
-Check disk images (chd files).
-Superfluouos merged into ckmame. ckmame now by default reports
-extra files. Also works for samples.
+0.6 
 
-0.5
+- libzip is distributed separately
+- Support MAME/MESS -listxml output
+- Adapt for MAME -listinfo output changes (honor flags baddump and nodump).
+- Check disk images (chd files).
+- Superfluouos merged into ckmame. ckmame now by default reports
+  extra files.  Also works for samples.
+- add file format version to database and don't use incompatible database
+- integrate checking for superfluous files into ckmame itself
+- dumpgame: find game by checksum of one of its ROMs
+- add script to create database by running xmame
+
+0.5 (2003-01-30)
 
 MESS, Impact, Raine, and others based on the CMPro format now supported.
 Man page added.
