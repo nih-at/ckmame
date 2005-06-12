@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.9 2005/06/12 22:35:36 wiz Exp $
+  $NiH: superfluous.c,v 1.10 2005/06/12 23:21:24 wiz Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -23,7 +23,19 @@
 
 
 
-#include "config.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <fnmatch.h>
+
+#include "types.h"
+#include "dbh.h"
+#include "util.h"
+#include "funcs.h"
+#include "error.h"
+#include "xmalloc.h"
+
+/* copied from autoconf manual (AC_HEADER_DIRENT) */
 
 #if HAVE_DIRENT_H
 # include <dirent.h>
@@ -41,17 +53,6 @@
 #  include <ndir.h>
 # endif
 #endif
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <fnmatch.h>
-
-#include "types.h"
-#include "dbh.h"
-#include "util.h"
-#include "funcs.h"
-#include "error.h"
-#include "xmalloc.h"
 
 
 
@@ -68,7 +69,7 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 {
     DIR *dir;
     struct dirent *de;
-    char b[8192], **list, **lists, **listx, *p, **lst;
+    char b[8192], *p, **list, **lists, **listx, **lst;
     char **found;
     int i, j, l, nfound, nalloced, first;
     int nlist, nlists, nlistx, nlst;
@@ -105,23 +106,20 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 	nalloced = nfound = 0;
 
 	while ((de=readdir(dir))) {
-	    l = NAMLEN(de);
-	    p = de->d_name;
+	    l = (NAMLEN(de) < sizeof(b)-1 ? NAMLEN(de) : sizeof(b)-1);
+	    strncpy(b, de->d_name, l);
+	    b[l] = '\0';
 
-	    if (strcmp(p, ".") == 0 || strcmp(p, "..") == 0)
+	    if (strcmp(b, ".") == 0 || strcmp(b, "..") == 0)
 		continue;
 
-	    if (l > 4 && strcmp(p+l-4, ".zip") == 0) {
-		strncpy(b, p, sizeof(b));
+	    if (l > 4 && strcmp(b+l-4, ".zip") == 0) {
 		b[l-4] = '\0';
-		p = b;
 		lst = sample ? lists : list;
 		nlst = sample ? nlists : nlist;
 	    }
-	    else if (l > 4 && strcmp(p+l-4, ".chd") == 0) {
-		strncpy(b, p, sizeof(b));
+	    else if (l > 4 && strcmp(b+l-4, ".chd") == 0) {
 		b[l-4] = '\0';
-		p = b;
 		lst = listx;
 		nlst = nlistx;
 	    }
@@ -130,6 +128,7 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 		nlst = nlistx;
 	    }
 
+	    p = b;
 	    if (bsearch(&p, lst, nlst, sizeof(char *),
 			(cmpfunc)strpcasecmp) == NULL) {
 		if (nfound >= nalloced) {
@@ -139,7 +138,10 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 			nalloced *= 2;
 		    found = xrealloc(found, sizeof(*found)*nalloced);
 		}
-		found[nfound++] = xstrdup(de->d_name);
+		found[nfound] = xmalloc(l+1);
+		strncpy(found[nfound], de->d_name, l);
+		found[nfound][l] = '\0';
+		nfound++;
 	    }
 	}
 	closedir(dir);
@@ -155,7 +157,7 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 	    for (j=0; j<nfound; j++) {
 		printf("%s/%s/%s\n", rompath[i],
 		       sample ? "samples" : "roms", found[j]);
-		free(found[i]);
+		free(found[j]);
 	    }
 
 	    free(found);
