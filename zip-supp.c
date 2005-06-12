@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.30 2005/06/12 17:09:28 dillo Exp $
+  $NiH: zip-supp.c,v 1.31 2005/06/12 19:22:36 wiz Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -251,7 +251,7 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 	    return -1;
 
 	if (h->types & GOT_CRC)
-	    crc = crc32(crc, buf, n);
+	    crc = crc32(crc, (Bytef *)buf, n);
 	if (h->types & GOT_MD5)
 	    MD5Update(&md5, buf, n);
 	if (h->types & GOT_SHA1)
