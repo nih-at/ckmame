@@ -26,36 +26,3 @@ distribution site
 The latest version can always be found there.
 
   Mail suggestions and bug reports to <nih@giga.or.at>.
-
-
-Usage:
-
-  Use a recent MAME executable with the option `-listxml' to create
-the database input file, e. g.
-	xmame -listxml > db.xml
-
-  Then start `mkmamedb db.xml', which writes to `mame.db'.  The name
-of the resulting database can be changed with the -o option.
-
-  Set the environment variables `MAMEDB' to point to the database file
-mkmamedb just created, and `ROMPATH' to the directory above the one
-where your ROMs reside (`/roms' will be added automatically to each
-entry, just like MAME does).  If you don't set them, ckmame will use
-the current directory as defaults for both.
-
-  Then just type `ckmame', and off you go.  You should probably
-redirect the output to a file, as it can get rather lengthy if your
-ROMs haven't been tended very well.  Or take a look at the output of
-`ckmame -h' to see some options which reduce the output.
-
-  If you trust ckmame enough, start it with the parameter `-F' and it
-will fix your roms (or at least try to).  Unrecognized files in your
-rom sets will be saved in the directory `garbage' in the
-roms-directory, in zip files with the name of game.
-
-  Also included is `dumpgame', which outputs rom and sample
-information for all games specified on the command line (using the
-database).
-
-  For a complete list of options, please take a look at the
-man pages.
