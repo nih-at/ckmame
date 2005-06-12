@@ -1,5 +1,5 @@
 /*
-  $NiH: chd.c,v 1.7 2005/06/03 13:44:15 wiz Exp $
+  $NiH: chd.c,v 1.8 2005/06/12 19:22:35 wiz Exp $
 
   chd.c -- accessing chd files
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -108,7 +108,7 @@ chd_open(const char *name, int *errp)
 
 
 int
-chd_read_hunk(struct chd *chd, int idx, char *b)
+chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 {
     int i, n, err;
 
@@ -228,7 +228,7 @@ chd_read_hunk(struct chd *chd, int idx, char *b)
 
 
 int
-chd_read_range(struct chd *chd, char *b, int off, int len)
+chd_read_range(struct chd *chd, unsigned char *b, int off, int len)
 {
     int i, s, n;
     int copied, o2, l2;

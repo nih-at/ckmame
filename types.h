@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.22 2004/04/26 11:49:38 dillo Exp $
+  $NiH: types.h,v 1.23 2004/04/26 21:29:20 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -81,8 +81,8 @@ enum filetype {
 struct hashes {
     int types;
     unsigned long crc;
-    char md5[16];
-    char sha1[20];
+    unsigned char md5[16];
+    unsigned char sha1[20];
 };
 
 struct rom {

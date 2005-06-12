@@ -1,7 +1,7 @@
 #ifndef HAD_CHD_H
 
 /*
-  $NiH: chd.h,v 1.4 2005/06/03 14:36:47 wiz Exp $
+  $NiH: chd.h,v 1.5 2005/06/12 19:22:35 wiz Exp $
 
   chd.h -- accessing chd files
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -85,14 +85,14 @@ struct chd {
     char *buf;			/* decompression buffer */
     z_stream z;			/* decompressor */
     int hno;			/* hunk currently in hbuf */
-    char *hbuf;			/* hunk data buffer */
+    unsigned char *hbuf;	/* hunk data buffer */
 };
 
 
 
 void chd_close(struct chd *);
 struct chd *chd_open(const char *, int *);
-int chd_read_hunk(struct chd *, int, char *);
-int chd_read_range(struct chd *, char *, int, int);
+int chd_read_hunk(struct chd *, int, unsigned char *);
+int chd_read_range(struct chd *, unsigned char *, int, int);
 
 #endif /* chd.h */

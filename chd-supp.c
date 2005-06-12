@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.8 2005/06/12 17:09:28 dillo Exp $
+  $NiH: chd-supp.c,v 1.9 2005/06/12 19:22:35 wiz Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -129,7 +129,7 @@ get_hashes(struct chd *chd, struct hashes *h)
     SHA1_CTX sha1;
     unsigned int hunk, n;
     uint64_t len;
-    char *buf;
+    unsigned char *buf;
 
     /* XXX: support CRC? */
     h->types &= ~GOT_CRC;
