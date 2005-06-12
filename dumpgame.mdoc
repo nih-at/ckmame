@@ -1,4 +1,4 @@
-.\" $NiH: dumpgame.mdoc,v 1.1 2005/06/12 14:23:58 wiz Exp $
+.\" $NiH: dumpgame.mdoc,v 1.2 2005/06/12 14:24:42 wiz Exp $
 .\"
 .\" Copyright (c) 2005 Thomas Klausner.
 .\" All rights reserved.
@@ -36,11 +36,11 @@
 .Nd extract rom set information from ckmame database
 .Sh SYNOPSIS
 .Nm
-.Op Fl d Ar DBFILE
+.Op Fl d Ar dbfile
 .Op Ar game
 .Nm
 .Fl c
-.Op Fl d Ar DBFILE
+.Op Fl d Ar dbfile
 .Op Fl t Ar type
 .Ar checksum
 .Op Ar ...
@@ -60,9 +60,9 @@ supports the following options:
 .It Fl c , -checksum
 Look for a rom by checksum (instead of the default
 behaviour to look for a game by name).
-.It Fl D Ar DBFILE , Fl -db Ar DBFILE
+.It Fl D Ar dbfile , Fl -db Ar dbfile
 Use database
-.Ar DBFILE
+.Ar dbfile
 instead of the default
 .Dq Pa ./mame.db .
 .It Fl h , -help

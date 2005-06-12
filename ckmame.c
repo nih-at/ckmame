@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.36 2004/04/26 09:03:17 dillo Exp $
+  $NiH: ckmame.c,v 1.37 2004/04/26 21:29:19 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -53,7 +53,7 @@ char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 char help[] = "\n"
 "  -b, --nobroken       don't report unfixable errors\n"
 "  -c, --correct        report correct sets\n"
-"  -D, --db DBFILE      use mame-db DBFILE\n"
+"  -D, --db dbfile      use mame-db dbfile\n"
 "  -d, --nonogooddumps  don't report roms with no good dumps\n"
 "  -F, --fix            fix rom sets\n"
 "  -f, --nofixable      don't report fixable errors\n"

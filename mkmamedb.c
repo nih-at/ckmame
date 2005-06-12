@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.23 2004/04/22 11:21:44 dillo Exp $
+  $NiH: mkmamedb.c,v 1.24 2004/07/18 21:54:50 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -50,7 +50,7 @@ char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
 char help[] = "\n\
   -h, --help           display this help message\n\
   -V, --version        display version number\n\
-  -o, --output DBFILE  write to db DBFILE\n\
+  -o, --output dbfile  write to db dbfile\n\
 \n\
 Report bugs to <nih@giga.or.at>.\n";
 
