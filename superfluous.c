@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.4 2004/04/24 09:40:25 dillo Exp $
+  $NiH: superfluous.c,v 1.5 2004/04/26 09:23:46 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -23,6 +23,7 @@
 
 
 
+#include <dirent.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -39,8 +40,9 @@
 int
 handle_extra_files(DB *db, const char *dbname, int sample)
 {
-    FILE *fin;
-    char b[8192], bo[8192], **list, **lists, **listx, *p, **lst;
+    DIR *dir;
+    struct dirent *de;
+    char b[8192], **list, **lists, **listx, *p, **lst;
     int i, l, nfound;
     int nlist, nlists, nlistx, nlst;
 
@@ -66,34 +68,34 @@ handle_extra_files(DB *db, const char *dbname, int sample)
     init_rompath();
 
     for (i=0; rompath[i]; i++) {
-	/* XXX: use opendir */
-	sprintf(b, "ls %s/%s", rompath[i], sample ? "samples" : "roms");
-	if ((fin=popen(b, "r")) == NULL) {
+	sprintf(b, "%s/%s", rompath[i], sample ? "samples" : "roms");
+	if ((dir=opendir(b)) == NULL) {
 	    /* XXX: error */
 	    continue;
 	}
 
-	while (fgets(b, 8192, fin)) {
-	    l = strlen(b);
-	    if (b[l-1] == '\n')
-		b[--l] = '\0';
+	while ((de=readdir(dir))) {
+	    l = de->d_namlen;
+	    p = de->d_name;
 
-	    if (l > 4 && strcmp(b+l-4, ".zip") == 0) {
-		strncpy(bo, b, sizeof(bo));
-		bo[l-4] = '\0';
-		p = bo;
+	    if (strcmp(p, ".") == 0 || strcmp(p, "..") == 0)
+		continue;
+
+	    if (l > 4 && strcmp(p+l-4, ".zip") == 0) {
+		strncpy(b, p, sizeof(b));
+		b[l-4] = '\0';
+		p = b;
 		lst = sample ? lists : list;
 		nlst = sample ? nlists : nlist;
 	    }
-	    else if (l > 4 && strcmp(b+l-4, ".chd") == 0) {
-		strncpy(bo, b, sizeof(bo));
-		bo[l-4] = '\0';
-		p = bo;
+	    else if (l > 4 && strcmp(p+l-4, ".chd") == 0) {
+		strncpy(b, p, sizeof(b));
+		b[l-4] = '\0';
+		p = b;
 		lst = listx;
 		nlst = nlistx;
 	    }
 	    else {
-		p = b;
 		lst = listx;
 		nlst = nlistx;
 	    }
@@ -103,10 +105,10 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 		if (nfound++ == 0)
 		    printf("Extra files found:\n");
 		printf("%s/%s/%s\n", rompath[i],
-		       sample ? "samples" : "roms", b);
+		       sample ? "samples" : "roms", de->d_name);
 	    }
 	}
-	pclose(fin);
+	closedir(dir);
     }
 
     return 0;
