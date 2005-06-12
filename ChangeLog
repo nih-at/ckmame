@@ -1,3 +1,14 @@
+2005-06-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* configure.ac, md5.c, md5_own.h, sha1.c, sha1_own.h: provide
+	replacements for MD5 and SHA1 functions.
+
+	* superfluous.c (docmp): new function.
+	* superfluous.c (handle_extra_files): use opendir instead of
+	popen("ls").  Thus, sort files manually.
+
+	* mkmamedb-xmame.sh: adapt to removal of -li option from xmame.
+
 2005-06-12  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* db-gdbm.h, db-db.h, dbl.c: move DDB_FILEEXT to dbl.c and make it
