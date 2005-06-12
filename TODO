@@ -1,7 +1,6 @@
 ------------------------------------------------------------ before release
 update NEWS file
 fix README
-link programs only against libs actually used
 ------------------------------------------------------------ maybe
 0.85.1: "bad dump" is reported as missing with -d
 -cd: do not print a line for each rom that is correct in sets that have nodump roms

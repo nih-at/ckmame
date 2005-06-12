@@ -1,5 +1,8 @@
 2005-06-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* configure.ac, Makefile.am: link each program only againts the
+	libraries it needs.
+	
 	* configure.ac, md5.c, md5_own.h, sha1.c, sha1_own.h: provide
 	replacements for MD5 and SHA1 functions.
 

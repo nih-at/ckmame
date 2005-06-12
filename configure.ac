@@ -18,6 +18,7 @@ AC_CHECK_TYPE([uint32_t], [],
 	      [AC_CHECK_SIZEOF([unsigned int])
 	       AC_CHECK_SIZEOF([unsigned long])])
 
+AC_CHECK_LIB(z, compress2)
 # find libzip
 PKG_CHECK_MODULES(LIBZIP, libzip >= 0.5)
 
