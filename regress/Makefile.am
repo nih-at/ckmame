@@ -1,4 +1,4 @@
-EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS}
+EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS} ${CHDS}
 
 CLEANFILES=mamedb
 
@@ -41,6 +41,8 @@ ZIPS=		1-4-dup.zip \
 		1-c-ok.zip \
 		2-48-ok.zip \
 		2-4c-ok.zip
+CHDS=		108-5.chd \
+		12-1.chd
 
 check: mamedb
 	@failed=0; all=0; \

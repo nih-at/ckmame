@@ -96,5 +96,5 @@ PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= 2.0,
 			   [Define if you have the xml2 library (-lxml2)]),
 			   AC_MSG_WARN(libxml2 not found))
 
-AC_CONFIG_FILES([Makefile regress/Makefile])
+AC_CONFIG_FILES([Makefile docs/Makefile regress/Makefile])
 AC_OUTPUT

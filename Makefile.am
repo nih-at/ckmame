@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS=dist-bzip2
 
 AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @CFLAGS@
 
-SUBDIRS=regress
+SUBDIRS=docs regress
 
 bin_PROGRAMS=ckmame mkmamedb dumpgame
 dist_bin_SCRIPTS=mkmamedb-xmame.sh
