@@ -1,9 +1,9 @@
 #!/bin/sh
 
-#  $NiH: mkmamedb.c,v 1.23 2004/04/22 11:21:44 dillo Exp $
+#  $NiH: mkmamedb-xmame.sh,v 1.2 2004/04/22 20:24:16 dillo Exp $
 #
 #  mkmamedb-xmame.sh -- create mamedb by calling xmame
-#  Copyright (C) 2004 Dieter Baron and Thomas Klausner
+#  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 #
 #  This file is part of ckmame, a program to check rom sets for MAME.
 #  The authors can be contacted at <nih@giga.or.at>
@@ -21,8 +21,22 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-(xmame --version 2>/dev/null \
-	| sed 's/\([^ ]*\).*version \([^ ]*\).*/emulator (@       name \1@        version \2@)@/' \
-	| tr @ '\012'; \
- xmame -li 2>/dev/null) \
-	| mkmamedb "$@"
+PROG_NAME=xmame
+PROG_VERSION=`xmame --version 2>/dev/null | sed 's/.* version \([^ ]*\).*/\1/'`
+
+if [ -z "$PROG_VERSION" ]
+then
+    echo "$0: cannot determine xmame version" >&2
+    exit 1
+fi
+
+if [ "$PROG_VERSION" '<' '0.84.1' ]
+then
+    LIST=-li
+else
+    LIST=-lx
+fi
+
+xmame $LIST 2>/dev/null | mkmamedb "$@"
+# xmame $LIST 2>/dev/null \
+#	| mkmamedb --prog-name "$PROG_NAME" --prog-version "$PROG_VERSION" "$@"

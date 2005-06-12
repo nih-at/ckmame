@@ -5,7 +5,6 @@ use cases:
 
 automatically fix renamed disks
 automatically fix superfluous zips that have been renamed
-fix mkmamedb-xmame.sh for removal of -li
 add option to check integrity for roms only (not for disks, they take forever)
 integrity check: remember which disks have already been checked (only check once each)
 support disks with parents
@@ -17,6 +16,7 @@ use ROM_NOCRC for samples match quality
 "ls ./roms: No such file or directory" if roms/ does not exist
 -cd: do not print a line for each rom that is correct in sets that have nodump roms
 
+mkmamedb: add --prog-{name,version}
 mkmamedb: no error message for missing newline in last line
 
 man page for mkmamedb
