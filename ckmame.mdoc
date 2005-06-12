@@ -1,4 +1,4 @@
-.\" $NiH: ckmame.mdoc,v 1.9 2005/06/12 18:01:16 wiz Exp $
+.\" $NiH: ckmame.mdoc,v 1.10 2005/06/12 18:03:51 dillo Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -45,22 +45,24 @@ is a program to check ROM sets for MAME, the Multiple Arcade
 Machine Emulator (see
 .Lk http://www.mame.net/ ) ,
 or other emulators that provide ROM set information in a compatible
-way (e.g., Raine, Impact, or other emulators.)  It tells you which ROM
-files are missing or have a wrong checksum, can delete unknown and
-unused files from the ROM sets, and rename or move files.
+way (e.g., Raine, Impact, or other emulators.)
+It tells you which ROM files are missing or have a wrong checksum,
+can delete unknown and unused files from the ROM sets, and rename
+or move files.
 .Pp
 MAME is an emulator for numerous arcade machines (video games, ranging
-from the 1970s to today).  Since MAME is emulating the games, it uses
-the original images from the arcade machines' original ROM chips.
-MAME's internal database contains extensive information on the ROMs,
-including the sizes and checksums of the used roms.
+from the 1970s to today).
+Since MAME is emulating the games, it uses the original images from
+the arcade machines' original ROM chips.  MAME's internal database
+contains extensive information on the ROMs, including the sizes
+and checksums of the used roms.
 Since some arcade games are variants of others and share some of the
 same ROMs, there are also internal dependencies between these so
 called clones.
 To save space, ROMs can be archived in zip files and
 dynamically unzipped by MAME when you play a game.
 .Nm
-does only supports ROM sets stored as zip files.
+does only support ROM sets stored as zip files.
 .Pp
 .Nm
 tries to create a
