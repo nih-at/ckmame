@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.39 2005/06/12 18:00:59 wiz Exp $
+  $NiH: parse.c,v 1.3 2005/06/12 19:33:57 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -45,7 +45,7 @@ static struct rom r[1000], s[1000];
 static struct disk d[10];
 static int nr, ns, nd;
 static enum { OUTSIDE, IN_ROM, IN_DISK, IN_SAMPLE } state;
-static int romhashtypes, diskhashtypes;
+static int w_romhashtypes, w_diskhashtypes;
 static int nlost;
 static char **lostchildren;
 static int *lostchildren_to_do;
@@ -114,7 +114,7 @@ parse(DB *mydb, const char *fname)
     lostchildren = (char **)xmalloc(lostmax*sizeof(char *));
     lostchildren_to_do = (int *)xmalloc(lostmax*sizeof(int));
 
-    romhashtypes = diskhashtypes = 0;
+    w_romhashtypes = w_diskhashtypes = 0;
     nlost = 0;
     g = NULL;
     prog_name = prog_version = NULL;
@@ -216,7 +216,7 @@ parse(DB *mydb, const char *fname)
 	  (int (*)(const void *, const void *))strpcasecmp);
     w_list(db, "/extra_list", extra, nextra);
 
-    w_hashtypes(db, romhashtypes, diskhashtypes);
+    w_hashtypes(db, w_romhashtypes, w_diskhashtypes);
     
     free(lostchildren);
 
@@ -254,7 +254,7 @@ parse_disk_md5(const char *attr)
 	return -1;
     }
     d[nd].hashes.types |= GOT_MD5;
-    diskhashtypes |= GOT_MD5;
+    w_diskhashtypes |= GOT_MD5;
 
     return 0;
 }
@@ -287,7 +287,7 @@ parse_disk_sha1(const char *attr)
 	return -1;
     }
     d[nd].hashes.types |= GOT_SHA1;
-    diskhashtypes |= GOT_SHA1;
+    w_diskhashtypes |= GOT_SHA1;
 
     return 0;
 }
@@ -492,7 +492,7 @@ parse_rom_crc(const char *attr)
 
     r[nr].hashes.crc = strtoul(attr, NULL, 16);
     r[nr].hashes.types |= GOT_CRC;
-    romhashtypes |= GOT_CRC;
+    w_romhashtypes |= GOT_CRC;
 
     return 0;
 }
@@ -572,7 +572,7 @@ parse_rom_md5(const char *attr)
 	return -1;
     }
     r[nr].hashes.types |= GOT_MD5;
-    romhashtypes |= GOT_MD5;
+    w_romhashtypes |= GOT_MD5;
 
     return 0;
 }
@@ -615,7 +615,7 @@ parse_rom_sha1(const char *attr)
 	return -1;
     }
     r[nr].hashes.types |= GOT_SHA1;
-    romhashtypes |= GOT_SHA1;
+    w_romhashtypes |= GOT_SHA1;
 
     return 0;
 }
