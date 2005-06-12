@@ -22,8 +22,6 @@ use ROM_NOCRC for samples match quality
 
 mkmamedb: no error message for missing newline in last line
 
-man page for mkmamedb
-
 source cleanup: split into appropriate files
 
 New in 0.78u1: nodump sets
