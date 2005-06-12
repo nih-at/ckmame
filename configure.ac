@@ -78,7 +78,8 @@ AC_REPLACE_FUNCS(fnmatch)
 AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ([getopt1]) AC_LIBOBJ([getopt])])
 AC_CHECK_FUNCS(MD5Init, , [AC_LIBOBJ([md5])])
 AC_CHECK_FUNCS(SHA1Init, , [AC_LIBOBJ([sha1])])
-AC_SUBST(DBLIBS)
+AC_SUBST([DBLIBS])
+AC_SUBST([MANFMT])
 
 case $host_os
 in
@@ -86,12 +87,9 @@ in
 	*) MANFMT=man;;
 esac
 
-AC_CONFIG_LINKS([dbl-int.h:db-${db}.h dbl-int.c:db-${db}.c ckmame.1:ckmame.${MANFMT} dumpgame.1:dumpgame.${MANFMT} mkmamedb.1:mkmamedb.${MANFMT}])
+AC_CONFIG_LINKS([dbl-int.h:db-${db}.h dbl-int.c:db-${db}.c])
 
 AC_EXEEXT
-
-AM_DISABLE_STATIC
-AM_PROG_LIBTOOL
 
 PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= 2.0, 
 			   AC_DEFINE([HAVE_LIBXML2], [1],
