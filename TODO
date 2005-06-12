@@ -1,5 +1,6 @@
 ------------------------------------------------------------ before release
 add md5 and sha1 replacement functions
+update NEWS file
 fix README
 ------------------------------------------------------------ maybe
 0.85.1: "bad dump" is reported as missing with -d
