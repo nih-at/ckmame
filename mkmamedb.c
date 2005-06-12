@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.24 2004/07/18 21:54:50 dillo Exp $
+  $NiH: mkmamedb.c,v 1.25 2005/06/12 15:18:45 wiz Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -50,7 +50,7 @@ char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
 char help[] = "\n\
   -h, --help           display this help message\n\
   -V, --version        display version number\n\
-  -o, --output dbfile  write to db dbfile\n\
+  -o, --output dbfile  write to database dbfile\n\
 \n\
 Report bugs to <nih@giga.or.at>.\n";
 
@@ -128,7 +128,7 @@ main(int argc, char **argv)
     db = ddb_open(dbname, DDB_WRITE);
 
     if (db==NULL) {
-	myerror(ERRDB, "can't create db '%s'", dbname);
+	myerror(ERRDB, "can't create database '%s'", dbname);
 	exit(1);
     }
 

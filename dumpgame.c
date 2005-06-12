@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.36 2005/06/03 14:37:40 wiz Exp $
+  $NiH: dumpgame.c,v 1.37 2005/06/12 15:18:45 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -60,7 +60,7 @@ char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and"
 
 char help[] = "\n\
   -c, --checksum       find games containing roms with given checksums\n\
-  -D, --db dbfile      use db dbfile\n\
+  -D, --db dbfile      use database dbfile\n\
   -h, --help           display this help message\n\
   -t, --type type      checksum type (crc32 (default), md5, sha1)\n\
   -V, --version        display version number\n\
@@ -391,7 +391,7 @@ dump_game(DB *db, const char *name)
     struct game *game;
 
     if ((game=r_game(db, name)) == NULL) {
-	myerror(ERRDEF, "game unknown (or db error): %s", name);
+	myerror(ERRDEF, "game unknown (or database error): %s", name);
 	return -1;
     }
     
