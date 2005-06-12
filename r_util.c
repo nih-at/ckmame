@@ -1,5 +1,5 @@
 /*
-  $NiH: r_util.c,v 1.16 2005/06/03 13:41:12 wiz Exp $
+  $NiH: r_util.c,v 1.17 2005/06/12 19:22:35 wiz Exp $
 
   r_util.c -- data base read utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -74,7 +74,7 @@ r__ulong(DBT *v)
 
 
 void
-r__mem(DBT *v, char *buf, int len)
+r__mem(DBT *v, void *buf, int len)
 {
     if (v->size < len)
 	return;
