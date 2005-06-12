@@ -1,4 +1,4 @@
-.\" $NiH: ckmame.mdoc,v 1.5 2005/06/12 14:25:42 wiz Exp $
+.\" $NiH: ckmame.mdoc,v 1.6 2005/06/12 15:20:12 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Thomas Klausner.
 .\" All rights reserved.
@@ -46,7 +46,7 @@ Actually, it now also supports more than that, you can also check
 sets for e.g., Raine, Impact, or other emulators.
 .Pp
 It uses
-.Ic mkmamedb
+.Xr mkmamedb 1
 to convert CMPro database files into an internal format that is faster
 to parse.
 .Pp
@@ -135,20 +135,21 @@ directory (see also
 .Fl K ) ,
 which you will also be warned about.
 .El
+.Sh ENVIRONMENT
+.Bl -tag -width 10n
+.It Ev MAMEDB
+Location for the database file.
+Can be overridden with the
+.Fl D
+option.
+Defaults to
+.Dq Pa mame.db .
+.It Ev ROMPATH
+Location for the rom zip files.
+Defaults to
+.Dq Pa \&. .
+.El
 .Sh EXAMPLES
-Get an input file for
-.Ic mkmamedb
-from
-.Xr xmame 6
-and convert it to the internal database format:
-.Dl Ic xmame -listinfo > db.txt
-.Dl Ic mkmamedb db.txt
-.Pp
-Alternatively, if you have xmame installed and in your
-.Ev PATH ,
-you can just run
-.Ic mkmamedb-xmame.sh .
-.Pp
 Print a report about the current state of your rom sets in the
 .Pa roms
 subdir of the current dir:

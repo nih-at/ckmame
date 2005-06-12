@@ -1,4 +1,4 @@
-.\" $NiH$
+.\" $NiH: mkmamedb.mdoc,v 1.1 2005/06/12 15:38:01 wiz Exp $
 .\"
 .\" Copyright (c) 2005 Thomas Klausner.
 .\" All rights reserved.
@@ -65,12 +65,33 @@ Display a short help message.
 .It Fl V , -version
 Display program name and version number.
 .El
+.Sh ENVIRONMENT
+.Bl -tag -width 10n
+.It Ev MAMEDB
+Location for the database file.
+Can be overridden with the
+.Fl o
+option.
+Defaults to
+.Dq Pa mame.db .
+.El
 .Sh EXAMPLES
-If you have
+Get an input file for
+.Xr mkmamedb 1
+from
 .Xr xmame 6
-installed, you can create a database by:
+and convert it to the internal database format:
 .Bd -literal
-# xmame -lx | mkmamedb
+# xmame -listxml \*[Gt] db.txt
+# mkmamedb db.txt
+.Ed
+.Pp
+Alternatively, if you have
+.Xr xmame 6
+installed and in your
+.Ev PATH ,
+you can just run
+.Ic mkmamedb-xmame.sh .
 .Sh AUTHORS
 .An -nosplit
 .Nm
