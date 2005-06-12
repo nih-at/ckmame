@@ -1,0 +1,105 @@
+.\" Converted with mdoc2man 0.2
+.\" from NiH: dumpgame.mdoc,v 1.2 2005/06/12 14:24:42 wiz Exp 
+.\" $NiH: dumpgame.mdoc,v 1.2 2005/06/12 14:24:42 wiz Exp $
+.\"
+.\" Copyright (c) 2005 Thomas Klausner.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above
+.\"    copyright notice, this list of conditions and the following
+.\"    disclaimer in the documentation and/or other materials provided
+.\"    with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+.\" CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+.\" USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+.\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+.\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.TH DUMPGAME 1 "June 12, 2005" NiH
+.SH "NAME"
+dumpgame \- extract rom set information from ckmame database
+.SH "SYNOPSIS"
+.B dumpgame
+[\fB-d\fR \fBDBFILE\fR]
+[\fBgame\fR]
+.B dumpgame
+\fB-c\fR
+[\fB-d\fR \fBDBFILE\fR]
+[\fB-t\fR \fBtype\fR]
+\fBchecksum\fR
+[\fB...\fR]
+.B dumpgame
+[\fB-hV\fR]
+.SH "DESCRIPTION"
+.B dumpgame
+extracts rom set information from a
+ckmame(1)
+database.
+.B dumpgame
+can also find roms matching a particular checksum.
+.PP
+.B dumpgame
+supports the following options:
+.RS
+.TP 24
+\fB-c\fR, \-checksum
+Look for a rom by checksum (instead of the default
+behaviour to look for a game by name).
+.TP 24
+\fB-D\fR \fBDBFILE, \fB--db\fR Ar DBFILE\fR
+Use database
+\fBDBFILE\fR
+instead of the default
+``\fB./mame.db\fR.''
+.TP 24
+\fB-h\fR, \-help
+Display a short help message.
+.TP 24
+\fB-t\fR \fBtype, \fB--type\fR Ar type\fR
+Interpret the checksum arguments as
+\fBtype\fR
+checksums.
+The following values are allowed:
+.Cm crc32,
+.Cm md5,
+and
+.Cm sha1.
+.Cm crc32
+is the default.
+.TP 24
+\fB-V\fR, \-version
+Display program name and version number.
+.RE
+.SH "EXAMPLES"
+Display rom information for the game
+``pacman'' :
+.IP
+\fBdumpgame pacman\fR
+.PP
+Display all roms matching the checksum
+``c1e6ab10'' :
+.IP
+\fBdumpgame \-c c1e6ab10\fR
+.PP
+.SH "AUTHORS"
+
+.B dumpgame
+was written by
+Dieter Baron <dillo@giga.or.at>
+and
+Thomas Klausner <tk@giga.or.at.>

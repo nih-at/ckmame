@@ -1,8 +1,8 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: ckmame.mdoc,v 1.4 2004/04/22 18:55:21 wiz Exp 
-.\" $NiH: ckmame.mdoc,v 1.4 2004/04/22 18:55:21 wiz Exp $
+.\" from NiH: ckmame.mdoc,v 1.5 2005/06/12 14:25:42 wiz Exp 
+.\" $NiH: ckmame.mdoc,v 1.5 2005/06/12 14:25:42 wiz Exp $
 .\"
-.\" Copyright (c) 2003, 2004 Thomas Klausner.
+.\" Copyright (c) 2003, 2004, 2005 Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,7 @@ Display a short help message.
 \fB-K\fR
 Keep unknown files when fixing (default).
 They are moved into a zip file with the same name under
-\fIroms/garbage.\fR
+\fBroms/garbage\fR.
 See also
 \fB-k\fR.
 .TP 12
@@ -149,7 +149,7 @@ Most of the time these are romsets whose names have changed.
 Additionally,
 .B ckmame
 creates a
-\fIroms/garbage\fR
+\fBroms/garbage\fR
 directory (see also
 \fB-K\fR ),
 which you will also be warned about.
@@ -173,7 +173,7 @@ you can just run
 \fBmkmamedb-xmame.sh\fR.
 .PP
 Print a report about the current state of your rom sets in the
-\fIroms\fR
+\fBroms\fR
 subdir of the current dir:
 .IP
 \fBckmame\fR
@@ -185,6 +185,7 @@ roms where no good dump exists:
 \fBckmame \-Fwd\fR
 .PP
 .SH "AUTHORS"
+
 .B ckmame
 was written by
 Dieter Baron
