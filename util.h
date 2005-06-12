@@ -2,7 +2,7 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.13 2004/02/26 02:26:12 wiz Exp $
+  $NiH: util.h,v 1.14 2004/04/24 09:40:25 dillo Exp $
 
   util.h -- miscellaneous utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -35,7 +35,6 @@ const char *bin2hex(const char *, int);
 char *findfile(const char *, enum filetype);
 int hex2bin(char *, const char *, int);
 void *memdup(const void *, int);
-unsigned char *memmem(const unsigned char *, int, const unsigned char *, int);
 int strpcasecmp(const char * const *, const char * const *);
 
 #endif
