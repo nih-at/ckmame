@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.8 2005/06/12 19:22:35 wiz Exp $
+  $NiH: superfluous.c,v 1.9 2005/06/12 22:35:36 wiz Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -23,17 +23,23 @@
 
 
 
-#ifdef UGLY_IRIX_HACK
-/* Irix 6.5 needs sys/dir.h instead of dirent.h for BSD opendir;
-   however, its sys/dir.h header is broken, because it defines
-   "struct direct" instead of "struct dirent". #define UGLY_IRIX_HACK
-   to work around this */
-#include <sys/types.h>
-#define direct dirent
-#include <sys/dir.h>
-#undef direct
+#include "config.h"
+
+#if HAVE_DIRENT_H
+# include <dirent.h>
+# define NAMLEN(dirent) strlen((dirent)->d_name)
 #else
-#include <dirent.h>
+# define dirent direct
+# define NAMLEN(dirent) (dirent)->d_namlen
+# if HAVE_SYS_NDIR_H
+#  include <sys/ndir.h>
+# endif
+# if HAVE_SYS_DIR_H
+#  include <sys/dir.h>
+# endif
+# if HAVE_NDIR_H
+#  include <ndir.h>
+# endif
 #endif
 #include <stdio.h>
 #include <string.h>
@@ -99,7 +105,7 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 	nalloced = nfound = 0;
 
 	while ((de=readdir(dir))) {
-	    l = de->d_namlen;
+	    l = NAMLEN(de);
 	    p = de->d_name;
 
 	    if (strcmp(p, ".") == 0 || strcmp(p, "..") == 0)

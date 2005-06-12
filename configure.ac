@@ -74,6 +74,8 @@ then
 	AC_MSG_ERROR(no supported data base library found)
 fi
 
+AC_HEADER_DIRENT
+
 AC_REPLACE_FUNCS(fnmatch)
 AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ([getopt1]) AC_LIBOBJ([getopt])])
 AC_CHECK_FUNCS(MD5Init, , [AC_LIBOBJ([md5])])
