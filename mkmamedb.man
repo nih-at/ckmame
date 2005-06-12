@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: mkmamedb.mdoc,v 1.5 2005/06/12 18:36:57 wiz Exp 
-.\" $NiH: mkmamedb.mdoc,v 1.5 2005/06/12 18:36:57 wiz Exp $
+.\" from NiH: mkmamedb.mdoc,v 1.7 2005/06/12 19:30:00 wiz Exp 
+.\" $NiH: mkmamedb.mdoc,v 1.7 2005/06/12 19:30:00 wiz Exp $
 .\"
 .\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -59,8 +59,12 @@ option or the
 environment variable.
 .PP
 The following formats of ROM set description are supported: xmame
--listinfo, also known as CMpro; and xmame \-listxml.
-.SH "OPTIONS"
+-listinfo, also known as CMPro; and xmame \-listxml.
+The CMPro file format is described at
+\fBhttp://www.logiqx.com/FAQs/CMPro.shtml\fR
+the DTD for MAME can be found in
+\fBPREFIX/share/doc/ckmame/\fR.
+.SS "OPTIONS"
 .B mkmamedb
 supports the following options:
 .RS
