@@ -1,8 +1,8 @@
 /*
-  $NiH: r_game.c,v 1.21 2004/04/26 11:49:38 dillo Exp $
+  $NiH: r_game.c,v 1.22 2005/06/03 14:37:58 wiz Exp $
 
   r_game.c -- read game struct from db
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

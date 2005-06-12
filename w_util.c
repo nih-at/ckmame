@@ -1,8 +1,8 @@
 /*
-  $NiH: w_util.c,v 1.17 2004/04/24 09:40:25 dillo Exp $
+  $NiH: w_util.c,v 1.18 2005/06/03 13:44:29 wiz Exp $
 
   w_util.c -- data base write utility functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

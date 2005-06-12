@@ -1,8 +1,8 @@
 /*
-  $NiH: treetrav.c,v 1.24 2004/04/26 21:29:20 wiz Exp $
+  $NiH: treetrav.c,v 1.25 2005/06/03 14:37:58 wiz Exp $
 
   treetrav.c -- traverse tree of games to check
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

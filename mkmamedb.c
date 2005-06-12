@@ -1,8 +1,8 @@
 /*
-  $NiH: mkmamedb.c,v 1.25 2005/06/12 15:18:45 wiz Exp $
+  $NiH: mkmamedb.c,v 1.26 2005/06/12 15:20:12 wiz Exp $
 
   mkmamedb.c -- create mamedb
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

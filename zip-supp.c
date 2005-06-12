@@ -1,8 +1,8 @@
 /*
-  $NiH: zip-supp.c,v 1.29 2004/12/01 00:20:29 wiz Exp $
+  $NiH: zip-supp.c,v 1.30 2005/06/12 17:09:28 dillo Exp $
 
   zip-supp.c -- support code for zip files
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

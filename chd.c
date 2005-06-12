@@ -1,8 +1,8 @@
 /*
-  $NiH: chd.c,v 1.6 2004/06/25 23:31:08 dillo Exp $
+  $NiH: chd.c,v 1.7 2005/06/03 13:44:15 wiz Exp $
 
   chd.c -- accessing chd files
-  Copyright (C) 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

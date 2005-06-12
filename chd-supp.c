@@ -1,8 +1,8 @@
 /*
-  $NiH: chd-supp.c,v 1.7 2004/04/28 18:36:38 dillo Exp $
+  $NiH: chd-supp.c,v 1.8 2005/06/12 17:09:28 dillo Exp $
 
   chd-supp.c -- support code for chd files
-  Copyright (C) 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
