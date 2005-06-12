@@ -30,7 +30,6 @@ New in 0.78u1: nodump sets
 mkmamedb: correct inconsistencies in input db (parent not found)
 
 fix 'should be in cloneof, is in zip'
-documentation
 use return value of w_game
 option to force fixing parents
 add error messages in ckmame with the zips (e.g. can't create file etc.)
