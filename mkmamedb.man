@@ -1,8 +1,8 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: mkmamedb.mdoc,v 1.2 2005/06/12 15:57:03 wiz Exp 
-.\" $NiH: mkmamedb.mdoc,v 1.2 2005/06/12 15:57:03 wiz Exp $
+.\" from NiH: mkmamedb.mdoc,v 1.5 2005/06/12 18:36:57 wiz Exp 
+.\" $NiH: mkmamedb.mdoc,v 1.5 2005/06/12 18:36:57 wiz Exp $
 .\"
-.\" Copyright (c) 2005 Thomas Klausner.
+.\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -40,17 +40,27 @@ mkmamedb \- create database for use by ckmame
 [\fBrominfo-file\fR]
 .SH "DESCRIPTION"
 .B mkmamedb
-parses a rom set information file as e.g. provided by
+parses a ROM set description, as provided by e.g.
 xmame(6)
 and converts it to an internal database format for use
 by
 ckmame(1).
-The rom set information is read
+The ROM set description is read from
 \fBrominfo-file\fR
 or stdin, if no
 \fBrominfo-file\fR
 is given on the command line.
+The default output file is
+\fBmame.db\fR.
+You can override it with the
+\fB-o\fR
+option or the
+\fBMAMEDB\fR
+environment variable.
 .PP
+The following formats of ROM set description are supported: xmame
+-listinfo, also known as CMpro; and xmame \-listxml.
+.SH "OPTIONS"
 .B mkmamedb
 supports the following options:
 .RS
@@ -59,7 +69,7 @@ supports the following options:
 Write to database
 \fBdbfile\fR
 instead of the default
-``\fB./mame.db\fR.''
+``\fBmame.db\fR.''
 .TP 11
 \fB-h\fR, \-help
 Display a short help message.
@@ -95,6 +105,9 @@ installed and in your
 \fBPATH\fR,
 you can just run
 \fBmkmamedb-xmame.sh\fR.
+.SH "SEE ALSO"
+ckmame(1),
+dumpgame(1)
 .SH "AUTHORS"
 
 .B mkmamedb

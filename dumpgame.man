@@ -1,8 +1,8 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: dumpgame.mdoc,v 1.4 2005/06/12 15:57:03 wiz Exp 
-.\" $NiH: dumpgame.mdoc,v 1.4 2005/06/12 15:57:03 wiz Exp $
+.\" from NiH: dumpgame.mdoc,v 1.7 2005/06/12 18:37:34 wiz Exp 
+.\" $NiH: dumpgame.mdoc,v 1.7 2005/06/12 18:37:34 wiz Exp $
 .\"
-.\" Copyright (c) 2005 Thomas Klausner.
+.\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ behaviour to look for a game by name).
 Use database
 \fBdbfile\fR
 instead of the default
-``\fB./mame.db\fR.''
+``\fBmame.db\fR.''
 .TP 24
 \fB-h\fR, \-help
 Display a short help message.
@@ -107,6 +107,9 @@ Display all roms matching the checksum
 .IP
 \fBdumpgame \-c c1e6ab10\fR
 .PP
+.SH "SEE ALSO"
+ckmame(1),
+mkmamedb(1)
 .SH "AUTHORS"
 
 .B dumpgame
