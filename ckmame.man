@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: ckmame.mdoc,v 1.12 2005/06/12 18:36:57 wiz Exp 
-.\" $NiH: ckmame.mdoc,v 1.12 2005/06/12 18:36:57 wiz Exp $
+.\" from NiH: ckmame.mdoc,v 1.13 2005/06/12 19:12:26 wiz Exp 
+.\" $NiH: ckmame.mdoc,v 1.13 2005/06/12 19:12:26 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -42,7 +42,7 @@ ckmame \- verify MAME rom sets
 .B ckmame
 is a program to check ROM sets for MAME, the Multiple Arcade
 Machine Emulator (see
-\fIhttp://www.mame.net/ ),\fR
+\fBhttp://www.mame.net/ )\fR,
 or other emulators that provide ROM set information in a compatible
 way (e.g., Raine, Impact, or other emulators.)
 It tells you which ROM files are missing or have a wrong checksum,
