@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.6 2004/04/28 16:59:48 dillo Exp $
+  $NiH: chd-supp.c,v 1.7 2004/04/28 18:36:38 dillo Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -23,9 +23,19 @@
 
 
 
+#include "config.h"
+
 #include <errno.h>
+#ifdef HAVE_MD5INIT
 #include <md5.h>
+#else
+#include <md5_own.h>
+#endif
+#ifdef HAVE_SHA1INIT
 #include <sha1.h>
+#else
+#include <sha1_own.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

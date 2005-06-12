@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.28 2004/11/18 16:51:13 wiz Exp $
+  $NiH: zip-supp.c,v 1.29 2004/12/01 00:20:29 wiz Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -23,9 +23,19 @@
 
 
 
+#include "config.h"
+
 #include <errno.h>
+#ifdef HAVE_MD5INIT
 #include <md5.h>
+#else
+#include <md5_own.h>
+#endif
+#ifdef HAVE_SHA1INIT
 #include <sha1.h>
+#else
+#include <sha1_own.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
