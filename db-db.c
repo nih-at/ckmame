@@ -1,7 +1,7 @@
 /*
-  $NiH: db-db.c,v 1.18 2004/04/21 10:38:36 dillo Exp $
+  $NiH: db-db.c,v 1.19 2004/04/24 09:40:23 dillo Exp $
 
-  db-db.c -- low level routines for Berkley db 
+  db-db.c -- low level routines for Berkeley db 
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
