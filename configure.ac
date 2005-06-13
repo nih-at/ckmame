@@ -62,7 +62,8 @@ then
     AC_CHECK_FUNCS(dbopen, [db=db])
     if test "$db" = "none"
     then
-	AC_CHECK_LIB(db, dbopen, [db=db; DBLIBS="-ldb"])
+	AC_CHECK_LIB(db, dbopen, [db=db; DBLIBS="-ldb"],
+		     [AC_CHECK_LIB(db, __db185_open, [db=db; DBLIBS="-ldb"])])
     fi
 fi
 if test "$db" = "none" -a "$check_gdbm" = "yes"
