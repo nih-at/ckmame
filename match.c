@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.36 2005/06/03 14:37:58 wiz Exp $
+  $NiH: match.c,v 1.37 2005/06/12 19:22:35 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -37,10 +37,10 @@
 
 extern char *prg;
 
-static int match(struct game *game, struct zfile *zip, int zno,
+static int match(struct game *game, struct zfile *zip, unsigned int zno,
 		 struct match *m);
-static int add_match(struct match *m, enum where where, int zno, int fno,
-		     enum state st, int offset);
+static int add_match(struct match *m, enum where where, unsigned int zno,
+		     unsigned int fno, enum state st, int offset);
 int matchcmp(struct match *m1, struct match *m2);
 
 void warn_game(char *name);
@@ -119,7 +119,7 @@ merge_match(struct match *m, int nrom, struct zfile **zip, int pno, int gpno)
 
 
 static int
-match(struct game *game, struct zfile *zip, int zno, struct match *m)
+match(struct game *game, struct zfile *zip, unsigned int zno, struct match *m)
 {
     int i, j, offset;
     enum state st;
@@ -145,8 +145,8 @@ match(struct game *game, struct zfile *zip, int zno, struct match *m)
 
 
 static int
-add_match(struct match *m, enum where where, int zno, int fno,
-	  enum state st, int offset)
+add_match(struct match *m, enum where where, unsigned int zno,
+	  unsigned int fno, enum state st, int offset)
 {
     struct match *p, *q;
 

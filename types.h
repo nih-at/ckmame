@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.23 2004/04/26 21:29:20 wiz Exp $
+  $NiH: types.h,v 1.24 2005/06/12 22:32:36 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -121,8 +121,8 @@ struct game {
 struct match {
     struct match *next;
     enum where where;
-    int zno;
-    int fno;
+    unsigned int zno;
+    unsigned int fno;
     enum state quality;
     int offset;              /* offset of correct part if ROM_LONGOK */
 };

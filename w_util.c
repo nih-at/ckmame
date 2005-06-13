@@ -1,5 +1,5 @@
 /*
-  $NiH: w_util.c,v 1.19 2005/06/12 19:22:35 wiz Exp $
+  $NiH: w_util.c,v 1.20 2005/06/13 00:20:39 wiz Exp $
 
   w_util.c -- data base write utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -36,7 +36,7 @@
 void
 w__grow(DBT *v, int n)
 {
-    int size;
+    unsigned int size;
     
     size = (v->size + BLKSIZE-1) / BLKSIZE;
     size *= BLKSIZE;
@@ -71,7 +71,7 @@ w__ulong(DBT *v, unsigned long l)
 
 
 void
-w__mem(DBT *v, const void *buf, int len)
+w__mem(DBT *v, const void *buf, unsigned int len)
 {
     w__grow(v, len);
     memcpy(((unsigned char *)v->data)+v->size, buf, len);
@@ -111,7 +111,7 @@ void
 w__array(DBT *v, void (*fn)(DBT *, const void *), const void *a,
 	 size_t size, size_t n)
 {
-    int i;
+    unsigned int i;
     
     w__ulong(v, n);
 

@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.32 2005/06/12 19:59:13 wiz Exp $
+  $NiH: zip-supp.c,v 1.33 2005/06/12 22:32:36 wiz Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -61,7 +61,7 @@ findcrc(struct zfile *zip, int idx, int romsize, const struct hashes *h)
 {
     struct zip_file *zf;
     struct hashes hn;
-    int offset, found;
+    unsigned int offset, found;
 
     hashes_init(&hn);
     hn.types = h->types;

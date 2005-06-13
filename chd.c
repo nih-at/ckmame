@@ -1,5 +1,5 @@
 /*
-  $NiH: chd.c,v 1.8 2005/06/12 19:22:35 wiz Exp $
+  $NiH: chd.c,v 1.9 2005/06/12 22:32:36 wiz Exp $
 
   chd.c -- accessing chd files
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -231,7 +231,7 @@ int
 chd_read_range(struct chd *chd, unsigned char *b, int off, int len)
 {
     int i, s, n;
-    int copied, o2, l2;
+    unsigned int copied, o2, l2;
 
     /* XXX: error handling */
 
@@ -356,7 +356,7 @@ static int
 read_map(struct chd *chd)
 {
     unsigned char b[MAP_ENTRY_SIZE_V3], *p;
-    int i, len;
+    unsigned int i, len;
     uint64_t v;
 
     if ((chd->map=malloc(sizeof(*chd->map)*chd->total_hunks)) == NULL) {

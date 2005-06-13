@@ -2,7 +2,7 @@
 #define _HAD_R_H
 
 /*
-  $NiH: r.h,v 1.10 2004/04/24 09:40:24 dillo Exp $
+  $NiH: r.h,v 1.11 2005/06/12 22:41:06 wiz Exp $
 
   r.h -- data base read functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -28,7 +28,7 @@
 
 int r__array(DBT *, void (*)(DBT *, void *), void **, size_t);
 void r__disk(DBT *, void *);
-void r__mem(DBT *, void *, int);
+void r__mem(DBT *, void *, unsigned int);
 void r__pstring(DBT *, void *);
 void r__rom(DBT *, void *);
 char *r__string(DBT *);
