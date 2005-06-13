@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.25 2004/04/24 09:40:25 dillo Exp $
+  $NiH: util.c,v 1.26 2005/06/12 22:32:36 wiz Exp $
 
   util.c -- utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -148,7 +148,7 @@ bin2hex(const unsigned char *s, int len)
 			 : (c)-'a'+10)
 
 int
-hex2bin(char *t, const char *s, int tlen)
+hex2bin(unsigned char *t, const char *s, int tlen)
 {
     int i;
     
