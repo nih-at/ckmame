@@ -2,7 +2,7 @@
 #define _HAD_W_H
 
 /*
-  $NiH: w.h,v 1.9 2004/04/21 10:38:38 dillo Exp $
+  $NiH: w.h,v 1.10 2004/04/24 09:40:25 dillo Exp $
 
   w.h -- data base write functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -30,7 +30,7 @@ void w__array(DBT *, void (*)(DBT *, const void *),
 	      const void *, size_t, size_t);
 void w__disk(DBT *, const void *);
 void w__grow(DBT *, int);
-void w__mem(DBT *, const char *, int);
+void w__mem(DBT *, const void *, int);
 void w__pstring(DBT *, const void *);
 void w__rom(DBT *, const void *);
 void w__string(DBT *, const char *);
