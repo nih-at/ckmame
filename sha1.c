@@ -1,4 +1,4 @@
-/* $NiH: sha1.c,v 1.1 2005/06/12 17:09:28 dillo Exp $ */
+/* $NiH: sha1.c,v 1.2 2005/06/13 00:12:03 dillo Exp $ */
 
 /* sha.c - Implementation of the Secure Hash Algorithm
  *
@@ -37,6 +37,8 @@ effort (for example the reengineering of a great many Capstone chips).
   Adapted for ckmame 2005 by Dieter Baron <dillo@giga.or.at>
                              Thomas Klausner <tk@giga.or.at>
 */
+
+#include <string.h>
 
 #include "config.h"
 
