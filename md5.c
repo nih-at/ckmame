@@ -1,4 +1,4 @@
-/* $NiH$ */
+/* $NiH: md5.c,v 1.1 2005/06/12 17:09:28 dillo Exp $ */
 
 /*
  * This code implements the MD5 message-digest algorithm.
@@ -23,6 +23,8 @@
 */
 
 #include <config.h>
+
+#include <string.h>
 
 #ifndef HAVE_MD5INIT
 
