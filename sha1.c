@@ -1,4 +1,4 @@
-/* $NiH: sha1.c,v 1.2 2005/06/13 00:12:03 dillo Exp $ */
+/* $NiH: sha1.c,v 1.3 2005/06/13 00:13:49 wiz Exp $ */
 
 /* sha.c - Implementation of the Secure Hash Algorithm
  *
@@ -262,7 +262,7 @@ static void sha_transform(struct sha_ctx *ctx, uint32_t *data )
 }
 
 
-static void sha_block(struct sha_ctx *ctx, unsigned char *block)
+static void sha_block(struct sha_ctx *ctx, const unsigned char *block)
 {
   uint32_t data[SHA_DATALEN];
   int i;
