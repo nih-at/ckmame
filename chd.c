@@ -1,5 +1,5 @@
 /*
-  $NiH: chd.c,v 1.9 2005/06/12 22:32:36 wiz Exp $
+  $NiH: chd.c,v 1.10 2005/06/13 00:32:19 wiz Exp $
 
   chd.c -- accessing chd files
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -112,7 +112,7 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 {
     int i, n, err;
 
-    if (idx < 0 || idx > chd->total_hunks) {
+    if (idx < 0 || (unsigned int)idx > chd->total_hunks) {
 	chd->error = CHD_ERR_INVAL;
 	return -1;
     }
