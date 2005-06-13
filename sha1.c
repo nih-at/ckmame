@@ -1,4 +1,4 @@
-/* $NiH$ */
+/* $NiH: sha1.c,v 1.1 2005/06/12 17:09:28 dillo Exp $ */
 
 /* sha.c - Implementation of the Secure Hash Algorithm
  *
@@ -132,7 +132,7 @@ void sha_copy(struct sha_ctx *dest, struct sha_ctx *src)
 
 /* Initialize the SHA values */
 
-void SHA1Init(struct sha_ctx *ctx)
+void SHA1Init(SHA1_CTX *ctx)
 {
   /* Set the h-vars to their initial values */
   ctx->digest[ 0 ] = h0init;
@@ -276,7 +276,7 @@ static void sha_block(struct sha_ctx *ctx, unsigned char *block)
   sha_transform(ctx, data);
 }
 
-void SHA1Update(struct sha_ctx *ctx, unsigned char *buffer, uint32_t len)
+void SHA1Update(SHA1_CTX *ctx, const unsigned char *buffer, unsigned int len)
 {
   if (ctx->index)
     { /* Try to fill partial block */
@@ -309,7 +309,7 @@ void SHA1Update(struct sha_ctx *ctx, unsigned char *buffer, uint32_t len)
 /* Final wrapup - pad to SHA_DATASIZE-byte boundary with the bit pattern
    1 0* (64-bit count of bits processed, MSB-first) */
 
-void SHA1Final(unsigned char digest[20], struct sha_ctx *ctx)
+void SHA1Final(unsigned char digest[20], SHA1_CTX *ctx)
 {
   uint32_t data[SHA_DATALEN];
   int i;
