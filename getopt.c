@@ -1,4 +1,4 @@
-/* $NiH$ */
+/* $NiH: getopt.c,v 1.2 2005/06/12 19:30:11 dillo Exp $ */
 
 /* Getopt for GNU.
    NOTE: getopt is now part of the C library, so if you don't know what
@@ -168,12 +168,10 @@ static enum
 /* Avoid depending on library functions or files
    whose names are inconsistent.  */
 
-char *getenv ();
+char *getenv (const char *);
 
 static char *
-my_index (str, chr)
-     const char *str;
-     int chr;
+my_index (const char *str, int chr)
 {
   while (*str)
     {
@@ -216,8 +214,7 @@ static int last_nonopt;
    the new indices of the non-options in ARGV after they are moved.  */
 
 static void
-exchange (argv)
-     char **argv;
+exchange(char **argv)
 {
   int bottom = first_nonopt;
   int middle = last_nonopt;
@@ -328,13 +325,8 @@ exchange (argv)
    long-named options.  */
 
 int
-_getopt_internal (argc, argv, optstring, longopts, longind, long_only)
-     int argc;
-     char *const *argv;
-     const char *optstring;
-     const struct option *longopts;
-     int *longind;
-     int long_only;
+_getopt_internal (int argc, char *const *argv, const char *optstring,
+		  const struct option *longopts, int *longind, int long_only)
 {
   int option_index;
 
@@ -662,10 +654,7 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 }
 
 int
-getopt (argc, argv, optstring)
-     int argc;
-     char *const *argv;
-     const char *optstring;
+getopt (int argc, char *const *argv, const char *optstring)
 {
   return _getopt_internal (argc, argv, optstring,
 			   (const struct option *) 0,
@@ -681,9 +670,7 @@ getopt (argc, argv, optstring)
    the above definition of `getopt'.  */
 
 int
-main (argc, argv)
-     int argc;
-     char **argv;
+main (int argc, char **argv)
 {
   int c;
   int digit_optind = 0;
