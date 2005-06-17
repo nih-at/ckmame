@@ -4,10 +4,9 @@
 - Support MAME/MESS -listxml output
 - Adapt for MAME -listinfo output changes (honor flags baddump and nodump).
 - Check disk images (chd files).
-- Superfluouos merged into ckmame. ckmame now by default reports
+- Superfluous merged into ckmame. ckmame now by default reports
   extra files.  Also works for samples.
 - add file format version to database and don't use incompatible database
-- integrate checking for superfluous files into ckmame itself
 - dumpgame: find game by checksum of one of its ROMs
 - add script to create database by running xmame
 
