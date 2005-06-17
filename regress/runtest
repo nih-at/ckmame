@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.12 2004/04/16 11:32:10 wiz Exp $
+#  $NiH: runtest,v 1.13 2004/04/28 16:59:51 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -303,7 +303,7 @@ if [ ! -z "${FILES}" ]
 then
     for fs in ${FILES}
     do
-        set -- `echo -n ${fs} | tr '!' ' '`
+        set -- `echo ${fs} | tr '!' ' '`
 	FILES_SHOULD="${FILES_SHOULD} $2"
 	checkzip $1 $2 "zip file $2 wrong"
     done
