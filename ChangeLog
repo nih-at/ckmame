@@ -1,3 +1,7 @@
+2005-06-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* regress/runtest: don't use ``echo -n''.
+
 2005-06-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.ac, Makefile.am: link each program only againts the
