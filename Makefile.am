@@ -51,7 +51,7 @@ MAN=${ALLMANDOC:.mdoc=.man}
 HTML=${ALLMANDOC:.mdoc=.html}
 
 mkmamedb.1: mkmamedb.${MANFMT}
-	sed 's,PREFIX,${prefix},g' mkmamedb.${MANFMT} > $@
+	sed 's,PREFIX,${prefix},g' ${srcdir}/mkmamedb.${MANFMT} > $@
 
 .mdoc.man:
 	mdoc2man $< > $@.$$$$ && diff -I NiH $@.$$$$ $@ || mv $@.$$$$ $@; \
