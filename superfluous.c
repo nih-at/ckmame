@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.10 2005/06/12 23:21:24 wiz Exp $
+  $NiH: superfluous.c,v 1.11 2005/06/12 23:37:41 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -36,6 +36,8 @@
 #include "xmalloc.h"
 
 /* copied from autoconf manual (AC_HEADER_DIRENT) */
+
+#include "config.h"
 
 #if HAVE_DIRENT_H
 # include <dirent.h>
