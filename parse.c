@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.4 2005/06/12 20:01:27 wiz Exp $
+  $NiH: parse.c,v 1.5 2005/06/20 16:16:04 wiz Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -83,6 +83,8 @@ static int add_sample_list(const char *);
 static void familymeeting(DB *, struct game *, struct game *);
 static int game_add(DB *, struct game *);
 static int lost(struct game *);
+static void enter_file_hash(enum filetype, int, const struct hashes *);
+static void file_by_hash_add(struct file_by_hash *, const char *, int);
 
 
 
@@ -234,6 +236,7 @@ parse_disk_end(void)
 {
     CHECK_STATE(IN_DISK);
     
+    enter_file_hash(TYPE_DISK, nd, &d[nd].hashes);
     nd++;
 
     state = OUTSIDE;
@@ -507,7 +510,7 @@ parse_rom_end(void)
 
     CHECK_STATE(IN_ROM);
 
-    /* CRC == 0 was old way of indication no-good-dumps */
+    /* CRC == 0 was old way of indicating no-good-dumps */
     if ((r[nr].hashes.types & GOT_CRC) && r[nr].hashes.crc == 0) {
 	r[nr].hashes.types &= ~GOT_CRC;
 	r[nr].flags = FLAGS_NODUMP;
@@ -536,8 +539,10 @@ parse_rom_end(void)
 	free(r[nr].merge);
 	free(r[nr].name);
     }
-    else
+    else {
+	enter_file_hash(TYPE_ROM, nr, &r[nr].hashes);
 	nr++;
+    }
 
     state = OUTSIDE;
 
@@ -821,4 +826,47 @@ lost(struct game *a)
 	    return 0;
 
     return 1;
+}
+
+
+
+static void
+enter_file_hash(enum filetype filetype, int index, const struct hashes *hashes)
+{
+    struct file_by_hash *fbh;
+    struct hashes hash;
+    int type;
+
+    memcpy(&hash, hashes, sizeof(hash));
+    
+    for (type=1; type<=GOT_MAX; type<<=1) {
+	if ((hashes->types & type) == 0)
+	    continue;
+	
+	hash.types = type;
+	if ((fbh=r_file_by_hash(db, filetype, &hash)) == NULL)
+	    fbh = file_by_hash_new(filetype, &hash);
+
+	file_by_hash_add(fbh, g->name, index);
+
+	w_file_by_hash(db, fbh);
+
+	file_by_hash_free(fbh);
+    }
+}
+
+
+
+static void
+file_by_hash_add(struct file_by_hash *fbh, const char *game, int index)
+{
+    int i;
+
+    i = fbh->nentry;
+    
+    fbh->nentry++;
+    fbh->entry = xrealloc(fbh->entry, sizeof(fbh->entry[0])*fbh->nentry);
+    
+    fbh->entry[i].game = xstrdup(game);
+    fbh->entry[i].index = index;
 }

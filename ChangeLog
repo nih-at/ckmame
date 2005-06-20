@@ -1,5 +1,9 @@
 2005-06-20  Thomas Klausner + Dieter Baron
 
+	* parse.c (enter_file_hash, file_by_hash_add): new functions.
+	* parse.c (parse_disk_end, parse_rom_end): write file_by_hash to
+	database.
+
 	* dumpgame.c: support /ckmame key
 
 	* configure.ac, Makefile.am: make libckmame convenience library
