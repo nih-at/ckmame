@@ -1,5 +1,5 @@
 /*
-  $NiH: w_util.c,v 1.20 2005/06/13 00:20:39 wiz Exp $
+  $NiH: w_util.c,v 1.21 2005/06/13 00:32:19 wiz Exp $
 
   w_util.c -- data base write utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -131,7 +131,7 @@ w_version(DB *db)
     v.size = 0;
 
     w__ushort(&v, DDB_FORMAT_VERSION);
-    err = ddb_insert(db, "/ckmame", &v);
+    err = ddb_insert(db, DDB_KEY_DB_VERSION, &v);
     free(v.data);
 
     return err;

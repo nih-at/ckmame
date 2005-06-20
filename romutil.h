@@ -2,7 +2,7 @@
 #define _HAD_ROMUTIL_H
 
 /*
-  $NiH: romutil.h,v 1.17 2004/04/26 11:49:38 dillo Exp $
+  $NiH: romutil.h,v 1.18 2004/04/26 21:29:20 wiz Exp $
 
   romutil.h -- miscellaneous utility functions for rom handling
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -54,5 +54,9 @@ int fix_game(struct game *g, struct zfile **zip, struct match *m);
 
 void disk_match_free(struct disk_match *, int);
 struct disk_match *check_disks(struct game *);
+
+void file_by_hash_free(struct file_by_hash *);
+struct file_by_hash *file_by_hash_new(enum filetype, const struct hashes *);
+char *file_by_hash_make_key(enum filetype, const struct hashes *);
 
 #endif

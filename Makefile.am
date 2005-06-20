@@ -7,25 +7,68 @@ SUBDIRS=docs regress
 bin_PROGRAMS=ckmame mkmamedb dumpgame
 dist_bin_SCRIPTS=mkmamedb-xmame.sh
 
-ckmame_SOURCES=ckmame.c error.c zip-supp.c util.c marry.c \
-		match.c malloc.c r_game.c r_list.c r_util.c dbl.c dbl-int.c \
-		treetrav.c fix.c romutil.c chd-supp.c superfluous.c hashes.c \
-		chd.c
-ckmame_LDADD=@DBLIBS@ @LIBZIP_LIBS@ @LIBOBJS@
+noinst_LIBRARIES=libckmame.a
 
-mkmamedb_SOURCES=mkmamedb.c dbl.c dbl-int.c parse.c parse-cm.c parse-xml.c \
-	w_game.c w_list.c w_prog.c \
-	error.c malloc.c w_util.c r_game.c r_util.c util.c romutil.c hashes.c
-mkmamedb_LDADD=@DBLIBS@ @LIBXML2_LIBS@ @LIBOBJS@
+# ckmame_SOURCES=ckmame.c
+ckmame_LDADD=libckmame.a @DBLIBS@ @LIBZIP_LIBS@
 
-dumpgame_SOURCES=dumpgame.c error.c malloc.c \
-	r_game.c r_util.c r_list.c r_prog.c \
-	dbl.c dbl-int.c util.c romutil.c hashes.c
-dumpgame_LDADD=@DBLIBS@ @LIBOBJS@
+# mkmamedb_SOURCES=mkmamedb.c
+mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@
 
-noinst_HEADERS=error.h types.h w.h funcs.h r.h dbl.h \
-	dbh.h util.h xmalloc.h romutil.h chd.h parse.h \
-	uint32.h md5_own.h sha1_own.h
+# dumpgame_SOURCES=dumpgame.c
+dumpgame_LDADD=libckmame.a @DBLIBS@
+
+libckmame_a_LIBADD=@LIBOBJS@
+libckmame_a_SOURCES= \
+	chd-supp.c \
+	chd.c \
+	dbl-int.c \
+	dbl.c \
+	error.c \
+	fix.c \
+	hash_to_string.c \
+	hashes.c \
+	malloc.c \
+	marry.c \
+	match.c \
+	parse-cm.c \
+	parse-xml.c \
+	parse.c \
+	r_game.c \
+	r_list.c \
+	r_prog.c \
+	r_file_by_hash.c \
+	r_util.c \
+	fbh_make_key.c \
+	file_by_hash.c \
+	romutil.c \
+	superfluous.c \
+	treetrav.c \
+	util.c \
+	w_file_by_hash.c \
+	w_game.c \
+	w_list.c \
+	w_prog.c \
+	w_util.c \
+	zip-supp.c
+
+noinst_HEADERS=\
+	chd.h \
+	dbh.h \
+	dbl.h \
+	error.h \
+	funcs.h \
+	hashes.h \
+	md5_own.h \
+	parse.h \
+	r.h \
+	romutil.h \
+	sha1_own.h \
+	types.h \
+	uint32.h \
+	util.h \
+	w.h \
+	xmalloc.h
 
 CLEANFILES=	${HTML} mkmamedb.1
 

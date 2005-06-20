@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.27 2005/06/13 00:19:08 wiz Exp $
+  $NiH: util.c,v 1.28 2005/06/13 00:32:19 wiz Exp $
 
   util.c -- utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -124,14 +124,10 @@ strpcasecmp(const char * const *sp1, const char * const *sp2)
 
 
 
-const char *
-bin2hex(const unsigned char *s, unsigned int len)
+char *
+bin2hex(char *b, const unsigned char *s, unsigned int len)
 {
-    static char b[257];
     unsigned int i;
-
-    if (len > sizeof(b)/2)
-	len = sizeof(b)/2;
 
     for (i=0; i<len; i++)
 	sprintf(b+2*i, "%02x", (unsigned char)s[i]);

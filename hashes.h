@@ -1,8 +1,11 @@
-/*
-  $NiH: r_prog.c,v 1.10 2005/06/12 19:22:35 wiz Exp $
+#ifndef HAD_HASHES_H
+#define HAD_HASHES_H
 
-  r_prog.c -- read prog struct from db
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+/*
+  $NiH$
+
+  hashes.h -- hash related functions
+  Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -23,31 +26,10 @@
 
 
 
-/* read list of strings from db */
-#include <stdlib.h>
-#include <string.h>
+#include "types.h"
 
-#include "dbh.h"
-#include "r.h"
-#include "xmalloc.h"
+char *hash_to_string(int, const struct hashes *);
+const char *hash_type_string(int);
 
-
+#endif /* hashes.h */
 
-int
-r_prog(DB *db, char **namep, char **versionp)
-{
-    DBT v;
-    void *data;
-
-    if (ddb_lookup(db, DDB_KEY_PROG, &v) != 0)
-	return -1;
-    
-    data = v.data;
-
-    *namep = r__string(&v);
-    *versionp = r__string(&v);
-
-    free(data);
-
-    return 0;
-}

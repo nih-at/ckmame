@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.26 2005/06/12 15:20:12 wiz Exp $
+  $NiH: mkmamedb.c,v 1.27 2005/06/12 19:22:35 wiz Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -55,7 +55,7 @@ char help[] = "\n\
 Report bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2003 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2005 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\

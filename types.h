@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.24 2005/06/12 22:32:36 wiz Exp $
+  $NiH: types.h,v 1.25 2005/06/13 00:32:19 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -59,6 +59,7 @@
 #define GOT_CRC		1
 #define GOT_MD5		2
 #define GOT_SHA1	4
+#define GOT_MAX		GOT_SHA1
 
 enum flags {
     FLAGS_OK, FLAGS_BADDUMP, FLAGS_NODUMP
@@ -116,6 +117,20 @@ struct game {
     int nsample;
     struct disk *disk;
     int ndisk;
+};
+
+struct file_by_hash_entry {
+    char *game;
+    int index;
+};
+
+struct file_by_hash {
+    /* key */
+    enum filetype filetype;
+    struct hashes hash;
+    /* database entry */
+    struct file_by_hash_entry *entry;
+    int nentry;
 };
 
 struct match {

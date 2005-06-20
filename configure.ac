@@ -1,5 +1,5 @@
 AC_PREREQ(2.54)
-AC_INIT([ckmame],[0.6],[nih@giga.or.at])
+AC_INIT([ckmame],[0.6a],[nih@giga.or.at])
 AC_CONFIG_SRCDIR([ckmame.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
@@ -10,6 +10,7 @@ AC_CANONICAL_HOST
 test -z "$CFLAGS" && CFLAGS='-Wall -g' auto_cflags=1
 
 AC_PROG_CC
+AC_PROG_RANLIB
 
 dnl they are already checked
 dnl AC_CHECK_HEADERS([stdint.h], [], [AC_CHECK_HEADERS([inttypes.h])])

@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.37 2005/06/12 19:22:35 wiz Exp $
+  $NiH: match.c,v 1.38 2005/06/13 00:32:19 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -34,6 +34,7 @@
 #include "util.h"
 #include "romutil.h"
 #include "xmalloc.h"
+#include "hashes.h"
 
 extern char *prg;
 
@@ -462,6 +463,7 @@ void
 warn_disk(struct disk *d, char *fmt, ...)
 {
     va_list va;
+    char *h;
 
     if (gnamedone == 0) {
 	printf("In game %s:\n", gname);
@@ -469,11 +471,16 @@ warn_disk(struct disk *d, char *fmt, ...)
     }
 
     printf("disk %-12s  ", d->name);
-    if (d->hashes.types & GOT_SHA1)
-	printf("sha1 %s: ", bin2hex(d->hashes.sha1, sizeof(d->hashes.sha1)));
-    else if (d->hashes.types & GOT_MD5)
-	printf("md5 %s         : ",
-	       bin2hex(d->hashes.md5, sizeof(d->hashes.md5)));
+    if (d->hashes.types & GOT_SHA1) {
+	h = hash_to_string(GOT_SHA1, &d->hashes);
+	printf("sha1 %s: ", h);
+	free(h);
+    }
+    else if (d->hashes.types & GOT_MD5) {
+	h = hash_to_string(GOT_MD5, &d->hashes);
+	printf("md5 %s         : ", h);
+	free(h);
+    }
     else
 	printf("no good dump              : ");
     

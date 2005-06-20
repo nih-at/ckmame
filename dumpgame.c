@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.38 2005/06/12 15:20:12 wiz Exp $
+  $NiH: dumpgame.c,v 1.39 2005/06/12 19:22:35 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -27,7 +27,6 @@
 #include <fnmatch.h>
 #include <string.h>
 #include <stdlib.h>
-#include <xmalloc.h>
 
 #include "config.h"
 
@@ -42,11 +41,14 @@
 #include "error.h"
 #include "util.h"
 #include "romutil.h"
+#include "hashes.h"
+#include "xmalloc.h"
 
 static int dump_game(DB *, const char *);
-static int dump_hashtypes(DB *);
+static int dump_hashtypes(DB *, const char *);
 static int dump_list(DB *, const char *);
-static int dump_prog(DB *);
+static int dump_prog(DB *, const char *);
+static int dump_db_version(DB *, const char *);
 static int dump_special(DB *, const char *);
 static void print_hashtypes(int);
 
@@ -68,7 +70,7 @@ char help[] = "\n\
 Report bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2004 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2005 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
@@ -154,14 +156,36 @@ parse_type(char *typestr)
 static void
 print_checksums(struct hashes *hashes)
 {
-    if (hashes->types & GOT_CRC)
-	printf("  crc %.8lx", hashes->crc);
-    if (hashes->types & GOT_MD5)
-	printf("  md5 %s", bin2hex(hashes->md5,
-				   sizeof(hashes->md5)));
-    if (hashes->types & GOT_SHA1)
-	printf("  sha1 %s", bin2hex(hashes->sha1,
-				    sizeof(hashes->sha1)));
+    int i;
+    char *h;
+
+    for (i=1; i<=GOT_MAX; i<<=1) {
+	if (hashes->types & i) {
+	    h = hash_to_string(i, hashes);
+	    printf(" %s %s", hash_type_string(i), h);
+	    free(h);
+	}
+    }
+}
+
+
+
+static void
+print_diskline(struct disk *disk)
+{
+    printf("\t\tdisk %-12s", disk->name);
+    print_checksums(&disk->hashes);
+    putc('\n', stdout);
+}
+
+
+
+static void
+print_footer(int matches, struct hashes *hash)
+{
+    printf("%d matches found for checksum", matches);
+    print_checksums(hash);
+    putc('\n', stdout);
 }
 
 
@@ -182,7 +206,7 @@ print_romline(struct rom *rom)
 
 
 static void
-print_match(struct game *game, int i)
+print_match(struct game *game, enum filetype ft, int i)
 {
     static int first = 0;
     static char *name = NULL;
@@ -198,59 +222,44 @@ print_match(struct game *game, int i)
 	first = 0;
     }
 
-    print_romline(game->rom+i);
+    if (ft == TYPE_DISK)
+	print_diskline(game->disk+i);
+    else
+	print_romline(game->rom+i);
 }
 
 
 
-static int
-match_checksum(DB *db, char *name, struct hashes *hashes)
+static void
+print_matches(DB *db, enum filetype ft, struct hashes *hash)
 {
     struct game *game;
     int i, matches;
+    struct file_by_hash *fbh;
 
-    if ((game=r_game(db, name)) == NULL) {
-	myerror(ERRDEF, "db error: %s not found, though in list of games",
-		name);
-	exit(-1);
+    if ((fbh=r_file_by_hash(db, ft, hash)) == NULL) {
+	print_footer(0, hash);
+	return;
     }
 
-    matches = 0;
-    for (i=0; i<game->nrom; i++) {
-	if ((hashes->types & game->rom[i].hashes.types) == 0)
-	    continue;
-	switch(hashes->types) {
-	case GOT_CRC:
-	    if (game->rom[i].hashes.crc == hashes->crc) {
-		matches++;
-		print_match(game, i);
-	    }
-	    break;
-	case GOT_MD5:
-	    if (memcmp(game->rom[i].hashes.md5, hashes->md5,
-			   sizeof(hashes->md5)) == 0) {
-		matches++;
-		print_match(game, i);
-	    }
-	    break;
-	case GOT_SHA1:
-	    if (memcmp(game->rom[i].hashes.sha1, hashes->sha1,
-			   sizeof(hashes->sha1)) == 0) {
-		matches++;
-		print_match(game, i);
-	    }
-	    break;
-	default:
-	    break;
+    matches = fbh->nentry;
+    for (i=0; i<matches; i++) {
+	if ((game=r_game(db, fbh->entry[i].game)) == NULL) {
+	    myerror(ERRDEF, "db error: %s not found, though in hash index",
+		    fbh->entry[i].game);
+	    exit(-1);
 	}
+
+	print_match(game, ft, fbh->entry[i].index);
+
+	game_free(game, 1);
     }
 
-    /* XXX: disk matches */
+    file_by_hash_free(fbh);
 
-    game_free(game, 1);
-
-    return matches;
+    print_footer(matches, hash);
 }
+
 
 
 int
@@ -264,6 +273,8 @@ main(int argc, char **argv)
     int c;
     int type;
     int find_checksum;
+
+    /* XXX: disk matches */
     
     prg = argv[0];
 
@@ -313,14 +324,13 @@ main(int argc, char **argv)
 	exit (1);
     }
 
-    if ((nlist=r_list(db, "/list", &list)) < 0) {
+    if ((nlist=r_list(db, DDB_KEY_LIST_GAME, &list)) < 0) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
     }
 
     /* find matches for roms */
     if (find_checksum != 0) {
-	int matches;
 	struct hashes *match;
 
 	for (i=optind; i<argc; i++) {
@@ -330,13 +340,9 @@ main(int argc, char **argv)
 		exit(2);
 	    }
 
-	    matches = 0;
-	    for (j=0; j<nlist; j++)
-		matches += match_checksum(db, list[j], match);
-
-	    printf("%d matches found for checksum", matches);
-	    print_checksums(match);
-	    putc('\n', stdout);
+	    /* XXX: TYPE_DISK support */
+	    print_matches(db, TYPE_ROM, match);
+	    /* XXX: free(match); */
 	}
 	exit(0);
     }
@@ -394,7 +400,8 @@ dump_game(DB *db, const char *name)
 	myerror(ERRDEF, "game unknown (or database error): %s", name);
 	return -1;
     }
-    
+
+    /* XXX: use print_* functions */
     printf("Name:\t\t%s\n", game->name);
     printf("Description:\t%s\n", game->description);
     if (game->cloneof[0])
@@ -471,7 +478,7 @@ dump_game(DB *db, const char *name)
 
 
 static int
-dump_hashtypes(DB *db)
+dump_hashtypes(DB *db, const char *dummy)
 {
     int romhashtypes, diskhashtypes;
 
@@ -513,7 +520,7 @@ dump_list(DB *db, const char *key)
 
 
 static int
-dump_prog(DB *db)
+dump_prog(DB *db, const char *dummy)
 {
     char *name, *version;
 
@@ -534,20 +541,43 @@ dump_prog(DB *db)
 
 
 static int
+dump_db_version(DB *db, const char *dummy)
+{
+    /* ddb_open won't let us open a db with a different version */
+    printf("%d\n", DDB_FORMAT_VERSION);
+
+    return 0;
+}
+
+
+
+static int
 dump_special(DB *db, const char *name)
 {
-    if (strcmp(name, "/prog") == 0)
-	return dump_prog(db);
-    else if (strcmp(name, "/list") == 0
-	     || strcmp(name, "/sample_list") == 0
-	     || strcmp(name, "/extra_list") == 0)
-	return dump_list(db, name);
-    else if (strcmp(name, "/hashtypes") == 0)
-	return dump_hashtypes(db);
-    else {
-	myerror(ERRDEF, "unknown special: %s", name);
-	return -1;
+    static const struct {
+	const char *key;
+	int (*f)(DB *, const char *);
+	const char *arg_override;
+    } keys[] = {
+	{ "/list",             dump_list,       DDB_KEY_LIST_GAME },
+	{ DDB_KEY_DB_VERSION,  dump_db_version, NULL },
+	{ DDB_KEY_HASH_TYPES,  dump_hashtypes,  NULL },
+	{ DDB_KEY_LIST_DISK,   dump_list,       NULL },
+	{ DDB_KEY_LIST_GAME,   dump_list,       NULL },
+	{ DDB_KEY_LIST_SAMPLE, dump_list,       NULL },
+	{ DDB_KEY_PROG,        dump_prog,       NULL }
+    };
+
+    int i;
+
+    for (i=0; i<sizeof(keys)/sizeof(keys[0]); i++) {
+	if (strcasecmp(name, keys[i].key) == 0)
+	    return keys[i].f(db, (keys[i].arg_override ? keys[i].arg_override
+				  : name));
     }
+    
+    myerror(ERRDEF, "unknown special: %s", name);
+    return -1;
 }
 
 

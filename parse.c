@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.3 2005/06/12 19:33:57 dillo Exp $
+  $NiH: parse.c,v 1.4 2005/06/12 20:01:27 wiz Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -204,17 +204,17 @@ parse(DB *mydb, const char *fname)
     /* write list of all known names to db */
     qsort((char **)games, ngames, sizeof(char *),
 	  (int (*)(const void *, const void *))strpcasecmp);
-    w_list(db, "/list", games, ngames);
+    w_list(db, DDB_KEY_LIST_GAME, games, ngames);
 
     /* write list of all games with samples to db */
     qsort(sl, nsl, sizeof(char *),
 	  (int (*)(const void *, const void *))strpcasecmp);
-    w_list(db, "/sample_list", sl, nsl);
+    w_list(db, DDB_KEY_LIST_SAMPLE, sl, nsl);
 
     /* write list of all extra files to db */
     qsort(extra, nextra, sizeof(char *),
 	  (int (*)(const void *, const void *))strpcasecmp);
-    w_list(db, "/extra_list", extra, nextra);
+    w_list(db, DDB_KEY_LIST_DISK, extra, nextra);
 
     w_hashtypes(db, w_romhashtypes, w_diskhashtypes);
     

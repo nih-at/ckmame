@@ -1,3 +1,20 @@
+2005-06-20  Thomas Klausner + Dieter Baron
+
+	* dumpgame.c: support /ckmame key
+
+	* configure.ac, Makefile.am: make libckmame convenience library
+
+	* dbl.h: add symbolic constants for DB keys, rename keys; adapt
+	users.
+	
+	* hash_to_string.c (hash_to_string, hash_type_string): convert
+	hash value and hash type to strings.
+	* util.c (bin2hex): take buffer as argument.
+
+	* r_file_by_hash.c, w_file_by_hash.c, fbh_make_key.c: new
+	functions.
+	* dumpgame.c: use file_by_hash indices for -c
+	
 2005-06-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.ac: bump version to 0.6.

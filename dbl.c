@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.21 2005/06/12 16:43:24 wiz Exp $
+  $NiH: dbl.c,v 1.22 2005/06/12 19:22:35 wiz Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -141,7 +141,7 @@ ddb_check_version(DB *db, int flags)
     int version;
     void *data;
 
-    if (ddb_lookup(db, "/ckmame", &v) != 0) {
+    if (ddb_lookup(db, DDB_KEY_DB_VERSION, &v) != 0) {
 	if (!(flags & DDB_WRITE)) {
 	    /* reading database, version not found -> old */
 	    ddb_errno = DDB_EOLD;

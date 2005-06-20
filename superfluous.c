@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.11 2005/06/12 23:37:41 dillo Exp $
+  $NiH: superfluous.c,v 1.12 2005/06/17 12:15:08 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -78,15 +78,15 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 
     first = 1;
 
-    if ((nlist=r_list(db, "/list", &list)) < 0) {
+    if ((nlist=r_list(db, DDB_KEY_LIST_GAME, &list)) < 0) {
 	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
 	exit(1);
     }
-    if ((nlists=r_list(db, "/sample_list", &lists)) < 0) {
+    if ((nlists=r_list(db, DDB_KEY_LIST_SAMPLE, &lists)) < 0) {
 	myerror(ERRDEF, "list of samples not found in database `%s'", dbname);
 	exit(1);
     }
-    if ((nlistx=r_list(db, "/extra_list", &listx)) < 0) {
+    if ((nlistx=r_list(db, DDB_KEY_LIST_DISK, &listx)) < 0) {
 	myerror(ERRDEF, "list of extra files not found in database `%s'",
 		dbname);
 	exit(1);

@@ -1,8 +1,8 @@
 /*
-  $NiH: r_prog.c,v 1.10 2005/06/12 19:22:35 wiz Exp $
+  $NiH$
 
-  r_prog.c -- read prog struct from db
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  file_by_hash.c -- file_by_hash struct functions
+  Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -21,33 +21,41 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-
-/* read list of strings from db */
 #include <stdlib.h>
 #include <string.h>
 
-#include "dbh.h"
-#include "r.h"
+#include "types.h"
 #include "xmalloc.h"
+
+struct file_by_hash *
+file_by_hash_new(enum filetype ft, const struct hashes *hash)
+{
+    struct file_by_hash *fbh;
+
+    fbh = (struct file_by_hash *)xmalloc(sizeof(struct file_by_hash));
+    fbh->filetype = ft;
+    memcpy(&fbh->hash, hash, sizeof(*hash));
+    fbh->nentry = 0;
+    fbh->entry = NULL;
+
+    return fbh;
+}
 
 
 
-int
-r_prog(DB *db, char **namep, char **versionp)
+void
+file_by_hash_free(struct file_by_hash *fbh)
 {
-    DBT v;
-    void *data;
+    int i;
 
-    if (ddb_lookup(db, DDB_KEY_PROG, &v) != 0)
-	return -1;
-    
-    data = v.data;
+    if (fbh == NULL)
+	return;
 
-    *namep = r__string(&v);
-    *versionp = r__string(&v);
+    if (fbh->nentry > 0) {
+	for (i=0; i<fbh->nentry; i++)
+	    free(fbh->entry[i].game);
+	free(fbh->entry);
+    }
 
-    free(data);
-
-    return 0;
+    free(fbh);
 }

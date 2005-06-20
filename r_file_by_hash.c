@@ -1,8 +1,8 @@
 /*
-  $NiH: r_prog.c,v 1.10 2005/06/12 19:22:35 wiz Exp $
+  $NiH$
 
-  r_prog.c -- read prog struct from db
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  r_file_by_hash.c -- read file_by_hash struct from db
+  Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -23,31 +23,53 @@
 
 
 
-/* read list of strings from db */
 #include <stdlib.h>
 #include <string.h>
 
+#include "types.h"
 #include "dbh.h"
-#include "r.h"
 #include "xmalloc.h"
+#include "r.h"
+#include "romutil.h"
+
+static void r__file_by_hash_entry(DBT *, void *);
+
+struct file_by_hash *
+r_file_by_hash(DB *db, enum filetype ft, const struct hashes *hash)
+{
+    DBT v;
+    struct file_by_hash *fbh;
+    void *data;
+    char *key;
+
+    key = file_by_hash_make_key(ft, hash);
+    if (ddb_lookup(db, key, &v) != 0) {
+	free(key);
+	return NULL;
+    }
+    free(key);
+
+    data = v.data;
+
+    fbh = file_by_hash_new(ft, hash);
+    
+    fbh->nentry = r__array(&v, r__file_by_hash_entry, (void *)&fbh->entry,
+			   sizeof(fbh->entry[0]));
+    
+    free(data);
+
+    return fbh;
+}
 
 
 
-int
-r_prog(DB *db, char **namep, char **versionp)
+static void
+r__file_by_hash_entry(DBT *v, void *vr)
 {
-    DBT v;
-    void *data;
-
-    if (ddb_lookup(db, DDB_KEY_PROG, &v) != 0)
-	return -1;
+    struct file_by_hash_entry *e;
     
-    data = v.data;
+    e = (struct file_by_hash_entry *)vr;
 
-    *namep = r__string(&v);
-    *versionp = r__string(&v);
-
-    free(data);
-
-    return 0;
+    e->game = r__string(v);
+    e->index = r__ushort(v);
 }

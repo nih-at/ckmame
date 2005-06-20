@@ -1,5 +1,5 @@
 /*
-  $NiH: w_prog.c,v 1.8 2004/02/26 02:49:03 wiz Exp $
+  $NiH: w_prog.c,v 1.9 2004/04/21 10:38:38 dillo Exp $
 
   w_prog.c -- write prog struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -48,7 +48,7 @@ w_prog(DB *db, const char *name, const char *version)
     w__string(&v, name);
     w__string(&v, version);
 
-    err = ddb_insert(db, "/prog", &v);
+    err = ddb_insert(db, DDB_KEY_PROG, &v);
 
     free(v.data);
 

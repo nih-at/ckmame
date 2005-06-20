@@ -1,5 +1,5 @@
 /*
-  $NiH: r_list.c,v 1.12 2004/04/21 10:38:38 dillo Exp $
+  $NiH: r_list.c,v 1.13 2004/04/26 21:29:20 wiz Exp $
 
   r_list.c -- read list struct from db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -39,7 +39,7 @@ r_hashtypes(DB *db, int *romhashtypesp, int *diskhashtypesp)
     DBT v;
     void *data;
 
-    if (ddb_lookup(db, "/hashtypes", &v) != 0)
+    if (ddb_lookup(db, DDB_KEY_HASH_TYPES, &v) != 0)
 	return -1;
 
     data = v.data;

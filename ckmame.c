@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.39 2005/06/12 18:00:59 wiz Exp $
+  $NiH: ckmame.c,v 1.40 2005/06/12 19:22:35 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -76,7 +76,7 @@ char help[] = "\n"
 "\nReport bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
-"Copyright (C) 2003, 2004 Dieter Baron and Thomas Klausner\n"
+"Copyright (C) 2005 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 "You may redistribute copies of\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
@@ -252,7 +252,7 @@ main(int argc, char **argv)
 	r_hashtypes(db, &romhashtypes, &diskhashtypes);
     }
     
-    if ((nlist=r_list(db, "/list", &list)) < 0) {
+    if ((nlist=r_list(db, DDB_KEY_LIST_GAME, &list)) < 0) {
 	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
 	exit(1);
     }
