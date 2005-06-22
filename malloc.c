@@ -1,5 +1,5 @@
 /*
-  $NiH: malloc.c,v 1.10 2003/12/27 23:18:39 wiz Exp $
+  $NiH: malloc.c,v 1.11 2004/02/26 02:26:09 wiz Exp $
 
   malloc.c -- malloc routines with exit on failure
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -42,6 +42,19 @@ xmalloc(size_t size)
     }
 
     return p;
+}
+
+
+
+void *
+xmemdup(const void *src, size_t size)
+{
+    void *dst;
+    
+    dst = xmalloc(size);
+    memcpy(dst, src, size);
+
+    return dst;
 }
 
 

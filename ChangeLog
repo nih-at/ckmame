@@ -1,3 +1,15 @@
+2005-06-22  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* parse.c (parse, enter_file_hash): create
+	file_by_hash entries in-core and copy to disk at end of parsing.
+
+	* dbl.c (ddb_lookup, ddb_insert): don't compress data for incore
+	database.
+	* db-db.c (ddb_is_incore): new function.
+	(ddb_copy): new function.
+
+	* malloc.c (xmemdup): new function.
+
 2005-06-20  Thomas Klausner + Dieter Baron
 
 	* parse.c (enter_file_hash, file_by_hash_add): new functions.

@@ -1,5 +1,5 @@
 /*
-  $NiH: db-db.c,v 1.20 2005/06/12 16:06:53 wiz Exp $
+  $NiH: db-db.c,v 1.21 2005/06/12 19:22:35 wiz Exp $
 
   db-db.c -- low level routines for Berkeley db 
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -38,7 +38,7 @@
 DB*
 ddb_open(const char *name, int flags)
 {
-    DB* db;
+    DB *db;
     HASHINFO hi;
     const char *s;
 
@@ -71,7 +71,7 @@ ddb_open(const char *name, int flags)
 
 
 int
-ddb_close(DB* db)
+ddb_close(DB *db)
 {
     (db->close)(db);
     return 0;
@@ -80,7 +80,7 @@ ddb_close(DB* db)
 
 
 int
-ddb_insert_l(DB* db, DBT* key, const DBT* value)
+ddb_insert_l(DB *db, DBT *key, const DBT *value)
 {
     return (db->put)(db, key, value, 0);
 }
@@ -88,9 +88,36 @@ ddb_insert_l(DB* db, DBT* key, const DBT* value)
 
 
 int
-ddb_lookup_l(DB* db, DBT* key, DBT* value)
+ddb_lookup_l(DB *db, DBT *key, DBT *value)
 {
     return (db->get)(db, key, value, 0);
+}
+
+
+
+int
+ddb_is_incore(DB *db)
+{
+    return db->fd(db) == -1;
+}
+
+
+
+int
+ddb_copy(DB *dst, DB *src)
+{
+    DBT key, value;
+    int ret;
+
+    /* test inside body to catch empty database */
+    for (ret=src->seq(src, &key, &value, R_FIRST); ;
+	 ret=src->seq(src, &key, &value, R_NEXT)) {
+	if (ret != 0)
+	    break;
+	ddb_insert(dst, (char *)key.data, &value);
+    }
+
+    return ret < 0 ? -1 : 0;
 }
 
 

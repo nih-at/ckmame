@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.5 2005/06/20 16:16:04 wiz Exp $
+  $NiH: parse.c,v 1.6 2005/06/20 16:42:02 wiz Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -38,6 +38,7 @@
 #include "parse.h"
 
 static DB *db;
+static DB *db_fbh;
 static struct game *g;
 static char *prog_name, *prog_version;
 /* XXX: every game is only allowed 1000 roms */
@@ -99,6 +100,10 @@ parse(DB *mydb, const char *fname)
     sgames = ngames = 0;
 
     db = mydb;
+    if ((db_fbh=ddb_open(NULL, DDB_READ|DDB_WRITE)) == NULL) {
+	myerror(ERRDEF, "can't create in-core database: %s", ddb_error());
+	return -1;
+    }
 
     if (fname == NULL) {
 	fin = stdin;
@@ -106,7 +111,8 @@ parse(DB *mydb, const char *fname)
     }
     else {
 	if ((fin=fopen(fname, "r")) == NULL) {
-	    myerror(ERRSTR, "can\'t open romlist file `%s'", fname);
+	    myerror(ERRSTR, "can't open romlist file `%s'", fname);
+	    ddb_close(db_fbh);
 	    return -1;
 	}
 	seterrinfo(fname, NULL);
@@ -145,12 +151,14 @@ parse(DB *mydb, const char *fname)
 	    if ((g=r_game(db, lostchildren[i]))==NULL) {
 		myerror(ERRDEF, "internal database error: "
 			"child not in database");
+		ddb_close(db_fbh);
 		return 1;
 	    }
 	    if (lostchildren_to_do[i] & 1) {
 		if ((parent=r_game(db, g->cloneof[0]))==NULL) {
 		    myerror(ERRDEF, "input database not consistent: "
 			    "parent %s not found", g->cloneof[0]);
+		    ddb_close(db_fbh);
 		    return 1;
 		}
 		if (lost(parent)) {
@@ -176,6 +184,7 @@ parse(DB *mydb, const char *fname)
 		if ((parent=r_game(db, g->cloneof[0]))==NULL) {
 		    myerror(ERRDEF, "input database not consistent: "
 			    "parent %s not found", g->cloneof[0]);
+		    ddb_close(db_fbh);
 		    return 1;
 		}
 		game_swap_rs(parent);
@@ -226,6 +235,10 @@ parse(DB *mydb, const char *fname)
     free(prog_name);
     free(prog_version);
 
+    ddb_copy(db, db_fbh);
+
+    ddb_close(db_fbh);
+    
     return 0;
 }
 
@@ -844,12 +857,12 @@ enter_file_hash(enum filetype filetype, int index, const struct hashes *hashes)
 	    continue;
 	
 	hash.types = type;
-	if ((fbh=r_file_by_hash(db, filetype, &hash)) == NULL)
+	if ((fbh=r_file_by_hash(db_fbh, filetype, &hash)) == NULL)
 	    fbh = file_by_hash_new(filetype, &hash);
 
 	file_by_hash_add(fbh, g->name, index);
 
-	w_file_by_hash(db, fbh);
+	w_file_by_hash(db_fbh, fbh);
 
 	file_by_hash_free(fbh);
     }

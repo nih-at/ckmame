@@ -1,3 +1,4 @@
+parse: move state handling to parse-cm.c
 create checksum db in core and write out when finished
 
 0.85.1: "bad dump" is reported as missing with -d

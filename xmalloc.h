@@ -4,7 +4,7 @@
 #include <sys/types.h>
 
 /*
-  $NiH: xmalloc.h,v 1.5 2003/12/27 23:18:39 wiz Exp $
+  $NiH: xmalloc.h,v 1.6 2004/02/26 02:26:13 wiz Exp $
 
   xmalloc.h -- malloc routines with exit on failure
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,8 +26,9 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-void *xrealloc(void *p, size_t size);
+void *xrealloc(void *, size_t);
 void *xmalloc(size_t size);
+void *xmemdup(const void *, size_t);
 char *xstrdup(const char *);
 
 #endif /* xmalloc.h */

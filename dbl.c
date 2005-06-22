@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.22 2005/06/12 19:22:35 wiz Exp $
+  $NiH: dbl.c,v 1.23 2005/06/20 16:16:04 wiz Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -49,31 +49,39 @@ int
 ddb_insert(DB *db, const char *key, const DBT *value)
 {
     DBT k, v;
-    int ret;
+    int ret, incore;
     uLong len;
 
     k.size = strlen(key);
     k.data = xmalloc(k.size);
     strncpy(k.data, key, k.size);
 
-    len = value->size*1.1+12;
-    v.data = xmalloc(len+2);
-
-    ((unsigned char *)v.data)[0] = (value->size >> 8) & 0xff;
-    ((unsigned char *)v.data)[1] = value->size & 0xff;
-
-    if (compress2(((unsigned char *)v.data)+2, &len, value->data, 
-		  value->size, 9) != 0) {
-	free(k.data);
-	free(v.data);
-	return -1;
+    incore = ddb_is_incore(db);
+    if (incore) {
+	v.data = value->data;
+	v.size = value->size;
     }
-    v.size = len + 2;
+    else {
+	len = value->size*1.1+12;
+	v.data = xmalloc(len+2);
 
+	((unsigned char *)v.data)[0] = (value->size >> 8) & 0xff;
+	((unsigned char *)v.data)[1] = value->size & 0xff;
+
+	if (compress2(((unsigned char *)v.data)+2, &len, value->data, 
+		      value->size, 9) != 0) {
+	    free(k.data);
+	    free(v.data);
+	    return -1;
+	}
+	v.size = len + 2;
+    }
+    
     ret = ddb_insert_l(db, &k, &v);
 
     free(k.data);
-    free(v.data);
+    if (!incore)
+	free(v.data);
 
     return ret;
 }
@@ -98,19 +106,25 @@ ddb_lookup(DB *db, const char *key, DBT *value)
 	return ret;
     }
 
-    value->size = ((((unsigned char *)v.data)[0] << 8)
-		   | (((unsigned char *)v.data)[1]));
-    value->data = xmalloc(value->size);
-
-    len = value->size;
-    if (uncompress(value->data, &len, ((unsigned char *)v.data)+2, 
-		   v.size-2) != 0) {
-	free(value->data);
-	free(k.data);
-	return -1;
+    if (ddb_is_incore(db)) {
+	value->size = v.size;
+	value->data = xmemdup(v.data, v.size);
     }
-    value->size = len;
-
+    else {
+	value->size = ((((unsigned char *)v.data)[0] << 8)
+		       | (((unsigned char *)v.data)[1]));
+	value->data = xmalloc(value->size);
+	
+	len = value->size;
+	if (uncompress(value->data, &len, ((unsigned char *)v.data)+2, 
+		       v.size-2) != 0) {
+	    free(value->data);
+	    free(k.data);
+	    return -1;
+	}
+	value->size = len;
+    }
+    
     free(k.data);
     
     return ret;
