@@ -1,3 +1,8 @@
+2005-06-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* r_game.c (r__hashes): don't clear unused hashes.
+	* hashes.c (hashes_init): don't clear unused hashes.
+
 2005-06-22  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* parse.c (parse, enter_file_hash): create

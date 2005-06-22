@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.39 2005/06/12 18:00:59 wiz Exp $
+  $NiH: hashes.c,v 1.3 2005/06/12 19:33:57 dillo Exp $
 
   hashes.c -- utility functions for hash handling
   Copyright (C) 2004 Dieter Baron and Thomas Klausner
@@ -61,6 +61,4 @@ hashes_init(struct hashes *h)
 {
     h->types = 0;
     h->crc = 0;
-    memset(h->md5, 0, sizeof(h->md5));
-    memset(h->sha1, 0, sizeof(h->sha1));
 }

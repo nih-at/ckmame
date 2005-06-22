@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.22 2005/06/03 14:37:58 wiz Exp $
+  $NiH: r_game.c,v 1.23 2005/06/12 19:22:35 wiz Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -116,10 +116,6 @@ r__hashes(DBT *v, struct hashes *h)
 	h->crc = 0;
     if (h->types & GOT_MD5)
 	r__mem(v, h->md5, sizeof(h->md5));
-    else
-	memset(h->md5, 0, sizeof(h->md5));
     if (h->types & GOT_SHA1)
 	r__mem(v, h->sha1, sizeof(h->sha1));
-    else
-	memset(h->sha1, 0, sizeof(h->sha1));
 }
