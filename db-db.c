@@ -1,5 +1,5 @@
 /*
-  $NiH: db-db.c,v 1.22 2005/06/22 22:10:03 dillo Exp $
+  $NiH: db-db.c,v 1.23 2005/06/26 19:33:15 dillo Exp $
 
   db-db.c -- low level routines for Berkeley db 
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -104,17 +104,17 @@ ddb_error_l(void)
 
 
 int
-ddb_foreach(DB *db, void (*f)(const DBT *, const DBT *, void *), void *ud)
+ddb_foreach(DB *db, int (*f)(const DBT *, const DBT *, void *), void *ud)
 {
     DBT key, value;
     int ret;
 
     /* test inside body to catch empty database */
-    for (ret=src->seq(src, &key, &value, R_FIRST); ;
-	 ret=src->seq(src, &key, &value, R_NEXT)) {
+    for (ret=db->seq(db, &key, &value, R_FIRST); ;
+	 ret=db->seq(db, &key, &value, R_NEXT)) {
 	if (ret != 0)
 	    break;
-	if ((ret=f(key, value, ud)) != 0)
+	if ((ret=f(&key, &value, ud)) != 0)
 	    break;
     }
 

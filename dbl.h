@@ -2,7 +2,7 @@
 #define _HAD_DBL_H
 
 /*
-  $NiH: dbl.h,v 1.21 2005/06/22 22:10:03 dillo Exp $
+  $NiH: dbl.h,v 1.22 2005/06/26 19:33:15 dillo Exp $
 
   dbl.h -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -47,7 +47,7 @@ int ddb_check_version(DB *, int);
 int ddb_close(DB *);
 const char *ddb_error(void);
 const char *ddb_error_l(void);
-int ddb_foreach(DB *, void (*)(const DBT *, const DBT *, void *), void *);
+int ddb_foreach(DB *, int (*)(const DBT *, const DBT *, void *), void *);
 int ddb_init_db(DB *);
 int ddb_insert(DB *, const char *, const DBT *);	/* API version */
 int ddb_insert_l(DB *, DBT *, const DBT *);		/* backend version */

@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.7 2005/06/22 22:10:03 dillo Exp $
+  $NiH: parse.c,v 1.8 2005/06/26 19:33:15 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -238,7 +238,7 @@ parse(DB *mydb, const char *fname)
     free(prog_name);
     free(prog_version);
 
-    ddb_foreach(db_fbh, file_by_hash_copy_incore db);
+    ddb_foreach(db_fbh, file_by_hash_copy_incore, db);
 
     ddb_close(db_fbh);
     
@@ -942,5 +942,5 @@ file_by_hash_copy_incore(DBT *key, DBT *value, void *ud)
 
     db = (DB *)ud;
 
-    return w_file_by_hash(db, *((struct file_by_hash **)value.data));
+    return w_file_by_hash(db, *((struct file_by_hash **)value->data));
 }
