@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.8 2005/06/26 19:33:15 dillo Exp $
+  $NiH: parse.c,v 1.9 2005/06/26 19:39:37 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -88,7 +88,7 @@ static void enter_file_hash(enum filetype, int, const struct hashes *);
 static void file_by_hash_add(struct file_by_hash *, const char *, int);
 static struct file_by_hash *r_file_by_hash_incore(DB *, enum filetype, const struct hashes *);
 static int w_file_by_hash_incore(DB *, struct file_by_hash *);
-static int file_by_hash_copy_incore(DBT *, DBT *, void *);
+static int file_by_hash_copy_incore(const DBT *, const DBT *, void *);
 
 
 
@@ -936,7 +936,7 @@ file_by_hash_add(struct file_by_hash *fbh, const char *game, int index)
 
 
 static int
-file_by_hash_copy_incore(DBT *key, DBT *value, void *ud)
+file_by_hash_copy_incore(const DBT *key, const DBT *value, void *ud)
 {
     DB *db;
 

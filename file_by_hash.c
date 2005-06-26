@@ -1,5 +1,5 @@
 /*
-  $NiH: file_by_hash.c,v 1.1 2005/06/20 16:16:04 wiz Exp $
+  $NiH: file_by_hash.c,v 1.2 2005/06/26 19:33:15 dillo Exp $
 
   file_by_hash.c -- file_by_hash struct functions
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "types.h"
+#include "romutil.h"
 #include "xmalloc.h"
 
 struct file_by_hash *

@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.24 2005/06/22 22:10:03 dillo Exp $
+  $NiH: dbl.c,v 1.25 2005/06/26 19:33:15 dillo Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -49,7 +49,7 @@ int
 ddb_insert(DB *db, const char *key, const DBT *value)
 {
     DBT k, v;
-    int ret, incore;
+    int ret;
     uLong len;
 
     k.size = strlen(key);

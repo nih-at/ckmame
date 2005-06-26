@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: fbh_make_key.c,v 1.1 2005/06/20 16:16:04 wiz Exp $
 
   fbh_make_key.c -- make dbkey for file_by_hash struct
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include "types.h"
+#include "romutil.h"
 #include "hashes.h"
 #include "xmalloc.h"
 
