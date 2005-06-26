@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: r_file_by_hash.c,v 1.1 2005/06/20 16:16:04 wiz Exp $
 
   r_file_by_hash.c -- read file_by_hash struct from db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -55,6 +55,7 @@ r_file_by_hash(DB *db, enum filetype ft, const struct hashes *hash)
     
     fbh->nentry = r__array(&v, r__file_by_hash_entry, (void *)&fbh->entry,
 			   sizeof(fbh->entry[0]));
+    fbh->nalloced = fbh->nentry;
     
     free(data);
 

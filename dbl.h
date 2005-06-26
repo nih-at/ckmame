@@ -2,7 +2,7 @@
 #define _HAD_DBL_H
 
 /*
-  $NiH: dbl.h,v 1.20 2005/06/20 16:16:04 wiz Exp $
+  $NiH: dbl.h,v 1.21 2005/06/22 22:10:03 dillo Exp $
 
   dbl.h -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -45,18 +45,15 @@
 
 int ddb_check_version(DB *, int);
 int ddb_close(DB *);
-int ddb_copy(DB *, DB *);
 const char *ddb_error(void);
 const char *ddb_error_l(void);
+int ddb_foreach(DB *, void (*)(const DBT *, const DBT *, void *), void *);
 int ddb_init_db(DB *);
 int ddb_insert(DB *, const char *, const DBT *);	/* API version */
 int ddb_insert_l(DB *, DBT *, const DBT *);		/* backend version */
-int ddb_is_incore(DB *);
 int ddb_lookup(DB *, const char *, DBT *);		/* API version */
 int ddb_lookup_l(DB *, DBT *, DBT *);			/* backend version */
 char *ddb_name(const char *);
 DB* ddb_open(const char *, int);
 
-
-
-#endif
+#endif /* dbl.h */

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: file_by_hash.c,v 1.1 2005/06/20 16:16:04 wiz Exp $
 
   file_by_hash.c -- file_by_hash struct functions
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -36,7 +36,8 @@ file_by_hash_new(enum filetype ft, const struct hashes *hash)
     fbh->filetype = ft;
     memcpy(&fbh->hash, hash, sizeof(*hash));
     fbh->nentry = 0;
-    fbh->entry = NULL;
+    fbh->nalloced = 1;
+    fbh->entry = xmalloc(sizeof(fbh->entry[0]));
 
     return fbh;
 }

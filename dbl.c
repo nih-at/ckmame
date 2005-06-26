@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.23 2005/06/20 16:16:04 wiz Exp $
+  $NiH: dbl.c,v 1.24 2005/06/22 22:10:03 dillo Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -56,32 +56,23 @@ ddb_insert(DB *db, const char *key, const DBT *value)
     k.data = xmalloc(k.size);
     strncpy(k.data, key, k.size);
 
-    incore = ddb_is_incore(db);
-    if (incore) {
-	v.data = value->data;
-	v.size = value->size;
-    }
-    else {
-	len = value->size*1.1+12;
-	v.data = xmalloc(len+2);
+    len = value->size*1.1+12;
+    v.data = xmalloc(len+2);
+    
+    ((unsigned char *)v.data)[0] = (value->size >> 8) & 0xff;
+    ((unsigned char *)v.data)[1] = value->size & 0xff;
 
-	((unsigned char *)v.data)[0] = (value->size >> 8) & 0xff;
-	((unsigned char *)v.data)[1] = value->size & 0xff;
-
-	if (compress2(((unsigned char *)v.data)+2, &len, value->data, 
-		      value->size, 9) != 0) {
-	    free(k.data);
-	    free(v.data);
-	    return -1;
-	}
-	v.size = len + 2;
+    if (compress2(((unsigned char *)v.data)+2, &len, value->data, 
+		  value->size, 9) != 0) {
+	free(k.data);
+	free(v.data);
+	return -1;
     }
+    v.size = len + 2;
     
     ret = ddb_insert_l(db, &k, &v);
 
     free(k.data);
-    if (!incore)
-	free(v.data);
 
     return ret;
 }
@@ -106,24 +97,18 @@ ddb_lookup(DB *db, const char *key, DBT *value)
 	return ret;
     }
 
-    if (ddb_is_incore(db)) {
-	value->size = v.size;
-	value->data = xmemdup(v.data, v.size);
+    value->size = ((((unsigned char *)v.data)[0] << 8)
+		   | (((unsigned char *)v.data)[1]));
+    value->data = xmalloc(value->size);
+    
+    len = value->size;
+    if (uncompress(value->data, &len, ((unsigned char *)v.data)+2, 
+		   v.size-2) != 0) {
+	free(value->data);
+	free(k.data);
+	return -1;
     }
-    else {
-	value->size = ((((unsigned char *)v.data)[0] << 8)
-		       | (((unsigned char *)v.data)[1]));
-	value->data = xmalloc(value->size);
-	
-	len = value->size;
-	if (uncompress(value->data, &len, ((unsigned char *)v.data)+2, 
-		       v.size-2) != 0) {
-	    free(value->data);
-	    free(k.data);
-	    return -1;
-	}
-	value->size = len;
-    }
+    value->size = len;
     
     free(k.data);
     

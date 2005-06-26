@@ -1,3 +1,7 @@
+2005-06-26  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* db-db.c (ddb_foreach): new function.
+
 2005-06-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* r_game.c (r__hashes): don't clear unused hashes.
@@ -7,11 +11,6 @@
 
 	* parse.c (parse, enter_file_hash): create
 	file_by_hash entries in-core and copy to disk at end of parsing.
-
-	* dbl.c (ddb_lookup, ddb_insert): don't compress data for incore
-	database.
-	* db-db.c (ddb_is_incore): new function.
-	(ddb_copy): new function.
 
 	* malloc.c (xmemdup): new function.
 

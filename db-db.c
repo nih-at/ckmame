@@ -1,5 +1,5 @@
 /*
-  $NiH: db-db.c,v 1.21 2005/06/12 19:22:35 wiz Exp $
+  $NiH: db-db.c,v 1.22 2005/06/22 22:10:03 dillo Exp $
 
   db-db.c -- low level routines for Berkeley db 
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -95,16 +95,16 @@ ddb_lookup_l(DB *db, DBT *key, DBT *value)
 
 
 
-int
-ddb_is_incore(DB *db)
+const char *
+ddb_error_l(void)
 {
-    return db->fd(db) == -1;
+    return strerror(errno);
 }
 
 
 
 int
-ddb_copy(DB *dst, DB *src)
+ddb_foreach(DB *db, void (*f)(const DBT *, const DBT *, void *), void *ud)
 {
     DBT key, value;
     int ret;
@@ -114,16 +114,9 @@ ddb_copy(DB *dst, DB *src)
 	 ret=src->seq(src, &key, &value, R_NEXT)) {
 	if (ret != 0)
 	    break;
-	ddb_insert(dst, (char *)key.data, &value);
+	if ((ret=f(key, value, ud)) != 0)
+	    break;
     }
 
     return ret < 0 ? -1 : 0;
-}
-
-
-
-const char *
-ddb_error_l(void)
-{
-    return strerror(errno);
 }

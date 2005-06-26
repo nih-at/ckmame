@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.6 2005/06/20 16:42:02 wiz Exp $
+  $NiH: parse.c,v 1.7 2005/06/22 22:10:03 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -86,6 +86,9 @@ static int game_add(DB *, struct game *);
 static int lost(struct game *);
 static void enter_file_hash(enum filetype, int, const struct hashes *);
 static void file_by_hash_add(struct file_by_hash *, const char *, int);
+static struct file_by_hash *r_file_by_hash_incore(DB *, enum filetype, const struct hashes *);
+static int w_file_by_hash_incore(DB *, struct file_by_hash *);
+static int file_by_hash_copy_incore(DBT *, DBT *, void *);
 
 
 
@@ -235,7 +238,7 @@ parse(DB *mydb, const char *fname)
     free(prog_name);
     free(prog_version);
 
-    ddb_copy(db, db_fbh);
+    ddb_foreach(db_fbh, file_by_hash_copy_incore db);
 
     ddb_close(db_fbh);
     
@@ -855,17 +858,61 @@ enter_file_hash(enum filetype filetype, int index, const struct hashes *hashes)
     for (type=1; type<=GOT_MAX; type<<=1) {
 	if ((hashes->types & type) == 0)
 	    continue;
-	
+
 	hash.types = type;
-	if ((fbh=r_file_by_hash(db_fbh, filetype, &hash)) == NULL)
+	if ((fbh=r_file_by_hash_incore(db_fbh, filetype, &hash)) == NULL) {
 	    fbh = file_by_hash_new(filetype, &hash);
+	    if (w_file_by_hash_incore(db_fbh, fbh) != 0) {
+		myerror(ERRSTR, "can't write file hash to incore db");
+	    }
+	}
 
 	file_by_hash_add(fbh, g->name, index);
-
-	w_file_by_hash(db_fbh, fbh);
-
-	file_by_hash_free(fbh);
     }
+}
+
+
+
+static struct file_by_hash *
+r_file_by_hash_incore(DB *db, enum filetype ft, const struct hashes *hash)
+{
+    DBT k, v;
+    char *key;
+
+    key = file_by_hash_make_key(ft, hash);
+    k.size = strlen(key);
+    k.data = key;
+
+    if (ddb_lookup_l(db, &k, &v) != 0) {
+	free(key);
+	return NULL;
+    }
+    free(key);
+
+    return *((struct file_by_hash **)v.data);
+}
+
+
+
+static int
+w_file_by_hash_incore(DB *db, struct file_by_hash *fbh)
+{
+    DBT k, v;
+    char *key;
+    int err;
+
+    key = file_by_hash_make_key(fbh->filetype, &fbh->hash);
+    k.size = strlen(key);
+    k.data = key;
+
+    v.size = sizeof(fbh);
+    v.data = &fbh;
+
+    err = ddb_insert_l(db, &k, &v);
+
+    free(key);
+
+    return err;
 }
 
 
@@ -873,13 +920,27 @@ enter_file_hash(enum filetype filetype, int index, const struct hashes *hashes)
 static void
 file_by_hash_add(struct file_by_hash *fbh, const char *game, int index)
 {
-    int i;
+    if (fbh->nentry >= fbh->nalloced) {
+	if (fbh->nalloced == 0)
+	    fbh->nalloced = 1;
+	else
+	    fbh->nalloced *= 2;
+	fbh->entry = xrealloc(fbh->entry, sizeof(fbh->entry[0])*fbh->nalloced);
+    }
 
-    i = fbh->nentry;
-    
+    fbh->entry[fbh->nentry].game = xstrdup(game);
+    fbh->entry[fbh->nentry].index = index;
     fbh->nentry++;
-    fbh->entry = xrealloc(fbh->entry, sizeof(fbh->entry[0])*fbh->nentry);
-    
-    fbh->entry[i].game = xstrdup(game);
-    fbh->entry[i].index = index;
+}
+
+
+
+static int
+file_by_hash_copy_incore(DBT *key, DBT *value, void *ud)
+{
+    DB *db;
+
+    db = (DB *)ud;
+
+    return w_file_by_hash(db, *((struct file_by_hash **)value.data));
 }

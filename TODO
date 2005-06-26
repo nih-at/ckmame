@@ -1,5 +1,7 @@
+add support for native db3/db4
+add support for fname==NULL and foreach to gdbm
 parse: move state handling to parse-cm.c
-create checksum db in core and write out when finished
+avoid excessive malloc/free in file_by_hash key generation
 
 0.85.1: "bad dump" is reported as missing with -d
 -cd: do not print a line for each rom that is correct in sets that have nodump roms

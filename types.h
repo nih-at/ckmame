@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.25 2005/06/13 00:32:19 wiz Exp $
+  $NiH: types.h,v 1.26 2005/06/20 16:16:04 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -131,6 +131,7 @@ struct file_by_hash {
     /* database entry */
     struct file_by_hash_entry *entry;
     int nentry;
+    int nalloced;
 };
 
 struct match {
