@@ -1,3 +1,6 @@
+fix free(): junk pointer, too high to make sense.
+fix free(): warning: chunk is already free.
+
 add support for native db3/db4
 add support for fname==NULL and foreach to gdbm
 parse: move state handling to parse-cm.c
