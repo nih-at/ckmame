@@ -30,13 +30,15 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH MKMAMEDB 1 "June 12, 2005" NiH
+.TH MKMAMEDB 1 "July 1, 2005" NiH
 .SH "NAME"
 mkmamedb \- create database for use by ckmame
 .SH "SYNOPSIS"
 .B mkmamedb
 [\fB-hV\fR]
 [\fB-o\fR \fBdbfile\fR]
+[\fB-prog-name\fR \fBname\fR]
+[\fB-prog-version\fR \fBversion\fR]
 [\fBrominfo-file\fR]
 .SH "DESCRIPTION"
 .B mkmamedb
@@ -74,6 +76,12 @@ Write to database
 \fBdbfile\fR
 instead of the default
 ``\fBmame.db\fR.''
+.TP 11
+\fB--prog-name\fR \fBname\fR
+Set name of the program the ROM info is from.
+.TP 11
+\fB--prog-version\fR \fBversion\fR
+Set version of the program the ROM info is from.
 .TP 11
 \fB-h\fR, \-help
 Display a short help message.
@@ -113,7 +121,7 @@ you can just run
 ckmame(1),
 dumpgame(1)
 .SH "AUTHORS"
-
+-nosplit
 .B mkmamedb
 was written by
 Dieter Baron <dillo@giga.or.at>
