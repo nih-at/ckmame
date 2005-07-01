@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.28 2005/06/20 16:16:04 wiz Exp $
+  $NiH: mkmamedb.c,v 1.29 2005/07/01 01:29:08 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -84,19 +84,14 @@ main(int argc, char **argv)
 {
     DB *db;
     char *dbname, *fname, *prog_name, *prog_version;
-    int dbext;
     int c;
 
     prg = argv[0];
 
     dbname = getenv("MAMEDB");
-    dbext = 0;
-    if (dbname == NULL) {
-	dbname = "mame";
-	dbext = 1;
-    }
+    if (dbname == NULL)
+	dbname = DDB_DEFAULT_DB_NAME;
     fname = NULL;
-
     prog_name = prog_version = NULL;
 
     opterr = 0;
@@ -112,7 +107,6 @@ main(int argc, char **argv)
 	    exit(0);
 	case 'o':
 	    dbname = optarg;
-	    dbext = 0;
 	    break;
 	case OPT_PROG_NAME:
 	    prog_name = optarg;
@@ -137,10 +131,6 @@ main(int argc, char **argv)
 	exit(1);
     }
     
-
-    if (dbext)
-	dbname = ddb_name(dbname);
-
     remove(dbname);
     db = ddb_open(dbname, DDB_WRITE);
 
@@ -153,9 +143,6 @@ main(int argc, char **argv)
     parse(db, fname, prog_name, prog_version);
 
     ddb_close(db);
-
-    if (dbext)
-	free(dbname);
 
     return 0;
 }

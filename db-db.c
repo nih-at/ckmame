@@ -1,5 +1,5 @@
 /*
-  $NiH: db-db.c,v 1.23 2005/06/26 19:33:15 dillo Exp $
+  $NiH: db-db.c,v 1.24 2005/06/26 19:39:37 dillo Exp $
 
   db-db.c -- low level routines for Berkeley db 
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -40,12 +40,6 @@ ddb_open(const char *name, int flags)
 {
     DB *db;
     HASHINFO hi;
-    const char *s;
-
-    if (flags & DDB_EXT)
-	s = ddb_name(name);
-    else
-	s = name;
 
     hi.bsize = 1024;
     hi.ffactor = 8;
@@ -54,11 +48,8 @@ ddb_open(const char *name, int flags)
     hi.hash = NULL;
     hi.lorder = 0;
 
-    db = dbopen(s, (flags & DDB_WRITE) ? O_RDWR|O_CREAT : O_RDONLY,
+    db = dbopen(name, (flags & DDB_WRITE) ? O_RDWR|O_CREAT : O_RDONLY,
 		0666, DB_HASH, &hi);
-
-    if (flags & DDB_EXT)
-	free((void *)s);
 
     if (db && ddb_check_version(db, flags) != 0) {
 	ddb_close(db);

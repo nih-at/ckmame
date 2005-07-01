@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.9 2005/06/26 19:39:37 dillo Exp $
+  $NiH: parse.c,v 1.10 2005/06/26 23:11:28 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -40,7 +40,7 @@
 static DB *db;
 static DB *db_fbh;
 static struct game *g;
-static char *prog_name, *prog_version;
+static char *file_prog_name, *file_prog_version;
 /* XXX: every game is only allowed 1000 roms */
 static struct rom r[1000], s[1000];
 static struct disk d[10];
@@ -93,7 +93,8 @@ static int file_by_hash_copy_incore(const DBT *, const DBT *, void *);
 
 
 int
-parse(DB *mydb, const char *fname)
+parse(DB *mydb, const char *fname,
+      const char *prog_name, const char *prog_version)
 {
     FILE *fin;
     int stillost, c;
@@ -128,7 +129,7 @@ parse(DB *mydb, const char *fname)
     w_romhashtypes = w_diskhashtypes = 0;
     nlost = 0;
     g = NULL;
-    prog_name = prog_version = NULL;
+    file_prog_name = file_prog_version = NULL;
 
     c = getc(fin);
     ungetc(c, fin);
@@ -234,9 +235,11 @@ parse(DB *mydb, const char *fname)
     
     free(lostchildren);
 
-    w_prog(db, prog_name, prog_version);
-    free(prog_name);
-    free(prog_version);
+    w_prog(db,
+	   prog_name ? prog_name : file_prog_name,
+	   prog_name ? prog_version : file_prog_version);
+    free(file_prog_name);
+    free(file_prog_version);
 
     ddb_foreach(db_fbh, file_by_hash_copy_incore, db);
 
@@ -487,7 +490,7 @@ parse_game_start(void)
 int
 parse_prog_name(const char *attr)
 {
-    prog_name = xstrdup(attr);
+    file_prog_name = xstrdup(attr);
 
     return 0;
 }
@@ -497,7 +500,7 @@ parse_prog_name(const char *attr)
 int
 parse_prog_version(const char *attr)
 {
-    prog_version = xstrdup(attr);
+    file_prog_version = xstrdup(attr);
 
     return 0;
 }

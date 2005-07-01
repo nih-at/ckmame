@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.25 2005/06/26 19:33:15 dillo Exp $
+  $NiH: dbl.c,v 1.26 2005/06/26 23:11:28 dillo Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -38,8 +38,6 @@
 #define DDB_EOLD	1	/* old db (no /ckmame entry) */
 #define DDB_EVERSION	2	/* version mismatch */
 #define DDB_EMAX	3
-
-#define DDB_FILEEXT ".db"
 
 static int ddb_errno;
 
@@ -113,22 +111,6 @@ ddb_lookup(DB *db, const char *key, DBT *value)
     free(k.data);
     
     return ret;
-}
-
-
-
-char *
-ddb_name(const char *prefix)
-{
-    char *s;
-
-    if (prefix == NULL)
-	return xstrdup(DDB_FILEEXT);
-
-    s = xmalloc(strlen(prefix)+strlen(DDB_FILEEXT)+1);
-    sprintf(s, "%s%s", prefix, DDB_FILEEXT);
-
-    return s;
 }
 
 

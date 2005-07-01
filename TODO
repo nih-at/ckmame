@@ -8,8 +8,6 @@ avoid excessive malloc/free in file_by_hash key generation
 
 0.85.1: "bad dump" is reported as missing with -d
 -cd: do not print a line for each rom that is correct in sets that have nodump roms
-mkmamedb: add --prog-{name,version}
-mkmamedb-xmame: use -prog-{name,version}
 
 use cases:
 . child gets renamed (move zip to other zip name)

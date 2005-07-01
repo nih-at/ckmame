@@ -1,5 +1,5 @@
 /*
-  $NiH: db-gdbm.c,v 1.17 2004/04/21 10:38:37 dillo Exp $
+  $NiH: db-gdbm.c,v 1.18 2004/04/24 09:40:23 dillo Exp $
 
   db-gdbm.c -- low level routines for GNU gdbm
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -37,18 +37,10 @@ DB*
 ddb_open(const char *name, int flags)
 {
     GDBM_FILE db;
-    char *s;
 
-    if (flags & DDB_EXT)
-	s = ddb_name(name);
-    else
-	s = name;
-
-    db = gdbm_open(s, 0, (flags & DDB_WRITE) ? GDBM_WRCREAT : GDBM_READER,
+    db = gdbm_open((char *)name,
+		   0, (flags & DDB_WRITE) ? GDBM_WRCREAT : GDBM_READER,
 		   0666, NULL);
-
-    if (flags & DDB_EXT)
-	free(s);
 
     if (db && ddb_check_version((DB*)db, flags) != 0) {
 	ddb_close((DB*)db);

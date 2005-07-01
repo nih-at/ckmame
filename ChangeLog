@@ -1,5 +1,9 @@
 2005-07-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* ckmame.c (main), db-db.c (ddb_open), db-gdbm.c (ddb_open),
+	dbl.c, dbl.h, dumpgame.c (main), mkmamedb.c (main): remove
+	DDB_EXT, DDB_FILEEXT, and ddb_named; add DDB_DEFAULT_DB_NAME.
+
 	* mkmamedb-xmame.sh: store program name and version in database.
 	* mkmamedb.c (main): new options --prog-name, --prog-version.
 	* parse.c (parse): add support for command line supplied prog

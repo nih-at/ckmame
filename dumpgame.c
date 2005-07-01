@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.39 2005/06/12 19:22:35 wiz Exp $
+  $NiH: dumpgame.c,v 1.40 2005/06/20 16:16:04 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -269,7 +269,6 @@ main(int argc, char **argv)
     char *dbname;
     DB *db;
     char **list;
-    int dbext;
     int c;
     int type;
     int find_checksum;
@@ -278,12 +277,9 @@ main(int argc, char **argv)
     
     prg = argv[0];
 
-    dbext = 0;
     dbname = getenv("MAMEDB");
-    if (dbname == NULL) {
-	dbname = "mame";
-	dbext = DDB_EXT;
-    }
+    if (dbname == NULL)
+	dbname = DDB_DEFAULT_DB_NAME;
 
     find_checksum = 0;
     type = GOT_CRC;
@@ -296,7 +292,6 @@ main(int argc, char **argv)
 	    break;
 	case 'D':
 	    dbname = optarg;
-	    dbext = 0;
 	    break;
 	case 'h':
 	    fputs(help_head, stdout);
@@ -319,7 +314,7 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=ddb_open(dbname, DDB_READ|dbext))==NULL) {
+    if ((db=ddb_open(dbname, DDB_READ))==NULL) {
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit (1);
     }

@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: ckmame.c,v 1.39 2005/06/12 18:00:59 wiz Exp $
+  $NiH: parse.h,v 1.3 2005/06/12 19:30:12 dillo Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999, 2001, 2002, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -32,7 +32,7 @@
 
 /* parser functions */
 
-int parse(DB *, const char *);
+int parse(DB *, const char *, const char *, const char *);
 int parse_xml(FILE *f);
 int parse_cm(FILE *f);
 

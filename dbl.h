@@ -2,7 +2,7 @@
 #define _HAD_DBL_H
 
 /*
-  $NiH: dbl.h,v 1.22 2005/06/26 19:33:15 dillo Exp $
+  $NiH: dbl.h,v 1.23 2005/06/26 19:39:37 dillo Exp $
 
   dbl.h -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -30,7 +30,6 @@
 
 #define DDB_READ	0x0	/* open readonly */
 #define DDB_WRITE	0x1	/* open for writing */
-#define DDB_EXT		0x2	/* append extension to filename */
 
 #define DDB_FORMAT_VERSION	6 /* version of ckmame database format */
 
@@ -40,6 +39,8 @@
 #define DDB_KEY_LIST_GAME	"/list/game"
 #define DDB_KEY_LIST_SAMPLE	"/list/sample"
 #define DDB_KEY_PROG		"/prog"
+
+#define DDB_DEFAULT_DB_NAME	"mame.db"
 
 
 
@@ -53,7 +54,6 @@ int ddb_insert(DB *, const char *, const DBT *);	/* API version */
 int ddb_insert_l(DB *, DBT *, const DBT *);		/* backend version */
 int ddb_lookup(DB *, const char *, DBT *);		/* API version */
 int ddb_lookup_l(DB *, DBT *, DBT *);			/* backend version */
-char *ddb_name(const char *);
 DB* ddb_open(const char *, int);
 
 #endif /* dbl.h */

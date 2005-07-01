@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.40 2005/06/12 19:22:35 wiz Exp $
+  $NiH: ckmame.c,v 1.41 2005/06/20 16:16:04 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -127,7 +127,7 @@ main(int argc, char **argv)
     int i, j;
     DB *db;
     char **list, *dbname;
-    int c, nlist, found, dbext;
+    int c, nlist, found;
     struct tree *tree;
     struct tree tree_root;
     int sample, superfluous_only, integrity;
@@ -138,12 +138,9 @@ main(int argc, char **argv)
     output_options = WARN_ALL;
     sample = 0;
     superfluous_only = 0;
-    dbext = 0;
     dbname = getenv("MAMEDB");
-    if (dbname == NULL) {
-	dbname = "mame";
-	dbext = DDB_EXT;
-    }
+    if (dbname == NULL)
+	dbname = DDB_DEFAULT_DB_NAME;
     fix_do = fix_print = 0;
     fix_keep_long = fix_keep_unknown = 1;
     fix_keep_unused = 0;
@@ -170,7 +167,6 @@ main(int argc, char **argv)
 	    break;
 	case 'D':
 	    dbname = optarg;
-	    dbext = 0;
 	    break;
 	case 'd':
 	    output_options &= ~WARN_NO_GOOD_DUMP;
@@ -231,7 +227,7 @@ main(int argc, char **argv)
 	}
     }
     
-    if ((db=ddb_open(dbname, DDB_READ|dbext))==NULL) {
+    if ((db=ddb_open(dbname, DDB_READ))==NULL) {
 	myerror(ERRDB, "can't open database `%s'", dbname);
 	exit(1);
     }
