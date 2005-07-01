@@ -1,3 +1,10 @@
+2005-07-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* mkmamedb-xmame.sh: store program name and version in database.
+	* mkmamedb.c (main): new options --prog-name, --prog-version.
+	* parse.c (parse): add support for command line supplied prog
+	info.
+
 2005-06-26  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* db-db.c (ddb_foreach): new function.

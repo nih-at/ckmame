@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: mkmamedb-xmame.sh,v 1.2 2004/04/22 20:24:16 dillo Exp $
+#  $NiH: mkmamedb-xmame.sh,v 1.3 2005/06/12 14:56:31 dillo Exp $
 #
 #  mkmamedb-xmame.sh -- create mamedb by calling xmame
 #  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -37,6 +37,5 @@ else
     LIST=-lx
 fi
 
-xmame $LIST 2>/dev/null | mkmamedb "$@"
-# xmame $LIST 2>/dev/null \
-#	| mkmamedb --prog-name "$PROG_NAME" --prog-version "$PROG_VERSION" "$@"
+xmame $LIST 2>/dev/null \
+   | mkmamedb --prog-name "$PROG_NAME" --prog-version "$PROG_VERSION" "$@"

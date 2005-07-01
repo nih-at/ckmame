@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.27 2005/06/12 19:22:35 wiz Exp $
+  $NiH: mkmamedb.c,v 1.28 2005/06/20 16:16:04 wiz Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -42,15 +42,17 @@
 #include "parse.h"
 
 char *prg;
-char *usage = "Usage: %s [-hV] [-o dbfile] [rominfo-file]\n";
+char *usage = "Usage: %s [-hV] [-o dbfile] [--prog-name name] [--prog-version version] [rominfo-file]\n";
 
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
 char help[] = "\n\
-  -h, --help           display this help message\n\
-  -V, --version        display version number\n\
-  -o, --output dbfile  write to database dbfile\n\
+  -h, --help               display this help message\n\
+  -V, --version            display version number\n\
+  -o, --output dbfile      write to database dbfile\n\
+      --prog-name name     set name of program rominfo is from\n\
+      --prog-version vers  set version of program rominfo is from\n\
 \n\
 Report bugs to <nih@giga.or.at>.\n";
 
@@ -63,10 +65,17 @@ For more information about these matters, see the files named COPYING.\n";
 
 #define OPTIONS "hVo:"
 
+enum {
+    OPT_PROG_NAME = 256,
+    OPT_PROG_VERSION
+};
+
 struct option options[] = {
     { "help",          0, 0, 'h' },
     { "version",       0, 0, 'V' },
     { "output",        1, 0, 'o' },
+    { "prog-name",     1, 0, OPT_PROG_NAME },
+    { "prog-version",  1, 0, OPT_PROG_VERSION },
     { NULL,            0, 0, 0 },
 };
 
@@ -74,7 +83,7 @@ int
 main(int argc, char **argv)
 {
     DB *db;
-    char *dbname, *fname;
+    char *dbname, *fname, *prog_name, *prog_version;
     int dbext;
     int c;
 
@@ -87,7 +96,9 @@ main(int argc, char **argv)
 	dbext = 1;
     }
     fname = NULL;
-    
+
+    prog_name = prog_version = NULL;
+
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
@@ -102,6 +113,12 @@ main(int argc, char **argv)
 	case 'o':
 	    dbname = optarg;
 	    dbext = 0;
+	    break;
+	case OPT_PROG_NAME:
+	    prog_name = optarg;
+	    break;
+	case OPT_PROG_VERSION:
+	    prog_version = optarg;
 	    break;
     	default:
 	    fprintf(stderr, usage, prg);
@@ -133,7 +150,7 @@ main(int argc, char **argv)
     }
 
     w_version(db);
-    parse(db, fname);
+    parse(db, fname, prog_name, prog_version);
 
     ddb_close(db);
 
