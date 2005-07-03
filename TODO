@@ -1,3 +1,4 @@
+improve output to: rom  tko-simm.05a  size 2097152  crc a275a387: SHA1 mismatch
 fix free(): junk pointer, too high to make sense.
 fix free(): warning: chunk is already free.
 
