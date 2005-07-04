@@ -1,0 +1,251 @@
+.\" Converted with mdoc2man 0.2
+.\" from NiH: ckmame.mdoc,v 1.13 2005/06/12 19:12:26 wiz Exp 
+.\" $NiH: ckmame.man,v 1.8 2005/06/12 19:34:14 wiz Exp $
+.\"
+.\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above
+.\"    copyright notice, this list of conditions and the following
+.\"    disclaimer in the documentation and/or other materials provided
+.\"    with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+.\" CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+.\" USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+.\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+.\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.TH CKMAME 1 "June 12, 2005" NiH
+.SH "NAME"
+ckmame \- verify MAME rom sets
+.SH "SYNOPSIS"
+.B ckmame
+[\fB-bcdFfhKkLlnSsUuVvw\fR]
+[\fB-D\fR \fBdbfile\fR]
+[\fBgame ...\fR]
+.SH "DESCRIPTION"
+.B ckmame
+is a program to check ROM sets for MAME, the Multiple Arcade
+Machine Emulator (see
+\fBhttp://www.mame.net/ )\fR,
+or other emulators that provide ROM set information in a compatible
+way (e.g., Raine, Impact, or other emulators.)
+It tells you which ROM files are missing or have a wrong checksum,
+can delete unknown and unused files from the ROM sets, and rename
+or move files.
+.PP
+MAME is an emulator for numerous arcade machines (video games, ranging
+from the 1970s to today).
+Since MAME is emulating the games, it uses the original images from
+the arcade machines' original ROM chips.  MAME's internal database
+contains extensive information on the ROMs, including the sizes
+and checksums of the used roms.
+Since some arcade games are variants of others and share some of the
+same ROMs, there are also internal dependencies between these so
+called clones.
+To save space, ROMs can be archived in zip files and
+dynamically unzipped by MAME when you play a game.
+.B ckmame
+does only support ROM sets stored as zip files.
+.PP
+.B ckmame
+tries to create a
+``split ROM set''
+from your current collection.
+This means that all files needed by the parent are kept in the
+parent's zip file, and only the files needed by the clone (or child)
+that are different from the parent's are kept in the child's zip file.
+For identifying the ROMs ckmame uses the sizes and checksums; names are
+only used for verification, since the MAME team often renames ROMs.
+.PP
+While
+.B ckmame
+uses MAME's rom database, it must be converted into a more
+efficient format before use.
+See
+mkmamedb(1)
+for details.
+.PP
+By default,
+.B ckmame
+will check the games named on the command line, or all games if none
+are given.
+Shell wildcards are allowed.
+You can use command line options to select which type of errors to report.
+.SS "OPTIONS"
+Supported options:
+.RS
+.TP 24
+Fl b, \-nobroken
+Don't report unfixable errors.
+See also
+\fB-f\fR
+and
+\fB-w\fR.
+.TP 24
+\fB-c\fR, \-correct
+Report correct sets.
+Normally they are not mentioned.
+.TP 24
+\fB-D\fR \fBdbfile, \fB--db\fR Ar dbfile\fR
+Use
+\fBdbfile\fR
+as database file.
+.TP 24
+\fB-d\fR, \-nonogooddumps
+Don't report roms with no known good dumps.
+.TP 24
+\fB-F\fR, \-fix
+Fix rom sets; do as much as possible, such as renaming and moving
+files.
+.TP 24
+\fB-f\fR, \-nofixable
+Don't report fixable errors.
+See also
+\fB-b\fR
+and
+\fB-w\fR.
+.TP 24
+\fB-h\fR, \-help
+Display a short help message.
+.TP 24
+\fB-i\fR, \-integrity
+Check integrity of zip archives and disk images
+by computing checksums and comparing them with the
+internally saved ones.
+.TP 24
+\fB-K\fR, \-keep-unknown
+Keep unknown files when fixing (default).
+They are moved into a zip file with the same name under
+\fBroms/garbage\fR.
+See also
+\fB-k\fR.
+.TP 24
+\fB-k\fR, \-delete-unknown
+Don't keep unknown files when fixing.
+See also
+\fB-K\fR.
+.TP 24
+\fB-L\fR, \-keep-long
+Keep too long files when fixing (default).
+See also
+\fB-K\fR
+and
+\fB-l\fR.
+.TP 24
+\fB-l\fR, \-delete-long
+Don't keep long files when fixing, delete them instead.
+See also
+\fB-L\fR.
+.TP 24
+\fB-n\fR, \-dryrun
+Don't actually fix anything, just report what would be done.
+.TP 24
+\fB-S\fR, \-samples
+Check samples instead of roms.
+.TP 24
+\fB--superfluous\fR
+Only check for superfluous files in rom sets.
+.TP 24
+\fB-s\fR, \-nosuperfluous
+Don't report superfluous (unneeded) files.
+.TP 24
+\fB-U\fR, \-keep-unused
+Keep unused files when fixing.
+Unused files are files that should, and do exist in other places.
+See also
+\fB-u\fR.
+.TP 24
+\fB-u\fR, \-delete-unused
+Don't keep unused files when fixing (default), delete them instead.
+See also
+\fB-U\fR.
+.TP 24
+\fB-V\fR, \-version
+Display program name and version number.
+.TP 24
+\fB-v\fR, \-verbose
+Print fixes made.
+.TP 24
+\fB-w\fR, \-nowarnings
+Print only unfixable error, like missing or completely incorrect roms.
+See also
+\fB-b\fR
+and
+\fB-f\fR.
+.TP 24
+\fB-X\fR, \-ignoreextra
+Do not mention extra files that are in the roms or samples dirs
+respectively.
+Most of the time these are romsets whose names have changed.
+Additionally,
+.B ckmame
+creates a
+\fBroms/garbage\fR
+directory (see also
+\fB-K\fR ),
+which you will also be warned about.
+.RE
+.SH "ENVIRONMENT"
+.RS
+.TP 12
+Ev MAMEDB
+Location for the database file.
+Can be overridden with the
+\fB-D\fR
+option.
+Defaults to
+``\fBmame.db\fR.''
+.TP 12
+Ev ROMPATH
+Location for the rom zip files.
+Defaults to
+``\fB.\fR.''
+.RE
+.SH "EXAMPLES"
+Print a report about the current state of your rom sets in the
+\fBroms\fR
+subdir of the current dir:
+.IP
+\fBckmame\fR
+.PP
+.PP
+Fix all sets and only report unfixable errors, omitting those
+roms where no good dump exists:
+.IP
+\fBckmame \-Fwd\fR
+.PP
+.SH "SEE ALSO"
+dumpgame(1),
+mkmamedb(1),
+xmame(6)
+.SH "AUTHORS"
+
+.B ckmame
+was written by
+Dieter Baron
+<dillo@giga.or.at>
+and
+Thomas Klausner
+<tk@giga.or.at.>
+.SH "BUGS"
+Files that are in clone sets of a set, but would belong in the parent
+set, are not moved automatically.
+Add them to the parent set manually, then run
+\fBckmame \-F\fR
+to remove them from the clone set(s) automatically.

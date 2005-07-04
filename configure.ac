@@ -1,6 +1,6 @@
 AC_PREREQ(2.54)
 AC_INIT([ckmame],[0.6a],[nih@giga.or.at])
-AC_CONFIG_SRCDIR([ckmame.c])
+AC_CONFIG_SRCDIR([src/ckmame.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 
@@ -75,6 +75,7 @@ if test "$db" = "none"
 then
 	AC_MSG_ERROR(no supported data base library found)
 fi
+DBTYPE=$db
 
 AC_HEADER_DIRENT
 
@@ -84,14 +85,14 @@ AC_CHECK_FUNCS(MD5Init, , [AC_LIBOBJ([md5])])
 AC_CHECK_FUNCS(SHA1Init, , [AC_LIBOBJ([sha1])])
 AC_SUBST([DBLIBS])
 AC_SUBST([MANFMT])
+AC_SUBST([DBTYPE])
+
 
 case $host_os
 in
 	*bsd*) MANFMT=mdoc;;
 	*) MANFMT=man;;
 esac
-
-AC_CONFIG_LINKS([dbl-int.h:db-${db}.h dbl-int.c:db-${db}.c])
 
 AC_EXEEXT
 
@@ -100,5 +101,9 @@ PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= 2.0,
 			   [Define if you have the xml2 library (-lxml2)]),
 			   AC_MSG_WARN(libxml2 not found))
 
-AC_CONFIG_FILES([Makefile docs/Makefile regress/Makefile])
+AC_CONFIG_FILES([Makefile
+		 docs/Makefile
+		 man/Makefile
+		 regress/Makefile
+		 src/Makefile])
 AC_OUTPUT

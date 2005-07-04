@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.13 2004/04/28 16:59:51 dillo Exp $
+#  $NiH: runtest,v 1.14 2005/06/17 12:15:45 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -190,7 +190,7 @@ fi
 
 if [ -z "${CKMAME}" ]
 then
-    PROGRAM=../../ckmame
+    PROGRAM=../../src/ckmame
 else
     PROGRAM="${CKMAME}"
 fi

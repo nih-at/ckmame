@@ -69,5 +69,5 @@ check: mamedb
 	echo "$$dashes"; \
 	test "$$failed" -eq 0
 
-mamedb: ../mkmamedb ${srcdir}/mamedb.txt
-	../mkmamedb -o mamedb ${srcdir}/mamedb.txt
+mamedb: ../src/mkmamedb ${srcdir}/mamedb.txt
+	../src/mkmamedb -o mamedb ${srcdir}/mamedb.txt
