@@ -1,5 +1,10 @@
 2005-07-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* src/chd-supp.c (get_hashes), src/zip-supp.c (get_hashes): use
+	hashes_update.
+	* src/hashes_update.c (hashes_update, hashes_update_final,
+	hashes_update_new): new function.
+
 	* src/hashes.h: move declarations and type definitions related to
 	struct hashes here.  rename GOT_ to HASHES_TYPE_.
 	* src/hashes.c (hashes_cmp): use symbolic constants as return

@@ -19,6 +19,7 @@ libckmame_a_SOURCES= \
 	fix.c \
 	hash_to_string.c \
 	hashes.c \
+	hashes_update.c \
 	malloc.c \
 	marry.c \
 	match.c \

@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: zip-supp.c,v 1.2 2005/07/04 22:41:36 dillo Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -26,16 +26,6 @@
 #include "config.h"
 
 #include <errno.h>
-#ifdef HAVE_MD5INIT
-#include <md5.h>
-#else
-#include <md5_own.h>
-#endif
-#ifdef HAVE_SHA1INIT
-#include <sha1.h>
-#else
-#include <sha1_own.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
@@ -231,18 +221,11 @@ read_infos_from_zip(struct zfile *z, int hashtypes)
 static int
 get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 {
-    unsigned long crc;
-    MD5_CTX md5;
-    SHA1_CTX sha1;
+    struct hashes_update *hu;
     unsigned char buf[BUFSIZE];
     int n;
 
-    if (h->types & HASHES_TYPE_CRC)
-	crc = crc32(0, NULL, 0);
-    if (h->types & HASHES_TYPE_MD5)
-	MD5Init(&md5);
-    if (h->types & HASHES_TYPE_SHA1)
-	SHA1Init(&sha1);
+    hu = hashes_update_new(h);
 
     while (len > 0) {
 	n = len > sizeof(buf) ? sizeof(buf) : len;
@@ -250,21 +233,11 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 	if (zip_fread(zf, buf, n) != n)
 	    return -1;
 
-	if (h->types & HASHES_TYPE_CRC)
-	    crc = crc32(crc, (Bytef *)buf, n);
-	if (h->types & HASHES_TYPE_MD5)
-	    MD5Update(&md5, buf, n);
-	if (h->types & HASHES_TYPE_SHA1)
-	    SHA1Update(&sha1, buf, n);
+	hashes_update(hu, buf, n);
 	len -= n;
     }
 
-    if (h->types & HASHES_TYPE_CRC)
-	h->crc = crc;
-    if (h->types & HASHES_TYPE_MD5)
-	MD5Final(h->md5, &md5);
-    if (h->types & HASHES_TYPE_SHA1)
-	SHA1Final(h->sha1, &sha1);
+    hashes_update_final(hu);
 
     return 0;
 }

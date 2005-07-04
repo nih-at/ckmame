@@ -2,7 +2,7 @@
 #define HAD_HASHES_H
 
 /*
-  $NiH: hashes.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: hashes.h,v 1.2 2005/07/04 22:41:36 dillo Exp $
 
   hashes.h -- hash related functions
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -45,8 +45,15 @@ struct hashes {
     unsigned char sha1[HASHES_SIZE_SHA1];
 };
 
+struct hashes_update;
+
+
+
 int hashes_cmp(const struct hashes *, const struct hashes *);
 void hashes_init(struct hashes *);
+void hashes_update(struct hashes_update *, const unsigned char *, size_t);
+void hashes_update_final(struct hashes_update *);
+struct hashes_update *hashes_update_new(struct hashes *);
 char *hash_to_string(int, const struct hashes *);
 const char *hash_type_string(int);
 

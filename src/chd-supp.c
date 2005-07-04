@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: chd-supp.c,v 1.2 2005/07/04 22:41:35 dillo Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -26,16 +26,6 @@
 #include "config.h"
 
 #include <errno.h>
-#ifdef HAVE_MD5INIT
-#include <md5.h>
-#else
-#include <md5_own.h>
-#endif
-#ifdef HAVE_SHA1INIT
-#include <sha1.h>
-#else
-#include <sha1_own.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,7 +67,7 @@ read_infos_from_chd(struct disk *d, int hashtypes)
     if (hashtypes == 0) {
 	d->hashes.types |= HASHES_TYPE_MD5;
 	memcpy(d->hashes.md5, chd->md5, sizeof(d->hashes.md5));
-	if (chd->version >= 3) {
+	if (chd->version > 2) {
 	    d->hashes.types |= HASHES_TYPE_SHA1;
 	    memcpy(d->hashes.sha1, chd->sha1, sizeof(d->hashes.sha1));
 	}
@@ -125,8 +115,7 @@ read_infos_from_chd(struct disk *d, int hashtypes)
 static int
 get_hashes(struct chd *chd, struct hashes *h)
 {
-    MD5_CTX md5;
-    SHA1_CTX sha1;
+    struct hashes_update *hu;
     unsigned int hunk, n;
     uint64_t len;
     unsigned char *buf;
@@ -134,10 +123,7 @@ get_hashes(struct chd *chd, struct hashes *h)
     /* XXX: support CRC? */
     h->types &= ~HASHES_TYPE_CRC;
 
-    if (h->types & HASHES_TYPE_MD5)
-	MD5Init(&md5);
-    if (h->types & HASHES_TYPE_SHA1)
-	SHA1Init(&sha1);
+    hu = hashes_update_new(h);
 
     buf = xmalloc(chd->hunk_len);
     len = chd->total_len;
@@ -152,18 +138,11 @@ get_hashes(struct chd *chd, struct hashes *h)
 	    return -1;
 	}
 
-	if (h->types & HASHES_TYPE_MD5)
-	    MD5Update(&md5, buf, n);
-	if (h->types & HASHES_TYPE_SHA1)
-	    SHA1Update(&sha1, buf, n);
+	hashes_update(hu, buf, n);
 	len -= n;
     }
     
-    if (h->types & HASHES_TYPE_MD5)
-	MD5Final(h->md5, &md5);
-    if (h->types & HASHES_TYPE_SHA1)
-	SHA1Final(h->sha1, &sha1);
-
+    hashes_update_final(hu);
     free(buf);
 
     return 0;
