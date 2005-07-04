@@ -1,3 +1,11 @@
+2005-07-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* configure.ac, src/Makefile.am, src/dbl.h: don't symlink database
+	backends, use directly.
+
+	* move sources to src subdirectory, move man pages to man
+	subdirectory.
+	
 2005-07-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* ckmame.c (main), db-db.c (ddb_open), db-gdbm.c (ddb_open),
