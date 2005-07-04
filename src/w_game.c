@@ -1,5 +1,5 @@
 /*
-  $NiH: w_game.c,v 1.21 2004/04/26 11:49:38 dillo Exp $
+  $NiH: w_game.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   w_game.c -- write game struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -112,10 +112,10 @@ static void
 w__hashes(DBT *v, const struct hashes *h)
 {
     w__ushort(v, h->types);
-    if (h->types & GOT_CRC)
+    if (h->types & HASHES_TYPE_CRC)
 	w__ulong(v, h->crc);
-    if (h->types & GOT_MD5)
+    if (h->types & HASHES_TYPE_MD5)
 	w__mem(v, h->md5, sizeof(h->md5));
-    if (h->types & GOT_SHA1)
+    if (h->types & HASHES_TYPE_SHA1)
 	w__mem(v, h->sha1, sizeof(h->sha1));
 }

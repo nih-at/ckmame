@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.24 2005/06/22 22:11:28 dillo Exp $
+  $NiH: r_game.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -110,12 +110,12 @@ static void
 r__hashes(DBT *v, struct hashes *h)
 {
     h->types = r__ushort(v);
-    if (h->types & GOT_CRC)
+    if (h->types & HASHES_TYPE_CRC)
 	h->crc = r__ulong(v);
     else
 	h->crc = 0;
-    if (h->types & GOT_MD5)
+    if (h->types & HASHES_TYPE_MD5)
 	r__mem(v, h->md5, sizeof(h->md5));
-    if (h->types & GOT_SHA1)
+    if (h->types & HASHES_TYPE_SHA1)
 	r__mem(v, h->sha1, sizeof(h->sha1));
 }

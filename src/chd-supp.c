@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.10 2005/06/12 22:32:36 wiz Exp $
+  $NiH: chd-supp.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -75,10 +75,10 @@ read_infos_from_chd(struct disk *d, int hashtypes)
     }
 
     if (hashtypes == 0) {
-	d->hashes.types |= GOT_MD5;
+	d->hashes.types |= HASHES_TYPE_MD5;
 	memcpy(d->hashes.md5, chd->md5, sizeof(d->hashes.md5));
 	if (chd->version >= 3) {
-	    d->hashes.types |= GOT_SHA1;
+	    d->hashes.types |= HASHES_TYPE_SHA1;
 	    memcpy(d->hashes.sha1, chd->sha1, sizeof(d->hashes.sha1));
 	}
     }
@@ -89,7 +89,7 @@ read_infos_from_chd(struct disk *d, int hashtypes)
 	    return -1;
 	}
 
-	if (hashtypes & GOT_MD5) {
+	if (hashtypes & HASHES_TYPE_MD5) {
 	    if (memcmp(d->hashes.md5, chd->md5, sizeof(d->hashes.md5)) != 0) {
 		fprintf(stderr, "%s: md5 mismatch in '%s'\n",
 		    prg, d->name);
@@ -101,7 +101,7 @@ read_infos_from_chd(struct disk *d, int hashtypes)
 	    memcpy(d->hashes.md5, chd->md5, sizeof(d->hashes.md5));
 
 	if (chd->version > 2) {
-	    if (hashtypes & GOT_SHA1) {
+	    if (hashtypes & HASHES_TYPE_SHA1) {
 		if (memcmp(d->hashes.sha1, chd->sha1,
 			   sizeof(d->hashes.sha1)) != 0) {
 		    fprintf(stderr, "%s: sha1 mismatch in '%s'\n",
@@ -132,11 +132,11 @@ get_hashes(struct chd *chd, struct hashes *h)
     unsigned char *buf;
 
     /* XXX: support CRC? */
-    h->types &= ~GOT_CRC;
+    h->types &= ~HASHES_TYPE_CRC;
 
-    if (h->types & GOT_MD5)
+    if (h->types & HASHES_TYPE_MD5)
 	MD5Init(&md5);
-    if (h->types & GOT_SHA1)
+    if (h->types & HASHES_TYPE_SHA1)
 	SHA1Init(&sha1);
 
     buf = xmalloc(chd->hunk_len);
@@ -152,16 +152,16 @@ get_hashes(struct chd *chd, struct hashes *h)
 	    return -1;
 	}
 
-	if (h->types & GOT_MD5)
+	if (h->types & HASHES_TYPE_MD5)
 	    MD5Update(&md5, buf, n);
-	if (h->types & GOT_SHA1)
+	if (h->types & HASHES_TYPE_SHA1)
 	    SHA1Update(&sha1, buf, n);
 	len -= n;
     }
     
-    if (h->types & GOT_MD5)
+    if (h->types & HASHES_TYPE_MD5)
 	MD5Final(h->md5, &md5);
-    if (h->types & GOT_SHA1)
+    if (h->types & HASHES_TYPE_SHA1)
 	SHA1Final(h->sha1, &sha1);
 
     free(buf);

@@ -1,8 +1,8 @@
 /*
-  $NiH: hashes.c,v 1.4 2005/06/22 22:11:28 dillo Exp $
+  $NiH: hashes.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   hashes.c -- utility functions for hash handling
-  Copyright (C) 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -37,21 +37,21 @@ int
 hashes_cmp(const struct hashes *h1, const struct hashes *h2)
 {
     if ((h1->types & h2->types) == 0)
-	return -1;
+	return HASHES_CMP_NOCOMMON;
 
-    if (h1->types & h2->types & GOT_CRC)
+    if (h1->types & h2->types & HASHES_TYPE_CRC)
 	if (h1->crc != h2->crc)
-	    return 1;
+	    return HASHES_CMP_MISMATCH;
 
-    if (h1->types & h2->types & GOT_MD5)
+    if (h1->types & h2->types & HASHES_TYPE_MD5)
 	if (memcmp(h1->md5, h2->md5, sizeof(h1->md5)) != 0)
-	    return 1;
+	    return HASHES_CMP_MISMATCH;
 
-    if (h1->types & h2->types & GOT_SHA1)
+    if (h1->types & h2->types & HASHES_TYPE_SHA1)
 	if (memcmp(h1->sha1, h2->sha1, sizeof(h1->sha1)) != 0)
-	    return 1;
+	    return HASHES_CMP_MISMATCH;
 
-    return 0;
+    return HASHES_CMP_MATCH;
 }
 
 

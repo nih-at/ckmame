@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.41 2005/07/01 01:35:56 dillo Exp $
+  $NiH: dumpgame.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -107,10 +107,10 @@ get_checksum(int type, char *checksumstr)
 
     newhash->types = type;
     switch(type) {
-    case GOT_CRC:
+    case HASHES_TYPE_CRC:
 	newhash->crc = strtoul(checksumstr, NULL, 16);
 	break;
-    case GOT_MD5:
+    case HASHES_TYPE_MD5:
 	if (hex2bin(newhash->md5, checksumstr,
 		    sizeof(newhash->md5)) != 0) {
 	    fprintf(stderr, "invalid argument for md5: %s\n",
@@ -119,7 +119,7 @@ get_checksum(int type, char *checksumstr)
 	    return NULL;
 	}
 	break;
-    case GOT_SHA1:
+    case HASHES_TYPE_SHA1:
 	if (hex2bin(newhash->sha1, checksumstr,
 		    sizeof(newhash->sha1)) != 0) {
 	    fprintf(stderr, "invalid argument for sha1: %s\n",
@@ -142,11 +142,11 @@ parse_type(char *typestr)
 {
     if (strcasecmp(typestr, "crc") == 0||
 	strcasecmp(typestr, "crc32") == 0)
-	return GOT_CRC;
+	return HASHES_TYPE_CRC;
     else if (strcasecmp(typestr, "md5") == 0)
-	return GOT_MD5;
+	return HASHES_TYPE_MD5;
     else if (strcasecmp(typestr, "sha1") == 0)
-	return GOT_SHA1;
+	return HASHES_TYPE_SHA1;
     else
 	return -1;
 }
@@ -159,7 +159,7 @@ print_checksums(struct hashes *hashes)
     int i;
     char *h;
 
-    for (i=1; i<=GOT_MAX; i<<=1) {
+    for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
 	if (hashes->types & i) {
 	    h = hash_to_string(i, hashes);
 	    printf(" %s %s", hash_type_string(i), h);
@@ -282,7 +282,7 @@ main(int argc, char **argv)
 	dbname = DDB_DEFAULT_DB_NAME;
 
     find_checksum = 0;
-    type = GOT_CRC;
+    type = HASHES_TYPE_CRC;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -589,7 +589,7 @@ print_hashtypes(int ht)
 
     first = 1;
 
-    DO(ht, GOT_CRC, "crc");
-    DO(ht, GOT_MD5, "md5");
-    DO(ht, GOT_SHA1, "sha1");
+    DO(ht, HASHES_TYPE_CRC, "crc");
+    DO(ht, HASHES_TYPE_MD5, "md5");
+    DO(ht, HASHES_TYPE_SHA1, "sha1");
 }

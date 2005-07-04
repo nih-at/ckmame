@@ -2,10 +2,10 @@
 #define HAD_HASHES_H
 
 /*
-  $NiH: hashes.h,v 1.1 2005/06/20 16:16:04 wiz Exp $
+  $NiH: hashes.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   hashes.h -- hash related functions
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -26,10 +26,28 @@
 
 
 
-#include "types.h"
+#define HASHES_SIZE_MD5		16
+#define HASHES_SIZE_SHA1	20
 
+#define HASHES_TYPE_CRC		1
+#define HASHES_TYPE_MD5		2
+#define HASHES_TYPE_SHA1	4
+#define HASHES_TYPE_MAX		HASHES_TYPE_SHA1
+
+#define HASHES_CMP_NOCOMMON	-1
+#define HASHES_CMP_MATCH	0
+#define HASHES_CMP_MISMATCH	1
+
+struct hashes {
+    int types;
+    unsigned long crc;
+    unsigned char md5[HASHES_SIZE_MD5];
+    unsigned char sha1[HASHES_SIZE_SHA1];
+};
+
+int hashes_cmp(const struct hashes *, const struct hashes *);
+void hashes_init(struct hashes *);
 char *hash_to_string(int, const struct hashes *);
 const char *hash_type_string(int);
 
 #endif /* hashes.h */
-

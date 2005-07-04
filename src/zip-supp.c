@@ -1,5 +1,5 @@
 /*
-  $NiH: zip-supp.c,v 1.34 2005/06/13 00:32:19 wiz Exp $
+  $NiH: zip-supp.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   zip-supp.c -- support code for zip files
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -84,7 +84,7 @@ findcrc(struct zfile *zip, int idx, int romsize, const struct hashes *h)
 	    return -1;
 	}
 	
-	if (hashes_cmp(h, &hn) == 0) {
+	if (hashes_cmp(h, &hn) == HASHES_CMP_MATCH) {
 	    found = 1;
 	    break;
 	}
@@ -192,7 +192,7 @@ read_infos_from_zip(struct zfile *z, int hashtypes)
 
 	hashes_init(&z->rom[count].hashes);
 	if (hashtypes == 0) {
-	    z->rom[count].hashes.types = GOT_CRC;
+	    z->rom[count].hashes.types = HASHES_TYPE_CRC;
 	    z->rom[count].hashes.crc = zsb.crc;
 	}
 	else {
@@ -204,7 +204,7 @@ read_infos_from_zip(struct zfile *z, int hashtypes)
 	    z->rom[count].hashes.types = hashtypes;
 	    get_hashes(zf, zsb.size, &z->rom[count].hashes);
 	    zip_fclose(zf);
-	    if (hashtypes & GOT_CRC) {
+	    if (hashtypes & HASHES_TYPE_CRC) {
 		if (z->rom[count].hashes.crc != zsb.crc) {
 		    fprintf(stderr,
 			    "%s: CRC error at index %d in `%s': %x != %lx\n",
@@ -214,7 +214,7 @@ read_infos_from_zip(struct zfile *z, int hashtypes)
 		}
 	    }
 	    else {
-		z->rom[count].hashes.types |= GOT_CRC;
+		z->rom[count].hashes.types |= HASHES_TYPE_CRC;
 		z->rom[count].hashes.crc = zsb.crc;
 	    }
 	}
@@ -237,11 +237,11 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
     unsigned char buf[BUFSIZE];
     int n;
 
-    if (h->types & GOT_CRC)
+    if (h->types & HASHES_TYPE_CRC)
 	crc = crc32(0, NULL, 0);
-    if (h->types & GOT_MD5)
+    if (h->types & HASHES_TYPE_MD5)
 	MD5Init(&md5);
-    if (h->types & GOT_SHA1)
+    if (h->types & HASHES_TYPE_SHA1)
 	SHA1Init(&sha1);
 
     while (len > 0) {
@@ -250,20 +250,20 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 	if (zip_fread(zf, buf, n) != n)
 	    return -1;
 
-	if (h->types & GOT_CRC)
+	if (h->types & HASHES_TYPE_CRC)
 	    crc = crc32(crc, (Bytef *)buf, n);
-	if (h->types & GOT_MD5)
+	if (h->types & HASHES_TYPE_MD5)
 	    MD5Update(&md5, buf, n);
-	if (h->types & GOT_SHA1)
+	if (h->types & HASHES_TYPE_SHA1)
 	    SHA1Update(&sha1, buf, n);
 	len -= n;
     }
 
-    if (h->types & GOT_CRC)
+    if (h->types & HASHES_TYPE_CRC)
 	h->crc = crc;
-    if (h->types & GOT_MD5)
+    if (h->types & HASHES_TYPE_MD5)
 	MD5Final(h->md5, &md5);
-    if (h->types & GOT_SHA1)
+    if (h->types & HASHES_TYPE_SHA1)
 	SHA1Final(h->sha1, &sha1);
 
     return 0;

@@ -1,5 +1,10 @@
 2005-07-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* src/hashes.h: move declarations and type definitions related to
+	struct hashes here.  rename GOT_ to HASHES_TYPE_.
+	* src/hashes.c (hashes_cmp): use symbolic constants as return
+	values.
+
 	* configure.ac, src/Makefile.am, src/dbl.h: don't symlink database
 	backends, use directly.
 

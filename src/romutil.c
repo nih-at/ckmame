@@ -1,5 +1,5 @@
 /*
-  $NiH: romutil.c,v 1.20 2004/04/26 11:49:38 dillo Exp $
+  $NiH: romutil.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   romutil.c -- miscellaneous utility functions for rom handling
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -57,7 +57,7 @@ romcmp(const struct rom *r1, const struct rom *r2, int merge)
 	    return ROM_OK;
 	if (r1->size == r2->size) {
 	    if (r1->flags == FLAGS_NODUMP || r2->flags == FLAGS_NODUMP
-		|| hashes_cmp(&r1->hashes, &r2->hashes) == 0)
+		|| hashes_cmp(&r1->hashes, &r2->hashes) == HASHES_CMP_MATCH)
 		return ROM_OK;
 	    else if ((((r1->hashes.crc ^ r2->hashes.crc) & 0xffffffff) == 0xffffffff)
 		     || r1->flags == FLAGS_BADDUMP || r2->flags == FLAGS_BADDUMP)
@@ -71,7 +71,7 @@ romcmp(const struct rom *r1, const struct rom *r2, int merge)
 	    return ROM_SHORT;
     }
     else if (r1->size == r2->size && r2->size != 0
-	     && hashes_cmp(&r1->hashes, &r2->hashes) == 0)
+	     && hashes_cmp(&r1->hashes, &r2->hashes) == HASHES_CMP_MATCH)
 	return ROM_NAMERR;
     else
 	return ROM_UNKNOWN;

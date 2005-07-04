@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.27 2005/06/26 19:33:15 dillo Exp $
+  $NiH: types.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,7 +26,9 @@
 
 
 
-#include "zip.h"
+#include <zip.h>
+
+#include "hashes.h"
 
 #define WARN_CORRECT		0x1000
 
@@ -55,11 +57,6 @@
 
 
 
-/* what information is available */
-#define GOT_CRC		1
-#define GOT_MD5		2
-#define GOT_SHA1	4
-#define GOT_MAX		GOT_SHA1
 
 enum flags {
     FLAGS_OK, FLAGS_BADDUMP, FLAGS_NODUMP
@@ -77,13 +74,6 @@ enum state {
 
 enum filetype {
     TYPE_ROM, TYPE_SAMPLE, TYPE_DISK
-};
-
-struct hashes {
-    int types;
-    unsigned long crc;
-    unsigned char md5[16];
-    unsigned char sha1[20];
 };
 
 struct rom {

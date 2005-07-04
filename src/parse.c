@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.11 2005/07/01 01:35:56 dillo Exp $
+  $NiH: parse.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -275,8 +275,8 @@ parse_disk_md5(const char *attr)
 	parse_errstr = "invalid argument for md5";
 	return -1;
     }
-    d[nd].hashes.types |= GOT_MD5;
-    w_diskhashtypes |= GOT_MD5;
+    d[nd].hashes.types |= HASHES_TYPE_MD5;
+    w_diskhashtypes |= HASHES_TYPE_MD5;
 
     return 0;
 }
@@ -308,8 +308,8 @@ parse_disk_sha1(const char *attr)
 	parse_errstr = "invalid argument for sha1";
 	return -1;
     }
-    d[nd].hashes.types |= GOT_SHA1;
-    w_diskhashtypes |= GOT_SHA1;
+    d[nd].hashes.types |= HASHES_TYPE_SHA1;
+    w_diskhashtypes |= HASHES_TYPE_SHA1;
 
     return 0;
 }
@@ -513,8 +513,8 @@ parse_rom_crc(const char *attr)
     CHECK_STATE(IN_ROM);
 
     r[nr].hashes.crc = strtoul(attr, NULL, 16);
-    r[nr].hashes.types |= GOT_CRC;
-    w_romhashtypes |= GOT_CRC;
+    r[nr].hashes.types |= HASHES_TYPE_CRC;
+    w_romhashtypes |= HASHES_TYPE_CRC;
 
     return 0;
 }
@@ -530,8 +530,8 @@ parse_rom_end(void)
     CHECK_STATE(IN_ROM);
 
     /* CRC == 0 was old way of indicating no-good-dumps */
-    if ((r[nr].hashes.types & GOT_CRC) && r[nr].hashes.crc == 0) {
-	r[nr].hashes.types &= ~GOT_CRC;
+    if ((r[nr].hashes.types & HASHES_TYPE_CRC) && r[nr].hashes.crc == 0) {
+	r[nr].hashes.types &= ~HASHES_TYPE_CRC;
 	r[nr].flags = FLAGS_NODUMP;
     }
     
@@ -595,8 +595,8 @@ parse_rom_md5(const char *attr)
 	parse_errstr = "invalid argument for md5";
 	return -1;
     }
-    r[nr].hashes.types |= GOT_MD5;
-    w_romhashtypes |= GOT_MD5;
+    r[nr].hashes.types |= HASHES_TYPE_MD5;
+    w_romhashtypes |= HASHES_TYPE_MD5;
 
     return 0;
 }
@@ -638,8 +638,8 @@ parse_rom_sha1(const char *attr)
 	parse_errstr = "invalid argument for sha1";
 	return -1;
     }
-    r[nr].hashes.types |= GOT_SHA1;
-    w_romhashtypes |= GOT_SHA1;
+    r[nr].hashes.types |= HASHES_TYPE_SHA1;
+    w_romhashtypes |= HASHES_TYPE_SHA1;
 
     return 0;
 }
@@ -858,7 +858,7 @@ enter_file_hash(enum filetype filetype, int index, const struct hashes *hashes)
 
     memcpy(&hash, hashes, sizeof(hash));
     
-    for (type=1; type<=GOT_MAX; type<<=1) {
+    for (type=1; type<=HASHES_TYPE_MAX; type<<=1) {
 	if ((hashes->types & type) == 0)
 	    continue;
 

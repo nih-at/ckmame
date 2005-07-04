@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.39 2005/06/20 16:16:04 wiz Exp $
+  $NiH: match.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -393,7 +393,7 @@ warn_rom(struct rom *r, char *fmt, ...)
 	printf("rom  %-12s  ", r->name);
 	if (r->size) {
 	    /* XXX */
-	    if (r->hashes.types & GOT_CRC) {
+	    if (r->hashes.types & HASHES_TYPE_CRC) {
 		if (r->flags == FLAGS_OK)
 		    sprintf(buf, "size %7ld  crc %.8lx: ", r->size, r->hashes.crc);
 		else if (r->flags == FLAGS_BADDUMP)
@@ -471,13 +471,13 @@ warn_disk(struct disk *d, char *fmt, ...)
     }
 
     printf("disk %-12s  ", d->name);
-    if (d->hashes.types & GOT_SHA1) {
-	h = hash_to_string(GOT_SHA1, &d->hashes);
+    if (d->hashes.types & HASHES_TYPE_SHA1) {
+	h = hash_to_string(HASHES_TYPE_SHA1, &d->hashes);
 	printf("sha1 %s: ", h);
 	free(h);
     }
-    else if (d->hashes.types & GOT_MD5) {
-	h = hash_to_string(GOT_MD5, &d->hashes);
+    else if (d->hashes.types & HASHES_TYPE_MD5) {
+	h = hash_to_string(HASHES_TYPE_MD5, &d->hashes);
 	printf("md5 %s         : ", h);
 	free(h);
     }
@@ -538,13 +538,13 @@ check_disks(struct game *game)
 	}
 
 	switch (hashes_cmp(&game->disk[i].hashes, &m[i].d.hashes)) {
-	case -1:
+	case HASHES_CMP_NOCOMMON:
 	    m[i].quality = ROM_NOCRC;
 	    break;
-	case 0:
+	case HASHES_CMP_MATCH:
 	    m[i].quality = ROM_OK;
 	    break;
-	case 1:
+	case HASHES_CMP_MISMATCH:
 	    m[i].quality = ROM_CRCERR;
 	    break;
 	}
