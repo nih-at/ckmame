@@ -1,10 +1,11 @@
 EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS} ${CHDS}
 
-CLEANFILES=mamedb
+CLEANFILES=${MAME_DB}
 
+MAME_DB=mame.db
 ZIPCMP=@ZIPCMP@
 
-TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}"
+TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
 
 TESTCASES=	baddump.test \
 		disk-mis.test \
@@ -44,7 +45,7 @@ ZIPS=		1-4-dup.zip \
 CHDS=		108-5.chd \
 		12-1.chd
 
-check: mamedb
+check: ${MAME_DB}
 	@failed=0; all=0; \
 	srcdir=$(srcdir); export srcdir; \
 	for tst in ${TESTCASES}; do \
@@ -69,5 +70,5 @@ check: mamedb
 	echo "$$dashes"; \
 	test "$$failed" -eq 0
 
-mamedb: ../src/mkmamedb ${srcdir}/mamedb.txt
-	../src/mkmamedb -o mamedb ${srcdir}/mamedb.txt
+${MAME_DB}: ../src/mkmamedb ${srcdir}/mamedb.txt
+	../src/mkmamedb ${srcdir}/mamedb.txt

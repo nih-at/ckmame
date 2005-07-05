@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.14 2005/06/17 12:15:45 dillo Exp $
+#  $NiH: runtest,v 1.15 2005/07/04 21:54:50 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -204,6 +204,12 @@ else
 	ZIPCMP="../${ZIPCMP}"
     fi
 fi
+
+if [ -z "${MAME_DB}" ]
+then
+    MAME_DB='mame.db'
+fi
+
 if [ -z "${VERBOSE}" ]
 then
     ZIPCMP_FLAGS='-q'
@@ -234,7 +240,7 @@ do
     RET="$arg";;
   args)
     test_empty "${ARGS}" args
-    ARGS="-D mamedb $arg";;
+    ARGS="-D ${MAME_DB} $arg";;
   rom)
     set $arg
     # XXX: check that $1 exists
@@ -267,7 +273,7 @@ done
 test_set "${RET}" return
 test_set "${ARGS}" args
 
-cp ../mamedb .
+cp ../"${MAME_DB}" .
 
 if [ ! -z "${VERBOSE}" ]
 then
@@ -285,7 +291,7 @@ then
     fail "unexpected exit status: got $ret, expected ${RET}"
 fi
 
-FILES_SHOULD="${FILES_SHOULD} gotout goterr mamedb"
+FILES_SHOULD="${FILES_SHOULD} gotout goterr ${MAME_DB}"
 
 if [ -f stdout ]
 then
