@@ -1,7 +1,7 @@
 /*
-  $NiH$
+  $NiH: hashes_update.c,v 1.1 2005/07/04 23:51:32 dillo Exp $
 
-  hashes_update.c -- hash related functions
+  hashes_update.c -- compute hashes
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
