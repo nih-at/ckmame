@@ -20,7 +20,6 @@ libckmame_a_SOURCES= \
 	hash_to_string.c \
 	hashes.c \
 	hashes_update.c \
-	malloc.c \
 	marry.c \
 	match.c \
 	parse-cm.c \
@@ -42,6 +41,7 @@ libckmame_a_SOURCES= \
 	w_list.c \
 	w_prog.c \
 	w_util.c \
+	xmalloc.c \
 	zip-supp.c
 
 noinst_HEADERS=\

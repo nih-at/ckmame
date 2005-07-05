@@ -1,5 +1,7 @@
 2005-07-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* src/malloc.c: rename to xmalloc.c
+
 	* src/chd-supp.c (get_hashes), src/zip-supp.c (get_hashes): use
 	hashes_update.
 	* src/hashes_update.c (hashes_update, hashes_update_final,
