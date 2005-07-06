@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: match.c,v 1.2 2005/07/04 22:41:36 dillo Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -29,12 +29,14 @@
 #include <string.h>
 
 #include "types.h"
+#include "chd-supp.h"
 #include "dbl.h"
 #include "error.h"
 #include "util.h"
 #include "romutil.h"
 #include "xmalloc.h"
 #include "hashes.h"
+#include "warn.h"
 
 extern char *prg;
 

@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.42 2005/07/01 01:35:56 dillo Exp $
+  $NiH: ckmame.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -41,6 +41,7 @@
 #include "util.h"
 #include "funcs.h"
 #include "error.h"
+#include "warn.h"
 
 
 

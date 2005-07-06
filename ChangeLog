@@ -1,3 +1,11 @@
+2005-07-06  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
+
+	* src/types.h: move read_infos_from_chd prototype to...
+	* src/chd-supp.h: new file.
+
+	* src/types.h: move warning related defines to...
+	* src/warn.h: new file.
+
 2005-07-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* src/malloc.c: rename to xmalloc.c

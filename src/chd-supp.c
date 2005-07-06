@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.2 2005/07/04 22:41:35 dillo Exp $
+  $NiH: chd-supp.c,v 1.3 2005/07/04 23:51:32 dillo Exp $
 
   chd-supp.c -- support code for chd files
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -33,6 +33,7 @@
 #include "types.h"
 #include "romutil.h"
 #include "chd.h"
+#include "chd-supp.h"
 #include "xmalloc.h"
 
 extern char *prg;
