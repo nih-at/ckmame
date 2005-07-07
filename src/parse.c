@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: parse.c,v 1.2 2005/07/04 22:41:36 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -27,18 +27,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "error.h"
-#include "types.h"
-#include "xmalloc.h"
-#include "romutil.h"
-#include "util.h"
 #include "dbh.h"
+#include "error.h"
+#include "file_by_hash.h"
 #include "funcs.h"
-#include "r.h"
+#include "map.h"
 #include "parse.h"
+#include "r.h"
+#include "romutil.h"
+#include "types.h"
+#include "util.h"
+#include "xmalloc.h"
 
 static DB *db;
-static DB *db_fbh;
+static map_t *map_rom;
+static map_t *map_disk;
 static struct game *g;
 static char *file_prog_name, *file_prog_version;
 /* XXX: every game is only allowed 1000 roms */
@@ -84,11 +87,8 @@ static int add_sample_list(const char *);
 static void familymeeting(DB *, struct game *, struct game *);
 static int game_add(DB *, struct game *);
 static int lost(struct game *);
-static void enter_file_hash(enum filetype, int, const struct hashes *);
-static void file_by_hash_add(struct file_by_hash *, const char *, int);
-static struct file_by_hash *r_file_by_hash_incore(DB *, enum filetype, const struct hashes *);
-static int w_file_by_hash_incore(DB *, struct file_by_hash *);
-static int file_by_hash_copy_incore(const DBT *, const DBT *, void *);
+static void enter_file_hash(map_t *, filetype_t, int, const hashes_t *);
+static int file_by_hash_copy(const hashes_t *, parray_t *, void *);
 
 
 
@@ -100,12 +100,20 @@ parse(DB *mydb, const char *fname,
     int stillost, c;
     int i;
     struct game *parent;
+    filetype_t ft;
 
     sgames = ngames = 0;
 
     db = mydb;
-    if ((db_fbh=ddb_open(NULL, DDB_READ|DDB_WRITE)) == NULL) {
-	myerror(ERRDEF, "can't create in-core database: %s", ddb_error());
+
+    if ((map_rom=map_new()) == NULL) {
+	/* XXX */
+	myerror(ERRDEF, "can't create hash table: %s", ddb_error());
+	return -1;
+    }
+    if ((map_disk=map_new()) == NULL) {
+	/* XXX */
+	myerror(ERRDEF, "can't create hash table: %s", ddb_error());
 	return -1;
     }
 
@@ -116,7 +124,8 @@ parse(DB *mydb, const char *fname,
     else {
 	if ((fin=fopen(fname, "r")) == NULL) {
 	    myerror(ERRSTR, "can't open romlist file `%s'", fname);
-	    ddb_close(db_fbh);
+	    map_free(map_rom, NULL);
+	    map_free(map_disk, NULL);
 	    return -1;
 	}
 	seterrinfo(fname, NULL);
@@ -155,14 +164,14 @@ parse(DB *mydb, const char *fname,
 	    if ((g=r_game(db, lostchildren[i]))==NULL) {
 		myerror(ERRDEF, "internal database error: "
 			"child not in database");
-		ddb_close(db_fbh);
+		/* XXX: fix inconsistency, don't abort */
 		return 1;
 	    }
 	    if (lostchildren_to_do[i] & 1) {
 		if ((parent=r_game(db, g->cloneof[0]))==NULL) {
 		    myerror(ERRDEF, "input database not consistent: "
 			    "parent %s not found", g->cloneof[0]);
-		    ddb_close(db_fbh);
+		    /* XXX: fix inconsistency, don't abort */
 		    return 1;
 		}
 		if (lost(parent)) {
@@ -188,7 +197,7 @@ parse(DB *mydb, const char *fname,
 		if ((parent=r_game(db, g->cloneof[0]))==NULL) {
 		    myerror(ERRDEF, "input database not consistent: "
 			    "parent %s not found", g->cloneof[0]);
-		    ddb_close(db_fbh);
+		    /* XXX: fix inconsistency, don't abort */
 		    return 1;
 		}
 		game_swap_rs(parent);
@@ -241,9 +250,13 @@ parse(DB *mydb, const char *fname,
     free(file_prog_name);
     free(file_prog_version);
 
-    ddb_foreach(db_fbh, file_by_hash_copy_incore, db);
+    ft = TYPE_ROM;
+    map_foreach(map_rom, file_by_hash_copy, &ft);
+    ft = TYPE_DISK;
+    map_foreach(map_disk, file_by_hash_copy, &ft);
 
-    ddb_close(db_fbh);
+    map_free(map_rom, MAP_FREE_FN(file_by_hash_entry_free));
+    map_free(map_disk, MAP_FREE_FN(file_by_hash_entry_free));
     
     return 0;
 }
@@ -255,7 +268,7 @@ parse_disk_end(void)
 {
     CHECK_STATE(IN_DISK);
     
-    enter_file_hash(TYPE_DISK, nd, &d[nd].hashes);
+    enter_file_hash(map_disk, TYPE_DISK, nd, &d[nd].hashes);
     nd++;
 
     state = OUTSIDE;
@@ -559,7 +572,7 @@ parse_rom_end(void)
 	free(r[nr].name);
     }
     else {
-	enter_file_hash(TYPE_ROM, nr, &r[nr].hashes);
+	enter_file_hash(map_rom, TYPE_ROM, nr, &r[nr].hashes);
 	nr++;
     }
 
@@ -850,100 +863,28 @@ lost(struct game *a)
 
 
 static void
-enter_file_hash(enum filetype filetype, int index, const struct hashes *hashes)
+enter_file_hash(map_t *map, filetype_t filetype,
+		int index, const hashes_t *hashes)
 {
-    struct file_by_hash *fbh;
-    struct hashes hash;
     int type;
 
-    memcpy(&hash, hashes, sizeof(hash));
-    
-    for (type=1; type<=HASHES_TYPE_MAX; type<<=1) {
-	if ((hashes->types & type) == 0)
-	    continue;
+    type = file_by_hash_default_hashtype(filetype);
 
-	hash.types = type;
-	if ((fbh=r_file_by_hash_incore(db_fbh, filetype, &hash)) == NULL) {
-	    fbh = file_by_hash_new(filetype, &hash);
-	    if (w_file_by_hash_incore(db_fbh, fbh) != 0) {
-		myerror(ERRSTR, "can't write file hash to incore db");
-	    }
+    if (hashes_has_type(hashes, type)) {
+	if (map_add(map, type, hashes,
+		    file_by_hash_entry_new(g->name, index)) < 0) {
+	    /* XXX: error */
 	}
-
-	file_by_hash_add(fbh, g->name, index);
     }
-}
-
-
-
-static struct file_by_hash *
-r_file_by_hash_incore(DB *db, enum filetype ft, const struct hashes *hash)
-{
-    DBT k, v;
-    char *key;
-
-    key = file_by_hash_make_key(ft, hash);
-    k.size = strlen(key);
-    k.data = key;
-
-    if (ddb_lookup_l(db, &k, &v) != 0) {
-	free(key);
-	return NULL;
+    else {
+	/* XXX: handle non-existent */
     }
-    free(key);
-
-    return *((struct file_by_hash **)v.data);
 }
 
 
 
 static int
-w_file_by_hash_incore(DB *db, struct file_by_hash *fbh)
+file_by_hash_copy(const hashes_t *key, parray_t *pa, void *ud)
 {
-    DBT k, v;
-    char *key;
-    int err;
-
-    key = file_by_hash_make_key(fbh->filetype, &fbh->hash);
-    k.size = strlen(key);
-    k.data = key;
-
-    v.size = sizeof(fbh);
-    v.data = &fbh;
-
-    err = ddb_insert_l(db, &k, &v);
-
-    free(key);
-
-    return err;
-}
-
-
-
-static void
-file_by_hash_add(struct file_by_hash *fbh, const char *game, int index)
-{
-    if (fbh->nentry >= fbh->nalloced) {
-	if (fbh->nalloced == 0)
-	    fbh->nalloced = 1;
-	else
-	    fbh->nalloced *= 2;
-	fbh->entry = xrealloc(fbh->entry, sizeof(fbh->entry[0])*fbh->nalloced);
-    }
-
-    fbh->entry[fbh->nentry].game = xstrdup(game);
-    fbh->entry[fbh->nentry].index = index;
-    fbh->nentry++;
-}
-
-
-
-static int
-file_by_hash_copy_incore(const DBT *key, const DBT *value, void *ud)
-{
-    DB *db;
-
-    db = (DB *)ud;
-
-    return w_file_by_hash(db, *((struct file_by_hash **)value->data));
+    return w_file_by_hash_parray(db, *(filetype_t *)ud, key, pa);
 }

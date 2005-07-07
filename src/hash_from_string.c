@@ -1,11 +1,8 @@
-#ifndef _HAD_W_H
-#define _HAD_W_H
-
 /*
-  $NiH: w.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH$
 
-  w.h -- data base write functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  hash_from_string.c -- convert string to hashes_t
+  Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -24,21 +21,43 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <errno.h>
+#include <limits.h>
+#include <stdlib.h>
+
+#include "hashes.h"
+
 
 
-#include "parray.h"
+int
+hash_from_string(hashes_t *h, const char *str)
+{
+    int l;
 
-void w__array(DBT *, void (*)(DBT *, const void *),
-	      const void *, size_t, size_t);
-void w__disk(DBT *, const void *);
-void w__grow(DBT *, int);
-void w__mem(DBT *, const void *, unsigned int);
-void w__parray(DBT *, void (*)(DBT *, const void *), parray_t *);
-void w__pstring(DBT *, const void *);
-void w__rom(DBT *, const void *);
-void w__string(DBT *, const char *);
-void w__ushort(DBT *, unsigned short);
-void w__ulong(DBT *, unsigned long);
-int w_version(DB *);
+    l = strlen(str);
+    
+    if (strspn(str, "0123456789ABCDEFabcdef") != l)
+	return -1;
 
-#endif /* w.h */
+    switch(strlen(str)) {
+    case HASHES_SIZE_CRC * 2:
+	h->types = HASHES_TYPE_CRC;
+	h->crc = strtoul(str, NULL, 16);
+	break;
+
+    case HASHES_SIZE_MD5 * 2:
+	h->types = HASHES_TYPE_MD5;
+	hex2bin(h->md5, str, HASHES_SIZE_MD5);
+	break;
+
+    case HASHES_SIZE_SHA1 * 2:
+	h->types = HASHES_TYPE_SHA1;
+	hex2bin(h->sha1, str, HASHES_SIZE_SHA1);
+	break;
+
+    default:
+	return -1;
+    }
+
+    return 0;
+}

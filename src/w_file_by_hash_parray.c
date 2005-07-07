@@ -1,5 +1,5 @@
 /*
-  $NiH: w_file_by_hash.c,v 1.1 2005/06/20 16:16:04 wiz Exp $
+  $NiH: w_file_by_hash.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   w_file_by_hash.c -- write file_by_hash struct to db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -26,46 +26,40 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
 #include "dbh.h"
 #include "error.h"
-#include "util.h"
-#include "xmalloc.h"
-#include "w.h"
+#include "parray.h"
 #include "romutil.h"
+#include "types.h"
+#include "util.h"
+#include "w.h"
+#include "xmalloc.h"
 
-static int fbh_entry_compare(const void *, const void *);
+static int file_by_hash_entry_cmp(const void *, const void *);
 static void w__file_by_hash_entry(DBT *, const void *);
 
 
 
 int
-w_file_by_hash(DB *db, const struct file_by_hash *fbh)
+w_file_by_hash_parray(DB *db, filetype_t ft, const hashes_t *h, parray_t *pa)
 {
     int err;
     DBT v;
-    char *key;
 
     v.data = NULL;
     v.size = 0;
 
-    if (fbh->nentry == 0) {
+    if (parray_length(pa) == 0) {
 	myerror(ERRDEF, "internal error: empty file_by_hash structure");
 	return -1;
     }
+    parray_sort(pa, file_by_hash_entry_cmp);
 
-    qsort(fbh->entry, fbh->nentry, sizeof(fbh->entry[0]),
-	  fbh_entry_compare);
+    w__parray(&v, w__file_by_hash_entry, pa);
 
-    w__array(&v, w__file_by_hash_entry, fbh->entry,
-	     sizeof(fbh->entry[0]), fbh->nentry);
-
-    key = file_by_hash_make_key(fbh->filetype, &fbh->hash);
-
-    err = ddb_insert(db, key, &v);
+    err = ddb_insert(db, file_by_hash_make_key(ft, h), &v);
 
     free(v.data);
-    free(key);
 
     return err;
 }
@@ -75,19 +69,19 @@ w_file_by_hash(DB *db, const struct file_by_hash *fbh)
 static void
 w__file_by_hash_entry(DBT *v, const void *vr)
 {
-    const struct file_by_hash_entry *e;
+    const file_by_hash_entry_t *fbh;
 
-    e = (const struct file_by_hash_entry *)vr;
+    fbh = (const file_by_hash_entry_t *)vr;
 
-    w__string(v, e->game);
-    w__ushort(v, e->index);
+    w__string(v, fbh->game);
+    w__ushort(v, fbh->index);
 }
 
 
 
 static int
-fbh_entry_compare(const void *a, const void *b)
+file_by_hash_entry_cmp(const void *a, const void *b)
 {
-    return strcasecmp(((const struct file_by_hash_entry *)a)->game,
-		      ((const struct file_by_hash_entry *)b)->game);
+    return strcasecmp(((const file_by_hash_entry_t *)a)->game,
+		      ((const file_by_hash_entry_t *)b)->game);
 }

@@ -2,7 +2,7 @@
 #define HAD_HASHES_H
 
 /*
-  $NiH: hashes.h,v 1.2 2005/07/04 22:41:36 dillo Exp $
+  $NiH: hashes.h,v 1.3 2005/07/04 23:51:32 dillo Exp $
 
   hashes.h -- hash related functions
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -26,8 +26,12 @@
 
 
 
+#include <sys/types.h>
+
+#define HASHES_SIZE_CRC		4
 #define HASHES_SIZE_MD5		16
 #define HASHES_SIZE_SHA1	20
+#define HASHES_SIZE_MAX		HASHES_SIZE_SHA1
 
 #define HASHES_TYPE_CRC		1
 #define HASHES_TYPE_MD5		2
@@ -45,16 +49,21 @@ struct hashes {
     unsigned char sha1[HASHES_SIZE_SHA1];
 };
 
-struct hashes_update;
+typedef struct hashes hashes_t;
+
+typedef struct hashes_update hashes_update_t;
+
+#define hashes_has_type(h, t)	((h)->types & (t))
 
 
 
-int hashes_cmp(const struct hashes *, const struct hashes *);
-void hashes_init(struct hashes *);
-void hashes_update(struct hashes_update *, const unsigned char *, size_t);
-void hashes_update_final(struct hashes_update *);
-struct hashes_update *hashes_update_new(struct hashes *);
-char *hash_to_string(int, const struct hashes *);
+int hashes_cmp(const hashes_t *, const hashes_t *);
+void hashes_init(hashes_t *);
+void hashes_update(hashes_update_t *, const unsigned char *, size_t);
+void hashes_update_final(hashes_update_t *);
+struct hashes_update *hashes_update_new(hashes_t *);
+int hash_from_string(hashes_t *, const char *);
+const char *hash_to_string(char *, int, const hashes_t *);
 const char *hash_type_string(int);
 
 #endif /* hashes.h */

@@ -1,11 +1,11 @@
-#ifndef _HAD_W_H
-#define _HAD_W_H
+#ifndef _HAD_PARRAY_H
+#define _HAD_PARRAY_H
 
 /*
-  $NiH: w.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH$
 
-  w.h -- data base write functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  parray.h -- array of pointers
+  Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -26,19 +26,26 @@
 
 
 
-#include "parray.h"
+struct parray {
+    void **entry;
+    int nentry;
+    int alloc_len;
+};
 
-void w__array(DBT *, void (*)(DBT *, const void *),
-	      const void *, size_t, size_t);
-void w__disk(DBT *, const void *);
-void w__grow(DBT *, int);
-void w__mem(DBT *, const void *, unsigned int);
-void w__parray(DBT *, void (*)(DBT *, const void *), parray_t *);
-void w__pstring(DBT *, const void *);
-void w__rom(DBT *, const void *);
-void w__string(DBT *, const char *);
-void w__ushort(DBT *, unsigned short);
-void w__ulong(DBT *, unsigned long);
-int w_version(DB *);
+typedef struct parray parray_t;
 
-#endif /* w.h */
+
+
+#define parray_get(a, i)	((a)->entry[i])
+#define parray_length(a)	((a)->nentry)
+#define parray_bsearch(pa, key, cmp)	\
+	(bsearch((key), (pa)->entry, parray_length(pa), sizeof(void *), (cmp)))
+
+void parray_delete(parray_t *, int, void (*)(void *));
+void parray_free(parray_t *, void (*)(void *));
+parray_t *parray_new(void);
+parray_t *parray_new_from_data(void **, int);
+void parray_push(parray_t *, void *);
+void parray_sort(parray_t *, int (*)(const void *, const void *));
+
+#endif /* parray.h */

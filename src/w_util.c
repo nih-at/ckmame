@@ -1,5 +1,5 @@
 /*
-  $NiH: w_util.c,v 1.22 2005/06/20 16:16:04 wiz Exp $
+  $NiH: w_util.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   w_util.c -- data base write utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -95,6 +95,19 @@ w__string(DBT *v, const char *s)
     if (s)
 	memcpy(((unsigned char *)v->data)+v->size, s, len);
     v->size += len;
+}
+
+
+
+void
+w__parray(DBT *v, void (*fn)(DBT *, const void *), parray_t *pa)
+{
+    unsigned int i;
+    
+    w__ulong(v, parray_length(pa));
+
+    for (i=0; i<parray_length(pa); i++)
+	fn(v, parray_get(pa, i));
 }
 
 

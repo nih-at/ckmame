@@ -1,11 +1,11 @@
-#ifndef _HAD_W_H
-#define _HAD_W_H
+#ifndef _HAD_MAP_H
+#define _HAD_MAP_H
 
 /*
-  $NiH: w.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH$
 
-  w.h -- data base write functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  map.h -- hash table
+  Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -26,19 +26,21 @@
 
 
 
+#include "dbl.h"
+#include "hashes.h"
 #include "parray.h"
 
-void w__array(DBT *, void (*)(DBT *, const void *),
-	      const void *, size_t, size_t);
-void w__disk(DBT *, const void *);
-void w__grow(DBT *, int);
-void w__mem(DBT *, const void *, unsigned int);
-void w__parray(DBT *, void (*)(DBT *, const void *), parray_t *);
-void w__pstring(DBT *, const void *);
-void w__rom(DBT *, const void *);
-void w__string(DBT *, const char *);
-void w__ushort(DBT *, unsigned short);
-void w__ulong(DBT *, unsigned long);
-int w_version(DB *);
+typedef DB map_t;
 
-#endif /* w.h */
+#define MAP_FREE_FN(fn)	((void (*)(void *))fn)
+
+
+
+int map_add(map_t *, int, const hashes_t *, void *);
+int map_foreach(map_t *, int (*)(const hashes_t *, parray_t *, void *),
+		void *);
+void map_free(map_t *, void (*)(void *));
+parray_t *map_get(map_t *, int, const hashes_t *);
+map_t *map_new(void);
+
+#endif /* map.h */

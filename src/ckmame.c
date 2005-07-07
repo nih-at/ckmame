@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: ckmame.c,v 1.2 2005/07/06 08:23:02 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -127,8 +127,9 @@ main(int argc, char **argv)
 {
     int i, j;
     DB *db;
-    char **list, *dbname;
-    int c, nlist, found;
+    char *dbname;
+    int c, found;
+    parray_t *list;
     struct tree *tree;
     struct tree tree_root;
     int sample, superfluous_only, integrity;
@@ -249,29 +250,28 @@ main(int argc, char **argv)
 	r_hashtypes(db, &romhashtypes, &diskhashtypes);
     }
     
-    if ((nlist=r_list(db, DDB_KEY_LIST_GAME, &list)) < 0) {
+    if ((list=r_list(db, DDB_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
 	exit(1);
     }
 
     if (optind == argc) {
-	for (i=0; i<nlist; i++)
-	    tree_add(db, tree, list[i], sample);
+	for (i=0; i<parray_length(list); i++)
+	    tree_add(db, tree, parray_get(list, i), sample);
     }
     else {
 	for (i=optind; i<argc; i++) {
 	    if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-		if (bsearch(argv+i, list, nlist, sizeof(char *),
-			    (cmpfunc)strpcasecmp) != NULL)
+		if (parray_bsearch(list, argv+i, (cmpfunc)strpcasecmp) != NULL)
 		    tree_add(db, tree, argv[i], sample);
 		else
 		    myerror(ERRDEF, "game `%s' unknown", argv[i]);
 	    }
 	    else {
 		found = 0;
-		for (j=0; j<nlist; j++) {
-		    if (fnmatch(argv[i], list[j], 0) == 0) {
-			tree_add(db, tree, list[j], sample);
+		for (j=0; j<parray_length(list); j++) {
+		    if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
+			tree_add(db, tree, parray_get(list, j), sample);
 			found = 1;
 		    }
 		}
@@ -280,6 +280,8 @@ main(int argc, char **argv)
 	    }
 	}
     }
+
+    parray_free(list, free);
 
     tree_traverse(db, tree, sample);
 

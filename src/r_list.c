@@ -1,5 +1,5 @@
 /*
-  $NiH: r_list.c,v 1.14 2005/06/20 16:16:04 wiz Exp $
+  $NiH: r_list.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   r_list.c -- read list struct from db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -54,21 +54,22 @@ r_hashtypes(DB *db, int *romhashtypesp, int *diskhashtypesp)
 
 
 
-int
-r_list(DB *db, const char *key, char ***listp)
+parray_t *
+r_list(DB *db, const char *key)
 {
     int n;
     DBT v;
     void *data;
+    void **entries;
 
     if (ddb_lookup(db, key, &v) != 0)
-	return -1;
+	return NULL;
 
     data = v.data;
 
-    n = r__array(&v, r__pstring, (void **)listp, sizeof(char *));
+    n = r__array(&v, r__pstring, (void *)&entries, sizeof(char *));
 
     free(data);
 
-    return n;
+    return parray_new_from_data(entries, n);
 }

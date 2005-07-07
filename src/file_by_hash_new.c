@@ -1,11 +1,8 @@
-#ifndef _HAD_W_H
-#define _HAD_W_H
-
 /*
-  $NiH: w.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH$
 
-  w.h -- data base write functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  file_by_hash_new.c -- create file_by_hash structure
+  Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -24,21 +21,20 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "file_by_hash.h"
+#include "xmalloc.h"
+
 
 
-#include "parray.h"
+file_by_hash_t *
+file_by_hash_new(void)
+{
+    file_by_hash_t *fbh;
 
-void w__array(DBT *, void (*)(DBT *, const void *),
-	      const void *, size_t, size_t);
-void w__disk(DBT *, const void *);
-void w__grow(DBT *, int);
-void w__mem(DBT *, const void *, unsigned int);
-void w__parray(DBT *, void (*)(DBT *, const void *), parray_t *);
-void w__pstring(DBT *, const void *);
-void w__rom(DBT *, const void *);
-void w__string(DBT *, const char *);
-void w__ushort(DBT *, unsigned short);
-void w__ulong(DBT *, unsigned long);
-int w_version(DB *);
+    fbh = xmalloc(sizeof(*fbh));
 
-#endif /* w.h */
+    fbh->entry = NULL;
+    fbh->nentry = 0;
+
+    return fbh;
+}

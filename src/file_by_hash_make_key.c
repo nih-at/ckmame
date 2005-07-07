@@ -1,5 +1,5 @@
 /*
-  $NiH: fbh_make_key.c,v 1.2 2005/06/26 23:11:28 dillo Exp $
+  $NiH: fbh_make_key.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
 
   fbh_make_key.c -- make dbkey for file_by_hash struct
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -24,57 +24,55 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
-#include "romutil.h"
-#include "hashes.h"
+#include "file_by_hash.h"
 #include "xmalloc.h"
 
-static const char *filetype_string(enum filetype);
+static int filetype_char(filetype_t);
 
 
 
-char *
-file_by_hash_make_key(enum filetype filetype, const struct hashes *hash)
+int
+file_by_hash_default_hashtype(filetype_t ft)
 {
-    char *key;
-    const char *ft, *ht;
-    char *h;
+    if (ft == TYPE_DISK)	
+	return HASHES_TYPE_MD5;
+    else
+	return HASHES_TYPE_CRC;
+}
 
-    ft = filetype_string(filetype);
-    ht = hash_type_string(hash->types);
-    h = hash_to_string(hash->types, hash);
+
 
-    if (ft == NULL || ht == NULL || h == NULL) {
-	free(h);
-	return NULL;
-    }
+const char *
+file_by_hash_make_key(filetype_t filetype, const hashes_t *hash)
+{
+    static char key[HASHES_SIZE_MAX*2 + 4];
 
-    key = xmalloc(strlen(ft)+strlen(ht)+strlen(h)+4);
-    sprintf(key, "/%s/%s/%s", ft, ht, h);
-
-    free(h);
+    key[0] = '/';
+    key[1] = filetype_char(filetype);
+    key[2] = '/';
+    hash_to_string(key+3, hash->types, hash);
 
     return key;
 }
 
 
 
-static const char *
-filetype_string(enum filetype filetype)
+static int
+filetype_char(enum filetype filetype)
 {
     /* XXX: I hate these fucking switch statements! */
 
     switch (filetype) {
     case TYPE_ROM:
-	return "rom";
+	return 'r';
 
     case TYPE_SAMPLE:
-	return "sample";
+	return 's';
 
     case TYPE_DISK:
-	return "disk";
+	return 'd';
 
     default:
-	return NULL;
+	return '?';
     }
 }

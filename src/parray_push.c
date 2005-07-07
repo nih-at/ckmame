@@ -1,7 +1,7 @@
 /*
-  $NiH: file_by_hash.c,v 1.3 2005/06/26 23:11:28 dillo Exp $
+  $NiH$
 
-  file_by_hash.c -- file_by_hash struct functions
+  parray_push.c -- append element to end of array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -22,42 +22,22 @@
 */
 
 #include <stdlib.h>
-#include <string.h>
 
-#include "types.h"
-#include "romutil.h"
+#include "parray.h"
 #include "xmalloc.h"
-
-struct file_by_hash *
-file_by_hash_new(enum filetype ft, const struct hashes *hash)
-{
-    struct file_by_hash *fbh;
-
-    fbh = (struct file_by_hash *)xmalloc(sizeof(struct file_by_hash));
-    fbh->filetype = ft;
-    memcpy(&fbh->hash, hash, sizeof(*hash));
-    fbh->nentry = 0;
-    fbh->nalloced = 1;
-    fbh->entry = xmalloc(sizeof(fbh->entry[0]));
-
-    return fbh;
-}
 
 
 
 void
-file_by_hash_free(struct file_by_hash *fbh)
+parray_push(parray_t *pa, void *e)
 {
-    int i;
-
-    if (fbh == NULL)
-	return;
-
-    if (fbh->nentry > 0) {
-	for (i=0; i<fbh->nentry; i++)
-	    free(fbh->entry[i].game);
-	free(fbh->entry);
+    if (pa->nentry >= pa->alloc_len) {
+	if (pa->alloc_len == 0)
+	    pa->alloc_len = 1;
+	else
+	    pa->alloc_len *= 2;
+	pa->entry = xrealloc(pa->entry, sizeof(pa->entry[0])*pa->alloc_len);
     }
 
-    free(fbh);
+    pa->entry[pa->nentry++] = e;
 }

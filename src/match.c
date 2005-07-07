@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.2 2005/07/04 22:41:36 dillo Exp $
+  $NiH: match.c,v 1.3 2005/07/06 08:23:02 wiz Exp $
 
   match.c -- find matches
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -465,7 +465,7 @@ void
 warn_disk(struct disk *d, char *fmt, ...)
 {
     va_list va;
-    char *h;
+    char h[HASHES_SIZE_MAX*2 + 1];
 
     if (gnamedone == 0) {
 	printf("In game %s:\n", gname);
@@ -473,16 +473,11 @@ warn_disk(struct disk *d, char *fmt, ...)
     }
 
     printf("disk %-12s  ", d->name);
-    if (d->hashes.types & HASHES_TYPE_SHA1) {
-	h = hash_to_string(HASHES_TYPE_SHA1, &d->hashes);
-	printf("sha1 %s: ", h);
-	free(h);
-    }
-    else if (d->hashes.types & HASHES_TYPE_MD5) {
-	h = hash_to_string(HASHES_TYPE_MD5, &d->hashes);
-	printf("md5 %s         : ", h);
-	free(h);
-    }
+    if (hashes_has_type(&d->hashes, HASHES_TYPE_SHA1))
+	printf("sha1 %s: ", hash_to_string(h, HASHES_TYPE_SHA1, &d->hashes));
+    else     if (hashes_has_type(&d->hashes, HASHES_TYPE_MD5))
+	printf("md5 %s         : ",
+	       hash_to_string(h, HASHES_TYPE_MD5, &d->hashes));
     else
 	printf("no good dump              : ");
     

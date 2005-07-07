@@ -3,11 +3,7 @@ XXX		game
 /list/game	list of all games
 /list/sample	list of games with samples
 /list/disk	list of disk image names
-/disk/md5/xxxxx
-/rom/md5/xxxxx
-/disk/sha1/xxxxx
-/rom/sha1/xxxxx
-(/disk/crc32/xxxxx)
-/rom/crc32/xxxxx
+/d/xxxxx
+/r/xxxxx
 /ckmame		db version format
 /hashtypes	type of hashes used, for roms and disks

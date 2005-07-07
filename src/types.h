@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.2 2005/07/04 22:41:36 dillo Exp $
+  $NiH: types.h,v 1.3 2005/07/06 08:23:02 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -49,6 +49,7 @@ enum state {
 enum filetype {
     TYPE_ROM, TYPE_SAMPLE, TYPE_DISK
 };
+typedef enum filetype filetype_t;
 
 struct rom {
     char *name, *merge;
@@ -83,20 +84,8 @@ struct game {
     int ndisk;
 };
 
-struct file_by_hash_entry {
-    char *game;
-    int index;
-};
+typedef struct game game_t;
 
-struct file_by_hash {
-    /* key */
-    enum filetype filetype;
-    struct hashes hash;
-    /* database entry */
-    struct file_by_hash_entry *entry;
-    int nentry;
-    int nalloced;
-};
 
 struct match {
     struct match *next;

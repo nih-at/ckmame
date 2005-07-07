@@ -1,5 +1,5 @@
 /*
-  $NiH: hash_to_string.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: hash_to_string.c,v 1.2 2005/07/04 22:41:36 dillo Exp $
 
   hash_to_string.c -- return string representation of hash
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -32,31 +32,30 @@
 
 
 
-char *
-hash_to_string(int type, const struct hashes *hashes)
+const char *
+hash_to_string(char *str, int type, const hashes_t *hashes)
 {
-    char *str;
-
-    if ((hashes->types & type) == 0)
+    if (!hashes_has_type(hashes, type))
 	return NULL;
 
     switch (type) {
     case HASHES_TYPE_CRC:
-	str = xmalloc(9);
 	sprintf(str, "%.8lx", hashes->crc);
-	return str;
+	break;
 
     case HASHES_TYPE_MD5:
-	return bin2hex(xmalloc(sizeof(hashes->md5)*2+1),
-		       hashes->md5, sizeof(hashes->md5));
+	bin2hex(str, hashes->md5, HASHES_SIZE_MD5);
+	break;
 
     case HASHES_TYPE_SHA1:
-	return bin2hex(xmalloc(sizeof(hashes->sha1)*2+1),
-		       hashes->sha1, sizeof(hashes->sha1));
+	bin2hex(str, hashes->sha1, HASHES_SIZE_SHA1);
+	break;
 
     default:
 	return NULL;
     }
+
+    return str;
 }
 
 

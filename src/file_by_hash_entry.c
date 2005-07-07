@@ -1,11 +1,8 @@
-#ifndef _HAD_W_H
-#define _HAD_W_H
-
 /*
-  $NiH: w.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH$
 
-  w.h -- data base write functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  file_by_hash_entry.c -- create / free file_by_hash_entry structure
+  Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -24,21 +21,34 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <stdlib.h>
+
+#include "file_by_hash.h"
+#include "xmalloc.h"
+
 
 
-#include "parray.h"
+void
+file_by_hash_entry_free(file_by_hash_entry_t *e)
+{
+    if (e == NULL)
+	return;
+    
+    free(e->game);
+    free(e);
+}
 
-void w__array(DBT *, void (*)(DBT *, const void *),
-	      const void *, size_t, size_t);
-void w__disk(DBT *, const void *);
-void w__grow(DBT *, int);
-void w__mem(DBT *, const void *, unsigned int);
-void w__parray(DBT *, void (*)(DBT *, const void *), parray_t *);
-void w__pstring(DBT *, const void *);
-void w__rom(DBT *, const void *);
-void w__string(DBT *, const char *);
-void w__ushort(DBT *, unsigned short);
-void w__ulong(DBT *, unsigned long);
-int w_version(DB *);
+
 
-#endif /* w.h */
+file_by_hash_entry_t *
+file_by_hash_entry_new(const char *game, int idx)
+{
+    file_by_hash_entry_t *e;
+
+    e = xmalloc(sizeof(*e));
+
+    e->game = xstrdup(game);
+    e->index = idx;
+
+    return e;
+}
