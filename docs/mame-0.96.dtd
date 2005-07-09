@@ -1,4 +1,5 @@
-<!DOCTYPE mame [
+<!-- DTD from mame 0.96 -->
+
 <!ELEMENT mame (game+)>
 	<!ELEMENT game (description, year?, manufacturer, history?, biosset*, rom*, disk*, sample*, chip*, video?, sound?, input?, dipswitch*, driver?)>
 		<!ATTLIST game name CDATA #REQUIRED>
@@ -74,4 +75,3 @@
 			<!ATTLIST driver cocktail (good|imperfect|preliminary) #IMPLIED>
 			<!ATTLIST driver protection (good|imperfect|preliminary) #IMPLIED>
 			<!ATTLIST driver palettesize CDATA #REQUIRED>
-]>
