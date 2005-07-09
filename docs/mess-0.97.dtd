@@ -1,0 +1,81 @@
+<!-- DTD from mess 0.97 -->
+
+<!ELEMENT mess (machine+)>
+	<!ELEMENT machine (description, year?, manufacturer, history?, biosset*, rom*, disk*, sample*, chip*, video?, sound?, input?, dipswitch*, driver?, device*)>
+		<!ATTLIST machine name CDATA #REQUIRED>
+		<!ATTLIST machine sourcefile CDATA #IMPLIED>
+		<!ATTLIST machine runnable (yes|no) "yes">
+		<!ATTLIST machine cloneof CDATA #IMPLIED>
+		<!ATTLIST machine romof CDATA #IMPLIED>
+		<!ATTLIST machine sampleof CDATA #IMPLIED>
+		<!ELEMENT description (#PCDATA)>
+		<!ELEMENT year (#PCDATA)>
+		<!ELEMENT manufacturer (#PCDATA)>
+		<!ELEMENT history (#PCDATA)>
+		<!ELEMENT biosset EMPTY>
+			<!ATTLIST biosset name CDATA #REQUIRED>
+			<!ATTLIST biosset description CDATA #REQUIRED>
+			<!ATTLIST biosset default (yes|no) "no">
+		<!ELEMENT rom EMPTY>
+			<!ATTLIST rom name CDATA #REQUIRED>
+			<!ATTLIST rom bios CDATA #IMPLIED>
+			<!ATTLIST rom size CDATA #REQUIRED>
+			<!ATTLIST rom crc CDATA #IMPLIED>
+			<!ATTLIST rom md5 CDATA #IMPLIED>
+			<!ATTLIST rom sha1 CDATA #IMPLIED>
+			<!ATTLIST rom merge CDATA #IMPLIED>
+			<!ATTLIST rom region CDATA #IMPLIED>
+			<!ATTLIST rom offset CDATA #IMPLIED>
+			<!ATTLIST rom status (baddump|nodump|good) "good">
+			<!ATTLIST rom dispose (yes|no) "no">
+			<!ATTLIST rom soundonly (yes|no) "no">
+		<!ELEMENT disk EMPTY>
+			<!ATTLIST disk name CDATA #REQUIRED>
+			<!ATTLIST disk md5 CDATA #IMPLIED>
+			<!ATTLIST disk sha1 CDATA #IMPLIED>
+			<!ATTLIST disk merge CDATA #IMPLIED>
+			<!ATTLIST disk region CDATA #IMPLIED>
+			<!ATTLIST disk index CDATA #IMPLIED>
+			<!ATTLIST disk status (baddump|nodump|good) "good">
+		<!ELEMENT sample EMPTY>
+			<!ATTLIST sample name CDATA #REQUIRED>
+		<!ELEMENT chip EMPTY>
+			<!ATTLIST chip name CDATA #REQUIRED>
+			<!ATTLIST chip type (cpu|audio) #REQUIRED>
+			<!ATTLIST chip soundonly (yes|no) "no">
+			<!ATTLIST chip clock CDATA #IMPLIED>
+		<!ELEMENT video EMPTY>
+			<!ATTLIST video screen (raster|vector) #REQUIRED>
+			<!ATTLIST video orientation (vertical|horizontal) #REQUIRED>
+			<!ATTLIST video width CDATA #IMPLIED>
+			<!ATTLIST video height CDATA #IMPLIED>
+			<!ATTLIST video aspectx CDATA #IMPLIED>
+			<!ATTLIST video aspecty CDATA #IMPLIED>
+			<!ATTLIST video refresh CDATA #REQUIRED>
+		<!ELEMENT sound EMPTY>
+			<!ATTLIST sound channels CDATA #REQUIRED>
+		<!ELEMENT input EMPTY>
+			<!ATTLIST input service (yes|no) "no">
+			<!ATTLIST input tilt (yes|no) "no">
+			<!ATTLIST input players CDATA #REQUIRED>
+			<!ATTLIST input control CDATA #IMPLIED>
+			<!ATTLIST input buttons CDATA #IMPLIED>
+			<!ATTLIST input coins CDATA #IMPLIED>
+		<!ELEMENT dipswitch (dipvalue*)>
+			<!ATTLIST dipswitch name CDATA #REQUIRED>
+			<!ELEMENT dipvalue EMPTY>
+				<!ATTLIST dipvalue name CDATA #REQUIRED>
+				<!ATTLIST dipvalue default (yes|no) "no">
+		<!ELEMENT driver EMPTY>
+			<!ATTLIST driver status (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver emulation (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver color (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver sound (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver graphic (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver cocktail (good|imperfect|preliminary) #IMPLIED>
+			<!ATTLIST driver protection (good|imperfect|preliminary) #IMPLIED>
+			<!ATTLIST driver palettesize CDATA #REQUIRED>
+		<!ELEMENT device (extension*)>
+			<!ATTLIST device name CDATA #REQUIRED>
+			<!ELEMENT extension EMPTY>
+				<!ATTLIST extension name CDATA #REQUIRED>
