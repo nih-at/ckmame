@@ -1,3 +1,10 @@
+2005-07-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* src/parse.c (disk_end, rom_end): if merge is same as name, don't
+	save it.
+
+	* XXX: refactoring
+
 2005-07-06  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* src/types.h: move read_infos_from_chd prototype to...

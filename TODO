@@ -1,3 +1,4 @@
+- document comment in prototypes for function pointers
 - fix, diagnostics: print match_offset properly, don't cast to int
 - refactor hashes_set and hashes_verify
 - make match_array_t an array_t of parray_t of match_t

@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.3 2005/07/07 22:00:20 dillo Exp $
+  $NiH: parse.c,v 1.4 2005/07/13 17:42:20 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -394,6 +394,11 @@ disk_end(parser_context_t *ctx)
     if (hashes_types(disk_hashes(d)) == 0)
 	disk_flags(d) = FLAGS_NODUMP;
 
+    if (disk_merge(d) != NULL && strcmp(disk_name(d), disk_merge(d)) == 0) {
+	free(disk_merge(d));
+	disk_merge(d) = NULL;
+    }
+
     enter_file_hash(ctx->map_disk, TYPE_DISK,
 		    game_name(ctx->g), game_num_disks(ctx->g)-1,
 		    disk_hashes(d));
@@ -646,8 +651,14 @@ rom_end(parser_context_t *ctx, filetype_t ft)
     }
     if (deleted)
 	array_delete(game_files(ctx->g, ft), n, rom_finalize);
-    else if (ft == TYPE_ROM)
-	enter_file_hash(ctx->map_rom, TYPE_ROM, game_name(ctx->g), n, h);
+    else {
+	if (rom_merge(r) != NULL && strcmp(rom_name(r), rom_merge(r)) == 0) {
+	    free(rom_merge(r));
+	    rom_merge(r) = NULL;
+	}
+	if (ft == TYPE_ROM)
+	    enter_file_hash(ctx->map_rom, TYPE_ROM, game_name(ctx->g), n, h);
+    }
 }
 
 
