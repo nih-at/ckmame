@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.2 2005/07/04 22:41:35 dillo Exp $
+  $NiH: dumpgame.c,v 1.3 2005/07/07 22:00:20 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -36,12 +36,11 @@
 #include "getopt.h"
 #endif
 
-#include "types.h"
 #include "dbh.h"
 #include "error.h"
-#include "util.h"
-#include "romutil.h"
 #include "hashes.h"
+#include "types.h"
+#include "util.h"
 #include "xmalloc.h"
 
 static int dump_game(DB *, const char *);
@@ -51,6 +50,8 @@ static int dump_prog(DB *, const char *);
 static int dump_db_version(DB *, const char *);
 static int dump_special(DB *, const char *);
 static void print_hashtypes(int);
+static void print_rs(game_t *, filetype_t, const char *,
+		     const char *, const char *, const char *);
 
 char *prg;
 char *usage = "Usage: %s [-h|-V]\n\
@@ -100,7 +101,7 @@ parray_t *list;
 
 
 static void
-print_checksums(struct hashes *hashes)
+print_checksums(hashes_t *hashes)
 {
     int i;
     char h[HASHES_SIZE_MAX*2 + 1];
@@ -116,17 +117,18 @@ print_checksums(struct hashes *hashes)
 
 
 static void
-print_diskline(struct disk *disk)
+print_diskline(disk_t *disk)
 {
     printf("\t\tdisk %-12s", disk->name);
     print_checksums(&disk->hashes);
+    printf("  flags %s", flags_name[disk_flags(disk)]);
     putc('\n', stdout);
 }
 
 
 
 static void
-print_footer(int matches, struct hashes *hash)
+print_footer(int matches, hashes_t *hash)
 {
     printf("%d matches found for checksum", matches);
     print_checksums(hash);
@@ -136,36 +138,36 @@ print_footer(int matches, struct hashes *hash)
 
 
 static void
-print_romline(struct rom *rom)
+print_romline(rom_t *rom)
 {
     printf("\t\tfile %-12s  size %7ld",
-	   rom->name, rom->size);
-    print_checksums(&rom->hashes);
+	   rom_name(rom), rom_size(rom));
+    print_checksums(rom_hashes(rom));
     printf("  flags %s  in %s",
-	   flags_name[rom->flags], where_name[rom->where]);
-    if (rom->merge && strcmp(rom->name, rom->merge) != 0)
-	printf(" (%s)", rom->merge);
+	   flags_name[rom_flags(rom)], where_name[rom_where(rom)]);
+    if (rom_merge(rom) && strcmp(rom_name(rom), rom_merge(rom)) != 0)
+	printf(" (%s)", rom_merge(rom));
     putc('\n', stdout);
 }
 
 
 
 static void
-print_match(struct game *game, enum filetype ft, int i)
+print_match(game_t *game, filetype_t ft, int i)
 {
     static char *name = NULL;
 
-    if (name == NULL || strcmp(game->name, name) != 0) {
+    if (name == NULL || strcmp(game_name(game), name) != 0) {
 	free(name);
-	name = xstrdup(game->name);
+	name = xstrdup(game_name(game));
 
-	printf("In game %s:\n", game->name);
+	printf("In game %s:\n", game_name(game));
     }
 
     if (ft == TYPE_DISK)
-	print_diskline(game->disk+i);
+	print_diskline(game_disk(game, i));
     else
-	print_romline(game->rom+i);
+	print_romline(game_file(game, TYPE_ROM, i));
 }
 
 
@@ -175,32 +177,32 @@ print_matches(DB *db, filetype_t ft, hashes_t *hash)
 {
     game_t *game;
     int i, j, matches;
-    file_by_hash_t *fbh;
+    array_t *fbh;
 
     matches = 0;
 
-    if (hash->types == file_by_hash_default_hashtype(ft)) {
+    if (hashes_has_type(hash, file_by_hash_default_hashtype(ft))) {
 	if ((fbh=r_file_by_hash(db, ft, hash)) == NULL) {
 	    print_footer(0, hash);
 	    return;
 	}
 
-	for (i=0; i<file_by_hash_length(fbh); i++) {
-	    if ((game=r_game(db, fbh->entry[i].game)) == NULL) {
+	for (i=0; i<array_length(fbh); i++) {
+	    if ((game=r_game(db, file_by_hash_game(fbh, i))) == NULL) {
 		myerror(ERRDEF,
 			"db error: %s not found, though in hash index",
-			fbh->entry[i].game);
+			file_by_hash_game(fbh, i));
 		/* XXX: remember error */
 		continue;
 	    }
 
-	    print_match(game, ft, fbh->entry[i].index);
+	    print_match(game, ft, file_by_hash_index(fbh, i));
 	    matches++;
 	    
-	    game_free(game, 1);
+	    game_free(game);
 	}
 
-	file_by_hash_free(fbh);
+	array_free(fbh, file_by_hash_finalize);
     }
     else {
 	for (i=0; i<parray_length(list); i++) {
@@ -213,8 +215,8 @@ print_matches(DB *db, filetype_t ft, hashes_t *hash)
 	    }
 
 	    if (ft == TYPE_ROM) {
-		for (j=0; j<game->nrom; j++) {
-		    if (hashes_cmp(&game->rom[j].hashes,
+		for (j=0; j<game_num_files(game, ft); j++) {
+		    if (hashes_cmp(rom_hashes(game_file(game, ft, j)),
 				   hash) == HASHES_CMP_MATCH) {
 			print_match(game, ft, j);
 			matches++;
@@ -222,15 +224,15 @@ print_matches(DB *db, filetype_t ft, hashes_t *hash)
 		}
 	    }
 	    else if (ft == TYPE_DISK) {
-		for (j=0; j<game->ndisk; j++) {
-		    if (hashes_cmp(&game->disk[j].hashes,
+		for (j=0; j<game_num_disks(game); j++) {
+		    if (hashes_cmp(disk_hashes(game_disk(game, j)),
 				   hash) == HASHES_CMP_MATCH) {
 			print_match(game, ft, j);
 			matches++;
 		    }
 		}
 	    }
-	    game_free(game, 1);
+	    game_free(game);
 	}
     }
 
@@ -297,12 +299,13 @@ main(int argc, char **argv)
 	exit(1);
     }
 
-    /* find matches for roms */
+    /* find matches for ROMs */
     if (find_checksum != 0) {
-	struct hashes match;
+	hashes_t match;
 
 	for (i=optind; i<argc; i++) {
 	    /* checksum */
+	    hashes_init(&match);
 	    if ((hash_from_string(&match, argv[i])) == -1) {
 		fprintf(stderr, "error parsing checksum `%s'\n", argv[i]);
 		exit(2);
@@ -323,8 +326,7 @@ main(int argc, char **argv)
 		    putc('\n', stdout);
 		dump_special(db, argv[i]);
 	    }
-	    else if (parray_bsearch(list, argv+i,
-				    (cmpfunc)strpcasecmp) != NULL) {
+	    else if (parray_index_sorted(list, argv[i], strcasecmp) >= 0) {
 		if (first)
 		    first = 0;
 		else
@@ -358,11 +360,57 @@ main(int argc, char **argv)
 
 
 
-int
-dump_game(DB *db, const char *name)
+static void
+print_rs(game_t *game, filetype_t ft,
+	const char *co, const char *gco, const char *cs, const char *fs) 
 {
     int i, j;
-    struct game *game;
+    rom_t *r;
+
+    if (game_cloneof(game, ft, 0))
+	printf("%s:\t%s\n", co, game_cloneof(game, ft, 0));
+    if (game_cloneof(game, ft, 1))
+	printf("%s:\t%s\n", gco, game_cloneof(game, ft, 1));
+    
+    if (game_num_clones(game, ft) > 0) {
+	printf("%s", cs);
+	for (i=0; i<game_num_clones(game, ft); i++) {
+	    if (i%6 == 0)
+		fputs("\t\t", stdout);
+	    printf("%-8s ", game_clone(game, ft, i));
+	    if (i%6 == 5)
+		putc('\n', stdout);
+	}
+	if (game_num_clones(game, ft) % 6 != 0)
+	    putc('\n', stdout);
+    }
+    if (game_num_files(game, ft) > 0) {
+	printf("%s:\n", fs);
+	for (i=0; i<game_num_files(game, ft); i++) {
+	    r = game_file(game, ft, i);
+	    print_romline(r);
+	    for (j=0; j<rom_num_altnames(r); j++) {
+		/* XXX: check hashes.types */
+		printf("\t\tfile %-12s  size %7ld  crc %.8lx  flags %s  in %s",
+		       rom_altname(r, j), rom_size(r), rom_hashes(r)->crc,
+		       flags_name[rom_flags(r)], where_name[rom_where(r)]);
+		if (rom_merge(r)) {
+		    if (strcmp(rom_altname(r, j), rom_merge(r)) != 0)
+			printf(" (%s)", rom_merge(r));
+		} else
+		    printf(" (%s)", rom_name(r));
+		putc('\n', stdout);
+	    }
+	}
+    }
+}
+
+
+static int
+dump_game(DB *db, const char *name)
+{
+    int i;
+    game_t *game;
 
     if ((game=r_game(db, name)) == NULL) {
 	myerror(ERRDEF, "game unknown (or database error): %s", name);
@@ -372,73 +420,17 @@ dump_game(DB *db, const char *name)
     /* XXX: use print_* functions */
     printf("Name:\t\t%s\n", game->name);
     printf("Description:\t%s\n", game->description);
-    if (game->cloneof[0])
-	printf("Cloneof:\t%s\n", game->cloneof[0]);
-    if (game->cloneof[1])
-	printf("Grand-Cloneof:\t%s\n", game->cloneof[1]);
-    if (game->nclone) {
-	printf("Clones:");
-	for (i=0; i<game->nclone; i++) {
-	    if (i%6 == 0)
-		fputs("\t\t", stdout);
-	    printf("%-8s ", game->clone[i]);
-	    if (i%6 == 5)
-		putc('\n', stdout);
-	}
-	if (game->nclone % 6 != 0)
-	    putc('\n', stdout);
-    }
-    printf("Roms:");
-    for (i=0; i<game->nrom; i++) {
-	print_romline(game->rom+i);
-	for (j=0; j < game->rom[i].naltname; j++) {
-	    /* XXX: check hashes.types */
-	    printf("\t\tfile %-12s  size %7ld  crc %.8lx  flags %s  in %s",
-		   game->rom[i].altname[j], game->rom[i].size,
-		   game->rom[i].hashes.crc, flags_name[game->rom[i].flags],
-		   where_name[game->rom[i].where]);
-	    if (game->rom[i].merge) {
-		if (strcmp(game->rom[i].altname[j], game->rom[i].merge) != 0)
-		    printf(" (%s)", game->rom[i].merge);
-	    } else
-		printf(" (%s)", game->rom[i].name);
-	    putc('\n', stdout);
-	}
-    }
-    if (game->sampleof[0])
-	printf("Sampleof:\t%s\n", game->sampleof[0]);
-    if (game->sampleof[1])
-	printf("Grand-Sampleof:\t%s\n", game->sampleof[1]);
-    if (game->nsclone) {
-	printf("Sample Clones:");
-	for (i=0; i<game->nsclone; i++) {
-	    if (i%6 == 0)
-		printf("%s\t", (i==0 ? "" : "\t"));
-	    printf("%-8s ", game->sclone[i]);
-	    if (i%6 == 5)
-		putc('\n', stdout);
-	}
-	if (game->nsclone % 6 != 5)
-	    putc('\n', stdout);
-    }
-    if (game->nsample) {
-	printf("Samples:");
-	for (i=0; i<game->nsample; i++)
-	    printf("\t%sfile %-12s  in %s\n",
-		   (i==0 ? "" : "\t"),
-		   game->sample[i].name,
-		   where_name[game->sample[i].where]);
-    }
-    if (game->ndisk) {
-	printf("Disks:");
-	for (i=0; i<game->ndisk; i++) {
-	    printf("\t\tdisk %-12s", game->disk[i].name);
-	    print_checksums(&game->disk[i].hashes);
-	    putc('\n', stdout);
-	}
+    print_rs(game, TYPE_ROM, "Cloneof", "Grand-Cloneof", "Clones", "ROMs");
+    print_rs(game, TYPE_SAMPLE, "Sampleof", "Grand-Sampleof",
+	     "Sample Clones", "Samples");
+    
+    if (game_num_disks(game) > 0) {
+	printf("Disks:\n");
+	for (i=0; i<game_num_disks(game); i++)
+	    print_diskline(game_disk(game, i));
     }
     
-    game_free(game, 1);
+    game_free(game);
 
     return 0;
 }

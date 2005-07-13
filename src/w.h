@@ -2,7 +2,7 @@
 #define _HAD_W_H
 
 /*
-  $NiH: w.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: w.h,v 1.2 2005/07/07 22:00:20 dillo Exp $
 
   w.h -- data base write functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,16 +26,15 @@
 
 
 
+#include "array.h"
 #include "parray.h"
 
-void w__array(DBT *, void (*)(DBT *, const void *),
-	      const void *, size_t, size_t);
+void w__array(DBT *, void (*)(DBT *, const void *), const array_t *);
 void w__disk(DBT *, const void *);
 void w__grow(DBT *, int);
 void w__mem(DBT *, const void *, unsigned int);
-void w__parray(DBT *, void (*)(DBT *, const void *), parray_t *);
+void w__parray(DBT *, void (*)(DBT *, const void *), const parray_t *);
 void w__pstring(DBT *, const void *);
-void w__rom(DBT *, const void *);
 void w__string(DBT *, const char *);
 void w__ushort(DBT *, unsigned short);
 void w__ulong(DBT *, unsigned long);

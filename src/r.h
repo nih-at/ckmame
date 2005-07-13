@@ -2,7 +2,7 @@
 #define _HAD_R_H
 
 /*
-  $NiH: r.h,v 1.12 2005/06/13 00:32:19 wiz Exp $
+  $NiH: r.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   r.h -- data base read functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -24,11 +24,15 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "array.h"
+#include "parray.h"
+
 
 
-int r__array(DBT *, void (*)(DBT *, void *), void **, size_t);
+array_t *r__array(DBT *, void (*)(DBT *, void *), size_t);
 void r__disk(DBT *, void *);
 void r__mem(DBT *, void *, unsigned int);
+parray_t *r__parray(DBT *, void *(*)(DBT *));
 void r__pstring(DBT *, void *);
 void r__rom(DBT *, void *);
 char *r__string(DBT *);

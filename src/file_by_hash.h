@@ -2,7 +2,7 @@
 #define HAD_FILE_BY_HASH_H
 
 /*
-  $NiH$
+  $NiH: file_by_hash.h,v 1.1 2005/07/07 22:00:20 dillo Exp $
 
   file_by_hash.h -- list of files with same hash
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -31,30 +31,25 @@
 
 
 
-struct file_by_hash_entry {
+struct file_by_hash {
     char *game;
     int index;
 };
 
-typedef struct file_by_hash_entry file_by_hash_entry_t;
-
-struct file_by_hash {
-    file_by_hash_entry_t *entry;
-    int nentry;
-};
-
 typedef struct file_by_hash file_by_hash_t;
-
-#define file_by_hash_length(f)	((f)->nentry)
 
 
 
-void file_by_hash_free(file_by_hash_t *);
+#define file_by_hash_get(a, i)	((file_by_hash_t *)array_get((a), (i)))
+#define file_by_hash_game(a, i)	(file_by_hash_get((a), (i))->game)
+#define file_by_hash_index(a, i) (file_by_hash_get((a), (i))->index)
+
 const char *file_by_hash_make_key(filetype_t, const hashes_t *);
 int file_by_hash_default_hashtype(filetype_t);
-file_by_hash_t *file_by_hash_new(void);
 
-void file_by_hash_entry_free(file_by_hash_entry_t *);
-file_by_hash_entry_t *file_by_hash_entry_new(const char *, int);
+int file_by_hash_entry_cmp(const file_by_hash_t *, const file_by_hash_t *);
+void file_by_hash_free(file_by_hash_t *);
+void file_by_hash_finalize(file_by_hash_t *);
+file_by_hash_t *file_by_hash_new(const char *, int);
 
 #endif /* file_by_hash.h */

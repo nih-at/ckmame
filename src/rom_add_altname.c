@@ -1,8 +1,8 @@
 /*
   $NiH$
 
-  file_by_hash_new.c -- create file_by_hash structure
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  rom_add_altname.c -- add alternate name to rom
+  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -21,20 +21,20 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "file_by_hash.h"
+
+
+#include <string.h>
+
+#include "game.h"
 #include "xmalloc.h"
 
 
 
-file_by_hash_t *
-file_by_hash_new(void)
+void
+rom_add_altname(rom_t *r, const char *name)
 {
-    file_by_hash_t *fbh;
-
-    fbh = xmalloc(sizeof(*fbh));
-
-    fbh->entry = NULL;
-    fbh->nentry = 0;
-
-    return fbh;
+    if (rom_altnames(r) == NULL)
+	rom_altnames(r) = parray_new();
+    parray_push(rom_altnames(r), xstrdup(name));
+    parray_sort_unique(rom_altnames(r), strcasecmp);
 }

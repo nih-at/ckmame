@@ -1,8 +1,8 @@
 /*
-  $NiH: marry.c,v 1.10 2004/04/24 09:40:24 dillo Exp $
+  $NiH: marry.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
-  marry.c -- pair matches with roms
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  marry.c -- pair matches with ROMs
+  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -25,17 +25,24 @@
 
 #include <stdlib.h>
 
+#include "funcs.h"
+#include "match.h"
 #include "types.h"
-#include "dbl.h"
 #include "xmalloc.h"
-#include "romutil.h"
+
+#define Z(m)		(z[match_zno(m)][match_fno(m)])
+#define DELETE_NEXT(i)	(parray_delete(match_array_matches(ma, (i)), 1, NULL),\
+			 NEXT(i))
+#define NEXT(i)		((match_array_num_matches(ma, (i)) > 1)	\
+			 ? match_array_get(ma, (i), 1) : NULL)
+#define FIRST(i)	(match_array_get(ma, (i), 0))
 
 void
-marry (struct match *rm, int count, const int *noz)
+marry(match_array_t *ma, const int *noz)
 {
     int i, j, now, other;
     int *z[3];
-    struct match *c;
+    match_t *m;
 
     for (i=0; i<3; i++)
 	if (noz[i] > 0) {
@@ -46,43 +53,33 @@ marry (struct match *rm, int count, const int *noz)
 	else
 	    z[i] = NULL;
 
-    for (i=0; i<count; i++) {
+    for (i=0; i<match_array_length(ma); i++)
+	match_array_sort(ma, i);
+
+    for (i=0; i<match_array_length(ma); i++) {
 	now = i;
-	while ((now != -1) && (rm[now].next)) {
-	    /* sometimes now gets changed */
-	    c = rm[now].next;
-	    if (z[c->zno][c->fno] == -1) {
-		rm[now].zno = c->zno;
-		rm[now].fno = c->fno;
-		rm[now].where = c->where;
-		rm[now].quality = c->quality;
-		rm[now].offset = c->offset;
-		z[c->zno][c->fno] = now;
+	while ((now != -1) && (m=NEXT(now))) {
+	    if (Z(m) == -1) {
+		/* first match for this file; take it */
+		match_copy(FIRST(now), m);
+		Z(m) = now;
 		now = -1;
 	    }
 	    else
-		while (c != NULL) {
-		    other = z[c->zno][c->fno];
-		    if (other != -1 && matchcmp(rm[other].next, rm[now].next) >= 0) {
+		while (m != NULL) {
+		    other = Z(m);
+		    if (other != -1 && matchcmp(NEXT(other), NEXT(now)) <= 0) {
 			/* other has the better grip on this file */
-			rm[now].next = c->next;
-			free(c);
-			c = rm[now].next;
+			m = DELETE_NEXT(now);
 		    }
 		    else {
 			/* now grabs other's file */
-			rm[now].zno = c->zno;
-			rm[now].fno = c->fno;
-			rm[now].where = c->where;
-			rm[now].quality = c->quality;
-			z[c->zno][c->fno] = now;
+			match_copy(FIRST(now), m);
+			Z(m) = now;
 			/* other has to let it go */
 			if (other != -1) {
-			    c = rm[other].next;
-			    rm[other].next = c->next;
-			    rm[other].quality = ROM_UNKNOWN;
-			    free(c);
-			    c = rm[other].next;
+			    match_quality(FIRST(other)) = ROM_UNKNOWN;
+			    m = DELETE_NEXT(other);
 			}
 			/* other has to go looking again */
 			now = other;

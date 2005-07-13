@@ -1,0 +1,8 @@
+# test single-rom game with bad dump
+# $NiH: nogood.test,v 1.1 2003/03/17 15:30:32 dillo Exp $
+return 0
+# XXX: -c reports game as correct
+args -FKULv nogood-2
+rom 1-8-ok.zip nogood-2.zip 1-8-ok.zip
+stdout In game nogood-2:
+stdout rom  04.rom        size       4  no good dump: missing

@@ -1,8 +1,11 @@
+#ifndef HAD_DISK_H
+#define HAD_DISK_H
+
 /*
   $NiH$
 
-  parray_sort.c -- sort array of pointers
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  disk.h -- information about one disk
+  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -21,16 +24,31 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <stdlib.h>
+
 
-#include "parray.h"
+#include "hashes.h"
+#include "types.h"
+
+struct disk {
+    char *name;
+    char *merge;
+    hashes_t hashes;
+    flags_t flags;
+};
+
+typedef struct disk disk_t;
 
 
 
-void parray_sort(parray_t *pa, int (*cmp)(const void *, const void *))
-{
-    if (parray_length(pa) < 2)
-	return;
-    
-    qsort(pa->entry, parray_length(pa), sizeof(pa->entry[0]), cmp);
-}
+#define disk_hashes(d)	(&(d)->hashes)
+#define disk_flags(d)	((d)->flags)
+#define disk_merge(d)	((d)->merge)
+#define disk_name(d)	((d)->name)
+
+void disk_finalize(disk_t *);
+void disk_free(disk_t *);
+disk_t *disk_get_info(const char *);
+void disk_init(disk_t *);
+disk_t *disk_new(const char *);
+
+#endif /* disk.h */

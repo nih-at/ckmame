@@ -2,10 +2,10 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.4 2005/07/01 01:35:56 dillo Exp $
+  $NiH: parse.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   parse.h -- parser interface
-  Copyright (C) 1999, 2001, 2002, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -29,41 +29,54 @@
 #include <stdio.h>
 
 #include "dbl.h"
+#include "game.h"
+#include "map.h"
+
+struct parser_context {
+    DB *db;
+    FILE *fin;
+    
+    map_t *map_rom;
+    map_t *map_disk;
+    game_t *g;
+    char *prog_name;
+    char *prog_version;
+    int romhashtypes;
+    int diskhashtypes;
+
+    parray_t *lost_children;
+    array_t *lost_children_types;
+
+    parray_t *list[TYPE_MAX];
+    
+    int lineno;
+
+    /* state */
+};
+
+typedef struct parser_context parser_context_t;
 
 /* parser functions */
 
 int parse(DB *, const char *, const char *, const char *);
-int parse_xml(FILE *f);
-int parse_cm(FILE *f);
+int parse_xml(parser_context_t *ctx);
+int parse_cm(parser_context_t *ctx);
 
 /* callbacks */
 
-int parse_disk_end(void);
-int parse_disk_md5(const char *);
-int parse_disk_name(const char *);
-int parse_disk_sha1(const char *);
-int parse_disk_start(void);
-int parse_game_cloneof(const char *);
-int parse_game_description(const char *);
-int parse_game_end(void);
-int parse_game_name(const char *);
-int parse_game_sampleof(const char *);
-int parse_game_start(void);
-int parse_prog_name(const char *);
-int parse_prog_version(const char *);
-int parse_rom_crc(const char *);
-int parse_rom_end(void);
-int parse_rom_flags(const char *);
-int parse_rom_md5(const char *);
-int parse_rom_merge(const char *);
-int parse_rom_name(const char *);
-int parse_rom_sha1(const char *);
-int parse_rom_size(const char *);
-int parse_rom_start(void);
-int parse_sample_end(void);
-int parse_sample_name(const char *);
-int parse_sample_start(void);
-
-extern char *parse_errstr;
+int parse_file_end(parser_context_t *, filetype_t);
+int parse_file_flags(parser_context_t *, filetype_t, int, const char *);
+int parse_file_hash(parser_context_t *, filetype_t, int, const char *);
+int parse_file_merge(parser_context_t *, filetype_t, int, const char *);
+int parse_file_name(parser_context_t *, filetype_t, int, const char *);
+int parse_file_size(parser_context_t *, filetype_t, int, const char *);
+int parse_file_start(parser_context_t *, filetype_t);
+int parse_game_cloneof(parser_context_t *, filetype_t, int, const char *);
+int parse_game_description(parser_context_t *, const char *);
+int parse_game_end(parser_context_t *, filetype_t);
+int parse_game_name(parser_context_t *, filetype_t, int, const char *);
+int parse_game_start(parser_context_t *, filetype_t);
+int parse_prog_name(parser_context_t *, const char *);
+int parse_prog_version(parser_context_t *, const char *);
 
 #endif /* parse.h */

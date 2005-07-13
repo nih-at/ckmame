@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: hash_from_string.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
 
   hash_from_string.c -- convert string to hashes_t
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -24,8 +24,10 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "hashes.h"
+#include "util.h"
 
 
 
@@ -33,25 +35,26 @@ int
 hash_from_string(hashes_t *h, const char *str)
 {
     int l;
+    int type;
 
     l = strlen(str);
     
-    if (strspn(str, "0123456789ABCDEFabcdef") != l)
+    if (l % 2 != 0 || strspn(str, "0123456789ABCDEFabcdef") != l)
 	return -1;
 
-    switch(strlen(str)) {
-    case HASHES_SIZE_CRC * 2:
-	h->types = HASHES_TYPE_CRC;
+    switch(l/2) {
+    case HASHES_SIZE_CRC:
+	type = HASHES_TYPE_CRC;
 	h->crc = strtoul(str, NULL, 16);
 	break;
 
-    case HASHES_SIZE_MD5 * 2:
-	h->types = HASHES_TYPE_MD5;
+    case HASHES_SIZE_MD5:
+	type = HASHES_TYPE_MD5;
 	hex2bin(h->md5, str, HASHES_SIZE_MD5);
 	break;
 
-    case HASHES_SIZE_SHA1 * 2:
-	h->types = HASHES_TYPE_SHA1;
+    case HASHES_SIZE_SHA1:
+	type = HASHES_TYPE_SHA1;
 	hex2bin(h->sha1, str, HASHES_SIZE_SHA1);
 	break;
 
@@ -59,5 +62,6 @@ hash_from_string(hashes_t *h, const char *str)
 	return -1;
     }
 
-    return 0;
+    h->types |= type;
+    return type;
 }

@@ -1,3 +1,16 @@
+- fix, diagnostics: print match_offset properly, don't cast to int
+- refactor hashes_set and hashes_verify
+- make match_array_t an array_t of parray_t of match_t
+- update ChangeLog
+- copyright maintenance
+- remove unneeded includes
+- use myerror throughout
+- parse_xml: set line numbers
+- make parse_cm table driven
+- parse: check for duplicate attributes
+- check romcmp (bestbaddump)
+- set rom merge to NULL if equal to name?
+
 improve output to: rom  tko-simm.05a  size 2097152  crc a275a387: SHA1 mismatch
 fix free(): junk pointer, too high to make sense.
 fix free(): warning: chunk is already free.

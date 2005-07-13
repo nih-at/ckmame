@@ -1,5 +1,5 @@
 /*
-  $NiH: w_file_by_hash.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: w_file_by_hash_parray.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
 
   w_file_by_hash.c -- write file_by_hash struct to db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -29,13 +29,11 @@
 #include "dbh.h"
 #include "error.h"
 #include "parray.h"
-#include "romutil.h"
 #include "types.h"
 #include "util.h"
 #include "w.h"
 #include "xmalloc.h"
 
-static int file_by_hash_entry_cmp(const void *, const void *);
 static void w__file_by_hash_entry(DBT *, const void *);
 
 
@@ -53,7 +51,6 @@ w_file_by_hash_parray(DB *db, filetype_t ft, const hashes_t *h, parray_t *pa)
 	myerror(ERRDEF, "internal error: empty file_by_hash structure");
 	return -1;
     }
-    parray_sort(pa, file_by_hash_entry_cmp);
 
     w__parray(&v, w__file_by_hash_entry, pa);
 
@@ -69,19 +66,10 @@ w_file_by_hash_parray(DB *db, filetype_t ft, const hashes_t *h, parray_t *pa)
 static void
 w__file_by_hash_entry(DBT *v, const void *vr)
 {
-    const file_by_hash_entry_t *fbh;
+    const file_by_hash_t *fbh;
 
-    fbh = (const file_by_hash_entry_t *)vr;
+    fbh = (const file_by_hash_t *)vr;
 
     w__string(v, fbh->game);
     w__ushort(v, fbh->index);
-}
-
-
-
-static int
-file_by_hash_entry_cmp(const void *a, const void *b)
-{
-    return strcasecmp(((const file_by_hash_entry_t *)a)->game,
-		      ((const file_by_hash_entry_t *)b)->game);
 }

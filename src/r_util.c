@@ -1,5 +1,5 @@
 /*
-  $NiH: r_util.c,v 1.19 2005/06/13 00:32:19 wiz Exp $
+  $NiH: r_util.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   r_util.c -- data base read utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -33,19 +33,86 @@
 
 #define BLKSIZE  1024
 
-unsigned short
-r__ushort(DBT *v)
+#define ADVANCE(v, n)	((v)->size -= (n), (char *)((v)->data) += (n))
+
+
+
+array_t *
+r__array(DBT *v, void (*fn)(DBT *, void *), size_t size)
 {
-    unsigned short s;
-
-    if (v->size < 2)
-	return 0;
+    int n;
+    int i;
+    array_t *a;
     
-    s = (((unsigned char *)v->data)[0] << 8)
-	| (((unsigned char *)v->data)[1]);
+    n = r__ulong(v);
 
-    v->size -= 2;
-    v->data = (char *)v->data + 2;
+    
+    a = array_new_sized(size, n);
+    
+    for (i=0; i<n; i++) {
+	array_grow(a, NULL);
+	fn(v, array_get(a, i));
+    }
+
+    return a;
+}
+
+
+
+void
+r__mem(DBT *v, void *buf, unsigned int len)
+{
+    if (v->size < len)
+	return;
+    
+    memcpy(buf, (char *)v->data, len);
+    ADVANCE(v, len);
+}
+
+
+
+parray_t *
+r__parray(DBT *v, void *(*fn)(DBT *))
+{
+    parray_t *pa;
+    int i, n;
+
+    n = r__ulong(v);
+
+    pa = parray_new_sized(n);
+
+    for (i=0; i<n; i++)
+	parray_push(pa, fn(v));
+
+    return pa;
+}
+
+
+
+void
+r__pstring(DBT *v, void *sp)
+{
+    *(char **)sp = r__string(v);
+}
+
+
+
+char *
+r__string(DBT *v)
+{
+    char *s;
+    unsigned int len;
+
+    len = r__ushort(v);
+    if (len == 0)
+	return NULL;
+    
+    if (v->size < len)
+	return NULL;
+
+    s =xmalloc(len);
+    memcpy(s, v->data, len);
+    ADVANCE(v, len);
 
     return s;
 }
@@ -65,74 +132,25 @@ r__ulong(DBT *v)
 	 | (((unsigned char *)v->data)[2] << 8)
 	 | (((unsigned char *)v->data)[3])) & 0xffffffff;
 
-    v->size -= 4;
-    v->data = (char *)v->data + 4;
+    ADVANCE(v, 4);
 
     return l;
 }
 
 
 
-void
-r__mem(DBT *v, void *buf, unsigned int len)
+unsigned short
+r__ushort(DBT *v)
 {
-    if (v->size < len)
-	return;
+    unsigned short s;
+
+    if (v->size < 2)
+	return 0;
     
-    memcpy(buf, (char *)v->data, len);
-    v->size -= len;
-    v->data = (char *)v->data + len;
-}
+    s = (((unsigned char *)v->data)[0] << 8)
+	| (((unsigned char *)v->data)[1]);
 
-
-
-char *
-r__string(DBT *v)
-{
-    char *s;
-    unsigned int len;
-
-    len = r__ushort(v);
-    if (len == 0)
-	return NULL;
-    
-    if (v->size < len)
-	return NULL;
-
-    s = (char *)xmalloc(len);
-	memcpy(s, (unsigned char *)v->data, len);
-    v->size -= len;
-    v->data = (char *)v->data + len;
+    ADVANCE(v, 2);
 
     return s;
-}
-
-
-
-void
-r__pstring(DBT *v, void *sp)
-{
-    *(char **)sp = r__string(v);
-}
-
-int
-r__array(DBT *v, void (*fn)(DBT *, void *), void **a, size_t size)
-{
-    int n;
-    int i;
-    void *ap;
-    
-    n = r__ulong(v);
-    if (n == 0) {
-	*a = NULL;
-	return 0;
-    }
-
-    ap = xmalloc(n*size);
-    
-    for (i=0; i<n; i++)
-	fn(v, (char *)ap+(size*i));
-
-    *a = ap;
-    return n;
 }

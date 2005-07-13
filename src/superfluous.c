@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: superfluous.c,v 1.2 2005/07/07 22:00:20 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -55,14 +55,6 @@
 #  include <ndir.h>
 # endif
 #endif
-
-
-
-static int
-docmp(const void *a, const void *b)
-{
-    return strcmp(*(const char **)a, *(const char **)b);
-}
 
 
 
@@ -125,8 +117,7 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 	    else
 		lst = listx;
 
-	    p = b;
-	    if (parray_bsearch(lst, &p, (cmpfunc)strpcasecmp) == NULL) {
+	    if (parray_index_sorted(lst, b, strcasecmp) == -1) {
 		p = xmalloc(l+1);
 		strncpy(p, de->d_name, l);
 		p[l] = '\0';
@@ -141,7 +132,7 @@ handle_extra_files(DB *db, const char *dbname, int sample)
 		first = 0;
 	    }
 
-	    parray_sort(found, docmp);
+	    parray_sort(found, strcmp);
 
 	    for (j=0; j<parray_length(found); j++)
 		printf("%s/%s/%s\n", rompath[i],

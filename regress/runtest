@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.15 2005/07/04 21:54:50 dillo Exp $
+#  $NiH: runtest,v 1.16 2005/07/05 01:24:15 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -231,6 +231,8 @@ FILES_SHOULD=''
 
 mkdir roms
 
+touch errors stdout
+
 while read cmd arg
 do
   case $cmd in
@@ -287,23 +289,15 @@ then
     if [ ! -z "${VERBOSE}" ]
     then
 	cat gotout
+	cat goterr
     fi
     fail "unexpected exit status: got $ret, expected ${RET}"
 fi
 
-FILES_SHOULD="${FILES_SHOULD} gotout goterr ${MAME_DB}"
+FILES_SHOULD="${FILES_SHOULD} errors stdout gotout goterr ${MAME_DB}"
 
-if [ -f stdout ]
-then
-    FILES_SHOULD="${FILES_SHOULD} stdout"
-    checkfile stdout gotout "unexpected output"
-fi
-
-if [ -f errors ]
-then
-    FILES_SHOULD="${FILES_SHOULD} errors"
-    checkfile errors goterr "unexpected error output"
-fi
+checkfile errors goterr "unexpected error output"
+checkfile stdout gotout "unexpected output"
 
 if [ ! -z "${FILES}" ]
 then

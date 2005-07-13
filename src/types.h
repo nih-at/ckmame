@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.3 2005/07/06 08:23:02 wiz Exp $
+  $NiH: types.h,v 1.4 2005/07/07 22:00:20 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,19 +26,17 @@
 
 
 
-#include <zip.h>
-
-#include "hashes.h"
-
-
-
 enum flags {
     FLAGS_OK, FLAGS_BADDUMP, FLAGS_NODUMP
 };
 
+typedef enum flags flags_t;
+
 enum where {
     ROM_INZIP, ROM_INCO, ROM_INGCO
 };
+
+typedef enum where where_t;
 
 enum state {
     ROM_0,
@@ -46,73 +44,14 @@ enum state {
     ROM_NAMERR, ROM_LONGOK, ROM_BESTBADDUMP, ROM_OK, ROM_TAKEN
 };
 
+typedef enum state state_t;
+
 enum filetype {
-    TYPE_ROM, TYPE_SAMPLE, TYPE_DISK
+    TYPE_ROM, TYPE_SAMPLE, TYPE_DISK,
+    TYPE_MAX
 };
+
 typedef enum filetype filetype_t;
-
-struct rom {
-    char *name, *merge;
-    struct hashes hashes;
-    unsigned long size;
-    enum flags flags;
-    enum state state;
-    enum where where;
-    int naltname;
-    char **altname;
-};
-
-struct disk {
-    char *name;
-    struct hashes hashes;
-};
-
-struct game {
-    char *name;
-    char *description;
-    char *cloneof[2];
-    int nclone;
-    char **clone;
-    struct rom *rom;
-    int nrom;
-    char  *sampleof[2];
-    int nsclone;
-    char **sclone;
-    struct rom *sample;
-    int nsample;
-    struct disk *disk;
-    int ndisk;
-};
-
-typedef struct game game_t;
-
-
-struct match {
-    struct match *next;
-    enum where where;
-    unsigned int zno;
-    unsigned int fno;
-    enum state quality;
-    int offset;              /* offset of correct part if ROM_LONGOK */
-};
-
-struct disk_match {
-    struct disk d;
-    enum state quality;
-};
-
-struct zfile {
-    char *name;
-    struct rom *rom;
-    int nrom;
-    struct zip *zf;
-};
-
-struct tree {
-    char *name;
-    int check;
-    struct tree *next, *child;
-};
 
 
 
@@ -120,5 +59,10 @@ extern int output_options;
 extern int fix_do, fix_print, fix_keep_long, fix_keep_unused,
     fix_keep_unknown;
 extern int romhashtypes, diskhashtypes;
+
+
+
+const char *filetype_db_key(filetype_t);
+
 
 #endif /* types.h */

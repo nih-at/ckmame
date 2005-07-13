@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.2 2005/07/06 08:23:02 wiz Exp $
+  $NiH: ckmame.c,v 1.3 2005/07/07 22:00:20 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -36,11 +36,12 @@
 #include "getopt.h"
 #endif
 
-#include "types.h"
 #include "dbh.h"
-#include "util.h"
-#include "funcs.h"
 #include "error.h"
+#include "funcs.h"
+#include "tree.h"
+#include "types.h"
+#include "util.h"
 #include "warn.h"
 
 
@@ -130,15 +131,13 @@ main(int argc, char **argv)
     char *dbname;
     int c, found;
     parray_t *list;
-    struct tree *tree;
-    struct tree tree_root;
-    int sample, superfluous_only, integrity;
+    tree_t *tree;
+    filetype_t ft;
+    int superfluous_only, integrity;
     
     prg = argv[0];
-    tree = &tree_root;
-    tree->child = NULL;
     output_options = WARN_ALL;
-    sample = 0;
+    ft = TYPE_ROM;
     superfluous_only = 0;
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -199,7 +198,7 @@ main(int argc, char **argv)
 	    fix_print = 1;
 	    break;
 	case 'S':
-	    sample = 1;
+	    ft = TYPE_SAMPLE;
 	    break;
 	case 's':
 	    output_options &= ~WARN_SUPERFLUOUS;
@@ -240,7 +239,7 @@ main(int argc, char **argv)
 	    exit(1);
 	}
 	
-	handle_extra_files(db, dbname, sample);
+	handle_extra_files(db, dbname, ft);
 	exit(0);
     }
 
@@ -255,15 +254,17 @@ main(int argc, char **argv)
 	exit(1);
     }
 
+    tree = tree_new(ft);
+
     if (optind == argc) {
 	for (i=0; i<parray_length(list); i++)
-	    tree_add(db, tree, parray_get(list, i), sample);
+	    tree_add(db, tree, parray_get(list, i), ft);
     }
     else {
 	for (i=optind; i<argc; i++) {
 	    if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-		if (parray_bsearch(list, argv+i, (cmpfunc)strpcasecmp) != NULL)
-		    tree_add(db, tree, argv[i], sample);
+		if (parray_index_sorted(list, argv[i], strcasecmp) >= 0)
+		    tree_add(db, tree, argv[i], ft);
 		else
 		    myerror(ERRDEF, "game `%s' unknown", argv[i]);
 	    }
@@ -271,7 +272,7 @@ main(int argc, char **argv)
 		found = 0;
 		for (j=0; j<parray_length(list); j++) {
 		    if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
-			tree_add(db, tree, parray_get(list, j), sample);
+			tree_add(db, tree, parray_get(list, j), ft);
 			found = 1;
 		    }
 		}
@@ -283,10 +284,10 @@ main(int argc, char **argv)
 
     parray_free(list, free);
 
-    tree_traverse(db, tree, sample);
+    tree_traverse(db, tree);
 
     if (optind == argc && !ignore_extra)
-	handle_extra_files(db, dbname, sample);
+	handle_extra_files(db, dbname, ft);
 
     return 0;
 }

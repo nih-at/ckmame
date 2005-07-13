@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-xml.c,v 1.4 2005/06/12 19:30:11 dillo Exp $
+  $NiH: parse-xml.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   parse-xml.c -- parse listxml format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -42,65 +42,109 @@ parse_xml(FILE *f)
 
 #include <libxml/xmlreader.h>
 
-static int do_attr(xmlTextReaderPtr, const char *, int (*)(const char *));
-int xml_close(void *);
-int xml_read(void *, char *, int);
+struct attr {
+    const char *name;
+    int (*fn)(parser_context_t *, filetype_t, int, const char *);
+    filetype_t ft;
+    int ht;
+};
+
+struct entity {
+    const char *name;
+    const struct attr *attr;
+    int empty;
+    int (*start)(parser_context_t *, filetype_t);
+    int (*end)(parser_context_t *, filetype_t);
+    filetype_t ft;
+};
+
+static const struct attr attr_disk[] = {
+    { "md5",      parse_file_hash,    TYPE_DISK,   HASHES_TYPE_MD5  },
+    { "merge",    parse_file_merge,   TYPE_DISK,   0                },
+    { "name",     parse_file_name,    TYPE_DISK,   0                },
+    { "sha1",     parse_file_hash,    TYPE_DISK,   HASHES_TYPE_SHA1 },
+    { "status",   parse_file_flags,   TYPE_DISK,   0                },
+    { NULL }
+};
+static const struct attr attr_game[] = {
+    { "name",     parse_game_name,    0,           0                },
+    { "romof",    parse_game_cloneof, TYPE_ROM,    0                },
+    { "sampleof", parse_game_cloneof, TYPE_SAMPLE, 0                },
+    { NULL }
+};
+static const struct attr attr_rom[] = {
+    { "crc",      parse_file_hash,    TYPE_ROM,    HASHES_TYPE_CRC  },
+    { "md5",      parse_file_hash,    TYPE_ROM,    HASHES_TYPE_MD5  },
+    { "merge",    parse_file_merge,   TYPE_ROM,    0                },
+    { "name",     parse_file_name,    TYPE_ROM,    0                },
+    { "sha1",     parse_file_hash,    TYPE_ROM,    HASHES_TYPE_SHA1 },
+    { "size",     parse_file_size,    TYPE_ROM,    0                },
+    { "status",   parse_file_flags,   TYPE_ROM,    0                },
+    { NULL }
+};
+static const struct attr attr_sample[] = {
+    { "name",     parse_file_name,    TYPE_SAMPLE, 0                },
+    { NULL }
+};
+static const struct entity entity[] = {
+    { "disk",   attr_disk,   1, parse_file_start, parse_file_end, TYPE_DISK },
+    { "game",   attr_game,   0, parse_game_start, parse_game_end, 0 },
+    { "machine", attr_game,  0, parse_game_start, parse_game_end, 0 },
+    { "rom",    attr_rom,    1, parse_file_start, parse_file_end, TYPE_ROM },
+    { "sample", attr_sample, 1, parse_file_start, parse_file_end, TYPE_SAMPLE }
+};
+static const int nentity = sizeof(entity)/sizeof(entity[0]);
+
+
+
+static int entity_cmp(const void *, const void *);
+static int xml_close(void *);
+static int xml_read(void *, char *, int);
 
 
 
 int
-parse_xml(FILE *f)
+parse_xml(parser_context_t *ctx)
 {
     xmlTextReaderPtr reader;
     int in_description;
-    int ret;
+    int i, ret;
     const xmlChar *name;
+    char *attr;
+    const struct entity *e;
+    const struct attr *a;
 
-    reader = xmlReaderForIO(xml_read, xml_close, f, NULL, NULL, 0);
+    reader = xmlReaderForIO(xml_read, xml_close, ctx->fin, NULL, NULL, 0);
     if (reader == NULL) {
 	/* XXX */
 	printf("opening error\n");
 	return -1;
     }
 
+    ctx->lineno = 0;
+
     in_description = 0;
 
     while ((ret=xmlTextReaderRead(reader)) == 1) {
 	name = xmlTextReaderConstName(reader);
 
-	if (strcmp(name, "game") == 0
-	    || strcmp(name, "machine") == 0) {
-	    if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT) {
-		parse_game_start();
-		do_attr(reader, "name", parse_game_name);
-		do_attr(reader, "romof", parse_game_cloneof);
-		do_attr(reader, "sampleof", parse_game_sampleof);
+	if ((e=bsearch(name, entity, nentity, sizeof(entity[0]),
+		       entity_cmp)) != NULL) {
+	    if (e->empty
+		|| xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT) {
+		ret |= e->start(ctx, e->ft);
+		a = e->attr;
+		for (i=0; a[i].name; i++) {
+		    if ((attr=xmlTextReaderGetAttribute(reader,
+						e->attr[i].name)) != NULL) {
+			ret |= a[i].fn(ctx, a[i].ft, a[i].ht, attr);
+			free(attr);
+		    }
+		}
 	    }
-	    else
-		parse_game_end();
-	}
-	else if (strcmp(name, "rom") == 0) {
-	    parse_rom_start();
-	    do_attr(reader, "name", parse_rom_name);
-	    do_attr(reader, "size", parse_rom_size);
-	    do_attr(reader, "crc", parse_rom_crc);
-	    do_attr(reader, "md5", parse_rom_md5);
-	    do_attr(reader, "sha1", parse_rom_sha1);
-	    do_attr(reader, "merge", parse_rom_merge);
-	    do_attr(reader, "status", parse_rom_flags);
-	    parse_rom_end();
-	}
-	else if (strcmp(name, "disk") == 0) {
-	    parse_disk_start();
-	    do_attr(reader, "name", parse_disk_name);
-	    do_attr(reader, "md5", parse_disk_md5);
-	    do_attr(reader, "sha1", parse_disk_sha1);
-	    parse_disk_end();
-	}
-	else if (strcmp(name, "sample") == 0) {
-	    parse_sample_start();
-	    do_attr(reader, "name", parse_sample_name);
-	    parse_sample_end();
+	    if (e->empty 
+		|| xmlTextReaderNodeType(reader) != XML_READER_TYPE_ELEMENT)
+		ret |= e->end(ctx, e->ft);
 	}
 	else if (strcmp(name, "description") == 0) {
 	    if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT)
@@ -109,7 +153,7 @@ parse_xml(FILE *f)
 		in_description = 0;
 	}
 	else if (in_description && strcmp(name, "#text") == 0)
-	    parse_game_description(xmlTextReaderConstValue(reader));
+	    parse_game_description(ctx, xmlTextReaderConstValue(reader));
     }
     xmlFreeTextReader(reader);
 
@@ -125,23 +169,14 @@ parse_xml(FILE *f)
 
 
 static int
-do_attr(xmlTextReaderPtr reader, const char *name,
-	int (*func)(const char *))
+entity_cmp(const void *key, const void *ve)
 {
-    char *attr;
-    int ret;
-
-    if ((attr=xmlTextReaderGetAttribute(reader, name)) == NULL)
-	return 1;
-
-    ret = func(attr);
-    free(attr);
-    return ret;
+    return strcmp(key, ((struct entity *)ve)->name);
 }
 
 
 
-int
+static int
 xml_close(void *ctx)
 {
     return 0;
@@ -149,7 +184,7 @@ xml_close(void *ctx)
 
 
 
-int
+static int
 xml_read(void *ctx, char *b, int len)
 {
     return fread(b, 1, len, (FILE *)ctx);

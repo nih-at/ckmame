@@ -1,7 +1,7 @@
 /*
-  $NiH: chd-supp.c,v 1.3 2005/07/04 23:51:32 dillo Exp $
+  $NiH: chd-supp.c,v 1.4 2005/07/06 08:23:02 wiz Exp $
 
-  chd-supp.c -- support code for chd files
+  disk_get_info.c -- get info from CHD file
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -30,10 +30,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
-#include "romutil.h"
 #include "chd.h"
-#include "chd-supp.h"
+#include "disk.h"
+#include "funcs.h"
 #include "xmalloc.h"
 
 extern char *prg;
@@ -42,73 +41,67 @@ static int get_hashes(struct chd *, struct hashes *);
 
 
 
-/*
-  fill in d->md5 and d->sha1 hashes from CHD file d->name
-  returns 0 on success, -1 on error.
-*/
-
-int
-read_infos_from_chd(struct disk *d, int hashtypes)
+disk_t *
+disk_get_info(const char *name)
 {
     struct chd *chd;
+    disk_t *d;
+    hashes_t *h;
     int err;
 
-    hashes_init(&d->hashes);
+    if (name == NULL)
+	return NULL;
 
-    if ((chd=chd_open(d->name, &err)) == NULL) {
+    if ((chd=chd_open(name, &err)) == NULL) {
 	/* no error if file doesn't exist */
 	if (!(err == CHD_ERR_OPEN && errno == ENOENT)) {
 	    /* XXX: include err */
 	    fprintf(stderr, "%s: error opening '%s': %s\n",
 		    prg, d->name, strerror(errno));
 	}
-	return -1;
+	return NULL;
     }
 
-    if (hashtypes == 0) {
-	d->hashes.types |= HASHES_TYPE_MD5;
-	memcpy(d->hashes.md5, chd->md5, sizeof(d->hashes.md5));
-	if (chd->version > 2) {
-	    d->hashes.types |= HASHES_TYPE_SHA1;
-	    memcpy(d->hashes.sha1, chd->sha1, sizeof(d->hashes.sha1));
-	}
-    }
-    else {
-	d->hashes.types = hashtypes;
-	if (get_hashes(chd, &d->hashes) < 0) {
-	    chd_close(chd);
-	    return -1;
+    d = disk_new(name);
+    h = disk_hashes(d);
+    hashes_init(h);
+
+    if (diskhashtypes) {
+	hashes_types(h) = diskhashtypes;
+	
+	err = get_hashes(chd, h);
+	chd_close(chd);
+
+	if (err < 0) {
+	    disk_free(d);
+	    return NULL;
 	}
 
-	if (hashtypes & HASHES_TYPE_MD5) {
-	    if (memcmp(d->hashes.md5, chd->md5, sizeof(d->hashes.md5)) != 0) {
+	if (diskhashtypes & HASHES_TYPE_MD5) {
+	    if (!hashes_verify(h, HASHES_TYPE_MD5, chd->md5)) {
 		fprintf(stderr, "%s: md5 mismatch in '%s'\n",
-		    prg, d->name);
-		chd_close(chd);
-		return -1;
+		    prg, name);
+		return NULL;
 	    }
 	}
-	else
-	    memcpy(d->hashes.md5, chd->md5, sizeof(d->hashes.md5));
 
-	if (chd->version > 2) {
-	    if (hashtypes & HASHES_TYPE_SHA1) {
-		if (memcmp(d->hashes.sha1, chd->sha1,
-			   sizeof(d->hashes.sha1)) != 0) {
-		    fprintf(stderr, "%s: sha1 mismatch in '%s'\n",
-			    prg, d->name);
-		    chd_close(chd);
-		    return -1;
-		}
+	if (chd->version > 2 && (diskhashtypes & HASHES_TYPE_SHA1)) {
+	    if (!hashes_verify(h, HASHES_TYPE_SHA1, chd->sha1)) {
+		fprintf(stderr, "%s: sha1 mismatch in '%s'\n",
+			prg, name);
+		return NULL;
 	    }
-	    else
-		memcpy(d->hashes.sha1, chd->sha1, sizeof(d->hashes.sha1));
 	}		
     }
+    else
+	chd_close(chd);
     
-    chd_close(chd);
+    hashes_set(h, HASHES_TYPE_MD5, chd->md5);
 
-    return 0;
+    if (chd->version > 2)
+	hashes_set(h, HASHES_TYPE_SHA1, chd->sha1);
+    
+    return d;
 }
 
 

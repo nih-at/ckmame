@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.13 2004/04/24 09:40:24 dillo Exp $
+  $NiH: funcs.h,v 1.1 2005/07/04 21:54:50 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,10 +26,19 @@
 
 
 
+#include "archive.h"
+#include "dbl.h"
+#include "game.h"
+#include "match.h"
+#include "match_disk.h"
+#include "tree.h"
+
+match_disk_array_t *check_disks(game_t *);
+match_array_t *check_roms(game_t *, archive_t **, filetype_t);
+void diagnostics(const game_t *, filetype_t, const match_array_t *,
+		 const match_disk_array_t *, const archive_t **);
+int fix_game(game_t *, filetype_t, archive_t **, match_array_t *);
 int handle_extra_files(DB *, const char *, int);
-int tree_add(DB *, struct tree *, const char *, int);
-void tree_free(struct tree *);
-struct tree *tree_new(const char *, int);
-void tree_traverse(DB *, const struct tree *, int);
+void marry(match_array_t *, const int *);
 
 #endif /* funcs.h */

@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.29 2005/06/20 16:16:04 wiz Exp $
+  $NiH: util.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   util.c -- utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -112,14 +112,6 @@ init_rompath(void)
     rompath[i] = NULL;
 
     rompath_init = 1;
-}
-
-
-
-int
-strpcasecmp(const char * const *sp1, const char * const *sp2)
-{
-    return strcasecmp(*sp1, *sp2);
 }
 
 

@@ -1,5 +1,5 @@
 /*
-  $NiH: w_util.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: w_util.c,v 1.2 2005/07/07 22:00:20 dillo Exp $
 
   w_util.c -- data base write utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -100,12 +100,16 @@ w__string(DBT *v, const char *s)
 
 
 void
-w__parray(DBT *v, void (*fn)(DBT *, const void *), parray_t *pa)
+w__parray(DBT *v, void (*fn)(DBT *, const void *), const parray_t *pa)
 {
-    unsigned int i;
+    int i;
     
-    w__ulong(v, parray_length(pa));
+    if (pa == NULL) {
+	w__ulong(v, 0);
+	return;
+    }
 
+    w__ulong(v, parray_length(pa));
     for (i=0; i<parray_length(pa); i++)
 	fn(v, parray_get(pa, i));
 }
@@ -121,15 +125,14 @@ w__pstring(DBT *v, const void *sp)
 
 
 void
-w__array(DBT *v, void (*fn)(DBT *, const void *), const void *a,
-	 size_t size, size_t n)
+w__array(DBT *v, void (*fn)(DBT *, const void *), const array_t *a)
 {
-    unsigned int i;
+    int i;
     
-    w__ulong(v, n);
+    w__ulong(v, array_length(a));
 
-    for (i=0; i<n; i++)
-	fn(v, (char *)a+(size*i));
+    for (i=0; i<array_length(a); i++)
+	fn(v, array_get(a, i));
 }
 
 

@@ -1,5 +1,5 @@
 /*
-  $NiH: r_file_by_hash.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: r_file_by_hash.c,v 1.2 2005/07/07 22:00:20 dillo Exp $
 
   r_file_by_hash.c -- read file_by_hash struct from db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -26,19 +26,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
+#include "array.h"
 #include "dbh.h"
+#include "file_by_hash.h"
 #include "xmalloc.h"
 #include "r.h"
-#include "romutil.h"
 
 static void r__file_by_hash_entry(DBT *, void *);
 
-file_by_hash_t *
+array_t *
 r_file_by_hash(DB *db, filetype_t ft, const hashes_t *hash)
 {
     DBT v;
-    struct file_by_hash *fbh;
+    array_t *a;
     void *data;
 
     if (ddb_lookup(db, file_by_hash_make_key(ft, hash), &v) != 0)
@@ -46,14 +46,11 @@ r_file_by_hash(DB *db, filetype_t ft, const hashes_t *hash)
 
     data = v.data;
 
-    fbh = file_by_hash_new();
-    
-    fbh->nentry = r__array(&v, r__file_by_hash_entry, (void *)&fbh->entry,
-			   sizeof(fbh->entry[0]));
+    a = r__array(&v, r__file_by_hash_entry, sizeof(file_by_hash_t));
     
     free(data);
 
-    return fbh;
+    return a;
 }
 
 
@@ -61,9 +58,9 @@ r_file_by_hash(DB *db, filetype_t ft, const hashes_t *hash)
 static void
 r__file_by_hash_entry(DBT *v, void *vr)
 {
-    file_by_hash_entry_t *e;
+    file_by_hash_t *e;
     
-    e = (file_by_hash_entry_t *)vr;
+    e = (file_by_hash_t *)vr;
 
     e->game = r__string(v);
     e->index = r__ushort(v);

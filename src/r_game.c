@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: r_game.c,v 1.2 2005/07/04 22:41:36 dillo Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -28,44 +28,36 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "types.h"
 #include "dbh.h"
-#include "xmalloc.h"
+#include "game.h"
 #include "r.h"
+#include "xmalloc.h"
 
-static void r__hashes(DBT *, struct hashes *);
+static void r__hashes(DBT *, hashes_t *);
+static void r__rs(DBT *, struct rs *);
 
 
 
-struct game *
+game_t *
 r_game(DB *db, const char *name)
 {
     DBT v;
-    struct game *game;
+    game_t *game;
     void *data;
+    int i;
 
     if (ddb_lookup(db, name, &v) != 0)
 	return NULL;
 
     data = v.data;
 
-    game = (struct game *)xmalloc(sizeof(struct game));
+    game = xmalloc(sizeof(*game));
     
     game->name = xstrdup(name);
     game->description = r__string(&v);
-    game->cloneof[0] = r__string(&v);
-    game->cloneof[1] = r__string(&v);
-    game->nclone = r__array(&v, r__pstring, (void *)&game->clone,
-			    sizeof(char *));
-    game->nrom = r__array(&v, r__rom, (void *)&game->rom, sizeof(struct rom));
-    game->sampleof[0] = r__string(&v);
-    game->sampleof[1] = r__string(&v);
-    game->nsclone = r__array(&v, r__pstring, (void *)&game->sclone,
-			    sizeof(char *));
-    game->nsample = r__array(&v, r__rom, (void *)&game->sample,
-			     sizeof(struct rom));
-    game->ndisk = r__array(&v, r__disk, (void *)&game->disk,
-			   sizeof(struct disk));
+    for (i=0; i<GAME_RS_MAX; i++)
+	r__rs(&v, game->rs+i);
+    game->disks = r__array(&v, r__disk, sizeof(disk_t));
     
     free(data);
 
@@ -77,12 +69,14 @@ r_game(DB *db, const char *name)
 void
 r__disk(DBT *v, void *vd)
 {
-    struct disk *d;
+    disk_t *d;
     
-    d = (struct disk *)vd;
+    d = vd;
 
     d->name = r__string(v);
+    d->merge = r__string(v);
     r__hashes(v, &d->hashes);
+    d->flags = (flags_t)r__ushort(v);
 }
 
 
@@ -96,12 +90,23 @@ r__rom(DBT *v, void *vr)
 
     r->name = r__string(v);
     r->merge = r__string(v);
-    r->naltname = r__array(v, r__pstring, (void *)&r->altname, sizeof(char *));
+    r->altnames = r__parray(v, (void *(*)())r__string);
     r__hashes(v, &r->hashes);
     r->size = r__ulong(v);
-    r->flags = (enum flags)r__ushort(v);
-    r->where = (enum where)r__ushort(v);
-    r->state = (enum state)0;
+    r->flags = (flags_t)r__ushort(v);
+    r->where = (where_t)r__ushort(v);
+    r->state = ROM_0;
+}
+
+
+
+static void
+r__rs(DBT *v, struct rs *rs)
+{
+    rs->cloneof[0] = r__string(v);
+    rs->cloneof[1] = r__string(v);
+    rs->clones = r__parray(v, (void *(*)())r__string);
+    rs->files = r__array(v, r__rom, sizeof(rom_t));
 }
 
 

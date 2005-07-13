@@ -1,5 +1,5 @@
 /*
-  $NiH: w_list.c,v 1.14 2005/06/20 16:16:04 wiz Exp $
+  $NiH: w_list.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   w_list.c -- write list struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -58,7 +58,7 @@ w_hashtypes(DB *db, int romhashtypes, int diskhashtypes)
 
 
 int
-w_list(DB *db, const char *key, const char * const *list, int n)
+w_list(DB *db, const char *key, const parray_t *pa)
 {
     int err;
     DBT v;
@@ -66,7 +66,7 @@ w_list(DB *db, const char *key, const char * const *list, int n)
     v.data = NULL;
     v.size = 0;
 
-    w__array(&v, w__pstring, list, sizeof(char *), n);
+    w__parray(&v, (void (*)())w__string, pa);
 
     err = ddb_insert(db, key, &v);
 

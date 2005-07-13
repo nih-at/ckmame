@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: dumpgame.mdoc,v 1.7 2005/06/12 18:37:34 wiz Exp 
-.\" $NiH: dumpgame.man,v 1.4 2005/06/12 18:37:42 wiz Exp $
+.\" from NiH: dumpgame.mdoc,v 1.2 2005/07/07 22:00:20 dillo Exp 
+.\" $NiH: dumpgame.mdoc,v 1.2 2005/07/07 22:00:20 dillo Exp $
 .\"
 .\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -30,7 +30,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH DUMPGAME 1 "June 12, 2005" NiH
+.TH DUMPGAME 1 "July 07, 2005" NiH
 .SH "NAME"
 dumpgame \- extract rom set information from ckmame database
 .SH "SYNOPSIS"
@@ -38,9 +38,8 @@ dumpgame \- extract rom set information from ckmame database
 [\fB-d\fR \fBdbfile\fR]
 [\fBgame\fR]
 .B dumpgame
-\fB-c\fR
+\fB-c\fR | d
 [\fB-d\fR \fBdbfile\fR]
-[\fB-t\fR \fBtype\fR]
 \fBchecksum\fR
 [\fB...\fR]
 .B dumpgame
@@ -58,7 +57,7 @@ supports the following options:
 .RS
 .TP 24
 \fB-c\fR, \-checksum
-Look for a rom by checksum (instead of the default
+Look for a ROM by checksum (instead of the default
 behaviour to look for a game by name).
 .TP 24
 \fB-D\fR \fBdbfile, \fB--db\fR Ar dbfile\fR
@@ -67,20 +66,12 @@ Use database
 instead of the default
 ``\fBmame.db\fR.''
 .TP 24
+\fB-d\fR, \-checksum
+Look for a disk by checksum (instead of the default
+behaviour to look for a game by name).
+.TP 24
 \fB-h\fR, \-help
 Display a short help message.
-.TP 24
-\fB-t\fR \fBtype, \fB--type\fR Ar type\fR
-Interpret the checksum arguments as
-\fBtype\fR
-checksums.
-The following values are allowed:
-.Cm crc32,
-.Cm md5,
-and
-.Cm sha1.
-.Cm crc32
-is the default.
 .TP 24
 \fB-V\fR, \-version
 Display program name and version number.
@@ -111,7 +102,7 @@ Display all roms matching the checksum
 ckmame(1),
 mkmamedb(1)
 .SH "AUTHORS"
-
+-nosplit
 .B dumpgame
 was written by
 Dieter Baron <dillo@giga.or.at>

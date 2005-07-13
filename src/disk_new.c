@@ -1,7 +1,7 @@
 /*
-  $NiH: file_by_hash.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH$
 
-  file_by_hash_free.c -- free file_by_hash structure
+  disk.c -- create / free disk structure
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -21,29 +21,36 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <stdlib.h>
-#include <string.h>
+
 
-#include "file_by_hash.h"
-#include "types.h"
-#include "romutil.h"
+#include <stdlib.h>
+
+#include "disk.h"
 #include "xmalloc.h"
 
 
 
-void
-file_by_hash_free(file_by_hash_t *fbh)
+disk_t *
+disk_new(const char *name)
 {
-    int i;
+    disk_t *d;
 
-    if (fbh == NULL)
+    d = xmalloc(sizeof(*d));
+
+    disk_init(d);
+    d->name = xstrdup(name);
+
+    return d;
+}
+
+
+
+void
+disk_free(disk_t *d)
+{
+    if (d == NULL)
 	return;
 
-    if (fbh->nentry > 0) {
-	for (i=0; i<fbh->nentry; i++)
-	    free(fbh->entry[i].game);
-	free(fbh->entry);
-    }
-
-    free(fbh);
+    disk_finalize(d);
+    free(d);
 }

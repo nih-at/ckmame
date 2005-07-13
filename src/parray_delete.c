@@ -1,7 +1,7 @@
 /*
-  $NiH$
+  $NiH: parray_delete.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
 
-  parray_push.c -- append element to end of array of pointers
+  parray_delete.c -- delete element from array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -37,6 +37,6 @@ parray_delete(parray_t *pa, int index, void (*fn)(void *))
 	fn(parray_get(pa, index));
     
     memmove(pa->entry+index, pa->entry+index+1,
-	    sizeof(pa->entry[0]) * parray_length(pa)-index-1);
+	    sizeof(pa->entry[0]) * (parray_length(pa)-index-1));
     pa->nentry--;
 }

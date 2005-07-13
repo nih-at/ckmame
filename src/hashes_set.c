@@ -1,11 +1,8 @@
-#ifndef _HAD_CHD_SUPP_H
-#define _HAD_CHD_SUPP_H
-
 /*
-  $NiH: chd-supp.c,v 1.3 2005/07/04 23:51:32 dillo Exp $
+  $NiH$
 
-  chd-supp.h -- support code for chd files
-  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+  hashes_set.c -- set hash from memory
+  Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -24,6 +21,40 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-int read_infos_from_chd(struct disk *, int);
+
 
-#endif /* _HAD_CHD_SUPP_H */
+#include <string.h>
+
+#include "hashes.h"
+
+
+
+void
+hashes_set(hashes_t *h, int type, const unsigned char *b)
+{
+    unsigned char *t;
+    int s;
+
+    switch (type) {
+    case HASHES_TYPE_CRC:
+	t = (unsigned char *)&h->crc;
+	s = sizeof(h->crc);
+	break;
+
+    case HASHES_TYPE_MD5:
+	t = h->md5;
+	s = HASHES_SIZE_MD5;
+	break;
+
+    case HASHES_TYPE_SHA1:
+	t = h->sha1;
+	s = HASHES_SIZE_SHA1;
+	break;
+
+    default:
+	return;
+    }
+
+    memcpy(t, b, s);
+    h->types |= type;
+}

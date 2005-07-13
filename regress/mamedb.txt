@@ -68,6 +68,15 @@ game (
 )
 
 game (
+	name nogood-2
+	description "clone-8 with no good dump"
+	manufacturer "synth"
+	year 1994
+	rom ( name 04.rom size 4 crc32 00000000 )
+	rom ( name 08.rom size 8 crc32 3656897d )
+)
+
+game (
 	name norom
 	description "no rom"
 	manufacturer "synth"

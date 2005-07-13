@@ -1,8 +1,11 @@
+#ifndef HAD_TREE_H
+#define HAD_TREE_H
+
 /*
   $NiH$
 
-  file_by_hash_entry.c -- create / free file_by_hash_entry structure
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  tree.h -- XXX
+  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -21,34 +24,27 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <stdlib.h>
+
 
-#include "file_by_hash.h"
-#include "xmalloc.h"
+#include "dbl.h"
+#include "types.h"
+
+struct tree {
+    char *name;
+    int check;
+    filetype_t ft;
+    struct tree *next, *child;
+};
+
+typedef struct tree tree_t;
 
 
 
-void
-file_by_hash_entry_free(file_by_hash_entry_t *e)
-{
-    if (e == NULL)
-	return;
-    
-    free(e->game);
-    free(e);
-}
+#define tree_name(t)	((t)->name)
 
-
+int tree_add(DB *, tree_t *, const char *, filetype_t);
+void tree_free(tree_t *);
+tree_t *tree_new(filetype_t);
+void tree_traverse(DB *, const tree_t *);
 
-file_by_hash_entry_t *
-file_by_hash_entry_new(const char *game, int idx)
-{
-    file_by_hash_entry_t *e;
-
-    e = xmalloc(sizeof(*e));
-
-    e->game = xstrdup(game);
-    e->index = idx;
-
-    return e;
-}
+#endif /* tree.h */

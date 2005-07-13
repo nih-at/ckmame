@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: parray.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
 
   parray.c -- create / free array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -48,15 +48,21 @@ parray_free(parray_t *pa, void (*fn)(void *))
 
 
 parray_t *
-parray_new(void)
+parray_new_sized(int n)
 {
     parray_t *pa;
 
+    if (n<0)
+	n = 0;
+
     pa = xmalloc(sizeof(*pa));
 
-    pa->entry = xmalloc(sizeof(pa->entry[0]));
+    if (n == 0)
+	pa->entry = 0;
+    else
+	pa->entry = xmalloc(n*sizeof(pa->entry[0]));
     pa->nentry = 0;
-    pa->alloc_len = 1;
+    pa->alloc_len = n;
 
     return pa;
 }
