@@ -2,9 +2,9 @@
 #define HAD_ARCHIVE_H
 
 /*
-  $NiH$
+  $NiH: archive.h,v 1.1 2005/07/13 17:42:19 dillo Exp $
 
-  rom.h -- information about one rom
+  archive.h -- information about an archive
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
