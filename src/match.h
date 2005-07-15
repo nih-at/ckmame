@@ -2,7 +2,7 @@
 #define HAD_MATCH_H
 
 /*
-  $NiH$
+  $NiH: match.h,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   match.h -- matching files with ROMs
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -35,33 +35,19 @@
 #include "types.h"
 
 struct match {
-    where_t where;
-    int zno;
-    int fno;
-    state_t quality;
-    off_t offset;              /* offset of correct part if ROM_LONGOK */
+    quality_t quality;
+    int index;
+    off_t offset;              /* offset of correct part if QU_LONG */
 };
 
 typedef struct match match_t;
 
-typedef parray_t match_array_t;
+typedef array_t match_array_t;
 
-#define match_array_add(ma, i, m)	\
-	(parray_push(match_array_matches((ma), (i)), (m)))
+#define match_array_get(ma, i)	\
+	((match_t *)array_get((ma), (i))
 
-#define match_array_get(ma, i, j)	\
-	((match_t *)parray_get(match_array_matches((ma), (i)), (j)))
-
-#define match_array_length		parray_length
-
-#define match_array_matches(ma, i)	((parray_t *)parray_get((ma), (i)))
-
-#define match_array_num_matches(ma, i)	\
-	(parray_length(match_array_matches((ma), (i))))
-
-#define match_array_sort(ma, i)						\
-	(parray_sort_part(match_array_matches((ma), (i)), 1, -1,	\
-			  (int (*)())matchcmp))
+#define match_array_length		array_length
 
 #define match_copy(m1, m2)		(memcpy(m1, m2, sizeof(match_t)))
 #define match_fno(m)			((m)->fno)

@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.4 2005/07/07 22:00:20 dillo Exp $
+  $NiH: types.h,v 1.5 2005/07/13 17:42:20 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,11 +26,24 @@
 
 
 
+/* XXX: rename to status */
 enum flags {
     FLAGS_OK, FLAGS_BADDUMP, FLAGS_NODUMP
 };
 
 typedef enum flags flags_t;
+
+enum quality {
+    QU_MISSING,		/* ROM is missing */
+    QU_LONG,		/* long ROM with valid subsection */
+    QU_NAMEERR,		/* wrong name */
+    QU_COPIED,		/* copied from elsewhere */
+    QU_INZIP,		/* is in zip, should be in ancestor */
+    QU_OK,		/* name/size/crc match */
+    QU_ANCESTOR_OK	/* ancestor ROM found in ancestor */
+};
+
+typedef enum quality quality_t;
 
 enum where {
     ROM_INZIP, ROM_INCO, ROM_INGCO
@@ -38,6 +51,7 @@ enum where {
 
 typedef enum where where_t;
 
+/* XXX: delete */
 enum state {
     ROM_0,
     ROM_UNKNOWN, ROM_SHORT, ROM_LONG, ROM_CRCERR, ROM_NOCRC,
@@ -52,6 +66,14 @@ enum filetype {
 };
 
 typedef enum filetype filetype_t;
+
+enum test {
+    TEST_NSC,
+    TEST_SCI,
+    TEST_LONG
+};
+
+typedef enum test test_t;
 
 
 

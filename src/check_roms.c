@@ -1,5 +1,5 @@
 /*
-  $NiH: check_roms.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
+  $NiH: check_roms.c,v 1.1.2.1 2005/07/14 15:16:18 wiz Exp $
 
   check_roms.c -- match files against ROMs
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -29,80 +29,25 @@
 #include "match.h"
 #include "rom.h"
 
-enum quality {
-    QU_MISSING,		/* ROM is missing */
-    QU_LONG,		/* long ROM with valid subsection */
-    QU_NAMEERR,		/* wrong name */
-    QU_COPIED,		/* copied from elsewhere */
-    QU_INZIP,		/* is in zip, should be in ancestor */
-    QU_OK,		/* name/size/crc match */
-    QU_ANCESTOR_OK	/* ancestor ROM found in ancestor */
-};
-
-#define match new_match
-#define match_t new_match_t
-
-typedef enum quality quality_t;
-
-struct match {
-    quality_t quality;
-    int index;
-    off_t offset;
-};
-
-typedef struct match match_t;
-
-enum test {
-    TEST_NSC,
-    TEST_SCI,
-    TEST_LONG
-};
-
-typedef enum test test_t;
-
-int rom_compare_sc(const rom_t *, const rom_t *);
-
 
 
+/* XXX: move elsewhere */
 int
-rom_compare_n(const rom_t *r1, const rom_t *r2)
+archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h)
 {
-    return strcasecmp(rom_name(r1), rom_name(r2));
+    hashes_t *rh;
+
+    rh = rom_hashes(archive_file(a, i));
+
+    if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h))
+	archive_file_compute_hashes(a, i, hashes_types(h)|romhashtypes);
+    
+    return hashes_cmp(rh, h);
 }
 
 
 
-int
-rom_compare_nsc(const rom_t *r1, const rom_t *r2)
-{
-    if (rom_compare_n(r1, r2) == 0
-	&& rom_compare_sc(r1, r2) == 0)
-	return 0;
-
-    return 1;
-}
-
-
-
-int
-rom_compare_sc(const rom_t *r1, const rom_t *r2)
-{
-    if (rom_size(r1) == rom_size(r2)
-	&& hashes_cmp(rom_hashes(r1), rom_hashes(r2)) == 0)
-	return 0;
-
-    return 1;
-}
-
-
-int
-archive_file_compare_hashes(const archive_t *a, int i, const hashes_t *h)
-{
-    return hashes_cmp(rom_hashes(archive_file(a, i)), h);
-}
-
-
-
+/* XXX: move elsewhere */
 int
 archive_find(archive_t *a, test_t t, const rom_t *r, match_t *m)
 {

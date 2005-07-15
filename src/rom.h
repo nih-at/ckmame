@@ -2,7 +2,7 @@
 #define HAD_ROM_H
 
 /*
-  $NiH$
+  $NiH: rom.h,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   rom.h -- information about one rom
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -56,6 +56,13 @@ typedef struct rom rom_t;
 #define rom_size(r)		((r)->size)
 #define rom_state(r)		((r)->state)
 #define rom_where(r)		((r)->where)
+
+#define rom_compare_n(r1, r2)	(strcasecmp(rom_name(r1), rom_name(r2)))
+#define rom_compare_sc(r1, r2)						    \
+	(rom_size(r1) != rom_size(r2)					    \
+	 || hashes_cmp(rom_hashes(r1), rom_hashes(r2)) != HASHES_CMP_MATCH)
+#define rom_compare_nsc(r1, r2)						\
+	(rom_compare_n((r1), (r2)) || rom_compare_sc((r1), (r2)))
 
 void rom_add_altname(rom_t *, const char *);
 void rom_init(rom_t *);

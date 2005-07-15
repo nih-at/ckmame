@@ -2,7 +2,7 @@
 #define HAD_ARCHIVE_H
 
 /*
-  $NiH: archive.h,v 1.1 2005/07/13 17:42:19 dillo Exp $
+  $NiH: archive.h,v 1.2 2005/07/14 03:10:11 wiz Exp $
 
   archive.h -- information about an archive
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -49,8 +49,11 @@ typedef struct archive archive_t;
 #define archive_zip(a)		((a)->za)
 
 int archive_ensure_zip(archive_t *, int);
+int archive_file_compare_hashes(archive_t *, int, const hashes_t *);
+int archive_find(archive_t *, test_t, const rom_t *, match_t *);
 int archive_find_offset(archive_t *, int, int, const hashes_t *);
 int archive_free(archive_t *);
 archive_t *archive_new(const char *, filetype_t, const char *);
+
 
 #endif /* archive.h */
