@@ -2,7 +2,7 @@
 #define HAD_FILE_BY_HASH_H
 
 /*
-  $NiH: file_by_hash.h,v 1.1 2005/07/07 22:00:20 dillo Exp $
+  $NiH: file_by_hash.h,v 1.2 2005/07/13 17:42:20 dillo Exp $
 
   file_by_hash.h -- list of files with same hash
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -32,7 +32,7 @@
 
 
 struct file_by_hash {
-    char *game;
+    char *name;
     int index;
 };
 
@@ -40,9 +40,8 @@ typedef struct file_by_hash file_by_hash_t;
 
 
 
-#define file_by_hash_get(a, i)	((file_by_hash_t *)array_get((a), (i)))
-#define file_by_hash_game(a, i)	(file_by_hash_get((a), (i))->game)
-#define file_by_hash_index(a, i) (file_by_hash_get((a), (i))->index)
+#define file_by_hash_name(a)	((a)->name)
+#define file_by_hash_index(a)	((a)->index)
 
 const char *file_by_hash_make_key(filetype_t, const hashes_t *);
 int file_by_hash_default_hashtype(filetype_t);

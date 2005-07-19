@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: funcs.h,v 1.2 2005/07/13 17:42:20 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -34,7 +34,7 @@
 #include "tree.h"
 
 match_disk_array_t *check_disks(game_t *);
-match_array_t *check_roms(game_t *, archive_t **, filetype_t);
+int check_roms(game_t *, filetype_t, archive_t []);
 void diagnostics(const game_t *, filetype_t, const match_array_t *,
 		 const match_disk_array_t *, const archive_t **);
 int fix_game(game_t *, filetype_t, archive_t **, match_array_t *);

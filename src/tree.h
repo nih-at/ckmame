@@ -2,7 +2,7 @@
 #define HAD_TREE_H
 
 /*
-  $NiH$
+  $NiH: tree.h,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   tree.h -- XXX
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -32,7 +32,7 @@
 struct tree {
     char *name;
     int check;
-    filetype_t ft;
+    archive_t *archive;
     struct tree *next, *child;
 };
 

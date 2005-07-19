@@ -2,7 +2,7 @@
 #define HAD_MATCH_H
 
 /*
-  $NiH: match.h,v 1.1 2005/07/13 17:42:20 dillo Exp $
+  $NiH: match.h,v 1.1.2.1 2005/07/15 10:02:59 dillo Exp $
 
   match.h -- matching files with ROMs
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -36,6 +36,7 @@
 
 struct match {
     quality_t quality;
+    archive_t *archive;
     int index;
     off_t offset;              /* offset of correct part if QU_LONG */
 };
@@ -45,7 +46,7 @@ typedef struct match match_t;
 typedef array_t match_array_t;
 
 #define match_array_get(ma, i)	\
-	((match_t *)array_get((ma), (i))
+	((match_t *)array_get((ma), (i)))
 
 #define match_array_length		array_length
 
@@ -62,7 +63,7 @@ typedef array_t match_array_t;
 
 void match_array_free(match_array_t *);
 match_array_t *match_array_new(int);
-void match_merge(match_array_t *, archive_t **, int, int);
+/*void match_merge(match_array_t *, archive_t **, int, int); */
 match_t *match_new(where_t, int, int, state_t, off_t);
 int matchcmp(const match_t *, const match_t *);
 

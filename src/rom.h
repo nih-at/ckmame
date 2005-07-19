@@ -2,7 +2,7 @@
 #define HAD_ROM_H
 
 /*
-  $NiH: rom.h,v 1.1 2005/07/13 17:42:20 dillo Exp $
+  $NiH: rom.h,v 1.1.2.1 2005/07/15 10:02:59 dillo Exp $
 
   rom.h -- information about one rom
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -27,6 +27,7 @@
 
 
 #include "hashes.h"
+#include "map.h"
 #include "types.h"
 #include "parray.h"
 
@@ -55,9 +56,10 @@ typedef struct rom rom_t;
 				 parray_length(rom_altnames(r)) : 0)
 #define rom_size(r)		((r)->size)
 #define rom_state(r)		((r)->state)
+#define rom_status(r)		((r)->flags)
 #define rom_where(r)		((r)->where)
 
-#define rom_compare_n(r1, r2)	(strcasecmp(rom_name(r1), rom_name(r2)))
+#define rom_compare_n(r1, r2)	(compare_names(rom_name(r1), rom_name(r2)))
 #define rom_compare_sc(r1, r2)						    \
 	(rom_size(r1) != rom_size(r2)					    \
 	 || hashes_cmp(rom_hashes(r1), rom_hashes(r2)) != HASHES_CMP_MATCH)

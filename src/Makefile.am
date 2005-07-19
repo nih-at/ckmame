@@ -85,6 +85,7 @@ noinst_HEADERS=\
 	file_by_hash.h \
 	funcs.h \
 	game.h \
+	globals.h \
 	hashes.h \
 	map.h \
 	match.h \

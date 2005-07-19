@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.5 2005/07/13 17:42:20 dillo Exp $
+  $NiH: types.h,v 1.5.2.1 2005/07/15 10:02:59 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -62,29 +62,18 @@ typedef enum state state_t;
 
 enum filetype {
     TYPE_ROM, TYPE_SAMPLE, TYPE_DISK,
-    TYPE_MAX
+    TYPE_MAX,
+    /* for archive_new only */
+    TYPE_FULL_PATH
 };
 
 typedef enum filetype filetype_t;
 
-enum test {
-    TEST_NSC,
-    TEST_SCI,
-    TEST_LONG
-};
-
-typedef enum test test_t;
-
 
 
-extern int output_options;
-extern int fix_do, fix_print, fix_keep_long, fix_keep_unused,
-    fix_keep_unknown;
-extern int romhashtypes, diskhashtypes;
 
 
 
 const char *filetype_db_key(filetype_t);
-
 
 #endif /* types.h */

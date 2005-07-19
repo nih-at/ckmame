@@ -2,7 +2,7 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.2 2005/07/06 08:39:52 wiz Exp $
+  $NiH: util.h,v 1.3 2005/07/13 17:42:20 dillo Exp $
 
   util.h -- miscellaneous utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -24,7 +24,11 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <string.h>
+
 #include "types.h"
+
+#define compare_names(a, b)	(strcasecmp(mybasename(a), mybasename(b)))
 
 typedef int (*cmpfunc)(const void *, const void *);
 
@@ -34,6 +38,7 @@ void init_rompath(void);
 char *bin2hex(char *, const unsigned char *, unsigned int);
 char *findfile(const char *, filetype_t);
 int hex2bin(unsigned char *, const char *, unsigned int);
+const char *mybasename(const char *);
 int psort(void **, int, int, int (*)(const void *, const void *));
 
 #endif

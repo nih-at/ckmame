@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: archive.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -29,6 +29,7 @@
 #include <string.h>
 
 #include "archive.h"
+#include "globals.h"
 #include "util.h"
 #include "xmalloc.h"
 
@@ -70,7 +71,73 @@ archive_ensure_zip(archive_t *a, int createp)
 
 
 int
-archive_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
+archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h)
+{
+    hashes_t *rh;
+
+    rh = rom_hashes(archive_file(a, i));
+
+    if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h))
+	archive_file_compute_hashes(a, i, hashes_types(h)|romhashtypes);
+
+    if (rom_status(archive_file(a, i)) != FLAGS_OK)
+	return HASHES_CMP_NOCOMMON;
+
+    return hashes_cmp(rh, h);
+}
+
+
+
+int
+archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
+{
+    hashes_t h;
+    struct zip *za;
+    struct zip_file *zf;
+    rom_t *r;
+
+    if (!archive_ensure_zip(a, 0))
+	return -1;
+
+    za = archive_zip(a);
+    r = archive_file(a, idx);
+
+    if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
+	fprintf(stderr, "%s: error open()ing index %d in `%s': %s\n",
+		prg, idx, archive_name(a), zip_strerror(za));
+	rom_status(r) = FLAGS_BADDUMP;
+	return -1;
+    }
+
+    hashes_types(&h) = hashtypes;
+    /* XXX: check return value */
+    if (get_hashes(zf, rom_size(r), &h) < 0) {
+	zip_fclose(zf);
+	rom_status(r) = FLAGS_BADDUMP;
+	return -1;
+    }
+
+    zip_fclose(zf);
+	    
+    if (hashtypes & HASHES_TYPE_CRC) {
+	if (rom_hashes(r)->crc != h.crc) {
+	    fprintf(stderr,
+		    "%s: CRC error at index %d in `%s': %lx != %lx\n",
+		    prg, idx, archive_name(a), h.crc,
+		    rom_hashes(r)->crc);
+	    rom_status(r) = FLAGS_BADDUMP;
+	    return -1;
+	}
+    }
+    hashes_copy(rom_hashes(r), &h);
+
+    return 0;
+}
+
+
+
+int
+archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
 {
     struct zip_file *zf;
     hashes_t hn;
@@ -118,6 +185,21 @@ archive_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
     if (found)
 	return offset;
 	    
+    return -1;
+}
+
+
+
+int
+archive_file_index_by_name(const archive_t *a, const char *name)
+{
+    int i;
+
+    for (i=0; i<archive_num_files(a); i++) {
+	if (compare_names(rom_name(archive_file(a, i)), name) == 0)
+	    return i;
+    }
+
     return -1;
 }
 
@@ -228,7 +310,6 @@ static void
 read_infos_from_zip(archive_t *a, int hashtypes)
 {
     struct zip *za;
-    struct zip_file *zf;
     struct zip_stat zsb;
     rom_t *r;
     int i;
@@ -260,41 +341,15 @@ read_infos_from_zip(archive_t *a, int hashtypes)
 	array_grow(archive_files(a), rom_init);
 	r = archive_last_file(a);
 	rom_size(r) = zsb.size;
-
-	hashes_init(rom_hashes(r));
-	if (hashtypes == 0) {
-	    rom_hashes(r)->types = HASHES_TYPE_CRC;
-	    rom_hashes(r)->crc = zsb.crc;
-	}
-	else {
-	    if ((zf=zip_fopen_index(za, i, 0)) == NULL) {
-		fprintf(stderr, "%s: error open()ing index %d in `%s': %s\n",
-			prg, i, archive_name(a), zip_strerror(za));
-		array_delete(archive_files(a), archive_num_files(a)-1,
-			     rom_finalize);
-		continue;
-	    }
-
-	    rom_hashes(r)->types = hashtypes;
-	    /* XXX: check return value */
-	    get_hashes(zf, zsb.size, rom_hashes(r));
-	    zip_fclose(zf);
-	    
-	    if (hashtypes & HASHES_TYPE_CRC) {
-		if (rom_hashes(r)->crc != zsb.crc) {
-		    fprintf(stderr,
-			    "%s: CRC error at index %d in `%s': %x != %lx\n",
-			    prg, i, archive_name(a), zsb.crc,
-			    rom_hashes(r)->crc);
-		    continue;
-		}
-	    }
-	    else {
-		rom_hashes(r)->types |= HASHES_TYPE_CRC;
-		rom_hashes(r)->crc = zsb.crc;
-	    }
-	}
 	rom_name(r) = xstrdup(zsb.name);
 	rom_state(r) = ROM_0;
+	rom_status(r) = FLAGS_OK;
+
+	hashes_init(rom_hashes(r));
+	rom_hashes(r)->types = HASHES_TYPE_CRC;
+	rom_hashes(r)->crc = zsb.crc;
+
+	if (hashtypes != 0)
+	    archive_file_compute_hashes(a, i, hashtypes);
     }
 }
