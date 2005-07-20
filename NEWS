@@ -1,3 +1,7 @@
+0.7
+
+- dropped support for inferring flags/status from CRC (before version XXX)
+
 0.6 (2005-06-17)
 
 - libzip is distributed separately

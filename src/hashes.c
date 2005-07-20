@@ -1,5 +1,5 @@
 /*
-  $NiH: hashes.c,v 1.2 2005/07/04 22:41:36 dillo Exp $
+  $NiH: hashes.c,v 1.3 2005/07/04 23:51:32 dillo Exp $
 
   hashes.c -- utility functions for hash handling
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -32,6 +32,9 @@
 int
 hashes_cmp(const struct hashes *h1, const struct hashes *h2)
 {
+    if (h1->types == 0 || h2->types == 0)
+	return HASHES_CMP_MATCH;
+
     if ((h1->types & h2->types) == 0)
 	return HASHES_CMP_NOCOMMON;
 

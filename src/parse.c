@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.4 2005/07/13 17:42:20 dillo Exp $
+  $NiH: parse.c,v 1.5 2005/07/13 17:48:50 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -623,12 +623,6 @@ rom_end(parser_context_t *ctx, filetype_t ft)
     n = game_num_files(ctx->g, ft)-1;
     h = rom_hashes(r);
 
-    /* CRC == 0 was old way of indicating no-good-dumps */
-    if ((hashes_has_type(h, HASHES_TYPE_CRC)) && h->crc == 0) {
-	h->types &= ~HASHES_TYPE_CRC;
-	rom_flags(r) = FLAGS_NODUMP;
-    }
-    
     /* omit duplicates */
     deleted = 0;
     for (j=0; j<n; j++) {

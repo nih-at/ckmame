@@ -1,5 +1,5 @@
 /*
-  $NiH: check_roms.c,v 1.1.2.2 2005/07/15 10:02:59 dillo Exp $
+  $NiH: check_roms.c,v 1.1.2.3 2005/07/19 22:46:48 dillo Exp $
 
   check_roms.c -- match files against ROMs
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -84,8 +84,6 @@ check_roms(game_t *g, filetype_t ft, archive_t as[3])
 
     ma = match_array_new(game_num_files(g, ft));
 
-    /* XXX: handle samples, bad and no dump */
-
     for (i=0; i<game_num_files(g, ft); i++) {
 	r = game_file(g, ft, i);
 	m = match_array_get(ma, i);
@@ -108,7 +106,8 @@ check_roms(game_t *g, filetype_t ft, archive_t as[3])
 	    }
 	}
 
-	if (rom_where(r) == ROM_INZIP && m->quality == QU_MISSING) {
+	if (rom_where(r) == ROM_INZIP && m->quality == QU_MISSING
+	    && rom_size(r) > 0 && rom_status(r) != FLAGS_NODUMP) {
 	    /* search for matching file in family (not yet) */
 
 	    /* search for matching file in other games (via db) */
