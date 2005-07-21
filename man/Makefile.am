@@ -18,7 +18,7 @@ mkmamedb.1: mkmamedb.${MANFMT}
 	sed 's,PREFIX,${prefix},g' ${srcdir}/mkmamedb.${MANFMT} > $@
 
 .mdoc.man:
-	mdoc2man $< > $@.$$$$ && diff -I NiH $@.$$$$ $@ || mv $@.$$$$ $@; \
+	mdoc2man $< > $@.$$$$ && diff -I NiH $@ $@.$$$$ || mv $@.$$$$ $@; \
 	rm -f $@.$$$$
 
 .mdoc.html:
