@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: file_by_hash_finalize.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   file_by_hash_finalize.c -- free members of file_by_hash structure
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -30,5 +30,5 @@
 void
 file_by_hash_finalize(file_by_hash_t *e)
 {
-    free(e->game);
+    free(e->name);
 }

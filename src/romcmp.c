@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: romcmp.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   romcmp.c -- compare two ROMs
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -39,15 +39,15 @@ romcmp(const rom_t *r1, const rom_t *r2, int merge)
 	    return ROM_OK;
 	
 	if (rom_size(r1) == rom_size(r2)) {
-	    if (rom_flags(r1) == FLAGS_NODUMP
-		|| rom_flags(r2) == FLAGS_NODUMP
+	    if (rom_status(r1) == STATUS_NODUMP
+		|| rom_status(r2) == STATUS_NODUMP
 		|| hashes_cmp(rom_hashes(r1),
 			      rom_hashes(r2)) == HASHES_CMP_MATCH)
 		return ROM_OK;
 	    else if (hashes_are_crc_complement(rom_hashes(r1),
 					       rom_hashes(r2))
-		     || rom_flags(r1) == FLAGS_BADDUMP
-		     || rom_flags(r2) == FLAGS_BADDUMP)
+		     || rom_status(r1) == STATUS_BADDUMP
+		     || rom_status(r2) == STATUS_BADDUMP)
 		return ROM_BESTBADDUMP;
 	    else
 		return ROM_CRCERR;

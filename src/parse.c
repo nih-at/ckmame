@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.5 2005/07/13 17:48:50 dillo Exp $
+  $NiH: parse.c,v 1.5.2.1 2005/07/20 00:26:44 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -141,27 +141,27 @@ parse_file_end(parser_context_t *ctx, filetype_t ft)
 
 
 int
-parse_file_flags(parser_context_t *ctx, filetype_t ft, int ht,
-		 const char *attr)
+parse_file_status(parser_context_t *ctx, filetype_t ft, int ht,
+		  const char *attr)
 {
-    flags_t flags;
+    status_t status;
 
     if (strcmp(attr, "good") == 0)
-	flags = FLAGS_OK;
+	status = STATUS_OK;
     else if (strcmp(attr, "baddump") == 0)
-	flags = FLAGS_BADDUMP;
+	status = STATUS_BADDUMP;
     else if (strcmp(attr, "nodump") == 0)
-	flags = FLAGS_NODUMP;
+	status = STATUS_NODUMP;
     else {
-	myerror(ERRFILE, "%d: illegal flags `%s'",
+	myerror(ERRFILE, "%d: illegal status `%s'",
 		ctx->lineno, attr);
 	return -1;
     }
 
     if (ft == TYPE_DISK)
-	disk_flags(game_last_disk(ctx->g)) = flags;
+	disk_status(game_last_disk(ctx->g)) = status;
     else
-	rom_flags(game_last_file(ctx->g, ft)) = flags;
+	rom_status(game_last_file(ctx->g, ft)) = status;
     
     return 0;
 }
@@ -392,7 +392,7 @@ disk_end(parser_context_t *ctx)
     d = game_last_disk(ctx->g);
 
     if (hashes_types(disk_hashes(d)) == 0)
-	disk_flags(d) = FLAGS_NODUMP;
+	disk_status(d) = STATUS_NODUMP;
 
     if (disk_merge(d) != NULL && strcmp(disk_name(d), disk_merge(d)) == 0) {
 	free(disk_merge(d));

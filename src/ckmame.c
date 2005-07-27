@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.3 2005/07/07 22:00:20 dillo Exp $
+  $NiH: ckmame.c,v 1.4 2005/07/13 17:42:19 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -117,9 +117,10 @@ struct option options[] = {
 };
 
 int output_options;
-int fix_do, fix_print, fix_keep_long, fix_keep_unused, fix_keep_unknown;
+int fix_options;
 int ignore_extra;
 int romhashtypes, diskhashtypes;
+parray_t *superfluous;
 
 
 
@@ -142,9 +143,7 @@ main(int argc, char **argv)
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DDB_DEFAULT_DB_NAME;
-    fix_do = fix_print = 0;
-    fix_keep_long = fix_keep_unknown = 1;
-    fix_keep_unused = 0;
+    fix_options = FIX_KEEP_LONG | FIX_KEEP_UNKNOWN;
     ignore_extra = 0;
     integrity = 0;
     
@@ -173,7 +172,7 @@ main(int argc, char **argv)
 	    output_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
 	case 'F':
-	    fix_do = 1;
+	    fix_options |= FIX_DO;
 	    break;
 	case 'f':
 	    output_options &= ~WARN_FIXABLE;
@@ -182,20 +181,20 @@ main(int argc, char **argv)
 	    integrity = 1;
 	    break;
 	case 'K':
-	    fix_keep_unknown = 1;
+	    fix_options |= FIX_KEEP_UNKNOWN;
 	    break;
 	case 'k':
-	    fix_keep_unknown = 0;
+	    fix_options &= ~FIX_KEEP_UNKNOWN;
 	    break;
 	case 'L':
-	    fix_keep_long = 1;
+	    fix_options |= FIX_KEEP_LONG;
 	    break;
 	case 'l':
-	    fix_keep_long = 0;
+	    fix_options &= ~FIX_KEEP_LONG;
 	    break;
 	case 'n':
-	    fix_do = 0;
-	    fix_print = 1;
+	    fix_options &= ~FIX_DO;
+	    fix_options |= FIX_PRINT;
 	    break;
 	case 'S':
 	    ft = TYPE_SAMPLE;
@@ -204,13 +203,13 @@ main(int argc, char **argv)
 	    output_options &= ~WARN_SUPERFLUOUS;
 	    break;
 	case 'U':
-	    fix_keep_unused = 1;
+	    fix_options |= FIX_KEEP_UNUSED;
 	    break;
 	case 'u':
-	    fix_keep_unused = 0;
+	    fix_options &= ~FIX_KEEP_UNUSED;
 	    break;
 	case 'v':
-	    fix_print = 1;
+	    fix_options |= FIX_PRINT;
 	    break;
 	case 'w':
 	    output_options &= WARN_BROKEN;
@@ -239,7 +238,8 @@ main(int argc, char **argv)
 	    exit(1);
 	}
 	
-	handle_extra_files(db, dbname, ft);
+	superfluous = find_extra_files(dbname);
+	print_extra_files(superfluous);
 	exit(0);
     }
 
@@ -254,17 +254,17 @@ main(int argc, char **argv)
 	exit(1);
     }
 
-    tree = tree_new(ft);
+    tree = tree_new();
 
     if (optind == argc) {
 	for (i=0; i<parray_length(list); i++)
-	    tree_add(db, tree, parray_get(list, i), ft);
+	    tree_add(db, tree, parray_get(list, i));
     }
     else {
 	for (i=optind; i<argc; i++) {
 	    if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 		if (parray_index_sorted(list, argv[i], strcasecmp) >= 0)
-		    tree_add(db, tree, argv[i], ft);
+		    tree_add(db, tree, argv[i]);
 		else
 		    myerror(ERRDEF, "game `%s' unknown", argv[i]);
 	    }
@@ -272,7 +272,7 @@ main(int argc, char **argv)
 		found = 0;
 		for (j=0; j<parray_length(list); j++) {
 		    if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
-			tree_add(db, tree, parray_get(list, j), ft);
+			tree_add(db, tree, parray_get(list, j));
 			found = 1;
 		    }
 		}
@@ -284,10 +284,9 @@ main(int argc, char **argv)
 
     parray_free(list, free);
 
-    tree_traverse(db, tree);
+    superfluous = find_extra_files(dbname);
 
-    if (optind == argc && !ignore_extra)
-	handle_extra_files(db, dbname, ft);
+    tree_traverse(db, tree);
 
     return 0;
 }

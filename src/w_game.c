@@ -1,5 +1,5 @@
 /*
-  $NiH: w_game.c,v 1.2 2005/07/04 22:41:36 dillo Exp $
+  $NiH: w_game.c,v 1.3 2005/07/13 17:42:20 dillo Exp $
 
   w_game.c -- write game struct to db
   Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
@@ -86,7 +86,7 @@ w__disk(DBT *v, const void *vd)
     w__string(v, d->name);
     w__string(v, d->merge);
     w__hashes(v, &d->hashes);
-    w__ushort(v, d->flags);
+    w__ushort(v, d->status);
 }
 
 
@@ -99,7 +99,7 @@ w__rom(DBT *v, const rom_t *r)
     w__parray(v, (void (*)())w__string, r->altnames);
     w__hashes(v, &r->hashes);
     w__ulong(v, r->size);
-    w__ushort(v, r->flags);
+    w__ushort(v, r->status);
     w__ushort(v, r->where);
 }
 

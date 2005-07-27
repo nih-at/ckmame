@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-xml.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: parse-xml.c,v 1.2 2005/07/13 17:42:20 dillo Exp $
 
   parse-xml.c -- parse listxml format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -63,7 +63,7 @@ static const struct attr attr_disk[] = {
     { "merge",    parse_file_merge,   TYPE_DISK,   0                },
     { "name",     parse_file_name,    TYPE_DISK,   0                },
     { "sha1",     parse_file_hash,    TYPE_DISK,   HASHES_TYPE_SHA1 },
-    { "status",   parse_file_flags,   TYPE_DISK,   0                },
+    { "status",   parse_file_status,   TYPE_DISK,   0                },
     { NULL }
 };
 static const struct attr attr_game[] = {
@@ -79,7 +79,7 @@ static const struct attr attr_rom[] = {
     { "name",     parse_file_name,    TYPE_ROM,    0                },
     { "sha1",     parse_file_hash,    TYPE_ROM,    HASHES_TYPE_SHA1 },
     { "size",     parse_file_size,    TYPE_ROM,    0                },
-    { "status",   parse_file_flags,   TYPE_ROM,    0                },
+    { "status",   parse_file_status,   TYPE_ROM,    0                },
     { NULL }
 };
 static const struct attr attr_sample[] = {

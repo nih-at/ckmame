@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: disk.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   disk.c -- initialize / finalize disk structure
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -34,7 +34,7 @@ disk_init(disk_t *d)
 {
     d->name = d->merge = NULL;
     hashes_init(&d->hashes);
-    d->flags = FLAGS_OK;
+    d->status = STATUS_OK;
 }
 
 

@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.2 2005/07/04 22:41:36 dillo Exp $
+  $NiH: r_game.c,v 1.3 2005/07/13 17:42:20 dillo Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -76,7 +76,7 @@ r__disk(DBT *v, void *vd)
     d->name = r__string(v);
     d->merge = r__string(v);
     r__hashes(v, &d->hashes);
-    d->flags = (flags_t)r__ushort(v);
+    d->status = (status_t)r__ushort(v);
 }
 
 
@@ -93,9 +93,9 @@ r__rom(DBT *v, void *vr)
     r->altnames = r__parray(v, (void *(*)())r__string);
     r__hashes(v, &r->hashes);
     r->size = r__ulong(v);
-    r->flags = (flags_t)r__ushort(v);
+    r->status = (status_t)r__ushort(v);
     r->where = (where_t)r__ushort(v);
-    r->state = ROM_0;
+    /* XXX: r->state = ROM_0; */
 }
 
 

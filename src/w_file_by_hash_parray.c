@@ -1,5 +1,5 @@
 /*
-  $NiH: w_file_by_hash_parray.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
+  $NiH: w_file_by_hash_parray.c,v 1.2 2005/07/13 17:42:20 dillo Exp $
 
   w_file_by_hash.c -- write file_by_hash struct to db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -70,6 +70,6 @@ w__file_by_hash_entry(DBT *v, const void *vr)
 
     fbh = (const file_by_hash_t *)vr;
 
-    w__string(v, fbh->game);
+    w__string(v, fbh->name);
     w__ushort(v, fbh->index);
 }

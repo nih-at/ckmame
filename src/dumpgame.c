@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.3 2005/07/07 22:00:20 dillo Exp $
+  $NiH: dumpgame.c,v 1.4 2005/07/13 17:42:20 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -38,6 +38,7 @@
 
 #include "dbh.h"
 #include "error.h"
+#include "file_by_hash.h"
 #include "hashes.h"
 #include "types.h"
 #include "util.h"
@@ -92,7 +93,7 @@ static char *where_name[] = {
     "zip", "cloneof", "grand-cloneof"
 };
 
-static char *flags_name[] = {
+static char *status_name[] = {
     "ok", "baddump", "nogooddump"
 };
 
@@ -121,7 +122,7 @@ print_diskline(disk_t *disk)
 {
     printf("\t\tdisk %-12s", disk->name);
     print_checksums(&disk->hashes);
-    printf("  flags %s", flags_name[disk_flags(disk)]);
+    printf("  status %s", status_name[disk_status(disk)]);
     putc('\n', stdout);
 }
 
@@ -143,8 +144,8 @@ print_romline(rom_t *rom)
     printf("\t\tfile %-12s  size %7ld",
 	   rom_name(rom), rom_size(rom));
     print_checksums(rom_hashes(rom));
-    printf("  flags %s  in %s",
-	   flags_name[rom_flags(rom)], where_name[rom_where(rom)]);
+    printf("  status %s in %s",
+	   status_name[rom_status(rom)], where_name[rom_where(rom)]);
     if (rom_merge(rom) && strcmp(rom_name(rom), rom_merge(rom)) != 0)
 	printf(" (%s)", rom_merge(rom));
     putc('\n', stdout);
@@ -188,10 +189,10 @@ print_matches(DB *db, filetype_t ft, hashes_t *hash)
 	}
 
 	for (i=0; i<array_length(fbh); i++) {
-	    if ((game=r_game(db, file_by_hash_game(fbh, i))) == NULL) {
+	    if ((game=r_game(db, file_by_hash_name(fbh))) == NULL) {
 		myerror(ERRDEF,
 			"db error: %s not found, though in hash index",
-			file_by_hash_game(fbh, i));
+			file_by_hash_name(fbh));
 		/* XXX: remember error */
 		continue;
 	    }
@@ -391,9 +392,9 @@ print_rs(game_t *game, filetype_t ft,
 	    print_romline(r);
 	    for (j=0; j<rom_num_altnames(r); j++) {
 		/* XXX: check hashes.types */
-		printf("\t\tfile %-12s  size %7ld  crc %.8lx  flags %s  in %s",
+		printf("\t\tfile %-12s  size %7ld  crc %.8lx  status %s in %s",
 		       rom_altname(r, j), rom_size(r), rom_hashes(r)->crc,
-		       flags_name[rom_flags(r)], where_name[rom_where(r)]);
+		       status_name[rom_status(r)], where_name[rom_where(r)]);
 		if (rom_merge(r)) {
 		    if (strcmp(rom_altname(r, j), rom_merge(r)) != 0)
 			printf(" (%s)", rom_merge(r));

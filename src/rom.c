@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: rom.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -35,7 +35,7 @@ rom_init(rom_t *r)
     r->name = r->merge = NULL;
     hashes_init(&r->hashes);
     r->size = 0;
-    r->flags = FLAGS_OK;
+    r->status = STATUS_OK;
     /* XXX: state */
     r->where = ROM_INZIP;
     r->altnames = NULL;

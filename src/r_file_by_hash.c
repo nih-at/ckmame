@@ -1,5 +1,5 @@
 /*
-  $NiH: r_file_by_hash.c,v 1.2 2005/07/07 22:00:20 dillo Exp $
+  $NiH: r_file_by_hash.c,v 1.3 2005/07/13 17:42:20 dillo Exp $
 
   r_file_by_hash.c -- read file_by_hash struct from db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -62,6 +62,6 @@ r__file_by_hash_entry(DBT *v, void *vr)
     
     e = (file_by_hash_t *)vr;
 
-    e->game = r__string(v);
+    e->name = r__string(v);
     e->index = r__ushort(v);
 }

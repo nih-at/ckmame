@@ -2,7 +2,7 @@
 #define _HAD_WARN_H
 
 /*
-  $NiH: warn.h,v 1.2 2005/07/04 22:41:36 dillo Exp $
+  $NiH: warn.h,v 1.1 2005/07/06 08:23:02 wiz Exp $
 
   warn.h -- warning type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -35,8 +35,10 @@
 #define WARN_WRONG_ZIP		0x0008
 #define WARN_WRONG_NAME		0x0010
 #define WARN_LONGOK		0x0080
+#define WARN_ELSEWHERE		0x0800
 
-#define WARN_FIXABLE		(WARN_WRONG_ZIP|WARN_WRONG_NAME|WARN_LONGOK)
+#define WARN_FIXABLE		(WARN_WRONG_ZIP|WARN_WRONG_NAME|WARN_LONGOK\
+				 |WARN_ELSEWHERE)
 
 #define WARN_WRONG_CRC		0x0020
 #define WARN_LONG		0x0040

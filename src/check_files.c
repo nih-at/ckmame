@@ -1,7 +1,7 @@
 /*
-  $NiH: check_roms.c,v 1.1.2.3 2005/07/19 22:46:48 dillo Exp $
+  $NiH: check_files.c,v 1.1.2.4 2005/07/20 00:26:43 dillo Exp $
 
-  check_roms.c -- match files against ROMs
+  check_files.c -- match files against ROMs
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -62,8 +62,8 @@ static test_result_t find_in_romset(const rom_t *, const char *, match_t *);
 
 
 
-int
-check_roms(game_t *g, filetype_t ft, archive_t as[3])
+match_array_t *
+check_files(game_t *g, archive_t *as[3])
 {
     static const struct test_result {
 	test_t test;
@@ -82,32 +82,35 @@ check_roms(game_t *g, filetype_t ft, archive_t as[3])
     match_t *m;
     archive_t *a;
 
-    ma = match_array_new(game_num_files(g, ft));
+    ma = match_array_new(game_num_files(g, file_type));
 
-    for (i=0; i<game_num_files(g, ft); i++) {
-	r = game_file(g, ft, i);
+    for (i=0; i<game_num_files(g, file_type); i++) {
+	r = game_file(g, file_type, i);
 	m = match_array_get(ma, i);
-	a = &as[rom_where(r)];
+	a = as[rom_where(r)];
 
 	m->quality = QU_MISSING;
 
 	/* check if it's in ancestor */
 	if (rom_where(r) != ROM_INZIP
 	    && match_files(a, TEST_NSC, r, m) == TEST_SUCCESS) {
-	    m->quality = QU_ANCESTOR_OK;
+	    m->quality = QU_OK;
 	    continue;
 	}
 	
 	/* search for matching file in game's zip */
 	for (j=0; j<test_result_count; j++) {
-	    if (match_files(as, test_results[j].test, r, m) == TEST_SUCCESS) {
+	    if (match_files(as[0],
+			    test_results[j].test, r, m) == TEST_SUCCESS) {
 		m->quality = test_results[j].quality;
+		if (rom_where(r) != ROM_INZIP && match_quality(m) == QU_OK)
+		    m->quality = QU_INZIP;
 		break;
 	    }
 	}
 
 	if (rom_where(r) == ROM_INZIP && m->quality == QU_MISSING
-	    && rom_size(r) > 0 && rom_status(r) != FLAGS_NODUMP) {
+	    && rom_size(r) > 0 && rom_status(r) != STATUS_NODUMP) {
 	    /* search for matching file in family (not yet) */
 
 	    /* search for matching file in other games (via db) */
@@ -124,7 +127,7 @@ check_roms(game_t *g, filetype_t ft, archive_t as[3])
 	}
     }
 
-    return 0;
+    return ma;
 }
 
 
@@ -254,7 +257,7 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
     for (i=0; i<archive_num_files(a); i++) {
 	ra = archive_file(a, i);
 
-	if (rom_status(ra) != FLAGS_OK)
+	if (rom_status(ra) != STATUS_OK)
 	    continue;
 
 	switch (t) {

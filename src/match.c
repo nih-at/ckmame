@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.4 2005/07/07 22:00:20 dillo Exp $
+  $NiH: match.c,v 1.5 2005/07/13 17:42:20 dillo Exp $
 
   match.c -- information about ROM/file matches
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -36,40 +36,30 @@
 #include "util.h"
 #include "xmalloc.h"
 
-static void match_array_free_one(parray_t *);
+
+
+void
+match_finalize(match_t *m)
+{
+    if (match_where(m) == ROM_ELSEWHERE)
+	archive_free(match_archive(m));
+}
 
 
 
 void
-match_array_free(match_array_t *ma)
+match_init(match_t *m)
 {
-    parray_free(ma, match_array_free_one);
+    m->quality = QU_MISSING;
+    m->archive = NULL;
+    m->where = ROM_NOWHERE;
+    m->index = -1;
+    m->offset = -1;
 }
 
 
 
-match_array_t *
-match_array_new(int n)
-{
-    match_array_t *ma;
-    parray_t *pa;
-    match_t *m;
-    int i;
-
-    ma = parray_new_sized(n);
-
-    for (i=0; i<n; i++) {
-	m = match_new(ROM_INZIP, -1, -1, ROM_UNKNOWN, -1);
-	pa = parray_new();
-	parray_push(pa, m);
-	parray_push(ma, pa);
-    }
-
-    return ma;
-}
-
-
-
+#if 0
 void
 match_merge(match_array_t *ma, archive_t **zip, int pno, int gpno)
 {
@@ -106,27 +96,11 @@ match_merge(match_array_t *ma, archive_t **zip, int pno, int gpno)
 
     return;
 }
+#endif
 
 
 
-match_t *
-match_new(where_t where, int zno, int fno, state_t quality, off_t offset)
-{
-    match_t *m;
-
-    m = xmalloc(sizeof(*m));
-
-    m->where = where;
-    m->zno = zno;
-    m->fno = fno;
-    m->quality = quality;
-    m->offset = (quality == ROM_LONGOK ? offset : -1);
-
-    return m;
-}
-
-
-
+#if 0
 /* <0: m1 is better than m2 */
 
 int
@@ -141,11 +115,4 @@ matchcmp(const match_t *m1, const match_t *m2)
 
     return ret;
 }
-
-
-
-static void
-match_array_free_one(parray_t *pa)
-{
-    parray_free(pa, match_free);
-}
+#endif

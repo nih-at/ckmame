@@ -20,7 +20,7 @@ libckmame_a_SOURCES= \
 	array_push.c \
 	chd.c \
 	check_disks.c \
-	check_roms.c \
+	check_files.c \
 	db-@DBTYPE@.c \
 	dbl.c \
 	diagnostics.c \
@@ -42,7 +42,6 @@ libckmame_a_SOURCES= \
 	hashes_update.c \
 	hashes_verify.c \
 	map.c \
-	marry.c \
 	match.c \
 	match_disk.c \
 	parray.c \

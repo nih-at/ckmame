@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.4 2005/07/06 08:23:02 wiz Exp $
+  $NiH: disk_get_info.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   disk_get_info.c -- get info from CHD file
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -32,6 +32,7 @@
 
 #include "chd.h"
 #include "disk.h"
+#include "globals.h"
 #include "funcs.h"
 #include "xmalloc.h"
 

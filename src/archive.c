@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
+  $NiH: archive.c,v 1.1.2.1 2005/07/19 22:46:48 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -80,7 +80,7 @@ archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h)
     if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h))
 	archive_file_compute_hashes(a, i, hashes_types(h)|romhashtypes);
 
-    if (rom_status(archive_file(a, i)) != FLAGS_OK)
+    if (rom_status(archive_file(a, i)) != STATUS_OK)
 	return HASHES_CMP_NOCOMMON;
 
     return hashes_cmp(rh, h);
@@ -105,7 +105,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
 	fprintf(stderr, "%s: error open()ing index %d in `%s': %s\n",
 		prg, idx, archive_name(a), zip_strerror(za));
-	rom_status(r) = FLAGS_BADDUMP;
+	rom_status(r) = STATUS_BADDUMP;
 	return -1;
     }
 
@@ -113,7 +113,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     /* XXX: check return value */
     if (get_hashes(zf, rom_size(r), &h) < 0) {
 	zip_fclose(zf);
-	rom_status(r) = FLAGS_BADDUMP;
+	rom_status(r) = STATUS_BADDUMP;
 	return -1;
     }
 
@@ -125,7 +125,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 		    "%s: CRC error at index %d in `%s': %lx != %lx\n",
 		    prg, idx, archive_name(a), h.crc,
 		    rom_hashes(r)->crc);
-	    rom_status(r) = FLAGS_BADDUMP;
+	    rom_status(r) = STATUS_BADDUMP;
 	    return -1;
 	}
     }
@@ -271,7 +271,7 @@ archive_new(const char *name, filetype_t ft, const char *parent)
     read_infos_from_zip(a, romhashtypes);
 
     for (i=0; i<archive_num_files(a); i++) {
-	rom_state(archive_file(a, i)) = ROM_UNKNOWN;
+	/* XXX: rom_state(archive_file(a, i)) = ROM_UNKNOWN; */
 	rom_where(archive_file(a, i)) = (where_t) -1;
     }
 
@@ -342,8 +342,8 @@ read_infos_from_zip(archive_t *a, int hashtypes)
 	r = archive_last_file(a);
 	rom_size(r) = zsb.size;
 	rom_name(r) = xstrdup(zsb.name);
-	rom_state(r) = ROM_0;
-	rom_status(r) = FLAGS_OK;
+	/* XXX: rom_state(r) = ROM_0; */
+	rom_status(r) = STATUS_OK;
 
 	hashes_init(rom_hashes(r));
 	rom_hashes(r)->types = HASHES_TYPE_CRC;

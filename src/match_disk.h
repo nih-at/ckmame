@@ -2,7 +2,7 @@
 #define HAD_MATCH_DISK_H
 
 /*
-  $NiH$
+  $NiH: match_disk.h,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   match_disk.h -- matching files with disks
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -33,7 +33,7 @@
 struct match_disk {
     char *name;
     hashes_t hashes;
-    state_t quality;
+    quality_t quality;
 };
 
 typedef struct match_disk match_disk_t;

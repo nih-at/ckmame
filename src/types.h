@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.5.2.1 2005/07/15 10:02:59 dillo Exp $
+  $NiH: types.h,v 1.5.2.2 2005/07/19 22:46:48 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -27,38 +27,42 @@
 
 
 /* XXX: rename to status */
-enum flags {
-    FLAGS_OK, FLAGS_BADDUMP, FLAGS_NODUMP
+enum status {
+    STATUS_OK, STATUS_BADDUMP, STATUS_NODUMP
 };
 
-typedef enum flags flags_t;
+typedef enum status status_t;
 
 enum quality {
     QU_MISSING,		/* ROM is missing */
+    QU_NOCRC,		/* disk and file have no common checksums */
+    QU_CRCERR,		/* disk and file have different checksums */
     QU_LONG,		/* long ROM with valid subsection */
     QU_NAMEERR,		/* wrong name */
     QU_COPIED,		/* copied from elsewhere */
     QU_INZIP,		/* is in zip, should be in ancestor */
-    QU_OK,		/* name/size/crc match */
-    QU_ANCESTOR_OK	/* ancestor ROM found in ancestor */
+    QU_OK		/* name/size/crc match */
 };
 
 typedef enum quality quality_t;
 
+enum file_status {
+    FS_UNKNOWN,		/* unknown */
+    FS_PARTUSED,	/* part needed here, whole file unknown */
+    FS_SUPERFLUOUS,	/* known, not needed here, and exists elsewhere */
+    FS_NEEDED,		/* known and needed elsewhere */
+    FS_USED		/* needed here */
+};
+
+typedef enum file_status file_status_t;
+
 enum where {
-    ROM_INZIP, ROM_INCO, ROM_INGCO
+    ROM_NOWHERE = -1,
+    ROM_INZIP, ROM_INCO, ROM_INGCO,
+    ROM_ELSEWHERE
 };
 
 typedef enum where where_t;
-
-/* XXX: delete */
-enum state {
-    ROM_0,
-    ROM_UNKNOWN, ROM_SHORT, ROM_LONG, ROM_CRCERR, ROM_NOCRC,
-    ROM_NAMERR, ROM_LONGOK, ROM_BESTBADDUMP, ROM_OK, ROM_TAKEN
-};
-
-typedef enum state state_t;
 
 enum filetype {
     TYPE_ROM, TYPE_SAMPLE, TYPE_DISK,
@@ -69,8 +73,20 @@ enum filetype {
 
 typedef enum filetype filetype_t;
 
-
+#define FIX_DO			0x01
+#define FIX_PRINT		0x02
+#define FIX_KEEP_LONG		0x04
+#define FIX_KEEP_UNUSED		0x08
+#define FIX_KEEP_UNKNOWN	0x10
 
+/* XXX: delete */
+enum state {
+        ROM_0,
+	    ROM_UNKNOWN, ROM_SHORT, ROM_LONG, ROM_CRCERR, ROM_NOCRC,
+	    ROM_NAMERR, ROM_LONGOK, ROM_BESTBADDUMP, ROM_OK, ROM_TAKEN
+	};
+
+typedef enum state state_t;
 
 
 
