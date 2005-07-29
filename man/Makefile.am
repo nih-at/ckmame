@@ -22,7 +22,7 @@ mkmamedb.1: mkmamedb.${MANFMT}
 	rm -f $@.$$$$
 
 .mdoc.html:
-	nroff -mdoc2html $< | sed -e "s,../html1/,," > $@.$$$$ && mv $@.$$$$ $@
+	nroff -mdoc2html $< | sed -e "s,../html[0-9]/,," > $@.$$$$ && mv $@.$$$$ $@
 
 update-man: ${MAN}
 update-html: ${HTML}
