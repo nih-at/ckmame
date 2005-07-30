@@ -1,15 +1,15 @@
 # test parent, file used by child (also tested)
-# $NiH$
+# $NiH: tochildfix.test,v 1.1 2003/03/17 04:44:02 dillo Exp $
 return 0
 # XXX: adding -c reports clone-8 as correct
 args -FKULv parent-4 clone-8
 rom 2-48-ok.zip parent-4.zip 1-4-ok.zip
 romnew clone-8.zip 1-8-ok.zip
 garbage parent-4.zip 1-8-ok.zip
-stdout ./roms/clone-8.zip: add `./roms/parent-4.zip/08.rom' as 08.rom
 stdout In game clone-8:
 stdout rom  08.rom        size       8  crc 3656897d: should be in zip, is in cloneof
-stdout ./roms/parent-4.zip: mv unused file 08.rom
+stdout ./roms/clone-8.zip: add `./roms/parent-4.zip/08.rom' as 08.rom
 stdout In game parent-4:
 #stdout game parent-4                                : correct
 stdout file 08.rom        size       8  crc 3656897d: not used
+stdout ./roms/parent-4.zip: mv unused file 08.rom

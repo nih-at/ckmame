@@ -1,11 +1,11 @@
 # unused file in parent
-# $NiH$
+# $NiH: punused.test,v 1.1 2003/03/17 04:44:01 dillo Exp $
 return 0
 args -FKULvc parent-4
 rom 2-48-ok.zip parent-4.zip 1-4-ok.zip
 rom 1-8-ok.zip clone-8.zip 1-8-ok.zip
 garbage parent-4.zip 1-8-ok.zip
-stdout ./roms/parent-4.zip: mv unused file 08.rom
 stdout In game parent-4:
 stdout game parent-4                                : correct
 stdout file 08.rom        size       8  crc 3656897d: not used
+stdout ./roms/parent-4.zip: mv unused file 08.rom
