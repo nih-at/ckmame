@@ -1,9 +1,10 @@
 # test single-rom game (no parent), rom is in middle of long file
-# $NiH$
+# $NiH: mid.test,v 1.2 2003/03/16 16:41:10 dillo Exp $
 return 0
 args -FKULvc 1-4
 rom 1-4-mid.zip 1-4.zip 1-4-ok.zip
 garbage 1-4.zip 1-4-mid.zip
-stdout ./roms/1-4.zip: shrink `04.rom' as 04.rom to 4/4
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 4 (16)
+stdout ./roms/1-4.zip: mv long file 04.rom
+stdout ./roms/1-4.zip: extract (offset 4, size 4) from `04.rom' to `04.rom'
