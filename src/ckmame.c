@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.4 2005/07/13 17:42:19 dillo Exp $
+  $NiH: ckmame.c,v 1.4.2.1 2005/07/27 00:05:57 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -121,6 +121,11 @@ int fix_options;
 int ignore_extra;
 int romhashtypes, diskhashtypes;
 parray_t *superfluous;
+filetype_t file_type;
+DB *db;
+map_t *disk_file_map;
+map_t *extra_file_map;
+map_t *needed_map;
 
 
 
@@ -128,17 +133,15 @@ int
 main(int argc, char **argv)
 {
     int i, j;
-    DB *db;
     char *dbname;
     int c, found;
     parray_t *list;
     tree_t *tree;
-    filetype_t ft;
     int superfluous_only, integrity;
     
     prg = argv[0];
     output_options = WARN_ALL;
-    ft = TYPE_ROM;
+    file_type = TYPE_ROM;
     superfluous_only = 0;
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -197,7 +200,7 @@ main(int argc, char **argv)
 	    fix_options |= FIX_PRINT;
 	    break;
 	case 'S':
-	    ft = TYPE_SAMPLE;
+	    file_type = TYPE_SAMPLE;
 	    break;
 	case 's':
 	    output_options &= ~WARN_SUPERFLUOUS;
@@ -258,13 +261,13 @@ main(int argc, char **argv)
 
     if (optind == argc) {
 	for (i=0; i<parray_length(list); i++)
-	    tree_add(db, tree, parray_get(list, i));
+	    tree_add(tree, parray_get(list, i));
     }
     else {
 	for (i=optind; i<argc; i++) {
 	    if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 		if (parray_index_sorted(list, argv[i], strcasecmp) >= 0)
-		    tree_add(db, tree, argv[i]);
+		    tree_add(tree, argv[i]);
 		else
 		    myerror(ERRDEF, "game `%s' unknown", argv[i]);
 	    }
@@ -272,7 +275,7 @@ main(int argc, char **argv)
 		found = 0;
 		for (j=0; j<parray_length(list); j++) {
 		    if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
-			tree_add(db, tree, parray_get(list, j));
+			tree_add(tree, parray_get(list, j));
 			found = 1;
 		    }
 		}
@@ -286,7 +289,7 @@ main(int argc, char **argv)
 
     superfluous = find_extra_files(dbname);
 
-    tree_traverse(db, tree);
+    tree_traverse(tree, NULL, NULL);
 
     return 0;
 }

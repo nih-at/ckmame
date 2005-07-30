@@ -1,10 +1,10 @@
-#ifndef _HAD_FILE_STATUS_H
-#define _HAD_FILE_STATUS_H
+#ifndef HAD_FIND_H
+#define HAD_FIND_H
 
 /*
-  $NiH: file_status.h,v 1.1.2.1 2005/07/27 10:55:53 dillo Exp $
+  $NiH$
 
-  file_status.h -- information about status of a file in an archive
+  find.h -- find ROM in ROM set or archives
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -26,22 +26,22 @@
 
 
 
-#include "array.h"
-#include "types.h"
+#include "map.h"
+#include "match.h"
+#include "rom.h"
+
+enum find_result {
+    FIND_ERROR = -1,
+    FIND_UNKNOWN,
+    FIND_MISSING,
+    FIND_EXISTS
+};
+
+typedef enum find_result find_result_t;
 
 
 
-typedef array_t file_status_array_t;
+find_result_t find_in_archives(map_t *, const rom_t *, match_t *);
+find_result_t find_in_romset(const rom_t *, const char *, match_t *);
 
-#define file_status_array_free(ma)	(array_free(ma, NULL))
-#define file_status_array_get(ma, i)	\
-	(*(file_status_t *)array_get((ma), (i)))
-#define file_status_array_new(n)	\
-	(array_new_length(sizeof(file_status_t), (n), file_status_init))
-#define file_status_array_length	array_length
-
-
-
-void file_status_init(file_status_t *);
-
-#endif /* file_status.h */
+#endif /* find.h */

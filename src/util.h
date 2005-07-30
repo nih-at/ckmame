@@ -2,7 +2,7 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.3 2005/07/13 17:42:20 dillo Exp $
+  $NiH: util.h,v 1.3.2.1 2005/07/19 22:46:48 dillo Exp $
 
   util.h -- miscellaneous utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -32,7 +32,6 @@
 
 typedef int (*cmpfunc)(const void *, const void *);
 
-extern char *rompath[];
 void init_rompath(void);
 
 char *bin2hex(char *, const unsigned char *, unsigned int);

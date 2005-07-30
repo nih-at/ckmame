@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.1.2.1 2005/07/19 22:46:48 dillo Exp $
+  $NiH: archive.c,v 1.1.2.2 2005/07/27 00:05:57 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -237,29 +237,19 @@ archive_free(archive_t *a)
 
 
 archive_t *
-archive_new(const char *name, filetype_t ft, const char *parent)
+archive_new(const char *name, filetype_t ft, int createp)
 {
     struct archive *a;
-    char b[8192], *p, *full_name;
+    char b[8192], *full_name;
     int i;
-
-    if (parent) {
-	/* this is used by fix_game to create the zip file in the same
-	   directory as it's parent */
-	
-	strcpy(b, parent);
-	p = strrchr(b, '/');
-	if (p == NULL)
-	    p = b;
+    
+    full_name = findfile(name, ft);
+    if (full_name == NULL) {
+	if (createp) {
+	    sprintf(b, "%s/%s.zip", rompath[0], name);
+	    full_name = xstrdup(b);
+	}
 	else
-	    p++;
-	strcpy(p, name);
-	strcat(p, ".zip");
-	full_name = xstrdup(b);
-    }
-    else {
-	full_name = findfile(name, ft);
-	if (full_name == NULL)
 	    return NULL;
     }
     

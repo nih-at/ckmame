@@ -2,7 +2,7 @@
 #define HAD_TREE_H
 
 /*
-  $NiH: tree.h,v 1.1.2.1 2005/07/19 22:46:48 dillo Exp $
+  $NiH: tree.h,v 1.1.2.2 2005/07/27 00:05:58 dillo Exp $
 
   tree.h -- XXX
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -41,9 +41,9 @@ typedef struct tree tree_t;
 
 #define tree_name(t)	((t)->name)
 
-int tree_add(DB *, tree_t *, const char *);
+int tree_add(tree_t *, const char *);
 void tree_free(tree_t *);
 tree_t *tree_new(void);
-void tree_traverse(DB *, const tree_t *);
+void tree_traverse(const tree_t *, archive_t *, archive_t *);
 
 #endif /* tree.h */

@@ -2,7 +2,7 @@
 #define HAD_MATCH_H
 
 /*
-  $NiH: match.h,v 1.1.2.2 2005/07/19 22:46:48 dillo Exp $
+  $NiH: match.h,v 1.1.2.3 2005/07/27 00:05:57 dillo Exp $
 
   match.h -- matching files with ROMs
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -49,7 +49,7 @@ typedef array_t match_array_t;
 #define match_array_free(ma)	(array_free(ma, match_finalize))
 #define match_array_get(ma, i)	((match_t *)array_get((ma), (i)))
 #define match_array_new(n)	\
-	(array_new_length((n), sizeof(match_t), match_init))
+	(array_new_length(sizeof(match_t), (n), match_init))
 #define match_array_length	array_length
 
 #define match_archive(m)	((m)->archive)

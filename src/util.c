@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: util.c,v 1.2 2005/07/13 17:42:20 dillo Exp $
 
   util.c -- utility functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -33,85 +33,16 @@
 #include "util.h"
 #include "error.h"
 
-#define MAXROMPATH 128
-
-#if 0
-#define DEFAULT_ROMDIR "/usr/local/share/games/xmame" /* XXX: autoconfed */
-#else
-#define DEFAULT_ROMDIR "."
-#endif
-
-char *rompath[MAXROMPATH] = { NULL };
-static int rompath_init = 0;
-
-void init_rompath(void);
-
 
 
-char *
-findfile(const char *name, enum filetype what)
+const char *
+mybasename(const char *fname)
 {
-    int i;
-    char b[8192];
-    struct stat st;
+    const char *p;
 
-    if (rompath_init == 0)
-	init_rompath();
-
-    for (i=0; rompath[i]; i++) {
-	sprintf(b, "%s/%s/%s%s",
-		rompath[i],
-		(what == TYPE_SAMPLE ? "samples" : "roms"),
-		name,
-		(what == TYPE_DISK ? ".chd" : ".zip"));
-	if (stat(b, &st) == 0)
-	    return xstrdup(b);
-	if (what == TYPE_DISK) {
-	    b[strlen(b)-4] = '\0';
-	    if (stat(b, &st) == 0)
-		return xstrdup(b);
-	}
-    }
-    
-    return NULL;
-}
-
-
-
-void
-init_rompath(void)
-{
-    int i, after;
-    char *s, *e;
-
-    if (rompath_init)
-	return;
-
-    /* skipping components placed via command line options */
-    for (i=0; rompath[i]; i++)
-	;
-
-    if ((e = getenv("ROMPATH"))) {
-	s = xstrdup(e);
-
-	after = 0;
-	if (s[0] == ':')
-	    rompath[i++] = DEFAULT_ROMDIR;
-	else if (s[strlen(s)-1] == ':')
-	    after = 1;
-	
-	for (e=strtok(s, ":"); e; e=strtok(NULL, ":"))
-	    rompath[i++] = e;
-
-	if (after)
-	    rompath[i++] = DEFAULT_ROMDIR;
-    }
-    else
-	rompath[i++] = DEFAULT_ROMDIR;
-
-    rompath[i] = NULL;
-
-    rompath_init = 1;
+    if ((p=strrchr(fname, '/')) == NULL)
+	return fname;
+    return p+1;
 }
 
 

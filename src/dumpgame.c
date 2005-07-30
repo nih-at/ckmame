@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.4 2005/07/13 17:42:20 dillo Exp $
+  $NiH: dumpgame.c,v 1.4.2.1 2005/07/27 00:05:57 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -178,17 +178,19 @@ print_matches(DB *db, filetype_t ft, hashes_t *hash)
 {
     game_t *game;
     int i, j, matches;
-    array_t *fbh;
+    array_t *fbha;
+    file_by_hash_t *fbh;
 
     matches = 0;
 
     if (hashes_has_type(hash, file_by_hash_default_hashtype(ft))) {
-	if ((fbh=r_file_by_hash(db, ft, hash)) == NULL) {
+	if ((fbha=r_file_by_hash(db, ft, hash)) == NULL) {
 	    print_footer(0, hash);
 	    return;
 	}
 
-	for (i=0; i<array_length(fbh); i++) {
+	for (i=0; i<array_length(fbha); i++) {
+	    fbh = array_get(fbha, i);
 	    if ((game=r_game(db, file_by_hash_name(fbh))) == NULL) {
 		myerror(ERRDEF,
 			"db error: %s not found, though in hash index",
@@ -197,13 +199,13 @@ print_matches(DB *db, filetype_t ft, hashes_t *hash)
 		continue;
 	    }
 
-	    print_match(game, ft, file_by_hash_index(fbh, i));
+	    print_match(game, ft, file_by_hash_index(fbh));
 	    matches++;
 	    
 	    game_free(game);
 	}
 
-	array_free(fbh, file_by_hash_finalize);
+	array_free(fbha, file_by_hash_finalize);
     }
     else {
 	for (i=0; i<parray_length(list); i++) {

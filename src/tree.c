@@ -1,5 +1,5 @@
 /*
-  $NiH: tree.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
+  $NiH: tree.c,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
 
   tree.c -- traverse tree of games to check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -37,14 +37,13 @@
 #include "xmalloc.h"
 
 static tree_t *tree_add_node(tree_t *, const char *, int);
-static int tree_child_traverse(DB *, const tree_t *, int,
-			       archive_t *, archive_t *, int, int);
 static tree_t *tree_new_full(const char *, int);
+static int tree_process(const tree_t *, archive_t *, archive_t *, archive_t *);
 
 
 
 int
-tree_add(DB *db, tree_t *tree, const char *name)
+tree_add(tree_t *tree, const char *name)
 {
     game_t *g;
 
@@ -99,25 +98,21 @@ tree_new(void)
 
 
 void
-tree_traverse(DB *db, const tree_t *tree)
+tree_traverse(const tree_t *tree, archive_t *parent, archive_t *gparent)
 {
     tree_t *t;
+    archive_t *child;
+
+    child = archive_new(tree->name, file_type, 0);
     
+    if (tree->check)
+	tree_process(tree, child, parent, gparent);
+
     for (t=tree->child; t; t=t->next)
-	tree_child_traverse(db, t, 0, NULL, NULL, 0, 0);
-#if 0
-    /* XXX */
-    
-    /* run through children & update zipstruct */
-    for (t=tree->child; t; t=t->next) {
-	/* XXX: init i */
-	if (tree->check)
-	    i = game_clone_index(me_g, file_type, t->name);
-	tree_child_traverse(db, t, tree->check, me_a, parent_a, i+1,
-			    parent_no);
-    }
-#endif
-    
+	tree_traverse(t, child, parent);
+
+    archive_free(child);
+
     return;
 }
 
@@ -189,45 +184,44 @@ tree_new_full(const char *name, int check)
 
 
 static int
-tree_child_traverse(DB *db, const tree_t *tree, int parentcheck,
-		    archive_t *parent_a, archive_t *gparent_a,
-		    int parent_no, int gparent_no)
+tree_process(const tree_t *tree, archive_t *child,
+	     archive_t *parent, archive_t *gparent)
 {
-    archive_t *me_a, *all_a[3];
-    game_t *me_g;
-    match_array_t *me_m;
-    match_disk_array_t *me_d;
-    file_status_array_t *me_fs;
+    archive_t *all[3];
+    game_t *g;
+    match_array_t *ma;
+    match_disk_array_t *mda;
+    file_status_array_t *fsa;
 
     /* check me */
-    if ((me_g=r_game(db, tree->name)) == NULL) {
+    if ((g=r_game(db, tree->name)) == NULL) {
 	myerror(ERRDEF, "db error: %s not found", tree->name);
 	return -1;
     }
 
-    me_a = archive_new(tree->name, file_type, NULL);
-    all_a[0] = me_a;
-    all_a[1] = parent_a;
-    all_a[2] = gparent_a;
+    all[0] = child;
+    all[1] = parent;
+    all[2] = gparent;
 
-    me_m = check_files(me_g, all_a);
-    me_fs = check_archive(me_a, me_m);
+    ma = check_files(g, all);
+    fsa = check_archive(child, ma);
     if (file_type == TYPE_ROM)
-	me_d = check_disks(me_g);
+	mda = check_disks(g);
     else
-	me_d = NULL;
+	mda = NULL;
 
     /* write warnings/errors for me */
-    diagnostics(me_g, me_a, me_m, me_d, me_fs);
+    diagnostics(g, child, ma, mda, fsa);
 
-    fix_game(me_g, me_a, me_m, me_d, me_fs);
+    fix_game(g, child, ma, mda, fsa);
 	
     /* clean up */
-    file_status_array_free(me_fs);
-    match_disk_array_free(me_d);
-    match_array_free(me_m);
-    game_free(me_g);
-    archive_free(me_a);
-    
+    file_status_array_free(fsa);
+    match_disk_array_free(mda);
+    match_array_free(ma);
+    game_free(g);
+
+    /* XXX: commit changes to child */
+
     return 0;
 }

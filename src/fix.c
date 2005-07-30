@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2 2005/07/13 17:42:20 dillo Exp $
+  $NiH: fix.c,v 1.2.2.1 2005/07/27 00:05:57 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -75,7 +75,10 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 
     if (fix_options & FIX_DO) {
 	/* XXX: handle error */
-	archive_ensure_zip(a, 1);
+	if (a == NULL)
+	    a = archive_new(game_name(g), file_type, 1);
+	else
+	    archive_ensure_zip(a, 1);
     }
 
     for (i=0; i<archive_num_files(a); i++) {
@@ -153,7 +156,10 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
     for (i=0; i<game_num_files(g, file_type); i++) {
 	m = match_array_get(ma, i);
 	afrom = match_archive(m);
-	zfrom = archive_zip(afrom);
+	if (afrom)
+	    zfrom = archive_zip(afrom);
+	else
+	    zfrom = NULL;
 	r = game_file(g, file_type, i);
 	seterrinfo(rom_name(r), archive_name(a));
 

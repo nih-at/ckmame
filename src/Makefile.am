@@ -19,6 +19,7 @@ libckmame_a_SOURCES= \
 	array_new_length.c \
 	array_push.c \
 	chd.c \
+	check_archive.c \
 	check_disks.c \
 	check_files.c \
 	db-@DBTYPE@.c \
@@ -31,7 +32,9 @@ libckmame_a_SOURCES= \
 	file_by_hash.c \
 	file_by_hash_finalize.c \
 	file_by_hash_make_key.c \
+	file_status.c \
 	filetype_db_key.c \
+	find.c \
 	fix.c \
 	game.c \
 	game_add_clone.c \
@@ -65,6 +68,7 @@ libckmame_a_SOURCES= \
 	superfluous.c \
 	tree.c \
 	util.c \
+	util2.c \
 	w_file_by_hash_parray.c \
 	w_game.c \
 	w_list.c \
@@ -82,6 +86,8 @@ noinst_HEADERS=\
 	disk.h \
 	error.h \
 	file_by_hash.h \
+	file_status.h \
+	find.h \
 	funcs.h \
 	game.h \
 	globals.h \

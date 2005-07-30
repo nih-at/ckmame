@@ -2,7 +2,7 @@
 #define HAD_ARCHIVE_H
 
 /*
-  $NiH: archive.h,v 1.2.2.1 2005/07/15 10:02:59 dillo Exp $
+  $NiH: archive.h,v 1.2.2.2 2005/07/19 22:46:48 dillo Exp $
 
   archive.h -- information about an archive
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -54,7 +54,7 @@ int archive_file_compute_hashes(archive_t *, int, int);
 int archive_file_find_offset(archive_t *, int, int, const hashes_t *);
 int archive_file_index_by_name(const archive_t *, const char *);
 int archive_free(archive_t *);
-archive_t *archive_new(const char *, filetype_t, const char *);
+archive_t *archive_new(const char *, filetype_t, int);
 
 
 #endif /* archive.h */

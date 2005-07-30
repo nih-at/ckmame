@@ -7,9 +7,12 @@
 
 extern DB *db;
 
-extern map_t *needed_map;
-extern map_t *extra_file_map;
+extern char *rompath[];
+extern char *need_dir;
+
 extern map_t *extra_disk_map;
+extern map_t *extra_file_map;
+extern map_t *needed_map;
 
 extern parray_t *superfluous;
 
