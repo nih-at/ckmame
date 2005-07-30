@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.3 2005/07/13 17:42:20 dillo Exp $
+  $NiH: superfluous.c,v 1.3.2.1 2005/07/27 00:05:57 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -64,7 +64,7 @@ find_extra_files(const char *dbname)
 {
     DIR *dir;
     struct dirent *de;
-    char b[8192], *p;
+    char b[8192], dirname[8192], *p;
     parray_t *listf, *listd, *lst, *found;
     int i, l, first;
 
@@ -96,10 +96,10 @@ find_extra_files(const char *dbname)
     found = parray_new();
 
     for (i=0; rompath[i]; i++) {
-	sprintf(b, "%s/%s", rompath[i],
-		file_type == TYPE_ROM ? "roms" : "samples");
-	if ((dir=opendir(b)) == NULL) {
-	    myerror(ERRSTR, "can't open ROMPATH directory `%s'");
+	snprintf(dirname, sizeof(dirname), "%s/%s", rompath[i],
+		 file_type == TYPE_ROM ? "roms" : "samples");
+	if ((dir=opendir(dirname)) == NULL) {
+	    myerror(ERRSTR, "can't open ROMPATH directory `%s'", dirname);
 	    continue;
 	}
 
@@ -123,9 +123,9 @@ find_extra_files(const char *dbname)
 		lst = listd;
 
 	    if (lst == NULL || parray_index_sorted(lst, b, strcasecmp) == -1) {
-		p = xmalloc(l+1);
-		strncpy(p, de->d_name, l);
-		p[l] = '\0';
+		p = xmalloc(strlen(dirname)+1+l+1);
+		snprintf(p, strlen(dirname)+1+l+1, "%s/%s", dirname,
+			 de->d_name);
 		parray_push(found, p);
 	    }
 	}
