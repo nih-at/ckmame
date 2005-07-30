@@ -47,7 +47,7 @@ game (
 	description "1-4 with bad dump"
 	manufacturer "synth"
 	year 1994
-	rom ( name 04.rom size 4 crc32 278081F3 )
+	rom ( name 04.rom size 4 crc32 d87f7e0c status baddump )
 )
 
 game (
