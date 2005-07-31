@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.17.2.2 2005/07/31 11:38:39 dillo Exp $
+#  $NiH: runtest,v 1.17.2.3 2005/07/31 17:40:23 wiz Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -83,6 +83,9 @@
 #	disk IN TEST
 #	    link chd file IN into roms directory with name TEST.
 #
+#	mkdir MODE NAME
+#	    create directory NAME with permissions MODE.
+#
 #	XXX: allow for creation of rom files and existing garbage files
 #
 # exit status
@@ -133,6 +136,7 @@ cleanup() {
 	cd ..;
 	if [ -z "${NOCLEANUP}" ]
 	then
+		chmod -R u+rw ${DIR};
 		rm -r ${DIR};
 	fi
 }
@@ -306,6 +310,9 @@ do
     echo "$arg" >> stdout;;
   error)
     echo "${PROGRAM}: $arg" >> errors;;
+  mkdir)
+    set $arg
+    mkdir "$2" && chmod "$1" "$2";;
   *)
     die "unknown directive '$cmd'"
   esac
