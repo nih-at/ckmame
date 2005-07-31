@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.17 2005/07/13 17:42:19 dillo Exp $
+#  $NiH: runtest,v 1.17.2.1 2005/07/31 09:27:37 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -65,9 +65,17 @@
 #	    check that CREATED-FILE has been created in garbage
 #	    directory and equals EXPECTED-FILE.
 #
-#	needed CREATED-FILE EXPECTED-FILE
-#	    check that CREATED-FILE has been created in needed
-#	    directory and equals EXPECTED-FILE.
+#	needed IN TEST OUT
+#	    link zip archive IN into needed directory with name TEST,
+#	    check against OUT after ckmame has run.
+#
+#	needed-new CREATED EXPECTED
+#	    check that CREATED has been created in needed directory and
+#	    equals EXPECTED.
+#
+#	needed-del IN TEST
+#	    link zip archive IN into needed directory with name TEST,
+#	    check that it is deleted.
 #
 #	disk IN TEST
 #	    link chd file IN into roms directory with name TEST.
@@ -264,7 +272,24 @@ do
     FILES="${FILES} ${srcdir}/$2!roms/garbage/$1";;
   needed)
     set $arg
+    if [ ! -d needed ]
+    then
+	mkdir needed
+    fi
+    # XXX: check that $1 exists
+    cp "${srcdir}/$1" "needed/$2"
+    FILES="${FILES} ${srcdir}/$3!needed/$1";;
+  needed-new)
+    set $arg
     FILES="${FILES} ${srcdir}/$2!needed/$1";;
+  needed-del)
+    set $arg
+    # XXX: check that $1 exists
+    if [ ! -d needed ]
+    then
+	mkdir needed
+    fi
+    cp "${srcdir}/$1" "needed/$2";;
   disk)
     set $arg
     # XXX: check that $1 exists
