@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.2.2.2 2005/07/27 00:05:57 dillo Exp $
+  $NiH: funcs.h,v 1.2.2.3 2005/07/30 12:24:29 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -40,6 +40,7 @@ match_disk_array_t *check_disks(game_t *);
 match_array_t *check_files(game_t *, archive_t *[]);
 void diagnostics(const game_t *, const archive_t *, const match_array_t *,
 		 const match_disk_array_t *, const file_status_array_t *);
+void enter_archive_in_map(map_t *, const archive_t *);
 void ensure_extra_file_map(void);
 void ensure_needed_map(void);
 int fix_game(game_t *, archive_t *, match_array_t *, match_disk_array_t *,

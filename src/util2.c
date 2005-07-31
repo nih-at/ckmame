@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.1 2005/07/30 12:24:29 dillo Exp $
+  $NiH: util2.c,v 1.1.2.2 2005/07/31 09:21:44 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -26,7 +26,9 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#include "dir.h"
 #include "error.h"
+#include "file_by_hash.h"
 #include "funcs.h"
 #include "globals.h"
 #include "hashes.h"
@@ -103,12 +105,41 @@ ensure_extra_file_map(void)
 void
 ensure_needed_map(void)
 {
+    dir_t *dir;
+    char b[8192];
+    archive_t *a;
+
     if (needed_map != NULL)
 	return;
     
     needed_map = map_new();
 
-    /* XXX: fill in */
+    if ((dir=dir_open(needed_dir)) == NULL)
+	return;
+
+    while (dir_next(dir, b, sizeof(b)) != DIR_EOD) {
+	/* XXX: handle error */
+
+	if ((a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
+	    enter_archive_in_map(needed_map, a);
+	    archive_free(a);
+	}
+    }
+
+    dir_close(dir);
+}
+
+
+
+void
+enter_archive_in_map(map_t *map, const archive_t *a)
+{
+    int i;
+
+    for (i=0; i<archive_num_files(a); i++)
+	map_add(map, file_by_hash_default_hashtype(TYPE_ROM),
+		rom_hashes(archive_file(a, i)),
+		file_by_hash_new(archive_name(a), i));
 }
 
 
