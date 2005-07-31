@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.4.2.3 2005/07/31 09:21:44 dillo Exp $
+  $NiH: ckmame.c,v 1.4.2.4 2005/07/31 14:02:20 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -38,6 +38,7 @@
 
 #include "dbh.h"
 #include "error.h"
+#include "globals.h"
 #include "funcs.h"
 #include "tree.h"
 #include "types.h"
@@ -286,6 +287,9 @@ main(int argc, char **argv)
     superfluous = find_extra_files(dbname);
 
     tree_traverse(tree, NULL, NULL);
+
+    if (needed_delete_list)
+	delete_list_execute(needed_delete_list);
 
     return 0;
 }

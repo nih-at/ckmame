@@ -1,5 +1,5 @@
 /*
-  $NiH: match.c,v 1.5 2005/07/13 17:42:20 dillo Exp $
+  $NiH: match.c,v 1.5.2.1 2005/07/27 00:05:57 dillo Exp $
 
   match.c -- information about ROM/file matches
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -41,7 +41,7 @@
 void
 match_finalize(match_t *m)
 {
-    if (match_where(m) == ROM_ELSEWHERE)
+    if (IS_ELSEWHERE(match_where(m)))
 	archive_free(match_archive(m));
 }
 

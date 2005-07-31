@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.5.2.4 2005/07/31 14:02:20 wiz Exp $
+  $NiH: types.h,v 1.5.2.5 2005/07/31 20:10:47 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -59,10 +59,14 @@ typedef enum file_status file_status_t;
 enum where {
     ROM_NOWHERE = -1,
     ROM_INZIP, ROM_INCO, ROM_INGCO,
-    ROM_ELSEWHERE
+    ROM_ROMSET,
+    ROM_NEEDED,
+    ROM_EXTRA
 };
 
 typedef enum where where_t;
+
+#define IS_ELSEWHERE(w)	((w) >= ROM_ROMSET)
 
 enum filetype {
     TYPE_ROM, TYPE_SAMPLE, TYPE_DISK,

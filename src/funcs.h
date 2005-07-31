@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.2.2.3 2005/07/30 12:24:29 dillo Exp $
+  $NiH: funcs.h,v 1.2.2.4 2005/07/31 11:37:08 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,6 +26,8 @@
 
 
 
+#include <zip.h>
+
 #include "archive.h"
 #include "dbl.h"
 #include "file_status.h"
@@ -47,6 +49,7 @@ int fix_game(game_t *, archive_t *, match_array_t *, match_disk_array_t *,
 	     file_status_array_t *);
 parray_t *find_extra_files(const char *);
 char *make_needed_name(const rom_t *);
+struct zip *my_zip_open(const char *, int);
 void print_extra_files(const parray_t *);
 
 #endif /* funcs.h */

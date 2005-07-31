@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.4 2005/07/31 13:44:29 wiz Exp $
+  $NiH: fix.c,v 1.2.2.5 2005/07/31 20:10:47 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -43,14 +43,15 @@
 #include "util.h"
 #include "xmalloc.h"
 
-extern char *prg;
+#define MARK_DELETED(x, i)	(*(int *)array_get((x), (i)) = 1)
+#define IS_DELETED(x, i)	(*(int *)array_get((x), (i)) == 1)
 
 static int fix_files(game_t *, archive_t *, match_array_t *);
 static int fix_save_needed(archive_t *, int, int);
-static struct zip *my_zip_open(const char *, int);
+static void set_zero(int *);
 
 /* XXX: move to garbage.c */
-static void close_garbage(void);
+static int close_garbage(void);
 static int fix_add_garbage(archive_t *, int);
 static char *mkgarbage_name(const char *);
 
@@ -64,11 +65,17 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	 file_status_array_t *fsa)
 {
     int i, islong, keep;
+    array_t *deleted;
 
     zf_garbage = NULL;
 
-    if (fix_options & FIX_DO)
+    if (fix_options & FIX_DO) {
 	archive_ensure_zip(a, 1);
+	deleted = array_new_length(sizeof(int), archive_num_files(a),
+				   set_zero);
+	if (needed_delete_list)
+	    delete_list_mark(needed_delete_list);
+    }
 
     for (i=0; i<archive_num_files(a); i++) {
 	switch (file_status_array_get(fsa, i)) {
@@ -85,8 +92,10 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	    if (fix_options & FIX_DO) {
 		if (keep)
 		    keep = (fix_add_garbage(a, i) == -1);
-		if (keep == 0)
+		if (keep == 0) {
+		    MARK_DELETED(deleted, i);
 		    zip_delete(archive_zip(a), i);
+		}
 	    }
 	    break;
 
@@ -116,6 +125,20 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	}
     }
 
+    if (fix_options & FIX_DO) {
+	if (close_garbage() < 0) {
+	    /* undelete files we tried to move to garbage */
+	    for (i=0; i<archive_num_files(a); i++) {
+		if (IS_DELETED(deleted, i)) {
+		    if (zip_unchange(archive_zip(a), i) < 0) {
+			/* XXX: cannot undelete */
+		    }
+		}
+	    }
+	}
+	array_free(deleted, NULL);
+    }
+    
     if ((fix_options & (FIX_DO|FIX_PRINT)) == 0) {
 	/* return early if no further messages or work requested */
 	return 0;
@@ -123,8 +146,9 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 
     fix_files(g, a, ma);
 
-    close_garbage();
-    archive_close_zip(a);
+    if (archive_close_zip(a) < 0)
+	if (needed_delete_list)
+	    delete_list_rollback(needed_delete_list);
 
     return 0;
 }
@@ -210,6 +234,11 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 			    rom_name(archive_file(afrom, match_index(m))),
 			    archive_name(afrom), zip_strerror(zto));
 		}
+		else {
+		    if (match_where(m) == ROM_NEEDED)
+			delete_list_add(needed_delete_list,
+					archive_name(afrom), match_index(m));
+		}
 	    }
 	    break;
 
@@ -229,24 +258,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 
     return 0;
 }
-
-
-
-static struct zip *
-my_zip_open(const char *name, int flags)
-{
-    struct zip *z;
-    char errbuf[80];
-    int err;
-
-    z = zip_open(name, flags, &err);
-    if (z == NULL)
-	myerror(ERRDEF, "error creating zip archive `%s': %s", name,
-		zip_error_to_str(errbuf, sizeof(errbuf), err, errno));
-
-    return z;
-}
-    
+  
 
 
 static int
@@ -265,7 +277,11 @@ fix_save_needed(archive_t *a, int index, int copy)
 
     if (copy) {
 	tmp = make_needed_name(archive_file(a, index));
-	if (ensure_dir(tmp, 1) < 0)
+	if (tmp == NULL) {
+	    myerror(ERRDEF, "cannot create needed file name");
+	    ret = -1;
+	}
+	else if (ensure_dir(tmp, 1) < 0)
 	    ret = -1;
 	else if ((zto=my_zip_open(tmp, ZIP_CREATE)) == NULL)
 	    ret = -1;
@@ -274,9 +290,16 @@ fix_save_needed(archive_t *a, int index, int copy)
 		 || zip_add(zto, rom_name(archive_file(a, index)),
 			    source) < 0) {
 	    zip_source_free(source);
-	    seterrinfo(tmp, rom_name(archive_file(a, index)));
+	    seterrinfo(rom_name(archive_file(a, index)), tmp);
 	    myerror(ERRFILE, "error adding from `%s': %s",
 		    archive_name(a), zip_strerror(zto));
+	    zip_close(zto);
+	    ret = -1;
+	}
+	else if (zip_close(zto) < 0) {
+	    seterrinfo(NULL, tmp);
+	    myerror(ERRZIP, "error closing: %s", zip_strerror(zto));
+	    zip_unchange_all(zto);
 	    zip_close(zto);
 	    ret = -1;
 	}
@@ -284,7 +307,6 @@ fix_save_needed(archive_t *a, int index, int copy)
 	    zip_name = tmp;
 	    zip_index = 0;
 	}
-	zip_close(zto);
     }
 
     fbh = file_by_hash_new(zip_name, zip_index);
@@ -297,23 +319,27 @@ fix_save_needed(archive_t *a, int index, int copy)
 
 
 
-static void
+static int
 close_garbage(void)
 {
-
     if (zf_garbage == NULL)
-	return;
+	return 0;
 
     if (zip_get_num_files(zf_garbage) > 0) {
-	/*
-	 * XXX: handle error, somehow, e.g.:
-	 * . undo deletion of garbage files in a
-	 * . if that fails, discard all changes and make big error message
-	*/
-	ensure_dir(zf_garbage_name, 1);
+	if (ensure_dir(zf_garbage_name, 1) < 0) {
+	    zip_unchange_all(zf_garbage);
+	    zip_close(zf_garbage);
+	    return -1;
+	}
     }
 
-    zip_close(zf_garbage);
+    if (zip_close(zf_garbage) < 0) {
+	zip_unchange_all(zf_garbage);
+	zip_close(zf_garbage);
+	return -1;
+    }
+
+    return 0;
 }
 
 
@@ -375,4 +401,12 @@ mkgarbage_name(const char *name)
     sprintf(t, "%.*sgarbage/%s", (int)(s-name), name, s);
 
     return t;
+}
+
+
+
+static void
+set_zero(int *ip)
+{
+    *ip = 0;
 }

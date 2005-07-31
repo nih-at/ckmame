@@ -2,7 +2,7 @@
 #define _HAD_PARRAY_H
 
 /*
-  $NiH: parray.h,v 1.1 2005/07/07 22:00:20 dillo Exp $
+  $NiH: parray.h,v 1.2 2005/07/13 17:42:20 dillo Exp $
 
   parray.h -- array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -52,6 +52,8 @@ int parray_index_sorted(const parray_t *, const void *,
 parray_t *parray_new_sized(int);
 parray_t *parray_new_from_data(void **, int);
 void parray_push(parray_t *, void *);
+void parray_set_length(parray_t *, int, void *(*)(void),
+		       void (*)(/* void * */));
 void parray_sort_real(parray_t *, int, int, int,
 		      int (*)(/* const void *, const void * */));
 

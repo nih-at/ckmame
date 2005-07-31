@@ -2,6 +2,7 @@
 #define HAD_GLOBALS_H
 
 #include "dbl.h"
+#include "delete_list.h"
 #include "map.h"
 #include "parray.h"
 
@@ -13,6 +14,7 @@ extern char *need_dir;
 extern map_t *extra_disk_map;
 extern map_t *extra_file_map;
 extern map_t *needed_map;
+extern delete_list_t *needed_delete_list;
 
 extern parray_t *superfluous;
 

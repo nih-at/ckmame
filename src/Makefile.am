@@ -24,6 +24,7 @@ libckmame_a_SOURCES= \
 	check_files.c \
 	db-@DBTYPE@.c \
 	dbl.c \
+	delete_list.c \
 	diagnostics.c \
 	dir.c \
 	disk.c \
@@ -53,6 +54,7 @@ libckmame_a_SOURCES= \
 	parray_index_sorted.c \
 	parray_new_from_data.c \
 	parray_push.c \
+	parray_set_length.c \
 	parray_sort_real.c \
 	parse-cm.c \
 	parse-xml.c \
@@ -84,6 +86,7 @@ noinst_HEADERS=\
 	db-@DBTYPE@.h \
 	dbh.h \
 	dbl.h \
+	delete_list.h \
 	dir.h \
 	disk.h \
 	error.h \

@@ -1,5 +1,5 @@
 /*
-  $NiH: fbh_make_key.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: file_by_hash_make_key.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
 
   fbh_make_key.c -- make dbkey for file_by_hash struct
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -50,7 +50,7 @@ file_by_hash_make_key(filetype_t filetype, const hashes_t *hash)
     key[0] = '/';
     key[1] = filetype_char(filetype);
     key[2] = '/';
-    hash_to_string(key+3, hash->types, hash);
+    hash_to_string(key+3, file_by_hash_default_hashtype(filetype), hash);
 
     return key;
 }

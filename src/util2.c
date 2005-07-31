@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.2 2005/07/31 09:21:44 dillo Exp $
+  $NiH: util2.c,v 1.1.2.3 2005/07/31 11:37:08 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -45,6 +45,7 @@ static int rompath_init = 0;
 map_t *disk_file_map = NULL;
 map_t *extra_file_map = NULL;
 map_t *needed_map = NULL;
+delete_list_t *needed_delete_list = NULL;
 
 
 
@@ -113,6 +114,7 @@ ensure_needed_map(void)
 	return;
     
     needed_map = map_new();
+    needed_delete_list = delete_list_new();
 
     if ((dir=dir_open(needed_dir)) == NULL)
 	return;
@@ -280,4 +282,22 @@ print_extra_files(const parray_t *files)
     
     for (i=0; i<parray_length(files); i++)
 	printf("%s\n", (char *)parray_get(files, i));
+}
+
+
+
+struct zip *
+my_zip_open(const char *name, int flags)
+{
+    struct zip *z;
+    char errbuf[80];
+    int err;
+
+    z = zip_open(name, flags, &err);
+    if (z == NULL)
+	myerror(ERRDEF, "error %s zip archive `%s': %s", name,
+		(flags & ZIP_CREATE ? "creating" : "opening"),
+		zip_error_to_str(errbuf, sizeof(errbuf), err, errno));
+
+    return z;
 }
