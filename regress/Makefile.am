@@ -15,6 +15,7 @@ TESTCASES=	baddump.test \
 		disk-ok.test \
 		disk-wrong.test \
 		double.test \
+		from-needed.test \
 		garbage.test \
 		inchild.test \
 		inparent.test \
