@@ -25,6 +25,7 @@ libckmame_a_SOURCES= \
 	db-@DBTYPE@.c \
 	dbl.c \
 	diagnostics.c \
+	dir.c \
 	disk.c \
 	disk_get_info.c \
 	disk_new.c \
@@ -83,6 +84,7 @@ noinst_HEADERS=\
 	db-@DBTYPE@.h \
 	dbh.h \
 	dbl.h \
+	dir.h \
 	disk.h \
 	error.h \
 	file_by_hash.h \
