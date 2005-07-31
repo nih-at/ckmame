@@ -1,0 +1,14 @@
+# $NiH: needed.test,v 1.1.2.5 2005/07/31 17:40:22 wiz Exp $
+description zip contains file needed elsewhere, creating needed archive fails
+return 0
+args -FKLvc 1-4
+#rom 2-48-ok.zip 1-4.zip 2-48-ok.zip
+rom 1-8-ok.zip 1-4.zip 2-48-ok.zip
+rom 1-4-ok.zip disk.zip 1-4-ok.zip
+mkdir 0555 needed
+stdout In game 1-4:
+stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/disk.zip'
+stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
+stdout ./roms/1-4.zip: save needed file `08.rom'
+stdout ./roms/1-4.zip: add `./roms/disk.zip/04.rom' as `04.rom'
+error needed/3656897d-000.zip: error closing: Permission denied

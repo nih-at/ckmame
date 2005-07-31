@@ -16,6 +16,7 @@ TESTCASES=	baddump.test \
 		disk-wrong.test \
 		double.test \
 		from-needed.test \
+		from-romset.test \
 		garbage.test \
 		inchild.test \
 		inparent.test \
@@ -27,6 +28,7 @@ TESTCASES=	baddump.test \
 		misnamed.test \
 		multi.test \
 		needed.test \
+		needed-error.test \
 		nogood.test \
 		nogood-miss.test \
 		nonexist.test \
