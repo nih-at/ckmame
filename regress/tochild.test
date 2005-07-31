@@ -1,9 +1,0 @@
-# test parent, file used by child (not tested)
-# $NiH$
-return 0
-# XXX: should move 08.rom to clone-8.zip
-args -FKULvc parent-4
-rom 2-48-ok.zip parent-4.zip 2-48-ok.zip
-stdout In game parent-4:
-stdout game parent-4                                : correct
-stdout file 08.rom        size       8  crc 3656897d: used in clone clone-8

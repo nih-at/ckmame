@@ -31,11 +31,9 @@ TESTCASES=	baddump.test \
 		punknown.test \
 		punused.test \
 		superfluous.test \
-		tochild.test \
 		tochildfix.test \
 		unused.test \
-		wrong.test \
-		wrong2.test
+		wrong.test
 
 ZIPS=		1-4-dup.zip \
 		1-4-mid.zip \
