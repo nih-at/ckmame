@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.1.2.2 2005/07/27 00:05:57 dillo Exp $
+  $NiH: archive.c,v 1.1.2.3 2005/07/30 12:24:28 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -29,6 +29,7 @@
 #include <string.h>
 
 #include "archive.h"
+#include "error.h"
 #include "globals.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -39,6 +40,32 @@ extern char *prg;
 
 static int get_hashes(struct zip_file *zf, off_t, hashes_t *);
 static void read_infos_from_zip(archive_t *, int);
+
+
+
+int
+archive_close_zip(archive_t *a)
+{
+    if (archive_zip(a) == NULL)
+	return 0;
+    
+    if (zip_close(archive_zip(a)) < 0) {
+	/* error closing, so zip is still valid */
+	myerror(ERRDEF, "%s: error closing zip: %s\n",
+		archive_name(a), zip_strerror(archive_zip(a)));
+
+	/* XXX: really do this here? */
+	/* discard all changes and close zipfile */
+	zip_unchange_all(archive_zip(a));
+	zip_close(archive_zip(a));
+	archive_zip(a) = NULL;
+	return -1;
+    }
+
+    archive_zip(a) = NULL;
+
+    return 0;
+}
 
 
 
@@ -213,19 +240,7 @@ archive_free(archive_t *a)
     if (a == NULL)
 	return 0;
 
-    ret = 0;
-    if (archive_zip(a)) {
-	if ((ret=zip_close(archive_zip(a))) < 0) {
-	    /* error closing, so zip is still valid */
-	    fprintf(stderr, "%s: %s: error closing zip: %s\n",
-		    prg, archive_name(a),
-		    zip_strerror(archive_zip(a)));
-
-	    /* discard all changes and close zipfile */
-	    zip_unchange_all(archive_zip(a));
-	    zip_close(archive_zip(a));
-	}
-    }
+    ret = archive_close_zip(a);
 
     free(a->name);
     array_free(archive_files(a), rom_finalize);
@@ -240,15 +255,13 @@ archive_t *
 archive_new(const char *name, filetype_t ft, int createp)
 {
     struct archive *a;
-    char b[8192], *full_name;
+    char *full_name;
     int i;
     
     full_name = findfile(name, ft);
     if (full_name == NULL) {
-	if (createp) {
-	    sprintf(b, "%s/%s.zip", rompath[0], name);
-	    full_name = xstrdup(b);
-	}
+	if (createp)
+	    full_name = make_file_name(ft, 0, name);
 	else
 	    return NULL;
     }

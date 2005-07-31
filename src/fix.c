@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: fix.c,v 1.2.2.2 2005/07/30 12:24:29 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -51,7 +51,6 @@ static struct zip *my_zip_open(const char *, int);
 
 /* XXX: move to garbage.c */
 static void close_garbage(void);
-static int ensure_garbage_dir(void);
 static int fix_add_garbage(archive_t *, int);
 static char *mkgarbage_name(const char *);
 
@@ -66,20 +65,10 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 {
     int i, islong, keep;
 
-#if 0
-    if (fix_options & (FIX_DO|FIX_PRINT))
-    	fake_needed(me_a, me_fs);
-#endif
-    
     zf_garbage = NULL;
 
-    if (fix_options & FIX_DO) {
-	/* XXX: handle error */
-	if (a == NULL)
-	    a = archive_new(game_name(g), file_type, 1);
-	else
-	    archive_ensure_zip(a, 1);
-    }
+    if (fix_options & FIX_DO)
+	archive_ensure_zip(a, 1);
 
     for (i=0; i<archive_num_files(a); i++) {
 	switch (file_status_array_get(fsa, i)) {
@@ -135,6 +124,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
     fix_files(g, a, ma);
 
     close_garbage();
+    archive_close_zip(a);
 
     return 0;
 }
@@ -151,6 +141,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
     rom_t *r;
     int i;
 
+    archive_ensure_zip(a, 1);
     zto = archive_zip(a);
 
     for (i=0; i<game_num_files(g, file_type); i++) {
@@ -274,9 +265,10 @@ fix_save_needed(archive_t *a, int index, int copy)
 
     if (copy) {
 	tmp = make_needed_name(archive_file(a, index));
-	if ((zto=my_zip_open(tmp, ZIP_CREATE)) == NULL) {
+	if (ensure_dir(tmp, 1) < 0)
 	    ret = -1;
-	}
+	else if ((zto=my_zip_open(tmp, ZIP_CREATE)) == NULL)
+	    ret = -1;
 	else if ((source=zip_source_zip(zto, archive_zip(a), index,
 					0, 0, -1)) == NULL
 		 || zip_add(zto, rom_name(archive_file(a, index)),
@@ -285,12 +277,14 @@ fix_save_needed(archive_t *a, int index, int copy)
 	    seterrinfo(tmp, rom_name(archive_file(a, index)));
 	    myerror(ERRFILE, "error adding from `%s': %s",
 		    archive_name(a), zip_strerror(zto));
+	    zip_close(zto);
 	    ret = -1;
 	}
 	else {
 	    zip_name = tmp;
 	    zip_index = 0;
 	}
+	zip_close(zto);
     }
 
     fbh = file_by_hash_new(zip_name, zip_index);
@@ -316,44 +310,11 @@ close_garbage(void)
 	 * . undo deletion of garbage files in a
 	 * . if that fails, discard all changes and make big error message
 	*/
-	ensure_garbage_dir();
+	ensure_dir(zf_garbage_name, 1);
     }
 
     zip_close(zf_garbage);
 }
-
-
-
-static int
-ensure_garbage_dir(void)
-{
-    char *s;
-    struct stat st;
-
-    s = strrchr(zf_garbage_name, '/');
-    if (s == NULL) {
-	/* internal error */
-	myerror(ERRDEF, "internal error: no slash in "
-		"zf_garbage_name `%s'", zf_garbage_name);
-	return -1;
-    }
-
-    *s = 0;
-    if (stat(zf_garbage_name, &st) < 0) {
-	if (mkdir(zf_garbage_name, 0777) < 0) {
-	    myerror(ERRDEF, "mkdir `%s' failed: %s",
-		    zf_garbage_name, strerror(errno));
-	    return -1;
-	}
-    }
-    else if (!(st.st_mode & S_IFDIR)) {
-	myerror(ERRDEF, "`%s' is not a directory", zf_garbage_name);
-	return -1;
-    }
-    *s = '/';
-
-    return 0;
-}		    
 
 
 

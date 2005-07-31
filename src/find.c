@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: find.c,v 1.1.2.1 2005/07/30 12:24:29 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -86,7 +86,7 @@ find_in_romset(const rom_t *r, const char *skip, match_t *m)
     game_t *g;
     const rom_t *gr;
     int i;
-    int status;
+    find_result_t status;
 
     if ((a=r_file_by_hash(db, TYPE_ROM, rom_hashes(r))) == NULL) {
 	/* XXX: internal error: db inconsistency */
@@ -95,7 +95,7 @@ find_in_romset(const rom_t *r, const char *skip, match_t *m)
 
     status = FIND_UNKNOWN;
     for (i=0;
-	 (status == FIND_ERROR || status == FIND_EXISTS) && i<array_length(a);
+	 (status != FIND_ERROR && status != FIND_EXISTS) && i<array_length(a);
 	 i++) {
 	fbh = array_get(a, i);
 

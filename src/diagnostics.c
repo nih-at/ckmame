@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
+  $NiH: diagnostics.c,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -151,7 +151,8 @@ diagnostics_disks(const game_t *game, const match_disk_array_t *mda)
 		
 	case QU_OK:
 	    if (output_options & WARN_CORRECT)
-		warn_disk(d, "correct");
+		warn_disk(d,
+			  disk_status(d) == STATUS_OK ? "correct" : "exists");
 	    break;
 
 	case QU_COPIED:
@@ -233,7 +234,7 @@ diagnostics_files(const game_t *game, const match_array_t *ma)
 			     rom_name(f),
 			     (rom_where(r) != match_where(m)
 			      ? ", should be in " : ""),
-			     zname[match_where(m)]);
+			     zname[rom_where(r)]);
 		break;
 		
 	    case QU_LONG:
@@ -243,7 +244,7 @@ diagnostics_files(const game_t *game, const match_array_t *ma)
 			     (int)match_offset(m), rom_size(f),
 			     (rom_where(r) != match_where(m)
 			      ? ", should be in " : ""),
-			     zname[match_where(m)]);
+			     zname[rom_where(r)]);
 		break;
 		
 	    case QU_OK:
@@ -265,7 +266,7 @@ diagnostics_files(const game_t *game, const match_array_t *ma)
 	    case QU_INZIP:
 		if (output_options & WARN_WRONG_ZIP)
 		    warn_rom(r, "should be in %s",
-			     zname[match_where(m)]);
+			     zname[rom_where(r)]);
 		break;
 
 	    case QU_NOCRC:

@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.4.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: ckmame.c,v 1.4.2.2 2005/07/30 12:24:28 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -123,9 +123,6 @@ int romhashtypes, diskhashtypes;
 parray_t *superfluous;
 filetype_t file_type;
 DB *db;
-map_t *disk_file_map;
-map_t *extra_file_map;
-map_t *needed_map;
 
 
 

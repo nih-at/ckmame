@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.2 2005/07/13 17:42:20 dillo Exp $
+  $NiH: util2.c,v 1.1.2.1 2005/07/30 12:24:29 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#include "error.h"
 #include "funcs.h"
 #include "globals.h"
 #include "hashes.h"
@@ -39,11 +40,59 @@ char *needed_dir = "needed";	/* XXX: proper value */
 char *rompath[MAXROMPATH] = { NULL };
 static int rompath_init = 0;
 
+map_t *disk_file_map = NULL;
+map_t *extra_file_map = NULL;
+map_t *needed_map = NULL;
+
+
+
+int
+ensure_dir(const char *name, int strip_fname)
+{
+    const char *p;
+    char *dir;
+    struct stat st;
+    int ret;
+
+    if (strip_fname) {
+	p = strrchr(name, '/');
+	if (p == NULL)
+	    dir = xstrdup(".");
+	else {
+	    dir = xmalloc(p-name+1);
+	    strncpy(dir, name, p-name);
+	    dir[p-name] = 0;
+	}
+	name = dir;
+    }
+
+    ret = 0;
+    if (stat(name, &st) < 0) {
+	if (mkdir(name, 0777) < 0) {
+	    myerror(ERRDEF, "mkdir `%s' failed: %s",
+		    name, strerror(errno));
+	    ret = -1;
+	}
+    }
+    else if (!(st.st_mode & S_IFDIR)) {
+	myerror(ERRDEF, "`%s' is not a directory", name);
+	ret = -1;
+    }
+
+    if (strip_fname)
+	free(dir);
+
+    return ret;
+}		    
+
 
 
 void
 ensure_extra_file_map(void)
 {
+    if (extra_file_map != NULL)
+	return;
+    
     extra_file_map = map_new();
 
     /* XXX: fill in */
@@ -54,6 +103,9 @@ ensure_extra_file_map(void)
 void
 ensure_needed_map(void)
 {
+    if (needed_map != NULL)
+	return;
+    
     needed_map = map_new();
 
     /* XXX: fill in */
@@ -62,28 +114,29 @@ ensure_needed_map(void)
 
 
 char *
-findfile(const char *name, enum filetype what)
+findfile(const char *name, filetype_t what)
 {
     int i;
-    char b[8192];
+    char *fn;
     struct stat st;
 
-    if (rompath_init == 0)
-	init_rompath();
+    if (what == TYPE_FULL_PATH) {
+	if (stat(name, &st) == 0)
+	    return xstrdup(name);
+	else
+	    return NULL;
+    }
 
     for (i=0; rompath[i]; i++) {
-	sprintf(b, "%s/%s/%s%s",
-		rompath[i],
-		(what == TYPE_SAMPLE ? "samples" : "roms"),
-		name,
-		(what == TYPE_DISK ? ".chd" : ".zip"));
-	if (stat(b, &st) == 0)
-	    return xstrdup(b);
+	fn = make_file_name(what, i, name);
+	if (stat(fn, &st) == 0)
+	    return fn;
 	if (what == TYPE_DISK) {
-	    b[strlen(b)-4] = '\0';
-	    if (stat(b, &st) == 0)
-		return xstrdup(b);
+	    fn[strlen(fn)-4] = '\0';
+	    if (stat(fn, &st) == 0)
+		return fn;
 	}
+	free(fn);
     }
     
     return NULL;
@@ -125,6 +178,33 @@ init_rompath(void)
     rompath[i] = NULL;
 
     rompath_init = 1;
+}
+
+
+
+char *
+make_file_name(filetype_t ft, int idx, const char *name)
+{
+    char *fn, *dir, *ext;
+    
+    if (rompath_init == 0)
+	init_rompath();
+
+    if (ft == TYPE_SAMPLE)
+	dir = "samples";
+    else
+	dir = "roms";
+
+    if (ft == TYPE_DISK)
+	ext = "chd";
+    else
+	ext = "zip";
+
+    fn = xmalloc(strlen(rompath[idx])+strlen(dir)+strlen(name)+7);
+    
+    sprintf(fn, "%s/%s/%s.%s", rompath[idx], dir, name, ext);
+
+    return fn;
 }
 
 

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: check_archive.c,v 1.1.2.1 2005/07/30 12:24:28 dillo Exp $
 
   check_archive.c -- determine status of files in archive
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -64,6 +64,7 @@ check_archive(archive_t *a, match_array_t *ma)
 	    break;
 
 	case FIND_MISSING:
+	    ensure_needed_map();
 	    if (find_in_archives(needed_map,
 				 archive_file(a, i), &mr) == FIND_EXISTS) {
 		archive_free(match_archive(&mr));
