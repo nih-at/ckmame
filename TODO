@@ -1,8 +1,4 @@
-delete used files
-dumpgame -c with non-default hash type
-
 tests:
-* get rom from other game
 * don't remove unneeded needed files
 * don't overwrite existing needed files
 - get missing roms from superfluous
@@ -11,7 +7,8 @@ tests:
 - get missing disks from extra dirs
 * complete integrity check (not only crc) before adding file
 * sample test
-
+* dumpgame
+* XML parsing
 
 other:
 - read games to check from file or stdin
