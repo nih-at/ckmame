@@ -19,6 +19,10 @@ TESTCASES=	baddump.test \
 		garbage.test \
 		inchild.test \
 		inparent.test \
+		hasherr.test \
+		hasherr-c.test \
+		hasherr-p.test \
+		hasherr-pc.test \
 		mid.test \
 		misnamed.test \
 		multi.test \
@@ -41,7 +45,10 @@ ZIPS=		1-4-dup.zip \
 		1-8-ok.zip \
 		1-c-ok.zip \
 		2-48-ok.zip \
-		2-4c-ok.zip
+		2-4c-ok.zip \
+		choko.zip \
+		chokoa.zip \
+		garbage.zip
 CHDS=		108-5.chd \
 		12-1.chd
 
