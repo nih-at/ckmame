@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.16 2005/07/05 01:24:15 dillo Exp $
+#  $NiH: runtest,v 1.17 2005/07/13 17:42:19 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -63,6 +63,10 @@
 #
 #	garbage CREATED-FILE EXPECTED-FILE
 #	    check that CREATED-FILE has been created in garbage
+#	    directory and equals EXPECTED-FILE.
+#
+#	needed CREATED-FILE EXPECTED-FILE
+#	    check that CREATED-FILE has been created in needed
 #	    directory and equals EXPECTED-FILE.
 #
 #	disk IN TEST
@@ -258,6 +262,9 @@ do
   garbage)
     set $arg
     FILES="${FILES} ${srcdir}/$2!roms/garbage/$1";;
+  needed)
+    set $arg
+    FILES="${FILES} ${srcdir}/$2!needed/$1";;
   disk)
     set $arg
     # XXX: check that $1 exists
@@ -276,6 +283,12 @@ test_set "${RET}" return
 test_set "${ARGS}" args
 
 cp ../"${MAME_DB}" .
+
+if [ ! -z "${SETUP_ONLY}" ]
+then
+    echo ${DIR}
+    exit 0
+fi
 
 if [ ! -z "${VERBOSE}" ]
 then
