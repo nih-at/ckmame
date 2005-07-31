@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: diagnostics.c,v 1.1.2.2 2005/07/31 09:21:44 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -101,7 +101,7 @@ diagnostics_archive(const archive_t *a, const file_status_array_t *fsa)
 	    
 	case FS_SUPERFLUOUS:
 	    if (output_options & WARN_SUPERFLUOUS)
-		warn_file(f, "unused");
+		warn_file(f, "not used");
 	    break;
 	}
     }
