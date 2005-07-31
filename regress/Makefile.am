@@ -21,6 +21,7 @@ TESTCASES=	baddump.test \
 		mid.test \
 		misnamed.test \
 		multi.test \
+		needed.test \
 		nogood.test \
 		nogood-miss.test \
 		nonexist.test \

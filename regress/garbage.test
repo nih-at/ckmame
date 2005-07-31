@@ -1,10 +1,10 @@
 # test single-rom game (no parent), zip contains garbage, fix
-# $NiH: garbage.test,v 1.2 2003/03/16 16:41:10 dillo Exp $
+# $NiH: garbage.test,v 1.2.2.1 2005/07/30 15:03:50 wiz Exp $
 return 0
 args -FKULvc 1-4
-rom 2-48-ok.zip 1-4.zip 1-4-ok.zip
-garbage 1-4.zip 1-8-ok.zip
+rom 1-4-garbage.zip 1-4.zip 1-4-ok.zip
+garbage 1-4.zip garbage.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
-stdout file 08.rom        size       8  crc 3656897d: unknown
-stdout ./roms/1-4.zip: mv unknown file 08.rom
+stdout file garbage       size       8  crc 01888242: unknown
+stdout ./roms/1-4.zip: mv unknown file garbage

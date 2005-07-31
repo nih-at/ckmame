@@ -1,0 +1,10 @@
+# test single-rom game (no parent), zip contains file needed elsewhere, fix
+# $NiH: garbage.test,v 1.2.2.1 2005/07/30 15:03:50 wiz Exp $
+return 0
+args -FKULvc 1-4
+rom 2-48-ok.zip 1-4.zip 1-4-ok.zip
+needed 3656897d-000.zip 1-8-ok.zip
+stdout In game 1-4:
+stdout game 1-4                                     : correct
+stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
+stdout ./roms/1-4.zip: save needed file 08.rom
