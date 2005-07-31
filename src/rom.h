@@ -2,7 +2,7 @@
 #define HAD_ROM_H
 
 /*
-  $NiH: rom.h,v 1.1.2.3 2005/07/20 00:26:44 dillo Exp $
+  $NiH: rom.h,v 1.1.2.4 2005/07/27 00:05:57 dillo Exp $
 
   rom.h -- information about one rom
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -59,11 +59,14 @@ typedef struct rom rom_t;
 #define rom_compare_n(r1, r2)	(compare_names(rom_name(r1), rom_name(r2)))
 #define rom_compare_nsc(r1, r2)						\
 	(rom_compare_n((r1), (r2)) || rom_compare_sc((r1), (r2)))
-#define rom_compare_sc(rg, ra)					\
-	(!(rom_size(rg) == 0					\
-	   || (rom_size(rg) == rom_size(ra)			\
-	       && hashes_cmp(rom_hashes(rg), rom_hashes(ra))	\
-	       == HASHES_CMP_MATCH)))
+#define rom_compare_sc(rg, ra)						  \
+	(!(rom_size(rg) == 0						  \
+	   || (rom_size(rg) == rom_size(ra)				  \
+	       && (rom_status(rg) == STATUS_NODUMP			  \
+		   || ((hashes_types(rom_hashes(rg))			  \
+			& hashes_types(rom_hashes(rg)) & HASHES_TYPE_CRC) \
+		       && (hashes_crc(rom_hashes(rg))			  \
+			   == hashes_crc(rom_hashes(ra))))))))
 
 void rom_add_altname(rom_t *, const char *);
 void rom_init(rom_t *);

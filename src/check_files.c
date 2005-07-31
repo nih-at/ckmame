@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: check_files.c,v 1.1.2.2 2005/07/30 12:24:28 dillo Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -46,9 +46,9 @@ enum test {
 typedef enum test test_t;
 
 enum test_result {
-    TEST_ERROR = -1,
-    TEST_SUCCESS,
-    TEST_FAILURE
+    TEST_NOTFOUND,
+    TEST_UNUSABLE,
+    TEST_USABLE
 };
 
 typedef enum test_result test_result_t;
@@ -61,22 +61,20 @@ static test_result_t match_files(archive_t *, test_t, const rom_t *,
 match_array_t *
 check_files(game_t *g, archive_t *as[3])
 {
-    static const struct test_result {
-	test_t test;
-	quality_t quality;
-    } test_results[] = {
-	{ TEST_NSC, QU_OK },
-	{ TEST_SCI, QU_NAMEERR },
-	{ TEST_LONG, QU_LONG },
+    static const test_t tests[] = {
+	TEST_NSC,
+	TEST_SCI,
+	TEST_LONG
     };
-    static const int test_result_count
-	= sizeof(test_results)/sizeof(test_results[0]);
+    static const int tests_count
+	= sizeof(tests)/sizeof(tests[0]);
     
     match_array_t *ma;
     int i, j;
     rom_t *r;
     match_t *m;
     archive_t *a;
+    test_result_t result;
 
     ma = match_array_new(game_num_files(g, file_type));
 
@@ -89,29 +87,30 @@ check_files(game_t *g, archive_t *as[3])
 
 	/* check if it's in ancestor */
 	if (rom_where(r) != ROM_INZIP
-	    && a && match_files(a, TEST_NSC, r, m) == TEST_SUCCESS) {
+	    && a && (result=match_files(a, TEST_NSC, r, m)) != TEST_NOTFOUND) {
 	    m->where = rom_where(r);
-	    m->quality = QU_OK;
-	    continue;
+	    if (result == TEST_USABLE)
+		continue;
 	}
 	
 	/* search for matching file in game's zip */
 	if (as[0]) {
-	    for (j=0; j<test_result_count; j++) {
-		if (match_files(as[0],
-				test_results[j].test, r, m) == TEST_SUCCESS) {
-		    m->quality = test_results[j].quality;
+	    for (j=0; j<tests_count; j++) {
+		if ((result=match_files(as[0],
+					tests[j], r, m)) != TEST_NOTFOUND) {
 		    m->where = ROM_INZIP;
 		    if (rom_where(r) != ROM_INZIP
 			&& match_quality(m) == QU_OK) {
 			m->quality = QU_INZIP;
 		    }
-		    break;
+		    if (result == TEST_USABLE)
+			break;
 		}
 	    }
 	}
 
-	if (rom_where(r) == ROM_INZIP && m->quality == QU_MISSING
+	if (rom_where(r) == ROM_INZIP
+	    && (m->quality == QU_MISSING || m->quality == QU_HASHERR)
 	    && rom_size(r) > 0 && rom_status(r) != STATUS_NODUMP) {
 	    /* search for matching file in family (not yet) */
 
@@ -147,10 +146,13 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 {
     int i;
     const rom_t *ra;
+    test_result_t result;
 
     m->offset = -1;
 
-    for (i=0; i<archive_num_files(a); i++) {
+    result = TEST_NOTFOUND;
+	
+    for (i=0; result != TEST_USABLE && i<archive_num_files(a); i++) {
 	ra = archive_file(a, i);
 
 	if (rom_status(ra) != STATUS_OK)
@@ -159,32 +161,54 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 	switch (t) {
 	case TEST_NSC:
 	    if (rom_compare_nsc(r, ra) == 0) {
-		m->archive = a;
-		m->index = i;
-		return 0;
+		if (hashes_cmp(rom_hashes(r), rom_hashes(ra))) {
+		    if (m->quality == QU_HASHERR)
+			break;
+		    
+		    m->quality = QU_HASHERR;
+		    result = TEST_UNUSABLE;
+		}
+		else {
+		    m->quality = QU_OK;
+		    result = TEST_USABLE;
+		}
 	    }
+	    m->archive = a;
+	    m->index = i;
 	    break;
 
 	case TEST_SCI:
 	    if (rom_compare_sc(r, ra) == 0
 		&& archive_file_compare_hashes(a, i, rom_hashes(r)) == 0) {
-		m->archive = a;
-		m->index = i;
-		return 0;
+		if (hashes_cmp(rom_hashes(r), rom_hashes(ra))) {
+		    if (m->quality == QU_HASHERR)
+			break;
+		    
+		    m->quality = QU_HASHERR;
+		    result = TEST_UNUSABLE;
+		}
+		else {
+		    m->quality = QU_NAMEERR;
+		    result = TEST_USABLE;
+		}
 	    }
+	    m->archive = a;
+	    m->index = i;
 	    break;
 
 	case TEST_LONG:
 	    if (rom_compare_n(r, ra) == 0
+		&& rom_size(ra) > rom_size(r)
 		&& (m->offset=archive_file_find_offset(a, i, rom_size(r),
 						       rom_hashes(r))) != -1) {
 		m->archive = a;
 		m->index = i;
-		return 0;
+		m->quality = QU_LONG;
+		return TEST_USABLE;
 	    }
 	    break;
 	}
     }
 
-    return 1;
+    return result;
 }

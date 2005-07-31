@@ -1,5 +1,5 @@
 /*
-  $NiH: check_archive.c,v 1.1.2.1 2005/07/30 12:24:28 dillo Exp $
+  $NiH: check_archive.c,v 1.1.2.2 2005/07/31 09:21:44 dillo Exp $
 
   check_archive.c -- determine status of files in archive
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -45,7 +45,7 @@ check_archive(archive_t *a, match_array_t *ma)
 
     for (i=0; i<match_array_length(ma); i++) {
 	m = match_array_get(ma, i);
-	if (match_where(m) == ROM_INZIP)
+	if (match_where(m) == ROM_INZIP && match_quality(m) != QU_HASHERR)
 	    file_status_array_get(fsa, match_index(m))
 		= match_quality(m) == QU_LONG ? FS_PARTUSED : FS_USED;
     }

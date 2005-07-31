@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.5.2.1 2005/07/20 00:26:44 dillo Exp $
+  $NiH: parse.c,v 1.5.2.2 2005/07/27 00:05:57 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -184,14 +184,12 @@ parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
     }
 	
     if (hash_from_string(h, attr) != ht) {
-	/* XXX:
-	   myerror(ERRFILE, "%d: invalid argument for %s",
-		   lineno, hash_type_string(ht));
-	*/
+	myerror(ERRFILE, "%d: invalid argument for %s",
+		ctx->lineno, hash_type_string(ht));
 	return -1;
     }
     
-    *types |= HASHES_TYPE_MD5;
+    *types |= ht;
     
     return 0;
 }

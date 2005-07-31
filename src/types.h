@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.5.2.3 2005/07/27 00:05:58 dillo Exp $
+  $NiH: types.h,v 1.5.2.4 2005/07/31 14:02:20 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -35,8 +35,8 @@ typedef enum status status_t;
 
 enum quality {
     QU_MISSING,		/* ROM is missing */
-    QU_NOCRC,		/* disk and file have no common checksums */
-    QU_CRCERR,		/* disk and file have different checksums */
+    QU_NOHASH,		/* disk and file have no common checksums */
+    QU_HASHERR,		/* rom/disk and file have different checksums */
     QU_LONG,		/* long ROM with valid subsection */
     QU_NAMEERR,		/* wrong name */
     QU_COPIED,		/* copied from elsewhere */

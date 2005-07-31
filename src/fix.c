@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.3 2005/07/31 09:21:44 dillo Exp $
+  $NiH: fix.c,v 1.2.2.4 2005/07/31 13:44:29 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -156,6 +156,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 
 	switch (match_quality(m)) {
 	case QU_MISSING:
+	case QU_HASHERR:
 	    /* all is lost */
 	    break;
 
@@ -220,8 +221,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 	    /* all is well */
 	    break;
 
-	case QU_NOCRC:
-	case QU_CRCERR:
+	case QU_NOHASH:
 	    /* only used for disks */
 	    break;
 	}

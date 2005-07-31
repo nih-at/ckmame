@@ -1,5 +1,5 @@
 /*
-  $NiH: check_disks.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
+  $NiH: check_disks.c,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
 
   check_disks.c -- match files against disks
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -57,13 +57,13 @@ check_disks(game_t *game)
 	
 	    switch (hashes_cmp(disk_hashes(d), disk_hashes(f))) {
 	    case HASHES_CMP_NOCOMMON:
-		match_disk_quality(md) = QU_NOCRC;
+		match_disk_quality(md) = QU_NOHASH;
 		break;
 	    case HASHES_CMP_MATCH:
 		match_disk_quality(md) = QU_OK;
 		break;
 	    case HASHES_CMP_MISMATCH:
-		match_disk_quality(md)  = QU_CRCERR;
+		match_disk_quality(md)  = QU_HASHERR;
 		break;
 	    }
 	}

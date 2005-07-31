@@ -1,5 +1,5 @@
 /*
-  $NiH: hash_from_string.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
+  $NiH: hash_from_string.c,v 1.2 2005/07/13 17:42:20 dillo Exp $
 
   hash_from_string.c -- convert string to hashes_t
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -42,7 +42,7 @@ hash_from_string(hashes_t *h, const char *str)
     if (l % 2 != 0 || strspn(str, "0123456789ABCDEFabcdef") != l)
 	return -1;
 
-    switch(l/2) {
+    switch (l/2) {
     case HASHES_SIZE_CRC:
 	type = HASHES_TYPE_CRC;
 	h->crc = strtoul(str, NULL, 16);

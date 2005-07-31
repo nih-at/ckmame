@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.1.2.3 2005/07/30 12:24:28 dillo Exp $
+  $NiH: archive.c,v 1.1.2.4 2005/07/31 09:21:44 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -123,7 +123,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     struct zip_file *zf;
     rom_t *r;
 
-    if (!archive_ensure_zip(a, 0))
+    if (archive_ensure_zip(a, 0) != 0)
 	return -1;
 
     za = archive_zip(a);
@@ -345,7 +345,6 @@ read_infos_from_zip(archive_t *a, int hashtypes)
 	r = archive_last_file(a);
 	rom_size(r) = zsb.size;
 	rom_name(r) = xstrdup(zsb.name);
-	/* XXX: rom_state(r) = ROM_0; */
 	rom_status(r) = STATUS_OK;
 
 	hashes_init(rom_hashes(r));

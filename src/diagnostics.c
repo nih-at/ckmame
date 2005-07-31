@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.1.2.2 2005/07/31 09:21:44 dillo Exp $
+  $NiH: diagnostics.c,v 1.1.2.3 2005/07/31 09:32:03 wiz Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -132,14 +132,14 @@ diagnostics_disks(const game_t *game, const match_disk_array_t *mda)
 		warn_disk(d, "missing");
 	    break;
 		
-	case QU_CRCERR:
+	case QU_HASHERR:
 	    if (output_options & WARN_WRONG_CRC) {
 		/* XXX: display checksum(s) */
 		warn_disk(d, "wrong checksum");
 	    }
 	    break;
 		
-	case QU_NOCRC:
+	case QU_NOHASH:
 	    if (disk_status(d) == STATUS_NODUMP
 		&& (output_options & WARN_NO_GOOD_DUMP))
 		warn_disk(d, "exists");
@@ -269,8 +269,17 @@ diagnostics_files(const game_t *game, const match_array_t *ma)
 			     zname[rom_where(r)]);
 		break;
 
-	    case QU_NOCRC:
-	    case QU_CRCERR:
+	    case QU_HASHERR:
+		if (output_options & WARN_MISSING) {
+		    warn_rom(r, "checksum mismatch%s%s",
+			     (rom_where(r) != match_where(m)
+			      ? ", should be in " : ""),
+			     (rom_where(r) != match_where(m)
+			      ? zname[rom_where(r)] : ""));
+		}
+		break;
+		
+	    case QU_NOHASH:
 		/* only used for disks */
 		break;
 	    }
