@@ -1,5 +1,5 @@
 # test 2-rom game (1 in parent), both roms in parent
-# $NiH$
+# $NiH: inparent.test,v 1.2 2003/03/16 16:41:10 dillo Exp $
 return 0
 # XXX: adding -c reports clone-8 as correct!
 args -FKULv clone-8
@@ -7,4 +7,4 @@ rom 2-48-ok.zip parent-4.zip 2-48-ok.zip
 romnew clone-8.zip 1-8-ok.zip
 stdout ./roms/clone-8.zip: add `./roms/parent-4.zip/08.rom' as 08.rom
 stdout In game clone-8:
-stdout rom  08.rom        size       8  crc 3656897d: should be in zip, is in cloneof
+stdout rom  08.rom        size       8  crc 3656897d: should be in zip
