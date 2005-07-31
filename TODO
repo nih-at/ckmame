@@ -1,5 +1,17 @@
-no-meta rewrite:
-- rename flags_t to status_t
+delete used files
+dumpgame -c with non-default hash type
+
+tests:
+* get rom from other game
+* don't remove unneeded needed files
+* don't overwrite existing needed files
+- get missing roms from superfluous
+- get missing roms from extra dirs
+- disk renames
+- get missing disks from extra dirs
+* complete integrity check (not only crc) before adding file
+* sample test
+
 
 other:
 - read games to check from file or stdin
