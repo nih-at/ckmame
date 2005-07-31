@@ -25,11 +25,28 @@ game (
 )
 
 game (
-	name parent-4
-	description "one four byte file, has clone"
+	name baddump
+	description "1-4 with bad dump"
 	manufacturer "synth"
-	year 1991
-	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	year 1994
+	rom ( name 04.rom size 4 crc32 d87f7e0c flags baddump )
+)
+
+game (
+	name choko
+	description "ROM from choko"
+	manufacturer "Mitchell"
+	year 2001
+	rom ( name tko-simm.05a size 2097152 crc32 a275a387 sha1 32e6aa776058fc8f657f05a6291a8110b381c133 )
+)
+
+game (
+	name chokoa
+	romof choko
+	manufacturer "synth"
+	year 2005
+	rom ( name tko-simm.05a merge tko-simm.05a size 2097152 crc32 a275a387 sha1 32e6aa776058fc8f657f05a6291a8110b381c133 )
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
 )
 
 game (
@@ -43,20 +60,21 @@ game (
 )
 
 game (
-	name baddump
-	description "1-4 with bad dump"
-	manufacturer "synth"
-	year 1994
-	rom ( name 04.rom size 4 crc32 d87f7e0c flags baddump )
-)
-
-game (
 	name disk
 	description "1-4 with disk"
 	manufacturer "synth"
 	year 2004
 	rom ( name 04.rom size 4 crc32 d87f7e0c )
 	disk ( name 108-5 md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 )
+)
+
+game (
+	name disk-nogood
+	description "1-4 with no good dump disk"
+	manufacturer "synth"
+	year 2004
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	disk ( name 108-5 )
 )
 
 game (
@@ -84,12 +102,11 @@ game (
 )
 
 game (
-	name disk-nogood
-	description "1-4 with no good dump disk"
+	name parent-4
+	description "one four byte file, has clone"
 	manufacturer "synth"
-	year 2004
+	year 1991
 	rom ( name 04.rom size 4 crc32 d87f7e0c )
-	disk ( name 108-5 )
 )
 
 END
