@@ -1,5 +1,5 @@
-# test single-rom game (no parent), rom is doubled
-# $NiH: double.test,v 1.2.2.2 2005/07/31 13:44:28 wiz Exp $
+# $NiH: double.test,v 1.2.2.3 2005/07/31 14:02:20 wiz Exp $
+description test single-rom game (no parent), rom is doubled
 return 0
 args -FKLvc 1-4
 rom 1-4-dup.zip 1-4.zip 1-4-ok.zip

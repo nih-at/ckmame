@@ -1,5 +1,5 @@
-# test single-rom game (no parent), rom has wrong name
-# $NiH: misnamed.test,v 1.2.2.2 2005/07/30 15:18:21 wiz Exp $
+# $NiH: misnamed.test,v 1.2.2.3 2005/07/31 14:02:20 wiz Exp $
+description test single-rom game (no parent), rom has wrong name
 return 0
 args -FKLvc 1-4
 rom 1-4-misnamed.zip 1-4.zip 1-4-ok.zip

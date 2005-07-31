@@ -1,5 +1,5 @@
-# test single-rom game (no parent), zip contains file needed elsewhere, fix
-# $NiH: needed.test,v 1.1.2.3 2005/07/31 13:44:28 wiz Exp $
+# $NiH: needed.test,v 1.1.2.4 2005/07/31 14:02:20 wiz Exp $
+description test single-rom game (no parent), zip contains file needed elsewhere, fix
 return 0
 args -FKLvc 1-4
 rom 2-48-ok.zip 1-4.zip 1-4-ok.zip

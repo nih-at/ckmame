@@ -1,5 +1,5 @@
-# test 2-rom game (1 in parent), both roms in parent
-# $NiH: inparent.test,v 1.2.2.2 2005/07/31 14:00:04 wiz Exp $
+# $NiH: inparent.test,v 1.2.2.3 2005/07/31 14:02:20 wiz Exp $
+description test 2-rom game (1 in parent), both roms in parent
 return 0
 args -cFKLv clone-8
 rom 2-48-ok.zip parent-4.zip 2-48-ok.zip

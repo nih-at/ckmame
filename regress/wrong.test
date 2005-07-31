@@ -1,5 +1,5 @@
-# test 1-rom game, only wrong roms in zip
-# $NiH: wrong.test,v 1.2.2.3 2005/07/31 14:00:04 wiz Exp $
+# $NiH: wrong.test,v 1.2.2.4 2005/07/31 14:02:20 wiz Exp $
+description test 1-rom game, only wrong roms in zip
 return 0
 args -FKLvc 1-4
 romdel garbage.zip 1-4.zip

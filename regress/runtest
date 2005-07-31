@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.17.2.1 2005/07/31 09:27:37 dillo Exp $
+#  $NiH: runtest,v 1.17.2.2 2005/07/31 11:38:39 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -32,6 +32,9 @@
 #
 #    The following commands are recognized; return and args must
 #    appear exactly once, the others are optional.
+#
+#	description TEXT
+#	    description of what test is for
 #
 #	retrun RET
 #	    RET is the expected exit code
@@ -240,6 +243,7 @@ RET=''
 ARGS=''
 FILES=''
 FILES_SHOULD=''
+DESCR=''
 
 mkdir roms
 
@@ -252,6 +256,9 @@ do
   return)
     test_empty "${RET}" return
     RET="$arg";;
+  description)
+    test_empty "${DESCR}" description
+    DESCR="$arg";;
   args)
     test_empty "${ARGS}" args
     ARGS="-D ${MAME_DB} $arg";;
@@ -317,6 +324,7 @@ fi
 
 if [ ! -z "${VERBOSE}" ]
 then
+	echo "${TEST}: ${DESCR}"
 	echo "running: ${PROGRAM} ${ARGS}"
 fi
 ${PROGRAM} ${ARGS} > gotout 2> goterr

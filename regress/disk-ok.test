@@ -1,5 +1,5 @@
-# test single-rom game with disk, both are correct
-# $NiH: disk-ok.test,v 1.1 2004/04/28 16:59:51 dillo Exp $
+# $NiH: disk-ok.test,v 1.1.2.1 2005/07/31 14:02:20 wiz Exp $
+description test single-rom game with disk, both are correct
 return 0
 args -FKLivc disk
 rom 1-4-ok.zip disk.zip 1-4-ok.zip

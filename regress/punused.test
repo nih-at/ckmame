@@ -1,5 +1,5 @@
-# unused file in parent
-# $NiH: punused.test,v 1.1.2.3 2005/07/31 14:00:04 wiz Exp $
+# $NiH: punused.test,v 1.1.2.4 2005/07/31 14:02:20 wiz Exp $
+description unused file in parent
 return 0
 args -FKLvc parent-4
 rom 2-48-ok.zip parent-4.zip 1-4-ok.zip

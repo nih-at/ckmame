@@ -1,5 +1,5 @@
-# test single-rom game with no good dump disk, disk missing
-# $NiH: disk-nogoodmis.test,v 1.1 2004/05/16 15:58:52 dillo Exp $
+# $NiH: disk-nogoodmis.test,v 1.1.2.1 2005/07/31 14:02:20 wiz Exp $
+description test single-rom game with no good dump disk, disk missing
 return 0
 args -FKLivc disk-nogood
 rom 1-4-ok.zip disk-nogood.zip 1-4-ok.zip

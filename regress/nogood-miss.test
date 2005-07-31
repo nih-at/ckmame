@@ -1,5 +1,5 @@
-# test single-rom game with bad dump
-# $NiH: nogood-miss.test,v 1.1 2005/07/13 17:42:19 dillo Exp $
+# $NiH: nogood-miss.test,v 1.1.2.1 2005/07/31 14:02:20 wiz Exp $
+description test single-rom game with bad dump
 return 0
 # XXX: -c reports game as correct
 args -FKLv nogood-2

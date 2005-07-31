@@ -1,5 +1,5 @@
-# unknown file in parent
-# $NiH: punknown.test,v 1.1.2.2 2005/07/31 13:44:28 wiz Exp $
+# $NiH: punknown.test,v 1.1.2.3 2005/07/31 14:02:20 wiz Exp $
+description unknown file in parent
 return 0
 args -FKLvc parent-4
 rom 2-4c-ok.zip parent-4.zip 1-4-ok.zip

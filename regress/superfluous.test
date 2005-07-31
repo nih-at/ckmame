@@ -1,5 +1,5 @@
-# test reporting superfluous files
-# $NiH: superfluous.test,v 1.2 2004/04/28 16:59:51 dillo Exp $
+# $NiH: superfluous.test,v 1.2.2.1 2005/07/31 14:02:20 wiz Exp $
+description test reporting superfluous files
 return 0
 args -FKLvc --superfluous
 rom 1-4-ok.zip foo.zip 1-4-ok.zip
