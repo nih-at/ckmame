@@ -1,5 +1,5 @@
 # testing non-existing game
-# $NiH$
+# $NiH: nonexist.test,v 1.3 2003/03/16 16:41:10 dillo Exp $
 return 0
-args -FKULvc nosuchgame
+args -FKLvc nosuchgame
 error game `nosuchgame' unknown

@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.5.2.2 2005/07/19 22:46:48 dillo Exp $
+  $NiH: types.h,v 1.5.2.3 2005/07/27 00:05:58 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -76,8 +76,7 @@ typedef enum filetype filetype_t;
 #define FIX_DO			0x01
 #define FIX_PRINT		0x02
 #define FIX_KEEP_LONG		0x04
-#define FIX_KEEP_UNUSED		0x08
-#define FIX_KEEP_UNKNOWN	0x10
+#define FIX_KEEP_UNKNOWN	0x08
 
 /* XXX: delete */
 enum state {

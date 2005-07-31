@@ -1,7 +1,7 @@
 # test reporting superfluous files
-# $NiH: superfluous.test,v 1.1 2004/04/26 09:03:18 dillo Exp $
+# $NiH: superfluous.test,v 1.2 2004/04/28 16:59:51 dillo Exp $
 return 0
-args -FKULvc --superfluous
+args -FKLvc --superfluous
 rom 1-4-ok.zip foo.zip 1-4-ok.zip
 disk 108-5.chd 1-8.chd
 disk 108-5.chd 1-4

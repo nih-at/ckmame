@@ -1,7 +1,7 @@
 # test single-rom game (no parent), zip contains garbage, fix
-# $NiH: garbage.test,v 1.2.2.2 2005/07/31 09:27:51 dillo Exp $
+# $NiH: garbage.test,v 1.2.2.3 2005/07/31 13:44:28 wiz Exp $
 return 0
-args -FKULvc 1-4
+args -FKLvc 1-4
 rom 1-4-garbage.zip 1-4.zip 1-4-ok.zip
 garbage 1-4.zip garbage.zip
 stdout In game 1-4:

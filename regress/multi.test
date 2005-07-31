@@ -1,7 +1,7 @@
 # test two single-rom games (no parent), both with unused files
-# $NiH: multi.test,v 1.1.2.3 2005/07/31 09:34:42 wiz Exp $
+# $NiH: multi.test,v 1.1.2.4 2005/07/31 13:44:28 wiz Exp $
 return 0
-args -FKULvc 1-4 1-8
+args -FKLvc 1-4 1-8
 rom 2-48-ok.zip 1-4.zip 1-4-ok.zip
 rom 2-48-ok.zip 1-8.zip 1-8-ok.zip
 stdout In game 1-4:

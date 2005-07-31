@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.4.2.2 2005/07/30 12:24:28 dillo Exp $
+  $NiH: ckmame.c,v 1.4.2.3 2005/07/31 09:21:44 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -48,7 +48,7 @@
 
 char *prg;
 
-char *usage = "Usage: %s [-hVSwsfbdcFKkUuLlvn] [-D dbfile] [game...]\n";
+char *usage = "Usage: %s [-hVSwsfbdcFKkLlvn] [-D dbfile] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -69,8 +69,6 @@ char help[] = "\n"
 "  -S, --samples        check samples instead of roms\n"
 "      --superfuous     only check for superfluous files in rom sets\n"
 "  -s, --nosuperfluous  don't report superfluous files in rom sets\n"
-"  -U, --keep-unused    keep unused files when fixing\n"
-"  -u, --delete-unused  don't keep unused files when fixing (default)\n"
 "  -V, --version        display version number\n"
 "  -v, --verbose        print fixes made\n"
 "  -w, --nowarnings     print only unfixable errors\n"
@@ -84,6 +82,7 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
 "For more information about these matters, see the files named COPYING.\n";
 
+/* XXX: remove Uu (also in long options) after next release */
 #define OPTIONS "bcD:dFfhiKkLlnSsxUuVvwX"
 
 #define OPT_SF	256
@@ -203,10 +202,10 @@ main(int argc, char **argv)
 	    output_options &= ~WARN_SUPERFLUOUS;
 	    break;
 	case 'U':
-	    fix_options |= FIX_KEEP_UNUSED;
+	    myerror(ERRDEF, "-U is no longer supported");
 	    break;
 	case 'u':
-	    fix_options &= ~FIX_KEEP_UNUSED;
+	    myerror(ERRDEF, "-u is no longer optional");
 	    break;
 	case 'v':
 	    fix_options |= FIX_PRINT;

@@ -1,4 +1,4 @@
-.\" $NiH: ckmame.mdoc,v 1.13 2005/06/12 19:12:26 wiz Exp $
+.\" $NiH: ckmame.mdoc,v 1.1 2005/07/04 21:54:49 dillo Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -36,7 +36,7 @@
 .Nd verify MAME rom sets
 .Sh SYNOPSIS
 .Nm
-.Op Fl bcdFfhKkLlnSsUuVvw
+.Op Fl bcdFfhKkLlnSsVvw
 .Op Fl D Ar dbfile
 .Op Ar game ...
 .Sh DESCRIPTION
@@ -149,15 +149,6 @@ Check samples instead of roms.
 Only check for superfluous files in rom sets.
 .It Fl s , -nosuperfluous
 Don't report superfluous (unneeded) files.
-.It Fl U , -keep-unused
-Keep unused files when fixing.
-Unused files are files that should, and do exist in other places.
-See also
-.Fl u .
-.It Fl u , -delete-unused
-Don't keep unused files when fixing (default), delete them instead.
-See also
-.Fl U .
 .It Fl V , -version
 Display program name and version number.
 .It Fl v , -verbose

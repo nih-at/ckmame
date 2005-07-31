@@ -1,8 +1,8 @@
 # test single-rom game with bad dump
-# $NiH: nogood.test,v 1.1 2003/03/17 15:30:32 dillo Exp $
+# $NiH: nogood.test,v 1.1.2.1 2005/07/31 13:44:22 wiz Exp $
 return 0
 # XXX: -c reports game as correct
-args -cFKULv nogood
+args -cFKLv nogood
 rom 1-4-ok.zip nogood.zip 1-4-ok.zip
 stdout In game nogood:
 stdout game nogood                                  : correct

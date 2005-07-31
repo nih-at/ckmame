@@ -1,7 +1,7 @@
 # move file from parent to clone (via needed)
-# $NiH: tochildfix.test,v 1.1.2.2 2005/07/31 09:27:51 dillo Exp $
+# $NiH: tochildfix.test,v 1.1.2.3 2005/07/31 13:44:28 wiz Exp $
 return 0
-args -FKULcv parent-4 clone-8
+args -FKLcv parent-4 clone-8
 rom 2-48-ok.zip parent-4.zip 1-4-ok.zip
 romnew clone-8.zip 1-8-ok.zip
 stdout In game parent-4:

@@ -1,6 +1,7 @@
 0.7
 
 - dropped support for inferring flags/status from CRC (before version XXX)
+- deprecated -u/-U command line options
 
 0.6 (2005-06-17)
 
