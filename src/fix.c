@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.2 2005/07/30 12:24:29 dillo Exp $
+  $NiH: fix.c,v 1.2.2.3 2005/07/31 09:21:44 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -77,9 +77,9 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	    islong = (file_status_array_get(fsa, i) == FS_PARTUSED);
 	    keep = fix_options & (islong ? FIX_KEEP_UNKNOWN : FIX_KEEP_LONG);
 	    if (fix_options & FIX_PRINT)
-		printf("%s: %s %s file %s\n",
+		printf("%s: %s %s file `%s'\n",
 		       archive_name(a),
-		       (keep ? "mv" : "rm"),
+		       (keep ? "mv" : "delete"),
 		       (islong ? "long" : "unknown"),
 		       rom_name(archive_file(a, i)));
 	    if (fix_options & FIX_DO) {
@@ -92,7 +92,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 
 	case FS_SUPERFLUOUS:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: rm unused file %s\n",
+		printf("%s: delete unused file `%s'\n",
 		       archive_name(a),
 		       rom_name(archive_file(a, i)));
 	    if (fix_options & FIX_DO)
@@ -101,7 +101,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 
 	case FS_NEEDED:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: save needed file %s\n",
+		printf("%s: save needed file `%s'\n",
 		       archive_name(a),
 		       rom_name(archive_file(a, i)));
 	    if (fix_save_needed(a, i, fix_options & FIX_DO) != -1) {

@@ -1,5 +1,5 @@
 # unknown file in parent
-# $NiH: punknown.test,v 1.1 2003/03/17 04:44:01 dillo Exp $
+# $NiH: punknown.test,v 1.1.2.1 2005/07/30 15:03:50 wiz Exp $
 return 0
 args -FKULvc parent-4
 rom 2-4c-ok.zip parent-4.zip 1-4-ok.zip
@@ -7,4 +7,4 @@ garbage parent-4.zip 1-c-ok.zip
 stdout In game parent-4:
 stdout game parent-4                                : correct
 stdout file 0c.rom        size      12  crc 0623c932: unknown
-stdout ./roms/parent-4.zip: mv unknown file 0c.rom
+stdout ./roms/parent-4.zip: mv unknown file `0c.rom'

@@ -1,5 +1,5 @@
 # move file from parent to clone (via needed)
-# $NiH: tochildfix.test,v 1.1.2.1 2005/07/30 15:03:50 wiz Exp $
+# $NiH: tochildfix.test,v 1.1.2.2 2005/07/31 09:27:51 dillo Exp $
 return 0
 args -FKULcv parent-4 clone-8
 rom 2-48-ok.zip parent-4.zip 1-4-ok.zip
@@ -7,7 +7,7 @@ romnew clone-8.zip 1-8-ok.zip
 stdout In game parent-4:
 stdout game parent-4                                : correct
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
-stdout ./roms/parent-4.zip: save needed file 08.rom
+stdout ./roms/parent-4.zip: save needed file `08.rom'
 stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout rom  08.rom        size       8  crc 3656897d: is in `needed/3656897d-000.zip'
