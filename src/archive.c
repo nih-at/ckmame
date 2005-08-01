@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.1.2.4 2005/07/31 09:21:44 dillo Exp $
+  $NiH: archive.c,v 1.1.2.5 2005/07/31 20:10:47 wiz Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -51,8 +51,7 @@ archive_close_zip(archive_t *a)
     
     if (zip_close(archive_zip(a)) < 0) {
 	/* error closing, so zip is still valid */
-	myerror(ERRDEF, "%s: error closing zip: %s\n",
-		archive_name(a), zip_strerror(archive_zip(a)));
+	myerror(ERRZIP, "error closing zip: %s", archive_name(a));
 
 	/* XXX: really do this here? */
 	/* discard all changes and close zipfile */
