@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: delete_list.c,v 1.1.2.1 2005/07/31 21:13:01 dillo Exp $
 
   delete_list.h -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -33,6 +33,24 @@
 
 
 
+static int
+my_zip_close(struct zip *z, const char *name)
+{
+    if (z) {
+	if (zip_close(z) < 0) {
+	    seterrinfo(NULL, name);
+	    myerror(ERRZIP, "cannot delete files: %s", zip_strerror(z));
+	    zip_unchange_all(z);
+	    zip_close(z);
+	    return -1;
+	}
+    }
+
+    return 0;
+}
+
+
+
 void
 delete_list_free(delete_list_t *dl)
 {
@@ -63,16 +81,9 @@ delete_list_execute(delete_list_t *dl)
 	fbh = delete_list_get(dl, i);
 
 	if (file_by_hash_name(fbh) != name) {
-	    if (z) {
-		if (zip_close(z) < 0) {
-		    seterrinfo(name, NULL);
-		    myerror(ERRZIP, "cannot delete files from `%s': %s",
-			    name, zip_strerror(z));
-		    zip_unchange_all(z);
-		    zip_close(z);
-		    ret = -1;
-		}
-	    }
+	    if (my_zip_close(z, name) == -1)
+		ret = -1;
+
 	    name = file_by_hash_name(fbh);
 	    if ((z=my_zip_open(name, 0)) == NULL)
 		ret = -1;
@@ -83,17 +94,9 @@ delete_list_execute(delete_list_t *dl)
 	}
     }
 
-    if (z) {
-	if (zip_close(z) < 0) {
-	    seterrinfo(name, NULL);
-	    myerror(ERRZIP, "cannot delete files from `%s': %s",
-		    name, zip_strerror(z));
-	    zip_unchange_all(z);
-	    zip_close(z);
-	    ret = -1;
-	}
-    }
-
+    if (my_zip_close(z, name) == -1)
+	ret = -1;
+    
     return ret;
 }
 
