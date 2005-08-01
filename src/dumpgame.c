@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.4.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: dumpgame.c,v 1.4.2.2 2005/07/30 12:24:28 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -416,7 +416,7 @@ dump_game(DB *db, const char *name)
     game_t *game;
 
     if ((game=r_game(db, name)) == NULL) {
-	myerror(ERRDEF, "game unknown (or database error): %s", name);
+	myerror(ERRDEF, "game unknown (or database error): `%s'", name);
 	return -1;
     }
 
@@ -467,7 +467,7 @@ dump_list(DB *db, const char *key)
     parray_t *list;
 
     if ((list=r_list(db, key)) == NULL) {
-	myerror(ERRDEF, "db error reading list %s", key);
+	myerror(ERRDEF, "db error reading list `%s'", key);
 	return -1;
     }
 
@@ -538,7 +538,7 @@ dump_special(DB *db, const char *name)
 				  : name));
     }
     
-    myerror(ERRDEF, "unknown special: %s", name);
+    myerror(ERRDEF, "unknown special: `%s'", name);
     return -1;
 }
 
