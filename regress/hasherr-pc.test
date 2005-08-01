@@ -1,12 +1,12 @@
-# $NiH: ok.test,v 1.3.2.1 2005/07/31 14:02:20 wiz Exp $
+# $NiH: hasherr-pc.test,v 1.1.2.1 2005/07/31 17:39:32 wiz Exp $
 description integrity test child, wrong file in parent and child
 return 0
-args -FKLivc chokoa
-rom choko.zip choko.zip choko.zip
-rom chokoa.zip chokoa.zip 1-4-ok.zip
-garbage chokoa.zip choko.zip
-stdout In game chokoa:
-stdout rom  tko-simm.05a  size 2097152  crc a275a387: checksum mismatch
+args -FKLivc deadbeefchild
+rom deadfish.zip deadbeef.zip deadfish.zip
+rom deadfish4.zip deadbeefchild.zip 1-4-ok.zip
+garbage deadbeefchild.zip deadfish.zip
+stdout In game deadbeefchild:
+stdout rom  deadbeef      size       8  crc deadbeef: checksum mismatch
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout file tko-simm.05a  size 2097152  crc a275a387: unknown
-stdout ./roms/chokoa.zip: mv unknown file `tko-simm.05a'
+stdout file deadbeef      size       8  crc deadbeef: unknown
+stdout ./roms/deadbeefchild.zip: mv unknown file `deadbeef'

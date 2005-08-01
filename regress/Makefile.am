@@ -16,11 +16,14 @@ TESTCASES=	baddump.test \
 		disk-wrong.test \
 		double.test \
 		from-needed.test \
+		from-needed2.test \
 		from-romset.test \
+		from-romset2.test \
 		garbage.test \
 		inchild.test \
 		inparent.test \
 		hasherr.test \
+		hasherr2.test \
 		hasherr-c.test \
 		hasherr-p.test \
 		hasherr-pc.test \
@@ -28,6 +31,8 @@ TESTCASES=	baddump.test \
 		misnamed.test \
 		multi.test \
 		needed.test \
+		needed2.test \
+		needed3.test \
 		needed-error.test \
 		nogood.test \
 		nogood-miss.test \
@@ -36,11 +41,13 @@ TESTCASES=	baddump.test \
 		ok.test \
 		punknown.test \
 		punused.test \
+		skipbad.test \
 		superfluous.test \
 		tochildfix.test \
 		wrong.test
 
 ZIPS=		1-4-dup.zip \
+		1-4-garbage.zip \
 		1-4-mid.zip \
 		1-4-misnamed.zip \
 		1-4-ok.zip \
@@ -48,8 +55,11 @@ ZIPS=		1-4-dup.zip \
 		1-c-ok.zip \
 		2-48-ok.zip \
 		2-4c-ok.zip \
-		choko.zip \
-		chokoa.zip \
+		deadbeef.zip \
+		deadclonedbeef.zip \
+		deadfish.zip \
+		deadfish4.zip \
+		deadpork.zip \
 		garbage.zip
 CHDS=		108-5.chd \
 		12-1.chd

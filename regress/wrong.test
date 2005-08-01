@@ -1,8 +1,8 @@
-# $NiH: wrong.test,v 1.2.2.4 2005/07/31 14:02:20 wiz Exp $
+# $NiH: wrong.test,v 1.2.2.5 2005/07/31 17:40:23 wiz Exp $
 description test 1-rom game, only wrong roms in zip
 return 0
 args -FKLvc 1-4
-romdel garbage.zip 1-4.zip
+rom-del garbage.zip 1-4.zip
 garbage 1-4.zip garbage.zip
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found

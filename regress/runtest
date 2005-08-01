@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.17.2.3 2005/07/31 17:40:23 wiz Exp $
+#  $NiH: runtest,v 1.17.2.4 2005/07/31 21:14:50 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -56,11 +56,11 @@
 #	    link zip file IN into roms directory with name TEST, check
 #	    against OUT after ckmame has run.
 #
-#	romnew CREATED EXPECTED
+#	rom-new CREATED EXPECTED
 #	    check that CREATED has been created in roms directory and
 #	    equals EXPECTED.
 #
-#	romdel IN TEST
+#	rom-del IN TEST
 #	    link zip file IN into roms directory with name TEST, check
 #	    that it is deleted.
 #
@@ -271,10 +271,10 @@ do
     # XXX: check that $1 exists
     cp "${srcdir}/$1" "roms/$2"
     FILES="${FILES} ${srcdir}/$3!roms/$2";;
-  romnew)
+  rom-new)
     set $arg
     FILES="${FILES} ${srcdir}/$2!roms/$1";;
-  romdel)
+  rom-del)
     set $arg
     # XXX: check that $1 exists
     cp "${srcdir}/$1" "roms/$2";;
@@ -289,7 +289,7 @@ do
     fi
     # XXX: check that $1 exists
     cp "${srcdir}/$1" "needed/$2"
-    FILES="${FILES} ${srcdir}/$3!needed/$1";;
+    FILES="${FILES} ${srcdir}/$3!needed/$2";;
   needed-new)
     set $arg
     FILES="${FILES} ${srcdir}/$2!needed/$1";;

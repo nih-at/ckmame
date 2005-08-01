@@ -1,0 +1,9 @@
+# $NiH$
+description integrity test child, file in parent is wrong, correct rom in child
+return 0
+args -FKLivc deadclonedbeef
+rom deadpork.zip deadbeef.zip deadpork.zip
+rom deadbeef.zip deadclonedbeef.zip deadclonedbeef.zip
+stdout In game deadclonedbeef:
+stdout rom  deadclonedbeef  size       8  crc deadbeef: wrong name (deadbeef), should be in cloneof
+stdout ./roms/deadclonedbeef.zip: rename `deadbeef' to `deadclonedbeef'
