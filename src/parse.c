@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.5.2.2 2005/07/27 00:05:57 dillo Exp $
+  $NiH: parse.c,v 1.5.2.3 2005/07/31 20:10:47 wiz Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -322,8 +322,7 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
     }
     
     if (w_game(ctx->db, g) != 0)
-	myerror(ERRSTR, "can't write game `%s' to db: %s",
-		game_name(g), ddb_error());
+	myerror(ERRDB, "can't write game `%s' to db", game_name(g));
     else
 	parray_push(ctx->list[TYPE_ROM], xstrdup(game_name(g)));
 
@@ -504,7 +503,7 @@ handle_lost(parser_context_t *ctx)
 		if ((parent=r_game(ctx->db,
 				   game_cloneof(child, ft, 0))) == NULL) {
 		    myerror(ERRDEF,
-			    "inconsistency: %s has non-existent parnet %s",
+			    "inconsistency: %s has non-existent parent %s",
 			    game_name(child), game_cloneof(child, ft, 0));
 		    
 		    /* remove non-existent cloneof */
@@ -568,11 +567,11 @@ parser_context_init(parser_context_t *ctx)
     ctx->db = NULL;
     ctx->fin = NULL;
     if ((ctx->map_rom=map_new()) == NULL) {
-	myerror(ERRDEF, "can't create hash table: %s", ddb_error());
+	myerror(ERRDB, "can't create hash table");
 	return -1;
     }
     if ((ctx->map_disk=map_new()) == NULL) {
-	myerror(ERRDEF, "can't create hash table: %s", ddb_error());
+	myerror(ERRDB, "can't create hash table");
 	map_free(ctx->map_rom, NULL);
 	return -1;
     }
