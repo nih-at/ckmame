@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.5 2005/07/31 20:10:47 wiz Exp $
+  $NiH: fix.c,v 1.2.2.6 2005/07/31 21:13:01 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -186,9 +186,9 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 
 	case QU_LONG:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: extract (offset %ld, size %lu) from `%s'"
+		printf("%s: extract (offset %lld, size %lu) from `%s'"
 		       " to `%s'\n", archive_name(a),
-		       (long)match_offset(m), rom_size(r),
+		       match_offset(m), rom_size(r),
 		       rom_name(archive_file(afrom, match_index(m))),
 		       rom_name(r));
 	    

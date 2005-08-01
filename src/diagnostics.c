@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.1.2.3 2005/07/31 09:32:03 wiz Exp $
+  $NiH: diagnostics.c,v 1.1.2.4 2005/07/31 20:10:47 wiz Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -240,8 +240,8 @@ diagnostics_files(const game_t *game, const match_array_t *ma)
 	    case QU_LONG:
 		if (output_options & WARN_LONGOK)
 		    warn_rom(r,
-			     "too long, valid subsection at byte %d (%d)%s%s",
-			     (int)match_offset(m), rom_size(f),
+			     "too long, valid subsection at byte %lld (%d)%s%s",
+			     match_offset(m), rom_size(f),
 			     (rom_where(r) != match_where(m)
 			      ? ", should be in " : ""),
 			     zname[rom_where(r)]);
