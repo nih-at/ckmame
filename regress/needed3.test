@@ -1,0 +1,11 @@
+# $NiH$
+description check, zip contains file needed elsewhere, fix, different needed already exists
+return 0
+args -FKLivc 1-4
+rom-del deadbeef.zip 1-4.zip
+needed deadpork.zip deadbeef-000.zip deadpork.zip
+needed-new deadbeef-001.zip deadbeef.zip
+stdout In game 1-4:
+stdout game 1-4                                     : not a single rom found
+stdout file deadbeef      size       8  crc deadbeef: needed elsewhere
+stdout ./roms/1-4.zip: save needed file `deadbeef'
