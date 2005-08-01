@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.4.2.2 2005/07/30 12:24:28 dillo Exp $
+  $NiH: dumpgame.c,v 1.4.2.3 2005/08/01 21:58:32 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -310,7 +310,7 @@ main(int argc, char **argv)
 	    /* checksum */
 	    hashes_init(&match);
 	    if ((hash_from_string(&match, argv[i])) == -1) {
-		fprintf(stderr, "error parsing checksum `%s'\n", argv[i]);
+		myerror(ERRDEF, "error parsing checksum `%s'", argv[i]);
 		exit(2);
 	    }
 
