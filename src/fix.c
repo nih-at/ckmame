@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.6 2005/07/31 21:13:01 dillo Exp $
+  $NiH: fix.c,v 1.2.2.7 2005/08/01 20:54:09 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -165,6 +165,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
     rom_t *r;
     int i;
 
+    seterrinfo(NULL, archive_name(a));
     archive_ensure_zip(a, 1);
     zto = archive_zip(a);
 
@@ -357,22 +358,13 @@ fix_add_garbage(archive_t *a, int idx)
 	if (zf_garbage_name != NULL)
 	    free(zf_garbage_name);
 	zf_garbage_name = mkgarbage_name(archive_name(a));
-	zf_garbage = zip_open(zf_garbage_name, ZIP_CREATE, &err);
-	if (zf_garbage == NULL) {
-	    char errbuf[80];
-
-	    myerror(ERRDEF, "error creating garbage file `%s': %s",
-		    zf_garbage_name,
-		    zip_error_to_str(errbuf, sizeof(errbuf), err, errno));
+	if ((zf_garbage=my_zip_open(zf_garbage_name, ZIP_CREATE)) == NULL)
 	    return -1;
-	}
     }
 
-    if ((source=zip_source_zip(zf_garbage,
-			       archive_zip(a), idx,
+    if ((source=zip_source_zip(zf_garbage, archive_zip(a), idx,
 			       ZIP_FL_UNCHANGED, 0, -1)) == NULL
-	|| zip_add(zf_garbage, rom_name(archive_file(a, idx)),
-		   source) < 0) {
+	|| zip_add(zf_garbage, rom_name(archive_file(a, idx)), source) < 0) {
 	zip_source_free(source);
 	seterrinfo(archive_name(a), rom_name(archive_file(a, idx)));
 	myerror(ERRFILE, "error moving to `%s': %s",
