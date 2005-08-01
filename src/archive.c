@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.1.2.6 2005/08/01 22:00:54 wiz Exp $
+  $NiH: archive.c,v 1.1.2.7 2005/08/01 22:02:20 wiz Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -30,6 +30,7 @@
 
 #include "archive.h"
 #include "error.h"
+#include "funcs.h"
 #include "globals.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -71,7 +72,6 @@ archive_close_zip(archive_t *a)
 int
 archive_ensure_zip(archive_t *a, int createp)
 {
-    int zerr;
     int flags;
     
     if (archive_zip(a))
@@ -81,15 +81,8 @@ archive_ensure_zip(archive_t *a, int createp)
     if (createp)
 	flags |= ZIP_CREATE;
 
-    zerr = 0;
-    if ((archive_zip(a)=zip_open(archive_name(a), flags, &zerr)) == NULL) {
-	char errstr[1024];
-
-	zip_error_to_str(errstr, sizeof(errstr), zerr, errno);
-	fprintf(stderr, "%s: error opening '%s': %s\n",
-		prg, archive_name(a), errstr);
+    if ((archive_zip(a)=my_zip_open(archive_name(a), flags)) == NULL)
 	return -1;
-    }
 
     return 0;
 }
@@ -129,8 +122,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     r = archive_file(a, idx);
 
     if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
-	fprintf(stderr, "%s: error open()ing index %d in `%s': %s\n",
-		prg, idx, archive_name(a), zip_strerror(za));
+	myerror(ERRZIP, "error opening index %d: %s", idx, zip_strerror(za));
 	rom_status(r) = STATUS_BADDUMP;
 	return -1;
     }
@@ -144,13 +136,11 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     }
 
     zip_fclose(zf);
-	    
+
     if (hashtypes & HASHES_TYPE_CRC) {
 	if (rom_hashes(r)->crc != h.crc) {
-	    fprintf(stderr,
-		    "%s: CRC error at index %d in `%s': %lx != %lx\n",
-		    prg, idx, archive_name(a), h.crc,
-		    rom_hashes(r)->crc);
+	    myerror(ERRZIP, "CRC error at index %d: %lx != %lx",
+		    idx, h.crc, rom_hashes(r)->crc);
 	    rom_status(r) = STATUS_BADDUMP;
 	    return -1;
 	}
@@ -174,10 +164,10 @@ archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
 
     if (archive_ensure_zip(a, 0) < 0)
 	return -1;
-	
+
+    seterrinfo(zip_get_name(archive_zip(a), idx, 0), archive_name(a));
     if ((zf = zip_fopen_index(archive_zip(a), idx, 0)) == NULL) {
-	fprintf(stderr, "%s: %s: can't open file '%s': %s\n", prg,
-		archive_name(a), zip_get_name(archive_zip(a), idx, 0),
+	myerror(ERRZIPFILE, "can't open file: %s",
 		zip_strerror(archive_zip(a)));
 	return -1;
     }
@@ -186,8 +176,7 @@ archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
     offset = 0;
     while (offset+size <= rom_size(archive_file(a, idx))) {
 	if (get_hashes(zf, size, &hn) < 0) {
-	    fprintf(stderr, "%s: %s: %s: read error: %s\n", prg,
-		    archive_name(a), zip_get_name(archive_zip(a), idx, 0),
+	    myerror(ERRZIPFILE, "read error: %s",
 		    zip_strerror(archive_zip(a)));
 	    zip_fclose(zf);
 	    return -1;
@@ -202,9 +191,7 @@ archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
     }
 
     if (zip_fclose(zf)) {
-	fprintf(stderr, "%s: %s: %s: close error: %s\n", prg,
-		archive_name(a), zip_get_name(archive_zip(a), idx, 0),
-		zip_strerror(archive_zip(a)));
+	myerror(ERRZIPFILE, "close error: %s", zip_strerror(archive_zip(a)));
 	return -1;
     }
     
@@ -321,11 +308,11 @@ read_infos_from_zip(archive_t *a, int hashtypes)
     if ((za=zip_open(archive_name(a), 0, &zerr)) == NULL) {
 	/* no error if file doesn't exist */
 	if (zerr != ZIP_ER_OPEN && errno != ENOENT) {
-	    char errstr[1024];
+	    char errstr[80];
 
 	    zip_error_to_str(errstr, sizeof(errstr), zerr, errno);
-	    fprintf(stderr, "%s: error opening '%s': %s\n",
-		    prg, archive_name(a), errstr);
+	    myerror(ERRDEF, "error opening zip archive '%s': %s",
+		    archive_name(a), errstr);
 	}
 
 	return;
@@ -333,10 +320,12 @@ read_infos_from_zip(archive_t *a, int hashtypes)
 
     archive_zip(a) = za;
 
+    seterrinfo(NULL, archive_name(a));
+
     for (i=0; i<zip_get_num_files(za); i++) {
 	if (zip_stat_index(za, i, 0, &zsb) == -1) {
-	    fprintf(stderr, "%s: error stat()ing index %d in `%s': %s\n",
-		    prg, i, archive_name(a), zip_strerror(za));
+	    myerror(ERRZIP, "error stat()ing index %d: %s",
+		    i, zip_strerror(za));
 	    continue;
 	}
 
