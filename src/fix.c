@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.7 2005/08/01 20:54:09 wiz Exp $
+  $NiH: fix.c,v 1.2.2.8 2005/08/01 21:59:25 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -199,7 +199,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 					   rom_size(r))) == NULL
 		    || zip_add(zto, rom_name(r), source) < 0) {
 		    zip_source_free(source);
-		    myerror(ERRFILE, "error shrinking `%s': %s",
+		    myerror(ERRZIPFILE, "error shrinking `%s': %s",
 			    rom_name(archive_file(afrom, match_index(m))),
 			    zip_strerror(zto));
 		}
@@ -213,7 +213,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 		       rom_name(r));
 	    if (fix_options & FIX_DO) {
 		if (zip_rename(zto, match_index(m), rom_name(r)) == -1)
-		    myerror(ERRFILE, "error renaming `%s': %s",
+		    myerror(ERRZIPFILE, "error renaming `%s': %s",
 			    rom_name(archive_file(a, match_index(m))),
 			    zip_strerror(zto));
 	    }
@@ -231,7 +231,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 					   0, 0, -1)) == NULL
 		    || zip_add(zto, rom_name(r), source) < 0) {
 		    zip_source_free(source);
-		    myerror(ERRFILE, "error adding `%s' from `%s': %s",
+		    myerror(ERRZIPFILE, "error adding `%s' from `%s': %s",
 			    rom_name(archive_file(afrom, match_index(m))),
 			    archive_name(afrom), zip_strerror(zto));
 		}
@@ -292,7 +292,7 @@ fix_save_needed(archive_t *a, int index, int copy)
 			    source) < 0) {
 	    zip_source_free(source);
 	    seterrinfo(rom_name(archive_file(a, index)), tmp);
-	    myerror(ERRFILE, "error adding from `%s': %s",
+	    myerror(ERRZIPFILE, "error adding from `%s': %s",
 		    archive_name(a), zip_strerror(zto));
 	    zip_close(zto);
 	    ret = -1;
@@ -349,7 +349,6 @@ static int
 fix_add_garbage(archive_t *a, int idx)
 {
     struct zip_source *source;
-    int err;
 
     if (!(fix_options & FIX_DO))
 	return 0;
@@ -367,7 +366,7 @@ fix_add_garbage(archive_t *a, int idx)
 	|| zip_add(zf_garbage, rom_name(archive_file(a, idx)), source) < 0) {
 	zip_source_free(source);
 	seterrinfo(archive_name(a), rom_name(archive_file(a, idx)));
-	myerror(ERRFILE, "error moving to `%s': %s",
+	myerror(ERRZIPFILE, "error moving to `%s': %s",
 		zf_garbage_name, zip_strerror(zf_garbage));
 	return -1;
     }
