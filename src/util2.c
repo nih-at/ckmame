@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.3 2005/07/31 11:37:08 dillo Exp $
+  $NiH: util2.c,v 1.1.2.4 2005/07/31 21:13:02 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -72,8 +72,7 @@ ensure_dir(const char *name, int strip_fname)
     ret = 0;
     if (stat(name, &st) < 0) {
 	if (mkdir(name, 0777) < 0) {
-	    myerror(ERRDEF, "mkdir `%s' failed: %s",
-		    name, strerror(errno));
+	    myerror(ERRSTR, "mkdir `%s' failed", name);
 	    ret = -1;
 	}
     }
@@ -295,8 +294,8 @@ my_zip_open(const char *name, int flags)
 
     z = zip_open(name, flags, &err);
     if (z == NULL)
-	myerror(ERRDEF, "error %s zip archive `%s': %s", name,
-		(flags & ZIP_CREATE ? "creating" : "opening"),
+	myerror(ERRDEF, "error %s zip archive `%s': %s",
+		(flags & ZIP_CREATE ? "creating" : "opening"), name,
 		zip_error_to_str(errbuf, sizeof(errbuf), err, errno));
 
     return z;
