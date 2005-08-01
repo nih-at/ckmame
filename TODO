@@ -10,7 +10,6 @@ tests:
 other:
 - read games to check from file or stdin
 - document comment in prototypes for function pointers
-- fix, diagnostics: print match_offset properly, don't cast to int
 - refactor hashes_set and hashes_verify
 - update ChangeLog
 - copyright maintenance
