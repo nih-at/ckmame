@@ -1,11 +1,8 @@
 tests:
-* don't remove unneeded needed files
-* don't overwrite existing needed files
 - get missing roms from superfluous
 - get missing roms from extra dirs
 - disk renames
 - get missing disks from extra dirs
-* complete integrity check (not only crc) before adding file
 * sample test
 * dumpgame
 * XML parsing
@@ -15,7 +12,6 @@ other:
 - document comment in prototypes for function pointers
 - fix, diagnostics: print match_offset properly, don't cast to int
 - refactor hashes_set and hashes_verify
-- make match_array_t an array_t of parray_t of match_t
 - update ChangeLog
 - copyright maintenance
 - remove unneeded includes
@@ -25,19 +21,12 @@ other:
 - parse: check for duplicate attributes
 - check romcmp (bestbaddump)
 
-improve output to: rom  tko-simm.05a  size 2097152  crc a275a387: SHA1 mismatch
-
 add support for native db3/db4
 add support for fname==NULL and foreach to gdbm
 parse: move state handling to parse-cm.c
 
 0.85.1: "bad dump" is reported as missing with -d
 -cd: do not print a line for each rom that is correct in sets that have nodump roms
-
-use cases:
-. child gets renamed (move zip to other zip name)
-. child becomes parent, parent becomes other child (move from now unknown child zip to parent)
-. missing rom is in a different (related or unrelated, but not parent/child) set
 
 automatically fix renamed disks
 automatically fix superfluous zips that have been renamed
@@ -52,7 +41,6 @@ mkmamedb: no error message for missing newline in last line
 
 mkmamedb: correct inconsistencies in input db (parent not found)
 
-fix 'should be in cloneof, is in zip'
 use return value of w_game
 option to force fixing parents
 add error messages in ckmame with the zips (e.g. can't create file etc.)
