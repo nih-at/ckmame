@@ -19,6 +19,7 @@ TESTCASES=	baddump.test \
 		from-needed2.test \
 		from-romset.test \
 		from-romset2.test \
+		from-superfluous.test \
 		garbage.test \
 		inchild.test \
 		inparent.test \

@@ -1,7 +1,7 @@
 tests:
-- get missing roms from superfluous
 - get missing roms from extra dirs
 - disk renames
+- get missing disks from superfluous
 - get missing disks from extra dirs
 * sample test
 * dumpgame

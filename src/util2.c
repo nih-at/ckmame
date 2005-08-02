@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.4 2005/07/31 21:13:02 dillo Exp $
+  $NiH: util2.c,v 1.1.2.5 2005/08/01 22:00:37 wiz Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -92,12 +92,25 @@ ensure_dir(const char *name, int strip_fname)
 void
 ensure_extra_file_map(void)
 {
+    int i;
+    const char *file;
+    archive_t *a;
+    
     if (extra_file_map != NULL)
 	return;
     
     extra_file_map = map_new();
 
-    /* XXX: fill in */
+    for (i=0; i<parray_length(superfluous); i++) {
+	file = parray_get(superfluous, i);
+	if (strcmp(file+strlen(file)-4, ".zip") != 0)
+	    continue;
+
+	if ((a=archive_new(file, TYPE_FULL_PATH, 0)) != NULL) {
+	    enter_archive_in_map(extra_file_map, a);
+	    archive_free(a);
+	}
+    }
 }
 
 
