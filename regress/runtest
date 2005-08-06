@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.17.2.4 2005/07/31 21:14:50 dillo Exp $
+#  $NiH: runtest,v 1.17.2.5 2005/08/01 01:56:09 wiz Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -33,59 +33,59 @@
 #    The following commands are recognized; return and args must
 #    appear exactly once, the others are optional.
 #
-#	description TEXT
-#	    description of what test is for
-#
-#	retrun RET
-#	    RET is the expected exit code
-#
 #	args ARGS
 #	    run ckmame with command line arguments ARGS
 #	
-#	stdout TEXT
-#	    ckmame is expected print TEXT to stdout.  If multiple
-#	    stdout commands are used, the messages are expected in
-#	    the order given. 
-#   
+#	description TEXT
+#	    description of what test is for
+#
+#	disk IN TEST
+#	    link chd file IN into roms directory with name TEST.
+#
 #	error TEXT
 #	    ckmame is expected to produce the error message TEXT.  If
 #	    multiple error commands are used, the messages are
 #	    expected in the order given.
 #
-#	rom IN TEST OUT
-#	    link zip file IN into roms directory with name TEST, check
-#	    against OUT after ckmame has run.
-#
-#	rom-new CREATED EXPECTED
-#	    check that CREATED has been created in roms directory and
-#	    equals EXPECTED.
-#
-#	rom-del IN TEST
-#	    link zip file IN into roms directory with name TEST, check
-#	    that it is deleted.
-#
 #	garbage CREATED-FILE EXPECTED-FILE
 #	    check that CREATED-FILE has been created in garbage
 #	    directory and equals EXPECTED-FILE.
+#
+#	mkdir MODE NAME
+#	    create directory NAME with permissions MODE.
 #
 #	needed IN TEST OUT
 #	    link zip archive IN into needed directory with name TEST,
 #	    check against OUT after ckmame has run.
 #
-#	needed-new CREATED EXPECTED
-#	    check that CREATED has been created in needed directory and
-#	    equals EXPECTED.
-#
 #	needed-del IN TEST
 #	    link zip archive IN into needed directory with name TEST,
 #	    check that it is deleted.
 #
-#	disk IN TEST
-#	    link chd file IN into roms directory with name TEST.
+#	needed-new CREATED EXPECTED
+#	    check that CREATED has been created in needed directory and
+#	    equals EXPECTED.
 #
-#	mkdir MODE NAME
-#	    create directory NAME with permissions MODE.
+#	return RET
+#	    RET is the expected exit code
 #
+#	rom IN TEST OUT
+#	    link zip file IN into roms directory with name TEST, check
+#	    against OUT after ckmame has run.
+#
+#	rom-del IN TEST
+#	    link zip file IN into roms directory with name TEST, check
+#	    that it is deleted.
+#
+#	rom-new CREATED EXPECTED
+#	    check that CREATED has been created in roms directory and
+#	    equals EXPECTED.
+#
+#	stdout TEXT
+#	    ckmame is expected print TEXT to stdout.  If multiple
+#	    stdout commands are used, the messages are expected in
+#	    the order given. 
+#   
 #	XXX: allow for creation of rom files and existing garbage files
 #
 # exit status
