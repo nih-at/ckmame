@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.9 2005/08/06 20:00:34 wiz Exp $
+  $NiH: util2.c,v 1.1.2.10 2005/08/06 20:07:39 wiz Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -163,7 +163,9 @@ enter_dir_in_map(map_t *map, const char *name, int flags, where_t where)
 	    continue;
 	}
 
-	if ((a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
+	/* only add zip files */
+	if (strlen(b) > 4 && strcasecmp(b+strlen(b)-4, ".zip") == 0
+	    && (a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
 	    enter_archive_in_map(map, a, where);
 	    archive_free(a);
 	}
