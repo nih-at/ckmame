@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.4.2.6 2005/08/06 20:00:34 wiz Exp $
+  $NiH: ckmame.c,v 1.4.2.7 2005/08/06 20:18:22 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -44,6 +44,7 @@
 #include "types.h"
 #include "util.h"
 #include "warn.h"
+#include "xmalloc.h"
 
 
 
