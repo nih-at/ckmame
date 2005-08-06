@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.4.2.4 2005/08/01 22:39:06 wiz Exp $
+  $NiH: dumpgame.c,v 1.4.2.5 2005/08/06 17:00:11 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -122,7 +122,7 @@ print_diskline(disk_t *disk)
 {
     printf("\t\tdisk %-12s", disk->name);
     print_checksums(&disk->hashes);
-    printf("  status %s", status_name[disk_status(disk)]);
+    printf(" status %s", status_name[disk_status(disk)]);
     putc('\n', stdout);
 }
 
@@ -144,7 +144,7 @@ print_romline(rom_t *rom)
     printf("\t\tfile %-12s  size %7ld",
 	   rom_name(rom), rom_size(rom));
     print_checksums(rom_hashes(rom));
-    printf("  status %s in %s",
+    printf(" status %s in %s",
 	   status_name[rom_status(rom)], where_name[rom_where(rom)]);
     if (rom_merge(rom) && strcmp(rom_name(rom), rom_merge(rom)) != 0)
 	printf(" (%s)", rom_merge(rom));
