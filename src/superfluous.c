@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.3.2.4 2005/07/31 11:36:34 dillo Exp $
+  $NiH: superfluous.c,v 1.3.2.5 2005/08/06 20:00:34 wiz Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -41,7 +41,7 @@
 
 
 parray_t *
-find_extra_files(const char *dbname)
+find_superfluous(const char *dbname)
 {
     dir_t *dir;
     char b[8192], dirname[8192], *p;
@@ -56,7 +56,7 @@ find_extra_files(const char *dbname)
 	    exit(1);
 	}
 	if ((listd=r_list(db, DDB_KEY_LIST_DISK)) == NULL) {
-	    myerror(ERRDEF, "list of extra files not found in database `%s'",
+	    myerror(ERRDEF, "list of disks not found in database `%s'",
 		    dbname);
 	    exit(1);
 	}
@@ -127,4 +127,20 @@ find_extra_files(const char *dbname)
 	parray_sort_unique(found, strcmp);
 
     return found;
+}
+
+
+
+void
+print_superfluous(const parray_t *files)
+{
+    int i;
+
+    if (parray_length(files) == 0)
+	return;
+
+    printf("Extra files found:\n");
+    
+    for (i=0; i<parray_length(files); i++)
+	printf("%s\n", (char *)parray_get(files, i));
 }

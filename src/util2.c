@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.8 2005/08/06 17:48:46 wiz Exp $
+  $NiH: util2.c,v 1.1.2.9 2005/08/06 20:00:34 wiz Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -112,8 +112,8 @@ ensure_extra_file_map(void)
 	}
     }
 
-    for (i=0; i<parray_length(extra_dirs); i++)
-	enter_dir_in_map(extra_file_map, parray_get(extra_dirs, i),
+    for (i=0; i<parray_length(search_dirs); i++)
+	enter_dir_in_map(extra_file_map, parray_get(search_dirs, i),
 			 DIR_RECURSE, ROM_EXTRA);
 }
 
@@ -294,22 +294,6 @@ make_needed_name(const rom_t *r)
 
     /* XXX: better error handling */
     return NULL;
-}
-
-
-
-void
-print_extra_files(const parray_t *files)
-{
-    int i;
-
-    if (parray_length(files) == 0)
-	return;
-
-    printf("Extra files found:\n");
-    
-    for (i=0; i<parray_length(files); i++)
-	printf("%s\n", (char *)parray_get(files, i));
 }
 
 
