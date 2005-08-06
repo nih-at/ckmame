@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.5.2.5 2005/07/31 20:10:47 wiz Exp $
+  $NiH: types.h,v 1.5.2.6 2005/07/31 21:13:02 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -61,6 +61,7 @@ enum where {
     ROM_INZIP, ROM_INCO, ROM_INGCO,
     ROM_ROMSET,
     ROM_NEEDED,
+    ROM_SUPERFLUOUS,
     ROM_EXTRA
 };
 
