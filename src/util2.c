@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.5 2005/08/01 22:00:37 wiz Exp $
+  $NiH: util2.c,v 1.1.2.6 2005/08/02 18:25:05 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -28,7 +28,7 @@
 
 #include "dir.h"
 #include "error.h"
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "funcs.h"
 #include "globals.h"
 #include "hashes.h"
@@ -151,9 +151,9 @@ enter_archive_in_map(map_t *map, const archive_t *a)
     int i;
 
     for (i=0; i<archive_num_files(a); i++)
-	map_add(map, file_by_hash_default_hashtype(TYPE_ROM),
+	map_add(map, file_location_default_hashtype(TYPE_ROM),
 		rom_hashes(archive_file(a, i)),
-		file_by_hash_new(archive_name(a), i));
+		file_location_new(archive_name(a), i));
 }
 
 

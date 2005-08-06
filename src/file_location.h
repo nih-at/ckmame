@@ -1,10 +1,10 @@
-#ifndef HAD_FILE_BY_HASH_H
-#define HAD_FILE_BY_HASH_H
+#ifndef HAD_FILE_LOCATION_H
+#define HAD_FILE_LOCATION_H
 
 /*
-  $NiH: file_by_hash.h,v 1.2 2005/07/13 17:42:20 dillo Exp $
+  $NiH$
 
-  file_by_hash.h -- list of files with same hash
+  file_location.h -- location of a file
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -31,24 +31,32 @@
 
 
 
-struct file_by_hash {
+struct file_location {
     char *name;
     int index;
 };
 
-typedef struct file_by_hash file_by_hash_t;
+typedef struct file_location file_location_t;
+
+struct file_location_ext {
+    char *name;
+    int index;
+    where_t where;
+};
+
+typedef struct file_location_ext file_location_ext_t;
 
 
 
-#define file_by_hash_name(a)	((a)->name)
-#define file_by_hash_index(a)	((a)->index)
+#define file_location_name(a)	((a)->name)
+#define file_location_index(a)	((a)->index)
 
-const char *file_by_hash_make_key(filetype_t, const hashes_t *);
-int file_by_hash_default_hashtype(filetype_t);
+const char *file_location_make_key(filetype_t, const hashes_t *);
+int file_location_default_hashtype(filetype_t);
 
-int file_by_hash_entry_cmp(const file_by_hash_t *, const file_by_hash_t *);
-void file_by_hash_free(file_by_hash_t *);
-void file_by_hash_finalize(file_by_hash_t *);
-file_by_hash_t *file_by_hash_new(const char *, int);
+int file_location_cmp(const file_location_t *, const file_location_t *);
+void file_location_free(file_location_t *);
+void file_location_finalize(file_location_t *);
+file_location_t *file_location_new(const char *, int);
 
-#endif /* file_by_hash.h */
+#endif /* file_location.h */

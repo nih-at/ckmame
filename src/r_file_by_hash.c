@@ -1,7 +1,7 @@
 /*
-  $NiH: r_file_by_hash.c,v 1.3 2005/07/13 17:42:20 dillo Exp $
+  $NiH: r_file_location.c,v 1.3.2.1 2005/07/27 00:05:57 dillo Exp $
 
-  r_file_by_hash.c -- read file_by_hash struct from db
+  r_file_location.c -- read file_by_hash information from db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -28,11 +28,11 @@
 
 #include "array.h"
 #include "dbh.h"
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "xmalloc.h"
 #include "r.h"
 
-static void r__file_by_hash_entry(DBT *, void *);
+static void r__file_location(DBT *, void *);
 
 array_t *
 r_file_by_hash(DB *db, filetype_t ft, const hashes_t *hash)
@@ -41,12 +41,12 @@ r_file_by_hash(DB *db, filetype_t ft, const hashes_t *hash)
     array_t *a;
     void *data;
 
-    if (ddb_lookup(db, file_by_hash_make_key(ft, hash), &v) != 0)
+    if (ddb_lookup(db, file_location_make_key(ft, hash), &v) != 0)
 	return NULL;
 
     data = v.data;
 
-    a = r__array(&v, r__file_by_hash_entry, sizeof(file_by_hash_t));
+    a = r__array(&v, r__file_location, sizeof(file_location_t));
     
     free(data);
 
@@ -56,11 +56,11 @@ r_file_by_hash(DB *db, filetype_t ft, const hashes_t *hash)
 
 
 static void
-r__file_by_hash_entry(DBT *v, void *vr)
+r__file_location(DBT *v, void *vr)
 {
-    file_by_hash_t *e;
+    file_location_t *e;
     
-    e = (file_by_hash_t *)vr;
+    e = (file_location_t *)vr;
 
     e->name = r__string(v);
     e->index = r__ushort(v);

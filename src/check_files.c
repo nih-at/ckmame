@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.1.2.4 2005/07/31 21:13:01 dillo Exp $
+  $NiH: check_files.c,v 1.1.2.5 2005/08/01 02:08:09 dillo Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -25,7 +25,7 @@
 
 #include "archive.h"
 #include "dbh.h"
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "find.h"
 #include "funcs.h"
 #include "game.h"

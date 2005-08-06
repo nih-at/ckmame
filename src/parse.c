@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.5.2.3 2005/07/31 20:10:47 wiz Exp $
+  $NiH: parse.c,v 1.5.2.4 2005/08/01 22:00:12 wiz Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -29,7 +29,7 @@
 
 #include "dbh.h"
 #include "error.h"
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "funcs.h"
 #include "map.h"
 #include "parse.h"
@@ -62,7 +62,7 @@ static void disk_end(parser_context_t *);
 static void enter_file_hash(map_t *, filetype_t, const char *,
 			    int, const hashes_t *);
 static void familymeeting(DB *, filetype_t, game_t *, game_t *);
-static int file_by_hash_copy(const hashes_t *, parray_t *, void *);
+static int file_location_copy(const hashes_t *, parray_t *, void *);
 static int handle_lost(parser_context_t *);
 static int lost(game_t *, filetype_t);
 static int parser_context_init(parser_context_t *);
@@ -409,11 +409,11 @@ enter_file_hash(map_t *map, filetype_t filetype,
 {
     int type;
 
-    type = file_by_hash_default_hashtype(filetype);
+    type = file_location_default_hashtype(filetype);
 
     if (hashes_has_type(hashes, type)) {
 	if (map_add(map, type, hashes,
-		    file_by_hash_new(name, index)) < 0) {
+		    file_location_new(name, index)) < 0) {
 	    /* XXX: error */
 	}
     }
@@ -464,11 +464,11 @@ familymeeting(DB *db, filetype_t ft, game_t *parent, game_t *child)
 
 
 static int
-file_by_hash_copy(const hashes_t *key, parray_t *pa, void *ud)
+file_location_copy(const hashes_t *key, parray_t *pa, void *ud)
 {
     struct fbh_context *ctx = ud;
 
-    parray_sort(pa, file_by_hash_entry_cmp);
+    parray_sort(pa, file_location_cmp);
     return w_file_by_hash_parray(ctx->db, ctx->ft, key, pa);
 }
 
@@ -595,8 +595,8 @@ parser_context_finalize(parser_context_t *ctx)
 
     if (ctx->fin)
 	fclose(ctx->fin);
-    map_free(ctx->map_rom, MAP_FREE_FN(file_by_hash_free));
-    map_free(ctx->map_disk, MAP_FREE_FN(file_by_hash_free));
+    map_free(ctx->map_rom, MAP_FREE_FN(file_location_free));
+    map_free(ctx->map_disk, MAP_FREE_FN(file_location_free));
     game_free(ctx->g);
     free(ctx->prog_name);
     free(ctx->prog_version);
@@ -662,11 +662,11 @@ write_hashes(parser_context_t *ctx)
     ud.db = ctx->db;
     
     ud.ft = TYPE_ROM;
-    if (map_foreach(ctx->map_rom, file_by_hash_copy, &ud) < 0)
+    if (map_foreach(ctx->map_rom, file_location_copy, &ud) < 0)
 	return -1;
 
     ud.ft = TYPE_DISK;
-    if (map_foreach(ctx->map_disk, file_by_hash_copy, &ud) < 0)
+    if (map_foreach(ctx->map_disk, file_location_copy, &ud) < 0)
 	return -1;
     
     return 0;

@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.4.2.3 2005/08/01 21:58:32 wiz Exp $
+  $NiH: dumpgame.c,v 1.4.2.4 2005/08/01 22:39:06 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -38,7 +38,7 @@
 
 #include "dbh.h"
 #include "error.h"
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "hashes.h"
 #include "types.h"
 #include "util.h"
@@ -179,11 +179,11 @@ print_matches(DB *db, filetype_t ft, hashes_t *hash)
     game_t *game;
     int i, j, matches;
     array_t *fbha;
-    file_by_hash_t *fbh;
+    file_location_t *fbh;
 
     matches = 0;
 
-    if (hashes_has_type(hash, file_by_hash_default_hashtype(ft))) {
+    if (hashes_has_type(hash, file_location_default_hashtype(ft))) {
 	if ((fbha=r_file_by_hash(db, ft, hash)) == NULL) {
 	    print_footer(0, hash);
 	    return;
@@ -191,21 +191,21 @@ print_matches(DB *db, filetype_t ft, hashes_t *hash)
 
 	for (i=0; i<array_length(fbha); i++) {
 	    fbh = array_get(fbha, i);
-	    if ((game=r_game(db, file_by_hash_name(fbh))) == NULL) {
+	    if ((game=r_game(db, file_location_name(fbh))) == NULL) {
 		myerror(ERRDEF,
 			"db error: %s not found, though in hash index",
-			file_by_hash_name(fbh));
+			file_location_name(fbh));
 		/* XXX: remember error */
 		continue;
 	    }
 
-	    print_match(game, ft, file_by_hash_index(fbh));
+	    print_match(game, ft, file_location_index(fbh));
 	    matches++;
 	    
 	    game_free(game);
 	}
 
-	array_free(fbha, file_by_hash_finalize);
+	array_free(fbha, file_location_finalize);
     }
     else {
 	for (i=0; i<parray_length(list); i++) {

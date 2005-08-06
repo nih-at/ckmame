@@ -1,7 +1,7 @@
 /*
-  $NiH: file_by_hash_finalize.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
+  $NiH: file_location.c,v 1.3.2.1 2005/07/27 00:05:57 dillo Exp $
 
-  file_by_hash_finalize.c -- free members of file_by_hash structure
+  file_location.c -- create / free file_location structure
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -23,12 +23,47 @@
 
 #include <stdlib.h>
 
-#include "file_by_hash.h"
+#include "file_location.h"
+#include "xmalloc.h"
+
+
+
+int
+file_location_cmp(const file_location_t *a, const file_location_t *b)
+{
+    int ret;
+    
+    ret = strcasecmp(file_location_name(a), file_location_name(b));
+    if (ret == 0)
+	ret = file_location_index(a) - file_location_index(b);
+
+    return ret;
+}
+
 
 
 
 void
-file_by_hash_finalize(file_by_hash_t *e)
+file_location_free(file_location_t *e)
 {
-    free(e->name);
+    if (e == NULL)
+	return;
+
+    file_location_finalize(e);
+    free(e);
+}
+
+
+
+file_location_t *
+file_location_new(const char *name, int idx)
+{
+    file_location_t *e;
+
+    e = xmalloc(sizeof(*e));
+
+    e->name = xstrdup(name);
+    e->index = idx;
+
+    return e;
 }

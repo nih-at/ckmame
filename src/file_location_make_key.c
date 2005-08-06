@@ -1,7 +1,7 @@
 /*
-  $NiH: file_by_hash_make_key.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
+  $NiH: file_location_make_key.c,v 1.1.2.1 2005/07/31 21:13:01 dillo Exp $
 
-  fbh_make_key.c -- make dbkey for file_by_hash struct
+  fbh_make_key.c -- make dbkey for file_location struct
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "xmalloc.h"
 
 static int filetype_char(filetype_t);
@@ -32,7 +32,7 @@ static int filetype_char(filetype_t);
 
 
 int
-file_by_hash_default_hashtype(filetype_t ft)
+file_location_default_hashtype(filetype_t ft)
 {
     if (ft == TYPE_DISK)	
 	return HASHES_TYPE_MD5;
@@ -43,14 +43,14 @@ file_by_hash_default_hashtype(filetype_t ft)
 
 
 const char *
-file_by_hash_make_key(filetype_t filetype, const hashes_t *hash)
+file_location_make_key(filetype_t filetype, const hashes_t *hash)
 {
     static char key[HASHES_SIZE_MAX*2 + 4];
 
     key[0] = '/';
     key[1] = filetype_char(filetype);
     key[2] = '/';
-    hash_to_string(key+3, file_by_hash_default_hashtype(filetype), hash);
+    hash_to_string(key+3, file_location_default_hashtype(filetype), hash);
 
     return key;
 }

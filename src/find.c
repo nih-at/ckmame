@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.1.2.1 2005/07/30 12:24:29 dillo Exp $
+  $NiH: find.c,v 1.1.2.2 2005/07/31 09:21:44 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -24,7 +24,7 @@
 
 
 #include "dbh.h"
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "find.h"
 #include "game.h"
 #include "globals.h"
@@ -38,28 +38,28 @@ find_result_t
 find_in_archives(map_t *map, const rom_t *r, match_t *m)
 {
     parray_t *pa;
-    file_by_hash_t *fbh;
+    file_location_t *fbh;
     archive_t *a;
     int i;
 
-    if ((pa=map_get(map, file_by_hash_default_hashtype(TYPE_ROM),
+    if ((pa=map_get(map, file_location_default_hashtype(TYPE_ROM),
 		    rom_hashes(r))) == NULL)
 	return FIND_UNKNOWN;
 
     for (i=0; i<parray_length(pa); i++) {
 	fbh = parray_get(pa, i);
 
-	if ((a=archive_new(file_by_hash_name(fbh),
+	if ((a=archive_new(file_location_name(fbh),
 			   TYPE_FULL_PATH, 0)) == NULL) {
 	    /* XXX: internal error */
 	    return FIND_ERROR;
 	}
 
-	switch (archive_file_compare_hashes(a, file_by_hash_index(fbh),
+	switch (archive_file_compare_hashes(a, file_location_index(fbh),
 					    rom_hashes(r))) {
 	case HASHES_CMP_MATCH:
 	    m->archive = a;
-	    m->index = file_by_hash_index(fbh);
+	    m->index = file_location_index(fbh);
 	    m->quality = QU_COPIED;
 	    return FIND_EXISTS;
 
@@ -82,7 +82,7 @@ find_result_t
 find_in_romset(const rom_t *r, const char *skip, match_t *m)
 {
     array_t *a;
-    file_by_hash_t *fbh;
+    file_location_t *fbh;
     game_t *g;
     const rom_t *gr;
     int i;
@@ -99,16 +99,16 @@ find_in_romset(const rom_t *r, const char *skip, match_t *m)
 	 i++) {
 	fbh = array_get(a, i);
 
-	if (skip && strcmp(file_by_hash_name(fbh), skip) == 0)
+	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
 
-	if ((g=r_game(db, file_by_hash_name(fbh))) == NULL) {
+	if ((g=r_game(db, file_location_name(fbh))) == NULL) {
 	    /* XXX: internal error: db inconsistency */
 	    status = FIND_ERROR;
 	    break;
 	}
 
-	gr = game_file(g, TYPE_ROM, file_by_hash_index(fbh));
+	gr = game_file(g, TYPE_ROM, file_location_index(fbh));
 
 	if (hashes_cmp(rom_hashes(r), rom_hashes(gr)) == HASHES_CMP_MATCH) {
 	    status = check_for_file_in_zip(game_name(g), gr, m);
@@ -119,7 +119,7 @@ find_in_romset(const rom_t *r, const char *skip, match_t *m)
 	game_free(g);
     }
 
-    array_free(a, file_by_hash_finalize);
+    array_free(a, file_location_finalize);
 
     return status;
 }

@@ -1,5 +1,5 @@
 /*
-  $NiH: delete_list.c,v 1.1.2.1 2005/07/31 21:13:01 dillo Exp $
+  $NiH: delete_list.c,v 1.1.2.2 2005/08/01 21:58:16 wiz Exp $
 
   delete_list.h -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -57,7 +57,7 @@ delete_list_free(delete_list_t *dl)
     if (dl == NULL)
 	return;
 
-    parray_free(dl->array, file_by_hash_free);
+    parray_free(dl->array, file_location_free);
     free(dl);
 }
 
@@ -68,11 +68,11 @@ delete_list_execute(delete_list_t *dl)
 {
     int i;
     const char *name;
-    const file_by_hash_t *fbh;
+    const file_location_t *fbh;
     struct zip *z;
     int ret;
 
-    parray_sort_unique(dl->array, file_by_hash_entry_cmp);
+    parray_sort_unique(dl->array, file_location_cmp);
 
     name = NULL;
     z = NULL;
@@ -80,17 +80,17 @@ delete_list_execute(delete_list_t *dl)
     for (i=0; i<delete_list_length(dl); i++) {
 	fbh = delete_list_get(dl, i);
 
-	if (file_by_hash_name(fbh) != name) {
+	if (file_location_name(fbh) != name) {
 	    if (my_zip_close(z, name) == -1)
 		ret = -1;
 
-	    name = file_by_hash_name(fbh);
+	    name = file_location_name(fbh);
 	    if ((z=my_zip_open(name, 0)) == NULL)
 		ret = -1;
 	}
 	if (z) {
 	    /* XXX: print message if FIX_PRINT */
-	    zip_delete(z, file_by_hash_index(fbh));
+	    zip_delete(z, file_location_index(fbh));
 	}
     }
 

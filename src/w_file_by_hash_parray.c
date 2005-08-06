@@ -1,7 +1,7 @@
 /*
-  $NiH: w_file_by_hash_parray.c,v 1.2 2005/07/13 17:42:20 dillo Exp $
+  $NiH: w_file_location_parray.c,v 1.2.2.1 2005/07/27 00:05:58 dillo Exp $
 
-  w_file_by_hash.c -- write file_by_hash struct to db
+  w_file_location.c -- write file_by_hash information to db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -34,7 +34,7 @@
 #include "w.h"
 #include "xmalloc.h"
 
-static void w__file_by_hash_entry(DBT *, const void *);
+static void w__file_location(DBT *, const void *);
 
 
 
@@ -48,13 +48,13 @@ w_file_by_hash_parray(DB *db, filetype_t ft, const hashes_t *h, parray_t *pa)
     v.size = 0;
 
     if (parray_length(pa) == 0) {
-	myerror(ERRDEF, "internal error: empty file_by_hash structure");
+	myerror(ERRDEF, "internal error: empty file_location structure");
 	return -1;
     }
 
-    w__parray(&v, w__file_by_hash_entry, pa);
+    w__parray(&v, w__file_location, pa);
 
-    err = ddb_insert(db, file_by_hash_make_key(ft, h), &v);
+    err = ddb_insert(db, file_location_make_key(ft, h), &v);
 
     free(v.data);
 
@@ -64,11 +64,11 @@ w_file_by_hash_parray(DB *db, filetype_t ft, const hashes_t *h, parray_t *pa)
 
 
 static void
-w__file_by_hash_entry(DBT *v, const void *vr)
+w__file_location(DBT *v, const void *vr)
 {
-    const file_by_hash_t *fbh;
+    const file_location_t *fbh;
 
-    fbh = (const file_by_hash_t *)vr;
+    fbh = (const file_location_t *)vr;
 
     w__string(v, fbh->name);
     w__ushort(v, fbh->index);

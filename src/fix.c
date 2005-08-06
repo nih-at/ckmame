@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.8 2005/08/01 21:59:25 wiz Exp $
+  $NiH: fix.c,v 1.2.2.9 2005/08/01 22:39:37 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -34,7 +34,7 @@
 
 #include "archive.h"
 #include "error.h"
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "funcs.h"
 #include "game.h"
 #include "globals.h"
@@ -269,7 +269,7 @@ fix_save_needed(archive_t *a, int index, int copy)
     int ret, zip_index;
     struct zip *zto;
     struct zip_source *source;
-    file_by_hash_t *fbh;
+    file_location_t *fbh;
 
     zip_name = archive_name(a);
     zip_index = index;
@@ -310,8 +310,8 @@ fix_save_needed(archive_t *a, int index, int copy)
 	}
     }
 
-    fbh = file_by_hash_new(zip_name, zip_index);
-    map_add(needed_map, file_by_hash_default_hashtype(TYPE_ROM),
+    fbh = file_location_new(zip_name, zip_index);
+    map_add(needed_map, file_location_default_hashtype(TYPE_ROM),
 	    rom_hashes(archive_file(a, index)), fbh);
 
     free(tmp);

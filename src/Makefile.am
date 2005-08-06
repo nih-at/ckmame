@@ -31,9 +31,9 @@ libckmame_a_SOURCES= \
 	disk_get_info.c \
 	disk_new.c \
 	error.c \
-	file_by_hash.c \
-	file_by_hash_finalize.c \
-	file_by_hash_make_key.c \
+	file_location.c \
+	file_location_finalize.c \
+	file_location_make_key.c \
 	file_status.c \
 	filetype_db_key.c \
 	find.c \
@@ -90,7 +90,7 @@ noinst_HEADERS=\
 	dir.h \
 	disk.h \
 	error.h \
-	file_by_hash.h \
+	file_location.h \
 	file_status.h \
 	find.h \
 	funcs.h \
