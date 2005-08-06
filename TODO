@@ -4,8 +4,11 @@ tests:
 - get missing disks from extra dirs
 * sample test
 * dumpgame
-* XML parsing
 * mkmamedb tests
+  * XML parsing
+  * /prog from command line
+  * /prog from file
+  * broken input
 
 other:
 - read games to check from file or stdin
@@ -36,9 +39,9 @@ regression tests for disk: different crc types, version 2
 "fix" superfluous files by moving them to a subdir
 use ROM_NOCRC for samples match quality
 
+mkmamedb: handle disk without md5
+mkmamedb: handle rom without crc
 mkmamedb: no error message for missing newline in last line
-
-mkmamedb: correct inconsistencies in input db (parent not found)
 
 use return value of w_game
 option to force fixing parents
