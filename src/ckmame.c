@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.4.2.5 2005/07/31 21:13:01 dillo Exp $
+  $NiH: ckmame.c,v 1.4.2.6 2005/08/06 20:00:34 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -131,7 +131,7 @@ int fix_options;
 int ignore_extra;
 int romhashtypes, diskhashtypes;
 parray_t *superfluous;
-parray_t *extra_dirs;
+parray_t *search_dirs;
 filetype_t file_type;
 DB *db;
 
@@ -157,7 +157,7 @@ main(int argc, char **argv)
     fix_options = FIX_KEEP_LONG | FIX_KEEP_UNKNOWN;
     ignore_extra = 0;
     integrity = 0;
-    extra_dirs = parray_new();
+    search_dirs = parray_new();
     
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -184,7 +184,7 @@ main(int argc, char **argv)
 	    output_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
 	case 'e':
-	    parray_push(extra_dirs, xstrdup(optarg));
+	    parray_push(search_dirs, xstrdup(optarg));
 	    break;
 	case 'F':
 	    fix_options |= FIX_DO;
@@ -259,8 +259,8 @@ main(int argc, char **argv)
 	    exit(1);
 	}
 	
-	superfluous = find_extra_files(dbname);
-	print_extra_files(superfluous);
+	superfluous = find_superfluous(dbname);
+	print_superfluous(superfluous);
 	exit(0);
     }
 
@@ -305,7 +305,7 @@ main(int argc, char **argv)
 
     parray_free(list, free);
 
-    superfluous = find_extra_files(dbname);
+    superfluous = find_superfluous(dbname);
 
     tree_traverse(tree, NULL, NULL);
 

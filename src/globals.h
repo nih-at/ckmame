@@ -11,7 +11,7 @@ extern DB *db;
 extern char *rompath[];
 extern char *need_dir;
 
-extern parray_t *extra_dirs;
+extern parray_t *search_dirs;
 
 extern map_t *extra_disk_map;
 extern map_t *extra_file_map;
