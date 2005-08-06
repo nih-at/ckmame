@@ -18,6 +18,8 @@ other:
 - make parse_cm table driven
 - parse: check for duplicate attributes
 - check romcmp (bestbaddump)
+- tool for generating update sets from ckmame output and existing romset
+- tool for generating update sets from two databases and existing romset
 
 add support for native db3/db4
 add support for fname==NULL and foreach to gdbm
