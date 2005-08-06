@@ -1,11 +1,11 @@
 tests:
-- get missing roms from extra dirs
 - disk renames
 - get missing disks from superfluous
 - get missing disks from extra dirs
 * sample test
 * dumpgame
 * XML parsing
+* mkmamedb tests
 
 other:
 - read games to check from file or stdin
@@ -21,20 +21,19 @@ other:
 - tool for generating update sets from ckmame output and existing romset
 - tool for generating update sets from two databases and existing romset
 - find out why runtest is slow
+- split util*, funcs.h
 
 add support for native db3/db4
 add support for fname==NULL and foreach to gdbm
-parse: move state handling to parse-cm.c
+parse: add state checking to parse-cm.c
 
 -cd: do not print a line for each rom that is correct in sets that have nodump roms
 
 automatically fix renamed disks
-automatically fix superfluous zips that have been renamed
 add option to check integrity for roms only (not for disks, they take forever)
 integrity check: remember which disks have already been checked (only check once each)
-support disks with parents
 regression tests for disk: different crc types, version 2
-"fix" extra files by moving them to a subdir
+"fix" superfluous files by moving them to a subdir
 use ROM_NOCRC for samples match quality
 
 mkmamedb: no error message for missing newline in last line
@@ -51,3 +50,4 @@ get roms from a different location to fix sets
 fix all XXXs
 
 init rom structure for files from zips
+support disks with parents
