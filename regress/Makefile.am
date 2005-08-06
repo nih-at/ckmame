@@ -42,6 +42,8 @@ TESTCASES=	baddump.test \
 		ok.test \
 		punknown.test \
 		punused.test \
+		search-keep.test \
+		search-remove.test \
 		skipbad.test \
 		superfluous.test \
 		tochildfix.test \
