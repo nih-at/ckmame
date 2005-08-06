@@ -1,0 +1,10 @@
+# $NiH$
+
+game (
+	name clone-8
+	description "two roms, one in parent"
+	manufacturer "synth"
+	year 1992
+	rom ( name 04.rom merge 04.rom size 4 crc32 d87f7e0c )
+	rom ( name 08.rom size 8 crc32 3656897d )
+)
