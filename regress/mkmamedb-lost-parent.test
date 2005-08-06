@@ -1,8 +1,8 @@
-# $NiH$
+# $NiH: mkmamedb-lost-parent.test,v 1.1.2.1 2005/08/06 22:11:57 wiz Exp $
 description test mkmamedb database creation, parent missing
 return 0
 program mkmamedb
 args -o mkmamedb-test.db mamedb.txt
 file mamedb.txt mamedb-lost-parent.txt mamedb-lost-parent.txt
 file-new mkmamedb-test.db mkmamedb-lost-parent.dump
-error inconsistency: clone-8 has non-existent parent parent-4
+stderr inconsistency: clone-8 has non-existent parent parent-4

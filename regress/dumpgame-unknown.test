@@ -1,6 +1,6 @@
-# $NiH$
+# $NiH: dumpgame-unknown.test,v 1.1.2.1 2005/08/06 22:03:39 wiz Exp $
 description test dumpgame: unknown game given on command line
 return 0
 program dumpgame
 args -D mame.db nosuchgame
-error game `nosuchgame' unknown
+stderr game `nosuchgame' unknown

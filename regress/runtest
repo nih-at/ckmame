@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.17.2.7 2005/08/06 19:54:39 wiz Exp $
+#  $NiH: runtest,v 1.17.2.8 2005/08/06 21:41:31 wiz Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -49,11 +49,6 @@
 #	    check that file TEST is created by ckmame and compare
 #	    against OUT.
 #
-#	error TEXT
-#	    ckmame is expected to produce the error message TEXT.  If
-#	    multiple error commands are used, the messages are
-#	    expected in the order given.
-#
 #	mkdir MODE NAME
 #	    create directory NAME with permissions MODE.
 #
@@ -62,6 +57,11 @@
 #
 #	return RET
 #	    RET is the expected exit code
+#
+#	stderr TEXT
+#	    ckmame is expected to produce the error message TEXT.  If
+#	    multiple stderr commands are used, the messages are
+#	    expected in the order given.
 #
 #	stdout TEXT
 #	    ckmame is expected print TEXT to stdout.  If multiple
@@ -248,7 +248,7 @@ DESCR=''
 
 mkdir roms
 
-touch errors stdout
+touch stderr stdout
 
 while read cmd arg
 do
@@ -260,8 +260,6 @@ do
   description)
     test_empty "${DESCR}" description
     DESCR="$arg";;
-  error)
-    echo "${PROGRAM}: $arg" >> errors;;
   file)
     set $arg
     copy_file "${srcdir}/$2" "$1"
@@ -280,6 +278,8 @@ do
   return)
     test_empty "${RET}" return
     RET="$arg";;
+  stderr)
+    echo "${PROGRAM}: $arg" >> stderr;;
   stdout)
     echo "$arg" >> stdout;;
   *)
@@ -322,9 +322,9 @@ then
     fail "unexpected exit status: got $ret, expected ${RET}"
 fi
 
-FILES_SHOULD="${FILES_SHOULD} errors stdout gotout goterr ${MAME_DB}"
+FILES_SHOULD="${FILES_SHOULD} stderr stdout gotout goterr ${MAME_DB}"
 
-checkfile errors goterr "unexpected error output"
+checkfile stderr goterr "unexpected error output"
 checkfile stdout gotout "unexpected output"
 
 if [ ! -z "${FILES}" ]

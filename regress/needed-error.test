@@ -1,4 +1,4 @@
-# $NiH: needed-error.test,v 1.1.2.1 2005/07/31 21:14:58 dillo Exp $
+# $NiH: needed-error.test,v 1.1.2.2 2005/08/06 19:54:39 wiz Exp $
 description zip contains file needed elsewhere, creating needed archive fails
 return 0
 args -FKLvc 1-4
@@ -10,4 +10,4 @@ stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/disk.zip'
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
 stdout ./roms/1-4.zip: save needed file `08.rom'
 stdout ./roms/1-4.zip: add `./roms/disk.zip/04.rom' as `04.rom'
-error needed/3656897d-000.zip: error closing: Permission denied
+stderr needed/3656897d-000.zip: error closing: Permission denied
