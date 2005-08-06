@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.17.2.6 2005/08/06 19:12:58 wiz Exp $
+#  $NiH: runtest,v 1.17.2.7 2005/08/06 19:54:39 wiz Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -121,43 +121,49 @@ cleanup() {
 	fi
 }
 
-checkfile() {
+check_in_out_exists() {
     if [ ! -f "$2" ]
     then
 	fail "missing output file: '$2'"
-    else
-	if [ ! -f "$1" ]
+    elif [ ! -f "$1" ]
+    then
+	die "cannot find input file '$1'"
+    fi
+}
+
+checkdb() {
+    check_in_out_exists "$1" "$2"
+    out=`../dbdump "$2" | sort | diff ${DIFF_FLAGS} "$1" -`
+    if [ $? -ne 0 ]
+    then
+	if [ $VERBOSE ]
 	then
-	    die "cannot find input file $1"
+	    echo "$out"
 	fi
-	
-	diff "$1" "$2" > /dev/null
-	if [ $? -ne 0 ]
+	fail "$3"
+    fi
+
+}
+
+checkfile() {
+    check_in_out_exists "$1" "$2"
+    out=`diff ${DIFF_FLAGS} "$1" "$2"`
+    if [ $? -ne 0 ]
+    then
+	if [ $VERBOSE ]
 	then
-	    if [ ! -z "${VERBOSE}" ]
-	    then
-		diff -u "$1" "$2"
-	    fi
-	    fail "$3"
+	    echo "$out"
 	fi
+	fail "$3"
     fi
 }
 
 checkzip() {
-    if [ ! -f "$2" ]
+    check_in_out_exists "$1" "$2"
+    ${ZIPCMP} -t ${ZIPCMP_FLAGS} "$1" "$2"
+    if [ $? -ne 0 ]
     then
-	fail "missing output file: '$2'"
-    else
-	if [ ! -f "$1" ]
-	then
-	    die "cannot find input file $1"
-	fi
-	
-	${ZIPCMP} -t ${ZIPCMP_FLAGS} "$1" "$2"
-	if [ $? -ne 0 ]
-	then
-	    fail "$3"
-	fi
+	fail "$3"
     fi
 }
 
@@ -220,8 +226,10 @@ fi
 
 if [ -z "${VERBOSE}" ]
 then
+    DIFF_FLAGS='-q'
     ZIPCMP_FLAGS='-q'
 else
+    DIFF_FLAGS='-u'
     ZIPCMP_FLAGS='-v'
 fi
 
@@ -248,7 +256,7 @@ do
   \#*) ;;
   args)
     test_empty "${ARGS}" args
-    ARGS="-D ${MAME_DB} $arg";;
+    ARGS="$arg";;
   description)
     test_empty "${DESCR}" description
     DESCR="$arg";;
@@ -290,11 +298,17 @@ then
     exit 0
 fi
 
+if [ "${PROGRAM}" = "../../src/ckmame" ]
+then
+    ARGS="-D ${MAME_DB} ${ARGS}"
+fi
+
 if [ ! -z "${VERBOSE}" ]
 then
 	echo "${TEST}: ${DESCR}"
 	echo "running: ${PROGRAM} ${ARGS}"
 fi
+
 ${PROGRAM} ${ARGS} > gotout 2> goterr
 ret=$?
 
@@ -319,7 +333,9 @@ then
     do
         set -- `echo ${fs} | tr '!' ' '`
 	FILES_SHOULD="${FILES_SHOULD} $2"
-	case "$1" in
+	case "$2" in
+	*.db)
+	    checkdb "$1" "$2" "database $2 wrong";;
 	*.zip)
 	    checkzip "$1" "$2" "zip file $2 wrong";;
 	*)

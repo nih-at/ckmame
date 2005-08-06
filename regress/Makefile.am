@@ -1,3 +1,8 @@
+noinst_PROGRAMS=	dbdump
+AM_CFLAGS=		-I${srcdir}/../src \
+			 -DDDB_INCLUDE=\"db-@DBTYPE@.h\"
+dbdump_LDADD=		${srcdir}/../src/libckmame.a @DBLIBS@
+
 EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS} ${CHDS}
 
 CLEANFILES=${MAME_DB}
@@ -30,6 +35,7 @@ TESTCASES=	baddump.test \
 		hasherr-pc.test \
 		mid.test \
 		misnamed.test \
+		mkmamedb-ok.test \
 		multi.test \
 		needed.test \
 		needed2.test \
