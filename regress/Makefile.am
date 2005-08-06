@@ -36,6 +36,7 @@ TESTCASES=	baddump.test \
 		hasherr-pc.test \
 		mid.test \
 		misnamed.test \
+		mkmamedb-lost-parent.test \
 		mkmamedb-ok.test \
 		multi.test \
 		needed.test \
