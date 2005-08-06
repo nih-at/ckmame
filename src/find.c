@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.1.2.2 2005/07/31 09:21:44 dillo Exp $
+  $NiH: find.c,v 1.1.2.3 2005/08/06 17:00:11 wiz Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -38,7 +38,7 @@ find_result_t
 find_in_archives(map_t *map, const rom_t *r, match_t *m)
 {
     parray_t *pa;
-    file_location_t *fbh;
+    file_location_ext_t *fbh;
     archive_t *a;
     int i;
 
@@ -49,17 +49,18 @@ find_in_archives(map_t *map, const rom_t *r, match_t *m)
     for (i=0; i<parray_length(pa); i++) {
 	fbh = parray_get(pa, i);
 
-	if ((a=archive_new(file_location_name(fbh),
+	if ((a=archive_new(file_location_ext_name(fbh),
 			   TYPE_FULL_PATH, 0)) == NULL) {
 	    /* XXX: internal error */
 	    return FIND_ERROR;
 	}
 
-	switch (archive_file_compare_hashes(a, file_location_index(fbh),
+	switch (archive_file_compare_hashes(a, file_location_ext_index(fbh),
 					    rom_hashes(r))) {
 	case HASHES_CMP_MATCH:
 	    m->archive = a;
-	    m->index = file_location_index(fbh);
+	    m->index = file_location_ext_index(fbh);
+	    m->where = file_location_ext_where(fbh);
 	    m->quality = QU_COPIED;
 	    return FIND_EXISTS;
 
@@ -112,8 +113,10 @@ find_in_romset(const rom_t *r, const char *skip, match_t *m)
 
 	if (hashes_cmp(rom_hashes(r), rom_hashes(gr)) == HASHES_CMP_MATCH) {
 	    status = check_for_file_in_zip(game_name(g), gr, m);
-	    if (status == FIND_EXISTS)
+	    if (status == FIND_EXISTS) {
 		m->quality = QU_COPIED;
+		m->where = ROM_ROMSET;
+	    }
 	}
 
 	game_free(g);

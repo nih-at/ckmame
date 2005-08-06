@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.6 2005/08/02 18:25:05 dillo Exp $
+  $NiH: util2.c,v 1.1.2.7 2005/08/06 17:00:12 wiz Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -107,7 +107,7 @@ ensure_extra_file_map(void)
 	    continue;
 
 	if ((a=archive_new(file, TYPE_FULL_PATH, 0)) != NULL) {
-	    enter_archive_in_map(extra_file_map, a);
+	    enter_archive_in_map(extra_file_map, a, ROM_SUPERFLUOUS);
 	    archive_free(a);
 	}
     }
@@ -135,7 +135,7 @@ ensure_needed_map(void)
 	/* XXX: handle error */
 
 	if ((a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
-	    enter_archive_in_map(needed_map, a);
+	    enter_archive_in_map(needed_map, a, ROM_NEEDED);
 	    archive_free(a);
 	}
     }
@@ -146,14 +146,14 @@ ensure_needed_map(void)
 
 
 void
-enter_archive_in_map(map_t *map, const archive_t *a)
+enter_archive_in_map(map_t *map, const archive_t *a, where_t where)
 {
     int i;
 
     for (i=0; i<archive_num_files(a); i++)
 	map_add(map, file_location_default_hashtype(TYPE_ROM),
 		rom_hashes(archive_file(a, i)),
-		file_location_new(archive_name(a), i));
+		file_location_ext_new(archive_name(a), i, where));
 }
 
 

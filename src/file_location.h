@@ -2,7 +2,7 @@
 #define HAD_FILE_LOCATION_H
 
 /*
-  $NiH$
+  $NiH: file_location.h,v 1.1.2.1 2005/08/06 17:00:11 wiz Exp $
 
   file_location.h -- location of a file
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -58,5 +58,12 @@ int file_location_cmp(const file_location_t *, const file_location_t *);
 void file_location_free(file_location_t *);
 void file_location_finalize(file_location_t *);
 file_location_t *file_location_new(const char *, int);
+
+#define file_location_ext_name(a)	((a)->name)
+#define file_location_ext_index(a)	((a)->index)
+#define file_location_ext_where(a)	((a)->where)
+
+void file_location_ext_free(file_location_ext_t *);
+file_location_ext_t *file_location_ext_new(const char *, int, where_t);
 
 #endif /* file_location.h */

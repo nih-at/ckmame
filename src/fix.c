@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.9 2005/08/01 22:39:37 wiz Exp $
+  $NiH: fix.c,v 1.2.2.10 2005/08/06 17:00:11 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -236,7 +236,10 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 			    archive_name(afrom), zip_strerror(zto));
 		}
 		else {
-		    if (match_where(m) == ROM_NEEDED)
+		    if (match_where(m) == ROM_NEEDED
+			|| match_where(m) == ROM_SUPERFLUOUS
+			|| (match_where(m) == ROM_EXTRA
+			    && (fix_options & FIX_DELETE_EXTRA)))
 			delete_list_add(needed_delete_list,
 					archive_name(afrom), match_index(m));
 		}
@@ -269,7 +272,7 @@ fix_save_needed(archive_t *a, int index, int copy)
     int ret, zip_index;
     struct zip *zto;
     struct zip_source *source;
-    file_location_t *fbh;
+    file_location_ext_t *fbh;
 
     zip_name = archive_name(a);
     zip_index = index;
@@ -310,7 +313,7 @@ fix_save_needed(archive_t *a, int index, int copy)
 	}
     }
 
-    fbh = file_location_new(zip_name, zip_index);
+    fbh = file_location_ext_new(zip_name, zip_index, ROM_NEEDED);
     map_add(needed_map, file_location_default_hashtype(TYPE_ROM),
 	    rom_hashes(archive_file(a, index)), fbh);
 
