@@ -1,11 +1,11 @@
-# $NiH$
+# $NiH: from-needed2.test,v 1.1.2.1 2005/08/01 01:56:47 wiz Exp $
 description integrity test, file is wrong, correct and wrong roms in needed
 return 0
 args -FKLivc deadbeef
-rom deadpork.zip deadbeef.zip deadbeef.zip
-needed deadfish.zip deadbeef-000.zip deadfish.zip
-needed-del deadbeef.zip deadbeef-001.zip
-garbage deadbeef.zip deadpork.zip
+file roms/deadbeef.zip deadpork.zip deadbeef.zip
+file needed/deadbeef-000.zip deadfish.zip deadfish.zip
+file-del needed/deadbeef-001.zip deadbeef.zip
+file-new roms/garbage/deadbeef.zip deadpork.zip
 stdout In game deadbeef:
 stdout rom  deadbeef      size       8  crc deadbeef: is in `needed/deadbeef-001.zip'
 stdout file deadpork      size       8  crc deadbeef: unknown

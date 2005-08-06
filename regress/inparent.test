@@ -1,7 +1,7 @@
-# $NiH: inparent.test,v 1.2.2.3 2005/07/31 14:02:20 wiz Exp $
+# $NiH: inparent.test,v 1.2.2.4 2005/07/31 17:40:22 wiz Exp $
 description test 2-rom game (1 in parent), both roms in parent
 return 0
 args -cFKLv clone-8
-rom 2-48-ok.zip parent-4.zip 2-48-ok.zip
+file roms/parent-4.zip 2-48-ok.zip 2-48-ok.zip
 stdout In game clone-8:
 stdout game clone-8                                 : not a single rom found

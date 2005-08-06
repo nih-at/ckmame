@@ -1,9 +1,9 @@
-# $NiH: disk-noext.test,v 1.1.2.1 2005/07/31 14:02:20 wiz Exp $
+# $NiH: disk-noext.test,v 1.1.2.2 2005/07/31 17:40:22 wiz Exp $
 description test single-rom game with disk, both are correct
 return 0
 args -FKLivc disk
-rom 1-4-ok.zip disk.zip 1-4-ok.zip
-disk 108-5.chd 108-5
+file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
+file roms/108-5 108-5.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct

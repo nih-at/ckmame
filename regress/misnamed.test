@@ -1,8 +1,8 @@
-# $NiH: misnamed.test,v 1.2.2.3 2005/07/31 14:02:20 wiz Exp $
+# $NiH: misnamed.test,v 1.2.2.4 2005/07/31 17:40:22 wiz Exp $
 description test single-rom game (no parent), rom has wrong name
 return 0
 args -FKLvc 1-4
-rom 1-4-misnamed.zip 1-4.zip 1-4-ok.zip
+file roms/1-4.zip 1-4-misnamed.zip 1-4-ok.zip
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: wrong name (04)
 stdout ./roms/1-4.zip: rename `04' to `04.rom'

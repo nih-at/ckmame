@@ -1,9 +1,9 @@
-# $NiH: needed.test,v 1.1.2.4 2005/07/31 14:02:20 wiz Exp $
+# $NiH: needed.test,v 1.1.2.5 2005/07/31 17:40:22 wiz Exp $
 description test single-rom game (no parent), zip contains file needed elsewhere, fix
 return 0
 args -FKLvc 1-4
-rom 2-48-ok.zip 1-4.zip 1-4-ok.zip
-needed-new 3656897d-000.zip 1-8-ok.zip
+file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
+file-new needed/3656897d-000.zip 1-8-ok.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere

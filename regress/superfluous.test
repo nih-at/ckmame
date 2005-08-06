@@ -1,10 +1,10 @@
-# $NiH: superfluous.test,v 1.2.2.1 2005/07/31 14:02:20 wiz Exp $
+# $NiH: superfluous.test,v 1.2.2.2 2005/07/31 17:40:23 wiz Exp $
 description test reporting superfluous files
 return 0
 args -FKLvc --superfluous
-rom 1-4-ok.zip foo.zip 1-4-ok.zip
-disk 108-5.chd 1-8.chd
-disk 108-5.chd 1-4
+file roms/foo.zip 1-4-ok.zip 1-4-ok.zip
+file roms/1-8.chd 108-5.chd 108-5.chd
+file roms/1-4 108-5.chd 108-5.chd
 stdout Extra files found:
 stdout ./roms/1-4
 stdout ./roms/1-8.chd

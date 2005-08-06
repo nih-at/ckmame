@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.17.2.5 2005/08/01 01:56:09 wiz Exp $
+#  $NiH: runtest,v 1.17.2.6 2005/08/06 19:12:58 wiz Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -39,55 +39,35 @@
 #	description TEXT
 #	    description of what test is for
 #
-#	disk IN TEST
-#	    link chd file IN into roms directory with name TEST.
+#	file TEST IN OUT
+#	    copy file IN as TEST, compare against OUT after ckmame run.
+#
+#	file-del TEST IN
+#	    copy file IN as TEST, check that it is removed by ckmame.
+#
+#	file-new TEST OUT
+#	    check that file TEST is created by ckmame and compare
+#	    against OUT.
 #
 #	error TEXT
 #	    ckmame is expected to produce the error message TEXT.  If
 #	    multiple error commands are used, the messages are
 #	    expected in the order given.
 #
-#	garbage CREATED-FILE EXPECTED-FILE
-#	    check that CREATED-FILE has been created in garbage
-#	    directory and equals EXPECTED-FILE.
-#
 #	mkdir MODE NAME
 #	    create directory NAME with permissions MODE.
 #
-#	needed IN TEST OUT
-#	    link zip archive IN into needed directory with name TEST,
-#	    check against OUT after ckmame has run.
-#
-#	needed-del IN TEST
-#	    link zip archive IN into needed directory with name TEST,
-#	    check that it is deleted.
-#
-#	needed-new CREATED EXPECTED
-#	    check that CREATED has been created in needed directory and
-#	    equals EXPECTED.
+#	program PRG
+#	    run PRG instead of ckmame.
 #
 #	return RET
 #	    RET is the expected exit code
-#
-#	rom IN TEST OUT
-#	    link zip file IN into roms directory with name TEST, check
-#	    against OUT after ckmame has run.
-#
-#	rom-del IN TEST
-#	    link zip file IN into roms directory with name TEST, check
-#	    that it is deleted.
-#
-#	rom-new CREATED EXPECTED
-#	    check that CREATED has been created in roms directory and
-#	    equals EXPECTED.
 #
 #	stdout TEXT
 #	    ckmame is expected print TEXT to stdout.  If multiple
 #	    stdout commands are used, the messages are expected in
 #	    the order given. 
 #   
-#	XXX: allow for creation of rom files and existing garbage files
-#
 # exit status
 #	runtest uses the following exit codes:
 #	    0: test passed
@@ -195,6 +175,20 @@ test_set() {
     fi
 }
 
+copy_file() {
+    if [ ! -f "$1" ]
+    then
+	die "source file '$1' does not exist"
+    fi
+    dir=`dirname "$2"`
+    if [ ! -d "$dir" ]
+    then
+	mkdir -p "$dir"
+    fi
+    cp "$1" "$2"
+}
+
+
 TEST=`echo $1 | sed 's/\.test$//'`
 shift
 
@@ -207,12 +201,7 @@ else
 	srcdir=../${srcdir}
 fi
 
-if [ -z "${CKMAME}" ]
-then
-    PROGRAM=../../src/ckmame
-else
-    PROGRAM="${CKMAME}"
-fi
+PROGRAM=../../src/ckmame
 
 if [ -z "${ZIPCMP}" ]
 then
@@ -257,62 +246,34 @@ while read cmd arg
 do
   case $cmd in
   \#*) ;;
-  return)
-    test_empty "${RET}" return
-    RET="$arg";;
-  description)
-    test_empty "${DESCR}" description
-    DESCR="$arg";;
   args)
     test_empty "${ARGS}" args
     ARGS="-D ${MAME_DB} $arg";;
-  rom)
-    set $arg
-    # XXX: check that $1 exists
-    cp "${srcdir}/$1" "roms/$2"
-    FILES="${FILES} ${srcdir}/$3!roms/$2";;
-  rom-new)
-    set $arg
-    FILES="${FILES} ${srcdir}/$2!roms/$1";;
-  rom-del)
-    set $arg
-    # XXX: check that $1 exists
-    cp "${srcdir}/$1" "roms/$2";;
-  garbage)
-    set $arg
-    FILES="${FILES} ${srcdir}/$2!roms/garbage/$1";;
-  needed)
-    set $arg
-    if [ ! -d needed ]
-    then
-	mkdir needed
-    fi
-    # XXX: check that $1 exists
-    cp "${srcdir}/$1" "needed/$2"
-    FILES="${FILES} ${srcdir}/$3!needed/$2";;
-  needed-new)
-    set $arg
-    FILES="${FILES} ${srcdir}/$2!needed/$1";;
-  needed-del)
-    set $arg
-    # XXX: check that $1 exists
-    if [ ! -d needed ]
-    then
-	mkdir needed
-    fi
-    cp "${srcdir}/$1" "needed/$2";;
-  disk)
-    set $arg
-    # XXX: check that $1 exists
-    cp "${srcdir}/$1" "roms/$2"
-    FILES_SHOULD="${FILES_SHOULD} roms/$2";;
-  stdout)
-    echo "$arg" >> stdout;;
+  description)
+    test_empty "${DESCR}" description
+    DESCR="$arg";;
   error)
     echo "${PROGRAM}: $arg" >> errors;;
+  file)
+    set $arg
+    copy_file "${srcdir}/$2" "$1"
+    FILES="${FILES} ${srcdir}/$3!$1";;
+  file-del)
+    set $arg
+    copy_file "${srcdir}/$2" "$1";;
+  file-new)
+    set $arg
+    FILES="${FILES} ${srcdir}/$2!$1";;
   mkdir)
     set $arg
     mkdir "$2" && chmod "$1" "$2";;
+  program)
+    PROGRAM=../../src/"$arg";;
+  return)
+    test_empty "${RET}" return
+    RET="$arg";;
+  stdout)
+    echo "$arg" >> stdout;;
   *)
     die "unknown directive '$cmd'"
   esac
@@ -358,11 +319,16 @@ then
     do
         set -- `echo ${fs} | tr '!' ' '`
 	FILES_SHOULD="${FILES_SHOULD} $2"
-	checkzip $1 $2 "zip file $2 wrong"
+	case "$1" in
+	*.zip)
+	    checkzip "$1" "$2" "zip file $2 wrong";;
+	*)
+	    checkfile "$1" "$2" "file $2 wrong";;
+	esac 
     done
 fi
 
-# XXX: check that no additional files exist
+# check that no additional files exist
 echo gotfiles shouldfiles ${FILES_SHOULD} | tr ' ' '\012' | sort > shouldfiles
 touch gotfiles
 find . -type f -print | sed 's!^./!!' | sort > gotfiles

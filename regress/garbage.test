@@ -1,9 +1,9 @@
-# $NiH: garbage.test,v 1.2.2.4 2005/07/31 14:02:20 wiz Exp $
+# $NiH: garbage.test,v 1.2.2.5 2005/07/31 17:40:22 wiz Exp $
 description test single-rom game (no parent), zip contains garbage, fix
 return 0
 args -FKLvc 1-4
-rom 1-4-garbage.zip 1-4.zip 1-4-ok.zip
-garbage 1-4.zip garbage.zip
+file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
+file-new roms/garbage/1-4.zip garbage.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout file garbage       size       8  crc 01888242: unknown

@@ -1,10 +1,10 @@
-# $NiH$
+# $NiH: needed3.test,v 1.1.2.1 2005/08/01 01:56:47 wiz Exp $
 description check, zip contains file needed elsewhere, fix, different needed already exists
 return 0
 args -FKLivc 1-4
-rom-del deadbeef.zip 1-4.zip
-needed deadpork.zip deadbeef-000.zip deadpork.zip
-needed-new deadbeef-001.zip deadbeef.zip
+file-del roms/1-4.zip deadbeef.zip
+file needed/deadbeef-000.zip deadpork.zip deadpork.zip
+file-new needed/deadbeef-001.zip deadbeef.zip
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found
 stdout file deadbeef      size       8  crc deadbeef: needed elsewhere

@@ -1,9 +1,9 @@
-# $NiH: tochildfix.test,v 1.1.2.5 2005/07/31 17:40:23 wiz Exp $
+# $NiH: tochildfix.test,v 1.1.2.6 2005/08/01 01:56:09 wiz Exp $
 description move file from parent to clone (via needed)
 return 0
 args -FKLcv parent-4 clone-8
-rom 2-48-ok.zip parent-4.zip 1-4-ok.zip
-rom-new clone-8.zip 1-8-ok.zip
+file roms/parent-4.zip 2-48-ok.zip 1-4-ok.zip
+file-new roms/clone-8.zip 1-8-ok.zip
 stdout In game parent-4:
 stdout game parent-4                                : correct
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere

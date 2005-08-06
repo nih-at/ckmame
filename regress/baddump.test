@@ -1,7 +1,7 @@
-# $NiH: baddump.test,v 1.1.2.2 2005/07/31 14:02:20 wiz Exp $
+# $NiH: baddump.test,v 1.1.2.3 2005/07/31 17:40:22 wiz Exp $
 description test single-rom game with bad dump
 return 0
 args -FKLvc baddump
-rom 1-4-ok.zip baddump.zip 1-4-ok.zip
+file roms/baddump.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game baddump:
 stdout game baddump                                 : correct

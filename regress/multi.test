@@ -1,9 +1,9 @@
-# $NiH: multi.test,v 1.1.2.5 2005/07/31 14:02:20 wiz Exp $
+# $NiH: multi.test,v 1.1.2.6 2005/07/31 17:40:22 wiz Exp $
 description test two single-rom games (no parent), both with unused files
 return 0
 args -FKLvc 1-4 1-8
-rom 2-48-ok.zip 1-4.zip 1-4-ok.zip
-rom 2-48-ok.zip 1-8.zip 1-8-ok.zip
+file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
+file roms/1-8.zip 2-48-ok.zip 1-8-ok.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout file 08.rom        size       8  crc 3656897d: not used

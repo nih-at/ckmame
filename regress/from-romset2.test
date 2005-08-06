@@ -1,10 +1,10 @@
-# $NiH$
+# $NiH: from-romset2.test,v 1.1.2.1 2005/08/01 01:56:09 wiz Exp $
 description integrity test parent, file is wrong, correct rom in romset
 return 0
 args -FKLivc deadbeef
-rom deadpork.zip deadbeef.zip deadbeef.zip
-rom deadclonedbeef.zip deadclonedbeef.zip deadclonedbeef.zip
-garbage deadbeef.zip deadpork.zip
+file roms/deadbeef.zip deadpork.zip deadbeef.zip
+file roms/deadclonedbeef.zip deadclonedbeef.zip deadclonedbeef.zip
+file-new roms/garbage/deadbeef.zip deadpork.zip
 stdout In game deadbeef:
 stdout rom  deadbeef      size       8  crc deadbeef: is in `./roms/deadclonedbeef.zip'
 stdout file deadpork      size       8  crc deadbeef: unknown

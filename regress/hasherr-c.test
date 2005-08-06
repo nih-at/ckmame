@@ -1,9 +1,9 @@
-# $NiH: hasherr-c.test,v 1.1.2.1 2005/07/31 17:39:32 wiz Exp $
+# $NiH: hasherr-c.test,v 1.1.2.2 2005/08/01 01:56:09 wiz Exp $
 description integrity test child, wrong file in child
 return 0
 args -FKLivc deadbeefchild
-rom deadfish4.zip deadbeefchild.zip 1-4-ok.zip
-garbage deadbeefchild.zip deadfish.zip
+file roms/deadbeefchild.zip deadfish4.zip 1-4-ok.zip
+file-new roms/garbage/deadbeefchild.zip deadfish.zip
 stdout In game deadbeefchild:
 stdout rom  deadbeef      size       8  crc deadbeef: checksum mismatch, should be in cloneof
 stdout rom  04.rom        size       4  crc d87f7e0c: correct

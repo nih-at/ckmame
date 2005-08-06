@@ -1,9 +1,9 @@
-# $NiH: disk-nogood.test,v 1.1.2.1 2005/07/31 14:02:20 wiz Exp $
+# $NiH: disk-nogood.test,v 1.1.2.2 2005/07/31 17:40:22 wiz Exp $
 description test single-rom game with no good dump disk, both are correct
 return 0
 args -FKLivc disk-nogood
-rom 1-4-ok.zip disk-nogood.zip 1-4-ok.zip
-disk 108-5.chd 108-5.chd
+file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
+file roms/108-5.chd 108-5.chd 108-5.chd
 stdout In game disk-nogood:
 stdout game disk-nogood                             : correct
 stdout disk 108-5         no good dump              : exists
