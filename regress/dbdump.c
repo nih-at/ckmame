@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: dbdump.c,v 1.1.2.1 2005/08/06 21:41:31 wiz Exp $
 
   dbdump.c -- print contents of db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -39,7 +39,7 @@ int bufsize;
 int
 dump(const DBT *key, const DBT *value, void *ud)
 {
-    if (value->size > bufsize) {
+    if (value->size*2+1 > bufsize) {
 	bufsize = value->size*2+1;
 	buf = xrealloc(buf, bufsize);
     }
