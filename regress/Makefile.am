@@ -20,6 +20,7 @@ TESTCASES=	baddump.test \
 		disk-ok.test \
 		disk-wrong.test \
 		double.test \
+		dumpgame-unknown.test \
 		from-needed.test \
 		from-needed2.test \
 		from-romset.test \

@@ -1,0 +1,6 @@
+# $NiH$
+description test dumpgame: unknown game given on command line
+return 0
+program dumpgame
+args -D mame.db nosuchgame
+error game `nosuchgame' unknown
