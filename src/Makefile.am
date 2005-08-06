@@ -54,6 +54,7 @@ libckmame_a_SOURCES= \
 	parray_delete.c \
 	parray_index_sorted.c \
 	parray_new_from_data.c \
+	parray_pop.c \
 	parray_push.c \
 	parray_set_length.c \
 	parray_sort_real.c \

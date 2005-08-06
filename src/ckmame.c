@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.4.2.4 2005/07/31 14:02:20 wiz Exp $
+  $NiH: ckmame.c,v 1.4.2.5 2005/07/31 21:13:01 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -49,7 +49,7 @@
 
 char *prg;
 
-char *usage = "Usage: %s [-hVSwsfbdcFKkLlvn] [-D dbfile] [game...]\n";
+char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-e dir] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -58,10 +58,13 @@ char help[] = "\n"
 "  -c, --correct        report correct sets\n"
 "  -D, --db dbfile      use mame-db dbfile\n"
 "  -d, --nonogooddumps  don't report roms with no good dumps\n"
+"  -e, --search dir     search for missing files in directory dir\n"
 "  -F, --fix            fix rom sets\n"
 "  -f, --nofixable      don't report fixable errors\n"
 "  -h, --help           display this help message\n"
 "  -i, --integrity      check integrity of rom files and disk images\n"
+"      --keep-found     keep files copied from search directories (default)\n"
+"  -j, --delete-found   delete files copied from search directories\n"
 "  -K, --keep-unknown   keep unknown files when fixing (default)\n"
 "  -k, --delete-unknown don't keep unknown files when fixing\n"
 "  -L, --keep-long      keep long files when fixing (default)\n"
@@ -84,9 +87,12 @@ PACKAGE " under the terms of the GNU General Public License.\n"
 "For more information about these matters, see the files named COPYING.\n";
 
 /* XXX: remove Uu (also in long options) after next release */
-#define OPTIONS "bcD:dFfhiKkLlnSsxUuVvwX"
+#define OPTIONS "bcD:dE:e:FfhijKkLlnSsxUuVvwX"
 
-#define OPT_SF	256
+enum {
+    OPT_KEEP_FOUND = 256,
+    OPT_SUPERFLUOUS
+};
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
@@ -94,6 +100,7 @@ struct option options[] = {
 
     { "correct",       0, 0, 'c' }, /* +CORRECT */
     { "db",            1, 0, 'D' },
+    { "delete-found",  0, 0, 'j' },
     { "delete-long",   0, 0, 'l' },
     { "delete-unknown",0, 0, 'k' },
     { "delete-unused" ,0, 0, 'u' },
@@ -101,6 +108,8 @@ struct option options[] = {
     { "fix",           0, 0, 'F' },
     { "ignoreextra",   0, 0, 'X' },
     { "integrity",     0, 0, 'i' },
+    { "keep-found",    0, 0, OPT_KEEP_FOUND },
+    { "keep-extra",    0, 0, 'E' },
     { "keep-long",     0, 0, 'L' },
     { "keep-unknown",  0, 0, 'K' },
     { "keep-unused",   0, 0, 'U' },
@@ -110,7 +119,8 @@ struct option options[] = {
     { "nosuperfluous", 0, 0, 's' }, /* -SUP */
     { "nowarnings",    0, 0, 'w' }, /* -SUP, -FIX */
     { "samples",       0, 0, 'S' },
-    { "superfluous",   0, 0, OPT_SF },
+    { "search",        1, 0, 'e' },
+    { "superfluous",   0, 0, OPT_SUPERFLUOUS },
     { "verbose",       0, 0, 'v' },
 
     { NULL,            0, 0, 0 },
@@ -121,6 +131,7 @@ int fix_options;
 int ignore_extra;
 int romhashtypes, diskhashtypes;
 parray_t *superfluous;
+parray_t *extra_dirs;
 filetype_t file_type;
 DB *db;
 
@@ -146,6 +157,7 @@ main(int argc, char **argv)
     fix_options = FIX_KEEP_LONG | FIX_KEEP_UNKNOWN;
     ignore_extra = 0;
     integrity = 0;
+    extra_dirs = parray_new();
     
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -171,6 +183,9 @@ main(int argc, char **argv)
 	case 'd':
 	    output_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
+	case 'e':
+	    parray_push(extra_dirs, xstrdup(optarg));
+	    break;
 	case 'F':
 	    fix_options |= FIX_DO;
 	    break;
@@ -179,6 +194,9 @@ main(int argc, char **argv)
 	    break;
 	case 'i':
 	    integrity = 1;
+	    break;
+	case 'j':
+	    fix_options |= FIX_DELETE_EXTRA;
 	    break;
 	case 'K':
 	    fix_options |= FIX_KEEP_UNKNOWN;
@@ -217,7 +235,10 @@ main(int argc, char **argv)
 	case 'X':
 	    ignore_extra = 1;
 	    break;
-	case OPT_SF:
+	case OPT_KEEP_FOUND:
+	    fix_options &= ~FIX_DELETE_EXTRA;
+	    break;
+	case OPT_SUPERFLUOUS:
 	    superfluous_only = 1;
 	    break;
 

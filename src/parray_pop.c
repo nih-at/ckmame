@@ -1,10 +1,7 @@
-#ifndef HAD_DIR_H
-#define HAD_DIR_H
-
 /*
-  $NiH: dir.h,v 1.1.2.1 2005/07/31 11:36:34 dillo Exp $
+  $NiH$
 
-  dir.h -- reading a directory
+  parray_pop.c -- delete element from array of pointers and return it
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -24,29 +21,17 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
+#include <string.h>
 
 #include "parray.h"
 
-#define DIR_RECURSE	1
+
 
-struct dir {
-    int flags;
-    parray_t *stack;
-};
+void *
+parray_pop(parray_t *pa)
+{
+    if (parray_length(pa) == 0)
+	return NULL;
 
-typedef struct dir dir_t;
-
-enum dir_status {
-    DIR_ERROR = -1,
-    DIR_OK,
-    DIR_EOD
-};
-
-typedef enum dir_status dir_status_t;
-
-int dir_close(dir_t *);
-dir_status_t dir_next(dir_t *, char *, int);
-dir_t *dir_open(const char *, int);
-
-#endif /* dir.h */
+    return (parray_get(pa, --pa->nentry));
+}

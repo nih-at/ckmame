@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: dir.c,v 1.1.2.1 2005/07/31 11:36:34 dillo Exp $
 
   dir.h -- reading a directory
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -23,6 +23,7 @@
 
 
 
+#include <sys/stat.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,16 +53,30 @@
 #include "dir.h"
 #include "xmalloc.h"
 
+struct dir_one {
+    DIR *dir;
+    char *name;
+    int len;
+};
+
+typedef struct dir_one dir_one_t;
+
+static int dir_one_free(dir_one_t *);
+static dir_one_t *dir_one_new(const char *);
+
 
 
 int
 dir_close(dir_t *dir)
 {
+    dir_one_t *d;
     int ret;
 
-    ret = closedir((DIR *)dir->dir);
+    ret = 0;
+    while ((d=parray_pop(dir->stack)) != NULL)
+	ret |= dir_one_free(d);
     
-    free(dir->name);
+    parray_free(dir->stack, (void (*)())dir_one_free);
     free(dir);
 
     return ret;
@@ -73,11 +88,19 @@ int
 dir_next(dir_t *dir, char *name, int len)
 {
     struct dirent *de;
+    dir_one_t *d;
     int l;
-    
+    struct stat st;
+
+    d = parray_get_last(dir->stack);
     for (;;) {
-	if ((de=readdir((DIR *)dir->dir)) == NULL)
-	    return DIR_EOD;
+	if ((de=readdir(d->dir)) == NULL) {
+	    dir_one_free(d);
+	    parray_pop(dir->stack);
+	    if ((d=parray_get_last(dir->stack)) == NULL)
+		return DIR_EOD;
+	    continue;
+	}
 	
 	l = NAMLEN(de);
 
@@ -85,12 +108,26 @@ dir_next(dir_t *dir, char *name, int len)
 	    || (l == 2 && strncmp(de->d_name, "..", 2) == 0))
 	    continue;
 	    
-	if (dir->len + l + 2 > len) {
+	if (d->len + l + 2 > len) {
 	    errno = ENAMETOOLONG;
 	    return DIR_ERROR;
 	}
 	
-	sprintf(name, "%s/%*s", dir->name, l, de->d_name);
+	sprintf(name, "%s/%*s", d->name, l, de->d_name);
+
+	if (dir->flags & DIR_RECURSE) {
+
+	    if (stat(name, &st) < 0)
+		return DIR_ERROR;
+
+	    if ((st.st_mode & S_IFMT) == S_IFDIR) {
+		if ((d=dir_one_new(name)) == NULL)
+		    return DIR_ERROR;
+
+		parray_push(dir->stack, d);
+		continue;
+	    }
+	}
 	return DIR_OK;
     }
 }
@@ -98,18 +135,54 @@ dir_next(dir_t *dir, char *name, int len)
 
 
 dir_t *
-dir_open(const char *name)
+dir_open(const char *name, int flags)
 {
-    DIR *d;
+    dir_one_t *d;
     dir_t *dir;
 
-    if ((d=opendir(name)) == NULL)
+    if ((d=dir_one_new(name)) == NULL)
 	return NULL;
 
     dir = xmalloc(sizeof(*dir));
-    dir->dir = d;
-    dir->name = xstrdup(name);
-    dir->len = strlen(name);
+    dir->stack = parray_new();
+    parray_push(dir->stack, d);
+    dir->flags = flags;
 
     return dir;
+}
+
+
+
+static int
+dir_one_free(dir_one_t *d)
+{
+    int ret;
+
+    if (d == NULL)
+	return 0;
+    
+    ret = closedir(d->dir);
+    free(d->name);
+    free(d);
+
+    return ret;
+}
+
+
+
+static dir_one_t *
+dir_one_new(const char *name)
+{
+    DIR *dir;
+    dir_one_t *d;
+
+    if ((dir=opendir(name)) == NULL)
+	return NULL;
+
+    d = xmalloc(sizeof(*d));
+    d->dir = dir;
+    d->name = xstrdup(name);
+    d->len = strlen(name);
+
+    return d;
 }

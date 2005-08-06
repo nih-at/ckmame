@@ -2,7 +2,7 @@
 #define _HAD_PARRAY_H
 
 /*
-  $NiH: parray.h,v 1.2 2005/07/13 17:42:20 dillo Exp $
+  $NiH: parray.h,v 1.2.2.1 2005/07/31 21:13:02 dillo Exp $
 
   parray.h -- array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -37,6 +37,8 @@ typedef struct parray parray_t;
 
 
 #define parray_get(a, i)	((a)->entry[i])
+#define parray_get_last(a)	\
+	(parray_length(a) ? parray_get((a), parray_length(a)-1) : NULL)
 #define parray_length(a)	((a)->nentry)
 #define parray_sort(a, cmp)	(parray_sort_real((a), 0, -1, -1, (cmp)))
 #define parray_sort_part(a, lo, hi, cmp) \
@@ -51,6 +53,7 @@ int parray_index_sorted(const parray_t *, const void *,
 			int (*)(/* const void *, const void * */));
 parray_t *parray_new_sized(int);
 parray_t *parray_new_from_data(void **, int);
+void *parray_pop(parray_t *);
 void parray_push(parray_t *, void *);
 void parray_set_length(parray_t *, int, void *(*)(void),
 		       void (*)(/* void * */));

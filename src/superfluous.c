@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.3.2.3 2005/07/31 08:56:22 wiz Exp $
+  $NiH: superfluous.c,v 1.3.2.4 2005/07/31 11:36:34 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -83,13 +83,16 @@ find_extra_files(const char *dbname)
 	    continue;
 	}
 	len_dir += 1; /* trailing '/' */
-	if ((dir=dir_open(dirname)) == NULL) {
+	if ((dir=dir_open(dirname, 0)) == NULL) {
 	    myerror(ERRSTR, "can't open ROMPATH directory `%s'", dirname);
 	    continue;
 	}
 
 	while ((err=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	    /* XXX: handle error */
+	    if (err == DIR_ERROR) {
+		/* XXX: handle error */
+		continue;
+	    }
 
 	    len_name = strlen(b+len_dir);
 

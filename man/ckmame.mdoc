@@ -1,4 +1,4 @@
-.\" $NiH: ckmame.mdoc,v 1.1 2005/07/04 21:54:49 dillo Exp $
+.\" $NiH: ckmame.mdoc,v 1.1.2.1 2005/07/31 14:02:19 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -28,7 +28,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd June 12, 2005
+.Dd August 6, 2005
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -36,8 +36,9 @@
 .Nd verify MAME rom sets
 .Sh SYNOPSIS
 .Nm
-.Op Fl bcdFfhKkLlnSsVvw
+.Op Fl bcdFfhjKkLlnSsVvw
 .Op Fl D Ar dbfile
+.Op Fl e Ar dir
 .Op Ar game ...
 .Sh DESCRIPTION
 .Nm
@@ -106,6 +107,13 @@ Use
 as database file.
 .It Fl d , -nonogooddumps
 Don't report roms with no known good dumps.
+.It Fl e , -search Ar dir
+Look for missing files in directory
+.Ar dir
+and its subdirectories.
+Recommended for use with update sets.
+See also
+.Fl j .
 .It Fl F , -fix
 Fix rom sets; do as much as possible, such as renaming and moving
 files.
@@ -121,6 +129,18 @@ Display a short help message.
 Check integrity of zip archives and disk images
 by computing checksums and comparing them with the
 internally saved ones.
+.It Fl j , -delete-found
+When using
+.Fl e ,
+delete files that are copied to the romset.
+See also
+.Fl -keep-found .
+.It Fl -keep-found
+When using
+.Fl e ,
+do not remove files that are copied to the romset (default).
+See also
+.Fl j .
 .It Fl K , -keep-unknown
 Keep unknown files when fixing (default).
 They are moved into a zip file with the same name under

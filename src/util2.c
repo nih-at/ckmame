@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.7 2005/08/06 17:00:12 wiz Exp $
+  $NiH: util2.c,v 1.1.2.8 2005/08/06 17:48:46 wiz Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -111,6 +111,10 @@ ensure_extra_file_map(void)
 	    archive_free(a);
 	}
     }
+
+    for (i=0; i<parray_length(extra_dirs); i++)
+	enter_dir_in_map(extra_file_map, parray_get(extra_dirs, i),
+			 DIR_RECURSE, ROM_EXTRA);
 }
 
 
@@ -118,29 +122,13 @@ ensure_extra_file_map(void)
 void
 ensure_needed_map(void)
 {
-    dir_t *dir;
-    char b[8192];
-    archive_t *a;
-
     if (needed_map != NULL)
 	return;
     
     needed_map = map_new();
     needed_delete_list = delete_list_new();
 
-    if ((dir=dir_open(needed_dir)) == NULL)
-	return;
-
-    while (dir_next(dir, b, sizeof(b)) != DIR_EOD) {
-	/* XXX: handle error */
-
-	if ((a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
-	    enter_archive_in_map(needed_map, a, ROM_NEEDED);
-	    archive_free(a);
-	}
-    }
-
-    dir_close(dir);
+    enter_dir_in_map(needed_map, needed_dir, 0, ROM_NEEDED);
 }
 
 
@@ -155,6 +143,34 @@ enter_archive_in_map(map_t *map, const archive_t *a, where_t where)
 		rom_hashes(archive_file(a, i)),
 		file_location_ext_new(archive_name(a), i, where));
 }
+
+
+
+int
+enter_dir_in_map(map_t *map, const char *name, int flags, where_t where)
+{
+    dir_t *dir;
+    dir_status_t ds;
+    char b[8192];
+    archive_t *a;
+
+    if ((dir=dir_open(name, flags)) == NULL)
+	return -1;
+
+    while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+	if (ds == DIR_ERROR) {
+	    /* XXX: handle error */
+	    continue;
+	}
+
+	if ((a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
+	    enter_archive_in_map(map, a, where);
+	    archive_free(a);
+	}
+    }
+
+    return dir_close(dir);
+}    
 
 
 
