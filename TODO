@@ -10,6 +10,8 @@ tests:
   * /prog from file
   * broken input
 
+- can't handle two roms switching names
+
 other:
 - read games to check from file or stdin
 - document comment in prototypes for function pointers
@@ -25,6 +27,11 @@ other:
 - tool for generating update sets from two databases and existing romset
 - find out why runtest is slow
 - split util*, funcs.h
+
+cmcheck features:
+- greppable output
+- dat file with roms we have elsewhere
+- create dat file
 
 add support for native db3/db4
 add support for fname==NULL and foreach to gdbm
