@@ -26,6 +26,7 @@ TESTCASES=	baddump.test \
 		from-romset.test \
 		from-romset2.test \
 		from-superfluous.test \
+		from-superfluous-dryrun.test \
 		garbage.test \
 		inchild.test \
 		inparent.test \
@@ -36,6 +37,7 @@ TESTCASES=	baddump.test \
 		hasherr-pc.test \
 		mid.test \
 		misnamed.test \
+		misnamed-dryrun.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-ok.test \
 		multi.test \

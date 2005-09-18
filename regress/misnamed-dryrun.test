@@ -1,0 +1,8 @@
+# $NiH: dryrun.test,v 1.2.2.5 2005/08/06 19:54:39 wiz Exp $
+description test single-rom game (no parent), rom has wrong name, don't fix
+return 0
+args -FKLvcn 1-4
+file roms/1-4.zip 1-4-misnamed.zip 1-4-misnamed.zip
+stdout In game 1-4:
+stdout rom  04.rom        size       4  crc d87f7e0c: wrong name (04)
+stdout ./roms/1-4.zip: rename `04' to `04.rom'
