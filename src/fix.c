@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.11 2005/08/06 17:48:46 wiz Exp $
+  $NiH: fix.c,v 1.2.2.12 2005/09/22 20:53:12 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -148,7 +148,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
     fix_files(g, a, ma);
 
     if (archive_close_zip(a) < 0)
-	if (needed_delete_list)
+	if ((fix_options & FIX_DO) && needed_delete_list)
 	    delete_list_rollback(needed_delete_list);
 
     return 0;
