@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.12 2005/09/22 20:53:12 dillo Exp $
+  $NiH: fix.c,v 1.2.2.13 2005/09/22 21:26:49 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -213,7 +213,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 		       rom_name(archive_file(a, match_index(m))),
 		       rom_name(r));
 	    if (fix_options & FIX_DO) {
-		if (zip_rename(zto, match_index(m), rom_name(r)) == -1)
+		if (my_zip_rename(zto, match_index(m), rom_name(r)) == -1)
 		    myerror(ERRZIPFILE, "error renaming `%s': %s",
 			    rom_name(archive_file(a, match_index(m))),
 			    zip_strerror(zto));

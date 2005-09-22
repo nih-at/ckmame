@@ -56,6 +56,7 @@ TESTCASES=	baddump.test \
 		search-remove.test \
 		skipbad.test \
 		superfluous.test \
+		swap.test \
 		tochildfix.test \
 		wrong.test
 
@@ -68,6 +69,7 @@ ZIPS=		1-4-dup.zip \
 		1-c-ok.zip \
 		2-48-ok.zip \
 		2-4c-ok.zip \
+		2-84.zip \
 		deadbeef.zip \
 		deadclonedbeef.zip \
 		deadfish.zip \
@@ -104,3 +106,6 @@ check: ${MAME_DB}
 
 ${MAME_DB}: ../src/mkmamedb ${srcdir}/mamedb.txt
 	../src/mkmamedb ${srcdir}/mamedb.txt
+
+update-mkmamedb.dump: ${MAME_DB}
+	./dbdump ${MAME_DB} | sort > mkmamedb-ok.dump

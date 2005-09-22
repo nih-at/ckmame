@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.10 2005/08/06 20:07:39 wiz Exp $
+  $NiH: util2.c,v 1.1.2.11 2005/08/06 20:30:14 wiz Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -314,4 +314,48 @@ my_zip_open(const char *name, int flags)
 		zip_error_to_str(errbuf, sizeof(errbuf), err, errno));
 
     return z;
+}
+
+
+
+#define RENAME_STRING "%s_renamed_by_ckmame_%d"
+
+int
+my_zip_rename(struct zip *za, int idx, const char *name)
+{
+    int zerr, idx2, try;
+    char *name2;
+
+    if (zip_rename(za, idx, name) == 0)
+	return 0;
+
+    zip_error_get(za, &zerr, NULL);
+
+    if (zerr != ZIP_ER_EXISTS)
+	return -1;
+
+    idx2 = zip_name_locate(za, name, 0);
+
+    if (idx2 == -1)
+	return -1;
+
+    name2 = xmalloc(strlen(RENAME_STRING)+strlen(name));
+
+    for (try=0; try<10; try++) {
+	sprintf(name2, RENAME_STRING, name, try);
+	if (zip_rename(za, idx2, name2) == 0) {
+	    free(name2);
+	    return zip_rename(za, idx, name);
+	}
+
+	zip_error_get(za, &zerr, NULL);
+
+	if (zerr != ZIP_ER_EXISTS) {
+	    free(name2);
+	    return -1;
+	}
+    }
+
+    free(name2);
+    return -1;
 }
