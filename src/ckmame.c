@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.4.2.7 2005/08/06 20:18:22 wiz Exp $
+  $NiH: ckmame.c,v 1.4.2.8 2005/08/06 20:29:55 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -312,6 +312,9 @@ main(int argc, char **argv)
 
     if (needed_delete_list)
 	delete_list_execute(needed_delete_list);
+
+    if (output_options & WARN_SUPERFLUOUS)
+	print_superfluous(superfluous);
 
     return 0;
 }

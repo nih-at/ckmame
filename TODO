@@ -9,6 +9,7 @@ tests:
   * /prog from command line
   * /prog from file
   * broken input
+* broken files in zip archive
 
 - can't handle two roms switching names
 - handle two roms in one game with same size/hashes but different name

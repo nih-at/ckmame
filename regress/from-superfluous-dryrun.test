@@ -1,4 +1,4 @@
-# $NiH: from-superfluous.test,v 1.1.2.3 2005/08/06 19:54:39 wiz Exp $
+# $NiH: from-superfluous-dryrun.test,v 1.1.2.1 2005/09/18 15:35:31 wiz Exp $
 description test single-rom game (no parent), file is in superfluous, don't fix
 return 0
 args -FKLvcn 1-4
@@ -6,3 +6,5 @@ file roms/14.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/14.zip'
 stdout ./roms/1-4.zip: add `./roms/14.zip/04.rom' as `04.rom'
+stdout Extra files found:
+stdout ./roms/14.zip
