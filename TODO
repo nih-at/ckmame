@@ -12,6 +12,9 @@ tests:
 
 - can't handle two roms switching names
 - handle two roms in one game with same size/hashes but different name
+- document ``checksum mismatch'' and ``broken'' diagnostics
+- in check for needed elsewhere: don't check if this game needs it
+- option to check if no good dumps are needed elsewhere
 
 other:
 - read games to check from file or stdin

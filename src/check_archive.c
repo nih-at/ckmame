@@ -1,5 +1,5 @@
 /*
-  $NiH: check_archive.c,v 1.1.2.2 2005/07/31 09:21:44 dillo Exp $
+  $NiH: check_archive.c,v 1.1.2.3 2005/07/31 20:10:47 wiz Exp $
 
   check_archive.c -- determine status of files in archive
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -51,6 +51,11 @@ check_archive(archive_t *a, match_array_t *ma)
     }
 
     for (i=0; i<archive_num_files(a); i++) {
+	if (rom_status(archive_file(a, i)) != STATUS_OK) {
+	    file_status_array_get(fsa, i) = FS_BROKEN;
+	    continue;
+	}
+
 	if (file_status_array_get(fsa, i) == FS_USED)
 	    continue;
 

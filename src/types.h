@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.5.2.7 2005/08/06 16:59:55 wiz Exp $
+  $NiH: types.h,v 1.5.2.8 2005/08/06 17:48:46 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -48,6 +48,7 @@ typedef enum quality quality_t;
 
 enum file_status {
     FS_UNKNOWN,		/* unknown */
+    FS_BROKEN,		/* file in zip broken (invalid data / crc error) */
     FS_PARTUSED,	/* part needed here, whole file unknown */
     FS_SUPERFLUOUS,	/* known, not needed here, and exists elsewhere */
     FS_NEEDED,		/* known and needed elsewhere */

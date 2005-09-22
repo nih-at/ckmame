@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.1.2.4 2005/07/31 20:10:47 wiz Exp $
+  $NiH: diagnostics.c,v 1.1.2.5 2005/08/01 20:53:28 wiz Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -94,6 +94,11 @@ diagnostics_archive(const archive_t *a, const file_status_array_t *fsa)
 	    /* handled in diagnostics_files */
 	    break;
 	    
+	case FS_BROKEN:
+	    if (output_options & WARN_FILE_BROKEN)
+		warn_file(f, "broken");
+	    break;
+
 	case FS_NEEDED:
 	    if (output_options & WARN_USED)
 		warn_file(f, "needed elsewhere");

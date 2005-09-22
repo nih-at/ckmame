@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.10 2005/08/06 17:00:11 wiz Exp $
+  $NiH: fix.c,v 1.2.2.11 2005/08/06 17:48:46 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -119,8 +119,9 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	    }
 	    break;
 
+	case FS_BROKEN:
 	case FS_USED:
-	    /* all is peachy */
+	    /* nothing to be done */
 	    break;
 	}
     }

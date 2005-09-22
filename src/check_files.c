@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.1.2.7 2005/08/06 17:48:46 wiz Exp $
+  $NiH: check_files.c,v 1.1.2.8 2005/09/22 19:38:13 dillo Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -39,6 +39,7 @@
 
 enum test {
     TEST_NSC,
+    TEST_MSC,
     TEST_SCI,
     TEST_LONG
 };
@@ -87,7 +88,7 @@ check_files(game_t *g, archive_t *as[3])
 
 	/* check if it's in ancestor */
 	if (rom_where(r) != ROM_INZIP
-	    && a && (result=match_files(a, TEST_NSC, r, m)) != TEST_NOTFOUND) {
+	    && a && (result=match_files(a, TEST_MSC, r, m)) != TEST_NOTFOUND) {
 	    m->where = rom_where(r);
 	    if (result == TEST_USABLE)
 		continue;
@@ -152,7 +153,11 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 
 	switch (t) {
 	case TEST_NSC:
-	    if (rom_compare_nsc(r, ra) == 0) {
+	case TEST_MSC:
+	    if ((t == TEST_NSC
+		 ? (rom_compare_n(r, ra) == 0)
+		 : (rom_compare_m(r, ra) == 0))
+		&& rom_compare_sc(r, ra) == 0) {
 		if ((hashes_cmp(rom_hashes(r), rom_hashes(ra))
 		     != HASHES_CMP_MATCH)) {
 		    if (m->quality == QU_HASHERR)
@@ -177,6 +182,8 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 	    
 	    if (rom_compare_sc(r, ra) == 0) {
 		if (archive_file_compare_hashes(a, i, rom_hashes(r)) != 0) {
+		    if (rom_status(archive_file(a, i)) != STATUS_OK)
+			break;
 		    if (m->quality == QU_HASHERR)
 			break;
 		    
