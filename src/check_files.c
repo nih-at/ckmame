@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.1.2.6 2005/08/06 17:00:11 wiz Exp $
+  $NiH: check_files.c,v 1.1.2.7 2005/08/06 17:48:46 wiz Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -171,6 +171,10 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 	    break;
 
 	case TEST_SCI:
+	    /* roms without hashes are only matched with correct name */
+	    if (hashes_types(rom_hashes(r)) == 0)
+		break;
+	    
 	    if (rom_compare_sc(r, ra) == 0) {
 		if (archive_file_compare_hashes(a, i, rom_hashes(r)) != 0) {
 		    if (m->quality == QU_HASHERR)
@@ -189,6 +193,10 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 	    break;
 
 	case TEST_LONG:
+	    /* roms without hashes are only matched with correct name */
+	    if (hashes_types(rom_hashes(r)) == 0)
+		break;
+	    
 	    if (rom_compare_n(r, ra) == 0
 		&& rom_size(ra) > rom_size(r)
 		&& (m->offset=archive_file_find_offset(a, i, rom_size(r),

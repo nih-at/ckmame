@@ -11,6 +11,7 @@ tests:
   * broken input
 
 - can't handle two roms switching names
+- handle two roms in one game with same size/hashes but different name
 
 other:
 - read games to check from file or stdin
