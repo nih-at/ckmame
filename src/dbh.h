@@ -2,7 +2,7 @@
 #define _HAD_DBH_H
 
 /*
-  $NiH: dbh.h,v 1.2 2005/07/07 22:00:20 dillo Exp $
+  $NiH: dbh.h,v 1.3.2.1 2005/08/06 17:00:11 wiz Exp $
 
   dbh.h -- high level db functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -25,7 +25,7 @@
 */
 
 #include "dbl.h"
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "game.h"
 #include "hashes.h"
 #include "parray.h"

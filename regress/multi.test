@@ -1,16 +1,14 @@
-# test two single-rom games (no parent), both with unknown files
-# $NiH: ok.test,v 1.2 2003/03/16 16:41:10 dillo Exp $
+# $NiH: multi.test,v 1.1.2.7 2005/08/06 19:54:39 wiz Exp $
+description test two single-rom games (no parent), both with unused files
 return 0
-args -FKULvc 1-4 1-8
-rom 2-48-ok.zip 1-4.zip 1-4-ok.zip
-rom 2-48-ok.zip 1-8.zip 1-8-ok.zip
-garbage 1-4.zip 1-8-ok.zip
-garbage 1-8.zip 1-4-ok.zip
-stdout ./roms/1-4.zip: mv unknown file 08.rom
+args -FKLvc 1-4 1-8
+file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
+file roms/1-8.zip 2-48-ok.zip 1-8-ok.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
-stdout file 08.rom        size       8  crc 3656897d: unknown
-stdout ./roms/1-8.zip: mv unknown file 04.rom
+stdout file 08.rom        size       8  crc 3656897d: not used
+stdout ./roms/1-4.zip: delete unused file `08.rom'
 stdout In game 1-8:
 stdout game 1-8                                     : correct
-stdout file 04.rom        size       4  crc d87f7e0c: unknown
+stdout file 04.rom        size       4  crc d87f7e0c: not used
+stdout ./roms/1-8.zip: delete unused file `04.rom'

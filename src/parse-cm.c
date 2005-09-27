@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-cm.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: parse-cm.c,v 1.2.2.1 2005/07/27 00:05:57 dillo Exp $
 
   parse-cm.c -- parse listinfo/CMpro format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -117,7 +117,7 @@ parse_cm(parser_context_t *ctx)
 				    ctx->lineno);
 			    break;
 			}
-			if (parse_file_flags(ctx, TYPE_ROM, 0, p) < 0)
+			if (parse_file_status(ctx, TYPE_ROM, 0, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "merge") == 0) {

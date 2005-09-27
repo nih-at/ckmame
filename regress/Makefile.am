@@ -1,3 +1,8 @@
+noinst_PROGRAMS=	dbdump
+AM_CFLAGS=		-I${srcdir}/../src \
+			 -DDDB_INCLUDE=\"db-@DBTYPE@.h\"
+dbdump_LDADD=		${srcdir}/../src/libckmame.a @DBLIBS@
+
 EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS} ${CHDS}
 
 CLEANFILES=${MAME_DB}
@@ -15,12 +20,31 @@ TESTCASES=	baddump.test \
 		disk-ok.test \
 		disk-wrong.test \
 		double.test \
+		dumpgame-unknown.test \
+		from-needed.test \
+		from-needed2.test \
+		from-romset.test \
+		from-romset2.test \
+		from-superfluous.test \
+		from-superfluous-dryrun.test \
 		garbage.test \
 		inchild.test \
 		inparent.test \
+		hasherr.test \
+		hasherr2.test \
+		hasherr-c.test \
+		hasherr-p.test \
+		hasherr-pc.test \
 		mid.test \
 		misnamed.test \
+		misnamed-dryrun.test \
+		mkmamedb-lost-parent.test \
+		mkmamedb-ok.test \
 		multi.test \
+		needed.test \
+		needed2.test \
+		needed3.test \
+		needed-error.test \
 		nogood.test \
 		nogood-miss.test \
 		nonexist.test \
@@ -28,21 +52,30 @@ TESTCASES=	baddump.test \
 		ok.test \
 		punknown.test \
 		punused.test \
+		search-keep.test \
+		search-remove.test \
+		skipbad.test \
 		superfluous.test \
-		tochild.test \
+		swap.test \
 		tochildfix.test \
-		unused.test \
-		wrong.test \
-		wrong2.test
+		wrong.test
 
 ZIPS=		1-4-dup.zip \
+		1-4-garbage.zip \
 		1-4-mid.zip \
 		1-4-misnamed.zip \
 		1-4-ok.zip \
 		1-8-ok.zip \
 		1-c-ok.zip \
 		2-48-ok.zip \
-		2-4c-ok.zip
+		2-4c-ok.zip \
+		2-84.zip \
+		deadbeef.zip \
+		deadclonedbeef.zip \
+		deadfish.zip \
+		deadfish4.zip \
+		deadpork.zip \
+		garbage.zip
 CHDS=		108-5.chd \
 		12-1.chd
 
@@ -73,3 +106,6 @@ check: ${MAME_DB}
 
 ${MAME_DB}: ../src/mkmamedb ${srcdir}/mamedb.txt
 	../src/mkmamedb ${srcdir}/mamedb.txt
+
+update-mkmamedb.dump: ${MAME_DB}
+	./dbdump ${MAME_DB} | sort > mkmamedb-ok.dump

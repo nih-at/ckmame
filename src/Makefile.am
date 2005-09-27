@@ -19,19 +19,25 @@ libckmame_a_SOURCES= \
 	array_new_length.c \
 	array_push.c \
 	chd.c \
+	check_archive.c \
 	check_disks.c \
-	check_roms.c \
+	check_files.c \
 	db-@DBTYPE@.c \
 	dbl.c \
+	delete_list.c \
 	diagnostics.c \
+	dir.c \
 	disk.c \
 	disk_get_info.c \
 	disk_new.c \
 	error.c \
-	file_by_hash.c \
-	file_by_hash_finalize.c \
-	file_by_hash_make_key.c \
+	file_location.c \
+	file_location_ext.c \
+	file_location_finalize.c \
+	file_location_make_key.c \
+	file_status.c \
 	filetype_db_key.c \
+	find.c \
 	fix.c \
 	game.c \
 	game_add_clone.c \
@@ -42,14 +48,15 @@ libckmame_a_SOURCES= \
 	hashes_update.c \
 	hashes_verify.c \
 	map.c \
-	marry.c \
 	match.c \
 	match_disk.c \
 	parray.c \
 	parray_delete.c \
 	parray_index_sorted.c \
 	parray_new_from_data.c \
+	parray_pop.c \
 	parray_push.c \
+	parray_set_length.c \
 	parray_sort_real.c \
 	parse-cm.c \
 	parse-xml.c \
@@ -66,6 +73,7 @@ libckmame_a_SOURCES= \
 	superfluous.c \
 	tree.c \
 	util.c \
+	util2.c \
 	w_file_by_hash_parray.c \
 	w_game.c \
 	w_list.c \
@@ -80,11 +88,16 @@ noinst_HEADERS=\
 	db-@DBTYPE@.h \
 	dbh.h \
 	dbl.h \
+	delete_list.h \
+	dir.h \
 	disk.h \
 	error.h \
-	file_by_hash.h \
+	file_location.h \
+	file_status.h \
+	find.h \
 	funcs.h \
 	game.h \
+	globals.h \
 	hashes.h \
 	map.h \
 	match.h \

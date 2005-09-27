@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.4 2005/07/13 17:42:20 dillo Exp $
+  $NiH: parse.c,v 1.5.2.5 2005/08/06 17:00:12 wiz Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -29,7 +29,7 @@
 
 #include "dbh.h"
 #include "error.h"
-#include "file_by_hash.h"
+#include "file_location.h"
 #include "funcs.h"
 #include "map.h"
 #include "parse.h"
@@ -62,7 +62,7 @@ static void disk_end(parser_context_t *);
 static void enter_file_hash(map_t *, filetype_t, const char *,
 			    int, const hashes_t *);
 static void familymeeting(DB *, filetype_t, game_t *, game_t *);
-static int file_by_hash_copy(const hashes_t *, parray_t *, void *);
+static int file_location_copy(const hashes_t *, parray_t *, void *);
 static int handle_lost(parser_context_t *);
 static int lost(game_t *, filetype_t);
 static int parser_context_init(parser_context_t *);
@@ -141,27 +141,27 @@ parse_file_end(parser_context_t *ctx, filetype_t ft)
 
 
 int
-parse_file_flags(parser_context_t *ctx, filetype_t ft, int ht,
-		 const char *attr)
+parse_file_status(parser_context_t *ctx, filetype_t ft, int ht,
+		  const char *attr)
 {
-    flags_t flags;
+    status_t status;
 
     if (strcmp(attr, "good") == 0)
-	flags = FLAGS_OK;
+	status = STATUS_OK;
     else if (strcmp(attr, "baddump") == 0)
-	flags = FLAGS_BADDUMP;
+	status = STATUS_BADDUMP;
     else if (strcmp(attr, "nodump") == 0)
-	flags = FLAGS_NODUMP;
+	status = STATUS_NODUMP;
     else {
-	myerror(ERRFILE, "%d: illegal flags `%s'",
+	myerror(ERRFILE, "%d: illegal status `%s'",
 		ctx->lineno, attr);
 	return -1;
     }
 
     if (ft == TYPE_DISK)
-	disk_flags(game_last_disk(ctx->g)) = flags;
+	disk_status(game_last_disk(ctx->g)) = status;
     else
-	rom_flags(game_last_file(ctx->g, ft)) = flags;
+	rom_status(game_last_file(ctx->g, ft)) = status;
     
     return 0;
 }
@@ -184,14 +184,12 @@ parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
     }
 	
     if (hash_from_string(h, attr) != ht) {
-	/* XXX:
-	   myerror(ERRFILE, "%d: invalid argument for %s",
-		   lineno, hash_type_string(ht));
-	*/
+	myerror(ERRFILE, "%d: invalid argument for %s",
+		ctx->lineno, hash_type_string(ht));
 	return -1;
     }
     
-    *types |= HASHES_TYPE_MD5;
+    *types |= ht;
     
     return 0;
 }
@@ -324,8 +322,7 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
     }
     
     if (w_game(ctx->db, g) != 0)
-	myerror(ERRSTR, "can't write game `%s' to db: %s",
-		game_name(g), ddb_error());
+	myerror(ERRDB, "can't write game `%s' to db", game_name(g));
     else
 	parray_push(ctx->list[TYPE_ROM], xstrdup(game_name(g)));
 
@@ -392,7 +389,7 @@ disk_end(parser_context_t *ctx)
     d = game_last_disk(ctx->g);
 
     if (hashes_types(disk_hashes(d)) == 0)
-	disk_flags(d) = FLAGS_NODUMP;
+	disk_status(d) = STATUS_NODUMP;
 
     if (disk_merge(d) != NULL && strcmp(disk_name(d), disk_merge(d)) == 0) {
 	free(disk_merge(d));
@@ -412,11 +409,11 @@ enter_file_hash(map_t *map, filetype_t filetype,
 {
     int type;
 
-    type = file_by_hash_default_hashtype(filetype);
+    type = file_location_default_hashtype(filetype);
 
     if (hashes_has_type(hashes, type)) {
 	if (map_add(map, type, hashes,
-		    file_by_hash_new(name, index)) < 0) {
+		    file_location_new(name, index)) < 0) {
 	    /* XXX: error */
 	}
     }
@@ -467,11 +464,11 @@ familymeeting(DB *db, filetype_t ft, game_t *parent, game_t *child)
 
 
 static int
-file_by_hash_copy(const hashes_t *key, parray_t *pa, void *ud)
+file_location_copy(const hashes_t *key, parray_t *pa, void *ud)
 {
     struct fbh_context *ctx = ud;
 
-    parray_sort(pa, file_by_hash_entry_cmp);
+    parray_sort(pa, file_location_cmp);
     return w_file_by_hash_parray(ctx->db, ctx->ft, key, pa);
 }
 
@@ -506,7 +503,7 @@ handle_lost(parser_context_t *ctx)
 		if ((parent=r_game(ctx->db,
 				   game_cloneof(child, ft, 0))) == NULL) {
 		    myerror(ERRDEF,
-			    "inconsistency: %s has non-existent parnet %s",
+			    "inconsistency: %s has non-existent parent %s",
 			    game_name(child), game_cloneof(child, ft, 0));
 		    
 		    /* remove non-existent cloneof */
@@ -570,11 +567,11 @@ parser_context_init(parser_context_t *ctx)
     ctx->db = NULL;
     ctx->fin = NULL;
     if ((ctx->map_rom=map_new()) == NULL) {
-	myerror(ERRDEF, "can't create hash table: %s", ddb_error());
+	myerror(ERRDB, "can't create hash table");
 	return -1;
     }
     if ((ctx->map_disk=map_new()) == NULL) {
-	myerror(ERRDEF, "can't create hash table: %s", ddb_error());
+	myerror(ERRDB, "can't create hash table");
 	map_free(ctx->map_rom, NULL);
 	return -1;
     }
@@ -598,8 +595,8 @@ parser_context_finalize(parser_context_t *ctx)
 
     if (ctx->fin)
 	fclose(ctx->fin);
-    map_free(ctx->map_rom, MAP_FREE_FN(file_by_hash_free));
-    map_free(ctx->map_disk, MAP_FREE_FN(file_by_hash_free));
+    map_free(ctx->map_rom, MAP_FREE_FN(file_location_free));
+    map_free(ctx->map_disk, MAP_FREE_FN(file_location_free));
     game_free(ctx->g);
     free(ctx->prog_name);
     free(ctx->prog_version);
@@ -623,12 +620,6 @@ rom_end(parser_context_t *ctx, filetype_t ft)
     n = game_num_files(ctx->g, ft)-1;
     h = rom_hashes(r);
 
-    /* CRC == 0 was old way of indicating no-good-dumps */
-    if ((hashes_has_type(h, HASHES_TYPE_CRC)) && h->crc == 0) {
-	h->types &= ~HASHES_TYPE_CRC;
-	rom_flags(r) = FLAGS_NODUMP;
-    }
-    
     /* omit duplicates */
     deleted = 0;
     for (j=0; j<n; j++) {
@@ -671,11 +662,11 @@ write_hashes(parser_context_t *ctx)
     ud.db = ctx->db;
     
     ud.ft = TYPE_ROM;
-    if (map_foreach(ctx->map_rom, file_by_hash_copy, &ud) < 0)
+    if (map_foreach(ctx->map_rom, file_location_copy, &ud) < 0)
 	return -1;
 
     ud.ft = TYPE_DISK;
-    if (map_foreach(ctx->map_disk, file_by_hash_copy, &ud) < 0)
+    if (map_foreach(ctx->map_disk, file_location_copy, &ud) < 0)
 	return -1;
     
     return 0;

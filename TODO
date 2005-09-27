@@ -1,52 +1,74 @@
-- read games to check from file or stdin
+tests: (-: code does not exist)
+- disk renames
+- get missing disks from superfluous
+- get missing disks from extra dirs
+- sample test (segfault)
+* dumpgame
+* mkmamedb tests
+  * XML parsing
+  * /prog from command line
+  * /prog from file
+  * broken input
+* broken files in zip archive
+
+- document ``checksum mismatch'' and ``broken'' diagnostics
+- in check for needed elsewhere: don't check if this game needs it
+- don't report superfluous files that were deleted completely
+- print message when executing delete_list if FIX_PRINT
 - document comment in prototypes for function pointers
-- fix, diagnostics: print match_offset properly, don't cast to int
-- refactor hashes_set and hashes_verify
-- make match_array_t an array_t of parray_t of match_t
 - update ChangeLog
 - copyright maintenance
-- remove unneeded includes
-- use myerror throughout
+- kill romcmp
+- kill gdbm support (docs)
+- don't print superfluous if not explicitly requested and not checking all sets
+- integrity check: remember which disks have already been checked
+  (only check once each)
+- "fix" superfluous files by moving them to a subdir
+
+-- NEXT RELEASE
+
+cmcheck features:
+- greppable output
+- db (dat file?) with roms we have elsewhere:
+  - if correct on dvd, write "correct (on dvd)"
+  - on dvd, only nameerrors: output optional
+  - garbage, unused on dvd: output optional
+  - use file from dvd: "is on dvd..." (-> game not "correct")
+  * option to fix minor errors (name error, garbage, unused) from dvd to hd
+  * option to delete files on disk that are not more correct than on dvd
+  * option to provide mapping from db to path (for dvd dbs)
+  + check dvd status first, if ok "correct" (garbage, unused)
+  + use any files from roms/game.zip
+    if unsplit ok: "correct"
+    if split ok
+      get files from dvd if possible
+      else keep looking
+  + use any files from superfluous/extra dirs
+- create dat file
+
+other features:
+- read games to check from file or stdin
 - parse_xml: set line numbers
-- make parse_cm table driven
+- parse: add state checking to parse-cm.c
 - parse: check for duplicate attributes
-- check romcmp (bestbaddump)
+- tool for generating update sets from ckmame output and existing romset
+- tool for generating update sets from two databases and existing romset
+- find out why runtest is slow
+- add support for native db3/db4
+- add option to check integrity for roms only (not for disks, they take forever)
+- mkmamedb: handle disk without md5
+- mkmamedb: handle rom without crc
+- mkmamedb: no error message for missing newline in last line
+- complete raine support (multiple archive names: archive ( name
+  "64th_street" name "64street" ))
+- handle two roms in one game with same size/hashes but different name
+- handle (incorrect db) with two roms of the same name in one game
+- option to check if no good dumps are needed elsewhere
 
-improve output to: rom  tko-simm.05a  size 2097152  crc a275a387: SHA1 mismatch
-
-add support for native db3/db4
-add support for fname==NULL and foreach to gdbm
-parse: move state handling to parse-cm.c
-
-0.85.1: "bad dump" is reported as missing with -d
--cd: do not print a line for each rom that is correct in sets that have nodump roms
-
-use cases:
-. child gets renamed (move zip to other zip name)
-. child becomes parent, parent becomes other child (move from now unknown child zip to parent)
-. missing rom is in a different (related or unrelated, but not parent/child) set
-
-automatically fix renamed disks
-automatically fix superfluous zips that have been renamed
-add option to check integrity for roms only (not for disks, they take forever)
-integrity check: remember which disks have already been checked (only check once each)
-support disks with parents
-regression tests for disk: different crc types, version 2
-"fix" extra files by moving them to a subdir
-use ROM_NOCRC for samples match quality
-
-mkmamedb: no error message for missing newline in last line
-
-mkmamedb: correct inconsistencies in input db (parent not found)
-
-fix 'should be in cloneof, is in zip'
-use return value of w_game
-option to force fixing parents
-add error messages in ckmame with the zips (e.g. can't create file etc.)
-complete raine support (multiple archive names: archive ( name "64th_street" name "64street" ))
-
-get roms from a different location to fix sets
-
-fix all XXXs
-
-init rom structure for files from zips
+code cleanups:
+- refactor hashes_set and hashes_verify
+- remove unneeded includes
+- make parse_cm table driven
+- split util*, funcs.h
+- use return value of w_game
+- fix all XXXs

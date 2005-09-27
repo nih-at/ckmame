@@ -1,0 +1,9 @@
+# $NiH: skipbad.test,v 1.1.2.2 2005/08/06 19:54:39 wiz Exp $
+description integrity test child, file in parent is wrong, correct rom in child
+return 0
+args -FKLivc deadclonedbeef
+file roms/deadbeef.zip deadpork.zip deadpork.zip
+file roms/deadclonedbeef.zip deadbeef.zip deadclonedbeef.zip
+stdout In game deadclonedbeef:
+stdout rom  deadclonedbeef  size       8  crc deadbeef: wrong name (deadbeef), should be in cloneof
+stdout ./roms/deadclonedbeef.zip: rename `deadbeef' to `deadclonedbeef'

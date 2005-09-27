@@ -2,7 +2,7 @@
 #define HAD_ROM_H
 
 /*
-  $NiH$
+  $NiH: rom.h,v 1.1.2.6 2005/09/22 20:53:12 dillo Exp $
 
   rom.h -- information about one rom
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -27,6 +27,7 @@
 
 
 #include "hashes.h"
+#include "map.h"
 #include "types.h"
 #include "parray.h"
 
@@ -35,8 +36,7 @@ struct rom {
     char *merge;
     hashes_t hashes;
     unsigned long size;
-    flags_t flags;
-    state_t state;
+    status_t status;
     where_t where;
     parray_t *altnames;
 };
@@ -48,14 +48,28 @@ typedef struct rom rom_t;
 #define rom_altname(r, i)	((char *)parray_get(rom_altnames(r), (i)))
 #define rom_altnames(r)		((r)->altnames)
 #define rom_hashes(r)		(&(r)->hashes)
-#define rom_flags(r)		((r)->flags)
 #define rom_merge(r)		((r)->merge)
 #define rom_name(r)		((r)->name)
 #define rom_num_altnames(r)	(rom_altnames(r) ? \
 				 parray_length(rom_altnames(r)) : 0)
 #define rom_size(r)		((r)->size)
-#define rom_state(r)		((r)->state)
+#define rom_status(r)		((r)->status)
 #define rom_where(r)		((r)->where)
+
+#define rom_compare_m(r1, r2)	(compare_names(rom_merge(r1)		      \
+					       ? rom_merge(r1)		      \
+					       : rom_name(r1), rom_name(r2)))
+#define rom_compare_n(r1, r2)	(compare_names(rom_name(r1), rom_name(r2)))
+#define rom_compare_nsc(r1, r2)						\
+	(rom_compare_n((r1), (r2)) || rom_compare_sc((r1), (r2)))
+#define rom_compare_sc(rg, ra)						  \
+	(!(rom_size(rg) == 0						  \
+	   || (rom_size(rg) == rom_size(ra)				  \
+	       && (rom_status(rg) == STATUS_NODUMP			  \
+		   || ((hashes_types(rom_hashes(rg))			  \
+			& hashes_types(rom_hashes(rg)) & HASHES_TYPE_CRC) \
+		       && (hashes_crc(rom_hashes(rg))			  \
+			   == hashes_crc(rom_hashes(ra))))))))
 
 void rom_add_altname(rom_t *, const char *);
 void rom_init(rom_t *);

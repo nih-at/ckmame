@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: funcs.h,v 1.2.2.9 2005/09/22 22:14:00 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,19 +26,32 @@
 
 
 
+#include <zip.h>
+
 #include "archive.h"
 #include "dbl.h"
+#include "file_status.h"
 #include "game.h"
 #include "match.h"
 #include "match_disk.h"
+#include "parray.h"
 #include "tree.h"
 
+file_status_array_t *check_archive(archive_t *, match_array_t *);
 match_disk_array_t *check_disks(game_t *);
-match_array_t *check_roms(game_t *, archive_t **, filetype_t);
-void diagnostics(const game_t *, filetype_t, const match_array_t *,
-		 const match_disk_array_t *, const archive_t **);
-int fix_game(game_t *, filetype_t, archive_t **, match_array_t *);
-int handle_extra_files(DB *, const char *, int);
-void marry(match_array_t *, const int *);
+match_array_t *check_files(game_t *, archive_t *[]);
+void diagnostics(const game_t *, const archive_t *, const match_array_t *,
+		 const match_disk_array_t *, const file_status_array_t *);
+void enter_archive_in_map(map_t *, const archive_t *, where_t);
+int enter_dir_in_map(map_t *, const char *, int, where_t);
+void ensure_extra_file_map(void);
+void ensure_needed_map(void);
+int fix_game(game_t *, archive_t *, match_array_t *, match_disk_array_t *,
+	     file_status_array_t *);
+parray_t *find_superfluous(const char *);
+char *make_needed_name(const rom_t *);
+struct zip *my_zip_open(const char *, int);
+int my_zip_rename(struct zip *, int, const char *);
+void print_superfluous(const parray_t *);
 
 #endif /* funcs.h */

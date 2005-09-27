@@ -1,0 +1,9 @@
+# $NiH: from-needed.test,v 1.1.2.5 2005/08/06 19:54:39 wiz Exp $
+description test single-rom game (no parent), file is in needed, fix
+return 0
+args -FKLvc 1-4
+file-new roms/1-4.zip 1-4-ok.zip
+file-del needed/3656897d-000.zip 1-4-ok.zip
+stdout In game 1-4:
+stdout rom  04.rom        size       4  crc d87f7e0c: is in `needed/3656897d-000.zip'
+stdout ./roms/1-4.zip: add `needed/3656897d-000.zip/04.rom' as `04.rom'

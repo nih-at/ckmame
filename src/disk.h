@@ -2,7 +2,7 @@
 #define HAD_DISK_H
 
 /*
-  $NiH$
+  $NiH: disk.h,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
 
   disk.h -- information about one disk
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -33,7 +33,7 @@ struct disk {
     char *name;
     char *merge;
     hashes_t hashes;
-    flags_t flags;
+    status_t status;
 };
 
 typedef struct disk disk_t;
@@ -41,7 +41,7 @@ typedef struct disk disk_t;
 
 
 #define disk_hashes(d)	(&(d)->hashes)
-#define disk_flags(d)	((d)->flags)
+#define disk_status(d)	((d)->status)
 #define disk_merge(d)	((d)->merge)
 #define disk_name(d)	((d)->name)
 

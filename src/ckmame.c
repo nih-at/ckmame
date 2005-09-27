@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.3 2005/07/07 22:00:20 dillo Exp $
+  $NiH: ckmame.c,v 1.4.2.9 2005/09/22 21:27:52 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -38,17 +38,19 @@
 
 #include "dbh.h"
 #include "error.h"
+#include "globals.h"
 #include "funcs.h"
 #include "tree.h"
 #include "types.h"
 #include "util.h"
 #include "warn.h"
+#include "xmalloc.h"
 
 
 
 char *prg;
 
-char *usage = "Usage: %s [-hVSwsfbdcFKkUuLlvn] [-D dbfile] [game...]\n";
+char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-e dir] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -57,10 +59,13 @@ char help[] = "\n"
 "  -c, --correct        report correct sets\n"
 "  -D, --db dbfile      use mame-db dbfile\n"
 "  -d, --nonogooddumps  don't report roms with no good dumps\n"
+"  -e, --search dir     search for missing files in directory dir\n"
 "  -F, --fix            fix rom sets\n"
 "  -f, --nofixable      don't report fixable errors\n"
 "  -h, --help           display this help message\n"
 "  -i, --integrity      check integrity of rom files and disk images\n"
+"      --keep-found     keep files copied from search directories (default)\n"
+"  -j, --delete-found   delete files copied from search directories\n"
 "  -K, --keep-unknown   keep unknown files when fixing (default)\n"
 "  -k, --delete-unknown don't keep unknown files when fixing\n"
 "  -L, --keep-long      keep long files when fixing (default)\n"
@@ -69,8 +74,6 @@ char help[] = "\n"
 "  -S, --samples        check samples instead of roms\n"
 "      --superfuous     only check for superfluous files in rom sets\n"
 "  -s, --nosuperfluous  don't report superfluous files in rom sets\n"
-"  -U, --keep-unused    keep unused files when fixing\n"
-"  -u, --delete-unused  don't keep unused files when fixing (default)\n"
 "  -V, --version        display version number\n"
 "  -v, --verbose        print fixes made\n"
 "  -w, --nowarnings     print only unfixable errors\n"
@@ -84,9 +87,13 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
 "For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "bcD:dFfhiKkLlnSsxUuVvwX"
+/* XXX: remove Uu (also in long options) after next release */
+#define OPTIONS "bcD:dE:e:FfhijKkLlnSsxUuVvwX"
 
-#define OPT_SF	256
+enum {
+    OPT_KEEP_FOUND = 256,
+    OPT_SUPERFLUOUS
+};
 
 struct option options[] = {
     { "help",          0, 0, 'h' },
@@ -94,6 +101,7 @@ struct option options[] = {
 
     { "correct",       0, 0, 'c' }, /* +CORRECT */
     { "db",            1, 0, 'D' },
+    { "delete-found",  0, 0, 'j' },
     { "delete-long",   0, 0, 'l' },
     { "delete-unknown",0, 0, 'k' },
     { "delete-unused" ,0, 0, 'u' },
@@ -101,6 +109,8 @@ struct option options[] = {
     { "fix",           0, 0, 'F' },
     { "ignoreextra",   0, 0, 'X' },
     { "integrity",     0, 0, 'i' },
+    { "keep-found",    0, 0, OPT_KEEP_FOUND },
+    { "keep-extra",    0, 0, 'E' },
     { "keep-long",     0, 0, 'L' },
     { "keep-unknown",  0, 0, 'K' },
     { "keep-unused",   0, 0, 'U' },
@@ -110,16 +120,21 @@ struct option options[] = {
     { "nosuperfluous", 0, 0, 's' }, /* -SUP */
     { "nowarnings",    0, 0, 'w' }, /* -SUP, -FIX */
     { "samples",       0, 0, 'S' },
-    { "superfluous",   0, 0, OPT_SF },
+    { "search",        1, 0, 'e' },
+    { "superfluous",   0, 0, OPT_SUPERFLUOUS },
     { "verbose",       0, 0, 'v' },
 
     { NULL,            0, 0, 0 },
 };
 
 int output_options;
-int fix_do, fix_print, fix_keep_long, fix_keep_unused, fix_keep_unknown;
+int fix_options;
 int ignore_extra;
 int romhashtypes, diskhashtypes;
+parray_t *superfluous;
+parray_t *search_dirs;
+filetype_t file_type;
+DB *db;
 
 
 
@@ -127,26 +142,23 @@ int
 main(int argc, char **argv)
 {
     int i, j;
-    DB *db;
     char *dbname;
     int c, found;
     parray_t *list;
     tree_t *tree;
-    filetype_t ft;
     int superfluous_only, integrity;
     
     prg = argv[0];
     output_options = WARN_ALL;
-    ft = TYPE_ROM;
+    file_type = TYPE_ROM;
     superfluous_only = 0;
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DDB_DEFAULT_DB_NAME;
-    fix_do = fix_print = 0;
-    fix_keep_long = fix_keep_unknown = 1;
-    fix_keep_unused = 0;
+    fix_options = FIX_KEEP_LONG | FIX_KEEP_UNKNOWN;
     ignore_extra = 0;
     integrity = 0;
+    search_dirs = parray_new();
     
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -172,8 +184,11 @@ main(int argc, char **argv)
 	case 'd':
 	    output_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
+	case 'e':
+	    parray_push(search_dirs, xstrdup(optarg));
+	    break;
 	case 'F':
-	    fix_do = 1;
+	    fix_options |= FIX_DO;
 	    break;
 	case 'f':
 	    output_options &= ~WARN_FIXABLE;
@@ -181,36 +196,39 @@ main(int argc, char **argv)
 	case 'i':
 	    integrity = 1;
 	    break;
+	case 'j':
+	    fix_options |= FIX_DELETE_EXTRA;
+	    break;
 	case 'K':
-	    fix_keep_unknown = 1;
+	    fix_options |= FIX_KEEP_UNKNOWN;
 	    break;
 	case 'k':
-	    fix_keep_unknown = 0;
+	    fix_options &= ~FIX_KEEP_UNKNOWN;
 	    break;
 	case 'L':
-	    fix_keep_long = 1;
+	    fix_options |= FIX_KEEP_LONG;
 	    break;
 	case 'l':
-	    fix_keep_long = 0;
+	    fix_options &= ~FIX_KEEP_LONG;
 	    break;
 	case 'n':
-	    fix_do = 0;
-	    fix_print = 1;
+	    fix_options &= ~FIX_DO;
+	    fix_options |= FIX_PRINT;
 	    break;
 	case 'S':
-	    ft = TYPE_SAMPLE;
+	    file_type = TYPE_SAMPLE;
 	    break;
 	case 's':
 	    output_options &= ~WARN_SUPERFLUOUS;
 	    break;
 	case 'U':
-	    fix_keep_unused = 1;
+	    myerror(ERRDEF, "-U is no longer supported");
 	    break;
 	case 'u':
-	    fix_keep_unused = 0;
+	    myerror(ERRDEF, "-u is no longer optional");
 	    break;
 	case 'v':
-	    fix_print = 1;
+	    fix_options |= FIX_PRINT;
 	    break;
 	case 'w':
 	    output_options &= WARN_BROKEN;
@@ -218,7 +236,10 @@ main(int argc, char **argv)
 	case 'X':
 	    ignore_extra = 1;
 	    break;
-	case OPT_SF:
+	case OPT_KEEP_FOUND:
+	    fix_options &= ~FIX_DELETE_EXTRA;
+	    break;
+	case OPT_SUPERFLUOUS:
 	    superfluous_only = 1;
 	    break;
 
@@ -239,7 +260,8 @@ main(int argc, char **argv)
 	    exit(1);
 	}
 	
-	handle_extra_files(db, dbname, ft);
+	superfluous = find_superfluous(dbname);
+	print_superfluous(superfluous);
 	exit(0);
     }
 
@@ -254,17 +276,17 @@ main(int argc, char **argv)
 	exit(1);
     }
 
-    tree = tree_new(ft);
+    tree = tree_new();
 
     if (optind == argc) {
 	for (i=0; i<parray_length(list); i++)
-	    tree_add(db, tree, parray_get(list, i), ft);
+	    tree_add(tree, parray_get(list, i));
     }
     else {
 	for (i=optind; i<argc; i++) {
 	    if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 		if (parray_index_sorted(list, argv[i], strcasecmp) >= 0)
-		    tree_add(db, tree, argv[i], ft);
+		    tree_add(tree, argv[i]);
 		else
 		    myerror(ERRDEF, "game `%s' unknown", argv[i]);
 	    }
@@ -272,7 +294,7 @@ main(int argc, char **argv)
 		found = 0;
 		for (j=0; j<parray_length(list); j++) {
 		    if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
-			tree_add(db, tree, parray_get(list, j), ft);
+			tree_add(tree, parray_get(list, j));
 			found = 1;
 		    }
 		}
@@ -284,10 +306,15 @@ main(int argc, char **argv)
 
     parray_free(list, free);
 
-    tree_traverse(db, tree);
+    superfluous = find_superfluous(dbname);
 
-    if (optind == argc && !ignore_extra)
-	handle_extra_files(db, dbname, ft);
+    tree_traverse(tree, NULL, NULL);
+
+    if (needed_delete_list)
+	delete_list_execute(needed_delete_list);
+
+    if (output_options & WARN_SUPERFLUOUS)
+	print_superfluous(superfluous);
 
     return 0;
 }

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: match_disk.c,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
 
   match_disk.c -- information about matches of files to disks
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -43,5 +43,5 @@ match_disk_init(match_disk_t *md)
 {
     match_disk_name(md) = NULL;
     hashes_init(match_disk_hashes(md));
-    match_disk_quality(md) = ROM_UNKNOWN;
+    match_disk_quality(md) = QU_MISSING;
 }

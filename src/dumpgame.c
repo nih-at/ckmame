@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.3 2005/07/07 22:00:20 dillo Exp $
+  $NiH: dumpgame.c,v 1.4.2.6 2005/08/06 21:41:51 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -38,6 +38,7 @@
 
 #include "dbh.h"
 #include "error.h"
+#include "file_location.h"
 #include "hashes.h"
 #include "types.h"
 #include "util.h"
@@ -92,7 +93,7 @@ static char *where_name[] = {
     "zip", "cloneof", "grand-cloneof"
 };
 
-static char *flags_name[] = {
+static char *status_name[] = {
     "ok", "baddump", "nogooddump"
 };
 
@@ -121,7 +122,7 @@ print_diskline(disk_t *disk)
 {
     printf("\t\tdisk %-12s", disk->name);
     print_checksums(&disk->hashes);
-    printf("  flags %s", flags_name[disk_flags(disk)]);
+    printf(" status %s", status_name[disk_status(disk)]);
     putc('\n', stdout);
 }
 
@@ -143,8 +144,8 @@ print_romline(rom_t *rom)
     printf("\t\tfile %-12s  size %7ld",
 	   rom_name(rom), rom_size(rom));
     print_checksums(rom_hashes(rom));
-    printf("  flags %s  in %s",
-	   flags_name[rom_flags(rom)], where_name[rom_where(rom)]);
+    printf(" status %s in %s",
+	   status_name[rom_status(rom)], where_name[rom_where(rom)]);
     if (rom_merge(rom) && strcmp(rom_name(rom), rom_merge(rom)) != 0)
 	printf(" (%s)", rom_merge(rom));
     putc('\n', stdout);
@@ -177,32 +178,34 @@ print_matches(DB *db, filetype_t ft, hashes_t *hash)
 {
     game_t *game;
     int i, j, matches;
-    array_t *fbh;
+    array_t *fbha;
+    file_location_t *fbh;
 
     matches = 0;
 
-    if (hashes_has_type(hash, file_by_hash_default_hashtype(ft))) {
-	if ((fbh=r_file_by_hash(db, ft, hash)) == NULL) {
+    if (hashes_has_type(hash, file_location_default_hashtype(ft))) {
+	if ((fbha=r_file_by_hash(db, ft, hash)) == NULL) {
 	    print_footer(0, hash);
 	    return;
 	}
 
-	for (i=0; i<array_length(fbh); i++) {
-	    if ((game=r_game(db, file_by_hash_game(fbh, i))) == NULL) {
+	for (i=0; i<array_length(fbha); i++) {
+	    fbh = array_get(fbha, i);
+	    if ((game=r_game(db, file_location_name(fbh))) == NULL) {
 		myerror(ERRDEF,
 			"db error: %s not found, though in hash index",
-			file_by_hash_game(fbh, i));
+			file_location_name(fbh));
 		/* XXX: remember error */
 		continue;
 	    }
 
-	    print_match(game, ft, file_by_hash_index(fbh, i));
+	    print_match(game, ft, file_location_index(fbh));
 	    matches++;
 	    
 	    game_free(game);
 	}
 
-	array_free(fbh, file_by_hash_finalize);
+	array_free(fbha, file_location_finalize);
     }
     else {
 	for (i=0; i<parray_length(list); i++) {
@@ -307,7 +310,7 @@ main(int argc, char **argv)
 	    /* checksum */
 	    hashes_init(&match);
 	    if ((hash_from_string(&match, argv[i])) == -1) {
-		fprintf(stderr, "error parsing checksum `%s'\n", argv[i]);
+		myerror(ERRDEF, "error parsing checksum `%s'", argv[i]);
 		exit(2);
 	    }
 
@@ -391,9 +394,9 @@ print_rs(game_t *game, filetype_t ft,
 	    print_romline(r);
 	    for (j=0; j<rom_num_altnames(r); j++) {
 		/* XXX: check hashes.types */
-		printf("\t\tfile %-12s  size %7ld  crc %.8lx  flags %s  in %s",
+		printf("\t\tfile %-12s  size %7ld  crc %.8lx  status %s in %s",
 		       rom_altname(r, j), rom_size(r), rom_hashes(r)->crc,
-		       flags_name[rom_flags(r)], where_name[rom_where(r)]);
+		       status_name[rom_status(r)], where_name[rom_where(r)]);
 		if (rom_merge(r)) {
 		    if (strcmp(rom_altname(r, j), rom_merge(r)) != 0)
 			printf(" (%s)", rom_merge(r));
@@ -413,7 +416,7 @@ dump_game(DB *db, const char *name)
     game_t *game;
 
     if ((game=r_game(db, name)) == NULL) {
-	myerror(ERRDEF, "game unknown (or database error): %s", name);
+	myerror(ERRDEF, "game unknown (or database error): `%s'", name);
 	return -1;
     }
 
@@ -464,7 +467,7 @@ dump_list(DB *db, const char *key)
     parray_t *list;
 
     if ((list=r_list(db, key)) == NULL) {
-	myerror(ERRDEF, "db error reading list %s", key);
+	myerror(ERRDEF, "db error reading list `%s'", key);
 	return -1;
     }
 
@@ -535,7 +538,7 @@ dump_special(DB *db, const char *name)
 				  : name));
     }
     
-    myerror(ERRDEF, "unknown special: %s", name);
+    myerror(ERRDEF, "unknown special: `%s'", name);
     return -1;
 }
 

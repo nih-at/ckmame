@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: parse.h,v 1.2.2.1 2005/07/27 00:05:57 dillo Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -65,7 +65,7 @@ int parse_cm(parser_context_t *ctx);
 /* callbacks */
 
 int parse_file_end(parser_context_t *, filetype_t);
-int parse_file_flags(parser_context_t *, filetype_t, int, const char *);
+int parse_file_status(parser_context_t *, filetype_t, int, const char *);
 int parse_file_hash(parser_context_t *, filetype_t, int, const char *);
 int parse_file_merge(parser_context_t *, filetype_t, int, const char *);
 int parse_file_name(parser_context_t *, filetype_t, int, const char *);

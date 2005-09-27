@@ -1,0 +1,7 @@
+# $NiH$
+description test rom with two identical files, only one present
+return 0
+args -FKLivc 2-44
+file roms/2-44.zip 1-4-ok.zip 1-4-ok.zip
+stdout In game 2-44:
+stdout game 2-44                                    : correct

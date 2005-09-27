@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: diagnostics.c,v 1.1.2.6 2005/09/22 20:53:12 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -30,6 +30,7 @@
 #include "archive.h"
 #include "funcs.h"
 #include "game.h"
+#include "globals.h"
 #include "hashes.h"
 #include "match.h"
 #include "match_disk.h"
@@ -37,7 +38,7 @@
 #include "warn.h"
 
 static const char *zname[] = {
-    "zip",
+    "",
     "cloneof",
     "grand-cloneof"
 };
@@ -45,6 +46,10 @@ static const char *zname[] = {
 static const char *gname;
 static int gnamedone;
 
+static void diagnostics_archive(const archive_t *,
+				const file_status_array_t *);
+static void diagnostics_disks(const game_t *, const match_disk_array_t *);
+static void diagnostics_files(const game_t *, const match_array_t *);
 static void warn_disk(const disk_t *d, const char *fmt, ...);
 static void warn_ensure_game(void);
 static void warn_file(const rom_t *r, const char *fmt, ...);
@@ -54,42 +59,156 @@ static void warn_rom(const rom_t *rom, const char *fmt, ...);
 
 
 void
-diagnostics(const game_t *game, filetype_t ft,
-	    const match_array_t *ma, const match_disk_array_t *mda,
-	    const archive_t **zip)
+diagnostics(const game_t *game, const archive_t *a, const match_array_t *ma,
+	    const match_disk_array_t *mda, const file_status_array_t *fsa)
+{
+    warn_game(game_name(game));
+
+    diagnostics_files(game, ma);
+    diagnostics_archive(a, fsa);
+    diagnostics_disks(game, mda);
+}
+    
+
+
+static void
+diagnostics_archive(const archive_t *a, const file_status_array_t *fsa)
+{
+    int i;
+    rom_t *f;
+
+    if (a == NULL)
+	return;
+
+    for (i=0; i<archive_num_files(a); i++) {
+	f = archive_file(a, i);
+	
+	switch (file_status_array_get(fsa, i)) {
+	case FS_UNKNOWN:
+	    if (output_options & WARN_UNKNOWN)
+		warn_file(f, "unknown");
+	    break;
+	    
+	case FS_PARTUSED:
+	case FS_USED:
+	    /* handled in diagnostics_files */
+	    break;
+	    
+	case FS_BROKEN:
+	    if (output_options & WARN_FILE_BROKEN)
+		warn_file(f, "broken");
+	    break;
+
+	case FS_NEEDED:
+	    if (output_options & WARN_USED)
+		warn_file(f, "needed elsewhere");
+	    break;
+	    
+	case FS_SUPERFLUOUS:
+	    if (output_options & WARN_SUPERFLUOUS)
+		warn_file(f, "not used");
+	    break;
+	}
+    }
+}
+
+
+
+static void
+diagnostics_disks(const game_t *game, const match_disk_array_t *mda)
+{
+    int i;
+    disk_t *d;
+    match_disk_t *md;
+
+    /* XXX: is mda always set if game has disks? */
+    if (mda == NULL)
+	return;
+
+    for (i=0; i<game_num_disks(game); i++) {
+	md = match_disk_array_get(mda, i);
+	d = game_disk(game, i);
+	    
+	switch (match_disk_quality(md)) {
+	case QU_MISSING:
+	    if ((disk_status(d) != STATUS_NODUMP
+		 && (output_options & WARN_MISSING))
+		|| (output_options & WARN_NO_GOOD_DUMP))
+		warn_disk(d, "missing");
+	    break;
+		
+	case QU_HASHERR:
+	    if (output_options & WARN_WRONG_CRC) {
+		/* XXX: display checksum(s) */
+		warn_disk(d, "wrong checksum");
+	    }
+	    break;
+		
+	case QU_NOHASH:
+	    if (disk_status(d) == STATUS_NODUMP
+		&& (output_options & WARN_NO_GOOD_DUMP))
+		warn_disk(d, "exists");
+	    else if (output_options & WARN_WRONG_CRC) {
+		/* XXX: display checksum(s) */
+		warn_disk(d, "no common checksum types");
+	    }
+	    break;
+		
+	case QU_OK:
+	    if (output_options & WARN_CORRECT)
+		warn_disk(d,
+			  disk_status(d) == STATUS_OK ? "correct" : "exists");
+	    break;
+
+	case QU_COPIED:
+	    if (output_options & WARN_ELSEWHERE)
+		warn_disk(d, "is at `%s'", match_disk_name(md));
+	    break;
+
+	case QU_NAMEERR:
+	    if (output_options & WARN_WRONG_NAME)
+		warn_disk(d, "wrong name (%s)",
+			  match_disk_name(md));
+	    break;
+		
+	default:
+	    break;
+	}
+    }
+}
+
+
+
+static void
+diagnostics_files(const game_t *game, const match_array_t *ma)
 {
     int i, alldead, allcorrect, allowndead, hasown;
     match_t *m;
-    match_disk_t *md;
-    rom_t *r, *f;
-    disk_t *d;
-    
-    warn_game(game_name(game));
-
-    /* analyze result: ROMs */
+    rom_t *f, *r;
     
     alldead = allcorrect = allowndead = 1;
     hasown = 0;
-    for (i=0; i<game_num_files(game, ft); i++) {
-	m = match_array_get(ma, i, 0);
-	r = game_file(game, ft, i);
+    for (i=0; i<game_num_files(game, file_type); i++) {
+	m = match_array_get(ma, i);
+	r = game_file(game, file_type, i);
 
 	if (rom_where(r) == ROM_INZIP) {
 	    hasown = 1;
 	    
-	    if (match_quality(m) >= ROM_NAMERR)
+	    if (match_quality(m) != QU_MISSING)
 		alldead = allowndead = 0;
 	}
 	else {
-	    if (match_quality(m) >= ROM_NAMERR)
+	    if (match_quality(m) != QU_MISSING)
 		alldead = 0;
 	}
 	
-	if (match_where(m) != rom_where(r) || match_quality(m) != ROM_OK)
+	if (match_quality(m) != QU_OK)
 	    allcorrect = 0;
     }
 
-    if (((alldead || (hasown && allowndead)) && game_num_files(game, ft) > 0
+    if (((alldead || (hasown && allowndead))
+	 && game_num_files(game, file_type) > 0
 	 && (output_options & WARN_MISSING))) {
 	warn_rom(NULL, "not a single rom found");
     }
@@ -97,146 +216,76 @@ diagnostics(const game_t *game, filetype_t ft,
 	warn_rom(NULL, "correct");
     }
     else {
-        for (i=0; i<game_num_files(game, ft); i++) {
-	    m = match_array_get(ma, i, 0);
-	    r = game_file(game, ft, i);
-	    if (match_zno(m) >= 0 && match_fno(m) >= 0)
-		f = archive_file(zip[match_zno(m)], match_fno(m));
+        for (i=0; i<game_num_files(game, file_type); i++) {
+	    m = match_array_get(ma, i);
+	    r = game_file(game, file_type, i);
+	    if (match_archive(m))
+		f = archive_file(match_archive(m), match_index(m));
 	    else
 		f = NULL;
 	    
 	    switch (match_quality(m)) {
-	    case ROM_UNKNOWN:
+	    case QU_MISSING:
 		if (output_options & WARN_MISSING) {
-		    /* XXX */
-		    if (((hashes_crc(rom_hashes(r)) != 0
-			  && rom_flags(r) != FLAGS_NODUMP)
-			 || rom_size(r) == 0)
+		    if (rom_status(r) == STATUS_OK
 			|| output_options & WARN_NO_GOOD_DUMP)
 			warn_rom(r, "missing");
 		}
 		break;
 		
-	    case ROM_SHORT:
-		if (output_options & WARN_SHORT)
-		    warn_rom(r, "short (%d)", rom_size(f));
-		break;
-		
-	    case ROM_LONG:
-		if (output_options & WARN_LONG)
-		    warn_rom(r, "too long, unfixable (%d)", rom_size(f));
-		break;
-		
-	    case ROM_CRCERR:
-		if (output_options & WARN_WRONG_CRC)
-		    warn_rom(r, "wrong crc (%0.8x)",
-			     hashes_crc(rom_hashes(f)));
-		break;
-
-	    case ROM_NAMERR:
+	    case QU_NAMEERR:
 		if (output_options & WARN_WRONG_NAME)
-		    warn_rom(r, "wrong name (%s)", rom_name(f));
+		    warn_rom(r, "wrong name (%s)%s%s",
+			     rom_name(f),
+			     (rom_where(r) != match_where(m)
+			      ? ", should be in " : ""),
+			     zname[rom_where(r)]);
 		break;
 		
-	    case ROM_LONGOK:
+	    case QU_LONG:
 		if (output_options & WARN_LONGOK)
 		    warn_rom(r,
-			     "too long, valid subsection at byte %d (%d)",
-			     (int)match_offset(m), rom_size(f));
+			     "too long, valid subsection at byte %lld (%d)%s%s",
+			     match_offset(m), rom_size(f),
+			     (rom_where(r) != match_where(m)
+			      ? ", should be in " : ""),
+			     zname[rom_where(r)]);
 		break;
 		
-	    case ROM_BESTBADDUMP:
-		if (output_options & (WARN_NO_GOOD_DUMP|WARN_CORRECT))
-		    warn_rom(r, "best bad dump");
+	    case QU_OK:
+		if (output_options & WARN_CORRECT) {
+		    if (rom_status(r) == STATUS_OK)
+			warn_rom(r, "correct");
+		    else if (output_options & WARN_NO_GOOD_DUMP)
+			warn_rom(r,
+				 rom_status(r) == STATUS_BADDUMP
+				 ? "best bad dump" : "exists");
+		}
 		break;
-		
-	    case ROM_OK:
-		/* XXX */
-		if ((hashes_crc(rom_hashes(r)) == 0 || rom_flags(r)
-		     == FLAGS_NODUMP) && rom_size(r) > 0
-		    && (output_options & WARN_NO_GOOD_DUMP))
-		    warn_rom(r, "exists");
-		else if (rom_where(r) == match_zno(m) &&
-			 (output_options & WARN_CORRECT))
-		    warn_rom(r, "correct");
+
+	    case QU_COPIED:
+		if (output_options & WARN_ELSEWHERE)
+		    warn_rom(r, "is in `%s'", archive_name(match_archive(m)));
 		break;
-		
-	    default:
+
+	    case QU_INZIP:
+		if (output_options & WARN_WRONG_ZIP)
+		    warn_rom(r, "should be in %s",
+			     zname[rom_where(r)]);
 		break;
-	    }
-	    
 
-	    if (match_quality(m) != ROM_UNKNOWN
-		&& rom_where(r) != match_zno(m)
-		&& (output_options & WARN_WRONG_ZIP))
-		warn_rom(r, "should be in %s, is in %s",
-			 zname[rom_where(r)],
-			 zname[match_zno(m)]);
-	}
-    }
-
-    
-    /* analyze result: files */
-
-    if (zip[0]) {
-	for (i=0; i<archive_num_files(zip[0]); i++) {
-	    f = archive_file(zip[0], i);
-	    
-	    if ((rom_state(f) == ROM_UNKNOWN
-		 || (rom_state(f) < ROM_NAMERR
-		     && rom_where(f) != 0))
-		&& (output_options & WARN_UNKNOWN))
-		warn_file(f, "unknown");
-	    else if (rom_state(f) < ROM_TAKEN
-		     && (output_options & WARN_NOT_USED))
-		warn_file(f, "not used");
-	    else if (rom_where(f) != 0
-		     && (output_options & WARN_USED))
-		warn_file(f, "used in clone %s",
-			  game_clone(game, ft, rom_where(f)-1));
-	}
-    }
-
-    /* analyze result: disks */
-
-    /* XXX: is mda always set if game has disks? */
-    if (mda) {
-	for (i=0; i<game_num_disks(game); i++) {
-	    md = match_disk_array_get(mda, i);
-	    d = game_disk(game, i);
-	    
-	    switch (match_disk_quality(md)) {
-	    case ROM_UNKNOWN:
-		if ((disk_flags(d) != FLAGS_NODUMP
-		     && (output_options & WARN_MISSING))
-		    || (output_options & WARN_NO_GOOD_DUMP))
-		    warn_disk(d, "missing");
-		break;
-		
-	    case ROM_CRCERR:
-		if (output_options & WARN_WRONG_CRC) {
-		    /* XXX: display checksum(s) */
-		    warn_disk(d, "wrong checksum");
+	    case QU_HASHERR:
+		if (output_options & WARN_MISSING) {
+		    warn_rom(r, "checksum mismatch%s%s",
+			     (rom_where(r) != match_where(m)
+			      ? ", should be in " : ""),
+			     (rom_where(r) != match_where(m)
+			      ? zname[rom_where(r)] : ""));
 		}
 		break;
 		
-	    case ROM_NOCRC:
-		if (disk_flags(d) == FLAGS_NODUMP
-		    && (output_options & WARN_NO_GOOD_DUMP))
-		    warn_disk(d, "exists");
-		else if (output_options & WARN_WRONG_CRC) {
-		    /* XXX: display checksum(s) */
-		    warn_disk(d, "no common checksum types");
-		}
-		break;
-		
-		
-	    case ROM_OK:
-		if (output_options & WARN_CORRECT)
-		    warn_disk(d, "correct");
-		break;
-		
-	    default:
+	    case QU_NOHASH:
+		/* only used for disks */
 		break;
 	    }
 	}
@@ -334,14 +383,14 @@ warn_rom(const rom_t *r, const char *fmt, ...)
 	    
 	    /* XXX */
 	    if (hashes_has_type(rom_hashes(r), HASHES_TYPE_CRC)) {
-		switch (rom_flags(r)) {
-		case FLAGS_OK:
+		switch (rom_status(r)) {
+		case STATUS_OK:
 		    sprintf(p, "crc %.8lx: ", hashes_crc(rom_hashes(r)));
 		    break;
-		case FLAGS_BADDUMP:
+		case STATUS_BADDUMP:
 		    sprintf(p, "bad dump    : ");
 		    break;
-		case FLAGS_NODUMP:
+		case STATUS_NODUMP:
 		    sprintf(p, "no good dump: ");
 		}
 	    } else

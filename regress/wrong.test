@@ -1,10 +1,10 @@
-# test 1-rom game, only wrong roms in zip
-# $NiH$
+# $NiH: wrong.test,v 1.2.2.7 2005/08/06 19:54:39 wiz Exp $
+description test 1-rom game, only wrong roms in zip
 return 0
-args -FKULvc 1-4
-romdel 1-8-ok.zip 1-4.zip
-garbage 1-4.zip 1-8-ok.zip
-stdout ./roms/1-4.zip: mv unknown file 08.rom
+args -FKLvc 1-4
+file-del roms/1-4.zip garbage.zip
+file-new roms/garbage/1-4.zip garbage.zip
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found
-stdout file 08.rom        size       8  crc 3656897d: unknown
+stdout file garbage       size       8  crc 01888242: unknown
+stdout ./roms/1-4.zip: mv unknown file `garbage'

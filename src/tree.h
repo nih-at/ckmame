@@ -2,7 +2,7 @@
 #define HAD_TREE_H
 
 /*
-  $NiH$
+  $NiH: tree.h,v 1.1.2.3 2005/07/30 12:24:29 dillo Exp $
 
   tree.h -- XXX
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -32,7 +32,6 @@
 struct tree {
     char *name;
     int check;
-    filetype_t ft;
     struct tree *next, *child;
 };
 
@@ -42,9 +41,9 @@ typedef struct tree tree_t;
 
 #define tree_name(t)	((t)->name)
 
-int tree_add(DB *, tree_t *, const char *, filetype_t);
+int tree_add(tree_t *, const char *);
 void tree_free(tree_t *);
-tree_t *tree_new(filetype_t);
-void tree_traverse(DB *, const tree_t *);
+tree_t *tree_new(void);
+void tree_traverse(const tree_t *, archive_t *, archive_t *);
 
 #endif /* tree.h */

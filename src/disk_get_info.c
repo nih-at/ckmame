@@ -1,5 +1,5 @@
 /*
-  $NiH: chd-supp.c,v 1.4 2005/07/06 08:23:02 wiz Exp $
+  $NiH: disk_get_info.c,v 1.1.2.2 2005/08/01 22:38:54 wiz Exp $
 
   disk_get_info.c -- get info from CHD file
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -32,6 +32,8 @@
 
 #include "chd.h"
 #include "disk.h"
+#include "error.h"
+#include "globals.h"
 #include "funcs.h"
 #include "xmalloc.h"
 
@@ -52,12 +54,12 @@ disk_get_info(const char *name)
     if (name == NULL)
 	return NULL;
 
+    seterrinfo(name, NULL);
     if ((chd=chd_open(name, &err)) == NULL) {
 	/* no error if file doesn't exist */
 	if (!(err == CHD_ERR_OPEN && errno == ENOENT)) {
 	    /* XXX: include err */
-	    fprintf(stderr, "%s: error opening '%s': %s\n",
-		    prg, d->name, strerror(errno));
+	    myerror(ERRSTR, "error opening");
 	}
 	return NULL;
     }
@@ -79,16 +81,14 @@ disk_get_info(const char *name)
 
 	if (diskhashtypes & HASHES_TYPE_MD5) {
 	    if (!hashes_verify(h, HASHES_TYPE_MD5, chd->md5)) {
-		fprintf(stderr, "%s: md5 mismatch in '%s'\n",
-		    prg, name);
+		myerror(ERRFILE, "md5 mismatch");
 		return NULL;
 	    }
 	}
 
 	if (chd->version > 2 && (diskhashtypes & HASHES_TYPE_SHA1)) {
 	    if (!hashes_verify(h, HASHES_TYPE_SHA1, chd->sha1)) {
-		fprintf(stderr, "%s: sha1 mismatch in '%s'\n",
-			prg, name);
+		myerror(ERRFILE, "sha1 mismatch in '%s'");
 		return NULL;
 	    }
 	}		
@@ -126,8 +126,7 @@ get_hashes(struct chd *chd, struct hashes *h)
 
 	if (chd_read_hunk(chd, hunk, buf) != chd->hunk_len) {
 	    /* XXX: include chd->error */
-	    fprintf(stderr, "%s: error reading hunk %d in '%s': %s\n",
-		    prg, hunk, chd->name, strerror(errno));
+	    myerror(ERRFILESTR, "error reading hunk %d", hunk);
 	    free(buf);
 	    return -1;
 	}

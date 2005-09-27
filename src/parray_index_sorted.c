@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: parray_index_sorted.c,v 1.1.2.2 2005/09/22 21:29:06 wiz Exp $
 
   parray_index.c -- find index of element
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -34,7 +34,9 @@ parray_index_sorted(const parray_t *pa, const void *elem,
     int hi, lo, mid, c;
 
     lo = 0;
-    hi = parray_length(pa);
+    hi = parray_length(pa)-1;
+    if (hi == 0)
+	return -1;
 
     while (lo <= hi) {
 	mid = lo + (hi-lo)/2;

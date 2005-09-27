@@ -1,10 +1,7 @@
-# test 2-rom game (1 in parent), both roms in parent
-# $NiH$
+# $NiH: inparent.test,v 1.2.2.5 2005/08/06 19:54:39 wiz Exp $
+description test 2-rom game (1 in parent), both roms in parent
 return 0
-# XXX: adding -c reports clone-8 as correct!
-args -FKULv clone-8
-rom 2-48-ok.zip parent-4.zip 2-48-ok.zip
-romnew clone-8.zip 1-8-ok.zip
-stdout ./roms/clone-8.zip: add `./roms/parent-4.zip/08.rom' as 08.rom
+args -cFKLv clone-8
+file roms/parent-4.zip 2-48-ok.zip 2-48-ok.zip
 stdout In game clone-8:
-stdout rom  08.rom        size       8  crc 3656897d: should be in zip, is in cloneof
+stdout game clone-8                                 : not a single rom found

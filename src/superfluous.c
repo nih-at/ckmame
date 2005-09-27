@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.2 2005/07/07 22:00:20 dillo Exp $
+  $NiH: superfluous.c,v 1.3.2.7 2005/09/22 21:27:26 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -28,120 +28,123 @@
 #include <stdlib.h>
 #include <fnmatch.h>
 
-#include "types.h"
+
 #include "dbh.h"
-#include "util.h"
-#include "funcs.h"
+#include "dir.h"
 #include "error.h"
+#include "funcs.h"
+#include "globals.h"
+#include "types.h"
+#include "util.h"
 #include "xmalloc.h"
-
-/* copied from autoconf manual (AC_HEADER_DIRENT) */
-
-#include "config.h"
-
-#if HAVE_DIRENT_H
-# include <dirent.h>
-# define NAMLEN(dirent) strlen((dirent)->d_name)
-#else
-# define dirent direct
-# define NAMLEN(dirent) (dirent)->d_namlen
-# if HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif
-# if HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif
-# if HAVE_NDIR_H
-#  include <ndir.h>
-# endif
-#endif
 
 
 
-int
-handle_extra_files(DB *db, const char *dbname, int sample)
+parray_t *
+find_superfluous(const char *dbname)
 {
-    DIR *dir;
-    struct dirent *de;
-    char b[8192], *p;
-    parray_t *list, *lists, *listx, *lst, *found;
-    int i, j, l, first;
+    dir_t *dir;
+    char b[8192], dirname[8192], *p;
+    parray_t *listf, *listd, *lst, *found;
+    dir_status_t err;
+    int i, len_dir, len_name;
 
-    first = 1;
-
-    if ((list=r_list(db, DDB_KEY_LIST_GAME)) == NULL) {
-	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
-	exit(1);
+    if (file_type == TYPE_ROM) {
+	if ((listf=r_list(db, DDB_KEY_LIST_GAME)) == NULL) {
+	    myerror(ERRDEF, "list of games not found in database `%s'",
+		    dbname);
+	    exit(1);
+	}
+	if ((listd=r_list(db, DDB_KEY_LIST_DISK)) == NULL) {
+	    myerror(ERRDEF, "list of disks not found in database `%s'",
+		    dbname);
+	    exit(1);
+	}
     }
-    if ((lists=r_list(db, DDB_KEY_LIST_SAMPLE)) == NULL) {
-	myerror(ERRDEF, "list of samples not found in database `%s'", dbname);
-	exit(1);
+    else {
+	if ((listf=r_list(db, DDB_KEY_LIST_SAMPLE)) == NULL) {
+	    myerror(ERRDEF, "list of samples not found in database `%s'",
+		    dbname);
+	    exit(1);
+	}
+	listd = NULL;
     }
-    if ((listx=r_list(db, DDB_KEY_LIST_DISK)) == NULL) {
-	myerror(ERRDEF, "list of extra files not found in database `%s'",
-		dbname);
-	exit(1);
-    }
-
-    /* XXX: why this? */
-    if (parray_length(list) < 1 || (sample && parray_length(lists) < 1))
-	return 0;
 
     init_rompath();
 
+    found = parray_new();
+
     for (i=0; rompath[i]; i++) {
-	sprintf(b, "%s/%s", rompath[i], sample ? "samples" : "roms");
-	if ((dir=opendir(b)) == NULL) {
-	    /* XXX: error */
+	if ((len_dir=snprintf(dirname, sizeof(dirname), "%s/%s", rompath[i],
+			      file_type == TYPE_ROM ? "roms" : "samples"))
+	    > sizeof(dirname)-1) {
+	    myerror(ERRDEF, "ROMPATH entry too long, skipping: `%s'",
+		    rompath[i]);
+	    continue;
+	}
+	len_dir += 1; /* trailing '/' */
+	if ((dir=dir_open(dirname, 0)) == NULL) {
+	    myerror(ERRSTR, "can't open ROMPATH directory `%s'", dirname);
 	    continue;
 	}
 
-	found = parray_new();
-
-	while ((de=readdir(dir))) {
-	    l = (NAMLEN(de) < sizeof(b)-1 ? NAMLEN(de) : sizeof(b)-1);
-	    strncpy(b, de->d_name, l);
-	    b[l] = '\0';
-
-	    if (strcmp(b, ".") == 0 || strcmp(b, "..") == 0)
+	while ((err=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+	    if (err == DIR_ERROR) {
+		/* XXX: handle error */
 		continue;
-
-	    if (l > 4 && strcmp(b+l-4, ".zip") == 0) {
-		b[l-4] = '\0';
-		lst = sample ? lists : list;
 	    }
-	    else if (l > 4 && strcmp(b+l-4, ".chd") == 0) {
-		b[l-4] = '\0';
-		lst = listx;
-	    }
-	    else
-		lst = listx;
 
-	    if (parray_index_sorted(lst, b, strcasecmp) == -1) {
-		p = xmalloc(l+1);
-		strncpy(p, de->d_name, l);
-		p[l] = '\0';
-		parray_push(found, p);
+	    len_name = strlen(b+len_dir);
+
+	    if (len_name > 4) {
+		p = b+len_dir+len_name-4;
+		if (strcmp(p, ".zip") == 0) {
+		    *p = '\0';
+		    lst = listf;
+		}
+		else if (strcmp(p, ".chd") == 0) {
+		    *p = '\0';
+		    lst = listd;
+		}
+		else {
+		    p = NULL;
+		    lst = listd;
+		}
+	    }
+	    else {
+		p = NULL;
+		lst = listd;
+	    }
+
+	    if (lst == NULL
+		|| parray_index_sorted(lst, b+len_dir, strcasecmp) == -1) {
+		if (p)
+		    *p = '.';
+		
+		parray_push(found, xstrdup(b));
 	    }
 	}
-	closedir(dir);
-
-	if (parray_length(found) > 0) {
-	    if (first) {
-		printf("Extra files found:\n");
-		first = 0;
-	    }
-
-	    parray_sort(found, strcmp);
-
-	    for (j=0; j<parray_length(found); j++)
-		printf("%s/%s/%s\n", rompath[i],
-		       sample ? "samples" : "roms",
-		       (char *)parray_get(found, j));
-
-	    parray_free(found, free);
-	}
+	dir_close(dir);
     }
 
-    return 0;
+    if (parray_length(found) > 0)
+	parray_sort_unique(found, strcmp);
+
+    return found;
+}
+
+
+
+void
+print_superfluous(const parray_t *files)
+{
+    int i;
+
+    if (parray_length(files) == 0)
+	return;
+
+    printf("Extra files found:\n");
+    
+    for (i=0; i<parray_length(files); i++)
+	printf("%s\n", (char *)parray_get(files, i));
 }

@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: ckmame.mdoc,v 1.13 2005/06/12 19:12:26 wiz Exp 
-.\" $NiH: ckmame.man,v 1.8 2005/06/12 19:34:14 wiz Exp $
+.\" from NiH: ckmame.mdoc,v 1.1.2.1 2005/07/31 14:02:19 wiz Exp 
+.\" $NiH: ckmame.man,v 1.1.2.1 2005/08/01 01:56:09 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -35,7 +35,7 @@
 ckmame \- verify MAME rom sets
 .SH "SYNOPSIS"
 .B ckmame
-[\fB-bcdFfhKkLlnSsUuVvw\fR]
+[\fB-bcdFfhKkLlnSsVvw\fR]
 [\fB-D\fR \fBdbfile\fR]
 [\fBgame ...\fR]
 .SH "DESCRIPTION"
@@ -91,7 +91,7 @@ You can use command line options to select which type of errors to report.
 Supported options:
 .RS
 .TP 24
-Fl b, \-nobroken
+\fB-b\fR, \-nobroken
 Don't report unfixable errors.
 See also
 \fB-f\fR
@@ -164,17 +164,6 @@ Only check for superfluous files in rom sets.
 .TP 24
 \fB-s\fR, \-nosuperfluous
 Don't report superfluous (unneeded) files.
-.TP 24
-\fB-U\fR, \-keep-unused
-Keep unused files when fixing.
-Unused files are files that should, and do exist in other places.
-See also
-\fB-u\fR.
-.TP 24
-\fB-u\fR, \-delete-unused
-Don't keep unused files when fixing (default), delete them instead.
-See also
-\fB-U\fR.
 .TP 24
 \fB-V\fR, \-version
 Display program name and version number.
