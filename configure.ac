@@ -28,48 +28,12 @@ AC_SUBST(ZIPCMP, $ZIPCMP)
 
 # find usable db library
 db=none
-check_db=yes
-check_gdbm=yes
-
-AC_ARG_WITH(gdbm,
-    [  --with-gdbm=PREFIX  specify prefix for GDBM library],,
-	 with_gdbm=unspec)
-
-if test "$with_gdbm" = "no"
+AC_CHECK_HEADERS([db_185.h])
+AC_CHECK_FUNCS(dbopen, [db=db])
+if test "$db" = "none"
 then
-    check_gdbm=no
-else if test "$with_gdbm" != "unspec"
-then
-    if test -f "$with_gdbm"/gdbm.h
-    then
-	# PREFIX is to uninstalled version in distribution directory
-	CFLAGS="$CFLAGS -I$with_gdbm"
-	LDFLAGS="$LDFLAGS -L$with_gdbm"
-    else if test -f "$with_gdbm"/include/gdbm.h
-    then
-	# PREFIX is installation prefix
-	CFLAGS="$CFLAGS -I$with_gdbm/include"
-	LDFLAGS="$LDFLAGS -L$with_gdbm/lib"
-    fi
-    fi
-    check_db=no
-fi
-fi
-
-
-if test "$check_db" = "yes"
-then
-    AC_CHECK_HEADERS([db_185.h])
-    AC_CHECK_FUNCS(dbopen, [db=db])
-    if test "$db" = "none"
-    then
-	AC_CHECK_LIB(db, dbopen, [db=db; DBLIBS="-ldb"],
-		     [AC_CHECK_LIB(db, __db185_open, [db=db; DBLIBS="-ldb"])])
-    fi
-fi
-if test "$db" = "none" -a "$check_gdbm" = "yes"
-then
-	AC_CHECK_LIB(gdbm, gdbm_open, [db=gdbm; DBLIBS="-lgdbm"])
+    AC_CHECK_LIB(db, dbopen, [db=db; DBLIBS="-ldb"],
+	         [AC_CHECK_LIB(db, __db185_open, [db=db; DBLIBS="-ldb"])])
 fi
 if test "$db" = "none"
 then

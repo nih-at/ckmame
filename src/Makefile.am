@@ -116,8 +116,6 @@ noinst_HEADERS=\
 EXTRA_DIST=\
 	db-db.c \
 	db-db.h \
-	db-gdbm.c \
-	db-gdbm.h \
 	fnmatch.c \
 	fnmatch.h \
 	getopt.c \
