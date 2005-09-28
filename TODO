@@ -20,7 +20,6 @@ tests: (-: code does not exist)
 - copyright maintenance
 - kill romcmp
 - kill gdbm support (docs)
-- don't print superfluous if not explicitly requested and not checking all sets
 - integrity check: remember which disks have already been checked
   (only check once each)
 - "fix" superfluous files by moving them to a subdir
