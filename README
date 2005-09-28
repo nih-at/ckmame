@@ -7,17 +7,15 @@ files.
   To use it, you need
 	- zlib (at least version 1.1.2)
 	- libzip
-	- either Berkeley DB or GNU gdbm
+	- Berkeley DB
 	- optionally libxml2 (for parsing xmame -listxml output)
-Please note that there might be problems with Berkeley db under Linux
--- use `./configure --without-db' if you encounter problems with it.
 
   You will also need a description of the ROM set you want to check.
 For MAME, it can be obtained by running `mame -listxml'.
 
-  You can find zlib at ftp://ftp.cdrom.com/pub/infozip/zlib, gdbm at
-your local GNU mirror (http://www.gnu.org/server/list-mirrors.html),
-libzip at http:/www.nih.at/libzip/, and libxml2 at http://xmlsoft.org/
+  You can find zlib at http://www.zlib.net/, Berkeley DB at
+http://www.sleepycat.com/, libzip at http://www.nih.at/libzip/,
+and libxml2 at http://xmlsoft.org/.
 
   If you make a binary distribution, please include a pointer to the
 distribution site
