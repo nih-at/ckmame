@@ -1,4 +1,4 @@
-# $NiH: tochildfix.test,v 1.1.2.7 2005/08/06 19:54:39 wiz Exp $
+# $NiH: tochildfix.test,v 1.2 2005/09/27 21:33:01 dillo Exp $
 description move file from parent to clone (via needed)
 return 0
 args -FKLcv parent-4 clone-8
@@ -12,3 +12,5 @@ stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout rom  08.rom        size       8  crc 3656897d: is in `needed/3656897d-000.zip'
 stdout ./roms/clone-8.zip: add `needed/3656897d-000.zip/08.rom' as `08.rom'
+stdout needed/3656897d-000.zip: delete used file `08.rom'
+stdout needed/3656897d-000.zip: remove empty archive

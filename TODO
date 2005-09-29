@@ -10,11 +10,11 @@ tests: (-: code does not exist)
   * /prog from file
   * broken input
 * broken files in zip archive
+* get some files from superfluous/extra, leaving a non-empty archive
 
 - document ``checksum mismatch'' and ``broken'' diagnostics
 - in check for needed elsewhere: don't check if this game needs it
 - don't report superfluous files that were deleted completely
-- print message when executing delete_list if FIX_PRINT
 - document comment in prototypes for function pointers
 - update ChangeLog
 - copyright maintenance

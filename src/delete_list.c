@@ -1,5 +1,5 @@
 /*
-  $NiH: delete_list.c,v 1.1.2.3 2005/08/06 17:00:11 wiz Exp $
+  $NiH: delete_list.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   delete_list.h -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -29,6 +29,7 @@
 #include "delete_list.h"
 #include "error.h"
 #include "funcs.h"
+#include "globals.h"
 #include "xmalloc.h"
 
 
@@ -70,30 +71,49 @@ delete_list_execute(delete_list_t *dl)
     const char *name;
     const file_location_t *fbh;
     struct zip *z;
-    int ret;
+    int ret, deleted;
 
     parray_sort_unique(dl->array, file_location_cmp);
 
     name = NULL;
     z = NULL;
+    deleted = 0;
     ret = 0;
     for (i=0; i<delete_list_length(dl); i++) {
 	fbh = delete_list_get(dl, i);
 
 	if (file_location_name(fbh) != name) {
+	    if (z && deleted == zip_get_num_files(z)) {
+		if (fix_options & FIX_PRINT)
+		    printf("%s: remove empty archive\n",
+			   name);
+		/* XXX: remove from superfluous list */
+	    }
 	    if (my_zip_close(z, name) == -1)
 		ret = -1;
 
 	    name = file_location_name(fbh);
 	    if ((z=my_zip_open(name, 0)) == NULL)
 		ret = -1;
+	    deleted = 0;
 	}
 	if (z) {
-	    /* XXX: print message if FIX_PRINT */
+	    if (fix_options & FIX_PRINT)
+		printf("%s: delete used file `%s'\n",
+		       name, zip_get_name(z, file_location_index(fbh), 0));
+	    /* XXX: check for error */
 	    zip_delete(z, file_location_index(fbh));
+	    deleted++;
 	}
     }
 
+    /* XXX: avoid code duplication with above */
+    if (z && deleted == zip_get_num_files(z)) {
+	if (fix_options & FIX_PRINT)
+	    printf("%s: remove empty archive\n",
+		   name);
+	/* XXX: remove from superfluous list */
+    }
     if (my_zip_close(z, name) == -1)
 	ret = -1;
     
