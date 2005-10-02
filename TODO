@@ -12,16 +12,18 @@ tests: (-: code does not exist)
 * broken files in zip archive
 * get some files from superfluous/extra, leaving a non-empty archive
 
-- document ``checksum mismatch'' and ``broken'' diagnostics
-- in check for needed elsewhere: don't check if this game needs it
-- don't report superfluous files that were deleted completely
-- document comment in prototypes for function pointers
-- update ChangeLog
-- copyright maintenance
-- kill romcmp
-- integrity check: remember which disks have already been checked
+- [fix] in check for needed elsewhere: don't check if this game needs it
+- [fix] don't report superfluous files that were deleted completely
+- [fix] sample checking (segfaults)
+- [feature] rename disks (via needed?)
+- [feature] search for missing disks in superfluous and extra dirs
+- [feature] integrity check: remember which disks have already been checked
   (only check once each)
-- "fix" superfluous files by moving them to a subdir
+- [feature] "fix" superfluous files by moving them to a subdir
+- [doc] document ``checksum mismatch'' and ``broken'' diagnostics
+- [doc] document comment in prototypes for function pointers
+- [cleanup] update ChangeLog
+- [cleanup] copyright maintenance
 
 -- NEXT RELEASE
 
