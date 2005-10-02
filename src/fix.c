@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.2.2.14 2005/09/22 22:14:00 dillo Exp $
+  $NiH: fix.c,v 1.3 2005/09/27 21:33:02 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -46,6 +46,7 @@
 #define MARK_DELETED(x, i)	(*(int *)array_get((x), (i)) = 1)
 #define IS_DELETED(x, i)	(*(int *)array_get((x), (i)) == 1)
 
+static int fix_disks(game_t *, match_disk_array_t *);
 static int fix_files(game_t *, archive_t *, match_array_t *);
 static int fix_save_needed(archive_t *, int, int);
 static void set_zero(int *);
@@ -150,6 +151,52 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
     if (archive_close_zip(a) < 0)
 	if ((fix_options & FIX_DO) && needed_delete_list)
 	    delete_list_rollback(needed_delete_list);
+
+    fix_disks(g, mda);
+
+    return 0;
+}
+
+
+
+static int
+fix_disks(game_t *g, match_disk_array_t *mda)
+{
+    int i;
+    disk_t *d;
+    match_disk_t *md;
+    char *name;
+
+    for (i=0; i<game_num_disks(g); i++) {
+	d = game_disk(g, i);
+	md = match_disk_array_get(mda, i);
+
+	switch (match_disk_quality(md)) {
+	case QU_COPIED:
+	    if ((name=find_file(disk_name(d), TYPE_DISK)) != NULL) {
+		/* XXX: move to garbage */
+	    }
+	    else
+		name = make_file_name(TYPE_DISK, 0, disk_name(d));
+	    
+	    if (fix_options & FIX_PRINT)
+		printf("rename `%s' to `%s'\n",
+		       match_disk_name(md), name);
+	    if (fix_options & FIX_DO)
+		rename_or_copy(match_disk_name(md), name);
+	    
+	    free(name);
+	    break;
+
+	case QU_HASHERR:
+	    /* XXX: move to garbage */
+	    break;
+
+	default:
+	    /* no fix necessary/possible */
+	    break;
+	}
+    }
 
     return 0;
 }
@@ -315,7 +362,7 @@ fix_save_needed(archive_t *a, int index, int copy)
     }
 
     fbh = file_location_ext_new(zip_name, zip_index, ROM_NEEDED);
-    map_add(needed_map, file_location_default_hashtype(TYPE_ROM),
+    map_add(needed_file_map, file_location_default_hashtype(TYPE_ROM),
 	    rom_hashes(archive_file(a, index)), fbh);
 
     free(tmp);

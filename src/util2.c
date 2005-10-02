@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.1.2.12 2005/09/22 22:14:00 dillo Exp $
+  $NiH: util2.c,v 1.2 2005/09/27 21:33:03 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -42,10 +42,20 @@ char *needed_dir = "needed";	/* XXX: proper value */
 char *rompath[MAXROMPATH] = { NULL };
 static int rompath_init = 0;
 
-map_t *disk_file_map = NULL;
+map_t *extra_disk_map = NULL;
 map_t *extra_file_map = NULL;
-map_t *needed_map = NULL;
+map_t *needed_disk_map = NULL;
+map_t *needed_file_map = NULL;
 delete_list_t *needed_delete_list = NULL;
+
+#define NAME_IS_CHD(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".chd") == 0)
+#define NAME_IS_ZIP(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".zip") == 0)
+#define NAME_NO_EXT(n)	(strchr(n, '.') == NULL)
+
+
+static void enter_archive_in_map(map_t *, const archive_t *, where_t);
+static int enter_dir_in_map(map_t *, map_t *, const char *, int, where_t);
+static void enter_disk_in_map(map_t *, const disk_t *, where_t);
 
 
 
@@ -90,89 +100,56 @@ ensure_dir(const char *name, int strip_fname)
 
 
 void
-ensure_extra_file_map(void)
+ensure_extra_maps(void)
 {
     int i;
     const char *file;
     archive_t *a;
+    disk_t *d;
     
     if (extra_file_map != NULL)
 	return;
     
+    extra_disk_map = map_new();
     extra_file_map = map_new();
 
     for (i=0; i<parray_length(superfluous); i++) {
 	file = parray_get(superfluous, i);
-	if (strcmp(file+strlen(file)-4, ".zip") != 0)
-	    continue;
-
-	if ((a=archive_new(file, TYPE_FULL_PATH, 0)) != NULL) {
-	    enter_archive_in_map(extra_file_map, a, ROM_SUPERFLUOUS);
-	    archive_free(a);
+	if (NAME_IS_ZIP(file)) {
+	    if ((a=archive_new(file, TYPE_FULL_PATH, 0)) != NULL) {
+		enter_archive_in_map(extra_file_map, a, ROM_SUPERFLUOUS);
+		archive_free(a);
+	    }
+	}
+	else if (NAME_IS_CHD(file) || NAME_NO_EXT(file)) {
+	    if ((d=disk_get_info(file, NAME_NO_EXT(file))) != NULL) {
+		enter_disk_in_map(extra_disk_map, d, ROM_SUPERFLUOUS);
+		disk_free(d);
+	    }
 	}
     }
 
     for (i=0; i<parray_length(search_dirs); i++)
-	enter_dir_in_map(extra_file_map, parray_get(search_dirs, i),
+	enter_dir_in_map(extra_file_map, extra_disk_map,
+			 parray_get(search_dirs, i),
 			 DIR_RECURSE, ROM_EXTRA);
 }
 
 
 
 void
-ensure_needed_map(void)
+ensure_needed_maps(void)
 {
-    if (needed_map != NULL)
+    if (needed_file_map != NULL)
 	return;
     
-    needed_map = map_new();
+    needed_disk_map = map_new();
+    needed_file_map = map_new();
     needed_delete_list = delete_list_new();
 
-    enter_dir_in_map(needed_map, needed_dir, 0, ROM_NEEDED);
+    enter_dir_in_map(needed_file_map, needed_disk_map,
+		     needed_dir, 0, ROM_NEEDED);
 }
-
-
-
-void
-enter_archive_in_map(map_t *map, const archive_t *a, where_t where)
-{
-    int i;
-
-    for (i=0; i<archive_num_files(a); i++)
-	map_add(map, file_location_default_hashtype(TYPE_ROM),
-		rom_hashes(archive_file(a, i)),
-		file_location_ext_new(archive_name(a), i, where));
-}
-
-
-
-int
-enter_dir_in_map(map_t *map, const char *name, int flags, where_t where)
-{
-    dir_t *dir;
-    dir_status_t ds;
-    char b[8192];
-    archive_t *a;
-
-    if ((dir=dir_open(name, flags)) == NULL)
-	return -1;
-
-    while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	if (ds == DIR_ERROR) {
-	    /* XXX: handle error */
-	    continue;
-	}
-
-	/* only add zip files */
-	if (strlen(b) > 4 && strcasecmp(b+strlen(b)-4, ".zip") == 0
-	    && (a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
-	    enter_archive_in_map(map, a, where);
-	    archive_free(a);
-	}
-    }
-
-    return dir_close(dir);
-}    
 
 
 
@@ -358,4 +335,75 @@ my_zip_rename(struct zip *za, int idx, const char *name)
 
     free(name2);
     return -1;
+}
+
+
+
+int
+rename_or_copy(const char *old, const char *new)
+{
+    /* XXX: try copy */
+    return rename(old, new);
+}
+
+
+
+static void
+enter_archive_in_map(map_t *map, const archive_t *a, where_t where)
+{
+    int i;
+
+    for (i=0; i<archive_num_files(a); i++)
+	map_add(map, file_location_default_hashtype(TYPE_ROM),
+		rom_hashes(archive_file(a, i)),
+		file_location_ext_new(archive_name(a), i, where));
+}
+
+
+
+static int
+enter_dir_in_map(map_t *zip_map, map_t *disk_map,
+		 const char *name, int flags, where_t where)
+{
+    dir_t *dir;
+    dir_status_t ds;
+    char b[8192];
+    archive_t *a;
+    disk_t *d;
+
+    if ((dir=dir_open(name, flags)) == NULL)
+	return -1;
+
+    while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+	if (ds == DIR_ERROR) {
+	    /* XXX: handle error */
+	    continue;
+	}
+	if (NAME_IS_ZIP(b)) {
+	    if ((a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
+		enter_archive_in_map(zip_map, a, where);
+		archive_free(a);
+	    }
+	}
+	else if (NAME_IS_CHD(b) || NAME_NO_EXT(b)) {
+	    if ((d=disk_get_info(b, NAME_NO_EXT(b))) != NULL) {
+		enter_disk_in_map(disk_map, d, where);
+		disk_free(d);
+	    }
+	}
+    }
+
+    return dir_close(dir);
+}    
+
+
+
+static void
+enter_disk_in_map(map_t *map, const disk_t *d, where_t where)
+{
+    int i;
+
+    map_add(map, file_location_default_hashtype(TYPE_DISK),
+	    disk_hashes(d),
+	    file_location_ext_new(disk_name(d), i, where));
 }

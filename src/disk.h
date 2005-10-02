@@ -2,7 +2,7 @@
 #define HAD_DISK_H
 
 /*
-  $NiH: disk.h,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: disk.h,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   disk.h -- information about one disk
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -47,7 +47,7 @@ typedef struct disk disk_t;
 
 void disk_finalize(disk_t *);
 void disk_free(disk_t *);
-disk_t *disk_get_info(const char *);
+disk_t *disk_get_info(const char *, int);
 void disk_init(disk_t *);
 disk_t *disk_new(const char *);
 

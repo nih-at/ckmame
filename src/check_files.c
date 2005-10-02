@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.1.2.9 2005/09/22 20:53:12 dillo Exp $
+  $NiH: check_files.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -118,12 +118,12 @@ check_files(game_t *g, archive_t *as[3])
 		continue;
 	    
 	    /* search for matching file in needed */
-	    ensure_needed_map();
-	    if (find_in_archives(needed_map, r, m) == FIND_EXISTS)
+	    ensure_needed_maps();
+	    if (find_in_archives(needed_file_map, r, m) == FIND_EXISTS)
 		continue;
 
 	    /* search for matching file in superfluous and update sets */
-	    ensure_extra_file_map();
+	    ensure_extra_maps();
 	    if (find_in_archives(extra_file_map, r, m) == FIND_EXISTS)
 		continue;
 	}

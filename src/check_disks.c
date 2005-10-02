@@ -1,5 +1,5 @@
 /*
-  $NiH: check_disks.c,v 1.1.2.2 2005/07/31 20:10:47 wiz Exp $
+  $NiH: check_disks.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   check_disks.c -- match files against disks
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -23,8 +23,10 @@
 
 
 
+#include "find.h"
 #include "funcs.h"
 #include "game.h"
+#include "globals.h"
 #include "match_disk.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -47,11 +49,11 @@ check_disks(game_t *game)
     for (i=0; i<game_num_disks(game); i++) {
 	md = match_disk_array_get(mda, i);
 	d = game_disk(game, i);
-	f = disk_get_info(findfile(disk_name(d), TYPE_DISK));
+	f = disk_get_info(findfile(disk_name(d), TYPE_DISK), 0);
 
-	if (f == NULL)
-	    match_disk_quality(md) = QU_MISSING;
-	else {
+	match_disk_quality(md) = QU_MISSING;
+	
+	if (f != NULL) {
 	    hashes_copy(match_disk_hashes(md), disk_hashes(f));
 	    match_disk_name(md) = xstrdup(disk_name(f));
 	
@@ -66,6 +68,15 @@ check_disks(game_t *game)
 		match_disk_quality(md)  = QU_HASHERR;
 		break;
 	    }
+	}
+
+	if (match_disk_quality(md) != QU_OK) {
+	    /* XXX: search needed */
+
+	    /* search in superfluous and extra dirs */
+	    ensure_extra_maps();
+	    if (find_disk(extra_disk_map, d, md) == FIND_EXISTS)
+		continue;
 	}
 
 	disk_free(f);

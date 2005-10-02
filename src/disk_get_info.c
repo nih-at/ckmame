@@ -1,5 +1,5 @@
 /*
-  $NiH: disk_get_info.c,v 1.1.2.2 2005/08/01 22:38:54 wiz Exp $
+  $NiH: disk_get_info.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   disk_get_info.c -- get info from CHD file
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -44,7 +44,7 @@ static int get_hashes(struct chd *, struct hashes *);
 
 
 disk_t *
-disk_get_info(const char *name)
+disk_get_info(const char *name, int quiet)
 {
     struct chd *chd;
     disk_t *d;
@@ -57,9 +57,10 @@ disk_get_info(const char *name)
     seterrinfo(name, NULL);
     if ((chd=chd_open(name, &err)) == NULL) {
 	/* no error if file doesn't exist */
-	if (!(err == CHD_ERR_OPEN && errno == ENOENT)) {
+	if (!((err == CHD_ERR_OPEN && errno == ENOENT)
+	      || (quiet && err == CHD_ERR_NO_CHD))) {
 	    /* XXX: include err */
-	    myerror(ERRSTR, "error opening");
+	    myerror(ERRFILESTR, "error opening disk");
 	}
 	return NULL;
     }

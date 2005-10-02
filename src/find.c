@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.1.2.4 2005/08/06 17:48:46 wiz Exp $
+  $NiH: find.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -28,9 +28,55 @@
 #include "find.h"
 #include "game.h"
 #include "globals.h"
+#include "hashes.h"
+#include "xmalloc.h"
 
 static find_result_t check_for_file_in_zip(const char *, const rom_t *,
 					   match_t *);
+
+
+
+
+find_result_t
+find_disk(map_t *map, const disk_t *d, match_disk_t *m)
+{
+    parray_t *pa;
+    file_location_ext_t *fbh;
+    disk_t *dm;
+    int i;
+
+    if ((pa=map_get(map, file_location_default_hashtype(TYPE_DISK),
+		    disk_hashes(d))) == NULL)
+	return FIND_UNKNOWN;
+
+    for (i=0; i<parray_length(pa); i++) {
+	fbh = parray_get(pa, i);
+
+	if ((dm=disk_get_info(file_location_ext_name(fbh), 0)) == NULL) {
+	    /* XXX: internal error */
+	    return FIND_ERROR;
+	}
+
+	switch (hashes_cmp(disk_hashes(d), disk_hashes(dm))) {
+	case HASHES_CMP_MATCH:
+	    m->name = xstrdup(disk_name(dm));
+	    hashes_copy(match_disk_hashes(m), disk_hashes(dm));
+	    m->quality = QU_COPIED;
+	    disk_free(dm);
+	    return FIND_EXISTS;
+
+	case HASHES_CMP_NOCOMMON:
+	    disk_free(dm);
+	    return FIND_ERROR;
+
+	default:
+	    disk_free(dm);
+	    break;
+	}
+    }
+
+    return FIND_UNKNOWN;
+}
 
 
 
