@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.5.2.9 2005/09/22 20:53:12 dillo Exp $
+  $NiH: types.h,v 1.6 2005/09/27 21:33:03 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -26,7 +26,6 @@
 
 
 
-/* XXX: rename to status */
 enum status {
     STATUS_OK, STATUS_BADDUMP, STATUS_NODUMP
 };
