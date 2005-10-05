@@ -98,6 +98,15 @@ game (
 )
 
 game (
+	name disk-2
+	description "1-4 with alternate disk"
+	manufacturer "synth"
+	year 2004
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	disk ( name 108-2 md5 d9cedd2875a8b4e11de39b0fe935e323 sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae )
+)
+
+game (
 	name disk-nogood
 	description "1-4 with no good dump disk"
 	manufacturer "synth"

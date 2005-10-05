@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.2 2005/09/27 21:33:03 dillo Exp $
+  $NiH: util2.c,v 1.3 2005/10/02 11:28:10 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -340,10 +340,16 @@ my_zip_rename(struct zip *za, int idx, const char *name)
 
 
 int
-rename_or_copy(const char *old, const char *new)
+rename_or_move(const char *old, const char *new)
 {
-    /* XXX: try copy */
-    return rename(old, new);
+    if (rename(old, new) < 0) {
+	/* XXX: try move */
+	seterrinfo(old, NULL);
+	myerror(ERRFILESTR, "cannot rename to `%s'", new);
+	return -1;
+    }
+
+    return 0;
 }
 
 

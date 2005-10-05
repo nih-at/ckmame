@@ -13,7 +13,7 @@ tests: (-: code does not exist)
 * get some files from superfluous/extra, leaving a non-empty archive
 
 - [fix] don't report superfluous files that were deleted completely
-- [feature] rename disks via needed
+- [feature] move images to needed, search in needed
 - [feature] integrity check: remember which disks have already been checked
   (only check once each)
 - [feature] "fix" superfluous files by moving them to a subdir

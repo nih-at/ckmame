@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.4 2005/10/02 11:28:10 dillo Exp $
+  $NiH: funcs.h,v 1.5 2005/10/05 21:21:33 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -53,6 +53,6 @@ char *make_needed_name(const rom_t *);
 struct zip *my_zip_open(const char *, int);
 int my_zip_rename(struct zip *, int, const char *);
 void print_superfluous(const parray_t *);
-int rename_or_copy(const char *, const char *);
+int rename_or_move(const char *, const char *);
 
 #endif /* funcs.h */

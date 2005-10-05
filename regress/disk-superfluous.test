@@ -1,11 +1,12 @@
-# $NiH: disk-mis.test,v 1.2 2005/09/27 21:33:01 dillo Exp $
-description test single-rom game with disk, disk wrong name
+# $NiH: disk-superfluous.test,v 1.1 2005/10/02 11:28:10 dillo Exp $
+description test single-rom game with disk, disk wrong (not needed)
 return 0
-args -FKLivc disk
-file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file-del roms/108-5a.chd 108-5.chd
-file-new roms/108-5.chd 108-5.chd
-stdout In game disk:
-stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at `./roms/108-5a.chd'
-stdout rename `./roms/108-5a.chd' to `./roms/108-5.chd'
+args -FKLivc disk-2
+file roms/disk-2.zip 1-4-ok.zip 1-4-ok.zip
+file-del roms/108-2.chd 108-5.chd
+file roms/108-5.chd 108-5.chd 108-5.chd
+stdout In game disk-2:
+stdout game disk-2                                  : correct
+stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: wrong checksum
+stdout image ./roms/108-2.chd: not used
+stdout ./roms/108-2.chd: delete unused image

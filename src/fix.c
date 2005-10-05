@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.5 2005/10/02 12:35:04 dillo Exp $
+  $NiH: fix.c,v 1.6 2005/10/05 21:21:33 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -56,6 +56,7 @@ static void set_zero(int *);
 static int close_garbage(void);
 static int fix_add_garbage(archive_t *, int);
 static char *mkgarbage_name(const char *);
+static int myremove(const char *);
 
 static struct zip *zf_garbage;
 static char *zf_garbage_name = NULL;
@@ -168,8 +169,51 @@ fix_disks(game_t *g, match_disk_array_t *mda, file_status_array_t *dsa,
     int i;
     disk_t *d;
     match_disk_t *md;
-    char *name;
+    char *name, *to_name;
+    
+    for (i=0; i<game_num_disks(g); i++) {
+	d = game_disk(g, i);
+	name = parray_get(dn, i);
+	
+	switch (file_status_array_get(dsa, i)) {
+	case FS_UNKNOWN:
+	case FS_BROKEN:
+	    if (fix_options & FIX_PRINT)
+		printf("%s: %s unknown image\n",
+		       name,
+		       ((fix_options & FIX_KEEP_UNKNOWN) ? "mv" : "delete"));
+	    if (fix_options & FIX_DO) {
+		if (fix_options & FIX_KEEP_UNKNOWN) {
+		    to_name = mkgarbage_name(name);
+		    ensure_dir(to_name, 1);
+		    rename_or_move(name, to_name);
+		    free(to_name);
+		}
+		else
+		    myremove(name);
+	    }
+	    break;
 
+	case FS_SUPERFLUOUS:
+	    if (fix_options & FIX_PRINT)
+		printf("%s: delete unused image\n", name);
+	    if (fix_options & FIX_DO)
+		myremove(name);
+	    break;
+
+	case FS_NEEDED:
+	    if (fix_options & FIX_PRINT)
+		printf("%s: save needed image\n", name);
+	    /* XXX: save (if FIX_DO) and enter in needed_disks_map */
+	    break;
+
+	case FS_MISSING:
+	case FS_USED:
+	case FS_PARTUSED:
+	    break;
+	}
+    }
+    
     for (i=0; i<game_num_disks(g); i++) {
 	d = game_disk(g, i);
 	md = match_disk_array_get(mda, i);
@@ -186,7 +230,7 @@ fix_disks(game_t *g, match_disk_array_t *mda, file_status_array_t *dsa,
 		printf("rename `%s' to `%s'\n",
 		       match_disk_name(md), name);
 	    if (fix_options & FIX_DO)
-		rename_or_copy(match_disk_name(md), name);
+		rename_or_move(match_disk_name(md), name);
 	    
 	    free(name);
 	    break;
@@ -454,4 +498,18 @@ static void
 set_zero(int *ip)
 {
     *ip = 0;
+}
+
+
+
+static int
+myremove(const char *name)
+{
+    if (remove(name) != 0) {
+	seterrinfo(name, NULL);
+	myerror(ERRFILESTR, "cannot remove");
+	return -1;
+    }
+
+    return 0;
 }
