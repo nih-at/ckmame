@@ -13,7 +13,7 @@ ZIPCMP=@ZIPCMP@
 TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
 
 TESTCASES=	baddump.test \
-		disk-from-extra.test \
+		disk-from-extra-remove.test \
 		disk-from-superfluous.test \
 		disk-mis.test \
 		disk-noext.test \
