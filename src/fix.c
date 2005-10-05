@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.4 2005/10/02 11:28:10 dillo Exp $
+  $NiH: fix.c,v 1.5 2005/10/02 12:35:04 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -46,7 +46,8 @@
 #define MARK_DELETED(x, i)	(*(int *)array_get((x), (i)) = 1)
 #define IS_DELETED(x, i)	(*(int *)array_get((x), (i)) == 1)
 
-static int fix_disks(game_t *, match_disk_array_t *);
+static int fix_disks(game_t *, match_disk_array_t *, file_status_array_t *,
+		     const parray_t *);
 static int fix_files(game_t *, archive_t *, match_array_t *);
 static int fix_save_needed(archive_t *, int, int);
 static void set_zero(int *);
@@ -63,7 +64,7 @@ static char *zf_garbage_name = NULL;
 
 int
 fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
-	 file_status_array_t *fsa)
+	 file_status_array_t *fsa, file_status_array_t *dsa, parray_t *dn)
 {
     int i, islong, keep;
     array_t *deleted;
@@ -122,6 +123,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 
 	case FS_BROKEN:
 	case FS_USED:
+	case FS_MISSING:
 	    /* nothing to be done */
 	    break;
 	}
@@ -152,7 +154,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	if ((fix_options & FIX_DO) && needed_delete_list)
 	    delete_list_rollback(needed_delete_list);
 
-    fix_disks(g, mda);
+    fix_disks(g, mda, dsa, dn);
 
     return 0;
 }
@@ -160,7 +162,8 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 
 
 static int
-fix_disks(game_t *g, match_disk_array_t *mda)
+fix_disks(game_t *g, match_disk_array_t *mda, file_status_array_t *dsa,
+	  const parray_t *dn)
 {
     int i;
     disk_t *d;

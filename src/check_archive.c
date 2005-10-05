@@ -1,5 +1,5 @@
 /*
-  $NiH: check_archive.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
+  $NiH: check_archive.c,v 1.3 2005/10/02 11:28:10 dillo Exp $
 
   check_archive.c -- determine status of files in archive
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -32,7 +32,7 @@
 
 
 file_status_array_t *
-check_archive(archive_t *a, match_array_t *ma)
+check_archive(archive_t *a, match_array_t *ma, const char *gamename)
 {
     file_status_array_t *fsa;
     match_t *m, mr;
@@ -59,7 +59,7 @@ check_archive(archive_t *a, match_array_t *ma)
 	if (file_status_array_get(fsa, i) == FS_USED)
 	    continue;
 
-	switch (find_in_romset(archive_file(a, i), NULL, &mr)) {
+	switch (find_in_romset(archive_file(a, i), gamename, &mr)) {
 	case FIND_UNKNOWN:
 	    break;
 

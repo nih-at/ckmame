@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
+  $NiH: find.c,v 1.3 2005/10/02 11:28:10 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -29,6 +29,7 @@
 #include "game.h"
 #include "globals.h"
 #include "hashes.h"
+#include "util.h"
 #include "xmalloc.h"
 
 static find_result_t check_for_file_in_zip(const char *, const rom_t *,
@@ -76,6 +77,73 @@ find_disk(map_t *map, const disk_t *d, match_disk_t *m)
     }
 
     return FIND_UNKNOWN;
+}
+
+
+
+find_result_t
+find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md)
+{
+    array_t *a;
+    file_location_t *fbh;
+    game_t *g;
+    const disk_t *gd;
+    disk_t *f;
+    int i;
+    find_result_t status;
+    char *file_name;
+
+    if ((a=r_file_by_hash(db, TYPE_DISK, disk_hashes(d))) == NULL) {
+	/* XXX: internal error: db inconsistency */
+	return FIND_ERROR;
+    }
+
+    status = FIND_UNKNOWN;
+    for (i=0;
+	 (status != FIND_ERROR && status != FIND_EXISTS) && i<array_length(a);
+	 i++) {
+	fbh = array_get(a, i);
+
+	if (skip && strcmp(file_location_name(fbh), skip) == 0)
+	    continue;
+
+	if ((g=r_game(db, file_location_name(fbh))) == NULL) {
+	    /* XXX: internal error: db inconsistency */
+	    status = FIND_ERROR;
+	    break;
+	}
+
+	gd = game_disk(g, file_location_index(fbh));
+
+	if (hashes_cmp(disk_hashes(d), disk_hashes(gd)) == HASHES_CMP_MATCH) {
+	    status = FIND_MISSING;
+	    
+	    file_name = findfile(disk_name(gd), TYPE_DISK);
+	    if (file_name != NULL) {
+		f = disk_get_info(file_name, 1);
+		if (f) {
+		    if (hashes_cmp(disk_hashes(d), disk_hashes(f))
+			== HASHES_CMP_MATCH) {
+			status = FIND_EXISTS;
+			md->quality = QU_COPIED;
+			md->name = file_name;
+			hashes_copy(&md->hashes, disk_hashes(f));
+		    }
+		    else
+			free(file_name);
+		    disk_free(f);
+		}
+		else
+		    free(file_name);
+	    }
+	}
+
+	game_free(g);
+    }
+
+    array_free(a, file_location_finalize);
+
+    return status;
 }
 
 

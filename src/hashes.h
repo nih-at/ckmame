@@ -2,7 +2,7 @@
 #define HAD_HASHES_H
 
 /*
-  $NiH: hashes.h,v 1.4 2005/07/07 22:00:20 dillo Exp $
+  $NiH: hashes.h,v 1.5 2005/07/13 17:42:20 dillo Exp $
 
   hashes.h -- hash related functions
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -38,9 +38,13 @@
 #define HASHES_TYPE_SHA1	4
 #define HASHES_TYPE_MAX		HASHES_TYPE_SHA1
 
-#define HASHES_CMP_NOCOMMON	-1
-#define HASHES_CMP_MATCH	0
-#define HASHES_CMP_MISMATCH	1
+enum hashes_cmp {
+    HASHES_CMP_NOCOMMON = -1,
+    HASHES_CMP_MATCH,
+    HASHES_CMP_MISMATCH
+};
+
+typedef enum hashes_cmp hashes_cmp_t;
 
 struct hashes {
     int types;
@@ -63,7 +67,7 @@ typedef struct hashes_update hashes_update_t;
 #define hashes_has_type(h, t)	(hashes_types(h) & (t))
 #define hashes_types(h)		((h)->types)
 
-int hashes_cmp(const hashes_t *, const hashes_t *);
+hashes_cmp_t hashes_cmp(const hashes_t *, const hashes_t *);
 void hashes_init(hashes_t *);
 void hashes_update(hashes_update_t *, const unsigned char *, size_t);
 void hashes_update_final(hashes_update_t *);

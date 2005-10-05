@@ -1,5 +1,5 @@
 /*
-  $NiH: tree.c,v 1.1.2.3 2005/07/31 09:21:44 dillo Exp $
+  $NiH: tree.c,v 1.2 2005/09/27 21:33:03 dillo Exp $
 
   tree.c -- traverse tree of games to check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -194,7 +194,8 @@ tree_process(const tree_t *tree, archive_t *child,
     game_t *g;
     match_array_t *ma;
     match_disk_array_t *mda;
-    file_status_array_t *fsa;
+    file_status_array_t *fsa, *dsa;
+    parray_t *dn;
 
     /* check me */
     if ((g=r_game(db, tree->name)) == NULL) {
@@ -207,21 +208,26 @@ tree_process(const tree_t *tree, archive_t *child,
     all[2] = gparent;
 
     ma = check_files(g, all);
-    fsa = check_archive(child, ma);
+    fsa = check_archive(child, ma, game_name(g));
     if (file_type == TYPE_ROM)
-	mda = check_disks(g);
-    else
+	check_disks(g, &dsa, &mda, &dn);
+    else {
 	mda = NULL;
+	dsa = NULL;
+	dn = NULL;
+    }
 
     /* write warnings/errors for me */
-    diagnostics(g, child, ma, mda, fsa);
+    diagnostics(g, child, ma, mda, fsa, dsa, dn);
 
-    fix_game(g, child, ma, mda, fsa);
+    fix_game(g, child, ma, mda, fsa, dsa, dn);
 	
     /* clean up */
     file_status_array_free(fsa);
+    file_status_array_free(dsa);
     match_disk_array_free(mda);
     match_array_free(ma);
+    parray_free(dn, free);
     game_free(g);
 
     /* XXX: commit changes to child */

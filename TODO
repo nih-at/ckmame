@@ -1,7 +1,7 @@
 tests: (-: code does not exist)
-- disk renames
-- get missing disks from superfluous
-- get missing disks from extra dirs
+* disk renames
+* get missing disks from superfluous
+* get missing disks from extra dirs
 - sample test (segfault)
 * dumpgame
 * mkmamedb tests
@@ -12,11 +12,9 @@ tests: (-: code does not exist)
 * broken files in zip archive
 * get some files from superfluous/extra, leaving a non-empty archive
 
-- [fix] in check for needed elsewhere: don't check if this game needs it
 - [fix] don't report superfluous files that were deleted completely
 - [fix] sample checking (segfaults)
-- [feature] rename disks (via needed?)
-- [feature] search for missing disks in superfluous and extra dirs
+- [feature] rename disks via needed
 - [feature] integrity check: remember which disks have already been checked
   (only check once each)
 - [feature] "fix" superfluous files by moving them to a subdir

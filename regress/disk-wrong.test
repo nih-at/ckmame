@@ -1,5 +1,5 @@
-# $NiH: disk-wrong.test,v 1.1.2.3 2005/08/06 19:54:39 wiz Exp $
-description test single-rom game with disk, both are correct
+# $NiH: disk-wrong.test,v 1.2 2005/09/27 21:33:01 dillo Exp $
+description test single-rom game with disk, disk is wrong
 return 0
 args -FKLivc disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
@@ -7,3 +7,4 @@ file roms/108-5.chd 12-1.chd 12-1.chd
 stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: wrong checksum
+stdout image ./roms/108-5.chd: unknown

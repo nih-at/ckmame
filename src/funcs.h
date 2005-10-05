@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.3 2005/09/27 21:33:02 dillo Exp $
+  $NiH: funcs.h,v 1.4 2005/10/02 11:28:10 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -37,15 +37,17 @@
 #include "parray.h"
 #include "tree.h"
 
-file_status_array_t *check_archive(archive_t *, match_array_t *);
-match_disk_array_t *check_disks(game_t *);
+file_status_array_t *check_archive(archive_t *, match_array_t *, const char *);
+int check_disks(game_t *, file_status_array_t **, match_disk_array_t **,
+		parray_t **);
 match_array_t *check_files(game_t *, archive_t *[]);
 void diagnostics(const game_t *, const archive_t *, const match_array_t *,
-		 const match_disk_array_t *, const file_status_array_t *);
+		 const match_disk_array_t *, const file_status_array_t *,
+		 const file_status_array_t *, const parray_t *);
 void ensure_extra_maps(void);
 void ensure_needed_maps(void);
 int fix_game(game_t *, archive_t *, match_array_t *, match_disk_array_t *,
-	     file_status_array_t *);
+	     file_status_array_t *, file_status_array_t *, parray_t *);
 parray_t *find_superfluous(const char *);
 char *make_needed_name(const rom_t *);
 struct zip *my_zip_open(const char *, int);

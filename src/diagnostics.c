@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.1.2.6 2005/09/22 20:53:12 dillo Exp $
+  $NiH: diagnostics.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -48,25 +48,28 @@ static int gnamedone;
 
 static void diagnostics_archive(const archive_t *,
 				const file_status_array_t *);
-static void diagnostics_disks(const game_t *, const match_disk_array_t *);
+static void diagnostics_disks(const game_t *, const match_disk_array_t *,
+			      const file_status_array_t *, const parray_t *);
 static void diagnostics_files(const game_t *, const match_array_t *);
-static void warn_disk(const disk_t *d, const char *fmt, ...);
+static void warn_disk(const disk_t *, const char *, ...);
 static void warn_ensure_game(void);
-static void warn_file(const rom_t *r, const char *fmt, ...);
-static void warn_game(const char *name);
-static void warn_rom(const rom_t *rom, const char *fmt, ...);
+static void warn_file(const rom_t *, const char *, ...);
+static void warn_game(const char *);
+static void warn_image(const char *, const char *, ...);
+static void warn_rom(const rom_t *, const char *, ...);
 
 
 
 void
 diagnostics(const game_t *game, const archive_t *a, const match_array_t *ma,
-	    const match_disk_array_t *mda, const file_status_array_t *fsa)
+	    const match_disk_array_t *mda, const file_status_array_t *fsa,
+	    const file_status_array_t *dsa, const parray_t *dn)
 {
     warn_game(game_name(game));
 
     diagnostics_files(game, ma);
     diagnostics_archive(a, fsa);
-    diagnostics_disks(game, mda);
+    diagnostics_disks(game, mda, dsa, dn);
 }
     
 
@@ -91,6 +94,7 @@ diagnostics_archive(const archive_t *a, const file_status_array_t *fsa)
 	    
 	case FS_PARTUSED:
 	case FS_USED:
+	case FS_MISSING:
 	    /* handled in diagnostics_files */
 	    break;
 	    
@@ -115,7 +119,8 @@ diagnostics_archive(const archive_t *a, const file_status_array_t *fsa)
 
 
 static void
-diagnostics_disks(const game_t *game, const match_disk_array_t *mda)
+diagnostics_disks(const game_t *game, const match_disk_array_t *mda,
+		  const file_status_array_t *dsa, const parray_t *dn)
 {
     int i;
     disk_t *d;
@@ -172,6 +177,32 @@ diagnostics_disks(const game_t *game, const match_disk_array_t *mda)
 	    break;
 		
 	default:
+	    break;
+	}
+    }
+    
+    for (i=0; i<game_num_disks(game); i++) {
+	switch (file_status_array_get(dsa, i)) {
+	case FS_UNKNOWN:
+	    if (output_options & WARN_UNKNOWN)
+		warn_image(parray_get(dn, i), "unknown");
+	    break;
+	case FS_BROKEN:
+	    if (output_options & WARN_FILE_BROKEN)
+		warn_image(parray_get(dn, i), "broken");
+	    break;
+	case FS_SUPERFLUOUS:
+	    if (output_options & WARN_SUPERFLUOUS)
+		warn_image(parray_get(dn, i), "not used");
+	    break;
+	case FS_NEEDED:
+	    if (output_options & WARN_USED)
+		warn_image(parray_get(dn, i), "needed elsewhere");
+	    break;
+
+	case FS_MISSING:
+	case FS_PARTUSED:
+	case FS_USED:
 	    break;
 	}
     }
@@ -362,6 +393,26 @@ warn_game(const char *name)
 {
     gname = name;
     gnamedone = 0;
+}
+
+
+
+static void
+warn_image(const char *name, const char *fmt, ...)
+{
+    va_list va;
+
+    warn_ensure_game();
+    
+    printf("image %-12s: ", name);
+    
+    va_start(va, fmt);
+    vprintf(fmt, va);
+    va_end(va);
+
+    putc('\n', stdout);
+
+    return;
 }
 
 
