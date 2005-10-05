@@ -50,6 +50,7 @@ TESTCASES=	baddump.test \
 		punknown.test \
 		punused.test \
 		rom-from-extra-keep.test \
+		rom-from-extra-partial.test \
 		rom-from-extra-remove.test \
 		rom-from-needed.test \
 		rom-from-needed2.test \
