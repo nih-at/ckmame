@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
+  $NiH: diagnostics.c,v 1.3 2005/10/05 21:21:33 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -449,7 +449,7 @@ warn_rom(const rom_t *r, const char *fmt, ...)
 
 	}
 	else
-	    sprintf(p, "                          : ");
+	    sprintf(buf, "                          : ");
 	fputs(buf, stdout);
     }
     else
