@@ -1,4 +1,4 @@
-# $NiH: from-romset2.test,v 1.1.2.2 2005/08/06 19:54:39 wiz Exp $
+# $NiH: from-romset2.test,v 1.2 2005/09/27 21:33:01 dillo Exp $
 description integrity test parent, file is wrong, correct rom in romset
 return 0
 args -FKLivc deadbeef

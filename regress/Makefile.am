@@ -24,12 +24,6 @@ TESTCASES=	baddump.test \
 		disk-wrong.test \
 		double.test \
 		dumpgame-unknown.test \
-		from-needed.test \
-		from-needed2.test \
-		from-romset.test \
-		from-romset2.test \
-		from-superfluous.test \
-		from-superfluous-dryrun.test \
 		garbage.test \
 		inchild.test \
 		inparent.test \
@@ -55,8 +49,14 @@ TESTCASES=	baddump.test \
 		ok.test \
 		punknown.test \
 		punused.test \
-		search-keep.test \
-		search-remove.test \
+		rom-from-extra-keep.test \
+		rom-from-extra-remove.test \
+		rom-from-needed.test \
+		rom-from-needed2.test \
+		rom-from-romset.test \
+		rom-from-romset2.test \
+		rom-from-superfluous.test \
+		rom-from-superfluous-dryrun.test \
 		skipbad.test \
 		superfluous.test \
 		swap.test \

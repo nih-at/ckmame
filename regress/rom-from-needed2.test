@@ -1,4 +1,4 @@
-# $NiH: from-needed2.test,v 1.2 2005/09/27 21:33:01 dillo Exp $
+# $NiH: from-needed2.test,v 1.3 2005/09/29 12:27:16 dillo Exp $
 description integrity test, file is wrong, correct and wrong roms in needed
 return 0
 args -FKLivc deadbeef
