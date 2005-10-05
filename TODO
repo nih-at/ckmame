@@ -8,7 +8,6 @@ tests: (-: code does not exist)
   * /prog from command line
   * /prog from file
   * broken input
-* broken files in zip archive
 * get some files from superfluous, leaving a non-empty archive
 
 - [fix] don't report superfluous files that were deleted completely
