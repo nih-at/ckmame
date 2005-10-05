@@ -49,6 +49,7 @@ TESTCASES=	baddump.test \
 		ok.test \
 		punknown.test \
 		punused.test \
+		rom-broken.test \
 		rom-from-extra-keep.test \
 		rom-from-extra-partial.test \
 		rom-from-extra-remove.test \

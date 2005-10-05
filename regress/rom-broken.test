@@ -1,0 +1,10 @@
+# $NiH$
+description test game (no parent), zip is partially broken
+return 0
+args -FKLivc 2-48
+file roms/2-48.zip 2-48-broken.zip 2-48-broken.zip
+stdout In game 2-48:
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout rom  08.rom        size       8  crc 3656897d: missing
+stdout file 08.rom        size       8  crc 3656897d: broken
+stderr ./roms/2-48.zip: CRC error at index 1: bf933f81 != 3656897d
