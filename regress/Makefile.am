@@ -1,9 +1,9 @@
 noinst_PROGRAMS=	dbdump
 AM_CFLAGS=		-I${srcdir}/../src \
 			 -DDDB_INCLUDE=\"db-@DBTYPE@.h\"
-dbdump_LDADD=		${srcdir}/../src/libckmame.a @DBLIBS@
+dbdump_LDADD=		../src/libckmame.a @DBLIBS@
 
-EXTRA_DIST=runtest mamedb.txt ${TESTCASES} ${ZIPS} ${CHDS}
+EXTRA_DIST=runtest ${TESTCASES} ${ZIPS} ${CHDS} ${DBFILES}
 
 CLEANFILES=${MAME_DB}
 
@@ -78,8 +78,16 @@ ZIPS=		1-4-dup.zip \
 		deadfish4.zip \
 		deadpork.zip \
 		garbage.zip
+
 CHDS=		108-5.chd \
 		12-1.chd
+
+
+DBFILES=	mamedb.txt \
+		mamedb-lost-parent.txt \
+		mamedb-lost-parent-ok.txt \
+		mkmamedb-lost-parent.dump \
+		mkmamedb-ok.dump
 
 check: ${MAME_DB}
 	@failed=0; all=0; \
