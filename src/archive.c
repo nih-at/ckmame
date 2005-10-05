@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.1.2.8 2005/08/01 22:38:30 wiz Exp $
+  $NiH: archive.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -139,8 +139,9 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 
     if (hashtypes & HASHES_TYPE_CRC) {
 	if (rom_hashes(r)->crc != h.crc) {
-	    myerror(ERRZIP, "CRC error at index %d: %lx != %lx",
-		    idx, h.crc, rom_hashes(r)->crc);
+	    myerror(ERRZIP, "CRC error in `%s': %lx != %lx",
+		    rom_name(archive_file(a, idx)),
+		    h.crc, rom_hashes(r)->crc);
 	    rom_status(r) = STATUS_BADDUMP;
 	    return -1;
 	}

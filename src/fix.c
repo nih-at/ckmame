@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.6 2005/10/05 21:21:33 dillo Exp $
+  $NiH: fix.c,v 1.7 2005/10/05 22:08:26 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -258,7 +258,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
     struct zip *zfrom, *zto;
     match_t *m;
     rom_t *r;
-    int i;
+    int i, idx;
 
     seterrinfo(NULL, archive_name(a));
     archive_ensure_zip(a, 1);
@@ -322,6 +322,14 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 		       rom_name(r));
 	    
 	    if (fix_options & FIX_DO) {
+		/* make room for new file, if necessary */
+		idx = archive_file_index_by_name(a, rom_name(r));
+		if (idx >= 0) {
+		    if (rom_status(archive_file(a, idx)) == STATUS_BADDUMP)
+			zip_delete(zto, idx);
+		    else
+			idx = -1;
+		}
 		if ((source=zip_source_zip(zto, zfrom, match_index(m),
 					   0, 0, -1)) == NULL
 		    || zip_add(zto, rom_name(r), source) < 0) {
@@ -329,6 +337,8 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 		    myerror(ERRZIPFILE, "error adding `%s' from `%s': %s",
 			    rom_name(archive_file(afrom, match_index(m))),
 			    archive_name(afrom), zip_strerror(zto));
+		    if (idx >= 0)
+			zip_unchange(zto, idx);
 		}
 		else {
 		    if (match_where(m) == ROM_NEEDED
