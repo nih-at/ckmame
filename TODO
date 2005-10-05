@@ -1,6 +1,5 @@
 tests: (-: code does not exist)
 * disk renames
-* get missing disks from extra dirs
 * sample test
 * dumpgame
 * mkmamedb tests
