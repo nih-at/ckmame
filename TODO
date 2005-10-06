@@ -14,6 +14,7 @@ tests: (-: code does not exist)
 - [feature] integrity check: remember which disks have already been checked
   (only check once each)
 - [feature] "fix" superfluous files by moving them to a subdir
+- [feature] dumpgame: dump samples
 - [doc] document ``checksum mismatch'' and ``broken'' diagnostics
 - [doc] document comment in prototypes for function pointers
 - [cleanup] update ChangeLog
