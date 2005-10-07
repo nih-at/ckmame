@@ -15,10 +15,10 @@ TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
 TESTCASES=	baddump.test \
 		disk-from-extra-remove.test \
 		disk-from-superfluous.test \
-		disk-mis.test \
+		disk-miss.test \
 		disk-noext.test \
 		disk-nogood.test \
-		disk-nogoodmis.test \
+		disk-nogoodmiss.test \
 		disk-ok.test \
 		disk-superfluous.test \
 		disk-wrong.test \

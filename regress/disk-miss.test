@@ -1,4 +1,4 @@
-# $NiH: disk-mis.test,v 1.1.2.3 2005/08/06 19:54:39 wiz Exp $
+# $NiH: disk-mis.test,v 1.2 2005/09/27 21:33:01 dillo Exp $
 description test single-rom game with disk, disk missing
 return 0
 args -FKLivc disk
