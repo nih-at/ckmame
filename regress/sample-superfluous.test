@@ -1,0 +1,11 @@
+# $NiH: sample-parent-ok.test,v 1.1 2005/10/07 16:54:59 wiz Exp $
+description test samples, some in parent, zip is correct
+return 0
+args -FKLivSc samptest-child
+file samples/samptest-child.zip samptest3.zip samptest2.zip
+file-new samples/garbage/samptest-child.zip samptest3-garbage.zip
+file samples/samptest.zip samptest.zip samptest.zip
+stdout In game samptest-child:
+stdout game samptest-child                          : correct
+stdout file boing.wav     size       8  crc 1cfbd7ab: unknown
+stdout ./samples/samptest-child.zip: mv unknown file `boing.wav'

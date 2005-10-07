@@ -63,6 +63,7 @@ TESTCASES=	baddump.test \
 		sample-miss.test \
 		sample-ok.test \
 		sample-parent-ok.test \
+		sample-superfluous.test \
 		skipbad.test \
 		superfluous.test \
 		swap.test \
