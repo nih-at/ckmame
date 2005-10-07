@@ -147,4 +147,25 @@ game (
 	rom ( name 04.rom size 4 crc32 d87f7e0c )
 )
 
+game (
+	name samptest
+	description "sample test"
+	manufacturer "synth"
+	year 2005
+	rom  ( name samplegame.rom size 2048 crc32 123456B8 )
+	sample bang.wav
+	sample crash.wav
+)
+
+game (
+	name samptest-child
+	description "sample test child"
+	manufacturer "synth"
+	year 2005
+	rom  ( name samplechild.rom size 1024 crc32 876A5321 )
+	sampleof samptest
+	sample boom.wav
+	sample crash.wav
+)
+
 END

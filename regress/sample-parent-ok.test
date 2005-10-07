@@ -1,0 +1,8 @@
+# $NiH$
+description test samples, some in parent, zip is correct
+return 0
+args -FKLivSc samptest-child
+file samples/samptest-child.zip samptest2.zip samptest2.zip
+file samples/samptest.zip samptest.zip samptest.zip
+stdout In game samptest-child:
+stdout game samptest-child                          : correct

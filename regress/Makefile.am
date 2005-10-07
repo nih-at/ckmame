@@ -60,6 +60,8 @@ TESTCASES=	baddump.test \
 		rom-from-romset2.test \
 		rom-from-superfluous.test \
 		rom-from-superfluous-dryrun.test \
+		sample-ok.test \
+		sample-parent-ok.test \
 		skipbad.test \
 		superfluous.test \
 		swap.test \
