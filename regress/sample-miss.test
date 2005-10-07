@@ -1,0 +1,8 @@
+# $NiH: sample-parent-ok.test,v 1.1 2005/10/07 16:54:59 wiz Exp $
+description test samples, some in parent, zip is correct
+return 0
+args -FKLivSc samptest-child
+file samples/samptest-child.zip samptest2.zip samptest2.zip
+stdout In game samptest-child:
+stdout rom  boom.wav                                : correct
+stdout rom  crash.wav                               : missing
