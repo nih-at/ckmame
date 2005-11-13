@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
+  $NiH: archive.c,v 1.3 2005/10/05 23:00:18 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -266,6 +266,19 @@ archive_new(const char *name, filetype_t ft, int createp)
     }
 
     return a;
+}
+
+
+
+int
+archive_refresh(archive_t *a)
+{
+    archive_close_zip(a);
+    array_truncate(archive_files(a), 0, rom_finalize);
+
+    read_infos_from_zip(a, romhashtypes);
+
+    return 0;
 }
 
 

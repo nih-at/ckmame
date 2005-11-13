@@ -18,6 +18,7 @@ libckmame_a_SOURCES= \
 	array_grow.c \
 	array_new_length.c \
 	array_push.c \
+	array_truncate.c \
 	chd.c \
 	check_archive.c \
 	check_disks.c \

@@ -1,10 +1,7 @@
-#ifndef _HAD_ARRAY_H
-#define _HAD_ARRAY_H
-
 /*
-  $NiH: array.h,v 1.1 2005/07/13 17:42:19 dillo Exp $
+  $NiH$
 
-  array.h -- array of arbitrary types
+  array_truncate.c -- truncate array to specified length
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -24,29 +21,20 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-
-struct array {
-    char *data;
-    int elem_size;
-    int nentry;
-    int alloc_len;
-};
-
-typedef struct array array_t;
+#include "array.h"
 
 
 
-#define array_get(a, i)		((void *)((a)->data+(a)->elem_size*(i)))
-#define array_length(a)		((a)->nentry)
-#define array_new(s)		(array_new_sized((s), 0))
+void
+array_truncate(array_t *a, int len, void (*finalize)(/* void * */))
+{
+    int i;
 
-void array_delete(array_t *, int, void (*)(/* void * */));
-void array_free(array_t *, void (*)(/* void * */));
-void array_grow(array_t *, void (*)(/* void * */));
-array_t *array_new_sized(int, int);
-array_t *array_new_length(int, int, void (*)(/* void * */));
-void array_push(array_t *, void *);
-void array_truncate(array_t *, int, void (*)(/* void * */));
-
-#endif /* array.h */
+    if (len >= array_length(a))
+	return;
+	
+    for (i=len; i<array_length(a); i++)
+	finalize(array_get(a, i));
+    
+    array_length(a) = len;
+}

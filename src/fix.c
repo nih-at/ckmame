@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.7 2005/10/05 22:08:26 dillo Exp $
+  $NiH: fix.c,v 1.8 2005/10/05 23:00:18 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -67,10 +67,12 @@ int
 fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	 file_status_array_t *fsa, file_status_array_t *dsa, parray_t *dn)
 {
-    int i, islong, keep;
+    int i, islong, keep, archive_changed;
     array_t *deleted;
 
     zf_garbage = NULL;
+
+    archive_changed = 0;
 
     if (fix_options & FIX_DO) {
 	archive_ensure_zip(a, 1);
@@ -96,6 +98,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 		if (keep)
 		    keep = (fix_add_garbage(a, i) == -1);
 		if (keep == 0) {
+		    archive_changed = 1;
 		    MARK_DELETED(deleted, i);
 		    zip_delete(archive_zip(a), i);
 		}
@@ -107,8 +110,10 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 		printf("%s: delete unused file `%s'\n",
 		       archive_name(a),
 		       rom_name(archive_file(a, i)));
-	    if (fix_options & FIX_DO)
+	    if (fix_options & FIX_DO) {
+		archive_changed = 1;
 		zip_delete(archive_zip(a), i);
+	    }
 	    break;
 
 	case FS_NEEDED:
@@ -117,8 +122,10 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 		       archive_name(a),
 		       rom_name(archive_file(a, i)));
 	    if (fix_save_needed(a, i, fix_options & FIX_DO) != -1) {
-		if (fix_options & FIX_DO)
+		if (fix_options & FIX_DO) {
+		    archive_changed = 1;
 		    zip_delete(archive_zip(a), i);
+		}
 	    }
 	    break;
 
@@ -149,15 +156,17 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	return 0;
     }
 
-    fix_files(g, a, ma);
+    archive_changed |= fix_files(g, a, ma);
 
-    if (archive_close_zip(a) < 0)
+    if (archive_close_zip(a) < 0) {
+	archive_changed = 0;
 	if ((fix_options & FIX_DO) && needed_delete_list)
 	    delete_list_rollback(needed_delete_list);
+    }
 
     fix_disks(g, mda, dsa, dn);
 
-    return 0;
+    return archive_changed;
 }
 
 
@@ -258,11 +267,13 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
     struct zip *zfrom, *zto;
     match_t *m;
     rom_t *r;
-    int i, idx;
+    int i, idx, archive_changed;
 
     seterrinfo(NULL, archive_name(a));
     archive_ensure_zip(a, 1);
     zto = archive_zip(a);
+
+    archive_changed = 0;
 
     for (i=0; i<game_num_files(g, file_type); i++) {
 	m = match_array_get(ma, i);
@@ -289,6 +300,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 		       rom_name(r));
 	    
 	    if (fix_options & FIX_DO) {
+		archive_changed = 1;
 		if ((source=zip_source_zip(zto, zfrom, match_index(m),
 					   ZIP_FL_UNCHANGED, match_offset(m),
 					   rom_size(r))) == NULL
@@ -307,6 +319,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 		       rom_name(archive_file(a, match_index(m))),
 		       rom_name(r));
 	    if (fix_options & FIX_DO) {
+		archive_changed = 1;
 		if (my_zip_rename(zto, match_index(m), rom_name(r)) == -1)
 		    myerror(ERRZIPFILE, "error renaming `%s': %s",
 			    rom_name(archive_file(a, match_index(m))),
@@ -322,6 +335,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 		       rom_name(r));
 	    
 	    if (fix_options & FIX_DO) {
+		archive_changed = 1;
 		/* make room for new file, if necessary */
 		idx = archive_file_index_by_name(a, rom_name(r));
 		if (idx >= 0) {
@@ -365,7 +379,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 	}
     }
 
-    return 0;
+    return archive_changed;
 }
   
 
