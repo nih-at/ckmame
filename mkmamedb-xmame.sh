@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: mkmamedb-xmame.sh,v 1.3 2005/06/12 14:56:31 dillo Exp $
+#  $NiH: mkmamedb-xmame.sh,v 1.4 2005/07/01 01:29:08 dillo Exp $
 #
 #  mkmamedb-xmame.sh -- create mamedb by calling xmame
 #  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -30,7 +30,7 @@ then
     exit 1
 fi
 
-if [ "$PROG_VERSION" '<' '0.84.1' ]
+if [ "$PROG_VERSION" '<' '0.84.1' -a "$PROG_VERSION" '<' '0.100' ]
 then
     LIST=-li
 else
