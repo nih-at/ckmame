@@ -15,6 +15,7 @@ tests: (-: code does not exist)
 - [feature] "fix" superfluous files by moving them to a subdir
 - [feature] dumpgame: dump samples
 - [feature] add option to remove used files from -e dirs
+- [feature] recognize and ignore ``0x'' prefix before checksums
 - [doc] document ``checksum mismatch'' and ``broken'' diagnostics
 - [doc] document comment in prototypes for function pointers
 - [cleanup] update ChangeLog
