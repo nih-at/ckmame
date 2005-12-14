@@ -1,5 +1,15 @@
+- [fix] don't report superfluous files that were deleted completely
+- [doc] document ``checksum mismatch'' and ``broken'' diagnostics
+- [doc] document comment in prototypes for function pointers
+- [cleanup] update ChangeLog
+- [cleanup] copyright maintenance
+- [feature] "fix" superfluous archives by moving unknown files to garbage
+- [feature] recognize and ignore ``0x'' prefix before checksums
+- [feature] add option to remove used files from -e dirs
+- [feature] move images to needed, search in needed
+
 tests: (-: code does not exist)
-* disk renames
+- disk swap
 * dumpgame
 * mkmamedb tests
   * XML parsing
@@ -8,20 +18,11 @@ tests: (-: code does not exist)
   * broken input
 * get some files from superfluous, leaving a non-empty archive
 
-- [fix] don't report superfluous files that were deleted completely
-- [feature] move images to needed, search in needed
+-- NEXT RELEASE
+
 - [feature] integrity check: remember which disks have already been checked
   (only check once each)
-- [feature] "fix" superfluous files by moving them to a subdir
 - [feature] dumpgame: dump samples
-- [feature] add option to remove used files from -e dirs
-- [feature] recognize and ignore ``0x'' prefix before checksums
-- [doc] document ``checksum mismatch'' and ``broken'' diagnostics
-- [doc] document comment in prototypes for function pointers
-- [cleanup] update ChangeLog
-- [cleanup] copyright maintenance
-
--- NEXT RELEASE
 
 cmcheck features:
 - greppable output
