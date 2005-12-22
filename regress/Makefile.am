@@ -80,6 +80,7 @@ ZIPS=		1-4-dup.zip \
 		1-4-ok.zip \
 		1-8-ok.zip \
 		1-c-ok.zip \
+		2-48-broken.zip \
 		2-48-ok.zip \
 		2-4c-ok.zip \
 		2-84.zip \
@@ -88,7 +89,11 @@ ZIPS=		1-4-dup.zip \
 		deadfish.zip \
 		deadfish4.zip \
 		deadpork.zip \
-		garbage.zip
+		garbage.zip \
+		samptest.zip \
+		samptest2.zip \
+		samptest3.zip \
+		samptest3-garbage.zip
 
 CHDS=		108-5.chd \
 		12-1.chd
