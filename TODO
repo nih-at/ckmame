@@ -1,4 +1,3 @@
-- [fix] don't report superfluous files that were deleted completely
 - [doc] document ``checksum mismatch'' and ``broken'' diagnostics
 - [doc] document comment in prototypes for function pointers
 - [cleanup] update ChangeLog

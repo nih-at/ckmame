@@ -1,5 +1,5 @@
 /*
-  $NiH: delete_list.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
+  $NiH: delete_list.c,v 1.3 2005/09/29 12:27:16 dillo Exp $
 
   delete_list.h -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -83,12 +83,9 @@ delete_list_execute(delete_list_t *dl)
 	fbh = delete_list_get(dl, i);
 
 	if (file_location_name(fbh) != name) {
-	    if (z && deleted == zip_get_num_files(z)) {
-		if (fix_options & FIX_PRINT)
-		    printf("%s: remove empty archive\n",
-			   name);
-		/* XXX: remove from superfluous list */
-	    }
+	    if (z && deleted == zip_get_num_files(z))
+		remove_from_superfluous(name);
+
 	    if (my_zip_close(z, name) == -1)
 		ret = -1;
 
@@ -107,13 +104,9 @@ delete_list_execute(delete_list_t *dl)
 	}
     }
 
-    /* XXX: avoid code duplication with above */
-    if (z && deleted == zip_get_num_files(z)) {
-	if (fix_options & FIX_PRINT)
-	    printf("%s: remove empty archive\n",
-		   name);
-	/* XXX: remove from superfluous list */
-    }
+    if (z && deleted == zip_get_num_files(z))
+	remove_from_superfluous(name);
+
     if (my_zip_close(z, name) == -1)
 	ret = -1;
     
@@ -132,4 +125,19 @@ delete_list_new(void)
     dl->mark = 0;
 
     return dl;
+}
+
+
+
+static void
+remove_from_superfluous(const char *name)
+{
+    int idx;
+
+    if (fix_options & FIX_PRINT)
+	printf("%s: remove empty archive\n", name);
+    idx = parray_index(superfluous, name, strcmp);
+    /* "needed/*.zip" are not in list */
+    if (idx >= 0)
+	parray_delete(superfluous, idx, free);
 }

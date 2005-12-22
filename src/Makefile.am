@@ -53,6 +53,7 @@ libckmame_a_SOURCES= \
 	match_disk.c \
 	parray.c \
 	parray_delete.c \
+	parray_index.c \
 	parray_index_sorted.c \
 	parray_new_from_data.c \
 	parray_pop.c \
