@@ -56,6 +56,7 @@ other features:
 - mkmamedb: handle disk without md5
 - mkmamedb: handle rom without crc
 - mkmamedb: no error message for missing newline in last line
+- mkmamedb: warn about sets without parent that use "merge"
 - complete raine support (multiple archive names: archive ( name
   "64th_street" name "64street" ))
 - handle two roms in one game with same size/hashes but different name
