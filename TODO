@@ -1,6 +1,6 @@
-- [cleanup] update ChangeLog
+. describe needed/ and garbage/
 
--- NEXT RELEASE
+-- new release
 
 tests:
 * dumpgame
