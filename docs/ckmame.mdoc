@@ -1,4 +1,4 @@
-.\" $NiH: ckmame.mdoc,v 1.2 2005/09/27 21:33:00 dillo Exp $
+.\" $NiH: ckmame.mdoc,v 1.1 2005/12/22 20:10:39 dillo Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -33,7 +33,7 @@
 .Os
 .Sh NAME
 .Nm ckmame
-.Nd verify MAME rom sets
+.Nd verify MAME ROM sets
 .Sh SYNOPSIS
 .Nm
 .Op Fl bcdFfhjKkLlnSsVvw
@@ -56,7 +56,7 @@ from the 1970s to today).
 Since MAME is emulating the games, it uses the original images from
 the arcade machines' original ROM chips.  MAME's internal database
 contains extensive information on the ROMs, including the sizes
-and checksums of the used roms.
+and checksums of the used ROMs.
 Since some arcade games are variants of others and share some of the
 same ROMs, there are also internal dependencies between these so
 called clones.
@@ -77,7 +77,7 @@ only used for verification, since the MAME team often renames ROMs.
 .Pp
 While
 .Nm
-uses MAME's rom database, it must be converted into a more
+uses MAME's ROM database, it must be converted into a more
 efficient format before use.
 See
 .Xr mkmamedb 1
@@ -106,7 +106,7 @@ Use
 .Ar dbfile
 as database file.
 .It Fl d , -nonogooddumps
-Don't report roms with no known good dumps.
+Don't report ROMs with no known good dumps.
 .It Fl e , -search Ar dir
 Look for missing files in directory
 .Ar dir
@@ -115,7 +115,7 @@ Recommended for use with update sets.
 See also
 .Fl j .
 .It Fl F , -fix
-Fix rom sets; do as much as possible, such as renaming and moving
+Fix ROM sets; do as much as possible, such as renaming and moving
 files.
 .It Fl f , -nofixable
 Don't report fixable errors.
@@ -132,13 +132,13 @@ internally saved ones.
 .It Fl j , -delete-found
 When using
 .Fl e ,
-delete files that are copied to the romset.
+delete files that are copied to the ROM set.
 See also
 .Fl -keep-found .
 .It Fl -keep-found
 When using
 .Fl e ,
-do not remove files that are copied to the romset (default).
+do not remove files that are copied to the ROM set (default).
 See also
 .Fl j .
 .It Fl K , -keep-unknown
@@ -164,9 +164,9 @@ See also
 .It Fl n , -dryrun
 Don't actually fix anything, just report what would be done.
 .It Fl S , -samples
-Check samples instead of roms.
+Check samples instead of ROMs.
 .It Fl -superfluous
-Only check for superfluous files in rom sets.
+Only check for superfluous files in ROM sets.
 .It Fl s , -nosuperfluous
 Don't report superfluous (unneeded) files.
 .It Fl V , -version
@@ -174,15 +174,15 @@ Display program name and version number.
 .It Fl v , -verbose
 Print fixes made.
 .It Fl w , -nowarnings
-Print only unfixable error, like missing or completely incorrect roms.
+Print only unfixable error, like missing or completely incorrect ROMs.
 See also
 .Fl b
 and
 .Fl f .
 .It Fl X , -ignoreextra
-Do not mention extra files that are in the roms or samples dirs
+Do not mention extra files that are in the ROMs or samples dirs
 respectively.
-Most of the time these are romsets whose names have changed.
+Most of the time these are ROM sets whose names have changed.
 Additionally,
 .Nm
 creates a
@@ -201,18 +201,33 @@ option.
 Defaults to
 .Dq Pa mame.db .
 .It Ev ROMPATH
-Location for the rom zip files.
+Location for the ROM zip files.
 Defaults to
 .Dq Pa \&. .
 .El
+.Sh DIAGNOSTICS
+Most messages should be straightforward.
+Two need special explanations:
+.Pp
+If a file is marked as
+.Dq broken ,
+it means that the computed checksum is not the same
+as the checksum stored in the zip archive,
+usually because there has been a decompression error.
+.Pp
+If a ROM or disk is marked with
+.Dq checksum mismatch ,
+the primary checksum matches, but one of the other checksums
+does not.
+The primary checksum for ROMs is CRC32, for disks MD5.
 .Sh EXAMPLES
-Print a report about the current state of your rom sets in the
+Print a report about the current state of your ROM sets in the
 .Pa roms
 subdir of the current dir:
 .Dl Ic ckmame
 .Pp
 Fix all sets and only report unfixable errors, omitting those
-roms where no good dump exists:
+ROMs where no good dump exists:
 .Dl Ic ckmame -Fwd
 .Sh SEE ALSO
 .Xr dumpgame 1 ,
@@ -227,9 +242,3 @@ was written by
 and
 .An Thomas Klausner
 .Aq tk@giga.or.at .
-.Sh BUGS
-Files that are in clone sets of a set, but would belong in the parent
-set, are not moved automatically.
-Add them to the parent set manually, then run
-.Ic ckmame -F
-to remove them from the clone set(s) automatically.
