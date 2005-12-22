@@ -1,5 +1,5 @@
 /*
-  $NiH: check_disks.c,v 1.3 2005/10/02 11:28:10 dillo Exp $
+  $NiH: check_disks.c,v 1.4 2005/10/05 21:21:33 dillo Exp $
 
   check_disks.c -- match files against disks
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -112,7 +112,10 @@ check_disks(game_t *game, file_status_array_t **dsap,
 	}
 
 	if (match_disk_quality(md) != QU_OK) {
-	    /* XXX: search needed */
+	    /* search in needed */
+	    ensure_needed_maps();
+	    if (find_disk(needed_disk_map, d, md) == FIND_EXISTS)
+		continue;
 	    
 	    /* search in superfluous and extra dirs */
 	    ensure_extra_maps();

@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.3 2005/10/02 11:28:10 dillo Exp $
+  $NiH: util2.c,v 1.4 2005/10/05 22:08:26 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -264,6 +264,34 @@ make_needed_name(const rom_t *r)
 		
     for (i=0; i<1000; i++) {
 	sprintf(s, "%s/%s-%03d.zip", needed_dir, crc, i);
+
+	if (stat(s, &st) == -1 && errno == ENOENT)
+	    return s;
+    }
+
+    free(s);
+
+    /* XXX: better error handling */
+    return NULL;
+}
+
+
+
+char *
+make_needed_name_disk(const disk_t *d)
+{
+    struct stat st;
+    int i;
+    char *s, md5[HASHES_SIZE_MD5*2+1];
+
+    /* <needed_dir>/<md5>-nnn.zip */
+
+    hash_to_string(md5, HASHES_TYPE_MD5, rom_hashes(d));
+    
+    s = xmalloc(strlen(needed_dir) + 42);
+		
+    for (i=0; i<1000; i++) {
+	sprintf(s, "%s/%s-%03d.chd", needed_dir, md5, i);
 
 	if (stat(s, &st) == -1 && errno == ENOENT)
 	    return s;

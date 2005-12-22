@@ -1,7 +1,7 @@
 /*
-  $NiH: delete_list.c,v 1.4 2005/12/22 19:54:56 dillo Exp $
+  $NiH: delete_list.c,v 1.5 2005/12/22 20:01:31 dillo Exp $
 
-  delete_list.h -- list of files to delete
+  delete_list.c -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

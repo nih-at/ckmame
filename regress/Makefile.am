@@ -23,6 +23,8 @@ TESTCASES=	baddump.test \
 		disk-nogoodmiss.test \
 		disk-ok.test \
 		disk-superfluous.test \
+		disk-swap.test \
+		disk-to-needed.test \
 		disk-wrong.test \
 		double.test \
 		dumpgame-unknown.test \

@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.8 2005/10/05 23:00:18 dillo Exp $
+  $NiH: fix.c,v 1.9 2005/11/13 21:28:20 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -50,6 +50,7 @@ static int fix_disks(game_t *, match_disk_array_t *, file_status_array_t *,
 		     const parray_t *);
 static int fix_files(game_t *, archive_t *, match_array_t *);
 static int fix_save_needed(archive_t *, int, int);
+static int fix_save_needed_disk(const char *, int);
 static void set_zero(int *);
 
 /* XXX: move to garbage.c */
@@ -213,7 +214,7 @@ fix_disks(game_t *g, match_disk_array_t *mda, file_status_array_t *dsa,
 	case FS_NEEDED:
 	    if (fix_options & FIX_PRINT)
 		printf("%s: save needed image\n", name);
-	    /* XXX: save (if FIX_DO) and enter in needed_disks_map */
+	    fix_save_needed_disk(name, (fix_options & FIX_DO));
 	    break;
 
 	case FS_MISSING:
@@ -381,7 +382,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 
     return archive_changed;
 }
-  
+
 
 
 static int
@@ -436,6 +437,46 @@ fix_save_needed(archive_t *a, int index, int copy)
     map_add(needed_file_map, file_location_default_hashtype(TYPE_ROM),
 	    rom_hashes(archive_file(a, index)), fbh);
 
+    free(tmp);
+    return ret;
+}
+
+
+
+static int
+fix_save_needed_disk(const char *fname, int move)
+{
+    char *tmp;
+    const char *name;
+    int ret;
+    disk_t *d;
+
+    if ((d=disk_get_info(fname, 0)) == NULL)
+	return -1;
+
+    ret = 0;
+    tmp = NULL;
+    name = fname;
+
+    if (move) {
+	tmp = make_needed_name_disk(d);
+	if (tmp == NULL) {
+	    myerror(ERRDEF, "cannot create needed file name");
+	    ret = -1;
+	}
+	else if (ensure_dir(tmp, 1) < 0)
+	    ret = -1;
+	else if (rename_or_move(fname, tmp) != 0)
+	    ret = -1;
+	else
+	    name = tmp;
+    }
+
+    ensure_needed_maps();
+    map_add(needed_disk_map, file_location_default_hashtype(TYPE_DISK),
+	    disk_hashes(d), file_location_ext_new(name, 0, ROM_NEEDED));
+
+    disk_free(d);
     free(tmp);
     return ret;
 }

@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.5 2005/10/05 21:21:33 dillo Exp $
+  $NiH: funcs.h,v 1.6 2005/10/05 22:08:26 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -50,6 +50,7 @@ int fix_game(game_t *, archive_t *, match_array_t *, match_disk_array_t *,
 	     file_status_array_t *, file_status_array_t *, parray_t *);
 parray_t *find_superfluous(const char *);
 char *make_needed_name(const rom_t *);
+char *make_needed_name_disk(const disk_t *);
 struct zip *my_zip_open(const char *, int);
 int my_zip_rename(struct zip *, int, const char *);
 void print_superfluous(const parray_t *);
