@@ -1,5 +1,5 @@
 /*
-  $NiH: delete_list.c,v 1.3 2005/09/29 12:27:16 dillo Exp $
+  $NiH: delete_list.c,v 1.4 2005/12/22 19:54:56 dillo Exp $
 
   delete_list.h -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -32,23 +32,8 @@
 #include "globals.h"
 #include "xmalloc.h"
 
-
-
-static int
-my_zip_close(struct zip *z, const char *name)
-{
-    if (z) {
-	if (zip_close(z) < 0) {
-	    seterrinfo(NULL, name);
-	    myerror(ERRZIP, "cannot delete files: %s", zip_strerror(z));
-	    zip_unchange_all(z);
-	    zip_close(z);
-	    return -1;
-	}
-    }
-
-    return 0;
-}
+static int my_zip_close(struct zip *, const char *);
+static void remove_from_superfluous(const char *);
 
 
 
@@ -129,6 +114,24 @@ delete_list_new(void)
 
 
 
+static int
+my_zip_close(struct zip *z, const char *name)
+{
+    if (z) {
+	if (zip_close(z) < 0) {
+	    seterrinfo(NULL, name);
+	    myerror(ERRZIP, "cannot delete files: %s", zip_strerror(z));
+	    zip_unchange_all(z);
+	    zip_close(z);
+	    return -1;
+	}
+    }
+
+    return 0;
+}
+
+
+
 static void
 remove_from_superfluous(const char *name)
 {
@@ -137,7 +140,7 @@ remove_from_superfluous(const char *name)
     if (fix_options & FIX_PRINT)
 	printf("%s: remove empty archive\n", name);
     idx = parray_index(superfluous, name, strcmp);
-    /* "needed/*.zip" are not in list */
+    /* "needed" zip archives are not in list */
     if (idx >= 0)
 	parray_delete(superfluous, idx, free);
 }
