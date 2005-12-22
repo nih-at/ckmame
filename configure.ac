@@ -67,7 +67,6 @@ PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= 2.0,
 
 AC_CONFIG_FILES([Makefile
 		 docs/Makefile
-		 man/Makefile
 		 regress/Makefile
 		 src/Makefile])
 AC_OUTPUT

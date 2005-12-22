@@ -1,4 +1,6 @@
-.\" $NiH: dumpgame.mdoc,v 1.1 2005/07/04 21:54:49 dillo Exp $
+.\" Converted with mdoc2man 0.2
+.\" from NiH: dumpgame.mdoc,v 1.2 2005/07/07 22:00:20 dillo Exp 
+.\" $NiH: dumpgame.man,v 1.2 2005/07/13 17:42:19 dillo Exp $
 .\"
 .\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -28,74 +30,81 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd July 07, 2005
-.Dt DUMPGAME 1
-.Os
-.Sh NAME
-.Nm dumpgame
-.Nd extract rom set information from ckmame database
-.Sh SYNOPSIS
-.Nm
-.Op Fl d Ar dbfile
-.Op Ar game
-.Nm
-.Fl c | d
-.Op Fl d Ar dbfile
-.Ar checksum
-.Op Ar ...
-.Nm
-.Op Fl hV
-.Sh DESCRIPTION
-.Nm
+.TH DUMPGAME 1 "July 07, 2005" NiH
+.SH "NAME"
+dumpgame \- extract rom set information from ckmame database
+.SH "SYNOPSIS"
+.B dumpgame
+[\fB-d\fR \fBdbfile\fR]
+[\fBgame\fR]
+.B dumpgame
+\fB-c\fR | d
+[\fB-d\fR \fBdbfile\fR]
+\fBchecksum\fR
+[\fB...\fR]
+.B dumpgame
+[\fB-hV\fR]
+.SH "DESCRIPTION"
+.B dumpgame
 extracts rom set information from a
-.Xr ckmame 1
+ckmame(1)
 database.
-.Nm
+.B dumpgame
 can also find roms matching a particular checksum.
-.Pp
-.Nm
+.PP
+.B dumpgame
 supports the following options:
-.Bl -tag -width XtXtypeXXXXtypeXtypeXX
-.It Fl c , -checksum
+.RS
+.TP 24
+\fB-c\fR, \-checksum
 Look for a ROM by checksum (instead of the default
 behaviour to look for a game by name).
-.It Fl D Ar dbfile , Fl -db Ar dbfile
+.TP 24
+\fB-D\fR \fBdbfile, \fB--db\fR Ar dbfile\fR
 Use database
-.Ar dbfile
+\fBdbfile\fR
 instead of the default
-.Dq Pa mame.db .
-.It Fl d , -checksum
+``\fBmame.db\fR.''
+.TP 24
+\fB-d\fR, \-checksum
 Look for a disk by checksum (instead of the default
 behaviour to look for a game by name).
-.It Fl h , -help
+.TP 24
+\fB-h\fR, \-help
 Display a short help message.
-.It Fl V , -version
+.TP 24
+\fB-V\fR, \-version
 Display program name and version number.
-.El
-.Sh ENVIRONMENT
-.Bl -tag -width 10n
-.It Ev MAMEDB
+.RE
+.SH "ENVIRONMENT"
+.RS
+.TP 12
+Ev MAMEDB
 Location for the database file.
 Can be overridden with the
-.Fl D
+\fB-D\fR
 option.
 Defaults to
-.Dq Pa mame.db .
-.El
-.Sh EXAMPLES
+``\fBmame.db\fR.''
+.RE
+.SH "EXAMPLES"
 Display rom information for the game
-.Dq pacman :
-.Dl Ic dumpgame pacman
+``pacman'' :
+.IP
+\fBdumpgame pacman\fR
+.PP
 Display all roms matching the checksum
-.Dq c1e6ab10 :
-.Dl Ic dumpgame -c c1e6ab10
-.Sh SEE ALSO
-.Xr ckmame 1 ,
-.Xr mkmamedb 1
-.Sh AUTHORS
-.An -nosplit
-.Nm
+``c1e6ab10'' :
+.IP
+\fBdumpgame \-c c1e6ab10\fR
+.PP
+.SH "SEE ALSO"
+ckmame(1),
+mkmamedb(1)
+.SH "AUTHORS"
+-nosplit
+.B dumpgame
 was written by
-.An Dieter Baron Aq dillo@giga.or.at
+Dieter Baron <dillo@giga.or.at>
 and
-.An Thomas Klausner Aq tk@giga.or.at .
+Thomas Klausner <tk@giga.or.at.>

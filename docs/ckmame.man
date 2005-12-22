@@ -1,4 +1,6 @@
-.\" $NiH: ckmame.mdoc,v 1.1.2.2 2005/08/06 20:00:34 wiz Exp $
+.\" Converted with mdoc2man 0.2
+.\" from NiH: ckmame.mdoc,v 1.1.2.1 2005/07/31 14:02:19 wiz Exp 
+.\" $NiH: ckmame.man,v 1.2 2005/09/27 21:33:00 dillo Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -28,29 +30,25 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd August 6, 2005
-.Dt CKMAME 1
-.Os
-.Sh NAME
-.Nm ckmame
-.Nd verify MAME rom sets
-.Sh SYNOPSIS
-.Nm
-.Op Fl bcdFfhjKkLlnSsVvw
-.Op Fl D Ar dbfile
-.Op Fl e Ar dir
-.Op Ar game ...
-.Sh DESCRIPTION
-.Nm
+.TH CKMAME 1 "June 12, 2005" NiH
+.SH "NAME"
+ckmame \- verify MAME rom sets
+.SH "SYNOPSIS"
+.B ckmame
+[\fB-bcdFfhKkLlnSsVvw\fR]
+[\fB-D\fR \fBdbfile\fR]
+[\fBgame ...\fR]
+.SH "DESCRIPTION"
+.B ckmame
 is a program to check ROM sets for MAME, the Multiple Arcade
 Machine Emulator (see
-.Pa http://www.mame.net/ ) ,
+\fBhttp://www.mame.net/ )\fR,
 or other emulators that provide ROM set information in a compatible
 way (e.g., Raine, Impact, or other emulators.)
 It tells you which ROM files are missing or have a wrong checksum,
 can delete unknown and unused files from the ROM sets, and rename
 or move files.
-.Pp
+.PP
 MAME is an emulator for numerous arcade machines (video games, ranging
 from the 1970s to today).
 Since MAME is emulating the games, it uses the original images from
@@ -62,174 +60,181 @@ same ROMs, there are also internal dependencies between these so
 called clones.
 To save space, ROMs can be archived in zip files and
 dynamically unzipped by MAME when you play a game.
-.Nm
+.B ckmame
 does only support ROM sets stored as zip files.
-.Pp
-.Nm
+.PP
+.B ckmame
 tries to create a
-.Dq split ROM set
+``split ROM set''
 from your current collection.
 This means that all files needed by the parent are kept in the
 parent's zip file, and only the files needed by the clone (or child)
 that are different from the parent's are kept in the child's zip file.
 For identifying the ROMs ckmame uses the sizes and checksums; names are
 only used for verification, since the MAME team often renames ROMs.
-.Pp
+.PP
 While
-.Nm
+.B ckmame
 uses MAME's rom database, it must be converted into a more
 efficient format before use.
 See
-.Xr mkmamedb 1
+mkmamedb(1)
 for details.
-.Pp
+.PP
 By default,
-.Nm
+.B ckmame
 will check the games named on the command line, or all games if none
 are given.
 Shell wildcards are allowed.
 You can use command line options to select which type of errors to report.
-.Ss OPTIONS
+.SS "OPTIONS"
 Supported options:
-.Bl -tag -width 22n
-.It Fl b, -nobroken
+.RS
+.TP 24
+\fB-b\fR, \-nobroken
 Don't report unfixable errors.
 See also
-.Fl f
+\fB-f\fR
 and
-.Fl w .
-.It Fl c , -correct
+\fB-w\fR.
+.TP 24
+\fB-c\fR, \-correct
 Report correct sets.
 Normally they are not mentioned.
-.It Fl D Ar dbfile , Fl -db Ar dbfile
+.TP 24
+\fB-D\fR \fBdbfile, \fB--db\fR Ar dbfile\fR
 Use
-.Ar dbfile
+\fBdbfile\fR
 as database file.
-.It Fl d , -nonogooddumps
+.TP 24
+\fB-d\fR, \-nonogooddumps
 Don't report roms with no known good dumps.
-.It Fl e , -search Ar dir
-Look for missing files in directory
-.Ar dir
-and its subdirectories.
-Recommended for use with update sets.
-See also
-.Fl j .
-.It Fl F , -fix
+.TP 24
+\fB-F\fR, \-fix
 Fix rom sets; do as much as possible, such as renaming and moving
 files.
-.It Fl f , -nofixable
+.TP 24
+\fB-f\fR, \-nofixable
 Don't report fixable errors.
 See also
-.Fl b
+\fB-b\fR
 and
-.Fl w .
-.It Fl h , -help
+\fB-w\fR.
+.TP 24
+\fB-h\fR, \-help
 Display a short help message.
-.It Fl i , -integrity
+.TP 24
+\fB-i\fR, \-integrity
 Check integrity of zip archives and disk images
 by computing checksums and comparing them with the
 internally saved ones.
-.It Fl j , -delete-found
-When using
-.Fl e ,
-delete files that are copied to the romset.
-See also
-.Fl -keep-found .
-.It Fl -keep-found
-When using
-.Fl e ,
-do not remove files that are copied to the romset (default).
-See also
-.Fl j .
-.It Fl K , -keep-unknown
+.TP 24
+\fB-K\fR, \-keep-unknown
 Keep unknown files when fixing (default).
 They are moved into a zip file with the same name under
-.Pa roms/garbage .
+\fBroms/garbage\fR.
 See also
-.Fl k .
-.It Fl k , -delete-unknown
+\fB-k\fR.
+.TP 24
+\fB-k\fR, \-delete-unknown
 Don't keep unknown files when fixing.
 See also
-.Fl K .
-.It Fl L , -keep-long
+\fB-K\fR.
+.TP 24
+\fB-L\fR, \-keep-long
 Keep too long files when fixing (default).
 See also
-.Fl K
+\fB-K\fR
 and
-.Fl l .
-.It Fl l , -delete-long
+\fB-l\fR.
+.TP 24
+\fB-l\fR, \-delete-long
 Don't keep long files when fixing, delete them instead.
 See also
-.Fl L .
-.It Fl n , -dryrun
+\fB-L\fR.
+.TP 24
+\fB-n\fR, \-dryrun
 Don't actually fix anything, just report what would be done.
-.It Fl S , -samples
+.TP 24
+\fB-S\fR, \-samples
 Check samples instead of roms.
-.It Fl -superfluous
+.TP 24
+\fB--superfluous\fR
 Only check for superfluous files in rom sets.
-.It Fl s , -nosuperfluous
+.TP 24
+\fB-s\fR, \-nosuperfluous
 Don't report superfluous (unneeded) files.
-.It Fl V , -version
+.TP 24
+\fB-V\fR, \-version
 Display program name and version number.
-.It Fl v , -verbose
+.TP 24
+\fB-v\fR, \-verbose
 Print fixes made.
-.It Fl w , -nowarnings
+.TP 24
+\fB-w\fR, \-nowarnings
 Print only unfixable error, like missing or completely incorrect roms.
 See also
-.Fl b
+\fB-b\fR
 and
-.Fl f .
-.It Fl X , -ignoreextra
+\fB-f\fR.
+.TP 24
+\fB-X\fR, \-ignoreextra
 Do not mention extra files that are in the roms or samples dirs
 respectively.
 Most of the time these are romsets whose names have changed.
 Additionally,
-.Nm
+.B ckmame
 creates a
-.Pa roms/garbage
+\fBroms/garbage\fR
 directory (see also
-.Fl K ) ,
+\fB-K\fR ),
 which you will also be warned about.
-.El
-.Sh ENVIRONMENT
-.Bl -tag -width 10n
-.It Ev MAMEDB
+.RE
+.SH "ENVIRONMENT"
+.RS
+.TP 12
+Ev MAMEDB
 Location for the database file.
 Can be overridden with the
-.Fl D
+\fB-D\fR
 option.
 Defaults to
-.Dq Pa mame.db .
-.It Ev ROMPATH
+``\fBmame.db\fR.''
+.TP 12
+Ev ROMPATH
 Location for the rom zip files.
 Defaults to
-.Dq Pa \&. .
-.El
-.Sh EXAMPLES
+``\fB.\fR.''
+.RE
+.SH "EXAMPLES"
 Print a report about the current state of your rom sets in the
-.Pa roms
+\fBroms\fR
 subdir of the current dir:
-.Dl Ic ckmame
-.Pp
+.IP
+\fBckmame\fR
+.PP
+.PP
 Fix all sets and only report unfixable errors, omitting those
 roms where no good dump exists:
-.Dl Ic ckmame -Fwd
-.Sh SEE ALSO
-.Xr dumpgame 1 ,
-.Xr mkmamedb 1 ,
-.Xr xmame 6
-.Sh AUTHORS
-.An -nosplit
-.Nm
+.IP
+\fBckmame \-Fwd\fR
+.PP
+.SH "SEE ALSO"
+dumpgame(1),
+mkmamedb(1),
+xmame(6)
+.SH "AUTHORS"
+
+.B ckmame
 was written by
-.An Dieter Baron
-.Aq dillo@giga.or.at
+Dieter Baron
+<dillo@giga.or.at>
 and
-.An Thomas Klausner
-.Aq tk@giga.or.at .
-.Sh BUGS
+Thomas Klausner
+<tk@giga.or.at.>
+.SH "BUGS"
 Files that are in clone sets of a set, but would belong in the parent
 set, are not moved automatically.
 Add them to the parent set manually, then run
-.Ic ckmame -F
+\fBckmame \-F\fR
 to remove them from the clone set(s) automatically.
