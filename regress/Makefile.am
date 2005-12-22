@@ -64,6 +64,7 @@ TESTCASES=	baddump.test \
 		rom-from-romset.test \
 		rom-from-romset2.test \
 		rom-from-superfluous.test \
+		rom-from-superfluous-some.test \
 		rom-from-superfluous-dryrun.test \
 		sample-miss.test \
 		sample-ok.test \

@@ -8,7 +8,6 @@ tests:
   * /prog from command line
   * /prog from file
   * broken input
-* get some files from superfluous, leaving a non-empty archive
 
 -- NEXT RELEASE
 
