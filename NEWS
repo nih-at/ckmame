@@ -1,7 +1,14 @@
 0.7
 
-- dropped support for inferring flags/status from CRC (before version XXX)
+- fix all fixable errors in at most two runs
+- rename disks
+- support searching for files in additional directories
+- detect faked ROMs (correct CRC, wrong MD5/SHA1)
+- adapt mkmamedb-xmame.sh for MAME version numbers of 0.100 and above
+- dropped support for inferring flags/status from CRC (old MAME versions)
 - deprecated -u/-U command line options
+- simplify ROM matching logic
+- many new regression tests
 
 0.6 (2005-06-17)
 
