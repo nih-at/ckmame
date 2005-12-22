@@ -1,3 +1,737 @@
+2005-12-22 23:12  dillo@danbala.tuwien.ac.at
+
+	* src/r_list.c, src/util.c, src/w_list.c, src/w_prog.c,
+	  src/xmalloc.c: copyright maintenance
+
+2005-12-22 23:03  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am,
+	  regress/rom-from-superfluous-some.test: Add test for removing
+	  files from superfluous archives, leaving some files.
+
+2005-12-22 22:59  dillo@danbala.tuwien.ac.at
+
+	* src/array.h, src/parray.h: Document why we do not specify
+	  function arguments in *array prototypes.
+
+2005-12-22 22:55  dillo@danbala.tuwien.ac.at
+
+	* docs/ckmame.mdoc: Describe "broken" and "checksum mismatch"
+	  states; remove old BUGS section; uppercase ROM.
+
+2005-12-22 22:37  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/disk-swap.test,
+	  regress/disk-to-needed.test, src/check_disks.c,
+	  src/delete_list.c, src/fix.c, src/funcs.h, src/util2.c: - move
+	  wrong disks needed elsewhere to needed - search needed for disks
+
+2005-12-22 21:10  dillo@danbala.tuwien.ac.at
+
+	* Makefile.am, configure.ac, docs/Makefile.am, docs/ckmame.man,
+	  docs/ckmame.mdoc, docs/dumpgame.man, docs/dumpgame.mdoc,
+	  docs/mkmamedb.man, docs/mkmamedb.mdoc: Move contents of man/ to
+	  docs/.
+
+2005-12-22 21:10  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am: Add missing zip files for sample tests (and
+	  another one).
+
+2005-12-22 21:02  dillo@danbala.tuwien.ac.at
+
+	* regress/mamedb.txt, src/hash_from_string.c: accept 0x
+	  prefix for hashes in database input file
+
+2005-12-22 21:01  dillo@danbala.tuwien.ac.at
+
+	* src/delete_list.c: avoid /* in comment add prototype for static
+	  function
+
+2005-12-22 20:54  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/delete-used-superfluous.test,
+	  src/Makefile.am, src/delete_list.c, src/parray.h,
+	  src/parray_index.c, src/parray_index_sorted.c: Don't warn about
+	  superfluous files that have been used and deleted.
+
+2005-12-08 22:19  dillo@danbala.tuwien.ac.at
+
+	* mkmamedb-xmame.sh: Fix version comparison for releases 0.100 and
+	  above (since we use string comparison).
+
+2005-11-13 22:28  wiz@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/rom-from-extra-child.test,
+	  src/Makefile.am, src/archive.c, src/archive.h, src/array.h,
+	  src/array_truncate.c, src/fix.c, src/tree.c: Fix case where rom
+	  is added to parent set and wasn't found in child set in the same
+	  run by reloading archive after fix. Add test case.
+
+2005-10-07 19:11  wiz@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/sample-superfluous.test,
+	  regress/samptest3-garbage.zip, regress/samptest3.zip: Add test
+	  for superfluous samples.
+
+2005-10-07 19:05  wiz@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/sample-miss.test: Add test for
+	  missing sample.
+
+2005-10-07 19:02  wiz@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/disk-mis.test,
+	  regress/disk-miss.test, regress/disk-nogoodmis.test,
+	  regress/disk-nogoodmiss.test: Rename *mis.* to *miss.* (name
+	  cleanup).
+
+2005-10-07 18:54  wiz@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, mamedb.txt, mkmamedb-ok.dump,
+	  sample-ok.test, sample-parent-ok.test, samptest.zip,
+	  samptest2.zip: Add two sample tests with result ok (non missing;
+	  some in parent).
+
+2005-10-06 01:00  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/rom-broken-replace.test,
+	  regress/rom-broken.test, src/archive.c, src/fix.c: Test if broken
+	  file in archive gets replaced by better copy from romset.
+	  Improve error message for CRC errors.  Fix code so that test
+	  actually works.
+
+2005-10-06 00:45  dillo@danbala.tuwien.ac.at
+
+	* regress/: 2-48-broken.zip, Makefile.am, rom-broken.test, runtest:
+	  Add test with broken zip file (CRC error).  Quiet zipcmp (no CRC
+	  error warnings).
+
+2005-10-06 00:38  dillo@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, rom-from-extra-partial.test: Add test
+	  removing partial contents from extra dir.
+
+2005-10-06 00:33  dillo@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, disk-from-extra-remove.test,
+	  disk-from-extra.test: Rename test to sync with rom-from-extra*.
+
+2005-10-06 00:26  dillo@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, from-needed.test, from-needed2.test,
+	  from-romset.test, from-romset2.test,
+	  from-superfluous-dryrun.test, from-superfluous.test,
+	  rom-from-extra-keep.test, rom-from-extra-remove.test,
+	  rom-from-needed.test, rom-from-needed2.test,
+	  rom-from-romset.test, rom-from-romset2.test,
+	  rom-from-superfluous-dryrun.test, rom-from-superfluous.test,
+	  search-keep.test, search-remove.test: Better names for some
+	  tests.
+
+2005-10-06 00:21  dillo@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, disk-from-extra.test: Add a test case.
+
+2005-10-06 00:16  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am: fix distcheck: - built libraries are not in
+	  ${srcdir} - distribute all needed files
+
+2005-10-06 00:08  dillo@danbala.tuwien.ac.at
+
+	* regress/108-2.chd, regress/Makefile.am,
+	  regress/disk-from-superfluous.test,
+	  regress/disk-superfluous.test, regress/disk-wrong.test,
+	  regress/mamedb.txt, regress/mkmamedb-ok.dump, src/fix.c,
+	  src/funcs.h, src/util2.c: - fix unknown/unneeded images - adapt
+	  test cases to image diagnostics - add case for not-needed image
+
+2005-10-05 23:28  dillo@danbala.tuwien.ac.at
+
+	* src/diagnostics.c: fix segfault when checking samples
+
+2005-10-05 23:21  dillo@danbala.tuwien.ac.at
+
+	* regress/disk-wrong.test, src/check_archive.c,
+	  src/check_disks.c, src/diagnostics.c, src/find.c, src/find.h,
+	  src/fix.c, src/funcs.h, src/hashes.h, src/tree.c, src/types.h:
+	  report status of disk images
+
+2005-10-03 19:39  dillo@danbala.tuwien.ac.at
+
+	* src/types.h: remove obsolete XXX comment
+
+2005-10-02 14:35  dillo@danbala.tuwien.ac.at
+
+	* src/fix.c: fix typo in function name
+
+2005-10-02 13:28  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/disk-superfluous.test,
+	  src/check_archive.c, src/check_disks.c, src/check_files.c,
+	  src/disk.h, src/disk_get_info.c, src/find.c, src/find.h,
+	  src/fix.c, src/funcs.h, src/globals.h, src/util2.c: implement
+	  searching for disks in superfluous and extra dirs
+
+2005-09-29 14:27  dillo@danbala.tuwien.ac.at
+
+	* regress/from-needed.test, regress/from-needed2.test,
+	  regress/from-superfluous.test, regress/search-remove.test,
+	  regress/tochildfix.test, src/delete_list.c: (delete_list_execute)
+	  print message about deleting files/archives
+
+2005-09-28 10:48  wiz@danbala.tuwien.ac.at
+
+	* configure.ac, src/Makefile.am, src/db-gdbm.c,
+	  src/db-gdbm.h: Kill gdbm support.
+
+2005-09-28 10:48  wiz@danbala.tuwien.ac.at
+
+	* README: Do not mention gdbm, update links.
+
+2005-09-28 10:36  wiz@danbala.tuwien.ac.at
+
+	* regress/mkmamedb-ok.dump: Update for new 2-44.
+
+2005-09-28 10:35  wiz@danbala.tuwien.ac.at
+
+	* regress/from-superfluous-dryrun.test, src/ckmame.c: Do not warn
+	  about extra files if not checking all roms or --superfluous
+	  explicitly specified.
+
+2005-09-27 23:33  dillo@danbala.tuwien.ac.at
+
+	* INSTALL, NEWS, depcomp, install-sh, missing, mkinstalldirs,
+	  regress/1-4-garbage.zip, regress/2-84.zip, regress/Makefile.am,
+	  regress/baddump.test, regress/dbdump.c, regress/deadbeef.zip,
+	  regress/deadclonedbeef.zip, regress/deadfish.zip,
+	  regress/deadfish4.zip, regress/deadpork.zip,
+	  regress/disk-mis.test, regress/disk-noext.test,
+	  regress/disk-nogood.test, regress/disk-nogoodmis.test,
+	  regress/disk-ok.test, regress/disk-wrong.test,
+	  regress/double.test, regress/dumpgame-unknown.test,
+	  regress/from-needed.test, regress/from-needed2.test,
+	  regress/from-romset.test, regress/from-romset2.test,
+	  regress/from-superfluous-dryrun.test,
+	  regress/from-superfluous.test, regress/garbage.test,
+	  regress/garbage.zip, regress/hasherr-c.test,
+	  regress/hasherr-p.test, regress/hasherr-pc.test,
+	  regress/hasherr.test, regress/hasherr2.test,
+	  regress/identical-once.test, regress/inchild.test,
+	  regress/inparent.test, regress/mamedb-lost-parent-ok.txt,
+	  regress/mamedb-lost-parent.txt, regress/mamedb.txt,
+	  regress/mid.test, regress/misnamed-dryrun.test,
+	  regress/misnamed.test, regress/mkmamedb-lost-parent.dump,
+	  regress/mkmamedb-lost-parent.test, regress/mkmamedb-ok.dump,
+	  regress/mkmamedb-ok.test, regress/multi.test,
+	  regress/needed-error.test, regress/needed.test,
+	  regress/needed2.test, regress/needed3.test,
+	  regress/nogood-miss.test, regress/nogood.test,
+	  regress/nonexist.test, regress/norom.test, regress/ok.test,
+	  regress/punknown.test, regress/punused.test, regress/runtest,
+	  regress/search-keep.test, regress/search-remove.test,
+	  regress/skipbad.test, regress/superfluous.test,
+	  regress/swap.test, regress/tochildfix.test, regress/wrong.test,
+	  src/Makefile.am, src/archive.c, src/archive.h,
+	  src/check_archive.c, src/check_disks.c, src/check_files.c,
+	  src/ckmame.c, src/dbh.h, src/delete_list.c, src/delete_list.h,
+	  src/diagnostics.c, src/dir.c, src/dir.h, src/disk.c, src/disk.h,
+	  src/disk_get_info.c, src/dumpgame.c, src/error.h,
+	  src/file_location.c, src/file_location.h,
+	  src/file_location_ext.c, src/file_location_finalize.c,
+	  src/file_location_make_key.c, src/file_status.c,
+	  src/file_status.h, src/find.c, src/find.h, src/fix.c,
+	  src/funcs.h, src/globals.h, src/hash_from_string.c, src/hashes.c,
+	  src/match.c, src/match.h, src/match_disk.c, src/match_disk.h,
+	  src/parray.h, src/parray_index_sorted.c, src/parray_pop.c,
+	  src/parray_set_length.c, src/parse-cm.c, src/parse-xml.c,
+	  src/parse.c, src/parse.h, src/r_file_by_hash.c, src/r_game.c,
+	  src/rom.c, src/rom.h, src/romcmp.c, src/superfluous.c,
+	  src/tree.c, src/tree.h, src/types.h, src/util.c, src/util.h,
+	  src/util2.c, src/w_file_by_hash_parray.c, src/w_game.c,
+	  src/warn.h: rewrite to get rid of marry.
+
+2005-09-23 01:27  dillo@danbala.tuwien.ac.at
+
+	* regress/2-84.zip: Add another test zip file.
+
+2005-09-23 01:26  dillo@danbala.tuwien.ac.at
+
+	* regress/swap.test: Add swap rename test.
+
+2005-09-23 01:25  dillo@danbala.tuwien.ac.at
+
+	* regress/mamedb.txt: Add 2-44.
+
+2005-09-23 00:13  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/mamedb.txt,
+	  regress/mkmamedb-ok.dump, src/fix.c, src/funcs.h, src/util2.c:
+	  Handle case where two roms swap names.
+
+2005-09-22 23:29  wiz@danbala.tuwien.ac.at
+
+	* src/parray_index_sorted.c: Do not iterate over empty list.
+
+2005-09-22 23:27  dillo@danbala.tuwien.ac.at
+
+	* regress/from-superfluous-dryrun.test, src/ckmame.c: restore
+	  printing of superfluous files
+
+2005-09-22 23:27  dillo@danbala.tuwien.ac.at
+
+	* src/superfluous.c: handle unknown/no extensions of file names > 4
+	  chars correctly
+
+2005-09-22 23:26  dillo@danbala.tuwien.ac.at
+
+	* src/fix.c: (fix_game) only rollback delete list if FIX_DO
+
+2005-09-22 22:56  wiz@danbala.tuwien.ac.at
+
+	* INSTALL: Update from automake-1.9.6.
+
+2005-09-22 22:53  dillo@danbala.tuwien.ac.at
+
+	* src/check_archive.c, src/check_files.c, src/diagnostics.c,
+	  src/fix.c, src/rom.h, src/types.h, src/warn.h: ignore broken
+	  files in zip archives
+
+2005-09-22 21:38  dillo@danbala.tuwien.ac.at
+
+	* src/check_files.c: only accept files with correct name for
+	  roms without hashes
+
+2005-09-18 17:35  wiz@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, from-superfluous-dryrun.test,
+	  misnamed-dryrun.test: Add two dryrun tests.
+
+2005-09-18 17:33  wiz@danbala.tuwien.ac.at
+
+	* depcomp, install-sh, missing, mkinstalldirs: Update to
+	  automake-1.9.6.
+
+2005-08-07 00:14  wiz@danbala.tuwien.ac.at
+
+	* regress/: dumpgame-unknown.test, mkmamedb-lost-parent.test,
+	  needed-error.test, nonexist.test, runtest: Rename "error" command
+	  to "stderr".
+
+2005-08-07 00:11  wiz@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, mkmamedb-lost-parent.dump,
+	  mkmamedb-lost-parent.test: Add mkmamedb test case for
+	  inconsistent input database (parent missing).
+
+2005-08-07 00:11  wiz@danbala.tuwien.ac.at
+
+	* regress/dbdump.c: Fix off-by-2*+1 in dbdump.c.
+
+2005-08-07 00:04  wiz@danbala.tuwien.ac.at
+
+	* src/parray_index_sorted.c: fix off by one: hi is last element,
+	  not one past last element.
+
+2005-08-07 00:03  wiz@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, dumpgame-unknown.test: Add test for
+	  dumpgame: unknown game on command line.
+
+2005-08-06 23:51  wiz@danbala.tuwien.ac.at
+
+	* regress/: mamedb-lost-parent-ok.txt, mamedb-lost-parent.txt: Add
+	  two files for next mkmamedb test.
+
+2005-08-06 23:41  wiz@danbala.tuwien.ac.at
+
+	* src/dumpgame.c: Remove superfluous whitespace in output.
+
+2005-08-06 23:41  wiz@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, dbdump.c, mkmamedb-ok.dump,
+	  mkmamedb-ok.test, runtest: Add first test for mkmamedb, and
+	  infrastructure for it.
+
+2005-08-06 22:30  wiz@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, search-keep.test, search-remove.test: Add
+	  two tests for --search.
+
+2005-08-06 22:30  wiz@danbala.tuwien.ac.at
+
+	* src/util2.c: Only add zip files to extra file map.
+
+2005-08-06 22:29  wiz@danbala.tuwien.ac.at
+
+	* src/ckmame.c: Add missing header include.
+
+2005-08-06 22:18  wiz@danbala.tuwien.ac.at
+
+	* src/: ckmame.c, funcs.h, globals.h: Rename some functions and
+	  variables.
+
+2005-08-06 22:07  wiz@danbala.tuwien.ac.at
+
+	* src/: superfluous.c, util2.c: Move print_extra_files from util2.c
+	  to superfluous.c.  Part of a function rename in progress.
+
+2005-08-06 22:00  wiz@danbala.tuwien.ac.at
+
+	* src/: Makefile.am, ckmame.c, dir.c, dir.h, funcs.h, globals.h,
+	  parray.h, parray_pop.c, superfluous.c, util2.c: Add support for
+	  getting files from separate dirs, e.g. for update sets.
+
+2005-08-06 21:54  wiz@danbala.tuwien.ac.at
+
+	* regress/: baddump.test, disk-mis.test, disk-noext.test,
+	  disk-nogood.test, disk-nogoodmis.test, disk-ok.test,
+	  disk-wrong.test, double.test, from-needed.test,
+	  from-needed2.test, from-romset.test, from-romset2.test,
+	  from-superfluous.test, garbage.test, hasherr-c.test,
+	  hasherr-p.test, hasherr-pc.test, hasherr.test, hasherr2.test,
+	  inchild.test, inparent.test, mid.test, misnamed.test, multi.test,
+	  needed-error.test, needed.test, needed2.test, needed3.test,
+	  nogood-miss.test, nogood.test, ok.test, punknown.test,
+	  punused.test, runtest, skipbad.test, superfluous.test,
+	  tochildfix.test, wrong.test: Simplify runtest: only file,
+	  file-new, file-del instead of rom*, needed*, garbage, disk.
+	  Automatically use zipcmp for zip file comparisons and diff for
+	  the rest.  Add program command to set executable name.  Adapt
+	  tests.
+
+2005-08-06 21:12  wiz@danbala.tuwien.ac.at
+
+	* regress/runtest: sort command descriptions
+
+2005-08-06 19:48  wiz@danbala.tuwien.ac.at
+
+	* regress/from-superfluous.test, src/Makefile.am,
+	  src/check_files.c, src/file_location.h, src/file_location_ext.c,
+	  src/find.c, src/fix.c, src/funcs.h, src/types.h, src/util2.c: Add
+	  file_location_ext for file locations with a where_t to
+	  differentiate between needed, superfluous and extra files.
+	  Remove used superfluous files.  Adapt test.
+
+2005-08-06 19:00  wiz@danbala.tuwien.ac.at
+
+	* src/: Makefile.am, check_files.c, dbh.h, delete_list.c,
+	  delete_list.h, dumpgame.c, file_by_hash.c, file_by_hash.h,
+	  file_by_hash_finalize.c, file_by_hash_make_key.c,
+	  file_location.c, file_location.h, file_location_finalize.c,
+	  file_location_make_key.c, find.c, fix.c, parse.c,
+	  r_file_by_hash.c, util2.c, w_file_by_hash_parray.c: Rename
+	  file_by_hash_* to file_location_*
+
+2005-08-06 18:59  wiz@danbala.tuwien.ac.at
+
+	* src/types.h: Add ROM_SUPERFLUOUS where_t.
+
+2005-08-02 20:25  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am, regress/from-superfluous.test,
+	  src/util2.c: add superfluous zips to extra_file_map add
+	  appropriate regression test
+
+2005-08-02 00:39  wiz@danbala.tuwien.ac.at
+
+	* src/fix.c: Use ERRZIPFILE where appropriate. Remove unused
+	  variable.
+
+2005-08-02 00:39  wiz@danbala.tuwien.ac.at
+
+	* src/dumpgame.c: Use myerror.
+
+2005-08-02 00:38  wiz@danbala.tuwien.ac.at
+
+	* src/disk_get_info.c: Use seterrinfo, myerror.
+
+2005-08-02 00:38  wiz@danbala.tuwien.ac.at
+
+	* src/archive.c: Use seterrinfo, myerror, my_zip_open.
+
+2005-08-02 00:02  wiz@danbala.tuwien.ac.at
+
+	* src/archive.c: Fix myerror %s argument.
+
+2005-08-02 00:00  wiz@danbala.tuwien.ac.at
+
+	* src/archive.c: Use ERRZIP.
+
+2005-08-02 00:00  wiz@danbala.tuwien.ac.at
+
+	* src/util2.c: Use ERRSTR. Fix argument order in another myerror
+	  call.
+
+2005-08-02 00:00  wiz@danbala.tuwien.ac.at
+
+	* src/parse.c: Use ERRDB. Fix typo.
+
+2005-08-01 23:59  wiz@danbala.tuwien.ac.at
+
+	* src/fix.c: Call seterrinfo. Use my_zip_open.
+
+2005-08-01 23:58  wiz@danbala.tuwien.ac.at
+
+	* src/dumpgame.c: Add quoting.
+
+2005-08-01 23:58  wiz@danbala.tuwien.ac.at
+
+	* src/delete_list.c: Factor out duplicate function. Fix seterrinfo
+	  argument order.
+
+2005-08-01 22:53  wiz@danbala.tuwien.ac.at
+
+	* src/: diagnostics.c, fix.c: Print off_t with %lld.
+
+2005-08-01 22:53  wiz@danbala.tuwien.ac.at
+
+	* src/error.h: Fix typo.
+
+2005-08-01 04:08  dillo@danbala.tuwien.ac.at
+
+	* src/check_files.c: Detect files with wrong name, correct CRC and
+	  wrong checksums as QU_HASHERR.
+
+2005-08-01 03:56  wiz@danbala.tuwien.ac.at
+
+	* regress/: deadfish4.zip, from-needed2.test, hasherr2.test,
+	  needed2.test, needed3.test: Add some more files.
+
+2005-08-01 03:56  wiz@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, choko.zip, chokoa.zip, deadbeef.zip,
+	  deadclonedbeef.zip, deadfish.zip, deadpork.zip, from-needed.test,
+	  from-romset.test, from-romset2.test, hasherr-c.test,
+	  hasherr-p.test, hasherr-pc.test, hasherr.test, mamedb.txt,
+	  runtest, skipbad.test, tochildfix.test, wrong.test: Add dead
+	  beef.  Adapt tests to use deadbeef instead of choko, and create
+	  more tests.  runtest: rename romnew/romdel to rom-new/rom-del.
+
+2005-07-31 23:14  dillo@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, from-romset.test, needed-error.test: two
+	  new tests
+
+2005-07-31 23:14  dillo@danbala.tuwien.ac.at
+
+	* regress/runtest: add support for mkdir (used to produce zip_close
+	  errors)
+
+2005-07-31 23:13  dillo@danbala.tuwien.ac.at
+
+	* src/: Makefile.am, check_files.c, ckmame.c, delete_list.c,
+	  delete_list.h, file_by_hash_make_key.c, fix.c, funcs.h,
+	  globals.h, match.c, parray.h, parray_set_length.c, types.h,
+	  util2.c: delete files from needed after copying them to game.
+	  avoid data loss in case of errors.
+
+2005-07-31 22:10  wiz@danbala.tuwien.ac.at
+
+	* src/: archive.c, check_archive.c, check_disks.c, check_files.c,
+	  diagnostics.c, fix.c, hash_from_string.c, parse.c, rom.h,
+	  types.h: add support for QU_HASHERR for ROMs
+
+2005-07-31 19:40  wiz@danbala.tuwien.ac.at
+
+	* regress/: baddump.test, chokoa.zip, disk-mis.test,
+	  disk-noext.test, disk-nogood.test, disk-nogoodmis.test,
+	  disk-ok.test, disk-wrong.test, double.test, from-needed.test,
+	  garbage.test, inchild.test, inparent.test, mid.test,
+	  misnamed.test, multi.test, needed.test, nogood-miss.test,
+	  nogood.test, nonexist.test, norom.test, ok.test, punknown.test,
+	  punused.test, runtest, superfluous.test, tochildfix.test,
+	  wrong.test: print test description in verbose mode
+
+2005-07-31 19:39  wiz@danbala.tuwien.ac.at
+
+	* regress/: hasherr-c.test, hasherr-p.test, hasherr-pc.test,
+	  hasherr.test, Makefile.am: add tests for hash mismatches
+
+2005-07-31 19:39  wiz@danbala.tuwien.ac.at
+
+	* regress/mamedb.txt: sort games alphabetically add games for hash
+	  mismatch testing
+
+2005-07-31 16:27  wiz@danbala.tuwien.ac.at
+
+	* regress/choko.zip: Add choko.zip with the broken file with
+	  correct CRC.
+
+2005-07-31 16:02  wiz@danbala.tuwien.ac.at
+
+	* NEWS, regress/Makefile.am, regress/baddump.test,
+	  regress/disk-mis.test, regress/disk-noext.test,
+	  regress/disk-nogood.test, regress/disk-nogoodmis.test,
+	  regress/disk-ok.test, regress/disk-wrong.test,
+	  regress/double.test, regress/from-needed.test,
+	  regress/garbage.test, regress/inchild.test,
+	  regress/inparent.test, regress/mid.test, regress/misnamed.test,
+	  regress/multi.test, regress/needed.test,
+	  regress/nogood-miss.test, regress/nogood.test,
+	  regress/nonexist.test, regress/norom.test, regress/ok.test,
+	  regress/punknown.test, regress/punused.test,
+	  regress/superfluous.test, regress/tochildfix.test,
+	  regress/unused.test, regress/wrong.test, src/ckmame.c,
+	  src/types.h: Deprecate -u/-U (keep unused). Adapt tests.
+
+2005-07-31 16:00  wiz@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, inparent.test, punused.test, tochild.test,
+	  wrong.test, wrong2.test: Adapt tests to wanted behaviour, remove
+	  obsolete/duplicate tests.
+
+2005-07-31 15:44  wiz@danbala.tuwien.ac.at
+
+	* regress/double.test, regress/garbage.test, regress/mid.test,
+	  regress/multi.test, regress/needed.test, regress/punknown.test,
+	  regress/punused.test, regress/tochildfix.test,
+	  regress/unused.test, regress/wrong.test, regress/wrong2.test,
+	  src/fix.c: Add quoting.
+
+2005-07-31 15:44  wiz@danbala.tuwien.ac.at
+
+	* regress/: baddump.test, nogood.test: Adapt to different
+	  baddump/nodump diagnostics.
+
+2005-07-31 13:38  dillo@danbala.tuwien.ac.at
+
+	* regress/: Makefile.am, from-needed.test: add test for getting
+	  file from pre-existing needed
+
+2005-07-31 13:38  dillo@danbala.tuwien.ac.at
+
+	* regress/: needed.test, runtest: improve needed support: allow for
+	  pre-existing, created, and deleted files
+
+2005-07-31 13:37  dillo@danbala.tuwien.ac.at
+
+	* src/: funcs.h, util2.c: fill in needed map
+
+2005-07-31 13:36  dillo@danbala.tuwien.ac.at
+
+	* src/: Makefile.am, dir.c, dir.h, superfluous.c: split dir reading
+	  into own file
+
+2005-07-31 11:34  wiz@danbala.tuwien.ac.at
+
+	* regress/multi.test: Adapt strings.
+
+2005-07-31 11:32  wiz@danbala.tuwien.ac.at
+
+	* regress/: inchild.test, inparent.test: Adapt some "should be"
+	  strings.
+
+2005-07-31 11:32  wiz@danbala.tuwien.ac.at
+
+	* src/diagnostics.c: "not used", not "unused", in file diagnostics.
+
+2005-07-31 11:27  dillo@danbala.tuwien.ac.at
+
+	* regress/: 1-4-garbage.zip, Makefile.am, garbage.test,
+	  garbage.zip, multi.test, needed.test, tochildfix.test: partially
+	  adapt tests to rewrite
+
+2005-07-31 11:27  dillo@danbala.tuwien.ac.at
+
+	* regress/runtest: add support for needed files add SETUP_ONLY:
+	  create test environment but don't run ckmame
+
+2005-07-31 11:21  dillo@danbala.tuwien.ac.at
+
+	* src/: archive.c, archive.h, check_archive.c, ckmame.c,
+	  diagnostics.c, find.c, fix.c, tree.c, util.h, util2.c: fix
+	  various problems uncovered by regression tests
+
+2005-07-31 10:56  wiz@danbala.tuwien.ac.at
+
+	* src/superfluous.c: Check snprintf return value.
+
+2005-07-31 06:28  dillo@danbala.tuwien.ac.at
+
+	* regress/mamedb.txt: It's status in XML output, but it's flags in
+	  CM format.
+
+2005-07-31 01:24  wiz@danbala.tuwien.ac.at
+
+	* src/superfluous.c: Fix printing of superfluous files. Add missing
+	  argument to myerror call. Prefer bounded string operations to
+	  unbounded ones.
+
+2005-07-30 17:18  wiz@danbala.tuwien.ac.at
+
+	* regress/misnamed.test: Adapt output for renames.
+
+2005-07-30 17:11  wiz@danbala.tuwien.ac.at
+
+	* regress/: double.test, mid.test: Adapt output for extracting
+	  parts of files.
+
+2005-07-30 17:05  wiz@danbala.tuwien.ac.at
+
+	* regress/mamedb.txt: Do not use (obsoleted) xored crc for bad
+	  dumps, use status baddump.
+
+2005-07-30 17:03  wiz@danbala.tuwien.ac.at
+
+	* regress/: garbage.test, misnamed.test, multi.test, punknown.test,
+	  punused.test, tochildfix.test, unused.test, wrong.test,
+	  wrong2.test: Re-order lines: reports for files are now after
+	  reports for games (and I think it is ok this way).
+
+2005-07-30 16:55  wiz@danbala.tuwien.ac.at
+
+	* regress/mamedb.txt: Do not use deprecated CRC 00000000.
+
+2005-07-30 14:24  dillo@danbala.tuwien.ac.at
+
+	* src/: Makefile.am, archive.c, archive.h, check_archive.c,
+	  check_files.c, ckmame.c, dumpgame.c, file_status.h, find.c,
+	  find.h, fix.c, funcs.h, globals.h, match.h, tree.c, tree.h,
+	  util.c, util.h, util2.c: compiles, links, and regressions don't
+	  trigger a core dump
+
+2005-07-27 12:55  dillo@danbala.tuwien.ac.at
+
+	* src/: file_status.c, file_status.h: information about the status
+	  of a file in an archive.  forgot to add this yesterday.
+
+2005-07-27 02:05  dillo@danbala.tuwien.ac.at
+
+	* src/: Makefile.am, archive.c, check_disks.c, check_files.c,
+	  check_roms.c, ckmame.c, diagnostics.c, disk.c, disk.h,
+	  disk_get_info.c, dumpgame.c, file_by_hash.c,
+	  file_by_hash_finalize.c, fix.c, funcs.h, globals.h, match.c,
+	  match.h, match_disk.c, match_disk.h, parse-cm.c, parse-xml.c,
+	  parse.c, parse.h, r_file_by_hash.c, r_game.c, rom.c, rom.h,
+	  romcmp.c, superfluous.c, tree.c, tree.h, types.h,
+	  w_file_by_hash_parray.c, w_game.c, warn.h: rename flags to status
+	  adapt diagnostics and fix begin adapting tree_traverse replace
+	  handle_extra_files with find_extra_files (print_extra_files
+	  missing) merge all fix options in one variable
+
+2005-07-21 15:21  wiz@danbala.tuwien.ac.at
+
+	* regress/runtest: grammar fix.
+
+2005-07-20 15:35  wiz@danbala.tuwien.ac.at
+
+	* NEWS: Add dates for previous releases.
+
+2005-07-20 02:26  dillo@danbala.tuwien.ac.at
+
+	* NEWS, src/check_roms.c, src/hashes.c, src/parse.c,
+	  src/rom.h: drop support for inferring flags from CRC handle
+	  samples and bad dumps
+
+2005-07-20 00:46  dillo@danbala.tuwien.ac.at
+
+	* src/: Makefile.am, archive.c, archive.h, check_roms.c,
+	  file_by_hash.h, funcs.h, globals.h, match.h, rom.h, tree.h,
+	  types.h, util.h: finished check_roms except for bad/no dumps and
+	  samples
+
 2005-07-17  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
 	* regress/runtest: fix typo.
@@ -7,7 +741,7 @@
 	* src/parse.c (disk_end, rom_end): if merge is same as name, don't
 	save it.
 
-	* XXX: refactoring
+	* src/: refactoring
 
 2005-07-06  Thomas Klausner  <wiz@danbala.tuwien.ac.at>
 
