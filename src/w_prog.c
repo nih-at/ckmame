@@ -1,8 +1,8 @@
 /*
-  $NiH: w_prog.c,v 1.10 2005/06/20 16:16:04 wiz Exp $
+  $NiH: w_prog.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   w_prog.c -- write prog struct to db
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

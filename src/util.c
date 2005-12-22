@@ -1,8 +1,8 @@
 /*
-  $NiH: util.c,v 1.2.2.1 2005/07/30 12:24:29 dillo Exp $
+  $NiH: util.c,v 1.3 2005/09/27 21:33:03 dillo Exp $
 
   util.c -- utility functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

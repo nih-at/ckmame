@@ -1,8 +1,8 @@
 /*
-  $NiH: malloc.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: xmalloc.c,v 1.1 2005/07/05 01:18:45 dillo Exp $
 
   xmalloc.c -- malloc routines with exit on failure
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>

@@ -1,5 +1,6 @@
 - [cleanup] update ChangeLog
-- [cleanup] copyright maintenance
+
+-- NEXT RELEASE
 
 tests:
 * dumpgame
@@ -8,8 +9,6 @@ tests:
   * /prog from command line
   * /prog from file
   * broken input
-
--- NEXT RELEASE
 
 - [feature] integrity check: remember which disks have already been checked
   (only check once each)
