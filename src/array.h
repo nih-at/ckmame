@@ -2,7 +2,7 @@
 #define _HAD_ARRAY_H
 
 /*
-  $NiH: array.h,v 1.1 2005/07/13 17:42:19 dillo Exp $
+  $NiH: array.h,v 1.2 2005/11/13 21:28:20 wiz Exp $
 
   array.h -- array of arbitrary types
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -41,6 +41,7 @@ typedef struct array array_t;
 #define array_length(a)		((a)->nentry)
 #define array_new(s)		(array_new_sized((s), 0))
 
+/* function arguments not specified to avoid lots of casts */
 void array_delete(array_t *, int, void (*)(/* void * */));
 void array_free(array_t *, void (*)(/* void * */));
 void array_grow(array_t *, void (*)(/* void * */));

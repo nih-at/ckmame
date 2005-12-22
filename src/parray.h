@@ -2,7 +2,7 @@
 #define _HAD_PARRAY_H
 
 /*
-  $NiH: parray.h,v 1.3 2005/09/27 21:33:02 dillo Exp $
+  $NiH: parray.h,v 1.4 2005/12/22 19:54:56 dillo Exp $
 
   parray.h -- array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -46,7 +46,7 @@ typedef struct parray parray_t;
 #define parray_sort_unique(a, cmp) (parray_sort_real((a), 1, -1, -1, (cmp)))
 #define parray_new()		(parray_new_sized(0))
 
-
+/* function arguments not specified to avoid lots of casts */
 void parray_delete(parray_t *, int, void (*)(/* void * */));
 void parray_free(parray_t *, void (*)(/* void * */));
 int parray_index(const parray_t *, const void *,
