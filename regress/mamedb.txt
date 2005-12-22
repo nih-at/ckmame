@@ -75,8 +75,8 @@ game (
 	manufacturer "dillo+wiz"
 	year 2005
 	romof deadbeef
-	rom ( name deadbeef merge deadbeef size 8 crc32 deadbeef sha1 0b0dcdf77237b4e5d920990b92d4b59ad264910f )
-	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+	rom ( name deadbeef merge deadbeef size 8 crc32 deadbeef sha1 0x0b0dcdf77237b4e5d920990b92d4b59ad264910f )
+	rom ( name 04.rom size 4 crc32 0xd87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
 )
 
 game (

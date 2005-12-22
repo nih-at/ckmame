@@ -3,7 +3,6 @@
 - [cleanup] update ChangeLog
 - [cleanup] copyright maintenance
 - [feature] "fix" superfluous archives by moving unknown files to garbage
-- [feature] recognize and ignore ``0x'' prefix before checksums
 - [feature] add option to remove used files from -e dirs
 - [feature] move images to needed, search in needed
 
