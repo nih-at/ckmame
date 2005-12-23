@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.4.2.6 2005/08/06 21:41:51 wiz Exp $
+  $NiH: dumpgame.c,v 1.5 2005/09/27 21:33:02 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -251,7 +251,6 @@ main(int argc, char **argv)
     char *dbname;
     DB *db;
     int c;
-    int type;
     int find_checksum;
     filetype_t filetype;
 
@@ -262,7 +261,6 @@ main(int argc, char **argv)
 	dbname = DDB_DEFAULT_DB_NAME;
 
     find_checksum = 0;
-    type = HASHES_TYPE_CRC;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
