@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.4 2005/10/05 22:08:26 dillo Exp $
+  $NiH: util2.c,v 1.5 2005/12/22 21:37:08 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -435,9 +435,7 @@ enter_dir_in_map(map_t *zip_map, map_t *disk_map,
 static void
 enter_disk_in_map(map_t *map, const disk_t *d, where_t where)
 {
-    int i;
-
     map_add(map, file_location_default_hashtype(TYPE_DISK),
 	    disk_hashes(d),
-	    file_location_ext_new(disk_name(d), i, where));
+	    file_location_ext_new(disk_name(d), 0, where));
 }
