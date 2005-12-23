@@ -1,4 +1,4 @@
-.\" $NiH: ckmame.mdoc,v 1.1 2005/12/22 20:10:39 dillo Exp $
+.\" $NiH: ckmame.mdoc,v 1.2 2005/12/22 21:55:46 dillo Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -205,6 +205,15 @@ Location for the ROM zip files.
 Defaults to
 .Dq Pa \&. .
 .El
+.Sh EXAMPLES
+Print a report about the current state of your ROM sets in the
+.Pa roms
+subdir of the current dir:
+.Dl Ic ckmame
+.Pp
+Fix all sets and only report unfixable errors, omitting those
+ROMs where no good dump exists:
+.Dl Ic ckmame -Fwd
 .Sh DIAGNOSTICS
 Most messages should be straightforward.
 Two need special explanations:
@@ -220,15 +229,6 @@ If a ROM or disk is marked with
 the primary checksum matches, but one of the other checksums
 does not.
 The primary checksum for ROMs is CRC32, for disks MD5.
-.Sh EXAMPLES
-Print a report about the current state of your ROM sets in the
-.Pa roms
-subdir of the current dir:
-.Dl Ic ckmame
-.Pp
-Fix all sets and only report unfixable errors, omitting those
-ROMs where no good dump exists:
-.Dl Ic ckmame -Fwd
 .Sh SEE ALSO
 .Xr dumpgame 1 ,
 .Xr mkmamedb 1 ,
