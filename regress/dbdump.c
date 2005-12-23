@@ -1,5 +1,5 @@
 /*
-  $NiH: dbdump.c,v 1.1.2.2 2005/08/06 22:11:42 wiz Exp $
+  $NiH: dbdump.c,v 1.2 2005/09/27 21:33:01 dillo Exp $
 
   dbdump.c -- print contents of db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -52,19 +52,11 @@ dump(const DBT *key, const DBT *value, void *ud)
 int
 main(int argc, char *argv[])
 {
-    int verbose;
     DB *db;
 
-    verbose = 0;
     prg = argv[0];
     bufsize = 0;
     buf = NULL;
-
-    /* in: two databases, verbose flag */
-    if (strcmp(argv[1], "-v") == 0) {
-	verbose = 1;
-	argv++, argc--;
-    }
 
     if (argc != 2) {
 	fprintf(stderr, usage, prg);
