@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: ckmame.mdoc,v 1.1.2.1 2005/07/31 14:02:19 wiz Exp 
-.\" $NiH: ckmame.man,v 1.2 2005/09/27 21:33:00 dillo Exp $
+.\" from NiH: ckmame.mdoc,v 1.3 2005/12/23 09:00:51 wiz Exp 
+.\" $NiH: ckmame.mdoc,v 1.3 2005/12/23 09:00:51 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -30,13 +30,14 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH CKMAME 1 "June 12, 2005" NiH
+.TH CKMAME 1 "August 6, 2005" NiH
 .SH "NAME"
-ckmame \- verify MAME rom sets
+ckmame \- verify MAME ROM sets
 .SH "SYNOPSIS"
 .B ckmame
-[\fB-bcdFfhKkLlnSsVvw\fR]
+[\fB-bcdFfhjKkLlnSsVvw\fR]
 [\fB-D\fR \fBdbfile\fR]
+[\fB-e\fR \fBdir\fR]
 [\fBgame ...\fR]
 .SH "DESCRIPTION"
 .B ckmame
@@ -54,7 +55,7 @@ from the 1970s to today).
 Since MAME is emulating the games, it uses the original images from
 the arcade machines' original ROM chips.  MAME's internal database
 contains extensive information on the ROMs, including the sizes
-and checksums of the used roms.
+and checksums of the used ROMs.
 Since some arcade games are variants of others and share some of the
 same ROMs, there are also internal dependencies between these so
 called clones.
@@ -75,7 +76,7 @@ only used for verification, since the MAME team often renames ROMs.
 .PP
 While
 .B ckmame
-uses MAME's rom database, it must be converted into a more
+uses MAME's ROM database, it must be converted into a more
 efficient format before use.
 See
 mkmamedb(1)
@@ -108,10 +109,18 @@ Use
 as database file.
 .TP 24
 \fB-d\fR, \-nonogooddumps
-Don't report roms with no known good dumps.
+Don't report ROMs with no known good dumps.
+.TP 24
+\fB-e\fR, \-search \fBdir\fR
+Look for missing files in directory
+\fBdir\fR
+and its subdirectories.
+Recommended for use with update sets.
+See also
+\fB-j\fR.
 .TP 24
 \fB-F\fR, \-fix
-Fix rom sets; do as much as possible, such as renaming and moving
+Fix ROM sets; do as much as possible, such as renaming and moving
 files.
 .TP 24
 \fB-f\fR, \-nofixable
@@ -128,6 +137,20 @@ Display a short help message.
 Check integrity of zip archives and disk images
 by computing checksums and comparing them with the
 internally saved ones.
+.TP 24
+\fB-j\fR, \-delete-found
+When using
+\fB-e\fR,
+delete files that are copied to the ROM set.
+See also
+\fB--keep-found\fR.
+.TP 24
+\fB--keep-found\fR
+When using
+\fB-e\fR,
+do not remove files that are copied to the ROM set (default).
+See also
+\fB-j\fR.
 .TP 24
 \fB-K\fR, \-keep-unknown
 Keep unknown files when fixing (default).
@@ -157,10 +180,10 @@ See also
 Don't actually fix anything, just report what would be done.
 .TP 24
 \fB-S\fR, \-samples
-Check samples instead of roms.
+Check samples instead of ROMs.
 .TP 24
 \fB--superfluous\fR
-Only check for superfluous files in rom sets.
+Only check for superfluous files in ROM sets.
 .TP 24
 \fB-s\fR, \-nosuperfluous
 Don't report superfluous (unneeded) files.
@@ -172,16 +195,16 @@ Display program name and version number.
 Print fixes made.
 .TP 24
 \fB-w\fR, \-nowarnings
-Print only unfixable error, like missing or completely incorrect roms.
+Print only unfixable error, like missing or completely incorrect ROMs.
 See also
 \fB-b\fR
 and
 \fB-f\fR.
 .TP 24
 \fB-X\fR, \-ignoreextra
-Do not mention extra files that are in the roms or samples dirs
+Do not mention extra files that are in the ROMs or samples dirs
 respectively.
-Most of the time these are romsets whose names have changed.
+Most of the time these are ROM sets whose names have changed.
 Additionally,
 .B ckmame
 creates a
@@ -202,12 +225,12 @@ Defaults to
 ``\fBmame.db\fR.''
 .TP 12
 Ev ROMPATH
-Location for the rom zip files.
+Location for the ROM zip files.
 Defaults to
 ``\fB.\fR.''
 .RE
 .SH "EXAMPLES"
-Print a report about the current state of your rom sets in the
+Print a report about the current state of your ROM sets in the
 \fBroms\fR
 subdir of the current dir:
 .IP
@@ -215,10 +238,25 @@ subdir of the current dir:
 .PP
 .PP
 Fix all sets and only report unfixable errors, omitting those
-roms where no good dump exists:
+ROMs where no good dump exists:
 .IP
 \fBckmame \-Fwd\fR
 .PP
+.SH "DIAGNOSTICS"
+Most messages should be straightforward.
+Two need special explanations:
+.PP
+If a file is marked as
+``broken'',
+it means that the computed checksum is not the same
+as the checksum stored in the zip archive,
+usually because there has been a decompression error.
+.PP
+If a ROM or disk is marked with
+``checksum mismatch'',
+the primary checksum matches, but one of the other checksums
+does not.
+The primary checksum for ROMs is CRC32, for disks MD5.
 .SH "SEE ALSO"
 dumpgame(1),
 mkmamedb(1),
@@ -232,9 +270,3 @@ Dieter Baron
 and
 Thomas Klausner
 <tk@giga.or.at.>
-.SH "BUGS"
-Files that are in clone sets of a set, but would belong in the parent
-set, are not moved automatically.
-Add them to the parent set manually, then run
-\fBckmame \-F\fR
-to remove them from the clone set(s) automatically.
