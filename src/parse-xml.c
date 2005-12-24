@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-xml.c,v 1.2.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: parse-xml.c,v 1.3 2005/09/27 21:33:03 dillo Exp $
 
   parse-xml.c -- parse listxml format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -30,14 +30,16 @@
 #include "parse.h"
 
 #ifndef HAVE_LIBXML2
+
 #include "error.h"
 
 int
-parse_xml(FILE *f)
+parse_xml(parser_context_t *ctx)
 {
     myerror(ERRFILE, "support for XML parsing not compiled in.");
     return -1;
 }
+
 #else
 
 #include <libxml/xmlreader.h>
