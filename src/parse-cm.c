@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-cm.c,v 1.2.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: parse-cm.c,v 1.3 2005/09/27 21:33:02 dillo Exp $
 
   parse-cm.c -- parse listinfo/CMpro format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -71,7 +71,7 @@ parse_cm(parser_context_t *ctx)
 	    /* game/resource for MAME/Raine, machine for MESS */
 	    if (strcmp(cmd, "game") == 0 || strcmp(cmd, "machine") == 0
 		||strcmp(cmd, "resource") == 0) {
-		parse_game_start(ctx, 0);
+		parse_game_start(ctx, TYPE_ROM);
 		state = st_game;
 	    }
 	    else if (strcmp(cmd, "emulator") == 0)
@@ -80,7 +80,7 @@ parse_cm(parser_context_t *ctx)
 	    
 	case st_game:
 	    if (strcmp(cmd, "name") == 0)
-		parse_game_name(ctx, 0, 0, gettok(&l));
+		parse_game_name(ctx, TYPE_ROM, 0, gettok(&l));
 	    else if (strcmp(cmd, "description") == 0)
 		parse_game_description(ctx, gettok(&l));
 	    else if (strcmp(cmd, "romof") == 0)
@@ -222,7 +222,7 @@ parse_cm(parser_context_t *ctx)
 		/* XXX: archive names */
 	    }
 	    else if (strcmp(cmd, ")") == 0) {
-		parse_game_end(ctx, 0);
+		parse_game_end(ctx, TYPE_ROM);
 		state = st_top;
 	    }
 	    break;

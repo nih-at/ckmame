@@ -1,5 +1,5 @@
 /*
-  $NiH: dbdump.c,v 1.2 2005/09/27 21:33:01 dillo Exp $
+  $NiH: dbdump.c,v 1.3 2005/12/23 13:40:26 wiz Exp $
 
   dbdump.c -- print contents of db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -36,18 +36,24 @@ const char *usage = "usage: %s db-file\n";
 char *buf;
 int bufsize;
 
-int
+static int dump(const DBT *, const DBT *, void *);
+
+
+
+static int
 dump(const DBT *key, const DBT *value, void *ud)
 {
     if (value->size*2+1 > bufsize) {
 	bufsize = value->size*2+1;
 	buf = xrealloc(buf, bufsize);
     }
-    printf("%.*s: %s\n", key->size, (char *)key->data,
+    printf("%.*s: %s\n", (int)key->size, (char *)key->data,
 	   bin2hex(buf, value->data, value->size));
 
     return 0;
 }
+
+
 
 int
 main(int argc, char *argv[])

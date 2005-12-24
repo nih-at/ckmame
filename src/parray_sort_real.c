@@ -1,5 +1,5 @@
 /*
-  $NiH: parray_sort.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
+  $NiH: parray_sort_real.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   parray_sort.c -- sort array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -34,7 +34,7 @@ parray_sort_real(parray_t *pa, int omit_duplicates, int lo, int hi,
 		 int (*cmp)(const void *, const void *))
 {
     int n, shrink;
-    void *data;
+    void **data;
 
     if (lo < 0)
 	lo = 0;

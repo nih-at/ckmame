@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.5.2.5 2005/08/06 17:00:12 wiz Exp $
+  $NiH: parse.c,v 1.6 2005/09/27 21:33:03 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -302,13 +302,13 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
 	    }
 
 	    if (((parent=r_game(ctx->db, game_cloneof(g, i, 0))) == NULL)
-		|| lost(parent, i)) {
+		|| lost(parent, (filetype_t)i)) {
 		to_do |= 1<<i;
 		if (parent)
 		    game_free(parent);
 	    }
 	    else {
-		familymeeting(ctx->db, i, parent, g);
+		familymeeting(ctx->db, (filetype_t)i, parent, g);
 		/* XXX: check error */
 		w_game(ctx->db, parent);
 		game_free(parent);
@@ -513,13 +513,13 @@ handle_lost(parser_context_t *ctx)
 		    continue;
 		}
 		
-		if (lost(parent, ft)) {
+		if (lost(parent, (filetype_t)ft)) {
 		    game_free(parent);
 		    continue;
 		}
 
 		/* parent found */
-		familymeeting(ctx->db, ft, parent, child);
+		familymeeting(ctx->db, (filetype_t)ft, parent, child);
 		w_game(ctx->db, parent);
 		game_free(parent);
 		types &= ~(1<<ft);
@@ -689,7 +689,7 @@ write_lists(parser_context_t *ctx)
 
     for (i=0; i<TYPE_MAX; i++) {
 	parray_sort_unique(ctx->list[i], strcasecmp);
-	if (w_list(ctx->db, filetype_db_key(i), ctx->list[i]) < 0)
+	if (w_list(ctx->db, filetype_db_key((filetype_t)i), ctx->list[i]) < 0)
 	    return -1;
     }
 
