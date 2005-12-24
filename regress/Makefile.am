@@ -99,6 +99,7 @@ ZIPS=		1-4-dup.zip \
 		samptest3-garbage.zip
 
 CHDS=		108-5.chd \
+		108-2.chd \
 		12-1.chd
 
 
