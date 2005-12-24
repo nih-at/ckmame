@@ -1,5 +1,5 @@
 /*
-  $NiH: r_util.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: r_util.c,v 1.2 2005/07/13 17:42:20 dillo Exp $
 
   r_util.c -- data base read utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -33,7 +33,7 @@
 
 #define BLKSIZE  1024
 
-#define ADVANCE(v, n)	((v)->size -= (n), (char *)((v)->data) += (n))
+#define ADVANCE(v, n)	((v)->size -= (n), (v)->data = (char *)((v)->data) + (n))
 
 
 
