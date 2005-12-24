@@ -8,7 +8,8 @@
 - dropped support for inferring flags/status from CRC (old MAME versions)
 - deprecated -u/-U command line options
 - simplify ROM matching logic
-- many new regression tests
+- many new regression tests, causing
+- various bug fixes
 
 0.6 (2005-06-17)
 
