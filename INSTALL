@@ -1,3 +1,7 @@
+For installation on Irix, add "-c99" to the compiler flags.
+
+Generic installation instructions follow.
+
 Installation Instructions
 *************************
 
