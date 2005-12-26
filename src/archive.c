@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.3 2005/10/05 23:00:18 dillo Exp $
+  $NiH: archive.c,v 1.4 2005/11/13 21:28:20 wiz Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -153,12 +153,13 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 
 
 
-int
+off_t
 archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
 {
     struct zip_file *zf;
     hashes_t hn;
-    unsigned int offset, found;
+    int found;
+    off_t offset;
 
     hashes_init(&hn);
     hashes_types(&hn) = hashes_types(h);
