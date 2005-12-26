@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.3 2005/10/05 21:21:33 dillo Exp $
+  $NiH: diagnostics.c,v 1.4 2005/10/05 21:28:52 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -34,6 +34,7 @@
 #include "hashes.h"
 #include "match.h"
 #include "match_disk.h"
+#include "pri.h"
 #include "types.h"
 #include "warn.h"
 
@@ -276,8 +277,9 @@ diagnostics_files(const game_t *game, const match_array_t *ma)
 	    case QU_LONG:
 		if (output_options & WARN_LONGOK)
 		    warn_rom(r,
-			     "too long, valid subsection at byte %lld (%d)%s%s",
-			     match_offset(m), rom_size(f),
+			     "too long, valid subsection at byte %" PRIdoff
+			     " (%d)%s%s",
+			     PRIoff_cast match_offset(m), rom_size(f),
 			     (rom_where(r) != match_where(m)
 			      ? ", should be in " : ""),
 			     zname[rom_where(r)]);

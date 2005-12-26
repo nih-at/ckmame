@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.9 2005/11/13 21:28:20 wiz Exp $
+  $NiH: fix.c,v 1.10 2005/12/22 21:37:08 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -39,6 +39,7 @@
 #include "game.h"
 #include "globals.h"
 #include "match.h"
+#include "pri.h"
 #include "types.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -294,9 +295,9 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
 
 	case QU_LONG:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: extract (offset %lld, size %lu) from `%s'"
+		printf("%s: extract (offset %" PRIdoff ", size %lu) from `%s'"
 		       " to `%s'\n", archive_name(a),
-		       match_offset(m), rom_size(r),
+		       PRIoff_cast match_offset(m), rom_size(r),
 		       rom_name(archive_file(afrom, match_index(m))),
 		       rom_name(r));
 	    

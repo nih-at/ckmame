@@ -106,6 +106,7 @@ noinst_HEADERS=\
 	match_disk.h \
 	parray.h \
 	parse.h \
+	pri.h \
 	r.h \
 	rom.h \
 	tree.h \
