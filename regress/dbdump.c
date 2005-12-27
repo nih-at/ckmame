@@ -1,5 +1,5 @@
 /*
-  $NiH: dbdump.c,v 1.3 2005/12/23 13:40:26 wiz Exp $
+  $NiH: dbdump.c,v 1.4 2005/12/24 11:28:45 dillo Exp $
 
   dbdump.c -- print contents of db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -83,5 +83,5 @@ main(int argc, char *argv[])
     /* read-only */
     ddb_close(db);
 
-    exit(0);
+    return 0;
 }
