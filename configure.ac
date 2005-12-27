@@ -33,12 +33,15 @@ AC_SUBST(ZIPCMP, $ZIPCMP)
 
 # find usable db library
 db=none
-AC_CHECK_HEADERS([db_185.h])
-AC_CHECK_FUNCS(dbopen, [db=db])
+AC_CHECK_HEADERS([db.h db_185.h db2/db_185.h db3/db_185.h db4/db_185.h],
+		 [break])
+AC_CHECK_FUNCS(dbopen, [db=db; DBLIBS=''])
 if test "$db" = "none"
 then
-    AC_CHECK_LIB(db, dbopen, [db=db; DBLIBS="-ldb"],
-	         [AC_CHECK_LIB(db, __db185_open, [db=db; DBLIBS="-ldb"])])
+    AC_CHECK_LIB(db, dbopen, [db=db; DBLIBS='-ldb'],
+	[AC_CHECK_LIB(db2, dbopen, [db=db; DBLIBS='-ldb2'],
+	    [AC_CHECK_LIB(__db185_open, db3, [db=db; DBLIBS='-ldb3'],
+		[AC_CHECK_LIB(__db185_open, db3, [db=db; DBLIBS='-ldb4'])])])])
 fi
 if test "$db" = "none"
 then
@@ -52,8 +55,8 @@ AC_REPLACE_FUNCS(fnmatch)
 AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ([getopt1]) AC_LIBOBJ([getopt])])
 AC_CHECK_FUNCS(MD5Init, , [AC_LIBOBJ([md5])])
 AC_CHECK_FUNCS(SHA1Init, , [AC_LIBOBJ([sha1])])
-AC_SUBST([DBLIBS])
 AC_SUBST([MANFMT])
+AC_SUBST([DBLIBS])
 AC_SUBST([DBTYPE])
 
 
