@@ -2,7 +2,7 @@
 #define HAD_PRI_H
 
 /*
-  $NiH$
+  $NiH: pri.h,v 1.1 2005/12/26 14:34:19 dillo Exp $
 
   pri.h -- define macros to portably print types
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -27,10 +27,10 @@
 #include "config.h"
 
 #ifndef PRIdoff
-#if SIZEOF_INT == SIZEOF_OFF_T
-#define PRIdoff	"d"
-#elif SIZEOF_LONG == SIZEOF_OFF_T
+#if SIZEOF_LONG == SIZEOF_OFF_T
 #define PRIdoff "ld"
+#elif SIZEOF_INT == SIZEOF_OFF_T
+#define PRIdoff	"d"
 #elif SIZEOF_LONG_LONG != 0 && SIZEOF_LONG_LONG == SIZEOF_OFF_T
 #define PRIdoff "lld"
 #else
