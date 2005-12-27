@@ -1,3 +1,113 @@
+2005-12-27 23:24  wiz@danbala.tuwien.ac.at
+
+	* docs/ckmame.man: regen.
+
+2005-12-27 23:24  wiz@danbala.tuwien.ac.at
+
+	* docs/ckmame.mdoc: Add FILES section describing garbage and needed
+	  dirs.
+
+2005-12-27 12:41  wiz@danbala.tuwien.ac.at
+
+	* regress/dbdump.c: Leave main with return, for the few (Irix)
+	  compilers who do not really grok exit.
+
+2005-12-27 12:11  wiz@danbala.tuwien.ac.at
+
+	* INSTALL: Remove sentence about -c99 for Irix; not necessary any
+	  longer.
+
+2005-12-27 12:11  wiz@danbala.tuwien.ac.at
+
+	* src/uint32.h: Prefer inttypes.h to stdint.h; better for Irix
+	  without -c99.
+
+2005-12-27 11:43  dillo@danbala.tuwien.ac.at
+
+	* configure.ac, src/db-db.h: Search for db{2,3,4} with the names
+	  used by at least pkgsrc.
+
+2005-12-27 10:43  dillo@danbala.tuwien.ac.at
+
+	* src/pri.h: Prefer long over int if both have the same size as
+	  off_t.  Fixes warnings on GNU/Linux and Solaris.
+
+2005-12-27 10:41  dillo@danbala.tuwien.ac.at
+
+	* regress/runtest: Set LC_ALL to C, needed for GNU sort.  Don't use
+	  diff -q, Solaris diff doesn't support it, and it's not needed.
+
+2005-12-26 15:34  dillo@danbala.tuwien.ac.at
+
+	* configure.ac, src/Makefile.am, src/diagnostics.c, src/fix.c,
+	  src/pri.h: Fix printing of off_t.  It's not the same size as long
+	  long everywhere.
+
+2005-12-26 15:33  dillo@danbala.tuwien.ac.at
+
+	* src/: archive.c, archive.h: (archive_file_find_offset) since the
+	  return value is used as off_t,       return an off_t.
+
+2005-12-25 10:51  wiz@danbala.tuwien.ac.at
+
+	* INSTALL: Note that one needs -c99 in the compiler flags on Irix.
+
+2005-12-24 15:31  wiz@danbala.tuwien.ac.at
+
+	* src/r_util.c: No lvalue casts, found by Irix cc, fixed by dillo.
+
+2005-12-24 12:37  dillo@danbala.tuwien.ac.at
+
+	* regress/Makefile.am: add missing disk image to distfiles
+
+2005-12-24 12:31  dillo@danbala.tuwien.ac.at
+
+	* src/parse-xml.c: Fix prototype of dummy function when libxml2 is
+	  missing.
+
+2005-12-24 12:28  dillo@danbala.tuwien.ac.at
+
+	* regress/dbdump.c, src/parray_sort_real.c, src/parse-cm.c,
+	  src/parse.c: Hopefully fix IRIX cc warnings.
+
+2005-12-24 12:02  dillo@danbala.tuwien.ac.at
+
+	* NEWS: add one
+
+2005-12-23 14:40  wiz@danbala.tuwien.ac.at
+
+	* regress/dbdump.c: Remove unused -v option and related variable.
+	  Irix cc noted that the variable was not used.
+
+2005-12-23 14:38  wiz@danbala.tuwien.ac.at
+
+	* src/dumpgame.c: Remove variable that is only set, but not used.
+	  Found by Irix cc.
+
+2005-12-23 14:36  wiz@danbala.tuwien.ac.at
+
+	* src/util2.c: Do not use uninitialized variable. Found by Irix cc.
+
+2005-12-23 10:01  wiz@danbala.tuwien.ac.at
+
+	* docs/ckmame.man: regen.
+
+2005-12-23 10:01  wiz@danbala.tuwien.ac.at
+
+	* docs/ckmame.mdoc: Bump date.
+
+2005-12-23 10:00  wiz@danbala.tuwien.ac.at
+
+	* docs/ckmame.mdoc: Sort sections.
+
+2005-12-22 23:37  dillo@danbala.tuwien.ac.at
+
+	* NEWS: Update for 0.7.
+
+2005-12-22 23:22  dillo@danbala.tuwien.ac.at
+
+	* ChangeLog: update (via cvs2cl)
+
 2005-12-22 23:12  dillo@danbala.tuwien.ac.at
 
 	* src/r_list.c, src/util.c, src/w_list.c, src/w_prog.c,
