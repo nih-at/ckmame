@@ -1,7 +1,3 @@
-. describe needed/ and garbage/
-
--- new release
-
 tests:
 * whether ckmame can be run (incomplete runtime library path)
 * dumpgame
