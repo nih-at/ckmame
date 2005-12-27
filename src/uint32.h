@@ -2,7 +2,7 @@
 #define HAD_UINT32_H
 
 /*
-  $NiH: uint32.h,v 1.3 2005/06/17 09:59:14 dillo Exp $
+  $NiH: uint32.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   uint32.h -- ensure that uint32_t is defined to a 4-byte type
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -27,10 +27,10 @@
 #include "config.h"
 
 #ifndef HAVE_UINT32_T
-# ifdef HAVE_STDINT_H
-#include <stdint.h>
-# elif defined(HAVE_INTTYPES_H)
+# if defined(HAVE_INTTYPES_H)
 #include <inttypes.h>
+# elif defined(HAVE_STDINT_H)
+#include <stdint.h>
 # else
 #  if SIZEOF_UNSIGNED_INT == 4
 typedef unsigned int uint32_t
