@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.20 2005/09/27 21:33:01 dillo Exp $
+#  $NiH: runtest,v 1.21 2005/10/05 22:45:41 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -195,6 +195,9 @@ copy_file() {
     cp "$1" "$2"
 }
 
+# GNU sort behaves differently on locales other than C, breaking tests
+LC_ALL=C
+export LC_ALL
 
 TEST=`echo $1 | sed 's/\.test$//'`
 shift
@@ -227,7 +230,7 @@ fi
 
 if [ -z "${VERBOSE}" ]
 then
-    DIFF_FLAGS='-q'
+    DIFF_FLAGS=''
     ZIPCMP_FLAGS='-q'
 else
     DIFF_FLAGS='-u'
