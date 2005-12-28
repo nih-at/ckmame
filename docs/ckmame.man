@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: ckmame.mdoc,v 1.5 2005/12/27 22:24:48 wiz Exp 
-.\" $NiH: ckmame.man,v 1.3 2005/12/27 22:24:56 wiz Exp $
+.\" from NiH: ckmame.mdoc,v 1.7 2005/12/28 21:20:21 wiz Exp 
+.\" $NiH: ckmame.mdoc,v 1.7 2005/12/28 21:20:21 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -111,7 +111,7 @@ as database file.
 \fB-d\fR, \-nonogooddumps
 Don't report ROMs with no known good dumps.
 .TP 24
-\fB-e\fR, \-search \fBdir\fR
+\fB-e\fR \fBdir, \fB--search\fR Ar dir\fR
 Look for missing files in directory
 \fBdir\fR
 and its subdirectories.
