@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
 .\" from NiH: ckmame.mdoc,v 1.5 2005/12/27 22:24:48 wiz Exp 
-.\" $NiH: ckmame.mdoc,v 1.5 2005/12/27 22:24:48 wiz Exp $
+.\" $NiH: ckmame.man,v 1.3 2005/12/27 22:24:56 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -232,7 +232,8 @@ Defaults to
 .SH "FILES"
 Unknown files are moved to the sub-directory
 \fBroms/garbage\fR.
-Files that will be needed by other ROM sets are moved to the
+Files that will be needed by other games in the ROM set are moved
+to the
 \fBneeded\fR
 directory.
 .SH "EXAMPLES"
