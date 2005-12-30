@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.5 2005/09/27 21:33:02 dillo Exp $
+  $NiH: ckmame.c,v 1.6 2005/09/28 08:36:37 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -87,8 +87,7 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
 "For more information about these matters, see the files named COPYING.\n";
 
-/* XXX: remove Uu (also in long options) after next release */
-#define OPTIONS "bcD:dE:e:FfhijKkLlnSsxUuVvwX"
+#define OPTIONS "bcD:dE:e:FfhijKkLlnSsxVvwX"
 
 enum {
     OPT_KEEP_FOUND = 256,
@@ -104,7 +103,6 @@ struct option options[] = {
     { "delete-found",  0, 0, 'j' },
     { "delete-long",   0, 0, 'l' },
     { "delete-unknown",0, 0, 'k' },
-    { "delete-unused" ,0, 0, 'u' },
     { "dryrun",        0, 0, 'n' },
     { "fix",           0, 0, 'F' },
     { "ignoreextra",   0, 0, 'X' },
@@ -113,7 +111,6 @@ struct option options[] = {
     { "keep-extra",    0, 0, 'E' },
     { "keep-long",     0, 0, 'L' },
     { "keep-unknown",  0, 0, 'K' },
-    { "keep-unused",   0, 0, 'U' },
     { "nobroken",      0, 0, 'b' }, /* -BROKEN */
     { "nofixable",     0, 0, 'f' }, /* -FIX */
     { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
@@ -220,12 +217,6 @@ main(int argc, char **argv)
 	    break;
 	case 's':
 	    output_options &= ~WARN_SUPERFLUOUS;
-	    break;
-	case 'U':
-	    myerror(ERRDEF, "-U is no longer supported");
-	    break;
-	case 'u':
-	    myerror(ERRDEF, "-u is no longer optional");
 	    break;
 	case 'v':
 	    fix_options |= FIX_PRINT;
