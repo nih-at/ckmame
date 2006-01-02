@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-xml.c,v 1.3 2005/09/27 21:33:03 dillo Exp $
+  $NiH: parse-xml.c,v 1.4 2005/12/24 11:31:16 dillo Exp $
 
   parse-xml.c -- parse listxml format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -33,6 +33,7 @@
 
 #include "error.h"
 
+/*ARGSUSED1*/
 int
 parse_xml(parser_context_t *ctx)
 {

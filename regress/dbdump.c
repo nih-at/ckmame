@@ -1,5 +1,5 @@
 /*
-  $NiH: dbdump.c,v 1.4 2005/12/24 11:28:45 dillo Exp $
+  $NiH: dbdump.c,v 1.5 2005/12/27 11:41:26 wiz Exp $
 
   dbdump.c -- print contents of db
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -40,6 +40,7 @@ static int dump(const DBT *, const DBT *, void *);
 
 
 
+/*ARGSUSED3*/
 static int
 dump(const DBT *key, const DBT *value, void *ud)
 {

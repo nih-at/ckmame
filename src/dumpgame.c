@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.5 2005/09/27 21:33:02 dillo Exp $
+  $NiH: dumpgame.c,v 1.6 2005/12/23 13:38:16 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -438,6 +438,7 @@ dump_game(DB *db, const char *name)
 
 
 
+/*ARGSUSED2*/
 static int
 dump_hashtypes(DB *db, const char *dummy)
 {
@@ -479,6 +480,7 @@ dump_list(DB *db, const char *key)
 
 
 
+/*ARGSUSED2*/
 static int
 dump_prog(DB *db, const char *dummy)
 {
@@ -500,6 +502,7 @@ dump_prog(DB *db, const char *dummy)
 
 
 
+/*ARGSUSED2*/
 static int
 dump_db_version(DB *db, const char *dummy)
 {

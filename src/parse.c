@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.6 2005/09/27 21:33:03 dillo Exp $
+  $NiH: parse.c,v 1.7 2005/12/24 11:28:46 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -140,6 +140,7 @@ parse_file_end(parser_context_t *ctx, filetype_t ft)
 
 
 
+/*ARGSUSED3*/
 int
 parse_file_status(parser_context_t *ctx, filetype_t ft, int ht,
 		  const char *attr)
@@ -196,8 +197,10 @@ parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
 
 
 
-int parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht,
-		     const char *attr)
+/*ARGSUSED3*/
+int
+parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht,
+		 const char *attr)
 {
     if (ft == TYPE_DISK)
 	disk_merge(game_last_disk(ctx->g)) = xstrdup(attr);
@@ -208,7 +211,8 @@ int parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht,
 }
 
 
-
+ 
+/*ARGSUSED3*/
 int
 parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy,
 		const char *attr)
@@ -225,6 +229,7 @@ parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy,
 
 
 
+/*ARGSUSED3*/
 int
 parse_file_size(parser_context_t *ctx, filetype_t ft, int dummy,
 		const char *attr)
@@ -256,6 +261,7 @@ parse_file_start(parser_context_t *ctx, filetype_t ft)
 
 
 
+/*ARGSUSED3*/
 int
 parse_game_cloneof(parser_context_t *ctx, filetype_t ft, int ht,
 		   const char *attr)
@@ -280,6 +286,7 @@ parse_game_description(parser_context_t *ctx, const char *attr)
 
 
 
+/*ARGSUSED2*/
 int
 parse_game_end(parser_context_t *ctx, filetype_t ft)
 {
@@ -335,6 +342,7 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
 
 
 
+/*ARGSUSED3*/
 int
 parse_game_name(parser_context_t *ctx, filetype_t ft, int ht,
 		const char *attr)
@@ -346,6 +354,7 @@ parse_game_name(parser_context_t *ctx, filetype_t ft, int ht,
 
 
 
+/*ARGSUSED2*/
 int
 parse_game_start(parser_context_t *ctx, filetype_t ft)
 {
