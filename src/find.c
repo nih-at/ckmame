@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.3 2005/10/02 11:28:10 dillo Exp $
+  $NiH: find.c,v 1.4 2005/10/05 21:21:33 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -82,7 +82,8 @@ find_disk(map_t *map, const disk_t *d, match_disk_t *m)
 
 
 find_result_t
-find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md)
+find_disk_in_romset(DB *db, const disk_t *d, const char *skip,
+		    match_disk_t *md)
 {
     array_t *a;
     file_location_t *fbh;
@@ -194,7 +195,7 @@ find_in_archives(map_t *map, const rom_t *r, match_t *m)
 
 
 find_result_t
-find_in_romset(const rom_t *r, const char *skip, match_t *m)
+find_in_romset(DB *db, const rom_t *r, const char *skip, match_t *m)
 {
     array_t *a;
     file_location_t *fbh;
