@@ -2,10 +2,10 @@
 #define _HAD_DBL_H
 
 /*
-  $NiH: dbl.h,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: dbl.h,v 1.2 2005/07/13 17:42:20 dillo Exp $
 
   dbl.h -- generic low level data base routines
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -31,14 +31,14 @@
 #define DDB_READ	0x0	/* open readonly */
 #define DDB_WRITE	0x1	/* open for writing */
 
-#define DDB_FORMAT_VERSION	8 /* version of ckmame database format */
+#define DDB_FORMAT_VERSION	9 /* version of ckmame database format */
 
+#define DDB_KEY_DAT		"/dat"
 #define DDB_KEY_DB_VERSION	"/ckmame"
 #define DDB_KEY_HASH_TYPES	"/hashtypes"
 #define DDB_KEY_LIST_DISK	"/list/disk"
 #define DDB_KEY_LIST_GAME	"/list/game"
 #define DDB_KEY_LIST_SAMPLE	"/list/sample"
-#define DDB_KEY_PROG		"/prog"
 
 #define DDB_DEFAULT_DB_NAME	"mame.db"
 

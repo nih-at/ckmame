@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.6 2005/12/23 13:38:16 wiz Exp $
+  $NiH: dumpgame.c,v 1.7 2006/01/02 09:00:24 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -36,6 +36,7 @@
 #include "getopt.h"
 #endif
 
+#include "dat.h"
 #include "dbh.h"
 #include "error.h"
 #include "file_location.h"
@@ -47,7 +48,7 @@
 static int dump_game(DB *, const char *);
 static int dump_hashtypes(DB *, const char *);
 static int dump_list(DB *, const char *);
-static int dump_prog(DB *, const char *);
+static int dump_dat(DB *, const char *);
 static int dump_db_version(DB *, const char *);
 static int dump_special(DB *, const char *);
 static void print_hashtypes(int);
@@ -418,6 +419,7 @@ dump_game(DB *db, const char *name)
 	return -1;
     }
 
+    /* XXX: print dat_no if more than one dat */
     /* XXX: use print_* functions */
     printf("Name:\t\t%s\n", game->name);
     printf("Description:\t%s\n", game->description);
@@ -482,21 +484,26 @@ dump_list(DB *db, const char *key)
 
 /*ARGSUSED2*/
 static int
-dump_prog(DB *db, const char *dummy)
+dump_dat(DB *db, const char *dummy)
 {
-    char *name, *version;
+    array_t *dat;
+    dat_t *d;
+    int i;
 
-    if (r_prog(db, &name, &version) < 0) {
-	myerror(ERRDEF, "db error reading /prog");
+    if ((dat=r_dat(db)) == NULL) {
+	myerror(ERRDEF, "db error reading /dat");
 	return -1;
     }
 
-    printf("%s (%s)\n",
-	   name ? name : "unknown",
-	   version ? version: "unknown");
-    free(name);
-    free(version);
-
+    for (i=0; i<array_length(dat); i++) {
+	if (array_length(dat) > 1)
+	    printf("%2d: ", i);
+	d = array_get(dat, i);
+	printf("%s (%s)\n",
+	       dat_name(d) ? dat_name(d) : "unknown",
+	       dat_version(d) ? dat_version(d) : "unknown");
+    }
+    
     return 0;
 }
 
@@ -523,12 +530,12 @@ dump_special(DB *db, const char *name)
 	const char *arg_override;
     } keys[] = {
 	{ "/list",             dump_list,       DDB_KEY_LIST_GAME },
+	{ DDB_KEY_DAT,         dump_dat,        NULL },
 	{ DDB_KEY_DB_VERSION,  dump_db_version, NULL },
 	{ DDB_KEY_HASH_TYPES,  dump_hashtypes,  NULL },
 	{ DDB_KEY_LIST_DISK,   dump_list,       NULL },
 	{ DDB_KEY_LIST_GAME,   dump_list,       NULL },
-	{ DDB_KEY_LIST_SAMPLE, dump_list,       NULL },
-	{ DDB_KEY_PROG,        dump_prog,       NULL }
+	{ DDB_KEY_LIST_SAMPLE, dump_list,       NULL }
     };
 
     int i;

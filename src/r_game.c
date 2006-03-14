@@ -1,8 +1,8 @@
 /*
-  $NiH: r_game.c,v 1.3.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: r_game.c,v 1.4 2005/09/27 21:33:03 dillo Exp $
 
   r_game.c -- read game struct from db
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -55,6 +55,7 @@ r_game(DB *db, const char *name)
     
     game->name = xstrdup(name);
     game->description = r__string(&v);
+    game->dat_no = r__ushort(&v);
     for (i=0; i<GAME_RS_MAX; i++)
 	r__rs(&v, game->rs+i);
     game->disks = r__array(&v, r__disk, sizeof(disk_t));

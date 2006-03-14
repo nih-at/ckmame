@@ -64,10 +64,10 @@ libckmame_a_SOURCES= \
 	parse-xml.c \
 	parse.c \
 	psort.c \
+	r_dat.c \
 	r_file_by_hash.c \
 	r_game.c \
 	r_list.c \
-	r_prog.c \
 	r_util.c \
 	rom.c \
 	rom_add_altname.c \
@@ -77,9 +77,9 @@ libckmame_a_SOURCES= \
 	util.c \
 	util2.c \
 	w_file_by_hash_parray.c \
+	w_dat.c \
 	w_game.c \
 	w_list.c \
-	w_prog.c \
 	w_util.c \
 	xmalloc.c
 
@@ -87,6 +87,7 @@ noinst_HEADERS=\
 	archive.h \
 	array.h \
 	chd.h \
+	dat.h \
 	db-@DBTYPE@.h \
 	dbh.h \
 	dbl.h \

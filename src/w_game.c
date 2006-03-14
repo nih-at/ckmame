@@ -1,8 +1,8 @@
 /*
-  $NiH: w_game.c,v 1.3.2.1 2005/07/27 00:05:58 dillo Exp $
+  $NiH: w_game.c,v 1.4 2005/09/27 21:33:03 dillo Exp $
 
   w_game.c -- write game struct to db
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -51,6 +51,7 @@ w_game(DB *db, const game_t *game)
     v.size = 0;
 
     w__string(&v, game->description);
+    w__ushort(&v, game->dat_no);
     for (i=0; i<GAME_RS_MAX; i++)
 	w__rs(&v, game->rs+i);
 	

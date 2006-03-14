@@ -2,10 +2,10 @@
 #define _HAD_GAME_H
 
 /*
-  $NiH$
+  $NiH: game.h,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   game.h -- information about one game
-  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -42,6 +42,7 @@ struct rs {
 struct game {
     char *name;
     char *description;
+    int dat_no;
     struct rs rs[GAME_RS_MAX];
     array_t *disks;
 };
@@ -58,6 +59,7 @@ typedef struct game game_t;
 
 #define game_cloneof(g, ft, i)		((g)->rs[ft].cloneof[i])
 #define game_clones(g, ft)		((g)->rs[ft].clones)
+#define game_dat_no(g)			((g)->dat_no)
 #define game_description(g)		((g)->description)
 
 #define game_disk(g, i)			\

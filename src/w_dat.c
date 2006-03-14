@@ -1,8 +1,8 @@
 /*
-  $NiH: r_prog.c,v 1.11 2005/06/20 16:16:04 wiz Exp $
+  $NiH$
 
-  r_prog.c -- read prog struct from db
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  w_dat.c -- write dat struct to db
+  Copyright (C) 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -23,31 +23,47 @@
 
 
 
-/* read list of strings from db */
-#include <stdlib.h>
+#include <stddef.h>
 #include <string.h>
+#include <stdlib.h>
 
+#include "dat.h"
 #include "dbh.h"
-#include "r.h"
+#include "w.h"
+#include "types.h"
 #include "xmalloc.h"
+
+static void w__dat(DBT *, const void *);
 
 
 
 int
-r_prog(DB *db, char **namep, char **versionp)
+w_dat(DB *db, array_t *dat)
 {
+    int err;
     DBT v;
-    void *data;
 
-    if (ddb_lookup(db, DDB_KEY_PROG, &v) != 0)
-	return -1;
-    
-    data = v.data;
+    v.data = NULL;
+    v.size = 0;
 
-    *namep = r__string(&v);
-    *versionp = r__string(&v);
+    w__array(&v, w__dat, dat);
 
-    free(data);
+    err = ddb_insert(db, DDB_KEY_DAT, &v);
 
-    return 0;
+    free(v.data);
+
+    return err;
+}
+
+
+
+static void
+w__dat(DBT *v, const void *vd)
+{
+    const dat_t *d;
+
+    d = (const dat_t *)vd;
+
+    w__string(v, d->name);
+    w__string(v, d->version);
 }

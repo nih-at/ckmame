@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.7 2005/12/24 11:28:46 dillo Exp $
+  $NiH: parse.c,v 1.8 2006/01/02 09:00:24 wiz Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "dat.h"
 #include "dbh.h"
 #include "error.h"
 #include "file_location.h"
@@ -364,6 +365,7 @@ parse_game_start(parser_context_t *ctx, filetype_t ft)
     }
 
     ctx->g = game_new();
+    game_dat_no(ctx->g) = 0;
 
     return 0;
 }
@@ -710,6 +712,14 @@ write_lists(parser_context_t *ctx)
 static int
 write_prog(parser_context_t *ctx, const char *name, const char *version)
 {
-    return w_prog(ctx->db, name ? name : ctx->prog_name,
-		  name ? version : ctx->prog_version);
+    array_t *dat;
+    dat_t d;
+
+    dat = array_new_sized(sizeof(dat_t), 1);
+
+    d.name = name ? name : ctx->prog_name;
+    d.version = name ? version : ctx->prog_version;
+    array_push(dat, &d);
+
+    return w_dat(ctx->db, dat);
 }
