@@ -23,6 +23,8 @@ libckmame_a_SOURCES= \
 	check_archive.c \
 	check_disks.c \
 	check_files.c \
+	dat_entry_finalize.c \
+	dat_push.c \
 	db-@DBTYPE@.c \
 	dbl.c \
 	delete_list.c \

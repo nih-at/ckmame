@@ -2,7 +2,7 @@
 #define _HAD_DBH_H
 
 /*
-  $NiH: dbh.h,v 1.4 2005/09/27 21:33:02 dillo Exp $
+  $NiH: dbh.h,v 1.5 2006/03/14 22:11:40 dillo Exp $
 
   dbh.h -- high level db functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -24,6 +24,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include "dat.h"
 #include "dbl.h"
 #include "file_location.h"
 #include "game.h"
@@ -33,12 +34,12 @@
 
 
 
-array_t *r_dat(DB *);
+dat_t *r_dat(DB *);
 array_t *r_file_by_hash(DB *, filetype_t, const hashes_t *);
 struct game *r_game(DB *, const char *);
 int r_hashtypes(DB *, int *, int *);
 parray_t *r_list(DB *, const char *);
-int w_dat(DB *, array_t *);
+int w_dat(DB *, dat_t *);
 int w_file_by_hash_parray(DB *, filetype_t, const hashes_t *, parray_t *);
 int w_game(DB *, const game_t *);
 int w_hashtypes(DB *, int, int);

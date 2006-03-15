@@ -1,10 +1,7 @@
-#ifndef HAD_DAT_H
-#define HAD_DAT_H
-
 /*
-  $NiH: dat.h,v 1.1 2006/03/14 22:11:40 dillo Exp $
+  $NiH$
 
-  dat.h -- information about dat file
+  dat_push.c -- add dat entry
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -24,30 +21,20 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
+#include <string.h>
 
-#include "array.h"
-
-struct dat_entry {
-    char *name;
-    char *version;
-};
-
-typedef array_t dat_t;
-typedef struct dat_entry dat_entry_t;
+#include "dat.h"
 
 
 
-#define dat_free(d)		(array_free(d, dat_entry_finalize))
-#define dat_entry_name(de)	((de)->name)
-#define dat_entry_version(de)	((de)->version)
-#define dat_get(d, i)		((dat_entry_t *)array_get((d), (i)))
-#define dat_length		array_length
-#define dat_name(d, i)		(dat_entry_name(dat_get((d), (i))))
-#define dat_new()		(array_new(sizeof(dat_entry_t)))
-#define dat_version(d, i)	(dat_entry_version(dat_get((d), (i))))
+void
+dat_push(dat_t *d, const char *name, const char *version)
+{
+    dat_entry_t *de;
 
-void dat_entry_finalize(dat_entry_t *);
-void dat_push(dat_t *, const char *, const char *);
+    array_grow(d, NULL);
+    de = dat_get(d, dat_length(d)-1);
 
-#endif /* rom.h */
+    de->name = name ? strdup(name) : NULL;
+    de->version = version ? strdup(version) : NULL;
+}

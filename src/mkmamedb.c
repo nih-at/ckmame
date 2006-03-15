@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.30 2005/07/01 01:35:56 dillo Exp $
+  $NiH: mkmamedb.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -42,7 +42,7 @@
 #include "parse.h"
 
 char *prg;
-char *usage = "Usage: %s [-hV] [-o dbfile] [--prog-name name] [--prog-version version] [rominfo-file]\n";
+char *usage = "Usage: %s [-hV] [-o dbfile] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
 
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
@@ -79,19 +79,21 @@ struct option options[] = {
     { NULL,            0, 0, 0 },
 };
 
+
+
 int
 main(int argc, char **argv)
 {
     DB *db;
-    char *dbname, *fname, *prog_name, *prog_version;
-    int c;
+    parser_context_t *ctx;
+    char *dbname, *prog_name, *prog_version;
+    int c, i;
 
     prg = argv[0];
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DDB_DEFAULT_DB_NAME;
-    fname = NULL;
     prog_name = prog_version = NULL;
 
     opterr = 0;
@@ -120,28 +122,35 @@ main(int argc, char **argv)
 	}
     }
 
-    switch (argc - optind) {
-    case 1:
-	fname = argv[optind];
-	break;
-    case 0:
-	break;
-    default:
-	fprintf(stderr, usage, prg);
-	exit(1);
+    if (argc - optind > 1 && prog_name) {
+	fprintf(stderr,
+		"%s: warning: multiple input files specified, \n\t"
+		"--prog-name and --prog-version are ignored", prg);
+	prog_name = prog_version = NULL;
     }
-    
+
     remove(dbname);
     db = ddb_open(dbname, DDB_WRITE);
-
     if (db==NULL) {
 	myerror(ERRDB, "can't create database '%s'", dbname);
 	exit(1);
     }
+    if ((ctx=parser_context_new(db)) == NULL) {
+	ddb_close(db);
+	exit(1);
+    }
 
     w_version(db);
-    parse(db, fname, prog_name, prog_version);
 
+    if (optind == argc)
+	parse(ctx, NULL, prog_name, prog_version);
+    else {
+	for (i=optind; i<argc; i++)
+	    parse(ctx, argv[i], prog_name, prog_version);
+    }
+
+    parse_bookkeeping(ctx);
+    parser_context_free(ctx);
     ddb_close(db);
 
     return 0;

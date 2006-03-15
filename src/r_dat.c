@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: r_dat.c,v 1.1 2006/03/14 22:11:40 dillo Exp $
 
   r_dat.c -- read dat struct from db
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -31,11 +31,11 @@
 #include "r.h"
 #include "xmalloc.h"
 
-static void r__dat(DBT *, void *);
+static void r__dat_entry(DBT *, void *);
 
 
 
-array_t *
+dat_t *
 r_dat(DB *db)
 {
     DBT v;
@@ -47,7 +47,7 @@ r_dat(DB *db)
     
     data = v.data;
 
-    dat = r__array(&v, r__dat, sizeof(dat_t));
+    dat = r__array(&v, r__dat_entry, sizeof(dat_entry_t));
     
     free(data);
 
@@ -57,12 +57,12 @@ r_dat(DB *db)
 
 
 static void
-r__dat(DBT *v, void *vd)
+r__dat_entry(DBT *v, void *vd)
 {
-    dat_t *d;
+    dat_entry_t *d;
     
-    d = (dat_t *)vd;
+    d = (dat_entry_t *)vd;
 
-    d->name = r__string(v);
-    d->version = r__string(v);
+    dat_entry_name(d) = r__string(v);
+    dat_entry_version(d) = r__string(v);
 }

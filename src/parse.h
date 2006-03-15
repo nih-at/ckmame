@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.2.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: parse.h,v 1.3 2005/09/27 21:33:03 dillo Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -28,19 +28,25 @@
 
 #include <stdio.h>
 
+#include "dat.h"
 #include "dbl.h"
 #include "game.h"
 #include "map.h"
 
 struct parser_context {
     DB *db;
-    FILE *fin;
-    
+
+    /* current file */
+    FILE *fin;			/* input file */
+    int lineno;			/* current line number in input file */
+    char *prog_name;		/* name of dat file */
+    char *prog_version;		/* version of dat file */
+    game_t *g;			/* current game */
+
+    /* accumulated info */
+    dat_t *dat;
     map_t *map_rom;
     map_t *map_disk;
-    game_t *g;
-    char *prog_name;
-    char *prog_version;
     int romhashtypes;
     int diskhashtypes;
 
@@ -49,8 +55,6 @@ struct parser_context {
 
     parray_t *list[TYPE_MAX];
     
-    int lineno;
-
     /* state */
 };
 
@@ -58,9 +62,15 @@ typedef struct parser_context parser_context_t;
 
 /* parser functions */
 
-int parse(DB *, const char *, const char *, const char *);
-int parse_xml(parser_context_t *ctx);
-int parse_cm(parser_context_t *ctx);
+int parse(parser_context_t *, const char *, const char *, const char *);
+int parse_bookkeeping(parser_context_t *);
+int parse_cm(parser_context_t *);
+int parse_xml(parser_context_t *);
+
+void parser_context_finalize_perfile(parser_context_t *);
+void parser_context_free(parser_context_t *);
+void parser_context_init_perfile(parser_context_t *);
+parser_context_t *parser_context_new(DB *);
 
 /* callbacks */
 

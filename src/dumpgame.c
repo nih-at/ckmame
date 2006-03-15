@@ -1,8 +1,8 @@
 /*
-  $NiH: dumpgame.c,v 1.7 2006/01/02 09:00:24 wiz Exp $
+  $NiH: dumpgame.c,v 1.8 2006/03/14 22:11:40 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -51,6 +51,7 @@ static int dump_list(DB *, const char *);
 static int dump_dat(DB *, const char *);
 static int dump_db_version(DB *, const char *);
 static int dump_special(DB *, const char *);
+static void print_dat(dat_t *, int);
 static void print_hashtypes(int);
 static void print_rs(game_t *, filetype_t, const char *,
 		     const char *, const char *, const char *);
@@ -413,15 +414,25 @@ dump_game(DB *db, const char *name)
 {
     int i;
     game_t *game;
+    dat_t *dat;
+
+    if ((dat=r_dat(db)) == NULL) {
+	myerror(ERRDEF, "cannot read dat info");
+	return -1;
+    }
 
     if ((game=r_game(db, name)) == NULL) {
 	myerror(ERRDEF, "game unknown (or database error): `%s'", name);
 	return -1;
     }
 
-    /* XXX: print dat_no if more than one dat */
     /* XXX: use print_* functions */
     printf("Name:\t\t%s\n", game->name);
+    if (dat_length(dat) > 1) {
+	printf("Source:\t\t");
+	print_dat(dat, game_dat_no(game));
+	putc('\n', stdout);
+    }
     printf("Description:\t%s\n", game->description);
     print_rs(game, TYPE_ROM, "Cloneof", "Grand-Cloneof", "Clones", "ROMs");
     print_rs(game, TYPE_SAMPLE, "Sampleof", "Grand-Sampleof",
@@ -486,22 +497,19 @@ dump_list(DB *db, const char *key)
 static int
 dump_dat(DB *db, const char *dummy)
 {
-    array_t *dat;
     dat_t *d;
     int i;
 
-    if ((dat=r_dat(db)) == NULL) {
+    if ((d=r_dat(db)) == NULL) {
 	myerror(ERRDEF, "db error reading /dat");
 	return -1;
     }
 
-    for (i=0; i<array_length(dat); i++) {
-	if (array_length(dat) > 1)
+    for (i=0; i<dat_length(d); i++) {
+	if (dat_length(d) > 1)
 	    printf("%2d: ", i);
-	d = array_get(dat, i);
-	printf("%s (%s)\n",
-	       dat_name(d) ? dat_name(d) : "unknown",
-	       dat_version(d) ? dat_version(d) : "unknown");
+	print_dat(d, i);
+	putc('\n', stdout);
     }
     
     return 0;
@@ -548,6 +556,16 @@ dump_special(DB *db, const char *name)
     
     myerror(ERRDEF, "unknown special: `%s'", name);
     return -1;
+}
+
+
+
+static void
+print_dat(dat_t *d, int i)
+{
+    printf("%s (%s)",
+	   dat_name(d, i) ? dat_name(d, i) : "unknown",
+	   dat_version(d, i) ? dat_version(d, i) : "unknown");
 }
 
 

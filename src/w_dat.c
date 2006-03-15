@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: w_dat.c,v 1.1 2006/03/14 22:11:40 dillo Exp $
 
   w_dat.c -- write dat struct to db
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -33,12 +33,12 @@
 #include "types.h"
 #include "xmalloc.h"
 
-static void w__dat(DBT *, const void *);
+static void w__dat_entry(DBT *, const void *);
 
 
 
 int
-w_dat(DB *db, array_t *dat)
+w_dat(DB *db, dat_t *dat)
 {
     int err;
     DBT v;
@@ -46,7 +46,7 @@ w_dat(DB *db, array_t *dat)
     v.data = NULL;
     v.size = 0;
 
-    w__array(&v, w__dat, dat);
+    w__array(&v, w__dat_entry, dat);
 
     err = ddb_insert(db, DDB_KEY_DAT, &v);
 
@@ -58,12 +58,12 @@ w_dat(DB *db, array_t *dat)
 
 
 static void
-w__dat(DBT *v, const void *vd)
+w__dat_entry(DBT *v, const void *vd)
 {
-    const dat_t *d;
+    const dat_entry_t *d;
 
-    d = (const dat_t *)vd;
+    d = (const dat_entry_t *)vd;
 
-    w__string(v, d->name);
-    w__string(v, d->version);
+    w__string(v, dat_entry_name(d));
+    w__string(v, dat_entry_version(d));
 }

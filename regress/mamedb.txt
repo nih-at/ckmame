@@ -1,5 +1,10 @@
 BEGIN
 
+clrmamepro (
+	name "ckmame test db"
+	version 1
+)
+
 game (
 	name 1-4
 	description "one four byte file"

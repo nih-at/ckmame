@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-cm.c,v 1.3 2005/09/27 21:33:02 dillo Exp $
+  $NiH: parse-cm.c,v 1.4 2005/12/24 11:28:45 dillo Exp $
 
   parse-cm.c -- parse listinfo/CMpro format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -74,7 +74,8 @@ parse_cm(parser_context_t *ctx)
 		parse_game_start(ctx, TYPE_ROM);
 		state = st_game;
 	    }
-	    else if (strcmp(cmd, "emulator") == 0)
+	    else if (strcmp(cmd, "emulator") == 0
+		     || strcmp(cmd, "clrmamepro") == 0)
 		state = st_prog;
 	    break;
 	    

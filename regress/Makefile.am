@@ -40,6 +40,7 @@ TESTCASES=	baddump.test \
 		misnamed.test \
 		misnamed-dryrun.test \
 		mkmamedb-lost-parent.test \
+		mkmamedb-multi-dats.test \
 		mkmamedb-ok.test \
 		multi.test \
 		needed.test \
@@ -107,6 +108,7 @@ DBFILES=	mamedb.txt \
 		mamedb-lost-parent.txt \
 		mamedb-lost-parent-ok.txt \
 		mkmamedb-lost-parent.dump \
+		mkmamedb-multi-dats.dump \
 		mkmamedb-ok.dump
 
 check: ${MAME_DB} ${MAME_DB2}

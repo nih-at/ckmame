@@ -1,8 +1,8 @@
 /*
-  $NiH: parse.c,v 1.8 2006/01/02 09:00:24 wiz Exp $
+  $NiH: parse.c,v 1.9 2006/03/14 22:11:40 dillo Exp $
 
   parse.c -- parser frontend
-  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -66,22 +66,18 @@ static void familymeeting(DB *, filetype_t, game_t *, game_t *);
 static int file_location_copy(const hashes_t *, parray_t *, void *);
 static int handle_lost(parser_context_t *);
 static int lost(game_t *, filetype_t);
-static int parser_context_init(parser_context_t *);
-static void parser_context_finalize(parser_context_t *);
 static void rom_end(parser_context_t *, filetype_t);
 static int write_hashes(parser_context_t *);
 static int write_hashtypes(parser_context_t *);
 static int write_lists(parser_context_t *);
-static int write_prog(parser_context_t *, const char *, const char *);
 
 
 
 int
-parse(DB *db, const char *fname,
+parse(parser_context_t *ctx, const char *fname,
       const char *prog_name, const char *prog_version)
 {
     FILE *fin;
-    parser_context_t ctx;
     int c, ret;
 
     if (fname == NULL) {
@@ -96,34 +92,42 @@ parse(DB *db, const char *fname,
 	seterrinfo(fname, NULL);
     }
     
-    parser_context_init(&ctx);
-    ctx.db = db;
-    ctx.fin = fin;
+    parser_context_init_perfile(ctx);
+    ctx->fin = fin;
 
-    c = getc(ctx.fin);
-    ungetc(c, ctx.fin);
+    c = getc(ctx->fin);
+    ungetc(c, ctx->fin);
 
     if (c == '<')
-	ret = parse_xml(&ctx);
+	ret = parse_xml(ctx);
     else
-	ret = parse_cm(&ctx);
+	ret = parse_cm(ctx);
 
-    fclose(ctx.fin);
-    ctx.fin = NULL;
-
-    if (ret < 0
-	|| handle_lost(&ctx) < 0
-	|| write_lists(&ctx) < 0
-	|| write_hashes(&ctx) < 0
-	|| write_hashtypes(&ctx) < 0
-	|| write_prog(&ctx, prog_name, prog_version) < 0)
-	ret = -1;
-    else
-	ret = 0;
-
-    parser_context_finalize(&ctx);
-
+    if (fname == NULL) {
+	/* don't close stdin */
+	ctx->fin = NULL;
+    }
+    
+    dat_push(ctx->dat,
+	     prog_name ? prog_name : ctx->prog_name, 
+	     prog_version ? prog_version : ctx->prog_version);
+    
+    parser_context_finalize_perfile(ctx);
     return ret;
+}
+
+int
+parse_bookkeeping(parser_context_t *ctx)
+{
+    w_dat(ctx->db, ctx->dat);
+
+    if (handle_lost(ctx) < 0
+	|| write_lists(ctx) < 0
+	|| write_hashes(ctx) < 0
+	|| write_hashtypes(ctx) < 0)
+	return -1;
+
+    return 0;
 }
 
 
@@ -365,7 +369,7 @@ parse_game_start(parser_context_t *ctx, filetype_t ft)
     }
 
     ctx->g = game_new();
-    game_dat_no(ctx->g) = 0;
+    game_dat_no(ctx->g) = dat_length(ctx->dat);
 
     return 0;
 }
@@ -388,6 +392,86 @@ parse_prog_version(parser_context_t *ctx, const char *attr)
     ctx->prog_version = xstrdup(attr);
 
     return 0;
+}
+
+
+
+void
+parser_context_finalize_perfile(parser_context_t *ctx)
+{
+    if (ctx->fin)
+	fclose(ctx->fin);
+    ctx->fin = NULL;
+    game_free(ctx->g);
+    ctx->g = NULL;
+    free(ctx->prog_name);
+    free(ctx->prog_version);
+    ctx->prog_name = ctx->prog_version = NULL;
+}
+
+
+
+void
+parser_context_free(parser_context_t *ctx)
+{
+    int i;
+
+    parser_context_finalize_perfile(ctx);
+
+    map_free(ctx->map_rom, MAP_FREE_FN(file_location_free));
+    map_free(ctx->map_disk, MAP_FREE_FN(file_location_free));
+    dat_free(ctx->dat);
+    parray_free(ctx->lost_children, free);
+    array_free(ctx->lost_children_types, NULL);
+    for (i=0; i<TYPE_MAX; i++)
+	parray_free(ctx->list[i], free);
+}
+
+
+
+void
+parser_context_init_perfile(parser_context_t *ctx)
+{
+    ctx->fin = NULL;
+    ctx->lineno = 0;
+    ctx->prog_name = ctx->prog_version = NULL;
+    ctx->g = NULL;
+
+}
+
+
+
+parser_context_t *
+parser_context_new(DB *db)
+{
+    parser_context_t *ctx;
+    int i;
+
+    ctx = (parser_context_t *)xmalloc(sizeof(*ctx));
+
+    ctx->db = db;
+
+    parser_context_init_perfile(ctx);
+
+    if ((ctx->map_rom=map_new()) == NULL) {
+	myerror(ERRDB, "can't create hash table");
+	free(ctx);
+	return NULL;
+    }
+    if ((ctx->map_disk=map_new()) == NULL) {
+	myerror(ERRDB, "can't create hash table");
+	map_free(ctx->map_rom, NULL);
+	free(ctx);
+	return NULL;
+    }
+    ctx->dat=dat_new();
+    ctx->romhashtypes = ctx->diskhashtypes = 0;
+    ctx->lost_children = parray_new();
+    ctx->lost_children_types = array_new(sizeof(int));
+    for (i=0; i<TYPE_MAX; i++)
+	ctx->list[i] = parray_new();
+
+    return ctx;
 }
 
 
@@ -571,54 +655,6 @@ lost(game_t *g, filetype_t ft)
 
 
 
-static int
-parser_context_init(parser_context_t *ctx)
-{
-    int i;
-    ctx->db = NULL;
-    ctx->fin = NULL;
-    if ((ctx->map_rom=map_new()) == NULL) {
-	myerror(ERRDB, "can't create hash table");
-	return -1;
-    }
-    if ((ctx->map_disk=map_new()) == NULL) {
-	myerror(ERRDB, "can't create hash table");
-	map_free(ctx->map_rom, NULL);
-	return -1;
-    }
-    ctx->g = NULL;
-    ctx->prog_name = ctx->prog_version = NULL;
-    ctx->romhashtypes = ctx->diskhashtypes = 0;
-    ctx->lost_children = parray_new();
-    ctx->lost_children_types = array_new(sizeof(int));
-    for (i=0; i<TYPE_MAX; i++)
-	ctx->list[i] = parray_new();
-
-    return 0;
-}
-
-
-
-static void
-parser_context_finalize(parser_context_t *ctx)
-{
-    int i;
-
-    if (ctx->fin)
-	fclose(ctx->fin);
-    map_free(ctx->map_rom, MAP_FREE_FN(file_location_free));
-    map_free(ctx->map_disk, MAP_FREE_FN(file_location_free));
-    game_free(ctx->g);
-    free(ctx->prog_name);
-    free(ctx->prog_version);
-    parray_free(ctx->lost_children, free);
-    array_free(ctx->lost_children_types, NULL);
-    for (i=0; i<TYPE_MAX; i++)
-	parray_free(ctx->list[i], free);
-}
-
-
-
 static void
 rom_end(parser_context_t *ctx, filetype_t ft)
 {
@@ -705,21 +741,4 @@ write_lists(parser_context_t *ctx)
     }
 
     return 0;
-}
-
-
-
-static int
-write_prog(parser_context_t *ctx, const char *name, const char *version)
-{
-    array_t *dat;
-    dat_t d;
-
-    dat = array_new_sized(sizeof(dat_t), 1);
-
-    d.name = name ? name : ctx->prog_name;
-    d.version = name ? version : ctx->prog_version;
-    array_push(dat, &d);
-
-    return w_dat(ctx->db, dat);
 }
