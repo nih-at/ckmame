@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.10 2006/03/15 18:27:21 dillo Exp $
+  $NiH: parse.c,v 1.11 2006/03/17 10:59:27 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -23,6 +23,7 @@
 
 
 
+#include <fnmatch.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,6 +67,7 @@ static void familymeeting(DB *, filetype_t, game_t *, game_t *);
 static int file_location_copy(const hashes_t *, parray_t *, void *);
 static int handle_lost(parser_context_t *);
 static int lost(game_t *, filetype_t);
+static int name_matches(const game_t *, const parray_t *);
 static void rom_end(parser_context_t *, filetype_t);
 static int write_hashes(parser_context_t *);
 static int write_hashtypes(parser_context_t *);
@@ -74,8 +76,7 @@ static int write_lists(parser_context_t *);
 
 
 int
-parse(parser_context_t *ctx, const char *fname, const char *prog_name,
-      const char *prog_description, const char *prog_version)
+parse(parser_context_t *ctx, const char *fname, const dat_entry_t *dat)
 {
     FILE *fin;
     int c, ret;
@@ -108,10 +109,7 @@ parse(parser_context_t *ctx, const char *fname, const char *prog_name,
 	ctx->fin = NULL;
     }
     
-    dat_push(ctx->dat,
-	     prog_name ? prog_name : ctx->prog_name, 
-	     prog_description ? prog_description : ctx->prog_description, 
-	     prog_version ? prog_version : ctx->prog_version);
+    dat_push(ctx->dat, dat, &ctx->de);
     
     parser_context_finalize_perfile(ctx);
     return ret;
@@ -299,6 +297,12 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
     int i, to_do;
     game_t *g, *parent;
 
+    if (name_matches(ctx->g, ctx->ignore)) {
+	game_free(ctx->g);
+	ctx->g = NULL;
+	return 0;
+    }
+
     g = ctx->g;
 
     /* omit description if same as name (to save space) */
@@ -387,7 +391,7 @@ parse_game_start(parser_context_t *ctx, filetype_t ft)
 int
 parse_prog_description(parser_context_t *ctx, const char *attr)
 {
-    ctx->prog_description = xstrdup(attr);
+    dat_entry_description(&ctx->de) = xstrdup(attr);
 
     return 0;
 }
@@ -397,7 +401,7 @@ parse_prog_description(parser_context_t *ctx, const char *attr)
 int
 parse_prog_name(parser_context_t *ctx, const char *attr)
 {
-    ctx->prog_name = xstrdup(attr);
+    dat_entry_name(&ctx->de) = xstrdup(attr);
 
     return 0;
 }
@@ -407,7 +411,7 @@ parse_prog_name(parser_context_t *ctx, const char *attr)
 int
 parse_prog_version(parser_context_t *ctx, const char *attr)
 {
-    ctx->prog_version = xstrdup(attr);
+    dat_entry_version(&ctx->de) = xstrdup(attr);
 
     return 0;
 }
@@ -422,10 +426,7 @@ parser_context_finalize_perfile(parser_context_t *ctx)
     ctx->fin = NULL;
     game_free(ctx->g);
     ctx->g = NULL;
-    free(ctx->prog_name);
-    free(ctx->prog_description);
-    free(ctx->prog_version);
-    ctx->prog_name = ctx->prog_name = ctx->prog_version = NULL;
+    dat_entry_finalize(&ctx->de);
 }
 
 
@@ -453,7 +454,7 @@ parser_context_init_perfile(parser_context_t *ctx)
 {
     ctx->fin = NULL;
     ctx->lineno = 0;
-    ctx->prog_name = ctx->prog_description = ctx->prog_version = NULL;
+    dat_entry_init(&ctx->de);
     ctx->g = NULL;
 
 }
@@ -461,7 +462,7 @@ parser_context_init_perfile(parser_context_t *ctx)
 
 
 parser_context_t *
-parser_context_new(DB *db)
+parser_context_new(DB *db, const parray_t *ignore)
 {
     parser_context_t *ctx;
     int i;
@@ -469,6 +470,7 @@ parser_context_new(DB *db)
     ctx = (parser_context_t *)xmalloc(sizeof(*ctx));
 
     ctx->db = db;
+    ctx->ignore = ignore;
 
     parser_context_init_perfile(ctx);
 
@@ -670,6 +672,24 @@ lost(game_t *g, filetype_t ft)
 	    return 0;
 
     return 1;
+}
+
+
+
+static int
+name_matches(const game_t *g, const parray_t *ignore)
+{
+    int i;
+
+    if (ignore == NULL)
+	return 0;
+
+    for (i=0; i<parray_length(ignore); i++) {
+	if (fnmatch(parray_get(ignore, i), game_name(g), 0) == 0)
+	    return 1;
+    }
+
+    return 0;
 }
 
 

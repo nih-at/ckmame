@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.2 2006/03/15 18:27:21 dillo Exp $
+  $NiH: mkmamedb.c,v 1.3 2006/03/17 10:59:27 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -38,21 +38,24 @@
 #include "dbl.h"
 #include "funcs.h"
 #include "error.h"
-#include "w.h"
 #include "parse.h"
+#include "w.h"
+#include "xmalloc.h"
 
 char *prg;
-char *usage = "Usage: %s [-hV] [-o dbfile] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
+char *usage = "Usage: %s [-hV] [-i pat] [-o dbfile] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
 
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
 char help[] = "\n\
-  -h, --help               display this help message\n\
-  -V, --version            display version number\n\
-  -o, --output dbfile      write to database dbfile\n\
-      --prog-name name     set name of program rominfo is from\n\
-      --prog-version vers  set version of program rominfo is from\n\
+  -h, --help                display this help message\n\
+  -V, --version             display version number\n\
+  -i, --ignore pat          ignore games matching shell glob PAT\n\
+  -o, --output dbfile       write to database dbfile\n\
+      --prog-description d  set description of rominfo\n\
+      --prog-name name      set name of program rominfo is from\n\
+      --prog-version vers   set version of program rominfo is from\n\
 \n\
 Report bugs to <nih@giga.or.at>.\n";
 
@@ -63,20 +66,22 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hVo:"
+#define OPTIONS "hi:o:V"
 
 enum {
-    OPT_PROG_NAME = 256,
+    OPT_PROG_DESCRIPTION = 256,
+    OPT_PROG_NAME,
     OPT_PROG_VERSION
 };
 
 struct option options[] = {
-    { "help",          0, 0, 'h' },
-    { "version",       0, 0, 'V' },
-    { "output",        1, 0, 'o' },
-    { "prog-name",     1, 0, OPT_PROG_NAME },
-    { "prog-version",  1, 0, OPT_PROG_VERSION },
-    { NULL,            0, 0, 0 },
+    { "help",             0, 0, 'h' },
+    { "version",          0, 0, 'V' },
+    { "output",           1, 0, 'o' },
+    { "prog-description", 1, 0, OPT_PROG_DESCRIPTION },
+    { "prog-name",        1, 0, OPT_PROG_NAME },
+    { "prog-version",     1, 0, OPT_PROG_VERSION },
+    { NULL,               0, 0, 0 },
 };
 
 
@@ -86,7 +91,9 @@ main(int argc, char **argv)
 {
     DB *db;
     parser_context_t *ctx;
-    char *dbname, *prog_name, *prog_version;
+    char *dbname;
+    parray_t *ignore;
+    dat_entry_t dat;
     int c, i;
 
     prg = argv[0];
@@ -94,7 +101,8 @@ main(int argc, char **argv)
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DDB_DEFAULT_DB_NAME;
-    prog_name = prog_version = NULL;
+    dat_entry_init(&dat);
+    ignore = NULL;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -107,14 +115,22 @@ main(int argc, char **argv)
 	case 'V':
 	    fputs(version_string, stdout);
 	    exit(0);
+	case 'i':
+	    if (ignore == NULL)
+		ignore = parray_new();
+	    parray_push(ignore, xstrdup(optarg));
+	    break;
 	case 'o':
 	    dbname = optarg;
 	    break;
+	case OPT_PROG_DESCRIPTION:
+	    dat_entry_description(&dat) = optarg;
+	    break;
 	case OPT_PROG_NAME:
-	    prog_name = optarg;
+	    dat_entry_name(&dat) = optarg;
 	    break;
 	case OPT_PROG_VERSION:
-	    prog_version = optarg;
+	    dat_entry_version(&dat) = optarg;
 	    break;
     	default:
 	    fprintf(stderr, usage, prg);
@@ -122,11 +138,12 @@ main(int argc, char **argv)
 	}
     }
 
-    if (argc - optind > 1 && prog_name) {
+    if (argc - optind > 1 && dat_entry_name(&dat)) {
 	fprintf(stderr,
 		"%s: warning: multiple input files specified, \n\t"
 		"--prog-name and --prog-version are ignored", prg);
-	prog_name = prog_version = NULL;
+	dat_entry_finalize(&dat);
+	dat_entry_init(&dat);
     }
 
     remove(dbname);
@@ -135,7 +152,7 @@ main(int argc, char **argv)
 	myerror(ERRDB, "can't create database '%s'", dbname);
 	exit(1);
     }
-    if ((ctx=parser_context_new(db)) == NULL) {
+    if ((ctx=parser_context_new(db, ignore)) == NULL) {
 	ddb_close(db);
 	exit(1);
     }
@@ -143,15 +160,18 @@ main(int argc, char **argv)
     w_version(db);
 
     if (optind == argc)
-	parse(ctx, NULL, prog_name, NULL, prog_version);
+	parse(ctx, NULL, &dat);
     else {
 	for (i=optind; i<argc; i++)
-	    parse(ctx, argv[i], prog_name, NULL, prog_version);
+	    parse(ctx, argv[i], &dat);
     }
 
     parse_bookkeeping(ctx);
     parser_context_free(ctx);
     ddb_close(db);
+
+    if (ignore)
+	parray_free(ignore, free);
 
     return 0;
 }

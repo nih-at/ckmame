@@ -1,7 +1,7 @@
 /*
-  $NiH: dat_push.c,v 1.2 2006/03/17 10:59:27 dillo Exp $
+  $NiH$
 
-  dat_push.c -- add dat entry
+  dat_entry.c -- dat entry util functions
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -24,16 +24,28 @@
 #include <string.h>
 
 #include "dat.h"
+#include "xmalloc.h"
 
 
 
 void
-dat_push(dat_t *d, const dat_entry_t *hi, const dat_entry_t *lo)
+dat_entry_init(dat_entry_t *de)
 {
-    dat_entry_t *de;
+    de->name = de->description = de->version = NULL;
+}
 
-    array_grow(d, NULL);
-    de = dat_get(d, dat_length(d)-1);
+
 
-    dat_entry_merge(de, hi, lo);
+#define de_copy_member(X)					\
+	(t->X = (hi && hi->X ? xstrdup(hi->X) 			\
+		 : lo && lo->X ? xstrdup(lo->X) : NULL))
+
+void
+dat_entry_merge(dat_entry_t *t, const dat_entry_t *hi, const dat_entry_t *lo)
+{
+    dat_entry_init(t);
+
+    de_copy_member(name);
+    de_copy_member(description);
+    de_copy_member(version);
 }

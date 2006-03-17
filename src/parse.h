@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.5 2006/03/15 19:51:57 wiz Exp $
+  $NiH: parse.h,v 1.6 2006/03/17 10:59:27 dillo Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -35,13 +35,12 @@
 
 struct parser_context {
     DB *db;
+    const parray_t *ignore;
 
     /* current file */
     FILE *fin;			/* input file */
     int lineno;			/* current line number in input file */
-    char *prog_name;		/* name of dat file */
-    char *prog_description;	/* long description of dat file */
-    char *prog_version;		/* version of dat file */
+    dat_entry_t de;		/* info about dat file */
     game_t *g;			/* current game */
 
     /* accumulated info */
@@ -63,8 +62,7 @@ typedef struct parser_context parser_context_t;
 
 /* parser functions */
 
-int parse(parser_context_t *, const char *, const char *, const char *,
-	  const char *);
+int parse(parser_context_t *, const char *, const dat_entry_t *);
 int parse_bookkeeping(parser_context_t *);
 int parse_cm(parser_context_t *);
 int parse_xml(parser_context_t *);
@@ -72,7 +70,7 @@ int parse_xml(parser_context_t *);
 void parser_context_finalize_perfile(parser_context_t *);
 void parser_context_free(parser_context_t *);
 void parser_context_init_perfile(parser_context_t *);
-parser_context_t *parser_context_new(DB *);
+parser_context_t *parser_context_new(DB *, const parray_t *);
 
 /* callbacks */
 
