@@ -2,7 +2,7 @@
 #define HAD_DAT_H
 
 /*
-  $NiH: dat.h,v 1.1 2006/03/14 22:11:40 dillo Exp $
+  $NiH: dat.h,v 1.2 2006/03/15 18:27:21 dillo Exp $
 
   dat.h -- information about dat file
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -30,6 +30,7 @@
 
 struct dat_entry {
     char *name;
+    char *description;
     char *version;
 };
 
@@ -39,15 +40,17 @@ typedef struct dat_entry dat_entry_t;
 
 
 #define dat_free(d)		(array_free(d, dat_entry_finalize))
+#define dat_entry_description(de)	((de)->description)
 #define dat_entry_name(de)	((de)->name)
 #define dat_entry_version(de)	((de)->version)
 #define dat_get(d, i)		((dat_entry_t *)array_get((d), (i)))
 #define dat_length		array_length
+#define dat_description(d, i)	(dat_entry_description(dat_get((d), (i))))
 #define dat_name(d, i)		(dat_entry_name(dat_get((d), (i))))
 #define dat_new()		(array_new(sizeof(dat_entry_t)))
 #define dat_version(d, i)	(dat_entry_version(dat_get((d), (i))))
 
 void dat_entry_finalize(dat_entry_t *);
-void dat_push(dat_t *, const char *, const char *);
+void dat_push(dat_t *, const char *, const char *, const char *);
 
 #endif /* rom.h */

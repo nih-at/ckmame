@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.8 2006/03/14 22:11:40 dillo Exp $
+  $NiH: dumpgame.c,v 1.9 2006/03/15 18:27:21 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -297,7 +297,7 @@ main(int argc, char **argv)
 	exit (1);
     }
 
-    if ((list=r_list(db, DDB_KEY_LIST_GAME)) < 0) {
+    if ((list=r_list(db, DDB_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
     }
@@ -433,7 +433,8 @@ dump_game(DB *db, const char *name)
 	print_dat(dat, game_dat_no(game));
 	putc('\n', stdout);
     }
-    printf("Description:\t%s\n", game->description);
+    if (game_description(game))
+	printf("Description:\t%s\n", game_description(game));
     print_rs(game, TYPE_ROM, "Cloneof", "Grand-Cloneof", "Clones", "ROMs");
     print_rs(game, TYPE_SAMPLE, "Sampleof", "Grand-Sampleof",
 	     "Sample Clones", "Samples");

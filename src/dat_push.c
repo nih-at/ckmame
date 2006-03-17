@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: dat_push.c,v 1.1 2006/03/15 18:27:21 dillo Exp $
 
   dat_push.c -- add dat entry
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -24,17 +24,23 @@
 #include <string.h>
 
 #include "dat.h"
+#include "xmalloc.h"
 
 
 
 void
-dat_push(dat_t *d, const char *name, const char *version)
+dat_push(dat_t *d, const char *name, const char *description,
+	 const char *version)
 {
     dat_entry_t *de;
 
     array_grow(d, NULL);
     de = dat_get(d, dat_length(d)-1);
 
-    de->name = name ? strdup(name) : NULL;
-    de->version = version ? strdup(version) : NULL;
+    de->name = name ? xstrdup(name) : NULL;
+    if (name && description && strcmp(name, description) != 0)
+	de->description = xstrdup(description);
+    else
+	de->description = NULL;
+    de->version = version ? xstrdup(version) : NULL;
 }

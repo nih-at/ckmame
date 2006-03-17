@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.4 2006/03/15 18:27:21 dillo Exp $
+  $NiH: parse.h,v 1.5 2006/03/15 19:51:57 wiz Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -40,6 +40,7 @@ struct parser_context {
     FILE *fin;			/* input file */
     int lineno;			/* current line number in input file */
     char *prog_name;		/* name of dat file */
+    char *prog_description;	/* long description of dat file */
     char *prog_version;		/* version of dat file */
     game_t *g;			/* current game */
 
@@ -62,7 +63,8 @@ typedef struct parser_context parser_context_t;
 
 /* parser functions */
 
-int parse(parser_context_t *, const char *, const char *, const char *);
+int parse(parser_context_t *, const char *, const char *, const char *,
+	  const char *);
 int parse_bookkeeping(parser_context_t *);
 int parse_cm(parser_context_t *);
 int parse_xml(parser_context_t *);
@@ -86,6 +88,7 @@ int parse_game_description(parser_context_t *, const char *);
 int parse_game_end(parser_context_t *, filetype_t);
 int parse_game_name(parser_context_t *, filetype_t, int, const char *);
 int parse_game_start(parser_context_t *, filetype_t);
+int parse_prog_description(parser_context_t *, const char *);
 int parse_prog_name(parser_context_t *, const char *);
 int parse_prog_version(parser_context_t *, const char *);
 

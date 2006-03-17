@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.27 2005/07/01 01:35:56 dillo Exp $
+  $NiH: dbl.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -55,10 +55,12 @@ ddb_insert(DB *db, const char *key, const DBT *value)
     strncpy(k.data, key, k.size);
 
     len = value->size*1.1+12;
-    v.data = xmalloc(len+2);
+    v.data = xmalloc(len+4);
     
-    ((unsigned char *)v.data)[0] = (value->size >> 8) & 0xff;
-    ((unsigned char *)v.data)[1] = value->size & 0xff;
+    ((unsigned char *)v.data)[0] = (value->size >> 24) & 0xff;
+    ((unsigned char *)v.data)[1] = (value->size >> 16) & 0xff;
+    ((unsigned char *)v.data)[2] = (value->size >> 8) & 0xff;
+    ((unsigned char *)v.data)[3] = value->size & 0xff;
 
     if (compress2(((unsigned char *)v.data)+2, &len, value->data, 
 		  value->size, 9) != 0) {
@@ -95,8 +97,10 @@ ddb_lookup(DB *db, const char *key, DBT *value)
 	return ret;
     }
 
-    value->size = ((((unsigned char *)v.data)[0] << 8)
-		   | (((unsigned char *)v.data)[1]));
+    value->size = ((((unsigned char *)v.data)[0] << 24)
+		   | (((unsigned char *)v.data)[1] << 16)
+		   | (((unsigned char *)v.data)[2] << 8)
+		   | (((unsigned char *)v.data)[3]));
     value->data = xmalloc(value->size);
     
     len = value->size;

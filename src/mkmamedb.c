@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: mkmamedb.c,v 1.2 2006/03/15 18:27:21 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -143,10 +143,10 @@ main(int argc, char **argv)
     w_version(db);
 
     if (optind == argc)
-	parse(ctx, NULL, prog_name, prog_version);
+	parse(ctx, NULL, prog_name, NULL, prog_version);
     else {
 	for (i=optind; i<argc; i++)
-	    parse(ctx, argv[i], prog_name, prog_version);
+	    parse(ctx, argv[i], prog_name, NULL, prog_version);
     }
 
     parse_bookkeeping(ctx);

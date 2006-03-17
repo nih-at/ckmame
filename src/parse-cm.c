@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-cm.c,v 1.4 2005/12/24 11:28:45 dillo Exp $
+  $NiH: parse-cm.c,v 1.5 2006/03/15 18:27:21 dillo Exp $
 
   parse-cm.c -- parse listinfo/CMpro format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -231,6 +231,8 @@ parse_cm(parser_context_t *ctx)
 	case st_prog:
 	    if (strcmp(cmd, "name") == 0)
 		parse_prog_name(ctx, gettok(&l));
+	    else if (strcmp(cmd, "description") == 0)
+		parse_prog_description(ctx, gettok(&l));
 	    else if (strcmp(cmd, "version") == 0)
 		parse_prog_version(ctx, gettok(&l));
 	    else if (strcmp(cmd, ")") == 0)

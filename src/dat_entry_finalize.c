@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: dat_entry_finalize.c,v 1.1 2006/03/15 18:27:21 dillo Exp $
 
   dat_entry_free.c -- free dat entry
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -31,7 +31,8 @@ void
 dat_entry_finalize(dat_entry_t *de)
 {
     free(de->name);
+    free(de->description);
     free(de->version);
     
-    de->name = de->version = NULL;
+    de->name = de->description = de->version = NULL;
 }

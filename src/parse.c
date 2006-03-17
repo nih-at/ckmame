@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.9 2006/03/14 22:11:40 dillo Exp $
+  $NiH: parse.c,v 1.10 2006/03/15 18:27:21 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -74,8 +74,8 @@ static int write_lists(parser_context_t *);
 
 
 int
-parse(parser_context_t *ctx, const char *fname,
-      const char *prog_name, const char *prog_version)
+parse(parser_context_t *ctx, const char *fname, const char *prog_name,
+      const char *prog_description, const char *prog_version)
 {
     FILE *fin;
     int c, ret;
@@ -110,6 +110,7 @@ parse(parser_context_t *ctx, const char *fname,
     
     dat_push(ctx->dat,
 	     prog_name ? prog_name : ctx->prog_name, 
+	     prog_description ? prog_description : ctx->prog_description, 
 	     prog_version ? prog_version : ctx->prog_version);
     
     parser_context_finalize_perfile(ctx);
@@ -300,6 +301,13 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
 
     g = ctx->g;
 
+    /* omit description if same as name (to save space) */
+    if (game_name(g) && game_description(g)
+	&& strcmp(game_name(g), game_description(g)) == 0) {
+	free(game_description(g));
+	game_description(g) = NULL;
+    }
+
     /* add to list of games with samples */
     if (game_num_files(g, TYPE_SAMPLE) > 0)
 	parray_push(ctx->list[TYPE_SAMPLE], xstrdup(game_name(g)));
@@ -377,6 +385,16 @@ parse_game_start(parser_context_t *ctx, filetype_t ft)
 
 
 int
+parse_prog_description(parser_context_t *ctx, const char *attr)
+{
+    ctx->prog_description = xstrdup(attr);
+
+    return 0;
+}
+
+
+
+int
 parse_prog_name(parser_context_t *ctx, const char *attr)
 {
     ctx->prog_name = xstrdup(attr);
@@ -405,8 +423,9 @@ parser_context_finalize_perfile(parser_context_t *ctx)
     game_free(ctx->g);
     ctx->g = NULL;
     free(ctx->prog_name);
+    free(ctx->prog_description);
     free(ctx->prog_version);
-    ctx->prog_name = ctx->prog_version = NULL;
+    ctx->prog_name = ctx->prog_name = ctx->prog_version = NULL;
 }
 
 
@@ -434,7 +453,7 @@ parser_context_init_perfile(parser_context_t *ctx)
 {
     ctx->fin = NULL;
     ctx->lineno = 0;
-    ctx->prog_name = ctx->prog_version = NULL;
+    ctx->prog_name = ctx->prog_description = ctx->prog_version = NULL;
     ctx->g = NULL;
 
 }
