@@ -1,6 +1,6 @@
-.\" $NiH: mkmamedb.mdoc,v 1.1 2005/07/04 21:54:49 dillo Exp $
+.\" $NiH: mkmamedb.mdoc,v 1.1 2005/12/22 20:10:39 dillo Exp $
 .\"
-.\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005-2006 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd July 1, 2005
+.Dd March 24, 2006
 .Dt MKMAMEDB 1
 .Os
 .Sh NAME
@@ -38,21 +38,19 @@
 .Nm
 .Op Fl hV
 .Op Fl o Ar dbfile
+.Op Fl x Ar pat
 .Op Fl -prog-name Ar name
 .Op Fl -prog-version Ar version
-.Op Ar rominfo-file
+.Op Ar rominfo-file ...
 .Sh DESCRIPTION
 .Nm
-parses a ROM set description, as provided by e.g.
-.Xr xmame 6
-and converts it to an internal database format for use
-by
+parses ROM set descriptions, as provided by e.g.
+.Xr xmame 6 ,
+and converts them to an internal database format for use
+with
 .Xr ckmame 1 .
-The ROM set description is read from
-.Ar rominfo-file
-or stdin, if no
-.Ar rominfo-file
-is given on the command line.
+The ROM set description is read from the specified files or the
+standard input if no files are specified.
 The default output file is
 .Pa mame.db .
 You can override it with the
@@ -76,6 +74,10 @@ Write to database
 .Ar dbfile
 instead of the default
 .Dq Pa mame.db .
+.It Fl x Ar pat , Fl -exclude Ar pat
+Exclude games with names matching
+.Ar pat
+from the created database.
 .It Fl -prog-name Ar name
 Set name of the program the ROM info is from.
 .It Fl -prog-version Ar version

@@ -1,8 +1,8 @@
 /*
-  $NiH: mkmamedb.c,v 1.3 2006/03/17 10:59:27 dillo Exp $
+  $NiH: mkmamedb.c,v 1.4 2006/03/17 16:46:01 dillo Exp $
 
   mkmamedb.c -- create mamedb
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -51,8 +51,8 @@ char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
 char help[] = "\n\
   -h, --help                display this help message\n\
   -V, --version             display version number\n\
-  -i, --ignore pat          ignore games matching shell glob PAT\n\
   -o, --output dbfile       write to database dbfile\n\
+  -x, --exclude pat         exclude games matching shell glob PAT\n\
       --prog-description d  set description of rominfo\n\
       --prog-name name      set name of program rominfo is from\n\
       --prog-version vers   set version of program rominfo is from\n\
@@ -60,13 +60,13 @@ char help[] = "\n\
 Report bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2005 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2006 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hi:o:V"
+#define OPTIONS "ho:Vx:"
 
 enum {
     OPT_PROG_DESCRIPTION = 256,
@@ -77,6 +77,7 @@ enum {
 struct option options[] = {
     { "help",             0, 0, 'h' },
     { "version",          0, 0, 'V' },
+    { "exclude",          1, 0, 'x' },
     { "output",           1, 0, 'o' },
     { "prog-description", 1, 0, OPT_PROG_DESCRIPTION },
     { "prog-name",        1, 0, OPT_PROG_NAME },
@@ -92,7 +93,7 @@ main(int argc, char **argv)
     DB *db;
     parser_context_t *ctx;
     char *dbname;
-    parray_t *ignore;
+    parray_t *exclude;
     dat_entry_t dat;
     int c, i;
 
@@ -102,7 +103,7 @@ main(int argc, char **argv)
     if (dbname == NULL)
 	dbname = DDB_DEFAULT_DB_NAME;
     dat_entry_init(&dat);
-    ignore = NULL;
+    exclude = NULL;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -115,13 +116,13 @@ main(int argc, char **argv)
 	case 'V':
 	    fputs(version_string, stdout);
 	    exit(0);
-	case 'i':
-	    if (ignore == NULL)
-		ignore = parray_new();
-	    parray_push(ignore, xstrdup(optarg));
-	    break;
 	case 'o':
 	    dbname = optarg;
+	    break;
+	case 'x':
+	    if (exclude == NULL)
+		exclude = parray_new();
+	    parray_push(exclude, xstrdup(optarg));
 	    break;
 	case OPT_PROG_DESCRIPTION:
 	    dat_entry_description(&dat) = optarg;
@@ -152,7 +153,7 @@ main(int argc, char **argv)
 	myerror(ERRDB, "can't create database '%s'", dbname);
 	exit(1);
     }
-    if ((ctx=parser_context_new(db, ignore)) == NULL) {
+    if ((ctx=parser_context_new(db, exclude)) == NULL) {
 	ddb_close(db);
 	exit(1);
     }
@@ -170,8 +171,8 @@ main(int argc, char **argv)
     parser_context_free(ctx);
     ddb_close(db);
 
-    if (ignore)
-	parray_free(ignore, free);
+    if (exclude)
+	parray_free(exclude, free);
 
     return 0;
 }
