@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: dbl.c,v 1.2 2006/03/17 10:59:27 dillo Exp $
 
   dbl.c -- generic low level data base routines
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -41,6 +41,8 @@
 
 static int ddb_errno;
 
+#define LEN_SIZE	4	/* size of len field */
+
 
 
 int
@@ -55,20 +57,20 @@ ddb_insert(DB *db, const char *key, const DBT *value)
     strncpy(k.data, key, k.size);
 
     len = value->size*1.1+12;
-    v.data = xmalloc(len+4);
+    v.data = xmalloc(len+LEN_SIZE);
     
     ((unsigned char *)v.data)[0] = (value->size >> 24) & 0xff;
     ((unsigned char *)v.data)[1] = (value->size >> 16) & 0xff;
     ((unsigned char *)v.data)[2] = (value->size >> 8) & 0xff;
     ((unsigned char *)v.data)[3] = value->size & 0xff;
 
-    if (compress2(((unsigned char *)v.data)+2, &len, value->data, 
+    if (compress2(((unsigned char *)v.data)+LEN_SIZE, &len, value->data, 
 		  value->size, 9) != 0) {
 	free(k.data);
 	free(v.data);
 	return -1;
     }
-    v.size = len + 2;
+    v.size = len + LEN_SIZE;
     
     ret = ddb_insert_l(db, &k, &v);
 
@@ -104,8 +106,8 @@ ddb_lookup(DB *db, const char *key, DBT *value)
     value->data = xmalloc(value->size);
     
     len = value->size;
-    if (uncompress(value->data, &len, ((unsigned char *)v.data)+2, 
-		   v.size-2) != 0) {
+    if ((ret=uncompress(value->data, &len, ((unsigned char *)v.data)+LEN_SIZE, 
+		   v.size-LEN_SIZE)) != 0) {
 	free(value->data);
 	free(k.data);
 	return -1;

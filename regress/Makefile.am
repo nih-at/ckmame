@@ -144,3 +144,9 @@ ${MAME_DB2}: ../src/mkmamedb ${srcdir}/mamedb-lost-parent-ok.txt
 
 update-mkmamedb.dump: ${MAME_DB}
 	./dbdump ${MAME_DB} | sort > mkmamedb-ok.dump
+	./dbdump ${MAME_DB2} | sort > mkmamedb-lost-parent.dump
+	./dbdump ${MAME_DB} | sort > mkmamedb-ok.dump
+	../src/mkmamedb -o $$$$.db \
+			${srcdir}/mamedb.txt ${srcdir}/mamedb-2.txt \
+		&& ./dbdump $$$$.db | sort > mkmamedb-multi-dats.dump \
+		&& rm $$$$.db
