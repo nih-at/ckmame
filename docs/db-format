@@ -1,5 +1,5 @@
 XXX		game
-/prog		program name and version
+/dat		program name and version
 /list/game	list of all games
 /list/sample	list of games with samples
 /list/disk	list of disk image names
@@ -7,3 +7,14 @@ XXX		game
 /r/xxxxx
 /ckmame		db version format
 /hashtypes	type of hashes used, for roms and disks
+
+
+
+version history:
+
+11: don't overwrite last 2 bytes of size field with compressed data
+10: use 4 byte size field
+    add description to /dat
+    omit game description if equal to name
+ 9: rename /prog to /dat and allow multiple source files
+    include source file number in games
