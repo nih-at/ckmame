@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.10 2005/12/22 21:37:08 dillo Exp $
+  $NiH: fix.c,v 1.11 2005/12/26 14:34:19 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -47,9 +47,8 @@
 #define MARK_DELETED(x, i)	(*(int *)array_get((x), (i)) = 1)
 #define IS_DELETED(x, i)	(*(int *)array_get((x), (i)) == 1)
 
-static int fix_disks(game_t *, match_disk_array_t *, file_status_array_t *,
-		     const parray_t *);
-static int fix_files(game_t *, archive_t *, match_array_t *);
+static int fix_disks(game_t *, result_t *res);
+static int fix_files(game_t *, archive_t *, result_t *);
 static int fix_save_needed(archive_t *, int, int);
 static int fix_save_needed_disk(const char *, int);
 static void set_zero(int *);
@@ -66,8 +65,7 @@ static char *zf_garbage_name = NULL;
 
 
 int
-fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
-	 file_status_array_t *fsa, file_status_array_t *dsa, parray_t *dn)
+fix_game(game_t *g, archive_t *a, result_t *res)
 {
     int i, islong, keep, archive_changed;
     array_t *deleted;
@@ -85,10 +83,10 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
     }
 
     for (i=0; i<archive_num_files(a); i++) {
-	switch (file_status_array_get(fsa, i)) {
+	switch (result_file(res, i)) {
 	case FS_UNKNOWN:
 	case FS_PARTUSED:
-	    islong = (file_status_array_get(fsa, i) == FS_PARTUSED);
+	    islong = (result_file(res, i) == FS_PARTUSED);
 	    keep = fix_options & (islong ? FIX_KEEP_UNKNOWN : FIX_KEEP_LONG);
 	    if (fix_options & FIX_PRINT)
 		printf("%s: %s %s file `%s'\n",
@@ -158,7 +156,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	return 0;
     }
 
-    archive_changed |= fix_files(g, a, ma);
+    archive_changed |= fix_files(g, a, res);
 
     if (archive_close_zip(a) < 0) {
 	archive_changed = 0;
@@ -166,7 +164,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 	    delete_list_rollback(needed_delete_list);
     }
 
-    fix_disks(g, mda, dsa, dn);
+    fix_disks(g, res);
 
     return archive_changed;
 }
@@ -174,8 +172,7 @@ fix_game(game_t *g, archive_t *a, match_array_t *ma, match_disk_array_t *mda,
 
 
 static int
-fix_disks(game_t *g, match_disk_array_t *mda, file_status_array_t *dsa,
-	  const parray_t *dn)
+fix_disks(game_t *g, result_t *res)
 {
     int i;
     disk_t *d;
@@ -184,9 +181,9 @@ fix_disks(game_t *g, match_disk_array_t *mda, file_status_array_t *dsa,
     
     for (i=0; i<game_num_disks(g); i++) {
 	d = game_disk(g, i);
-	name = parray_get(dn, i);
+	name = result_disk_name(res, i);
 	
-	switch (file_status_array_get(dsa, i)) {
+	switch (result_disk_file(res, i)) {
 	case FS_UNKNOWN:
 	case FS_BROKEN:
 	    if (fix_options & FIX_PRINT)
@@ -227,7 +224,7 @@ fix_disks(game_t *g, match_disk_array_t *mda, file_status_array_t *dsa,
     
     for (i=0; i<game_num_disks(g); i++) {
 	d = game_disk(g, i);
-	md = match_disk_array_get(mda, i);
+	md = result_disk(res, i);
 
 	switch (match_disk_quality(md)) {
 	case QU_COPIED:
@@ -262,7 +259,7 @@ fix_disks(game_t *g, match_disk_array_t *mda, file_status_array_t *dsa,
 
 
 static int
-fix_files(game_t *g, archive_t *a, match_array_t *ma)
+fix_files(game_t *g, archive_t *a, result_t *res)
 {
     struct zip_source *source;
     archive_t *afrom;
@@ -278,7 +275,7 @@ fix_files(game_t *g, archive_t *a, match_array_t *ma)
     archive_changed = 0;
 
     for (i=0; i<game_num_files(g, file_type); i++) {
-	m = match_array_get(ma, i);
+	m = result_rom(res, i);
 	afrom = match_archive(m);
 	if (afrom)
 	    zfrom = archive_zip(afrom);

@@ -1,8 +1,8 @@
 /*
-  $NiH: check_disks.c,v 1.5 2005/12/22 21:37:08 dillo Exp $
+  $NiH: check_disks.c,v 1.6 2006/03/14 20:30:35 dillo Exp $
 
   check_disks.c -- match files against disks
-  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -33,46 +33,34 @@
 
 
 
-int
-check_disks(game_t *game, file_status_array_t **dsap,
-	    match_disk_array_t **mdap, parray_t **dnp)
+void
+check_disks(game_t *game, result_t *res)
 {
-    match_disk_array_t *mda;
-    match_disk_t *md, mf;
-    file_status_array_t *dsa;
-    parray_t *dn;
     disk_t *d, *f;
+    match_disk_t *md, mf;
     char *name;
     int i;
 
-    if (game_num_disks(game) == 0) {
-	*dsap = NULL;
-	*mdap = NULL;
-	*dnp = NULL;
-	return 0;
-    }
-
-    mda = match_disk_array_new(game_num_disks(game));
-    dsa = file_status_array_new(game_num_disks(game));
-    dn = parray_new_sized(game_num_disks(game));
+    if (game_num_disks(game) == 0)
+	return;
 
     for (i=0; i<game_num_disks(game); i++) {
-	md = match_disk_array_get(mda, i);
+	md = result_disk(res, i);
 	d = game_disk(game, i);
 	
 	name = findfile(disk_name(d), TYPE_DISK);
 	if (name == NULL) {
 	    f = NULL;
-	    file_status_array_get(dsa, i) = FS_MISSING;
-	    parray_push(dn, NULL);
+	    result_disk_file(res, i) = FS_MISSING;
+	    result_disk_name(res, i) = NULL;
 	}
 	else {
 	    f = disk_get_info(name, 0);
-	    parray_push(dn, name);
+	    result_disk_name(res, i) = name;
 	    
 	    if (f == NULL) {
 		match_disk_quality(md) = QU_MISSING;
-		file_status_array_get(dsa, i) = FS_BROKEN;
+		result_disk_file(res, i) = FS_BROKEN;
 	    }
 	}
 
@@ -83,23 +71,23 @@ check_disks(game_t *game, file_status_array_t **dsap,
 	    switch (hashes_cmp(disk_hashes(d), disk_hashes(f))) {
 	    case HASHES_CMP_NOCOMMON:
 		match_disk_quality(md) = QU_NOHASH;
-		file_status_array_get(dsa, i) = FS_USED;
+		result_disk_file(res, i) = FS_USED;
 		break;
 	    case HASHES_CMP_MATCH:
 		match_disk_quality(md) = QU_OK;
-		file_status_array_get(dsa, i) = FS_USED;
+		result_disk_file(res, i) = FS_USED;
 		break;
 	    case HASHES_CMP_MISMATCH:
 		match_disk_quality(md)  = QU_HASHERR;
 		switch (find_disk_in_romset(db, f, game_name(game), &mf)) {
 		case FIND_UNKNOWN:
-		    file_status_array_get(dsa, i) = FS_UNKNOWN;
+		    result_disk_file(res, i) = FS_UNKNOWN;
 		    break;
 		case FIND_MISSING:
-		    file_status_array_get(dsa, i) = FS_NEEDED;
+		    result_disk_file(res, i) = FS_NEEDED;
 		    break;
 		case FIND_EXISTS:
-		    file_status_array_get(dsa, i) = FS_SUPERFLUOUS;
+		    result_disk_file(res, i) = FS_SUPERFLUOUS;
 		    break;
 		case FIND_ERROR:
 		    /* XXX: how to handle? */
@@ -123,9 +111,4 @@ check_disks(game_t *game, file_status_array_t **dsap,
 		continue;
 	}
     }
-
-    *mdap = mda;
-    *dsap = dsa;
-    *dnp = dn;
-    return 0;
 }

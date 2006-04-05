@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.6 2005/10/05 22:08:26 dillo Exp $
+  $NiH: funcs.h,v 1.7 2005/12/22 21:37:08 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
@@ -30,24 +30,18 @@
 
 #include "archive.h"
 #include "dbl.h"
-#include "file_status.h"
 #include "game.h"
-#include "match.h"
-#include "match_disk.h"
 #include "parray.h"
+#include "result.h"
 #include "tree.h"
 
-file_status_array_t *check_archive(archive_t *, match_array_t *, const char *);
-int check_disks(game_t *, file_status_array_t **, match_disk_array_t **,
-		parray_t **);
-match_array_t *check_files(game_t *, archive_t *[]);
-void diagnostics(const game_t *, const archive_t *, const match_array_t *,
-		 const match_disk_array_t *, const file_status_array_t *,
-		 const file_status_array_t *, const parray_t *);
+void check_archive(archive_t *, const char *, result_t *);
+void check_disks(game_t *, result_t *);
+void check_files(game_t *, archive_t *[], result_t *);
+void diagnostics(const game_t *, const archive_t *, const result_t *);
 void ensure_extra_maps(void);
 void ensure_needed_maps(void);
-int fix_game(game_t *, archive_t *, match_array_t *, match_disk_array_t *,
-	     file_status_array_t *, file_status_array_t *, parray_t *);
+int fix_game(game_t *, archive_t *, result_t *);
 parray_t *find_superfluous(const char *);
 char *make_needed_name(const rom_t *);
 char *make_needed_name_disk(const disk_t *);

@@ -72,6 +72,7 @@ libckmame_a_SOURCES= \
 	r_game.c \
 	r_list.c \
 	r_util.c \
+	result.c \
 	rom.c \
 	rom_add_altname.c \
 	romcmp.c \
@@ -112,6 +113,7 @@ noinst_HEADERS=\
 	parse.h \
 	pri.h \
 	r.h \
+	result.h \
 	rom.h \
 	tree.h \
 	types.h \

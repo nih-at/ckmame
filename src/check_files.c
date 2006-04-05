@@ -1,8 +1,8 @@
 /*
-  $NiH: check_files.c,v 1.3 2005/10/02 11:28:10 dillo Exp $
+  $NiH: check_files.c,v 1.4 2006/03/14 20:30:35 dillo Exp $
 
   check_files.c -- match files against ROMs
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -59,8 +59,8 @@ static test_result_t match_files(archive_t *, test_t, const rom_t *,
 
 
 
-match_array_t *
-check_files(game_t *g, archive_t *as[3])
+void
+check_files(game_t *g, archive_t *as[3], result_t *res)
 {
     static const test_t tests[] = {
 	TEST_NSC,
@@ -70,18 +70,15 @@ check_files(game_t *g, archive_t *as[3])
     static const int tests_count
 	= sizeof(tests)/sizeof(tests[0]);
     
-    match_array_t *ma;
     int i, j;
     rom_t *r;
     match_t *m;
     archive_t *a;
     test_result_t result;
 
-    ma = match_array_new(game_num_files(g, file_type));
-
     for (i=0; i<game_num_files(g, file_type); i++) {
 	r = game_file(g, file_type, i);
-	m = match_array_get(ma, i);
+	m = result_rom(res, i);
 	a = as[rom_where(r)];
 
 	m->quality = QU_MISSING;
@@ -128,8 +125,6 @@ check_files(game_t *g, archive_t *as[3])
 		continue;
 	}
     }
-
-    return ma;
 }
 
 

@@ -1,8 +1,8 @@
 /*
-  $NiH: diagnostics.c,v 1.4 2005/10/05 21:28:52 dillo Exp $
+  $NiH: diagnostics.c,v 1.5 2005/12/26 14:34:19 dillo Exp $
 
   diagnostics.c -- display result of check
-  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -47,11 +47,9 @@ static const char *zname[] = {
 static const char *gname;
 static int gnamedone;
 
-static void diagnostics_archive(const archive_t *,
-				const file_status_array_t *);
-static void diagnostics_disks(const game_t *, const match_disk_array_t *,
-			      const file_status_array_t *, const parray_t *);
-static void diagnostics_files(const game_t *, const match_array_t *);
+static void diagnostics_archive(const archive_t *, const result_t *);
+static void diagnostics_disks(const game_t *, const result_t *);
+static void diagnostics_files(const game_t *, const result_t *);
 static void warn_disk(const disk_t *, const char *, ...);
 static void warn_ensure_game(void);
 static void warn_file(const rom_t *, const char *, ...);
@@ -62,21 +60,19 @@ static void warn_rom(const rom_t *, const char *, ...);
 
 
 void
-diagnostics(const game_t *game, const archive_t *a, const match_array_t *ma,
-	    const match_disk_array_t *mda, const file_status_array_t *fsa,
-	    const file_status_array_t *dsa, const parray_t *dn)
+diagnostics(const game_t *game, const archive_t *a, const result_t *res)
 {
     warn_game(game_name(game));
 
-    diagnostics_files(game, ma);
-    diagnostics_archive(a, fsa);
-    diagnostics_disks(game, mda, dsa, dn);
+    diagnostics_files(game, res);
+    diagnostics_archive(a, res);
+    diagnostics_disks(game, res);
 }
     
 
 
 static void
-diagnostics_archive(const archive_t *a, const file_status_array_t *fsa)
+diagnostics_archive(const archive_t *a, const result_t *res)
 {
     int i;
     rom_t *f;
@@ -87,7 +83,7 @@ diagnostics_archive(const archive_t *a, const file_status_array_t *fsa)
     for (i=0; i<archive_num_files(a); i++) {
 	f = archive_file(a, i);
 	
-	switch (file_status_array_get(fsa, i)) {
+	switch (result_file(res, i)) {
 	case FS_UNKNOWN:
 	    if (output_options & WARN_UNKNOWN)
 		warn_file(f, "unknown");
@@ -120,19 +116,17 @@ diagnostics_archive(const archive_t *a, const file_status_array_t *fsa)
 
 
 static void
-diagnostics_disks(const game_t *game, const match_disk_array_t *mda,
-		  const file_status_array_t *dsa, const parray_t *dn)
+diagnostics_disks(const game_t *game, const result_t *res)
 {
     int i;
     disk_t *d;
     match_disk_t *md;
 
-    /* XXX: is mda always set if game has disks? */
-    if (mda == NULL)
+    if (result_disks(res) == NULL)
 	return;
 
     for (i=0; i<game_num_disks(game); i++) {
-	md = match_disk_array_get(mda, i);
+	md = result_disk(res, i);
 	d = game_disk(game, i);
 	    
 	switch (match_disk_quality(md)) {
@@ -183,22 +177,22 @@ diagnostics_disks(const game_t *game, const match_disk_array_t *mda,
     }
     
     for (i=0; i<game_num_disks(game); i++) {
-	switch (file_status_array_get(dsa, i)) {
+	switch (result_disk_file(res, i)) {
 	case FS_UNKNOWN:
 	    if (output_options & WARN_UNKNOWN)
-		warn_image(parray_get(dn, i), "unknown");
+		warn_image(result_disk_name(res, i), "unknown");
 	    break;
 	case FS_BROKEN:
 	    if (output_options & WARN_FILE_BROKEN)
-		warn_image(parray_get(dn, i), "broken");
+		warn_image(result_disk_name(res, i), "broken");
 	    break;
 	case FS_SUPERFLUOUS:
 	    if (output_options & WARN_SUPERFLUOUS)
-		warn_image(parray_get(dn, i), "not used");
+		warn_image(result_disk_name(res, i), "not used");
 	    break;
 	case FS_NEEDED:
 	    if (output_options & WARN_USED)
-		warn_image(parray_get(dn, i), "needed elsewhere");
+		warn_image(result_disk_name(res, i), "needed elsewhere");
 	    break;
 
 	case FS_MISSING:
@@ -212,7 +206,7 @@ diagnostics_disks(const game_t *game, const match_disk_array_t *mda,
 
 
 static void
-diagnostics_files(const game_t *game, const match_array_t *ma)
+diagnostics_files(const game_t *game, const result_t *res)
 {
     int i, alldead, allcorrect, allowndead, hasown;
     match_t *m;
@@ -221,7 +215,7 @@ diagnostics_files(const game_t *game, const match_array_t *ma)
     alldead = allcorrect = allowndead = 1;
     hasown = 0;
     for (i=0; i<game_num_files(game, file_type); i++) {
-	m = match_array_get(ma, i);
+	m = result_rom(res, i);
 	r = game_file(game, file_type, i);
 
 	if (rom_where(r) == ROM_INZIP) {
@@ -249,7 +243,7 @@ diagnostics_files(const game_t *game, const match_array_t *ma)
     }
     else {
         for (i=0; i<game_num_files(game, file_type); i++) {
-	    m = match_array_get(ma, i);
+	    m = result_rom(res, i);
 	    r = game_file(game, file_type, i);
 	    if (match_archive(m))
 		f = archive_file(match_archive(m), match_index(m));

@@ -1,5 +1,5 @@
 /*
-  $NiH: tree.c,v 1.3 2005/10/05 21:21:33 dillo Exp $
+  $NiH: tree.c,v 1.4 2005/11/13 21:28:20 wiz Exp $
 
   tree.c -- traverse tree of games to check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -182,8 +182,6 @@ tree_new_full(const char *name, int check)
     return t;
 }
 
-/* XXX: convert rest */
-
 
 
 static int
@@ -192,10 +190,7 @@ tree_process(const tree_t *tree, archive_t *child,
 {
     archive_t *all[3];
     game_t *g;
-    match_array_t *ma;
-    match_disk_array_t *mda;
-    file_status_array_t *fsa, *dsa;
-    parray_t *dn;
+    result_t *res;
 
     /* check me */
     if ((g=r_game(db, tree->name)) == NULL) {
@@ -207,28 +202,21 @@ tree_process(const tree_t *tree, archive_t *child,
     all[1] = parent;
     all[2] = gparent;
 
-    ma = check_files(g, all);
-    fsa = check_archive(child, ma, game_name(g));
+    res = result_new(g, child);
+
+    check_files(g, all, res);
+    check_archive(child, game_name(g), res);
     if (file_type == TYPE_ROM)
-	check_disks(g, &dsa, &mda, &dn);
-    else {
-	mda = NULL;
-	dsa = NULL;
-	dn = NULL;
-    }
+	check_disks(g, res);
 
     /* write warnings/errors for me */
-    diagnostics(g, child, ma, mda, fsa, dsa, dn);
+    diagnostics(g, child, res);
 
-    if (fix_game(g, child, ma, mda, fsa, dsa, dn) == 1 && tree->child)
+    if (fix_game(g, child, res) == 1 && tree->child)
 	archive_refresh(child);
 	
     /* clean up */
-    file_status_array_free(fsa);
-    file_status_array_free(dsa);
-    match_disk_array_free(mda);
-    match_array_free(ma);
-    parray_free(dn, free);
+    result_free(res);
     game_free(g);
 
     /* XXX: commit changes to child */
