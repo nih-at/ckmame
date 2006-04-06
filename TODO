@@ -13,6 +13,8 @@ tests:
 - [feature] add option to remove files from -e dirs that already are in ROM set
 - [feature] "fix" superfluous archives by moving unknown files to garbage
 - [cleanup] use AC_CHECK_TYPES for uint32_t
+- [feature] export from DB to CM dat file(s)
+- [feature] config file (provides defaults overridable on command line)
 
 cmcheck features:
 - greppable output
