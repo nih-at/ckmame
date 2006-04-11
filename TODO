@@ -7,6 +7,8 @@ tests:
   * /prog from file
   * broken input
 
+- [bug] report error if opening zip archive fails (find_in_archives)
+- [bug] don't open same zip file multiple times, reuse first copy
 - [feature] integrity check: remember which disks have already been checked
   (only check once each)
 - [feature] dumpgame: dump samples
