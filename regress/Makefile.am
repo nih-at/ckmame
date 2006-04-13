@@ -13,7 +13,8 @@ ZIPCMP=@ZIPCMP@
 
 TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
 
-TESTCASES=	baddump.test \
+TESTCASES=	archive-broken.test \
+		baddump.test \
 		delete-used-superfluous.test \
 		disk-from-extra-remove.test \
 		disk-from-superfluous.test \
