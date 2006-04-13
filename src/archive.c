@@ -1,8 +1,8 @@
 /*
-  $NiH: archive.c,v 1.4 2005/11/13 21:28:20 wiz Exp $
+  $NiH: archive.c,v 1.5 2005/12/26 14:33:51 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
-  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -242,7 +242,7 @@ archive_free(archive_t *a)
 archive_t *
 archive_new(const char *name, filetype_t ft, int createp)
 {
-    struct archive *a;
+    archive_t *a;
     char *full_name;
     int i;
     
