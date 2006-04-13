@@ -1,8 +1,8 @@
 /*
-  $NiH: util2.c,v 1.6 2005/12/23 13:36:46 wiz Exp $
+  $NiH: util2.c,v 1.7 2006/04/13 23:17:22 wiz Exp $
 
   util.c -- utility functions needed only by ckmame itself
-  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -317,10 +317,12 @@ my_zip_open(const char *name, int flags)
     int err;
 
     z = zip_open(name, flags, &err);
-    if (z == NULL)
+    if (z == NULL) {
+	zip_error_to_str(errbuf, sizeof(errbuf), err, errno);
 	myerror(ERRDEF, "error %s zip archive `%s': %s",
 		(flags & ZIP_CREATE ? "creating" : "opening"), name,
-		zip_error_to_str(errbuf, sizeof(errbuf), err, errno));
+		errbuf);
+    }
 
     return z;
 }
