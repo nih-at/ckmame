@@ -9,6 +9,8 @@ tests:
   * /prog from file
   * broken input
 
+- [bug] duplicate file for multiple identical ROMs in one game
+- [bug] skip CHDs that need parent.
 - [bug] generic make_unique_file_name(), use in fix_game, make_needed_name*
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [bug] don't open same zip file multiple times, reuse first copy
