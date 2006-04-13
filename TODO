@@ -1,5 +1,7 @@
 tests:
 * whether ckmame can be run (incomplete runtime library path)
+* broken zip file in roms/, files found elsewhere (move away, create new)
+* broken zip in superfluous / extra dir (ignore)
 * dumpgame
 * mkmamedb tests
   * XML parsing
@@ -7,6 +9,7 @@ tests:
   * /prog from file
   * broken input
 
+- [bug] generic make_unique_file_name(), use in fix_game, make_needed_name*
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [bug] don't open same zip file multiple times, reuse first copy
 - [feature] integrity check: remember which disks have already been checked
