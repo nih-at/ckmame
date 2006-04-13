@@ -1,8 +1,8 @@
 /*
-  $NiH: fix.c,v 1.13 2006/04/13 22:38:39 dillo Exp $
+  $NiH: fix.c,v 1.14 2006/04/13 23:17:22 wiz Exp $
 
   fix.c -- fix ROM sets
-  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
