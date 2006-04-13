@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.12 2006/04/05 22:36:03 dillo Exp $
+  $NiH: fix.c,v 1.13 2006/04/13 22:38:39 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -80,10 +80,10 @@ fix_game(game_t *g, archive_t *a, result_t *res)
 
 	    /* opening the zip file failed, rename it and create new one */
 
-	    /* XXX: create unique name, don't just append `.broken' */
+	    if ((new_name=make_unique_name("broken", "%s",
+					   archive_name(a))) == NULL)
+		return -1;
 
-	    new_name = xmalloc(strlen(archive_name(a)+8));
-	    sprintf(new_name, "%s.broken", archive_name(a));
 	    if (rename_or_move(archive_name(a), new_name) < 0) {
 		free(new_name);
 		return -1;

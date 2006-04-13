@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.5 2005/12/22 21:37:08 dillo Exp $
+  $NiH: util2.c,v 1.6 2005/12/23 13:36:46 wiz Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -25,6 +25,7 @@
 
 #include <sys/stat.h>
 #include <errno.h>
+#include <stdarg.h>
 
 #include "dir.h"
 #include "error.h"
@@ -249,30 +250,47 @@ make_file_name(filetype_t ft, int idx, const char *name)
 
 
 
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 1024
+#endif
+
+char *
+make_unique_name(const char *ext, const char *fmt, ...)
+{
+    char ret[MAXPATHLEN];
+    int i, len;
+    struct stat st;
+    va_list ap;
+
+    va_start(ap, fmt);
+    len = vsnprintf(ret, sizeof(ret), fmt, ap);
+    va_end(ap);
+
+    /* already used space, "-XXX.", extension, 0 */
+    if (len+5+strlen(ext)+1 > sizeof(ret)) {
+	return NULL;
+    }
+
+    for (i=0; i<1000; i++) {
+	sprintf(ret+len, "-%03d.%s", i, ext);
+
+	if (stat(ret, &st) == -1 && errno == ENOENT)
+	    return xstrdup(ret);
+    }
+    
+    return NULL;
+}
+
 char *
 make_needed_name(const rom_t *r)
 {
-    struct stat st;
-    int i;
-    char *s, crc[HASHES_SIZE_CRC*2+1];
+    char crc[HASHES_SIZE_CRC*2+1];
 
     /* <needed_dir>/<crc>-nnn.zip */
 
     hash_to_string(crc, HASHES_TYPE_CRC, rom_hashes(r));
-    
-    s = xmalloc(strlen(needed_dir) + 18);
-		
-    for (i=0; i<1000; i++) {
-	sprintf(s, "%s/%s-%03d.zip", needed_dir, crc, i);
 
-	if (stat(s, &st) == -1 && errno == ENOENT)
-	    return s;
-    }
-
-    free(s);
-
-    /* XXX: better error handling */
-    return NULL;
+    return make_unique_name("zip", "%s/%s", needed_dir, crc);
 }
 
 
@@ -280,27 +298,13 @@ make_needed_name(const rom_t *r)
 char *
 make_needed_name_disk(const disk_t *d)
 {
-    struct stat st;
-    int i;
-    char *s, md5[HASHES_SIZE_MD5*2+1];
+    char md5[HASHES_SIZE_MD5*2+1];
 
     /* <needed_dir>/<md5>-nnn.zip */
 
     hash_to_string(md5, HASHES_TYPE_MD5, rom_hashes(d));
-    
-    s = xmalloc(strlen(needed_dir) + 42);
-		
-    for (i=0; i<1000; i++) {
-	sprintf(s, "%s/%s-%03d.chd", needed_dir, md5, i);
 
-	if (stat(s, &st) == -1 && errno == ENOENT)
-	    return s;
-    }
-
-    free(s);
-
-    /* XXX: better error handling */
-    return NULL;
+    return make_unique_name("chd", "%s/%s", needed_dir, md5);
 }
 
 
