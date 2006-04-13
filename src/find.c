@@ -1,8 +1,8 @@
 /*
-  $NiH: find.c,v 1.4 2005/10/05 21:21:33 dillo Exp $
+  $NiH: find.c,v 1.5 2006/03/14 20:30:35 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -165,7 +165,8 @@ find_in_archives(map_t *map, const rom_t *r, match_t *m)
 	fbh = parray_get(pa, i);
 
 	if ((a=archive_new(file_location_ext_name(fbh),
-			   TYPE_FULL_PATH, 0)) == NULL) {
+			   TYPE_FULL_PATH, 0)) == NULL
+	    || archive_num_files(a) < file_location_ext_index(fbh)) {
 	    /* XXX: internal error */
 	    return FIND_ERROR;
 	}
