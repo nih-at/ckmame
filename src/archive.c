@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.5 2005/12/26 14:33:51 dillo Exp $
+  $NiH: archive.c,v 1.6 2006/04/13 21:38:52 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -40,7 +40,7 @@
 extern char *prg;
 
 static int get_hashes(struct zip_file *zf, off_t, hashes_t *);
-static void read_infos_from_zip(archive_t *, int);
+static int read_infos_from_zip(archive_t *, int);
 
 
 
@@ -244,12 +244,16 @@ archive_new(const char *name, filetype_t ft, int createp)
 {
     archive_t *a;
     char *full_name;
+    int created;
     int i;
-    
+
+    created = 0;
     full_name = findfile(name, ft);
     if (full_name == NULL) {
-	if (createp)
+	if (createp) {
+	    created = 1;
 	    full_name = make_file_name(ft, 0, name);
+	}
 	else
 	    return NULL;
     }
@@ -258,12 +262,20 @@ archive_new(const char *name, filetype_t ft, int createp)
     a->name = full_name;
     a->files = array_new(sizeof(rom_t));
     a->za = NULL;
-    
-    read_infos_from_zip(a, romhashtypes);
 
-    for (i=0; i<archive_num_files(a); i++) {
-	/* XXX: rom_state(archive_file(a, i)) = ROM_UNKNOWN; */
-	rom_where(archive_file(a, i)) = (where_t) -1;
+    if (!created) {
+	if (read_infos_from_zip(a, romhashtypes) < 0) {
+	    if (createp)
+		return a;
+
+	    archive_free(a);
+	    return NULL;
+	}
+	
+	for (i=0; i<archive_num_files(a); i++) {
+	    /* XXX: rom_state(archive_file(a, i)) = ROM_UNKNOWN; */
+	    rom_where(archive_file(a, i)) = (where_t) -1;
+	}
     }
 
     return a;
@@ -310,7 +322,7 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 
 
 
-static void
+static int
 read_infos_from_zip(archive_t *a, int hashtypes)
 {
     struct zip *za;
@@ -330,7 +342,7 @@ read_infos_from_zip(archive_t *a, int hashtypes)
 		    archive_name(a), errstr);
 	}
 
-	return;
+	return -1;
     }
 
     archive_zip(a) = za;
@@ -357,4 +369,6 @@ read_infos_from_zip(archive_t *a, int hashtypes)
 	if (hashtypes != 0)
 	    archive_file_compute_hashes(a, i, hashtypes);
     }
+
+    return 0;
 }
