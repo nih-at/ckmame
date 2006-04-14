@@ -1,5 +1,5 @@
 /*
-  $NiH: delete_list.c,v 1.5 2005/12/22 20:01:31 dillo Exp $
+  $NiH: delete_list.c,v 1.6 2005/12/22 21:37:08 dillo Exp $
 
   delete_list.c -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -67,7 +67,7 @@ delete_list_execute(delete_list_t *dl)
     for (i=0; i<delete_list_length(dl); i++) {
 	fbh = delete_list_get(dl, i);
 
-	if (file_location_name(fbh) != name) {
+	if (name == NULL || strcmp(file_location_name(fbh), name) != 0) {
 	    if (z && deleted == zip_get_num_files(z))
 		remove_from_superfluous(name);
 
