@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.6 2006/04/13 21:38:52 dillo Exp $
+  $NiH: archive.c,v 1.7 2006/04/13 22:37:54 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -338,7 +338,7 @@ read_infos_from_zip(archive_t *a, int hashtypes)
 	    char errstr[80];
 
 	    zip_error_to_str(errstr, sizeof(errstr), zerr, errno);
-	    myerror(ERRDEF, "error opening zip archive '%s': %s",
+	    myerror(ERRDEF, "error opening zip archive `%s': %s",
 		    archive_name(a), errstr);
 	}
 
