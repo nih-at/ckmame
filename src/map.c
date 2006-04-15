@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: map.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
 
   map.c -- in-memory hash table
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -23,7 +23,6 @@
 
 #include <string.h>
 
-#include "dbl.h"
 #include "map.h"
 
 struct foreach_ud {
@@ -64,7 +63,7 @@ map_foreach(map_t *map, int (*fn)(const hashes_t *, parray_t *, void *),
     fud.ifn = fn;
     fud.ud = ud;
     
-    return ddb_foreach(map, foreach, &fud);
+    return dbl_foreach(map, foreach, &fud);
 }
 
 
@@ -78,7 +77,7 @@ map_free(map_t *map, void (*fn)(void *))
     fud.ifn = NULL;
     fud.ud = NULL;
     
-    ddb_foreach(map, foreach, &fud);
+    dbl_foreach(map, foreach, &fud);
 }
 
 
@@ -96,7 +95,7 @@ map_new(void)
 {
     map_t *map;
     
-    if ((map=ddb_open(NULL, DDB_READ|DDB_WRITE)) == NULL)
+    if ((map=dbl_open(NULL, DBL_READ|DBL_WRITE)) == NULL)
 	return NULL;
 
     return map;
@@ -168,12 +167,12 @@ lookup(map_t *map, int hashtype, const hashes_t *hashes, int create)
     if (make_key(&k, hashtype, hashes) < 0)
 	return NULL;
     
-    if (ddb_lookup_l(map, &k, &v) != 0) {
+    if (dbl_lookup(map, &k, &v) != 0) {
 	if (create) {
 	    pa = parray_new();
 	    v.size = sizeof(pa);
 	    v.data = &pa;
-	    if (ddb_insert_l(map, &k, &v) != 0) {
+	    if (dbl_insert(map, &k, &v) != 0) {
 		parray_free(pa, NULL);
 		return NULL;
 	    }

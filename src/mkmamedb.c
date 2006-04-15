@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.4 2006/03/17 16:46:01 dillo Exp $
+  $NiH: mkmamedb.c,v 1.5 2006/03/24 22:38:24 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -35,7 +35,7 @@
 #endif
 
 #include "types.h"
-#include "dbl.h"
+#include "dbh.h"
 #include "funcs.h"
 #include "error.h"
 #include "parse.h"
@@ -101,7 +101,7 @@ main(int argc, char **argv)
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
-	dbname = DDB_DEFAULT_DB_NAME;
+	dbname = DBH_DEFAULT_DB_NAME;
     dat_entry_init(&dat);
     exclude = NULL;
 
@@ -148,13 +148,13 @@ main(int argc, char **argv)
     }
 
     remove(dbname);
-    db = ddb_open(dbname, DDB_WRITE);
+    db = dbh_open(dbname, DBL_WRITE);
     if (db==NULL) {
 	myerror(ERRDB, "can't create database '%s'", dbname);
 	exit(1);
     }
     if ((ctx=parser_context_new(db, exclude)) == NULL) {
-	ddb_close(db);
+	dbh_close(db);
 	exit(1);
     }
 
@@ -169,7 +169,7 @@ main(int argc, char **argv)
 
     parse_bookkeeping(ctx);
     parser_context_free(ctx);
-    ddb_close(db);
+    dbh_close(db);
 
     if (exclude)
 	parray_free(exclude, free);

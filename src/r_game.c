@@ -1,5 +1,5 @@
 /*
-  $NiH: r_game.c,v 1.4 2005/09/27 21:33:03 dillo Exp $
+  $NiH: r_game.c,v 1.5 2006/03/14 22:11:40 dillo Exp $
 
   r_game.c -- read game struct from db
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -46,7 +46,7 @@ r_game(DB *db, const char *name)
     void *data;
     int i;
 
-    if (ddb_lookup(db, name, &v) != 0)
+    if (dbh_lookup(db, name, &v) != 0)
 	return NULL;
 
     data = v.data;

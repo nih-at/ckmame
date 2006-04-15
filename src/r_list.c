@@ -1,8 +1,8 @@
 /*
-  $NiH: r_list.c,v 1.3 2005/07/13 17:42:20 dillo Exp $
+  $NiH: r_list.c,v 1.4 2005/12/22 22:12:03 dillo Exp $
 
   r_list.c -- read list struct from db
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -39,7 +39,7 @@ r_hashtypes(DB *db, int *romhashtypesp, int *diskhashtypesp)
     DBT v;
     void *data;
 
-    if (ddb_lookup(db, DDB_KEY_HASH_TYPES, &v) != 0)
+    if (dbh_lookup(db, DBH_KEY_HASH_TYPES, &v) != 0)
 	return -1;
 
     data = v.data;
@@ -61,7 +61,7 @@ r_list(DB *db, const char *key)
     void *data;
     parray_t *pa;
 
-    if (ddb_lookup(db, key, &v) != 0)
+    if (dbh_lookup(db, key, &v) != 0)
 	return NULL;
 
     data = v.data;

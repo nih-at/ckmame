@@ -2,10 +2,10 @@
 #define _HAD_DBH_H
 
 /*
-  $NiH: dbh.h,v 1.5 2006/03/14 22:11:40 dillo Exp $
+  $NiH: dbh.h,v 1.6 2006/03/15 18:27:21 dillo Exp $
 
-  dbh.h -- high level db functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  dbh.h -- compressed on-disk mame.db data base
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -33,6 +33,26 @@
 #include "types.h"
 
 
+
+#define DBH_FORMAT_VERSION	11 /* version of ckmame database format */
+
+#define DBH_KEY_DAT		"/dat"
+#define DBH_KEY_DB_VERSION	"/ckmame"
+#define DBH_KEY_HASH_TYPES	"/hashtypes"
+#define DBH_KEY_LIST_DISK	"/list/disk"
+#define DBH_KEY_LIST_GAME	"/list/game"
+#define DBH_KEY_LIST_SAMPLE	"/list/sample"
+
+#define DBH_DEFAULT_DB_NAME	"mame.db"
+
+
+
+int dbh_check_version(DB *, int);	/* XXX: really part of API? */
+int dbh_close(DB *);
+const char *dbh_error(void);
+int dbh_insert(DB *, const char *, const DBT *);
+int dbh_lookup(DB *, const char *, DBT *);
+DB* dbh_open(const char *, int);
 
 dat_t *r_dat(DB *);
 array_t *r_file_by_hash(DB *, filetype_t, const hashes_t *);

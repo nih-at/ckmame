@@ -1,5 +1,5 @@
 AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @CFLAGS@ \
-	 -DDDB_INCLUDE=\"db-@DBTYPE@.h\"
+	 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
 
 bin_PROGRAMS=ckmame mkmamedb dumpgame
 
@@ -28,6 +28,7 @@ libckmame_a_SOURCES= \
 	dat_push.c \
 	db-@DBTYPE@.c \
 	dbl.c \
+	dbh.c \
 	delete_list.c \
 	diagnostics.c \
 	dir.c \

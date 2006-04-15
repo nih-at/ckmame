@@ -1,8 +1,8 @@
 /*
-  $NiH: ckmame.c,v 1.6 2005/09/28 08:36:37 wiz Exp $
+  $NiH: ckmame.c,v 1.7 2005/12/30 07:56:37 wiz Exp $
 
   ckmame.c -- main routine for ckmame
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -151,7 +151,7 @@ main(int argc, char **argv)
     superfluous_only = 0;
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
-	dbname = DDB_DEFAULT_DB_NAME;
+	dbname = DBH_DEFAULT_DB_NAME;
     fix_options = FIX_KEEP_LONG | FIX_KEEP_UNKNOWN;
     ignore_extra = 0;
     integrity = 0;
@@ -240,7 +240,7 @@ main(int argc, char **argv)
 	}
     }
     
-    if ((db=ddb_open(dbname, DDB_READ))==NULL) {
+    if ((db=dbh_open(dbname, DBL_READ)) == NULL) {
 	myerror(ERRDB, "can't open database `%s'", dbname);
 	exit(1);
     }
@@ -262,7 +262,7 @@ main(int argc, char **argv)
 	r_hashtypes(db, &romhashtypes, &diskhashtypes);
     }
     
-    if ((list=r_list(db, DDB_KEY_LIST_GAME)) == NULL) {
+    if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
 	exit(1);
     }

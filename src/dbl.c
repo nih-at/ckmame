@@ -1,8 +1,8 @@
 /*
-  $NiH: dbl.c,v 1.2 2006/03/17 10:59:27 dillo Exp $
+  $NiH: dbl.c,v 1.3 2006/04/05 23:05:36 dillo Exp $
 
-  dbl.c -- generic low level data base routines
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  dbl.c -- abstraction of data base access functions
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -23,163 +23,17 @@
 
 
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-#include <zlib.h>
 
 #include "dbl.h"
-#include "r.h"
 #include "xmalloc.h"
 
 
 
-#define DDB_ENOERR	0
-#define DDB_EOLD	1	/* old db (no /ckmame entry) */
-#define DDB_EVERSION	2	/* version mismatch */
-#define DDB_EMAX	3
-
-static int ddb_errno;
-
-#define LEN_SIZE	4	/* size of len field */
-
-
-
-int
-ddb_insert(DB *db, const char *key, const DBT *value)
+void
+dbl_init_string_key(DBT *k, const char *s)
 {
-    DBT k, v;
-    int ret;
-    uLong len;
-
-    k.size = strlen(key);
-    k.data = xmalloc(k.size);
-    strncpy(k.data, key, k.size);
-
-    len = value->size*1.1+12;
-    v.data = xmalloc(len+LEN_SIZE);
-    
-    ((unsigned char *)v.data)[0] = (value->size >> 24) & 0xff;
-    ((unsigned char *)v.data)[1] = (value->size >> 16) & 0xff;
-    ((unsigned char *)v.data)[2] = (value->size >> 8) & 0xff;
-    ((unsigned char *)v.data)[3] = value->size & 0xff;
-
-    if (compress2(((unsigned char *)v.data)+LEN_SIZE, &len, value->data, 
-		  value->size, 9) != 0) {
-	free(k.data);
-	free(v.data);
-	return -1;
-    }
-    v.size = len + LEN_SIZE;
-    
-    ret = ddb_insert_l(db, &k, &v);
-
-    free(k.data);
-
-    return ret;
-}
-
-
-
-int
-ddb_lookup(DB *db, const char *key, DBT *value)
-{
-    DBT k, v;
-    int ret;
-    uLong len;
-
-    k.size = strlen(key);
-    k.data = xmalloc(k.size);
-    strncpy(k.data, key, k.size);
-
-    ret = ddb_lookup_l(db, &k, &v);
-
-    if (ret != 0) {
-	free(k.data);
-	return ret;
-    }
-
-    value->size = ((((unsigned char *)v.data)[0] << 24)
-		   | (((unsigned char *)v.data)[1] << 16)
-		   | (((unsigned char *)v.data)[2] << 8)
-		   | (((unsigned char *)v.data)[3]));
-    value->data = xmalloc(value->size);
-    
-    len = value->size;
-    if ((ret=uncompress(value->data, &len, ((unsigned char *)v.data)+LEN_SIZE, 
-		   v.size-LEN_SIZE)) != 0) {
-	free(value->data);
-	free(k.data);
-	return -1;
-    }
-    value->size = len;
-    
-    free(k.data);
-    
-    return ret;
-}
-
-
-
-int
-ddb_check_version(DB *db, int flags)
-{
-    DBT v;
-    int version;
-    void *data;
-
-    if (ddb_lookup(db, DDB_KEY_DB_VERSION, &v) != 0) {
-	if (!(flags & DDB_WRITE)) {
-	    /* reading database, version not found -> old */
-	    ddb_errno = DDB_EOLD;
-	    return -1;
-	}
-	else {
-	    if (ddb_lookup(db, "/list", &v) == 0) {
-		/* writing database, version not found, but list found
-		   -> old */
-		free(v.data);
-		ddb_errno = DDB_EOLD;
-		return -1;
-	    }
-	    else {
-		/* writing database, version and list not found ->
-		   creating database, ok */
-		ddb_errno = DDB_ENOERR;
-		return 0;
-	    }
-	}
-    }
-
-    /* compare version numbers */
-
-    data = v.data;
-    version = r__ushort(&v);
-    free(data);
-
-    if (version != DDB_FORMAT_VERSION) {
-	ddb_errno = DDB_EVERSION;
-	return -1;
-    }
-    
-    ddb_errno = DDB_ENOERR;
-    return 0;
-}
-
-
-
-const char *
-ddb_error(void)
-{
-    static const char *str[] = {
-	"No error",
-	"Old (incompatible) database",
-	"Database format version mismatch",
-	"Unknown error"
-    };
-
-    if (ddb_errno == DDB_ENOERR)
-	return ddb_error_l();
-
-    return str[ddb_errno<0||ddb_errno>DDB_EMAX ? DDB_EMAX : ddb_errno];
+    k->size = strlen(s);
+    k->data = xmalloc(k->size);
+    strncpy(k->data, s, k->size);
 }

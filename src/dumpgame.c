@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.9 2006/03/15 18:27:21 dillo Exp $
+  $NiH: dumpgame.c,v 1.10 2006/03/17 10:59:27 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -260,7 +260,7 @@ main(int argc, char **argv)
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
-	dbname = DDB_DEFAULT_DB_NAME;
+	dbname = DBH_DEFAULT_DB_NAME;
 
     find_checksum = 0;
 
@@ -292,12 +292,12 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=ddb_open(dbname, DDB_READ))==NULL) {
+    if ((db=dbh_open(dbname, DBL_READ))==NULL) {
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit (1);
     }
 
-    if ((list=r_list(db, DDB_KEY_LIST_GAME)) == NULL) {
+    if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
     }
@@ -522,8 +522,8 @@ dump_dat(DB *db, const char *dummy)
 static int
 dump_db_version(DB *db, const char *dummy)
 {
-    /* ddb_open won't let us open a db with a different version */
-    printf("%d\n", DDB_FORMAT_VERSION);
+    /* dbh_open won't let us open a db with a different version */
+    printf("%d\n", DBH_FORMAT_VERSION);
 
     return 0;
 }
@@ -538,13 +538,13 @@ dump_special(DB *db, const char *name)
 	int (*f)(DB *, const char *);
 	const char *arg_override;
     } keys[] = {
-	{ "/list",             dump_list,       DDB_KEY_LIST_GAME },
-	{ DDB_KEY_DAT,         dump_dat,        NULL },
-	{ DDB_KEY_DB_VERSION,  dump_db_version, NULL },
-	{ DDB_KEY_HASH_TYPES,  dump_hashtypes,  NULL },
-	{ DDB_KEY_LIST_DISK,   dump_list,       NULL },
-	{ DDB_KEY_LIST_GAME,   dump_list,       NULL },
-	{ DDB_KEY_LIST_SAMPLE, dump_list,       NULL }
+	{ "/list",             dump_list,       DBH_KEY_LIST_GAME },
+	{ DBH_KEY_DAT,         dump_dat,        NULL },
+	{ DBH_KEY_DB_VERSION,  dump_db_version, NULL },
+	{ DBH_KEY_HASH_TYPES,  dump_hashtypes,  NULL },
+	{ DBH_KEY_LIST_DISK,   dump_list,       NULL },
+	{ DBH_KEY_LIST_GAME,   dump_list,       NULL },
+	{ DBH_KEY_LIST_SAMPLE, dump_list,       NULL }
     };
 
     int i;

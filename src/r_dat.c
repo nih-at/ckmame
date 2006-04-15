@@ -1,5 +1,5 @@
 /*
-  $NiH: r_dat.c,v 1.1 2006/03/14 22:11:40 dillo Exp $
+  $NiH: r_dat.c,v 1.2 2006/03/15 18:27:21 dillo Exp $
 
   r_dat.c -- read dat struct from db
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -42,7 +42,7 @@ r_dat(DB *db)
     void *data;
     array_t *dat;
 
-    if (ddb_lookup(db, DDB_KEY_DAT, &v) != 0)
+    if (dbh_lookup(db, DBH_KEY_DAT, &v) != 0)
 	return NULL;
     
     data = v.data;

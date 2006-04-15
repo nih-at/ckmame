@@ -1,8 +1,8 @@
 /*
-  $NiH: db-db.c,v 1.25 2005/07/01 01:35:56 dillo Exp $
+  $NiH: db-db.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
 
-  db-db.c -- low level routines for Berkeley db 
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  db-db.c -- access abstractions for Berkeley DB 1.x
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -24,21 +24,16 @@
 
 
 #include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
 
-#include "db-db.h"
 #include "dbl.h"
-#include "xmalloc.h"
 
 
 
 DB*
-ddb_open(const char *name, int flags)
+dbl_open(const char *name, int flags)
 {
-    DB *db;
     HASHINFO hi;
 
     hi.bsize = 1024;
@@ -48,21 +43,14 @@ ddb_open(const char *name, int flags)
     hi.hash = NULL;
     hi.lorder = 0;
 
-    db = dbopen(name, (flags & DDB_WRITE) ? O_RDWR|O_CREAT : O_RDONLY,
-		0666, DB_HASH, &hi);
-
-    if (db && ddb_check_version(db, flags) != 0) {
-	ddb_close(db);
-	return NULL;
-    }
-    
-    return db;
+    return dbopen(name, (flags & DBL_WRITE) ? O_RDWR|O_CREAT : O_RDONLY,
+		  0666, DB_HASH, &hi);
 }
 
 
 
 int
-ddb_close(DB *db)
+dbl_close(DB *db)
 {
     (db->close)(db);
     return 0;
@@ -71,7 +59,7 @@ ddb_close(DB *db)
 
 
 int
-ddb_insert_l(DB *db, DBT *key, const DBT *value)
+dbl_insert(DB *db, DBT *key, const DBT *value)
 {
     return (db->put)(db, key, value, 0);
 }
@@ -79,7 +67,7 @@ ddb_insert_l(DB *db, DBT *key, const DBT *value)
 
 
 int
-ddb_lookup_l(DB *db, DBT *key, DBT *value)
+dbl_lookup(DB *db, DBT *key, DBT *value)
 {
     return (db->get)(db, key, value, 0);
 }
@@ -87,7 +75,7 @@ ddb_lookup_l(DB *db, DBT *key, DBT *value)
 
 
 const char *
-ddb_error_l(void)
+dbl_error(void)
 {
     return strerror(errno);
 }
@@ -95,7 +83,7 @@ ddb_error_l(void)
 
 
 int
-ddb_foreach(DB *db, int (*f)(const DBT *, const DBT *, void *), void *ud)
+dbl_foreach(DB *db, int (*f)(const DBT *, const DBT *, void *), void *ud)
 {
     DBT key, value;
     int ret;

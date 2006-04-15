@@ -2,10 +2,10 @@
 #define _HAD_ERROR_H
 
 /*
-  $NiH: error.h,v 1.1.2.1 2005/08/01 20:53:02 wiz Exp $
+  $NiH: error.h,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   error.h -- error printing
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -30,7 +30,7 @@
 #define ERRZIP	0x1	/* prepend zipfile name */
 #define ERRFILE	0x2	/* prepend file name */
 #define ERRSTR	0x4	/* append strerror(errno) */
-#define ERRDB	0x8	/* append ddb_error() */
+#define ERRDB	0x8	/* append dbh_error() */
 
 #define ERRZIPFILE	(ERRZIP|ERRFILE)
 #define	ERRZIPSTR	(ERRZIP|ERRSTR)

@@ -1,8 +1,8 @@
 /*
-  $NiH: r_file_by_hash.c,v 1.3.2.2 2005/08/06 17:00:12 wiz Exp $
+  $NiH: r_file_by_hash.c,v 1.4 2005/09/27 21:33:03 dillo Exp $
 
   r_file_location.c -- read file_by_hash information from db
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -41,7 +41,7 @@ r_file_by_hash(DB *db, filetype_t ft, const hashes_t *hash)
     array_t *a;
     void *data;
 
-    if (ddb_lookup(db, file_location_make_key(ft, hash), &v) != 0)
+    if (dbh_lookup(db, file_location_make_key(ft, hash), &v) != 0)
 	return NULL;
 
     data = v.data;

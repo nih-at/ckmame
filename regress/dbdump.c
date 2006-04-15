@@ -1,8 +1,8 @@
 /*
-  $NiH: dbdump.c,v 1.5 2005/12/27 11:41:26 wiz Exp $
+  $NiH: dbdump.c,v 1.6 2006/01/02 09:00:21 wiz Exp $
 
   dbdump.c -- print contents of db
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -71,18 +71,18 @@ main(int argc, char *argv[])
     }
 
     seterrinfo(argv[1], NULL);
-    if ((db=ddb_open(argv[1], DDB_READ)) == NULL) {
+    if ((db=dbl_open(argv[1], DBL_READ)) == NULL) {
 	myerror(ERRDB, "can't open database");
 	exit(1);
     }
 
-    if (ddb_foreach(db, dump, NULL) < 0) {
+    if (dbl_foreach(db, dump, NULL) < 0) {
 	myerror(ERRDB, "can't read all keys and values from database");
 	exit(1);
     }
 
     /* read-only */
-    ddb_close(db);
+    dbl_close(db);
 
     return 0;
 }

@@ -2,9 +2,9 @@
 #define _HAD_DBL_INT_H
    
 /*
-  $NiH: db-db.h,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: db-db.h,v 1.2 2005/12/27 10:43:35 dillo Exp $
 
-  db-db.h -- low level routines for Berkeley db 
+  db-db.c -- access abstractions for Berkeley DB 1.x
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

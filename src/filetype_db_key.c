@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: filetype_db_key.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   filetype_db_key.c -- get db key for list of files of a type
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -21,9 +21,9 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <string.h>
+#include <stddef.h>
 
-#include "dbl.h"
+#include "dbh.h"
 #include "types.h"
 
 
@@ -33,13 +33,13 @@ filetype_db_key(filetype_t ft)
 {
     switch (ft) {
     case TYPE_ROM:
-	return DDB_KEY_LIST_GAME;
+	return DBH_KEY_LIST_GAME;
 
     case TYPE_SAMPLE:
-	return DDB_KEY_LIST_SAMPLE;
+	return DBH_KEY_LIST_SAMPLE;
 
     case TYPE_DISK:
-	return DDB_KEY_LIST_DISK;
+	return DBH_KEY_LIST_DISK;
 
     default:
 	return NULL;

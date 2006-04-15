@@ -1,8 +1,8 @@
 /*
-  $NiH: w_list.c,v 1.2 2005/07/13 17:42:21 dillo Exp $
+  $NiH: w_list.c,v 1.3 2005/12/22 22:12:03 dillo Exp $
 
   w_list.c -- write list struct to db
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -48,7 +48,7 @@ w_hashtypes(DB *db, int romhashtypes, int diskhashtypes)
     w__ushort(&v, romhashtypes);
     w__ushort(&v, diskhashtypes);
 
-    err = ddb_insert(db, DDB_KEY_HASH_TYPES, &v);
+    err = dbh_insert(db, DBH_KEY_HASH_TYPES, &v);
 
     free(v.data);
 
@@ -68,7 +68,7 @@ w_list(DB *db, const char *key, const parray_t *pa)
 
     w__parray(&v, (void (*)())w__string, pa);
 
-    err = ddb_insert(db, key, &v);
+    err = dbh_insert(db, key, &v);
 
     free(v.data);
 

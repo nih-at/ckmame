@@ -2,9 +2,9 @@
 #define _HAD_DBL_H
 
 /*
-  $NiH: dbl.h,v 1.4 2006/03/17 10:59:27 dillo Exp $
+  $NiH: dbl.h,v 1.5 2006/04/05 23:05:36 dillo Exp $
 
-  dbl.h -- generic low level data base routines
+  dbl.h -- abstraction of data base access functions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -26,34 +26,19 @@
 
 
 
-#include DDB_INCLUDE
+#include DBL_INCLUDE
 
-#define DDB_READ	0x0	/* open readonly */
-#define DDB_WRITE	0x1	/* open for writing */
-
-#define DDB_FORMAT_VERSION	11 /* version of ckmame database format */
-
-#define DDB_KEY_DAT		"/dat"
-#define DDB_KEY_DB_VERSION	"/ckmame"
-#define DDB_KEY_HASH_TYPES	"/hashtypes"
-#define DDB_KEY_LIST_DISK	"/list/disk"
-#define DDB_KEY_LIST_GAME	"/list/game"
-#define DDB_KEY_LIST_SAMPLE	"/list/sample"
-
-#define DDB_DEFAULT_DB_NAME	"mame.db"
+#define DBL_READ	0x0	/* open readonly */
+#define DBL_WRITE	0x1	/* open for writing */
 
 
 
-int ddb_check_version(DB *, int);
-int ddb_close(DB *);
-const char *ddb_error(void);
-const char *ddb_error_l(void);
-int ddb_foreach(DB *, int (*)(const DBT *, const DBT *, void *), void *);
-int ddb_init_db(DB *);
-int ddb_insert(DB *, const char *, const DBT *);	/* API version */
-int ddb_insert_l(DB *, DBT *, const DBT *);		/* backend version */
-int ddb_lookup(DB *, const char *, DBT *);		/* API version */
-int ddb_lookup_l(DB *, DBT *, DBT *);			/* backend version */
-DB* ddb_open(const char *, int);
+int dbl_close(DB *);
+const char *dbl_error(void);
+int dbl_foreach(DB *, int (*)(const DBT *, const DBT *, void *), void *);
+void dbl_init_string_key(DBT *, const char *);
+int dbl_insert(DB *, DBT *, const DBT *);
+int dbl_lookup(DB *, DBT *, DBT *);
+DB* dbl_open(const char *, int);
 
 #endif /* dbl.h */

@@ -1,5 +1,5 @@
 /*
-  $NiH: w_game.c,v 1.4 2005/09/27 21:33:03 dillo Exp $
+  $NiH: w_game.c,v 1.5 2006/03/14 22:11:40 dillo Exp $
 
   w_game.c -- write game struct to db
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -57,7 +57,7 @@ w_game(DB *db, const game_t *game)
 	
     w__array(&v, w__disk, game->disks);
 
-    err = ddb_insert(db, game->name, &v);
+    err = dbh_insert(db, game->name, &v);
 
     free(v.data);
 

@@ -1,6 +1,6 @@
 noinst_PROGRAMS=	dbdump
 AM_CFLAGS=		-I${srcdir}/../src \
-			 -DDDB_INCLUDE=\"db-@DBTYPE@.h\"
+			 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
 dbdump_LDADD=		../src/libckmame.a @DBLIBS@
 
 EXTRA_DIST=runtest ${TESTCASES} ${ZIPS} ${CHDS} ${DBFILES}

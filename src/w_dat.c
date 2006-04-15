@@ -1,5 +1,5 @@
 /*
-  $NiH: w_dat.c,v 1.1 2006/03/14 22:11:40 dillo Exp $
+  $NiH: w_dat.c,v 1.2 2006/03/15 18:27:21 dillo Exp $
 
   w_dat.c -- write dat struct to db
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -48,7 +48,7 @@ w_dat(DB *db, dat_t *dat)
 
     w__array(&v, w__dat_entry, dat);
 
-    err = ddb_insert(db, DDB_KEY_DAT, &v);
+    err = dbh_insert(db, DBH_KEY_DAT, &v);
 
     free(v.data);
 

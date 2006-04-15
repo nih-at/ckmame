@@ -1,8 +1,8 @@
 /*
-  $NiH: w_file_by_hash_parray.c,v 1.2.2.2 2005/08/06 17:00:12 wiz Exp $
+  $NiH: w_file_by_hash_parray.c,v 1.3 2005/09/27 21:33:03 dillo Exp $
 
   w_file_location.c -- write file_by_hash information to db
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -54,7 +54,7 @@ w_file_by_hash_parray(DB *db, filetype_t ft, const hashes_t *h, parray_t *pa)
 
     w__parray(&v, w__file_location, pa);
 
-    err = ddb_insert(db, file_location_make_key(ft, h), &v);
+    err = dbh_insert(db, file_location_make_key(ft, h), &v);
 
     free(v.data);
 

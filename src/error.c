@@ -1,8 +1,8 @@
 /*
-  $NiH: error.c,v 1.10 2004/04/22 11:21:44 dillo Exp $
+  $NiH: error.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
 
   error.c -- error printing
-  Copyright (C) 1999, 2003, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -27,7 +27,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "error.h"
-#include "dbl.h"
+#include "dbh.h"
 
 #include <errno.h>
 
@@ -61,7 +61,7 @@ myerror(int errtype, const char *fmt, ...)
     if ((errno != 0) && (errtype & ERRSTR))
 	fprintf(stderr, ": %s", strerror(errno));
     if (errtype & ERRDB)
-	fprintf(stderr, ": %s", ddb_error());
+	fprintf(stderr, ": %s", dbh_error());
     
     putc('\n', stderr);
 

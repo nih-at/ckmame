@@ -1,8 +1,8 @@
 /*
-  $NiH: w_util.c,v 1.2 2005/07/07 22:00:20 dillo Exp $
+  $NiH: w_util.c,v 1.3 2005/07/13 17:42:21 dillo Exp $
 
   w_util.c -- data base write utility functions
-  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "dbl.h"
+#include "dbh.h"
 #include "types.h"
 #include "xmalloc.h"
 #include "w.h"
@@ -146,8 +146,8 @@ w_version(DB *db)
     v.data = NULL;
     v.size = 0;
 
-    w__ushort(&v, DDB_FORMAT_VERSION);
-    err = ddb_insert(db, DDB_KEY_DB_VERSION, &v);
+    w__ushort(&v, DBH_FORMAT_VERSION);
+    err = dbh_insert(db, DBH_KEY_DB_VERSION, &v);
     free(v.data);
 
     return err;
