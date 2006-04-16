@@ -1,5 +1,5 @@
 /*
-  $NiH: db-db.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: db-db.c,v 1.2 2006/04/15 22:52:57 dillo Exp $
 
   db-db.c -- access abstractions for Berkeley DB 1.x
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -55,6 +55,15 @@ dbl_close(DB *db)
     (db->close)(db);
     return 0;
 }
+
+
+
+int
+dbl_delete(DB *db, const DBT *key)
+{
+    return (db->del)(db, key, 0);
+}
+
 
 
 

@@ -1,11 +1,11 @@
-#ifndef _HAD_DBL_H
-#define _HAD_DBL_H
+#ifndef _HAD_PMAP_H
+#define _HAD_PMAP_H
 
 /*
-  $NiH: dbl.h,v 1.6 2006/04/15 22:52:58 dillo Exp $
+  $NiH$
 
-  dbl.h -- abstraction of data base access functions
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  pmap.h -- hash table mapping strings to pointers
+  Copyright (C) 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -26,20 +26,25 @@
 
 
 
-#include DBL_INCLUDE
+#include "dbl.h"
 
-#define DBL_READ	0x0	/* open readonly */
-#define DBL_WRITE	0x1	/* open for writing */
+typedef void (*pmap_free_f)(void *);
+typedef int (*pmap_foreach_f)(const char *, void *, void *);
+
+struct pmap {
+    DB *db;
+    pmap_free_f cb_free;
+};
+
+typedef struct pmap pmap_t;
 
 
 
-int dbl_close(DB *);
-int dbl_delete(DB *, const DBT *);
-const char *dbl_error(void);
-int dbl_foreach(DB *, int (*)(const DBT *, const DBT *, void *), void *);
-void dbl_init_string_key(DBT *, const char *);
-int dbl_insert(DB *, DBT *, const DBT *);
-int dbl_lookup(DB *, DBT *, DBT *);
-DB* dbl_open(const char *, int);
+int pmap_add(pmap_t *, const char *, void *);
+int pmap_delete(pmap_t *, const char *);
+int pmap_foreach(pmap_t *, pmap_foreach_f, void *);
+void pmap_free(pmap_t *);
+void *pmap_get(pmap_t *, const char *);
+pmap_t *pmap_new(pmap_free_f);
 
-#endif /* dbl.h */
+#endif /* pmap.h */

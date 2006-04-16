@@ -67,6 +67,7 @@ libckmame_a_SOURCES= \
 	parse-cm.c \
 	parse-xml.c \
 	parse.c \
+	pmap.c \
 	psort.c \
 	r_dat.c \
 	r_file_by_hash.c \
@@ -112,6 +113,7 @@ noinst_HEADERS=\
 	match_disk.h \
 	parray.h \
 	parse.h \
+	pmap.h \
 	pri.h \
 	r.h \
 	result.h \
