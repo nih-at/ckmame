@@ -1,5 +1,5 @@
 /*
-  $NiH: dbl.c,v 1.3 2006/04/05 23:05:36 dillo Exp $
+  $NiH: dbl.c,v 1.4 2006/04/15 22:52:58 dillo Exp $
 
   dbl.c -- abstraction of data base access functions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -34,6 +34,5 @@ void
 dbl_init_string_key(DBT *k, const char *s)
 {
     k->size = strlen(s);
-    k->data = xmalloc(k->size);
-    strncpy(k->data, s, k->size);
+    k->data = (void *)s;
 }

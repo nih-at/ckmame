@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: dbh.c,v 1.1 2006/04/15 22:52:58 dillo Exp $
 
   dbh.c -- compressed on-disk mame.db data base
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -137,7 +137,9 @@ dbh_insert(DB *db, const char *key, const DBT *value)
 
     if (compress2(((unsigned char *)v.data)+DBH_LEN_SIZE, &len, value->data, 
 		  value->size, 9) != 0) {
+#if 0
 	free(k.data);
+#endif
 	free(v.data);
 	return -1;
     }
@@ -145,7 +147,9 @@ dbh_insert(DB *db, const char *key, const DBT *value)
     
     ret = dbl_insert(db, &k, &v);
 
+#if 0
     free(k.data);
+#endif
 
     return ret;
 }
@@ -163,10 +167,8 @@ dbh_lookup(DB *db, const char *key, DBT *value)
 
     ret = dbl_lookup(db, &k, &v);
 
-    if (ret != 0) {
-	free(k.data);
+    if (ret != 0)
 	return ret;
-    }
 
     value->size = ((((unsigned char *)v.data)[0] << 24)
 		   | (((unsigned char *)v.data)[1] << 16)
@@ -179,14 +181,11 @@ dbh_lookup(DB *db, const char *key, DBT *value)
 			((unsigned char *)v.data)+DBH_LEN_SIZE, 
 			v.size-DBH_LEN_SIZE)) != 0) {
 	free(value->data);
-	free(k.data);
 	return -1;
     }
     value->size = len;
     
-    free(k.data);
-    
-    return ret;
+    return 0;
 }
 
 
