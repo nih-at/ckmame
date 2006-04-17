@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.21 2005/10/05 22:45:41 dillo Exp $
+#  $NiH: runtest,v 1.22 2005/12/27 09:41:51 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
@@ -299,6 +299,7 @@ cp ../"${MAME_DB}" .
 if [ ! -z "${SETUP_ONLY}" ]
 then
     echo ${DIR}
+    echo ${ARGS}
     exit 0
 fi
 
