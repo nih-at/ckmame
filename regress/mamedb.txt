@@ -173,4 +173,43 @@ game (
 	sample crash.wav
 )
 
+game (
+	name many
+	description "game with many (32) roms"
+	manufacturer "synth"
+	year 2006
+	rom ( name 00 size 2 crc32 b84614a0 )
+	rom ( name 01 size 2 crc32 cf412436 )
+	rom ( name 02 size 2 crc32 5648758c )
+	rom ( name 03 size 2 crc32 214f451a )
+	rom ( name 04 size 2 crc32 bf2bd0b9 )
+	rom ( name 05 size 2 crc32 c82ce02f )
+	rom ( name 06 size 2 crc32 5125b195 )
+	rom ( name 07 size 2 crc32 26228103 )
+	rom ( name 08 size 2 crc32 b69d9c92 )
+	rom ( name 09 size 2 crc32 c19aac04 )
+	rom ( name 0A size 2 crc32 9f44550a )
+	rom ( name 0B size 2 crc32 064d04b0 )
+	rom ( name 0C size 2 crc32 714a3426 )
+	rom ( name 0D size 2 crc32 ef2ea185 )
+	rom ( name 0E size 2 crc32 98299113 )
+	rom ( name 0F size 2 crc32 0120c0a9 )
+	rom ( name 10 size 2 crc32 a15d25e1 )
+	rom ( name 11 size 2 crc32 d65a1577 )
+	rom ( name 12 size 2 crc32 4f5344cd )
+	rom ( name 13 size 2 crc32 3854745b )
+	rom ( name 14 size 2 crc32 a630e1f8 )
+	rom ( name 15 size 2 crc32 d137d16e )
+	rom ( name 16 size 2 crc32 483e80d4 )
+	rom ( name 17 size 2 crc32 3f39b042 )
+	rom ( name 18 size 2 crc32 af86add3 )
+	rom ( name 19 size 2 crc32 d8819d45 )
+	rom ( name 1A size 2 crc32 865f644b )
+	rom ( name 1B size 2 crc32 1f5635f1 )
+	rom ( name 1C size 2 crc32 68510567 )
+	rom ( name 1D size 2 crc32 f63590c4 )
+	rom ( name 1E size 2 crc32 8132a052 )
+	rom ( name 1F size 2 crc32 183bf1e8 )
+)
+
 END

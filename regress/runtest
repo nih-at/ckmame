@@ -1,9 +1,9 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.22 2005/12/27 09:41:51 dillo Exp $
+#  $NiH: runtest,v 1.23 2006/04/17 11:04:35 dillo Exp $
 #
 #  runtest -- run regression tests
-#  Copyright (C) 2002, 2003 Dieter Baron and Thomas Klausner
+#  Copyright (C) 2002-2006 Dieter Baron and Thomas Klausner
 #
 #  This file is part of ckmame, a program to check rom sets for MAME.
 #  The authors can be contacted at <nih@giga.or.at>
@@ -67,6 +67,8 @@
 #	    ckmame is expected to print TEXT to stdout.  If multiple
 #	    stdout commands are used, the messages are expected in
 #	    the order given. 
+#	ulimit C VALUE
+#	    set ulimit -C to VALUE while running the program.
 #   
 # exit status
 #	runtest uses the following exit codes:
@@ -249,6 +251,7 @@ ARGS=''
 FILES=''
 FILES_SHOULD=''
 DESCR=''
+ULIMIT=''
 
 mkdir roms
 
@@ -286,6 +289,10 @@ do
     echo "${PROGRAM}: $arg" >> stderr;;
   stdout)
     echo "$arg" >> stdout;;
+  ulimit)
+    set $arg
+    # XXX: should only limit this during run of ${PROGRAM}
+    ulimit -$1 $2;;
   *)
     die "unknown directive '$cmd'"
   esac
