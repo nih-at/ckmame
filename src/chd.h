@@ -1,10 +1,10 @@
 #ifndef HAD_CHD_H
 
 /*
-  $NiH: chd.h,v 1.6 2005/06/12 22:32:36 wiz Exp $
+  $NiH: chd.h,v 1.1 2005/07/04 21:54:50 dillo Exp $
 
   chd.h -- accessing chd files
-  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -41,6 +41,8 @@
 #define CHD_ERR_ZLIB	8	/* Z zlib error */
 #define CHD_ERR_CRC	9	/* N CRC mismatch */
 #define CHD_ERR_NOMEM	10	/* N out of memory */
+
+#define CHD_FLAG_HAS_PARENT		0x01
 
 #define CHD_MAP_TYPE_COMPRESSED		0x01
 #define CHD_MAP_TYPE_UNCOMPRESSED	0x02

@@ -1,5 +1,5 @@
 /*
-  $NiH: disk_new.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
+  $NiH: disk_new.c,v 1.2 2006/04/17 11:31:11 dillo Exp $
 
   disk_new.c -- create / free disk structure from image
   Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
@@ -65,6 +65,12 @@ disk_new(const char *name, int quiet)
 	    /* XXX: include err */
 	    myerror(ERRFILESTR, "error opening disk");
 	}
+	return NULL;
+    }
+
+    if (chd->flags & CHD_FLAG_HAS_PARENT) {
+	chd_close(chd);
+	myerror(ERRFILE, "error opening disk: parent image required");
 	return NULL;
     }
 

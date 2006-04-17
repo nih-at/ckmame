@@ -23,6 +23,7 @@ TESTCASES=	archive-broken.test \
 		disk-nogood.test \
 		disk-nogoodmiss.test \
 		disk-ok.test \
+		disk-parent.test \
 		disk-superfluous.test \
 		disk-swap.test \
 		disk-to-needed.test \
@@ -68,6 +69,7 @@ TESTCASES=	archive-broken.test \
 		rom-from-superfluous.test \
 		rom-from-superfluous-some.test \
 		rom-from-superfluous-dryrun.test \
+		rom-many.test \
 		sample-miss.test \
 		sample-ok.test \
 		sample-parent-ok.test \
@@ -100,10 +102,11 @@ ZIPS=		1-4-dup.zip \
 		samptest3.zip \
 		samptest3-garbage.zip
 
-CHDS=		108-5.chd \
-		108-2.chd \
-		12-1.chd
-
+CHDS=		108-2.chd \
+		108-5.chd \
+		108-5a.chd \
+		12-1.chd \
+		diff.chd
 
 DBFILES=	mamedb.txt \
 		mamedb-lost-parent.txt \
