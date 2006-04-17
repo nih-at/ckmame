@@ -1,8 +1,11 @@
-/*
-  $NiH: disk.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
+#ifndef _HAD_ARCHIVE_MAP_H
+#define _HAD_ARCHIVE_MAP_H
 
-  disk.c -- initialize / finalize disk structure
-  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+/*
+  $NiH$
+
+  archive_map.h -- hash table of opened archvies
+  Copyright (C) 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -23,26 +26,15 @@
 
 
 
-#include <stdlib.h>
+#include "archive.h"
+#include "pmap.h"
 
-#include "disk.h"
+typedef pmap_t archive_map_t;
 
-
+#define archive_map_add(m, s, a)	(pmap_add((m), (s), (a)))
+#define archive_map_delete(m, s, a)	(pmap_delete((m), (s), (a)))
+#define archive_map_get(m, s)		((archive_t *)pmap_get((m), (s)))
+#define archive_map_new()	\
+	(pmap_new((pmap_free_f)archive_real_free))
 
-void
-disk_init(disk_t *d)
-{
-    d->refcount = 0;
-    d->name = d->merge = NULL;
-    hashes_init(&d->hashes);
-    d->status = STATUS_OK;
-}
-
-
-
-void
-disk_finalize(disk_t *d)
-{
-    free(d->name);
-    free(d->merge);
-}
+#endif /* archive_map.h */

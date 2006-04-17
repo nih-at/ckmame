@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.7 2006/04/13 22:37:54 dillo Exp $
+  $NiH: archive.c,v 1.8 2006/04/14 18:25:32 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -29,6 +29,7 @@
 #include <string.h>
 
 #include "archive.h"
+#include "archive_map.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
@@ -37,7 +38,7 @@
 
 #define BUFSIZE 8192
 
-extern char *prg;
+static archive_map_t *_amap = NULL;
 
 static int get_hashes(struct zip_file *zf, off_t, hashes_t *);
 static int read_infos_from_zip(archive_t *, int);
@@ -228,12 +229,18 @@ archive_free(archive_t *a)
     if (a == NULL)
 	return 0;
 
+    if (--a->refcount != 0)
+	return 0;
+
     ret = archive_close_zip(a);
 
-    free(a->name);
-    array_free(archive_files(a), rom_finalize);
-    free(a);
-
+#ifdef DONT_CACHE_UNUSED
+    if (_amap)
+	archive_map_delete(_amap, archive_name(a));
+    else
+	archive_real_free(a);
+#endif
+    
     return ret;
 }
 
@@ -258,27 +265,52 @@ archive_new(const char *name, filetype_t ft, int createp)
 	    return NULL;
     }
     
+    if (_amap && (a=archive_map_get(_amap, full_name)) != NULL) {
+	free(full_name);
+	a->refcount++;
+	return a;
+    }
+
     a = xmalloc(sizeof(*a));
     a->name = full_name;
+    a->refcount = 1;
     a->files = array_new(sizeof(rom_t));
     a->za = NULL;
 
     if (!created) {
 	if (read_infos_from_zip(a, romhashtypes) < 0) {
-	    if (createp)
-		return a;
-
-	    archive_free(a);
-	    return NULL;
+	    if (!createp) {
+		archive_real_free(a);
+		return NULL;
+	    }
 	}
-	
-	for (i=0; i<archive_num_files(a); i++) {
-	    /* XXX: rom_state(archive_file(a, i)) = ROM_UNKNOWN; */
-	    rom_where(archive_file(a, i)) = (where_t) -1;
+	else {
+	    for (i=0; i<archive_num_files(a); i++) {
+		/* XXX: rom_state(archive_file(a, i)) = ROM_UNKNOWN; */
+		rom_where(archive_file(a, i)) = (where_t) -1;
+	    }
 	}
     }
 
+    if (_amap == NULL)
+	_amap = archive_map_new();
+    archive_map_add(_amap, archive_name(a), a);
+
     return a;
+}
+
+
+
+void
+archive_real_free(archive_t *a)
+{
+    if (a == NULL)
+	return;
+
+    archive_close_zip(a);
+    free(a->name);
+    array_free(archive_files(a), rom_finalize);
+    free(a);
 }
 
 

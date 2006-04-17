@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.5 2006/03/14 20:30:35 dillo Exp $
+  $NiH: find.c,v 1.6 2006/04/13 21:41:37 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -53,7 +53,7 @@ find_disk(map_t *map, const disk_t *d, match_disk_t *m)
     for (i=0; i<parray_length(pa); i++) {
 	fbh = parray_get(pa, i);
 
-	if ((dm=disk_get_info(file_location_ext_name(fbh), 0)) == NULL) {
+	if ((dm=disk_new(file_location_ext_name(fbh), 0)) == NULL) {
 	    /* XXX: internal error */
 	    return FIND_ERROR;
 	}
@@ -121,7 +121,7 @@ find_disk_in_romset(DB *db, const disk_t *d, const char *skip,
 	    
 	    file_name = findfile(disk_name(gd), TYPE_DISK);
 	    if (file_name != NULL) {
-		f = disk_get_info(file_name, 1);
+		f = disk_new(file_name, 1);
 		if (f) {
 		    if (hashes_cmp(disk_hashes(d), disk_hashes(f))
 			== HASHES_CMP_MATCH) {

@@ -1,5 +1,5 @@
 /*
-  $NiH: check_disks.c,v 1.6 2006/03/14 20:30:35 dillo Exp $
+  $NiH: check_disks.c,v 1.7 2006/04/05 22:36:03 dillo Exp $
 
   check_disks.c -- match files against disks
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -55,7 +55,7 @@ check_disks(game_t *game, result_t *res)
 	    result_disk_name(res, i) = NULL;
 	}
 	else {
-	    f = disk_get_info(name, 0);
+	    f = disk_new(name, 0);
 	    result_disk_name(res, i) = name;
 	    
 	    if (f == NULL) {

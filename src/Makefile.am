@@ -33,7 +33,6 @@ libckmame_a_SOURCES= \
 	diagnostics.c \
 	dir.c \
 	disk.c \
-	disk_get_info.c \
 	disk_new.c \
 	error.c \
 	file_location.c \
@@ -91,6 +90,7 @@ libckmame_a_SOURCES= \
 
 noinst_HEADERS=\
 	archive.h \
+	archive_map.h \
 	array.h \
 	chd.h \
 	dat.h \
@@ -100,6 +100,7 @@ noinst_HEADERS=\
 	delete_list.h \
 	dir.h \
 	disk.h \
+	disk_map.h \
 	error.h \
 	file_location.h \
 	file_status.h \

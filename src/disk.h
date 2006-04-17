@@ -2,7 +2,7 @@
 #define HAD_DISK_H
 
 /*
-  $NiH: disk.h,v 1.2 2005/09/27 21:33:02 dillo Exp $
+  $NiH: disk.h,v 1.3 2005/10/02 11:28:10 dillo Exp $
 
   disk.h -- information about one disk
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -30,6 +30,7 @@
 #include "types.h"
 
 struct disk {
+    int refcount;
     char *name;
     char *merge;
     hashes_t hashes;
@@ -47,8 +48,8 @@ typedef struct disk disk_t;
 
 void disk_finalize(disk_t *);
 void disk_free(disk_t *);
-disk_t *disk_get_info(const char *, int);
 void disk_init(disk_t *);
-disk_t *disk_new(const char *);
+disk_t *disk_new(const char *, int);
+void disk_real_free(disk_t *);
 
 #endif /* disk.h */

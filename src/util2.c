@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.7 2006/04/13 23:17:22 wiz Exp $
+  $NiH: util2.c,v 1.8 2006/04/13 23:28:45 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -123,7 +123,7 @@ ensure_extra_maps(void)
 	    }
 	}
 	else if (NAME_IS_CHD(file) || NAME_NO_EXT(file)) {
-	    if ((d=disk_get_info(file, NAME_NO_EXT(file))) != NULL) {
+	    if ((d=disk_new(file, NAME_NO_EXT(file))) != NULL) {
 		enter_disk_in_map(extra_disk_map, d, ROM_SUPERFLUOUS);
 		disk_free(d);
 	    }
@@ -426,7 +426,7 @@ enter_dir_in_map(map_t *zip_map, map_t *disk_map,
 	    }
 	}
 	else if (NAME_IS_CHD(b) || NAME_NO_EXT(b)) {
-	    if ((d=disk_get_info(b, NAME_NO_EXT(b))) != NULL) {
+	    if ((d=disk_new(b, NAME_NO_EXT(b))) != NULL) {
 		enter_disk_in_map(disk_map, d, where);
 		disk_free(d);
 	    }

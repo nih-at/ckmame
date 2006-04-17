@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.14 2006/04/13 23:17:22 wiz Exp $
+  $NiH: fix.c,v 1.15 2006/04/13 23:30:25 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -293,8 +293,10 @@ fix_files(game_t *g, archive_t *a, result_t *res)
     for (i=0; i<game_num_files(g, file_type); i++) {
 	m = result_rom(res, i);
 	afrom = match_archive(m);
-	if (afrom)
+	if (afrom) {
+	    archive_ensure_zip(afrom, 0);
 	    zfrom = archive_zip(afrom);
+	}
 	else
 	    zfrom = NULL;
 	r = game_file(g, file_type, i);
@@ -465,7 +467,7 @@ fix_save_needed_disk(const char *fname, int move)
     int ret;
     disk_t *d;
 
-    if ((d=disk_get_info(fname, 0)) == NULL)
+    if ((d=disk_new(fname, 0)) == NULL)
 	return -1;
 
     ret = 0;
