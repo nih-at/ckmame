@@ -10,7 +10,6 @@ tests:
 
 - [bug] duplicate file for multiple identical ROMs in one game
 - [bug] report error if opening zip archive fails (find_in_archives)
-- [feature] mkmamedb: convert `\' into `/' (optionally?)
 - [feature] dumpgame: dump samples
 - [feature] add option to remove files from -e dirs that already are in ROM set
 - [feature] "fix" superfluous archives by moving unknown files to garbage

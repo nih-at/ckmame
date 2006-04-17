@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.11 2006/03/17 10:59:27 dillo Exp $
+  $NiH: parse.c,v 1.12 2006/03/17 16:46:01 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -221,12 +221,20 @@ int
 parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy,
 		const char *attr)
 {
+    char *p;
+    
     if (ft == TYPE_DISK) {
 	disk_name(game_last_disk(ctx->g)) = xstrdup(attr);
 	parray_push(ctx->list[TYPE_DISK], xstrdup(attr));
     }
-    else
+    else {
 	rom_name(game_last_file(ctx->g, ft)) = xstrdup(attr);
+
+	/* XXX: warn about broken dat file? */
+	p = rom_name(game_last_file(ctx->g, ft));
+	while ((p=strchr(p, '\\')))
+	    *(p++) = '/';
+    }
 
     return 0;
 }
