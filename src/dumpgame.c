@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.10 2006/03/17 10:59:27 dillo Exp $
+  $NiH: dumpgame.c,v 1.11 2006/04/15 22:52:58 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -51,6 +51,7 @@ static int dump_list(DB *, const char *);
 static int dump_dat(DB *, const char *);
 static int dump_db_version(DB *, const char *);
 static int dump_special(DB *, const char *);
+static int dump_stats(DB *, const char *);
 static void print_dat(dat_t *, int);
 static void print_hashtypes(int);
 static void print_rs(game_t *, filetype_t, const char *,
@@ -544,7 +545,8 @@ dump_special(DB *db, const char *name)
 	{ DBH_KEY_HASH_TYPES,  dump_hashtypes,  NULL },
 	{ DBH_KEY_LIST_DISK,   dump_list,       NULL },
 	{ DBH_KEY_LIST_GAME,   dump_list,       NULL },
-	{ DBH_KEY_LIST_SAMPLE, dump_list,       NULL }
+	{ DBH_KEY_LIST_SAMPLE, dump_list,       NULL },
+	{ "/stats",            dump_stats,      NULL }
     };
 
     int i;
@@ -558,6 +560,62 @@ dump_special(DB *db, const char *name)
     myerror(ERRDEF, "unknown special: `%s'", name);
     return -1;
 }
+
+
+
+/*ARGSUSED2*/
+static int
+dump_stats(DB *db, const char *dummy)
+{
+    int ngames, nroms, ndisks;
+    unsigned long long sroms;
+    parray_t *list;
+    game_t *game;
+    int i, j;
+
+    if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+	myerror(ERRDEF, "db error reading game list");
+	return -1;
+    }
+
+    ngames = parray_length(list);
+    nroms = ndisks = 0;
+    sroms = 0;
+
+    for (i=0; i<parray_length(list); i++) {
+	if ((game=r_game(db, (char *)parray_get(list, i))) == NULL) {
+	    /* XXX: internal error */
+	    continue;
+	}
+	nroms += game_num_files(game, TYPE_ROM);
+	for (j=0; j<game_num_files(game, TYPE_ROM); j++)
+	    sroms += rom_size(game_file(game, TYPE_ROM, j));
+
+	ndisks += game_num_disks(game);
+
+	game_free(game);
+    }
+
+    parray_free(list, free);
+
+    printf("Games:\t%d\n", ngames);
+    printf("ROMs:\t%d ", nroms);
+    if (sroms > 1024*1024*1024)
+	printf("(%llu.%02llugb)\n",
+	       sroms/(1024*1024*1024),
+	       (((sroms/(1024*1024))*10+512)/1024) % 100);
+    else if (sroms > 1024*1024)
+	printf("(%llu.%02llumb)\n",
+	       sroms/(1024*1024),
+	       (((sroms/1024)*10+512)/1024) % 100);
+    else
+	printf("(%llu bytes)\n", sroms);
+    if (ndisks)
+	printf("Disks:\t%d\n", ndisks);
+
+    return 0;
+}
+
 
 
 
