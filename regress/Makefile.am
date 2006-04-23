@@ -97,6 +97,7 @@ ZIPS=		1-4-dup.zip \
 		deadfish4.zip \
 		deadpork.zip \
 		garbage.zip \
+		many.zip \
 		samptest.zip \
 		samptest2.zip \
 		samptest3.zip \
@@ -109,6 +110,7 @@ CHDS=		108-2.chd \
 		diff.chd
 
 DBFILES=	mamedb.txt \
+		mamedb-2.txt \
 		mamedb-lost-parent.txt \
 		mamedb-lost-parent-ok.txt \
 		mkmamedb-lost-parent.dump \
