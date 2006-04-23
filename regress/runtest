@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.23 2006/04/17 11:04:35 dillo Exp $
+#  $NiH: runtest,v 1.24 2006/04/17 15:50:00 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002-2006 Dieter Baron and Thomas Klausner
@@ -185,16 +185,22 @@ test_set() {
 }
 
 copy_file() {
-    if [ ! -f "$1" ]
+    case "$1" in
+    *.db)
+	src="../$1";;
+    *)
+	src="${srcdir}/$1";;
+    esac
+    if [ ! -f "$src" ]
     then
-	die "source file '$1' does not exist"
+	die "source file '$src' does not exist"
     fi
     dir=`dirname "$2"`
     if [ ! -d "$dir" ]
     then
 	mkdir -p "$dir"
     fi
-    cp "$1" "$2"
+    cp "$src" "$2"
 }
 
 # GNU sort behaves differently on locales other than C, breaking tests
@@ -269,11 +275,11 @@ do
     DESCR="$arg";;
   file)
     set $arg
-    copy_file "${srcdir}/$2" "$1"
+    copy_file "$2" "$1"
     FILES="${FILES} ${srcdir}/$3!$1";;
   file-del)
     set $arg
-    copy_file "${srcdir}/$2" "$1";;
+    copy_file "$2" "$1";;
   file-new)
     set $arg
     FILES="${FILES} ${srcdir}/$2!$1";;
