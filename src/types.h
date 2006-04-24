@@ -2,10 +2,10 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.7 2005/10/03 17:39:36 dillo Exp $
+  $NiH: types.h,v 1.8 2005/10/05 21:21:33 dillo Exp $
 
   types.h -- type definitions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -40,7 +40,8 @@ enum quality {
     QU_NAMEERR,		/* wrong name */
     QU_COPIED,		/* copied from elsewhere */
     QU_INZIP,		/* is in zip, should be in ancestor */
-    QU_OK		/* name/size/crc match */
+    QU_OK,		/* name/size/crc match */
+    QU_OLD		/* exists in old */
 };
 
 typedef enum quality quality_t;
@@ -52,10 +53,21 @@ enum file_status {
     FS_PARTUSED,	/* part needed here, whole file unknown */
     FS_SUPERFLUOUS,	/* known, not needed here, and exists elsewhere */
     FS_NEEDED,		/* known and needed elsewhere */
-    FS_USED		/* needed here */
+    FS_USED,		/* needed here */
+    FS_DUPLICATE	/* exists in old */
 };
 
 typedef enum file_status file_status_t;
+
+enum game_status {
+    GS_MISSING,		/* not a single own ROM found */
+    GS_CORRECT,		/* all ROMs correct */
+    GS_FIXABLE,		/* only fixable errors */
+    GS_PARTIAL,		/* some ROMs missing */
+    GS_OLD,		/* all ROMs in old */
+};
+
+typedef enum game_status game_status_t;
 
 enum where {
     ROM_NOWHERE = -1,
@@ -63,7 +75,8 @@ enum where {
     ROM_ROMSET,
     ROM_NEEDED,
     ROM_SUPERFLUOUS,
-    ROM_EXTRA
+    ROM_EXTRA,
+    ROM_OLD
 };
 
 typedef enum where where_t;
@@ -79,11 +92,16 @@ enum filetype {
 
 typedef enum filetype filetype_t;
 
-#define FIX_DO			0x01
-#define FIX_PRINT		0x02
-#define FIX_KEEP_LONG		0x04
-#define FIX_KEEP_UNKNOWN	0x08
-#define FIX_DELETE_EXTRA	0x10
+#define FIX_DO			0x01 /* really make fixes */
+#define FIX_PRINT		0x02 /* print fixes made */
+#define FIX_KEEP_LONG		0x04 /* move partially used files to garbage */
+#define FIX_KEEP_UNKNOWN	0x08 /* move unknown files to garbage */
+#define FIX_DELETE_EXTRA	0x10 /* delete used from extra dirs */
+#define FIX_CLEANUP_EXTRA	0x20 /* delete superfluous from extra dirs */ 
+#define FIX_SUPERFLUOUS		0x40 /* move/delete superfluous */
+#if 0 /* not supported (yet?) */
+#define FIX_COMPLETE_GAMES	0x80 /* complete in old or complete in roms */
+#endif
 
 /* XXX: delete */
 enum state {

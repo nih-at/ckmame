@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.5 2005/12/26 14:34:19 dillo Exp $
+  $NiH: diagnostics.c,v 1.6 2006/04/05 22:36:03 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -109,6 +109,10 @@ diagnostics_archive(const archive_t *a, const result_t *res)
 	    if (output_options & WARN_SUPERFLUOUS)
 		warn_file(f, "not used");
 	    break;
+	case FS_DUPLICATE:
+	    if (output_options & WARN_SUPERFLUOUS)
+		warn_file(f, "duplicate");
+	    break;
 	}
     }
 }
@@ -122,7 +126,7 @@ diagnostics_disks(const game_t *game, const result_t *res)
     disk_t *d;
     match_disk_t *md;
 
-    if (result_disks(res) == NULL)
+    if (game_num_disks(game) == 0)
 	return;
 
     for (i=0; i<game_num_disks(game); i++) {
@@ -190,6 +194,10 @@ diagnostics_disks(const game_t *game, const result_t *res)
 	    if (output_options & WARN_SUPERFLUOUS)
 		warn_image(result_disk_name(res, i), "not used");
 	    break;
+	case FS_DUPLICATE:
+	    if (output_options & WARN_SUPERFLUOUS)
+		warn_image(result_disk_name(res, i), "duplicate");
+	    break;
 	case FS_NEEDED:
 	    if (output_options & WARN_USED)
 		warn_image(result_disk_name(res, i), "needed elsewhere");
@@ -208,44 +216,28 @@ diagnostics_disks(const game_t *game, const result_t *res)
 static void
 diagnostics_files(const game_t *game, const result_t *res)
 {
-    int i, alldead, allcorrect, allowndead, hasown;
     match_t *m;
     rom_t *f, *r;
+    int i;
     
-    alldead = allcorrect = allowndead = 1;
-    hasown = 0;
-    for (i=0; i<game_num_files(game, file_type); i++) {
-	m = result_rom(res, i);
-	r = game_file(game, file_type, i);
-
-	if (rom_where(r) == ROM_INZIP) {
-	    hasown = 1;
-	    
-	    if (match_quality(m) != QU_MISSING)
-		alldead = allowndead = 0;
-	}
-	else {
-	    if (match_quality(m) != QU_MISSING)
-		alldead = 0;
-	}
-	
-	if (match_quality(m) != QU_OK)
-	    allcorrect = 0;
-    }
-
-    if (((alldead || (hasown && allowndead))
-	 && game_num_files(game, file_type) > 0
-	 && (output_options & WARN_MISSING))) {
-	warn_rom(NULL, "not a single rom found");
-    }
-    else if (allcorrect && (output_options & WARN_CORRECT)) {
-	warn_rom(NULL, "correct");
-    }
-    else {
+    switch (result_game(res)) {
+    case GS_CORRECT:
+	if (output_options & WARN_CORRECT)
+	    warn_rom(NULL, "correct");
+	break;
+    case GS_OLD:
+	if (output_options & WARN_CORRECT)
+	    warn_rom(NULL, "old");
+	break;
+    case GS_MISSING:
+	if (output_options & WARN_MISSING)
+	    warn_rom(NULL, "not a single rom found");
+	break;
+    default:
         for (i=0; i<game_num_files(game, file_type); i++) {
 	    m = result_rom(res, i);
 	    r = game_file(game, file_type, i);
-	    if (match_archive(m))
+	    if (!match_source_is_old(m) && match_archive(m))
 		f = archive_file(match_archive(m), match_index(m));
 	    else
 		f = NULL;
@@ -310,12 +302,17 @@ diagnostics_files(const game_t *game, const result_t *res)
 			      ? zname[rom_where(r)] : ""));
 		}
 		break;
-		
+
+	    case QU_OLD:
+		if (output_options & WARN_CORRECT)
+		    warn_rom(r, "old");
+		break;
 	    case QU_NOHASH:
 		/* only used for disks */
 		break;
 	    }
 	}
+	break;
     }
 }
 

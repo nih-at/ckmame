@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.6 2006/04/13 21:41:37 dillo Exp $
+  $NiH: find.c,v 1.7 2006/04/17 11:31:11 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -34,12 +34,17 @@
 
 static find_result_t check_for_file_in_zip(const char *, const rom_t *,
 					   match_t *);
-
+static find_result_t check_match_old(const game_t *, const rom_t *, match_t *);
+static find_result_t check_match_romset(const game_t *, const rom_t *,
+					match_t *);
+static find_result_t find_in_db(DB *, const rom_t *, const char *, match_t *,
+				find_result_t (*)(const game_t *,
+						  const rom_t *, match_t *));
 
 
 
 find_result_t
-find_disk(map_t *map, const disk_t *d, match_disk_t *m)
+find_disk(map_t *map, const disk_t *d, match_disk_t *md)
 {
     parray_t *pa;
     file_location_ext_t *fbh;
@@ -60,9 +65,11 @@ find_disk(map_t *map, const disk_t *d, match_disk_t *m)
 
 	switch (hashes_cmp(disk_hashes(d), disk_hashes(dm))) {
 	case HASHES_CMP_MATCH:
-	    m->name = xstrdup(disk_name(dm));
-	    hashes_copy(match_disk_hashes(m), disk_hashes(dm));
-	    m->quality = QU_COPIED;
+	    if (md) {
+		match_disk_name(md) = xstrdup(disk_name(dm));
+		hashes_copy(match_disk_hashes(md), disk_hashes(dm));
+		match_disk_quality(md) = QU_COPIED;
+	    }
 	    disk_free(dm);
 	    return FIND_EXISTS;
 
@@ -126,9 +133,12 @@ find_disk_in_romset(DB *db, const disk_t *d, const char *skip,
 		    if (hashes_cmp(disk_hashes(d), disk_hashes(f))
 			== HASHES_CMP_MATCH) {
 			status = FIND_EXISTS;
-			md->quality = QU_COPIED;
-			md->name = file_name;
-			hashes_copy(&md->hashes, disk_hashes(f));
+			if (md) {
+			    match_disk_quality(md) = QU_COPIED;
+			    match_disk_name(md) = file_name;
+			    hashes_copy(match_disk_hashes(md),
+					disk_hashes(f));
+			}
 		    }
 		    else
 			free(file_name);
@@ -174,10 +184,14 @@ find_in_archives(map_t *map, const rom_t *r, match_t *m)
 	switch (archive_file_compare_hashes(a, file_location_ext_index(fbh),
 					    rom_hashes(r))) {
 	case HASHES_CMP_MATCH:
-	    m->archive = a;
-	    m->index = file_location_ext_index(fbh);
-	    m->where = file_location_ext_where(fbh);
-	    m->quality = QU_COPIED;
+	    if (m) {
+		match_archive(m) = a;
+		match_index(m) = file_location_ext_index(fbh);
+		match_where(m) = file_location_ext_where(fbh);
+		match_quality(m) = QU_COPIED;
+	    }
+	    else
+		archive_free(a);
 	    return FIND_EXISTS;
 
 	case HASHES_CMP_NOCOMMON:
@@ -196,51 +210,19 @@ find_in_archives(map_t *map, const rom_t *r, match_t *m)
 
 
 find_result_t
+find_in_old(DB *db, const rom_t *r, match_t *m)
+{
+    if (db == NULL)
+	return FIND_MISSING;
+    return find_in_db(db, r, NULL, m, check_match_old);
+}
+
+
+
+find_result_t
 find_in_romset(DB *db, const rom_t *r, const char *skip, match_t *m)
 {
-    array_t *a;
-    file_location_t *fbh;
-    game_t *g;
-    const rom_t *gr;
-    int i;
-    find_result_t status;
-
-    if ((a=r_file_by_hash(db, TYPE_ROM, rom_hashes(r))) == NULL) {
-	/* XXX: internal error: db inconsistency */
-	return FIND_ERROR;
-    }
-
-    status = FIND_UNKNOWN;
-    for (i=0;
-	 (status != FIND_ERROR && status != FIND_EXISTS) && i<array_length(a);
-	 i++) {
-	fbh = array_get(a, i);
-
-	if (skip && strcmp(file_location_name(fbh), skip) == 0)
-	    continue;
-
-	if ((g=r_game(db, file_location_name(fbh))) == NULL) {
-	    /* XXX: internal error: db inconsistency */
-	    status = FIND_ERROR;
-	    break;
-	}
-
-	gr = game_file(g, TYPE_ROM, file_location_index(fbh));
-
-	if (hashes_cmp(rom_hashes(r), rom_hashes(gr)) == HASHES_CMP_MATCH) {
-	    status = check_for_file_in_zip(game_name(g), gr, m);
-	    if (status == FIND_EXISTS) {
-		m->quality = QU_COPIED;
-		m->where = ROM_ROMSET;
-	    }
-	}
-
-	game_free(g);
-    }
-
-    array_free(a, file_location_finalize);
-
-    return status;
+    return find_in_db(db, r, skip, m, check_match_romset);
 }
 
 
@@ -257,12 +239,94 @@ check_for_file_in_zip(const char *name, const rom_t *r, match_t *m)
     if ((idx=archive_file_index_by_name(a, rom_name(r))) >= 0
 	&& archive_file_compare_hashes(a, idx,
 				       rom_hashes(r)) == HASHES_CMP_MATCH) {
-	m->archive = a;
-	m->index = idx;
+	if (m) {
+	    match_archive(m) = a;
+	    match_index(m) = idx;
+	}
+	else
+	    archive_free(a);
 	return FIND_EXISTS;
     }
 
     archive_free(a);
 
     return FIND_MISSING;
+}
+
+
+
+static find_result_t
+check_match_old(const game_t *g, const rom_t *r, match_t *m)
+{
+    if (m) {
+	match_quality(m) = QU_OLD;
+	match_where(m) = ROM_OLD;
+	match_old_game(m) = xstrdup(game_name(g));
+	match_old_file(m) = xstrdup(rom_name(r));
+    }
+    
+    return FIND_EXISTS;
+}
+
+
+
+static find_result_t
+check_match_romset(const game_t *g, const rom_t *r, match_t *m)
+{
+    find_result_t status;
+    
+    status = check_for_file_in_zip(game_name(g), r, m);
+    if (m && status == FIND_EXISTS) {
+	match_quality(m) = QU_COPIED;
+	match_where(m) = ROM_ROMSET;
+    }
+    
+    return status;
+}
+
+
+
+static find_result_t
+find_in_db(DB *db, const rom_t *r, const char *skip, match_t *m,
+	   find_result_t (*check_match)(const game_t *, const rom_t *,
+					match_t *))
+{
+    array_t *a;
+    file_location_t *fbh;
+    game_t *g;
+    const rom_t *gr;
+    int i;
+    find_result_t status;
+
+    if ((a=r_file_by_hash(db, TYPE_ROM, rom_hashes(r))) == NULL)
+	return FIND_UNKNOWN;
+
+    status = FIND_UNKNOWN;
+    for (i=0;
+	 (status != FIND_ERROR && status != FIND_EXISTS) && i<array_length(a);
+	 i++) {
+	fbh = array_get(a, i);
+
+	if (skip && strcmp(file_location_name(fbh), skip) == 0)
+	    continue;
+
+	if ((g=r_game(db, file_location_name(fbh))) == NULL
+	    || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
+	    /* XXX: internal error: db inconsistency */
+	    status = FIND_ERROR;
+	    break;
+	}
+
+	gr = game_file(g, TYPE_ROM, file_location_index(fbh));
+
+	if (hashes_cmp(rom_hashes(r), rom_hashes(gr)) == HASHES_CMP_MATCH) {
+	    status = check_match(g, gr, m);
+	}
+
+	game_free(g);
+    }
+
+    array_free(a, file_location_finalize);
+
+    return status;
 }

@@ -53,6 +53,8 @@ TESTCASES=	archive-broken.test \
 		nogood-miss.test \
 		nonexist.test \
 		norom.test \
+		old-complete.test \
+		old-partial.test \
 		ok.test \
 		punknown.test \
 		punused.test \
@@ -86,9 +88,11 @@ ZIPS=		1-4-dup.zip \
 		1-4-misnamed.zip \
 		1-4-ok.zip \
 		1-8-ok.zip \
+		1-a-ok.zip \
 		1-c-ok.zip \
 		2-48-broken.zip \
 		2-48-ok.zip \
+		2-4a-ok.zip \
 		2-4c-ok.zip \
 		2-84.zip \
 		deadbeef.zip \

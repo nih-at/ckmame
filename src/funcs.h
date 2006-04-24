@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.9 2006/04/13 23:17:22 wiz Exp $
+  $NiH: funcs.h,v 1.10 2006/04/13 23:30:25 wiz Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
@@ -38,6 +38,7 @@
 void check_archive(archive_t *, const char *, result_t *);
 void check_disks(game_t *, result_t *);
 void check_files(game_t *, archive_t *[], result_t *);
+void check_old(game_t *, result_t *);
 void diagnostics(const game_t *, const archive_t *, const result_t *);
 void ensure_extra_maps(void);
 void ensure_needed_maps(void);

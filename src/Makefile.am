@@ -23,6 +23,7 @@ libckmame_a_SOURCES= \
 	check_archive.c \
 	check_disks.c \
 	check_files.c \
+	check_old.c \
 	dat_entry.c \
 	dat_entry_finalize.c \
 	dat_push.c \

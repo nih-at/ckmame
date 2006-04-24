@@ -7,6 +7,7 @@
 #include "parray.h"
 
 extern DB *db;
+extern DB *old_db;
 
 extern char *rompath[];
 extern char *need_dir;

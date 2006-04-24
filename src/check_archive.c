@@ -1,5 +1,5 @@
 /*
-  $NiH: check_archive.c,v 1.5 2006/03/14 20:30:35 dillo Exp $
+  $NiH: check_archive.c,v 1.6 2006/04/05 22:36:03 dillo Exp $
 
   check_archive.c -- determine status of files in archive
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -34,18 +34,10 @@
 void
 check_archive(archive_t *a, const char *gamename, result_t *res)
 {
-    match_t *m, mr;
     int i;
 
     if (a == NULL)
 	return;
-
-    for (i=0; i<match_array_length(result_roms(res)); i++) {
-	m = result_rom(res, i);
-	if (match_where(m) == ROM_INZIP && match_quality(m) != QU_HASHERR)
-	    result_file(res, match_index(m))
-		= match_quality(m) == QU_LONG ? FS_PARTUSED : FS_USED;
-    }
 
     for (i=0; i<archive_num_files(a); i++) {
 	if (rom_status(archive_file(a, i)) != STATUS_OK) {
@@ -56,24 +48,26 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	if (result_file(res, i) == FS_USED)
 	    continue;
 
-	switch (find_in_romset(db, archive_file(a, i), gamename, &mr)) {
+	if (find_in_old(old_db, archive_file(a, i), NULL) == FIND_EXISTS) {
+	    result_file(res, i) = FS_DUPLICATE;
+	    continue;
+	}
+
+	switch (find_in_romset(db, archive_file(a, i), gamename, NULL)) {
 	case FIND_UNKNOWN:
 	    break;
 
 	case FIND_EXISTS:
-	    archive_free(match_archive(&mr));
 	    result_file(res, i) = FS_SUPERFLUOUS;
 	    break;
 
 	case FIND_MISSING:
 	    ensure_needed_maps();
 	    if (find_in_archives(needed_file_map,
-				 archive_file(a, i), &mr) == FIND_EXISTS) {
-		archive_free(match_archive(&mr));
-		result_file(res, i) = FS_SUPERFLUOUS;
-	    }
-	    else
+				 archive_file(a, i), NULL) != FIND_EXISTS)
 		result_file(res, i) = FS_NEEDED;
+	    else
+		result_file(res, i) = FS_SUPERFLUOUS;
 	    break;
 
 	case FIND_ERROR:

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: result.c,v 1.1 2006/04/05 22:39:14 dillo Exp $
 
   result.c -- allocate/free result structure
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -54,21 +54,27 @@ result_new(const game_t *g, const archive_t *a)
 
     res = (result_t *)xmalloc(sizeof(*res));
 
-    res->roms = match_array_new(game_num_files(g, file_type));
-    res->files = file_status_array_new(archive_num_files(a));
+    result_game(res) = GS_MISSING;
+    result_roms(res) = NULL;
+    result_files(res) = NULL;
+    result_disks(res) = NULL;
+    result_disk_files(res) = NULL;
+    result_disk_names(res) = NULL;
+    
+    if (g) {
+	res->roms = match_array_new(game_num_files(g, file_type));
 
-    if (game_num_disks(g) > 0 && file_type == TYPE_ROM) {
-	res->disks = match_disk_array_new(game_num_disks(g));
-	res->disk_files = file_status_array_new(game_num_disks(g));
-	res->disk_names = parray_new_sized(game_num_disks(g));
-	for (i=0; i<game_num_disks(g); i++)
-	    parray_push(res->disk_names, NULL);
-    }
-    else {
-	res->disks = NULL;
-	res->disk_files = NULL;
-	res->disk_names = NULL;
+	if (game_num_disks(g) > 0 && file_type == TYPE_ROM) {
+	    result_disks(res) = match_disk_array_new(game_num_disks(g));
+	    result_disk_files(res) = file_status_array_new(game_num_disks(g));
+	    result_disk_names(res) = parray_new_sized(game_num_disks(g));
+	    for (i=0; i<game_num_disks(g); i++)
+		parray_push(result_disk_names(res), NULL);
+	}
     }
 
+    if (a)
+	result_files(res) = file_status_array_new(archive_num_files(a));
+    
     return res;
 }

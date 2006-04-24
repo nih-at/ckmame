@@ -1,8 +1,8 @@
 /*
-  $NiH: match.c,v 1.5.2.2 2005/07/31 21:13:02 dillo Exp $
+  $NiH: match.c,v 1.6 2005/09/27 21:33:02 dillo Exp $
 
   match.c -- information about ROM/file matches
-  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -38,11 +38,38 @@
 
 
 
+const char *
+match_file(match_t *m)
+{
+    if (match_source_is_old(m))
+	return match_old_file(m);
+    else
+	return rom_name(archive_file(match_archive(m),
+				     match_index(m)));
+}
+
+
+
 void
 match_finalize(match_t *m)
 {
-    if (IS_ELSEWHERE(match_where(m)))
+    if (match_source_is_old(m)) {
+	free(match_old_game(m));
+	free(match_old_file(m));
+    }
+    else if (IS_ELSEWHERE(match_where(m)))
 	archive_free(match_archive(m));
+}
+
+
+
+const char *
+match_game(match_t *m)
+{
+    if (match_source_is_old(m))
+	return match_old_game(m);
+    else
+	return archive_name(match_archive(m));
 }
 
 
@@ -50,69 +77,9 @@ match_finalize(match_t *m)
 void
 match_init(match_t *m)
 {
-    m->quality = QU_MISSING;
-    m->archive = NULL;
-    m->where = ROM_NOWHERE;
-    m->index = -1;
-    m->offset = -1;
+    match_quality(m) = QU_MISSING;
+    match_where(m) = ROM_NOWHERE;
+    match_archive(m) = NULL;
+    match_index(m) = -1;
+    match_offset(m) = -1;
 }
-
-
-
-#if 0
-void
-match_merge(match_array_t *ma, archive_t **zip, int pno, int gpno)
-{
-    int zno[3], i, j;
-    match_t *mm, *m;
-    rom_t *r;
-    
-    /* update zip structures */
-
-    zno[0] = 0;
-    zno[1] = pno;
-    zno[2] = gpno;
-
-    for (i=0; i<match_array_length(ma); i++) {
-	m = match_array_get(ma, i, 0);
-	if (match_quality(m) > ROM_UNKNOWN) {
-	    r = archive_file(zip[match_zno(m)], match_fno(m));
-	    if (rom_state(r) < ROM_TAKEN || match_zno(m) == 0) {
-		rom_state(r) = ROM_TAKEN;
-		rom_where(r) = (where_t)match_zno(m);
-	    }
-	}
-	
-	for (j=1; j<match_array_num_matches(ma, i); j++) {
-	    mm = match_array_get(ma, i, j);
-	    r = archive_file(zip[match_zno(mm)], match_fno(mm));
-	    if (match_quality(mm) > ROM_UNKNOWN
-		&& match_quality(mm) > rom_state(r)) {
-		rom_state(r) = match_quality(mm);
-		rom_where(r) = (where_t)match_zno(mm);
-	    }
-	}
-    }
-
-    return;
-}
-#endif
-
-
-
-#if 0
-/* <0: m1 is better than m2 */
-
-int
-matchcmp(const match_t *m1, const match_t *m2)
-{
-    int ret;
-
-    ret = match_quality(m2) - match_quality(m1);
-
-    if (ret == 0)
-	ret = match_is_correct_place(m2) - match_is_correct_place(m1);
-
-    return ret;
-}
-#endif

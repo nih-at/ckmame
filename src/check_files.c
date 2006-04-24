@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.4 2006/03/14 20:30:35 dillo Exp $
+  $NiH: check_files.c,v 1.5 2006/04/05 22:36:03 dillo Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -56,6 +56,7 @@ typedef enum test_result test_result_t;
 
 static test_result_t match_files(archive_t *, test_t, const rom_t *,
 				 match_t *);
+static void update_game_status(const game_t *, result_t *);
 
 
 
@@ -67,8 +68,7 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
 	TEST_SCI,
 	TEST_LONG
     };
-    static const int tests_count
-	= sizeof(tests)/sizeof(tests[0]);
+    static const int tests_count = sizeof(tests)/sizeof(tests[0]);
     
     int i, j;
     rom_t *r;
@@ -76,17 +76,23 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
     archive_t *a;
     test_result_t result;
 
+    if (result_game(res) == GS_OLD)
+	return;
+
     for (i=0; i<game_num_files(g, file_type); i++) {
 	r = game_file(g, file_type, i);
 	m = result_rom(res, i);
 	a = as[rom_where(r)];
 
-	m->quality = QU_MISSING;
+	if (match_quality(m) == QU_OLD)
+	    continue;
+
+	match_quality(m) = QU_MISSING;
 
 	/* check if it's in ancestor */
 	if (rom_where(r) != ROM_INZIP
 	    && a && (result=match_files(a, TEST_MSC, r, m)) != TEST_NOTFOUND) {
-	    m->where = rom_where(r);
+	    match_where(m) = rom_where(r);
 	    if (result == TEST_USABLE)
 		continue;
 	}
@@ -96,10 +102,10 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
 	    for (j=0; j<tests_count; j++) {
 		if ((result=match_files(as[0],
 					tests[j], r, m)) != TEST_NOTFOUND) {
-		    m->where = ROM_INZIP;
+		    match_where(m) = ROM_INZIP;
 		    if (rom_where(r) != ROM_INZIP
 			&& match_quality(m) == QU_OK) {
-			m->quality = QU_INZIP;
+			match_quality(m) = QU_INZIP;
 		    }
 		    if (result == TEST_USABLE)
 			break;
@@ -108,7 +114,8 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
 	}
 
 	if (rom_where(r) == ROM_INZIP
-	    && (m->quality == QU_MISSING || m->quality == QU_HASHERR)
+	    && (match_quality(m) == QU_MISSING
+		|| match_quality(m) == QU_HASHERR)
 	    && rom_size(r) > 0 && rom_status(r) != STATUS_NODUMP) {
 	    /* search for matching file in other games (via db) */
 	    if (find_in_romset(db, r, game_name(g), m) == FIND_EXISTS)
@@ -125,6 +132,15 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
 		continue;
 	}
     }
+
+    for (i=0; i<game_num_files(g, file_type); i++) {
+	m = result_rom(res, i);
+	if (match_where(m) == ROM_INZIP && match_quality(m) != QU_HASHERR)
+	    result_file(res, match_index(m))
+		= match_quality(m) == QU_LONG ? FS_PARTUSED : FS_USED;
+    }
+
+    update_game_status(g, res);
 }
 
 
@@ -136,7 +152,7 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
     const rom_t *ra;
     test_result_t result;
 
-    m->offset = -1;
+    match_offset(m) = -1;
 
     result = TEST_NOTFOUND;
 	
@@ -155,19 +171,19 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 		&& rom_compare_sc(r, ra) == 0) {
 		if ((hashes_cmp(rom_hashes(r), rom_hashes(ra))
 		     != HASHES_CMP_MATCH)) {
-		    if (m->quality == QU_HASHERR)
+		    if (match_quality(m) == QU_HASHERR)
 			break;
 		    
-		    m->quality = QU_HASHERR;
+		    match_quality(m) = QU_HASHERR;
 		    result = TEST_UNUSABLE;
 		}
 		else {
-		    m->quality = QU_OK;
+		    match_quality(m) = QU_OK;
 		    result = TEST_USABLE;
 		}
 	    }
-	    m->archive = a;
-	    m->index = i;
+	    match_archive(m) = a;
+	    match_index(m) = i;
 	    break;
 
 	case TEST_SCI:
@@ -179,19 +195,19 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 		if (archive_file_compare_hashes(a, i, rom_hashes(r)) != 0) {
 		    if (rom_status(archive_file(a, i)) != STATUS_OK)
 			break;
-		    if (m->quality == QU_HASHERR)
+		    if (match_quality(m) == QU_HASHERR)
 			break;
 		    
-		    m->quality = QU_HASHERR;
+		    match_quality(m) = QU_HASHERR;
 		    result = TEST_UNUSABLE;
 		}
 		else {
-		    m->quality = QU_NAMEERR;
+		    match_quality(m) = QU_NAMEERR;
 		    result = TEST_USABLE;
 		}
 	    }
-	    m->archive = a;
-	    m->index = i;
+	    match_archive(m) = a;
+	    match_index(m) = i;
 	    break;
 
 	case TEST_LONG:
@@ -201,11 +217,12 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 	    
 	    if (rom_compare_n(r, ra) == 0
 		&& rom_size(ra) > rom_size(r)
-		&& (m->offset=archive_file_find_offset(a, i, rom_size(r),
-						       rom_hashes(r))) != -1) {
-		m->archive = a;
-		m->index = i;
-		m->quality = QU_LONG;
+		&& (match_offset(m)=archive_file_find_offset(a, i, rom_size(r),
+							     rom_hashes(r)))
+		!= -1) {
+		match_archive(m) = a;
+		match_index(m) = i;
+		match_quality(m) = QU_LONG;
 		return TEST_USABLE;
 	    }
 	    break;
@@ -213,4 +230,44 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
     }
 
     return result;
+}
+
+
+
+static void
+update_game_status(const game_t *g, result_t *res)
+{
+    int i;
+    int all_dead, all_own_dead, all_correct, all_fixable, has_own;
+    const match_t *m;
+    const rom_t *r;
+
+    all_dead = all_correct = all_fixable = 1;
+    has_own = 0;
+
+    for (i=0; i<game_num_files(g, file_type); i++) {
+	m = result_rom(res, i);
+	r = game_file(g, file_type, i);
+
+	if (rom_where(r) == ROM_INZIP)
+	    has_own = 1;
+	if (match_quality(m) == QU_MISSING)
+	    all_fixable = 0;
+	if (match_quality(m) != QU_MISSING) {
+	    all_dead = 0;
+	    if (rom_where(r) == ROM_INZIP)
+		all_own_dead = 0;
+	}
+	if (match_quality(m) != QU_OK)
+	    all_correct = 0;
+    }
+
+    if (all_correct)
+	result_game(res) = GS_CORRECT;
+    else if (all_dead || (has_own && all_own_dead))
+	result_game(res) = GS_MISSING;
+    else if (all_fixable)
+	result_game(res) = GS_FIXABLE;
+    else
+	result_game(res) = GS_PARTIAL;
 }

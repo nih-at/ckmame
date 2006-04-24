@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.15 2006/04/13 23:30:25 wiz Exp $
+  $NiH: fix.c,v 1.16 2006/04/17 11:31:11 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -122,9 +122,12 @@ fix_game(game_t *g, archive_t *a, result_t *res)
 	    break;
 
 	case FS_SUPERFLUOUS:
+	case FS_DUPLICATE:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete unused file `%s'\n",
+		printf("%s: delete %s file `%s'\n",
 		       archive_name(a),
+		       (result_file(res, i) == FS_SUPERFLUOUS
+			? "unused" : "duplicate"),
 		       rom_name(archive_file(a, i)));
 	    if (fix_options & FIX_DO) {
 		archive_changed = 1;
@@ -235,6 +238,9 @@ fix_disks(game_t *g, result_t *res)
 	case FS_USED:
 	case FS_PARTUSED:
 	    break;
+	case FS_DUPLICATE:
+	    /* XXX */
+	    break;
 	}
     }
     
@@ -292,7 +298,10 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 
     for (i=0; i<game_num_files(g, file_type); i++) {
 	m = result_rom(res, i);
-	afrom = match_archive(m);
+	if (match_source_is_old(m))
+	    afrom = NULL;
+	else
+	    afrom = match_archive(m);
 	if (afrom) {
 	    archive_ensure_zip(afrom, 0);
 	    zfrom = archive_zip(afrom);
@@ -392,6 +401,10 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 
 	case QU_NOHASH:
 	    /* only used for disks */
+	    break;
+
+	case QU_OLD:
+	    /* nothing to be done */
 	    break;
 	}
     }

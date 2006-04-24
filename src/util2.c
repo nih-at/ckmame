@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.8 2006/04/13 23:28:45 dillo Exp $
+  $NiH: util2.c,v 1.9 2006/04/17 11:31:11 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -30,6 +30,7 @@
 #include "dir.h"
 #include "error.h"
 #include "file_location.h"
+#include "find.h"
 #include "funcs.h"
 #include "globals.h"
 #include "hashes.h"
@@ -52,11 +53,13 @@ delete_list_t *needed_delete_list = NULL;
 #define NAME_IS_CHD(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".chd") == 0)
 #define NAME_IS_ZIP(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".zip") == 0)
 #define NAME_NO_EXT(n)	(strchr(n, '.') == NULL)
+
 
 
 static void enter_archive_in_map(map_t *, const archive_t *, where_t);
 static int enter_dir_in_map(map_t *, map_t *, const char *, int, where_t);
 static void enter_disk_in_map(map_t *, const disk_t *, where_t);
+static int mark_extra_superfluous_rom(const hashes_t *, parray_t *, void *);
 
 
 
@@ -114,6 +117,9 @@ ensure_extra_maps(void)
     extra_disk_map = map_new();
     extra_file_map = map_new();
 
+    if (needed_delete_list == NULL)
+        needed_delete_list = delete_list_new();
+
     for (i=0; i<parray_length(superfluous); i++) {
 	file = parray_get(superfluous, i);
 	if (NAME_IS_ZIP(file)) {
@@ -146,7 +152,9 @@ ensure_needed_maps(void)
     
     needed_disk_map = map_new();
     needed_file_map = map_new();
-    needed_delete_list = delete_list_new();
+
+    if (needed_delete_list == NULL)
+        needed_delete_list = delete_list_new();
 
     enter_dir_in_map(needed_file_map, needed_disk_map,
 		     needed_dir, 0, ROM_NEEDED);

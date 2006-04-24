@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.7 2005/12/30 07:56:37 wiz Exp $
+  $NiH: ckmame.c,v 1.8 2006/04/15 22:52:57 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -50,7 +50,7 @@
 
 char *prg;
 
-char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-e dir] [game...]\n";
+char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-O dbfile] [-e dir] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -71,6 +71,7 @@ char help[] = "\n"
 "  -L, --keep-long      keep long files when fixing (default)\n"
 "  -l, --delete-long    don't keep long files when fixing\n"
 "  -n, --dryrun         don't actually fix, only report what would be done\n"
+"  -O, --old-db dbfile  use mame-db dbfile for old roms\n"
 "  -S, --samples        check samples instead of roms\n"
 "      --superfuous     only check for superfluous files in rom sets\n"
 "  -s, --nosuperfluous  don't report superfluous files in rom sets\n"
@@ -116,6 +117,7 @@ struct option options[] = {
     { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
     { "nosuperfluous", 0, 0, 's' }, /* -SUP */
     { "nowarnings",    0, 0, 'w' }, /* -SUP, -FIX */
+    { "old-db",        1, 0, 'O' },
     { "samples",       0, 0, 'S' },
     { "search",        1, 0, 'e' },
     { "superfluous",   0, 0, OPT_SUPERFLUOUS },
@@ -132,6 +134,7 @@ parray_t *superfluous;
 parray_t *search_dirs;
 filetype_t file_type;
 DB *db;
+DB *old_db;
 
 
 
@@ -139,7 +142,7 @@ int
 main(int argc, char **argv)
 {
     int i, j;
-    char *dbname;
+    char *dbname, *olddbname;
     int c, found;
     parray_t *list;
     tree_t *tree;
@@ -152,6 +155,9 @@ main(int argc, char **argv)
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
+    olddbname = getenv("MAMEDB_OLD");
+    if (olddbname == NULL)
+	dbname = DBH_DEFAULT_OLD_DB_NAME;
     fix_options = FIX_KEEP_LONG | FIX_KEEP_UNKNOWN;
     ignore_extra = 0;
     integrity = 0;
@@ -212,6 +218,9 @@ main(int argc, char **argv)
 	    fix_options &= ~FIX_DO;
 	    fix_options |= FIX_PRINT;
 	    break;
+	case 'O':
+	    olddbname = optarg;
+	    break;
 	case 'S':
 	    file_type = TYPE_SAMPLE;
 	    break;
@@ -244,6 +253,8 @@ main(int argc, char **argv)
 	myerror(ERRDB, "can't open database `%s'", dbname);
 	exit(1);
     }
+    /* XXX: check for errors other than ENOENT */
+    old_db = dbh_open(olddbname, DBL_READ);
 
     if (superfluous_only) {
 	if (optind != argc) {
@@ -307,5 +318,6 @@ main(int argc, char **argv)
     if (optind == argc && (output_options & WARN_SUPERFLUOUS))
 	print_superfluous(superfluous);
 
+    
     return 0;
 }
