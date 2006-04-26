@@ -1,6 +1,11 @@
 tests:
 * whether ckmame can be run (incomplete runtime library path)
 * broken zip in superfluous / extra dir (ignore)
+* broken zip in ROM set w/ -i
+* crc correct, sha1 wrong in ROM set w/o -i being accepted
+* crc correct, sha1 wrong in extra, not being used (w/o -i)
+* superfluous cleanup
+* superfluous/extra cleanup done when all games checked
 * dumpgame
 * mkmamedb tests
   * XML parsing
@@ -8,6 +13,8 @@ tests:
   * /prog from file
   * broken input
 
+- [cleanup] split up util2.c, move/rename remove_from_superfluous
+- [bug] superfluous cleanup: move unknown/needed
 - [bug] duplicate file for multiple identical ROMs in one game
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [doc] dumpgame: document special keys (/list et al)

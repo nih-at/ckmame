@@ -1,5 +1,5 @@
 /*
-  $NiH: delete_list.c,v 1.6 2005/12/22 21:37:08 dillo Exp $
+  $NiH: delete_list.c,v 1.7 2006/04/14 18:26:08 dillo Exp $
 
   delete_list.c -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -33,7 +33,6 @@
 #include "xmalloc.h"
 
 static int my_zip_close(struct zip *, const char *);
-static void remove_from_superfluous(const char *);
 
 
 
@@ -58,7 +57,7 @@ delete_list_execute(delete_list_t *dl)
     struct zip *z;
     int ret, deleted;
 
-    parray_sort_unique(dl->array, file_location_cmp);
+    delete_list_sort(dl);
 
     name = NULL;
     z = NULL;
@@ -132,15 +131,17 @@ my_zip_close(struct zip *z, const char *name)
 
 
 
-static void
+void
 remove_from_superfluous(const char *name)
 {
     int idx;
 
     if (fix_options & FIX_PRINT)
 	printf("%s: remove empty archive\n", name);
-    idx = parray_index(superfluous, name, strcmp);
-    /* "needed" zip archives are not in list */
-    if (idx >= 0)
-	parray_delete(superfluous, idx, free);
+    if (superfluous) {
+	idx = parray_index(superfluous, name, strcmp);
+	/* "needed" zip archives are not in list */
+	if (idx >= 0)
+	    parray_delete(superfluous, idx, free);
+    }
 }

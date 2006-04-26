@@ -1,0 +1,14 @@
+# $NiH$
+description clean up extra dirs
+return 0
+# XXX: interface is sub-optimal
+args -v --cleanup-extra -e extra
+file old.db mame2.db mkmamedb-lost-parent.dump
+file roms/deadbeef.zip deadbeef.zip deadbeef.zip 
+file extra/deadfish4.zip deadfish4.zip deadfish.zip
+file extra/2-4c.zip 2-4c-ok.zip 1-c-ok.zip
+file-del extra/deadclonedbeef.zip deadclonedbeef.zip 
+stdout extra/2-4c.zip: delete duplicate file `04.rom'
+stdout extra/deadclonedbeef.zip: delete unused file `deadclonedbeef'
+stdout extra/deadclonedbeef.zip: remove empty archive
+stdout extra/deadfish4.zip: delete duplicate file `04.rom'

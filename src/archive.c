@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.9 2006/04/17 11:31:11 dillo Exp $
+  $NiH: archive.c,v 1.10 2006/04/21 00:43:16 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -116,11 +116,12 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     struct zip_file *zf;
     rom_t *r;
 
+    r = archive_file(a, idx);
+
     if (archive_ensure_zip(a, 0) != 0)
 	return -1;
 
     za = archive_zip(a);
-    r = archive_file(a, idx);
 
     if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
 	myerror(ERRZIP, "error opening index %d: %s", idx, zip_strerror(za));
@@ -278,7 +279,7 @@ archive_new(const char *name, filetype_t ft, int createp)
     a->za = NULL;
 
     if (!created) {
-	if (read_infos_from_zip(a, romhashtypes) < 0) {
+	if (read_infos_from_zip(a, ft == TYPE_ROM ? check_integrity : 0) < 0) {
 	    if (!createp) {
 		archive_real_free(a);
 		return NULL;
@@ -321,7 +322,7 @@ archive_refresh(archive_t *a)
     archive_close_zip(a);
     array_truncate(archive_files(a), 0, rom_finalize);
 
-    read_infos_from_zip(a, romhashtypes);
+    read_infos_from_zip(a, 0);
 
     return 0;
 }
@@ -355,7 +356,7 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 
 
 static int
-read_infos_from_zip(archive_t *a, int hashtypes)
+read_infos_from_zip(archive_t *a, int integrity)
 {
     struct zip *za;
     struct zip_stat zsb;
@@ -364,7 +365,9 @@ read_infos_from_zip(archive_t *a, int hashtypes)
     int zerr;
 
     zerr = 0;
-    if ((za=zip_open(archive_name(a), 0, &zerr)) == NULL) {
+    if ((za=zip_open(archive_name(a),
+		     integrity ? ZIP_CHECKCONS : 0, 
+		     &zerr)) == NULL) {
 	/* no error if file doesn't exist */
 	if (!(zerr == ZIP_ER_OPEN && errno == ENOENT)) {
 	    char errstr[80];
@@ -398,8 +401,8 @@ read_infos_from_zip(archive_t *a, int hashtypes)
 	rom_hashes(r)->types = HASHES_TYPE_CRC;
 	rom_hashes(r)->crc = zsb.crc;
 
-	if (hashtypes != 0)
-	    archive_file_compute_hashes(a, i, hashtypes);
+	if (integrity)
+	    archive_file_compute_hashes(a, i, romhashtypes);
     }
 
     return 0;

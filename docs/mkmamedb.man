@@ -1,8 +1,6 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: mkmamedb.mdoc,v 1.7 2005/06/12 19:30:00 wiz Exp 
-.\" $NiH: mkmamedb.man,v 1.1 2005/07/04 21:54:49 dillo Exp $
+.\" $NiH: mkmamedb.mdoc,v 1.2 2006/03/24 22:38:23 dillo Exp $
 .\"
-.\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005\-2006 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -30,76 +28,79 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH MKMAMEDB 1 "July 1, 2005" NiH
+.TH MKMAMEDB 1 "March 24, 2006" NiH
 .SH "NAME"
 mkmamedb \- create database for use by ckmame
 .SH "SYNOPSIS"
 .B mkmamedb
-[\fB-hV\fR]
-[\fB-o\fR \fBdbfile\fR]
-[\fB-prog-name\fR \fBname\fR]
-[\fB-prog-version\fR \fBversion\fR]
-[\fBrominfo-file\fR]
+[\fB\-hV\fR]
+[\fB\-o\fR \fBdbfile\fR]
+[\fB\-x\fR \fBpat\fR]
+[\fB\-\-prog\-name\fR \fBname\fR]
+[\fB\-\-prog\-version\fR \fBversion\fR]
+[\fBrominfo\-file ...\fR]
 .SH "DESCRIPTION"
 .B mkmamedb
-parses a ROM set description, as provided by e.g.
-xmame(6)
-and converts it to an internal database format for use
-by
+parses ROM set descriptions, as provided by e.g.
+xmame(6),
+and converts them to an internal database format for use
+with
 ckmame(1).
-The ROM set description is read from
-\fBrominfo-file\fR
-or stdin, if no
-\fBrominfo-file\fR
-is given on the command line.
+The ROM set description is read from the specified files or the
+standard input if no files are specified.
 The default output file is
-\fBmame.db\fR.
+.Pa mame.db.
 You can override it with the
-\fB-o\fR
+\fB\-o\fR
 option or the
 \fBMAMEDB\fR
 environment variable.
 .PP
 The following formats of ROM set description are supported: xmame
--listinfo, also known as CMPro; and xmame \-listxml.
+\-listinfo, also known as CMPro; and xmame \-listxml.
 The CMPro file format is described at
-\fBhttp://www.logiqx.com/FAQs/CMPro.shtml\fR
+.Pa http://www.logiqx.com/FAQs/CMPro.shtml
 the DTD for MAME can be found in
-\fBPREFIX/share/doc/ckmame/\fR.
+.Pa PREFIX/share/doc/ckmame/.
 .SS "OPTIONS"
 .B mkmamedb
 supports the following options:
-.RS
+
 .TP 11
-\fB-o\fR \fBdbfile, \fB--output\fR Ar dbfile\fR
+\fB\-o\fR \fBdbfile, \fB\-\-output\fR Ar dbfile\fR
 Write to database
 \fBdbfile\fR
 instead of the default
-``\fBmame.db\fR.''
+``Pa''mame.db.
 .TP 11
-\fB--prog-name\fR \fBname\fR
+\fB\-x\fR \fBpat, \fB\-\-exclude\fR Ar pat\fR
+Exclude games with names matching
+\fBpat\fR
+from the created database.
+.TP 11
+\fB\-\-prog\-name\fR \fBname\fR
 Set name of the program the ROM info is from.
 .TP 11
-\fB--prog-version\fR \fBversion\fR
+\fB\-\-prog\-version\fR \fBversion\fR
 Set version of the program the ROM info is from.
 .TP 11
-\fB-h\fR, \-help
+\fB\-h\fR, \-help
 Display a short help message.
 .TP 11
-\fB-V\fR, \-version
+\fB\-V\fR, \-version
 Display program name and version number.
-.RE
+
 .SH "ENVIRONMENT"
-.RS
+
 .TP 12
 Ev MAMEDB
 Location for the database file.
 Can be overridden with the
-\fB-o\fR
+\fB\-o\fR
 option.
 Defaults to
-``\fBmame.db\fR.''
-.RE
+``Pa''mame.db.
+
 .SH "EXAMPLES"
 Get an input file for
 mkmamedb(1)
@@ -116,12 +117,12 @@ xmame(6)
 installed and in your
 \fBPATH\fR,
 you can just run
-\fBmkmamedb-xmame.sh\fR.
+.Ic mkmamedb\-xmame.sh.
 .SH "SEE ALSO"
 ckmame(1),
 dumpgame(1)
 .SH "AUTHORS"
--nosplit
+\-nosplit
 .B mkmamedb
 was written by
 Dieter Baron <dillo@giga.or.at>

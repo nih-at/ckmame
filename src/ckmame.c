@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.8 2006/04/15 22:52:57 dillo Exp $
+  $NiH: ckmame.c,v 1.9 2006/04/24 11:38:38 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -46,6 +46,15 @@
 #include "warn.h"
 #include "xmalloc.h"
 
+enum action {
+    ACTION_UNSPECIFIED,
+    ACTION_CHECK_ROMSET,
+    ACTION_SUPERFLUOUS_ONLY,
+    ACTION_CLEANUP_EXTRA_ONLY
+};
+
+typedef enum action action_t;
+
 
 
 char *prg;
@@ -56,6 +65,7 @@ char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
 char help[] = "\n"
 "  -b, --nobroken       don't report unfixable errors\n"
+"      --cleanup-extra  clean up extra dirs (delete superfluous files)\n"
 "  -c, --correct        report correct sets\n"
 "  -D, --db dbfile      use mame-db dbfile\n"
 "  -d, --nonogooddumps  don't report roms with no good dumps\n"
@@ -88,10 +98,11 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
 "For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "bcD:dE:e:FfhijKkLlnSsxVvwX"
+#define OPTIONS "bcD:de:FfhijKkLlnSsxVvwX"
 
 enum {
-    OPT_KEEP_FOUND = 256,
+    OPT_CLEANUP_EXTRA = 256,
+    OPT_KEEP_FOUND,
     OPT_SUPERFLUOUS
 };
 
@@ -99,6 +110,7 @@ struct option options[] = {
     { "help",          0, 0, 'h' },
     { "version",       0, 0, 'V' },
 
+    { "cleanup-extra", 0, 0, OPT_CLEANUP_EXTRA },
     { "correct",       0, 0, 'c' }, /* +CORRECT */
     { "db",            1, 0, 'D' },
     { "delete-found",  0, 0, 'j' },
@@ -109,7 +121,6 @@ struct option options[] = {
     { "ignoreextra",   0, 0, 'X' },
     { "integrity",     0, 0, 'i' },
     { "keep-found",    0, 0, OPT_KEEP_FOUND },
-    { "keep-extra",    0, 0, 'E' },
     { "keep-long",     0, 0, 'L' },
     { "keep-unknown",  0, 0, 'K' },
     { "nobroken",      0, 0, 'b' }, /* -BROKEN */
@@ -130,6 +141,8 @@ int output_options;
 int fix_options;
 int ignore_extra;
 int romhashtypes, diskhashtypes;
+int check_integrity;
+parray_t *superfluous;
 parray_t *superfluous;
 parray_t *search_dirs;
 filetype_t file_type;
@@ -138,29 +151,33 @@ DB *old_db;
 
 
 
+static void error_multiple_actions(void);
+
+
+
 int
 main(int argc, char **argv)
 {
+    action_t action;
     int i, j;
     char *dbname, *olddbname;
     int c, found;
     parray_t *list;
     tree_t *tree;
-    int superfluous_only, integrity;
     
     prg = argv[0];
     output_options = WARN_ALL;
     file_type = TYPE_ROM;
-    superfluous_only = 0;
+    action = ACTION_UNSPECIFIED;
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
     olddbname = getenv("MAMEDB_OLD");
     if (olddbname == NULL)
-	dbname = DBH_DEFAULT_OLD_DB_NAME;
+	olddbname = DBH_DEFAULT_OLD_DB_NAME;
     fix_options = FIX_KEEP_LONG | FIX_KEEP_UNKNOWN;
     ignore_extra = 0;
-    integrity = 0;
+    check_integrity = 0;
     search_dirs = parray_new();
     
     opterr = 0;
@@ -197,7 +214,7 @@ main(int argc, char **argv)
 	    output_options &= ~WARN_FIXABLE;
 	    break;
 	case 'i':
-	    integrity = 1;
+	    check_integrity = 1;
 	    break;
 	case 'j':
 	    fix_options |= FIX_DELETE_EXTRA;
@@ -236,11 +253,19 @@ main(int argc, char **argv)
 	case 'X':
 	    ignore_extra = 1;
 	    break;
+	case OPT_CLEANUP_EXTRA:
+	    if (action != ACTION_UNSPECIFIED)
+		error_multiple_actions();
+	    action = ACTION_CLEANUP_EXTRA_ONLY;
+	    fix_options |= FIX_DO|FIX_CLEANUP_EXTRA;
+	    break;
 	case OPT_KEEP_FOUND:
 	    fix_options &= ~FIX_DELETE_EXTRA;
 	    break;
 	case OPT_SUPERFLUOUS:
-	    superfluous_only = 1;
+	    if (action != ACTION_UNSPECIFIED)
+		error_multiple_actions();
+	    action = ACTION_SUPERFLUOUS_ONLY;
 	    break;
 
 	default:
@@ -256,68 +281,108 @@ main(int argc, char **argv)
     /* XXX: check for errors other than ENOENT */
     old_db = dbh_open(olddbname, DBL_READ);
 
-    if (superfluous_only) {
-	if (optind != argc) {
-	    fprintf(stderr, usage, prg);
+    if (optind != argc) {
+	if (action != ACTION_UNSPECIFIED)
+	    error_multiple_actions();
+	action = ACTION_CHECK_ROMSET;
+    }
+    else if (action == ACTION_UNSPECIFIED) {
+	action = ACTION_CHECK_ROMSET;
+	fix_options |= FIX_SUPERFLUOUS;
+	if (fix_options & FIX_DELETE_EXTRA)
+	    fix_options |= FIX_CLEANUP_EXTRA;
+    }
+
+    if (action == ACTION_CHECK_ROMSET) {
+	/* build tree of games to check */
+
+	if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+	    myerror(ERRDEF,
+		    "list of games not found in database `%s'", dbname);
 	    exit(1);
 	}
-	
-	superfluous = find_superfluous(dbname);
-	print_superfluous(superfluous);
-	exit(0);
+
+	tree = tree_new();
+
+	if (optind == argc) {
+	    for (i=0; i<parray_length(list); i++)
+		tree_add(tree, parray_get(list, i));
+	}
+	else {
+	    for (i=optind; i<argc; i++) {
+		if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
+		    if (parray_index_sorted(list, argv[i], strcasecmp) >= 0)
+			tree_add(tree, argv[i]);
+		    else
+			myerror(ERRDEF, "game `%s' unknown", argv[i]);
+		}
+		else {
+		    found = 0;
+		    for (j=0; j<parray_length(list); j++) {
+			if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
+			    tree_add(tree, parray_get(list, j));
+			    found = 1;
+			}
+		    }
+		    if (!found)
+			myerror(ERRDEF,
+				"no game matching `%s' found", argv[i]);
+		}
+	    }
+	}
+
+	parray_free(list, free);
     }
 
-    romhashtypes = diskhashtypes = 0;
-    if (integrity) {
+    if (action != ACTION_SUPERFLUOUS_ONLY) {
 	/* XXX: check error */
 	r_hashtypes(db, &romhashtypes, &diskhashtypes);
+	/* XXX: merge in olddb */
     }
     
-    if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
-	myerror(ERRDEF, "list of games not found in database `%s'", dbname);
-	exit(1);
-    }
+    if (action != ACTION_CLEANUP_EXTRA_ONLY)
+	superfluous = find_superfluous(dbname);
 
-    tree = tree_new();
+    if ((fix_options & (FIX_DO|FIX_PRINT))
+	&& (fix_options & FIX_CLEANUP_EXTRA))
+	ensure_extra_maps((action==ACTION_CHECK_ROMSET ? DO_MAP : 0)
+			  | DO_LIST);
 
-    if (optind == argc) {
-	for (i=0; i<parray_length(list); i++)
-	    tree_add(tree, parray_get(list, i));
-    }
-    else {
-	for (i=optind; i<argc; i++) {
-	    if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-		if (parray_index_sorted(list, argv[i], strcasecmp) >= 0)
-		    tree_add(tree, argv[i]);
-		else
-		    myerror(ERRDEF, "game `%s' unknown", argv[i]);
-	    }
-	    else {
-		found = 0;
-		for (j=0; j<parray_length(list); j++) {
-		    if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
-			tree_add(tree, parray_get(list, j));
-			found = 1;
-		    }
-		}
-		if (!found)
-		    myerror(ERRDEF, "no game matching `%s' found", argv[i]);
-	    }
+    if (action == ACTION_CHECK_ROMSET) {
+	tree_traverse(tree, NULL, NULL);
+
+	if (fix_options & (FIX_DO|FIX_PRINT)) {
+	    if (needed_delete_list)
+		delete_list_execute(needed_delete_list);
+
+	    if (fix_options & FIX_SUPERFLUOUS)
+		cleanup_list(superfluous, superfluous_delete_list);
+	    else if (superfluous_delete_list)
+		delete_list_execute(superfluous_delete_list);
 	}
     }
 
-    parray_free(list, free);
+    if ((fix_options & (FIX_DO|FIX_PRINT))
+	&& (fix_options & FIX_CLEANUP_EXTRA))
+	cleanup_list(extra_list, extra_delete_list);
+    else if (extra_delete_list)
+	delete_list_execute(extra_delete_list);
 
-    superfluous = find_superfluous(dbname);
-
-    tree_traverse(tree, NULL, NULL);
-
-    if (needed_delete_list)
-	delete_list_execute(needed_delete_list);
-
-    if (optind == argc && (output_options & WARN_SUPERFLUOUS))
+    if ((action == ACTION_CHECK_ROMSET &&
+	 (optind == argc && (output_options & WARN_SUPERFLUOUS)))
+	|| action == ACTION_SUPERFLUOUS_ONLY)
 	print_superfluous(superfluous);
-
     
-    return 0;
+    exit(0);
+}
+
+
+
+static void
+error_multiple_actions(void)
+{
+    fprintf(stderr,
+	    "%s: only one of --cleanup-extra, --superfluous, game can be used",
+	    prg);
+    exit(1);
 }

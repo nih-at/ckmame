@@ -2,7 +2,7 @@
 #define HAD_DELETE_LIST_H
 
 /*
-  $NiH: delete_list.h,v 1.1.2.2 2005/08/06 17:00:11 wiz Exp $
+  $NiH: delete_list.h,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   delete_list.h -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -52,6 +52,9 @@ typedef struct delete_list delete_list_t;
 #define delete_list_rollback(dl)			\
 	(parray_set_length((dl)->array, (dl)->mark,	\
 			   NULL, file_location_free))
+
+#define delete_list_sort(dl)					\
+	(parray_sort_unique(dl->array, file_location_cmp))
 
 void delete_list_free(delete_list_t *);
 int delete_list_execute(delete_list_t *);

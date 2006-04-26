@@ -2,7 +2,7 @@
 #define _HAD_DBH_H
 
 /*
-  $NiH: dbh.h,v 1.6 2006/03/15 18:27:21 dillo Exp $
+  $NiH: dbh.h,v 1.7 2006/04/15 22:52:58 dillo Exp $
 
   dbh.h -- compressed on-disk mame.db data base
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -44,6 +44,7 @@
 #define DBH_KEY_LIST_SAMPLE	"/list/sample"
 
 #define DBH_DEFAULT_DB_NAME	"mame.db"
+#define DBH_DEFAULT_OLD_DB_NAME	"old.db"
 
 
 

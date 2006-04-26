@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.16 2006/04/17 11:31:11 dillo Exp $
+  $NiH: fix.c,v 1.17 2006/04/24 11:38:38 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -94,8 +94,12 @@ fix_game(game_t *g, archive_t *a, result_t *res)
 	}
 	deleted = array_new_length(sizeof(int), archive_num_files(a),
 				   set_zero);
+	if (extra_delete_list)
+	    delete_list_mark(extra_delete_list);
 	if (needed_delete_list)
 	    delete_list_mark(needed_delete_list);
+	if (superfluous_delete_list)
+	    delete_list_mark(superfluous_delete_list);
     }
 
     for (i=0; i<archive_num_files(a); i++) {
@@ -179,8 +183,12 @@ fix_game(game_t *g, archive_t *a, result_t *res)
 
     if (archive_close_zip(a) < 0) {
 	archive_changed = 0;
+	if ((fix_options & FIX_DO) && extra_delete_list)
+	    delete_list_rollback(extra_delete_list);
 	if ((fix_options & FIX_DO) && needed_delete_list)
 	    delete_list_rollback(needed_delete_list);
+	if ((fix_options & FIX_DO) && superfluous_delete_list)
+	    delete_list_rollback(superfluous_delete_list);
     }
 
     fix_disks(g, res);
@@ -381,11 +389,15 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 			zip_unchange(zto, idx);
 		}
 		else {
-		    if (match_where(m) == ROM_NEEDED
-			|| match_where(m) == ROM_SUPERFLUOUS
-			|| (match_where(m) == ROM_EXTRA
-			    && (fix_options & FIX_DELETE_EXTRA)))
+		    if (match_where(m) == ROM_NEEDED)
 			delete_list_add(needed_delete_list,
+					archive_name(afrom), match_index(m));
+		    else if (match_where(m) == ROM_SUPERFLUOUS)
+			delete_list_add(superfluous_delete_list,
+					archive_name(afrom), match_index(m));
+		    else if (match_where(m) == ROM_EXTRA
+			     && (fix_options & FIX_DELETE_EXTRA))
+			delete_list_add(extra_delete_list,
 					archive_name(afrom), match_index(m));
 		}
 	    }

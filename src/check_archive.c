@@ -1,5 +1,5 @@
 /*
-  $NiH: check_archive.c,v 1.6 2006/04/05 22:36:03 dillo Exp $
+  $NiH: check_archive.c,v 1.7 2006/04/24 11:38:38 dillo Exp $
 
   check_archive.c -- determine status of files in archive
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -47,6 +47,14 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 
 	if (result_file(res, i) == FS_USED)
 	    continue;
+
+	if ((hashes_types(rom_hashes(archive_file(a, i))) & romhashtypes)
+	    != romhashtypes) {
+	    if (archive_file_compute_hashes(a, i, romhashtypes) < 0) {
+		result_file(res, i) = FS_BROKEN;
+		continue;
+	    }
+	}
 
 	if (find_in_old(old_db, archive_file(a, i), NULL) == FIND_EXISTS) {
 	    result_file(res, i) = FS_DUPLICATE;

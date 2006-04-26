@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.10 2006/04/13 23:30:25 wiz Exp $
+  $NiH: funcs.h,v 1.11 2006/04/24 11:38:38 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
@@ -30,17 +30,22 @@
 
 #include "archive.h"
 #include "dbl.h"
+#include "delete_list.h"
 #include "game.h"
 #include "parray.h"
 #include "result.h"
 #include "tree.h"
 
+#define DO_MAP  0x1
+#define DO_LIST	0x2
+
 void check_archive(archive_t *, const char *, result_t *);
 void check_disks(game_t *, result_t *);
 void check_files(game_t *, archive_t *[], result_t *);
 void check_old(game_t *, result_t *);
+void cleanup_list(parray_t *, delete_list_t *);
 void diagnostics(const game_t *, const archive_t *, const result_t *);
-void ensure_extra_maps(void);
+void ensure_extra_maps(int);
 void ensure_needed_maps(void);
 int fix_game(game_t *, archive_t *, result_t *);
 parray_t *find_superfluous(const char *);
@@ -50,6 +55,7 @@ char *make_unique_name(const char *, const char *, ...);
 struct zip *my_zip_open(const char *, int);
 int my_zip_rename(struct zip *, int, const char *);
 void print_superfluous(const parray_t *);
+void remove_from_superfluous(const char *);
 int rename_or_move(const char *, const char *);
 
 #endif /* funcs.h */
