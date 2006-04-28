@@ -2,7 +2,7 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.4 2005/09/27 21:33:03 dillo Exp $
+  $NiH: util.h,v 1.5 2006/04/28 18:52:10 dillo Exp $
 
   util.h -- miscellaneous utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -25,8 +25,6 @@
 */
 
 #include <string.h>
-
-#include "types.h"
 
 #define compare_names(a, b)	(strcasecmp(mybasename(a), mybasename(b)))
 

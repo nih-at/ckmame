@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.11 2006/04/26 21:01:51 dillo Exp $
+  $NiH: fix_util.c,v 1.1 2006/04/28 18:52:10 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -82,6 +82,29 @@ ensure_dir(const char *name, int strip_fname)
 
 
 
+
+
+
+char *
+make_garbage_name(const char *name)
+{
+    const char *s;
+    char *t;
+
+    if ((s=strrchr(name, '/')) == NULL)
+	s = name;
+    else
+	s++;
+
+    t = (char *)xmalloc(strlen(name)+strlen("garbage/")+1);
+
+    sprintf(t, "%.*sgarbage/%s", (int)(s-name), name, s);
+
+    return t;
+}
+
+
+
 char *
 make_unique_name(const char *ext, const char *fmt, ...)
 {
@@ -140,6 +163,20 @@ make_needed_name_disk(const disk_t *d)
 
 
 int
+my_remove(const char *name)
+{
+    if (remove(name) != 0) {
+	seterrinfo(name, NULL);
+	myerror(ERRFILESTR, "cannot remove");
+	return -1;
+    }
+
+    return 0;
+}
+
+
+
+int
 rename_or_move(const char *old, const char *new)
 {
     if (rename(old, new) < 0) {
@@ -150,4 +187,122 @@ rename_or_move(const char *old, const char *new)
     }
 
     return 0;
+}
+
+
+
+
+
+
+void
+remove_empty_archive(const char *name)
+{
+    int idx;
+
+    if (fix_options & FIX_PRINT)
+	printf("%s: remove empty archive\n", name);
+    if (superfluous) {
+	idx = parray_index(superfluous, name, strcmp);
+	/* "needed" zip archives are not in list */
+	if (idx >= 0)
+	    parray_delete(superfluous, idx, free);
+    }
+}
+
+
+
+int
+save_needed(archive_t *a, int index, int do_save)
+{
+    char *zip_name, *tmp;
+    int ret, zip_index;
+    struct zip *zto;
+    struct zip_source *source;
+    file_location_ext_t *fbh;
+
+    zip_name = archive_name(a);
+    zip_index = index;
+    ret = 0;
+    tmp = NULL;
+
+    if (do_save) {
+	tmp = make_needed_name(archive_file(a, index));
+	if (tmp == NULL) {
+	    myerror(ERRDEF, "cannot create needed file name");
+	    ret = -1;
+	}
+	else if (ensure_dir(tmp, 1) < 0)
+	    ret = -1;
+	else if ((zto=my_zip_open(tmp, ZIP_CREATE)) == NULL)
+	    ret = -1;
+	else if ((source=zip_source_zip(zto, archive_zip(a), index,
+					0, 0, -1)) == NULL
+		 || zip_add(zto, rom_name(archive_file(a, index)),
+			    source) < 0) {
+	    zip_source_free(source);
+	    seterrinfo(rom_name(archive_file(a, index)), tmp);
+	    myerror(ERRZIPFILE, "error adding from `%s': %s",
+		    archive_name(a), zip_strerror(zto));
+	    zip_close(zto);
+	    ret = -1;
+	}
+	else if (zip_close(zto) < 0) {
+	    seterrinfo(NULL, tmp);
+	    myerror(ERRZIP, "error closing: %s", zip_strerror(zto));
+	    zip_unchange_all(zto);
+	    zip_close(zto);
+	    ret = -1;
+	}
+	else {
+	    zip_name = tmp;
+	    zip_index = 0;
+	}
+    }
+
+    fbh = file_location_ext_new(zip_name, zip_index, ROM_NEEDED);
+    map_add(needed_file_map, file_location_default_hashtype(TYPE_ROM),
+	    rom_hashes(archive_file(a, index)), fbh);
+
+    free(tmp);
+    return ret;
+}
+
+
+
+int
+save_needed_disk(const char *fname, int do_save)
+{
+    char *tmp;
+    const char *name;
+    int ret;
+    disk_t *d;
+
+    if ((d=disk_new(fname, 0)) == NULL)
+	return -1;
+
+    ret = 0;
+    tmp = NULL;
+    name = fname;
+
+    if (do_save) {
+	tmp = make_needed_name_disk(d);
+	if (tmp == NULL) {
+	    myerror(ERRDEF, "cannot create needed file name");
+	    ret = -1;
+	}
+	else if (ensure_dir(tmp, 1) < 0)
+	    ret = -1;
+	else if (rename_or_move(fname, tmp) != 0)
+	    ret = -1;
+	else
+	    name = tmp;
+    }
+
+    ensure_needed_maps();
+    map_add(needed_disk_map, file_location_default_hashtype(TYPE_DISK),
+	    disk_hashes(d), file_location_ext_new(name, 0, ROM_NEEDED));
+
+    disk_free(d);
+    free(tmp);
+    return ret;
 }

@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.17 2006/04/24 11:38:38 dillo Exp $
+  $NiH: fix.c,v 1.18 2006/04/26 21:01:51 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -37,6 +37,7 @@
 #include "file_location.h"
 #include "funcs.h"
 #include "game.h"
+#include "garbage.h"
 #include "globals.h"
 #include "match.h"
 #include "pri.h"
@@ -49,18 +50,7 @@
 
 static int fix_disks(game_t *, result_t *res);
 static int fix_files(game_t *, archive_t *, result_t *);
-static int fix_save_needed(archive_t *, int, int);
-static int fix_save_needed_disk(const char *, int);
 static void set_zero(int *);
-
-/* XXX: move to garbage.c */
-static int close_garbage(void);
-static int fix_add_garbage(archive_t *, int);
-static char *mkgarbage_name(const char *);
-static int myremove(const char *);
-
-static struct zip *zf_garbage;
-static char *zf_garbage_name = NULL;
 
 
 
@@ -69,12 +59,13 @@ fix_game(game_t *g, archive_t *a, result_t *res)
 {
     int i, islong, keep, archive_changed;
     array_t *deleted;
-
-    zf_garbage = NULL;
+    garbage_t *gb;
 
     archive_changed = 0;
 
     if (fix_options & FIX_DO) {
+	gb = garbage_new(a);
+	
 	if (archive_ensure_zip(a, 1) < 0) {
 	    char *new_name;
 
@@ -116,7 +107,7 @@ fix_game(game_t *g, archive_t *a, result_t *res)
 		       rom_name(archive_file(a, i)));
 	    if (fix_options & FIX_DO) {
 		if (keep)
-		    keep = (fix_add_garbage(a, i) == -1);
+		    keep = (garbage_add(gb, i) == -1);
 		if (keep == 0) {
 		    archive_changed = 1;
 		    MARK_DELETED(deleted, i);
@@ -144,7 +135,7 @@ fix_game(game_t *g, archive_t *a, result_t *res)
 		printf("%s: save needed file `%s'\n",
 		       archive_name(a),
 		       rom_name(archive_file(a, i)));
-	    if (fix_save_needed(a, i, fix_options & FIX_DO) != -1) {
+	    if (save_needed(a, i, fix_options & FIX_DO) != -1) {
 		if (fix_options & FIX_DO) {
 		    archive_changed = 1;
 		    zip_delete(archive_zip(a), i);
@@ -161,7 +152,7 @@ fix_game(game_t *g, archive_t *a, result_t *res)
     }
 
     if (fix_options & FIX_DO) {
-	if (close_garbage() < 0) {
+	if (garbage_close(gb) < 0) {
 	    /* undelete files we tried to move to garbage */
 	    for (i=0; i<archive_num_files(a); i++) {
 		if (IS_DELETED(deleted, i)) {
@@ -219,13 +210,13 @@ fix_disks(game_t *g, result_t *res)
 		       ((fix_options & FIX_KEEP_UNKNOWN) ? "mv" : "delete"));
 	    if (fix_options & FIX_DO) {
 		if (fix_options & FIX_KEEP_UNKNOWN) {
-		    to_name = mkgarbage_name(name);
+		    to_name = make_garbage_name(name);
 		    ensure_dir(to_name, 1);
 		    rename_or_move(name, to_name);
 		    free(to_name);
 		}
 		else
-		    myremove(name);
+		    my_remove(name);
 	    }
 	    break;
 
@@ -233,13 +224,13 @@ fix_disks(game_t *g, result_t *res)
 	    if (fix_options & FIX_PRINT)
 		printf("%s: delete unused image\n", name);
 	    if (fix_options & FIX_DO)
-		myremove(name);
+		my_remove(name);
 	    break;
 
 	case FS_NEEDED:
 	    if (fix_options & FIX_PRINT)
 		printf("%s: save needed image\n", name);
-	    fix_save_needed_disk(name, (fix_options & FIX_DO));
+	    save_needed_disk(name, (fix_options & FIX_DO));
 	    break;
 
 	case FS_MISSING:
@@ -426,196 +417,8 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 
 
 
-static int
-fix_save_needed(archive_t *a, int index, int copy)
-{
-    char *zip_name, *tmp;
-    int ret, zip_index;
-    struct zip *zto;
-    struct zip_source *source;
-    file_location_ext_t *fbh;
-
-    zip_name = archive_name(a);
-    zip_index = index;
-    ret = 0;
-    tmp = NULL;
-
-    if (copy) {
-	tmp = make_needed_name(archive_file(a, index));
-	if (tmp == NULL) {
-	    myerror(ERRDEF, "cannot create needed file name");
-	    ret = -1;
-	}
-	else if (ensure_dir(tmp, 1) < 0)
-	    ret = -1;
-	else if ((zto=my_zip_open(tmp, ZIP_CREATE)) == NULL)
-	    ret = -1;
-	else if ((source=zip_source_zip(zto, archive_zip(a), index,
-					0, 0, -1)) == NULL
-		 || zip_add(zto, rom_name(archive_file(a, index)),
-			    source) < 0) {
-	    zip_source_free(source);
-	    seterrinfo(rom_name(archive_file(a, index)), tmp);
-	    myerror(ERRZIPFILE, "error adding from `%s': %s",
-		    archive_name(a), zip_strerror(zto));
-	    zip_close(zto);
-	    ret = -1;
-	}
-	else if (zip_close(zto) < 0) {
-	    seterrinfo(NULL, tmp);
-	    myerror(ERRZIP, "error closing: %s", zip_strerror(zto));
-	    zip_unchange_all(zto);
-	    zip_close(zto);
-	    ret = -1;
-	}
-	else {
-	    zip_name = tmp;
-	    zip_index = 0;
-	}
-    }
-
-    fbh = file_location_ext_new(zip_name, zip_index, ROM_NEEDED);
-    map_add(needed_file_map, file_location_default_hashtype(TYPE_ROM),
-	    rom_hashes(archive_file(a, index)), fbh);
-
-    free(tmp);
-    return ret;
-}
-
-
-
-static int
-fix_save_needed_disk(const char *fname, int move)
-{
-    char *tmp;
-    const char *name;
-    int ret;
-    disk_t *d;
-
-    if ((d=disk_new(fname, 0)) == NULL)
-	return -1;
-
-    ret = 0;
-    tmp = NULL;
-    name = fname;
-
-    if (move) {
-	tmp = make_needed_name_disk(d);
-	if (tmp == NULL) {
-	    myerror(ERRDEF, "cannot create needed file name");
-	    ret = -1;
-	}
-	else if (ensure_dir(tmp, 1) < 0)
-	    ret = -1;
-	else if (rename_or_move(fname, tmp) != 0)
-	    ret = -1;
-	else
-	    name = tmp;
-    }
-
-    ensure_needed_maps();
-    map_add(needed_disk_map, file_location_default_hashtype(TYPE_DISK),
-	    disk_hashes(d), file_location_ext_new(name, 0, ROM_NEEDED));
-
-    disk_free(d);
-    free(tmp);
-    return ret;
-}
-
-
-
-static int
-close_garbage(void)
-{
-    if (zf_garbage == NULL)
-	return 0;
-
-    if (zip_get_num_files(zf_garbage) > 0) {
-	if (ensure_dir(zf_garbage_name, 1) < 0) {
-	    zip_unchange_all(zf_garbage);
-	    zip_close(zf_garbage);
-	    return -1;
-	}
-    }
-
-    if (zip_close(zf_garbage) < 0) {
-	zip_unchange_all(zf_garbage);
-	zip_close(zf_garbage);
-	return -1;
-    }
-
-    return 0;
-}
-
-
-
-static int
-fix_add_garbage(archive_t *a, int idx)
-{
-    struct zip_source *source;
-
-    if (!(fix_options & FIX_DO))
-	return 0;
-
-    if (zf_garbage == NULL) {
-	if (zf_garbage_name != NULL)
-	    free(zf_garbage_name);
-	zf_garbage_name = mkgarbage_name(archive_name(a));
-	if ((zf_garbage=my_zip_open(zf_garbage_name, ZIP_CREATE)) == NULL)
-	    return -1;
-    }
-
-    if ((source=zip_source_zip(zf_garbage, archive_zip(a), idx,
-			       ZIP_FL_UNCHANGED, 0, -1)) == NULL
-	|| zip_add(zf_garbage, rom_name(archive_file(a, idx)), source) < 0) {
-	zip_source_free(source);
-	seterrinfo(archive_name(a), rom_name(archive_file(a, idx)));
-	myerror(ERRZIPFILE, "error moving to `%s': %s",
-		zf_garbage_name, zip_strerror(zf_garbage));
-	return -1;
-    }
-
-    return 0;
-}
-
-
-
-static char *
-mkgarbage_name(const char *name)
-{
-    const char *s;
-    char *t;
-
-    if ((s=strrchr(name, '/')) == NULL)
-	s = name;
-    else
-	s++;
-
-    t = (char *)xmalloc(strlen(name)+strlen("garbage/")+1);
-
-    sprintf(t, "%.*sgarbage/%s", (int)(s-name), name, s);
-
-    return t;
-}
-
-
-
 static void
 set_zero(int *ip)
 {
     *ip = 0;
-}
-
-
-
-static int
-myremove(const char *name)
-{
-    if (remove(name) != 0) {
-	seterrinfo(name, NULL);
-	myerror(ERRFILESTR, "cannot remove");
-	return -1;
-    }
-
-    return 0;
 }

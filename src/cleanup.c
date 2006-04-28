@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.11 2006/04/26 21:01:51 dillo Exp $
+  $NiH: cleanup.c,v 1.1 2006/04/28 18:52:10 dillo Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -111,6 +111,6 @@ cleanup_list(parray_t *list, delete_list_t *del)
 	result_free(res);
 
 	if (!survivors)
-	    remove_from_superfluous(name);
+	    remove_empty_archive(name);
     }
 }

@@ -1,5 +1,5 @@
 /*
-  $NiH: delete_list.c,v 1.7 2006/04/14 18:26:08 dillo Exp $
+  $NiH: delete_list.c,v 1.8 2006/04/26 21:01:51 dillo Exp $
 
   delete_list.c -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -68,7 +68,7 @@ delete_list_execute(delete_list_t *dl)
 
 	if (name == NULL || strcmp(file_location_name(fbh), name) != 0) {
 	    if (z && deleted == zip_get_num_files(z))
-		remove_from_superfluous(name);
+		remove_empty_archive(name);
 
 	    if (my_zip_close(z, name) == -1)
 		ret = -1;
@@ -89,7 +89,7 @@ delete_list_execute(delete_list_t *dl)
     }
 
     if (z && deleted == zip_get_num_files(z))
-	remove_from_superfluous(name);
+	remove_empty_archive(name);
 
     if (my_zip_close(z, name) == -1)
 	ret = -1;
@@ -127,21 +127,4 @@ my_zip_close(struct zip *z, const char *name)
     }
 
     return 0;
-}
-
-
-
-void
-remove_from_superfluous(const char *name)
-{
-    int idx;
-
-    if (fix_options & FIX_PRINT)
-	printf("%s: remove empty archive\n", name);
-    if (superfluous) {
-	idx = parray_index(superfluous, name, strcmp);
-	/* "needed" zip archives are not in list */
-	if (idx >= 0)
-	    parray_delete(superfluous, idx, free);
-    }
 }
