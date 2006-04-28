@@ -1,3 +1,12 @@
+0.8
+
+- clean up superfluous files and extra directories
+- read games to check from file
+- create DB from multiple dat files
+- omit games matching shell glob patterns from database
+- don't open archives or disk images multiple times
+- don't accept disk images that need a parent
+
 0.7 (2005-12-28)
 
 - fix all fixable errors in at most two runs
