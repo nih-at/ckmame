@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.10 2006/04/26 21:01:51 dillo Exp $
+  $NiH: ckmame.c,v 1.11 2006/04/28 20:25:45 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -98,7 +98,7 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
 "For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "bcD:de:FfhijKkLlnSsxVvwX"
+#define OPTIONS "bcD:de:FfhijKkLlnO:SsxVvwX"
 
 enum {
     OPT_CLEANUP_EXTRA = 256,
