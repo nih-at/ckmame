@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.12 2006/04/28 20:58:46 dillo Exp $
+  $NiH: ckmame.c,v 1.13 2006/04/28 21:24:40 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -250,6 +250,7 @@ main(int argc, char **argv)
 	    break;
 	case 'T':
 	    game_list = optarg;
+	    break;
 	case 'v':
 	    fix_options |= FIX_PRINT;
 	    break;
