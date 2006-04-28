@@ -112,6 +112,7 @@ noinst_HEADERS=\
 	find.h \
 	funcs.h \
 	game.h \
+	garbage.h \
 	globals.h \
 	hashes.h \
 	map.h \
