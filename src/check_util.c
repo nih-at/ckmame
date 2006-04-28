@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.10 2006/04/24 11:38:38 dillo Exp $
+  $NiH: util2.c,v 1.11 2006/04/26 21:01:51 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -24,25 +24,22 @@
 
 
 #include <sys/stat.h>
-#include <errno.h>
-#include <stdarg.h>
 
 #include "dir.h"
-#include "error.h"
-#include "file_location.h"
-#include "find.h"
 #include "funcs.h"
 #include "globals.h"
-#include "hashes.h"
-#include "util.h"
 #include "xmalloc.h"
+
+
 
 #define MAXROMPATH 128
 #define DEFAULT_ROMDIR "."
 
-char *needed_dir = "needed";	/* XXX: proper value */
-char *rompath[MAXROMPATH] = { NULL };
-static int rompath_init = 0;
+#define NAME_IS_CHD(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".chd") == 0)
+#define NAME_IS_ZIP(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".zip") == 0)
+#define NAME_NO_EXT(n)	(strchr(n, '.') == NULL)
+
+
 
 delete_list_t *extra_delete_list = NULL;
 map_t *extra_disk_map = NULL;
@@ -52,10 +49,9 @@ delete_list_t *needed_delete_list = NULL;
 map_t *needed_disk_map = NULL;
 map_t *needed_file_map = NULL;
 delete_list_t *superfluous_delete_list = NULL;
-
-#define NAME_IS_CHD(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".chd") == 0)
-#define NAME_IS_ZIP(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".zip") == 0)
-#define NAME_NO_EXT(n)	(strchr(n, '.') == NULL)
+char *needed_dir = "needed";	/* XXX: proper value */
+char *rompath[MAXROMPATH] = { NULL };
+static int rompath_init = 0;
 
 
 
@@ -63,135 +59,6 @@ static void enter_archive_in_map(map_t *, const archive_t *, where_t);
 static int enter_dir_in_map_and_list(map_t *, map_t *, parray_t *,
 				     const char *, int, where_t);
 static void enter_disk_in_map(map_t *, const disk_t *, where_t);
-
-
-
-void
-cleanup_list(parray_t *list, delete_list_t *del)
-{
-    archive_t *a;
-    result_t *res;
-    char *name;
-    int i, j, di, len, cmp;
-    file_location_t *fl;
-    char *reason;
-    int survivors;
-
-    di = len = 0;
-    if (del) {
-	delete_list_sort(del);
-	len = delete_list_length(del);
-    }
-
-    for (i=0; i<parray_length(list); i++) {
-	name = (char *)parray_get(list, i);
-	if ((a=archive_new(name, TYPE_FULL_PATH, 0)) == NULL) {
-	    /* XXX */
-	    continue;
-	}
-	res = result_new(NULL, a);
-
-	while (di < len) {
-	    fl = delete_list_get(del, di++);
-	    cmp = strcmp(name, file_location_name(fl));
-
-	    if (cmp == 0)
-		result_file(res, file_location_index(fl)) = FS_USED;
-	    else if (cmp < 0)
-		break;
-	}
-
-	check_archive(a, NULL, res);
-
-	archive_ensure_zip(a, 0);
-	survivors = 0;
-
-	for (j=0; j<archive_num_files(a); j++) {
-	    switch (result_file(res, j)) {
-	    case FS_SUPERFLUOUS:
-	    case FS_DUPLICATE:
-	    case FS_USED:
-		switch (result_file(res, j)) {
-		case FS_SUPERFLUOUS:
-		    reason = "unused";
-		    break;
-		case FS_DUPLICATE:
-		    reason = "duplicate";
-		    break;
-		case FS_USED:
-		    reason = "used";
-		    break;
-		default:
-		    reason = "[internal error]";
-		    break;
-		}
-		
-		if (fix_options & FIX_PRINT)
-		    printf("%s: delete %s file `%s'\n",
-			   archive_name(a), reason,
-			   rom_name(archive_file(a, j)));
-		if (fix_options & FIX_DO)
-		    zip_delete(archive_zip(a), j);
-		break;
-
-	    case FS_BROKEN:
-	    case FS_MISSING:
-	    case FS_NEEDED:
-	    case FS_PARTUSED:
-	    case FS_UNKNOWN:
-		survivors = 1;
-		break;
-	    }
-	}
-
-	archive_close_zip(a);
-	archive_free(a);
-	result_free(res);
-
-	if (!survivors)
-	    remove_from_superfluous(name);
-    }
-}
-
-
-
-int
-ensure_dir(const char *name, int strip_fname)
-{
-    const char *p;
-    char *dir;
-    struct stat st;
-    int ret;
-
-    if (strip_fname) {
-	p = strrchr(name, '/');
-	if (p == NULL)
-	    dir = xstrdup(".");
-	else {
-	    dir = xmalloc(p-name+1);
-	    strncpy(dir, name, p-name);
-	    dir[p-name] = 0;
-	}
-	name = dir;
-    }
-
-    ret = 0;
-    if (stat(name, &st) < 0) {
-	if (mkdir(name, 0777) < 0) {
-	    myerror(ERRSTR, "mkdir `%s' failed", name);
-	    ret = -1;
-	}
-    }
-    else if (!(st.st_mode & S_IFDIR)) {
-	myerror(ERRDEF, "`%s' is not a directory", name);
-	ret = -1;
-    }
-
-    if (strip_fname)
-	free(dir);
-
-    return ret;
-}		    
 
 
 
@@ -361,144 +228,6 @@ make_file_name(filetype_t ft, int idx, const char *name)
     sprintf(fn, "%s/%s/%s.%s", rompath[idx], dir, name, ext);
 
     return fn;
-}
-
-
-
-#ifndef MAXPATHLEN
-#define MAXPATHLEN 1024
-#endif
-
-char *
-make_unique_name(const char *ext, const char *fmt, ...)
-{
-    char ret[MAXPATHLEN];
-    int i, len;
-    struct stat st;
-    va_list ap;
-
-    va_start(ap, fmt);
-    len = vsnprintf(ret, sizeof(ret), fmt, ap);
-    va_end(ap);
-
-    /* already used space, "-XXX.", extension, 0 */
-    if (len+5+strlen(ext)+1 > sizeof(ret)) {
-	return NULL;
-    }
-
-    for (i=0; i<1000; i++) {
-	sprintf(ret+len, "-%03d.%s", i, ext);
-
-	if (stat(ret, &st) == -1 && errno == ENOENT)
-	    return xstrdup(ret);
-    }
-    
-    return NULL;
-}
-
-char *
-make_needed_name(const rom_t *r)
-{
-    char crc[HASHES_SIZE_CRC*2+1];
-
-    /* <needed_dir>/<crc>-nnn.zip */
-
-    hash_to_string(crc, HASHES_TYPE_CRC, rom_hashes(r));
-
-    return make_unique_name("zip", "%s/%s", needed_dir, crc);
-}
-
-
-
-char *
-make_needed_name_disk(const disk_t *d)
-{
-    char md5[HASHES_SIZE_MD5*2+1];
-
-    /* <needed_dir>/<md5>-nnn.zip */
-
-    hash_to_string(md5, HASHES_TYPE_MD5, rom_hashes(d));
-
-    return make_unique_name("chd", "%s/%s", needed_dir, md5);
-}
-
-
-
-struct zip *
-my_zip_open(const char *name, int flags)
-{
-    struct zip *z;
-    char errbuf[80];
-    int err;
-
-    z = zip_open(name, flags, &err);
-    if (z == NULL) {
-	zip_error_to_str(errbuf, sizeof(errbuf), err, errno);
-	myerror(ERRDEF, "error %s zip archive `%s': %s",
-		(flags & ZIP_CREATE ? "creating" : "opening"), name,
-		errbuf);
-    }
-
-    return z;
-}
-
-
-
-#define RENAME_STRING "%s_renamed_by_ckmame_%d"
-
-int
-my_zip_rename(struct zip *za, int idx, const char *name)
-{
-    int zerr, idx2, try;
-    char *name2;
-
-    if (zip_rename(za, idx, name) == 0)
-	return 0;
-
-    zip_error_get(za, &zerr, NULL);
-
-    if (zerr != ZIP_ER_EXISTS)
-	return -1;
-
-    idx2 = zip_name_locate(za, name, 0);
-
-    if (idx2 == -1)
-	return -1;
-
-    name2 = xmalloc(strlen(RENAME_STRING)+strlen(name));
-
-    for (try=0; try<10; try++) {
-	sprintf(name2, RENAME_STRING, name, try);
-	if (zip_rename(za, idx2, name2) == 0) {
-	    free(name2);
-	    return zip_rename(za, idx, name);
-	}
-
-	zip_error_get(za, &zerr, NULL);
-
-	if (zerr != ZIP_ER_EXISTS) {
-	    free(name2);
-	    return -1;
-	}
-    }
-
-    free(name2);
-    return -1;
-}
-
-
-
-int
-rename_or_move(const char *old, const char *new)
-{
-    if (rename(old, new) < 0) {
-	/* XXX: try move */
-	seterrinfo(old, NULL);
-	myerror(ERRFILESTR, "cannot rename to `%s'", new);
-	return -1;
-    }
-
-    return 0;
 }
 
 

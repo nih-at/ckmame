@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.11 2006/04/24 11:38:38 dillo Exp $
+  $NiH: funcs.h,v 1.12 2006/04/26 21:01:51 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
@@ -45,12 +45,16 @@ void check_files(game_t *, archive_t *[], result_t *);
 void check_old(game_t *, result_t *);
 void cleanup_list(parray_t *, delete_list_t *);
 void diagnostics(const game_t *, const archive_t *, const result_t *);
+int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
+char *findfile(const char *, filetype_t);
 int fix_game(game_t *, archive_t *, result_t *);
 parray_t *find_superfluous(const char *);
+void init_rompath(void);
 char *make_needed_name(const rom_t *);
 char *make_needed_name_disk(const disk_t *);
+char *make_file_name(filetype_t, int, const char *);
 char *make_unique_name(const char *, const char *, ...);
 struct zip *my_zip_open(const char *, int);
 int my_zip_rename(struct zip *, int, const char *);

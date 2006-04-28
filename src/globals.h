@@ -10,7 +10,7 @@ extern DB *db;
 extern DB *old_db;
 
 extern char *rompath[];
-extern char *need_dir;
+extern char *needed_dir;
 
 extern parray_t *search_dirs;
 

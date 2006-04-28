@@ -2,7 +2,7 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.3.2.3 2005/07/31 09:21:44 dillo Exp $
+  $NiH: util.h,v 1.4 2005/09/27 21:33:03 dillo Exp $
 
   util.h -- miscellaneous utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -32,13 +32,9 @@
 
 typedef int (*cmpfunc)(const void *, const void *);
 
-void init_rompath(void);
 
 char *bin2hex(char *, const unsigned char *, unsigned int);
-int ensure_dir(const char *, int);
-char *findfile(const char *, filetype_t);
 int hex2bin(unsigned char *, const char *, unsigned int);
-char *make_file_name(filetype_t, int, const char *);
 const char *mybasename(const char *);
 int psort(void **, int, int, int (*)(const void *, const void *));
 

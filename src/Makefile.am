@@ -24,6 +24,8 @@ libckmame_a_SOURCES= \
 	check_disks.c \
 	check_files.c \
 	check_old.c \
+	check_util.c \
+	cleanup.c \
 	dat_entry.c \
 	dat_entry_finalize.c \
 	dat_push.c \
@@ -44,6 +46,7 @@ libckmame_a_SOURCES= \
 	filetype_db_key.c \
 	find.c \
 	fix.c \
+	fix_util.c \
 	game.c \
 	game_add_clone.c \
 	hash_from_string.c \
@@ -81,13 +84,13 @@ libckmame_a_SOURCES= \
 	superfluous.c \
 	tree.c \
 	util.c \
-	util2.c \
 	w_file_by_hash_parray.c \
 	w_dat.c \
 	w_game.c \
 	w_list.c \
 	w_util.c \
-	xmalloc.c
+	xmalloc.c \
+	zip_util.c
 
 noinst_HEADERS=\
 	archive.h \

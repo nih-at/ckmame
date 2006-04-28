@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.7 2006/04/17 11:31:11 dillo Exp $
+  $NiH: find.c,v 1.8 2006/04/24 11:38:38 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -26,10 +26,10 @@
 #include "dbh.h"
 #include "file_location.h"
 #include "find.h"
+#include "funcs.h"
 #include "game.h"
 #include "globals.h"
 #include "hashes.h"
-#include "util.h"
 #include "xmalloc.h"
 
 static find_result_t check_for_file_in_zip(const char *, const rom_t *,
