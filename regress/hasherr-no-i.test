@@ -1,0 +1,7 @@
+# $NiH$
+description check single-rom game (no parent), zip is wrong, no integrity check
+return 0
+args -FKLvc deadbeef
+file roms/deadbeef.zip deadfish.zip deadfish.zip
+stdout In game deadbeef:
+stdout game deadbeef                                : correct

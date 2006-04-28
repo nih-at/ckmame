@@ -37,6 +37,8 @@ TESTCASES=	archive-broken.test \
 		hasherr.test \
 		hasherr2.test \
 		hasherr-c.test \
+		hasherr-extra.test \
+		hasherr-no-i.test \
 		hasherr-p.test \
 		hasherr-pc.test \
 		mid.test \

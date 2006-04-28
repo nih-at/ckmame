@@ -1,9 +1,9 @@
 tests:
 * whether ckmame can be run (incomplete runtime library path)
 * broken zip in superfluous / extra dir (ignore)
+* broken file in zip in superfluous / extra dir (ignore)
 * broken zip in ROM set w/ -i
-* crc correct, sha1 wrong in ROM set w/o -i being accepted
-* crc correct, sha1 wrong in extra, not being used (w/o -i)
+* broken zip in ROM set w/o -i
 * extra cleanup done when all games checked
 * ckmame -T
 * dumpgame

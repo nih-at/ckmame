@@ -1,0 +1,7 @@
+# $NiH$
+description check single-rom game (no parent), extra has wrong
+return 0
+args -FKLvc -e extra deadbeef
+file extra/deadbeef.zip deadfish.zip deadfish.zip
+stdout In game deadbeef:
+stdout game deadbeef                                : not a single rom found
