@@ -1,0 +1,11 @@
+# $NiH$
+description test cleanup of superfluous files
+return 0
+args -D mame2.db -FKLv
+file mame2.db mame2.db mkmamedb-lost-parent.dump
+file roms/clone-8.zip 2-48-ok.zip 2-48-ok.zip
+file-del roms/parent.zip 2-4c-ok.zip
+file-new roms/garbage/parent.zip 1-c-ok.zip
+stdout ./roms/parent.zip: delete unused file `04.rom'
+stdout ./roms/parent.zip: mv unknown file `0c.rom'
+stdout ./roms/parent.zip: remove empty archive

@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.9 2006/04/24 11:38:38 dillo Exp $
+  $NiH: ckmame.c,v 1.10 2006/04/26 21:01:51 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -356,7 +356,8 @@ main(int argc, char **argv)
 		delete_list_execute(needed_delete_list);
 
 	    if (fix_options & FIX_SUPERFLUOUS)
-		cleanup_list(superfluous, superfluous_delete_list);
+		cleanup_list(superfluous, superfluous_delete_list,
+			     CLEANUP_NEEDED|CLEANUP_UNKNOWN);
 	    else if (superfluous_delete_list)
 		delete_list_execute(superfluous_delete_list);
 	}
@@ -364,7 +365,7 @@ main(int argc, char **argv)
 
     if ((fix_options & (FIX_DO|FIX_PRINT))
 	&& (fix_options & FIX_CLEANUP_EXTRA))
-	cleanup_list(extra_list, extra_delete_list);
+	cleanup_list(extra_list, extra_delete_list, 0);
     else if (extra_delete_list)
 	delete_list_execute(extra_delete_list);
 

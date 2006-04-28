@@ -13,12 +13,11 @@ tests:
   * /prog from file
   * broken input
 
-- [cleanup] split up util2.c, move/rename remove_from_superfluous
-- [bug] superfluous cleanup: move unknown/needed
+- [bug] cleanup disks
+- [bug] check for disks in old
 - [bug] duplicate file for multiple identical ROMs in one game
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [doc] dumpgame: document special keys (/list et al)
-- [bug] use ZIP_CHECKCONS only if -i and only for zips in ROMset.
 - [cleanup] no macros that evaluate arguments twice
 - [feature] dumpgame: dump samples
 - [feature] add option to remove files from -e dirs that already are in ROM set

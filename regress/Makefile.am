@@ -79,6 +79,7 @@ TESTCASES=	archive-broken.test \
 		sample-superfluous.test \
 		skipbad.test \
 		superfluous.test \
+		superfluous-cleanup.test \
 		swap.test \
 		tochildfix.test \
 		wrong.test

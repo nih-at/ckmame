@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.13 2006/04/28 18:52:10 dillo Exp $
+  $NiH: funcs.h,v 1.14 2006/04/28 20:01:37 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
@@ -39,11 +39,14 @@
 #define DO_MAP  0x1
 #define DO_LIST	0x2
 
+#define CLEANUP_NEEDED	0x1
+#define CLEANUP_UNKNOWN	0x2
+
 void check_archive(archive_t *, const char *, result_t *);
 void check_disks(game_t *, result_t *);
 void check_files(game_t *, archive_t *[], result_t *);
 void check_old(game_t *, result_t *);
-void cleanup_list(parray_t *, delete_list_t *);
+void cleanup_list(parray_t *, delete_list_t *, int);
 void diagnostics(const game_t *, const archive_t *, const result_t *);
 int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
