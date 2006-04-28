@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.11 2006/04/28 20:25:45 dillo Exp $
+  $NiH: ckmame.c,v 1.12 2006/04/28 20:58:46 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -59,36 +59,37 @@ typedef enum action action_t;
 
 char *prg;
 
-char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-O dbfile] [-e dir] [game...]\n";
+char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-O dbfile] [-e dir] [-T file] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
 char help[] = "\n"
-"  -b, --nobroken       don't report unfixable errors\n"
-"      --cleanup-extra  clean up extra dirs (delete superfluous files)\n"
-"  -c, --correct        report correct sets\n"
-"  -D, --db dbfile      use mame-db dbfile\n"
-"  -d, --nonogooddumps  don't report roms with no good dumps\n"
-"  -e, --search dir     search for missing files in directory dir\n"
-"  -F, --fix            fix rom sets\n"
-"  -f, --nofixable      don't report fixable errors\n"
-"  -h, --help           display this help message\n"
-"  -i, --integrity      check integrity of rom files and disk images\n"
-"      --keep-found     keep files copied from search directories (default)\n"
-"  -j, --delete-found   delete files copied from search directories\n"
-"  -K, --keep-unknown   keep unknown files when fixing (default)\n"
-"  -k, --delete-unknown don't keep unknown files when fixing\n"
-"  -L, --keep-long      keep long files when fixing (default)\n"
-"  -l, --delete-long    don't keep long files when fixing\n"
-"  -n, --dryrun         don't actually fix, only report what would be done\n"
-"  -O, --old-db dbfile  use mame-db dbfile for old roms\n"
-"  -S, --samples        check samples instead of roms\n"
-"      --superfuous     only check for superfluous files in rom sets\n"
-"  -s, --nosuperfluous  don't report superfluous files in rom sets\n"
-"  -V, --version        display version number\n"
-"  -v, --verbose        print fixes made\n"
-"  -w, --nowarnings     print only unfixable errors\n"
-"  -X, --ignoreextra    ignore extra files in rom/samples dirs\n"
+"  -b, --nobroken        don't report unfixable errors\n"
+"      --cleanup-extra   clean up extra dirs (delete superfluous files)\n"
+"  -c, --correct         report correct sets\n"
+"  -D, --db dbfile       use mame-db dbfile\n"
+"  -d, --nonogooddumps   don't report roms with no good dumps\n"
+"  -e, --search dir      search for missing files in directory dir\n"
+"  -F, --fix             fix rom sets\n"
+"  -f, --nofixable       don't report fixable errors\n"
+"  -h, --help            display this help message\n"
+"  -i, --integrity       check integrity of rom files and disk images\n"
+"      --keep-found      keep files copied from search directories (default)\n"
+"  -j, --delete-found    delete files copied from search directories\n"
+"  -K, --keep-unknown    keep unknown files when fixing (default)\n"
+"  -k, --delete-unknown  don't keep unknown files when fixing\n"
+"  -L, --keep-long       keep long files when fixing (default)\n"
+"  -l, --delete-long     don't keep long files when fixing\n"
+"  -n, --dryrun          don't actually fix, only report what would be done\n"
+"  -O, --old-db dbfile   use mame-db dbfile for old roms\n"
+"  -S, --samples         check samples instead of roms\n"
+"      --superfuous      only check for superfluous files in rom sets\n"
+"  -s, --nosuperfluous   don't report superfluous files in rom sets\n"
+"  -T, --games-from file read games to check from file\n"
+"  -V, --version         display version number\n"
+"  -v, --verbose         print fixes made\n"
+"  -w, --nowarnings      print only unfixable errors\n"
+"  -X, --ignoreextra     ignore extra files in rom/samples dirs\n"
 "\nReport bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
@@ -98,7 +99,7 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
 "For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "bcD:de:FfhijKkLlnO:SsxVvwX"
+#define OPTIONS "bcD:de:FfhijKkLlnO:SsT:xVvwX"
 
 enum {
     OPT_CLEANUP_EXTRA = 256,
@@ -118,6 +119,7 @@ struct option options[] = {
     { "delete-unknown",0, 0, 'k' },
     { "dryrun",        0, 0, 'n' },
     { "fix",           0, 0, 'F' },
+    { "games-from",    1, 0, 'T' },
     { "ignoreextra",   0, 0, 'X' },
     { "integrity",     0, 0, 'i' },
     { "keep-found",    0, 0, OPT_KEEP_FOUND },
@@ -164,6 +166,7 @@ main(int argc, char **argv)
     int c, found;
     parray_t *list;
     tree_t *tree;
+    char *game_list;
     
     prg = argv[0];
     output_options = WARN_ALL;
@@ -179,6 +182,7 @@ main(int argc, char **argv)
     ignore_extra = 0;
     check_integrity = 0;
     search_dirs = parray_new();
+    game_list = NULL;
     
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -244,6 +248,8 @@ main(int argc, char **argv)
 	case 's':
 	    output_options &= ~WARN_SUPERFLUOUS;
 	    break;
+	case 'T':
+	    game_list = optarg;
 	case 'v':
 	    fix_options |= FIX_PRINT;
 	    break;
@@ -274,14 +280,12 @@ main(int argc, char **argv)
 	}
     }
     
-    if ((db=dbh_open(dbname, DBL_READ)) == NULL) {
-	myerror(ERRDB, "can't open database `%s'", dbname);
-	exit(1);
-    }
-    /* XXX: check for errors other than ENOENT */
-    old_db = dbh_open(olddbname, DBL_READ);
-
     if (optind != argc) {
+	if (action != ACTION_UNSPECIFIED)
+	    error_multiple_actions();
+	action = ACTION_CHECK_ROMSET;
+    }
+    else if (game_list) {
 	if (action != ACTION_UNSPECIFIED)
 	    error_multiple_actions();
 	action = ACTION_CHECK_ROMSET;
@@ -292,6 +296,13 @@ main(int argc, char **argv)
 	if (fix_options & FIX_DELETE_EXTRA)
 	    fix_options |= FIX_CLEANUP_EXTRA;
     }
+
+    if ((db=dbh_open(dbname, DBL_READ)) == NULL) {
+	myerror(ERRDB, "can't open database `%s'", dbname);
+	exit(1);
+    }
+    /* XXX: check for errors other than ENOENT */
+    old_db = dbh_open(olddbname, DBL_READ);
 
     if (action == ACTION_CHECK_ROMSET) {
 	/* build tree of games to check */
@@ -304,7 +315,31 @@ main(int argc, char **argv)
 
 	tree = tree_new();
 
-	if (optind == argc) {
+	if (game_list) {
+	    FILE *f;
+	    char b[8192];
+
+	    seterrinfo(game_list, NULL);
+	    
+	    if ((f=fopen(game_list, "r")) == NULL) {
+		myerror(ERRZIPSTR, "cannot open game list");
+		exit(1);
+	    }
+
+	    while (fgets(b, sizeof(b), f)) {
+		if (b[strlen(b)-1] == '\n')
+		    b[strlen(b)-1] = '\0';
+		else {
+		    myerror(ERRZIP, "overly long line ignored");
+		    continue;
+		}
+		    
+		tree_add(tree, b);
+	    }
+
+	    fclose(f);
+	}
+	else if (optind == argc) {
 	    for (i=0; i<parray_length(list); i++)
 		tree_add(tree, parray_get(list, i));
 	}
