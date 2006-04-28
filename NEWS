@@ -1,6 +1,7 @@
 0.8
 
 - clean up superfluous files and extra directories
+- use additional DB listing files that exist elsewhere
 - read games to check from file
 - create DB from multiple dat files
 - omit games matching shell glob patterns from database
