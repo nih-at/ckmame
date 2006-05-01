@@ -1,5 +1,5 @@
 /*
-  $NiH: fix_util.c,v 1.1 2006/04/28 18:52:10 dillo Exp $
+  $NiH: fix_util.c,v 1.2 2006/04/28 20:01:37 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -191,9 +191,6 @@ rename_or_move(const char *old, const char *new)
 
 
 
-
-
-
 void
 remove_empty_archive(const char *name)
 {
@@ -204,6 +201,21 @@ remove_empty_archive(const char *name)
     if (superfluous) {
 	idx = parray_index(superfluous, name, strcmp);
 	/* "needed" zip archives are not in list */
+	if (idx >= 0)
+	    parray_delete(superfluous, idx, free);
+    }
+}
+
+
+
+void
+remove_from_superfluous(const char *name)
+{
+    int idx;
+
+    if (superfluous) {
+	idx = parray_index(superfluous, name, strcmp);
+	/* "needed" images are not in list */
 	if (idx >= 0)
 	    parray_delete(superfluous, idx, free);
     }

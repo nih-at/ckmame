@@ -1,9 +1,8 @@
-# $NiH$
+# $NiH: old-partial.test,v 1.1 2006/04/24 11:38:39 dillo Exp $
 description test 2 rom game, zip is correct, one rom is in old
 return 0
-args -FKLivc 2-4a
+args -O ../mame2.db -FKLivc 2-4a
 file roms/2-4a.zip 2-4a-ok.zip 1-a-ok.zip
-file old.db mame2.db mkmamedb-lost-parent.dump
 stdout In game 2-4a:
 stdout rom  04.rom        size       4  crc d87f7e0c: old
 stdout rom  0a.rom        size      10  crc 0b4a4cde: correct

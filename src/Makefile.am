@@ -23,6 +23,7 @@ libckmame_a_SOURCES= \
 	check_archive.c \
 	check_disks.c \
 	check_files.c \
+	check_images.c \
 	check_old.c \
 	check_util.c \
 	cleanup.c \
@@ -56,6 +57,7 @@ libckmame_a_SOURCES= \
 	hashes_set.c \
 	hashes_update.c \
 	hashes_verify.c \
+	images.c \
 	map.c \
 	match.c \
 	match_disk.c \

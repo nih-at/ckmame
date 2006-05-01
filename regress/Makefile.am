@@ -9,6 +9,7 @@ CLEANFILES=${MAME_DB} ${MAME_DB2}
 
 MAME_DB=mame.db
 MAME_DB2=mame2.db
+MAME_DB3=mame3.db
 ZIPCMP=@ZIPCMP@
 
 TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
@@ -18,6 +19,7 @@ TESTCASES=	archive-broken.test \
 		cleanup.test \
 		delete-used-superfluous.test \
 		disk-from-extra-remove.test \
+		disk-from-superfluous-all.test \
 		disk-from-superfluous.test \
 		disk-miss.test \
 		disk-noext.test \
@@ -32,37 +34,38 @@ TESTCASES=	archive-broken.test \
 		double.test \
 		dumpgame-unknown.test \
 		garbage.test \
-		inchild.test \
-		inparent.test \
-		hasherr.test \
-		hasherr2.test \
 		hasherr-c.test \
 		hasherr-extra.test \
 		hasherr-no-i.test \
 		hasherr-p.test \
 		hasherr-pc.test \
+		hasherr.test \
+		hasherr2.test \
+		inchild.test \
+		inparent.test \
 		mid.test \
-		misnamed.test \
 		misnamed-dryrun.test \
+		misnamed.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-multi-dats.test \
 		mkmamedb-ok.test \
 		multi.test \
+		needed-error.test \
 		needed.test \
 		needed2.test \
 		needed3.test \
-		needed-error.test \
-		nogood.test \
 		nogood-miss.test \
+		nogood.test \
 		nonexist.test \
 		norom.test \
-		old-complete.test \
-		old-partial.test \
 		ok.test \
+		old-complete.test \
+		old-disk.test \
+		old-partial.test \
 		punknown.test \
 		punused.test \
-		rom-broken.test \
 		rom-broken-replace.test \
+		rom-broken.test \
 		rom-from-extra-child.test \
 		rom-from-extra-keep.test \
 		rom-from-extra-partial.test \
@@ -71,17 +74,17 @@ TESTCASES=	archive-broken.test \
 		rom-from-needed2.test \
 		rom-from-romset.test \
 		rom-from-romset2.test \
-		rom-from-superfluous.test \
-		rom-from-superfluous-some.test \
 		rom-from-superfluous-dryrun.test \
+		rom-from-superfluous-some.test \
+		rom-from-superfluous.test \
 		rom-many.test \
 		sample-miss.test \
 		sample-ok.test \
 		sample-parent-ok.test \
 		sample-superfluous.test \
 		skipbad.test \
-		superfluous.test \
 		superfluous-cleanup.test \
+		superfluous.test \
 		swap.test \
 		tochildfix.test \
 		wrong.test
@@ -155,6 +158,8 @@ ${MAME_DB}: ../src/mkmamedb ${srcdir}/mamedb.txt
 
 ${MAME_DB2}: ../src/mkmamedb ${srcdir}/mamedb-lost-parent-ok.txt
 	../src/mkmamedb -o ${MAME_DB2} ${srcdir}/mamedb-lost-parent-ok.txt
+${MAME_DB3}: ../src/mkmamedb ${srcdir}/mamedb-disk.txt
+	../src/mkmamedb -o ${MAME_DB3} ${srcdir}/mamedb-disk.txt
 
 update-mkmamedb.dump: ${MAME_DB}
 	./dbdump ${MAME_DB} | sort > mkmamedb-ok.dump

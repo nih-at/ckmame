@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.14 2006/04/28 20:01:37 dillo Exp $
+  $NiH: funcs.h,v 1.15 2006/04/28 20:25:45 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
@@ -42,17 +42,30 @@
 #define CLEANUP_NEEDED	0x1
 #define CLEANUP_UNKNOWN	0x2
 
+enum name_type {
+    NAME_ZIP,
+    NAME_CHD,
+    NAME_NOEXT,
+    NAME_UNKNOWN
+};
+
+typedef enum name_type name_type_t;
+
+
+
 void check_archive(archive_t *, const char *, result_t *);
-void check_disks(game_t *, result_t *);
+void check_disks(game_t *, images_t *, result_t *);
 void check_files(game_t *, archive_t *[], result_t *);
+void check_images(images_t *, const char *, result_t *);
 void check_old(game_t *, result_t *);
 void cleanup_list(parray_t *, delete_list_t *, int);
-void diagnostics(const game_t *, const archive_t *, const result_t *);
+void diagnostics(const game_t *, const archive_t *, const images_t *,
+		 const result_t *);
 int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
 char *findfile(const char *, filetype_t);
-int fix_game(game_t *, archive_t *, result_t *);
+int fix_game(game_t *, archive_t *, images_t *, result_t *);
 parray_t *find_superfluous(const char *);
 void init_rompath(void);
 char *make_file_name(filetype_t, int, const char *);
@@ -63,8 +76,11 @@ char *make_unique_name(const char *, const char *, ...);
 int my_remove(const char *name);
 struct zip *my_zip_open(const char *, int);
 int my_zip_rename(struct zip *, int, const char *);
+name_type_t name_type(const char *);
+int name_is_zip(const char *);
 void print_superfluous(const parray_t *);
 void remove_empty_archive(const char *);
+void remove_from_superfluous(const char *);
 int rename_or_move(const char *, const char *);
 int save_needed(archive_t *, int, int);
 int save_needed_disk(const char *, int);

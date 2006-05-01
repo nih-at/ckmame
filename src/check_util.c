@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.11 2006/04/26 21:01:51 dillo Exp $
+  $NiH: check_util.c,v 1.1 2006/04/28 18:52:10 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -35,10 +35,6 @@
 #define MAXROMPATH 128
 #define DEFAULT_ROMDIR "."
 
-#define NAME_IS_CHD(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".chd") == 0)
-#define NAME_IS_ZIP(n)	(strlen(n) > 4 && strcmp((n)+strlen(n)-4, ".zip") == 0)
-#define NAME_NO_EXT(n)	(strchr(n, '.') == NULL)
-
 
 
 delete_list_t *extra_delete_list = NULL;
@@ -69,6 +65,7 @@ ensure_extra_maps(int flags)
     const char *file;
     archive_t *a;
     disk_t *d;
+    name_type_t nt;
 
     if ((flags & (DO_MAP|DO_LIST)) == 0)
 	return;
@@ -90,17 +87,24 @@ ensure_extra_maps(int flags)
     if (flags & DO_MAP) {
 	for (i=0; i<parray_length(superfluous); i++) {
 	    file = parray_get(superfluous, i);
-	    if (NAME_IS_ZIP(file)) {
+	    switch ((nt=name_type(file))) {
+	    case NAME_ZIP:
 		if ((a=archive_new(file, TYPE_FULL_PATH, 0)) != NULL) {
 		    enter_archive_in_map(extra_file_map, a, ROM_SUPERFLUOUS);
 		    archive_free(a);
 		}
-	    }
-	    else if (NAME_IS_CHD(file) || NAME_NO_EXT(file)) {
-		if ((d=disk_new(file, NAME_NO_EXT(file))) != NULL) {
+		break;
+	    case NAME_CHD:
+	    case NAME_NOEXT:
+		if ((d=disk_new(file, nt==NAME_NOEXT)) != NULL) {
 		    enter_disk_in_map(extra_disk_map, d, ROM_SUPERFLUOUS);
 		    disk_free(d);
 		}
+		break;
+
+	    default:
+		/* ignore unknown files */
+		break;
 	    }
 	}
     }
@@ -232,6 +236,28 @@ make_file_name(filetype_t ft, int idx, const char *name)
 
 
 
+name_type_t
+name_type(const char *name)
+{
+    int l;
+
+    l = strlen(name);
+
+    if (strchr(name, '.') == NULL)
+	return NAME_NOEXT;
+
+    if (l > 4) {
+	if (strcmp(name+l-4, ".chd") == 0)
+	    return NAME_CHD;
+	if (strcmp(name+l-4, ".zip") == 0)
+	    return NAME_ZIP;
+    }
+
+    return NAME_UNKNOWN;
+}
+
+
+
 static void
 enter_archive_in_map(map_t *map, const archive_t *a, where_t where)
 {
@@ -254,6 +280,7 @@ enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
     char b[8192];
     archive_t *a;
     disk_t *d;
+    name_type_t nt;
 
     if ((dir=dir_open(name, flags)) == NULL)
 	return -1;
@@ -263,7 +290,8 @@ enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
 	    /* XXX: handle error */
 	    continue;
 	}
-	if (NAME_IS_ZIP(b)) {
+	switch ((nt=name_type(b))) {
+	case NAME_ZIP:
 	    if ((a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
 		if (zip_map)
 		    enter_archive_in_map(zip_map, a, where);
@@ -271,15 +299,21 @@ enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
 		    parray_push(list, xstrdup(archive_name(a)));
 		archive_free(a);
 	    }
-	}
-	else if (NAME_IS_CHD(b) || NAME_NO_EXT(b)) {
-	    if ((d=disk_new(b, NAME_NO_EXT(b))) != NULL) {
+	    break;
+
+	case NAME_CHD:
+	case NAME_NOEXT:
+	    if ((d=disk_new(b, nt==NAME_NOEXT)) != NULL) {
 		if (disk_map)
 		    enter_disk_in_map(disk_map, d, where);
 		if (list)
 		    parray_push(list, xstrdup(disk_name(d)));
 		disk_free(d);
 	    }
+
+	case NAME_UNKNOWN:
+	    /* ignore unknown files */
+	    break;
 	}
     }
 

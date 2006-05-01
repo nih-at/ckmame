@@ -1,9 +1,7 @@
-# $NiH$
+# $NiH: cleanup.test,v 1.1 2006/04/26 21:01:50 dillo Exp $
 description clean up extra dirs
 return 0
-# XXX: interface is sub-optimal
-args -v --cleanup-extra -e extra
-file old.db mame2.db mkmamedb-lost-parent.dump
+args -O ../mame2.db -v --cleanup-extra -e extra
 file roms/deadbeef.zip deadbeef.zip deadbeef.zip 
 file extra/deadfish4.zip deadfish4.zip deadfish.zip
 file extra/2-4c.zip 2-4c-ok.zip 1-c-ok.zip

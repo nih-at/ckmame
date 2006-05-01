@@ -1,8 +1,7 @@
-# $NiH$
+# $NiH: superfluous-cleanup.test,v 1.1 2006/04/28 20:25:45 dillo Exp $
 description test cleanup of superfluous files
 return 0
-args -D mame2.db -FKLv
-file mame2.db mame2.db mkmamedb-lost-parent.dump
+args -D ../mame2.db -FKLv
 file roms/clone-8.zip 2-48-ok.zip 2-48-ok.zip
 file-del roms/parent.zip 2-4c-ok.zip
 file-new roms/garbage/parent.zip 1-c-ok.zip

@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.6 2006/04/24 11:38:38 dillo Exp $
+  $NiH: check_files.c,v 1.7 2006/04/26 21:01:51 dillo Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -118,7 +118,7 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
 		|| match_quality(m) == QU_HASHERR)
 	    && rom_size(r) > 0 && rom_status(r) != STATUS_NODUMP) {
 	    /* search for matching file in other games (via db) */
-	    if (find_in_romset(db, r, game_name(g), m) == FIND_EXISTS)
+	    if (find_in_romset(r, game_name(g), m) == FIND_EXISTS)
 		continue;
 	    
 	    /* search for matching file in needed */

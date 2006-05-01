@@ -1,9 +1,8 @@
-# $NiH$
+# $NiH: old-complete.test,v 1.1 2006/04/24 11:38:39 dillo Exp $
 description test 2 rom game (no parent), zip is correct, game is in old
 return 0
-args -FKLivc 2-48
+args -O ../mame2.db -FKLivc 2-48
 file-del roms/2-48.zip 2-48-ok.zip
-file old.db mame.db mkmamedb-ok.dump
 stdout In game 2-48:
 stdout game 2-48                                    : old
 stdout file 04.rom        size       4  crc d87f7e0c: duplicate

@@ -1,5 +1,5 @@
 /*
-  $NiH: result.c,v 1.1 2006/04/05 22:39:14 dillo Exp $
+  $NiH: result.c,v 1.2 2006/04/24 11:38:38 dillo Exp $
 
   result.c -- allocate/free result structure
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -38,8 +38,7 @@ result_free(result_t *res)
     match_array_free(res->roms);
     file_status_array_free(res->files);
     match_disk_array_free(res->disks);
-    file_status_array_free(res->disk_files);
-    parray_free(res->disk_names, free);
+    file_status_array_free(res->images);
     free(res);
 }
 
@@ -47,10 +46,9 @@ result_free(result_t *res)
 
 
 result_t *
-result_new(const game_t *g, const archive_t *a)
+result_new(const game_t *g, const archive_t *a, const images_t *im)
 {
     result_t *res;
-    int i;
 
     res = (result_t *)xmalloc(sizeof(*res));
 
@@ -58,23 +56,20 @@ result_new(const game_t *g, const archive_t *a)
     result_roms(res) = NULL;
     result_files(res) = NULL;
     result_disks(res) = NULL;
-    result_disk_files(res) = NULL;
-    result_disk_names(res) = NULL;
+    result_images(res) = NULL;
     
     if (g) {
 	res->roms = match_array_new(game_num_files(g, file_type));
 
-	if (game_num_disks(g) > 0 && file_type == TYPE_ROM) {
+	if (game_num_disks(g) > 0 && file_type == TYPE_ROM)
 	    result_disks(res) = match_disk_array_new(game_num_disks(g));
-	    result_disk_files(res) = file_status_array_new(game_num_disks(g));
-	    result_disk_names(res) = parray_new_sized(game_num_disks(g));
-	    for (i=0; i<game_num_disks(g); i++)
-		parray_push(result_disk_names(res), NULL);
-	}
     }
-
+    
     if (a)
 	result_files(res) = file_status_array_new(archive_num_files(a));
-    
+
+    if (im)
+	result_images(res) = file_status_array_new(images_length(im));
+
     return res;
 }

@@ -34,52 +34,59 @@
 
 
 void
-check_disks(game_t *game, images_t *im, result_t *res)
+check_images(images_t *im, const char *gamename, result_t *res)
 {
-    disk_t *d, *f;
-    match_disk_t *md;
+    disk_t *d;
     int i;
 
-    if (game_num_disks(game) == 0)
+    if (im == NULL)
 	return;
 
-    for (i=0; i<game_num_disks(game); i++) {
-	md = result_disk(res, i);
-	d = game_disk(game, i);
-	f = images_get(im, i);
+    for (i=0; i<images_length(im); i++) {
+	d = images_get(im, i);
 
-	if (match_disk_quality(md) == QU_OLD)
+	if (d == NULL) {
+	    result_image(res, i) = FS_MISSING;
+	    continue;
+	}
+
+	if (disk_status(d) != STATUS_OK) {
+	    result_image(res, i) = FS_BROKEN;
+	    continue;
+	}
+
+	if (result_image(res, i) == FS_USED)
 	    continue;
 
-	if (f) {
-	    match_disk_set_source(md, f);
-	    
-	    switch (hashes_cmp(disk_hashes(d), disk_hashes(f))) {
-	    case HASHES_CMP_NOCOMMON:
-		match_disk_quality(md) = QU_NOHASH;
-		result_image(res, i) = FS_USED;
-		break;
-	    case HASHES_CMP_MATCH:
-		match_disk_quality(md) = QU_OK;
-		result_image(res, i) = FS_USED;
-		break;
-	    case HASHES_CMP_MISMATCH:
-		match_disk_quality(md) = QU_HASHERR;
-		break;
-	    }
+	if ((hashes_types(disk_hashes(d)) & diskhashtypes) != diskhashtypes) {
+	    /* XXX: compute missing hashes */
 	}
 
-	if (match_disk_quality(md) != QU_OK
-	    && match_disk_quality(md) != QU_OLD) {
-	    /* search in needed */
-	    ensure_needed_maps();
-	    if (find_disk(needed_disk_map, d, md) == FIND_EXISTS)
-		continue;
-	    
-	    /* search in superfluous and extra dirs */
-	    ensure_extra_maps(DO_MAP);
-	    if (find_disk(extra_disk_map, d, md) == FIND_EXISTS)
-		continue;
+	if (find_disk_in_old(d, NULL) == FIND_EXISTS) {
+	    result_image(res, i) = FS_DUPLICATE;
+	    continue;
 	}
+
+	switch (find_disk_in_romset(d, gamename, NULL)) {
+	case FIND_UNKNOWN:
+	    break;
+
+	case FIND_EXISTS:
+	    result_image(res, i) = FS_SUPERFLUOUS;
+	    break;
+
+	case FIND_MISSING:
+	    ensure_needed_maps();
+	    if (find_disk(needed_disk_map, d, NULL) != FIND_EXISTS)
+		result_image(res, i) = FS_NEEDED;
+	    else
+		result_image(res, i) = FS_SUPERFLUOUS;
+	    break;
+
+	case FIND_ERROR:
+	    /* XXX: how to handle? */
+	    break;
+	}
+	
     }
 }

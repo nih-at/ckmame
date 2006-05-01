@@ -2,7 +2,7 @@
 #define HAD_MATCH_DISK_H
 
 /*
-  $NiH: match_disk.h,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: match_disk.h,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   match_disk.h -- matching files with disks
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -58,5 +58,6 @@ typedef array_t match_disk_array_t;
 
 void match_disk_finalize(match_disk_t *);
 void match_disk_init(match_disk_t *);
+void match_disk_set_source(match_disk_t *, const disk_t *);
 
 #endif /* match_disk.h */

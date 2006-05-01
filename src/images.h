@@ -1,8 +1,11 @@
-/*
-  $NiH: match_disk.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
+#ifndef _HAD_IMAGES_H
+#define _HAD_IMAGES_H
 
-  match_disk.c -- information about matches of files to disks
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+/*
+  $NiH$
+
+  images.h -- array of disk images
+  Copyright (C) 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -23,36 +26,20 @@
 
 
 
-#include <stdlib.h>
-
+#include "disk.h"
 #include "game.h"
-#include "match_disk.h"
-#include "xmalloc.h"
+#include "parray.h"
+
+typedef parray_t images_t;
+
+#define images_free(im)		(parray_free((im), disk_free))
+#define images_get(im, i)	((disk_t *)parray_get((im), (i)))
+#define images_length(im)	(parray_length(im))
 
 
 
-void
-match_disk_finalize(match_disk_t *md)
-{
-    free(md->name);
-}
+const char *images_name(const images_t *, int);
+images_t *images_new(const game_t *);
+images_t *images_new_name(const char  *, int);
 
-
-
-void
-match_disk_init(match_disk_t *md)
-{
-    match_disk_name(md) = NULL;
-    hashes_init(match_disk_hashes(md));
-    match_disk_quality(md) = QU_MISSING;
-}
-
-
-
-void
-match_disk_set_source(match_disk_t *md, const disk_t *d)
-{
-    free(match_disk_name(md));
-    match_disk_name(md) = xstrdup(disk_name(d));
-    hashes_copy(match_disk_hashes(md), disk_hashes(d));
-}
+#endif /* images.h */

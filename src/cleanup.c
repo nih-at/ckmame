@@ -1,5 +1,5 @@
 /*
-  $NiH: cleanup.c,v 1.2 2006/04/28 20:01:37 dillo Exp $
+  $NiH: cleanup.c,v 1.3 2006/04/28 20:25:45 dillo Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -27,19 +27,21 @@
 #include "garbage.h"
 #include "globals.h"
 
+static void cleanup_archive(archive_t *, result_t *, int);
+static void cleanup_disk(images_t *, result_t *, int);
+
 
 
 void
 cleanup_list(parray_t *list, delete_list_t *del, int flags)
 {
     archive_t *a;
+    images_t *im;
     result_t *res;
     char *name;
-    int i, j, di, len, cmp, keep;
+    int i, di, len, cmp;
     file_location_t *fl;
-    char *reason;
-    int survivors;
-    garbage_t *gb;
+    name_type_t nt;
 
     di = len = 0;
     if (del) {
@@ -49,119 +51,172 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 
     for (i=0; i<parray_length(list); i++) {
 	name = (char *)parray_get(list, i);
-	if ((a=archive_new(name, TYPE_FULL_PATH, 0)) == NULL) {
-	    /* XXX */
-	    continue;
+	switch ((nt=name_type(name))) {
+	case NAME_ZIP:
+	    if ((a=archive_new(name, TYPE_FULL_PATH, 0)) == NULL) {
+		/* XXX */
+		continue;
+	    }
+	    res = result_new(NULL, a, NULL);
+
+	    while (di < len) {
+		fl = delete_list_get(del, di++);
+		cmp = strcmp(name, file_location_name(fl));
+		
+		if (cmp == 0)
+		    result_file(res, file_location_index(fl)) = FS_USED;
+		else if (cmp < 0)
+		    break;
+	    }
+
+	    cleanup_archive(a, res, flags);
+
+	    result_free(res);
+	    archive_close_zip(a);
+	    archive_free(a);
+
+	    break;
+
+	case NAME_CHD:
+	case NAME_NOEXT:
+	    if ((im=images_new_name(name, nt==NAME_NOEXT)) == NULL) {
+		/* XXX */
+		continue;
+	    }
+
+	    res = result_new(NULL, NULL, im);
+
+	    while (di < len) {
+		fl = delete_list_get(del, di++);
+		cmp = strcmp(name, file_location_name(fl));
+		
+		if (cmp == 0)
+		    result_image(res, i) = FS_USED;
+		else if (cmp < 0)
+		    break;
+	    }
+
+	    cleanup_disk(im, res, flags);
+
+	    result_free(res);
+	    images_free(im);
+
+	case NAME_UNKNOWN:
+	    /* unknown files shouldn't be in list */
+	    break;
 	}
-	res = result_new(NULL, a);
-	if (flags & CLEANUP_UNKNOWN && fix_options & FIX_DO)
-	    gb = garbage_new(a);
+    }
+}
 
-	while (di < len) {
-	    fl = delete_list_get(del, di++);
-	    cmp = strcmp(name, file_location_name(fl));
+
 
-	    if (cmp == 0)
-		result_file(res, file_location_index(fl)) = FS_USED;
-	    else if (cmp < 0)
-		break;
-	}
-
-	check_archive(a, NULL, res);
-
-	archive_ensure_zip(a, 0);
-	survivors = 0;
-
-	for (j=0; j<archive_num_files(a); j++) {
-	    switch (result_file(res, j)) {
+static void
+cleanup_archive(archive_t *a, result_t *res, int flags)
+{
+    garbage_t *gb;
+    int i, keep, survivors;
+    char *reason;
+    
+    if (flags & CLEANUP_UNKNOWN && fix_options & FIX_DO)
+	gb = garbage_new(a);
+	    
+    check_archive(a, NULL, res);
+	    
+    archive_ensure_zip(a, 0);
+    survivors = 0;
+	    
+    for (i=0; i<archive_num_files(a); i++) {
+	switch (result_file(res, i)) {
+	case FS_SUPERFLUOUS:
+	case FS_DUPLICATE:
+	case FS_USED:
+	    switch (result_file(res, i)) {
 	    case FS_SUPERFLUOUS:
+		reason = "unused";
+		break;
 	    case FS_DUPLICATE:
+		reason = "duplicate";
+		break;
 	    case FS_USED:
-		switch (result_file(res, j)) {
-		case FS_SUPERFLUOUS:
-		    reason = "unused";
-		    break;
-		case FS_DUPLICATE:
-		    reason = "duplicate";
-		    break;
-		case FS_USED:
-		    reason = "used";
-		    break;
-		default:
-		    reason = "[internal error]";
-		    break;
-		}
-		
+		reason = "used";
+		break;
+	    default:
+		reason = "[internal error]";
+		break;
+	    }
+	    
+	    if (fix_options & FIX_PRINT)
+		printf("%s: delete %s file `%s'\n",
+		       archive_name(a), reason,
+		       rom_name(archive_file(a, i)));
+	    if (fix_options & FIX_DO)
+		zip_delete(archive_zip(a), i);
+	    break;
+	    
+	case FS_BROKEN:
+	case FS_MISSING:
+	case FS_PARTUSED:
+	    survivors = 1;
+	    break;
+	    
+	case FS_NEEDED:
+	    if (flags & CLEANUP_NEEDED) {
 		if (fix_options & FIX_PRINT)
-		    printf("%s: delete %s file `%s'\n",
-			   archive_name(a), reason,
-			   rom_name(archive_file(a, j)));
-		if (fix_options & FIX_DO)
-		    zip_delete(archive_zip(a), j);
-		break;
-
-	    case FS_BROKEN:
-	    case FS_MISSING:
-	    case FS_PARTUSED:
-		survivors = 1;
-		break;
-
-	    case FS_NEEDED:
-		if (flags & CLEANUP_NEEDED) {
-		    if (fix_options & FIX_PRINT)
-			printf("%s: save needed file `%s'\n",
-			       archive_name(a), rom_name(archive_file(a, j)));
-		    if (fix_options & FIX_DO) {
-			if (save_needed(a, j, 1) != -1)
-			    zip_delete(archive_zip(a), j);
-			else
-			    survivors = 1;
-		    }
+		    printf("%s: save needed file `%s'\n",
+			   archive_name(a), rom_name(archive_file(a, i)));
+		if (fix_options & FIX_DO) {
+		    if (save_needed(a, i, 1) != -1)
+			zip_delete(archive_zip(a), i);
+		    else
+			survivors = 1;
 		}
-		else
-		    survivors = 1;
-		break;
-		
-	    case FS_UNKNOWN:
-		if (flags & CLEANUP_NEEDED) {
-		    keep = fix_options & FIX_KEEP_UNKNOWN;
-		    if (fix_options & FIX_PRINT)
-			printf("%s: %s unknown file `%s'\n",
-			       archive_name(a),
-			       (keep ? "mv" : "delete"),
-			       rom_name(archive_file(a, j)));
-		    if (fix_options & FIX_DO) {
-			if (keep)
-			    keep = (garbage_add(gb, j) == -1);
-			if (keep == 0) {
-			    zip_delete(archive_zip(a), j);
-			}
-			else
-			    survivors = 1;
+	    }
+	    else
+		survivors = 1;
+	    break;
+	    
+	case FS_UNKNOWN:
+	    if (flags & CLEANUP_NEEDED) {
+		keep = fix_options & FIX_KEEP_UNKNOWN;
+		if (fix_options & FIX_PRINT)
+		    printf("%s: %s unknown file `%s'\n",
+			   archive_name(a),
+			   (keep ? "mv" : "delete"),
+			   rom_name(archive_file(a, i)));
+		if (fix_options & FIX_DO) {
+		    if (keep)
+			keep = (garbage_add(gb, i) == -1);
+		    if (keep == 0) {
+			zip_delete(archive_zip(a), i);
 		    }
 		    else
 			survivors = 1;
 		}
 		else
 		    survivors = 1;
-		break;
 	    }
+	    else
+		survivors = 1;
+	    break;
 	}
-
-	if (flags & CLEANUP_UNKNOWN && fix_options & FIX_DO) {
-	    if (garbage_close(gb) < 0) {
-		for (j=0; j<archive_num_files(a); j++) {
-		    if (result_file(res, j) == FS_UNKNOWN)
-			zip_unchange(archive_zip(a), j);
-		}
-	    }
-	}
-
-	archive_close_zip(a);
-	archive_free(a);
-	result_free(res);
-
-	if ((fix_options & FIX_DO) && !survivors)
-	    remove_empty_archive(name);
     }
+    
+    if (flags & CLEANUP_UNKNOWN && fix_options & FIX_DO) {
+	if (garbage_close(gb) < 0) {
+	    for (i=0; i<archive_num_files(a); i++) {
+		if (result_file(res, i) == FS_UNKNOWN)
+		    zip_unchange(archive_zip(a), i);
+	    }
+	}
+    }
+
+    if ((fix_options & FIX_DO) && !survivors)
+	remove_empty_archive(archive_name(a));
+}
+
+
+
+static void
+cleanup_disk(images_t *im, result_t *res, int flags)
+{
 }

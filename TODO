@@ -14,7 +14,6 @@ tests:
   * broken input
 
 - [bug] cleanup disks
-- [bug] check for disks in old
 - [bug] duplicate file for multiple identical ROMs in one game
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [doc] dumpgame: document special keys (/list et al)

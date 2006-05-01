@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.18 2006/04/26 21:01:51 dillo Exp $
+  $NiH: fix.c,v 1.19 2006/04/28 20:01:37 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -48,14 +48,14 @@
 #define MARK_DELETED(x, i)	(*(int *)array_get((x), (i)) = 1)
 #define IS_DELETED(x, i)	(*(int *)array_get((x), (i)) == 1)
 
-static int fix_disks(game_t *, result_t *res);
+static int fix_disks(game_t *, images_t *, result_t *res);
 static int fix_files(game_t *, archive_t *, result_t *);
 static void set_zero(int *);
 
 
 
 int
-fix_game(game_t *g, archive_t *a, result_t *res)
+fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 {
     int i, islong, keep, archive_changed;
     array_t *deleted;
@@ -182,7 +182,7 @@ fix_game(game_t *g, archive_t *a, result_t *res)
 	    delete_list_rollback(superfluous_delete_list);
     }
 
-    fix_disks(g, res);
+    fix_disks(g, im, res);
 
     return archive_changed;
 }
@@ -190,18 +190,19 @@ fix_game(game_t *g, archive_t *a, result_t *res)
 
 
 static int
-fix_disks(game_t *g, result_t *res)
+fix_disks(game_t *g, images_t *im, result_t *res)
 {
     int i;
     disk_t *d;
     match_disk_t *md;
-    char *name, *to_name;
+    const char *name;
+    char *fname, *to_name;
     
     for (i=0; i<game_num_disks(g); i++) {
 	d = game_disk(g, i);
-	name = result_disk_name(res, i);
+	name = images_name(im, i);
 	
-	switch (result_disk_file(res, i)) {
+	switch (result_image(res, i)) {
 	case FS_UNKNOWN:
 	case FS_BROKEN:
 	    if (fix_options & FIX_PRINT)
@@ -220,11 +221,16 @@ fix_disks(game_t *g, result_t *res)
 	    }
 	    break;
 
+	case FS_DUPLICATE:
 	case FS_SUPERFLUOUS:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete unused image\n", name);
+		printf("%s: delete %s image\n",
+		       name,
+		       (result_image(res, i) == FS_SUPERFLUOUS
+			? "unused" : "duplicate"));
 	    if (fix_options & FIX_DO)
 		my_remove(name);
+	    remove_from_superfluous(name);
 	    break;
 
 	case FS_NEEDED:
@@ -236,9 +242,6 @@ fix_disks(game_t *g, result_t *res)
 	case FS_MISSING:
 	case FS_USED:
 	case FS_PARTUSED:
-	    break;
-	case FS_DUPLICATE:
-	    /* XXX */
 	    break;
 	}
     }
@@ -253,15 +256,16 @@ fix_disks(game_t *g, result_t *res)
 		/* XXX: move to garbage */
 	    }
 	    else
-		name = make_file_name(TYPE_DISK, 0, disk_name(d));
+		fname = make_file_name(TYPE_DISK, 0, disk_name(d));
 	    
 	    if (fix_options & FIX_PRINT)
 		printf("rename `%s' to `%s'\n",
-		       match_disk_name(md), name);
+		       match_disk_name(md), fname);
 	    if (fix_options & FIX_DO)
-		rename_or_move(match_disk_name(md), name);
+		rename_or_move(match_disk_name(md), fname);
+	    remove_from_superfluous(match_disk_name(md));
 	    
-	    free(name);
+	    free(fname);
 	    break;
 
 	case QU_HASHERR:

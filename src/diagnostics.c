@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.6 2006/04/05 22:36:03 dillo Exp $
+  $NiH: diagnostics.c,v 1.7 2006/04/24 11:38:38 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -50,6 +50,7 @@ static int gnamedone;
 static void diagnostics_archive(const archive_t *, const result_t *);
 static void diagnostics_disks(const game_t *, const result_t *);
 static void diagnostics_files(const game_t *, const result_t *);
+static void diagnostics_images(const images_t *, const result_t *);
 static void warn_disk(const disk_t *, const char *, ...);
 static void warn_ensure_game(void);
 static void warn_file(const rom_t *, const char *, ...);
@@ -60,13 +61,15 @@ static void warn_rom(const rom_t *, const char *, ...);
 
 
 void
-diagnostics(const game_t *game, const archive_t *a, const result_t *res)
+diagnostics(const game_t *game, const archive_t *a, const images_t *im,
+	    const result_t *res)
 {
     warn_game(game_name(game));
 
     diagnostics_files(game, res);
     diagnostics_archive(a, res);
     diagnostics_disks(game, res);
+    diagnostics_images(im, res);
 }
     
 
@@ -164,6 +167,11 @@ diagnostics_disks(const game_t *game, const result_t *res)
 			  disk_status(d) == STATUS_OK ? "correct" : "exists");
 	    break;
 
+	case QU_OLD:
+	    if (output_options & WARN_CORRECT)
+		warn_disk(d, "old");
+	    break;
+
 	case QU_COPIED:
 	    if (output_options & WARN_ELSEWHERE)
 		warn_disk(d, "is at `%s'", match_disk_name(md));
@@ -176,36 +184,6 @@ diagnostics_disks(const game_t *game, const result_t *res)
 	    break;
 		
 	default:
-	    break;
-	}
-    }
-    
-    for (i=0; i<game_num_disks(game); i++) {
-	switch (result_disk_file(res, i)) {
-	case FS_UNKNOWN:
-	    if (output_options & WARN_UNKNOWN)
-		warn_image(result_disk_name(res, i), "unknown");
-	    break;
-	case FS_BROKEN:
-	    if (output_options & WARN_FILE_BROKEN)
-		warn_image(result_disk_name(res, i), "broken");
-	    break;
-	case FS_SUPERFLUOUS:
-	    if (output_options & WARN_SUPERFLUOUS)
-		warn_image(result_disk_name(res, i), "not used");
-	    break;
-	case FS_DUPLICATE:
-	    if (output_options & WARN_SUPERFLUOUS)
-		warn_image(result_disk_name(res, i), "duplicate");
-	    break;
-	case FS_NEEDED:
-	    if (output_options & WARN_USED)
-		warn_image(result_disk_name(res, i), "needed elsewhere");
-	    break;
-
-	case FS_MISSING:
-	case FS_PARTUSED:
-	case FS_USED:
 	    break;
 	}
     }
@@ -313,6 +291,47 @@ diagnostics_files(const game_t *game, const result_t *res)
 	    }
 	}
 	break;
+    }
+}
+
+
+
+static void
+diagnostics_images(const images_t *im, const result_t *res)
+{
+    int i;
+
+    if (im == NULL)
+	return;
+
+    for (i=0; i<images_length(im); i++) {
+	switch (result_image(res, i)) {
+	case FS_UNKNOWN:
+	    if (output_options & WARN_UNKNOWN)
+		warn_image(images_name(im, i), "unknown");
+	    break;
+	case FS_BROKEN:
+	    if (output_options & WARN_FILE_BROKEN)
+		warn_image(images_name(im, i), "broken");
+	    break;
+	case FS_SUPERFLUOUS:
+	    if (output_options & WARN_SUPERFLUOUS)
+		warn_image(images_name(im, i), "not used");
+	    break;
+	case FS_DUPLICATE:
+	    if (output_options & WARN_SUPERFLUOUS)
+		warn_image(images_name(im, i), "duplicate");
+	    break;
+	case FS_NEEDED:
+	    if (output_options & WARN_USED)
+		warn_image(images_name(im, i), "needed elsewhere");
+	    break;
+
+	case FS_MISSING:
+	case FS_PARTUSED:
+	case FS_USED:
+	    break;
+	}
     }
 }
 

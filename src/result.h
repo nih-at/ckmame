@@ -2,7 +2,7 @@
 #define HAD_RESULT_H
 
 /*
-  $NiH: result.h,v 1.1 2006/04/05 22:39:14 dillo Exp $
+  $NiH: result.h,v 1.2 2006/04/24 11:38:38 dillo Exp $
 
   result.h -- result of game check
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -32,6 +32,7 @@
 
 #include "file_status.h"
 #include "game.h"
+#include "images.h"
 #include "match.h"
 #include "match_disk.h"
 #include "parray.h"
@@ -42,8 +43,7 @@ struct result {
     file_status_array_t *files;
 
     match_disk_array_t *disks;
-    file_status_array_t *disk_files;
-    parray_t *disk_names;
+    file_status_array_t *images;
 };
 
 typedef struct result result_t;
@@ -51,15 +51,12 @@ typedef struct result result_t;
 
 #define result_disk(res, i)	(match_disk_array_get(result_disks(res), (i)))
 #define result_disks(res)	((res)->disks)
-#define result_disk_file(res, i)	\
-	(file_status_array_get(result_disk_files(res), (i)))
-#define result_disk_files(res)	((res)->disk_files)
-#define result_disk_name(res, i)	\
-	(parray_get(result_disk_names(res), (i)))
-#define result_disk_names(res)	((res)->disk_names)
 #define result_file(res, i)	(file_status_array_get(result_files(res), (i)))
 #define result_files(res)	((res)->files)
 #define result_game(res) 	((res)->game)
+#define result_image(res, i)	\
+	(file_status_array_get(result_images(res), (i)))
+#define result_images(res)	((res)->images)
 #define result_num_disks(res)					\
 	(result_disks(res)					\
 	 ? match_disk_array_length(result_disks(res)) : 0)
@@ -74,6 +71,6 @@ typedef struct result result_t;
 
 
 void result_free(result_t *);
-result_t *result_new(const game_t *, const archive_t *);
+result_t *result_new(const game_t *, const archive_t *, const images_t *);
 
 #endif /* result.h */

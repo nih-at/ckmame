@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.5 2006/04/05 22:36:03 dillo Exp $
+  $NiH: check_old.c,v 1.1 2006/04/24 11:38:38 dillo Exp $
 
   check_old.c -- search ROMs in old db
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -40,11 +40,14 @@ check_old(game_t *g, result_t *res)
 
     all_old = 1;
     for (i=0; i<game_num_files(g, file_type); i++) {
-	if (find_in_old(old_db, game_file(g, file_type, i),
-			result_rom(res, i)) != FIND_EXISTS)
+	if (find_in_old(game_file(g, file_type, i), result_rom(res, i))
+	    != FIND_EXISTS)
 	    all_old = 0;
     }
 
     if (all_old)
 	result_game(res) = GS_OLD;
+
+    for (i=0; i<game_num_disks(g); i++)
+	find_disk_in_old(game_disk(g, i), result_disk(res, i));
 }
