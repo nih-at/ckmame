@@ -1,5 +1,5 @@
 /*
-  $NiH: cleanup.c,v 1.3 2006/04/28 20:25:45 dillo Exp $
+  $NiH: cleanup.c,v 1.4 2006/05/01 21:09:11 dillo Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -176,7 +176,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 	    break;
 	    
 	case FS_UNKNOWN:
-	    if (flags & CLEANUP_NEEDED) {
+	    if (flags & CLEANUP_UNKNOWN) {
 		keep = fix_options & FIX_KEEP_UNKNOWN;
 		if (fix_options & FIX_PRINT)
 		    printf("%s: %s unknown file `%s'\n",
@@ -219,4 +219,73 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 static void
 cleanup_disk(images_t *im, result_t *res, int flags)
 {
+    int i, keep, ret;
+    const char *name, *reason;
+    
+    check_images(im, NULL, res);
+	    
+    for (i=0; i<images_length(im); i++) {
+	if ((name=images_name(im, i)) == NULL)
+	    continue;
+
+	switch (result_image(res, i)) {
+	case FS_SUPERFLUOUS:
+	case FS_DUPLICATE:
+	case FS_USED:
+	    switch (result_image(res, i)) {
+	    case FS_SUPERFLUOUS:
+		reason = "unused";
+		break;
+	    case FS_DUPLICATE:
+		reason = "duplicate";
+		break;
+	    case FS_USED:
+		reason = "used";
+		break;
+	    default:
+		reason = "[internal error]";
+		break;
+	    }
+	    
+	    if (fix_options & FIX_PRINT)
+		printf("%s: delete %s image\n", name, reason);
+	    if (fix_options & FIX_DO) {
+		if (my_remove(name) == 0)
+		    remove_from_superfluous(name);
+	    }		
+	    break;
+	    
+	case FS_BROKEN:
+	case FS_MISSING:
+	case FS_PARTUSED:
+	    break;
+	    
+	case FS_NEEDED:
+	    if (flags & CLEANUP_NEEDED) {
+		if (fix_options & FIX_PRINT)
+		    printf("%s: save needed image\n", name);
+		save_needed_disk(name, (fix_options & FIX_DO));
+		if (fix_options & FIX_DO)
+		    remove_from_superfluous(name);
+	    }
+	    break;
+	    
+	case FS_UNKNOWN:
+	    if (flags & CLEANUP_UNKNOWN) {
+		keep = fix_options & FIX_KEEP_UNKNOWN;
+		if (fix_options & FIX_PRINT)
+		    printf("%s: %s unknown image\n",
+			   name, (keep ? "mv" : "delete"));
+		if (fix_options & FIX_DO) {
+		    if (keep)
+			ret = move_image_to_garbage(name);
+		    else
+			ret = my_remove(name);
+		    if (ret == 0)
+			remove_from_superfluous(name);
+		}
+	    }
+	    break;
+	}
+    }
 }

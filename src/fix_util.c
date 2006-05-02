@@ -1,5 +1,5 @@
 /*
-  $NiH: fix_util.c,v 1.2 2006/04/28 20:01:37 dillo Exp $
+  $NiH: fix_util.c,v 1.3 2006/05/01 21:09:11 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -158,6 +158,22 @@ make_needed_name_disk(const disk_t *d)
     hash_to_string(md5, HASHES_TYPE_MD5, rom_hashes(d));
 
     return make_unique_name("chd", "%s/%s", needed_dir, md5);
+}
+
+
+
+int
+move_image_to_garbage(const char *fname)
+{
+    char *to_name;
+    int ret;
+
+    to_name = make_garbage_name(fname);
+    ensure_dir(to_name, 1);
+    ret = rename_or_move(fname, to_name);
+    free(to_name);
+
+    return ret;
 }
 
 

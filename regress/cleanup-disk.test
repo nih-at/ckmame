@@ -1,0 +1,10 @@
+# $NiH: cleanup.test,v 1.2 2006/05/01 21:09:10 dillo Exp $
+description clean up disk images from extra dirs
+return 0
+args -O ../mame3.db -v --cleanup-extra -e extra
+file roms/108-2.chd 108-2.chd 108-2.chd
+file-del extra/108-5.chd 108-5.chd
+file extra/108-5a.chd 108-5a.chd 108-5a.chd
+file-del extra/108-2.chd 108-2.chd
+stdout extra/108-2.chd: delete unused image
+stdout extra/108-5.chd: delete duplicate image

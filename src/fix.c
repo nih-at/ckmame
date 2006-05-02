@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.19 2006/04/28 20:01:37 dillo Exp $
+  $NiH: fix.c,v 1.20 2006/05/01 21:09:11 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -196,7 +196,7 @@ fix_disks(game_t *g, images_t *im, result_t *res)
     disk_t *d;
     match_disk_t *md;
     const char *name;
-    char *fname, *to_name;
+    char *fname;
     
     for (i=0; i<game_num_disks(g); i++) {
 	d = game_disk(g, i);
@@ -210,12 +210,8 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 		       name,
 		       ((fix_options & FIX_KEEP_UNKNOWN) ? "mv" : "delete"));
 	    if (fix_options & FIX_DO) {
-		if (fix_options & FIX_KEEP_UNKNOWN) {
-		    to_name = make_garbage_name(name);
-		    ensure_dir(to_name, 1);
-		    rename_or_move(name, to_name);
-		    free(to_name);
-		}
+		if (fix_options & FIX_KEEP_UNKNOWN)
+		    move_image_to_garbage(name);
 		else
 		    my_remove(name);
 	    }

@@ -5,11 +5,13 @@ dbdump_LDADD=		../src/libckmame.a @DBLIBS@
 
 EXTRA_DIST=runtest ${TESTCASES} ${ZIPS} ${CHDS} ${DBFILES}
 
-CLEANFILES=${MAME_DB} ${MAME_DB2}
+CLEANFILES=${DBS}
 
 MAME_DB=mame.db
 MAME_DB2=mame2.db
 MAME_DB3=mame3.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3}
+
 ZIPCMP=@ZIPCMP@
 
 TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
@@ -17,6 +19,7 @@ TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
 TESTCASES=	archive-broken.test \
 		baddump.test \
 		cleanup.test \
+		cleanup-disk.test \
 		delete-used-superfluous.test \
 		disk-from-extra-remove.test \
 		disk-from-superfluous-all.test \
@@ -122,13 +125,14 @@ CHDS=		108-2.chd \
 
 DBFILES=	mamedb.txt \
 		mamedb-2.txt \
+		mamedb-disk.txt \
 		mamedb-lost-parent.txt \
 		mamedb-lost-parent-ok.txt \
 		mkmamedb-lost-parent.dump \
 		mkmamedb-multi-dats.dump \
 		mkmamedb-ok.dump
 
-check: ${MAME_DB} ${MAME_DB2}
+check: ${DBS}
 	@failed=0; all=0; \
 	srcdir=$(srcdir); export srcdir; \
 	for tst in ${TESTCASES}; do \
