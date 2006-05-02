@@ -117,6 +117,7 @@ noinst_HEADERS=\
 	garbage.h \
 	globals.h \
 	hashes.h \
+	images.h \
 	map.h \
 	match.h \
 	match_disk.h \
