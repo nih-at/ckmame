@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-cm.c,v 1.5 2006/03/15 18:27:21 dillo Exp $
+  $NiH: parse-cm.c,v 1.6 2006/03/17 10:59:27 dillo Exp $
 
   parse-cm.c -- parse listinfo/CMpro format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -49,7 +49,7 @@ parse_cm(parser_context_t *ctx)
     
     while (fgets(l=b, 8192, ctx->fin)) {
 	ctx->lineno++;
-	if (b[strlen(b)-1] != '\n') {
+	if (b[strlen(b)-1] != '\n' && !feof(ctx->fin)) {
 	    cmd = gettok(&l);
 	    if ((cmd == NULL) || (strcmp(cmd, "history"))) {
 		myerror(ERRFILE, "%d: warning: line too long (ignored)",
