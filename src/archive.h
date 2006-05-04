@@ -2,7 +2,7 @@
 #define HAD_ARCHIVE_H
 
 /*
-  $NiH: archive.h,v 1.5 2005/12/26 14:33:51 dillo Exp $
+  $NiH: archive.h,v 1.6 2006/04/17 11:31:11 dillo Exp $
 
   archive.h -- information about an archive
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -33,6 +33,7 @@
 
 struct archive {
     int refcount;
+    int check_integrity;
     char *name;
     array_t *files;
     struct zip *za;

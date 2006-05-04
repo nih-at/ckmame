@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.10 2006/04/21 00:43:16 dillo Exp $
+  $NiH: archive.c,v 1.11 2006/04/26 21:01:51 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -41,7 +41,7 @@
 static archive_map_t *_amap = NULL;
 
 static int get_hashes(struct zip_file *zf, off_t, hashes_t *);
-static int read_infos_from_zip(archive_t *, int);
+static int read_infos_from_zip(archive_t *);
 
 
 
@@ -78,7 +78,7 @@ archive_ensure_zip(archive_t *a, int createp)
     if (archive_zip(a))
 	return 0;
 
-    flags = ZIP_CHECKCONS;
+    flags = a->check_integrity ? ZIP_CHECKCONS : 0;
     if (createp)
 	flags |= ZIP_CREATE;
 
@@ -277,9 +277,10 @@ archive_new(const char *name, filetype_t ft, int createp)
     a->refcount = 1;
     a->files = array_new(sizeof(rom_t));
     a->za = NULL;
+    a->check_integrity = (ft == TYPE_ROM ? check_integrity : 0);
 
     if (!created) {
-	if (read_infos_from_zip(a, ft == TYPE_ROM ? check_integrity : 0) < 0) {
+	if (read_infos_from_zip(a) < 0) {
 	    if (!createp) {
 		archive_real_free(a);
 		return NULL;
@@ -322,7 +323,7 @@ archive_refresh(archive_t *a)
     archive_close_zip(a);
     array_truncate(archive_files(a), 0, rom_finalize);
 
-    read_infos_from_zip(a, 0);
+    read_infos_from_zip(a);
 
     return 0;
 }
@@ -356,7 +357,7 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 
 
 static int
-read_infos_from_zip(archive_t *a, int integrity)
+read_infos_from_zip(archive_t *a)
 {
     struct zip *za;
     struct zip_stat zsb;
@@ -366,7 +367,7 @@ read_infos_from_zip(archive_t *a, int integrity)
 
     zerr = 0;
     if ((za=zip_open(archive_name(a),
-		     integrity ? ZIP_CHECKCONS : 0, 
+		     a->check_integrity ? ZIP_CHECKCONS : 0, 
 		     &zerr)) == NULL) {
 	/* no error if file doesn't exist */
 	if (!(zerr == ZIP_ER_OPEN && errno == ENOENT)) {
@@ -401,7 +402,7 @@ read_infos_from_zip(archive_t *a, int integrity)
 	rom_hashes(r)->types = HASHES_TYPE_CRC;
 	rom_hashes(r)->crc = zsb.crc;
 
-	if (integrity)
+	if (a->check_integrity)
 	    archive_file_compute_hashes(a, i, romhashtypes);
     }
 
