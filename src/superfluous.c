@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.4 2005/09/27 21:33:03 dillo Exp $
+  $NiH: superfluous.c,v 1.5 2006/04/15 22:52:58 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -117,7 +117,7 @@ find_superfluous(const char *dbname)
 	    }
 
 	    if (lst == NULL
-		|| parray_index_sorted(lst, b+len_dir, strcasecmp) == -1) {
+		|| parray_index_sorted(lst, b+len_dir, strcmp) == -1) {
 		if (p)
 		    *p = '.';
 		
