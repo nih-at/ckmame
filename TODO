@@ -18,7 +18,6 @@ tests:
 - [bug] duplicate file for multiple identical ROMs in one game
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [bug] dumpgame: report real database version or /ckmame key
-- [doc] dumpgame: document special keys (/list et al)
 - [feature] dumpgame: dump samples
 - [feature] export from DB to CM dat file(s)
 - [feature] config file (provides defaults overridable on command line)

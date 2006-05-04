@@ -1,4 +1,4 @@
-.\" $NiH: dumpgame.mdoc,v 1.2 2005/07/07 22:00:20 dillo Exp $
+.\" $NiH: dumpgame.mdoc,v 1.1 2005/12/22 20:10:39 dillo Exp $
 .\"
 .\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -28,7 +28,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd July 07, 2005
+.Dd May 5, 2006
 .Dt DUMPGAME 1
 .Os
 .Sh NAME
@@ -71,6 +71,32 @@ behaviour to look for a game by name).
 Display a short help message.
 .It Fl V , -version
 Display program name and version number.
+.El
+.Pp
+The
+.Ar game
+argument can also be one of the following special keywords:
+.Bl -tag -width XXlistXsampleXX
+.It Ar /ckmame
+Report database version of the database, if it is supported by
+.Nm .
+.It Ar /dat
+Names of the datfiles used for creating the database, and their
+descriptions.
+.It Ar /hashtypes
+Types of checksums used (crc, md5, sha1).
+One line each for roms and disks.
+.It Ar /list
+Same as
+.Ar /list/game .
+.It Ar /list/disk
+List names of all disks in the database.
+.It Ar /list/game
+List names of all games in the database.
+.It Ar /list/sample
+List names of all games with samples in the database.
+.It Ar /stats
+List some statistics about the contents of the database.
 .El
 .Sh ENVIRONMENT
 .Bl -tag -width 10n
