@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.13 2006/04/28 21:24:40 dillo Exp $
+  $NiH: ckmame.c,v 1.14 2006/04/28 21:55:56 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -347,7 +347,7 @@ main(int argc, char **argv)
 	else {
 	    for (i=optind; i<argc; i++) {
 		if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-		    if (parray_index_sorted(list, argv[i], strcasecmp) >= 0)
+		    if (parray_index_sorted(list, argv[i], strcmp) >= 0)
 			tree_add(tree, argv[i]);
 		    else
 			myerror(ERRDEF, "game `%s' unknown", argv[i]);

@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.11 2006/04/15 22:52:58 dillo Exp $
+  $NiH: dumpgame.c,v 1.12 2006/04/18 09:16:02 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -330,7 +330,7 @@ main(int argc, char **argv)
 		    putc('\n', stdout);
 		dump_special(db, argv[i]);
 	    }
-	    else if (parray_index_sorted(list, argv[i], strcasecmp) >= 0) {
+	    else if (parray_index_sorted(list, argv[i], strcmp) >= 0) {
 		if (first)
 		    first = 0;
 		else

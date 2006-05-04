@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: file_by_hash.c,v 1.3 2005/07/13 17:42:20 dillo Exp $
 
   file_by_hash.c -- create / free file_by_hash structure
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -33,7 +33,7 @@ file_by_hash_entry_cmp(const file_by_hash_t *a, const file_by_hash_t *b)
 {
     int ret;
     
-    ret = strcasecmp(a->game, b->game);
+    ret = strcmp(a->game, b->game);
     if (ret == 0)
 	ret = a->index - b->index;
 

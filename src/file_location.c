@@ -1,5 +1,5 @@
 /*
-  $NiH: file_location.c,v 1.1.2.1 2005/08/06 17:00:11 wiz Exp $
+  $NiH: file_location.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   file_location.c -- create / free file_location structure
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -33,7 +33,7 @@ file_location_cmp(const file_location_t *a, const file_location_t *b)
 {
     int ret;
     
-    ret = strcasecmp(file_location_name(a), file_location_name(b));
+    ret = strcmp(file_location_name(a), file_location_name(b));
     if (ret == 0)
 	ret = file_location_index(a) - file_location_index(b);
 

@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: game_add_clone.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   game_add_clone.c -- add a clone to a game
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -34,5 +34,5 @@ void
 game_add_clone(game_t *g, filetype_t ft, const char *name)
 {
     parray_push(game_clones(g, ft), xstrdup(name));
-    parray_sort_unique(game_clones(g, ft), strcasecmp);
+    parray_sort_unique(game_clones(g, ft), strcmp);
 }

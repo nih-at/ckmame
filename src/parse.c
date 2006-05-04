@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.12 2006/03/17 16:46:01 dillo Exp $
+  $NiH: parse.c,v 1.13 2006/04/17 17:04:03 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -782,7 +782,7 @@ write_lists(parser_context_t *ctx)
     int i;
 
     for (i=0; i<TYPE_MAX; i++) {
-	parray_sort_unique(ctx->list[i], strcasecmp);
+	parray_sort_unique(ctx->list[i], strcmp);
 	if (w_list(ctx->db, filetype_db_key((filetype_t)i), ctx->list[i]) < 0)
 	    return -1;
     }
