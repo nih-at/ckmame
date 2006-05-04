@@ -12,6 +12,7 @@ XXX		game
 
 version history:
 
+12: case sensitive game/disk/sample lists
 11: don't overwrite last 2 bytes of size field with compressed data
 10: use 4 byte size field
     add description to /dat

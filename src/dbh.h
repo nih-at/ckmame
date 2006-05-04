@@ -2,7 +2,7 @@
 #define _HAD_DBH_H
 
 /*
-  $NiH: dbh.h,v 1.7 2006/04/15 22:52:58 dillo Exp $
+  $NiH: dbh.h,v 1.8 2006/04/26 21:01:51 dillo Exp $
 
   dbh.h -- compressed on-disk mame.db data base
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -34,7 +34,7 @@
 
 
 
-#define DBH_FORMAT_VERSION	11 /* version of ckmame database format */
+#define DBH_FORMAT_VERSION	12 /* version of ckmame database format */
 
 #define DBH_KEY_DAT		"/dat"
 #define DBH_KEY_DB_VERSION	"/ckmame"
