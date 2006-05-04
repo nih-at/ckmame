@@ -1,6 +1,6 @@
 .\" Converted with mdoc2man 0.2
-.\" from NiH: dumpgame.mdoc,v 1.2 2005/07/07 22:00:20 dillo Exp 
-.\" $NiH: dumpgame.man,v 1.2 2005/07/13 17:42:19 dillo Exp $
+.\" from NiH: dumpgame.mdoc,v 1.2 2006/05/04 22:42:22 wiz Exp 
+.\" $NiH: dumpgame.mdoc,v 1.2 2006/05/04 22:42:22 wiz Exp $
 .\"
 .\" Copyright (c) 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -30,7 +30,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH DUMPGAME 1 "July 07, 2005" NiH
+.TH DUMPGAME 1 "May 5, 2006" NiH
 .SH "NAME"
 dumpgame \- extract rom set information from ckmame database
 .SH "SYNOPSIS"
@@ -76,6 +76,40 @@ Display a short help message.
 \fB-V\fR, \-version
 Display program name and version number.
 .RE
+.PP
+The
+\fBgame\fR
+argument can also be one of the following special keywords:
+.RS
+.TP 17
+\fB/ckmame\fR
+Report database version of the database, if it is supported by
+.Nm.
+.TP 17
+\fB/dat\fR
+Names of the datfiles used for creating the database, and their
+descriptions.
+.TP 17
+\fB/hashtypes\fR
+Types of checksums used (crc, md5, sha1).
+One line each for roms and disks.
+.TP 17
+\fB/list\fR
+Same as
+\fB/list/game.\fR
+.TP 17
+\fB/list/disk\fR
+List names of all disks in the database.
+.TP 17
+\fB/list/game\fR
+List names of all games in the database.
+.TP 17
+\fB/list/sample\fR
+List names of all games with samples in the database.
+.TP 17
+\fB/stats\fR
+List some statistics about the contents of the database.
+.RE
 .SH "ENVIRONMENT"
 .RS
 .TP 12
@@ -102,7 +136,7 @@ Display all roms matching the checksum
 ckmame(1),
 mkmamedb(1)
 .SH "AUTHORS"
--nosplit
+
 .B dumpgame
 was written by
 Dieter Baron <dillo@giga.or.at>
