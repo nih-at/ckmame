@@ -69,6 +69,9 @@ TESTCASES=	archive-broken.test \
 		punused.test \
 		rom-broken-replace.test \
 		rom-broken.test \
+		rom-duplicate-1st.test \
+		rom-duplicate-2nd.test \
+		rom-duplicate-wrong.test \
 		rom-from-extra-child.test \
 		rom-from-extra-keep.test \
 		rom-from-extra-partial.test \
@@ -92,7 +95,8 @@ TESTCASES=	archive-broken.test \
 		tochildfix.test \
 		wrong.test
 
-ZIPS=		1-4-dup.zip \
+ZIPS=		1-4-2.zip \
+		1-4-dup.zip \
 		1-4-garbage.zip \
 		1-4-mid.zip \
 		1-4-misnamed.zip \
@@ -100,6 +104,7 @@ ZIPS=		1-4-dup.zip \
 		1-8-ok.zip \
 		1-a-ok.zip \
 		1-c-ok.zip \
+		2-44-ok.zip \
 		2-48-broken.zip \
 		2-48-ok.zip \
 		2-4a-ok.zip \

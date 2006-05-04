@@ -15,7 +15,6 @@ tests:
   * broken input
 
 - [bug] superfluous files are not removed correctly, some are skipped
-- [bug] duplicate file for multiple identical ROMs in one game
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [bug] dumpgame: report real database version or /ckmame key
 - [feature] dumpgame: dump samples

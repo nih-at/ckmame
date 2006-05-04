@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.7 2006/04/26 21:01:51 dillo Exp $
+  $NiH: check_files.c,v 1.8 2006/05/01 21:09:11 dillo Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -75,6 +75,7 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
     match_t *m;
     archive_t *a;
     test_result_t result;
+    int *user;
 
     if (result_game(res) == GS_OLD)
 	return;
@@ -133,11 +134,36 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
 	}
     }
 
-    for (i=0; i<game_num_files(g, file_type); i++) {
-	m = result_rom(res, i);
-	if (match_where(m) == ROM_INZIP && match_quality(m) != QU_HASHERR)
-	    result_file(res, match_index(m))
-		= match_quality(m) == QU_LONG ? FS_PARTUSED : FS_USED;
+    if (as[0] && archive_num_files(as[0]) > 0) {
+	user = malloc(sizeof(int) * archive_num_files(as[0]));
+	for (i=0; i<archive_num_files(as[0]); i++)
+	    user[i] = -1;
+    
+	for (i=0; i<game_num_files(g, file_type); i++) {
+	    m = result_rom(res, i);
+	    if (match_where(m) == ROM_INZIP
+		&& match_quality(m) != QU_HASHERR) {
+		j = match_index(m);
+		if (result_file(res, j) != FS_USED)
+		    result_file(res, j)
+			= match_quality(m) == QU_LONG ? FS_PARTUSED : FS_USED;
+		
+		if (match_quality(m) != QU_LONG
+		    && match_quality(m) != QU_INZIP) {
+		    if (user[j] == -1)
+			user[j] = i;
+		    else {
+			if (match_quality(m) == QU_OK) {
+			    match_quality(result_rom(res, user[j]))
+				= QU_COPIED;
+			    user[j] = i;
+			}
+			else
+			    match_quality(m) = QU_COPIED;
+		    }
+		}
+	    }
+	}
     }
 
     update_game_status(g, res);
