@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.15 2006/05/04 07:52:45 dillo Exp $
+  $NiH: ckmame.c,v 1.16 2006/05/05 00:44:45 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -83,13 +83,13 @@ char help[] = "\n"
 "  -n, --dryrun          don't actually fix, only report what would be done\n"
 "  -O, --old-db dbfile   use mame-db dbfile for old roms\n"
 "  -S, --samples         check samples instead of roms\n"
-"      --superfuous      only check for superfluous files in rom sets\n"
+"      --superfluous     only check for superfluous files in rom sets\n"
 "  -s, --nosuperfluous   don't report superfluous files in rom sets\n"
 "  -T, --games-from file read games to check from file\n"
 "  -V, --version         display version number\n"
 "  -v, --verbose         print fixes made\n"
 "  -w, --nowarnings      print only unfixable errors\n"
-"  -X, --ignoreextra     ignore extra files in rom/samples dirs\n"
+"  -X, --ignore-extra    ignore extra files in rom/samples dirs\n"
 "\nReport bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
@@ -120,7 +120,7 @@ struct option options[] = {
     { "dryrun",        0, 0, 'n' },
     { "fix",           0, 0, 'F' },
     { "games-from",    1, 0, 'T' },
-    { "ignoreextra",   0, 0, 'X' },
+    { "ignore-extra",  0, 0, 'X' },
     { "integrity",     0, 0, 'i' },
     { "keep-found",    0, 0, OPT_KEEP_FOUND },
     { "move-long",     0, 0, 'L' },
