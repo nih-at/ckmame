@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.10 2006/05/05 00:44:45 wiz Exp $
+  $NiH: types.h,v 1.11 2006/05/05 01:11:50 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -104,15 +104,6 @@ typedef enum filetype filetype_t;
 #if 0 /* not supported (yet?) */
 #define FIX_COMPLETE_GAMES	0x100 /* complete in old or complete in roms */
 #endif
-
-/* XXX: delete */
-enum state {
-        ROM_0,
-	    ROM_UNKNOWN, ROM_SHORT, ROM_LONG, ROM_CRCERR, ROM_NOCRC,
-	    ROM_NAMERR, ROM_LONGOK, ROM_BESTBADDUMP, ROM_OK, ROM_TAKEN
-	};
-
-typedef enum state state_t;
 
 
 

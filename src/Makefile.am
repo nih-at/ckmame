@@ -83,7 +83,6 @@ libckmame_a_SOURCES= \
 	result.c \
 	rom.c \
 	rom_add_altname.c \
-	romcmp.c \
 	superfluous.c \
 	tree.c \
 	util.c \

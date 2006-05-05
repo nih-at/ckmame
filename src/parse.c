@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.13 2006/04/17 17:04:03 dillo Exp $
+  $NiH: parse.c,v 1.14 2006/05/04 07:52:45 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -575,7 +575,7 @@ familymeeting(DB *db, filetype_t ft, game_t *parent, game_t *child)
 	cr = game_file(child, ft, i);
 	for (j=0; j<game_num_files(parent, ft); j++) {
 	    pr = game_file(parent, ft, j);
-	    if (romcmp(pr, cr, 1) == ROM_OK) {
+	    if (rom_compare_msc(cr, pr) == 0) {
 		rom_where(cr) = (where_t)(rom_where(pr) + 1);
 		break;
 	    }
@@ -717,21 +717,25 @@ rom_end(parser_context_t *ctx, filetype_t ft)
     /* omit duplicates */
     deleted = 0;
     for (j=0; j<n; j++) {
-	if (romcmp(game_file(ctx->g, ft, j), r, 0) == ROM_OK) {
-	    deleted = 1;
-	    break;
-	}
-    }
-    if (!deleted) {
-	for (j=0; j<n; j++) {
-	    r2 = game_file(ctx->g, ft, j);
-	    if ((romcmp(r2, r, 0) == ROM_NAMERR
-		 && rom_merge(r2) && rom_merge(r)
-		 && !strcmp(rom_merge(r2), rom_merge(r)))) {
+	r2 = game_file(ctx->g, ft, j);
+	if (rom_compare_sc(r, r2) == 0) {
+	    /* XXX: merge in additional hash types? */
+	    if (rom_compare_n(r, r2) == 0) {
+		deleted = 1;
+		break;
+	    }
+	    else if (rom_merge(r2) && rom_merge(r)
+		     && strcmp(rom_merge(r2), rom_merge(r)) != 0) {
 		rom_add_altname(r2, rom_name(r));
 		deleted = 1;
 		break;
 	    }
+	}
+	else if (rom_compare_n(r, r2) == 0) {
+	    myerror(ERRFILE, "%d: two different roms with same name (%s)",
+		    ctx->lineno, rom_name(r));
+	    deleted = 1;
+	    break;
 	}
     }
     if (deleted)
