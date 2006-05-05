@@ -36,6 +36,7 @@ TESTCASES=	archive-broken.test \
 		disk-wrong.test \
 		double.test \
 		dumpgame-unknown.test \
+		gamelist-from-file.test \
 		garbage.test \
 		hasherr-c.test \
 		hasherr-extra.test \

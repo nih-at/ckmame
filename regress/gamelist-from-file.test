@@ -1,0 +1,11 @@
+# $NiH: ok.test,v 1.4 2005/09/27 21:33:01 dillo Exp $
+description test single-rom game (no parent), zip is correct
+return 0
+args -FKLivcT gamelist
+file gamelist gamelist-from-file.in gamelist-from-file.in
+file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
+file roms/2-48.zip 2-48-ok.zip 2-48-ok.zip
+stdout In game 1-4:
+stdout game 1-4                                     : correct
+stdout In game 2-48:
+stdout game 2-48                                    : correct

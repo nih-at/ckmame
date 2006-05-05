@@ -7,7 +7,6 @@ tests:
 * broken zip in ROM set w/ -i
 * broken zip in ROM set w/o -i
 * extra cleanup done when all games checked
-* ckmame -T
 * dumpgame
 * mkmamedb tests
   * XML parsing
