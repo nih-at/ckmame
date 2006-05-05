@@ -29,6 +29,7 @@ tests:
   - are all roms of one set included in one other set
   - are two sets the same, just different name
 - [feature] needed cleanup (automatically?)
+- [feature] --cleanup-extra: remove (unnecessary?) directories
 - [cleanup] retire romcmp
 - [cleanup] no macros that evaluate arguments twice
 - [cleanup] use AC_CHECK_TYPES for uint32_t
