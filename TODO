@@ -26,6 +26,7 @@ tests:
 - [feature] database consistency checks during mkmamedb
   - are all roms of one set included in one other set
   - are two sets the same, just different name
+- [feature] needed cleanup (automatically?)
 - [cleanup] retire romcmp
 - [cleanup] no macros that evaluate arguments twice
 - [cleanup] use AC_CHECK_TYPES for uint32_t
