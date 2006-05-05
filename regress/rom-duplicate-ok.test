@@ -1,0 +1,7 @@
+# $NiH: rom-duplicate-wrong.test,v 1.1 2006/05/04 23:33:20 dillo Exp $
+description test game w/ duplicate rom, all is well
+return 0
+args -FKLivc 2-44
+file roms/2-44.zip 2-44-ok.zip 2-44-ok.zip
+stdout In game 2-44:
+stdout game 2-44                                    : correct

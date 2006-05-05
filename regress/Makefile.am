@@ -72,6 +72,7 @@ TESTCASES=	archive-broken.test \
 		rom-broken.test \
 		rom-duplicate-1st.test \
 		rom-duplicate-2nd.test \
+		rom-duplicate-ok.test \
 		rom-duplicate-wrong.test \
 		rom-from-extra-child.test \
 		rom-from-extra-keep.test \
