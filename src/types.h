@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.8 2005/10/05 21:21:33 dillo Exp $
+  $NiH: types.h,v 1.9 2006/04/24 11:38:38 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -94,8 +94,8 @@ typedef enum filetype filetype_t;
 
 #define FIX_DO			0x01 /* really make fixes */
 #define FIX_PRINT		0x02 /* print fixes made */
-#define FIX_KEEP_LONG		0x04 /* move partially used files to garbage */
-#define FIX_KEEP_UNKNOWN	0x08 /* move unknown files to garbage */
+#define FIX_MOVE_LONG		0x04 /* move partially used files to garbage */
+#define FIX_MOVE_UNKNOWN	0x08 /* move unknown files to garbage */
 #define FIX_DELETE_EXTRA	0x10 /* delete used from extra dirs */
 #define FIX_CLEANUP_EXTRA	0x20 /* delete superfluous from extra dirs */ 
 #define FIX_SUPERFLUOUS		0x40 /* move/delete superfluous */

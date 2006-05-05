@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.20 2006/05/01 21:09:11 dillo Exp $
+  $NiH: fix.c,v 1.21 2006/05/02 13:43:54 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -57,7 +57,7 @@ static void set_zero(int *);
 int
 fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 {
-    int i, islong, keep, archive_changed;
+    int i, islong, move, archive_changed;
     array_t *deleted;
     garbage_t *gb;
 
@@ -98,17 +98,17 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	case FS_UNKNOWN:
 	case FS_PARTUSED:
 	    islong = (result_file(res, i) == FS_PARTUSED);
-	    keep = fix_options & (islong ? FIX_KEEP_UNKNOWN : FIX_KEEP_LONG);
+	    move = fix_options & (islong ? FIX_MOVE_UNKNOWN : FIX_MOVE_LONG);
 	    if (fix_options & FIX_PRINT)
 		printf("%s: %s %s file `%s'\n",
 		       archive_name(a),
-		       (keep ? "mv" : "delete"),
+		       (move ? "mv" : "delete"),
 		       (islong ? "long" : "unknown"),
 		       rom_name(archive_file(a, i)));
 	    if (fix_options & FIX_DO) {
-		if (keep)
-		    keep = (garbage_add(gb, i) == -1);
-		if (keep == 0) {
+		if (move)
+		    move = (garbage_add(gb, i) == -1);
+		if (move == 0) {
 		    archive_changed = 1;
 		    MARK_DELETED(deleted, i);
 		    zip_delete(archive_zip(a), i);
@@ -208,9 +208,9 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 	    if (fix_options & FIX_PRINT)
 		printf("%s: %s unknown image\n",
 		       name,
-		       ((fix_options & FIX_KEEP_UNKNOWN) ? "mv" : "delete"));
+		       ((fix_options & FIX_MOVE_UNKNOWN) ? "mv" : "delete"));
 	    if (fix_options & FIX_DO) {
-		if (fix_options & FIX_KEEP_UNKNOWN)
+		if (fix_options & FIX_MOVE_UNKNOWN)
 		    move_image_to_garbage(name);
 		else
 		    my_remove(name);

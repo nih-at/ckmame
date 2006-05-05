@@ -1,5 +1,5 @@
 /*
-  $NiH: cleanup.c,v 1.4 2006/05/01 21:09:11 dillo Exp $
+  $NiH: cleanup.c,v 1.5 2006/05/02 13:43:54 dillo Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -114,7 +114,7 @@ static void
 cleanup_archive(archive_t *a, result_t *res, int flags)
 {
     garbage_t *gb;
-    int i, keep, survivors;
+    int i, move, survivors;
     char *reason;
     
     if (flags & CLEANUP_UNKNOWN && fix_options & FIX_DO)
@@ -177,16 +177,16 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 	    
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
-		keep = fix_options & FIX_KEEP_UNKNOWN;
+		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT)
 		    printf("%s: %s unknown file `%s'\n",
 			   archive_name(a),
-			   (keep ? "mv" : "delete"),
+			   (move ? "mv" : "delete"),
 			   rom_name(archive_file(a, i)));
 		if (fix_options & FIX_DO) {
-		    if (keep)
-			keep = (garbage_add(gb, i) == -1);
-		    if (keep == 0) {
+		    if (move)
+			move = (garbage_add(gb, i) == -1);
+		    if (move == 0) {
 			zip_delete(archive_zip(a), i);
 		    }
 		    else
@@ -219,7 +219,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 static void
 cleanup_disk(images_t *im, result_t *res, int flags)
 {
-    int i, keep, ret;
+    int i, move, ret;
     const char *name, *reason;
     
     check_images(im, NULL, res);
@@ -272,12 +272,12 @@ cleanup_disk(images_t *im, result_t *res, int flags)
 	    
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
-		keep = fix_options & FIX_KEEP_UNKNOWN;
+		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT)
 		    printf("%s: %s unknown image\n",
-			   name, (keep ? "mv" : "delete"));
+			   name, (move ? "mv" : "delete"));
 		if (fix_options & FIX_DO) {
-		    if (keep)
+		    if (move)
 			ret = move_image_to_garbage(name);
 		    else
 			ret = my_remove(name);

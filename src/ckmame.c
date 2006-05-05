@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.14 2006/04/28 21:55:56 dillo Exp $
+  $NiH: ckmame.c,v 1.15 2006/05/04 07:52:45 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -76,10 +76,10 @@ char help[] = "\n"
 "  -i, --integrity       check integrity of rom files and disk images\n"
 "      --keep-found      keep files copied from search directories (default)\n"
 "  -j, --delete-found    delete files copied from search directories\n"
-"  -K, --keep-unknown    keep unknown files when fixing (default)\n"
-"  -k, --delete-unknown  don't keep unknown files when fixing\n"
-"  -L, --keep-long       keep long files when fixing (default)\n"
-"  -l, --delete-long     don't keep long files when fixing\n"
+"  -K, --move-unknown    move unknown files when fixing (default)\n"
+"  -k, --delete-unknown  delete unknown files when fixing\n"
+"  -L, --move-long       move long files when fixing (default)\n"
+"  -l, --delete-long     delete long files when fixing\n"
 "  -n, --dryrun          don't actually fix, only report what would be done\n"
 "  -O, --old-db dbfile   use mame-db dbfile for old roms\n"
 "  -S, --samples         check samples instead of roms\n"
@@ -93,7 +93,7 @@ char help[] = "\n"
 "\nReport bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
-"Copyright (C) 2005 Dieter Baron and Thomas Klausner\n"
+"Copyright (C) 2006 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 "You may redistribute copies of\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
@@ -123,8 +123,8 @@ struct option options[] = {
     { "ignoreextra",   0, 0, 'X' },
     { "integrity",     0, 0, 'i' },
     { "keep-found",    0, 0, OPT_KEEP_FOUND },
-    { "keep-long",     0, 0, 'L' },
-    { "keep-unknown",  0, 0, 'K' },
+    { "move-long",     0, 0, 'L' },
+    { "move-unknown",  0, 0, 'K' },
     { "nobroken",      0, 0, 'b' }, /* -BROKEN */
     { "nofixable",     0, 0, 'f' }, /* -FIX */
     { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
@@ -178,7 +178,7 @@ main(int argc, char **argv)
     olddbname = getenv("MAMEDB_OLD");
     if (olddbname == NULL)
 	olddbname = DBH_DEFAULT_OLD_DB_NAME;
-    fix_options = FIX_KEEP_LONG | FIX_KEEP_UNKNOWN;
+    fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN;
     ignore_extra = 0;
     check_integrity = 0;
     search_dirs = parray_new();
@@ -224,16 +224,16 @@ main(int argc, char **argv)
 	    fix_options |= FIX_DELETE_EXTRA;
 	    break;
 	case 'K':
-	    fix_options |= FIX_KEEP_UNKNOWN;
+	    fix_options |= FIX_MOVE_UNKNOWN;
 	    break;
 	case 'k':
-	    fix_options &= ~FIX_KEEP_UNKNOWN;
+	    fix_options &= ~FIX_MOVE_UNKNOWN;
 	    break;
 	case 'L':
-	    fix_options |= FIX_KEEP_LONG;
+	    fix_options |= FIX_MOVE_LONG;
 	    break;
 	case 'l':
-	    fix_options &= ~FIX_KEEP_LONG;
+	    fix_options &= ~FIX_MOVE_LONG;
 	    break;
 	case 'n':
 	    fix_options &= ~FIX_DO;

@@ -1,4 +1,4 @@
-.\" $NiH: ckmame.mdoc,v 1.7 2005/12/28 21:20:21 wiz Exp $
+.\" $NiH: ckmame.mdoc,v 1.8 2006/04/28 21:38:59 dillo Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -28,7 +28,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd April 28, 2006
+.Dd May 5, 2006
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -148,24 +148,24 @@ When using
 do not remove files that are copied to the ROM set (default).
 See also
 .Fl j .
-.It Fl K , -keep-unknown
-Keep unknown files when fixing (default).
+.It Fl K , -move-unknown
+Move unknown files when fixing (default).
 They are moved into a zip file with the same name under
 .Pa roms/garbage .
 See also
 .Fl k .
 .It Fl k , -delete-unknown
-Don't keep unknown files when fixing.
+Delete unknown files when fixing.
 See also
 .Fl K .
-.It Fl L , -keep-long
-Keep too long files when fixing (default).
+.It Fl L , -move-long
+Move too long files when fixing (default).
 See also
 .Fl K
 and
 .Fl l .
 .It Fl l , -delete-long
-Don't keep long files when fixing, delete them instead.
+Delete long files when fixing.
 See also
 .Fl L .
 .It Fl n , -dryrun
