@@ -44,6 +44,7 @@ TESTCASES=	archive-broken.test \
 		hasherr-pc.test \
 		hasherr.test \
 		hasherr2.test \
+		ignore-unknown.test \
 		inchild.test \
 		inparent.test \
 		mid.test \

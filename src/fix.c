@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.21 2006/05/02 13:43:54 dillo Exp $
+  $NiH: fix.c,v 1.22 2006/05/05 00:44:45 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -96,6 +96,9 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
     for (i=0; i<archive_num_files(a); i++) {
 	switch (result_file(res, i)) {
 	case FS_UNKNOWN:
+	    if (fix_options & FIX_IGNORE_UNKNOWN)
+		break;
+	    /* FALLTHROUGH */
 	case FS_PARTUSED:
 	    islong = (result_file(res, i) == FS_PARTUSED);
 	    move = fix_options & (islong ? FIX_MOVE_UNKNOWN : FIX_MOVE_LONG);

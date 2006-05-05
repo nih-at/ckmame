@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.16 2006/05/05 00:44:45 wiz Exp $
+  $NiH: ckmame.c,v 1.17 2006/05/05 00:47:29 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -73,6 +73,7 @@ char help[] = "\n"
 "  -F, --fix             fix rom sets\n"
 "  -f, --nofixable       don't report fixable errors\n"
 "  -h, --help            display this help message\n"
+"  -I, --ignore-unknown  do not touch unknown files when fixing\n"
 "  -i, --integrity       check integrity of rom files and disk images\n"
 "      --keep-found      keep files copied from search directories (default)\n"
 "  -j, --delete-found    delete files copied from search directories\n"
@@ -103,6 +104,7 @@ PACKAGE " under the terms of the GNU General Public License.\n"
 
 enum {
     OPT_CLEANUP_EXTRA = 256,
+    OPT_IGNORE_UNKNOWN,
     OPT_KEEP_FOUND,
     OPT_SUPERFLUOUS
 };
@@ -121,6 +123,7 @@ struct option options[] = {
     { "fix",           0, 0, 'F' },
     { "games-from",    1, 0, 'T' },
     { "ignore-extra",  0, 0, 'X' },
+    { "ignore-unknown",0, 0, OPT_IGNORE_UNKNOWN },
     { "integrity",     0, 0, 'i' },
     { "keep-found",    0, 0, OPT_KEEP_FOUND },
     { "move-long",     0, 0, 'L' },
@@ -265,6 +268,9 @@ main(int argc, char **argv)
 		error_multiple_actions();
 	    action = ACTION_CLEANUP_EXTRA_ONLY;
 	    fix_options |= FIX_DO|FIX_CLEANUP_EXTRA;
+	    break;
+	case OPT_IGNORE_UNKNOWN:
+	    fix_options |= FIX_IGNORE_UNKNOWN;
 	    break;
 	case OPT_KEEP_FOUND:
 	    fix_options &= ~FIX_DELETE_EXTRA;
