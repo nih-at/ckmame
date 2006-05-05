@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.22 2006/05/05 00:44:45 wiz Exp $
+  $NiH: fix.c,v 1.23 2006/05/05 01:11:50 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -75,6 +75,9 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 					   archive_name(a))) == NULL)
 		return -1;
 
+	    if (fix_options & FIX_PRINT)
+		printf("%s: rename broken zip to `%s'\n",
+		       archive_name(a), new_name);
 	    if (rename_or_move(archive_name(a), new_name) < 0) {
 		free(new_name);
 		return -1;

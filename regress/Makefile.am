@@ -47,6 +47,8 @@ TESTCASES=	archive-broken.test \
 		hasherr2.test \
 		ignore-unknown.test \
 		inchild.test \
+		inconsistent-with-i.test \
+		inconsistent-without-i.test \
 		inparent.test \
 		mid.test \
 		misnamed-dryrun.test \

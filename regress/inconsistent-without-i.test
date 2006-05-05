@@ -1,0 +1,7 @@
+# $NiH: ok.test,v 1.4 2005/09/27 21:33:01 dillo Exp $
+description test single-rom game (no parent), zip is inconsistent, without -i
+return 0
+args -FKLvc 1-4
+file roms/1-4.zip 1-4-inconsistent.zip 1-4-inconsistent.zip
+stdout In game 1-4:
+stdout game 1-4                                     : correct

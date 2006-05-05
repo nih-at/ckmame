@@ -4,8 +4,6 @@ tests:
 * whether ckmame can be run (incomplete runtime library path)
 * broken zip in superfluous / extra dir (ignore)
 * broken file in zip in superfluous / extra dir (ignore)
-* broken zip in ROM set w/ -i
-* broken zip in ROM set w/o -i
 * extra cleanup done when all games checked
 * dumpgame
 * mkmamedb tests
