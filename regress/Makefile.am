@@ -16,6 +16,10 @@ ZIPCMP=@ZIPCMP@
 
 TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
 
+# XXX: following tests currently do not work
+BROKEN_TESTCASES=
+		rom-from-extra-child.test
+
 TESTCASES=	archive-broken.test \
 		baddump.test \
 		cleanup.test \
@@ -95,6 +99,7 @@ TESTCASES=	archive-broken.test \
 		sample-parent-ok.test \
 		sample-superfluous.test \
 		skipbad.test \
+		superfluous-broken.test \
 		superfluous-cleanup.test \
 		superfluous-inconsistent.test \
 		superfluous.test \

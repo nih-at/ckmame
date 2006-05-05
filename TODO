@@ -2,7 +2,6 @@ tests:
 * dirs in rom names
 * case differences (game name / archive / rom / file in archive)
 * whether ckmame can be run (incomplete runtime library path)
-* broken file in zip in superfluous / extra dir (ignore)
 * extra cleanup done when all games checked
 * dumpgame
 * mkmamedb tests
@@ -12,6 +11,8 @@ tests:
   * /prog from file
   * broken input
 
+- [bug] broken file in zip in extra dir is ignored completely
+  (test commented out)
 - [bug] rom: use flag to specify wether we know the size
 - [bug] superfluous files are not removed correctly, some are skipped
 - [bug] report error if opening zip archive fails (find_in_archives)
