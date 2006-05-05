@@ -1,5 +1,5 @@
 /*
-  $NiH: delete_list.c,v 1.8 2006/04/26 21:01:51 dillo Exp $
+  $NiH: delete_list.c,v 1.9 2006/04/28 20:01:37 dillo Exp $
 
   delete_list.c -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -99,6 +99,14 @@ delete_list_execute(delete_list_t *dl)
 
 
 
+void
+delete_list_mark(delete_list_t *dl)
+{
+    dl->mark = parray_length(dl->array);
+}
+
+
+
 delete_list_t *
 delete_list_new(void)
 {
@@ -109,6 +117,14 @@ delete_list_new(void)
     dl->mark = 0;
 
     return dl;
+}
+
+
+
+void
+delete_list_rollback(delete_list_t *dl)
+{
+    parray_set_length(dl->array, dl->mark, NULL, file_location_free);
 }
 
 

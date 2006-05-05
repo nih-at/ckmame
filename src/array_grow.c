@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: array_grow.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
 
   array_grow.c -- grow array of arbitrary types by one element
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -21,6 +21,8 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+
+
 #include <stdlib.h>
 
 #include "array.h"
@@ -28,9 +30,11 @@
 
 
 
-void
+void *
 array_grow(array_t *a, void (*fn)(void *))
 {
+    void *ne;
+
     if (a->nentry >= a->alloc_len) {
 	if (a->alloc_len == 0)
 	    a->alloc_len = 1;
@@ -40,6 +44,10 @@ array_grow(array_t *a, void (*fn)(void *))
     }
     a->nentry++;
 
+    ne = array_get(a, array_length(a)-1);
+
     if (fn)
-	fn(array_get(a, array_length(a)-1));
+	fn(ne);
+
+    return ne;
 }

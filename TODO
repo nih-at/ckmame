@@ -6,14 +6,17 @@ tests:
 * extra cleanup done when all games checked
 * dumpgame
 * mkmamedb tests
+  * two different roms with same name (error)
   * XML parsing
   * /prog from command line
   * /prog from file
   * broken input
 
+- [bug] rom: use flag to specify wether we know the size
 - [bug] superfluous files are not removed correctly, some are skipped
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [bug] dumpgame: report real database version or /ckmame key
+- [feature] inconsisten zip in ROM set: copy files to new zip
 - [bug] adding stuff to garbage which already exists there
 - [bug] check if rompath/needed/extra are different
 - [feature] dumpgame: dump samples
@@ -26,8 +29,16 @@ tests:
   - are two sets the same, just different name
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
-- [cleanup] retire romcmp
+- [cleanup] don't use array_get as lvalue
 - [cleanup] no macros that evaluate arguments twice
+	array_get
+	parray_get_last
+	result_num_*
+	rom_compare_m
+	rom_compare_msc
+	rom_compare_nsc
+	rom_copmare_sc
+	rom_num_altnames
 - [cleanup] use AC_CHECK_TYPES for uint32_t
 
 cmcheck features:

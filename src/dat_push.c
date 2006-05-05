@@ -1,5 +1,5 @@
 /*
-  $NiH: dat_push.c,v 1.2 2006/03/17 10:59:27 dillo Exp $
+  $NiH: dat_push.c,v 1.3 2006/03/17 16:46:01 dillo Exp $
 
   dat_push.c -- add dat entry
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -27,13 +27,14 @@
 
 
 
-void
+void *
 dat_push(dat_t *d, const dat_entry_t *hi, const dat_entry_t *lo)
 {
     dat_entry_t *de;
 
-    array_grow(d, NULL);
-    de = dat_get(d, dat_length(d)-1);
+    de = (dat_entry_t *)array_grow(d, NULL);
 
     dat_entry_merge(de, hi, lo);
+
+    return de;
 }

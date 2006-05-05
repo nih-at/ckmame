@@ -2,7 +2,7 @@
 #define HAD_DAT_H
 
 /*
-  $NiH: dat.h,v 1.3 2006/03/17 10:59:27 dillo Exp $
+  $NiH: dat.h,v 1.4 2006/03/17 16:46:01 dillo Exp $
 
   dat.h -- information about dat file
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -53,6 +53,6 @@ typedef struct dat_entry dat_entry_t;
 void dat_entry_finalize(dat_entry_t *);
 void dat_entry_merge(dat_entry_t *, const dat_entry_t *, const dat_entry_t *);
 void dat_entry_init(dat_entry_t *);
-void dat_push(dat_t *, const dat_entry_t *, const dat_entry_t *);
+void *dat_push(dat_t *, const dat_entry_t *, const dat_entry_t *);
 
 #endif /* rom.h */

@@ -1,5 +1,5 @@
-/*
-  $NiH: array_grow.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
+ /*
+  $NiH: array_push.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
 
   array_push.c -- append element to end of array of arbitrary types
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -21,15 +21,21 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+
+
 #include <string.h>
 
 #include "array.h"
 
 
 
-void
+void *
 array_push(array_t *a, void *e)
 {
-    array_grow(a, NULL);
-    memcpy(array_get(a, array_length(a)-1), e, a->elem_size);
+    void *ne;
+    
+    ne = array_grow(a, NULL);
+    memcpy(ne, e, a->elem_size);
+
+    return ne;
 }

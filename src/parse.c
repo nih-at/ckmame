@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.14 2006/05/04 07:52:45 dillo Exp $
+  $NiH: parse.c,v 1.15 2006/05/05 09:44:58 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -164,9 +164,9 @@ parse_file_status(parser_context_t *ctx, filetype_t ft, int ht,
     }
 
     if (ft == TYPE_DISK)
-	disk_status(game_last_disk(ctx->g)) = status;
+	disk_status(ctx->d) = status;
     else
-	rom_status(game_last_file(ctx->g, ft)) = status;
+	rom_status(ctx->r) = status;
     
     return 0;
 }
@@ -180,11 +180,11 @@ parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
     int *types;
 
     if (ft == TYPE_DISK) {
-	h = disk_hashes(game_last_disk(ctx->g));
+	h = disk_hashes(ctx->d);
 	types = &ctx->diskhashtypes;
     }
     else {
-	h = rom_hashes(game_last_file(ctx->g, ft));
+	h = rom_hashes(ctx->r);
 	types = &ctx->romhashtypes;
     }
 	
@@ -207,9 +207,9 @@ parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht,
 		 const char *attr)
 {
     if (ft == TYPE_DISK)
-	disk_merge(game_last_disk(ctx->g)) = xstrdup(attr);
+	disk_merge(ctx->d) = xstrdup(attr);
     else
-	rom_merge(game_last_file(ctx->g, ft)) = xstrdup(attr);
+	rom_merge(ctx->r) = xstrdup(attr);
 
     return 0;
 }
@@ -224,14 +224,14 @@ parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy,
     char *p;
     
     if (ft == TYPE_DISK) {
-	disk_name(game_last_disk(ctx->g)) = xstrdup(attr);
+	disk_name(ctx->d) = xstrdup(attr);
 	parray_push(ctx->list[TYPE_DISK], xstrdup(attr));
     }
     else {
-	rom_name(game_last_file(ctx->g, ft)) = xstrdup(attr);
+	rom_name(ctx->r) = xstrdup(attr);
 
 	/* XXX: warn about broken dat file? */
-	p = rom_name(game_last_file(ctx->g, ft));
+	p = rom_name(ctx->r);
 	while ((p=strchr(p, '\\')))
 	    *(p++) = '/';
     }
@@ -253,7 +253,7 @@ parse_file_size(parser_context_t *ctx, filetype_t ft, int dummy,
     }
 
     /* XXX: check for strol errors */
-    rom_size(game_last_file(ctx->g, ft)) = strtol(attr, NULL, 10);
+    rom_size(ctx->r) = strtol(attr, NULL, 10);
 
     return 0;
 }
@@ -264,9 +264,9 @@ int
 parse_file_start(parser_context_t *ctx, filetype_t ft)
 {
     if (ft == TYPE_DISK)
-	array_grow(game_disks(ctx->g), disk_init);
+	ctx->d = array_grow(game_disks(ctx->g), disk_init);
     else
-	array_grow(game_files(ctx->g, ft), rom_init);
+	ctx->r = array_grow(game_files(ctx->g, ft), rom_init);
 
     return 0;
 }
@@ -508,21 +508,18 @@ parser_context_new(DB *db, const parray_t *ignore)
 static void
 disk_end(parser_context_t *ctx)
 {
-    disk_t *d;
+    if (hashes_types(disk_hashes(ctx->d)) == 0)
+	disk_status(ctx->d) = STATUS_NODUMP;
 
-    d = game_last_disk(ctx->g);
-
-    if (hashes_types(disk_hashes(d)) == 0)
-	disk_status(d) = STATUS_NODUMP;
-
-    if (disk_merge(d) != NULL && strcmp(disk_name(d), disk_merge(d)) == 0) {
-	free(disk_merge(d));
-	disk_merge(d) = NULL;
+    if (disk_merge(ctx->d) != NULL
+	&& strcmp(disk_name(ctx->d), disk_merge(ctx->d)) == 0) {
+	free(disk_merge(ctx->d));
+	disk_merge(ctx->d) = NULL;
     }
 
     enter_file_hash(ctx->map_disk, TYPE_DISK,
 		    game_name(ctx->g), game_num_disks(ctx->g)-1,
-		    disk_hashes(d));
+		    disk_hashes(ctx->d));
 }
 
 
@@ -710,7 +707,7 @@ rom_end(parser_context_t *ctx, filetype_t ft)
     int deleted;
     int j, n;
 
-    r = game_last_file(ctx->g, ft);    
+    r = ctx->r;    
     n = game_num_files(ctx->g, ft)-1;
     h = rom_hashes(r);
 

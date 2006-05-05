@@ -2,7 +2,7 @@
 #define _HAD_GAME_H
 
 /*
-  $NiH: game.h,v 1.1 2005/07/13 17:42:20 dillo Exp $
+  $NiH: game.h,v 1.2 2006/03/14 22:11:40 dillo Exp $
 
   game.h -- information about one game
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -75,11 +75,6 @@ typedef struct game game_t;
 #define game_num_clones(g, ft)		(array_length(game_clones((g), (ft))))
 #define game_num_disks(g)		(array_length(game_disks(g)))
 #define game_num_files(g, ft)		(array_length(game_files((g), (ft))))
-#define game_last_disk(g)		(game_disk((g), game_num_disks(g)-1))
-
-#define game_last_file(g, ft)		\
-	(game_file((g), (ft), (game_num_files((g), (ft))-1)))
-
 #define game_name(g)			((g)->name)
 
 void game_add_clone(game_t *, filetype_t, const char *);

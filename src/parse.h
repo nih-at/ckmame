@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.6 2006/03/17 10:59:27 dillo Exp $
+  $NiH: parse.h,v 1.7 2006/03/17 16:46:01 dillo Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -42,6 +42,8 @@ struct parser_context {
     int lineno;			/* current line number in input file */
     dat_entry_t de;		/* info about dat file */
     game_t *g;			/* current game */
+    rom_t *r;			/* current rom */
+    disk_t *d;			/* current disk */
 
     /* accumulated info */
     dat_t *dat;

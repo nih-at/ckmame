@@ -2,7 +2,7 @@
 #define HAD_ARCHIVE_H
 
 /*
-  $NiH: archive.h,v 1.6 2006/04/17 11:31:11 dillo Exp $
+  $NiH: archive.h,v 1.7 2006/05/04 07:26:43 dillo Exp $
 
   archive.h -- information about an archive
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -45,7 +45,6 @@ typedef struct archive archive_t;
 
 #define archive_file(a, i)	((rom_t *)array_get(archive_files(a), (i)))
 #define archive_files(a)	((a)->files)
-#define archive_last_file(a)	(archive_file((a), archive_num_files(a)-1))
 #define archive_name(a)		((a)->name)
 #define archive_num_files(a)	(array_length(archive_files(a)))
 #define archive_zip(a)		((a)->za)
