@@ -1,7 +1,7 @@
 /*
   $NiH$
 
-  array_grow.c -- append element to end of array of arbitrary types
+  array_grow.c -- grow array of arbitrary types by one element
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -21,15 +21,25 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <string.h>
+#include <stdlib.h>
 
 #include "array.h"
+#include "xmalloc.h"
 
 
 
 void
-array_push(array_t *a, void *e)
+array_grow(array_t *a, void (*fn)(void *))
 {
-    array_grow(a, NULL);
-    memcpy(array_get(a, array_length(a)-1), e, a->elem_size);
+    if (a->nentry >= a->alloc_len) {
+	if (a->alloc_len == 0)
+	    a->alloc_len = 1;
+	else
+	    a->alloc_len *= 2;
+	a->data = xrealloc(a->data, a->elem_size*a->alloc_len);
+    }
+    a->nentry++;
+
+    if (fn)
+	fn(array_get(a, array_length(a)-1));
 }
