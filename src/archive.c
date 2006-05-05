@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.11 2006/04/26 21:01:51 dillo Exp $
+  $NiH: archive.c,v 1.12 2006/05/04 07:26:43 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -213,7 +213,7 @@ archive_file_index_by_name(const archive_t *a, const char *name)
     int i;
 
     for (i=0; i<archive_num_files(a); i++) {
-	if (compare_names(rom_name(archive_file(a, i)), name) == 0)
+	if (strcmp(rom_name(archive_file(a, i)), name) == 0)
 	    return i;
     }
 

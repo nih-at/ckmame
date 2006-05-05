@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.3 2005/09/27 21:33:03 dillo Exp $
+  $NiH: util.c,v 1.4 2005/12/22 22:12:03 dillo Exp $
 
   util.c -- utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -32,18 +32,6 @@
 #include "xmalloc.h"
 #include "util.h"
 #include "error.h"
-
-
-
-const char *
-mybasename(const char *fname)
-{
-    const char *p;
-
-    if ((p=strrchr(fname, '/')) == NULL)
-	return fname;
-    return p+1;
-}
 
 
 

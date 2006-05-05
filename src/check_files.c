@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.8 2006/05/01 21:09:11 dillo Exp $
+  $NiH: check_files.c,v 1.9 2006/05/04 23:33:20 dillo Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -207,9 +207,9 @@ match_files(archive_t *a, test_t t, const rom_t *r, match_t *m)
 		    match_quality(m) = QU_OK;
 		    result = TEST_USABLE;
 		}
+		match_archive(m) = a;
+		match_index(m) = i;
 	    }
-	    match_archive(m) = a;
-	    match_index(m) = i;
 	    break;
 
 	case TEST_SCI:

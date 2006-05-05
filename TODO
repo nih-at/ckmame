@@ -1,4 +1,5 @@
 tests:
+* dirs in rom names
 * case differences (game name / archive / rom / file in archive)
 * whether ckmame can be run (incomplete runtime library path)
 * broken zip in superfluous / extra dir (ignore)
@@ -25,6 +26,7 @@ tests:
 - [feature] database consistency checks during mkmamedb
   - are all roms of one set included in one other set
   - are two sets the same, just different name
+- [cleanup] retire romcmp
 - [cleanup] no macros that evaluate arguments twice
 - [cleanup] use AC_CHECK_TYPES for uint32_t
 

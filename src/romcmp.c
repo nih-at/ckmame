@@ -1,8 +1,8 @@
 /*
-  $NiH: romcmp.c,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: romcmp.c,v 1.2 2005/09/27 21:33:03 dillo Exp $
 
   romcmp.c -- compare two ROMs
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -33,7 +33,7 @@ romcmp(const rom_t *r1, const rom_t *r2, int merge)
     /* r1 is important */
     /* in match: r1 is from zip, r2 from rom */
     
-    if (strcasecmp(rom_name(r1), (merge && rom_merge(r2)
+    if (strcmp(rom_name(r1), (merge && rom_merge(r2)
 				  ? rom_merge(r2) : rom_name(r2))) == 0) {
 	if (rom_size(r2) == 0)
 	    return ROM_OK;

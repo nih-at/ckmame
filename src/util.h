@@ -2,7 +2,7 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.5 2006/04/28 18:52:10 dillo Exp $
+  $NiH: util.h,v 1.6 2006/04/28 20:01:37 dillo Exp $
 
   util.h -- miscellaneous utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -26,14 +26,11 @@
 
 #include <string.h>
 
-#define compare_names(a, b)	(strcasecmp(mybasename(a), mybasename(b)))
-
 typedef int (*cmpfunc)(const void *, const void *);
 
 
 char *bin2hex(char *, const unsigned char *, unsigned int);
 int hex2bin(unsigned char *, const char *, unsigned int);
-const char *mybasename(const char *);
 int psort(void **, int, int, int (*)(const void *, const void *));
 
 #endif
