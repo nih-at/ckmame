@@ -78,6 +78,7 @@ TESTCASES=	archive-broken.test \
 		rom-duplicate-ok.test \
 		rom-duplicate-wrong.test \
 		rom-from-extra-child.test \
+		rom-from-extra-inconsistent.test \
 		rom-from-extra-keep.test \
 		rom-from-extra-partial.test \
 		rom-from-extra-remove.test \
@@ -95,6 +96,7 @@ TESTCASES=	archive-broken.test \
 		sample-superfluous.test \
 		skipbad.test \
 		superfluous-cleanup.test \
+		superfluous-inconsistent.test \
 		superfluous.test \
 		swap.test \
 		tochildfix.test \

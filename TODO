@@ -2,7 +2,6 @@ tests:
 * dirs in rom names
 * case differences (game name / archive / rom / file in archive)
 * whether ckmame can be run (incomplete runtime library path)
-* broken zip in superfluous / extra dir (ignore)
 * broken file in zip in superfluous / extra dir (ignore)
 * extra cleanup done when all games checked
 * dumpgame
