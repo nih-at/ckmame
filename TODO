@@ -18,6 +18,8 @@ tests:
 - [bug] superfluous files are not removed correctly, some are skipped
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [bug] dumpgame: report real database version or /ckmame key
+- [bug] adding stuff to garbage which already exists there
+- [bug] check if rompath/needed/extra are different
 - [feature] dumpgame: dump samples
 - [feature] export from DB to CM dat file(s)
 - [feature] config file (provides defaults overridable on command line)
