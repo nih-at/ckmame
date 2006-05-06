@@ -26,7 +26,7 @@ AC_CHECK_SIZEOF([off_t])
 
 AC_CHECK_LIB(z, compress2)
 # find libzip
-PKG_CHECK_MODULES(LIBZIP, libzip >= 0.5)
+PKG_CHECK_MODULES(LIBZIP, libzip >= 0.7)
 
 ZIPCMP=`pkg-config --variable=zipcmp libzip`
 AC_SUBST(ZIPCMP, $ZIPCMP)
