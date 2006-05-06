@@ -12,7 +12,6 @@ tests:
   * broken input
 
 - [bug] adding stuff to garbage which already exists there
-- [cleanup] don't use array_get as lvalue
 ---------------------------------------------------------------- release
 - [bug] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version or /ckmame key
@@ -29,7 +28,6 @@ tests:
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
 - [cleanup] no macros that evaluate arguments twice
-	array_get
 	parray_get_last
 	result_num_*
 	rom_compare_m

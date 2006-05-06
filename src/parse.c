@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.15 2006/05/05 09:44:58 dillo Exp $
+  $NiH: parse.c,v 1.16 2006/05/05 10:38:51 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -655,7 +655,7 @@ handle_lost(parser_context_t *ctx)
 		array_delete(ctx->lost_children_types, i, NULL);
 	    }
 	    else
-		*((int *)array_get(ctx->lost_children_types, i)) = types;
+		array_set(ctx->lost_children_types, i, &types);
 	}
     }
 

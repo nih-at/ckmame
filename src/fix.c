@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.23 2006/05/05 01:11:50 wiz Exp $
+  $NiH: fix.c,v 1.24 2006/05/05 10:13:00 wiz Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -45,12 +45,8 @@
 #include "util.h"
 #include "xmalloc.h"
 
-#define MARK_DELETED(x, i)	(*(int *)array_get((x), (i)) = 1)
-#define IS_DELETED(x, i)	(*(int *)array_get((x), (i)) == 1)
-
 static int fix_disks(game_t *, images_t *, result_t *res);
 static int fix_files(game_t *, archive_t *, result_t *);
-static void set_zero(int *);
 
 
 
@@ -58,7 +54,7 @@ int
 fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 {
     int i, islong, move, archive_changed;
-    array_t *deleted;
+    int *deleted;
     garbage_t *gb;
 
     archive_changed = 0;
@@ -86,8 +82,11 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	    if (archive_ensure_zip(a, 1) < 0)
 		return -1;
 	}
-	deleted = array_new_length(sizeof(int), archive_num_files(a),
-				   set_zero);
+
+	deleted = malloc(sizeof(int) * archive_num_files(a));
+	for (i=0; i<archive_num_files(a); i++)
+	    deleted[i] = 0;
+
 	if (extra_delete_list)
 	    delete_list_mark(extra_delete_list);
 	if (needed_delete_list)
@@ -116,7 +115,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		    move = (garbage_add(gb, i) == -1);
 		if (move == 0) {
 		    archive_changed = 1;
-		    MARK_DELETED(deleted, i);
+		    deleted[i] = 1;
 		    zip_delete(archive_zip(a), i);
 		}
 	    }
@@ -161,14 +160,14 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	if (garbage_close(gb) < 0) {
 	    /* undelete files we tried to move to garbage */
 	    for (i=0; i<archive_num_files(a); i++) {
-		if (IS_DELETED(deleted, i)) {
+		if (deleted[i]) {
 		    if (zip_unchange(archive_zip(a), i) < 0) {
 			/* XXX: cannot undelete */
 		    }
 		}
 	    }
 	}
-	array_free(deleted, NULL);
+	free(deleted);
     }
     
     if ((fix_options & (FIX_DO|FIX_PRINT)) == 0) {
@@ -419,12 +418,4 @@ fix_files(game_t *g, archive_t *a, result_t *res)
     }
 
     return archive_changed;
-}
-
-
-
-static void
-set_zero(int *ip)
-{
-    *ip = 0;
 }

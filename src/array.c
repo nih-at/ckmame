@@ -1,8 +1,8 @@
 /*
-  $NiH$
+  $NiH: array.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
 
   array.c -- create / free array of arbitrary types
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -22,6 +22,7 @@
 */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "array.h"
 #include "xmalloc.h"
@@ -47,6 +48,14 @@ array_free(array_t *a, void (*fn)(void *))
 
 
 
+void *
+array_get(const array_t *a, int i)
+{
+    return (void *)(a->data + a->elem_size*i);
+}
+
+
+
 array_t *
 array_new_sized(int size, int n)
 {
@@ -66,4 +75,12 @@ array_new_sized(int size, int n)
     a->alloc_len = n;
 
     return a;
+}
+
+
+
+void
+array_set(array_t *a, int i, const void *d)
+{
+    memcpy(array_get(a, i), d, a->elem_size);
 }

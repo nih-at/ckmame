@@ -2,10 +2,10 @@
 #define _HAD_ARRAY_H
 
 /*
-  $NiH: array.h,v 1.3 2005/12/22 21:59:26 dillo Exp $
+  $NiH: array.h,v 1.4 2006/05/05 10:38:51 dillo Exp $
 
   array.h -- array of arbitrary types
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -37,17 +37,18 @@ typedef struct array array_t;
 
 
 
-#define array_get(a, i)		((void *)((a)->data+(a)->elem_size*(i)))
 #define array_length(a)		((a)->nentry)
 #define array_new(s)		(array_new_sized((s), 0))
 
 /* function arguments not specified to avoid lots of casts */
 void array_delete(array_t *, int, void (*)(/* void * */));
 void array_free(array_t *, void (*)(/* void * */));
+void *array_get(const array_t *, int);
 void *array_grow(array_t *, void (*)(/* void * */));
 array_t *array_new_sized(int, int);
 array_t *array_new_length(int, int, void (*)(/* void * */));
 void *array_push(array_t *, void *);
+void array_set(array_t *, int, const void *);
 void array_truncate(array_t *, int, void (*)(/* void * */));
 
 #endif /* array.h */
