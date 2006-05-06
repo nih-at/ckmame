@@ -28,9 +28,9 @@
 
 typedef int (*cmpfunc)(const void *, const void *);
 
-
 char *bin2hex(char *, const unsigned char *, unsigned int);
 int hex2bin(unsigned char *, const char *, unsigned int);
+const char *mybasename(const char *);
 int psort(void **, int, int, int (*)(const void *, const void *));
 
 #endif

@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.16 2006/05/01 21:09:11 dillo Exp $
+  $NiH: funcs.h,v 1.17 2006/05/02 13:43:54 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
@@ -69,7 +69,7 @@ int fix_game(game_t *, archive_t *, images_t *, result_t *);
 parray_t *find_superfluous(const char *);
 void init_rompath(void);
 char *make_file_name(filetype_t, int, const char *);
-char *make_garbage_name(const char *);
+char *make_garbage_name(const char *, int);
 char *make_needed_name(const rom_t *);
 char *make_needed_name_disk(const disk_t *);
 char *make_unique_name(const char *, const char *, ...);

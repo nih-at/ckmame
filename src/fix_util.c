@@ -1,5 +1,5 @@
 /*
-  $NiH: fix_util.c,v 1.3 2006/05/01 21:09:11 dillo Exp $
+  $NiH: fix_util.c,v 1.4 2006/05/02 13:43:54 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -32,6 +32,7 @@
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
+#include "util.h"
 #include "xmalloc.h"
 
 
@@ -86,19 +87,28 @@ ensure_dir(const char *name, int strip_fname)
 
 
 char *
-make_garbage_name(const char *name)
+make_garbage_name(const char *name, int unique)
 {
     const char *s;
-    char *t;
+    char *t, *u, *ext;
+    struct stat st;
 
-    if ((s=strrchr(name, '/')) == NULL)
-	s = name;
-    else
-	s++;
+    s = mybasename(name);
 
-    t = (char *)xmalloc(strlen(name)+strlen("garbage/")+1);
+    t = (char *)xmalloc(strlen(unknown_dir)+strlen(s)+2);
 
-    sprintf(t, "%.*sgarbage/%s", (int)(s-name), name, s);
+    sprintf(t, "%s/%s", unknown_dir, s);
+
+    if (unique && (stat(t, &st) == 0 || errno != ENOENT)) {
+	ext = strchr(t, '.');
+	if (ext) 
+	    *(ext++) = '\0';
+	else
+	    ext = "";
+	u = make_unique_name(ext, "%s", t);
+	free(t);
+	return u;
+    }
 
     return t;
 }
@@ -123,7 +133,7 @@ make_unique_name(const char *ext, const char *fmt, ...)
     }
 
     for (i=0; i<1000; i++) {
-	sprintf(ret+len, "-%03d.%s", i, ext);
+	sprintf(ret+len, "-%03d%s%s", i, (ext[0] ? "." : ""), ext);
 
 	if (stat(ret, &st) == -1 && errno == ENOENT)
 	    return xstrdup(ret);
@@ -168,7 +178,7 @@ move_image_to_garbage(const char *fname)
     char *to_name;
     int ret;
 
-    to_name = make_garbage_name(fname);
+    to_name = make_garbage_name(fname, 1);
     ensure_dir(to_name, 1);
     ret = rename_or_move(fname, to_name);
     free(to_name);

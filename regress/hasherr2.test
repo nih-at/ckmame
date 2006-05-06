@@ -1,9 +1,9 @@
-# $NiH: hasherr2.test,v 1.1.2.2 2005/08/06 19:54:39 wiz Exp $
+# $NiH: hasherr2.test,v 1.2 2005/09/27 21:33:01 dillo Exp $
 description integrity test single-rom game (no parent), zip is wrong
 return 0
 args -FKLivc deadbeef
 file-del roms/deadbeef.zip deadfish.zip
-file-new roms/garbage/deadbeef.zip deadfish.zip
+file-new unknown/deadbeef.zip deadfish.zip
 stdout In game deadbeef:
 stdout rom  deadbeef      size       8  crc deadbeef: checksum mismatch
 stdout file deadbeef      size       8  crc deadbeef: unknown

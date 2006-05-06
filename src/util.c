@@ -35,6 +35,18 @@
 
 
 
+const char *
+mybasename(const char *fname)
+{
+    const char *p;
+
+    if ((p=strrchr(fname, '/')) == NULL)
+	return fname;
+    return p+1;
+}
+
+
+
 char *
 bin2hex(char *b, const unsigned char *s, unsigned int len)
 {

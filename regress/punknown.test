@@ -1,9 +1,9 @@
-# $NiH: punknown.test,v 1.1.2.5 2005/08/06 19:54:39 wiz Exp $
+# $NiH: punknown.test,v 1.2 2005/09/27 21:33:01 dillo Exp $
 description unknown file in parent
 return 0
 args -FKLvc parent-4
 file roms/parent-4.zip 2-4c-ok.zip 1-4-ok.zip
-file-new roms/garbage/parent-4.zip 1-c-ok.zip
+file-new unknown/parent-4.zip 1-c-ok.zip
 stdout In game parent-4:
 stdout game parent-4                                : correct
 stdout file 0c.rom        size      12  crc 0623c932: unknown

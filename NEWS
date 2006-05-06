@@ -7,6 +7,7 @@
 - omit games matching shell glob patterns from database
 - don't open archives or disk images multiple times
 - don't accept disk images that need a parent
+- move unknown files to directory `unknown', not to `garbage' in ROM path
 
 0.7 (2005-12-28)
 

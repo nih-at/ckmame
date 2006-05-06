@@ -36,6 +36,7 @@ TESTCASES=	\
 		disk-swap.test \
 		disk-to-needed.test \
 		disk-wrong.test \
+		disk-wrong2.test \
 		double.test \
 		dumpgame-unknown.test \
 		gamelist-from-file.test \

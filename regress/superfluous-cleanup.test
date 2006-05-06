@@ -1,4 +1,4 @@
-# $NiH: superfluous-cleanup.test,v 1.2 2006/05/01 21:09:10 dillo Exp $
+# $NiH: superfluous-cleanup.test,v 1.3 2006/05/06 00:29:33 dillo Exp $
 description test cleanup of superfluous files
 return 0
 args -O ../mame3.db -D ../mame2.db -FKLv
@@ -7,8 +7,8 @@ file-del roms/parent.zip 2-4c-ok.zip
 file-del roms/1-8.zip 1-8-ok.zip
 file-del roms/108-2.chd 108-2.chd
 file-del roms/108-5.chd 108-5.chd
-file-new roms/garbage/parent.zip 1-c-ok.zip
-file-new roms/garbage/108-2.chd 108-2.chd
+file-new unknown/parent.zip 1-c-ok.zip
+file-new unknown/108-2.chd 108-2.chd
 stdout ./roms/1-8.zip: delete duplicate file `08.rom'
 stdout ./roms/1-8.zip: remove empty archive
 stdout ./roms/108-2.chd: mv unknown image

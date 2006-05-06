@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: garbage.c,v 1.1 2006/04/28 20:01:37 dillo Exp $
 
   garbage.c -- move files to garbage directory
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -119,7 +119,7 @@ garbage_t *garbage_new(archive_t *a)
 static int
 garbage_open(garbage_t *g)
 {
-    g->zname = make_garbage_name(archive_name(g->a));
+    g->zname = make_garbage_name(archive_name(g->a), 0);
 
     if ((g->za=my_zip_open(g->zname, ZIP_CREATE)) == NULL)
 	return -1;

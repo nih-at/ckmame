@@ -1,5 +1,5 @@
 /*
-  $NiH: check_util.c,v 1.1 2006/04/28 18:52:10 dillo Exp $
+  $NiH: check_util.c,v 1.2 2006/05/01 21:09:11 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -45,7 +45,8 @@ delete_list_t *needed_delete_list = NULL;
 map_t *needed_disk_map = NULL;
 map_t *needed_file_map = NULL;
 delete_list_t *superfluous_delete_list = NULL;
-char *needed_dir = "needed";	/* XXX: proper value */
+char *needed_dir = "needed";	/* XXX: proper value, move elsewhere */
+char *unknown_dir = "unknown";	/* XXX: proper value, move elsewhere */
 char *rompath[MAXROMPATH] = { NULL };
 static int rompath_init = 0;
 
