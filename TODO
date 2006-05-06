@@ -14,7 +14,6 @@ tests:
 - [bug] broken file in zip in extra dir is ignored completely
   (test commented out)
 - [bug] rom: use flag to specify wether we know the size
-- [bug] superfluous files are not removed correctly, some are skipped
 - [bug] report error if opening zip archive fails (find_in_archives)
 - [bug] dumpgame: report real database version or /ckmame key
 - [feature] inconsisten zip in ROM set: copy files to new zip

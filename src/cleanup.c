@@ -1,5 +1,5 @@
 /*
-  $NiH: cleanup.c,v 1.5 2006/05/02 13:43:54 dillo Exp $
+  $NiH: cleanup.c,v 1.6 2006/05/05 00:44:45 wiz Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -39,7 +39,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
     images_t *im;
     result_t *res;
     char *name;
-    int i, di, len, cmp;
+    int i, di, len, cmp, n;
     file_location_t *fl;
     name_type_t nt;
 
@@ -49,7 +49,9 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	len = delete_list_length(del);
     }
 
-    for (i=0; i<parray_length(list); i++) {
+    n = parray_length(list);
+    i = 0;
+    while (i < n) {
 	name = (char *)parray_get(list, i);
 	switch ((nt=name_type(name))) {
 	case NAME_ZIP:
@@ -105,6 +107,11 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	    /* unknown files shouldn't be in list */
 	    break;
 	}
+
+	if (n != parray_length(list))
+	    n = parray_length(list);
+	else
+	    i++;
     }
 }
 
