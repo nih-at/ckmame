@@ -13,12 +13,14 @@ tests:
 
 - [bug] broken file in zip in extra dir is ignored completely
   (test commented out)
-- [bug] rom: use flag to specify wether we know the size
 - [bug] report error if opening zip archive fails (find_in_archives)
-- [bug] dumpgame: report real database version or /ckmame key
-- [feature] inconsisten zip in ROM set: copy files to new zip
 - [bug] adding stuff to garbage which already exists there
+- [cleanup] don't use array_get as lvalue
+---------------------------------------------------------------- release
+- [bug] rom: use flag to specify whether we know the size
+- [bug] dumpgame: report real database version or /ckmame key
 - [bug] check if rompath/needed/extra are different
+- [feature] inconsistent zip in ROM set: copy files to new zip
 - [feature] dumpgame: dump samples
 - [feature] export from DB to CM dat file(s)
 - [feature] config file (provides defaults overridable on command line)
@@ -29,7 +31,6 @@ tests:
   - are two sets the same, just different name
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
-- [cleanup] don't use array_get as lvalue
 - [cleanup] no macros that evaluate arguments twice
 	array_get
 	parray_get_last
