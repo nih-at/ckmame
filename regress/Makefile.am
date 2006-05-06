@@ -20,7 +20,9 @@ TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
 BROKEN_TESTCASES=
 		rom-from-extra-child.test
 
-TESTCASES=	archive-broken.test \
+TESTCASES=	\
+		archive-broken.test \
+		archive-broken2.test \
 		baddump.test \
 		cleanup.test \
 		cleanup-disk.test \

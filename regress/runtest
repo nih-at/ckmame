@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.24 2006/04/17 15:50:00 dillo Exp $
+#  $NiH: runtest,v 1.25 2006/04/23 18:23:00 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002-2006 Dieter Baron and Thomas Klausner
@@ -351,10 +351,10 @@ then
     do
         set -- `echo ${fs} | tr '!' ' '`
 	FILES_SHOULD="${FILES_SHOULD} $2"
-	case "$2" in
+	case "$1!$2" in
 	*.db)
 	    checkdb "$1" "$2" "database $2 wrong";;
-	*.zip)
+	*.zip!*.zip)
 	    checkzip "$1" "$2" "zip file $2 wrong";;
 	*)
 	    checkfile "$1" "$2" "file $2 wrong";;
