@@ -13,7 +13,6 @@ tests:
 
 - [bug] broken file in zip in extra dir is ignored completely
   (test commented out)
-- [bug] report error if opening zip archive fails (find_in_archives)
 - [bug] adding stuff to garbage which already exists there
 - [cleanup] don't use array_get as lvalue
 ---------------------------------------------------------------- release
