@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.17 2006/05/02 13:43:54 dillo Exp $
+  $NiH: funcs.h,v 1.18 2006/05/06 23:01:53 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
@@ -77,6 +77,7 @@ int move_image_to_garbage(const char *);
 int my_remove(const char *name);
 struct zip *my_zip_open(const char *, int);
 int my_zip_rename(struct zip *, int, const char *);
+char *my_zip_unique_name(struct zip *, const char *);
 name_type_t name_type(const char *);
 int name_is_zip(const char *);
 void print_superfluous(const parray_t *);

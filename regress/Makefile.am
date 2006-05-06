@@ -3,7 +3,8 @@ AM_CFLAGS=		-I${srcdir}/../src \
 			 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
 dbdump_LDADD=		../src/libckmame.a @DBLIBS@
 
-EXTRA_DIST=runtest ${TESTCASES} ${ZIPS} ${CHDS} ${DBFILES}
+EXTRA_DIST=runtest ${TESTCASES} ${ZIPS} ${CHDS} ${DBFILES} \
+		gamelist-from-file.in
 
 CLEANFILES=${DBS}
 
@@ -41,6 +42,7 @@ TESTCASES=	\
 		dumpgame-unknown.test \
 		gamelist-from-file.test \
 		garbage.test \
+		garbage2.test \
 		hasherr-c.test \
 		hasherr-extra.test \
 		hasherr-no-i.test \
@@ -110,9 +112,11 @@ TESTCASES=	\
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \
 		1-4-garbage.zip \
+		1-4-inconsistent.zip \
 		1-4-mid.zip \
 		1-4-misnamed.zip \
 		1-4-ok.zip \
+		1-8-broken.zip \
 		1-8-ok.zip \
 		1-a-ok.zip \
 		1-c-ok.zip \
@@ -122,12 +126,14 @@ ZIPS=		1-4-2.zip \
 		2-4a-ok.zip \
 		2-4c-ok.zip \
 		2-84.zip \
+		2-cc-ok.zip \
 		deadbeef.zip \
 		deadclonedbeef.zip \
 		deadfish.zip \
 		deadfish4.zip \
 		deadpork.zip \
 		garbage.zip \
+		garbage2.zip \
 		many.zip \
 		samptest.zip \
 		samptest2.zip \

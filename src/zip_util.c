@@ -1,5 +1,5 @@
 /*
-  $NiH: util2.c,v 1.11 2006/04/26 21:01:51 dillo Exp $
+  $NiH: zip_util.c,v 1.1 2006/04/28 18:52:10 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -54,12 +54,10 @@ my_zip_open(const char *name, int flags)
 
 
 
-#define RENAME_STRING "%s_renamed_by_ckmame_%d"
-
 int
 my_zip_rename(struct zip *za, int idx, const char *name)
 {
-    int zerr, idx2, try;
+    int zerr, idx2;
     char *name2;
 
     if (zip_rename(za, idx, name) == 0)
@@ -75,23 +73,50 @@ my_zip_rename(struct zip *za, int idx, const char *name)
     if (idx2 == -1)
 	return -1;
 
-    name2 = xmalloc(strlen(RENAME_STRING)+strlen(name));
-
-    for (try=0; try<10; try++) {
-	sprintf(name2, RENAME_STRING, name, try);
-	if (zip_rename(za, idx2, name2) == 0) {
-	    free(name2);
-	    return zip_rename(za, idx, name);
-	}
-
-	zip_error_get(za, &zerr, NULL);
-
-	if (zerr != ZIP_ER_EXISTS) {
-	    free(name2);
-	    return -1;
-	}
+    if ((name2=my_zip_unique_name(za, name)) == NULL)
+	return -1;
+    
+    if (zip_rename(za, idx2, name2) == 0) {
+	free(name2);
+	return zip_rename(za, idx, name);
     }
 
     free(name2);
     return -1;
+}
+
+
+
+char *
+my_zip_unique_name(struct zip *za, const char *name)
+{
+    char *ret, *p;
+    char n[4];
+    const char *ext;
+    int i;
+
+    ret = (char *)xmalloc(strlen(name)+5);
+
+    ext = strrchr(name, '.');
+    if (ext == NULL) {
+	strcpy(ret, name);
+	p = ret+strlen(ret);
+    }
+    else {
+	strncpy(ret, name, ext-name);
+	p = ret + (ext-name);
+	strcpy(p+4, ext);
+    }	
+    *(p++) = '-';
+
+    for (i=0; i<1000; i++) {
+	sprintf(n, "%03d", i);
+	strncpy(p, n, 3);
+
+	if (zip_name_locate(za, ret, 0) == -1)
+	    return ret;
+    }
+
+    free(ret);
+    return NULL;
 }

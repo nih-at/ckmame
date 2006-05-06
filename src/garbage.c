@@ -1,5 +1,5 @@
 /*
-  $NiH: garbage.c,v 1.1 2006/04/28 20:01:37 dillo Exp $
+  $NiH: garbage.c,v 1.2 2006/05/06 23:01:53 dillo Exp $
 
   garbage.c -- move files to garbage directory
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -39,6 +39,8 @@ static int garbage_open(garbage_t *);
 int garbage_add(garbage_t *g, int idx)
 {
     struct zip_source *source;
+    const char *name;
+    char *name2;
 
     if (g->zname == NULL)
 	garbage_open(g);
@@ -46,16 +48,24 @@ int garbage_add(garbage_t *g, int idx)
     if (g->za == NULL)
 	return -1;
 
+    name = rom_name(archive_file(g->a, idx));
+    if (zip_name_locate(g->za, name, 0) == 0)
+	name2 = my_zip_unique_name(g->za, name);
+    else
+	name2 = NULL;
+
     if ((source=zip_source_zip(g->za, archive_zip(g->a), idx,
 			       ZIP_FL_UNCHANGED, 0, -1)) == NULL
-	|| zip_add(g->za, rom_name(archive_file(g->a, idx)), source) < 0) {
+	|| zip_add(g->za, name2 ? name2 : name, source) < 0) {
 	zip_source_free(source);
 	seterrinfo(archive_name(g->a), rom_name(archive_file(g->a, idx)));
 	myerror(ERRZIPFILE, "error moving to `%s': %s",
 		g->zname, zip_strerror(g->za));
+	free(name2);
 	return -1;
     }
 
+    free(name2);
     return 0;
 }
 

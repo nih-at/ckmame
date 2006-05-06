@@ -11,8 +11,6 @@ tests:
   * /prog from file
   * broken input
 
-- [bug] adding stuff to garbage which already exists there
----------------------------------------------------------------- release
 - [bug] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version or /ckmame key
 - [bug] check if rompath/needed/extra are different

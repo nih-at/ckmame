@@ -1,0 +1,17 @@
+# $NiH: garbage.test,v 1.4 2006/05/06 23:01:52 dillo Exp $
+description test single-rom game (no parent), zip contains garbage, fix
+return 0
+args -FKLvc 1-4 disk
+file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
+file roms/disk.zip 2-4c-ok.zip 1-4-ok.zip
+file unknown/1-4.zip garbage.zip garbage2.zip
+file unknown/disk.zip 1-c-ok.zip 2-cc-ok.zip
+stdout In game 1-4:
+stdout game 1-4                                     : correct
+stdout file garbage       size       8  crc 01888242: unknown
+stdout ./roms/1-4.zip: mv unknown file `garbage'
+stdout In game disk:
+stdout game disk                                    : correct
+stdout file 0c.rom        size      12  crc 0623c932: unknown
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
+stdout ./roms/disk.zip: mv unknown file `0c.rom'
