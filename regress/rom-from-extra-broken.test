@@ -1,7 +1,7 @@
-# $NiH: superfluous-inconsistent.test,v 1.1 2006/05/05 10:25:07 wiz Exp $
+# $NiH: rom-from-extra-broken.test,v 1.1 2006/05/05 10:40:19 wiz Exp $
 description test single-rom game (no parent), extra zip contains broken
 return 0
-args -FiKLvc 2-48
+args -FijKLvc -e extra 2-48
 file extra/2-48-part-broken.zip 2-48-broken.zip 1-8-broken.zip
 file-new roms/2-48.zip 1-4-ok.zip
 stdout In game 2-48:

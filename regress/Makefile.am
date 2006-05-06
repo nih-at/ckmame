@@ -16,10 +16,6 @@ ZIPCMP=@ZIPCMP@
 
 TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
 
-# XXX: following tests currently do not work
-BROKEN_TESTCASES=
-		rom-from-extra-child.test
-
 TESTCASES=	\
 		archive-broken.test \
 		archive-broken2.test \
@@ -83,6 +79,7 @@ TESTCASES=	\
 		rom-duplicate-2nd.test \
 		rom-duplicate-ok.test \
 		rom-duplicate-wrong.test \
+		rom-from-extra-broken.test \
 		rom-from-extra-child.test \
 		rom-from-extra-inconsistent.test \
 		rom-from-extra-keep.test \
