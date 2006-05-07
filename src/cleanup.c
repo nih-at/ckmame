@@ -1,5 +1,5 @@
 /*
-  $NiH: cleanup.c,v 1.6 2006/05/05 00:44:45 wiz Exp $
+  $NiH: cleanup.c,v 1.7 2006/05/06 00:29:32 dillo Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -26,6 +26,7 @@
 #include "funcs.h"
 #include "garbage.h"
 #include "globals.h"
+#include "warn.h"
 
 static void cleanup_archive(archive_t *, result_t *, int);
 static void cleanup_disk(images_t *, result_t *, int);
@@ -71,6 +72,9 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 		    break;
 	    }
 
+	    warn_set_info(WARN_TYPE_ARCHIVE, archive_name(a));
+	    diagnostics_archive(a, res);
+	    
 	    cleanup_archive(a, res, flags);
 
 	    result_free(res);
@@ -97,6 +101,10 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 		else if (cmp < 0)
 		    break;
 	    }
+
+	    
+	    warn_set_info(WARN_TYPE_IMAGE, name);
+	    diagnostics_images(im, res);
 
 	    cleanup_disk(im, res, flags);
 

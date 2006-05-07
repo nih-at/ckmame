@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.18 2006/05/06 23:01:53 dillo Exp $
+  $NiH: funcs.h,v 1.19 2006/05/06 23:31:40 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
@@ -61,6 +61,8 @@ void check_old(game_t *, result_t *);
 void cleanup_list(parray_t *, delete_list_t *, int);
 void diagnostics(const game_t *, const archive_t *, const images_t *,
 		 const result_t *);
+void diagnostics_archive(const archive_t *, const result_t *);
+void diagnostics_images(const images_t *, const result_t *);
 int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);

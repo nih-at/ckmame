@@ -91,6 +91,7 @@ libckmame_a_SOURCES= \
 	w_game.c \
 	w_list.c \
 	w_util.c \
+	warn.c \
 	xmalloc.c \
 	zip_util.c
 

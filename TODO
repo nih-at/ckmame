@@ -25,6 +25,7 @@ tests:
   - are two sets the same, just different name
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
+- [cleanup] rename: file is part of zip archive, rom is part of game
 - [cleanup] no macros that evaluate arguments twice
 	parray_get_last
 	result_num_*

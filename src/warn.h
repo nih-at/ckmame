@@ -2,10 +2,10 @@
 #define _HAD_WARN_H
 
 /*
-  $NiH: warn.h,v 1.1.2.2 2005/09/22 20:53:12 dillo Exp $
+  $NiH: warn.h,v 1.2 2005/09/27 21:33:03 dillo Exp $
 
-  warn.h -- warning type definitions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  warn.h -- emit warning
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -23,6 +23,13 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
+
+
+#include "disk.h"
+#include "rom.h"
+
+
 
 #define WARN_UNKNOWN		0x0001
 #define WARN_USED		0x0002
@@ -52,5 +59,22 @@
 				 |WARN_FILE_BROKEN)
 
 #define WARN_CORRECT		0x2000
+
+/* keep in sync with tname in warn.c:warn_ensure_header() */
+enum warn_type {
+    WARN_TYPE_ARCHIVE,
+    WARN_TYPE_GAME,
+    WARN_TYPE_IMAGE
+};    
+
+typedef enum warn_type warn_type_t;
+
+
+
+void warn_disk(const disk_t *, const char *, ...);
+void warn_file(const rom_t *, const char *, ...);
+void warn_image(const char *, const char *, ...);
+void warn_rom(const rom_t *, const char *, ...);
+void warn_set_info(warn_type_t, const char *);
 
 #endif /* _HAD_WARN_H */

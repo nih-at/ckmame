@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.7 2006/04/24 11:38:38 dillo Exp $
+  $NiH: diagnostics.c,v 1.8 2006/05/01 21:09:11 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -44,19 +44,8 @@ static const char *zname[] = {
     "grand-cloneof"
 };
 
-static const char *gname;
-static int gnamedone;
-
-static void diagnostics_archive(const archive_t *, const result_t *);
 static void diagnostics_disks(const game_t *, const result_t *);
 static void diagnostics_files(const game_t *, const result_t *);
-static void diagnostics_images(const images_t *, const result_t *);
-static void warn_disk(const disk_t *, const char *, ...);
-static void warn_ensure_game(void);
-static void warn_file(const rom_t *, const char *, ...);
-static void warn_game(const char *);
-static void warn_image(const char *, const char *, ...);
-static void warn_rom(const rom_t *, const char *, ...);
 
 
 
@@ -64,7 +53,7 @@ void
 diagnostics(const game_t *game, const archive_t *a, const images_t *im,
 	    const result_t *res)
 {
-    warn_game(game_name(game));
+    warn_set_info(WARN_TYPE_GAME, game_name(game));
 
     diagnostics_files(game, res);
     diagnostics_archive(a, res);
@@ -74,7 +63,7 @@ diagnostics(const game_t *game, const archive_t *a, const images_t *im,
     
 
 
-static void
+void
 diagnostics_archive(const archive_t *a, const result_t *res)
 {
     int i;
@@ -296,7 +285,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 
 
 
-static void
+void
 diagnostics_images(const images_t *im, const result_t *res)
 {
     int i;
@@ -333,157 +322,4 @@ diagnostics_images(const images_t *im, const result_t *res)
 	    break;
 	}
     }
-}
-
-
-
-static void
-warn_disk(const disk_t *d, const char *fmt, ...)
-{
-    va_list va;
-    char buf[HASHES_SIZE_MAX*2 + 1];
-    const hashes_t *h;
-
-    warn_ensure_game();
-    
-    printf("disk %-12s  ", disk_name(d));
-
-    h = disk_hashes(d);
-    if (hashes_has_type(h, HASHES_TYPE_SHA1))
-	printf("sha1 %s: ", hash_to_string(buf, HASHES_TYPE_SHA1, h));
-    else if (hashes_has_type(h, HASHES_TYPE_MD5))
-	printf("md5 %s         : ", hash_to_string(buf, HASHES_TYPE_MD5, h));
-    else
-	printf("no good dump              : ");
-    
-    va_start(va, fmt);
-    vprintf(fmt, va);
-    va_end(va);
-
-    putc('\n', stdout);
-
-    return;
-}
-
-
-
-static void
-warn_ensure_game(void)
-{
-    if (gnamedone == 0) {
-	printf("In game %s:\n", gname);
-	gnamedone = 1;
-    }
-}
-
-
-
-static void
-warn_file(const rom_t *r, const char *fmt, ...)
-{
-    va_list va;
-
-    warn_ensure_game();
-    
-    /* XXX */
-    printf("file %-12s  size %7ld  crc %.8lx: ",
-	   rom_name(r), rom_size(r), hashes_crc(rom_hashes(r)));
-    
-    va_start(va, fmt);
-    vprintf(fmt, va);
-    va_end(va);
-
-    putc('\n', stdout);
-
-    return;
-}
-
-
-
-static void
-warn_game(const char *name)
-{
-    gname = name;
-    gnamedone = 0;
-}
-
-
-
-static void
-warn_image(const char *name, const char *fmt, ...)
-{
-    va_list va;
-
-    warn_ensure_game();
-    
-    printf("image %-12s: ", name);
-    
-    va_start(va, fmt);
-    vprintf(fmt, va);
-    va_end(va);
-
-    putc('\n', stdout);
-
-    return;
-}
-
-
-
-static void
-warn_rom(const rom_t *r, const char *fmt, ...)
-{
-    va_list va;
-    char buf[100], *p;
-    int j;
-
-    warn_ensure_game();
-    
-    if (r) {
-	printf("rom  %-12s  ", rom_name(r));
-	if (rom_size(r) > 0) {
-	    sprintf(buf, "size %7ld  ", rom_size(r));
-	    p = buf + strlen(buf);
-	    
-	    /* XXX */
-	    if (hashes_has_type(rom_hashes(r), HASHES_TYPE_CRC)) {
-		switch (rom_status(r)) {
-		case STATUS_OK:
-		    sprintf(p, "crc %.8lx: ", hashes_crc(rom_hashes(r)));
-		    break;
-		case STATUS_BADDUMP:
-		    sprintf(p, "bad dump    : ");
-		    break;
-		case STATUS_NODUMP:
-		    sprintf(p, "no good dump: ");
-		}
-	    } else
-		sprintf(p, "no good dump: ");
-
-	}
-	else
-	    sprintf(buf, "                          : ");
-	fputs(buf, stdout);
-    }
-    else
-	printf("game %-40s: ", gname);
-    
-    va_start(va, fmt);
-    vprintf(fmt, va);
-    va_end(va);
-
-    putc('\n', stdout);
-
-    if (r && rom_num_altnames(r)) {
-	for (j=0; j<rom_num_altnames(r); j++) {
-	    printf("rom  %-12s  ", rom_altname(r, j));
-	    fputs(buf, stdout);
-	    va_start(va, fmt);
-	    vprintf(fmt, va);
-	    va_end(va);
-
-	    printf(" (same as %s)\n", rom_name(r));
-	}
-    }
-
-    return;
 }
