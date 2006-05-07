@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.17 2006/05/05 00:47:29 wiz Exp $
+  $NiH: ckmame.c,v 1.18 2006/05/05 01:11:50 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -424,8 +424,7 @@ main(int argc, char **argv)
 static void
 error_multiple_actions(void)
 {
-    fprintf(stderr,
-	    "%s: only one of --cleanup-extra, --superfluous, game can be used",
-	    prg);
+    fprintf(stderr, "%s: only one of --cleanup-extra, --superfluous, "
+	    "game can be used\n", prg);
     exit(1);
 }
