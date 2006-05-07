@@ -1,5 +1,5 @@
 /*
-  $NiH: check_files.c,v 1.9 2006/05/04 23:33:20 dillo Exp $
+  $NiH: check_files.c,v 1.10 2006/05/05 01:10:08 dillo Exp $
 
   check_files.c -- match files against ROMs
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -268,7 +268,7 @@ update_game_status(const game_t *g, result_t *res)
     const match_t *m;
     const rom_t *r;
 
-    all_dead = all_correct = all_fixable = 1;
+    all_own_dead = all_dead = all_correct = all_fixable = 1;
     has_own = 0;
 
     for (i=0; i<game_num_files(g, file_type); i++) {
