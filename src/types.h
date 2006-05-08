@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.11 2006/05/05 01:11:50 wiz Exp $
+  $NiH: types.h,v 1.12 2006/05/05 09:44:58 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -64,7 +64,7 @@ enum game_status {
     GS_CORRECT,		/* all ROMs correct */
     GS_FIXABLE,		/* only fixable errors */
     GS_PARTIAL,		/* some ROMs missing */
-    GS_OLD,		/* all ROMs in old */
+    GS_OLD		/* all ROMs in old */
 };
 
 typedef enum game_status game_status_t;
