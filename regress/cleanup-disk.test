@@ -1,4 +1,4 @@
-# $NiH: cleanup-disk.test,v 1.1 2006/05/02 13:43:53 dillo Exp $
+# $NiH: cleanup-disk.test,v 1.2 2006/05/07 11:47:25 dillo Exp $
 description clean up disk images from extra dirs
 return 0
 args -O ../mame3.db -v --cleanup-extra -e extra
@@ -7,10 +7,10 @@ file-del extra/108-5.chd 108-5.chd
 file extra/108-5a.chd 108-5a.chd 108-5a.chd
 file-del extra/108-2.chd 108-2.chd
 stdout In image extra/108-2.chd:
-stdout image extra/108-2.chd: unknown
+stdout image extra/108-2.chd: not used
 stdout extra/108-2.chd: delete unused image
 stdout In image extra/108-5.chd:
-stdout image extra/108-5.chd: unknown
+stdout image extra/108-5.chd: duplicate
 stdout extra/108-5.chd: delete duplicate image
 stdout In image extra/108-5a.chd:
 stdout image extra/108-5a.chd: unknown

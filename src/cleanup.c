@@ -1,5 +1,5 @@
 /*
-  $NiH: cleanup.c,v 1.7 2006/05/06 00:29:32 dillo Exp $
+  $NiH: cleanup.c,v 1.8 2006/05/07 11:47:26 dillo Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -72,6 +72,8 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 		    break;
 	    }
 
+	    check_archive(a, NULL, res);
+	    
 	    warn_set_info(WARN_TYPE_ARCHIVE, archive_name(a));
 	    diagnostics_archive(a, res);
 	    
@@ -102,6 +104,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 		    break;
 	    }
 
+	    check_images(im, NULL, res);
 	    
 	    warn_set_info(WARN_TYPE_IMAGE, name);
 	    diagnostics_images(im, res);
@@ -134,8 +137,6 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
     
     if (flags & CLEANUP_UNKNOWN && fix_options & FIX_DO)
 	gb = garbage_new(a);
-	    
-    check_archive(a, NULL, res);
 	    
     archive_ensure_zip(a, 0);
     survivors = 0;
@@ -237,8 +238,6 @@ cleanup_disk(images_t *im, result_t *res, int flags)
     int i, move, ret;
     const char *name, *reason;
     
-    check_images(im, NULL, res);
-	    
     for (i=0; i<images_length(im); i++) {
 	if ((name=images_name(im, i)) == NULL)
 	    continue;
