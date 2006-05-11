@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.18 2006/05/05 01:11:50 wiz Exp $
+  $NiH: ckmame.c,v 1.19 2006/05/07 06:58:35 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -416,7 +416,7 @@ main(int argc, char **argv)
 	|| action == ACTION_SUPERFLUOUS_ONLY)
 	print_superfluous(superfluous);
     
-    exit(0);
+    return 0;
 }
 
 
