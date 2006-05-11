@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: pmap.c,v 1.1 2006/04/16 00:12:57 dillo Exp $
 
   pmap.c -- in-memory hash table mapping strings to pointers
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -155,6 +155,7 @@ iter_foreach(const DBT *k, const DBT *v, void *ud)
 
 
 
+/*ARGSUSED1*/
 static int
 iter_free(const DBT *k, const DBT *v, void *ud)
 {

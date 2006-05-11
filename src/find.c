@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.12 2006/05/09 14:34:22 wiz Exp $
+  $NiH: find.c,v 1.13 2006/05/11 21:13:32 wiz Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -211,6 +211,7 @@ check_for_file_in_zip(const char *name, const rom_t *r, match_t *m)
 
 
 
+/*ARGSUSED1*/
 static find_result_t
 check_match_disk_old(const game_t *g, const disk_t *d, match_disk_t *md)
 {
@@ -225,6 +226,7 @@ check_match_disk_old(const game_t *g, const disk_t *d, match_disk_t *md)
 
 
 
+/*ARGSUSED1*/
 static find_result_t
 check_match_disk_romset(const game_t *g, const disk_t *d, match_disk_t *md)
 {
