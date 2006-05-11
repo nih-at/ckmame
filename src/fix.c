@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.24 2006/05/05 10:13:00 wiz Exp $
+  $NiH: fix.c,v 1.25 2006/05/06 16:46:12 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -188,6 +188,9 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
     }
 
     fix_disks(g, im, res);
+
+    if (archive_changed)
+	archive_refresh(a);
 
     return archive_changed;
 }

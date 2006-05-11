@@ -11,6 +11,7 @@ tests:
   * /prog from file
   * broken input
 
+- [bug] ensure rompath[0] before trying to create zip file there
 - [bug] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version or /ckmame key
 - [bug] check if rompath/needed/extra are different
@@ -25,6 +26,9 @@ tests:
   - are two sets the same, just different name
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
+- [cleanup] use parray_t for rompath
+- [cleanup] refactor fixing code (one function per operation)
+- [cleanup] handle archive refreshing in archive.c
 - [cleanup] rename: file is part of zip archive, rom is part of game
 - [cleanup] no macros that evaluate arguments twice
 	parray_get_last

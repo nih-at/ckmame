@@ -23,6 +23,7 @@ TESTCASES=	\
 		baddump.test \
 		cleanup.test \
 		cleanup-disk.test \
+		cleanup-implicit.test \
 		delete-used-superfluous.test \
 		disk-from-extra-remove.test \
 		disk-from-superfluous-all.test \
