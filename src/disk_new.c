@@ -1,5 +1,5 @@
 /*
-  $NiH: disk_new.c,v 1.2 2006/04/17 11:31:11 dillo Exp $
+  $NiH: disk_new.c,v 1.3 2006/04/17 16:26:03 dillo Exp $
 
   disk_new.c -- create / free disk structure from image
   Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
@@ -173,7 +173,7 @@ get_hashes(struct chd *chd, struct hashes *h)
     for (hunk=0; hunk<chd->total_hunks; hunk++) {
 	n = chd->hunk_len > len ? len : chd->hunk_len;
 
-	if (chd_read_hunk(chd, hunk, buf) != chd->hunk_len) {
+	if (chd_read_hunk(chd, hunk, buf) != (int)chd->hunk_len) {
 	    /* XXX: include chd->error */
 	    myerror(ERRFILESTR, "error reading hunk %d", hunk);
 	    free(buf);

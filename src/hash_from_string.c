@@ -1,5 +1,5 @@
 /*
-  $NiH: hash_from_string.c,v 1.3 2005/09/27 21:33:02 dillo Exp $
+  $NiH: hash_from_string.c,v 1.4 2005/12/22 20:02:07 dillo Exp $
 
   hash_from_string.c -- convert string to hashes_t
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
@@ -34,7 +34,7 @@
 int
 hash_from_string(hashes_t *h, const char *str)
 {
-    int l;
+    size_t l;
     int type;
 
     if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))

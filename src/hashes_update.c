@@ -1,5 +1,5 @@
 /*
-  $NiH: hashes_update.c,v 1.1 2005/07/04 23:51:32 dillo Exp $
+  $NiH: hashes_update.c,v 1.2 2005/07/05 00:04:35 dillo Exp $
 
   hashes_update.c -- compute hashes
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -57,7 +57,7 @@ void
 hashes_update(struct hashes_update *hu, const unsigned char *buf, size_t len)
 {
     if (hu->h->types & HASHES_TYPE_CRC)
-	hu->crc = crc32(hu->crc, (Bytef *)buf, len);
+	hu->crc = crc32(hu->crc, (const Bytef *)buf, len);
     if (hu->h->types & HASHES_TYPE_MD5)
 	MD5Update(&hu->md5, buf, len);
     if (hu->h->types & HASHES_TYPE_SHA1)

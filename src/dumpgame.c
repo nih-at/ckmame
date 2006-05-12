@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.12 2006/04/18 09:16:02 dillo Exp $
+  $NiH: dumpgame.c,v 1.13 2006/05/04 07:52:45 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -548,10 +548,11 @@ dump_special(DB *db, const char *name)
 	{ DBH_KEY_LIST_SAMPLE, dump_list,       NULL },
 	{ "/stats",            dump_stats,      NULL }
     };
+    static const int nkeys = sizeof(keys)/sizeof(keys[0]);
 
     int i;
 
-    for (i=0; i<sizeof(keys)/sizeof(keys[0]); i++) {
+    for (i=0; i<nkeys; i++) {
 	if (strcasecmp(name, keys[i].key) == 0)
 	    return keys[i].f(db, (keys[i].arg_override ? keys[i].arg_override
 				  : name));

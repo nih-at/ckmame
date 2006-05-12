@@ -1,5 +1,5 @@
 /*
-  $NiH: superfluous.c,v 1.5 2006/04/15 22:52:58 dillo Exp $
+  $NiH: superfluous.c,v 1.6 2006/05/04 07:41:09 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -77,7 +77,7 @@ find_superfluous(const char *dbname)
     for (i=0; rompath[i]; i++) {
 	if ((len_dir=snprintf(dirname, sizeof(dirname), "%s/%s", rompath[i],
 			      file_type == TYPE_ROM ? "roms" : "samples"))
-	    > sizeof(dirname)-1) {
+	    > (int)sizeof(dirname)-1) {
 	    myerror(ERRDEF, "ROMPATH entry too long, skipping: `%s'",
 		    rompath[i]);
 	    continue;

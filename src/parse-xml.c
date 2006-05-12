@@ -1,8 +1,8 @@
 /*
-  $NiH: parse-xml.c,v 1.4 2005/12/24 11:31:16 dillo Exp $
+  $NiH: parse-xml.c,v 1.5 2006/01/02 09:00:24 wiz Exp $
 
   parse-xml.c -- parse listxml format files
-  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -112,7 +112,7 @@ parse_xml(parser_context_t *ctx)
     xmlTextReaderPtr reader;
     int in_description;
     int i, ret;
-    const xmlChar *name;
+    const char *name;
     char *attr;
     const struct entity *e;
     const struct attr *a;
@@ -129,7 +129,7 @@ parse_xml(parser_context_t *ctx)
     in_description = 0;
 
     while ((ret=xmlTextReaderRead(reader)) == 1) {
-	name = xmlTextReaderConstName(reader);
+	name = (const char *)xmlTextReaderConstName(reader);
 
 	if ((e=bsearch(name, entity, nentity, sizeof(entity[0]),
 		       entity_cmp)) != NULL) {
@@ -138,8 +138,8 @@ parse_xml(parser_context_t *ctx)
 		ret |= e->start(ctx, e->ft);
 		a = e->attr;
 		for (i=0; a[i].name; i++) {
-		    if ((attr=xmlTextReaderGetAttribute(reader,
-						e->attr[i].name)) != NULL) {
+		    if ((attr=(char *)xmlTextReaderGetAttribute(reader,
+				(const xmlChar *)e->attr[i].name)) != NULL) {
 			ret |= a[i].fn(ctx, a[i].ft, a[i].ht, attr);
 			free(attr);
 		    }
@@ -156,7 +156,8 @@ parse_xml(parser_context_t *ctx)
 		in_description = 0;
 	}
 	else if (in_description && strcmp(name, "#text") == 0)
-	    parse_game_description(ctx, xmlTextReaderConstValue(reader));
+	    parse_game_description(ctx,
+			   (const char *)xmlTextReaderConstValue(reader));
     }
     xmlFreeTextReader(reader);
 
@@ -174,7 +175,7 @@ parse_xml(parser_context_t *ctx)
 static int
 entity_cmp(const void *key, const void *ve)
 {
-    return strcmp(key, ((struct entity *)ve)->name);
+    return strcmp(key, ((const struct entity *)ve)->name);
 }
 
 
