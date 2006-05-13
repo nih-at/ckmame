@@ -32,21 +32,48 @@ ZIPCMP=`pkg-config --variable=zipcmp libzip`
 AC_SUBST(ZIPCMP, $ZIPCMP)
 
 # find usable db library
+
 db=none
-AC_CHECK_HEADERS([db_185.h db2/db_185.h db3/db_185.h db4/db_185.h db.h],
-		 [break])
-AC_CHECK_FUNCS(dbopen, [db=db; DBLIBS=''])
+
+# db 1.85, included in libc
+AC_CHECK_FUNCS(dbopen, [AC_CHECK_HEADERS([db.h], [db=db; DBLIBS=''])])
+
+# db 1.85, separate library
 if test "$db" = "none"
 then
-    AC_CHECK_LIB(db, dbopen, [db=db; DBLIBS='-ldb'],
-	[AC_CHECK_LIB(db2, dbopen, [db=db; DBLIBS='-ldb2'],
-	    [AC_CHECK_LIB(db3, __db185_open, [db=db; DBLIBS='-ldb3'],
-		[AC_CHECK_LIB(db4, __db185_open, [db=db; DBLIBS='-ldb4'])])])])
+    AC_CHECK_LIB(db, dbopen,
+                 [AC_CHECK_HEADERS([db.h], [db=db; DBLIBS='-ldb'])])
 fi
+
+# db 2 compatibility mode
+if test "$db" = "none"
+then
+    AC_CHECK_LIB(db2, dbopen,
+                 [AC_CHECK_HEADERS([db2/db_185.h db_185.h],
+		                   [db=db; DBLIBS='-ldb2'; break])])
+fi
+
+# db 3 compatibility mode
+if test "$db" = "none"
+then
+    AC_CHECK_LIB(db3, __db185_open,
+                 [AC_CHECK_HEADERS([db3/db_185.h db_185.h],
+		                   [db=db; DBLIBS='-ldb3'; break])])
+fi
+
+# db 4 compatibility mode
+if test "$db" = "none"
+then
+    AC_CHECK_LIB(db4, __db185_open,
+                 [AC_CHECK_HEADERS([db4/db_185.h db_185.h],
+		                   [db=db; DBLIBS='-ldb4'; break])])
+fi
+
 if test "$db" = "none"
 then
 	AC_MSG_ERROR(no supported data base library found)
 fi
+
 DBTYPE=$db
 
 AC_HEADER_DIRENT
