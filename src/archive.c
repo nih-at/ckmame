@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.13 2006/05/05 01:10:08 dillo Exp $
+  $NiH: archive.c,v 1.14 2006/05/05 10:38:51 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -40,7 +40,7 @@
 
 static archive_map_t *_amap = NULL;
 
-static int get_hashes(struct zip_file *zf, off_t, hashes_t *);
+static int get_hashes(struct zip_file *, off_t, hashes_t *);
 static int read_infos_from_zip(archive_t *);
 
 
