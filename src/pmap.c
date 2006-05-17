@@ -1,5 +1,5 @@
 /*
-  $NiH: pmap.c,v 1.1 2006/04/16 00:12:57 dillo Exp $
+  $NiH: pmap.c,v 1.2 2006/05/11 21:50:54 wiz Exp $
 
   pmap.c -- in-memory hash table mapping strings to pointers
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -28,14 +28,14 @@
 #include "pmap.h"
 #include "xmalloc.h"
 
-#define EXTRACT(v)	(*((void **)(v)->data))
-#define STORE(v, p)	((v)->size = sizeof(void *), (v)->data = &(p))
+#define store(v, p)	((v)->size = sizeof(void *), (v)->data = &(p))
 
 struct foreach_ud {
     pmap_foreach_f f;
     void *ud;
 };
 
+static void *extract(const DBT *);
 static void *lookup(pmap_t *, DBT *);
 static int iter_foreach(const DBT *, const DBT *, void *);
 static int iter_free(const DBT *, const DBT *, void *);
@@ -49,7 +49,7 @@ pmap_add(pmap_t *pm, const char *key, void *val)
     void *old;
 
     dbl_init_string_key(&k, key);
-    STORE(&v, val);
+    store(&v, val);
 
     if (pm->cb_free && (old=lookup(pm, &k)) != NULL)
 	pm->cb_free(old);
@@ -134,6 +134,21 @@ pmap_new(pmap_free_f f)
 
 
 
+static void *
+extract(const DBT *v)
+{
+    void *p;
+
+    if (v->size != sizeof(void *))
+	return NULL;
+
+    memcpy((void *)&p, v->data, sizeof(void *));
+
+    return p;
+}
+
+
+
 static int
 iter_foreach(const DBT *k, const DBT *v, void *ud)
 {
@@ -147,7 +162,7 @@ iter_foreach(const DBT *k, const DBT *v, void *ud)
     memcpy(s, k->data, k->size);
     s[k->size] = '\0';
 
-    ret = fud->f(s, EXTRACT(v), fud->ud);
+    ret = fud->f(s, extract(v), fud->ud);
 
     free(s);
     return ret;
@@ -163,7 +178,7 @@ iter_free(const DBT *k, const DBT *v, void *ud)
 
     f = (pmap_free_f)ud;
 
-    f(EXTRACT(v));
+    f(extract(v));
     return 0;
 }
 
@@ -177,5 +192,5 @@ lookup(pmap_t *pm, DBT *key)
     if (dbl_lookup(pm->db, key, &val) != 0)
 	return NULL;
 
-    return EXTRACT(&val);
+    return extract(&val);
 }
