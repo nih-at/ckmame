@@ -1,3 +1,20 @@
+2006-05-18 15:24  Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* docs/ckmame.man: regen; manually fix "--" and remove some
+	  spurious "Ar".
+
+2006-05-18 15:21  Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* docs/ckmame.mdoc: Unknown files are moved to unknown now.
+
+2006-05-18 15:19  Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* docs/ckmame.mdoc: Mention clrmamepro dat files.
+
+2006-05-18 14:45  Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* ChangeLog: Update ChangeLog for 0.8 release.
+
 2006-05-18 12:59 Thomas Klausner <wiz@danbala.tuwien.ac.at>
 
 	* configure.ac: Depend on libzip-0.7.1.
