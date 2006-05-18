@@ -1,3 +1,659 @@
+2006-05-18 12:59 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* configure.ac: Depend on libzip-0.7.1.
+
+2006-05-18 11:41 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* NEWS, configure.ac: Prepare for 0.8 release.
+
+2006-05-18 01:25 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/pmap.c: Fix bug on LP64 systems: db only aligns its data on a
+	  4-byte boundary, so dereferencing it as an 8-byte pointer causes
+	  unaligned access.  memcpy to aligned memory first.
+
+2006-05-16 09:52 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* src/archive.c: Remove argument name from prototype.
+
+2006-05-13 09:27 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* configure.ac: Improve db detection: check for library first, then
+	  for matching usable header.
+
+2006-05-13 00:12 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: disk_new.c, dumpgame.c, hash_from_string.c,
+	  hashes_update.c, parse-xml.c, superfluous.c: Fix (some of the)
+	  warnings found by gcc 4.1.
+
+2006-05-11 23:50 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* src/: find.c, pmap.c: Mark some arguments as used, for Irix cc.
+
+2006-05-11 23:31 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* src/ckmame.c: Exit main with return, one less warning for Irix
+	  cc.
+
+2006-05-11 23:13 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* src/find.c: Remove write-only variable, found by Irix cc.
+
+2006-05-11 18:51 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/Makefile.am, regress/cleanup-implicit.test,
+	  src/fix.c, src/tree.c: Always refresh fixed archive if it changed
+	  -- it might be searched for unrelated games.
+
+2006-05-11 12:08 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/cleanup-disk.test, regress/cleanup.test,
+	  regress/superfluous-cleanup.test, src/cleanup.c: Call
+	  check_{archive,images} before diagnositcs_{archive,images}.
+
+2006-05-09 16:34 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* src/find.c: Revert previous to fix build.
+
+2006-05-09 00:53 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: find.c, types.h: Fix warnings of IRIX C compiler.
+
+2006-05-08 00:47 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/check_files.c: Initialize all variables.
+
+2006-05-08 00:47 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* configure.ac: Fix bugs in db detection.
+
+2006-05-07 13:47 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/cleanup-disk.test, regress/cleanup.test,
+	  regress/superfluous-cleanup.test, src/Makefile.am, src/cleanup.c,
+	  src/diagnostics.c, src/funcs.h, src/warn.c, src/warn.h: Print
+	  diagnostics in cleanup.
+
+2006-05-07 08:58 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/ckmame.c: Add newline to end of error message.
+
+2006-05-07 01:31 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/2-cc-ok.zip, regress/Makefile.am,
+	  regress/garbage2.test, regress/garbage2.zip, src/funcs.h,
+	  src/garbage.c, src/zip_util.c: - When adding a file to a zip
+	  archive in unknown, make sure it has	 a unique name.  - Add
+	  files needed by recently added regression tests to EXTRA_DIST.
+	  (Hi wiz!)
+
+2006-05-07 01:01 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* NEWS, regress/Makefile.am, regress/disk-wrong.test,
+	  regress/disk-wrong2.test, regress/double.test,
+	  regress/garbage.test, regress/hasherr-c.test,
+	  regress/hasherr-pc.test, regress/hasherr.test,
+	  regress/hasherr2.test, regress/mid.test, regress/punknown.test,
+	  regress/rom-from-needed2.test, regress/rom-from-romset2.test,
+	  regress/sample-superfluous.test,
+	  regress/superfluous-cleanup.test, regress/wrong.test,
+	  src/check_util.c, src/fix_util.c, src/funcs.h, src/garbage.c,
+	  src/globals.h, src/util.c, src/util.h: - Move unknown file to
+	  directory `unknown', not to directory `garbage'   in ROM path.  -
+	  When moving disk image to unknown, ensure unique file name.
+
+2006-05-07 00:55 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/array_set.c: Belatedly commit
+
+2006-05-06 23:57 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* configure.ac: Depend on libzip>=0.7.
+
+2006-05-06 18:46 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, src/array.c, src/array.h, src/fix.c, src/parse.c: Make
+	  array_get a proper function.	Don't use array_get as an lvalue.
+	  Don't use array_t for a fixed-sized array of ints.
+
+2006-05-06 17:53 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/Makefile.am, regress/rom-from-extra-broken.test:
+	  Pass the options to ckmame that enable the behaviour this test
+	  expects. (Hi wiz!)
+
+2006-05-06 17:33 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO: Remove a [bug] that does not seem to be there.
+
+2006-05-06 17:32 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* regress/: Makefile.am, archive-broken2.test, runtest: Add another
+	  test.
+
+2006-05-06 02:38 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO: Say what needs to be done before release.  wizd: fix typo
+
+2006-05-06 02:29 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, src/cleanup.c, regress/superfluous-cleanup.test:
+	  (cleanup_list) If entry was deleted, don't skip new entry at same
+	  index.  superfluous-cleanup: Improve test case to also test
+	  images and old.
+
+2006-05-06 02:26 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/inconsistent-with-i.test: Adapt to new (correct) libzip
+	  error code.
+
+2006-05-05 12:40 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO, regress/1-8-broken.zip, regress/Makefile.am,
+	  regress/rom-from-extra-broken.test,
+	  regress/superfluous-broken.test: Add tests for broken files in
+	  zips; works as expected in superfluous, broken in extra dir.
+
+2006-05-05 12:38 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, src/archive.c, src/archive.h, src/array.h,
+	  src/array_grow.c, src/array_push.c, src/dat.h, src/dat_push.c,
+	  src/delete_list.c, src/delete_list.h, src/game.h, src/parse.c,
+	  src/parse.h: First part of elimination of macros that evaluate
+	  arguments more than once.
+
+2006-05-05 12:25 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO, regress/Makefile.am,
+	  regress/rom-from-extra-inconsistent.test,
+	  regress/superfluous-inconsistent.test: Add two tests for
+	  inconsistent files (in extra/superfluous).
+
+2006-05-05 12:12 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO, regress/1-4-inconsistent.zip, regress/Makefile.am,
+	  regress/archive-broken.test, regress/inconsistent-with-i.test,
+	  regress/inconsistent-without-i.test, src/fix.c: Add tests for
+	  inconsistent zip archives with and without -i.
+
+2006-05-05 11:53 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: array_grow.c, array_push.c: The files were swapped, correct
+	  it.
+
+2006-05-05 11:51 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO, regress/Makefile.am, regress/gamelist-from-file.in,
+	  regress/gamelist-from-file.test: add test for ckmame -T.
+
+2006-05-05 11:44 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: Makefile.am, parse.c, rom.h, romcmp.c, types.h: Retire
+	  romcmp and state_t.
+
+2006-05-05 11:30 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO: Add one.
+
+2006-05-05 03:25 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO: add two.
+
+2006-05-05 03:19 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO: Add one.
+
+2006-05-05 03:13 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* regress/: Makefile.am, rom-duplicate-ok.test: Duplicate file, but
+	  all ok, no changes necessary.
+
+2006-05-05 03:12 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* docs/ckmame.mdoc: Document --ignore-unknown.
+
+2006-05-05 03:11 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* regress/Makefile.am, regress/ignore-unknown.test, src/ckmame.c,
+	  src/fix.c, src/types.h: Add --ignore-unknown flag: unknown files
+	  will not be fixed in any way (but reported).
+
+2006-05-05 03:10 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, src/archive.c, src/check_files.c, src/rom.h, src/romcmp.c,
+	  src/util.c, src/util.h: Use case sensitive comparison of full
+	  name (including directories) when comparing ROM names.
+
+2006-05-05 02:47 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* docs/ckmame.mdoc, src/ckmame.c: Fix a typo in usage, and rename
+	  --ignoreextra to --ignore-extra.
+
+2006-05-05 02:44 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* docs/ckmame.mdoc, src/ckmame.c, src/cleanup.c, src/fix.c,
+	  src/types.h: Rename --keep-long to --move-long and --keep-unknown
+	  to --move-unknown, because they better describe their behaviour.
+	  They are still on by default.
+
+2006-05-05 01:33 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/1-4-2.zip, regress/2-44-ok.zip,
+	  regress/Makefile.am, regress/rom-duplicate-1st.test,
+	  regress/rom-duplicate-2nd.test, regress/rom-duplicate-wrong.test,
+	  src/check_files.c: If game contains multiple identical roms,
+	  duplicate file in archive.
+
+2006-05-05 01:17 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* docs/dumpgame.man: regen
+
+2006-05-05 00:42 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO, docs/dumpgame.mdoc: Describe special keywords for dumpgame.
+
+2006-05-05 00:41 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO: Add one.
+
+2006-05-04 10:02 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/: mkmamedb-lost-parent.dump, mkmamedb-multi-dats.dump,
+	  mkmamedb-ok.dump: Regen with newer db format version.
+
+2006-05-04 10:00 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO: Add one.
+
+2006-05-04 09:56 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* docs/db-format, src/dbh.h: Bump db format version for case
+	  sensitive lists.
+
+2006-05-04 09:52 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, src/ckmame.c, src/dumpgame.c, src/file_by_hash.c,
+	  src/file_location.c, src/game_add_clone.c, src/parse.c:
+	  Consistently treat game names and file names as case sensitive.
+
+2006-05-04 09:41 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/superfluous.c: Use srcmp to compare file names.
+
+2006-05-04 09:26 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: archive.c, archive.h: Remember wether we want integrity
+	  checking for an archive, so we can reopen it with the correct
+	  flags.
+
+2006-05-04 01:24 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/parse-cm.c: Don't warn about overlong line if newline of last
+	  line is missing.
+
+2006-05-04 01:24 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO: add a bug.
+
+2006-05-04 01:17 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/2-48-broken.zip: Remove trailing garbage.
+
+2006-05-02 15:43 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/Makefile.am, regress/cleanup-disk.test,
+	  src/cleanup.c, src/fix.c, src/fix_util.c, src/funcs.h: Clean up
+	  disk images.
+
+2006-05-02 15:43 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/Makefile.am: Distribute header file added in last.
+
+2006-05-01 23:09 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/Makefile.am, regress/cleanup.test,
+	  regress/disk-from-superfluous-all.test, regress/mamedb-disk.txt,
+	  regress/old-complete.test, regress/old-disk.test,
+	  regress/old-partial.test, regress/superfluous-cleanup.test,
+	  src/Makefile.am, src/check_archive.c, src/check_disks.c,
+	  src/check_files.c, src/check_images.c, src/check_old.c,
+	  src/check_util.c, src/cleanup.c, src/diagnostics.c, src/find.c,
+	  src/find.h, src/fix.c, src/fix_util.c, src/funcs.h, src/images.c,
+	  src/images.h, src/match_disk.c, src/match_disk.h, src/result.c,
+	  src/result.h, src/tree.c: Commit changes of last weekend (done
+	  offline):
+
+	  - Don't copy db files into test directory, use directly from ..
+	  - Open all disk images in tree.c.  - Split disk / disk image
+	  checking and diagnostics (fixing still to do).  - When renaming,
+	  moving or, deleting a superfluous image, remove it from list.  -
+	  Fix memory leak when overwriting disk match source.  - Add
+	  framework to clean up disk images (actual cleanup still missing).
+	   - Search for disks in old.
+
+2006-04-29 00:44 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/Makefile.am, regress/hasherr-extra.test,
+	  regress/hasherr-no-i.test: Add two regression tests.
+
+2006-04-29 00:27 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* NEWS: add one
+
+2006-04-29 00:25 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* NEWS: update
+
+2006-04-28 23:55 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/ckmame.c: Add missing break that caused -T to also imply -v.
+
+2006-04-28 23:38 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* docs/: ckmame.man, ckmame.mdoc: Document new options and
+	  environment variable.
+
+2006-04-28 23:24 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, src/ckmame.c: Add new option -T (--games-from): read list
+	  of games to check from file.
+
+2006-04-28 22:58 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/ckmame.c: Add O to options.
+
+2006-04-28 22:25 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/Makefile.am, regress/superfluous-cleanup.test,
+	  src/ckmame.c, src/cleanup.c, src/funcs.h: Clean up unknown/needed
+	  files when cleaning up superfluous.
+
+2006-04-28 22:24 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: Makefile.am, garbage.h: Forgot to add garbage.h with
+	  cleanup part 2.
+
+2006-04-28 22:01 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: Makefile.am, cleanup.c, delete_list.c, fix.c, fix_util.c,
+	  funcs.h, garbage.c, util.h: cleanup, part 2: Redo garbage
+	  handling, move needed and empty archive handling to fix_util.c
+
+2006-04-28 20:52 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: Makefile.am, check_util.c, cleanup.c, find.c, fix_util.c,
+	  funcs.h, globals.h, util.h, util2.c, zip_util.c: cleanup part 1:
+	  split and remove util2.c
+
+2006-04-26 23:01 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, docs/mkmamedb.man, regress/Makefile.am,
+	  regress/cleanup.test, src/archive.c, src/check_archive.c,
+	  src/check_disks.c, src/check_files.c, src/ckmame.c, src/dbh.h,
+	  src/delete_list.c, src/delete_list.h, src/fix.c, src/funcs.h,
+	  src/globals.h, src/util2.c: - Implement extra dir and superfluous
+	  (missing moving of unknown   to garbage) cleanup.  - Fix
+	  searching in extra dirs so all hash types are compared.  - Do
+	  integrity checks only for zip archives from ROMPATH.
+
+2006-04-24 13:41 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO: update
+
+2006-04-24 13:38 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/Makefile.am, src/check_archive.c, src/check_files.c,
+	  src/check_old.c, src/check_roms.c, src/ckmame.c,
+	  src/diagnostics.c, src/find.c, src/find.h, src/fix.c,
+	  src/funcs.h, src/globals.h, src/match.c, src/match.h,
+	  src/result.c, src/result.h, src/tree.c, src/types.h, src/util2.c,
+	  regress/1-a-ok.zip, regress/2-4a-ok.zip, regress/Makefile.am,
+	  regress/mamedb.txt, regress/mkmamedb-multi-dats.dump,
+	  regress/mkmamedb-ok.dump, regress/old-complete.test,
+	  regress/old-partial.test: Remove no longer used file check_roms
+	  (replaced by check_files some time ago).  Remove on longer used
+	  functions match_merge and match_cmp.	Add support for having part
+	  of the ROM set offline (via olddb).  XXX: Update documentation.
+
+2006-04-23 20:25 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/Makefile.am: add missing files to distribution
+
+2006-04-23 20:23 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/runtest: Copy .db files from .., not ${srcdir}.
+
+2006-04-21 02:43 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/archive.c: Fix broken check for no such file error.
+
+2006-04-18 11:16 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, src/dumpgame.c: Add /stats special key: print statistics
+	  (total size, # of games/roms/disks)
+
+2006-04-17 19:04 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, src/parse.c: Convert `\' in ROM names to `/'.  XXX: Issue
+	  warning, or option to disable?
+
+2006-04-17 18:26 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/108-5a.chd, regress/Makefile.am, regress/diff.chd,
+	  regress/disk-parent.test, src/chd.h, src/disk_new.c: Skip disk
+	  images that need a parent, and add test for it.
+
+2006-04-17 17:50 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/: mamedb.txt, many.zip, mkmamedb-multi-dats.dump,
+	  mkmamedb-ok.dump, rom-many.test, runtest: Add support to runtest
+	  for limiting resources with ulimit.  Add test that moves many
+	  roms from one zip archive to another.
+
+2006-04-17 13:31 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: Makefile.am, archive.c, archive.h, archive_map.h,
+	  check_disks.c, disk.c, disk.h, disk_get_info.c, disk_map.h,
+	  disk_new.c, find.c, fix.c, util2.c: - Move disk_get_info into
+	  disk_new.  - Add cache of opened archives and disk images.
+
+2006-04-17 13:04 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/runtest: When SETUP_ONLY, also print args.
+
+2006-04-16 02:12 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: Makefile.am, db-db.c, dbl.h, pmap.c, pmap.h: Add pmap, a
+	  hash table mapping strings to pointers.  XXX: compile tested only
+
+2006-04-16 02:12 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: dbh.c, dbl.c: (dbl_init_string_key) strdup is not needed,
+	  simply point to the	original string.
+
+2006-04-16 00:52 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO, regress/Makefile.am, regress/dbdump.c, src/Makefile.am,
+	  src/ckmame.c, src/db-db.c, src/db-db.h, src/dbh.c, src/dbh.h,
+	  src/dbl.c, src/dbl.h, src/dumpgame.c, src/error.c, src/error.h,
+	  src/filetype_db_key.c, src/map.c, src/mkmamedb.c, src/r_dat.c,
+	  src/r_file_by_hash.c, src/r_game.c, src/r_list.c,
+	  src/superfluous.c, src/w_dat.c, src/w_file_by_hash_parray.c,
+	  src/w_game.c, src/w_list.c, src/w_util.c: Clean up database
+	  functions and clearly separate into two layers: - dbl:
+	  abstraction of the data base backend - dbh: compressed on-disk
+	  mame.db data base
+
+2006-04-14 20:31 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO: Add another one (prompted by Nokia dat file).
+
+2006-04-14 20:27 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/archive-broken.test: Finish test case, now that the
+	  program works.
+
+2006-04-14 20:26 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/delete_list.c: Strings should not be compared with !=, use
+	  strcmp.
+
+2006-04-14 20:25 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/archive.c: Use `' in error message.
+
+2006-04-14 01:36 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* regress/: Makefile.am, archive-broken.test: Add a regression test
+	  that demonstrates a bug.
+
+2006-04-14 01:30 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* src/: fix.c, funcs.h: Bump copyright for previous.
+
+2006-04-14 01:28 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/util2.c: (my_zip_open) zip_error_to_str returns int, not char
+	  *.
+
+2006-04-14 01:17 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* TODO, src/fix.c, src/funcs.h, src/util2.c: Add new function
+	  make_unique_name, and use it.
+
+2006-04-14 00:44 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO: Add two more found during last MAME update.
+
+2006-04-14 00:41 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO: Add missing tests and cleanup found during
+	  read_infos_from_zip error handling improvements.
+
+2006-04-14 00:38 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/fix.c: (fix_game) If archive_ensure_zip fails, move the file
+	  away and try	       again, creating a new zip archive.
+
+2006-04-14 00:37 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/archive.c: (archive_new) If read_infos_from_zip fails to open
+	  the zip file	      and create == 0, return NULL.
+
+2006-04-13 23:41 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/find.c: (find_in_archives) Check that archive has file with
+	  index we're interested in.
+
+2006-04-13 23:38 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/archive.c: Use TYPE_t, not struct TYPE.
+
+2006-04-12 01:59 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO: Add two bugs found by wiz.
+
+2006-04-06 14:32 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO: add two
+
+2006-04-06 01:17 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* docs/db-format: Add version history
+
+2006-04-06 01:05 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/Makefile.am, regress/mkmamedb-lost-parent.dump,
+	  regress/mkmamedb-multi-dats.dump, regress/mkmamedb-ok.dump,
+	  src/dbl.c, src/dbl.h: Fix bug introduced with 4-byte size field:
+	  don't overwrite last 2 bytes of size field with compressed data.
+	  Bump database version.
+
+2006-04-06 00:39 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: result.c, result.h: Actually add the result structure.
+
+2006-04-06 00:36 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: Makefile.am, check_archive.c, check_disks.c, check_files.c,
+	  diagnostics.c, fix.c, funcs.h, tree.c: New structure result_t
+	  that contains results of all checks.	Use throughout.
+
+2006-03-24 23:38 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* docs/mkmamedb.mdoc, src/mkmamedb.c: Use -x (--exclude) instead of
+	  -i.  Update man page for recent mkmamdb changes.
+
+2006-03-17 17:46 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: Makefile.am, dat.h, dat_entry.c, dat_push.c, mkmamedb.c,
+	  parse.c, parse.h: Clean up passing around dat info.  Add support
+	  for omitting games matching shel glob patterns.
+
+2006-03-17 11:59 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/mkmamedb-lost-parent.dump,
+	  regress/mkmamedb-multi-dats.dump, regress/mkmamedb-ok.dump,
+	  src/dat.h, src/dat_entry_finalize.c, src/dat_push.c, src/dbl.c,
+	  src/dbl.h, src/dumpgame.c, src/mkmamedb.c, src/parse-cm.c,
+	  src/parse.c, src/parse.h: - add description to /dat - omit
+	  description from game if it is equal to name - use a 4 byte size
+	  field for db entries - bump database format version to 10
+
+2006-03-15 21:31 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/mamedb-2.txt: add input file for new test case (noted by
+	  wiz)
+
+2006-03-15 20:51 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* src/parse.h: Bump date in copyright.
+
+2006-03-15 19:27 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/Makefile.am, regress/mamedb.txt,
+	  regress/mkmamedb-multi-dats.dump,
+	  regress/mkmamedb-multi-dats.test, regress/mkmamedb-ok.dump,
+	  src/Makefile.am, src/dat.h, src/dat_entry_finalize.c,
+	  src/dat_push.c, src/dbh.h, src/dumpgame.c, src/mkmamedb.c,
+	  src/parse-cm.c, src/parse.c, src/parse.h, src/r_dat.c,
+	  src/w_dat.c: Allow creating database from multiple input files.
+
+2006-03-14 23:11 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* regress/mkmamedb-lost-parent.dump, regress/mkmamedb-ok.dump,
+	  src/Makefile.am, src/dat.h, src/dbh.h, src/dbl.h, src/dumpgame.c,
+	  src/game.h, src/parse.c, src/r_dat.c, src/r_game.c, src/r_prog.c,
+	  src/w_dat.c, src/w_game.c, src/w_prog.c: Change database format
+	  in preparation for multiple dat files.
+
+2006-03-14 21:30 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* src/: check_archive.c, check_disks.c, check_files.c, find.c,
+	  find.h: Give find_*in_romset a db argument.
+
+2006-01-02 10:00 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* regress/dbdump.c, src/dumpgame.c, src/parse-xml.c, src/parse.c:
+	  Add lint-style ARGSUSED comments to quiet Irix cc (without -c99).
+
+2005-12-30 08:56 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* src/ckmame.c: Retire -u and -U, as promised in the NEWS file.
+
+2005-12-30 01:23 Dieter Baron <dillo@danbala.tuwien.ac.at>
+
+	* TODO: Add one found during 0.7 portability tests.
+
+2005-12-28 22:20 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* docs/ckmame.man: regen
+
+2005-12-28 22:20 Thomas Klausner <wiz@danbala.tuwien.ac.at>
+
+	* docs/ckmame.mdoc: Sync -e description with others.
+
 2005-12-28 22:12  wiz@danbala.tuwien.ac.at
 
 	* configure.ac: bump version to 0.7
