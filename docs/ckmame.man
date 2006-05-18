@@ -1,4 +1,6 @@
-.\" $NiH: ckmame.mdoc,v 1.7 2005/12/28 21:20:21 wiz Exp $
+.\" Converted with mdoc2man 0.2
+.\" from NiH: ckmame.mdoc,v 1.13 2006/05/18 13:21:35 wiz Exp 
+.\" $NiH: ckmame.mdoc,v 1.13 2006/05/18 13:21:35 wiz Exp $
 .\"
 .\" Copyright (c) 2003, 2004, 2005 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -28,25 +30,27 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH CKMAME 1 "April 28, 2006" NiH
+.TH CKMAME 1 "May 5, 2006" NiH
 .SH "NAME"
 ckmame \- verify MAME ROM sets
 .SH "SYNOPSIS"
 .B ckmame
-[\fB\-bcdFfhjKkLlnSsVvw\fR]
-[\fB\-D\fR \fBdbfile\fR]
-[\fB\-e\fR \fBdir\fR]
-[\fB\-O\fR \fBdbfile\fR]
-[\fB\-T\fR \fBfile\fR]
+[\fB-bcdFfhjKkLlnSsVvw\fR]
+[\fB-D\fR \fBdbfile\fR]
+[\fB-e\fR \fBdir\fR]
+[\fB-O\fR \fBdbfile\fR]
+[\fB-T\fR \fBfile\fR]
 [\fBgame ...\fR]
 .SH "DESCRIPTION"
 .B ckmame
 is a program to check ROM sets for MAME, the Multiple Arcade
 Machine Emulator (see
-.Pa http://www.mame.net/ ),
+\fBhttp://www.mame.net/\fR),
 or other emulators that provide ROM set information in a compatible
-way (e.g., Raine, Impact, or other emulators.)
-It tells you which ROM files are missing or have a wrong checksum,
+way (e.g., Raine, Impact, or other emulators).
+This is the same format as clrmamepro dat files.
+.B ckmame
+tells you which ROM files are missing or have a wrong checksum,
 can delete unknown and unused files from the ROM sets, and rename
 or move files.
 .PP
@@ -66,7 +70,7 @@ does only support ROM sets stored as zip files.
 .PP
 .B ckmame
 tries to create a
-``split''ROM set
+``split ROM set''
 from your current collection.
 This means that all files needed by the parent are kept in the
 parent's zip file, and only the files needed by the clone (or child)
@@ -90,106 +94,110 @@ Shell wildcards are allowed.
 You can use command line options to select which type of errors to report.
 .SS "OPTIONS"
 Supported options:
-
+.RS
 .TP 24
-Fl b, \-nobroken
+\fB-b\fR, \-\-nobroken
 Don't report unfixable errors.
 See also
-\fB\-f\fR
+\fB-f\fR
 and
-\fB\-w\fR.
+\fB-w\fR.
 .TP 24
-\fB\-\-cleanup\-extra\fR
+\fB\-\-cleanup-extra\fR
 Remove files already in ROM set from extra directories.
 .TP 24
-\fB\-c\fR, \-correct
+\fB-c\fR, \-\-correct
 Report correct sets.
 Normally they are not mentioned.
 .TP 24
-\fB\-D\fR \fBdbfile, \fB\-\-db\fR Ar dbfile\fR
+\fB-D\fR \fBdbfile, \fB\-\-db\fR dbfile\fR
 Use
 \fBdbfile\fR
 as database file.
 .TP 24
-\fB\-d\fR, \-nonogooddumps
+\fB-d\fR, \-\-nonogooddumps
 Don't report ROMs with no known good dumps.
 .TP 24
-\fB\-e\fR \fBdir, \fB\-\-search\fR Ar dir\fR
+\fB-e\fR \fBdir, \fB\-\-search\fR dir\fR
 Look for missing files in directory
 \fBdir\fR
 and its subdirectories.
 Recommended for use with update sets.
 See also
-\fB\-j\fR.
+\fB-j\fR.
 .TP 24
-Fl e, \fBdir,  \fB\-\-search\fR Ar dir\fR
+\fB-e\fR, \fBdir,  \fB\-\-search\fR dir\fR
 Search for missing ROMs in
 \fBdir.\fR
 .TP 24
-\fB\-F\fR, \-fix
+\fB-F\fR, \-\-fix
 Fix ROM sets; do as much as possible, such as renaming and moving
 files.
 .TP 24
-\fB\-f\fR, \-nofixable
+\fB-f\fR, \-\-nofixable
 Don't report fixable errors.
 See also
-\fB\-b\fR
+\fB-b\fR
 and
-\fB\-w\fR.
+\fB-w\fR.
 .TP 24
-\fB\-h\fR, \-help
+\fB-h\fR, \-\-help
 Display a short help message.
 .TP 24
-\fB\-i\fR, \-integrity
+\fB\-\-ignore-unknown\fR
+Ignore unknown files when fixing.
+They will still be reported.
+.TP 24
+\fB-i\fR, \-\-integrity
 Check integrity of zip archives and disk images
 by computing checksums and comparing them with the
 internally saved ones.
 .TP 24
-\fB\-j\fR, \-delete\-found
+\fB-j\fR, \-\-delete-found
 When using
-\fB\-e\fR,
+\fB-e\fR,
 delete files that are copied to the ROM set.
 See also
-\fB\-\-keep\-found\fR.
+\fB\-\-keep-found\fR.
 .TP 24
-\fB\-\-keep\-found\fR
+\fB\-\-keep-found\fR
 When using
-\fB\-e\fR,
+\fB-e\fR,
 do not remove files that are copied to the ROM set (default).
 See also
-\fB\-j\fR.
+\fB-j\fR.
 .TP 24
-\fB\-K\fR, \-keep\-unknown
-Keep unknown files when fixing (default).
+\fB-K\fR, \-\-move-unknown
+Move unknown files when fixing (default).
 They are moved into a zip file with the same name under
-.Pa roms/garbage.
+\fBroms/garbage\fR.
 See also
-\fB\-k\fR.
+\fB-k\fR.
 .TP 24
-\fB\-k\fR, \-delete\-unknown
-Don't keep unknown files when fixing.
+\fB-k\fR, \-\-delete-unknown
+Delete unknown files when fixing.
 See also
-\fB\-K\fR.
+\fB-K\fR.
 .TP 24
-\fB\-L\fR, \-keep\-long
-Keep too long files when fixing (default).
+\fB-L\fR, \-\-move-long
+Move too long files when fixing (default).
 See also
-\fB\-K\fR
+\fB-K\fR
 and
-\fB\-l\fR.
+\fB-l\fR.
 .TP 24
-\fB\-l\fR, \-delete\-long
-Don't keep long files when fixing, delete them instead.
+\fB-l\fR, \-\-delete-long
+Delete long files when fixing.
 See also
-\fB\-L\fR.
+\fB-L\fR.
 .TP 24
-\fB\-n\fR, \-dryrun
+\fB-n\fR, \-\-dryrun
 Don't actually fix anything, just report what would be done.
 .TP 24
-\fB\-S\fR, \-samples
+\fB-S\fR, \-\-samples
 Check samples instead of ROMs.
 .TP 24
-\fB\-O\fR \fBdbfile, \fB\-\-old\-db\fR Ar dbfile\fR
+\fB-O\fR \fBdbfile, \fB\-\-old-db\fR dbfile\fR
 Assume that files listed in
 \fBdbfile\fR
 exist elsewhere.
@@ -197,78 +205,82 @@ exist elsewhere.
 \fB\-\-superfluous\fR
 Only check for superfluous files in ROM sets.
 .TP 24
-\fB\-s\fR, \-nosuperfluous
+\fB-s\fR, \-\-nosuperfluous
 Don't report superfluous (unneeded) files.
 .TP 24
-\fB\-T\fR \fBfile, \fB\-\-games\-from\fR Ar file\fR
+\fB-T\fR \fBfile, \fB\-\-games-from\fR file\fR
 Read list of games to check from
 \fBfile.\fR
 .TP 24
-\fB\-V\fR, \-version
+\fB-V\fR, \-\-version
 Display program name and version number.
 .TP 24
-\fB\-v\fR, \-verbose
+\fB-v\fR, \-\-verbose
 Print fixes made.
 .TP 24
-\fB\-w\fR, \-nowarnings
+\fB-w\fR, \-\-nowarnings
 Print only unfixable error, like missing or completely incorrect ROMs.
 See also
-\fB\-b\fR
+\fB-b\fR
 and
-\fB\-f\fR.
+\fB-f\fR.
 .TP 24
-\fB\-X\fR, \-ignoreextra
+\fB-X\fR, \-\-ignore-extra
 Do not mention extra files that are in the ROMs or samples dirs
 respectively.
 Most of the time these are ROM sets whose names have changed.
 Additionally,
 .B ckmame
 creates a
-.Pa roms/garbage
+\fBroms/garbage\fR
 directory (see also
-\fB\-K\fR ),
+\fB-K\fR ),
 which you will also be warned about.
-
+.RE
 .SH "ENVIRONMENT"
-
+.RS
 .TP 12
 Ev MAMEDB
 Location for the database file.
 Can be overridden with the
-\fB\-D\fR
+\fB-D\fR
 option.
 Defaults to
-``Pa''mame.db.
+``\fBmame.db\fR.''
 .TP 12
 Ev MAMEDB_OLD
 Location for the database file of files that exist elsewhere.
 Can be overridden with the
-\fB\-O\fR
+\fB-O\fR
 option.
 Defaults to
-``Pa''old.db.
+``\fBold.db\fR.''
 .TP 12
 Ev ROMPATH
 Location for the ROM zip files.
 Defaults to
-``Pa''\&. .
-
+``\fB.\fR.''
+.RE
 .SH "FILES"
-Unknown files are moved to the sub\-directory
-.Pa roms/garbage.
+Unknown files are moved to the sub-directory
+\fBunknown\fR.
 Files that will be needed by other games in the ROM set are moved
 to the
-.Pa needed
+\fBneeded\fR
 directory.
 .SH "EXAMPLES"
 Print a report about the current state of your ROM sets in the
-.Pa roms
+\fBroms\fR
 subdir of the current dir:
-.Dl Ic ckmame
+.IP
+\fBckmame\fR
+.PP
 .PP
 Fix all sets and only report unfixable errors, omitting those
 ROMs where no good dump exists:
-.Dl Ic ckmame \-Fwd
+.IP
+\fBckmame \-Fwd\fR
+.PP
 .SH "DIAGNOSTICS"
 Most messages should be straightforward.
 Two need special explanations:
@@ -280,7 +292,7 @@ as the checksum stored in the zip archive,
 usually because there has been a decompression error.
 .PP
 If a ROM or disk is marked with
-``checksum''mismatch,
+``checksum mismatch'',
 the primary checksum matches, but one of the other checksums
 does not.
 The primary checksum for ROMs is CRC32, for disks MD5.
@@ -289,7 +301,7 @@ dumpgame(1),
 mkmamedb(1),
 xmame(6)
 .SH "AUTHORS"
-\-nosplit
+
 .B ckmame
 was written by
 Dieter Baron
