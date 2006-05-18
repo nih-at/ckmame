@@ -1,5 +1,5 @@
 AC_PREREQ(2.54)
-AC_INIT([ckmame],[0.7],[nih@giga.or.at])
+AC_INIT([ckmame],[0.8],[nih@giga.or.at])
 AC_CONFIG_SRCDIR([src/ckmame.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
