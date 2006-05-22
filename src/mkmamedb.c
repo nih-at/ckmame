@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.5 2006/03/24 22:38:24 dillo Exp $
+  $NiH: mkmamedb.c,v 1.6 2006/04/15 22:52:58 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -38,6 +38,7 @@
 #include "dbh.h"
 #include "funcs.h"
 #include "error.h"
+#include "output.h"
 #include "parse.h"
 #include "w.h"
 #include "xmalloc.h"
@@ -90,8 +91,7 @@ struct option options[] = {
 int
 main(int argc, char **argv)
 {
-    DB *db;
-    parser_context_t *ctx;
+    output_context_t *out;
     char *dbname;
     parray_t *exclude;
     dat_entry_t dat;
@@ -147,29 +147,18 @@ main(int argc, char **argv)
 	dat_entry_init(&dat);
     }
 
-    remove(dbname);
-    db = dbh_open(dbname, DBL_WRITE);
-    if (db==NULL) {
-	myerror(ERRDB, "can't create database '%s'", dbname);
+    if ((out=output_db_new(dbname)) == NULL)
 	exit(1);
-    }
-    if ((ctx=parser_context_new(db, exclude)) == NULL) {
-	dbh_close(db);
-	exit(1);
-    }
 
-    w_version(db);
-
+    /* XXX: handle errors */
     if (optind == argc)
-	parse(ctx, NULL, &dat);
+	parse(NULL, exclude, &dat, out);
     else {
 	for (i=optind; i<argc; i++)
-	    parse(ctx, argv[i], &dat);
+	    parse(argv[i], exclude, &dat, out);
     }
 
-    parse_bookkeeping(ctx);
-    parser_context_free(ctx);
-    dbh_close(db);
+    output_close(out);
 
     if (exclude)
 	parray_free(exclude, free);

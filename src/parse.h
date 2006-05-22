@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.7 2006/03/17 16:46:01 dillo Exp $
+  $NiH: parse.h,v 1.8 2006/05/05 10:38:51 dillo Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -31,48 +31,49 @@
 #include "dat.h"
 #include "dbl.h"
 #include "game.h"
-#include "map.h"
+#include "output.h"
+
+enum parser_state {
+    PARSE_IN_HEADER,
+    PARSE_IN_GAME,
+    PARSE_IN_FILE,
+    PARSE_OUTSIDE
+};
+
+typedef enum parser_state parser_state_t;
 
 struct parser_context {
-    DB *db;
+    /* config */
     const parray_t *ignore;
+    dat_entry_t dat_default;
+
+    /* output */
+    output_context_t *output;
 
     /* current file */
+    /* XXX: move out of context */
     FILE *fin;			/* input file */
     int lineno;			/* current line number in input file */
+
+    /* state */
+    parser_state_t state;
     dat_entry_t de;		/* info about dat file */
     game_t *g;			/* current game */
     rom_t *r;			/* current rom */
     disk_t *d;			/* current disk */
-
-    /* accumulated info */
-    dat_t *dat;
-    map_t *map_rom;
-    map_t *map_disk;
-    int romhashtypes;
-    int diskhashtypes;
-
-    parray_t *lost_children;
-    array_t *lost_children_types;
-
-    parray_t *list[TYPE_MAX];
-    
-    /* state */
 };
 
 typedef struct parser_context parser_context_t;
 
 /* parser functions */
 
-int parse(parser_context_t *, const char *, const dat_entry_t *);
-int parse_bookkeeping(parser_context_t *);
+int parse(const char *, const parray_t *, const dat_entry_t *,
+	  output_context_t *);
+
+/* backend parser functions */
+
 int parse_cm(parser_context_t *);
 int parse_xml(parser_context_t *);
-
-void parser_context_finalize_perfile(parser_context_t *);
-void parser_context_free(parser_context_t *);
-void parser_context_init_perfile(parser_context_t *);
-parser_context_t *parser_context_new(DB *, const parray_t *);
 
 /* callbacks */
 

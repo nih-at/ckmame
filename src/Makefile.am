@@ -61,6 +61,8 @@ libckmame_a_SOURCES= \
 	map.c \
 	match.c \
 	match_disk.c \
+	output.c \
+	output_db.c \
 	parray.c \
 	parray_delete.c \
 	parray_index.c \
