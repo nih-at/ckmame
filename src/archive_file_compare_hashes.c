@@ -1,11 +1,8 @@
-#ifndef _HAD_UTIL_H
-#define _HAD_UTIL_H
-
 /*
-  $NiH: util.h,v 1.8 2006/05/06 23:01:53 dillo Exp $
+  $NiH: archive.c,v 1.15 2006/05/16 07:52:51 wiz Exp $
 
-  util.h -- miscellaneous utility functions
-  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
+  archive_file_compare_hashes.c -- compare hashes with file in archive
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -24,18 +21,30 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+
+
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include "types.h"
+#include "archive.h"
+#include "globals.h"
 
 
 
-typedef int (*cmpfunc)(const void *, const void *);
+int
+archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h)
+{
+    hashes_t *rh;
 
-char *bin2hex(char *, const unsigned char *, unsigned int);
-int hex2bin(unsigned char *, const char *, unsigned int);
-const char *mybasename(const char *);
-name_type_t name_type(const char *);
-int psort(void **, int, int, int (*)(const void *, const void *));
+    rh = rom_hashes(archive_file(a, i));
 
-#endif
+    if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h))
+	archive_file_compute_hashes(a, i, hashes_types(h)|romhashtypes);
+
+    if (rom_status(archive_file(a, i)) != STATUS_OK)
+	return HASHES_CMP_NOCOMMON;
+
+    return hashes_cmp(rh, h);
+}

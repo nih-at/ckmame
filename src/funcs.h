@@ -2,7 +2,7 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.19 2006/05/06 23:31:40 dillo Exp $
+  $NiH: funcs.h,v 1.20 2006/05/07 11:47:26 dillo Exp $
 
   funcs.h -- tree functions
   Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
@@ -42,15 +42,6 @@
 #define CLEANUP_NEEDED	0x1
 #define CLEANUP_UNKNOWN	0x2
 
-enum name_type {
-    NAME_ZIP,
-    NAME_CHD,
-    NAME_NOEXT,
-    NAME_UNKNOWN
-};
-
-typedef enum name_type name_type_t;
-
 
 
 void check_archive(archive_t *, const char *, result_t *);
@@ -80,7 +71,6 @@ int my_remove(const char *name);
 struct zip *my_zip_open(const char *, int);
 int my_zip_rename(struct zip *, int, const char *);
 char *my_zip_unique_name(struct zip *, const char *);
-name_type_t name_type(const char *);
 int name_is_zip(const char *);
 void print_superfluous(const parray_t *);
 void remove_empty_archive(const char *);

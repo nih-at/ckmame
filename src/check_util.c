@@ -1,5 +1,5 @@
 /*
-  $NiH: check_util.c,v 1.2 2006/05/01 21:09:11 dillo Exp $
+  $NiH: check_util.c,v 1.3 2006/05/06 23:01:52 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -28,6 +28,7 @@
 #include "dir.h"
 #include "funcs.h"
 #include "globals.h"
+#include "util.h"
 #include "xmalloc.h"
 
 
@@ -90,7 +91,7 @@ ensure_extra_maps(int flags)
 	    file = parray_get(superfluous, i);
 	    switch ((nt=name_type(file))) {
 	    case NAME_ZIP:
-		if ((a=archive_new(file, TYPE_FULL_PATH, 0)) != NULL) {
+		if ((a=archive_new(file, 0)) != NULL) {
 		    enter_archive_in_map(extra_file_map, a, ROM_SUPERFLUOUS);
 		    archive_free(a);
 		}
@@ -237,28 +238,6 @@ make_file_name(filetype_t ft, int idx, const char *name)
 
 
 
-name_type_t
-name_type(const char *name)
-{
-    int l;
-
-    l = strlen(name);
-
-    if (strchr(name, '.') == NULL)
-	return NAME_NOEXT;
-
-    if (l > 4) {
-	if (strcmp(name+l-4, ".chd") == 0)
-	    return NAME_CHD;
-	if (strcmp(name+l-4, ".zip") == 0)
-	    return NAME_ZIP;
-    }
-
-    return NAME_UNKNOWN;
-}
-
-
-
 static void
 enter_archive_in_map(map_t *map, const archive_t *a, where_t where)
 {
@@ -293,7 +272,7 @@ enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
 	}
 	switch ((nt=name_type(b))) {
 	case NAME_ZIP:
-	    if ((a=archive_new(b, TYPE_FULL_PATH, 0)) != NULL) {
+	    if ((a=archive_new(b, 0)) != NULL) {
 		if (zip_map)
 		    enter_archive_in_map(zip_map, a, where);
 		if (list)

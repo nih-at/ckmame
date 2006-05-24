@@ -1,7 +1,7 @@
 /*
-  $NiH: archive.c,v 1.14 2006/05/05 10:38:51 dillo Exp $
+  $NiH: archive.c,v 1.15 2006/05/16 07:52:51 wiz Exp $
 
-  rom.c -- initialize / finalize rom structure
+  archive.c -- information about an archive
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -91,24 +91,6 @@ archive_ensure_zip(archive_t *a, int createp)
 
 
 int
-archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h)
-{
-    hashes_t *rh;
-
-    rh = rom_hashes(archive_file(a, i));
-
-    if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h))
-	archive_file_compute_hashes(a, i, hashes_types(h)|romhashtypes);
-
-    if (rom_status(archive_file(a, i)) != STATUS_OK)
-	return HASHES_CMP_NOCOMMON;
-
-    return hashes_cmp(rh, h);
-}
-
-
-
-int
 archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 {
     hashes_t h;
@@ -130,8 +112,9 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     }
 
     hashes_types(&h) = hashtypes;
-    /* XXX: check return value */
     if (get_hashes(zf, rom_size(r), &h) < 0) {
+	myerror(ERRZIP, "error reading index %d: %s", idx,
+		zip_file_strerror(zf));
 	zip_fclose(zf);
 	rom_status(r) = STATUS_BADDUMP;
 	return -1;
@@ -248,50 +231,33 @@ archive_free(archive_t *a)
 
 
 archive_t *
-archive_new(const char *name, filetype_t ft, int createp)
+archive_new(const char *name, int flags)
 {
     archive_t *a;
-    char *full_name;
-    int created;
     int i;
 
-    created = 0;
-    full_name = findfile(name, ft);
-    if (full_name == NULL) {
-	if (createp) {
-	    created = 1;
-	    full_name = make_file_name(ft, 0, name);
-	}
-	else
-	    return NULL;
-    }
-    
-    if (_amap && (a=archive_map_get(_amap, full_name)) != NULL) {
-	free(full_name);
+    if (_amap && (a=archive_map_get(_amap, name)) != NULL) {
 	a->refcount++;
 	return a;
     }
 
     a = xmalloc(sizeof(*a));
-    a->name = full_name;
+    a->name = xstrdup(name);
     a->refcount = 1;
     a->files = array_new(sizeof(rom_t));
     a->za = NULL;
-    a->check_integrity = (ft == TYPE_ROM ? check_integrity : 0);
+    a->check_integrity = (flags & ARCHIVE_FL_CHECK_INTEGRITY);
 
-    if (!created) {
-	if (read_infos_from_zip(a) < 0) {
-	    if (!createp) {
-		archive_real_free(a);
-		return NULL;
-	    }
+    if (read_infos_from_zip(a) < 0) {
+	if (!(flags & ARCHIVE_FL_CREATE)) {
+	    archive_real_free(a);
+	    return NULL;
 	}
-	else {
-	    for (i=0; i<archive_num_files(a); i++) {
-		/* XXX: rom_state(archive_file(a, i)) = ROM_UNKNOWN; */
-		rom_where(archive_file(a, i)) = (where_t) -1;
-	    }
-	}
+    }
+
+    for (i=0; i<archive_num_files(a); i++) {
+	/* XXX: rom_state(archive_file(a, i)) = ROM_UNKNOWN; */
+	rom_where(archive_file(a, i)) = (where_t) -1;
     }
 
     if (_amap == NULL)
@@ -364,21 +330,20 @@ read_infos_from_zip(archive_t *a)
     rom_t *r;
     int i;
     int zerr;
+    char errstr[80];
 
     zerr = 0;
     if ((za=zip_open(archive_name(a),
-		     a->check_integrity ? ZIP_CHECKCONS : 0, 
+		     (a->check_integrity ? ZIP_CHECKCONS : 0), 
 		     &zerr)) == NULL) {
 	/* no error if file doesn't exist */
 	if (!(zerr == ZIP_ER_OPEN && errno == ENOENT)) {
-	    char errstr[80];
-
 	    zip_error_to_str(errstr, sizeof(errstr), zerr, errno);
 	    myerror(ERRDEF, "error opening zip archive `%s': %s",
 		    archive_name(a), errstr);
-	}
 
-	return -1;
+	    return -1;
+	}
     }
 
     archive_zip(a) = za;

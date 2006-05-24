@@ -1,5 +1,5 @@
 /*
-  $NiH: cleanup.c,v 1.8 2006/05/07 11:47:26 dillo Exp $
+  $NiH: cleanup.c,v 1.9 2006/05/11 10:08:12 dillo Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -26,6 +26,7 @@
 #include "funcs.h"
 #include "garbage.h"
 #include "globals.h"
+#include "util.h"
 #include "warn.h"
 
 static void cleanup_archive(archive_t *, result_t *, int);
@@ -56,7 +57,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	name = (char *)parray_get(list, i);
 	switch ((nt=name_type(name))) {
 	case NAME_ZIP:
-	    if ((a=archive_new(name, TYPE_FULL_PATH, 0)) == NULL) {
+	    if ((a=archive_new(name, 0)) == NULL) {
 		/* XXX */
 		continue;
 	    }

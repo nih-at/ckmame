@@ -20,7 +20,6 @@ tests:
 - [feature] export from DB to CM dat file(s)
 - [feature] config file (provides defaults overridable on command line)
 - [feature] cmcheck style diagnostics
-- [feature] create dat file / db from zip archives
 - [feature] database consistency checks during mkmamedb
   - are all roms of one set included in one other set
   - are two sets the same, just different name

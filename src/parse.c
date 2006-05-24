@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.17 2006/05/06 16:46:12 dillo Exp $
+  $NiH: parse.c,v 1.18 2006/05/22 21:36:47 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -23,6 +23,7 @@
 
 
 
+#include <sys/stat.h>
 #include <fnmatch.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,7 +33,6 @@
 #include "error.h"
 #include "funcs.h"
 #include "parse.h"
-#include "r.h"
 #include "types.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -68,34 +68,43 @@ parse(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
     parser_context_t *ctx;
     FILE *fin;
     int c, ret;
+    struct stat st;
 
+    fin = NULL;
     if (fname == NULL) {
 	fin = stdin;
 	seterrinfo("*stdin*", NULL);
     }
     else {
-	if ((fin=fopen(fname, "r")) == NULL) {
-	    myerror(ERRSTR, "can't open romlist file `%s'", fname);
+	if (stat(fname, &st) == -1) {
+	    myerror(ERRSTR, "can't stat romlist file `%s'", fname);
 	    return -1;
 	}
-	seterrinfo(fname, NULL);
+	if ((st.st_mode & S_IFMT) != S_IFDIR) {
+	    if ((fin=fopen(fname, "r")) == NULL) {
+		myerror(ERRSTR, "can't open romlist file `%s'", fname);
+		return -1;
+	    }
+	    seterrinfo(fname, NULL);
+	}
     }
 
     ctx = parser_context_new(exclude, dat, out);
 
+    if (fin) {
+	c = getc(fin);
+	ungetc(c, fin);
 
-    ctx->fin = fin;
+	if (c == '<')
+	    ret = parse_xml(fin, ctx);
+	else
+	    ret = parse_cm(fin, ctx);
 
-    c = getc(ctx->fin);
-    ungetc(c, ctx->fin);
-
-    if (c == '<')
-	ret = parse_xml(ctx);
+	if (fname != NULL)
+	    fclose(fin);
+    }
     else
-	ret = parse_cm(ctx);
-
-    if (fname != NULL)
-	fclose(ctx->fin);
+	ret = parse_dir(fname, ctx);
 
     parser_context_free(ctx);
 
@@ -427,7 +436,6 @@ parser_context_new(const parray_t *exclude, const dat_entry_t *dat,
     ctx->ignore = exclude;
     ctx->state = PARSE_IN_HEADER;
 
-    ctx->fin = NULL;
     ctx->lineno = 0;
     dat_entry_init(&ctx->de);
     ctx->g = NULL;

@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.8 2006/05/05 10:38:51 dillo Exp $
+  $NiH: parse.h,v 1.9 2006/05/22 21:36:47 dillo Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -52,7 +52,6 @@ struct parser_context {
 
     /* current file */
     /* XXX: move out of context */
-    FILE *fin;			/* input file */
     int lineno;			/* current line number in input file */
 
     /* state */
@@ -72,8 +71,9 @@ int parse(const char *, const parray_t *, const dat_entry_t *,
 
 /* backend parser functions */
 
-int parse_cm(parser_context_t *);
-int parse_xml(parser_context_t *);
+int parse_cm(FILE *, parser_context_t *);
+int parse_dir(const char *, parser_context_t *);
+int parse_xml(FILE *, parser_context_t *);
 
 /* callbacks */
 

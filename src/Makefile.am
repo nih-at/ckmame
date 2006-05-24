@@ -6,13 +6,14 @@ bin_PROGRAMS=ckmame mkmamedb dumpgame
 noinst_LIBRARIES=libckmame.a
 
 ckmame_LDADD=libckmame.a @DBLIBS@ @LIBZIP_LIBS@
-mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@
+mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
 dumpgame_LDADD=libckmame.a @DBLIBS@
 
 libckmame_a_LIBADD=@LIBOBJS@
 
 libckmame_a_SOURCES= \
 	archive.c \
+	archive_file_compare_hashes.c \
 	array.c \
 	array_delete.c \
 	array_grow.c \
@@ -62,6 +63,7 @@ libckmame_a_SOURCES= \
 	match.c \
 	match_disk.c \
 	output.c \
+	output_cm.c \
 	output_db.c \
 	parray.c \
 	parray_delete.c \
@@ -73,6 +75,7 @@ libckmame_a_SOURCES= \
 	parray_set_length.c \
 	parray_sort_real.c \
 	parse-cm.c \
+	parse-dir.c \
 	parse-xml.c \
 	parse.c \
 	pmap.c \
@@ -123,6 +126,7 @@ noinst_HEADERS=\
 	map.h \
 	match.h \
 	match_disk.h \
+	output.h \
 	parray.h \
 	parse.h \
 	pmap.h \

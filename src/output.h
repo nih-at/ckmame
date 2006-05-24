@@ -16,7 +16,7 @@ struct output_context {
 
 
 
-output_context_t *output_dat_new(const char *);
+output_context_t *output_cm_new(const char *);
 output_context_t *output_db_new(const char *);
 
 int output_close(output_context_t *);

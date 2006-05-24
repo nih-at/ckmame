@@ -1,8 +1,8 @@
 /*
-  $NiH: util.c,v 1.4 2005/12/22 22:12:03 dillo Exp $
+  $NiH: util.c,v 1.6 2006/05/06 23:01:53 dillo Exp $
 
   util.c -- utility functions
-  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -78,4 +78,26 @@ hex2bin(unsigned char *t, const char *s, int unsigned tlen)
 	t[i] = HEX2BIN(s[i*2])<<4 | HEX2BIN(s[i*2+1]);
     
     return 0;
+}
+
+
+
+name_type_t
+name_type(const char *name)
+{
+    int l;
+
+    l = strlen(name);
+
+    if (strchr(name, '.') == NULL)
+	return NAME_NOEXT;
+
+    if (l > 4) {
+	if (strcmp(name+l-4, ".chd") == 0)
+	    return NAME_CHD;
+	if (strcmp(name+l-4, ".zip") == 0)
+	    return NAME_ZIP;
+    }
+
+    return NAME_UNKNOWN;
 }

@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.12 2006/05/05 09:44:58 dillo Exp $
+  $NiH: types.h,v 1.13 2006/05/08 22:53:18 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -91,6 +91,15 @@ enum filetype {
 };
 
 typedef enum filetype filetype_t;
+
+enum name_type {
+    NAME_ZIP,
+    NAME_CHD,
+    NAME_NOEXT,
+    NAME_UNKNOWN
+};
+
+typedef enum name_type name_type_t;
 
 #define FIX_DO			0x001 /* really make fixes */
 #define FIX_PRINT		0x002 /* print fixes made */

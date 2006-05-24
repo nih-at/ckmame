@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-xml.c,v 1.5 2006/01/02 09:00:24 wiz Exp $
+  $NiH: parse-xml.c,v 1.6 2006/05/12 22:12:18 dillo Exp $
 
   parse-xml.c -- parse listxml format files
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -107,7 +107,7 @@ static int xml_read(void *, char *, int);
 
 
 int
-parse_xml(parser_context_t *ctx)
+parse_xml(FILE *fin, parser_context_t *ctx)
 {
     xmlTextReaderPtr reader;
     int in_description;
@@ -117,7 +117,7 @@ parse_xml(parser_context_t *ctx)
     const struct entity *e;
     const struct attr *a;
 
-    reader = xmlReaderForIO(xml_read, xml_close, ctx->fin, NULL, NULL, 0);
+    reader = xmlReaderForIO(xml_read, xml_close, fin, NULL, NULL, 0);
     if (reader == NULL) {
 	/* XXX */
 	printf("opening error\n");

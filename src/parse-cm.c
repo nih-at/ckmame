@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-cm.c,v 1.6 2006/03/17 10:59:27 dillo Exp $
+  $NiH: parse-cm.c,v 1.7 2006/05/03 23:24:49 dillo Exp $
 
   parse-cm.c -- parse listinfo/CMpro format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -39,7 +39,7 @@ static char *gettok(char **);
 
 
 int
-parse_cm(parser_context_t *ctx)
+parse_cm(FILE *fin, parser_context_t *ctx)
 {
     char b[8192], *cmd, *p, *l;
     enum parse_state state;
@@ -47,15 +47,15 @@ parse_cm(parser_context_t *ctx)
     ctx->lineno = 0;
     state = st_top;
     
-    while (fgets(l=b, 8192, ctx->fin)) {
+    while (fgets(l=b, 8192, fin)) {
 	ctx->lineno++;
-	if (b[strlen(b)-1] != '\n' && !feof(ctx->fin)) {
+	if (b[strlen(b)-1] != '\n' && !feof(fin)) {
 	    cmd = gettok(&l);
 	    if ((cmd == NULL) || (strcmp(cmd, "history"))) {
 		myerror(ERRFILE, "%d: warning: line too long (ignored)",
 			ctx->lineno);
 	    }
-	    while (fgets(b, 8192, ctx->fin)) {
+	    while (fgets(b, 8192, fin)) {
 		if (b[strlen(b)-1] == '\n')
 		    break;
 	    }

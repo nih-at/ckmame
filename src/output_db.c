@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: output_db.c,v 1.1 2006/05/22 21:36:47 dillo Exp $
 
   output-db.c -- write games to DB
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -311,6 +311,8 @@ output_db_close(output_context_t *out)
     array_free(ctx->lost_children_types, NULL);
     for (i=0; i<TYPE_MAX; i++)
 	parray_free(ctx->list[i], free);
+
+    free(ctx);
 
     return ret;
 }

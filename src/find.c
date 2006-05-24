@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.13 2006/05/11 21:13:32 wiz Exp $
+  $NiH: find.c,v 1.14 2006/05/11 21:50:54 wiz Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -130,8 +130,7 @@ find_in_archives(map_t *map, const rom_t *r, match_t *m)
     for (i=0; i<parray_length(pa); i++) {
 	fbh = parray_get(pa, i);
 
-	if ((a=archive_new(file_location_ext_name(fbh),
-			   TYPE_FULL_PATH, 0)) == NULL
+	if ((a=archive_new(file_location_ext_name(fbh), 0)) == NULL
 	    || archive_num_files(a) < file_location_ext_index(fbh)) {
 	    /* XXX: internal error */
 	    return FIND_ERROR;
@@ -186,12 +185,17 @@ find_in_romset(const rom_t *r, const char *skip, match_t *m)
 static find_result_t
 check_for_file_in_zip(const char *name, const rom_t *r, match_t *m)
 {
+    char *full_name;
     archive_t *a;
     int idx;
 
-    if ((a=archive_new(name, TYPE_ROM, 0)) == NULL)
+    if ((full_name=findfile(name, TYPE_ROM)) == NULL
+	|| (a=archive_new(full_name, 0)) == NULL) {
+	free(full_name);
 	return FIND_MISSING;
-    
+    }
+    free(full_name);
+
     if ((idx=archive_file_index_by_name(a, rom_name(r))) >= 0
 	&& archive_file_compare_hashes(a, idx,
 				       rom_hashes(r)) == HASHES_CMP_MATCH) {

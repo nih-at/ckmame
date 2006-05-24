@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.6 2006/04/15 22:52:58 dillo Exp $
+  $NiH: mkmamedb.c,v 1.7 2006/05/22 21:36:47 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -86,6 +86,9 @@ struct option options[] = {
     { NULL,               0, 0, 0 },
 };
 
+/* XXX: needed by archive.c:read_infos_from_zip */
+int romhashtypes = 0;
+
 
 
 int
@@ -147,8 +150,15 @@ main(int argc, char **argv)
 	dat_entry_init(&dat);
     }
 
-    if ((out=output_db_new(dbname)) == NULL)
-	exit(1);
+    /* XXX: proper selection mechanism */
+    if (strlen(dbname)>4 && strcmp(dbname+strlen(dbname)-4, ".dat") == 0) {
+	if ((out=output_cm_new(dbname)) == NULL)
+	    exit(1);
+    }
+    else {
+	if ((out=output_db_new(dbname)) == NULL)
+	    exit(1);
+    }
 
     /* XXX: handle errors */
     if (optind == argc)
