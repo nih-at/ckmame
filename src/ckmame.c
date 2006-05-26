@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.19 2006/05/07 06:58:35 dillo Exp $
+  $NiH: ckmame.c,v 1.20 2006/05/11 21:31:19 wiz Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -340,8 +340,11 @@ main(int argc, char **argv)
 		    myerror(ERRZIP, "overly long line ignored");
 		    continue;
 		}
-		    
-		tree_add(tree, b);
+
+		if (parray_index_sorted(list, b, strcmp) >= 0)
+		    tree_add(tree, b);
+		else
+		    myerror(ERRDEF, "game `%s' unknown", b);
 	    }
 
 	    fclose(f);
