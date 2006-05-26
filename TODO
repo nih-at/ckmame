@@ -11,6 +11,7 @@ tests:
   * /prog from file
   * broken input
 
+- [bug] -T does not check if line in file even exists in database
 - [bug] ensure rompath[0] before trying to create zip file there
 - [bug] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version or /ckmame key
