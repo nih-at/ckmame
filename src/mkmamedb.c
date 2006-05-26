@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.7 2006/05/22 21:36:47 dillo Exp $
+  $NiH: mkmamedb.c,v 1.8 2006/05/24 09:29:18 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -44,7 +44,7 @@
 #include "xmalloc.h"
 
 char *prg;
-char *usage = "Usage: %s [-hV] [-i pat] [-o dbfile] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
+char *usage = "Usage: %s [-hV] [-i pat] [-o dbfile] [-F fmt] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
 
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
@@ -52,6 +52,7 @@ char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
 char help[] = "\n\
   -h, --help                display this help message\n\
   -V, --version             display version number\n\
+  -F, --format [db|cm]      specify output format [default: db]\n\
   -o, --output dbfile       write to database dbfile\n\
   -x, --exclude pat         exclude games matching shell glob PAT\n\
       --prog-description d  set description of rominfo\n\
@@ -67,7 +68,7 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "ho:Vx:"
+#define OPTIONS "hF:o:Vx:"
 
 enum {
     OPT_PROG_DESCRIPTION = 256,
@@ -79,6 +80,7 @@ struct option options[] = {
     { "help",             0, 0, 'h' },
     { "version",          0, 0, 'V' },
     { "exclude",          1, 0, 'x' },
+    { "format",           1, 0, 'F' },
     { "output",           1, 0, 'o' },
     { "prog-description", 1, 0, OPT_PROG_DESCRIPTION },
     { "prog-name",        1, 0, OPT_PROG_NAME },
@@ -98,6 +100,7 @@ main(int argc, char **argv)
     char *dbname;
     parray_t *exclude;
     dat_entry_t dat;
+    output_format_t fmt;
     int c, i;
 
     prg = argv[0];
@@ -107,6 +110,7 @@ main(int argc, char **argv)
 	dbname = DBH_DEFAULT_DB_NAME;
     dat_entry_init(&dat);
     exclude = NULL;
+    fmt = OUTPUT_FMT_DB;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -119,6 +123,17 @@ main(int argc, char **argv)
 	case 'V':
 	    fputs(version_string, stdout);
 	    exit(0);
+	case 'F':
+	    if (strcmp(optarg, "cm") == 0)
+		fmt = OUTPUT_FMT_CM;
+	    else if (strcmp(optarg, "db") == 0)
+		fmt = OUTPUT_FMT_DB;
+	    else {
+		fprintf(stderr, "%s: unknown output format `%s'\n",
+			prg, optarg);
+		exit(1);
+	    }
+	    break;
 	case 'o':
 	    dbname = optarg;
 	    break;
@@ -150,15 +165,8 @@ main(int argc, char **argv)
 	dat_entry_init(&dat);
     }
 
-    /* XXX: proper selection mechanism */
-    if (strlen(dbname)>4 && strcmp(dbname+strlen(dbname)-4, ".dat") == 0) {
-	if ((out=output_cm_new(dbname)) == NULL)
+    if ((out=output_new(fmt, dbname)) == NULL)
 	    exit(1);
-    }
-    else {
-	if ((out=output_db_new(dbname)) == NULL)
-	    exit(1);
-    }
 
     /* XXX: handle errors */
     if (optind == argc)

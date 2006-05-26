@@ -1,8 +1,8 @@
 /*
-  $NiH: output_db.c,v 1.1 2006/05/22 21:36:47 dillo Exp $
+  $NiH: output_dat.c,v 1.1 2006/05/24 09:29:18 dillo Exp $
 
   output-dat.c -- write games to clrmamepro dat files
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
