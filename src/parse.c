@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.18 2006/05/22 21:36:47 dillo Exp $
+  $NiH: parse.c,v 1.19 2006/05/24 09:29:18 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -302,32 +302,28 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
 
     CHECK_STATE(ctx, PARSE_IN_GAME);
     
-    if (name_matches(ctx->g, ctx->ignore)) {
-	game_free(ctx->g);
-	ctx->g = NULL;
-	return 0;
-    }
+    if (!name_matches(ctx->g, ctx->ignore)) {
+	g = ctx->g;
 
-    g = ctx->g;
-
-    /* omit description if same as name (to save space) */
-    if (game_name(g) && game_description(g)
-	&& strcmp(game_name(g), game_description(g)) == 0) {
-	free(game_description(g));
-	game_description(g) = NULL;
-    }
-
-    for (i=0; i<GAME_RS_MAX; i++) {
-	if (game_cloneof(g, i, 0)) {
-	    if (strcmp(game_cloneof(g, i, 0), game_name(g)) == 0) {
-		free(game_cloneof(g, i, 0));
-		game_cloneof(g, i, 0) = NULL;
-		continue;
+	/* omit description if same as name (to save space) */
+	if (game_name(g) && game_description(g)
+	    && strcmp(game_name(g), game_description(g)) == 0) {
+	    free(game_description(g));
+	    game_description(g) = NULL;
+	}
+	
+	for (i=0; i<GAME_RS_MAX; i++) {
+	    if (game_cloneof(g, i, 0)) {
+		if (strcmp(game_cloneof(g, i, 0), game_name(g)) == 0) {
+		    free(game_cloneof(g, i, 0));
+		    game_cloneof(g, i, 0) = NULL;
+		    continue;
+		}
 	    }
 	}
-    }
 
-    output_game(ctx->output, ctx->g);
+	output_game(ctx->output, ctx->g);
+    }
 
     game_free(ctx->g);
     ctx->g = NULL;
