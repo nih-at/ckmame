@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.9 2006/05/22 21:36:47 dillo Exp $
+  $NiH: parse.h,v 1.10 2006/05/24 09:29:18 dillo Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -68,6 +68,7 @@ typedef struct parser_context parser_context_t;
 
 int parse(const char *, const parray_t *, const dat_entry_t *,
 	  output_context_t *);
+int export_db(DB *, const parray_t *, const dat_entry_t *, output_context_t *);
 
 /* backend parser functions */
 
@@ -92,5 +93,9 @@ int parse_game_start(parser_context_t *, filetype_t);
 int parse_prog_description(parser_context_t *, const char *);
 int parse_prog_name(parser_context_t *, const char *);
 int parse_prog_version(parser_context_t *, const char *);
+
+/* util functions */
+
+int name_matches(const game_t *, const parray_t *);
 
 #endif /* parse.h */

@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.8 2006/05/24 09:29:18 dillo Exp $
+  $NiH: mkmamedb.c,v 1.9 2006/05/26 21:46:50 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -102,6 +102,7 @@ main(int argc, char **argv)
     dat_entry_t dat;
     output_format_t fmt;
     int c, i;
+    DB *db;
 
     prg = argv[0];
 
@@ -172,8 +173,13 @@ main(int argc, char **argv)
     if (optind == argc)
 	parse(NULL, exclude, &dat, out);
     else {
-	for (i=optind; i<argc; i++)
-	    parse(argv[i], exclude, &dat, out);
+	for (i=optind; i<argc; i++) {
+	    if ((db=dbh_open(argv[i], DBL_READ)) != NULL) {
+		export_db(db, exclude, &dat, out);
+	    }
+	    else
+		parse(argv[i], exclude, &dat, out);
+	}
     }
 
     output_close(out);

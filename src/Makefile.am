@@ -40,6 +40,7 @@ libckmame_a_SOURCES= \
 	disk.c \
 	disk_new.c \
 	error.c \
+	export_db.c \
 	file_location.c \
 	file_location_ext.c \
 	file_location_finalize.c \

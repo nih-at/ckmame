@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.19 2006/05/24 09:29:18 dillo Exp $
+  $NiH: parse.c,v 1.20 2006/05/28 14:55:59 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -56,7 +56,6 @@ static parser_context_t *parser_context_new(const parray_t *,
 static int parse_header_end(parser_context_t *);
 
 static void disk_end(parser_context_t *);
-static int name_matches(const game_t *, const parray_t *);
 static void rom_end(parser_context_t *, filetype_t);
 
 
@@ -474,7 +473,7 @@ disk_end(parser_context_t *ctx)
 
 
 
-static int
+int
 name_matches(const game_t *g, const parray_t *ignore)
 {
     int i;

@@ -13,11 +13,13 @@ tests:
 
 - [bug] ensure rompath[0] before trying to create zip file there
 - [bug] rom: use flag to specify whether we know the size
-- [bug] dumpgame: report real database version or /ckmame key
+- [bug] dumpgame: report real database version for /ckmame key
 - [bug] check if rompath/needed/extra are different
+- [bug] DB export: pass all dat entries to output backend
+- [docs] update mkmamedb man page
 - [feature] inconsistent zip in ROM set: copy files to new zip
 - [feature] dumpgame: dump samples
-- [feature] export from DB to CM dat file(s)
+- [feature] mkmamedb: split to original CM dat files on export
 - [feature] config file (provides defaults overridable on command line)
 - [feature] cmcheck style diagnostics
 - [feature] database consistency checks during mkmamedb
