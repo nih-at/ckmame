@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.13 2006/05/04 07:52:45 dillo Exp $
+  $NiH: dumpgame.c,v 1.14 2006/05/12 22:12:18 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -45,7 +45,7 @@
 #include "util.h"
 #include "xmalloc.h"
 
-static int dump_game(DB *, const char *);
+static int dump_game(DB *, const char *, int);
 static int dump_hashtypes(DB *, const char *);
 static int dump_list(DB *, const char *);
 static int dump_dat(DB *, const char *);
@@ -66,6 +66,7 @@ char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
 char help[] = "\n\
+  -b  --brief          brief listing (omit ROM details)\n\
   -c, --checksum       find games containing ROMs with given checksums\n\
   -d, --disk           find games containing disks with given checksums\n\
   -D, --db dbfile      use database dbfile\n\
@@ -81,9 +82,10 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hcdD:V"
+#define OPTIONS "hbcdD:V"
 
 struct option options[] = {
+    { "brief",         0, 0, 'b' },
     { "checksum",      0, 0, 'c' },
     { "db",            1, 0, 'D' },
     { "disk",          0, 0, 'd' },
@@ -254,7 +256,7 @@ main(int argc, char **argv)
     char *dbname;
     DB *db;
     int c;
-    int find_checksum;
+    int find_checksum, brief_mode;
     filetype_t filetype;
 
     prg = argv[0];
@@ -263,11 +265,14 @@ main(int argc, char **argv)
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
 
-    find_checksum = 0;
+    find_checksum = brief_mode = 0;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
+	case 'b':
+	    brief_mode = 1;
+	    break;
 	case 'c':
 	    find_checksum = 1;
 	    filetype = TYPE_ROM;
@@ -335,7 +340,7 @@ main(int argc, char **argv)
 		    first = 0;
 		else
 		    putc('\n', stdout);
-		dump_game(db, argv[i]);
+		dump_game(db, argv[i], brief_mode);
 	    }
 	    else
 		myerror(ERRDEF, "game `%s' unknown", argv[i]);
@@ -348,7 +353,7 @@ main(int argc, char **argv)
 			first = 0;
 		    else
 			putc('\n', stdout);
-		    dump_game(db, parray_get(list, j));
+		    dump_game(db, parray_get(list, j), brief_mode);
 		    found = 1;
 		}
 	    }
@@ -411,7 +416,7 @@ print_rs(game_t *game, filetype_t ft,
 
 
 static int
-dump_game(DB *db, const char *name)
+dump_game(DB *db, const char *name, int brief_mode)
 {
     int i;
     game_t *game;
@@ -436,14 +441,17 @@ dump_game(DB *db, const char *name)
     }
     if (game_description(game))
 	printf("Description:\t%s\n", game_description(game));
-    print_rs(game, TYPE_ROM, "Cloneof", "Grand-Cloneof", "Clones", "ROMs");
-    print_rs(game, TYPE_SAMPLE, "Sampleof", "Grand-Sampleof",
-	     "Sample Clones", "Samples");
+
+    if (!brief_mode) {
+	print_rs(game, TYPE_ROM, "Cloneof", "Grand-Cloneof", "Clones", "ROMs");
+	print_rs(game, TYPE_SAMPLE, "Sampleof", "Grand-Sampleof",
+		 "Sample Clones", "Samples");
     
-    if (game_num_disks(game) > 0) {
-	printf("Disks:\n");
-	for (i=0; i<game_num_disks(game); i++)
-	    print_diskline(game_disk(game, i));
+	if (game_num_disks(game) > 0) {
+	    printf("Disks:\n");
+	    for (i=0; i<game_num_disks(game); i++)
+		print_diskline(game_disk(game, i));
+	}
     }
     
     game_free(game);
