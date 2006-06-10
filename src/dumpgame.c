@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.14 2006/05/12 22:12:18 dillo Exp $
+  $NiH: dumpgame.c,v 1.15 2006/06/09 17:38:27 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -59,30 +59,30 @@ static void print_rs(game_t *, filetype_t, const char *,
 
 char *prg;
 char *usage = "Usage: %s [-h|-V]\n\
-       %s [-D dbfile] [game ...]\n\
-       %s [-D dbfile] [-c | -d] [checksum ...]\n";
+       %s [-b] [-D dbfile] [game ...]\n\
+       %s [-b] [-D dbfile] [-c | -d] [checksum ...]\n";
 
 char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
 char help[] = "\n\
-  -b  --brief          brief listing (omit ROM details)\n\
+  -b, --brief          brief listing (omit ROM details)\n\
   -c, --checksum       find games containing ROMs with given checksums\n\
-  -d, --disk           find games containing disks with given checksums\n\
   -D, --db dbfile      use database dbfile\n\
+  -d, --disk           find games containing disks with given checksums\n\
   -h, --help           display this help message\n\
   -V, --version        display version number\n\
 \n\
 Report bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2005 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2005, 2006 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hbcdD:V"
+#define OPTIONS "hbcD:dV"
 
 struct option options[] = {
     { "brief",         0, 0, 'b' },
@@ -277,12 +277,12 @@ main(int argc, char **argv)
 	    find_checksum = 1;
 	    filetype = TYPE_ROM;
 	    break;
+	case 'D':
+	    dbname = optarg;
+	    break;
 	case 'd':
 	    find_checksum = 1;
 	    filetype = TYPE_DISK;
-	    break;
-	case 'D':
-	    dbname = optarg;
 	    break;
 	case 'h':
 	    fputs(help_head, stdout);
