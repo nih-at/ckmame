@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.15 2006/06/09 17:38:27 dillo Exp $
+  $NiH: dumpgame.c,v 1.16 2006/06/10 07:32:35 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -76,7 +76,7 @@ char help[] = "\n\
 Report bugs to <nih@giga.or.at>.\n";
 
 char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2005, 2006 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2006 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
