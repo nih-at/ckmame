@@ -17,6 +17,7 @@ tests:
 - [bug] check if rompath/needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [docs] update mkmamedb man page
+- [feature] when moving file to needed, recheck games that might need it
 - [feature] inconsistent zip in ROM set: copy files to new zip
 - [feature] dumpgame: dump samples
 - [feature] mkmamedb: split to original CM dat files on export
