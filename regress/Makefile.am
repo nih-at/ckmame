@@ -108,7 +108,9 @@ TESTCASES=	\
 		superfluous.test \
 		swap.test \
 		tochildfix.test \
-		wrong.test
+		wrong.test \
+		zero.test \
+		zero-miss.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \
@@ -139,7 +141,8 @@ ZIPS=		1-4-2.zip \
 		samptest.zip \
 		samptest2.zip \
 		samptest3.zip \
-		samptest3-garbage.zip
+		samptest3-garbage.zip \
+		zero-ok.zip
 
 CHDS=		108-2.chd \
 		108-5.chd \

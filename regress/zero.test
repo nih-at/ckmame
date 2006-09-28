@@ -1,0 +1,7 @@
+# $NiH$
+description test game with 0 byte rom, zip is ok
+return 0
+args -FKLivc zero
+file roms/zero.zip zero-ok.zip zero-ok.zip
+stdout In game zero:
+stdout game zero                                    : correct

@@ -183,6 +183,14 @@ game (
 )
 
 game (
+	name zero
+	description "game with 0 byte rom"
+	manufactuerer "synth"
+	year 2006
+	rom ( name zero size 0 crc32 00000000 )
+)
+
+game (
 	name many
 	description "game with many (32) roms"
 	manufacturer "synth"

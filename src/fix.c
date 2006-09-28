@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.25 2006/05/06 16:46:12 dillo Exp $
+  $NiH: fix.c,v 1.26 2006/05/11 16:51:58 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
@@ -320,6 +320,24 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 
 	switch (match_quality(m)) {
 	case QU_MISSING:
+	    if (rom_size(r) == 0 && hashes_types(rom_hashes(r)) != 0) {
+		/* create missing empty file */
+		if (fix_options & FIX_PRINT)
+		    printf("%s: create empty file `%s'\n",
+			   archive_name(a), rom_name(r));
+
+		if (fix_options & FIX_DO) {
+		    archive_changed = 1;
+		    if ((source=zip_source_buffer(zto, NULL, 0, 0)) == NULL
+			|| zip_add(zto, rom_name(r), source) < 0) {
+			zip_source_free(source);
+			myerror(ERRZIPFILE, "error creating empty file: %s",
+				zip_strerror(zto));
+		    }
+		}
+	    }
+	    break;
+	    
 	case QU_HASHERR:
 	    /* all is lost */
 	    break;
