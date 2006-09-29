@@ -1,0 +1,9 @@
+# $NiH: zero-miss.test,v 1.1 2006/09/28 09:20:46 dillo Exp $
+description test game with 0 byte rom and bigger rom, zero rom is missing
+return 0
+args -FKLivc zero-4
+file roms/zero-4.zip 1-4-ok.zip zero-4-ok.zip
+stdout In game zero-4:
+stdout rom  zero                                    : missing
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout ./roms/zero-4.zip: create empty file `zero'

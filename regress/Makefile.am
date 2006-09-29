@@ -111,6 +111,8 @@ TESTCASES=	\
 		wrong.test \
 		zero.test \
 		zero-miss.test
+FAILING_TESTCASES=	\
+		zero-good.test \
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \
