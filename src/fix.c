@@ -1,8 +1,8 @@
 /*
-  $NiH: fix.c,v 1.26 2006/05/11 16:51:58 dillo Exp $
+  $NiH: fix.c,v 1.27 2006/09/28 09:20:45 dillo Exp $
 
   fix.c -- fix ROM sets
-  Copyright (C) 1999, 2004, 2005, 2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -320,7 +320,7 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 
 	switch (match_quality(m)) {
 	case QU_MISSING:
-	    if (rom_size(r) == 0 && hashes_types(rom_hashes(r)) != 0) {
+	    if (rom_size(r) == 0) {
 		/* create missing empty file */
 		if (fix_options & FIX_PRINT)
 		    printf("%s: create empty file `%s'\n",

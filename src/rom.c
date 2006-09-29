@@ -1,8 +1,8 @@
 /*
-  $NiH: rom.c,v 1.1.2.1 2005/07/27 00:05:57 dillo Exp $
+  $NiH: rom.c,v 1.2 2005/09/27 21:33:03 dillo Exp $
 
   rom.c -- initialize / finalize rom structure
-  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <nih@giga.or.at>
@@ -34,7 +34,7 @@ rom_init(rom_t *r)
 {
     r->name = r->merge = NULL;
     hashes_init(&r->hashes);
-    r->size = 0;
+    r->size = SIZE_UNKNOWN;
     r->status = STATUS_OK;
     /* XXX: state */
     r->where = ROM_INZIP;

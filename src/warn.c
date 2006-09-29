@@ -1,5 +1,5 @@
 /*
-  $NiH: warn.h,v 1.2 2005/09/27 21:33:03 dillo Exp $
+  $NiH: warn.c,v 1.1 2006/05/07 11:47:26 dillo Exp $
 
   warn.h -- emit warning
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -119,7 +119,7 @@ warn_rom(const rom_t *r, const char *fmt, ...)
     
     if (r) {
 	printf("rom  %-12s  ", rom_name(r));
-	if (rom_size(r) > 0) {
+	if (SIZE_IS_KNOWN(rom_size(r))) {
 	    sprintf(buf, "size %7ld  ", rom_size(r));
 	    p = buf + strlen(buf);
 	    

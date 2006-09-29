@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.8 2006/05/01 21:09:11 dillo Exp $
+  $NiH: diagnostics.c,v 1.9 2006/05/07 11:47:26 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -158,7 +158,7 @@ diagnostics_disks(const game_t *game, const result_t *res)
 
 	case QU_OLD:
 	    if (output_options & WARN_CORRECT)
-		warn_disk(d, "old");
+		warn_disk(d, "old (%s)", match_disk_name(md));
 	    break;
 
 	case QU_COPIED:
@@ -193,8 +193,9 @@ diagnostics_files(const game_t *game, const result_t *res)
 	    warn_rom(NULL, "correct");
 	break;
     case GS_OLD:
+	/* XXX: handle games where not all roms are in same old game */
 	if (output_options & WARN_CORRECT)
-	    warn_rom(NULL, "old");
+	    warn_rom(NULL, "old (%s)", match_old_game(result_rom(res, 0)));
 	break;
     case GS_MISSING:
 	if (output_options & WARN_MISSING)
@@ -272,7 +273,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 
 	    case QU_OLD:
 		if (output_options & WARN_CORRECT)
-		    warn_rom(r, "old");
+		    warn_rom(r, "old (%s)", match_old_game(m));
 		break;
 	    case QU_NOHASH:
 		/* only used for disks */
