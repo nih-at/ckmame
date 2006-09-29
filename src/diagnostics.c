@@ -158,7 +158,7 @@ diagnostics_disks(const game_t *game, const result_t *res)
 
 	case QU_OLD:
 	    if (output_options & WARN_CORRECT)
-		warn_disk(d, "old (%s)", match_disk_name(md));
+		warn_disk(d, "old");
 	    break;
 
 	case QU_COPIED:
@@ -193,9 +193,8 @@ diagnostics_files(const game_t *game, const result_t *res)
 	    warn_rom(NULL, "correct");
 	break;
     case GS_OLD:
-	/* XXX: handle games where not all roms are in same old game */
 	if (output_options & WARN_CORRECT)
-	    warn_rom(NULL, "old (%s)", match_old_game(result_rom(res, 0)));
+	    warn_rom(NULL, "old");
 	break;
     case GS_MISSING:
 	if (output_options & WARN_MISSING)
@@ -273,7 +272,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 
 	    case QU_OLD:
 		if (output_options & WARN_CORRECT)
-		    warn_rom(r, "old (%s)", match_old_game(m));
+		    warn_rom(r, "old");
 		break;
 	    case QU_NOHASH:
 		/* only used for disks */

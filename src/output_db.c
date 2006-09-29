@@ -326,15 +326,9 @@ output_db_game(output_context_t *out, game_t *g)
     rom_t *r;
     disk_t *d;
     int i, to_do;
-    game_t *g2, *parent;
+    game_t *parent;
 
     ctx = (output_context_db_t *)out;
-
-    if ((g2=r_game(ctx->db, game_name(g))) != NULL) {
-	myerror(ERRDEF, "duplicate game ``%s'' skipped", game_name(g));
-	game_free(g2);
-	return -1;
-    }
 
     game_dat_no(g) = dat_length(ctx->dat)-1;
 
