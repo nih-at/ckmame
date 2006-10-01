@@ -1,7 +1,9 @@
 0.9
 
+- fix handling of zero byte ROMs
 - create CMPro dat files
 - create db or dat file from zip archives
+- brief option for dumpgame: no ROM/disk info
 
 0.8 (2006-05-18)
 
