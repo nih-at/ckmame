@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.15 2006/05/16 07:52:51 wiz Exp $
+  $NiH: archive.c,v 1.16 2006/05/24 09:29:18 dillo Exp $
 
   archive.c -- information about an archive
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -347,6 +347,9 @@ read_infos_from_zip(archive_t *a)
     }
 
     archive_zip(a) = za;
+
+    if (za == NULL)
+	return 0;
 
     seterrinfo(NULL, archive_name(a));
 
