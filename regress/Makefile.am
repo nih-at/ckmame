@@ -110,7 +110,7 @@ TESTCASES=	\
 		tochildfix.test \
 		wrong.test \
 		zero.test \
-		zero-good.test
+		zero-good.test \
 		zero-miss.test
 
 ZIPS=		1-4-2.zip \
