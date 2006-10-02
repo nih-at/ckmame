@@ -1,4 +1,4 @@
-# $NiH: needed-error.test,v 1.1.2.3 2005/08/06 22:14:17 wiz Exp $
+# $NiH: needed-error.test,v 1.2 2005/09/27 21:33:01 dillo Exp $
 description zip contains file needed elsewhere, creating needed archive fails
 return 0
 args -FKLvc 1-4
@@ -11,3 +11,4 @@ stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
 stdout ./roms/1-4.zip: save needed file `08.rom'
 stdout ./roms/1-4.zip: add `./roms/disk.zip/04.rom' as `04.rom'
 stderr needed/3656897d-000.zip: error closing: Permission denied
+sed-err s/Failure to create temporary file: //

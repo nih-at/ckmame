@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.25 2006/04/23 18:23:00 dillo Exp $
+#  $NiH: runtest,v 1.26 2006/05/06 15:32:44 wiz Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002-2006 Dieter Baron and Thomas Klausner
@@ -58,6 +58,9 @@
 #	return RET
 #	    RET is the expected exit code
 #
+#	sed-err PAT
+#	    sed command to apply to stderr.
+#
 #	stderr TEXT
 #	    ckmame is expected to produce the error message TEXT.  If
 #	    multiple stderr commands are used, the messages are
@@ -66,7 +69,8 @@
 #	stdout TEXT
 #	    ckmame is expected to print TEXT to stdout.  If multiple
 #	    stdout commands are used, the messages are expected in
-#	    the order given. 
+#	    the order given.
+#
 #	ulimit C VALUE
 #	    set ulimit -C to VALUE while running the program.
 #   
@@ -291,6 +295,8 @@ do
   return)
     test_empty "${RET}" return
     RET="$arg";;
+  sed-err)
+    echo "$arg" >> sed-err;;
   stderr)
     echo "${PROGRAM}: $arg" >> stderr;;
   stdout)
@@ -341,6 +347,13 @@ then
 fi
 
 FILES_SHOULD="${FILES_SHOULD} stderr stdout gotout goterr ${MAME_DB}"
+
+if [ -s sed-err ]
+then
+    FILES_SHOULD="${FILES_SHOULD} sed-err goterr.raw"
+    mv goterr goterr.raw
+    sed -f sed-err goterr.raw > goterr
+fi
 
 checkfile stderr goterr "unexpected error output"
 checkfile stdout gotout "unexpected output"
