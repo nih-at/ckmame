@@ -11,6 +11,11 @@ tests:
   * /prog from file
   * broken input
 
+- [bug] when a file in rompath is renamed, it sometimes shows up twice:
+  In game foo:
+  rom  foo.rom size 1234  crc 12345678: is in `./roms/foo-alt.zip'
+  In archive ./roms/foo-alt.zip
+  file foo.rom  size 1234  crc 12345678: not used
 - [bug] ensure rompath[0] before trying to create zip file there
 - [bug] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version for /ckmame key
