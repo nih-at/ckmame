@@ -1,5 +1,5 @@
 /*
-  $NiH: output_db.c,v 1.2 2006/05/24 09:29:18 dillo Exp $
+  $NiH: output_db.c,v 1.4 2006/09/29 16:05:03 dillo Exp $
 
   output-db.c -- write games to DB
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -326,9 +326,15 @@ output_db_game(output_context_t *out, game_t *g)
     rom_t *r;
     disk_t *d;
     int i, to_do;
-    game_t *parent;
+    game_t *g2, *parent;
 
     ctx = (output_context_db_t *)out;
+
+    if ((g2=r_game(ctx->db, game_name(g))) != NULL) {
+	myerror(ERRDEF, "duplicate game ``%s'' skipped", game_name(g));
+	game_free(g2);
+	return -1;
+    }
 
     game_dat_no(g) = dat_length(ctx->dat)-1;
 

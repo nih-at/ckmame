@@ -59,6 +59,7 @@ TESTCASES=	\
 		mid.test \
 		misnamed-dryrun.test \
 		misnamed.test \
+		mkmamedb-duplicate-game.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-multi-dats.test \
 		mkmamedb-ok.test \
