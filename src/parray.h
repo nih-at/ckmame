@@ -2,13 +2,13 @@
 #define _HAD_PARRAY_H
 
 /*
-  $NiH: parray.h,v 1.4 2005/12/22 19:54:56 dillo Exp $
+  $NiH: parray.h,v 1.5 2005/12/22 21:59:26 dillo Exp $
 
   parray.h -- array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

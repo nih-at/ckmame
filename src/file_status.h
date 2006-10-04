@@ -2,13 +2,13 @@
 #define _HAD_FILE_STATUS_H
 
 /*
-  $NiH: file_status.h,v 1.1.2.2 2005/07/30 12:24:29 dillo Exp $
+  $NiH: file_status.h,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   file_status.h -- information about status of a file in an archive
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

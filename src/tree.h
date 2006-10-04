@@ -2,13 +2,13 @@
 #define HAD_TREE_H
 
 /*
-  $NiH: tree.h,v 1.1.2.3 2005/07/30 12:24:29 dillo Exp $
+  $NiH: tree.h,v 1.2 2005/09/27 21:33:03 dillo Exp $
 
   tree.h -- XXX
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

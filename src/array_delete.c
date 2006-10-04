@@ -1,11 +1,11 @@
 /*
-  $NiH$
+  $NiH: array_delete.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
 
   array_delete.c -- delete element from array of arbitrary types
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

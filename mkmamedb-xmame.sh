@@ -1,12 +1,12 @@
 #!/bin/sh
 
-#  $NiH: mkmamedb-xmame.sh,v 1.4 2005/07/01 01:29:08 dillo Exp $
+#  $NiH: mkmamedb-xmame.sh,v 1.5 2005/12/08 21:19:54 dillo Exp $
 #
 #  mkmamedb-xmame.sh -- create mamedb by calling xmame
 #  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 #
 #  This file is part of ckmame, a program to check rom sets for MAME.
-#  The authors can be contacted at <nih@giga.or.at>
+#  The authors can be contacted at <ckmame@nih.at>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License, version 2, as

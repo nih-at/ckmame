@@ -1,11 +1,11 @@
 /*
-  $NiH: mkmamedb.c,v 1.9 2006/05/26 21:46:50 dillo Exp $
+  $NiH: mkmamedb.c,v 1.10 2006/05/31 22:12:49 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as
@@ -59,7 +59,7 @@ char help[] = "\n\
       --prog-name name      set name of program rominfo is from\n\
       --prog-version vers   set version of program rominfo is from\n\
 \n\
-Report bugs to <nih@giga.or.at>.\n";
+Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n\
 Copyright (C) 2006 Dieter Baron and Thomas Klausner\n\

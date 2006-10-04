@@ -2,13 +2,13 @@
 #define HAD_UINT32_H
 
 /*
-  $NiH: uint32.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
+  $NiH: uint32.h,v 1.2 2005/12/27 11:11:26 wiz Exp $
 
   uint32.h -- ensure that uint32_t is defined to a 4-byte type
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

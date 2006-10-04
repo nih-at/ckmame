@@ -1,11 +1,11 @@
 /*
-  $NiH: hash_from_string.c,v 1.4 2005/12/22 20:02:07 dillo Exp $
+  $NiH: hash_from_string.c,v 1.5 2006/05/12 22:12:18 dillo Exp $
 
   hash_from_string.c -- convert string to hashes_t
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

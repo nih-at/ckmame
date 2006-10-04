@@ -1,11 +1,11 @@
 /*
-  $NiH: find.c,v 1.14 2006/05/11 21:50:54 wiz Exp $
+  $NiH: find.c,v 1.15 2006/05/24 09:29:18 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

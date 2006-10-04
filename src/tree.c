@@ -1,11 +1,11 @@
 /*
-  $NiH: tree.c,v 1.8 2006/05/11 16:51:58 dillo Exp $
+  $NiH: tree.c,v 1.9 2006/05/24 09:29:18 dillo Exp $
 
   tree.c -- traverse tree of games to check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

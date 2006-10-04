@@ -2,13 +2,13 @@
 #define HAD_ARCHIVE_H
 
 /*
-  $NiH: archive.h,v 1.8 2006/05/05 10:38:51 dillo Exp $
+  $NiH: archive.h,v 1.9 2006/05/24 09:29:18 dillo Exp $
 
   archive.h -- information about an archive
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

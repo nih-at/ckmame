@@ -1,11 +1,11 @@
 /*
-  $NiH: w_game.c,v 1.5 2006/03/14 22:11:40 dillo Exp $
+  $NiH: w_game.c,v 1.6 2006/04/15 22:52:58 dillo Exp $
 
   w_game.c -- write game struct to db
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

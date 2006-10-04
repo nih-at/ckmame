@@ -1,11 +1,11 @@
 /*
-  $NiH: archive.c,v 1.15 2006/05/16 07:52:51 wiz Exp $
+  $NiH: archive_file_compare_hashes.c,v 1.1 2006/05/24 09:29:18 dillo Exp $
 
   archive_file_compare_hashes.c -- compare hashes with file in archive
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

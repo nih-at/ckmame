@@ -1,13 +1,13 @@
 #ifndef HAD_CHD_H
 
 /*
-  $NiH: chd.h,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: chd.h,v 1.2 2006/04/17 16:26:03 dillo Exp $
 
   chd.h -- accessing chd files
   Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

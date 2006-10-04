@@ -1,11 +1,11 @@
 /*
-  $NiH: fix_util.c,v 1.4 2006/05/02 13:43:54 dillo Exp $
+  $NiH: fix_util.c,v 1.5 2006/05/06 23:01:52 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

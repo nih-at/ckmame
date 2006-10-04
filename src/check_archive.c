@@ -1,11 +1,11 @@
 /*
-  $NiH: check_archive.c,v 1.8 2006/04/26 21:01:51 dillo Exp $
+  $NiH: check_archive.c,v 1.9 2006/05/01 21:09:11 dillo Exp $
 
   check_archive.c -- determine status of files in archive
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

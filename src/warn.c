@@ -1,11 +1,11 @@
 /*
-  $NiH: warn.c,v 1.1 2006/05/07 11:47:26 dillo Exp $
+  $NiH: warn.c,v 1.2 2006/09/29 16:01:34 dillo Exp $
 
   warn.h -- emit warning
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

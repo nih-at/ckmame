@@ -1,11 +1,11 @@
 /*
-  $NiH$
+  $NiH: array_truncate.c,v 1.1 2005/11/13 21:28:20 wiz Exp $
 
   array_truncate.c -- truncate array to specified length
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

@@ -1,11 +1,11 @@
 /*
-  $NiH: pmap.c,v 1.2 2006/05/11 21:50:54 wiz Exp $
+  $NiH: pmap.c,v 1.3 2006/05/17 23:25:32 dillo Exp $
 
   pmap.c -- in-memory hash table mapping strings to pointers
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

@@ -4,13 +4,13 @@
 #include <sys/types.h>
 
 /*
-  $NiH: xmalloc.h,v 1.7 2005/06/22 22:10:03 dillo Exp $
+  $NiH: xmalloc.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
 
   xmalloc.h -- malloc routines with exit on failure
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

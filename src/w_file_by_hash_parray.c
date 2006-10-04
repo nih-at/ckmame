@@ -1,11 +1,11 @@
 /*
-  $NiH: w_file_by_hash_parray.c,v 1.3 2005/09/27 21:33:03 dillo Exp $
+  $NiH: w_file_by_hash_parray.c,v 1.4 2006/04/15 22:52:58 dillo Exp $
 
   w_file_location.c -- write file_by_hash information to db
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

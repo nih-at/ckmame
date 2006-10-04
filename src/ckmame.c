@@ -1,11 +1,11 @@
 /*
-  $NiH: ckmame.c,v 1.20 2006/05/11 21:31:19 wiz Exp $
+  $NiH: ckmame.c,v 1.21 2006/05/26 21:47:29 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as
@@ -91,7 +91,7 @@ char help[] = "\n"
 "  -v, --verbose         print fixes made\n"
 "  -w, --nowarnings      print only unfixable errors\n"
 "  -X, --ignore-extra    ignore extra files in rom/samples dirs\n"
-"\nReport bugs to <nih@giga.or.at>.\n";
+"\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
 "Copyright (C) 2006 Dieter Baron and Thomas Klausner\n"

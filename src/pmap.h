@@ -2,13 +2,13 @@
 #define _HAD_PMAP_H
 
 /*
-  $NiH$
+  $NiH: pmap.h,v 1.1 2006/04/16 00:12:57 dillo Exp $
 
   pmap.h -- hash table mapping strings to pointers
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

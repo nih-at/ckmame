@@ -2,13 +2,13 @@
 #define HAD_PRI_H
 
 /*
-  $NiH: pri.h,v 1.1 2005/12/26 14:34:19 dillo Exp $
+  $NiH: pri.h,v 1.2 2005/12/27 09:43:08 dillo Exp $
 
   pri.h -- define macros to portably print types
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

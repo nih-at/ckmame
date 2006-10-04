@@ -1,11 +1,11 @@
 /*
-  $NiH: parray_set_length.c,v 1.1.2.1 2005/07/31 21:13:02 dillo Exp $
+  $NiH: parray_set_length.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
 
   parray_set_length.c -- set length of parary
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as

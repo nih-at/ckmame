@@ -1,11 +1,11 @@
 /*
-  $NiH: dumpgame.c,v 1.16 2006/06/10 07:32:35 wiz Exp $
+  $NiH: dumpgame.c,v 1.17 2006/06/10 07:33:32 wiz Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
-  The authors can be contacted at <nih@giga.or.at>
+  The authors can be contacted at <ckmame@nih.at>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License, version 2, as
@@ -73,7 +73,7 @@ char help[] = "\n\
   -h, --help           display this help message\n\
   -V, --version        display version number\n\
 \n\
-Report bugs to <nih@giga.or.at>.\n";
+Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
 Copyright (C) 2006 Dieter Baron and Thomas Klausner\n\
