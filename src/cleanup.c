@@ -1,5 +1,5 @@
 /*
-  $NiH: cleanup.c,v 1.10 2006/05/24 09:29:18 dillo Exp $
+  $NiH: cleanup.c,v 1.11 2006/10/04 17:36:43 dillo Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -64,13 +64,15 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	    res = result_new(NULL, a, NULL);
 
 	    while (di < len) {
-		fl = delete_list_get(del, di++);
+		fl = delete_list_get(del, di);
 		cmp = strcmp(name, file_location_name(fl));
 		
 		if (cmp == 0)
 		    result_file(res, file_location_index(fl)) = FS_USED;
 		else if (cmp < 0)
 		    break;
+
+		di++;
 	    }
 
 	    check_archive(a, NULL, res);
