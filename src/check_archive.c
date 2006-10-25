@@ -1,5 +1,5 @@
 /*
-  $NiH: check_archive.c,v 1.9 2006/05/01 21:09:11 dillo Exp $
+  $NiH: check_archive.c,v 1.10 2006/10/04 17:36:43 dillo Exp $
 
   check_archive.c -- determine status of files in archive
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -70,12 +70,16 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	    break;
 
 	case FIND_MISSING:
-	    ensure_needed_maps();
-	    if (find_in_archives(needed_file_map,
-				 archive_file(a, i), NULL) != FIND_EXISTS)
-		result_file(res, i) = FS_NEEDED;
-	    else
+	    if (rom_size(archive_file(a, i)) == 0)
 		result_file(res, i) = FS_SUPERFLUOUS;
+	    else {
+		ensure_needed_maps();
+		if (find_in_archives(needed_file_map,
+				     archive_file(a, i), NULL) != FIND_EXISTS)
+		    result_file(res, i) = FS_NEEDED;
+		else
+		    result_file(res, i) = FS_SUPERFLUOUS;
+	    }
 	    break;
 
 	case FIND_ERROR:
