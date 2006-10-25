@@ -30,6 +30,7 @@ tests:
   - are two sets the same, just different name
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
+- [cleanup] replace (u)long with (u)int32_t
 - [cleanup] use parray_t for rompath
 - [cleanup] refactor fixing code (one function per operation)
 - [cleanup] handle archive refreshing in archive.c

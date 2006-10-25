@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.15 2006/09/29 16:01:34 dillo Exp $
+  $NiH: types.h,v 1.16 2006/10/04 17:36:44 dillo Exp $
 
   types.h -- type definitions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -83,7 +83,7 @@ typedef enum where where_t;
 
 #define IS_ELSEWHERE(w)	((w) >= ROM_ROMSET)
 
-#define SIZE_UNKNOWN	ULONG_MAX
+#define SIZE_UNKNOWN	0xffffffff
 #define SIZE_IS_KNOWN(s)	((s) != SIZE_UNKNOWN)
 
 enum filetype {
