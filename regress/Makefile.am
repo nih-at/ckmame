@@ -94,6 +94,7 @@ TESTCASES=	\
 		rom-from-needed2.test \
 		rom-from-romset.test \
 		rom-from-romset2.test \
+		rom-from-superfluous-cleanup.test \
 		rom-from-superfluous-dryrun.test \
 		rom-from-superfluous-some.test \
 		rom-from-superfluous.test \
