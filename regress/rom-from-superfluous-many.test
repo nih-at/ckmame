@@ -1,4 +1,4 @@
-# $NiH: rom-from-superfluous.test,v 1.1 2005/10/05 22:26:43 dillo Exp $
+# $NiH: rom-from-superfluous-many.test,v 1.1 2006/10/18 01:49:40 wiz Exp $
 description test single-rom game (no parent), file is in superfluous, fix
 return 0
 args -Fvc
@@ -103,13 +103,9 @@ stdout ./roms/zero-4.zip: create empty file `zero'
 stdout ./roms/zero-4.zip: add `./roms/1-4.zip/04.rom' as `04.rom'
 stdout ./roms/1-4-ok.zip: delete used file `04.rom'
 stdout ./roms/1-4-ok.zip: remove empty archive
-stdout In archive ./roms/1-8-ok.zip:
-stdout file 08.rom        size       8  crc 3656897d: not used
-stdout ./roms/1-8-ok.zip: delete unused file `08.rom'
+stdout ./roms/1-8-ok.zip: delete used file `08.rom'
 stdout ./roms/1-8-ok.zip: remove empty archive
-stdout In archive ./roms/1-a-ok.zip:
-stdout file 0a.rom        size      10  crc 0b4a4cde: not used
-stdout ./roms/1-a-ok.zip: delete unused file `0a.rom'
+stdout ./roms/1-a-ok.zip: delete used file `0a.rom'
 stdout ./roms/1-a-ok.zip: remove empty archive
 stdout In archive ./roms/2-44-ok.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
