@@ -1,5 +1,5 @@
 /*
-  $NiH: images.c,v 1.1 2006/05/01 21:09:11 dillo Exp $
+  $NiH: images.c,v 1.2 2006/10/04 17:36:44 dillo Exp $
 
   images.c -- array of disk images
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -54,6 +54,8 @@ images_new(const game_t *g)
 
     for (i=0; i<game_num_disks(g); i++) {
 	fname = findfile(disk_name(game_disk(g, i)), TYPE_DISK);
+	if (fname == NULL && disk_merge(game_disk(g, i)) != NULL)
+	    fname = findfile(disk_merge(game_disk(g, i)), TYPE_DISK);
 	if (fname == NULL)
 	    parray_push(im, NULL);
 	else {
