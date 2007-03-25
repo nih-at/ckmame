@@ -1,8 +1,8 @@
 /*
-  $NiH: chd.c,v 1.1 2005/07/04 21:54:50 dillo Exp $
+  $NiH: chd.c,v 1.2 2006/10/04 17:36:43 dillo Exp $
 
   chd.c -- accessing chd files
-  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -29,6 +29,12 @@
 #include <zlib.h>
 
 #include "chd.h"
+
+#include "config.h"
+
+#ifndef HAVE_FSEEKO
+#define fseeko fseek
+#endif
 
 
 
@@ -154,7 +160,7 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 	    return -1;
 	}
 
-	if (fseek(chd->f, chd->map[idx].offset, SEEK_SET) == -1) {
+	if (fseeko(chd->f, chd->map[idx].offset, SEEK_SET) == -1) {
 	    chd->error = CHD_ERR_SEEK;
 	    return -1;
 	}
@@ -177,7 +183,7 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 	break;
 
     case CHD_MAP_TYPE_UNCOMPRESSED:
-	if (fseek(chd->f, chd->map[idx].offset, SEEK_SET) == -1) {
+	if (fseeko(chd->f, chd->map[idx].offset, SEEK_SET) == -1) {
 	    chd->error = CHD_ERR_SEEK;
 	    return -1;
 	}
