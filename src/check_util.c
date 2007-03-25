@@ -1,5 +1,5 @@
 /*
-  $NiH: check_util.c,v 1.4 2006/05/24 09:29:18 dillo Exp $
+  $NiH: check_util.c,v 1.5 2006/10/04 17:36:43 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -98,7 +98,8 @@ ensure_extra_maps(int flags)
 		break;
 	    case NAME_CHD:
 	    case NAME_NOEXT:
-		if ((d=disk_new(file, nt==NAME_NOEXT)) != NULL) {
+		if ((d=disk_new(file, (nt==NAME_NOEXT
+				       ? DISK_FL_QUIET : 0))) != NULL) {
 		    enter_disk_in_map(extra_disk_map, d, ROM_SUPERFLUOUS);
 		    disk_free(d);
 		}
@@ -283,7 +284,8 @@ enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
 
 	case NAME_CHD:
 	case NAME_NOEXT:
-	    if ((d=disk_new(b, nt==NAME_NOEXT)) != NULL) {
+	    if ((d=disk_new(b, (nt==NAME_NOEXT
+				? DISK_FL_QUIET : 0))) != NULL) {
 		if (disk_map)
 		    enter_disk_in_map(disk_map, d, where);
 		if (list)

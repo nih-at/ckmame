@@ -1,5 +1,5 @@
 /*
-  $NiH: images.c,v 1.2 2006/10/04 17:36:44 dillo Exp $
+  $NiH: images.c,v 1.3 2007/03/19 08:32:52 dillo Exp $
 
   images.c -- array of disk images
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -41,7 +41,7 @@ images_name(const images_t *im, int i)
 
 
 images_t *
-images_new(const game_t *g)
+images_new(const game_t *g, int flags)
 {
     images_t *im;
     char *fname;
@@ -59,7 +59,7 @@ images_new(const game_t *g)
 	if (fname == NULL)
 	    parray_push(im, NULL);
 	else {
-	    parray_push(im, disk_new(fname, 0));
+	    parray_push(im, disk_new(fname, flags));
 	    free(fname);
 	}
     }
@@ -70,13 +70,13 @@ images_new(const game_t *g)
 
 
 images_t *
-images_new_name(const char *name, int quiet)
+images_new_name(const char *name, int flags)
 {
     images_t *im;
 
     im = parray_new_sized(1);
 
-    parray_push(im, disk_new(name, quiet));
+    parray_push(im, disk_new(name, flags));
 
     return im;
 }

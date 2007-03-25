@@ -1,5 +1,5 @@
 /*
-  $NiH: tree.c,v 1.9 2006/05/24 09:29:18 dillo Exp $
+  $NiH: tree.c,v 1.10 2006/10/04 17:36:44 dillo Exp $
 
   tree.c -- traverse tree of games to check
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -216,7 +216,7 @@ tree_process(const tree_t *tree, archive_t *child,
     all[1] = parent;
     all[2] = gparent;
 
-    images = images_new(g);
+    images = images_new(g, check_integrity ? DISK_FL_CHECK_INTEGRITY : 0);
 
     res = result_new(g, child, images);
 

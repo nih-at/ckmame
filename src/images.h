@@ -2,7 +2,7 @@
 #define _HAD_IMAGES_H
 
 /*
-  $NiH: images.h,v 1.1 2006/05/01 21:09:11 dillo Exp $
+  $NiH: images.h,v 1.2 2006/10/04 17:36:44 dillo Exp $
 
   images.h -- array of disk images
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -39,7 +39,7 @@ typedef parray_t images_t;
 
 
 const char *images_name(const images_t *, int);
-images_t *images_new(const game_t *);
+images_t *images_new(const game_t *, int);
 images_t *images_new_name(const char  *, int);
 
 #endif /* images.h */

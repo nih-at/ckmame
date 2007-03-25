@@ -2,7 +2,7 @@
 #define HAD_DISK_H
 
 /*
-  $NiH: disk.h,v 1.4 2006/04/17 11:31:11 dillo Exp $
+  $NiH: disk.h,v 1.5 2006/10/04 17:36:43 dillo Exp $
 
   disk.h -- information about one disk
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -38,6 +38,9 @@ struct disk {
 };
 
 typedef struct disk disk_t;
+
+#define DISK_FL_CHECK_INTEGRITY	0x2
+#define DISK_FL_QUIET		0x4
 
 
 

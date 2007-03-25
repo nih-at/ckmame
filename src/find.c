@@ -1,5 +1,5 @@
 /*
-  $NiH: find.c,v 1.15 2006/05/24 09:29:18 dillo Exp $
+  $NiH: find.c,v 1.16 2006/10/04 17:36:43 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -241,7 +241,7 @@ check_match_disk_romset(const game_t *g, const disk_t *d, match_disk_t *md)
     if (file_name == NULL)
 	return FIND_MISSING;
     
-    f = disk_new(file_name, 1);
+    f = disk_new(file_name, DISK_FL_QUIET);
     if (!f) {
 	free(file_name);
 	return FIND_MISSING;

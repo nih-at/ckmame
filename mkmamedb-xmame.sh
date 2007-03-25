@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: mkmamedb-xmame.sh,v 1.5 2005/12/08 21:19:54 dillo Exp $
+#  $NiH: mkmamedb-xmame.sh,v 1.6 2006/10/04 17:36:42 dillo Exp $
 #
 #  mkmamedb-xmame.sh -- create mamedb by calling xmame
 #  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -21,8 +21,15 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-PROG_NAME=xmame
-PROG_VERSION=`xmame --version 2>/dev/null | sed 's/.* version \([^ ]*\).*/\1/'`
+MAME=${MAME:=mame}
+PROG_NAME=MAME
+PROG_VERSION=`$MAME --version 2>/dev/null | sed 's/.* version \([^ ]*\).*/\1/'`
+
+if [ -z "$PROG_VERSION" ]
+then
+	#M.A.M.E. v0.113 (Mar 25 2007) - Multiple Arcade Machine Emulator
+    PROG_VERSION=`$MAME -help 2>/dev/null | sed -n 's/M.A.M.E.*v\([^ ]*\).*/\1/p'`
+fi
 
 if [ -z "$PROG_VERSION" ]
 then
@@ -37,5 +44,5 @@ else
     LIST=-lx
 fi
 
-xmame $LIST 2>/dev/null \
+$MAME $LIST 2>/dev/null \
    | mkmamedb --prog-name "$PROG_NAME" --prog-version "$PROG_VERSION" "$@"

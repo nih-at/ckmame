@@ -1,5 +1,5 @@
 /*
-  $NiH: cleanup.c,v 1.11 2006/10/04 17:36:43 dillo Exp $
+  $NiH: cleanup.c,v 1.12 2006/10/25 15:56:54 wiz Exp $
 
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -90,7 +90,8 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 
 	case NAME_CHD:
 	case NAME_NOEXT:
-	    if ((im=images_new_name(name, nt==NAME_NOEXT)) == NULL) {
+	    if ((im=images_new_name(name,
+			    nt==NAME_NOEXT ? DISK_FL_QUIET : 0)) == NULL) {
 		/* XXX */
 		continue;
 	    }

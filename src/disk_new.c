@@ -1,5 +1,5 @@
 /*
-  $NiH: disk_new.c,v 1.4 2006/05/12 22:12:18 dillo Exp $
+  $NiH: disk_new.c,v 1.5 2006/10/04 17:36:43 dillo Exp $
 
   disk_new.c -- create / free disk structure from image
   Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
@@ -42,7 +42,7 @@ static int get_hashes(struct chd *, struct hashes *);
 
 
 disk_t *
-disk_new(const char *name, int quiet)
+disk_new(const char *name, int flags)
 {
     disk_t *d;
     struct chd *chd;
@@ -61,7 +61,7 @@ disk_new(const char *name, int quiet)
     if ((chd=chd_open(name, &err)) == NULL) {
 	/* no error if file doesn't exist */
 	if (!((err == CHD_ERR_OPEN && errno == ENOENT)
-	      || (quiet && err == CHD_ERR_NO_CHD))) {
+	      || ((flags & DISK_FL_QUIET) && err == CHD_ERR_NO_CHD))) {
 	    /* XXX: include err */
 	    myerror(ERRFILESTR, "error opening disk");
 	}
@@ -82,7 +82,7 @@ disk_new(const char *name, int quiet)
     h = disk_hashes(d);
     hashes_init(h);
 
-    if (diskhashtypes) {
+    if (flags & DISK_FL_CHECK_INTEGRITY) {
 	hashes_types(h) = diskhashtypes;
 	
 	err = get_hashes(chd, h);
@@ -96,6 +96,7 @@ disk_new(const char *name, int quiet)
 	if (diskhashtypes & HASHES_TYPE_MD5) {
 	    if (!hashes_verify(h, HASHES_TYPE_MD5, chd->md5)) {
 		myerror(ERRFILE, "md5 mismatch");
+		disk_real_free(d);
 		return NULL;
 	    }
 	}
@@ -103,17 +104,18 @@ disk_new(const char *name, int quiet)
 	if (chd->version > 2 && (diskhashtypes & HASHES_TYPE_SHA1)) {
 	    if (!hashes_verify(h, HASHES_TYPE_SHA1, chd->sha1)) {
 		myerror(ERRFILE, "sha1 mismatch in '%s'");
+		disk_real_free(d);
 		return NULL;
 	    }
 	}		
     }
-    else
+    else {
 	chd_close(chd);
     
-    hashes_set(h, HASHES_TYPE_MD5, chd->md5);
-
-    if (chd->version > 2)
-	hashes_set(h, HASHES_TYPE_SHA1, chd->sha1);
+	hashes_set(h, HASHES_TYPE_MD5, chd->md5);
+	if (chd->version > 2)
+	    hashes_set(h, HASHES_TYPE_SHA1, chd->sha1);
+    }
 
     if (_dmap == NULL)
 	_dmap = disk_map_new();
