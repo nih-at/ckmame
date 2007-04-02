@@ -1,5 +1,10 @@
 #!/usr/pkg/bin/perl
 
+# TODO:
+# . less hardwired paths
+# . handle spaces in file names better
+# . handle CHDs
+
 $zipname="mamediffs";
 $linkdir="/archive/roms/dillo";
 $rompath="/archive/roms/mame/roms/";
