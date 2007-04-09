@@ -18,7 +18,6 @@ tests:
 - [bug] DB export: pass all dat entries to output backend
 - [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
 - [docs] update mkmamedb man page
-- [feature] mkmamedb: sort created CM dat file
 - [feature] add option to keep duplicate files
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
 - [feature] when moving file to needed, recheck games that might need it

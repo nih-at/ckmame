@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.21 2006/05/31 22:12:49 dillo Exp $
+  $NiH: parse.c,v 1.22 2006/10/04 17:36:44 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -298,9 +298,12 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
 {
     int i;
     game_t *g;
+    int keep_g, ret;
 
     CHECK_STATE(ctx, PARSE_IN_GAME);
-    
+
+    keep_g = 0;
+
     if (!name_matches(ctx->g, ctx->ignore)) {
 	g = ctx->g;
 
@@ -321,15 +324,20 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
 	    }
 	}
 
-	output_game(ctx->output, ctx->g);
+	ret = output_game(ctx->output, ctx->g);
+	if (ret == 1) {
+	    keep_g = 1;
+	    ret = 0;
+	}
     }
 
-    game_free(ctx->g);
+    if (!keep_g)
+	game_free(ctx->g);
     ctx->g = NULL;
 
     SET_STATE(ctx, PARSE_OUTSIDE);
     
-    return 0;
+    return ret;
 }
 
 
