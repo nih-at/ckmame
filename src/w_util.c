@@ -1,5 +1,5 @@
 /*
-  $NiH: w_util.c,v 1.4 2006/04/15 22:52:58 dillo Exp $
+  $NiH: w_util.c,v 1.5 2006/10/04 17:36:44 dillo Exp $
 
   w_util.c -- data base write utility functions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -44,6 +44,41 @@ w__grow(DBT *v, int n)
     if (v->size+n >= size) {
 	v->data = xrealloc(v->data, size+BLKSIZE);
     }
+}
+
+
+
+void
+w__uint64(DBT *v, uint64_t u)
+{
+    uint8_t *d;
+
+    w__grow(v, 8);
+
+    d = v->data;
+
+    d[v->size++] = (u >> 56) & 0xff;
+    d[v->size++] = (u >> 48) & 0xff;
+    d[v->size++] = (u >> 40) & 0xff;
+    d[v->size++] = (u >> 32) & 0xff;
+    d[v->size++] = (u >> 24) & 0xff;
+    d[v->size++] = (u >> 16) & 0xff;
+    d[v->size++] = (u >> 8) & 0xff;
+    d[v->size++] = u & 0xff;
+}
+
+
+
+void
+w__uint8(DBT *v, uint8_t u)
+{
+    uint8_t *d;
+
+    w__grow(v, 1);
+
+    d = v->data;
+
+    d[v->size++] = u;
 }
 
 

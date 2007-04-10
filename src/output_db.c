@@ -1,8 +1,8 @@
 /*
-  $NiH: output_db.c,v 1.5 2006/10/04 16:39:42 dillo Exp $
+  $NiH: output_db.c,v 1.6 2006/10/04 17:36:44 dillo Exp $
 
   output-db.c -- write games to DB
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -70,6 +70,7 @@ static int file_location_copy(const hashes_t *, parray_t *, void *);
 static int handle_lost(output_context_db_t *);
 static int lost(game_t *, filetype_t);
 static int output_db_close(output_context_t *);
+static int output_db_detector(output_context_t *, detector_t *);
 static int output_db_game(output_context_t *, game_t *);
 static int output_db_header(output_context_t *, dat_entry_t *);
 static int write_hashes(output_context_db_t *);
@@ -87,6 +88,7 @@ output_db_new(const char *dbname)
     ctx = (output_context_db_t *)xmalloc(sizeof(*ctx));
 
     ctx->output.close = output_db_close;
+    ctx->output.output_detector = output_db_detector;
     ctx->output.output_game = output_db_game;
     ctx->output.output_header = output_db_header;
 
@@ -316,6 +318,23 @@ output_db_close(output_context_t *out)
 
     return ret;
 }
+
+
+
+static int
+output_db_detector(output_context_t *out, detector_t *d)
+{
+    output_context_db_t *ctx;
+
+    ctx = (output_context_db_t *)out;
+
+    if (w_detector(ctx->db, d) != 0) {
+	myerror(ERRDB, "can't write detector to db");
+	return -1;
+    }
+
+    return 0;
+}    
 
 
 

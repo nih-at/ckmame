@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.17 2006/06/10 07:33:32 wiz Exp $
+  $NiH: dumpgame.c,v 1.18 2006/10/04 17:36:43 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -539,6 +539,22 @@ dump_db_version(DB *db, const char *dummy)
 
 
 
+/*ARGSUSED2*/
+static int
+dump_detector(DB *db, const char *dummy)
+{
+    detector_t *d;
+    
+    if ((d=r_detector(db)) != NULL) {
+	detector_print(d, stdout);
+	detector_free(d);
+    }
+    
+    return 0;
+}
+
+
+
 static int
 dump_special(DB *db, const char *name)
 {
@@ -550,6 +566,7 @@ dump_special(DB *db, const char *name)
 	{ "/list",             dump_list,       DBH_KEY_LIST_GAME },
 	{ DBH_KEY_DAT,         dump_dat,        NULL },
 	{ DBH_KEY_DB_VERSION,  dump_db_version, NULL },
+	{ DBH_KEY_DETECTOR,    dump_detector,   NULL },
 	{ DBH_KEY_HASH_TYPES,  dump_hashtypes,  NULL },
 	{ DBH_KEY_LIST_DISK,   dump_list,       NULL },
 	{ DBH_KEY_LIST_GAME,   dump_list,       NULL },

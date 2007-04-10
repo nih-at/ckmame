@@ -1,11 +1,8 @@
-#ifndef _HAD_R_H
-#define _HAD_R_H
-
 /*
-  $NiH: r.h,v 1.3 2006/10/04 17:36:44 dillo Exp $
+  $NiH$
 
-  r.h -- data base read functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  detector_init.c -- initialize detector structures
+  Copyright (C) 2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -24,24 +21,30 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "array.h"
-#include "parray.h"
+
+
+#include <stddef.h>
+
+#include "detector.h"
 
 
 
-array_t *r__array(DBT *, void (*)(DBT *, void *), size_t);
-void r__disk(DBT *, void *);
-void r__mem(DBT *, void *, unsigned int);
-parray_t *r__parray(DBT *, void *(*)(DBT *));
-void r__pstring(DBT *, void *);
-void r__rom(DBT *, void *);
-char *r__string(DBT *);
-uint64_t r__uint64(DBT *);
-uint8_t r__uint8(DBT *);
-unsigned long r__ulong(DBT *);
-unsigned short r__ushort(DBT *);
+void detector_rule_init(detector_rule_t *dr)
+{
+    dr->start_offset = 0;
+    dr->end_offset = 0;
+    dr->operation = DETECTOR_OP_NONE;
+    dr->tests = array_new(sizeof(detector_test_t));
+}
 
-#define r__uint16	r__ushort
-#define r__uint32	r__ulong
+
 
-#endif /* r.h */
+void detector_test_init(detector_test_t *dt)
+{
+    dt->type = DETECTOR_TEST_DATA;
+    dt->offset = 0;
+    dt->length = 0;
+    dt->value = NULL;
+    dt->mask = NULL;
+    dt->result = true;
+}

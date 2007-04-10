@@ -5,6 +5,9 @@ bin_PROGRAMS=ckmame mkmamedb dumpgame
 
 noinst_LIBRARIES=libckmame.a
 
+noinst_PROGRAMS=dtest
+dtest_LDADD=libckmame.a @LIBXML2_LIBS@
+
 ckmame_LDADD=libckmame.a @DBLIBS@ @LIBZIP_LIBS@
 mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
 dumpgame_LDADD=libckmame.a @DBLIBS@
@@ -35,6 +38,11 @@ libckmame_a_SOURCES= \
 	dbl.c \
 	dbh.c \
 	delete_list.c \
+	detector.c \
+	detector_init.c \
+	detector_parse.c \
+	detector_print.c \
+	detector_str.c \
 	diagnostics.c \
 	dir.c \
 	disk.c \
@@ -82,6 +90,7 @@ libckmame_a_SOURCES= \
 	pmap.c \
 	psort.c \
 	r_dat.c \
+	r_detector.c \
 	r_file_by_hash.c \
 	r_game.c \
 	r_list.c \
@@ -94,11 +103,13 @@ libckmame_a_SOURCES= \
 	util.c \
 	w_file_by_hash_parray.c \
 	w_dat.c \
+	w_detector.c \
 	w_game.c \
 	w_list.c \
 	w_util.c \
 	warn.c \
 	xmalloc.c \
+	xmlutil.c \
 	zip_util.c
 
 noinst_HEADERS=\
@@ -111,6 +122,7 @@ noinst_HEADERS=\
 	dbh.h \
 	dbl.h \
 	delete_list.h \
+	detector.h \
 	dir.h \
 	disk.h \
 	disk_map.h \
@@ -140,7 +152,8 @@ noinst_HEADERS=\
 	util.h \
 	w.h \
 	warn.h \
-	xmalloc.h
+	xmalloc.h \
+	xmlutil.h
 
 EXTRA_DIST=\
 	db-db.c \

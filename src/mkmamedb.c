@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.10 2006/05/31 22:12:49 dillo Exp $
+  $NiH: mkmamedb.c,v 1.11 2006/10/04 17:36:44 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -55,6 +55,7 @@ char help[] = "\n\
   -F, --format [db|cm]      specify output format [default: db]\n\
   -o, --output dbfile       write to database dbfile\n\
   -x, --exclude pat         exclude games matching shell glob PAT\n\
+      --detector xml-file   use header detector\n\
       --prog-description d  set description of rominfo\n\
       --prog-name name      set name of program rominfo is from\n\
       --prog-version vers   set version of program rominfo is from\n\
@@ -73,12 +74,14 @@ For more information about these matters, see the files named COPYING.\n";
 enum {
     OPT_PROG_DESCRIPTION = 256,
     OPT_PROG_NAME,
-    OPT_PROG_VERSION
+    OPT_PROG_VERSION,
+    OPT_DETECTOR
 };
 
 struct option options[] = {
     { "help",             0, 0, 'h' },
     { "version",          0, 0, 'V' },
+    { "detector",         1, 0, OPT_DETECTOR },
     { "exclude",          1, 0, 'x' },
     { "format",           1, 0, 'F' },
     { "output",           1, 0, 'o' },
@@ -101,6 +104,7 @@ main(int argc, char **argv)
     parray_t *exclude;
     dat_entry_t dat;
     output_format_t fmt;
+    char *detector_name;
     int c, i;
     DB *db;
 
@@ -112,6 +116,7 @@ main(int argc, char **argv)
     dat_entry_init(&dat);
     exclude = NULL;
     fmt = OUTPUT_FMT_DB;
+    detector_name = NULL;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -152,6 +157,9 @@ main(int argc, char **argv)
 	case OPT_PROG_VERSION:
 	    dat_entry_version(&dat) = optarg;
 	    break;
+	case OPT_DETECTOR:
+	    detector_name = optarg;
+	    break;
     	default:
 	    fprintf(stderr, usage, prg);
 	    exit(1);
@@ -181,6 +189,9 @@ main(int argc, char **argv)
 		parse(argv[i], exclude, &dat, out);
 	}
     }
+
+    if (detector_name)
+	output_detector(out, detector_name);
 
     output_close(out);
 

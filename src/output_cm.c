@@ -1,8 +1,8 @@
 /*
-  $NiH: output_cm.c,v 1.2 2006/10/04 17:36:44 dillo Exp $
+  $NiH: output_cm.c,v 1.3 2007/04/09 18:20:40 dillo Exp $
 
   output-cm.c -- write games to clrmamepro dat files
-  Copyright (C) 2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -78,6 +78,7 @@ output_cm_new(const char *fname)
     }
 
     ctx->output.close = output_cm_close;
+    ctx->output.output_detector = NULL;
     ctx->output.output_game = output_cm_game;
     ctx->output.output_header = output_cm_header;
 

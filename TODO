@@ -19,6 +19,8 @@ tests:
 - [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
 - [docs] update mkmamedb man page
 - [feature] support clrmamepro XML header skipper
+  - honour header field in dat file
+  - use detector
 - [feature] add option to keep duplicate files
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
 - [feature] when moving file to needed, recheck games that might need it
@@ -32,6 +34,7 @@ tests:
   - are two sets the same, just different name
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
+- [cleanup] use {get,set}progname, get rid of global prg
 - [cleanup] replace (u)long with (u)int32_t
 - [cleanup] use parray_t for rompath
 - [cleanup] refactor fixing code (one function per operation)

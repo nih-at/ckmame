@@ -1,5 +1,5 @@
 /*
-  $NiH: r_util.c,v 1.3 2005/12/24 14:31:03 wiz Exp $
+  $NiH: r_util.c,v 1.4 2006/10/04 17:36:44 dillo Exp $
 
   r_util.c -- data base read utility functions
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
@@ -115,6 +115,49 @@ r__string(DBT *v)
     ADVANCE(v, len);
 
     return s;
+}
+
+
+
+uint64_t
+r__uint64(DBT *v)
+{
+    uint64_t u;
+    uint8_t *d;
+
+    if (v->size < 8)
+	return 0;
+
+    d = v->data;
+
+    u = ((((uint64_t)d[0])<<56) | (((uint64_t)d[1])<<48)
+	 | (((uint64_t)d[2])<<40) | (((uint64_t)d[3])<<32)
+	 | (((uint64_t)d[4])<<24) | (((uint64_t)d[5])<<16)
+	 | (((uint64_t)d[6])<<8) | (d[7])) & 0xffffffffffffffffLL;
+
+    ADVANCE(v, 8);
+
+    return u;
+}
+
+
+
+uint8_t
+r__uint8(DBT *v)
+{
+    uint8_t u;
+    uint8_t *d;
+
+    if (v->size < 1)
+	return 0;
+
+    d = v->data;
+
+    u = d[0];
+
+    ADVANCE(v, 1);
+
+    return u;
 }
 
 
