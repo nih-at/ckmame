@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.22 2006/10/04 17:36:43 dillo Exp $
+  $NiH: ckmame.c,v 1.23 2007/04/10 19:49:49 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
@@ -151,6 +151,7 @@ parray_t *search_dirs;
 filetype_t file_type;
 DB *db;
 DB *old_db;
+detector_t *detector;
 
 
 
@@ -381,6 +382,7 @@ main(int argc, char **argv)
 	/* XXX: check error */
 	r_hashtypes(db, &romhashtypes, &diskhashtypes);
 	/* XXX: merge in olddb */
+	detector = r_detector(db);
     }
     
     if (action != ACTION_CLEANUP_EXTRA_ONLY)

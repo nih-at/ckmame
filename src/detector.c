@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: detector.c,v 1.1 2007/04/10 16:26:46 dillo Exp $
 
   detector.c -- alloc/free detector
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
@@ -37,6 +37,7 @@ detector_free(detector_t *d)
     free(d->author);
     free(d->version);
     array_free(d->rules, detector_rule_finalize);
+    free(d->buf);
 }
 
 
@@ -52,6 +53,8 @@ detector_new(void)
     d->author = NULL;
     d->version = NULL;
     d->rules = array_new(sizeof(detector_rule_t));
+    d->buf = NULL;
+    d->buf_size = 0;
 
     return d;
 }

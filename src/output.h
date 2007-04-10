@@ -2,7 +2,7 @@
 #define HAD_OUTPUT_H
 
 /*
-  $NiH: output.h,v 1.4 2006/10/04 17:36:44 dillo Exp $
+  $NiH: output.h,v 1.5 2007/04/10 16:26:46 dillo Exp $
 
   output.h -- output game info
   Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
@@ -54,7 +54,7 @@ output_context_t *output_cm_new(const char *);
 output_context_t *output_db_new(const char *);
 
 int output_close(output_context_t *);
-int output_detector(output_context_t *, const char *);
+int output_detector(output_context_t *, detector_t *);
 int output_game(output_context_t *, game_t *);
 int output_header(output_context_t *, dat_entry_t *);
 output_context_t *output_new(output_format_t, const char *);

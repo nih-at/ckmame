@@ -28,11 +28,14 @@
 
 #include "dbl.h"
 #include "delete_list.h"
+#include "detector.h"
 #include "map.h"
 #include "parray.h"
 
 extern DB *db;
 extern DB *old_db;
+
+extern detector_t *detector;
 
 extern char *rompath[];
 extern char *needed_dir;

@@ -1,5 +1,5 @@
 /*
-  $NiH: output.c,v 1.3 2006/10/04 17:36:44 dillo Exp $
+  $NiH: output.c,v 1.4 2007/04/10 16:26:46 dillo Exp $
 
   output.c -- output game info
   Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
@@ -37,26 +37,12 @@ output_close(output_context_t *ctx)
 
 
 int
-output_detector(output_context_t *ctx, const char *fname)
+output_detector(output_context_t *ctx, detector_t *detector)
 {
-    detector_t *d;
-    int ret;
+    if (ctx->output_detector == NULL)
+	return 0;
 
-    if (ctx->output_detector == NULL) {
-	myerror(ERRDEF, "detector not supported by output format");
-	return -1;
-    }
-
-    if ((d=detector_parse(fname)) == NULL) {
-	myerror(ERRSTR, "cannot parse detector `%s'", fname);
-	return -1;
-    }
-
-    ret = ctx->output_detector(ctx, d);
-
-    detector_free(d);
-
-    return ret;
+    return ctx->output_detector(ctx, detector);
 }
 
 

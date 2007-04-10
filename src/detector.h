@@ -2,7 +2,7 @@
 #define HAD_DETECTOR_H
 
 /*
-  $NiH$
+  $NiH: detector.h,v 1.1 2007/04/10 16:26:46 dillo Exp $
 
   detector.h -- clrmamepro XML header skip detector
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
@@ -31,6 +31,7 @@
 #include <stdio.h>
 
 #include "array.h"
+#include "rom.h"
 
 struct detector {
     char *name;
@@ -38,6 +39,9 @@ struct detector {
     char *version;
 
     array_t *rules;
+
+    unsigned char *buf;
+    size_t buf_size;
 };
 
 typedef struct detector detector_t ;
@@ -87,6 +91,8 @@ struct detector_test {
 
 typedef struct detector_test detector_test_t;
 
+typedef int (*detector_read_cb)(void *, void *, int);
+
 
 
 #define detector_author(d)	((d)->author)
@@ -113,6 +119,7 @@ typedef struct detector_test detector_test_t;
 #define detector_test_type(t)	((t)->type)
 #define detector_test_value(t)	((t)->value)
 
+int detector_execute(detector_t *, rom_t *, detector_read_cb, void *);
 void detector_free(detector_t *);
 detector_t *detector_parse(const char *);
 int detector_print(const detector_t *, FILE *);

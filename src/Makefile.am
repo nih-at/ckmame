@@ -5,9 +5,6 @@ bin_PROGRAMS=ckmame mkmamedb dumpgame
 
 noinst_LIBRARIES=libckmame.a
 
-noinst_PROGRAMS=dtest
-dtest_LDADD=libckmame.a @LIBXML2_LIBS@
-
 ckmame_LDADD=libckmame.a @DBLIBS@ @LIBZIP_LIBS@
 mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
 dumpgame_LDADD=libckmame.a @DBLIBS@
@@ -39,6 +36,7 @@ libckmame_a_SOURCES= \
 	dbh.c \
 	delete_list.c \
 	detector.c \
+	detector_execute.c \
 	detector_init.c \
 	detector_parse.c \
 	detector_print.c \

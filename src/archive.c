@@ -1,5 +1,5 @@
 /*
-  $NiH: archive.c,v 1.17 2006/10/02 13:58:47 dillo Exp $
+  $NiH: archive.c,v 1.18 2006/10/04 17:36:43 dillo Exp $
 
   archive.c -- information about an archive
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -99,6 +99,9 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     rom_t *r;
 
     r = archive_file(a, idx);
+
+    if ((hashes_types(rom_hashes(r)) & hashtypes) == hashtypes)
+	return 0;
 
     if (archive_ensure_zip(a, 0) != 0)
 	return -1;
@@ -323,6 +326,27 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 
 
 static int
+match_detector(struct zip *za, int idx, rom_t *r)
+{
+    struct zip_file *zf;
+    int ret;
+
+    if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
+	myerror(ERRZIP, "error opening index %d: %s", idx, zip_strerror(za));
+	rom_status(r) = STATUS_BADDUMP;
+	return -1;
+    }
+
+    ret = detector_execute(detector, r, (detector_read_cb)zip_fread, zf);
+
+    zip_fclose(zf);
+
+    return ret;
+}
+
+
+
+static int
 read_infos_from_zip(archive_t *a)
 {
     struct zip *za;
@@ -368,6 +392,9 @@ read_infos_from_zip(archive_t *a)
 	hashes_init(rom_hashes(r));
 	rom_hashes(r)->types = HASHES_TYPE_CRC;
 	rom_hashes(r)->crc = zsb.crc;
+
+	if (detector)
+	    match_detector(za, i, r);
 
 	if (a->check_integrity)
 	    archive_file_compute_hashes(a, i, romhashtypes);

@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.12 2007/04/10 16:26:46 dillo Exp $
+  $NiH: mkmamedb.c,v 1.13 2007/04/10 19:49:49 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
@@ -92,6 +92,7 @@ struct option options[] = {
 
 /* XXX: needed by archive.c:read_infos_from_zip */
 int romhashtypes = 0;
+detector_t *detector;
 
 
 
@@ -108,6 +109,8 @@ main(int argc, char **argv)
     DB *db;
 
     setprogname(argv[0]);
+
+    detector = NULL;
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -176,6 +179,12 @@ main(int argc, char **argv)
     if ((out=output_new(fmt, dbname)) == NULL)
 	    exit(1);
 
+    if (detector_name) {
+	detector = detector_parse(detector_name);
+	output_detector(out, detector);
+    }
+
+
     /* XXX: handle errors */
     if (optind == argc)
 	parse(NULL, exclude, &dat, out);
@@ -189,10 +198,10 @@ main(int argc, char **argv)
 	}
     }
 
-    if (detector_name)
-	output_detector(out, detector_name);
-
     output_close(out);
+
+    if (detector)
+	detector_free(detector);
 
     if (exclude)
 	parray_free(exclude, free);

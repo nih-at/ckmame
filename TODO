@@ -4,6 +4,7 @@ tests:
 * whether ckmame can be run (incomplete runtime library path)
 * extra cleanup done when all games checked
 * dumpgame
+* detector
 * mkmamedb tests
   * two different roms with same name (error)
   * XML parsing
@@ -21,7 +22,7 @@ tests:
 - [docs] update mkmamedb man page
 - [feature] support clrmamepro XML header skipper
   - honour header field in dat file
-  - use detector
+  - implement rule operations (bit/byte/word swap)
 - [feature] add option to keep duplicate files
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
 - [feature] when moving file to needed, recheck games that might need it
