@@ -1,8 +1,8 @@
 /*
-  $NiH: mkmamedb.c,v 1.11 2006/10/04 17:36:44 dillo Exp $
+  $NiH: mkmamedb.c,v 1.12 2007/04/10 16:26:46 dillo Exp $
 
   mkmamedb.c -- create mamedb
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -43,7 +43,6 @@
 #include "w.h"
 #include "xmalloc.h"
 
-char *prg;
 char *usage = "Usage: %s [-hV] [-i pat] [-o dbfile] [-F fmt] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
 
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
@@ -63,7 +62,7 @@ char help[] = "\n\
 Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2006 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2007 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
@@ -108,7 +107,7 @@ main(int argc, char **argv)
     int c, i;
     DB *db;
 
-    prg = argv[0];
+    setprogname(argv[0]);
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -123,7 +122,7 @@ main(int argc, char **argv)
 	switch (c) {
 	case 'h':
 	    fputs(help_head, stdout);
-	    printf(usage, prg);
+	    printf(usage, getprogname());
 	    fputs(help, stdout);
 	    exit(0);
 	case 'V':
@@ -136,7 +135,7 @@ main(int argc, char **argv)
 		fmt = OUTPUT_FMT_DB;
 	    else {
 		fprintf(stderr, "%s: unknown output format `%s'\n",
-			prg, optarg);
+			getprogname(), optarg);
 		exit(1);
 	    }
 	    break;
@@ -161,7 +160,7 @@ main(int argc, char **argv)
 	    detector_name = optarg;
 	    break;
     	default:
-	    fprintf(stderr, usage, prg);
+	    fprintf(stderr, usage, getprogname());
 	    exit(1);
 	}
     }
@@ -169,7 +168,7 @@ main(int argc, char **argv)
     if (argc - optind > 1 && dat_entry_name(&dat)) {
 	fprintf(stderr,
 		"%s: warning: multiple input files specified, \n\t"
-		"--prog-name and --prog-version are ignored", prg);
+		"--prog-name and --prog-version are ignored", getprogname());
 	dat_entry_finalize(&dat);
 	dat_entry_init(&dat);
     }

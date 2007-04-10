@@ -1,8 +1,8 @@
 /*
-  $NiH: error.c,v 1.2 2006/04/15 22:52:58 dillo Exp $
+  $NiH: error.c,v 1.3 2006/10/04 17:36:43 dillo Exp $
 
   error.c -- error printing
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -23,8 +23,9 @@
 
 
 
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "error.h"
 #include "dbh.h"
@@ -32,8 +33,6 @@
 #include <errno.h>
 
 #define DEFAULT_FN	"<unknown>"
-
-extern char *prg;
 
 static const char *myerrorfn = DEFAULT_FN;
 static const char *myerrorzipn = DEFAULT_FN;
@@ -45,7 +44,7 @@ myerror(int errtype, const char *fmt, ...)
 {
     va_list va;
 
-    fprintf(stderr, "%s: ", prg);
+    fprintf(stderr, "%s: ", getprogname());
 
     if ((errtype & ERRZIPFILE) == ERRZIPFILE)
 	fprintf(stderr, "%s (%s): ", myerrorfn, myerrorzipn);

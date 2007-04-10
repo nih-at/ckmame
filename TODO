@@ -17,6 +17,7 @@ tests:
 - [bug] check if rompath/needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
+- [portability] provide replacements for {get,set}progname
 - [docs] update mkmamedb man page
 - [feature] support clrmamepro XML header skipper
   - honour header field in dat file
@@ -34,7 +35,6 @@ tests:
   - are two sets the same, just different name
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
-- [cleanup] use {get,set}progname, get rid of global prg
 - [cleanup] replace (u)long with (u)int32_t
 - [cleanup] use parray_t for rompath
 - [cleanup] refactor fixing code (one function per operation)

@@ -1,8 +1,8 @@
 /*
-  $NiH: dumpgame.c,v 1.18 2006/10/04 17:36:43 dillo Exp $
+  $NiH: dumpgame.c,v 1.19 2007/04/10 16:26:46 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -57,7 +57,6 @@ static void print_hashtypes(int);
 static void print_rs(game_t *, filetype_t, const char *,
 		     const char *, const char *, const char *);
 
-char *prg;
 char *usage = "Usage: %s [-h|-V]\n\
        %s [-b] [-D dbfile] [game ...]\n\
        %s [-b] [-D dbfile] [-c | -d] [checksum ...]\n";
@@ -76,7 +75,7 @@ char help[] = "\n\
 Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2006 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2007 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
@@ -259,7 +258,7 @@ main(int argc, char **argv)
     int find_checksum, brief_mode;
     filetype_t filetype;
 
-    prg = argv[0];
+    setprogname(argv[0]);
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -286,14 +285,15 @@ main(int argc, char **argv)
 	    break;
 	case 'h':
 	    fputs(help_head, stdout);
-	    printf(usage, prg, prg, prg);
+	    printf(usage, getprogname(), getprogname(), getprogname());
 	    fputs(help, stdout);
 	    exit(0);
 	case 'V':
 	    fputs(version_string, stdout);
 	    exit(0);
     	default:
-	    fprintf(stderr, usage, prg, prg, prg);
+	    fprintf(stderr, usage,
+		    getprogname(), getprogname(), getprogname());
 	    exit(1);
 	}
     }

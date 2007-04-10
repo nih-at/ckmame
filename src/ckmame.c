@@ -1,8 +1,8 @@
 /*
-  $NiH: ckmame.c,v 1.21 2006/05/26 21:47:29 dillo Exp $
+  $NiH: ckmame.c,v 1.22 2006/10/04 17:36:43 dillo Exp $
 
   ckmame.c -- main routine for ckmame
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -57,8 +57,6 @@ typedef enum action action_t;
 
 
 
-char *prg;
-
 char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-O dbfile] [-e dir] [-T file] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
@@ -94,7 +92,7 @@ char help[] = "\n"
 "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
-"Copyright (C) 2006 Dieter Baron and Thomas Klausner\n"
+"Copyright (C) 2007 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n"
 "You may redistribute copies of\n"
 PACKAGE " under the terms of the GNU General Public License.\n"
@@ -171,7 +169,7 @@ main(int argc, char **argv)
     tree_t *tree;
     char *game_list;
     
-    prg = argv[0];
+    setprogname(argv[0]);
     output_options = WARN_ALL;
     file_type = TYPE_ROM;
     action = ACTION_UNSPECIFIED;
@@ -192,7 +190,7 @@ main(int argc, char **argv)
 	switch (c) {
 	case 'h':
 	    fputs(help_head, stdout);
-	    printf(usage, prg);
+	    printf(usage, getprogname());
 	    fputs(help, stdout);
 	    exit(0);
 	case 'V':
@@ -282,7 +280,7 @@ main(int argc, char **argv)
 	    break;
 
 	default:
-	    fprintf(stderr, usage, prg);
+	    fprintf(stderr, usage, getprogname());
 	    exit(1);
 	}
     }
@@ -428,6 +426,6 @@ static void
 error_multiple_actions(void)
 {
     fprintf(stderr, "%s: only one of --cleanup-extra, --superfluous, "
-	    "game can be used\n", prg);
+	    "game can be used\n", getprogname());
     exit(1);
 }

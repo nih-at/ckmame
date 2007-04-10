@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.27 2006/10/02 20:44:03 dillo Exp $
+#  $NiH: runtest,v 1.28 2006/10/04 18:22:57 dillo Exp $
 #
 #  runtest -- run regression tests
 #  Copyright (C) 2002-2006 Dieter Baron and Thomas Klausner
@@ -298,7 +298,7 @@ do
   sed-err)
     echo "$arg" >> sed-err;;
   stderr)
-    echo "${PROGRAM}: $arg" >> stderr;;
+    echo "`basename ${PROGRAM}`: $arg" >> stderr;;
   stdout)
     echo "$arg" >> stdout;;
   ulimit)
