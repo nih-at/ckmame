@@ -12,6 +12,8 @@ $rompath="/archive/roms/mame/roms/";
 sub do_game_copy {
     my $gamename = shift;
     if (@_) {
+	if ( ! -d $linkdir ) {
+	    mkdir($linkdir, 0755);
 	system("unzip","-Cd",$gamename,"$rompath/$gamename.zip",@_);
 	system("zip","-9Drm",$zipname,$gamename);
     }
@@ -25,7 +27,7 @@ while (<>) {
 	}
 	$gamename = $1;
     }
-    elsif (/^rom\s+(.*)\s+size/ and not /no good dump: exists/
+    elsif (/^rom\s+(.*?)\s+size/ and not /no good dump: exists/
 	   and not /best bad dump/) {
 	push @files, $1;
     }
