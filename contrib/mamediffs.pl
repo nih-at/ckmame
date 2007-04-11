@@ -1,4 +1,4 @@
-#!/usr/pkg/bin/perl
+#!/usr/bin/env perl
 
 # TODO:
 # . less hardwired paths
@@ -13,7 +13,7 @@ sub do_game_copy {
     my $gamename = shift;
     if (@_) {
 	system("unzip","-Cd",$gamename,"$rompath/$gamename.zip",@_);
-	system("zip","-9rm",$zipname,$gamename);
+	system("zip","-9Drm",$zipname,$gamename);
     }
 }
 
