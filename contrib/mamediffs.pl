@@ -25,11 +25,11 @@ while (<>) {
 	}
 	$gamename = $1;
     }
-    elsif (/^rom\s*([^\s]*)/ and not /no good dump: exists/
+    elsif (/^rom\s+(.*)\s+size/ and not /no good dump: exists/
 	   and not /best bad dump/) {
 	push @files, $1;
     }
-    elsif (/^game\s*([^\s]*)/) {
+    elsif (/^game\s+([^\s]*)/) {
 	if ( ! -f "$rompath/$gamename.zip") {
 	    print("$gamename not found\n");
 	    next;
