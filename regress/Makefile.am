@@ -146,6 +146,7 @@ ZIPS=		1-4-2.zip \
 		samptest2.zip \
 		samptest3.zip \
 		samptest3-garbage.zip \
+		zero-4-ok.zip \
 		zero-ok.zip
 
 CHDS=		108-2.chd \
@@ -159,6 +160,7 @@ DBFILES=	mamedb.txt \
 		mamedb-disk.txt \
 		mamedb-lost-parent.txt \
 		mamedb-lost-parent-ok.txt \
+		mkmamedb-duplicate-game.dump \
 		mkmamedb-lost-parent.dump \
 		mkmamedb-multi-dats.dump \
 		mkmamedb-ok.dump
