@@ -14,6 +14,7 @@ sub do_game_copy {
     if (@_) {
 	if ( ! -d $linkdir ) {
 	    mkdir($linkdir, 0755);
+	}
 	system("unzip","-Cd",$gamename,"$rompath/$gamename.zip",@_);
 	system("zip","-9Drm",$zipname,$gamename);
     }
