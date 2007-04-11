@@ -23,6 +23,7 @@ tests:
 - [feature] support clrmamepro XML header skipper
   - honour header field in dat file
   - implement rule operations (bit/byte/word swap)
+  - add tool to view info of processed files from zip archive
 - [feature] add option to keep duplicate files
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
 - [feature] when moving file to needed, recheck games that might need it
