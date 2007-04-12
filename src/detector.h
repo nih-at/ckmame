@@ -2,7 +2,7 @@
 #define HAD_DETECTOR_H
 
 /*
-  $NiH: detector.h,v 1.1 2007/04/10 16:26:46 dillo Exp $
+  $NiH: detector.h,v 1.2 2007/04/10 23:01:30 dillo Exp $
 
   detector.h -- clrmamepro XML header skip detector
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
@@ -45,6 +45,8 @@ struct detector {
 };
 
 typedef struct detector detector_t ;
+
+/* keep in sync with ops in detector_execute.c */
 
 enum detector_operation {
     DETECTOR_OP_NONE,
