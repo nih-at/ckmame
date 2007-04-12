@@ -1,5 +1,5 @@
 /*
-  $NiH: ckmame.c,v 1.23 2007/04/10 19:49:49 dillo Exp $
+  $NiH: ckmame.c,v 1.24 2007/04/10 23:01:30 dillo Exp $
 
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
@@ -62,33 +62,35 @@ char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-O dbfile] [-e dir] [
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
 char help[] = "\n"
-"  -b, --nobroken        don't report unfixable errors\n"
-"      --cleanup-extra   clean up extra dirs (delete superfluous files)\n"
-"  -c, --correct         report correct sets\n"
-"  -D, --db dbfile       use mame-db dbfile\n"
-"  -d, --nonogooddumps   don't report roms with no good dumps\n"
-"  -e, --search dir      search for missing files in directory dir\n"
-"  -F, --fix             fix rom sets\n"
-"  -f, --nofixable       don't report fixable errors\n"
-"  -h, --help            display this help message\n"
-"  -I, --ignore-unknown  do not touch unknown files when fixing\n"
-"  -i, --integrity       check integrity of rom files and disk images\n"
-"      --keep-found      keep files copied from search directories (default)\n"
-"  -j, --delete-found    delete files copied from search directories\n"
-"  -K, --move-unknown    move unknown files when fixing (default)\n"
-"  -k, --delete-unknown  delete unknown files when fixing\n"
-"  -L, --move-long       move long files when fixing (default)\n"
-"  -l, --delete-long     delete long files when fixing\n"
-"  -n, --dryrun          don't actually fix, only report what would be done\n"
-"  -O, --old-db dbfile   use mame-db dbfile for old roms\n"
-"  -S, --samples         check samples instead of roms\n"
-"      --superfluous     only check for superfluous files in rom sets\n"
-"  -s, --nosuperfluous   don't report superfluous files in rom sets\n"
-"  -T, --games-from file read games to check from file\n"
-"  -V, --version         display version number\n"
-"  -v, --verbose         print fixes made\n"
-"  -w, --nowarnings      print only unfixable errors\n"
-"  -X, --ignore-extra    ignore extra files in rom/samples dirs\n"
+"  -b, --nobroken          don't report unfixable errors\n"
+"      --cleanup-extra     clean up extra dirs (delete superfluous files)\n"
+"  -c, --correct           report correct sets\n"
+"  -D, --db dbfile         use mame-db dbfile\n"
+"  -d, --nonogooddumps     don't report roms with no good dumps\n"
+"  -e, --search dir        search for missing files in directory dir\n"
+"  -F, --fix               fix rom sets\n"
+"  -f, --nofixable         don't report fixable errors\n"
+"  -h, --help              display this help message\n"
+"  -I, --ignore-unknown    do not touch unknown files when fixing\n"
+"  -i, --integrity         check integrity of rom files and disk images\n"
+"      --keep-found        keep files copied from search directory (default)\n"
+"  -j, --delete-found      delete files copied from search directories\n"
+"      --keep-duplicate    keep files present in old rom db\n"
+"      --delete-duplicate  delete files present in old rom db (default)\n"
+"  -K, --move-unknown      move unknown files when fixing (default)\n"
+"  -k, --delete-unknown    delete unknown files when fixing\n"
+"  -L, --move-long         move long files when fixing (default)\n"
+"  -l, --delete-long       delete long files when fixing\n"
+"  -n, --dryrun            don't actually fix, only report what would be done\n"
+"  -O, --old-db dbfile     use mame-db dbfile for old roms\n"
+"  -S, --samples           check samples instead of roms\n"
+"      --superfluous       only check for superfluous files in rom sets\n"
+"  -s, --nosuperfluous     don't report superfluous files in rom sets\n"
+"  -T, --games-from file   read games to check from file\n"
+"  -V, --version           display version number\n"
+"  -v, --verbose           print fixes made\n"
+"  -w, --nowarnings        print only unfixable errors\n"
+"  -X, --ignore-extra      ignore extra files in rom/samples dirs\n"
 "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
@@ -102,42 +104,46 @@ PACKAGE " under the terms of the GNU General Public License.\n"
 
 enum {
     OPT_CLEANUP_EXTRA = 256,
+    OPT_DELETE_DUPLICATE,
     OPT_IGNORE_UNKNOWN,
+    OPT_KEEP_DUPLICATE,
     OPT_KEEP_FOUND,
     OPT_SUPERFLUOUS
 };
 
 struct option options[] = {
-    { "help",          0, 0, 'h' },
-    { "version",       0, 0, 'V' },
+    { "help",              0, 0, 'h' },
+    { "version",           0, 0, 'V' },
 
-    { "cleanup-extra", 0, 0, OPT_CLEANUP_EXTRA },
-    { "correct",       0, 0, 'c' }, /* +CORRECT */
-    { "db",            1, 0, 'D' },
-    { "delete-found",  0, 0, 'j' },
-    { "delete-long",   0, 0, 'l' },
-    { "delete-unknown",0, 0, 'k' },
-    { "dryrun",        0, 0, 'n' },
-    { "fix",           0, 0, 'F' },
-    { "games-from",    1, 0, 'T' },
-    { "ignore-extra",  0, 0, 'X' },
-    { "ignore-unknown",0, 0, OPT_IGNORE_UNKNOWN },
-    { "integrity",     0, 0, 'i' },
-    { "keep-found",    0, 0, OPT_KEEP_FOUND },
-    { "move-long",     0, 0, 'L' },
-    { "move-unknown",  0, 0, 'K' },
-    { "nobroken",      0, 0, 'b' }, /* -BROKEN */
-    { "nofixable",     0, 0, 'f' }, /* -FIX */
-    { "nonogooddumps", 0, 0, 'd' }, /* -NO_GOOD_DUMPS */
-    { "nosuperfluous", 0, 0, 's' }, /* -SUP */
-    { "nowarnings",    0, 0, 'w' }, /* -SUP, -FIX */
-    { "old-db",        1, 0, 'O' },
-    { "samples",       0, 0, 'S' },
-    { "search",        1, 0, 'e' },
-    { "superfluous",   0, 0, OPT_SUPERFLUOUS },
-    { "verbose",       0, 0, 'v' },
+    { "cleanup-extra",     0, 0, OPT_CLEANUP_EXTRA },
+    { "correct",           0, 0, 'c' }, /* +CORRECT */
+    { "db",                1, 0, 'D' },
+    { "delete-duplicate",  0, 0, OPT_DELETE_DUPLICATE }, /*+DELETE_DUPLICATE */
+    { "delete-found",      0, 0, 'j' },
+    { "delete-long",       0, 0, 'l' },
+    { "delete-unknown",    0, 0, 'k' },
+    { "dryrun",            0, 0, 'n' },
+    { "fix",               0, 0, 'F' },
+    { "games-from",        1, 0, 'T' },
+    { "ignore-extra",      0, 0, 'X' },
+    { "ignore-unknown",    0, 0, OPT_IGNORE_UNKNOWN },
+    { "integrity",         0, 0, 'i' },
+    { "keep-duplicate",    0, 0, OPT_KEEP_DUPLICATE }, /* -DELETE_DUPLICATE */
+    { "keep-found",        0, 0, OPT_KEEP_FOUND },
+    { "move-long",         0, 0, 'L' },
+    { "move-unknown",      0, 0, 'K' },
+    { "nobroken",          0, 0, 'b' }, /* -BROKEN */
+    { "nofixable",         0, 0, 'f' }, /* -FIX */
+    { "nonogooddumps",     0, 0, 'd' }, /* -NO_GOOD_DUMPS */
+    { "nosuperfluous",     0, 0, 's' }, /* -SUP */
+    { "nowarnings",        0, 0, 'w' }, /* -SUP, -FIX */
+    { "old-db",            1, 0, 'O' },
+    { "samples",           0, 0, 'S' },
+    { "search",            1, 0, 'e' },
+    { "superfluous",       0, 0, OPT_SUPERFLUOUS },
+    { "verbose",           0, 0, 'v' },
 
-    { NULL,            0, 0, 0 },
+    { NULL,                0, 0, 0 },
 };
 
 int output_options;
@@ -180,7 +186,7 @@ main(int argc, char **argv)
     olddbname = getenv("MAMEDB_OLD");
     if (olddbname == NULL)
 	olddbname = DBH_DEFAULT_OLD_DB_NAME;
-    fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN;
+    fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
     ignore_extra = 0;
     check_integrity = 0;
     search_dirs = parray_new();
@@ -268,8 +274,14 @@ main(int argc, char **argv)
 	    action = ACTION_CLEANUP_EXTRA_ONLY;
 	    fix_options |= FIX_DO|FIX_CLEANUP_EXTRA;
 	    break;
+	case OPT_DELETE_DUPLICATE:
+	    fix_options |= FIX_DELETE_DUPLICATE;
+	    break;
 	case OPT_IGNORE_UNKNOWN:
 	    fix_options |= FIX_IGNORE_UNKNOWN;
+	    break;
+	case OPT_KEEP_DUPLICATE:
+	    fix_options &= ~FIX_DELETE_DUPLICATE;
 	    break;
 	case OPT_KEEP_FOUND:
 	    fix_options &= ~FIX_DELETE_EXTRA;

@@ -2,7 +2,7 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.16 2006/10/04 17:36:44 dillo Exp $
+  $NiH: types.h,v 1.17 2006/10/25 15:44:47 wiz Exp $
 
   types.h -- type definitions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -113,8 +113,9 @@ typedef enum name_type name_type_t;
 #define FIX_CLEANUP_EXTRA	0x020 /* delete superfluous from extra dirs */ 
 #define FIX_SUPERFLUOUS		0x040 /* move/delete superfluous */
 #define FIX_IGNORE_UNKNOWN	0x080 /* ignore unknown files during fixing */
+#define FIX_DELETE_DUPLICATE	0x100 /* delete files present in old.db */
 #if 0 /* not supported (yet?) */
-#define FIX_COMPLETE_GAMES	0x100 /* complete in old or complete in roms */
+#define FIX_COMPLETE_GAMES	0x200 /* complete in old or complete in roms */
 #endif
 
 

@@ -1,10 +1,12 @@
 0.9
 
+- add support for CMPro XML header skip detectors
 - fix handling of zero byte ROMs
 - create CMPro dat files
-- create db or dat file from zip archives
+- create mame db or CMPro dat file from zip archives
 - brief option for dumpgame: no ROM/disk info
 - mkmamedb: warn about multiple games with same name
+- ckmame: add option to keep files present in old ROM database
 
 0.8 (2006-05-18)
 

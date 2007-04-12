@@ -11,9 +11,9 @@ tests:
   * /prog from file
   * broken input
 
-+ [docs] update man pages (detector, ...)
++ [docs] update man pages
 + [feature] honour header (header skip detector) field in CM dat file
-+ [feature] add option to keep duplicate files
++ [tests] keep/delete duplicate
 + [tests] detector
   - write to db
   - use on matching file
@@ -35,6 +35,7 @@ tests:
 - [feature] inconsistent zip in ROM set: copy files to new zip
 - [feature] dumpgame: dump samples
 - [feature] mkmamedb: split to original CM dat files on export
+- [feature] mkmamedb: add XML output format
 - [feature] config file (provides defaults overridable on command line)
 - [feature] cmcheck style diagnostics
 - [feature] database consistency checks during mkmamedb

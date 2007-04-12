@@ -1,5 +1,5 @@
 /*
-  $NiH: fix.c,v 1.28 2006/09/29 16:01:33 dillo Exp $
+  $NiH: fix.c,v 1.29 2006/10/04 17:36:44 dillo Exp $
 
   fix.c -- fix ROM sets
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -121,8 +121,11 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	    }
 	    break;
 
-	case FS_SUPERFLUOUS:
 	case FS_DUPLICATE:
+	    if (!(fix_options & FIX_DELETE_DUPLICATE))
+		break;
+	    /* fallthrough */
+	case FS_SUPERFLUOUS:
 	    if (fix_options & FIX_PRINT)
 		printf("%s: delete %s file `%s'\n",
 		       archive_name(a),
