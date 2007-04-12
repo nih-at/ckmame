@@ -1,5 +1,5 @@
 /*
-  $NiH: dumpgame.c,v 1.19 2007/04/10 16:26:46 dillo Exp $
+  $NiH: dumpgame.c,v 1.20 2007/04/10 19:49:49 dillo Exp $
 
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
@@ -546,7 +546,10 @@ dump_detector(DB *db, const char *dummy)
     detector_t *d;
     
     if ((d=r_detector(db)) != NULL) {
-	detector_print(d, stdout);
+	printf("%s", detector_name(d));
+	if (detector_version(d))
+	    printf(" (%s)", detector_version(d));
+	printf("\n");
 	detector_free(d);
     }
     
