@@ -23,13 +23,13 @@ tests:
 . [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
 . [feature] add tool to view info of header skipped files from zip archive
 . [cleanup] review types used for length/offset (use 64bit?)
-. [cleanup] replace (u)long with (u)int32_t
 - [bug] ensure rompath[0] before trying to create zip file there
 - [bug] tries to remove disk image in extra twice (or tries to remove used?)
 - [bug] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version for /ckmame key
 - [bug] check if rompath/needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
+- [bug] DB export: export detector
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
 - [feature] when moving file to needed, recheck games that might need it
 - [feature] inconsistent zip in ROM set: copy files to new zip
@@ -42,6 +42,8 @@ tests:
 - [feature] database consistency checks during mkmamedb
   - are all roms of one set included in one other set
   - are two sets the same, just different name
+- [cleanup] replace (u)long with (u)int32_t
+- [cleanup] rename {r,w}__u{short,long} to {r,w}__uint{16,32}
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
 - [cleanup] use parray_t for rompath
