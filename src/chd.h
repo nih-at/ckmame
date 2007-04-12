@@ -1,10 +1,10 @@
 #ifndef HAD_CHD_H
 
 /*
-  $NiH: chd.h,v 1.2 2006/04/17 16:26:03 dillo Exp $
+  $NiH: chd.h,v 1.3 2006/10/04 17:36:43 dillo Exp $
 
   chd.h -- accessing chd files
-  Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -23,12 +23,10 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "config.h"
-#if HAVE_INTTYPES_H
-# include <inttypes.h>
-#endif
 #include <stdio.h>
 #include <zlib.h>
+
+#include "myinttypes.h"
 
 #define CHD_ERR_NONE	0	/* N no error */
 #define CHD_ERR_OPEN	1	/* S cannot open file */

@@ -2,7 +2,7 @@
 #define HAD_DETECTOR_H
 
 /*
-  $NiH: detector.h,v 1.2 2007/04/10 23:01:30 dillo Exp $
+  $NiH: detector.h,v 1.3 2007/04/12 12:36:07 dillo Exp $
 
   detector.h -- clrmamepro XML header skip detector
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
@@ -27,10 +27,10 @@
 
 
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 
 #include "array.h"
+#include "myinttypes.h"
 #include "rom.h"
 
 struct detector {

@@ -114,6 +114,7 @@ noinst_HEADERS=\
 	archive.h \
 	archive_map.h \
 	array.h \
+	bswap.h \
 	chd.h \
 	dat.h \
 	db-@DBTYPE@.h \
@@ -137,6 +138,7 @@ noinst_HEADERS=\
 	map.h \
 	match.h \
 	match_disk.h \
+	myinttypes.h \
 	output.h \
 	parray.h \
 	parse.h \
@@ -154,8 +156,11 @@ noinst_HEADERS=\
 	xmlutil.h
 
 EXTRA_DIST=\
+	bswap16.c \
+	bswap32.c \
 	db-db.c \
 	db-db.h \
+	getprogname.c \
 	fnmatch.c \
 	fnmatch.h \
 	getopt.c \
@@ -164,5 +169,4 @@ EXTRA_DIST=\
 	md5.c \
 	md5_own.h \
 	sha1.c \
-	sha1_own.h \
-	uint32.h
+	sha1_own.h

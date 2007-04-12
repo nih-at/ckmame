@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: detector_parse.c,v 1.1 2007/04/10 16:26:46 dillo Exp $
 
   detector_parse.c -- parse clrmamepro header skip detector XML file
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
@@ -24,11 +24,11 @@
 
 
 #include <errno.h>
-#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "detector.h"
+#include "myinttypes.h"
 #include "util.h"
 #include "xmalloc.h"
 #include "xmlutil.h"

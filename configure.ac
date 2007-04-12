@@ -15,10 +15,17 @@ AC_PROG_RANLIB
 dnl they are already checked
 dnl AC_CHECK_HEADERS([stdint.h], [], [AC_CHECK_HEADERS([inttypes.h])])
 
-AC_CHECK_TYPE([uint32_t], [],
-	      [AC_CHECK_SIZEOF([unsigned int])
-	       AC_CHECK_SIZEOF([unsigned long])])
 
+AC_CHECK_TYPES([int8_t])
+AC_CHECK_TYPES([int16_t])
+AC_CHECK_TYPES([int32_t])
+AC_CHECK_TYPES([int64_t])
+AC_CHECK_TYPES([uint8_t])
+AC_CHECK_TYPES([uint16_t])
+AC_CHECK_TYPES([uint32_t])
+AC_CHECK_TYPES([uint64_t])
+
+AC_CHECK_SIZEOF([short])
 AC_CHECK_SIZEOF([int])
 AC_CHECK_SIZEOF([long])
 AC_CHECK_SIZEOF([long long])
@@ -78,7 +85,9 @@ DBTYPE=$db
 
 AC_HEADER_DIRENT
 
-AC_REPLACE_FUNCS(fnmatch)
+AC_REPLACE_FUNCS(fnmatch getprogname)
+NIH_REPLACE_BSWAP(bswap16)
+NIH_REPLACE_BSWAP(bswap32)
 AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ([getopt1]) AC_LIBOBJ([getopt])])
 AC_CHECK_FUNCS(MD5Init, , [AC_LIBOBJ([md5])])
 AC_CHECK_FUNCS(SHA1Init, , [AC_LIBOBJ([sha1])])

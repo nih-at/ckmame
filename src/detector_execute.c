@@ -1,5 +1,5 @@
 /*
-  $NiH: detector_execute.c,v 1.1 2007/04/10 23:01:30 dillo Exp $
+  $NiH: detector_execute.c,v 1.2 2007/04/12 12:36:07 dillo Exp $
 
   detector_execute.c -- match file against detector and compute size/hashes
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
@@ -23,9 +23,9 @@
 
 
 
-#include <sys/endian.h>
 #include <stdlib.h>
 
+#include "bswap.h"
 #include "detector.h"
 #include "xmalloc.h"
 

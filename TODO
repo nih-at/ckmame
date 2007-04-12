@@ -11,12 +11,8 @@ tests:
   * /prog from file
   * broken input
 
-+ [portability] provide replacements for {get,set}progname
-+ [portability] uint64_t, BSWAP16, BSWAP32
 + [docs] update man pages (detector, ...)
-+ [feature] support clrmamepro XML header skipper
-  - honour header field in dat file
-  - implement rule operations (bit/byte/word swap)
++ [feature] honour header (header skip detector) field in CM dat file
 + [feature] add option to keep duplicate files
 + [tests] detector
   - write to db
@@ -28,7 +24,6 @@ tests:
 . [feature] add tool to view info of header skipped files from zip archive
 . [cleanup] review types used for length/offset (use 64bit?)
 . [cleanup] replace (u)long with (u)int32_t
-. [cleanup] use AC_CHECK_TYPES for uint32_t
 - [bug] ensure rompath[0] before trying to create zip file there
 - [bug] tries to remove disk image in extra twice (or tries to remove used?)
 - [bug] rom: use flag to specify whether we know the size
