@@ -1,5 +1,5 @@
 /*
-  $NiH: parse-cm.c,v 1.8 2006/05/24 09:29:18 dillo Exp $
+  $NiH: parse-cm.c,v 1.9 2006/10/04 17:36:44 dillo Exp $
 
   parse-cm.c -- parse listinfo/CMpro format files
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
@@ -235,6 +235,8 @@ parse_cm(FILE *fin, parser_context_t *ctx)
 		parse_prog_description(ctx, gettok(&l));
 	    else if (strcmp(cmd, "version") == 0)
 		parse_prog_version(ctx, gettok(&l));
+	    else if (strcmp(cmd, "header") == 0)
+		parse_prog_header(ctx, gettok(&l));
 	    else if (strcmp(cmd, ")") == 0)
 		state = st_top;
 	    break;

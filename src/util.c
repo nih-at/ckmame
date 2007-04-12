@@ -1,5 +1,5 @@
 /*
-  $NiH: util.c,v 1.7 2006/05/24 09:29:19 dillo Exp $
+  $NiH: util.c,v 1.8 2006/10/04 17:36:44 dillo Exp $
 
   util.c -- utility functions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -43,6 +43,30 @@ mybasename(const char *fname)
     if ((p=strrchr(fname, '/')) == NULL)
 	return fname;
     return p+1;
+}
+
+
+
+char *
+mydirname(const char *fname)
+{
+    const char *p;
+    char *d;
+    int l;
+
+    /* XXX: ignore trailing slashes */
+
+    if ((p=strrchr(fname, '/')) == NULL)
+	return xstrdup(".");
+
+    l = p - fname;
+
+    if (l == 0)
+	return xstrdup("/");
+
+    d = xmalloc(l+1);
+    sprintf(d, "%.*s", l, fname);
+    return d;
 }
 
 

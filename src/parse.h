@@ -2,7 +2,7 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.11 2006/05/31 22:12:49 dillo Exp $
+  $NiH: parse.h,v 1.12 2006/10/04 17:36:44 dillo Exp $
 
   parse.h -- parser interface
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -51,6 +51,7 @@ struct parser_context {
     output_context_t *output;
 
     /* current file */
+    char *fname;
     /* XXX: move out of context */
     int lineno;			/* current line number in input file */
 
@@ -91,6 +92,7 @@ int parse_game_end(parser_context_t *, filetype_t);
 int parse_game_name(parser_context_t *, filetype_t, int, const char *);
 int parse_game_start(parser_context_t *, filetype_t);
 int parse_prog_description(parser_context_t *, const char *);
+int parse_prog_header(parser_context_t *, const char *);
 int parse_prog_name(parser_context_t *, const char *);
 int parse_prog_version(parser_context_t *, const char *);
 

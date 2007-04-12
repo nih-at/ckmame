@@ -1,5 +1,5 @@
 /*
-  $NiH: export_db.c,v 1.1 2006/05/31 22:12:49 dillo Exp $
+  $NiH: export_db.c,v 1.2 2006/10/04 17:36:43 dillo Exp $
 
   export_db.c -- export games from db to output backend
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
@@ -45,6 +45,8 @@ export_db(DB *db, const parray_t *exclude, const dat_entry_t *dat,
 	/* XXX: split into original dat files */
 	return 0;
     }
+
+    /* XXX: export detector */
     
     dat_entry_merge(&de, dat,
 		    ((db_dat && dat_length(db_dat) == 1)

@@ -12,9 +12,9 @@ tests:
   * broken input
 
 + [docs] update man pages
-+ [feature] honour header (header skip detector) field in CM dat file
 + [tests] keep/delete duplicate
 + [tests] detector
+  - header field
   - write to db
   - use on matching file
   - use on non-matching file
@@ -34,6 +34,7 @@ tests:
 - [feature] when moving file to needed, recheck games that might need it
 - [feature] inconsistent zip in ROM set: copy files to new zip
 - [feature] dumpgame: dump samples
+- [feature] dumpgame: option to select which checksums to print
 - [feature] mkmamedb: split to original CM dat files on export
 - [feature] mkmamedb: add XML output format
 - [feature] config file (provides defaults overridable on command line)
@@ -47,6 +48,7 @@ tests:
 - [cleanup] refactor fixing code (one function per operation)
 - [cleanup] handle archive refreshing in archive.c
 - [cleanup] rename: file is part of zip archive, rom is part of game
+- [cleanup] generic string <-> int mappings
 - [cleanup] no macros that evaluate arguments twice
 	parray_get_last
 	result_num_*

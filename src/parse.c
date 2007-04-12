@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.22 2006/10/04 17:36:44 dillo Exp $
+  $NiH: parse.c,v 1.23 2007/04/09 18:20:40 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -31,6 +31,7 @@
 
 #include "dat.h"
 #include "error.h"
+#include "globals.h"
 #include "funcs.h"
 #include "parse.h"
 #include "types.h"
@@ -89,6 +90,8 @@ parse(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
     }
 
     ctx = parser_context_new(exclude, dat, out);
+
+    ctx->fname = strdup(fname);
 
     if (fin) {
 	c = getc(fin);
@@ -391,6 +394,45 @@ parse_prog_description(parser_context_t *ctx, const char *attr)
 
 
 int
+parse_prog_header(parser_context_t *ctx, const char *name)
+{
+    char *dir, *temp;
+    const char *fname;
+
+    CHECK_STATE(ctx, PARSE_IN_HEADER);
+
+    if (detector != 0) {
+	myerror(ERRFILE,
+		"%d: warning: detector already defined, header `%s' ignored",
+		ctx->lineno, name);
+	return 0;
+    }
+
+    temp = NULL;
+
+    if (ctx->fname == NULL)
+	fname = name;
+    else {
+	dir = mydirname(ctx->fname);
+	temp = xmalloc(strlen(dir)+strlen(name)+2);
+	sprintf(temp, "%s/%s", dir, name);
+	free(dir);
+	fname = temp;
+    }
+
+    if ((detector=detector_parse(fname)) == NULL) {
+	myerror(ERRFILESTR, "%s: cannot parse detector `%s'",
+		ctx->lineno, fname);
+	free(temp);
+	return -1;
+    }
+
+    return output_detector(ctx->output, detector);
+}
+
+
+
+int
 parse_prog_name(parser_context_t *ctx, const char *attr)
 {
     CHECK_STATE(ctx, PARSE_IN_HEADER);
@@ -420,6 +462,7 @@ parser_context_free(parser_context_t *ctx)
     game_free(ctx->g);
     ctx->g = NULL;
     dat_entry_finalize(&ctx->de);
+    free(ctx->fname);
 
     free(ctx);
 }
@@ -439,6 +482,7 @@ parser_context_new(const parray_t *exclude, const dat_entry_t *dat,
     ctx->ignore = exclude;
     ctx->state = PARSE_IN_HEADER;
 
+    ctx->fname = 0;
     ctx->lineno = 0;
     dat_entry_init(&ctx->de);
     ctx->g = NULL;
