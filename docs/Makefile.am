@@ -12,7 +12,7 @@ SUFFIXES=.man .mdoc .html
 
 man1_MANS=${MANDOC:.mdoc=.${MANFMT}} mkmamedb.1
 
-MANDOC=ckmame.mdoc dumpgame.mdoc
+MANDOC=ckmame.mdoc detective.mdoc dumpgame.mdoc
 MANDOC2=mkmamedb.mdoc
 ALLMANDOC=${MANDOC} ${MANDOC2}
 MAN=${ALLMANDOC:.mdoc=.man}
