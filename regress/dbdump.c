@@ -1,5 +1,5 @@
 /*
-  $NiH: dbdump.c,v 1.7 2006/04/15 22:52:57 dillo Exp $
+  $NiH: dbdump.c,v 1.8 2006/10/04 18:22:57 dillo Exp $
 
   dbdump.c -- print contents of db
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
@@ -34,7 +34,7 @@
 const char *prg;
 const char *usage = "usage: %s db-file\n";
 char *buf;
-int bufsize;
+size_t bufsize;
 
 static int dump(const DBT *, const DBT *, void *);
 
