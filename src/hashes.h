@@ -2,7 +2,7 @@
 #define HAD_HASHES_H
 
 /*
-  $NiH: hashes.h,v 1.6 2005/10/05 21:21:33 dillo Exp $
+  $NiH: hashes.h,v 1.7 2006/10/04 17:36:44 dillo Exp $
 
   hashes.h -- hash related functions
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
@@ -27,6 +27,8 @@
 
 
 #include <string.h>
+
+#include "intstr.h"
 
 #define HASHES_SIZE_CRC		4
 #define HASHES_SIZE_MD5		16
@@ -59,6 +61,10 @@ typedef struct hashes_update hashes_update_t;
 
 
 
+extern const intstr_t hash_type_names[];
+
+
+
 
 #define hashes_are_crc_complement(h1, h2) \
 	((((h1)->crc ^ (h2)->crc) & 0xffffffff) == 0xffffffff)
@@ -66,6 +72,9 @@ typedef struct hashes_update hashes_update_t;
 #define hashes_copy(h1, h2)	(memcpy((h1), (h2), sizeof(hashes_t)))
 #define hashes_has_type(h, t)	(hashes_types(h) & (t))
 #define hashes_types(h)		((h)->types)
+
+#define hash_type_from_str(s)	(str2int((s), hash_type_names))
+#define hash_type_string(i)	(int2str((i), hash_type_names))
 
 hashes_cmp_t hashes_cmp(const hashes_t *, const hashes_t *);
 void hashes_init(hashes_t *);
@@ -76,6 +85,6 @@ void hashes_set(hashes_t *, int, const unsigned char *);
 int hashes_verify(const hashes_t *, int, const unsigned char *);
 int hash_from_string(hashes_t *, const char *);
 const char *hash_to_string(char *, int, const hashes_t *);
-const char *hash_type_string(int);
+int hash_types_from_str(const char *);
 
 #endif /* hashes.h */

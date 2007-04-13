@@ -1,13 +1,14 @@
 AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @CFLAGS@ \
 	 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
 
-bin_PROGRAMS=ckmame mkmamedb dumpgame
+bin_PROGRAMS=ckmame detective dumpgame mkmamedb
 
 noinst_LIBRARIES=libckmame.a
 
 ckmame_LDADD=libckmame.a @DBLIBS@ @LIBZIP_LIBS@
-mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
+detective_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
 dumpgame_LDADD=libckmame.a @DBLIBS@
+mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
 
 libckmame_a_LIBADD=@LIBOBJS@
 
@@ -66,6 +67,7 @@ libckmame_a_SOURCES= \
 	hashes_update.c \
 	hashes_verify.c \
 	images.c \
+	intstr.c \
 	map.c \
 	match.c \
 	match_disk.c \
@@ -135,6 +137,7 @@ noinst_HEADERS=\
 	globals.h \
 	hashes.h \
 	images.h \
+	intstr.h \
 	map.h \
 	match.h \
 	match_disk.h \

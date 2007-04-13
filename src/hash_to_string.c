@@ -1,8 +1,8 @@
 /*
-  $NiH: hash_to_string.c,v 1.3 2005/07/07 22:00:20 dillo Exp $
+  $NiH: hash_to_string.c,v 1.4 2006/10/04 17:36:44 dillo Exp $
 
   hash_to_string.c -- return string representation of hash
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -24,11 +24,21 @@
 
 
 #include <stdio.h>
+#include <string.h>
 
 #include "types.h"
 #include "hashes.h"
 #include "util.h"
 #include "xmalloc.h"
+
+
+
+const intstr_t hash_type_names[] = {
+    { HASHES_TYPE_CRC, "crc" },
+    { HASHES_TYPE_MD5, "md5" },
+    { HASHES_TYPE_SHA1, "sha1" },
+    { 0, NULL }
+};
 
 
 
@@ -60,20 +70,26 @@ hash_to_string(char *str, int type, const hashes_t *hashes)
 
 
 
-const char *
-hash_type_string(int type)
+int
+hash_types_from_str(const char *s)
 {
-    switch (type) {
-    case HASHES_TYPE_CRC:
-	return "crc";
+    const char *p, *q;
+    char b[16];
+    int types, t;
 
-    case HASHES_TYPE_MD5:
-	return "md5";
+    types = 0;
+    p = s;
+    do {
+	q = p+strcspn(p, ",");
+	if ((size_t)(q-p) >= sizeof(b))
+	    return 0;
+	strlcpy(b, p, q-p+1);
+	if ((t=hash_type_from_str(b)) == 0)
+	    return 0;
+	types |= t;
 
-    case HASHES_TYPE_SHA1:
-	return "sha1";
-
-    default:
-	return NULL;
-    }
+	p = q+1;
+    } while (*q);
+    
+    return types;
 }

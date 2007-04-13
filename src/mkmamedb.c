@@ -1,5 +1,5 @@
 /*
-  $NiH: mkmamedb.c,v 1.13 2007/04/10 19:49:49 dillo Exp $
+  $NiH: mkmamedb.c,v 1.14 2007/04/10 23:01:30 dillo Exp $
 
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
@@ -43,7 +43,7 @@
 #include "w.h"
 #include "xmalloc.h"
 
-char *usage = "Usage: %s [-hV] [-i pat] [-o dbfile] [-F fmt] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
+char *usage = "Usage: %s [-hV] [-C types] [-i pat] [-o dbfile] [-F fmt] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
 
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
@@ -51,6 +51,7 @@ char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
 char help[] = "\n\
   -h, --help                display this help message\n\
   -V, --version             display version number\n\
+  -C, --hash-types types    specify hash types to compute (default: all)\n\
   -F, --format [db|cm]      specify output format [default: db]\n\
   -o, --output dbfile       write to database dbfile\n\
   -x, --exclude pat         exclude games matching shell glob PAT\n\
@@ -68,7 +69,7 @@ You may redistribute copies of\n\
 " PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
-#define OPTIONS "hF:o:Vx:"
+#define OPTIONS "hC:F:o:Vx:"
 
 enum {
     OPT_PROG_DESCRIPTION = 256,
@@ -83,6 +84,7 @@ struct option options[] = {
     { "detector",         1, 0, OPT_DETECTOR },
     { "exclude",          1, 0, 'x' },
     { "format",           1, 0, 'F' },
+    { "hash-types",       1, 0, 'C' },
     { "output",           1, 0, 'o' },
     { "prog-description", 1, 0, OPT_PROG_DESCRIPTION },
     { "prog-name",        1, 0, OPT_PROG_NAME },
@@ -90,8 +92,7 @@ struct option options[] = {
     { NULL,               0, 0, 0 },
 };
 
-/* XXX: needed by archive.c:read_infos_from_zip */
-int romhashtypes = 0;
+int romhashtypes;
 detector_t *detector;
 
 
@@ -118,6 +119,7 @@ main(int argc, char **argv)
     dat_entry_init(&dat);
     exclude = NULL;
     fmt = OUTPUT_FMT_DB;
+    romhashtypes = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
     detector_name = NULL;
 
     opterr = 0;
@@ -131,6 +133,14 @@ main(int argc, char **argv)
 	case 'V':
 	    fputs(version_string, stdout);
 	    exit(0);
+	case 'C':
+	    romhashtypes=hash_types_from_str(optarg);
+	    if (romhashtypes == 0) {
+		fprintf(stderr, "%s: illegal hash types `%s'\n",
+			getprogname(), optarg);
+		exit(1);
+	    }
+	    break;
 	case 'F':
 	    if (strcmp(optarg, "cm") == 0)
 		fmt = OUTPUT_FMT_CM;

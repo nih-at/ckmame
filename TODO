@@ -11,7 +11,9 @@ tests:
   * /prog from file
   * broken input
 
++ [portability] stdbool replacement
 + [docs] update man pages
++ [docs] filedetect man page
 + [tests] keep/delete duplicate
 + [tests] detector
   - header field
@@ -21,8 +23,9 @@ tests:
   - rule operations
 . [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
 . [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
-. [feature] add tool to view info of header skipped files from zip archive
+. [feature] add hash-types option to dumpgame
 . [cleanup] review types used for length/offset (use 64bit?)
+. [cleanup] use int2str/str2int
 - [bug] ensure rompath[0] before trying to create zip file there
 - [bug] tries to remove disk image in extra twice (or tries to remove used?)
 - [bug] rom: use flag to specify whether we know the size

@@ -1,8 +1,8 @@
 /*
-  $NiH: parse-dir.c,v 1.1 2006/05/24 09:29:18 dillo Exp $
+  $NiH: parse-dir.c,v 1.2 2006/10/04 17:36:44 dillo Exp $
 
   parse-dir.c -- read info from zip archives
-  Copyright (C) 2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,6 +31,7 @@
 #include "dir.h"
 #include "error.h"
 #include "funcs.h"
+#include "globals.h"
 #include "parse.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -85,7 +86,7 @@ static int
 parse_archive(parser_context_t *ctx, archive_t *a)
 {
     char *name;
-    int i;
+    int i, ht;
     rom_t *r;
     char hstr[HASHES_SIZE_MAX*2+1];
 
@@ -98,8 +99,7 @@ parse_archive(parser_context_t *ctx, archive_t *a)
     free(name);
 
     for (i=0; i<archive_num_files(a); i++) {
-	if (archive_file_compute_hashes(a, i,
-		   HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1) < 0)
+	if (archive_file_compute_hashes(a, i, romhashtypes) < 0)
 	    continue;
 	r = archive_file(a, i);
 
@@ -107,12 +107,12 @@ parse_archive(parser_context_t *ctx, archive_t *a)
 	parse_file_name(ctx, TYPE_ROM, 0, rom_name(r));
 	sprintf(hstr, "%lu", rom_size(r));
 	parse_file_size(ctx, TYPE_ROM, 0, hstr);
-	parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_CRC,
-			hash_to_string(hstr, HASHES_TYPE_CRC, rom_hashes(r)));
-	parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_MD5,
-			hash_to_string(hstr, HASHES_TYPE_MD5, rom_hashes(r)));
-	parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_SHA1,
-			hash_to_string(hstr, HASHES_TYPE_SHA1, rom_hashes(r)));
+	for (ht=1; ht<=HASHES_TYPE_MAX; ht<<=1) {
+	    if (romhashtypes & ht)
+		parse_file_hash(ctx, TYPE_ROM, ht,
+				hash_to_string(hstr, ht,
+					       rom_hashes(r)));
+	}
 	parse_file_end(ctx,TYPE_ROM);
     }
 
