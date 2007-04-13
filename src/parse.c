@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.23 2007/04/09 18:20:40 dillo Exp $
+  $NiH: parse.c,v 1.24 2007/04/12 21:09:20 dillo Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -482,7 +482,7 @@ parser_context_new(const parray_t *exclude, const dat_entry_t *dat,
     ctx->ignore = exclude;
     ctx->state = PARSE_IN_HEADER;
 
-    ctx->fname = 0;
+    ctx->fname = NULL;
     ctx->lineno = 0;
     dat_entry_init(&ctx->de);
     ctx->g = NULL;
