@@ -2,7 +2,7 @@
 #define HAD_MYINTTYPES_H
 
 /*
-  $NiH$
+  $NiH: myinttypes.h,v 1.1 2007/04/12 16:19:56 dillo Exp $
 
   myinttypes.h -- ensure that {u,}int{8,16,32,64}_t are defined
   Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
@@ -25,6 +25,14 @@
 */
 
 #include "config.h"
+
+#ifdef HAVE_STDBOOL_H
+#include <stdbool.h>
+#else
+#define bool char
+#define true 1
+#define false 0
+#endif
 
 #if defined(HAVE_INTTYPES_H)
 #include <inttypes.h>

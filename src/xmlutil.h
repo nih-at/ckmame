@@ -2,7 +2,7 @@
 #define HAD_XMLUTIL_H
 
 /*
-  $NiH$
+  $NiH: xmlutil.h,v 1.1 2007/04/10 23:01:30 dillo Exp $
 
   xmlutil.h -- parse XML file via callbacks
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
@@ -26,8 +26,9 @@
 
 
 
-#include <stdbool.h>
 #include <stdio.h>
+
+#include "myinttypes.h"
 
 typedef int (*xmlu_attr_cb)(void *, int, int, const char *);
 typedef int (*xmlu_tag_cb)(void *, int);

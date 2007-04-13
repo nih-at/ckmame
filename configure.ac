@@ -12,9 +12,7 @@ test -z "$CFLAGS" && CFLAGS='-Wall -g' auto_cflags=1
 AC_PROG_CC
 AC_PROG_RANLIB
 
-dnl they are already checked
-dnl AC_CHECK_HEADERS([stdint.h], [], [AC_CHECK_HEADERS([inttypes.h])])
-
+AC_CHECK_HEADERS([stdbool.h])
 
 AC_CHECK_TYPES([int8_t])
 AC_CHECK_TYPES([int16_t])

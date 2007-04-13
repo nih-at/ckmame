@@ -11,9 +11,7 @@ tests:
   * /prog from file
   * broken input
 
-+ [portability] stdbool replacement
 + [docs] update man pages
-+ [docs] filedetect man page
 + [tests] keep/delete duplicate
 + [tests] detector
   - header field
