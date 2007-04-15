@@ -1,4 +1,4 @@
-.\" $NiH$
+.\" $NiH: detective.mdoc,v 1.1 2007/04/13 14:42:28 dillo Exp $
 .\"
 .\" Copyright (c) 2007 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -40,20 +40,21 @@
 .Op Fl C Ar hashtypes
 .Op Fl D Ar dbfile
 .Op Fl -detector Ar file
-.Op Ar zip-archive [...]
+.Op Ar zip-archive Op ...
 .Sh DESCRIPTION
 .Nm
 lists the contents of zip archives in a format similar to
 .Xr dumpgame 1 ,
 optionally applying a header skip detector.
 .Pp
-If no hash types or detector are given via command line options, they are taken from the
+If no hash types or detector are given via command line options,
+they are taken from the
 .Xr ckmame 1
 database.
 .Ss OPTIONS
 .Nm
 supports the following options:
-.Bl -tag -width XtXtypeXX
+.Bl -tag -width XCXtypesXXXhashXtypesXtypesXX
 .It Fl C Ar types , Fl -hash-types Ar types
 A comma separated list of hash types to compute when creating a ROM
 set description from a directory of zip archives.
