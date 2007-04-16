@@ -12,7 +12,6 @@ tests:
   * broken input
 
 + [docs] update man pages
-+ [tests] keep/delete duplicate
 + [tests] detector
   - header field
   - write to db
