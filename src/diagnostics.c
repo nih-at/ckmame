@@ -1,5 +1,5 @@
 /*
-  $NiH: diagnostics.c,v 1.11 2006/09/29 16:05:03 dillo Exp $
+  $NiH: diagnostics.c,v 1.12 2006/10/04 17:36:43 dillo Exp $
 
   diagnostics.c -- display result of check
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -102,7 +102,8 @@ diagnostics_archive(const archive_t *a, const result_t *res)
 		warn_file(f, "not used");
 	    break;
 	case FS_DUPLICATE:
-	    if (output_options & WARN_SUPERFLUOUS)
+	    if ((output_options & WARN_SUPERFLUOUS)
+		&& (fix_options & FIX_DELETE_DUPLICATE))
 		warn_file(f, "duplicate");
 	    break;
 	}
@@ -185,101 +186,117 @@ diagnostics_files(const game_t *game, const result_t *res)
 {
     match_t *m;
     rom_t *f, *r;
-    int i;
+    int i, all_same;
     
     switch (result_game(res)) {
     case GS_CORRECT:
 	if (output_options & WARN_CORRECT)
 	    warn_rom(NULL, "correct");
-	break;
+	return;
     case GS_OLD:
-	if (output_options & WARN_CORRECT)
-	    warn_rom(NULL, "old");
+	if (!(output_options & WARN_CORRECT))
+	    return;
+	else {
+	    all_same = 1;
+	    for (i=1; i<game_num_files(game, file_type); i++) {
+		if (strcmp(match_old_game(result_rom(res, 0)),
+			   match_old_game(result_rom(res, i))) != 0) {
+		    all_same = 0;
+		    break;
+		}
+	    }
+	    if (all_same) {
+		warn_rom(NULL, "old in `%s'",
+			 match_old_game(result_rom(res, 0)));
+		return;
+	    }
+	}
 	break;
     case GS_MISSING:
 	if (output_options & WARN_MISSING)
 	    warn_rom(NULL, "not a single rom found");
-	break;
+	return;
     default:
-        for (i=0; i<game_num_files(game, file_type); i++) {
-	    m = result_rom(res, i);
-	    r = game_file(game, file_type, i);
-	    if (!match_source_is_old(m) && match_archive(m))
-		f = archive_file(match_archive(m), match_index(m));
-	    else
-		f = NULL;
-	    
-	    switch (match_quality(m)) {
-	    case QU_MISSING:
-		if (output_options & WARN_MISSING) {
-		    if (rom_status(r) == STATUS_OK
-			|| output_options & WARN_NO_GOOD_DUMP)
-			warn_rom(r, "missing");
-		}
-		break;
-		
-	    case QU_NAMEERR:
-		if (output_options & WARN_WRONG_NAME)
-		    warn_rom(r, "wrong name (%s)%s%s",
-			     rom_name(f),
-			     (rom_where(r) != match_where(m)
-			      ? ", should be in " : ""),
-			     zname[rom_where(r)]);
-		break;
-		
-	    case QU_LONG:
-		if (output_options & WARN_LONGOK)
-		    warn_rom(r,
-			     "too long, valid subsection at byte %" PRIdoff
-			     " (%d)%s%s",
-			     PRIoff_cast match_offset(m), rom_size(f),
-			     (rom_where(r) != match_where(m)
-			      ? ", should be in " : ""),
-			     zname[rom_where(r)]);
-		break;
-		
-	    case QU_OK:
-		if (output_options & WARN_CORRECT) {
-		    if (rom_status(r) == STATUS_OK)
-			warn_rom(r, "correct");
-		    else if (output_options & WARN_NO_GOOD_DUMP)
-			warn_rom(r,
-				 rom_status(r) == STATUS_BADDUMP
-				 ? "best bad dump" : "exists");
-		}
-		break;
-
-	    case QU_COPIED:
-		if (output_options & WARN_ELSEWHERE)
-		    warn_rom(r, "is in `%s'", archive_name(match_archive(m)));
-		break;
-
-	    case QU_INZIP:
-		if (output_options & WARN_WRONG_ZIP)
-		    warn_rom(r, "should be in %s",
-			     zname[rom_where(r)]);
-		break;
-
-	    case QU_HASHERR:
-		if (output_options & WARN_MISSING) {
-		    warn_rom(r, "checksum mismatch%s%s",
-			     (rom_where(r) != match_where(m)
-			      ? ", should be in " : ""),
-			     (rom_where(r) != match_where(m)
-			      ? zname[rom_where(r)] : ""));
-		}
-		break;
-
-	    case QU_OLD:
-		if (output_options & WARN_CORRECT)
-		    warn_rom(r, "old");
-		break;
-	    case QU_NOHASH:
-		/* only used for disks */
-		break;
-	    }
-	}
 	break;
+    }
+
+    for (i=0; i<game_num_files(game, file_type); i++) {
+	m = result_rom(res, i);
+	r = game_file(game, file_type, i);
+	if (!match_source_is_old(m) && match_archive(m))
+	    f = archive_file(match_archive(m), match_index(m));
+	else
+	    f = NULL;
+	
+	switch (match_quality(m)) {
+	case QU_MISSING:
+	    if (output_options & WARN_MISSING) {
+		if (rom_status(r) == STATUS_OK
+		    || output_options & WARN_NO_GOOD_DUMP)
+		    warn_rom(r, "missing");
+	    }
+	    break;
+	    
+	case QU_NAMEERR:
+	    if (output_options & WARN_WRONG_NAME)
+		warn_rom(r, "wrong name (%s)%s%s",
+			 rom_name(f),
+			 (rom_where(r) != match_where(m)
+			  ? ", should be in " : ""),
+			 zname[rom_where(r)]);
+	    break;
+	    
+	case QU_LONG:
+	    if (output_options & WARN_LONGOK)
+		warn_rom(r,
+			 "too long, valid subsection at byte %" PRIdoff
+			 " (%d)%s%s",
+			 PRIoff_cast match_offset(m), rom_size(f),
+			 (rom_where(r) != match_where(m)
+			  ? ", should be in " : ""),
+			 zname[rom_where(r)]);
+	    break;
+	    
+	case QU_OK:
+	    if (output_options & WARN_CORRECT) {
+		if (rom_status(r) == STATUS_OK)
+		    warn_rom(r, "correct");
+		else if (output_options & WARN_NO_GOOD_DUMP)
+		    warn_rom(r,
+			     rom_status(r) == STATUS_BADDUMP
+			     ? "best bad dump" : "exists");
+	    }
+	    break;
+	    
+	case QU_COPIED:
+	    if (output_options & WARN_ELSEWHERE)
+		warn_rom(r, "is in `%s'", archive_name(match_archive(m)));
+	    break;
+	    
+	case QU_INZIP:
+	    if (output_options & WARN_WRONG_ZIP)
+		warn_rom(r, "should be in %s",
+			 zname[rom_where(r)]);
+	    break;
+	    
+	case QU_HASHERR:
+	    if (output_options & WARN_MISSING) {
+		warn_rom(r, "checksum mismatch%s%s",
+			 (rom_where(r) != match_where(m)
+			  ? ", should be in " : ""),
+			 (rom_where(r) != match_where(m)
+			  ? zname[rom_where(r)] : ""));
+	    }
+	    break;
+	    
+	case QU_OLD:
+	    if (output_options & WARN_CORRECT)
+		warn_rom(r, "old in `%s'", match_old_game(m));
+	    break;
+	case QU_NOHASH:
+	    /* only used for disks */
+	    break;
+	}
     }
 }
 

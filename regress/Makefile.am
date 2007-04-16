@@ -75,6 +75,7 @@ TESTCASES=	\
 		ok.test \
 		old-complete.test \
 		old-disk.test \
+		old-keep.test \
 		old-partial.test \
 		punknown.test \
 		punused.test \

@@ -1,10 +1,10 @@
-# $NiH: old-complete.test,v 1.1 2006/04/24 11:38:39 dillo Exp $
+# $NiH: old-complete.test,v 1.2 2006/05/01 21:09:10 dillo Exp $
 description test 2 rom game (no parent), zip is correct, game is in old
 return 0
 args -O ../mame2.db -FKLivc 2-48
 file-del roms/2-48.zip 2-48-ok.zip
 stdout In game 2-48:
-stdout game 2-48                                    : old
+stdout game 2-48                                    : old in `clone-8'
 stdout file 04.rom        size       4  crc d87f7e0c: duplicate
 stdout file 08.rom        size       8  crc 3656897d: duplicate
 stdout ./roms/2-48.zip: delete duplicate file `04.rom'

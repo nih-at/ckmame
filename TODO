@@ -43,10 +43,10 @@ tests:
 - [feature] database consistency checks during mkmamedb
   - are all roms of one set included in one other set
   - are two sets the same, just different name
-- [cleanup] replace (u)long with (u)int32_t
-- [cleanup] rename {r,w}__u{short,long} to {r,w}__uint{16,32}
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
+- [cleanup] replace (u)long with (u)int32_t
+- [cleanup] rename {r,w}__u{short,long} to {r,w}__uint{16,32}
 - [cleanup] use parray_t for rompath
 - [cleanup] refactor fixing code (one function per operation)
 - [cleanup] handle archive refreshing in archive.c
