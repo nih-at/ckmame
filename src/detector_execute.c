@@ -1,5 +1,5 @@
 /*
-  $NiH: detector_execute.c,v 1.2 2007/04/12 12:36:07 dillo Exp $
+  $NiH: detector_execute.c,v 1.3 2007/04/12 16:18:26 dillo Exp $
 
   detector_execute.c -- match file against detector and compute size/hashes
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
@@ -384,6 +384,8 @@ op_byteswap(uint8_t *b, size_t len)
     uint16_t *bw;
     size_t i;
 
+    bw = (uint16_t *)b;
+
     for (i=0; i<len/2; i++)
 	bw[i] = bswap16(bw[i]);
 }
@@ -395,6 +397,8 @@ op_wordswap(uint8_t *b, size_t len)
 {
     uint32_t *bl;
     size_t i;
+
+    bl = (uint32_t *)b;
 
     for (i=0; i<len/4; i++)
 	bl[i] = bswap32(bl[i]);

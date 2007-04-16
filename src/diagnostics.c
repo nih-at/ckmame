@@ -1,8 +1,8 @@
 /*
-  $NiH: diagnostics.c,v 1.12 2006/10/04 17:36:43 dillo Exp $
+  $NiH: diagnostics.c,v 1.13 2007/04/16 16:43:32 dillo Exp $
 
   diagnostics.c -- display result of check
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
