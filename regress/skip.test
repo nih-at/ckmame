@@ -1,0 +1,10 @@
+# $NiH$
+description test header detector
+return 0
+file skip.xml skip.xml skip.xml
+file skipped.txt skipped.txt skipped.txt
+mkdbargs --detector skip.xml skipped.txt
+args -FKLivc skipped
+file roms/skipped.zip 1-8-ok.zip 1-8-ok.zip
+stdout In game skipped:
+stdout game skipped                                 : correct

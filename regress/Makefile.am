@@ -3,7 +3,7 @@ AM_CFLAGS=		-I${srcdir}/../src \
 			 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
 dbdump_LDADD=		../src/libckmame.a @DBLIBS@
 
-EXTRA_DIST=runtest ${TESTCASES} ${ZIPS} ${CHDS} ${DBFILES} \
+EXTRA_DIST=runtest ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in
 
 CLEANFILES=${DBS}
@@ -15,9 +15,9 @@ DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3}
 
 ZIPCMP=@ZIPCMP@
 
-TESTS_ENVIRONMENT=	ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}"
+TESTS_ENVIRONMENT=ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}" $(srcdir)/runtest
 
-TESTCASES=	\
+TESTS=	\
 		archive-broken.test \
 		archive-broken2.test \
 		baddump.test \
@@ -104,6 +104,7 @@ TESTCASES=	\
 		sample-ok.test \
 		sample-parent-ok.test \
 		sample-superfluous.test \
+		skip.test \
 		skipbad.test \
 		superfluous-broken.test \
 		superfluous-cleanup.test \
@@ -164,32 +165,11 @@ DBFILES=	mamedb.txt \
 		mkmamedb-duplicate-game.dump \
 		mkmamedb-lost-parent.dump \
 		mkmamedb-multi-dats.dump \
-		mkmamedb-ok.dump
+		mkmamedb-ok.dump \
+		skip.xml \
+		skipped.txt
 
-check: ${DBS}
-	@failed=0; all=0; \
-	srcdir=$(srcdir); export srcdir; \
-	for tst in ${TESTCASES}; do \
-	  t=`basename $$tst .test`; \
-	  if ${TESTS_ENVIRONMENT} $(srcdir)/runtest $$t; then \
-	    all=`expr $$all + 1`; \
-	    echo "PASS: $$tst"; \
-	  elif test $$? -ne 77; then \
-	    all=`expr $$all + 1`; \
-	    failed=`expr $$failed + 1`; \
-	    echo "FAIL: $$tst"; \
-	  fi; \
-	done; \
-	if test "$$failed" -eq 0; then \
-	  banner="All $$all tests passed"; \
-	else \
-	  banner="$$failed of $$all tests failed"; \
-	fi; \
-	dashes=`echo "$$banner" | sed s/./=/g`; \
-	echo "$$dashes"; \
-	echo "$$banner"; \
-	echo "$$dashes"; \
-	test "$$failed" -eq 0
+check-am: ${DBS}
 
 ${MAME_DB}: ../src/mkmamedb ${srcdir}/mamedb.txt
 	../src/mkmamedb ${srcdir}/mamedb.txt

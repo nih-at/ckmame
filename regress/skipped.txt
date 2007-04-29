@@ -1,0 +1,11 @@
+clrmamepro (
+        name "ckmame test db"
+        version 1
+)
+
+game (
+	name skipped
+	description skipped
+	rom ( name 08.rom size 4 crc 02404c40 sha1 bfac6a4b8fac8cc5337c3e58459324c560cfea67 md5 926abae84a4bd33c834bc6b981b8cf30 )
+)
+

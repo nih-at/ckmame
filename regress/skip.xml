@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<detector>
+  <name>skip some bytes</name>
+  <author>no1</author>
+  <version>20070429</version>
+
+  <rule start_offset="4">
+    <data offset="0" value="7465"/>
+  </rule>
+
+</detector>
