@@ -214,7 +214,7 @@ copy_file() {
 LC_ALL=C
 export LC_ALL
 
-TEST=`echo $1 | sed 's/\.test$//'`
+TEST=`echo $1 | sed -e 's,^.*/,,' -e 's/\.test$//'`
 shift
 
 DIR=${TEST}.d$$
