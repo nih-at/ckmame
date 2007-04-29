@@ -1,9 +1,9 @@
 #!/bin/sh
 
-#  $NiH: runtest,v 1.28 2006/10/04 18:22:57 dillo Exp $
+#  $NiH: runtest,v 1.29 2007/04/10 19:49:49 dillo Exp $
 #
 #  runtest -- run regression tests
-#  Copyright (C) 2002-2006 Dieter Baron and Thomas Klausner
+#  Copyright (C) 2002-2007 Dieter Baron and Thomas Klausner
 #
 #  This file is part of ckmame, a program to check rom sets for MAME.
 #  The authors can be contacted at <ckmame@nih.at>
@@ -51,6 +51,9 @@
 #
 #	mkdir MODE NAME
 #	    create directory NAME with permissions MODE.
+#
+#	mkdb CMD
+#	    run CMD to create mame.db.
 #
 #	program PRG
 #	    run PRG instead of ckmame.
@@ -223,7 +226,7 @@ else
 	srcdir=../${srcdir}
 fi
 
-PROGRAM=../../src/ckmame
+MKMAMEDB=../../src/mkmamedb
 
 if [ -z "${ZIPCMP}" ]
 then
@@ -233,11 +236,6 @@ else
     then
 	ZIPCMP="../${ZIPCMP}"
     fi
-fi
-
-if [ -z "${MAME_DB}" ]
-then
-    MAME_DB='mame.db'
 fi
 
 if [ -z "${VERBOSE}" ]
@@ -256,12 +254,14 @@ cd ${DIR} || ( die "cannot cd to test directory ${DIR}" )
 
 {
 
+PROGRAM=../../src/ckmame
 RET=''
 ARGS=''
 FILES=''
 FILES_SHOULD=''
 DESCR=''
 ULIMIT=''
+MKDBARGS=''
 
 mkdir roms
 
@@ -287,6 +287,9 @@ do
   file-new)
     set $arg
     FILES="${FILES} ${srcdir}/$2!$1";;
+  mkdbargs)
+    test_empty "${MKDBARGS}" args
+    MKDBARGS="$arg";;
   mkdir)
     set $arg
     mkdir "$2" && chmod "$1" "$2";;
@@ -313,8 +316,6 @@ done
 test_set "${RET}" return
 test_set "${ARGS}" args
 
-cp ../"${MAME_DB}" .
-
 if [ ! -z "${SETUP_ONLY}" ]
 then
     echo ${DIR}
@@ -324,7 +325,7 @@ fi
 
 if [ "${PROGRAM}" = "../../src/ckmame" ]
 then
-    ARGS="-D ${MAME_DB} ${ARGS}"
+    ARGS="${ARGS}"
 fi
 
 if [ ! -z "${VERBOSE}" ]
@@ -333,7 +334,18 @@ then
 	echo "running: ${PROGRAM} ${ARGS}"
 fi
 
-${PROGRAM} ${ARGS} > gotout 2> goterr
+if [ ! -z "${MKDBARGS}" ]
+then
+    ${MKMAMEDB} ${MKDBARGS} > gotout 2> goterr
+    if [ $? -ne 0 ]
+    then
+	fail "can't create database"
+    fi
+else
+    cp ../mame.db .
+fi
+
+${PROGRAM} ${ARGS} >> gotout 2>> goterr
 ret=$?
 
 if [ $ret -ne ${RET} ]
@@ -346,7 +358,7 @@ then
     fail "unexpected exit status: got $ret, expected ${RET}"
 fi
 
-FILES_SHOULD="${FILES_SHOULD} stderr stdout gotout goterr ${MAME_DB}"
+FILES_SHOULD="${FILES_SHOULD} stderr stdout gotout goterr mame.db"
 
 if [ -s sed-err ]
 then
