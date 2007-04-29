@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<detector>
+
+  <name>Nintendo 64 de-interleave</name>
+  <author>Dieter Baron</author>
+  <version>20070416</version>
+
+  <rule operation="byteswap">
+    <and offset="0" value="37804012" mask="FFFFFEFF" />
+  </rule>
+
+</detector>
