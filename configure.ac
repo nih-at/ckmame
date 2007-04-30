@@ -83,7 +83,7 @@ DBTYPE=$db
 
 AC_HEADER_DIRENT
 
-AC_REPLACE_FUNCS(fnmatch getprogname)
+AC_REPLACE_FUNCS(fnmatch getprogname strlcpy)
 NIH_REPLACE_BSWAP(bswap16)
 NIH_REPLACE_BSWAP(bswap32)
 AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ([getopt1]) AC_LIBOBJ([getopt])])

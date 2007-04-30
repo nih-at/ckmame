@@ -1,4 +1,4 @@
-/* $NiH: sha1.c,v 1.4 2005/06/13 00:14:59 dillo Exp $ */
+/* $NiH: sha1.c,v 1.1 2005/07/04 21:54:51 dillo Exp $ */
 
 /* sha.c - Implementation of the Secure Hash Algorithm
  *
@@ -45,7 +45,6 @@ effort (for example the reengineering of a great many Capstone chips).
 #ifndef HAVE_SHA1INIT
 
 #include "sha1_own.h"
-#include "uint32.h"
 
 #define EXTRACT_UCHAR(p)  (*(unsigned char *)(p))
 #define STRING2INT(s) ((((((EXTRACT_UCHAR(s) << 8)    \

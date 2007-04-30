@@ -10,19 +10,15 @@ tests:
   * /prog from command line
   * /prog from file
   * broken input
+* detector
+  * header field
+  * write to db
+  * use on matching file
+  * use on non-matching file
+  * rule operations
 
-+ [docs] update man pages
-+ [tests] detector
-  - header field
-  - write to db
-  - use on matching file
-  - use on non-matching file
-  - rule operations
-. [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
-. [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
-. [feature] add hash-types option to dumpgame
-. [cleanup] review types used for length/offset (use 64bit?)
-. [cleanup] use int2str/str2int
++ [portability] prototype for {get,set}progname, strlcpy replacements
+- [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
 - [bug] ensure rompath[0] before trying to create zip file there
 - [bug] tries to remove disk image in extra twice (or tries to remove used?)
 - [bug] rom: use flag to specify whether we know the size
@@ -30,13 +26,15 @@ tests:
 - [bug] check if rompath/needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
+- [feature] add hash-types option to dumpgame
+- [feature] mkmamedb: split to original CM dat files + detector XML on export
+- [feature] regress: better db dump format
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
 - [feature] when moving file to needed, recheck games that might need it
 - [feature] inconsistent zip in ROM set: copy files to new zip
 - [feature] dumpgame: dump samples
 - [feature] dumpgame: option to select which checksums to print
-- [feature] mkmamedb: split to original CM dat files on export
-- [feature] mkmamedb: add XML output format
+- [feature] mkmamedb: add XML output format (XXX: we have no manufacturer)
 - [feature] config file (provides defaults overridable on command line)
 - [feature] cmcheck style diagnostics
 - [feature] database consistency checks during mkmamedb
@@ -44,6 +42,9 @@ tests:
   - are two sets the same, just different name
 - [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
+- [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
+- [cleanup] review types used for length/offset (use 64bit?)
+- [cleanup] use int2str/str2int
 - [cleanup] replace (u)long with (u)int32_t
 - [cleanup] rename {r,w}__u{short,long} to {r,w}__uint{16,32}
 - [cleanup] use parray_t for rompath
@@ -103,3 +104,15 @@ code cleanups:
 - split util*, funcs.h
 - use return value of w_game
 - fix all XXXs
+
+
+tools:
+
+[db, rom] fully merge game to dir/zip
+[archive, detector] view files with detector applied
+
+[db] consistency checks
+[db] find possible cloneofs
+[db, archive, cloneof-info] add game to db
+[db, name] remove game from db
+[db, name, cloneof-info] merge games
