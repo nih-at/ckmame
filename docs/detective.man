@@ -1,4 +1,6 @@
-.\" $NiH$
+.\" Converted with mdoc2man 0.2
+.\" from NiH: detective.mdoc,v 1.2 2007/04/15 08:41:52 wiz Exp 
+.\" $NiH: detective.mdoc,v 1.2 2007/04/15 08:41:52 wiz Exp $
 .\"
 .\" Copyright (c) 2007 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
@@ -33,55 +35,56 @@
 detective \- list zip archive contents with headers skipped
 .SH "SYNOPSIS"
 .B detective
-[\fB\-hV\fR]
-[\fB\-C\fR \fBhashtypes\fR]
-[\fB\-D\fR \fBdbfile\fR]
-[\fB\-\-detector\fR \fBfile\fR]
-[\fBzip\-archive [...]\fR]
+[\fB-hV\fR]
+[\fB-C\fR \fBhashtypes\fR]
+[\fB-D\fR \fBdbfile\fR]
+[\fB--detector\fR \fBfile\fR]
+[\fBzip-archive Op ...\fR]
 .SH "DESCRIPTION"
 .B detective
 lists the contents of zip archives in a format similar to
 dumpgame(1),
 optionally applying a header skip detector.
 .PP
-If no hash types or detector are given via command line options, they are taken from the
+If no hash types or detector are given via command line options,
+they are taken from the
 ckmame(1)
 database.
 .SS "OPTIONS"
 .B detective
 supports the following options:
-
-.TP 11
-\fB\-C\fR \fBtypes, \fB\-\-hash\-types\fR Ar types\fR
+.RS
+.TP 31
+\fB-C\fR \fBtypes, \fB--hash-types\fR Ar types\fR
 A comma separated list of hash types to compute when creating a ROM
 set description from a directory of zip archives.
 Supported hash types are: crc, md5, sha1.
-.TP 11
-\fB\-D\fR \fBdbfile, \fB\-\-db\fR Ar dbfile\fR
+.TP 31
+\fB-D\fR \fBdbfile, \fB--db\fR Ar dbfile\fR
 Use
 \fBdbfile\fR
 as database file.
-.TP 11
-\fB\-\-detector\fR \fBfile\fR
+.TP 31
+\fB--detector\fR \fBfile\fR
 Use CMPro XML header skip detector description from
 \fBfile.\fR
-
+.RE
 .SH "ENVIRONMENT"
-
+.RS
 .TP 12
 Ev MAMEDB
 Location for the database file.
 Can be overridden with the
-\fB\-D\fR
+\fB-D\fR
 option.
 Defaults to
-``Pa''mame.db.
-
+``\fBmame.db\fR.''
+.RE
 .SH "SEE ALSO"
 ckmame(1),
 dumpgame(1)
 .SH "AUTHORS"
-\-nosplit
+
 .B detective
 was written by
 Dieter Baron <dillo@giga.or.at>

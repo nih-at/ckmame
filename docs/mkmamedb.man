@@ -1,6 +1,8 @@
-.\" $NiH: mkmamedb.mdoc,v 1.4 2007/04/13 13:31:35 dillo Exp $
+.\" Converted with mdoc2man 0.2
+.\" from NiH: mkmamedb.mdoc,v 1.5 2007/04/15 08:38:42 wiz Exp 
+.\" $NiH: mkmamedb.mdoc,v 1.5 2007/04/15 08:38:42 wiz Exp $
 .\"
-.\" Copyright (c) 2005\-2007 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005-2007 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -33,100 +35,100 @@
 mkmamedb \- create database for use by ckmame
 .SH "SYNOPSIS"
 .B mkmamedb
-[\fB\-hV\fR]
-[\fB\-C\fR \fBhashtypes\fR]
-[\fB\-o\fR \fBdbfile\fR]
-[\fB\-x\fR \fBpat\fR]
-[\fB\-\-prog\-name\fR \fBname\fR]
-[\fB\-\-prog\-version\fR \fBversion\fR]
-[\fBrominfo\-file ...\fR]
+[\fB-hV\fR]
+[\fB-C\fR \fBhashtypes\fR]
+[\fB-o\fR \fBdbfile\fR]
+[\fB-x\fR \fBpat\fR]
+[\fB--prog-name\fR \fBname\fR]
+[\fB--prog-version\fR \fBversion\fR]
+[\fBrominfo-file ...\fR]
 .SH "DESCRIPTION"
 .B mkmamedb
-conerts ROM set descriptions from one format to another.
+converts ROM set descriptions from one format to another.
 .PP
 The ROM set description is read from the specified files (or
 directories) or the standard input if no files are specified.
 The default output file is
-.Pa mame.db.
+\fBmame.db\fR.
 You can override it with the
-\fB\-o\fR
+\fB-o\fR
 option or the
 \fBMAMEDB\fR
 environment variable.
 .PP
 Supported input formats are:
-
-.TP 
+.RS
+.IP \(bu 
 CMPro dat file
-.TP 
+.IP \(bu 
 MAME xml file
-.TP 
+.IP \(bu 
 ckmame(1)
 database format
-.TP 
+.IP \(bu 
 directory of zip archives
-
+.RE
 Supported output formats are:
-
-.TP 
+.RS
+.IP \(bu 
 CMPro dat file
-.TP 
+.IP \(bu 
 ckmame(1)
 database format
-
+.RE
 .PP
 The CMPro file format is described at
-.Pa http://www.logiqx.com/FAQs/CMPro.shtml,
+\fBhttp://www.logiqx.com/FAQs/CMPro.shtml\fR,
 the DTD for MAME xml can be found in
-.Pa PREFIX/share/doc/ckmame/.
+\fBPREFIX/share/doc/ckmame/\fR.
 .SS "OPTIONS"
 .B mkmamedb
 supports the following options:
-
-.TP 11
-\fB\-o\fR \fBdbfile, \fB\-\-output\fR Ar dbfile\fR
-Write to database
-\fBdbfile\fR
-instead of the default
-``Pa''mame.db.
-.TP 11
-\fB\-x\fR \fBpat, \fB\-\-exclude\fR Ar pat\fR
-Exclude games with names matching
-\fBpat\fR
-from the created database.
-.TP 11
-\fB\-C\fR \fBtypes, \fB\-\-hash\-types\fR Ar types\fR
+.RS
+.TP 31
+\fB-C\fR \fBtypes, \fB--hash-types\fR Ar types\fR
 A comma separated list of hash types to compute when creating a ROM
 set description from a directory of zip archives.
 Supported hash types are: crc, md5, sha1.
-.TP 11
-\fB\-\-detector\fR \fBfile\fR
+.TP 31
+\fB--detector\fR \fBfile\fR
 Use CMPro XML header skip detector description from
 \fBfile.\fR
-.TP 11
-\fB\-\-prog\-name\fR \fBname\fR
-Set name of the program the ROM info is from.
-.TP 11
-\fB\-\-prog\-version\fR \fBversion\fR
-Set version of the program the ROM info is from.
-.TP 11
-\fB\-h\fR, \-help
+.TP 31
+\fB-h\fR, \-help
 Display a short help message.
-.TP 11
-\fB\-V\fR, \-version
+.TP 31
+\fB-o\fR \fBdbfile, \fB--output\fR Ar dbfile\fR
+Write to database
+\fBdbfile\fR
+instead of the default
+``\fBmame.db\fR.''
+.TP 31
+\fB--prog-name\fR \fBname\fR
+Set name of the program the ROM info is from.
+.TP 31
+\fB--prog-version\fR \fBversion\fR
+Set version of the program the ROM info is from.
+.TP 31
+\fB-V\fR, \-version
 Display program name and version number.
-
+.TP 31
+\fB-x\fR \fBpat, \fB--exclude\fR Ar pat\fR
+Exclude games with names matching
+\fBpat\fR
+from the created database.
+.RE
 .SH "ENVIRONMENT"
-
+.RS
 .TP 12
 Ev MAMEDB
 Location for the database file.
 Can be overridden with the
-\fB\-o\fR
+\fB-o\fR
 option.
 Defaults to
-``Pa''mame.db.
-
+``\fBmame.db\fR.''
+.RE
 .SH "EXAMPLES"
 Get an input file for
 mkmamedb(1)
@@ -143,12 +145,12 @@ xmame(6)
 installed and in your
 \fBPATH\fR,
 you can just run
-.Ic mkmamedb\-xmame.sh.
+\fBmkmamedb-xmame.sh\fR.
 .SH "SEE ALSO"
 ckmame(1),
 dumpgame(1)
 .SH "AUTHORS"
-\-nosplit
+
 .B mkmamedb
 was written by
 Dieter Baron <dillo@giga.or.at>
