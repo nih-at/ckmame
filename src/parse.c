@@ -1,5 +1,5 @@
 /*
-  $NiH: parse.c,v 1.24 2007/04/12 21:09:20 dillo Exp $
+  $NiH: parse.c,v 1.25 2007/04/13 05:43:42 wiz Exp $
 
   parse.c -- parser frontend
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
@@ -91,7 +91,8 @@ parse(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 
     ctx = parser_context_new(exclude, dat, out);
 
-    ctx->fname = strdup(fname);
+    if (fname)
+	ctx->fname = strdup(fname);
 
     if (fin) {
 	c = getc(fin);
