@@ -18,6 +18,7 @@ tests:
   * rule operations
 
 + [portability] prototype for {get,set}progname, strlcpy replacements
++ [bug] ckmame -e and not -j: don't rename chds, link/copy them.
 - [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
 - [bug] ensure rompath[0] before trying to create zip file there
 - [bug] tries to remove disk image in extra twice (or tries to remove used?)
