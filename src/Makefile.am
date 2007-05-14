@@ -60,6 +60,7 @@ libckmame_a_SOURCES= \
 	game.c \
 	game_add_clone.c \
 	garbage.c \
+	getline.c \
 	hash_from_string.c \
 	hash_to_string.c \
 	hashes.c \
@@ -85,6 +86,7 @@ libckmame_a_SOURCES= \
 	parray_sort_real.c \
 	parse-cm.c \
 	parse-dir.c \
+	parse-rc.c \
 	parse-xml.c \
 	parse.c \
 	pmap.c \

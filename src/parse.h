@@ -2,10 +2,10 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.12 2006/10/04 17:36:44 dillo Exp $
+  $NiH: parse.h,v 1.13 2007/04/12 21:09:20 dillo Exp $
 
   parse.h -- parser interface
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -75,6 +75,7 @@ int export_db(DB *, const parray_t *, const dat_entry_t *, output_context_t *);
 
 int parse_cm(FILE *, parser_context_t *);
 int parse_dir(const char *, parser_context_t *);
+int parse_rc(FILE *, parser_context_t *);
 int parse_xml(FILE *, parser_context_t *);
 
 /* callbacks */

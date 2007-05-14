@@ -1,11 +1,8 @@
-#ifndef _HAD_UTIL_H
-#define _HAD_UTIL_H
-
 /*
-  $NiH: util.h,v 1.11 2007/04/12 21:09:21 dillo Exp $
+  $NiH$
 
-  util.h -- miscellaneous utility functions
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  getline.c -- utility functions
+  Copyright (C) 2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -24,21 +21,48 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <stdio.h>
-#include <string.h>
+
 
-#include "types.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
+#include "util.h"
+#include "xmalloc.h"
 
 
 
-typedef int (*cmpfunc)(const void *, const void *);
 
-char *bin2hex(char *, const unsigned char *, unsigned int);
-char *getline(FILE *);
-int hex2bin(unsigned char *, const char *, unsigned int);
-const char *mybasename(const char *);
-char *mydirname(const char *);
-name_type_t name_type(const char *);
-int psort(void **, int, int, int (*)(const void *, const void *));
+char *
+getline(FILE *f)
+{
+    static char *buf = NULL;
+    static int buf_size = 0;
 
-#endif
+    int n;
+
+    n = 0;
+    for (;;) {
+	if (n == buf_size) {
+	    buf_size += 8192;
+	    buf = xrealloc(buf, buf_size);
+	}
+	if (fgets(buf+n, buf_size-n, f) == NULL) {
+	    if (n == 0)
+		return NULL;
+	    break;
+	}
+	n += strlen(buf+n);
+	if (buf[n-1] == '\n')
+	    break;
+    }
+
+    if (buf[n-1] == '\n') {
+	if (buf[n-2] == '\r')
+	    --n;
+	--n;
+    }
+    buf[n] = '\0';
+
+    return buf;
+}

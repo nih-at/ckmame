@@ -1,8 +1,8 @@
 /*
-  $NiH: parse.c,v 1.25 2007/04/13 05:43:42 wiz Exp $
+  $NiH: parse.c,v 1.26 2007/05/09 18:58:06 dillo Exp $
 
   parse.c -- parser frontend
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -98,10 +98,16 @@ parse(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	c = getc(fin);
 	ungetc(c, fin);
 
-	if (c == '<')
+	switch (c) {
+	case '<':
 	    ret = parse_xml(fin, ctx);
-	else
+	    break;
+	case '[':
+	    ret = parse_rc(fin, ctx);
+	    break;
+	default:
 	    ret = parse_cm(fin, ctx);
+	}
 
 	if (fname != NULL)
 	    fclose(fin);

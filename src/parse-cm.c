@@ -1,8 +1,8 @@
 /*
-  $NiH: parse-cm.c,v 1.9 2006/10/04 17:36:44 dillo Exp $
+  $NiH: parse-cm.c,v 1.10 2007/04/12 21:09:20 dillo Exp $
 
   parse-cm.c -- parse listinfo/CMpro format files
-  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -28,6 +28,7 @@
 
 #include "error.h"
 #include "parse.h"
+#include "util.h"
 
 
 
@@ -41,26 +42,14 @@ static char *gettok(char **);
 int
 parse_cm(FILE *fin, parser_context_t *ctx)
 {
-    char b[8192], *cmd, *p, *l;
+    char *cmd, *p, *l;
     enum parse_state state;
     
     ctx->lineno = 0;
     state = st_top;
     
-    while (fgets(l=b, 8192, fin)) {
+    while ((l=getline(fin))) {
 	ctx->lineno++;
-	if (b[strlen(b)-1] != '\n' && !feof(fin)) {
-	    cmd = gettok(&l);
-	    if ((cmd == NULL) || (strcmp(cmd, "history"))) {
-		myerror(ERRFILE, "%d: warning: line too long (ignored)",
-			ctx->lineno);
-	    }
-	    while (fgets(b, 8192, fin)) {
-		if (b[strlen(b)-1] == '\n')
-		    break;
-	    }
-	    continue;
-	}
 	
 	cmd = gettok(&l);
 	if (cmd == NULL)
