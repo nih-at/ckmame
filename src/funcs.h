@@ -2,10 +2,10 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.21 2006/05/24 09:29:18 dillo Exp $
+  $NiH: funcs.h,v 1.22 2006/10/04 17:36:44 dillo Exp $
 
   funcs.h -- tree functions
-  Copyright (C) 1999, 2004, 2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -50,6 +50,7 @@ void check_files(game_t *, archive_t *[], result_t *);
 void check_images(images_t *, const char *, result_t *);
 void check_old(game_t *, result_t *);
 void cleanup_list(parray_t *, delete_list_t *, int);
+int copy_file(const char *, const char *);
 void diagnostics(const game_t *, const archive_t *, const images_t *,
 		 const result_t *);
 void diagnostics_archive(const archive_t *, const result_t *);
@@ -61,6 +62,7 @@ char *findfile(const char *, filetype_t);
 int fix_game(game_t *, archive_t *, images_t *, result_t *);
 parray_t *find_superfluous(const char *);
 void init_rompath(void);
+int link_or_copy(const char *, const char *);
 char *make_file_name(filetype_t, int, const char *);
 char *make_garbage_name(const char *, int);
 char *make_needed_name(const rom_t *);

@@ -1,8 +1,8 @@
 /*
-  $NiH: fix_util.c,v 1.5 2006/05/06 23:01:52 dillo Exp $
+  $NiH: fix_util.c,v 1.6 2006/10/04 17:36:44 dillo Exp $
 
   util.c -- utility functions needed only by ckmame itself
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -28,6 +28,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "error.h"
 #include "funcs.h"
@@ -40,6 +41,50 @@
 #ifndef MAXPATHLEN
 #define MAXPATHLEN 1024
 #endif
+
+
+
+int
+copy_file(const char *old, const char *new)
+{
+    FILE *fin, *fout;
+    char b[8192], nr, nw, n;
+    int err;
+
+    if ((fin=fopen(old, "rb")) == NULL)
+	return -1;
+
+    if ((fout=fopen(new, "wb")) == NULL) {
+	fclose(fin);
+	return -1;
+    }
+
+    while ((nr=fread(b, sizeof(b), 1, fin)) > 0) {
+	nw = 0;
+	while (nw<nr) {
+	    if ((n=fwrite(b+nw, nr-nw, 1, fout)) == 0) {
+		err = errno;
+		fclose(fin);
+		fclose(fout);
+		remove(new);
+		errno = err;
+		return -1;
+	    }
+	    nw += n;
+	}
+    }
+
+    if (fclose(fout) != 0 || ferror(fin)) {
+	err = errno;
+	fclose(fin);
+	unlink(new);
+	errno = err;
+	return -1;
+    }
+
+    fclose(fin);
+    return 0;
+}
 
 
 
@@ -83,6 +128,19 @@ ensure_dir(const char *name, int strip_fname)
 
 
 
+int
+link_or_copy(const char *old, const char *new)
+{
+    if (link(old, new) < 0) {
+	if (copy_file(old, new) < 0) {
+	    seterrinfo(old, NULL);
+	    myerror(ERRFILESTR, "cannot link to `%s'", new);
+	    return -1;
+	}
+    }
+
+    return 0;
+}
 
 
 
@@ -206,10 +264,12 @@ int
 rename_or_move(const char *old, const char *new)
 {
     if (rename(old, new) < 0) {
-	/* XXX: try move */
-	seterrinfo(old, NULL);
-	myerror(ERRFILESTR, "cannot rename to `%s'", new);
-	return -1;
+	if (copy_file(old, new) < 0) {
+	    seterrinfo(old, NULL);
+	    myerror(ERRFILESTR, "cannot rename to `%s'", new);
+	    return -1;
+	}
+	unlink(old);
     }
 
     return 0;
