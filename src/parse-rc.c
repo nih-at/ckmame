@@ -1,5 +1,5 @@
 /*
-  $NiH$
+  $NiH: parse-rc.c,v 1.1 2007/05/14 19:11:16 dillo Exp $
 
   parse-rc.c -- parse Romcenter format files
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
@@ -89,12 +89,13 @@ parse_rc(FILE *fin, parser_context_t *ctx)
 	    sect = str2int(line, sections);
 	    continue;
 	}
-
+	
 	if (sect == RC_GAMES) {
 	    if (rc_romline(ctx, line) < 0) {
 		myerror(ERRFILE, "%d: cannot parse ROM line, skipping",
 			ctx->lineno);
 	    }
+	}
 	else {
 	    if ((val=strchr(line, '=')) == NULL) {
 		myerror(ERRFILE, "%d: no `=' found",
