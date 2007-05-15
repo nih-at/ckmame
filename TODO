@@ -114,6 +114,12 @@ tools:
 
 [db] consistency checks
 [db] find possible cloneofs
+	db find-clones [GAME]
 [db, archive, cloneof-info] add game to db
+	db add ZIP
 [db, name] remove game from db
+	db remove GAME
 [db, name, cloneof-info] merge games
+	db clone-of CHILD PARENT
+[db, name] make parent
+	db make-parent CHILD
