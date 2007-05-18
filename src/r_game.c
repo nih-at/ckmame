@@ -38,9 +38,8 @@
 #define QUERY_PARENT	\
 	"select parent from parent where game_id = ? and file_type = ?"
 #define QUERY_GPARENT	\
-	"select p2.parent from parent p, parent p2, game g " \
-	"where p.parent = g.name and g.game_id = p2.game_id " \
-	"and p2.file_type = p.file_type and p.game_id = ? and p.file_type = ?"
+	"select parent from parent p, game g " \
+	"where g.game_id = p.game_id and g.name = ? and p.file_type = ?"
 #define QUERY_FILE	\
 	"select name, merge, status, location, size, crc, md5, sha1 " \
 	"from file where game_id = ? and file_type = ? order by file_idx"
@@ -144,21 +143,24 @@ read_rs(sqlite3 *db, game_t *g, filetype_t ft)
     sqlite3_finalize(stmt);
     if (ret != SQLITE_ROW && ret != SQLITE_DONE)
 	return -1;
-	
-    if (sqlite3_prepare_v2(db, QUERY_GPARENT, -1, &stmt, NULL) != SQLITE_OK)
-	return -1;
-    if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
-	return -1;
-    }
-    if ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
-	game_cloneof(g, ft, 1) = sq3_get_string(stmt, 0);
-    }
-    sqlite3_finalize(stmt);
 
-    if (ret != SQLITE_ROW && ret != SQLITE_DONE)
-	return -1;
+    if (game_cloneof(g, ft, 0)) {
+	if (sqlite3_prepare_v2(db, QUERY_GPARENT, -1, &stmt, NULL)
+	    != SQLITE_OK)
+	    return -1;
+	if (sq3_set_string(stmt, 1, game_cloneof(g, ft, 0)) < 0
+	    || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
+	    sqlite3_finalize(stmt);
+	    return -1;
+	}
+	if ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	    game_cloneof(g, ft, 1) = sq3_get_string(stmt, 0);
+	}
+	sqlite3_finalize(stmt);
+	
+	if (ret != SQLITE_ROW && ret != SQLITE_DONE)
+	    return -1;
+    }
 
     if (sqlite3_prepare_v2(db, QUERY_FILE, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
