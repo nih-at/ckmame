@@ -33,6 +33,7 @@
 #define DBL_NEW		0x2	/* create new database */
 
 extern const char *sql_db_init;
+extern const char *sql_db_init_2;
 
 
 

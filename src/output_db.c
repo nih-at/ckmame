@@ -227,6 +227,10 @@ output_db_close(output_context_t *out)
 	if (handle_lost(ctx) < 0)
 	    ret = -1;
 
+	if (sqlite3_exec(ctx->db, sql_db_init_2, NULL, NULL, NULL)
+	    != SQLITE_OK)
+	    ret = -1;
+	
 	dbh_close(ctx->db);
     }
 

@@ -39,11 +39,6 @@ create table file (\n\
 	primary key (game_id, file_type, file_idx)\n\
 );\n\
 create index file_game_type on file (game_id, file_type);\n\
-create index file_name on file (name);\n\
-create index file_size on file (size);\n\
-create index file_crc on file (crc);\n\
-create index file_md5 on file (md5);\n\
-create index file_sha1 on file (sha1);\n\
 \n\
 create table rule (\n\
 	rule_idx integer primary key,\n\
@@ -64,4 +59,12 @@ create table test (\n\
 );\n\
 \n\
 insert into dat (dat_idx, name, version) values (-1, 'ckmame', '1');\n\
+";
+
+const char *sql_db_init_2 = "\
+create index file_name on file (name);\n\
+create index file_size on file (size);\n\
+create index file_crc on file (crc);\n\
+create index file_md5 on file (md5);\n\
+create index file_sha1 on file (sha1);\n\
 ";
