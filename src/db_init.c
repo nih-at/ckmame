@@ -3,7 +3,7 @@
 const char *sql_db_init = "\
 create table dat (\n\
 	dat_idx integer primary key,\n\
-	name text not null,\n\
+	name text,\n\
 	description text,\n\
 	version text\n\
 );\n\

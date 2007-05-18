@@ -31,7 +31,7 @@
 #include "sq_util.h"
 #include "xmalloc.h"
 
-#define QUERY_DAT "select dat_idx, name, description, version from dat " \
+#define QUERY_DAT "select name, description, version from dat " \
 		  "where dat_idx >= 0 order by dat_idx"
 
 
