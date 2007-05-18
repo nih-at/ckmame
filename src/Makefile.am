@@ -1,14 +1,14 @@
-AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @CFLAGS@ \
+AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @SQLITE3_CFLAGS@ @CFLAGS@ \
 	 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
 
 bin_PROGRAMS=ckmame detective dumpgame mkmamedb
 
 noinst_LIBRARIES=libckmame.a
 
-ckmame_LDADD=libckmame.a @DBLIBS@ @LIBZIP_LIBS@
-detective_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
-dumpgame_LDADD=libckmame.a @DBLIBS@
-mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
+ckmame_LDADD=libckmame.a @DBLIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
+detective_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
+dumpgame_LDADD=libckmame.a @DBLIBS@ @SQLITE3_LIBS@
+mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 
 libckmame_a_LIBADD=@LIBOBJS@
 
@@ -33,6 +33,7 @@ libckmame_a_SOURCES= \
 	dat_entry_finalize.c \
 	dat_push.c \
 	db-@DBTYPE@.c \
+	db_init.c \
 	dbl.c \
 	dbh.c \
 	delete_list.c \
@@ -100,6 +101,7 @@ libckmame_a_SOURCES= \
 	result.c \
 	rom.c \
 	rom_add_altname.c \
+	sq_util.c \
 	superfluous.c \
 	tree.c \
 	util.c \
@@ -152,6 +154,7 @@ noinst_HEADERS=\
 	r.h \
 	result.h \
 	rom.h \
+	sq_util.h \
 	tree.h \
 	types.h \
 	util.h \

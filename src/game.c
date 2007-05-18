@@ -37,7 +37,8 @@ game_new(void)
     int i;
 
     g = xmalloc(sizeof(*g));
-    
+
+    g->id = -1;
     g->name = g->description = NULL;
     
     for (i=0; i<GAME_RS_MAX; i++) {

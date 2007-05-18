@@ -40,6 +40,7 @@ struct rs {
 #define GAME_RS_MAX	2
 
 struct game {
+    int id;
     char *name;
     char *description;
     int dat_no;
@@ -72,6 +73,7 @@ typedef struct game game_t;
 
 #define game_files(g, ft)		((g)->rs[ft].files)
 
+#define game_id(g)			((g)->id)
 #define game_num_clones(g, ft)		(array_length(game_clones((g), (ft))))
 #define game_num_disks(g)		(array_length(game_disks(g)))
 #define game_num_files(g, ft)		(array_length(game_files((g), (ft))))

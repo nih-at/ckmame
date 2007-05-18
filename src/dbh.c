@@ -1,8 +1,8 @@
 /*
   $NiH: dbh.c,v 1.2 2006/04/16 00:12:02 dillo Exp $
 
-  dbh.c -- compressed on-disk mame.db data base
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  dbh.c -- mame.db sqlite3 data base
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -35,51 +35,38 @@
 
 
 #define DBH_ENOERR	0
-#define DBH_EOLD	1	/* old db (no /ckmame entry) */
 #define DBH_EVERSION	2	/* version mismatch */
 #define DBH_EMAX	3
 
-#define DBH_LEN_SIZE	4	/* size of len field */
+#define QUERY_VERSION	"select version from dat where dat_idx=-1"
+
+#define PRAGMAS		"PRAGMA synchronous = OFF; "
 
 static int dbh_errno;
 
+static int init_db(sqlite3 *);
+
 
 
-int
-dbh_check_version(DB *db, int flags)
+static int
+dbh_check_version(sqlite3 *db, int flags)
 {
-    DBT v;
+    sqlite3_stmt *stmt;
     int version;
-    void *data;
 
-    if (dbh_lookup(db, DBH_KEY_DB_VERSION, &v) != 0) {
-	if (!(flags & DBL_WRITE)) {
-	    /* reading database, version not found -> old */
-	    dbh_errno = DBH_EOLD;
-	    return -1;
-	}
-	else {
-	    if (dbh_lookup(db, "/list", &v) == 0) {
-		/* writing database, version not found, but list found
-		   -> old */
-		free(v.data);
-		dbh_errno = DBH_EOLD;
-		return -1;
-	    }
-	    else {
-		/* writing database, version and list not found ->
-		   creating database, ok */
-		dbh_errno = DBH_ENOERR;
-		return 0;
-	    }
-	}
+    if (sqlite3_prepare_v2(db, QUERY_VERSION, -1, &stmt, NULL) != SQLITE_OK) {
+	/* XXX */
+	return -1;
+    }
+    if (sqlite3_step(stmt) != SQLITE_ROW) {
+	sqlite3_finalize(stmt);
+	/* XXX */
+	return -1;
     }
 
-    /* compare version numbers */
+    version = sqlite3_column_int(stmt, 0);
 
-    data = v.data;
-    version = r__ushort(&v);
-    free(data);
+    sqlite3_finalize(stmt);
 
     if (version != DBH_FORMAT_VERSION) {
 	dbh_errno = DBH_EVERSION;
@@ -93,9 +80,9 @@ dbh_check_version(DB *db, int flags)
 
 
 int
-dbh_close(DB *db)
+dbh_close(sqlite3 *db)
 {
-    return dbl_close(db);
+    return sqlite3_close(db);
 }
 
 
@@ -105,11 +92,11 @@ dbh_error(void)
 {
     static const char *str[] = {
 	"No error",
-	"Old (incompatible) database",
 	"Database format version mismatch",
 	"Unknown error"
     };
 
+    /* XXX */
     if (dbh_errno == DBH_ENOERR)
 	return dbl_error();
 
@@ -118,90 +105,46 @@ dbh_error(void)
 
 
 
-int
-dbh_insert(DB *db, const char *key, const DBT *value)
+sqlite3 *
+dbh_open(const char *name, int mode)
 {
-    DBT k, v;
-    int ret;
-    uLong len;
+    sqlite3 *db;
 
-    dbl_init_string_key(&k, key);
+    if (mode == DBL_NEW)
+	unlink(name);
 
-    len = value->size*1.1+12;
-    v.data = xmalloc(len+DBH_LEN_SIZE);
-    
-    ((unsigned char *)v.data)[0] = (value->size >> 24) & 0xff;
-    ((unsigned char *)v.data)[1] = (value->size >> 16) & 0xff;
-    ((unsigned char *)v.data)[2] = (value->size >> 8) & 0xff;
-    ((unsigned char *)v.data)[3] = value->size & 0xff;
-
-    if (compress2(((unsigned char *)v.data)+DBH_LEN_SIZE, &len, value->data, 
-		  value->size, 9) != 0) {
-#if 0
-	free(k.data);
-#endif
-	free(v.data);
-	return -1;
-    }
-    v.size = len + DBH_LEN_SIZE;
-    
-    ret = dbl_insert(db, &k, &v);
-
-#if 0
-    free(k.data);
-#endif
-
-    return ret;
-}
-
-
-
-int
-dbh_lookup(DB *db, const char *key, DBT *value)
-{
-    DBT k, v;
-    int ret;
-    uLong len;
-
-    dbl_init_string_key(&k, key);
-
-    ret = dbl_lookup(db, &k, &v);
-
-    if (ret != 0)
-	return ret;
-
-    value->size = ((((unsigned char *)v.data)[0] << 24)
-		   | (((unsigned char *)v.data)[1] << 16)
-		   | (((unsigned char *)v.data)[2] << 8)
-		   | (((unsigned char *)v.data)[3]));
-    value->data = xmalloc(value->size);
-    
-    len = value->size;
-    if ((ret=uncompress(value->data, &len,
-			((unsigned char *)v.data)+DBH_LEN_SIZE, 
-			v.size-DBH_LEN_SIZE)) != 0) {
-	free(value->data);
-	return -1;
-    }
-    value->size = len;
-    
-    return 0;
-}
-
-
-
-DB *
-dbh_open(const char *name, int flags)
-{
-    DB *db;
-
-    if ((db=dbl_open(name, flags)) == NULL)
+    if (sqlite3_open(name, &db) != SQLITE_OK) {
+	sqlite3_close(db);    
 	return NULL;
+    }
 
-    if (dbh_check_version(db, flags) != 0) {
-	dbl_close(db);
+    if (sqlite3_exec(db, PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
+	sqlite3_close(db);    
+	return NULL;
+    }
+
+    if (mode == DBL_NEW) {
+	if (init_db(db) < 0) {
+	    sqlite3_close(db);
+	    unlink(name);
+	    return NULL;
+	}
+    }
+    else if (dbh_check_version(db, mode) != 0) {
+	sqlite3_close(db);
 	return NULL;
     }
 
     return db;
+}
+
+
+
+static int
+init_db(sqlite3 *db)
+{
+    if (sqlite3_exec(db, sql_db_init, NULL, NULL, NULL) != SQLITE_OK)
+	return -1;
+
+    return 0;
 }

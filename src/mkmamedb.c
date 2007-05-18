@@ -107,7 +107,7 @@ main(int argc, char **argv)
     output_format_t fmt;
     char *detector_name;
     int c, i;
-    DB *db;
+    sqlite3 *db;
 
     setprogname(argv[0]);
 

@@ -30,98 +30,178 @@
 
 #include "dbh.h"
 #include "game.h"
-#include "r.h"
+#include "sq_util.h"
 #include "xmalloc.h"
 
-static void r__hashes(DBT *, hashes_t *);
-static void r__rs(DBT *, struct rs *);
+#define QUERY_GAME	\
+	"select game_id, description, dat_idx from game where name = ?"
+#define QUERY_PARENT	\
+	"select parent from parent where game_id = ? and file_type = ?"
+#define QUERY_GPARENT	\
+	"select p2.parent from parent p, parent p2, game g " \
+	"where p.parent = g.name and g.game_id = p2.game_id " \
+	"and p2.file_type = p.file_type and p.game_id = ? and p.file_type = ?"
+#define QUERY_FILE	\
+	"select name, merge, status, location, size, crc, md5, sha1 " \
+	"from file where game_id = ? and file_type = ? order by file_idx"
+
+static int read_disks(sqlite3 *, game_t *);
+static int read_rs(sqlite3 *, game_t *, filetype_t);
+static void sq3_get_hashes(hashes_t *, sqlite3_stmt *, int);
 
 
 
 game_t *
-r_game(DB *db, const char *name)
+r_game(sqlite3 *db, const char *name)
 {
-    DBT v;
+    sqlite3_stmt *stmt;
     game_t *game;
-    void *data;
     int i;
 
-    if (dbh_lookup(db, name, &v) != 0)
+    if (sqlite3_prepare_v2(db, QUERY_GAME, -1, &stmt, NULL) != SQLITE_OK)
 	return NULL;
 
-    data = v.data;
+    if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK
+	|| sqlite3_step(stmt) != SQLITE_ROW) {
+	sqlite3_finalize(stmt);
+	return NULL;
+    }
 
-    game = xmalloc(sizeof(*game));
-    
+    game = game_new();
+    game->id = sqlite3_column_int(stmt, 0);
     game->name = xstrdup(name);
-    game->description = r__string(&v);
-    game->dat_no = r__ushort(&v);
-    for (i=0; i<GAME_RS_MAX; i++)
-	r__rs(&v, game->rs+i);
-    game->disks = r__array(&v, r__disk, sizeof(disk_t));
-    
-    free(data);
+    game->description = sq3_get_string(stmt, 1);
+    game->dat_no = sqlite3_column_int(stmt, 2);
+
+    sqlite3_finalize(stmt);
+
+    for (i=0; i<GAME_RS_MAX; i++) {
+	if (read_rs(db, game, i) < 0) {
+	    game_free(game);
+	    return NULL;
+	}
+    }
+
+    if (read_disks(db, game) < 0) {
+	game_free(game);
+	return NULL;
+    }
 
     return game;
 }
 
 
 
-void
-r__disk(DBT *v, void *vd)
+static int
+read_disks(sqlite3 *db, game_t *g)
 {
+    sqlite3_stmt *stmt;
+    int ret;
     disk_t *d;
-    
-    d = vd;
 
-    d->name = r__string(v);
-    d->merge = r__string(v);
-    r__hashes(v, &d->hashes);
-    d->status = (status_t)r__ushort(v);
+    if (sqlite3_prepare_v2(db, QUERY_FILE, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	d = (disk_t *)array_grow(game_disks(g), disk_init);
+
+	disk_name(d) = sq3_get_string(stmt, 0);
+	disk_merge(d) = sq3_get_string(stmt, 1);
+	disk_status(d) = sqlite3_column_int(stmt, 2);
+	sq3_get_hashes(disk_hashes(d), stmt, 5);
+    }
+
+    sqlite3_finalize(stmt);
+
+    return (ret == SQLITE_DONE ? 0 : -1);
 }
 
 
 
-void
-r__rom(DBT *v, void *vr)
+static int
+read_rs(sqlite3 *db, game_t *g, filetype_t ft)
 {
-    struct rom *r;
-    
-    r = (struct rom *)vr;
+    sqlite3_stmt *stmt;
+    int ret;
+    rom_t *r;
 
-    r->name = r__string(v);
-    r->merge = r__string(v);
-    r->altnames = r__parray(v, (void *(*)())r__string);
-    r__hashes(v, &r->hashes);
-    r->size = r__ulong(v);
-    r->status = (status_t)r__ushort(v);
-    r->where = (where_t)r__ushort(v);
-    /* XXX: r->state = ROM_0; */
+    if (sqlite3_prepare_v2(db, QUERY_PARENT, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+    if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+    if ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	game_cloneof(g, ft, 0) = sq3_get_string(stmt, 0);
+    }
+    sqlite3_finalize(stmt);
+    if (ret != SQLITE_ROW && ret != SQLITE_DONE)
+	return -1;
+	
+    if (sqlite3_prepare_v2(db, QUERY_GPARENT, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+    if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+    if ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	game_cloneof(g, ft, 1) = sq3_get_string(stmt, 0);
+    }
+    sqlite3_finalize(stmt);
+
+    if (ret != SQLITE_ROW && ret != SQLITE_DONE)
+	return -1;
+
+    if (sqlite3_prepare_v2(db, QUERY_FILE, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	r = (rom_t *)array_grow(game_files(g, ft), rom_init);
+
+	rom_name(r) = sq3_get_string(stmt, 0);
+	rom_merge(r) = sq3_get_string(stmt, 1);
+	rom_status(r) = sqlite3_column_int(stmt, 2);
+	rom_where(r) = sqlite3_column_int(stmt, 3);
+	rom_size(r) = sqlite3_column_int64(stmt, 4); /* XXX: handle NULL */
+	sq3_get_hashes(rom_hashes(r), stmt, 5);
+    }
+
+    sqlite3_finalize(stmt);
+
+    return (ret == SQLITE_DONE ? 0 : -1);
 }
 
 
 
-static void
-r__rs(DBT *v, struct rs *rs)
+static
+void sq3_get_hashes(hashes_t *h, sqlite3_stmt *stmt, int col)
 {
-    rs->cloneof[0] = r__string(v);
-    rs->cloneof[1] = r__string(v);
-    rs->clones = r__parray(v, (void *(*)())r__string);
-    rs->files = r__array(v, r__rom, sizeof(rom_t));
-}
-
-
-
-static void
-r__hashes(DBT *v, struct hashes *h)
-{
-    h->types = r__ushort(v);
-    if (h->types & HASHES_TYPE_CRC)
-	h->crc = r__ulong(v);
-    else
-	h->crc = 0;
-    if (h->types & HASHES_TYPE_MD5)
-	r__mem(v, h->md5, sizeof(h->md5));
-    if (h->types & HASHES_TYPE_SHA1)
-	r__mem(v, h->sha1, sizeof(h->sha1));
+    if (sqlite3_column_type(stmt, col) != SQLITE_NULL) {
+	hashes_crc(h) = sqlite3_column_int64(stmt, col);
+	hashes_types(h) |= HASHES_TYPE_CRC;
+    }
+    if (sqlite3_column_type(stmt, col+1) != SQLITE_NULL) {
+	memcpy(h->md5, sqlite3_column_blob(stmt, col+1),
+	       HASHES_SIZE_MD5);
+	hashes_types(h) |= HASHES_TYPE_MD5;
+    }
+    if (sqlite3_column_type(stmt, col+2) != SQLITE_NULL) {
+	memcpy(h->sha1, sqlite3_column_blob(stmt, col+2),
+	       HASHES_SIZE_SHA1);
+	hashes_types(h) |= HASHES_TYPE_SHA1;
+    }
 }

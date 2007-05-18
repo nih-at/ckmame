@@ -40,7 +40,7 @@ void w__uint64(DBT *, uint64_t);
 void w__uint8(DBT *, uint8_t);
 void w__ushort(DBT *, unsigned short);
 void w__ulong(DBT *, unsigned long);
-int w_version(DB *);
+int w_version(sqlite3 *);
 
 #define w__uint16	w_ushort
 #define w__uint32	w_ulong

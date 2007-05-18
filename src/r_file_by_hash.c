@@ -30,13 +30,11 @@
 #include "dbh.h"
 #include "file_location.h"
 #include "xmalloc.h"
-#include "r.h"
-
-static void r__file_location(DBT *, void *);
 
 array_t *
-r_file_by_hash(DB *db, filetype_t ft, const hashes_t *hash)
+r_file_by_hash(sqlite3 *db, filetype_t ft, const hashes_t *hash)
 {
+#if 0
     DBT v;
     array_t *a;
     void *data;
@@ -51,17 +49,7 @@ r_file_by_hash(DB *db, filetype_t ft, const hashes_t *hash)
     free(data);
 
     return a;
-}
-
-
-
-static void
-r__file_location(DBT *v, void *vr)
-{
-    file_location_t *e;
-    
-    e = (file_location_t *)vr;
-
-    e->name = r__string(v);
-    e->index = r__ushort(v);
+#else
+    return NULL;
+#endif
 }

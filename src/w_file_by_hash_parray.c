@@ -31,16 +31,15 @@
 #include "parray.h"
 #include "types.h"
 #include "util.h"
-#include "w.h"
 #include "xmalloc.h"
-
-static void w__file_location(DBT *, const void *);
 
 
 
 int
-w_file_by_hash_parray(DB *db, filetype_t ft, const hashes_t *h, parray_t *pa)
+w_file_by_hash_parray(sqlite3 *db, filetype_t ft, const hashes_t *h,
+		      parray_t *pa)
 {
+#if 0
     int err;
     DBT v;
 
@@ -59,17 +58,7 @@ w_file_by_hash_parray(DB *db, filetype_t ft, const hashes_t *h, parray_t *pa)
     free(v.data);
 
     return err;
-}
-
-
-
-static void
-w__file_location(DBT *v, const void *vr)
-{
-    const file_location_t *fbh;
-
-    fbh = (const file_location_t *)vr;
-
-    w__string(v, fbh->name);
-    w__ushort(v, fbh->index);
+#else
+    return 0;
+#endif
 }

@@ -93,7 +93,7 @@ main(int argc, char **argv)
     char *dbname;
     char *detector_name;
     int c, i, ret;
-    DB *db;
+    sqlite3 *db;
 
     setprogname(argv[0]);
 

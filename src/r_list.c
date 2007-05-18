@@ -28,26 +28,23 @@
 #include <string.h>
 
 #include "dbh.h"
-#include "r.h"
+#include "sq_util.h"
 #include "xmalloc.h"
+
+#define QUERY_LIST_GAME	"select name from game"
+
+#define QUERY_HASH_TYPE	"select name from file " \
+			"where file_type = %d and %s not null limit 1"
+
+static void r__hashtypes_ft(sqlite3 *, filetype_t, int *);
 
 
 
 int
-r_hashtypes(DB *db, int *romhashtypesp, int *diskhashtypesp)
+r_hashtypes(sqlite3 *db, int *romhashtypesp, int *diskhashtypesp)
 {
-    DBT v;
-    void *data;
-
-    if (dbh_lookup(db, DBH_KEY_HASH_TYPES, &v) != 0)
-	return -1;
-
-    data = v.data;
-
-    *romhashtypesp = r__ushort(&v);
-    *diskhashtypesp = r__ushort(&v);
-
-    free(data);
+    r__hashtypes_ft(db, TYPE_ROM, romhashtypesp);
+    r__hashtypes_ft(db, TYPE_DISK, diskhashtypesp);
 
     return 0;
 }
@@ -55,20 +52,55 @@ r_hashtypes(DB *db, int *romhashtypesp, int *diskhashtypesp)
 
 
 parray_t *
-r_list(DB *db, const char *key)
+r_list(sqlite3 *db, const char *key)
 {
-    DBT v;
-    void *data;
     parray_t *pa;
-
-    if (dbh_lookup(db, key, &v) != 0)
+    sqlite3_stmt *stmt;
+    int ret;
+    
+    if (strcmp(key, DBH_KEY_LIST_GAME) != 0)
 	return NULL;
 
-    data = v.data;
+    if (sqlite3_prepare_v2(db, QUERY_LIST_GAME,
+			   -1, &stmt, NULL) != SQLITE_OK) {
+	/* XXX */
+	return NULL;
+    }
 
-    pa = r__parray(&v, (void *(*)())r__string);
+    pa = parray_new();
 
-    free(data);
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW)
+	parray_push(pa, sq3_get_string(stmt, 0));
 
+    sqlite3_finalize(stmt);
+
+    if (ret != SQLITE_DONE) {
+	/* XXX */
+	parray_free(pa, free);
+	return NULL;
+    }
+    
     return pa;
+}
+
+
+
+static void
+r__hashtypes_ft(sqlite3 *db, filetype_t ft, int *typesp)
+{
+    char buf[256];
+    int type;
+    sqlite3_stmt *stmt;
+
+    *typesp = 0;
+
+    for (type=1; type<=HASHES_TYPE_MAX; type<<=1) {
+	sprintf(buf, QUERY_HASH_TYPE,
+		ft, hash_type_string(type));
+	if (sqlite3_prepare_v2(db, buf, -1, &stmt, NULL) != SQLITE_OK)
+	    continue;
+	if (sqlite3_step(stmt) == SQLITE_ROW)
+	    *typesp |= type;
+	sqlite3_finalize(stmt);
+    }
 }

@@ -27,17 +27,14 @@
 
 #include "dbh.h"
 #include "detector.h"
-#include "r.h"
 #include "xmalloc.h"
-
-static void r__rule(DBT *, void *);
-static void r__test(DBT *, void *);
 
 
 
 detector_t *
-r_detector(DB *db)
+r_detector(sqlite3 *db)
 {
+#if 0
     DBT v;
     detector_t *d;
     void *data;
@@ -59,47 +56,7 @@ r_detector(DB *db)
     free(data);
 
     return d;
-}
-
-
-
-static void
-r__rule(DBT *v, void *vd)
-{
-    detector_rule_t *dr;
-    
-    dr = vd;
-
-    detector_rule_init(dr);
-
-    dr->start_offset = (int64_t)r__uint64(v);
-    dr->end_offset = (int64_t)r__uint64(v);
-    dr->operation = r__uint8(v);
-    dr->tests = r__array(v, r__test, sizeof(detector_test_t));
-}
-
-
-
-static void
-r__test(DBT *v, void *vd)
-{
-    detector_test_t *dt;
-    
-    
-    dt = vd;
-
-    detector_test_init(dt);
-
-    dt->type = r__uint8(v);
-    dt->offset = (int64_t)r__uint64(v);
-    dt->length = r__uint64(v);
-    if (dt->length > 0) {
-	dt->value = xmalloc(dt->length);
-	r__mem(v, dt->value, dt->length);
-	if (r__uint8(v)) {
-	    dt->mask = xmalloc(dt->length);
-	    r__mem(v, dt->mask, dt->length);
-	}
-    }
-    dt->result = r__uint8(v);
+#else
+    return NULL;
+#endif
 }

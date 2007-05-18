@@ -173,8 +173,9 @@ w__array(DBT *v, void (*fn)(DBT *, const void *), const array_t *a)
 
 
 int
-w_version(DB *db)
+w_version(sqlite3 *db)
 {
+#if 0
     DBT v;
     int err;
 
@@ -186,4 +187,7 @@ w_version(DB *db)
     free(v.data);
 
     return err;
+#else
+    return 0;
+#endif
 }

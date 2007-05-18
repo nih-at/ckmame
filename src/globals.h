@@ -26,14 +26,16 @@
 
 
 
+#include <sqlite3.h>
+
 #include "dbl.h"
 #include "delete_list.h"
 #include "detector.h"
 #include "map.h"
 #include "parray.h"
 
-extern DB *db;
-extern DB *old_db;
+extern sqlite3 *db;
+extern sqlite3 *old_db;
 
 extern detector_t *detector;
 

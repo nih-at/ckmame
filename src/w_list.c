@@ -30,15 +30,15 @@
 #include <stdlib.h>
 
 #include "dbh.h"
-#include "w.h"
 #include "types.h"
 #include "xmalloc.h"
 
 
 
 int
-w_hashtypes(DB *db, int romhashtypes, int diskhashtypes)
+w_hashtypes(sqlite3 *db, int romhashtypes, int diskhashtypes)
 {
+#if 0
     int err;
     DBT v;
 
@@ -53,13 +53,17 @@ w_hashtypes(DB *db, int romhashtypes, int diskhashtypes)
     free(v.data);
 
     return err;
+#else
+    return 0;
+#endif
 }
 
 
 
 int
-w_list(DB *db, const char *key, const parray_t *pa)
+w_list(sqlite3 *db, const char *key, const parray_t *pa)
 {
+#if 0
     int err;
     DBT v;
 
@@ -73,4 +77,7 @@ w_list(DB *db, const char *key, const parray_t *pa)
     free(v.data);
 
     return err;
+#else
+    return 0;
+#endif
 }

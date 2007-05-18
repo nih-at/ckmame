@@ -27,16 +27,13 @@
 
 #include "dbh.h"
 #include "detector.h"
-#include "w.h"
-
-static void w__rule(DBT *, const void *);
-static void w__test(DBT *, const void *);
 
 
 
 int
-w_detector(DB *db, const detector_t *d)
+w_detector(sqlite3 *db, const detector_t *d)
 {
+#if 0
     DBT v;
     int err;
 
@@ -53,43 +50,7 @@ w_detector(DB *db, const detector_t *d)
     free(v.data);
 
     return err;
-}
-
-
-
-static void
-w__rule(DBT *v, const void *vd)
-{
-    const detector_rule_t *dr;
-    
-    dr = vd;
-
-    w__uint64(v, detector_rule_start_offset(dr));
-    w__uint64(v, (uint64_t)detector_rule_end_offset(dr));
-    w__uint8(v, (uint64_t)detector_rule_operation(dr));
-    w__array(v, w__test, detector_rule_tests(dr));
-}
-
-
-
-static void
-w__test(DBT *v, const void *vd)
-{
-    const detector_test_t *dt;
-    
-    dt = vd;
-
-    w__uint8(v, detector_test_type(dt));
-    w__uint64(v, (uint64_t)detector_test_offset(dt));
-    w__uint64(v, detector_test_length(dt));
-    if (detector_test_length(dt) > 0) {
-	w__mem(v, detector_test_value(dt), detector_test_length(dt));
-	if (detector_test_mask(dt)) {
-	    w__uint8(v, true);
-	    w__mem(v, detector_test_mask(dt), detector_test_length(dt));
-	}
-	else
-	    w__uint8(v, false);
-    }
-    w__uint8(v, detector_test_result(dt));
+#else
+    return 0;
+#endif
 }

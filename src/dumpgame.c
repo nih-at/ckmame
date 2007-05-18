@@ -45,13 +45,13 @@
 #include "util.h"
 #include "xmalloc.h"
 
-static int dump_game(DB *, const char *, int);
-static int dump_hashtypes(DB *, const char *);
-static int dump_list(DB *, const char *);
-static int dump_dat(DB *, const char *);
-static int dump_db_version(DB *, const char *);
-static int dump_special(DB *, const char *);
-static int dump_stats(DB *, const char *);
+static int dump_game(sqlite3 *, const char *, int);
+static int dump_hashtypes(sqlite3 *, const char *);
+static int dump_list(sqlite3 *, const char *);
+static int dump_dat(sqlite3 *, const char *);
+static int dump_db_version(sqlite3 *, const char *);
+static int dump_special(sqlite3 *, const char *);
+static int dump_stats(sqlite3 *, const char *);
 static void print_dat(dat_t *, int);
 static void print_hashtypes(int);
 static void print_rs(game_t *, filetype_t, const char *,
@@ -178,7 +178,7 @@ print_match(game_t *game, filetype_t ft, int i)
 
 
 static void
-print_matches(DB *db, filetype_t ft, hashes_t *hash)
+print_matches(sqlite3 *db, filetype_t ft, hashes_t *hash)
 {
     game_t *game;
     int i, j, matches;
@@ -253,7 +253,7 @@ main(int argc, char **argv)
 {
     int i, j, found, first;
     char *dbname;
-    DB *db;
+    sqlite3 *db;
     int c;
     int find_checksum, brief_mode;
     filetype_t filetype;
@@ -416,7 +416,7 @@ print_rs(game_t *game, filetype_t ft,
 
 
 static int
-dump_game(DB *db, const char *name, int brief_mode)
+dump_game(sqlite3 *db, const char *name, int brief_mode)
 {
     int i;
     game_t *game;
@@ -463,7 +463,7 @@ dump_game(DB *db, const char *name, int brief_mode)
 
 /*ARGSUSED2*/
 static int
-dump_hashtypes(DB *db, const char *dummy)
+dump_hashtypes(sqlite3 *db, const char *dummy)
 {
     int romhashtypes, diskhashtypes;
 
@@ -483,7 +483,7 @@ dump_hashtypes(DB *db, const char *dummy)
 
 
 static int
-dump_list(DB *db, const char *key)
+dump_list(sqlite3 *db, const char *key)
 {
     int i;
     parray_t *list;
@@ -505,7 +505,7 @@ dump_list(DB *db, const char *key)
 
 /*ARGSUSED2*/
 static int
-dump_dat(DB *db, const char *dummy)
+dump_dat(sqlite3 *db, const char *dummy)
 {
     dat_t *d;
     int i;
@@ -529,7 +529,7 @@ dump_dat(DB *db, const char *dummy)
 
 /*ARGSUSED2*/
 static int
-dump_db_version(DB *db, const char *dummy)
+dump_db_version(sqlite3 *db, const char *dummy)
 {
     /* dbh_open won't let us open a db with a different version */
     printf("%d\n", DBH_FORMAT_VERSION);
@@ -541,7 +541,7 @@ dump_db_version(DB *db, const char *dummy)
 
 /*ARGSUSED2*/
 static int
-dump_detector(DB *db, const char *dummy)
+dump_detector(sqlite3 *db, const char *dummy)
 {
     detector_t *d;
     
@@ -559,21 +559,21 @@ dump_detector(DB *db, const char *dummy)
 
 
 static int
-dump_special(DB *db, const char *name)
+dump_special(sqlite3 *db, const char *name)
 {
     static const struct {
 	const char *key;
-	int (*f)(DB *, const char *);
+	int (*f)(sqlite3 *, const char *);
 	const char *arg_override;
     } keys[] = {
 	{ "/list",             dump_list,       DBH_KEY_LIST_GAME },
-	{ DBH_KEY_DAT,         dump_dat,        NULL },
-	{ DBH_KEY_DB_VERSION,  dump_db_version, NULL },
-	{ DBH_KEY_DETECTOR,    dump_detector,   NULL },
-	{ DBH_KEY_HASH_TYPES,  dump_hashtypes,  NULL },
-	{ DBH_KEY_LIST_DISK,   dump_list,       NULL },
-	{ DBH_KEY_LIST_GAME,   dump_list,       NULL },
-	{ DBH_KEY_LIST_SAMPLE, dump_list,       NULL },
+	{ "/dat",              dump_dat,        NULL },
+	{ "/ckmame",           dump_db_version, NULL },
+	{ "/detector",         dump_detector,   NULL },
+	{ "/hashtypes",        dump_hashtypes,  NULL },
+	{ "/list/disk",        dump_list,       NULL },
+	{ "/list/game",        dump_list,       NULL },
+	{ "/list/sample",      dump_list,       NULL },
 	{ "/stats",            dump_stats,      NULL }
     };
     static const int nkeys = sizeof(keys)/sizeof(keys[0]);
@@ -594,7 +594,7 @@ dump_special(DB *db, const char *name)
 
 /*ARGSUSED2*/
 static int
-dump_stats(DB *db, const char *dummy)
+dump_stats(sqlite3 *db, const char *dummy)
 {
     int ngames, nroms, ndisks;
     unsigned long long sroms;

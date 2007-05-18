@@ -30,6 +30,9 @@
 
 #define DBL_READ	0x0	/* open readonly */
 #define DBL_WRITE	0x1	/* open for writing */
+#define DBL_NEW		0x2	/* create new database */
+
+extern const char *sql_db_init;
 
 
 

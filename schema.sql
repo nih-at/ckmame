@@ -5,20 +5,28 @@ create table dat (
 	version text
 );
 
-create talbe game (
+create table game (
 	game_id integer primary key autoincrement,
 	name text not null,
 	description text,
 	dat_idx integer not null,
-	parent text
 );
 create index game_name on game (name);
+
+create table parent (
+	game_id integer,
+	file_type integer,
+	parent integer not null,
+	primary key (game_id, file_type)
+);
+create index parnet_parent on parent (parent);
 
 create table file (
 	game_id integer,
 	file_type integer,
 	file_idx integer,
 	name text not null,
+	merge text,
 	status integer not null,
 	location integer not null,
 	size integer,
@@ -27,6 +35,7 @@ create table file (
 	sha1 binary,
 	primary key (game_id, file_type, file_idx)
 );
+create index file_game_type on file (game_id, file_type);
 create index file_name on file (name);
 create index file_size on file (size);
 create index file_crc on file (crc);

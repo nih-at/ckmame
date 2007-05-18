@@ -155,8 +155,8 @@ parray_t *superfluous;
 parray_t *superfluous;
 parray_t *search_dirs;
 filetype_t file_type;
-DB *db;
-DB *old_db;
+sqlite3 *db;
+sqlite3 *old_db;
 detector_t *detector;
 
 
