@@ -88,7 +88,7 @@ dbh_close(sqlite3 *db)
 
 
 const char *
-dbh_error(void)
+dbh_error(sqlite3 *db)
 {
     static const char *str[] = {
 	"No error",
@@ -98,7 +98,7 @@ dbh_error(void)
 
     /* XXX */
     if (dbh_errno == DBH_ENOERR)
-	return dbl_error();
+	return sqlite3_errmsg(db);
 
     return str[dbh_errno<0||dbh_errno>DBH_EMAX ? DBH_EMAX : dbh_errno];
 }

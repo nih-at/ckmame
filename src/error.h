@@ -26,6 +26,8 @@
 
 
 
+#include <sqlite3.h>
+
 #define ERRDEF	0x0	/* no additional info */
 #define ERRZIP	0x1	/* prepend zipfile name */
 #define ERRFILE	0x2	/* prepend file name */
@@ -38,6 +40,7 @@
 #define ERRZIPFILESTR	(ERRZIPFILE|ERRSTR)
 
 void myerror(int, const char *, ...);
+void seterrdb(sqlite3 *);
 void seterrinfo(const char *, const char *);
 
 #endif /* error.h */

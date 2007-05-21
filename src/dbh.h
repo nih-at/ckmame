@@ -38,9 +38,13 @@
 
 #define DBH_FORMAT_VERSION	1 /* version of ckmame database format */
 
-#define DBH_KEY_LIST_DISK	"/list/disk"
-#define DBH_KEY_LIST_GAME	"/list/game"
-#define DBH_KEY_LIST_SAMPLE	"/list/sample"
+/* keep in sync with r_list.c:query_list */
+enum dbh_list {
+    DBH_KEY_LIST_DISK,
+    DBH_KEY_LIST_GAME,
+    DBH_KEY_LIST_SAMPLE,
+    DBH_KEY_LIST_MAX
+};
 
 #define DBH_DEFAULT_DB_NAME	"mame.db"
 #define DBH_DEFAULT_OLD_DB_NAME	"old.db"
@@ -48,7 +52,7 @@
 
 
 int dbh_close(sqlite3 *);
-const char *dbh_error(void);
+const char *dbh_error(sqlite3 *);
 sqlite3* dbh_open(const char *, int);
 
 int d_game(sqlite3 *, const char *);
@@ -59,7 +63,7 @@ detector_t *r_detector(sqlite3 *);
 array_t *r_file_by_hash(sqlite3 *, filetype_t, const hashes_t *);
 struct game *r_game(sqlite3 *, const char *);
 int r_hashtypes(sqlite3 *, int *, int *);
-parray_t *r_list(sqlite3 *, const char *);
+parray_t *r_list(sqlite3 *, enum dbh_list);
 int u_game(sqlite3 *, game_t *);
 int w_dat(sqlite3 *, dat_t *);
 int w_detector(sqlite3 *db, const detector_t *);
