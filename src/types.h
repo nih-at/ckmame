@@ -120,6 +120,6 @@ typedef enum name_type name_type_t;
 
 
 
-const char *filetype_db_key(filetype_t);
+enum dbh_list filetype_db_key(filetype_t);
 
 #endif /* types.h */

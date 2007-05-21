@@ -2,7 +2,7 @@
   $NiH: r_list.c,v 1.5 2006/04/15 22:52:58 dillo Exp $
 
   r_list.c -- read list struct from db
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,7 +31,16 @@
 #include "sq_util.h"
 #include "xmalloc.h"
 
-#define QUERY_LIST_GAME	"select name from game"
+/* keep in sync with dbh.h:enum list */
+const char *query_list[] = {
+    /* XXX: don't hardwire constant */
+    "select distinct name from file where file_type = 2",
+
+    "select name from game",
+
+    "select distinct  g.name from game g, file f where g.game_id=f.game_id" \
+    " and f.file_type = 1"
+};
 
 #define QUERY_HASH_TYPE	"select name from file " \
 			"where file_type = %d and %s not null limit 1"
@@ -52,20 +61,17 @@ r_hashtypes(sqlite3 *db, int *romhashtypesp, int *diskhashtypesp)
 
 
 parray_t *
-r_list(sqlite3 *db, const char *key)
+r_list(sqlite3 *db, enum dbh_list type)
 {
     parray_t *pa;
     sqlite3_stmt *stmt;
     int ret;
-    
-    if (strcmp(key, DBH_KEY_LIST_GAME) != 0)
+
+    if (type < 0 || type >= DBH_KEY_LIST_MAX)
 	return NULL;
 
-    if (sqlite3_prepare_v2(db, QUERY_LIST_GAME,
-			   -1, &stmt, NULL) != SQLITE_OK) {
-	/* XXX */
+    if (sqlite3_prepare_v2(db, query_list[type], -1, &stmt, NULL) != SQLITE_OK)
 	return NULL;
-    }
 
     pa = parray_new();
 
@@ -75,7 +81,6 @@ r_list(sqlite3 *db, const char *key)
     sqlite3_finalize(stmt);
 
     if (ret != SQLITE_DONE) {
-	/* XXX */
 	parray_free(pa, free);
 	return NULL;
     }

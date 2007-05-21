@@ -28,7 +28,7 @@
 
 
 
-const char *
+enum dbh_list
 filetype_db_key(filetype_t ft)
 {
     switch (ft) {
@@ -42,6 +42,6 @@ filetype_db_key(filetype_t ft)
 	return DBH_KEY_LIST_DISK;
 
     default:
-	return NULL;
+	return -1;
     }
 }

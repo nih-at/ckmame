@@ -46,12 +46,12 @@
 #include "xmalloc.h"
 
 static int dump_game(sqlite3 *, const char *, int);
-static int dump_hashtypes(sqlite3 *, const char *);
-static int dump_list(sqlite3 *, const char *);
-static int dump_dat(sqlite3 *, const char *);
-static int dump_db_version(sqlite3 *, const char *);
+static int dump_hashtypes(sqlite3 *, int);
+static int dump_list(sqlite3 *, int);
+static int dump_dat(sqlite3 *, int);
+static int dump_db_version(sqlite3 *, int);
 static int dump_special(sqlite3 *, const char *);
-static int dump_stats(sqlite3 *, const char *);
+static int dump_stats(sqlite3 *, int);
 static void print_dat(dat_t *, int);
 static void print_hashtypes(int);
 static void print_rs(game_t *, filetype_t, const char *,
@@ -302,6 +302,7 @@ main(int argc, char **argv)
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit (1);
     }
+    seterrdb(db);
 
     if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
@@ -463,7 +464,7 @@ dump_game(sqlite3 *db, const char *name, int brief_mode)
 
 /*ARGSUSED2*/
 static int
-dump_hashtypes(sqlite3 *db, const char *dummy)
+dump_hashtypes(sqlite3 *db, int dummy)
 {
     int romhashtypes, diskhashtypes;
 
@@ -483,13 +484,13 @@ dump_hashtypes(sqlite3 *db, const char *dummy)
 
 
 static int
-dump_list(sqlite3 *db, const char *key)
+dump_list(sqlite3 *db, int type)
 {
     int i;
     parray_t *list;
 
-    if ((list=r_list(db, key)) == NULL) {
-	myerror(ERRDEF, "db error reading list `%s'", key);
+    if ((list=r_list(db, type)) == NULL) {
+	myerror(ERRDB, "db error reading list");
 	return -1;
     }
 
@@ -505,7 +506,7 @@ dump_list(sqlite3 *db, const char *key)
 
 /*ARGSUSED2*/
 static int
-dump_dat(sqlite3 *db, const char *dummy)
+dump_dat(sqlite3 *db, int dummy)
 {
     dat_t *d;
     int i;
@@ -529,7 +530,7 @@ dump_dat(sqlite3 *db, const char *dummy)
 
 /*ARGSUSED2*/
 static int
-dump_db_version(sqlite3 *db, const char *dummy)
+dump_db_version(sqlite3 *db, int dummy)
 {
     /* dbh_open won't let us open a db with a different version */
     printf("%d\n", DBH_FORMAT_VERSION);
@@ -541,7 +542,7 @@ dump_db_version(sqlite3 *db, const char *dummy)
 
 /*ARGSUSED2*/
 static int
-dump_detector(sqlite3 *db, const char *dummy)
+dump_detector(sqlite3 *db, int dummy)
 {
     detector_t *d;
     
@@ -563,18 +564,18 @@ dump_special(sqlite3 *db, const char *name)
 {
     static const struct {
 	const char *key;
-	int (*f)(sqlite3 *, const char *);
-	const char *arg_override;
+	int (*f)(sqlite3 *, int);
+	int  arg;
     } keys[] = {
 	{ "/list",             dump_list,       DBH_KEY_LIST_GAME },
-	{ "/dat",              dump_dat,        NULL },
-	{ "/ckmame",           dump_db_version, NULL },
-	{ "/detector",         dump_detector,   NULL },
-	{ "/hashtypes",        dump_hashtypes,  NULL },
-	{ "/list/disk",        dump_list,       NULL },
-	{ "/list/game",        dump_list,       NULL },
-	{ "/list/sample",      dump_list,       NULL },
-	{ "/stats",            dump_stats,      NULL }
+	{ "/dat",              dump_dat,        0 },
+	{ "/ckmame",           dump_db_version, 0 },
+	{ "/detector",         dump_detector,   0 },
+	{ "/hashtypes",        dump_hashtypes,  0 },
+	{ "/list/disk",        dump_list,       DBH_KEY_LIST_DISK },
+	{ "/list/game",        dump_list,       DBH_KEY_LIST_GAME },
+	{ "/list/sample",      dump_list,       DBH_KEY_LIST_SAMPLE },
+	{ "/stats",            dump_stats,      0 }
     };
     static const int nkeys = sizeof(keys)/sizeof(keys[0]);
 
@@ -582,8 +583,7 @@ dump_special(sqlite3 *db, const char *name)
 
     for (i=0; i<nkeys; i++) {
 	if (strcasecmp(name, keys[i].key) == 0)
-	    return keys[i].f(db, (keys[i].arg_override ? keys[i].arg_override
-				  : name));
+	    return keys[i].f(db, keys[i].arg);
     }
     
     myerror(ERRDEF, "unknown special: `%s'", name);
@@ -594,7 +594,7 @@ dump_special(sqlite3 *db, const char *name)
 
 /*ARGSUSED2*/
 static int
-dump_stats(sqlite3 *db, const char *dummy)
+dump_stats(sqlite3 *db, int dummy)
 {
     int ngames, nroms, ndisks;
     unsigned long long sroms;
