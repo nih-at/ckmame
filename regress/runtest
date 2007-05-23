@@ -316,6 +316,17 @@ done
 test_set "${RET}" return
 test_set "${ARGS}" args
 
+if [ ! -z "${MKDBARGS}" ]
+then
+    ${MKMAMEDB} ${MKDBARGS} > gotout 2> goterr
+    if [ $? -ne 0 ]
+    then
+	fail "can't create database"
+    fi
+else
+    cp ../mame.db .
+fi
+
 if [ ! -z "${SETUP_ONLY}" ]
 then
     echo ${DIR}
@@ -332,17 +343,6 @@ if [ ! -z "${VERBOSE}" ]
 then
 	echo "${TEST}: ${DESCR}"
 	echo "running: ${PROGRAM} ${ARGS}"
-fi
-
-if [ ! -z "${MKDBARGS}" ]
-then
-    ${MKMAMEDB} ${MKDBARGS} > gotout 2> goterr
-    if [ $? -ne 0 ]
-    then
-	fail "can't create database"
-    fi
-else
-    cp ../mame.db .
 fi
 
 ${PROGRAM} ${ARGS} >> gotout 2>> goterr
