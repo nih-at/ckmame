@@ -5,6 +5,40 @@
 
 
 
+void *
+sq3_get_blob(sqlite3_stmt *stmt, int col, size_t *sizep)
+{
+    if (sqlite3_column_type(stmt, col) == SQLITE_NULL) {
+	*sizep = 0;
+	return NULL;
+    }
+
+    *sizep = sqlite3_column_bytes(stmt, col);
+    return xmemdup(sqlite3_column_blob(stmt, col), *sizep);
+}
+
+
+
+int
+sq3_get_int_default(sqlite3_stmt *stmt, int col, int def)
+{
+    if (sqlite3_column_type(stmt, col) == SQLITE_NULL)
+	return def;
+    return sqlite3_column_int(stmt, col);
+}
+
+
+
+int64_t
+sq3_get_int64_default(sqlite3_stmt *stmt, int col, int64_t def)
+{
+    if (sqlite3_column_type(stmt, col) == SQLITE_NULL)
+	return def;
+    return sqlite3_column_int64(stmt, col);
+}
+
+
+
 int
 sq3_get_one_int(sqlite3 *db, const char *query, int *valp)
 {
@@ -34,6 +68,37 @@ sq3_get_string(sqlite3_stmt *stmt, int i)
     
     return xstrdup((const char *)sqlite3_column_text(stmt, i));
 }
+
+
+
+int
+sq3_set_blob(sqlite3_stmt *stmt, int col, const void *p, size_t s)
+{
+    if (s == 0 || p == NULL)
+	return sqlite3_bind_null(stmt, col);
+    return sqlite3_bind_blob(stmt, col, p, s, SQLITE_STATIC);
+}
+
+
+
+int
+sq3_set_int_default(sqlite3_stmt *stmt, int col, int val, int def)
+{
+    if (val == def)
+	return sqlite3_bind_null(stmt, col);
+    return sqlite3_bind_int(stmt, col, val);
+}
+
+
+
+int
+sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def)
+{
+    if (val == def)
+	return sqlite3_bind_null(stmt, col);
+    return sqlite3_bind_int64(stmt, col, val);
+}
+
 
 
 

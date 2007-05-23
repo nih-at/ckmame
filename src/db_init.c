@@ -5,6 +5,7 @@ create table dat (\n\
 	dat_idx integer primary key,\n\
 	name text,\n\
 	description text,\n\
+	author text,\n\
 	version text\n\
 );\n\
 \n\
@@ -52,13 +53,12 @@ create table test (\n\
 	test_idx integer,\n\
 	type integer not null,\n\
 	offset integer,\n\
+	size integer,\n\
 	mask binary,\n\
 	value binary,\n\
 	result integer not null,\n\
 	primary key (rule_idx, test_idx)\n\
 );\n\
-\n\
-insert into dat (dat_idx, name, version) values (-1, 'ckmame', '1');\n\
 ";
 
 const char *sql_db_init_2 = "\

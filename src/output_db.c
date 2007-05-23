@@ -250,6 +250,7 @@ output_db_detector(output_context_t *out, detector_t *d)
     ctx = (output_context_db_t *)out;
 
     if (w_detector(ctx->db, d) != 0) {
+	seterrdb(ctx->db);
 	myerror(ERRDB, "can't write detector to db");
 	return -1;
     }

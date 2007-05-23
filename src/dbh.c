@@ -38,7 +38,8 @@
 #define DBH_EVERSION	2	/* version mismatch */
 #define DBH_EMAX	3
 
-#define QUERY_VERSION	"select version from dat where dat_idx=-1"
+#define QUERY_VERSION	"pragma user_version"
+#define SET_VERSION_FMT	"pragma user_version = %d"
 
 #define PRAGMAS		"PRAGMA synchronous = OFF; "
 
@@ -68,7 +69,7 @@ dbh_check_version(sqlite3 *db, int flags)
 
     sqlite3_finalize(stmt);
 
-    if (version != DBH_FORMAT_VERSION) {
+    if (version != DBH_FORMAT_VERSION + 17000) {
 	dbh_errno = DBH_EVERSION;
 	return -1;
     }
@@ -148,6 +149,12 @@ dbh_open(const char *name, int mode)
 static int
 init_db(sqlite3 *db)
 {
+    char b[256];
+
+    sprintf(b, SET_VERSION_FMT, DBH_FORMAT_VERSION + 17000);
+    if (sqlite3_exec(db, b, NULL, NULL, NULL) != SQLITE_OK)
+	return -1;
+
     if (sqlite3_exec(db, sql_db_init, NULL, NULL, NULL) != SQLITE_OK)
 	return -1;
 

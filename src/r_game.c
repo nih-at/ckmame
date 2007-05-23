@@ -178,7 +178,7 @@ read_rs(sqlite3 *db, game_t *g, filetype_t ft)
 	rom_merge(r) = sq3_get_string(stmt, 1);
 	rom_status(r) = sqlite3_column_int(stmt, 2);
 	rom_where(r) = sqlite3_column_int(stmt, 3);
-	rom_size(r) = sqlite3_column_int64(stmt, 4); /* XXX: handle NULL */
+	rom_size(r) = sq3_get_int64_default(stmt, 4, SIZE_UNKNOWN);
 	sq3_get_hashes(rom_hashes(r), stmt, 5);
     }
 

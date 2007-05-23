@@ -295,13 +295,13 @@ write_rs(sqlite3 *db, const game_t *g, filetype_t ft)
     for (i=0; i<game_num_files(g, ft); i++) {
 	r = game_file(g, ft, i);
 
-	/* XXX: handle unkown size */
 	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
 	    || sq3_set_string(stmt, 4, rom_name(r)) < 0
 	    || sq3_set_string(stmt, 5, rom_merge(r)) < 0
 	    || sqlite3_bind_int(stmt, 6, rom_status(r)) != SQLITE_OK
 	    || sqlite3_bind_int(stmt, 7, rom_where(r)) != SQLITE_OK
-	    || sqlite3_bind_int64(stmt, 8, rom_size(r)) != SQLITE_OK
+	    || sq3_set_int64_default(stmt, 8, rom_size(r),
+				     SIZE_UNKNOWN) != SQLITE_OK
 	    || sq3_set_hashes(rom_hashes(r), stmt, 9) < 0
 	    || sqlite3_step(stmt) != SQLITE_DONE
 	    || sqlite3_reset(stmt) != SQLITE_OK) {
