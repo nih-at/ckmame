@@ -72,6 +72,7 @@ struct game *r_game(sqlite3 *, const char *);
 int r_hashtypes(sqlite3 *, int *, int *);
 parray_t *r_list(sqlite3 *, enum dbh_list);
 int u_game(sqlite3 *, game_t *);
+int u_game_parent(sqlite3 *, game_t *, filetype_t);
 int w_dat(sqlite3 *, dat_t *);
 int w_detector(sqlite3 *db, const detector_t *);
 int w_file_by_hash_parray(sqlite3 *, filetype_t, const hashes_t *, parray_t *);

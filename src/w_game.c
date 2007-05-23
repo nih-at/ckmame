@@ -37,6 +37,9 @@
 #define QUERY_GAME_ID	"select game_id from game where name = ?"
 #define DELETE_GAME	"delete from game where game_id = ?"
 #define DELETE_FILE	"delete from file where game_id = ?"
+#define DELETE_PARENT	"delete from parent where game_id = ?"
+#define DELETE_PARENT_FT	\
+    "delete from parent where game_id = ? and file_type = ?"
 
 #define INSERT_GAME	"insert into game (name, description, dat_idx) " \
 			"values (?, ?, ?)"
@@ -50,6 +53,8 @@
 #define UPDATE_FILE	\
 	"update file set location = ? where game_id = ? and file_type = ? " \
  	"and file_idx = ?"
+#define UPDATE_PARENT	\
+    "update parent set parent = ? where game_id = ? and file_type = ?"
 
 static int sq3_set_hashes(const hashes_t *, sqlite3_stmt *, int);
 static int write_disks(sqlite3 *, const game_t *);
@@ -97,12 +102,18 @@ d_game(sqlite3 *db, const char *name)
 	ret = -1;
     sqlite3_finalize(stmt);
 
+    if (sqlite3_prepare_v2(db, DELETE_PARENT, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK
+	|| sqlite3_step(stmt) != SQLITE_DONE)
+	ret = -1;
+    sqlite3_finalize(stmt);
+
     return ret;
 }
 
 
 
-/* update location of files */
 int
 u_game(sqlite3 *db, game_t *g)
 {
@@ -139,6 +150,47 @@ u_game(sqlite3 *db, game_t *g)
 
     return 0;
 }
+
+
+
+int
+u_game_parent(sqlite3 *db, game_t *g, filetype_t ft)
+{
+    sqlite3_stmt *stmt;
+    const char *query;
+    int off;
+
+    if (game_cloneof(g, ft, 0)) {
+	query = UPDATE_PARENT;
+	off = 2;
+    }
+    else {
+	query = DELETE_PARENT_FT;
+	off = 1;
+    }
+
+    if (sqlite3_prepare_v2(db, query, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    if (sqlite3_bind_int(stmt, off, game_id(g)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, off+1, ft) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+    if (game_cloneof(g, ft, 0)
+	&& sqlite3_bind_text(stmt, 1, game_cloneof(g, ft, 0),
+			     -1, SQLITE_STATIC) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+
+    if (sqlite3_step(stmt) != SQLITE_DONE
+	|| sqlite3_finalize(stmt) != SQLITE_OK)
+	return -1;
+
+    return 0;
+}
+
 
 
 
