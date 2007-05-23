@@ -34,12 +34,12 @@
 /* keep in sync with dbh.h:enum list */
 const char *query_list[] = {
     /* XXX: don't hardwire constant */
-    "select distinct name from file where file_type = 2",
+    "select distinct name from file where file_type = 2 order by name",
 
-    "select name from game",
+    "select name from game order by name",
 
     "select distinct g.name from game g, file f where g.game_id=f.game_id" \
-    " and f.file_type = 1"
+    " and f.file_type = 1 order by g.name"
 };
 
 #define QUERY_HASH_TYPE	"select name from file " \
