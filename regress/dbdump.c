@@ -23,49 +23,163 @@
 
 
 
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "dbh.h"
+#include <sqlite3.h>
+
 #include "error.h"
 #include "util.h"
-#include "xmalloc.h"
 
-const char *prg;
+#define QUERY_TABLES	\
+    "select name from sqlite_master where type='table'" \
+    " and name not like 'sqlite_%' order by name"
+
+#define QUERY_COLS_FMT	"pragma table_info(%s)"
+
 const char *usage = "usage: %s db-file\n";
-char *buf;
-size_t bufsize;
+
+static int dump_db(sqlite3 *);
+static int dump_table(sqlite3 *, const char *);
 
 
 
 int
 main(int argc, char *argv[])
 {
-#if 0
-    DB *db;
+    sqlite3 *db;
+    char *fname;
+    struct stat st;
+    int ret;
 
-    prg = argv[0];
-    bufsize = 0;
-    buf = NULL;
+    setprogname(argv[0]);
 
     if (argc != 2) {
-	fprintf(stderr, usage, prg);
+	fprintf(stderr, usage, getprogname());
 	exit(1);
     }
 
-    seterrinfo(argv[1], NULL);
-    if ((db=dbl_open(argv[1], DBL_READ)) == NULL) {
-	myerror(ERRDB, "can't open database");
+    fname = argv[1];
+
+    seterrinfo(fname, NULL);
+
+    if (stat(fname, &st) != 0) {
+	myerror(ERRSTR, "can't stat database `%s'", fname);
 	exit(1);
     }
 
-    if (dbl_foreach(db, dump, NULL) < 0) {
-	myerror(ERRDB, "can't read all keys and values from database");
+    if (sqlite3_open(fname, &db) != SQLITE_OK) {
+	seterrdb(db);
+	myerror(ERRDB, "can't open database `%s'", fname);
+	sqlite3_close(db);
 	exit(1);
     }
 
-    /* read-only */
-    dbl_close(db);
-#endif
+    seterrdb(db);
+    
+    if ((ret=dump_db(db)) < 0)
+	myerror(ERRDB, "can't dump database `%s'", fname);
+
+    sqlite3_close(db);
+
+    return ret < 0 ? 1 : 0;
+}
+
+
+
+static int
+dump_db(sqlite3 *db)
+{
+    sqlite3_stmt *stmt;
+    int ret;
+
+    if (sqlite3_prepare_v2(db, QUERY_TABLES, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	if (dump_table(db, (const char *)sqlite3_column_text(stmt, 0)) < 0)
+	    break;
+    }
+
+    sqlite3_finalize(stmt);
+
+    if (ret != SQLITE_DONE)
+	return -1;
+
+    return 0;
+}
+
+
+
+static int
+dump_table(sqlite3 *db, const char *tbl)
+{
+    sqlite3_stmt *stmt;
+    char b[8192];
+    int first_col, first_key;
+    int i, ret;
+
+    sprintf(b, QUERY_COLS_FMT, tbl);
+
+    if (sqlite3_prepare_v2(db, b, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    printf(">>> table %s (", tbl);
+    sprintf(b, "select * from %s", tbl);
+    first_col = first_key = 1;
+
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	printf("%s%s",
+	       first_col ? "" : ", ",
+	       sqlite3_column_text(stmt, 1));
+	first_col = 0;
+
+	if (sqlite3_column_int(stmt, 5)) {
+	    sprintf(b+strlen(b), "%s%s",
+		    first_key ? " order by " : ", ",
+		    sqlite3_column_text(stmt, 1));
+	    first_key = 0;
+	}
+    }
+
+    printf(")\n");
+    sqlite3_finalize(stmt);
+
+    if (ret != SQLITE_DONE)
+	return -1;
+
+    if (sqlite3_prepare_v2(db, b, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	for (i=0; i<sqlite3_column_count(stmt); i++) {
+	    if (i > 0)
+		printf("|");
+
+	    switch (sqlite3_column_type(stmt, i)) {
+	    case SQLITE_INTEGER:
+	    case SQLITE_FLOAT:
+	    case SQLITE_TEXT:
+		printf("%s", sqlite3_column_text(stmt, i));
+		break;
+	    case SQLITE_NULL:
+		printf("<null>");
+		break;
+	    case SQLITE_BLOB:
+		bin2hex(b, sqlite3_column_blob(stmt, i),
+			sqlite3_column_bytes(stmt, i));
+		printf("<%s>", b);
+		break;
+	    }
+	}
+	printf("\n");
+    }
+
+    sqlite3_finalize(stmt);
+
+    if (ret != SQLITE_DONE)
+	return -1;
+
     return 0;
 }

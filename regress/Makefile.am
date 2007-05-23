@@ -179,10 +179,10 @@ ${MAME_DB3}: ../src/mkmamedb ${srcdir}/mamedb-disk.txt
 	../src/mkmamedb -o ${MAME_DB3} ${srcdir}/mamedb-disk.txt
 
 update-mkmamedb.dump: ${MAME_DB}
-	./dbdump ${MAME_DB} | sort > mkmamedb-ok.dump
-	./dbdump ${MAME_DB2} | sort > mkmamedb-lost-parent.dump
-	./dbdump ${MAME_DB} | sort > mkmamedb-ok.dump
+	./dbdump ${MAME_DB} > mkmamedb-ok.dump
+	./dbdump ${MAME_DB2} > mkmamedb-lost-parent.dump
+	./dbdump ${MAME_DB} > mkmamedb-ok.dump
 	../src/mkmamedb -o $$$$.db \
 			${srcdir}/mamedb.txt ${srcdir}/mamedb-2.txt \
-		&& ./dbdump $$$$.db | sort > mkmamedb-multi-dats.dump \
+		&& ./dbdump $$$$.db > mkmamedb-multi-dats.dump \
 		&& rm $$$$.db
