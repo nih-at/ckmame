@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "dbl.h"
+#include "dbh.h"
 #include "error.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -36,29 +36,12 @@ const char *usage = "usage: %s db-file\n";
 char *buf;
 size_t bufsize;
 
-static int dump(const DBT *, const DBT *, void *);
-
-
-
-/*ARGSUSED3*/
-static int
-dump(const DBT *key, const DBT *value, void *ud)
-{
-    if (value->size*2+1 > bufsize) {
-	bufsize = value->size*2+1;
-	buf = xrealloc(buf, bufsize);
-    }
-    printf("%.*s: %s\n", (int)key->size, (char *)key->data,
-	   bin2hex(buf, value->data, value->size));
-
-    return 0;
-}
-
 
 
 int
 main(int argc, char *argv[])
 {
+#if 0
     DB *db;
 
     prg = argv[0];
@@ -83,6 +66,6 @@ main(int argc, char *argv[])
 
     /* read-only */
     dbl_close(db);
-
+#endif
     return 0;
 }

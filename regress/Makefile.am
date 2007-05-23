@@ -1,7 +1,6 @@
 noinst_PROGRAMS=	dbdump
-AM_CFLAGS=		-I${srcdir}/../src \
-			 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
-dbdump_LDADD=		../src/libckmame.a @DBLIBS@
+AM_CFLAGS=		-I${srcdir}/../src @SQLITE3_CFLAGS@ @CFLAGS@
+dbdump_LDADD=		../src/libckmame.a @SQLITE3_LIBS@
 
 EXTRA_DIST=runtest ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in
