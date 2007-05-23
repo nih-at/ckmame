@@ -17,6 +17,7 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [cleanup] add/update copyright notices and multiple inclusion guards
 ! [cleanup] convert in-memory database to sqlite3
 ! [cleanup] merge rom_t and disk_t
 ! [bug] check/fix database error reporting
@@ -113,7 +114,7 @@ code cleanups:
 tools:
 
 [db, rom] fully merge game to dir/zip
-[archive, detector] view files with detector applied
+[archive, detector] view/extract files with detector applied
 
 [db] consistency checks
 [db] find possible cloneofs
