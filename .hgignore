@@ -11,7 +11,8 @@ Makefile.in$
 ^config\.log$
 ^config\.status$
 ^configure$
-^regress/mame\.db$
+^regress/dbdump$
+^regress/mame[0-9]?\.db$
 ^src/ckmame$
 ^src/detective$
 ^src/dumpgame$
