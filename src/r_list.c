@@ -38,7 +38,7 @@ const char *query_list[] = {
 
     "select name from game",
 
-    "select distinct  g.name from game g, file f where g.game_id=f.game_id" \
+    "select distinct g.name from game g, file f where g.game_id=f.game_id" \
     " and f.file_type = 1"
 };
 

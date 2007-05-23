@@ -29,27 +29,68 @@
 #include "array.h"
 #include "dbh.h"
 #include "file_location.h"
-#include "xmalloc.h"
+#include "sq_util.h"
+
+const char *query_fbh[] = {
+    "select g.name, f.file_idx from game g, file f" \
+    " where f.game_id = g.game_id and f.file_type = ?"	\
+    " and f.crc = ?",
+
+    NULL,
+
+    "select g.name, f.file_idx from game g, file f" \
+    " where f.game_id = g.game_id and f.file_type = ?" \
+    " and f.md5 = ?"
+};
 
 array_t *
 r_file_by_hash(sqlite3 *db, filetype_t ft, const hashes_t *hash)
 {
-#if 0
-    DBT v;
+    sqlite3_stmt *stmt;
     array_t *a;
-    void *data;
+    file_location_t *fl;
+    int ret;
 
-    if (dbh_lookup(db, file_location_make_key(ft, hash), &v) != 0)
+    if (sqlite3_prepare_v2(db, query_fbh[ft], -1, &stmt, NULL) != SQLITE_OK)
 	return NULL;
 
-    data = v.data;
+    if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return NULL;
+    }
+    switch (ft) {
+    case TYPE_ROM:
+	if (sqlite3_bind_int(stmt, 2, hashes_crc(hash)) != SQLITE_OK) {
+	    sqlite3_finalize(stmt);
+	    return NULL;
+	}
+	break;
+    case TYPE_DISK:
+	if (sqlite3_bind_blob(stmt, 2, hash->md5, HASHES_SIZE_MD5,
+			      SQLITE_STATIC) != SQLITE_OK) {
+	    sqlite3_finalize(stmt);
+	    return NULL;
+	}
+	break;
+    default:
+	sqlite3_finalize(stmt);
+	return NULL;
+    }
 
-    a = r__array(&v, r__file_location, sizeof(file_location_t));
-    
-    free(data);
+    a = array_new(sizeof(file_location_t));
+
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	fl = array_grow(a, NULL);
+	file_location_name(fl) = sq3_get_string(stmt, 0);
+	file_location_index(fl) = sqlite3_column_int(stmt, 1);
+    }
+
+    sqlite3_finalize(stmt);
+
+    if (ret != SQLITE_DONE) {
+	array_free(a, file_location_finalize);
+	return NULL;
+    }
 
     return a;
-#else
-    return NULL;
-#endif
 }

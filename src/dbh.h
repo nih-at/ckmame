@@ -38,6 +38,10 @@
 
 #define DBH_FORMAT_VERSION	1 /* version of ckmame database format */
 
+#define DBL_READ	0x0	/* open readonly */
+#define DBL_WRITE	0x1	/* open for writing */
+#define DBL_NEW		0x2	/* create new database */
+
 /* keep in sync with r_list.c:query_list */
 enum dbh_list {
     DBH_KEY_LIST_DISK,
@@ -48,6 +52,9 @@ enum dbh_list {
 
 #define DBH_DEFAULT_DB_NAME	"mame.db"
 #define DBH_DEFAULT_OLD_DB_NAME	"old.db"
+
+extern const char *sql_db_init;
+extern const char *sql_db_init_2;
 
 
 

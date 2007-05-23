@@ -23,13 +23,13 @@
 
 
 
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <zlib.h>
 
 #include "dbh.h"
-#include "r.h"
 #include "xmalloc.h"
 
 
@@ -109,9 +109,14 @@ sqlite3 *
 dbh_open(const char *name, int mode)
 {
     sqlite3 *db;
+    struct stat st;
 
     if (mode == DBL_NEW)
 	unlink(name);
+    else {
+	if (stat(name, &st) != 0)
+	    return NULL;
+    }
 
     if (sqlite3_open(name, &db) != SQLITE_OK) {
 	sqlite3_close(db);    

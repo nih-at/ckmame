@@ -97,7 +97,6 @@ libckmame_a_SOURCES= \
 	r_file_by_hash.c \
 	r_game.c \
 	r_list.c \
-	r_util.c \
 	result.c \
 	rom.c \
 	rom_add_altname.c \
@@ -110,7 +109,6 @@ libckmame_a_SOURCES= \
 	w_detector.c \
 	w_game.c \
 	w_list.c \
-	w_util.c \
 	warn.c \
 	xmalloc.c \
 	xmlutil.c \
@@ -151,14 +149,12 @@ noinst_HEADERS=\
 	parse.h \
 	pmap.h \
 	pri.h \
-	r.h \
 	result.h \
 	rom.h \
 	sq_util.h \
 	tree.h \
 	types.h \
 	util.h \
-	w.h \
 	warn.h \
 	xmalloc.h \
 	xmlutil.h

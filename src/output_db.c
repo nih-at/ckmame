@@ -31,7 +31,6 @@
 #include "file_location.h"
 #include "map.h"
 #include "output.h"
-#include "w.h"
 #include "xmalloc.h"
 
 
@@ -89,8 +88,6 @@ output_db_new(const char *dbname)
 	myerror(ERRDB, "can't create hash table");
 	return NULL;
     }
-
-    w_version(ctx->db);
 
     return (output_context_t *)ctx;
 }
