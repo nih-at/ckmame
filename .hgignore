@@ -12,6 +12,7 @@ Makefile.in$
 ^config\.log$
 ^config\.status$
 ^configure$
+^docs/mkmamedb\.1$
 ^regress/dbdump$
 ^regress/mame[0-9]?\.db$
 ^src/ckmame$
