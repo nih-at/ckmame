@@ -108,7 +108,6 @@ code cleanups:
 - use return value of w_game
 - fix all XXXs
 
-
 tools:
 
 [db, rom] fully merge game to dir/zip
