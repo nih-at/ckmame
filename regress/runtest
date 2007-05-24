@@ -39,6 +39,9 @@
 #	description TEXT
 #	    description of what test is for
 #
+#	features FEATURE ...
+#	    only run test if all FEATUREs are present, otherwise skip it.
+#
 #	file TEST IN OUT
 #	    copy file IN as TEST, compare against OUT after ckmame run.
 #
@@ -228,6 +231,11 @@ fi
 
 MKMAMEDB=../../src/mkmamedb
 
+if [ -z "${CONFIG_H}" ]
+then
+    CONFIG_H=../../config.h
+fi
+
 if [ -z "${ZIPCMP}" ]
 then
     ZIPCMP=zipcmp
@@ -257,6 +265,7 @@ cd ${DIR} || ( die "cannot cd to test directory ${DIR}" )
 PROGRAM=../../src/ckmame
 RET=''
 ARGS=''
+FEATURES=''
 FILES=''
 FILES_SHOULD=''
 DESCR=''
@@ -277,6 +286,8 @@ do
   description)
     test_empty "${DESCR}" description
     DESCR="$arg";;
+  features)
+    FEATURES="${FEATURES} $arg";;
   file)
     set $arg
     copy_file "$2" "$1"
@@ -315,6 +326,19 @@ done
 
 test_set "${RET}" return
 test_set "${ARGS}" args
+
+if [ ! -z "${FEATURES}" ]
+then
+    for feat in ${FEATURES}
+    do
+        if grep "^#define [HU][AS][VE]E*_$feat " ${CONFIG_H} >/dev/null 2>&1
+        then
+	    :
+	else
+	    skip "missing feature $feat"
+	fi
+    done
+fi
 
 if [ ! -z "${SETUP_ONLY}" ]
 then
