@@ -36,10 +36,7 @@ PKG_CHECK_MODULES(LIBZIP, libzip >= 0.7.1)
 ZIPCMP=`pkg-config --variable=zipcmp libzip`
 AC_SUBST(ZIPCMP, $ZIPCMP)
 
-PKG_CHECK_MODULES(SQLITE3, sqlite3 >= 3.0, 
-		  AC_DEFINE([HAVE_SQLITE3], [1],
-		    [Define if you have the sqlite3 library (-lsqlite3)]),
-		  AC_MSG_WARN(libxml2 not found))
+PKG_CHECK_MODULES(SQLITE3, sqlite3 >= 3.0)
 
 # find usable db library
 

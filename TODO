@@ -17,11 +17,12 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [cleanup] make sq3_* return SQLITE error codes
+! [cleanup] dumpgame /stats: get directly from db
 ! [cleanup] convert in-memory database to sqlite3
 ! [cleanup] merge rom_t and disk_t
 ! [cleanup] access db directly in find_*
 ! [bug] check/fix database error reporting
-! [portability] include sqlite3-in-one-file
 + [portability] prototype for {get,set}progname, strlcpy replacements
 + [bug] ckmame -e and not -j: don't rename chds, link/copy them.
 - [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
