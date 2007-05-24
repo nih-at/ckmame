@@ -382,6 +382,7 @@ print_rs(game_t *game, filetype_t ft,
     if (game_cloneof(game, ft, 1))
 	printf("%s:\t%s\n", gco, game_cloneof(game, ft, 1));
     
+#if 0 /* XXX: get clones directly from db */
     if (game_num_clones(game, ft) > 0) {
 	printf("%s", cs);
 	for (i=0; i<game_num_clones(game, ft); i++) {
@@ -394,6 +395,7 @@ print_rs(game_t *game, filetype_t ft,
 	if (game_num_clones(game, ft) % 6 != 0)
 	    putc('\n', stdout);
     }
+#endif
     if (game_num_files(game, ft) > 0) {
 	printf("%s:\n", fs);
 	for (i=0; i<game_num_files(game, ft); i++) {

@@ -17,10 +17,11 @@ tests:
   * use on non-matching file
   * rule operations
 
-! [cleanup] add/update copyright notices and multiple inclusion guards
 ! [cleanup] convert in-memory database to sqlite3
 ! [cleanup] merge rom_t and disk_t
+! [cleanup] access db directly in find_*
 ! [bug] check/fix database error reporting
+! [portability] include sqlite3-in-one-file
 + [portability] prototype for {get,set}progname, strlcpy replacements
 + [bug] ckmame -e and not -j: don't rename chds, link/copy them.
 - [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
@@ -127,3 +128,5 @@ tools:
 	db clone-of CHILD PARENT
 [db, name] make parent
 	db make-parent CHILD
+[db] export to dat files
+	db export

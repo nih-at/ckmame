@@ -5,7 +5,7 @@
   $NiH: game.h,v 1.3 2006/05/05 10:38:51 dillo Exp $
 
   game.h -- information about one game
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -33,7 +33,6 @@
 
 struct rs {
     char *cloneof[2];
-    parray_t *clones;
     array_t *files;
 };
 
@@ -52,14 +51,7 @@ typedef struct game game_t;
 
 
 
-#define game_clone(g, ft, i)		\
-	((char *)parray_get(game_clones((g), (ft)), (i)))
-
-#define game_clone_index(g, ft, n)	\
-	parray_index_sorted(game_clones((g), (ft)), (n), (int (*)())strcmp)
-
 #define game_cloneof(g, ft, i)		((g)->rs[ft].cloneof[i])
-#define game_clones(g, ft)		((g)->rs[ft].clones)
 #define game_dat_no(g)			((g)->dat_no)
 #define game_description(g)		((g)->description)
 

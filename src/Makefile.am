@@ -59,7 +59,6 @@ libckmame_a_SOURCES= \
 	fix.c \
 	fix_util.c \
 	game.c \
-	game_add_clone.c \
 	garbage.c \
 	getline.c \
 	hash_from_string.c \
@@ -104,7 +103,6 @@ libckmame_a_SOURCES= \
 	superfluous.c \
 	tree.c \
 	util.c \
-	w_file_by_hash_parray.c \
 	w_dat.c \
 	w_detector.c \
 	w_game.c \
