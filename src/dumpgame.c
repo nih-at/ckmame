@@ -41,6 +41,7 @@
 #include "error.h"
 #include "file_location.h"
 #include "hashes.h"
+#include "sq_util.h"
 #include "types.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -102,6 +103,11 @@ static char *status_name[] = {
 };
 
 parray_t *list;
+sqlite3 *db;
+
+#define QUERY_CLONES	\
+    "select g.name from game g, parent p where g.game_id = p.game_id" \
+    " and p.parent = ? and file_type = ?"
 
 
 
@@ -253,7 +259,6 @@ main(int argc, char **argv)
 {
     int i, j, found, first;
     char *dbname;
-    sqlite3 *db;
     int c;
     int find_checksum, brief_mode;
     filetype_t filetype;
@@ -374,28 +379,44 @@ static void
 print_rs(game_t *game, filetype_t ft,
 	const char *co, const char *gco, const char *cs, const char *fs) 
 {
-    int i, j;
+    int i, j, ret;
     rom_t *r;
+    sqlite3_stmt *stmt;
 
     if (game_cloneof(game, ft, 0))
 	printf("%s:\t%s\n", co, game_cloneof(game, ft, 0));
     if (game_cloneof(game, ft, 1))
 	printf("%s:\t%s\n", gco, game_cloneof(game, ft, 1));
-    
-#if 0 /* XXX: get clones directly from db */
-    if (game_num_clones(game, ft) > 0) {
-	printf("%s", cs);
-	for (i=0; i<game_num_clones(game, ft); i++) {
-	    if (i%6 == 0)
-		fputs("\t\t", stdout);
-	    printf("%-8s ", game_clone(game, ft, i));
-	    if (i%6 == 5)
-		putc('\n', stdout);
-	}
-	if (game_num_clones(game, ft) % 6 != 0)
-	    putc('\n', stdout);
+
+    if (sqlite3_prepare_v2(db, QUERY_CLONES, -1, &stmt, NULL) != SQLITE_OK) {
+	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
+	return;
     }
-#endif
+    if (sq3_set_string(stmt, 1, game_name(game)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
+	return;
+    }
+
+    for (i = 0; ((ret=sqlite3_step(stmt)) == SQLITE_ROW); i++) {
+	if (i == 0)
+	    printf("%s", cs);
+	if (i%6 == 0)
+	    printf("\t\t");
+	printf("%-8s ", sqlite3_column_text(stmt, 0));
+	if (i%6 == 5)
+	    printf("\n");
+    }
+    if (i % 6 != 0)
+	printf("\n");
+
+    if (ret != SQLITE_DONE
+	|| sqlite3_finalize(stmt) != SQLITE_OK) {
+	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
+	return;
+    }
+
     if (game_num_files(game, ft) > 0) {
 	printf("%s:\n", fs);
 	for (i=0; i<game_num_files(game, ft); i++) {
