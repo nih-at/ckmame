@@ -49,9 +49,9 @@ w_dat(sqlite3 *db, dat_t *d)
 
     for (i=0; i<dat_length(d); i++) {
 	if (sqlite3_bind_int(stmt, 1, i) != SQLITE_OK
-	    || sq3_set_string(stmt, 2, dat_name(d, i)) < 0
-	    || sq3_set_string(stmt, 3, dat_description(d, i)) < 0
-	    || sq3_set_string(stmt, 4, dat_version(d, i)) < 0
+	    || sq3_set_string(stmt, 2, dat_name(d, i)) != SQLITE_OK
+	    || sq3_set_string(stmt, 3, dat_description(d, i)) != SQLITE_OK
+	    || sq3_set_string(stmt, 4, dat_version(d, i)) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE
 	    || sqlite3_reset(stmt) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);

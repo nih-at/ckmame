@@ -204,8 +204,8 @@ w_game(sqlite3 *db, game_t *g)
 
     if (sqlite3_prepare_v2(db, INSERT_GAME, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
-    if (sq3_set_string(stmt, 1, game_name(g)) < 0
-	|| sq3_set_string(stmt, 2, game_description(g)) < 0
+    if (sq3_set_string(stmt, 1, game_name(g)) != SQLITE_OK
+	|| sq3_set_string(stmt, 2, game_description(g)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 3, game_dat_no(g)) != SQLITE_OK
 	|| sqlite3_step(stmt) != SQLITE_DONE) {
 	sqlite3_finalize(stmt);
@@ -244,7 +244,7 @@ sq3_set_hashes(const hashes_t *h, sqlite3_stmt *stmt, int col)
     else
 	ret = sqlite3_bind_null(stmt, col);
     if (ret != SQLITE_OK)
-	return -1;
+	return ret;
 
     if (hashes_has_type(h, HASHES_TYPE_MD5))
 	ret = sqlite3_bind_blob(stmt, col+1, h->md5, HASHES_SIZE_MD5,
@@ -252,7 +252,7 @@ sq3_set_hashes(const hashes_t *h, sqlite3_stmt *stmt, int col)
     else
 	ret = sqlite3_bind_null(stmt, col+1);
     if (ret != SQLITE_OK)
-	return -1;
+	return ret;
 
     if (hashes_has_type(h, HASHES_TYPE_SHA1))
 	ret = sqlite3_bind_blob(stmt, col+2, h->sha1, HASHES_SIZE_SHA1,
@@ -260,9 +260,9 @@ sq3_set_hashes(const hashes_t *h, sqlite3_stmt *stmt, int col)
     else
 	ret = sqlite3_bind_null(stmt, col+2);
     if (ret != SQLITE_OK)
-	return -1;
+	return ret;
 
-    return 0;
+    return SQLITE_OK;
 }
 
 
@@ -291,10 +291,10 @@ write_disks(sqlite3 *db, const game_t *g)
 	d = game_disk(g, i);
 
 	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
-	    || sq3_set_string(stmt, 4, disk_name(d)) < 0
-	    || sq3_set_string(stmt, 5, disk_merge(d)) < 0
+	    || sq3_set_string(stmt, 4, disk_name(d)) != SQLITE_OK
+	    || sq3_set_string(stmt, 5, disk_merge(d)) != SQLITE_OK
 	    || sqlite3_bind_int(stmt, 6, disk_status(d)) != SQLITE_OK
-	    || sq3_set_hashes(disk_hashes(d), stmt, 9) < 0
+	    || sq3_set_hashes(disk_hashes(d), stmt, 9) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE
 	    || sqlite3_reset(stmt) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);
@@ -323,7 +323,7 @@ write_rs(sqlite3 *db, const game_t *g, filetype_t ft)
 
 	if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
 	    || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK
-	    || sq3_set_string(stmt, 3, game_cloneof(g, ft, 0)) < 0
+	    || sq3_set_string(stmt, 3, game_cloneof(g, ft, 0)) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE) {
 	    sqlite3_finalize(stmt);
 	    return -1;
@@ -348,13 +348,13 @@ write_rs(sqlite3 *db, const game_t *g, filetype_t ft)
 	r = game_file(g, ft, i);
 
 	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
-	    || sq3_set_string(stmt, 4, rom_name(r)) < 0
-	    || sq3_set_string(stmt, 5, rom_merge(r)) < 0
+	    || sq3_set_string(stmt, 4, rom_name(r)) != SQLITE_OK
+	    || sq3_set_string(stmt, 5, rom_merge(r)) != SQLITE_OK
 	    || sqlite3_bind_int(stmt, 6, rom_status(r)) != SQLITE_OK
 	    || sqlite3_bind_int(stmt, 7, rom_where(r)) != SQLITE_OK
 	    || sq3_set_int64_default(stmt, 8, rom_size(r),
 				     SIZE_UNKNOWN) != SQLITE_OK
-	    || sq3_set_hashes(rom_hashes(r), stmt, 9) < 0
+	    || sq3_set_hashes(rom_hashes(r), stmt, 9) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE
 	    || sqlite3_reset(stmt) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);

@@ -148,7 +148,7 @@ read_rs(sqlite3 *db, game_t *g, filetype_t ft)
 	if (sqlite3_prepare_v2(db, QUERY_GPARENT, -1, &stmt, NULL)
 	    != SQLITE_OK)
 	    return -1;
-	if (sq3_set_string(stmt, 1, game_cloneof(g, ft, 0)) < 0
+	if (sq3_set_string(stmt, 1, game_cloneof(g, ft, 0)) != SQLITE_OK
 	    || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);
 	    return -1;

@@ -20,7 +20,6 @@ tests:
 ! [cleanup] make sq3_* return SQLITE error codes
 ! [cleanup] dumpgame /stats: get directly from db
 ! [cleanup] convert in-memory database to sqlite3
-! [cleanup] merge rom_t and disk_t
 ! [cleanup] access db directly in find_*
 ! [bug] check/fix database error reporting
 + [portability] prototype for {get,set}progname, strlcpy replacements

@@ -130,11 +130,8 @@ sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def)
 int
 sq3_set_string(sqlite3_stmt *stmt, int i, const char *s)
 {
-    int ret;
     if (s)
-	ret = sqlite3_bind_text(stmt, i, s, -1, SQLITE_STATIC);
+	return sqlite3_bind_text(stmt, i, s, -1, SQLITE_STATIC);
     else
-	ret = sqlite3_bind_null(stmt, i);
-
-    return ret == SQLITE_OK ? 0 : -1;
+	return sqlite3_bind_null(stmt, i);
 }

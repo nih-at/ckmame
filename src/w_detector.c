@@ -52,9 +52,9 @@ w_detector(sqlite3 *db, const detector_t *d)
     if (sqlite3_prepare_v2(db, INSERT_DAT, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
 
-    if (sq3_set_string(stmt, 1, detector_name(d)) < 0
-	|| sq3_set_string(stmt, 2, detector_author(d)) < 0
-	|| sq3_set_string(stmt, 3, detector_version(d)) < 0
+    if (sq3_set_string(stmt, 1, detector_name(d)) != SQLITE_OK
+	|| sq3_set_string(stmt, 2, detector_author(d)) != SQLITE_OK
+	|| sq3_set_string(stmt, 3, detector_version(d)) != SQLITE_OK
 	|| sqlite3_step(stmt) != SQLITE_DONE) {
 	sqlite3_finalize(stmt);
 	return -1;
