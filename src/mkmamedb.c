@@ -189,8 +189,10 @@ main(int argc, char **argv)
 	    exit(1);
 
     if (detector_name) {
+	seterrinfo(detector_name, NULL);
 	detector = detector_parse(detector_name);
-	output_detector(out, detector);
+	if (detector != NULL)
+	    output_detector(out, detector);
     }
 
 

@@ -1,5 +1,6 @@
 # $NiH$
 description test header detector
+features LIBXML2
 return 0
 file skip.xml skip.xml skip.xml
 file skipped.txt skipped.txt skipped.txt
