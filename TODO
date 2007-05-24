@@ -17,10 +17,9 @@ tests:
   * use on non-matching file
   * rule operations
 
-! [cleanup] make sq3_* return SQLITE error codes
-! [cleanup] dumpgame /stats: get directly from db
 ! [cleanup] convert in-memory database to sqlite3
 ! [cleanup] access db directly in find_*
+! [cleanup] merge rom_t/disk_t
 ! [bug] check/fix database error reporting
 + [portability] prototype for {get,set}progname, strlcpy replacements
 + [bug] ckmame -e and not -j: don't rename chds, link/copy them.

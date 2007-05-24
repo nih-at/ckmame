@@ -46,13 +46,13 @@
 #include "util.h"
 #include "xmalloc.h"
 
-static int dump_game(sqlite3 *, const char *, int);
-static int dump_hashtypes(sqlite3 *, int);
-static int dump_list(sqlite3 *, int);
-static int dump_dat(sqlite3 *, int);
-static int dump_db_version(sqlite3 *, int);
-static int dump_special(sqlite3 *, const char *);
-static int dump_stats(sqlite3 *, int);
+static int dump_game(const char *, int);
+static int dump_hashtypes(int);
+static int dump_list(int);
+static int dump_dat(int);
+static int dump_db_version(int);
+static int dump_special(const char *);
+static int dump_stats(int);
 static void print_dat(dat_t *, int);
 static void print_hashtypes(int);
 static void print_rs(game_t *, filetype_t, const char *,
@@ -108,6 +108,11 @@ sqlite3 *db;
 #define QUERY_CLONES	\
     "select g.name from game g, parent p where g.game_id = p.game_id" \
     " and p.parent = ? and file_type = ?"
+
+#define QUERY_STATS_GAMES	"select count(name) from game"
+#define QUERY_STATS_FILES	\
+    "select file_type, count(name), sum(size) from file" \
+    " group by file_type order by file_type"
 
 
 
@@ -184,7 +189,7 @@ print_match(game_t *game, filetype_t ft, int i)
 
 
 static void
-print_matches(sqlite3 *db, filetype_t ft, hashes_t *hash)
+print_matches(filetype_t ft, hashes_t *hash)
 {
     game_t *game;
     int i, j, matches;
@@ -326,7 +331,7 @@ main(int argc, char **argv)
 		exit(2);
 	    }
 
-	    print_matches(db, filetype, &match);
+	    print_matches(filetype, &match);
 	}
 	exit(0);
     }
@@ -339,14 +344,14 @@ main(int argc, char **argv)
 		    first = 0;
 		else
 		    putc('\n', stdout);
-		dump_special(db, argv[i]);
+		dump_special(argv[i]);
 	    }
 	    else if (parray_index_sorted(list, argv[i], strcmp) >= 0) {
 		if (first)
 		    first = 0;
 		else
 		    putc('\n', stdout);
-		dump_game(db, argv[i], brief_mode);
+		dump_game(argv[i], brief_mode);
 	    }
 	    else
 		myerror(ERRDEF, "game `%s' unknown", argv[i]);
@@ -359,7 +364,7 @@ main(int argc, char **argv)
 			first = 0;
 		    else
 			putc('\n', stdout);
-		    dump_game(db, parray_get(list, j), brief_mode);
+		    dump_game(parray_get(list, j), brief_mode);
 		    found = 1;
 		}
 	    }
@@ -440,7 +445,7 @@ print_rs(game_t *game, filetype_t ft,
 
 
 static int
-dump_game(sqlite3 *db, const char *name, int brief_mode)
+dump_game(const char *name, int brief_mode)
 {
     int i;
     game_t *game;
@@ -485,9 +490,9 @@ dump_game(sqlite3 *db, const char *name, int brief_mode)
 
 
 
-/*ARGSUSED2*/
+/*ARGSUSED1*/
 static int
-dump_hashtypes(sqlite3 *db, int dummy)
+dump_hashtypes(int dummy)
 {
     int romhashtypes, diskhashtypes;
 
@@ -507,7 +512,7 @@ dump_hashtypes(sqlite3 *db, int dummy)
 
 
 static int
-dump_list(sqlite3 *db, int type)
+dump_list(int type)
 {
     int i;
     parray_t *list;
@@ -527,9 +532,9 @@ dump_list(sqlite3 *db, int type)
 
 
 
-/*ARGSUSED2*/
+/*ARGSUSED1*/
 static int
-dump_dat(sqlite3 *db, int dummy)
+dump_dat(int dummy)
 {
     dat_t *d;
     int i;
@@ -551,9 +556,9 @@ dump_dat(sqlite3 *db, int dummy)
 
 
 
-/*ARGSUSED2*/
+/*ARGSUSED1*/
 static int
-dump_db_version(sqlite3 *db, int dummy)
+dump_db_version(int dummy)
 {
     /* dbh_open won't let us open a db with a different version */
     printf("%d\n", DBH_FORMAT_VERSION);
@@ -563,9 +568,9 @@ dump_db_version(sqlite3 *db, int dummy)
 
 
 
-/*ARGSUSED2*/
+/*ARGSUSED1*/
 static int
-dump_detector(sqlite3 *db, int dummy)
+dump_detector(int dummy)
 {
     detector_t *d;
     
@@ -583,18 +588,18 @@ dump_detector(sqlite3 *db, int dummy)
 
 
 static int
-dump_special(sqlite3 *db, const char *name)
+dump_special(const char *name)
 {
     static const struct {
 	const char *key;
-	int (*f)(sqlite3 *, int);
+	int (*f)(int);
 	int  arg;
     } keys[] = {
-	{ "/list",             dump_list,       DBH_KEY_LIST_GAME },
-	{ "/dat",              dump_dat,        0 },
 	{ "/ckmame",           dump_db_version, 0 },
+	{ "/dat",              dump_dat,        0 },
 	{ "/detector",         dump_detector,   0 },
 	{ "/hashtypes",        dump_hashtypes,  0 },
+	{ "/list",             dump_list,       DBH_KEY_LIST_GAME },
 	{ "/list/disk",        dump_list,       DBH_KEY_LIST_DISK },
 	{ "/list/game",        dump_list,       DBH_KEY_LIST_GAME },
 	{ "/list/sample",      dump_list,       DBH_KEY_LIST_SAMPLE },
@@ -606,7 +611,7 @@ dump_special(sqlite3 *db, const char *name)
 
     for (i=0; i<nkeys; i++) {
 	if (strcasecmp(name, keys[i].key) == 0)
-	    return keys[i].f(db, keys[i].arg);
+	    return keys[i].f(keys[i].arg);
     }
     
     myerror(ERRDEF, "unknown special: `%s'", name);
@@ -615,55 +620,80 @@ dump_special(sqlite3 *db, const char *name)
 
 
 
-/*ARGSUSED2*/
+/*ARGSUSED1*/
 static int
-dump_stats(sqlite3 *db, int dummy)
+dump_stats(int dummy)
 {
-    int ngames, nroms, ndisks;
-    unsigned long long sroms;
-    parray_t *list;
-    game_t *game;
-    int i, j;
+    static const char *ft_name[] = {
+	"ROM",
+	"Sample",
+	"Disk"
+    };
 
-    if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
-	myerror(ERRDEF, "db error reading game list");
+    sqlite3_stmt *stmt;
+    int i, ft;
+    int64_t size;
+
+    if (sqlite3_prepare_v2(db, QUERY_STATS_GAMES, -1, &stmt, NULL)
+	!= SQLITE_OK) {
+	myerror(ERRDB, "can't get number of games");
+	return -1;
+    }
+    if (sqlite3_step(stmt) != SQLITE_ROW) {
+	sqlite3_finalize(stmt);
+	myerror(ERRDB, "can't get number of games");
 	return -1;
     }
 
-    ngames = parray_length(list);
-    nroms = ndisks = 0;
-    sroms = 0;
+    printf("Games:\t%d\n", sqlite3_column_int(stmt, 0));
 
-    for (i=0; i<parray_length(list); i++) {
-	if ((game=r_game(db, (char *)parray_get(list, i))) == NULL) {
-	    /* XXX: internal error */
-	    continue;
-	}
-	nroms += game_num_files(game, TYPE_ROM);
-	for (j=0; j<game_num_files(game, TYPE_ROM); j++)
-	    sroms += rom_size(game_file(game, TYPE_ROM, j));
+    sqlite3_finalize(stmt);
 
-	ndisks += game_num_disks(game);
-
-	game_free(game);
+    if (sqlite3_prepare_v2(db, QUERY_STATS_FILES, -1, &stmt, NULL)
+	!= SQLITE_OK) {
+	myerror(ERRDB, "can't get file stats");
+	return -1;
     }
 
-    parray_free(list, free);
+    ft = -1;
+    for (i=0; i<TYPE_MAX; i++) {
+	if (ft < i) {
+	    switch (sqlite3_step(stmt)) {
+	    case SQLITE_ROW:
+		ft = sqlite3_column_int(stmt, 0);
+		break;
+	    case SQLITE_DONE:
+		ft = TYPE_MAX;
+	    default:
+		myerror(ERRDB, "can't get file stats");
+		sqlite3_finalize(stmt);
+		return -1;
+	    }
+	}
 
-    printf("Games:\t%d\n", ngames);
-    printf("ROMs:\t%d ", nroms);
-    if (sroms > 1024*1024*1024)
-	printf("(%llu.%02llugb)\n",
-	       sroms/(1024*1024*1024),
-	       (((sroms/(1024*1024))*10+512)/1024) % 100);
-    else if (sroms > 1024*1024)
-	printf("(%llu.%02llumb)\n",
-	       sroms/(1024*1024),
-	       (((sroms/1024)*10+512)/1024) % 100);
-    else
-	printf("(%llu bytes)\n", sroms);
-    if (ndisks)
-	printf("Disks:\t%d\n", ndisks);
+	if (ft != i)
+	    continue;
+
+	printf("%ss:\t%d", ft_name[i], sqlite3_column_int(stmt, 1));
+	size = sqlite3_column_int64(stmt, 2);
+	if (size > 0) {
+	    printf(" (");
+	    if (size > 1024*1024*1024)
+		printf("%llu.%02lluGiB",
+		       size/(1024*1024*1024),
+		       (((size/(1024*1024))*10+512)/1024) % 100);
+	    else if (size > 1024*1024)
+		printf("%llu.%02lluMiB",
+		       size/(1024*1024),
+		       (((size/1024)*10+512)/1024) % 100);
+	    else
+		printf("%llu bytes", size);
+	    printf(")");
+	}
+	printf("\n");
+    }
+
+    sqlite3_finalize(stmt);
 
     return 0;
 }
