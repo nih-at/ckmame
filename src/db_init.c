@@ -93,29 +93,3 @@ create index file_crc on file (crc);\n\
 create index file_md5 on file (md5);\n\
 create index file_sha1 on file (sha1);\n\
 ";
-
-
-
-const char *sql_db_init_mem = "\
-create table file_cache (
-	game_id integer primary key,\n\
-	name text not null,\n\
-	pointer blob\n\
-);\n\
-create index file_cache_name on file_cache (name);\n\
-\n\
-create table file (\n\
-	game_id integer,\n\
-	file_type integer,\n\
-	file_idx integer,\n\
-	size integer,\n\
-	crc integer,\n\
-	md5 binray,\n\
-	sha1 binary,\n\
-	primary key (game_id, file_type, file_idx)\n\
-);\n\
-create index file_size on file (size);\n\
-create index file_crc on file (crc);\n\
-create index file_md5 on file (md5);\n\
-create index file_sha1 on file (sha1);\n\
-";

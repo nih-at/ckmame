@@ -1,11 +1,11 @@
-#ifndef _HAD_DISK_MAP_H
-#define _HAD_DISK_MAP_H
+#ifndef _HAD_MEMDB_H
+#define _HAD_MEMDB_H
 
 /*
-  $NiH: disk_map.h,v 1.1 2006/04/17 11:31:11 dillo Exp $
+  $NiH$
 
-  disk_map.h -- hash table of opened disk images
-  Copyright (C) 2006 Dieter Baron and Thomas Klausner
+  memdb.h -- in-memory sqlite3 db
+  Copyright (C) 2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -26,15 +26,14 @@
 
 
 
-#include "disk.h"
-#include "pmap.h"
+#include <sqlite3.h>
 
-typedef pmap_t disk_map_t;
+extern sqlite3 *memdb;
 
-#define disk_map_add(m, s, a)	(pmap_add((m), (s), (a)))
-#define disk_map_delete(m, s, a)	(pmap_delete((m), (s), (a)))
-#define disk_map_get(m, s)		((disk_t *)pmap_get((m), (s)))
-#define disk_map_new()	\
-	(pmap_new((pmap_free_f)disk_real_free))
+
 
-#endif /* disk_map.h */
+int memdb_ensure(void);
+void *memdb_get_ptr(const char *);
+int memdb_put_ptr(const char *, void *);
+
+#endif /* memdb.h */

@@ -72,6 +72,7 @@ libckmame_a_SOURCES= \
 	map.c \
 	match.c \
 	match_disk.c \
+	memdb.c \
 	output.c \
 	output_cm.c \
 	output_db.c \
@@ -89,7 +90,6 @@ libckmame_a_SOURCES= \
 	parse-rc.c \
 	parse-xml.c \
 	parse.c \
-	pmap.c \
 	psort.c \
 	r_dat.c \
 	r_detector.c \
@@ -114,7 +114,6 @@ libckmame_a_SOURCES= \
 
 noinst_HEADERS=\
 	archive.h \
-	archive_map.h \
 	array.h \
 	bswap.h \
 	chd.h \
@@ -127,7 +126,6 @@ noinst_HEADERS=\
 	detector.h \
 	dir.h \
 	disk.h \
-	disk_map.h \
 	error.h \
 	file_location.h \
 	file_status.h \
@@ -142,11 +140,11 @@ noinst_HEADERS=\
 	map.h \
 	match.h \
 	match_disk.h \
+	memdb.h \
 	myinttypes.h \
 	output.h \
 	parray.h \
 	parse.h \
-	pmap.h \
 	pri.h \
 	result.h \
 	rom.h \

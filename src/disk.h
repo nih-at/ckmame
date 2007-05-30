@@ -5,7 +5,7 @@
   $NiH: disk.h,v 1.5 2006/10/04 17:36:43 dillo Exp $
 
   disk.h -- information about one disk
-  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -30,6 +30,7 @@
 #include "types.h"
 
 struct disk {
+    int id;
     int refcount;
     char *name;
     char *merge;

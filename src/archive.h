@@ -5,7 +5,7 @@
   $NiH: archive.h,v 1.9 2006/05/24 09:29:18 dillo Exp $
 
   archive.h -- information about an archive
-  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -32,6 +32,7 @@
 #include "rom.h"
 
 struct archive {
+    int id;
     int refcount;
     int check_integrity;
     char *name;
