@@ -27,7 +27,7 @@ Cambridge, MA 02139, USA.  */
 #endif
 
 #include <errno.h>
-#include <fnmatch.h>
+#include <compat_fnmatch.h>
 #include <ctype.h>
 
 

@@ -29,8 +29,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "error.h"
+#include "compat.h"
 #include "dbh.h"
+#include "error.h"
 
 #define DEFAULT_FN	"<unknown>"
 

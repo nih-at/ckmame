@@ -24,18 +24,10 @@
 
 
 #include <stdio.h>
-#include <fnmatch.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "config.h"
-
-#ifdef HAVE_GETOPT_LONG
-#include <getopt.h>
-#else
-#include "getopt.h"
-#endif
-
+#include "compat.h"
 #include "dat.h"
 #include "dbh.h"
 #include "error.h"

@@ -26,15 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "config.h"
-
-#ifdef HAVE_GETOPT_LONG
-#include <getopt.h>
-#else
-#include "getopt.h"
-#endif
-
 #include "archive.h"
+#include "compat.h"
 #include "dbh.h"
 #include "detector.h"
 #include "error.h"

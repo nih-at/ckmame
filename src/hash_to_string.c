@@ -26,8 +26,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "types.h"
+#include "compat.h"
 #include "hashes.h"
+#include "types.h"
 #include "util.h"
 #include "xmalloc.h"
 

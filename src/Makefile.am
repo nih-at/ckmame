@@ -118,6 +118,7 @@ noinst_HEADERS=\
 	array.h \
 	bswap.h \
 	chd.h \
+	compat.h \
 	dat.h \
 	db-@DBTYPE@.h \
 	dbh.h \
@@ -160,13 +161,13 @@ noinst_HEADERS=\
 EXTRA_DIST=\
 	bswap16.c \
 	bswap32.c \
+	compat_fnmatch.h \
+	compat_getopt.h \
 	db-db.c \
 	db-db.h \
 	getprogname.c \
 	fnmatch.c \
-	fnmatch.h \
 	getopt.c \
-	getopt.h \
 	getopt1.c \
 	md5.c \
 	md5_own.h \

@@ -25,6 +25,8 @@
 
 #include <string.h>
 
+#include "compat.h"
+
 
 
 size_t
