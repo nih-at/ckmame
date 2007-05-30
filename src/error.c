@@ -23,14 +23,15 @@
 
 
 
+#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "error.h"
-#include "dbh.h"
 
-#include <errno.h>
+#include "compat.h"
+#include "dbh.h"
+#include "error.h"
 
 #define DEFAULT_FN	"<unknown>"
 

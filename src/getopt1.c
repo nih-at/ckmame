@@ -22,7 +22,7 @@
 #include "config.h"
 #endif
 
-#include "getopt.h"
+#include "compat_getopt.h"
 
 #if !__STDC__ && !defined(const) && IN_GCC
 #define const

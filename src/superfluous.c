@@ -2,7 +2,7 @@
   $NiH: superfluous.c,v 1.7 2006/05/12 22:12:18 dillo Exp $
 
   superfluous.c -- check for unknown file in rom directories
-  Copyright (C) 1999, 2003, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -26,7 +26,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <fnmatch.h>
 
 
 #include "dbh.h"

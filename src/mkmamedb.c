@@ -26,20 +26,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "config.h"
-
-#ifdef HAVE_GETOPT_LONG
-#include <getopt.h>
-#else
-#include "getopt.h"
-#endif
-
-#include "types.h"
+#include "compat.h"
 #include "dbh.h"
 #include "funcs.h"
 #include "error.h"
 #include "output.h"
 #include "parse.h"
+#include "types.h"
 #include "w.h"
 #include "xmalloc.h"
 

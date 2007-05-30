@@ -29,12 +29,7 @@
 #include <zlib.h>
 
 #include "chd.h"
-
-#include "config.h"
-
-#ifndef HAVE_FSEEKO
-#define fseeko fseek
-#endif
+#include "compat.h"
 
 
 

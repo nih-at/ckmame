@@ -26,16 +26,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <fnmatch.h>
 
-#include "config.h"
-
-#ifdef HAVE_GETOPT_LONG
-#include <getopt.h>
-#else
-#include "getopt.h"
-#endif
-
+#include "compat.h"
 #include "dbh.h"
 #include "error.h"
 #include "globals.h"
