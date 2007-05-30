@@ -1,8 +1,8 @@
 /*
   $NiH: check_util.c,v 1.5 2006/10/04 17:36:43 dillo Exp $
 
-  util.c -- utility functions needed only by ckmame itself
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  check_util.c -- utility functions needed only by ckmame itself
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -28,6 +28,8 @@
 #include "dir.h"
 #include "funcs.h"
 #include "globals.h"
+#include "memdb.h"
+#include "sq_util.h"
 #include "util.h"
 #include "xmalloc.h"
 
@@ -36,15 +38,19 @@
 #define MAXROMPATH 128
 #define DEFAULT_ROMDIR "."
 
+#define EXTRA_MAPS		0x1
+#define NEEDED_MAPS		0x2
+
+#define INSERT_FILE	\
+    "insert into file (game_id, file_type, file_idx, location," \
+    " size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?)"
+
 
 
+int maps_done = 0;
 delete_list_t *extra_delete_list = NULL;
-map_t *extra_disk_map = NULL;
-map_t *extra_file_map = NULL;
 parray_t *extra_list = NULL;
 delete_list_t *needed_delete_list = NULL;
-map_t *needed_disk_map = NULL;
-map_t *needed_file_map = NULL;
 delete_list_t *superfluous_delete_list = NULL;
 char *needed_dir = "needed";	/* XXX: proper value, move elsewhere */
 char *unknown_dir = "unknown";	/* XXX: proper value, move elsewhere */
@@ -53,10 +59,8 @@ static int rompath_init = 0;
 
 
 
-static void enter_archive_in_map(map_t *, const archive_t *, where_t);
-static int enter_dir_in_map_and_list(map_t *, map_t *, parray_t *,
-				     const char *, int, where_t);
-static void enter_disk_in_map(map_t *, const disk_t *, where_t);
+static int enter_dir_in_map_and_list(int, parray_t *, const char *,
+				     int, where_t);
 
 
 
@@ -72,13 +76,12 @@ ensure_extra_maps(int flags)
     if ((flags & (DO_MAP|DO_LIST)) == 0)
 	return;
 
-    if ((extra_file_map != NULL && !(flags & DO_LIST))
+    if (((maps_done & EXTRA_MAPS) && !(flags & DO_LIST))
 	|| (extra_list != NULL && !(flags & DO_MAP)))
 	return;
 
-    if (extra_file_map == NULL && (flags & DO_MAP)) {
-	extra_disk_map = map_new();
-	extra_file_map = map_new();
+    if (!(maps_done & EXTRA_MAPS) && (flags & DO_MAP)) {
+	maps_done |= EXTRA_MAPS;
 	extra_delete_list = delete_list_new();
 	superfluous_delete_list = delete_list_new();
     }
@@ -92,7 +95,7 @@ ensure_extra_maps(int flags)
 	    switch ((nt=name_type(file))) {
 	    case NAME_ZIP:
 		if ((a=archive_new(file, 0)) != NULL) {
-		    enter_archive_in_map(extra_file_map, a, ROM_SUPERFLUOUS);
+		    enter_archive_in_map(a, ROM_SUPERFLUOUS);
 		    archive_free(a);
 		}
 		break;
@@ -100,7 +103,7 @@ ensure_extra_maps(int flags)
 	    case NAME_NOEXT:
 		if ((d=disk_new(file, (nt==NAME_NOEXT
 				       ? DISK_FL_QUIET : 0))) != NULL) {
-		    enter_disk_in_map(extra_disk_map, d, ROM_SUPERFLUOUS);
+		    enter_disk_in_map(d, ROM_SUPERFLUOUS);
 		    disk_free(d);
 		}
 		break;
@@ -113,9 +116,7 @@ ensure_extra_maps(int flags)
     }
 
     for (i=0; i<parray_length(search_dirs); i++)
-	enter_dir_in_map_and_list((flags & DO_MAP) ? extra_file_map : NULL,
-				  (flags & DO_MAP) ? extra_disk_map : NULL,
-				  (flags & DO_LIST) ? extra_list : NULL,
+	enter_dir_in_map_and_list(flags, extra_list,
 				  parray_get(search_dirs, i),
 				  DIR_RECURSE, ROM_EXTRA);
 
@@ -128,15 +129,13 @@ ensure_extra_maps(int flags)
 void
 ensure_needed_maps(void)
 {
-    if (needed_file_map != NULL)
+    if (maps_done & NEEDED_MAPS)
 	return;
     
-    needed_disk_map = map_new();
-    needed_file_map = map_new();
+    maps_done |= NEEDED_MAPS;
     needed_delete_list = delete_list_new();
 
-    enter_dir_in_map_and_list(needed_file_map, needed_disk_map, NULL,
-			      needed_dir, 0, ROM_NEEDED);
+    enter_dir_in_map_and_list(DO_MAP,NULL, needed_dir, 0, ROM_NEEDED);
 }
 
 
@@ -239,22 +238,50 @@ make_file_name(filetype_t ft, int idx, const char *name)
 
 
 
-static void
-enter_archive_in_map(map_t *map, const archive_t *a, where_t where)
+int
+enter_archive_in_map(const archive_t *a, where_t where)
 {
+    sqlite3_stmt *stmt;
     int i;
+    rom_t *r;
 
-    for (i=0; i<archive_num_files(a); i++)
-	map_add(map, file_location_default_hashtype(TYPE_ROM),
-		rom_hashes(archive_file(a, i)),
-		file_location_ext_new(archive_name(a), i, where));
+    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+
+    for (i=0; i<archive_num_files(a); i++) {
+	r = archive_file(a, i);
+
+	if (rom_status(r) != STATUS_OK)
+	    continue;
+
+	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
+	    || sqlite3_bind_int(stmt, 4, where) != SQLITE_OK
+	    || sq3_set_int64_default(stmt, 5, rom_size(r),
+				     SIZE_UNKNOWN) != SQLITE_OK
+	    || sq3_set_hashes(stmt, 6, rom_hashes(r), 1) != SQLITE_OK
+	    || sqlite3_step(stmt) != SQLITE_DONE
+	    || sqlite3_reset(stmt) != SQLITE_OK) {
+	    sqlite3_finalize(stmt);
+	    return -1;
+	}
+    }
+
+    sqlite3_finalize(stmt);
+
+    return 0;
 }
 
 
 
 static int
-enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
-			  const char *name, int flags, where_t where)
+enter_dir_in_map_and_list(int flags, parray_t *list, const char *name,
+			  int dir_flags, where_t where)
 {
     dir_t *dir;
     dir_status_t ds;
@@ -263,7 +290,7 @@ enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
     disk_t *d;
     name_type_t nt;
 
-    if ((dir=dir_open(name, flags)) == NULL)
+    if ((dir=dir_open(name, dir_flags)) == NULL)
 	return -1;
 
     while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
@@ -274,9 +301,9 @@ enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
 	switch ((nt=name_type(b))) {
 	case NAME_ZIP:
 	    if ((a=archive_new(b, 0)) != NULL) {
-		if (zip_map)
-		    enter_archive_in_map(zip_map, a, where);
-		if (list)
+		if (flags & DO_MAP)
+		    enter_archive_in_map(a, where);
+		if ((flags & DO_LIST) && list)
 		    parray_push(list, xstrdup(archive_name(a)));
 		archive_free(a);
 	    }
@@ -286,9 +313,9 @@ enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
 	case NAME_NOEXT:
 	    if ((d=disk_new(b, (nt==NAME_NOEXT
 				? DISK_FL_QUIET : 0))) != NULL) {
-		if (disk_map)
-		    enter_disk_in_map(disk_map, d, where);
-		if (list)
+		if (flags & DO_MAP)
+		    enter_disk_in_map(d, where);
+		if ((flags & DO_LIST) && list)
 		    parray_push(list, xstrdup(disk_name(d)));
 		disk_free(d);
 	    }
@@ -304,10 +331,59 @@ enter_dir_in_map_and_list(map_t *zip_map, map_t *disk_map, parray_t *list,
 
 
 
-static void
-enter_disk_in_map(map_t *map, const disk_t *d, where_t where)
+int
+enter_disk_in_map(const disk_t *d, where_t where)
 {
-    map_add(map, file_location_default_hashtype(TYPE_DISK),
-	    disk_hashes(d),
-	    file_location_ext_new(disk_name(d), 0, where));
+    sqlite3_stmt *stmt;
+
+    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    if (sqlite3_bind_int(stmt, 1, disk_id(d)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 4, where) != SQLITE_OK
+	|| sqlite3_bind_null(stmt, 5) != SQLITE_OK
+	|| sq3_set_hashes(stmt, 6, disk_hashes(d), 1) != SQLITE_OK
+	|| sqlite3_step(stmt) != SQLITE_DONE) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+
+    sqlite3_finalize(stmt);
+
+    return 0;
+}
+
+
+
+int
+enter_file_in_map(const archive_t *a, int idx, where_t where)
+{
+    sqlite3_stmt *stmt;
+    rom_t *r;
+
+    r = archive_file(a, idx);
+
+    if (rom_status(r) != STATUS_OK)
+	return 0;
+
+    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+    
+    if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 4, where) != SQLITE_OK
+	|| sq3_set_int64_default(stmt, 5, rom_size(r),
+				 SIZE_UNKNOWN) != SQLITE_OK
+	|| sq3_set_hashes(stmt, 6, rom_hashes(r), 1) != SQLITE_OK
+	|| sqlite3_step(stmt) != SQLITE_DONE) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+
+    sqlite3_finalize(stmt);
+
+    return 0;
 }

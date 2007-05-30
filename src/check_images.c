@@ -76,11 +76,20 @@ check_images(images_t *im, const char *gamename, result_t *res)
 	    break;
 
 	case FIND_MISSING:
-	    ensure_needed_maps();
-	    if (find_disk(needed_disk_map, d, NULL) != FIND_EXISTS)
-		result_image(res, i) = FS_NEEDED;
-	    else
-		result_image(res, i) = FS_SUPERFLUOUS;
+	    {
+		match_disk_t md;
+		match_disk_init(&md);
+		ensure_needed_maps();
+		if (find_disk(d, &md) != FIND_EXISTS)
+		    result_image(res, i) = FS_NEEDED;
+		else {
+		    if (match_disk_where(&md) == ROM_NEEDED)
+			result_image(res, i) = FS_SUPERFLUOUS;
+		    else
+			result_image(res, i) = FS_NEEDED;
+		}
+		match_disk_finalize(&md);
+	    }
 	    break;
 
 	case FIND_ERROR:

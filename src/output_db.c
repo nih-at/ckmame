@@ -29,7 +29,6 @@
 #include "dbh.h"
 #include "error.h"
 #include "file_location.h"
-#include "map.h"
 #include "output.h"
 #include "xmalloc.h"
 

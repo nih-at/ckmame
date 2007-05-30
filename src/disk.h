@@ -49,6 +49,9 @@ typedef struct disk disk_t;
 #define disk_status(d)	((d)->status)
 #define disk_merge(d)	((d)->merge)
 #define disk_name(d)	((d)->name)
+#define disk_id(d)	((d)->id)
+
+#define disk_by_id(i)	((disk_t *)memdb_get_ptr_by_id(i))
 
 void disk_finalize(disk_t *);
 void disk_free(disk_t *);

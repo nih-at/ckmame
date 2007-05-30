@@ -107,6 +107,39 @@ sq3_set_blob(sqlite3_stmt *stmt, int col, const void *p, size_t s)
 
 
 int
+sq3_set_hashes(sqlite3_stmt *stmt, int col, const hashes_t *h, int nullp)
+{
+    int ret;
+
+    ret = SQLITE_OK;
+
+    if (hashes_has_type(h, HASHES_TYPE_CRC))
+	ret = sqlite3_bind_int(stmt, col++, hashes_crc(h));
+    else if (nullp)
+	ret = sqlite3_bind_null(stmt, col++);
+    if (ret != SQLITE_OK)
+	return ret;
+
+    if (hashes_has_type(h, HASHES_TYPE_MD5))
+	ret = sqlite3_bind_blob(stmt, col++, h->md5, HASHES_SIZE_MD5,
+				SQLITE_STATIC);
+    else if (nullp)
+	ret = sqlite3_bind_null(stmt, col++);
+    if (ret != SQLITE_OK)
+	return ret;
+
+    if (hashes_has_type(h, HASHES_TYPE_SHA1))
+	ret = sqlite3_bind_blob(stmt, col++, h->sha1, HASHES_SIZE_SHA1,
+				SQLITE_STATIC);
+    else if (nullp)
+	ret = sqlite3_bind_null(stmt, col++);
+
+    return ret;
+}
+
+
+
+int
 sq3_set_int_default(sqlite3_stmt *stmt, int col, int val, int def)
 {
     if (val == def)

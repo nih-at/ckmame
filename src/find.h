@@ -5,7 +5,7 @@
   $NiH: find.h,v 1.7 2006/05/01 21:09:11 dillo Exp $
 
   find.h -- find ROM in ROM set or archives
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -27,7 +27,6 @@
 
 
 #include "disk.h"
-#include "map.h"
 #include "match.h"
 #include "match_disk.h"
 #include "rom.h"
@@ -43,11 +42,11 @@ typedef enum find_result find_result_t;
 
 
 
-find_result_t find_disk(map_t *, const disk_t *, match_disk_t *);
+find_result_t find_disk(const disk_t *, match_disk_t *);
 find_result_t find_disk_in_old(const disk_t *, match_disk_t *);
 find_result_t find_disk_in_romset(const disk_t *, const char *,
 				  match_disk_t *);
-find_result_t find_in_archives(map_t *, const rom_t *, match_t *);
+find_result_t find_in_archives(const rom_t *, match_t *);
 find_result_t find_in_old(const rom_t *, match_t *);
 find_result_t find_in_romset(const rom_t *, const char *, match_t *);
 

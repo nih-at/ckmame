@@ -122,14 +122,10 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
 	    if (find_in_romset(r, game_name(g), m) == FIND_EXISTS)
 		continue;
 	    
-	    /* search for matching file in needed */
+	    /* search in needed, superfluous and update sets */
 	    ensure_needed_maps();
-	    if (find_in_archives(needed_file_map, r, m) == FIND_EXISTS)
-		continue;
-
-	    /* search for matching file in superfluous and update sets */
 	    ensure_extra_maps(DO_MAP);
-	    if (find_in_archives(extra_file_map, r, m) == FIND_EXISTS)
+	    if (find_in_archives(r, m) == FIND_EXISTS)
 		continue;
 	}
     }

@@ -1,14 +1,13 @@
-AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @SQLITE3_CFLAGS@ @CFLAGS@ \
-	 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
+AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @SQLITE3_CFLAGS@ @CFLAGS@ 
 
 bin_PROGRAMS=ckmame detective dumpgame mkmamedb
 
 noinst_LIBRARIES=libckmame.a
 
-ckmame_LDADD=libckmame.a @DBLIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
-detective_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
-dumpgame_LDADD=libckmame.a @DBLIBS@ @SQLITE3_LIBS@
-mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
+ckmame_LDADD=libckmame.a @LIBZIP_LIBS@ @SQLITE3_LIBS@
+detective_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
+dumpgame_LDADD=libckmame.a @SQLITE3_LIBS@
+mkmamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 
 libckmame_a_LIBADD=@LIBOBJS@
 
@@ -32,9 +31,7 @@ libckmame_a_SOURCES= \
 	dat_entry.c \
 	dat_entry_finalize.c \
 	dat_push.c \
-	db-@DBTYPE@.c \
 	db_init.c \
-	dbl.c \
 	dbh.c \
 	delete_list.c \
 	detector.c \
@@ -69,7 +66,6 @@ libckmame_a_SOURCES= \
 	hashes_verify.c \
 	images.c \
 	intstr.c \
-	map.c \
 	match.c \
 	match_disk.c \
 	memdb.c \
@@ -119,9 +115,7 @@ noinst_HEADERS=\
 	chd.h \
 	compat.h \
 	dat.h \
-	db-@DBTYPE@.h \
 	dbh.h \
-	dbl.h \
 	delete_list.h \
 	detector.h \
 	dir.h \
@@ -137,7 +131,6 @@ noinst_HEADERS=\
 	hashes.h \
 	images.h \
 	intstr.h \
-	map.h \
 	match.h \
 	match_disk.h \
 	memdb.h \
@@ -161,8 +154,6 @@ EXTRA_DIST=\
 	bswap32.c \
 	compat_fnmatch.h \
 	compat_getopt.h \
-	db-db.c \
-	db-db.h \
 	getprogname.c \
 	fnmatch.c \
 	getopt.c \

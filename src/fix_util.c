@@ -312,14 +312,11 @@ remove_from_superfluous(const char *name)
 int
 save_needed(archive_t *a, int index, int do_save)
 {
-    char *zip_name, *tmp;
-    int ret, zip_index;
+    char *tmp;
+    int ret;
     struct zip *zto;
     struct zip_source *source;
-    file_location_ext_t *fbh;
 
-    zip_name = archive_name(a);
-    zip_index = index;
     ret = 0;
     tmp = NULL;
 
@@ -352,14 +349,12 @@ save_needed(archive_t *a, int index, int do_save)
 	    ret = -1;
 	}
 	else {
-	    zip_name = tmp;
-	    zip_index = 0;
+	    a = archive_new(tmp, 0);
+	    index = 0;
 	}
     }
 
-    fbh = file_location_ext_new(zip_name, zip_index, ROM_NEEDED);
-    map_add(needed_file_map, file_location_default_hashtype(TYPE_ROM),
-	    rom_hashes(archive_file(a, index)), fbh);
+    enter_file_in_map(a, index, ROM_NEEDED);
 
     free(tmp);
     return ret;
@@ -371,7 +366,6 @@ int
 save_needed_disk(const char *fname, int do_save)
 {
     char *tmp;
-    const char *name;
     int ret;
     disk_t *d;
 
@@ -380,7 +374,6 @@ save_needed_disk(const char *fname, int do_save)
 
     ret = 0;
     tmp = NULL;
-    name = fname;
 
     if (do_save) {
 	tmp = make_needed_name_disk(d);
@@ -392,14 +385,14 @@ save_needed_disk(const char *fname, int do_save)
 	    ret = -1;
 	else if (rename_or_move(fname, tmp) != 0)
 	    ret = -1;
-	else
-	    name = tmp;
+	else {
+	    disk_free(d);
+	    d = disk_new(tmp, 0);
+	}
     }
 
     ensure_needed_maps();
-    map_add(needed_disk_map, file_location_default_hashtype(TYPE_DISK),
-	    disk_hashes(d), file_location_ext_new(name, 0, ROM_NEEDED));
-
+    enter_disk_in_map(d, ROM_NEEDED);
     disk_free(d);
     free(tmp);
     return ret;

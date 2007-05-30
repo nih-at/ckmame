@@ -71,14 +71,10 @@ check_disks(game_t *game, images_t *im, result_t *res)
 
 	if (match_disk_quality(md) != QU_OK
 	    && match_disk_quality(md) != QU_OLD) {
-	    /* search in needed */
-	    ensure_needed_maps();
-	    if (find_disk(needed_disk_map, d, md) == FIND_EXISTS)
-		continue;
-	    
-	    /* search in superfluous and extra dirs */
+	    /* search in needed, superfluous and extra dirs */
 	    ensure_extra_maps(DO_MAP);
-	    if (find_disk(extra_disk_map, d, md) == FIND_EXISTS)
+	    ensure_needed_maps();
+	    if (find_disk(d, md) == FIND_EXISTS)
 		continue;
 	}
     }

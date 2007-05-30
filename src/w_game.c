@@ -56,7 +56,6 @@
 #define UPDATE_PARENT	\
     "update parent set parent = ? where game_id = ? and file_type = ?"
 
-static int sq3_set_hashes(const hashes_t *, sqlite3_stmt *, int);
 static int write_disks(sqlite3 *, const game_t *);
 static int write_rs(sqlite3 *, const game_t *, filetype_t);
 
@@ -235,39 +234,6 @@ w_game(sqlite3 *db, game_t *g)
 
 
 static int
-sq3_set_hashes(const hashes_t *h, sqlite3_stmt *stmt, int col)
-{
-    int ret;
-    
-    if (hashes_has_type(h, HASHES_TYPE_CRC))
-	ret = sqlite3_bind_int(stmt, col, hashes_crc(h));
-    else
-	ret = sqlite3_bind_null(stmt, col);
-    if (ret != SQLITE_OK)
-	return ret;
-
-    if (hashes_has_type(h, HASHES_TYPE_MD5))
-	ret = sqlite3_bind_blob(stmt, col+1, h->md5, HASHES_SIZE_MD5,
-				SQLITE_STATIC);
-    else
-	ret = sqlite3_bind_null(stmt, col+1);
-    if (ret != SQLITE_OK)
-	return ret;
-
-    if (hashes_has_type(h, HASHES_TYPE_SHA1))
-	ret = sqlite3_bind_blob(stmt, col+2, h->sha1, HASHES_SIZE_SHA1,
-				SQLITE_STATIC);
-    else
-	ret = sqlite3_bind_null(stmt, col+2);
-    if (ret != SQLITE_OK)
-	return ret;
-
-    return SQLITE_OK;
-}
-
-
-
-static int
 write_disks(sqlite3 *db, const game_t *g)
 {
     sqlite3_stmt *stmt;
@@ -294,7 +260,7 @@ write_disks(sqlite3 *db, const game_t *g)
 	    || sq3_set_string(stmt, 4, disk_name(d)) != SQLITE_OK
 	    || sq3_set_string(stmt, 5, disk_merge(d)) != SQLITE_OK
 	    || sqlite3_bind_int(stmt, 6, disk_status(d)) != SQLITE_OK
-	    || sq3_set_hashes(disk_hashes(d), stmt, 9) != SQLITE_OK
+	    || sq3_set_hashes(stmt, 9, disk_hashes(d), 1) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE
 	    || sqlite3_reset(stmt) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);
@@ -354,7 +320,7 @@ write_rs(sqlite3 *db, const game_t *g, filetype_t ft)
 	    || sqlite3_bind_int(stmt, 7, rom_where(r)) != SQLITE_OK
 	    || sq3_set_int64_default(stmt, 8, rom_size(r),
 				     SIZE_UNKNOWN) != SQLITE_OK
-	    || sq3_set_hashes(rom_hashes(r), stmt, 9) != SQLITE_OK
+	    || sq3_set_hashes(stmt, 9, rom_hashes(r), 1) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE
 	    || sqlite3_reset(stmt) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);

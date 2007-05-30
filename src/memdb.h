@@ -28,12 +28,18 @@
 
 #include <sqlite3.h>
 
+#include "archive.h"
+#include "disk.h"
+
 extern sqlite3 *memdb;
 
 
 
 int memdb_ensure(void);
 void *memdb_get_ptr(const char *);
+void *memdb_get_ptr_by_id(int);
 int memdb_put_ptr(const char *, void *);
+int memdb_update_disk(const disk_t *);
+int memdb_update_file(const archive_t *, int);
 
 #endif /* memdb.h */

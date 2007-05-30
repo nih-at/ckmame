@@ -17,6 +17,7 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [cleanup] reduce code duplication
 ! [cleanup] convert in-memory database to sqlite3
 ! [cleanup] access db directly in find_*
 ! [cleanup] merge rom_t/disk_t

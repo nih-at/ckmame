@@ -34,6 +34,7 @@ struct match_disk {
     char *name;
     hashes_t hashes;
     quality_t quality;
+    where_t where;
 };
 
 typedef struct match_disk match_disk_t;
@@ -53,6 +54,7 @@ typedef array_t match_disk_array_t;
 #define match_disk_hashes(m)	(&(m)->hashes)
 #define match_disk_name(m)	((m)->name)
 #define match_disk_quality(m)	((m)->quality)
+#define match_disk_where(m)	((m)->where)
 
 
 

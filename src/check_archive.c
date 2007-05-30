@@ -73,12 +73,18 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	    if (rom_size(archive_file(a, i)) == 0)
 		result_file(res, i) = FS_SUPERFLUOUS;
 	    else {
+		match_t m;
 		ensure_needed_maps();
-		if (find_in_archives(needed_file_map,
-				     archive_file(a, i), NULL) != FIND_EXISTS)
+		match_init(&m);
+		if (find_in_archives(archive_file(a, i), &m) != FIND_EXISTS)
 		    result_file(res, i) = FS_NEEDED;
-		else
-		    result_file(res, i) = FS_SUPERFLUOUS;
+		else {
+		    if (match_where(&m) == ROM_NEEDED)
+			result_file(res, i) = FS_SUPERFLUOUS;
+		    else
+			result_file(res, i) = FS_NEEDED;
+		}
+		match_finalize(&m);
 	    }
 	    break;
 
