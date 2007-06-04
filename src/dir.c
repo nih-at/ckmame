@@ -84,7 +84,7 @@ dir_close(dir_t *dir)
 
 
 
-int
+dir_status_t
 dir_next(dir_t *dir, char *name, int len)
 {
     struct dirent *de;
