@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "compat.h"
 #include "dat.h"
 #include "error.h"
 #include "globals.h"
@@ -427,7 +428,7 @@ parse_prog_header(parser_context_t *ctx, const char *name)
     }
 
     if ((detector=detector_parse(fname)) == NULL) {
-	myerror(ERRFILESTR, "%s: cannot parse detector `%s'",
+	myerror(ERRFILESTR, "%d: cannot parse detector `%s'",
 		ctx->lineno, fname);
 	free(temp);
 	return -1;
