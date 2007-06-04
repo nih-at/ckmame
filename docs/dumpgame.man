@@ -1,6 +1,8 @@
-.\" $NiH: dumpgame.mdoc,v 1.4 2007/04/12 17:17:45 dillo Exp $
+.\" Converted with mdoc2man 0.2
+.\" from NiH: dumpgame.mdoc,v 1.3 2006/06/09 17:38:27 dillo Exp 
+.\" $NiH: dumpgame.mdoc,v 1.3 2006/06/09 17:38:27 dillo Exp $
 .\"
-.\" Copyright (c) 2005\-2007 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005-2007 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -33,16 +35,16 @@
 dumpgame \- extract rom set information from ckmame database
 .SH "SYNOPSIS"
 .B dumpgame
-\fB\-b\fR
-[\fB\-D\fR \fBdbfile\fR]
+\fB-b\fR
+[\fB-D\fR \fBdbfile\fR]
 [\fBgame\fR]
 .B dumpgame
-\fB\-c\fR | d
-[\fB\-D\fR \fBdbfile\fR]
+\fB-c\fR | d
+[\fB-D\fR \fBdbfile\fR]
 \fBchecksum\fR
 [\fB...\fR]
 .B dumpgame
-[\fB\-hV\fR]
+[\fB-hV\fR]
 .SH "DESCRIPTION"
 .B dumpgame
 extracts rom set information from a
@@ -53,36 +55,36 @@ can also find roms matching a particular checksum.
 .PP
 .B dumpgame
 supports the following options:
-
+.RS
 .TP 24
-\fB\-b\fR, \-brief 
+\fB-b\fR, \-brief 
 Use brief mode: don't output ROM and disk information.
 .TP 24
-\fB\-c\fR, \-checksum
+\fB-c\fR, \-checksum
 Look for a ROM by checksum (instead of the default
 behaviour to look for a game by name).
 .TP 24
-\fB\-D\fR \fBdbfile, \fB\-\-db\fR Ar dbfile\fR
+\fB-D\fR \fBdbfile, \fB--db\fR Ar dbfile\fR
 Use database
 \fBdbfile\fR
 instead of the default
-``Pa''mame.db.
+``\fBmame.db\fR.''
 .TP 24
-\fB\-d\fR, \-checksum
+\fB-d\fR, \-checksum
 Look for a disk by checksum (instead of the default
 behaviour to look for a game by name).
 .TP 24
-\fB\-h\fR, \-help
+\fB-h\fR, \-help
 Display a short help message.
 .TP 24
-\fB\-V\fR, \-version
+\fB-V\fR, \-version
 Display program name and version number.
-
+.RE
 .PP
 The
 \fBgame\fR
 argument can also be one of the following special keywords:
-
+.RS
 .TP 17
 \fB/ckmame\fR
 Report database version of the database, if it is supported by
@@ -114,30 +116,34 @@ List names of all games with samples in the database.
 .TP 17
 \fB/stats\fR
 List some statistics about the contents of the database.
-
+.RE
 .SH "ENVIRONMENT"
-
+.RS
 .TP 12
 Ev MAMEDB
 Location for the database file.
 Can be overridden with the
-\fB\-D\fR
+\fB-D\fR
 option.
 Defaults to
-``Pa''mame.db.
-
+``\fBmame.db\fR.''
+.RE
 .SH "EXAMPLES"
 Display rom information for the game
-``pacman'':
-.Dl Ic dumpgame pacman
+``pacman'' :
+.IP
+\fBdumpgame pacman\fR
+.PP
 Display all roms matching the checksum
-``c1e6ab10'':
-.Dl Ic dumpgame \-c c1e6ab10
+``c1e6ab10'' :
+.IP
+\fBdumpgame \-c c1e6ab10\fR
+.PP
 .SH "SEE ALSO"
 ckmame(1),
 mkmamedb(1)
 .SH "AUTHORS"
-\-nosplit
+
 .B dumpgame
 was written by
 Dieter Baron <dillo@giga.or.at>
