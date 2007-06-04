@@ -1,13 +1,10 @@
 AC_PREREQ(2.54)
-AC_INIT([ckmame],[0.8],[ckmame@nih.at])
+AC_INIT([ckmame],[0.9],[ckmame@nih.at])
 AC_CONFIG_SRCDIR([src/ckmame.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
 
 AC_CANONICAL_HOST
-
-# We want these before the checks, so the checks can modify their values.
-test -z "$CFLAGS" && CFLAGS='-Wall -g' auto_cflags=1
 
 AC_PROG_CC
 AC_PROG_RANLIB
