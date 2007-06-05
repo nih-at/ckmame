@@ -122,6 +122,7 @@ game (
 
 game (
 	name diskchild
+	cloneof disk
 	description "1-4 with disk (child)"
 	manufacturer "synth"
 	year 2007

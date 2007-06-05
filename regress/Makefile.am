@@ -28,6 +28,7 @@ TESTS=	\
 		disk-from-extra-remove.test \
 		disk-from-superfluous-all.test \
 		disk-from-superfluous.test \
+		disk-merge.test \
 		disk-miss.test \
 		disk-noext.test \
 		disk-nogood.test \
