@@ -121,6 +121,15 @@ game (
 )
 
 game (
+	name diskchild
+	description "1-4 with disk (child)"
+	manufacturer "synth"
+	year 2007
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	disk ( name 108-5c merge 108-5 md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 )
+)
+
+game (
 	name disk-nogood
 	description "1-4 with no good dump disk"
 	manufacturer "synth"

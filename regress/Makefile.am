@@ -117,6 +117,8 @@ TESTS=	\
 		zero-good.test \
 		zero-miss.test \
 		zero-superfluous.test
+BROKEN_TESTS=	\
+		disk-swapmerge.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \
