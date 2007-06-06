@@ -28,7 +28,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd April 12, 2007
+.Dd June 4, 2007
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -113,6 +113,9 @@ Use
 as database file.
 .It Fl d , -nonogooddumps
 Don't report ROMs with no known good dumps.
+.It Fl -delete-duplicate
+Delete files present in old ROM database (default).  See also
+.Fl -keep-duplicate .
 .It Fl e Ar dir , Fl -search Ar dir
 Look for missing files in directory
 .Ar dir
@@ -120,12 +123,6 @@ and its subdirectories.
 Recommended for use with update sets.
 See also
 .Fl j .
-.It Fl -delete-duplicate
-Delete files present in old ROM database (default).  See also
-.Fl -keep-duplicate .
-.It Fl e, Ar dir ,  Fl -search Ar dir
-Search for missing ROMs in
-.Ar dir .
 .It Fl F , -fix
 Fix ROM sets; do as much as possible, such as renaming and moving
 files.

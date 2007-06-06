@@ -428,7 +428,7 @@ parse_prog_header(parser_context_t *ctx, const char *name)
     }
 
     if ((detector=detector_parse(fname)) == NULL) {
-	myerror(ERRFILESTR, "%s: cannot parse detector `%s'",
+	myerror(ERRFILESTR, "%d: cannot parse detector `%s'",
 		ctx->lineno, fname);
 	free(temp);
 	return -1;
@@ -554,13 +554,11 @@ static void
 rom_end(parser_context_t *ctx, filetype_t ft)
 {
     rom_t *r, *r2;
-    hashes_t *h;
     int deleted;
     int j, n;
 
     r = ctx->r;    
     n = game_num_files(ctx->g, ft)-1;
-    h = rom_hashes(r);
 
     /* omit duplicates */
     deleted = 0;

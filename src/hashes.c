@@ -29,7 +29,7 @@
 
 
 
-int
+hashes_cmp_t
 hashes_cmp(const struct hashes *h1, const struct hashes *h2)
 {
     if (h1->types == 0 || h2->types == 0)

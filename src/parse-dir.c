@@ -50,7 +50,6 @@ parse_dir(const char *dname, parser_context_t *ctx)
     archive_t *a;
     char b[8192];
     dir_status_t ds;
-    name_type_t nt;
 
     ctx->lineno = 0;
     
@@ -62,7 +61,7 @@ parse_dir(const char *dname, parser_context_t *ctx)
 	    /* XXX: handle error */
 	    continue;
 	}
-	switch ((nt=name_type(b))) {
+	switch (name_type(b)) {
 	case NAME_ZIP:
 	    if ((a=archive_new(b, 0)) != NULL) {
 		parse_archive(ctx, a);
