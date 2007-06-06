@@ -18,7 +18,6 @@ tests:
   * rule operations
 
 ! [cleanup] reduce code duplication
-! [cleanup] convert in-memory database to sqlite3
 ! [cleanup] access db directly in find_*
 ! [cleanup] merge rom_t/disk_t
 ! [bug] check/fix database error reporting
@@ -115,6 +114,8 @@ tools:
 [db, rom] fully merge game to dir/zip
 [archive, detector] view/extract files with detector applied
 
+[db] import dat file / db
+	db import [FILE]
 [db] consistency checks
 [db] find possible cloneofs
 	db find-clones [GAME]
