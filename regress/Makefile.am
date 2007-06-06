@@ -28,6 +28,7 @@ TESTS=	\
 		disk-from-extra-remove.test \
 		disk-from-superfluous-all.test \
 		disk-from-superfluous.test \
+		disk-merge.test \
 		disk-miss.test \
 		disk-noext.test \
 		disk-nogood.test \
@@ -117,6 +118,8 @@ TESTS=	\
 		zero-good.test \
 		zero-miss.test \
 		zero-superfluous.test
+BROKEN_TESTS=	\
+		disk-swapmerge.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \

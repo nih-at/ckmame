@@ -554,13 +554,11 @@ static void
 rom_end(parser_context_t *ctx, filetype_t ft)
 {
     rom_t *r, *r2;
-    hashes_t *h;
     int deleted;
     int j, n;
 
     r = ctx->r;    
     n = game_num_files(ctx->g, ft)-1;
-    h = rom_hashes(r);
 
     /* omit duplicates */
     deleted = 0;
