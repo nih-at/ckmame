@@ -108,7 +108,7 @@ code cleanups:
 tools:
 
 [db, rom] fully merge game to dir/zip
-[archive, detector] view files with detector applied
+[archive, detector] view/extract/copy files with detector applied
 
 [db] consistency checks
 [db] find possible cloneofs
