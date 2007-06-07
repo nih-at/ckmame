@@ -1,7 +1,6 @@
 noinst_PROGRAMS=	dbdump
-AM_CFLAGS=		-I${srcdir}/../src \
-			 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
-dbdump_LDADD=		../src/libckmame.a @DBLIBS@
+AM_CFLAGS=		-I${srcdir}/../src @SQLITE3_CFLAGS@ @CFLAGS@
+dbdump_LDADD=		../src/libckmame.a @SQLITE3_LIBS@
 
 EXTRA_DIST=runtest ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in
@@ -183,10 +182,10 @@ ${MAME_DB3}: ../src/mkmamedb ${srcdir}/mamedb-disk.txt
 	../src/mkmamedb -o ${MAME_DB3} ${srcdir}/mamedb-disk.txt
 
 update-mkmamedb.dump: ${MAME_DB}
-	./dbdump ${MAME_DB} | sort > mkmamedb-ok.dump
-	./dbdump ${MAME_DB2} | sort > mkmamedb-lost-parent.dump
-	./dbdump ${MAME_DB} | sort > mkmamedb-ok.dump
+	./dbdump ${MAME_DB} > mkmamedb-ok.dump
+	./dbdump ${MAME_DB2} > mkmamedb-lost-parent.dump
+	./dbdump ${MAME_DB} > mkmamedb-ok.dump
 	../src/mkmamedb -o $$$$.db \
 			${srcdir}/mamedb.txt ${srcdir}/mamedb-2.txt \
-		&& ./dbdump $$$$.db | sort > mkmamedb-multi-dats.dump \
+		&& ./dbdump $$$$.db > mkmamedb-multi-dats.dump \
 		&& rm $$$$.db

@@ -17,6 +17,10 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [cleanup] reduce code duplication
+! [cleanup] access db directly in find_*
+! [cleanup] merge rom_t/disk_t
+! [bug] check/fix database error reporting
 - [bug] ckmame -e and not -j: don't rename chds, link/copy them.
 - [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
 - [bug] ensure rompath[0] before trying to create zip file there
@@ -110,6 +114,8 @@ tools:
 [db, rom] fully merge game to dir/zip
 [archive, detector] view/extract/copy files with detector applied
 
+[db] import dat file / db
+	db import [FILE]
 [db] consistency checks
 [db] find possible cloneofs
 	db find-clones [GAME]
@@ -121,3 +127,5 @@ tools:
 	db clone-of CHILD PARENT
 [db, name] make parent
 	db make-parent CHILD
+[db] export to dat files
+	db export

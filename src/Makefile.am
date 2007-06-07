@@ -1,14 +1,13 @@
-AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @CFLAGS@ \
-	 -DDBL_INCLUDE=\"db-@DBTYPE@.h\"
+AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @SQLITE3_CFLAGS@ @CFLAGS@ 
 
 bin_PROGRAMS=ckmame detective dumpgame mkmamedb
 
 noinst_LIBRARIES=libckmame.a
 
-ckmame_LDADD=libckmame.a @DBLIBS@ @LIBZIP_LIBS@
-detective_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
-dumpgame_LDADD=libckmame.a @DBLIBS@
-mkmamedb_LDADD=libckmame.a @DBLIBS@ @LIBXML2_LIBS@ @LIBZIP_LIBS@
+ckmame_LDADD=libckmame.a @LIBZIP_LIBS@ @SQLITE3_LIBS@
+detective_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
+dumpgame_LDADD=libckmame.a @SQLITE3_LIBS@
+mkmamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 
 libckmame_a_LIBADD=@LIBOBJS@
 
@@ -32,8 +31,7 @@ libckmame_a_SOURCES= \
 	dat_entry.c \
 	dat_entry_finalize.c \
 	dat_push.c \
-	db-@DBTYPE@.c \
-	dbl.c \
+	db_init.c \
 	dbh.c \
 	delete_list.c \
 	detector.c \
@@ -58,7 +56,6 @@ libckmame_a_SOURCES= \
 	fix.c \
 	fix_util.c \
 	game.c \
-	game_add_clone.c \
 	garbage.c \
 	getline.c \
 	hash_from_string.c \
@@ -69,9 +66,9 @@ libckmame_a_SOURCES= \
 	hashes_verify.c \
 	images.c \
 	intstr.c \
-	map.c \
 	match.c \
 	match_disk.c \
+	memdb.c \
 	output.c \
 	output_cm.c \
 	output_db.c \
@@ -89,26 +86,23 @@ libckmame_a_SOURCES= \
 	parse-rc.c \
 	parse-xml.c \
 	parse.c \
-	pmap.c \
 	psort.c \
 	r_dat.c \
 	r_detector.c \
 	r_file_by_hash.c \
 	r_game.c \
 	r_list.c \
-	r_util.c \
 	result.c \
 	rom.c \
 	rom_add_altname.c \
+	sq_util.c \
 	superfluous.c \
 	tree.c \
 	util.c \
-	w_file_by_hash_parray.c \
 	w_dat.c \
 	w_detector.c \
 	w_game.c \
 	w_list.c \
-	w_util.c \
 	warn.c \
 	xmalloc.c \
 	xmlutil.c \
@@ -116,20 +110,16 @@ libckmame_a_SOURCES= \
 
 noinst_HEADERS=\
 	archive.h \
-	archive_map.h \
 	array.h \
 	bswap.h \
 	chd.h \
 	compat.h \
 	dat.h \
-	db-@DBTYPE@.h \
 	dbh.h \
-	dbl.h \
 	delete_list.h \
 	detector.h \
 	dir.h \
 	disk.h \
-	disk_map.h \
 	error.h \
 	file_location.h \
 	file_status.h \
@@ -141,22 +131,20 @@ noinst_HEADERS=\
 	hashes.h \
 	images.h \
 	intstr.h \
-	map.h \
 	match.h \
 	match_disk.h \
+	memdb.h \
 	myinttypes.h \
 	output.h \
 	parray.h \
 	parse.h \
-	pmap.h \
 	pri.h \
-	r.h \
 	result.h \
 	rom.h \
+	sq_util.h \
 	tree.h \
 	types.h \
 	util.h \
-	w.h \
 	warn.h \
 	xmalloc.h \
 	xmlutil.h
@@ -166,8 +154,6 @@ EXTRA_DIST=\
 	bswap32.c \
 	compat_fnmatch.h \
 	compat_getopt.h \
-	db-db.c \
-	db-db.h \
 	getprogname.c \
 	fnmatch.c \
 	getopt.c \

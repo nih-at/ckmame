@@ -2,7 +2,7 @@
   $NiH: r_dat.c,v 1.3 2006/04/15 22:52:58 dillo Exp $
 
   r_dat.c -- read dat struct from db
-  Copyright (C) 2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -28,41 +28,44 @@
 
 #include "dat.h"
 #include "dbh.h"
-#include "r.h"
+#include "sq_util.h"
 #include "xmalloc.h"
 
-static void r__dat_entry(DBT *, void *);
+#define QUERY_DAT "select name, description, version from dat " \
+		  "where dat_idx >= 0 order by dat_idx"
 
 
 
 dat_t *
-r_dat(DB *db)
+r_dat(sqlite3 *db)
 {
-    DBT v;
-    void *data;
-    array_t *dat;
+    sqlite3_stmt *stmt;
+    dat_t *dat;
+    dat_entry_t *de;
+    int ret;
 
-    if (dbh_lookup(db, DBH_KEY_DAT, &v) != 0)
+    if (sqlite3_prepare_v2(db, QUERY_DAT, -1, &stmt, NULL) != SQLITE_OK) {
+	/* XXX */
 	return NULL;
-    
-    data = v.data;
+    }
 
-    dat = r__array(&v, r__dat_entry, sizeof(dat_entry_t));
-    
-    free(data);
+    dat = dat_new();
 
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	de = (dat_entry_t *)array_grow(dat, dat_entry_init);
+
+	de->name = sq3_get_string(stmt, 0);
+	de->description = sq3_get_string(stmt, 1);
+	de->version = sq3_get_string(stmt, 2);
+    }
+
+    sqlite3_finalize(stmt);
+
+    if (ret != SQLITE_DONE) {
+	/* XXX */
+	dat_free(dat);
+	return NULL;
+    }
+    
     return dat;
-}
-
-
-
-static void
-r__dat_entry(DBT *v, void *vd)
-{
-    dat_entry_t *d;
-    
-    d = (dat_entry_t *)vd;
-
-    dat_entry_name(d) = r__string(v);
-    dat_entry_version(d) = r__string(v);
 }

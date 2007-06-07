@@ -2,7 +2,7 @@
   $NiH: w_list.c,v 1.4 2006/04/15 22:52:58 dillo Exp $
 
   w_list.c -- write list struct to db
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -30,15 +30,15 @@
 #include <stdlib.h>
 
 #include "dbh.h"
-#include "w.h"
 #include "types.h"
 #include "xmalloc.h"
 
 
 
 int
-w_hashtypes(DB *db, int romhashtypes, int diskhashtypes)
+w_hashtypes(sqlite3 *db, int romhashtypes, int diskhashtypes)
 {
+#if 0
     int err;
     DBT v;
 
@@ -53,13 +53,17 @@ w_hashtypes(DB *db, int romhashtypes, int diskhashtypes)
     free(v.data);
 
     return err;
+#else
+    return 0;
+#endif
 }
 
 
 
 int
-w_list(DB *db, const char *key, const parray_t *pa)
+w_list(sqlite3 *db, const char *key, const parray_t *pa)
 {
+#if 0
     int err;
     DBT v;
 
@@ -73,4 +77,7 @@ w_list(DB *db, const char *key, const parray_t *pa)
     free(v.data);
 
     return err;
+#else
+    return 0;
+#endif
 }

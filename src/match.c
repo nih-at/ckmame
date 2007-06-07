@@ -28,7 +28,6 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include "dbl.h"
 #include "error.h"
 #include "hashes.h"
 #include "match.h"

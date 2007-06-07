@@ -2,7 +2,7 @@
   $NiH: archive.c,v 1.18 2006/10/04 17:36:43 dillo Exp $
 
   archive.c -- information about an archive
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -29,16 +29,14 @@
 #include <string.h>
 
 #include "archive.h"
-#include "archive_map.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
+#include "memdb.h"
 #include "util.h"
 #include "xmalloc.h"
 
 #define BUFSIZE 8192
-
-static archive_map_t *_amap = NULL;
 
 static int get_hashes(struct zip_file *, off_t, hashes_t *);
 static int read_infos_from_zip(archive_t *);
@@ -221,13 +219,6 @@ archive_free(archive_t *a)
 
     ret = archive_close_zip(a);
 
-#ifdef DONT_CACHE_UNUSED
-    if (_amap)
-	archive_map_delete(_amap, archive_name(a));
-    else
-	archive_real_free(a);
-#endif
-    
     return ret;
 }
 
@@ -237,9 +228,9 @@ archive_t *
 archive_new(const char *name, int flags)
 {
     archive_t *a;
-    int i;
+    int i, id;
 
-    if (_amap && (a=archive_map_get(_amap, name)) != NULL) {
+    if ((a=memdb_get_ptr(name)) != 0) {
 	a->refcount++;
 	return a;
     }
@@ -263,10 +254,12 @@ archive_new(const char *name, int flags)
 	rom_where(archive_file(a, i)) = (where_t) -1;
     }
 
-    if (_amap == NULL)
-	_amap = archive_map_new();
-    archive_map_add(_amap, archive_name(a), a);
-
+    if ((id=memdb_put_ptr(name, a)) < 0) {
+	archive_real_free(a);
+	return NULL;
+    }
+    a->id = id;
+    
     return a;
 }
 

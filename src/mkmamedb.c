@@ -33,7 +33,6 @@
 #include "output.h"
 #include "parse.h"
 #include "types.h"
-#include "w.h"
 #include "xmalloc.h"
 
 char *usage = "Usage: %s [-hV] [-C types] [-i pat] [-o dbfile] [-F fmt] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
@@ -100,7 +99,7 @@ main(int argc, char **argv)
     output_format_t fmt;
     char *detector_name;
     int c, i;
-    DB *db;
+    sqlite3 *db;
 
     setprogname(argv[0]);
 

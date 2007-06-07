@@ -37,6 +37,7 @@
 
 static const char *myerrorfn = DEFAULT_FN;
 static const char *myerrorzipn = DEFAULT_FN;
+static sqlite3 *myerrdb = NULL;
 
 
 
@@ -60,12 +61,24 @@ myerror(int errtype, const char *fmt, ...)
 
     if ((errno != 0) && (errtype & ERRSTR))
 	fprintf(stderr, ": %s", strerror(errno));
-    if (errtype & ERRDB)
-	fprintf(stderr, ": %s", dbh_error());
+    if (errtype & ERRDB) {
+	if (myerrdb == NULL)
+	    fprintf(stderr, ": no database");
+	else
+	    fprintf(stderr, ": %s", dbh_error(myerrdb));
+    }
     
     putc('\n', stderr);
 
     return;
+}
+
+
+
+void
+seterrdb(sqlite3 *db)
+{
+    myerrdb = db;
 }
 
 

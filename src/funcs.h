@@ -29,7 +29,6 @@
 #include <zip.h>
 
 #include "archive.h"
-#include "dbl.h"
 #include "delete_list.h"
 #include "game.h"
 #include "parray.h"
@@ -58,6 +57,9 @@ void diagnostics_images(const images_t *, const result_t *);
 int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
+int enter_archive_in_map(const archive_t *, where_t);
+int enter_disk_in_map(const disk_t *, where_t);
+int enter_file_in_map(const archive_t *, int, where_t);
 char *findfile(const char *, filetype_t);
 int fix_game(game_t *, archive_t *, images_t *, result_t *);
 parray_t *find_superfluous(const char *);

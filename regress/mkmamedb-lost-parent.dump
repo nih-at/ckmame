@@ -1,9 +1,10 @@
-/ckmame: 0000000278da63e00500000f000e
-/dat: 0000000878da6360606064000200000d0002
-/hashtypes: 0000000478da63606460000000070002
-/list/disk: 0000000478da63606060000000040001
-/list/game: 0000000e78da6360606064e048cec9cf4bd5b56000000db80280
-/list/sample: 0000000478da63606060000000040001
-/r/3656897d: 0000001078da6360606064e048cec9cf4bd5b500b20112b90281
-/r/d87f7e0c: 0000001078da6360606064e048cec9cf4bd5b5606060000012b80280
-clone-8: 0000007278da63902829cf5728cacf2dd651c8cf4b55c8cc5328482c4acd2b6140014c0cec06267a40653001c61bf5753c409a05cc6337b04091340bebac05d21c0c580000c17a0fd8
+>>> table dat (dat_idx, name, description, author, version)
+0|<null>|<null>|<null>|<null>
+>>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1)
+1|0|0|04.rom|<null>|0|0|4|-662733300|<null>|<null>
+1|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
+>>> table game (game_id, name, description, dat_idx)
+1|clone-8|two roms, one in parent|0
+>>> table parent (game_id, file_type, parent)
+>>> table rule (rule_idx, start_offset, end_offset, operation)
+>>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

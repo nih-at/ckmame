@@ -5,7 +5,7 @@
   $NiH: archive.h,v 1.9 2006/05/24 09:29:18 dillo Exp $
 
   archive.h -- information about an archive
-  Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -32,6 +32,7 @@
 #include "rom.h"
 
 struct archive {
+    int id;
     int refcount;
     int check_integrity;
     char *name;
@@ -48,9 +49,12 @@ typedef struct archive archive_t;
 
 #define archive_file(a, i)	((rom_t *)array_get(archive_files(a), (i)))
 #define archive_files(a)	((a)->files)
+#define archive_id(a)		((a)->id)
 #define archive_name(a)		((a)->name)
 #define archive_num_files(a)	(array_length(archive_files(a)))
 #define archive_zip(a)		((a)->za)
+
+#define archive_by_id(i)	((archive_t *)memdb_get_ptr_by_id(i))
 
 int archive_close_zip(archive_t *);
 int archive_ensure_zip(archive_t *, int);

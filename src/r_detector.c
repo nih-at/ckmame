@@ -27,79 +27,122 @@
 
 #include "dbh.h"
 #include "detector.h"
-#include "r.h"
-#include "xmalloc.h"
+#include "sq_util.h"
 
-static void r__rule(DBT *, void *);
-static void r__test(DBT *, void *);
+#define QUERY_DAT	\
+    "select name, author, version from dat where dat_idx = -1"
+#define QUERY_RULE	\
+    "select rule_idx, start_offset, end_offset, operation" \
+    " from rule order by rule_idx"
+#define QUERY_TEST	\
+    "select type, offset, size, mask, value, result from test" \
+    " where rule_idx = ? order by test_idx"
+
+static int r_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
 
 
 detector_t *
-r_detector(DB *db)
+r_detector(sqlite3 *db)
 {
-    DBT v;
+    sqlite3_stmt *stmt, *stmt2;
     detector_t *d;
-    void *data;
+    int ret;
 
-    if (dbh_lookup(db, DBH_KEY_DETECTOR, &v) != 0)
+    if (sqlite3_prepare_v2(db, QUERY_DAT, -1, &stmt, NULL) != SQLITE_OK)
 	return NULL;
 
-    data = v.data;
+    if (sqlite3_step(stmt) != SQLITE_ROW) {
+	sqlite3_finalize(stmt);
+	return NULL;
+    }
 
-    d = xmalloc(sizeof(*d));
-    
-    d->name = r__string(&v);
-    d->author = r__string(&v);
-    d->version = r__string(&v);
-    d->rules = r__array(&v, r__rule, sizeof(detector_rule_t));
-    d->buf = NULL;
-    d->buf_size = 0;
-    
-    free(data);
+    d = detector_new();
+
+    detector_name(d) = sq3_get_string(stmt, 0);
+    detector_author(d) = sq3_get_string(stmt, 1);
+    detector_version(d) = sq3_get_string(stmt, 2);
+
+    sqlite3_finalize(stmt);
+
+    if (sqlite3_prepare_v2(db, QUERY_RULE, -1, &stmt, NULL) != SQLITE_OK)
+	return NULL;
+    if (sqlite3_prepare_v2(db, QUERY_TEST, -1, &stmt2, NULL) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return NULL;
+    }
+
+    ret = r_rules(d, stmt, stmt2);
+
+    sqlite3_finalize(stmt);
+    sqlite3_finalize(stmt2);
+
+    if (ret < 0) {
+	detector_free(d);
+	return NULL;
+    }
 
     return d;
 }
 
 
 
-static void
-r__rule(DBT *v, void *vd)
+static int
+r_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
 {
-    detector_rule_t *dr;
+    array_t *rs, *ts;
+    detector_rule_t *r;
+    detector_test_t *t;
+    int ret;
+    int idx;
+    size_t lmask, lvalue;
+
+    rs = detector_rules(d);
     
-    dr = vd;
+    while ((ret=sqlite3_step(st_r)) == SQLITE_ROW) {
+	r = (detector_rule_t *)array_grow(rs, detector_rule_init);
 
-    detector_rule_init(dr);
+	idx = sqlite3_column_int(st_r, 0);
+	detector_rule_start_offset(r) = sq3_get_int64_default(st_r, 1, 0);
+	detector_rule_end_offset(r)
+	    = sq3_get_int64_default(st_r, 2, DETECTOR_OFFSET_EOF);
+	detector_rule_operation(r)
+	    = sq3_get_int_default(st_r, 3, DETECTOR_OP_NONE);
 
-    dr->start_offset = (int64_t)r__uint64(v);
-    dr->end_offset = (int64_t)r__uint64(v);
-    dr->operation = r__uint8(v);
-    dr->tests = r__array(v, r__test, sizeof(detector_test_t));
-}
+	if (sqlite3_bind_int(st_t, 1, idx) != SQLITE_OK)
+	    return -1;
 
-
+	ts = detector_rule_tests(r);
+	
+	while ((ret=sqlite3_step(st_t)) == SQLITE_ROW) {
+	    t = (detector_test_t *)array_grow(ts, detector_test_init);
 
-static void
-r__test(DBT *v, void *vd)
-{
-    detector_test_t *dt;
-    
-    
-    dt = vd;
+	    detector_test_type(t) = sqlite3_column_int(st_t, 0);
+	    detector_test_offset(t) = sqlite3_column_int64(st_t, 1);
+	    detector_test_result(t) = sqlite3_column_int64(st_t, 5);
 
-    detector_test_init(dt);
-
-    dt->type = r__uint8(v);
-    dt->offset = (int64_t)r__uint64(v);
-    dt->length = r__uint64(v);
-    if (dt->length > 0) {
-	dt->value = xmalloc(dt->length);
-	r__mem(v, dt->value, dt->length);
-	if (r__uint8(v)) {
-	    dt->mask = xmalloc(dt->length);
-	    r__mem(v, dt->mask, dt->length);
+	    switch (detector_test_type(t)) {
+	    case DETECTOR_TEST_DATA:
+	    case DETECTOR_TEST_OR:
+	    case DETECTOR_TEST_AND:
+	    case DETECTOR_TEST_XOR:
+		detector_test_mask(t) = sq3_get_blob(st_t, 3, &lmask);
+		detector_test_value(t) = sq3_get_blob(st_t, 4, &lvalue);
+		if (lmask > 0 && lmask != lvalue)
+		    return -1;
+		detector_test_length(t) = lmask;
+		break;
+	    case DETECTOR_TEST_FILE_EQ:
+	    case DETECTOR_TEST_FILE_LE:
+	    case DETECTOR_TEST_FILE_GR:
+		detector_test_length(t) = sqlite3_column_int64(st_t, 2);
+		break;
+	    }
 	}
+	if (ret != SQLITE_DONE
+	    || sqlite3_reset(st_t) != SQLITE_OK)
+	    return -1;
     }
-    dt->result = r__uint8(v);
+
+    return 0;
 }

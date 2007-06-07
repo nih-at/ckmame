@@ -2,7 +2,7 @@
   $NiH: disk_new.c,v 1.5 2006/10/04 17:36:43 dillo Exp $
 
   disk_new.c -- create / free disk structure from image
-  Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -28,14 +28,12 @@
 
 #include "chd.h"
 #include "disk.h"
-#include "disk_map.h"
 #include "error.h"
 #include "globals.h"
+#include "memdb.h"
 #include "xmalloc.h"
 
 
-
-disk_map_t *_dmap = NULL;
 
 static int get_hashes(struct chd *, struct hashes *);
 
@@ -47,12 +45,12 @@ disk_new(const char *name, int flags)
     disk_t *d;
     struct chd *chd;
     hashes_t *h;
-    int err;
+    int err, id;
 
     if (name == NULL)
 	return NULL;
 
-    if (_dmap && (d=disk_map_get(_dmap, name)) != NULL) {
+    if ((d=memdb_get_ptr(name)) != 0) {
 	d->refcount++;
 	return d;
     }
@@ -117,9 +115,11 @@ disk_new(const char *name, int flags)
 	    hashes_set(h, HASHES_TYPE_SHA1, chd->sha1);
     }
 
-    if (_dmap == NULL)
-	_dmap = disk_map_new();
-    disk_map_add(_dmap, disk_name(d), d);
+    if ((id=memdb_put_ptr(name, d)) < 0) {
+	disk_real_free(d);
+	return NULL;
+    }
+    d->id = id;
 
     return d;
 }

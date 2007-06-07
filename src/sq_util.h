@@ -1,11 +1,11 @@
-#ifndef _HAD_R_H
-#define _HAD_R_H
+#ifndef HAD_SQ_UTIL_H
+#define HAD_SQ_UTIL_H
 
 /*
-  $NiH: r.h,v 1.4 2007/04/10 16:26:46 dillo Exp $
+  $NiH$
 
-  r.h -- data base read functions
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  sq_util.h -- sqlite3 utility functions
+  Copyright (C) 2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -24,25 +24,22 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "array.h"
-#include "parray.h"
+#include <sqlite3.h>
+
+#include "hashes.h"
 #include "myinttypes.h"
 
 
 
-array_t *r__array(DBT *, void (*)(DBT *, void *), size_t);
-void r__disk(DBT *, void *);
-void r__mem(DBT *, void *, unsigned int);
-parray_t *r__parray(DBT *, void *(*)(DBT *));
-void r__pstring(DBT *, void *);
-void r__rom(DBT *, void *);
-char *r__string(DBT *);
-uint64_t r__uint64(DBT *);
-uint8_t r__uint8(DBT *);
-unsigned long r__ulong(DBT *);
-unsigned short r__ushort(DBT *);
+void *sq3_get_blob(sqlite3_stmt *, int, size_t *);
+int sq3_get_int_default(sqlite3_stmt *, int, int);
+int64_t sq3_get_int64_default(sqlite3_stmt *, int, int64_t);
+int sq3_get_one_int(sqlite3 *, const char *, int *);
+char *sq3_get_string(sqlite3_stmt *, int);
+int sq3_set_blob(sqlite3_stmt *, int, const void *, size_t);
+int sq3_set_hashes(sqlite3_stmt *, int, const hashes_t *, int);
+int sq3_set_int_default(sqlite3_stmt *, int, int, int);
+int sq3_set_int64_default(sqlite3_stmt *, int, int64_t, int64_t);
+int sq3_set_string(sqlite3_stmt *, int, const char *);
 
-#define r__uint16	r__ushort
-#define r__uint32	r__ulong
-
-#endif /* r.h */
+#endif /* sq_util.h */

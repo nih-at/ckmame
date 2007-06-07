@@ -26,14 +26,14 @@
 
 
 
-#include "dbl.h"
+#include <sqlite3.h>
+
 #include "delete_list.h"
 #include "detector.h"
-#include "map.h"
 #include "parray.h"
 
-extern DB *db;
-extern DB *old_db;
+extern sqlite3 *db;
+extern sqlite3 *old_db;
 
 extern detector_t *detector;
 
@@ -44,12 +44,8 @@ extern char *unknown_dir;
 extern parray_t *search_dirs;
 
 extern delete_list_t *extra_delete_list;
-extern map_t *extra_disk_map;
-extern map_t *extra_file_map;
 extern parray_t *extra_list;
 extern delete_list_t *needed_delete_list;
-extern map_t *needed_disk_map;
-extern map_t *needed_file_map;
 extern delete_list_t *superfluous_delete_list;
 
 extern parray_t *superfluous;

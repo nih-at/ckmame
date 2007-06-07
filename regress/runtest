@@ -145,7 +145,7 @@ check_in_out_exists() {
 
 checkdb() {
     check_in_out_exists "$1" "$2"
-    out=`../dbdump "$2" | sort | diff ${DIFF_FLAGS} "$1" -`
+    out=`../dbdump "$2" | diff ${DIFF_FLAGS} "$1" -`
     if [ $? -ne 0 ]
     then
 	if [ $VERBOSE ]
@@ -340,24 +340,6 @@ then
     done
 fi
 
-if [ ! -z "${SETUP_ONLY}" ]
-then
-    echo ${DIR}
-    echo ${ARGS}
-    exit 0
-fi
-
-if [ "${PROGRAM}" = "../../src/ckmame" ]
-then
-    ARGS="${ARGS}"
-fi
-
-if [ ! -z "${VERBOSE}" ]
-then
-	echo "${TEST}: ${DESCR}"
-	echo "running: ${PROGRAM} ${ARGS}"
-fi
-
 if [ ! -z "${MKDBARGS}" ]
 then
     ${MKMAMEDB} ${MKDBARGS} > gotout 2> goterr
@@ -367,6 +349,19 @@ then
     fi
 else
     cp ../mame.db .
+fi
+
+if [ ! -z "${SETUP_ONLY}" ]
+then
+    echo ${DIR}
+    echo ${ARGS}
+    exit 0
+fi
+
+if [ ! -z "${VERBOSE}" ]
+then
+	echo "${TEST}: ${DESCR}"
+	echo "running: ${PROGRAM} ${ARGS}"
 fi
 
 ${PROGRAM} ${ARGS} >> gotout 2>> goterr

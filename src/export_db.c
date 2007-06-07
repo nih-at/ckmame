@@ -30,7 +30,7 @@
 
 
 int
-export_db(DB *db, const parray_t *exclude, const dat_entry_t *dat,
+export_db(sqlite3 *db, const parray_t *exclude, const dat_entry_t *dat,
 	  output_context_t *out)
 {
     parray_t *list;

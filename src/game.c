@@ -2,7 +2,7 @@
   $NiH: game.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
 
   game.c -- create / free game structure
-  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -37,12 +37,12 @@ game_new(void)
     int i;
 
     g = xmalloc(sizeof(*g));
-    
+
+    g->id = -1;
     g->name = g->description = NULL;
     
     for (i=0; i<GAME_RS_MAX; i++) {
 	g->rs[i].cloneof[0] = g->rs[i].cloneof[1] = NULL;
-	g->rs[i].clones = parray_new();
 	g->rs[i].files = array_new(sizeof(rom_t));
     }
     
@@ -67,7 +67,6 @@ game_free(game_t *g)
     for (i=0; i<GAME_RS_MAX; i++) {
 	free(g->rs[i].cloneof[0]);
 	free(g->rs[i].cloneof[1]);
-	parray_free(g->rs[i].clones, free);
 	array_free(g->rs[i].files, rom_finalize);
     }
     array_free(g->disks, disk_finalize);
