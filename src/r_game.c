@@ -193,7 +193,7 @@ static
 void sq3_get_hashes(hashes_t *h, sqlite3_stmt *stmt, int col)
 {
     if (sqlite3_column_type(stmt, col) != SQLITE_NULL) {
-	hashes_crc(h) = sqlite3_column_int64(stmt, col);
+	hashes_crc(h) = sqlite3_column_int64(stmt, col) & 0xffffffff;
 	hashes_types(h) |= HASHES_TYPE_CRC;
     }
     if (sqlite3_column_type(stmt, col+1) != SQLITE_NULL) {
