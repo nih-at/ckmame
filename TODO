@@ -17,6 +17,7 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [cleanup] use non-GPL getopt_long replacement
 ! [cleanup] reduce code duplication
 ! [cleanup] access db directly in find_*
 ! [cleanup] merge rom_t/disk_t
