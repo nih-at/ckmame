@@ -43,6 +43,21 @@ static int read_infos_from_zip(archive_t *);
 
 
 
+archive_t *
+archive_by_id(int id)
+{
+    archive_t *a;
+
+    a = (archive_t *)memdb_get_ptr_by_id(id);
+
+    if (a != NULL)
+	a->refcount++;
+
+    return a;
+}
+
+
+
 int
 archive_close_zip(archive_t *a)
 {
