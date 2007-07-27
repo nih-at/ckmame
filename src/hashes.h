@@ -51,6 +51,7 @@
 #define HASHES_TYPE_MD5		2
 #define HASHES_TYPE_SHA1	4
 #define HASHES_TYPE_MAX		HASHES_TYPE_SHA1
+#define HASHES_TYPE_ALL		((HASHES_TYPE_MAX<<1)-1)
 
 enum hashes_cmp {
     HASHES_CMP_NOCOMMON = -1,
