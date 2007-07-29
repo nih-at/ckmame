@@ -76,18 +76,15 @@ static struct option options[] = {
 int romhashtypes;
 detector_t *detector;
 sqlite3 *db;
-
-
-
-static int execute_command(int, char **);
+char *dbname;
 
 
 
 int
 main(int argc, char **argv)
 {
-    char *dbname;
-    int c;
+    const cmd_t *cmd;
+    int c, ret;
 
     setprogname(argv[0]);
 
@@ -121,21 +118,27 @@ main(int argc, char **argv)
 	exit(1);
     }
 
-    if (execute_command(argc-optind, argv+optind) < 0)
+    if ((cmd=find_command(argv[optind])) == NULL) {
 	exit(1);
+    }
 
-    return 0;
-}
+    db = NULL;
+    ret = 0;
 
-
+    if ((cmd->flags & CMD_FL_NODB) == 0) {
+	/* XXX: use proper mode */
+	if ((db=dbh_open(dbname, DBL_WRITE)) == NULL) {
+	    myerror(ERRDB, "can't open database `%s'", dbname);
+	    exit(1);
+	}
+	seterrdb(db);
+    }
 
-static int
-execute_command(int argc, char **argv)
-{
-    const cmd_t *cmd;
+    if (cmd->fn(argc-optind, argv+optind) < 0)
+	ret = 1;
 
-    if ((cmd=find_command(argv[0])) == NULL)
-	return -1;
+    if (db)
+	dbh_close(db);
 
-    return cmd->fn(argc, argv);
+    return ret;
 }

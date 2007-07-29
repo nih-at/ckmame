@@ -1,5 +1,5 @@
 /*
-  mamedb_help.c -- mamedb help subcommand
+  mamedb_new.c -- mamedb new subcommand
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -35,81 +35,33 @@
 
 #include <stdlib.h>
 
-#include "compat.h"
+#include "dbh.h"
+#include "error.h"
+#include "globals.h"
 #include "mamedb.h"
-
-static void help_all(void);
-static void help_one(const char *);
 
 
 
 int
-cmd_help(int argc, char **argv)
+cmd_new(int argc, char **argv)
 {
-    switch (argc) {
-    case 1:
-	help_all();
-	break;
-
-    case 2:
-	help_one(argv[1]);
-	break;
-
-    default:
+    if (argc != 1) {
 	command_usage(stderr, argv[0]);
 	return -1;
     }
 
-    return 0;
-}
-
-
-
-void
-command_usage(FILE *fout, const char *name)
-{
-    const cmd_t *cmd;
-    
-    if ((cmd=find_command(name)) == NULL)
-	return;
-
-    fprintf(fout, "Usage: %s %s %s\n",
-	    getprogname(), cmd->name, cmd->usage);
-}
-
-
-
-static void
-help_all(void)
-{
-    int i;
-
-    printf("list of commands:\n\n");
-
-    for (i=0; i<ncmdtab; i++) {
-	/* skip aliases */
-	if (cmdtab[i].usage == NULL)
-	    continue;
-
-	printf("  %-16s %s\n", cmdtab[i].name, cmdtab[i].description);
+    if ((db=dbh_open(dbname, DBL_NEW)) == NULL) {
+	myerror(ERRDB, "can't create database `%s'", dbname);
+	return -1;
     }
 
-    printf("\nUse %s help CMD for help on a specific command.\n",
-	   getprogname());
-}
-
-
-
-static void
-help_one(const char *name)
-{
-    const cmd_t *cmd;
-
-    if ((cmd=find_command(name)) == NULL)
-	return;
-
-    command_usage(stdout, name);
-    printf("  %s\n", cmd->description);
-    if (cmd->help)
-	printf("\n%s", cmd->help);
+    if (sqlite3_exec(db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
+	myerror(ERRDB, "can't create database `%s'", dbname);
+	dbh_close(db);
+	db = NULL;
+	remove(dbname);
+	return -1;
+    }
+    
+    return 0;
 }

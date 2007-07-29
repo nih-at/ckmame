@@ -14,7 +14,8 @@ mamedb_SOURCES= \
 	mamedb.c \
 	mamedb_add.c \
 	mamedb_cmdtab.c \
-	mamedb_help.c
+	mamedb_help.c \
+	mamedb_new.c
 
 libckmame_a_LIBADD=@LIBOBJS@
 

@@ -55,8 +55,10 @@
 #define CLONE_OF_HELP	""
 
 #define EXPORT_DESC	"export to dat files"
-#define EXPORT_USAGE	""
-#define EXPORT_HELP	""
+#define EXPORT_USAGE	"[-d dat-no]"
+#define EXPORT_HELP	"\
+  -d, --dat-no no           specify which dat to export (default: all)\n\
+"
 
 #define FIND_CLONES_DESC	"find possible clones"
 #define FIND_CLONES_USAGE	"[game]"
@@ -67,12 +69,18 @@
 #define HELP_HELP	NULL
 
 #define IMPORT_DESC	"import dat file"
-#define IMPORT_USAGE	""
-#define IMPORT_HELP	""
+#define IMPORT_USAGE	"[-x pat] [file ...]"
+#define IMPORT_HELP	"\
+  -x, --exclude pat         exclude games matching shell glob PAT\n\
+"
 
 #define MAKE_PARENT_DESC	"set parent of a clone set"
 #define MAKE_PARENT_USAGE	"child"
 #define MAKE_PARENT_HELP	""
+
+#define NEW_DESC	"create new database"
+#define NEW_USAGE	""
+#define NEW_HELP	NULL
 
 #define REMOVE_DESC	"remove games"
 #define REMOVE_USAGE	"game [...]"
@@ -80,19 +88,22 @@
 
 
 
+#define XX(N)		N##_DESC, N##_USAGE, N##_HELP
+#define ALIAS(N)	cmd_##N, CMD_FL_ALIAS, NULL, NULL, NULL
+
 cmd_t cmdtab[] = {
-    { "add",           ADD_DESC, cmd_add, ADD_USAGE, ADD_HELP },
-#if 0
-    { "check",         CHECK_DESC, cmd_check, CHECK_USAGE, CHECK_HELP },
-    { "clone-of",      CLONE_OF_DESC, cmd_clone_of, CLONE_OF_USAGE, CLONE_OF_HELP },
-    { "export",        EXPORT_DESC, cmd_export, EXPORT_USAGE, EXPORT_HELP },
-    { "find-clones",   FIND_CLONES_DESC, cmd_find_clones, FIND_CLONES_USAGE, FIND_CLONES_HELP },
-#endif
-    { "help",          HELP_DESC, cmd_help, HELP_USAGE, HELP_HELP },
-#if 0
-    { "import",        IMPORT_DESC, cmd_import, IMPORT_USAGE, IMPORT_HELP },
-    { "make-parent",   MAKE_PARENT_DESC, cmd_make_parent, MAKE_PARENT_USAGE, MAKE_PARENT_HELP },
-    { "remove",        REMOVE_DESC, cmd_remove, REMOVE_USAGE, REMOVE_HELP },
+    { "add",           cmd_add,         0,           XX(ADD) },
+    { "help",          cmd_help,        CMD_FL_NODB, XX(HELP) },
+    { "new",           cmd_new,         CMD_FL_NODB, XX(NEW) },
+
+#if 0 /* not yet */
+    { "check",         cmd_check,       0,           XX(CHECK) },
+    { "clone-of",      cmd_clone_of,    0,           XX(CLONE_OF) },
+    { "export",        cmd_export,      0,           XX(EXPORT) },
+    { "find-clones",   cmd_find_clones, 0,           XX(FIND_CLONES) },
+    { "import",        cmd_import,      CMD_FL_NODB, XX(IMPORT) },
+    { "make-parent",   cmd_make_parent, 0,           XX(MAKE_PARENT) },
+    { "remove",        cmd_remove,      0,           XX(REMOVE) },
 #endif
 
     /* XXX: add/remove/edit single ROM */
@@ -105,6 +116,7 @@ int ncmdtab = sizeof(cmdtab)/sizeof(cmdtab[0]);
 const cmd_t *
 find_command(const char *name)
 {
+    cmd_t *cmd;
     size_t len;
     int i;
     bool abbrev;
@@ -113,7 +125,7 @@ find_command(const char *name)
     abbrev = false;
     for (i=0; i<ncmdtab; i++) {
 	if (strcmp(name, cmdtab[i].name) == 0)
-	    return cmdtab+i;
+	    cmd = cmdtab+i;
 
 	if (len < strlen(cmdtab[i].name)
 	    && strncmp(name, cmdtab[i].name, len) == 0) {
@@ -124,30 +136,25 @@ find_command(const char *name)
 	    abbrev = true;
 	}
 	else if (abbrev)
-	    return cmdtab+(i-1);
+	    break;
     }
 
     if (abbrev)
-	return cmdtab+(i-1);
+	cmd = cmdtab+(i-1);
 
-    myerror(ERRDEF, "unknown command `%s'", name);
-    return NULL;
-}
+    if (cmd == NULL) {
+	myerror(ERRDEF, "unknown command `%s'", name);
+	return NULL;
+    }
 
-
+    if (cmd->flags & CMD_FL_ALIAS) {
+	for (i=0; i<ncmdtab; i++)
+	    if (cmd->fn == cmdtab[i].fn
+		&& (cmdtab[i].flags & CMD_FL_ALIAS) == 0)
+		return cmdtab+i;
+	
+	myerror(ERRDEF, "unresolved alias `%s'");
+    }
 
-const cmd_t *
-resolve_alias(const cmd_t *cmd)
-{
-    int i;
-
-    if (cmd->usage != NULL)
-	return cmd;
-
-    for (i=0; i<ncmdtab; i++)
-	if (strcmp(cmd->name, cmdtab[i].name) == 0 && cmdtab[i].usage != NULL)
-	    return cmdtab+i;
-
-    myerror(ERRDEF, "unresolved alias `%s'");
-    return NULL;
+    return cmd;
 }

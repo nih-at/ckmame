@@ -40,16 +40,22 @@
 
 struct cmd {
     char *name;
-    char *description;
     int (*fn)(int, char **);
+    int flags;
+    char *description;
     char *usage;
     char *help;
 };
 
 typedef struct cmd cmd_t;
 
+#define CMD_FL_ALIAS	0x01
+#define CMD_FL_NODB	0x02
+
 extern cmd_t cmdtab[];
 extern int ncmdtab;
+
+extern char *dbname;
 
 void command_usage(FILE *, const char *);
 const cmd_t *find_command(const char *);
@@ -65,6 +71,7 @@ extern int cmd_find_clones(int, char **);
 extern int cmd_help(int, char **);
 extern int cmd_import(int, char **);
 extern int cmd_make_parent(int, char **);
+extern int cmd_new(int, char **);
 extern int cmd_remove(int, char **);
 
 #endif /* mamedb.h */
