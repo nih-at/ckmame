@@ -115,7 +115,7 @@ static int
 output_dat_game(output_context_t *out, game_t *g)
 {
     output_context_dat_t *ctx;
-    rom_t *r;
+    file_t *r;
     disk_t *d;
     int i;
     game_t *parent;

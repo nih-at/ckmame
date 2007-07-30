@@ -79,7 +79,7 @@ void
 diagnostics_archive(const archive_t *a, const result_t *res)
 {
     int i;
-    rom_t *f;
+    file_t *f;
 
     if (a == NULL)
 	return;
@@ -197,7 +197,7 @@ static void
 diagnostics_files(const game_t *game, const result_t *res)
 {
     match_t *m;
-    rom_t *f, *r;
+    file_t *f, *r;
     int i, all_same;
     
     switch (result_game(res)) {
@@ -243,7 +243,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 	switch (match_quality(m)) {
 	case QU_MISSING:
 	    if (output_options & WARN_MISSING) {
-		if (rom_status(r) == STATUS_OK
+		if (file_status(r) == STATUS_OK
 		    || output_options & WARN_NO_GOOD_DUMP)
 		    warn_rom(r, "missing");
 	    }
@@ -252,10 +252,10 @@ diagnostics_files(const game_t *game, const result_t *res)
 	case QU_NAMEERR:
 	    if (output_options & WARN_WRONG_NAME)
 		warn_rom(r, "wrong name (%s)%s%s",
-			 rom_name(f),
-			 (rom_where(r) != match_where(m)
+			 file_name(f),
+			 (file_where(r) != match_where(m)
 			  ? ", should be in " : ""),
-			 zname[rom_where(r)]);
+			 zname[file_where(r)]);
 	    break;
 	    
 	case QU_LONG:
@@ -263,19 +263,19 @@ diagnostics_files(const game_t *game, const result_t *res)
 		warn_rom(r,
 			 "too long, valid subsection at byte %" PRIdoff
 			 " (%d)%s%s",
-			 PRIoff_cast match_offset(m), rom_size(f),
-			 (rom_where(r) != match_where(m)
+			 PRIoff_cast match_offset(m), file_size(f),
+			 (file_where(r) != match_where(m)
 			  ? ", should be in " : ""),
-			 zname[rom_where(r)]);
+			 zname[file_where(r)]);
 	    break;
 	    
 	case QU_OK:
 	    if (output_options & WARN_CORRECT) {
-		if (rom_status(r) == STATUS_OK)
+		if (file_status(r) == STATUS_OK)
 		    warn_rom(r, "correct");
 		else if (output_options & WARN_NO_GOOD_DUMP)
 		    warn_rom(r,
-			     rom_status(r) == STATUS_BADDUMP
+			     file_status(r) == STATUS_BADDUMP
 			     ? "best bad dump" : "exists");
 	    }
 	    break;
@@ -288,16 +288,16 @@ diagnostics_files(const game_t *game, const result_t *res)
 	case QU_INZIP:
 	    if (output_options & WARN_WRONG_ZIP)
 		warn_rom(r, "should be in %s",
-			 zname[rom_where(r)]);
+			 zname[file_where(r)]);
 	    break;
 	    
 	case QU_HASHERR:
 	    if (output_options & WARN_MISSING) {
 		warn_rom(r, "checksum mismatch%s%s",
-			 (rom_where(r) != match_where(m)
+			 (file_where(r) != match_where(m)
 			  ? ", should be in " : ""),
-			 (rom_where(r) != match_where(m)
-			  ? zname[rom_where(r)] : ""));
+			 (file_where(r) != match_where(m)
+			  ? zname[file_where(r)] : ""));
 	    }
 	    break;
 	    

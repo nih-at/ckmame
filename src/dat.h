@@ -67,4 +67,4 @@ void dat_entry_merge(dat_entry_t *, const dat_entry_t *, const dat_entry_t *);
 void dat_entry_init(dat_entry_t *);
 void *dat_push(dat_t *, const dat_entry_t *, const dat_entry_t *);
 
-#endif /* rom.h */
+#endif /* dat.h */

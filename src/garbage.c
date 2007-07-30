@@ -60,7 +60,7 @@ int garbage_add(garbage_t *g, int idx)
     if (g->za == NULL)
 	return -1;
 
-    name = rom_name(archive_file(g->a, idx));
+    name = file_name(archive_file(g->a, idx));
     if (zip_name_locate(g->za, name, 0) == 0)
 	name2 = my_zip_unique_name(g->za, name);
     else
@@ -70,7 +70,7 @@ int garbage_add(garbage_t *g, int idx)
 			       ZIP_FL_UNCHANGED, 0, -1)) == NULL
 	|| zip_add(g->za, name2 ? name2 : name, source) < 0) {
 	zip_source_free(source);
-	seterrinfo(archive_name(g->a), rom_name(archive_file(g->a, idx)));
+	seterrinfo(archive_name(g->a), file_name(archive_file(g->a, idx)));
 	myerror(ERRZIPFILE, "error moving to `%s': %s",
 		g->zname, zip_strerror(g->za));
 	free(name2);

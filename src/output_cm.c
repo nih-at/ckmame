@@ -201,7 +201,7 @@ print_string(output_context_cm_t *ctx, const char *pre, const char *str,
 static int
 write_game(output_context_cm_t *ctx, game_t *g)
 {
-    rom_t *r;
+    file_t *r;
     int i;
     char *fl;
 
@@ -216,16 +216,16 @@ write_game(output_context_cm_t *ctx, game_t *g)
 	r = game_file(g, TYPE_ROM, i);
 	
 	fputs("\trom ( ", ctx->f);
-	print_string(ctx, "name", rom_name(r), " ");
-	if (rom_where(r) != ROM_INZIP)
+	print_string(ctx, "name", file_name(r), " ");
+	if (file_where(r) != FILE_INZIP)
 	    print_string(ctx, "merge",
-			 rom_merge(r) ? rom_merge(r) : rom_name(r),
+			 file_merge(r) ? file_merge(r) : file_name(r),
 			 " ");
-	fprintf(ctx->f, "size %lu ", rom_size(r));
-	print_hash(ctx, HASHES_TYPE_CRC, rom_hashes(r), " ");
-	print_hash(ctx, HASHES_TYPE_SHA1, rom_hashes(r), " ");
-	print_hash(ctx, HASHES_TYPE_MD5, rom_hashes(r), " ");
-	switch (rom_status(r)) {
+	fprintf(ctx->f, "size %lu ", file_size(r));
+	print_hash(ctx, HASHES_TYPE_CRC, file_hashes(r), " ");
+	print_hash(ctx, HASHES_TYPE_SHA1, file_hashes(r), " ");
+	print_hash(ctx, HASHES_TYPE_MD5, file_hashes(r), " ");
+	switch (file_status(r)) {
 	case STATUS_OK:
 	    fl = NULL;
 	    break;

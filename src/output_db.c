@@ -109,7 +109,7 @@ static void
 familymeeting(sqlite3 *db, filetype_t ft, game_t *parent, game_t *child)
 {
     int i, j;
-    rom_t * cr, *pr;
+    file_t * cr, *pr;
 
     if (game_cloneof(parent, ft, 0)) {
        /* tell child of his grandfather */
@@ -122,8 +122,8 @@ familymeeting(sqlite3 *db, filetype_t ft, game_t *parent, game_t *child)
 	cr = game_file(child, ft, i);
 	for (j=0; j<game_num_files(parent, ft); j++) {
 	    pr = game_file(parent, ft, j);
-	    if (rom_compare_msc(cr, pr) == 0) {
-		rom_where(cr) = (where_t)(rom_where(pr) + 1);
+	    if (file_compare_msc(cr, pr) == 0) {
+		file_where(cr) = (where_t)(file_where(pr) + 1);
 		break;
 	    }
 	}
@@ -212,7 +212,7 @@ lost(game_t *g, filetype_t ft)
 	return 0;
 
     for (i=0; i<game_num_files(g, ft); i++)
-	if (rom_where(game_file(g, ft, i)) != ROM_INZIP)
+	if (file_where(game_file(g, ft, i)) != FILE_INZIP)
 	    return 0;
 
     return 1;

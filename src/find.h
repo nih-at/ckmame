@@ -39,9 +39,9 @@
 
 
 #include "disk.h"
+#include "file.h"
 #include "match.h"
 #include "match_disk.h"
-#include "rom.h"
 
 enum find_result {
     FIND_ERROR = -1,
@@ -58,8 +58,8 @@ find_result_t find_disk(const disk_t *, match_disk_t *);
 find_result_t find_disk_in_old(const disk_t *, match_disk_t *);
 find_result_t find_disk_in_romset(const disk_t *, const char *,
 				  match_disk_t *);
-find_result_t find_in_archives(const rom_t *, match_t *);
-find_result_t find_in_old(const rom_t *, match_t *);
-find_result_t find_in_romset(const rom_t *, const char *, match_t *);
+find_result_t find_in_archives(const file_t *, match_t *);
+find_result_t find_in_old(const file_t *, match_t *);
+find_result_t find_in_romset(const file_t *, const char *, match_t *);
 
 #endif /* find.h */

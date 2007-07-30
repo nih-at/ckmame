@@ -179,7 +179,7 @@ static int
 print_archive(const char *fname)
 {
     archive_t *a;
-    rom_t *f;
+    file_t *f;
     int i, ret;
 
     if ((a=archive_new(fname, 0)) == NULL)
@@ -197,8 +197,8 @@ print_archive(const char *fname)
 	f = archive_file(a, i);
 
 	printf("\tfile %-12s  size %7ld",
-	       rom_name(f), rom_size(f));
-	print_checksums(rom_hashes(f));
+	       file_name(f), file_size(f));
+	print_checksums(file_hashes(f));
 	printf("\n");
 	
     }

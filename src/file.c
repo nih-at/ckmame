@@ -1,7 +1,7 @@
 /*
-  $NiH: rom.c,v 1.3 2006/09/29 16:01:34 dillo Exp $
+  $NiH: file.c,v 1.3 2006/09/29 16:01:34 dillo Exp $
 
-  rom.c -- initialize / finalize rom structure
+  file.c -- initialize / finalize file structure
   Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -37,26 +37,26 @@
 
 #include <stdlib.h>
 
-#include "rom.h"
+#include "file.h"
 
 
 
 void
-rom_init(rom_t *r)
+file_init(file_t *r)
 {
     r->name = r->merge = NULL;
     hashes_init(&r->hashes);
     r->size = SIZE_UNKNOWN;
     r->status = STATUS_OK;
     /* XXX: state */
-    r->where = ROM_INZIP;
+    r->where = FILE_INZIP;
     r->altnames = NULL;
 }
 
 
 
 void
-rom_finalize(rom_t *r)
+file_finalize(file_t *r)
 {
     free(r->name);
     free(r->merge);

@@ -130,7 +130,7 @@ u_game(sqlite3 *db, game_t *g)
 {
     sqlite3_stmt *stmt;
     int ft, i;
-    rom_t *r;
+    file_t *r;
 
     if (sqlite3_prepare_v2(db, UPDATE_FILE, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
@@ -147,10 +147,10 @@ u_game(sqlite3 *db, game_t *g)
 	}
 	for (i=0; i<game_num_files(g, ft); i++) {
 	    r = game_file(g, ft, i);
-	    if (rom_where(r) == ROM_INZIP)
+	    if (file_where(r) == FILE_INZIP)
 		continue;
 
-	    if (sqlite3_bind_int(stmt, 1, rom_where(r)) != SQLITE_OK
+	    if (sqlite3_bind_int(stmt, 1, file_where(r)) != SQLITE_OK
 		|| sqlite3_bind_int(stmt, 4, i) != SQLITE_OK
 		|| sqlite3_step(stmt) != SQLITE_DONE) {
 		sqlite3_finalize(stmt);
@@ -292,7 +292,7 @@ write_rs(sqlite3 *db, const game_t *g, filetype_t ft)
 {
     sqlite3_stmt *stmt;
     int i;
-    rom_t *r;
+    file_t *r;
 
     if (game_cloneof(g, ft, 0)) {
 	if (sqlite3_prepare_v2(db, INSERT_PARENT, -1, &stmt, NULL)
@@ -326,13 +326,13 @@ write_rs(sqlite3 *db, const game_t *g, filetype_t ft)
 	r = game_file(g, ft, i);
 
 	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
-	    || sq3_set_string(stmt, 4, rom_name(r)) != SQLITE_OK
-	    || sq3_set_string(stmt, 5, rom_merge(r)) != SQLITE_OK
-	    || sqlite3_bind_int(stmt, 6, rom_status(r)) != SQLITE_OK
-	    || sqlite3_bind_int(stmt, 7, rom_where(r)) != SQLITE_OK
-	    || sq3_set_int64_default(stmt, 8, rom_size(r),
+	    || sq3_set_string(stmt, 4, file_name(r)) != SQLITE_OK
+	    || sq3_set_string(stmt, 5, file_merge(r)) != SQLITE_OK
+	    || sqlite3_bind_int(stmt, 6, file_status(r)) != SQLITE_OK
+	    || sqlite3_bind_int(stmt, 7, file_where(r)) != SQLITE_OK
+	    || sq3_set_int64_default(stmt, 8, file_size(r),
 				     SIZE_UNKNOWN) != SQLITE_OK
-	    || sq3_set_hashes(stmt, 9, rom_hashes(r), 1) != SQLITE_OK
+	    || sq3_set_hashes(stmt, 9, file_hashes(r), 1) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE
 	    || sqlite3_reset(stmt) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);

@@ -98,7 +98,7 @@ parse_archive(parser_context_t *ctx, archive_t *a)
 {
     char *name;
     int i, ht;
-    rom_t *r;
+    file_t *r;
     char hstr[HASHES_SIZE_MAX*2+1];
 
     parse_game_start(ctx, 0);
@@ -115,14 +115,14 @@ parse_archive(parser_context_t *ctx, archive_t *a)
 	r = archive_file(a, i);
 
 	parse_file_start(ctx, TYPE_ROM);
-	parse_file_name(ctx, TYPE_ROM, 0, rom_name(r));
-	sprintf(hstr, "%lu", rom_size(r));
+	parse_file_name(ctx, TYPE_ROM, 0, file_name(r));
+	sprintf(hstr, "%lu", file_size(r));
 	parse_file_size(ctx, TYPE_ROM, 0, hstr);
 	for (ht=1; ht<=HASHES_TYPE_MAX; ht<<=1) {
 	    if (romhashtypes & ht)
 		parse_file_hash(ctx, TYPE_ROM, ht,
 				hash_to_string(hstr, ht,
-					       rom_hashes(r)));
+					       file_hashes(r)));
 	}
 	parse_file_end(ctx,TYPE_ROM);
     }

@@ -95,7 +95,7 @@ check_images(images_t *im, const char *gamename, result_t *res)
 		if (find_disk(d, &md) != FIND_EXISTS)
 		    result_image(res, i) = FS_NEEDED;
 		else {
-		    if (match_disk_where(&md) == ROM_NEEDED)
+		    if (match_disk_where(&md) == FILE_NEEDED)
 			result_image(res, i) = FS_SUPERFLUOUS;
 		    else
 			result_image(res, i) = FS_NEEDED;

@@ -175,7 +175,7 @@ parse_file_status(parser_context_t *ctx, filetype_t ft, int ht,
     if (ft == TYPE_DISK)
 	disk_status(ctx->d) = status;
     else
-	rom_status(ctx->r) = status;
+	file_status(ctx->r) = status;
     
     return 0;
 }
@@ -192,7 +192,7 @@ parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
     if (ft == TYPE_DISK)
 	h = disk_hashes(ctx->d);
     else
-	h = rom_hashes(ctx->r);
+	h = file_hashes(ctx->r);
 	
     if (hash_from_string(h, attr) != ht) {
 	myerror(ERRFILE, "%d: invalid argument for %s",
@@ -215,7 +215,7 @@ parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht,
     if (ft == TYPE_DISK)
 	disk_merge(ctx->d) = xstrdup(attr);
     else
-	rom_merge(ctx->r) = xstrdup(attr);
+	file_merge(ctx->r) = xstrdup(attr);
 
     return 0;
 }
@@ -234,10 +234,10 @@ parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy,
     if (ft == TYPE_DISK)
 	disk_name(ctx->d) = xstrdup(attr);
     else {
-	rom_name(ctx->r) = xstrdup(attr);
+	file_name(ctx->r) = xstrdup(attr);
 
 	/* XXX: warn about broken dat file? */
-	p = rom_name(ctx->r);
+	p = file_name(ctx->r);
 	while ((p=strchr(p, '\\')))
 	    *(p++) = '/';
     }
@@ -261,7 +261,7 @@ parse_file_size(parser_context_t *ctx, filetype_t ft, int dummy,
     }
 
     /* XXX: check for strol errors */
-    rom_size(ctx->r) = strtol(attr, NULL, 10);
+    file_size(ctx->r) = strtol(attr, NULL, 10);
 
     return 0;
 }
@@ -276,7 +276,7 @@ parse_file_start(parser_context_t *ctx, filetype_t ft)
     if (ft == TYPE_DISK)
 	ctx->d = array_grow(game_disks(ctx->g), disk_init);
     else
-	ctx->r = array_grow(game_files(ctx->g, ft), rom_init);
+	ctx->r = array_grow(game_files(ctx->g, ft), file_init);
 
     SET_STATE(ctx, PARSE_IN_FILE);
     
@@ -565,7 +565,7 @@ name_matches(const game_t *g, const parray_t *ignore)
 static void
 rom_end(parser_context_t *ctx, filetype_t ft)
 {
-    rom_t *r, *r2;
+    file_t *r, *r2;
     int deleted;
     int j, n;
 
@@ -576,32 +576,32 @@ rom_end(parser_context_t *ctx, filetype_t ft)
     deleted = 0;
     for (j=0; j<n; j++) {
 	r2 = game_file(ctx->g, ft, j);
-	if (rom_compare_sc(r, r2) == 0) {
+	if (file_compare_sc(r, r2) == 0) {
 	    /* XXX: merge in additional hash types? */
-	    if (rom_compare_n(r, r2) == 0) {
+	    if (file_compare_n(r, r2) == 0) {
 		deleted = 1;
 		break;
 	    }
-	    else if (rom_merge(r2) && rom_merge(r)
-		     && strcmp(rom_merge(r2), rom_merge(r)) != 0) {
-		rom_add_altname(r2, rom_name(r));
+	    else if (file_merge(r2) && file_merge(r)
+		     && strcmp(file_merge(r2), file_merge(r)) != 0) {
+		/* file_add_altname(r2, file_name(r)); */
 		deleted = 1;
 		break;
 	    }
 	}
-	else if (rom_compare_n(r, r2) == 0) {
+	else if (file_compare_n(r, r2) == 0) {
 	    myerror(ERRFILE, "%d: two different roms with same name (%s)",
-		    ctx->lineno, rom_name(r));
+		    ctx->lineno, file_name(r));
 	    deleted = 1;
 	    break;
 	}
     }
     if (deleted)
-	array_delete(game_files(ctx->g, ft), n, rom_finalize);
+	array_delete(game_files(ctx->g, ft), n, file_finalize);
     else {
-	if (rom_merge(r) != NULL && strcmp(rom_name(r), rom_merge(r)) == 0) {
-	    free(rom_merge(r));
-	    rom_merge(r) = NULL;
+	if (file_merge(r) != NULL && strcmp(file_name(r), file_merge(r)) == 0) {
+	    free(file_merge(r));
+	    file_merge(r) = NULL;
 	}
     }
 }

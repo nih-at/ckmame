@@ -52,7 +52,7 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	return;
 
     for (i=0; i<archive_num_files(a); i++) {
-	if (rom_status(archive_file(a, i)) != STATUS_OK) {
+	if (file_status(archive_file(a, i)) != STATUS_OK) {
 	    result_file(res, i) = FS_BROKEN;
 	    continue;
 	}
@@ -60,7 +60,7 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	if (result_file(res, i) == FS_USED)
 	    continue;
 
-	if ((hashes_types(rom_hashes(archive_file(a, i))) & romhashtypes)
+	if ((hashes_types(file_hashes(archive_file(a, i))) & romhashtypes)
 	    != romhashtypes) {
 	    if (archive_file_compute_hashes(a, i, romhashtypes) < 0) {
 		result_file(res, i) = FS_BROKEN;
@@ -82,7 +82,7 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	    break;
 
 	case FIND_MISSING:
-	    if (rom_size(archive_file(a, i)) == 0)
+	    if (file_size(archive_file(a, i)) == 0)
 		result_file(res, i) = FS_SUPERFLUOUS;
 	    else {
 		match_t m;
@@ -91,7 +91,7 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 		if (find_in_archives(archive_file(a, i), &m) != FIND_EXISTS)
 		    result_file(res, i) = FS_NEEDED;
 		else {
-		    if (match_where(&m) == ROM_NEEDED)
+		    if (match_where(&m) == FILE_NEEDED)
 			result_file(res, i) = FS_SUPERFLUOUS;
 		    else
 			result_file(res, i) = FS_NEEDED;

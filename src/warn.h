@@ -39,7 +39,7 @@
 
 
 #include "disk.h"
-#include "rom.h"
+#include "file.h"
 
 
 
@@ -84,9 +84,9 @@ typedef enum warn_type warn_type_t;
 
 
 void warn_disk(const disk_t *, const char *, ...);
-void warn_file(const rom_t *, const char *, ...);
+void warn_file(const file_t *, const char *, ...);
 void warn_image(const char *, const char *, ...);
-void warn_rom(const rom_t *, const char *, ...);
+void warn_rom(const file_t *, const char *, ...);
 void warn_set_info(warn_type_t, const char *);
 
 #endif /* _HAD_WARN_H */

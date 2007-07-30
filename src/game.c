@@ -55,7 +55,7 @@ game_new(void)
     
     for (i=0; i<GAME_RS_MAX; i++) {
 	g->rs[i].cloneof[0] = g->rs[i].cloneof[1] = NULL;
-	g->rs[i].files = array_new(sizeof(rom_t));
+	g->rs[i].files = array_new(sizeof(file_t));
     }
     
     g->disks = array_new(sizeof(disk_t));
@@ -79,7 +79,7 @@ game_free(game_t *g)
     for (i=0; i<GAME_RS_MAX; i++) {
 	free(g->rs[i].cloneof[0]);
 	free(g->rs[i].cloneof[1]);
-	array_free(g->rs[i].files, rom_finalize);
+	array_free(g->rs[i].files, file_finalize);
     }
     array_free(g->disks, disk_finalize);
     free(g);

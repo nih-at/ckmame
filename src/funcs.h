@@ -79,7 +79,7 @@ void init_rompath(void);
 int link_or_copy(const char *, const char *);
 char *make_file_name(filetype_t, int, const char *);
 char *make_garbage_name(const char *, int);
-char *make_needed_name(const rom_t *);
+char *make_needed_name(const file_t *);
 char *make_needed_name_disk(const disk_t *);
 char *make_unique_name(const char *, const char *, ...);
 int move_image_to_garbage(const char *);

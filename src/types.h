@@ -82,18 +82,18 @@ enum game_status {
 typedef enum game_status game_status_t;
 
 enum where {
-    ROM_NOWHERE = -1,
-    ROM_INZIP, ROM_INCO, ROM_INGCO,
-    ROM_ROMSET,
-    ROM_NEEDED,
-    ROM_SUPERFLUOUS,
-    ROM_EXTRA,
-    ROM_OLD
+    FILE_NOWHERE = -1,
+    FILE_INZIP, FILE_INCO, FILE_INGCO,
+    FILE_ROMSET,
+    FILE_NEEDED,
+    FILE_SUPERFLUOUS,
+    FILE_EXTRA,
+    FILE_OLD
 };
 
 typedef enum where where_t;
 
-#define IS_ELSEWHERE(w)	((w) >= ROM_ROMSET)
+#define IS_ELSEWHERE(w)	((w) >= FILE_ROMSET)
 
 #define SIZE_UNKNOWN	0xffffffff
 #define SIZE_IS_KNOWN(s)	((s) != SIZE_UNKNOWN)

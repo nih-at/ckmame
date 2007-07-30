@@ -41,7 +41,7 @@
 #include <zip.h>
 
 #include "array.h"
-#include "rom.h"
+#include "file.h"
 
 struct archive {
     int id;
@@ -59,7 +59,7 @@ typedef struct archive archive_t;
 
 
 
-#define archive_file(a, i)	((rom_t *)array_get(archive_files(a), (i)))
+#define archive_file(a, i)	((file_t *)array_get(archive_files(a), (i)))
 #define archive_files(a)	((a)->files)
 #define archive_id(a)		((a)->id)
 #define archive_name(a)		((a)->name)

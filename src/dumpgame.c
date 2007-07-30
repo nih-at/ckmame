@@ -155,15 +155,15 @@ print_footer(int matches, hashes_t *hash)
 
 
 static void
-print_romline(rom_t *rom)
+print_romline(file_t *rom)
 {
     printf("\t\tfile %-12s  size %7ld",
-	   rom_name(rom), rom_size(rom));
-    print_checksums(rom_hashes(rom));
+	   file_name(rom), file_size(rom));
+    print_checksums(file_hashes(rom));
     printf(" status %s in %s",
-	   status_name[rom_status(rom)], where_name[rom_where(rom)]);
-    if (rom_merge(rom) && strcmp(rom_name(rom), rom_merge(rom)) != 0)
-	printf(" (%s)", rom_merge(rom));
+	   status_name[file_status(rom)], where_name[file_where(rom)]);
+    if (file_merge(rom) && strcmp(file_name(rom), file_merge(rom)) != 0)
+	printf(" (%s)", file_merge(rom));
     putc('\n', stdout);
 }
 
@@ -235,7 +235,7 @@ print_matches(filetype_t ft, hashes_t *hash)
 
 	    if (ft == TYPE_ROM) {
 		for (j=0; j<game_num_files(game, ft); j++) {
-		    if (hashes_cmp(rom_hashes(game_file(game, ft, j)),
+		    if (hashes_cmp(file_hashes(game_file(game, ft, j)),
 				   hash) == HASHES_CMP_MATCH) {
 			print_match(game, ft, j);
 			matches++;
@@ -386,7 +386,7 @@ print_rs(game_t *game, filetype_t ft,
 	const char *co, const char *gco, const char *cs, const char *fs) 
 {
     int i, j, ret;
-    rom_t *r;
+    file_t *r;
     sqlite3_stmt *stmt;
 
     if (game_cloneof(game, ft, 0))
@@ -428,16 +428,16 @@ print_rs(game_t *game, filetype_t ft,
 	for (i=0; i<game_num_files(game, ft); i++) {
 	    r = game_file(game, ft, i);
 	    print_romline(r);
-	    for (j=0; j<rom_num_altnames(r); j++) {
+	    for (j=0; j<file_num_altnames(r); j++) {
 		/* XXX: check hashes.types */
 		printf("\t\tfile %-12s  size %7ld  crc %.8lx  status %s in %s",
-		       rom_altname(r, j), rom_size(r), rom_hashes(r)->crc,
-		       status_name[rom_status(r)], where_name[rom_where(r)]);
-		if (rom_merge(r)) {
-		    if (strcmp(rom_altname(r, j), rom_merge(r)) != 0)
-			printf(" (%s)", rom_merge(r));
+		       file_altname(r, j), file_size(r), file_hashes(r)->crc,
+		       status_name[file_status(r)], where_name[file_where(r)]);
+		if (file_merge(r)) {
+		    if (strcmp(file_altname(r, j), file_merge(r)) != 0)
+			printf(" (%s)", file_merge(r));
 		} else
-		    printf(" (%s)", rom_name(r));
+		    printf(" (%s)", file_name(r));
 		putc('\n', stdout);
 	    }
 	}

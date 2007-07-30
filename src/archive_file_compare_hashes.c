@@ -50,12 +50,12 @@ archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h)
 {
     hashes_t *rh;
 
-    rh = rom_hashes(archive_file(a, i));
+    rh = file_hashes(archive_file(a, i));
 
     if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h))
 	archive_file_compute_hashes(a, i, hashes_types(h)|romhashtypes);
 
-    if (rom_status(archive_file(a, i)) != STATUS_OK)
+    if (file_status(archive_file(a, i)) != STATUS_OK)
 	return HASHES_CMP_NOCOMMON;
 
     return hashes_cmp(rh, h);

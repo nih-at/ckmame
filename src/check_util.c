@@ -107,7 +107,7 @@ ensure_extra_maps(int flags)
 	    switch ((nt=name_type(file))) {
 	    case NAME_ZIP:
 		if ((a=archive_new(file, 0)) != NULL) {
-		    enter_archive_in_map(a, ROM_SUPERFLUOUS);
+		    enter_archive_in_map(a, FILE_SUPERFLUOUS);
 		    archive_free(a);
 		}
 		break;
@@ -115,7 +115,7 @@ ensure_extra_maps(int flags)
 	    case NAME_NOEXT:
 		if ((d=disk_new(file, (nt==NAME_NOEXT
 				       ? DISK_FL_QUIET : 0))) != NULL) {
-		    enter_disk_in_map(d, ROM_SUPERFLUOUS);
+		    enter_disk_in_map(d, FILE_SUPERFLUOUS);
 		    disk_free(d);
 		}
 		break;
@@ -130,7 +130,7 @@ ensure_extra_maps(int flags)
     for (i=0; i<parray_length(search_dirs); i++)
 	enter_dir_in_map_and_list(flags, extra_list,
 				  parray_get(search_dirs, i),
-				  DIR_RECURSE, ROM_EXTRA);
+				  DIR_RECURSE, FILE_EXTRA);
 
     if (flags & DO_LIST)
 	parray_sort(extra_list, strcmp);
@@ -147,7 +147,7 @@ ensure_needed_maps(void)
     maps_done |= NEEDED_MAPS;
     needed_delete_list = delete_list_new();
 
-    enter_dir_in_map_and_list(DO_MAP,NULL, needed_dir, 0, ROM_NEEDED);
+    enter_dir_in_map_and_list(DO_MAP,NULL, needed_dir, 0, FILE_NEEDED);
 }
 
 
@@ -255,7 +255,7 @@ enter_archive_in_map(const archive_t *a, where_t where)
 {
     sqlite3_stmt *stmt;
     int i;
-    rom_t *r;
+    file_t *r;
 
     if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
@@ -269,14 +269,14 @@ enter_archive_in_map(const archive_t *a, where_t where)
     for (i=0; i<archive_num_files(a); i++) {
 	r = archive_file(a, i);
 
-	if (rom_status(r) != STATUS_OK)
+	if (file_status(r) != STATUS_OK)
 	    continue;
 
 	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
 	    || sqlite3_bind_int(stmt, 4, where) != SQLITE_OK
-	    || sq3_set_int64_default(stmt, 5, rom_size(r),
+	    || sq3_set_int64_default(stmt, 5, file_size(r),
 				     SIZE_UNKNOWN) != SQLITE_OK
-	    || sq3_set_hashes(stmt, 6, rom_hashes(r), 1) != SQLITE_OK
+	    || sq3_set_hashes(stmt, 6, file_hashes(r), 1) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE
 	    || sqlite3_reset(stmt) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);
@@ -373,11 +373,11 @@ int
 enter_file_in_map(const archive_t *a, int idx, where_t where)
 {
     sqlite3_stmt *stmt;
-    rom_t *r;
+    file_t *r;
 
     r = archive_file(a, idx);
 
-    if (rom_status(r) != STATUS_OK)
+    if (file_status(r) != STATUS_OK)
 	return 0;
 
     if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
@@ -387,9 +387,9 @@ enter_file_in_map(const archive_t *a, int idx, where_t where)
 	|| sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 4, where) != SQLITE_OK
-	|| sq3_set_int64_default(stmt, 5, rom_size(r),
+	|| sq3_set_int64_default(stmt, 5, file_size(r),
 				 SIZE_UNKNOWN) != SQLITE_OK
-	|| sq3_set_hashes(stmt, 6, rom_hashes(r), 1) != SQLITE_OK
+	|| sq3_set_hashes(stmt, 6, file_hashes(r), 1) != SQLITE_OK
 	|| sqlite3_step(stmt) != SQLITE_DONE) {
 	sqlite3_finalize(stmt);
 	return -1;

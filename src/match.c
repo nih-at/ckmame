@@ -55,7 +55,7 @@ match_file(match_t *m)
     if (match_source_is_old(m))
 	return match_old_file(m);
     else
-	return rom_name(archive_file(match_archive(m),
+	return file_name(archive_file(match_archive(m),
 				     match_index(m)));
 }
 
@@ -89,7 +89,7 @@ void
 match_init(match_t *m)
 {
     match_quality(m) = QU_MISSING;
-    match_where(m) = ROM_NOWHERE;
+    match_where(m) = FILE_NOWHERE;
     match_archive(m) = NULL;
     match_index(m) = -1;
     match_offset(m) = -1;

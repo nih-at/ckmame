@@ -107,18 +107,18 @@ static const uint8_t bitswap[] = {
 static int bit_cmp(const uint8_t *, const uint8_t *, const uint8_t *,
 		   detector_test_type_t, size_t);
 static void buf_grow(detector_t *, size_t);
-static int compute_values(detector_t *, rom_t *, int64_t, int64_t,
+static int compute_values(detector_t *, file_t *, int64_t, int64_t,
 			  detector_operation_t, struct ctx *);
-static int execute_rule(detector_t *, detector_rule_t *, rom_t *,
+static int execute_rule(detector_t *, detector_rule_t *, file_t *,
 			struct ctx *);
-static int execute_test(detector_t *, detector_test_t *, rom_t *,
+static int execute_test(detector_t *, detector_test_t *, file_t *,
 			struct ctx *);
 static int fill_buffer(detector_t *, size_t, struct ctx *);
 
 
 
 int
-detector_execute(detector_t *d, rom_t *r, detector_read_cb cb_read,
+detector_execute(detector_t *d, file_t *r, detector_read_cb cb_read,
 		 void *ud)
 {
     struct ctx ctx;
@@ -185,7 +185,7 @@ buf_grow(detector_t *d, size_t size)
 
 
 static int
-compute_values(detector_t *d, rom_t *r, int64_t start, int64_t end,
+compute_values(detector_t *d, file_t *r, int64_t start, int64_t end,
 	       detector_operation_t op, struct ctx *ctx)
 {
     hashes_t h;
@@ -249,8 +249,8 @@ compute_values(detector_t *d, rom_t *r, int64_t start, int64_t end,
 
     hashes_update_final(hu);
 
-    rom_size(r) = size;
-    memcpy(rom_hashes(r), &h, sizeof(h));
+    file_size(r) = size;
+    memcpy(file_hashes(r), &h, sizeof(h));
 
     return 0;
 }
@@ -258,22 +258,22 @@ compute_values(detector_t *d, rom_t *r, int64_t start, int64_t end,
 
 
 static int
-execute_rule(detector_t *d, detector_rule_t *dr, rom_t *r, struct ctx *ctx)
+execute_rule(detector_t *d, detector_rule_t *dr, file_t *r, struct ctx *ctx)
 {
     int i, ret;
     int64_t start, end;
 
     start = detector_rule_start_offset(dr);
     if (start < 0)
-	start += rom_size(r);
+	start += file_size(r);
     end = detector_rule_end_offset(dr);
     if (end == DETECTOR_OFFSET_EOF)
-	end = rom_size(r);
+	end = file_size(r);
     else if (end < 0)
-	end += rom_size(r);
+	end += file_size(r);
 
-    if (start < 0 || start > rom_size(r)
-	|| end < 0 || end > rom_size(r)
+    if (start < 0 || start > file_size(r)
+	|| end < 0 || end > file_size(r)
 	|| start > end)
 	return 0;
 
@@ -290,7 +290,7 @@ execute_rule(detector_t *d, detector_rule_t *dr, rom_t *r, struct ctx *ctx)
 
 
 static int
-execute_test(detector_t *d, detector_test_t *dt, rom_t *r, struct ctx *ctx)
+execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx)
 {
     int64_t off;
     int ret;
@@ -302,9 +302,9 @@ execute_test(detector_t *d, detector_test_t *dt, rom_t *r, struct ctx *ctx)
     case DETECTOR_TEST_XOR:
 	off = detector_test_offset(dt);
 	if (off < 0)
-	    off = rom_size(r) + detector_test_offset(dt);
+	    off = file_size(r) + detector_test_offset(dt);
 
-	if (off < 0 || off+detector_test_length(dt) > rom_size(r))
+	if (off < 0 || off+detector_test_length(dt) > file_size(r))
 	    return 0;
 
 	if (off+detector_test_length(dt) > ctx->bytes_read) {
@@ -329,7 +329,7 @@ execute_test(detector_t *d, detector_test_t *dt, rom_t *r, struct ctx *ctx)
 
 	    ret = 0;
 	    for (i=0; i<64; i++)
-		if (rom_size(r) == ((uint64_t)1) << i) {
+		if (file_size(r) == ((uint64_t)1) << i) {
 		    ret = 1;
 		    break;
 		}
@@ -337,7 +337,7 @@ execute_test(detector_t *d, detector_test_t *dt, rom_t *r, struct ctx *ctx)
 	else {
 	    int cmp;
 	    
-	    cmp = detector_test_size(dt) - rom_size(r);
+	    cmp = detector_test_size(dt) - file_size(r);
 
 	    switch (detector_test_type(dt)) {
 	    case DETECTOR_TEST_FILE_EQ:

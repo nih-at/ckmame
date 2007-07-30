@@ -140,7 +140,7 @@ read_rs(sqlite3 *db, game_t *g, filetype_t ft)
 {
     sqlite3_stmt *stmt;
     int ret;
-    rom_t *r;
+    file_t *r;
 
     if (sqlite3_prepare_v2(db, QUERY_PARENT, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
@@ -184,14 +184,14 @@ read_rs(sqlite3 *db, game_t *g, filetype_t ft)
     }
 
     while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
-	r = (rom_t *)array_grow(game_files(g, ft), rom_init);
+	r = (file_t *)array_grow(game_files(g, ft), file_init);
 
-	rom_name(r) = sq3_get_string(stmt, 0);
-	rom_merge(r) = sq3_get_string(stmt, 1);
-	rom_status(r) = sqlite3_column_int(stmt, 2);
-	rom_where(r) = sqlite3_column_int(stmt, 3);
-	rom_size(r) = sq3_get_int64_default(stmt, 4, SIZE_UNKNOWN);
-	sq3_get_hashes(rom_hashes(r), stmt, 5);
+	file_name(r) = sq3_get_string(stmt, 0);
+	file_merge(r) = sq3_get_string(stmt, 1);
+	file_status(r) = sqlite3_column_int(stmt, 2);
+	file_where(r) = sqlite3_column_int(stmt, 3);
+	file_size(r) = sq3_get_int64_default(stmt, 4, SIZE_UNKNOWN);
+	sq3_get_hashes(file_hashes(r), stmt, 5);
     }
 
     sqlite3_finalize(stmt);

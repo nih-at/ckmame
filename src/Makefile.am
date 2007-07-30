@@ -54,6 +54,7 @@ libckmame_a_SOURCES= \
 	disk_new.c \
 	error.c \
 	export_db.c \
+	file.c \
 	file_location.c \
 	file_location_ext.c \
 	file_location_finalize.c \
@@ -101,8 +102,6 @@ libckmame_a_SOURCES= \
 	r_game.c \
 	r_list.c \
 	result.c \
-	rom.c \
-	rom_add_altname.c \
 	sq_util.c \
 	superfluous.c \
 	tree.c \
@@ -129,6 +128,7 @@ noinst_HEADERS=\
 	dir.h \
 	disk.h \
 	error.h \
+	file.h \
 	file_location.h \
 	file_status.h \
 	find.h \
@@ -149,7 +149,6 @@ noinst_HEADERS=\
 	parse.h \
 	pri.h \
 	result.h \
-	rom.h \
 	sq_util.h \
 	tree.h \
 	types.h \

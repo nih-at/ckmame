@@ -215,13 +215,13 @@ make_unique_name(const char *ext, const char *fmt, ...)
 
 
 char *
-make_needed_name(const rom_t *r)
+make_needed_name(const file_t *r)
 {
     char crc[HASHES_SIZE_CRC*2+1];
 
     /* <needed_dir>/<crc>-nnn.zip */
 
-    hash_to_string(crc, HASHES_TYPE_CRC, rom_hashes(r));
+    hash_to_string(crc, HASHES_TYPE_CRC, file_hashes(r));
 
     return make_unique_name("zip", "%s/%s", needed_dir, crc);
 }
@@ -235,7 +235,7 @@ make_needed_name_disk(const disk_t *d)
 
     /* <needed_dir>/<md5>-nnn.zip */
 
-    hash_to_string(md5, HASHES_TYPE_MD5, rom_hashes(d));
+    hash_to_string(md5, HASHES_TYPE_MD5, file_hashes(d));
 
     return make_unique_name("chd", "%s/%s", needed_dir, md5);
 }
@@ -344,10 +344,10 @@ save_needed(archive_t *a, int index, int do_save)
 	    ret = -1;
 	else if ((source=zip_source_zip(zto, archive_zip(a), index,
 					0, 0, -1)) == NULL
-		 || zip_add(zto, rom_name(archive_file(a, index)),
+		 || zip_add(zto, file_name(archive_file(a, index)),
 			    source) < 0) {
 	    zip_source_free(source);
-	    seterrinfo(rom_name(archive_file(a, index)), tmp);
+	    seterrinfo(file_name(archive_file(a, index)), tmp);
 	    myerror(ERRZIPFILE, "error adding from `%s': %s",
 		    archive_name(a), zip_strerror(zto));
 	    zip_close(zto);
@@ -366,7 +366,7 @@ save_needed(archive_t *a, int index, int do_save)
 	}
     }
 
-    enter_file_in_map(a, index, ROM_NEEDED);
+    enter_file_in_map(a, index, FILE_NEEDED);
 
     free(tmp);
     return ret;
@@ -404,7 +404,7 @@ save_needed_disk(const char *fname, int do_save)
     }
 
     ensure_needed_maps();
-    enter_disk_in_map(d, ROM_NEEDED);
+    enter_disk_in_map(d, FILE_NEEDED);
     disk_free(d);
     free(tmp);
     return ret;

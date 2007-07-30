@@ -121,7 +121,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		       archive_name(a),
 		       (move ? "mv" : "delete"),
 		       (islong ? "long" : "unknown"),
-		       rom_name(archive_file(a, i)));
+		       file_name(archive_file(a, i)));
 	    if (fix_options & FIX_DO) {
 		if (move)
 		    move = (garbage_add(gb, i) == -1);
@@ -143,7 +143,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		       archive_name(a),
 		       (result_file(res, i) == FS_SUPERFLUOUS
 			? "unused" : "duplicate"),
-		       rom_name(archive_file(a, i)));
+		       file_name(archive_file(a, i)));
 	    if (fix_options & FIX_DO) {
 		archive_changed = 1;
 		zip_delete(archive_zip(a), i);
@@ -154,7 +154,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	    if (fix_options & FIX_PRINT)
 		printf("%s: save needed file `%s'\n",
 		       archive_name(a),
-		       rom_name(archive_file(a, i)));
+		       file_name(archive_file(a, i)));
 	    if (save_needed(a, i, fix_options & FIX_DO) != -1) {
 		if (fix_options & FIX_DO) {
 		    archive_changed = 1;
@@ -309,7 +309,7 @@ fix_files(game_t *g, archive_t *a, result_t *res)
     archive_t *afrom;
     struct zip *zfrom, *zto;
     match_t *m;
-    rom_t *r;
+    file_t *r;
     int i, idx, archive_changed;
 
     seterrinfo(NULL, archive_name(a));
@@ -331,20 +331,20 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 	else
 	    zfrom = NULL;
 	r = game_file(g, file_type, i);
-	seterrinfo(rom_name(r), archive_name(a));
+	seterrinfo(file_name(r), archive_name(a));
 
 	switch (match_quality(m)) {
 	case QU_MISSING:
-	    if (rom_size(r) == 0) {
+	    if (file_size(r) == 0) {
 		/* create missing empty file */
 		if (fix_options & FIX_PRINT)
 		    printf("%s: create empty file `%s'\n",
-			   archive_name(a), rom_name(r));
+			   archive_name(a), file_name(r));
 
 		if (fix_options & FIX_DO) {
 		    archive_changed = 1;
 		    if ((source=zip_source_buffer(zto, NULL, 0, 0)) == NULL
-			|| zip_add(zto, rom_name(r), source) < 0) {
+			|| zip_add(zto, file_name(r), source) < 0) {
 			zip_source_free(source);
 			myerror(ERRZIPFILE, "error creating empty file: %s",
 				zip_strerror(zto));
@@ -361,19 +361,19 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 	    if (fix_options & FIX_PRINT)
 		printf("%s: extract (offset %" PRIdoff ", size %lu) from `%s'"
 		       " to `%s'\n", archive_name(a),
-		       PRIoff_cast match_offset(m), rom_size(r),
-		       rom_name(archive_file(afrom, match_index(m))),
-		       rom_name(r));
+		       PRIoff_cast match_offset(m), file_size(r),
+		       file_name(archive_file(afrom, match_index(m))),
+		       file_name(r));
 	    
 	    if (fix_options & FIX_DO) {
 		archive_changed = 1;
 		if ((source=zip_source_zip(zto, zfrom, match_index(m),
 					   ZIP_FL_UNCHANGED, match_offset(m),
-					   rom_size(r))) == NULL
-		    || zip_add(zto, rom_name(r), source) < 0) {
+					   file_size(r))) == NULL
+		    || zip_add(zto, file_name(r), source) < 0) {
 		    zip_source_free(source);
 		    myerror(ERRZIPFILE, "error shrinking `%s': %s",
-			    rom_name(archive_file(afrom, match_index(m))),
+			    file_name(archive_file(afrom, match_index(m))),
 			    zip_strerror(zto));
 		}
 	    }
@@ -382,13 +382,13 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 	case QU_NAMEERR:
 	    if (fix_options & FIX_PRINT)
 		printf("%s: rename `%s' to `%s'\n", archive_name(a),
-		       rom_name(archive_file(a, match_index(m))),
-		       rom_name(r));
+		       file_name(archive_file(a, match_index(m))),
+		       file_name(r));
 	    if (fix_options & FIX_DO) {
 		archive_changed = 1;
-		if (my_zip_rename(zto, match_index(m), rom_name(r)) == -1)
+		if (my_zip_rename(zto, match_index(m), file_name(r)) == -1)
 		    myerror(ERRZIPFILE, "error renaming `%s': %s",
-			    rom_name(archive_file(a, match_index(m))),
+			    file_name(archive_file(a, match_index(m))),
 			    zip_strerror(zto));
 	    }
 	    break;
@@ -397,37 +397,37 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 	    if (fix_options & FIX_PRINT)
 		printf("%s: add `%s/%s' as `%s'\n",
 		       archive_name(a), archive_name(afrom),
-		       rom_name(archive_file(afrom, match_index(m))),
-		       rom_name(r));
+		       file_name(archive_file(afrom, match_index(m))),
+		       file_name(r));
 	    
 	    if (fix_options & FIX_DO) {
 		archive_changed = 1;
 		/* make room for new file, if necessary */
-		idx = archive_file_index_by_name(a, rom_name(r));
+		idx = archive_file_index_by_name(a, file_name(r));
 		if (idx >= 0) {
-		    if (rom_status(archive_file(a, idx)) == STATUS_BADDUMP)
+		    if (file_status(archive_file(a, idx)) == STATUS_BADDUMP)
 			zip_delete(zto, idx);
 		    else
 			idx = -1;
 		}
 		if ((source=zip_source_zip(zto, zfrom, match_index(m),
 					   0, 0, -1)) == NULL
-		    || zip_add(zto, rom_name(r), source) < 0) {
+		    || zip_add(zto, file_name(r), source) < 0) {
 		    zip_source_free(source);
 		    myerror(ERRZIPFILE, "error adding `%s' from `%s': %s",
-			    rom_name(archive_file(afrom, match_index(m))),
+			    file_name(archive_file(afrom, match_index(m))),
 			    archive_name(afrom), zip_strerror(zto));
 		    if (idx >= 0)
 			zip_unchange(zto, idx);
 		}
 		else {
-		    if (match_where(m) == ROM_NEEDED)
+		    if (match_where(m) == FILE_NEEDED)
 			delete_list_add(needed_delete_list,
 					archive_name(afrom), match_index(m));
-		    else if (match_where(m) == ROM_SUPERFLUOUS)
+		    else if (match_where(m) == FILE_SUPERFLUOUS)
 			delete_list_add(superfluous_delete_list,
 					archive_name(afrom), match_index(m));
-		    else if (match_where(m) == ROM_EXTRA
+		    else if (match_where(m) == FILE_EXTRA
 			     && (fix_options & FIX_DELETE_EXTRA))
 			delete_list_add(extra_delete_list,
 					archive_name(afrom), match_index(m));

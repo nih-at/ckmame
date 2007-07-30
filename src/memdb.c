@@ -248,11 +248,11 @@ memdb_update_disk(const disk_t *d)
 int
 memdb_update_file(const archive_t *a, int idx)
 {
-    if (rom_status(archive_file(a, idx)) != STATUS_OK)
+    if (file_status(archive_file(a, idx)) != STATUS_OK)
 	return _delete_file(archive_id(a), TYPE_ROM, idx);
     
     return _update_file(archive_id(a), TYPE_ROM, idx,
-			rom_hashes(archive_file(a, idx)));
+			file_hashes(archive_file(a, idx)));
 }
 
 

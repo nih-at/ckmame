@@ -1,10 +1,8 @@
-#ifndef HAD_ROM_H
-#define HAD_ROM_H
+#ifndef HAD_FILE_H
+#define HAD_FILE_H
 
 /*
-  $NiH: rom.h,v 1.5 2006/09/29 16:01:34 dillo Exp $
-
-  rom.h -- information about one rom
+  file.h -- information about one file
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -42,7 +40,7 @@
 #include "types.h"
 #include "parray.h"
 
-struct rom {
+struct file {
     char *name;
     char *merge;
     hashes_t hashes;
@@ -52,39 +50,39 @@ struct rom {
     parray_t *altnames;
 };
 
-typedef struct rom rom_t;
+typedef struct file file_t;
 
 
 
-#define rom_altname(r, i)	((char *)parray_get(rom_altnames(r), (i)))
-#define rom_altnames(r)		((r)->altnames)
-#define rom_hashes(r)		(&(r)->hashes)
-#define rom_merge(r)		((r)->merge)
-#define rom_name(r)		((r)->name)
-#define rom_num_altnames(r)	(rom_altnames(r) ? \
-				 parray_length(rom_altnames(r)) : 0)
-#define rom_size(r)		((r)->size)
-#define rom_status(r)		((r)->status)
-#define rom_where(r)		((r)->where)
+#define file_altname(r, i)	((char *)parray_get(file_altnames(r), (i)))
+#define file_altnames(r)		((r)->altnames)
+#define file_hashes(r)		(&(r)->hashes)
+#define file_merge(r)		((r)->merge)
+#define file_name(r)		((r)->name)
+#define file_num_altnames(r)	(file_altnames(r) ? \
+				 parray_length(file_altnames(r)) : 0)
+#define file_size(r)		((r)->size)
+#define file_status(r)		((r)->status)
+#define file_where(r)		((r)->where)
 
-#define rom_compare_m(r1, r2)	\
-	(strcmp(rom_merge(r1) ? rom_merge(r1) : rom_name(r1), rom_name(r2)))
-#define rom_compare_n(r1, r2)	(strcmp(rom_name(r1), rom_name(r2)))
-#define rom_compare_msc(r1, r2)						\
-	(rom_compare_m((r1), (r2)) || rom_compare_sc((r1), (r2)))
-#define rom_compare_nsc(r1, r2)						\
-	(rom_compare_n((r1), (r2)) || rom_compare_sc((r1), (r2)))
-#define rom_compare_sc(rg, ra)						  \
-	(!(!SIZE_IS_KNOWN(rom_size(rg))					  \
-	   || (rom_size(rg) == rom_size(ra)				  \
-	       && (rom_status(rg) == STATUS_NODUMP			  \
-		   || ((hashes_types(rom_hashes(rg))			  \
-			& hashes_types(rom_hashes(rg)) & HASHES_TYPE_CRC) \
-		       && (hashes_crc(rom_hashes(rg))			  \
-			   == hashes_crc(rom_hashes(ra))))))))
+#define file_compare_m(r1, r2)	\
+	(strcmp(file_merge(r1) ? file_merge(r1) : file_name(r1), file_name(r2)))
+#define file_compare_n(r1, r2)	(strcmp(file_name(r1), file_name(r2)))
+#define file_compare_msc(r1, r2)						\
+	(file_compare_m((r1), (r2)) || file_compare_sc((r1), (r2)))
+#define file_compare_nsc(r1, r2)						\
+	(file_compare_n((r1), (r2)) || file_compare_sc((r1), (r2)))
+#define file_compare_sc(rg, ra)						  \
+	(!(!SIZE_IS_KNOWN(file_size(rg))					  \
+	   || (file_size(rg) == file_size(ra)				  \
+	       && (file_status(rg) == STATUS_NODUMP			  \
+		   || ((hashes_types(file_hashes(rg))			  \
+			& hashes_types(file_hashes(rg)) & HASHES_TYPE_CRC) \
+		       && (hashes_crc(file_hashes(rg))			  \
+			   == hashes_crc(file_hashes(ra))))))))
 
-void rom_add_altname(rom_t *, const char *);
-void rom_init(rom_t *);
-void rom_finalize(rom_t *);
+void file_add_altname(file_t *, const char *);
+void file_init(file_t *);
+void file_finalize(file_t *);
 
-#endif /* rom.h */
+#endif /* file.h */

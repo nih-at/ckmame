@@ -121,11 +121,11 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     hashes_t h;
     struct zip *za;
     struct zip_file *zf;
-    rom_t *r;
+    file_t *r;
 
     r = archive_file(a, idx);
 
-    if ((hashes_types(rom_hashes(r)) & hashtypes) == hashtypes)
+    if ((hashes_types(file_hashes(r)) & hashtypes) == hashtypes)
 	return 0;
 
     if (archive_ensure_zip(a, 0) != 0)
@@ -135,31 +135,31 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 
     if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
 	myerror(ERRZIP, "error opening index %d: %s", idx, zip_strerror(za));
-	rom_status(r) = STATUS_BADDUMP;
+	file_status(r) = STATUS_BADDUMP;
 	return -1;
     }
 
     hashes_types(&h) = hashtypes;
-    if (get_hashes(zf, rom_size(r), &h) < 0) {
+    if (get_hashes(zf, file_size(r), &h) < 0) {
 	myerror(ERRZIP, "error reading index %d: %s", idx,
 		zip_file_strerror(zf));
 	zip_fclose(zf);
-	rom_status(r) = STATUS_BADDUMP;
+	file_status(r) = STATUS_BADDUMP;
 	return -1;
     }
 
     zip_fclose(zf);
 
     if (hashtypes & HASHES_TYPE_CRC) {
-	if (rom_hashes(r)->crc != h.crc) {
+	if (file_hashes(r)->crc != h.crc) {
 	    myerror(ERRZIP, "CRC error in `%s': %lx != %lx",
-		    rom_name(archive_file(a, idx)),
-		    h.crc, rom_hashes(r)->crc);
-	    rom_status(r) = STATUS_BADDUMP;
+		    file_name(archive_file(a, idx)),
+		    h.crc, file_hashes(r)->crc);
+	    file_status(r) = STATUS_BADDUMP;
 	    return -1;
 	}
     }
-    hashes_copy(rom_hashes(r), &h);
+    hashes_copy(file_hashes(r), &h);
 
     return 0;
 }
@@ -189,7 +189,7 @@ archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
 
     found = 0;
     offset = 0;
-    while (offset+size <= rom_size(archive_file(a, idx))) {
+    while (offset+size <= file_size(archive_file(a, idx))) {
 	if (get_hashes(zf, size, &hn) < 0) {
 	    myerror(ERRZIPFILE, "read error: %s",
 		    zip_strerror(archive_zip(a)));
@@ -224,7 +224,7 @@ archive_file_index_by_name(const archive_t *a, const char *name)
     int i;
 
     for (i=0; i<archive_num_files(a); i++) {
-	if (strcmp(rom_name(archive_file(a, i)), name) == 0)
+	if (strcmp(file_name(archive_file(a, i)), name) == 0)
 	    return i;
     }
 
@@ -265,7 +265,7 @@ archive_new(const char *name, int flags)
     a = xmalloc(sizeof(*a));
     a->name = xstrdup(name);
     a->refcount = 1;
-    a->files = array_new(sizeof(rom_t));
+    a->files = array_new(sizeof(file_t));
     a->za = NULL;
     a->check_integrity = (flags & ARCHIVE_FL_CHECK_INTEGRITY);
 
@@ -277,8 +277,8 @@ archive_new(const char *name, int flags)
     }
 
     for (i=0; i<archive_num_files(a); i++) {
-	/* XXX: rom_state(archive_file(a, i)) = ROM_UNKNOWN; */
-	rom_where(archive_file(a, i)) = (where_t) -1;
+	/* XXX: file_state(archive_file(a, i)) = FILE_UNKNOWN; */
+	file_where(archive_file(a, i)) = (where_t) -1;
     }
 
     if ((id=memdb_put_ptr(name, a)) < 0) {
@@ -300,7 +300,7 @@ archive_real_free(archive_t *a)
 
     archive_close_zip(a);
     free(a->name);
-    array_free(archive_files(a), rom_finalize);
+    array_free(archive_files(a), file_finalize);
     free(a);
 }
 
@@ -310,7 +310,7 @@ int
 archive_refresh(archive_t *a)
 {
     archive_close_zip(a);
-    array_truncate(archive_files(a), 0, rom_finalize);
+    array_truncate(archive_files(a), 0, file_finalize);
 
     read_infos_from_zip(a);
 
@@ -346,14 +346,14 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 
 
 static int
-match_detector(struct zip *za, int idx, rom_t *r)
+match_detector(struct zip *za, int idx, file_t *r)
 {
     struct zip_file *zf;
     int ret;
 
     if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
 	myerror(ERRZIP, "error opening index %d: %s", idx, zip_strerror(za));
-	rom_status(r) = STATUS_BADDUMP;
+	file_status(r) = STATUS_BADDUMP;
 	return -1;
     }
 
@@ -371,7 +371,7 @@ read_infos_from_zip(archive_t *a)
 {
     struct zip *za;
     struct zip_stat zsb;
-    rom_t *r;
+    file_t *r;
     int i;
     int zerr;
     char errstr[80];
@@ -404,14 +404,14 @@ read_infos_from_zip(archive_t *a)
 	    continue;
 	}
 
-	r = (rom_t *)array_grow(archive_files(a), rom_init);
-	rom_size(r) = zsb.size;
-	rom_name(r) = xstrdup(zsb.name);
-	rom_status(r) = STATUS_OK;
+	r = (file_t *)array_grow(archive_files(a), file_init);
+	file_size(r) = zsb.size;
+	file_name(r) = xstrdup(zsb.name);
+	file_status(r) = STATUS_OK;
 
-	hashes_init(rom_hashes(r));
-	rom_hashes(r)->types = HASHES_TYPE_CRC;
-	rom_hashes(r)->crc = zsb.crc;
+	hashes_init(file_hashes(r));
+	file_hashes(r)->types = HASHES_TYPE_CRC;
+	file_hashes(r)->crc = zsb.crc;
 
 	if (detector)
 	    match_detector(za, i, r);

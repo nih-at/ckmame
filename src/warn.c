@@ -79,7 +79,7 @@ warn_disk(const disk_t *d, const char *fmt, ...)
 
 
 void
-warn_file(const rom_t *r, const char *fmt, ...)
+warn_file(const file_t *r, const char *fmt, ...)
 {
     va_list va;
 
@@ -87,7 +87,7 @@ warn_file(const rom_t *r, const char *fmt, ...)
     
     /* XXX */
     printf("file %-12s  size %7ld  crc %.8lx: ",
-	   rom_name(r), rom_size(r), hashes_crc(rom_hashes(r)));
+	   file_name(r), file_size(r), hashes_crc(file_hashes(r)));
     
     va_start(va, fmt);
     vprintf(fmt, va);
@@ -121,7 +121,7 @@ warn_image(const char *name, const char *fmt, ...)
 
 
 void
-warn_rom(const rom_t *r, const char *fmt, ...)
+warn_rom(const file_t *r, const char *fmt, ...)
 {
     va_list va;
     char buf[100], *p;
@@ -130,16 +130,16 @@ warn_rom(const rom_t *r, const char *fmt, ...)
     warn_ensure_header();
     
     if (r) {
-	printf("rom  %-12s  ", rom_name(r));
-	if (SIZE_IS_KNOWN(rom_size(r))) {
-	    sprintf(buf, "size %7ld  ", rom_size(r));
+	printf("rom  %-12s  ", file_name(r));
+	if (SIZE_IS_KNOWN(file_size(r))) {
+	    sprintf(buf, "size %7ld  ", file_size(r));
 	    p = buf + strlen(buf);
 	    
 	    /* XXX */
-	    if (hashes_has_type(rom_hashes(r), HASHES_TYPE_CRC)) {
-		switch (rom_status(r)) {
+	    if (hashes_has_type(file_hashes(r), HASHES_TYPE_CRC)) {
+		switch (file_status(r)) {
 		case STATUS_OK:
-		    sprintf(p, "crc %.8lx: ", hashes_crc(rom_hashes(r)));
+		    sprintf(p, "crc %.8lx: ", hashes_crc(file_hashes(r)));
 		    break;
 		case STATUS_BADDUMP:
 		    sprintf(p, "bad dump    : ");
@@ -166,15 +166,15 @@ warn_rom(const rom_t *r, const char *fmt, ...)
 
     putc('\n', stdout);
 
-    if (r && rom_num_altnames(r)) {
-	for (j=0; j<rom_num_altnames(r); j++) {
-	    printf("rom  %-12s  ", rom_altname(r, j));
+    if (r && file_num_altnames(r)) {
+	for (j=0; j<file_num_altnames(r); j++) {
+	    printf("rom  %-12s  ", file_altname(r, j));
 	    fputs(buf, stdout);
 	    va_start(va, fmt);
 	    vprintf(fmt, va);
 	    va_end(va);
 
-	    printf(" (same as %s)\n", rom_name(r));
+	    printf(" (same as %s)\n", file_name(r));
 	}
     }
 

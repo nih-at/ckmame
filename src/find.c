@@ -57,23 +57,23 @@
 
 
 
-static find_result_t check_for_file_in_zip(const char *, const rom_t *,
+static find_result_t check_for_file_in_zip(const char *, const file_t *,
 					   match_t *);
 static find_result_t check_match_disk_old(const game_t *, const disk_t *,
 					  match_disk_t *);
 static find_result_t check_match_disk_romset(const game_t *, const disk_t *,
 					     match_disk_t *);
-static find_result_t check_match_old(const game_t *, const rom_t *, match_t *);
-static find_result_t check_match_romset(const game_t *, const rom_t *,
+static find_result_t check_match_old(const game_t *, const file_t *, match_t *);
+static find_result_t check_match_romset(const game_t *, const file_t *,
 					match_t *);
 static find_result_t find_disk_in_db(sqlite3 *, const disk_t *, const char *,
 				     match_disk_t *,
 				     find_result_t (*)(const game_t *,
 						       const disk_t *,
 						       match_disk_t *));
-static find_result_t find_in_db(sqlite3 *, const rom_t *, const char *, match_t *,
+static find_result_t find_in_db(sqlite3 *, const file_t *, const char *, match_t *,
 				find_result_t (*)(const game_t *,
-						  const rom_t *, match_t *));
+						  const file_t *, match_t *));
 
 
 
@@ -158,19 +158,19 @@ find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md)
 
 
 find_result_t
-find_in_archives(const rom_t *r, match_t *m)
+find_in_archives(const file_t *r, match_t *m)
 {
     sqlite3_stmt *stmt;
     char query[1024], *p;
     const char *ht;
     archive_t *a;
-    rom_t *f;
+    file_t *f;
     int i, ret, hcol;
 
     strcpy(query, QUERY_FILE);
     p = query + strlen(query);
 
-    if (rom_size(r) != SIZE_UNKNOWN) {
+    if (file_size(r) != SIZE_UNKNOWN) {
 	strcpy(p, " and size = ?");
 	p += strlen(p);
 	hcol = 3;
@@ -178,7 +178,7 @@ find_in_archives(const rom_t *r, match_t *m)
     else
 	hcol = 2;
     for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
-	if (hashes_has_type(rom_hashes(r), i)) {
+	if (hashes_has_type(file_hashes(r), i)) {
 	    ht = hash_type_string(i);
 	    sprintf(p, QUERY_FILE_HASH_FMT, ht, ht);
 	    p += strlen(p);
@@ -190,12 +190,12 @@ find_in_archives(const rom_t *r, match_t *m)
 	return FIND_ERROR;
 
     if (sqlite3_bind_int(stmt, 1, TYPE_ROM) != SQLITE_OK
-	|| sq3_set_hashes(stmt, hcol, rom_hashes(r), 0) != SQLITE_OK) {
+	|| sq3_set_hashes(stmt, hcol, file_hashes(r), 0) != SQLITE_OK) {
 	sqlite3_finalize(stmt);
 	return FIND_ERROR;
     }
-    if (rom_size(r) != SIZE_UNKNOWN)
-	if (sqlite3_bind_int(stmt, 2, rom_size(r)) != SQLITE_OK) {
+    if (file_size(r) != SIZE_UNKNOWN)
+	if (sqlite3_bind_int(stmt, 2, file_size(r)) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);
 	    return FIND_ERROR;
 	}
@@ -208,14 +208,14 @@ find_in_archives(const rom_t *r, match_t *m)
 	i = sqlite3_column_int(stmt, 1);
 	f = archive_file(a, i);
 
-	if ((hashes_types(rom_hashes(r)) & hashes_types(rom_hashes(f)))
-	    != hashes_types(rom_hashes(r))) {
+	if ((hashes_types(file_hashes(r)) & hashes_types(file_hashes(f)))
+	    != hashes_types(file_hashes(r))) {
 	    archive_file_compute_hashes(a, i,
-				hashes_types(rom_hashes(r))|romhashtypes);
+				hashes_types(file_hashes(r))|romhashtypes);
 	    memdb_update_file(a, i);
 
-	    if (rom_status(f) != STATUS_OK
-		|| (archive_file_compare_hashes(a, i, rom_hashes(r))
+	    if (file_status(f) != STATUS_OK
+		|| (archive_file_compare_hashes(a, i, file_hashes(r))
 		    != HASHES_CMP_MATCH)) {
 		archive_free(a);
 		continue;
@@ -243,7 +243,7 @@ find_in_archives(const rom_t *r, match_t *m)
 
 
 find_result_t
-find_in_old(const rom_t *r, match_t *m)
+find_in_old(const file_t *r, match_t *m)
 {
     if (old_db == NULL)
 	return FIND_MISSING;
@@ -253,7 +253,7 @@ find_in_old(const rom_t *r, match_t *m)
 
 
 find_result_t
-find_in_romset(const rom_t *r, const char *skip, match_t *m)
+find_in_romset(const file_t *r, const char *skip, match_t *m)
 {
     return find_in_db(db, r, skip, m, check_match_romset);
 }
@@ -261,7 +261,7 @@ find_in_romset(const rom_t *r, const char *skip, match_t *m)
 
 
 static find_result_t
-check_for_file_in_zip(const char *name, const rom_t *r, match_t *m)
+check_for_file_in_zip(const char *name, const file_t *r, match_t *m)
 {
     char *full_name;
     archive_t *a;
@@ -274,9 +274,9 @@ check_for_file_in_zip(const char *name, const rom_t *r, match_t *m)
     }
     free(full_name);
 
-    if ((idx=archive_file_index_by_name(a, rom_name(r))) >= 0
+    if ((idx=archive_file_index_by_name(a, file_name(r))) >= 0
 	&& archive_file_compare_hashes(a, idx,
-				       rom_hashes(r)) == HASHES_CMP_MATCH) {
+				       file_hashes(r)) == HASHES_CMP_MATCH) {
 	if (m) {
 	    match_archive(m) = a;
 	    match_index(m) = idx;
@@ -346,13 +346,13 @@ check_match_disk_romset(const game_t *g, const disk_t *d, match_disk_t *md)
 
 
 static find_result_t
-check_match_old(const game_t *g, const rom_t *r, match_t *m)
+check_match_old(const game_t *g, const file_t *r, match_t *m)
 {
     if (m) {
 	match_quality(m) = QU_OLD;
-	match_where(m) = ROM_OLD;
+	match_where(m) = FILE_OLD;
 	match_old_game(m) = xstrdup(game_name(g));
-	match_old_file(m) = xstrdup(rom_name(r));
+	match_old_file(m) = xstrdup(file_name(r));
     }
     
     return FIND_EXISTS;
@@ -361,14 +361,14 @@ check_match_old(const game_t *g, const rom_t *r, match_t *m)
 
 
 static find_result_t
-check_match_romset(const game_t *g, const rom_t *r, match_t *m)
+check_match_romset(const game_t *g, const file_t *r, match_t *m)
 {
     find_result_t status;
     
     status = check_for_file_in_zip(game_name(g), r, m);
     if (m && status == FIND_EXISTS) {
 	match_quality(m) = QU_COPIED;
-	match_where(m) = ROM_ROMSET;
+	match_where(m) = FILE_ROMSET;
     }
     
     return status;
@@ -377,18 +377,18 @@ check_match_romset(const game_t *g, const rom_t *r, match_t *m)
 
 
 static find_result_t
-find_in_db(sqlite3 *db, const rom_t *r, const char *skip, match_t *m,
-	   find_result_t (*check_match)(const game_t *, const rom_t *,
+find_in_db(sqlite3 *db, const file_t *r, const char *skip, match_t *m,
+	   find_result_t (*check_match)(const game_t *, const file_t *,
 					match_t *))
 {
     array_t *a;
     file_location_t *fbh;
     game_t *g;
-    const rom_t *gr;
+    const file_t *gr;
     int i;
     find_result_t status;
 
-    if ((a=r_file_by_hash(db, TYPE_ROM, rom_hashes(r))) == NULL)
+    if ((a=r_file_by_hash(db, TYPE_ROM, file_hashes(r))) == NULL)
 	return FIND_UNKNOWN;
 
     status = FIND_UNKNOWN;
@@ -409,7 +409,7 @@ find_in_db(sqlite3 *db, const rom_t *r, const char *skip, match_t *m,
 
 	gr = game_file(g, TYPE_ROM, file_location_index(fbh));
 
-	if (hashes_cmp(rom_hashes(r), rom_hashes(gr)) == HASHES_CMP_MATCH) {
+	if (hashes_cmp(file_hashes(r), file_hashes(gr)) == HASHES_CMP_MATCH) {
 	    status = check_match(g, gr, m);
 	}
 

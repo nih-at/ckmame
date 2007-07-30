@@ -80,7 +80,7 @@ typedef array_t match_array_t;
 #define match_old_game(m)	((m)->source.old.game)
 #define match_old_file(m)	((m)->source.old.file)
 #define match_quality(m)	((m)->quality)
-#define match_source_is_old(m)	(match_where(m) == ROM_OLD)
+#define match_source_is_old(m)	(match_where(m) == FILE_OLD)
 #define match_where(m)		((m)->where)
 
 

@@ -40,8 +40,8 @@
 
 #include "array.h"
 #include "disk.h"
+#include "file.h"
 #include "parray.h"
-#include "rom.h"
 
 struct rs {
     char *cloneof[2];
@@ -73,7 +73,7 @@ typedef struct game game_t;
 #define game_disks(g)			((g)->disks)
 
 #define game_file(g, ft, i)   		\
-	((rom_t *)array_get(game_files((g), (ft)), (i)))
+	((file_t *)array_get(game_files((g), (ft)), (i)))
 
 #define game_files(g, ft)		((g)->rs[ft].files)
 
