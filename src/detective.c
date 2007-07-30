@@ -180,7 +180,7 @@ print_archive(const char *fname)
 {
     archive_t *a;
     file_t *f;
-    int i, ret;
+    int i, j, ret;
 
     if ((a=archive_new(fname, 0)) == NULL)
 	return -1;
@@ -196,9 +196,16 @@ print_archive(const char *fname)
 
 	f = archive_file(a, i);
 
+	if (file_sh_is_set(f, FILE_SH_DETECTOR))
+	    j = FILE_SH_DETECTOR;
+	else
+	    j = FILE_SH_FULL;
+
 	printf("\tfile %-12s  size %7" PRIu64,
-	       file_name(f), file_size(f));
-	print_checksums(file_hashes(f));
+	       file_name(f), file_size_xxx(f, j));
+	print_checksums(file_hashes_xxx(f, j));
+	if (j == FILE_SH_DETECTOR)
+	    printf("  (header skipped)");
 	printf("\n");
 	
     }
