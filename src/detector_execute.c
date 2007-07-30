@@ -272,8 +272,8 @@ execute_rule(detector_t *d, detector_rule_t *dr, file_t *r, struct ctx *ctx)
     else if (end < 0)
 	end += file_size(r);
 
-    if (start < 0 || start > file_size(r)
-	|| end < 0 || end > file_size(r)
+    if (start < 0 || (uint64_t)start > file_size(r)
+	|| end < 0 || (uint64_t)end > file_size(r)
 	|| start > end)
 	return 0;
 

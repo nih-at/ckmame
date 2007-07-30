@@ -1,8 +1,6 @@
 /*
-  $NiH: file.c,v 1.3 2006/09/29 16:01:34 dillo Exp $
-
-  file.c -- initialize / finalize file structure
-  Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
+  file_compare.c -- compare various parts of two files
+  Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -35,32 +33,67 @@
 
 
 
-#include <stdlib.h>
+#include <string.h>
 
 #include "file.h"
 
-
-
-void
-file_init(file_t *r)
+bool
+file_compare_m(const file_t *fg, const file_t *fa)
 {
-    int i;
-
-    r->name = r->merge = NULL;
-    for (i=0; i<FILE_SH_MAX; i++) {
-	r->sh[i].size = SIZE_UNKNOWN;
-	hashes_init(&r->sh[i].hashes);
-    }
-    r->status = STATUS_OK;
-    /* XXX: state */
-    r->where = FILE_INZIP;
+    return strcmp(file_merge(fg) ? file_merge(fg) : file_name(fg),
+		  file_name(fa)) == 0;
 }
 
 
 
-void
-file_finalize(file_t *r)
+bool
+file_compare_msc(const file_t *fg, const file_t *fa)
 {
-    free(r->name);
-    free(r->merge);
+    return file_compare_m(fg, fa) || file_compare_sc(fg, fa);
+}
+
+
+
+bool
+file_compare_nsc(const file_t *fg, const file_t *fa)
+{
+    return file_compare_n(fg, fa) || file_compare_sc(fg, fa);
+}
+
+
+
+bool
+file_compare_sc(const file_t *fg, const file_t *fa)
+{
+    int i;
+
+    for (i=0; i<FILE_SH_MAX; i++) {
+	if (!file_sh_is_set(fa, i))
+	    continue;
+	
+	if (file_size_known(fg) && file_size_xxx_known(fa, i)
+	    && file_size(fg) != file_size_xxx(fa, i))
+	    continue;
+
+	if (hashes_types(file_hashes(fg)) == 0)
+	    return true;
+
+	/* XXX: don't hardcode CRC, doesn't work for disks */
+	if ((hashes_types(file_hashes(fg))
+	     & hashes_types(file_hashes_xxx(fg, i)) & HASHES_TYPE_CRC)
+	    && (hashes_crc(file_hashes(fa))
+		== hashes_crc(file_hashes_xxx(fa, i))))
+	    return true;
+    }
+
+    return false;
+}
+
+
+
+bool
+file_sh_is_set(const file_t *f, int i)
+{
+    return file_size_xxx_known(f, i)
+	&& hashes_types(file_hashes_xxx(f, i)) != 0;
 }

@@ -157,7 +157,7 @@ print_footer(int matches, hashes_t *hash)
 static void
 print_romline(file_t *rom)
 {
-    printf("\t\tfile %-12s  size %7ld",
+    printf("\t\tfile %-12s  size %7" PRIu64,
 	   file_name(rom), file_size(rom));
     print_checksums(file_hashes(rom));
     printf(" status %s in %s",
@@ -385,8 +385,7 @@ static void
 print_rs(game_t *game, filetype_t ft,
 	const char *co, const char *gco, const char *cs, const char *fs) 
 {
-    int i, j, ret;
-    file_t *r;
+    int i, ret;
     sqlite3_stmt *stmt;
 
     if (game_cloneof(game, ft, 0))
@@ -425,22 +424,8 @@ print_rs(game_t *game, filetype_t ft,
 
     if (game_num_files(game, ft) > 0) {
 	printf("%s:\n", fs);
-	for (i=0; i<game_num_files(game, ft); i++) {
-	    r = game_file(game, ft, i);
-	    print_romline(r);
-	    for (j=0; j<file_num_altnames(r); j++) {
-		/* XXX: check hashes.types */
-		printf("\t\tfile %-12s  size %7ld  crc %.8lx  status %s in %s",
-		       file_altname(r, j), file_size(r), file_hashes(r)->crc,
-		       status_name[file_status(r)], where_name[file_where(r)]);
-		if (file_merge(r)) {
-		    if (strcmp(file_altname(r, j), file_merge(r)) != 0)
-			printf(" (%s)", file_merge(r));
-		} else
-		    printf(" (%s)", file_name(r));
-		putc('\n', stdout);
-	    }
-	}
+	for (i=0; i<game_num_files(game, ft); i++)
+	    print_romline(game_file(game, ft, i));
     }
 }
 

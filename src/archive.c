@@ -189,7 +189,7 @@ archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
 
     found = 0;
     offset = 0;
-    while (offset+size <= file_size(archive_file(a, idx))) {
+    while ((uint64_t)offset+size <= file_size(archive_file(a, idx))) {
 	if (get_hashes(zf, size, &hn) < 0) {
 	    myerror(ERRZIPFILE, "read error: %s",
 		    zip_strerror(archive_zip(a)));

@@ -576,9 +576,9 @@ rom_end(parser_context_t *ctx, filetype_t ft)
     deleted = 0;
     for (j=0; j<n; j++) {
 	r2 = game_file(ctx->g, ft, j);
-	if (file_compare_sc(r, r2) == 0) {
+	if (file_compare_sc(r, r2)) {
 	    /* XXX: merge in additional hash types? */
-	    if (file_compare_n(r, r2) == 0) {
+	    if (file_compare_n(r, r2)) {
 		deleted = 1;
 		break;
 	    }
@@ -589,7 +589,7 @@ rom_end(parser_context_t *ctx, filetype_t ft)
 		break;
 	    }
 	}
-	else if (file_compare_n(r, r2) == 0) {
+	else if (file_compare_n(r, r2)) {
 	    myerror(ERRFILE, "%d: two different roms with same name (%s)",
 		    ctx->lineno, file_name(r));
 	    deleted = 1;

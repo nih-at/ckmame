@@ -55,6 +55,7 @@ libckmame_a_SOURCES= \
 	error.c \
 	export_db.c \
 	file.c \
+	file_compare.c \
 	file_location.c \
 	file_location_ext.c \
 	file_location_finalize.c \

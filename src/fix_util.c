@@ -235,7 +235,7 @@ make_needed_name_disk(const disk_t *d)
 
     /* <needed_dir>/<md5>-nnn.zip */
 
-    hash_to_string(md5, HASHES_TYPE_MD5, file_hashes(d));
+    hash_to_string(md5, HASHES_TYPE_MD5, disk_hashes(d));
 
     return make_unique_name("chd", "%s/%s", needed_dir, md5);
 }

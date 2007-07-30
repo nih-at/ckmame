@@ -95,7 +95,7 @@ typedef enum where where_t;
 
 #define IS_ELSEWHERE(w)	((w) >= FILE_ROMSET)
 
-#define SIZE_UNKNOWN	0xffffffff
+#define SIZE_UNKNOWN	UINT64_MAX
 #define SIZE_IS_KNOWN(s)	((s) != SIZE_UNKNOWN)
 
 enum filetype {

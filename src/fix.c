@@ -359,8 +359,8 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 
 	case QU_LONG:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: extract (offset %" PRIdoff ", size %lu) from `%s'"
-		       " to `%s'\n", archive_name(a),
+		printf("%s: extract (offset %" PRIdoff ", size %" PRIu64
+		       ") from `%s' to `%s'\n", archive_name(a),
 		       PRIoff_cast match_offset(m), file_size(r),
 		       file_name(archive_file(afrom, match_index(m))),
 		       file_name(r));

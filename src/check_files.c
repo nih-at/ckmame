@@ -200,9 +200,9 @@ match_files(archive_t *a, test_t t, const file_t *r, match_t *m)
 	case TEST_NSC:
 	case TEST_MSC:
 	    if ((t == TEST_NSC
-		 ? (file_compare_n(r, ra) == 0)
-		 : (file_compare_m(r, ra) == 0))
-		&& file_compare_sc(r, ra) == 0) {
+		 ? (file_compare_n(r, ra))
+		 : (file_compare_m(r, ra)))
+		&& file_compare_sc(r, ra)) {
 		if ((hashes_cmp(file_hashes(r), file_hashes(ra))
 		     != HASHES_CMP_MATCH)) {
 		    if (match_quality(m) == QU_HASHERR)
@@ -225,7 +225,7 @@ match_files(archive_t *a, test_t t, const file_t *r, match_t *m)
 	    if (hashes_types(file_hashes(r)) == 0)
 		break;
 	    
-	    if (file_compare_sc(r, ra) == 0) {
+	    if (file_compare_sc(r, ra)) {
 		if (archive_file_compare_hashes(a, i, file_hashes(r)) != 0) {
 		    if (file_status(archive_file(a, i)) != STATUS_OK)
 			break;
@@ -249,7 +249,7 @@ match_files(archive_t *a, test_t t, const file_t *r, match_t *m)
 	    if (hashes_types(file_hashes(r)) == 0)
 		break;
 	    
-	    if (file_compare_n(r, ra) == 0
+	    if (file_compare_n(r, ra)
 		&& file_size(ra) > file_size(r)
 		&& (match_offset(m)=archive_file_find_offset(a, i, file_size(r),
 							     file_hashes(r)))

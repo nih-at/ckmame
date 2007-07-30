@@ -17,6 +17,7 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [compatibility] PRIu64 replacement
 ! [cleanup] use non-GPL getopt_long replacement
 ! [cleanup] reduce code duplication
 ! [cleanup] access db directly in find_*

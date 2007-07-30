@@ -3,7 +3,7 @@
 
 /*
   file.h -- information about one file
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -36,53 +36,57 @@
 
 
 
-#include "hashes.h"
-#include "types.h"
-#include "parray.h"
 
+#include "hashes.h"
+#include "myinttypes.h"
+#include "parray.h"
+#include "types.h"
+
+struct file_sh {
+    uint64_t size;
+    hashes_t hashes;
+};
+
+typedef struct file_sh file_sh_t;
+
+enum {
+    FILE_SH_FULL,
+    FILE_SH_DETECTOR,
+    FILE_SH_MAX
+};
+  
 struct file {
     char *name;
     char *merge;
-    hashes_t hashes;
-    unsigned long size;
+    file_sh_t sh[FILE_SH_MAX];
     status_t status;
     where_t where;
-    parray_t *altnames;
 };
 
 typedef struct file file_t;
 
 
 
-#define file_altname(r, i)	((char *)parray_get(file_altnames(r), (i)))
-#define file_altnames(r)		((r)->altnames)
-#define file_hashes(r)		(&(r)->hashes)
-#define file_merge(r)		((r)->merge)
-#define file_name(r)		((r)->name)
-#define file_num_altnames(r)	(file_altnames(r) ? \
-				 parray_length(file_altnames(r)) : 0)
-#define file_size(r)		((r)->size)
-#define file_status(r)		((r)->status)
-#define file_where(r)		((r)->where)
+#define file_hashes(f)		(file_hashes_xxx((f), FILE_SH_FULL))
+#define file_hashes_xxx(f, i)	(&(f)->sh[(i)].hashes)
+#define file_merge(f)		((f)->merge)
+#define file_name(f)		((f)->name)
+#define file_size(f)		(file_size_xxx((f), FILE_SH_FULL))
+#define file_size_known(f)	(file_size_xxx_known((f), FILE_SH_FULL))
+#define file_size_xxx(f, i)	((f)->sh[(i)].size)
+#define file_size_xxx_known(f, i)	\
+		(file_size_xxx((f), (i)) != SIZE_UNKNOWN)
+#define file_status(f)		((f)->status)
+#define file_where(f)		((f)->where)
 
-#define file_compare_m(r1, r2)	\
-	(strcmp(file_merge(r1) ? file_merge(r1) : file_name(r1), file_name(r2)))
-#define file_compare_n(r1, r2)	(strcmp(file_name(r1), file_name(r2)))
-#define file_compare_msc(r1, r2)						\
-	(file_compare_m((r1), (r2)) || file_compare_sc((r1), (r2)))
-#define file_compare_nsc(r1, r2)						\
-	(file_compare_n((r1), (r2)) || file_compare_sc((r1), (r2)))
-#define file_compare_sc(rg, ra)						  \
-	(!(!SIZE_IS_KNOWN(file_size(rg))					  \
-	   || (file_size(rg) == file_size(ra)				  \
-	       && (file_status(rg) == STATUS_NODUMP			  \
-		   || ((hashes_types(file_hashes(rg))			  \
-			& hashes_types(file_hashes(rg)) & HASHES_TYPE_CRC) \
-		       && (hashes_crc(file_hashes(rg))			  \
-			   == hashes_crc(file_hashes(ra))))))))
+#define file_compare_n(f1, f2)	(strcmp(file_name(f1), file_name(f2)) == 0)
 
-void file_add_altname(file_t *, const char *);
+bool file_compare_m(const file_t *, const file_t *);
+bool file_compare_msc(const file_t *, const file_t *);
+bool file_compare_nsc(const file_t *, const file_t *);
+bool file_compare_sc(const file_t *, const file_t *);
 void file_init(file_t *);
 void file_finalize(file_t *);
+bool file_sh_is_set(const file_t *, int);
 
 #endif /* file.h */

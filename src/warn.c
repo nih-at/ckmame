@@ -86,7 +86,7 @@ warn_file(const file_t *r, const char *fmt, ...)
     warn_ensure_header();
     
     /* XXX */
-    printf("file %-12s  size %7ld  crc %.8lx: ",
+    printf("file %-12s  size %7" PRIu64 "  crc %.8lx: ",
 	   file_name(r), file_size(r), hashes_crc(file_hashes(r)));
     
     va_start(va, fmt);
@@ -125,14 +125,13 @@ warn_rom(const file_t *r, const char *fmt, ...)
 {
     va_list va;
     char buf[100], *p;
-    int j;
 
     warn_ensure_header();
     
     if (r) {
 	printf("rom  %-12s  ", file_name(r));
 	if (SIZE_IS_KNOWN(file_size(r))) {
-	    sprintf(buf, "size %7ld  ", file_size(r));
+	    sprintf(buf, "size %7" PRIu64 "  ", file_size(r));
 	    p = buf + strlen(buf);
 	    
 	    /* XXX */
@@ -165,18 +164,6 @@ warn_rom(const file_t *r, const char *fmt, ...)
     va_end(va);
 
     putc('\n', stdout);
-
-    if (r && file_num_altnames(r)) {
-	for (j=0; j<file_num_altnames(r); j++) {
-	    printf("rom  %-12s  ", file_altname(r, j));
-	    fputs(buf, stdout);
-	    va_start(va, fmt);
-	    vprintf(fmt, va);
-	    va_end(va);
-
-	    printf(" (same as %s)\n", file_name(r));
-	}
-    }
 
     return;
 }

@@ -122,7 +122,7 @@ familymeeting(sqlite3 *db, filetype_t ft, game_t *parent, game_t *child)
 	cr = game_file(child, ft, i);
 	for (j=0; j<game_num_files(parent, ft); j++) {
 	    pr = game_file(parent, ft, j);
-	    if (file_compare_msc(cr, pr) == 0) {
+	    if (file_compare_msc(cr, pr)) {
 		file_where(cr) = (where_t)(file_where(pr) + 1);
 		break;
 	    }

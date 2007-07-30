@@ -221,7 +221,7 @@ write_game(output_context_cm_t *ctx, game_t *g)
 	    print_string(ctx, "merge",
 			 file_merge(r) ? file_merge(r) : file_name(r),
 			 " ");
-	fprintf(ctx->f, "size %lu ", file_size(r));
+	fprintf(ctx->f, "size %" PRIu64 " ", file_size(r));
 	print_hash(ctx, HASHES_TYPE_CRC, file_hashes(r), " ");
 	print_hash(ctx, HASHES_TYPE_SHA1, file_hashes(r), " ");
 	print_hash(ctx, HASHES_TYPE_MD5, file_hashes(r), " ");

@@ -116,7 +116,7 @@ parse_archive(parser_context_t *ctx, archive_t *a)
 
 	parse_file_start(ctx, TYPE_ROM);
 	parse_file_name(ctx, TYPE_ROM, 0, file_name(r));
-	sprintf(hstr, "%lu", file_size(r));
+	sprintf(hstr, "%" PRIu64, file_size(r));
 	parse_file_size(ctx, TYPE_ROM, 0, hstr);
 	for (ht=1; ht<=HASHES_TYPE_MAX; ht<<=1) {
 	    if (romhashtypes & ht)

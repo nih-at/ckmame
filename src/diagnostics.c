@@ -262,7 +262,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 	    if (output_options & WARN_LONGOK)
 		warn_rom(r,
 			 "too long, valid subsection at byte %" PRIdoff
-			 " (%d)%s%s",
+			 " (%" PRIu64 ")%s%s",
 			 PRIoff_cast match_offset(m), file_size(f),
 			 (file_where(r) != match_where(m)
 			  ? ", should be in " : ""),

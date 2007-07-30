@@ -196,7 +196,7 @@ print_archive(const char *fname)
 
 	f = archive_file(a, i);
 
-	printf("\tfile %-12s  size %7ld",
+	printf("\tfile %-12s  size %7" PRIu64,
 	       file_name(f), file_size(f));
 	print_checksums(file_hashes(f));
 	printf("\n");
