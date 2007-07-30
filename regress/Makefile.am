@@ -105,6 +105,7 @@ TESTS=	\
 		sample-parent-ok.test \
 		sample-superfluous.test \
 		skip.test \
+		skip-full.test \
 		skipbad.test \
 		superfluous-broken.test \
 		superfluous-cleanup.test \
