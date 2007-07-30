@@ -19,5 +19,6 @@ Makefile.in$
 ^src/detective$
 ^src/dumpgame$
 ^src/libckmame.a$
+^src/mamedb$
 ^src/mkmamedb$
 ^stamp-h1$
