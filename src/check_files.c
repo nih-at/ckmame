@@ -203,8 +203,13 @@ match_files(archive_t *a, test_t t, const file_t *r, match_t *m)
 		 ? (file_compare_n(r, ra))
 		 : (file_compare_m(r, ra)))
 		&& file_compare_sc(r, ra)) {
+		/* XXX: this is exceedingly ugly */
 		if ((hashes_cmp(file_hashes(r), file_hashes(ra))
-		     != HASHES_CMP_MATCH)) {
+		     != HASHES_CMP_MATCH)
+		    && (!file_sh_is_set(ra, FILE_SH_DETECTOR)
+			|| (hashes_cmp(file_hashes(r),
+				      file_hashes_xxx(ra, FILE_SH_DETECTOR))
+			    != HASHES_CMP_MATCH))) {
 		    if (match_quality(m) == QU_HASHERR)
 			break;
 		    

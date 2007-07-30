@@ -249,8 +249,8 @@ compute_values(detector_t *d, file_t *r, int64_t start, int64_t end,
 
     hashes_update_final(hu);
 
-    file_size(r) = size;
-    memcpy(file_hashes(r), &h, sizeof(h));
+    file_size_xxx(r, FILE_SH_DETECTOR) = size;
+    memcpy(file_hashes_xxx(r, FILE_SH_DETECTOR), &h, sizeof(h));
 
     return 0;
 }
