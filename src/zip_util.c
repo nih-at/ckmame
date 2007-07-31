@@ -113,6 +113,7 @@ my_zip_unique_name(struct zip *za, const char *name)
     if (ext == NULL) {
 	strcpy(ret, name);
 	p = ret+strlen(ret);
+	p[4] = '\0';
     }
     else {
 	strncpy(ret, name, ext-name);
