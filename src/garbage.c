@@ -1,8 +1,6 @@
 /*
-  $NiH: garbage.c,v 1.3 2006/05/06 23:31:40 dillo Exp $
-
   garbage.c -- move files to garbage directory
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -50,73 +48,54 @@ static int garbage_open(garbage_t *);
 
 int garbage_add(garbage_t *g, int idx)
 {
-    struct zip_source *source;
     const char *name;
     char *name2;
+    int ret;
 
-    if (g->zname == NULL)
-	garbage_open(g);
-
-    if (g->za == NULL)
+    if (garbage_open(g) < 0)
 	return -1;
 
-    name = file_name(archive_file(g->a, idx));
-    if (zip_name_locate(g->za, name, 0) == 0)
-	name2 = my_zip_unique_name(g->za, name);
+    name = file_name(archive_file(g->sa, idx));
+    if (archive_file_index_by_name(g->da, name) != -1)
+	name2 = my_zip_unique_name(archive_zip(g->da), name);	/* XXX */
     else
 	name2 = NULL;
 
-    if ((source=zip_source_zip(g->za, archive_zip(g->a), idx,
-			       ZIP_FL_UNCHANGED, 0, -1)) == NULL
-	|| zip_add(g->za, name2 ? name2 : name, source) < 0) {
-	zip_source_free(source);
-	seterrinfo(archive_name(g->a), file_name(archive_file(g->a, idx)));
-	myerror(ERRZIPFILE, "error moving to `%s': %s",
-		g->zname, zip_strerror(g->za));
-	free(name2);
-	return -1;
-    }
+    /* XXX: used ZIP_FL_UNCHANGED, why is/was that needed? */
+    ret = archive_file_copy(g->sa, idx, g->da, name2 ? name2 : name);
 
     free(name2);
-    return 0;
+    return ret;
 }
 
 
 
-int garbage_close(garbage_t *g)
+int
+garbage_close(garbage_t *g)
 {
-    struct zip *za;
-    char *zname;
+    archive_t *da;
 
     if (g == NULL)
 	return 0;
 
-    za = g->za;
-    zname = g->zname;
+    da = g->da;
 
     free(g);
 
-    if (za == NULL) {
-	free(zname);
+    if (da == NULL)
 	return 0;
-    }
 
-    if (zip_get_num_files(za) > 0) {
-	if (ensure_dir(zname, 1) < 0) {
-	    zip_unchange_all(za);
-	    zip_close(za);
-	    free(zname);
+    /* XXX: move this to archive_commit/archive_free? */
+    if (archive_num_files(da) > 0) {
+	if (ensure_dir(archive_name(da), 1) < 0) {
+	    archive_rollback(da);
+	    archive_free(da);
 	    return -1;
 	}
     }
 
-    free(zname);
-
-    if (zip_close(za) < 0) {
-	zip_unchange_all(za);
-	zip_close(za);
+    if (archive_free(da) < 0)
 	return -1;
-    }
 
     return 0;
 }
@@ -129,9 +108,9 @@ garbage_t *garbage_new(archive_t *a)
 
     g = (garbage_t *)xmalloc(sizeof(*g));
 
-    g->a = a;
-    g->zname = NULL;
-    g->za = NULL;
+    g->sa = a;
+    g->da = NULL;
+    g->opened = false;
 
     return g;
 }
@@ -141,10 +120,18 @@ garbage_t *garbage_new(archive_t *a)
 static int
 garbage_open(garbage_t *g)
 {
-    g->zname = make_garbage_name(archive_name(g->a), 0);
+    char *name;
 
-    if ((g->za=my_zip_open(g->zname, ZIP_CREATE)) == NULL)
-	return -1;
+    if (!g->opened) {
+	g->opened = true;
+	name = make_garbage_name(archive_name(g->sa), 0);
+	g->da = archive_new(name, TYPE_ROM, ARCHIVE_FL_CREATE);
+	free(name);
+	if (archive_ensure_zip(g->da) < 0) {
+	    archive_free(g->da);
+	    g->da = NULL;
+	}
+    }
 
-    return 0;
+    return (g->da != NULL ? 0 : -1);
 }

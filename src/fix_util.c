@@ -361,7 +361,7 @@ save_needed(archive_t *a, int index, int do_save)
 	    ret = -1;
 	}
 	else {
-	    a = archive_new(tmp, 0);
+	    a = archive_new(tmp, TYPE_ROM, 0);
 	    index = 0;
 	}
     }

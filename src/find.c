@@ -268,7 +268,7 @@ check_for_file_in_zip(const char *name, const file_t *r, match_t *m)
     int idx;
 
     if ((full_name=findfile(name, TYPE_ROM)) == NULL
-	|| (a=archive_new(full_name, 0)) == NULL) {
+	|| (a=archive_new(full_name, TYPE_ROM, 0)) == NULL) {
 	free(full_name);
 	return FIND_MISSING;
     }

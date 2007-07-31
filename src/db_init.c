@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   db_init.c -- SQL statements to initialize mamedb
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

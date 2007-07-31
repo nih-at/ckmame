@@ -1,6 +1,4 @@
 /*
-  $NiH: archive.c,v 1.18 2006/10/04 17:36:43 dillo Exp $
-
   archive.c -- information about an archive
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
@@ -96,15 +94,18 @@ archive_close_zip(archive_t *a)
 
 
 int
-archive_ensure_zip(archive_t *a, int createp)
+archive_ensure_zip(archive_t *a)
 {
     int flags;
     
     if (archive_zip(a))
 	return 0;
 
-    flags = a->check_integrity ? ZIP_CHECKCONS : 0;
-    if (createp)
+    if (archive_filetype(a) != TYPE_ROM)
+	return -1;
+
+    flags = (a->flags & ARCHIVE_FL_CHECK_INTEGRITY) ? ZIP_CHECKCONS : 0;
+    if (a->flags & ARCHIVE_FL_CREATE)
 	flags |= ZIP_CREATE;
 
     if ((archive_zip(a)=my_zip_open(archive_name(a), flags)) == NULL)
@@ -128,7 +129,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     if ((hashes_types(file_hashes(r)) & hashtypes) == hashtypes)
 	return 0;
 
-    if (archive_ensure_zip(a, 0) != 0)
+    if (archive_ensure_zip(a) != 0)
 	return -1;
 
     za = archive_zip(a);
@@ -177,7 +178,7 @@ archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
     hashes_init(&hn);
     hashes_types(&hn) = hashes_types(h);
 
-    if (archive_ensure_zip(a, 0) < 0)
+    if (archive_ensure_zip(a) < 0)
 	return -1;
 
     seterrinfo(zip_get_name(archive_zip(a), idx, 0), archive_name(a));
@@ -252,7 +253,7 @@ archive_free(archive_t *a)
 
 
 archive_t *
-archive_new(const char *name, int flags)
+archive_new(const char *name, filetype_t ft, int flags)
 {
     archive_t *a;
     int i, id;
@@ -267,13 +268,28 @@ archive_new(const char *name, int flags)
     a->refcount = 1;
     a->files = array_new(sizeof(file_t));
     a->za = NULL;
-    a->check_integrity = (flags & ARCHIVE_FL_CHECK_INTEGRITY);
+    a->flags = flags;
 
-    if (read_infos_from_zip(a) < 0) {
-	if (!(flags & ARCHIVE_FL_CREATE)) {
-	    archive_real_free(a);
-	    return NULL;
+    switch (ft) {
+    case TYPE_ROM:
+    case TYPE_SAMPLE:
+	archive_filetype(a) = TYPE_ROM;
+	if (read_infos_from_zip(a) < 0) {
+	    if (!(a->flags & ARCHIVE_FL_CREATE)) {
+		archive_real_free(a);
+		return NULL;
+	    }
 	}
+	break;
+
+    case TYPE_DISK:
+	archive_filetype(a) = TYPE_DISK;
+	/* XXX */
+	break;
+
+    default:
+	archive_real_free(a);
+	return NULL;
     }
 
     for (i=0; i<archive_num_files(a); i++) {
@@ -309,6 +325,8 @@ archive_real_free(archive_t *a)
 int
 archive_refresh(archive_t *a)
 {
+    /* XXX: handle TYPE_DISK */
+
     archive_close_zip(a);
     array_truncate(archive_files(a), 0, file_finalize);
 
@@ -378,7 +396,8 @@ read_infos_from_zip(archive_t *a)
 
     zerr = 0;
     if ((za=zip_open(archive_name(a),
-		     (a->check_integrity ? ZIP_CHECKCONS : 0), 
+		     ((a->flags & ARCHIVE_FL_CHECK_INTEGRITY)
+		      ? ZIP_CHECKCONS : 0), 
 		     &zerr)) == NULL) {
 	/* no error if file doesn't exist */
 	if (!(zerr == ZIP_ER_OPEN && errno == ENOENT)) {
@@ -416,7 +435,7 @@ read_infos_from_zip(archive_t *a)
 	if (detector)
 	    match_detector(za, i, r);
 
-	if (a->check_integrity)
+	if (a->flags & ARCHIVE_FL_CHECK_INTEGRITY)
 	    archive_file_compute_hashes(a, i, romhashtypes);
     }
 

@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   memdb.h -- in-memory sqlite3 db
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 
@@ -48,27 +46,30 @@ sqlite3 *memdb = NULL;
 int memdb_inited = 0;
 
 #define INSERT_PTR	\
-    "insert into file_cache (name, pointer) values (?, ?)"
+    "insert into ptr_cache (name, pointer) values (?, ?)"
 #define QUERY_PTR	\
-    "select pointer from file_cache where name = ?"
+    "select pointer from ptr_cache where name = ?"
 #define QUERY_PTR_ID	\
-    "select pointer from file_cache where game_id = ?"
+    "select pointer from ptr_cache where game_id = ?"
 #define UPDATE_FILE \
     "update file set crc = ?, md5 = ?, sha1 = ? where" \
     " game_id = ? and file_type = ? and file_idx = ?"
 #define DELETE_FILE \
     "delete from file where" \
     " game_id = ? and file_type = ? and file_idx = ?"
+#define DEC_FILE_IDX \
+    "update file set idx=idx-1 where" \
+    " game_id = ? and file_type = ? and file_idx > ?"
 
 
 
 const char *sql_db_init_mem = "\
-create table file_cache (\n\
+create table ptr_cache (\n\
 	game_id integer primary key,\n\
 	name text not null,\n\
 	pointer blob\n\
 );\n\
-create index file_cache_name on file_cache (name);\n\
+create index ptr_cache_name on ptr_cache (name);\n\
 \n\
 create table file (\n\
 	game_id integer,\n\
@@ -238,6 +239,31 @@ memdb_put_ptr(const char *name, void *ptr)
 
 
 int
+memdb_file_delete(const archive_t *a, int idx)
+{
+    sqlite3_stmt *stmt;
+
+    if (_delete_file(archive_id(a), archive_filetype(a), idx) < 0)
+	return -1;
+
+    if (sqlite3_prepare_v2(memdb, DEC_FILE_IDX, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+    
+    if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, archive_filetype(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK
+	|| sqlite3_step(stmt) != SQLITE_DONE) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+
+    sqlite3_finalize(stmt);
+    return 0;
+}
+
+
+
+int
 memdb_update_disk(const disk_t *d)
 {
     return _update_file(disk_id(d), TYPE_DISK, 0, disk_hashes(d));
@@ -249,9 +275,9 @@ int
 memdb_update_file(const archive_t *a, int idx)
 {
     if (file_status(archive_file(a, idx)) != STATUS_OK)
-	return _delete_file(archive_id(a), TYPE_ROM, idx);
+	return _delete_file(archive_id(a), archive_filetype(a), idx);
     
-    return _update_file(archive_id(a), TYPE_ROM, idx,
+    return _update_file(archive_id(a), archive_filetype(a), idx,
 			file_hashes(archive_file(a, idx)));
 }
 

@@ -182,7 +182,7 @@ print_archive(const char *fname)
     file_t *f;
     int i, j, ret;
 
-    if ((a=archive_new(fname, 0)) == NULL)
+    if ((a=archive_new(fname, TYPE_ROM, 0)) == NULL)
 	return -1;
 
     printf("%s\n", archive_name(a));

@@ -22,9 +22,11 @@ libckmame_a_LIBADD=@LIBOBJS@
 libckmame_a_SOURCES= \
 	archive.c \
 	archive_file_compare_hashes.c \
+	archive_modify.c \
 	array.c \
 	array_delete.c \
 	array_grow.c \
+	array_insert.c \
 	array_new_length.c \
 	array_push.c \
 	array_truncate.c \

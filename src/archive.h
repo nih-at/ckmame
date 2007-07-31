@@ -46,8 +46,9 @@
 struct archive {
     int id;
     int refcount;
-    int check_integrity;
     char *name;
+    filetype_t filetype;
+    int flags;
     array_t *files;
     struct zip *za;
 };
@@ -56,28 +57,40 @@ typedef struct archive archive_t;
 
 #define ARCHIVE_FL_CREATE		0x1
 #define ARCHIVE_FL_CHECK_INTEGRITY	0x2
+#define ARCHIVE_FL_QUIET		0x4
 
 
 
 #define archive_file(a, i)	((file_t *)array_get(archive_files(a), (i)))
 #define archive_files(a)	((a)->files)
+#define archive_filetype(a)	((a)->filetype)
 #define archive_id(a)		((a)->id)
 #define archive_name(a)		((a)->name)
 #define archive_num_files(a)	(array_length(archive_files(a)))
+
+/* internal */
 #define archive_zip(a)		((a)->za)
 
 
 archive_t *archive_by_id(int);
-int archive_close_zip(archive_t *);
-int archive_ensure_zip(archive_t *, int);
+int archive_file_add_empty(archive_t *, const char *);
 int archive_file_compare_hashes(archive_t *, int, const hashes_t *);
 int archive_file_compute_hashes(archive_t *, int, int);
+int archive_file_copy(archive_t *, int, archive_t *, const char *);
+int archive_file_copy_or_move(archive_t *, int, archive_t *, const char *, int);
+int archive_file_delete(archive_t *, int);
+int archive_file_move(archive_t *, int, archive_t *, const char *);
+int archive_file_rename(archive_t *, int, const char *);
 off_t archive_file_find_offset(archive_t *, int, int, const hashes_t *);
 int archive_file_index_by_name(const archive_t *, const char *);
 int archive_free(archive_t *);
-archive_t *archive_new(const char *, int);
+archive_t *archive_new(const char *, filetype_t, int);
 void archive_real_free(archive_t *);
-int archive_refresh(archive_t *);
+int archive_rollback(archive_t *);
 
+/* internal */
+int archive_close_zip(archive_t *);
+int archive_ensure_zip(archive_t *);
+int archive_refresh(archive_t *);
 
 #endif /* archive.h */

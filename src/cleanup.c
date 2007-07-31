@@ -69,7 +69,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	name = (char *)parray_get(list, i);
 	switch ((nt=name_type(name))) {
 	case NAME_ZIP:
-	    if ((a=archive_new(name, 0)) == NULL) {
+	    if ((a=archive_new(name, TYPE_ROM, 0)) == NULL) {
 		/* XXX */
 		continue;
 	    }
@@ -154,7 +154,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
     if (flags & CLEANUP_UNKNOWN && fix_options & FIX_DO)
 	gb = garbage_new(a);
 	    
-    archive_ensure_zip(a, 0);
+    archive_ensure_zip(a);
     survivors = 0;
 	    
     for (i=0; i<archive_num_files(a); i++) {
@@ -230,6 +230,9 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 	    else
 		survivors = 1;
 	    break;
+
+	case FS_DELETED:
+	    break;
 	}
     }
     
@@ -288,6 +291,7 @@ cleanup_disk(images_t *im, result_t *res, int flags)
 	case FS_BROKEN:
 	case FS_MISSING:
 	case FS_PARTUSED:
+	case FS_DELETED:
 	    break;
 	    
 	case FS_NEEDED:

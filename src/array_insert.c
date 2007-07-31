@@ -1,8 +1,5 @@
-#ifndef _HAD_MEMDB_H
-#define _HAD_MEMDB_H
-
 /*
-  memdb.h -- in-memory sqlite3 db
+  array_insert.c -- insert element into array of arbitrary types
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -36,21 +33,30 @@
 
 
 
-#include <sqlite3.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "archive.h"
-#include "disk.h"
-
-extern sqlite3 *memdb;
+#include "array.h"
 
 
 
-int memdb_ensure(void);
-void *memdb_get_ptr(const char *);
-void *memdb_get_ptr_by_id(int);
-int memdb_put_ptr(const char *, void *);
-int memdb_file_delete(const archive_t *, int);
-int memdb_update_disk(const disk_t *);
-int memdb_update_file(const archive_t *, int);
+void *
+array_insert(array_t *a, int idx, const void *d)
+{
+    if (idx == -1)
+	idx = array_length(a);
 
-#endif /* memdb.h */
+    if (idx < 0 || idx > array_length(a))
+	return NULL;
+
+    array_grow(a, NULL);
+
+    memmove(a->data + (idx+1)*a->elem_size,
+	    a->data + idx*a->elem_size,
+	    a->elem_size * (array_length(a)-idx-1));
+
+    if (d)
+	array_set(a, idx, d);
+
+    return array_get(a, idx);
+}

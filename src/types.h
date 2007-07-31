@@ -2,8 +2,6 @@
 #define _HAD_TYPES_H
 
 /*
-  $NiH: types.h,v 1.17 2006/10/25 15:44:47 wiz Exp $
-
   types.h -- type definitions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
@@ -66,7 +64,8 @@ enum file_status {
     FS_SUPERFLUOUS,	/* known, not needed here, and exists elsewhere */
     FS_NEEDED,		/* known and needed elsewhere */
     FS_USED,		/* needed here */
-    FS_DUPLICATE	/* exists in old */
+    FS_DUPLICATE,	/* exists in old */
+    FS_DELETED		/* file deleted from archive */
 };
 
 typedef enum file_status file_status_t;
@@ -98,6 +97,8 @@ typedef enum where where_t;
 #define SIZE_UNKNOWN	UINT64_MAX
 #define SIZE_IS_KNOWN(s)	((s) != SIZE_UNKNOWN)
 
+/* keep in sync with archive_modify.c:ops */
+/* also, bump database version on change */
 enum filetype {
     TYPE_ROM, TYPE_SAMPLE, TYPE_DISK,
     TYPE_MAX,

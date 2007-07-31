@@ -1,6 +1,4 @@
 /*
-  $NiH: fix.c,v 1.29 2006/10/04 17:36:44 dillo Exp $
-
   fix.c -- fix ROM sets
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
@@ -74,7 +72,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
     if (fix_options & FIX_DO) {
 	gb = garbage_new(a);
 	
-	if (archive_ensure_zip(a, 1) < 0) {
+	if (archive_ensure_zip(a) < 0) {
 	    char *new_name;
 
 	    /* opening the zip file failed, rename it and create new one */
@@ -91,7 +89,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		return -1;
 	    }
 	    free(new_name);
-	    if (archive_ensure_zip(a, 1) < 0)
+	    if (archive_ensure_zip(a) < 0)
 		return -1;
 	}
 
@@ -166,6 +164,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	case FS_BROKEN:
 	case FS_USED:
 	case FS_MISSING:
+	case FS_DELETED:
 	    /* nothing to be done */
 	    break;
 	}
@@ -261,6 +260,7 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 	case FS_MISSING:
 	case FS_USED:
 	case FS_PARTUSED:
+	case FS_DELETED:
 	    break;
 	}
     }
@@ -313,7 +313,7 @@ fix_files(game_t *g, archive_t *a, result_t *res)
     int i, idx, archive_changed;
 
     seterrinfo(NULL, archive_name(a));
-    archive_ensure_zip(a, 1);
+    archive_ensure_zip(a);
     zto = archive_zip(a);
 
     archive_changed = 0;
@@ -325,7 +325,7 @@ fix_files(game_t *g, archive_t *a, result_t *res)
 	else
 	    afrom = match_archive(m);
 	if (afrom) {
-	    archive_ensure_zip(afrom, 0);
+	    archive_ensure_zip(afrom);
 	    zfrom = archive_zip(afrom);
 	}
 	else

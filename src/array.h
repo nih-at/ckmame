@@ -2,10 +2,8 @@
 #define _HAD_ARRAY_H
 
 /*
-  $NiH: array.h,v 1.5 2006/05/06 16:46:12 dillo Exp $
-
   array.h -- array of arbitrary types
-  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -57,6 +55,7 @@ void array_delete(array_t *, int, void (*)(/* void * */));
 void array_free(array_t *, void (*)(/* void * */));
 void *array_get(const array_t *, int);
 void *array_grow(array_t *, void (*)(/* void * */));
+void *array_insert(array_t *, int, const void *);
 array_t *array_new_sized(int, int);
 array_t *array_new_length(int, int, void (*)(/* void * */));
 void *array_push(array_t *, void *);

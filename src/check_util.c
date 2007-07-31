@@ -106,7 +106,7 @@ ensure_extra_maps(int flags)
 	    file = parray_get(superfluous, i);
 	    switch ((nt=name_type(file))) {
 	    case NAME_ZIP:
-		if ((a=archive_new(file, 0)) != NULL) {
+		if ((a=archive_new(file, TYPE_ROM, 0)) != NULL) {
 		    enter_archive_in_map(a, FILE_SUPERFLUOUS);
 		    archive_free(a);
 		}
@@ -312,7 +312,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name,
 	}
 	switch ((nt=name_type(b))) {
 	case NAME_ZIP:
-	    if ((a=archive_new(b, 0)) != NULL) {
+	    if ((a=archive_new(b, TYPE_ROM, 0)) != NULL) {
 		if (flags & DO_MAP)
 		    enter_archive_in_map(a, where);
 		if ((flags & DO_LIST) && list)
