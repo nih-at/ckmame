@@ -225,8 +225,11 @@ archive_file_index_by_name(const archive_t *a, const char *name)
     int i;
 
     for (i=0; i<archive_num_files(a); i++) {
-	if (strcmp(file_name(archive_file(a, i)), name) == 0)
+	if (strcmp(file_name(archive_file(a, i)), name) == 0) {
+	    if (file_where(archive_file(a, i)) == FILE_DELETED)
+		return -1;
 	    return i;
+	}
     }
 
     return -1;
@@ -245,6 +248,10 @@ archive_free(archive_t *a)
     if (--a->refcount != 0)
 	return 0;
 
+    if (a->flags & ARCHIVE_IFL_MODIFIED) {
+	/* XXX: warn about freeing modified archive */
+    }
+
     ret = archive_close_zip(a);
 
     if (a->flags & ARCHIVE_FL_NOCACHE)
@@ -262,6 +269,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     int i, id;
 
     if ((a=memdb_get_ptr(name)) != 0) {
+	/* XXX: check for compatibility of a->flags and flags */
 	a->refcount++;
 	return a;
     }
@@ -273,7 +281,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     a->where = where;
     a->files = array_new(sizeof(file_t));
     a->za = NULL;
-    a->flags = flags;
+    a->flags = (flags & ARCHIVE_FL_MASK);
 
     switch (ft) {
     case TYPE_ROM:
@@ -308,10 +316,10 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
 	    return NULL;
 	}
 	a->id = id;
-    }
 
-    if (IS_EXTERNAL(archive_where(a)))
-	memdb_file_insert_archive(a);
+	if (IS_EXTERNAL(archive_where(a)))
+	    memdb_file_insert_archive(a);
+    }
 
     return a;
 }

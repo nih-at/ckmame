@@ -37,6 +37,7 @@
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
+#include "memdb.h"
 #include "xmalloc.h"
 
 
@@ -63,7 +64,45 @@ struct {
 
 
 int
-archive_file_add_empty(archive_t *a, const char *name, bool dochange)
+archive_commit(archive_t *a)
+{
+    int i;
+
+    if (!(a->flags & ARCHIVE_IFL_MODIFIED))
+	return 0;
+
+    if (zip_close(a->za) < 0)
+	return -1;
+    a->za = NULL;
+
+    for (i=0; i<archive_num_files(a); i++) {
+	switch (file_where(archive_file(a, i))) {
+	case FILE_DELETED:
+	    /* XXX: handle error (how?) */
+	    memdb_file_delete(a, i, archive_is_rdwr(a));
+
+	    if (archive_is_rdwr(a)) {
+		array_delete(archive_files(a), i, file_finalize);
+		i--;
+	    }
+	    break;
+
+	case FILE_ADDED:
+	    memdb_file_insert(a, i);
+	    break;
+
+	default:
+	    break;
+	}
+    }
+
+    return 0;
+}
+
+
+
+int
+archive_file_add_empty(archive_t *a, const char *name)
 {
     struct zip_source *source;
     struct hashes_update *hu;
@@ -75,7 +114,7 @@ archive_file_add_empty(archive_t *a, const char *name, bool dochange)
 	return -1;
     }
 
-    if (dochange) {
+    if (archive_is_rdwr(a)) {
 	if (archive_ensure_zip(a) < 0)
 	    return -1;
 
@@ -103,8 +142,7 @@ archive_file_add_empty(archive_t *a, const char *name, bool dochange)
 
 
 int
-archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname,
-		  bool dochange)
+archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname)
 {
     if (archive_filetype(sa) != archive_filetype(da)) {
 	seterrinfo(archive_name(sa), NULL);
@@ -113,13 +151,13 @@ archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname,
 	return -1;
     }
 
-    if (dochange)
+    /* XXX: don't add deleted files */
+
+    if (archive_is_rdwr(sa))
 	if (ops[archive_filetype(sa)].copy(sa, sidx, da, dname) < 0)
 	    return -1;
 
     _add_file(da, -1, dname, archive_file(sa, sidx));
-
-    /* XXX: add to memdb (or do that in commit?) */
 
     return 0;
 }
@@ -128,24 +166,27 @@ archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname,
 
 int
 archive_file_copy_or_move(archive_t *sa, int sidx, archive_t *da,
-			  const char *dname, int copyp, bool dochange)
+			  const char *dname, int copyp)
 {
     if (copyp)
-	return archive_file_copy(sa, sidx, da, dname, dochange);
+	return archive_file_copy(sa, sidx, da, dname);
     else
-	return archive_file_move(sa, sidx, da, dname, dochange);
+	return archive_file_move(sa, sidx, da, dname);
 }
 
 
 
 int
-archive_file_delete(archive_t *a, int idx, bool dochange)
+archive_file_delete(archive_t *a, int idx)
 {
-    if (dochange)
+    /* XXX: don't delete deleted files */
+
+    if (archive_is_rdwr(a))
 	if (ops[archive_filetype(a)].delete(a, idx) < 0)
 	    return -1;
 
     file_where(archive_file(a, idx)) = FILE_DELETED;
+    a->flags |= ARCHIVE_IFL_MODIFIED;
 
     return 0;
 }
@@ -153,23 +194,25 @@ archive_file_delete(archive_t *a, int idx, bool dochange)
 
 
 int
-archive_file_move(archive_t *sa, int sidx, archive_t *da, const char *dname,
-		  bool dochange)
+archive_file_move(archive_t *sa, int sidx, archive_t *da, const char *dname)
 {
-    if (archive_file_copy(sa, sidx, da, dname, dochange) < 0)
+    if (archive_file_copy(sa, sidx, da, dname) < 0)
 	return -1;
 
-    return archive_file_delete(sa, sidx, dochange);
+    return archive_file_delete(sa, sidx);
 }
 
 int
-archive_file_rename(archive_t *a, int idx, const char *name, bool dochange)
+archive_file_rename(archive_t *a, int idx, const char *name)
 {
-    if (dochange)
+    /* XXX: don't rename deleted files */
+
+    if (archive_is_rdwr(a))
 	if (ops[archive_filetype(a)].rename(a, idx, name) < 0)
 	    return -1;
     
-    /* XXX: update archive */
+    free(file_name(archive_file(a, idx)));
+    file_name(archive_file(a, idx)) = xstrdup(name);
 
     return 0;
 }
@@ -179,33 +222,35 @@ archive_file_rename(archive_t *a, int idx, const char *name, bool dochange)
 int
 archive_rollback(archive_t *a)
 {
-    int ret, i;
+    int i;
+
+    if (!(a->flags & ARCHIVE_IFL_MODIFIED))
+	return 0;
+
+    /* XXX: unchange archive name on disk rename */
 
     if (a->za == NULL)
 	return 0;
 
-    ret = zip_unchange_all(a->za);
+    if (zip_unchange_all(a->za) < 0)
+	return -1;
 
-    /* XXX: how to undo renames? */
+    /* remove added files */
+    array_truncate(archive_files(a), zip_get_num_files(a->za), file_finalize);
 
+    /* undo deletion and renames */
     for (i=0; i<archive_num_files(a); i++) {
-	switch (file_where(archive_file(a, i))) {
-	    case FILE_DELETED:
-		file_where(archive_file(a, i)) = FILE_INZIP;
-		break;
+	if (file_where(archive_file(a, i)) == FILE_DELETED)
+	    file_where(archive_file(a, i)) = FILE_INZIP;
 
-	    case FILE_ADDED:
-		array_truncate(archive_files(a), i, file_finalize);
-		break;
-
-	    default:
-		break;
-	    }
+	if (strcmp(file_name(archive_file(a, i)),
+		   zip_get_name(a->za, i, 0)) != 0) {
+	    free(file_name(archive_file(a, i)));
+	    file_name(archive_file(a, i)) = xstrdup(zip_get_name(a->za, i, 0));
+	}
     }
 
-    /* XXX: update memdb (or only in commit?) */
-
-    return ret;
+    return 0;
 }
 
 
@@ -219,6 +264,7 @@ _add_file(archive_t *a, int idx, const char *name, const file_t *f)
 
     file_name(nf) = xstrdup(name);
     file_where(nf) = FILE_ADDED;
+    a->flags |= ARCHIVE_IFL_MODIFIED;
 }
 
 

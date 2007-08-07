@@ -242,13 +242,16 @@ memdb_put_ptr(const char *name, void *ptr)
 
 
 int
-memdb_file_delete(const archive_t *a, int idx)
+memdb_file_delete(const archive_t *a, int idx, bool adjust_idx)
 {
     sqlite3_stmt *stmt;
 
     if (_delete_file(archive_id(a), archive_filetype(a), idx) < 0)
 	return -1;
 
+    if (!adjust_idx)
+	return 0;
+    
     if (sqlite3_prepare_v2(memdb, DEC_FILE_IDX, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
     
@@ -261,6 +264,41 @@ memdb_file_delete(const archive_t *a, int idx)
     }
 
     sqlite3_finalize(stmt);
+    return 0;
+}
+
+
+
+/* XXX: avoid code duplication with memdb_file_insert_archive */
+
+int
+memdb_file_insert(const archive_t *a, int idx)
+{
+    sqlite3_stmt *stmt;
+    int i;
+    file_t *r;
+
+    if (memdb_ensure() < 0)
+	return -1;
+
+    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, archive_filetype(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 4, archive_where(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
+	|| sq3_set_int64_default(stmt, 5, file_size(r),
+				 SIZE_UNKNOWN) != SQLITE_OK
+	|| sq3_set_hashes(stmt, 6, file_hashes(r), 1) != SQLITE_OK
+	|| sqlite3_step(stmt) != SQLITE_DONE
+	|| sqlite3_reset(stmt) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+
+    sqlite3_finalize(stmt);
+
     return 0;
 }
 

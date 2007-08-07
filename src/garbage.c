@@ -62,7 +62,7 @@ int garbage_add(garbage_t *g, int idx)
 	name2 = NULL;
 
     /* XXX: used ZIP_FL_UNCHANGED, why is/was that needed? */
-    ret = archive_file_copy(g->sa, idx, g->da, name2 ? name2 : name, true);
+    ret = archive_file_copy(g->sa, idx, g->da, name2 ? name2 : name);
 
     free(name2);
     return ret;

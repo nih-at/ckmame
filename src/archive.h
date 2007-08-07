@@ -54,10 +54,15 @@ struct archive {
 
 typedef struct archive archive_t;
 
-#define ARCHIVE_FL_CREATE		0x1
-#define ARCHIVE_FL_CHECK_INTEGRITY	0x2
-#define ARCHIVE_FL_QUIET		0x4
-#define ARCHIVE_FL_NOCACHE		0x8
+#define ARCHIVE_FL_CREATE		0x01
+#define ARCHIVE_FL_CHECK_INTEGRITY	0x02
+#define ARCHIVE_FL_QUIET		0x04
+#define ARCHIVE_FL_NOCACHE		0x08
+#define ARCHIVE_FL_RDONLY		0x10
+
+#define ARCHIVE_FL_MASK			0xff
+
+#define ARCHIVE_IFL_MODIFIED		0x100
 
 
 
@@ -75,15 +80,14 @@ typedef struct archive archive_t;
 
 archive_t *archive_by_id(int);
 int archive_commit(archive_t *);
-int archive_file_add_empty(archive_t *, const char *, bool);
+int archive_file_add_empty(archive_t *, const char *);
 int archive_file_compare_hashes(archive_t *, int, const hashes_t *);
 int archive_file_compute_hashes(archive_t *, int, int);
-int archive_file_copy(archive_t *, int, archive_t *, const char *, bool);
-int archive_file_copy_or_move(archive_t *, int, archive_t *, const char *, int,
-			      bool);
-int archive_file_delete(archive_t *, int, bool);
-int archive_file_move(archive_t *, int, archive_t *, const char *, bool);
-int archive_file_rename(archive_t *, int, const char *, bool);
+int archive_file_copy(archive_t *, int, archive_t *, const char *);
+int archive_file_copy_or_move(archive_t *, int, archive_t *, const char *, int);
+int archive_file_delete(archive_t *, int);
+int archive_file_move(archive_t *, int, archive_t *, const char *);
+int archive_file_rename(archive_t *, int, const char *);
 off_t archive_file_find_offset(archive_t *, int, int, const hashes_t *);
 int archive_file_index_by_name(const archive_t *, const char *);
 int archive_free(archive_t *);
@@ -92,6 +96,8 @@ void archive_real_free(archive_t *);
 int archive_rollback(archive_t *);
 
 /* internal */
+#define archive_is_rdwr(a)	(((a)->flags & ARCHIVE_FL_RDONLY) == 0)
+
 int archive_close_zip(archive_t *);
 int archive_ensure_zip(archive_t *);
 int archive_refresh(archive_t *);
