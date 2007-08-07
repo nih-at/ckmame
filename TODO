@@ -17,6 +17,8 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [test] verify inparent.test
+! [cleanup] specify globally which parts of memdb/lists to fill/maintain
 ! [test] detective
 ! [compatibility] PRIu64 replacement
 ! [cleanup] use non-GPL getopt_long replacement

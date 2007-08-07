@@ -51,6 +51,9 @@ int memdb_inited = 0;
     "select pointer from ptr_cache where name = ?"
 #define QUERY_PTR_ID	\
     "select pointer from ptr_cache where game_id = ?"
+#define INSERT_FILE	\
+    "insert into file (game_id, file_type, file_idx, location," \
+    " size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?)"
 #define UPDATE_FILE \
     "update file set crc = ?, md5 = ?, sha1 = ? where" \
     " game_id = ? and file_type = ? and file_idx = ?"
@@ -258,6 +261,50 @@ memdb_file_delete(const archive_t *a, int idx)
     }
 
     sqlite3_finalize(stmt);
+    return 0;
+}
+
+
+
+int
+memdb_file_insert_archive(const archive_t *a)
+{
+    sqlite3_stmt *stmt;
+    int i;
+    file_t *r;
+
+    if (memdb_ensure() < 0)
+	return -1;
+
+    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
+	return -1;
+
+    if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, archive_filetype(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 4, archive_where(a)) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return -1;
+    }
+
+    for (i=0; i<archive_num_files(a); i++) {
+	r = archive_file(a, i);
+
+	if (file_status(r) != STATUS_OK)
+	    continue;
+
+	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
+	    || sq3_set_int64_default(stmt, 5, file_size(r),
+				     SIZE_UNKNOWN) != SQLITE_OK
+	    || sq3_set_hashes(stmt, 6, file_hashes(r), 1) != SQLITE_OK
+	    || sqlite3_step(stmt) != SQLITE_DONE
+	    || sqlite3_reset(stmt) != SQLITE_OK) {
+	    sqlite3_finalize(stmt);
+	    return -1;
+	}
+    }
+
+    sqlite3_finalize(stmt);
+
     return 0;
 }
 

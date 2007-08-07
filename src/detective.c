@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   detective.c -- list files from zip archive with headers skipped
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 
@@ -182,7 +180,8 @@ print_archive(const char *fname)
     file_t *f;
     int i, j, ret;
 
-    if ((a=archive_new(fname, TYPE_ROM, 0)) == NULL)
+    if ((a=archive_new(fname, TYPE_ROM, FILE_NOWHERE,
+		       ARCHIVE_FL_NOCACHE)) == NULL)
 	return -1;
 
     printf("%s\n", archive_name(a));

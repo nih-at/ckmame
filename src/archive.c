@@ -247,13 +247,16 @@ archive_free(archive_t *a)
 
     ret = archive_close_zip(a);
 
+    if (a->flags & ARCHIVE_FL_NOCACHE)
+	archive_real_free(a);
+
     return ret;
 }
 
 
 
 archive_t *
-archive_new(const char *name, filetype_t ft, int flags)
+archive_new(const char *name, filetype_t ft, where_t where, int flags)
 {
     archive_t *a;
     int i, id;
@@ -264,8 +267,10 @@ archive_new(const char *name, filetype_t ft, int flags)
     }
 
     a = xmalloc(sizeof(*a));
+    a->id = -1;
     a->name = xstrdup(name);
     a->refcount = 1;
+    a->where = where;
     a->files = array_new(sizeof(file_t));
     a->za = NULL;
     a->flags = flags;
@@ -294,15 +299,20 @@ archive_new(const char *name, filetype_t ft, int flags)
 
     for (i=0; i<archive_num_files(a); i++) {
 	/* XXX: file_state(archive_file(a, i)) = FILE_UNKNOWN; */
-	file_where(archive_file(a, i)) = (where_t) -1;
+	file_where(archive_file(a, i)) = FILE_INZIP;
     }
 
-    if ((id=memdb_put_ptr(name, a)) < 0) {
-	archive_real_free(a);
-	return NULL;
+    if (!(a->flags & ARCHIVE_FL_NOCACHE)) {
+	if ((id=memdb_put_ptr(name, a)) < 0) {
+	    archive_real_free(a);
+	    return NULL;
+	}
+	a->id = id;
     }
-    a->id = id;
-    
+
+    if (IS_EXTERNAL(archive_where(a)))
+	memdb_file_insert_archive(a);
+
     return a;
 }
 

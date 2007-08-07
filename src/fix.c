@@ -164,7 +164,6 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	case FS_BROKEN:
 	case FS_USED:
 	case FS_MISSING:
-	case FS_DELETED:
 	    /* nothing to be done */
 	    break;
 	}
@@ -260,7 +259,6 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 	case FS_MISSING:
 	case FS_USED:
 	case FS_PARTUSED:
-	case FS_DELETED:
 	    break;
 	}
     }

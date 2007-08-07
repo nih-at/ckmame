@@ -126,7 +126,7 @@ tree_traverse(const tree_t *tree, archive_t *parent, archive_t *gparent)
 	    full_name = make_file_name(file_type, 0, tree->name);
 	}
 	if (full_name)
-	    child = archive_new(full_name, TYPE_ROM, flags);
+	    child = archive_new(full_name, TYPE_ROM, FILE_ROMSET, flags);
 	else
 	    child = NULL;
 	free(full_name);

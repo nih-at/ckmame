@@ -69,7 +69,8 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	name = (char *)parray_get(list, i);
 	switch ((nt=name_type(name))) {
 	case NAME_ZIP:
-	    if ((a=archive_new(name, TYPE_ROM, 0)) == NULL) {
+	    /* XXX: where? */
+	    if ((a=archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL) {
 		/* XXX */
 		continue;
 	    }
@@ -230,9 +231,6 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 	    else
 		survivors = 1;
 	    break;
-
-	case FS_DELETED:
-	    break;
 	}
     }
     
@@ -291,7 +289,6 @@ cleanup_disk(images_t *im, result_t *res, int flags)
 	case FS_BROKEN:
 	case FS_MISSING:
 	case FS_PARTUSED:
-	case FS_DELETED:
 	    break;
 	    
 	case FS_NEEDED:

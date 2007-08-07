@@ -62,7 +62,7 @@ int garbage_add(garbage_t *g, int idx)
 	name2 = NULL;
 
     /* XXX: used ZIP_FL_UNCHANGED, why is/was that needed? */
-    ret = archive_file_copy(g->sa, idx, g->da, name2 ? name2 : name);
+    ret = archive_file_copy(g->sa, idx, g->da, name2 ? name2 : name, true);
 
     free(name2);
     return ret;
@@ -125,7 +125,7 @@ garbage_open(garbage_t *g)
     if (!g->opened) {
 	g->opened = true;
 	name = make_garbage_name(archive_name(g->sa), 0);
-	g->da = archive_new(name, TYPE_ROM, ARCHIVE_FL_CREATE);
+	g->da = archive_new(name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_CREATE);
 	free(name);
 	if (archive_ensure_zip(g->da) < 0) {
 	    archive_free(g->da);

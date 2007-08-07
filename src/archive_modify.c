@@ -63,7 +63,7 @@ struct {
 
 
 int
-archive_file_add_empty(archive_t *a, const char *name)
+archive_file_add_empty(archive_t *a, const char *name, bool dochange)
 {
     struct zip_source *source;
     struct hashes_update *hu;
@@ -75,16 +75,18 @@ archive_file_add_empty(archive_t *a, const char *name)
 	return -1;
     }
 
-    if (archive_ensure_zip(a) < 0)
-	return -1;
+    if (dochange) {
+	if (archive_ensure_zip(a) < 0)
+	    return -1;
 
-    if ((source=zip_source_buffer(archive_zip(a), NULL, 0, 0)) == NULL
-	|| zip_add(archive_zip(a), name, source) < 0) {
-	zip_source_free(source);
-	seterrinfo(archive_name(a), name);
-	myerror(ERRZIPFILE, "error creating empty file: %s",
-		zip_strerror(archive_zip(a)));
-	return -1;
+	if ((source=zip_source_buffer(archive_zip(a), NULL, 0, 0)) == NULL
+	    || zip_add(archive_zip(a), name, source) < 0) {
+	    zip_source_free(source);
+	    seterrinfo(archive_name(a), name);
+	    myerror(ERRZIPFILE, "error creating empty file: %s",
+		    zip_strerror(archive_zip(a)));
+	    return -1;
+	}
     }
 
     file_init(&f);
@@ -101,7 +103,8 @@ archive_file_add_empty(archive_t *a, const char *name)
 
 
 int
-archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname)
+archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname,
+		  bool dochange)
 {
     if (archive_filetype(sa) != archive_filetype(da)) {
 	seterrinfo(archive_name(sa), NULL);
@@ -110,8 +113,9 @@ archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname)
 	return -1;
     }
 
-    if (ops[archive_filetype(sa)].copy(sa, sidx, da, dname) < 0)
-	return -1;
+    if (dochange)
+	if (ops[archive_filetype(sa)].copy(sa, sidx, da, dname) < 0)
+	    return -1;
 
     _add_file(da, -1, dname, archive_file(sa, sidx));
 
@@ -124,23 +128,24 @@ archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname)
 
 int
 archive_file_copy_or_move(archive_t *sa, int sidx, archive_t *da,
-			  const char *dname, int copyp)
+			  const char *dname, int copyp, bool dochange)
 {
     if (copyp)
-	return archive_file_copy(sa, sidx, da, dname);
+	return archive_file_copy(sa, sidx, da, dname, dochange);
     else
-	return archive_file_move(sa, sidx, da, dname);
+	return archive_file_move(sa, sidx, da, dname, dochange);
 }
 
 
 
 int
-archive_file_delete(archive_t *a, int idx)
+archive_file_delete(archive_t *a, int idx, bool dochange)
 {
-    if (ops[archive_filetype(a)].delete(a, idx) < 0)
-	return -1;
+    if (dochange)
+	if (ops[archive_filetype(a)].delete(a, idx) < 0)
+	    return -1;
 
-    file_status(archive_file(a, idx)) = FS_DELETED;
+    file_where(archive_file(a, idx)) = FILE_DELETED;
 
     return 0;
 }
@@ -148,20 +153,22 @@ archive_file_delete(archive_t *a, int idx)
 
 
 int
-archive_file_move(archive_t *sa, int sidx, archive_t *da, const char *dname)
+archive_file_move(archive_t *sa, int sidx, archive_t *da, const char *dname,
+		  bool dochange)
 {
-    if (archive_file_copy(sa, sidx, da, dname) < 0)
+    if (archive_file_copy(sa, sidx, da, dname, dochange) < 0)
 	return -1;
 
-    return archive_file_delete(sa, sidx);
+    return archive_file_delete(sa, sidx, dochange);
 }
 
 int
-archive_file_rename(archive_t *a, int idx, const char *name)
+archive_file_rename(archive_t *a, int idx, const char *name, bool dochange)
 {
-    if (ops[archive_filetype(a)].rename(a, idx, name) < 0)
-	return -1;
-
+    if (dochange)
+	if (ops[archive_filetype(a)].rename(a, idx, name) < 0)
+	    return -1;
+    
     /* XXX: update archive */
 
     return 0;
@@ -172,14 +179,31 @@ archive_file_rename(archive_t *a, int idx, const char *name)
 int
 archive_rollback(archive_t *a)
 {
-    int ret;
+    int ret, i;
 
     if (a->za == NULL)
 	return 0;
 
     ret = zip_unchange_all(a->za);
 
-    /* XXX: update archive and memdb */
+    /* XXX: how to undo renames? */
+
+    for (i=0; i<archive_num_files(a); i++) {
+	switch (file_where(archive_file(a, i))) {
+	    case FILE_DELETED:
+		file_where(archive_file(a, i)) = FILE_INZIP;
+		break;
+
+	    case FILE_ADDED:
+		array_truncate(archive_files(a), i, file_finalize);
+		break;
+
+	    default:
+		break;
+	    }
+    }
+
+    /* XXX: update memdb (or only in commit?) */
 
     return ret;
 }
@@ -194,6 +218,7 @@ _add_file(archive_t *a, int idx, const char *name, const file_t *f)
     nf = array_insert(archive_files(a), idx, f);
 
     file_name(nf) = xstrdup(name);
+    file_where(nf) = FILE_ADDED;
 }
 
 

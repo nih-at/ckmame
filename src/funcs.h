@@ -2,8 +2,6 @@
 #define _HAD_FUNCS_H
 
 /*
-  $NiH: funcs.h,v 1.22 2006/10/04 17:36:44 dillo Exp $
-
   funcs.h -- tree functions
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
@@ -69,7 +67,6 @@ void diagnostics_images(const images_t *, const result_t *);
 int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
-int enter_archive_in_map(const archive_t *, where_t);
 int enter_disk_in_map(const disk_t *, where_t);
 int enter_file_in_map(const archive_t *, int, where_t);
 char *findfile(const char *, filetype_t);

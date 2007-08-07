@@ -3,7 +3,7 @@
 
 /*
   types.h -- type definitions
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -65,7 +65,6 @@ enum file_status {
     FS_NEEDED,		/* known and needed elsewhere */
     FS_USED,		/* needed here */
     FS_DUPLICATE,	/* exists in old */
-    FS_DELETED		/* file deleted from archive */
 };
 
 typedef enum file_status file_status_t;
@@ -87,12 +86,17 @@ enum where {
     FILE_NEEDED,
     FILE_SUPERFLUOUS,
     FILE_EXTRA,
-    FILE_OLD
+    FILE_OLD,
+
+    /* uncommited changes to archive */
+    FILE_DELETED,
+    FILE_ADDED
 };
 
 typedef enum where where_t;
 
 #define IS_ELSEWHERE(w)	((w) >= FILE_ROMSET)
+#define IS_EXTERNAL(w)	((w) > FILE_ROMSET && (w) < FILE_OLD)
 
 #define SIZE_UNKNOWN	UINT64_MAX
 #define SIZE_IS_KNOWN(s)	((s) != SIZE_UNKNOWN)

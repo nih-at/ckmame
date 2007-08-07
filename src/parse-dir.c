@@ -75,7 +75,8 @@ parse_dir(const char *dname, parser_context_t *ctx)
 	}
 	switch (name_type(b)) {
 	case NAME_ZIP:
-	    if ((a=archive_new(b, TYPE_ROM, 0)) != NULL) {
+	    if ((a=archive_new(b, TYPE_ROM, FILE_NOWHERE,
+			       ARCHIVE_FL_NOCACHE)) != NULL) {
 		parse_archive(ctx, a);
 		archive_free(a);
 	    }

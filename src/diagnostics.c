@@ -96,7 +96,6 @@ diagnostics_archive(const archive_t *a, const result_t *res)
 	case FS_PARTUSED:
 	case FS_USED:
 	case FS_MISSING:
-	case FS_DELETED:
 	    /* handled in diagnostics_files */
 	    break;
 	    
@@ -349,7 +348,6 @@ diagnostics_images(const images_t *im, const result_t *res)
 	case FS_MISSING:
 	case FS_PARTUSED:
 	case FS_USED:
-	case FS_DELETED:
 	    break;
 	}
     }

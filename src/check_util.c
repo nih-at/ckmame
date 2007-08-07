@@ -106,8 +106,8 @@ ensure_extra_maps(int flags)
 	    file = parray_get(superfluous, i);
 	    switch ((nt=name_type(file))) {
 	    case NAME_ZIP:
-		if ((a=archive_new(file, TYPE_ROM, 0)) != NULL) {
-		    enter_archive_in_map(a, FILE_SUPERFLUOUS);
+		if ((a=archive_new(file, TYPE_ROM,
+				   FILE_SUPERFLUOUS, 0)) != NULL) {
 		    archive_free(a);
 		}
 		break;
@@ -250,47 +250,6 @@ make_file_name(filetype_t ft, int idx, const char *name)
 
 
 
-int
-enter_archive_in_map(const archive_t *a, where_t where)
-{
-    sqlite3_stmt *stmt;
-    int i;
-    file_t *r;
-
-    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
-	return -1;
-
-    if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
-	return -1;
-    }
-
-    for (i=0; i<archive_num_files(a); i++) {
-	r = archive_file(a, i);
-
-	if (file_status(r) != STATUS_OK)
-	    continue;
-
-	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
-	    || sqlite3_bind_int(stmt, 4, where) != SQLITE_OK
-	    || sq3_set_int64_default(stmt, 5, file_size(r),
-				     SIZE_UNKNOWN) != SQLITE_OK
-	    || sq3_set_hashes(stmt, 6, file_hashes(r), 1) != SQLITE_OK
-	    || sqlite3_step(stmt) != SQLITE_DONE
-	    || sqlite3_reset(stmt) != SQLITE_OK) {
-	    sqlite3_finalize(stmt);
-	    return -1;
-	}
-    }
-
-    sqlite3_finalize(stmt);
-
-    return 0;
-}
-
-
-
 static int
 enter_dir_in_map_and_list(int flags, parray_t *list, const char *name,
 			  int dir_flags, where_t where)
@@ -312,9 +271,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name,
 	}
 	switch ((nt=name_type(b))) {
 	case NAME_ZIP:
-	    if ((a=archive_new(b, TYPE_ROM, 0)) != NULL) {
-		if (flags & DO_MAP)
-		    enter_archive_in_map(a, where);
+	    if ((a=archive_new(b, TYPE_ROM, where, 0)) != NULL) {
 		if ((flags & DO_LIST) && list)
 		    parray_push(list, xstrdup(archive_name(a)));
 		archive_free(a);
