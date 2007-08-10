@@ -88,8 +88,10 @@
 #	   77: test was skipped
 # 
 # environment variables:
+#   RUN_GDB: if set, run gdb on program in test environment
+#   NOCLEANUP: if set, don't delete test environment
+#   SETUP_ONLY: if set, exit after creating test environment
 #   VERBOSE: if set, be more verbose (e. g., output diffs)
-#   NOCLEANUP: if set, don't delete directory test is run in
 
 die() {
 	echo "$0: $*" >&2;
@@ -260,8 +262,6 @@ fi
 mkdir ${DIR} || ( die "cannot create test directory ${DIR}" )
 cd ${DIR} || ( die "cannot cd to test directory ${DIR}" )
 
-{
-
 PROGRAM=../../src/ckmame
 RET=''
 ARGS=''
@@ -275,6 +275,8 @@ MKDBARGS=''
 mkdir roms
 
 touch stderr stdout
+
+{
 
 while read cmd arg
 do
@@ -324,6 +326,8 @@ do
   esac
 done
 
+} < ${srcdir}/${TEST}.test
+
 test_set "${RET}" return
 test_set "${ARGS}" args
 
@@ -353,8 +357,22 @@ fi
 
 if [ ! -z "${SETUP_ONLY}" ]
 then
-    echo ${DIR}
-    echo ${ARGS}
+    echo DIR: ${DIR}
+    echo PROGRAM: ${PROGRAM} ${ARGS}
+    exit 0
+fi
+
+if [ ! -z "${RUN_GDB}" ]
+then
+    echo DIR: ${DIR}
+    echo PROGRAM: ${PROGRAM} ${ARGS}
+    echo
+    gdb --args ${PROGRAM} ${ARGS}
+    if [ -z "${NOCLEANUP}" ]
+    then
+	cd ..
+	rm -r ${DIR}
+    fi
     exit 0
 fi
 
@@ -414,5 +432,3 @@ find . -type f -print | sed 's!^./!!' | sort > gotfiles
 checkfile shouldfiles gotfiles "unexpected/missing files"
 
 succeed
-
-} < ${srcdir}/${TEST}.test
