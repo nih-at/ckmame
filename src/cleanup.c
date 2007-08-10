@@ -149,14 +149,11 @@ static void
 cleanup_archive(archive_t *a, result_t *res, int flags)
 {
     garbage_t *gb;
-    int i, move, survivors;
+    int i, move;
     char *reason;
     
-    if (flags & CLEANUP_UNKNOWN && fix_options & FIX_DO)
+    if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO))
 	gb = garbage_new(a);
-	    
-    archive_ensure_zip(a);
-    survivors = 0;
 	    
     for (i=0; i<archive_num_files(a); i++) {
 	switch (result_file(res, i)) {
@@ -182,14 +179,12 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 		printf("%s: delete %s file `%s'\n",
 		       archive_name(a), reason,
 		       file_name(archive_file(a, i)));
-	    if (fix_options & FIX_DO)
-		zip_delete(archive_zip(a), i);
+	    archive_file_delete(a, i);
 	    break;
 	    
 	case FS_BROKEN:
 	case FS_MISSING:
 	case FS_PARTUSED:
-	    survivors = 1;
 	    break;
 	    
 	case FS_NEEDED:
@@ -197,15 +192,9 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 		if (fix_options & FIX_PRINT)
 		    printf("%s: save needed file `%s'\n",
 			   archive_name(a), file_name(archive_file(a, i)));
-		if (fix_options & FIX_DO) {
-		    if (save_needed(a, i, 1) != -1)
-			zip_delete(archive_zip(a), i);
-		    else
-			survivors = 1;
-		}
+		/* XXX: handle error (how?) */
+		save_needed(a, i, fix_options & FIX_DO);
 	    }
-	    else
-		survivors = 1;
 	    break;
 	    
 	case FS_UNKNOWN:
@@ -216,34 +205,25 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 			   archive_name(a),
 			   (move ? "mv" : "delete"),
 			   file_name(archive_file(a, i)));
-		if (fix_options & FIX_DO) {
-		    if (move)
-			move = (garbage_add(gb, i) == -1);
-		    if (move == 0) {
-			zip_delete(archive_zip(a), i);
-		    }
-		    else
-			survivors = 1;
-		}
+
+		/* XXX: handle error (how?) */
+		if (move)
+		    garbage_add(gb, i, false);
 		else
-		    survivors = 1;
+		    archive_file_delete(a, i);
 	    }
-	    else
-		survivors = 1;
 	    break;
 	}
     }
     
-    if (flags & CLEANUP_UNKNOWN && fix_options & FIX_DO) {
-	if (garbage_close(gb) < 0) {
-	    for (i=0; i<archive_num_files(a); i++) {
-		if (result_file(res, i) == FS_UNKNOWN)
-		    zip_unchange(archive_zip(a), i);
-	    }
-	}
+    if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
+	if (garbage_close(gb) < 0)
+	    archive_rollback(a);
     }
 
-    if ((fix_options & FIX_DO) && !survivors)
+    archive_commit(a);
+
+    if (archive_is_empty(a))
 	remove_empty_archive(archive_name(a));
 }
 

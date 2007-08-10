@@ -33,7 +33,8 @@
 
 
 
-#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "error.h"
@@ -102,12 +103,21 @@ static int _update_file(int, filetype_t, int, const hashes_t *);
 int
 memdb_ensure(void)
 {
+    char *dbname;
+
     if (memdb_inited)
 	return (memdb != NULL) ? 0 : -1;
 
+    if (getenv("CKMAME_DEBUG_MEMDB")) {
+	dbname = "memdb.sqlite3";
+	remove(dbname);
+    }
+    else
+	dbname = ":memory:";
+
     memdb_inited = 1;
 
-    if (sqlite3_open(":memory:", &memdb) != SQLITE_OK
+    if (sqlite3_open(dbname, &memdb) != SQLITE_OK
 	|| sqlite3_exec(memdb, sql_db_init_mem, NULL, NULL,
 			NULL) != SQLITE_OK) {
 	seterrdb(memdb);
@@ -275,11 +285,12 @@ int
 memdb_file_insert(const archive_t *a, int idx)
 {
     sqlite3_stmt *stmt;
-    int i;
     file_t *r;
 
     if (memdb_ensure() < 0)
 	return -1;
+
+    r = archive_file(a, idx);
 
     if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
@@ -287,7 +298,7 @@ memdb_file_insert(const archive_t *a, int idx)
     if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, archive_filetype(a)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 4, archive_where(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK
 	|| sq3_set_int64_default(stmt, 5, file_size(r),
 				 SIZE_UNKNOWN) != SQLITE_OK
 	|| sq3_set_hashes(stmt, 6, file_hashes(r), 1) != SQLITE_OK

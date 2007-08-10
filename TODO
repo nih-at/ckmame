@@ -17,7 +17,6 @@ tests:
   * use on non-matching file
   * rule operations
 
-! [bug] archive_commit: only update memdb if archive is external & cached
 ! [test] verify inparent.test
 ! [cleanup] specify globally which parts of memdb/lists to fill/maintain
 ! [test] detective

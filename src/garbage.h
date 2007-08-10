@@ -48,7 +48,7 @@ typedef struct garbage garbage_t;
 
 
 
-int garbage_add(garbage_t *, int);
+int garbage_add(garbage_t *, int, bool);
 int garbage_close(garbage_t *);
 garbage_t *garbage_new(archive_t *);
 

@@ -51,6 +51,8 @@
 static int get_hashes(struct zip_file *, off_t, hashes_t *);
 static int read_infos_from_zip(archive_t *);
 
+int _archive_global_flags = 0;
+
 
 
 archive_t *
@@ -262,6 +264,17 @@ archive_free(archive_t *a)
 
 
 
+void
+archive_global_flags(int fl, bool setp)
+{
+    if (setp)
+	_archive_global_flags |= fl;
+    else
+	_archive_global_flags &= ~fl;
+}
+
+
+
 archive_t *
 archive_new(const char *name, filetype_t ft, where_t where, int flags)
 {
@@ -351,6 +364,20 @@ archive_refresh(archive_t *a)
     read_infos_from_zip(a);
 
     return 0;
+}
+
+
+
+bool
+archive_is_empty(const archive_t *a)
+{
+    int i;
+
+    for (i=0; i<archive_num_files(a); i++)
+	if (file_where(archive_file(a, i)) != FILE_DELETED)
+	    return false;
+
+    return true;
 }
 
 

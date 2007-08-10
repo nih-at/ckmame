@@ -43,8 +43,8 @@
 
 
 static void _add_file(archive_t *, int, const char *, const file_t *);
-static int _copy_chd(archive_t *, int, archive_t *, const char *);
-static int _copy_zip(archive_t *, int, archive_t *, const char *);
+static int _copy_chd(archive_t *, int, archive_t *, const char *, off_t, off_t);
+static int _copy_zip(archive_t *, int, archive_t *, const char *, off_t, off_t);
 static int _delete_chd(archive_t *, int);
 static int _delete_zip(archive_t *, int);
 static int _rename_chd(archive_t *, int, const char *);
@@ -52,7 +52,7 @@ static int _rename_zip(archive_t *, int, const char *);
 
 /* keep in sync with types.h:enum filetype */
 struct {
-    int (*copy)(archive_t *, int, archive_t *, const char *);
+    int (*copy)(archive_t *, int, archive_t *, const char *, off_t, off_t);
     int (*delete)(archive_t *, int);
     int (*rename)(archive_t *, int, const char *);
 } ops[] = {
@@ -71,15 +71,31 @@ archive_commit(archive_t *a)
     if (!(a->flags & ARCHIVE_IFL_MODIFIED))
 	return 0;
 
-    if (zip_close(a->za) < 0)
-	return -1;
-    a->za = NULL;
+    /* XXX: handle disks */
+
+    if (a->za) {
+	if (!archive_is_empty(a)) {
+	    if (ensure_dir(archive_name(a), 1) < 0)
+		return -1;
+	}
+
+	if (zip_close(a->za) < 0) {
+	    seterrinfo(NULL, archive_name(a));
+	    myerror(ERRZIP, "cannot commit changes: %s",
+		    zip_strerror(a->za));
+	    return -1;
+	}
+
+	a->za = NULL;
+    }
 
     for (i=0; i<archive_num_files(a); i++) {
 	switch (file_where(archive_file(a, i))) {
 	case FILE_DELETED:
-	    /* XXX: handle error (how?) */
-	    memdb_file_delete(a, i, archive_is_rdwr(a));
+	    if (ARCHIVE_IS_INDEXED(a)) {
+		/* XXX: handle error (how?) */
+		memdb_file_delete(a, i, archive_is_rdwr(a));
+	    }
 
 	    if (archive_is_rdwr(a)) {
 		array_delete(archive_files(a), i, file_finalize);
@@ -88,7 +104,11 @@ archive_commit(archive_t *a)
 	    break;
 
 	case FILE_ADDED:
-	    memdb_file_insert(a, i);
+	    if (ARCHIVE_IS_INDEXED(a)) {
+		/* XXX: handle error (how?) */
+		memdb_file_insert(a, i);
+	    }
+	    file_where(archive_file(a, i)) = FILE_INZIP;
 	    break;
 
 	default:
@@ -142,29 +162,6 @@ archive_file_add_empty(archive_t *a, const char *name)
 
 
 int
-archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname)
-{
-    if (archive_filetype(sa) != archive_filetype(da)) {
-	seterrinfo(archive_name(sa), NULL);
-	myerror(ERRZIP, "cannot copy to archive of different type `%s'",
-		archive_name(da));
-	return -1;
-    }
-
-    /* XXX: don't add deleted files */
-
-    if (archive_is_rdwr(sa))
-	if (ops[archive_filetype(sa)].copy(sa, sidx, da, dname) < 0)
-	    return -1;
-
-    _add_file(da, -1, dname, archive_file(sa, sidx));
-
-    return 0;
-}
-
-
-
-int
 archive_file_copy_or_move(archive_t *sa, int sidx, archive_t *da,
 			  const char *dname, int copyp)
 {
@@ -177,10 +174,58 @@ archive_file_copy_or_move(archive_t *sa, int sidx, archive_t *da,
 
 
 int
+archive_file_copy_part(archive_t *sa, int sidx, archive_t *da,
+		       const char *dname, off_t start, off_t len)
+{
+    if (archive_filetype(sa) != archive_filetype(da)) {
+	seterrinfo(archive_name(sa), NULL);
+	myerror(ERRZIP, "cannot copy to archive of different type `%s'",
+		archive_name(da));
+	return -1;
+    }
+
+    if (file_where(archive_file(sa, sidx)) != FILE_INZIP) {
+	seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
+	myerror(ERRZIP, "cannot copy broken/added/deleted file");
+	return -1;
+    }
+
+    if (start < 0 || (len != -1 &&
+	      (len < 0 ||
+	       (uint64_t)(start+len) > file_size(archive_file(sa, sidx))))) {
+	seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
+	/* XXX: print off_t properly */
+	myerror(ERRZIP, "invalid range (%ld, %ld)",
+		(long)start, (long)len);
+	return -1;
+    }
+	
+    if (archive_is_rdwr(sa))
+	if (ops[archive_filetype(sa)].copy(sa, sidx, da, dname, start, len) < 0)
+	    return -1;
+
+    if (start == 0 && (len == -1
+		       || (uint64_t)len == file_size(archive_file(sa, sidx))))
+	_add_file(da, -1, dname, archive_file(sa, sidx));
+    else {
+	/* XXX: don't know checksums here */
+    }
+
+    return 0;
+}
+
+
+
+
+int
 archive_file_delete(archive_t *a, int idx)
 {
-    /* XXX: don't delete deleted files */
-
+    if (file_where(archive_file(a, idx)) != FILE_INZIP) {
+	seterrinfo(archive_name(a), NULL);
+	myerror(ERRZIP, "cannot copy broken/added/deleted file");
+	return -1;
+    }
+	
     if (archive_is_rdwr(a))
 	if (ops[archive_filetype(a)].delete(a, idx) < 0)
 	    return -1;
@@ -205,8 +250,12 @@ archive_file_move(archive_t *sa, int sidx, archive_t *da, const char *dname)
 int
 archive_file_rename(archive_t *a, int idx, const char *name)
 {
-    /* XXX: don't rename deleted files */
-
+    if (file_where(archive_file(a, idx)) != FILE_INZIP) {
+	seterrinfo(archive_name(a), NULL);
+	myerror(ERRZIP, "cannot copy broken/added/deleted file");
+	return -1;
+    }
+	
     if (archive_is_rdwr(a))
 	if (ops[archive_filetype(a)].rename(a, idx, name) < 0)
 	    return -1;
@@ -235,11 +284,12 @@ archive_rollback(archive_t *a)
     if (zip_unchange_all(a->za) < 0)
 	return -1;
 
-    /* remove added files */
-    array_truncate(archive_files(a), zip_get_num_files(a->za), file_finalize);
-
-    /* undo deletion and renames */
     for (i=0; i<archive_num_files(a); i++) {
+	if (file_where(archive_file(a, i)) == FILE_ADDED) {
+	    array_truncate(archive_files(a), i, file_finalize);
+	    break;
+	}
+
 	if (file_where(archive_file(a, i)) == FILE_DELETED)
 	    file_where(archive_file(a, i)) = FILE_INZIP;
 
@@ -248,6 +298,7 @@ archive_rollback(archive_t *a)
 	    free(file_name(archive_file(a, i)));
 	    file_name(archive_file(a, i)) = xstrdup(zip_get_name(a->za, i, 0));
 	}
+
     }
 
     return 0;
@@ -270,7 +321,8 @@ _add_file(archive_t *a, int idx, const char *name, const file_t *f)
 
 
 static int
-_copy_chd(archive_t *sa, int sidx, archive_t *da, const char *dname)
+_copy_chd(archive_t *sa, int sidx, archive_t *da, const char *dname,
+	  off_t start, off_t len)
 {
     /* XXX: build new name */
     return link_or_copy(archive_name(sa), archive_name(da));
@@ -279,7 +331,8 @@ _copy_chd(archive_t *sa, int sidx, archive_t *da, const char *dname)
 
 
 static int
-_copy_zip(archive_t *sa, int sidx, archive_t *da, const char *dname)
+_copy_zip(archive_t *sa, int sidx, archive_t *da, const char *dname,
+	  off_t start, off_t len)
 {
     int didx;
     struct zip_source *source;
@@ -299,11 +352,11 @@ _copy_zip(archive_t *sa, int sidx, archive_t *da, const char *dname)
 	if (file_status(archive_file(da, didx)) == STATUS_BADDUMP)
 	    zip_delete(archive_zip(da), didx);
 	else
-	    didx = -1;
+	    my_zip_rename_to_unique(archive_zip(da), didx);
     }
     
     if ((source=zip_source_zip(archive_zip(da), archive_zip(sa),
-			       sidx, 0, 0, -1)) == NULL
+			       sidx, 0, start, len)) == NULL
 	|| zip_add(archive_zip(da), dname, source) < 0) {
 	zip_source_free(source);
 	seterrinfo(archive_name(da), dname);
@@ -332,7 +385,16 @@ _delete_chd(archive_t *a, int idx)
 static int
 _delete_zip(archive_t *a, int idx)
 {
-    /* XXX */
+    if (archive_ensure_zip(a) < 0)
+	return -1;
+
+    if (zip_delete(a->za, idx) < 0) {
+	seterrinfo(NULL, archive_name(a));
+	myerror(ERRZIP, "cannot delete `%s': %s",
+		zip_get_name(a->za, idx, 0), zip_strerror(a->za));
+	return -1;
+    }
+
     return 0;
 }
 
@@ -350,6 +412,15 @@ _rename_chd(archive_t *a, int idx, const char *name)
 static int
 _rename_zip(archive_t *a, int idx, const char *name)
 {
-    /* XXX */
+    if (archive_ensure_zip(a) < 0)
+	return -1;
+
+    if (my_zip_rename(a->za, idx, name) < 0) {
+	seterrinfo(NULL, archive_name(a));
+	myerror(ERRZIP, "cannot rename `%s' to `%s': %s",
+		zip_get_name(a->za, idx, 0), name, zip_strerror(a->za));
+	return -1;
+    }
+    
     return 0;
 }

@@ -70,7 +70,6 @@ int
 my_zip_rename(struct zip *za, int idx, const char *name)
 {
     int zerr, idx2;
-    char *name2;
 
     if (zip_rename(za, idx, name) == 0)
 	return 0;
@@ -81,43 +80,38 @@ my_zip_rename(struct zip *za, int idx, const char *name)
 	return -1;
 
     idx2 = zip_name_locate(za, name, 0);
-
     if (idx2 == -1)
 	return -1;
-
-    if ((name2=my_zip_unique_name(za, name)) == NULL)
+    if (my_zip_rename_to_unique(za, idx2) < 0)
 	return -1;
-    
-    if (zip_rename(za, idx2, name2) == 0) {
-	free(name2);
-	return zip_rename(za, idx, name);
-    }
 
-    free(name2);
-    return -1;
+    return zip_rename(za, idx, name);
 }
 
 
 
-char *
-my_zip_unique_name(struct zip *za, const char *name)
+int
+my_zip_rename_to_unique(struct zip *za, int idx)
 {
-    char *ret, *p;
+    char *unique, *p;
     char n[4];
-    const char *ext;
-    int i;
+    const char *name, *ext;
+    int i, ret, zerr;
 
-    ret = (char *)xmalloc(strlen(name)+5);
+    if ((name=zip_get_name(za, idx, 0)) == NULL)
+	return -1;
+
+    unique = (char *)xmalloc(strlen(name)+5);
 
     ext = strrchr(name, '.');
     if (ext == NULL) {
-	strcpy(ret, name);
-	p = ret+strlen(ret);
+	strcpy(unique, name);
+	p = unique+strlen(unique);
 	p[4] = '\0';
     }
     else {
-	strncpy(ret, name, ext-name);
-	p = ret + (ext-name);
+	strncpy(unique, name, ext-name);
+	p = unique + (ext-name);
 	strcpy(p+4, ext);
     }	
     *(p++) = '-';
@@ -126,10 +120,14 @@ my_zip_unique_name(struct zip *za, const char *name)
 	sprintf(n, "%03d", i);
 	strncpy(p, n, 3);
 
-	if (zip_name_locate(za, ret, 0) == -1)
+	ret = zip_rename(za, idx, unique);
+	zip_error_get(za, &zerr, NULL);
+	if (ret == 0 || zerr != ZIP_ER_EXISTS) {
+	    free(unique);
 	    return ret;
+	}
     }
 
-    free(ret);
-    return NULL;
+    free(unique);
+    return -1;
 }

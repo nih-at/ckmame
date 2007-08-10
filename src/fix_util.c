@@ -1,6 +1,4 @@
 /*
-  $NiH: fix_util.c,v 1.6 2006/10/04 17:36:44 dillo Exp $
-
   util.c -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
@@ -322,54 +320,32 @@ remove_from_superfluous(const char *name)
 
 
 int
-save_needed(archive_t *a, int index, int do_save)
+save_needed(archive_t *sa, int sidx, int do_save)
 {
     char *tmp;
-    int ret;
-    struct zip *zto;
-    struct zip_source *source;
+    archive_t *da;
 
-    ret = 0;
-    tmp = NULL;
-
-    if (do_save) {
-	tmp = make_needed_name(archive_file(a, index));
-	if (tmp == NULL) {
-	    myerror(ERRDEF, "cannot create needed file name");
-	    ret = -1;
-	}
-	else if (ensure_dir(tmp, 1) < 0)
-	    ret = -1;
-	else if ((zto=my_zip_open(tmp, ZIP_CREATE)) == NULL)
-	    ret = -1;
-	else if ((source=zip_source_zip(zto, archive_zip(a), index,
-					0, 0, -1)) == NULL
-		 || zip_add(zto, file_name(archive_file(a, index)),
-			    source) < 0) {
-	    zip_source_free(source);
-	    seterrinfo(file_name(archive_file(a, index)), tmp);
-	    myerror(ERRZIPFILE, "error adding from `%s': %s",
-		    archive_name(a), zip_strerror(zto));
-	    zip_close(zto);
-	    ret = -1;
-	}
-	else if (zip_close(zto) < 0) {
-	    seterrinfo(NULL, tmp);
-	    myerror(ERRZIP, "error closing: %s", zip_strerror(zto));
-	    zip_unchange_all(zto);
-	    zip_close(zto);
-	    ret = -1;
-	}
-	else {
-	    a = archive_new(tmp, TYPE_ROM, FILE_NEEDED, 0);
-	    index = 0;
-	}
+    if ((tmp=make_needed_name(archive_file(sa, sidx))) == NULL) {
+	myerror(ERRDEF, "cannot create needed file name");
+	return -1;
     }
 
-    enter_file_in_map(a, index, FILE_NEEDED);
+    if ((da=archive_new(tmp, archive_filetype(sa), FILE_NEEDED,
+			ARCHIVE_FL_CREATE
+			| (do_save ? 0 : ARCHIVE_FL_RDONLY))) == NULL)
+	return -1;
 
     free(tmp);
-    return ret;
+
+    
+    if (archive_file_copy(sa, sidx, da, file_name(archive_file(sa, sidx))) < 0
+	|| archive_commit(da) < 0) {
+	archive_rollback(da);
+	archive_free(da);
+	return -1;
+    }
+
+    return archive_file_delete(sa, sidx);
 }
 
 

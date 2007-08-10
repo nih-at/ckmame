@@ -1,6 +1,4 @@
 /*
-  $NiH: ckmame.c,v 1.24 2007/04/10 23:01:30 dillo Exp $
-
   ckmame.c -- main routine for ckmame
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
@@ -247,6 +245,7 @@ main(int argc, char **argv)
 	case 'n':
 	    fix_options &= ~FIX_DO;
 	    fix_options |= FIX_PRINT;
+	    archive_global_flags(ARCHIVE_FL_RDONLY, true);
 	    break;
 	case 'O':
 	    olddbname = optarg;

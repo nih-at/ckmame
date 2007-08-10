@@ -44,8 +44,6 @@
 #include "globals.h"
 #include "xmalloc.h"
 
-static int my_zip_close(struct zip *, const char *);
-
 
 
 void
@@ -66,45 +64,56 @@ delete_list_execute(delete_list_t *dl)
     int i;
     const char *name;
     const file_location_t *fbh;
-    struct zip *z;
-    int ret, deleted;
+    archive_t *a;
+    int ret;
 
     delete_list_sort(dl);
 
     name = NULL;
-    z = NULL;
-    deleted = 0;
+    a = NULL;
     ret = 0;
     for (i=0; i<delete_list_length(dl); i++) {
 	fbh = delete_list_get(dl, i);
 
 	if (name == NULL || strcmp(file_location_name(fbh), name) != 0) {
-	    if (z && deleted == zip_get_num_files(z))
-		remove_empty_archive(name);
-
-	    if (my_zip_close(z, name) == -1)
-		ret = -1;
+	    if (a) {
+		if (archive_commit(a) < 0) {
+		    archive_rollback(a);
+		    ret = -1;
+		}
+		
+		if (archive_is_empty(a))
+		    remove_empty_archive(name);
+		
+		archive_free(a);
+	    }
 
 	    name = file_location_name(fbh);
-	    if ((z=my_zip_open(name, 0)) == NULL)
+	    /* XXX: don't hardcode location */
+	    if ((a=archive_new(name, TYPE_ROM, FILE_NOWHERE,0)) == NULL)
 		ret = -1;
-	    deleted = 0;
 	}
-	if (z) {
+	if (a) {
 	    if (fix_options & FIX_PRINT)
 		printf("%s: delete used file `%s'\n",
-		       name, zip_get_name(z, file_location_index(fbh), 0));
+		       name,
+		       file_name(archive_file(a, file_location_index(fbh))));
 	    /* XXX: check for error */
-	    zip_delete(z, file_location_index(fbh));
-	    deleted++;
+	    archive_file_delete(a, file_location_index(fbh));
 	}
     }
 
-    if (z && deleted == zip_get_num_files(z))
-	remove_empty_archive(name);
-
-    if (my_zip_close(z, name) == -1)
-	ret = -1;
+    if (a) {
+	if (archive_commit(a) < 0) {
+	    archive_rollback(a);
+	    ret = -1;
+	}
+	
+	if (archive_is_empty(a))
+	    remove_empty_archive(name);
+	
+	archive_free(a);
+    }
     
     return ret;
 }
@@ -137,22 +146,4 @@ void
 delete_list_rollback(delete_list_t *dl)
 {
     parray_set_length(dl->array, dl->mark, NULL, file_location_free);
-}
-
-
-
-static int
-my_zip_close(struct zip *z, const char *name)
-{
-    if (z) {
-	if (zip_close(z) < 0) {
-	    seterrinfo(NULL, name);
-	    myerror(ERRZIP, "cannot delete files: %s", zip_strerror(z));
-	    zip_unchange_all(z);
-	    zip_close(z);
-	    return -1;
-	}
-    }
-
-    return 0;
 }

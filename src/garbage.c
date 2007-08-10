@@ -46,26 +46,14 @@ static int garbage_open(garbage_t *);
 
 
 
-int garbage_add(garbage_t *g, int idx)
+int garbage_add(garbage_t *g, int idx, bool copyp)
 {
-    const char *name;
-    char *name2;
-    int ret;
-
     if (garbage_open(g) < 0)
 	return -1;
 
-    name = file_name(archive_file(g->sa, idx));
-    if (archive_file_index_by_name(g->da, name) != -1)
-	name2 = my_zip_unique_name(archive_zip(g->da), name);	/* XXX */
-    else
-	name2 = NULL;
-
-    /* XXX: used ZIP_FL_UNCHANGED, why is/was that needed? */
-    ret = archive_file_copy(g->sa, idx, g->da, name2 ? name2 : name);
-
-    free(name2);
-    return ret;
+    return archive_file_copy_or_move(g->sa, idx, g->da,
+				     file_name(archive_file(g->sa, idx)),
+				     copyp);
 }
 
 
@@ -85,17 +73,13 @@ garbage_close(garbage_t *g)
     if (da == NULL)
 	return 0;
 
-    /* XXX: move this to archive_commit/archive_free? */
-    if (archive_num_files(da) > 0) {
-	if (ensure_dir(archive_name(da), 1) < 0) {
-	    archive_rollback(da);
-	    archive_free(da);
-	    return -1;
-	}
+    if (archive_commit(da) < 0) {
+	archive_rollback(da);
+	archive_free(da);
+	return -1;
     }
 
-    if (archive_free(da) < 0)
-	return -1;
+    archive_free(da);
 
     return 0;
 }
