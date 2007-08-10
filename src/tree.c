@@ -1,8 +1,6 @@
 /*
-  $NiH: tree.c,v 1.10 2006/10/04 17:36:44 dillo Exp $
-
   tree.c -- traverse tree of games to check
-  Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -117,6 +115,8 @@ tree_traverse(const tree_t *tree, archive_t *parent, archive_t *gparent)
     char *full_name;
     int flags;
 
+    child = NULL;
+
     if (tree->name) {
 	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0)
 		 | (check_integrity ? ARCHIVE_FL_CHECK_INTEGRITY: 0));
@@ -127,8 +127,6 @@ tree_traverse(const tree_t *tree, archive_t *parent, archive_t *gparent)
 	}
 	if (full_name)
 	    child = archive_new(full_name, TYPE_ROM, FILE_ROMSET, flags);
-	else
-	    child = NULL;
 	free(full_name);
 
 	if (tree->check)
@@ -138,7 +136,7 @@ tree_traverse(const tree_t *tree, archive_t *parent, archive_t *gparent)
     for (t=tree->child; t; t=t->next)
 	tree_traverse(t, child, parent);
 
-    if (tree->name)
+    if (child)
 	archive_free(child);
 
     return;
@@ -243,7 +241,8 @@ tree_process(const tree_t *tree, archive_t *child,
     /* write warnings/errors for me */
     diagnostics(g, child, images, res);
 
-    fix_game(g, child, images, res);
+    if (fix_options & (FIX_DO|FIX_PRINT))
+	fix_game(g, child, images, res);
 	
     /* clean up */
     result_free(res);
