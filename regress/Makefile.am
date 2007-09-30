@@ -119,7 +119,12 @@ TESTS=	\
 		zero-miss.test \
 		zero-superfluous.test
 BROKEN_TESTS=	\
-		disk-swapmerge.test
+		disk-swapmerge.test \
+		identical-once.test \
+		rom-from-superfluous-many.test \
+		tochild.test \
+		unused.test \
+		wrong2.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \
