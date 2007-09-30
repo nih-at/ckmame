@@ -1,10 +1,10 @@
 # test 2-rom game (1 in parent), unused in zip
 # $NiH$
 return 0
-args -FKULvc clone-8
-rom 1-4-ok.zip parent-4.zip 1-4-ok.zip
-rom 2-48-ok.zip clone-8.zip 1-8-ok.zip
-garbage clone-8.zip 1-4-ok.zip
+args -FKLvc clone-8
+file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip
+file roms/clone-8.zip 2-48-ok.zip 1-8-ok.zip
+file unknown/clone-8.zip 1-4-ok.zip
 stdout ./roms/clone-8.zip: mv unused file 04.rom
 stdout In game clone-8:
 stdout game clone-8                                 : correct
