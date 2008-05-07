@@ -37,7 +37,7 @@ tests:
 - [bug] check if rompath/needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
-- [feature] torrentzip support
+- [feature] torrentzip support (via option)
 - [feature] add hash-types option to dumpgame
 - [feature] mkmamedb: split to original CM dat files + detector XML on export
 - [feature] regress: better db dump format
