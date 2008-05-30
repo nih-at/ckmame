@@ -295,7 +295,7 @@ main(int argc, char **argv)
 	    action = ACTION_SUPERFLUOUS_ONLY;
 	    break;
 	case OPT_TORRENTZIP:
-	    fix_options &= ~FIX_TORRENTZIP;
+	    fix_options |= FIX_TORRENTZIP;
 	    break;
 
 	default:
