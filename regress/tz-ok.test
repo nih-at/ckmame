@@ -2,6 +2,6 @@
 description test 2-rom game (no parent), zip is correct, torrentzip
 return 0
 args -FKLivc --torrentzip 2-48
-file roms/2-48.zip 2-48-ok.zip 2-48-tz.zip
+file roms/2-48.zip 2-48-ok.zip 2-48-ok.tzip
 stdout In game 2-48:
 stdout game 2-48                                    : correct
