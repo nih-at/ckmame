@@ -1,6 +1,6 @@
 /*
-  archive_edit.c -- functions to modify an archive
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  archive_modify.c -- functions to modify an archive
+  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -40,6 +40,9 @@
 #include "memdb.h"
 #include "xmalloc.h"
 
+/* XXX: for TorrentZip feature check */
+#include <zip.h>
+
 
 
 static void _add_file(archive_t *, int, const char *, const file_t *);
@@ -47,6 +50,7 @@ static int _copy_chd(archive_t *, int, archive_t *, const char *, off_t, off_t);
 static int _copy_zip(archive_t *, int, archive_t *, const char *, off_t, off_t);
 static int _delete_chd(archive_t *, int);
 static int _delete_zip(archive_t *, int);
+static int _file_cmp_name(const file_t *, const file_t *);
 static int _rename_chd(archive_t *, int, const char *);
 static int _rename_zip(archive_t *, int, const char *);
 
@@ -68,6 +72,14 @@ archive_commit(archive_t *a)
 {
     int i;
 
+#ifdef ZIP_AFL_TORRENT
+    if (a->flags & ARCHIVE_FL_TORRENTZIP) {
+	if (a->za == NULL
+	    || zip_get_archive_flag(a->za, ZIP_AFL_TORRENT, 0) == 0)
+	a->flags |= ARCHIVE_IFL_MODIFIED;
+    }
+#endif
+
     if (!(a->flags & ARCHIVE_IFL_MODIFIED))
 	return 0;
 
@@ -78,6 +90,17 @@ archive_commit(archive_t *a)
 	    if (ensure_dir(archive_name(a), 1) < 0)
 		return -1;
 	}
+
+#ifdef ZIP_AFL_TORRENT
+	if (a->flags & ARCHIVE_FL_TORRENTZIP) {
+	    if (zip_set_archive_flag(a->za, ZIP_AFL_TORRENT, 1) < 0) {
+		seterrinfo(NULL, archive_name(a));
+		myerror(ERRZIP, "cannot torrentzip: %s",
+			zip_strerror(a->za));
+		return -1;
+	    }
+	}
+#endif
 
 	if (zip_close(a->za) < 0) {
 	    seterrinfo(NULL, archive_name(a));
@@ -115,6 +138,16 @@ archive_commit(archive_t *a)
 	    break;
 	}
     }
+
+#ifdef ZIP_AFL_TORRENT
+    if (a->flags & ARCHIVE_FL_TORRENTZIP) {
+	/* Currently, only internal archives are torrtentzipped and
+	   only external archives are indexed.  So we don't need to
+	   worry about memdb. */
+
+	array_sort(archive_files(a), _file_cmp_name);
+    }
+#endif
 
     return 0;
 }
@@ -396,6 +429,14 @@ _delete_zip(archive_t *a, int idx)
     }
 
     return 0;
+}
+
+
+
+static int
+_file_cmp_name(const file_t *a, const file_t *b)
+{
+    return strcasecmp(file_name(a), file_name(b));
 }
 
 

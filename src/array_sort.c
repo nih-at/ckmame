@@ -1,9 +1,6 @@
-#ifndef _HAD_ARRAY_H
-#define _HAD_ARRAY_H
-
 /*
-  array.h -- array of arbitrary types
-  Copyright (C) 2005-2008 Dieter Baron and Thomas Klausner
+  array_sort.c -- sort array
+  Copyright (C) 2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,33 +31,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+#include <stdlib.h>
 
-struct array {
-    char *data;
-    int elem_size;
-    int nentry;
-    int alloc_len;
-};
-
-typedef struct array array_t;
+#include "array.h"
 
 
 
-#define array_length(a)		((a)->nentry)
-#define array_new(s)		(array_new_sized((s), 0))
-
-/* function arguments not specified to avoid lots of casts */
-void array_delete(array_t *, int, void (*)(/* void * */));
-void array_free(array_t *, void (*)(/* void * */));
-void *array_get(const array_t *, int);
-void *array_grow(array_t *, void (*)(/* void * */));
-void *array_insert(array_t *, int, const void *);
-array_t *array_new_sized(int, int);
-array_t *array_new_length(int, int, void (*)(/* void * */));
-void *array_push(array_t *, void *);
-void array_set(array_t *, int, const void *);
-void array_sort(array_t *, int (*)(/* const void *, const void * */));
-void array_truncate(array_t *, int, void (*)(/* void * */));
-
-#endif /* array.h */
+void
+array_sort(array_t *a, int (*cmp)(const void *, const void *))
+{
+    qsort(a->data, array_length(a), a->elem_size, cmp);
+}

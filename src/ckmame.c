@@ -1,6 +1,6 @@
 /*
   ckmame.c -- main routine for ckmame
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -88,6 +88,7 @@ char help[] = "\n"
 "  -S, --samples           check samples instead of roms\n"
 "      --superfluous       only check for superfluous files in rom sets\n"
 "  -s, --nosuperfluous     don't report superfluous files in rom sets\n"
+"      --torrentzip        TorrentZip ROM archives\n"
 "  -T, --games-from file   read games to check from file\n"
 "  -V, --version           display version number\n"
 "  -v, --verbose           print fixes made\n"
@@ -107,7 +108,8 @@ enum {
     OPT_IGNORE_UNKNOWN,
     OPT_KEEP_DUPLICATE,
     OPT_KEEP_FOUND,
-    OPT_SUPERFLUOUS
+    OPT_SUPERFLUOUS,
+    OPT_TORRENTZIP
 };
 
 struct option options[] = {
@@ -140,6 +142,7 @@ struct option options[] = {
     { "samples",           0, 0, 'S' },
     { "search",            1, 0, 'e' },
     { "superfluous",       0, 0, OPT_SUPERFLUOUS },
+    { "torrentzip",        0, 0, OPT_TORRENTZIP },
     { "verbose",           0, 0, 'v' },
 
     { NULL,                0, 0, 0 },
@@ -290,6 +293,9 @@ main(int argc, char **argv)
 	    if (action != ACTION_UNSPECIFIED)
 		error_multiple_actions();
 	    action = ACTION_SUPERFLUOUS_ONLY;
+	    break;
+	case OPT_TORRENTZIP:
+	    fix_options &= ~FIX_TORRENTZIP;
 	    break;
 
 	default:

@@ -29,6 +29,7 @@ libckmame_a_SOURCES= \
 	array_insert.c \
 	array_new_length.c \
 	array_push.c \
+	array_sort.c \
 	array_truncate.c \
 	chd.c \
 	check_archive.c \

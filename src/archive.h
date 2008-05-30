@@ -59,6 +59,7 @@ typedef struct archive archive_t;
 #define ARCHIVE_FL_QUIET		0x04
 #define ARCHIVE_FL_NOCACHE		0x08
 #define ARCHIVE_FL_RDONLY		0x10
+#define ARCHIVE_FL_TORRENTZIP		0x20
 
 #define ARCHIVE_FL_MASK			0xff
 

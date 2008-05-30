@@ -1,0 +1,7 @@
+# $NiH: ok.test,v 1.3.2.3 2005/08/06 19:54:39 wiz Exp $
+description test 2-rom game (no parent), zip is correct, torrentzip
+return 0
+args -FKLivc --torrentzip 2-48
+file roms/2-48.zip 2-48-ok.zip 2-48-tz.zip
+stdout In game 2-48:
+stdout game 2-48                                    : correct
