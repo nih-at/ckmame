@@ -1,0 +1,9 @@
+description test 2-rom game, 1 file in different game, torrentzipn
+return 0
+args -FKLvc --torrentzip 2-48
+file roms/2-48.zip 1-8-ok.zip 2-48-ok.tzip
+file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
+stdout In game 2-48:
+stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/disk.zip'
+stdout rom  08.rom        size       8  crc 3656897d: correct
+stdout ./roms/2-48.zip: add `./roms/disk.zip/04.rom' as `04.rom'
