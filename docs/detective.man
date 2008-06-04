@@ -1,8 +1,4 @@
-.\" Converted with mdoc2man 0.2
-.\" from NiH: detective.mdoc,v 1.2 2007/04/15 08:41:52 wiz Exp 
-.\" $NiH: detective.mdoc,v 1.2 2007/04/15 08:41:52 wiz Exp $
-.\"
-.\" Copyright (c) 2007 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2007, 2008 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -30,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH DETECTIVE 1 "April 13, 2007" NiH
+.TH DETECTIVE 1 "June 4, 2008" NiH
 .SH "NAME"
 detective \- list zip archive contents with headers skipped
 .SH "SYNOPSIS"
@@ -38,7 +34,9 @@ detective \- list zip archive contents with headers skipped
 [\fB-hV\fR]
 [\fB-C\fR \fBhashtypes\fR]
 [\fB-D\fR \fBdbfile\fR]
+[\fB--db\fR \fBdbfile\fR]
 [\fB--detector\fR \fBfile\fR]
+[\fB--hash-types\fR \fBtypes\fR]
 [\fBzip-archive Op ...\fR]
 .SH "DESCRIPTION"
 .B detective
