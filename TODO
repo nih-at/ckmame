@@ -17,6 +17,7 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [doc] mkmamedb -i not in help
 ! [doc] docuemnt --torrentzip
 ! [test] verify inparent.test
 ! [cleanup] specify globally which parts of memdb/lists to fill/maintain
