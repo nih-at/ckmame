@@ -2,7 +2,7 @@
   $NiH: parse-xml.c,v 1.8 2006/10/04 17:36:44 dillo Exp $
 
   parse-xml.c -- parse listxml format files
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -44,10 +44,17 @@
 
 
 
+static int parse_xml_mame_build(parser_context_t *, filetype_t, int,
+				const char *);
+
 #define XA(f)	((xmlu_attr_cb)f)
 #define XC(f)	((xmlu_tag_cb)f)
 #define XO(f)	((xmlu_tag_cb)f)
 #define XT(f)	((xmlu_text_cb)f)
+
+static const xmlu_attr_t attr_mame[] = {
+    { "build",    XA(parse_xml_mame_build), 0,         0                },
+};
 
 static const xmlu_attr_t attr_disk[] = {
     { "md5",      XA(parse_file_hash),    TYPE_DISK,   HASHES_TYPE_MD5  },
@@ -78,11 +85,15 @@ static const xmlu_attr_t attr_sample[] = {
     { NULL }
 };
 static const xmlu_entity_t entities[] = {
+    { "description", NULL,   0, NULL,                 NULL,
+      XT(parse_game_description), 0 },
     { "disk",   attr_disk,   1, XO(parse_file_start), XC(parse_file_end),
       NULL, TYPE_DISK },
     { "game",   attr_game,   0, XO(parse_game_start), XC(parse_game_end),
-      XT(parse_game_description), 0 },
+      NULL, 0 },
     { "machine", attr_game,  0, XO(parse_game_start), XC(parse_game_end),
+      NULL, 0 },
+    { "mame",   attr_mame,   0, NULL,                 NULL,
       NULL, 0 },
     { "rom",    attr_rom,    1, XO(parse_file_start), XC(parse_file_end),
       NULL, TYPE_ROM },
@@ -97,4 +108,22 @@ int
 parse_xml(FILE *fin, parser_context_t *ctx)
 {
     return xmlu_parse(fin, ctx, entities, nentities);
+}
+
+static int
+parse_xml_mame_build(parser_context_t *ctx, filetype_t ft, int ht,
+		     const char *attr)
+{
+    int err;
+    char *s, *p;
+
+    if ((err=parse_prog_name(ctx, "M.A.M.E.")) != 0)
+	return err;
+
+    s = xstrdup(attr);
+    if ((p=strchr(s, ' ')) != NULL)
+	*p = '\0';
+    err = parse_prog_version(ctx, s);
+    free(s);
+    return err;
 }
