@@ -18,6 +18,8 @@ tests:
   * rule operations
 
 ! [doc] mkmamedb -i not in help
+! [feature] --torrentzip: tell when torrentzipping archive
+! [bug] mkmamedb: duplicate nodump ROMs produce warning
 ! [doc] docuemnt --torrentzip
 ! [test] verify inparent.test
 ! [cleanup] specify globally which parts of memdb/lists to fill/maintain
