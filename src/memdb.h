@@ -3,7 +3,7 @@
 
 /*
   memdb.h -- in-memory sqlite3 db
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -50,7 +50,7 @@ void *memdb_get_ptr(const char *);
 void *memdb_get_ptr_by_id(int);
 int memdb_put_ptr(const char *, void *);
 int memdb_file_delete(const archive_t *, int, bool);
-int memdb_file_insert(const archive_t *, int);
+int memdb_file_insert(sqlite3_stmt *, const archive_t *, int);
 int memdb_file_insert_archive(const archive_t *);
 int memdb_update_disk(const disk_t *);
 int memdb_update_file(const archive_t *, int);

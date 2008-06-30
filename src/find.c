@@ -2,7 +2,7 @@
   $NiH: find.c,v 1.16 2006/10/04 17:36:43 dillo Exp $
 
   find.c -- find ROM in ROM set or archives
-  Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -49,11 +49,16 @@
 
 
 #define QUERY_FILE \
-    "select game_id, file_idx, location from file where file_type = ?"
+    "select game_id, file_idx, file_sh, location from file where file_type = ?"
 #define QUERY_FILE_HASH_FMT \
     " and (%s = ? or %s is null)"
 #define QUERY_FILE_TAIL \
     " order by location"
+#define QUERY_FILE_GAME_ID	0
+#define QUERY_FILE_FILE_IDX	1
+#define QUERY_FILE_FILE_SH	2
+#define QUERY_FILE_LOCATION	3
+
 
 
 
@@ -109,7 +114,8 @@ find_disk(const disk_t *d, match_disk_t *md)
 
     switch (sqlite3_step(stmt)) {
     case SQLITE_ROW:
-	if ((dm=disk_by_id(sqlite3_column_int(stmt, 0))) == NULL) {
+	if ((dm=disk_by_id(sqlite3_column_int(stmt,
+				      QUERY_FILE_GAME_ID))) == NULL) {
 	    ret = FIND_ERROR;
 	    break;
 	}
@@ -117,7 +123,8 @@ find_disk(const disk_t *d, match_disk_t *md)
 	    match_disk_name(md) = xstrdup(disk_name(dm));
 	    hashes_copy(match_disk_hashes(md), disk_hashes(dm));
 	    match_disk_quality(md) = QU_COPIED;
-	    match_disk_where(md) = sqlite3_column_int(stmt, 2);
+	    match_disk_where(md) = sqlite3_column_int(stmt,
+					      QUERY_FILE_LOCATION);
 	}
 	disk_free(dm);
 	ret = FIND_EXISTS;
@@ -165,7 +172,7 @@ find_in_archives(const file_t *r, match_t *m)
     const char *ht;
     archive_t *a;
     file_t *f;
-    int i, ret, hcol;
+    int i, ret, hcol, sh;
 
     strcpy(query, QUERY_FILE);
     p = query + strlen(query);
@@ -201,31 +208,34 @@ find_in_archives(const file_t *r, match_t *m)
 	}
 
     while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
-	if ((a=archive_by_id(sqlite3_column_int(stmt, 0))) == NULL) {
+	if ((a=archive_by_id(sqlite3_column_int(stmt,
+					QUERY_FILE_GAME_ID))) == NULL) {
 	    ret = SQLITE_ERROR;
 	    break;
 	}
-	i = sqlite3_column_int(stmt, 1);
+	i = sqlite3_column_int(stmt, QUERY_FILE_FILE_IDX);
+	sh = sqlite3_column_int(stmt, QUERY_FILE_FILE_SH);
 	f = archive_file(a, i);
 
-	if ((hashes_types(file_hashes(r)) & hashes_types(file_hashes(f)))
-	    != hashes_types(file_hashes(r))) {
+	if (sh == FILE_SH_FULL
+	    && ((hashes_types(file_hashes(r)) & hashes_types(file_hashes(f)))
+		!= hashes_types(file_hashes(r)))) {
 	    archive_file_compute_hashes(a, i,
 				hashes_types(file_hashes(r))|romhashtypes);
 	    memdb_update_file(a, i);
+	}
 
-	    if (file_status(f) != STATUS_OK
-		|| (archive_file_compare_hashes(a, i, file_hashes(r))
-		    != HASHES_CMP_MATCH)) {
-		archive_free(a);
-		continue;
-	    }
+	if (file_status(f) != STATUS_OK
+	    || (hashes_cmp(file_hashes_xxx(f, sh), file_hashes(r))
+		!= HASHES_CMP_MATCH)) {
+	    archive_free(a);
+	    continue;
 	}
 	
 	if (m) {
 	    match_archive(m) = a;
-	    match_index(m) = sqlite3_column_int(stmt, 1);
-	    match_where(m) = sqlite3_column_int(stmt, 2);
+	    match_index(m) = i;
+	    match_where(m) = sqlite3_column_int(stmt, QUERY_FILE_LOCATION);
 	    match_quality(m) = QU_COPIED;
 	}
 	else

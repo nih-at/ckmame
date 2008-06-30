@@ -5,4 +5,4 @@ program mkmamedb
 args -o mkmamedb-test.db mamedb.txt mamedb-2.txt
 file mamedb.txt mamedb.txt mamedb.txt
 file mamedb-2.txt mamedb-2.txt mamedb-2.txt
-file-new mkmamedb-test.db mkmamedb-multi-dats.dump
+file-new mkmamedb-test.db mamedb-multi-dats.dump

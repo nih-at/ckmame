@@ -4,4 +4,4 @@ return 0
 program mkmamedb
 args -o mkmamedb-test.db mamedb.txt
 file mamedb.txt mamedb.txt mamedb.txt
-file-new mkmamedb-test.db mkmamedb-ok.dump
+file-new mkmamedb-test.db mamedb-ok.dump

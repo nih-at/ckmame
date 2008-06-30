@@ -89,6 +89,7 @@ TESTS=	\
 		rom-duplicate-wrong.test \
 		rom-from-extra-broken.test \
 		rom-from-extra-child.test \
+		rom-from-extra-detector.test \
 		rom-from-extra-inconsistent.test \
 		rom-from-extra-keep.test \
 		rom-from-extra-partial.test \
@@ -98,6 +99,7 @@ TESTS=	\
 		rom-from-romset.test \
 		rom-from-romset2.test \
 		rom-from-superfluous-cleanup.test \
+		rom-from-superfluous-detector.test \
 		rom-from-superfluous-dryrun.test \
 		rom-from-superfluous-some.test \
 		rom-from-superfluous.test \
@@ -172,12 +174,16 @@ CHDS=		108-2.chd \
 DBFILES=	mamedb.txt \
 		mamedb-2.txt \
 		mamedb-disk.txt \
+		mamedb-duplicate-game.dump \
+		mamedb-duplicate-nodump.dump \
+		mamedb-duplicate-nodump.txt \
+		mamedb-lost-parent.dump \
 		mamedb-lost-parent.txt \
 		mamedb-lost-parent-ok.txt \
-		mkmamedb-duplicate-game.dump \
-		mkmamedb-lost-parent.dump \
-		mkmamedb-multi-dats.dump \
-		mkmamedb-ok.dump \
+		mamedb-multi-dats.dump \
+		mamedb-ok.dump \
+		mamedb-parent-crcdiff.txt \
+		mamedb-parent-crcdiff.dump \
 		skip.xml \
 		skipped.txt
 

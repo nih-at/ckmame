@@ -4,5 +4,5 @@ return 0
 program mkmamedb
 args -o mkmamedb-test.db mamedb.txt
 file mamedb.txt mamedb-lost-parent.txt mamedb-lost-parent.txt
-file-new mkmamedb-test.db mkmamedb-lost-parent.dump
+file-new mkmamedb-test.db mamedb-lost-parent.dump
 stderr inconsistency: clone-8 has non-existent parent parent-4

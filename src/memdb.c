@@ -1,6 +1,6 @@
 /*
   memdb.h -- in-memory sqlite3 db
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -52,12 +52,21 @@ int memdb_inited = 0;
     "select pointer from ptr_cache where name = ?"
 #define QUERY_PTR_ID	\
     "select pointer from ptr_cache where game_id = ?"
-#define INSERT_FILE	\
-    "insert into file (game_id, file_type, file_idx, location," \
-    " size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?)"
+
+#define INSERT_FILE							\
+    "insert into file (game_id, file_type, file_idx, file_sh, location," \
+    " size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+#define INSERT_FILE_GAME_ID	1
+#define INSERT_FILE_FILE_TYPE	2
+#define INSERT_FILE_FILE_IDX	3
+#define INSERT_FILE_FILE_SH	4
+#define INSERT_FILE_LOCATION	5
+#define INSERT_FILE_SIZE	6
+#define INSERT_FILE_HASHES	7
+
 #define UPDATE_FILE \
     "update file set crc = ?, md5 = ?, sha1 = ? where" \
-    " game_id = ? and file_type = ? and file_idx = ?"
+    " game_id = ? and file_type = ? and file_idx = ? and file_sh = ?"
 #define DELETE_FILE \
     "delete from file where" \
     " game_id = ? and file_type = ? and file_idx = ?"
@@ -79,13 +88,14 @@ create table file (\n\
 	game_id integer,\n\
 	file_type integer,\n\
 	file_idx integer,\n\
+	file_sh integer,\n\
 	location integer not null,\n\
 	size integer,\n\
 	crc integer,\n\
 	md5 binray,\n\
-	sha1 binary,\n\
-	primary key (game_id, file_type, file_idx)\n\
+	sha1 binary\n\
 );\n\
+create index file_id on file (game_id, file_type, file_idx);\n\
 create index file_location on file (location);\n\
 create index file_size on file (size);\n\
 create index file_crc on file (crc);\n\
@@ -279,38 +289,67 @@ memdb_file_delete(const archive_t *a, int idx, bool adjust_idx)
 
 
 
-/* XXX: avoid code duplication with memdb_file_insert_archive */
-
 int
-memdb_file_insert(const archive_t *a, int idx)
+memdb_file_insert(sqlite3_stmt *stmt, const archive_t *a, int idx)
 {
-    sqlite3_stmt *stmt;
+    bool stmt_owned;
     file_t *r;
+    int i, err;
 
     if (memdb_ensure() < 0)
 	return -1;
 
     r = archive_file(a, idx);
 
-    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
-	return -1;
+    if (stmt)
+	stmt_owned = false;
+    else {
+	if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1,
+			       &stmt, NULL) != SQLITE_OK)
+	    return -1;
 
-    if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, archive_filetype(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 4, archive_where(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK
-	|| sq3_set_int64_default(stmt, 5, file_size(r),
-				 SIZE_UNKNOWN) != SQLITE_OK
-	|| sq3_set_hashes(stmt, 6, file_hashes(r), 1) != SQLITE_OK
-	|| sqlite3_step(stmt) != SQLITE_DONE
-	|| sqlite3_reset(stmt) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
-	return -1;
+	if (sqlite3_bind_int(stmt, INSERT_FILE_GAME_ID,
+			     archive_id(a)) != SQLITE_OK
+	    || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE,
+				archive_filetype(a)) != SQLITE_OK
+	    || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION,
+				archive_where(a)) != SQLITE_OK) {
+	    sqlite3_finalize(stmt);
+	    return -1;
+	}
+
+	stmt_owned = true;
     }
 
-    sqlite3_finalize(stmt);
+    err = 0;
 
-    return 0;
+    if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_IDX, idx) != SQLITE_OK)
+	err = -1;
+    else {
+	for (i=0; i<FILE_SH_MAX; i++) {
+	    if (!file_sh_is_set(r, i) && i != FILE_SH_FULL)
+		continue;
+
+	    if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_SH, i) != SQLITE_OK
+		|| sq3_set_int64_default(stmt, INSERT_FILE_SIZE,
+					 file_size_xxx(r, i),
+					 SIZE_UNKNOWN) != SQLITE_OK
+		|| sq3_set_hashes(stmt, INSERT_FILE_HASHES,
+				  file_hashes_xxx(r, i), 1) != SQLITE_OK
+		|| sqlite3_step(stmt) != SQLITE_DONE
+		|| sqlite3_reset(stmt) != SQLITE_OK) {
+		err = -1;
+		continue;
+	    }
+	}
+    }
+
+    if (stmt_owned) {
+	if (sqlite3_finalize(stmt) != SQLITE_OK)
+	    err = -1;
+    }
+
+    return err;
 }
 
 
@@ -319,8 +358,7 @@ int
 memdb_file_insert_archive(const archive_t *a)
 {
     sqlite3_stmt *stmt;
-    int i;
-    file_t *r;
+    int i, err;
 
     if (memdb_ensure() < 0)
 	return -1;
@@ -328,33 +366,27 @@ memdb_file_insert_archive(const archive_t *a)
     if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
 
-    if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, archive_filetype(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 4, archive_where(a)) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, INSERT_FILE_GAME_ID, archive_id(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE,
+			    archive_filetype(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, INSERT_FILE_LOCATION,
+			    archive_where(a)) != SQLITE_OK) {
 	sqlite3_finalize(stmt);
 	return -1;
     }
 
+    err = 0;
     for (i=0; i<archive_num_files(a); i++) {
-	r = archive_file(a, i);
-
-	if (file_status(r) != STATUS_OK)
+	if (file_status(archive_file(a, i)) != STATUS_OK)
 	    continue;
-
-	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK
-	    || sq3_set_int64_default(stmt, 5, file_size(r),
-				     SIZE_UNKNOWN) != SQLITE_OK
-	    || sq3_set_hashes(stmt, 6, file_hashes(r), 1) != SQLITE_OK
-	    || sqlite3_step(stmt) != SQLITE_DONE
-	    || sqlite3_reset(stmt) != SQLITE_OK) {
-	    sqlite3_finalize(stmt);
-	    return -1;
-	}
+	if (memdb_file_insert(stmt, a, i) < 0)
+	    err = -1;
     }
 
-    sqlite3_finalize(stmt);
+    if (sqlite3_finalize(stmt) != SQLITE_OK)
+	err = -1;
 
-    return 0;
+    return err;
 }
 
 
@@ -384,6 +416,8 @@ _update_file(int id, filetype_t ft, int idx, const hashes_t *h)
 {
     sqlite3_stmt *stmt;
 
+    /* FILE_SH_DETECTOR hashes are always completely filled in */
+
     if (sqlite3_prepare_v2(memdb, UPDATE_FILE, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
 
@@ -391,6 +425,7 @@ _update_file(int id, filetype_t ft, int idx, const hashes_t *h)
 	|| sqlite3_bind_int(stmt, 4, id) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 5, ft) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 6, idx) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 7, FILE_SH_FULL) != SQLITE_OK
 	|| sqlite3_step(stmt) != SQLITE_DONE) {
 	sqlite3_finalize(stmt);
 	return -1;

@@ -129,7 +129,7 @@ archive_commit(archive_t *a)
 	case FILE_ADDED:
 	    if (ARCHIVE_IS_INDEXED(a)) {
 		/* XXX: handle error (how?) */
-		memdb_file_insert(a, i);
+		memdb_file_insert(NULL, a, i);
 	    }
 	    file_where(archive_file(a, i)) = FILE_INZIP;
 	    break;
