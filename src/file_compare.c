@@ -1,6 +1,6 @@
 /*
   file_compare.c -- compare various parts of two files
-  Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -49,7 +49,7 @@ file_compare_m(const file_t *fg, const file_t *fa)
 bool
 file_compare_msc(const file_t *fg, const file_t *fa)
 {
-    return file_compare_m(fg, fa) || file_compare_sc(fg, fa);
+    return file_compare_m(fg, fa) && file_compare_sc(fg, fa);
 }
 
 
@@ -57,7 +57,7 @@ file_compare_msc(const file_t *fg, const file_t *fa)
 bool
 file_compare_nsc(const file_t *fg, const file_t *fa)
 {
-    return file_compare_n(fg, fa) || file_compare_sc(fg, fa);
+    return file_compare_n(fg, fa) && file_compare_sc(fg, fa);
 }
 
 
@@ -68,7 +68,7 @@ file_compare_sc(const file_t *fg, const file_t *fa)
     int i;
 
     for (i=0; i<FILE_SH_MAX; i++) {
-	if (!file_sh_is_set(fa, i))
+	if (!file_sh_is_set(fa, i) && i != FILE_SH_FULL)
 	    continue;
 	
 	if (file_size_known(fg) && file_size_xxx_known(fa, i)

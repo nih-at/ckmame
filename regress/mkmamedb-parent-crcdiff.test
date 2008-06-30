@@ -1,0 +1,6 @@
+description parent has ROM with same name, different CRC
+return 0
+program mkmamedb
+args -o mkmamedb-test.db mamedb.txt
+file mamedb.txt mamedb-parent-crcdiff.txt mamedb-parent-crcdiff.txt
+file-new mkmamedb-test.db mkmamedb-parent-crcdiff.dump

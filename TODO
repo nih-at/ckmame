@@ -17,6 +17,7 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [check] mkmamedb: merge does not match name in parent: warning and fixup
 ! [bug] mkmamedb: warn if rom from parent has different crc
 ! [doc] mkmamedb -i not in help
 ! [feature] --torrentzip: tell when torrentzipping archive

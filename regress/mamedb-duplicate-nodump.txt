@@ -1,0 +1,10 @@
+game (
+        name nogood
+        description "1-4 with no good dump, duplicated"
+        manufacturer "synth"
+        year 2008
+        rom ( name 04.rom size 4 flags nodump )
+        rom ( name 04.rom size 4 flags nodump )
+	sample boom.wav
+	sample boom.wav
+)

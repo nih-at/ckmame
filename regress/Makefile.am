@@ -60,9 +60,11 @@ TESTS=	\
 		misnamed-dryrun.test \
 		misnamed.test \
 		mkmamedb-duplicate-game.test \
+		mkmamedb-duplicate-nodump.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-multi-dats.test \
 		mkmamedb-ok.test \
+		mkmamedb-parent-crcdiff.test \
 		multi.test \
 		needed-error.test \
 		needed.test \
