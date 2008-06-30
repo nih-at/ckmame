@@ -17,6 +17,7 @@ tests:
   * use on non-matching file
   * rule operations
 
+! [bug] mkmamedb: warn if rom from parent has different crc
 ! [doc] mkmamedb -i not in help
 ! [feature] --torrentzip: tell when torrentzipping archive
 ! [bug] mkmamedb: duplicate nodump ROMs produce warning
