@@ -23,6 +23,7 @@ file-new roms/deadbeefchild.zip 1-4-ok.zip
 file-new roms/disk-2.zip 1-4-ok.zip
 file-new roms/disk-nogood.zip 1-4-ok.zip
 file-new roms/disk.zip 1-4-ok.zip
+file-new roms/diskchild.zip 1-4-ok.zip
 file-new roms/nogood-2.zip 1-8-ok.zip
 file-new roms/parent-4.zip 1-4-ok.zip
 file roms/108-5.chd 108-5.chd 108-5.chd
@@ -72,6 +73,10 @@ stdout In game disk-nogood:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/1-4.zip'
 stdout disk 108-5         no good dump              : exists
 stdout ./roms/disk-nogood.zip: add `./roms/1-4.zip/04.rom' as `04.rom'
+stdout In game diskchild:
+stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/1-4.zip'
+stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
+stdout ./roms/diskchild.zip: add `./roms/1-4.zip/04.rom' as `04.rom'
 stdout In game many:
 stdout game many                                    : not a single rom found
 stdout In game nogood:
