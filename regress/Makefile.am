@@ -197,11 +197,12 @@ ${MAME_DB2}: ../src/mkmamedb ${srcdir}/mamedb-lost-parent-ok.txt
 ${MAME_DB3}: ../src/mkmamedb ${srcdir}/mamedb-disk.txt
 	../src/mkmamedb -o ${MAME_DB3} ${srcdir}/mamedb-disk.txt
 
-update-mkmamedb.dump: ${MAME_DB}
-	./dbdump ${MAME_DB} > mkmamedb-ok.dump
-	./dbdump ${MAME_DB2} > mkmamedb-lost-parent.dump
-	./dbdump ${MAME_DB} > mkmamedb-ok.dump
+update-mamedb.dump: ${MAME_DB}
+	./dbdump ${MAME_DB} > mamedb-ok.dump
+	./dbdump ${MAME_DB2} > mamedb-lost-parent.dump
+	./dbdump ${MAME_DB} > mamedb-ok.dump
+	set -e \
 	../src/mkmamedb -o $$$$.db \
 			${srcdir}/mamedb.txt ${srcdir}/mamedb-2.txt \
-		&& ./dbdump $$$$.db > mkmamedb-multi-dats.dump \
+		&& ./dbdump $$$$.db > mamedb-multi-dats.dump \
 		&& rm $$$$.db
