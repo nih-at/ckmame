@@ -16,6 +16,7 @@ tests:
   * use on matching file
   * use on non-matching file
   * rule operations
+  * [test] is superfluous file that needs detector cleaned up correctly?
 
 ! [cleanup] use non-GPL getopt_long replacement
 ! [cleanup] reduce code duplication
