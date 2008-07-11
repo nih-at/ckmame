@@ -650,6 +650,7 @@ dump_stats(int dummy)
 		break;
 	    case SQLITE_DONE:
 		ft = TYPE_MAX;
+		break;
 	    default:
 		myerror(ERRDB, "can't get file stats");
 		sqlite3_finalize(stmt);
