@@ -3,6 +3,7 @@ tests:
 * case differences (game name / archive / rom / file in archive)
 * whether ckmame can be run (incomplete runtime library path)
 * extra cleanup done when all games checked
+* is superfluous file that needs detector cleaned up correctly?
 * dumpgame
 * mkmamedb tests
   * two different roms with same name (error)
@@ -33,6 +34,7 @@ tests:
 ! [cleanup] merge disk_t into file_t
 ! [bug] check/fix database error reporting
 ! [bug] diagnostics (fix?): don't process disks if checking samples
+! [feature] mkmamedb: read zipped dats (including detectors)
 - [bug] ckmame -e and not -j: don't rename chds, link/copy them.
 - [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
 - [bug] game: only nogooddumps in set: ckmame -d reports not a single rom found
