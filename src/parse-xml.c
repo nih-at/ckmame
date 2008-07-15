@@ -36,10 +36,12 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "error.h"
 #include "parse.h"
+#include "xmalloc.h"
 #include "xmlutil.h"
 
 
@@ -105,9 +107,9 @@ static const int nentities = sizeof(entities)/sizeof(entities[0]);
 
 
 int
-parse_xml(FILE *fin, parser_context_t *ctx)
+parse_xml(parser_source_t *ps, parser_context_t *ctx)
 {
-    return xmlu_parse(fin, ctx, entities, nentities);
+    return xmlu_parse(ps, ctx, entities, nentities);
 }
 
 static int

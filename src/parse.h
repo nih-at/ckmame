@@ -5,7 +5,7 @@
   $NiH: parse.h,v 1.13 2007/04/12 21:09:20 dillo Exp $
 
   parse.h -- parser interface
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -45,6 +45,7 @@
 #include "dat.h"
 #include "game.h"
 #include "output.h"
+#include "parser_source.h"
 
 enum parser_state {
     PARSE_IN_HEADER,
@@ -63,8 +64,8 @@ struct parser_context {
     /* output */
     output_context_t *output;
 
-    /* current file */
-    char *fname;
+    /* current source */
+    parser_source_t *ps;
     /* XXX: move out of context */
     int lineno;			/* current line number in input file */
 
@@ -80,16 +81,21 @@ typedef struct parser_context parser_context_t;
 
 /* parser functions */
 
-int parse(const char *, const parray_t *, const dat_entry_t *,
+void parser_context_free(parser_context_t *);
+parser_context_t *parser_context_new(parser_source_t *, const parray_t *,
+				     const dat_entry_t *, output_context_t *);
+
+int parse(parser_source_t *, const parray_t *, const dat_entry_t *,
 	  output_context_t *);
-int export_db(sqlite3 *, const parray_t *, const dat_entry_t *, output_context_t *);
+int export_db(sqlite3 *, const parray_t *, const dat_entry_t *,
+	      output_context_t *);
 
 /* backend parser functions */
 
-int parse_cm(FILE *, parser_context_t *);
+int parse_cm(parser_source_t *, parser_context_t *);
 int parse_dir(const char *, parser_context_t *);
-int parse_rc(FILE *, parser_context_t *);
-int parse_xml(FILE *, parser_context_t *);
+int parse_rc(parser_source_t *, parser_context_t *);
+int parse_xml(parser_source_t *, parser_context_t *);
 
 /* callbacks */
 
@@ -112,6 +118,6 @@ int parse_prog_version(parser_context_t *, const char *);
 
 /* util functions */
 
-int name_matches(const game_t *, const parray_t *);
+int name_matches(const char *, const parray_t *);
 
 #endif /* parse.h */

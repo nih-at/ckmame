@@ -2,7 +2,7 @@
   $NiH: mkmamedb.c,v 1.14 2007/04/10 23:01:30 dillo Exp $
 
   mkmamedb.c -- create mamedb
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -35,8 +35,10 @@
 
 
 
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <zip.h>
 
 #include "compat.h"
 #include "dbh.h"
@@ -47,7 +49,7 @@
 #include "types.h"
 #include "xmalloc.h"
 
-char *usage = "Usage: %s [-hV] [-C types] [-i pat] [-o dbfile] [-F fmt] [--prog-name name] [--prog-version version] [rominfo-file ...]\n";
+char *usage = "Usage: %s [-hV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--only-files pat] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
 
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
@@ -60,23 +62,27 @@ char help[] = "\n\
   -o, --output dbfile       write to database dbfile\n\
   -x, --exclude pat         exclude games matching shell glob PAT\n\
       --detector xml-file   use header detector\n\
+      --only-files pat      only use zip members matching shell glob PAT\n\
       --prog-description d  set description of rominfo\n\
       --prog-name name      set name of program rominfo is from\n\
       --prog-version vers   set version of program rominfo is from\n\
+      --skip-files pat      don't use zip members matching shell glob PAT\n\
 \n\
 Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2007 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2008 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hC:F:o:Vx:"
 
 enum {
-    OPT_PROG_DESCRIPTION = 256,
+    OPT_DETECTOR = 256,
+    OPT_ONLY_FILES,
+    OPT_PROG_DESCRIPTION,
     OPT_PROG_NAME,
     OPT_PROG_VERSION,
-    OPT_DETECTOR
+    OPT_SKIP_FILES
 };
 
 struct option options[] = {
@@ -87,14 +93,23 @@ struct option options[] = {
     { "format",           1, 0, 'F' },
     { "hash-types",       1, 0, 'C' },
     { "output",           1, 0, 'o' },
+    { "only-files",       1, 0, OPT_ONLY_FILES },
     { "prog-description", 1, 0, OPT_PROG_DESCRIPTION },
     { "prog-name",        1, 0, OPT_PROG_NAME },
     { "prog-version",     1, 0, OPT_PROG_VERSION },
+    { "skip-files",       1, 0, OPT_SKIP_FILES },
     { NULL,               0, 0, 0 },
 };
 
 int romhashtypes;
 detector_t *detector;
+
+#define DEFAULT_FILES_ONLY	"*.dat"
+
+static int process_file(const char *, const parray_t *, const dat_entry_t *,
+			const parray_t *, const parray_t *, output_context_t *);
+static int process_stdin(const parray_t *, const dat_entry_t *,
+			 output_context_t *);
 
 
 
@@ -104,11 +119,12 @@ main(int argc, char **argv)
     output_context_t *out;
     char *dbname;
     parray_t *exclude;
+    parray_t *only_files;
+    parray_t *skip_files;
     dat_entry_t dat;
     output_format_t fmt;
     char *detector_name;
     int c, i;
-    sqlite3 *db;
 
     setprogname(argv[0]);
 
@@ -119,6 +135,7 @@ main(int argc, char **argv)
 	dbname = DBH_DEFAULT_DB_NAME;
     dat_entry_init(&dat);
     exclude = NULL;
+    only_files = skip_files = NULL;
     fmt = OUTPUT_FMT_DB;
     romhashtypes = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
     detector_name = NULL;
@@ -161,17 +178,27 @@ main(int argc, char **argv)
 		exclude = parray_new();
 	    parray_push(exclude, xstrdup(optarg));
 	    break;
-	case OPT_PROG_DESCRIPTION:
-	    dat_entry_description(&dat) = optarg;
-	    break;
-	case OPT_PROG_NAME:
-	    dat_entry_name(&dat) = optarg;
-	    break;
-	case OPT_PROG_VERSION:
-	    dat_entry_version(&dat) = optarg;
-	    break;
 	case OPT_DETECTOR:
 	    detector_name = optarg;
+	    break;
+	case OPT_ONLY_FILES:
+	    if (only_files == NULL)
+		only_files = parray_new();
+	    parray_push(only_files, xstrdup(optarg));
+	    break;
+	case OPT_PROG_DESCRIPTION:
+	    dat_entry_description(&dat) = xstrdup(optarg);
+	    break;
+	case OPT_PROG_NAME:
+	    dat_entry_name(&dat) = xstrdup(optarg);
+	    break;
+	case OPT_PROG_VERSION:
+	    dat_entry_version(&dat) = xstrdup(optarg);
+	    break;
+	case OPT_SKIP_FILES:
+	    if (skip_files == NULL)
+		skip_files = parray_new();
+	    parray_push(skip_files, xstrdup(optarg));
 	    break;
     	default:
 	    fprintf(stderr, usage, getprogname());
@@ -183,8 +210,6 @@ main(int argc, char **argv)
 	fprintf(stderr,
 		"%s: warning: multiple input files specified, \n\t"
 		"--prog-name and --prog-version are ignored", getprogname());
-	dat_entry_finalize(&dat);
-	dat_entry_init(&dat);
     }
 
     if ((out=output_new(fmt, dbname)) == NULL)
@@ -200,14 +225,15 @@ main(int argc, char **argv)
 
     /* XXX: handle errors */
     if (optind == argc)
-	parse(NULL, exclude, &dat, out);
+	process_stdin(exclude, &dat, out);
     else {
+	if (only_files == NULL) {
+	    only_files = parray_new();
+	    parray_push(only_files, xstrdup(DEFAULT_FILES_ONLY));
+	}
+	
 	for (i=optind; i<argc; i++) {
-	    if ((db=dbh_open(argv[i], DBL_READ)) != NULL) {
-		export_db(db, exclude, &dat, out);
-	    }
-	    else
-		parse(argv[i], exclude, &dat, out);
+	    process_file(argv[i], exclude, &dat, only_files, skip_files, out);
 	}
     }
 
@@ -219,5 +245,85 @@ main(int argc, char **argv)
     if (exclude)
 	parray_free(exclude, free);
 
+    if (only_files)
+	parray_free(only_files, free);
+    if (skip_files)
+	parray_free(skip_files, free);
+
     return 0;
+}
+
+
+
+int
+process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
+	     const parray_t *files_only, const parray_t *files_skip,
+	     output_context_t *out)
+{
+    sqlite3 *db;
+    parser_source_t *ps;
+    struct zip *za;
+    
+    if ((db=dbh_open(fname, DBL_READ)) != NULL)
+	return export_db(db, exclude, dat, out);
+    else if ((za=zip_open(fname, 0, NULL)) != NULL) {
+	int i;
+	const char *name;
+	int err;
+
+	err = 0;
+	for (i=0; i<zip_get_num_files(za); i++) {
+	    name = zip_get_name(za, i, 0);
+
+	    if (!name_matches(name, files_only)
+		|| name_matches(name, files_skip))
+		continue;
+
+	    if ((ps=ps_new_zip(za, name)) == NULL) {
+		err = -1;
+		continue;
+	    }
+	    if (parse(ps, exclude, dat, out) < 0)
+		err = -1;
+	}
+	zip_close(za);
+
+	return err;
+    }
+    else {
+	struct stat st;
+
+	if (stat(fname, &st) == -1) {
+	    myerror(ERRSTR, "can't stat romlist file `%s'", fname);
+	    return -1;
+	}
+	if ((st.st_mode & S_IFMT) == S_IFDIR) {
+	    parser_context_t *ctx;
+	    int ret;
+	    
+	    ctx = parser_context_new(NULL, exclude, dat, out);
+	    ret = parse_dir(fname, ctx);
+	    parser_context_free(ctx);
+	    return ret;
+	}
+
+	if ((ps=ps_new_file(fname)) == NULL)
+	    return -1;
+	
+	return parse(ps, exclude, dat, out);
+    }
+}
+
+
+
+int
+process_stdin(const parray_t *exclude, const dat_entry_t *dat,
+	      output_context_t *out)
+{
+    parser_source_t *ps;
+
+    if ((ps=ps_new_stdin()) == NULL)
+	return -1;
+
+    return parse(ps, exclude, dat, out);
 }

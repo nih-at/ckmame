@@ -64,7 +64,8 @@ static int xml_read(void *, char *, int);
 
 
 int
-xmlu_parse(FILE *fin, void *ctx, const xmlu_entity_t *entities, int nentities)
+xmlu_parse(parser_source_t *ps, void *ctx,
+	   const xmlu_entity_t *entities, int nentities)
 {
     xmlTextReaderPtr reader;
     int i, ret;
@@ -73,7 +74,7 @@ xmlu_parse(FILE *fin, void *ctx, const xmlu_entity_t *entities, int nentities)
     const xmlu_entity_t *e, *e_txt;
     const xmlu_attr_t *a;
 
-    reader = xmlReaderForIO(xml_read, xml_close, fin, NULL, NULL, 0);
+    reader = xmlReaderForIO(xml_read, xml_close, ps, NULL, NULL, 0);
     if (reader == NULL) {
 	/* XXX */
 	printf("opening error\n");
@@ -144,7 +145,7 @@ xml_close(void *ctx)
 static int
 xml_read(void *ctx, char *b, int len)
 {
-    return fread(b, 1, len, (FILE *)ctx);
+    return ps_read(ctx, b, len);
 }
 
 #endif /* HAVE_LIBXML2 */

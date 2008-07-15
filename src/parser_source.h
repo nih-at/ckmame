@@ -1,8 +1,9 @@
-/*
-  $NiH$
+#ifndef HAD_PARSER_SOURCE_H
+#define HAD_PARSER_SOURCE_H
 
-  getline.c -- utility functions
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+/*
+  parser_source.h -- reading parser input data from various sources
+  Copyright (C) 2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -35,46 +36,25 @@
 
 
 
-#include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
+#include <zip.h>
 
-#include "util.h"
-#include "xmalloc.h"
-
-
+typedef struct parser_source parser_source_t;
 
 
-char *
-getline(FILE *f)
-{
-    static char *buf = NULL;
-    static int buf_size = 0;
+typedef int (*parser_source_close)(void *);
+typedef parser_source_t *(*parser_source_open)(void *, const char *);
+typedef int (*parser_source_read)(void *, void *, int); 
 
-    int n;
+int ps_close(parser_source_t *);
+char *ps_getline(parser_source_t *);
+parser_source_t *ps_new(void *, parser_source_close, parser_source_open,
+			parser_source_read);
+parser_source_t *ps_new_file(const char *);
+parser_source_t *ps_new_stdin(void);
+parser_source_t *ps_new_zip(struct zip *, const char *);
+parser_source_t *ps_open(parser_source_t *, const char *);
+int ps_peek(parser_source_t *);
+int ps_read(parser_source_t *, void *, int);
 
-    n = 0;
-    for (;;) {
-	if (n == buf_size) {
-	    buf_size += 8192;
-	    buf = xrealloc(buf, buf_size);
-	}
-	if (fgets(buf+n, buf_size-n, f) == NULL) {
-	    if (n == 0)
-		return NULL;
-	    break;
-	}
-	n += strlen(buf+n);
-	if (buf[n-1] == '\n')
-	    break;
-    }
-
-    if (buf[n-1] == '\n') {
-	if (buf[n-2] == '\r')
-	    --n;
-	--n;
-    }
-    buf[n] = '\0';
-
-    return buf;
-}
+#endif /* parser_source.h */

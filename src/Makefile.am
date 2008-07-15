@@ -49,6 +49,7 @@ libckmame_a_SOURCES= \
 	detector_execute.c \
 	detector_init.c \
 	detector_parse.c \
+	detector_parse_ps.c \
 	detector_print.c \
 	detector_str.c \
 	diagnostics.c \
@@ -70,7 +71,6 @@ libckmame_a_SOURCES= \
 	fix_util.c \
 	game.c \
 	garbage.c \
-	getline.c \
 	hash_from_string.c \
 	hash_to_string.c \
 	hashes.c \
@@ -99,6 +99,7 @@ libckmame_a_SOURCES= \
 	parse-rc.c \
 	parse-xml.c \
 	parse.c \
+	parser_source.c \
 	psort.c \
 	r_dat.c \
 	r_detector.c \
@@ -151,6 +152,7 @@ noinst_HEADERS=\
 	output.h \
 	parray.h \
 	parse.h \
+	parser_source.h \
 	pri.h \
 	result.h \
 	sq_util.h \

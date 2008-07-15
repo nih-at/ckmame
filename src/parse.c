@@ -2,7 +2,7 @@
   $NiH: parse.c,v 1.26 2007/05/09 18:58:06 dillo Exp $
 
   parse.c -- parser frontend
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -62,10 +62,6 @@
 
 
 
-static void parser_context_free(parser_context_t *);
-static parser_context_t *parser_context_new(const parray_t *,
-					    const dat_entry_t *,
-					    output_context_t *);
 static int parse_header_end(parser_context_t *);
 
 static void disk_end(parser_context_t *);
@@ -74,59 +70,27 @@ static void rom_end(parser_context_t *, filetype_t);
 
 
 int
-parse(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
+parse(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat,
 	  output_context_t *out)
 {
     parser_context_t *ctx;
-    FILE *fin;
     int c, ret;
-    struct stat st;
 
-    fin = NULL;
-    if (fname == NULL) {
-	fin = stdin;
-	seterrinfo("*stdin*", NULL);
+    ctx = parser_context_new(ps, exclude, dat, out);
+
+    c = ps_peek(ps);
+
+    switch (c) {
+    case '<':
+	ret = parse_xml(ps, ctx);
+	break;
+    case '[':
+	ret = parse_rc(ps, ctx);
+	break;
+    default:
+	ret = parse_cm(ps, ctx);
     }
-    else {
-	if (stat(fname, &st) == -1) {
-	    myerror(ERRSTR, "can't stat romlist file `%s'", fname);
-	    return -1;
-	}
-	if ((st.st_mode & S_IFMT) != S_IFDIR) {
-	    if ((fin=fopen(fname, "r")) == NULL) {
-		myerror(ERRSTR, "can't open romlist file `%s'", fname);
-		return -1;
-	    }
-	    seterrinfo(fname, NULL);
-	}
-    }
-
-    ctx = parser_context_new(exclude, dat, out);
-
-    if (fname)
-	ctx->fname = strdup(fname);
-
-    if (fin) {
-	c = getc(fin);
-	ungetc(c, fin);
-
-	switch (c) {
-	case '<':
-	    ret = parse_xml(fin, ctx);
-	    break;
-	case '[':
-	    ret = parse_rc(fin, ctx);
-	    break;
-	default:
-	    ret = parse_cm(fin, ctx);
-	}
-
-	if (fname != NULL)
-	    fclose(fin);
-    }
-    else
-	ret = parse_dir(fname, ctx);
-
+    
     parser_context_free(ctx);
 
     return ret;
@@ -326,7 +290,7 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
 
     keep_g = 0;
 
-    if (!name_matches(ctx->g, ctx->ignore)) {
+    if (!name_matches(game_name(ctx->g), ctx->ignore)) {
 	g = ctx->g;
 
 	/* omit description if same as name (to save space) */
@@ -415,8 +379,8 @@ parse_prog_description(parser_context_t *ctx, const char *attr)
 int
 parse_prog_header(parser_context_t *ctx, const char *name)
 {
-    char *dir, *temp;
-    const char *fname;
+    parser_source_t *ps;
+    int ret;
 
     CHECK_STATE(ctx, PARSE_IN_HEADER);
 
@@ -427,26 +391,22 @@ parse_prog_header(parser_context_t *ctx, const char *name)
 	return 0;
     }
 
-    temp = NULL;
-
-    if (ctx->fname == NULL)
-	fname = name;
-    else {
-	dir = mydirname(ctx->fname);
-	temp = xmalloc(strlen(dir)+strlen(name)+2);
-	sprintf(temp, "%s/%s", dir, name);
-	free(dir);
-	fname = temp;
-    }
-
-    if ((detector=detector_parse(fname)) == NULL) {
-	myerror(ERRFILESTR, "%d: cannot parse detector `%s'",
-		ctx->lineno, fname);
-	free(temp);
+    if ((ps=ps_open(ctx->ps, name)) == NULL) {
+	/* XXX: error message */
 	return -1;
     }
 
-    return output_detector(ctx->output, detector);
+    if ((detector=detector_parse_ps(ps)) == NULL) {
+	myerror(ERRFILESTR, "%d: cannot parse detector `%s'",
+		ctx->lineno, name);
+	ret = -1;
+    }
+    else
+	ret = output_detector(ctx->output, detector);
+
+    ps_close(ps);
+
+    return ret;
 }
 
 
@@ -481,16 +441,15 @@ parser_context_free(parser_context_t *ctx)
     game_free(ctx->g);
     ctx->g = NULL;
     dat_entry_finalize(&ctx->de);
-    free(ctx->fname);
 
     free(ctx);
 }
 
 
 
-static parser_context_t *
-parser_context_new(const parray_t *exclude, const dat_entry_t *dat,
-		   output_context_t *out)
+parser_context_t *
+parser_context_new(parser_source_t *ps, const parray_t *exclude,
+		   const dat_entry_t *dat, output_context_t *out)
 {
     parser_context_t *ctx;
 
@@ -501,7 +460,7 @@ parser_context_new(const parray_t *exclude, const dat_entry_t *dat,
     ctx->ignore = exclude;
     ctx->state = PARSE_IN_HEADER;
 
-    ctx->fname = NULL;
+    ctx->ps = ps;
     ctx->lineno = 0;
     dat_entry_init(&ctx->de);
     ctx->g = NULL;
@@ -545,15 +504,15 @@ disk_end(parser_context_t *ctx)
 
 
 int
-name_matches(const game_t *g, const parray_t *ignore)
+name_matches(const char *name, const parray_t *patterns)
 {
     int i;
 
-    if (ignore == NULL)
+    if (patterns == NULL)
 	return 0;
 
-    for (i=0; i<parray_length(ignore); i++) {
-	if (fnmatch(parray_get(ignore, i), game_name(g), 0) == 0)
+    for (i=0; i<parray_length(patterns); i++) {
+	if (fnmatch(parray_get(patterns, i), name, 0) == 0)
 	    return 1;
     }
 

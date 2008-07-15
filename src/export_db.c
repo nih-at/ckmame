@@ -2,7 +2,7 @@
   $NiH: export_db.c,v 1.2 2006/10/04 17:36:43 dillo Exp $
 
   export_db.c -- export games from db to output backend
-  Copyright (C) 2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -77,7 +77,7 @@ export_db(sqlite3 *db, const parray_t *exclude, const dat_entry_t *dat,
 	    /* XXX: error */
 	    continue;
 	}
-	if (!name_matches(g, exclude))
+	if (!name_matches(game_name(g), exclude))
 	    output_game(out, g);
 	game_free(g);
     }

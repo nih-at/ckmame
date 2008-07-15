@@ -52,7 +52,7 @@ static char *gettok(char **);
 
 
 int
-parse_cm(FILE *fin, parser_context_t *ctx)
+parse_cm(parser_source_t *ps, parser_context_t *ctx)
 {
     char *cmd, *p, *l;
     enum parse_state state;
@@ -60,7 +60,7 @@ parse_cm(FILE *fin, parser_context_t *ctx)
     ctx->lineno = 0;
     state = st_top;
     
-    while ((l=getline(fin))) {
+    while ((l=ps_getline(ps))) {
 	ctx->lineno++;
 	
 	cmd = gettok(&l);
@@ -271,15 +271,17 @@ gettok(char **p)
     case '\"':
 	s++;
 	e = s+strcspn(s, "\"");
-	*e = 0;
 	break;
 
     default:
 	e = s+strcspn(s, " \t\n\r");
-	*e = 0;
 	break;
     }
 
-    *p = e+1;
+    if (*e != '\0') {
+	*e = '\0';
+	e++;
+    }
+    *p = e;
     return s;
 }

@@ -5,7 +5,7 @@
   $NiH: detector.h,v 1.4 2007/04/12 16:18:26 dillo Exp $
 
   detector.h -- clrmamepro XML header skip detector
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -43,6 +43,7 @@
 #include "array.h"
 #include "myinttypes.h"
 #include "file.h"
+#include "parser_source.h"
 
 struct detector {
     char *name;
@@ -135,6 +136,7 @@ typedef int (*detector_read_cb)(void *, void *, int);
 int detector_execute(detector_t *, file_t *, detector_read_cb, void *);
 void detector_free(detector_t *);
 detector_t *detector_parse(const char *);
+detector_t *detector_parse_ps(parser_source_t *);
 int detector_print(const detector_t *, FILE *);
 detector_t *detector_new(void);
 

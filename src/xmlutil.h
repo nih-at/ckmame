@@ -5,7 +5,7 @@
   $NiH: xmlutil.h,v 1.1 2007/04/10 23:01:30 dillo Exp $
 
   xmlutil.h -- parse XML file via callbacks
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -41,6 +41,7 @@
 #include <stdio.h>
 
 #include "myinttypes.h"
+#include "parser_source.h"
 
 typedef int (*xmlu_attr_cb)(void *, int, int, const char *);
 typedef int (*xmlu_tag_cb)(void *, int);
@@ -69,7 +70,7 @@ typedef struct xmlu_entity xmlu_entity_t;
 
 
 
-int xmlu_parse(FILE *, void *, const xmlu_entity_t *, int);
+int xmlu_parse(parser_source_t *, void *, const xmlu_entity_t *, int);
 
 
 #endif /* xmlutil.h */

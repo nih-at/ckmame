@@ -48,6 +48,9 @@
 
 #define RC_SEP 0xac
 
+static int rc_plugin(parser_context_t *, const char *);
+
+
 enum section {
     RC_UNKNOWN = -1,
     RC_CREDITS,
@@ -71,6 +74,7 @@ struct {
     int (*cb)(parser_context_t *, const char *);
 } fields[] = {
     { RC_CREDITS,  "version", parse_prog_version },
+    { RC_DAT,      "plugin",  rc_plugin },
     { RC_EMULATOR, "refname", parse_prog_name },
     { RC_EMULATOR, "version", parse_prog_description }
 };
@@ -83,7 +87,7 @@ static int rc_romline(parser_context_t *, char *);
 
 
 int
-parse_rc(FILE *fin, parser_context_t *ctx)
+parse_rc(parser_source_t *ps, parser_context_t *ctx)
 {
     char *line, *val;
     enum section sect;
@@ -94,7 +98,7 @@ parse_rc(FILE *fin, parser_context_t *ctx)
 
     rc_romline(ctx, NULL);
 
-    while ((line=getline(fin))) {
+    while ((line=ps_getline(ps))) {
 	ctx->lineno++;
 
 	if (line[0] == '[') {
@@ -152,6 +156,18 @@ gettok(char **linep)
 	return NULL;
 
     return p;
+}
+
+
+
+static int
+rc_plugin(parser_context_t *ctx, const char *value)
+{
+    myerror(ERRFILE, "%d: warning: RomCenter plugins not supported,",
+	    ctx->lineno);
+    myerror(ERRFILE, "%d: warning: DAT won't work as expected.",
+	    ctx->lineno);
+    return -1;
 }
 
 
