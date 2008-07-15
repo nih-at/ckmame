@@ -18,6 +18,7 @@ tests:
   * use on non-matching file
   * rule operations
 
+- [feature] mkmamedb: support for cmpro's www-profiler
 ! [check] mkmamedb: merge does not match name in parent: warning and fixup
 ! [bug] mkmamedb: warn if rom from parent has different crc
 ! [doc] mkmamedb -i not in help
