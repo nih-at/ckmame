@@ -1,0 +1,287 @@
+With the www profiler you can:
+==============================
+
+- see which updates for your dats are available in the www
+- see newly available datfiles as well
+- hide/show old,new,local and updated dats
+- add as many www-sites (which support clrmamepro's www profiler) as you want
+- etc etc...
+
+
+
+I - What the common datfile user should know:
+=============================================
+
+
+
+How to access the www profiler?
+===============================
+
+In the profiler window you'll find a new button called 'WWW Mode'. You can
+also use the popupmenu which got that option as well. You can go back to
+standard profiler mode by selecting the button / menu item again.
+
+
+
+How to use it?
+==============
+
+First of all you need a WWW site which supports clrmamepro's www profiler
+feature. "Support" is nothing but providing a XML file with datfile
+information. You as a user don't have to care about that, you only need to
+know the URL of such a file.
+
+Click on "Add Site" and enter the URL of such a XML file and give an alias
+name for it in the next appearing window. Clicking on OK will try to connect
+to the given address, it will download the xml file, validates it and you'll
+see the just added site in the profiler tree window (left) and the provided
+datfiles in the profiler list (right).
+
+The list shows the datfile description, the version and a status.
+
+Status can be:
+new - you don't have the datfile yet.
+old - you got a newer version on your harddisk already.
+update - you got an older version of the datfile on your harddisk.
+local -  you got exactly the same datfile already on your harddisk
+
+The popup menu holds options to show/hide dats with a status new/old/update
+or local similar to the normal profiler mode hide green/red etc...
+
+The icon of the www site treeicon and the dats themselves can have 2 states.
+The normal look and the same icons but with a little red *. That red * means,
+the dat/www site was updated (or new) since the last refresh.
+
+Talking of refreshs:
+Hitting the refresh sites button will look if your listed www sites updated
+their xml files. and will automatically download a newer version.
+
+Doubleclicking or selecting datfiles and clicking on download will download
+the dats to your clrmamepro datfile folder. After downloading you can return
+to the profiler and you'll find the just downloaded datfiles in either the
+"new/not used datfiles" profiler folder or it <datfiles>. This depends on the
+status of the datfiles.
+
+If you don't want to see the "return to profiler" prompt after a download, you
+disable it in the profiler options window.
+
+
+That's basically it for the common user.
+
+1) Add a site or more (you have to find out the URLs of the xml files
+though, but I guess datfile providers will add xmls in the near future)
+2) select the files you want to download and click on download
+3) go back to the profiler to access it
+
+
+
+Security issues?
+================
+
+clrmamepro uses standard http connects on port 80. There is no data transfered
+from your PC to somewhere in the internet.
+
+Trust your datfile profider. Be sure you get valid datfiles from that site.
+
+
+
+Something fails
+===============
+
+Well...if you got a firewall, you have to allow clrmamepro to access the
+internet (http connects on port 80). If downloads fail, the datfile profider
+may have changed his xmlfile location or datfile location. Ask the providers
+for further support then. Another possible error is an error in the xml file.
+Again, contact the dat provider.
+
+
+
+Known issues:
+=============
+
+WWW caching can be evil. The datfile provider may updated his datfiles and the
+xml but internet caches prevents it from being detected as new. Usually after
+some time it'll be detected. Caching can also affect downloading of zips. The
+xml was updated with new datfilelocations, but caching reports a 'file not
+found' at the location. You simply have to wait a while before it's accessable.
+
+
+Datfile status doesn't have to be 100% correct. Although the detector is
+rather clever, it may fail on weird datheader information. If datfile authors
+use a common version numbering everything's fine.
+
+Some datfile authors use the same datfile header name tag in multiple
+datfiles. This results in wrong or multiple equal status values.
+
+
+
+
+
+
+
+
+
+II - What a datfile provider has to know
+=========================================
+
+
+You have to provide a XML file containing datfile information about
+datfiles you want to provide.
+
+
+The XML File
+============
+
+The syntax of the xml file is as follows:
+
+<clrmamepro>
+   <datfile>
+      <name></name>
+      <description></description>
+      <version></version>
+      <author></author>
+      <comment></comment>
+      <url></url>
+      <file></file>
+   </datfile>
+
+   <datfile>.....</datfile>
+   <datfile>.....</datfile>
+   <datfile>.....</datfile>
+</clrmamepro>
+
+
+Example:
+========
+
+<clrmamepro>
+   <datfile>
+      <name>MAME Artwork</name>
+      <description>MAME Artwork 20050808</description>
+      <version>20050808</version>
+      <author>R.Scherzer www.clrmame.com</author>
+      <comment>&lt;insert comment&gt;</comment>
+      <url>www.clrmame.com/datfiles/MAME/MAME Artwork 20050808 (cm).zip</url>
+      <file>MAME Artwork 20050808 (cm).dat</file>
+   </datfile>
+   <datfile>
+      <name>MAME Flyers</name>
+      <description>MAME Flyers 20050711</description>
+      <version>20050711</version>
+      <author>Gerard Maathuis</author>
+      <comment>The Xray1 Farewell pack</comment>
+      <url>www.clrmame.com/datfiles/MAME/MAME Flyers 20050711 (cm).zip</url>
+      <file>MAME Flyers 20050711 (cm).dat</file>
+   </datfile>
+</clrmamepro>
+
+
+- clrmamepro tags mark the start and end of the file
+- datfile tags mark the start and end of one datfile definition
+- name is the datfile name (as you know it already from a datfile)
+- description is the datfile description (as you know it already from a
+  datfile)
+- version, author and comment like in your dats
+- url points to the datfile on your page (www.bla.com/test.dat) or to
+  a zipfile containing the datfile (www.bla.com/zippeddats/test1.zip)
+- file can be empty if url points to a datfile. It has been filled if url
+  points to a zipfile. file is the name of the datfile inside the zipfile,
+  WITH a possible zipsubfoldername. ("test\test.dat")
+
+name, description, version and url are mandatory entries. file is mandatory
+if url points to zipfile
+
+Your page can provide more than one xml file of course. Useful if you want
+to separate datfiles by some characteristic.
+
+
+
+How to generate such a XML file?
+================================
+
+
+clrmamepro got a xml creator included. You can access it either in the
+popupmenu of the www profile mode or by using the clrmamepro binary from the
+commmandline with some parameters:
+
+The GUI creator:
+
+You have to select
+
+- an URL prestring
+- a folder with datfiles or a listfile (see further down below)
+- a destination filename for the xml
+
+The destination filename for the XML is the name of the file which gets
+created.
+
+The URL prestring is used to create the XML url tag. It's a prestring to
+the datfile filename.
+
+The folder is a folder which gets scanned for dats recursively. The given
+foldername is used as a rootfolder and won't be added to the url tag. Found
+Subfolder will be added.
+
+
+Instead of a folder with datfiles you can use a filename which points to a
+plain text file which includes a list of folders and files.
+
+For example:
+
+d:\temp\dats\
+d:\temp2\other\mame.dat
+
+
+there is another option which allows you to keep some parts of the listed
+folder/files in the url xml tag.
+
+d:\temp\dats\; dats
+d:\temp2\other\mame.dat
+
+See that ";" and the "dats" behind it? Normally d:\temp\dats would be used
+as the datfiles root for xml url tag creation. So if you got a file named
+"d:\temp\dats\test.dat" you'll end with a
+<url><your_www_prestring>/test.dat<url>. Specifying "; dats" will keep the
+"dats" part of the folderstatement. It will result in:
+<url><your_www_prestring>/dats/test.dat<url>.
+
+
+You can also use cmpro.exe to create xmls.
+
+cmpro.exe /xml <www_prestring> <folder or listfile> <destination file> /pack /r
+
+/pack packs the created xml to a zipfile
+/r also scans subfolders
+
+For example:
+
+cmpro.exe /xml www.clrmame.com d:\temp\dats c:\mydats.xml
+cmpro.exe /xml www.clrmame.com d:\temp\datlist.txt c:\mydats.xml
+
+with datlist.txt:
+
+d:\temp\dats\; dats
+d:\temp2\other\mame.dat
+
+
+
+What's the bandwidth usage?
+===========================
+
+clrmamepro checks if the date/timestamp of the xml file has changed on your
+www site when the user hits the "refresh sites" button. If not, it won't
+download it.
+
+You can keep the xml file zipped, too, so this will minimize bandwidth usage
+as well.
+
+If a user selects more than one datfile from the same zipfile, the zip is
+only downloaded once (until clrmamepro is closed or the zipfile gets changed
+on the server).
+
+You still watch your bandwidth since it's not known how many people will use
+this feature and will download and download and download and .....
+
+To prevent caching issues you should update the dats first, wait a while and
+then update the xml. Otherwise you may run into trouble that the xml is
+available while the dats aren't yet accessible for the users.
