@@ -1,6 +1,12 @@
 0.10
 
+- use SQLite3 instead of Berkeley DB
 - optionally TorrentZip ROM set
+- mkmamedb: add support for ROM Management Datafile format
+- mkmamedb: add support to read dat files from zip archives
+- mkmamedb: extract version and game description from listxml output
+- ckmame: fix finding ROMs that need detectors from superfluous and extra
+- change to 3-clause BSD license
 
 0.9 (2007-06-04)
 
