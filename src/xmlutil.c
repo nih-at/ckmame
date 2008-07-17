@@ -2,7 +2,7 @@
   $NiH$
 
   xmlutil.c -- parse XML file via callbacks
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -47,7 +47,8 @@
 
 /*ARGSUSED1*/
 int
-xmlu_parse(FILE *fin, void *ctx, const xmlu_entity_t *entities, int nentities)
+xmlu_parse(parser_source_t *ps, void *ctx,
+	   const xmlu_entity_t *entities, int nentities)
 {
     myerror(ERRFILE, "support for XML parsing not compiled in.");
     return -1;
