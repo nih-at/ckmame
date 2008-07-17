@@ -376,8 +376,9 @@ parse_prog_description(parser_context_t *ctx, const char *attr)
 
 
 
+/* ARGSUSED3 */
 int
-parse_prog_header(parser_context_t *ctx, const char *name)
+parse_prog_header(parser_context_t *ctx, const char *name, int dummy)
 {
     parser_source_t *ps;
     int ret;

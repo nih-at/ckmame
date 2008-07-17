@@ -56,6 +56,12 @@ static int parse_xml_mame_build(parser_context_t *, filetype_t, int,
 
 static const xmlu_attr_t attr_mame[] = {
     { "build",    XA(parse_xml_mame_build), 0,         0                },
+    { NULL }
+};
+
+static const xmlu_attr_t attr_clrmamepro [] = {
+    { "header",   XA(parse_prog_header),  0,           0,               },
+    { NULL }
 };
 
 static const xmlu_attr_t attr_disk[] = {
@@ -87,19 +93,21 @@ static const xmlu_attr_t attr_sample[] = {
     { NULL }
 };
 static const xmlu_entity_t entities[] = {
-    { "description", NULL,   0, NULL,                 NULL,
-      XT(parse_game_description), 0 },
-    { "disk",   attr_disk,   1, XO(parse_file_start), XC(parse_file_end),
+    { "clrmamepro", attr_clrmamepro, NULL, NULL, NULL, 0 },
+    { "disk",   attr_disk,   XO(parse_file_start), XC(parse_file_end),
       NULL, TYPE_DISK },
-    { "game",   attr_game,   0, XO(parse_game_start), XC(parse_game_end),
+    { "game",   attr_game,   XO(parse_game_start), XC(parse_game_end),
       NULL, 0 },
-    { "machine", attr_game,  0, XO(parse_game_start), XC(parse_game_end),
+    { "game/description",   NULL, NULL, NULL, XT(parse_game_description), 0 },
+    { "header/description", NULL, NULL, NULL, XT(parse_prog_description), 0 },
+    { "header/name",        NULL, NULL, NULL, XT(parse_prog_name),        0 },
+    { "header/version",     NULL, NULL, NULL, XT(parse_prog_version),     0 },
+    { "machine", attr_game,  XO(parse_game_start), XC(parse_game_end),
       NULL, 0 },
-    { "mame",   attr_mame,   0, NULL,                 NULL,
-      NULL, 0 },
-    { "rom",    attr_rom,    1, XO(parse_file_start), XC(parse_file_end),
+    { "mame",   attr_mame,  NULL, NULL, NULL, 0 },
+    { "rom",    attr_rom,    XO(parse_file_start), XC(parse_file_end),
       NULL, TYPE_ROM },
-    { "sample", attr_sample, 1, XO(parse_file_start), XC(parse_file_end),
+    { "sample", attr_sample, XO(parse_file_start), XC(parse_file_end),
       NULL, TYPE_SAMPLE }
 };
 static const int nentities = sizeof(entities)/sizeof(entities[0]);

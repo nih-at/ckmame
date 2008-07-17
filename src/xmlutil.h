@@ -59,7 +59,6 @@ typedef struct xmlu_attr xmlu_attr_t;
 struct xmlu_entity {
     const char *name;
     const xmlu_attr_t *attr;
-    bool empty;
     xmlu_tag_cb cb_open;
     xmlu_tag_cb cb_close;
     xmlu_text_cb cb_text;

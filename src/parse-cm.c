@@ -237,7 +237,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 	    else if (strcmp(cmd, "version") == 0)
 		parse_prog_version(ctx, gettok(&l));
 	    else if (strcmp(cmd, "header") == 0)
-		parse_prog_header(ctx, gettok(&l));
+		parse_prog_header(ctx, gettok(&l), 0);
 	    else if (strcmp(cmd, ")") == 0)
 		state = st_top;
 	    break;

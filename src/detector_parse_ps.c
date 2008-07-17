@@ -119,15 +119,15 @@ static const xmlu_attr_t attr_rule[] = {
 };
 
 static const xmlu_entity_t entities[] = {
-    { "and", attr_bit, true, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_AND },
-    { "author", NULL, false, NULL, NULL, XT(text_author), 0 },
-    { "data", attr_data, true, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_DATA },
-    { "file", attr_file, true, XO(test_open), XC(test_close), NULL, 0 },
-    { "name", NULL, false, NULL, NULL, XT(text_name), 0 },
-    { "or", attr_bit, true, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_OR },
-    { "rule", attr_rule, false, XO(rule_open), XC(rule_close), NULL, 0 },
-    { "version", NULL, false, NULL, NULL, XT(text_version), 0 },
-    { "xor", attr_bit, true, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_XOR },
+    { "and", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_AND },
+    { "author", NULL, NULL, NULL, XT(text_author), 0 },
+    { "data", attr_data, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_DATA },
+    { "file", attr_file, XO(test_open), XC(test_close), NULL, 0 },
+    { "name", NULL, NULL, NULL, XT(text_name), 0 },
+    { "or", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_OR },
+    { "rule", attr_rule, XO(rule_open), XC(rule_close), NULL, 0 },
+    { "version", NULL, NULL, NULL, XT(text_version), 0 },
+    { "xor", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_XOR },
 };
 static const int nentities = sizeof(entities)/sizeof(entities[0]);
 

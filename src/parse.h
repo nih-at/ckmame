@@ -112,7 +112,7 @@ int parse_game_end(parser_context_t *, filetype_t);
 int parse_game_name(parser_context_t *, filetype_t, int, const char *);
 int parse_game_start(parser_context_t *, filetype_t);
 int parse_prog_description(parser_context_t *, const char *);
-int parse_prog_header(parser_context_t *, const char *);
+int parse_prog_header(parser_context_t *, const char *, int);
 int parse_prog_name(parser_context_t *, const char *);
 int parse_prog_version(parser_context_t *, const char *);
 

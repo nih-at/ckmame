@@ -58,7 +58,10 @@ xmlu_parse(parser_source_t *ps, void *ctx,
 
 #include <libxml/xmlreader.h>
 
-static int entity_cmp(const void *, const void *);
+#define XMLU_MAX_PATH	8192
+
+static const xmlu_entity_t *find_entity(const char *, const xmlu_entity_t *,
+					int);
 static int xml_close(void *);
 static int xml_read(void *, char *, int);
 
@@ -71,6 +74,7 @@ xmlu_parse(parser_source_t *ps, void *ctx,
     xmlTextReaderPtr reader;
     int i, ret;
     const char *name;
+    char path[XMLU_MAX_PATH];
     char *attr;
     const xmlu_entity_t *e, *e_txt;
     const xmlu_attr_t *a;
@@ -83,16 +87,23 @@ xmlu_parse(parser_source_t *ps, void *ctx,
     }
 
     e_txt = NULL;
+    path[0] = '\0';
 
     while ((ret=xmlTextReaderRead(reader)) == 1) {
-	name = (const char *)xmlTextReaderConstName(reader);
+	switch (xmlTextReaderNodeType(reader)) {
+	case XML_READER_TYPE_ELEMENT:
+	    name = (const char *)xmlTextReaderConstName(reader);
+	    if (path+strlen(path)+strlen(name)+2 > path+sizeof(path)) {
+		/* XXX */
+	    }
+	    else {
+		sprintf(path+strlen(path), "/%s", name);
+	    }
 
-	if ((e=bsearch(name, entities, nentities, sizeof(entities[0]),
-		       entity_cmp)) != NULL) {
-	    if (e->empty
-		|| xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT) {
+	    if ((e=find_entity(path, entities, nentities)) != NULL) {
 		if (e->cb_open)
 		    ret |= e->cb_open(ctx, e->arg1);
+
 		a = e->attr;
 		for (i=0; a && a[i].name; i++) {
 		    if ((attr=(char *)xmlTextReaderGetAttribute(reader,
@@ -101,18 +112,38 @@ xmlu_parse(parser_source_t *ps, void *ctx,
 			free(attr);
 		    }
 		}
+
 		if (e->cb_text)
 		    e_txt = e;
 	    }
-	    if (e->empty 
-		|| xmlTextReaderNodeType(reader) != XML_READER_TYPE_ELEMENT) {
+
+	    if (!xmlTextReaderIsEmptyElement(reader))
+		break;
+	    /*
+	      Fallthrough for empty elements, as we won't get an
+	      extra close.
+	    */
+
+	case XML_READER_TYPE_END_ELEMENT:
+	    if ((e=find_entity(path, entities, nentities)) != NULL) {
 		if (e->cb_close)
 		    ret |= e->cb_close(ctx, e->arg1);
-		e_txt = NULL;
 	    }
+
+	    *(strrchr(path, '/')) = '\0';
+	    e_txt = NULL;
+	    
+	    break;
+	    
+	case XML_READER_TYPE_TEXT:
+	    if (e_txt)
+		e_txt->cb_text(ctx,
+			       (const char *)xmlTextReaderConstValue(reader));
+	    break;
+	    
+	default:
+	    break;
 	}
-	else if (e_txt && strcmp(name, "#text") == 0)
-	    e_txt->cb_text(ctx, (const char *)xmlTextReaderConstValue(reader));
     }
     xmlFreeTextReader(reader);
 
@@ -127,10 +158,32 @@ xmlu_parse(parser_source_t *ps, void *ctx,
 
 
 
-static int
-entity_cmp(const void *key, const void *ve)
+static const xmlu_entity_t *
+find_entity(const char *path, const xmlu_entity_t *entities, int nentities)
 {
-    return strcmp(key, ((const xmlu_entity_t *)ve)->name);
+    int i;
+    const char *path_end;
+    int name_len;
+
+    path_end = path+strlen(path);
+
+    for (i=0; i<nentities; i++) {
+	if (entities[i].name[0] == '/') {
+	    if (strcmp(path, entities[i].name) == 0)
+		break;
+	}
+	else {
+	    name_len = strlen(entities[i].name);
+	    if (path_end[-name_len-1] == '/'
+		&& strcmp(path_end-name_len, entities[i].name) == 0)
+		break;
+	}
+    }
+
+    if (i != nentities)
+	return entities+i;
+
+    return NULL;
 }
 
 
