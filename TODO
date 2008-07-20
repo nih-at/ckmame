@@ -18,45 +18,42 @@ tests:
   * use on non-matching file
   * rule operations
 
-- [feature] mkmamedb: support for cmpro's www-profiler
-! [check] mkmamedb: merge does not match name in parent: warning and fixup
 ! [bug] mkmamedb: warn if rom from parent has different crc
+! [check] mkmamedb: merge does not match name in parent: warning and fixup
 ! [doc] mkmamedb -i not in help
 ! [feature] --torrentzip: tell when torrentzipping archive
-! [bug] mkmamedb: duplicate nodump ROMs produce warning
+! [bug] torrentzip: rezipping torrentzipped archive (under Solaris)
+! [bug] mkmamedb: duplicate nodump ROMs produce warning (fixed?)
 ! [doc] docuemnt --torrentzip
 ! [test] verify inparent.test
-! [cleanup] specify globally which parts of memdb/lists to fill/maintain
-! [test] detective
 ! [compatibility] PRIu64 replacement
 ! [cleanup] use non-GPL getopt_long replacement
-! [cleanup] reduce code duplication
-! [cleanup] access db directly in find_*
-! [cleanup] merge disk_t into file_t
-! [bug] check/fix database error reporting
-! [bug] diagnostics (fix?): don't process disks if checking samples
-- [bug] ckmame -e and not -j: don't rename chds, link/copy them.
+! [bug] ensure rompath[0] before trying to create zip file there (fixed?)
++ [bug] check/fix database error reporting
++ [test] detective
++ [bug] diagnostics (fix?): don't process disks if checking samples
++ [bug] ckmame -e and not -j: don't rename chds, link/copy them.
++ [bug] tries to remove disk image in extra twice (or tries to remove used?)
++ [feature] inconsistent zip in ROM set: copy files to new zip (fixed?)
+- [feature] config file (provides defaults overridable on command line)
+- [feature] mkmamedb: support for cmpro's www-profiler
+- [cleanup] reduce code duplication
+- [cleanup] access db directly in find_*
+- [cleanup] merge disk_t into file_t
+- [cleanup] specify globally which parts of memdb/lists to fill/maintain
 - [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
 - [bug] game: only nogooddumps in set: ckmame -d reports not a single rom found
-- [bug] ensure rompath[0] before trying to create zip file there
-- [bug] tries to remove disk image in extra twice (or tries to remove used?)
 - [bug] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version for /ckmame key
 - [bug] check if rompath/needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
-- [feature] torrentzip support (via option)
 - [feature] add hash-types option to dumpgame
 - [feature] mkmamedb: split to original CM dat files + detector XML on export
-- [feature] regress: better db dump format
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
 - [feature] when moving file to needed, recheck games that might need it
-- [feature] inconsistent zip in ROM set: copy files to new zip
 - [feature] dumpgame: dump samples
-- [feature] dumpgame: option to select which checksums to print
-- [feature] mkmamedb: add XML output format (XXX: we have no manufacturer)
-- [feature] config file (provides defaults overridable on command line)
-- [feature] cmcheck style diagnostics
+- [feature] mkmamedb: add XML output format
 - [feature] database consistency checks during mkmamedb
   - are all roms of one set included in one other set
   - are two sets the same, just different name
