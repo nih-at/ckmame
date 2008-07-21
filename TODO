@@ -18,17 +18,16 @@ tests:
   * use on non-matching file
   * rule operations
 
-! [bug] mkmamedb: warn if rom from parent has different crc
-! [check] mkmamedb: merge does not match name in parent: warning and fixup
-! [doc] mkmamedb -i not in help
-! [feature] --torrentzip: tell when torrentzipping archive
+! [bug] ensure rompath[0] before trying to create zip file there (fixed?)
 ! [bug] torrentzip: rezipping torrentzipped archive (under Solaris)
-! [bug] mkmamedb: duplicate nodump ROMs produce warning (fixed?)
+! [feature] --torrentzip: tell when torrentzipping archive
+! [doc] mkmamedb -i not in help
 ! [doc] document --torrentzip
 ! [test] verify inparent.test
 ! [compatibility] PRIu64 replacement
 ! [cleanup] use non-GPL getopt_long replacement
-! [bug] ensure rompath[0] before trying to create zip file there (fixed?)
++ [bug] mkmamedb: warn if rom from parent has different crc
++ [bug] mkmamedb: merge does not match name in parent: warning and fixup
 + [bug] check/fix database error reporting
 + [test] detective
 + [bug] diagnostics (fix?): don't process disks if checking samples
