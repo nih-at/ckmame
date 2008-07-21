@@ -24,7 +24,7 @@ tests:
 ! [feature] --torrentzip: tell when torrentzipping archive
 ! [bug] torrentzip: rezipping torrentzipped archive (under Solaris)
 ! [bug] mkmamedb: duplicate nodump ROMs produce warning (fixed?)
-! [doc] docuemnt --torrentzip
+! [doc] document --torrentzip
 ! [test] verify inparent.test
 ! [compatibility] PRIu64 replacement
 ! [cleanup] use non-GPL getopt_long replacement
