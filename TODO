@@ -18,7 +18,6 @@ tests:
   * use on non-matching file
   * rule operations
 
-! [bug] ensure rompath[0] before trying to create zip file there (fixed?)
 ! [bug] torrentzip: rezipping torrentzipped archive (under Solaris)
 ! [feature] --torrentzip: tell when torrentzipping archive
 ! [doc] mkmamedb -i not in help

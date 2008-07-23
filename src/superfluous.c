@@ -94,10 +94,8 @@ find_superfluous(const char *dbname)
 	    continue;
 	}
 	len_dir += 1; /* trailing '/' */
-	if ((dir=dir_open(dirname, 0)) == NULL) {
-	    myerror(ERRSTR, "can't open ROMPATH directory `%s'", dirname);
+	if ((dir=dir_open(dirname, 0)) == NULL)
 	    continue;
-	}
 
 	while ((err=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
 	    if (err == DIR_ERROR) {
