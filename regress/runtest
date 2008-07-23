@@ -55,8 +55,8 @@
 #	mkdir MODE NAME
 #	    create directory NAME with permissions MODE.
 #
-#	mkdb CMD
-#	    run CMD to create mame.db.
+#	mkdbargs ARGS
+#	    run mkmamedb with ARGS to create mame.db.
 #
 #	program PRG
 #	    run PRG instead of ckmame.
