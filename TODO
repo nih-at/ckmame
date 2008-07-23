@@ -18,10 +18,7 @@ tests:
   * use on non-matching file
   * rule operations
 
-! [bug] torrentzip: rezipping torrentzipped archive (under Solaris)
 ! [feature] --torrentzip: tell when torrentzipping archive
-! [doc] mkmamedb -i not in help
-! [doc] document --torrentzip
 ! [test] verify inparent.test
 ! [compatibility] PRIu64 replacement
 ! [cleanup] use non-GPL getopt_long replacement
@@ -33,6 +30,7 @@ tests:
 + [bug] ckmame -e and not -j: don't rename chds, link/copy them.
 + [bug] tries to remove disk image in extra twice (or tries to remove used?)
 + [feature] inconsistent zip in ROM set: copy files to new zip (fixed?)
++ [cleanup] remove ROMPATH support
 - [feature] config file (provides defaults overridable on command line)
 - [feature] mkmamedb: support for cmpro's www-profiler
 - [cleanup] reduce code duplication
