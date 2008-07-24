@@ -326,8 +326,6 @@ do
   esac
 done
 
-} < ${srcdir}/${TEST}.test
-
 test_set "${RET}" return
 test_set "${ARGS}" args
 
@@ -432,3 +430,5 @@ find . -type f -print | sed 's!^./!!' | sort > gotfiles
 checkfile shouldfiles gotfiles "unexpected/missing files"
 
 succeed
+
+} < ${srcdir}/${TEST}.test
