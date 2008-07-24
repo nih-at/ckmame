@@ -4,8 +4,8 @@
 /*
   $NiH: myinttypes.h,v 1.1 2007/04/12 16:19:56 dillo Exp $
 
-  myinttypes.h -- ensure that {u,}int{8,16,32,64}_t are defined
-  Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
+  myinttypes.h -- ensure that {u,}int{8,16,32,64}_t and PRIu64 are defined
+  Copyright (C) 2005-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -100,13 +100,16 @@ typedef unsigned short uint32_t;
 #  endif
 #endif
 
-#if !defined(HAVE_INT64_T) || !defined(HAVE_UINT64_T)
+#if !defined(HAVE_INT64_T) || !defined(HAVE_UINT64_T) || !defined(PRIu64)
 #  if SIZEOF_INT == 8
 #    ifndef HAVE_INT64_T
 typedef int int64_t;
 #    endif
 #    ifndef HAVE_UINT64_T
 typedef unsigned int uint64_t;
+#    endif
+#    ifndef PRIu64
+#define PRIu64 "u"
 #    endif
 #  elif SIZEOF_LONG == 8
 #    ifndef HAVE_INT64_T
@@ -115,12 +118,18 @@ typedef long int64_t;
 #    ifndef HAVE_UINT64_T
 typedef unsigned long uint64_t;
 #    endif
+#    ifndef PRIu64
+#define PRIu64 "ul"
+#    endif
 #  elif SIZEOF_LONG_LONG == 8
 #    ifndef HAVE_INT64_T
 typedef long long int64_t;
 #    endif
 #    ifndef HAVE_UINT64_T
 typedef unsigned long long uint64_t;
+#    endif
+#    ifndef PRIu64
+#define PRIu64 "ull"
 #    endif
 #  else
 #error no 4-byte integer type found
