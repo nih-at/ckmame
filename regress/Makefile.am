@@ -147,6 +147,7 @@ ZIPS=		1-4-2.zip \
 		2-44-ok.zip \
 		2-48-broken.zip \
 		2-48-ok.zip \
+		2-48-ok.tzip \
 		2-4a-ok.zip \
 		2-4c-ok.zip \
 		2-84.zip \
