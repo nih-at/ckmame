@@ -37,10 +37,9 @@ PKG_CHECK_MODULES(SQLITE3, sqlite3 >= 3.0)
 
 AC_HEADER_DIRENT
 
-AC_REPLACE_FUNCS(fnmatch getprogname strlcpy)
+AC_REPLACE_FUNCS(fnmatch getprogname strlcpy getopt_long)
 NIH_REPLACE_BSWAP(bswap16)
 NIH_REPLACE_BSWAP(bswap32)
-AC_CHECK_FUNCS(getopt_long, , [AC_LIBOBJ([getopt1]) AC_LIBOBJ([getopt])])
 AC_CHECK_FUNCS(MD5Init, , [AC_LIBOBJ([md5])])
 AC_CHECK_FUNCS(SHA1Init, , [AC_LIBOBJ([sha1])])
 AC_CHECK_FUNCS(fseeko)

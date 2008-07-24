@@ -167,11 +167,10 @@ EXTRA_DIST=\
 	bswap16.c \
 	bswap32.c \
 	compat_fnmatch.h \
-	compat_getopt.h \
+	getopt_long.h \
 	getprogname.c \
 	fnmatch.c \
-	getopt.c \
-	getopt1.c \
+	getopt_long.c \
 	md5.c \
 	md5_own.h \
 	sha1.c \

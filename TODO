@@ -18,9 +18,8 @@ tests:
   * use on non-matching file
   * rule operations
 
-! [test] verify inparent.test
-! [compatibility] PRIu64 replacement
-! [cleanup] use non-GPL getopt_long replacement
+! [cleanup] require libzip w/ torrentzip support
++ [feature] get needed files directly from parent (see inparent.test)
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
 + [bug] check/fix database error reporting
@@ -28,7 +27,7 @@ tests:
 + [bug] diagnostics (fix?): don't process disks if checking samples
 + [bug] ckmame -e and not -j: don't rename chds, link/copy them.
 + [bug] tries to remove disk image in extra twice (or tries to remove used?)
-+ [feature] inconsistent zip in ROM set: copy files to new zip (fixed?)
++ [feature] inconsistent zip in ROM set: copy files to new zip
 + [cleanup] remove ROMPATH support
 - [feature] config file (provides defaults overridable on command line)
 - [feature] mkmamedb: support for cmpro's www-profiler
