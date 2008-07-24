@@ -34,9 +34,9 @@
 
 
 #include <errno.h>
-#include <stdbool.h>
 #include <stdlib.h>
 
+#include "myinttypes.h"
 #include "parser_source.h"
 #include "util.h"
 #include "xmalloc.h"
