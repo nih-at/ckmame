@@ -18,7 +18,6 @@ tests:
   * use on non-matching file
   * rule operations
 
-! [feature] --torrentzip: tell when torrentzipping archive
 ! [test] verify inparent.test
 ! [compatibility] PRIu64 replacement
 ! [cleanup] use non-GPL getopt_long replacement

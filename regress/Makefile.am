@@ -117,6 +117,7 @@ TESTS=	\
 		superfluous.test \
 		swap.test \
 		tochildfix.test \
+		tz-already.test \
 		tz-ok.test \
 		tz-from-romset.test \
 		wrong.test \

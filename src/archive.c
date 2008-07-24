@@ -1,6 +1,6 @@
 /*
   archive.c -- information about an archive
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -485,4 +485,18 @@ read_infos_from_zip(archive_t *a)
     }
 
     return 0;
+}
+
+
+
+bool
+archive_is_torrentzipped(archive_t *a)
+{
+    if (archive_filetype(a) != TYPE_ROM)
+	return true;
+
+    if (a->za == NULL)
+	return true;
+
+    return zip_get_archive_flag(a->za, ZIP_AFL_TORRENT, ZIP_FL_UNCHANGED) == 1;
 }

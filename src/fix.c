@@ -161,7 +161,12 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	    /* XXX: return -1 here? */
 	}
     }
-    
+
+    if (fix_options & FIX_PRINT) {
+	if ((a->flags & ARCHIVE_FL_TORRENTZIP) && !archive_is_torrentzipped(a))
+	    printf("%s: torrentzipping\n", archive_name(a));
+    }
+
     if (archive_commit(a) < 0) {
 	if ((fix_options & FIX_DO) && extra_delete_list)
 	    delete_list_rollback(extra_delete_list);

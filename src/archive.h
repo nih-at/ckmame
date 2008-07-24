@@ -113,6 +113,8 @@ extern int _archive_global_flags;
 #define archive_is_rdwr(a)	\
     ((_archive_global_flags & ARCHIVE_FL_RDONLY) == 0)
 
+bool archive_is_torrentzipped(archive_t *);
+
 int archive_close_zip(archive_t *);
 int archive_ensure_zip(archive_t *);
 int archive_refresh(archive_t *);
