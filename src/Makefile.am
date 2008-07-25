@@ -1,13 +1,13 @@
 AM_CFLAGS=@LIBZIP_CFLAGS@ @LIBXML2_CFLAGS@ @SQLITE3_CFLAGS@ @CFLAGS@ 
 
-bin_PROGRAMS=ckmame detective dumpgame mamedb mkmamedb
+bin_PROGRAMS=ckmame detective dumpgame mkmamedb
 
 noinst_LIBRARIES=libckmame.a
 
 ckmame_LDADD=libckmame.a @LIBZIP_LIBS@ @SQLITE3_LIBS@
 detective_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 dumpgame_LDADD=libckmame.a @SQLITE3_LIBS@
-mamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
+#mamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 mkmamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 
 mamedb_SOURCES= \
