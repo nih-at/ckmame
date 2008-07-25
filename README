@@ -6,16 +6,16 @@ files.
 
   To use it, you need
 	- zlib (at least version 1.1.2)
-	- libzip
-	- Berkeley DB
-	- optionally libxml2 (for parsing xmame -listxml output)
+	- libzip (at least version 0.9)
+	- SQLite3
+	- optionally libxml2 (for M.A.M.E. -listxml and detectors)
 
   You will also need a description of the ROM set you want to check.
 For MAME, it can be obtained by running `mame -listxml'.
 
-  You can find zlib at http://www.zlib.net/, Berkeley DB at
-http://www.sleepycat.com/, libzip at http://www.nih.at/libzip/,
-and libxml2 at http://xmlsoft.org/.
+  You can find zlib at http://www.zlib.net/, SQLite3 at
+http://www.sqlite.org/, libzip at http://www.nih.at/libzip/, and
+libxml2 at http://xmlsoft.org/.
 
   If you make a binary distribution, please include a pointer to the
 distribution site
