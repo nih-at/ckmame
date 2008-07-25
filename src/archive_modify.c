@@ -72,13 +72,11 @@ archive_commit(archive_t *a)
 {
     int i;
 
-#ifdef ZIP_AFL_TORRENT
     if (a->flags & ARCHIVE_FL_TORRENTZIP) {
 	if (a->za == NULL
 	    || zip_get_archive_flag(a->za, ZIP_AFL_TORRENT, 0) == 0)
 	a->flags |= ARCHIVE_IFL_MODIFIED;
     }
-#endif
 
     if (!(a->flags & ARCHIVE_IFL_MODIFIED))
 	return 0;
@@ -91,7 +89,6 @@ archive_commit(archive_t *a)
 		return -1;
 	}
 
-#ifdef ZIP_AFL_TORRENT
 	if (a->flags & ARCHIVE_FL_TORRENTZIP) {
 	    if (zip_set_archive_flag(a->za, ZIP_AFL_TORRENT, 1) < 0) {
 		seterrinfo(NULL, archive_name(a));
@@ -100,7 +97,6 @@ archive_commit(archive_t *a)
 		return -1;
 	    }
 	}
-#endif
 
 	if (zip_close(a->za) < 0) {
 	    seterrinfo(NULL, archive_name(a));
@@ -139,7 +135,6 @@ archive_commit(archive_t *a)
 	}
     }
 
-#ifdef ZIP_AFL_TORRENT
     if (a->flags & ARCHIVE_FL_TORRENTZIP) {
 	/* Currently, only internal archives are torrtentzipped and
 	   only external archives are indexed.  So we don't need to
@@ -147,7 +142,6 @@ archive_commit(archive_t *a)
 
 	array_sort(archive_files(a), _file_cmp_name);
     }
-#endif
 
     return 0;
 }
