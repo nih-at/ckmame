@@ -1,5 +1,5 @@
 AC_PREREQ(2.54)
-AC_INIT([ckmame],[0.9a],[ckmame@nih.at])
+AC_INIT([ckmame],[0.10],[ckmame@nih.at])
 AC_CONFIG_SRCDIR([src/ckmame.c])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
@@ -28,7 +28,7 @@ AC_CHECK_SIZEOF([off_t])
 
 AC_CHECK_LIB(z, compress2)
 # find libzip
-PKG_CHECK_MODULES(LIBZIP, libzip >= 0.7.1)
+PKG_CHECK_MODULES(LIBZIP, libzip >= 0.9)
 
 ZIPCMP=`pkg-config --variable=zipcmp libzip`
 AC_SUBST(ZIPCMP, $ZIPCMP)

@@ -1,4 +1,4 @@
-0.10
+0.10 (2008-07-25)
 
 - use SQLite3 instead of Berkeley DB
 - optionally TorrentZip ROM set

@@ -18,7 +18,6 @@ tests:
   * use on non-matching file
   * rule operations
 
-! [cleanup] require libzip w/ torrentzip support
 + [feature] get needed files directly from parent (see inparent.test)
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
