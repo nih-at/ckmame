@@ -1,0 +1,7 @@
+description test mkmamedb database creation, SHA1 broken
+return 0
+program mkmamedb
+args -o mkmamedb-test.db mamedb.txt
+file mamedb.txt mamedb-broken-sha1.txt mamedb-broken-sha1.txt
+file-new mkmamedb-test.db mamedb-broken-sha1.dump
+stderr <unknown>: 6: invalid argument for sha1

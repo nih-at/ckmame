@@ -59,6 +59,7 @@ TESTS=	\
 		mid.test \
 		misnamed-dryrun.test \
 		misnamed.test \
+		mkmamedb-broken-sha1.test \
 		mkmamedb-duplicate-game.test \
 		mkmamedb-duplicate-nodump.test \
 		mkmamedb-lost-parent.test \
