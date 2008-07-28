@@ -43,6 +43,8 @@ tests:
 - [bug] DB export: export detector
 - [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange
   results: the file is copied into nogoodclone.
+- [feature] speed up cleanup of extra dir: no checksums need to be computed
+  if the crc (or size) doesn't match any known rom
 - [feature] add hash-types option to dumpgame
 - [feature] mkmamedb: split to original CM dat files + detector XML on export
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
