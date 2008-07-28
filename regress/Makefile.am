@@ -71,6 +71,8 @@ TESTS=	\
 		needed.test \
 		needed2.test \
 		needed3.test \
+		nogood-allmissing.test \
+		nogood-miss-d.test \
 		nogood-miss.test \
 		nogood.test \
 		nonexist.test \
@@ -131,8 +133,6 @@ BROKEN_TESTS=	\
 		disk-from-extra.test \
 		disk-swapmerge.test \
 		identical-once.test \
-		nogood-allmissing.test \
-		nogood-miss-d.test \
 		rom-from-superfluous-many.test \
 		tochild.test \
 		wrong2.test

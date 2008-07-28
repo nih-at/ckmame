@@ -1,6 +1,6 @@
 /*
   check_files.c -- match files against ROMs
-  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2008 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -44,6 +44,7 @@
 #include "hashes.h"
 #include "match.h"
 #include "util.h"
+#include "warn.h"
 
 
 
@@ -290,12 +291,16 @@ update_game_status(const game_t *g, result_t *res)
 	    has_own = 1;
 	if (match_quality(m) == QU_MISSING)
 	    all_fixable = 0;
-	if (match_quality(m) != QU_MISSING) {
+	else {
 	    all_dead = 0;
 	    if (file_where(r) == FILE_INZIP)
 		all_own_dead = 0;
 	}
-	if (match_quality(m) != QU_OK)
+	/* XXX: using output_options here is a bit of a hack,
+	   but so is all of the result_game processing */
+	if (match_quality(m) != QU_OK
+	    && (file_status(r) == STATUS_OK
+		|| (output_options & WARN_NO_GOOD_DUMP)))
 	    all_correct = 0;
     }
 

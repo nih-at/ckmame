@@ -374,7 +374,7 @@ then
     echo DIR: ${DIR}
     echo PROGRAM: ${PROGRAM} ${ARGS}
     echo
-    gdb --args ${PROGRAM} ${ARGS}
+    gdb --args ${PROGRAM} ${ARGS} < /dev/tty
     if [ -z "${NOCLEANUP}" ]
     then
 	cd ..
