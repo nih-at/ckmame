@@ -105,6 +105,7 @@ TESTS=	\
 		rom-from-superfluous-some.test \
 		rom-from-superfluous.test \
 		rom-many.test \
+		rom-unused.test \
 		sample-miss.test \
 		sample-ok.test \
 		sample-parent-ok.test \
@@ -134,7 +135,6 @@ BROKEN_TESTS=	\
 		nogood-miss-d.test \
 		rom-from-superfluous-many.test \
 		tochild.test \
-		unused.test \
 		wrong2.test
 
 ZIPS=		1-4-2.zip \
