@@ -122,10 +122,10 @@ game (
 
 game (
 	name diskchild
-	cloneof disk
 	description "1-4 with disk (child)"
 	manufacturer "synth"
 	year 2007
+	romof disk
 	rom ( name 04.rom size 4 crc32 d87f7e0c )
 	disk ( name 108-5c merge 108-5 md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 )
 )
@@ -154,6 +154,16 @@ game (
 	year 1994
 	rom ( name 04.rom size 4 flags nodump )
 	rom ( name 08.rom size 8 crc32 3656897d )
+)
+
+game (
+	name nogoodclone
+	description "clone-8 with no good dump"
+	manufacturer "synth"
+	year 1994
+	romof 1-8
+	rom ( name 04.rom size 4 flags nodump )
+	rom ( name 08.rom merge 08.rom size 8 crc32 3656897d )
 )
 
 game (
