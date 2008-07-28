@@ -126,6 +126,7 @@ TESTS=	\
 		zero-miss.test \
 		zero-superfluous.test
 BROKEN_TESTS=	\
+		disk-from-extra.test \
 		disk-swapmerge.test \
 		identical-once.test \
 		rom-from-superfluous-many.test \
