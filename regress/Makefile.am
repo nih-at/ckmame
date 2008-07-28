@@ -129,6 +129,7 @@ BROKEN_TESTS=	\
 		disk-from-extra.test \
 		disk-swapmerge.test \
 		identical-once.test \
+		nogood-allmissing.test \
 		rom-from-superfluous-many.test \
 		tochild.test \
 		unused.test \
