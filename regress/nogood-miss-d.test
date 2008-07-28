@@ -1,0 +1,4 @@
+description test single-rom game with bad dump, with -d
+return 0
+args -dFKLv nogoodclone
+file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
