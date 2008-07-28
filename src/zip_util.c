@@ -1,7 +1,5 @@
 /*
-  $NiH: zip_util.c,v 1.2 2006/05/06 23:31:40 dillo Exp $
-
-  util.c -- utility functions needed only by ckmame itself
+  zip_util.c -- utility functions for zip needed only by ckmame itself
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
