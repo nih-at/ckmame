@@ -1,6 +1,4 @@
 /*
-  $NiH: error.c,v 1.3 2006/10/04 17:36:43 dillo Exp $
-
   error.c -- error printing
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

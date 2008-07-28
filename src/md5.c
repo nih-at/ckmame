@@ -1,5 +1,3 @@
-/* $NiH: md5.c,v 1.2 2005/06/13 00:08:22 wiz Exp $ */
-
 /*
  * This code implements the MD5 message-digest algorithm.
  * The algorithm is due to Ron Rivest.  This code was

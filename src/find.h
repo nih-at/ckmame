@@ -2,8 +2,6 @@
 #define HAD_FIND_H
 
 /*
-  $NiH: find.h,v 1.7 2006/05/01 21:09:11 dillo Exp $
-
   find.h -- find ROM in ROM set or archives
   Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
 

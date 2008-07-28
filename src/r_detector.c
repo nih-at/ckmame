@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   r_detector.c -- read detector from db
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   intstr.h -- map int to strings and back
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

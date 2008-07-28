@@ -1,6 +1,4 @@
 /*
-  $NiH: file_location_make_key.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
-
   fbh_make_key.c -- make dbkey for file_location struct
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

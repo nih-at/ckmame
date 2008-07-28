@@ -1,6 +1,4 @@
 /*
-  $NiH: detector_parse.c,v 1.1 2007/04/10 16:26:46 dillo Exp $
-
   detector_parse.c -- parse clrmamepro header skip detector XML file
   Copyright (C) 2007-2008 Dieter Baron and Thomas Klausner
 

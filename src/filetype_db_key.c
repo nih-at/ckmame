@@ -1,6 +1,4 @@
 /*
-  $NiH: filetype_db_key.c,v 1.2 2006/04/15 22:52:58 dillo Exp $
-
   filetype_db_key.c -- get db key for list of files of a type
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

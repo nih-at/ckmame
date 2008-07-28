@@ -1,4 +1,3 @@
-# $NiH$
 description test that file added to parent is found in child
 return 0
 args -FKLvc -e extra parent-4 clone-8

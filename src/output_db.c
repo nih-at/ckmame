@@ -1,6 +1,4 @@
 /*
-  $NiH: output_db.c,v 1.6 2006/10/04 17:36:44 dillo Exp $
-
   output-db.c -- write games to DB
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

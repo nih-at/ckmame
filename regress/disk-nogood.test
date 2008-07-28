@@ -1,4 +1,3 @@
-# $NiH: disk-nogood.test,v 1.1.2.3 2005/08/06 19:54:39 wiz Exp $
 description test single-rom game with no good dump disk, both are correct
 return 0
 args -FKLivc disk-nogood

@@ -1,8 +1,6 @@
 #ifndef HAD_CHD_H
 
 /*
-  $NiH: chd.h,v 1.3 2006/10/04 17:36:43 dillo Exp $
-
   chd.h -- accessing chd files
   Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
 

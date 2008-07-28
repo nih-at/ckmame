@@ -1,6 +1,4 @@
 /*
-  $NiH: hashes_set.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
-
   hashes_set.c -- set hash from memory
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

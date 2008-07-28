@@ -2,8 +2,6 @@
 #define _HAD_DBH_H
 
 /*
-  $NiH: dbh.h,v 1.11 2006/10/04 17:36:43 dillo Exp $
-
   dbh.h -- mame.db sqlite3 data base
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

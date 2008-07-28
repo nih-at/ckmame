@@ -1,6 +1,4 @@
 /*
-  $NiH: hash_from_string.c,v 1.5 2006/05/12 22:12:18 dillo Exp $
-
   hash_from_string.c -- convert string to hashes_t
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

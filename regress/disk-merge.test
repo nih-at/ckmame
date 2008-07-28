@@ -1,4 +1,3 @@
-# $NiH$
 description child uses parents disk
 return 0
 args -FKLivc disk diskchild

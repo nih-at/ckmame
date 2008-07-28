@@ -1,6 +1,4 @@
 /*
-  $NiH: mkmamedb.c,v 1.14 2007/04/10 23:01:30 dillo Exp $
-
   mkmamedb.c -- create mamedb
   Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 

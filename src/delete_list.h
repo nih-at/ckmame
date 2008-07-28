@@ -2,8 +2,6 @@
 #define HAD_DELETE_LIST_H
 
 /*
-  $NiH: delete_list.h,v 1.4 2006/05/05 10:38:51 dillo Exp $
-
   delete_list.h -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

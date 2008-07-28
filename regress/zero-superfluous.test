@@ -1,4 +1,3 @@
-# $NiH: zero-good.test,v 1.2 2006/09/29 15:54:48 dillo Exp $
 description test archive with 0 byte rom
 return 0
 args -FKLivc 1-4

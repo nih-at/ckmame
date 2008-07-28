@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   xmlutil.c -- parse XML file via callbacks
   Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 

@@ -1,6 +1,4 @@
 /*
-  $NiH: diagnostics.c,v 1.13 2007/04/16 16:43:32 dillo Exp $
-
   diagnostics.c -- display result of check
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

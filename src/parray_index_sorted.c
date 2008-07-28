@@ -1,6 +1,4 @@
 /*
-  $NiH: parray_index_sorted.c,v 1.3 2005/12/22 19:54:56 dillo Exp $
-
   parray_index_sorted.c -- find index of element in sorted array
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

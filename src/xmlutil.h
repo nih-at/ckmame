@@ -2,8 +2,6 @@
 #define HAD_XMLUTIL_H
 
 /*
-  $NiH: xmlutil.h,v 1.1 2007/04/10 23:01:30 dillo Exp $
-
   xmlutil.h -- parse XML file via callbacks
   Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 

@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   w_detector.c -- write detector to db
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

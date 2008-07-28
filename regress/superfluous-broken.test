@@ -1,4 +1,3 @@
-# $NiH: superfluous-inconsistent.test,v 1.1 2006/05/05 10:25:07 wiz Exp $
 description test single-rom game (no parent), superfluous zip contains broken
 return 0
 args -FiKLvc 2-48

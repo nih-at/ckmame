@@ -1,4 +1,3 @@
-# $NiH: multi.test,v 1.1.2.7 2005/08/06 19:54:39 wiz Exp $
 description test two single-rom games (no parent), both with unused files
 return 0
 args -FKLvc 1-4 1-8

@@ -2,8 +2,6 @@
 #define HAD_SQ_UTIL_H
 
 /*
-  $NiH$
-
   sq_util.h -- sqlite3 utility functions
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

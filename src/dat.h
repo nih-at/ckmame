@@ -2,8 +2,6 @@
 #define HAD_DAT_H
 
 /*
-  $NiH: dat.h,v 1.5 2006/05/05 10:38:51 dillo Exp $
-
   dat.h -- information about dat file
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

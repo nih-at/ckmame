@@ -1,6 +1,4 @@
 /*
-  $NiH: parray_push.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
-
   parray_push.c -- append element to end of array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

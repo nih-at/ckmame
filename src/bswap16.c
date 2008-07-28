@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   bswap16.c -- byte swap 16-bit word
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

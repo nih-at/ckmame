@@ -1,5 +1,4 @@
 # test parent, file used by child (not tested)
-# $NiH$
 return 0
 # XXX: should move 08.rom to clone-8.zip
 args -FKLvc parent-4

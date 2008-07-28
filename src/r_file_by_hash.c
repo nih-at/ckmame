@@ -1,6 +1,4 @@
 /*
-  $NiH: r_file_by_hash.c,v 1.5 2006/04/15 22:52:58 dillo Exp $
-
   r_file_location.c -- read file_by_hash information from db
   Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
 

@@ -1,4 +1,3 @@
-# $NiH: inchild.test,v 1.3.2.4 2005/08/06 19:54:39 wiz Exp $
 description test 2-rom game (1 in parent), both roms in child
 return 0
 args -FKLvc clone-8

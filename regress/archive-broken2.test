@@ -1,4 +1,3 @@
-# $NiH: archive-broken.test,v 1.3 2006/05/05 10:13:00 wiz Exp $
 description test game (no parent), zip is incomplete, looked-at zip is broken
 return 0
 args -FKLivc 1-4

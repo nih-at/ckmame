@@ -1,4 +1,3 @@
-# $NiH$
 description test game with disk, move wrong but needed disk to needed
 return 0
 args -FKLivc disk

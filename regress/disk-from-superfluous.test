@@ -1,4 +1,3 @@
-# $NiH: disk-superfluous.test,v 1.1 2005/10/02 11:28:10 dillo Exp $
 description test single-rom game with disk, disk wrong name
 return 0
 args -FKLivc disk

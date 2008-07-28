@@ -1,6 +1,4 @@
 /*
-  $NiH: match_disk.c,v 1.3 2006/05/01 21:09:11 dillo Exp $
-
   match_disk.c -- information about matches of files to disks
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 

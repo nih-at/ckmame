@@ -1,6 +1,4 @@
 /*
-  $NiH: check_old.c,v 1.2 2006/05/01 21:09:11 dillo Exp $
-
   check_old.c -- search ROMs in old db
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 

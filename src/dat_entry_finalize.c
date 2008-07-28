@@ -1,6 +1,4 @@
 /*
-  $NiH: dat_entry_finalize.c,v 1.2 2006/03/17 10:59:27 dillo Exp $
-
   dat_entry_free.c -- free dat entry
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

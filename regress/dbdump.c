@@ -1,6 +1,4 @@
 /*
-  $NiH: dbdump.c,v 1.8 2006/10/04 18:22:57 dillo Exp $
-
   dbdump.c -- print contents of db
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 

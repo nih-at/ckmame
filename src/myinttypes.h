@@ -2,8 +2,6 @@
 #define HAD_MYINTTYPES_H
 
 /*
-  $NiH: myinttypes.h,v 1.1 2007/04/12 16:19:56 dillo Exp $
-
   myinttypes.h -- ensure that {u,}int{8,16,32,64}_t and PRIu64 are defined
   Copyright (C) 2005-2008 Dieter Baron and Thomas Klausner
 

@@ -1,6 +1,4 @@
 /*
-  $NiH: parray_index.c,v 1.1 2005/12/22 19:54:56 dillo Exp $
-
   parray_index.c -- find index of element
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

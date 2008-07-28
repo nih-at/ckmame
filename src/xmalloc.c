@@ -1,6 +1,4 @@
 /*
-  $NiH: xmalloc.c,v 1.2 2005/12/22 22:12:03 dillo Exp $
-
   xmalloc.c -- malloc routines with exit on failure
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
 

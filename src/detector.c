@@ -1,6 +1,4 @@
 /*
-  $NiH: detector.c,v 1.1 2007/04/10 16:26:46 dillo Exp $
-
   detector.c -- alloc/free detector
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

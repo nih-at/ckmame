@@ -1,6 +1,4 @@
 /*
-  $NiH: archive_file_compare_hashes.c,v 1.1 2006/05/24 09:29:18 dillo Exp $
-
   archive_file_compare_hashes.c -- compare hashes with file in archive
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 

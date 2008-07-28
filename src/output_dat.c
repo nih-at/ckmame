@@ -1,6 +1,4 @@
 /*
-  $NiH: output_dat.c,v 1.2 2006/05/26 21:46:50 dillo Exp $
-
   output-dat.c -- write games to clrmamepro dat files
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

@@ -1,6 +1,4 @@
 /*
-  $NiH: match.c,v 1.7 2006/04/24 11:38:38 dillo Exp $
-
   match.c -- information about ROM/file matches
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 

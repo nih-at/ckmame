@@ -1,4 +1,3 @@
-# $NiH: needed3.test,v 1.1.2.2 2005/08/06 19:54:39 wiz Exp $
 description check, zip contains file needed elsewhere, fix, different needed already exists
 return 0
 args -FKLivc 1-4

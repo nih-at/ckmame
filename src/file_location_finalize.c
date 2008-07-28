@@ -1,6 +1,4 @@
 /*
-  $NiH: file_location_finalize.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
-
   file_location_finalize.c -- free members of file_location structure
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

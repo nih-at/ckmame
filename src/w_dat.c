@@ -1,6 +1,4 @@
 /*
-  $NiH: w_dat.c,v 1.3 2006/04/15 22:52:58 dillo Exp $
-
   w_dat.c -- write dat struct to db
   Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
 

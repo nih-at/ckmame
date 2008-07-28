@@ -1,6 +1,4 @@
 /*
-  $NiH: cleanup.c,v 1.12 2006/10/25 15:56:54 wiz Exp $
-
   cleanup.c -- clean up list of zip archives
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

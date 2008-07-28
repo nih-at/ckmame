@@ -1,6 +1,4 @@
 /*
-  $NiH: warn.c,v 1.2 2006/09/29 16:01:34 dillo Exp $
-
   warn.h -- emit warning
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 

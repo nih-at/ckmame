@@ -1,4 +1,3 @@
-# $NiH$
 description test two games where child has parents merged disk under its name
 return 0
 args -FKLivc disk diskchild

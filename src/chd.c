@@ -1,6 +1,4 @@
 /*
-  $NiH: chd.c,v 1.2 2006/10/04 17:36:43 dillo Exp $
-
   chd.c -- accessing chd files
   Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
 

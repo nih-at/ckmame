@@ -1,6 +1,4 @@
 /*
-  $NiH: parse-rc.c,v 1.1 2007/05/14 19:11:16 dillo Exp $
-
   parse-rc.c -- parse Romcenter format files
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

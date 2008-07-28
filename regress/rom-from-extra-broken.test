@@ -1,4 +1,3 @@
-# $NiH: rom-from-extra-broken.test,v 1.1 2006/05/05 10:40:19 wiz Exp $
 description test single-rom game (no parent), extra zip contains broken
 return 0
 args -FijKLvc -e extra 2-48

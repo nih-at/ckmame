@@ -1,4 +1,3 @@
-# $NiH: disk-from-superfluous.test,v 1.1 2005/10/05 22:08:26 dillo Exp $
 description check all (game with disk), disk wrong name
 return 0
 args -FKLivc -D ../mame3.db

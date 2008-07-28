@@ -1,4 +1,3 @@
-# $NiH: from-superfluous-dryrun.test,v 1.3 2005/09/28 08:35:21 wiz Exp $
 description test single-rom game (no parent), file is in superfluous, don't fix
 return 0
 args -FKLvcn 1-4

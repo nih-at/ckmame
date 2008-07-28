@@ -1,6 +1,4 @@
 /*
-  $NiH: parray_set_length.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
-
   parray_set_length.c -- set length of parary
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

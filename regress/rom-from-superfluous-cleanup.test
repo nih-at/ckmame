@@ -1,4 +1,3 @@
-# $NiH$
 description test double-rom game (no parent), cleanup messages for used ok
 return 0
 args -Fvc 2-48

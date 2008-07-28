@@ -1,6 +1,4 @@
 /*
-  $NiH: file_by_hash.c,v 1.4 2006/05/04 07:52:45 dillo Exp $
-
   file_by_hash.c -- create / free file_by_hash structure
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

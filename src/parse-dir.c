@@ -1,6 +1,4 @@
 /*
-  $NiH: parse-dir.c,v 1.2 2006/10/04 17:36:44 dillo Exp $
-
   parse-dir.c -- read info from zip archives
   Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
 

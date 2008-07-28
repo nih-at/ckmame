@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   detector_init.c -- initialize detector structures
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

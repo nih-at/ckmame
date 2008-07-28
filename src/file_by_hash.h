@@ -2,8 +2,6 @@
 #define HAD_FILE_BY_HASH_H
 
 /*
-  $NiH: file_by_hash.h,v 1.2 2005/07/13 17:42:20 dillo Exp $
-
   file_by_hash.h -- list of files with same hash
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

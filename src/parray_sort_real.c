@@ -1,6 +1,4 @@
 /*
-  $NiH: parray_sort_real.c,v 1.2 2005/12/24 11:28:45 dillo Exp $
-
   parray_sort.c -- sort array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

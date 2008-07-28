@@ -2,8 +2,6 @@
 #define _HAD_IMAGES_H
 
 /*
-  $NiH: images.h,v 1.2 2006/10/04 17:36:44 dillo Exp $
-
   images.h -- array of disk images
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

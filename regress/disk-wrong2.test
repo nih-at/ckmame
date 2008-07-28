@@ -1,4 +1,3 @@
-# $NiH: disk-wrong.test,v 1.4 2005/10/05 22:08:26 dillo Exp $
 description test game with disk, disk is wrong and exists in garbage
 return 0
 args -FKLivc disk

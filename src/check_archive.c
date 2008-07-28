@@ -1,6 +1,4 @@
 /*
-  $NiH: check_archive.c,v 1.10 2006/10/04 17:36:43 dillo Exp $
-
   check_archive.c -- determine status of files in archive
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 

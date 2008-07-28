@@ -2,8 +2,6 @@
 #define HAD_COMPAT_H
 
 /*
-  $NiH$
-
   compat.h -- prototypes/defines for missing library functions
   Copyright (C) 2007-2008 Dieter Baron and Thomas Klausner
 

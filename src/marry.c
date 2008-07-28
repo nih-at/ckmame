@@ -1,6 +1,4 @@
 /*
-  $NiH: marry.c,v 1.2 2005/07/13 17:42:20 dillo Exp $
-
   marry.c -- pair matches with ROMs
   Copyright (C) 1999, 2004, 2005 Dieter Baron and Thomas Klausner
 

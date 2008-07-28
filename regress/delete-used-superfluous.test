@@ -1,4 +1,3 @@
-# $NiH$
 description test game, file is in superfluous, fix, remove superfluous
 return 0
 args -FKLvc -D ../mame2.db

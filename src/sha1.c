@@ -1,5 +1,3 @@
-/* $NiH: sha1.c,v 1.1 2005/07/04 21:54:51 dillo Exp $ */
-
 /* sha.c - Implementation of the Secure Hash Algorithm
  *
  * Copyright (C) 1995, A.M. Kuchling

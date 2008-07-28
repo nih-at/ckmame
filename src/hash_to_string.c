@@ -1,6 +1,4 @@
 /*
-  $NiH: hash_to_string.c,v 1.4 2006/10/04 17:36:44 dillo Exp $
-
   hash_to_string.c -- return string representation of hash
   Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
 

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#  $NiH: mkmamedb-xmame.sh,v 1.6 2006/10/04 17:36:42 dillo Exp $
-#
 #  mkmamedb-xmame.sh -- create mamedb by calling xmame
 #  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 #

@@ -1,6 +1,4 @@
 /*
-  $NiH: array.c,v 1.2 2006/05/06 16:46:12 dillo Exp $
-
   array.c -- create / free array of arbitrary types
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 

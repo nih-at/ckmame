@@ -1,6 +1,4 @@
 /*
-  $NiH: delete_list.c,v 1.10 2006/05/05 10:38:51 dillo Exp $
-
   delete_list.c -- list of files to delete
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

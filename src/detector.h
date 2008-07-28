@@ -2,8 +2,6 @@
 #define HAD_DETECTOR_H
 
 /*
-  $NiH: detector.h,v 1.4 2007/04/12 16:18:26 dillo Exp $
-
   detector.h -- clrmamepro XML header skip detector
   Copyright (C) 2007-2008 Dieter Baron and Thomas Klausner
 

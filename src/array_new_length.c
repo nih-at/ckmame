@@ -1,6 +1,4 @@
 /*
-  $NiH: array_new_length.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
-
   array_new_length.c -- new array of given length 
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

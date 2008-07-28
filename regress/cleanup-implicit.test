@@ -1,4 +1,3 @@
-# $NiH: cleanup.test,v 1.4 2006/05/11 10:08:11 dillo Exp $
 description clean up extra dirs
 return 0
 args -D ../mame2.db -Fjv -e extra

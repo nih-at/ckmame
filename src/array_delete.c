@@ -1,6 +1,4 @@
 /*
-  $NiH: array_delete.c,v 1.1 2005/07/13 17:42:19 dillo Exp $
-
   array_delete.c -- delete element from array of arbitrary types
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

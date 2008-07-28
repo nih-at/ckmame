@@ -1,6 +1,4 @@
 /*
-  $NiH: dat_push.c,v 1.4 2006/05/05 10:38:51 dillo Exp $
-
   dat_push.c -- add dat entry
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

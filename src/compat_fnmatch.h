@@ -1,5 +1,3 @@
-/* $NiH: fnmatch.h,v 1.3 2005/06/12 19:30:11 dillo Exp $ */
-
 /* Copyright (C) 1991, 1992, 1993, 1996 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 

@@ -1,6 +1,4 @@
 /*
-  $NiH: array_grow.c,v 1.3 2006/05/05 10:38:51 dillo Exp $
-
   array_grow.c -- grow array of arbitrary types by one element
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 

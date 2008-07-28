@@ -2,8 +2,6 @@
 #define HAD_BSWAP_H
 
 /*
-  $NiH$
-
   bswap.h -- byte swap definitions
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

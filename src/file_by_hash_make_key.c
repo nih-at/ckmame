@@ -1,6 +1,4 @@
 /*
-  $NiH: file_by_hash_make_key.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
-
   fbh_make_key.c -- make dbkey for file_by_hash struct
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

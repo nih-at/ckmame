@@ -1,4 +1,3 @@
-# $NiH: inconsistent-without-i.test,v 1.1 2006/05/05 10:13:00 wiz Exp $
 description test single-rom game (no parent), extra zip is inconsistent
 return 0
 args -FijKLvc -e extradir 1-4

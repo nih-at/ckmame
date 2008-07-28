@@ -1,4 +1,3 @@
-# $NiH: ok.test,v 1.3.2.3 2005/08/06 19:54:39 wiz Exp $
 description test 2-rom game (no parent), zip is torrentzipped
 return 0
 args -FKLivc --torrentzip 2-48

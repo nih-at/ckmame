@@ -2,8 +2,6 @@
 #define _HAD_UTIL_H
 
 /*
-  $NiH: util.h,v 1.11 2007/04/12 21:09:21 dillo Exp $
-
   util.h -- miscellaneous utility functions
   Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 

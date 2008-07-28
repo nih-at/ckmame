@@ -1,6 +1,4 @@
 /*
-  $NiH: detector_execute.c,v 1.3 2007/04/12 16:18:26 dillo Exp $
-
   detector_execute.c -- match file against detector and compute size/hashes
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

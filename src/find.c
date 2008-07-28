@@ -1,6 +1,4 @@
 /*
-  $NiH: find.c,v 1.16 2006/10/04 17:36:43 dillo Exp $
-
   find.c -- find ROM in ROM set or archives
   Copyright (C) 2005-2008 Dieter Baron and Thomas Klausner
 

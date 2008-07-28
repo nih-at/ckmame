@@ -2,8 +2,6 @@
 #define HAD_FILE_LOCATION_H
 
 /*
-  $NiH: file_location.h,v 1.2 2005/09/27 21:33:02 dillo Exp $
-
   file_location.h -- location of a file
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

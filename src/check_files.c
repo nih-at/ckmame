@@ -1,6 +1,4 @@
 /*
-  $NiH: check_files.c,v 1.11 2006/05/07 22:47:54 dillo Exp $
-
   check_files.c -- match files against ROMs
   Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
 

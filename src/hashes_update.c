@@ -1,6 +1,4 @@
 /*
-  $NiH: hashes_update.c,v 1.3 2006/05/12 22:12:18 dillo Exp $
-
   hashes_update.c -- compute hashes
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 

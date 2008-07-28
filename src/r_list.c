@@ -1,6 +1,4 @@
 /*
-  $NiH: r_list.c,v 1.5 2006/04/15 22:52:58 dillo Exp $
-
   r_list.c -- read list struct from db
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

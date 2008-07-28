@@ -1,6 +1,4 @@
 /*
-  $NiH: parse.c,v 1.26 2007/05/09 18:58:06 dillo Exp $
-
   parse.c -- parser frontend
   Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 

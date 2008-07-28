@@ -1,6 +1,4 @@
 /*
-  $NiH: parray_new_from_data.c,v 1.1 2005/07/07 22:00:20 dillo Exp $
-
   parray_new_from_data.c -- create array of pointers from existing data
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

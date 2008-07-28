@@ -1,4 +1,3 @@
-# $NiH: misnamed-dryrun.test,v 1.1.2.1 2005/09/18 15:35:31 wiz Exp $
 description test single-rom game (no parent), rom has wrong name, don't fix
 return 0
 args -FKLvcn 1-4

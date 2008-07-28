@@ -1,5 +1,4 @@
 # test 1-rom game, only wrong roms in zip
-# $NiH: wrong2.test,v 1.1 2004/04/16 11:34:45 wiz Exp $
 return 0
 args -FKLvc 1-8a
 file-del roms/1-8a.zip 1-8-ok.zip

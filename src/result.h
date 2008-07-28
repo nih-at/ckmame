@@ -2,8 +2,6 @@
 #define HAD_RESULT_H
 
 /*
-  $NiH: result.h,v 1.3 2006/05/01 21:09:11 dillo Exp $
-
   result.h -- result of game check
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

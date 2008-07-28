@@ -1,6 +1,4 @@
 /*
-  $NiH: parse-cm.c,v 1.10 2007/04/12 21:09:20 dillo Exp $
-
   parse-cm.c -- parse listinfo/CMpro format files
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

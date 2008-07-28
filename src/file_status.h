@@ -2,8 +2,6 @@
 #define _HAD_FILE_STATUS_H
 
 /*
-  $NiH: file_status.h,v 1.2 2005/09/27 21:33:02 dillo Exp $
-
   file_status.h -- information about status of a file in an archive
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

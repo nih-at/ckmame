@@ -1,4 +1,3 @@
-# $NiH: rom-from-superfluous-many.test,v 1.1 2006/10/18 01:49:40 wiz Exp $
 description test single-rom game (no parent), file is in superfluous, fix
 return 0
 args -Fvc

@@ -1,6 +1,4 @@
 /*
-  $NiH: disk_new.c,v 1.5 2006/10/04 17:36:43 dillo Exp $
-
   disk_new.c -- create / free disk structure from image
   Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
 

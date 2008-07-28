@@ -2,8 +2,6 @@
 #define HAD_GLOBALS_H
 
 /*
-  $NiH: globals.h,v 1.9 2006/10/04 17:36:44 dillo Exp $
-
   globals.h -- declaration of global variables
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

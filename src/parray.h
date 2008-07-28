@@ -2,8 +2,6 @@
 #define _HAD_PARRAY_H
 
 /*
-  $NiH: parray.h,v 1.5 2005/12/22 21:59:26 dillo Exp $
-
   parray.h -- array of pointers
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

@@ -1,4 +1,3 @@
-# $NiH$
 description test game w/ disk, disk is in old
 return 0
 args -FKLivc -O ../mame3.db disk

@@ -1,6 +1,4 @@
 /*
-  $NiH: hashes.c,v 1.4 2005/09/27 21:33:02 dillo Exp $
-
   hashes.c -- utility functions for hash handling
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 

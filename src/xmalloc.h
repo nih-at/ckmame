@@ -4,8 +4,6 @@
 #include <sys/types.h>
 
 /*
-  $NiH: xmalloc.h,v 1.1 2005/07/04 21:54:51 dillo Exp $
-
   xmalloc.h -- malloc routines with exit on failure
   Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
 

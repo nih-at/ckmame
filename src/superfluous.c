@@ -1,6 +1,4 @@
 /*
-  $NiH: superfluous.c,v 1.7 2006/05/12 22:12:18 dillo Exp $
-
   superfluous.c -- check for unknown file in rom directories
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

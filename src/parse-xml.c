@@ -1,6 +1,4 @@
 /*
-  $NiH: parse-xml.c,v 1.8 2006/10/04 17:36:44 dillo Exp $
-
   parse-xml.c -- parse listxml format files
   Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 

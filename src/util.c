@@ -1,6 +1,4 @@
 /*
-  $NiH: util.c,v 1.8 2006/10/04 17:36:44 dillo Exp $
-
   util.c -- utility functions
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 

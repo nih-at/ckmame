@@ -1,6 +1,4 @@
 /*
-  $NiH: array_truncate.c,v 1.1 2005/11/13 21:28:20 wiz Exp $
-
   array_truncate.c -- truncate array to specified length
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

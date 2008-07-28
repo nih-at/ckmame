@@ -2,8 +2,6 @@
 #define _HAD_WARN_H
 
 /*
-  $NiH: warn.h,v 1.3 2006/05/07 11:47:26 dillo Exp $
-
   warn.h -- emit warning
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 

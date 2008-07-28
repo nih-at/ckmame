@@ -1,6 +1,4 @@
 /*
-  $NiH: result.c,v 1.3 2006/05/01 21:09:11 dillo Exp $
-
   result.c -- allocate/free result structure
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

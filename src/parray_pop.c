@@ -1,6 +1,4 @@
 /*
-  $NiH: parray_pop.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
-
   parray_pop.c -- delete element from array of pointers and return it
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

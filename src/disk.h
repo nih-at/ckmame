@@ -2,8 +2,6 @@
 #define HAD_DISK_H
 
 /*
-  $NiH: disk.h,v 1.5 2006/10/04 17:36:43 dillo Exp $
-
   disk.h -- information about one disk
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

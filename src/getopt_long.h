@@ -1,4 +1,3 @@
-/*	$NiH: getopt_long.h,v 1.1 2002/10/15 03:17:26 dillo Exp $	*/
 /*	$NetBSD: getopt.h,v 1.4 2000/07/07 10:43:54 ad Exp $	*/
 
 /*-

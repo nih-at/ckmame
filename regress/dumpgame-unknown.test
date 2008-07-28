@@ -1,4 +1,3 @@
-# $NiH: dumpgame-unknown.test,v 1.1.2.2 2005/08/06 22:14:17 wiz Exp $
 description test dumpgame: unknown game given on command line
 return 0
 program dumpgame

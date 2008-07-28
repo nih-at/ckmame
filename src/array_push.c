@@ -1,6 +1,4 @@
  /*
-  $NiH: array_push.c,v 1.3 2006/05/05 10:38:51 dillo Exp $
-
   array_push.c -- append element to end of array of arbitrary types
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

@@ -1,6 +1,4 @@
 /*
-  $NiH: dumpgame.c,v 1.20 2007/04/10 19:49:49 dillo Exp $
-
   dumpgame.c -- print info about game (from data base)
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

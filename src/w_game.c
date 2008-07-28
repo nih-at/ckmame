@@ -1,6 +1,4 @@
 /*
-  $NiH: w_game.c,v 1.6 2006/04/15 22:52:58 dillo Exp $
-
   w_game.c -- write game struct to db
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

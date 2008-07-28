@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   detector_print.c -- print clrmamepro header skip detector in XML format
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

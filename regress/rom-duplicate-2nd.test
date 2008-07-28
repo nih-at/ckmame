@@ -1,4 +1,3 @@
-# $NiH$
 description test game w/ duplicate rom, zip has one copy w/ name of second
 return 0
 args -FKLivc 2-44

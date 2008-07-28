@@ -1,5 +1,4 @@
 # test 2-rom game (1 in parent), unused in zip
-# $NiH$
 return 0
 args -FKLvc clone-8
 file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip

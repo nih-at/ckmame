@@ -1,6 +1,4 @@
 /*
-  $NiH: psort.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
-
   psort.c -- sort pointers, opionally removing duplicates
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
   Copyright (C) Wikipedia

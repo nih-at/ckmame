@@ -2,8 +2,6 @@
 #define HAD_OUTPUT_H
 
 /*
-  $NiH: output.h,v 1.5 2007/04/10 16:26:46 dillo Exp $
-
   output.h -- output game info
   Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
 

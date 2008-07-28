@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   detector_str.c -- return string representation of detector enums
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

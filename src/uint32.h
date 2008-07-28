@@ -2,8 +2,6 @@
 #define HAD_UINT32_H
 
 /*
-  $NiH: uint32.h,v 1.2 2005/12/27 11:11:26 wiz Exp $
-
   uint32.h -- ensure that uint32_t is defined to a 4-byte type
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

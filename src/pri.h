@@ -2,8 +2,6 @@
 #define HAD_PRI_H
 
 /*
-  $NiH: pri.h,v 1.2 2005/12/27 09:43:08 dillo Exp $
-
   pri.h -- define macros to portably print types
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

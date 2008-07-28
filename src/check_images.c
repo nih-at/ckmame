@@ -1,6 +1,4 @@
 /*
-  $NiH: check_images.c,v 1.1 2006/05/01 21:09:11 dillo Exp $
-
   check_disks.c -- match files against disks
   Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
 

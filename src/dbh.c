@@ -1,6 +1,4 @@
 /*
-  $NiH: dbh.c,v 1.2 2006/04/16 00:12:02 dillo Exp $
-
   dbh.c -- mame.db sqlite3 data base
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

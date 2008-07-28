@@ -1,6 +1,4 @@
 /*
-  $NiH: r_dat.c,v 1.3 2006/04/15 22:52:58 dillo Exp $
-
   r_dat.c -- read dat struct from db
   Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
 

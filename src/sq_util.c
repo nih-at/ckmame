@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   sq_util.c -- sqlite3 utility functions
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

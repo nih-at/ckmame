@@ -1,4 +1,3 @@
-# $NiH$
 description test two games with swapped disks
 return 0
 args -FKLivc disk disk-2

@@ -1,6 +1,4 @@
 /*
-  $NiH: dat_entry.c,v 1.1 2006/03/17 16:46:01 dillo Exp $
-
   dat_entry.c -- dat entry util functions
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

@@ -1,8 +1,6 @@
 #ifndef MD5_H
 #define MD5_H
 
-/* $NiH: md5_own.h,v 1.1 2005/07/04 21:54:51 dillo Exp $ */
-
 #include "myinttypes.h"
 
 struct MD5Context {

@@ -1,6 +1,4 @@
 /*
-  $NiH: file.c,v 1.3 2006/09/29 16:01:34 dillo Exp $
-
   file.c -- initialize / finalize file structure
   Copyright (C) 2004-2006 Dieter Baron and Thomas Klausner
 

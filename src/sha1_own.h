@@ -1,8 +1,6 @@
 #ifndef SHA1_OWN_H
 #define SHA1_OWN_H
 
-/* $NiH: sha1_own.h,v 1.1 2005/07/04 21:54:51 dillo Exp $ */
-
 #include "myinttypes.h"
 
 #define SHA_DATASIZE    64

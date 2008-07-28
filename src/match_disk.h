@@ -2,8 +2,6 @@
 #define HAD_MATCH_DISK_H
 
 /*
-  $NiH: match_disk.h,v 1.3 2006/05/01 21:09:11 dillo Exp $
-
   match_disk.h -- matching files with disks
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
 

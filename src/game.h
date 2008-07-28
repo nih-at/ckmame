@@ -2,8 +2,6 @@
 #define _HAD_GAME_H
 
 /*
-  $NiH: game.h,v 1.3 2006/05/05 10:38:51 dillo Exp $
-
   game.h -- information about one game
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 

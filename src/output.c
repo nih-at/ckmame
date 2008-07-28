@@ -1,6 +1,4 @@
 /*
-  $NiH: output.c,v 1.4 2007/04/10 16:26:46 dillo Exp $
-
   output.c -- output game info
   Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
 

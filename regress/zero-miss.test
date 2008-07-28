@@ -1,4 +1,3 @@
-# $NiH$
 description test game with 0 byte rom, rom is missing
 return 0
 args -FKLivc zero

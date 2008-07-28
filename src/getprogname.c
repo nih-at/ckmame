@@ -1,6 +1,4 @@
 /*
-  $NiH$
-
   getprogname.c -- getprogname/setprogname replacemenet
   Copyright (C) 2007 Dieter Baron and Thomas Klausner
 

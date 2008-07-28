@@ -2,8 +2,6 @@
 #define HAD_PARSE_H
 
 /*
-  $NiH: parse.h,v 1.13 2007/04/12 21:09:20 dillo Exp $
-
   parse.h -- parser interface
   Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
 

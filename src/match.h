@@ -2,8 +2,6 @@
 #define HAD_MATCH_H
 
 /*
-  $NiH: match.h,v 1.3 2006/04/24 11:38:38 dillo Exp $
-
   match.h -- matching files with ROMs
   Copyright (C) 1999-2005 Dieter Baron and Thomas Klausner
 

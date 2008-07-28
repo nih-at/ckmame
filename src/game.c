@@ -1,6 +1,4 @@
 /*
-  $NiH: game.c,v 1.1 2005/07/13 17:42:20 dillo Exp $
-
   game.c -- create / free game structure
   Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
 

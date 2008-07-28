@@ -1,6 +1,4 @@
 /*
-  $NiH: disk.c,v 1.3 2006/04/17 11:31:11 dillo Exp $
-
   disk.c -- initialize / finalize disk structure
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 

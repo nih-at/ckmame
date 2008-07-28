@@ -1,4 +1,3 @@
-# $NiH$
 description check single-rom game (no parent), zip is wrong, no integrity check
 return 0
 args -FKLvc deadbeef

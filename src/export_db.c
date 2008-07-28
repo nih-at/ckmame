@@ -1,6 +1,4 @@
 /*
-  $NiH: export_db.c,v 1.2 2006/10/04 17:36:43 dillo Exp $
-
   export_db.c -- export games from db to output backend
   Copyright (C) 2006-2008 Dieter Baron and Thomas Klausner
 

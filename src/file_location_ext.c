@@ -1,6 +1,4 @@
 /*
-  $NiH: file_location_ext.c,v 1.2 2005/09/27 21:33:02 dillo Exp $
-
   file_location_ext.c -- create / free file_location_ext structure
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 

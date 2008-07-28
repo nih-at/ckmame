@@ -1,6 +1,4 @@
 /*
-  $NiH: images.c,v 1.3 2007/03/19 08:32:52 dillo Exp $
-
   images.c -- array of disk images
   Copyright (C) 2006 Dieter Baron and Thomas Klausner
 

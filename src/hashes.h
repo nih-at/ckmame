@@ -2,8 +2,6 @@
 #define HAD_HASHES_H
 
 /*
-  $NiH: hashes.h,v 1.7 2006/10/04 17:36:44 dillo Exp $
-
   hashes.h -- hash related functions
   Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
 

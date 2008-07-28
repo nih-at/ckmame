@@ -1,4 +1,3 @@
-# $NiH: nonexist.test,v 1.3.2.3 2005/08/06 22:14:17 wiz Exp $
 description testing non-existing game
 return 0
 args -FKLvc nosuchgame
