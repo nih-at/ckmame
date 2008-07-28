@@ -1,7 +1,7 @@
 # $NiH: disk-from-extra.test,v 1.1 2005/10/05 22:21:56 dillo Exp $
 description test single-rom game with disk, get missing disk from extra
 return 0
-args -FKLivc -e extradir disk
+args -FKLijvc -e extradir disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file-del extradir/108-5.chd 108-5.chd
 file-new roms/108-5.chd 108-5.chd
