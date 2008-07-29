@@ -1,3 +1,7 @@
+0.11
+
+- mkmamedb-xmame.sh: has been retired, use "mame -listxml | mkmamedb" instead
+
 0.10 (2008-07-25)
 
 - use SQLite3 instead of Berkeley DB

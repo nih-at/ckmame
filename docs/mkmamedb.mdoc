@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd June 4, 2008
+.Dd July 29, 2008
 .Dt MKMAMEDB 1
 .Os
 .Sh NAME
@@ -130,20 +130,10 @@ Defaults to
 .Sh EXAMPLES
 Get an input file for
 .Xr mkmamedb 1
-from
-.Xr xmame 6
-and convert it to the internal database format:
+from MAME and convert it to the internal database format:
 .Bd -literal
-# xmame -listxml \*[Gt] db.txt
-# mkmamedb db.txt
+# mame -listxml | mkmamedb
 .Ed
-.Pp
-Alternatively, if you have
-.Xr xmame 6
-installed and in your
-.Ev PATH ,
-you can just run
-.Ic mkmamedb-xmame.sh .
 .Sh SEE ALSO
 .Xr ckmame 1 ,
 .Xr dumpgame 1
