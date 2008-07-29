@@ -25,6 +25,7 @@ TESTS=	\
 		cleanup-implicit.test \
 		delete-used-superfluous.test \
 		disk-from-extra-remove.test \
+		disk-from-extra.test \
 		disk-from-superfluous-all.test \
 		disk-from-superfluous.test \
 		disk-merge.test \
@@ -133,7 +134,6 @@ TESTS=	\
 		zero-miss.test \
 		zero-superfluous.test
 BROKEN_TESTS=	\
-		disk-from-extra.test \
 		disk-swapmerge.test \
 		tochild.test
 

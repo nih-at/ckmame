@@ -191,6 +191,7 @@ fix_disks(game_t *g, images_t *im, result_t *res)
     match_disk_t *md;
     const char *name;
     char *fname;
+    bool do_copy;
     
     for (i=0; i<game_num_disks(g); i++) {
 	d = game_disk(g, i);
@@ -247,12 +248,20 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 	    }
 	    else
 		fname = make_file_name(TYPE_DISK, 0, disk_name(d));
-	    
+
+	    do_copy = ((fix_options & FIX_DELETE_EXTRA) == 0
+		       && match_disk_where(md) == FILE_EXTRA);
+    
 	    if (fix_options & FIX_PRINT)
-		printf("rename `%s' to `%s'\n",
+		printf("%s `%s' to `%s'\n",
+		       do_copy ? "copy" : "rename",
 		       match_disk_name(md), fname);
-	    if (fix_options & FIX_DO)
-		rename_or_move(match_disk_name(md), fname);
+	    if (fix_options & FIX_DO) {
+		if (do_copy)
+		    link_or_copy(match_disk_name(md), fname);
+		else
+		    rename_or_move(match_disk_name(md), fname);
+	    }
 	    remove_from_superfluous(match_disk_name(md));
 	    
 	    free(fname);

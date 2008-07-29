@@ -24,7 +24,6 @@ tests:
 + [bug] check/fix database error reporting
 + [test] detective
 + [bug] diagnostics (fix?): don't process disks if checking samples
-+ [bug] ckmame -e and not -j: don't rename chds, link/copy them.
 + [bug] tries to remove disk image in extra twice (or tries to remove used?)
 + [feature] inconsistent zip in ROM set: copy files to new zip
 + [cleanup] remove ROMPATH support
