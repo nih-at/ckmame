@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH CKMAME 1 "June 4, 2008" NiH
+.TH CKMAME 1 "July 29, 2008" NiH
 .SH "NAME"
 ckmame \- verify MAME ROM sets
 .SH "SYNOPSIS"
@@ -345,8 +345,7 @@ does not.
 The primary checksum for ROMs is CRC32, for disks MD5.
 .SH "SEE ALSO"
 dumpgame(1),
-mkmamedb(1),
-xmame(6)
+mkmamedb(1)
 .SH "AUTHORS"
 
 .B ckmame

@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH MKMAMEDB 1 "June 4, 2008" NiH
+.TH MKMAMEDB 1 "July 29, 2008" NiH
 .SH "NAME"
 mkmamedb \- create database for use by ckmame
 .SH "SYNOPSIS"
@@ -136,20 +136,10 @@ Defaults to
 .SH "EXAMPLES"
 Get an input file for
 mkmamedb(1)
-from
-xmame(6)
-and convert it to the internal database format:
+from MAME and convert it to the internal database format:
 .Bd \-literal
-# xmame \-listxml \*[Gt] db.txt
-# mkmamedb db.txt
+# mame \-listxml | mkmamedb
 .Ed
-.PP
-Alternatively, if you have
-xmame(6)
-installed and in your
-\fBPATH\fR,
-you can just run
-\fBmkmamedb-xmame.sh\fR.
 .SH "SEE ALSO"
 ckmame(1),
 dumpgame(1)
