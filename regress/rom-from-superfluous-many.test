@@ -1,4 +1,4 @@
-description test single-rom game (no parent), file is in superfluous, fix
+description test all games, some files in superfluous, fix
 return 0
 args -Fvc
 file-del roms/1-4-ok.zip 1-4-ok.zip
@@ -22,7 +22,6 @@ file-new roms/deadbeefchild.zip 1-4-ok.zip
 file-new roms/disk-2.zip 1-4-ok.zip
 file-new roms/disk-nogood.zip 1-4-ok.zip
 file-new roms/disk.zip 1-4-ok.zip
-file-new roms/diskchild.zip 1-4-ok.zip
 file-new roms/nogood-2.zip 1-8-ok.zip
 file-new roms/parent-4.zip 1-4-ok.zip
 file roms/108-5.chd 108-5.chd 108-5.chd
@@ -32,6 +31,8 @@ stdout ./roms/1-4.zip: add `./roms/1-4-ok.zip/04.rom' as `04.rom'
 stdout In game 1-8:
 stdout rom  08.rom        size       8  crc 3656897d: is in `./roms/1-8-ok.zip'
 stdout ./roms/1-8.zip: add `./roms/1-8-ok.zip/08.rom' as `08.rom'
+stdout In game nogoodclone:
+stdout game nogoodclone                             : not a single rom found
 stdout In game 1-8a:
 stdout game 1-8a                                    : not a single rom found
 stdout In game 2-44:
@@ -64,6 +65,9 @@ stdout In game disk:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/1-4.zip'
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
 stdout ./roms/disk.zip: add `./roms/1-4.zip/04.rom' as `04.rom'
+stdout In game diskchild:
+stdout game diskchild                               : correct
+stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
 stdout In game disk-2:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/1-4.zip'
 stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
@@ -72,10 +76,6 @@ stdout In game disk-nogood:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/1-4.zip'
 stdout disk 108-5         no good dump              : exists
 stdout ./roms/disk-nogood.zip: add `./roms/1-4.zip/04.rom' as `04.rom'
-stdout In game diskchild:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/1-4.zip'
-stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
-stdout ./roms/diskchild.zip: add `./roms/1-4.zip/04.rom' as `04.rom'
 stdout In game many:
 stdout game many                                    : not a single rom found
 stdout In game nogood:

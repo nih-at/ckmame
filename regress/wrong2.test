@@ -1,9 +1,9 @@
-# test 1-rom game, only wrong roms in zip
+description test 1-rom game, only wrong roms in zip
 return 0
 args -FKLvc 1-8a
 file-del roms/1-8a.zip 1-8-ok.zip
-file-new unknown/1-8a.zip 1-8-ok.zip
-stdout ./roms/1-8a.zip: mv unknown file 08.rom
+file-new needed/3656897d-000.zip 1-8-ok.zip
 stdout In game 1-8a:
 stdout game 1-8a                                    : not a single rom found
-stdout file 08.rom        size       8  crc 3656897d: unknown
+stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
+stdout ./roms/1-8a.zip: save needed file `08.rom'

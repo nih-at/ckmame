@@ -51,6 +51,7 @@ TESTS=	\
 		hasherr-pc.test \
 		hasherr.test \
 		hasherr2.test \
+		identical-once.test \
 		ignore-unknown.test \
 		inchild.test \
 		inconsistent-with-i.test \
@@ -105,6 +106,7 @@ TESTS=	\
 		rom-from-superfluous-detector.test \
 		rom-from-superfluous-dryrun.test \
 		rom-from-superfluous-some.test \
+		rom-from-superfluous-many.test \
 		rom-from-superfluous.test \
 		rom-many.test \
 		rom-unused.test \
@@ -125,6 +127,7 @@ TESTS=	\
 		tz-ok.test \
 		tz-from-romset.test \
 		wrong.test \
+		wrong2.test \
 		zero.test \
 		zero-good.test \
 		zero-miss.test \
@@ -132,10 +135,7 @@ TESTS=	\
 BROKEN_TESTS=	\
 		disk-from-extra.test \
 		disk-swapmerge.test \
-		identical-once.test \
-		rom-from-superfluous-many.test \
-		tochild.test \
-		wrong2.test
+		tochild.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \
