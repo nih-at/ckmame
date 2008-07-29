@@ -34,8 +34,6 @@ tests:
 - [cleanup] access db directly in find_*
 - [cleanup] merge disk_t into file_t
 - [cleanup] specify globally which parts of memdb/lists to fill/maintain
-- [bug] game: good rom in parent, only bad dumps: ckmame -d reports as missing
-- [bug] game: only nogooddumps in set: ckmame -d reports not a single rom found
 - [bug] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version for /ckmame key
 - [bug] check if rompath/needed/extra are different
