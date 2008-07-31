@@ -135,6 +135,7 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TESTS=	\
 		disk-swapmerge.test \
+		needed-cleanup.test \
 		tochild.test
 
 ZIPS=		1-4-2.zip \

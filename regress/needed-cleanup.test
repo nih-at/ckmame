@@ -1,0 +1,5 @@
+description test cleanup of needed files that are not needed
+return 0
+args -O ../mame3.db -D ../mame2.db -FKLv
+file roms/clone-8.zip 1-4-ok.zip 1-4-ok.zip
+file-del needed/d87f7e0c-000.zip 1-4-ok.zip
