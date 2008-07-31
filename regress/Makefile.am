@@ -70,9 +70,9 @@ TESTS=	\
 		mkmamedb-parent-crcdiff.test \
 		multi.test \
 		needed-error.test \
+		needed-exists-different.test \
+		needed-exists-same.test \
 		needed.test \
-		needed2.test \
-		needed3.test \
 		nogood-allmissing.test \
 		nogood-miss-d.test \
 		nogood-miss.test \
