@@ -18,28 +18,28 @@ tests:
   * use on non-matching file
   * rule operations
 
-+ [feature] get needed files directly from parent (see inparent.test)
+! [test] detective
+! [bug] fix BROKEN_TESTS
+! [bug] tries to remove disk image in extra twice (or tries to remove used?)
+! [bug] diagnostics (fix?): don't process disks if checking samples
+! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
 + [bug] check/fix database error reporting
-+ [test] detective
-+ [bug] diagnostics (fix?): don't process disks if checking samples
-+ [bug] tries to remove disk image in extra twice (or tries to remove used?)
++ [feature] get needed files directly from parent (see inparent.test)
 + [feature] inconsistent zip in ROM set: copy files to new zip
++ [cleanup] merge disk_t into file_t
 + [cleanup] remove ROMPATH support
-- [feature] config file (provides defaults overridable on command line)
-- [feature] mkmamedb: support for cmpro's www-profiler
++ [feature] config file (provides defaults overridable on command line)
++ [feature] mkmamedb: support for cmpro's www-profiler
 - [cleanup] reduce code duplication
 - [cleanup] access db directly in find_*
-- [cleanup] merge disk_t into file_t
 - [cleanup] specify globally which parts of memdb/lists to fill/maintain
-- [bug] rom: use flag to specify whether we know the size
+- [cleanup] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version for /ckmame key
 - [bug] check if rompath/needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
-- [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange
-  results: the file is copied into nogoodclone.
 - [feature] speed up cleanup of extra dir: no checksums need to be computed
   if the crc (or size) doesn't match any known rom
 - [feature] add hash-types option to dumpgame
