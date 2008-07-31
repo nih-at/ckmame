@@ -23,15 +23,19 @@ tests:
 ! [bug] tries to remove disk image in extra twice (or tries to remove used?)
 ! [bug] diagnostics (fix?): don't process disks if checking samples
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
+! [bug] speed up cleanup of extra dir: no checksums need to be computed
+  if the crc (or size) doesn't match any known rom
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
-+ [bug] check/fix database error reporting
++ [bug] check/fix database error reporting (pass on sqlite3 errors)
 + [feature] get needed files directly from parent (see inparent.test)
 + [feature] inconsistent zip in ROM set: copy files to new zip
 + [cleanup] merge disk_t into file_t
 + [cleanup] remove ROMPATH support
 + [feature] config file (provides defaults overridable on command line)
 + [feature] mkmamedb: support for cmpro's www-profiler
++ [feature] when moving file to needed, recheck games that might need it
++ [feature] needed cleanup (automatically?)
 - [cleanup] reduce code duplication
 - [cleanup] access db directly in find_*
 - [cleanup] specify globally which parts of memdb/lists to fill/maintain
@@ -40,18 +44,14 @@ tests:
 - [bug] check if rompath/needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
-- [feature] speed up cleanup of extra dir: no checksums need to be computed
-  if the crc (or size) doesn't match any known rom
 - [feature] add hash-types option to dumpgame
 - [feature] mkmamedb: split to original CM dat files + detector XML on export
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
-- [feature] when moving file to needed, recheck games that might need it
 - [feature] dumpgame: dump samples
 - [feature] mkmamedb: add XML output format
 - [feature] database consistency checks during mkmamedb
   - are all roms of one set included in one other set
   - are two sets the same, just different name
-- [feature] needed cleanup (automatically?)
 - [feature] --cleanup-extra: remove (unnecessary?) directories
 - [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
 - [cleanup] review types used for length/offset (use 64bit?)
