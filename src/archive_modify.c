@@ -40,9 +40,6 @@
 #include "memdb.h"
 #include "xmalloc.h"
 
-/* XXX: for TorrentZip feature check */
-#include <zip.h>
-
 
 
 static void _add_file(archive_t *, int, const char *, const file_t *);
