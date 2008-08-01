@@ -209,7 +209,8 @@ update-mamedb.dump: ${MAME_DB}
 	./dbdump ${MAME_DB2} > mamedb-lost-parent.dump
 	./dbdump ${MAME_DB} > mamedb-ok.dump
 	set -e \
-	../src/mkmamedb -o $$$$.db \
+	f=$$$$.db; \
+	../src/mkmamedb -o "$$f".db \
 			${srcdir}/mamedb.txt ${srcdir}/mamedb-2.txt \
-		&& ./dbdump $$$$.db > mamedb-multi-dats.dump \
-		&& rm $$$$.db
+		&& ./dbdump "$$f".db > mamedb-multi-dats.dump \
+		&& rm "$$f".db
