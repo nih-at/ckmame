@@ -339,12 +339,14 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 		    		       match_offset(m), file_size(r)) < 0)
 		break;
 
+#if 0
 	    if (a == afrom) {
 		if (!(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
 		    printf("%s: delete long file `%s'\n",
 			   archive_name(a), file_name(r));
 		archive_file_delete(a, i);
 	    }
+#endif
 	    break;
 
 	case QU_NAMEERR:

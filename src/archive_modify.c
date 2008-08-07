@@ -360,6 +360,7 @@ _copy_zip(archive_t *sa, int sidx, archive_t *da, const char *dname,
 {
     int didx;
     struct zip_source *source;
+    bool replace;
 
     if (file_status(archive_file(sa, sidx)) == STATUS_BADDUMP) {
 	seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
@@ -371,17 +372,24 @@ _copy_zip(archive_t *sa, int sidx, archive_t *da, const char *dname,
 	return -1;
 
     /* if exists, delete broken file with same name */
+    replace = false;
     didx = archive_file_index_by_name(da, dname);
     if (didx >= 0) {
-	if (file_status(archive_file(da, didx)) == STATUS_BADDUMP)
-	    zip_delete(archive_zip(da), didx);
-	else
-	    my_zip_rename_to_unique(archive_zip(da), didx);
+	if (sa == da && sidx == didx)
+	    replace = true;
+	else {
+	    if (file_status(archive_file(da, didx)) == STATUS_BADDUMP)
+		zip_delete(archive_zip(da), didx);
+	    else
+		my_zip_rename_to_unique(archive_zip(da), didx);
+	}
     }
     
     if ((source=zip_source_zip(archive_zip(da), archive_zip(sa),
-			       sidx, 0, start, len)) == NULL
-	|| zip_add(archive_zip(da), dname, source) < 0) {
+			       sidx, replace ? ZIP_FL_UNCHANGED : 0,
+			       start, len)) == NULL
+	|| (replace ? zip_replace(archive_zip(sa), sidx, source)
+	    : zip_add(archive_zip(da), dname, source)) < 0) {
 	zip_source_free(source);
 	seterrinfo(archive_name(da), dname);
 	myerror(ERRZIPFILE, "error adding `%s' from `%s': %s",

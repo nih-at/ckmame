@@ -110,6 +110,7 @@ TESTS=	\
 		rom-from-superfluous-many.test \
 		rom-from-superfluous.test \
 		rom-many.test \
+		rom-two-long.test \
 		rom-unused.test \
 		sample-miss.test \
 		sample-ok.test \
