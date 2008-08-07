@@ -56,6 +56,10 @@ static const xmlu_attr_t attr_mame[] = {
     { "build",    XA(parse_xml_mame_build), 0,         0                },
     { NULL }
 };
+static const xmlu_attr_t attr_mess[] = {
+    { "build",    XA(parse_xml_mame_build), 1,         0                },
+    { NULL }
+};
 
 static const xmlu_attr_t attr_clrmamepro [] = {
     { "header",   XA(parse_prog_header),  0,           0,               },
@@ -103,6 +107,7 @@ static const xmlu_entity_t entities[] = {
     { "machine", attr_game,  XO(parse_game_start), XC(parse_game_end),
       NULL, 0 },
     { "mame",   attr_mame,  NULL, NULL, NULL, 0 },
+    { "mess",   attr_mess,  NULL, NULL, NULL, 0 },
     { "rom",    attr_rom,    XO(parse_file_start), XC(parse_file_end),
       NULL, TYPE_ROM },
     { "sample", attr_sample, XO(parse_file_start), XC(parse_file_end),
@@ -125,7 +130,8 @@ parse_xml_mame_build(parser_context_t *ctx, filetype_t ft, int ht,
     int err;
     char *s, *p;
 
-    if ((err=parse_prog_name(ctx, "M.A.M.E.")) != 0)
+    if ((err=parse_prog_name(ctx,
+			     (ft == 0 ? "M.A.M.E." : "M.E.S.S."))) != 0)
 	return err;
 
     s = xstrdup(attr);
