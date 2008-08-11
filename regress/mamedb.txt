@@ -140,6 +140,14 @@ game (
 )
 
 game (
+	name disk-nogood2
+	description "1-8 with no good dump disk"
+	manufacturer "synth"
+	year 2004
+	rom ( name 08.rom size 8 crc32 3656897d )
+	disk ( name 208-7 )
+)
+game (
 	name nogood
 	description "1-4 with no good dump"
 	manufacturer "synth"

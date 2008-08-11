@@ -10,7 +10,8 @@ CLEANFILES=${DBS}
 MAME_DB=mame.db
 MAME_DB2=mame2.db
 MAME_DB3=mame3.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3}
+MAME_DB4=mame4.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4}
 
 ZIPCMP=@ZIPCMP@
 
@@ -32,7 +33,7 @@ TESTS=	\
 		disk-miss.test \
 		disk-noext.test \
 		disk-nogood.test \
-		disk-nogoodmiss.test \
+		disk-nogood-miss.test \
 		disk-ok.test \
 		disk-parent.test \
 		disk-superfluous.test \
@@ -135,6 +136,7 @@ TESTS=	\
 		zero-miss.test \
 		zero-superfluous.test
 BROKEN_TESTS=	\
+		disk-nogood-copy.test \
 		disk-swapmerge.test \
 		needed-cleanup.test \
 		tochild.test
@@ -202,13 +204,17 @@ ${MAME_DB}: ../src/mkmamedb ${srcdir}/mamedb.txt
 
 ${MAME_DB2}: ../src/mkmamedb ${srcdir}/mamedb-lost-parent-ok.txt
 	../src/mkmamedb -o ${MAME_DB2} ${srcdir}/mamedb-lost-parent-ok.txt
+
 ${MAME_DB3}: ../src/mkmamedb ${srcdir}/mamedb-disk.txt
 	../src/mkmamedb -o ${MAME_DB3} ${srcdir}/mamedb-disk.txt
 
-update-mamedb.dump: ${MAME_DB}
+${MAME_DB4}: ../src/mkmamedb ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt
+	../src/mkmamedb -o ${MAME_DB4} ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt
+
+update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 	./dbdump ${MAME_DB} > mamedb-ok.dump
 	./dbdump ${MAME_DB2} > mamedb-lost-parent.dump
-	./dbdump ${MAME_DB} > mamedb-ok.dump
+	./dbdump ${MAME_DB4} > mamedb-duplicate-game.dump
 	set -e \
 	f=$$$$.db; \
 	../src/mkmamedb -o "$$f".db \
