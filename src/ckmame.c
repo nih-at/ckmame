@@ -33,6 +33,7 @@
 
 
 
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -42,6 +43,7 @@
 #include "error.h"
 #include "globals.h"
 #include "funcs.h"
+#include "sighandle.h"
 #include "tree.h"
 #include "types.h"
 #include "util.h"
@@ -410,6 +412,10 @@ main(int argc, char **argv)
 	&& (fix_options & FIX_CLEANUP_EXTRA))
 	ensure_extra_maps((action==ACTION_CHECK_ROMSET ? DO_MAP : 0)
 			  | DO_LIST);
+
+#ifdef SIGINFO
+    signal(SIGINFO, sighandle);
+#endif
 
     if (action == ACTION_CHECK_ROMSET) {
 	tree_traverse(tree, NULL, NULL);

@@ -107,6 +107,7 @@ libckmame_a_SOURCES= \
 	r_game.c \
 	r_list.c \
 	result.c \
+	sighandle.c \
 	sq_util.c \
 	superfluous.c \
 	tree.c \
@@ -155,6 +156,7 @@ noinst_HEADERS=\
 	parser_source.h \
 	pri.h \
 	result.h \
+	sighandle.h \
 	sq_util.h \
 	tree.h \
 	types.h \

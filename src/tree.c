@@ -43,6 +43,7 @@
 #include "funcs.h"
 #include "game.h"
 #include "globals.h"
+#include "sighandle.h"
 #include "tree.h"
 #include "xmalloc.h"
 
@@ -118,6 +119,9 @@ tree_traverse(const tree_t *tree, archive_t *parent, archive_t *gparent)
     child = NULL;
 
     if (tree->name) {
+	if (siginfo_caught)
+	    print_info(tree->name);
+
 	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0)
 		 | (check_integrity ? ARCHIVE_FL_CHECK_INTEGRITY: 0)
 		 | ((fix_options & FIX_TORRENTZIP) ? ARCHIVE_FL_TORRENTZIP :0));
