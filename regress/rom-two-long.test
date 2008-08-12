@@ -1,4 +1,4 @@
-description test single-rom game (no parent), rom is doubled
+description test two single-rom games (no parent), roms are doubled or otherwise too long
 return 0
 args -Fv 1-8 2-48
 file roms/1-8.zip 1-8-long.zip 1-8-ok.zip
