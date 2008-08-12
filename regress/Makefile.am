@@ -149,6 +149,7 @@ ZIPS=		1-4-2.zip \
 		1-4-misnamed.zip \
 		1-4-ok.zip \
 		1-8-broken.zip \
+		1-8-long.zip \
 		1-8-ok.zip \
 		1-a-ok.zip \
 		1-c-ok.zip \
