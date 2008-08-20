@@ -100,6 +100,7 @@ other features:
 - add option to check integrity for roms only (not for disks, they take forever)
 - mkmamedb: handle disk without md5
 - mkmamedb: handle rom without crc
+- mkmamedb: handle "size 0 crc -"
 - mkmamedb: no error message for missing newline in last line
 - mkmamedb: warn about sets without parent that use "merge"
 - complete raine support (multiple archive names: archive ( name
