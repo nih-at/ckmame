@@ -36,6 +36,7 @@ tests:
 + [feature] mkmamedb: support for cmpro's www-profiler
 + [feature] when moving file to needed, recheck games that might need it
 + [feature] needed cleanup (automatically?)
+- [feature] better support for chds in separate chds/gamename/chdname.chd
 - [cleanup] reduce code duplication
 - [cleanup] access db directly in find_*
 - [cleanup] specify globally which parts of memdb/lists to fill/maintain
