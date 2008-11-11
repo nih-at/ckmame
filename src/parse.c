@@ -124,6 +124,8 @@ parse_file_status(parser_context_t *ctx, filetype_t ft, int ht,
     
     if (strcmp(attr, "good") == 0)
 	status = STATUS_OK;
+    else if (strcmp(attr, "verified") == 0)
+	status = STATUS_OK;
     else if (strcmp(attr, "baddump") == 0)
 	status = STATUS_BADDUMP;
     else if (strcmp(attr, "nodump") == 0)
