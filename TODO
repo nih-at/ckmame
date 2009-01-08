@@ -23,7 +23,7 @@ tests:
 ! [bug] tries to remove disk image in extra twice (or tries to remove used?)
 ! [bug] diagnostics (fix?): don't process disks if checking samples
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
-! [bug] speed up cleanup of extra dir: no checksums need to be computed
++ [bug] speed up cleanup of extra dir: no checksums need to be computed
   if the crc (or size) doesn't match any known rom
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
