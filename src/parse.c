@@ -152,7 +152,12 @@ parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
     hashes_t *h;
 
     CHECK_STATE(ctx, PARSE_IN_FILE);
-    
+
+    if (strcmp(attr, "-") == 0) {
+	/* some dat files record crc - for 0-byte files, so skip it */
+	return 0;
+    }
+
     if (ft == TYPE_DISK)
 	h = disk_hashes(ctx->d);
     else
@@ -531,6 +536,11 @@ rom_end(parser_context_t *ctx, filetype_t ft)
 
     r = ctx->r;    
     n = game_num_files(ctx->g, ft)-1;
+
+    /* some dats don't record crc for 0-byte files, so set it here */
+    if (file_size(r) == 0 && !hashes_has_type(file_hashes(r), HASHES_TYPE_CRC))
+	hashes_set(file_hashes(r), HASHES_TYPE_CRC,
+		   (unsigned char *)"\0\0\0\0");
 
     /* omit duplicates */
     deleted = 0;
