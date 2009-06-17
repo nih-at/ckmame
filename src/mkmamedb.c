@@ -277,7 +277,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 		|| name_matches(name, files_skip))
 		continue;
 
-	    if ((ps=ps_new_zip(za, name)) == NULL) {
+	    if ((ps=ps_new_zip(fname, za, name)) == NULL) {
 		err = -1;
 		continue;
 	    }

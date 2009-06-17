@@ -52,7 +52,7 @@ parser_source_t *ps_new(void *, parser_source_close, parser_source_open,
 			parser_source_read);
 parser_source_t *ps_new_file(const char *);
 parser_source_t *ps_new_stdin(void);
-parser_source_t *ps_new_zip(struct zip *, const char *);
+parser_source_t *ps_new_zip(const char *, struct zip *, const char *);
 parser_source_t *ps_open(parser_source_t *, const char *);
 int ps_peek(parser_source_t *);
 int ps_read(parser_source_t *, void *, int);

@@ -398,7 +398,7 @@ parse_prog_header(parser_context_t *ctx, const char *name, int dummy)
     }
 
     if ((ps=ps_open(ctx->ps, name)) == NULL) {
-	/* XXX: error message */
+	myerror(ERRFILESTR, "%d: cannot open detector `%s'", ctx->lineno, name);
 	return -1;
     }
 

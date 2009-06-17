@@ -56,6 +56,7 @@ struct parser_source {
 };
 
 struct pszip_ud {
+    char *fname;
     struct zip *za;
     struct zip_file *zf;
 };
@@ -80,7 +81,9 @@ static void _buffer_consume(parser_source_t *, int);
 static void _buffer_fill(parser_source_t *, int);
 static void _buffer_grow(parser_source_t *, int);
 
-parser_source_t *_ps_new_zip(struct zip *, const char *, bool);
+static parser_source_t *_ps_file_open(const char *, const char *);
+static parser_source_t *_ps_new_zip(const char *, struct zip *, const char *,
+				    bool);
 
 
 
@@ -200,9 +203,9 @@ ps_new_stdin(void)
 
 
 parser_source_t *
-ps_new_zip(struct zip *za, const char *fname)
+ps_new_zip(const char *zaname, struct zip *za, const char *fname)
 {
-    return _ps_new_zip(za, fname, false);
+    return _ps_new_zip(zaname, za, fname, false);
 }
 
 
@@ -275,22 +278,8 @@ static parser_source_t *
 psfile_open(psfile_ud_t *ud, const char *fname)
 {
     parser_source_t *ps;
-    char *full_name;
 
-    full_name = NULL;
-
-    if (ud->fname != NULL) {
-	char *dir;
-
-	dir = mydirname(ud->fname);
-	full_name = xmalloc(strlen(dir)+strlen(fname)+2);
-	sprintf(full_name, "%s/%s", dir, fname);
-	free(dir);
-	fname = full_name;
-    }
-    ps = ps_new_file(fname);
-    free(full_name);
-    return ps;
+    return _ps_file_open(fname, ud->fname);
 }
 
 
@@ -310,6 +299,7 @@ pszip_close(pszip_ud_t *ud)
 
     ret = zip_fclose(ud->zf);
 
+    free(ud->fname);
     free(ud);
 
     return ret;
@@ -320,7 +310,14 @@ pszip_close(pszip_ud_t *ud)
 static parser_source_t *
 pszip_open(pszip_ud_t *ud, const char *fname)
 {
-    return _ps_new_zip(ud->za, fname, true);
+    parser_source_t *ps;
+
+    ps = _ps_new_zip(ud->fname, ud->za, fname, true);
+
+    if (ps == NULL && errno == ENOENT)
+	ps = _ps_file_open(fname, ud->fname);
+
+    return ps;
 }
 
 
@@ -388,8 +385,33 @@ _buffer_grow(parser_source_t *ps, int n)
 
 
 
-parser_source_t *
-_ps_new_zip(struct zip *za, const char *fname, bool relaxed)
+static parser_source_t *
+_ps_file_open(const char *fname, const char *parent)
+{
+    parser_source_t *ps;
+    char *full_name;
+
+    if (parent != NULL) {
+	char *dir;
+
+	full_name = NULL;
+
+	dir = mydirname(parent);
+	full_name = xmalloc(strlen(dir)+strlen(fname)+2);
+	sprintf(full_name, "%s/%s", dir, fname);
+	free(dir);
+	fname = full_name;
+    }
+    
+    ps = ps_new_file(fname);
+    free(full_name);
+    return ps;
+}
+
+
+
+static parser_source_t *
+_ps_new_zip(const char *zaname, struct zip *za, const char *fname, bool relaxed)
 {
     struct zip_file *zf;
     pszip_ud_t *ud;
@@ -418,6 +440,7 @@ _ps_new_zip(struct zip *za, const char *fname, bool relaxed)
     }
 
     ud = xmalloc(sizeof(*ud));
+    ud->fname = xstrdup(zaname);
     ud->za = za;
     ud->zf = zf;
 
