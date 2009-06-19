@@ -10,12 +10,12 @@ dumpgame_LDADD=libckmame.a @SQLITE3_LIBS@
 #mamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 mkmamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 
-mamedb_SOURCES= \
-	mamedb.c \
-	mamedb_add.c \
-	mamedb_cmdtab.c \
-	mamedb_help.c \
-	mamedb_new.c
+#mamedb_SOURCES= \
+#	mamedb.c \
+#	mamedb_add.c \
+#	mamedb_cmdtab.c \
+#	mamedb_help.c \
+#	mamedb_new.c
 
 libckmame_a_LIBADD=@LIBOBJS@
 
