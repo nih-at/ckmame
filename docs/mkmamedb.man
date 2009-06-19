@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH MKMAMEDB 1 "July 29, 2008" NiH
+.TH MKMAMEDB 1 "June 19, 2009" NiH
 .SH "NAME"
 mkmamedb \- create database for use by ckmame
 .SH "SYNOPSIS"
@@ -98,6 +98,10 @@ Supported hash types are: crc, md5, sha1.
 \fB--detector\fR \fBfile\fR
 Use CMPro XML header skip detector description from
 \fBfile.\fR
+This overrides any detectors given in the file itself.
+.B mkmamedb
+looks for the detector in the input file (if it is a zip file) or
+the directory of the input file.
 .TP 31
 \fB-h\fR, \-help
 Display a short help message.
