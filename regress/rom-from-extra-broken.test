@@ -8,4 +8,4 @@ stdout rom  04.rom        size       4  crc d87f7e0c: is in `extra/2-48-part-bro
 stdout rom  08.rom        size       8  crc 3656897d: missing
 stdout ./roms/2-48.zip: add `extra/2-48-part-broken.zip/04.rom' as `04.rom'
 stdout extra/2-48-part-broken.zip: delete used file `04.rom'
-stderr extra/2-48-part-broken.zip: CRC error in `08.rom': bf933f81 != 3656897d
+stderr extra/2-48-part-broken.zip: 08.rom: CRC error: bf933f81 !- 3656897d

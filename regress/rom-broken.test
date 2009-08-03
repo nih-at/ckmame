@@ -6,4 +6,4 @@ stdout In game 2-48:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout rom  08.rom        size       8  crc 3656897d: missing
 stdout file 08.rom        size       8  crc 3656897d: broken
-stderr ./roms/2-48.zip: CRC error in `08.rom': bf933f81 != 3656897d
+stderr ./roms/2-48.zip: 08.rom: CRC error: bf933f81 !- 3656897d

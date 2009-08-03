@@ -137,15 +137,16 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     za = archive_zip(a);
 
     if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
-	myerror(ERRZIP, "error opening index %d: %s", idx, zip_strerror(za));
+	myerror(ERRDEF, "%s: %s: cannot open: %s",
+		archive_name(a), file_name(r), zip_strerror(za));
 	file_status(r) = STATUS_BADDUMP;
 	return -1;
     }
 
     hashes_types(&h) = hashtypes;
     if (get_hashes(zf, file_size(r), &h) < 0) {
-	myerror(ERRZIP, "error reading index %d: %s", idx,
-		zip_file_strerror(zf));
+	myerror(ERRDEF, "%s: %s: read error: %s",
+		archive_name(a), file_name(r), zip_strerror(za));
 	zip_fclose(zf);
 	file_status(r) = STATUS_BADDUMP;
 	return -1;
@@ -155,8 +156,8 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 
     if (hashtypes & HASHES_TYPE_CRC) {
 	if (file_hashes(r)->crc != h.crc) {
-	    myerror(ERRZIP, "CRC error in `%s': %lx != %lx",
-		    file_name(archive_file(a, idx)),
+	    myerror(ERRDEF, "%s: %s: CRC error: %lx !- %lx",
+		    archive_name(a), file_name(r),
 		    h.crc, file_hashes(r)->crc);
 	    file_status(r) = STATUS_BADDUMP;
 	    return -1;
