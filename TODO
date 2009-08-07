@@ -20,7 +20,7 @@ tests:
 
 ! [feature] complete chd v4 support (get hashes / verify)
 ! [bug] chd check integrity: compute and compare all hashes stored in chd
-! [bug] diagonstics: -c for correct game outputs game correct + disk correct
+! [bug] diagnostics: -c for correct game outputs game correct + disk correct
 ! [bug] dumpgame -c outputs no good dumps
 ! [test] detective
 ! [bug] fix BROKEN_TESTS
