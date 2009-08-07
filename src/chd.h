@@ -2,7 +2,7 @@
 
 /*
   chd.h -- accessing chd files
-  Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2009 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -90,6 +90,7 @@ struct chd {
     uint8_t parent_md5[16];	/* MD5 checksum of parent file */
     uint8_t sha1[20];           /* SHA1 checksum of raw data */
     uint8_t parent_sha1[20];	/* SHA1 checksum of parent file */
+    uint8_t raw_sha1[20];	/* SHA1 checksum of raw data */
 
     struct chd_map_entry *map;	/* hunk map */
     char *buf;			/* decompression buffer */

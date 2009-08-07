@@ -1,6 +1,6 @@
 /*
   chd.c -- accessing chd files
-  Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2009 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -321,7 +321,7 @@ read_header(struct chd *chd)
     chd->flags = GET_LONG(p);
     chd->compression = GET_LONG(p);
 
-    if (chd->version > 3) {
+    if (chd->version > 4) {
 	chd->error = CHD_ERR_VERSION;
 	return -1;
     }
@@ -344,18 +344,35 @@ read_header(struct chd *chd)
 	chd->meta_offset = 0;
 	memset(chd->sha1, 0, sizeof(chd->sha1));
 	memset(chd->parent_sha1, 0, sizeof(chd->parent_sha1));
+	memset(chd->raw_sha1, 0, sizeof(chd->raw_sha1));
     }
     else {
 	chd->total_hunks = GET_LONG(p);
 	chd->total_len = GET_QUAD(p);
 	chd->meta_offset = GET_QUAD(p);
-	memcpy(chd->md5, p, sizeof(chd->md5));
-	p += sizeof(chd->md5);
-	memcpy(chd->parent_md5, p, sizeof(chd->parent_md5));
-	p += sizeof(chd->parent_md5);
+
+	if (chd->version == 3) {
+	    memcpy(chd->md5, p, sizeof(chd->md5));
+	    p += sizeof(chd->md5);
+	    memcpy(chd->parent_md5, p, sizeof(chd->parent_md5));
+	    p += sizeof(chd->parent_md5);
+	}
+	else {
+	    memset(chd->md5, 0, sizeof(chd->md5));
+	    memset(chd->parent_md5, 0, sizeof(chd->parent_md5));
+	}
+	
 	chd->hunk_len = GET_LONG(p);
+	
 	memcpy(chd->sha1, p, sizeof(chd->sha1));
 	p += sizeof(chd->sha1);
+
+	if (chd->version == 3)
+	    memcpy(chd->raw_sha1, chd->sha1, sizeof(chd->raw_sha1));
+	else {
+	    memcpy(chd->raw_sha1, p, sizeof(chd->raw_sha1));
+	    p += sizeof(chd->raw_sha1);
+	}
     }
 
     return 0;
