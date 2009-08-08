@@ -51,12 +51,12 @@
 #define MAP_ENTRY_SIZE_V12	8	/* size of map entry, versions 1 & 2 */
 #define MAP_ENTRY_SIZE_V3	16	/* size of map entry, version 3 */
 
-#define GET_LONG(b)	(b+=4,((b)[-4]<<24)|((b)[-3]<<16)|((b)[-2]<<8)|(b)[-1])
-#define GET_QUAD(b)	(b+=8,((uint64_t)(b)[-8]<<56)|((uint64_t)(b)[-7]<<48) \
+#define GET_UINT16(b)	(b+=2,((b)[-2]<<8)|(b)[-1])
+#define GET_UINT32(b)	(b+=4,((b)[-4]<<24)|((b)[-3]<<16)|((b)[-2]<<8)|(b)[-1])
+#define GET_UINT64(b)	(b+=8,((uint64_t)(b)[-8]<<56)|((uint64_t)(b)[-7]<<48) \
 			 |((uint64_t)(b)[-6]<<40)|((uint64_t)(b)[-5]<<32)     \
 			 |((uint64_t)(b)[-4]<<24)|((uint64_t)(b)[-3]<<16)     \
 			 |((uint64_t)(b)[-2]<<8)|((uint64_t)(b)[-1]))
-#define GET_SHORT(b)	(b+=2,((b)[-2]<<8)|(b)[-1])
 
 static int read_header(struct chd *);
 static int read_map(struct chd *);
@@ -306,7 +306,7 @@ read_header(struct chd *chd)
     }
 
     p = b+TAG_LEN;
-    len = GET_LONG(p);
+    len = GET_UINT32(p);
     if (len > MAX_HEADERLEN) {
 	chd->error = CHD_ERR_NO_CHD;
 	return -1;
@@ -317,9 +317,9 @@ read_header(struct chd *chd)
     }
     
     chd->hdr_length = len;
-    chd->version = GET_LONG(p);
-    chd->flags = GET_LONG(p);
-    chd->compression = GET_LONG(p);
+    chd->version = GET_UINT32(p);
+    chd->flags = GET_UINT32(p);
+    chd->compression = GET_UINT32(p);
 
     if (chd->version > 4) {
 	chd->error = CHD_ERR_VERSION;
@@ -328,8 +328,8 @@ read_header(struct chd *chd)
     /* XXX: check chd->hdr_length against expected value for version */
 
     if (chd->version < 3) {
-	chd->hunk_len = GET_LONG(p);
-	chd->total_hunks = GET_LONG(p);
+	chd->hunk_len = GET_UINT32(p);
+	chd->total_hunks = GET_UINT32(p);
 	p += 12; /* skip c/h/s */
 	memcpy(chd->md5, p, sizeof(chd->md5));
 	p += sizeof(chd->md5);
@@ -339,7 +339,7 @@ read_header(struct chd *chd)
 	if (chd->version == 1)
 	    chd->hunk_len *= 512;
 	else
-	    chd->hunk_len *= GET_LONG(p);
+	    chd->hunk_len *= GET_UINT32(p);
 	chd->total_len = chd->hunk_len * chd->total_hunks;
 	chd->meta_offset = 0;
 	memset(chd->sha1, 0, sizeof(chd->sha1));
@@ -347,9 +347,9 @@ read_header(struct chd *chd)
 	memset(chd->raw_sha1, 0, sizeof(chd->raw_sha1));
     }
     else {
-	chd->total_hunks = GET_LONG(p);
-	chd->total_len = GET_QUAD(p);
-	chd->meta_offset = GET_QUAD(p);
+	chd->total_hunks = GET_UINT32(p);
+	chd->total_len = GET_UINT64(p);
+	chd->meta_offset = GET_UINT64(p);
 
 	if (chd->version == 3) {
 	    memcpy(chd->md5, p, sizeof(chd->md5));
@@ -362,7 +362,7 @@ read_header(struct chd *chd)
 	    memset(chd->parent_md5, 0, sizeof(chd->parent_md5));
 	}
 	
-	chd->hunk_len = GET_LONG(p);
+	chd->hunk_len = GET_UINT32(p);
 	
 	memcpy(chd->sha1, p, sizeof(chd->sha1));
 	p += sizeof(chd->sha1);
@@ -408,7 +408,7 @@ read_map(struct chd *chd)
 	    chd->version = 3;
 
 	if (chd->version < 3) {
-	    v = GET_QUAD(p);
+	    v = GET_UINT64(p);
 	    chd->map[i].offset = v & 0xFFFFFFFFFFFLL;
 	    chd->map[i].crc = 0;
 	    chd->map[i].length = v >> 44;
@@ -417,10 +417,10 @@ read_map(struct chd *chd)
 		   ? CHD_MAP_TYPE_UNCOMPRESSED : CHD_MAP_TYPE_COMPRESSED);
 	}
 	else {
-	    chd->map[i].offset = GET_QUAD(p);
-	    chd->map[i].crc = GET_LONG(p);
-	    chd->map[i].length = GET_SHORT(p);
-	    chd->map[i].flags = GET_SHORT(p);
+	    chd->map[i].offset = GET_UINT64(p);
+	    chd->map[i].crc = GET_UINT32(p);
+	    chd->map[i].length = GET_UINT16(p);
+	    chd->map[i].flags = GET_UINT16(p);
 	}
     }
 
