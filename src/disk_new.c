@@ -1,6 +1,6 @@
 /*
   disk_new.c -- create / free disk structure from image
-  Copyright (C) 2004-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2009 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -45,7 +45,15 @@
 
 
 
+struct meta_hash {
+    unsigned char tag[4];
+    unsigned char sha1[HASHES_SIZE_SHA1];
+};
+
+
+
 static int get_hashes(struct chd *, struct hashes *);
+int meta_hash_cmp(const void *, const void *);
 
 
 
@@ -170,15 +178,25 @@ disk_real_free(disk_t *d)
 static int
 get_hashes(struct chd *chd, struct hashes *h)
 {
+    struct hashes h_raw;
     struct hashes_update *hu;
     unsigned int hunk, n;
     uint64_t len;
     unsigned char *buf;
 
-    /* XXX: support CRC? */
-    h->types &= ~HASHES_TYPE_CRC;
+    if (chd->version > 3) {
+	/* version 4 only defines hash for SHA1 */
+	h->types = HASHES_TYPE_SHA1;
+    }
 
-    hu = hashes_update_new(h);
+    h_raw.types = h->types;
+
+    if (chd->version > 2)
+	h_raw.types |= HASHES_TYPE_SHA1;
+    if (chd->version < 4)
+	h_raw.types |= HASHES_TYPE_MD5;
+
+    hu = hashes_update_new(&h_raw);
 
     buf = xmalloc(chd->hunk_len);
     len = chd->total_len;
@@ -189,6 +207,7 @@ get_hashes(struct chd *chd, struct hashes *h)
 	    /* XXX: include chd->error */
 	    myerror(ERRFILESTR, "error reading hunk %d", hunk);
 	    free(buf);
+	    hashes_update_final(hu);
 	    return -1;
 	}
 
@@ -197,7 +216,98 @@ get_hashes(struct chd *chd, struct hashes *h)
     }
     
     hashes_update_final(hu);
+
+    if ((chd->version < 4 && memcmp(h_raw.md5, chd->md5, HASHES_SIZE_MD5) != 0)
+	|| (chd->version > 2 && memcmp(h_raw.sha1, chd->raw_sha1,
+				       HASHES_SIZE_SHA1) != 0)) {
+	myerror(ERRFILE, "checksum mismatch for raw data");
+	free(buf);
+	return -1;
+    }
+    
+    if (chd->version < 4) {
+	hashes_copy(h, &h_raw);
+    }
+    else {
+	struct hashes_update *hu_meta;
+	struct chd_metadata_entry *meta, *e;
+	struct meta_hash *meta_hash;
+	int n_meta_hash, i;
+	
+	hu = hashes_update_new(h);
+	hashes_update(hu, h_raw.sha1, HASHES_SIZE_SHA1);
+
+	h_raw.types = HASHES_TYPE_SHA1;
+
+	meta = chd_get_metadata_list(chd);
+
+	n_meta_hash = 0;
+
+	for (e=meta; e; e=e->next) {
+	    if (e->flags & CHD_META_FL_CHECKSUM)
+		n_meta_hash++;
+	}
+
+	meta_hash = xmalloc(n_meta_hash*sizeof(*meta_hash));
+
+	len = chd->hunk_len; /* curent size of buf */
+
+	for (i=0,e=meta; e; e=e->next) {
+	    if ((e->flags & CHD_META_FL_CHECKSUM) == 0)
+		continue;
+	    
+	    if (e->length > len) {
+		free(buf);
+		len = e->length;
+		buf = xmalloc(len);
+	    }
+	    
+	    if (chd_read_metadata(chd, e, buf) < 0) {
+		/* XXX: include chd->error */
+		myerror(ERRFILESTR, "error reading hunk %d", hunk);
+		free(buf);
+		free(meta_hash);
+		hashes_update_final(hu);
+		return -1;
+	    }
+
+	    hu_meta = hashes_update_new(&h_raw);
+	    hashes_update(hu_meta, buf, e->length);
+	    hashes_update_final(hu_meta);
+
+	    memcpy(meta_hash[i].tag, e->tag, 4);
+	    memcpy(meta_hash[i].sha1, h_raw.sha1, HASHES_SIZE_SHA1);
+	    i++;
+	}
+
+	qsort(meta_hash, n_meta_hash, sizeof(*meta_hash), meta_hash_cmp);
+
+	for (i=0; i<n_meta_hash; i++) {
+	    hashes_update(hu, meta_hash[i].tag, 4);
+	    hashes_update(hu, meta_hash[i].sha1, HASHES_SIZE_SHA1);
+	}
+	hashes_update_final(hu);
+	free(meta_hash);
+    }
+
     free(buf);
 
     return 0;
+}
+
+
+
+int meta_hash_cmp(const void *a_, const void *b_)
+{
+    const struct meta_hash *a, *b;
+    int ret;
+
+    a = a_;
+    b = b_;
+
+    ret = memcmp(a->tag, b->tag, sizeof(a->tag));
+    if (ret == 0)
+	ret = memcmp(a->sha1, b->sha1, sizeof(a->sha1));
+
+    return ret;
 }

@@ -63,6 +63,9 @@
 #define CHD_COMP_NONE			0x0
 #define CHD_COMP_ZLIB			0x1
 #define CHD_COMP_ZLIB_PLUS		0x2
+#define CHD_COMP_AV			0x3
+
+#define CHD_META_FL_CHECKSUM		0x1
 
 
 
@@ -71,6 +74,14 @@ struct chd_map_entry {
     uint32_t crc;	/* 32-bit CRC of the data */
     uint16_t length;	/* length of the data */
     uint16_t flags;	/* misc flags */
+};
+
+struct chd_metadata_entry {
+    struct chd_metadata_entry *next;
+    unsigned char tag[4];
+    uint32_t length;
+    uint64_t offset;
+    uint8_t flags;
 };
 
 struct chd {
@@ -97,13 +108,18 @@ struct chd {
     z_stream z;			/* decompressor */
     int hno;			/* hunk currently in hbuf */
     unsigned char *hbuf;	/* hunk data buffer */
+
+    struct chd_metadata_entry *meta; /* list of meta data entries */
 };
 
 
 
 void chd_close(struct chd *);
+struct chd_metadata_entry *chd_get_metadata_list(struct chd *);
 struct chd *chd_open(const char *, int *);
 int chd_read_hunk(struct chd *, int, unsigned char *);
+int chd_read_metadata(struct chd*, const struct chd_metadata_entry *,
+		      unsigned char *);
 int chd_read_range(struct chd *, unsigned char *, int, int);
 
 #endif /* chd.h */

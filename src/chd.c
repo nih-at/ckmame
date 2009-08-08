@@ -48,6 +48,8 @@
 #define TAG_LEN		8		/* length of tag */
 #define TAG_AND_LEN	12		/* length of tag + header length */
 
+#define META_HEADERLEN	16
+
 #define MAP_ENTRY_SIZE_V12	8	/* size of map entry, versions 1 & 2 */
 #define MAP_ENTRY_SIZE_V3	16	/* size of map entry, version 3 */
 
@@ -73,6 +75,17 @@ chd_close(struct chd *chd)
     free(chd->hbuf);
     free(chd);
 }   
+
+
+
+struct chd_metadata_entry *
+chd_get_metadata_list(struct chd *chd)
+{
+    /* XXX: handle/propagate error */
+    read_meta_headers(chd);
+
+    return chd->meta;
+}
 
 
 
@@ -105,6 +118,7 @@ chd_open(const char *name, int *errp)
     chd->buf = NULL;
     chd->hno = -1;
     chd->hbuf = NULL;
+    chd->meta = NULL;
 
     if (read_header(chd) < 0) {
 	if (errp)
@@ -239,6 +253,34 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 
 
 int
+chd_read_metadata(struct chd* chd, const struct chd_metadata_entry *e,
+		  unsigned char *b)
+{
+    if (e == NULL) {
+	chd->error = CHD_ERR_INVAL;
+	return -1;
+    }
+
+    if (chd->meta == NULL) {
+	if (read_meta_headers(chd) < 0)
+	    return -1;
+    }
+
+    if (fseeko(chd->f, e->offset, SEEK_SET) == -1) {
+	chd->error = CHD_ERR_SEEK;
+	return -1;
+    }
+    if (fread(b, e->length, 1, chd->f) != 1) {
+	chd->error = CHD_ERR_READ;
+	return -1;
+    }
+
+    return 0;
+}
+
+
+
+int
 chd_read_range(struct chd *chd, unsigned char *b, int off, int len)
 {
     int i, s, n;
@@ -366,6 +408,8 @@ read_header(struct chd *chd)
 	
 	memcpy(chd->sha1, p, sizeof(chd->sha1));
 	p += sizeof(chd->sha1);
+	memcpy(chd->parent_sha1, p, sizeof(chd->parent_sha1));
+	p += sizeof(chd->parent_sha1);
 
 	if (chd->version == 3)
 	    memcpy(chd->raw_sha1, chd->sha1, sizeof(chd->raw_sha1));
@@ -404,7 +448,8 @@ read_map(struct chd *chd)
 	}
 	p = b;
 
-	if (i == 1832)
+	/* XXX: why? */
+	if (i == 1832 && chd->version < 3)
 	    chd->version = 3;
 
 	if (chd->version < 3) {
@@ -422,6 +467,56 @@ read_map(struct chd *chd)
 	    chd->map[i].length = GET_UINT16(p);
 	    chd->map[i].flags = GET_UINT16(p);
 	}
+    }
+
+    return 0;
+}
+
+
+
+int
+read_meta_headers(struct chd *chd)
+{
+    struct chd_metadata_entry *meta, *prev;
+    uint64_t offset, next;
+    unsigned char b[META_HEADERLEN], *p;
+
+    if (chd->meta != NULL)
+	return 0; /* already read in */
+
+    prev = NULL;
+    for (offset = chd->meta_offset; offset; offset = next) {
+	if (fseeko(chd->f, offset, SEEK_SET) == -1) {
+	    chd->error = CHD_ERR_SEEK;
+	    return -1;
+	}
+	if (fread(b, META_HEADERLEN, 1, chd->f) != 1) {
+	    chd->error = CHD_ERR_READ;
+	    return -1;
+	}
+
+	if ((meta=malloc(sizeof(*meta))) == NULL) {
+	    chd->error = CHD_ERR_NOMEM;
+	    return -1;
+	}
+
+	p = b;
+
+	meta->next = NULL;
+	memcpy(meta->tag, p, 4);
+	p += 4;
+	meta->length = GET_UINT32(p);
+	meta->offset = offset + META_HEADERLEN;
+	meta->flags = meta->length >> 24;
+	meta->length &= 0xffffff;
+
+	next = GET_UINT64(p);
+
+	if (prev)
+	    prev->next = meta;
+	else
+	    chd->meta = meta;
+	prev = meta;
     }
 
     return 0;
