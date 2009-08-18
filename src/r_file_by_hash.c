@@ -53,47 +53,25 @@ r_file_by_hash(sqlite3 *db, filetype_t ft, const hashes_t *hash)
     sqlite3_stmt *stmt;
     array_t *a;
     file_location_t *fl;
-    int col, ret;
+    int i, ret;
+    const char *ht;
 
     strcpy(query, query_fbh);
-    if (hashes_has_type(hash, HASHES_TYPE_CRC))
-	sprintf(query+strlen(query), query_fbh_hash, "crc", "crc"); 
-    if (hashes_has_type(hash, HASHES_TYPE_MD5))
-	sprintf(query+strlen(query), query_fbh_hash, "md5", "md5"); 
-    if (hashes_has_type(hash, HASHES_TYPE_SHA1))
-	sprintf(query+strlen(query), query_fbh_hash, "sha1", "sha1"); 
+    for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
+	if (hashes_has_type(hash, i)) {
+	    ht = hash_type_string(i);
+	    sprintf(query+strlen(query), query_fbh_hash, ht, ht);
+	}
+    }
     
     if (sqlite3_prepare_v2(db, query, -1, &stmt, NULL) != SQLITE_OK)
 	return NULL;
 
-    if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, STATUS_OK) != SQLITE_OK
+	|| sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK) {
 	sqlite3_finalize(stmt);
 	return NULL;
-    }
-    if (sqlite3_bind_int(stmt, 2, STATUS_OK) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
-	return NULL;
-    }
-    col = 3;
-    if (hashes_has_type(hash, HASHES_TYPE_CRC)) {
-	if (sqlite3_bind_int(stmt, col++, hashes_crc(hash)) != SQLITE_OK) {
-	    sqlite3_finalize(stmt);
-	    return NULL;
-	}
-    }
-    if (hashes_has_type(hash, HASHES_TYPE_MD5)) {
-	if (sqlite3_bind_blob(stmt, col++, hash->md5, HASHES_SIZE_MD5,
-			      SQLITE_STATIC) != SQLITE_OK) {
-	    sqlite3_finalize(stmt);
-	    return NULL;
-	}
-    }
-    if (hashes_has_type(hash, HASHES_TYPE_SHA1)) {
-	if (sqlite3_bind_blob(stmt, col++, hash->sha1, HASHES_SIZE_SHA1,
-			      SQLITE_STATIC) != SQLITE_OK) {
-	    sqlite3_finalize(stmt);
-	    return NULL;
-	}
     }
 
     a = array_new(sizeof(file_location_t));
