@@ -1,6 +1,6 @@
 /*
   r_file_location.c -- read file_by_hash information from db
-  Copyright (C) 2005-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2009 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -41,50 +41,59 @@
 #include "file_location.h"
 #include "sq_util.h"
 
-const char *query_fbh[] = {
-    "select g.name, f.file_idx from game g, file f" \
-    " where f.game_id = g.game_id and f.file_type = ?"	\
-    " and f.crc = ?",
-
-    NULL,
-
-    "select g.name, f.file_idx from game g, file f" \
-    " where f.game_id = g.game_id and f.file_type = ?" \
-    " and f.md5 = ?"
-};
+const char *query_fbh =
+    "select g.name, f.file_idx from game g, file f"
+    " where f.game_id = g.game_id and f.file_type = ? and f.status = ?";
+const char *query_fbh_hash = " and (f.%s = ? or f.%s is null)";
 
 array_t *
 r_file_by_hash(sqlite3 *db, filetype_t ft, const hashes_t *hash)
 {
+    char query[512];
     sqlite3_stmt *stmt;
     array_t *a;
     file_location_t *fl;
-    int ret;
+    int col, ret;
 
-    if (sqlite3_prepare_v2(db, query_fbh[ft], -1, &stmt, NULL) != SQLITE_OK)
+    strcpy(query, query_fbh);
+    if (hashes_has_type(hash, HASHES_TYPE_CRC))
+	sprintf(query+strlen(query), query_fbh_hash, "crc", "crc"); 
+    if (hashes_has_type(hash, HASHES_TYPE_MD5))
+	sprintf(query+strlen(query), query_fbh_hash, "md5", "md5"); 
+    if (hashes_has_type(hash, HASHES_TYPE_SHA1))
+	sprintf(query+strlen(query), query_fbh_hash, "sha1", "sha1"); 
+    
+    if (sqlite3_prepare_v2(db, query, -1, &stmt, NULL) != SQLITE_OK)
 	return NULL;
 
     if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK) {
 	sqlite3_finalize(stmt);
 	return NULL;
     }
-    switch (ft) {
-    case TYPE_ROM:
-	if (sqlite3_bind_int(stmt, 2, hashes_crc(hash)) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, 2, STATUS_OK) != SQLITE_OK) {
+	sqlite3_finalize(stmt);
+	return NULL;
+    }
+    col = 3;
+    if (hashes_has_type(hash, HASHES_TYPE_CRC)) {
+	if (sqlite3_bind_int(stmt, col++, hashes_crc(hash)) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);
 	    return NULL;
 	}
-	break;
-    case TYPE_DISK:
-	if (sqlite3_bind_blob(stmt, 2, hash->md5, HASHES_SIZE_MD5,
+    }
+    if (hashes_has_type(hash, HASHES_TYPE_MD5)) {
+	if (sqlite3_bind_blob(stmt, col++, hash->md5, HASHES_SIZE_MD5,
 			      SQLITE_STATIC) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);
 	    return NULL;
 	}
-	break;
-    default:
-	sqlite3_finalize(stmt);
-	return NULL;
+    }
+    if (hashes_has_type(hash, HASHES_TYPE_SHA1)) {
+	if (sqlite3_bind_blob(stmt, col++, hash->sha1, HASHES_SIZE_SHA1,
+			      SQLITE_STATIC) != SQLITE_OK) {
+	    sqlite3_finalize(stmt);
+	    return NULL;
+	}
     }
 
     a = array_new(sizeof(file_location_t));

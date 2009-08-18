@@ -20,7 +20,6 @@ tests:
 
 ! [feature] chd: implement a/v decompression
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
-! [bug] dumpgame -c outputs no good dumps
 ! [test] detective
 ! [bug] fix BROKEN_TESTS
 ! [bug] tries to remove disk image in extra twice (or tries to remove used?)

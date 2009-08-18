@@ -1,6 +1,6 @@
 /*
   dumpgame.c -- print info about game (from data base)
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2009 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -197,61 +197,28 @@ print_matches(filetype_t ft, hashes_t *hash)
 
     matches = 0;
 
-    if (hashes_has_type(hash, file_location_default_hashtype(ft))) {
-	if ((fbha=r_file_by_hash(db, ft, hash)) == NULL) {
-	    print_footer(0, hash);
-	    return;
-	}
-
-	for (i=0; i<array_length(fbha); i++) {
-	    fbh = array_get(fbha, i);
-	    if ((game=r_game(db, file_location_name(fbh))) == NULL) {
-		myerror(ERRDEF,
-			"db error: %s not found, though in hash index",
-			file_location_name(fbh));
-		/* XXX: remember error */
-		continue;
-	    }
-
-	    print_match(game, ft, file_location_index(fbh));
-	    matches++;
-	    
-	    game_free(game);
-	}
-
-	array_free(fbha, file_location_finalize);
+    if ((fbha=r_file_by_hash(db, ft, hash)) == NULL) {
+      print_footer(0, hash);
+      return;
     }
-    else {
-	for (i=0; i<parray_length(list); i++) {
-	    if ((game=r_game(db, parray_get(list, i))) == NULL) {
-		myerror(ERRDEF,
-			"db error: %s not found, though in list",
-			parray_get(list, i));
-		/* XXX: remember error */
-		continue;
-	    }
 
-	    if (ft == TYPE_ROM) {
-		for (j=0; j<game_num_files(game, ft); j++) {
-		    if (hashes_cmp(file_hashes(game_file(game, ft, j)),
-				   hash) == HASHES_CMP_MATCH) {
-			print_match(game, ft, j);
-			matches++;
-		    }
-		}
-	    }
-	    else if (ft == TYPE_DISK) {
-		for (j=0; j<game_num_disks(game); j++) {
-		    if (hashes_cmp(disk_hashes(game_disk(game, j)),
-				   hash) == HASHES_CMP_MATCH) {
-			print_match(game, ft, j);
-			matches++;
-		    }
-		}
-	    }
-	    game_free(game);
-	}
+    for (i=0; i<array_length(fbha); i++) {
+      fbh = array_get(fbha, i);
+      if ((game=r_game(db, file_location_name(fbh))) == NULL) {
+	myerror(ERRDEF,
+		"db error: %s not found, though in hash index",
+		file_location_name(fbh));
+	/* XXX: remember error */
+	continue;
+      }
+      
+      print_match(game, ft, file_location_index(fbh));
+      matches++;
+      
+      game_free(game);
     }
+    
+    array_free(fbha, file_location_finalize);
 
     print_footer(matches, hash);
 }
