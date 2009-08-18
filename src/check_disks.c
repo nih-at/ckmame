@@ -79,6 +79,11 @@ check_disks(game_t *game, images_t *im, result_t *res)
 	    }
 	}
 
+	if (disk_status(d) != STATUS_OK) {
+	  /* XXX: search for disk by name */
+	  continue;
+	}
+
 	if (match_disk_quality(md) != QU_OK
 	    && match_disk_quality(md) != QU_OLD) {
 	    /* search in needed, superfluous and extra dirs */
