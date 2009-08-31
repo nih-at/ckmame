@@ -103,7 +103,16 @@ struct detector_test {
 
 typedef struct detector_test detector_test_t;
 
-typedef int (*detector_read_cb)(void *, void *, int);
+#ifdef LIBZIP_VERSION
+typedef uint64_t detector_read_arg_t;
+typedef int64_t detector_read_ret_t;
+#else
+typedef int detector_read_arg_t;
+typedef int detector_read_ret_t;
+#endif
+
+typedef detector_read_ret_t (*detector_read_cb)(void *, void *,
+						detector_read_arg_t);
 
 
 
