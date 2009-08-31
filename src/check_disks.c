@@ -79,7 +79,7 @@ check_disks(game_t *game, images_t *im, result_t *res)
 	    }
 	}
 
-	if (disk_status(d) != STATUS_OK) {
+	if (hashes_types(disk_hashes(d)) == 0) {
 	  /* XXX: search for disk by name */
 	  continue;
 	}
