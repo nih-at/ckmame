@@ -129,7 +129,7 @@ name_type(const char *name)
     if (l > 4) {
 	if (strcmp(name+l-4, ".chd") == 0)
 	    return NAME_CHD;
-	if (strcmp(name+l-4, ".zip") == 0)
+	if (strcasecmp(name+l-4, ".zip") == 0)
 	    return NAME_ZIP;
     }
 
