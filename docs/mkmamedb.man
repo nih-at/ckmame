@@ -1,4 +1,4 @@
-.\" Copyright (c) 2005-2008 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005-2009 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,14 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH MKMAMEDB 1 "June 19, 2009" NiH
+.TH MKMAMEDB 1 "November 7, 2009" NiH
 .SH "NAME"
 mkmamedb \- create database for use by ckmame
 .SH "SYNOPSIS"
 .B mkmamedb
 [\fB-hV\fR]
 [\fB-C\fR \fBhashtypes\fR]
+[\fB-F\fR \fBoutputformat\fR]
 [\fB-o\fR \fBdbfile\fR]
 [\fB-x\fR \fBpat\fR]
 [\fB--detector\fR \fBfile\fR]
@@ -94,6 +95,12 @@ supports the following options:
 A comma separated list of hash types to compute when creating a ROM
 set description from a directory of zip archives.
 Supported hash types are: crc, md5, sha1.
+Default are all.
+.TP 31
+\fB-F\fR \fBoutputformat, \fB-Fl\fR format Ar outputformat\fR
+Specify output format.
+Supported formats are: db (ckmame database) and cm (clrmamepro dat file).
+Default is cm.
 .TP 31
 \fB--detector\fR \fBfile\fR
 Use CMPro XML header skip detector description from
