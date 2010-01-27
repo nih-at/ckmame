@@ -17,6 +17,7 @@ tests:
   * use on matching file
   * use on non-matching file
   * rule operations
+  * [test] is superfluous file that needs detector cleaned up correctly?
 
 ! [feature] chd: implement a/v decompression
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
