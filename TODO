@@ -31,6 +31,7 @@ tests:
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
++ [bug] recognize second copy of [bad dump] in extra dir and remove it
 + [feature] get needed files directly from parent (see inparent.test)
 + [feature] inconsistent zip in ROM set: copy files to new zip
 + [cleanup] merge disk_t into file_t
