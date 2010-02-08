@@ -1,6 +1,6 @@
 /*
-  psort.c -- sort pointers, opionally removing duplicates
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  ptr_sort.c -- sort pointers, opionally removing duplicates
+  Copyright (C) 2005-2010 Dieter Baron and Thomas Klausner
   Copyright (C) Wikipedia
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -38,13 +38,13 @@
 
 /*
   Implementation adapted from Wikipedia
-	http://en.wikipedia.org/wiki/Heapsort
+	http://en.wikipedia.org/wiki/Heaptr_sort
 */
 
 #define HEAP(j)		(data[(length-1) - (j)])
 
 int
-psort(void **data, int length, int omit_duplicates,
+ptr_sort(void **data, int length, int omit_duplicates,
       int (*cmp)(const void *, const void *))
 {
     int heap_size, array_end, sort_node, node, child;
