@@ -1,6 +1,6 @@
 /*
   sq_util.c -- sqlite3 utility functions
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2010 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -124,7 +124,7 @@ sq3_set_hashes(sqlite3_stmt *stmt, int col, const hashes_t *h, int nullp)
     ret = SQLITE_OK;
 
     if (hashes_has_type(h, HASHES_TYPE_CRC))
-	ret = sqlite3_bind_int(stmt, col++, hashes_crc(h));
+	ret = sqlite3_bind_int64(stmt, col++, hashes_crc(h));
     else if (nullp)
 	ret = sqlite3_bind_null(stmt, col++);
     if (ret != SQLITE_OK)

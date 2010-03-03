@@ -1,6 +1,6 @@
 /*
   find.c -- find ROM in ROM set or archives
-  Copyright (C) 2005-2008 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2010 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -200,7 +200,7 @@ find_in_archives(const file_t *r, match_t *m)
 	return FIND_ERROR;
     }
     if (file_size(r) != SIZE_UNKNOWN)
-	if (sqlite3_bind_int(stmt, 2, file_size(r)) != SQLITE_OK) {
+	if (sqlite3_bind_int64(stmt, 2, file_size(r)) != SQLITE_OK) {
 	    sqlite3_finalize(stmt);
 	    return FIND_ERROR;
 	}
