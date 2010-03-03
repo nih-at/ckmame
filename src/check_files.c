@@ -1,6 +1,6 @@
 /*
   check_files.c -- match files against ROMs
-  Copyright (C) 2005-2008 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2009 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -299,7 +299,7 @@ update_game_status(const game_t *g, result_t *res)
 	/* XXX: using output_options here is a bit of a hack,
 	   but so is all of the result_game processing */
 	if (match_quality(m) != QU_OK
-	    && (file_status(r) == STATUS_OK
+	    && (file_status(r) != STATUS_NODUMP
 		|| (output_options & WARN_NO_GOOD_DUMP)))
 	    all_correct = 0;
     }
