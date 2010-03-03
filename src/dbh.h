@@ -3,7 +3,7 @@
 
 /*
   dbh.h -- mame.db sqlite3 data base
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2010 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -46,7 +46,7 @@
 
 
 
-#define DBH_FORMAT_VERSION	1 /* version of ckmame database format */
+#define DBH_FORMAT_VERSION	2 /* version of ckmame database format */
 
 #define DBL_READ	0x0	/* open readonly */
 #define DBL_WRITE	0x1	/* open for writing */
