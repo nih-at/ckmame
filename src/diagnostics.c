@@ -1,6 +1,6 @@
 /*
   diagnostics.c -- display result of check
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2009 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -241,8 +241,8 @@ diagnostics_files(const game_t *game, const result_t *res)
 	switch (match_quality(m)) {
 	case QU_MISSING:
 	    if (output_options & WARN_MISSING) {
-		if (file_status(r) == STATUS_OK
-		    || output_options & WARN_NO_GOOD_DUMP)
+		if (file_status(r) != STATUS_NODUMP
+		    || (output_options & WARN_NO_GOOD_DUMP))
 		    warn_rom(r, "missing");
 	    }
 	    break;
@@ -271,7 +271,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 	    if (output_options & WARN_CORRECT) {
 		if (file_status(r) == STATUS_OK)
 		    warn_rom(r, "correct");
-		else if (output_options & WARN_NO_GOOD_DUMP)
+		else
 		    warn_rom(r,
 			     file_status(r) == STATUS_BADDUMP
 			     ? "best bad dump" : "exists");

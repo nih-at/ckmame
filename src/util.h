@@ -3,7 +3,7 @@
 
 /*
   util.h -- miscellaneous utility functions
-  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2010 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -48,6 +48,6 @@ int hex2bin(unsigned char *, const char *, unsigned int);
 const char *mybasename(const char *);
 char *mydirname(const char *);
 name_type_t name_type(const char *);
-int psort(void **, int, int, int (*)(const void *, const void *));
+int ptr_sort(void **, int, int, int (*)(const void *, const void *));
 
 #endif

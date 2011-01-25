@@ -100,7 +100,7 @@ libckmame_a_SOURCES= \
 	parse-xml.c \
 	parse.c \
 	parser_source.c \
-	psort.c \
+	ptr_sort.c \
 	r_dat.c \
 	r_detector.c \
 	r_file_by_hash.c \

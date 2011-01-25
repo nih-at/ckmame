@@ -1,6 +1,6 @@
 /*
   parray_sort.c -- sort array of pointers
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2010 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -57,7 +57,7 @@ parray_sort_real(parray_t *pa, int omit_duplicates, int lo, int hi,
 	return;
 
     data = pa->entry+lo;
-    n = psort(data, hi-lo, omit_duplicates, cmp);
+    n = ptr_sort(data, hi-lo, omit_duplicates, cmp);
     shrink = ((hi-lo) - n);
 
     if (shrink > 0 && hi < parray_length(pa))
