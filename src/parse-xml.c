@@ -1,6 +1,6 @@
 /*
   parse-xml.c -- parse listxml format files
-  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -46,6 +46,8 @@
 
 static int parse_xml_mame_build(parser_context_t *, filetype_t, int,
 				const char *);
+static int parse_xml_softwarelist(parser_context_t *, filetype_t, int,
+				  const char *);
 
 #define XA(f)	((xmlu_attr_cb)f)
 #define XC(f)	((xmlu_tag_cb)f)
@@ -94,6 +96,10 @@ static const xmlu_attr_t attr_sample[] = {
     { "name",     XA(parse_file_name),    TYPE_SAMPLE, 0                },
     { NULL }
 };
+static const xmlu_attr_t attr_softwarelist[] = {
+    { "description", XA(parse_xml_softwarelist), 0,    0                },
+    { NULL }
+};
 static const xmlu_entity_t entities[] = {
     { "clrmamepro", attr_clrmamepro, NULL, NULL, NULL, 0 },
     { "disk",   attr_disk,   XO(parse_file_start), XC(parse_file_end),
@@ -111,7 +117,10 @@ static const xmlu_entity_t entities[] = {
     { "rom",    attr_rom,    XO(parse_file_start), XC(parse_file_end),
       NULL, TYPE_ROM },
     { "sample", attr_sample, XO(parse_file_start), XC(parse_file_end),
-      NULL, TYPE_SAMPLE }
+      NULL, TYPE_SAMPLE },
+    { "software", attr_game, XO(parse_game_start), XC(parse_game_end), NULL, 0 },
+    { "software/description",   NULL, NULL, NULL, XT(parse_game_description), 0 },
+    { "softwarelist", attr_softwarelist, NULL, NULL, NULL, 0 }
 };
 static const int nentities = sizeof(entities)/sizeof(entities[0]);
 
@@ -141,3 +150,15 @@ parse_xml_mame_build(parser_context_t *ctx, filetype_t ft, int ht,
     free(s);
     return err;
 }
+
+static int
+parse_xml_softwarelist(parser_context_t *ctx, filetype_t ft, int ht,
+		     const char *attr)
+{
+    int err;
+    char *s, *p;
+
+    /* sadly, no version information */
+    return parse_prog_name(ctx, attr);
+}
+
