@@ -61,7 +61,7 @@ typedef enum action action_t;
 
 
 
-char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-O dbfile] [-e dir] [-T file] [game...]\n";
+char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -87,6 +87,7 @@ char help[] = "\n"
 "  -l, --delete-long       delete long files when fixing\n"
 "  -n, --dryrun            don't actually fix, only report what would be done\n"
 "  -O, --old-db dbfile     use mame-db dbfile for old roms\n"
+"  -R, --rom-dir dir       look for roms in rom-dir (default: 'roms')\n"
 "  -S, --samples           check samples instead of roms\n"
 "      --superfluous       only check for superfluous files in rom sets\n"
 "  -s, --nosuperfluous     don't report superfluous files in rom sets\n"
@@ -99,10 +100,10 @@ char help[] = "\n"
 "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
-"Copyright (C) 2008 Dieter Baron and Thomas Klausner\n"
+"Copyright (C) 2011 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "bcD:de:FfhijKkLlnO:SsT:xVvwX"
+#define OPTIONS "bcD:de:FfhijKkLlnO:R:SsT:xVvwX"
 
 enum {
     OPT_CLEANUP_EXTRA = 256,
@@ -141,6 +142,7 @@ struct option options[] = {
     { "nosuperfluous",     0, 0, 's' }, /* -SUP */
     { "nowarnings",        0, 0, 'w' }, /* -SUP, -FIX */
     { "old-db",            1, 0, 'O' },
+    { "rom-dir",           1, 0, 'R' },
     { "samples",           0, 0, 'S' },
     { "search",            1, 0, 'e' },
     { "superfluous",       0, 0, OPT_SUPERFLUOUS },
@@ -158,6 +160,7 @@ int check_integrity;
 parray_t *superfluous;
 parray_t *superfluous;
 parray_t *search_dirs;
+const char *rom_dir;
 filetype_t file_type;
 sqlite3 *db;
 sqlite3 *old_db;
@@ -195,6 +198,7 @@ main(int argc, char **argv)
     check_integrity = 0;
     search_dirs = parray_new();
     game_list = NULL;
+    rom_dir = NULL;
     
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -254,6 +258,9 @@ main(int argc, char **argv)
 	    break;
 	case 'O':
 	    olddbname = optarg;
+	    break;
+	case 'R':
+	    rom_dir = optarg;
 	    break;
 	case 'S':
 	    file_type = TYPE_SAMPLE;

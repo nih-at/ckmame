@@ -89,6 +89,7 @@ TESTS=	\
 		punused.test \
 		rom-broken-replace.test \
 		rom-broken.test \
+		rom-dir.test \
 		rom-duplicate-1st.test \
 		rom-duplicate-2nd.test \
 		rom-duplicate-ok.test \

@@ -226,6 +226,8 @@ get_directory(filetype_t ft)
 {
     if (ft == TYPE_SAMPLE)
 	return "samples";
+    else if (rom_dir)
+	return rom_dir;
     else
 	return "roms";
 }

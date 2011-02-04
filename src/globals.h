@@ -50,6 +50,7 @@ extern detector_t *detector;
 extern char *rompath[];
 extern char *needed_dir;
 extern char *unknown_dir;
+extern const char *rom_dir;
 
 extern parray_t *search_dirs;
 
