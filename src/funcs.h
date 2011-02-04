@@ -3,7 +3,7 @@
 
 /*
   funcs.h -- tree functions
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -72,6 +72,7 @@ int enter_file_in_map(const archive_t *, int, where_t);
 char *findfile(const char *, filetype_t);
 int fix_game(game_t *, archive_t *, images_t *, result_t *);
 parray_t *find_superfluous(const char *);
+const char *get_directory(filetype_t);
 void init_rompath(void);
 int link_or_copy(const char *, const char *);
 char *make_file_name(filetype_t, int, const char *);

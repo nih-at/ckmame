@@ -1,6 +1,6 @@
 /*
   check_util.c -- utility functions needed only by ckmame itself
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -221,18 +221,27 @@ init_rompath(void)
 
 
 
+const char *
+get_directory(filetype_t ft)
+{
+    if (ft == TYPE_SAMPLE)
+	return "samples";
+    else
+	return "roms";
+}
+
+
+
 char *
 make_file_name(filetype_t ft, int idx, const char *name)
 {
-    char *fn, *dir, *ext;
+    char *fn;
+    const char *dir, *ext;
     
     if (rompath_init == 0)
 	init_rompath();
 
-    if (ft == TYPE_SAMPLE)
-	dir = "samples";
-    else
-	dir = "roms";
+    dir = get_directory(ft);
 
     if (ft == TYPE_DISK)
 	ext = "chd";
