@@ -1,4 +1,4 @@
-.\" Copyright (c) 2003-2008 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2003-2011 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH CKMAME 1 "July 29, 2008" NiH
+.TH CKMAME 1 "February 4, 2011" NiH
 .SH "NAME"
 ckmame \- verify MAME ROM sets
 .SH "SYNOPSIS"
@@ -35,6 +35,7 @@ ckmame \- verify MAME ROM sets
 [\fB-D\fR \fBdbfile\fR]
 [\fB-e\fR \fBdir\fR]
 [\fB-O\fR \fBdbfile\fR]
+[\fB-R\fR \fBdir\fR]
 [\fB-T\fR \fBfile\fR]
 [\fB--cleanup-extra\fR]
 [\fB--correct\fR]
@@ -60,6 +61,7 @@ ckmame \- verify MAME ROM sets
 [\fB--nosuperfluous\fR]
 [\fB--nowarnings\fR]
 [\fB--old-db\fR \fBdbfile\fR]
+[\fB--rom-dir\fR \fBdir\fR]
 [\fB--samples\fR]
 [\fB--search\fR \fBdir\fR]
 [\fB--superfluous\fR]
@@ -122,7 +124,7 @@ You can use command line options to select which type of errors to report.
 Supported options:
 .RS
 .TP 24
-\fB-b\fR, \-nobroken
+\fB-b\fR, \fB--nobroken\fR
 Don't report unfixable errors.
 See also
 \fB-f\fR
@@ -132,7 +134,7 @@ and
 \fB--cleanup-extra\fR
 Remove files already in ROM set from extra directories.
 .TP 24
-\fB-c\fR, \-correct
+\fB-c\fR, \fB--correct\fR
 Report correct sets.
 Normally they are not mentioned.
 .TP 24
@@ -141,12 +143,12 @@ Use
 \fBdbfile\fR
 as database file.
 .TP 24
-\fB-d\fR, \-nonogooddumps
+\fB-d\fR, \fB--nonogooddumps\fR
 Don't report ROMs with no known good dumps.
 .TP 24
 \fB--delete-duplicate\fR
 Delete files present in old ROM database (default).  See also
-\fB--keep-duplicate\fR.
+.\fB--keep-duplicate\fR.
 .TP 24
 \fB-e\fR \fBdir, \fB--search\fR Ar dir\fR
 Look for missing files in directory
@@ -156,39 +158,39 @@ Recommended for use with update sets.
 See also
 \fB-j\fR.
 .TP 24
-\fB-F\fR, \-fix
+\fB-F\fR, \fB--fix\fR
 Fix ROM sets; do as much as possible, such as renaming and moving
 files.
 .TP 24
-\fB-f\fR, \-nofixable
+\fB-f\fR, \fB--nofixable\fR
 Don't report fixable errors.
 See also
 \fB-b\fR
 and
 \fB-w\fR.
 .TP 24
-\fB-h\fR, \-help
+\fB-h\fR, \fB--help\fR
 Display a short help message.
 .TP 24
 \fB--ignore-unknown\fR
 Ignore unknown files when fixing.
 They will still be reported.
 .TP 24
-\fB-i\fR, \-integrity
+\fB-i\fR, \fB--integrity\fR
 Check integrity of zip archives and disk images
 by computing checksums and comparing them with the
 internally saved ones.
 .TP 24
-\fB-j\fR, \-delete-found
+\fB-j\fR, \fB--delete-found\fR
 When using
 \fB-e\fR,
 delete files that are copied to the ROM set.
 See also
-\fB--keep-found\fR.
+.\fB--keep-found\fR.
 .TP 24
 \fB--keep-duplicate\fR
 Keep files present in old ROM database.  See also
-\fB--delete-duplicate\fR.
+.\fB--delete-duplicate\fR.
 .TP 24
 \fB--keep-found\fR
 When using
@@ -197,45 +199,51 @@ do not remove files that are copied to the ROM set (default).
 See also
 \fB-j\fR.
 .TP 24
-\fB-K\fR, \-move-unknown
+\fB-K\fR, \fB--move-unknown\fR
 Move unknown files when fixing (default).
 They are moved into a zip file with the same name under
 \fBroms/garbage\fR.
 See also
 \fB-k\fR.
 .TP 24
-\fB-k\fR, \-delete-unknown
+\fB-k\fR, \fB--delete-unknown\fR
 Delete unknown files when fixing.
 See also
 \fB-K\fR.
 .TP 24
-\fB-L\fR, \-move-long
+\fB-L\fR, \fB--move-long\fR
 Move too long files when fixing (default).
 See also
 \fB-K\fR
 and
 \fB-l\fR.
 .TP 24
-\fB-l\fR, \-delete-long
+\fB-l\fR, \fB--delete-long\fR
 Delete long files when fixing.
 See also
 \fB-L\fR.
 .TP 24
-\fB-n\fR, \-dryrun
+\fB-n\fR, \fB--dryrun\fR
 Don't actually fix anything, just report what would be done.
-.TP 24
-\fB-S\fR, \-samples
-Check samples instead of ROMs.
 .TP 24
 \fB-O\fR \fBdbfile, \fB--old-db\fR Ar dbfile\fR
 Assume that files listed in
 \fBdbfile\fR
 exist elsewhere.
 .TP 24
+\fB-R\fR \fBdir, \fB--rom-dir\fR Ar dir\fR
+Look for roms in
+\fBdir.\fR
+Default is
+``roms''.
+.TP 24
+\fB-S\fR, \fB--samples\fR
+Check samples instead of ROMs.
+.TP 24
 \fB--superfluous\fR
 Only check for superfluous files in ROM sets.
 .TP 24
-\fB-s\fR, \-nosuperfluous
+\fB-s\fR, \fB--nosuperfluous\fR
 Don't report superfluous (unneeded) files.
 .TP 24
 \fB-T\fR \fBfile, \fB--games-from\fR Ar file\fR
@@ -252,20 +260,20 @@ Only useful in combination with the
 \fB-F\fR
 flag.
 .TP 24
-\fB-V\fR, \-version
+\fB-V\fR, \fB--version\fR
 Display program name and version number.
 .TP 24
-\fB-v\fR, \-verbose
+\fB-v\fR, \fB--verbose\fR
 Print fixes made.
 .TP 24
-\fB-w\fR, \-nowarnings
+\fB-w\fR, \fB--nowarnings\fR
 Print only unfixable error, like missing or completely incorrect ROMs.
 See also
 \fB-b\fR
 and
 \fB-f\fR.
 .TP 24
-\fB-X\fR, \-ignore-extra
+\fB-X\fR, \fB--ignore-extra\fR
 Do not mention extra files that are in the ROMs or samples dirs
 respectively.
 Most of the time these are ROM sets whose names have changed.
