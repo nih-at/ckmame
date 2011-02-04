@@ -1,5 +1,6 @@
 0.11
 
+- MESS Software Lists support
 - retire mkmamedb-xmame.sh, use "mame -listxml | mkmamedb" instead
 - link/copy disks from extra if -j (--delete-found) isn't specified
 - ckmame: display current game on SIGINFO (Ctrl-T)
