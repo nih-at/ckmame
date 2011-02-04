@@ -544,7 +544,12 @@ rom_end(parser_context_t *ctx, filetype_t ft)
 
     /* omit duplicates */
     deleted = 0;
-    for (j=0; j<n; j++) {
+
+    if (file_name(r) == NULL) {
+	    myerror(ERRFILE, "%d: roms without name", ctx->lineno);
+	    deleted = 1;
+    }	
+    for (j=0; j<n && !deleted; j++) {
 	r2 = game_file(ctx->g, ft, j);
 	if (file_compare_sc(r, r2)) {
 	    /* XXX: merge in additional hash types? */
