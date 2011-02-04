@@ -19,7 +19,9 @@ tests:
   * rule operations
   * [test] is superfluous file that needs detector cleaned up correctly?
 
-! [feature] support MESS softlists http://git.redump.net/cgit.cgi/mess/tree/hash
+! [test] size=0x...
+! [test] rom without name
+! [bug] roms with size 0 take very long to check when missing
 ! [feature] chd: implement a/v decompression
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
 ! [test] detective
