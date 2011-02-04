@@ -230,7 +230,7 @@ parse_file_size(parser_context_t *ctx, filetype_t ft, int dummy,
     }
 
     /* XXX: check for strol errors */
-    file_size(ctx->r) = strtol(attr, NULL, 10);
+    file_size(ctx->r) = strtol(attr, NULL, 0);
 
     return 0;
 }
