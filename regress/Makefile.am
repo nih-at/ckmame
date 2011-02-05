@@ -69,6 +69,7 @@ TESTS=	\
 		mkmamedb-multi-dats.test \
 		mkmamedb-ok.test \
 		mkmamedb-parent-crcdiff.test \
+		mkmamedb-size-hex.test \
 		multi.test \
 		needed-error.test \
 		needed-exists-different.test \
@@ -196,6 +197,8 @@ DBFILES=	mamedb.txt \
 		mamedb-ok.dump \
 		mamedb-parent-crcdiff.txt \
 		mamedb-parent-crcdiff.dump \
+		mamedb-size-hex.txt \
+		mamedb-size-hex.dump \
 		skip.xml \
 		skipped.txt
 

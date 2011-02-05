@@ -1,0 +1,6 @@
+description dat file has size given as hex number
+return 0
+program mkmamedb
+args -o mkmamedb-test.db mamedb.txt
+file mamedb.txt mkmamedb-size-hex.txt mkmamedb-size-hex.txt
+file-new mkmamedb-test.db mamedb-size-hex.dump
