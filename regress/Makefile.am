@@ -157,6 +157,7 @@ ZIPS=		1-4-2.zip \
 		1-c-ok.zip \
 		2-44-ok.zip \
 		2-48-broken.zip \
+		2-48-long.zip \
 		2-48-ok.zip \
 		2-48-ok.tzip \
 		2-4a-ok.zip \
@@ -187,18 +188,20 @@ CHDS=		108-2.chd \
 DBFILES=	mamedb.txt \
 		mamedb-2.txt \
 		mamedb-disk.txt \
+		mamedb-multi-dats.dump \
+		mamedb-ok.dump \
+		mkmamedb-broken-sha1.dump \
+		mkmamedb-broken-sha1.txt \
 		mkmamedb-duplicate-game.dump \
 		mkmamedb-duplicate-nodump.dump \
 		mkmamedb-duplicate-nodump.txt \
+		mkmamedb-lost-parent-ok.txt \
 		mkmamedb-lost-parent.dump \
 		mkmamedb-lost-parent.txt \
-		mkmamedb-lost-parent-ok.txt \
-		mamedb-multi-dats.dump \
-		mamedb-ok.dump \
-		mkmamedb-parent-crcdiff.txt \
 		mkmamedb-parent-crcdiff.dump \
-		mkmamedb-size-hex.txt \
+		mkmamedb-parent-crcdiff.txt \
 		mkmamedb-size-hex.dump \
+		mkmamedb-size-hex.txt \
 		skip.xml \
 		skipped.txt
 
