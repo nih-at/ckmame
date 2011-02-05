@@ -67,6 +67,7 @@ TESTS=	\
 		mkmamedb-duplicate-nodump.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-multi-dats.test \
+		mkmamedb-no-name.test \
 		mkmamedb-ok.test \
 		mkmamedb-parent-crcdiff.test \
 		mkmamedb-size-hex.test \
@@ -198,6 +199,8 @@ DBFILES=	mamedb.txt \
 		mkmamedb-lost-parent-ok.txt \
 		mkmamedb-lost-parent.dump \
 		mkmamedb-lost-parent.txt \
+		mkmamedb-no-name.dump \
+		mkmamedb-no-name.txt \
 		mkmamedb-parent-crcdiff.dump \
 		mkmamedb-parent-crcdiff.txt \
 		mkmamedb-size-hex.dump \
