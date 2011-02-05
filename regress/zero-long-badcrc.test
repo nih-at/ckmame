@@ -1,0 +1,6 @@
+description test game with 0 byte rom and weird CRC, too big file exists
+return 0
+args -FKLivc zerobadcrc
+file roms/zerobadcrc.zip zero-long.zip zero-ok.zip
+stdout In game zerobadcrc:
+stdout rom  zero          size       0  crc 12345678: missing

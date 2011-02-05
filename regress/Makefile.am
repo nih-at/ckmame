@@ -142,7 +142,9 @@ BROKEN_TESTS=	\
 		disk-nogood-copy.test \
 		disk-swapmerge.test \
 		needed-cleanup.test \
-		tochild.test
+		tochild.test \
+		zero-long.test \
+		zero-long-badcrc.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \

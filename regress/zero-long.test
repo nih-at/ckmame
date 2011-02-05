@@ -1,0 +1,8 @@
+description test game with 0 byte rom, too big file exists
+return 0
+args -FKLivc zero
+file roms/zero.zip zero-long.zip zero-ok.zip
+stdout In game zero:
+stdout rom  zero          size       0  crc 00000000: too long, valid subsection at byte 0 (4)
+stdout ./roms/zero.zip: mv long file `zero'
+stdout ./roms/zero.zip: extract (offset 0, size 0) from `zero' to `zero'
