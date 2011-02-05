@@ -187,18 +187,18 @@ CHDS=		108-2.chd \
 DBFILES=	mamedb.txt \
 		mamedb-2.txt \
 		mamedb-disk.txt \
-		mamedb-duplicate-game.dump \
-		mamedb-duplicate-nodump.dump \
-		mamedb-duplicate-nodump.txt \
-		mamedb-lost-parent.dump \
-		mamedb-lost-parent.txt \
-		mamedb-lost-parent-ok.txt \
+		mkmamedb-duplicate-game.dump \
+		mkmamedb-duplicate-nodump.dump \
+		mkmamedb-duplicate-nodump.txt \
+		mkmamedb-lost-parent.dump \
+		mkmamedb-lost-parent.txt \
+		mkmamedb-lost-parent-ok.txt \
 		mamedb-multi-dats.dump \
 		mamedb-ok.dump \
-		mamedb-parent-crcdiff.txt \
-		mamedb-parent-crcdiff.dump \
-		mamedb-size-hex.txt \
-		mamedb-size-hex.dump \
+		mkmamedb-parent-crcdiff.txt \
+		mkmamedb-parent-crcdiff.dump \
+		mkmamedb-size-hex.txt \
+		mkmamedb-size-hex.dump \
 		skip.xml \
 		skipped.txt
 
@@ -207,19 +207,19 @@ check-am: ${DBS}
 ${MAME_DB}: ../src/mkmamedb ${srcdir}/mamedb.txt
 	../src/mkmamedb ${srcdir}/mamedb.txt
 
-${MAME_DB2}: ../src/mkmamedb ${srcdir}/mamedb-lost-parent-ok.txt
-	../src/mkmamedb -o ${MAME_DB2} ${srcdir}/mamedb-lost-parent-ok.txt
+${MAME_DB2}: ../src/mkmamedb ${srcdir}/mkmamedb-lost-parent-ok.txt
+	../src/mkmamedb -o ${MAME_DB2} ${srcdir}/mkmamedb-lost-parent-ok.txt
 
 ${MAME_DB3}: ../src/mkmamedb ${srcdir}/mamedb-disk.txt
 	../src/mkmamedb -o ${MAME_DB3} ${srcdir}/mamedb-disk.txt
 
-${MAME_DB4}: ../src/mkmamedb ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt
-	../src/mkmamedb -o ${MAME_DB4} ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt
+${MAME_DB4}: ../src/mkmamedb ${srcdir}/mamedb.txt ${srcdir}/mkmamedb-lost-parent-ok.txt
+	../src/mkmamedb -o ${MAME_DB4} ${srcdir}/mamedb.txt ${srcdir}/mkmamedb-lost-parent-ok.txt
 
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 	./dbdump ${MAME_DB} > mamedb-ok.dump
-	./dbdump ${MAME_DB2} > mamedb-lost-parent.dump
-	./dbdump ${MAME_DB4} > mamedb-duplicate-game.dump
+	./dbdump ${MAME_DB2} > mkmamedb-lost-parent.dump
+	./dbdump ${MAME_DB4} > mkmamedb-duplicate-game.dump
 	set -e \
 	f=$$$$.db; \
 	../src/mkmamedb -o "$$f".db \
