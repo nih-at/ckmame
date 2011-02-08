@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+while (<>) {
+	if (m/loadflag="continue"/) {
+		$size = $_;
+		$size =~ s/.*size="([^"]*)".*/\1/;
+		$oldsize = $keep;
+		$oldsize =~ s/.*size="([^"]*)".*/\1/;
+		$size += $oldsize;
+		chomp($size);
+		$keep =~ s/(.*size=")[^"]*(".*)/\1$size\2/;
+	} else {
+		print $keep;
+		$keep = $_;
+	}
+}
+print $keep;
