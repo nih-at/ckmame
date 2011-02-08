@@ -1,6 +1,6 @@
 /*
   check_files.c -- match files against ROMs
-  Copyright (C) 2005-2009 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2011 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -250,7 +250,7 @@ match_files(archive_t *a, test_t t, const file_t *r, match_t *m)
 
 	case TEST_LONG:
 	    /* roms without hashes are only matched with correct name */
-	    if (hashes_types(file_hashes(r)) == 0)
+	    if (hashes_types(file_hashes(r)) == 0 || file_size(r) == 0)
 		break;
 	    
 	    if (file_compare_n(r, ra)

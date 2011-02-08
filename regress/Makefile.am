@@ -136,6 +136,8 @@ TESTS=	\
 		wrong2.test \
 		zero.test \
 		zero-good.test \
+		zero-long.test \
+		zero-long-badcrc.test \
 		zero-miss.test \
 		zero-superfluous.test
 BROKEN_TESTS=	\
