@@ -105,7 +105,7 @@ parse_file_continue(parser_context_t *ctx, filetype_t ft, int ht,
     CHECK_STATE(ctx, PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
-	myerror(ERRFILE, "%d: file continuation only suppored for ROMs",
+	myerror(ERRFILE, "%d: file continuation only supported for ROMs",
 		ctx->lineno);
 	return -1;
     }
@@ -208,7 +208,7 @@ parse_file_ignore(parser_context_t *ctx, filetype_t ft, int ht,
     CHECK_STATE(ctx, PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
-	myerror(ERRFILE, "%d: file ignoring only suppored for ROMs",
+	myerror(ERRFILE, "%d: file ignoring only supported for ROMs",
 		ctx->lineno);
 	return -1;
     }
