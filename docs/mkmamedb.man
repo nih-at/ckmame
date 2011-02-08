@@ -1,4 +1,4 @@
-.\" Copyright (c) 2005-2009 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005-2011 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH MKMAMEDB 1 "November 7, 2009" NiH
+.TH MKMAMEDB 1 "February 8, 2011" NiH
 .SH "NAME"
 mkmamedb \- create database for use by ckmame
 .SH "SYNOPSIS"
@@ -38,13 +38,13 @@ mkmamedb \- create database for use by ckmame
 [\fB-x\fR \fBpat\fR]
 [\fB--detector\fR \fBfile\fR]
 [\fB--exclude\fR \fBpat\fR]
-[\fB--hash-types\fR \fBtypes\fR]
+[\fB--hash\-types\fR \fBtypes\fR]
 [\fB--help\fR]
 [\fB--output\fR \fBdbfile\fR]
-[\fB--prog-name\fR \fBname\fR]
-[\fB--prog-version\fR \fBversion\fR]
+[\fB--prog\-name\fR \fBname\fR]
+[\fB--prog\-version\fR \fBversion\fR]
 [\fB--version\fR]
-[\fBrominfo-file ...\fR]
+[\fBrominfo\-file ...\fR]
 .SH "DESCRIPTION"
 .B mkmamedb
 converts ROM set descriptions from one format to another.
@@ -64,7 +64,9 @@ Supported input formats are:
 .IP \(bu 
 CMPro dat file
 .IP \(bu 
-MAME xml file
+MAME XML file
+.IP \(bu 
+MESS Softlist XML file
 .IP \(bu 
 Romcenter dat file
 .IP \(bu 
@@ -91,13 +93,13 @@ the DTD for MAME xml can be found in
 supports the following options:
 .RS
 .TP 31
-\fB-C\fR \fBtypes, \fB--hash-types\fR Ar types\fR
+\fB-C\fR \fBtypes, \fB--hash\-types\fR Ar types\fR
 A comma separated list of hash types to compute when creating a ROM
 set description from a directory of zip archives.
 Supported hash types are: crc, md5, sha1.
 Default are all.
 .TP 31
-\fB-F\fR \fBoutputformat, \fB-Fl\fR format Ar outputformat\fR
+\fB-F\fR \fBoutputformat, \fB--format\fR Ar outputformat\fR
 Specify output format.
 Supported formats are: db (ckmame database) and cm (clrmamepro dat file).
 Default is cm.
@@ -110,7 +112,7 @@ This overrides any detectors given in the file itself.
 looks for the detector in the input file (if it is a zip file) or
 the directory of the input file.
 .TP 31
-\fB-h\fR, \-help
+\fB-h\fR, \fB--help\fR
 Display a short help message.
 .TP 31
 \fB-o\fR \fBdbfile, \fB--output\fR Ar dbfile\fR
@@ -119,13 +121,13 @@ Write to database
 instead of the default
 ``\fBmame.db\fR.''
 .TP 31
-\fB--prog-name\fR \fBname\fR
+\fB--prog\-name\fR \fBname\fR
 Set name of the program the ROM info is from.
 .TP 31
-\fB--prog-version\fR \fBversion\fR
+\fB--prog\-version\fR \fBversion\fR
 Set version of the program the ROM info is from.
 .TP 31
-\fB-V\fR, \-version
+\fB-V\fR, \fB--version\fR
 Display program name and version number.
 .TP 31
 \fB-x\fR \fBpat, \fB--exclude\fR Ar pat\fR
