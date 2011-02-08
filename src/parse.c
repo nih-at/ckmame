@@ -96,6 +96,31 @@ parse(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat,
 
 
 
+/*ARGSUSED3*/
+/*ARGSUSED4*/
+int
+parse_file_continue(parser_context_t *ctx, filetype_t ft, int ht,
+		    const char *attr)
+{
+    CHECK_STATE(ctx, PARSE_IN_FILE);
+
+    if (ft != TYPE_ROM) {
+	myerror(ERRFILE, "%d: file continuation only suppored for ROMs",
+		ctx->lineno);
+	return -1;
+    }
+
+    if (ctx->flags & PARSE_FL_ROM_DELETED) {
+	myerror(ERRFILE, "%d: internal error: trying to continue deleted file",
+		ctx->lineno);
+	return -1;
+    }
+
+    ctx->flags |= PARSE_FL_ROM_CONTINUED;
+}
+
+
+
 int
 parse_file_end(parser_context_t *ctx, filetype_t ft)
 {
@@ -170,6 +195,25 @@ parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
     }
     
     return 0;
+}
+
+
+
+/*ARGSUSED3*/
+/*ARGSUSED4*/
+int
+parse_file_ignore(parser_context_t *ctx, filetype_t ft, int ht,
+		    const char *attr)
+{
+    CHECK_STATE(ctx, PARSE_IN_FILE);
+
+    if (ft != TYPE_ROM) {
+	myerror(ERRFILE, "%d: file ignoring only suppored for ROMs",
+		ctx->lineno);
+	return -1;
+    }
+
+    ctx->flags |= PARSE_FL_ROM_IGNORE;
 }
 
 
@@ -470,6 +514,7 @@ parser_context_new(parser_source_t *ps, const parray_t *exclude,
     ctx->lineno = 0;
     dat_entry_init(&ctx->de);
     ctx->g = NULL;
+    ctx->flags = 0;
 
     return ctx;
 }
@@ -545,7 +590,14 @@ rom_end(parser_context_t *ctx, filetype_t ft)
     /* omit duplicates */
     deleted = 0;
 
-    if (file_name(r) == NULL) {
+    if (ctx->flags & PARSE_FL_ROM_IGNORE)
+	deleted = 1;
+    else if (ctx->flags & PARSE_FL_ROM_CONTINUED) {
+	r2 = game_file(ctx->g, ft, n-1);
+	file_size(r2) += file_size(r);
+	deleted = 1;
+    }
+    else if (file_name(r) == NULL) {
 	    myerror(ERRFILE, "%d: roms without name", ctx->lineno);
 	    deleted = 1;
     }	
@@ -571,9 +623,12 @@ rom_end(parser_context_t *ctx, filetype_t ft)
 	    break;
 	}
     }
-    if (deleted)
+    if (deleted) {
+	ctx->flags = (ctx->flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;
 	array_delete(game_files(ctx->g, ft), n, file_finalize);
+    }
     else {
+	ctx->flags = 0;
 	if (file_merge(r) != NULL && strcmp(file_name(r), file_merge(r)) == 0) {
 	    free(file_merge(r));
 	    file_merge(r) = NULL;

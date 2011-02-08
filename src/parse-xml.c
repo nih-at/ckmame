@@ -44,6 +44,8 @@
 
 
 
+static int parse_xml_loadflag(parser_context_t *, filetype_t, int,
+			      const char *);
 static int parse_xml_mame_build(parser_context_t *, filetype_t, int,
 				const char *);
 static int parse_xml_softwarelist(parser_context_t *, filetype_t, int,
@@ -84,6 +86,7 @@ static const xmlu_attr_t attr_game[] = {
 };
 static const xmlu_attr_t attr_rom[] = {
     { "crc",      XA(parse_file_hash),    TYPE_ROM,    HASHES_TYPE_CRC  },
+    { "loadflag", XA(parse_xml_loadflag), TYPE_ROM,    0                },
     { "md5",      XA(parse_file_hash),    TYPE_ROM,    HASHES_TYPE_MD5  },
     { "merge",    XA(parse_file_merge),   TYPE_ROM,    0                },
     { "name",     XA(parse_file_name),    TYPE_ROM,    0                },
@@ -130,6 +133,17 @@ int
 parse_xml(parser_source_t *ps, parser_context_t *ctx)
 {
     return xmlu_parse(ps, ctx, entities, nentities);
+}
+
+static int
+parse_xml_loadflag(parser_context_t *ctx, filetype_t ft, int ht, const char *value)
+{
+    if (strcmp(value, "continue") == 0)
+	return parse_file_continue(ctx, ft, ht, NULL);
+    else if (strcmp(value, "reload") == 0 || strcmp(value, "fill") == 0)
+	return parse_file_ignore(ctx, ft, ht, NULL);
+
+    return 0;
 }
 
 static int

@@ -54,6 +54,10 @@ enum parser_state {
 
 typedef enum parser_state parser_state_t;
 
+#define PARSE_FL_ROM_DELETED	1
+#define PARSE_FL_ROM_IGNORE	2
+#define PARSE_FL_ROM_CONTINUED	4
+
 struct parser_context {
     /* config */
     const parray_t *ignore;
@@ -68,6 +72,7 @@ struct parser_context {
     int lineno;			/* current line number in input file */
 
     /* state */
+    int flags;
     parser_state_t state;
     dat_entry_t de;		/* info about dat file */
     game_t *g;			/* current game */
@@ -97,9 +102,11 @@ int parse_xml(parser_source_t *, parser_context_t *);
 
 /* callbacks */
 
+int parse_file_continue(parser_context_t *, filetype_t, int, const char *);
 int parse_file_end(parser_context_t *, filetype_t);
 int parse_file_status(parser_context_t *, filetype_t, int, const char *);
 int parse_file_hash(parser_context_t *, filetype_t, int, const char *);
+int parse_file_ignore(parser_context_t *, filetype_t, int, const char *);
 int parse_file_merge(parser_context_t *, filetype_t, int, const char *);
 int parse_file_name(parser_context_t *, filetype_t, int, const char *);
 int parse_file_size(parser_context_t *, filetype_t, int, const char *);
