@@ -1,0 +1,11 @@
+description test mkmamedb database creation, using original MESS Software Lists
+# sets were chosen for the following reasons:
+# nam1975: loadflag="reload"
+# kotm2: loadflag="continue"
+# kof99: loadflag="fill"
+features LIBXML2
+return 0
+program mkmamedb
+args -o mkmamedb-test.db mamedb.xml
+file mamedb.xml mkmamedb-mess.xml mkmamedb-mess.xml
+file-new mkmamedb-test.db mkmamedb-mess.dump

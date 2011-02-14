@@ -68,6 +68,7 @@ TESTS=	\
 		mkmamedb-duplicate-nodump.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-mame.test \
+		mkmamedb-mess.test \
 		mkmamedb-multi-dats.test \
 		mkmamedb-no-name.test \
 		mkmamedb-ok.test \
@@ -206,6 +207,8 @@ DBFILES=	mamedb.txt \
 		mkmamedb-lost-parent.txt \
 		mkmamedb-mame.dump \
 		mkmamedb-mame.txt \
+		mkmamedb-mess.dump \
+		mkmamedb-mess.txt \
 		mkmamedb-no-name.dump \
 		mkmamedb-no-name.txt \
 		mkmamedb-parent-crcdiff.dump \
