@@ -38,7 +38,6 @@ tests:
 + [feature] get needed files directly from parent (see inparent.test)
 + [feature] inconsistent zip in ROM set: copy files to new zip
 + [cleanup] merge disk_t into file_t
-+ [cleanup] remove ROMPATH support
 + [feature] config file (provides defaults overridable on command line)
 + [feature] mkmamedb: support for cmpro's www-profiler
 + [feature] when moving file to needed, recheck games that might need it
@@ -49,7 +48,7 @@ tests:
 - [cleanup] specify globally which parts of memdb/lists to fill/maintain
 - [cleanup] rom: use flag to specify whether we know the size
 - [bug] dumpgame: report real database version for /ckmame key
-- [bug] check if rompath/needed/extra are different
+- [bug] check if needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
 - [feature] add hash-types option to dumpgame
@@ -66,7 +65,6 @@ tests:
 - [cleanup] use int2str/str2int
 - [cleanup] replace (u)long with (u)int32_t
 - [cleanup] rename {r,w}__u{short,long} to {r,w}__uint{16,32}
-- [cleanup] use parray_t for rompath
 - [cleanup] refactor fixing code (one function per operation)
 - [cleanup] handle archive refreshing in archive.c
 - [cleanup] rename: file is part of zip archive, rom is part of game

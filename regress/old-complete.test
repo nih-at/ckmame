@@ -6,5 +6,5 @@ stdout In game 2-48:
 stdout game 2-48                                    : old in `clone-8'
 stdout file 04.rom        size       4  crc d87f7e0c: duplicate
 stdout file 08.rom        size       8  crc 3656897d: duplicate
-stdout ./roms/2-48.zip: delete duplicate file `04.rom'
-stdout ./roms/2-48.zip: delete duplicate file `08.rom'
+stdout roms/2-48.zip: delete duplicate file `04.rom'
+stdout roms/2-48.zip: delete duplicate file `08.rom'

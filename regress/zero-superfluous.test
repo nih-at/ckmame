@@ -5,4 +5,4 @@ file-del roms/1-4.zip zero-ok.zip
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found
 stdout file zero          size       0  crc 00000000: not used
-stdout ./roms/1-4.zip: delete unused file `zero'
+stdout roms/1-4.zip: delete unused file `zero'

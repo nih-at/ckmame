@@ -7,4 +7,4 @@ stdout In game deadbeefchild:
 stdout rom  deadbeef      size       8  crc deadbeef: checksum mismatch, should be in cloneof
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout file deadbeef      size       8  crc deadbeef: unknown
-stdout ./roms/deadbeefchild.zip: mv unknown file `deadbeef'
+stdout roms/deadbeefchild.zip: mv unknown file `deadbeef'

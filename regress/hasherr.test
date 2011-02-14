@@ -6,4 +6,4 @@ file-new unknown/deadbeef.zip deadpork.zip
 stdout In game deadbeef:
 stdout rom  deadbeef      size       8  crc deadbeef: checksum mismatch
 stdout file deadpork      size       8  crc deadbeef: unknown
-stdout ./roms/deadbeef.zip: mv unknown file `deadpork'
+stdout roms/deadbeef.zip: mv unknown file `deadpork'

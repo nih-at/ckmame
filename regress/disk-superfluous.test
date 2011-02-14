@@ -7,5 +7,5 @@ file roms/108-5.chd 108-5.chd 108-5.chd
 stdout In game disk-2:
 stdout game disk-2                                  : correct
 stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: wrong checksum
-stdout image ./roms/108-2.chd: not used
-stdout ./roms/108-2.chd: delete unused image
+stdout image roms/108-2.chd: not used
+stdout roms/108-2.chd: delete unused image

@@ -6,5 +6,5 @@ file-del roms/108-5.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: old
-stdout image ./roms/108-5.chd: duplicate
-stdout ./roms/108-5.chd: delete duplicate image
+stdout image roms/108-5.chd: duplicate
+stdout roms/108-5.chd: delete duplicate image

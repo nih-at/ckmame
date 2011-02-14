@@ -45,9 +45,6 @@
 
 
 
-#define MAXROMPATH 128
-#define DEFAULT_ROMDIR "."
-
 #define EXTRA_MAPS		0x1
 #define NEEDED_MAPS		0x2
 
@@ -64,8 +61,6 @@ delete_list_t *needed_delete_list = NULL;
 delete_list_t *superfluous_delete_list = NULL;
 char *needed_dir = "needed";	/* XXX: proper value, move elsewhere */
 char *unknown_dir = "unknown";	/* XXX: proper value, move elsewhere */
-char *rompath[MAXROMPATH] = { NULL };
-static int rompath_init = 0;
 
 
 
@@ -164,59 +159,17 @@ findfile(const char *name, filetype_t what)
 	    return NULL;
     }
 
-    init_rompath();
-
-    for (i=0; rompath[i]; i++) {
-	fn = make_file_name(what, i, name);
+    fn = make_file_name(what, i, name);
+    if (stat(fn, &st) == 0)
+	return fn;
+    if (what == TYPE_DISK) {
+	fn[strlen(fn)-4] = '\0';
 	if (stat(fn, &st) == 0)
-	    return fn;
-	if (what == TYPE_DISK) {
-	    fn[strlen(fn)-4] = '\0';
-	    if (stat(fn, &st) == 0)
-		return fn;
-	}
-	free(fn);
+	return fn;
     }
+    free(fn);
     
     return NULL;
-}
-
-
-
-void
-init_rompath(void)
-{
-    int i, after;
-    char *s, *e;
-
-    if (rompath_init)
-	return;
-
-    /* skipping components placed via command line options */
-    for (i=0; rompath[i]; i++)
-	;
-
-    if ((e = getenv("ROMPATH"))) {
-	s = xstrdup(e);
-
-	after = 0;
-	if (s[0] == ':')
-	    rompath[i++] = DEFAULT_ROMDIR;
-	else if (s[strlen(s)-1] == ':')
-	    after = 1;
-	
-	for (e=strtok(s, ":"); e; e=strtok(NULL, ":"))
-	    rompath[i++] = e;
-
-	if (after)
-	    rompath[i++] = DEFAULT_ROMDIR;
-    }
-    else
-	rompath[i++] = DEFAULT_ROMDIR;
-
-    rompath[i] = NULL;
-
-    rompath_init = 1;
 }
 
 
@@ -240,9 +193,6 @@ make_file_name(filetype_t ft, int idx, const char *name)
     char *fn;
     const char *dir, *ext;
     
-    if (rompath_init == 0)
-	init_rompath();
-
     dir = get_directory(ft);
 
     if (ft == TYPE_DISK)
@@ -250,9 +200,9 @@ make_file_name(filetype_t ft, int idx, const char *name)
     else
 	ext = "zip";
 
-    fn = xmalloc(strlen(rompath[idx])+strlen(dir)+strlen(name)+7);
+    fn = xmalloc(strlen(dir)+strlen(name)+7);
     
-    sprintf(fn, "%s/%s/%s.%s", rompath[idx], dir, name, ext);
+    sprintf(fn, "%s/%s.%s", dir, name, ext);
 
     return fn;
 }

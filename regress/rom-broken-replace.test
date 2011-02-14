@@ -5,7 +5,7 @@ file roms/2-48.zip 2-48-broken.zip 2-48-ok.zip
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
 stdout In game 2-48:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout rom  08.rom        size       8  crc 3656897d: is in `./roms/1-8.zip'
+stdout rom  08.rom        size       8  crc 3656897d: is in `roms/1-8.zip'
 stdout file 08.rom        size       8  crc 3656897d: broken
-stdout ./roms/2-48.zip: add `./roms/1-8.zip/08.rom' as `08.rom'
-stderr ./roms/2-48.zip: 08.rom: CRC error: bf933f81 != 3656897d
+stdout roms/2-48.zip: add `roms/1-8.zip/08.rom' as `08.rom'
+stderr roms/2-48.zip: 08.rom: CRC error: bf933f81 != 3656897d

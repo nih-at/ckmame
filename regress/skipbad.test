@@ -5,4 +5,4 @@ file roms/deadbeef.zip deadpork.zip deadpork.zip
 file roms/deadclonedbeef.zip deadbeef.zip deadclonedbeef.zip
 stdout In game deadclonedbeef:
 stdout rom  deadclonedbeef  size       8  crc deadbeef: wrong name (deadbeef), should be in cloneof
-stdout ./roms/deadclonedbeef.zip: rename `deadbeef' to `deadclonedbeef'
+stdout roms/deadclonedbeef.zip: rename `deadbeef' to `deadclonedbeef'

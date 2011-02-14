@@ -4,5 +4,5 @@ args -FKLvc 1-4
 file-new roms/1-4.zip 1-4-ok.zip
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/disk.zip'
-stdout ./roms/1-4.zip: add `./roms/disk.zip/04.rom' as `04.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/disk.zip'
+stdout roms/1-4.zip: add `roms/disk.zip/04.rom' as `04.rom'

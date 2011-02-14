@@ -5,13 +5,13 @@ file roms/2-48.zip Makefile.am 2-48-ok.zip
 file-del roms/good-2-48.zip 2-48-ok.zip
 file-new roms/2-48.zip-000.broken Makefile.am
 stdout In game 2-48:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `./roms/good-2-48.zip'
-stdout rom  08.rom        size       8  crc 3656897d: is in `./roms/good-2-48.zip'
-stdout ./roms/2-48.zip: rename broken zip to `./roms/2-48.zip-000.broken'
-stdout ./roms/2-48.zip: add `./roms/good-2-48.zip/04.rom' as `04.rom'
-stdout ./roms/2-48.zip: add `./roms/good-2-48.zip/08.rom' as `08.rom'
-stdout ./roms/good-2-48.zip: delete used file `04.rom'
-stdout ./roms/good-2-48.zip: delete used file `08.rom'
-stdout ./roms/good-2-48.zip: remove empty archive
-stderr error opening zip archive `./roms/2-48.zip': Not a zip archive
-stderr error creating zip archive `./roms/2-48.zip': Not a zip archive
+stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/good-2-48.zip'
+stdout rom  08.rom        size       8  crc 3656897d: is in `roms/good-2-48.zip'
+stdout roms/2-48.zip: rename broken zip to `roms/2-48.zip-000.broken'
+stdout roms/2-48.zip: add `roms/good-2-48.zip/04.rom' as `04.rom'
+stdout roms/2-48.zip: add `roms/good-2-48.zip/08.rom' as `08.rom'
+stdout roms/good-2-48.zip: delete used file `04.rom'
+stdout roms/good-2-48.zip: delete used file `08.rom'
+stdout roms/good-2-48.zip: remove empty archive
+stderr error opening zip archive `roms/2-48.zip': Not a zip archive
+stderr error creating zip archive `roms/2-48.zip': Not a zip archive

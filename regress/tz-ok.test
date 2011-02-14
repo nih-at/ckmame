@@ -4,4 +4,4 @@ args -FKLivc --torrentzip 2-48
 file roms/2-48.zip 2-48-ok.zip 2-48-ok.tzip
 stdout In game 2-48:
 stdout game 2-48                                    : correct
-stdout ./roms/2-48.zip: torrentzipping
+stdout roms/2-48.zip: torrentzipping

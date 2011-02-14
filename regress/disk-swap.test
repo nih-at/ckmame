@@ -9,11 +9,11 @@ file-new needed/bf5c9c39eb49bcf5a55a06dbb4deccb3-000.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: wrong checksum
-stdout image ./roms/108-5.chd: needed elsewhere
-stdout ./roms/108-5.chd: save needed image
+stdout image roms/108-5.chd: needed elsewhere
+stdout roms/108-5.chd: save needed image
 stdout In game disk-2:
 stdout game disk-2                                  : correct
 stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: is at `needed/d9cedd2875a8b4e11de39b0fe935e323-000.chd'
-stdout image ./roms/108-2.chd: needed elsewhere
-stdout ./roms/108-2.chd: save needed image
-stdout rename `needed/d9cedd2875a8b4e11de39b0fe935e323-000.chd' to `./roms/108-2.chd'
+stdout image roms/108-2.chd: needed elsewhere
+stdout roms/108-2.chd: save needed image
+stdout rename `needed/d9cedd2875a8b4e11de39b0fe935e323-000.chd' to `roms/108-2.chd'

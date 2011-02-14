@@ -79,59 +79,52 @@ find_superfluous(const char *dbname)
 	listd = NULL;
     }
 
-    init_rompath();
-
     found = parray_new();
 
-    for (i=0; rompath[i]; i++) {
-	if ((len_dir=snprintf(dirname, sizeof(dirname), "%s/%s", rompath[i],
-			      get_directory(file_type))) > (int)sizeof(dirname)-1) {
-	    myerror(ERRDEF, "ROMPATH entry too long, skipping: `%s'",
-		    rompath[i]);
+    len_dir = snprintf(dirname, sizeof(dirname), "%s",
+		       get_directory(file_type));
+    len_dir += 1; /* trailing '/' */
+    if ((dir=dir_open(dirname, 0)) == NULL) {
+	myerror(ERRDEF, "directory `%s' not found", dirname);
+	return found;
+    }
+
+    while ((err=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+	if (err == DIR_ERROR) {
+	    /* XXX: handle error */
 	    continue;
 	}
-	len_dir += 1; /* trailing '/' */
-	if ((dir=dir_open(dirname, 0)) == NULL)
-	    continue;
 
-	while ((err=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	    if (err == DIR_ERROR) {
-		/* XXX: handle error */
-		continue;
+	len_name = strlen(b+len_dir);
+
+	if (len_name > 4) {
+	    p = b+len_dir+len_name-4;
+	    if (strcmp(p, ".zip") == 0) {
+		*p = '\0';
+		lst = listf;
 	    }
-
-	    len_name = strlen(b+len_dir);
-
-	    if (len_name > 4) {
-		p = b+len_dir+len_name-4;
-		if (strcmp(p, ".zip") == 0) {
-		    *p = '\0';
-		    lst = listf;
-		}
-		else if (strcmp(p, ".chd") == 0) {
-		    *p = '\0';
-		    lst = listd;
-		}
-		else {
-		    p = NULL;
-		    lst = listd;
-		}
+	    else if (strcmp(p, ".chd") == 0) {
+		*p = '\0';
+		lst = listd;
 	    }
 	    else {
 		p = NULL;
 		lst = listd;
 	    }
-
-	    if (lst == NULL
-		|| parray_index_sorted(lst, b+len_dir, strcmp) == -1) {
-		if (p)
-		    *p = '.';
-		
-		parray_push(found, xstrdup(b));
-	    }
 	}
-	dir_close(dir);
+	else {
+	    p = NULL;
+	    lst = listd;
+	}
+
+	if (lst == NULL || parray_index_sorted(lst, b+len_dir, strcmp) == -1) {
+	    if (p)
+		*p = '.';
+		
+	    parray_push(found, xstrdup(b));
+	}
     }
+    dir_close(dir);
 
     if (parray_length(found) > 0)
 	parray_sort_unique(found, strcmp);

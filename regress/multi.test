@@ -6,8 +6,8 @@ file roms/1-8.zip 2-48-ok.zip 1-8-ok.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout file 08.rom        size       8  crc 3656897d: not used
-stdout ./roms/1-4.zip: delete unused file `08.rom'
+stdout roms/1-4.zip: delete unused file `08.rom'
 stdout In game 1-8:
 stdout game 1-8                                     : correct
 stdout file 04.rom        size       4  crc d87f7e0c: not used
-stdout ./roms/1-8.zip: delete unused file `04.rom'
+stdout roms/1-8.zip: delete unused file `04.rom'

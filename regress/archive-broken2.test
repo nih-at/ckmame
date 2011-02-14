@@ -4,4 +4,4 @@ args -FKLivc 1-4
 file roms/2-48.zip Makefile.am Makefile.am
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found
-stderr error opening zip archive `./roms/2-48.zip': Not a zip archive
+stderr error opening zip archive `roms/2-48.zip': Not a zip archive

@@ -6,4 +6,4 @@ file-new needed/3656897d-000.zip 1-8-ok.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
-stdout ./roms/1-4.zip: save needed file `08.rom'
+stdout roms/1-4.zip: save needed file `08.rom'

@@ -5,6 +5,6 @@ file-new roms/1-4.zip 1-4-ok.zip
 file-del needed/3656897d-000.zip 1-4-ok.zip
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in `needed/3656897d-000.zip'
-stdout ./roms/1-4.zip: add `needed/3656897d-000.zip/04.rom' as `04.rom'
+stdout roms/1-4.zip: add `needed/3656897d-000.zip/04.rom' as `04.rom'
 stdout needed/3656897d-000.zip: delete used file `04.rom'
 stdout needed/3656897d-000.zip: remove empty archive
