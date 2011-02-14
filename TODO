@@ -7,7 +7,6 @@ tests:
 * dumpgame
 * mkmamedb tests
   * two different roms with same name (error)
-  * XML parsing
   * /prog from command line
   * /prog from file
   * broken input
