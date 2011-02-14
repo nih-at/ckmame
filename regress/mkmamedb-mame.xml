@@ -1,0 +1,891 @@
+<?xml version="1.0"?>
+<!DOCTYPE mame [
+<!ELEMENT mame (game+)>
+	<!ATTLIST mame build CDATA #IMPLIED>
+	<!ATTLIST mame debug (yes|no) "no">
+	<!ATTLIST mame mameconfig CDATA #REQUIRED>
+	<!ELEMENT game (description, year?, manufacturer, biosset*, rom*, disk*, sample*, chip*, display*, sound?, input?, dipswitch*, configuration*, category*, adjuster*, driver?, device*, softwarelist*)>
+		<!ATTLIST game name CDATA #REQUIRED>
+		<!ATTLIST game sourcefile CDATA #IMPLIED>
+		<!ATTLIST game isbios (yes|no) "no">
+		<!ATTLIST game runnable (yes|no) "yes">
+		<!ATTLIST game cloneof CDATA #IMPLIED>
+		<!ATTLIST game romof CDATA #IMPLIED>
+		<!ATTLIST game sampleof CDATA #IMPLIED>
+		<!ELEMENT description (#PCDATA)>
+		<!ELEMENT year (#PCDATA)>
+		<!ELEMENT manufacturer (#PCDATA)>
+		<!ELEMENT biosset EMPTY>
+			<!ATTLIST biosset name CDATA #REQUIRED>
+			<!ATTLIST biosset description CDATA #REQUIRED>
+			<!ATTLIST biosset default (yes|no) "no">
+		<!ELEMENT rom EMPTY>
+			<!ATTLIST rom name CDATA #REQUIRED>
+			<!ATTLIST rom bios CDATA #IMPLIED>
+			<!ATTLIST rom size CDATA #REQUIRED>
+			<!ATTLIST rom crc CDATA #IMPLIED>
+			<!ATTLIST rom md5 CDATA #IMPLIED>
+			<!ATTLIST rom sha1 CDATA #IMPLIED>
+			<!ATTLIST rom merge CDATA #IMPLIED>
+			<!ATTLIST rom region CDATA #IMPLIED>
+			<!ATTLIST rom offset CDATA #IMPLIED>
+			<!ATTLIST rom status (baddump|nodump|good) "good">
+			<!ATTLIST rom optional (yes|no) "no">
+		<!ELEMENT disk EMPTY>
+			<!ATTLIST disk name CDATA #REQUIRED>
+			<!ATTLIST disk md5 CDATA #IMPLIED>
+			<!ATTLIST disk sha1 CDATA #IMPLIED>
+			<!ATTLIST disk merge CDATA #IMPLIED>
+			<!ATTLIST disk region CDATA #IMPLIED>
+			<!ATTLIST disk index CDATA #IMPLIED>
+			<!ATTLIST disk status (baddump|nodump|good) "good">
+			<!ATTLIST disk optional (yes|no) "no">
+		<!ELEMENT sample EMPTY>
+			<!ATTLIST sample name CDATA #REQUIRED>
+		<!ELEMENT chip EMPTY>
+			<!ATTLIST chip name CDATA #REQUIRED>
+			<!ATTLIST chip tag CDATA #IMPLIED>
+			<!ATTLIST chip type (cpu|audio) #REQUIRED>
+			<!ATTLIST chip clock CDATA #IMPLIED>
+		<!ELEMENT display EMPTY>
+			<!ATTLIST display type (raster|vector|lcd|unknown) #REQUIRED>
+			<!ATTLIST display rotate (0|90|180|270) #REQUIRED>
+			<!ATTLIST display flipx (yes|no) "no">
+			<!ATTLIST display width CDATA #IMPLIED>
+			<!ATTLIST display height CDATA #IMPLIED>
+			<!ATTLIST display refresh CDATA #REQUIRED>
+			<!ATTLIST display pixclock CDATA #IMPLIED>
+			<!ATTLIST display htotal CDATA #IMPLIED>
+			<!ATTLIST display hbend CDATA #IMPLIED>
+			<!ATTLIST display hbstart CDATA #IMPLIED>
+			<!ATTLIST display vtotal CDATA #IMPLIED>
+			<!ATTLIST display vbend CDATA #IMPLIED>
+			<!ATTLIST display vbstart CDATA #IMPLIED>
+		<!ELEMENT sound EMPTY>
+			<!ATTLIST sound channels CDATA #REQUIRED>
+		<!ELEMENT input (control*)>
+			<!ATTLIST input service (yes|no) "no">
+			<!ATTLIST input tilt (yes|no) "no">
+			<!ATTLIST input players CDATA #REQUIRED>
+			<!ATTLIST input buttons CDATA #IMPLIED>
+			<!ATTLIST input coins CDATA #IMPLIED>
+			<!ELEMENT control EMPTY>
+				<!ATTLIST control type CDATA #REQUIRED>
+				<!ATTLIST control minimum CDATA #IMPLIED>
+				<!ATTLIST control maximum CDATA #IMPLIED>
+				<!ATTLIST control sensitivity CDATA #IMPLIED>
+				<!ATTLIST control keydelta CDATA #IMPLIED>
+				<!ATTLIST control reverse (yes|no) "no">
+		<!ELEMENT dipswitch (dipvalue*)>
+			<!ATTLIST dipswitch name CDATA #REQUIRED>
+			<!ATTLIST dipswitch tag CDATA #REQUIRED>
+			<!ATTLIST dipswitch mask CDATA #REQUIRED>
+			<!ELEMENT dipvalue EMPTY>
+				<!ATTLIST dipvalue name CDATA #REQUIRED>
+				<!ATTLIST dipvalue value CDATA #REQUIRED>
+				<!ATTLIST dipvalue default (yes|no) "no">
+		<!ELEMENT configuration (confsetting*)>
+			<!ATTLIST configuration name CDATA #REQUIRED>
+			<!ATTLIST configuration tag CDATA #REQUIRED>
+			<!ATTLIST configuration mask CDATA #REQUIRED>
+			<!ELEMENT confsetting EMPTY>
+				<!ATTLIST confsetting name CDATA #REQUIRED>
+				<!ATTLIST confsetting value CDATA #REQUIRED>
+				<!ATTLIST confsetting default (yes|no) "no">
+		<!ELEMENT category (item*)>
+			<!ATTLIST category name CDATA #REQUIRED>
+			<!ELEMENT item EMPTY>
+				<!ATTLIST item name CDATA #REQUIRED>
+				<!ATTLIST item default (yes|no) "no">
+		<!ELEMENT adjuster EMPTY>
+			<!ATTLIST adjuster name CDATA #REQUIRED>
+			<!ATTLIST adjuster default CDATA #REQUIRED>
+		<!ELEMENT driver EMPTY>
+			<!ATTLIST driver status (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver emulation (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver color (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver sound (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver graphic (good|imperfect|preliminary) #REQUIRED>
+			<!ATTLIST driver cocktail (good|imperfect|preliminary) #IMPLIED>
+			<!ATTLIST driver protection (good|imperfect|preliminary) #IMPLIED>
+			<!ATTLIST driver savestate (supported|unsupported) #REQUIRED>
+			<!ATTLIST driver palettesize CDATA #REQUIRED>
+		<!ELEMENT device (instance*, extension*)>
+			<!ATTLIST device type CDATA #REQUIRED>
+			<!ATTLIST device tag CDATA #IMPLIED>
+			<!ATTLIST device mandatory CDATA #IMPLIED>
+			<!ATTLIST device interface CDATA #IMPLIED>
+			<!ELEMENT instance EMPTY>
+				<!ATTLIST instance name CDATA #REQUIRED>
+				<!ATTLIST instance briefname CDATA #REQUIRED>
+			<!ELEMENT extension EMPTY>
+				<!ATTLIST extension name CDATA #REQUIRED>
+		<!ELEMENT softwarelist EMPTY>
+			<!ATTLIST softwarelist name CDATA #REQUIRED>
+			<!ATTLIST softwarelist status (original|compatible) #REQUIRED>
+]>
+
+<mame build="0.141 (Feb  3 2011)" debug="no" mameconfig="10">
+	<game name="puckman" sourcefile="pacman.c">
+		<description>PuckMan (Japan set 1)</description>
+		<year>1980</year>
+		<manufacturer>Namco</manufacturer>
+		<rom name="namcopac.6e" size="4096" crc="fee263b3" sha1="87117ba5082cd7a615b4ec7c02dd819003fbd669" region="maincpu" offset="0"/>
+		<rom name="namcopac.6f" size="4096" crc="39d1fc83" sha1="326dbbf94c6fa2e96613dedb53702f8832b47d59" region="maincpu" offset="1000"/>
+		<rom name="namcopac.6h" size="4096" crc="02083b03" sha1="7e1945f6eb51f2e51806d0439f975f7a2889b9b8" region="maincpu" offset="2000"/>
+		<rom name="namcopac.6j" size="4096" crc="7a36fe55" sha1="01b4c38108d9dc4e48da4f8d685248e1e6821377" region="maincpu" offset="3000"/>
+		<rom name="pacman.5e" size="4096" crc="0c944964" sha1="06ef227747a440831c9a3a613b76693d52a2f0a9" region="gfx1" offset="0"/>
+		<rom name="pacman.5f" size="4096" crc="958fedf9" sha1="4a937ac02216ea8c96477d4a15522070507fb599" region="gfx1" offset="1000"/>
+		<rom name="82s123.7f" size="32" crc="2fc650bd" sha1="8d0268dee78e47c712202b0ec4f1f51109b1f2a5" region="proms" offset="0"/>
+		<rom name="82s126.4a" size="256" crc="3eb3a8e4" sha1="19097b5f60d1030f8b82d9f1d3a241f93e5c75d6" region="proms" offset="20"/>
+		<rom name="82s126.1m" size="256" crc="a9cc86bf" sha1="bbcec0570aeceb582ff8238a4bc8546a23430081" region="namco" offset="0"/>
+		<rom name="82s126.3m" size="256" crc="77245b66" sha1="0c4d0bee858b97632411c440bea6948a74759746" region="namco" offset="100"/>
+		<chip type="cpu" tag="maincpu" name="Z80" clock="3072000"/>
+		<chip type="audio" tag="namco" name="Namco" clock="96000"/>
+		<display type="raster" rotate="90" width="288" height="224" refresh="60.606061" pixclock="6144000" htotal="384" hbend="0" hbstart="288" vtotal="264" vbend="0" vbstart="224" />
+		<sound channels="1"/>
+		<input players="2" buttons="1" coins="2" service="yes">
+			<control type="joy4way"/>
+		</input>
+		<dipswitch name="Rack Test (Cheat)" tag="IN0" mask="16">
+			<dipvalue name="Off" value="16" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Service Mode" tag="IN1" mask="16">
+			<dipvalue name="Off" value="16" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Cabinet" tag="IN1" mask="128">
+			<dipvalue name="Upright" value="128" default="yes"/>
+			<dipvalue name="Cocktail" value="0"/>
+		</dipswitch>
+		<dipswitch name="Coinage" tag="DSW1" mask="3">
+			<dipvalue name="2 Coins/1 Credit" value="3"/>
+			<dipvalue name="1 Coin/1 Credit" value="1" default="yes"/>
+			<dipvalue name="1 Coin/2 Credits" value="2"/>
+			<dipvalue name="Free Play" value="0"/>
+		</dipswitch>
+		<dipswitch name="Lives" tag="DSW1" mask="12">
+			<dipvalue name="1" value="0"/>
+			<dipvalue name="2" value="4"/>
+			<dipvalue name="3" value="8" default="yes"/>
+			<dipvalue name="5" value="12"/>
+		</dipswitch>
+		<dipswitch name="Bonus Life" tag="DSW1" mask="48">
+			<dipvalue name="10000" value="0" default="yes"/>
+			<dipvalue name="15000" value="16"/>
+			<dipvalue name="20000" value="32"/>
+			<dipvalue name="None" value="48"/>
+		</dipswitch>
+		<dipswitch name="Difficulty" tag="DSW1" mask="64">
+			<dipvalue name="Normal" value="64" default="yes"/>
+			<dipvalue name="Hard" value="0"/>
+		</dipswitch>
+		<dipswitch name="Ghost Names" tag="DSW1" mask="128">
+			<dipvalue name="Normal" value="128" default="yes"/>
+			<dipvalue name="Alternate" value="0"/>
+		</dipswitch>
+		<configuration name="2x Speed Cheat" tag="FAKE" mask="6">
+			<confsetting name="Disabled" value="0" default="yes"/>
+			<confsetting name="Enabled Always" value="2"/>
+			<confsetting name="Enabled with Button" value="4"/>
+		</configuration>
+		<driver status="good" emulation="good" color="good" sound="good" graphic="good" savestate="supported" palettesize="512"/>
+	</game>
+	<game name="csplayh5" sourcefile="csplayh5.c">
+		<description>Mahjong Hanafuda Cosplay Tengoku 5 (Japan)</description>
+		<year>1998</year>
+		<manufacturer>Nichibutsu</manufacturer>
+		<rom name="2.ic3" size="131072" crc="980bf3b0" sha1="89da7354552f30aaa9d46442972c060b4b0f8979" region="maincpu" offset="0"/>
+		<rom name="1.ic2" size="131072" crc="81ca49a4" sha1="601b6802ab85be61f45a64f5b4c7e1f1ae5ee887" region="maincpu" offset="1"/>
+		<rom name="daughter.bin" size="131072" crc="36135792" sha1="1b9c50bd02df8227b228b35cc485efd5a13ec639" region="subcpu" offset="0"/>
+		<rom name="11.ic51" size="131072" crc="0b920806" sha1="95f50ebfb296ba29aaa8079a41f5362cb9e879cc" region="audiocpu" offset="0"/>
+		<rom name="3.ic40" size="524288" crc="895b5e1f" sha1="9398ee95d391f74d62fe641cb75311f31d4d1c8d" region="blit_gfx" offset="0"/>
+		<rom name="4.ic41" size="524288" crc="113d7e96" sha1="f3fb9c719544417a6a018b82f07c65bf73de21ff" region="blit_gfx" offset="1"/>
+		<disk name="csplayh5" sha1="ce4883ce1351ce5299e41bfbd9a5ae8078b82b8c" region="dvd" index="0"/>
+		<chip type="cpu" tag="maincpu" name="68000" clock="16000000"/>
+		<chip type="cpu" tag="audiocpu" name="Z80" clock="8000000"/>
+		<chip type="audio" tag="ymsnd" name="YM3812" clock="4000000"/>
+		<chip type="audio" tag="dac1" name="DAC"/>
+		<chip type="audio" tag="dac2" name="DAC"/>
+		<display type="raster" rotate="0" width="544" height="480" refresh="60.000000" />
+		<sound channels="1"/>
+		<input players="2" coins="2" service="yes">
+		</input>
+		<dipswitch name="DSWA" tag="DSW" mask="1">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="1"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="2">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="2"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="4">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="4"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="8">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="8"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="16">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="16"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="32">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="32"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="64">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="64"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="128">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="128"/>
+		</dipswitch>
+		<dipswitch name="DSWB" tag="DSW" mask="256">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="256"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="512">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="512"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="1024">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="1024"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="2048">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="2048"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="4096">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="4096"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="8192">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="8192"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="16384">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="16384"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="32768">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="32768"/>
+		</dipswitch>
+		<dipswitch name="SYSA" tag="SYSTEM" mask="4">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="4" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="8">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="8" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="16">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="16" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="32">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="32" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="64">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="64" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="128">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="128" default="yes"/>
+		</dipswitch>
+		<dipswitch name="SYSB" tag="SYSTEM" mask="256">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="256" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="512">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="512" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="1024">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="1024" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="2048">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="2048" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="4096">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="4096" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="8192">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="8192" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="16384">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="16384" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="SYSTEM" mask="32768">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="32768" default="yes"/>
+		</dipswitch>
+		<driver status="preliminary" emulation="preliminary" color="good" sound="good" graphic="good" savestate="unsupported" palettesize="512"/>
+	</game>
+	<game name="cobra" sourcefile="deco_ld.c">
+		<description>Cobra Command (Data East LD)</description>
+		<year>1984</year>
+		<manufacturer>Data East</manufacturer>
+		<rom name="au03-2" size="8192" crc="8f0a8fba" sha1="8e11d2bd665a5ca6b3bb11aa2b707458c1534327" region="maincpu" offset="8000"/>
+		<rom name="au02-2" size="8192" crc="7db11acf" sha1="1eebae0741f5735bc8966f3c31a9c07dac2e3916" region="maincpu" offset="a000"/>
+		<rom name="au01-2" size="8192" crc="523dd8f6" sha1="47bd4c9b2272e9a710e6e97f2505075df68101ed" region="maincpu" offset="c000"/>
+		<rom name="au00-2" size="8192" crc="6c0f1f16" sha1="ed05d3eaa24e84b1dfb4e1eb5f69b23e4a1494ba" region="maincpu" offset="e000"/>
+		<rom name="au0a" size="8192" crc="6aaedcf3" sha1="52dc913eecf8a159784d500217cffd7a6d8eb45c" region="gfx1" offset="0"/>
+		<rom name="au0b" size="8192" crc="92247877" sha1="f9bb0c20212ab13caabfb5beb9b6afc807bc9555" region="gfx1" offset="4000"/>
+		<rom name="au0c" size="8192" crc="d00a2762" sha1="84d4329b39b9fd30682b7efa5cb2744934c5ee5c" region="gfx1" offset="8000"/>
+		<rom name="au07" size="8192" crc="d4bf12a5" sha1="e172f69ae02ac2670b70af0cfcf3887dd99c2761" region="gfx1" offset="2000"/>
+		<rom name="au08" size="8192" crc="63158274" sha1="c728e8ba0a11ea67cf508877ad74a3aab9ef26fc" region="gfx1" offset="6000"/>
+		<rom name="au09" size="8192" crc="74e93394" sha1="7a1470cf2008b1bef8d950939b758707297b3655" region="gfx1" offset="a000"/>
+		<rom name="z03_1001_vyw-053_v1-0.bin" size="8192" crc="31ec4687" sha1="52f91c304a878ba02b2fa1cda1a9489d6dd5a34f" region="ldv1000" offset="0"/>
+		<disk name="cobra" sha1="8390498294aca97a5d1769032e7b115d1a42f5d3" region="laserdisc" index="0"/>
+		<chip type="cpu" tag="maincpu" name="M6502" clock="4000000"/>
+		<chip type="cpu" tag="laserdisc:ldv1000" name="Z80" clock="2500000"/>
+		<chip type="audio" tag="ay1" name="AY-3-8910A" clock="1500000"/>
+		<chip type="audio" tag="ay2" name="AY-3-8910A" clock="1500000"/>
+		<chip type="audio" tag="ldsound" name="Laserdisc Analog"/>
+		<display type="raster" rotate="0" width="704" height="480" refresh="59.940052" pixclock="28636360" htotal="910" hbend="0" hbstart="704" vtotal="525" vbend="44" vbstart="524" />
+		<sound channels="2"/>
+		<input players="1">
+		</input>
+		<dipswitch name="SYS0" tag="IN0" mask="1">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="1"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN0" mask="2">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="2"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN0" mask="4">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="4"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN0" mask="8">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="8"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN0" mask="16">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="16"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN0" mask="32">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="32"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN0" mask="64">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="64"/>
+		</dipswitch>
+		<dipswitch name="SYS1" tag="IN1" mask="1">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="1"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN1" mask="2">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="2"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN1" mask="4">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="4"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN1" mask="8">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="8"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN1" mask="16">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="16"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN1" mask="32">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="32"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN1" mask="64">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="64"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN1" mask="128">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="128"/>
+		</dipswitch>
+		<dipswitch name="SYS2" tag="IN2" mask="1">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="1"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN2" mask="2">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="2"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN2" mask="4">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="4"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN2" mask="8">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="8"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN2" mask="16">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="16"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN2" mask="32">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="32"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN2" mask="64">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="64"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN2" mask="128">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="128"/>
+		</dipswitch>
+		<dipswitch name="SYS3" tag="IN3" mask="1">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="1"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN3" mask="2">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="2"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN3" mask="4">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="4"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN3" mask="8">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="8"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN3" mask="16">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="16"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN3" mask="32">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="32"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN3" mask="64">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="64"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN3" mask="128">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="128"/>
+		</dipswitch>
+		<dipswitch name="SYS4" tag="IN4" mask="1">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="1"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN4" mask="2">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="2"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN4" mask="4">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="4"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN4" mask="8">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="8"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN4" mask="16">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="16"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN4" mask="32">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="32"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN4" mask="64">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="64"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN4" mask="128">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="128"/>
+		</dipswitch>
+		<dipswitch name="SYS5" tag="IN5" mask="1">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="1"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN5" mask="2">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="2"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN5" mask="4">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="4"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN5" mask="8">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="8"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN5" mask="16">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="16"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN5" mask="32">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="32"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN5" mask="64">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="64"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="IN5" mask="128">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="128"/>
+		</dipswitch>
+		<driver status="preliminary" emulation="preliminary" color="good" sound="good" graphic="good" savestate="unsupported" palettesize="512"/>
+	</game>
+	<game name="safarir" sourcefile="safarir.c">
+		<description>Safari Rally (Japan)</description>
+		<year>1979</year>
+		<manufacturer>SNK</manufacturer>
+		<rom name="rl-01.9" size="1024" crc="cf7703c9" sha1="b4182df9332b355edaa518462217a6e31e1c07b2" region="maincpu" offset="0"/>
+		<rom name="rl-02.1" size="1024" crc="1013ecd3" sha1="2fe367db8ca367b36c5378cb7d5ff918db243c78" region="maincpu" offset="400"/>
+		<rom name="rl-03.10" size="1024" crc="84545894" sha1="377494ceeac5ad58b70f77b2b27b609491cb7ffd" region="maincpu" offset="800"/>
+		<rom name="rl-04.2" size="1024" crc="5dd12f96" sha1="a80ac0705648f0807ea33e444fdbea450bf23f85" region="maincpu" offset="c00"/>
+		<rom name="rl-05.11" size="1024" crc="935ed469" sha1="052a59df831dcc2c618e9e5e5fdfa47548550596" region="maincpu" offset="1000"/>
+		<rom name="rl-06.3" size="1024" crc="24c1cd42" sha1="fe32ecea77a3777f8137ca248b8f371db37b8b85" region="maincpu" offset="1400"/>
+		<rom name="rl-08.43" size="1024" crc="d6a50aac" sha1="0a0c2cefc556e4e15085318fcac485b82bac2416" region="gfx1" offset="0"/>
+		<rom name="rl-07.40" size="1024" crc="ba525203" sha1="1c261cc1259787a7a248766264fefe140226e465" region="gfx2" offset="0"/>
+		<sample name="sound1-1.wav"/>
+		<sample name="sound1-2.wav"/>
+		<sample name="sound2.wav"/>
+		<sample name="sound3.wav"/>
+		<sample name="sound4-1.wav"/>
+		<sample name="sound4-2.wav"/>
+		<sample name="sound5-1.wav"/>
+		<sample name="sound5-2.wav"/>
+		<sample name="sound6.wav"/>
+		<sample name="sound7.wav"/>
+		<sample name="sound8.wav"/>
+		<chip type="cpu" tag="maincpu" name="8085A" clock="2250000"/>
+		<chip type="audio" tag="samples" name="Samples"/>
+		<display type="raster" rotate="90" width="256" height="208" refresh="60.000000" pixclock="3932160" htotal="256" hbend="0" hbstart="256" vtotal="256" vbend="0" vbstart="208" />
+		<sound channels="1"/>
+		<input players="1" buttons="1" coins="1" service="yes">
+			<control type="joy2way"/>
+		</input>
+		<dipswitch name="Lives" tag="DSW" mask="3">
+			<dipvalue name="3" value="0" default="yes"/>
+			<dipvalue name="4" value="1"/>
+			<dipvalue name="5" value="2"/>
+			<dipvalue name="6" value="3"/>
+		</dipswitch>
+		<dipswitch name="Acceleration Rate" tag="DSW" mask="12">
+			<dipvalue name="Slowest" value="0"/>
+			<dipvalue name="Slow" value="4" default="yes"/>
+			<dipvalue name="Fast" value="8"/>
+			<dipvalue name="Fastest" value="12"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="16">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="16"/>
+		</dipswitch>
+		<dipswitch name="Bonus Life" tag="DSW" mask="96">
+			<dipvalue name="3000" value="0"/>
+			<dipvalue name="5000" value="32" default="yes"/>
+			<dipvalue name="7000" value="64"/>
+			<dipvalue name="9000" value="96"/>
+		</dipswitch>
+		<driver status="imperfect" emulation="good" color="good" sound="imperfect" graphic="good" savestate="supported" palettesize="16"/>
+	</game>
+	<game name="cobram3" sourcefile="gottlieb.c" cloneof="cobra" romof="cobra">
+		<description>Cobra Command (M.A.C.H. 3 hardware)</description>
+		<year>1984</year>
+		<manufacturer>Data East</manufacturer>
+		<rom name="bh03" size="8192" crc="755cbbf5" sha1="e3ea146f8c344af1e9bf51548ae4902cb09e589a" region="maincpu" offset="8000"/>
+		<rom name="bh02" size="8192" crc="928ef670" sha1="6f56454aaf76418ae94da2bd16b4e8309aca29a6" region="maincpu" offset="a000"/>
+		<rom name="bh01" size="8192" crc="7d86ab08" sha1="26b7eb089ca3fe3f8b1531316ce8f95e33b380e5" region="maincpu" offset="c000"/>
+		<rom name="bh00" size="8192" crc="c19ad038" sha1="4d20ae70d8ad1eaa61cb91d7a0cff6932fce30d2" region="maincpu" offset="e000"/>
+		<rom name="m3drom1.bin" size="4096" crc="a6e29212" sha1="a73aafc2efa99e9ae0aecbb6075a10f7178ac938" region="audiocpu" offset="d000"/>
+		<rom name="bh04" size="8192" crc="c3f61bc9" sha1="d02374e6e29238def0cfb01c96c78b206f24d77e" region="speech" offset="e000"/>
+		<rom name="bh09" size="4096" crc="8c5dfac0" sha1="5be28f807c4eb9df76a8f7519086ae57953d8c6f" region="bgtiles" offset="0"/>
+		<rom name="bh0a" size="4096" crc="8b8da8dc" sha1="9f03ac0e6b6396cd44843ea394d55d79848d6a27" region="bgtiles" offset="1000"/>
+		<rom name="bh05" size="8192" crc="d8f49994" sha1="0631457264ff7f8d5fb1edc2c0211992a67c73e6" region="sprites" offset="0"/>
+		<rom name="bh08" size="8192" crc="d6439e2f" sha1="84a6e574f76313ce065d8765f21bdda8fe5a9a7b" region="sprites" offset="4000"/>
+		<rom name="bh07" size="8192" crc="f94668d2" sha1="b5c3a54cf80097ac447a8140bd5877a66712e240" region="sprites" offset="8000"/>
+		<rom name="bh06" size="8192" crc="ab6c7cf1" sha1="3625f2e00a333552036bff99af25edeac5915d78" region="sprites" offset="c000"/>
+		<rom name="pr-8210_mcu_ud6005a.bin" size="2048" crc="120fa83b" sha1="b514326ca1f52d6d89056868f9d17eabd4e3f31d" region="pr8210" offset="0"/>
+		<disk name="cobra" merge="cobra" sha1="8390498294aca97a5d1769032e7b115d1a42f5d3" region="laserdisc" index="0"/>
+		<chip type="cpu" tag="maincpu" name="8088" clock="5000000"/>
+		<chip type="cpu" tag="audiocpu" name="M6502" clock="1000000"/>
+		<chip type="cpu" tag="speech" name="M6502" clock="1000000"/>
+		<chip type="cpu" tag="laserdisc:pr8210" name="I8049" clock="4410000"/>
+		<chip type="audio" tag="dac1" name="DAC"/>
+		<chip type="audio" tag="dac2" name="DAC"/>
+		<chip type="audio" tag="ay1" name="AY-3-8913A" clock="2000000"/>
+		<chip type="audio" tag="ay2" name="AY-3-8913A" clock="2000000"/>
+		<chip type="audio" tag="spsnd" name="SP0250" clock="3120000"/>
+		<chip type="audio" tag="ldsound" name="Laserdisc Analog"/>
+		<display type="raster" rotate="0" width="704" height="480" refresh="59.940052" pixclock="28636360" htotal="910" hbend="0" hbstart="704" vtotal="525" vbend="44" vbstart="524" />
+		<sound channels="1"/>
+		<input players="1" buttons="2" coins="2" service="yes" tilt="yes">
+			<control type="joy8way"/>
+		</input>
+		<dipswitch name="Coinage" tag="DSW" mask="1">
+			<dipvalue name="2 Coins/1 Credit" value="0"/>
+			<dipvalue name="1 Coin/1 Credit" value="1" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Demo Sounds" tag="DSW" mask="2">
+			<dipvalue name="Off" value="0"/>
+			<dipvalue name="On" value="2" default="yes"/>
+		</dipswitch>
+		<dipswitch name="1st Bonus / 2nd Bonus" tag="DSW" mask="20">
+			<dipvalue name="20000 / None" value="0" default="yes"/>
+			<dipvalue name="15000 / 30000" value="16"/>
+			<dipvalue name="20000 / 40000" value="4"/>
+			<dipvalue name="30000 / 50000" value="20"/>
+		</dipswitch>
+		<dipswitch name="Lives" tag="DSW" mask="8">
+			<dipvalue name="3" value="0" default="yes"/>
+			<dipvalue name="5" value="8"/>
+		</dipswitch>
+		<dipswitch name="Difficulty" tag="DSW" mask="32">
+			<dipvalue name="Normal" value="0" default="yes"/>
+			<dipvalue name="Difficult" value="32"/>
+		</dipswitch>
+		<dipswitch name="Random 1st Level" tag="DSW" mask="64">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="64"/>
+		</dipswitch>
+		<dipswitch name="Self Test" tag="DSW" mask="128">
+			<dipvalue name="Off" value="0" default="yes"/>
+			<dipvalue name="On" value="128"/>
+		</dipswitch>
+		<dipswitch name="Service Mode" tag="IN1" mask="1">
+			<dipvalue name="Off" value="1" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="GOTTLIEB2" mask="16">
+			<dipvalue name="Off" value="16" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="GOTTLIEB2" mask="32">
+			<dipvalue name="Off" value="32" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Sound Test" tag="GOTTLIEB2" mask="64">
+			<dipvalue name="Off" value="64" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<driver status="good" emulation="good" color="good" sound="good" graphic="good" savestate="unsupported" palettesize="16"/>
+	</game>
+	<game name="eggor" sourcefile="pacman.c">
+		<description>Eggor</description>
+		<year>1983</year>
+		<manufacturer>Telko</manufacturer>
+		<rom name="1.bin" size="2048" crc="818ed154" sha1="8c0f555a3ab1d20a2c284d721b31278a0ddf9e51" region="maincpu" offset="0"/>
+		<rom name="5.bin" size="2048" crc="a4b21d93" sha1="923b7a06f9146c7bcda4cdb16b15d2bbbec95eab" region="maincpu" offset="800"/>
+		<rom name="2.bin" size="2048" crc="5d7a23ed" sha1="242fd973b0bde91c38e1f5e7f6c53d737019ec9c" region="maincpu" offset="1000"/>
+		<rom name="6.bin" size="2048" crc="e9dbca8d" sha1="b66783d68df778910cc190159aba07b476ff01af" region="maincpu" offset="1800"/>
+		<rom name="3.bin" size="2048" crc="4318ab85" sha1="eda9bb1bb8102e1c2cf838d0682732a45609f430" region="maincpu" offset="2000"/>
+		<rom name="7.bin" size="2048" crc="03214d7f" sha1="0e1b602fbdedfe81452109912fed006653bdc455" region="maincpu" offset="2800"/>
+		<rom name="4.bin" size="2048" crc="dc805be4" sha1="18604b221cd8af23ff8a05c954a42c3aa9e1948a" region="maincpu" offset="3000"/>
+		<rom name="8.bin" size="2048" crc="f9ae204b" sha1="53022d2d7b83f44c46fdcca454815cf1f65c34d1" region="maincpu" offset="3800"/>
+		<rom name="9.bin" size="2048" crc="96ad8626" sha1="f003a6e1b00a51bfe326eac18658fafd58c88f88" region="gfx1" offset="0"/>
+		<rom name="11.bin" size="2048" crc="cc324017" sha1="ea96572e3e24714033688fe7ca99af2fc707c1d3" region="gfx1" offset="800"/>
+		<rom name="10.bin" size="2048" crc="7c97f513" sha1="6f78c7cde321ea6ac51d08d0e3620653d0af87db" region="gfx1" offset="1000"/>
+		<rom name="12.bin" size="2048" crc="2e930602" sha1="4012ec0cc542061b27b9b508bedde3f2ffc11838" region="gfx1" offset="1800"/>
+		<rom name="82s123.7f" size="32" crc="2fc650bd" sha1="8d0268dee78e47c712202b0ec4f1f51109b1f2a5" region="proms" status="baddump" offset="0"/>
+		<rom name="82s126.4a" size="256" crc="3eb3a8e4" sha1="19097b5f60d1030f8b82d9f1d3a241f93e5c75d6" region="proms" status="baddump" offset="20"/>
+		<rom name="82s126.1m" size="256" crc="a9cc86bf" sha1="bbcec0570aeceb582ff8238a4bc8546a23430081" region="namco" offset="0"/>
+		<rom name="82s126.3m" size="256" crc="77245b66" sha1="0c4d0bee858b97632411c440bea6948a74759746" region="namco" offset="100"/>
+		<chip type="cpu" tag="maincpu" name="Z80" clock="3072000"/>
+		<chip type="audio" tag="namco" name="Namco" clock="96000"/>
+		<display type="raster" rotate="90" width="288" height="224" refresh="60.606061" pixclock="6144000" htotal="384" hbend="0" hbstart="288" vtotal="264" vbend="0" vbstart="224" />
+		<sound channels="1"/>
+		<input players="2" buttons="1" coins="2" service="yes" tilt="yes">
+			<control type="joy4way"/>
+		</input>
+		<dipswitch name="Service Mode" tag="IN0" mask="16">
+			<dipvalue name="Off" value="16" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Coinage" tag="DSW1" mask="3">
+			<dipvalue name="2 Coins/1 Credit" value="1"/>
+			<dipvalue name="1 Coin/1 Credit" value="3" default="yes"/>
+			<dipvalue name="1 Coin/2 Credits" value="2"/>
+			<dipvalue name="Free Play" value="0"/>
+		</dipswitch>
+		<dipswitch name="Lives" tag="DSW1" mask="12">
+			<dipvalue name="2" value="12"/>
+			<dipvalue name="3" value="8" default="yes"/>
+			<dipvalue name="4" value="4"/>
+			<dipvalue name="5" value="0"/>
+		</dipswitch>
+		<dipswitch name="Bonus Life" tag="DSW1" mask="48">
+			<dipvalue name="75000" value="48" default="yes"/>
+			<dipvalue name="100000" value="32"/>
+			<dipvalue name="125000" value="16"/>
+			<dipvalue name="150000" value="0"/>
+		</dipswitch>
+		<dipswitch name="Cabinet" tag="DSW1" mask="64">
+			<dipvalue name="Upright" value="64" default="yes"/>
+			<dipvalue name="Cocktail" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW1" mask="128">
+			<dipvalue name="Off" value="128" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<driver status="preliminary" emulation="good" color="preliminary" sound="imperfect" graphic="good" savestate="supported" palettesize="512"/>
+	</game>
+	<game name="hnageman" sourcefile="nbmj8891.c">
+		<description>AV Hanafuda Hana no Ageman (Japan 900716)</description>
+		<year>1990</year>
+		<manufacturer>Nichibutsu / AV Japan</manufacturer>
+		<rom name="2.3f" size="65536" crc="155ed09a" sha1="254f199063fe525c574032ae69d4d21b0debb4c5" region="maincpu" offset="0"/>
+		<rom name="1.3c" size="131072" crc="713b3f8f" sha1="460e9dcfc4a31f8e6d3f40ba77d6639257d9762f" region="voice" offset="0"/>
+		<rom name="3.10a" size="131072" crc="080e0daa" sha1="331137392c46fededdc55bd731c3a0bee88e59e3" region="gfx1" offset="0"/>
+		<rom name="4.10c" size="131072" crc="d297ee95" sha1="a89d438175b6f0b3af83a4706744a19c0d742904" region="gfx1" offset="20000"/>
+		<rom name="5.10d" size="131072" crc="c2eb8ced" sha1="d58ef5f7d47da4624595058c23e949e193ced40a" region="gfx1" offset="40000"/>
+		<rom name="6.10e" size="131072" crc="36106de2" sha1="15f2957c3e83d05b5706a0b98068a3d0d8d57ae9" region="gfx1" offset="60000"/>
+		<rom name="7.10h" size="131072" crc="0bb99a3a" sha1="1c896f50f74a52fcf96a40ca536502908bab85c9" region="gfx1" offset="80000"/>
+		<rom name="8.10j" size="131072" crc="23fad43a" sha1="7276b92623dc4559e62d2f4742c8a68233c1dfe5" region="gfx1" offset="a0000"/>
+		<rom name="9.10k" size="65536" crc="c995c1da" sha1="c8a1f4919296221c375763b0d9838f31ed53135d" region="gfx1" offset="c0000"/>
+		<disk name="hnageman" region="vhs" status="nodump" index="0"/>
+		<chip type="cpu" tag="maincpu" name="Z80" clock="5000000"/>
+		<chip type="audio" tag="fmsnd" name="YM3812" clock="2500000"/>
+		<chip type="audio" tag="dac" name="DAC"/>
+		<display type="raster" rotate="180" width="512" height="240" refresh="60.000000" />
+		<sound channels="1"/>
+		<input players="2" coins="1" service="yes">
+		</input>
+		<dipswitch name="Difficulty" tag="DSWA" mask="7">
+			<dipvalue name="1 (Easy)" value="7" default="yes"/>
+			<dipvalue name="2" value="6"/>
+			<dipvalue name="3" value="5"/>
+			<dipvalue name="4" value="4"/>
+			<dipvalue name="5" value="3"/>
+			<dipvalue name="6" value="2"/>
+			<dipvalue name="7" value="1"/>
+			<dipvalue name="8 (Hard)" value="0"/>
+		</dipswitch>
+		<dipswitch name="Coinage" tag="DSWA" mask="8">
+			<dipvalue name="1 Coin/1 Credit" value="8" default="yes"/>
+			<dipvalue name="1 Coin/2 Credits" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSWA" mask="16">
+			<dipvalue name="Off" value="16" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Flip Screen" tag="DSWA" mask="32">
+			<dipvalue name="Off" value="32" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSWA" mask="64">
+			<dipvalue name="Off" value="64" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSWA" mask="128">
+			<dipvalue name="Off" value="128" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSWB" mask="1">
+			<dipvalue name="Off" value="1" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSWB" mask="2">
+			<dipvalue name="Off" value="2" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Oyaken" tag="DSWB" mask="4">
+			<dipvalue name="Off" value="4"/>
+			<dipvalue name="On" value="0" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Local Rule" tag="DSWB" mask="8">
+			<dipvalue name="Off" value="8"/>
+			<dipvalue name="On" value="0" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Graphic ROM Test" tag="DSWB" mask="16">
+			<dipvalue name="Off" value="16" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSWB" mask="32">
+			<dipvalue name="Off" value="32" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSWB" mask="64">
+			<dipvalue name="Off" value="64" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSWB" mask="128">
+			<dipvalue name="Off" value="128" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Service Mode" tag="SYSTEM" mask="16">
+			<dipvalue name="Off" value="16" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<driver status="preliminary" emulation="preliminary" color="good" sound="good" graphic="good" savestate="unsupported" palettesize="256"/>
+	</game>
+	<game name="tankbatt" sourcefile="tankbatt.c">
+		<description>Tank Battalion</description>
+		<year>1980</year>
+		<manufacturer>Namco</manufacturer>
+		<rom name="tb1-1.1a" size="2048" crc="278a0b8c" sha1="11ea8fe8401b3cd986616a30a759c0ac1a5ce73b" region="maincpu" offset="0"/>
+		<rom name="tb1-2.1b" size="2048" crc="e0923370" sha1="8d3dbea877bed9f9c267d8002dc180f6eb1e5a8f" region="maincpu" offset="800"/>
+		<rom name="tb1-3.1c" size="2048" crc="85005ea4" sha1="91583081803a5ef600fb90bee34be9edd87f157e" region="maincpu" offset="1000"/>
+		<rom name="tb1-4.1d" size="2048" crc="3dfb5bcf" sha1="aa24bf74f4d5dc81baf3843196c837e0b731077b" region="maincpu" offset="1800"/>
+		<rom name="tb1-5.2k" size="2048" crc="aabd4fb1" sha1="5cff659b531d0f1b6faa503f7c06045c3a209a84" region="gfx1" offset="0"/>
+		<rom name="bct1-1.l3" size="256" crc="d17518bc" sha1="f3b0deffa586808bc59e9a24ec1699c54ebe84cc" region="proms" offset="0"/>
+		<rom name="prom.2d" size="256" region="proms" status="nodump" offset="100"/>
+		<sample name="fire.wav"/>
+		<sample name="engine1.wav"/>
+		<sample name="engine2.wav"/>
+		<sample name="explode1.wav"/>
+		<chip type="cpu" tag="maincpu" name="M6502" clock="1000000"/>
+		<chip type="audio" tag="samples" name="Samples"/>
+		<display type="raster" rotate="90" width="256" height="224" refresh="60.000000" />
+		<sound channels="1"/>
+		<input players="2" buttons="1" coins="2" service="yes" tilt="yes">
+			<control type="joy4way"/>
+		</input>
+		<dipswitch name="Service Mode" tag="P2" mask="128">
+			<dipvalue name="Off" value="128" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Cabinet" tag="DSW" mask="1">
+			<dipvalue name="Upright" value="1" default="yes"/>
+			<dipvalue name="Cocktail" value="0"/>
+		</dipswitch>
+		<dipswitch name="Coinage" tag="DSW" mask="6">
+			<dipvalue name="2 Coins/1 Credit" value="4"/>
+			<dipvalue name="1 Coin/1 Credit" value="6" default="yes"/>
+			<dipvalue name="1 Coin/2 Credits" value="2"/>
+			<dipvalue name="Free Play" value="0"/>
+		</dipswitch>
+		<dipswitch name="Bonus Life" tag="DSW" mask="24">
+			<dipvalue name="10000" value="0"/>
+			<dipvalue name="15000" value="16"/>
+			<dipvalue name="20000" value="8" default="yes"/>
+			<dipvalue name="None" value="24"/>
+		</dipswitch>
+		<dipswitch name="Lives" tag="DSW" mask="32">
+			<dipvalue name="2" value="32"/>
+			<dipvalue name="3" value="0" default="yes"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="64">
+			<dipvalue name="Off" value="64" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<dipswitch name="Unknown" tag="DSW" mask="128">
+			<dipvalue name="Off" value="128" default="yes"/>
+			<dipvalue name="On" value="0"/>
+		</dipswitch>
+		<driver status="imperfect" emulation="good" color="good" sound="imperfect" graphic="good" savestate="unsupported" palettesize="512"/>
+	</game>
+</mame>
