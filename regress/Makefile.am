@@ -21,6 +21,7 @@ TESTS=	\
 		archive-broken.test \
 		archive-broken2.test \
 		baddump.test \
+		ckmame.test \
 		cleanup.test \
 		cleanup-disk.test \
 		cleanup-implicit.test \

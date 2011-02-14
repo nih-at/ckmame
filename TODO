@@ -1,6 +1,5 @@
 tests:
 * case differences (game name / archive / rom / file in archive)
-* whether ckmame can be run (incomplete runtime library path)
 * extra cleanup done when all games checked
 * is superfluous file that needs detector cleaned up correctly?
 * dumpgame
