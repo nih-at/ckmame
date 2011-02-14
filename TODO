@@ -19,7 +19,6 @@ tests:
   * rule operations
   * [test] is superfluous file that needs detector cleaned up correctly?
 
-! [bug] roms with size 0: two bugs, tests exist
 ! [feature] chd: implement a/v decompression
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
 ! [test] detective
