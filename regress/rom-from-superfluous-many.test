@@ -14,18 +14,19 @@ file-new roms/1-8.zip 1-8-ok.zip
 file-new roms/2-44.zip 2-44-ok.zip
 file-new roms/2-48.zip 2-48-ok.zip
 file-new roms/2-4a.zip 2-4a-ok.zip
-file-new roms/zero-4.zip zero-4-ok.zip
-file-new roms/zero.zip zero-ok.zip
-file-new roms/zerobadcrc.zip zero-ok.zip
 file-new roms/baddump.zip 1-4-ok.zip
 file-new roms/clone-8.zip 1-8-ok.zip
 file-new roms/deadbeefchild.zip 1-4-ok.zip
+file-new roms/dir-in-rom-name.zip 1-4-path.zip
 file-new roms/disk-2.zip 1-4-ok.zip
 file-new roms/disk-nogood.zip 1-4-ok.zip
 file-new roms/disk-nogood2.zip 1-8-ok.zip
 file-new roms/disk.zip 1-4-ok.zip
 file-new roms/nogood-2.zip 1-8-ok.zip
 file-new roms/parent-4.zip 1-4-ok.zip
+file-new roms/zero-4.zip zero-4-ok.zip
+file-new roms/zero.zip zero-ok.zip
+file-new roms/zerobadcrc.zip zero-ok.zip
 file roms/108-5.chd 108-5.chd 108-5.chd
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4-ok.zip'
@@ -63,6 +64,9 @@ stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
 stdout roms/deadbeefchild.zip: add `roms/1-4.zip/04.rom' as `04.rom'
 stdout In game deadclonedbeef:
 stdout game deadclonedbeef                          : not a single rom found
+stdout In game dir-in-rom-name:
+stdout rom  some/path/to/file.rom  size       4  crc d87f7e0c: is in `roms/1-4.zip'
+stdout roms/dir-in-rom-name.zip: add `roms/1-4.zip/04.rom' as `some/path/to/file.rom'
 stdout In game disk:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
