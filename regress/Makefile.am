@@ -42,6 +42,7 @@ TESTS=	\
 		disk-wrong.test \
 		disk-wrong2.test \
 		double.test \
+		dumpgame-stats.test \
 		dumpgame-unknown.test \
 		gamelist-from-file.test \
 		garbage.test \
