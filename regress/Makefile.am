@@ -182,6 +182,7 @@ ZIPS=		1-4-2.zip \
 		samptest3.zip \
 		samptest3-garbage.zip \
 		zero-4-ok.zip \
+		zero-long.zip \
 		zero-ok.zip
 
 CHDS=		108-2.chd \
