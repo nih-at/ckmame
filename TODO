@@ -18,6 +18,8 @@ tests:
 
 ! [feature] chd: implement a/v decompression
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
+! [bug] cleanup reports file that were used this time as "not used"
+! [bug] cleanup after using disks reports errors because disks were moved
 ! [test] detective
 ! [bug] fix BROKEN_TESTS
 ! [bug] tries to remove disk image in extra twice (or tries to remove used?)
