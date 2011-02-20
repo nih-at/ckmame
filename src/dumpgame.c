@@ -579,9 +579,9 @@ static int
 dump_stats(int dummy)
 {
     static const char *ft_name[] = {
-	"ROM",
-	"Sample",
-	"Disk"
+	"ROMs:",
+	"Samples:",
+	"Disks:"
     };
 
     sqlite3_stmt *stmt;
@@ -599,7 +599,7 @@ dump_stats(int dummy)
 	return -1;
     }
 
-    printf("Games:\t%d\n", sqlite3_column_int(stmt, 0));
+    printf("Games:  \t%d\n", sqlite3_column_int(stmt, 0));
 
     sqlite3_finalize(stmt);
 
@@ -629,7 +629,7 @@ dump_stats(int dummy)
 	if (ft != i)
 	    continue;
 
-	printf("%ss:\t%d", ft_name[i], sqlite3_column_int(stmt, 1));
+	printf("%-8s\t%d", ft_name[i], sqlite3_column_int(stmt, 1));
 	size = sqlite3_column_int64(stmt, 2);
 	if (size > 0) {
 	    printf(" (");

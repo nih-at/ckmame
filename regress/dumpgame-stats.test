@@ -2,7 +2,7 @@ description test dumpgame statistics output
 return 0
 program dumpgame
 args /stats
-stdout Games:	28
-stdout ROMs:	66 (3298 bytes)
+stdout Games:  	28
+stdout ROMs:   	66 (3298 bytes)
 stdout Samples:	4
-stdout Disks:	5
+stdout Disks:  	5
