@@ -1,0 +1,115 @@
+>>> table dat (dat_idx, name, description, author, version)
+0|M.A.M.E.|<null>|<null>|0.141
+>>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1)
+1|0|0|namcopac.6e|<null>|0|0|4096|4276249523|<null>|<87117ba5082cd7a615b4ec7c02dd819003fbd669>
+1|0|1|namcopac.6f|<null>|0|0|4096|970062979|<null>|<326dbbf94c6fa2e96613dedb53702f8832b47d59>
+1|0|2|namcopac.6h|<null>|0|0|4096|34093827|<null>|<7e1945f6eb51f2e51806d0439f975f7a2889b9b8>
+1|0|3|namcopac.6j|<null>|0|0|4096|2050424405|<null>|<01b4c38108d9dc4e48da4f8d685248e1e6821377>
+1|0|4|pacman.5e|<null>|0|0|4096|211044708|<null>|<06ef227747a440831c9a3a613b76693d52a2f0a9>
+1|0|5|pacman.5f|<null>|0|0|4096|2509237753|<null>|<4a937ac02216ea8c96477d4a15522070507fb599>
+1|0|6|82s123.7f|<null>|0|0|32|801525949|<null>|<8d0268dee78e47c712202b0ec4f1f51109b1f2a5>
+1|0|7|82s126.4a|<null>|0|0|256|1051961572|<null>|<19097b5f60d1030f8b82d9f1d3a241f93e5c75d6>
+1|0|8|82s126.1m|<null>|0|0|256|2848753343|<null>|<bbcec0570aeceb582ff8238a4bc8546a23430081>
+1|0|9|82s126.3m|<null>|0|0|256|1998871398|<null>|<0c4d0bee858b97632411c440bea6948a74759746>
+2|0|0|2.ic3|<null>|0|0|131072|2550920112|<null>|<89da7354552f30aaa9d46442972c060b4b0f8979>
+2|0|1|1.ic2|<null>|0|0|131072|2177517988|<null>|<601b6802ab85be61f45a64f5b4c7e1f1ae5ee887>
+2|0|2|daughter.bin|<null>|0|0|131072|907237266|<null>|<1b9c50bd02df8227b228b35cc485efd5a13ec639>
+2|0|3|11.ic51|<null>|0|0|131072|194119686|<null>|<95f50ebfb296ba29aaa8079a41f5362cb9e879cc>
+2|0|4|3.ic40|<null>|0|0|524288|2304466463|<null>|<9398ee95d391f74d62fe641cb75311f31d4d1c8d>
+2|0|5|4.ic41|<null>|0|0|524288|289242774|<null>|<f3fb9c719544417a6a018b82f07c65bf73de21ff>
+2|2|0|csplayh5|<null>|0|0|<null>|<null>|<null>|<ce4883ce1351ce5299e41bfbd9a5ae8078b82b8c>
+3|0|0|au03-2|<null>|0|0|8192|2399834042|<null>|<8e11d2bd665a5ca6b3bb11aa2b707458c1534327>
+3|0|1|au02-2|<null>|0|0|8192|2108758735|<null>|<1eebae0741f5735bc8966f3c31a9c07dac2e3916>
+3|0|2|au01-2|<null>|0|0|8192|1379784950|<null>|<47bd4c9b2272e9a710e6e97f2505075df68101ed>
+3|0|3|au00-2|<null>|0|0|8192|1812930326|<null>|<ed05d3eaa24e84b1dfb4e1eb5f69b23e4a1494ba>
+3|0|4|au0a|<null>|0|0|8192|1789844723|<null>|<52dc913eecf8a159784d500217cffd7a6d8eb45c>
+3|0|5|au0b|<null>|0|0|8192|2451863671|<null>|<f9bb0c20212ab13caabfb5beb9b6afc807bc9555>
+3|0|6|au0c|<null>|0|0|8192|3490326370|<null>|<84d4329b39b9fd30682b7efa5cb2744934c5ee5c>
+3|0|7|au07|<null>|0|0|8192|3569291941|<null>|<e172f69ae02ac2670b70af0cfcf3887dd99c2761>
+3|0|8|au08|<null>|0|0|8192|1662354036|<null>|<c728e8ba0a11ea67cf508877ad74a3aab9ef26fc>
+3|0|9|au09|<null>|0|0|8192|1961440148|<null>|<7a1470cf2008b1bef8d950939b758707297b3655>
+3|0|10|z03_1001_vyw-053_v1-0.bin|<null>|0|0|8192|837568135|<null>|<52f91c304a878ba02b2fa1cda1a9489d6dd5a34f>
+3|2|0|cobra|<null>|0|0|<null>|<null>|<null>|<8390498294aca97a5d1769032e7b115d1a42f5d3>
+4|0|0|rl-01.9|<null>|0|0|1024|3480683465|<null>|<b4182df9332b355edaa518462217a6e31e1c07b2>
+4|0|1|rl-02.1|<null>|0|0|1024|269741267|<null>|<2fe367db8ca367b36c5378cb7d5ff918db243c78>
+4|0|2|rl-03.10|<null>|0|0|1024|2220120212|<null>|<377494ceeac5ad58b70f77b2b27b609491cb7ffd>
+4|0|3|rl-04.2|<null>|0|0|1024|1573990294|<null>|<a80ac0705648f0807ea33e444fdbea450bf23f85>
+4|0|4|rl-05.11|<null>|0|0|1024|2472465513|<null>|<052a59df831dcc2c618e9e5e5fdfa47548550596>
+4|0|5|rl-06.3|<null>|0|0|1024|616680770|<null>|<fe32ecea77a3777f8137ca248b8f371db37b8b85>
+4|0|6|rl-08.43|<null>|0|0|1024|3601140396|<null>|<0a0c2cefc556e4e15085318fcac485b82bac2416>
+4|0|7|rl-07.40|<null>|0|0|1024|3125957123|<null>|<1c261cc1259787a7a248766264fefe140226e465>
+4|1|0|sound1-1.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|1|sound1-2.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|2|sound2.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|3|sound3.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|4|sound4-1.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|5|sound4-2.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|6|sound5-1.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|7|sound5-2.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|8|sound6.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|9|sound7.wav|<null>|0|0|<null>|<null>|<null>|<null>
+4|1|10|sound8.wav|<null>|0|0|<null>|<null>|<null>|<null>
+5|0|0|bh03|<null>|0|0|8192|1969011701|<null>|<e3ea146f8c344af1e9bf51548ae4902cb09e589a>
+5|0|1|bh02|<null>|0|0|8192|2458842736|<null>|<6f56454aaf76418ae94da2bd16b4e8309aca29a6>
+5|0|2|bh01|<null>|0|0|8192|2105977608|<null>|<26b7eb089ca3fe3f8b1531316ce8f95e33b380e5>
+5|0|3|bh00|<null>|0|0|8192|3248148536|<null>|<4d20ae70d8ad1eaa61cb91d7a0cff6932fce30d2>
+5|0|4|m3drom1.bin|<null>|0|0|4096|2799866386|<null>|<a73aafc2efa99e9ae0aecbb6075a10f7178ac938>
+5|0|5|bh04|<null>|0|0|8192|3287686089|<null>|<d02374e6e29238def0cfb01c96c78b206f24d77e>
+5|0|6|bh09|<null>|0|0|4096|2354969280|<null>|<5be28f807c4eb9df76a8f7519086ae57953d8c6f>
+5|0|7|bh0a|<null>|0|0|4096|2341316828|<null>|<9f03ac0e6b6396cd44843ea394d55d79848d6a27>
+5|0|8|bh05|<null>|0|0|8192|3639908756|<null>|<0631457264ff7f8d5fb1edc2c0211992a67c73e6>
+5|0|9|bh08|<null>|0|0|8192|3594755631|<null>|<84a6e574f76313ce065d8765f21bdda8fe5a9a7b>
+5|0|10|bh07|<null>|0|0|8192|4182141138|<null>|<b5c3a54cf80097ac447a8140bd5877a66712e240>
+5|0|11|bh06|<null>|0|0|8192|2876013809|<null>|<3625f2e00a333552036bff99af25edeac5915d78>
+5|0|12|pr-8210_mcu_ud6005a.bin|<null>|0|0|2048|303015995|<null>|<b514326ca1f52d6d89056868f9d17eabd4e3f31d>
+5|2|0|cobra|<null>|0|0|<null>|<null>|<null>|<8390498294aca97a5d1769032e7b115d1a42f5d3>
+6|0|0|1.bin|<null>|0|0|2048|2173620564|<null>|<8c0f555a3ab1d20a2c284d721b31278a0ddf9e51>
+6|0|1|5.bin|<null>|0|0|2048|2763136403|<null>|<923b7a06f9146c7bcda4cdb16b15d2bbbec95eab>
+6|0|2|2.bin|<null>|0|0|2048|1568285677|<null>|<242fd973b0bde91c38e1f5e7f6c53d737019ec9c>
+6|0|3|6.bin|<null>|0|0|2048|3923495565|<null>|<b66783d68df778910cc190159aba07b476ff01af>
+6|0|4|3.bin|<null>|0|0|2048|1125690245|<null>|<eda9bb1bb8102e1c2cf838d0682732a45609f430>
+6|0|5|7.bin|<null>|0|0|2048|52514175|<null>|<0e1b602fbdedfe81452109912fed006653bdc455>
+6|0|6|4.bin|<null>|0|0|2048|3699399652|<null>|<18604b221cd8af23ff8a05c954a42c3aa9e1948a>
+6|0|7|8.bin|<null>|0|0|2048|4188938315|<null>|<53022d2d7b83f44c46fdcca454815cf1f65c34d1>
+6|0|8|9.bin|<null>|0|0|2048|2527954470|<null>|<f003a6e1b00a51bfe326eac18658fafd58c88f88>
+6|0|9|11.bin|<null>|0|0|2048|3425845271|<null>|<ea96572e3e24714033688fe7ca99af2fc707c1d3>
+6|0|10|10.bin|<null>|0|0|2048|2090333459|<null>|<6f78c7cde321ea6ac51d08d0e3620653d0af87db>
+6|0|11|12.bin|<null>|0|0|2048|781387266|<null>|<4012ec0cc542061b27b9b508bedde3f2ffc11838>
+6|0|12|82s123.7f|<null>|1|0|32|801525949|<null>|<8d0268dee78e47c712202b0ec4f1f51109b1f2a5>
+6|0|13|82s126.4a|<null>|1|0|256|1051961572|<null>|<19097b5f60d1030f8b82d9f1d3a241f93e5c75d6>
+6|0|14|82s126.1m|<null>|0|0|256|2848753343|<null>|<bbcec0570aeceb582ff8238a4bc8546a23430081>
+6|0|15|82s126.3m|<null>|0|0|256|1998871398|<null>|<0c4d0bee858b97632411c440bea6948a74759746>
+7|0|0|2.3f|<null>|0|0|65536|358535322|<null>|<254f199063fe525c574032ae69d4d21b0debb4c5>
+7|0|1|1.3c|<null>|0|0|131072|1899708303|<null>|<460e9dcfc4a31f8e6d3f40ba77d6639257d9762f>
+7|0|2|3.10a|<null>|0|0|131072|135138730|<null>|<331137392c46fededdc55bd731c3a0bee88e59e3>
+7|0|3|4.10c|<null>|0|0|131072|3533172373|<null>|<a89d438175b6f0b3af83a4706744a19c0d742904>
+7|0|4|5.10d|<null>|0|0|131072|3270216941|<null>|<d58ef5f7d47da4624595058c23e949e193ced40a>
+7|0|5|6.10e|<null>|0|0|131072|907046370|<null>|<15f2957c3e83d05b5706a0b98068a3d0d8d57ae9>
+7|0|6|7.10h|<null>|0|0|131072|196713018|<null>|<1c896f50f74a52fcf96a40ca536502908bab85c9>
+7|0|7|8.10j|<null>|0|0|131072|603640890|<null>|<7276b92623dc4559e62d2f4742c8a68233c1dfe5>
+7|0|8|9.10k|<null>|0|0|65536|3382034906|<null>|<c8a1f4919296221c375763b0d9838f31ed53135d>
+7|2|0|hnageman|<null>|2|0|<null>|<null>|<null>|<null>
+8|0|0|tb1-1.1a|<null>|0|0|2048|663358348|<null>|<11ea8fe8401b3cd986616a30a759c0ac1a5ce73b>
+8|0|1|tb1-2.1b|<null>|0|0|2048|3767677808|<null>|<8d3dbea877bed9f9c267d8002dc180f6eb1e5a8f>
+8|0|2|tb1-3.1c|<null>|0|0|2048|2231393956|<null>|<91583081803a5ef600fb90bee34be9edd87f157e>
+8|0|3|tb1-4.1d|<null>|0|0|2048|1039883215|<null>|<aa24bf74f4d5dc81baf3843196c837e0b731077b>
+8|0|4|tb1-5.2k|<null>|0|0|2048|2864533425|<null>|<5cff659b531d0f1b6faa503f7c06045c3a209a84>
+8|0|5|bct1-1.l3|<null>|0|0|256|3514112188|<null>|<f3b0deffa586808bc59e9a24ec1699c54ebe84cc>
+8|0|6|prom.2d|<null>|2|0|256|<null>|<null>|<null>
+8|1|0|fire.wav|<null>|0|0|<null>|<null>|<null>|<null>
+8|1|1|engine1.wav|<null>|0|0|<null>|<null>|<null>|<null>
+8|1|2|engine2.wav|<null>|0|0|<null>|<null>|<null>|<null>
+8|1|3|explode1.wav|<null>|0|0|<null>|<null>|<null>|<null>
+>>> table game (game_id, name, description, dat_idx)
+1|puckman|PuckMan (Japan set 1)|0
+2|csplayh5|Mahjong Hanafuda Cosplay Tengoku 5 (Japan)|0
+3|cobra|Cobra Command (Data East LD)|0
+4|safarir|Safari Rally (Japan)|0
+5|cobram3|Cobra Command (M.A.C.H. 3 hardware)|0
+6|eggor|Eggor|0
+7|hnageman|AV Hanafuda Hana no Ageman (Japan 900716)|0
+8|tankbatt|Tank Battalion|0
+>>> table parent (game_id, file_type, parent)
+5|0|cobra
+>>> table rule (rule_idx, start_offset, end_offset, operation)
+>>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

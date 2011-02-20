@@ -1,13 +1,10 @@
 tests:
-* dirs in rom names
 * case differences (game name / archive / rom / file in archive)
-* whether ckmame can be run (incomplete runtime library path)
 * extra cleanup done when all games checked
 * is superfluous file that needs detector cleaned up correctly?
 * dumpgame
 * mkmamedb tests
   * two different roms with same name (error)
-  * XML parsing
   * /prog from command line
   * /prog from file
   * broken input
@@ -19,9 +16,14 @@ tests:
   * rule operations
   * [test] is superfluous file that needs detector cleaned up correctly?
 
-! [bug] roms with size 0: two bugs, tests exist
 ! [feature] chd: implement a/v decompression
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
+! [bug] cleanup reports file that were used this time as "not used"
+! [bug] cleanup after using disks reports errors because disks were moved
+  Example:
+  ckmame: new/file.chd: cannot remove: No such file or directory
+  In image new/file.chd:
+  image new/file.chd: not used
 ! [test] detective
 ! [bug] fix BROKEN_TESTS
 ! [bug] tries to remove disk image in extra twice (or tries to remove used?)

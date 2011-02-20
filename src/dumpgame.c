@@ -1,6 +1,6 @@
 /*
   dumpgame.c -- print info about game (from data base)
-  Copyright (C) 1999-2009 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -78,7 +78,7 @@ char help[] = "\n\
 Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2007 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2011 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hbcD:dV"
@@ -579,9 +579,9 @@ static int
 dump_stats(int dummy)
 {
     static const char *ft_name[] = {
-	"ROM",
-	"Sample",
-	"Disk"
+	"ROMs:",
+	"Samples:",
+	"Disks:"
     };
 
     sqlite3_stmt *stmt;
@@ -599,7 +599,7 @@ dump_stats(int dummy)
 	return -1;
     }
 
-    printf("Games:\t%d\n", sqlite3_column_int(stmt, 0));
+    printf("Games:  \t%d\n", sqlite3_column_int(stmt, 0));
 
     sqlite3_finalize(stmt);
 
@@ -629,7 +629,7 @@ dump_stats(int dummy)
 	if (ft != i)
 	    continue;
 
-	printf("%ss:\t%d", ft_name[i], sqlite3_column_int(stmt, 1));
+	printf("%-8s\t%d", ft_name[i], sqlite3_column_int(stmt, 1));
 	size = sqlite3_column_int64(stmt, 2);
 	if (size > 0) {
 	    printf(" (");

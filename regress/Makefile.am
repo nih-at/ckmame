@@ -21,6 +21,7 @@ TESTS=	\
 		archive-broken.test \
 		archive-broken2.test \
 		baddump.test \
+		ckmame.test \
 		cleanup.test \
 		cleanup-disk.test \
 		cleanup-implicit.test \
@@ -42,6 +43,7 @@ TESTS=	\
 		disk-wrong.test \
 		disk-wrong2.test \
 		double.test \
+		dumpgame-stats.test \
 		dumpgame-unknown.test \
 		gamelist-from-file.test \
 		garbage.test \
@@ -66,6 +68,8 @@ TESTS=	\
 		mkmamedb-duplicate-game.test \
 		mkmamedb-duplicate-nodump.test \
 		mkmamedb-lost-parent.test \
+		mkmamedb-mame.test \
+		mkmamedb-mess.test \
 		mkmamedb-multi-dats.test \
 		mkmamedb-no-name.test \
 		mkmamedb-ok.test \
@@ -144,9 +148,7 @@ BROKEN_TESTS=	\
 		disk-nogood-copy.test \
 		disk-swapmerge.test \
 		needed-cleanup.test \
-		tochild.test \
-		zero-long.test \
-		zero-long-badcrc.test
+		tochild.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \
@@ -204,6 +206,10 @@ DBFILES=	mamedb.txt \
 		mkmamedb-lost-parent-ok.txt \
 		mkmamedb-lost-parent.dump \
 		mkmamedb-lost-parent.txt \
+		mkmamedb-mame.dump \
+		mkmamedb-mame.txt \
+		mkmamedb-mess.dump \
+		mkmamedb-mess.txt \
 		mkmamedb-no-name.dump \
 		mkmamedb-no-name.txt \
 		mkmamedb-parent-crcdiff.dump \
