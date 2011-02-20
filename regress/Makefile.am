@@ -157,6 +157,7 @@ ZIPS=		1-4-2.zip \
 		1-4-mid.zip \
 		1-4-misnamed.zip \
 		1-4-ok.zip \
+		1-4-path.zip \
 		1-8-broken.zip \
 		1-8-long.zip \
 		1-8-ok.zip \
@@ -207,9 +208,9 @@ DBFILES=	mamedb.txt \
 		mkmamedb-lost-parent.dump \
 		mkmamedb-lost-parent.txt \
 		mkmamedb-mame.dump \
-		mkmamedb-mame.txt \
+		mkmamedb-mame.xml \
 		mkmamedb-mess.dump \
-		mkmamedb-mess.txt \
+		mkmamedb-mess.xml \
 		mkmamedb-no-name.dump \
 		mkmamedb-no-name.txt \
 		mkmamedb-parent-crcdiff.dump \
