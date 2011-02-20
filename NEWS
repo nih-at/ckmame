@@ -1,4 +1,4 @@
-0.11
+0.11 (2011-02-20)
 
 - MESS Software Lists support
 - retire mkmamedb-xmame.sh, use "mame -listxml | mkmamedb" instead
