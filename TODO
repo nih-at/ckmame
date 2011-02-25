@@ -30,6 +30,9 @@ tests:
 ! [bug] diagnostics (fix?): don't process disks if checking samples
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
 ! [bug] ckmame -i fails for LD-CHD disks
++ [bug] when size is wrong but checksums match, status is "needed elsewhere".
+  should be something else, since it's not really a match (though usually it's
+  a dat error, so an extra state might be good)
 + [feature] create fix dats for missing files
 + [bug] speed up cleanup of extra dir: no checksums need to be computed
   if the crc (or size) doesn't match any known rom
