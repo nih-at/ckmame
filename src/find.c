@@ -417,7 +417,8 @@ find_in_db(sqlite3 *db, const file_t *r, const char *skip, match_t *m,
 
 	gr = game_file(g, TYPE_ROM, file_location_index(fbh));
 
-	if (hashes_cmp(file_hashes(r), file_hashes(gr)) == HASHES_CMP_MATCH) {
+	if (file_size(r) == file_size(gr)
+	    && hashes_cmp(file_hashes(r), file_hashes(gr)) == HASHES_CMP_MATCH) {
 	    status = check_match(g, gr, m);
 	}
 

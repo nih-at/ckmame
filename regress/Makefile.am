@@ -11,7 +11,8 @@ MAME_DB=mame.db
 MAME_DB2=mame2.db
 MAME_DB3=mame3.db
 MAME_DB4=mame4.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4}
+MAME_DB_8_IS_4=mame-1-8-is-4.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4}
 
 ZIPCMP=@ZIPCMP@
 
@@ -45,6 +46,7 @@ TESTS=	\
 		double.test \
 		dumpgame-stats.test \
 		dumpgame-unknown.test \
+		extra-size-mismatch.test \
 		gamelist-from-file.test \
 		garbage.test \
 		garbage2.test \
@@ -195,6 +197,7 @@ CHDS=		108-2.chd \
 		diff.chd
 
 DBFILES=	mamedb.txt \
+		mamedb-1-8-is-4.txt \
 		mamedb-2.txt \
 		mamedb-disk.txt \
 		mamedb-multi-dats.dump \
@@ -233,6 +236,9 @@ ${MAME_DB3}: ../src/mkmamedb ${srcdir}/mamedb-disk.txt
 
 ${MAME_DB4}: ../src/mkmamedb ${srcdir}/mamedb.txt ${srcdir}/mkmamedb-lost-parent-ok.txt
 	../src/mkmamedb -o ${MAME_DB4} ${srcdir}/mamedb.txt ${srcdir}/mkmamedb-lost-parent-ok.txt
+
+${MAME_DB_8_IS_4}: ../src/mkmamedb ${srcdir}/mamedb-1-8-is-4.txt
+	../src/mkmamedb -o ${MAME_DB_8_IS_4} ${srcdir}/mamedb-1-8-is-4.txt
 
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 	./dbdump ${MAME_DB} > mamedb-ok.dump

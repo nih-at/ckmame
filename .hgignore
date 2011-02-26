@@ -15,6 +15,7 @@ Makefile.in$
 ^docs/mkmamedb\.1$
 ^regress/dbdump$
 ^regress/mame[0-9]?\.db$
+^regress/mame-1-8-is-4\.db$
 ^src/ckmame$
 ^src/detective$
 ^src/dumpgame$
