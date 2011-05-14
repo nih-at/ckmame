@@ -16,6 +16,8 @@ tests:
   * rule operations
   * [test] is superfluous file that needs detector cleaned up correctly?
 
+! [feature] reorder cleanup step when renaming files to remove the copies
+  earlier; otherwise big renames on big sets don't work.
 ! [feature] chd: implement a/v decompression
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
 ! [bug] cleanup reports file that were used this time as "not used"
@@ -30,6 +32,8 @@ tests:
 ! [bug] diagnostics (fix?): don't process disks if checking samples
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
 ! [bug] ckmame -i fails for LD-CHD disks
++ [bug] -j does not remove bad roms from roms/ nor superfluous/ if they were
+  not used (however still exist); test case exists (patch)
 + [feature] create fix dats for missing files
 + [bug] speed up cleanup of extra dir: no checksums need to be computed
   if the crc (or size) doesn't match any known rom
