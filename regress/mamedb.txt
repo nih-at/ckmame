@@ -59,10 +59,10 @@ game (
 
 game (
 	name baddump
-	description "1-4 with bad dump"
+	description "bad dump"
 	manufacturer "synth"
 	year 1994
-	rom ( name 04.rom size 4 crc32 d87f7e0c flags baddump )
+	rom ( name bad.rom size 3 crc32 148c7b71 flags baddump )
 )
 
 game (

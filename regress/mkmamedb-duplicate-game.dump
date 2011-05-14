@@ -11,7 +11,7 @@
 5|0|1|08.rom|<null>|0|0|8|911640957|<null>|<111bb8b7549e3386a996845405b02164f17c7b37>
 6|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 6|0|1|0a.rom|<null>|0|0|10|189418718|<null>|<7ee80d6e0af4beff1da2df46e23901b77f2d238a>
-7|0|0|04.rom|<null>|1|0|4|3632233996|<null>|<null>
+7|0|0|bad.rom|<null>|1|0|3|344750961|<null>|<null>
 8|0|0|04.rom|<null>|0|1|4|3632233996|<null>|<null>
 8|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
 9|0|0|deadbeef|<null>|0|0|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
@@ -84,7 +84,7 @@
 4|2-44|two identical files|0
 5|2-48|two files|0
 6|2-4a|two files, one other|0
-7|baddump|1-4 with bad dump|0
+7|baddump|bad dump|0
 8|clone-8|two roms, one in parent|0
 9|deadbeef|Dead Beef|0
 10|deadbeefchild|Dead Beef Child|0

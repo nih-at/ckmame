@@ -3,6 +3,6 @@ return 0
 program dumpgame
 args /stats
 stdout Games:  	28
-stdout ROMs:   	66 (3298 bytes)
+stdout ROMs:   	66 (3297 bytes)
 stdout Samples:	4
 stdout Disks:  	5
