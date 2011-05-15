@@ -32,6 +32,7 @@ tests:
 ! [bug] diagnostics (fix?): don't process disks if checking samples
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
 ! [bug] ckmame -i fails for LD-CHD disks
++ [feature] support multiple -O arguments
 + [bug] -j does not remove bad roms from roms/ nor superfluous/ if they were
   not used (however still exist); test case exists (patch)
 + [feature] create fix dats for missing files
