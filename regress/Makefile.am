@@ -150,6 +150,7 @@ BROKEN_TESTS=	\
 		disk-nogood-copy.test \
 		disk-swapmerge.test \
 		needed-cleanup.test \
+		rom-from-unknown.test \
 		tochild.test
 
 ZIPS=		1-4-2.zip \
@@ -160,6 +161,7 @@ ZIPS=		1-4-2.zip \
 		1-4-misnamed.zip \
 		1-4-ok.zip \
 		1-4-path.zip \
+		1-4-wrong.zip \
 		1-8-broken.zip \
 		1-8-long.zip \
 		1-8-ok.zip \
