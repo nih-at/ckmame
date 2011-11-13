@@ -103,7 +103,6 @@ cmcheck features:
   + use any files from superfluous/extra dirs
 
 other features:
-- parse_xml: set line numbers
 - parse: add state checking to parse-cm.c
 - parse: check for duplicate attributes
 - tool for generating update sets from ckmame output and existing romset
