@@ -55,6 +55,7 @@ xmlu_parse(parser_source_t *ps, void *ctx,
 #else
 
 #include <libxml/xmlreader.h>
+#include "parse.h"
 
 #define XMLU_MAX_PATH	8192
 
@@ -88,6 +89,7 @@ xmlu_parse(parser_source_t *ps, void *ctx,
     path[0] = '\0';
 
     while ((ret=xmlTextReaderRead(reader)) == 1) {
+	((parser_context_t*)ctx)->lineno=xmlTextReaderGetParserLineNumber(reader);
 	switch (xmlTextReaderNodeType(reader)) {
 	case XML_READER_TYPE_ELEMENT:
 	    name = (const char *)xmlTextReaderConstName(reader);
