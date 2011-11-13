@@ -12,7 +12,8 @@ MAME_DB2=mame2.db
 MAME_DB3=mame3.db
 MAME_DB4=mame4.db
 MAME_DB_8_IS_4=mame-1-8-is-4.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4}
+MAME_DB_BADDUMP=mame-baddump.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP}
 
 ZIPCMP=@ZIPCMP@
 
@@ -202,6 +203,7 @@ CHDS=		108-2.chd \
 DBFILES=	mamedb.txt \
 		mamedb-1-8-is-4.txt \
 		mamedb-2.txt \
+		mamedb-baddump.txt \
 		mamedb-disk.txt \
 		mamedb-multi-dats.dump \
 		mamedb-ok.dump \
@@ -242,6 +244,9 @@ ${MAME_DB4}: ../src/mkmamedb ${srcdir}/mamedb.txt ${srcdir}/mkmamedb-lost-parent
 
 ${MAME_DB_8_IS_4}: ../src/mkmamedb ${srcdir}/mamedb-1-8-is-4.txt
 	../src/mkmamedb -o ${MAME_DB_8_IS_4} ${srcdir}/mamedb-1-8-is-4.txt
+
+${MAME_DB_BADDUMP}: ../src/mkmamedb ${srcdir}/mamedb-baddump.txt
+	../src/mkmamedb -o ${MAME_DB_BADDUMP} ${srcdir}/mamedb-baddump.txt
 
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 	./dbdump ${MAME_DB} > mamedb-ok.dump

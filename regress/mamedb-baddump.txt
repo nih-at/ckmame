@@ -1,0 +1,16 @@
+BEGIN
+
+clrmamepro (
+	name "ckmame test db"
+	version 1
+)
+
+game (
+	name baddump
+	description "bad dump"
+	manufacturer "synth"
+	year 1994
+	rom ( name bad.rom size 3 crc32 148c7b71 flags baddump )
+)
+
+END

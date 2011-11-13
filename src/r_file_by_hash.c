@@ -1,6 +1,6 @@
 /*
   r_file_location.c -- read file_by_hash information from db
-  Copyright (C) 2005-2009 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2011 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -43,7 +43,7 @@
 
 const char *query_fbh =
     "select g.name, f.file_idx from game g, file f"
-    " where f.game_id = g.game_id and f.file_type = ? and f.status = ?";
+    " where f.game_id = g.game_id and f.file_type = ? and f.status <> ?";
 const char *query_fbh_hash = " and (f.%s = ? or f.%s is null)";
 
 array_t *
@@ -68,7 +68,7 @@ r_file_by_hash(sqlite3 *db, filetype_t ft, const hashes_t *hash)
 	return NULL;
 
     if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, STATUS_OK) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, 2, STATUS_NODUMP) != SQLITE_OK
 	|| sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK) {
 	sqlite3_finalize(stmt);
 	return NULL;

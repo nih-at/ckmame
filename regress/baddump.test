@@ -1,6 +1,11 @@
 description test single-rom game with bad dump
 return 0
-args -FKLvc baddump
+args -D ../mame-baddump.db -FKLvc -je extra
 file roms/baddump.zip baddump.zip baddump.zip
+file-del extra/baddump.zip baddump.zip
 stdout In game baddump:
 stdout game baddump                                 : correct
+stdout In archive extra/baddump.zip:
+stdout file bad.rom       size       3  crc 148c7b71: not used
+stdout extra/baddump.zip: delete unused file `bad.rom'
+stdout extra/baddump.zip: remove empty archive

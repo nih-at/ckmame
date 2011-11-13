@@ -10,6 +10,7 @@ file-del roms/2-4a-ok.zip 2-4a-ok.zip
 file-del roms/zero-4-ok.zip zero-4-ok.zip
 file-del roms/zero-ok.zip zero-ok.zip
 file-del roms/baddump-ok.zip baddump.zip
+file-del roms/baddump-separate.zip baddump.zip
 file-new roms/1-4.zip 1-4-ok.zip
 file-new roms/1-8.zip 1-8-ok.zip
 file-new roms/2-44.zip 2-44-ok.zip
@@ -145,6 +146,10 @@ stdout roms/2-4a-ok.zip: delete unused file `0a.rom'
 stdout roms/2-4a-ok.zip: remove empty archive
 stdout roms/baddump-ok.zip: delete used file `bad.rom'
 stdout roms/baddump-ok.zip: remove empty archive
+stdout In archive roms/baddump-separate.zip:
+stdout file bad.rom       size       3  crc 148c7b71: not used
+stdout roms/baddump-separate.zip: delete unused file `bad.rom'
+stdout roms/baddump-separate.zip: remove empty archive
 stdout In archive roms/zero-4-ok.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
 stdout file zero          size       0  crc 00000000: not used
