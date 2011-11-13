@@ -33,15 +33,12 @@ tests:
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
 ! [bug] ckmame -i fails for LD-CHD disks
 + [feature] support multiple -O arguments
-+ [bug] -j does not remove bad roms from roms/ nor superfluous/ if they were
-  not used (however still exist); test case exists (patch)
 + [feature] create fix dats for missing files
 + [bug] speed up cleanup of extra dir: no checksums need to be computed
   if the crc (or size) doesn't match any known rom
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
-+ [bug] recognize second copy of [bad dump] in extra dir and remove it
 + [feature] get needed files directly from parent (see inparent.test)
 + [feature] inconsistent zip in ROM set: copy files to new zip
 + [cleanup] merge disk_t into file_t
