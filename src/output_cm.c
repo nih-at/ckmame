@@ -147,11 +147,11 @@ output_cm_header(output_context_t *out, dat_entry_t *dat)
     ctx = (output_context_cm_t *)out;
 
     fputs("clrmamepro (\n", ctx->f);
-    print_string(ctx, "\tname", dat_entry_name(dat), "\n");
-    print_string(ctx, "\tdescription",
+    output_cond_print_string(ctx->f, "\tname ", dat_entry_name(dat), "\n");
+    output_cond_print_string(ctx->f, "\tdescription ",
 		 (dat_entry_description(dat)
 		  ? dat_entry_description(dat) : dat_entry_name(dat)), "\n");
-    print_string(ctx, "\tversion", dat_entry_version(dat), "\n");
+    output_cond_print_string(ctx->f, "\tversion ", dat_entry_version(dat), "\n");
     fputs(")\n\n", ctx->f);
 
     return 0;
@@ -167,35 +167,6 @@ cmp_games(const game_t *g1, const game_t *g2)
 
 
 
-static void
-print_hash(output_context_cm_t *ctx, int t, hashes_t *h, const char *post)
-{
-    char hstr[HASHES_SIZE_MAX*2+1];
-
-    print_string(ctx, hash_type_string(t), hash_to_string(hstr, t, h), post);
-}
-
-
-
-static void
-print_string(output_context_cm_t *ctx, const char *pre, const char *str,
-	     const char *post)
-{
-    char *q;
-
-    if (str == NULL)
-	return;
-
-    if (strcspn(str, " \t") == strlen(str))
-	q = "";
-    else
-	q = "\"";
-
-    fprintf(ctx->f, "%s %s%s%s%s", pre, q, str, q, post);
-}
-
-
-
 static int
 write_game(output_context_cm_t *ctx, game_t *g)
 {
@@ -204,25 +175,25 @@ write_game(output_context_cm_t *ctx, game_t *g)
     char *fl;
 
     fputs("game (\n", ctx->f);
-    print_string(ctx, "\tname", game_name(g), "\n");
-    print_string(ctx, "\tdescription",
+    output_cond_print_string(ctx->f, "\tname ", game_name(g), "\n");
+    output_cond_print_string(ctx->f, "\tdescription ",
 		 game_description(g) ? game_description(g) : game_name(g),
 		 "\n");
-    print_string(ctx, "\tcloneof", game_cloneof(g, TYPE_ROM, 0), "\n");
-    print_string(ctx, "\tromof", game_cloneof(g, TYPE_ROM, 0), "\n");
+    output_cond_print_string(ctx->f, "\tcloneof ", game_cloneof(g, TYPE_ROM, 0), "\n");
+    output_cond_print_string(ctx->f, "\tromof ", game_cloneof(g, TYPE_ROM, 0), "\n");
     for (i=0; i<game_num_files(g, TYPE_ROM); i++) {
 	r = game_file(g, TYPE_ROM, i);
 	
 	fputs("\trom ( ", ctx->f);
-	print_string(ctx, "name", file_name(r), " ");
+	output_cond_print_string(ctx->f, "name ", file_name(r), " ");
 	if (file_where(r) != FILE_INZIP)
-	    print_string(ctx, "merge",
+	    output_cond_print_string(ctx->f, "merge ",
 			 file_merge(r) ? file_merge(r) : file_name(r),
 			 " ");
 	fprintf(ctx->f, "size %" PRIu64 " ", file_size(r));
-	print_hash(ctx, HASHES_TYPE_CRC, file_hashes(r), " ");
-	print_hash(ctx, HASHES_TYPE_SHA1, file_hashes(r), " ");
-	print_hash(ctx, HASHES_TYPE_MD5, file_hashes(r), " ");
+	output_cond_print_hash(ctx->f, hash_type_string(HASHES_TYPE_CRC), HASHES_TYPE_CRC, file_hashes(r), " ");
+	output_cond_print_hash(ctx->f, hash_type_string(HASHES_TYPE_SHA1), HASHES_TYPE_SHA1, file_hashes(r), " ");
+	output_cond_print_hash(ctx->f, hash_type_string(HASHES_TYPE_MD5), HASHES_TYPE_MD5, file_hashes(r), " ");
 	switch (file_status(r)) {
 	case STATUS_OK:
 	    fl = NULL;
@@ -234,7 +205,7 @@ write_game(output_context_cm_t *ctx, game_t *g)
 	    fl = "nodump";
 	    break;
 	}
-	print_string(ctx, "flags", fl, " ");
+	output_cond_print_string(ctx->f, "flags ", fl, " ");
 	fputs(")\n", ctx->f);
     }
     /* XXX: samples */

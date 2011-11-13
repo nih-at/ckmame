@@ -1,6 +1,6 @@
 /*
   mkmamedb.c -- create mamedb
-  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -56,7 +56,7 @@ char help[] = "\n\
   -h, --help                display this help message\n\
   -V, --version             display version number\n\
   -C, --hash-types types    specify hash types to compute (default: all)\n\
-  -F, --format [db|cm]      specify output format [default: db]\n\
+  -F, --format [cm|dat|db]  specify output format [default: db]\n\
   -o, --output dbfile       write to database dbfile\n\
   -x, --exclude pat         exclude games matching shell glob PAT\n\
       --detector xml-file   use header detector\n\
@@ -160,6 +160,8 @@ main(int argc, char **argv)
 	case 'F':
 	    if (strcmp(optarg, "cm") == 0)
 		fmt = OUTPUT_FMT_CM;
+	    else if (strcmp(optarg, "dat") == 0)
+		fmt = OUTPUT_FMT_DATAFILE_XML;
 	    else if (strcmp(optarg, "db") == 0)
 		fmt = OUTPUT_FMT_DB;
 	    else {
