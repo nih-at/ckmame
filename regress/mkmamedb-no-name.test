@@ -4,4 +4,4 @@ program mkmamedb
 args -o mkmamedb-no-name.db mamedb.txt
 file mamedb.txt mkmamedb-no-name.txt mkmamedb-no-name.txt
 file-new mkmamedb-no-name.db mkmamedb-no-name.dump
-stderr <unknown>: 7: expected token (name) not found
+stderr mamedb.txt: 7: expected token (name) not found

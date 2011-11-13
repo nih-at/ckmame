@@ -187,6 +187,7 @@ ps_new_file(const char *fname)
 	ud->fname = NULL;
     ud->f = f;
 
+    seterrinfo(fname, NULL);
     return ps_new(ud, (parser_source_close)psfile_close,
 		  (parser_source_open)psfile_open,
 		  (parser_source_read)psfile_read);
