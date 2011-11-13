@@ -8,8 +8,8 @@
    PUBLIC "-//Logiqx//DTD ROM Management Datafile//EN"
    SYSTEM "http://www.logiqx.com/Dats/datafile.dtd"
 
-   $Revision: 1.4 $
-   $Date: 2008/04/15 20:42:06 $
+   $Revision: 1.5 $
+   $Date: 2008/10/28 21:39:16 $
 
 -->
 
@@ -68,14 +68,14 @@
 			<!ATTLIST rom sha1 CDATA #IMPLIED>
 			<!ATTLIST rom md5 CDATA #IMPLIED>
 			<!ATTLIST rom merge CDATA #IMPLIED>
-			<!ATTLIST rom status (baddump|nodump|good) "good">
+			<!ATTLIST rom status (baddump|nodump|good|verified) "good">
 			<!ATTLIST rom date CDATA #IMPLIED>
 		<!ELEMENT disk EMPTY>
 			<!ATTLIST disk name CDATA #REQUIRED>
 			<!ATTLIST disk sha1 CDATA #IMPLIED>
 			<!ATTLIST disk md5 CDATA #IMPLIED>
 			<!ATTLIST disk merge CDATA #IMPLIED>
-			<!ATTLIST disk status (baddump|nodump|good) "good">
+			<!ATTLIST disk status (baddump|nodump|good|verified) "good">
 		<!ELEMENT sample EMPTY>
 			<!ATTLIST sample name CDATA #REQUIRED>
 		<!ELEMENT archive EMPTY>
