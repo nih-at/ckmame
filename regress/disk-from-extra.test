@@ -3,9 +3,9 @@ return 0
 args -FKLivc -e extra disk
 mkdir 755 extra
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file extra/108-5.chd 108-5.chd 108-5.chd
+file extra/new.chd 108-5.chd 108-5.chd
 file-new roms/108-5.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at `extra/108-5.chd'
-stdout copy `extra/108-5.chd' to `roms/108-5.chd'
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at `extra/new.chd'
+stdout copy `extra/new.chd' to `roms/108-5.chd'
