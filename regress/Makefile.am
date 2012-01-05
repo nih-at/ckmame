@@ -36,6 +36,7 @@ TESTS=	\
 		disk-miss.test \
 		disk-noext.test \
 		disk-nogood.test \
+		disk-nogood-copy.test \
 		disk-nogood-miss.test \
 		disk-ok.test \
 		disk-parent.test \
@@ -79,6 +80,7 @@ TESTS=	\
 		mkmamedb-parent-crcdiff.test \
 		mkmamedb-size-hex.test \
 		multi.test \
+		needed-cleanup.test \
 		needed-error.test \
 		needed-exists-different.test \
 		needed-exists-same.test \
@@ -135,6 +137,7 @@ TESTS=	\
 		superfluous-inconsistent.test \
 		superfluous.test \
 		swap.test \
+		tochild.test \
 		tochildfix.test \
 		tz-already.test \
 		tz-ok.test \
@@ -147,12 +150,9 @@ TESTS=	\
 		zero-long-badcrc.test \
 		zero-miss.test \
 		zero-superfluous.test
-BROKEN_TESTS=	\
-		disk-nogood-copy.test \
+BROKEN_TEST=	\
 		disk-swapmerge.test \
-		needed-cleanup.test \
-		rom-from-unknown.test \
-		tochild.test
+		rom-from-unknown.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \
