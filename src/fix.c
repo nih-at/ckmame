@@ -257,10 +257,23 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 		       do_copy ? "copy" : "rename",
 		       match_disk_name(md), fname);
 	    if (fix_options & FIX_DO) {
-		if (do_copy)
+		if (do_copy) {
 		    link_or_copy(match_disk_name(md), fname);
-		else
+#if 0
+		    /* delete_list_execute can't currently handle disks */
+		    if (extra_delete_list)
+		        delete_list_add(extra_delete_list, match_disk_name(md), 0);
+#endif
+                }
+		else {
 		    rename_or_move(match_disk_name(md), fname);
+		    if (extra_list) {
+		    	int idx;
+		    	idx = parray_index_sorted(extra_list, match_disk_name(md), strcmp);
+		    	if (idx >= 0)
+		            parray_delete(extra_list, idx, free);
+		    }
+		}
 	    }
 	    remove_from_superfluous(match_disk_name(md));
 	    

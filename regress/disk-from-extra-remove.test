@@ -1,10 +1,9 @@
 description test single-rom game with disk, get missing disk from extra
 return 0
-args -FKLijvc -e extradir disk
-file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file-del extradir/108-5.chd 108-5.chd
+args -Fvj -D ../mame3.db -e extradir
+file-del extradir/1234.chd 108-5.chd
 file-new roms/108-5.chd 108-5.chd
 stdout In game disk:
-stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at `extradir/108-5.chd'
-stdout rename `extradir/108-5.chd' to `roms/108-5.chd'
+stdout game disk                                    : not a single rom found
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at `extradir/1234.chd'
+stdout rename `extradir/1234.chd' to `roms/108-5.chd'

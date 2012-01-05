@@ -114,7 +114,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 		cmp = strcmp(name, file_location_name(fl));
 		
 		if (cmp == 0)
-		    result_image(res, i) = FS_USED;
+		    result_image(res, 0) = FS_USED;
 		else if (cmp < 0)
 		    break;
 	    }
