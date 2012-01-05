@@ -1,9 +1,8 @@
-description test 2 single-rom game with no good dump disks, disk copying
+description test 2 single-rom game with no good dump disks, name matching disk exists
 return 0
 args -FKLivcj -e extras disk-nogood disk-nogood2
 file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
-file-del extras/108-5.chd 108-5.chd
-file-new roms/108-5.chd 108-5.chd
+file extras/108-5.chd 108-5.chd 108-5.chd
 stdout In game disk-nogood:
 stdout game disk-nogood                             : correct
 # file name alone shouldn't be enough
