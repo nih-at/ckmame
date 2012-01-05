@@ -1,9 +1,9 @@
 description test parent, file used by child, not fixing
 # XXX: -n instead of -v works, so it still fixes (w/o -F!)
 return 0
-args -KLvc parent-4
+args -v parent-4
 file roms/parent-4.zip 2-48-ok.zip 2-48-ok.zip
 stdout In game parent-4:
-stdout game parent-4                                : correct
+#stdout game parent-4                                : correct
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
 stdout roms/parent-4.zip: save needed file `08.rom'
