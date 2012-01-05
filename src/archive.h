@@ -109,9 +109,7 @@ extern int _archive_global_flags;
 	(((a)->flags & ARCHIVE_FL_NOCACHE) == 0	\
 	 && IS_EXTERNAL(archive_where(a)))
 
-/* XXX: a is not evaluated */
-#define archive_is_rdwr(a)	\
-    ((_archive_global_flags & ARCHIVE_FL_RDONLY) == 0)
+#define archive_is_writable(a)	(((a)->flags & ARCHIVE_FL_RDONLY) == 0)
 
 bool archive_is_torrentzipped(archive_t *);
 

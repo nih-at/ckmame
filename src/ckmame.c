@@ -254,7 +254,6 @@ main(int argc, char **argv)
 	case 'n':
 	    fix_options &= ~FIX_DO;
 	    fix_options |= FIX_PRINT;
-	    archive_global_flags(ARCHIVE_FL_RDONLY, true);
 	    break;
 	case 'O':
 	    olddbname = optarg;
@@ -313,6 +312,9 @@ main(int argc, char **argv)
 	}
     }
     
+    if ((fix_options & FIX_DO) == 0)
+	archive_global_flags(ARCHIVE_FL_RDONLY, true);
+
     if (optind != argc) {
 	if (action != ACTION_UNSPECIFIED)
 	    error_multiple_actions();

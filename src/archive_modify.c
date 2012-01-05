@@ -110,10 +110,10 @@ archive_commit(archive_t *a)
 	case FILE_DELETED:
 	    if (ARCHIVE_IS_INDEXED(a)) {
 		/* XXX: handle error (how?) */
-		memdb_file_delete(a, i, archive_is_rdwr(a));
+		memdb_file_delete(a, i, archive_is_writable(a));
 	    }
 
-	    if (archive_is_rdwr(a)) {
+	    if (archive_is_writable(a)) {
 		array_delete(archive_files(a), i, file_finalize);
 		i--;
 	    }
@@ -158,7 +158,7 @@ archive_file_add_empty(archive_t *a, const char *name)
 	return -1;
     }
 
-    if (archive_is_rdwr(a)) {
+    if (archive_is_writable(a)) {
 	if (archive_ensure_zip(a) < 0)
 	    return -1;
 
@@ -224,7 +224,7 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da,
 	return -1;
     }
 	
-    if (archive_is_rdwr(sa))
+    if (archive_is_writable(da))
 	if (ops[archive_filetype(sa)].copy(sa, sidx, da, dname, start, len) < 0)
 	    return -1;
 
@@ -250,7 +250,7 @@ archive_file_delete(archive_t *a, int idx)
 	return -1;
     }
 	
-    if (archive_is_rdwr(a))
+    if (archive_is_writable(a))
 	if (ops[archive_filetype(a)].delete(a, idx) < 0)
 	    return -1;
 
@@ -280,7 +280,7 @@ archive_file_rename(archive_t *a, int idx, const char *name)
 	return -1;
     }
 	
-    if (archive_is_rdwr(a))
+    if (archive_is_writable(a))
 	if (ops[archive_filetype(a)].rename(a, idx, name) < 0)
 	    return -1;
     

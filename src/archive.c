@@ -295,7 +295,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     a->where = where;
     a->files = array_new(sizeof(file_t));
     a->za = NULL;
-    a->flags = (flags & ARCHIVE_FL_MASK);
+    a->flags = ((flags|_archive_global_flags) & ARCHIVE_FL_MASK);
 
     switch (ft) {
     case TYPE_ROM:
