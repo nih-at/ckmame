@@ -3,7 +3,7 @@
 
 /*
   archive.h -- information about an archive
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2012 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
