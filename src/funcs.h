@@ -71,7 +71,7 @@ int enter_disk_in_map(const disk_t *, where_t);
 int enter_file_in_map(const archive_t *, int, where_t);
 char *findfile(const char *, filetype_t);
 int fix_game(game_t *, archive_t *, images_t *, result_t *);
-parray_t *find_superfluous(const char *);
+parray_t *list_directory(const char *, const char *);
 const char *get_directory(filetype_t);
 int link_or_copy(const char *, const char *);
 char *make_file_name(filetype_t, int, const char *);

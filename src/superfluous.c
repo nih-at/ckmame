@@ -50,44 +50,44 @@
 
 
 parray_t *
-find_superfluous(const char *dbname)
+list_directory(const char *dirname, const char *dbname)
 {
     dir_t *dir;
-    char b[8192], dirname[8192], *p;
+    char b[8192], *p;
     parray_t *listf, *listd, *lst, *found;
     dir_status_t err;
     int i, len_dir, len_name;
 
-    if (file_type == TYPE_ROM) {
-	if ((listf=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
-	    myerror(ERRDEF, "list of games not found in database `%s'",
-		    dbname);
-	    exit(1);
-	}
-	if ((listd=r_list(db, DBH_KEY_LIST_DISK)) == NULL) {
-	    myerror(ERRDEF, "list of disks not found in database `%s'",
-		    dbname);
-	    exit(1);
-	}
-    }
-    else {
-	if ((listf=r_list(db, DBH_KEY_LIST_SAMPLE)) == NULL) {
-	    myerror(ERRDEF, "list of samples not found in database `%s'",
-		    dbname);
-	    exit(1);
-	}
-	listd = NULL;
+    listf = listd = NULL;
+
+    if (dbname) {
+	if (file_type == TYPE_ROM) {
+	    if ((listf=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+	        myerror(ERRDEF, "list of games not found in database `%s'",
+		        dbname);
+	        exit(1);
+	    }
+	    if ((listd=r_list(db, DBH_KEY_LIST_DISK)) == NULL) {
+	        myerror(ERRDEF, "list of disks not found in database `%s'",
+		        dbname);
+	        exit(1);
+	    }
+        }
+        else {
+	    if ((listf=r_list(db, DBH_KEY_LIST_SAMPLE)) == NULL) {
+	        myerror(ERRDEF, "list of samples not found in database `%s'",
+		        dbname);
+	        exit(1);
+	    }
+        }
     }
 
     found = parray_new();
 
-    len_dir = snprintf(dirname, sizeof(dirname), "%s",
-		       get_directory(file_type));
-    len_dir += 1; /* trailing '/' */
-    if ((dir=dir_open(dirname, 0)) == NULL) {
-	myerror(ERRDEF, "directory `%s' not found", dirname);
+    if ((dir=dir_open(dirname, 0)) == NULL)
 	return found;
-    }
+
+    len_dir = strlen(dirname)+1;
 
     while ((err=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
 	if (err == DIR_ERROR) {

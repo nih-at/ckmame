@@ -158,7 +158,6 @@ int ignore_extra;
 int romhashtypes, diskhashtypes;
 int check_integrity;
 parray_t *superfluous;
-parray_t *superfluous;
 parray_t *search_dirs;
 const char *rom_dir;
 filetype_t file_type;
@@ -415,7 +414,7 @@ main(int argc, char **argv)
     }
     
     if (action != ACTION_CLEANUP_EXTRA_ONLY)
-	superfluous = find_superfluous(dbname);
+	superfluous = list_directory(get_directory(file_type), dbname);
 
     if ((fix_options & (FIX_DO|FIX_PRINT))
 	&& (fix_options & FIX_CLEANUP_EXTRA))
@@ -430,14 +429,21 @@ main(int argc, char **argv)
 	tree_traverse(tree, NULL, NULL);
 
 	if (fix_options & (FIX_DO|FIX_PRINT)) {
-	    if (needed_delete_list)
-		delete_list_execute(needed_delete_list);
+	    if (fix_options & FIX_SUPERFLUOUS) {
+		parray_t *needed_list;
 
-	    if (fix_options & FIX_SUPERFLUOUS)
 		cleanup_list(superfluous, superfluous_delete_list,
 			     CLEANUP_NEEDED|CLEANUP_UNKNOWN);
-	    else if (superfluous_delete_list)
-		delete_list_execute(superfluous_delete_list);
+		needed_list = list_directory(needed_dir, NULL);
+		cleanup_list(needed_list, needed_delete_list,
+			     CLEANUP_UNKNOWN);
+            }
+	    else {
+	        if (needed_delete_list)
+		    delete_list_execute(needed_delete_list);
+		if (superfluous_delete_list)
+		    delete_list_execute(superfluous_delete_list);
+	    }
 	}
     }
 
