@@ -138,6 +138,7 @@ TESTS=	\
 		superfluous-inconsistent.test \
 		superfluous.test \
 		swap.test \
+		swap-roms.test \
 		tochild.test \
 		tochildfix.test \
 		tz-already.test \
@@ -153,8 +154,7 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
-		rom-from-unknown.test \
-		swap-roms.test
+		rom-from-unknown.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \

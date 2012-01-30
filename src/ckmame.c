@@ -164,6 +164,7 @@ filetype_t file_type;
 sqlite3 *db;
 sqlite3 *old_db;
 detector_t *detector;
+tree_t *check_tree;
 
 
 
@@ -179,7 +180,6 @@ main(int argc, char **argv)
     char *dbname, *olddbname;
     int c, found;
     parray_t *list;
-    tree_t *tree;
     char *game_list;
     
     setprogname(argv[0]);
@@ -347,7 +347,7 @@ main(int argc, char **argv)
 	    exit(1);
 	}
 
-	tree = tree_new();
+	check_tree = tree_new();
 
 	if (game_list) {
 	    FILE *f;
@@ -369,7 +369,7 @@ main(int argc, char **argv)
 		}
 
 		if (parray_index_sorted(list, b, strcmp) >= 0)
-		    tree_add(tree, b);
+		    tree_add(check_tree, b);
 		else
 		    myerror(ERRDEF, "game `%s' unknown", b);
 	    }
@@ -378,13 +378,13 @@ main(int argc, char **argv)
 	}
 	else if (optind == argc) {
 	    for (i=0; i<parray_length(list); i++)
-		tree_add(tree, parray_get(list, i));
+		tree_add(check_tree, parray_get(list, i));
 	}
 	else {
 	    for (i=optind; i<argc; i++) {
 		if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 		    if (parray_index_sorted(list, argv[i], strcmp) >= 0)
-			tree_add(tree, argv[i]);
+			tree_add(check_tree, argv[i]);
 		    else
 			myerror(ERRDEF, "game `%s' unknown", argv[i]);
 		}
@@ -392,7 +392,7 @@ main(int argc, char **argv)
 		    found = 0;
 		    for (j=0; j<parray_length(list); j++) {
 			if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
-			    tree_add(tree, parray_get(list, j));
+			    tree_add(check_tree, parray_get(list, j));
 			    found = 1;
 			}
 		    }
@@ -426,7 +426,8 @@ main(int argc, char **argv)
 #endif
 
     if (action == ACTION_CHECK_ROMSET) {
-	tree_traverse(tree, NULL, NULL);
+	tree_traverse(check_tree, NULL, NULL);
+	tree_traverse(check_tree, NULL, NULL);
 
 	if (fix_options & (FIX_DO|FIX_PRINT)) {
 	    if (fix_options & FIX_SUPERFLUOUS) {

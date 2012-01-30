@@ -1,6 +1,6 @@
 /*
   tree.c -- traverse tree of games to check
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2012 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -49,7 +49,7 @@
 
 static tree_t *tree_add_node(tree_t *, const char *, int);
 static tree_t *tree_new_full(const char *, int);
-static int tree_process(const tree_t *, archive_t *, archive_t *, archive_t *);
+static int tree_process(tree_t *, archive_t *, archive_t *, archive_t *);
 
 
 
@@ -100,7 +100,7 @@ tree_new(void)
     t = xmalloc(sizeof(*t));
 
     t->name = NULL;
-    t->check = 0;
+    t->check = t->checked = false;;
     t->child = t->next = NULL;
 
     return t;
@@ -109,7 +109,61 @@ tree_new(void)
 
 
 void
-tree_traverse(const tree_t *tree, archive_t *parent, archive_t *gparent)
+tree_recheck(const tree_t *tree, const char *name)
+{
+    tree_t *t;
+
+    for (t=tree->child; t; t=t->next) {
+	if (tree_checked(t) && strcmp(tree_name(t), name) == 0) {
+	    tree_checked(t) = false;
+	    break;
+	}
+	tree_recheck(t, name);
+    }
+}
+
+
+
+int
+tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes)
+{
+    array_t *a;
+    file_location_t *fbh;
+    game_t *g;
+    const file_t *gr;
+    int i, ret;
+
+    if ((a=r_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
+	return 0;
+
+    ret = 0;
+    for (i=0; i<array_length(a); i++) {
+	fbh = array_get(a, i);
+
+	if ((g=r_game(db, file_location_name(fbh))) == NULL
+	    || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
+	    /* XXX: internal error: db inconsistency */
+	    ret = -1;
+	    continue;
+	}
+
+	gr = game_file(g, TYPE_ROM, file_location_index(fbh));
+
+	if (size == file_size(gr) && hashes_cmp(hashes, file_hashes(gr)) == HASHES_CMP_MATCH && file_where(gr) == FILE_INZIP)
+	    tree_recheck(tree, game_name(g));
+
+	game_free(g);
+    }
+
+    array_free(a, file_location_finalize);
+
+    return ret;
+}
+
+
+
+void
+tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent)
 {
     tree_t *t;
     archive_t *child;
@@ -134,7 +188,7 @@ tree_traverse(const tree_t *tree, archive_t *parent, archive_t *gparent)
 	    child = archive_new(full_name, TYPE_ROM, FILE_ROMSET, flags);
 	free(full_name);
 
-	if (tree->check)
+	if (tree_check(tree) && !tree_checked(tree))
 	    tree_process(tree, child, parent, gparent);
     }
 
@@ -213,7 +267,7 @@ tree_new_full(const char *name, int check)
 
 
 static int
-tree_process(const tree_t *tree, archive_t *child,
+tree_process(tree_t *tree, archive_t *child,
 	     archive_t *parent, archive_t *gparent)
 {
     archive_t *all[3];
@@ -253,6 +307,8 @@ tree_process(const tree_t *tree, archive_t *child,
     result_free(res);
     game_free(g);
     images_free(images);
+
+    tree_checked(tree) = true;
 
     return 0;
 }

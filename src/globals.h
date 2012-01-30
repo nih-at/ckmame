@@ -3,7 +3,7 @@
 
 /*
   globals.h -- declaration of global variables
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2012 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -41,6 +41,7 @@
 #include "delete_list.h"
 #include "detector.h"
 #include "parray.h"
+#include "tree.h"
 
 extern sqlite3 *db;
 extern sqlite3 *old_db;
@@ -68,5 +69,7 @@ extern filetype_t file_type;	/* type of files to check (ROMs or samples) */
 
 extern int output_options;
 extern int fix_options;
+
+extern tree_t *check_tree;
 
 #endif /* globals.h */

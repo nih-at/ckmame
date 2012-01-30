@@ -37,10 +37,13 @@
 
 
 #include "types.h"
+#include "archive.h"
+#include "hashes.h"
 
 struct tree {
     char *name;
-    int check;
+    bool check;
+    bool checked;
     struct tree *next, *child;
 };
 
@@ -48,11 +51,15 @@ typedef struct tree tree_t;
 
 
 
+#define tree_check(t)	((t)->check)
+#define tree_checked(t)	((t)->checked)
 #define tree_name(t)	((t)->name)
 
 int tree_add(tree_t *, const char *);
+int tree_add_games_needing(tree_t *, uint64_t, const hashes_t *);
 void tree_free(tree_t *);
 tree_t *tree_new(void);
-void tree_traverse(const tree_t *, archive_t *, archive_t *);
+void tree_recheck(const tree_t *, const char *);
+void tree_traverse(tree_t *, archive_t *, archive_t *);
 
 #endif /* tree.h */

@@ -140,7 +140,8 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		       file_name(archive_file(a, i)));
 
 	    /* XXX: handle error (how?) */
-	    save_needed(a, i, fix_options & FIX_DO);
+	    if (save_needed(a, i, fix_options & FIX_DO) == 0)
+		tree_recheck_games_needing(check_tree, file_size(archive_file(a, i)), file_hashes(archive_file(a, i)));
 	    break;
 
 	case FS_BROKEN:
