@@ -13,7 +13,8 @@ MAME_DB3=mame3.db
 MAME_DB4=mame4.db
 MAME_DB_8_IS_4=mame-1-8-is-4.db
 MAME_DB_BADDUMP=mame-baddump.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP}
+MAME_DB_CRCDIFF=mame-crcdiff.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF}
 
 ZIPCMP=@ZIPCMP@
 
@@ -152,7 +153,8 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
-		rom-from-unknown.test
+		rom-from-unknown.test \
+		swap-roms.test
 
 ZIPS=		1-4-2.zip \
 		1-4-dup.zip \
@@ -248,10 +250,14 @@ ${MAME_DB_8_IS_4}: ../src/mkmamedb ${srcdir}/mamedb-1-8-is-4.txt
 ${MAME_DB_BADDUMP}: ../src/mkmamedb ${srcdir}/mamedb-baddump.txt
 	../src/mkmamedb -o ${MAME_DB_BADDUMP} ${srcdir}/mamedb-baddump.txt
 
+${MAME_DB_CRCDIFF}: ../src/mkmamedb ${srcdir}/mkmamedb-parent-crcdiff.txt
+	../src/mkmamedb -o ${MAME_DB_CRCDIFF} ${srcdir}/mkmamedb-parent-crcdiff.txt
+
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 	./dbdump ${MAME_DB} > mamedb-ok.dump
 	./dbdump ${MAME_DB2} > mkmamedb-lost-parent.dump
 	./dbdump ${MAME_DB4} > mkmamedb-duplicate-game.dump
+	./dbdump ${MAME_DB_CRCDIFF} > mkmamedb-parent-crcdiff.dump
 	set -e \
 	f=$$$$.db; \
 	../src/mkmamedb -o "$$f".db \
