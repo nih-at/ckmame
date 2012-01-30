@@ -302,7 +302,12 @@ tree_process(tree_t *tree, archive_t *child,
 
     if (fix_options & (FIX_DO|FIX_PRINT))
 	fix_game(g, child, images, res);
-	
+
+    /* XXX: includes too much when rechecking */
+    /* XXX: not when checking samples */
+    if (fixdat)
+	write_fixdat_entry(g, child, images, res);
+
     /* clean up */
     result_free(res);
     game_free(g);

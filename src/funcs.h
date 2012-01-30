@@ -91,5 +91,6 @@ void remove_from_superfluous(const char *);
 int rename_or_move(const char *, const char *);
 int save_needed(archive_t *, int, int);
 int save_needed_disk(const char *, int);
+void write_fixdat_entry(const game_t *, const archive_t *, const images_t *, const result_t *);
 
 #endif /* funcs.h */

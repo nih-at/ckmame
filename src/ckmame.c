@@ -103,7 +103,7 @@ char version_string[] = PACKAGE " " VERSION "\n"
 "Copyright (C) 2012 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "bcD:de:FfhijKkLlnO:R:SsT:xVvwX"
+#define OPTIONS "bcD:de:FfhijKkLlnO:R:SsT:xVvwXx"
 
 enum {
     OPT_CLEANUP_EXTRA = 256,
@@ -165,6 +165,7 @@ sqlite3 *db;
 sqlite3 *old_db;
 detector_t *detector;
 tree_t *check_tree;
+output_context_t *fixdat;
 
 
 
@@ -198,6 +199,7 @@ main(int argc, char **argv)
     search_dirs = parray_new();
     game_list = NULL;
     rom_dir = NULL;
+    fixdat = NULL;
     
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -303,6 +305,11 @@ main(int argc, char **argv)
 	    break;
 	case OPT_TORRENTZIP:
 	    fix_options |= FIX_TORRENTZIP;
+	    break;
+
+	case 'x' /* fixdat */:
+	    fixdat = output_new(OUTPUT_FMT_DATAFILE_XML, "fixdat.dat");
+	    /* XXX: error handling */
 	    break;
 
 	default:
@@ -447,6 +454,9 @@ main(int argc, char **argv)
 	    }
 	}
     }
+
+    if (fixdat)
+	output_close(fixdat);
 
     if ((fix_options & (FIX_DO|FIX_PRINT))
 	&& (fix_options & FIX_CLEANUP_EXTRA))

@@ -69,6 +69,7 @@ libckmame_a_SOURCES= \
 	find.c \
 	fix.c \
 	fix_util.c \
+	fixdat.c \
 	game.c \
 	garbage.c \
 	hash_from_string.c \
