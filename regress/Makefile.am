@@ -3,7 +3,8 @@ AM_CFLAGS=		-I${srcdir}/../src @SQLITE3_CFLAGS@ @CFLAGS@
 dbdump_LDADD=		../src/libckmame.a @SQLITE3_LIBS@
 
 EXTRA_DIST=runtest ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
-		gamelist-from-file.in
+		gamelist-from-file.in \
+		rom-from-superfluous-many-fixdat.fixdat
 
 CLEANFILES=${DBS}
 
@@ -120,8 +121,8 @@ TESTS=	\
 		rom-from-superfluous-cleanup.test \
 		rom-from-superfluous-detector.test \
 		rom-from-superfluous-dryrun.test \
-		rom-from-superfluous-some.test \
 		rom-from-superfluous-many.test \
+		rom-from-superfluous-some.test \
 		rom-from-superfluous.test \
 		rom-many.test \
 		rom-two-long.test \
@@ -154,6 +155,7 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
+		rom-from-superfluous-many-fixdat.test \
 		rom-from-unknown.test
 
 ZIPS=		1-4-2.zip \
