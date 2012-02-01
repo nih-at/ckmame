@@ -105,7 +105,7 @@ output_datafile_xml_close(output_context_t *out)
     if (ctx->f == NULL || ctx->f == stdout)
 	ret = 0;
     else {
-	fputs("</datafile>", ctx->f);
+	fputs("</datafile>\n", ctx->f);
 	ret = fclose(ctx->f);
     }
 
