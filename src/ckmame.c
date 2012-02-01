@@ -73,6 +73,7 @@ char help[] = "\n"
 "  -d, --nonogooddumps     don't report roms with no good dumps\n"
 "  -e, --search dir        search for missing files in directory dir\n"
 "  -F, --fix               fix rom sets\n"
+"      --fixdat datfile    write fixdat to `datfile'\n"
 "  -f, --nofixable         don't report fixable errors\n"
 "  -h, --help              display this help message\n"
 "  -I, --ignore-unknown    do not touch unknown files when fixing\n"
@@ -108,6 +109,7 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 enum {
     OPT_CLEANUP_EXTRA = 256,
     OPT_DELETE_DUPLICATE,
+    OPT_FIXDAT,
     OPT_IGNORE_UNKNOWN,
     OPT_KEEP_DUPLICATE,
     OPT_KEEP_FOUND,
@@ -128,6 +130,7 @@ struct option options[] = {
     { "delete-unknown",    0, 0, 'k' },
     { "dryrun",            0, 0, 'n' },
     { "fix",               0, 0, 'F' },
+    { "fixdat",            1, 0, OPT_FIXDAT },
     { "games-from",        1, 0, 'T' },
     { "ignore-extra",      0, 0, 'X' },
     { "ignore-unknown",    0, 0, OPT_IGNORE_UNKNOWN },
@@ -289,6 +292,10 @@ main(int argc, char **argv)
 	case OPT_DELETE_DUPLICATE:
 	    fix_options |= FIX_DELETE_DUPLICATE;
 	    break;
+	case OPT_FIXDAT:
+	    if ((fixdat=output_new(OUTPUT_FMT_DATAFILE_XML, optarg)) == NULL)
+		exit(1);
+	    break;
 	case OPT_IGNORE_UNKNOWN:
 	    fix_options |= FIX_IGNORE_UNKNOWN;
 	    break;
@@ -306,12 +313,6 @@ main(int argc, char **argv)
 	case OPT_TORRENTZIP:
 	    fix_options |= FIX_TORRENTZIP;
 	    break;
-
-	case 'x' /* fixdat */:
-	    fixdat = output_new(OUTPUT_FMT_DATAFILE_XML, "fixdat.dat");
-	    /* XXX: error handling */
-	    break;
-
 	default:
 	    fprintf(stderr, usage, getprogname());
 	    exit(1);
