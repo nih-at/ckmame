@@ -1,4 +1,4 @@
-.\" Copyright (c) 2003-2011 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2003-2012 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH CKMAME 1 "February 14, 2011" NiH
+.TH CKMAME 1 "February 1, 2012" NiH
 .SH "NAME"
 ckmame \- verify MAME ROM sets
 .SH "SYNOPSIS"
@@ -46,6 +46,7 @@ ckmame \- verify MAME ROM sets
 [\fB--delete-unknown\fR]
 [\fB--dryrun\fR]
 [\fB--fix\fR]
+[\fB--fixdat\fR \fBfile\fR]
 [\fB--games-from\fR \fBfile\fR]
 [\fB--help\fR]
 [\fB--ignore-extra\fR]
@@ -147,7 +148,8 @@ as database file.
 Don't report ROMs with no known good dumps.
 .TP 24
 \fB--delete-duplicate\fR
-Delete files present in old ROM database (default).  See also
+Delete files present in old ROM database (default).
+See also
 .\fB--keep-duplicate\fR.
 .TP 24
 \fB-e\fR \fBdir, \fB--search\fR Ar dir\fR
@@ -169,6 +171,12 @@ See also
 and
 \fB-w\fR.
 .TP 24
+\fB--fixdat\fR \fBname\fR
+Create a clrmamepro-style
+``fixdat''
+file, i.e. an XML file containing only the files missing in the ROM
+set compared to the database used.
+.TP 24
 \fB-h\fR, \fB--help\fR
 Display a short help message.
 .TP 24
@@ -189,7 +197,8 @@ See also
 .\fB--keep-found\fR.
 .TP 24
 \fB--keep-duplicate\fR
-Keep files present in old ROM database.  See also
+Keep files present in old ROM database.
+See also
 .\fB--delete-duplicate\fR.
 .TP 24
 \fB--keep-found\fR
