@@ -41,6 +41,7 @@
 #include "myinttypes.h"
 #include "parser_source.h"
 
+typedef void (*xmlu_lineno_cb)(void *, int);
 typedef int (*xmlu_attr_cb)(void *, int, int, const char *);
 typedef int (*xmlu_tag_cb)(void *, int);
 typedef int (*xmlu_text_cb)(void *, const char *);
@@ -67,7 +68,7 @@ typedef struct xmlu_entity xmlu_entity_t;
 
 
 
-int xmlu_parse(parser_source_t *, void *, const xmlu_entity_t *, int);
+int xmlu_parse(parser_source_t *, void *, xmlu_lineno_cb, const xmlu_entity_t *, int);
 
 
 #endif /* xmlutil.h */

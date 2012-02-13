@@ -140,7 +140,8 @@ detector_parse_ps(parser_source_t *ps)
     ctx.dr = NULL;
     ctx.dt = NULL;
 
-    if (xmlu_parse(ps, &ctx, entities, nentities) < 0) {
+    /* XXX: lineno callback */
+    if (xmlu_parse(ps, &ctx, NULL, entities, nentities) < 0) {
 	detector_free(ctx.d);
 	return NULL;
     }

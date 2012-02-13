@@ -51,6 +51,8 @@ static int parse_xml_mame_build(parser_context_t *, filetype_t, int,
 static int parse_xml_softwarelist(parser_context_t *, filetype_t, int,
 				  const char *);
 
+static void parse_xml_lineno_cb(parser_context_t *, int);
+
 #define XA(f)	((xmlu_attr_cb)f)
 #define XC(f)	((xmlu_tag_cb)f)
 #define XO(f)	((xmlu_tag_cb)f)
@@ -132,8 +134,16 @@ static const int nentities = sizeof(entities)/sizeof(entities[0]);
 int
 parse_xml(parser_source_t *ps, parser_context_t *ctx)
 {
-    return xmlu_parse(ps, ctx, entities, nentities);
+    return xmlu_parse(ps, ctx, (xmlu_lineno_cb)parse_xml_lineno_cb, entities, nentities);
 }
+
+
+static void
+parse_xml_lineno_cb(parser_context_t *ctx, int lineno)
+{
+    ctx->lineno = lineno;
+}    
+
 
 static int
 parse_xml_loadflag(parser_context_t *ctx, filetype_t ft, int ht, const char *value)

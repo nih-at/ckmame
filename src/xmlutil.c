@@ -67,7 +67,7 @@ static int xml_read(void *, char *, int);
 
 
 int
-xmlu_parse(parser_source_t *ps, void *ctx,
+xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb,
 	   const xmlu_entity_t *entities, int nentities)
 {
     xmlTextReaderPtr reader;
@@ -89,7 +89,9 @@ xmlu_parse(parser_source_t *ps, void *ctx,
     path[0] = '\0';
 
     while ((ret=xmlTextReaderRead(reader)) == 1) {
-	((parser_context_t*)ctx)->lineno=xmlTextReaderGetParserLineNumber(reader);
+	if (lineno_cb)
+	    lineno_cb(ctx, xmlTextReaderGetParserLineNumber(reader));
+
 	switch (xmlTextReaderNodeType(reader)) {
 	case XML_READER_TYPE_ELEMENT:
 	    name = (const char *)xmlTextReaderConstName(reader);
