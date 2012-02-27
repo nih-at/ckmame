@@ -59,6 +59,10 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im,
 	match_t *m = result_rom(res, i);
 	file_t *r = game_file(game, TYPE_ROM, i);
 
+	/* no use requesting zero byte files */
+	if (file_size(r) == 0)
+	    continue;
+
 	if (match_quality(m) != QU_MISSING || file_status(r) == STATUS_NODUMP)
 	    continue;
 

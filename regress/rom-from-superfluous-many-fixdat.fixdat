@@ -2,9 +2,9 @@
 <!DOCTYPE datafile PUBLIC "-//Logiqx//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">
 <datafile>
 	<header>
-		<name>%s</name>
-		<description>%s</description>
-		<version>%s</version>
+		<name>Fixdat</name>
+		<description>Fixdat by ckmame</description>
+		<version>1</version>
 		<author>automatically generated</author>
 	</header>
 
@@ -67,11 +67,6 @@
 	<game name="samptest-child">
 		<description>samptest-child</description>
 		<rom name="samplechild.rom" size="1024" crc="876a5321"/>
-	</game>
-
-	<game name="zerobadcrc">
-		<description>zerobadcrc</description>
-		<rom name="zero" size="0" crc="12345678"/>
 	</game>
 
 </datafile>

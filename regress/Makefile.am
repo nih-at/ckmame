@@ -122,6 +122,7 @@ TESTS=	\
 		rom-from-superfluous-detector.test \
 		rom-from-superfluous-dryrun.test \
 		rom-from-superfluous-many.test \
+		rom-from-superfluous-many-fixdat.test \
 		rom-from-superfluous-some.test \
 		rom-from-superfluous.test \
 		rom-many.test \
@@ -155,7 +156,6 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
-		rom-from-superfluous-many-fixdat.test \
 		rom-from-unknown.test
 
 ZIPS=		1-4-2.zip \

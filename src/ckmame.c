@@ -293,8 +293,18 @@ main(int argc, char **argv)
 	    fix_options |= FIX_DELETE_DUPLICATE;
 	    break;
 	case OPT_FIXDAT:
-	    if ((fixdat=output_new(OUTPUT_FMT_DATAFILE_XML, optarg)) == NULL)
-		exit(1);
+	    {
+		dat_entry_t de;
+
+		de.name = "Fixdat";
+		de.description = "Fixdat by ckmame";
+		de.version = "1";
+		    
+		if ((fixdat=output_new(OUTPUT_FMT_DATAFILE_XML, optarg)) == NULL)
+		    exit(1);
+
+		output_header(fixdat, &de);
+	    }
 	    break;
 	case OPT_IGNORE_UNKNOWN:
 	    fix_options |= FIX_IGNORE_UNKNOWN;
