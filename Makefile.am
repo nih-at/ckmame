@@ -1,4 +1,4 @@
-AUTOMAKE_OPTIONS=dist-bzip2 foreign
+AUTOMAKE_OPTIONS=dist-xz foreign
 
 SUBDIRS=docs src regress
 
