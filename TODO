@@ -16,6 +16,7 @@ tests:
   * rule operations
   * [test] is superfluous file that needs detector cleaned up correctly?
 
+! [feature] chd v5 support
 ! [feature] reorder cleanup step when renaming files to remove the copies
   earlier; otherwise big renames on big sets don't work.
 ! [feature] chd: implement a/v decompression
