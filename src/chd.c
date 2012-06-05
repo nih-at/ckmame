@@ -1,6 +1,6 @@
 /*
   chd.c -- accessing chd files
-  Copyright (C) 2004-2009 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2012 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -43,7 +43,7 @@
 
 
 
-#define MAX_HEADERLEN	120		/* maximum header length */
+#define MAX_HEADERLEN	124		/* maximum header length */
 #define TAG		"MComprHD"
 #define TAG_LEN		8		/* length of tag */
 #define TAG_AND_LEN	12		/* length of tag + header length */
@@ -60,8 +60,27 @@
 			 |((uint64_t)(b)[-4]<<24)|((uint64_t)(b)[-3]<<16)     \
 			 |((uint64_t)(b)[-2]<<8)|((uint64_t)(b)[-1]))
 
+#define MAKE_TAG(a, b, c, d) (((a) << 24) | ((b) << 16) | ((c) << 8) | (d))
+static uint32_t v4_compressors[] = {
+    0,
+    CHD_CODEC_ZLIB,
+    CHD_CODEC_ZLIB, /* XXX: zlib plus */
+    CHD_CODEC_AVHUFF
+};
+
+static uint8_t  v4_map_types[] = {
+    0, CHD_MAP_TYPE_COMPRESSOR0, CHD_MAP_TYPE_UNCOMPRESSED, CHD_MAP_TYPE_MINI, CHD_MAP_TYPE_SELF_REF, CHD_MAP_TYPE_PARENT_REF
+};
+
+static uint8_t  v5_map_types[] = {
+    CHD_MAP_TYPE_UNCOMPRESSED, CHD_MAP_TYPE_SELF_REF, CHD_MAP_TYPE_PARENT_REF, CHD_MAP_TYPE_MINI,
+    CHD_MAP_TYPE_COMPRESSOR0, CHD_MAP_TYPE_COMPRESSOR1, CHD_MAP_TYPE_COMPRESSOR2, CHD_MAP_TYPE_COMPRESSOR3
+};
+
 static int read_header(struct chd *);
+static int read_header_v5(struct chd *, unsigned char *, uint32_t);
 static int read_map(struct chd *);
+static int read_map_v5(struct chd *);
 
 
 
@@ -136,6 +155,7 @@ int
 chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 {
     int i, n, err;
+    uint32_t compression_type;
 
     if (idx < 0 || (unsigned int)idx > chd->total_hunks) {
 	chd->error = CHD_ERR_INVAL;
@@ -152,15 +172,13 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 	return -1;
     }
 
-    switch (chd->map[idx].flags & CHD_MAP_TYPE_MASK) {
-    case CHD_MAP_TYPE_COMPRESSED:
-	/* XXX: CHD_COMP_NONE? */
-	if (chd->compression != CHD_COMP_ZLIB
-	    && chd->compression != CHD_COMP_ZLIB_PLUS) {
-	    chd->error = CHD_ERR_NOTSUP;
-	    return -1;
-	}
-
+    if (chd->map[idx].type < 4)
+	compression_type = chd->compressors[chd->map[idx].type];
+    else
+	compression_type = chd->map[idx].type;
+	
+    switch (compression_type) {
+    case CHD_CODEC_ZLIB:
 	if (chd->buf == NULL) {
 	    if ((chd->buf=malloc(chd->hunk_len)) == NULL) {
 		chd->error = CHD_ERR_NOMEM;
@@ -227,16 +245,16 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 	    b[i] = b[i-8];
 	break;
 
-    case CHD_MAP_TYPE_SELF_HUNK:
+    case CHD_MAP_TYPE_SELF_REF:
 	/* XXX: check CRC here too? */
 	return chd_read_hunk(chd, chd->map[idx].offset, b);
 
-    case CHD_MAP_TYPE_PARENT_HUNK:
+    case CHD_MAP_TYPE_PARENT_REF:
 	chd->error = CHD_ERR_NOTSUP;
 	return -1;
 
     default:
-	chd->error = CHD_ERR_NOTSUP; /* XXX: wrong error */
+	chd->error = CHD_ERR_NOTSUP;
 	return -1;
     }
     
@@ -360,13 +378,18 @@ read_header(struct chd *chd)
     
     chd->hdr_length = len;
     chd->version = GET_UINT32(p);
-    chd->flags = GET_UINT32(p);
-    chd->compression = GET_UINT32(p);
 
-    if (chd->version > 4) {
+    if (chd->version > 5) {
 	chd->error = CHD_ERR_VERSION;
 	return -1;
     }
+    
+    if (chd->version >= 5)
+	return read_header_v5(chd, b, len);
+    
+    chd->flags = GET_UINT32(p);
+    chd->compressors[0] = v4_compressors[GET_UINT32(p)];
+
     /* XXX: check chd->hdr_length against expected value for version */
 
     if (chd->version < 3) {
@@ -419,6 +442,69 @@ read_header(struct chd *chd)
 	}
     }
 
+    chd->map_offset = chd->hdr_length;
+    
+    return 0;
+}
+
+
+
+
+static int
+read_header_v5(struct chd *chd, unsigned char *header, uint32_t len)
+{
+    /* 
+    V5 header:
+
+    [  0] char   tag[8];        // 'MComprHD'
+    [  8] UINT32 length;        // length of header (including tag and
+				// length fields)
+    [ 12] UINT32 version;       // drive format version
+    [ 16] UINT32 compressors[4];// which custom compressors are used?
+    [ 32] UINT64 logicalbytes;  // logical size of the data (in bytes)
+    [ 40] UINT64 mapoffset;     // offset to the map
+    [ 48] UINT64 metaoffset;    // offset to the first blob of
+				// metadata
+    [ 56] UINT32 hunkbytes;     // number of bytes per hunk (512k
+				// maximum)
+    [ 60] UINT32 unitbytes;     // number of bytes per unit within
+				// each hunk
+    [ 64] UINT8  rawsha1[20];   // raw data SHA1
+    [ 84] UINT8  sha1[20];      // combined raw+meta SHA1
+    [104] UINT8  parentsha1[20];// combined raw+meta SHA1 of parent
+    [124] (V5 header length)
+    */
+
+    unsigned char *p = header + TAG_AND_LEN + 4;
+    int i;
+    
+    for (i=0; i<4; i++)
+	chd->compressors[i] = GET_UINT32(p);
+
+    chd->total_len = GET_UINT64(p);
+
+    chd->map_offset = GET_UINT64(p);
+    chd->meta_offset = GET_UINT64(p);
+
+    chd->hunk_len = GET_UINT32(p);
+    chd->total_hunks = (chd->total_len+chd->hunk_len-1) / chd->hunk_len;
+    
+    p += 4; /* unit bytes */
+    
+    memcpy(chd->raw_sha1, p, sizeof(chd->raw_sha1));
+    p += sizeof(chd->raw_sha1);
+    memcpy(chd->sha1, p, sizeof(chd->sha1));
+    p += sizeof(chd->sha1);
+    memcpy(chd->parent_sha1, p, sizeof(chd->parent_sha1));
+    p += sizeof(chd->parent_sha1);
+
+    chd->flags = 0;
+    for (i=0; i<sizeof(chd->parent_sha1); i++)
+	if (chd->parent_sha1[i] != 0) {
+	    chd->flags = CHD_FLAG_HAS_PARENT;
+	    break;
+	}
+    
     return 0;
 }
 
@@ -431,10 +517,18 @@ read_map(struct chd *chd)
     unsigned int i, len;
     uint64_t v;
 
+    if (fseek(chd->f, chd->map_offset, SEEK_SET) < 0) {
+	chd->error = CHD_ERR_SEEK;
+	return -1;
+    }
+
     if ((chd->map=malloc(sizeof(*chd->map)*chd->total_hunks)) == NULL) {
 	chd->error = CHD_ERR_NOMEM;
 	return -1;
     }
+
+    if (chd->version >= 5)
+	return read_map_v5(chd);
 
     if (chd->version < 3)
 	len = MAP_ENTRY_SIZE_V12;
@@ -457,19 +551,40 @@ read_map(struct chd *chd)
 	    chd->map[i].offset = v & 0xFFFFFFFFFFFLL;
 	    chd->map[i].crc = 0;
 	    chd->map[i].length = v >> 44;
-	    chd->map[i].flags = CHD_MAP_FL_NOCRC
-		| (chd->map[i].length == chd->hunk_len
-		   ? CHD_MAP_TYPE_UNCOMPRESSED : CHD_MAP_TYPE_COMPRESSED);
+	    chd->map[i].flags = CHD_MAP_FL_NOCRC;
+	    if (chd->map[i].length == chd->hunk_len)
+		chd->map[i].type = CHD_MAP_TYPE_UNCOMPRESSED;
+	    else
+		chd->map[i].type = CHD_MAP_TYPE_COMPRESSOR0;
 	}
 	else {
 	    chd->map[i].offset = GET_UINT64(p);
 	    chd->map[i].crc = GET_UINT32(p);
 	    chd->map[i].length = GET_UINT16(p);
 	    chd->map[i].flags = GET_UINT16(p);
+	    chd->map[i].type = v4_map_types[chd->map[i].flags & 0x0f];
+	    chd->map[i].flags &= 0xf0;
 	}
     }
 
     return 0;
+}
+
+
+
+static int
+read_map_v5(struct chd *chd)
+{
+    int i;
+
+    chd->error = CHD_ERR_NOTSUP;
+    
+    if (chd->compressors[0] == 0) {
+	/* XXX: uncompressed map */
+
+	return -1;
+    }
+    return -1;
 }
 
 
