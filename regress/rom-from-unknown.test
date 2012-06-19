@@ -4,7 +4,7 @@ args -FKLvcje unknown 1-4
 file unknown/1-4.zip 1-4-ok.zip 1-4-wrong.zip
 file roms/1-4.zip 1-4-wrong.zip 1-4-ok.zip
 stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/14.zip'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in `unknown/1-4.zip'
 stdout roms/1-4.zip: add `unknown/1-4.zip/04.rom' as `04.rom'
 stdout roms/1-4.zip: mv unknown file `04.rom'
 stdout unknown/14.zip: delete used file `04.rom'
