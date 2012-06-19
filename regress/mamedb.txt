@@ -129,6 +129,14 @@ game (
 )
 
 game (
+	name disk-3
+	description "512 byte size disk"
+	manufacturer "synth"
+	year 2012
+	disk ( name 512v5 sha1 cf37d50e886519c332dcfe84440f1f085b98c634 )
+)
+
+game (
 	name diskchild
 	description "1-4 with disk (child)"
 	manufacturer "synth"

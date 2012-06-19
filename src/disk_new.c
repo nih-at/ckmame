@@ -109,7 +109,7 @@ disk_new(const char *name, int flags)
 	    return NULL;
 	}
 
-	if (diskhashtypes & HASHES_TYPE_MD5) {
+	if (diskhashtypes & HASHES_TYPE_MD5 & h->types) {
 	    if (!hashes_verify(h, HASHES_TYPE_MD5, chd->md5)) {
 		myerror(ERRFILE, "md5 mismatch");
 		disk_real_free(d);
@@ -117,21 +117,23 @@ disk_new(const char *name, int flags)
 	    }
 	}
 
-	if (chd->version > 2 && (diskhashtypes & HASHES_TYPE_SHA1)) {
+	if (chd->version > 2 && (diskhashtypes & HASHES_TYPE_SHA1 & h->types)) {
 	    if (!hashes_verify(h, HASHES_TYPE_SHA1, chd->sha1)) {
 		myerror(ERRFILE, "sha1 mismatch in '%s'");
 		disk_real_free(d);
 		return NULL;
 	    }
-	}		
+	}
     }
     else {
 	chd_close(chd);
-    
-	hashes_set(h, HASHES_TYPE_MD5, chd->md5);
-	if (chd->version > 2)
-	    hashes_set(h, HASHES_TYPE_SHA1, chd->sha1);
+	h->types = 0;
     }
+
+    if (chd->version < 4 && (hashes_types(h) & HASHES_TYPE_MD5) == 0)
+	hashes_set(h, HASHES_TYPE_MD5, chd->md5);
+    if (chd->version > 2 && (hashes_types(h) & HASHES_TYPE_SHA1) == 0)
+	hashes_set(h, HASHES_TYPE_SHA1, chd->sha1);
 
     if ((id=memdb_put_ptr(name, d)) < 0) {
 	disk_real_free(d);
@@ -204,8 +206,12 @@ get_hashes(struct chd *chd, struct hashes *h)
 	n = chd->hunk_len > len ? len : chd->hunk_len;
 
 	if (chd_read_hunk(chd, hunk, buf) != (int)chd->hunk_len) {
-	    /* XXX: include chd->error */
-	    myerror(ERRFILESTR, "error reading hunk %d", hunk);
+	    if (chd->error == CHD_ERR_NOTSUP) {
+		myerror(ERRFILE, "warning: unsupported CHD type, integrity not checked");
+		h->types = 0;
+		return 0;
+	    }
+	    myerror(ERRFILESTR, "error reading hunk %d: error %d", hunk, chd->error);
 	    free(buf);
 	    hashes_update_final(hu);
 	    return -1;
@@ -250,7 +256,7 @@ get_hashes(struct chd *chd, struct hashes *h)
 
 	meta_hash = xmalloc(n_meta_hash*sizeof(*meta_hash));
 
-	len = chd->hunk_len; /* curent size of buf */
+	len = chd->hunk_len; /* current size of buf */
 
 	for (i=0,e=meta; e; e=e->next) {
 	    if ((e->flags & CHD_META_FL_CHECKSUM) == 0)

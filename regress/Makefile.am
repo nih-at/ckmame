@@ -30,6 +30,7 @@ TESTS=	\
 		cleanup-disk.test \
 		cleanup-implicit.test \
 		delete-used-superfluous.test \
+		disk-chd-v5-integrity.test \
 		disk-from-extra-remove.test \
 		disk-from-extra.test \
 		disk-from-superfluous-all.test \
@@ -202,6 +203,7 @@ CHDS=		108-2.chd \
 		108-5.chd \
 		108-5a.chd \
 		12-1.chd \
+		512v5.chd \
 		diff.chd
 
 DBFILES=	mamedb.txt \

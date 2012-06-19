@@ -32,7 +32,6 @@ tests:
 ! [bug] tries to remove disk image in extra twice (or tries to remove used?)
 ! [bug] diagnostics (fix?): don't process disks if checking samples
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
-! [bug] ckmame -i fails for LD-CHD disks
 + [feature] support multiple -O arguments
 + [feature] create fix dats for missing files
 + [bug] speed up cleanup of extra dir: no checksums need to be computed
@@ -45,7 +44,6 @@ tests:
 + [cleanup] merge disk_t into file_t
 + [feature] config file (provides defaults overridable on command line)
 + [feature] mkmamedb: support for cmpro's www-profiler
-+ [feature] when moving file to needed, recheck games that might need it
 + [feature] needed cleanup (automatically?)
 - [feature] better support for chds in separate chds/gamename/chdname.chd
 - [cleanup] reduce code duplication
