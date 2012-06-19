@@ -25,13 +25,7 @@ tests:
   ckmame: new/file.chd: cannot remove: No such file or directory
   In image new/file.chd:
   image new/file.chd: not used
-! [test] detective
-! [bug] fix BROKEN_TESTS
-! [bug] tries to remove disk image in extra twice (or tries to remove used?)
-! [bug] diagnostics (fix?): don't process disks if checking samples
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
-+ [feature] support multiple -O arguments
-+ [feature] create fix dats for missing files
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
@@ -39,8 +33,8 @@ tests:
 + [feature] inconsistent zip in ROM set: copy files to new zip
 + [cleanup] merge disk_t into file_t
 + [feature] config file (provides defaults overridable on command line)
-+ [feature] mkmamedb: support for cmpro's www-profiler
 + [feature] needed cleanup (automatically?)
++ [bug] fix BROKEN_TESTS
 - [feature] chd v5 support: maps, lzma, huffman, flac, a/v decompression
 - [feature] better support for chds in separate chds/gamename/chdname.chd
 - [cleanup] reduce code duplication
@@ -51,6 +45,8 @@ tests:
 - [bug] check if needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
+- [bug] diagnostics (fix?): don't process disks if checking samples
+- [feature] mkmamedb: support for cmpro's www-profiler
 - [feature] add hash-types option to dumpgame
 - [feature] mkmamedb: split to original CM dat files + detector XML on export
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
@@ -60,6 +56,7 @@ tests:
   - are all roms of one set included in one other set
   - are two sets the same, just different name
 - [feature] --cleanup-extra: remove (unnecessary?) directories
+- [feature] support multiple -O arguments
 - [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
 - [cleanup] review types used for length/offset (use 64bit?)
 - [cleanup] use int2str/str2int
@@ -77,33 +74,12 @@ tests:
 	rom_compare_nsc
 	rom_copmare_sc
 	rom_num_altnames
-
-cmcheck features:
-- db (dat file?) with roms we have elsewhere:
-  - if correct on dvd, write "correct (on dvd)"
-  - on dvd, only nameerrors: output optional
-  - garbage, unused on dvd: output optional
-  - use file from dvd: "is on dvd..." (-> game not "correct")
-  * option to fix minor errors (name error, garbage, unused) from dvd to hd
-  * option to delete files on disk that are not more correct than on dvd
-  * option to provide mapping from db to path (for dvd dbs)
-  + check dvd status first, if ok "correct" (garbage, unused)
-  + use any files from roms/game.zip
-    if unsplit ok: "correct"
-    if split ok
-      get files from dvd if possible
-      else keep looking
-  + use any files from superfluous/extra dirs
+- [test] detective
 
 other features:
 - parse: add state checking to parse-cm.c
 - parse: check for duplicate attributes
-- tool for generating update sets from ckmame output and existing romset
-- tool for generating update sets from two databases and existing romset
-- find out why runtest is slow
-- add support for native db3/db4
 - add option to check integrity for roms only (not for disks, they take forever)
-- mkmamedb: handle disk without md5
 - mkmamedb: handle rom without crc
 - mkmamedb: handle "size 0 crc -"
 - mkmamedb: no error message for missing newline in last line
