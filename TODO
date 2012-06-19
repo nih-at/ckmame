@@ -34,7 +34,7 @@ tests:
 + [cleanup] merge disk_t into file_t
 + [feature] config file (provides defaults overridable on command line)
 + [feature] needed cleanup (automatically?)
-+ [bug] fix BROKEN_TESTS
+- [bug] fix BROKEN_TESTS
 - [feature] chd v5 support: maps, lzma, huffman, flac, a/v decompression
 - [feature] better support for chds in separate chds/gamename/chdname.chd
 - [cleanup] reduce code duplication
