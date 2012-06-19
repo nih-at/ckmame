@@ -4,7 +4,10 @@ args -O ../mame2.db -v --cleanup-extra -e extra
 file roms/deadbeef.zip deadbeef.zip deadbeef.zip 
 file extra/deadfish4.zip deadfish4.zip deadfish.zip
 file extra/2-4c.zip 2-4c-ok.zip 1-c-ok.zip
+file extra/1-4-crcerror.zip 1-4-crcerror.zip 1-4-crcerror.zip
 file-del extra/deadclonedbeef.zip deadclonedbeef.zip 
+stdout In archive extra/1-4-crcerror.zip:
+stdout file 04.rom        size       4  crc d87e7e0c: unknown
 stdout In archive extra/2-4c.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: duplicate
 stdout file 0c.rom        size      12  crc 0623c932: unknown

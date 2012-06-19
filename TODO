@@ -16,10 +16,8 @@ tests:
   * rule operations
   * [test] is superfluous file that needs detector cleaned up correctly?
 
-! [feature] chd v5 support
 ! [feature] reorder cleanup step when renaming files to remove the copies
   earlier; otherwise big renames on big sets don't work.
-! [feature] chd: implement a/v decompression
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
 ! [bug] cleanup reports file that were used this time as "not used"
 ! [bug] cleanup after using disks reports errors because disks were moved
@@ -34,8 +32,6 @@ tests:
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
 + [feature] support multiple -O arguments
 + [feature] create fix dats for missing files
-+ [bug] speed up cleanup of extra dir: no checksums need to be computed
-  if the crc (or size) doesn't match any known rom
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
@@ -45,6 +41,7 @@ tests:
 + [feature] config file (provides defaults overridable on command line)
 + [feature] mkmamedb: support for cmpro's www-profiler
 + [feature] needed cleanup (automatically?)
+- [feature] chd v5 support: maps, lzma, huffman, flac, a/v decompression
 - [feature] better support for chds in separate chds/gamename/chdname.chd
 - [cleanup] reduce code duplication
 - [cleanup] access db directly in find_*

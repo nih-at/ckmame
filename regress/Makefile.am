@@ -109,6 +109,7 @@ TESTS=	\
 		rom-duplicate-ok.test \
 		rom-duplicate-wrong.test \
 		rom-from-extra-broken.test \
+		rom-from-extra-broken-unwanted.test \
 		rom-from-extra-child.test \
 		rom-from-extra-detector.test \
 		rom-from-extra-inconsistent.test \
@@ -160,6 +161,7 @@ BROKEN_TEST=	\
 		rom-from-unknown.test
 
 ZIPS=		1-4-2.zip \
+		1-4-crcerror.zip \
 		1-4-dup.zip \
 		1-4-garbage.zip \
 		1-4-inconsistent.zip \
