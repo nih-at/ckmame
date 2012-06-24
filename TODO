@@ -1,21 +1,3 @@
-tests:
-* case differences (game name / archive / rom / file in archive)
-* extra cleanup done when all games checked
-* is superfluous file that needs detector cleaned up correctly?
-* dumpgame
-* mkmamedb tests
-  * two different roms with same name (error)
-  * /prog from command line
-  * /prog from file
-  * broken input
-* detector
-  * header field
-  * write to db
-  * use on matching file
-  * use on non-matching file
-  * rule operations
-  * [test] is superfluous file that needs detector cleaned up correctly?
-
 ! [feature] reorder cleanup step when renaming files to remove the copies
   earlier; otherwise big renames on big sets don't work.
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
@@ -26,6 +8,7 @@ tests:
   In image new/file.chd:
   image new/file.chd: not used
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
++ [cleanup] ckmame: create fixdat only when necessary
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
@@ -34,6 +17,16 @@ tests:
 + [cleanup] merge disk_t into file_t
 + [feature] config file (provides defaults overridable on command line)
 + [feature] needed cleanup (automatically?)
++ [feature] mkmamedb: mark ROMs without checksums as nogooddump
++ [bug] mkmamedb -F dat:
+  - write & unquoted (perhaps other meta characters as well)
+  - write Umlaut wrong
+    Entity: line 5986: parser error : Input is not proper UTF-8, indicate encoding !
+    Bytes: 0x81 0x63 0x6B 0x73
+                <rom name="Gl�cksrad.ipf" size="1049180" crc="008b8870" sha1="b1a4bba7c96ce0c2
+                             ^
+    Suggested solution: using iconv and LC_CTYPE, try transcribing invalid UTF-8 files to UTF-8
+    if it fails or no iconv or LC_CTYPE available, replace invalid characters with '?'
 - [bug] fix BROKEN_TESTS
 - [feature] chd v5 support: maps, lzma, huffman, flac, a/v decompression
 - [feature] better support for chds in separate chds/gamename/chdname.chd
@@ -74,7 +67,6 @@ tests:
 	rom_compare_nsc
 	rom_copmare_sc
 	rom_num_altnames
-- [test] detective
 
 other features:
 - parse: add state checking to parse-cm.c
@@ -97,6 +89,25 @@ code cleanups:
 - split util*, funcs.h
 - use return value of w_game
 - fix all XXXs
+
+tests:
+* case differences (game name / archive / rom / file in archive)
+* extra cleanup done when all games checked
+* is superfluous file that needs detector cleaned up correctly?
+* detective
+* detector
+  * header field
+  * write to db
+  * use on matching file
+  * use on non-matching file
+  * rule operations
+  * [test] is superfluous file that needs detector cleaned up correctly?
+* dumpgame
+* mkmamedb tests
+  * two different roms with same name (error)
+  * /prog from command line
+  * /prog from file
+  * broken input
 
 tools:
 
