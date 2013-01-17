@@ -81,6 +81,7 @@ static int read_header(struct chd *);
 static int read_header_v5(struct chd *, unsigned char *, uint32_t);
 static int read_map(struct chd *);
 static int read_map_v5(struct chd *);
+static int read_meta_headers(struct chd *chd);
 
 
 
@@ -589,7 +590,7 @@ read_map_v5(struct chd *chd)
 
 
 
-int
+static int
 read_meta_headers(struct chd *chd)
 {
     struct chd_metadata_entry *meta, *prev;
