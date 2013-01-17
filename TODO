@@ -104,6 +104,7 @@ tests:
   * [test] is superfluous file that needs detector cleaned up correctly?
 * dumpgame
 * mkmamedb tests
+  * mtree output format
   * two different roms with same name (error)
   * /prog from command line
   * /prog from file
