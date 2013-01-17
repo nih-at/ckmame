@@ -635,14 +635,14 @@ dump_stats(int dummy)
 	    printf(" (");
 	    if (size > 1024*1024*1024)
 		printf("%llu.%02lluGiB",
-		       size/(1024*1024*1024),
-		       (((size/(1024*1024))*10+512)/1024) % 100);
+		       (unsigned long long)size/(1024*1024*1024),
+		       ((((unsigned long long)size/(1024*1024))*10+512)/1024) % 100);
 	    else if (size > 1024*1024)
 		printf("%llu.%02lluMiB",
-		       size/(1024*1024),
-		       (((size/1024)*10+512)/1024) % 100);
+		       (unsigned long long)size/(1024*1024),
+		       ((((unsigned long long)size/1024)*10+512)/1024) % 100);
 	    else
-		printf("%llu bytes", size);
+		printf("%llu bytes", (unsigned long long)size);
 	    printf(")");
 	}
 	printf("\n");
