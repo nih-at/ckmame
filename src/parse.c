@@ -117,6 +117,8 @@ parse_file_continue(parser_context_t *ctx, filetype_t ft, int ht,
     }
 
     ctx->flags |= PARSE_FL_ROM_CONTINUED;
+
+    return 0;
 }
 
 
@@ -214,6 +216,8 @@ parse_file_ignore(parser_context_t *ctx, filetype_t ft, int ht,
     }
 
     ctx->flags |= PARSE_FL_ROM_IGNORE;
+
+    return 0;
 }
 
 
