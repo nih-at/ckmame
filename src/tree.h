@@ -60,6 +60,7 @@ int tree_add_games_needing(tree_t *, uint64_t, const hashes_t *);
 void tree_free(tree_t *);
 tree_t *tree_new(void);
 void tree_recheck(const tree_t *, const char *);
+int tree_recheck_games_needing(tree_t *, uint64_t, const hashes_t *);
 void tree_traverse(tree_t *, archive_t *, archive_t *);
 
 #endif /* tree.h */
