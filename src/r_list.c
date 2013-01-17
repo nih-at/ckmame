@@ -77,7 +77,7 @@ r_list(sqlite3 *db, enum dbh_list type)
     sqlite3_stmt *stmt;
     int ret;
 
-    if (type < 0 || type >= DBH_KEY_LIST_MAX)
+    if (type >= DBH_KEY_LIST_MAX)
 	return NULL;
 
     if (sqlite3_prepare_v2(db, query_list[type], -1, &stmt, NULL) != SQLITE_OK)
