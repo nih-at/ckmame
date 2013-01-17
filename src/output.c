@@ -1,6 +1,6 @@
 /*
   output.c -- output game info
-  Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -68,7 +68,10 @@ output_game(output_context_t *ctx, game_t *g)
 int
 output_header(output_context_t *ctx, dat_entry_t *de)
 {
-        return ctx->output_header(ctx, de);
+    if (ctx->output_header == NULL)
+	return 0;
+
+    return ctx->output_header(ctx, de);
 }
 
 
@@ -83,6 +86,8 @@ output_new(output_format_t fmt, const char *fname)
 	return output_db_new(fname);
     case OUTPUT_FMT_DATAFILE_XML:
 	return output_datafile_xml_new(fname);
+    case OUTPUT_FMT_MTREE:
+	return output_mtree_new(fname);
     default:
 	return NULL;
     }

@@ -1,4 +1,4 @@
-.\" Copyright (c) 2005-2011 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005-2013 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd February 8, 2011
+.Dd January 18, 2013
 .Dt MKMAMEDB 1
 .Os
 .Sh NAME
@@ -81,10 +81,15 @@ directory of zip archives
 Supported output formats are:
 .Bl -bullet -offset indent -compact
 .It
-CMPro dat file
-.It
 .Xr ckmame 1
 database format
+.It
+CMPro dat file
+.It
+Logiqx XML dat file
+.It
+.Xr mtree 8
+file
 .El
 .Pp
 The CMPro file format is described at
@@ -102,8 +107,18 @@ Supported hash types are: crc, md5, sha1.
 Default are all.
 .It Fl F Ar outputformat , Fl Fl format Ar outputformat
 Specify output format.
-Supported formats are: db (ckmame database) and cm (clrmamepro dat file).
-Default is cm.
+Supported formats are 
+.Cm cm 
+(clrmamepro dat file),
+.Cm dat
+(XML datfile),
+.Cm db
+.Xr ( ckmame 1
+database), and
+.Cm mtree
+.Xr ( mtree 8
+file).
+The default is cm.
 .It Fl Fl detector Ar file
 Use CMPro XML header skip detector description from
 .Ar file .

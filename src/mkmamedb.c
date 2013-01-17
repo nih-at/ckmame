@@ -1,6 +1,6 @@
 /*
   mkmamedb.c -- create mamedb
-  Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -53,23 +53,23 @@ char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
 char help[] = "\n\
-  -h, --help                display this help message\n\
-  -V, --version             display version number\n\
-  -C, --hash-types types    specify hash types to compute (default: all)\n\
-  -F, --format [cm|dat|db]  specify output format [default: db]\n\
-  -o, --output dbfile       write to database dbfile\n\
-  -x, --exclude pat         exclude games matching shell glob PAT\n\
-      --detector xml-file   use header detector\n\
-      --only-files pat      only use zip members matching shell glob PAT\n\
-      --prog-description d  set description of rominfo\n\
-      --prog-name name      set name of program rominfo is from\n\
-      --prog-version vers   set version of program rominfo is from\n\
-      --skip-files pat      don't use zip members matching shell glob PAT\n\
+  -h, --help                      display this help message\n\
+  -V, --version                   display version number\n\
+  -C, --hash-types types          specify hash types to compute (default: all)\n\
+  -F, --format [cm|dat|db|mtree]  specify output format [default: db]\n\
+  -o, --output dbfile             write to database dbfile\n\
+  -x, --exclude pat               exclude games matching shell glob PAT\n\
+      --detector xml-file         use header detector\n\
+      --only-files pat            only use zip members matching shell glob PAT\n\
+      --prog-description d        set description of rominfo\n\
+      --prog-name name            set name of program rominfo is from\n\
+      --prog-version vers         set version of program rominfo is from\n\
+      --skip-files pat            don't use zip members matching shell glob PAT\n\
 \n\
 Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2011 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2013 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hC:F:o:Vx:"
@@ -164,6 +164,8 @@ main(int argc, char **argv)
 		fmt = OUTPUT_FMT_DATAFILE_XML;
 	    else if (strcmp(optarg, "db") == 0)
 		fmt = OUTPUT_FMT_DB;
+	    else if (strcmp(optarg, "mtree") == 0)
+		fmt = OUTPUT_FMT_MTREE;
 	    else {
 		fprintf(stderr, "%s: unknown output format `%s'\n",
 			getprogname(), optarg);
