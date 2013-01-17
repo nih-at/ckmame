@@ -1,6 +1,6 @@
 /*
   dumpgame.c -- print info about game (from data base)
-  Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
