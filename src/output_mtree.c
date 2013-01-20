@@ -158,6 +158,10 @@ strsvis_cstyle(const char *in)
 	    out[outpos++] = '\\';
 	    out[outpos++] = 'v';
 	    break;
+	case '#':
+	    out[outpos++] = '\\';
+	    out[outpos++] = '#';
+	    break;
 	default:
 	    out[outpos++] = in[inpos];
 	    break;
