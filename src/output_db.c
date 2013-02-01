@@ -1,6 +1,6 @@
 /*
   output-db.c -- write games to DB
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -66,7 +66,7 @@ struct fbh_context {
 
 static void familymeeting(sqlite3 *, filetype_t, game_t *, game_t *);
 static int handle_lost(output_context_db_t *);
-static int lost(game_t *, filetype_t);
+static int lost(output_context_db_t *, game_t *, filetype_t);
 static int output_db_close(output_context_t *);
 static int output_db_detector(output_context_t *, detector_t *);
 static int output_db_game(output_context_t *, game_t *);
@@ -172,7 +172,8 @@ handle_lost(output_context_db_t *ctx)
 		    continue;
 		}
 		
-		if (lost(parent, (filetype_t)ft)) {
+		if (lost(ctx, parent, (filetype_t)ft)) {
+		    printf("skipping %s, parent %s lost\n", child->name, parent->name);
 		    game_free(parent);
 		    continue;
 		}
@@ -202,18 +203,21 @@ handle_lost(output_context_db_t *ctx)
 
 
 static int
-lost(game_t *g, filetype_t ft)
+lost(output_context_db_t *ctx, game_t *g, filetype_t ft)
 {
-    int i;
+    int i, type;
 
     if (game_cloneof(g, ft, 0) == NULL)
 	return 0;
 
-    for (i=0; i<game_num_files(g, ft); i++)
-	if (file_where(game_file(g, ft, i)) != FILE_INZIP)
-	    return 0;
+    for (i=0; i<parray_length(ctx->lost_children); i++) {
+	if (strcmp(parray_get(ctx->lost_children, i), game_name(g)) == 0) {
+	    type = *(int *)array_get(ctx->lost_children_types, i);
+	    return (type & (1<<ft)) ? 1 : 0;
+	}
+    }
 
-    return 1;
+    return 0;
 }
 
 
@@ -291,7 +295,7 @@ output_db_game(output_context_t *out, game_t *g)
     for (i=0; i<GAME_RS_MAX; i++) {
 	if (game_cloneof(g, i, 0)) {
 	    if (((parent=r_game(ctx->db, game_cloneof(g, i, 0))) == NULL)
-		|| lost(parent, (filetype_t)i)) {
+		|| lost(ctx, parent, (filetype_t)i)) {
 		to_do |= 1<<i;
 		if (parent)
 		    game_free(parent);
