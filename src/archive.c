@@ -441,24 +441,11 @@ read_infos_from_zip(archive_t *a)
     char errstr[80];
 
     zerr = 0;
-    if ((za=zip_open(archive_name(a),
-		     ((a->flags & ARCHIVE_FL_CHECK_INTEGRITY)
-		      ? ZIP_CHECKCONS : 0), 
-		     &zerr)) == NULL) {
-	/* no error if file doesn't exist */
-	if (!(zerr == ZIP_ER_OPEN && errno == ENOENT)) {
-	    zip_error_to_str(errstr, sizeof(errstr), zerr, errno);
-	    myerror(ERRDEF, "error opening zip archive `%s': %s",
-		    archive_name(a), errstr);
 
-	    return -1;
-	}
-    }
+    if (archive_ensure_zip(a) < 0)
+	return -1;
 
-    archive_zip(a) = za;
-
-    if (za == NULL)
-	return 0;
+    za = archive_zip(a);
 
     seterrinfo(NULL, archive_name(a));
 

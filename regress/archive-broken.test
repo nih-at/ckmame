@@ -13,5 +13,5 @@ stdout roms/2-48.zip: add `roms/good-2-48.zip/08.rom' as `08.rom'
 stdout roms/good-2-48.zip: delete used file `04.rom'
 stdout roms/good-2-48.zip: delete used file `08.rom'
 stdout roms/good-2-48.zip: remove empty archive
-stderr error opening zip archive `roms/2-48.zip': Not a zip archive
+stderr error creating zip archive `roms/2-48.zip': Not a zip archive
 stderr error creating zip archive `roms/2-48.zip': Not a zip archive

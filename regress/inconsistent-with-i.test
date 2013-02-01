@@ -6,5 +6,5 @@ file-new roms/1-4.zip-000.broken 1-4-inconsistent.zip
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found
 stdout roms/1-4.zip: rename broken zip to `roms/1-4.zip-000.broken'
-stderr error opening zip archive `roms/1-4.zip': Zip archive inconsistent
+stderr error creating zip archive `roms/1-4.zip': Zip archive inconsistent
 stderr error creating zip archive `roms/1-4.zip': Zip archive inconsistent
