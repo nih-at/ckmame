@@ -173,7 +173,7 @@ handle_lost(output_context_db_t *ctx)
 		}
 		
 		if (lost(ctx, parent, (filetype_t)ft)) {
-		    printf("skipping %s, parent %s lost\n", child->name, parent->name);
+		    /* printf("skipping %s, parent %s lost\n", child->name, parent->name); */
 		    game_free(parent);
 		    continue;
 		}
