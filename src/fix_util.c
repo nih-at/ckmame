@@ -345,6 +345,9 @@ save_needed(archive_t *sa, int sidx, int do_save)
 	return -1;
     }
 
+    if (archive_free(da) < 0)
+	return -1;
+
     if (do_save)
         return archive_file_delete(sa, sidx);
     else
