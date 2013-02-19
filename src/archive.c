@@ -75,7 +75,10 @@ archive_close_zip(archive_t *a)
 {
     if (archive_zip(a) == NULL)
 	return 0;
-    
+
+#ifdef FD_DEBUGGING
+    fprintf(stderr, "zip_close %s\n", archive_name(a));
+#endif
     if (zip_close(archive_zip(a)) < 0) {
 	/* error closing, so zip is still valid */
 	myerror(ERRZIP, "error closing zip: %s", zip_strerror(archive_zip(a)));
@@ -112,6 +115,9 @@ archive_ensure_zip(archive_t *a)
 
     if ((archive_zip(a)=my_zip_open(archive_name(a), flags)) == NULL)
 	return -1;
+#ifdef FD_DEBUGGING
+    fprintf(stderr, "zip_open: %s\n", archive_name(a));
+#endif
 
     return 0;
 }

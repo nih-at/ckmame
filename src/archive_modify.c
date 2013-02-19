@@ -95,6 +95,9 @@ archive_commit(archive_t *a)
 	    }
 	}
 
+#ifdef FD_DEBUGGING
+	fprintf(stderr, "zip_close %s\n", archive_name(a));
+#endif
 	if (zip_close(a->za) < 0) {
 	    seterrinfo(NULL, archive_name(a));
 	    myerror(ERRZIP, "cannot commit changes: %s",
