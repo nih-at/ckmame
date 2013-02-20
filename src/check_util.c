@@ -148,7 +148,6 @@ ensure_needed_maps(void)
 char *
 findfile(const char *name, filetype_t what)
 {
-    int i;
     char *fn;
     struct stat st;
 
@@ -159,7 +158,7 @@ findfile(const char *name, filetype_t what)
 	    return NULL;
     }
 
-    fn = make_file_name(what, i, name);
+    fn = make_file_name(what, name);
     if (stat(fn, &st) == 0)
 	return fn;
     if (what == TYPE_DISK) {
@@ -188,7 +187,7 @@ get_directory(filetype_t ft)
 
 
 char *
-make_file_name(filetype_t ft, int idx, const char *name)
+make_file_name(filetype_t ft, const char *name)
 {
     char *fn;
     const char *dir, *ext;

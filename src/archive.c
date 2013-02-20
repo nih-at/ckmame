@@ -444,7 +444,6 @@ read_infos_from_zip(archive_t *a)
     file_t *r;
     int i;
     int zerr;
-    char errstr[80];
 
     zerr = 0;
 

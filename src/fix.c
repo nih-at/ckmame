@@ -248,7 +248,7 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 		/* XXX: move to garbage */
 	    }
 	    else
-		fname = make_file_name(TYPE_DISK, 0, disk_name(d));
+		fname = make_file_name(TYPE_DISK, disk_name(d));
 
 	    do_copy = ((fix_options & FIX_DELETE_EXTRA) == 0
 		       && match_disk_where(md) == FILE_EXTRA);

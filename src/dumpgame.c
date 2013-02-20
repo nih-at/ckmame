@@ -194,7 +194,7 @@ static void
 print_matches(filetype_t ft, hashes_t *hash)
 {
     game_t *game;
-    int i, j, matches;
+    int i, matches;
     array_t *fbha;
     file_location_t *fbh;
 

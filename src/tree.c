@@ -182,7 +182,7 @@ tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent)
 
 	full_name = findfile(tree->name, file_type);
 	if (full_name == NULL && tree->check) {
-	    full_name = make_file_name(file_type, 0, tree->name);
+	    full_name = make_file_name(file_type, tree->name);
 	}
 	if (full_name)
 	    child = archive_new(full_name, TYPE_ROM, FILE_ROMSET, flags);

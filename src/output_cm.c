@@ -60,9 +60,6 @@ static int output_cm_close(output_context_t *);
 static int output_cm_game(output_context_t *, game_t *);
 static int output_cm_header(output_context_t *, dat_entry_t *);
 static int cmp_games(const game_t *, const game_t *);
-static void print_hash(output_context_cm_t *, int, hashes_t *, const char *);
-static void print_string(output_context_cm_t *, const char *, const char *,
-			 const char *);
 static int write_game(output_context_cm_t *, game_t *);
 
 

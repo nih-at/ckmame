@@ -56,7 +56,7 @@ list_directory(const char *dirname, const char *dbname)
     char b[8192], *p;
     parray_t *listf, *listd, *lst, *found;
     dir_status_t err;
-    int i, len_dir, len_name;
+    int len_dir, len_name;
 
     listf = listd = NULL;
 

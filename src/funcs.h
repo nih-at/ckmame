@@ -74,7 +74,7 @@ int fix_game(game_t *, archive_t *, images_t *, result_t *);
 parray_t *list_directory(const char *, const char *);
 const char *get_directory(filetype_t);
 int link_or_copy(const char *, const char *);
-char *make_file_name(filetype_t, int, const char *);
+char *make_file_name(filetype_t, const char *);
 char *make_garbage_name(const char *, int);
 char *make_needed_name(const file_t *);
 char *make_needed_name_disk(const disk_t *);

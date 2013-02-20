@@ -279,8 +279,6 @@ psfile_close(psfile_ud_t *ud)
 static parser_source_t *
 psfile_open(psfile_ud_t *ud, const char *fname)
 {
-    parser_source_t *ps;
-
     return _ps_file_open(fname, ud->fname);
 }
 

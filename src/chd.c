@@ -72,10 +72,12 @@ static uint8_t  v4_map_types[] = {
     0, CHD_MAP_TYPE_COMPRESSOR0, CHD_MAP_TYPE_UNCOMPRESSED, CHD_MAP_TYPE_MINI, CHD_MAP_TYPE_SELF_REF, CHD_MAP_TYPE_PARENT_REF
 };
 
+#if 0
 static uint8_t  v5_map_types[] = {
     CHD_MAP_TYPE_UNCOMPRESSED, CHD_MAP_TYPE_SELF_REF, CHD_MAP_TYPE_PARENT_REF, CHD_MAP_TYPE_MINI,
     CHD_MAP_TYPE_COMPRESSOR0, CHD_MAP_TYPE_COMPRESSOR1, CHD_MAP_TYPE_COMPRESSOR2, CHD_MAP_TYPE_COMPRESSOR3
 };
+#endif
 
 static int read_header(struct chd *);
 static int read_header_v5(struct chd *, unsigned char *, uint32_t);
@@ -576,8 +578,6 @@ read_map(struct chd *chd)
 static int
 read_map_v5(struct chd *chd)
 {
-    int i;
-
     chd->error = CHD_ERR_NOTSUP;
     
     if (chd->compressors[0] == 0) {

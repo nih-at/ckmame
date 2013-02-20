@@ -179,9 +179,6 @@ static int
 parse_xml_softwarelist(parser_context_t *ctx, filetype_t ft, int ht,
 		     const char *attr)
 {
-    int err;
-    char *s, *p;
-
     /* sadly, no version information */
     return parse_prog_name(ctx, attr);
 }

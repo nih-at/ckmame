@@ -123,7 +123,6 @@ output_datafile_xml_game(output_context_t *out, game_t *g)
     file_t *r;
     disk_t *d;
     int i;
-    game_t *parent;
     char *fl;
 
     ctx = (output_context_xml_t *)out;
