@@ -58,7 +58,8 @@ int
 copy_file(const char *old, const char *new)
 {
     FILE *fin, *fout;
-    char b[8192], nr, nw, n;
+    char b[8192];
+    size_t nr, nw, n;
     int err;
 
     if ((fin=fopen(old, "rb")) == NULL)
@@ -69,10 +70,10 @@ copy_file(const char *old, const char *new)
 	return -1;
     }
 
-    while ((nr=fread(b, sizeof(b), 1, fin)) > 0) {
+    while ((nr=fread(b, 1, sizeof(b), fin)) > 0) {
 	nw = 0;
 	while (nw<nr) {
-	    if ((n=fwrite(b+nw, nr-nw, 1, fout)) == 0) {
+	    if ((n=fwrite(b+nw, 1, nr-nw, fout)) <= 0) {
 		err = errno;
 		fclose(fin);
 		fclose(fout);
