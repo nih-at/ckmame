@@ -389,7 +389,7 @@ static parser_source_t *
 _ps_file_open(const char *fname, const char *parent)
 {
     parser_source_t *ps;
-    char *full_name;
+    char *full_name = NULL;
 
     if (parent != NULL) {
 	char *dir;

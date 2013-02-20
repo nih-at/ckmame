@@ -341,7 +341,7 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
 
     CHECK_STATE(ctx, PARSE_IN_GAME);
 
-    keep_g = 0;
+    keep_g = ret = 0;
 
     if (!name_matches(game_name(ctx->g), ctx->ignore)) {
 	g = ctx->g;
