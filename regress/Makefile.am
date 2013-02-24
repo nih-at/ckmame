@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS=	parallel-tests
+
 noinst_PROGRAMS=	dbdump
 AM_CFLAGS=		-I${srcdir}/../src @SQLITE3_CFLAGS@ @CFLAGS@
 dbdump_LDADD=		../src/libckmame.a @SQLITE3_LIBS@
@@ -19,7 +21,9 @@ DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_B
 
 ZIPCMP=@ZIPCMP@
 
-TESTS_ENVIRONMENT=ZIPCMP="${ZIPCMP}" MAME_DB="${MAME_DB}" $(srcdir)/runtest
+TESTS_ENVIRONMENT=      ZIPCMP=${ZIPCMP} MAME_DB="${MAME_DB}"
+TEST_EXTENSIONS= .test
+TEST_LOG_COMPILER= ${srcdir}/runtest
 
 TESTS=	\
 		archive-broken.test \
