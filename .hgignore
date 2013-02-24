@@ -30,3 +30,5 @@ Makefile.in$
 ^stamp-h1$
 ^test-driver$
 ^regress/sandbox
+^regress/.*\.log$
+^regress/.*\.trs$
