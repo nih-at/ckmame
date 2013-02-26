@@ -38,7 +38,7 @@
 
 
 
-enum dbh_list
+int
 filetype_db_key(filetype_t ft)
 {
     switch (ft) {

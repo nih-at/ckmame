@@ -53,6 +53,8 @@
 #define MAP_ENTRY_SIZE_V12	8	/* size of map entry, versions 1 & 2 */
 #define MAP_ENTRY_SIZE_V3	16	/* size of map entry, version 3 */
 
+#define HEADER_LEN_V5	124
+
 #define GET_UINT16(b)	(b+=2,((b)[-2]<<8)|(b)[-1])
 #define GET_UINT32(b)	(b+=4,((b)[-4]<<24)|((b)[-3]<<16)|((b)[-2]<<8)|(b)[-1])
 #define GET_UINT64(b)	(b+=8,((uint64_t)(b)[-8]<<56)|((uint64_t)(b)[-7]<<48) \
@@ -80,7 +82,7 @@ static uint8_t  v5_map_types[] = {
 #endif
 
 static int read_header(struct chd *);
-static int read_header_v5(struct chd *, unsigned char *, uint32_t);
+static int read_header_v5(struct chd *, unsigned char *);
 static int read_map(struct chd *);
 static int read_map_v5(struct chd *);
 static int read_meta_headers(struct chd *chd);
@@ -388,7 +390,7 @@ read_header(struct chd *chd)
     }
     
     if (chd->version >= 5)
-	return read_header_v5(chd, b, len);
+	return read_header_v5(chd, b);
     
     chd->flags = GET_UINT32(p);
     chd->compressors[0] = v4_compressors[GET_UINT32(p)];
@@ -454,7 +456,7 @@ read_header(struct chd *chd)
 
 
 static int
-read_header_v5(struct chd *chd, unsigned char *header, uint32_t len)
+read_header_v5(struct chd *chd, unsigned char *header)
 {
     /* 
     V5 header:
@@ -481,6 +483,9 @@ read_header_v5(struct chd *chd, unsigned char *header, uint32_t len)
     unsigned char *p = header + TAG_AND_LEN + 4;
     int i;
     
+    if (chd->hdr_length < HEADER_LEN_V5)
+	return -1;
+
     for (i=0; i<4; i++)
 	chd->compressors[i] = GET_UINT32(p);
 

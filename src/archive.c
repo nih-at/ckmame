@@ -443,9 +443,6 @@ read_infos_from_zip(archive_t *a)
     struct zip_stat zsb;
     file_t *r;
     int i;
-    int zerr;
-
-    zerr = 0;
 
     if (archive_ensure_zip(a) < 0)
 	return -1;

@@ -347,6 +347,8 @@ _add_file(archive_t *a, int idx, const char *name, const file_t *f)
 
 
 
+/* some not used here, but prototype must match others */
+/* ARGSUSED */
 static int
 _copy_chd(archive_t *sa, int sidx, archive_t *da, const char *dname,
 	  off_t start, off_t len)
@@ -409,6 +411,7 @@ _copy_zip(archive_t *sa, int sidx, archive_t *da, const char *dname,
 
 
 
+/* ARGSUSED */
 static int
 _delete_chd(archive_t *a, int idx)
 {
@@ -443,6 +446,7 @@ _file_cmp_name(const file_t *a, const file_t *b)
 
 
 
+/* ARGSUSED */
 static int
 _rename_chd(archive_t *a, int idx, const char *name)
 {

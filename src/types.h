@@ -64,7 +64,7 @@ enum file_status {
     FS_SUPERFLUOUS,	/* known, not needed here, and exists elsewhere */
     FS_NEEDED,		/* known and needed elsewhere */
     FS_USED,		/* needed here */
-    FS_DUPLICATE,	/* exists in old */
+    FS_DUPLICATE	/* exists in old */
 };
 
 typedef enum file_status file_status_t;
@@ -138,6 +138,6 @@ typedef enum name_type name_type_t;
 
 
 
-enum dbh_list filetype_db_key(filetype_t);
+int filetype_db_key(filetype_t);
 
 #endif /* types.h */

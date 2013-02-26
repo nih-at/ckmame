@@ -60,7 +60,7 @@ static int init_db(sqlite3 *);
 
 
 static int
-dbh_check_version(sqlite3 *db, int flags)
+dbh_check_version(sqlite3 *db)
 {
     sqlite3_stmt *stmt;
     int version;
@@ -146,7 +146,7 @@ dbh_open(const char *name, int mode)
 	    return NULL;
 	}
     }
-    else if (dbh_check_version(db, mode) != 0) {
+    else if (dbh_check_version(db) != 0) {
 	sqlite3_close(db);
 	return NULL;
     }

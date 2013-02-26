@@ -53,7 +53,7 @@ struct meta_hash {
 
 
 static int get_hashes(struct chd *, struct hashes *);
-int meta_hash_cmp(const void *, const void *);
+static int meta_hash_cmp(const void *, const void *);
 
 
 
@@ -303,7 +303,8 @@ get_hashes(struct chd *chd, struct hashes *h)
 
 
 
-int meta_hash_cmp(const void *a_, const void *b_)
+static int
+meta_hash_cmp(const void *a_, const void *b_)
 {
     const struct meta_hash *a, *b;
     int ret;
