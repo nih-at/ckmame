@@ -1,9 +1,17 @@
 game (
+        name grandparent
+        description "grandparent"
+        manufacturer "synth"
+        year 2008
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+)
+
+game (
         name parent
         description "parent"
         manufacturer "synth"
         year 2008
-	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	romof grandparent
 	rom ( name 08.rom size 8 crc32 3656897d )
 )
 

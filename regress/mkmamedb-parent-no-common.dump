@@ -2,12 +2,14 @@
 0|<null>|<null>|<null>|<null>
 >>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1)
 1|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-1|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
-2|0|0|0a.rom|<null>|0|0|10|189418718|<null>|<null>
+2|0|0|08.rom|<null>|0|0|8|911640957|<null>|<null>
+3|0|0|0a.rom|<null>|0|0|10|189418718|<null>|<null>
 >>> table game (game_id, name, description, dat_idx)
-1|parent|<null>|0
-2|child|<null>|0
+1|grandparent|<null>|0
+2|parent|<null>|0
+3|child|<null>|0
 >>> table parent (game_id, file_type, parent)
-2|0|parent
+2|0|grandparent
+3|0|parent
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)
