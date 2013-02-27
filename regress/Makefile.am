@@ -149,6 +149,7 @@ TESTS=	\
 		superfluous.test \
 		swap.test \
 		swap-roms.test \
+		swap-roms-2.test \
 		tochild.test \
 		tochildfix.test \
 		tz-already.test \
