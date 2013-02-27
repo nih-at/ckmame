@@ -17,7 +17,8 @@ MAME_DB4=mame4.db
 MAME_DB_8_IS_4=mame-1-8-is-4.db
 MAME_DB_BADDUMP=mame-baddump.db
 MAME_DB_CRCDIFF=mame-crcdiff.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF}
+MAME_DB_NOCOMMON=mkmamedb-parent-no-common.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON}
 
 ZIPCMP=@ZIPCMP@
 
@@ -85,6 +86,7 @@ TESTS=	\
 		mkmamedb-no-name.test \
 		mkmamedb-ok.test \
 		mkmamedb-parent-crcdiff.test \
+		mkmamedb-parent-no-common.test \
 		mkmamedb-size-hex.test \
 		multi.test \
 		needed-cleanup.test \
@@ -150,8 +152,6 @@ TESTS=	\
 		tochild.test \
 		tochildfix.test \
 		tz-already.test \
-		tz-ok.test \
-		tz-from-romset.test \
 		wrong.test \
 		wrong2.test \
 		zero.test \
@@ -162,7 +162,9 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
-		rom-from-unknown.test
+		rom-from-unknown.test \
+		tz-ok.test \
+		tz-from-romset.test
 
 ZIPS=		1-4-2.zip \
 		1-4-crcerror.zip \
@@ -235,6 +237,8 @@ DBFILES=	mamedb.txt \
 		mkmamedb-no-name.txt \
 		mkmamedb-parent-crcdiff.dump \
 		mkmamedb-parent-crcdiff.txt \
+		mkmamedb-parent-no-common.dump \
+		mkmamedb-parent-no-common.txt \
 		mkmamedb-size-hex.dump \
 		mkmamedb-size-hex.txt \
 		skip.xml \
@@ -263,11 +267,15 @@ ${MAME_DB_BADDUMP}: ../src/mkmamedb ${srcdir}/mamedb-baddump.txt
 ${MAME_DB_CRCDIFF}: ../src/mkmamedb ${srcdir}/mkmamedb-parent-crcdiff.txt
 	../src/mkmamedb -o ${MAME_DB_CRCDIFF} ${srcdir}/mkmamedb-parent-crcdiff.txt
 
+${MAME_DB_NOCOMMON}: ../src/mkmamedb ${srcdir}/mkmamedb-parent-no-common.txt
+	../src/mkmamedb -o ${MAME_DB_NOCOMMON} ${srcdir}/mkmamedb-parent-no-common.txt
+
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 	./dbdump ${MAME_DB} > mamedb-ok.dump
 	./dbdump ${MAME_DB2} > mkmamedb-lost-parent.dump
 	./dbdump ${MAME_DB4} > mkmamedb-duplicate-game.dump
 	./dbdump ${MAME_DB_CRCDIFF} > mkmamedb-parent-crcdiff.dump
+	./dbdump ${MAME_DB_NOCOMMON} > mkmamedb-parent-no-common.dump
 	set -e \
 	f=$$$$.db; \
 	../src/mkmamedb -o "$$f".db \

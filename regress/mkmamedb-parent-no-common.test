@@ -1,0 +1,6 @@
+description parent no common ROMs with child
+return 0
+program mkmamedb
+args -o mkmamedb-test.db mamedb.txt
+file mamedb.txt mkmamedb-parent-no-common.txt mkmamedb-parent-no-common.txt
+file-new mkmamedb-test.db mkmamedb-parent-no-common.dump
