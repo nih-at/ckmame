@@ -23,6 +23,7 @@ Makefile.in$
 ^regress/mame[0-9]?\.db$
 ^regress/mame-baddump.db$
 ^regress/mame-crcdiff.db$
+^regress/mkmamedb-dir-in-name.db$
 ^regress/mkmamedb-parent-no-common.db$
 ^src/ckmame$
 ^src/detective$

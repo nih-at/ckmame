@@ -77,6 +77,7 @@ TESTS=	\
 		misnamed-dryrun.test \
 		misnamed.test \
 		mkmamedb-broken-sha1.test \
+		mkmamedb-dir-in-name.test \
 		mkmamedb-duplicate-game.test \
 		mkmamedb-duplicate-nodump.test \
 		mkmamedb-lost-parent.test \
@@ -224,6 +225,8 @@ DBFILES=	mamedb.txt \
 		mamedb-ok.dump \
 		mkmamedb-broken-sha1.dump \
 		mkmamedb-broken-sha1.txt \
+		mkmamedb-dir-in-name.dump \
+		mkmamedb-dir-in-name.txt \
 		mkmamedb-duplicate-game.dump \
 		mkmamedb-duplicate-nodump.dump \
 		mkmamedb-duplicate-nodump.txt \
