@@ -5,10 +5,16 @@ file skip.xml skip.xml skip.xml
 file skipped.txt skipped.txt skipped.txt
 mkdir 755 extra
 mkdbargs --detector skip.xml skipped.txt
-args -FKLijvc -e extra skipped
+args -FKLijvc -e extra
 # alternatively
 #file roms/skipped.zip 1-8-ok.zip 1-8-skip-ok.zip
 file roms/skipped.zip 1-8-ok.zip 1-8-ok.zip
 file-del extra/short.zip 1-8-skip-ok.zip
 stdout In game skipped:
 stdout game skipped                                 : correct
+# this is wrong: it should find 08.rom from skipped.zip
+stdout In game unskipped:
+stdout game unskipped                               : not a single rom found
+# this is wrong: it should either just use this file in skipped.zip or clean it up
+stdout In archive extra/short.zip:
+stdout file 08.rom        size       4  crc 02404c40: needed elsewhere
