@@ -36,3 +36,5 @@ Makefile.in$
 ^regress/sandbox
 ^regress/.*\.log$
 ^regress/.*\.trs$
+^xcode/ckmame\.xcodeproj/project\.xcworkspace/xcuserdata
+^xcode/ckmame\.xcodeproj/xcuserdata
