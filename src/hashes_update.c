@@ -39,12 +39,12 @@
 #ifdef HAVE_MD5INIT
 #include <md5.h>
 #else
-#include <md5_own.h>
+#include "md5_own.h"
 #endif
 #ifdef HAVE_SHA1INIT
 #include <sha1.h>
 #else
-#include <sha1_own.h>
+#include "sha1_own.h"
 #endif
 #include <zlib.h>
 

@@ -188,9 +188,9 @@ write_game(output_context_cm_t *ctx, game_t *g)
 			 file_merge(r) ? file_merge(r) : file_name(r),
 			 " ");
 	fprintf(ctx->f, "size %" PRIu64 " ", file_size(r));
-	output_cond_print_hash(ctx->f, hash_type_string(HASHES_TYPE_CRC), HASHES_TYPE_CRC, file_hashes(r), " ");
-	output_cond_print_hash(ctx->f, hash_type_string(HASHES_TYPE_SHA1), HASHES_TYPE_SHA1, file_hashes(r), " ");
-	output_cond_print_hash(ctx->f, hash_type_string(HASHES_TYPE_MD5), HASHES_TYPE_MD5, file_hashes(r), " ");
+	output_cond_print_hash(ctx->f, "crc ", HASHES_TYPE_CRC, file_hashes(r), " ");
+	output_cond_print_hash(ctx->f, "sha1 ", HASHES_TYPE_SHA1, file_hashes(r), " ");
+	output_cond_print_hash(ctx->f, "md5 ", HASHES_TYPE_MD5, file_hashes(r), " ");
 	switch (file_status(r)) {
 	case STATUS_OK:
 	    fl = NULL;

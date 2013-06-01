@@ -85,8 +85,8 @@ libckmame_a_SOURCES= \
 	memdb.c \
 	output.c \
 	output_cm.c \
-	output_db.c \
 	output_datafile_xml.c \
+	output_db.c \
 	output_mtree.c \
 	parray.c \
 	parray_delete.c \
