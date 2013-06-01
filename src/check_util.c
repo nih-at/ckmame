@@ -282,36 +282,3 @@ enter_disk_in_map(const disk_t *d, where_t where)
 
     return 0;
 }
-
-
-
-int
-enter_file_in_map(const archive_t *a, int idx, where_t where)
-{
-    sqlite3_stmt *stmt;
-    file_t *r;
-
-    r = archive_file(a, idx);
-
-    if (file_status(r) != STATUS_OK)
-	return 0;
-
-    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
-	return -1;
-    
-    if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 4, where) != SQLITE_OK
-	|| sq3_set_int64_default(stmt, 5, file_size(r),
-				 SIZE_UNKNOWN) != SQLITE_OK
-	|| sq3_set_hashes(stmt, 6, file_hashes(r), 1) != SQLITE_OK
-	|| sqlite3_step(stmt) != SQLITE_DONE) {
-	sqlite3_finalize(stmt);
-	return -1;
-    }
-
-    sqlite3_finalize(stmt);
-
-    return 0;
-}
