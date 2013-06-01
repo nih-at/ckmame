@@ -68,7 +68,6 @@ int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
 int enter_disk_in_map(const disk_t *, where_t);
-int enter_file_in_map(const archive_t *, int, where_t);
 char *findfile(const char *, filetype_t);
 int fix_game(game_t *, archive_t *, images_t *, result_t *);
 parray_t *list_directory(const char *, const char *);
