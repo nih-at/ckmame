@@ -74,27 +74,6 @@ sq3_get_int64_default(sqlite3_stmt *stmt, int col, int64_t def)
 
 
 
-int
-sq3_get_one_int(sqlite3 *db, const char *query, int *valp)
-{
-    sqlite3_stmt *stmt;
-    int ret;
-
-    if ((ret=sqlite3_prepare_v2(db, query, -1, &stmt, NULL)) != SQLITE_OK)
-	return ret;
-
-    if ((ret=sqlite3_step(stmt)) != SQLITE_ROW)
-	return ret;
-
-    *valp = sqlite3_column_int(stmt, 0);
-
-    sqlite3_finalize(stmt);
-
-    return SQLITE_OK;
-}
-
-
-
 char *
 sq3_get_string(sqlite3_stmt *stmt, int i)
 {
