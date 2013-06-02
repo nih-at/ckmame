@@ -52,7 +52,6 @@ static int dump_game(const char *, int);
 static int dump_hashtypes(int);
 static int dump_list(int);
 static int dump_dat(int);
-static int dump_db_version(int);
 static int dump_special(const char *);
 static int dump_stats(int);
 static void print_dat(dat_t *, int);
@@ -102,7 +101,7 @@ static char *status_name[] = {
 };
 
 parray_t *list;
-sqlite3 *db;
+dbh_t *db;
 
 #define QUERY_CLONES	\
     "select g.name from game g, parent p where g.game_id = p.game_id" \
@@ -277,7 +276,7 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=dbh_open(dbname, DBL_READ))==NULL) {
+    if ((db=dbh_open(dbname, DBH_READ))==NULL) {
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit (1);
     }
@@ -361,13 +360,12 @@ print_rs(game_t *game, filetype_t ft,
     if (game_cloneof(game, ft, 1))
 	printf("%s:\t%s\n", gco, game_cloneof(game, ft, 1));
 
-    if (sqlite3_prepare_v2(db, QUERY_CLONES, -1, &stmt, NULL) != SQLITE_OK) {
+    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_CLONES)) == NULL) {
 	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
 	return;
     }
     if (sq3_set_string(stmt, 1, game_name(game)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
 	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
 	return;
     }
@@ -384,8 +382,7 @@ print_rs(game_t *game, filetype_t ft,
     if (i % 6 != 0)
 	printf("\n");
 
-    if (ret != SQLITE_DONE
-	|| sqlite3_finalize(stmt) != SQLITE_OK) {
+    if (ret != SQLITE_DONE) {
 	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
 	return;
     }
@@ -512,18 +509,6 @@ dump_dat(int dummy)
 
 /*ARGSUSED1*/
 static int
-dump_db_version(int dummy)
-{
-    /* dbh_open won't let us open a db with a different version */
-    printf("%d\n", DBH_FORMAT_VERSION);
-
-    return 0;
-}
-
-
-
-/*ARGSUSED1*/
-static int
 dump_detector(int dummy)
 {
     detector_t *d;
@@ -549,7 +534,6 @@ dump_special(const char *name)
 	int (*f)(int);
 	int  arg;
     } keys[] = {
-	{ "/ckmame",           dump_db_version, 0 },
 	{ "/dat",              dump_dat,        0 },
 	{ "/detector",         dump_detector,   0 },
 	{ "/hashtypes",        dump_hashtypes,  0 },
@@ -588,23 +572,18 @@ dump_stats(int dummy)
     int i, ft;
     int64_t size;
 
-    if (sqlite3_prepare_v2(db, QUERY_STATS_GAMES, -1, &stmt, NULL)
-	!= SQLITE_OK) {
+    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_STATS_GAMES)) == NULL) {
 	myerror(ERRDB, "can't get number of games");
 	return -1;
     }
     if (sqlite3_step(stmt) != SQLITE_ROW) {
-	sqlite3_finalize(stmt);
 	myerror(ERRDB, "can't get number of games");
 	return -1;
     }
 
     printf("Games:  \t%d\n", sqlite3_column_int(stmt, 0));
 
-    sqlite3_finalize(stmt);
-
-    if (sqlite3_prepare_v2(db, QUERY_STATS_FILES, -1, &stmt, NULL)
-	!= SQLITE_OK) {
+    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_STATS_FILES)) == NULL) {
 	myerror(ERRDB, "can't get file stats");
 	return -1;
     }
@@ -621,7 +600,6 @@ dump_stats(int dummy)
 		break;
 	    default:
 		myerror(ERRDB, "can't get file stats");
-		sqlite3_finalize(stmt);
 		return -1;
 	    }
 	}
@@ -647,8 +625,6 @@ dump_stats(int dummy)
 	}
 	printf("\n");
     }
-
-    sqlite3_finalize(stmt);
 
     return 0;
 }

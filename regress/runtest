@@ -359,7 +359,7 @@ then
 	fail "can't create database"
     fi
 else
-    cp ../mame.db .
+    cp ../mame.db . || fail "can't copy mame.db"
 fi
 
 if [ ! -z "${SETUP_ONLY}" ]

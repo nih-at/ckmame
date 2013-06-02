@@ -41,20 +41,15 @@
 #include "sq_util.h"
 #include "xmalloc.h"
 
-#define QUERY_DAT "select name, description, version from dat " \
-		  "where dat_idx >= 0 order by dat_idx"
-
-
-
 dat_t *
-r_dat(sqlite3 *db)
+r_dat(dbh_t *db)
 {
     sqlite3_stmt *stmt;
     dat_t *dat;
     dat_entry_t *de;
     int ret;
 
-    if (sqlite3_prepare_v2(db, QUERY_DAT, -1, &stmt, NULL) != SQLITE_OK) {
+    if ((stmt=dbh_get_statement(db, DBH_STMT_QUERY_DAT)) == NULL) {
 	/* XXX */
 	return NULL;
     }
@@ -68,8 +63,6 @@ r_dat(sqlite3 *db)
 	de->description = sq3_get_string(stmt, 1);
 	de->version = sq3_get_string(stmt, 2);
     }
-
-    sqlite3_finalize(stmt);
 
     if (ret != SQLITE_DONE) {
 	/* XXX */

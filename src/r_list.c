@@ -42,25 +42,24 @@
 #include "xmalloc.h"
 
 /* keep in sync with dbh.h:enum list */
-const char *query_list[] = {
-    /* XXX: don't hardwire constant */
-    "select distinct name from file where file_type = 2 order by name",
-
-    "select name from game order by name",
-
-    "select distinct g.name from game g, file f where g.game_id=f.game_id" \
-    " and f.file_type = 1 order by g.name"
+const dbh_stmt_t query_list[] = {
+    DBH_STMT_QUERY_LIST_DISK,
+    DBH_STMT_QUERY_LIST_GAME,
+    DBH_STMT_QUERY_LIST_SAMPLE
 };
 
-#define QUERY_HASH_TYPE	"select name from file " \
-			"where file_type = %d and %s not null limit 1"
+const dbh_stmt_t query_hash_type[] = {
+    DBH_STMT_QUERY_HASH_TYPE_CRC,
+    DBH_STMT_QUERY_HASH_TYPE_MD5,
+    DBH_STMT_QUERY_HASH_TYPE_SHA1
+};
 
-static void r__hashtypes_ft(sqlite3 *, filetype_t, int *);
+static void r__hashtypes_ft(dbh_t *, filetype_t, int *);
 
 
 
 int
-r_hashtypes(sqlite3 *db, int *romhashtypesp, int *diskhashtypesp)
+r_hashtypes(dbh_t *db, int *romhashtypesp, int *diskhashtypesp)
 {
     r__hashtypes_ft(db, TYPE_ROM, romhashtypesp);
     r__hashtypes_ft(db, TYPE_DISK, diskhashtypesp);
@@ -71,7 +70,7 @@ r_hashtypes(sqlite3 *db, int *romhashtypesp, int *diskhashtypesp)
 
 
 parray_t *
-r_list(sqlite3 *db, enum dbh_list type)
+r_list(dbh_t *db, enum dbh_list type)
 {
     parray_t *pa;
     sqlite3_stmt *stmt;
@@ -80,15 +79,13 @@ r_list(sqlite3 *db, enum dbh_list type)
     if (type >= DBH_KEY_LIST_MAX)
 	return NULL;
 
-    if (sqlite3_prepare_v2(db, query_list[type], -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(db, query_list[type])) == NULL)
 	return NULL;
 
     pa = parray_new();
 
     while ((ret=sqlite3_step(stmt)) == SQLITE_ROW)
 	parray_push(pa, sq3_get_string(stmt, 0));
-
-    sqlite3_finalize(stmt);
 
     if (ret != SQLITE_DONE) {
 	parray_free(pa, free);
@@ -101,21 +98,19 @@ r_list(sqlite3 *db, enum dbh_list type)
 
 
 static void
-r__hashtypes_ft(sqlite3 *db, filetype_t ft, int *typesp)
+r__hashtypes_ft(dbh_t *db, filetype_t ft, int *typesp)
 {
-    char buf[256];
     int type;
     sqlite3_stmt *stmt;
 
     *typesp = 0;
 
-    for (type=1; type<=HASHES_TYPE_MAX; type<<=1) {
-	sprintf(buf, QUERY_HASH_TYPE,
-		ft, hash_type_string(type));
-	if (sqlite3_prepare_v2(db, buf, -1, &stmt, NULL) != SQLITE_OK)
+    for (type=0; (1<<type)<=HASHES_TYPE_MAX; type++) {
+	if ((stmt = dbh_get_statement(db, query_hash_type[type])) == NULL)
+	    continue;
+	if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK)
 	    continue;
 	if (sqlite3_step(stmt) == SQLITE_ROW)
-	    *typesp |= type;
-	sqlite3_finalize(stmt);
+	    *typesp |= (1<<type);
     }
 }

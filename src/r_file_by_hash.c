@@ -41,38 +41,21 @@
 #include "file_location.h"
 #include "sq_util.h"
 
-const char *query_fbh =
-    "select g.name, f.file_idx from game g, file f"
-    " where f.game_id = g.game_id and f.file_type = ? and f.status <> ?";
-const char *query_fbh_hash = " and (f.%s = ? or f.%s is null)";
-
 array_t *
-r_file_by_hash(sqlite3 *db, filetype_t ft, const hashes_t *hash)
+r_file_by_hash(dbh_t *db, filetype_t ft, const hashes_t *hash)
 {
-    char query[512];
     sqlite3_stmt *stmt;
     array_t *a;
     file_location_t *fl;
-    int i, ret;
-    const char *ht;
+    int ret;
 
-    strcpy(query, query_fbh);
-    for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
-	if (hashes_has_type(hash, i)) {
-	    ht = hash_type_string(i);
-	    sprintf(query+strlen(query), query_fbh_hash, ht, ht);
-	}
-    }
-    
-    if (sqlite3_prepare_v2(db, query, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(db, dbh_stmt_with_hashes_and_size(DBH_STMT_QUERY_FILE_FBH, hash, 0))) == NULL)
 	return NULL;
 
     if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, STATUS_NODUMP) != SQLITE_OK
-	|| sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
+	|| sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK)
 	return NULL;
-    }
 
     a = array_new(sizeof(file_location_t));
 
@@ -81,8 +64,6 @@ r_file_by_hash(sqlite3 *db, filetype_t ft, const hashes_t *hash)
 	file_location_name(fl) = sq3_get_string(stmt, 0);
 	file_location_index(fl) = sqlite3_column_int(stmt, 1);
     }
-
-    sqlite3_finalize(stmt);
 
     if (ret != SQLITE_DONE) {
 	array_free(a, file_location_finalize);

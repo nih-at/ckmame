@@ -47,7 +47,7 @@
 
 static const char *myerrorfn = DEFAULT_FN;
 static const char *myerrorzipn = DEFAULT_FN;
-static sqlite3 *myerrdb = NULL;
+static dbh_t *myerrdb = NULL;
 
 
 
@@ -86,7 +86,7 @@ myerror(int errtype, const char *fmt, ...)
 
 
 void
-seterrdb(sqlite3 *db)
+seterrdb(dbh_t *db)
 {
     myerrdb = db;
 }

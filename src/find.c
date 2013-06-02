@@ -69,12 +69,12 @@ static find_result_t check_match_disk_romset(const game_t *, const disk_t *,
 static find_result_t check_match_old(const game_t *, const file_t *, match_t *);
 static find_result_t check_match_romset(const game_t *, const file_t *,
 					match_t *);
-static find_result_t find_disk_in_db(sqlite3 *, const disk_t *, const char *,
+static find_result_t find_disk_in_db(dbh_t *, const disk_t *, const char *,
 				     match_disk_t *,
 				     find_result_t (*)(const game_t *,
 						       const disk_t *,
 						       match_disk_t *));
-static find_result_t find_in_db(sqlite3 *, const file_t *, const char *, match_t *,
+static find_result_t find_in_db(dbh_t *, const file_t *, const char *, match_t *,
 				find_result_t (*)(const game_t *,
 						  const file_t *, match_t *));
 
@@ -84,36 +84,20 @@ find_result_t
 find_disk(const disk_t *d, match_disk_t *md)
 {
     sqlite3_stmt *stmt;
-    char query[1024], *p;
-    const char *ht;
     disk_t *dm;
-    int i, ret;
+    int ret;
 
-    strcpy(query, QUERY_FILE);
-    p = query + strlen(query);
-
-    for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
-	if (hashes_has_type(disk_hashes(d), i)) {
-	    ht = hash_type_string(i);
-	    sprintf(p, QUERY_FILE_HASH_FMT, ht, ht);
-	    p += strlen(p);
-	}
-    }
-    strcpy(p, QUERY_FILE_TAIL);
-	    
-    if (sqlite3_prepare_v2(memdb, query, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, disk_hashes(d), 0))) == NULL)
 	return FIND_ERROR;
 
     if (sqlite3_bind_int(stmt, 1, TYPE_DISK) != SQLITE_OK
 	|| sq3_set_hashes(stmt, 2, disk_hashes(d), 0) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
 	return FIND_ERROR;
     }
 
     switch (sqlite3_step(stmt)) {
     case SQLITE_ROW:
-	if ((dm=disk_by_id(sqlite3_column_int(stmt,
-				      QUERY_FILE_GAME_ID))) == NULL) {
+	if ((dm=disk_by_id(sqlite3_column_int(stmt, QUERY_FILE_GAME_ID))) == NULL) {
 	    ret = FIND_ERROR;
 	    break;
 	}
@@ -121,8 +105,7 @@ find_disk(const disk_t *d, match_disk_t *md)
 	    match_disk_name(md) = xstrdup(disk_name(dm));
 	    hashes_copy(match_disk_hashes(md), disk_hashes(dm));
 	    match_disk_quality(md) = QU_COPIED;
-	    match_disk_where(md) = sqlite3_column_int(stmt,
-					      QUERY_FILE_LOCATION);
+	    match_disk_where(md) = sqlite3_column_int(stmt, QUERY_FILE_LOCATION);
 	}
 	disk_free(dm);
 	ret = FIND_EXISTS;
@@ -136,8 +119,6 @@ find_disk(const disk_t *d, match_disk_t *md)
 	ret = FIND_ERROR;
 	break;
     }
-
-    sqlite3_finalize(stmt);
 
     return ret;
 }
@@ -166,44 +147,25 @@ find_result_t
 find_in_archives(const file_t *r, match_t *m)
 {
     sqlite3_stmt *stmt;
-    char query[1024], *p;
-    const char *ht;
     archive_t *a;
     file_t *f;
     int i, ret, hcol, sh;
 
-    strcpy(query, QUERY_FILE);
-    p = query + strlen(query);
-
-    if (file_size(r) != SIZE_UNKNOWN) {
-	strcpy(p, " and size = ?");
-	p += strlen(p);
-	hcol = 3;
-    }
-    else
-	hcol = 2;
-    for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
-	if (hashes_has_type(file_hashes(r), i)) {
-	    ht = hash_type_string(i);
-	    sprintf(p, QUERY_FILE_HASH_FMT, ht, ht);
-	    p += strlen(p);
-	}
-    }
-    strcpy(p, QUERY_FILE_TAIL);
-	    
-    if (sqlite3_prepare_v2(memdb, query, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, file_hashes(r), file_size(r) != SIZE_UNKNOWN))) == NULL)
 	return FIND_ERROR;
+
+    hcol = 2;
+    if (file_size(r) != SIZE_UNKNOWN) {
+        hcol++;
+	if (sqlite3_bind_int64(stmt, 2, file_size(r)) != SQLITE_OK)
+	    return FIND_ERROR;
+    }
 
     if (sqlite3_bind_int(stmt, 1, TYPE_ROM) != SQLITE_OK
-	|| sq3_set_hashes(stmt, hcol, file_hashes(r), 0) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
+	|| sq3_set_hashes(stmt, hcol, file_hashes(r), 0) != SQLITE_OK)
 	return FIND_ERROR;
-    }
-    if (file_size(r) != SIZE_UNKNOWN)
-	if (sqlite3_bind_int64(stmt, 2, file_size(r)) != SQLITE_OK) {
-	    sqlite3_finalize(stmt);
-	    return FIND_ERROR;
-	}
+
+
 
     while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
 	if ((a=archive_by_id(sqlite3_column_int(stmt,
@@ -239,11 +201,8 @@ find_in_archives(const file_t *r, match_t *m)
 	else
 	    archive_free(a);
 
-	sqlite3_finalize(stmt);
 	return FIND_EXISTS;
     }
-
-    sqlite3_finalize(stmt);
 
     return ret == SQLITE_DONE ? FIND_UNKNOWN : FIND_ERROR;
 }
@@ -385,7 +344,7 @@ check_match_romset(const game_t *g, const file_t *r, match_t *m)
 
 
 static find_result_t
-find_in_db(sqlite3 *db, const file_t *r, const char *skip, match_t *m,
+find_in_db(dbh_t *db, const file_t *r, const char *skip, match_t *m,
 	   find_result_t (*check_match)(const game_t *, const file_t *,
 					match_t *))
 {
@@ -433,7 +392,7 @@ find_in_db(sqlite3 *db, const file_t *r, const char *skip, match_t *m,
 
 
 find_result_t
-find_disk_in_db(sqlite3 *db, const disk_t *d, const char *skip, match_disk_t *md,
+find_disk_in_db(dbh_t *db, const disk_t *d, const char *skip, match_disk_t *md,
 		find_result_t (*check_match)(const game_t *, const disk_t *,
 					     match_disk_t *))
 {

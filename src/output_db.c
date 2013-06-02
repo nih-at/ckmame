@@ -47,7 +47,7 @@
 struct output_context_db {
     output_context_t output;
 
-    sqlite3 *db;
+    dbh_t *db;
 
     dat_t *dat;
     
@@ -64,7 +64,7 @@ struct fbh_context {
 
 
 
-static void familymeeting(sqlite3 *, filetype_t, game_t *, game_t *);
+static void familymeeting(dbh_t *, filetype_t, game_t *, game_t *);
 static int handle_lost(output_context_db_t *);
 static int lost(output_context_db_t *, game_t *, filetype_t);
 static int output_db_close(output_context_t *);
@@ -91,7 +91,7 @@ output_db_new(const char *dbname)
     ctx->lost_children_types = array_new(sizeof(int));
 
     remove(dbname);
-    ctx->db = dbh_open(dbname, DBL_NEW);
+    ctx->db = dbh_open(dbname, DBH_NEW);
     if (ctx->db == NULL) {
 	output_db_close((output_context_t *)ctx);
 	myerror(ERRDB, "can't create hash table");
@@ -104,7 +104,7 @@ output_db_new(const char *dbname)
 
 
 static void
-familymeeting(sqlite3 *db, filetype_t ft, game_t *parent, game_t *child)
+familymeeting(dbh_t *db, filetype_t ft, game_t *parent, game_t *child)
 {
     int i, j;
     file_t * cr, *pr;
@@ -238,8 +238,7 @@ output_db_close(output_context_t *out)
 	if (handle_lost(ctx) < 0)
 	    ret = -1;
 
-	if (sqlite3_exec(ctx->db, sql_db_init_2, NULL, NULL, NULL)
-	    != SQLITE_OK)
+	if (sqlite3_exec(dbh_db(ctx->db), sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK)
 	    ret = -1;
 	
 	dbh_close(ctx->db);

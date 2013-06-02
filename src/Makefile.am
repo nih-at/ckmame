@@ -44,6 +44,7 @@ libckmame_a_SOURCES= \
 	dat_push.c \
 	db_init.c \
 	dbh.c \
+	dbh_statements.c \
 	delete_list.c \
 	detector.c \
 	detector_execute.c \
@@ -132,6 +133,7 @@ noinst_HEADERS=\
 	compat.h \
 	dat.h \
 	dbh.h \
+	dbh_statements.h \
 	delete_list.h \
 	detector.h \
 	dir.h \
@@ -172,11 +174,18 @@ EXTRA_DIST=\
 	bswap16.c \
 	bswap32.c \
 	compat_fnmatch.h \
+	dbh_statements.in \
 	getopt_long.h \
 	getprogname.c \
 	fnmatch.c \
 	getopt_long.c \
 	md5.c \
 	md5_own.h \
+	mkstatements.pl \
 	sha1.c \
 	sha1_own.h
+
+BUILT_SOURCES=dbh_statements.h dbh_statements.c
+
+dbh_statements.h: dbh_statements.in mkstatements.pl
+	perl ${srcdir}/mkstatements.pl ${srcdir}/dbh_statements.in dbh_statements.c dbh_statements.h

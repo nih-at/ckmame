@@ -1,6 +1,6 @@
 /*
   dbh.c -- mame.db sqlite3 data base
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,6 +34,7 @@
 
 
 #include <sys/stat.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,24 +49,26 @@
 #define DBH_EVERSION	2	/* version mismatch */
 #define DBH_EMAX	3
 
-#define QUERY_VERSION	"pragma user_version"
+static const int format_version[] = {
+    2, 1, 1
+};
+#define USER_VERSION(fmt)	(format_version[fmt]+(fmt<<8)+17000)
+
 #define SET_VERSION_FMT	"pragma user_version = %d"
 
 #define PRAGMAS		"PRAGMA synchronous = OFF; "
 
-static int dbh_errno;
-
-static int init_db(sqlite3 *);
+static int init_db(dbh_t *);
 
 
 
 static int
-dbh_check_version(sqlite3 *db)
+dbh_check_version(dbh_t *db)
 {
     sqlite3_stmt *stmt;
     int version;
 
-    if (sqlite3_prepare_v2(db, QUERY_VERSION, -1, &stmt, NULL) != SQLITE_OK) {
+    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_VERSION)) == NULL) {
 	/* XXX */
 	return -1;
     }
@@ -77,29 +80,35 @@ dbh_check_version(sqlite3 *db)
 
     version = sqlite3_column_int(stmt, 0);
 
-    sqlite3_finalize(stmt);
-
-    if (version != DBH_FORMAT_VERSION + 17000) {
-	dbh_errno = DBH_EVERSION;
+    if (version != USER_VERSION(db->format)) {
+	db->dbh_errno = DBH_EVERSION;
 	return -1;
     }
     
-    dbh_errno = DBH_ENOERR;
+    db->dbh_errno = DBH_ENOERR;
     return 0;
 }
 
 
 
 int
-dbh_close(sqlite3 *db)
+dbh_close(dbh_t *db)
 {
-    return sqlite3_close(db);
+    if (db == NULL)
+	return 0;
+
+    /* XXX finalize/free statements */
+
+    if (dbh_db(db))
+	return sqlite3_close(dbh_db(db));
+    
+    return 0;
 }
 
 
 
 const char *
-dbh_error(sqlite3 *db)
+dbh_error(dbh_t *db)
 {
     static const char *str[] = {
 	"No error",
@@ -107,66 +116,125 @@ dbh_error(sqlite3 *db)
 	"Unknown error"
     };
 
-    /* XXX */
-    if (dbh_errno == DBH_ENOERR)
-	return sqlite3_errmsg(db);
+    if (db == NULL)
+	return strerror(ENOMEM);
 
-    return str[dbh_errno<0||dbh_errno>DBH_EMAX ? DBH_EMAX : dbh_errno];
+    /* XXX */
+    if (db->dbh_errno == DBH_ENOERR)
+	return sqlite3_errmsg(dbh_db(db));
+
+    return str[db->dbh_errno<0||db->dbh_errno>DBH_EMAX ? DBH_EMAX : db->dbh_errno];
 }
 
 
 
-sqlite3 *
+dbh_t *
 dbh_open(const char *name, int mode)
 {
-    sqlite3 *db;
+    dbh_t *db;
     struct stat st;
+    unsigned int i;
 
-    if (mode == DBL_NEW)
+    if (DBH_FMT(mode) > sizeof(format_version)/sizeof(format_version[0])) {
+	errno = EINVAL;
+	return NULL;
+    }
+
+    if ((db = (dbh_t *)malloc(sizeof(*db))) == NULL)
+	return NULL;
+
+    db->db = NULL;
+    for (i=0; i<DBH_STMT_MAX; i++)
+	db->statements[i] = NULL;
+
+    db->format = DBH_FMT(mode);
+
+    if (DBH_FLAGS(mode) == DBH_NEW)
 	unlink(name);
     else {
-	if (stat(name, &st) != 0)
+	if (stat(name, &st) != 0) {
+	    free(db);
 	    return NULL;
+	}
     }
 
-    if (sqlite3_open(name, &db) != SQLITE_OK) {
-	sqlite3_close(db);    
+    if (sqlite3_open(name, &dbh_db(db)) != SQLITE_OK) {
+	/* XXX: errno? */
+	dbh_close(db);
 	return NULL;
     }
 
-    if (sqlite3_exec(db, PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
-	sqlite3_close(db);    
+    if (sqlite3_exec(dbh_db(db), PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
+	/* XXX: errno? */
+	dbh_close(db);
 	return NULL;
     }
 
-    if (mode == DBL_NEW) {
+    if (DBH_FLAGS(mode) == DBH_NEW) {
 	if (init_db(db) < 0) {
-	    sqlite3_close(db);
+	    /* XXX: errno? */
+	    dbh_close(db);
 	    unlink(name);
 	    return NULL;
 	}
     }
     else if (dbh_check_version(db) != 0) {
-	sqlite3_close(db);
+	dbh_close(db);
+	errno = EFTYPE;
 	return NULL;
     }
-
+    
     return db;
 }
 
 
 
 static int
-init_db(sqlite3 *db)
+init_db(dbh_t *db)
 {
     char b[256];
 
-    sprintf(b, SET_VERSION_FMT, DBH_FORMAT_VERSION + 17000);
-    if (sqlite3_exec(db, b, NULL, NULL, NULL) != SQLITE_OK)
+    sprintf(b, SET_VERSION_FMT, USER_VERSION(db->format));
+    if (sqlite3_exec(dbh_db(db), b, NULL, NULL, NULL) != SQLITE_OK)
 	return -1;
 
-    if (sqlite3_exec(db, sql_db_init, NULL, NULL, NULL) != SQLITE_OK)
+    if (sqlite3_exec(dbh_db(db), sql_db_init[db->format], NULL, NULL, NULL) != SQLITE_OK)
 	return -1;
 
     return 0;
+}
+
+dbh_stmt_t
+dbh_stmt_with_hashes_and_size(dbh_stmt_t stmt, const hashes_t *hash, int have_size)
+{
+    unsigned int i;
+
+    for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
+	if (hashes_has_type(hash, i))
+	    stmt += i;
+    }
+    if (have_size)
+	stmt += HASHES_TYPE_MAX<<1;
+
+    return stmt;
+}
+
+sqlite3_stmt *
+dbh_get_statement(dbh_t *db, dbh_stmt_t stmt_id)
+{
+    if (stmt_id >= DBH_STMT_MAX)
+	return NULL;
+
+    if (db->statements[stmt_id] == NULL) {
+	if (sqlite3_prepare_v2(dbh_db(db), dbh_stmt_sql[stmt_id], -1, &(db->statements[stmt_id]), NULL) != SQLITE_OK) {
+	    db->statements[stmt_id] = NULL;
+	    return NULL;
+	}
+    }
+    else {
+	sqlite3_reset(db->statements[stmt_id]);
+	sqlite3_clear_bindings(db->statements[stmt_id]);
+    }
+
+    return db->statements[stmt_id];
 }

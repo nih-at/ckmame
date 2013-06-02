@@ -164,8 +164,8 @@ parray_t *superfluous;
 parray_t *search_dirs;
 const char *rom_dir;
 filetype_t file_type;
-sqlite3 *db;
-sqlite3 *old_db;
+dbh_t *db;
+dbh_t *old_db;
 detector_t *detector;
 tree_t *check_tree;
 output_context_t *fixdat;
@@ -349,12 +349,12 @@ main(int argc, char **argv)
 	    fix_options |= FIX_CLEANUP_EXTRA;
     }
 
-    if ((db=dbh_open(dbname, DBL_READ)) == NULL) {
-	myerror(ERRDB, "can't open database `%s'", dbname);
+    if ((db=dbh_open(dbname, DBH_READ)) == NULL) {
+	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit(1);
     }
     /* XXX: check for errors other than ENOENT */
-    old_db = dbh_open(olddbname, DBL_READ);
+    old_db = dbh_open(olddbname, DBH_READ);
 
     if (action == ACTION_CHECK_ROMSET) {
 	/* build tree of games to check */

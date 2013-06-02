@@ -36,7 +36,7 @@
 
 
 
-#include <sqlite3.h>
+#include "dbh.h"
 
 #define ERRDEF	0x0	/* no additional info */
 #define ERRZIP	0x1	/* prepend zipfile name */
@@ -50,7 +50,7 @@
 #define ERRZIPFILESTR	(ERRZIPFILE|ERRSTR)
 
 void myerror(int, const char *, ...);
-void seterrdb(sqlite3 *);
+void seterrdb(dbh_t *);
 void seterrinfo(const char *, const char *);
 
 #endif /* error.h */

@@ -1,6 +1,6 @@
 /*
-  memdb.h -- in-memory sqlite3 db
-  Copyright (C) 2007-2008 Dieter Baron and Thomas Klausner
+  memdb.c -- in-memory sqlite3 db
+  Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -43,19 +43,9 @@
 
 
 
-sqlite3 *memdb = NULL;
+dbh_t *memdb = NULL;
 int memdb_inited = 0;
 
-#define INSERT_PTR	\
-    "insert into ptr_cache (name, pointer) values (?, ?)"
-#define QUERY_PTR	\
-    "select pointer from ptr_cache where name = ?"
-#define QUERY_PTR_ID	\
-    "select pointer from ptr_cache where game_id = ?"
-
-#define INSERT_FILE							\
-    "insert into file (game_id, file_type, file_idx, file_sh, location," \
-    " size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 #define INSERT_FILE_GAME_ID	1
 #define INSERT_FILE_FILE_TYPE	2
 #define INSERT_FILE_FILE_IDX	3
@@ -63,45 +53,6 @@ int memdb_inited = 0;
 #define INSERT_FILE_LOCATION	5
 #define INSERT_FILE_SIZE	6
 #define INSERT_FILE_HASHES	7
-
-#define UPDATE_FILE \
-    "update file set crc = ?, md5 = ?, sha1 = ? where" \
-    " game_id = ? and file_type = ? and file_idx = ? and file_sh = ?"
-#define DELETE_FILE \
-    "delete from file where" \
-    " game_id = ? and file_type = ? and file_idx = ?"
-#define DEC_FILE_IDX \
-    "update file set idx=idx-1 where" \
-    " game_id = ? and file_type = ? and file_idx > ?"
-
-
-
-const char *sql_db_init_mem = "\
-create table ptr_cache (\n\
-	game_id integer primary key,\n\
-	name text not null,\n\
-	pointer blob\n\
-);\n\
-create index ptr_cache_name on ptr_cache (name);\n\
-\n\
-create table file (\n\
-	game_id integer,\n\
-	file_type integer,\n\
-	file_idx integer,\n\
-	file_sh integer,\n\
-	location integer not null,\n\
-	size integer,\n\
-	crc integer,\n\
-	md5 binray,\n\
-	sha1 binary\n\
-);\n\
-create index file_id on file (game_id, file_type, file_idx);\n\
-create index file_location on file (location);\n\
-create index file_size on file (size);\n\
-create index file_crc on file (crc);\n\
-create index file_md5 on file (md5);\n\
-create index file_sha1 on file (sha1);\n\
-";
 
 
 
@@ -120,20 +71,14 @@ memdb_ensure(void)
 
     if (getenv("CKMAME_DEBUG_MEMDB")) {
 	dbname = "memdb.sqlite3";
-	remove(dbname);
     }
     else
 	dbname = ":memory:";
 
     memdb_inited = 1;
 
-    if (sqlite3_open(dbname, &memdb) != SQLITE_OK
-	|| sqlite3_exec(memdb, sql_db_init_mem, NULL, NULL,
-			NULL) != SQLITE_OK) {
-	seterrdb(memdb);
-	myerror(ERRDB, "cannot create in-memory db");
-	sqlite3_close(memdb);
-	memdb = NULL;
+    if ((memdb = dbh_open(dbname, DBH_FMT_MEM|DBH_NEW)) == NULL) {
+	myerror(ERRSTR, "cannot create in-memory db");
 	return -1;
     }
 
@@ -151,7 +96,7 @@ memdb_get_ptr(const char *name)
     if (!memdb_inited)
 	return NULL;
 
-    if (sqlite3_prepare_v2(memdb, QUERY_PTR, -1, &stmt, NULL) != SQLITE_OK) {
+    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_QUERY_PTR)) == NULL) {
 	seterrdb(memdb);
 	myerror(ERRDB, "cannot get `%s' from file cache", name);
 	return NULL;
@@ -160,7 +105,6 @@ memdb_get_ptr(const char *name)
     if (sq3_set_string(stmt, 1, name) != SQLITE_OK) {
 	seterrdb(memdb);
 	myerror(ERRDB, "cannot get `%s' from file cache", name);
-	sqlite3_finalize(stmt);
 	return NULL;
     }
 
@@ -178,7 +122,6 @@ memdb_get_ptr(const char *name)
 	seterrdb(memdb);
 	myerror(ERRDB, "cannot get `%s' from file cache", name);
     }
-    sqlite3_finalize(stmt);
 
     return ptr;
 }
@@ -194,7 +137,7 @@ memdb_get_ptr_by_id(int id)
     if (!memdb_inited)
 	return NULL;
 
-    if (sqlite3_prepare_v2(memdb, QUERY_PTR_ID, -1, &stmt, NULL) != SQLITE_OK) {
+    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_QUERY_PTR_ID)) == NULL) {
 	seterrdb(memdb);
 	myerror(ERRDB, "cannot get `%d' from file cache", id);
 	return NULL;
@@ -203,7 +146,6 @@ memdb_get_ptr_by_id(int id)
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
 	seterrdb(memdb);
 	myerror(ERRDB, "cannot get `%d' from file cache", id);
-	sqlite3_finalize(stmt);
 	return NULL;
     }
 
@@ -221,7 +163,6 @@ memdb_get_ptr_by_id(int id)
 	seterrdb(memdb);
 	myerror(ERRDB, "cannot get `%d' from file cache", id);
     }
-    sqlite3_finalize(stmt);
 
     return ptr;
 }
@@ -237,19 +178,17 @@ memdb_put_ptr(const char *name, void *ptr)
     if (memdb_ensure() < 0)
 	return -1;
 
-    if (sqlite3_prepare_v2(memdb, INSERT_PTR, -1, &stmt, NULL) == SQLITE_OK) {
+    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_PTR)) == NULL)
+	ret = -1;
+    else {
 	if (sq3_set_string(stmt, 1, name) != SQLITE_OK
-	    || sqlite3_bind_blob(stmt, 2, &ptr, sizeof(void *),
-				 SQLITE_STATIC) != SQLITE_OK
+	    || sqlite3_bind_blob(stmt, 2, &ptr, sizeof(void *), SQLITE_STATIC) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE) {
 	    ret = -1;
 	}
 	else
-	    ret = sqlite3_last_insert_rowid(memdb);
-	sqlite3_finalize(stmt);
+	    ret = sqlite3_last_insert_rowid(dbh_db(memdb));
     }
-    else
-	ret = -1;
 
     if (ret < 0) {
 	seterrdb(memdb);
@@ -272,18 +211,15 @@ memdb_file_delete(const archive_t *a, int idx, bool adjust_idx)
     if (!adjust_idx)
 	return 0;
     
-    if (sqlite3_prepare_v2(memdb, DEC_FILE_IDX, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_DEC_FILE_IDX)) == NULL)
 	return -1;
     
     if (sqlite3_bind_int(stmt, 1, archive_id(a)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, archive_filetype(a)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK
-	|| sqlite3_step(stmt) != SQLITE_DONE) {
-	sqlite3_finalize(stmt);
+	|| sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
-    }
 
-    sqlite3_finalize(stmt);
     return 0;
 }
 
@@ -292,7 +228,6 @@ memdb_file_delete(const archive_t *a, int idx, bool adjust_idx)
 int
 memdb_file_insert(sqlite3_stmt *stmt, const archive_t *a, int idx)
 {
-    bool stmt_owned;
     file_t *r;
     int i, err;
 
@@ -301,24 +236,14 @@ memdb_file_insert(sqlite3_stmt *stmt, const archive_t *a, int idx)
 
     r = archive_file(a, idx);
 
-    if (stmt)
-	stmt_owned = false;
-    else {
-	if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1,
-			       &stmt, NULL) != SQLITE_OK)
+    if (stmt == NULL) {
+	if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	    return -1;
 
-	if (sqlite3_bind_int(stmt, INSERT_FILE_GAME_ID,
-			     archive_id(a)) != SQLITE_OK
-	    || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE,
-				archive_filetype(a)) != SQLITE_OK
-	    || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION,
-				archive_where(a)) != SQLITE_OK) {
-	    sqlite3_finalize(stmt);
+	if (sqlite3_bind_int(stmt, INSERT_FILE_GAME_ID, archive_id(a)) != SQLITE_OK
+	    || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive_filetype(a)) != SQLITE_OK
+	    || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive_where(a)) != SQLITE_OK)
 	    return -1;
-	}
-
-	stmt_owned = true;
     }
 
     err = 0;
@@ -331,22 +256,14 @@ memdb_file_insert(sqlite3_stmt *stmt, const archive_t *a, int idx)
 		continue;
 
 	    if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_SH, i) != SQLITE_OK
-		|| sq3_set_int64_default(stmt, INSERT_FILE_SIZE,
-					 file_size_xxx(r, i),
-					 SIZE_UNKNOWN) != SQLITE_OK
-		|| sq3_set_hashes(stmt, INSERT_FILE_HASHES,
-				  file_hashes_xxx(r, i), 1) != SQLITE_OK
+		|| sq3_set_int64_default(stmt, INSERT_FILE_SIZE, file_size_xxx(r, i), SIZE_UNKNOWN) != SQLITE_OK
+		|| sq3_set_hashes(stmt, INSERT_FILE_HASHES, file_hashes_xxx(r, i), 1) != SQLITE_OK
 		|| sqlite3_step(stmt) != SQLITE_DONE
 		|| sqlite3_reset(stmt) != SQLITE_OK) {
 		err = -1;
 		continue;
 	    }
 	}
-    }
-
-    if (stmt_owned) {
-	if (sqlite3_finalize(stmt) != SQLITE_OK)
-	    err = -1;
     }
 
     return err;
@@ -363,17 +280,13 @@ memdb_file_insert_archive(const archive_t *a)
     if (memdb_ensure() < 0)
 	return -1;
 
-    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int(stmt, INSERT_FILE_GAME_ID, archive_id(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE,
-			    archive_filetype(a)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, INSERT_FILE_LOCATION,
-			    archive_where(a)) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
+	|| sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive_filetype(a)) != SQLITE_OK
+	|| sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive_where(a)) != SQLITE_OK)
 	return -1;
-    }
 
     err = 0;
     for (i=0; i<archive_num_files(a); i++) {
@@ -382,9 +295,6 @@ memdb_file_insert_archive(const archive_t *a)
 	if (memdb_file_insert(stmt, a, i) < 0)
 	    err = -1;
     }
-
-    if (sqlite3_finalize(stmt) != SQLITE_OK)
-	err = -1;
 
     return err;
 }
@@ -418,7 +328,7 @@ _update_file(int id, filetype_t ft, int idx, const hashes_t *h)
 
     /* FILE_SH_DETECTOR hashes are always completely filled in */
 
-    if (sqlite3_prepare_v2(memdb, UPDATE_FILE, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_UPDATE_FILE)) == NULL)
 	return -1;
 
     if (sq3_set_hashes(stmt, 1, h, 1) != SQLITE_OK
@@ -426,12 +336,9 @@ _update_file(int id, filetype_t ft, int idx, const hashes_t *h)
 	|| sqlite3_bind_int(stmt, 5, ft) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 6, idx) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 7, FILE_SH_FULL) != SQLITE_OK
-	|| sqlite3_step(stmt) != SQLITE_DONE) {
-	sqlite3_finalize(stmt);
+	|| sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
-    }
 
-    sqlite3_finalize(stmt);
     return 0;
 }
 
@@ -442,17 +349,14 @@ _delete_file(int id, filetype_t ft, int idx)
 {
     sqlite3_stmt *stmt;
 
-    if (sqlite3_prepare_v2(memdb, DELETE_FILE, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_DELETE_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK
-	|| sqlite3_step(stmt) != SQLITE_DONE) {
-	sqlite3_finalize(stmt);
+	|| sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
-    }
 
-    sqlite3_finalize(stmt);
     return 0;
 }

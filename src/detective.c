@@ -93,7 +93,7 @@ main(int argc, char **argv)
     char *dbname;
     char *detector_name;
     int c, i, ret;
-    sqlite3 *db;
+    dbh_t *db;
 
     setprogname(argv[0]);
 
@@ -148,9 +148,9 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=dbh_open(dbname, DBL_READ)) == NULL) {
+    if ((db=dbh_open(dbname, DBH_READ)) == NULL) {
 	if (detector == 0) {
-	    myerror(ERRDB, "can't open database `%s'", dbname);
+	    myerror(ERRSTR, "can't open database `%s'", dbname);
 	    exit(1);
 	}
 	if (romhashtypes == 0)

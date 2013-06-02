@@ -7,6 +7,7 @@ Makefile$
 Makefile.in$
 ^aclocal\.m4$
 ^autom4te\.cache
+^build/
 ^ckmame-[0-9.]*\.tar\.(bz2|gz)$
 ^config.guess$
 ^config.sub$

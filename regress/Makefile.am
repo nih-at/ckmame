@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS=	parallel-tests
 
 noinst_PROGRAMS=	dbdump
-AM_CFLAGS=		-I${srcdir}/../src @SQLITE3_CFLAGS@ @CFLAGS@
+AM_CFLAGS=		-I${srcdir}/../src @LIBZIP_CFLAGS@ @SQLITE3_CFLAGS@ @CFLAGS@
 dbdump_LDADD=		../src/libckmame.a @SQLITE3_LIBS@
 
 EXTRA_DIST=runtest ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \

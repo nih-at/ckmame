@@ -36,16 +36,15 @@
 
 
 
-#include <sqlite3.h>
-
+#include "dbh.h"
 #include "delete_list.h"
 #include "detector.h"
 #include "output.h"
 #include "parray.h"
 #include "tree.h"
 
-extern sqlite3 *db;
-extern sqlite3 *old_db;
+extern dbh_t *db;
+extern dbh_t *old_db;
 
 extern detector_t *detector;
 

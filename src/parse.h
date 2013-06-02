@@ -38,9 +38,8 @@
 
 #include <stdio.h>
 
-#include <sqlite3.h>
-
 #include "dat.h"
+#include "dbh.h"
 #include "game.h"
 #include "output.h"
 #include "parser_source.h"
@@ -90,7 +89,7 @@ parser_context_t *parser_context_new(parser_source_t *, const parray_t *,
 
 int parse(parser_source_t *, const parray_t *, const dat_entry_t *,
 	  output_context_t *);
-int export_db(sqlite3 *, const parray_t *, const dat_entry_t *,
+int export_db(dbh_t *, const parray_t *, const dat_entry_t *,
 	      output_context_t *);
 
 /* backend parser functions */

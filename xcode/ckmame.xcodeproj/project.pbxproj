@@ -24,6 +24,9 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		4B513F4C175B52B70096EF42 /* dbh_statements.in in Sources */ = {isa = PBXBuildFile; fileRef = 4B513F49175B52700096EF42 /* dbh_statements.in */; };
+		4B513F4E175BC6820096EF42 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B513F4D175BC6820096EF42 /* libxml2.dylib */; };
+		4B513F4F175BC68F0096EF42 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B513F4D175BC6820096EF42 /* libxml2.dylib */; };
 		4B5FADB71735930100B67C24 /* archive.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAC7D173590FB00B67C24 /* archive.c */; };
 		4B5FADB91735930100B67C24 /* archive_file_compare_hashes.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAC7F1735914600B67C24 /* archive_file_compare_hashes.c */; };
 		4B5FADBA1735930100B67C24 /* archive_modify.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAC801735914600B67C24 /* archive_modify.c */; };
@@ -151,9 +154,22 @@
 		4B5FAEB417359AAE00B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B5FAEB517359AB100B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B5FAEB617359AB400B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
-		4BFF169D173699080000FD83 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BFF169C173699080000FD83 /* libxml2.dylib */; };
-		4BFF169E1736990E0000FD83 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BFF169C173699080000FD83 /* libxml2.dylib */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		4B513F50175BC96B0096EF42 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.in";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$(INPUT_FILE_BASE).c",
+				"$(INPUT_FILE_BASE).h",
+			);
+			script = "perl $SOURCE_ROOT/../src/mkstatements.pl $INPUT_FILE_DIR/$INPUT_FILE_NAME $DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.c $DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.h";
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
 		4B5FAE241735931C00B67C24 /* PBXContainerItemProxy */ = {
@@ -254,6 +270,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4B513F49175B52700096EF42 /* dbh_statements.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dbh_statements.in; sourceTree = "<group>"; };
+		4B513F4D175BC6820096EF42 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		4B513F51175BCC440096EF42 /* dbh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dbh.h; sourceTree = "<group>"; };
 		4B5FAC6017358FF000B67C24 /* ckmame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ckmame; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B5FAC7D173590FB00B67C24 /* archive.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive.c; sourceTree = "<group>"; };
 		4B5FAC7F1735914600B67C24 /* archive_file_compare_hashes.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_file_compare_hashes.c; sourceTree = "<group>"; };
@@ -398,8 +417,6 @@
 		4B5FAEA817359A3700B67C24 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzip.2.dylib; path = ../../../../nih/lib/libzip.2.dylib; sourceTree = "<group>"; };
 		4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
-		4BFF169C173699080000FD83 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
-		4BFF169F1736ACB80000FD83 /* dbh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dbh.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -425,7 +442,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BFF169D173699080000FD83 /* libxml2.dylib in Frameworks */,
+				4B513F4E175BC6820096EF42 /* libxml2.dylib in Frameworks */,
 				4B5FAEAA17359A4200B67C24 /* libz.dylib in Frameworks */,
 				4B5FAE341735936100B67C24 /* liblibckmame.a in Frameworks */,
 				4B5FAEB517359AB100B67C24 /* libsqlite3.dylib in Frameworks */,
@@ -448,10 +465,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B513F4F175BC68F0096EF42 /* libxml2.dylib in Frameworks */,
 				4B5FAEB317359AAA00B67C24 /* libsqlite3.dylib in Frameworks */,
 				4B5FAEAC17359A5100B67C24 /* libz.dylib in Frameworks */,
 				4B5FAE4B1735939000B67C24 /* liblibckmame.a in Frameworks */,
-				4BFF169E1736990E0000FD83 /* libxml2.dylib in Frameworks */,
 				4B5FAEB117359A9800B67C24 /* libzip.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -462,7 +479,7 @@
 		4B5FAC5717358FF000B67C24 = {
 			isa = PBXGroup;
 			children = (
-				4BFF169C173699080000FD83 /* libxml2.dylib */,
+				4B513F4D175BC6820096EF42 /* libxml2.dylib */,
 				4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */,
 				4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */,
 				4B5FAEA817359A3700B67C24 /* libz.dylib */,
@@ -529,7 +546,8 @@
 				4B5FACA21735919800B67C24 /* dat_push.c */,
 				4B5FAE591735941D00B67C24 /* db_init.c */,
 				4B5FAE5A1735941D00B67C24 /* dbh.c */,
-				4BFF169F1736ACB80000FD83 /* dbh.h */,
+				4B513F51175BCC440096EF42 /* dbh.h */,
+				4B513F49175B52700096EF42 /* dbh_statements.in */,
 				4B5FACA41735919800B67C24 /* delete_list.c */,
 				4B5FACA51735919800B67C24 /* delete_list.h */,
 				4B5FACAC1735919800B67C24 /* detector.c */,
@@ -717,6 +735,7 @@
 				4B5FAD44173592D700B67C24 /* Headers */,
 			);
 			buildRules = (
+				4B513F50175BC96B0096EF42 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -823,6 +842,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B513F4C175B52B70096EF42 /* dbh_statements.in in Sources */,
 				4B5FAE7D173594E400B67C24 /* db_init.c in Sources */,
 				4B5FAE7E173594E400B67C24 /* dbh.c in Sources */,
 				4B5FAE7F173594E400B67C24 /* file_compare.c in Sources */,

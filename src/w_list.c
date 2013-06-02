@@ -46,7 +46,7 @@
 
 
 int
-w_hashtypes(sqlite3 *db, int romhashtypes, int diskhashtypes)
+w_hashtypes(dbh_t *db, int romhashtypes, int diskhashtypes)
 {
 #if 0
     int err;
@@ -71,7 +71,7 @@ w_hashtypes(sqlite3 *db, int romhashtypes, int diskhashtypes)
 
 
 int
-w_list(sqlite3 *db, const char *key, const parray_t *pa)
+w_list(dbh_t *db, const char *key, const parray_t *pa)
 {
 #if 0
     int err;
