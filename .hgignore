@@ -32,6 +32,7 @@ Makefile.in$
 ^src/libckmame.a$
 ^src/mamedb$
 ^src/mkmamedb$
+^src/dbh_statements.[ch]
 ^stamp-h1$
 ^test-driver$
 ^regress/sandbox
