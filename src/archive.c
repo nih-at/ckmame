@@ -394,7 +394,7 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 {
     hashes_update_t *hu;
     unsigned char buf[BUFSIZE];
-    int n;
+    off_t n;
 
     hu = hashes_update_new(h);
 

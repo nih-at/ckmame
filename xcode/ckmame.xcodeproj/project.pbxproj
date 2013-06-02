@@ -151,6 +151,8 @@
 		4B5FAEB417359AAE00B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B5FAEB517359AB100B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B5FAEB617359AB400B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
+		4BFF169D173699080000FD83 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BFF169C173699080000FD83 /* libxml2.dylib */; };
+		4BFF169E1736990E0000FD83 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BFF169C173699080000FD83 /* libxml2.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -396,6 +398,8 @@
 		4B5FAEA817359A3700B67C24 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzip.2.dylib; path = ../../../../nih/lib/libzip.2.dylib; sourceTree = "<group>"; };
 		4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		4BFF169C173699080000FD83 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		4BFF169F1736ACB80000FD83 /* dbh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dbh.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -421,6 +425,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BFF169D173699080000FD83 /* libxml2.dylib in Frameworks */,
 				4B5FAEAA17359A4200B67C24 /* libz.dylib in Frameworks */,
 				4B5FAE341735936100B67C24 /* liblibckmame.a in Frameworks */,
 				4B5FAEB517359AB100B67C24 /* libsqlite3.dylib in Frameworks */,
@@ -446,6 +451,7 @@
 				4B5FAEB317359AAA00B67C24 /* libsqlite3.dylib in Frameworks */,
 				4B5FAEAC17359A5100B67C24 /* libz.dylib in Frameworks */,
 				4B5FAE4B1735939000B67C24 /* liblibckmame.a in Frameworks */,
+				4BFF169E1736990E0000FD83 /* libxml2.dylib in Frameworks */,
 				4B5FAEB117359A9800B67C24 /* libzip.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -456,6 +462,7 @@
 		4B5FAC5717358FF000B67C24 = {
 			isa = PBXGroup;
 			children = (
+				4BFF169C173699080000FD83 /* libxml2.dylib */,
 				4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */,
 				4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */,
 				4B5FAEA817359A3700B67C24 /* libz.dylib */,
@@ -522,6 +529,7 @@
 				4B5FACA21735919800B67C24 /* dat_push.c */,
 				4B5FAE591735941D00B67C24 /* db_init.c */,
 				4B5FAE5A1735941D00B67C24 /* dbh.c */,
+				4BFF169F1736ACB80000FD83 /* dbh.h */,
 				4B5FACA41735919800B67C24 /* delete_list.c */,
 				4B5FACA51735919800B67C24 /* delete_list.h */,
 				4B5FACAC1735919800B67C24 /* detector.c */,
