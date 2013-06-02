@@ -73,7 +73,6 @@ dbh_check_version(dbh_t *db)
 	return -1;
     }
     if (sqlite3_step(stmt) != SQLITE_ROW) {
-	sqlite3_finalize(stmt);
 	/* XXX */
 	return -1;
     }
