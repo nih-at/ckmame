@@ -48,7 +48,7 @@
 
 
 
-int _archive_global_flags = 0;
+int _archive_global_flags = 0;
 
 archive_t *
 archive_by_id(int id)
