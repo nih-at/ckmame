@@ -71,7 +71,7 @@ create table file (\n\
 	location integer not null,\n\
 	size integer,\n\
 	crc integer,\n\
-	md5 binray,\n\
+	md5 binaray,\n\
 	sha1 binary,\n\
 	primary key (game_id, file_type, file_idx)\n\
 );\n\
@@ -113,7 +113,7 @@ create table file (\n\
 	location integer not null,\n\
 	size integer,\n\
 	crc integer,\n\
-	md5 binray,\n\
+	md5 binaray,\n\
 	sha1 binary\n\
 );\n\
 create index file_id on file (game_id, file_type, file_idx);\n\
