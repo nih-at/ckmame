@@ -1,6 +1,6 @@
 /*
   db_init.c -- SQL statements to initialize mamedb
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -71,7 +71,7 @@ create table file (\n\
 	location integer not null,\n\
 	size integer,\n\
 	crc integer,\n\
-	md5 binaray,\n\
+	md5 binary,\n\
 	sha1 binary,\n\
 	primary key (game_id, file_type, file_idx)\n\
 );\n\
@@ -113,7 +113,7 @@ create table file (\n\
 	location integer not null,\n\
 	size integer,\n\
 	crc integer,\n\
-	md5 binaray,\n\
+	md5 binary,\n\
 	sha1 binary\n\
 );\n\
 create index file_id on file (game_id, file_type, file_idx);\n\
