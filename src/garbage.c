@@ -111,7 +111,7 @@ garbage_open(garbage_t *g)
 	name = make_garbage_name(archive_name(g->sa), 0);
 	g->da = archive_new(name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_CREATE);
 	free(name);
-	if (archive_ensure_zip(g->da) < 0) {
+	if (archive_check(g->da) < 0) {
 	    archive_free(g->da);
 	    g->da = NULL;
 	}

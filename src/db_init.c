@@ -122,7 +122,29 @@ create index file_size on file (size);\n\
 create index file_crc on file (crc);\n\
 create index file_md5 on file (md5);\n\
 create index file_sha1 on file (sha1);\n\
-"
+",
+    
+"\
+create table game (\n\
+    game_id integer primary key autoincrement,\n\
+    name text not null\n\
+);\n\
+create index game_name on game (name);\n\
+\n\
+create table file (\n\
+    file_id integer primary key autoincrement,\n\
+    game_id integer,\n\
+    name text not null,\n\
+    size integer not null,\n\
+    mtime integer not null,\n\
+    crc integer,\n\
+    md5 binary,\n\
+    sha1 binary\n\
+);\n\
+create index file_size on file (size);\n\
+create index file_crc on file (crc);\n\
+create index file_md5 on file (md5);\n\
+create index file_sha1 on file (sha1);\n"
 };
 
 

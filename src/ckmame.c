@@ -61,7 +61,7 @@ typedef enum action action_t;
 
 
 
-char *usage = "Usage: %s [-bcdFfhjKkLlnSsVvw] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
+char *usage = "Usage: %s [-bcdFfhjKkLlnSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -94,6 +94,7 @@ char help[] = "\n"
 "  -s, --nosuperfluous     don't report superfluous files in rom sets\n"
 "      --torrentzip        TorrentZip ROM archives\n"
 "  -T, --games-from file   read games to check from file\n"
+"  -u, --roms-unzipped     ROMs are files on disk, not contained in zip archives\n"
 "  -V, --version           display version number\n"
 "  -v, --verbose           print fixes made\n"
 "  -w, --nowarnings        print only unfixable errors\n"
@@ -104,7 +105,7 @@ char version_string[] = PACKAGE " " VERSION "\n"
 "Copyright (C) 2013 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "bcD:de:FfhijKkLlnO:R:SsT:xVvwXx"
+#define OPTIONS "bcD:de:FfhijKkLlnO:R:SsT:uVvwX"
 
 enum {
     OPT_CLEANUP_EXTRA = 256,
@@ -146,6 +147,7 @@ struct option options[] = {
     { "nowarnings",        0, 0, 'w' }, /* -SUP, -FIX */
     { "old-db",            1, 0, 'O' },
     { "rom-dir",           1, 0, 'R' },
+    { "roms-unzipped",     0, 0, 'u' },
     { "samples",           0, 0, 'S' },
     { "search",            1, 0, 'e' },
     { "superfluous",       0, 0, OPT_SUPERFLUOUS },
@@ -160,6 +162,7 @@ int fix_options;
 int ignore_extra;
 int romhashtypes, diskhashtypes;
 int check_integrity;
+int roms_unzipped;
 parray_t *superfluous;
 parray_t *search_dirs;
 const char *rom_dir;
@@ -199,6 +202,7 @@ main(int argc, char **argv)
     fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
     ignore_extra = 0;
     check_integrity = 0;
+    roms_unzipped = 0;
     search_dirs = parray_new();
     game_list = NULL;
     rom_dir = NULL;
@@ -273,6 +277,9 @@ main(int argc, char **argv)
 	    break;
 	case 'T':
 	    game_list = optarg;
+            break;
+        case 'u':
+            roms_unzipped = 1;
 	    break;
 	case 'v':
 	    fix_options |= FIX_PRINT;

@@ -94,7 +94,6 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	    cleanup_archive(a, res, flags);
 
 	    result_free(res);
-	    archive_close_zip(a);
 	    archive_free(a);
 
 	    break;

@@ -154,6 +154,8 @@
 		4B5FAEB417359AAE00B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B5FAEB517359AB100B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B5FAEB617359AB400B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
+		4B9292CA17635B5500806C0A /* archive_zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* archive_zip.c */; };
+		4B9292CC17635EE600806C0A /* archive_chd.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292CB17635EE600806C0A /* archive_chd.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -417,6 +419,21 @@
 		4B5FAEA817359A3700B67C24 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzip.2.dylib; path = ../../../../nih/lib/libzip.2.dylib; sourceTree = "<group>"; };
 		4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		4B9292BC17633FFC00806C0A /* dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dir.h; sourceTree = "<group>"; };
+		4B9292BD17633FFC00806C0A /* find.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = find.h; sourceTree = "<group>"; };
+		4B9292BE17633FFC00806C0A /* funcs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = funcs.h; sourceTree = "<group>"; };
+		4B9292BF17633FFC00806C0A /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
+		4B9292C017633FFC00806C0A /* result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = result.h; sourceTree = "<group>"; };
+		4B9292C117633FFC00806C0A /* sighandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sighandle.h; sourceTree = "<group>"; };
+		4B9292C217633FFC00806C0A /* sq_util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sq_util.h; sourceTree = "<group>"; };
+		4B9292C317633FFC00806C0A /* tree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tree.h; sourceTree = "<group>"; };
+		4B9292C417633FFC00806C0A /* util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		4B9292C517633FFC00806C0A /* warn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = warn.h; sourceTree = "<group>"; };
+		4B9292C617633FFC00806C0A /* xmalloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmalloc.h; sourceTree = "<group>"; };
+		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmlutil.h; sourceTree = "<group>"; };
+		4B9292C81763463200806C0A /* Objectification */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Objectification; path = ../Objectification; sourceTree = "<group>"; };
+		4B9292C917635B5500806C0A /* archive_zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_zip.c; sourceTree = "<group>"; };
+		4B9292CB17635EE600806C0A /* archive_chd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_chd.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -479,6 +496,7 @@
 		4B5FAC5717358FF000B67C24 = {
 			isa = PBXGroup;
 			children = (
+				4B9292C81763463200806C0A /* Objectification */,
 				4B513F4D175BC6820096EF42 /* libxml2.dylib */,
 				4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */,
 				4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */,
@@ -522,6 +540,8 @@
 				4B5FAC811735914600B67C24 /* archive.h */,
 				4B5FAC7F1735914600B67C24 /* archive_file_compare_hashes.c */,
 				4B5FAC801735914600B67C24 /* archive_modify.c */,
+				4B9292C917635B5500806C0A /* archive_zip.c */,
+				4B9292CB17635EE600806C0A /* archive_chd.c */,
 				4B5FAC8A1735914600B67C24 /* array.c */,
 				4B5FAC8B1735914600B67C24 /* array.h */,
 				4B5FAC821735914600B67C24 /* array_delete.c */,
@@ -560,6 +580,7 @@
 				4B5FACAB1735919800B67C24 /* detector_str.c */,
 				4B5FACAE1735919800B67C24 /* diagnostics.c */,
 				4B5FACAF1735919800B67C24 /* dir.c */,
+				4B9292BC17633FFC00806C0A /* dir.h */,
 				4B5FACC61735924900B67C24 /* disk.c */,
 				4B5FACC71735924900B67C24 /* disk.h */,
 				4B5FACC51735924900B67C24 /* disk_new.c */,
@@ -578,13 +599,16 @@
 				4B5FACD21735924900B67C24 /* file_status.h */,
 				4B5FACD51735924900B67C24 /* filetype_db_key.c */,
 				4B5FACD61735924900B67C24 /* find.c */,
+				4B9292BD17633FFC00806C0A /* find.h */,
 				4B5FACD81735924900B67C24 /* fix.c */,
 				4B5FACD71735924900B67C24 /* fix_util.c */,
 				4B5FACD91735924900B67C24 /* fixdat.c */,
+				4B9292BE17633FFC00806C0A /* funcs.h */,
 				4B5FACDA1735924900B67C24 /* game.c */,
 				4B5FACDB1735924900B67C24 /* game.h */,
 				4B5FACDC1735924900B67C24 /* garbage.c */,
 				4B5FACDD1735924900B67C24 /* garbage.h */,
+				4B9292BF17633FFC00806C0A /* globals.h */,
 				4B5FACDE1735924900B67C24 /* hash_from_string.c */,
 				4B5FACDF1735924900B67C24 /* hash_to_string.c */,
 				4B5FACE31735924900B67C24 /* hashes.c */,
@@ -633,18 +657,26 @@
 				4B5FAE5F1735949900B67C24 /* r_game.c */,
 				4B5FAE601735949900B67C24 /* r_list.c */,
 				4B5FAE611735949900B67C24 /* result.c */,
+				4B9292C017633FFC00806C0A /* result.h */,
 				4B5FAD401735929E00B67C24 /* sighandle.c */,
+				4B9292C117633FFC00806C0A /* sighandle.h */,
 				4B5FAE65173594C800B67C24 /* sq_util.c */,
+				4B9292C217633FFC00806C0A /* sq_util.h */,
 				4B5FAE66173594C800B67C24 /* superfluous.c */,
 				4B5FAE67173594C800B67C24 /* tree.c */,
+				4B9292C317633FFC00806C0A /* tree.h */,
 				4B5FAE68173594C800B67C24 /* util.c */,
+				4B9292C417633FFC00806C0A /* util.h */,
 				4B5FAE69173594C800B67C24 /* w_dat.c */,
 				4B5FAE6A173594C800B67C24 /* w_detector.c */,
 				4B5FAE6B173594C800B67C24 /* w_game.c */,
 				4B5FAE6C173594C800B67C24 /* w_list.c */,
 				4B5FAE6D173594C800B67C24 /* warn.c */,
+				4B9292C517633FFC00806C0A /* warn.h */,
 				4B5FAE6E173594C800B67C24 /* xmalloc.c */,
+				4B9292C617633FFC00806C0A /* xmalloc.h */,
 				4B5FAE6F173594C800B67C24 /* xmlutil.c */,
+				4B9292C717633FFC00806C0A /* xmlutil.h */,
 				4B5FAE70173594C800B67C24 /* zip_util.c */,
 			);
 			name = common;
@@ -950,6 +982,8 @@
 				4B5FAE9E173599C100B67C24 /* sha1.c in Sources */,
 				4B5FAEA617359A1B00B67C24 /* bswap16.c in Sources */,
 				4B5FAEA717359A1B00B67C24 /* bswap32.c in Sources */,
+				4B9292CA17635B5500806C0A /* archive_zip.c in Sources */,
+				4B9292CC17635EE600806C0A /* archive_chd.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

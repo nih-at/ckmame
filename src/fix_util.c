@@ -99,43 +99,6 @@ copy_file(const char *old, const char *new)
 
 
 
-int
-ensure_dir(const char *name, int strip_fname)
-{
-    const char *p;
-    char *dir;
-    struct stat st;
-    int ret;
-
-    if (strip_fname) {
-	p = strrchr(name, '/');
-	if (p == NULL)
-	    dir = xstrdup(".");
-	else {
-	    dir = xmalloc(p-name+1);
-	    strncpy(dir, name, p-name);
-	    dir[p-name] = 0;
-	}
-	name = dir;
-    }
-
-    ret = 0;
-    if (stat(name, &st) < 0) {
-	if (mkdir(name, 0777) < 0) {
-	    myerror(ERRSTR, "mkdir `%s' failed", name);
-	    ret = -1;
-	}
-    }
-    else if (!(st.st_mode & S_IFDIR)) {
-	myerror(ERRDEF, "`%s' is not a directory", name);
-	ret = -1;
-    }
-
-    if (strip_fname)
-	free(dir);
-
-    return ret;
-}		    
 
 
 

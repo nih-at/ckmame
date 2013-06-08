@@ -35,11 +35,11 @@
 */
 
 
-
-#include <zip.h>
+#include <sys/types.h>
 
 #include "array.h"
 #include "file.h"
+
 
 struct archive {
     int id;
@@ -49,10 +49,25 @@ struct archive {
     where_t where;
     int flags;
     array_t *files;
-    struct zip *za;
+    struct archive_ops *ops;
+    void *ud;
 };
 
 typedef struct archive archive_t;
+
+struct archive_ops {
+    int (*check)(archive_t *);
+    int (*close)(archive_t *);
+    int (*commit)(archive_t *);
+    int (*file_add_empty)(archive_t *, const char *name);
+    int (*file_compute_hashes)(archive_t *, int, int);
+    int (*file_copy)(archive_t *, int, archive_t *, const char *, off_t, off_t);
+    int (*file_delete)(archive_t *, int);
+    off_t (*file_find_offset)(archive_t *, int, int, const hashes_t *);
+    int (*file_rename)(archive_t *, int, const char *);
+    int (*read_infos)(archive_t *);
+    int (*rollback)(archive_t *);  /* never called if commit never fails */
+};
 
 #define ARCHIVE_FL_CREATE		0x01
 #define ARCHIVE_FL_CHECK_INTEGRITY	0x02
@@ -73,23 +88,20 @@ typedef struct archive archive_t;
 #define archive_id(a)		((a)->id)
 #define archive_name(a)		((a)->name)
 #define archive_num_files(a)	(array_length(archive_files(a)))
+#define archive_user_data(a)    ((a)->ud)
 #define archive_where(a)	((a)->where)
 
-/* internal */
-#define archive_zip(a)		((a)->za)
-
-
-#define archive_file_copy(sa, sidx, da, dname)	\
-    (archive_file_copy_part((sa), (sidx), (da), (dname), 0, -1))
 
 archive_t *archive_by_id(int);
+int archive_check(archive_t *);
+int archive_close(archive_t *);
 int archive_commit(archive_t *);
 int archive_file_add_empty(archive_t *, const char *);
 int archive_file_compare_hashes(archive_t *, int, const hashes_t *);
 int archive_file_compute_hashes(archive_t *, int, int);
-int archive_file_copy_part(archive_t *, int, archive_t *, const char *,
-			   off_t, off_t);
+int archive_file_copy(archive_t *, int, archive_t *, const char *);
 int archive_file_copy_or_move(archive_t *, int, archive_t *, const char *, int);
+int archive_file_copy_part(archive_t *, int, archive_t *, const char *, off_t, off_t, const file_t *f);
 int archive_file_delete(archive_t *, int);
 int archive_file_move(archive_t *, int, archive_t *, const char *);
 int archive_file_rename(archive_t *, int, const char *);
@@ -97,10 +109,12 @@ off_t archive_file_find_offset(archive_t *, int, int, const hashes_t *);
 int archive_file_index_by_name(const archive_t *, const char *);
 int archive_free(archive_t *);
 void archive_global_flags(int, bool);
-archive_t *archive_new(const char *, filetype_t, where_t, int);
-void archive_real_free(archive_t *);
-int archive_rollback(archive_t *);
 bool archive_is_empty(const archive_t *);
+archive_t *archive_new(const char *, filetype_t, where_t, int);
+int archive_read_infos(archive_t *);
+void archive_real_free(archive_t *);
+int archive_refresh(archive_t *);
+int archive_rollback(archive_t *);
 
 /* internal */
 extern int _archive_global_flags;
@@ -111,10 +125,6 @@ extern int _archive_global_flags;
 
 #define archive_is_writable(a)	(((a)->flags & ARCHIVE_FL_RDONLY) == 0)
 
-bool archive_is_torrentzipped(archive_t *);
-
-int archive_close_zip(archive_t *);
-int archive_ensure_zip(archive_t *);
-int archive_refresh(archive_t *);
+int archive_init_zip(archive_t *);
 
 #endif /* archive.h */

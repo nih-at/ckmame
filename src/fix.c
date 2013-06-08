@@ -70,24 +70,22 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
     if (fix_options & FIX_DO) {
 	gb = garbage_new(a);
 	
-	if (archive_ensure_zip(a) < 0) {
+	if (archive_check(a) < 0) {
 	    char *new_name;
 
 	    /* opening the zip file failed, rename it and create new one */
 
-	    if ((new_name=make_unique_name("broken", "%s",
-					   archive_name(a))) == NULL)
+	    if ((new_name=make_unique_name("broken", "%s", archive_name(a))) == NULL)
 		return -1;
 
 	    if (fix_options & FIX_PRINT)
-		printf("%s: rename broken zip to `%s'\n",
-		       archive_name(a), new_name);
+		printf("%s: rename broken archive to `%s'\n", archive_name(a), new_name);
 	    if (rename_or_move(archive_name(a), new_name) < 0) {
 		free(new_name);
 		return -1;
 	    }
 	    free(new_name);
-	    if (archive_ensure_zip(a) < 0)
+	    if (archive_check(a) < 0)
 		return -1;
 	}
 
@@ -106,10 +104,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		break;
 	    move = (fix_options & FIX_MOVE_UNKNOWN);
 	    if (fix_options & FIX_PRINT)
-		printf("%s: %s unknown file `%s'\n",
-		       archive_name(a),
-		       (move ? "mv" : "delete"),
-		       file_name(archive_file(a, i)));
+		printf("%s: %s unknown file `%s'\n", archive_name(a), (move ? "mv" : "delete"), file_name(archive_file(a, i)));
 
 	    if (move)
 		garbage_add(gb, i, false);
@@ -123,11 +118,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	    /* fallthrough */
 	case FS_SUPERFLUOUS:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete %s file `%s'\n",
-		       archive_name(a),
-		       (result_file(res, i) == FS_SUPERFLUOUS
-			? "unused" : "duplicate"),
-		       file_name(archive_file(a, i)));
+		printf("%s: delete %s file `%s'\n", archive_name(a), (result_file(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"), file_name(archive_file(a, i)));
 
 	    /* XXX: handle error (how?) */
 	    archive_file_delete(a, i);
@@ -163,10 +154,12 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	}
     }
 
+#if 0 /** \todo */
     if (fix_options & FIX_PRINT) {
 	if ((a->flags & ARCHIVE_FL_TORRENTZIP) && !archive_is_torrentzipped(a))
 	    printf("%s: torrentzipping\n", archive_name(a));
     }
+#endif
 
     if (archive_commit(a) < 0) {
 	if ((fix_options & FIX_DO) && extra_delete_list)
@@ -343,14 +336,10 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    }
 	    
 	    if (fix_options & FIX_PRINT)
-		printf("%s: extract (offset %" PRIdoff ", size %" PRIu64
-		       ") from `%s' to `%s'\n", archive_name(a),
-		       PRIoff_cast match_offset(m), file_size(r),
-		       file_name(archive_file(afrom, match_index(m))),
-		       file_name(r));
+		printf("%s: extract (offset %" PRIdoff ", size %" PRIu64 ") from `%s' to `%s'\n",
+                       archive_name(a), PRIoff_cast match_offset(m), file_size(r), file_name(archive_file(afrom, match_index(m))), file_name(r));
 
-	    if (archive_file_copy_part(afrom, match_index(m), a, file_name(r),
-		    		       match_offset(m), file_size(r)) < 0)
+	    if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size(r), r) < 0)
 		break;
 
 #if 0

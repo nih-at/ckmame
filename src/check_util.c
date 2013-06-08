@@ -191,13 +191,13 @@ make_file_name(filetype_t ft, const char *name)
     dir = get_directory(ft);
 
     if (ft == TYPE_DISK)
-	ext = "chd";
+	ext = ".chd";
     else
-	ext = "zip";
+	ext = roms_unzipped ? "" : ".zip";
 
     fn = xmalloc(strlen(dir)+strlen(name)+7);
     
-    sprintf(fn, "%s/%s.%s", dir, name, ext);
+    sprintf(fn, "%s/%s%s", dir, name, ext);
 
     return fn;
 }
@@ -234,8 +234,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name,
 
 	case NAME_CHD:
 	case NAME_NOEXT:
-	    if ((d=disk_new(b, (nt==NAME_NOEXT
-				? DISK_FL_QUIET : 0))) != NULL) {
+	    if ((d=disk_new(b, (nt==NAME_NOEXT ? DISK_FL_QUIET : 0))) != NULL) {
 		if (flags & DO_MAP)
 		    enter_disk_in_map(d, where);
 		if ((flags & DO_LIST) && list)
@@ -250,7 +249,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name,
     }
 
     return dir_close(dir);
-}    
+}
 
 
 

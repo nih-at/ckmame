@@ -64,6 +64,7 @@ extern parray_t *superfluous;
 extern int diskhashtypes;	/* hash type recorded for disks in db */
 extern int romhashtypes;	/* hash type recorded for ROMs in db */
 extern int check_integrity;	/* full integrity check of ROM set */
+extern int roms_unzipped;       /* ROMs are files on disk, not contained in zip archives */
 
 extern filetype_t file_type;	/* type of files to check (ROMs or samples) */
 

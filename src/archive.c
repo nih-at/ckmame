@@ -46,14 +46,9 @@
 #include "util.h"
 #include "xmalloc.h"
 
-#define BUFSIZE 8192
 
-static int get_hashes(struct zip_file *, off_t, hashes_t *);
-static int read_infos_from_zip(archive_t *);
 
-int _archive_global_flags = 0;
-
-
+int _archive_global_flags = 0;
 
 archive_t *
 archive_by_id(int id)
@@ -68,165 +63,35 @@ archive_by_id(int id)
     return a;
 }
 
-
-
 int
-archive_close_zip(archive_t *a)
+archive_check(archive_t *a)
 {
-    if (archive_zip(a) == NULL)
-	return 0;
-
-#ifdef FD_DEBUGGING
-    fprintf(stderr, "zip_close %s\n", archive_name(a));
-#endif
-    if (zip_close(archive_zip(a)) < 0) {
-	/* error closing, so zip is still valid */
-	myerror(ERRZIP, "error closing zip: %s", zip_strerror(archive_zip(a)));
-
-	/* XXX: really do this here? */
-	/* discard all changes and close zipfile */
-	zip_unchange_all(archive_zip(a));
-	zip_close(archive_zip(a));
-	archive_zip(a) = NULL;
-	return -1;
-    }
-
-    archive_zip(a) = NULL;
-
-    return 0;
+    return a->ops->check(a);
 }
 
-
+
 
 int
-archive_ensure_zip(archive_t *a)
+archive_close(archive_t *a)
 {
-    int flags;
-    
-    if (archive_zip(a))
-	return 0;
-
-    if (archive_filetype(a) != TYPE_ROM)
-	return -1;
-
-    flags = (a->flags & ARCHIVE_FL_CHECK_INTEGRITY) ? ZIP_CHECKCONS : 0;
-    if (a->flags & ARCHIVE_FL_CREATE)
-	flags |= ZIP_CREATE;
-
-    if ((archive_zip(a)=my_zip_open(archive_name(a), flags)) == NULL)
-	return -1;
-#ifdef FD_DEBUGGING
-    fprintf(stderr, "zip_open: %s\n", archive_name(a));
-#endif
-
-    return 0;
+    return a->ops->close(a);
 }
 
-
 
 int
 archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 {
-    hashes_t h;
-    struct zip *za;
-    struct zip_file *zf;
-    file_t *r;
-
-    r = archive_file(a, idx);
-
-    if ((hashes_types(file_hashes(r)) & hashtypes) == hashtypes)
-	return 0;
-
-    if (archive_ensure_zip(a) != 0)
-	return -1;
-
-    za = archive_zip(a);
-
-    if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
-	myerror(ERRDEF, "%s: %s: cannot open: %s",
-		archive_name(a), file_name(r), zip_strerror(za));
-	file_status(r) = STATUS_BADDUMP;
-	return -1;
-    }
-
-    hashes_types(&h) = hashtypes;
-    if (get_hashes(zf, file_size(r), &h) < 0) {
-	myerror(ERRDEF, "%s: %s: read error: %s",
-		archive_name(a), file_name(r), zip_strerror(za));
-	zip_fclose(zf);
-	file_status(r) = STATUS_BADDUMP;
-	return -1;
-    }
-
-    zip_fclose(zf);
-
-    if (hashtypes & HASHES_TYPE_CRC) {
-	if (file_hashes(r)->crc != h.crc) {
-	    myerror(ERRDEF, "%s: %s: CRC error: %lx != %lx",
-		    archive_name(a), file_name(r),
-		    h.crc, file_hashes(r)->crc);
-	    file_status(r) = STATUS_BADDUMP;
-	    return -1;
-	}
-    }
-    hashes_copy(file_hashes(r), &h);
-
-    return 0;
+    return a->ops->file_compute_hashes(a, idx, hashtypes);
 }
 
-
 
 off_t
 archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
 {
-    struct zip_file *zf;
-    hashes_t hn;
-    int found;
-    off_t offset;
-
-    hashes_init(&hn);
-    hashes_types(&hn) = hashes_types(h);
-
-    if (archive_ensure_zip(a) < 0)
-	return -1;
-
-    seterrinfo(zip_get_name(archive_zip(a), idx, 0), archive_name(a));
-    if ((zf = zip_fopen_index(archive_zip(a), idx, 0)) == NULL) {
-	myerror(ERRZIPFILE, "can't open file: %s",
-		zip_strerror(archive_zip(a)));
-	return -1;
-    }
-
-    found = 0;
-    offset = 0;
-    while ((uint64_t)offset+size <= file_size(archive_file(a, idx))) {
-	if (get_hashes(zf, size, &hn) < 0) {
-	    myerror(ERRZIPFILE, "read error: %s",
-		    zip_strerror(archive_zip(a)));
-	    zip_fclose(zf);
-	    return -1;
-	}
-	
-	if (hashes_cmp(h, &hn) == HASHES_CMP_MATCH) {
-	    found = 1;
-	    break;
-	}
-
-	offset += size;
-    }
-
-    if (zip_fclose(zf)) {
-	myerror(ERRZIPFILE, "close error: %s", zip_strerror(archive_zip(a)));
-	return -1;
-    }
-    
-    if (found)
-	return offset;
-	    
-    return -1;
+    return a->ops->file_find_offset(a, idx, size, h);
 }
 
-
+
 
 int
 archive_file_index_by_name(const archive_t *a, const char *name)
@@ -261,7 +126,7 @@ archive_free(archive_t *a)
 	/* XXX: warn about freeing modified archive */
     }
 
-    ret = archive_close_zip(a);
+    ret = archive_close(a);
 
     if (a->flags & ARCHIVE_FL_NOCACHE)
 	archive_real_free(a);
@@ -300,19 +165,23 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     a->refcount = 1;
     a->where = where;
     a->files = array_new(sizeof(file_t));
-    a->za = NULL;
+    a->ud = NULL;
     a->flags = ((flags|_archive_global_flags) & ARCHIVE_FL_MASK);
 
     switch (ft) {
     case TYPE_ROM:
     case TYPE_SAMPLE:
 	archive_filetype(a) = TYPE_ROM;
-	if (read_infos_from_zip(a) < 0) {
-	    if (!(a->flags & ARCHIVE_FL_CREATE)) {
-		archive_real_free(a);
-		return NULL;
-	    }
-	}
+        if (archive_init_zip(a) < 0) {
+            archive_real_free(a);
+            return NULL;
+        }
+        if (archive_read_infos(a) < 0) {
+            if (!(a->flags & ARCHIVE_FL_CREATE)) {
+                archive_real_free(a);
+                return NULL;
+            }
+        }
 	break;
 
     case TYPE_DISK:
@@ -346,13 +215,21 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
 
 
 
+
+int
+archive_read_infos(archive_t *a)
+{
+    return a->ops->read_infos(a);
+}
+
+
 void
 archive_real_free(archive_t *a)
 {
     if (a == NULL)
 	return;
 
-    archive_close_zip(a);
+    archive_close(a);
     free(a->name);
     array_free(archive_files(a), file_finalize);
     free(a);
@@ -363,12 +240,9 @@ archive_real_free(archive_t *a)
 int
 archive_refresh(archive_t *a)
 {
-    /* XXX: handle TYPE_DISK */
-
-    archive_close_zip(a);
+    archive_close(a);
     array_truncate(archive_files(a), 0, file_finalize);
-
-    read_infos_from_zip(a);
+    archive_read_infos(a);
 
     return 0;
 }
@@ -385,108 +259,4 @@ archive_is_empty(const archive_t *a)
 	    return false;
 
     return true;
-}
-
-
-
-static int
-get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
-{
-    hashes_update_t *hu;
-    unsigned char buf[BUFSIZE];
-    off_t n;
-
-    hu = hashes_update_new(h);
-
-    while (len > 0) {
-	n = len > sizeof(buf) ? sizeof(buf) : len;
-
-	if (zip_fread(zf, buf, n) != n)
-	    return -1;
-
-	hashes_update(hu, buf, n);
-	len -= n;
-    }
-
-    hashes_update_final(hu);
-
-    return 0;
-}
-
-
-
-static int
-match_detector(struct zip *za, int idx, file_t *r)
-{
-    struct zip_file *zf;
-    int ret;
-
-    if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
-	myerror(ERRZIP, "error opening index %d: %s", idx, zip_strerror(za));
-	file_status(r) = STATUS_BADDUMP;
-	return -1;
-    }
-
-    ret = detector_execute(detector, r, (detector_read_cb)zip_fread, zf);
-
-    zip_fclose(zf);
-
-    return ret;
-}
-
-
-
-static int
-read_infos_from_zip(archive_t *a)
-{
-    struct zip *za;
-    struct zip_stat zsb;
-    file_t *r;
-    int i;
-
-    if (archive_ensure_zip(a) < 0)
-	return -1;
-
-    za = archive_zip(a);
-
-    seterrinfo(NULL, archive_name(a));
-
-    for (i=0; i<zip_get_num_files(za); i++) {
-	if (zip_stat_index(za, i, 0, &zsb) == -1) {
-	    myerror(ERRZIP, "error stat()ing index %d: %s",
-		    i, zip_strerror(za));
-	    continue;
-	}
-
-	r = (file_t *)array_grow(archive_files(a), file_init);
-	file_size(r) = zsb.size;
-	file_name(r) = xstrdup(zsb.name);
-	file_status(r) = STATUS_OK;
-
-	hashes_init(file_hashes(r));
-	file_hashes(r)->types = HASHES_TYPE_CRC;
-	file_hashes(r)->crc = zsb.crc;
-
-	if (detector)
-	    match_detector(za, i, r);
-
-	if (a->flags & ARCHIVE_FL_CHECK_INTEGRITY)
-	    archive_file_compute_hashes(a, i, romhashtypes);
-    }
-
-    return 0;
-}
-
-
-
-bool
-archive_is_torrentzipped(archive_t *a)
-{
-    if (archive_filetype(a) != TYPE_ROM)
-	return true;
-
-    if (a->za == NULL)
-	return true;
-
-    return zip_get_archive_flag(a->za, ZIP_AFL_TORRENT, ZIP_FL_UNCHANGED) == 1;
 }

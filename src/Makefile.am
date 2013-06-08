@@ -23,6 +23,7 @@ libckmame_a_SOURCES= \
 	archive.c \
 	archive_file_compare_hashes.c \
 	archive_modify.c \
+	archive_zip.c \
 	array.c \
 	array_delete.c \
 	array_grow.c \
