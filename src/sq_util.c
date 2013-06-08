@@ -1,6 +1,6 @@
 /*
   sq_util.c -- sqlite3 utility functions
-  Copyright (C) 2010 Dieter Baron and Thomas Klausner
+  Copyright (C) 2010-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>

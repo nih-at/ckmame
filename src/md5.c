@@ -16,8 +16,8 @@
  */
 
 /*
-  Adapted for ckmame 2005 by Dieter Baron <dillo@giga.or.at>
-                             Thomas Klausner <tk@giga.or.at>
+  Adapted for ckmame 2005, 2013 by Dieter Baron <dillo@giga.or.at>
+                                   Thomas Klausner <tk@giga.or.at>
 */
 
 #include "config.h"

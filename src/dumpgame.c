@@ -77,7 +77,7 @@ char help[] = "\n\
 Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2011 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2013 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hbcD:dV"
