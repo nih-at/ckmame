@@ -1,6 +1,6 @@
 /*
   r_detector.c -- read detector from db
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -53,19 +53,17 @@ static int r_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
 
 detector_t *
-r_detector(sqlite3 *db)
+r_detector(dbh_t *db)
 {
     sqlite3_stmt *stmt, *stmt2;
     detector_t *d;
     int ret;
 
-    if (sqlite3_prepare_v2(db, QUERY_DAT, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt=dbh_get_statement(db, DBH_STMT_QUERY_DAT_DETECTOR)) == NULL)
 	return NULL;
 
-    if (sqlite3_step(stmt) != SQLITE_ROW) {
-	sqlite3_finalize(stmt);
+    if (sqlite3_step(stmt) != SQLITE_ROW)
 	return NULL;
-    }
 
     d = detector_new();
 
@@ -73,19 +71,11 @@ r_detector(sqlite3 *db)
     detector_author(d) = sq3_get_string(stmt, 1);
     detector_version(d) = sq3_get_string(stmt, 2);
 
-    sqlite3_finalize(stmt);
-
-    if (sqlite3_prepare_v2(db, QUERY_RULE, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt=dbh_get_statement(db, DBH_STMT_QUERY_RULE)) == NULL
+	|| (stmt2=dbh_get_statement(db, DBH_STMT_QUERY_TEST)) == NULL)
 	return NULL;
-    if (sqlite3_prepare_v2(db, QUERY_TEST, -1, &stmt2, NULL) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
-	return NULL;
-    }
 
     ret = r_rules(d, stmt, stmt2);
-
-    sqlite3_finalize(stmt);
-    sqlite3_finalize(stmt2);
 
     if (ret < 0) {
 	detector_free(d);

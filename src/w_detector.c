@@ -1,6 +1,6 @@
 /*
   w_detector.c -- write detector to db
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -54,37 +54,25 @@ static int w_rules(const detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
 
 int
-w_detector(sqlite3 *db, const detector_t *d)
+w_detector(dbh_t *db, const detector_t *d)
 {
     sqlite3_stmt *stmt, *stmt2;
-    int ret;
 
-    if (sqlite3_prepare_v2(db, INSERT_DAT, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_DAT_DETECTOR)) == NULL)
 	return -1;
 
     if (sq3_set_string(stmt, 1, detector_name(d)) != SQLITE_OK
 	|| sq3_set_string(stmt, 2, detector_author(d)) != SQLITE_OK
 	|| sq3_set_string(stmt, 3, detector_version(d)) != SQLITE_OK
-	|| sqlite3_step(stmt) != SQLITE_DONE) {
-	sqlite3_finalize(stmt);
+	|| sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
-    }
 
-    sqlite3_finalize(stmt);
-
-    if (sqlite3_prepare_v2(db, INSERT_RULE, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_RULE)) == NULL)
 	return -1;
-    if (sqlite3_prepare_v2(db, INSERT_TEST, -1, &stmt2, NULL) != SQLITE_OK) {
-	sqlite3_finalize(stmt);
+    if ((stmt2 = dbh_get_statement(db, DBH_STMT_INSERT_TEST)) == NULL)
 	return -1;
-    }
 
-    ret = w_rules(d, stmt, stmt2);
-
-    sqlite3_finalize(stmt);
-    sqlite3_finalize(stmt2);
-
-    return ret;
+    return w_rules(d, stmt, stmt2);
 }
 
 

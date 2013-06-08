@@ -1,6 +1,6 @@
 /*
   check_util.c -- utility functions needed only by ckmame itself
-  Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -47,10 +47,6 @@
 
 #define EXTRA_MAPS		0x1
 #define NEEDED_MAPS		0x2
-
-#define INSERT_FILE	\
-    "insert into file (game_id, file_type, file_idx, location," \
-    " size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?)"
 
 
 
@@ -263,21 +259,18 @@ enter_disk_in_map(const disk_t *d, where_t where)
 {
     sqlite3_stmt *stmt;
 
-    if (sqlite3_prepare_v2(memdb, INSERT_FILE, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int(stmt, 1, disk_id(d)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 4, where) != SQLITE_OK
-	|| sqlite3_bind_null(stmt, 5) != SQLITE_OK
-	|| sq3_set_hashes(stmt, 6, disk_hashes(d), 1) != SQLITE_OK
-	|| sqlite3_step(stmt) != SQLITE_DONE) {
-	sqlite3_finalize(stmt);
+        || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK
+        || sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK
+        || sqlite3_bind_int(stmt, 4, FILE_SH_FULL) != SQLITE_OK
+        || sqlite3_bind_int(stmt, 5, where) != SQLITE_OK
+        || sqlite3_bind_null(stmt, 6) != SQLITE_OK
+        || sq3_set_hashes(stmt, 7, disk_hashes(d), 1) != SQLITE_OK
+        || sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
-    }
-
-    sqlite3_finalize(stmt);
 
     return 0;
 }

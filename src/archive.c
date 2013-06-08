@@ -1,6 +1,6 @@
 /*
   archive.c -- information about an archive
-  Copyright (C) 1999-2012 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -394,7 +394,7 @@ get_hashes(struct zip_file *zf, off_t len, struct hashes *h)
 {
     hashes_update_t *hu;
     unsigned char buf[BUFSIZE];
-    int n;
+    off_t n;
 
     hu = hashes_update_new(h);
 

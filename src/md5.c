@@ -16,8 +16,8 @@
  */
 
 /*
-  Adapted for ckmame 2005 by Dieter Baron <dillo@giga.or.at>
-                             Thomas Klausner <tk@giga.or.at>
+  Adapted for ckmame 2005, 2013 by Dieter Baron <dillo@giga.or.at>
+                                   Thomas Klausner <tk@giga.or.at>
 */
 
 #include "config.h"
@@ -151,7 +151,7 @@ void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
     
     if (digest!=NULL)
 	    memcpy(digest, ctx->buf, 16);
-    memset(ctx, 0, sizeof(ctx));	/* In case it's sensitive */
+    memset(ctx, 0, sizeof(*ctx));	/* In case it's sensitive */
 }
 
 /* The four core functions - F1 is optimized somewhat */

@@ -1,6 +1,6 @@
 /*
   util.c -- utility functions
-  Copyright (C) 1999-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -62,7 +62,7 @@ mydirname(const char *fname)
 {
     const char *p;
     char *d;
-    int l;
+    size_t l;
 
     /* XXX: ignore trailing slashes */
 
@@ -75,7 +75,8 @@ mydirname(const char *fname)
 	return xstrdup("/");
 
     d = xmalloc(l+1);
-    sprintf(d, "%.*s", l, fname);
+    strncpy(d, fname, l);
+    d[l] = '\0';
     return d;
 }
 
@@ -119,7 +120,7 @@ hex2bin(unsigned char *t, const char *s, int unsigned tlen)
 name_type_t
 name_type(const char *name)
 {
-    int l;
+    size_t l;
 
     l = strlen(name);
 

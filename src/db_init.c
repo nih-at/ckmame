@@ -1,6 +1,6 @@
 /*
   db_init.c -- SQL statements to initialize mamedb
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -35,7 +35,8 @@
 
 #include "dbh.h"
 
-const char *sql_db_init = "\
+const char *sql_db_init[] = {
+"\
 create table dat (\n\
 	dat_idx integer primary key,\n\
 	name text,\n\
@@ -70,7 +71,7 @@ create table file (\n\
 	location integer not null,\n\
 	size integer,\n\
 	crc integer,\n\
-	md5 binray,\n\
+	md5 binary,\n\
 	sha1 binary,\n\
 	primary key (game_id, file_type, file_idx)\n\
 );\n\
@@ -94,7 +95,36 @@ create table test (\n\
 	result integer not null,\n\
 	primary key (rule_idx, test_idx)\n\
 );\n\
-";
+",
+
+"\
+create table ptr_cache (\n\
+	game_id integer primary key,\n\
+	name text not null,\n\
+	pointer blob\n\
+);\n\
+create index ptr_cache_name on ptr_cache (name);\n\
+\n\
+create table file (\n\
+	game_id integer,\n\
+	file_type integer,\n\
+	file_idx integer,\n\
+	file_sh integer,\n\
+	location integer not null,\n\
+	size integer,\n\
+	crc integer,\n\
+	md5 binary,\n\
+	sha1 binary\n\
+);\n\
+create index file_id on file (game_id, file_type, file_idx);\n\
+create index file_location on file (location);\n\
+create index file_size on file (size);\n\
+create index file_crc on file (crc);\n\
+create index file_md5 on file (md5);\n\
+create index file_sha1 on file (sha1);\n\
+"
+};
+
 
 const char *sql_db_init_2 = "\
 create index file_name on file (name);\n\

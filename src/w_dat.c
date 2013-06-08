@@ -1,6 +1,6 @@
 /*
   w_dat.c -- write dat struct to db
-  Copyright (C) 2006-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -42,19 +42,15 @@
 #include "sq_util.h"
 #include "types.h"
 
-#define DELETE_DAT	"delete from dat where dat_idx >= 0"
-#define INSERT_DAT	"insert into dat (dat_idx, name, description, " \
-			"version) values (?, ?, ?, ?)"
-
 
 
 int
-w_dat(sqlite3 *db, dat_t *d)
+w_dat(dbh_t *db, dat_t *d)
 {
     sqlite3_stmt *stmt;
     int i;
 
-    if (sqlite3_prepare_v2(db, INSERT_DAT, -1, &stmt, NULL) != SQLITE_OK)
+    if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_DAT)) == NULL)
 	return -1;
 
     for (i=0; i<dat_length(d); i++) {
@@ -63,13 +59,9 @@ w_dat(sqlite3 *db, dat_t *d)
 	    || sq3_set_string(stmt, 3, dat_description(d, i)) != SQLITE_OK
 	    || sq3_set_string(stmt, 4, dat_version(d, i)) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE
-	    || sqlite3_reset(stmt) != SQLITE_OK) {
-	    sqlite3_finalize(stmt);
+	    || sqlite3_reset(stmt) != SQLITE_OK)
 	    return -1;
-	}
     }
-
-    sqlite3_finalize(stmt);
 
     return 0;
 }

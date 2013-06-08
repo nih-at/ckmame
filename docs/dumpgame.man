@@ -1,4 +1,4 @@
-.\" Copyright (c) 2005-2008 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005-2013 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH DUMPGAME 1 "June 4, 2008" NiH
+.TH DUMPGAME 1 "June 2, 2013" NiH
 .SH "NAME"
 dumpgame \- extract rom set information from ckmame database
 .SH "SYNOPSIS"
@@ -83,10 +83,6 @@ The
 \fBgame\fR
 argument can also be one of the following special keywords:
 .RS
-.TP 17
-\fB/ckmame\fR
-Report database version of the database, if it is supported by
-.Nm.
 .TP 17
 \fB/dat\fR
 Names of the datfiles used for creating the database, and their

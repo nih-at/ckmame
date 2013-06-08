@@ -1,6 +1,6 @@
 /*
   error.c -- error printing
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -47,7 +47,7 @@
 
 static const char *myerrorfn = DEFAULT_FN;
 static const char *myerrorzipn = DEFAULT_FN;
-static sqlite3 *myerrdb = NULL;
+static dbh_t *myerrdb = NULL;
 
 
 
@@ -86,7 +86,7 @@ myerror(int errtype, const char *fmt, ...)
 
 
 void
-seterrdb(sqlite3 *db)
+seterrdb(dbh_t *db)
 {
     myerrdb = db;
 }

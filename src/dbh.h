@@ -3,7 +3,7 @@
 
 /*
   dbh.h -- mame.db sqlite3 data base
-  Copyright (C) 1999-2010 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -37,6 +37,7 @@
 #include <sqlite3.h>
 
 #include "dat.h"
+#include "dbh_statements.h"
 #include "detector.h"
 #include "file_location.h"
 #include "game.h"
@@ -46,11 +47,15 @@
 
 
 
-#define DBH_FORMAT_VERSION	2 /* version of ckmame database format */
+#define DBH_FMT_MAME	0x0	/* mame.db format */
+#define DBH_FMT_MEM	0x1	/* in-memory db format */
+#define DBH_FMT_FILE	0x2	/* unpacked files db format */
+#define DBH_FMT(m)	((m) & 0xf)
 
-#define DBL_READ	0x0	/* open readonly */
-#define DBL_WRITE	0x1	/* open for writing */
-#define DBL_NEW		0x2	/* create new database */
+#define DBH_READ	0x00	/* open readonly */
+#define DBH_WRITE	0x10	/* open for writing */
+#define DBH_NEW		0x20	/* create new database */
+#define DBH_FLAGS(m)	((m) & 0xf0)
 
 /* keep in sync with r_list.c:query_list */
 enum dbh_list {
@@ -63,31 +68,42 @@ enum dbh_list {
 #define DBH_DEFAULT_DB_NAME	"mame.db"
 #define DBH_DEFAULT_OLD_DB_NAME	"old.db"
 
-extern const char *sql_db_init;
+extern const char *sql_db_init[];
 extern const char *sql_db_init_2;
 
-
+struct dbh {
+    sqlite3 *db;
+    sqlite3_stmt *statements[DBH_STMT_MAX];
+    int dbh_errno;
+    int format;
+};
+typedef struct dbh dbh_t;
 
-int dbh_close(sqlite3 *);
-const char *dbh_error(sqlite3 *);
-sqlite3* dbh_open(const char *, int);
+#define dbh_db(dbh)	((dbh)->db)
 
-int d_game(sqlite3 *, const char *);
+int dbh_close(dbh_t *);
+const char *dbh_error(dbh_t *);
+dbh_t* dbh_open(const char *, int);
+
+sqlite3_stmt *dbh_get_statement(dbh_t *, dbh_stmt_t);
+dbh_stmt_t dbh_stmt_with_hashes_and_size(dbh_stmt_t, const hashes_t *, int);
+
+int d_game(dbh_t *, const char *);
 
 
-dat_t *r_dat(sqlite3 *);
-detector_t *r_detector(sqlite3 *);
-array_t *r_file_by_hash(sqlite3 *, filetype_t, const hashes_t *);
-struct game *r_game(sqlite3 *, const char *);
-int r_hashtypes(sqlite3 *, int *, int *);
-parray_t *r_list(sqlite3 *, enum dbh_list);
-int u_game(sqlite3 *, game_t *);
-int u_game_parent(sqlite3 *, game_t *, filetype_t);
-int w_dat(sqlite3 *, dat_t *);
-int w_detector(sqlite3 *db, const detector_t *);
-int w_file_by_hash_parray(sqlite3 *, filetype_t, const hashes_t *, parray_t *);
-int w_game(sqlite3 *, game_t *);
-int w_hashtypes(sqlite3 *, int, int);
-int w_list(sqlite3 *, const char *, const parray_t *);
+dat_t *r_dat(dbh_t *);
+detector_t *r_detector(dbh_t *);
+array_t *r_file_by_hash(dbh_t *, filetype_t, const hashes_t *);
+struct game *r_game(dbh_t *, const char *);
+int r_hashtypes(dbh_t *, int *, int *);
+parray_t *r_list(dbh_t *, enum dbh_list);
+int u_game(dbh_t *, game_t *);
+int u_game_parent(dbh_t *, game_t *, filetype_t);
+int w_dat(dbh_t *, dat_t *);
+int w_detector(dbh_t *db, const detector_t *);
+int w_file_by_hash_parray(dbh_t *, filetype_t, const hashes_t *, parray_t *);
+int w_game(dbh_t *, game_t *);
+int w_hashtypes(dbh_t *, int, int);
+int w_list(dbh_t *, const char *, const parray_t *);
 
 #endif /* dbh.h */

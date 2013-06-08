@@ -1,6 +1,6 @@
 /*
   export_db.c -- export games from db to output backend
-  Copyright (C) 2006-2008 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -40,7 +40,7 @@
 
 
 int
-export_db(sqlite3 *db, const parray_t *exclude, const dat_entry_t *dat,
+export_db(dbh_t *db, const parray_t *exclude, const dat_entry_t *dat,
 	  output_context_t *out)
 {
     parray_t *list;

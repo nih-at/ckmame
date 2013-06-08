@@ -7,6 +7,7 @@ Makefile$
 Makefile.in$
 ^aclocal\.m4$
 ^autom4te\.cache
+^build/
 ^ckmame-[0-9.]*\.tar\.(bz2|gz)$
 ^config.guess$
 ^config.sub$
@@ -31,6 +32,7 @@ Makefile.in$
 ^src/libckmame.a$
 ^src/mamedb$
 ^src/mkmamedb$
+^src/dbh_statements.[ch]
 ^stamp-h1$
 ^test-driver$
 ^regress/sandbox

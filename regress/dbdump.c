@@ -1,6 +1,6 @@
 /*
   dbdump.c -- print contents of db
-  Copyright (C) 2005-2006 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -80,13 +80,13 @@ main(int argc, char *argv[])
     }
 
     if (sqlite3_open(fname, &db) != SQLITE_OK) {
-	seterrdb(db);
+	/* seterrdb(db); */
 	myerror(ERRDB, "can't open database `%s'", fname);
 	sqlite3_close(db);
 	exit(1);
     }
 
-    seterrdb(db);
+    /* seterrdb(db); */
     
     if ((ret=dump_db(db)) < 0)
 	myerror(ERRDB, "can't dump database `%s'", fname);
