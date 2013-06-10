@@ -8,6 +8,8 @@
   In image new/file.chd:
   image new/file.chd: not used
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
++ [feature] mkmamedb: parser for mtree files
++ [feature] server mode: tell location/mamedb of ROM sets, serves files needed by remote ckmame client
 + [cleanup] ckmame: create fixdat only when necessary
 + [bug] mkmamedb: warn if rom from parent has different crc
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
