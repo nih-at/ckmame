@@ -419,6 +419,8 @@
 		4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzip.2.dylib; path = ../../../../nih/lib/libzip.2.dylib; sourceTree = "<group>"; };
 		4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		4B7F50691776479C00B4273C /* archive_dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_dir.c; sourceTree = "<group>"; };
+		4B7F506B1776523900B4273C /* THANKS */ = {isa = PBXFileReference; lastKnownFileType = text; name = THANKS; path = ../THANKS; sourceTree = "<group>"; };
+		4B7F506C1776523900B4273C /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; name = TODO; path = ../TODO; sourceTree = "<group>"; };
 		4B9292BC17633FFC00806C0A /* dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dir.h; sourceTree = "<group>"; };
 		4B9292BD17633FFC00806C0A /* find.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = find.h; sourceTree = "<group>"; };
 		4B9292BE17633FFC00806C0A /* funcs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = funcs.h; sourceTree = "<group>"; };
@@ -495,6 +497,8 @@
 		4B5FAC5717358FF000B67C24 = {
 			isa = PBXGroup;
 			children = (
+				4B7F506B1776523900B4273C /* THANKS */,
+				4B7F506C1776523900B4273C /* TODO */,
 				4B9292C81763463200806C0A /* Objectification */,
 				4B513F4D175BC6820096EF42 /* libxml2.dylib */,
 				4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */,
