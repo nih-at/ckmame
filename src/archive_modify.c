@@ -138,28 +138,57 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
         myerror(ERRZIP, "cannot copy to archive of different type `%s'", archive_name(da));
         return -1;
     }
-
+    if (file_status(archive_file(sa, sidx)) == STATUS_BADDUMP) {
+	seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
+	myerror(ERRZIPFILE, "not copying broken file");
+	return -1;
+    }
     if (file_where(archive_file(sa, sidx)) != FILE_INZIP) {
         seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
         myerror(ERRZIP, "cannot copy broken/added/deleted file");
         return -1;
     }
-
     if (start < 0 || (len != -1 && (len < 0 || (uint64_t)(start+len) > file_size(archive_file(sa, sidx))))) {
         seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
         /* XXX: print off_t properly */
         myerror(ERRZIP, "invalid range (%ld, %ld)", (long)start, (long)len);
         return -1;
     }
-	
-    if (archive_is_writable(da))
-        if (sa->ops->file_copy(sa, sidx, da, dname, start, len) < 0)
+
+    /* if exists, delete broken file with same name */
+    bool replace = false;
+    int didx = archive_file_index_by_name(da, dname);
+    if (didx >= 0) {
+	if (sa == da && sidx == didx)
+	    replace = true;
+	else {
+	    if (file_status(archive_file(da, didx)) == STATUS_BADDUMP) {
+		if (archive_file_delete(da, didx) < 0)
+		    return -1;
+	    }
+	    else {
+		if (archive_file_rename_to_unique(da, didx) < 0)
+		    return -1;
+	    }
+	}
+    }
+
+    if (archive_is_writable(da)) {
+        if (sa->ops->file_copy(sa, sidx, da, replace ? didx : -1, dname, start, len) < 0) {
+	    /** \todo undo rename_to_unique? */	       
             return -1;
-    
-    if (start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx))))
-        _add_file(da, -1, dname, archive_file(sa, sidx));
-    else
-        _add_file(da, -1, dname, f);
+	}
+    }
+
+    if (replace) {
+	/** \todo update archive_file(sa, sidx) */
+    }
+    else {
+	if (start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx))))
+	    _add_file(da, -1, dname, archive_file(sa, sidx));
+	else
+	    _add_file(da, -1, dname, f);
+    }
 
     return 0;
 }
@@ -216,7 +245,24 @@ archive_file_rename(archive_t *a, int idx, const char *name)
     return 0;
 }
 
-
+
+int
+archive_file_rename_to_unique(archive_t *a, int idx)
+{
+    if (!archive_is_writable(a))
+        return 0;
+    
+    char *new_name = a->ops->file_rename_unique(a, idx);
+    if (new_name == NULL)
+        return -1;
+    
+    file_t *r = archive_file(a, idx);
+    
+    free(file_name(r));
+    file_name(r) = new_name;
+
+    return 0;
+}
 
 int
 archive_rollback(archive_t *a)

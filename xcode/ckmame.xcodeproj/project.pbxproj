@@ -155,7 +155,6 @@
 		4B5FAEB517359AB100B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B5FAEB617359AB400B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B9292CA17635B5500806C0A /* archive_zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* archive_zip.c */; };
-		4B9292CC17635EE600806C0A /* archive_chd.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292CB17635EE600806C0A /* archive_chd.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -169,7 +168,7 @@
 				"$(INPUT_FILE_BASE).c",
 				"$(INPUT_FILE_BASE).h",
 			);
-			script = "perl $SOURCE_ROOT/../src/mkstatements.pl $INPUT_FILE_DIR/$INPUT_FILE_NAME $DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.c $DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.h";
+			script = "if [ ! -d $BUILT_PRODUCTS_DIR/include ]\nthen\n    mkdir $BUILT_PRODUCTS_DIR/include\nfi\n\nperl $SOURCE_ROOT/../src/mkstatements.pl $INPUT_FILE_DIR/$INPUT_FILE_NAME $DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.c $BUILT_PRODUCTS_DIR/include/$INPUT_FILE_BASE.h";
 		};
 /* End PBXBuildRule section */
 
@@ -419,6 +418,7 @@
 		4B5FAEA817359A3700B67C24 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzip.2.dylib; path = ../../../../nih/lib/libzip.2.dylib; sourceTree = "<group>"; };
 		4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		4B7F50691776479C00B4273C /* archive_dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_dir.c; sourceTree = "<group>"; };
 		4B9292BC17633FFC00806C0A /* dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dir.h; sourceTree = "<group>"; };
 		4B9292BD17633FFC00806C0A /* find.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = find.h; sourceTree = "<group>"; };
 		4B9292BE17633FFC00806C0A /* funcs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = funcs.h; sourceTree = "<group>"; };
@@ -433,7 +433,6 @@
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmlutil.h; sourceTree = "<group>"; };
 		4B9292C81763463200806C0A /* Objectification */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Objectification; path = ../Objectification; sourceTree = "<group>"; };
 		4B9292C917635B5500806C0A /* archive_zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_zip.c; sourceTree = "<group>"; };
-		4B9292CB17635EE600806C0A /* archive_chd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_chd.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -540,8 +539,8 @@
 				4B5FAC811735914600B67C24 /* archive.h */,
 				4B5FAC7F1735914600B67C24 /* archive_file_compare_hashes.c */,
 				4B5FAC801735914600B67C24 /* archive_modify.c */,
+				4B7F50691776479C00B4273C /* archive_dir.c */,
 				4B9292C917635B5500806C0A /* archive_zip.c */,
-				4B9292CB17635EE600806C0A /* archive_chd.c */,
 				4B5FAC8A1735914600B67C24 /* array.c */,
 				4B5FAC8B1735914600B67C24 /* array.h */,
 				4B5FAC821735914600B67C24 /* array_delete.c */,
@@ -983,7 +982,6 @@
 				4B5FAEA617359A1B00B67C24 /* bswap16.c in Sources */,
 				4B5FAEA717359A1B00B67C24 /* bswap32.c in Sources */,
 				4B9292CA17635B5500806C0A /* archive_zip.c in Sources */,
-				4B9292CC17635EE600806C0A /* archive_chd.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

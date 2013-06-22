@@ -95,15 +95,13 @@ ensure_extra_maps(int flags)
 	    file = parray_get(superfluous, i);
 	    switch ((nt=name_type(file))) {
 	    case NAME_ZIP:
-		if ((a=archive_new(file, TYPE_ROM,
-				   FILE_SUPERFLUOUS, 0)) != NULL) {
+		if ((a=archive_new(file, TYPE_ROM, FILE_SUPERFLUOUS, 0)) != NULL) {
 		    archive_free(a);
 		}
 		break;
 	    case NAME_CHD:
 	    case NAME_NOEXT:
-		if ((d=disk_new(file, (nt==NAME_NOEXT
-				       ? DISK_FL_QUIET : 0))) != NULL) {
+		if ((d=disk_new(file, (nt==NAME_NOEXT ? DISK_FL_QUIET : 0))) != NULL) {
 		    enter_disk_in_map(d, FILE_SUPERFLUOUS);
 		    disk_free(d);
 		}
@@ -117,9 +115,7 @@ ensure_extra_maps(int flags)
     }
 
     for (i=0; i<parray_length(search_dirs); i++)
-	enter_dir_in_map_and_list(flags, extra_list,
-				  parray_get(search_dirs, i),
-				  DIR_RECURSE, FILE_EXTRA);
+	enter_dir_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
 
     if (flags & DO_LIST)
 	parray_sort(extra_list, strcmp);
@@ -205,8 +201,7 @@ make_file_name(filetype_t ft, const char *name)
 
 
 static int
-enter_dir_in_map_and_list(int flags, parray_t *list, const char *name,
-			  int dir_flags, where_t where)
+enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_flags, where_t where)
 {
     dir_t *dir;
     dir_status_t ds;

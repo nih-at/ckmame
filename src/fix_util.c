@@ -55,11 +55,11 @@
 
 
 int
-copy_file(const char *old, const char *new)
+copy_file(const char *old, const char *new, size_t start, ssize_t len)
 {
     FILE *fin, *fout;
     char b[8192];
-    size_t nr, nw, n;
+    size_t nr, nw, n, total;
     int err;
 
     if ((fin=fopen(old, "rb")) == NULL)
@@ -70,7 +70,13 @@ copy_file(const char *old, const char *new)
 	return -1;
     }
 
-    while ((nr=fread(b, 1, sizeof(b), fin)) > 0) {
+    total = 0;
+    while ((len >= 0 && total < (size_t)len) || !feof(fin)) {
+	nr = sizeof(b);
+	if (len > 0 && n > (size_t)len-total)
+	    n = (size_t)len-total;
+	if ((nr = fread(b, 1, nr, fin)) == 0)
+            break;
 	nw = 0;
 	while (nw<nr) {
 	    if ((n=fwrite(b+nw, 1, nr-nw, fout)) <= 0) {
@@ -83,6 +89,7 @@ copy_file(const char *old, const char *new)
 	    }
 	    nw += n;
 	}
+	total += nw;
     }
 
     if (fclose(fout) != 0 || ferror(fin)) {
@@ -97,16 +104,12 @@ copy_file(const char *old, const char *new)
     return 0;
 }
 
-
-
-
-
 
 int
 link_or_copy(const char *old, const char *new)
 {
     if (link(old, new) < 0) {
-	if (copy_file(old, new) < 0) {
+	if (copy_file(old, new, 0, -1) < 0) {
 	    seterrinfo(old, NULL);
 	    myerror(ERRFILESTR, "cannot link to `%s'", new);
 	    return -1;
@@ -238,7 +241,7 @@ int
 rename_or_move(const char *old, const char *new)
 {
     if (rename(old, new) < 0) {
-	if (copy_file(old, new) < 0) {
+	if (copy_file(old, new, 0, -1) < 0) {
 	    seterrinfo(old, NULL);
 	    myerror(ERRFILESTR, "cannot rename to `%s'", new);
 	    return -1;
@@ -294,9 +297,7 @@ save_needed(archive_t *sa, int sidx, int do_save)
 	return -1;
     }
 
-    if ((da=archive_new(tmp, archive_filetype(sa), FILE_NEEDED,
-			ARCHIVE_FL_CREATE
-			| (do_save ? 0 : ARCHIVE_FL_RDONLY))) == NULL)
+    if ((da=archive_new(tmp, archive_filetype(sa), FILE_NEEDED, ARCHIVE_FL_CREATE | (do_save ? 0 : ARCHIVE_FL_RDONLY))) == NULL)
 	return -1;
 
     free(tmp);

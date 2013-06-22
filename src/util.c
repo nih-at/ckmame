@@ -31,19 +31,36 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include "xmalloc.h"
 #include "util.h"
 #include "error.h"
 
-
+
+int
+is_writable_directory(const char *name)
+{
+    struct stat st;
+
+    if (stat(name, &st) < 0)
+	return -1;
+
+    if (!S_ISDIR(st.st_mode)) {
+	errno = ENOTDIR;
+	return -1;
+    }
+
+    return access(name, R_OK|W_OK|X_OK);		  
+}
+
 
 const char *
 mybasename(const char *fname)

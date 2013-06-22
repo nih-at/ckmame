@@ -60,11 +60,14 @@ struct archive_ops {
     int (*close)(archive_t *);
     int (*commit)(archive_t *);
     int (*file_add_empty)(archive_t *, const char *name);
-    int (*file_compute_hashes)(archive_t *, int, int);
-    int (*file_copy)(archive_t *, int, archive_t *, const char *, off_t, off_t);
+    void (*file_close)(void *);
+    int (*file_copy)(archive_t *, int, archive_t *, int, const char *, off_t, off_t);
     int (*file_delete)(archive_t *, int);
-    off_t (*file_find_offset)(archive_t *, int, int, const hashes_t *);
+    void *(*file_open)(archive_t *, int);
+    int64_t (*file_read)(void *, void *, uint64_t);
     int (*file_rename)(archive_t *, int, const char *);
+    char *(*file_rename_unique)(archive_t *, int);
+    const char *(*file_strerror)(void *);
     int (*read_infos)(archive_t *);
     int (*rollback)(archive_t *);  /* never called if commit never fails */
 };
@@ -85,6 +88,7 @@ struct archive_ops {
 #define archive_file(a, i)	((file_t *)array_get(archive_files(a), (i)))
 #define archive_files(a)	((a)->files)
 #define archive_filetype(a)	((a)->filetype)
+#define archive_flags(a)	((a)->flags)
 #define archive_id(a)		((a)->id)
 #define archive_name(a)		((a)->name)
 #define archive_num_files(a)	(array_length(archive_files(a)))
@@ -105,6 +109,7 @@ int archive_file_copy_part(archive_t *, int, archive_t *, const char *, off_t, o
 int archive_file_delete(archive_t *, int);
 int archive_file_move(archive_t *, int, archive_t *, const char *);
 int archive_file_rename(archive_t *, int, const char *);
+int archive_file_rename_to_unique(archive_t *, int);
 off_t archive_file_find_offset(archive_t *, int, int, const hashes_t *);
 int archive_file_index_by_name(const archive_t *, const char *);
 int archive_free(archive_t *);

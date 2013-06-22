@@ -49,7 +49,7 @@
 
 #define DBH_FMT_MAME	0x0	/* mame.db format */
 #define DBH_FMT_MEM	0x1	/* in-memory db format */
-#define DBH_FMT_FILE	0x2	/* unpacked files db format */
+#define DBH_FMT_DIR	0x2	/* unpacked dirs db format */
 #define DBH_FMT(m)	((m) & 0xf)
 
 #define DBH_READ	0x00	/* open readonly */

@@ -3,7 +3,7 @@
 
 /*
   util.h -- miscellaneous utility functions
-  Copyright (C) 1999-2010 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -45,6 +45,7 @@ typedef int (*cmpfunc)(const void *, const void *);
 
 char *bin2hex(char *, const unsigned char *, unsigned int);
 int hex2bin(unsigned char *, const char *, unsigned int);
+int is_writable_directory(const char *);
 const char *mybasename(const char *);
 char *mydirname(const char *);
 name_type_t name_type(const char *);

@@ -46,6 +46,9 @@
 #include "util.h"
 #include "xmalloc.h"
 
+#define BUFSIZE 8192
+
+static int get_hashes(archive_t *, void *, off_t, struct hashes *);
 
 
 int _archive_global_flags = 0;
@@ -81,14 +84,84 @@ archive_close(archive_t *a)
 int
 archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 {
-    return a->ops->file_compute_hashes(a, idx, hashtypes);
+    hashes_t h;
+    file_t *r;
+    void *f;
+    
+    r = archive_file(a, idx);
+    
+    if ((hashes_types(file_hashes(r)) & hashtypes) == hashtypes)
+	return 0;
+
+    hashes_types(&h) = hashtypes;
+
+    if ((f=a->ops->file_open(a, idx)) == NULL) {
+	file_status(r) = STATUS_BADDUMP;
+	return -1;
+    }
+    
+    if (get_hashes(a, f, file_size(r), &h) < 0) {
+	file_status(r) = STATUS_BADDUMP;
+	a->ops->file_close(f);
+	return -1;
+    }
+
+    a->ops->file_close(f);
+    
+    if (hashtypes & HASHES_TYPE_CRC) {
+	if (file_hashes(r)->crc != h.crc) {
+	    myerror(ERRDEF, "%s: %s: CRC error: %lx != %lx", archive_name(a), file_name(r), h.crc, file_hashes(r)->crc);
+	    file_status(r) = STATUS_BADDUMP;
+	    return -1;
+	}
+    }
+    hashes_copy(file_hashes(r), &h);
+
+    return 0;
 }
 
 
 off_t
 archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
 {
-    return a->ops->file_find_offset(a, idx, size, h);
+    void *f;
+    hashes_t hn;
+    int found;
+    off_t offset;
+    
+    hashes_init(&hn);
+    hashes_types(&hn) = hashes_types(h);
+    
+    file_t *r = archive_file(a, idx);
+    
+    if ((f = a->ops->file_open(a, idx)) == NULL) {
+	file_status(r) = STATUS_BADDUMP;
+	return -1;
+    }
+    
+    found = 0;
+    offset = 0;
+    while ((uint64_t)offset+size <= file_size(r)) {
+	if (get_hashes(a, f, size, &hn) < 0) {
+	    a->ops->file_close(f);
+	    file_status(r) = STATUS_BADDUMP;
+	    return -1;
+	}
+	
+	if (hashes_cmp(h, &hn) == HASHES_CMP_MATCH) {
+	    found = 1;
+	    break;
+	}
+        
+	offset += size;
+    }
+
+    a->ops->file_close(f);
+    
+    if (found)
+	return offset;
+    
+    return -1;
 }
 
 
@@ -259,4 +332,29 @@ archive_is_empty(const archive_t *a)
 	    return false;
 
     return true;
+}
+
+
+static int
+get_hashes(archive_t *a, void *f, off_t len, struct hashes *h)
+{
+    hashes_update_t *hu;
+    unsigned char buf[BUFSIZE];
+    off_t n;
+    
+    hu = hashes_update_new(h);
+    
+    while (len > 0) {
+	n = len > sizeof(buf) ? sizeof(buf) : len;
+        
+	if (a->ops->file_read(f, buf, n) != n)
+	    return -1;
+        
+	hashes_update(hu, buf, n);
+	len -= n;
+    }
+    
+    hashes_update_final(hu);
+    
+    return 0;
 }

@@ -88,7 +88,7 @@ delete_list_execute(delete_list_t *dl)
 
 	    name = file_location_name(fbh);
 	    /* XXX: don't hardcode location */
-	    if ((a=archive_new(name, TYPE_ROM, FILE_NOWHERE,0)) == NULL)
+	    if ((a=archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL)
 		ret = -1;
 	}
 	if (a) {

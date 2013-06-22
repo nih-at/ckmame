@@ -111,7 +111,7 @@ static int execute_rule(detector_t *, detector_rule_t *, file_t *,
 			struct ctx *);
 static int execute_test(detector_t *, detector_test_t *, file_t *,
 			struct ctx *);
-static int fill_buffer(detector_t *, detector_read_arg_t, struct ctx *);
+static int fill_buffer(detector_t *, uint64_t, struct ctx *);
 
 
 
@@ -189,7 +189,7 @@ compute_values(detector_t *d, file_t *r, int64_t start, int64_t end,
     hashes_t h;
     hashes_update_t *hu;
     size_t off;
-    detector_read_arg_t len;
+    uint64_t len;
     unsigned long size;
     int align;
 
@@ -199,7 +199,7 @@ compute_values(detector_t *d, file_t *r, int64_t start, int64_t end,
 	/* XXX: read in chunks */
 	buf_grow(d, start - ctx->bytes_read);
 	if (ctx->cb_read(ctx->ud, d->buf,
-			 (detector_read_arg_t)(start - ctx->bytes_read)) < 0)
+			 (uint64_t)(start - ctx->bytes_read)) < 0)
 	    return -1;
 	
     }
@@ -365,7 +365,7 @@ execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx)
 
 
 static int
-fill_buffer(detector_t *d, detector_read_arg_t len, struct ctx *ctx)
+fill_buffer(detector_t *d, uint64_t len, struct ctx *ctx)
 {
     if (ctx->bytes_read < len) {
 	buf_grow(d, len);
