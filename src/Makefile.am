@@ -120,7 +120,6 @@ libckmame_a_SOURCES= \
 	w_dat.c \
 	w_detector.c \
 	w_game.c \
-	w_list.c \
 	warn.c \
 	xmalloc.c \
 	xmlutil.c \
