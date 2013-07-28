@@ -31,11 +31,18 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sys/stat.h>
+#include <errno.h>
+#include <fts.h>
+#include <unistd.h>
+
 #include "funcs.h"
 
 #include "archive.h"
+#include "dbh_dir.h"
 #include "error.h"
 #include "globals.h"
+#include "util.h"
 #include "xmalloc.h"
 
 #define BUFSIZE 8192
@@ -63,23 +70,29 @@ typedef struct {
 
 static ud_t *ud_new(int);
 
-static int match_detector(struct zip *, int, file_t *);
+static int ensure_archive_dir(archive_t *);
+static char *get_full_name(archive_t *, int);
+static char *make_full_name(archive_t *, const char *);
+static char *mktmpname(archive_t *, const char *);
+static int my_fts_sort_names(const FTSENT **, const FTSENT **);
 
 static int op_check(archive_t *);
+static int op_close(archive_t *);
 static int op_commit(archive_t *);
 static int op_file_add_empty(archive_t *, const char *);
-static int op_file_copy(archive_t *, int, archive_t *, const char *, off_t, off_t);
+static int op_file_copy(archive_t *, int, archive_t *, int, const char *, off_t, off_t);
 static int op_file_delete(archive_t *, int);
 static void *op_file_open(archive_t *, int);
-static int op_file_read(void *, char *, int);
+static int64_t op_file_read(void *, void *, uint64_t);
 static int op_file_rename(archive_t *, int, const char *);
+static char *op_file_rename_unique(archive_t *, int);
 static const char *op_file_strerror(void *);
 static int op_read_infos(archive_t *);
 static int op_rollback(archive_t *);
 
 struct archive_ops ops_dir = {
     op_check,
-    op_commit,
+    op_close,
     op_commit,
     op_file_add_empty,
     (void (*)(void *))fclose,
@@ -88,6 +101,7 @@ struct archive_ops ops_dir = {
     op_file_open,
     op_file_read,
     op_file_rename,
+    op_file_rename_unique,
     op_file_strerror,
     op_read_infos,
     op_rollback
@@ -98,19 +112,6 @@ int
 archive_init_dir(archive_t *a)
 {
     a->ops = &ops_dir;
-
-    if ((a->ud = ud_new(archive_num_files(a))) == NULL)
-	return -1;
-
-    switch (archive_where(a)) {
-    case FILE_ROMSET:
-	/** \todo ensure and set ROMs file map */
-	break;
-
-    case FILE_NEEDED:
-	/** \todo ensure and set needed file map */
-	break;
-    }
     
     return 0;
 }
@@ -182,12 +183,12 @@ change_set(change_t *ch, change_type_t type, char *current_name, char *final_nam
 
 
 static int
-ensure_dir(archive_t *a)
+ensure_archive_dir(archive_t *a)
 {
-    stuct stat st;
+    struct stat st;
 
     if (stat(archive_name(a), &st) < 0) {
-	if (errno == ENOENT && (archive_flags(a) & ARCHIVE_FLAGS_CREATE))
+	if (errno == ENOENT && (archive_flags(a) & ARCHIVE_FL_CREATE))
 	    return mkdir(archive_name(a), 0777);
 	return -1;
     }
@@ -196,32 +197,10 @@ ensure_dir(archive_t *a)
 
 
 static int
-match_detector(struct zip *za, int idx, file_t *r)
-{
-    struct zip_file *zf;
-    int ret;
-    
-    if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
-        myerror(ERRZIP, "error opening index %d: %s", idx, zip_strerror(za));
-        file_status(r) = STATUS_BADDUMP;
-        return -1;
-    }
-    
-    ret = detector_execute(detector, r, (detector_read_cb)zip_fread, zf);
-    
-    zip_fclose(zf);
-    
-    return ret;
-}
-
-
-static int
 op_check(archive_t *a)
 {
-    struct stat st;
-
     if (!is_writable_directory(archive_name(a))) {
-	if (errno == ENOENT && (a->flags & ARCHIVE_FLAG_CREATE)) {
+	if (errno == ENOENT && (a->flags & ARCHIVE_FL_CREATE)) {
 	    char *parent = mydirname(archive_name(a));
 	    int ret = is_writable_directory(parent);
 	    free(parent);
@@ -235,43 +214,24 @@ op_check(archive_t *a)
 
 
 static int
+op_close(archive_t *a)
+{
+    ud_t *ud = archive_user_data(a);
+    
+    if (archive_where(a) == FILE_ROMSET) {
+        if (ud->id > 0)
+            dbh_dir_delete(ud->id);
+        dbh_dir_write(ud->id, archive_name(a), archive_files(a));
+    }
+    
+    return op_commit(a);
+}
+
+static int
 op_commit(archive_t *a)
 {
-    if (a->flags & ARCHIVE_FL_TORRENTZIP) {
-	if (archive_zip(a) == NULL || zip_get_archive_flag(archive_zip(a), ZIP_AFL_TORRENT, 0) == 0)
-            a->flags |= ARCHIVE_IFL_MODIFIED;
-    }
-    
-    if (!(a->flags & ARCHIVE_IFL_MODIFIED))
-	return 0;
-    
-    if (archive_zip(a)) {
-	if (!archive_is_empty(a)) {
-	    if (ensure_dir(archive_name(a), 1) < 0)
-		return -1;
-	}
-        
-	if (a->flags & ARCHIVE_FL_TORRENTZIP) {
-	    if (zip_set_archive_flag(archive_zip(a), ZIP_AFL_TORRENT, 1) < 0) {
-		seterrinfo(NULL, archive_name(a));
-		myerror(ERRZIP, "cannot torrentzip: %s", zip_strerror(archive_zip(a)));
-		return -1;
-	    }
-	}
-        
-#ifdef FD_DEBUGGING
-	fprintf(stderr, "zip_close %s\n", archive_name(a));
-#endif
-	if (zip_close(archive_zip(a)) < 0) {
-	    seterrinfo(NULL, archive_name(a));
-	    myerror(ERRZIP, "cannot commit changes: %s", zip_strerror(archive_zip(a)));
-	    return -1;
-	}
-        
-	archive_zip(a) = NULL;
-    }
-    
-    return 0;
+    /** \todo implement */
+    return -1;
 }
 
 
@@ -285,7 +245,7 @@ op_file_add_empty(archive_t *a, const char *name)
 static int
 op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname, off_t start, off_t len)
 {
-    if (ensure_dir(da) < 0)
+    if (ensure_archive_dir(da) < 0)
 	return -1;
 
     char *tmpname = mktmpname(da, dname);
@@ -293,7 +253,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
     if (tmpname == NULL)
 	return -1;
 
-    char *srcname;
+    char *srcname = NULL;
     
     if (sa) {
 	if ((srcname = get_full_name(sa, sidx)) == NULL) {
@@ -331,13 +291,13 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	}
     }
 
-    ud_t *ud = archive_user_data(a);
+    ud_t *ud = archive_user_data(da);
     change_t *ch;
 
     if (didx >= 0)
-	ch = archive_get(ud->change, didx);
+	ch = array_get(ud->change, didx);
     else {
-	if ((ch = archive_grow(ud->change, change_init)) == NULL) {
+	if ((ch = array_grow(ud->change, change_init)) == NULL) {
 	    /** \todo error message */
 	    unlink(tmpname);
 	    free(tmpname);
@@ -345,7 +305,13 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	}
     }
 
-    if (change_set(ch, didx >= 0 ? CHANGE_REPLACE : CHANGE_ADD, tmpname) < 0) {
+    int ret;
+    if (didx >= 0)
+        ret = change_set(ch, CHANGE_REPLACE, file_name(archive_file(da, didx)), tmpname);
+    else
+        ret = change_set(ch, CHANGE_ADD, NULL, tmpname);
+    
+    if (ret < 0) {
 	/** \todo error message */
 	unlink(tmpname);
 	free(tmpname);
@@ -365,7 +331,7 @@ op_file_delete(archive_t *a, int idx)
 
     if (stat(full_name, &st) < 0) {
 	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot delete `%s': %s", file_name(archive_file(a, idx), strerror(errno)));
+	myerror(ERRZIP, "cannot delete `%s': %s", file_name(archive_file(a, idx)), strerror(errno));
 	free(full_name);
 	return -1;
     }
@@ -387,7 +353,7 @@ op_file_open(archive_t *a, int idx)
 
     if ((f=fopen(full_name, "r")) == NULL) {
 	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot open `%s': %s", file_name(archive_file(a, idx), strerror(errno)));
+	myerror(ERRZIP, "cannot open `%s': %s", file_name(archive_file(a, idx)), strerror(errno));
 	free(full_name);
 	return NULL;
     }
@@ -399,7 +365,7 @@ op_file_open(archive_t *a, int idx)
 
 
 static int64_t
-op_file_read(void *f, char *buf, uint64_t n)
+op_file_read(void *f, void *buf, uint64_t n)
 {
     /** \todo handle short reads, integer overflow */
     return fread(buf, 1, n, f);
@@ -416,12 +382,12 @@ op_file_rename(archive_t *a, int idx, const char *name)
 
     if (stat(current_name, &st) < 0) {
 	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot rename `%s': %s", file_name(archive_file(a, idx), strerror(errno)));
+	myerror(ERRZIP, "cannot rename `%s': %s", file_name(archive_file(a, idx)), strerror(errno));
 	free(current_name);
 	return -1;
     }
     
-    car *final_name = make_full_name(a, name);
+    char *final_name = make_full_name(a, name);
     ud_t *ud = archive_user_data(a);
     
     change_set(array_get(ud->change, idx), CHANGE_RENAME, current_name, final_name);
@@ -440,39 +406,80 @@ op_file_strerror(void *f)
 static int
 op_read_infos(archive_t *a)
 {
-    struct zip *za;
-    struct zip_stat zsb;
-    file_t *r;
-    int i;
+    int id = 0;
+    array_t *files = NULL;
+    FTS *ftsp;
+    FTSENT *ent;
+    file_t *fdir, *fdb;
     
-    if (ensure_zip(a) < 0)
-	return -1;
-    
-    za = (struct zip *)archive_user_data(a);
-    
-    seterrinfo(NULL, archive_name(a));
-    
-    for (i=0; i<zip_get_num_files(za); i++) {
-	if (zip_stat_index(za, i, 0, &zsb) == -1) {
-	    myerror(ERRZIP, "error stat()ing index %d: %s", i, zip_strerror(za));
-	    continue;
-	}
+    if (archive_where(a) == FILE_ROMSET) {
+        if (ensure_romset_dir_db() < 0)
+            return -1;
         
-	r = (file_t *)array_grow(archive_files(a), file_init);
-	file_size(r) = zsb.size;
-	file_name(r) = xstrdup(zsb.name);
-	file_status(r) = STATUS_OK;
-        
-	hashes_init(file_hashes(r));
-	file_hashes(r)->types = HASHES_TYPE_CRC;
-	file_hashes(r)->crc = zsb.crc;
-        
-	if (detector)
-	    match_detector(za, i, r);
-        
-	if (a->flags & ARCHIVE_FL_CHECK_INTEGRITY)
-	    archive_file_compute_hashes(a, i, romhashtypes);
+        files = array_new(sizeof(file_t));
+
+        if ((id = dbh_dir_read(mybasename(archive_name(a)), files)) < 0) {
+            /** \todo error message */
+        }
     }
+    
+    if ((ftsp = fts_open(archive_name(a), FTS_LOGICAL|FTS_NOCHDIR, my_fts_sort_names)) == NULL) {
+        /** \todo error message */
+        array_free(files, file_finalize);
+        return -1;
+    }
+    
+    while ((ent=fts_read(ftsp)) != NULL) {
+        switch (ent->fts_info) {
+            case FTS_D:
+            case FTS_DP:
+                break;
+                
+            case FTS_DC:
+            case FTS_DNR:
+            case FTS_ERR:
+            case FTS_NS:
+            case FTS_SLNONE:
+                /** \todo error message */
+                break;
+                
+            case FTS_F:
+                fdir = array_grow(archive_files(a), file_init);
+                
+                file_name(fdir) = xstrdup(ent->fts_name);
+                file_size(fdir) = ent->fts_statp->st_size;
+                file_mtime(fdir) = ent->fts_statp->st_mtime;
+                
+                if (files) {
+                    fdb = array_get(files, array_index_sorted(files, file_name(fdir)));
+                
+                    if (fdb) {
+                        if (file_mtime(fdb) == file_mtime(fdir) && file_size(fdb) == file_size(fdir)) {
+                            memcpy(fdir->sh, fdb->sh, sizeof(fdir->sh));
+                        }
+                    }
+                }
+                break;
+
+            case FTS_DEFAULT:
+            case FTS_NSOK:
+            case FTS_SL:
+            case FTS_DOT:
+                /** \todo shouldn't happen */
+                break;
+        }
+    }
+    
+    if (errno != 0) {
+        fts_close(ftsp);
+        /** \todo handle fts error */
+    }
+    
+    fts_close(ftsp);
+    
+    array_free(files, file_finalize);
+
+    /** \todo set up ud */
     
     return 0;
     
@@ -481,28 +488,6 @@ op_read_infos(archive_t *a)
 static int
 op_rollback(archive_t *a)
 {
-    int i;
-    
-    if (archive_zip(a) == NULL)
-        return 0;
-    
-    if (zip_unchange_all(archive_zip(a)) < 0)
-        return -1;
-    
-    for (i=0; i<archive_num_files(a); i++) {
-        if (file_where(archive_file(a, i)) == FILE_ADDED) {
-            array_truncate(archive_files(a), i, file_finalize);
-            break;
-        }
-        
-        if (file_where(archive_file(a, i)) == FILE_DELETED)
-            file_where(archive_file(a, i)) = FILE_INZIP;
-        
-        if (strcmp(file_name(archive_file(a, i)), zip_get_name(archive_zip(a), i, 0)) != 0) {
-            free(file_name(archive_file(a, i)));
-            file_name(archive_file(a, i)) = xstrdup(zip_get_name(archive_zip(a), i, 0));
-        }
-    }
-
+    /** \todo implement */
     return 0;
 }

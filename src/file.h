@@ -3,7 +3,7 @@
 
 /*
   file.h -- information about one file
-  Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,7 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
+#include <time.h>
 
 
 #include "hashes.h"
@@ -59,6 +60,7 @@ struct file {
     char *name;
     char *merge;
     file_sh_t sh[FILE_SH_MAX];
+    time_t mtime;
     status_t status;
     where_t where;
 };
@@ -70,6 +72,7 @@ typedef struct file file_t;
 #define file_hashes(f)		(file_hashes_xxx((f), FILE_SH_FULL))
 #define file_hashes_xxx(f, i)	(&(f)->sh[(i)].hashes)
 #define file_merge(f)		((f)->merge)
+#define file_mtime(f)           ((f)->mtime)
 #define file_name(f)		((f)->name)
 #define file_size(f)		(file_size_xxx((f), FILE_SH_FULL))
 #define file_size_known(f)	(file_size_xxx_known((f), FILE_SH_FULL))
