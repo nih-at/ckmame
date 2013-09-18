@@ -3,7 +3,7 @@
 
 /*
   pri.h -- define macros to portably print types
-  Copyright (C) 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005, 2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -37,12 +37,12 @@
 #include "config.h"
 
 #ifndef PRIdoff
-#if SIZEOF_LONG == SIZEOF_OFF_T
+#if SIZEOF_LONG_LONG != 0 && SIZEOF_LONG_LONG == SIZEOF_OFF_T
+#define PRIdoff "lld"
+#elif SIZEOF_LONG == SIZEOF_OFF_T
 #define PRIdoff "ld"
 #elif SIZEOF_INT == SIZEOF_OFF_T
 #define PRIdoff	"d"
-#elif SIZEOF_LONG_LONG != 0 && SIZEOF_LONG_LONG == SIZEOF_OFF_T
-#define PRIdoff "lld"
 #else
 #define PRIdoff "ld"
 #define PRIoff_cast (long)
