@@ -72,16 +72,17 @@ struct archive_ops {
     int (*rollback)(archive_t *);  /* never called if commit never fails */
 };
 
-#define ARCHIVE_FL_CREATE		0x01
-#define ARCHIVE_FL_CHECK_INTEGRITY	0x02
-#define ARCHIVE_FL_QUIET		0x04
-#define ARCHIVE_FL_NOCACHE		0x08
-#define ARCHIVE_FL_RDONLY		0x10
-#define ARCHIVE_FL_TORRENTZIP		0x20
+#define ARCHIVE_FL_CREATE		0x00100
+#define ARCHIVE_FL_CHECK_INTEGRITY	0x00200
+#define ARCHIVE_FL_QUIET		0x00400
+#define ARCHIVE_FL_NOCACHE		0x00800
+#define ARCHIVE_FL_RDONLY		0x01000
+#define ARCHIVE_FL_TORRENTZIP		0x02000
 
-#define ARCHIVE_FL_MASK			0xff
+#define ARCHIVE_FL_HASHTYPES_MASK	0x000ff
+#define ARCHIVE_FL_MASK			0x0ff00
 
-#define ARCHIVE_IFL_MODIFIED		0x100
+#define ARCHIVE_IFL_MODIFIED		0x10000
 
 
 

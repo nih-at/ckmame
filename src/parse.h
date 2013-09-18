@@ -93,7 +93,7 @@ int export_db(romdb_t *, const parray_t *, const dat_entry_t *, output_context_t
 /* backend parser functions */
 
 int parse_cm(parser_source_t *, parser_context_t *);
-int parse_dir(const char *, parser_context_t *);
+int parse_dir(const char *, parser_context_t *, int);
 int parse_rc(parser_source_t *, parser_context_t *);
 int parse_xml(parser_source_t *, parser_context_t *);
 

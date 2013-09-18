@@ -99,8 +99,8 @@ struct option options[] = {
     { NULL,               0, 0, 0 },
 };
 
-int romhashtypes;
 detector_t *detector;
+static int hashtypes;
 
 #define DEFAULT_FILES_ONLY	"*.dat"
 
@@ -135,7 +135,7 @@ main(int argc, char **argv)
     exclude = NULL;
     only_files = skip_files = NULL;
     fmt = OUTPUT_FMT_DB;
-    romhashtypes = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
+    hashtypes = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
     detector_name = NULL;
 
     opterr = 0;
@@ -150,10 +150,9 @@ main(int argc, char **argv)
 	    fputs(version_string, stdout);
 	    exit(0);
 	case 'C':
-	    romhashtypes=hash_types_from_str(optarg);
-	    if (romhashtypes == 0) {
-		fprintf(stderr, "%s: illegal hash types `%s'\n",
-			getprogname(), optarg);
+	    hashtypes = hash_types_from_str(optarg);
+	    if (hashtypes == 0) {
+		fprintf(stderr, "%s: illegal hash types `%s'\n", getprogname(), optarg);
 		exit(1);
 	    }
 	    break;
@@ -304,7 +303,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	    int ret;
 	    
 	    ctx = parser_context_new(NULL, exclude, dat, out);
-	    ret = parse_dir(fname, ctx);
+	    ret = parse_dir(fname, ctx, hashtypes);
 	    parser_context_free(ctx);
 	    return ret;
 	}

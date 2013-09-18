@@ -51,7 +51,7 @@ archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h)
     rh = file_hashes(archive_file(a, i));
 
     if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h))
-	archive_file_compute_hashes(a, i, hashes_types(h)|romhashtypes);
+	archive_file_compute_hashes(a, i, hashes_types(h)|romdb_hashtypes(db, TYPE_ROM));
 
     if (file_status(archive_file(a, i)) != STATUS_OK)
 	return HASHES_CMP_NOCOMMON;

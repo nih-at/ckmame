@@ -31,9 +31,19 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <errno.h>
 #include <stdlib.h>
 
 #include "romdb.h"
+#include "xmalloc.h"
+
+const dbh_stmt_t query_hash_type[] = {
+    DBH_STMT_QUERY_HASH_TYPE_CRC,
+    DBH_STMT_QUERY_HASH_TYPE_MD5,
+    DBH_STMT_QUERY_HASH_TYPE_SHA1
+};
+
+static void read_hashtypes_ft(romdb_t *, filetype_t);
 
 
 int romdb_close(romdb_t *db)
@@ -46,6 +56,20 @@ int romdb_close(romdb_t *db)
 }
 
 
+int romdb_hashtypes(romdb_t *db, filetype_t type)
+{
+    if (type >= TYPE_MAX) {
+	errno = EINVAL;
+	return -1;
+    }
+
+    if (db->hashtypes[type] == -1)
+	read_hashtypes_ft(db, type);
+
+    return db->hashtypes[type];
+}
+
+
 romdb_t *
 romdb_open(const char *name, int mode)
 {
@@ -54,12 +78,7 @@ romdb_open(const char *name, int mode)
     if (dbh == NULL)
 	return NULL;
 
-    romdb_t *db = malloc(sizeof(*db));
-
-    if (db == NULL) {
-	dbh_close(dbh);
-	return NULL;
-    }
+    romdb_t *db = xmalloc(sizeof(*db));
 
     db->dbh = dbh;
 
@@ -69,4 +88,23 @@ romdb_open(const char *name, int mode)
     }
 
     return db;
+}
+
+
+static void
+read_hashtypes_ft(romdb_t *db, filetype_t ft)
+{
+    int type;
+    sqlite3_stmt *stmt;
+
+    db->hashtypes[ft] = 0;
+
+    for (type=0; (1<<type)<=HASHES_TYPE_MAX; type++) {
+	if ((stmt = dbh_get_statement(romdb_dbh(db), query_hash_type[type])) == NULL)
+	    continue;
+	if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK)
+	    continue;
+	if (sqlite3_step(stmt) == SQLITE_ROW)
+	    db->hashtypes[ft] |= (1<<type);
+    }
 }

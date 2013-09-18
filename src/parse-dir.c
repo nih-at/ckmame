@@ -48,13 +48,13 @@
 
 
 
-static int parse_archive(parser_context_t *, archive_t *);
+static int parse_archive(parser_context_t *, archive_t *, int hashtypes);
 
 
 
 
 int
-parse_dir(const char *dname, parser_context_t *ctx)
+parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
 {
     dir_t *dir;
     archive_t *a;
@@ -74,7 +74,7 @@ parse_dir(const char *dname, parser_context_t *ctx)
 	switch (name_type(b)) {
 	case NAME_ZIP:
 	    if ((a=archive_new(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) != NULL) {
-		parse_archive(ctx, a);
+		parse_archive(ctx, a, hashtypes);
 		archive_free(a);
 	    }
 	    break;
@@ -92,7 +92,7 @@ parse_dir(const char *dname, parser_context_t *ctx)
 
 
 static int
-parse_archive(parser_context_t *ctx, archive_t *a)
+parse_archive(parser_context_t *ctx, archive_t *a, int hashtypes)
 {
     char *name;
     int i, ht;
@@ -108,7 +108,7 @@ parse_archive(parser_context_t *ctx, archive_t *a)
     free(name);
 
     for (i=0; i<archive_num_files(a); i++) {
-	if (archive_file_compute_hashes(a, i, romhashtypes) < 0)
+	if (archive_file_compute_hashes(a, i, hashtypes) < 0)
 	    continue;
 	r = archive_file(a, i);
 
@@ -117,10 +117,8 @@ parse_archive(parser_context_t *ctx, archive_t *a)
 	sprintf(hstr, "%" PRIu64, file_size(r));
 	parse_file_size(ctx, TYPE_ROM, 0, hstr);
 	for (ht=1; ht<=HASHES_TYPE_MAX; ht<<=1) {
-	    if (romhashtypes & ht)
-		parse_file_hash(ctx, TYPE_ROM, ht,
-				hash_to_string(hstr, ht,
-					       file_hashes(r)));
+	    if (hashtypes & ht)
+		parse_file_hash(ctx, TYPE_ROM, ht, hash_to_string(hstr, ht, file_hashes(r)));
 	}
 	parse_file_end(ctx,TYPE_ROM);
     }

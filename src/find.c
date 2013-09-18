@@ -181,7 +181,7 @@ find_in_archives(const file_t *r, match_t *m)
 	    && ((hashes_types(file_hashes(r)) & hashes_types(file_hashes(f)))
 		!= hashes_types(file_hashes(r)))) {
 	    archive_file_compute_hashes(a, i,
-				hashes_types(file_hashes(r))|romhashtypes);
+				hashes_types(file_hashes(r))|romdb_hashtypes(db, TYPE_ROM));
 	    memdb_update_file(a, i);
 	}
 

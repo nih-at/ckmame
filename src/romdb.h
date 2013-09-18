@@ -51,7 +51,7 @@ dat_t *romdb_read_dat(romdb_t *);
 detector_t *romdb_read_detector(romdb_t *);
 array_t *romdb_read_file_by_hash(romdb_t *, filetype_t, const hashes_t *);
 struct game *romdb_read_game(romdb_t *, const char *);
-int romdb_read_hashtypes(romdb_t *, int *, int *);
+int romdb_hashtypes(romdb_t *, filetype_t);
 parray_t *romdb_read_list(romdb_t *, enum dbh_list);
 int romdb_update_game(romdb_t *, game_t *);
 int romdb_update_game_parent(romdb_t *, game_t *, filetype_t);

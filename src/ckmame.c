@@ -160,7 +160,6 @@ struct option options[] = {
 int output_options;
 int fix_options;
 int ignore_extra;
-int romhashtypes, diskhashtypes;
 int check_integrity;
 int roms_unzipped;
 parray_t *superfluous;
@@ -432,8 +431,6 @@ main(int argc, char **argv)
     }
 
     if (action != ACTION_SUPERFLUOUS_ONLY) {
-	/* XXX: check error */
-	romdb_read_hashtypes(db, &romhashtypes, &diskhashtypes);
 	/* XXX: merge in olddb */
 	detector = romdb_read_detector(db);
     }

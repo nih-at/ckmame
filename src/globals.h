@@ -43,10 +43,7 @@
 #include "romdb.h"
 #include "tree.h"
 
-extern romdb_t *db;
-extern romdb_t *old_db;
-
-extern detector_t *detector;
+/* option settings */
 
 extern char *needed_dir;
 extern char *unknown_dir;
@@ -54,15 +51,6 @@ extern const char *rom_dir;
 
 extern parray_t *search_dirs;
 
-extern delete_list_t *extra_delete_list;
-extern parray_t *extra_list;
-extern delete_list_t *needed_delete_list;
-extern delete_list_t *superfluous_delete_list;
-
-extern parray_t *superfluous;
-
-extern int diskhashtypes;	/* hash type recorded for disks in db */
-extern int romhashtypes;	/* hash type recorded for ROMs in db */
 extern int check_integrity;	/* full integrity check of ROM set */
 extern int roms_unzipped;       /* ROMs are files on disk, not contained in zip archives */
 
@@ -70,6 +58,24 @@ extern filetype_t file_type;	/* type of files to check (ROMs or samples) */
 
 extern int output_options;
 extern int fix_options;
+
+
+/* check input (read only) */
+
+extern romdb_t *db;
+extern romdb_t *old_db;
+
+extern detector_t *detector;
+
+extern parray_t *superfluous;
+
+
+/* check state */
+
+extern delete_list_t *extra_delete_list;
+extern parray_t *extra_list;
+extern delete_list_t *needed_delete_list;
+extern delete_list_t *superfluous_delete_list;
 
 extern tree_t *check_tree;
 extern output_context_t *fixdat;

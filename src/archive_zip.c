@@ -367,7 +367,7 @@ op_read_infos(archive_t *a)
 	    match_detector(za, i, r);
         
 	if (a->flags & ARCHIVE_FL_CHECK_INTEGRITY)
-	    archive_file_compute_hashes(a, i, romhashtypes);
+	    archive_file_compute_hashes(a, i, a->flags & ARCHIVE_FL_HASHTYPES_MASK);
     }
     
     return 0;

@@ -103,7 +103,7 @@ archive_file_add_empty(archive_t *a, const char *name)
     
     file_init(&f);
     file_size(&f) = 0;
-    hashes_types(file_hashes(&f)) = romhashtypes;
+    hashes_types(file_hashes(&f)) = romdb_hashtypes(db, TYPE_ROM);
     hu = hashes_update_new(file_hashes(&f));
     hashes_update_final(hu);
 

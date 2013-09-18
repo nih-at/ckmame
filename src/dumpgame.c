@@ -445,16 +445,10 @@ dump_game(const char *name, int brief_mode)
 static int
 dump_hashtypes(int dummy)
 {
-    int romhashtypes, diskhashtypes;
-
-    if (romdb_read_hashtypes(db, &romhashtypes, &diskhashtypes) < 0) {
-	myerror(ERRDEF, "db error reading hashtypes");
-	return -1;
-    }
     printf("roms: ");
-    print_hashtypes(romhashtypes);
+    print_hashtypes(romdb_hashtypes(db, TYPE_ROM));
     printf("\ndisks: ");
-    print_hashtypes(diskhashtypes);
+    print_hashtypes(romdb_hashtypes(db, TYPE_DISK));
     putc('\n', stdout);
 
     return 0;

@@ -48,26 +48,7 @@ const dbh_stmt_t query_list[] = {
     DBH_STMT_QUERY_LIST_SAMPLE
 };
 
-const dbh_stmt_t query_hash_type[] = {
-    DBH_STMT_QUERY_HASH_TYPE_CRC,
-    DBH_STMT_QUERY_HASH_TYPE_MD5,
-    DBH_STMT_QUERY_HASH_TYPE_SHA1
-};
 
-static void romdb_read__hashtypes_ft(romdb_t *, filetype_t, int *);
-
-
-
-int
-romdb_read_hashtypes(romdb_t *db, int *romhashtypesp, int *diskhashtypesp)
-{
-    romdb_read__hashtypes_ft(db, TYPE_ROM, romhashtypesp);
-    romdb_read__hashtypes_ft(db, TYPE_DISK, diskhashtypesp);
-
-    return 0;
-}
-
-
 
 parray_t *
 romdb_read_list(romdb_t *db, enum dbh_list type)
@@ -93,24 +74,4 @@ romdb_read_list(romdb_t *db, enum dbh_list type)
     }
     
     return pa;
-}
-
-
-
-static void
-romdb_read__hashtypes_ft(romdb_t *db, filetype_t ft, int *typesp)
-{
-    int type;
-    sqlite3_stmt *stmt;
-
-    *typesp = 0;
-
-    for (type=0; (1<<type)<=HASHES_TYPE_MAX; type++) {
-	if ((stmt = dbh_get_statement(romdb_dbh(db), query_hash_type[type])) == NULL)
-	    continue;
-	if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK)
-	    continue;
-	if (sqlite3_step(stmt) == SQLITE_ROW)
-	    *typesp |= (1<<type);
-    }
 }

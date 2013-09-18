@@ -99,7 +99,7 @@ disk_new(const char *name, int flags)
     hashes_init(h);
 
     if (flags & DISK_FL_CHECK_INTEGRITY) {
-	hashes_types(h) = diskhashtypes;
+	hashes_types(h) = romdb_hashtypes(db, TYPE_DISK);
 	
 	err = get_hashes(chd, h);
 	chd_close(chd);
@@ -109,7 +109,7 @@ disk_new(const char *name, int flags)
 	    return NULL;
 	}
 
-	if (diskhashtypes & HASHES_TYPE_MD5 & h->types) {
+	if (romdb_hashtypes(db, TYPE_DISK) & HASHES_TYPE_MD5 & h->types) {
 	    if (!hashes_verify(h, HASHES_TYPE_MD5, chd->md5)) {
 		myerror(ERRFILE, "md5 mismatch");
 		disk_real_free(d);
@@ -117,7 +117,7 @@ disk_new(const char *name, int flags)
 	    }
 	}
 
-	if (chd->version > 2 && (diskhashtypes & HASHES_TYPE_SHA1 & h->types)) {
+	if (chd->version > 2 && (romdb_hashtypes(db, TYPE_DISK) & HASHES_TYPE_SHA1 & h->types)) {
 	    if (!hashes_verify(h, HASHES_TYPE_SHA1, chd->sha1)) {
 		myerror(ERRFILE, "sha1 mismatch in '%s'");
 		disk_real_free(d);
