@@ -1,5 +1,5 @@
 /*
-  w_detector.c -- write detector to db
+  romdb_write_detector.c -- write detector to db
   Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -49,12 +49,12 @@
     "insert into test (rule_idx, test_idx, type, offset, size, mask," \
     " value, result) values (?, ?, ?, ?, ?, ?, ?, ?)"
 
-static int w_rules(const detector_t *, sqlite3_stmt *, sqlite3_stmt *);
+static int romdb_write_rules(const detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
 
 
 int
-w_detector(dbh_t *db, const detector_t *d)
+romdb_write_detector(romdb_t *db, const detector_t *d)
 {
     sqlite3_stmt *stmt, *stmt2;
 
@@ -72,13 +72,13 @@ w_detector(dbh_t *db, const detector_t *d)
     if ((stmt2 = dbh_get_statement(db, DBH_STMT_INSERT_TEST)) == NULL)
 	return -1;
 
-    return w_rules(d, stmt, stmt2);
+    return romdb_write_rules(d, stmt, stmt2);
 }
 
 
 
 static int
-w_rules(const detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
+romdb_write_rules(const detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
 {
     int i, j;
     detector_rule_t *r;

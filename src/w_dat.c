@@ -1,5 +1,5 @@
 /*
-  w_dat.c -- write dat struct to db
+  romdb_write_dat.c -- write dat struct to db
   Copyright (C) 2006-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -45,7 +45,7 @@
 
 
 int
-w_dat(dbh_t *db, dat_t *d)
+romdb_write_dat(romdb_t *db, dat_t *d)
 {
     sqlite3_stmt *stmt;
     int i;

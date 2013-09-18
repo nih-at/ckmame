@@ -1,5 +1,5 @@
 /*
-  r_detector.c -- read detector from db
+  romdb_read_detector.c -- read detector from db
   Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -48,12 +48,12 @@
     "select type, offset, size, mask, value, result from test" \
     " where rule_idx = ? order by test_idx"
 
-static int r_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
+static int romdb_read_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
 
 
 detector_t *
-r_detector(dbh_t *db)
+romdb_read_detector(romdb_t *db)
 {
     sqlite3_stmt *stmt, *stmt2;
     detector_t *d;
@@ -75,7 +75,7 @@ r_detector(dbh_t *db)
 	|| (stmt2=dbh_get_statement(db, DBH_STMT_QUERY_TEST)) == NULL)
 	return NULL;
 
-    ret = r_rules(d, stmt, stmt2);
+    ret = romdb_read_rules(d, stmt, stmt2);
 
     if (ret < 0) {
 	detector_free(d);
@@ -88,7 +88,7 @@ r_detector(dbh_t *db)
 
 
 static int
-r_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
+romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
 {
     array_t *rs, *ts;
     detector_rule_t *r;

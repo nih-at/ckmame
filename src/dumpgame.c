@@ -199,14 +199,14 @@ print_matches(filetype_t ft, hashes_t *hash)
 
     matches = 0;
 
-    if ((fbha=r_file_by_hash(db, ft, hash)) == NULL) {
+    if ((fbha=romdb_read_file_by_hash(db, ft, hash)) == NULL) {
       print_footer(0, hash);
       return;
     }
 
     for (i=0; i<array_length(fbha); i++) {
       fbh = array_get(fbha, i);
-      if ((game=r_game(db, file_location_name(fbh))) == NULL) {
+      if ((game=romdb_read_game(db, file_location_name(fbh))) == NULL) {
 	myerror(ERRDEF,
 		"db error: %s not found, though in hash index",
 		file_location_name(fbh));
@@ -282,7 +282,7 @@ main(int argc, char **argv)
     }
     seterrdb(db);
 
-    if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+    if ((list=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
     }
@@ -402,12 +402,12 @@ dump_game(const char *name, int brief_mode)
     game_t *game;
     dat_t *dat;
 
-    if ((dat=r_dat(db)) == NULL) {
+    if ((dat=romdb_read_dat(db)) == NULL) {
 	myerror(ERRDEF, "cannot read dat info");
 	return -1;
     }
 
-    if ((game=r_game(db, name)) == NULL) {
+    if ((game=romdb_read_game(db, name)) == NULL) {
 	myerror(ERRDEF, "game unknown (or database error): `%s'", name);
 	return -1;
     }
@@ -447,7 +447,7 @@ dump_hashtypes(int dummy)
 {
     int romhashtypes, diskhashtypes;
 
-    if (r_hashtypes(db, &romhashtypes, &diskhashtypes) < 0) {
+    if (romdb_read_hashtypes(db, &romhashtypes, &diskhashtypes) < 0) {
 	myerror(ERRDEF, "db error reading hashtypes");
 	return -1;
     }
@@ -468,7 +468,7 @@ dump_list(int type)
     int i;
     parray_t *list;
 
-    if ((list=r_list(db, type)) == NULL) {
+    if ((list=romdb_read_list(db, type)) == NULL) {
 	myerror(ERRDB, "db error reading list");
 	return -1;
     }
@@ -490,7 +490,7 @@ dump_dat(int dummy)
     dat_t *d;
     int i;
 
-    if ((d=r_dat(db)) == NULL) {
+    if ((d=romdb_read_dat(db)) == NULL) {
 	myerror(ERRDEF, "db error reading /dat");
 	return -1;
     }
@@ -513,7 +513,7 @@ dump_detector(int dummy)
 {
     detector_t *d;
     
-    if ((d=r_detector(db)) != NULL) {
+    if ((d=romdb_read_detector(db)) != NULL) {
 	printf("%s", detector_name(d));
 	if (detector_version(d))
 	    printf(" (%s)", detector_version(d));

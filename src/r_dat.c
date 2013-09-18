@@ -1,5 +1,5 @@
 /*
-  r_dat.c -- read dat struct from db
+  romdb_read_dat.c -- read dat struct from db
   Copyright (C) 2006-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -42,7 +42,7 @@
 #include "xmalloc.h"
 
 dat_t *
-r_dat(dbh_t *db)
+romdb_read_dat(romdb_t *db)
 {
     sqlite3_stmt *stmt;
     dat_t *dat;

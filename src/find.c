@@ -355,7 +355,7 @@ find_in_db(dbh_t *db, const file_t *r, const char *skip, match_t *m,
     int i;
     find_result_t status;
 
-    if ((a=r_file_by_hash(db, TYPE_ROM, file_hashes(r))) == NULL)
+    if ((a=romdb_read_file_by_hash(db, TYPE_ROM, file_hashes(r))) == NULL)
 	return FIND_UNKNOWN;
 
     status = FIND_UNKNOWN;
@@ -367,7 +367,7 @@ find_in_db(dbh_t *db, const file_t *r, const char *skip, match_t *m,
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
 
-	if ((g=r_game(db, file_location_name(fbh))) == NULL
+	if ((g=romdb_read_game(db, file_location_name(fbh))) == NULL
 	    || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
 	    /* XXX: internal error: db inconsistency */
 	    status = FIND_ERROR;
@@ -403,7 +403,7 @@ find_disk_in_db(dbh_t *db, const disk_t *d, const char *skip, match_disk_t *md,
     int i;
     find_result_t status;
 
-    if ((a=r_file_by_hash(db, TYPE_DISK, disk_hashes(d))) == NULL) {
+    if ((a=romdb_read_file_by_hash(db, TYPE_DISK, disk_hashes(d))) == NULL) {
 	/* XXX: internal error: db inconsistency */
 	return FIND_ERROR;
     }
@@ -417,7 +417,7 @@ find_disk_in_db(dbh_t *db, const disk_t *d, const char *skip, match_disk_t *md,
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
 
-	if ((g=r_game(db, file_location_name(fbh))) == NULL) {
+	if ((g=romdb_read_game(db, file_location_name(fbh))) == NULL) {
 	    /* XXX: internal error: db inconsistency */
 	    status = FIND_ERROR;
 	    break;

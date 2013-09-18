@@ -158,9 +158,9 @@ main(int argc, char **argv)
     }
     else {
 	if (detector == NULL)
-	    detector = r_detector(db);
+	    detector = romdb_read_detector(db);
 	if (romhashtypes == 0)
-	    r_hashtypes(db, &romhashtypes, &i);
+	    romdb_read_hashtypes(db, &romhashtypes, &i);
 	dbh_close(db);
     }
 

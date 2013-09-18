@@ -1,5 +1,5 @@
 /*
-  r_list.c -- read list struct from db
+  romdb_read_list.c -- read list struct from db
   Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -54,15 +54,15 @@ const dbh_stmt_t query_hash_type[] = {
     DBH_STMT_QUERY_HASH_TYPE_SHA1
 };
 
-static void r__hashtypes_ft(dbh_t *, filetype_t, int *);
+static void romdb_read__hashtypes_ft(romdb_t *, filetype_t, int *);
 
 
 
 int
-r_hashtypes(dbh_t *db, int *romhashtypesp, int *diskhashtypesp)
+romdb_read_hashtypes(romdb_t *db, int *romhashtypesp, int *diskhashtypesp)
 {
-    r__hashtypes_ft(db, TYPE_ROM, romhashtypesp);
-    r__hashtypes_ft(db, TYPE_DISK, diskhashtypesp);
+    romdb_read__hashtypes_ft(db, TYPE_ROM, romhashtypesp);
+    romdb_read__hashtypes_ft(db, TYPE_DISK, diskhashtypesp);
 
     return 0;
 }
@@ -70,7 +70,7 @@ r_hashtypes(dbh_t *db, int *romhashtypesp, int *diskhashtypesp)
 
 
 parray_t *
-r_list(dbh_t *db, enum dbh_list type)
+romdb_read_list(romdb_t *db, enum dbh_list type)
 {
     parray_t *pa;
     sqlite3_stmt *stmt;
@@ -98,7 +98,7 @@ r_list(dbh_t *db, enum dbh_list type)
 
 
 static void
-r__hashtypes_ft(dbh_t *db, filetype_t ft, int *typesp)
+romdb_read__hashtypes_ft(romdb_t *db, filetype_t ft, int *typesp)
 {
     int type;
     sqlite3_stmt *stmt;

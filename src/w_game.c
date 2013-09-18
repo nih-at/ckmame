@@ -1,5 +1,5 @@
 /*
-  w_game.c -- write game struct to db
+  romdb_write_game.c -- write game struct to db
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -165,7 +165,7 @@ u_game_parent(dbh_t *db, game_t *g, filetype_t ft)
 
 
 int
-w_game(dbh_t *db, game_t *g)
+romdb_write_game(romdb_t *db, game_t *g)
 {
     sqlite3_stmt *stmt;
     int i;

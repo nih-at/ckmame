@@ -366,7 +366,7 @@ main(int argc, char **argv)
     if (action == ACTION_CHECK_ROMSET) {
 	/* build tree of games to check */
 
-	if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+	if ((list=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	    myerror(ERRDEF,
 		    "list of games not found in database `%s'", dbname);
 	    exit(1);
@@ -433,9 +433,9 @@ main(int argc, char **argv)
 
     if (action != ACTION_SUPERFLUOUS_ONLY) {
 	/* XXX: check error */
-	r_hashtypes(db, &romhashtypes, &diskhashtypes);
+	romdb_read_hashtypes(db, &romhashtypes, &diskhashtypes);
 	/* XXX: merge in olddb */
-	detector = r_detector(db);
+	detector = romdb_read_detector(db);
     }
     
     if (action != ACTION_CLEANUP_EXTRA_ONLY)

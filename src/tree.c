@@ -58,7 +58,7 @@ tree_add(tree_t *tree, const char *name)
 {
     game_t *g;
 
-    if ((g=r_game(db, name)) == NULL)
+    if ((g=romdb_read_game(db, name)) == NULL)
 	return -1;
 
     if (game_cloneof(g, file_type, 1))
@@ -133,14 +133,14 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes)
     const file_t *gr;
     int i, ret;
 
-    if ((a=r_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
+    if ((a=romdb_read_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
 	return 0;
 
     ret = 0;
     for (i=0; i<array_length(a); i++) {
 	fbh = array_get(a, i);
 
-	if ((g=r_game(db, file_location_name(fbh))) == NULL
+	if ((g=romdb_read_game(db, file_location_name(fbh))) == NULL
 	    || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
 	    /* XXX: internal error: db inconsistency */
 	    ret = -1;
@@ -276,7 +276,7 @@ tree_process(tree_t *tree, archive_t *child,
     images_t *images;
 
     /* check me */
-    if ((g=r_game(db, tree->name)) == NULL) {
+    if ((g=romdb_read_game(db, tree->name)) == NULL) {
 	myerror(ERRDEF, "db error: %s not found", tree->name);
 	return -1;
     }

@@ -62,19 +62,19 @@ list_directory(const char *dirname, const char *dbname)
 
     if (dbname) {
 	if (file_type == TYPE_ROM) {
-	    if ((listf=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+	    if ((listf=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	        myerror(ERRDEF, "list of games not found in database `%s'",
 		        dbname);
 	        exit(1);
 	    }
-	    if ((listd=r_list(db, DBH_KEY_LIST_DISK)) == NULL) {
+	    if ((listd=romdb_read_list(db, DBH_KEY_LIST_DISK)) == NULL) {
 	        myerror(ERRDEF, "list of disks not found in database `%s'",
 		        dbname);
 	        exit(1);
 	    }
         }
         else {
-	    if ((listf=r_list(db, DBH_KEY_LIST_SAMPLE)) == NULL) {
+	    if ((listf=romdb_read_list(db, DBH_KEY_LIST_SAMPLE)) == NULL) {
 	        myerror(ERRDEF, "list of samples not found in database `%s'",
 		        dbname);
 	        exit(1);

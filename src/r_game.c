@@ -1,5 +1,5 @@
 /*
-  r_game.c -- read game struct from db
+  romdb_read_game.c -- read game struct from db
   Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -50,7 +50,7 @@ static void sq3_get_hashes(hashes_t *, sqlite3_stmt *, int);
 
 
 game_t *
-r_game(dbh_t *db, const char *name)
+romdb_read_game(romdb_t *db, const char *name)
 {
     sqlite3_stmt *stmt;
     game_t *game;

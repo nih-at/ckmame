@@ -144,7 +144,7 @@ handle_lost(output_context_db_t *ctx)
 	for (i=parray_length(ctx->lost_children)-1; i>=0; --i) {
 	    /* get current lost child from database, get parent,
 	       look if parent is still lost, if not, do child */
-	    if ((child=r_game(ctx->db,
+	    if ((child=romdb_read_game(ctx->db,
 			      parray_get(ctx->lost_children, i))) == NULL) {
 		myerror(ERRDEF,
 			"internal database error: child not in database");
@@ -158,7 +158,7 @@ handle_lost(output_context_db_t *ctx)
 		if ((types & (1<<ft)) == 0)
 		    continue;
 
-		if ((parent=r_game(ctx->db,
+		if ((parent=romdb_read_game(ctx->db,
 				   game_cloneof(child, ft, 0))) == NULL) {
 		    myerror(ERRDEF,
 			    "inconsistency: %s has non-existent parent %s",
@@ -233,7 +233,7 @@ output_db_close(output_context_t *out)
     ret = 0;
 
     if (ctx->db) {
-	w_dat(ctx->db, ctx->dat);
+	romdb_write_dat(ctx->db, ctx->dat);
 
 	if (handle_lost(ctx) < 0)
 	    ret = -1;
@@ -262,7 +262,7 @@ output_db_detector(output_context_t *out, detector_t *d)
 
     ctx = (output_context_db_t *)out;
 
-    if (w_detector(ctx->db, d) != 0) {
+    if (romdb_write_detector(ctx->db, d) != 0) {
 	seterrdb(ctx->db);
 	myerror(ERRDB, "can't write detector to db");
 	return -1;
@@ -282,7 +282,7 @@ output_db_game(output_context_t *out, game_t *g)
 
     ctx = (output_context_db_t *)out;
 
-    if ((g2=r_game(ctx->db, game_name(g))) != NULL) {
+    if ((g2=romdb_read_game(ctx->db, game_name(g))) != NULL) {
 	myerror(ERRDEF, "duplicate game ``%s'' skipped", game_name(g));
 	game_free(g2);
 	return -1;
@@ -293,7 +293,7 @@ output_db_game(output_context_t *out, game_t *g)
     to_do = 0;
     for (i=0; i<GAME_RS_MAX; i++) {
 	if (game_cloneof(g, i, 0)) {
-	    if (((parent=r_game(ctx->db, game_cloneof(g, i, 0))) == NULL)
+	    if (((parent=romdb_read_game(ctx->db, game_cloneof(g, i, 0))) == NULL)
 		|| lost(ctx, parent, (filetype_t)i)) {
 		to_do |= 1<<i;
 		if (parent)
@@ -312,7 +312,7 @@ output_db_game(output_context_t *out, game_t *g)
 	array_push(ctx->lost_children_types, &to_do);
     }
     
-    if (w_game(ctx->db, g) != 0) {
+    if (romdb_write_game(ctx->db, g) != 0) {
 	myerror(ERRDB, "can't write game `%s' to db", game_name(g));
 	return -1;
     }

@@ -57,7 +57,7 @@
 #define DBH_NEW		0x20	/* create new database */
 #define DBH_FLAGS(m)	((m) & 0xf0)
 
-/* keep in sync with r_list.c:query_list */
+/* keep in sync with romdb_read_list.c:query_list */
 enum dbh_list {
     DBH_KEY_LIST_DISK,
     DBH_KEY_LIST_GAME,
@@ -79,6 +79,8 @@ struct dbh {
 };
 typedef struct dbh dbh_t;
 
+typedef dbh_t romdb_t;
+
 #define dbh_db(dbh)	((dbh)->db)
 
 int dbh_close(dbh_t *);
@@ -91,19 +93,19 @@ dbh_stmt_t dbh_stmt_with_hashes_and_size(dbh_stmt_t, const hashes_t *, int);
 int d_game(dbh_t *, const char *);
 
 
-dat_t *r_dat(dbh_t *);
-detector_t *r_detector(dbh_t *);
-array_t *r_file_by_hash(dbh_t *, filetype_t, const hashes_t *);
-struct game *r_game(dbh_t *, const char *);
-int r_hashtypes(dbh_t *, int *, int *);
-parray_t *r_list(dbh_t *, enum dbh_list);
+dat_t *romdb_read_dat(romdb_t *);
+detector_t *romdb_read_detector(romdb_t *);
+array_t *romdb_read_file_by_hash(romdb_t *, filetype_t, const hashes_t *);
+struct game *romdb_read_game(romdb_t *, const char *);
+int romdb_read_hashtypes(romdb_t *, int *, int *);
+parray_t *romdb_read_list(romdb_t *, enum dbh_list);
 int u_game(dbh_t *, game_t *);
 int u_game_parent(dbh_t *, game_t *, filetype_t);
-int w_dat(dbh_t *, dat_t *);
-int w_detector(dbh_t *db, const detector_t *);
-int w_file_by_hash_parray(dbh_t *, filetype_t, const hashes_t *, parray_t *);
-int w_game(dbh_t *, game_t *);
-int w_hashtypes(dbh_t *, int, int);
-int w_list(dbh_t *, const char *, const parray_t *);
+int romdb_write_dat(romdb_t *, dat_t *);
+int romdb_write_detector(romdb_t *db, const detector_t *);
+int romdb_write_file_by_hash_parray(romdb_t *, filetype_t, const hashes_t *, parray_t *);
+int romdb_write_game(romdb_t *, game_t *);
+int romdb_write_hashtypes(romdb_t *, int, int);
+int romdb_write_list(romdb_t *, const char *, const parray_t *);
 
 #endif /* dbh.h */
