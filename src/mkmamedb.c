@@ -39,7 +39,7 @@
 #include <zip.h>
 
 #include "compat.h"
-#include "dbh.h"
+#include "romdb.h"
 #include "funcs.h"
 #include "error.h"
 #include "output.h"
@@ -262,11 +262,11 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	     const parray_t *files_only, const parray_t *files_skip,
 	     output_context_t *out)
 {
-    dbh_t *db;
+    romdb_t *db;
     parser_source_t *ps;
     struct zip *za;
     
-    if ((db=dbh_open(fname, DBH_READ)) != NULL)
+    if ((db=romdb_open(fname, DBH_READ)) != NULL)
 	return export_db(db, exclude, dat, out);
     else if ((za=zip_open(fname, 0, NULL)) != NULL) {
 	int i;

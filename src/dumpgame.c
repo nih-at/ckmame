@@ -39,11 +39,11 @@
 
 #include "compat.h"
 #include "dat.h"
-#include "dbh.h"
 #include "error.h"
 #include "file_location.h"
 #include "hashes.h"
 #include "sq_util.h"
+#include "romdb.h"
 #include "types.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -101,7 +101,7 @@ static char *status_name[] = {
 };
 
 parray_t *list;
-dbh_t *db;
+romdb_t *db;
 
 #define QUERY_CLONES	\
     "select g.name from game g, parent p where g.game_id = p.game_id" \
@@ -276,11 +276,11 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=dbh_open(dbname, DBH_READ))==NULL) {
+    if ((db=romdb_open(dbname, DBH_READ))==NULL) {
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit (1);
     }
-    seterrdb(db);
+    seterrdb(romdb_dbh(db));
 
     if ((list=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
@@ -360,7 +360,7 @@ print_rs(game_t *game, filetype_t ft,
     if (game_cloneof(game, ft, 1))
 	printf("%s:\t%s\n", gco, game_cloneof(game, ft, 1));
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_CLONES)) == NULL) {
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_CLONES)) == NULL) {
 	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
 	return;
     }
@@ -572,7 +572,7 @@ dump_stats(int dummy)
     int i, ft;
     int64_t size;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_STATS_GAMES)) == NULL) {
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_GAMES)) == NULL) {
 	myerror(ERRDB, "can't get number of games");
 	return -1;
     }
@@ -583,7 +583,7 @@ dump_stats(int dummy)
 
     printf("Games:  \t%d\n", sqlite3_column_int(stmt, 0));
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_STATS_FILES)) == NULL) {
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_FILES)) == NULL) {
 	myerror(ERRDB, "can't get file stats");
 	return -1;
     }

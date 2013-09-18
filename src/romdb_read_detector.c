@@ -35,8 +35,8 @@
 
 #include <stdlib.h>
 
-#include "dbh.h"
 #include "detector.h"
+#include "romdb.h"
 #include "sq_util.h"
 
 #define QUERY_DAT	\
@@ -59,7 +59,7 @@ romdb_read_detector(romdb_t *db)
     detector_t *d;
     int ret;
 
-    if ((stmt=dbh_get_statement(db, DBH_STMT_QUERY_DAT_DETECTOR)) == NULL)
+    if ((stmt=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT_DETECTOR)) == NULL)
 	return NULL;
 
     if (sqlite3_step(stmt) != SQLITE_ROW)
@@ -71,8 +71,8 @@ romdb_read_detector(romdb_t *db)
     detector_author(d) = sq3_get_string(stmt, 1);
     detector_version(d) = sq3_get_string(stmt, 2);
 
-    if ((stmt=dbh_get_statement(db, DBH_STMT_QUERY_RULE)) == NULL
-	|| (stmt2=dbh_get_statement(db, DBH_STMT_QUERY_TEST)) == NULL)
+    if ((stmt=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_RULE)) == NULL
+	|| (stmt2=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_TEST)) == NULL)
 	return NULL;
 
     ret = romdb_read_rules(d, stmt, stmt2);

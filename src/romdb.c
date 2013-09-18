@@ -1,6 +1,6 @@
 /*
-  romdb_write_dat.c -- write dat struct to db
-  Copyright (C) 2006-2013 Dieter Baron and Thomas Klausner
+  romdb.c -- mame.db sqlite3 data base
+  Copyright (C) 2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,37 +31,42 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
-#include <stddef.h>
-#include <string.h>
 #include <stdlib.h>
 
-#include "dat.h"
 #include "romdb.h"
-#include "sq_util.h"
-#include "types.h"
 
-
 
-int
-romdb_write_dat(romdb_t *db, dat_t *d)
+int romdb_close(romdb_t *db)
 {
-    sqlite3_stmt *stmt;
-    int i;
+    int ret = dbh_close(romdb_dbh(db));
 
-    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT)) == NULL)
-	return -1;
+    free(db);
 
-    for (i=0; i<dat_length(d); i++) {
-	if (sqlite3_bind_int(stmt, 1, i) != SQLITE_OK
-	    || sq3_set_string(stmt, 2, dat_name(d, i)) != SQLITE_OK
-	    || sq3_set_string(stmt, 3, dat_description(d, i)) != SQLITE_OK
-	    || sq3_set_string(stmt, 4, dat_version(d, i)) != SQLITE_OK
-	    || sqlite3_step(stmt) != SQLITE_DONE
-	    || sqlite3_reset(stmt) != SQLITE_OK)
-	    return -1;
+    return ret;
+}
+
+
+romdb_t *
+romdb_open(const char *name, int mode)
+{
+    dbh_t *dbh = dbh_open(name, mode);
+
+    if (dbh == NULL)
+	return NULL;
+
+    romdb_t *db = malloc(sizeof(*db));
+
+    if (db == NULL) {
+	dbh_close(dbh);
+	return NULL;
     }
 
-    return 0;
+    db->dbh = dbh;
+
+    int i;
+    for (i=0; i<TYPE_MAX; i++) {
+	db->hashtypes[i] = -1;
+    }
+
+    return db;
 }

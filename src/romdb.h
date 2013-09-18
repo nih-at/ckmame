@@ -1,6 +1,9 @@
+#ifndef _HAD_ROMDB_H
+#define _HAD_ROMDB_H
+
 /*
-  romdb_write_dat.c -- write dat struct to db
-  Copyright (C) 2006-2013 Dieter Baron and Thomas Klausner
+  romdb.h -- mame.db sqlite3 data base
+  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,37 +34,32 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+#include "dbh.h"
 
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
+typedef struct {
+    dbh_t *dbh;
+    int hashtypes[TYPE_MAX];
+} romdb_t;
 
-#include "dat.h"
-#include "romdb.h"
-#include "sq_util.h"
-#include "types.h"
+#define romdb_dbh(db)  ((db)->dbh)
+#define romdb_sqlite3(db)	(dbh_db(romdb_dbh(db)))
 
-
+int romdb_close(romdb_t *);
+int romdb_delete_game(romdb_t *, const char *);
+romdb_t *romdb_open(const char *, int);
+dat_t *romdb_read_dat(romdb_t *);
+detector_t *romdb_read_detector(romdb_t *);
+array_t *romdb_read_file_by_hash(romdb_t *, filetype_t, const hashes_t *);
+struct game *romdb_read_game(romdb_t *, const char *);
+int romdb_read_hashtypes(romdb_t *, int *, int *);
+parray_t *romdb_read_list(romdb_t *, enum dbh_list);
+int romdb_update_game(romdb_t *, game_t *);
+int romdb_update_game_parent(romdb_t *, game_t *, filetype_t);
+int romdb_write_dat(romdb_t *, dat_t *);
+int romdb_write_detector(romdb_t *db, const detector_t *);
+int romdb_write_file_by_hash_parray(romdb_t *, filetype_t, const hashes_t *, parray_t *);
+int romdb_write_game(romdb_t *, game_t *);
+int romdb_write_hashtypes(romdb_t *, int, int);
+int romdb_write_list(romdb_t *, const char *, const parray_t *);
 
-int
-romdb_write_dat(romdb_t *db, dat_t *d)
-{
-    sqlite3_stmt *stmt;
-    int i;
-
-    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT)) == NULL)
-	return -1;
-
-    for (i=0; i<dat_length(d); i++) {
-	if (sqlite3_bind_int(stmt, 1, i) != SQLITE_OK
-	    || sq3_set_string(stmt, 2, dat_name(d, i)) != SQLITE_OK
-	    || sq3_set_string(stmt, 3, dat_description(d, i)) != SQLITE_OK
-	    || sq3_set_string(stmt, 4, dat_version(d, i)) != SQLITE_OK
-	    || sqlite3_step(stmt) != SQLITE_DONE
-	    || sqlite3_reset(stmt) != SQLITE_OK)
-	    return -1;
-    }
-
-    return 0;
-}
+#endif /* romdb.h */

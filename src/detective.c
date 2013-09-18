@@ -38,11 +38,11 @@
 
 #include "archive.h"
 #include "compat.h"
-#include "dbh.h"
 #include "detector.h"
 #include "error.h"
 #include "globals.h"
 #include "hashes.h"
+#include "romdb.h"
 
 char *usage = "Usage: %s [-hV] [-C types] [-D dbfile] [--detector detector] zip-archive [...]\n";
 
@@ -93,7 +93,7 @@ main(int argc, char **argv)
     char *dbname;
     char *detector_name;
     int c, i, ret;
-    dbh_t *db;
+    romdb_t *db;
 
     setprogname(argv[0]);
 
@@ -148,7 +148,7 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=dbh_open(dbname, DBH_READ)) == NULL) {
+    if ((db=romdb_open(dbname, DBH_READ)) == NULL) {
 	if (detector == 0) {
 	    myerror(ERRSTR, "can't open database `%s'", dbname);
 	    exit(1);
@@ -161,7 +161,7 @@ main(int argc, char **argv)
 	    detector = romdb_read_detector(db);
 	if (romhashtypes == 0)
 	    romdb_read_hashtypes(db, &romhashtypes, &i);
-	dbh_close(db);
+	romdb_close(db);
     }
 
     ret = 0;

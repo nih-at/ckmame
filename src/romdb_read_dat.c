@@ -37,7 +37,7 @@
 #include <stdlib.h>
 
 #include "dat.h"
-#include "dbh.h"
+#include "romdb.h"
 #include "sq_util.h"
 #include "xmalloc.h"
 
@@ -49,7 +49,7 @@ romdb_read_dat(romdb_t *db)
     dat_entry_t *de;
     int ret;
 
-    if ((stmt=dbh_get_statement(db, DBH_STMT_QUERY_DAT)) == NULL) {
+    if ((stmt=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT)) == NULL) {
 	/* XXX */
 	return NULL;
     }

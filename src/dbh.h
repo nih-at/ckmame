@@ -79,8 +79,6 @@ struct dbh {
 };
 typedef struct dbh dbh_t;
 
-typedef dbh_t romdb_t;
-
 #define dbh_db(dbh)	((dbh)->db)
 
 int dbh_close(dbh_t *);
@@ -90,22 +88,5 @@ dbh_t* dbh_open(const char *, int);
 sqlite3_stmt *dbh_get_statement(dbh_t *, dbh_stmt_t);
 dbh_stmt_t dbh_stmt_with_hashes_and_size(dbh_stmt_t, const hashes_t *, int);
 
-int romdb_delete_game(romdb_t *, const char *);
-
-
-dat_t *romdb_read_dat(romdb_t *);
-detector_t *romdb_read_detector(romdb_t *);
-array_t *romdb_read_file_by_hash(romdb_t *, filetype_t, const hashes_t *);
-struct game *romdb_read_game(romdb_t *, const char *);
-int romdb_read_hashtypes(romdb_t *, int *, int *);
-parray_t *romdb_read_list(romdb_t *, enum dbh_list);
-int romdb_update_game(romdb_t *, game_t *);
-int romdb_update_game_parent(romdb_t *, game_t *, filetype_t);
-int romdb_write_dat(romdb_t *, dat_t *);
-int romdb_write_detector(romdb_t *db, const detector_t *);
-int romdb_write_file_by_hash_parray(romdb_t *, filetype_t, const hashes_t *, parray_t *);
-int romdb_write_game(romdb_t *, game_t *);
-int romdb_write_hashtypes(romdb_t *, int, int);
-int romdb_write_list(romdb_t *, const char *, const parray_t *);
 
 #endif /* dbh.h */

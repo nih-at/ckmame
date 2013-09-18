@@ -33,15 +33,13 @@
 
 
 
-#include "dbh.h"
 #include "error.h"
 #include "parse.h"
 
 
 
 int
-export_db(dbh_t *db, const parray_t *exclude, const dat_entry_t *dat,
-	  output_context_t *out)
+export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out)
 {
     parray_t *list;
     int i;

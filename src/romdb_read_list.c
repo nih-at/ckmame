@@ -37,7 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "dbh.h"
+#include "romdb.h"
 #include "sq_util.h"
 #include "xmalloc.h"
 
@@ -79,7 +79,7 @@ romdb_read_list(romdb_t *db, enum dbh_list type)
     if (type >= DBH_KEY_LIST_MAX)
 	return NULL;
 
-    if ((stmt = dbh_get_statement(db, query_list[type])) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), query_list[type])) == NULL)
 	return NULL;
 
     pa = parray_new();
@@ -106,7 +106,7 @@ romdb_read__hashtypes_ft(romdb_t *db, filetype_t ft, int *typesp)
     *typesp = 0;
 
     for (type=0; (1<<type)<=HASHES_TYPE_MAX; type++) {
-	if ((stmt = dbh_get_statement(db, query_hash_type[type])) == NULL)
+	if ((stmt = dbh_get_statement(romdb_dbh(db), query_hash_type[type])) == NULL)
 	    continue;
 	if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK)
 	    continue;

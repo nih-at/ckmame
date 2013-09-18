@@ -38,11 +38,11 @@
 #include <stdlib.h>
 
 
-#include "dbh.h"
 #include "dir.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
+#include "romdb.h"
 #include "types.h"
 #include "util.h"
 #include "xmalloc.h"

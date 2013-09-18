@@ -35,7 +35,7 @@
 
 #include <stdlib.h>
 
-#include "dbh.h"
+#include "romdb.h"
 #include "detector.h"
 #include "sq_util.h"
 
@@ -58,7 +58,7 @@ romdb_write_detector(romdb_t *db, const detector_t *d)
 {
     sqlite3_stmt *stmt, *stmt2;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_DAT_DETECTOR)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT_DETECTOR)) == NULL)
 	return -1;
 
     if (sq3_set_string(stmt, 1, detector_name(d)) != SQLITE_OK
@@ -67,9 +67,9 @@ romdb_write_detector(romdb_t *db, const detector_t *d)
 	|| sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_RULE)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_RULE)) == NULL)
 	return -1;
-    if ((stmt2 = dbh_get_statement(db, DBH_STMT_INSERT_TEST)) == NULL)
+    if ((stmt2 = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_TEST)) == NULL)
 	return -1;
 
     return romdb_write_rules(d, stmt, stmt2);

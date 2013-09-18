@@ -109,6 +109,7 @@ libckmame_a_SOURCES= \
 	parser_source.c \
 	ptr_sort.c \
 	result.c \
+	romdb.c \
 	romdb_read_dat.c \
 	romdb_read_detector.c \
 	romdb_read_file_by_hash.c \
@@ -163,6 +164,7 @@ noinst_HEADERS=\
 	parser_source.h \
 	pri.h \
 	result.h \
+	romdb.h \
 	sighandle.h \
 	sq_util.h \
 	tree.h \

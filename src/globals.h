@@ -36,15 +36,15 @@
 
 
 
-#include "dbh.h"
 #include "delete_list.h"
 #include "detector.h"
 #include "output.h"
 #include "parray.h"
+#include "romdb.h"
 #include "tree.h"
 
-extern dbh_t *db;
-extern dbh_t *old_db;
+extern romdb_t *db;
+extern romdb_t *old_db;
 
 extern detector_t *detector;
 

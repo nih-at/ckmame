@@ -69,12 +69,12 @@ static find_result_t check_match_disk_romset(const game_t *, const disk_t *,
 static find_result_t check_match_old(const game_t *, const file_t *, match_t *);
 static find_result_t check_match_romset(const game_t *, const file_t *,
 					match_t *);
-static find_result_t find_disk_in_db(dbh_t *, const disk_t *, const char *,
+static find_result_t find_disk_in_db(romdb_t *, const disk_t *, const char *,
 				     match_disk_t *,
 				     find_result_t (*)(const game_t *,
 						       const disk_t *,
 						       match_disk_t *));
-static find_result_t find_in_db(dbh_t *, const file_t *, const char *, match_t *,
+static find_result_t find_in_db(romdb_t *, const file_t *, const char *, match_t *,
 				find_result_t (*)(const game_t *,
 						  const file_t *, match_t *));
 
@@ -344,7 +344,7 @@ check_match_romset(const game_t *g, const file_t *r, match_t *m)
 
 
 static find_result_t
-find_in_db(dbh_t *db, const file_t *r, const char *skip, match_t *m,
+find_in_db(romdb_t *db, const file_t *r, const char *skip, match_t *m,
 	   find_result_t (*check_match)(const game_t *, const file_t *,
 					match_t *))
 {
@@ -392,7 +392,7 @@ find_in_db(dbh_t *db, const file_t *r, const char *skip, match_t *m,
 
 
 find_result_t
-find_disk_in_db(dbh_t *db, const disk_t *d, const char *skip, match_disk_t *md,
+find_disk_in_db(romdb_t *db, const disk_t *d, const char *skip, match_disk_t *md,
 		find_result_t (*check_match)(const game_t *, const disk_t *,
 					     match_disk_t *))
 {
