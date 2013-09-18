@@ -21,6 +21,7 @@ libckmame_a_LIBADD=@LIBOBJS@
 
 libckmame_a_SOURCES= \
 	archive.c \
+	archive_dir.c \
 	archive_file_compare_hashes.c \
 	archive_modify.c \
 	archive_zip.c \
@@ -45,6 +46,7 @@ libckmame_a_SOURCES= \
 	dat_push.c \
 	db_init.c \
 	dbh.c \
+	dbh_dir.c \
 	dbh_statements.c \
 	delete_list.c \
 	detector.c \

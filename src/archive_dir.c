@@ -70,10 +70,11 @@ typedef struct {
 
 static ud_t *ud_new(int);
 
+static int cmp_file_by_name(file_t *f, const char *);
 static int ensure_archive_dir(archive_t *);
 static char *get_full_name(archive_t *, int);
 static char *make_full_name(archive_t *, const char *);
-static char *mktmpname(archive_t *, const char *);
+static char *make_tmp_name(archive_t *, const char *);
 static int my_fts_sort_names(const FTSENT **, const FTSENT **);
 
 static int op_check(archive_t *);
@@ -161,14 +162,13 @@ change_set(change_t *ch, change_type_t type, char *current_name, char *final_nam
     if (ch->type != CHANGE_NONE) {
 	/** \todo shouldn't happen, investigate if it does */
 	fprintf(stderr, "WARNING: discarding old change\n");
+	change_rollback(ch);
     }
 
     if (current_name) {
 	if (stat(current_name, &st) < 0)
 	    return -1;
     }
-
-    change_rollback(ch);
 
     ch->type = type;
     ch->final_name = final_name;
@@ -183,6 +183,13 @@ change_set(change_t *ch, change_type_t type, char *current_name, char *final_nam
 
 
 static int
+cmp_file_by_name(file_t *f, const char *name)
+{
+    return strcmp(file_name(f), name);
+}
+
+
+static int
 ensure_archive_dir(archive_t *a)
 {
     struct stat st;
@@ -192,6 +199,63 @@ ensure_archive_dir(archive_t *a)
 	    return mkdir(archive_name(a), 0777);
 	return -1;
     }
+    return 0;
+}
+
+
+static char *
+get_full_name(archive_t *a, int idx)
+{
+    return make_full_name(a, file_name(archive_file(a, idx)));
+}
+
+
+static char *
+make_full_name(archive_t *a, const char *name)
+{
+    size_t len;
+    char *s;
+
+    len = strlen(archive_name(a)) + strlen(name) + 2;
+
+    if ((s=malloc(len)) == NULL)
+	return NULL;
+
+    snprintf(s, len, "%s/%s", archive_name(a), name);
+
+    return s;
+}
+
+static char *
+make_tmp_name(archive_t *a, const char *name)
+{
+    size_t len;
+    char *s;
+
+    if (a == NULL || name == NULL) {
+	errno = EINVAL;
+	return NULL;
+    }
+
+    len = strlen(archive_name(a)) + strlen(name) + 17;
+
+    if ((s=malloc(len)) == NULL)
+	return NULL;
+
+    snprintf(s, len, "%s/.ckmame-%s.XXXXXX", archive_name(a), name);
+    
+    if (mktemp(s) == NULL) {
+	free(s);
+	return NULL;
+    }
+    return s;
+}
+
+
+static int
+my_fts_sort_names(const FTSENT **a, const FTSENT **b)
+{
+    /** \todo implement */
     return 0;
 }
 
@@ -218,11 +282,14 @@ op_close(archive_t *a)
 {
     ud_t *ud = archive_user_data(a);
     
+    /** \todo update database in commit */
+#if 0
     if (archive_where(a) == FILE_ROMSET) {
         if (ud->id > 0)
             dbh_dir_delete(ud->id);
         dbh_dir_write(ud->id, archive_name(a), archive_files(a));
     }
+#endif
     
     return op_commit(a);
 }
@@ -230,8 +297,35 @@ op_close(archive_t *a)
 static int
 op_commit(archive_t *a)
 {
-    /** \todo implement */
-    return -1;
+    int idx;
+    ud_t *ud = archive_user_data(a);
+    change_t *ch;
+
+    /** \todo update db */
+    /** \todo handle errors */
+
+    for (idx=0; idx<archive_num_files(a); idx++) {
+	ch = array_get(ud->change, idx);
+	switch (ch->type) {
+	case CHANGE_NONE:
+	    break;
+
+	case CHANGE_DELETE:
+	    unlink(ch->current_name);
+	    break;
+
+	case CHANGE_ADD:
+	case CHANGE_REPLACE:
+	case CHANGE_RENAME:
+	    rename(ch->current_name, ch->final_name);
+	    break;
+	}
+
+	change_fini(ch);
+	change_init(ch);
+    }
+
+    return 0;
 }
 
 
@@ -248,7 +342,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
     if (ensure_archive_dir(da) < 0)
 	return -1;
 
-    char *tmpname = mktmpname(da, dname);
+    char *tmpname = make_tmp_name(da, dname);
 
     if (tmpname == NULL)
 	return -1;
@@ -307,9 +401,9 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 
     int ret;
     if (didx >= 0)
-        ret = change_set(ch, CHANGE_REPLACE, file_name(archive_file(da, didx)), tmpname);
+        ret = change_set(ch, CHANGE_REPLACE, tmpname, make_full_name(da, dname));
     else
-        ret = change_set(ch, CHANGE_ADD, NULL, tmpname);
+        ret = change_set(ch, CHANGE_ADD, tmpname, make_full_name(da, dname));
     
     if (ret < 0) {
 	/** \todo error message */
@@ -396,6 +490,14 @@ op_file_rename(archive_t *a, int idx, const char *name)
 }
 
 
+static char *
+op_file_rename_unique(archive_t *a, int idx)
+{
+    /*** \todo implement */
+    return NULL;
+}
+
+
 static const char *
 op_file_strerror(void *f)
 {
@@ -411,6 +513,7 @@ op_read_infos(archive_t *a)
     FTS *ftsp;
     FTSENT *ent;
     file_t *fdir, *fdb;
+    char * const names[2] = { archive_name(a), NULL };
     
     if (archive_where(a) == FILE_ROMSET) {
         if (ensure_romset_dir_db() < 0)
@@ -423,7 +526,7 @@ op_read_infos(archive_t *a)
         }
     }
     
-    if ((ftsp = fts_open(archive_name(a), FTS_LOGICAL|FTS_NOCHDIR, my_fts_sort_names)) == NULL) {
+    if ((ftsp = fts_open(names, FTS_LOGICAL|FTS_NOCHDIR, my_fts_sort_names)) == NULL) {
         /** \todo error message */
         array_free(files, file_finalize);
         return -1;
@@ -451,7 +554,7 @@ op_read_infos(archive_t *a)
                 file_mtime(fdir) = ent->fts_statp->st_mtime;
                 
                 if (files) {
-                    fdb = array_get(files, array_index_sorted(files, file_name(fdir)));
+                    fdb = array_get(files, array_index(files, file_name(fdir), cmp_file_by_name));
                 
                     if (fdb) {
                         if (file_mtime(fdb) == file_mtime(fdir) && file_size(fdb) == file_size(fdir)) {
@@ -485,9 +588,34 @@ op_read_infos(archive_t *a)
     
 }
 
+
 static int
 op_rollback(archive_t *a)
 {
-    /** \todo implement */
+    int idx;
+    ud_t *ud = archive_user_data(a);
+    change_t *ch;
+
+    for (idx=0; idx<archive_num_files(a); idx++) {
+	ch = array_get(ud->change, idx);
+	switch (ch->type) {
+	case CHANGE_NONE:
+	case CHANGE_DELETE:
+	case CHANGE_RENAME:
+	    break;
+
+	case CHANGE_ADD:
+	case CHANGE_REPLACE:
+	    unlink(ch->current_name);
+	    /** \todo warning if failed */
+	    break;
+	}
+
+	change_fini(ch);
+	change_init(ch);
+    }
+
     return 0;
 }
+
+

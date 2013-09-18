@@ -130,6 +130,7 @@ extern int _archive_global_flags;
 
 #define archive_is_writable(a)	(((a)->flags & ARCHIVE_FL_RDONLY) == 0)
 
+int archive_init_dir(archive_t *);
 int archive_init_zip(archive_t *);
 
 #endif /* archive.h */

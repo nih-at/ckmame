@@ -51,9 +51,7 @@ int garbage_add(garbage_t *g, int idx, bool copyp)
     if (garbage_open(g) < 0)
 	return -1;
 
-    return archive_file_copy_or_move(g->sa, idx, g->da,
-				     file_name(archive_file(g->sa, idx)),
-				     copyp);
+    return archive_file_copy_or_move(g->sa, idx, g->da, file_name(archive_file(g->sa, idx)), copyp);
 }
 
 
