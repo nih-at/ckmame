@@ -108,20 +108,20 @@ libckmame_a_SOURCES= \
 	parse.c \
 	parser_source.c \
 	ptr_sort.c \
-	r_dat.c \
-	r_detector.c \
-	r_file_by_hash.c \
-	r_game.c \
-	r_list.c \
 	result.c \
+	romdb_read_dat.c \
+	romdb_read_detector.c \
+	romdb_read_file_by_hash.c \
+	romdb_read_game.c \
+	romdb_read_list.c \
+	romdb_write_dat.c \
+	romdb_write_detector.c \
+	romdb_write_game.c \
 	sighandle.c \
 	sq_util.c \
 	superfluous.c \
 	tree.c \
 	util.c \
-	w_dat.c \
-	w_detector.c \
-	w_game.c \
 	warn.c \
 	xmalloc.c \
 	xmlutil.c \
