@@ -50,7 +50,7 @@ static int write_rs(dbh_t *, const game_t *, filetype_t);
 
 
 int
-d_game(dbh_t *db, const char *name)
+romdb_delete_game(romdb_t *db, const char *name)
 {
     sqlite3_stmt *stmt;
     int ret, id;
@@ -95,7 +95,7 @@ d_game(dbh_t *db, const char *name)
 
 
 int
-u_game(dbh_t *db, game_t *g)
+romdb_update_game(romdb_t *db, game_t *g)
 {
     sqlite3_stmt *stmt;
     int ft, i;
@@ -129,7 +129,7 @@ u_game(dbh_t *db, game_t *g)
 
 
 int
-u_game_parent(dbh_t *db, game_t *g, filetype_t ft)
+romdb_update_game_parent(romdb_t *db, game_t *g, filetype_t ft)
 {
     sqlite3_stmt *stmt;
     dbh_stmt_t query;
@@ -170,7 +170,7 @@ romdb_write_game(romdb_t *db, game_t *g)
     sqlite3_stmt *stmt;
     int i;
 
-    d_game(db, game_name(g));
+    romdb_delete_game(db, game_name(g));
 
     if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_GAME)) == NULL)
 	return -1;
@@ -184,14 +184,14 @@ romdb_write_game(romdb_t *db, game_t *g)
     game_id(g) = sqlite3_last_insert_rowid(dbh_db(db));
 
     if (write_disks(db, g) < 0) {
-	d_game(db, game_name(g));
+	romdb_delete_game(db, game_name(g));
 	return -1;
     }
 
 
     for (i=0; i<GAME_RS_MAX; i++) {
 	if (write_rs(db, g, i) < 0) {
-	    d_game(db, game_name(g));
+	    romdb_delete_game(db, game_name(g));
 	    return -1;
 	}
     }

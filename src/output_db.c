@@ -167,7 +167,7 @@ handle_lost(output_context_db_t *ctx)
 		    /* remove non-existent cloneof */
 		    free(game_cloneof(child, ft, 0));
 		    game_cloneof(child, ft, 0) = NULL;
-		    u_game_parent(ctx->db, child, ft);
+		    romdb_update_game_parent(ctx->db, child, ft);
 		    types &= ~(1<<ft);
 		    continue;
 		}
@@ -185,7 +185,7 @@ handle_lost(output_context_db_t *ctx)
 	    }
 
 	    if (types != old_types)
-		u_game(ctx->db, child);
+		romdb_update_game(ctx->db, child);
 	    game_free(child);
 
 	    if (types == 0) {
