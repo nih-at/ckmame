@@ -52,27 +52,28 @@ char *usage = "Usage: %s [-hV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--only-
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
-char help[] = "\n\
-  -h, --help                      display this help message\n\
-  -V, --version                   display version number\n\
-  -C, --hash-types types          specify hash types to compute (default: all)\n\
-  -F, --format [cm|dat|db|mtree]  specify output format [default: db]\n\
-  -o, --output dbfile             write to database dbfile\n\
-  -x, --exclude pat               exclude games matching shell glob PAT\n\
-      --detector xml-file         use header detector\n\
-      --only-files pat            only use zip members matching shell glob PAT\n\
-      --prog-description d        set description of rominfo\n\
-      --prog-name name            set name of program rominfo is from\n\
-      --prog-version vers         set version of program rominfo is from\n\
-      --skip-files pat            don't use zip members matching shell glob PAT\n\
-\n\
-Report bugs to " PACKAGE_BUGREPORT ".\n";
+char help[] = "\n"
+"  -h, --help                      display this help message\n"
+"  -V, --version                   display version number\n"
+"  -C, --hash-types types          specify hash types to compute (default: all)\n"
+"  -F, --format [cm|dat|db|mtree]  specify output format [default: db]\n"
+"  -o, --output dbfile             write to database dbfile\n"
+"  -x, --exclude pat               exclude games matching shell glob PAT\n"
+"      --detector xml-file         use header detector\n"
+"      --only-files pat            only use zip members matching shell glob PAT\n"
+"      --prog-description d        set description of rominfo\n"
+"      --prog-name name            set name of program rominfo is from\n"
+"      --prog-version vers         set version of program rominfo is from\n"
+"      --skip-files pat            don't use zip members matching shell glob PAT\n"
+"  -u, --roms-unzipped             ROMs are files on disk, not contained in zip archives\n"
+"\n"
+"Report bugs to " PACKAGE_BUGREPORT ".\n";
 
-char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2013 Dieter Baron and Thomas Klausner\n\
-" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n"
+"Copyright (C) 2013 Dieter Baron and Thomas Klausner\n"
+PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "hC:F:o:Vx:"
+#define OPTIONS "hC:F:o:uVx:"
 
 enum {
     OPT_DETECTOR = 256,
@@ -95,11 +96,14 @@ struct option options[] = {
     { "prog-description", 1, 0, OPT_PROG_DESCRIPTION },
     { "prog-name",        1, 0, OPT_PROG_NAME },
     { "prog-version",     1, 0, OPT_PROG_VERSION },
+    { "roms-unzipped",    0, 0, 'u' },
     { "skip-files",       1, 0, OPT_SKIP_FILES },
     { NULL,               0, 0, 0 },
 };
 
 detector_t *detector;
+int roms_unzipped;
+
 static int hashtypes;
 
 #define DEFAULT_FILES_ONLY	"*.dat"
@@ -127,6 +131,7 @@ main(int argc, char **argv)
     setprogname(argv[0]);
 
     detector = NULL;
+    roms_unzipped = 0;
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -173,6 +178,9 @@ main(int argc, char **argv)
 	    break;
 	case 'o':
 	    dbname = optarg;
+	    break;
+        case 'u':
+            roms_unzipped = 1;
 	    break;
 	case 'x':
 	    if (exclude == NULL)

@@ -49,20 +49,21 @@ char *usage = "Usage: %s [-hV] [-C types] [-D dbfile] [--detector detector] zip-
 char help_head[] = "detective (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
-char help[] = "\n\
-  -h, --help               display this help message\n\
-  -V, --version            display version number\n\
-  -C, --hash-types types   specify hash types to compute (default: all)\n\
-  -D, --db dbfile          use mame-db dbfile\n\
-      --detector xml-file  use header detector\n\
-\n\
-Report bugs to " PACKAGE_BUGREPORT ".\n";
+char help[] = "\n"
+"  -h, --help               display this help message\n"
+"  -V, --version            display version number\n"
+"  -C, --hash-types types   specify hash types to compute (default: all)\n"
+"  -D, --db dbfile          use mame-db dbfile\n"
+"      --detector xml-file  use header detector\n"
+"  -u, --roms-unzipped      ROMs are files on disk, not contained in zip archives\n"
+"\n"
+"Report bugs to " PACKAGE_BUGREPORT ".\n";
 
-char version_string[] = "detective (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2013 Dieter Baron and Thomas Klausner\n\
-" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+char version_string[] = "detective (" PACKAGE " " VERSION ")\n"
+"Copyright (C) 2013 Dieter Baron and Thomas Klausner\n"
+PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "hC:DV"
+#define OPTIONS "hC:DuV"
 
 enum {
     OPT_DETECTOR = 256
@@ -74,10 +75,12 @@ struct option options[] = {
     { "db",               1, 0, 'D' },
     { "detector",         1, 0, OPT_DETECTOR },
     { "hash-types",       1, 0, 'C' },
+    { "roms-unzipped",    0, 0, 'u' },
     { NULL,               0, 0, 0 },
 };
 
 detector_t *detector;
+int roms_unzipped;
 
 
 
@@ -104,6 +107,7 @@ main(int argc, char **argv)
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
     detector_name = NULL;
+    roms_unzipped = 0;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -125,6 +129,9 @@ main(int argc, char **argv)
 	    break;
 	case 'D':
 	    dbname = optarg;
+	    break;
+        case 'u':
+            roms_unzipped = 1;
 	    break;
 	case OPT_DETECTOR:
 	    detector_name = optarg;

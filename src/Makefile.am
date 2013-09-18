@@ -69,6 +69,7 @@ libckmame_a_SOURCES= \
 	file_location_finalize.c \
 	file_location_make_key.c \
 	file_status.c \
+	file_util.c \
 	filetype_db_key.c \
 	find.c \
 	fix.c \
