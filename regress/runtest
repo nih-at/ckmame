@@ -67,6 +67,9 @@
 #	mkdbargs ARGS
 #	    run mkmamedb with ARGS to create mame.db.
 #
+#	preload OBJ
+#	    ld-preload OBJ before running PRG
+#
 #	program PRG
 #	    run PRG instead of ckmame.
 #
@@ -75,6 +78,9 @@
 #
 #	sed-err PAT
 #	    sed command to apply to stderr.
+#
+#	setenv VAR VALUE
+#	    set environment variable VAR to VALUE
 #
 #	stderr TEXT
 #	    program is expected to produce the error message TEXT.  If
@@ -280,6 +286,7 @@ FILES_SHOULD=''
 DESCR=''
 ULIMIT=''
 MKDBARGS=''
+ENV=''
 
 mkdir roms
 
@@ -315,6 +322,8 @@ do
   mkdir)
     set $arg
     mkdir "$2" && chmod "$1" "$2";;
+  preload)
+    ENV="$ENV LD_PRELOAD=$(pwd)/../.libs/$arg";;
   program)
     PROGRAM=../../src/"$arg";;
   return)
@@ -322,6 +331,9 @@ do
     RET="$arg";;
   sed-err)
     echo "$arg" >> sed-err;;
+  setenv)
+    set $arg
+    ENV="$ENV $1=$2";;
   stderr)
     echo "`basename ${PROGRAM}`: $arg" >> stderr;;
   stdout)
@@ -386,10 +398,11 @@ fi
 if [ ! -z "${VERBOSE}" ]
 then
 	echo "${TEST}: ${DESCR}"
-	echo "running: ${PROGRAM} ${ARGS}"
+	echo "running: ${ENV} ${PROGRAM} ${ARGS}"
 fi
 
-${PROGRAM} ${ARGS} >> gotout 2>> goterr
+(export ${ENV}; ${PROGRAM} ${ARGS} >> gotout 2>> goterr)
+
 ret=$?
 
 if [ $ret -ne ${RET} ]
