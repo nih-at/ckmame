@@ -1,7 +1,10 @@
 ^\.hgignore$
 \.o$
+\.la$
+\.lo$
 /\.deps$
 /\.deps/
+/\.libs/
 ~$
 Makefile$
 Makefile.in$
@@ -40,3 +43,6 @@ Makefile.in$
 ^regress/.*\.trs$
 ^xcode/ckmame\.xcodeproj/project\.xcworkspace/xcuserdata
 ^xcode/ckmame\.xcodeproj/xcuserdata
+^m4/
+^libtool$
+^ltmain.sh$

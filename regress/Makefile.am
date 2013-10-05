@@ -4,6 +4,10 @@ noinst_PROGRAMS=	dbdump
 AM_CFLAGS=		-I${top_srcdir}/src -I${top_builddir}/src @LIBZIP_CFLAGS@ @SQLITE3_CFLAGS@ @CFLAGS@
 dbdump_LDADD=		../src/libckmame.a @SQLITE3_LIBS@
 
+pkglib_LTLIBRARIES=	fwrite.la
+fwrite_la_SOURCES=	fwrite.c
+fwrite_la_LDFLAGS=	-module -avoid-version
+
 EXTRA_DIST=runtest ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in \
 		rom-from-superfluous-many-fixdat.fixdat

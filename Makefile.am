@@ -1,4 +1,5 @@
 AUTOMAKE_OPTIONS=dist-xz foreign
+ACLOCAL_AMFLAGS= -I m4
 
 SUBDIRS=docs src regress
 

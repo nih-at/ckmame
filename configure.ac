@@ -2,12 +2,13 @@ AC_PREREQ(2.54)
 AC_INIT([ckmame],[0.11a],[ckmame@nih.at])
 AC_CONFIG_SRCDIR([src/ckmame.c])
 AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE
 
 AC_CANONICAL_HOST
 
 AC_PROG_CC
-AC_PROG_RANLIB
+LT_INIT
 
 AC_CHECK_HEADERS([stdbool.h])
 
