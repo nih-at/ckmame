@@ -1,6 +1,6 @@
 /*
-  garbage.c -- move files to garbage directory
-  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
+  romdb.c -- mame.db sqlite3 data base
+  Copyright (C) 2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,89 +31,80 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
+#include <errno.h>
 #include <stdlib.h>
 
-#include "error.h"
-#include "funcs.h"
-#include "garbage.h"
+#include "romdb.h"
 #include "xmalloc.h"
 
-
+const dbh_stmt_t query_hash_type[] = {
+    DBH_STMT_QUERY_HASH_TYPE_CRC,
+    DBH_STMT_QUERY_HASH_TYPE_MD5,
+    DBH_STMT_QUERY_HASH_TYPE_SHA1
+};
 
-static int garbage_open(garbage_t *);
+static void read_hashtypes_ft(romdb_t *, filetype_t);
 
-
 
-int garbage_add(garbage_t *g, int idx, bool copyp)
+int romdb_close(romdb_t *db)
 {
-    if (garbage_open(g) < 0)
-	return -1;
+    int ret = dbh_close(romdb_dbh(db));
 
-    return archive_file_copy_or_move(g->sa, idx, g->da, file_name(archive_file(g->sa, idx)), copyp);
+    free(db);
+
+    return ret;
 }
 
-
 
-int
-garbage_close(garbage_t *g)
+int romdb_hashtypes(romdb_t *db, filetype_t type)
 {
-    archive_t *da;
-
-    if (g == NULL)
-	return 0;
-
-    da = g->da;
-
-    free(g);
-
-    if (da == NULL)
-	return 0;
-
-    if (archive_commit(da) < 0) {
-	archive_rollback(da);
-	archive_free(da);
+    if (type >= TYPE_MAX) {
+	errno = EINVAL;
 	return -1;
     }
 
-    archive_free(da);
+    if (db->hashtypes[type] == -1)
+	read_hashtypes_ft(db, type);
 
-    return 0;
+    return db->hashtypes[type];
 }
 
-
 
-garbage_t *garbage_new(archive_t *a)
+romdb_t *
+romdb_open(const char *name, int mode)
 {
-    garbage_t *g;
+    dbh_t *dbh = dbh_open(name, mode);
 
-    g = (garbage_t *)xmalloc(sizeof(*g));
+    if (dbh == NULL)
+	return NULL;
 
-    g->sa = a;
-    g->da = NULL;
-    g->opened = false;
+    romdb_t *db = xmalloc(sizeof(*db));
 
-    return g;
-}
+    db->dbh = dbh;
 
-
-
-static int
-garbage_open(garbage_t *g)
-{
-    char *name;
-
-    if (!g->opened) {
-	g->opened = true;
-	name = make_garbage_name(archive_name(g->sa), 0);
-	g->da = archive_new(name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_CREATE);
-	free(name);
-	if (archive_check(g->da) < 0) {
-	    archive_free(g->da);
-	    g->da = NULL;
-	}
+    int i;
+    for (i=0; i<TYPE_MAX; i++) {
+	db->hashtypes[i] = -1;
     }
 
-    return (g->da != NULL ? 0 : -1);
+    return db;
+}
+
+
+static void
+read_hashtypes_ft(romdb_t *db, filetype_t ft)
+{
+    int type;
+    sqlite3_stmt *stmt;
+
+    db->hashtypes[ft] = 0;
+
+    for (type=0; (1<<type)<=HASHES_TYPE_MAX; type++) {
+	if ((stmt = dbh_get_statement(romdb_dbh(db), query_hash_type[type])) == NULL)
+	    continue;
+	if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK)
+	    continue;
+	if (sqlite3_step(stmt) == SQLITE_ROW)
+	    db->hashtypes[ft] |= (1<<type);
+    }
 }

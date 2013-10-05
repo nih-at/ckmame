@@ -1,5 +1,5 @@
 /*
-  r_file_location.c -- read file_by_hash information from db
+  romdb_read_file_location.c -- read file_by_hash information from db
   Copyright (C) 2005-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -37,19 +37,19 @@
 #include <string.h>
 
 #include "array.h"
-#include "dbh.h"
 #include "file_location.h"
+#include "romdb.h"
 #include "sq_util.h"
 
 array_t *
-r_file_by_hash(dbh_t *db, filetype_t ft, const hashes_t *hash)
+romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const hashes_t *hash)
 {
     sqlite3_stmt *stmt;
     array_t *a;
     file_location_t *fl;
     int ret;
 
-    if ((stmt = dbh_get_statement(db, dbh_stmt_with_hashes_and_size(DBH_STMT_QUERY_FILE_FBH, hash, 0))) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), dbh_stmt_with_hashes_and_size(DBH_STMT_QUERY_FILE_FBH, hash, 0))) == NULL)
 	return NULL;
 
     if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK

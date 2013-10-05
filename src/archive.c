@@ -239,16 +239,16 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     a->where = where;
     a->files = array_new(sizeof(file_t));
     a->ud = NULL;
-    a->flags = ((flags|_archive_global_flags) & ARCHIVE_FL_MASK);
+    a->flags = ((flags|_archive_global_flags) & (ARCHIVE_FL_MASK|ARCHIVE_FL_HASHTYPES_MASK));
 
     switch (ft) {
     case TYPE_ROM:
     case TYPE_SAMPLE:
 	archive_filetype(a) = TYPE_ROM;
-        if (archive_init_zip(a) < 0) {
-            archive_real_free(a);
-            return NULL;
-        }
+	if ((roms_unzipped ? archive_init_dir(a) : archive_init_zip(a)) < 0) {
+	    archive_real_free(a);
+	    return NULL;
+	}
         if (archive_read_infos(a) < 0) {
             if (!(a->flags & ARCHIVE_FL_CREATE)) {
                 archive_real_free(a);

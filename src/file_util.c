@@ -1,5 +1,5 @@
 /*
-  r_list.c -- read list struct from db
+  file_util.c -- utility functions for manipulating files
   Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -31,86 +31,102 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+#include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
 
-/* read list of strings from db */
-#include <stdlib.h>
-#include <string.h>
-
-#include "dbh.h"
-#include "sq_util.h"
-#include "xmalloc.h"
-
-/* keep in sync with dbh.h:enum list */
-const dbh_stmt_t query_list[] = {
-    DBH_STMT_QUERY_LIST_DISK,
-    DBH_STMT_QUERY_LIST_GAME,
-    DBH_STMT_QUERY_LIST_SAMPLE
-};
-
-const dbh_stmt_t query_hash_type[] = {
-    DBH_STMT_QUERY_HASH_TYPE_CRC,
-    DBH_STMT_QUERY_HASH_TYPE_MD5,
-    DBH_STMT_QUERY_HASH_TYPE_SHA1
-};
-
-static void r__hashtypes_ft(dbh_t *, filetype_t, int *);
-
-
+#include "error.h"
 
 int
-r_hashtypes(dbh_t *db, int *romhashtypesp, int *diskhashtypesp)
+copy_file(const char *old, const char *new, size_t start, ssize_t len)
 {
-    r__hashtypes_ft(db, TYPE_ROM, romhashtypesp);
-    r__hashtypes_ft(db, TYPE_DISK, diskhashtypesp);
+    FILE *fin, *fout;
+    char b[8192];
+    size_t nr, nw, n, total;
+    int err;
+
+    if ((fin=fopen(old, "rb")) == NULL)
+	return -1;
+
+    if ((fout=fopen(new, "wb")) == NULL) {
+	fclose(fin);
+	return -1;
+    }
+
+    total = 0;
+    while ((len >= 0 && total < (size_t)len) || !feof(fin)) {
+	nr = sizeof(b);
+	if (len > 0 && n > (size_t)len-total)
+	    n = (size_t)len-total;
+	if ((nr = fread(b, 1, nr, fin)) == 0)
+            break;
+	nw = 0;
+	while (nw<nr) {
+	    if ((n=fwrite(b+nw, 1, nr-nw, fout)) <= 0) {
+		err = errno;
+		fclose(fin);
+		fclose(fout);
+		remove(new);
+		errno = err;
+		return -1;
+	    }
+	    nw += n;
+	}
+	total += nw;
+    }
+
+    if (fclose(fout) != 0 || ferror(fin)) {
+	err = errno;
+	fclose(fin);
+	unlink(new);
+	errno = err;
+	return -1;
+    }
+
+    fclose(fin);
+    return 0;
+}
+
+
+int
+link_or_copy(const char *old, const char *new)
+{
+    if (link(old, new) < 0) {
+	if (copy_file(old, new, 0, -1) < 0) {
+	    seterrinfo(old, NULL);
+	    myerror(ERRFILESTR, "cannot link to `%s'", new);
+	    return -1;
+	}
+    }
 
     return 0;
 }
 
-
 
-parray_t *
-r_list(dbh_t *db, enum dbh_list type)
+int
+my_remove(const char *name)
 {
-    parray_t *pa;
-    sqlite3_stmt *stmt;
-    int ret;
-
-    if (type >= DBH_KEY_LIST_MAX)
-	return NULL;
-
-    if ((stmt = dbh_get_statement(db, query_list[type])) == NULL)
-	return NULL;
-
-    pa = parray_new();
-
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW)
-	parray_push(pa, sq3_get_string(stmt, 0));
-
-    if (ret != SQLITE_DONE) {
-	parray_free(pa, free);
-	return NULL;
+    if (remove(name) != 0) {
+	seterrinfo(name, NULL);
+	myerror(ERRFILESTR, "cannot remove");
+	return -1;
     }
-    
-    return pa;
+
+    return 0;
 }
 
-
 
-static void
-r__hashtypes_ft(dbh_t *db, filetype_t ft, int *typesp)
+int
+rename_or_move(const char *old, const char *new)
 {
-    int type;
-    sqlite3_stmt *stmt;
-
-    *typesp = 0;
-
-    for (type=0; (1<<type)<=HASHES_TYPE_MAX; type++) {
-	if ((stmt = dbh_get_statement(db, query_hash_type[type])) == NULL)
-	    continue;
-	if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK)
-	    continue;
-	if (sqlite3_step(stmt) == SQLITE_ROW)
-	    *typesp |= (1<<type);
+    if (rename(old, new) < 0) {
+	if (copy_file(old, new, 0, -1) < 0) {
+	    seterrinfo(old, NULL);
+	    myerror(ERRFILESTR, "cannot rename to `%s'", new);
+	    return -1;
+	}
+	unlink(old);
     }
+
+    return 0;
 }

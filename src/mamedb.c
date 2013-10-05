@@ -73,7 +73,7 @@ static struct option options[] = {
     { NULL,               0, 0, 0 },
 };
 
-int romhashtypes;
+int romdb_hashtypes(db, TYPE_ROM);
 detector_t *detector;
 sqlite3 *db;
 char *dbname;
@@ -91,7 +91,7 @@ main(int argc, char **argv)
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
-    romhashtypes = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
+    romdb_hashtypes(db, TYPE_ROM) = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {

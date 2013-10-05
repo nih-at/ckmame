@@ -36,10 +36,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "dbh.h"
 #include "error.h"
 #include "file_location.h"
 #include "output.h"
+#include "romdb.h"
 #include "xmalloc.h"
 
 
@@ -47,7 +47,7 @@
 struct output_context_db {
     output_context_t output;
 
-    dbh_t *db;
+    romdb_t *db;
 
     dat_t *dat;
     
@@ -64,7 +64,7 @@ struct fbh_context {
 
 
 
-static void familymeeting(dbh_t *, filetype_t, game_t *, game_t *);
+static void familymeeting(romdb_t *, filetype_t, game_t *, game_t *);
 static int handle_lost(output_context_db_t *);
 static int lost(output_context_db_t *, game_t *, filetype_t);
 static int output_db_close(output_context_t *);
@@ -91,7 +91,7 @@ output_db_new(const char *dbname)
     ctx->lost_children_types = array_new(sizeof(int));
 
     remove(dbname);
-    ctx->db = dbh_open(dbname, DBH_NEW);
+    ctx->db = romdb_open(dbname, DBH_NEW);
     if (ctx->db == NULL) {
 	output_db_close((output_context_t *)ctx);
 	myerror(ERRDB, "can't create hash table");
@@ -104,7 +104,7 @@ output_db_new(const char *dbname)
 
 
 static void
-familymeeting(dbh_t *db, filetype_t ft, game_t *parent, game_t *child)
+familymeeting(romdb_t *db, filetype_t ft, game_t *parent, game_t *child)
 {
     int i, j;
     file_t * cr, *pr;
@@ -140,14 +140,12 @@ handle_lost(output_context_db_t *ctx)
 
     while (parray_length(ctx->lost_children) > 0) {
 	/* processing order does not matter and deleting last
-	   element is cheaper*/
+	   element is cheaper */
 	for (i=parray_length(ctx->lost_children)-1; i>=0; --i) {
 	    /* get current lost child from database, get parent,
 	       look if parent is still lost, if not, do child */
-	    if ((child=r_game(ctx->db,
-			      parray_get(ctx->lost_children, i))) == NULL) {
-		myerror(ERRDEF,
-			"internal database error: child not in database");
+	    if ((child=romdb_read_game(ctx->db, parray_get(ctx->lost_children, i))) == NULL) {
+		myerror(ERRDEF, "internal database error: child not in database");
 		return -1;
 	    }
 	    
@@ -158,16 +156,13 @@ handle_lost(output_context_db_t *ctx)
 		if ((types & (1<<ft)) == 0)
 		    continue;
 
-		if ((parent=r_game(ctx->db,
-				   game_cloneof(child, ft, 0))) == NULL) {
-		    myerror(ERRDEF,
-			    "inconsistency: %s has non-existent parent %s",
-			    game_name(child), game_cloneof(child, ft, 0));
+		if ((parent=romdb_read_game(ctx->db,  game_cloneof(child, ft, 0))) == NULL) {
+		    myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", game_name(child), game_cloneof(child, ft, 0));
 		    
 		    /* remove non-existent cloneof */
 		    free(game_cloneof(child, ft, 0));
 		    game_cloneof(child, ft, 0) = NULL;
-		    u_game_parent(ctx->db, child, ft);
+		    romdb_update_game_parent(ctx->db, child, ft);
 		    types &= ~(1<<ft);
 		    continue;
 		}
@@ -185,7 +180,7 @@ handle_lost(output_context_db_t *ctx)
 	    }
 
 	    if (types != old_types)
-		u_game(ctx->db, child);
+		romdb_update_game(ctx->db, child);
 	    game_free(child);
 
 	    if (types == 0) {
@@ -233,15 +228,15 @@ output_db_close(output_context_t *out)
     ret = 0;
 
     if (ctx->db) {
-	w_dat(ctx->db, ctx->dat);
+	romdb_write_dat(ctx->db, ctx->dat);
 
 	if (handle_lost(ctx) < 0)
 	    ret = -1;
 
-	if (sqlite3_exec(dbh_db(ctx->db), sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK)
+	if (sqlite3_exec(romdb_sqlite3(ctx->db), sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK)
 	    ret = -1;
 	
-	dbh_close(ctx->db);
+	romdb_close(ctx->db);
     }
 
     dat_free(ctx->dat);
@@ -262,8 +257,8 @@ output_db_detector(output_context_t *out, detector_t *d)
 
     ctx = (output_context_db_t *)out;
 
-    if (w_detector(ctx->db, d) != 0) {
-	seterrdb(ctx->db);
+    if (romdb_write_detector(ctx->db, d) != 0) {
+        seterrdb(romdb_dbh(ctx->db));
 	myerror(ERRDB, "can't write detector to db");
 	return -1;
     }
@@ -282,7 +277,7 @@ output_db_game(output_context_t *out, game_t *g)
 
     ctx = (output_context_db_t *)out;
 
-    if ((g2=r_game(ctx->db, game_name(g))) != NULL) {
+    if ((g2=romdb_read_game(ctx->db, game_name(g))) != NULL) {
 	myerror(ERRDEF, "duplicate game ``%s'' skipped", game_name(g));
 	game_free(g2);
 	return -1;
@@ -293,7 +288,7 @@ output_db_game(output_context_t *out, game_t *g)
     to_do = 0;
     for (i=0; i<GAME_RS_MAX; i++) {
 	if (game_cloneof(g, i, 0)) {
-	    if (((parent=r_game(ctx->db, game_cloneof(g, i, 0))) == NULL)
+	    if (((parent=romdb_read_game(ctx->db, game_cloneof(g, i, 0))) == NULL)
 		|| lost(ctx, parent, (filetype_t)i)) {
 		to_do |= 1<<i;
 		if (parent)
@@ -312,7 +307,7 @@ output_db_game(output_context_t *out, game_t *g)
 	array_push(ctx->lost_children_types, &to_do);
     }
     
-    if (w_game(ctx->db, g) != 0) {
+    if (romdb_write_game(ctx->db, g) != 0) {
 	myerror(ERRDB, "can't write game `%s' to db", game_name(g));
 	return -1;
     }

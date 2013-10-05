@@ -1,5 +1,5 @@
 /*
-  w_game.c -- write game struct to db
+  romdb_write_game.c -- write game struct to db
   Copyright (C) 1999-2007 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -39,23 +39,23 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "dbh.h"
+#include "romdb.h"
 #include "game.h"
 #include "sq_util.h"
 #include "util.h"
 
-static int write_disks(dbh_t *, const game_t *);
-static int write_rs(dbh_t *, const game_t *, filetype_t);
+static int write_disks(romdb_t *, const game_t *);
+static int write_rs(romdb_t *, const game_t *, filetype_t);
 
 
 
 int
-d_game(dbh_t *db, const char *name)
+romdb_delete_game(romdb_t *db, const char *name)
 {
     sqlite3_stmt *stmt;
     int ret, id;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_GAME_ID)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_GAME_ID)) == NULL)
 	return -1;
 
     if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK)
@@ -71,19 +71,19 @@ d_game(dbh_t *db, const char *name)
 
     ret = 0;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_DELETE_GAME)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_DELETE_GAME)) == NULL)
 	return -1;
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK
 	|| sqlite3_step(stmt) != SQLITE_DONE)
 	ret = -1;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_DELETE_FILE)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_DELETE_FILE)) == NULL)
 	return -1;
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK
 	|| sqlite3_step(stmt) != SQLITE_DONE)
 	ret = -1;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_DELETE_PARENT)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_DELETE_PARENT)) == NULL)
 	return -1;
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK
 	|| sqlite3_step(stmt) != SQLITE_DONE)
@@ -95,13 +95,13 @@ d_game(dbh_t *db, const char *name)
 
 
 int
-u_game(dbh_t *db, game_t *g)
+romdb_update_game(romdb_t *db, game_t *g)
 {
     sqlite3_stmt *stmt;
     int ft, i;
     file_t *r;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_UPDATE_FILE)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_UPDATE_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int(stmt, 2, game_id(g)) != SQLITE_OK)
@@ -129,7 +129,7 @@ u_game(dbh_t *db, game_t *g)
 
 
 int
-u_game_parent(dbh_t *db, game_t *g, filetype_t ft)
+romdb_update_game_parent(romdb_t *db, game_t *g, filetype_t ft)
 {
     sqlite3_stmt *stmt;
     dbh_stmt_t query;
@@ -144,7 +144,7 @@ u_game_parent(dbh_t *db, game_t *g, filetype_t ft)
 	off = 1;
     }
 
-    if ((stmt = dbh_get_statement(db, query)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), query)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int(stmt, off, game_id(g)) != SQLITE_OK
@@ -165,14 +165,14 @@ u_game_parent(dbh_t *db, game_t *g, filetype_t ft)
 
 
 int
-w_game(dbh_t *db, game_t *g)
+romdb_write_game(romdb_t *db, game_t *g)
 {
     sqlite3_stmt *stmt;
     int i;
 
-    d_game(db, game_name(g));
+    romdb_delete_game(db, game_name(g));
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_GAME)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_GAME)) == NULL)
 	return -1;
 
     if (sq3_set_string(stmt, 1, game_name(g)) != SQLITE_OK
@@ -181,17 +181,17 @@ w_game(dbh_t *db, game_t *g)
 	|| sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
 
-    game_id(g) = sqlite3_last_insert_rowid(dbh_db(db));
+    game_id(g) = sqlite3_last_insert_rowid(romdb_sqlite3(db));
 
     if (write_disks(db, g) < 0) {
-	d_game(db, game_name(g));
+	romdb_delete_game(db, game_name(g));
 	return -1;
     }
 
 
     for (i=0; i<GAME_RS_MAX; i++) {
 	if (write_rs(db, g, i) < 0) {
-	    d_game(db, game_name(g));
+	    romdb_delete_game(db, game_name(g));
 	    return -1;
 	}
     }
@@ -202,7 +202,7 @@ w_game(dbh_t *db, game_t *g)
 
 
 static int
-write_disks(dbh_t *db, const game_t *g)
+write_disks(romdb_t *db, const game_t *g)
 {
     sqlite3_stmt *stmt;
     int i;
@@ -211,7 +211,7 @@ write_disks(dbh_t *db, const game_t *g)
     if (game_num_disks(g) == 0)
 	return 0;
     
-    if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_FILE)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
@@ -238,14 +238,14 @@ write_disks(dbh_t *db, const game_t *g)
 
 
 static int
-write_rs(dbh_t *db, const game_t *g, filetype_t ft)
+write_rs(romdb_t *db, const game_t *g, filetype_t ft)
 {
     sqlite3_stmt *stmt;
     int i;
     file_t *r;
 
     if (game_cloneof(g, ft, 0)) {
-	if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_PARENT)) == NULL)
+	if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_PARENT)) == NULL)
 	    return -1;
 
 	if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
@@ -258,7 +258,7 @@ write_rs(dbh_t *db, const game_t *g, filetype_t ft)
     if (game_num_files(g, ft) == 0)
 	return 0;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_INSERT_FILE)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK

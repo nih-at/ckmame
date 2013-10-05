@@ -41,3 +41,12 @@ dbh_dir_read(const char *name, array_t *files)
     
     return 0;
 }
+
+
+int
+ensure_romset_dir_db(void)
+{
+    /** \todo implement */
+
+    return -1;
+}

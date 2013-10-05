@@ -33,15 +33,13 @@
 
 
 
-#include "dbh.h"
 #include "error.h"
 #include "parse.h"
 
 
 
 int
-export_db(dbh_t *db, const parray_t *exclude, const dat_entry_t *dat,
-	  output_context_t *out)
+export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out)
 {
     parray_t *list;
     int i;
@@ -49,7 +47,7 @@ export_db(dbh_t *db, const parray_t *exclude, const dat_entry_t *dat,
     dat_entry_t de;
     dat_t *db_dat;
 
-    db_dat = r_dat(db);
+    db_dat = romdb_read_dat(db);
 
     if (out == NULL) {
 	/* XXX: split into original dat files */
@@ -65,13 +63,13 @@ export_db(dbh_t *db, const parray_t *exclude, const dat_entry_t *dat,
     dat_entry_finalize(&de);
     dat_free(db_dat);
 
-    if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+    if ((list=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "db error reading game list");
 	return -1;
     }
 
     for (i=0; i<parray_length(list); i++) {
-	if ((g=r_game(db, parray_get(list, i))) == NULL) {
+	if ((g=romdb_read_game(db, parray_get(list, i))) == NULL) {
 	    /* XXX: error */
 	    continue;
 	}

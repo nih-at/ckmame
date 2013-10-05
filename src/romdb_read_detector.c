@@ -1,5 +1,5 @@
 /*
-  r_detector.c -- read detector from db
+  romdb_read_detector.c -- read detector from db
   Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -35,8 +35,8 @@
 
 #include <stdlib.h>
 
-#include "dbh.h"
 #include "detector.h"
+#include "romdb.h"
 #include "sq_util.h"
 
 #define QUERY_DAT	\
@@ -48,18 +48,18 @@
     "select type, offset, size, mask, value, result from test" \
     " where rule_idx = ? order by test_idx"
 
-static int r_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
+static int romdb_read_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
 
 
 detector_t *
-r_detector(dbh_t *db)
+romdb_read_detector(romdb_t *db)
 {
     sqlite3_stmt *stmt, *stmt2;
     detector_t *d;
     int ret;
 
-    if ((stmt=dbh_get_statement(db, DBH_STMT_QUERY_DAT_DETECTOR)) == NULL)
+    if ((stmt=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT_DETECTOR)) == NULL)
 	return NULL;
 
     if (sqlite3_step(stmt) != SQLITE_ROW)
@@ -71,11 +71,11 @@ r_detector(dbh_t *db)
     detector_author(d) = sq3_get_string(stmt, 1);
     detector_version(d) = sq3_get_string(stmt, 2);
 
-    if ((stmt=dbh_get_statement(db, DBH_STMT_QUERY_RULE)) == NULL
-	|| (stmt2=dbh_get_statement(db, DBH_STMT_QUERY_TEST)) == NULL)
+    if ((stmt=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_RULE)) == NULL
+	|| (stmt2=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_TEST)) == NULL)
 	return NULL;
 
-    ret = r_rules(d, stmt, stmt2);
+    ret = romdb_read_rules(d, stmt, stmt2);
 
     if (ret < 0) {
 	detector_free(d);
@@ -88,7 +88,7 @@ r_detector(dbh_t *db)
 
 
 static int
-r_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
+romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
 {
     array_t *rs, *ts;
     detector_rule_t *r;

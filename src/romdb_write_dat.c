@@ -1,5 +1,5 @@
 /*
-  r_dat.c -- read dat struct from db
+  romdb_write_dat.c -- write dat struct to db
   Copyright (C) 2006-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -33,42 +33,35 @@
 
 
 
+#include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
 
 #include "dat.h"
-#include "dbh.h"
+#include "romdb.h"
 #include "sq_util.h"
-#include "xmalloc.h"
+#include "types.h"
 
-dat_t *
-r_dat(dbh_t *db)
+
+
+int
+romdb_write_dat(romdb_t *db, dat_t *d)
 {
     sqlite3_stmt *stmt;
-    dat_t *dat;
-    dat_entry_t *de;
-    int ret;
+    int i;
 
-    if ((stmt=dbh_get_statement(db, DBH_STMT_QUERY_DAT)) == NULL) {
-	/* XXX */
-	return NULL;
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT)) == NULL)
+	return -1;
+
+    for (i=0; i<dat_length(d); i++) {
+	if (sqlite3_bind_int(stmt, 1, i) != SQLITE_OK
+	    || sq3_set_string(stmt, 2, dat_name(d, i)) != SQLITE_OK
+	    || sq3_set_string(stmt, 3, dat_description(d, i)) != SQLITE_OK
+	    || sq3_set_string(stmt, 4, dat_version(d, i)) != SQLITE_OK
+	    || sqlite3_step(stmt) != SQLITE_DONE
+	    || sqlite3_reset(stmt) != SQLITE_OK)
+	    return -1;
     }
 
-    dat = dat_new();
-
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
-	de = (dat_entry_t *)array_grow(dat, dat_entry_init);
-
-	de->name = sq3_get_string(stmt, 0);
-	de->description = sq3_get_string(stmt, 1);
-	de->version = sq3_get_string(stmt, 2);
-    }
-
-    if (ret != SQLITE_DONE) {
-	/* XXX */
-	dat_free(dat);
-	return NULL;
-    }
-    
-    return dat;
+    return 0;
 }

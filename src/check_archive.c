@@ -60,8 +60,8 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	    continue;
 
 	found = find_in_old(archive_file(a, i), NULL);
-	if (found == FIND_EXISTS && (hashes_types(file_hashes(archive_file(a, i))) & romhashtypes) != romhashtypes) {
-	    if (archive_file_compute_hashes(a, i, romhashtypes) < 0) {
+	if (found == FIND_EXISTS && (hashes_types(file_hashes(archive_file(a, i))) & romdb_hashtypes(db, TYPE_ROM)) != romdb_hashtypes(db, TYPE_ROM)) {
+	    if (archive_file_compute_hashes(a, i, romdb_hashtypes(db, TYPE_ROM)) < 0) {
 		result_file(res, i) = FS_BROKEN;
 		continue;
 	    }
@@ -73,8 +73,8 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	}
 
 	found = find_in_romset(archive_file(a, i), gamename, NULL);
-	if ((found == FIND_EXISTS || found == FIND_MISSING) && (hashes_types(file_hashes(archive_file(a, i))) & romhashtypes) != romhashtypes) {
-	    if (archive_file_compute_hashes(a, i, romhashtypes) < 0) {
+	if ((found == FIND_EXISTS || found == FIND_MISSING) && (hashes_types(file_hashes(archive_file(a, i))) & romdb_hashtypes(db, TYPE_ROM)) != romdb_hashtypes(db, TYPE_ROM)) {
+	    if (archive_file_compute_hashes(a, i, romdb_hashtypes(db, TYPE_ROM)) < 0) {
 		result_file(res, i) = FS_BROKEN;
 		continue;
 	    }

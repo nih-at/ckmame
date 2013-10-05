@@ -55,6 +55,7 @@ void array_delete(array_t *, int, void (*)(/* void * */));
 void array_free(array_t *, void (*)(/* void * */));
 void *array_get(const array_t *, int);
 void *array_grow(array_t *, void (*)(/* void * */));
+int array_index(const array_t *, const void *, int (*)(/* const void *, const void * */));
 void *array_insert(array_t *, int, const void *);
 array_t *array_new_sized(int, int);
 array_t *array_new_length(int, int, void (*)(/* void * */));

@@ -1,5 +1,8 @@
+#ifndef _HAD_ROMDB_H
+#define _HAD_ROMDB_H
+
 /*
-  garbage.c -- move files to garbage directory
+  romdb.h -- mame.db sqlite3 data base
   Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -31,89 +34,32 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+#include "dbh.h"
 
-#include <stdlib.h>
+typedef struct {
+    dbh_t *dbh;
+    int hashtypes[TYPE_MAX];
+} romdb_t;
 
-#include "error.h"
-#include "funcs.h"
-#include "garbage.h"
-#include "xmalloc.h"
+#define romdb_dbh(db)  ((db)->dbh)
+#define romdb_sqlite3(db)	(dbh_db(romdb_dbh(db)))
 
-
+int romdb_close(romdb_t *);
+int romdb_delete_game(romdb_t *, const char *);
+romdb_t *romdb_open(const char *, int);
+dat_t *romdb_read_dat(romdb_t *);
+detector_t *romdb_read_detector(romdb_t *);
+array_t *romdb_read_file_by_hash(romdb_t *, filetype_t, const hashes_t *);
+struct game *romdb_read_game(romdb_t *, const char *);
+int romdb_hashtypes(romdb_t *, filetype_t);
+parray_t *romdb_read_list(romdb_t *, enum dbh_list);
+int romdb_update_game(romdb_t *, game_t *);
+int romdb_update_game_parent(romdb_t *, game_t *, filetype_t);
+int romdb_write_dat(romdb_t *, dat_t *);
+int romdb_write_detector(romdb_t *db, const detector_t *);
+int romdb_write_file_by_hash_parray(romdb_t *, filetype_t, const hashes_t *, parray_t *);
+int romdb_write_game(romdb_t *, game_t *);
+int romdb_write_hashtypes(romdb_t *, int, int);
+int romdb_write_list(romdb_t *, const char *, const parray_t *);
 
-static int garbage_open(garbage_t *);
-
-
-
-int garbage_add(garbage_t *g, int idx, bool copyp)
-{
-    if (garbage_open(g) < 0)
-	return -1;
-
-    return archive_file_copy_or_move(g->sa, idx, g->da, file_name(archive_file(g->sa, idx)), copyp);
-}
-
-
-
-int
-garbage_close(garbage_t *g)
-{
-    archive_t *da;
-
-    if (g == NULL)
-	return 0;
-
-    da = g->da;
-
-    free(g);
-
-    if (da == NULL)
-	return 0;
-
-    if (archive_commit(da) < 0) {
-	archive_rollback(da);
-	archive_free(da);
-	return -1;
-    }
-
-    archive_free(da);
-
-    return 0;
-}
-
-
-
-garbage_t *garbage_new(archive_t *a)
-{
-    garbage_t *g;
-
-    g = (garbage_t *)xmalloc(sizeof(*g));
-
-    g->sa = a;
-    g->da = NULL;
-    g->opened = false;
-
-    return g;
-}
-
-
-
-static int
-garbage_open(garbage_t *g)
-{
-    char *name;
-
-    if (!g->opened) {
-	g->opened = true;
-	name = make_garbage_name(archive_name(g->sa), 0);
-	g->da = archive_new(name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_CREATE);
-	free(name);
-	if (archive_check(g->da) < 0) {
-	    archive_free(g->da);
-	    g->da = NULL;
-	}
-    }
-
-    return (g->da != NULL ? 0 : -1);
-}
+#endif /* romdb.h */

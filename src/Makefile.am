@@ -21,6 +21,7 @@ libckmame_a_LIBADD=@LIBOBJS@
 
 libckmame_a_SOURCES= \
 	archive.c \
+	archive_dir.c \
 	archive_file_compare_hashes.c \
 	archive_modify.c \
 	archive_zip.c \
@@ -45,6 +46,7 @@ libckmame_a_SOURCES= \
 	dat_push.c \
 	db_init.c \
 	dbh.c \
+	dbh_dir.c \
 	dbh_statements.c \
 	delete_list.c \
 	detector.c \
@@ -67,6 +69,7 @@ libckmame_a_SOURCES= \
 	file_location_finalize.c \
 	file_location_make_key.c \
 	file_status.c \
+	file_util.c \
 	filetype_db_key.c \
 	find.c \
 	fix.c \
@@ -106,20 +109,21 @@ libckmame_a_SOURCES= \
 	parse.c \
 	parser_source.c \
 	ptr_sort.c \
-	r_dat.c \
-	r_detector.c \
-	r_file_by_hash.c \
-	r_game.c \
-	r_list.c \
 	result.c \
+	romdb.c \
+	romdb_read_dat.c \
+	romdb_read_detector.c \
+	romdb_read_file_by_hash.c \
+	romdb_read_game.c \
+	romdb_read_list.c \
+	romdb_write_dat.c \
+	romdb_write_detector.c \
+	romdb_write_game.c \
 	sighandle.c \
 	sq_util.c \
 	superfluous.c \
 	tree.c \
 	util.c \
-	w_dat.c \
-	w_detector.c \
-	w_game.c \
 	warn.c \
 	xmalloc.c \
 	xmlutil.c \
@@ -161,6 +165,7 @@ noinst_HEADERS=\
 	parser_source.h \
 	pri.h \
 	result.h \
+	romdb.h \
 	sighandle.h \
 	sq_util.h \
 	tree.h \

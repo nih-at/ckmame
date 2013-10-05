@@ -66,6 +66,21 @@ array_get(const array_t *a, int i)
 
 
 
+int
+array_index(const array_t *a, const void *key, int (*cmp)(/* const void *, const void * */))
+{
+    int idx;
+
+    for (idx=0; idx<array_length(a); idx++) {
+	if (cmp(array_get(a, idx), key) == 0)
+	    return idx;
+    }
+
+    return -1;
+}
+
+
+
 array_t *
 array_new_sized(int size, int n)
 {

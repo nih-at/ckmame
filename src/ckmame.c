@@ -160,15 +160,14 @@ struct option options[] = {
 int output_options;
 int fix_options;
 int ignore_extra;
-int romhashtypes, diskhashtypes;
 int check_integrity;
 int roms_unzipped;
 parray_t *superfluous;
 parray_t *search_dirs;
 const char *rom_dir;
 filetype_t file_type;
-dbh_t *db;
-dbh_t *old_db;
+romdb_t *db;
+romdb_t *old_db;
 detector_t *detector;
 tree_t *check_tree;
 output_context_t *fixdat;
@@ -356,17 +355,17 @@ main(int argc, char **argv)
 	    fix_options |= FIX_CLEANUP_EXTRA;
     }
 
-    if ((db=dbh_open(dbname, DBH_READ)) == NULL) {
+    if ((db=romdb_open(dbname, DBH_READ)) == NULL) {
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit(1);
     }
     /* XXX: check for errors other than ENOENT */
-    old_db = dbh_open(olddbname, DBH_READ);
+    old_db = romdb_open(olddbname, DBH_READ);
 
     if (action == ACTION_CHECK_ROMSET) {
 	/* build tree of games to check */
 
-	if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+	if ((list=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	    myerror(ERRDEF,
 		    "list of games not found in database `%s'", dbname);
 	    exit(1);
@@ -432,10 +431,8 @@ main(int argc, char **argv)
     }
 
     if (action != ACTION_SUPERFLUOUS_ONLY) {
-	/* XXX: check error */
-	r_hashtypes(db, &romhashtypes, &diskhashtypes);
 	/* XXX: merge in olddb */
-	detector = r_detector(db);
+	detector = romdb_read_detector(db);
     }
     
     if (action != ACTION_CLEANUP_EXTRA_ONLY)

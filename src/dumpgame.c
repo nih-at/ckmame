@@ -39,11 +39,11 @@
 
 #include "compat.h"
 #include "dat.h"
-#include "dbh.h"
 #include "error.h"
 #include "file_location.h"
 #include "hashes.h"
 #include "sq_util.h"
+#include "romdb.h"
 #include "types.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -101,7 +101,7 @@ static char *status_name[] = {
 };
 
 parray_t *list;
-dbh_t *db;
+romdb_t *db;
 
 #define QUERY_CLONES	\
     "select g.name from game g, parent p where g.game_id = p.game_id" \
@@ -199,14 +199,14 @@ print_matches(filetype_t ft, hashes_t *hash)
 
     matches = 0;
 
-    if ((fbha=r_file_by_hash(db, ft, hash)) == NULL) {
+    if ((fbha=romdb_read_file_by_hash(db, ft, hash)) == NULL) {
       print_footer(0, hash);
       return;
     }
 
     for (i=0; i<array_length(fbha); i++) {
       fbh = array_get(fbha, i);
-      if ((game=r_game(db, file_location_name(fbh))) == NULL) {
+      if ((game=romdb_read_game(db, file_location_name(fbh))) == NULL) {
 	myerror(ERRDEF,
 		"db error: %s not found, though in hash index",
 		file_location_name(fbh));
@@ -276,13 +276,13 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=dbh_open(dbname, DBH_READ))==NULL) {
+    if ((db=romdb_open(dbname, DBH_READ))==NULL) {
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit (1);
     }
-    seterrdb(db);
+    seterrdb(romdb_dbh(db));
 
-    if ((list=r_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+    if ((list=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
     }
@@ -360,7 +360,7 @@ print_rs(game_t *game, filetype_t ft,
     if (game_cloneof(game, ft, 1))
 	printf("%s:\t%s\n", gco, game_cloneof(game, ft, 1));
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_CLONES)) == NULL) {
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_CLONES)) == NULL) {
 	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
 	return;
     }
@@ -402,12 +402,12 @@ dump_game(const char *name, int brief_mode)
     game_t *game;
     dat_t *dat;
 
-    if ((dat=r_dat(db)) == NULL) {
+    if ((dat=romdb_read_dat(db)) == NULL) {
 	myerror(ERRDEF, "cannot read dat info");
 	return -1;
     }
 
-    if ((game=r_game(db, name)) == NULL) {
+    if ((game=romdb_read_game(db, name)) == NULL) {
 	myerror(ERRDEF, "game unknown (or database error): `%s'", name);
 	return -1;
     }
@@ -445,16 +445,10 @@ dump_game(const char *name, int brief_mode)
 static int
 dump_hashtypes(int dummy)
 {
-    int romhashtypes, diskhashtypes;
-
-    if (r_hashtypes(db, &romhashtypes, &diskhashtypes) < 0) {
-	myerror(ERRDEF, "db error reading hashtypes");
-	return -1;
-    }
     printf("roms: ");
-    print_hashtypes(romhashtypes);
+    print_hashtypes(romdb_hashtypes(db, TYPE_ROM));
     printf("\ndisks: ");
-    print_hashtypes(diskhashtypes);
+    print_hashtypes(romdb_hashtypes(db, TYPE_DISK));
     putc('\n', stdout);
 
     return 0;
@@ -468,7 +462,7 @@ dump_list(int type)
     int i;
     parray_t *list;
 
-    if ((list=r_list(db, type)) == NULL) {
+    if ((list=romdb_read_list(db, type)) == NULL) {
 	myerror(ERRDB, "db error reading list");
 	return -1;
     }
@@ -490,7 +484,7 @@ dump_dat(int dummy)
     dat_t *d;
     int i;
 
-    if ((d=r_dat(db)) == NULL) {
+    if ((d=romdb_read_dat(db)) == NULL) {
 	myerror(ERRDEF, "db error reading /dat");
 	return -1;
     }
@@ -513,7 +507,7 @@ dump_detector(int dummy)
 {
     detector_t *d;
     
-    if ((d=r_detector(db)) != NULL) {
+    if ((d=romdb_read_detector(db)) != NULL) {
 	printf("%s", detector_name(d));
 	if (detector_version(d))
 	    printf(" (%s)", detector_version(d));
@@ -572,7 +566,7 @@ dump_stats(int dummy)
     int i, ft;
     int64_t size;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_STATS_GAMES)) == NULL) {
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_GAMES)) == NULL) {
 	myerror(ERRDB, "can't get number of games");
 	return -1;
     }
@@ -583,7 +577,7 @@ dump_stats(int dummy)
 
     printf("Games:  \t%d\n", sqlite3_column_int(stmt, 0));
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_STATS_FILES)) == NULL) {
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_FILES)) == NULL) {
 	myerror(ERRDB, "can't get file stats");
 	return -1;
     }

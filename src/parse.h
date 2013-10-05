@@ -39,7 +39,7 @@
 #include <stdio.h>
 
 #include "dat.h"
-#include "dbh.h"
+#include "romdb.h"
 #include "game.h"
 #include "output.h"
 #include "parser_source.h"
@@ -87,15 +87,13 @@ void parser_context_free(parser_context_t *);
 parser_context_t *parser_context_new(parser_source_t *, const parray_t *,
 				     const dat_entry_t *, output_context_t *);
 
-int parse(parser_source_t *, const parray_t *, const dat_entry_t *,
-	  output_context_t *);
-int export_db(dbh_t *, const parray_t *, const dat_entry_t *,
-	      output_context_t *);
+int parse(parser_source_t *, const parray_t *, const dat_entry_t *, output_context_t *);
+int export_db(romdb_t *, const parray_t *, const dat_entry_t *, output_context_t *);
 
 /* backend parser functions */
 
 int parse_cm(parser_source_t *, parser_context_t *);
-int parse_dir(const char *, parser_context_t *);
+int parse_dir(const char *, parser_context_t *, int);
 int parse_rc(parser_source_t *, parser_context_t *);
 int parse_xml(parser_source_t *, parser_context_t *);
 

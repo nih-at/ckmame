@@ -39,7 +39,7 @@
 #include <zip.h>
 
 #include "compat.h"
-#include "dbh.h"
+#include "romdb.h"
 #include "funcs.h"
 #include "error.h"
 #include "output.h"
@@ -52,27 +52,28 @@ char *usage = "Usage: %s [-hV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--only-
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
-char help[] = "\n\
-  -h, --help                      display this help message\n\
-  -V, --version                   display version number\n\
-  -C, --hash-types types          specify hash types to compute (default: all)\n\
-  -F, --format [cm|dat|db|mtree]  specify output format [default: db]\n\
-  -o, --output dbfile             write to database dbfile\n\
-  -x, --exclude pat               exclude games matching shell glob PAT\n\
-      --detector xml-file         use header detector\n\
-      --only-files pat            only use zip members matching shell glob PAT\n\
-      --prog-description d        set description of rominfo\n\
-      --prog-name name            set name of program rominfo is from\n\
-      --prog-version vers         set version of program rominfo is from\n\
-      --skip-files pat            don't use zip members matching shell glob PAT\n\
-\n\
-Report bugs to " PACKAGE_BUGREPORT ".\n";
+char help[] = "\n"
+"  -h, --help                      display this help message\n"
+"  -V, --version                   display version number\n"
+"  -C, --hash-types types          specify hash types to compute (default: all)\n"
+"  -F, --format [cm|dat|db|mtree]  specify output format [default: db]\n"
+"  -o, --output dbfile             write to database dbfile\n"
+"  -x, --exclude pat               exclude games matching shell glob PAT\n"
+"      --detector xml-file         use header detector\n"
+"      --only-files pat            only use zip members matching shell glob PAT\n"
+"      --prog-description d        set description of rominfo\n"
+"      --prog-name name            set name of program rominfo is from\n"
+"      --prog-version vers         set version of program rominfo is from\n"
+"      --skip-files pat            don't use zip members matching shell glob PAT\n"
+"  -u, --roms-unzipped             ROMs are files on disk, not contained in zip archives\n"
+"\n"
+"Report bugs to " PACKAGE_BUGREPORT ".\n";
 
-char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2013 Dieter Baron and Thomas Klausner\n\
-" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n"
+"Copyright (C) 2013 Dieter Baron and Thomas Klausner\n"
+PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "hC:F:o:Vx:"
+#define OPTIONS "hC:F:o:uVx:"
 
 enum {
     OPT_DETECTOR = 256,
@@ -95,12 +96,15 @@ struct option options[] = {
     { "prog-description", 1, 0, OPT_PROG_DESCRIPTION },
     { "prog-name",        1, 0, OPT_PROG_NAME },
     { "prog-version",     1, 0, OPT_PROG_VERSION },
+    { "roms-unzipped",    0, 0, 'u' },
     { "skip-files",       1, 0, OPT_SKIP_FILES },
     { NULL,               0, 0, 0 },
 };
 
-int romhashtypes;
 detector_t *detector;
+int roms_unzipped;
+
+static int hashtypes;
 
 #define DEFAULT_FILES_ONLY	"*.dat"
 
@@ -127,6 +131,7 @@ main(int argc, char **argv)
     setprogname(argv[0]);
 
     detector = NULL;
+    roms_unzipped = 0;
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -135,7 +140,7 @@ main(int argc, char **argv)
     exclude = NULL;
     only_files = skip_files = NULL;
     fmt = OUTPUT_FMT_DB;
-    romhashtypes = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
+    hashtypes = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
     detector_name = NULL;
 
     opterr = 0;
@@ -150,10 +155,9 @@ main(int argc, char **argv)
 	    fputs(version_string, stdout);
 	    exit(0);
 	case 'C':
-	    romhashtypes=hash_types_from_str(optarg);
-	    if (romhashtypes == 0) {
-		fprintf(stderr, "%s: illegal hash types `%s'\n",
-			getprogname(), optarg);
+	    hashtypes = hash_types_from_str(optarg);
+	    if (hashtypes == 0) {
+		fprintf(stderr, "%s: illegal hash types `%s'\n", getprogname(), optarg);
 		exit(1);
 	    }
 	    break;
@@ -174,6 +178,9 @@ main(int argc, char **argv)
 	    break;
 	case 'o':
 	    dbname = optarg;
+	    break;
+        case 'u':
+            roms_unzipped = 1;
 	    break;
 	case 'x':
 	    if (exclude == NULL)
@@ -262,11 +269,11 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	     const parray_t *files_only, const parray_t *files_skip,
 	     output_context_t *out)
 {
-    dbh_t *db;
+    romdb_t *db;
     parser_source_t *ps;
     struct zip *za;
     
-    if ((db=dbh_open(fname, DBH_READ)) != NULL)
+    if ((db=romdb_open(fname, DBH_READ)) != NULL)
 	return export_db(db, exclude, dat, out);
     else if ((za=zip_open(fname, 0, NULL)) != NULL) {
 	int i;
@@ -304,7 +311,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	    int ret;
 	    
 	    ctx = parser_context_new(NULL, exclude, dat, out);
-	    ret = parse_dir(fname, ctx);
+	    ret = parse_dir(fname, ctx, hashtypes);
 	    parser_context_free(ctx);
 	    return ret;
 	}

@@ -38,31 +38,32 @@
 
 #include "archive.h"
 #include "compat.h"
-#include "dbh.h"
 #include "detector.h"
 #include "error.h"
 #include "globals.h"
 #include "hashes.h"
+#include "romdb.h"
 
 char *usage = "Usage: %s [-hV] [-C types] [-D dbfile] [--detector detector] zip-archive [...]\n";
 
 char help_head[] = "detective (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
 
-char help[] = "\n\
-  -h, --help               display this help message\n\
-  -V, --version            display version number\n\
-  -C, --hash-types types   specify hash types to compute (default: all)\n\
-  -D, --db dbfile          use mame-db dbfile\n\
-      --detector xml-file  use header detector\n\
-\n\
-Report bugs to " PACKAGE_BUGREPORT ".\n";
+char help[] = "\n"
+"  -h, --help               display this help message\n"
+"  -V, --version            display version number\n"
+"  -C, --hash-types types   specify hash types to compute (default: all)\n"
+"  -D, --db dbfile          use mame-db dbfile\n"
+"      --detector xml-file  use header detector\n"
+"  -u, --roms-unzipped      ROMs are files on disk, not contained in zip archives\n"
+"\n"
+"Report bugs to " PACKAGE_BUGREPORT ".\n";
 
-char version_string[] = "detective (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2013 Dieter Baron and Thomas Klausner\n\
-" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+char version_string[] = "detective (" PACKAGE " " VERSION ")\n"
+"Copyright (C) 2013 Dieter Baron and Thomas Klausner\n"
+PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "hC:DV"
+#define OPTIONS "hC:DuV"
 
 enum {
     OPT_DETECTOR = 256
@@ -74,16 +75,17 @@ struct option options[] = {
     { "db",               1, 0, 'D' },
     { "detector",         1, 0, OPT_DETECTOR },
     { "hash-types",       1, 0, 'C' },
+    { "roms-unzipped",    0, 0, 'u' },
     { NULL,               0, 0, 0 },
 };
 
-int romhashtypes;
 detector_t *detector;
+int roms_unzipped;
 
 
 
-static int print_archive(const char *);
-static void print_checksums(hashes_t *);
+static int print_archive(const char *, int);
+static void print_checksums(hashes_t *, int);
 
 
 
@@ -93,17 +95,19 @@ main(int argc, char **argv)
     char *dbname;
     char *detector_name;
     int c, i, ret;
-    dbh_t *db;
+    romdb_t *db;
+    int hashtypes;
 
     setprogname(argv[0]);
 
     detector = NULL;
+    hashtypes = -1;
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
-    romhashtypes = 0;
     detector_name = NULL;
+    roms_unzipped = 0;
 
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -117,15 +121,17 @@ main(int argc, char **argv)
 	    fputs(version_string, stdout);
 	    exit(0);
 	case 'C':
-	    romhashtypes=hash_types_from_str(optarg);
-	    if (romhashtypes == 0) {
-		fprintf(stderr, "%s: illegal hash types `%s'\n",
-			getprogname(), optarg);
+	    hashtypes = hash_types_from_str(optarg);
+	    if (hashtypes == 0) {
+		fprintf(stderr, "%s: illegal hash types `%s'\n", getprogname(), optarg);
 		exit(1);
 	    }
 	    break;
 	case 'D':
 	    dbname = optarg;
+	    break;
+        case 'u':
+            roms_unzipped = 1;
 	    break;
 	case OPT_DETECTOR:
 	    detector_name = optarg;
@@ -148,25 +154,24 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=dbh_open(dbname, DBH_READ)) == NULL) {
+    if ((db=romdb_open(dbname, DBH_READ)) == NULL) {
 	if (detector == 0) {
 	    myerror(ERRSTR, "can't open database `%s'", dbname);
 	    exit(1);
 	}
-	if (romhashtypes == 0)
-	    romhashtypes = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
     }
     else {
 	if (detector == NULL)
-	    detector = r_detector(db);
-	if (romhashtypes == 0)
-	    r_hashtypes(db, &romhashtypes, &i);
-	dbh_close(db);
+	    detector = romdb_read_detector(db);
+	romdb_close(db);
     }
+
+    if (hashtypes == -1)
+	hashtypes = romdb_hashtypes(db, TYPE_ROM);
 
     ret = 0;
     for (i=optind; i<argc; i++)
-	ret |= print_archive(argv[i]);
+	ret |= print_archive(argv[i], hashtypes);
 
     return ret ? 1 : 0;
 }
@@ -174,7 +179,7 @@ main(int argc, char **argv)
 
 
 static int
-print_archive(const char *fname)
+print_archive(const char *fname, int hashtypes)
 {
     archive_t *a;
     file_t *f;
@@ -187,7 +192,7 @@ print_archive(const char *fname)
 
     ret = 0;
     for (i=0; i<archive_num_files(a); i++) {
-	if (archive_file_compute_hashes(a, i, romhashtypes) < 0) {
+	if (archive_file_compute_hashes(a, i, hashtypes) < 0) {
 	    ret = -1;
 	    continue;
 	}
@@ -199,9 +204,8 @@ print_archive(const char *fname)
 	else
 	    j = FILE_SH_FULL;
 
-	printf("\tfile %-12s  size %7" PRIu64,
-	       file_name(f), file_size_xxx(f, j));
-	print_checksums(file_hashes_xxx(f, j));
+	printf("\tfile %-12s  size %7" PRIu64, file_name(f), file_size_xxx(f, j));
+	print_checksums(file_hashes_xxx(f, j), hashtypes);
 	if (j == FILE_SH_DETECTOR)
 	    printf("  (header skipped)");
 	printf("\n");
@@ -214,15 +218,14 @@ print_archive(const char *fname)
 
 
 static void
-print_checksums(hashes_t *hashes)
+print_checksums(hashes_t *hashes, int hashtypes)
 {
     int i;
     char h[HASHES_SIZE_MAX*2 + 1];
 
     for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
-	if (hashes_has_type(hashes, i) && (romhashtypes & i)) {
-	    printf(" %s %s", hash_type_string(i),
-		   hash_to_string(h, i, hashes));
+	if (hashes_has_type(hashes, i) && (hashtypes & i)) {
+	    printf(" %s %s", hash_type_string(i), hash_to_string(h, i, hashes));
 	}
     }
 }

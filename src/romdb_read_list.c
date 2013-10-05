@@ -1,5 +1,5 @@
 /*
-  garbage.c -- move files to garbage directory
+  romdb_read_list.c -- read list struct from db
   Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -33,87 +33,45 @@
 
 
 
+/* read list of strings from db */
 #include <stdlib.h>
+#include <string.h>
 
-#include "error.h"
-#include "funcs.h"
-#include "garbage.h"
+#include "romdb.h"
+#include "sq_util.h"
 #include "xmalloc.h"
 
-
+/* keep in sync with dbh.h:enum list */
+const dbh_stmt_t query_list[] = {
+    DBH_STMT_QUERY_LIST_DISK,
+    DBH_STMT_QUERY_LIST_GAME,
+    DBH_STMT_QUERY_LIST_SAMPLE
+};
 
-static int garbage_open(garbage_t *);
 
-
 
-int garbage_add(garbage_t *g, int idx, bool copyp)
+parray_t *
+romdb_read_list(romdb_t *db, enum dbh_list type)
 {
-    if (garbage_open(g) < 0)
-	return -1;
+    parray_t *pa;
+    sqlite3_stmt *stmt;
+    int ret;
 
-    return archive_file_copy_or_move(g->sa, idx, g->da, file_name(archive_file(g->sa, idx)), copyp);
-}
+    if (type >= DBH_KEY_LIST_MAX)
+	return NULL;
 
-
+    if ((stmt = dbh_get_statement(romdb_dbh(db), query_list[type])) == NULL)
+	return NULL;
 
-int
-garbage_close(garbage_t *g)
-{
-    archive_t *da;
+    pa = parray_new();
 
-    if (g == NULL)
-	return 0;
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW)
+	parray_push(pa, sq3_get_string(stmt, 0));
 
-    da = g->da;
-
-    free(g);
-
-    if (da == NULL)
-	return 0;
-
-    if (archive_commit(da) < 0) {
-	archive_rollback(da);
-	archive_free(da);
-	return -1;
+    if (ret != SQLITE_DONE) {
+	parray_free(pa, free);
+	return NULL;
     }
-
-    archive_free(da);
-
-    return 0;
-}
-
-
-
-garbage_t *garbage_new(archive_t *a)
-{
-    garbage_t *g;
-
-    g = (garbage_t *)xmalloc(sizeof(*g));
-
-    g->sa = a;
-    g->da = NULL;
-    g->opened = false;
-
-    return g;
-}
-
-
-
-static int
-garbage_open(garbage_t *g)
-{
-    char *name;
-
-    if (!g->opened) {
-	g->opened = true;
-	name = make_garbage_name(archive_name(g->sa), 0);
-	g->da = archive_new(name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_CREATE);
-	free(name);
-	if (archive_check(g->da) < 0) {
-	    archive_free(g->da);
-	    g->da = NULL;
-	}
-    }
-
-    return (g->da != NULL ? 0 : -1);
+    
+    return pa;
 }

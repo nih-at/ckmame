@@ -1,5 +1,5 @@
 /*
-  r_game.c -- read game struct from db
+  romdb_read_game.c -- read game struct from db
   Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -38,25 +38,25 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "dbh.h"
 #include "game.h"
+#include "romdb.h"
 #include "sq_util.h"
 #include "xmalloc.h"
 
-static int read_disks(dbh_t *, game_t *);
-static int read_rs(dbh_t *, game_t *, filetype_t);
+static int read_disks(romdb_t *, game_t *);
+static int read_rs(romdb_t *, game_t *, filetype_t);
 static void sq3_get_hashes(hashes_t *, sqlite3_stmt *, int);
 
 
 
 game_t *
-r_game(dbh_t *db, const char *name)
+romdb_read_game(romdb_t *db, const char *name)
 {
     sqlite3_stmt *stmt;
     game_t *game;
     int i;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_GAME)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_GAME)) == NULL)
 	return NULL;
 
     if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK
@@ -87,13 +87,13 @@ r_game(dbh_t *db, const char *name)
 
 
 static int
-read_disks(dbh_t *db, game_t *g)
+read_disks(romdb_t *db, game_t *g)
 {
     sqlite3_stmt *stmt;
     int ret;
     disk_t *d;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_FILE)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
@@ -115,13 +115,13 @@ read_disks(dbh_t *db, game_t *g)
 
 
 static int
-read_rs(dbh_t *db, game_t *g, filetype_t ft)
+read_rs(romdb_t *db, game_t *g, filetype_t ft)
 {
     sqlite3_stmt *stmt;
     int ret;
     file_t *r;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_PARENT)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_PARENT)) == NULL)
 	return -1;
     if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
@@ -134,7 +134,7 @@ read_rs(dbh_t *db, game_t *g, filetype_t ft)
 	return -1;
 
     if (game_cloneof(g, ft, 0)) {
-	if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_GPARENT)) == NULL)
+	if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_GPARENT)) == NULL)
 	    return -1;
 	if (sq3_set_string(stmt, 1, game_cloneof(g, ft, 0)) != SQLITE_OK
 	    || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
@@ -147,7 +147,7 @@ read_rs(dbh_t *db, game_t *g, filetype_t ft)
 	    return -1;
     }
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_FILE)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK

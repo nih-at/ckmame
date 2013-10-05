@@ -57,7 +57,7 @@
 #define DBH_NEW		0x20	/* create new database */
 #define DBH_FLAGS(m)	((m) & 0xf0)
 
-/* keep in sync with r_list.c:query_list */
+/* keep in sync with romdb_read_list.c:query_list */
 enum dbh_list {
     DBH_KEY_LIST_DISK,
     DBH_KEY_LIST_GAME,
@@ -88,22 +88,5 @@ dbh_t* dbh_open(const char *, int);
 sqlite3_stmt *dbh_get_statement(dbh_t *, dbh_stmt_t);
 dbh_stmt_t dbh_stmt_with_hashes_and_size(dbh_stmt_t, const hashes_t *, int);
 
-int d_game(dbh_t *, const char *);
-
-
-dat_t *r_dat(dbh_t *);
-detector_t *r_detector(dbh_t *);
-array_t *r_file_by_hash(dbh_t *, filetype_t, const hashes_t *);
-struct game *r_game(dbh_t *, const char *);
-int r_hashtypes(dbh_t *, int *, int *);
-parray_t *r_list(dbh_t *, enum dbh_list);
-int u_game(dbh_t *, game_t *);
-int u_game_parent(dbh_t *, game_t *, filetype_t);
-int w_dat(dbh_t *, dat_t *);
-int w_detector(dbh_t *db, const detector_t *);
-int w_file_by_hash_parray(dbh_t *, filetype_t, const hashes_t *, parray_t *);
-int w_game(dbh_t *, game_t *);
-int w_hashtypes(dbh_t *, int, int);
-int w_list(dbh_t *, const char *, const parray_t *);
 
 #endif /* dbh.h */
