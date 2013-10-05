@@ -96,6 +96,7 @@ code cleanups:
 - fix all XXXs
 
 tests:
+* finish disk-full test
 * case differences (game name / archive / rom / file in archive)
 * extra cleanup done when all games checked
 * is superfluous file that needs detector cleaned up correctly?
