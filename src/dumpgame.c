@@ -277,7 +277,7 @@ main(int argc, char **argv)
     }
 
     if ((db=romdb_open(dbname, DBH_READ))==NULL) {
-	myerror(ERRSTR, "can't open database `%s'", dbname);
+	myerror(ERRSTR, "can't open database '%s'", dbname);
 	exit (1);
     }
     seterrdb(romdb_dbh(db));
@@ -295,7 +295,7 @@ main(int argc, char **argv)
 	    /* checksum */
 	    hashes_init(&match);
 	    if ((hash_from_string(&match, argv[i])) == -1) {
-		myerror(ERRDEF, "error parsing checksum `%s'", argv[i]);
+		myerror(ERRDEF, "error parsing checksum '%s'", argv[i]);
 		exit(2);
 	    }
 
@@ -322,7 +322,7 @@ main(int argc, char **argv)
 		dump_game(argv[i], brief_mode);
 	    }
 	    else
-		myerror(ERRDEF, "game `%s' unknown", argv[i]);
+		myerror(ERRDEF, "game '%s' unknown", argv[i]);
 	}
 	else {
 	    found = 0;
@@ -337,7 +337,7 @@ main(int argc, char **argv)
 		}
 	    }
 	    if (!found)
-		myerror(ERRDEF, "no game matching `%s' found", argv[i]);
+		myerror(ERRDEF, "no game matching '%s' found", argv[i]);
 	}
     }
 
@@ -361,12 +361,12 @@ print_rs(game_t *game, filetype_t ft,
 	printf("%s:\t%s\n", gco, game_cloneof(game, ft, 1));
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_CLONES)) == NULL) {
-	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
+	myerror(ERRDB, "cannot get clones for '%s'", game_name(game));
 	return;
     }
     if (sq3_set_string(stmt, 1, game_name(game)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
-	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
+	myerror(ERRDB, "cannot get clones for '%s'", game_name(game));
 	return;
     }
 
@@ -383,7 +383,7 @@ print_rs(game_t *game, filetype_t ft,
 	printf("\n");
 
     if (ret != SQLITE_DONE) {
-	myerror(ERRDB, "cannot get clones for `%s'", game_name(game));
+	myerror(ERRDB, "cannot get clones for '%s'", game_name(game));
 	return;
     }
 
@@ -408,7 +408,7 @@ dump_game(const char *name, int brief_mode)
     }
 
     if ((game=romdb_read_game(db, name)) == NULL) {
-	myerror(ERRDEF, "game unknown (or database error): `%s'", name);
+	myerror(ERRDEF, "game unknown (or database error): '%s'", name);
 	return -1;
     }
 
@@ -546,7 +546,7 @@ dump_special(const char *name)
 	    return keys[i].f(keys[i].arg);
     }
     
-    myerror(ERRDEF, "unknown special: `%s'", name);
+    myerror(ERRDEF, "unknown special: '%s'", name);
     return -1;
 }
 

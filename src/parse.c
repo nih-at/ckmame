@@ -158,7 +158,7 @@ parse_file_status(parser_context_t *ctx, filetype_t ft, int ht,
     else if (strcmp(attr, "nodump") == 0)
 	status = STATUS_NODUMP;
     else {
-	myerror(ERRFILE, "%d: illegal status `%s'",
+	myerror(ERRFILE, "%d: illegal status '%s'",
 		ctx->lineno, attr);
 	return -1;
     }
@@ -440,18 +440,18 @@ parse_prog_header(parser_context_t *ctx, const char *name, int dummy)
 
     if (detector != 0) {
 	myerror(ERRFILE,
-		"%d: warning: detector already defined, header `%s' ignored",
+		"%d: warning: detector already defined, header '%s' ignored",
 		ctx->lineno, name);
 	return 0;
     }
 
     if ((ps=ps_open(ctx->ps, name)) == NULL) {
-	myerror(ERRFILESTR, "%d: cannot open detector `%s'", ctx->lineno, name);
+	myerror(ERRFILESTR, "%d: cannot open detector '%s'", ctx->lineno, name);
 	return -1;
     }
 
     if ((detector=detector_parse_ps(ps)) == NULL) {
-	myerror(ERRFILESTR, "%d: cannot parse detector `%s'",
+	myerror(ERRFILESTR, "%d: cannot parse detector '%s'",
 		ctx->lineno, name);
 	ret = -1;
     }

@@ -4,7 +4,7 @@ args -FijKLvc -e extradir 1-4
 file-del extradir/1-4-super.zip 1-4-inconsistent.zip
 file-new roms/1-4.zip 1-4-ok.zip
 stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `extradir/1-4-super.zip'
-stdout roms/1-4.zip: add `extradir/1-4-super.zip/04.rom' as `04.rom'
-stdout extradir/1-4-super.zip: delete used file `04.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extradir/1-4-super.zip'
+stdout roms/1-4.zip: add 'extradir/1-4-super.zip/04.rom' as `04.rom'
+stdout extradir/1-4-super.zip: delete used file '04.rom'
 stdout extradir/1-4-super.zip: remove empty archive

@@ -11,12 +11,12 @@ stdout file 04.rom        size       4  crc d87e7e0c: unknown
 stdout In archive extra/2-4c.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: duplicate
 stdout file 0c.rom        size      12  crc 0623c932: unknown
-stdout extra/2-4c.zip: delete duplicate file `04.rom'
+stdout extra/2-4c.zip: delete duplicate file '04.rom'
 stdout In archive extra/deadclonedbeef.zip:
 stdout file deadclonedbeef  size       8  crc deadbeef: not used
-stdout extra/deadclonedbeef.zip: delete unused file `deadclonedbeef'
+stdout extra/deadclonedbeef.zip: delete unused file 'deadclonedbeef'
 stdout extra/deadclonedbeef.zip: remove empty archive
 stdout In archive extra/deadfish4.zip:
 stdout file deadbeef      size       8  crc deadbeef: unknown
 stdout file 04.rom        size       4  crc d87f7e0c: duplicate
-stdout extra/deadfish4.zip: delete duplicate file `04.rom'
+stdout extra/deadfish4.zip: delete duplicate file '04.rom'

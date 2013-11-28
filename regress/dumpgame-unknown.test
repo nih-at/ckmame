@@ -2,4 +2,4 @@ description test dumpgame: unknown game given on command line
 return 0
 program dumpgame
 args -D mame.db nosuchgame
-stderr game `nosuchgame' unknown
+stderr game 'nosuchgame' unknown

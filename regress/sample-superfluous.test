@@ -7,4 +7,4 @@ file samples/samptest.zip samptest.zip samptest.zip
 stdout In game samptest-child:
 stdout game samptest-child                          : correct
 stdout file boing.wav     size       8  crc 1cfbd7ab: unknown
-stdout samples/samptest-child.zip: mv unknown file `boing.wav'
+stdout samples/samptest-child.zip: mv unknown file 'boing.wav'

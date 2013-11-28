@@ -98,13 +98,13 @@ memdb_get_ptr(const char *name)
 
     if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_QUERY_PTR)) == NULL) {
 	seterrdb(memdb);
-	myerror(ERRDB, "cannot get `%s' from file cache", name);
+	myerror(ERRDB, "cannot get '%s' from file cache", name);
 	return NULL;
     }
 
     if (sq3_set_string(stmt, 1, name) != SQLITE_OK) {
 	seterrdb(memdb);
-	myerror(ERRDB, "cannot get `%s' from file cache", name);
+	myerror(ERRDB, "cannot get '%s' from file cache", name);
 	return NULL;
     }
 
@@ -120,7 +120,7 @@ memdb_get_ptr(const char *name)
     default:
 	ptr = NULL;
 	seterrdb(memdb);
-	myerror(ERRDB, "cannot get `%s' from file cache", name);
+	myerror(ERRDB, "cannot get '%s' from file cache", name);
     }
 
     return ptr;
@@ -139,13 +139,13 @@ memdb_get_ptr_by_id(int id)
 
     if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_QUERY_PTR_ID)) == NULL) {
 	seterrdb(memdb);
-	myerror(ERRDB, "cannot get `%d' from file cache", id);
+	myerror(ERRDB, "cannot get '%d' from file cache", id);
 	return NULL;
     }
 
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
 	seterrdb(memdb);
-	myerror(ERRDB, "cannot get `%d' from file cache", id);
+	myerror(ERRDB, "cannot get '%d' from file cache", id);
 	return NULL;
     }
 
@@ -161,7 +161,7 @@ memdb_get_ptr_by_id(int id)
     default:
 	ptr = NULL;
 	seterrdb(memdb);
-	myerror(ERRDB, "cannot get `%d' from file cache", id);
+	myerror(ERRDB, "cannot get '%d' from file cache", id);
     }
 
     return ptr;
@@ -192,7 +192,7 @@ memdb_put_ptr(const char *name, void *ptr)
 
     if (ret < 0) {
 	seterrdb(memdb);
-	myerror(ERRDB, "cannot insert `%s' into file cache", name);
+	myerror(ERRDB, "cannot insert '%s' into file cache", name);
     }
 
     return ret;

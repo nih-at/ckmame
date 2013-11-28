@@ -157,7 +157,7 @@ main(int argc, char **argv)
 	case 'C':
 	    hashtypes = hash_types_from_str(optarg);
 	    if (hashtypes == 0) {
-		fprintf(stderr, "%s: illegal hash types `%s'\n", getprogname(), optarg);
+		fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), optarg);
 		exit(1);
 	    }
 	    break;
@@ -171,7 +171,7 @@ main(int argc, char **argv)
 	    else if (strcmp(optarg, "mtree") == 0)
 		fmt = OUTPUT_FMT_MTREE;
 	    else {
-		fprintf(stderr, "%s: unknown output format `%s'\n",
+		fprintf(stderr, "%s: unknown output format '%s'\n",
 			getprogname(), optarg);
 		exit(1);
 	    }
@@ -303,7 +303,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	struct stat st;
 
 	if (stat(fname, &st) == -1) {
-	    myerror(ERRSTR, "can't stat romlist file `%s'", fname);
+	    myerror(ERRSTR, "can't stat romlist file '%s'", fname);
 	    return -1;
 	}
 	if ((st.st_mode & S_IFMT) == S_IFDIR) {

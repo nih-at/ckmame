@@ -130,7 +130,7 @@ find_command(const char *name)
 	if (len < strlen(cmdtab[i].name)
 	    && strncmp(name, cmdtab[i].name, len) == 0) {
 	    if (abbrev) {
-		myerror(ERRDEF, "ambigous abbreviation `%s'", name);
+		myerror(ERRDEF, "ambigous abbreviation '%s'", name);
 		return NULL;
 	    }
 	    abbrev = true;
@@ -143,7 +143,7 @@ find_command(const char *name)
 	cmd = cmdtab+(i-1);
 
     if (cmd == NULL) {
-	myerror(ERRDEF, "unknown command `%s'", name);
+	myerror(ERRDEF, "unknown command '%s'", name);
 	return NULL;
     }
 
@@ -153,7 +153,7 @@ find_command(const char *name)
 		&& (cmdtab[i].flags & CMD_FL_ALIAS) == 0)
 		return cmdtab+i;
 	
-	myerror(ERRDEF, "unresolved alias `%s'");
+	myerror(ERRDEF, "unresolved alias '%s'");
     }
 
     return cmd;

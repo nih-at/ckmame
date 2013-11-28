@@ -66,7 +66,7 @@ cmd_add(int argc, char **argv)
 	case 'C':
 	    hashtypes = hash_types_from_str(optarg);
             if (hashtypes == 0) {
-		myerror(ERRDEF, "illegal hash types `%s'", optarg);
+		myerror(ERRDEF, "illegal hash types '%s'", optarg);
                 return -1;
             }
 	    break;

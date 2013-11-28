@@ -51,12 +51,12 @@ cmd_new(int argc, char **argv)
     }
 
     if ((db=dbh_open(dbname, DBL_NEW)) == NULL) {
-	myerror(ERRDB, "can't create database `%s'", dbname);
+	myerror(ERRDB, "can't create database '%s'", dbname);
 	return -1;
     }
 
     if (sqlite3_exec(db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
-	myerror(ERRDB, "can't create database `%s'", dbname);
+	myerror(ERRDB, "can't create database '%s'", dbname);
 	dbh_close(db);
 	db = NULL;
 	remove(dbname);

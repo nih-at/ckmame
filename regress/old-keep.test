@@ -3,5 +3,5 @@ return 0
 args -O ../mame2.db -FKLivc --keep-duplicate 2-4a
 file roms/2-4a.zip 2-4a-ok.zip 2-4a-ok.zip
 stdout In game 2-4a:
-stdout rom  04.rom        size       4  crc d87f7e0c: old in `clone-8'
+stdout rom  04.rom        size       4  crc d87f7e0c: old in 'clone-8'
 stdout rom  0a.rom        size      10  crc 0b4a4cde: correct

@@ -430,7 +430,7 @@ op_file_delete(archive_t *a, int idx)
 
     if (stat(full_name, &st) < 0) {
 	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot delete `%s': %s", file_name(archive_file(a, idx)), strerror(errno));
+	myerror(ERRZIP, "cannot delete '%s': %s", file_name(archive_file(a, idx)), strerror(errno));
 	free(full_name);
 	free(tmpname);
 	return -1;
@@ -453,7 +453,7 @@ op_file_open(archive_t *a, int idx)
 
     if ((f=fopen(full_name, "r")) == NULL) {
 	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot open `%s': %s", file_name(archive_file(a, idx)), strerror(errno));
+	myerror(ERRZIP, "cannot open '%s': %s", file_name(archive_file(a, idx)), strerror(errno));
 	free(full_name);
 	return NULL;
     }
@@ -488,7 +488,7 @@ op_file_rename(archive_t *a, int idx, const char *name)
 
     if (stat(current_name, &st) < 0) {
 	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot rename `%s': %s", file_name(archive_file(a, idx)), strerror(errno));
+	myerror(ERRZIP, "cannot rename '%s': %s", file_name(archive_file(a, idx)), strerror(errno));
 	free(current_name);
 	free(tmpname);
 	return -1;

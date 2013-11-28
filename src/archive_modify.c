@@ -136,7 +136,7 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
 {
     if (archive_filetype(sa) != archive_filetype(da)) {
         seterrinfo(archive_name(sa), NULL);
-        myerror(ERRZIP, "cannot copy to archive of different type `%s'", archive_name(da));
+        myerror(ERRZIP, "cannot copy to archive of different type '%s'", archive_name(da));
         return -1;
     }
     if (file_status(archive_file(sa, sidx)) == STATUS_BADDUMP) {

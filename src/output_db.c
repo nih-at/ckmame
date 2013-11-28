@@ -278,7 +278,7 @@ output_db_game(output_context_t *out, game_t *g)
     ctx = (output_context_db_t *)out;
 
     if ((g2=romdb_read_game(ctx->db, game_name(g))) != NULL) {
-	myerror(ERRDEF, "duplicate game ``%s'' skipped", game_name(g));
+	myerror(ERRDEF, "duplicate game '%s' skipped", game_name(g));
 	game_free(g2);
 	return -1;
     }
@@ -308,7 +308,7 @@ output_db_game(output_context_t *out, game_t *g)
     }
     
     if (romdb_write_game(ctx->db, g) != 0) {
-	myerror(ERRDB, "can't write game `%s' to db", game_name(g));
+	myerror(ERRDB, "can't write game '%s' to db", game_name(g));
 	return -1;
     }
 

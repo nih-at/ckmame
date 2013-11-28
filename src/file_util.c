@@ -94,7 +94,7 @@ link_or_copy(const char *old, const char *new)
     if (link(old, new) < 0) {
 	if (copy_file(old, new, 0, -1) < 0) {
 	    seterrinfo(old, NULL);
-	    myerror(ERRFILESTR, "cannot link to `%s'", new);
+	    myerror(ERRFILESTR, "cannot link to '%s'", new);
 	    return -1;
 	}
     }
@@ -122,7 +122,7 @@ rename_or_move(const char *old, const char *new)
     if (rename(old, new) < 0) {
 	if (copy_file(old, new, 0, -1) < 0) {
 	    seterrinfo(old, NULL);
-	    myerror(ERRFILESTR, "cannot rename to `%s'", new);
+	    myerror(ERRFILESTR, "cannot rename to '%s'", new);
 	    return -1;
 	}
 	unlink(old);

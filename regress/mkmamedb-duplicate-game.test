@@ -5,4 +5,4 @@ args -o mkmamedb-test.db mamedb.txt mkmamedb-lost-parent-ok.txt
 file mamedb.txt mamedb.txt mamedb.txt
 file mkmamedb-lost-parent-ok.txt mkmamedb-lost-parent-ok.txt mkmamedb-lost-parent-ok.txt
 file-new mkmamedb-test.db mkmamedb-duplicate-game.dump
-stderr duplicate game ``clone-8'' skipped
+stderr duplicate game 'clone-8' skipped

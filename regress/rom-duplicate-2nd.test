@@ -3,6 +3,6 @@ return 0
 args -FKLivc 2-44
 file roms/2-44.zip 1-4-2.zip 2-44-ok.zip
 stdout In game 2-44:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/2-44.zip'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/2-44.zip'
 stdout rom  04-2.rom      size       4  crc d87f7e0c: correct
-stdout roms/2-44.zip: add `roms/2-44.zip/04-2.rom' as `04.rom'
+stdout roms/2-44.zip: add 'roms/2-44.zip/04-2.rom' as `04.rom'

@@ -75,13 +75,13 @@ main(int argc, char *argv[])
     seterrinfo(fname, NULL);
 
     if (stat(fname, &st) != 0) {
-	myerror(ERRSTR, "can't stat database `%s'", fname);
+	myerror(ERRSTR, "can't stat database '%s'", fname);
 	exit(1);
     }
 
     if (sqlite3_open(fname, &db) != SQLITE_OK) {
 	/* seterrdb(db); */
-	myerror(ERRDB, "can't open database `%s'", fname);
+	myerror(ERRDB, "can't open database '%s'", fname);
 	sqlite3_close(db);
 	exit(1);
     }
@@ -89,7 +89,7 @@ main(int argc, char *argv[])
     /* seterrdb(db); */
     
     if ((ret=dump_db(db)) < 0)
-	myerror(ERRDB, "can't dump database `%s'", fname);
+	myerror(ERRDB, "can't dump database '%s'", fname);
 
     sqlite3_close(db);
 

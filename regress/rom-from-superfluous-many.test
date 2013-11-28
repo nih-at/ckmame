@@ -31,135 +31,135 @@ file-new roms/zero.zip zero-ok.zip
 file-new roms/zerobadcrc.zip zero-ok.zip
 file roms/108-5.chd 108-5.chd 108-5.chd
 stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4-ok.zip'
-stdout roms/1-4.zip: add `roms/1-4-ok.zip/04.rom' as `04.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip'
+stdout roms/1-4.zip: add 'roms/1-4-ok.zip/04.rom' as `04.rom'
 stdout In game 1-8:
-stdout rom  08.rom        size       8  crc 3656897d: is in `roms/1-8-ok.zip'
-stdout roms/1-8.zip: add `roms/1-8-ok.zip/08.rom' as `08.rom'
+stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8-ok.zip'
+stdout roms/1-8.zip: add 'roms/1-8-ok.zip/08.rom' as `08.rom'
 stdout In game nogoodclone:
 stdout game nogoodclone                             : not a single rom found
 stdout In game 1-8a:
 stdout game 1-8a                                    : not a single rom found
 stdout In game 2-44:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
-stdout rom  04-2.rom      size       4  crc d87f7e0c: is in `roms/1-4.zip'
-stdout roms/2-44.zip: add `roms/1-4.zip/04.rom' as `04.rom'
-stdout roms/2-44.zip: add `roms/1-4.zip/04.rom' as `04-2.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip'
+stdout rom  04-2.rom      size       4  crc d87f7e0c: is in 'roms/1-4.zip'
+stdout roms/2-44.zip: add 'roms/1-4.zip/04.rom' as `04.rom'
+stdout roms/2-44.zip: add 'roms/1-4.zip/04.rom' as `04-2.rom'
 stdout In game 2-48:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
-stdout rom  08.rom        size       8  crc 3656897d: is in `roms/1-8.zip'
-stdout roms/2-48.zip: add `roms/1-4.zip/04.rom' as `04.rom'
-stdout roms/2-48.zip: add `roms/1-8.zip/08.rom' as `08.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip'
+stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip'
+stdout roms/2-48.zip: add 'roms/1-4.zip/04.rom' as `04.rom'
+stdout roms/2-48.zip: add 'roms/1-8.zip/08.rom' as `08.rom'
 stdout In game 2-4a:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
-stdout rom  0a.rom        size      10  crc 0b4a4cde: is in `roms/1-a-ok.zip'
-stdout roms/2-4a.zip: add `roms/1-4.zip/04.rom' as `04.rom'
-stdout roms/2-4a.zip: add `roms/1-a-ok.zip/0a.rom' as `0a.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip'
+stdout rom  0a.rom        size      10  crc 0b4a4cde: is in 'roms/1-a-ok.zip'
+stdout roms/2-4a.zip: add 'roms/1-4.zip/04.rom' as `04.rom'
+stdout roms/2-4a.zip: add 'roms/1-a-ok.zip/0a.rom' as `0a.rom'
 stdout In game baddump:
-stdout rom  bad.rom       size       3  bad dump    : is in `roms/baddump-ok.zip'
-stdout roms/baddump.zip: add `roms/baddump-ok.zip/bad.rom' as `bad.rom'
+stdout rom  bad.rom       size       3  bad dump    : is in 'roms/baddump-ok.zip'
+stdout roms/baddump.zip: add 'roms/baddump-ok.zip/bad.rom' as `bad.rom'
 stdout In game deadbeef:
 stdout game deadbeef                                : not a single rom found
 stdout In game deadbeefchild:
 stdout rom  deadbeef      size       8  crc deadbeef: missing
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
-stdout roms/deadbeefchild.zip: add `roms/1-4.zip/04.rom' as `04.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip'
+stdout roms/deadbeefchild.zip: add 'roms/1-4.zip/04.rom' as `04.rom'
 stdout In game deadclonedbeef:
 stdout game deadclonedbeef                          : not a single rom found
 stdout In game dir-in-rom-name:
-stdout rom  some/path/to/file.rom  size       4  crc d87f7e0c: is in `roms/1-4.zip'
-stdout roms/dir-in-rom-name.zip: add `roms/1-4.zip/04.rom' as `some/path/to/file.rom'
+stdout rom  some/path/to/file.rom  size       4  crc d87f7e0c: is in 'roms/1-4.zip'
+stdout roms/dir-in-rom-name.zip: add 'roms/1-4.zip/04.rom' as `some/path/to/file.rom'
 stdout In game disk:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip'
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
-stdout roms/disk.zip: add `roms/1-4.zip/04.rom' as `04.rom'
+stdout roms/disk.zip: add 'roms/1-4.zip/04.rom' as `04.rom'
 stdout In game diskchild:
 stdout game diskchild                               : correct
 stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
 stdout In game disk-2:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip'
 stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
-stdout roms/disk-2.zip: add `roms/1-4.zip/04.rom' as `04.rom'
+stdout roms/disk-2.zip: add 'roms/1-4.zip/04.rom' as `04.rom'
 stdout In game disk-3:
 stdout game disk-3                                  : correct
 stdout disk 512v5         sha1 cf37d50e886519c332dcfe84440f1f085b98c634: missing
 stdout In game disk-nogood:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip'
 stdout disk 108-5         no good dump              : exists
-stdout roms/disk-nogood.zip: add `roms/1-4.zip/04.rom' as `04.rom'
+stdout roms/disk-nogood.zip: add 'roms/1-4.zip/04.rom' as `04.rom'
 stdout In game disk-nogood2:
-stdout rom  08.rom        size       8  crc 3656897d: is in `roms/1-8.zip'
+stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip'
 stdout disk 208-7         no good dump              : missing
-stdout roms/disk-nogood2.zip: add `roms/1-8.zip/08.rom' as `08.rom'
+stdout roms/disk-nogood2.zip: add 'roms/1-8.zip/08.rom' as `08.rom'
 stdout In game many:
 stdout game many                                    : not a single rom found
 stdout In game nogood:
 stdout game nogood                                  : not a single rom found
 stdout In game nogood-2:
 stdout rom  04.rom        size       4  no good dump: missing
-stdout rom  08.rom        size       8  crc 3656897d: is in `roms/1-8.zip'
-stdout roms/nogood-2.zip: add `roms/1-8.zip/08.rom' as `08.rom'
+stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip'
+stdout roms/nogood-2.zip: add 'roms/1-8.zip/08.rom' as `08.rom'
 stdout In game norom:
 stdout game norom                                   : correct
 stdout In game parent-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
-stdout roms/parent-4.zip: add `roms/1-4.zip/04.rom' as `04.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip'
+stdout roms/parent-4.zip: add 'roms/1-4.zip/04.rom' as `04.rom'
 stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout rom  08.rom        size       8  crc 3656897d: is in `roms/1-8.zip'
-stdout roms/clone-8.zip: add `roms/1-8.zip/08.rom' as `08.rom'
+stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip'
+stdout roms/clone-8.zip: add 'roms/1-8.zip/08.rom' as `08.rom'
 stdout In game samptest:
 stdout game samptest                                : not a single rom found
 stdout In game samptest-child:
 stdout game samptest-child                          : not a single rom found
 stdout In game zero:
 stdout game zero                                    : not a single rom found
-stdout roms/zero.zip: create empty file `zero'
+stdout roms/zero.zip: create empty file 'zero'
 stdout In game zero-4:
 stdout rom  zero          size       0  crc 00000000: missing
-stdout rom  04.rom        size       4  crc d87f7e0c: is in `roms/1-4.zip'
-stdout roms/zero-4.zip: create empty file `zero'
-stdout roms/zero-4.zip: add `roms/1-4.zip/04.rom' as `04.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip'
+stdout roms/zero-4.zip: create empty file 'zero'
+stdout roms/zero-4.zip: add 'roms/1-4.zip/04.rom' as `04.rom'
 stdout In game zerobadcrc:
 stdout game zerobadcrc                              : not a single rom found
-stdout roms/zerobadcrc.zip: create empty file `zero'
-stdout roms/1-4-ok.zip: delete used file `04.rom'
+stdout roms/zerobadcrc.zip: create empty file 'zero'
+stdout roms/1-4-ok.zip: delete used file '04.rom'
 stdout roms/1-4-ok.zip: remove empty archive
-stdout roms/1-8-ok.zip: delete used file `08.rom'
+stdout roms/1-8-ok.zip: delete used file '08.rom'
 stdout roms/1-8-ok.zip: remove empty archive
-stdout roms/1-a-ok.zip: delete used file `0a.rom'
+stdout roms/1-a-ok.zip: delete used file '0a.rom'
 stdout roms/1-a-ok.zip: remove empty archive
 stdout In archive roms/2-44-ok.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
 stdout file 04-2.rom      size       4  crc d87f7e0c: not used
-stdout roms/2-44-ok.zip: delete unused file `04.rom'
-stdout roms/2-44-ok.zip: delete unused file `04-2.rom'
+stdout roms/2-44-ok.zip: delete unused file '04.rom'
+stdout roms/2-44-ok.zip: delete unused file '04-2.rom'
 stdout roms/2-44-ok.zip: remove empty archive
 stdout In archive roms/2-48-ok.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
 stdout file 08.rom        size       8  crc 3656897d: not used
-stdout roms/2-48-ok.zip: delete unused file `04.rom'
-stdout roms/2-48-ok.zip: delete unused file `08.rom'
+stdout roms/2-48-ok.zip: delete unused file '04.rom'
+stdout roms/2-48-ok.zip: delete unused file '08.rom'
 stdout roms/2-48-ok.zip: remove empty archive
 stdout In archive roms/2-4a-ok.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
 stdout file 0a.rom        size      10  crc 0b4a4cde: not used
-stdout roms/2-4a-ok.zip: delete unused file `04.rom'
-stdout roms/2-4a-ok.zip: delete unused file `0a.rom'
+stdout roms/2-4a-ok.zip: delete unused file '04.rom'
+stdout roms/2-4a-ok.zip: delete unused file '0a.rom'
 stdout roms/2-4a-ok.zip: remove empty archive
-stdout roms/baddump-ok.zip: delete used file `bad.rom'
+stdout roms/baddump-ok.zip: delete used file 'bad.rom'
 stdout roms/baddump-ok.zip: remove empty archive
 stdout In archive roms/baddump-separate.zip:
 stdout file bad.rom       size       3  crc 148c7b71: not used
-stdout roms/baddump-separate.zip: delete unused file `bad.rom'
+stdout roms/baddump-separate.zip: delete unused file 'bad.rom'
 stdout roms/baddump-separate.zip: remove empty archive
 stdout In archive roms/zero-4-ok.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
 stdout file zero          size       0  crc 00000000: not used
-stdout roms/zero-4-ok.zip: delete unused file `04.rom'
-stdout roms/zero-4-ok.zip: delete unused file `zero'
+stdout roms/zero-4-ok.zip: delete unused file '04.rom'
+stdout roms/zero-4-ok.zip: delete unused file 'zero'
 stdout roms/zero-4-ok.zip: remove empty archive
 stdout In archive roms/zero-ok.zip:
 stdout file zero          size       0  crc 00000000: not used
-stdout roms/zero-ok.zip: delete unused file `zero'
+stdout roms/zero-ok.zip: delete unused file 'zero'
 stdout roms/zero-ok.zip: remove empty archive

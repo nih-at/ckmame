@@ -7,4 +7,4 @@ file-new needed/deadbeef-001.zip deadbeef.zip
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found
 stdout file deadbeef      size       8  crc deadbeef: needed elsewhere
-stdout roms/1-4.zip: save needed file `deadbeef'
+stdout roms/1-4.zip: save needed file 'deadbeef'

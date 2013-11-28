@@ -79,7 +79,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		return -1;
 
 	    if (fix_options & FIX_PRINT)
-		printf("%s: rename broken archive to `%s'\n", archive_name(a), new_name);
+		printf("%s: rename broken archive to '%s'\n", archive_name(a), new_name);
 	    if (rename_or_move(archive_name(a), new_name) < 0) {
 		free(new_name);
 		return -1;
@@ -104,7 +104,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		break;
 	    move = (fix_options & FIX_MOVE_UNKNOWN);
 	    if (fix_options & FIX_PRINT)
-		printf("%s: %s unknown file `%s'\n", archive_name(a), (move ? "mv" : "delete"), file_name(archive_file(a, i)));
+		printf("%s: %s unknown file '%s'\n", archive_name(a), (move ? "mv" : "delete"), file_name(archive_file(a, i)));
 
 	    if (move)
 		garbage_add(gb, i, false);
@@ -118,7 +118,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	    /* fallthrough */
 	case FS_SUPERFLUOUS:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete %s file `%s'\n", archive_name(a), (result_file(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"), file_name(archive_file(a, i)));
+		printf("%s: delete %s file '%s'\n", archive_name(a), (result_file(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"), file_name(archive_file(a, i)));
 
 	    /* TODO: handle error (how?) */
 	    archive_file_delete(a, i);
@@ -126,7 +126,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 
 	case FS_NEEDED:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: save needed file `%s'\n",
+		printf("%s: save needed file '%s'\n",
 		       archive_name(a),
 		       file_name(archive_file(a, i)));
 
@@ -247,7 +247,7 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 		       && match_disk_where(md) == FILE_EXTRA);
     
 	    if (fix_options & FIX_PRINT)
-		printf("%s `%s' to `%s'\n",
+		printf("%s '%s' to `%s'\n",
 		       do_copy ? "copy" : "rename",
 		       match_disk_name(md), fname);
 	    if (fix_options & FIX_DO) {
@@ -313,7 +313,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    if (file_size(r) == 0) {
 		/* create missing empty file */
 		if (fix_options & FIX_PRINT)
-		    printf("%s: create empty file `%s'\n",
+		    printf("%s: create empty file '%s'\n",
 			   archive_name(a), file_name(r));
 
 		/* TODO: handle error (how?) */
@@ -328,7 +328,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	case QU_LONG:
 	    if (a == afrom && (fix_options & FIX_MOVE_LONG)) {
 		if (fix_options & FIX_PRINT)
-		    printf("%s: mv long file `%s'\n",
+		    printf("%s: mv long file '%s'\n",
 			   archive_name(afrom),
 			   file_name(archive_file(afrom, match_index(m))));
 		if (garbage_add(gb, match_index(m), true) < 0)
@@ -336,7 +336,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    }
 	    
 	    if (fix_options & FIX_PRINT)
-		printf("%s: extract (offset %" PRIdoff ", size %" PRIu64 ") from `%s' to `%s'\n",
+		printf("%s: extract (offset %" PRIdoff ", size %" PRIu64 ") from '%s' to `%s'\n",
                        archive_name(a), PRIoff_cast match_offset(m), file_size(r), file_name(archive_file(afrom, match_index(m))), file_name(r));
 
 	    if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size(r), r) < 0)
@@ -345,7 +345,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 #if 0
 	    if (a == afrom) {
 		if (!(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
-		    printf("%s: delete long file `%s'\n",
+		    printf("%s: delete long file '%s'\n",
 			   archive_name(a), file_name(r));
 		archive_file_delete(a, i);
 	    }
@@ -354,7 +354,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 
 	case QU_NAMEERR:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: rename `%s' to `%s'\n", archive_name(a),
+		printf("%s: rename '%s' to `%s'\n", archive_name(a),
 		       file_name(archive_file(a, match_index(m))),
 		       file_name(r));
 
@@ -364,7 +364,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 
 	case QU_COPIED:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: add `%s/%s' as `%s'\n",
+		printf("%s: add '%s/%s' as `%s'\n",
 		       archive_name(a), archive_name(afrom),
 		       file_name(archive_file(afrom, match_index(m))),
 		       file_name(r));

@@ -123,7 +123,7 @@ main(int argc, char **argv)
 	case 'C':
 	    hashtypes = hash_types_from_str(optarg);
 	    if (hashtypes == 0) {
-		fprintf(stderr, "%s: illegal hash types `%s'\n", getprogname(), optarg);
+		fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), optarg);
 		exit(1);
 	    }
 	    break;
@@ -149,14 +149,14 @@ main(int argc, char **argv)
 
     if (detector_name) {
 	if ((detector=detector_parse(detector_name)) == NULL) {
-	    myerror(ERRSTR, "cannot parse detector `%s'", detector_name);
+	    myerror(ERRSTR, "cannot parse detector '%s'", detector_name);
 	    exit(1);
 	}
     }
 
     if ((db=romdb_open(dbname, DBH_READ)) == NULL) {
 	if (detector == 0) {
-	    myerror(ERRSTR, "can't open database `%s'", dbname);
+	    myerror(ERRSTR, "can't open database '%s'", dbname);
 	    exit(1);
 	}
     }

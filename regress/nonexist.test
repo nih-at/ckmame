@@ -1,4 +1,4 @@
 description testing non-existing game
 return 0
 args -FKLvc nosuchgame
-stderr game `nosuchgame' unknown
+stderr game 'nosuchgame' unknown

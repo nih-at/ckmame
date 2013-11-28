@@ -7,12 +7,12 @@ file-new unknown/2-48.zip 2-48-long.zip
 file-new unknown/1-8.zip 1-8-long.zip
 stdout In game 1-8:
 stdout rom  08.rom        size       8  crc 3656897d: too long, valid subsection at byte 0 (16)
-stdout roms/1-8.zip: mv long file `08.rom'
-stdout roms/1-8.zip: extract (offset 0, size 8) from `08.rom' to `08.rom'
+stdout roms/1-8.zip: mv long file '08.rom'
+stdout roms/1-8.zip: extract (offset 0, size 8) from '08.rom' to `08.rom'
 stdout In game 2-48:
 stdout rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 0 (8)
 stdout rom  08.rom        size       8  crc 3656897d: too long, valid subsection at byte 8 (16)
-stdout roms/2-48.zip: mv long file `04.rom'
-stdout roms/2-48.zip: extract (offset 0, size 4) from `04.rom' to `04.rom'
-stdout roms/2-48.zip: mv long file `08.rom'
-stdout roms/2-48.zip: extract (offset 8, size 8) from `08.rom' to `08.rom'
+stdout roms/2-48.zip: mv long file '04.rom'
+stdout roms/2-48.zip: extract (offset 0, size 4) from '04.rom' to `04.rom'
+stdout roms/2-48.zip: mv long file '08.rom'
+stdout roms/2-48.zip: extract (offset 8, size 8) from '08.rom' to `08.rom'

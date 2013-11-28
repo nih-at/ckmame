@@ -54,7 +54,7 @@ my_zip_open(const char *name, int flags)
     z = zip_open(name, flags, &err);
     if (z == NULL) {
 	zip_error_to_str(errbuf, sizeof(errbuf), err, errno);
-	myerror(ERRDEF, "error %s zip archive `%s': %s",
+	myerror(ERRDEF, "error %s zip archive '%s': %s",
 		(flags & ZIP_CREATE ? "creating" : "opening"), name,
 		errbuf);
     }

@@ -75,7 +75,7 @@ output_datafile_xml_new(const char *fname)
     }
     else {
 	if ((f=fopen(fname, "w")) == NULL) {
-	    myerror(ERRDEF, "cannot create `%s': %s", fname, strerror(errno));
+	    myerror(ERRDEF, "cannot create '%s': %s", fname, strerror(errno));
 	    free(ctx);
 	    return NULL;
 	}

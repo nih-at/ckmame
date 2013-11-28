@@ -173,7 +173,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 	    }
 	    
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete %s file `%s'\n",
+		printf("%s: delete %s file '%s'\n",
 		       archive_name(a), reason,
 		       file_name(archive_file(a, i)));
 	    archive_file_delete(a, i);
@@ -187,7 +187,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 	case FS_NEEDED:
 	    if (flags & CLEANUP_NEEDED) {
 		if (fix_options & FIX_PRINT)
-		    printf("%s: save needed file `%s'\n",
+		    printf("%s: save needed file '%s'\n",
 			   archive_name(a), file_name(archive_file(a, i)));
 		/* TODO: handle error (how?) */
 		save_needed(a, i, fix_options & FIX_DO);
@@ -198,7 +198,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 	    if (flags & CLEANUP_UNKNOWN) {
 		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT)
-		    printf("%s: %s unknown file `%s'\n",
+		    printf("%s: %s unknown file '%s'\n",
 			   archive_name(a),
 			   (move ? "mv" : "delete"),
 			   file_name(archive_file(a, i)));

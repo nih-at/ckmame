@@ -6,4 +6,4 @@ file-new unknown/parent-4.zip 1-c-ok.zip
 stdout In game parent-4:
 stdout game parent-4                                : correct
 stdout file 0c.rom        size      12  crc 0623c932: unknown
-stdout roms/parent-4.zip: mv unknown file `0c.rom'
+stdout roms/parent-4.zip: mv unknown file '0c.rom'

@@ -356,7 +356,7 @@ main(int argc, char **argv)
     }
 
     if ((db=romdb_open(dbname, DBH_READ)) == NULL) {
-	myerror(ERRSTR, "can't open database `%s'", dbname);
+	myerror(ERRSTR, "can't open database '%s'", dbname);
 	exit(1);
     }
     /* TODO: check for errors other than ENOENT */
@@ -367,7 +367,7 @@ main(int argc, char **argv)
 
 	if ((list=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	    myerror(ERRDEF,
-		    "list of games not found in database `%s'", dbname);
+		    "list of games not found in database '%s'", dbname);
 	    exit(1);
 	}
 
@@ -395,7 +395,7 @@ main(int argc, char **argv)
 		if (parray_index_sorted(list, b, strcmp) >= 0)
 		    tree_add(check_tree, b);
 		else
-		    myerror(ERRDEF, "game `%s' unknown", b);
+		    myerror(ERRDEF, "game '%s' unknown", b);
 	    }
 
 	    fclose(f);
@@ -410,7 +410,7 @@ main(int argc, char **argv)
 		    if (parray_index_sorted(list, argv[i], strcmp) >= 0)
 			tree_add(check_tree, argv[i]);
 		    else
-			myerror(ERRDEF, "game `%s' unknown", argv[i]);
+			myerror(ERRDEF, "game '%s' unknown", argv[i]);
 		}
 		else {
 		    found = 0;
@@ -422,7 +422,7 @@ main(int argc, char **argv)
 		    }
 		    if (!found)
 			myerror(ERRDEF,
-				"no game matching `%s' found", argv[i]);
+				"no game matching '%s' found", argv[i]);
 		}
 	    }
 	}

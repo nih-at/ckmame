@@ -174,7 +174,7 @@ diagnostics_disks(const game_t *game, const result_t *res)
 
 	case QU_COPIED:
 	    if (output_options & WARN_ELSEWHERE)
-		warn_disk(d, "is at `%s'", match_disk_name(md));
+		warn_disk(d, "is at '%s'", match_disk_name(md));
 	    break;
 
 	case QU_NAMEERR:
@@ -216,7 +216,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 		}
 	    }
 	    if (all_same) {
-		warn_rom(NULL, "old in `%s'",
+		warn_rom(NULL, "old in '%s'",
 			 match_old_game(result_rom(res, 0)));
 		return;
 	    }
@@ -280,7 +280,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 	    
 	case QU_COPIED:
 	    if (output_options & WARN_ELSEWHERE)
-		warn_rom(r, "is in `%s'", archive_name(match_archive(m)));
+		warn_rom(r, "is in '%s'", archive_name(match_archive(m)));
 	    break;
 	    
 	case QU_INZIP:
@@ -301,7 +301,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 	    
 	case QU_OLD:
 	    if (output_options & WARN_CORRECT)
-		warn_rom(r, "old in `%s'", match_old_game(m));
+		warn_rom(r, "old in '%s'", match_old_game(m));
 	    break;
 	case QU_NOHASH:
 	    /* only used for disks */

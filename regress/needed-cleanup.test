@@ -7,5 +7,5 @@ stdout In game clone-8:
 stdout rom  08.rom        size       8  crc 3656897d: missing
 stdout In archive needed/d87f7e0c-000.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
-stdout needed/d87f7e0c-000.zip: delete unused file `04.rom'
+stdout needed/d87f7e0c-000.zip: delete unused file '04.rom'
 stdout needed/d87f7e0c-000.zip: remove empty archive

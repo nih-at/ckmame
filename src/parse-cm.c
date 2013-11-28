@@ -162,7 +162,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		    }
 		    /*
 		      else
-		      myerror(ERRFILE, "%d: ignoring token `%s'", ctx->lineno, p);
+		      myerror(ERRFILE, "%d: ignoring token '%s'", ctx->lineno, p);
 		    */
 		}
 
@@ -206,7 +206,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		    }
 		    /*
 		      else
-		      myerror(ERRFILE, "%d: ignoring token `%s'", ctx->lineno, p);
+		      myerror(ERRFILE, "%d: ignoring token '%s'", ctx->lineno, p);
 		    */
 		}
 		parse_file_end(ctx, TYPE_DISK);

@@ -252,7 +252,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
         || (didx >= 0 ? zip_replace(archive_zip(da), didx, source) : zip_add(archive_zip(da), dname, source)) < 0) {
         zip_source_free(source);
         seterrinfo(archive_name(da), dname);
-        myerror(ERRZIPFILE, "error adding `%s' from `%s': %s", file_name(archive_file(sa, sidx)), archive_name(sa), zip_strerror(archive_zip(da)));
+        myerror(ERRZIPFILE, "error adding '%s' from `%s': %s", file_name(archive_file(sa, sidx)), archive_name(sa), zip_strerror(archive_zip(da)));
         return -1;
     }
     
@@ -268,7 +268,7 @@ op_file_delete(archive_t *a, int idx)
     
     if (zip_delete(archive_zip(a), idx) < 0) {
 	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot delete `%s': %s", zip_get_name(archive_zip(a), idx, 0), zip_strerror(archive_zip(a)));
+	myerror(ERRZIP, "cannot delete '%s': %s", zip_get_name(archive_zip(a), idx, 0), zip_strerror(archive_zip(a)));
 	return -1;
     }
     
@@ -287,7 +287,7 @@ op_file_open(archive_t *a, int idx)
 
     if ((zf = zip_fopen_index(za, idx, 0)) == NULL) {
 	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot open `%s': %s", file_name(archive_file(a, idx)), zip_strerror(za));
+	myerror(ERRZIP, "cannot open '%s': %s", file_name(archive_file(a, idx)), zip_strerror(za));
 	return NULL;
     }
 
@@ -303,7 +303,7 @@ op_file_rename(archive_t *a, int idx, const char *name)
     
     if (my_zip_rename(archive_zip(a), idx, name) < 0) {
 	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot rename `%s' to `%s': %s", zip_get_name(archive_zip(a), idx, 0), name, zip_strerror(archive_zip(a)));
+	myerror(ERRZIP, "cannot rename '%s' to `%s': %s", zip_get_name(archive_zip(a), idx, 0), name, zip_strerror(archive_zip(a)));
 	return -1;
     }
     

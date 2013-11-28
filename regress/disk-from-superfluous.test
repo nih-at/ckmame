@@ -6,5 +6,5 @@ file-del roms/108-5a.chd 108-5.chd
 file-new roms/108-5.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at `roms/108-5a.chd'
-stdout rename `roms/108-5a.chd' to `roms/108-5.chd'
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/108-5a.chd'
+stdout rename 'roms/108-5a.chd' to `roms/108-5.chd'

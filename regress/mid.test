@@ -5,5 +5,5 @@ file roms/1-4.zip 1-4-mid.zip 1-4-ok.zip
 file-new unknown/1-4.zip 1-4-mid.zip
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 4 (16)
-stdout roms/1-4.zip: mv long file `04.rom'
-stdout roms/1-4.zip: extract (offset 4, size 4) from `04.rom' to `04.rom'
+stdout roms/1-4.zip: mv long file '04.rom'
+stdout roms/1-4.zip: extract (offset 4, size 4) from '04.rom' to `04.rom'

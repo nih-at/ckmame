@@ -177,12 +177,12 @@ ensure_dir(const char *name, int strip_fname)
     ret = 0;
     if (stat(name, &st) < 0) {
 	if (mkdir(name, 0777) < 0) {
-	    myerror(ERRSTR, "mkdir `%s' failed", name);
+	    myerror(ERRSTR, "mkdir '%s' failed", name);
 	    ret = -1;
 	}
     }
     else if (!(st.st_mode & S_IFDIR)) {
-	myerror(ERRDEF, "`%s' is not a directory", name);
+	myerror(ERRDEF, "'%s' is not a directory", name);
 	ret = -1;
     }
     

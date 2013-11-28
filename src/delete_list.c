@@ -93,7 +93,7 @@ delete_list_execute(delete_list_t *dl)
 	}
 	if (a) {
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete used file `%s'\n",
+		printf("%s: delete used file '%s'\n",
 		       name,
 		       file_name(archive_file(a, file_location_index(fbh))));
 	    /* TODO: check for error */
