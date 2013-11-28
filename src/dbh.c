@@ -69,11 +69,11 @@ dbh_check_version(dbh_t *db)
     int version;
 
     if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_VERSION)) == NULL) {
-	/* XXX */
+	/* TODO */
 	return -1;
     }
     if (sqlite3_step(stmt) != SQLITE_ROW) {
-	/* XXX */
+	/* TODO */
 	return -1;
     }
 
@@ -96,7 +96,7 @@ dbh_close(dbh_t *db)
     if (db == NULL)
 	return 0;
 
-    /* XXX finalize/free statements */
+    /* TODO finalize/free statements */
 
     if (dbh_db(db))
 	return sqlite3_close(dbh_db(db));
@@ -118,7 +118,7 @@ dbh_error(dbh_t *db)
     if (db == NULL)
 	return strerror(ENOMEM);
 
-    /* XXX */
+    /* TODO */
     if (db->dbh_errno == DBH_ENOERR)
 	return sqlite3_errmsg(dbh_db(db));
 
@@ -158,20 +158,20 @@ dbh_open(const char *name, int mode)
     }
 
     if (sqlite3_open(name, &dbh_db(db)) != SQLITE_OK) {
-	/* XXX: errno? */
+	/* TODO: errno? */
 	dbh_close(db);
 	return NULL;
     }
 
     if (sqlite3_exec(dbh_db(db), PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
-	/* XXX: errno? */
+	/* TODO: errno? */
 	dbh_close(db);
 	return NULL;
     }
 
     if (DBH_FLAGS(mode) == DBH_NEW) {
 	if (init_db(db) < 0) {
-	    /* XXX: errno? */
+	    /* TODO: errno? */
 	    dbh_close(db);
 	    unlink(name);
 	    return NULL;

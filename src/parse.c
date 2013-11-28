@@ -253,7 +253,7 @@ parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy,
     else {
 	file_name(ctx->r) = xstrdup(attr);
 
-	/* XXX: warn about broken dat file? */
+	/* TODO: warn about broken dat file? */
 	p = file_name(ctx->r);
 	while ((p=strchr(p, '\\')))
 	    *(p++) = '/';
@@ -277,7 +277,7 @@ parse_file_size(parser_context_t *ctx, filetype_t ft, int dummy,
 	return -1;
     }
 
-    /* XXX: check for strol errors */
+    /* TODO: check for strol errors */
     file_size(ctx->r) = strtol(attr, NULL, 0);
 
     return 0;
@@ -608,7 +608,7 @@ rom_end(parser_context_t *ctx, filetype_t ft)
     for (j=0; j<n && !deleted; j++) {
 	r2 = game_file(ctx->g, ft, j);
 	if (file_compare_sc(r, r2)) {
-	    /* XXX: merge in additional hash types? */
+	    /* TODO: merge in additional hash types? */
 	    if (file_compare_n(r, r2)) {
 		deleted = 1;
 		break;

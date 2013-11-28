@@ -196,7 +196,7 @@ archive_free(archive_t *a)
 	return 0;
 
     if (a->flags & ARCHIVE_IFL_MODIFIED) {
-	/* XXX: warn about freeing modified archive */
+	/* TODO: warn about freeing modified archive */
     }
 
     ret = archive_close(a);
@@ -227,7 +227,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     int i, id;
 
     if ((a=memdb_get_ptr(name)) != 0) {
-	/* XXX: check for compatibility of a->flags and flags */
+	/* TODO: check for compatibility of a->flags and flags */
 	a->refcount++;
 	return a;
     }
@@ -259,7 +259,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
 
     case TYPE_DISK:
 	archive_filetype(a) = TYPE_DISK;
-	/* XXX */
+	/* TODO */
 	break;
 
     default:
@@ -268,7 +268,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     }
 
     for (i=0; i<archive_num_files(a); i++) {
-	/* XXX: file_state(archive_file(a, i)) = FILE_UNKNOWN; */
+	/* TODO: file_state(archive_file(a, i)) = FILE_UNKNOWN; */
 	file_where(archive_file(a, i)) = FILE_INZIP;
     }
 

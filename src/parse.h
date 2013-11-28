@@ -67,7 +67,7 @@ struct parser_context {
 
     /* current source */
     parser_source_t *ps;
-    /* XXX: move out of context */
+    /* TODO: move out of context */
     int lineno;			/* current line number in input file */
 
     /* state */

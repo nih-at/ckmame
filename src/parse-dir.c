@@ -68,7 +68,7 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
 
     while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
 	if (ds == DIR_ERROR) {
-	    /* XXX: handle error */
+	    /* TODO: handle error */
 	    continue;
 	}
 	switch (name_type(b)) {

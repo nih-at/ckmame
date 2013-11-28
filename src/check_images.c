@@ -69,7 +69,7 @@ check_images(images_t *im, const char *gamename, result_t *res)
 	    continue;
 
 	if ((hashes_types(disk_hashes(d)) & romdb_hashtypes(db, TYPE_DISK)) != romdb_hashtypes(db, TYPE_DISK)) {
-	    /* XXX: compute missing hashes */
+	    /* TODO: compute missing hashes */
 	}
 
 	if (find_disk_in_old(d, NULL) == FIND_EXISTS) {
@@ -103,7 +103,7 @@ check_images(images_t *im, const char *gamename, result_t *res)
 	    break;
 
 	case FIND_ERROR:
-	    /* XXX: how to handle? */
+	    /* TODO: how to handle? */
 	    break;
 	}
 	

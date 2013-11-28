@@ -150,7 +150,7 @@ op_close(archive_t *a)
 	/* error closing, so zip is still valid */
 	myerror(ERRZIP, "error closing zip: %s", zip_strerror(archive_zip(a)));
         
-	/* XXX: really do this here? */
+	/* TODO: really do this here? */
 	/* discard all changes and close zipfile */
 	zip_discard(archive_zip(a));
 	archive_zip(a) = NULL;

@@ -55,8 +55,8 @@ delete_list_t *extra_delete_list = NULL;
 parray_t *extra_list = NULL;
 delete_list_t *needed_delete_list = NULL;
 delete_list_t *superfluous_delete_list = NULL;
-char *needed_dir = "needed";	/* XXX: proper value, move elsewhere */
-char *unknown_dir = "unknown";	/* XXX: proper value, move elsewhere */
+char *needed_dir = "needed";	/* TODO: proper value, move elsewhere */
+char *unknown_dir = "unknown";	/* TODO: proper value, move elsewhere */
 
 
 
@@ -215,7 +215,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_f
 
     while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
 	if (ds == DIR_ERROR) {
-	    /* XXX: handle error */
+	    /* TODO: handle error */
 	    continue;
 	}
 	switch ((nt=name_type(b))) {

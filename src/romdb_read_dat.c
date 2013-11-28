@@ -50,7 +50,7 @@ romdb_read_dat(romdb_t *db)
     int ret;
 
     if ((stmt=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT)) == NULL) {
-	/* XXX */
+	/* TODO */
 	return NULL;
     }
 
@@ -65,7 +65,7 @@ romdb_read_dat(romdb_t *db)
     }
 
     if (ret != SQLITE_DONE) {
-	/* XXX */
+	/* TODO */
 	dat_free(dat);
 	return NULL;
     }

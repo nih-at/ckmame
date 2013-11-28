@@ -83,7 +83,7 @@ warn_file(const file_t *r, const char *fmt, ...)
 
     warn_ensure_header();
     
-    /* XXX */
+    /* TODO */
     printf("file %-12s  size %7" PRIu64 "  crc %.8lx: ",
 	   file_name(r), file_size(r), hashes_crc(file_hashes(r)));
     
@@ -132,7 +132,7 @@ warn_rom(const file_t *r, const char *fmt, ...)
 	    sprintf(buf, "size %7" PRIu64 "  ", file_size(r));
 	    p = buf + strlen(buf);
 	    
-	    /* XXX */
+	    /* TODO */
 	    if (hashes_has_type(file_hashes(r), HASHES_TYPE_CRC)) {
 		switch (file_status(r)) {
 		case STATUS_OK:
@@ -153,7 +153,7 @@ warn_rom(const file_t *r, const char *fmt, ...)
 	fputs(buf, stdout);
     }
     else {
-	/* XXX: use warn_game */
+	/* TODO: use warn_game */
 	printf("game %-40s: ", header_name);
     }
     

@@ -91,7 +91,7 @@ list_directory(const char *dirname, const char *dbname)
 
     while ((err=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
 	if (err == DIR_ERROR) {
-	    /* XXX: handle error */
+	    /* TODO: handle error */
 	    continue;
 	}
 

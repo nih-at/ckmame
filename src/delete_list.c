@@ -87,7 +87,7 @@ delete_list_execute(delete_list_t *dl)
 	    }
 
 	    name = file_location_name(fbh);
-	    /* XXX: don't hardcode location */
+	    /* TODO: don't hardcode location */
 	    if ((a=archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL)
 		ret = -1;
 	}
@@ -96,7 +96,7 @@ delete_list_execute(delete_list_t *dl)
 		printf("%s: delete used file `%s'\n",
 		       name,
 		       file_name(archive_file(a, file_location_index(fbh))));
-	    /* XXX: check for error */
+	    /* TODO: check for error */
 	    archive_file_delete(a, file_location_index(fbh));
 	}
     }

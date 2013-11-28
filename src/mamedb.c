@@ -126,7 +126,7 @@ main(int argc, char **argv)
     ret = 0;
 
     if ((cmd->flags & CMD_FL_NODB) == 0) {
-	/* XXX: use proper mode */
+	/* TODO: use proper mode */
 	if ((db=dbh_open(dbname, DBL_WRITE)) == NULL) {
 	    myerror(ERRDB, "can't open database `%s'", dbname);
 	    exit(1);

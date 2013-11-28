@@ -81,7 +81,7 @@ mydirname(const char *fname)
     char *d;
     size_t l;
 
-    /* XXX: ignore trailing slashes */
+    /* TODO: ignore trailing slashes */
 
     if ((p=strrchr(fname, '/')) == NULL)
 	return xstrdup(".");

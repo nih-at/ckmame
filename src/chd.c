@@ -66,7 +66,7 @@
 static uint32_t v4_compressors[] = {
     0,
     CHD_CODEC_ZLIB,
-    CHD_CODEC_ZLIB, /* XXX: zlib plus */
+    CHD_CODEC_ZLIB, /* TODO: zlib plus */
     CHD_CODEC_AVHUFF
 };
 
@@ -105,7 +105,7 @@ chd_close(struct chd *chd)
 struct chd_metadata_entry *
 chd_get_metadata_list(struct chd *chd)
 {
-    /* XXX: handle/propagate error */
+    /* TODO: handle/propagate error */
     read_meta_headers(chd);
 
     return chd->meta;
@@ -215,12 +215,12 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 	chd->z.avail_in = n;
 	chd->z.next_out = (Bytef *)b;
 	chd->z.avail_out = chd->hunk_len;
-	/* XXX: should use Z_FINISH, but that returns Z_BUF_ERROR */
+	/* TODO: should use Z_FINISH, but that returns Z_BUF_ERROR */
 	if ((err=inflate(&chd->z, 0)) != Z_OK && err != Z_STREAM_END) {
 	    chd->error = CHD_ERR_ZLIB;
 	    return -1;
 	}
-	/* XXX: chd->z.avail_out should be 0 */
+	/* TODO: chd->z.avail_out should be 0 */
 	n = chd->hunk_len - chd->z.avail_out;
 	break;
 
@@ -229,7 +229,7 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 	    chd->error = CHD_ERR_SEEK;
 	    return -1;
 	}
-	/* XXX: use chd->hunk_len instead? */
+	/* TODO: use chd->hunk_len instead? */
 	if ((n=fread(b, 1, chd->map[idx].length, chd->f)) < 0) {
 	    chd->error = CHD_ERR_READ;
 	    return -1;
@@ -251,7 +251,7 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 	break;
 
     case CHD_MAP_TYPE_SELF_REF:
-	/* XXX: check CRC here too? */
+	/* TODO: check CRC here too? */
 	return chd_read_hunk(chd, chd->map[idx].offset, b);
 
     case CHD_MAP_TYPE_PARENT_REF:
@@ -309,7 +309,7 @@ chd_read_range(struct chd *chd, unsigned char *b, int off, int len)
     int i, s, n;
     unsigned int copied, o2, l2;
 
-    /* XXX: error handling */
+    /* TODO: error handling */
 
     s = off/chd->hunk_len;
     n = (off+len+chd->hunk_len-1)/chd->hunk_len - s;
@@ -395,7 +395,7 @@ read_header(struct chd *chd)
     chd->flags = GET_UINT32(p);
     chd->compressors[0] = v4_compressors[GET_UINT32(p)];
 
-    /* XXX: check chd->hdr_length against expected value for version */
+    /* TODO: check chd->hdr_length against expected value for version */
 
     if (chd->version < 3) {
 	chd->hunk_len = GET_UINT32(p);
@@ -550,7 +550,7 @@ read_map(struct chd *chd)
 	}
 	p = b;
 
-	/* XXX: why? */
+	/* TODO: why? */
 	if (i == 1832 && chd->version < 3)
 	    chd->version = 3;
 
@@ -586,7 +586,7 @@ read_map_v5(struct chd *chd)
     chd->error = CHD_ERR_NOTSUP;
     
     if (chd->compressors[0] == 0) {
-	/* XXX: uncompressed map */
+	/* TODO: uncompressed map */
 
 	return -1;
     }

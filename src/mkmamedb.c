@@ -232,7 +232,7 @@ main(int argc, char **argv)
     }
 
 
-    /* XXX: handle errors */
+    /* TODO: handle errors */
     if (optind == argc)
 	process_stdin(exclude, &dat, out);
     else {

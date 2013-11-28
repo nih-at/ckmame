@@ -202,7 +202,7 @@ match_files(archive_t *a, test_t t, const file_t *r, match_t *m)
 		 ? (file_compare_n(r, ra))
 		 : (file_compare_m(r, ra)))
 		&& file_compare_sc(r, ra)) {
-		/* XXX: this is exceedingly ugly */
+		/* TODO: this is exceedingly ugly */
 		if ((hashes_cmp(file_hashes(r), file_hashes(ra))
 		     != HASHES_CMP_MATCH)
 		    && (!file_sh_is_set(ra, FILE_SH_DETECTOR)
@@ -296,7 +296,7 @@ update_game_status(const game_t *g, result_t *res)
 	    if (file_where(r) == FILE_INZIP)
 		all_own_dead = 0;
 	}
-	/* XXX: using output_options here is a bit of a hack,
+	/* TODO: using output_options here is a bit of a hack,
 	   but so is all of the result_game processing */
 	if (match_quality(m) != QU_OK
 	    && (file_status(r) != STATUS_NODUMP

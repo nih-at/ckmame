@@ -58,7 +58,7 @@ archive_commit(archive_t *a)
 	switch (file_where(archive_file(a, i))) {
             case FILE_DELETED:
                 if (ARCHIVE_IS_INDEXED(a)) {
-                    /* XXX: handle error (how?) */
+                    /* TODO: handle error (how?) */
                     memdb_file_delete(a, i, archive_is_writable(a));
                 }
                 
@@ -70,7 +70,7 @@ archive_commit(archive_t *a)
                 
             case FILE_ADDED:
                 if (ARCHIVE_IS_INDEXED(a)) {
-                    /* XXX: handle error (how?) */
+                    /* TODO: handle error (how?) */
                     memdb_file_insert(NULL, a, i);
                 }
                 file_where(archive_file(a, i)) = FILE_INZIP;
@@ -151,7 +151,7 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
     }
     if (start < 0 || (len != -1 && (len < 0 || (uint64_t)(start+len) > file_size(archive_file(sa, sidx))))) {
         seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
-        /* XXX: print off_t properly */
+        /* TODO: print off_t properly */
         myerror(ERRZIP, "invalid range (%ld, %ld)", (long)start, (long)len);
         return -1;
     }
@@ -176,13 +176,13 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
 
     if (archive_is_writable(da)) {
         if (sa->ops->file_copy(sa, sidx, da, replace ? didx : -1, dname, start, len) < 0) {
-	    /** \todo undo rename_to_unique? */	       
+	    /* TODO undo rename_to_unique? */	       
             return -1;
 	}
     }
 
     if (replace) {
-	/** \todo update archive_file(sa, sidx) */
+	/* TODO update archive_file(sa, sidx) */
     }
     else {
 	if (start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx))))
@@ -348,7 +348,7 @@ static int
 _copy_chd(archive_t *sa, int sidx, archive_t *da, const char *dname,
 	  off_t start, off_t len)
 {
-    /* XXX: build new name */
+    /* TODO: build new name */
     return link_or_copy(archive_name(sa), archive_name(da));
 }
 
@@ -368,7 +368,7 @@ _delete_chd(archive_t *a, int idx)
 static int
 _rename_chd(archive_t *a, int idx, const char *name)
 {
-    /* XXX */
+    /* TODO */
     return 0;
 }
 #endif

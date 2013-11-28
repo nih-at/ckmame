@@ -142,7 +142,7 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes)
 
 	if ((g=romdb_read_game(db, file_location_name(fbh))) == NULL
 	    || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
-	    /* XXX: internal error: db inconsistency */
+	    /* TODO: internal error: db inconsistency */
 	    ret = -1;
 	    continue;
 	}
@@ -303,7 +303,7 @@ tree_process(tree_t *tree, archive_t *child,
     if (fix_options & (FIX_DO|FIX_PRINT))
 	fix_game(g, child, images, res);
 
-    /* XXX: includes too much when rechecking */
+    /* TODO: includes too much when rechecking */
     if (file_type != TYPE_SAMPLE && fixdat)
 	write_fixdat_entry(g, child, images, res);
 

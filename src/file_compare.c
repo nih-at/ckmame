@@ -78,7 +78,7 @@ file_compare_sc(const file_t *fg, const file_t *fa)
 	if (hashes_types(file_hashes(fg)) == 0)
 	    return true;
 
-	/* XXX: don't hardcode CRC, doesn't work for disks */
+	/* TODO: don't hardcode CRC, doesn't work for disks */
 	if ((hashes_types(file_hashes(fg))
 	     & hashes_types(file_hashes_xxx(fa, i)) & HASHES_TYPE_CRC)
 	    && (hashes_crc(file_hashes(fg))

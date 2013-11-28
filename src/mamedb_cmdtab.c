@@ -106,8 +106,8 @@ cmd_t cmdtab[] = {
     { "remove",        cmd_remove,      0,           XX(REMOVE) },
 #endif
 
-    /* XXX: add/remove/edit single ROM */
-    /* XXX: change dat info */
+    /* TODO: add/remove/edit single ROM */
+    /* TODO: change dat info */
 };
 int ncmdtab = sizeof(cmdtab)/sizeof(cmdtab[0]);
 

@@ -67,9 +67,9 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	name = (char *)parray_get(list, i);
 	switch ((nt=name_type(name))) {
 	case NAME_ZIP:
-	    /* XXX: where? */
+	    /* TODO: where? */
 	    if ((a=archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL) {
-		/* XXX */
+		/* TODO */
 		continue;
 	    }
 	    res = result_new(NULL, a, NULL);
@@ -102,7 +102,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	case NAME_NOEXT:
 	    if ((im=images_new_name(name,
 			    nt==NAME_NOEXT ? DISK_FL_QUIET : 0)) == NULL) {
-		/* XXX */
+		/* TODO */
 		continue;
 	    }
 
@@ -189,7 +189,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 		if (fix_options & FIX_PRINT)
 		    printf("%s: save needed file `%s'\n",
 			   archive_name(a), file_name(archive_file(a, i)));
-		/* XXX: handle error (how?) */
+		/* TODO: handle error (how?) */
 		save_needed(a, i, fix_options & FIX_DO);
 	    }
 	    break;
@@ -203,7 +203,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 			   (move ? "mv" : "delete"),
 			   file_name(archive_file(a, i)));
 
-		/* XXX: handle error (how?) */
+		/* TODO: handle error (how?) */
 		if (move)
 		    garbage_add(gb, i, false);
 		else

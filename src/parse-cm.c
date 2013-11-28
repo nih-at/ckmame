@@ -88,7 +88,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 	    else if (strcmp(cmd, "rom") == 0) {
 		gettok(&l);
 		if (strcmp(gettok(&l), "name") != 0) {
-		    /* XXX: error */
+		    /* TODO: error */
 		    myerror(ERRFILE, "%d: expected token (name) not found",
 			    ctx->lineno);
 		    break;
@@ -100,7 +100,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		while ((p=gettok(&l)) != NULL) {
 		    if (strcmp(p, "crc") == 0 || strcmp(p, "crc32") == 0) {
 			if ((p=gettok(&l)) == NULL) {
-			    /* XXX: error */
+			    /* TODO: error */
 			    myerror(ERRFILE, "%d: token crc missing argument",
 				    ctx->lineno);
 			    break;
@@ -111,7 +111,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		    }
 		    else if (strcmp(p, "flags") == 0) {
 			if ((p=gettok(&l)) == NULL) {
-			    /* XXX: error */
+			    /* TODO: error */
 			    myerror(ERRFILE,
 				    "%d: token flags missing argument",
 				    ctx->lineno);
@@ -152,7 +152,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		    }
 		    else if (strcmp(p, "size") == 0) {
 			if ((p=gettok(&l)) == NULL) {
-			    /* XXX: error */
+			    /* TODO: error */
 			    myerror(ERRFILE, "%d: token size missing argument",
 				    ctx->lineno);
 			    break;
@@ -171,7 +171,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 	    else if (strcmp(cmd, "disk") == 0) {
 		gettok(&l);
 		if (strcmp(gettok(&l), "name") != 0) {
-		    /* XXX: error */
+		    /* TODO: error */
 		    myerror(ERRFILE, "%d: expected token (name) not found",
 			    ctx->lineno);
 		    break;
@@ -184,7 +184,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		while ((p=gettok(&l)) != NULL) {
 		    if (strcmp(p, "sha1") == 0) {
 			if ((p=gettok(&l)) == NULL) {
-			    /* XXX: error */
+			    /* TODO: error */
 			    myerror(ERRFILE, "%d: token sha1 missing argument",
 				    ctx->lineno);
 			    break;
@@ -195,7 +195,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		    }
 		    else if (strcmp(p, "md5") == 0) {
 			if ((p=gettok(&l)) == NULL) {
-			    /* XXX: error */
+			    /* TODO: error */
 			    myerror(ERRFILE, "%d: token md5 missing argument",
 				    ctx->lineno);
 			    break;
@@ -219,7 +219,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		parse_file_end(ctx, TYPE_SAMPLE);
 	    }
 	    else if (strcmp(cmd, "archive") == 0) {
-		/* XXX: archive names */
+		/* TODO: archive names */
 	    }
 	    else if (strcmp(cmd, ")") == 0) {
 		parse_game_end(ctx, TYPE_ROM);

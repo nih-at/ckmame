@@ -78,7 +78,7 @@ disk_new(const char *name, int flags)
 	/* no error if file doesn't exist */
 	if (!((err == CHD_ERR_OPEN && errno == ENOENT)
 	      || ((flags & DISK_FL_QUIET) && err == CHD_ERR_NO_CHD))) {
-	    /* XXX: include err */
+	    /* TODO: include err */
 	    myerror(ERRFILESTR, "error opening disk");
 	}
 	return NULL;
@@ -269,7 +269,7 @@ get_hashes(struct chd *chd, struct hashes *h)
 	    }
 	    
 	    if (chd_read_metadata(chd, e, buf) < 0) {
-		/* XXX: include chd->error */
+		/* TODO: include chd->error */
 		myerror(ERRFILESTR, "error reading hunk %d", hunk);
 		free(buf);
 		free(meta_hash);

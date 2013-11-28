@@ -140,7 +140,7 @@ detector_parse_ps(parser_source_t *ps)
     ctx.dr = NULL;
     ctx.dt = NULL;
 
-    /* XXX: lineno callback */
+    /* TODO: lineno callback */
     if (xmlu_parse(ps, &ctx, NULL, entities, nentities) < 0) {
 	detector_free(ctx.d);
 	return NULL;
@@ -157,7 +157,7 @@ parse_enum(int *ep, const char *value,
 {
     int i;
 
-    /* XXX: use bsearch? */
+    /* TODO: use bsearch? */
 
     for (i=0; i<nenums; i++) {
 	if (strcmp(value, enums[i].name) == 0) {

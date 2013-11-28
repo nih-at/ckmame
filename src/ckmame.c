@@ -359,7 +359,7 @@ main(int argc, char **argv)
 	myerror(ERRSTR, "can't open database `%s'", dbname);
 	exit(1);
     }
-    /* XXX: check for errors other than ENOENT */
+    /* TODO: check for errors other than ENOENT */
     old_db = romdb_open(olddbname, DBH_READ);
 
     if (action == ACTION_CHECK_ROMSET) {
@@ -431,7 +431,7 @@ main(int argc, char **argv)
     }
 
     if (action != ACTION_SUPERFLUOUS_ONLY) {
-	/* XXX: merge in olddb */
+	/* TODO: merge in olddb */
 	detector = romdb_read_detector(db);
     }
     

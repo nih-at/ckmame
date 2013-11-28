@@ -162,10 +162,10 @@ change_set(change_t *ch, change_type_t type, char *original_name, char *current_
 {
     struct stat st;
 
-    /** \todo check that final_name not used by other entry in archvie */
+    /* TODO check that final_name not used by other entry in archvie */
 
     if (ch->type != CHANGE_NONE) {
-	/** \todo shouldn't happen, investigate if it does */
+	/* TODO shouldn't happen, investigate if it does */
 	fprintf(stderr, "WARNING: discarding old change\n");
 	change_rollback(ch);
     }
@@ -293,7 +293,7 @@ op_commit(archive_t *a)
     if (archive_where(a) == FILE_ROMSET) {
         if (ud->id > 0)
             dbh_dir_delete(ud->id);
-        ud->id = dbh_dir_write(ud->id, archive_name(a), archive_files(a)); /** \todo handle errors */
+        ud->id = dbh_dir_write(ud->id, archive_name(a), archive_files(a)); /* TODO handle errors */
     }
     
     int ret = 0;
@@ -467,7 +467,7 @@ op_file_open(archive_t *a, int idx)
 static int64_t
 op_file_read(void *f, void *buf, uint64_t n)
 {
-    /** \todo handle short reads */
+    /* TODO handle short reads */
     if (n > SIZE_T_MAX) {
 	errno = EINVAL;
 	return -1;
@@ -572,7 +572,7 @@ op_read_infos(archive_t *a)
             case FTS_NSOK:
             case FTS_SL:
             case FTS_DOT:
-                /** \todo shouldn't happen */
+                /* TODO shouldn't happen */
                 break;
         }
     }
@@ -596,7 +596,7 @@ op_read_infos(archive_t *a)
 	return -1;
     }
 
-    /** \todo: ud->db = ? */
+    /* TODO: ud->db = ? */
     ud->db = NULL;
     ud->id = id;
     ud->change = array_new(sizeof(change_t));

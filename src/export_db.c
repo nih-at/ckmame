@@ -50,11 +50,11 @@ export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_c
     db_dat = romdb_read_dat(db);
 
     if (out == NULL) {
-	/* XXX: split into original dat files */
+	/* TODO: split into original dat files */
 	return 0;
     }
 
-    /* XXX: export detector */
+    /* TODO: export detector */
     
     dat_entry_merge(&de, dat,
 		    ((db_dat && dat_length(db_dat) == 1)
@@ -70,7 +70,7 @@ export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_c
 
     for (i=0; i<parray_length(list); i++) {
 	if ((g=romdb_read_game(db, parray_get(list, i))) == NULL) {
-	    /* XXX: error */
+	    /* TODO: error */
 	    continue;
 	}
 	if (!name_matches(game_name(g), exclude))

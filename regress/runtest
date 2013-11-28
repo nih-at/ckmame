@@ -242,7 +242,7 @@ if [ -z "${srcdir}" ]
 then
     srcdir=..
 else
-	# XXX: fix for absolute srcdir?
+	# TODO: fix for absolute srcdir?
 	srcdir=../${srcdir}
 fi
 
@@ -272,7 +272,7 @@ else
     ZIPCMP_FLAGS='-v'
 fi
 
-# XXX: set up trap to cleanup
+# TODO: set up trap to cleanup
 
 mkdir ${DIR} || ( die "cannot create test directory ${DIR}" )
 cd ${DIR} || ( die "cannot cd to test directory ${DIR}" )
@@ -340,7 +340,7 @@ do
     echo "$arg" >> stdout;;
   ulimit)
     set $arg
-    # XXX: should only limit this during run of ${PROGRAM}
+    # TODO: should only limit this during run of ${PROGRAM}
     ulimit -$1 $2;;
   *)
     die "unknown directive '$cmd'"

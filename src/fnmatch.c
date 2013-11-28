@@ -209,7 +209,7 @@ fnmatch (pattern, string, flags)
 		  {
 		    if (*p == '\0')
 		      return FNM_NOMATCH;
-		    /* XXX 1003.2d11 is unclear if this is right.  */
+		    /* TODO 1003.2d11 is unclear if this is right.  */
 		    ++p;
 		  }
 	      }

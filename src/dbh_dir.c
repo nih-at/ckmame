@@ -36,7 +36,7 @@
 int
 dbh_dir_delete(int id)
 {
-    /** \todo implement */
+    /* TODO implement */
 
     return 0;
 }
@@ -45,7 +45,7 @@ dbh_dir_delete(int id)
 int
 dbh_dir_read(const char *name, array_t *files)
 {
-    /** \todo implement */
+    /* TODO implement */
     
     return 0;
 }
@@ -54,7 +54,7 @@ dbh_dir_read(const char *name, array_t *files)
 int
 dbh_dir_write(int id, const char *name, array_t *files)
 {
-    /** \todo implement */
+    /* TODO implement */
     
     return 0;
 }
@@ -63,7 +63,7 @@ dbh_dir_write(int id, const char *name, array_t *files)
 int
 ensure_romset_dir_db(void)
 {
-    /** \todo implement */
+    /* TODO implement */
 
     return -1;
 }

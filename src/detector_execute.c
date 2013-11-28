@@ -196,7 +196,7 @@ compute_values(detector_t *d, file_t *r, int64_t start, int64_t end,
     size = end-start;
 
     if (start > ctx->bytes_read) {
-	/* XXX: read in chunks */
+	/* TODO: read in chunks */
 	buf_grow(d, start - ctx->bytes_read);
 	if (ctx->cb_read(ctx->ud, d->buf,
 			 (uint64_t)(start - ctx->bytes_read)) < 0)
@@ -204,7 +204,7 @@ compute_values(detector_t *d, file_t *r, int64_t start, int64_t end,
 	
     }
 
-    hashes_types(&h) = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1; /* XXX */
+    hashes_types(&h) = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1; /* TODO */
     hu = hashes_update_new(&h);
 
     while (start < end) {

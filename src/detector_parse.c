@@ -48,7 +48,7 @@ detector_parse(const char *fname)
     detector_t *d;
 
     if ((ps=ps_new_file(fname)) == NULL) {
-	/* XXX: error */
+	/* TODO: error */
 	return NULL;
     }
 

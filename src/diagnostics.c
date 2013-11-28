@@ -146,7 +146,7 @@ diagnostics_disks(const game_t *game, const result_t *res)
 		
 	case QU_HASHERR:
 	    if (output_options & WARN_WRONG_CRC) {
-		/* XXX: display checksum(s) */
+		/* TODO: display checksum(s) */
 		warn_disk(d, "wrong checksum");
 	    }
 	    break;
@@ -156,7 +156,7 @@ diagnostics_disks(const game_t *game, const result_t *res)
 		&& (output_options & WARN_NO_GOOD_DUMP))
 		warn_disk(d, "exists");
 	    else if (output_options & WARN_WRONG_CRC) {
-		/* XXX: display checksum(s) */
+		/* TODO: display checksum(s) */
 		warn_disk(d, "no common checksum types");
 	    }
 	    break;

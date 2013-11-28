@@ -71,7 +71,7 @@ cmd_add(int argc, char **argv)
             }
 	    break;
 	case 'd':
-	    datno = atoi(optarg); /* XXX: check valid input */
+	    datno = atoi(optarg); /* TODO: check valid input */
 	    break;
 
     	default:
@@ -85,7 +85,7 @@ cmd_add(int argc, char **argv)
 	return -1;
     }
 
-    /* XXX: add games */
+    /* TODO: add games */
 
     return 0;
 }

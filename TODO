@@ -93,7 +93,7 @@ code cleanups:
 - make parse_cm table driven
 - split util*, funcs.h
 - use return value of w_game
-- fix all XXXs
+- fix all TODOs
 
 tests:
 * finish disk-full test

@@ -80,7 +80,7 @@ xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb,
 
     reader = xmlReaderForIO(xml_read, xml_close, ps, NULL, NULL, 0);
     if (reader == NULL) {
-	/* XXX */
+	/* TODO */
 	printf("opening error\n");
 	return -1;
     }
@@ -96,7 +96,7 @@ xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb,
 	case XML_READER_TYPE_ELEMENT:
 	    name = (const char *)xmlTextReaderConstName(reader);
 	    if (path+strlen(path)+strlen(name)+2 > path+sizeof(path)) {
-		/* XXX */
+		/* TODO */
 	    }
 	    else {
 		sprintf(path+strlen(path), "/%s", name);
@@ -150,7 +150,7 @@ xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb,
     xmlFreeTextReader(reader);
 
     if (ret != 0) {
-	/* XXX: parse error */
+	/* TODO: parse error */
 	printf("parse error\n");
 	return -1;
     }

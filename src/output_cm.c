@@ -205,8 +205,8 @@ write_game(output_context_cm_t *ctx, game_t *g)
 	output_cond_print_string(ctx->f, "flags ", fl, " ");
 	fputs(")\n", ctx->f);
     }
-    /* XXX: samples */
-    /* XXX: disks */
+    /* TODO: samples */
+    /* TODO: disks */
     fputs(")\n\n", ctx->f);
 
     return 0;

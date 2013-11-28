@@ -50,7 +50,7 @@ file_init(file_t *r)
 	hashes_init(&r->sh[i].hashes);
     }
     r->status = STATUS_OK;
-    /* XXX: state */
+    /* TODO: state */
     r->where = FILE_INZIP;
 }
 

@@ -120,7 +120,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	    if (fix_options & FIX_PRINT)
 		printf("%s: delete %s file `%s'\n", archive_name(a), (result_file(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"), file_name(archive_file(a, i)));
 
-	    /* XXX: handle error (how?) */
+	    /* TODO: handle error (how?) */
 	    archive_file_delete(a, i);
 	    break;
 
@@ -130,7 +130,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		       archive_name(a),
 		       file_name(archive_file(a, i)));
 
-	    /* XXX: handle error (how?) */
+	    /* TODO: handle error (how?) */
 	    if (save_needed(a, i, fix_options & FIX_DO) == 0)
 		tree_recheck_games_needing(check_tree, file_size(archive_file(a, i)), file_hashes(archive_file(a, i)));
 	    break;
@@ -148,13 +148,13 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 
     if (fix_options & FIX_DO) {
 	if (garbage_close(gb) < 0) {
-	    /* XXX: handle error (how?) */
+	    /* TODO: handle error (how?) */
 	    archive_rollback(a);
-	    /* XXX: return -1 here? */
+	    /* TODO: return -1 here? */
 	}
     }
 
-#if 0 /** \todo */
+#if 0 /* TODO */
     if (fix_options & FIX_PRINT) {
 	if ((a->flags & ARCHIVE_FL_TORRENTZIP) && !archive_is_torrentzipped(a))
 	    printf("%s: torrentzipping\n", archive_name(a));
@@ -238,7 +238,7 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 	switch (match_disk_quality(md)) {
 	case QU_COPIED:
 	    if ((name=findfile(disk_name(d), TYPE_DISK)) != NULL) {
-		/* XXX: move to garbage */
+		/* TODO: move to garbage */
 	    }
 	    else
 		fname = make_file_name(TYPE_DISK, disk_name(d));
@@ -275,7 +275,7 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 	    break;
 
 	case QU_HASHERR:
-	    /* XXX: move to garbage */
+	    /* TODO: move to garbage */
 	    break;
 
 	default:
@@ -316,7 +316,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 		    printf("%s: create empty file `%s'\n",
 			   archive_name(a), file_name(r));
 
-		/* XXX: handle error (how?) */
+		/* TODO: handle error (how?) */
 		archive_file_add_empty(a, file_name(r));
 	    }
 	    break;
@@ -358,7 +358,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 		       file_name(archive_file(a, match_index(m))),
 		       file_name(r));
 
-	    /* XXX: handle errors (how?) */
+	    /* TODO: handle errors (how?) */
 	    archive_file_rename(a, match_index(m), file_name(r));
 	    break;
 
@@ -370,7 +370,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 		       file_name(r));
 	    
 #if 0
-	    /* XXX: is this neccessary? */
+	    /* TODO: is this neccessary? */
 	    /* make room for new file, if necessary */
 	    idx = archive_file_index_by_name(a, file_name(r));
 	    if (idx >= 0) {
@@ -381,7 +381,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    }
 #endif
 	    if (archive_file_copy(afrom, match_index(m), a, file_name(r)) < 0) {
-		    /* XXX: handle error (how?) */
+		    /* TODO: handle error (how?) */
 	    }
 	    else {
 		if (match_where(m) == FILE_NEEDED)

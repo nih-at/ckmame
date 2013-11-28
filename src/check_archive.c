@@ -108,7 +108,7 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	    break;
 
 	case FIND_ERROR:
-	    /* XXX: how to handle? */
+	    /* TODO: how to handle? */
 	    break;
 	}
     }

@@ -210,7 +210,7 @@ print_matches(filetype_t ft, hashes_t *hash)
 	myerror(ERRDEF,
 		"db error: %s not found, though in hash index",
 		file_location_name(fbh));
-	/* XXX: remember error */
+	/* TODO: remember error */
 	continue;
       }
       
@@ -412,7 +412,7 @@ dump_game(const char *name, int brief_mode)
 	return -1;
     }
 
-    /* XXX: use print_* functions */
+    /* TODO: use print_* functions */
     printf("Name:\t\t%s\n", game->name);
     if (dat_length(dat) > 1) {
 	printf("Source:\t\t");

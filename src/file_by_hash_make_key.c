@@ -70,7 +70,7 @@ file_by_hash_make_key(filetype_t filetype, const hashes_t *hash)
 static int
 filetype_char(enum filetype filetype)
 {
-    /* XXX: I hate these fucking switch statements! */
+    /* TODO: I hate these fucking switch statements! */
 
     switch (filetype) {
     case TYPE_ROM:

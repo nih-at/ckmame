@@ -296,7 +296,7 @@ output_db_game(output_context_t *out, game_t *g)
 	    }
 	    else {
 		familymeeting(ctx->db, (filetype_t)i, parent, g);
-		/* XXX: check error */
+		/* TODO: check error */
 		game_free(parent);
 	    }
 	}
