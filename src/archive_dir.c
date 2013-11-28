@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <fts.h>
+#include <limits.h>
 #include <unistd.h>
 
 #include "funcs.h"
@@ -57,6 +58,7 @@ typedef enum {
 
 typedef struct {
     change_type_t type;
+    char *original_name; /* only for RENAME */
     char *current_name;
     char *final_name;
     time_t mtime;
@@ -78,7 +80,6 @@ static char *make_tmp_name(archive_t *, const char *);
 static int my_fts_sort_names(const FTSENT **, const FTSENT **);
 
 static int op_check(archive_t *);
-static int op_close(archive_t *);
 static int op_commit(archive_t *);
 static int op_file_add_empty(archive_t *, const char *);
 static int op_file_copy(archive_t *, int, archive_t *, int, const char *, off_t, off_t);
@@ -86,14 +87,13 @@ static int op_file_delete(archive_t *, int);
 static void *op_file_open(archive_t *, int);
 static int64_t op_file_read(void *, void *, uint64_t);
 static int op_file_rename(archive_t *, int, const char *);
-static char *op_file_rename_unique(archive_t *, int);
 static const char *op_file_strerror(void *);
 static int op_read_infos(archive_t *);
 static int op_rollback(archive_t *);
 
 struct archive_ops ops_dir = {
     op_check,
-    op_close,
+    op_commit, /* close */
     op_commit,
     op_file_add_empty,
     (void (*)(void *))fclose,
@@ -102,7 +102,6 @@ struct archive_ops ops_dir = {
     op_file_open,
     op_file_read,
     op_file_rename,
-    op_file_rename_unique,
     op_file_strerror,
     op_read_infos,
     op_rollback
@@ -121,6 +120,7 @@ archive_init_dir(archive_t *a)
 static void
 change_fini(change_t *ch)
 {
+    free(ch->original_name);
     free(ch->current_name);
     free(ch->final_name);
 }
@@ -130,7 +130,7 @@ static void
 change_init(change_t *ch)
 {
     ch->type = CHANGE_NONE;
-    ch->current_name = ch->final_name = NULL;
+    ch->original_name = ch->current_name = ch->final_name = NULL;
     ch->mtime = 0;
 }
 
@@ -140,8 +140,11 @@ change_rollback(change_t *ch)
 {
     switch (ch->type) {
     case CHANGE_NONE:
+	break;
+
     case CHANGE_DELETE:
     case CHANGE_RENAME:
+	rename(ch->current_name, ch->original_name);
 	break;
 	
     case CHANGE_ADD:
@@ -155,9 +158,11 @@ change_rollback(change_t *ch)
 }
 
 static int
-change_set(change_t *ch, change_type_t type, char *current_name, char *final_name)
+change_set(change_t *ch, change_type_t type, char *original_name, char *current_name, char *final_name)
 {
     struct stat st;
+
+    /** \todo check that final_name not used by other entry in archvie */
 
     if (ch->type != CHANGE_NONE) {
 	/** \todo shouldn't happen, investigate if it does */
@@ -171,8 +176,9 @@ change_set(change_t *ch, change_type_t type, char *current_name, char *final_nam
     }
 
     ch->type = type;
-    ch->final_name = final_name;
+    ch->original_name = original_name;
     ch->current_name = current_name;
+    ch->final_name = final_name;
     if (current_name)
 	ch->mtime = st.st_mtime;
     else
@@ -255,8 +261,7 @@ make_tmp_name(archive_t *a, const char *name)
 static int
 my_fts_sort_names(const FTSENT **a, const FTSENT **b)
 {
-    /** \todo implement */
-    return 0;
+    return strcmp((*a)->fts_name, (*b)->fts_name);
 }
 
 
@@ -278,32 +283,20 @@ op_check(archive_t *a)
 
 
 static int
-op_close(archive_t *a)
-{
-    ud_t *ud = archive_user_data(a);
-    
-    /** \todo update database in commit */
-#if 0
-    if (archive_where(a) == FILE_ROMSET) {
-        if (ud->id > 0)
-            dbh_dir_delete(ud->id);
-        dbh_dir_write(ud->id, archive_name(a), archive_files(a));
-    }
-#endif
-    
-    return op_commit(a);
-}
-
-static int
 op_commit(archive_t *a)
 {
     int idx;
     ud_t *ud = archive_user_data(a);
     change_t *ch;
 
-    /** \todo update db */
-    /** \todo handle errors */
-
+    /* update db */
+    if (archive_where(a) == FILE_ROMSET) {
+        if (ud->id > 0)
+            dbh_dir_delete(ud->id);
+        ud->id = dbh_dir_write(ud->id, archive_name(a), archive_files(a)); /** \todo handle errors */
+    }
+    
+    int ret = 0;
     for (idx=0; idx<archive_num_files(a); idx++) {
 	ch = array_get(ud->change, idx);
 	switch (ch->type) {
@@ -311,13 +304,19 @@ op_commit(archive_t *a)
 	    break;
 
 	case CHANGE_DELETE:
-	    unlink(ch->current_name);
+	    if (unlink(ch->current_name) < 0) {
+		myerror(ERRZIP, "cannot delete '%s': %s", ch->current_name, strerror(errno));
+		ret = -1;
+	    }
 	    break;
 
 	case CHANGE_ADD:
 	case CHANGE_REPLACE:
 	case CHANGE_RENAME:
-	    rename(ch->current_name, ch->final_name);
+	    if (rename(ch->current_name, ch->final_name) < 0) {
+		myerror(ERRZIP, "cannot rename '%s' to '%s': %s", ch->current_name, ch->final_name, strerror(errno));
+		ret = -1;
+	    }
 	    break;
 	}
 
@@ -325,7 +324,7 @@ op_commit(archive_t *a)
 	change_init(ch);
     }
 
-    return 0;
+    return ret;
 }
 
 
@@ -366,7 +365,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
     else {
 	if (srcname) {
 	    if (copy_file(srcname, tmpname, start, len) < 0) {
-		/** \todo error message */
+		myerror(ERRZIP, "cannot copy '%s' to '%s': %s", srcname, tmpname, strerror(errno));
 		free(tmpname);
 		free(srcname);
 		return -1;
@@ -377,7 +376,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	    FILE *fout;
 
 	    if ((fout = fopen(tmpname, "w")) == NULL) {
-		/** \todo error message */
+		myerror(ERRZIP, "cannot open '%s': %s", tmpname, strerror(errno));
 		free(tmpname);
 		return -1;
 	    }
@@ -392,7 +391,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	ch = array_get(ud->change, didx);
     else {
 	if ((ch = array_grow(ud->change, change_init)) == NULL) {
-	    /** \todo error message */
+	    myerror(ERRDEF, "cannot grow array: %s", strerror(errno));
 	    unlink(tmpname);
 	    free(tmpname);
 	    return -1;
@@ -400,13 +399,16 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
     }
 
     int ret;
+    char *full_name;
+    full_name = make_full_name(da, dname);
     if (didx >= 0)
-        ret = change_set(ch, CHANGE_REPLACE, tmpname, make_full_name(da, dname));
+        ret = change_set(ch, CHANGE_REPLACE, NULL, tmpname, full_name);
     else
-        ret = change_set(ch, CHANGE_ADD, tmpname, make_full_name(da, dname));
+        ret = change_set(ch, CHANGE_ADD, NULL, tmpname, full_name);
     
     if (ret < 0) {
-	/** \todo error message */
+	myerror(ERRDEF, "cannot add change for '%s': %s", full_name, strerror(errno));
+	free(full_name);
 	unlink(tmpname);
 	free(tmpname);
 	return -1;
@@ -421,18 +423,22 @@ op_file_delete(archive_t *a, int idx)
 {
     struct stat st;
     
+    char *tmpname = make_tmp_name(a, file_name(archive_file(a, idx)));
+    if (tmpname == NULL)
+	return -1;
     char *full_name = get_full_name(a, idx);
 
     if (stat(full_name, &st) < 0) {
 	seterrinfo(NULL, archive_name(a));
 	myerror(ERRZIP, "cannot delete `%s': %s", file_name(archive_file(a, idx)), strerror(errno));
 	free(full_name);
+	free(tmpname);
 	return -1;
     }
     
     ud_t *ud = archive_user_data(a);
     
-    change_set(array_get(ud->change, idx), CHANGE_DELETE, full_name, NULL);
+    change_set(array_get(ud->change, idx), CHANGE_DELETE, full_name, tmpname, NULL);
     
     return 0;
 }
@@ -461,7 +467,11 @@ op_file_open(archive_t *a, int idx)
 static int64_t
 op_file_read(void *f, void *buf, uint64_t n)
 {
-    /** \todo handle short reads, integer overflow */
+    /** \todo handle short reads */
+    if (n > SIZE_T_MAX) {
+	errno = EINVAL;
+	return -1;
+    }
     return fread(buf, 1, n, f);
 }
 
@@ -471,30 +481,25 @@ op_file_rename(archive_t *a, int idx, const char *name)
 {
     struct stat st;
     
+    char *tmpname = make_tmp_name(a, file_name(archive_file(a, idx)));
+    if (tmpname == NULL)
+	return -1;
     char *current_name = get_full_name(a, idx);
-    
 
     if (stat(current_name, &st) < 0) {
 	seterrinfo(NULL, archive_name(a));
 	myerror(ERRZIP, "cannot rename `%s': %s", file_name(archive_file(a, idx)), strerror(errno));
 	free(current_name);
+	free(tmpname);
 	return -1;
     }
     
     char *final_name = make_full_name(a, name);
     ud_t *ud = archive_user_data(a);
     
-    change_set(array_get(ud->change, idx), CHANGE_RENAME, current_name, final_name);
+    change_set(array_get(ud->change, idx), CHANGE_RENAME, current_name, tmpname, final_name);
     
     return 0;
-}
-
-
-static char *
-op_file_rename_unique(archive_t *a, int idx)
-{
-    /*** \todo implement */
-    return NULL;
 }
 
 
@@ -509,7 +514,7 @@ static int
 op_read_infos(archive_t *a)
 {
     int id = 0;
-    array_t *files = NULL;
+    array_t *files = NULL;    /* information on files from cache DB */
     FTS *ftsp;
     FTSENT *ent;
     file_t *fdir, *fdb;
@@ -520,14 +525,13 @@ op_read_infos(archive_t *a)
             return -1;
         
         files = array_new(sizeof(file_t));
-
-        if ((id = dbh_dir_read(mybasename(archive_name(a)), files)) < 0) {
-            /** \todo error message */
-        }
+	
+        if ((id=dbh_dir_read(mybasename(archive_name(a)), files)) < 0)
+	    id = 0;
     }
     
     if ((ftsp = fts_open(names, FTS_LOGICAL|FTS_NOCHDIR, my_fts_sort_names)) == NULL) {
-        /** \todo error message */
+	myerror(ERRDEF, "cannot fts_open '%s': %s", archive_name(a), strerror(errno));
         array_free(files, file_finalize);
         return -1;
     }
@@ -543,7 +547,7 @@ op_read_infos(archive_t *a)
             case FTS_ERR:
             case FTS_NS:
             case FTS_SLNONE:
-                /** \todo error message */
+		myerror(ERRDEF, "fts_open error: %s", strerror(errno));
                 break;
                 
             case FTS_F:
@@ -573,17 +577,31 @@ op_read_infos(archive_t *a)
         }
     }
     
-    if (errno != 0) {
-        fts_close(ftsp);
-        /** \todo handle fts error */
-    }
-    
-    fts_close(ftsp);
-    
     array_free(files, file_finalize);
 
-    /** \todo set up ud */
+    if (errno != 0) {
+	myerror(ERRDEF, "fts_read error: %s", strerror(errno));
+        fts_close(ftsp);
+	return -1;
+    }
     
+    if (fts_close(ftsp) < 0) {
+	myerror(ERRDEF, "cannot fts_close '%s': %s", archive_name(a), strerror(errno));
+	return -1;
+    }
+
+    ud_t *ud;
+    if ((ud=malloc(sizeof(*ud))) == NULL) {
+	myerror(ERRDEF, "malloc error: %s", strerror(errno));
+	return -1;
+    }
+
+    /** \todo: ud->db = ? */
+    ud->db = NULL;
+    ud->id = id;
+    ud->change = array_new(sizeof(change_t));
+
+    archive_user_data(a) = ud;
     return 0;
     
 }
@@ -598,24 +616,8 @@ op_rollback(archive_t *a)
 
     for (idx=0; idx<archive_num_files(a); idx++) {
 	ch = array_get(ud->change, idx);
-	switch (ch->type) {
-	case CHANGE_NONE:
-	case CHANGE_DELETE:
-	case CHANGE_RENAME:
-	    break;
-
-	case CHANGE_ADD:
-	case CHANGE_REPLACE:
-	    unlink(ch->current_name);
-	    /** \todo warning if failed */
-	    break;
-	}
-
-	change_fini(ch);
-	change_init(ch);
+	change_rollback(ch);
     }
 
     return 0;
 }
-
-

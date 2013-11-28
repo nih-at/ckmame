@@ -33,9 +33,26 @@
 
 #include "dbh_dir.h"
 
+int
+dbh_dir_delete(int id)
+{
+    /** \todo implement */
+
+    return 0;
+}
+
 
 int
 dbh_dir_read(const char *name, array_t *files)
+{
+    /** \todo implement */
+    
+    return 0;
+}
+
+
+int
+dbh_dir_write(int id, const char *name, array_t *files)
 {
     /** \todo implement */
     

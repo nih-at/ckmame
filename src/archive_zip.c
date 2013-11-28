@@ -54,7 +54,6 @@ static int op_file_copy(archive_t *, int, archive_t *, int, const char *, off_t,
 static int op_file_delete(archive_t *, int);
 static void *op_file_open(archive_t *, int);
 static int op_file_rename(archive_t *, int, const char *);
-static char *op_file_rename_unique(archive_t *, int);
 static const char *op_file_strerror(void *);
 static int op_read_infos(archive_t *);
 static int op_rollback(archive_t *);
@@ -70,7 +69,6 @@ struct archive_ops ops_zip = {
     op_file_open,
     (int64_t (*)(void *, void *, uint64_t))zip_fread,
     op_file_rename,
-    op_file_rename_unique,
     op_file_strerror,
     op_read_infos,
     op_rollback
@@ -154,8 +152,7 @@ op_close(archive_t *a)
         
 	/* XXX: really do this here? */
 	/* discard all changes and close zipfile */
-	zip_unchange_all(archive_zip(a));
-	zip_close(archive_zip(a));
+	zip_discard(archive_zip(a));
 	archive_zip(a) = NULL;
 	return -1;
     }
@@ -311,18 +308,6 @@ op_file_rename(archive_t *a, int idx, const char *name)
     }
     
     return 0;
-}
-
-static char *
-op_file_rename_unique(archive_t *a, int idx)
-{
-    if (ensure_zip(a) < 0)
-	return NULL;
-
-    if (my_zip_rename_to_unique(archive_zip(a), idx) < 0)
-	return NULL;
-
-    return xstrdup(zip_get_name(archive_zip(a), idx, 0));
 }
 
 

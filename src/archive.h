@@ -66,7 +66,6 @@ struct archive_ops {
     void *(*file_open)(archive_t *, int);
     int64_t (*file_read)(void *, void *, uint64_t);
     int (*file_rename)(archive_t *, int, const char *);
-    char *(*file_rename_unique)(archive_t *, int);
     const char *(*file_strerror)(void *);
     int (*read_infos)(archive_t *);
     int (*rollback)(archive_t *);  /* never called if commit never fails */

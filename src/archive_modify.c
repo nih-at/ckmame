@@ -43,6 +43,7 @@
 
 static void _add_file(archive_t *, int, const char *, const file_t *);
 static int _file_cmp_name(const file_t *, const file_t *);
+static char *_make_unique_name(archive_t *, int);
 
 
 int
@@ -252,16 +253,13 @@ archive_file_rename_to_unique(archive_t *a, int idx)
     if (!archive_is_writable(a))
         return 0;
     
-    char *new_name = a->ops->file_rename_unique(a, idx);
+    char *new_name = _make_unique_name(a, idx);
     if (new_name == NULL)
         return -1;
     
-    file_t *r = archive_file(a, idx);
-    
-    free(file_name(r));
-    file_name(r) = new_name;
-
-    return 0;
+    int ret = archive_file_rename(a, idx, new_name);
+    free(new_name);
+    return ret;
 }
 
 int
@@ -295,6 +293,54 @@ _file_cmp_name(const file_t *a, const file_t *b)
 }
 
 
+static char *
+_make_unique_name(archive_t *a, int idx)
+{
+    char *unique, *p;
+    char n[4];
+    const char *name, *ext;
+    int i, j, ret, zerr;
+
+    if ((name=file_name(archive_file(a, idx))) == NULL)
+	return -1;
+
+    unique = (char *)xmalloc(strlen(name)+5);
+
+    ext = strrchr(name, '.');
+    if (ext == NULL) {
+	strcpy(unique, name);
+	p = unique+strlen(unique);
+	p[4] = '\0';
+    }
+    else {
+	strncpy(unique, name, ext-name);
+	p = unique + (ext-name);
+	strcpy(p+4, ext);
+    }	
+    *(p++) = '-';
+
+    for (i=0; i<1000; i++) {
+	sprintf(n, "%03d", i);
+	strncpy(p, n, 3);
+
+	int exists = 0;
+	for (j=0; j<archive_num_files(a); j++) {
+	    if (j == idx)
+		continue;
+	    if (strcmp(file_name(archive_file(a, j)), unique) == 0) {
+		exists = 1;
+		break;
+	    }
+	}
+
+	if (!exists)
+	    return unique;
+    }
+
+    free(unique);
+    return NULL;
+}
+
 #if 0
 /* some not used here, but prototype must match others */
 /* ARGSUSED */
@@ -305,7 +351,6 @@ _copy_chd(archive_t *sa, int sidx, archive_t *da, const char *dname,
     /* XXX: build new name */
     return link_or_copy(archive_name(sa), archive_name(da));
 }
-#endif
 
 
 
@@ -326,3 +371,4 @@ _rename_chd(archive_t *a, int idx, const char *name)
     /* XXX */
     return 0;
 }
+#endif

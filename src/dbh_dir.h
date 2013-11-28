@@ -36,7 +36,9 @@
 
 #include "array.h"
 
+int dbh_dir_delete(int);
 int dbh_dir_read(const char *, array_t *);
+int dbh_dir_write(int, const char *, array_t *);
 int ensure_romset_dir_db(void);
 
 #endif /* dbh_dir.h */
