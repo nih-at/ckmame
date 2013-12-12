@@ -157,20 +157,7 @@ struct option options[] = {
     { NULL,                0, 0, 0 },
 };
 
-int output_options;
-int fix_options;
-int ignore_extra;
-int check_integrity;
-int roms_unzipped;
-parray_t *superfluous;
-parray_t *search_dirs;
-const char *rom_dir;
-filetype_t file_type;
-romdb_t *db;
-romdb_t *old_db;
-detector_t *detector;
-tree_t *check_tree;
-output_context_t *fixdat;
+static int ignore_extra;
 
 
 

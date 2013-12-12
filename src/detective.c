@@ -79,9 +79,6 @@ struct option options[] = {
     { NULL,               0, 0, 0 },
 };
 
-detector_t *detector;
-int roms_unzipped;
-
 
 
 static int print_archive(const char *, int);

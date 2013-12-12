@@ -108,7 +108,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 
     a->ops->file_close(f);
     
-    if (hashtypes & HASHES_TYPE_CRC) {
+    if (hashes_types(file_hashes(r)) & hashtypes & HASHES_TYPE_CRC) {
 	if (file_hashes(r)->crc != h.crc) {
 	    myerror(ERRDEF, "%s: %s: CRC error: %lx != %lx", archive_name(a), file_name(r), h.crc, file_hashes(r)->crc);
 	    file_status(r) = STATUS_BADDUMP;
@@ -226,7 +226,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     archive_t *a;
     int i, id;
 
-    if ((a=memdb_get_ptr(name)) != 0) {
+    if ((a=memdb_get_ptr(name, ft)) != 0) {
 	/* TODO: check for compatibility of a->flags and flags */
 	a->refcount++;
 	return a;
@@ -273,7 +273,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     }
 
     if (!(a->flags & ARCHIVE_FL_NOCACHE)) {
-	if ((id=memdb_put_ptr(name, a)) < 0) {
+	if ((id=memdb_put_ptr(name, archive_filetype(a), a)) < 0) {
 	    archive_real_free(a);
 	    return NULL;
 	}

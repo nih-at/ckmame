@@ -31,14 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stddef.h>
 
 #include "sq_util.h"
 #include "xmalloc.h"
 
-
 
 void *
 sq3_get_blob(sqlite3_stmt *stmt, int col, size_t *sizep)
@@ -52,7 +50,26 @@ sq3_get_blob(sqlite3_stmt *stmt, int col, size_t *sizep)
     return xmemdup(sqlite3_column_blob(stmt, col), *sizep);
 }
 
-
+
+void
+sq3_get_hashes(hashes_t *h, sqlite3_stmt *stmt, int col)
+{
+    if (sqlite3_column_type(stmt, col) != SQLITE_NULL) {
+	hashes_crc(h) = sqlite3_column_int64(stmt, col) & 0xffffffff;
+	hashes_types(h) |= HASHES_TYPE_CRC;
+    }
+    if (sqlite3_column_type(stmt, col+1) != SQLITE_NULL) {
+	memcpy(h->md5, sqlite3_column_blob(stmt, col+1),
+	       HASHES_SIZE_MD5);
+	hashes_types(h) |= HASHES_TYPE_MD5;
+    }
+    if (sqlite3_column_type(stmt, col+2) != SQLITE_NULL) {
+	memcpy(h->sha1, sqlite3_column_blob(stmt, col+2),
+	       HASHES_SIZE_SHA1);
+	hashes_types(h) |= HASHES_TYPE_SHA1;
+    }
+}
+
 
 int
 sq3_get_int_default(sqlite3_stmt *stmt, int col, int def)
@@ -62,7 +79,6 @@ sq3_get_int_default(sqlite3_stmt *stmt, int col, int def)
     return sqlite3_column_int(stmt, col);
 }
 
-
 
 int64_t
 sq3_get_int64_default(sqlite3_stmt *stmt, int col, int64_t def)
@@ -72,7 +88,6 @@ sq3_get_int64_default(sqlite3_stmt *stmt, int col, int64_t def)
     return sqlite3_column_int64(stmt, col);
 }
 
-
 
 char *
 sq3_get_string(sqlite3_stmt *stmt, int i)
@@ -83,7 +98,6 @@ sq3_get_string(sqlite3_stmt *stmt, int i)
     return xstrdup((const char *)sqlite3_column_text(stmt, i));
 }
 
-
 
 int
 sq3_set_blob(sqlite3_stmt *stmt, int col, const void *p, size_t s)
@@ -93,7 +107,6 @@ sq3_set_blob(sqlite3_stmt *stmt, int col, const void *p, size_t s)
     return sqlite3_bind_blob(stmt, col, p, s, SQLITE_STATIC);
 }
 
-
 
 int
 sq3_set_hashes(sqlite3_stmt *stmt, int col, const hashes_t *h, int nullp)
@@ -126,7 +139,6 @@ sq3_set_hashes(sqlite3_stmt *stmt, int col, const hashes_t *h, int nullp)
     return ret;
 }
 
-
 
 int
 sq3_set_int_default(sqlite3_stmt *stmt, int col, int val, int def)
@@ -136,7 +148,6 @@ sq3_set_int_default(sqlite3_stmt *stmt, int col, int val, int def)
     return sqlite3_bind_int(stmt, col, val);
 }
 
-
 
 int
 sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def)
@@ -146,8 +157,6 @@ sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def)
     return sqlite3_bind_int64(stmt, col, val);
 }
 
-
-
 
 int
 sq3_set_string(sqlite3_stmt *stmt, int i, const char *s)

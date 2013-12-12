@@ -302,7 +302,7 @@ _make_unique_name(archive_t *a, int idx)
     int i, j, ret, zerr;
 
     if ((name=file_name(archive_file(a, idx))) == NULL)
-	return -1;
+	return NULL;
 
     unique = (char *)xmalloc(strlen(name)+5);
 

@@ -40,9 +40,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "xmalloc.h"
-#include "util.h"
 #include "error.h"
+#include "globals.h"
+#include "util.h"
+#include "xmalloc.h"
 
 
 int
@@ -192,3 +193,14 @@ ensure_dir(const char *name, int strip_fname)
     return ret;
 }		    
 
+
+const char *
+get_directory(filetype_t ft)
+{
+    if (ft == TYPE_SAMPLE)
+	return "samples";
+    else if (rom_dir)
+	return rom_dir;
+    else
+	return "roms";
+}

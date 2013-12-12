@@ -36,6 +36,7 @@
 #include "dbh.h"
 
 const char *sql_db_init[] = {
+/* DBH_FMT_MAME	-- mame.db format */
 "\
 create table dat (\n\
 	dat_idx integer primary key,\n\
@@ -97,13 +98,15 @@ create table test (\n\
 );\n\
 ",
 
+/* DBH_FMT_MEM -- in-memory db format */
 "\
 create table ptr_cache (\n\
 	game_id integer primary key,\n\
 	name text not null,\n\
+	file_type integer not null,\n\
 	pointer blob\n\
 );\n\
-create index ptr_cache_name on ptr_cache (name);\n\
+create index ptr_cache_name_file_type on ptr_cache (name, file_type);\n\
 \n\
 create table file (\n\
 	game_id integer,\n\
@@ -124,27 +127,23 @@ create index file_md5 on file (md5);\n\
 create index file_sha1 on file (sha1);\n\
 ",
     
-"\
-create table game (\n\
-    game_id integer primary key autoincrement,\n\
-    name text not null\n\
+/* DBH_FMT_DIR -- unpacked dirs db format */
+"create table archive (\n\
+	archive_id integer primary key autoincrement,\n\
+	name text not null\n\
 );\n\
-create index game_name on game (name);\n\
-\n\
+create index archive_name on archive (name);\n\
 create table file (\n\
-    file_id integer primary key autoincrement,\n\
-    game_id integer,\n\
-    name text not null,\n\
-    size integer not null,\n\
-    mtime integer not null,\n\
-    crc integer,\n\
-    md5 binary,\n\
-    sha1 binary\n\
+	archive_id integer not null,\n\
+	name text not null,\n\
+        mtime integer not null,\n\
+	status integer not null,\n\
+	size integer not null,\n\
+	crc integer,\n\
+	md5 binary,\n\
+	sha1 binary\n\
 );\n\
-create index file_size on file (size);\n\
-create index file_crc on file (crc);\n\
-create index file_md5 on file (md5);\n\
-create index file_sha1 on file (sha1);\n"
+create index file_archive_id on file (archive_id);\n"
 };
 
 

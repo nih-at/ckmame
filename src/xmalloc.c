@@ -33,11 +33,31 @@
 
 
 
+#include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "error.h"
 #include "xmalloc.h"
+
+int
+xasprintf(char **ret, const char *format,  ...)
+{
+    va_list va;
+    int retval;
+
+    va_start(va, format);
+
+    if (((retval=vasprintf(ret, format, va)) < 0) && (errno == ENOMEM)) {
+	myerror(ERRDEF, "malloc failure");
+	exit(1);
+    }
+
+    va_end(va);
+    
+    return retval;
+}
 
 
 

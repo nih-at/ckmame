@@ -45,9 +45,9 @@ extern dbh_t *memdb;
 
 
 int memdb_ensure(void);
-void *memdb_get_ptr(const char *);
+void *memdb_get_ptr(const char *, filetype_t);
 void *memdb_get_ptr_by_id(int);
-int memdb_put_ptr(const char *, void *);
+int memdb_put_ptr(const char *, filetype_t, void *);
 int memdb_file_delete(const archive_t *, int, bool);
 int memdb_file_insert(sqlite3_stmt *, const archive_t *, int);
 int memdb_file_insert_archive(const archive_t *);

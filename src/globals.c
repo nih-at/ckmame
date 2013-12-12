@@ -1,11 +1,6 @@
-#ifndef _HAD_XMALLOC_H
-#define _HAD_XMALLOC_H
-
-#include <sys/types.h>
-
 /*
-  xmalloc.h -- malloc routines with exit on failure
-  Copyright (C) 1999, 2004 Dieter Baron and Thomas Klausner
+  globals.c -- definition of global variables
+  Copyright (C) 2013 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -36,10 +31,41 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-int xasprintf(char **, const char *, ...) __attribute__ ((format (printf, 2, 3))); 
-void *xrealloc(void *, size_t);
-void *xmalloc(size_t size);
-void *xmemdup(const void *, size_t);
-char *xstrdup(const char *);
+#include <globals.h>
 
-#endif /* xmalloc.h */
+/* option settings */
+
+char *needed_dir;
+char *unknown_dir;
+const char *rom_dir;
+
+parray_t *search_dirs;
+
+int check_integrity;	/* full integrity check of ROM set */
+int roms_unzipped;      /* ROMs are files on disk, not contained in zip archives */
+
+filetype_t file_type;	/* type of files to check (ROMs or samples) */
+
+int output_options;
+int fix_options;
+
+
+/* check input (read only) */
+
+romdb_t *db;
+romdb_t *old_db;
+
+detector_t *detector;
+
+parray_t *superfluous;
+
+
+/* check state */
+
+delete_list_t *extra_delete_list;
+parray_t *extra_list;
+delete_list_t *needed_delete_list;
+delete_list_t *superfluous_delete_list;
+
+tree_t *check_tree;
+output_context_t *fixdat;

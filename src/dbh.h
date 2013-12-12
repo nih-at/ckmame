@@ -54,7 +54,9 @@
 
 #define DBH_READ	0x00	/* open readonly */
 #define DBH_WRITE	0x10	/* open for writing */
-#define DBH_NEW		0x20	/* create new database */
+#define DBH_CREATE	0x20	/* create database if it doesn't exist */
+#define DBH_TRUNCATE	0x40	/* delete database if it exists */
+#define DBH_NEW		(DBH_CREATE|DBH_TRUNCATE|DBH_WRITE)	/* create new writable empty database */
 #define DBH_FLAGS(m)	((m) & 0xf0)
 
 /* keep in sync with romdb_read_list.c:query_list */
@@ -67,6 +69,7 @@ enum dbh_list {
 
 #define DBH_DEFAULT_DB_NAME	"mame.db"
 #define DBH_DEFAULT_OLD_DB_NAME	"old.db"
+#define DBH_DIR_DB_NAME		".ckmame.db"
 
 extern const char *sql_db_init[];
 extern const char *sql_db_init_2;

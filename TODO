@@ -1,3 +1,12 @@
+* archive_dir support
+- .ckmame.db is in extra files list
+- libzip is linked to too many executables
+- possibly too many hash types computed for archive_dir, restrict to what's available in mame.db
+- archive_dir: add lots of tests
+- runtest: improve support for testing archive_dir
+- add tests using pre-existing .ckmame.db, possibly out of date
+
+* previously
 - archive_zip.c: don't use zip_fread in ops directly, breaks very old libzip
 ! [feature] reorder cleanup step when renaming files to remove the copies
   earlier; otherwise big renames on big sets don't work.
@@ -9,6 +18,7 @@
   In image new/file.chd:
   image new/file.chd: not used
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
++ [cleanup] get rid of global variables (mostly globals.c)
 + [feature] mkmamedb: parser for mtree files
 + [feature] server mode: tell location/mamedb of ROM sets, serves files needed by remote ckmame client
 + [cleanup] ckmame: create fixdat only when necessary
@@ -35,6 +45,8 @@
 - [bug] fix BROKEN_TESTS
 - [feature] chd v5 support: maps, lzma, huffman, flac, a/v decompression
 - [feature] better support for chds in separate chds/gamename/chdname.chd
+- [cleanup] archive: remove leftovers of TYPE_DISK
+- [cleanup] consistently use asprintf() instead of malloc()+str*
 - [cleanup] reduce code duplication
 - [cleanup] access db directly in find_*
 - [cleanup] specify globally which parts of memdb/lists to fill/maintain

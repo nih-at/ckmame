@@ -45,7 +45,6 @@
 
 static int read_disks(romdb_t *, game_t *);
 static int read_rs(romdb_t *, game_t *, filetype_t);
-static void sq3_get_hashes(hashes_t *, sqlite3_stmt *, int);
 
 
 
@@ -166,25 +165,4 @@ read_rs(romdb_t *db, game_t *g, filetype_t ft)
     }
 
     return (ret == SQLITE_DONE ? 0 : -1);
-}
-
-
-
-static
-void sq3_get_hashes(hashes_t *h, sqlite3_stmt *stmt, int col)
-{
-    if (sqlite3_column_type(stmt, col) != SQLITE_NULL) {
-	hashes_crc(h) = sqlite3_column_int64(stmt, col) & 0xffffffff;
-	hashes_types(h) |= HASHES_TYPE_CRC;
-    }
-    if (sqlite3_column_type(stmt, col+1) != SQLITE_NULL) {
-	memcpy(h->md5, sqlite3_column_blob(stmt, col+1),
-	       HASHES_SIZE_MD5);
-	hashes_types(h) |= HASHES_TYPE_MD5;
-    }
-    if (sqlite3_column_type(stmt, col+2) != SQLITE_NULL) {
-	memcpy(h->sha1, sqlite3_column_blob(stmt, col+2),
-	       HASHES_SIZE_SHA1);
-	hashes_types(h) |= HASHES_TYPE_SHA1;
-    }
 }

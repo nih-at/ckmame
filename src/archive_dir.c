@@ -112,7 +112,7 @@ int
 archive_init_dir(archive_t *a)
 {
     a->ops = &ops_dir;
-    
+
     return 0;
 }
 
@@ -289,12 +289,22 @@ op_commit(archive_t *a)
     ud_t *ud = archive_user_data(a);
     change_t *ch;
 
+    if (ud == NULL) {
+	/* error during initialization, do nothing */
+	return 0;
+    }
+
     /* update db */
     if (archive_where(a) == FILE_ROMSET) {
         if (ud->id > 0)
             dbh_dir_delete(ud->id);
-        ud->id = dbh_dir_write(ud->id, archive_name(a), archive_files(a)); /* TODO handle errors */
+	if (archive_num_files(a) > 0)
+	    ud->id = dbh_dir_write(ud->id, mybasename(archive_name(a)), archive_files(a)); /* TODO handle errors */
+	else
+	    ud->id = 0;
     }
+
+    /* TODO if archive_num_files(a) > 0: ensure dir, else delete dir */
     
     int ret = 0;
     for (idx=0; idx<archive_num_files(a); idx++) {
@@ -531,41 +541,58 @@ op_read_infos(archive_t *a)
     }
     
     if ((ftsp = fts_open(names, FTS_LOGICAL|FTS_NOCHDIR, my_fts_sort_names)) == NULL) {
-	myerror(ERRDEF, "cannot fts_open '%s': %s", archive_name(a), strerror(errno));
-        array_free(files, file_finalize);
-        return -1;
+	array_free(files, file_finalize);
+
+	return -1;
     }
-    
-    while ((ent=fts_read(ftsp)) != NULL) {
-        switch (ent->fts_info) {
+    else {
+	while ((ent=fts_read(ftsp)) != NULL) {
+	    if (strcmp(ent->fts_path, archive_name(a)) == 0) {
+		if (ent->fts_info == FTS_NS) {
+		    if ((a->flags & ARCHIVE_FL_CREATE) == 0 || errno != ENOENT) {
+			array_free(files, file_finalize);
+			fts_close(ftsp);
+			return -1;
+		    }
+		}
+		continue;
+	    }
+
+	    switch (ent->fts_info) {
             case FTS_D:
             case FTS_DP:
                 break;
                 
+            case FTS_NS:
             case FTS_DC:
             case FTS_DNR:
             case FTS_ERR:
-            case FTS_NS:
             case FTS_SLNONE:
-		myerror(ERRDEF, "fts_open error: %s", strerror(errno));
+		myerror(ERRDEF, "fts_read error (%s): %s", ent->fts_path, strerror(errno));
+		/* TODO mark file as broken? */
                 break;
-                
+
             case FTS_F:
                 fdir = array_grow(archive_files(a), file_init);
                 
-                file_name(fdir) = xstrdup(ent->fts_name);
+                file_name(fdir) = xstrdup(ent->fts_path+strlen(archive_name(a))+1);
                 file_size(fdir) = ent->fts_statp->st_size;
                 file_mtime(fdir) = ent->fts_statp->st_mtime;
                 
+		fdb = NULL;
                 if (files) {
-                    fdb = array_get(files, array_index(files, file_name(fdir), cmp_file_by_name));
-                
-                    if (fdb) {
-                        if (file_mtime(fdb) == file_mtime(fdir) && file_size(fdb) == file_size(fdir)) {
-                            memcpy(fdir->sh, fdb->sh, sizeof(fdir->sh));
-                        }
-                    }
-                }
+		    int idx = array_index(files, file_name(fdir), cmp_file_by_name);
+		    if (idx >= 0) {
+			fdb = array_get(files, idx);
+			if (file_mtime(fdb) != file_mtime(fdir) || file_size(fdb) != file_size(fdir))
+			    fdb = NULL;
+		    }
+		}
+
+		if (fdb)
+		    memcpy(fdir->sh, fdb->sh, sizeof(fdir->sh));
+		else
+		    archive_file_compute_hashes(a, array_length(archive_files(a)-1), HASHES_TYPE_ALL);
                 break;
 
             case FTS_DEFAULT:
@@ -574,32 +601,29 @@ op_read_infos(archive_t *a)
             case FTS_DOT:
                 /* TODO shouldn't happen */
                 break;
-        }
-    }
-    
-    array_free(files, file_finalize);
+	    }
+	}
 
-    if (errno != 0) {
-	myerror(ERRDEF, "fts_read error: %s", strerror(errno));
-        fts_close(ftsp);
-	return -1;
-    }
-    
-    if (fts_close(ftsp) < 0) {
-	myerror(ERRDEF, "cannot fts_close '%s': %s", archive_name(a), strerror(errno));
-	return -1;
+	array_free(files, file_finalize);
+
+	if (errno != 0) {
+	    myerror(ERRDEF, "fts_read error: %s", strerror(errno));
+	    fts_close(ftsp);
+	    return -1;
+	}
+	if (fts_close(ftsp) < 0) {
+	    myerror(ERRDEF, "cannot fts_close '%s': %s", archive_name(a), strerror(errno));
+	    return -1;
+	}
     }
 
     ud_t *ud;
-    if ((ud=malloc(sizeof(*ud))) == NULL) {
-	myerror(ERRDEF, "malloc error: %s", strerror(errno));
-	return -1;
-    }
+    ud = xmalloc(sizeof(*ud));
 
     /* TODO: ud->db = ? */
     ud->db = NULL;
     ud->id = id;
-    ud->change = array_new(sizeof(change_t));
+    ud->change = array_new_length(sizeof(change_t), archive_num_files(a), change_init);
 
     archive_user_data(a) = ud;
     return 0;

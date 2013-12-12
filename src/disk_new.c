@@ -68,7 +68,7 @@ disk_new(const char *name, int flags)
     if (name == NULL)
 	return NULL;
 
-    if ((d=memdb_get_ptr(name)) != 0) {
+    if ((d=memdb_get_ptr(name, TYPE_DISK)) != 0) {
 	d->refcount++;
 	return d;
     }
@@ -135,7 +135,7 @@ disk_new(const char *name, int flags)
     if (chd->version > 2 && (hashes_types(h) & HASHES_TYPE_SHA1) == 0)
 	hashes_set(h, HASHES_TYPE_SHA1, chd->sha1);
 
-    if ((id=memdb_put_ptr(name, d)) < 0) {
+    if ((id=memdb_put_ptr(name, TYPE_DISK, d)) < 0) {
 	disk_real_free(d);
 	return NULL;
     }

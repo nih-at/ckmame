@@ -88,7 +88,7 @@ memdb_ensure(void)
 
 
 void *
-memdb_get_ptr(const char *name)
+memdb_get_ptr(const char *name, filetype_t type)
 {
     sqlite3_stmt *stmt;
     void *ptr;
@@ -102,7 +102,7 @@ memdb_get_ptr(const char *name)
 	return NULL;
     }
 
-    if (sq3_set_string(stmt, 1, name) != SQLITE_OK) {
+    if (sq3_set_string(stmt, 1, name) != SQLITE_OK || sqlite3_bind_int(stmt, 2, type) != SQLITE_OK) {
 	seterrdb(memdb);
 	myerror(ERRDB, "cannot get '%s' from file cache", name);
 	return NULL;
@@ -170,7 +170,7 @@ memdb_get_ptr_by_id(int id)
 
 
 int
-memdb_put_ptr(const char *name, void *ptr)
+memdb_put_ptr(const char *name, filetype_t type, void *ptr)
 {
     sqlite3_stmt *stmt;
     int ret;
@@ -182,7 +182,8 @@ memdb_put_ptr(const char *name, void *ptr)
 	ret = -1;
     else {
 	if (sq3_set_string(stmt, 1, name) != SQLITE_OK
-	    || sqlite3_bind_blob(stmt, 2, &ptr, sizeof(void *), SQLITE_STATIC) != SQLITE_OK
+	    || sqlite3_bind_int(stmt, 2, type) != SQLITE_OK
+	    || sqlite3_bind_blob(stmt, 3, &ptr, sizeof(void *), SQLITE_STATIC) != SQLITE_OK
 	    || sqlite3_step(stmt) != SQLITE_DONE) {
 	    ret = -1;
 	}

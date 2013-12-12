@@ -133,6 +133,8 @@ dbh_open(const char *name, int mode)
     dbh_t *db;
     struct stat st;
     unsigned int i;
+    int sql3_flags;
+    int needs_init = 0;
 
     if (DBH_FMT(mode) > sizeof(format_version)/sizeof(format_version[0])) {
 	errno = EINVAL;
@@ -148,32 +150,47 @@ dbh_open(const char *name, int mode)
 
     db->format = DBH_FMT(mode);
 
-    if (DBH_FLAGS(mode) == DBH_NEW)
-	unlink(name);
-    else {
-	if (stat(name, &st) != 0) {
-	    free(db);
-	    return NULL;
-	}
+    if (DBH_FLAGS(mode) & DBH_TRUNCATE) {
+	/* do not delete special cases (like memdb) */
+	if (name[0] != ':')
+	    unlink(name);
+	needs_init = 1;
     }
 
-    if (sqlite3_open(name, &dbh_db(db)) != SQLITE_OK) {
-	/* TODO: errno? */
+    if (DBH_FLAGS(mode) & DBH_WRITE)
+	sql3_flags = SQLITE_OPEN_READWRITE;
+    else
+	sql3_flags = SQLITE_OPEN_READONLY;
+
+    if (DBH_FLAGS(mode) & DBH_CREATE) {
+	sql3_flags |= SQLITE_OPEN_CREATE;
+	if (name[0] == ':' || (stat(name, &st) < 0 && errno == ENOENT))
+	    needs_init = 1;
+    }
+
+    if (sqlite3_open_v2(name, &dbh_db(db), sql3_flags, NULL) != SQLITE_OK) {
+	int save;
+	save = errno;
 	dbh_close(db);
+	errno = save;
 	return NULL;
     }
 
     if (sqlite3_exec(dbh_db(db), PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
-	/* TODO: errno? */
+	int save;
+	save = errno;
 	dbh_close(db);
+	errno = save;
 	return NULL;
     }
 
-    if (DBH_FLAGS(mode) == DBH_NEW) {
+    if (needs_init) {
 	if (init_db(db) < 0) {
-	    /* TODO: errno? */
+	    int save;
+	    save = errno;
 	    dbh_close(db);
 	    unlink(name);
+	    errno = save;
 	    return NULL;
 	}
     }

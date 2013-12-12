@@ -6,7 +6,7 @@ noinst_LIBRARIES=libckmame.a
 
 ckmame_LDADD=libckmame.a @LIBZIP_LIBS@ @SQLITE3_LIBS@
 detective_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
-dumpgame_LDADD=libckmame.a @SQLITE3_LIBS@
+dumpgame_LDADD=libckmame.a @SQLITE3_LIBS@ @LIBZIP_LIBS@
 #mamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 mkmamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 
@@ -77,6 +77,7 @@ libckmame_a_SOURCES= \
 	fixdat.c \
 	game.c \
 	garbage.c \
+	globals.c \
 	hash_from_string.c \
 	hash_to_string.c \
 	hashes.c \

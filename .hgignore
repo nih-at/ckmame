@@ -12,6 +12,7 @@ Makefile.in$
 ^autom4te\.cache
 ^build/
 ^ckmame-[0-9.]*\.tar\.(bz2|gz)$
+^compile
 ^config.guess$
 ^config.sub$
 ^config\.h(\.in)?$

@@ -5,8 +5,8 @@
 #define MEM_INSERT_FILE     "insert into file (game_id, file_type, file_idx, file_sh, location, size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 #define MEM_QUERY_FILE      "select game_id, file_idx, file_sh, location from file f where file_type = ? @SIZE@ @HASH@ order by location"
 
-#define MEM_INSERT_PTR      "insert into ptr_cache (name, pointer) values (?, ?)"
-#define MEM_QUERY_PTR       "select pointer from ptr_cache where name = ?"
+#define MEM_INSERT_PTR      "insert into ptr_cache (name, file_type, pointer) values (?, ?, ?)"
+#define MEM_QUERY_PTR       "select pointer from ptr_cache where name = ? and file_type = ?"
 #define MEM_QUERY_PTR_ID    "select pointer from ptr_cache where game_id = ?"
 #define MEM_UPDATE_FILE     "update file set crc = ?, md5 = ?, sha1 = ? where game_id = ? and file_type = ? and file_idx = ? and file_sh = ?"
 #define MEM_DELETE_FILE     "delete from file where game_id = ? and file_type = ? and file_idx = ?"
@@ -49,3 +49,13 @@
 #define QUERY_STATS_GAMES   "select count(name) from game"
 #define UPDATE_FILE	    "update file set location = ? where game_id = ? and file_type = ? and file_idx = ?"
 #define UPDATE_PARENT	    "update parent set parent = ? where game_id = ? and file_type = ?"
+
+/* dirdb */
+#define DIR_INSERT_ARCHIVE  "insert into archive (name) values (?)"
+#define DIR_INSERT_ARCHIVE_ID	    "insert into archive (name, archive_id) values (?, ?)"
+#define DIR_QUERY_ARCHIVE   "select archive_id from archive where name = ?"
+#define DIR_DELETE_ARCHIVE  "delete from archive where archive_id = ?"
+
+#define DIR_INSERT_FILE     "insert into file (archive_id, name, mtime, status, size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?)"
+#define DIR_QUERY_FILE      "select name, mtime, status, size, crc, md5, sha1 from file where archive_id = ?"
+#define DIR_DELETE_FILE     "delete from file where archive_id = ?"

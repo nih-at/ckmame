@@ -39,6 +39,7 @@
 #include <zip.h>
 
 #include "compat.h"
+#include "globals.h"
 #include "romdb.h"
 #include "funcs.h"
 #include "error.h"
@@ -101,11 +102,6 @@ struct option options[] = {
     { NULL,               0, 0, 0 },
 };
 
-detector_t *detector;
-int roms_unzipped;
-
-static int hashtypes;
-
 #define DEFAULT_FILES_ONLY	"*.dat"
 
 static int process_file(const char *, const parray_t *, const dat_entry_t *,
@@ -113,6 +109,7 @@ static int process_file(const char *, const parray_t *, const dat_entry_t *,
 static int process_stdin(const parray_t *, const dat_entry_t *,
 			 output_context_t *);
 
+static int hashtypes;
 
 
 int
