@@ -31,41 +31,41 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <globals.h>
+#include "globals.h"
 
 /* option settings */
 
-char *needed_dir;
-char *unknown_dir;
-const char *rom_dir;
+char *needed_dir = "needed"; /* TODO: proper value */
+char *unknown_dir = "unknown"; /* TODO: proper value */
+const char *rom_dir = NULL;
 
-parray_t *search_dirs;
+parray_t *search_dirs = NULL;
 
-int check_integrity;	/* full integrity check of ROM set */
-int roms_unzipped;      /* ROMs are files on disk, not contained in zip archives */
+int check_integrity = 0;	/* full integrity check of ROM set */
+int roms_unzipped = 0;      /* ROMs are files on disk, not contained in zip archives */
 
-filetype_t file_type;	/* type of files to check (ROMs or samples) */
+filetype_t file_type = TYPE_ROM;	/* type of files to check (ROMs or samples) */
 
-int output_options;
-int fix_options;
+int output_options = 0;
+int fix_options = 0;
 
 
 /* check input (read only) */
 
-romdb_t *db;
-romdb_t *old_db;
+romdb_t *db = NULL;
+romdb_t *old_db = NULL;
 
-detector_t *detector;
+detector_t *detector = NULL;
 
-parray_t *superfluous;
+parray_t *superfluous = NULL;
 
 
 /* check state */
 
-delete_list_t *extra_delete_list;
-parray_t *extra_list;
-delete_list_t *needed_delete_list;
-delete_list_t *superfluous_delete_list;
+delete_list_t *extra_delete_list = NULL;
+parray_t *extra_list = NULL;
+delete_list_t *needed_delete_list = NULL;
+delete_list_t *superfluous_delete_list = NULL;
 
-tree_t *check_tree;
-output_context_t *fixdat;
+tree_t *check_tree = NULL;
+output_context_t *fixdat = NULL;

@@ -43,27 +43,16 @@
 #include "util.h"
 #include "xmalloc.h"
 
-
 
 #define EXTRA_MAPS		0x1
 #define NEEDED_MAPS		0x2
 
-
 
 int maps_done = 0;
-delete_list_t *extra_delete_list = NULL;
-parray_t *extra_list = NULL;
-delete_list_t *needed_delete_list = NULL;
-delete_list_t *superfluous_delete_list = NULL;
-char *needed_dir = "needed";	/* TODO: proper value, move elsewhere */
-char *unknown_dir = "unknown";	/* TODO: proper value, move elsewhere */
 
-
 
-static int enter_dir_in_map_and_list(int, parray_t *, const char *,
-				     int, where_t);
+static int enter_dir_in_map_and_list(int, parray_t *, const char *, int, where_t);
 
-
 
 void
 ensure_extra_maps(int flags)
