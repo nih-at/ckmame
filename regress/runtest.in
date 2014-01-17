@@ -1,0 +1,73 @@
+#!/usr/bin/env perl
+
+#  runtest -- run regression tests
+#  Copyright (C) 2002-2013 Dieter Baron and Thomas Klausner
+#
+#  This file is part of ckmame, a program to check rom sets for MAME.
+#  The authors can be contacted at <ckmame@nih.at>
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions
+#  are met:
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in
+#     the documentation and/or other materials provided with the
+#     distribution.
+#  3. The names of the authors may not be used to endorse or promote
+#     products derived from this software without specific prior
+#     written permission.
+# 
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
+#  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#  ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+#  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+#  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+#  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+#  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+#  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+use strict;
+
+BEGIN { push @INC, '@abs_srcdir@'; }
+
+use NiHTest;
+
+my $test = NiHTest::new({ default_program => '../src/ckmame', srcdir => '@srcdir@' });
+
+sub post_parse {
+	my ($test, $hook) = @_;
+
+	if ($test->{test}->{mkdbargs}) {
+		$test->add_file({ destination => 'mame.db', ignore => 1});
+	}
+	else {
+		$test->add_file({ source => 'mame.db', destination => 'mame.db', result => 'mame.db'});
+	}
+
+	return 1;
+}
+
+sub prepare_sandbox {
+	my ($test, $hook) = @_;
+	
+	if ($test->{test}->{mkdbargs}) {
+		my $ret = system('../../src/mkmamedb', @{$test->{test}->{mkdbargs}});
+		# TODO: capture stdout/stderr
+		return $ret == 0;
+	}
+
+	return 1;
+}
+
+$test->add_directive(mkdbargs => { type => 'string...', once => 1 });
+
+$test->add_hook('post_parse', \&post_parse);
+$test->add_hook('prepare_sandbox', \&prepare_sandbox);
+
+$test->run(@ARGV);

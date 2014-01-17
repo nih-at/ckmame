@@ -290,3 +290,7 @@ update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 			${srcdir}/mamedb.txt ${srcdir}/mamedb-2.txt \
 		&& ./dbdump "$$f".db > mamedb-multi-dats.dump \
 		&& rm "$$f".db
+
+runtest.pl: runtest.in
+	sed -e 's!@[s]rcdir@!${srcdir}!g' -e 's!@[a]bs_srcdir@!${abs_srcdir}!g' ${srcdir}/runtest.in > runtest.pl
+	chmod +x runtest.pl
