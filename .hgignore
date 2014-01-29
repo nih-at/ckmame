@@ -30,6 +30,7 @@ Makefile.in$
 ^regress/mame-crcdiff.db$
 ^regress/mkmamedb-dir-in-name.db$
 ^regress/mkmamedb-parent-no-common.db$
+^regress/runtest$
 ^src/ckmame$
 ^src/detective$
 ^src/dumpgame$
