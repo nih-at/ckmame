@@ -271,9 +271,9 @@ op_check(archive_t *a)
     if (!is_writable_directory(archive_name(a))) {
 	if (errno == ENOENT && (a->flags & ARCHIVE_FL_CREATE)) {
 	    char *parent = mydirname(archive_name(a));
-	    int ret = is_writable_directory(parent);
+	    int ok = is_writable_directory(parent);
 	    free(parent);
-	    return ret;
+	    return ok ? 0 : -1;
 	}
 	return -1;
     }

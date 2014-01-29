@@ -52,14 +52,14 @@ is_writable_directory(const char *name)
     struct stat st;
 
     if (stat(name, &st) < 0)
-	return -1;
+	return 0;
 
     if (!S_ISDIR(st.st_mode)) {
 	errno = ENOTDIR;
-	return -1;
+	return 0;
     }
 
-    return access(name, R_OK|W_OK|X_OK);		  
+    return access(name, R_OK|W_OK|X_OK) == 0;
 }
 
 
