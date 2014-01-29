@@ -1,4 +1,5 @@
 description test 2-rom game (no parent), zip is torrentzipped
+archive-types zip
 return 0
 args -FKLivc --torrentzip 2-48
 file roms/2-48.zip 2-48-ok.tzip 2-48-ok.tzip

@@ -50,7 +50,7 @@ int
 archive_commit(archive_t *a)
 {
     int i;
-    
+
     if (a->ops->commit(a) < 0)
         return -1;
     

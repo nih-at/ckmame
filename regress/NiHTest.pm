@@ -147,8 +147,11 @@ sub new {
 		ulimit => { type => 'char string' },
 	};
 	
-	$self->{compare_by_type} = { 'zip/zip' => \&comparator_zip };
+	$self->{compare_by_type} = {};
+	$self->{copy_by_type} = {};
 	$self->{hooks} = {};
+
+	$self->add_comparator('zip/zip', \&comparator_zip);
 	
 	$self->{srcdir} = $opts->{srcdir} // $ENV{srcdir};
 	
@@ -169,9 +172,14 @@ sub new {
 sub add_comparator {
 	my ($self, $ext, $sub) = @_;
 	
-	$self->{compare_by_type}->{$ext} = $sub;
-	
-	return 1;
+	return $self->add_file_proc('compare_by_type', $ext, $sub);
+}
+
+
+sub add_copier {
+	my ($self, $ext, $sub) = @_;
+
+	return $self->add_file_proc('copy_by_type', $ext, $sub);
 }
 
 
@@ -190,15 +198,97 @@ sub add_directive {
 }
 
 
+sub add_file_proc {
+	my ($self, $proc, $ext, $sub) = @_;
+
+	$self->{$proc}->{$ext} = [] unless (defined($self->{$proc}->{$ext}));
+	unshift @{$self->{$proc}->{$ext}}, $sub;
+
+	return 1;
+}
+
+
 sub add_hook {
 	my ($self, $hook, $sub) = @_;
 	
 	$self->{hooks}->{$hook} = [] unless (defined($self->{hooks}->{$hook}));
 	push @{$self->{hooks}->{$hook}}, $sub;
+
+	return 1;
 }
 
 
-sub run {
+sub end {
+	my ($self, @results) = @_;
+
+	my $result = 'PASS';
+
+	for my $r (@results) {
+		if ($r eq 'ERROR' || ($r eq 'FAIL' && $result ne 'ERROR')) {
+			$result = $r;
+		}
+	}
+
+	$self->end_test($result);
+}
+
+
+sub runtest {
+	my ($self, $tag) = @_;
+
+	$self->sandbox_create($tag);
+	$self->sandbox_enter();
+	
+	$self->copy_files();
+	$self->run_hook('prepare_sandbox');
+	$self->run_program();
+
+	if ($self->{test}->{stdout}) {
+		$self->{expected_stdout} = [ @{$self->{test}->{stdout}} ];
+	}
+	else {
+		$self->{expected_stdout} = [];
+	}
+	if ($self->{test}->{stderr}) {
+		$self->{expected_stderr} = [ @{$self->{test}->{stderr}} ];
+	}
+	else {
+		$self->{expected_stderr} = [];
+	}
+
+	$self->run_hook('post_run_program');
+
+	my @failed = ();
+	
+	if ($self->{exit_status} != $self->{test}->{return} // 0) {
+		push @failed, 'exit status';
+		if ($self->{verbose}) {
+			print "Unexpected exit status:\n";
+			print "-" . ($self->{test}->{return} // 0) . "\n+$self->{exit_status}\n";
+		}
+	}
+	
+	if (!$self->compare_arrays($self->{expected_stdout}, $self->{stdout}, 'output')) {
+		push @failed, 'output';
+	}
+	if (!$self->compare_arrays($self->{expected_stderr}, $self->{stderr}, 'error output')) {
+		push @failed, 'error output';
+	}
+	if (!$self->compare_files()) {
+		push @failed, 'files';
+	}
+	
+	$self->sandbox_leave();
+	$self->sandbox_remove() unless ($self->{nocleanup});
+
+	my $result = scalar(@failed) == 0 ? 'PASS' : 'FAIL';
+	$self->print_test_result($tag, $result, join ', ', @failed);
+
+	return $result;
+}
+
+
+sub setup {
 	my ($self, @argv) = @_;
 	
 	if (scalar(@argv) != 1) {
@@ -220,9 +310,6 @@ sub run {
 	$self->die("error in test case definition") unless $self->parse_case($testcase_file);
 	
 	$self->check_features_requirement() if ($self->{test}->{features});
-	
-	$self->sandbox_create();
-	$self->runtest();
 }
 
 
@@ -303,15 +390,14 @@ sub compare_file() {
 		return 0;
 	}
 
-	my $ext = ($self->get_extension($got)) . '/' . ($self->get_extension($expected));
-	
-	if ($self->{compare_by_type}->{$ext}) {
-		return $self->{compare_by_type}->{$ext}($self, $got, $real_expected);
-	}
-	else {
+	my $ok = $self->run_comparator($got, $real_expected);
+
+	if (!defined($ok)) {
 		my $ret = system('diff', $self->{verbose} ? '-u' : '-q', $real_expected, $got);
-		return $ret == 0;
+		$ok = ($ret == 0);
 	}
+
+	return $ok;
 }
 
 
@@ -340,10 +426,17 @@ sub compare_files() {
 	for my $file (sort keys $self->{files}) {
 		push @files_should, $file if ($self->{files}->{$file}->{result} || $self->{files}->{$file}->{ignore});
 	}
+
+	$self->{files_got} = \@files_got;
+	$self->{files_should} = \@files_should;
+
+	unless ($self->run_hook('post_list_files')) {
+		return 0;
+	}
 	
-	$ok = $self->compare_arrays(\@files_should, \@files_got, 'files');
+	$ok = $self->compare_arrays($self->{files_should}, $self->{files_got}, 'files');
 	
-	for my $file (@files_got) {
+	for my $file (@{$self->{files_got}}) {
 		my $file_def = $self->{files}->{$file};
 		next unless ($file_def && $file_def->{result});
 		
@@ -362,7 +455,7 @@ sub copy_files {
 	for my $filename (sort keys %{$self->{files}}) {
 		my $file = $self->{files}->{$filename};
 		next unless ($file->{source});
-		
+
 		my $src = $self->find_file($file->{source});
 		unless ($src) {
 			$self->warn("cannot find input file $file->{source}");
@@ -377,10 +470,16 @@ sub copy_files {
 				make_path($dir);
 			}
 		}
-		
-		unless (copy($src, $file->{destination})) {
-			$self->warn("cannot copy $src to $file->{destination}: $!");
-			$ok = 0;
+
+		my $this_ok = $self->run_copier($src, $file->{destination});
+		if (defined($this_ok)) {
+			$ok &= $this_ok;
+		}
+		else {
+			unless (copy($src, $file->{destination})) {
+				$self->warn("cannot copy $src to $file->{destination}: $!");
+				$ok = 0;
+			}
 		}
 	}
 
@@ -405,20 +504,14 @@ sub die() {
 	
 	print STDERR "$0: $msg\n" if ($msg);
 	
-	$self->end_test('ERROR', $msg);
+	$self->end_test('ERROR');
 }
 
 
 sub end_test {
-	my ($self, $status, $reason) = @_;
+	my ($self, $status) = @_;
 	
 	my $exit_code = $EXIT_CODES{$status} // $EXIT_CODES{ERROR};
-	
-	if ($self->{verbose}) {
-		print "$self->{testname} -- $status";
-		print ": $reason" if ($reason);
-		print "\n";
-	}
 	
 	$self->exit($exit_code);
 }
@@ -430,13 +523,6 @@ sub exit() {
 	### TODO: cleanup
 	
 	exit($status);
-}
-
-
-sub fail() {
-	my ($self, $msg) = @_;
-	
-	$self->end_test(1, 'FAILED', $msg);
 }
 
 
@@ -620,38 +706,46 @@ sub parse_postprocess_files {
 }
 
 
-sub runtest {
-	my ($self) = @_;
-	
-	$self->sandbox_enter();
-	
-	$self->copy_files();
-	$self->run_hook('prepare_sandbox');
-	$self->run_program();
+sub print_test_result {
+	my ($self, $tag, $result, $reason) = @_;
 
-	my @failed = ();
-	
-	if ($self->{exit_status} != $self->{test}->{return} // 0) {
-		push @failed, 'exit status';
-		if ($self->{verbose}) {
-			print "Unexpected exit status:\n";
-			print "-" . ($self->{test}->{return} // 0) . "\n+$self->{exit_status}\n";
+	if ($self->{verbose}) {
+		print "$self->{testname}";
+		print " ($tag)" if ($tag);
+		print " -- $result";
+		print ": $reason" if ($reason);
+		print "\n";
+	}
+}
+
+
+sub run_comparator {
+	my ($self, $got, $expected) = @_;
+
+	return $self->run_file_proc('compare_by_type', $got, $expected);
+}
+
+
+sub run_copier {
+	my ($self, $src, $dest) = @_;
+
+	return $self->run_file_proc('copy_by_type', $src, $dest);
+}
+
+
+sub run_file_proc {
+	my ($self, $proc, $got, $expected) = @_;
+
+	my $ext = ($self->get_extension($got)) . '/' . ($self->get_extension($expected));
+
+	if (defined($self->{$proc}->{$ext})) {
+		for my $sub (@{$self->{$proc}->{$ext}}) {
+			my $ret = $sub->($self, $got, $expected);
+			return $ret if (defined($ret));
 		}
 	}
-	if (!$self->compare_arrays($self->{test}->{stdout} // [], $self->{stdout}, 'output')) {
-		push @failed, 'output';
-	}
-	if (!$self->compare_arrays($self->{test}->{stderr} // [], $self->{stderr}, 'error output')) {
-		push @failed, 'error output';
-	}
-	if (!$self->compare_files()) {
-		push @failed, 'files';
-	}
-	
-	$self->sandbox_leave();
-	$self->sandbox_remove() unless ($self->{nocleanup});
 
-	$self->end_test(scalar(@failed) == 0 ? 'PASS' : 'FAIL', join ', ', @failed);
+	return undef;
 }
 
 
@@ -662,7 +756,10 @@ sub run_hook {
 	
 	if (defined($self->{hooks}->{$hook})) {
 		for my $sub (@{$self->{hooks}->{$hook}}) {
-			$ok &= $sub->($self, $hook);
+			unless ($sub->($self, $hook)) {
+				$self->warn("hook $hook failed");
+				$ok = 0;
+			}
 		}
 	}
 	
@@ -702,9 +799,10 @@ sub run_program {
 
 
 sub sandbox_create {
-	my ($self) = @_;
+	my ($self, $tag) = @_;
 	
-	$self->{sandbox_dir} = "sandbox-$self->{testname}.d$$";
+	$tag = "-$tag" if ($tag);
+	$self->{sandbox_dir} = "sandbox-$self->{testname}$tag.d$$";
 	
 	$self->die("sandbox $self->{sandbox_dir} already exists") if (-e $self->{sandbox_dir});
 	
@@ -742,29 +840,15 @@ sub sandbox_remove {
 	my ($self) = @_;
 
 	my $ok = 1;
-	unless (system('chmod', '-R', 'u+rwx', $self->{sandbox_dir}) != 0) {
+	unless (system('chmod', '-R', 'u+rwx', $self->{sandbox_dir}) == 0) {
 		$self->warn("can't ensure that sandbox is writable: $!");
 	}
-	unless (system('rm', '-rf', $self->{sandbox_dir}) != 0) {
+	unless (system('rm', '-rf', $self->{sandbox_dir}) == 0) {
 		$self->warn("can't remove sandbox: $!");
 		$ok = 0;
 	}
 	
 	return $ok;
-}
-
-
-sub skip() {
-	my ($self, $msg) = @_;
-	
-	$self->end_test(77, 'skipped', $msg);
-}
-
-
-sub succeed() {
-	my ($self, $msg) = @_;
-	
-	$self->end_test(0, 'passed', $msg);
 }
 
 

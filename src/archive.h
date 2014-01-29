@@ -34,7 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include "array.h"
@@ -77,6 +78,7 @@ struct archive_ops {
 #define ARCHIVE_FL_NOCACHE		0x00800
 #define ARCHIVE_FL_RDONLY		0x01000
 #define ARCHIVE_FL_TORRENTZIP		0x02000
+#define ARCHIVE_FL_DELAY_READINFO	0x04000
 
 #define ARCHIVE_FL_HASHTYPES_MASK	0x000ff
 #define ARCHIVE_FL_MASK			0x0ff00
@@ -100,12 +102,13 @@ archive_t *archive_by_id(int);
 int archive_check(archive_t *);
 int archive_close(archive_t *);
 int archive_commit(archive_t *);
+int archive_dir_add_file(archive_t *, const char *, struct stat *, file_sh_t *);
 int archive_file_add_empty(archive_t *, const char *);
 int archive_file_compare_hashes(archive_t *, int, const hashes_t *);
 int archive_file_compute_hashes(archive_t *, int, int);
 int archive_file_copy(archive_t *, int, archive_t *, const char *);
 int archive_file_copy_or_move(archive_t *, int, archive_t *, const char *, int);
-int archive_file_copy_part(archive_t *, int, archive_t *, const char *, off_t, off_t, const file_t *f);
+int archive_file_copy_part(archive_t *, int, archive_t *, const char *, off_t, off_t, const file_t *);
 int archive_file_delete(archive_t *, int);
 int archive_file_move(archive_t *, int, archive_t *, const char *);
 int archive_file_rename(archive_t *, int, const char *);

@@ -40,19 +40,78 @@ use NiHTest;
 
 my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@' });
 
+my $roms_uncompressed = 0;
+
 sub comparator_db {
-	my ($self, $got, $expected) = @_;
+	my ($test, $got, $expected) = @_;
 	# $got -- db
 	# $expected -- db dump
 
-	my $cmd = "../dbdump \"$got\" | diff " . ($self->{verbose} ? '-u' : '-q') . " \"$expected\" -";
+	my $cmd = "../dbdump \"$got\" | diff " . ($test->{verbose} ? '-u' : '-q') . " \"$expected\" -";
 	my $ret = system($cmd);
     
 	return $ret == 0;
 }
 
+sub comparator_zip {
+	my ($test, $got, $expected) = @_;
+
+	return undef unless ($roms_uncompressed);
+
+	$got =~ s/\.zip//;
+	return NiHTest::comparator_zip($test, $got, $expected);
+}
+
+
+sub copier_zip {
+	my ($test, $src, $dest) = @_;
+
+	return undef unless ($roms_uncompressed);
+
+	$dest =~ s/\.zip$//;
+
+	return system('unzip', '-qd', $dest, $src) == 0;
+}
+
+
+sub mangle_program {
+	my ($test, $hook) = @_;
+
+	$test->{test}->{program} =  "../src/$test->{test}->{program}";
+
+	return 1;
+}
+
+
+sub post_list_files {
+	my ($test, $hook) = @_;
+
+	if ($roms_uncompressed) {
+		my %got = ();
+		
+		for my $file (@{$test->{files_got}}) {
+			next if ($file eq 'roms/.ckmame.db');
+			if ($file =~ m,((?:roms|unknown|needed)/[^/]*)/,) {
+				$got{"$1.zip"} = 1;
+			}
+			else {
+				$got{$file} = 1;
+			}
+		}
+
+		$test->{files_got} = [sort keys %got];
+	}
+
+	return 1;
+}
+
+
 sub post_parse {
 	my ($test, $hook) = @_;
+
+	if (!defined($test->{test}->{'archive-types'})) {
+		$test->{test}->{'archive-types'} = $test->{test}->{program} =~ m/ckmame$/ ? ['zip', 'dir'] : ['zip'];
+	}
 
 	if ($test->{test}->{mkdbargs}) {
 		$test->add_file({ destination => 'mame.db', ignore => 1});
@@ -63,6 +122,18 @@ sub post_parse {
 
 	return 1;
 }
+
+
+sub post_run_program {
+	my ($test, $hook) = @_;
+
+	if ($roms_uncompressed) {
+		map { s,((?:roms|unknown|needed)/[^ :]*)\.zip,$1,g; } @{$test->{expected_stdout}};
+	}
+
+	return 1;
+}
+
 
 sub prepare_sandbox {
 	my ($test, $hook) = @_;
@@ -80,21 +151,39 @@ sub prepare_sandbox {
 }
 
 
-sub mangle_program {
-	my ($test, $hook) = @_;
-
-	$test->{test}->{program} =  "../src/$test->{test}->{program}";
-
-	return 1;
-}
-
-
 $test->add_directive(mkdbargs => { type => 'string...', once => 1 });
+$test->add_directive('archive-types' => { type => 'string...', once => 1 });
 
 $test->add_comparator('db/dump', \&comparator_db);
+$test->add_comparator('zip/zip', \&comparator_zip);
+$test->add_copier('zip/zip', \&copier_zip);
 
-$test->add_hook('post_parse', \&post_parse);
-$test->add_hook('prepare_sandbox', \&prepare_sandbox);
 $test->add_hook('mangle_program', \&mangle_program);
+$test->add_hook('post_parse', \&post_parse);
+$test->add_hook('post_list_files', \&post_list_files);
+$test->add_hook('post_run_program', \&post_run_program);
+$test->add_hook('prepare_sandbox', \&prepare_sandbox);
 
-$test->run(@ARGV);
+$test->setup(@ARGV);
+
+my @results = ();
+
+for my $archive_type (reverse sort @{$test->{test}->{'archive-types'}}) {
+	if ($archive_type eq 'dir') {
+		$roms_uncompressed = 1;
+		if ($test->{test}->{program} =~ m/ckmame$/) {
+			unshift @{$test->{test}->{args}}, '-u';
+		}
+	}
+
+	push @results, $test->runtest($archive_type);
+
+	if ($archive_type eq 'dir') {
+		$roms_uncompressed = 0;
+		if ($test->{test}->{program} =~ m/ckmame$/) {
+			shift @{$test->{test}->{args}};
+		}
+	}
+}
+
+$test->end(@results);

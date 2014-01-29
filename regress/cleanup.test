@@ -1,4 +1,5 @@
 description clean up extra dirs
+archive-types zip
 return 0
 args -O ../mame2.db -v --cleanup-extra -e extra
 file roms/deadbeef.zip deadbeef.zip deadbeef.zip 

@@ -33,6 +33,7 @@
 
 
 
+#include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -53,11 +54,13 @@ parray_t *
 list_directory(const char *dirname, const char *dbname)
 {
     dir_t *dir;
-    char b[8192], *p;
+    char b[8192], *p, *ext;
     parray_t *listf, *listd, *lst, *found;
     dir_status_t err;
     int len_dir, len_name;
-
+    int known;
+    struct stat st;
+    
     listf = listd = NULL;
 
     if (dbname) {
@@ -95,34 +98,50 @@ list_directory(const char *dirname, const char *dbname)
 	    continue;
 	}
 
+	if (roms_unzipped && strcmp(b+len_dir, DBH_DIR_DB_NAME) == 0)
+	    continue;
+
 	len_name = strlen(b+len_dir);
 
-	if (len_name > 4) {
-	    p = b+len_dir+len_name-4;
-	    if (strcmp(p, ".zip") == 0) {
-		*p = '\0';
-		lst = listf;
-	    }
-	    else if (strcmp(p, ".chd") == 0) {
-		*p = '\0';
-		lst = listd;
-	    }
-	    else {
-		p = NULL;
-		lst = listd;
-	    }
-	}
-	else {
-	    p = NULL;
-	    lst = listd;
+	if (stat(b, &st) < 0) {
+	    /* TODO: handle error */
+	    continue;
 	}
 
-	if (lst == NULL || parray_index_sorted(lst, b+len_dir, strcmp) == -1) {
+	known = 0;
+
+	if (S_ISDIR(st.st_mode)) {
+	    if (roms_unzipped && listf)
+		known = parray_index_sorted(listf, b+len_dir, strcmp) != -1;
+	}
+	else {
+	    ext = NULL;
+
+	    if (len_name > 4) {
+		p = b+len_dir+len_name-4;
+		if (*p == '.') {
+		    ext = p+1;
+		    *p = '\0';
+		}
+	    }
+
+	    if (ext) {
+		if (strcmp(ext, "chd") == 0 && listd)
+		    known = parray_index_sorted(listd, b+len_dir, strcmp) != -1;
+		else if (!roms_unzipped && strcmp(ext, "zip") == 0 && listf)
+		    known = parray_index_sorted(listf, b+len_dir, strcmp) != -1;
+	    }
+	    else {
+		if (listd)
+		    known = parray_index_sorted(listd, b+len_dir, strcmp) != -1;
+	    }
+
 	    if (p)
 		*p = '.';
-		
-	    parray_push(found, xstrdup(b));
 	}
+
+	if (!known)
+	    parray_push(found, xstrdup(b));
     }
     dir_close(dir);
 

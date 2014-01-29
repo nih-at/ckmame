@@ -1,4 +1,5 @@
 description test game (no parent), zip is invalid, good files exist
+archive-types zip
 return 0
 args -FKLivc 2-48
 file roms/2-48.zip Makefile.am 2-48-ok.zip

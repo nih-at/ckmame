@@ -1,4 +1,5 @@
 description test single-rom game (no parent), zip is inconsistent, with -i
+archive-types zip
 return 0
 args -FKLivc 1-4
 file-del roms/1-4.zip 1-4-inconsistent.zip

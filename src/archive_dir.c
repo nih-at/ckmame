@@ -70,7 +70,7 @@ typedef struct {
     array_t *change;
 } ud_t;
 
-static ud_t *ud_new(int);
+static void change_init(change_t *);
 
 static int cmp_file_by_name(file_t *f, const char *);
 static int ensure_archive_dir(archive_t *);
@@ -109,9 +109,51 @@ struct archive_ops ops_dir = {
 
 
 int
+archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t *sh)
+{
+    ud_t *ud = archive_user_data(a);
+    file_t *fdir;
+    struct stat stt;
+
+    fdir = array_grow(archive_files(a), file_init);
+    array_grow(ud->change, change_init);
+                
+    file_name(fdir) = xstrdup(fname);
+
+    if (!st) {
+	char *full_name = make_full_name(a, fname);
+	stat(full_name, &stt); /* TODO handle error */
+	free(full_name);
+	st = &stt;
+    }
+
+    file_size(fdir) = st->st_size;
+    file_mtime(fdir) = st->st_mtime;
+                
+    if (sh)
+	memcpy(fdir->sh, sh, sizeof(fdir->sh));
+    else
+	archive_file_compute_hashes(a, array_length(archive_files(a))-1, HASHES_TYPE_ALL);
+
+    return 0;
+}
+
+
+int
 archive_init_dir(archive_t *a)
 {
+    ud_t *ud;
+
     a->ops = &ops_dir;
+
+    ud = xmalloc(sizeof(*ud));
+
+    /* TODO: ud->db = ? */
+    ud->db = NULL;
+    ud->id = -1;
+    ud->change = array_new(sizeof(change_t));
+
+    archive_user_data(a) = ud;
 
     return 0;
 }
@@ -198,14 +240,7 @@ cmp_file_by_name(file_t *f, const char *name)
 static int
 ensure_archive_dir(archive_t *a)
 {
-    struct stat st;
-
-    if (stat(archive_name(a), &st) < 0) {
-	if (errno == ENOENT && (archive_flags(a) & ARCHIVE_FL_CREATE))
-	    return mkdir(archive_name(a), 0777);
-	return -1;
-    }
-    return 0;
+    return ensure_dir(archive_name(a), 0);
 }
 
 
@@ -249,6 +284,7 @@ make_tmp_name(archive_t *a, const char *name)
 	return NULL;
 
     snprintf(s, len, "%s/.ckmame-%s.XXXXXX", archive_name(a), name);
+    /* TODO: map / in name to _ */
     
     if (mktemp(s) == NULL) {
 	free(s);
@@ -268,16 +304,6 @@ my_fts_sort_names(const FTSENT **a, const FTSENT **b)
 static int
 op_check(archive_t *a)
 {
-    if (!is_writable_directory(archive_name(a))) {
-	if (errno == ENOENT && (a->flags & ARCHIVE_FL_CREATE)) {
-	    char *parent = mydirname(archive_name(a));
-	    int ok = is_writable_directory(parent);
-	    free(parent);
-	    return ok ? 0 : -1;
-	}
-	return -1;
-    }
-    
     return 0;
 }
 
@@ -308,6 +334,8 @@ op_commit(archive_t *a)
     
     int ret = 0;
     for (idx=0; idx<archive_num_files(a); idx++) {
+	if (idx >= array_length(ud->change))
+	    break;
 	ch = array_get(ud->change, idx);
 	switch (ch->type) {
 	case CHANGE_NONE:
@@ -323,6 +351,7 @@ op_commit(archive_t *a)
 	case CHANGE_ADD:
 	case CHANGE_REPLACE:
 	case CHANGE_RENAME:
+	    ensure_dir(ch->final_name, 1); /* TODO: error */
 	    if (rename(ch->current_name, ch->final_name) < 0) {
 		myerror(ERRZIP, "cannot rename '%s' to '%s': %s", ch->current_name, ch->final_name, strerror(errno));
 		ret = -1;
@@ -366,7 +395,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
     }
 
     if (srcname && start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx)))) {
-	if (link_or_copy(tmpname, srcname) < 0) {
+	if (link_or_copy(srcname, tmpname) < 0) {
 	    free(tmpname);
 	    free(srcname);
 	    return -1;
@@ -439,6 +468,13 @@ op_file_delete(archive_t *a, int idx)
     char *full_name = get_full_name(a, idx);
 
     if (stat(full_name, &st) < 0) {
+	seterrinfo(NULL, archive_name(a));
+	myerror(ERRZIP, "cannot delete '%s': %s", file_name(archive_file(a, idx)), strerror(errno));
+	free(full_name);
+	free(tmpname);
+	return -1;
+    }
+    if (rename(full_name, tmpname) < 0) {
 	seterrinfo(NULL, archive_name(a));
 	myerror(ERRZIP, "cannot delete '%s': %s", file_name(archive_file(a, idx)), strerror(errno));
 	free(full_name);
@@ -529,7 +565,9 @@ op_read_infos(archive_t *a)
     FTSENT *ent;
     file_t *fdir, *fdb;
     char * const names[2] = { archive_name(a), NULL };
-    
+    ud_t *ud = archive_user_data(a);
+    const char *fname;
+
     if (archive_where(a) == FILE_ROMSET) {
         if (ensure_romset_dir_db() < 0)
             return -1;
@@ -573,26 +611,21 @@ op_read_infos(archive_t *a)
                 break;
 
             case FTS_F:
-                fdir = array_grow(archive_files(a), file_init);
-                
-                file_name(fdir) = xstrdup(ent->fts_path+strlen(archive_name(a))+1);
-                file_size(fdir) = ent->fts_statp->st_size;
-                file_mtime(fdir) = ent->fts_statp->st_mtime;
-                
+		fname = ent->fts_path+strlen(archive_name(a))+1;
+
 		fdb = NULL;
                 if (files) {
-		    int idx = array_index(files, file_name(fdir), cmp_file_by_name);
+		    int idx = array_index(files, fname, cmp_file_by_name);
 		    if (idx >= 0) {
 			fdb = array_get(files, idx);
-			if (file_mtime(fdb) != file_mtime(fdir) || file_size(fdb) != file_size(fdir))
+			if (file_mtime(fdb) != ent->fts_statp->st_mtime || file_size(fdb) != ent->fts_statp->st_size)
 			    fdb = NULL;
 		    }
 		}
 
-		if (fdb)
-		    memcpy(fdir->sh, fdb->sh, sizeof(fdir->sh));
-		else
-		    archive_file_compute_hashes(a, array_length(archive_files(a)-1), HASHES_TYPE_ALL);
+		archive_dir_add_file(a, fname, ent->fts_statp, fdb ? fdb->sh : NULL);
+
+
                 break;
 
             case FTS_DEFAULT:
@@ -617,17 +650,9 @@ op_read_infos(archive_t *a)
 	}
     }
 
-    ud_t *ud;
-    ud = xmalloc(sizeof(*ud));
-
-    /* TODO: ud->db = ? */
-    ud->db = NULL;
     ud->id = id;
-    ud->change = array_new_length(sizeof(change_t), archive_num_files(a), change_init);
 
-    archive_user_data(a) = ud;
     return 0;
-    
 }
 
 
@@ -639,6 +664,8 @@ op_rollback(archive_t *a)
     change_t *ch;
 
     for (idx=0; idx<archive_num_files(a); idx++) {
+	if (idx >= array_length(ud->change))
+	    break;
 	ch = array_get(ud->change, idx);
 	change_rollback(ch);
     }

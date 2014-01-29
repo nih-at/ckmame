@@ -5,6 +5,7 @@
 - archive_dir: add lots of tests
 - runtest: improve support for testing archive_dir
 - add tests using pre-existing .ckmame.db, possibly out of date
+- stop using fts, use dir.{c,h}
 
 * previously
 - archive_zip.c: don't use zip_fread in ops directly, breaks very old libzip

@@ -191,13 +191,22 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_f
     if ((dir=dir_open(name, dir_flags)) == NULL)
 	return -1;
 
+    if (roms_unzipped) {
+	if ((a=archive_new(name, TYPE_ROM, where, ARCHIVE_FL_DELAY_READINFO)) == NULL) {
+	    /* TODO: handle error */
+	}
+    }
+
     while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+	int handled = 0;
 	if (ds == DIR_ERROR) {
 	    /* TODO: handle error */
 	    continue;
 	}
 	switch ((nt=name_type(b))) {
 	case NAME_ZIP:
+	    if (roms_unzipped)
+		break;
 	    if ((a=archive_new(b, TYPE_ROM, where, 0)) != NULL) {
 		if ((flags & DO_LIST) && list)
 		    parray_push(list, xstrdup(archive_name(a)));
@@ -213,12 +222,22 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_f
 		if ((flags & DO_LIST) && list)
 		    parray_push(list, xstrdup(disk_name(d)));
 		disk_free(d);
+		handled = 1;
 	    }
 
 	case NAME_UNKNOWN:
 	    /* ignore unknown files */
 	    break;
 	}
+	if (roms_unzipped && !handled) {
+	    archive_dir_add_file(a, b+strlen(name)+1, NULL, NULL); /* TODO: handle error */
+	}
+    }
+
+    if (roms_unzipped) {
+	if ((flags & DO_LIST) && list)
+	    parray_push(list, xstrdup(name));
+	archive_free(a);
     }
 
     return dir_close(dir);

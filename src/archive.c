@@ -96,11 +96,13 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     hashes_types(&h) = hashtypes;
 
     if ((f=a->ops->file_open(a, idx)) == NULL) {
+	myerror(ERRDEF, "%s: %s: can't open: %s", archive_name(a), file_name(r), strerror(errno));
 	file_status(r) = STATUS_BADDUMP;
 	return -1;
     }
     
     if (get_hashes(a, f, file_size(r), &h) < 0) {
+	myerror(ERRDEF, "%s: %s: can't compute hashes: %s", archive_name(a), file_name(r), strerror(errno));
 	file_status(r) = STATUS_BADDUMP;
 	a->ops->file_close(f);
 	return -1;
@@ -249,12 +251,14 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
 	    archive_real_free(a);
 	    return NULL;
 	}
-        if (archive_read_infos(a) < 0) {
-            if (!(a->flags & ARCHIVE_FL_CREATE)) {
-                archive_real_free(a);
-                return NULL;
-            }
-        }
+	if (!(a->flags & ARCHIVE_FL_DELAY_READINFO)) {
+	    if (archive_read_infos(a) < 0) {
+		if (!(a->flags & ARCHIVE_FL_CREATE)) {
+		    archive_real_free(a);
+		    return NULL;
+		}
+	    }
+	}
 	break;
 
     case TYPE_DISK:
