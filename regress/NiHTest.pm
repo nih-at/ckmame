@@ -160,6 +160,7 @@ sub new {
 	$self->{in_sandbox} = 0;
 	
 	$self->{verbose} = $ENV{VERBOSE};
+	$self->{nocleanup} = $ENV{NOCLEANUP};
 
 	return $self;
 }
@@ -648,7 +649,7 @@ sub runtest {
 	}
 	
 	$self->sandbox_leave();
-	### TODO: remove sandbox
+	$self->sandbox_remove() unless ($self->{nocleanup});
 
 	$self->end_test(scalar(@failed) == 0 ? 'PASS' : 'FAIL', join ', ', @failed);
 }
@@ -734,6 +735,22 @@ sub sandbox_leave {
 	chdir('..') or $self->die("cannot leave sandbox: $!");
 	
 	$self->{in_sandbox} = 0;
+}
+
+
+sub sandbox_remove {
+	my ($self) = @_;
+
+	my $ok = 1;
+	unless (system('chmod', '-R', 'u+rwx', $self->{sandbox_dir}) != 0) {
+		$self->warn("can't ensure that sandbox is writable: $!");
+	}
+	unless (system('rm', '-rf', $self->{sandbox_dir}) != 0) {
+		$self->warn("can't remove sandbox: $!");
+		$ok = 0;
+	}
+	
+	return $ok;
 }
 
 
