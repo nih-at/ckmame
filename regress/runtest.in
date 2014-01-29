@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 #  runtest -- run regression tests
-#  Copyright (C) 2002-2013 Dieter Baron and Thomas Klausner
+#  Copyright (C) 2002-2014 Dieter Baron and Thomas Klausner
 #
 #  This file is part of ckmame, a program to check rom sets for MAME.
 #  The authors can be contacted at <ckmame@nih.at>
@@ -38,7 +38,18 @@ BEGIN { push @INC, '@abs_srcdir@'; }
 
 use NiHTest;
 
-my $test = NiHTest::new({ default_program => '../src/ckmame', srcdir => '@srcdir@' });
+my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@' });
+
+sub comparator_db {
+	my ($self, $got, $expected) = @_;
+	# $got -- db
+	# $expected -- db dump
+
+	my $cmd = "../dbdump \"$got\" | diff " . ($self->{verbose} ? '-u' : '-q') . " \"$expected\" -";
+	my $ret = system($cmd);
+    
+	return $ret == 0;
+}
 
 sub post_parse {
 	my ($test, $hook) = @_;
@@ -61,13 +72,29 @@ sub prepare_sandbox {
 		# TODO: capture stdout/stderr
 		return $ret == 0;
 	}
+	if (! -d 'roms') {
+		mkdir('roms');
+	}
 
 	return 1;
 }
 
+
+sub mangle_program {
+	my ($test, $hook) = @_;
+
+	$test->{test}->{program} =  "../src/$test->{test}->{program}";
+
+	return 1;
+}
+
+
 $test->add_directive(mkdbargs => { type => 'string...', once => 1 });
+
+$test->add_comparator('db/dump', \&comparator_db);
 
 $test->add_hook('post_parse', \&post_parse);
 $test->add_hook('prepare_sandbox', \&prepare_sandbox);
+$test->add_hook('mangle_program', \&mangle_program);
 
 $test->run(@ARGV);
