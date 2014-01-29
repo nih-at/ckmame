@@ -28,7 +28,7 @@ ZIPCMP=@ZIPCMP@
 
 TESTS_ENVIRONMENT=      ZIPCMP=${ZIPCMP} MAME_DB="${MAME_DB}"
 TEST_EXTENSIONS= .test
-TEST_LOG_COMPILER= ${srcdir}/runtest
+TEST_LOG_COMPILER= ${builddir}/runtest
 
 TESTS=	\
 		archive-broken.test \
@@ -252,7 +252,7 @@ DBFILES=	mamedb.txt \
 		skip.xml \
 		skipped.txt
 
-check-am: ${DBS}
+check-am: ${DBS} runtest
 
 ${MAME_DB}: ../src/mkmamedb ${srcdir}/mamedb.txt
 	../src/mkmamedb ${srcdir}/mamedb.txt
@@ -291,6 +291,6 @@ update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 		&& ./dbdump "$$f".db > mamedb-multi-dats.dump \
 		&& rm "$$f".db
 
-runtest.pl: runtest.in
-	sed -e 's!@[s]rcdir@!${srcdir}!g' -e 's!@[a]bs_srcdir@!${abs_srcdir}!g' ${srcdir}/runtest.in > runtest.pl
-	chmod +x runtest.pl
+runtest: runtest.in
+	sed -e 's!@[s]rcdir@!${srcdir}!g' -e 's!@[a]bs_srcdir@!${abs_srcdir}!g' ${srcdir}/runtest.in > runtest
+	chmod +x runtest
