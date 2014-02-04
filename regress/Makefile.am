@@ -168,6 +168,7 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
+		nogood-diskgood.test \
 		rom-from-unknown.test \
 		tz-ok.test \
 		tz-from-romset.test

@@ -19,6 +19,7 @@
   In image new/file.chd:
   image new/file.chd: not used
 ! [bug] mkmamedb: nogoodclone: s/romof 1-8/romof cloneof-8/ gives strange result
++ [bug] no good rom with good disk gives incorrect warnings (nogood-diskgood.test)
 + [cleanup] get rid of global variables (mostly globals.c)
 + [feature] mkmamedb: parser for mtree files
 + [feature] server mode: tell location/mamedb of ROM sets, serves files needed by remote ckmame client

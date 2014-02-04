@@ -31,53 +31,55 @@
 18|0|0|08.rom|<null>|0|0|8|911640957|<null>|<null>
 18|2|0|208-7|<null>|2|0|<null>|<null>|<null>|<null>
 19|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
+19|2|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
 20|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
-20|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
 21|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
-21|0|1|08.rom|<null>|0|1|8|911640957|<null>|<null>
-23|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-24|0|0|samplegame.rom|<null>|0|0|2048|305419960|<null>|<null>
-24|1|0|bang.wav|<null>|0|0|<null>|<null>|<null>|<null>
-24|1|1|crash.wav|<null>|0|0|<null>|<null>|<null>|<null>
-25|0|0|samplechild.rom|<null>|0|0|1024|2271892257|<null>|<null>
-25|1|0|boom.wav|<null>|0|0|<null>|<null>|<null>|<null>
-25|1|1|crash.wav|<null>|0|1|<null>|<null>|<null>|<null>
-26|0|0|zero|<null>|0|0|0|0|<null>|<null>
+21|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
+22|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
+22|0|1|08.rom|<null>|0|1|8|911640957|<null>|<null>
+24|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
+25|0|0|samplegame.rom|<null>|0|0|2048|305419960|<null>|<null>
+25|1|0|bang.wav|<null>|0|0|<null>|<null>|<null>|<null>
+25|1|1|crash.wav|<null>|0|0|<null>|<null>|<null>|<null>
+26|0|0|samplechild.rom|<null>|0|0|1024|2271892257|<null>|<null>
+26|1|0|boom.wav|<null>|0|0|<null>|<null>|<null>|<null>
+26|1|1|crash.wav|<null>|0|1|<null>|<null>|<null>|<null>
 27|0|0|zero|<null>|0|0|0|0|<null>|<null>
-27|0|1|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-28|0|0|zero|<null>|0|0|0|305419896|<null>|<null>
-29|0|0|00|<null>|0|0|2|3091600544|<null>|<null>
-29|0|1|01|<null>|0|0|2|3477152822|<null>|<null>
-29|0|2|02|<null>|0|0|2|1447589260|<null>|<null>
-29|0|3|03|<null>|0|0|2|558843162|<null>|<null>
-29|0|4|04|<null>|0|0|2|3207319737|<null>|<null>
-29|0|5|05|<null>|0|0|2|3358384175|<null>|<null>
-29|0|6|06|<null>|0|0|2|1361424789|<null>|<null>
-29|0|7|07|<null>|0|0|2|639795459|<null>|<null>
-29|0|8|08|<null>|0|0|2|3063782546|<null>|<null>
-29|0|9|09|<null>|0|0|2|3248139268|<null>|<null>
-29|0|10|0A|<null>|0|0|2|2672055562|<null>|<null>
-29|0|11|0B|<null>|0|0|2|105710768|<null>|<null>
-29|0|12|0C|<null>|0|0|2|1900688422|<null>|<null>
-29|0|13|0D|<null>|0|0|2|4012810629|<null>|<null>
-29|0|14|0E|<null>|0|0|2|2552860947|<null>|<null>
-29|0|15|0F|<null>|0|0|2|18923689|<null>|<null>
-29|0|16|10|<null>|0|0|2|2707236321|<null>|<null>
-29|0|17|11|<null>|0|0|2|3596227959|<null>|<null>
-29|0|18|12|<null>|0|0|2|1330857165|<null>|<null>
-29|0|19|13|<null>|0|0|2|945058907|<null>|<null>
-29|0|20|14|<null>|0|0|2|2788221432|<null>|<null>
-29|0|21|15|<null>|0|0|2|3510096238|<null>|<null>
-29|0|22|16|<null>|0|0|2|1212055764|<null>|<null>
-29|0|23|17|<null>|0|0|2|1060745282|<null>|<null>
-29|0|24|18|<null>|0|0|2|2944839123|<null>|<null>
-29|0|25|19|<null>|0|0|2|3632373061|<null>|<null>
-29|0|26|1A|<null>|0|0|2|2254398539|<null>|<null>
-29|0|27|1B|<null>|0|0|2|525743601|<null>|<null>
-29|0|28|1C|<null>|0|0|2|1750140263|<null>|<null>
-29|0|29|1D|<null>|0|0|2|4130705604|<null>|<null>
-29|0|30|1E|<null>|0|0|2|2167578706|<null>|<null>
-29|0|31|1F|<null>|0|0|2|406581736|<null>|<null>
+28|0|0|zero|<null>|0|0|0|0|<null>|<null>
+28|0|1|04.rom|<null>|0|0|4|3632233996|<null>|<null>
+29|0|0|zero|<null>|0|0|0|305419896|<null>|<null>
+30|0|0|00|<null>|0|0|2|3091600544|<null>|<null>
+30|0|1|01|<null>|0|0|2|3477152822|<null>|<null>
+30|0|2|02|<null>|0|0|2|1447589260|<null>|<null>
+30|0|3|03|<null>|0|0|2|558843162|<null>|<null>
+30|0|4|04|<null>|0|0|2|3207319737|<null>|<null>
+30|0|5|05|<null>|0|0|2|3358384175|<null>|<null>
+30|0|6|06|<null>|0|0|2|1361424789|<null>|<null>
+30|0|7|07|<null>|0|0|2|639795459|<null>|<null>
+30|0|8|08|<null>|0|0|2|3063782546|<null>|<null>
+30|0|9|09|<null>|0|0|2|3248139268|<null>|<null>
+30|0|10|0A|<null>|0|0|2|2672055562|<null>|<null>
+30|0|11|0B|<null>|0|0|2|105710768|<null>|<null>
+30|0|12|0C|<null>|0|0|2|1900688422|<null>|<null>
+30|0|13|0D|<null>|0|0|2|4012810629|<null>|<null>
+30|0|14|0E|<null>|0|0|2|2552860947|<null>|<null>
+30|0|15|0F|<null>|0|0|2|18923689|<null>|<null>
+30|0|16|10|<null>|0|0|2|2707236321|<null>|<null>
+30|0|17|11|<null>|0|0|2|3596227959|<null>|<null>
+30|0|18|12|<null>|0|0|2|1330857165|<null>|<null>
+30|0|19|13|<null>|0|0|2|945058907|<null>|<null>
+30|0|20|14|<null>|0|0|2|2788221432|<null>|<null>
+30|0|21|15|<null>|0|0|2|3510096238|<null>|<null>
+30|0|22|16|<null>|0|0|2|1212055764|<null>|<null>
+30|0|23|17|<null>|0|0|2|1060745282|<null>|<null>
+30|0|24|18|<null>|0|0|2|2944839123|<null>|<null>
+30|0|25|19|<null>|0|0|2|3632373061|<null>|<null>
+30|0|26|1A|<null>|0|0|2|2254398539|<null>|<null>
+30|0|27|1B|<null>|0|0|2|525743601|<null>|<null>
+30|0|28|1C|<null>|0|0|2|1750140263|<null>|<null>
+30|0|29|1D|<null>|0|0|2|4130705604|<null>|<null>
+30|0|30|1E|<null>|0|0|2|2167578706|<null>|<null>
+30|0|31|1F|<null>|0|0|2|406581736|<null>|<null>
 >>> table game (game_id, name, description, dat_idx)
 1|1-4|one four byte file|0
 2|1-8|one eight byte file|0
@@ -97,23 +99,24 @@
 16|diskchild|1-4 with disk (child)|0
 17|disk-nogood|1-4 with no good dump disk|0
 18|disk-nogood2|1-8 with no good dump disk|0
-19|nogood|1-4 with no good dump|0
-20|nogood-2|clone-8 with no good dump|0
-21|nogoodclone|clone-8 with no good dump|0
-22|norom|no rom|0
-23|parent-4|one four byte file, has clone|0
-24|samptest|sample test|0
-25|samptest-child|sample test child|0
-26|zero|game with 0 byte rom|0
-27|zero-4|game with 0 byte rom and a bigger one|0
-28|zerobadcrc|game with 0 byte rom, impossible CRC|0
-29|many|game with many (32) roms|0
+19|diskgood-romnogood|no good rom with good disk|0
+20|nogood|1-4 with no good dump|0
+21|nogood-2|clone-8 with no good dump|0
+22|nogoodclone|clone-8 with no good dump|0
+23|norom|no rom|0
+24|parent-4|one four byte file, has clone|0
+25|samptest|sample test|0
+26|samptest-child|sample test child|0
+27|zero|game with 0 byte rom|0
+28|zero-4|game with 0 byte rom and a bigger one|0
+29|zerobadcrc|game with 0 byte rom, impossible CRC|0
+30|many|game with many (32) roms|0
 >>> table parent (game_id, file_type, parent)
 8|0|parent-4
 10|0|deadbeef
 11|0|deadbeef
 16|0|disk
-21|0|1-8
-25|1|samptest
+22|0|1-8
+26|1|samptest
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

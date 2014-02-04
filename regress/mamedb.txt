@@ -164,6 +164,14 @@ game (
 	disk ( name 208-7 )
 )
 game (
+	name diskgood-romnogood
+	description "no good rom with good disk"
+	manufacturer "synth"
+	year 2014
+        rom ( name 04.rom size 4 flags nodump )
+	disk ( name 108-5 md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 )
+)
+game (
 	name nogood
 	description "1-4 with no good dump"
 	manufacturer "synth"

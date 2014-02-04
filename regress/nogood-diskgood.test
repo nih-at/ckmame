@@ -1,0 +1,8 @@
+description test single-rom game with bad dump but good disk
+return 0
+# TODO: -c reports game as correct
+args -cFKLv diskgood-romnogood
+file roms/108-5.chd 108-5.chd 108-5.chd
+file roms/nogood.zip 1-4-ok.zip 1-4-ok.zip
+stdout In game diskgood-romnogood:
+stdout game diskgood-romnogood                      : correct
