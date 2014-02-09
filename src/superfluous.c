@@ -61,7 +61,7 @@ list_directory(const char *dirname, const char *dbname)
     int known;
     struct stat st;
     
-    listf = listd = NULL;
+    p = listf = listd = NULL;
 
     if (dbname) {
 	if (file_type == TYPE_ROM) {
