@@ -45,8 +45,7 @@
 
 /*ARGSUSED1*/
 int
-xmlu_parse(parser_source_t *ps, void *ctx,
-	   const xmlu_entity_t *entities, int nentities)
+xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb, const xmlu_entity_t *entities, int nentities)
 {
     myerror(ERRFILE, "support for XML parsing not compiled in.");
     return -1;
