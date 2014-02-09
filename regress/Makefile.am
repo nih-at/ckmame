@@ -8,11 +8,11 @@ pkglib_LTLIBRARIES=	fwrite.la
 fwrite_la_SOURCES=	fwrite.c
 fwrite_la_LDFLAGS=	-module -avoid-version
 
-EXTRA_DIST=runtest ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
+EXTRA_DIST=runtest.in NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in \
 		rom-from-superfluous-many-fixdat.fixdat
 
-CLEANFILES=${DBS}
+CLEANFILES=${DBS} runtest
 
 MAME_DB=mame.db
 MAME_DB2=mame2.db
@@ -188,6 +188,7 @@ ZIPS=		1-4-2.zip \
 		1-8-ok.zip \
 		1-a-ok.zip \
 		1-c-ok.zip \
+		12345678.zip \
 		2-44-ok.zip \
 		2-48-broken.zip \
 		2-48-long.zip \
