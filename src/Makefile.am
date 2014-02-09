@@ -138,6 +138,7 @@ noinst_HEADERS=\
 	compat.h \
 	dat.h \
 	dbh.h \
+	dbh_dir.h \
 	dbh_statements.h \
 	delete_list.h \
 	detector.h \
