@@ -110,7 +110,7 @@ sub post_parse {
 	my ($test, $hook) = @_;
 
 	if (!defined($test->{test}->{'archive-types'})) {
-		$test->{test}->{'archive-types'} = $test->{test}->{program} =~ m/ckmame$/ ? ['zip', 'dir'] : ['zip'];
+		$test->{test}->{'archive-types'} = $test->{test}->{program} =~ m/ckmame$/ ? ['zip'] : ['zip'];
 	}
 
 	if ($test->{test}->{mkdbargs}) {
