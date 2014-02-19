@@ -121,7 +121,7 @@ ensure_needed_maps(void)
     maps_done |= NEEDED_MAPS;
     needed_delete_list = delete_list_new();
 
-    enter_dir_in_map_and_list(DO_MAP,NULL, needed_dir, 0, FILE_NEEDED);
+    enter_dir_in_map_and_list(DO_MAP, NULL, needed_dir, 0, FILE_NEEDED);
 }
 
 

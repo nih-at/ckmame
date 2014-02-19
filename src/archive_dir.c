@@ -57,10 +57,13 @@ typedef enum {
 } change_type_t;
 
 typedef struct {
-    change_type_t type;
-    char *original_name; /* only for RENAME */
-    char *current_name;
-    char *final_name;
+    char *name;
+    char *data;
+} fileinfo_t;
+
+typedef struct {
+    fileinfo_t original;
+    fileinfo_t final;
     time_t mtime;
 } change_t;
 
@@ -81,6 +84,7 @@ static int my_fts_sort_names(const FTSENT **, const FTSENT **);
 
 static int op_check(archive_t *);
 static int op_commit(archive_t *);
+static void op_commit_cleanup(archive_t *);
 static int op_file_add_empty(archive_t *, const char *);
 static int op_file_copy(archive_t *, int, archive_t *, int, const char *, off_t, off_t);
 static int op_file_delete(archive_t *, int);
@@ -95,6 +99,7 @@ struct archive_ops ops_dir = {
     op_check,
     op_commit, /* close */
     op_commit,
+    op_commit_cleanup,
     op_file_add_empty,
     (void (*)(void *))fclose,
     op_file_copy,
@@ -107,6 +112,7 @@ struct archive_ops ops_dir = {
     op_rollback
 };
 
+#define archive_file_change(a, idx)	(array_get(((ud_t *)archive_user_data(a))->change, (idx)))
 
 int
 archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t *sh)
@@ -160,75 +166,160 @@ archive_init_dir(archive_t *a)
 
 
 static void
-change_fini(change_t *ch)
+fileinfo_init(fileinfo_t *f)
 {
-    free(ch->original_name);
-    free(ch->current_name);
-    free(ch->final_name);
+    f->name = f->data = NULL;
 }
 
+static void
+fileinfo_fini(fileinfo_t *f)
+{
+    free(f->name);
+    f->name = NULL;
+    free(f->data);
+    f->data = NULL;
+}
+
+static void
+change_fini(change_t *ch)
+{
+    fileinfo_fini(&ch->original);
+    fileinfo_fini(&ch->final);
+}
 
 static void
 change_init(change_t *ch)
 {
-    ch->type = CHANGE_NONE;
-    ch->original_name = ch->current_name = ch->final_name = NULL;
+    fileinfo_init(&ch->original);
+    fileinfo_init(&ch->final);
     ch->mtime = 0;
 }
 
-
-static void
-change_rollback(change_t *ch)
+static bool
+change_is_unchanged(const change_t *ch)
 {
-    switch (ch->type) {
-    case CHANGE_NONE:
-	break;
+    return ch->original.name == NULL && ch->final.name == NULL;
+}
 
-    case CHANGE_DELETE:
-    case CHANGE_RENAME:
-	rename(ch->current_name, ch->original_name);
-	break;
-	
-    case CHANGE_ADD:
-    case CHANGE_REPLACE:
-	unlink(ch->current_name);
-	break;
-    }
+static bool
+change_is_added(const change_t *ch)
+{
+    return ch->original.name == NULL && ch->final.name != NULL;
+}
 
-    change_fini(ch);
-    change_init(ch);
+static bool
+change_is_deleted(const change_t *ch)
+{
+    return ch->original.name != NULL && ch->final.name == NULL;
+}
+
+static bool
+change_is_rename(const change_t *ch)
+{
+    if (ch->original.data == NULL || ch->final.data == NULL)
+	return false;
+    return strcmp(ch->original.data, ch->final.data) == 0;
+}
+
+static bool
+change_has_new_data(const change_t *ch)
+{
+    if (ch->final.name == NULL)
+	return false;
+
+    return (ch->original.name == NULL || strcmp(ch->original.name, ch->final.name) != 0);
 }
 
 static int
-change_set(change_t *ch, change_type_t type, char *original_name, char *current_name, char *final_name)
+fileinfo_apply(const fileinfo_t *f)
 {
-    struct stat st;
+    if (f->name == NULL || strcmp(f->name, f->data) == 0)
+	return 0;
 
-    /* TODO check that final_name not used by other entry in archvie */
+    if (rename(f->data, f->name) < 0) {
+	myerror(ERRZIP, "apply: cannot rename '%s' to '%s': %s", f->data, f->name, strerror(errno));
+	return -1;
+    }
+    return 0;   
+}
 
-    if (ch->type != CHANGE_NONE) {
-	/* TODO shouldn't happen, investigate if it does */
-	fprintf(stderr, "WARNING: discarding old change\n");
-	change_rollback(ch);
+static int
+fileinfo_discard(archive_t *a, const fileinfo_t *f)
+{
+    if (f->name == NULL || strcmp(f->name, f->data) == 0)
+	return 0;
+
+    /* TODO: stop before removing archive_name itself, e.g. extra_dir */
+    if (remove_file_and_containing_empty_dirs(f->data, archive_name(a)) < 0) {
+	myerror(ERRZIP, "cannot delete '%s': %s", f->data, strerror(errno));
+	return -1;
+    }
+    return 0;   
+}
+
+
+/* returns: -1 on error, 1 if file was moved, 0 if nothing needed to be done */
+static int
+move_original_file_out_of_the_way(archive_t *a, int idx)
+{
+    change_t *ch = archive_file_change(a, idx);
+    char *name = file_name(archive_file(a, idx));
+
+    if (change_is_added(ch) || ch->original.name)
+	return 0;
+
+    char *full_name = get_full_name(a, idx);
+    char *tmp = make_tmp_name(a, name);
+
+    if (rename(full_name, tmp) < 0) {
+	myerror(ERRZIP, "move: cannot rename '%s' to '%s': %s", name, tmp, strerror(errno));
+	free(full_name);
+	free(tmp);
+	return -1;
     }
 
-    if (current_name) {
-	if (stat(current_name, &st) < 0)
+    ch->original.name = full_name;
+    ch->original.data = tmp;
+
+    return 1;
+
+}
+
+
+static int
+change_apply(archive_t *a, change_t *ch)
+{
+    if (ch->final.name != NULL) {
+	if (ensure_dir(ch->final.name, 1) < 0) {
+	    myerror(ERRZIP, "destination directory cannot be created: %s", strerror(errno));
+	    return -1;
+	}
+
+	if (fileinfo_apply(&ch->final) < 0)
 	    return -1;
     }
 
-    ch->type = type;
-    ch->original_name = original_name;
-    ch->current_name = current_name;
-    ch->final_name = final_name;
-    if (current_name)
-	ch->mtime = st.st_mtime;
-    else
-	ch->mtime = 0;
+    if (!change_is_rename(ch))
+	if (fileinfo_discard(a, &ch->original) < 0)
+	    return -1;
+
+    change_fini(ch);
+    change_init(ch);
 
     return 0;
 }
 
+static void
+change_rollback(archive_t *a, change_t *ch)
+{
+    fileinfo_apply(&ch->original);
+
+    if (!change_is_rename(ch))
+	fileinfo_discard(a, &ch->final);
+
+    change_fini(ch);
+    change_init(ch);
+}
 
 static int
 cmp_file_by_name(file_t *f, const char *name)
@@ -270,7 +361,7 @@ make_full_name(archive_t *a, const char *name)
 static char *
 make_tmp_name(archive_t *a, const char *name)
 {
-    size_t len;
+    size_t i, len;
     char *s;
 
     if (a == NULL || name == NULL) {
@@ -284,7 +375,10 @@ make_tmp_name(archive_t *a, const char *name)
 	return NULL;
 
     snprintf(s, len, "%s/.ckmame-%s.XXXXXX", archive_name(a), name);
-    /* TODO: map / in name to _ */
+    for (i = strlen(archive_name(a))+1; i < len; i++) {
+	if (s[i] == '/')
+	    s[i] = '_';
+    }
     
     if (mktemp(s) == NULL) {
 	free(s);
@@ -320,50 +414,51 @@ op_commit(archive_t *a)
 	return 0;
     }
 
+    bool is_empty = true;
+    for (idx = 0; idx < archive_num_files(a); idx++) {
+	if (file_where(archive_file(a, idx)) != FILE_DELETED) {
+	    is_empty = false;
+	    break;
+	}
+    }
+
     /* update db */
     if (archive_where(a) == FILE_ROMSET) {
         if (ud->id > 0)
             dbh_dir_delete(ud->id);
-	if (archive_num_files(a) > 0)
+	if (!is_empty)
 	    ud->id = dbh_dir_write(ud->id, mybasename(archive_name(a)), archive_files(a)); /* TODO handle errors */
 	else
 	    ud->id = 0;
     }
 
-    /* TODO if archive_num_files(a) > 0: ensure dir, else delete dir */
-    
     int ret = 0;
     for (idx=0; idx<archive_num_files(a); idx++) {
 	if (idx >= array_length(ud->change))
 	    break;
 	ch = array_get(ud->change, idx);
-	switch (ch->type) {
-	case CHANGE_NONE:
-	    break;
 
-	case CHANGE_DELETE:
-	    if (unlink(ch->current_name) < 0) {
-		myerror(ERRZIP, "cannot delete '%s': %s", ch->current_name, strerror(errno));
-		ret = -1;
-	    }
-	    break;
-
-	case CHANGE_ADD:
-	case CHANGE_REPLACE:
-	case CHANGE_RENAME:
-	    ensure_dir(ch->final_name, 1); /* TODO: error */
-	    if (rename(ch->current_name, ch->final_name) < 0) {
-		myerror(ERRZIP, "cannot rename '%s' to '%s': %s", ch->current_name, ch->final_name, strerror(errno));
-		ret = -1;
-	    }
-	    break;
-	}
-
-	change_fini(ch);
-	change_init(ch);
+	if (change_apply(a, ch) < 0)
+	    ret = -1;
     }
 
+    if (is_empty) {
+	if (rmdir(archive_name(a)) < 0 && errno != ENOENT) {
+	    myerror(ERRZIP, "cannot remove empty archive '%s': %s", archive_name(a), strerror(errno));
+	    ret = -1;
+	}
+    }
+    
     return ret;
+}
+
+
+static void
+op_commit_cleanup(archive_t *a)
+{
+    ud_t *ud = archive_user_data(a);
+
+    array_truncate(ud->change, archive_num_files(a), change_fini);
 }
 
 
@@ -392,102 +487,109 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	    free(tmpname);
 	    return -1;
 	}
-    }
 
-    if (srcname && start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx)))) {
-	if (link_or_copy(srcname, tmpname) < 0) {
-	    free(tmpname);
-	    free(srcname);
-	    return -1;
+	if (start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx)))) {
+	    if (link_or_copy(srcname, tmpname) < 0) {
+		free(tmpname);
+		free(srcname);
+		return -1;
+	    }
 	}
-    }
-    else {
-	if (srcname) {
+	else {
 	    if (copy_file(srcname, tmpname, start, len) < 0) {
 		myerror(ERRZIP, "cannot copy '%s' to '%s': %s", srcname, tmpname, strerror(errno));
 		free(tmpname);
 		free(srcname);
 		return -1;
 	    }
-	    free(srcname);
 	}
-	else {
-	    FILE *fout;
+	free(srcname);
+    }
+    else {
+	FILE *fout;
 
-	    if ((fout = fopen(tmpname, "w")) == NULL) {
-		myerror(ERRZIP, "cannot open '%s': %s", tmpname, strerror(errno));
-		free(tmpname);
-		return -1;
-	    }
-	    fclose(fout);
+	if ((fout = fopen(tmpname, "w")) == NULL) {
+	    myerror(ERRZIP, "cannot open '%s': %s", tmpname, strerror(errno));
+	    free(tmpname);
+	    return -1;
 	}
+	fclose(fout);
     }
 
     ud_t *ud = archive_user_data(da);
     change_t *ch;
 
-    if (didx >= 0)
+    bool err = false;
+    if (didx >= 0) {
 	ch = array_get(ud->change, didx);
+
+	if (!change_is_added(ch)) {
+	    if (strcmp(dname, file_name(archive_file(da, didx))) != 0) {
+		if (move_original_file_out_of_the_way(da, didx) < 0)
+		    err = true;
+	    }
+	    else {
+		if (change_is_unchanged(ch)) {
+		    ch->original.name = make_full_name(da, dname);
+		    ch->original.data = xstrdup(ch->original.name);
+		}
+	    }
+	}
+    }
     else {
 	if ((ch = array_grow(ud->change, change_init)) == NULL) {
 	    myerror(ERRDEF, "cannot grow array: %s", strerror(errno));
-	    unlink(tmpname);
-	    free(tmpname);
-	    return -1;
+	    err = true;
 	}
     }
 
-    int ret;
-    char *full_name;
-    full_name = make_full_name(da, dname);
-    if (didx >= 0)
-        ret = change_set(ch, CHANGE_REPLACE, NULL, tmpname, full_name);
-    else
-        ret = change_set(ch, CHANGE_ADD, NULL, tmpname, full_name);
-    
-    if (ret < 0) {
-	myerror(ERRDEF, "cannot add change for '%s': %s", full_name, strerror(errno));
-	free(full_name);
+    if (err) {
 	unlink(tmpname);
 	free(tmpname);
 	return -1;
     }
-    
+
+    char *full_name = make_full_name(da, dname);
+
+    if (change_has_new_data(ch))
+	fileinfo_discard(da, &ch->final);
+    fileinfo_fini(&ch->final);
+    ch->final.name = full_name;
+    ch->final.data = tmpname;
+
     return 0;
+}
+
+
+static int
+discard_new_data(archive_t *a, int idx)
+{
+    change_t *ch = archive_file_change(a, idx);
+
+    int ret = 0;
+
+    if (change_has_new_data(ch)) {
+	if (fileinfo_discard(a, &ch->final) < 0)
+	    ret = -1;
+	fileinfo_fini(&ch->final);
+    }
+
+    return ret;
 }
 
 
 static int
 op_file_delete(archive_t *a, int idx)
 {
-    struct stat st;
-    
-    char *tmpname = make_tmp_name(a, file_name(archive_file(a, idx)));
-    if (tmpname == NULL)
+    if (move_original_file_out_of_the_way(a, idx) < 0)
 	return -1;
-    char *full_name = get_full_name(a, idx);
 
-    if (stat(full_name, &st) < 0) {
-	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot delete '%s': %s", file_name(archive_file(a, idx)), strerror(errno));
-	free(full_name);
-	free(tmpname);
+    if (discard_new_data(a, idx) < 0)
 	return -1;
-    }
-    if (rename(full_name, tmpname) < 0) {
-	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot delete '%s': %s", file_name(archive_file(a, idx)), strerror(errno));
-	free(full_name);
-	free(tmpname);
-	return -1;
-    }
-    
-    ud_t *ud = archive_user_data(a);
-    
-    change_set(array_get(ud->change, idx), CHANGE_DELETE, full_name, tmpname, NULL);
-    
+
     return 0;
 }
+
 
 
 static void *
@@ -522,29 +624,61 @@ op_file_read(void *f, void *buf, uint64_t n)
 }
 
 
+static bool
+file_will_exist_after_commit(archive_t *a, const char *full_name)
+{
+    struct stat st;
+    int i;
+    
+    for (i=0; i<archive_num_files(a); i++) {
+	change_t *ch = archive_file_change(a, i);
+
+	if (ch->final.name && strcmp(ch->final.name, full_name) == 0)
+	    return true;
+    }
+
+    if (stat(full_name, &st) == 0)
+	return true;
+
+    return false;
+}
+
+
 static int
 op_file_rename(archive_t *a, int idx, const char *name)
 {
-    struct stat st;
-    
-    char *tmpname = make_tmp_name(a, file_name(archive_file(a, idx)));
-    if (tmpname == NULL)
-	return -1;
-    char *current_name = get_full_name(a, idx);
+    change_t *ch = archive_file_change(a, idx);
 
-    if (stat(current_name, &st) < 0) {
-	seterrinfo(NULL, archive_name(a));
-	myerror(ERRZIP, "cannot rename '%s': %s", file_name(archive_file(a, idx)), strerror(errno));
-	free(current_name);
-	free(tmpname);
+    if (change_is_deleted(ch)) {
+	myerror(ERRZIP, "rename1: cannot rename deleted file '%s'", file_name(archive_file(a, idx)));
 	return -1;
     }
-    
+   
     char *final_name = make_full_name(a, name);
-    ud_t *ud = archive_user_data(a);
-    
-    change_set(array_get(ud->change, idx), CHANGE_RENAME, current_name, tmpname, final_name);
-    
+
+    if (file_will_exist_after_commit(a, final_name)) {
+	free(final_name);
+	errno = EEXIST;
+	myerror(ERRZIP, "rename2: cannot rename '%s' to '%s': %s", file_name(archive_file(a, idx)), name, strerror(errno));
+	return -1;
+    }
+
+    switch (move_original_file_out_of_the_way(a, idx)) {
+    case -1:
+	free(final_name);
+	return -1;
+
+    case 1:
+	ch->final.data = xstrdup(ch->original.data);
+	break;
+
+    default:
+	break;
+    }
+
+    free(ch->final.name);
+    ch->final.name = final_name;
+
     return 0;
 }
 
@@ -667,7 +801,7 @@ op_rollback(archive_t *a)
 	if (idx >= array_length(ud->change))
 	    break;
 	ch = array_get(ud->change, idx);
-	change_rollback(ch);
+	change_rollback(a, ch);
     }
 
     return 0;

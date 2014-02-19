@@ -60,6 +60,7 @@ struct archive_ops {
     int (*check)(archive_t *);
     int (*close)(archive_t *);
     int (*commit)(archive_t *);
+    void (*commit_cleanup)(archive_t *);
     int (*file_add_empty)(archive_t *, const char *name);
     void (*file_close)(void *);
     int (*file_copy)(archive_t *, int, archive_t *, int, const char *, off_t, off_t);

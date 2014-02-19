@@ -1,3 +1,4 @@
+* archive_file_copy_part/archive_file_rename: if target name exists, it's renamed on disk, but not in archive_t; do we really want that?!
 * archive_dir support
 - .ckmame.db is in extra files list
 - libzip is linked to too many executables

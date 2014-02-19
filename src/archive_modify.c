@@ -51,6 +51,8 @@ archive_commit(archive_t *a)
 {
     int i;
 
+    seterrinfo(NULL, archive_name(a));
+
     if (a->ops->commit(a) < 0)
         return -1;
     
@@ -88,6 +90,9 @@ archive_commit(archive_t *a)
         
 	array_sort(archive_files(a), _file_cmp_name);
     }
+
+    if (a->ops->commit_cleanup)
+	a->ops->commit_cleanup(a);
     
     return 0;
 }
@@ -168,8 +173,12 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
 		    return -1;
 	    }
 	    else {
-		if (archive_file_rename_to_unique(da, didx) < 0)
+		char *new_name = _make_unique_name(da, didx);
+		if (da->ops->file_rename(da, didx, new_name) < 0) {
+		    free(new_name);
 		    return -1;
+		}
+		free(new_name);
 	    }
 	}
     }
@@ -230,16 +239,29 @@ archive_file_move(archive_t *sa, int sidx, archive_t *da, const char *dname)
 int
 archive_file_rename(archive_t *a, int idx, const char *name)
 {
+    int other_idx;
+
     if (file_where(archive_file(a, idx)) != FILE_INZIP) {
         seterrinfo(archive_name(a), NULL);
         myerror(ERRZIP, "cannot copy broken/added/deleted file");
         return -1;
     }
 	
-    if (archive_is_writable(a))
-        if (a->ops->file_rename(a, idx, name) < 0)
+    if (archive_is_writable(a)) {
+	if ((other_idx=archive_file_index_by_name(a, name)) != -1) {
+	    char *new_name = _make_unique_name(a, other_idx);
+	    if (a->ops->file_rename(a, other_idx, new_name) < 0) {
+		free(new_name);
+		return -1;
+	    }
+	    free(new_name);
+	}
+        if (a->ops->file_rename(a, idx, name) < 0) {
+	    if (other_idx != -1)
+		a->ops->file_rename(a, idx, name);
             return -1;
-    
+	}
+    }
     free(file_name(archive_file(a, idx)));
     file_name(archive_file(a, idx)) = xstrdup(name);
 

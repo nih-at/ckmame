@@ -1,6 +1,6 @@
 /*
  archive_zip.c -- implementation of archive from zip
- Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
+ Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
  
  This file is part of ckmame, a program to check rom sets for MAME.
  The authors can be contacted at <ckmame@nih.at>
@@ -62,6 +62,7 @@ struct archive_ops ops_zip = {
     op_check,
     op_close,
     op_commit,
+    NULL, /* commit_cleanup */
     op_file_add_empty,
     op_file_close,
     op_file_copy,

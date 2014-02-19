@@ -120,7 +120,7 @@ make_needed_name(const file_t *r)
 
     hash_to_string(crc, HASHES_TYPE_CRC, file_hashes(r));
 
-    return make_unique_name("zip", "%s/%s", needed_dir, crc);
+    return make_unique_name(roms_unzipped ? "" : "zip", "%s/%s", needed_dir, crc);
 }
 
 

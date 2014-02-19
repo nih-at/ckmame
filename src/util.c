@@ -140,6 +140,15 @@ name_type(const char *name)
 {
     size_t l;
 
+    if (roms_unzipped) {
+	struct stat st;
+
+	if (stat(name, &st) < 0)
+	    return NAME_UNKNOWN;
+	if (S_ISDIR(st.st_mode))
+	    return NAME_ZIP;
+    }
+
     l = strlen(name);
 
     if (strchr(name, '.') == NULL)
@@ -148,7 +157,7 @@ name_type(const char *name)
     if (l > 4) {
 	if (strcmp(name+l-4, ".chd") == 0)
 	    return NAME_CHD;
-	if (strcasecmp(name+l-4, ".zip") == 0)
+	if (!roms_unzipped && strcasecmp(name+l-4, ".zip") == 0)
 	    return NAME_ZIP;
     }
 
@@ -208,4 +217,39 @@ get_directory(filetype_t ft)
 	return rom_dir;
     else
 	return "roms";
+}
+
+int
+remove_file_and_containing_empty_dirs(const char *name, const char *base)
+{
+    if (base == NULL) {
+	errno = EINVAL;
+	return -1;
+    }
+
+    size_t n = strlen(base);
+
+    if (n >= strlen(name) || strncmp(base, name, n) != 0 || name[n] != '/') {
+	errno = EINVAL;
+	return -1;
+    }
+
+    if (unlink(name) < 0)
+	return -1;
+
+    if (strchr(name+n+1, '/') == NULL)
+	return 0;
+
+    char *tmp = xstrdup(name);
+    char *r;
+    while ((r=strrchr(tmp+n+1, '/')) != NULL) {
+	*r = '\0';
+	if (rmdir(tmp) < 0) {
+	    free(tmp);
+	    return errno == ENOTEMPTY ? 0 : -1;
+	}
+    }
+
+    free(tmp);
+    return 0;
 }
