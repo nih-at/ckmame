@@ -109,6 +109,7 @@ use Text::Diff;
 #
 # environment variables:
 #   RUN_GDB: if set, run gdb on program in test environment
+#   KEEPBROKEN: if set, don't delete test environment if test failed
 #   NOCLEANUP: if set, don't delete test environment
 #   SETUP_ONLY: if set, exit after creating test environment
 #   VERBOSE: if set, be more verbose (e. g., output diffs)
@@ -163,6 +164,7 @@ sub new {
 	$self->{in_sandbox} = 0;
 	
 	$self->{verbose} = $ENV{VERBOSE};
+	$self->{keepbroken} = $ENV{KEEPBROKEN};
 	$self->{nocleanup} = $ENV{NOCLEANUP};
 
 	return $self;
@@ -278,10 +280,13 @@ sub runtest {
 		push @failed, 'files';
 	}
 	
-	$self->sandbox_leave();
-	$self->sandbox_remove() unless ($self->{nocleanup});
-
 	my $result = scalar(@failed) == 0 ? 'PASS' : 'FAIL';
+
+	$self->sandbox_leave();
+	if (!($self->{nocleanup} || ($self->{keepbroken} && $result eq 'FAIL'))) {
+		$self->sandbox_remove();
+	}
+
 	$self->print_test_result($tag, $result, join ', ', @failed);
 
 	return $result;
