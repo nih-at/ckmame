@@ -91,7 +91,7 @@ sub post_list_files {
 		
 		for my $file (@{$test->{files_got}}) {
 			next if ($file eq 'roms/.ckmame.db');
-			if ($file =~ m,((?:roms|unknown|needed)/[^/]*)/,) {
+			if ($file =~ m,((?:needed|roms|samples|unknown)/[^/]*)/,) {
 				$got{"$1.zip"} = 1;
 			}
 			else {
