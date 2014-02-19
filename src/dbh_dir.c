@@ -35,8 +35,10 @@
 
 #include "dbh_dir.h"
 #include "error.h"
+#include "funcs.h"
 #include "sq_util.h"
 #include "util.h"
+#include "xmalloc.h"
 
 static dbh_t *romset_db;
 static int romset_db_initialized;
