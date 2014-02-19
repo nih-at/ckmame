@@ -109,8 +109,8 @@ use Text::Diff;
 #
 # environment variables:
 #   RUN_GDB: if set, run gdb on program in test environment
-#   KEEPBROKEN: if set, don't delete test environment if test failed
-#   NOCLEANUP: if set, don't delete test environment
+#   KEEP_BROKEN: if set, don't delete test environment if test failed
+#   NO_CLEANUP: if set, don't delete test environment
 #   SETUP_ONLY: if set, exit after creating test environment
 #   VERBOSE: if set, be more verbose (e. g., output diffs)
 
@@ -164,8 +164,9 @@ sub new {
 	$self->{in_sandbox} = 0;
 	
 	$self->{verbose} = $ENV{VERBOSE};
-	$self->{keepbroken} = $ENV{KEEPBROKEN};
-	$self->{nocleanup} = $ENV{NOCLEANUP};
+	$self->{keep_broken} = $ENV{KEEP_BROKEN};
+	$self->{no_cleanup} = $ENV{NO_CLEANUP};
+	$self->{setup_only} = $ENV{SETUP_ONLY};
 
 	return $self;
 }
@@ -243,6 +244,10 @@ sub runtest {
 	
 	$self->copy_files();
 	$self->run_hook('prepare_sandbox');
+	if ($self->{setup_only}) {
+	    $self->sandbox_leave();
+	    return 'SKIP';
+	}
 	$self->run_program();
 
 	if ($self->{test}->{stdout}) {
@@ -283,7 +288,7 @@ sub runtest {
 	my $result = scalar(@failed) == 0 ? 'PASS' : 'FAIL';
 
 	$self->sandbox_leave();
-	if (!($self->{nocleanup} || ($self->{keepbroken} && $result eq 'FAIL'))) {
+	if (!($self->{no_cleanup} || ($self->{keep_broken} && $result eq 'FAIL'))) {
 		$self->sandbox_remove();
 	}
 
