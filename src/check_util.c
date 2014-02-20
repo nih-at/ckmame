@@ -31,8 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 #include <sys/stat.h>
 
 #include "dir.h"
@@ -43,15 +41,14 @@
 #include "util.h"
 #include "xmalloc.h"
 
-
 #define EXTRA_MAPS		0x1
 #define NEEDED_MAPS		0x2
 
-
 int maps_done = 0;
 
-
 static int enter_dir_in_map_and_list(int, parray_t *, const char *, int, where_t);
+static int enter_dir_entries_in_map_and_list(int, parray_t *, const char *, int, where_t);
+static int enter_file_in_map_and_list(int flags, parray_t *list, archive_t *dir_archive, const char *name, where_t where);
 
 
 void
@@ -103,14 +100,17 @@ ensure_extra_maps(int flags)
 	}
     }
 
-    for (i=0; i<parray_length(search_dirs); i++)
-	enter_dir_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
+    for (i=0; i<parray_length(search_dirs); i++) {
+	if (roms_unzipped)
+	    enter_dir_entries_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), 0, FILE_EXTRA);
+	else 
+	    enter_dir_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
+    }
 
     if (flags & DO_LIST)
 	parray_sort(extra_list, strcmp);
 }
 
-
 
 void
 ensure_needed_maps(void)
@@ -124,7 +124,6 @@ ensure_needed_maps(void)
     enter_dir_in_map_and_list(DO_MAP, NULL, needed_dir, 0, FILE_NEEDED);
 }
 
-
 
 char *
 findfile(const char *name, filetype_t what)
@@ -152,9 +151,6 @@ findfile(const char *name, filetype_t what)
     return NULL;
 }
 
-
-
-
 
 char *
 make_file_name(filetype_t ft, const char *name)
@@ -176,7 +172,6 @@ make_file_name(filetype_t ft, const char *name)
     return fn;
 }
 
-
 
 static int
 enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_flags, where_t where)
@@ -185,8 +180,6 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_f
     dir_status_t ds;
     char b[8192];
     archive_t *a;
-    disk_t *d;
-    name_type_t nt;
 
     if ((dir=dir_open(name, dir_flags)) == NULL)
 	return -1;
@@ -198,40 +191,12 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_f
     }
 
     while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	int handled = 0;
 	if (ds == DIR_ERROR) {
 	    /* TODO: handle error */
 	    continue;
 	}
-	switch ((nt=name_type(b))) {
-	case NAME_ZIP:
-	    if (roms_unzipped)
-		break;
-	    if ((a=archive_new(b, TYPE_ROM, where, 0)) != NULL) {
-		if ((flags & DO_LIST) && list)
-		    parray_push(list, xstrdup(archive_name(a)));
-		archive_free(a);
-	    }
-	    break;
-
-	case NAME_CHD:
-	case NAME_NOEXT:
-	    if ((d=disk_new(b, (nt==NAME_NOEXT ? DISK_FL_QUIET : 0))) != NULL) {
-		if (flags & DO_MAP)
-		    enter_disk_in_map(d, where);
-		if ((flags & DO_LIST) && list)
-		    parray_push(list, xstrdup(disk_name(d)));
-		disk_free(d);
-		handled = 1;
-	    }
-
-	case NAME_UNKNOWN:
-	    /* ignore unknown files */
-	    break;
-	}
-	if (roms_unzipped && !handled) {
-	    archive_dir_add_file(a, b+strlen(name)+1, NULL, NULL); /* TODO: handle error */
-	}
+        enter_file_in_map_and_list(flags, list, a, b, where);
+        /* TODO: handle error */
     }
 
     if (roms_unzipped) {
@@ -243,7 +208,46 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_f
     return dir_close(dir);
 }
 
-
+
+static int
+enter_dir_entries_in_map_and_list(int flags, parray_t *list, const char *name, int dir_flags, where_t where)
+{
+    dir_t *dir;
+    dir_status_t ds;
+    char b[8192];
+    archive_t *a;
+
+    if ((dir=dir_open(name, dir_flags)) == NULL)
+	return -1;
+
+    if (roms_unzipped) {
+	if ((a=archive_new(name, TYPE_ROM, where, ARCHIVE_FL_DELAY_READINFO)) == NULL) {
+	    /* TODO: handle error */
+	}
+        /* TODO: tell a that it shouldn't delete its root dir even if empty */
+    }
+
+    while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+	struct stat sb;
+	if (stat(b, &sb) < 0)
+	    continue;
+	if (S_ISDIR(sb.st_mode)) {
+	    enter_dir_in_map_and_list(flags, list, b, dir_flags, where);
+	} else if (S_ISREG(sb.st_mode)) {
+            enter_file_in_map_and_list(flags, list, a, b, where);
+	    /* TODO: handle error */
+	}
+    }
+
+    if (roms_unzipped) {
+	if ((flags & DO_LIST) && list)
+	    parray_push(list, xstrdup(name));
+	archive_free(a);
+    }
+    
+    return dir_close(dir);
+}
+
 
 int
 enter_disk_in_map(const disk_t *d, where_t where)
@@ -265,3 +269,46 @@ enter_disk_in_map(const disk_t *d, where_t where)
 
     return 0;
 }
+
+
+static int
+enter_file_in_map_and_list(int flags, parray_t *list, archive_t *dir_archive, const char *name, where_t where)
+{
+    archive_t *a;
+    disk_t *d;
+    name_type_t nt;
+
+    bool handled = false;
+    switch ((nt=name_type(name))) {
+	case NAME_ZIP:
+	    if (roms_unzipped)
+		break;
+	    if ((a=archive_new(name, TYPE_ROM, where, 0)) != NULL) {
+		if ((flags & DO_LIST) && list)
+		    parray_push(list, xstrdup(archive_name(a)));
+		archive_free(a);
+	    }
+	    break;
+            
+	case NAME_CHD:
+	case NAME_NOEXT:
+	    if ((d=disk_new(name, (nt==NAME_NOEXT ? DISK_FL_QUIET : 0))) != NULL) {
+		if (flags & DO_MAP)
+		    enter_disk_in_map(d, where);
+		if ((flags & DO_LIST) && list)
+		    parray_push(list, xstrdup(disk_name(d)));
+		disk_free(d);
+		handled = true;
+	    }
+            
+	case NAME_UNKNOWN:
+	    /* ignore unknown files */
+	    break;
+    }
+    if (roms_unzipped && !handled) {
+        archive_dir_add_file(dir_archive, name + strlen(archive_name(dir_archive))+1, NULL, NULL); /* TODO: handle error */
+    }
+
+    return 0;
+}
+                           
