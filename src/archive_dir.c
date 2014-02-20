@@ -442,7 +442,7 @@ op_commit(archive_t *a)
 	    ret = -1;
     }
 
-    if (is_empty) {
+    if (is_empty && !(archive_flags(a) & ARCHIVE_FL_KEEP_EMPTY)) {
 	if (rmdir(archive_name(a)) < 0 && errno != ENOENT) {
 	    myerror(ERRZIP, "cannot remove empty archive '%s': %s", archive_name(a), strerror(errno));
 	    ret = -1;

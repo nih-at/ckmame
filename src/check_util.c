@@ -221,10 +221,9 @@ enter_dir_entries_in_map_and_list(int flags, parray_t *list, const char *name, i
 	return -1;
 
     if (roms_unzipped) {
-	if ((a=archive_new(name, TYPE_ROM, where, ARCHIVE_FL_DELAY_READINFO)) == NULL) {
+	if ((a=archive_new(name, TYPE_ROM, where, ARCHIVE_FL_DELAY_READINFO|ARCHIVE_FL_KEEP_EMPTY)) == NULL) {
 	    /* TODO: handle error */
 	}
-        /* TODO: tell a that it shouldn't delete its root dir even if empty */
     }
 
     while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
@@ -240,8 +239,8 @@ enter_dir_entries_in_map_and_list(int flags, parray_t *list, const char *name, i
     }
 
     if (roms_unzipped) {
-	if ((flags & DO_LIST) && list)
-	    parray_push(list, xstrdup(name));
+        if (archive_num_files(a) > 0 && (flags & DO_LIST) && list)
+            parray_push(list, xstrdup(name));
 	archive_free(a);
     }
     
