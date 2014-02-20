@@ -91,7 +91,7 @@ sub post_list_files {
 		
 		for my $file (@{$test->{files_got}}) {
 			next if ($file eq 'roms/.ckmame.db');
-			if ($file =~ m,((?:needed|roms|samples|unknown)/[^/]*)/,) {
+			if ($file =~ m,((?:extra|needed|roms|samples|unknown)/[^/]*)/,) {
 				$got{"$1.zip"} = 1;
 			}
 			else {
@@ -128,7 +128,7 @@ sub post_run_program {
 	my ($test, $hook) = @_;
 
 	if ($roms_uncompressed) {
-		map { s,((?:roms|unknown|needed)/[^ :]*)\.zip,$1,g; } @{$test->{expected_stdout}};
+		map { s,((?:extra|needed|roms|unknown)/[^ :]*)\.zip,$1,g; } @{$test->{expected_stdout}};
 	}
 
 	return 1;
@@ -169,6 +169,7 @@ $test->setup(@ARGV);
 my @results = ();
 
 for my $archive_type (reverse sort @{$test->{test}->{'archive-types'}}) {
+	next if ($ENV{SKIP_DIR} && $archive_type eq 'dir');
 	if ($archive_type eq 'dir') {
 		$roms_uncompressed = 1;
 		if ($test->{test}->{program} =~ m/ckmame$/) {
