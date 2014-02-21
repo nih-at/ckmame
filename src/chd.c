@@ -361,7 +361,7 @@ read_header(struct chd *chd)
     unsigned char b[MAX_HEADERLEN], *p;
 
     if (fread(b, TAG_AND_LEN, 1, chd->f) != 1) {
-	chd->error = CHD_ERR_READ;
+	chd->error = feof(chd->f) ? CHD_ERR_NO_CHD : CHD_ERR_READ;
 	return -1;
     }
 
