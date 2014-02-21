@@ -101,10 +101,7 @@ ensure_extra_maps(int flags)
     }
 
     for (i=0; i<parray_length(search_dirs); i++) {
-	if (roms_unzipped)
-	    enter_dir_entries_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), 0, FILE_EXTRA);
-	else 
-	    enter_dir_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
+	    enter_dir_entries_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
     }
 
     if (flags & DO_LIST)
@@ -121,7 +118,7 @@ ensure_needed_maps(void)
     maps_done |= NEEDED_MAPS;
     needed_delete_list = delete_list_new();
 
-    enter_dir_in_map_and_list(DO_MAP, NULL, needed_dir, 0, FILE_NEEDED);
+        enter_dir_entries_in_map_and_list(DO_MAP, NULL, needed_dir, DIR_RECURSE, FILE_NEEDED);
 }
 
 
@@ -217,13 +214,14 @@ enter_dir_entries_in_map_and_list(int flags, parray_t *list, const char *name, i
     char b[8192];
     archive_t *a;
 
-    if ((dir=dir_open(name, dir_flags)) == NULL)
+    if (!roms_unzipped)
+        return enter_dir_in_map_and_list(flags, list, name, dir_flags, where);
+
+    if ((dir=dir_open(name, dir_flags & ~DIR_RECURSE)) == NULL)
 	return -1;
 
-    if (roms_unzipped) {
-	if ((a=archive_new(name, TYPE_ROM, where, ARCHIVE_FL_DELAY_READINFO|ARCHIVE_FL_KEEP_EMPTY)) == NULL) {
-	    /* TODO: handle error */
-	}
+    if ((a=archive_new(name, TYPE_ROM, where, ARCHIVE_FL_DELAY_READINFO|ARCHIVE_FL_KEEP_EMPTY)) == NULL) {
+        /* TODO: handle error */
     }
 
     while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
@@ -238,11 +236,9 @@ enter_dir_entries_in_map_and_list(int flags, parray_t *list, const char *name, i
 	}
     }
 
-    if (roms_unzipped) {
-        if (archive_num_files(a) > 0 && (flags & DO_LIST) && list)
-            parray_push(list, xstrdup(name));
-	archive_free(a);
-    }
+    if (archive_num_files(a) > 0 && (flags & DO_LIST) && list)
+        parray_push(list, xstrdup(name));
+    archive_free(a);
     
     return dir_close(dir);
 }
