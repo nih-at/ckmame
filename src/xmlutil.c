@@ -164,7 +164,7 @@ find_entity(const char *path, const xmlu_entity_t *entities, int nentities)
 {
     int i;
     const char *path_end;
-    int name_len;
+    size_t name_len;
 
     path_end = path+strlen(path);
 

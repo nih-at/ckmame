@@ -697,7 +697,7 @@ op_read_infos(archive_t *a)
     array_t *files = NULL;    /* information on files from cache DB */
     FTS *ftsp;
     FTSENT *ent;
-    file_t *fdir, *fdb;
+    file_t *fdb;
     char * const names[2] = { archive_name(a), NULL };
     ud_t *ud = archive_user_data(a);
     const char *fname;

@@ -182,8 +182,8 @@ get_hashes(struct chd *chd, struct hashes *h)
 {
     struct hashes h_raw;
     struct hashes_update *hu;
-    unsigned int hunk, n;
-    uint64_t len;
+    uint32_t hunk;
+    uint64_t n, len;
     unsigned char *buf;
 
     if (chd->version > 3) {

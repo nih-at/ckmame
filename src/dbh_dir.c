@@ -66,7 +66,7 @@ int
 dbh_dir_read(const char *name, array_t *files)
 {
     sqlite3_stmt *stmt;
-    int i, ret;
+    int ret;
     int archive_id;
 
     if ((stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_QUERY_ARCHIVE)) == NULL)

@@ -321,7 +321,7 @@ _make_unique_name(archive_t *a, int idx)
     char *unique, *p;
     char n[4];
     const char *name, *ext;
-    int i, j, ret, zerr;
+    int i, j;
 
     if ((name=file_name(archive_file(a, idx))) == NULL)
 	return NULL;

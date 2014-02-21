@@ -55,10 +55,10 @@ list_directory(const char *dirname, const char *dbname)
 {
     dir_t *dir;
     char b[8192], *p, *ext;
-    parray_t *listf, *listd, *lst, *found;
+    parray_t *listf, *listd, *found;
     dir_status_t err;
-    int len_dir, len_name;
-    int known;
+    size_t len_dir, len_name;
+    bool known;
     struct stat st;
     
     p = NULL;
@@ -109,7 +109,7 @@ list_directory(const char *dirname, const char *dbname)
 	    continue;
 	}
 
-	known = 0;
+	known = false;
 
 	if (S_ISDIR(st.st_mode)) {
 	    if (roms_unzipped && listf)
