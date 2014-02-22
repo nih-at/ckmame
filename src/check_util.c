@@ -100,9 +100,8 @@ ensure_extra_maps(int flags)
 	}
     }
 
-    for (i=0; i<parray_length(search_dirs); i++) {
-	    enter_dir_entries_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
-    }
+    for (i=0; i<parray_length(search_dirs); i++)
+	enter_dir_entries_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
 
     if (flags & DO_LIST)
 	parray_sort(extra_list, strcmp);
@@ -118,7 +117,7 @@ ensure_needed_maps(void)
     maps_done |= NEEDED_MAPS;
     needed_delete_list = delete_list_new();
 
-        enter_dir_entries_in_map_and_list(DO_MAP, NULL, needed_dir, DIR_RECURSE, FILE_NEEDED);
+    enter_dir_entries_in_map_and_list(DO_MAP, NULL, needed_dir, DIR_RECURSE, FILE_NEEDED);
 }
 
 
