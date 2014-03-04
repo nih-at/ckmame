@@ -1,12 +1,12 @@
 description test single-rom game (no parent), file is in search dir, remove
 return 0
 args -FKLvcj -e search 1-4
-file-del search/foo/14.zip 1-4-ok.zip
-file search/bar/ignore.zip 1-8-ok.zip 1-8-ok.zip
-file search/foo/bar/ignore runtest runtest
+file-del search/foo.zip 1-4-ok.zip
+file search/ignore.zip 1-8-ok.zip 1-8-ok.zip
+file search/ignore2 runtest runtest
 file-new roms/1-4.zip 1-4-ok.zip
 stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo/14.zip'
-stdout roms/1-4.zip: add 'search/foo/14.zip/04.rom' as `04.rom'
-stdout search/foo/14.zip: delete used file '04.rom'
-stdout search/foo/14.zip: remove empty archive
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo.zip'
+stdout roms/1-4.zip: add 'search/foo.zip/04.rom' as `04.rom'
+stdout search/foo.zip: delete used file '04.rom'
+stdout search/foo.zip: remove empty archive
