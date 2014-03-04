@@ -116,6 +116,7 @@ TESTS=	\
 		punused.test \
 		replace-broken-rom.test \
 		rom-broken-replace.test \
+		rom-broken-without-i.test \
 		rom-broken.test \
 		rom-dir.test \
 		rom-duplicate-1st.test \

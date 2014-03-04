@@ -1,0 +1,7 @@
+description test game (no parent), zip is partially broken; without -i noone notices
+archive-types zip
+return 0
+args -FKLvc 2-48
+file roms/2-48.zip 2-48-broken.zip 2-48-broken.zip
+stdout In game 2-48:
+stdout game 2-48                                    : correct
