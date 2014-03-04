@@ -422,9 +422,6 @@ op_commit(archive_t *a)
     ud_t *ud = archive_user_data(a);
     change_t *ch;
 
-    if (archive_flags(a) & ARCHIVE_FL_RDONLY)
-	return 0;
-
     if (ud == NULL) {
 	/* error during initialization, do nothing */
 	return 0;
@@ -442,11 +439,17 @@ op_commit(archive_t *a)
     if (archive_where(a) == FILE_ROMSET) {
         if (ud->id > 0)
             dbh_dir_delete(ud->id);
-	if (!is_empty)
-	    ud->id = dbh_dir_write(ud->id, mybasename(archive_name(a)), archive_files(a)); /* TODO handle errors */
+	if (!is_empty) {
+	    ud->id = dbh_dir_write(ud->id, mybasename(archive_name(a)), archive_files(a));
+	    if (ud->id < 0)
+		ud->id = 0;
+	}
 	else
 	    ud->id = 0;
     }
+
+    if (archive_flags(a) & ARCHIVE_FL_RDONLY)
+	return 0;
 
     int ret = 0;
     for (idx=0; idx<archive_num_files(a); idx++) {
@@ -717,6 +720,8 @@ op_read_infos(archive_t *a)
         if ((id=dbh_dir_read(mybasename(archive_name(a)), files)) < 0)
 	    id = 0;
     }
+
+    ud->id = id;
     
     if ((ftsp = fts_open(names, FTS_LOGICAL|FTS_NOCHDIR, my_fts_sort_names)) == NULL) {
 	array_free(files, file_finalize);
@@ -789,8 +794,6 @@ op_read_infos(archive_t *a)
 	    return -1;
 	}
     }
-
-    ud->id = id;
 
     return 0;
 }

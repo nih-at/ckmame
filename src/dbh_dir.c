@@ -44,6 +44,16 @@ static dbh_t *romset_db;
 static int romset_db_initialized;
 
 int
+dbh_dir_close(void)
+{
+    if (romset_db)
+	return dbh_close(romset_db);
+
+    return 0;
+}
+
+
+int
 dbh_dir_delete(int id)
 {
     sqlite3_stmt *stmt;
@@ -113,10 +123,9 @@ dbh_dir_write(int id, const char *name, array_t *files)
     if (id != 0) {
 	if (dbh_dir_delete(id) < 0)
 	    return -1;
-	stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_INSERT_ARCHIVE_ID);
     }
-    else
-	stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_INSERT_ARCHIVE_ID);
+    
+    stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_INSERT_ARCHIVE_ID);
 
     if (stmt == NULL || sq3_set_string(stmt, 1, name) != SQLITE_OK)
 	return -1;

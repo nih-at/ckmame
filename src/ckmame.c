@@ -40,6 +40,7 @@
 
 #include "compat.h"
 #include "dbh.h"
+#include "dbh_dir.h"
 #include "error.h"
 #include "globals.h"
 #include "funcs.h"
@@ -470,7 +471,10 @@ main(int argc, char **argv)
 	 (optind == argc && (output_options & WARN_SUPERFLUOUS)))
 	|| action == ACTION_SUPERFLUOUS_ONLY)
 	print_superfluous(superfluous);
-    
+
+    if (roms_unzipped)
+	dbh_dir_close();
+
     return 0;
 }
 
