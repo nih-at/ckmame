@@ -92,7 +92,7 @@ sub post_list_files {
 		for my $file (@{$test->{files_got}}) {
 			next if ($file eq 'roms/.ckmame.db');
 			next if ($file eq 'moreroms/.ckmame.db');
-			if ($file =~ m,((?:extra|moreroms|needed|roms|samples|search|unknown)/[^/]*)/,) {
+			if ($file =~ m,((?:extra|extradir|moreroms|needed|roms|samples|search|unknown)/[^/]*)/,) {
 				$got{"$1.zip"} = 1;
 			}
 			else {
@@ -129,7 +129,7 @@ sub post_run_program {
 	my ($test, $hook) = @_;
 
 	if ($roms_uncompressed) {
-		map { s,((?:extra|moreroms|needed|roms|search|unknown)/[^ :]*)\.zip,$1,g; } @{$test->{expected_stdout}};
+		map { s,((?:extra|extradir|moreroms|needed|roms|search|unknown)/[^ :]*)\.zip,$1,g; } @{$test->{expected_stdout}};
 	}
         my $exclude_tag = ($roms_uncompressed ? 'ZIP' : 'DIR');
         $test->{expected_stderr} = [ map { s/^<[A-Z]*> //; $_; } grep { $_ !~ /^<$exclude_tag> /; } @{$test->{expected_stderr}} ];
