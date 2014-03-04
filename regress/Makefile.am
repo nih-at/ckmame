@@ -114,6 +114,7 @@ TESTS=	\
 		old-partial.test \
 		punknown.test \
 		punused.test \
+		replace-broken-rom.test \
 		rom-broken-replace.test \
 		rom-broken.test \
 		rom-dir.test \

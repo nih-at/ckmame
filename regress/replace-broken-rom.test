@@ -1,0 +1,14 @@
+description fix broken rom by replacing it with a proper copy
+archive-types zip
+return 0
+args -FjKLivc -e extra 1-4
+file roms/1-4.zip 1-4-crcerror.zip 1-4-ok.zip
+file-del extra/1-4.zip 1-4-ok.zip
+stdout In game 1-4:
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4.zip'
+stdout file 04.rom        size       4  crc d87e7e0c: broken
+stdout roms/1-4.zip: add 'extra/1-4.zip/04.rom' as `04.rom'
+stdout roms/1-4.zip: delete broken '04.rom'
+stdout extra/1-4.zip: delete used file '04.rom'
+stdout extra/1-4.zip: remove empty archive
+stderr roms/1-4.zip: 04.rom: CRC error: d87f7e0c != d87e7e0c
