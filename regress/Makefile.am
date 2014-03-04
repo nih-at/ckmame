@@ -126,7 +126,8 @@ TESTS=	\
 		rom-from-extra-child.test \
 		rom-from-extra-detector.test \
 		rom-from-extra-inconsistent.test \
-		rom-from-extra-keep.test \
+		rom-from-extra-keep-dir.test \
+		rom-from-extra-keep-zip.test \
 		rom-from-extra-partial.test \
 		rom-from-extra-remove.test \
 		rom-from-needed.test \
@@ -210,6 +211,8 @@ ZIPS=		1-4-2.zip \
 		garbage.zip \
 		garbage2.zip \
 		many.zip \
+		pathtest1.zip \
+		pathtest2.zip \
 		samptest.zip \
 		samptest2.zip \
 		samptest3.zip \
