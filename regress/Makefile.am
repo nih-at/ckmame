@@ -58,6 +58,7 @@ TESTS=	\
 		disk-wrong.test \
 		disk-wrong2.test \
 		double.test \
+		doublezip.test \
 		dumpgame-stats.test \
 		dumpgame-unknown.test \
 		extra-size-mismatch.test \
@@ -182,6 +183,7 @@ ZIPS=		1-4-2.zip \
 		1-4-mid.zip \
 		1-4-misnamed.zip \
 		1-4-ok.zip \
+		1-4-ok-doublezip.zip \
 		1-4-path.zip \
 		1-4-wrong.zip \
 		1-8-broken.zip \

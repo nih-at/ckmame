@@ -1,0 +1,9 @@
+description test double zipped rom not being opened by either zip nor dir modes
+return 0
+args -FKLivc 1-4
+file-del roms/1-4.zip 1-4-ok-doublezip.zip
+file-new unknown/1-4.zip 1-4-ok-doublezip.zip
+stdout In game 1-4:
+stdout game 1-4                                     : not a single rom found
+stdout file 1-4-ok.zip    size     148  crc ea01b28e: unknown
+stdout roms/1-4.zip: mv unknown file '1-4-ok.zip'
