@@ -346,6 +346,11 @@ ensure_archive_dir(archive_t *a)
 static char *
 get_full_name(archive_t *a, int idx)
 {
+    change_t *ch = archive_file_change(a, idx);
+
+    if (ch->final.data)
+	return strdup(ch->final.data);
+
     return make_full_name(a, file_name(archive_file(a, idx)));
 }
 
