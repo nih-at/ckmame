@@ -422,6 +422,9 @@ op_commit(archive_t *a)
     ud_t *ud = archive_user_data(a);
     change_t *ch;
 
+    if (archive_flags(a) & ARCHIVE_FL_RDONLY)
+	return 0;
+
     if (ud == NULL) {
 	/* error during initialization, do nothing */
 	return 0;

@@ -150,23 +150,24 @@ op_commit(archive_t *a)
             a->flags |= ARCHIVE_IFL_MODIFIED;
     }
     
-    if (!(a->flags & ARCHIVE_IFL_MODIFIED))
-	return 0;
-    
-    if (archive_zip(a)) {
-	if (!archive_is_empty(a)) {
-	    if (ensure_dir(archive_name(a), 1) < 0)
-		return -1;
-	}
-        
-	if (a->flags & ARCHIVE_FL_TORRENTZIP) {
-	    if (zip_set_archive_flag(archive_zip(a), ZIP_AFL_TORRENT, 1) < 0) {
-		seterrinfo(NULL, archive_name(a));
-		myerror(ERRZIP, "cannot torrentzip: %s", zip_strerror(archive_zip(a)));
-		return -1;
+    if ((archive_flags(a) & ARCHIVE_IFL_MODIFIED) && (archive_flags(a) & ARCHIVE_FL_RDONLY) == 0) {
+	if (archive_zip(a)) {
+	    if (!archive_is_empty(a)) {
+		if (ensure_dir(archive_name(a), 1) < 0)
+		    return -1;
+	    }
+	    
+	    if (a->flags & ARCHIVE_FL_TORRENTZIP) {
+		if (zip_set_archive_flag(archive_zip(a), ZIP_AFL_TORRENT, 1) < 0) {
+		    seterrinfo(NULL, archive_name(a));
+		    myerror(ERRZIP, "cannot torrentzip: %s", zip_strerror(archive_zip(a)));
+		    return -1;
+		}
 	    }
 	}
-        
+    }
+
+    if (archive_zip(a)) {
 #ifdef FD_DEBUGGING
 	fprintf(stderr, "zip_close %s\n", archive_name(a));
 #endif
