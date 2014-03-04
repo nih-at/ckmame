@@ -109,28 +109,6 @@ ensure_zip(archive_t *a)
 }
 
 
-
-
-static int
-match_detector(struct zip *za, int idx, file_t *r)
-{
-    struct zip_file *zf;
-    int ret;
-    
-    if ((zf=zip_fopen_index(za, idx, 0)) == NULL) {
-        myerror(ERRZIP, "error opening index %d: %s", idx, zip_strerror(za));
-        file_status(r) = STATUS_BADDUMP;
-        return -1;
-    }
-    
-    ret = detector_execute(detector, r, (detector_read_cb)zip_fread, zf);
-    
-    zip_fclose(zf);
-    
-    return ret;
-}
-
-
 static int
 op_check(archive_t *a)
 {
@@ -350,7 +328,7 @@ op_read_infos(archive_t *a)
 	file_hashes(r)->crc = zsb.crc;
         
 	if (detector)
-	    match_detector(za, i, r);
+	    archive_file_match_detector(a, i);
         
 	if (a->flags & ARCHIVE_FL_CHECK_INTEGRITY)
 	    archive_file_compute_hashes(a, i, a->flags & ARCHIVE_FL_HASHTYPES_MASK);

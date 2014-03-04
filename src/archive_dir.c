@@ -136,7 +136,10 @@ archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t
 
     file_size(fdir) = st->st_size;
     file_mtime(fdir) = st->st_mtime;
-                
+           
+    if (detector)
+	archive_file_match_detector(a, array_length(archive_files(a))-1);
+
     if (sh)
 	memcpy(fdir->sh, sh, sizeof(fdir->sh));
     else

@@ -112,6 +112,7 @@ int archive_file_copy(archive_t *, int, archive_t *, const char *);
 int archive_file_copy_or_move(archive_t *, int, archive_t *, const char *, int);
 int archive_file_copy_part(archive_t *, int, archive_t *, const char *, off_t, off_t, const file_t *);
 int archive_file_delete(archive_t *, int);
+int archive_file_match_detector(archive_t *, int);
 int archive_file_move(archive_t *, int, archive_t *, const char *);
 int archive_file_rename(archive_t *, int, const char *);
 int archive_file_rename_to_unique(archive_t *, int);

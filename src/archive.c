@@ -184,7 +184,29 @@ archive_file_index_by_name(const archive_t *a, const char *name)
     return -1;
 }
 
-
+
+int
+archive_file_match_detector(archive_t *a, int idx)
+{
+    void *f;
+    file_t *r;
+    int ret;
+    
+    r = archive_file(a, idx);
+
+    if ((f=a->ops->file_open(a, idx)) == NULL) {
+	myerror(ERRZIP, "%s: can't open: %s", file_name(r), strerror(errno));
+	file_status(r) = STATUS_BADDUMP;
+	return -1;
+    }
+
+    ret = detector_execute(detector, r, a->ops->file_read, f);
+    
+    a->ops->file_close(f);
+    
+    return ret;
+}
+
 
 int
 archive_free(archive_t *a)
