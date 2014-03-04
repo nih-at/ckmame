@@ -164,7 +164,9 @@ ensure_romset_dir_db(void)
 
     romset_db_initialized = 1;
 
-    /* TODO check if roms/ exists or create? */
+    if (ensure_dir(get_directory(TYPE_ROM), 0) < 0)
+	return -1;
+
     if (xasprintf(&dbname, "%s/%s", get_directory(TYPE_ROM), DBH_DIR_DB_NAME) < 0) {
 	myerror(ERRSTR, "vasprintf failed");
 	return -1;
@@ -172,8 +174,11 @@ ensure_romset_dir_db(void)
 
     if ((romset_db=dbh_open(dbname, DBH_FMT_DIR|DBH_CREATE|DBH_WRITE)) == NULL) {
 	myerror(ERRDB, "can't open rom directory database for '%s'", get_directory(TYPE_ROM));
+	free(dbname);
 	return -1;
     }
     
+    free(dbname);
+
     return 0;
 }
