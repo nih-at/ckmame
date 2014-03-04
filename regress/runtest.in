@@ -129,7 +129,7 @@ sub post_run_program {
 	my ($test, $hook) = @_;
 
 	if ($roms_uncompressed) {
-		map { s,((?:extra|extradir|moreroms|needed|roms|search|unknown)/[^ :]*)\.zip,$1,g; } @{$test->{expected_stdout}};
+		map { s,((?:extra|extradir|moreroms|needed|roms|samples|search|unknown)/[^ :]*)\.zip,$1,g; } @{$test->{expected_stdout}};
 	}
         my $exclude_tag = ($roms_uncompressed ? 'ZIP' : 'DIR');
         $test->{expected_stderr} = [ map { s/^<[A-Z]*> //; $_; } grep { $_ !~ /^<$exclude_tag> /; } @{$test->{expected_stderr}} ];
