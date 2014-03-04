@@ -1,6 +1,6 @@
 /*
   garbage.c -- move files to garbage directory
-  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -51,7 +51,18 @@ int garbage_add(garbage_t *g, int idx, bool copyp)
     if (garbage_open(g) < 0)
 	return -1;
 
-    return archive_file_copy_or_move(g->sa, idx, g->da, file_name(archive_file(g->sa, idx)), copyp);
+    char *source_name = file_name(archive_file(g->sa, idx));
+    char *destination_name = source_name;
+    if (archive_file_index_by_name(g->da, source_name) >= 0) {
+	destination_name = archive_make_unique_name(g->da, source_name);
+    }
+
+    int ret = archive_file_copy_or_move(g->sa, idx, g->da, destination_name, copyp);
+
+    if (destination_name != source_name)
+	free(destination_name);
+
+    return ret;
 }
 
 
@@ -71,18 +82,26 @@ garbage_close(garbage_t *g)
     if (da == NULL)
 	return 0;
 
-    if (archive_commit(da) < 0) {
-	archive_rollback(da);
-	archive_free(da);
-	return -1;
+    if (!archive_is_empty(da)) {
+	if (ensure_dir(archive_name(da), 1) < 0)
+	    return -1;
     }
 
-    archive_free(da);
-
-    return 0;
+    if (archive_close(da) < 0)
+	return -1;
+    return archive_free(da);
 }
 
-
+
+int
+garbage_commit(garbage_t *g)
+{
+    if (g->da == NULL)
+	return 0;
+
+    return archive_commit(g->da);
+}
+
 
 garbage_t *garbage_new(archive_t *a)
 {

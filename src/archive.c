@@ -77,6 +77,7 @@ archive_check(archive_t *a)
 int
 archive_close(archive_t *a)
 {
+    seterrinfo(NULL, archive_name(a));
     return a->ops->close(a);
 }
 
@@ -242,7 +243,56 @@ archive_global_flags(int fl, bool setp)
 	_archive_global_flags &= ~fl;
 }
 
-
+
+char *
+archive_make_unique_name(archive_t *a, const char *name)
+{
+    char *unique, *p;
+    char n[4];
+    const char *ext;
+    int idx, i, j;
+
+    idx = archive_file_index_by_name(a, name);
+    if (idx < 0)
+	return xstrdup(name);
+
+    unique = (char *)xmalloc(strlen(name)+5);
+
+    ext = strrchr(name, '.');
+    if (ext == NULL) {
+	strcpy(unique, name);
+	p = unique+strlen(unique);
+	p[4] = '\0';
+    }
+    else {
+	strncpy(unique, name, ext-name);
+	p = unique + (ext-name);
+	strcpy(p+4, ext);
+    }	
+    *(p++) = '-';
+
+    for (i=0; i<1000; i++) {
+	sprintf(n, "%03d", i);
+	strncpy(p, n, 3);
+
+	int exists = 0;
+	for (j=0; j<archive_num_files(a); j++) {
+	    if (j == idx)
+		continue;
+	    if (strcmp(file_name(archive_file(a, j)), unique) == 0) {
+		exists = 1;
+		break;
+	    }
+	}
+
+	if (!exists)
+	    return unique;
+    }
+
+    free(unique);
+    return NULL;
+}
+
 
 archive_t *
 archive_new(const char *name, filetype_t ft, where_t where, int flags)

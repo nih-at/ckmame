@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+#include <errno.h>
 
 #include "archive.h"
 #include "error.h"
@@ -43,7 +43,6 @@
 
 static void _add_file(archive_t *, int, const char *, const file_t *);
 static int _file_cmp_name(const file_t *, const file_t *);
-static char *_make_unique_name(archive_t *, int);
 
 
 int
@@ -144,61 +143,36 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
         myerror(ERRZIP, "cannot copy to archive of different type '%s'", archive_name(da));
         return -1;
     }
+    if (archive_file_index_by_name(da, dname) != -1) {
+	seterrinfo(archive_name(da), NULL);
+	errno = EEXIST;
+        myerror(ERRZIP, "can't copy to %s: %s", dname, strerror(errno));
+        return -1;
+    }
+    seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
     if (file_status(archive_file(sa, sidx)) == STATUS_BADDUMP) {
-	seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
 	myerror(ERRZIPFILE, "not copying broken file");
 	return -1;
     }
     if (file_where(archive_file(sa, sidx)) != FILE_INZIP) {
-        seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
         myerror(ERRZIP, "cannot copy broken/added/deleted file");
         return -1;
     }
     if (start < 0 || (len != -1 && (len < 0 || (uint64_t)(start+len) > file_size(archive_file(sa, sidx))))) {
-        seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
         /* TODO: print off_t properly */
         myerror(ERRZIP, "invalid range (%ld, %ld)", (long)start, (long)len);
         return -1;
     }
 
-    /* if exists, delete broken file with same name */
-    bool replace = false;
-    int didx = archive_file_index_by_name(da, dname);
-    if (didx >= 0) {
-	if (sa == da && sidx == didx)
-	    replace = true;
-	else {
-	    if (file_status(archive_file(da, didx)) == STATUS_BADDUMP) {
-		if (archive_file_delete(da, didx) < 0)
-		    return -1;
-	    }
-	    else {
-		char *new_name = _make_unique_name(da, didx);
-		if (da->ops->file_rename(da, didx, new_name) < 0) {
-		    free(new_name);
-		    return -1;
-		}
-		free(new_name);
-	    }
-	}
-    }
-
     if (archive_is_writable(da)) {
-        if (sa->ops->file_copy(sa, sidx, da, replace ? didx : -1, dname, start, len) < 0) {
-	    /* TODO undo rename_to_unique? */	       
+        if (sa->ops->file_copy(sa, sidx, da, -1, dname, start, len) < 0)
             return -1;
-	}
     }
 
-    if (replace) {
-	/* TODO update archive_file(sa, sidx) */
-    }
-    else {
-	if (start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx))))
-	    _add_file(da, -1, dname, archive_file(sa, sidx));
-	else
-	    _add_file(da, -1, dname, f);
-    }
+    if (start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx))))
+	_add_file(da, -1, dname, archive_file(sa, sidx));
+    else
+	_add_file(da, -1, dname, f);
 
     return 0;
 }
@@ -241,21 +215,20 @@ archive_file_rename(archive_t *a, int idx, const char *name)
 {
     int other_idx;
 
+    seterrinfo(archive_name(a), NULL);
+
     if (file_where(archive_file(a, idx)) != FILE_INZIP) {
-        seterrinfo(archive_name(a), NULL);
         myerror(ERRZIP, "cannot copy broken/added/deleted file");
         return -1;
     }
-	
+
+    if (archive_file_index_by_name(a, name) != -1) {
+	errno = EEXIST;
+        myerror(ERRZIP, "can't rename %s to %s: %s", file_name(archive_file(a, idx)), name, strerror(errno));
+        return -1;
+    }
+
     if (archive_is_writable(a)) {
-	if ((other_idx=archive_file_index_by_name(a, name)) != -1) {
-	    char *new_name = _make_unique_name(a, other_idx);
-	    if (a->ops->file_rename(a, other_idx, new_name) < 0) {
-		free(new_name);
-		return -1;
-	    }
-	    free(new_name);
-	}
         if (a->ops->file_rename(a, idx, name) < 0) {
 	    if (other_idx != -1)
 		a->ops->file_rename(a, idx, name);
@@ -275,7 +248,7 @@ archive_file_rename_to_unique(archive_t *a, int idx)
     if (!archive_is_writable(a))
         return 0;
     
-    char *new_name = _make_unique_name(a, idx);
+    char *new_name = archive_make_unique_name(a, file_name(archive_file(a, idx)));
     if (new_name == NULL)
         return -1;
     
@@ -283,6 +256,7 @@ archive_file_rename_to_unique(archive_t *a, int idx)
     free(new_name);
     return ret;
 }
+
 
 int
 archive_rollback(archive_t *a)
@@ -314,54 +288,6 @@ _file_cmp_name(const file_t *a, const file_t *b)
     return strcasecmp(file_name(a), file_name(b));
 }
 
-
-static char *
-_make_unique_name(archive_t *a, int idx)
-{
-    char *unique, *p;
-    char n[4];
-    const char *name, *ext;
-    int i, j;
-
-    if ((name=file_name(archive_file(a, idx))) == NULL)
-	return NULL;
-
-    unique = (char *)xmalloc(strlen(name)+5);
-
-    ext = strrchr(name, '.');
-    if (ext == NULL) {
-	strcpy(unique, name);
-	p = unique+strlen(unique);
-	p[4] = '\0';
-    }
-    else {
-	strncpy(unique, name, ext-name);
-	p = unique + (ext-name);
-	strcpy(p+4, ext);
-    }	
-    *(p++) = '-';
-
-    for (i=0; i<1000; i++) {
-	sprintf(n, "%03d", i);
-	strncpy(p, n, 3);
-
-	int exists = 0;
-	for (j=0; j<archive_num_files(a); j++) {
-	    if (j == idx)
-		continue;
-	    if (strcmp(file_name(archive_file(a, j)), unique) == 0) {
-		exists = 1;
-		break;
-	    }
-	}
-
-	if (!exists)
-	    return unique;
-    }
-
-    free(unique);
-    return NULL;
-}
 
 #if 0
 /* some not used here, but prototype must match others */

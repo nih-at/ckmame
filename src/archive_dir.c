@@ -235,7 +235,7 @@ change_has_new_data(const change_t *ch)
     if (ch->final.name == NULL)
 	return false;
 
-    return (ch->original.name == NULL || strcmp(ch->original.name, ch->final.name) != 0);
+    return (ch->original.name == NULL || strcmp(ch->original.data, ch->final.data) != 0);
 }
 
 static int
@@ -578,32 +578,22 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 
 
 static int
-discard_new_data(archive_t *a, int idx)
+op_file_delete(archive_t *a, int idx)
 {
     change_t *ch = archive_file_change(a, idx);
+
+    if (move_original_file_out_of_the_way(a, idx) < 0)
+	return -1;
 
     int ret = 0;
 
     if (change_has_new_data(ch)) {
 	if (fileinfo_discard(a, &ch->final) < 0)
 	    ret = -1;
-	fileinfo_fini(&ch->final);
     }
+    fileinfo_fini(&ch->final);
 
     return ret;
-}
-
-
-static int
-op_file_delete(archive_t *a, int idx)
-{
-    if (move_original_file_out_of_the_way(a, idx) < 0)
-	return -1;
-
-    if (discard_new_data(a, idx) < 0)
-	return -1;
-
-    return 0;
 }
 
 

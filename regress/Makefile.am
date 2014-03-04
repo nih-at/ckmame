@@ -142,6 +142,7 @@ TESTS=	\
 		rom-from-superfluous-many-fixdat.test \
 		rom-from-superfluous-some.test \
 		rom-from-superfluous.test \
+		rom-from-unknown.test \
 		rom-many.test \
 		rom-two-long.test \
 		rom-unused.test \
@@ -173,7 +174,6 @@ TESTS=	\
 BROKEN_TEST=	\
 		disk-swapmerge.test \
 		nogood-diskgood.test \
-		rom-from-unknown.test \
 		tz-ok.test \
 		tz-from-romset.test
 

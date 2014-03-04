@@ -107,9 +107,9 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 		printf("%s: %s unknown file '%s'\n", archive_name(a), (move ? "mv" : "delete"), file_name(archive_file(a, i)));
 
 	    if (move)
-		garbage_add(gb, i, false);
+		garbage_add(gb, i, false); /* TODO: check return value */
 	    else
-		archive_file_delete(a, i);
+		archive_file_delete(a, i); /* TODO: check return value */
 	    break;
 
 	case FS_DUPLICATE:
@@ -144,13 +144,23 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	}
     }
 
-    fix_files(g, a, res, gb);
+    if (fix_options & FIX_DO) {
+	if (garbage_commit(gb) < 0) {
+	    /* TODO: error message? (or is message from archive_close enough?) */
+	    /* TODO: handle error (how?) */
+	    archive_rollback(a);
+	    myerror(ERRZIP, "committing garbage failed");
+	    return -1;
+	}
+    }
+
+    int ret = fix_files(g, a, res, gb);
 
     if (fix_options & FIX_DO) {
 	if (garbage_close(gb) < 0) {
-	    /* TODO: handle error (how?) */
 	    archive_rollback(a);
-	    /* TODO: return -1 here? */
+	    myerror(ERRZIP, "closing garbage failed");
+	    return -1;
 	}
     }
 
@@ -172,7 +182,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 
     fix_disks(g, im, res);
 
-    return 0;
+    return ret;
 }
 
 
@@ -287,7 +297,29 @@ fix_disks(game_t *g, images_t *im, result_t *res)
     return 0;
 }
 
-
+
+static int
+make_space(archive_t *a, const char *name, char **original_names, size_t num_names)
+{
+    int idx = archive_file_index_by_name(a, name);
+
+    if (idx < 0)
+	return 0;
+
+    if (idx < num_names && original_names[idx] == NULL)
+	original_names[idx] = xstrdup(name);
+
+    if (file_status(archive_file(a, idx)) == STATUS_BADDUMP) {
+	if (fix_options & FIX_PRINT)
+	    printf("%s: delete broken '%s'\n", archive_name(a), name);
+	return archive_file_delete(a, idx);
+    }
+
+    return archive_file_rename_to_unique(a, idx);
+}
+
+
+#define REAL_NAME(aa, ii)  ((aa) == a && (ii) < num_names && original_names[(ii)] ? original_names[(ii)] : file_name(archive_file((aa), (ii))))
 
 static int
 fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
@@ -296,8 +328,15 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
     match_t *m;
     file_t *r;
     int i;
+    char **original_names;
+
+    bool needs_recheck = false;
 
     seterrinfo(NULL, archive_name(a));
+
+    size_t num_names = archive_num_files(a);
+    original_names = xmalloc(sizeof(original_names[0])*num_names);
+    memset(original_names, 0, sizeof(original_names[0])*num_names);
 
     for (i=0; i<game_num_files(g, file_type); i++) {
 	m = result_rom(res, i);
@@ -328,72 +367,72 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	case QU_LONG:
 	    if (a == afrom && (fix_options & FIX_MOVE_LONG)) {
 		if (fix_options & FIX_PRINT)
-		    printf("%s: mv long file '%s'\n",
-			   archive_name(afrom),
-			   file_name(archive_file(afrom, match_index(m))));
+		    printf("%s: mv long file '%s'\n", archive_name(afrom), REAL_NAME(afrom, match_index(m)));
 		if (garbage_add(gb, match_index(m), true) < 0)
 		    break;
 	    }
 	    
 	    if (fix_options & FIX_PRINT)
 		printf("%s: extract (offset %" PRIdoff ", size %" PRIu64 ") from '%s' to `%s'\n",
-                       archive_name(a), PRIoff_cast match_offset(m), file_size(r), file_name(archive_file(afrom, match_index(m))), file_name(r));
+                       archive_name(a), PRIoff_cast match_offset(m), file_size(r), REAL_NAME(afrom, match_index(m)), file_name(r));
 
+	    bool replacing_ourself = (a == afrom && match_index(m) == archive_file_index_by_name(afrom, file_name(r)));
+
+	    if (make_space(a, file_name(r), original_names, num_names) < 0)
+		break;
 	    if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size(r), r) < 0)
 		break;
 
-#if 0
 	    if (a == afrom) {
-		if (!(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
-		    printf("%s: delete long file '%s'\n",
-			   archive_name(a), file_name(r));
-		archive_file_delete(a, i);
+		if (!replacing_ourself && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
+		    printf("%s: delete long file '%s'\n", archive_name(afrom), file_name(r));
+		archive_file_delete(afrom, match_index(m));
 	    }
-#endif
 	    break;
 
 	case QU_NAMEERR:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: rename '%s' to `%s'\n", archive_name(a),
-		       file_name(archive_file(a, match_index(m))),
-		       file_name(r));
+		printf("%s: rename '%s' to `%s'\n", archive_name(a), REAL_NAME(a, match_index(m)), file_name(r));
 
 	    /* TODO: handle errors (how?) */
+	    if (make_space(a, file_name(r), original_names, num_names) < 0)
+		break;
 	    archive_file_rename(a, match_index(m), file_name(r));
+
 	    break;
 
 	case QU_COPIED:
-	    if (fix_options & FIX_PRINT)
-		printf("%s: add '%s/%s' as `%s'\n",
-		       archive_name(a), archive_name(afrom),
-		       file_name(archive_file(afrom, match_index(m))),
-		       file_name(r));
-	    
-#if 0
-	    /* TODO: is this neccessary? */
-	    /* make room for new file, if necessary */
-	    idx = archive_file_index_by_name(a, file_name(r));
-	    if (idx >= 0) {
-		if (file_status(archive_file(a, idx)) == STATUS_BADDUMP)
-		    zip_delete(zto, idx);
-		else
-		    idx = -1;
+	    if (gb && afrom == gb->da) {
+		/* we can't copy from our own garbage archive, since we're copying to it, and libzip doesn't support cross copying */
+
+		if (fix_options & FIX_PRINT)
+		    printf("%s: save needed file '%s'\n", archive_name(afrom), file_name(archive_file(afrom, match_index(m))));
+
+		/* TODO: handle error (how?) */
+		if (save_needed(afrom, match_index(m), fix_options & FIX_DO) == 0)
+		    needs_recheck = true;
+
+		break;
 	    }
-#endif
+	    if (fix_options & FIX_PRINT)
+		printf("%s: add '%s/%s' as `%s'\n", archive_name(a), archive_name(afrom), REAL_NAME(afrom, match_index(m)), file_name(r));
+	    
+	    if (make_space(a, file_name(r), original_names, num_names) < 0) {
+		/* TODO: if (idx >= 0) undo deletion of broken file */
+		break;
+	    }
+	    
 	    if (archive_file_copy(afrom, match_index(m), a, file_name(r)) < 0) {
-		    /* TODO: handle error (how?) */
+		/* TODO: if (idx >= 0) undo deletion of broken file */
 	    }
 	    else {
 		if (match_where(m) == FILE_NEEDED)
-		    delete_list_add(needed_delete_list,
-				    archive_name(afrom), match_index(m));
+		    delete_list_add(needed_delete_list, archive_name(afrom), match_index(m));
 		else if (match_where(m) == FILE_SUPERFLUOUS)
-		    delete_list_add(superfluous_delete_list,
-				    archive_name(afrom), match_index(m));
+		    delete_list_add(superfluous_delete_list, archive_name(afrom), match_index(m));
 		else if (match_where(m) == FILE_EXTRA
 			 && (fix_options & FIX_DELETE_EXTRA))
-		    delete_list_add(extra_delete_list,
-				    archive_name(afrom), match_index(m));
+		    delete_list_add(extra_delete_list, archive_name(afrom), match_index(m));
 	    }
 	    break;
 
@@ -415,5 +454,9 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	}
     }
 
-    return 0;
+    for (size_t ii = 0; ii < num_names; ii++)
+	free(original_names[ii]);
+    free(original_names);
+
+    return needs_recheck ? 1 : 0;
 }

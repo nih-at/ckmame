@@ -121,6 +121,7 @@ int archive_file_index_by_name(const archive_t *, const char *);
 int archive_free(archive_t *);
 void archive_global_flags(int, bool);
 bool archive_is_empty(const archive_t *);
+char *archive_make_unique_name(archive_t *, const char *);
 archive_t *archive_new(const char *, filetype_t, where_t, int);
 int archive_read_infos(archive_t *);
 void archive_real_free(archive_t *);

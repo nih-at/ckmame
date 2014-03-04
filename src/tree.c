@@ -300,8 +300,10 @@ tree_process(tree_t *tree, archive_t *child,
     /* write warnings/errors for me */
     diagnostics(g, child, images, res);
 
+    int ret;
+
     if (fix_options & (FIX_DO|FIX_PRINT))
-	fix_game(g, child, images, res);
+	ret = fix_game(g, child, images, res);
 
     /* TODO: includes too much when rechecking */
     if (file_type != TYPE_SAMPLE && fixdat)
@@ -312,7 +314,8 @@ tree_process(tree_t *tree, archive_t *child,
     game_free(g);
     images_free(images);
 
-    tree_checked(tree) = true;
+    if (ret != 1)
+	tree_checked(tree) = true;
 
     return 0;
 }
