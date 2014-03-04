@@ -48,6 +48,13 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len)
     if ((fin=fopen(old, "rb")) == NULL)
 	return -1;
 
+    if (start > 0) {
+	if (fseeko(fin, start, SEEK_SET) < 0) {
+	    fclose(fin);
+	    return -1;
+	}
+    }
+
     if ((fout=fopen(new, "wb")) == NULL) {
 	fclose(fin);
 	return -1;
@@ -56,8 +63,8 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len)
     total = 0;
     while ((len >= 0 && total < (size_t)len) || !feof(fin)) {
 	nr = sizeof(b);
-	if (len > 0 && n > (size_t)len-total)
-	    n = (size_t)len-total;
+	if (len > 0 && nr > (size_t)len-total)
+	    nr = (size_t)len-total;
 	if ((nr = fread(b, 1, nr, fin)) == 0)
             break;
 	nw = 0;
