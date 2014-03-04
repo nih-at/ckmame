@@ -134,10 +134,10 @@ stdout roms/1-8-ok.zip: remove empty archive
 stdout roms/1-a-ok.zip: delete used file '0a.rom'
 stdout roms/1-a-ok.zip: remove empty archive
 stdout In archive roms/2-44-ok.zip:
-stdout file 04.rom        size       4  crc d87f7e0c: not used
 stdout file 04-2.rom      size       4  crc d87f7e0c: not used
-stdout roms/2-44-ok.zip: delete unused file '04.rom'
+stdout file 04.rom        size       4  crc d87f7e0c: not used
 stdout roms/2-44-ok.zip: delete unused file '04-2.rom'
+stdout roms/2-44-ok.zip: delete unused file '04.rom'
 stdout roms/2-44-ok.zip: remove empty archive
 stdout In archive roms/2-48-ok.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
