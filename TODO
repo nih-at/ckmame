@@ -1,10 +1,6 @@
-* archive_file_copy_part/archive_file_rename: if target name exists, it's renamed on disk, but not in archive_t; do we really want that?!
-* archive_dir support
-- .ckmame.db is in extra files list
+* test that .ckmame.db is correct for dir tests
 - libzip is linked to too many executables
 - possibly too many hash types computed for archive_dir, restrict to what's available in mame.db
-- archive_dir: add lots of tests
-- runtest: improve support for testing archive_dir
 - add tests using pre-existing .ckmame.db, possibly out of date
 - stop using fts, use dir.{c,h}
 - EFTYPE not available on (some?) Linux
