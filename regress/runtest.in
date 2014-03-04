@@ -130,6 +130,8 @@ sub post_run_program {
 	if ($roms_uncompressed) {
 		map { s,((?:extra|needed|roms|unknown)/[^ :]*)\.zip,$1,g; } @{$test->{expected_stdout}};
 	}
+        my $exclude_tag = ($roms_uncompressed ? 'ZIP' : 'DIR');
+        $test->{expected_stderr} = [ map { s/^<[A-Z]*> //; $_; } grep { $_ !~ /^<$exclude_tag> /; } @{$test->{expected_stderr}} ];
 
 	return 1;
 }
