@@ -1,10 +1,8 @@
-0.xx
-
-- sped up database operations by preparing statements only once
-
 0.12
 
+- support for ROMs in directories instead of in zip archives
 - fix all fixable ROM errors automatically in one run
+- speed up database operations by preparing statements only once
 
 0.11 (2011-02-20)
 
