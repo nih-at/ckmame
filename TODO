@@ -1,3 +1,5 @@
+* ckmame -n changes archive_t and writes those changes to .ckmame.db, but doesn't do the changes on disk (i.e. .ckmake.db is wrong)
+* test that .ckmame.db is corect for added files, including mtime
 * test that .ckmame.db is correct for dir tests (reflects what's in roms)
 * test that files with up-to-date info in .ckmame.db are not re-read (put file with different content there)
 * test that files with out-of-date info is reread
