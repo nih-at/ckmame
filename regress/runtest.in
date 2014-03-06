@@ -50,7 +50,7 @@ sub check_ckmame_db {
 	my $db = new CkmameDB($dir);
 	
 	if (!$db) {
-		# TODO: error message
+		print "opening $dir/.ckmame.db failed\n" if ($test->{verbose});
 		return undef;
 	}
 
