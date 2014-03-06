@@ -299,10 +299,10 @@ ${MAME_DB_SMALL}: ../src/mkmamedb ${srcdir}/mamedb-small.txt
 
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2}
 	./dbdump ${MAME_DB} > mamedb-ok.dump
-	./dbdump ${MAME_DB2} > mkmamedb-lost-parent.dump
-	../src/mkmamedb -o mame.db.$$ ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt && ./dbdump mame.db.$$ > mkmamedb-duplicate-game.dump && rm mame.db.$$
-	./dbdump ${MAME_DB_CRCDIFF} > mkmamedb-parent-crcdiff.dump
-	./dbdump ${MAME_DB_NOCOMMON} > mkmamedb-parent-no-common.dump
+	./dbdump ${MAME_DB2} > mamedb-lost-parent.dump
+	../src/mkmamedb -o mame.db.$$ ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt && ./dbdump mame.db.$$ > mamedb-duplicate-game.dump && rm mame.db.$$
+	./dbdump ${MAME_DB_CRCDIFF} > mamedb-parent-crcdiff.dump
+	./dbdump ${MAME_DB_NOCOMMON} > mamedb-parent-no-common.dump
 	set -e \
 	f=$$$$.db; \
 	../src/mkmamedb -o "$$f".db \
