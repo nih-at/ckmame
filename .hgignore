@@ -5,6 +5,7 @@
 /\.deps$
 /\.deps/
 /\.libs/
+/\.DS_Store$
 ~$
 Makefile$
 Makefile.in$
