@@ -94,7 +94,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     if ((hashes_types(file_hashes(r)) & hashtypes) == hashtypes)
 	return 0;
 
-    hashes_types(&h) = hashtypes;
+    hashes_types(&h) = HASHES_TYPE_ALL;
 
     if ((f=a->ops->file_open(a, idx)) == NULL) {
 	myerror(ERRDEF, "%s: %s: can't open: %s", archive_name(a), file_name(r), strerror(errno));

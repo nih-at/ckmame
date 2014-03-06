@@ -28,9 +28,17 @@ sub read_db {
 		return undef;
 	}
 
-	my $table;
+	my @files = ();
+
+	my $table = '';
 	while (my $line = <$dump>) {
 		chomp $line;
+		
+		if ($table eq 'file') {
+			my ($id, $name) = split '\|', $line;
+			push @files, [ $id, $name, $line ];
+			next;
+		}
 		push @{$self->{dump_got}}, $line;
 		if ($line =~ m/>>> table (\w+)/) {
 			$table = $1;
@@ -46,6 +54,9 @@ sub read_db {
 	}
 	close($dump);
 
+	for my $file (sort { return $a->[1] cmp $b->[1] if ($a->[0] == $b->[0]) ; return $a->[0] <=> $b->[0]; } @files) {
+		push @{$self->{dump_got}}, $file->[2];
+	}
 	
 	return 1;
 }
