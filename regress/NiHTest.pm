@@ -285,14 +285,18 @@ sub runtest {
 		push @failed, 'files';
 	}
 	
-	my $result = scalar(@failed) == 0 ? 'PASS' : 'FAIL';
+	$self->{failed} = \@failed;
+	
+	$self->run_hook('checks');
+	
+	my $result = scalar(@{$self->{failed}}) == 0 ? 'PASS' : 'FAIL';
 
 	$self->sandbox_leave();
 	if (!($self->{no_cleanup} || ($self->{keep_broken} && $result eq 'FAIL'))) {
 		$self->sandbox_remove();
 	}
 
-	$self->print_test_result($tag, $result, join ', ', @failed);
+	$self->print_test_result($tag, $result, join ', ', @{$self->{failed}});
 
 	return $result;
 }

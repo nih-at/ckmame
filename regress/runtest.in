@@ -36,11 +36,47 @@ use strict;
 
 BEGIN { push @INC, '@abs_srcdir@'; }
 
+use CkmameDB;
 use NiHTest;
 
 my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@' });
 
 my $roms_uncompressed = 0;
+
+
+sub check_ckmame_db {
+	my ($test, $dir) = @_;
+	
+	my $db = new CkmameDB($dir);
+	
+	if (!$db) {
+		# TODO: error message
+		return undef;
+	}
+
+	# TODO: error message (in CkmameDB?)
+	return undef unless ($db->read_db() && $db->read_archives() && $db->make_dump());
+	
+	return $test->compare_arrays($db->{dump_got}, $db->{dump_expected}, '$dir/.ckmame.db');
+}
+
+
+sub checks {
+	my ($test, $hook) = @_;
+	
+	if ($roms_uncompressed) {
+		my $ret = check_ckmame_db($test, 'roms');
+		
+		if (!defined($ret)) {
+			return undef;
+		}
+		elsif ($ret != 1) {
+			push @{$test->{failed}}, 'ckmame.db';
+		}
+	}
+	
+	return 1;
+}
 
 sub comparator_db {
 	my ($test, $got, $expected) = @_;
@@ -161,6 +197,7 @@ $test->add_comparator('db/dump', \&comparator_db);
 $test->add_comparator('zip/zip', \&comparator_zip);
 $test->add_copier('zip/zip', \&copier_zip);
 
+#$test->add_hook('checks', \&checks);
 $test->add_hook('mangle_program', \&mangle_program);
 $test->add_hook('post_parse', \&post_parse);
 $test->add_hook('post_list_files', \&post_list_files);
@@ -175,7 +212,7 @@ for my $archive_type (reverse sort @{$test->{test}->{'archive-types'}}) {
 	next if ($ENV{SKIP_DIR} && $archive_type eq 'dir');
 	if ($archive_type eq 'dir') {
 		$roms_uncompressed = 1;
-		if ($test->{test}->{program} =~ m/ckmame$/) {
+		if ($test->{test}->{program} =~ m/(ckmame|mamedb)$/) {
 			unshift @{$test->{test}->{args}}, '-u';
 		}
 	}
