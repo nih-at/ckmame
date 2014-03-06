@@ -43,6 +43,9 @@
 static dbh_t *romset_db;
 static int romset_db_initialized;
 
+static int dbh_dir_write_file_with_stmt(int id, const file_t *f, sqlite3_stmt *stmt);
+
+
 int
 dbh_dir_close(void)
 {
@@ -58,12 +61,23 @@ dbh_dir_delete(int id)
 {
     sqlite3_stmt *stmt;
 
-    if ((stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_DELETE_FILE)) == NULL)
+    if (dbh_dir_delete_files(id) < 0)
+        return -1;
+    
+    if ((stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_DELETE_ARCHIVE)) == NULL)
 	return -1;
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
 
-    if ((stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_DELETE_ARCHIVE)) == NULL)
+    return 0;
+}
+
+
+int dbh_dir_delete_files(int id)
+{
+    sqlite3_stmt *stmt;
+
+    if ((stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_DELETE_FILE)) == NULL)
 	return -1;
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
@@ -125,43 +139,74 @@ dbh_dir_write(int id, const char *name, array_t *files)
 	    return -1;
     }
     
-    stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_INSERT_ARCHIVE_ID);
-
-    if (stmt == NULL || sq3_set_string(stmt, 1, name) != SQLITE_OK)
-	return -1;
-
-    if (id != 0) {
-	if (sqlite3_bind_int(stmt, 2, id) != SQLITE_OK)
-	    return -1;
-    }
-	
-    if (sqlite3_step(stmt) != SQLITE_DONE)
-	return -1;
-
-    if (id == 0)
-	id = sqlite3_last_insert_rowid(dbh_db(romset_db));
+    if ((id = dbh_dir_write_archive(id, name)) < 0)
+        return -1;
+    
 
     if ((stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_INSERT_FILE)) == NULL)
 	return -1;
 
-    sqlite3_bind_int(stmt, 1, id);
+    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK)
+        return -1;
 
     for (i=0; i<array_length(files); i++) {
-	file_t *f = (file_t *)array_get(files, i);
-
-	if (sq3_set_string(stmt, 2, file_name(f)) != SQLITE_OK
-	    || sqlite3_bind_int(stmt, 3, file_mtime(f)) != SQLITE_OK
-	    || sqlite3_bind_int(stmt, 4, file_status(f)) != SQLITE_OK
-	    || sq3_set_int64_default(stmt, 5, file_size(f), SIZE_UNKNOWN) != SQLITE_OK
-	    || sq3_set_hashes(stmt, 6, file_hashes(f), 1) != SQLITE_OK
-	    || sqlite3_step(stmt) != SQLITE_DONE
-	    || sqlite3_reset(stmt) != SQLITE_OK)
+        if (dbh_dir_write_file_with_stmt(id, array_get(files, i), stmt) < 0)
 	    return -1;
     }
 
     return id;
 }
 
+int dbh_dir_write_archive(int id, const char *name)
+{
+    sqlite3_stmt *stmt;
+
+    stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_INSERT_ARCHIVE_ID);
+    
+    if (stmt == NULL || sq3_set_string(stmt, 1, name) != SQLITE_OK)
+	return -1;
+    
+    if (id != 0) {
+	if (sqlite3_bind_int(stmt, 2, id) != SQLITE_OK)
+	    return -1;
+    }
+    
+    if (sqlite3_step(stmt) != SQLITE_DONE)
+	return -1;
+    
+    if (id == 0)
+	id = (int)sqlite3_last_insert_rowid(dbh_db(romset_db)); /* TODO: use int64_t as id */
+    
+    return id;
+}
+
+int dbh_dir_write_file(int id, const file_t *f)
+{
+    sqlite3_stmt *stmt;
+
+    if ((stmt = dbh_get_statement(romset_db, DBH_STMT_DIR_INSERT_FILE)) == NULL)
+	return -1;
+    
+    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK)
+        return -1;
+
+    return dbh_dir_write_file_with_stmt(id, f, stmt);
+}
+
+
+static int dbh_dir_write_file_with_stmt(int id, const file_t *f, sqlite3_stmt *stmt)
+{
+    if (sq3_set_string(stmt, 2, file_name(f)) != SQLITE_OK
+        || sqlite3_bind_int(stmt, 3, file_mtime(f)) != SQLITE_OK
+        || sqlite3_bind_int(stmt, 4, file_status(f)) != SQLITE_OK
+        || sq3_set_int64_default(stmt, 5, file_size(f), SIZE_UNKNOWN) != SQLITE_OK
+        || sq3_set_hashes(stmt, 6, file_hashes(f), 1) != SQLITE_OK
+        || sqlite3_step(stmt) != SQLITE_DONE
+        || sqlite3_reset(stmt) != SQLITE_OK)
+        return -1;
+ 
+    return 0;
+}
 
 int
 ensure_romset_dir_db(void)

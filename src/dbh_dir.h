@@ -35,11 +35,15 @@
  */
 
 #include "array.h"
+#include "file.h"
 
 int dbh_dir_close(void);
 int dbh_dir_delete(int);
+int dbh_dir_delete_files(int);
 int dbh_dir_read(const char *, array_t *);
 int dbh_dir_write(int, const char *, array_t *);
+int dbh_dir_write_archive(int id, const char *);
+int dbh_dir_write_file(int, const file_t *);
 int ensure_romset_dir_db(void);
 
 #endif /* dbh_dir.h */

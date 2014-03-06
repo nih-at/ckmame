@@ -115,6 +115,8 @@ struct archive_ops ops_dir = {
 
 #define archive_file_change(a, idx)	(array_get(((ud_t *)archive_user_data(a))->change, (idx)))
 
+#define SAVE_IN_CKMAME_DB(a)    (file_type == TYPE_ROM && (archive_where(a) == FILE_ROMSET || archive_where(a) == FILE_SUPERFLUOUS))
+
 int
 archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t *sh)
 {
@@ -148,6 +150,19 @@ archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t
     /* normally, files are written to memdb in archive_new after read_infos is done */
     if ((archive_flags(a) & ARCHIVE_FL_DELAY_READINFO) && IS_EXTERNAL(archive_where(a)))
 	memdb_file_insert(NULL, a, array_length(archive_files(a))-1);
+
+    if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
+        ud_t *ud = archive_user_data(a);
+        
+        if (SAVE_IN_CKMAME_DB(a)) {
+            if (ud->id == 0 && archive_num_files(a) == 1) {
+                if ((ud->id = dbh_dir_write_archive(0, mybasename(archive_name(a)))) < 0)
+                    ud->id = 0;
+            }
+            if (ud->id > 0)
+                dbh_dir_write_file(ud->id, archive_file(a, archive_num_files(a)-1));
+        }
+    }
 
     return 0;
 }
@@ -442,8 +457,11 @@ op_commit(archive_t *a)
 	}
     }
 
+    if (archive_flags(a) & ARCHIVE_FL_RDONLY)
+	return 0;
+
     /* update db */
-    if (archive_where(a) == FILE_ROMSET) {
+    if (SAVE_IN_CKMAME_DB(a)) {
         if (ud->id > 0)
             dbh_dir_delete(ud->id);
 	if (!is_empty) {
@@ -455,8 +473,6 @@ op_commit(archive_t *a)
 	    ud->id = 0;
     }
 
-    if (archive_flags(a) & ARCHIVE_FL_RDONLY)
-	return 0;
 
     int ret = 0;
     for (idx=0; idx<archive_num_files(a); idx++) {
@@ -719,14 +735,19 @@ op_read_infos(archive_t *a)
     ud_t *ud = archive_user_data(a);
     const char *fname;
 
-    if (archive_where(a) == FILE_ROMSET) {
+    if (SAVE_IN_CKMAME_DB(a)) {
         if (ensure_romset_dir_db() < 0)
             return -1;
         
         files = array_new(sizeof(file_t));
 	
         if ((id=dbh_dir_read(mybasename(archive_name(a)), files)) < 0)
-	    id = 0;
+            id = 0;
+
+        if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
+            if (id > 0)
+                dbh_dir_delete_files(id);
+        }
     }
 
     ud->id = id;
