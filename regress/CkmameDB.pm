@@ -22,6 +22,10 @@ sub new {
 sub read_db {
 	my ($self) = @_;
 	
+	if (! -f "$self->{dir}/.ckmame.db") {
+		return 0;
+	}
+	
 	my $dump;
 	unless (open $dump, "../dbdump $self->{dir}/.ckmame.db |") {
 		# TODO: error message
@@ -119,11 +123,11 @@ sub make_dump {
 	
 	push @dump, '>>> table archive (archive_id, name)';
 	
-	for my $id (sort keys %{$self->{archives_got}}) {
+	for my $id (sort { $a <=> $b } keys %{$self->{archives_got}}) {
 		push @dump, "$id|$self->{archives_got}->{$id}->{name}";
 	}
 	push @dump, '>>> table file (archive_id, name, mtime, status, size, crc, md5, sha1)';
-	for my $id (sort keys %{$self->{archives_got}}) {
+	for my $id (sort { $a <=> $b} keys %{$self->{archives_got}}) {
 		my $archive = $self->{archives_got}->{$id};
 		
 		for my $fname (sort keys %{$archive->{files}}) {
