@@ -1,0 +1,11 @@
+description test single-rom game (no parent), missing file is at top-level in roms dir
+archive-types dir
+return 0
+args -D ../mame-small.db -jFKLivc
+file-new roms/1-4.zip 1-4-ok.zip
+file-del roms/04.rom 04.rom
+stdout In game 1-4:
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra'
+stdout roms/1-4: add 'roms/04.rom' as `04.rom'
+stdout roms: delete used file '04.rom'
+stdout roms: remove empty archive

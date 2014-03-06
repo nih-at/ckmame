@@ -454,7 +454,8 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	}
     }
 
-    for (size_t ii = 0; ii < num_names; ii++)
+    size_t ii;
+    for (ii = 0; ii < num_names; ii++)
 	free(original_names[ii]);
     free(original_names);
 

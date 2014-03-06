@@ -1,10 +1,10 @@
 description test header detector
 features LIBXML2
 return 0
-file skip.xml skip.xml skip.xml
+file detector.xml detector.xml detector.xml
 file skipped.txt skipped.txt skipped.txt
 mkdir 755 extra
-mkdbargs --detector skip.xml skipped.txt
+mkdbargs --detector detector.xml skipped.txt
 args -FKLijvc -e extra skipped
 file-del extra/short.zip 1-8-skip-ok.zip
 file-del extra/1-8-ok.zip 1-8-ok.zip

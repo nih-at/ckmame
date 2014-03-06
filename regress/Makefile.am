@@ -10,7 +10,8 @@ fwrite_la_LDFLAGS=	-module -avoid-version
 
 EXTRA_DIST=runtest.in NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in \
-		rom-from-superfluous-many-fixdat.fixdat
+		rom-from-superfluous-many-fixdat.fixdat \
+		04.rom
 
 CLEANFILES=${DBS} runtest
 
@@ -21,8 +22,9 @@ MAME_DB4=mame4.db
 MAME_DB_8_IS_4=mame-1-8-is-4.db
 MAME_DB_BADDUMP=mame-baddump.db
 MAME_DB_CRCDIFF=mame-crcdiff.db
-MAME_DB_NOCOMMON=mkmamedb-parent-no-common.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON}
+MAME_DB_NOCOMMON=mamedb-parent-no-common.db
+MAME_DB_SMALL=mamedb-small.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL}
 
 ZIPCMP=@ZIPCMP@
 
@@ -85,6 +87,7 @@ TESTS=	\
 		mkmamedb-dir-in-name.test \
 		mkmamedb-duplicate-game.test \
 		mkmamedb-duplicate-nodump.test \
+		mkmamedb-input-dir.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-mame.test \
 		mkmamedb-mess.test \
@@ -164,6 +167,7 @@ TESTS=	\
 		tochild.test \
 		tochildfix.test \
 		tz-already.test \
+		uncompressed-toplevel-extra.test \
 		wrong.test \
 		wrong2.test \
 		zero.test \
@@ -174,9 +178,11 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
+		extra-file.test \
 		nogood-diskgood.test \
 		tz-ok.test \
-		tz-from-romset.test
+		tz-from-romset.test \
+		uncompressed-extra-file-known.test
 
 ZIPS=		1-4-2.zip \
 		1-4-crcerror.zip \
@@ -189,6 +195,7 @@ ZIPS=		1-4-2.zip \
 		1-4-ok-doublezip.zip \
 		1-4-path.zip \
 		1-4-wrong.zip \
+		1-4-wrong-renamed.zip \
 		1-8-broken.zip \
 		1-8-long.zip \
 		1-8-ok.zip \
@@ -235,31 +242,33 @@ DBFILES=	mamedb.txt \
 		mamedb-2.txt \
 		mamedb-baddump.txt \
 		mamedb-disk.txt \
+		mamedb-small.txt \
+		mamedb-small.dump \
 		mamedb-multi-dats.dump \
 		mamedb-ok.dump \
-		mkmamedb-broken-sha1.dump \
-		mkmamedb-broken-sha1.txt \
-		mkmamedb-dir-in-name.dump \
-		mkmamedb-dir-in-name.txt \
-		mkmamedb-duplicate-game.dump \
-		mkmamedb-duplicate-nodump.dump \
-		mkmamedb-duplicate-nodump.txt \
-		mkmamedb-lost-parent-ok.txt \
-		mkmamedb-lost-parent.dump \
-		mkmamedb-lost-parent.txt \
-		mkmamedb-mame.dump \
-		mkmamedb-mame.xml \
-		mkmamedb-mess.dump \
-		mkmamedb-mess.xml \
-		mkmamedb-no-name.dump \
-		mkmamedb-no-name.txt \
-		mkmamedb-parent-crcdiff.dump \
-		mkmamedb-parent-crcdiff.txt \
-		mkmamedb-parent-no-common.dump \
-		mkmamedb-parent-no-common.txt \
-		mkmamedb-size-hex.dump \
-		mkmamedb-size-hex.txt \
-		skip.xml \
+		mamedb-broken-sha1.dump \
+		mamedb-broken-sha1.txt \
+		mamedb-dir-in-name.dump \
+		mamedb-dir-in-name.txt \
+		mamedb-duplicate-game.dump \
+		mamedb-duplicate-nodump.dump \
+		mamedb-duplicate-nodump.txt \
+		mamedb-lost-parent-ok.txt \
+		mamedb-lost-parent.dump \
+		mamedb-lost-parent.txt \
+		mamedb-mame.dump \
+		mamedb-mame.xml \
+		mamedb-mess.dump \
+		mamedb-mess.xml \
+		mamedb-no-name.dump \
+		mamedb-no-name.txt \
+		mamedb-parent-crcdiff.dump \
+		mamedb-parent-crcdiff.txt \
+		mamedb-parent-no-common.dump \
+		mamedb-parent-no-common.txt \
+		mamedb-size-hex.dump \
+		mamedb-size-hex.txt \
+		detector.xml \
 		skipped.txt
 
 check-am: ${DBS} runtest
@@ -267,14 +276,14 @@ check-am: ${DBS} runtest
 ${MAME_DB}: ../src/mkmamedb ${srcdir}/mamedb.txt
 	../src/mkmamedb ${srcdir}/mamedb.txt
 
-${MAME_DB2}: ../src/mkmamedb ${srcdir}/mkmamedb-lost-parent-ok.txt
-	../src/mkmamedb -o ${MAME_DB2} ${srcdir}/mkmamedb-lost-parent-ok.txt
+${MAME_DB2}: ../src/mkmamedb ${srcdir}/mamedb-lost-parent-ok.txt
+	../src/mkmamedb -o ${MAME_DB2} ${srcdir}/mamedb-lost-parent-ok.txt
 
 ${MAME_DB3}: ../src/mkmamedb ${srcdir}/mamedb-disk.txt
 	../src/mkmamedb -o ${MAME_DB3} ${srcdir}/mamedb-disk.txt
 
-${MAME_DB4}: ../src/mkmamedb ${srcdir}/mamedb.txt ${srcdir}/mkmamedb-lost-parent-ok.txt
-	../src/mkmamedb -o ${MAME_DB4} ${srcdir}/mamedb.txt ${srcdir}/mkmamedb-lost-parent-ok.txt
+${MAME_DB4}: ../src/mkmamedb ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt
+	../src/mkmamedb -o ${MAME_DB4} ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt
 
 ${MAME_DB_8_IS_4}: ../src/mkmamedb ${srcdir}/mamedb-1-8-is-4.txt
 	../src/mkmamedb -o ${MAME_DB_8_IS_4} ${srcdir}/mamedb-1-8-is-4.txt
@@ -282,11 +291,14 @@ ${MAME_DB_8_IS_4}: ../src/mkmamedb ${srcdir}/mamedb-1-8-is-4.txt
 ${MAME_DB_BADDUMP}: ../src/mkmamedb ${srcdir}/mamedb-baddump.txt
 	../src/mkmamedb -o ${MAME_DB_BADDUMP} ${srcdir}/mamedb-baddump.txt
 
-${MAME_DB_CRCDIFF}: ../src/mkmamedb ${srcdir}/mkmamedb-parent-crcdiff.txt
-	../src/mkmamedb -o ${MAME_DB_CRCDIFF} ${srcdir}/mkmamedb-parent-crcdiff.txt
+${MAME_DB_CRCDIFF}: ../src/mkmamedb ${srcdir}/mamedb-parent-crcdiff.txt
+	../src/mkmamedb -o ${MAME_DB_CRCDIFF} ${srcdir}/mamedb-parent-crcdiff.txt
 
-${MAME_DB_NOCOMMON}: ../src/mkmamedb ${srcdir}/mkmamedb-parent-no-common.txt
-	../src/mkmamedb -o ${MAME_DB_NOCOMMON} ${srcdir}/mkmamedb-parent-no-common.txt
+${MAME_DB_NOCOMMON}: ../src/mkmamedb ${srcdir}/mamedb-parent-no-common.txt
+	../src/mkmamedb -o ${MAME_DB_NOCOMMON} ${srcdir}/mamedb-parent-no-common.txt
+
+${MAME_DB_SMALL}: ../src/mkmamedb ${srcdir}/mamedb-small.txt
+	../src/mkmamedb -o ${MAME_DB_SMALL} ${srcdir}/mamedb-small.txt
 
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 	./dbdump ${MAME_DB} > mamedb-ok.dump

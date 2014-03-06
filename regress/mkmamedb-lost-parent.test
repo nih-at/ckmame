@@ -1,7 +1,7 @@
 description test mkmamedb database creation, parent missing
 return 0
 program mkmamedb
-args -o mkmamedb-test.db mamedb.txt
-file mamedb.txt mkmamedb-lost-parent.txt mkmamedb-lost-parent.txt
-file-new mkmamedb-test.db mkmamedb-lost-parent.dump
+args -o mamedb-test.db mamedb.txt
+file mamedb.txt mamedb-lost-parent.txt mamedb-lost-parent.txt
+file-new mamedb-test.db mamedb-lost-parent.dump
 stderr inconsistency: clone-8 has non-existent parent parent-4

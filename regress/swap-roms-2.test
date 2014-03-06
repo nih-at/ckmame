@@ -1,6 +1,6 @@
 description swap files between games
 return 0
-args -D ../mkmamedb-parent-no-common.db -Fv
+args -D ../mamedb-parent-no-common.db -Fv
 file roms/grandparent.zip 1-a-ok.zip 1-4-ok.zip
 file roms/parent.zip 1-4-ok.zip 1-8-ok.zip
 file roms/child.zip 1-8-ok.zip 1-a-ok.zip
