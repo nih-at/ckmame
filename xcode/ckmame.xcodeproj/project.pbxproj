@@ -446,6 +446,7 @@
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmlutil.h; sourceTree = "<group>"; };
 		4B9292C81763463200806C0A /* Objectification */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Objectification; path = ../Objectification; sourceTree = "<group>"; };
 		4B9292C917635B5500806C0A /* archive_zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_zip.c; sourceTree = "<group>"; };
+		4BC0362818C8B01B00D6D5AF /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -598,6 +599,7 @@
 				4B5FACAE1735919800B67C24 /* diagnostics.c */,
 				4B5FACAF1735919800B67C24 /* dir.c */,
 				4B9292BC17633FFC00806C0A /* dir.h */,
+				4BC0362818C8B01B00D6D5AF /* types.h */,
 				4B5FACC61735924900B67C24 /* disk.c */,
 				4B5FACC71735924900B67C24 /* disk.h */,
 				4B5FACC51735924900B67C24 /* disk_new.c */,
