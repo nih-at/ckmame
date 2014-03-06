@@ -28,9 +28,7 @@ sub read_db {
 	
 	my $dump;
 	unless (open $dump, "../dbdump $self->{dir}/.ckmame.db |") {
-		if ($self->{verbose}) {
-			print "dbdump in $self->{dir}/.ckmame.db failed: $!\n" if ($self->{verbose});
-		}
+		print "dbdump in $self->{dir}/.ckmame.db failed: $!\n" if ($self->{verbose});
 		return undef;
 	}
 
