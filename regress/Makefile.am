@@ -18,13 +18,12 @@ CLEANFILES=${DBS} runtest
 MAME_DB=mame.db
 MAME_DB2=mamedb-lost-parent-ok.db
 MAME_DB3=mamedb-disk.db
-MAME_DB4=mame4.db
 MAME_DB_8_IS_4=mamedb-1-8-is-4.db
 MAME_DB_BADDUMP=mamedb-baddump.db
 MAME_DB_CRCDIFF=mamedb-crcdiff.db
 MAME_DB_NOCOMMON=mamedb-parent-no-common.db
 MAME_DB_SMALL=mamedb-small.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL}
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL}
 
 ZIPCMP=@ZIPCMP@
 
@@ -283,9 +282,6 @@ ${MAME_DB2}: ../src/mkmamedb ${srcdir}/mamedb-lost-parent-ok.txt
 ${MAME_DB3}: ../src/mkmamedb ${srcdir}/mamedb-disk.txt
 	../src/mkmamedb -o ${MAME_DB3} ${srcdir}/mamedb-disk.txt
 
-${MAME_DB4}: ../src/mkmamedb ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt
-	../src/mkmamedb -o ${MAME_DB4} ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt
-
 ${MAME_DB_8_IS_4}: ../src/mkmamedb ${srcdir}/mamedb-1-8-is-4.txt
 	../src/mkmamedb -o ${MAME_DB_8_IS_4} ${srcdir}/mamedb-1-8-is-4.txt
 
@@ -301,10 +297,10 @@ ${MAME_DB_NOCOMMON}: ../src/mkmamedb ${srcdir}/mamedb-parent-no-common.txt
 ${MAME_DB_SMALL}: ../src/mkmamedb ${srcdir}/mamedb-small.txt
 	../src/mkmamedb -o ${MAME_DB_SMALL} ${srcdir}/mamedb-small.txt
 
-update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
+update-mamedb.dump: ${MAME_DB} ${MAME_DB2}
 	./dbdump ${MAME_DB} > mamedb-ok.dump
 	./dbdump ${MAME_DB2} > mkmamedb-lost-parent.dump
-	./dbdump ${MAME_DB4} > mkmamedb-duplicate-game.dump
+	../src/mkmamedb -o mame.db.$$ ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt && ./dbdump mame.db.$$ > mkmamedb-duplicate-game.dump && rm mame.db.$$
 	./dbdump ${MAME_DB_CRCDIFF} > mkmamedb-parent-crcdiff.dump
 	./dbdump ${MAME_DB_NOCOMMON} > mkmamedb-parent-no-common.dump
 	set -e \
