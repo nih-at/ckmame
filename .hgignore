@@ -30,8 +30,8 @@ Makefile.in$
 ^regress/mame-baddump.db$
 ^regress/mame-crcdiff.db$
 ^regress/mamedb-small.db$
-^regress/mkmamedb-dir-in-name.db$
-^regress/mkmamedb-parent-no-common.db$
+^regress/mamedb-dir-in-name.db$
+^regress/mamedb-parent-no-common.db$
 ^regress/runtest$
 ^src/ckmame$
 ^src/detective$
