@@ -1,0 +1,8 @@
+description test mkmamedb database creation from input directory
+# archive-types dir zip
+archive-types zip
+return 0
+program mkmamedb
+args -o mamedb-test.db --prog-name "ckmame test db" --prog-version "1" roms
+file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
+file-new mamedb-test.db mamedb-small.dump
