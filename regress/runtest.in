@@ -57,7 +57,7 @@ sub check_ckmame_db {
 	# TODO: error message (in CkmameDB?)
 	return undef unless ($db->read_db() && $db->read_archives() && $db->make_dump());
 	
-	return $test->compare_arrays($db->{dump_got}, $db->{dump_expected}, '$dir/.ckmame.db');
+	return $test->compare_arrays($db->{dump_got}, $db->{dump_expected}, "$dir/.ckmame.db");
 }
 
 
