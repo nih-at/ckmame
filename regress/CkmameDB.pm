@@ -29,7 +29,7 @@ sub read_db {
 	
 	my $dump;
 	unless (open $dump, "../dbdump $self->{dir}/.ckmame.db |") {
-		# TODO: error message
+		print "dbdump in $self->{dir}/.ckmame.db failed: $!\n" if ($self->{verbose});
 		return undef;
 	}
 
@@ -72,7 +72,7 @@ sub read_archives {
 	
 	my $dat;
 	unless (open $dat, "../../src/mkmamedb -F cm -u -o /dev/stdout $self->{dir} | ") {
-		# TODO: error message
+		print "mkmamedb using $self->{dir} failed: $!\n" if ($self->{verbose});
 		return undef;
 	}
 
