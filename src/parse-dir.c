@@ -1,6 +1,6 @@
 /*
   parse-dir.c -- read info from zip archives
-  Copyright (C) 2006-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,7 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+
+#include <sys/stat.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,12 +47,9 @@
 #include "util.h"
 #include "xmalloc.h"
 
-
 
 static int parse_archive(parser_context_t *, archive_t *, int hashtypes);
 
-
-
 
 int
 parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
@@ -63,29 +61,62 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
 
     ctx->lineno = 0;
     
-    if ((dir=dir_open(dname, DIR_RECURSE)) == NULL)
+    if ((dir=dir_open(dname, roms_unzipped ? 0 : DIR_RECURSE)) == NULL)
 	return -1;
 
-    while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	if (ds == DIR_ERROR) {
-	    /* TODO: handle error */
-	    continue;
-	}
-	switch (name_type(b)) {
-	case NAME_ZIP:
-	    if ((a=archive_new(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) != NULL) {
-		parse_archive(ctx, a, hashtypes);
-		archive_free(a);
-	    }
-	    break;
-	    
-	case NAME_CHD:
-	case NAME_NOEXT:
-	case NAME_UNKNOWN:
-	    /* ignore all but zip archives */
-	    break;
-	}
+    if (roms_unzipped ) {
+        struct stat st;
+        
+        while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+            if (ds == DIR_ERROR) {
+                /* TODO: handle error */
+                continue;
+            }
+
+            if (stat(b, &st) < 0) {
+                /* TODO: handle error */
+                continue;
+            }
+            
+            if (S_ISDIR(st.st_mode)) {
+                /* TODO: handle errors */
+                if (( a = archive_new(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) != NULL) {
+                    parse_archive(ctx, a, hashtypes);
+                }
+            }
+            else {
+                /* TOOD: if chd, include in dat */
+                /* TODO: warn about top-level files */
+            }
+        }
     }
+    else {
+        while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+            if (ds == DIR_ERROR) {
+                /* TODO: handle error */
+                continue;
+            }
+            switch (name_type(b)) {
+                case NAME_ZIP:
+                    /* TODO: handle errors */
+                    if ((a=archive_new(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) != NULL) {
+                        parse_archive(ctx, a, hashtypes);
+                        archive_free(a);
+                    }
+                    break;
+                    
+                case NAME_CHD:
+                case NAME_NOEXT:
+                case NAME_UNKNOWN:
+                    /* TODO: include disks in dat */
+                    /* TODO: warn? */
+                    /* ignore all but zip archives */
+                    break;
+            }
+        }
+    }
+    
+    dir_close(dir);
     return 0;
 }
 
