@@ -683,7 +683,7 @@ op_file_rename(archive_t *a, int idx, const char *name)
     change_t *ch = archive_file_change(a, idx);
 
     if (change_is_deleted(ch)) {
-	myerror(ERRZIP, "rename1: cannot rename deleted file '%s'", file_name(archive_file(a, idx)));
+	myerror(ERRZIP, "cannot rename deleted file '%s'", file_name(archive_file(a, idx)));
 	return -1;
     }
    
@@ -692,7 +692,7 @@ op_file_rename(archive_t *a, int idx, const char *name)
     if (file_will_exist_after_commit(a, final_name)) {
 	free(final_name);
 	errno = EEXIST;
-	myerror(ERRZIP, "rename2: cannot rename '%s' to '%s': %s", file_name(archive_file(a, idx)), name, strerror(errno));
+	myerror(ERRZIP, "cannot rename '%s' to '%s': %s", file_name(archive_file(a, idx)), name, strerror(errno));
 	return -1;
     }
 
