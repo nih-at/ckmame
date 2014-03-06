@@ -151,6 +151,7 @@ archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t
     if ((archive_flags(a) & ARCHIVE_FL_DELAY_READINFO) && IS_EXTERNAL(archive_where(a)))
 	memdb_file_insert(NULL, a, archive_num_files(a)-1);
 
+    /* in read-only case, archive data is not written into dirdb on commit, so we have to do it now */
     if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
         ud_t *ud = archive_user_data(a);
         
@@ -744,6 +745,7 @@ op_read_infos(archive_t *a)
         if ((id=dbh_dir_read(mybasename(archive_name(a)), files)) < 0)
             id = 0;
 
+        /* in read-only case, archive data is not written into dirdb on commit, so we have to do it now */
         if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
             if (id > 0)
                 dbh_dir_delete_files(id);
