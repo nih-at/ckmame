@@ -23,12 +23,13 @@ sub read_db {
 	my ($self) = @_;
 	
 	if (! -f "$self->{dir}/.ckmame.db") {
-		return 0;
+		$self->{dump_got} = [ '>>> table archive (archive_id, name)', '>>> table file (archive_id, name, mtime, status, size, crc, md5, sha1)' ];
+		return 1;
 	}
 	
 	my $dump;
 	unless (open $dump, "../dbdump $self->{dir}/.ckmame.db |") {
-		print "dbdump in $self->{dir}/.ckmame.db failed: $!\n" if ($self->{verbose});
+		# TODO: error message
 		return undef;
 	}
 
@@ -71,7 +72,7 @@ sub read_archives {
 	
 	my $dat;
 	unless (open $dat, "../../src/mkmamedb -F cm -u -o /dev/stdout $self->{dir} | ") {
-		print "mkmamedb using $self->{dir} failed: $!\n" if ($self->{verbose});
+		# TODO: error message
 		return undef;
 	}
 
