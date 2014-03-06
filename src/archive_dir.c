@@ -140,16 +140,16 @@ archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t
     file_mtime(fdir) = st->st_mtime;
            
     if (detector)
-	archive_file_match_detector(a, array_length(archive_files(a))-1);
+	archive_file_match_detector(a, archive_num_files(a)-1);
 
     if (sh)
 	memcpy(fdir->sh, sh, sizeof(fdir->sh));
     else
-	archive_file_compute_hashes(a, array_length(archive_files(a))-1, HASHES_TYPE_ALL);
+	archive_file_compute_hashes(a, archive_num_files(a)-1, HASHES_TYPE_ALL);
 
     /* normally, files are written to memdb in archive_new after read_infos is done */
     if ((archive_flags(a) & ARCHIVE_FL_DELAY_READINFO) && IS_EXTERNAL(archive_where(a)))
-	memdb_file_insert(NULL, a, array_length(archive_files(a))-1);
+	memdb_file_insert(NULL, a, archive_num_files(a)-1);
 
     if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
         ud_t *ud = archive_user_data(a);
