@@ -1,6 +1,6 @@
 description file in extra matches hashes, but not size from romset
 return 0
-args -D ../mame-1-8-is-4.db -Fje extra
+args -D ../mamedb-1-8-is-4.db -Fje extra
 file extra/1-4.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game 1-8-is-4:
 stdout game 1-8-is-4                                : not a single rom found

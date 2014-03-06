@@ -1,6 +1,6 @@
 description check all (game with disk), disk wrong name
 return 0
-args -FKLivc -D ../mame3.db
+args -FKLivc -D ../mamedb-disk.db
 file roms/disk.zip 1-8-ok.zip 1-8-ok.zip
 file-del roms/108-5a.chd 108-5.chd
 file-new roms/108-5.chd 108-5.chd

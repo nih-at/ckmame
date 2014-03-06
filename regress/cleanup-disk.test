@@ -1,6 +1,6 @@
 description clean up disk images from extra dirs
 return 0
-args -O ../mame3.db -v --cleanup-extra -e extra
+args -O ../mamedb-disk.db -v --cleanup-extra -e extra
 file roms/108-2.chd 108-2.chd 108-2.chd
 file-del extra/108-5.chd 108-5.chd
 file extra/108-5a.chd 108-5a.chd 108-5a.chd

@@ -1,6 +1,6 @@
 description test single-rom game with disk, get missing disk from extra
 return 0
-args -Fvj -D ../mame3.db -e extradir
+args -Fvj -D ../mamedb-disk.db -e extradir
 file-del extradir/1234.chd 108-5.chd
 file-new roms/108-5.chd 108-5.chd
 stdout In game disk:

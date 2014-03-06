@@ -1,6 +1,6 @@
 description swap files between games
 return 0
-args -D ../mame-crcdiff.db -Fv
+args -D ../mamedb-crcdiff.db -Fv
 file roms/parent.zip 12345678.zip 2-48-ok.zip
 file roms/child.zip 2-48-ok.zip 12345678.zip
 stdout In game parent:

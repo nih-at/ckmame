@@ -17,11 +17,11 @@ CLEANFILES=${DBS} runtest
 
 MAME_DB=mame.db
 MAME_DB2=mamedb-lost-parent-ok.db
-MAME_DB3=mame3.db
+MAME_DB3=mamedb-disk.db
 MAME_DB4=mame4.db
-MAME_DB_8_IS_4=mame-1-8-is-4.db
-MAME_DB_BADDUMP=mame-baddump.db
-MAME_DB_CRCDIFF=mame-crcdiff.db
+MAME_DB_8_IS_4=mamedb-1-8-is-4.db
+MAME_DB_BADDUMP=mamedb-baddump.db
+MAME_DB_CRCDIFF=mamedb-crcdiff.db
 MAME_DB_NOCOMMON=mamedb-parent-no-common.db
 MAME_DB_SMALL=mamedb-small.db
 DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL}
