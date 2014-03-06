@@ -180,7 +180,8 @@ BROKEN_TEST=	\
 		extra-file.test \
 		nogood-diskgood.test \
 		tz-ok.test \
-		tz-from-romset.test
+		tz-from-romset.test \
+		uncompressed-extra-file-known.test
 
 ZIPS=		1-4-2.zip \
 		1-4-crcerror.zip \
