@@ -22,7 +22,8 @@ MAME_DB_8_IS_4=mame-1-8-is-4.db
 MAME_DB_BADDUMP=mame-baddump.db
 MAME_DB_CRCDIFF=mame-crcdiff.db
 MAME_DB_NOCOMMON=mkmamedb-parent-no-common.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON}
+MAME_DB_SMALL=mame-small.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL}
 
 ZIPCMP=@ZIPCMP@
 
@@ -174,6 +175,7 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
+		extra-file.test \
 		nogood-diskgood.test \
 		tz-ok.test \
 		tz-from-romset.test
@@ -235,6 +237,7 @@ DBFILES=	mamedb.txt \
 		mamedb-2.txt \
 		mamedb-baddump.txt \
 		mamedb-disk.txt \
+		mamedb-small.txt \
 		mamedb-multi-dats.dump \
 		mamedb-ok.dump \
 		mkmamedb-broken-sha1.dump \
@@ -287,6 +290,9 @@ ${MAME_DB_CRCDIFF}: ../src/mkmamedb ${srcdir}/mkmamedb-parent-crcdiff.txt
 
 ${MAME_DB_NOCOMMON}: ../src/mkmamedb ${srcdir}/mkmamedb-parent-no-common.txt
 	../src/mkmamedb -o ${MAME_DB_NOCOMMON} ${srcdir}/mkmamedb-parent-no-common.txt
+
+${MAME_DB_SMALL}: ../src/mkmamedb ${srcdir}/mamedb-small.txt
+	../src/mkmamedb -o ${MAME_DB_SMALL} ${srcdir}/mamedb-small.txt
 
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB4}
 	./dbdump ${MAME_DB} > mamedb-ok.dump
