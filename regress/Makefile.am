@@ -87,6 +87,7 @@ TESTS=	\
 		mkmamedb-dir-in-name.test \
 		mkmamedb-duplicate-game.test \
 		mkmamedb-duplicate-nodump.test \
+		mkmamedb-input-dir.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-mame.test \
 		mkmamedb-mess.test \
