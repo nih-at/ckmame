@@ -2,7 +2,7 @@ description test copying file from extra, failing (disk full) and cleaning up ex
 return 0
 setenv FWRITE_MAX_WRITE 5
 preload fwrite.so
-args -Fjivc -D ../mame2.db -e extra
+args -Fjivc -D ../mamedb-lost-parent-ok.db -e extra
 file-del extra/wrongname.zip 2-48-ok.zip
 file-new roms/clone-8.zip 2-48-ok.zip
 stdout In game clone-8:

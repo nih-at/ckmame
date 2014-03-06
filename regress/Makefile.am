@@ -16,7 +16,7 @@ EXTRA_DIST=runtest.in NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 CLEANFILES=${DBS} runtest
 
 MAME_DB=mame.db
-MAME_DB2=mame2.db
+MAME_DB2=mamedb-lost-parent-ok.db
 MAME_DB3=mame3.db
 MAME_DB4=mame4.db
 MAME_DB_8_IS_4=mame-1-8-is-4.db

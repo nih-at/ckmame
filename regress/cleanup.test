@@ -1,7 +1,7 @@
 description clean up extra dirs
 archive-types zip
 return 0
-args -O ../mame2.db -v --cleanup-extra -e extra
+args -O ../mamedb-lost-parent-ok.db -v --cleanup-extra -e extra
 file roms/deadbeef.zip deadbeef.zip deadbeef.zip 
 file extra/deadfish4.zip deadfish4.zip deadfish.zip
 file extra/2-4c.zip 2-4c-ok.zip 1-c-ok.zip
