@@ -212,7 +212,7 @@ for my $archive_type (reverse sort @{$test->{test}->{'archive-types'}}) {
 	next if ($ENV{SKIP_DIR} && $archive_type eq 'dir');
 	if ($archive_type eq 'dir') {
 		$roms_uncompressed = 1;
-		if ($test->{test}->{program} =~ m/ckmame$/) {
+		if ($test->{test}->{program} =~ m/(ckmame|mamedb)$/) {
 			unshift @{$test->{test}->{args}}, '-u';
 		}
 	}
