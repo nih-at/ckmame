@@ -196,7 +196,7 @@ $test->add_comparator('db/dump', \&comparator_db);
 $test->add_comparator('zip/zip', \&comparator_zip);
 $test->add_copier('zip/zip', \&copier_zip);
 
-$test->add_hook('checks', \&checks);
+#$test->add_hook('checks', \&checks);
 $test->add_hook('mangle_program', \&mangle_program);
 $test->add_hook('post_parse', \&post_parse);
 $test->add_hook('post_list_files', \&post_list_files);
