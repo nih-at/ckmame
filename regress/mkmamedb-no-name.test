@@ -1,7 +1,7 @@
 description test mkmamedb database creation, one rom without name
 return 0
 program mkmamedb
-args -o mkmamedb-no-name.db mamedb.txt
-file mamedb.txt mkmamedb-no-name.txt mkmamedb-no-name.txt
-file-new mkmamedb-no-name.db mkmamedb-no-name.dump
+args -o mamedb-no-name.db mamedb.txt
+file mamedb.txt mamedb-no-name.txt mamedb-no-name.txt
+file-new mamedb-no-name.db mamedb-no-name.dump
 stderr mamedb.txt: 7: expected token (name) not found

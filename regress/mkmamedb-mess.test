@@ -6,6 +6,6 @@ description test mkmamedb database creation, using original MESS Software Lists
 features LIBXML2
 return 0
 program mkmamedb
-args -o mkmamedb-test.db mamedb.xml
-file mamedb.xml mkmamedb-mess.xml mkmamedb-mess.xml
-file-new mkmamedb-test.db mkmamedb-mess.dump
+args -o mamedb-test.db mamedb.xml
+file mamedb.xml mamedb-mess.xml mamedb-mess.xml
+file-new mamedb-test.db mamedb-mess.dump
