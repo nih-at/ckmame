@@ -10,7 +10,8 @@ fwrite_la_LDFLAGS=	-module -avoid-version
 
 EXTRA_DIST=runtest.in NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in \
-		rom-from-superfluous-many-fixdat.fixdat
+		rom-from-superfluous-many-fixdat.fixdat \
+		04.rom
 
 CLEANFILES=${DBS} runtest
 
@@ -165,6 +166,7 @@ TESTS=	\
 		tochild.test \
 		tochildfix.test \
 		tz-already.test \
+		uncompressed-toplevel-extra.test \
 		wrong.test \
 		wrong2.test \
 		zero.test \
