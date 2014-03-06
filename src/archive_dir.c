@@ -295,7 +295,7 @@ move_original_file_out_of_the_way(archive_t *a, int idx)
 
 
 static int
-change_apply(archive_t *a, change_t *ch)
+change_apply(archive_t *a, int idx, change_t *ch)
 {
     if (ch->final.name != NULL) {
 	if (ensure_dir(ch->final.name, 1) < 0) {
@@ -305,6 +305,13 @@ change_apply(archive_t *a, change_t *ch)
 
 	if (fileinfo_apply(&ch->final) < 0)
 	    return -1;
+        
+        struct stat st;
+        if (stat(ch->final.name, &st) < 0) {
+            myerror(ERRZIP, "can't stat created file '%s': %s", ch->final.name, strerror(errno));
+            return -1;
+        }
+        file_mtime(archive_file(a, idx)) = st.st_mtime;
     }
 
     if (!change_is_rename(ch))
@@ -457,7 +464,7 @@ op_commit(archive_t *a)
 	    break;
 	ch = array_get(ud->change, idx);
 
-	if (change_apply(a, ch) < 0)
+	if (change_apply(a, idx, ch) < 0)
 	    ret = -1;
     }
 
@@ -495,7 +502,8 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	return -1;
 
     char *tmpname = make_tmp_name(da, dname);
-
+    file_t *f = archive_file(da, (didx >= 0 ? didx : archive_num_files(da)-1));
+    
     if (tmpname == NULL)
 	return -1;
 
@@ -515,7 +523,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	    }
 	}
 	else {
-	    if (copy_file(srcname, tmpname, start, len) < 0) {
+	    if (copy_file(srcname, tmpname, start, len, file_hashes(f)) < 0) {
 		myerror(ERRZIP, "cannot copy '%s' to '%s': %s", srcname, tmpname, strerror(errno));
 		free(tmpname);
 		free(srcname);
@@ -539,7 +547,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
     change_t *ch;
 
     bool err = false;
-    if (didx >= 0) {
+    if (didx >= 0 && didx < array_length(ud->change)) {
 	ch = array_get(ud->change, didx);
 
 	if (!change_is_added(ch)) {

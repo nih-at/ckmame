@@ -36,12 +36,13 @@
 #include <unistd.h>
 
 #include "error.h"
+#include "hashes.h"
 
 int
-copy_file(const char *old, const char *new, size_t start, ssize_t len)
+copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t *hashes)
 {
     FILE *fin, *fout;
-    char b[8192];
+    unsigned char b[8192];
     size_t nr, nw, n, total;
     int err;
 
@@ -58,6 +59,14 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len)
     if ((fout=fopen(new, "wb")) == NULL) {
 	fclose(fin);
 	return -1;
+    }
+    
+    hashes_update_t *hu = NULL;
+    hashes_t h;
+
+    if (hashes) {
+        hashes_types(&h) = HASHES_TYPE_ALL;
+        hu = hashes_update_new(&h);
     }
 
     total = 0;
@@ -77,10 +86,16 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len)
 		errno = err;
 		return -1;
 	    }
+            
+            if (hashes)
+                hashes_update(hu, b+nw, nr-nw);
 	    nw += n;
 	}
 	total += nw;
     }
+    
+    if (hashes)
+        hashes_update_final(hu);
 
     if (fclose(fout) != 0 || ferror(fin)) {
 	err = errno;
@@ -89,6 +104,9 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len)
 	errno = err;
 	return -1;
     }
+    
+    if (hashes)
+        hashes_copy(hashes, &h);
 
     fclose(fin);
     return 0;
@@ -99,7 +117,7 @@ int
 link_or_copy(const char *old, const char *new)
 {
     if (link(old, new) < 0) {
-	if (copy_file(old, new, 0, -1) < 0) {
+	if (copy_file(old, new, 0, -1, NULL) < 0) {
 	    seterrinfo(old, NULL);
 	    myerror(ERRFILESTR, "cannot link to '%s'", new);
 	    return -1;
@@ -127,7 +145,7 @@ int
 rename_or_move(const char *old, const char *new)
 {
     if (rename(old, new) < 0) {
-	if (copy_file(old, new, 0, -1) < 0) {
+	if (copy_file(old, new, 0, -1, NULL) < 0) {
 	    seterrinfo(old, NULL);
 	    myerror(ERRFILESTR, "cannot rename to '%s'", new);
 	    return -1;

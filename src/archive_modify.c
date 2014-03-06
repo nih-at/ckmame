@@ -108,7 +108,7 @@ archive_file_add_empty(archive_t *a, const char *name)
     
     file_init(&f);
     file_size(&f) = 0;
-    hashes_types(file_hashes(&f)) = romdb_hashtypes(db, TYPE_ROM);
+    hashes_types(file_hashes(&f)) = HASHES_TYPE_ALL;
     hu = hashes_update_new(file_hashes(&f));
     hashes_update_final(hu);
 
@@ -164,15 +164,18 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
         return -1;
     }
 
-    if (archive_is_writable(da)) {
-        if (sa->ops->file_copy(sa, sidx, da, -1, dname, start, len) < 0)
-            return -1;
-    }
-
     if (start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx))))
 	_add_file(da, -1, dname, archive_file(sa, sidx));
     else
 	_add_file(da, -1, dname, f);
+
+    if (archive_is_writable(da)) {
+        if (sa->ops->file_copy(sa, sidx, da, -1, dname, start, len) < 0) {
+            array_delete(archive_files(da), archive_num_files(da)-1, file_finalize);
+            return -1;
+        }
+    }
+
 
     return 0;
 }

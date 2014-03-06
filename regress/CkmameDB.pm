@@ -22,15 +22,27 @@ sub new {
 sub read_db {
 	my ($self) = @_;
 	
+	if (! -f "$self->{dir}/.ckmame.db") {
+		return 0;
+	}
+	
 	my $dump;
 	unless (open $dump, "../dbdump $self->{dir}/.ckmame.db |") {
 		# TODO: error message
 		return undef;
 	}
 
-	my $table;
+	my @files = ();
+
+	my $table = '';
 	while (my $line = <$dump>) {
 		chomp $line;
+		
+		if ($table eq 'file') {
+			my ($id, $name) = split '\|', $line;
+			push @files, [ $id, $name, $line ];
+			next;
+		}
 		push @{$self->{dump_got}}, $line;
 		if ($line =~ m/>>> table (\w+)/) {
 			$table = $1;
@@ -46,6 +58,9 @@ sub read_db {
 	}
 	close($dump);
 
+	for my $file (sort { return $a->[1] cmp $b->[1] if ($a->[0] == $b->[0]) ; return $a->[0] <=> $b->[0]; } @files) {
+		push @{$self->{dump_got}}, $file->[2];
+	}
 	
 	return 1;
 }
@@ -108,11 +123,11 @@ sub make_dump {
 	
 	push @dump, '>>> table archive (archive_id, name)';
 	
-	for my $id (sort keys %{$self->{archives_got}}) {
+	for my $id (sort { $a <=> $b } keys %{$self->{archives_got}}) {
 		push @dump, "$id|$self->{archives_got}->{$id}->{name}";
 	}
 	push @dump, '>>> table file (archive_id, name, mtime, status, size, crc, md5, sha1)';
-	for my $id (sort keys %{$self->{archives_got}}) {
+	for my $id (sort { $a <=> $b} keys %{$self->{archives_got}}) {
 		my $archive = $self->{archives_got}->{$id};
 		
 		for my $fname (sort keys %{$archive->{files}}) {

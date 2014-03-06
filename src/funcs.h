@@ -59,7 +59,7 @@ void check_files(game_t *, archive_t *[], result_t *);
 void check_images(images_t *, const char *, result_t *);
 void check_old(game_t *, result_t *);
 void cleanup_list(parray_t *, delete_list_t *, int);
-int copy_file(const char *, const char *, size_t, ssize_t);
+int copy_file(const char *, const char *, size_t, ssize_t, hashes_t *);
 void diagnostics(const game_t *, const archive_t *, const images_t *,
 		 const result_t *);
 void diagnostics_archive(const archive_t *, const result_t *);
