@@ -1,6 +1,6 @@
 description test single-rom game (no parent), zip is correct, extra file exists
 return 0
-args -D ../mame-small.db -FKLivc
+args -D ../mamedb-small.db -FKLivc
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file roms/runtest runtest runtest
 stdout In game 1-4:

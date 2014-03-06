@@ -23,7 +23,7 @@ MAME_DB_8_IS_4=mame-1-8-is-4.db
 MAME_DB_BADDUMP=mame-baddump.db
 MAME_DB_CRCDIFF=mame-crcdiff.db
 MAME_DB_NOCOMMON=mkmamedb-parent-no-common.db
-MAME_DB_SMALL=mame-small.db
+MAME_DB_SMALL=mamedb-small.db
 DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB4} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL}
 
 ZIPCMP=@ZIPCMP@
@@ -241,6 +241,7 @@ DBFILES=	mamedb.txt \
 		mamedb-baddump.txt \
 		mamedb-disk.txt \
 		mamedb-small.txt \
+		mamedb-small.dump \
 		mamedb-multi-dats.dump \
 		mamedb-ok.dump \
 		mkmamedb-broken-sha1.dump \
