@@ -2,9 +2,9 @@ description test header detector
 features LIBXML2
 return 0
 file detector.xml detector.xml detector.xml
-file skipped.txt skipped.txt skipped.txt
+file mamedb-skipped.txt mamedb-skipped.txt mamedb-skipped.txt
 mkdir 755 extra
-mkdbargs --detector detector.xml skipped.txt
+mkdbargs --detector detector.xml mamedb-skipped.txt
 args -FKLijvc -e extra
 # alternatively
 #file roms/skipped.zip 1-8-ok.zip 1-8-skip-ok.zip

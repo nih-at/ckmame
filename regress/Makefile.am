@@ -237,19 +237,16 @@ CHDS=		108-2.chd \
 		512v5.chd \
 		diff.chd
 
-DBFILES=	mamedb.txt \
+DBFILES=	\
+		detector.xml \
 		mamedb-1-8-is-4.txt \
 		mamedb-2.txt \
 		mamedb-baddump.txt \
-		mamedb-disk.txt \
-		mamedb-small.txt \
-		mamedb-small.dump \
-		mamedb-multi-dats.dump \
-		mamedb-ok.dump \
 		mamedb-broken-sha1.dump \
 		mamedb-broken-sha1.txt \
 		mamedb-dir-in-name.dump \
 		mamedb-dir-in-name.txt \
+		mamedb-disk.txt \
 		mamedb-duplicate-game.dump \
 		mamedb-duplicate-nodump.dump \
 		mamedb-duplicate-nodump.txt \
@@ -260,16 +257,20 @@ DBFILES=	mamedb.txt \
 		mamedb-mame.xml \
 		mamedb-mess.dump \
 		mamedb-mess.xml \
+		mamedb-multi-dats.dump \
 		mamedb-no-name.dump \
 		mamedb-no-name.txt \
+		mamedb-ok.dump \
 		mamedb-parent-crcdiff.dump \
 		mamedb-parent-crcdiff.txt \
 		mamedb-parent-no-common.dump \
 		mamedb-parent-no-common.txt \
 		mamedb-size-hex.dump \
 		mamedb-size-hex.txt \
-		detector.xml \
-		skipped.txt
+		mamedb-skipped.txt \
+		mamedb-small.dump \
+		mamedb-small.txt \
+		mamedb.txt
 
 check-am: ${DBS} runtest
 
