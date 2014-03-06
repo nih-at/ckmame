@@ -5,4 +5,4 @@ file roms/2-44.zip 1-4-ok.zip 2-44-ok.zip
 stdout In game 2-44:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout rom  04-2.rom      size       4  crc d87f7e0c: is in 'roms/2-44.zip'
-stdout roms/2-44.zip: add 'roms/2-44.zip/04.rom' as `04-2.rom'
+stdout roms/2-44.zip: add 'roms/2-44.zip/04.rom' as '04-2.rom'

@@ -16,4 +16,4 @@ stdout game disk-2                                  : correct
 stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: is at 'needed/d9cedd2875a8b4e11de39b0fe935e323-000.chd'
 stdout image roms/108-2.chd: needed elsewhere
 stdout roms/108-2.chd: save needed image
-stdout rename 'needed/d9cedd2875a8b4e11de39b0fe935e323-000.chd' to `roms/108-2.chd'
+stdout rename 'needed/d9cedd2875a8b4e11de39b0fe935e323-000.chd' to 'roms/108-2.chd'

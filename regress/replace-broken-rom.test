@@ -7,7 +7,7 @@ file-del extra/1-4.zip 1-4-ok.zip
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4.zip'
 stdout file 04.rom        size       4  crc d87e7e0c: broken
-stdout roms/1-4.zip: add 'extra/1-4.zip/04.rom' as `04.rom'
+stdout roms/1-4.zip: add 'extra/1-4.zip/04.rom' as '04.rom'
 stdout roms/1-4.zip: delete broken '04.rom'
 stdout extra/1-4.zip: delete used file '04.rom'
 stdout extra/1-4.zip: remove empty archive

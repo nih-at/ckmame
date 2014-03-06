@@ -9,6 +9,6 @@ file-del roms/18.zip 1-8-ok.zip
 file-new roms/skipped.zip 1-8-ok.zip
 stdout In game skipped:
 stdout rom  08.rom        size       4  crc 02404c40: is in 'roms/18.zip'
-stdout roms/skipped.zip: add 'roms/18.zip/08.rom' as `08.rom'
+stdout roms/skipped.zip: add 'roms/18.zip/08.rom' as '08.rom'
 stdout roms/18.zip: delete used file '08.rom'
 stdout roms/18.zip: remove empty archive

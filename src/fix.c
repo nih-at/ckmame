@@ -257,7 +257,7 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 		       && match_disk_where(md) == FILE_EXTRA);
     
 	    if (fix_options & FIX_PRINT)
-		printf("%s '%s' to `%s'\n",
+		printf("%s '%s' to '%s'\n",
 		       do_copy ? "copy" : "rename",
 		       match_disk_name(md), fname);
 	    if (fix_options & FIX_DO) {
@@ -373,7 +373,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    }
 	    
 	    if (fix_options & FIX_PRINT)
-		printf("%s: extract (offset %" PRIdoff ", size %" PRIu64 ") from '%s' to `%s'\n",
+		printf("%s: extract (offset %" PRIdoff ", size %" PRIu64 ") from '%s' to '%s'\n",
                        archive_name(a), PRIoff_cast match_offset(m), file_size(r), REAL_NAME(afrom, match_index(m)), file_name(r));
 
 	    bool replacing_ourself = (a == afrom && match_index(m) == archive_file_index_by_name(afrom, file_name(r)));
@@ -392,7 +392,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 
 	case QU_NAMEERR:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: rename '%s' to `%s'\n", archive_name(a), REAL_NAME(a, match_index(m)), file_name(r));
+		printf("%s: rename '%s' to '%s'\n", archive_name(a), REAL_NAME(a, match_index(m)), file_name(r));
 
 	    /* TODO: handle errors (how?) */
 	    if (make_space(a, file_name(r), original_names, num_names) < 0)
@@ -415,7 +415,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 		break;
 	    }
 	    if (fix_options & FIX_PRINT)
-		printf("%s: add '%s/%s' as `%s'\n", archive_name(a), archive_name(afrom), REAL_NAME(afrom, match_index(m)), file_name(r));
+		printf("%s: add '%s/%s' as '%s'\n", archive_name(a), archive_name(afrom), REAL_NAME(afrom, match_index(m)), file_name(r));
 	    
 	    if (make_space(a, file_name(r), original_names, num_names) < 0) {
 		/* TODO: if (idx >= 0) undo deletion of broken file */

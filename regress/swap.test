@@ -5,5 +5,5 @@ file roms/2-48.zip 2-84.zip 2-48-ok.zip
 stdout In game 2-48:
 stdout rom  04.rom        size       4  crc d87f7e0c: wrong name (08.rom)
 stdout rom  08.rom        size       8  crc 3656897d: wrong name (04.rom)
-stdout roms/2-48.zip: rename '08.rom' to `04.rom'
-stdout roms/2-48.zip: rename '04.rom' to `08.rom'
+stdout roms/2-48.zip: rename '08.rom' to '04.rom'
+stdout roms/2-48.zip: rename '04.rom' to '08.rom'

@@ -8,6 +8,6 @@ stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/disk.zip'
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
 stdout roms/1-4.zip: save needed file '08.rom'
-stdout roms/1-4.zip: add 'roms/disk.zip/04.rom' as `04.rom'
+stdout roms/1-4.zip: add 'roms/disk.zip/04.rom' as '04.rom'
 stderr <ZIP> needed/3656897d-000.zip: cannot commit changes: Failure to create temporary file: Permission denied
 stderr <DIR> mkdir 'needed/3656897d-000' failed: Permission denied

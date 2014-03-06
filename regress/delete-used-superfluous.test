@@ -6,6 +6,6 @@ file roms/clone-8.zip 1-8-ok.zip 2-48-ok.zip
 stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/superfluous.zip'
 stdout rom  08.rom        size       8  crc 3656897d: correct
-stdout roms/clone-8.zip: add 'roms/superfluous.zip/04.rom' as `04.rom'
+stdout roms/clone-8.zip: add 'roms/superfluous.zip/04.rom' as '04.rom'
 stdout roms/superfluous.zip: delete used file '04.rom'
 stdout roms/superfluous.zip: remove empty archive
