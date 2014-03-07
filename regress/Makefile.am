@@ -298,7 +298,7 @@ ${MAME_DB_NOCOMMON}: ../src/mkmamedb ${srcdir}/mamedb-parent-no-common.txt
 ${MAME_DB_SMALL}: ../src/mkmamedb ${srcdir}/mamedb-small.txt
 	../src/mkmamedb -o ${MAME_DB_SMALL} ${srcdir}/mamedb-small.txt
 
-update-mamedb.dump: ${MAME_DB} ${MAME_DB2}
+update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} dbdump ../src/mkmamedb
 	./dbdump ${MAME_DB} > mamedb-ok.dump
 	./dbdump ${MAME_DB2} > mamedb-lost-parent.dump
 	../src/mkmamedb -o mame.db.$$ ${srcdir}/mamedb.txt ${srcdir}/mamedb-lost-parent-ok.txt && ./dbdump mame.db.$$ > mamedb-duplicate-game.dump && rm mame.db.$$
