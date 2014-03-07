@@ -7,9 +7,15 @@ sub new {
 	my $class = UNIVERSAL::isa ($_[0], __PACKAGE__) ? shift : __PACKAGE__;
 	my $self = bless {}, $class;
 
-	my ($dir) = @_;
+	my ($dir, $skip) = @_;
 	
 	$self->{dir} = $dir;
+	if ($skip) {
+		$self->{skip} = { map { $_ => 1} @$skip };
+	}
+	else {
+		$self->{skip} = {};
+	}
 	
 	$self->{dump_got} = [];
 	$self->{archive_id} = {};
@@ -93,6 +99,11 @@ sub read_archives {
 		}
 		
 		if ($line =~ m/^\s*name (.*)/) {
+			if ($self->{skip}->{$1}) {
+				undef $archive;
+				next;
+			}
+			
 			$archive->{name} = $1;
 			if ($self->{archive_id}->{$archive->{name}}) {
 				$archive->{id} = $self->{archive_id}->{$archive->{name}};
@@ -103,6 +114,8 @@ sub read_archives {
 			$self->{archives_got}->{$archive->{id}} = $archive;
 		}
 		elsif ($line =~ m/rom \( (.*) \)/) {
+			next unless ($archive);
+
 			my $rom = { split ' ', $1 };
 			
 			$rom->{mtime} = (stat("$self->{dir}/$archive->{name}/$rom->{name}"))[9];
