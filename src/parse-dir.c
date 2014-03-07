@@ -80,7 +80,7 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
             
             if (S_ISDIR(st.st_mode)) {
                 /* TODO: handle errors */
-                if ((a = archive_new(b, TYPE_ROM, FILE_ROMSET, ARCHIVE_FL_NOCACHE)) != NULL) {
+                if ((a = archive_new(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) != NULL) {
                     parse_archive(ctx, a, hashtypes);
                     archive_close(a);
                 }
