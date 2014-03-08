@@ -7,7 +7,6 @@
 * test that new files are read, old files are remove from .ckmame.db
 - libzip is linked to too many executables
 - add tests using pre-existing .ckmame.db, possibly out of date
-- RTLD_NEXT not defined on (some?) Linux, unless __USE_GNU defined
 - File::Path does not always provide make_path
 
 * previously
