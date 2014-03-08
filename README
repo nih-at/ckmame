@@ -10,6 +10,9 @@ files.
 	- SQLite3
 	- optionally libxml2 (for M.A.M.E. -listxml and detectors)
 
+  For running the self-tests, you also need:
+	- perl module Text::Diff
+
   You will also need a description of the ROM set you want to check.
 For MAME, it can be obtained by running `mame -listxml'.
 
