@@ -1,6 +1,6 @@
 /*
   dbh.c -- mame.db sqlite3 data base
-  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,8 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 #include <sys/stat.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -43,7 +41,9 @@
 #include "dbh.h"
 #include "xmalloc.h"
 
-
+#ifndef EFTYPE
+#defined EFTYPE EINVAL
+#endif
 
 #define DBH_ENOERR	0
 #define DBH_EVERSION	2	/* version mismatch */
@@ -60,7 +60,6 @@ static const int format_version[] = {
 
 static int init_db(dbh_t *);
 
-
 
 static int
 dbh_check_version(dbh_t *db)
@@ -88,7 +87,6 @@ dbh_check_version(dbh_t *db)
     return 0;
 }
 
-
 
 int
 dbh_close(dbh_t *db)
@@ -104,7 +102,6 @@ dbh_close(dbh_t *db)
     return 0;
 }
 
-
 
 const char *
 dbh_error(dbh_t *db)
@@ -125,7 +122,6 @@ dbh_error(dbh_t *db)
     return str[db->dbh_errno<0||db->dbh_errno>DBH_EMAX ? DBH_EMAX : db->dbh_errno];
 }
 
-
 
 dbh_t *
 dbh_open(const char *name, int mode)
@@ -203,7 +199,6 @@ dbh_open(const char *name, int mode)
     return db;
 }
 
-
 
 static int
 init_db(dbh_t *db)
