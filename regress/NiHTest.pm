@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use File::Copy;
-use File::Path qw(make_path);
+use File::Path qw(mkpath);
 use IPC::Open3;
 use Symbol 'gensym';
 use UNIVERSAL;
@@ -481,7 +481,7 @@ sub copy_files {
 			my $dir = $file->{destination};
 			$dir =~ s,/[^/]*$,,;
 			if (! -d $dir) {
-				make_path($dir);
+				mkpath($dir);
 			}
 		}
 
