@@ -182,7 +182,7 @@ BROKEN_TEST=	\
 		nogood-diskgood.test \
 		tz-ok.test \
 		tz-from-romset.test \
-		uncompressed-extra-file-known.test
+		uncompressed-toplevel-roms.test
 
 ZIPS=		1-4-2.zip \
 		1-4-crcerror.zip \

@@ -6,6 +6,7 @@
 * test that new files are read, old files are remove from .ckmame.db
 - libzip is linked to too many executables
 - add tests using pre-existing .ckmame.db, possibly out of date
+- dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
 
 * previously
 ! [feature] reorder cleanup step when renaming files to remove the copies
