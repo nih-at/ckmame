@@ -131,14 +131,12 @@ list_directory(const char *dirname, const char *dbname)
 		    known = parray_index_sorted(listd, b+len_dir, strcmp) != -1;
 		else if (!roms_unzipped && strcmp(ext, "zip") == 0 && listf)
 		    known = parray_index_sorted(listf, b+len_dir, strcmp) != -1;
+		*p = '.';
 	    }
 	    else {
 		if (listd)
 		    known = parray_index_sorted(listd, b+len_dir, strcmp) != -1;
 	    }
-
-	    if (p)
-		*p = '.';
 	}
 
 	if (!known)

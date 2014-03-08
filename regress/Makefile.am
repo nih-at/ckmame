@@ -63,6 +63,7 @@ TESTS=	\
 		doublezip.test \
 		dumpgame-stats.test \
 		dumpgame-unknown.test \
+		extra-file.test \
 		extra-size-mismatch.test \
 		gamelist-from-file.test \
 		garbage.test \
@@ -178,7 +179,6 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
-		extra-file.test \
 		nogood-diskgood.test \
 		tz-ok.test \
 		tz-from-romset.test \
