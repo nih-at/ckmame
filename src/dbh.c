@@ -42,7 +42,7 @@
 #include "xmalloc.h"
 
 #ifndef EFTYPE
-#defined EFTYPE EINVAL
+#define EFTYPE EINVAL
 #endif
 
 #define DBH_ENOERR	0
