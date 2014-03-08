@@ -4,7 +4,6 @@
 * test that files with up-to-date info in .ckmame.db are not re-read (put file with different content there)
 * test that files with out-of-date info is reread
 * test that new files are read, old files are remove from .ckmame.db
-- libzip is linked to too many executables
 - add tests using pre-existing .ckmame.db, possibly out of date
 - dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
 

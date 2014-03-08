@@ -6,7 +6,7 @@ noinst_LIBRARIES=libckmame.a
 
 ckmame_LDADD=libckmame.a @LIBZIP_LIBS@ @SQLITE3_LIBS@
 detective_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
-dumpgame_LDADD=libckmame.a @SQLITE3_LIBS@ @LIBZIP_LIBS@
+dumpgame_LDADD=libckmame.a @SQLITE3_LIBS@
 #mamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 mkmamedb_LDADD=libckmame.a @LIBXML2_LIBS@ @LIBZIP_LIBS@ @SQLITE3_LIBS@
 
