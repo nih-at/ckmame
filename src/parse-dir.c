@@ -58,22 +58,22 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
     archive_t *a;
     char b[8192];
     dir_status_t ds;
+    struct stat st;
 
     ctx->lineno = 0;
     
     if ((dir=dir_open(dname, roms_unzipped ? 0 : DIR_RECURSE)) == NULL)
 	return -1;
 
-    if (roms_unzipped ) {
-        struct stat st;
-        
+    if (roms_unzipped) {
         while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
             if (ds == DIR_ERROR) {
-                /* TODO: handle error */
+		myerror(ERRSTR, "error reading directory entry '%s', skipped", b);
                 continue;
             }
 
             if (stat(b, &st) < 0) {
+		myerror(ERRSTR, "can't stat '%s', skipped", b);
                 /* TODO: handle error */
                 continue;
             }
@@ -87,14 +87,16 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
             }
             else {
                 /* TOOD: if chd, include in dat */
-                /* TODO: warn about top-level files */
+		if (S_ISREG(st.st_mode)) {
+		    myerror(ERRDEF, "skipping unknown file '%s'", b);
+		}
             }
         }
     }
     else {
         while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
             if (ds == DIR_ERROR) {
-                /* TODO: handle error */
+		myerror(ERRSTR, "error reading directory entry '%s', skipped", b);
                 continue;
             }
             switch (name_type(b)) {
@@ -107,11 +109,16 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
                     break;
                     
                 case NAME_CHD:
+                    /* TODO: include disks in dat */
                 case NAME_NOEXT:
                 case NAME_UNKNOWN:
-                    /* TODO: include disks in dat */
-                    /* TODO: warn? */
-                    /* ignore all but zip archives */
+		    if (stat(b, &st) < 0) {
+			myerror(ERRSTR, "can't stat '%s', skipped", b);
+			break;
+		    }
+		    if (S_ISREG(st.st_mode)) {
+			myerror(ERRDEF, "skipping unknown file '%s'", b);
+		    }
                     break;
             }
         }

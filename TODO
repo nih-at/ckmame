@@ -1,7 +1,6 @@
 * create .ckmame.db for extra dirs, dirs scanned by mkmamedb, unknown?
 * test rom-dir: moreroms/.ckmame.db is not checked
 * mkmamedb doesn't handle chds (ignores for zipped, includes in games as rom for unzipped)
-* mkmamedb should warn for ignored files
 * test that files with up-to-date info in .ckmame.db are not re-read (put file with different content there)
 * test that files with out-of-date info is reread
 * test that new files are read, old files are remove from .ckmame.db
