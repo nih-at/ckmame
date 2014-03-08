@@ -33,7 +33,6 @@
 
 #include <sys/stat.h>
 #include <errno.h>
-#include <fts.h>
 #include <limits.h>
 #include <unistd.h>
 
@@ -41,6 +40,7 @@
 
 #include "archive.h"
 #include "dbh_dir.h"
+#include "dir.h"
 #include "error.h"
 #include "globals.h"
 #include "memdb.h"
@@ -81,7 +81,6 @@ static int ensure_archive_dir(archive_t *);
 static char *get_full_name(archive_t *, int);
 static char *make_full_name(archive_t *, const char *);
 static char *make_tmp_name(archive_t *, const char *);
-static int my_fts_sort_names(const FTSENT **, const FTSENT **);
 
 static int op_check(archive_t *);
 static int op_commit(archive_t *);
@@ -425,13 +424,6 @@ make_tmp_name(archive_t *a, const char *name)
 
 
 static int
-my_fts_sort_names(const FTSENT **a, const FTSENT **b)
-{
-    return strcmp((*a)->fts_name, (*b)->fts_name);
-}
-
-
-static int
 op_check(archive_t *a)
 {
     return 0;
@@ -729,12 +721,12 @@ op_read_infos(archive_t *a)
 {
     int id = 0;
     array_t *files = NULL;    /* information on files from cache DB */
-    FTS *ftsp;
-    FTSENT *ent;
     file_t *fdb;
-    char * const names[2] = { archive_name(a), NULL };
     ud_t *ud = archive_user_data(a);
     const char *fname;
+    dir_t *dir;
+    char namebuf[8192];
+    dir_status_t status;
 
     if (SAVE_IN_CKMAME_DB(a)) {
         if (ensure_romset_dir_db() < 0)
@@ -753,77 +745,48 @@ op_read_infos(archive_t *a)
     }
 
     ud->id = id;
-    
-    if ((ftsp = fts_open(names, FTS_LOGICAL|FTS_NOCHDIR, my_fts_sort_names)) == NULL) {
-	array_free(files, file_finalize);
 
+    if ((dir=dir_open(archive_name(a), DIR_RECURSE)) == NULL) {
+	array_free(files, file_finalize);
 	return -1;
     }
-    else {
-	while ((ent=fts_read(ftsp)) != NULL) {
-	    if (strcmp(ent->fts_path, archive_name(a)) == 0) {
-		if (ent->fts_info == FTS_NS) {
-		    if ((a->flags & ARCHIVE_FL_CREATE) == 0 || errno != ENOENT) {
-			array_free(files, file_finalize);
-			fts_close(ftsp);
-			return -1;
-		    }
-		}
-		continue;
-	    }
 
-	    switch (ent->fts_info) {
-            case FTS_D:
-            case FTS_DP:
-                break;
-                
-            case FTS_NS:
-            case FTS_DC:
-            case FTS_DNR:
-            case FTS_ERR:
-            case FTS_SLNONE:
-		myerror(ERRDEF, "fts_read error (%s): %s", ent->fts_path, strerror(errno));
-		/* TODO mark file as broken? */
-                break;
+    while ((status=dir_next(dir, namebuf, sizeof(namebuf))) == DIR_OK) {
+	struct stat sb;
+	if (strcmp(namebuf, archive_name(a)) == 0)
+	    continue;
 
-            case FTS_F:
-		fname = ent->fts_path+strlen(archive_name(a))+1;
-
-		fdb = NULL;
-                if (files) {
-		    int idx = array_index(files, fname, cmp_file_by_name);
-		    if (idx >= 0) {
-			fdb = array_get(files, idx);
-			if (file_mtime(fdb) != ent->fts_statp->st_mtime || file_size(fdb) != ent->fts_statp->st_size)
-			    fdb = NULL;
-		    }
-		}
-
-		archive_dir_add_file(a, fname, ent->fts_statp, fdb ? fdb->sh : NULL);
-
-
-                break;
-
-            case FTS_DEFAULT:
-            case FTS_NSOK:
-            case FTS_SL:
-            case FTS_DOT:
-                /* TODO shouldn't happen */
-                break;
-	    }
-	}
-
-	array_free(files, file_finalize);
-
-	if (errno != 0) {
-	    myerror(ERRDEF, "fts_read error: %s", strerror(errno));
-	    fts_close(ftsp);
+	if (stat(namebuf, &sb) < 0) {
+	    array_free(files, file_finalize);
+	    dir_close(dir);
 	    return -1;
 	}
-	if (fts_close(ftsp) < 0) {
-	    myerror(ERRDEF, "cannot fts_close '%s': %s", archive_name(a), strerror(errno));
-	    return -1;
+
+	if (S_ISREG(sb.st_mode)) {
+	    fname = namebuf+strlen(archive_name(a))+1;
+	    fdb = NULL;
+	    if (files) {
+		int idx = array_index(files, fname, cmp_file_by_name);
+		if (idx >= 0) {
+		    fdb = array_get(files, idx);
+		    if (file_mtime(fdb) != sb.st_mtime || file_size(fdb) != sb.st_size)
+			fdb = NULL;
+		}
+	    }
+	    archive_dir_add_file(a, fname, &sb, fdb ? fdb->sh : NULL);
 	}
+    }
+
+    array_free(files, file_finalize);
+
+    if (status != DIR_EOD) {
+	myerror(ERRDEF, "error reading directory: %s", strerror(errno));
+	dir_close(dir);
+	return -1;
+    }
+    if (dir_close(dir) < 0) {
+	myerror(ERRDEF, "cannot close directory '%s': %s", archive_name(a), strerror(errno));
+	return -1;
     }
 
     return 0;
