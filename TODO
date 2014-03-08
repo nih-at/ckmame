@@ -12,7 +12,6 @@
 - File::Path does not always provide make_path
 
 * previously
-- archive_zip.c: don't use zip_fread in ops directly, breaks very old libzip
 ! [feature] reorder cleanup step when renaming files to remove the copies
   earlier; otherwise big renames on big sets don't work.
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct
