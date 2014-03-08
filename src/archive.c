@@ -333,11 +333,6 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
 	}
 	break;
 
-    case TYPE_DISK:
-	archive_filetype(a) = TYPE_DISK;
-	/* TODO */
-	break;
-
     default:
 	archive_real_free(a);
 	return NULL;

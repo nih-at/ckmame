@@ -46,7 +46,6 @@
 - [bug] fix BROKEN_TESTS
 - [feature] chd v5 support: maps, lzma, huffman, flac, a/v decompression
 - [feature] better support for chds in separate chds/gamename/chdname.chd
-- [cleanup] archive: remove leftovers of TYPE_DISK
 - [cleanup] consistently use asprintf() instead of malloc()+str*
 - [cleanup] reduce code duplication
 - [cleanup] access db directly in find_*
