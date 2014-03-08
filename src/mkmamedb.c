@@ -1,6 +1,6 @@
 /*
   mkmamedb.c -- create mamedb
-  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -48,7 +48,7 @@
 #include "types.h"
 #include "xmalloc.h"
 
-char *usage = "Usage: %s [-hV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--only-files pat] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
+char *usage = "Usage: %s [-huV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
 
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
@@ -59,19 +59,19 @@ char help[] = "\n"
 "  -C, --hash-types types          specify hash types to compute (default: all)\n"
 "  -F, --format [cm|dat|db|mtree]  specify output format [default: db]\n"
 "  -o, --output dbfile             write to database dbfile\n"
+"  -u, --roms-unzipped             ROMs are files on disk, not contained in zip archives\n"
 "  -x, --exclude pat               exclude games matching shell glob PAT\n"
 "      --detector xml-file         use header detector\n"
 "      --only-files pat            only use zip members matching shell glob PAT\n"
 "      --prog-description d        set description of rominfo\n"
 "      --prog-name name            set name of program rominfo is from\n"
-"      --prog-version vers         set version of program rominfo is from\n"
+"      --prog-version version      set version of program rominfo is from\n"
 "      --skip-files pat            don't use zip members matching shell glob PAT\n"
-"  -u, --roms-unzipped             ROMs are files on disk, not contained in zip archives\n"
 "\n"
 "Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n"
-"Copyright (C) 2013 Dieter Baron and Thomas Klausner\n"
+"Copyright (C) 2014 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hC:F:o:uVx:"
