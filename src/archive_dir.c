@@ -49,6 +49,10 @@
 
 #define BUFSIZE 8192
 
+#ifndef SIZE_T_MAX
+#define SIZE_T_MAX (~(size_t)0)
+#endif
+
 typedef enum {
     CHANGE_NONE,
     CHANGE_ADD,
