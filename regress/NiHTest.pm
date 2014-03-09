@@ -97,6 +97,10 @@ use Text::Diff;
 #	    stdout commands are used, the messages are expected in
 #	    the order given.
 #
+#	touch MTIME FILE
+#	    set last modified timestamp of FILE to MTIME (seconds since epoch).
+#	    If FILE doesn't exist, an empty file is created.
+#
 #	ulimit C VALUE
 #	    set ulimit -C to VALUE while running the program.
 #
@@ -145,7 +149,8 @@ sub new {
 		setenv => { type => 'string string' },
 		stderr => { type => 'string' },
 		stdout => { type => 'string' },
-		ulimit => { type => 'char string' },
+		touch => { type => 'int string' },
+		ulimit => { type => 'char string' }
 	};
 	
 	$self->{compare_by_type} = {};
@@ -242,8 +247,13 @@ sub runtest {
 	$self->sandbox_create($tag);
 	$self->sandbox_enter();
 	
-	$self->copy_files();
-	$self->run_hook('prepare_sandbox');
+	my $ok = 1;
+	$ok &= $self->copy_files();
+	$ok &= $self->run_hook('post_copy_files');
+	$ok &= $self->touch_files();
+	$ok &= $self->run_hook('prepare_sandbox');
+	return 'ERROR' unless ($ok);
+
 	if ($self->{setup_only}) {
 	    $self->sandbox_leave();
 	    return 'SKIP';
@@ -860,6 +870,34 @@ sub sandbox_remove {
 	unless (system('rm', '-rf', $self->{sandbox_dir}) == 0) {
 		$self->warn("can't remove sandbox: $!");
 		$ok = 0;
+	}
+	
+	return $ok;
+}
+
+
+sub touch_files {
+	my ($self) = @_;
+	
+	my $ok = 1;
+	
+	if (defined($self->{test}->{touch})) {
+		for my $args (@{$self->{test}->{touch}}) {
+			my ($mtime, $fname) = @$args;
+			
+			if (!-f $fname) {
+				my $fh;
+				unless (open($fh, "> $fname") and close($fh)) {
+					# TODO: error message
+					$ok = 0;
+					next;
+				}
+			}
+			unless (utime($mtime, $mtime, $fname) == 1) {
+				# TODO: error message
+				$ok = 0;
+			}
+		}
 	}
 	
 	return $ok;

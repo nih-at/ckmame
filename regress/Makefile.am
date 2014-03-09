@@ -1,8 +1,9 @@
 AUTOMAKE_OPTIONS=	parallel-tests
 
-noinst_PROGRAMS=	dbdump
+noinst_PROGRAMS=	dbdump dbrestore
 AM_CFLAGS=		-I${top_srcdir}/src -I${top_builddir}/src @LIBZIP_CFLAGS@ @SQLITE3_CFLAGS@ @CFLAGS@
-dbdump_LDADD=		../src/libckmame.a @SQLITE3_LIBS@ @LIBZIP_LIBS@
+dbdump_LDADD=		../src/libckmame.a @SQLITE3_LIBS@
+dbrestore_LDADD=	../src/libckmame.a @SQLITE3_LIBS@
 noinst_SCRIPTS=		runtest
 
 noinst_LTLIBRARIES=	fwrite.la

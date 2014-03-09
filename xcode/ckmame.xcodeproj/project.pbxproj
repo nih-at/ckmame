@@ -13,6 +13,8 @@
 			buildPhases = (
 			);
 			dependencies = (
+				4B41079318CC9E04002C3052 /* PBXTargetDependency */,
+				4B41079518CC9E04002C3052 /* PBXTargetDependency */,
 				4B5FAE52173593E300B67C24 /* PBXTargetDependency */,
 				4B5FAE54173593E300B67C24 /* PBXTargetDependency */,
 				4B5FAE56173593E300B67C24 /* PBXTargetDependency */,
@@ -24,6 +26,15 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		4B41077318CC8F25002C3052 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEA817359A3700B67C24 /* libz.dylib */; };
+		4B41077418CC8F25002C3052 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
+		4B41077518CC8F25002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
+		4B41078218CC8F66002C3052 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEA817359A3700B67C24 /* libz.dylib */; };
+		4B41078318CC8F66002C3052 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
+		4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
+		4B41078518CC8F66002C3052 /* libzip.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */; };
+		4B41078E18CC8FEE002C3052 /* dbdump.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B41078D18CC8FEE002C3052 /* dbdump.c */; };
+		4B41079118CC9017002C3052 /* dbrestore.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B41079018CC9017002C3052 /* dbrestore.c */; };
 		4B513F4C175B52B70096EF42 /* dbh_statements.in in Sources */ = {isa = PBXBuildFile; fileRef = 4B513F49175B52700096EF42 /* dbh_statements.in */; };
 		4B513F4E175BC6820096EF42 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B513F4D175BC6820096EF42 /* libxml2.dylib */; };
 		4B513F4F175BC68F0096EF42 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B513F4D175BC6820096EF42 /* libxml2.dylib */; };
@@ -178,6 +189,34 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
+		4B41076F18CC8F25002C3052 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B5FAC5817358FF000B67C24 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B5FAD45173592D700B67C24;
+			remoteInfo = libckmame;
+		};
+		4B41077E18CC8F66002C3052 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B5FAC5817358FF000B67C24 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B5FAD45173592D700B67C24;
+			remoteInfo = libckmame;
+		};
+		4B41079218CC9E04002C3052 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B5FAC5817358FF000B67C24 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B41076D18CC8F25002C3052;
+			remoteInfo = dbdump;
+		};
+		4B41079418CC9E04002C3052 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B5FAC5817358FF000B67C24 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B41077C18CC8F66002C3052;
+			remoteInfo = dbrestore;
+		};
 		4B5FAE241735931C00B67C24 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4B5FAC5817358FF000B67C24 /* Project object */;
@@ -237,6 +276,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		4B41077718CC8F25002C3052 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		4B41078618CC8F66002C3052 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		4B5FAC5E17358FF000B67C24 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -276,6 +333,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4B41077B18CC8F25002C3052 /* dbdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbdump; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B41078D18CC8FEE002C3052 /* dbdump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbdump.c; sourceTree = "<group>"; };
+		4B41079018CC9017002C3052 /* dbrestore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbrestore.c; sourceTree = "<group>"; };
 		4B513F49175B52700096EF42 /* dbh_statements.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dbh_statements.in; sourceTree = "<group>"; };
 		4B513F4D175BC6820096EF42 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		4B513F51175BCC440096EF42 /* dbh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dbh.h; sourceTree = "<group>"; };
@@ -450,6 +511,27 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4B41077218CC8F25002C3052 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B41077318CC8F25002C3052 /* libz.dylib in Frameworks */,
+				4B41077418CC8F25002C3052 /* libsqlite3.dylib in Frameworks */,
+				4B41077518CC8F25002C3052 /* liblibckmame.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B41078118CC8F66002C3052 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B41078218CC8F66002C3052 /* libz.dylib in Frameworks */,
+				4B41078318CC8F66002C3052 /* libsqlite3.dylib in Frameworks */,
+				4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */,
+				4B41078518CC8F66002C3052 /* libzip.2.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B5FAC5D17358FF000B67C24 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -506,6 +588,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4B41078B18CC8F8A002C3052 /* dbdump */ = {
+			isa = PBXGroup;
+			children = (
+				4B41078D18CC8FEE002C3052 /* dbdump.c */,
+			);
+			name = dbdump;
+			path = ../regress;
+			sourceTree = "<group>";
+		};
+		4B41078F18CC8FF3002C3052 /* dbrestore */ = {
+			isa = PBXGroup;
+			children = (
+				4B41079018CC9017002C3052 /* dbrestore.c */,
+			);
+			name = dbrestore;
+			path = ../regress;
+			sourceTree = "<group>";
+		};
 		4B5FAC5717358FF000B67C24 = {
 			isa = PBXGroup;
 			children = (
@@ -530,6 +630,8 @@
 				4B5FAE2B1735934C00B67C24 /* detective */,
 				4B5FAE411735937100B67C24 /* dumpgame */,
 				4B5FAE501735939000B67C24 /* mkmamedb */,
+				4B41077B18CC8F25002C3052 /* dbdump */,
+				4B41078A18CC8F66002C3052 /* dbrestore */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -543,6 +645,8 @@
 				4B5FAC6F1735904000B67C24 /* detective */,
 				4B5FAC701735904800B67C24 /* dumpgame */,
 				4B5FAC6E1735903200B67C24 /* mkmamedb */,
+				4B41078B18CC8F8A002C3052 /* dbdump */,
+				4B41078F18CC8FF3002C3052 /* dbrestore */,
 			);
 			name = ckmame;
 			path = ../src;
@@ -650,7 +754,9 @@
 				4B5FACF31735924900B67C24 /* output.c */,
 				4B5FACF41735924900B67C24 /* output.h */,
 				4B5FACEF1735924900B67C24 /* output_cm.c */,
+				4B5FACF11735924900B67C24 /* output_db.c */,
 				4B5FACF01735924900B67C24 /* output_datafile_xml.c */,
+				4B5FACF21735924900B67C24 /* output_mtree.c */,
 				4B5F43AF1889D059000C3B7C /* romdb_read_dat.c */,
 				4B5F43B01889D059000C3B7C /* romdb_read_detector.c */,
 				4B5F43B11889D059000C3B7C /* romdb_read_file_by_hash.c */,
@@ -661,8 +767,6 @@
 				4B5F43B61889D059000C3B7C /* romdb_write_game.c */,
 				4B5F43B71889D059000C3B7C /* romdb.c */,
 				4B5F43B81889D059000C3B7C /* romdb.h */,
-				4B5FACF11735924900B67C24 /* output_db.c */,
-				4B5FACF21735924900B67C24 /* output_mtree.c */,
 				4B5FACFD1735924900B67C24 /* parray.c */,
 				4B5FACFE1735924900B67C24 /* parray.h */,
 				4B5FACF51735924900B67C24 /* parray_delete.c */,
@@ -763,6 +867,42 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		4B41076D18CC8F25002C3052 /* dbdump */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B41077818CC8F25002C3052 /* Build configuration list for PBXNativeTarget "dbdump" */;
+			buildPhases = (
+				4B41077018CC8F25002C3052 /* Sources */,
+				4B41077218CC8F25002C3052 /* Frameworks */,
+				4B41077718CC8F25002C3052 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4B41076E18CC8F25002C3052 /* PBXTargetDependency */,
+			);
+			name = dbdump;
+			productName = detective;
+			productReference = 4B41077B18CC8F25002C3052 /* dbdump */;
+			productType = "com.apple.product-type.tool";
+		};
+		4B41077C18CC8F66002C3052 /* dbrestore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B41078718CC8F66002C3052 /* Build configuration list for PBXNativeTarget "dbrestore" */;
+			buildPhases = (
+				4B41077F18CC8F66002C3052 /* Sources */,
+				4B41078118CC8F66002C3052 /* Frameworks */,
+				4B41078618CC8F66002C3052 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4B41077D18CC8F66002C3052 /* PBXTargetDependency */,
+			);
+			name = dbrestore;
+			productName = detective;
+			productReference = 4B41078A18CC8F66002C3052 /* dbrestore */;
+			productType = "com.apple.product-type.tool";
+		};
 		4B5FAC5F17358FF000B67C24 /* ckmame */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4B5FAC6917358FF000B67C24 /* Build configuration list for PBXNativeTarget "ckmame" */;
@@ -880,11 +1020,29 @@
 				4B5FAE2A1735934C00B67C24 /* detective */,
 				4B5FAE371735937100B67C24 /* dumpgame */,
 				4B5FAE461735939000B67C24 /* mkmamedb */,
+				4B41076D18CC8F25002C3052 /* dbdump */,
+				4B41077C18CC8F66002C3052 /* dbrestore */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4B41077018CC8F25002C3052 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B41078E18CC8FEE002C3052 /* dbdump.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B41077F18CC8F66002C3052 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B41079118CC9017002C3052 /* dbrestore.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4B5FAC5C17358FF000B67C24 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1040,6 +1198,26 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4B41076E18CC8F25002C3052 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B5FAD45173592D700B67C24 /* libckmame */;
+			targetProxy = 4B41076F18CC8F25002C3052 /* PBXContainerItemProxy */;
+		};
+		4B41077D18CC8F66002C3052 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B5FAD45173592D700B67C24 /* libckmame */;
+			targetProxy = 4B41077E18CC8F66002C3052 /* PBXContainerItemProxy */;
+		};
+		4B41079318CC9E04002C3052 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B41076D18CC8F25002C3052 /* dbdump */;
+			targetProxy = 4B41079218CC9E04002C3052 /* PBXContainerItemProxy */;
+		};
+		4B41079518CC9E04002C3052 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B41077C18CC8F66002C3052 /* dbrestore */;
+			targetProxy = 4B41079418CC9E04002C3052 /* PBXContainerItemProxy */;
+		};
 		4B5FAE251735931C00B67C24 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4B5FAD45173592D700B67C24 /* libckmame */;
@@ -1083,6 +1261,52 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		4B41077918CC8F25002C3052 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../nih/lib\"",
+				);
+				PRODUCT_NAME = dbdump;
+			};
+			name = Debug;
+		};
+		4B41077A18CC8F25002C3052 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../nih/lib\"",
+				);
+				PRODUCT_NAME = dbdump;
+			};
+			name = Release;
+		};
+		4B41078818CC8F66002C3052 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../nih/lib\"",
+				);
+				PRODUCT_NAME = dbrestore;
+				USER_HEADER_SEARCH_PATHS = ". ../src";
+			};
+			name = Debug;
+		};
+		4B41078918CC8F66002C3052 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../nih/lib\"",
+				);
+				PRODUCT_NAME = dbrestore;
+				USER_HEADER_SEARCH_PATHS = ". ../src";
+			};
+			name = Release;
+		};
 		4B5FAC6717358FF000B67C24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1277,6 +1501,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4B41077818CC8F25002C3052 /* Build configuration list for PBXNativeTarget "dbdump" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B41077918CC8F25002C3052 /* Debug */,
+				4B41077A18CC8F25002C3052 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4B41078718CC8F66002C3052 /* Build configuration list for PBXNativeTarget "dbrestore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B41078818CC8F66002C3052 /* Debug */,
+				4B41078918CC8F66002C3052 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4B5FAC5B17358FF000B67C24 /* Build configuration list for PBXProject "ckmame" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

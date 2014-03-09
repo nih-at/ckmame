@@ -183,16 +183,34 @@ sub post_run_program {
 }
 
 
-sub prepare_sandbox {
+sub post_copy_file {
 	my ($test, $hook) = @_;
 	
 	if ($test->{test}->{mkdbargs}) {
 		my $ret = system('../../src/mkmamedb', @{$test->{test}->{mkdbargs}});
 		# TODO: capture stdout/stderr
-		return $ret == 0;
+		return $ret == 0 ? 1 : undef;
 	}
 	if (! -d 'roms') {
 		mkdir('roms');
+	}
+
+	if ($roms_uncompressed) {
+		if (defined($test->{test}->{ckmamedb})) {
+			for my $args (@{$test->{test}->{ckmamedb}}) {
+				my ($dir, $dump) = @$args;
+				print "restoring ckmamedb $dump in $dir\n";
+				
+				my $dump_file = $test->find_file($dump);
+				return undef unless (defined($dump));
+				
+				print "restoring ckmamedb $dump ($dump_file) in $dir\n";
+				unless (system('../dbrestore', '-t', 'ckmamedb', "$dump_file", "$dir/.ckmame.db") == 0) {
+					print STDERR "can't restore ckmamedb dump $dump: $!";
+					return undef;
+				}
+			}
+		}
 	}
 
 	return 1;
@@ -202,6 +220,7 @@ sub prepare_sandbox {
 $test->add_directive(mkdbargs => { type => 'string...', once => 1 });
 $test->add_directive('archive-types' => { type => 'string...', once => 1 });
 $test->add_directive('ckmamedb-skip' => { type => 'string' });
+$test->add_directive('ckmamedb' => { type => 'string string' });
 
 $test->add_comparator('db/dump', \&comparator_db);
 $test->add_comparator('zip/zip', \&comparator_zip);
@@ -212,7 +231,7 @@ $test->add_hook('mangle_program', \&mangle_program);
 $test->add_hook('post_parse', \&post_parse);
 $test->add_hook('post_list_files', \&post_list_files);
 $test->add_hook('post_run_program', \&post_run_program);
-$test->add_hook('prepare_sandbox', \&prepare_sandbox);
+$test->add_hook('post_copy_files', \&post_copy_file);
 
 $test->setup(@ARGV);
 
