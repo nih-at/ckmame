@@ -344,7 +344,7 @@ check_match_romset(const game_t *g, const file_t *r, match_t *m)
 
 
 static find_result_t
-find_in_db(romdb_t *db, const file_t *r, const char *skip, match_t *m,
+find_in_db(romdb_t *fdb, const file_t *r, const char *skip, match_t *m,
 	   find_result_t (*check_match)(const game_t *, const file_t *,
 					match_t *))
 {
@@ -355,7 +355,7 @@ find_in_db(romdb_t *db, const file_t *r, const char *skip, match_t *m,
     int i;
     find_result_t status;
 
-    if ((a=romdb_read_file_by_hash(db, TYPE_ROM, file_hashes(r))) == NULL)
+    if ((a=romdb_read_file_by_hash(fdb, TYPE_ROM, file_hashes(r))) == NULL)
 	return FIND_UNKNOWN;
 
     status = FIND_UNKNOWN;
@@ -367,9 +367,9 @@ find_in_db(romdb_t *db, const file_t *r, const char *skip, match_t *m,
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
 
-	if ((g=romdb_read_game(db, file_location_name(fbh))) == NULL
+	if ((g=romdb_read_game(fdb, file_location_name(fbh))) == NULL
 	    || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
-	    /* TODO: internal error: db inconsistency */
+	    /* TODO: internal error: database inconsistency */
 	    status = FIND_ERROR;
 	    break;
 	}
@@ -392,7 +392,7 @@ find_in_db(romdb_t *db, const file_t *r, const char *skip, match_t *m,
 
 
 find_result_t
-find_disk_in_db(romdb_t *db, const disk_t *d, const char *skip, match_disk_t *md,
+find_disk_in_db(romdb_t *fdb, const disk_t *d, const char *skip, match_disk_t *md,
 		find_result_t (*check_match)(const game_t *, const disk_t *,
 					     match_disk_t *))
 {
@@ -403,8 +403,8 @@ find_disk_in_db(romdb_t *db, const disk_t *d, const char *skip, match_disk_t *md
     int i;
     find_result_t status;
 
-    if ((a=romdb_read_file_by_hash(db, TYPE_DISK, disk_hashes(d))) == NULL) {
-	/* TODO: internal error: db inconsistency */
+    if ((a=romdb_read_file_by_hash(fdb, TYPE_DISK, disk_hashes(d))) == NULL) {
+	/* TODO: internal error: database inconsistency */
 	return FIND_ERROR;
     }
 
@@ -417,7 +417,7 @@ find_disk_in_db(romdb_t *db, const disk_t *d, const char *skip, match_disk_t *md
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
 
-	if ((g=romdb_read_game(db, file_location_name(fbh))) == NULL) {
+	if ((g=romdb_read_game(fdb, file_location_name(fbh))) == NULL) {
 	    /* TODO: internal error: db inconsistency */
 	    status = FIND_ERROR;
 	    break;
