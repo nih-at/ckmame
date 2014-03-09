@@ -43,7 +43,6 @@
 #include "hashes.h"
 #include "match.h"
 #include "match_disk.h"
-#include "pri.h"
 #include "types.h"
 #include "warn.h"
 
@@ -254,9 +253,8 @@ diagnostics_files(const game_t *game, const result_t *res)
 	case QU_LONG:
 	    if (output_options & WARN_LONGOK)
 		warn_rom(r,
-			 "too long, valid subsection at byte %" PRIdoff
-			 " (%" PRIu64 ")%s%s",
-			 PRIoff_cast match_offset(m), file_size(f),
+			 "too long, valid subsection at byte %jd (%" PRIu64 ")%s%s",
+			 (intmax_t)match_offset(m), file_size(f),
 			 (file_where(r) != match_where(m)
 			  ? ", should be in " : ""),
 			 zname[file_where(r)]);

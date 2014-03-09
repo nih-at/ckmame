@@ -165,7 +165,6 @@ noinst_HEADERS=\
 	parray.h \
 	parse.h \
 	parser_source.h \
-	pri.h \
 	result.h \
 	romdb.h \
 	sighandle.h \

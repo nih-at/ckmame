@@ -49,7 +49,6 @@
 #include "garbage.h"
 #include "globals.h"
 #include "match.h"
-#include "pri.h"
 #include "types.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -370,8 +369,8 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    }
 	    
 	    if (fix_options & FIX_PRINT)
-		printf("%s: extract (offset %" PRIdoff ", size %" PRIu64 ") from '%s' to '%s'\n",
-                       archive_name(a), PRIoff_cast match_offset(m), file_size(r), REAL_NAME(afrom, match_index(m)), file_name(r));
+		printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n",
+                       archive_name(a), (intmax_t)match_offset(m), file_size(r), REAL_NAME(afrom, match_index(m)), file_name(r));
 
 	    bool replacing_ourself = (a == afrom && match_index(m) == archive_file_index_by_name(afrom, file_name(r)));
 
