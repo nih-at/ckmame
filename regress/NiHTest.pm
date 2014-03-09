@@ -660,6 +660,8 @@ sub parse_case() {
 		
 		unless ($def) {
 			$self->warn_file_line("unknown directive $cmd in test file");
+			$ok = 0;
+			next;
 		}
 		
 		my $args = $self->parse_args($def->{type}, $argstring);
