@@ -92,7 +92,7 @@ main(int argc, char **argv)
     char *dbname;
     char *detector_name;
     int c, i, ret;
-    romdb_t *db;
+    romdb_t *ddb;
     int hashtypes;
 
     setprogname(argv[0]);
@@ -151,7 +151,7 @@ main(int argc, char **argv)
 	}
     }
 
-    if ((db=romdb_open(dbname, DBH_READ)) == NULL) {
+    if ((ddb=romdb_open(dbname, DBH_READ)) == NULL) {
 	if (detector == 0) {
 	    myerror(ERRSTR, "can't open database '%s'", dbname);
 	    exit(1);
@@ -159,12 +159,11 @@ main(int argc, char **argv)
     }
     else {
 	if (detector == NULL)
-	    detector = romdb_read_detector(db);
-	romdb_close(db);
+	    detector = romdb_read_detector(ddb);
+	if (hashtypes == -1)
+	    hashtypes = romdb_hashtypes(ddb, TYPE_ROM);
+	romdb_close(ddb);
     }
-
-    if (hashtypes == -1)
-	hashtypes = romdb_hashtypes(db, TYPE_ROM);
 
     ret = 0;
     for (i=optind; i<argc; i++)
