@@ -1,6 +1,6 @@
 /*
   find.c -- find ROM in ROM set or archives
-  Copyright (C) 2005-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,8 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 #include "dbh.h"
 #include "file_location.h"
 #include "find.h"
@@ -43,8 +41,6 @@
 #include "memdb.h"
 #include "sq_util.h"
 #include "xmalloc.h"
-
-
 
 #define QUERY_FILE \
     "select game_id, file_idx, file_sh, location from file where file_type = ?"
@@ -57,8 +53,6 @@
 #define QUERY_FILE_FILE_SH	2
 #define QUERY_FILE_LOCATION	3
 
-
-
 
 static find_result_t check_for_file_in_zip(const char *, const file_t *,
 					   match_t *);
@@ -78,7 +72,6 @@ static find_result_t find_in_db(romdb_t *, const file_t *, const char *, match_t
 				find_result_t (*)(const game_t *,
 						  const file_t *, match_t *));
 
-
 
 find_result_t
 find_disk(const disk_t *d, match_disk_t *md)
@@ -123,7 +116,6 @@ find_disk(const disk_t *d, match_disk_t *md)
     return ret;
 }
 
-
 
 find_result_t find_disk_in_old(const disk_t *d, match_disk_t *md)
 {
@@ -133,7 +125,6 @@ find_result_t find_disk_in_old(const disk_t *d, match_disk_t *md)
     return find_disk_in_db(old_db, d, NULL, md, check_match_disk_old);
 }
 
-
 
 find_result_t
 find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md)
@@ -141,7 +132,6 @@ find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md)
     return find_disk_in_db(db, d, skip, md, check_match_disk_romset);
 }
 
-
 
 find_result_t
 find_in_archives(const file_t *r, match_t *m)
@@ -207,7 +197,6 @@ find_in_archives(const file_t *r, match_t *m)
     return ret == SQLITE_DONE ? FIND_UNKNOWN : FIND_ERROR;
 }
 
-
 
 find_result_t
 find_in_old(const file_t *r, match_t *m)
@@ -217,7 +206,6 @@ find_in_old(const file_t *r, match_t *m)
     return find_in_db(old_db, r, NULL, m, check_match_old);
 }
 
-
 
 find_result_t
 find_in_romset(const file_t *r, const char *skip, match_t *m)
@@ -225,7 +213,6 @@ find_in_romset(const file_t *r, const char *skip, match_t *m)
     return find_in_db(db, r, skip, m, check_match_romset);
 }
 
-
 
 static find_result_t
 check_for_file_in_zip(const char *name, const file_t *r, match_t *m)
@@ -258,7 +245,6 @@ check_for_file_in_zip(const char *name, const file_t *r, match_t *m)
     return FIND_MISSING;
 }
 
-
 
 /*ARGSUSED1*/
 static find_result_t
@@ -273,7 +259,6 @@ check_match_disk_old(const game_t *g, const disk_t *d, match_disk_t *md)
     return FIND_EXISTS;
 }
 
-
 
 /*ARGSUSED1*/
 static find_result_t
@@ -310,7 +295,6 @@ check_match_disk_romset(const game_t *g, const disk_t *d, match_disk_t *md)
     return FIND_MISSING;
 }
 
-
 
 static find_result_t
 check_match_old(const game_t *g, const file_t *r, match_t *m)
@@ -325,7 +309,6 @@ check_match_old(const game_t *g, const file_t *r, match_t *m)
     return FIND_EXISTS;
 }
 
-
 
 static find_result_t
 check_match_romset(const game_t *g, const file_t *r, match_t *m)
@@ -341,7 +324,6 @@ check_match_romset(const game_t *g, const file_t *r, match_t *m)
     return status;
 }
 
-
 
 static find_result_t
 find_in_db(romdb_t *fdb, const file_t *r, const char *skip, match_t *m,
@@ -389,7 +371,6 @@ find_in_db(romdb_t *fdb, const file_t *r, const char *skip, match_t *m,
     return status;
 }
 
-
 
 find_result_t
 find_disk_in_db(romdb_t *fdb, const disk_t *d, const char *skip, match_disk_t *md,

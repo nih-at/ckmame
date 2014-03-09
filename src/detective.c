@@ -1,6 +1,6 @@
 /*
   detective.c -- list files from zip archive with headers skipped
-  Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,8 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -60,7 +58,7 @@ char help[] = "\n"
 "Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "detective (" PACKAGE " " VERSION ")\n"
-"Copyright (C) 2013 Dieter Baron and Thomas Klausner\n"
+"Copyright (C) 2014 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hC:DuV"
@@ -79,12 +77,10 @@ struct option options[] = {
     { NULL,               0, 0, 0 },
 };
 
-
 
 static int print_archive(const char *, int);
 static void print_checksums(hashes_t *, int);
 
-
 
 int
 main(int argc, char **argv)
@@ -172,7 +168,6 @@ main(int argc, char **argv)
     return ret ? 1 : 0;
 }
 
-
 
 static int
 print_archive(const char *fname, int hashtypes)
@@ -211,7 +206,6 @@ print_archive(const char *fname, int hashtypes)
     return ret;
 }
 
-
 
 static void
 print_checksums(hashes_t *hashes, int hashtypes)
