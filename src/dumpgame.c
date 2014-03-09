@@ -591,15 +591,11 @@ dump_stats(int dummy)
 	if (size > 0) {
 	    printf(" (");
 	    if (size > 1024*1024*1024)
-		printf("%llu.%02lluGiB",
-		       (unsigned long long)size/(1024*1024*1024),
-		       ((((unsigned long long)size/(1024*1024))*10+512)/1024) % 100);
+		printf("%" PRIi64 ".%02" PRIi64 "GiB", size/(1024*1024*1024), (((size/(1024*1024))*10+512)/1024) % 100);
 	    else if (size > 1024*1024)
-		printf("%llu.%02lluMiB",
-		       (unsigned long long)size/(1024*1024),
-		       ((((unsigned long long)size/1024)*10+512)/1024) % 100);
+		printf("%" PRIi64 ".%02" PRIi64 "MiB", size/(1024*1024), (((size/1024)*10+512)/1024) % 100);
 	    else
-		printf("%llu bytes", (unsigned long long)size);
+		printf("%" PRIi64 " bytes", size);
 	    printf(")");
 	}
 	printf("\n");

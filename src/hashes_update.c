@@ -1,6 +1,6 @@
 /*
   hashes_update.c -- compute hashes
-  Copyright (C) 2004, 2005 Dieter Baron and Thomas Klausner
+  Copyright (C) 2004-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -52,7 +52,7 @@
 
 
 struct hashes_update {
-    unsigned long crc;
+    uint32_t crc;
     MD5_CTX md5;
     SHA1_CTX sha1;
 

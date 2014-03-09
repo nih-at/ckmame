@@ -1,6 +1,6 @@
 /*
   detector_execute.c -- match file against detector and compute size/hashes
-  Copyright (C) 2007-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -184,7 +184,7 @@ compute_values(detector_t *d, file_t *r, int64_t start, int64_t end,
     hashes_update_t *hu;
     size_t off;
     uint64_t len;
-    unsigned long size;
+    uint64_t size;
     int align;
 
     size = end-start;
