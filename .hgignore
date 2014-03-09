@@ -25,6 +25,7 @@ Makefile.in$
 ^install-sh$
 ^missing$
 ^regress/dbdump$
+^regress/dbrestore$
 ^regress/mame[4-9]?\.db$
 ^regress/mamedb-1-8-is-4.db$
 ^regress/mamedb-baddump.db$
