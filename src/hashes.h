@@ -37,6 +37,7 @@
 
 #include <string.h>
 
+#include "myinttypes.h"
 #include "intstr.h"
 
 #define HASHES_SIZE_CRC		4
@@ -60,9 +61,9 @@ typedef enum hashes_cmp hashes_cmp_t;
 
 struct hashes {
     int types;
-    unsigned long crc;
-    unsigned char md5[HASHES_SIZE_MD5];
-    unsigned char sha1[HASHES_SIZE_SHA1];
+    uint32_t crc;
+    uint8_t md5[HASHES_SIZE_MD5];
+    uint8_t sha1[HASHES_SIZE_SHA1];
 };
 
 typedef struct hashes hashes_t;

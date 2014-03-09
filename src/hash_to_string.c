@@ -58,7 +58,7 @@ hash_to_string(char *str, int type, const hashes_t *hashes)
 
     switch (type) {
     case HASHES_TYPE_CRC:
-	sprintf(str, "%.8lx", hashes->crc);
+	sprintf(str, "%.8" PRIx32, hashes->crc);
 	break;
 
     case HASHES_TYPE_MD5:
