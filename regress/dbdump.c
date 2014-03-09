@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <sys/stat.h>
 #include <stdio.h>
@@ -53,7 +52,6 @@ const char *usage = "usage: %s db-file\n";
 static int dump_db(sqlite3 *);
 static int dump_table(sqlite3 *, const char *);
 
-
 
 int
 main(int argc, char *argv[])
@@ -96,7 +94,6 @@ main(int argc, char *argv[])
     return ret < 0 ? 1 : 0;
 }
 
-
 
 static int
 dump_db(sqlite3 *db)
@@ -120,7 +117,6 @@ dump_db(sqlite3 *db)
     return 0;
 }
 
-
 
 static int
 dump_table(sqlite3 *db, const char *tbl)
