@@ -39,7 +39,6 @@
 
 #include "types.h"
 
-
 
 typedef int (*cmpfunc)(const void *, const void *);
 

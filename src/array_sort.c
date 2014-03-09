@@ -35,7 +35,6 @@
 
 #include "array.h"
 
-
 
 void
 array_sort(array_t *a, int (*cmp)(const void *, const void *))

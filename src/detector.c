@@ -31,14 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
 #include "detector.h"
 #include "xmalloc.h"
 
-
 
 void
 detector_free(detector_t *d)
@@ -50,7 +48,6 @@ detector_free(detector_t *d)
     free(d->buf);
 }
 
-
 
 detector_t *
 detector_new(void)
@@ -69,7 +66,6 @@ detector_new(void)
     return d;
 }
 
-
 
 void
 detector_rule_finalize(detector_rule_t *dr)
@@ -77,7 +73,6 @@ detector_rule_finalize(detector_rule_t *dr)
     array_free(dr->tests, detector_test_finalize);
 }
 
-
 
 void
 detector_test_finalize(detector_test_t *dt)

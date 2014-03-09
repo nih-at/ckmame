@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
@@ -39,7 +38,6 @@
 
 static const char *progname;
 
-
 
 const char *
 getprogname(void)
@@ -47,7 +45,6 @@ getprogname(void)
     return progname;
 }
 
-
 
 void
 setprogname(const char *name)

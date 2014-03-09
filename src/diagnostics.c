@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -57,7 +56,6 @@ static const char *zname[] = {
 static void diagnostics_disks(const game_t *, const result_t *);
 static void diagnostics_files(const game_t *, const result_t *);
 
-
 
 void
 diagnostics(const game_t *game, const archive_t *a, const images_t *im,
@@ -71,7 +69,6 @@ diagnostics(const game_t *game, const archive_t *a, const images_t *im,
     diagnostics_images(im, res);
 }
     
-
 
 void
 diagnostics_archive(const archive_t *a, const result_t *res)
@@ -120,7 +117,6 @@ diagnostics_archive(const archive_t *a, const result_t *res)
     }
 }
 
-
 
 static void
 diagnostics_disks(const game_t *game, const result_t *res)
@@ -189,7 +185,6 @@ diagnostics_disks(const game_t *game, const result_t *res)
     }
 }
 
-
 
 static void
 diagnostics_files(const game_t *game, const result_t *res)
@@ -310,7 +305,6 @@ diagnostics_files(const game_t *game, const result_t *res)
     }
 }
 
-
 
 void
 diagnostics_images(const images_t *im, const result_t *res)

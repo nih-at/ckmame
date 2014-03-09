@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdlib.h>
@@ -58,7 +57,6 @@
 static int fix_disks(game_t *, images_t *, result_t *);
 static int fix_files(game_t *, archive_t *, result_t *, garbage_t *);
 
-
 
 int
 fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
@@ -185,7 +183,6 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
     return ret;
 }
 
-
 
 static int
 fix_disks(game_t *g, images_t *im, result_t *res)

@@ -36,7 +36,6 @@
 #include "dbh.h"
 #include "types.h"
 
-
 
 int
 filetype_db_key(filetype_t ft)

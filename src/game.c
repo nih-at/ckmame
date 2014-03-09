@@ -31,14 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
 #include "game.h"
 #include "xmalloc.h"
 
-
 
 game_t *
 game_new(void)
@@ -61,7 +59,6 @@ game_new(void)
     return g;
 }
 
-
 
 void
 game_free(game_t *g)

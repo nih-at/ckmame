@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
 #include "hashes.h"
 
-
 
 hashes_cmp_t
 hashes_cmp(const struct hashes *h1, const struct hashes *h2)
@@ -63,7 +61,6 @@ hashes_cmp(const struct hashes *h1, const struct hashes *h2)
     return HASHES_CMP_MATCH;
 }
 
-
 
 void
 hashes_init(struct hashes *h)

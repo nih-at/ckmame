@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +40,6 @@
 #include "chd.h"
 #include "compat.h"
 
-
 
 #define MAX_HEADERLEN	124		/* maximum header length */
 #define TAG		"MComprHD"
@@ -87,7 +85,6 @@ static int read_map(struct chd *);
 static int read_map_v5(struct chd *);
 static int read_meta_headers(struct chd *chd);
 
-
 
 void
 chd_close(struct chd *chd)
@@ -100,7 +97,6 @@ chd_close(struct chd *chd)
     free(chd);
 }   
 
-
 
 struct chd_metadata_entry *
 chd_get_metadata_list(struct chd *chd)
@@ -111,7 +107,6 @@ chd_get_metadata_list(struct chd *chd)
     return chd->meta;
 }
 
-
 
 struct chd *
 chd_open(const char *name, int *errp)
@@ -154,7 +149,6 @@ chd_open(const char *name, int *errp)
     return chd;
 }
 
-
 
 int
 chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
@@ -273,7 +267,6 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
     return n;
 }
 
-
 
 int
 chd_read_metadata(struct chd* chd, const struct chd_metadata_entry *e,
@@ -301,7 +294,6 @@ chd_read_metadata(struct chd* chd, const struct chd_metadata_entry *e,
     return 0;
 }
 
-
 
 int
 chd_read_range(struct chd *chd, unsigned char *b, int off, int len)
@@ -351,7 +343,6 @@ chd_read_range(struct chd *chd, unsigned char *b, int off, int len)
     return len;
 }
 
-
 
 static int
 read_header(struct chd *chd)
@@ -452,7 +443,6 @@ read_header(struct chd *chd)
     return 0;
 }
 
-
 
 
 static int
@@ -516,7 +506,6 @@ read_header_v5(struct chd *chd, unsigned char *header)
     return 0;
 }
 
-
 
 static int
 read_map(struct chd *chd)
@@ -578,7 +567,6 @@ read_map(struct chd *chd)
     return 0;
 }
 
-
 
 static int
 read_map_v5(struct chd *chd)
@@ -593,7 +581,6 @@ read_map_v5(struct chd *chd)
     return -1;
 }
 
-
 
 static int
 read_meta_headers(struct chd *chd)

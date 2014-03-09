@@ -35,7 +35,6 @@
 
 #include "file_location.h"
 
-
 
 void
 file_location_finalize(file_location_t *e)

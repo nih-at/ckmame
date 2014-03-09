@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
 #include "array.h"
 
-
 
 void *
 array_push(array_t *a, void *e)

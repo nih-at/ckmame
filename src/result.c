@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "globals.h"
 #include "result.h"
 #include "xmalloc.h"
 
-
 
 void
 result_free(result_t *res)
@@ -53,7 +51,6 @@ result_free(result_t *res)
 }
 
 
-
 
 result_t *
 result_new(const game_t *g, const archive_t *a, const images_t *im)

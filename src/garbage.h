@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "archive.h"
 
@@ -46,7 +45,6 @@ struct garbage {
 
 typedef struct garbage garbage_t;
 
-
 
 int garbage_add(garbage_t *, int, bool);
 int garbage_close(garbage_t *);

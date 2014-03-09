@@ -38,7 +38,6 @@
 
 volatile int siginfo_caught;
 
-
 
 void
 sighandle(int signo)
@@ -56,7 +55,6 @@ sighandle(int signo)
     return;
 }
 
-
 
 void
 print_info(const char *gamename)

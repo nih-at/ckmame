@@ -36,7 +36,6 @@
 #include "parray.h"
 #include "xmalloc.h"
 
-
 
 void
 parray_free(parray_t *pa, void (*fn)(void *))
@@ -55,7 +54,6 @@ parray_free(parray_t *pa, void (*fn)(void *))
     free(pa);
 }
 
-
 
 parray_t *
 parray_new_sized(int n)

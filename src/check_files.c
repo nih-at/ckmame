@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "archive.h"
 #include "dbh.h"
@@ -46,7 +45,6 @@
 #include "util.h"
 #include "warn.h"
 
-
 
 enum test {
     TEST_NSC,
@@ -69,7 +67,6 @@ static test_result_t match_files(archive_t *, test_t, const file_t *,
 				 match_t *);
 static void update_game_status(const game_t *, result_t *);
 
-
 
 void
 check_files(game_t *g, archive_t *as[3], result_t *res)
@@ -176,7 +173,6 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
     update_game_status(g, res);
 }
 
-
 
 static test_result_t
 match_files(archive_t *a, test_t t, const file_t *r, match_t *m)
@@ -270,7 +266,6 @@ match_files(archive_t *a, test_t t, const file_t *r, match_t *m)
     return result;
 }
 
-
 
 static void
 update_game_status(const game_t *g, result_t *res)

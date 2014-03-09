@@ -77,7 +77,6 @@
 #define CHD_CODEC_CD_FLAC MAKE_TAG('c','d','f','l')
 #define CHD_CODEC_AVHUFF  MAKE_TAG('a','v','h','u')
 
-
 
 struct chd_map_entry {
     uint64_t offset;	 /* offset within the file of the data */
@@ -124,7 +123,6 @@ struct chd {
     struct chd_metadata_entry *meta; /* list of meta data entries */
 };
 
-
 
 void chd_close(struct chd *);
 struct chd_metadata_entry *chd_get_metadata_list(struct chd *);

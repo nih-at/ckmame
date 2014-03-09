@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdio.h>
@@ -59,7 +58,6 @@ xasprintf(char **ret, const char *format,  ...)
     return retval;
 }
 
-
 
 void *
 xmalloc(size_t size)
@@ -74,7 +72,6 @@ xmalloc(size_t size)
     return p;
 }
 
-
 
 void *
 xmemdup(const void *src, size_t size)
@@ -87,7 +84,6 @@ xmemdup(const void *src, size_t size)
     return dst;
 }
 
-
 
 char *
 xstrdup(const char *str)
@@ -106,7 +102,6 @@ xstrdup(const char *str)
     
     return p;
 }
-
 
 void *
 xrealloc(void *p, size_t size)

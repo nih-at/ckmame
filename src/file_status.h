@@ -34,12 +34,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "array.h"
 #include "types.h"
 
-
 
 typedef array_t file_status_array_t;
 
@@ -50,7 +48,6 @@ typedef array_t file_status_array_t;
 	(array_new_length(sizeof(file_status_t), (n), file_status_init))
 #define file_status_array_length	array_length
 
-
 
 void file_status_init(file_status_t *);
 

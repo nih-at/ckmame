@@ -133,7 +133,6 @@ archive_file_copy_or_move(archive_t *sa, int sidx, archive_t *da, const char *dn
         return archive_file_move(sa, sidx, da, dname);
 }
 
-
 
 int
 archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname, off_t start, off_t len, const file_t *f)
@@ -181,7 +180,6 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
 }
 
 
-
 
 int
 archive_file_delete(archive_t *a, int idx)
@@ -270,7 +268,6 @@ archive_rollback(archive_t *a)
     return a->ops->rollback(a);
 }
 
-
 
 static void
 _add_file(archive_t *a, int idx, const char *name, const file_t *f)

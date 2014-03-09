@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +41,6 @@
 #include "util.h"
 #include "xmalloc.h"
 
-
 
 #define RC_SEP 0xac
 
@@ -82,7 +80,6 @@ int nfields = sizeof(fields) / sizeof(fields[0]);
 static char *gettok(char **);
 static int rc_romline(parser_context_t *, char *);
 
-
 
 int
 parse_rc(parser_source_t *ps, parser_context_t *ctx)
@@ -132,7 +129,6 @@ parse_rc(parser_source_t *ps, parser_context_t *ctx)
     return 0;
 }
 
-
 
 static char *
 gettok(char **linep)
@@ -156,7 +152,6 @@ gettok(char **linep)
     return p;
 }
 
-
 
 static int
 rc_plugin(parser_context_t *ctx, const char *value)
@@ -168,7 +163,6 @@ rc_plugin(parser_context_t *ctx, const char *value)
     return -1;
 }
 
-
 
 static int
 rc_romline(parser_context_t *ctx, char *line)

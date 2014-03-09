@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "funcs.h"
 #include "globals.h"
@@ -39,7 +38,6 @@
 #include "match_disk.h"
 #include "output.h"
 
-
 
 void
 write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im,

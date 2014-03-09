@@ -73,7 +73,6 @@ mybasename(const char *fname)
     return p+1;
 }
 
-
 
 char *
 mydirname(const char *fname)
@@ -98,7 +97,6 @@ mydirname(const char *fname)
     return d;
 }
 
-
 
 char *
 bin2hex(char *b, const unsigned char *s, unsigned int len)
@@ -112,7 +110,6 @@ bin2hex(char *b, const unsigned char *s, unsigned int len)
     return b;
 }
 
-
 
 #define HEX2BIN(c)	(((c)>='0' && (c)<='9') ? (c)-'0'	\
 			 : ((c)>='A' && (c)<='F') ? (c)-'A'+10	\
@@ -133,7 +130,6 @@ hex2bin(unsigned char *t, const char *s, int unsigned tlen)
     return 0;
 }
 
-
 
 name_type_t
 name_type(const char *name)

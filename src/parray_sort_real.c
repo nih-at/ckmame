@@ -37,7 +37,6 @@
 #include "parray.h"
 #include "util.h"
 
-
 
 void
 parray_sort_real(parray_t *pa, int omit_duplicates, int lo, int hi,

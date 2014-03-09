@@ -34,12 +34,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "hashes.h"
 #include "types.h"
 
-
 
 struct file_by_hash {
     char *game;
@@ -48,7 +46,6 @@ struct file_by_hash {
 
 typedef struct file_by_hash file_by_hash_t;
 
-
 
 #define file_by_hash_get(a, i)	((file_by_hash_t *)array_get((a), (i)))
 #define file_by_hash_game(a, i)	(file_by_hash_get((a), (i))->game)

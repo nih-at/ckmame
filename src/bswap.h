@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "config.h"
 
@@ -44,7 +43,6 @@
 
 #include "myinttypes.h"
 
-
 
 #ifndef HAVE_BSWAP16
 uint16_t bswap16(uint16_t);

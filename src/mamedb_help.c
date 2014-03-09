@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
@@ -41,7 +40,6 @@
 static void help_all(void);
 static void help_one(const char *);
 
-
 
 int
 cmd_help(int argc, char **argv)
@@ -63,7 +61,6 @@ cmd_help(int argc, char **argv)
     return 0;
 }
 
-
 
 void
 command_usage(FILE *fout, const char *name)
@@ -77,7 +74,6 @@ command_usage(FILE *fout, const char *name)
 	    getprogname(), cmd->name, cmd->usage);
 }
 
-
 
 static void
 help_all(void)
@@ -98,7 +94,6 @@ help_all(void)
 	   getprogname());
 }
 
-
 
 static void
 help_one(const char *name)

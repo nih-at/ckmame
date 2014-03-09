@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +41,6 @@
 #include "xmalloc.h"
 #include "xmlutil.h"
 
-
 
 static int parse_xml_loadflag(parser_context_t *, filetype_t, int,
 			      const char *);
@@ -129,7 +127,6 @@ static const xmlu_entity_t entities[] = {
 };
 static const int nentities = sizeof(entities)/sizeof(entities[0]);
 
-
 
 int
 parse_xml(parser_source_t *ps, parser_context_t *ctx)

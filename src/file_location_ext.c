@@ -36,7 +36,6 @@
 #include "file_location.h"
 #include "xmalloc.h"
 
-
 
 void
 file_location_ext_free(file_location_ext_t *e)
@@ -48,7 +47,6 @@ file_location_ext_free(file_location_ext_t *e)
     free(e);
 }
 
-
 
 file_location_ext_t *
 file_location_ext_new(const char *name, int idx, where_t where)

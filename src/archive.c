@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdio.h>
@@ -232,7 +231,6 @@ archive_free(archive_t *a)
     return ret;
 }
 
-
 
 void
 archive_global_flags(int fl, bool setp)
@@ -357,7 +355,6 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     return a;
 }
 
-
 
 
 int
@@ -379,7 +376,6 @@ archive_real_free(archive_t *a)
     free(a);
 }
 
-
 
 int
 archive_refresh(archive_t *a)
@@ -391,7 +387,6 @@ archive_refresh(archive_t *a)
     return 0;
 }
 
-
 
 bool
 archive_is_empty(const archive_t *a)

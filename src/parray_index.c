@@ -33,7 +33,6 @@
 
 #include "parray.h"
 
-
 
 /* return index of ELEM in parray PA, -1 if not found */
 

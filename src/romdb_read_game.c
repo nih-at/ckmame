@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 /* read struct game from db */
 
@@ -46,7 +45,6 @@
 static int read_disks(romdb_t *, game_t *);
 static int read_rs(romdb_t *, game_t *, filetype_t);
 
-
 
 game_t *
 romdb_read_game(romdb_t *db, const char *name)
@@ -83,7 +81,6 @@ romdb_read_game(romdb_t *db, const char *name)
     return game;
 }
 
-
 
 static int
 read_disks(romdb_t *db, game_t *g)
@@ -111,7 +108,6 @@ read_disks(romdb_t *db, game_t *g)
     return (ret == SQLITE_DONE ? 0 : -1);
 }
 
-
 
 static int
 read_rs(romdb_t *db, game_t *g, filetype_t ft)

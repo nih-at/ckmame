@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <zip.h>
 
@@ -51,7 +50,6 @@
 #define CLEANUP_NEEDED	0x1
 #define CLEANUP_UNKNOWN	0x2
 
-
 
 void check_archive(archive_t *, const char *, result_t *);
 void check_disks(game_t *, images_t *, result_t *);

@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
@@ -40,11 +39,9 @@
 #include "garbage.h"
 #include "xmalloc.h"
 
-
 
 static int garbage_open(garbage_t *);
 
-
 
 int garbage_add(garbage_t *g, int idx, bool copyp)
 {
@@ -65,7 +62,6 @@ int garbage_add(garbage_t *g, int idx, bool copyp)
     return ret;
 }
 
-
 
 int
 garbage_close(garbage_t *g)
@@ -116,7 +112,6 @@ garbage_t *garbage_new(archive_t *a)
     return g;
 }
 
-
 
 static int
 garbage_open(garbage_t *g)

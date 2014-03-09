@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 struct parray {
     void **entry;
@@ -44,7 +43,6 @@ struct parray {
 
 typedef struct parray parray_t;
 
-
 
 #define parray_get(a, i)	((a)->entry[i])
 #define parray_get_last(a)	\

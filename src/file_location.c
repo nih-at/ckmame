@@ -36,7 +36,6 @@
 #include "file_location.h"
 #include "xmalloc.h"
 
-
 
 int
 file_location_cmp(const file_location_t *a, const file_location_t *b)
@@ -51,7 +50,6 @@ file_location_cmp(const file_location_t *a, const file_location_t *b)
 }
 
 
-
 
 void
 file_location_free(file_location_t *e)
@@ -63,7 +61,6 @@ file_location_free(file_location_t *e)
     free(e);
 }
 
-
 
 file_location_t *
 file_location_new(const char *name, int idx)

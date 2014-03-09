@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 
@@ -105,7 +104,6 @@ typedef struct detector_test detector_test_t;
 
 typedef int64_t (*detector_read_cb)(void *, void *, uint64_t);
 
-
 
 #define detector_author(d)	((d)->author)
 #define detector_name(d)	((d)->name)

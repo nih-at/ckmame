@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <string.h>
@@ -40,13 +39,11 @@
 #include "parse.h"
 #include "util.h"
 
-
 
 enum parse_state { st_top, st_game, st_prog };
 
 static char *gettok(char **);
 
-
 
 
 int
@@ -245,7 +242,6 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
     return 0;
 }
 
-
 
 static char *
 gettok(char **p)

@@ -31,14 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
 #include "array.h"
 #include "xmalloc.h"
 
-
 
 void *
 array_grow(array_t *a, void (*fn)(void *))

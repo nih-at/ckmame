@@ -35,7 +35,6 @@
 
 #include "file_by_hash.h"
 
-
 
 void
 file_by_hash_finalize(file_by_hash_t *e)

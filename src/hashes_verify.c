@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
 #include "hashes.h"
 
-
 
 int
 hashes_verify(const hashes_t *h, int type, const unsigned char *b)

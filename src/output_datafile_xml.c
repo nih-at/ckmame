@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdio.h>
@@ -42,7 +41,6 @@
 #include "output.h"
 #include "xmalloc.h"
 
-
 
 struct output_context_xml {
     output_context_t output;
@@ -53,13 +51,11 @@ struct output_context_xml {
 
 typedef struct output_context_xml output_context_xml_t;
 
-
 
 static int output_datafile_xml_close(output_context_t *);
 static int output_datafile_xml_game(output_context_t *, game_t *);
 static int output_datafile_xml_header(output_context_t *, dat_entry_t *);
 
-
 
 output_context_t *
 output_datafile_xml_new(const char *fname)
@@ -92,7 +88,6 @@ output_datafile_xml_new(const char *fname)
     return (output_context_t *)ctx;
 }
 
-
 
 static int
 output_datafile_xml_close(output_context_t *out)
@@ -114,7 +109,6 @@ output_datafile_xml_close(output_context_t *out)
     return ret;
 }
 
-
 
 static int
 output_datafile_xml_game(output_context_t *out, game_t *g)
@@ -189,7 +183,6 @@ output_datafile_xml_game(output_context_t *out, game_t *g)
     return 0;
 }
 
-
 
 static int
 output_datafile_xml_header(output_context_t *out, dat_entry_t *dat)

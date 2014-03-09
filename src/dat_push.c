@@ -35,7 +35,6 @@
 
 #include "dat.h"
 
-
 
 void *
 dat_push(dat_t *d, const dat_entry_t *hi, const dat_entry_t *lo)

@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
 #include "hashes.h"
 
-
 
 void
 hashes_set(hashes_t *h, int type, const unsigned char *b)

@@ -35,7 +35,6 @@
 
 #include "parray.h"
 
-
 
 void *
 parray_pop(parray_t *pa)

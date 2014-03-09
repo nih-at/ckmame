@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "archive.h"
 #include "dbh.h"
@@ -42,7 +41,6 @@
 
 extern dbh_t *memdb;
 
-
 
 int memdb_ensure(void);
 void *memdb_get_ptr(const char *, filetype_t);

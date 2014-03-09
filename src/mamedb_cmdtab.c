@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
@@ -86,7 +85,6 @@
 #define REMOVE_USAGE	"game [...]"
 #define REMOVE_HELP	""
 
-
 
 #define XX(N)		N##_DESC, N##_USAGE, N##_HELP
 #define ALIAS(N)	cmd_##N, CMD_FL_ALIAS, NULL, NULL, NULL
@@ -111,7 +109,6 @@ cmd_t cmdtab[] = {
 };
 int ncmdtab = sizeof(cmdtab)/sizeof(cmdtab[0]);
 
-
 
 const cmd_t *
 find_command(const char *name)

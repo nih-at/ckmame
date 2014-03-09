@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <string.h>
@@ -63,7 +62,6 @@ static const xmlu_entity_t *find_entity(const char *, const xmlu_entity_t *,
 static int xml_close(void *);
 static int xml_read(void *, char *, int);
 
-
 
 int
 xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb,
@@ -157,7 +155,6 @@ xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb,
     return 0;
 }
 
-
 
 static const xmlu_entity_t *
 find_entity(const char *path, const xmlu_entity_t *entities, int nentities)
@@ -187,7 +184,6 @@ find_entity(const char *path, const xmlu_entity_t *entities, int nentities)
     return NULL;
 }
 
-
 
 static int
 xml_close(void *ctx)
@@ -195,7 +191,6 @@ xml_close(void *ctx)
     return 0;
 }
 
-
 
 static int
 xml_read(void *ctx, char *b, int len)

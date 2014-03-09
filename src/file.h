@@ -67,7 +67,6 @@ struct file {
 
 typedef struct file file_t;
 
-
 
 #define file_hashes(f)		(file_hashes_xxx((f), FILE_SH_FULL))
 #define file_hashes_xxx(f, i)	(&(f)->sh[(i)].hashes)

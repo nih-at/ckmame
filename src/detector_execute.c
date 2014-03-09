@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
@@ -100,7 +99,6 @@ static const uint8_t bitswap[] = {
     0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF
 };
 
-
 
 static int bit_cmp(const uint8_t *, const uint8_t *, const uint8_t *,
 		   detector_test_type_t, size_t);
@@ -113,7 +111,6 @@ static int execute_test(detector_t *, detector_test_t *, file_t *,
 			struct ctx *);
 static int fill_buffer(detector_t *, uint64_t, struct ctx *);
 
-
 
 int
 detector_execute(detector_t *d, file_t *r, detector_read_cb cb_read,
@@ -134,7 +131,6 @@ detector_execute(detector_t *d, file_t *r, detector_read_cb cb_read,
     return 0;
 }
 
-
 
 static int
 bit_cmp(const uint8_t *b, const uint8_t *value, const uint8_t *mask,
@@ -169,7 +165,6 @@ bit_cmp(const uint8_t *b, const uint8_t *value, const uint8_t *mask,
     }
 }
 
-
 
 static void
 buf_grow(detector_t *d, size_t size)
@@ -180,7 +175,6 @@ buf_grow(detector_t *d, size_t size)
     }
 }
 
-
 
 static int
 compute_values(detector_t *d, file_t *r, int64_t start, int64_t end,
@@ -255,7 +249,6 @@ compute_values(detector_t *d, file_t *r, int64_t start, int64_t end,
     return 0;
 }
 
-
 
 static int
 execute_rule(detector_t *d, detector_rule_t *dr, file_t *r, struct ctx *ctx)
@@ -287,7 +280,6 @@ execute_rule(detector_t *d, detector_rule_t *dr, file_t *r, struct ctx *ctx)
     return 1;
 }
 
-
 
 static int
 execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx)
@@ -362,7 +354,6 @@ execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx)
 	return !detector_test_result(dt);
 }
 
-
 
 static int
 fill_buffer(detector_t *d, uint64_t len, struct ctx *ctx)
@@ -377,7 +368,6 @@ fill_buffer(detector_t *d, uint64_t len, struct ctx *ctx)
     return 0;
 }
 
-
 
 static void
 op_bitswap(uint8_t *b, size_t len)
@@ -388,7 +378,6 @@ op_bitswap(uint8_t *b, size_t len)
 	b[i] = bitswap[b[i]];
 }
 
-
 
 static void
 op_byteswap(uint8_t *b, size_t len)
@@ -402,7 +391,6 @@ op_byteswap(uint8_t *b, size_t len)
 	bw[i] = bswap16(bw[i]);
 }
 
-
 
 static void
 op_wordswap(uint8_t *b, size_t len)

@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "funcs.h"
 #include "garbage.h"
@@ -42,7 +41,6 @@
 static void cleanup_archive(archive_t *, result_t *, int);
 static void cleanup_disk(images_t *, result_t *, int);
 
-
 
 void
 cleanup_list(parray_t *list, delete_list_t *del, int flags)
@@ -140,7 +138,6 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
     }
 }
 
-
 
 static void
 cleanup_archive(archive_t *a, result_t *res, int flags)
@@ -224,7 +221,6 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 	remove_empty_archive(archive_name(a));
 }
 
-
 
 static void
 cleanup_disk(images_t *im, result_t *res, int flags)

@@ -45,7 +45,6 @@
 #include "parray.h"
 #include "types.h"
 
-
 
 #define DBH_FMT_MAME	0x0	/* mame.db format */
 #define DBH_FMT_MEM	0x1	/* in-memory db format */

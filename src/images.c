@@ -31,12 +31,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "images.h"
 #include "funcs.h"
 
-
 
 const char *
 images_name(const images_t *im, int i)
@@ -48,7 +46,6 @@ images_name(const images_t *im, int i)
     return d ? disk_name(d) : NULL;
 }
 
-
 
 images_t *
 images_new(const game_t *g, int flags)
@@ -77,7 +74,6 @@ images_new(const game_t *g, int flags)
     return im;
 }
 
-
 
 images_t *
 images_new_name(const char *name, int flags)

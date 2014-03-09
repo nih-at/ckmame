@@ -34,12 +34,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "file_location.h"
 #include "parray.h"
 
-
 
 struct delete_list {
     parray_t *array;
@@ -48,7 +46,6 @@ struct delete_list {
 
 typedef struct delete_list delete_list_t;
 
-
 
 #define delete_list_add(dl, n, i)	\
 	(parray_push((dl)->array, file_location_new((n), (i))))

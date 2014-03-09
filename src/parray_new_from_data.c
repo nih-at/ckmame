@@ -36,7 +36,6 @@
 #include "parray.h"
 #include "xmalloc.h"
 
-
 
 parray_t *
 parray_new_from_data(void **data, int n)

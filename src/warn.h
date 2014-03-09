@@ -34,12 +34,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "disk.h"
 #include "file.h"
 
-
 
 #define WARN_UNKNOWN		0x0001
 #define WARN_USED		0x0002
@@ -79,7 +77,6 @@ enum warn_type {
 
 typedef enum warn_type warn_type_t;
 
-
 
 void warn_disk(const disk_t *, const char *, ...);
 void warn_file(const file_t *, const char *, ...);

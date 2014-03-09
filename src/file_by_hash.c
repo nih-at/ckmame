@@ -36,7 +36,6 @@
 #include "file_by_hash.h"
 #include "xmalloc.h"
 
-
 
 int
 file_by_hash_entry_cmp(const file_by_hash_t *a, const file_by_hash_t *b)
@@ -51,7 +50,6 @@ file_by_hash_entry_cmp(const file_by_hash_t *a, const file_by_hash_t *b)
 }
 
 
-
 
 void
 file_by_hash_free(file_by_hash_t *e)
@@ -63,7 +61,6 @@ file_by_hash_free(file_by_hash_t *e)
     free(e);
 }
 
-
 
 file_by_hash_t *
 file_by_hash_new(const char *game, int idx)

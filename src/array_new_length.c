@@ -35,7 +35,6 @@
 
 #include "array.h"
 
-
 
 array_t *
 array_new_length(int size, int n, void (*fn)(void *))

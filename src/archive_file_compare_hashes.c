@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdio.h>
@@ -41,7 +40,6 @@
 #include "archive.h"
 #include "globals.h"
 
-
 
 int
 archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h)

@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "disk.h"
 #include "file.h"
@@ -50,7 +49,6 @@ enum find_result {
 
 typedef enum find_result find_result_t;
 
-
 
 find_result_t find_disk(const disk_t *, match_disk_t *);
 find_result_t find_disk_in_old(const disk_t *, match_disk_t *);

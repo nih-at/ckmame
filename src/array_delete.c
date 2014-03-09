@@ -35,7 +35,6 @@
 
 #include "array.h"
 
-
 
 void
 array_delete(array_t *a, int index, void (*fn)(void *))

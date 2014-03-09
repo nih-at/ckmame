@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdio.h>
@@ -42,7 +41,6 @@
 #include "output.h"
 #include "xmalloc.h"
 
-
 
 struct output_context_mtree {
     output_context_t output;
@@ -53,13 +51,11 @@ struct output_context_mtree {
 
 typedef struct output_context_mtree output_context_mtree_t;
 
-
 
 static int output_mtree_close(output_context_t *);
 static int output_mtree_game(output_context_t *, game_t *);
 static int output_mtree_header(output_context_t *, dat_entry_t *);
 
-
 
 output_context_t *
 output_mtree_new(const char *fname)
@@ -92,7 +88,6 @@ output_mtree_new(const char *fname)
     return (output_context_t *)ctx;
 }
 
-
 
 static int
 output_mtree_close(output_context_t *out)
@@ -113,7 +108,6 @@ output_mtree_close(output_context_t *out)
     return ret;
 }
 
-
 
 static char *
 strsvis_cstyle(const char *in)
@@ -172,7 +166,6 @@ strsvis_cstyle(const char *in)
     return out;
 }
 
-
 
 static int
 output_mtree_game(output_context_t *out, game_t *g)
@@ -249,7 +242,6 @@ output_mtree_game(output_context_t *out, game_t *g)
     return 0;
 }
 
-
 
 static int
 output_mtree_header(output_context_t *out, dat_entry_t *dat)

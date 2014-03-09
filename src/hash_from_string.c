@@ -39,7 +39,6 @@
 #include "hashes.h"
 #include "util.h"
 
-
 
 int
 hash_from_string(hashes_t *h, const char *str)

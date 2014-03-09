@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +40,6 @@
 #include "memdb.h"
 #include "sq_util.h"
 
-
 
 dbh_t *memdb = NULL;
 int memdb_inited = 0;
@@ -54,12 +52,10 @@ int memdb_inited = 0;
 #define INSERT_FILE_SIZE	6
 #define INSERT_FILE_HASHES	7
 
-
 
 static int _delete_file(int, filetype_t, int);
 static int _update_file(int, filetype_t, int, const hashes_t *);
 
-
 
 int
 memdb_ensure(void)
@@ -85,7 +81,6 @@ memdb_ensure(void)
     return 0;
 }
 
-
 
 void *
 memdb_get_ptr(const char *name, filetype_t type)
@@ -126,7 +121,6 @@ memdb_get_ptr(const char *name, filetype_t type)
     return ptr;
 }
 
-
 
 void *
 memdb_get_ptr_by_id(int id)
@@ -167,7 +161,6 @@ memdb_get_ptr_by_id(int id)
     return ptr;
 }
 
-
 
 int
 memdb_put_ptr(const char *name, filetype_t type, void *ptr)
@@ -199,7 +192,6 @@ memdb_put_ptr(const char *name, filetype_t type, void *ptr)
     return ret;
 }
 
-
 
 int
 memdb_file_delete(const archive_t *a, int idx, bool adjust_idx)
@@ -224,7 +216,6 @@ memdb_file_delete(const archive_t *a, int idx, bool adjust_idx)
     return 0;
 }
 
-
 
 int
 memdb_file_insert(sqlite3_stmt *stmt, const archive_t *a, int idx)
@@ -270,7 +261,6 @@ memdb_file_insert(sqlite3_stmt *stmt, const archive_t *a, int idx)
     return err;
 }
 
-
 
 int
 memdb_file_insert_archive(const archive_t *a)
@@ -300,7 +290,6 @@ memdb_file_insert_archive(const archive_t *a)
     return err;
 }
 
-
 
 int
 memdb_update_disk(const disk_t *d)
@@ -308,7 +297,6 @@ memdb_update_disk(const disk_t *d)
     return _update_file(disk_id(d), TYPE_DISK, 0, disk_hashes(d));
 }
 
-
 
 int
 memdb_update_file(const archive_t *a, int idx)
@@ -320,7 +308,6 @@ memdb_update_file(const archive_t *a, int idx)
 			file_hashes(archive_file(a, idx)));
 }
 
-
 
 static int
 _update_file(int id, filetype_t ft, int idx, const hashes_t *h)
@@ -343,7 +330,6 @@ _update_file(int id, filetype_t ft, int idx, const hashes_t *h)
     return 0;
 }
 
-
 
 static int
 _delete_file(int id, filetype_t ft, int idx)

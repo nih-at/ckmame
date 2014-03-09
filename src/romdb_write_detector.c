@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
@@ -51,7 +50,6 @@
 
 static int romdb_write_rules(const detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
-
 
 int
 romdb_write_detector(romdb_t *db, const detector_t *d)
@@ -75,7 +73,6 @@ romdb_write_detector(romdb_t *db, const detector_t *d)
     return romdb_write_rules(d, stmt, stmt2);
 }
 
-
 
 static int
 romdb_write_rules(const detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)

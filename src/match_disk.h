@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "disk.h"
 #include "parray.h"
@@ -66,7 +65,6 @@ typedef array_t match_disk_array_t;
 #define match_disk_quality(m)	((m)->quality)
 #define match_disk_where(m)	((m)->where)
 
-
 
 void match_disk_finalize(match_disk_t *);
 void match_disk_init(match_disk_t *);

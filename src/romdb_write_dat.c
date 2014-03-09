@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stddef.h>
 #include <string.h>
@@ -42,7 +41,6 @@
 #include "sq_util.h"
 #include "types.h"
 
-
 
 int
 romdb_write_dat(romdb_t *db, dat_t *d)

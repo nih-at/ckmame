@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
@@ -40,7 +39,6 @@
 #include "globals.h"
 #include "mamedb.h"
 
-
 
 int
 cmd_new(int argc, char **argv)

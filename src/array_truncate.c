@@ -33,7 +33,6 @@
 
 #include "array.h"
 
-
 
 void
 array_truncate(array_t *a, int len, void (*finalize)(/* void * */))

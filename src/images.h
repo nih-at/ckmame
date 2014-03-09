@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "disk.h"
 #include "game.h"
@@ -46,7 +45,6 @@ typedef parray_t images_t;
 #define images_get(im, i)	((disk_t *)parray_get((im), (i)))
 #define images_length(im)	(parray_length(im))
 
-
 
 const char *images_name(const images_t *, int);
 images_t *images_new(const game_t *, int);

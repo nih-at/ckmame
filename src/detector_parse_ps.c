@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdlib.h>
@@ -43,7 +42,6 @@
 #include "xmalloc.h"
 #include "xmlutil.h"
 
-
 
 struct ctx {
     detector_t *d;
@@ -56,7 +54,6 @@ struct str_enum {
     int value;
 };
 
-
 
 static int parse_enum(int *, const char *, const struct str_enum *, int);
 static int parse_hex(detector_test_t *, uint8_t **, const char *);
@@ -80,7 +77,6 @@ static int text_author(struct ctx *, const char *);
 static int text_name(struct ctx *, const char *);
 static int text_version(struct ctx *, const char *);
 
-
 
 #define XA(f)	((xmlu_attr_cb)f)
 #define XC(f)	((xmlu_tag_cb)f)
@@ -129,7 +125,6 @@ static const xmlu_entity_t entities[] = {
 };
 static const int nentities = sizeof(entities)/sizeof(entities[0]);
 
-
 
 detector_t *
 detector_parse_ps(parser_source_t *ps)
@@ -149,7 +144,6 @@ detector_parse_ps(parser_source_t *ps)
     return ctx.d;
 }
 
-
 
 static int
 parse_enum(int *ep, const char *value,
@@ -170,7 +164,6 @@ parse_enum(int *ep, const char *value,
     return -1;
 }
 
-
 
 static int
 parse_hex(detector_test_t *dt, uint8_t **vp, const char *value)
@@ -203,7 +196,6 @@ parse_hex(detector_test_t *dt, uint8_t **vp, const char *value)
     return 0;
 }
 
-
 
 static int
 parse_number(int64_t *offsetp, const char *value)
@@ -233,7 +225,6 @@ parse_number(int64_t *offsetp, const char *value)
     return 0;
 }
 
-
 
 static int
 parse_offset(int64_t *offsetp, const char *value)
@@ -246,7 +237,6 @@ parse_offset(int64_t *offsetp, const char *value)
     return parse_number(offsetp, value);
 }
 
-
 
 static int
 parse_size(int64_t *offsetp, const char *value)
@@ -259,7 +249,6 @@ parse_size(int64_t *offsetp, const char *value)
     return parse_number(offsetp, value);
 }
 
-
 
 static int
 rule_close(struct ctx *ctx, int arg1)
@@ -269,7 +258,6 @@ rule_close(struct ctx *ctx, int arg1)
     return 0;
 }
 
-
 
 static int
 rule_end_offset(struct ctx *ctx, int arg1, int arg2, const char *value)
@@ -277,7 +265,6 @@ rule_end_offset(struct ctx *ctx, int arg1, int arg2, const char *value)
     return parse_offset(&detector_rule_end_offset(ctx->dr), value);
 }
 
-
 
 static int
 rule_open(struct ctx *ctx, int arg1)
@@ -287,7 +274,6 @@ rule_open(struct ctx *ctx, int arg1)
     return 0;
 }
 
-
 
 static int
 rule_operation(struct ctx *ctx, int arg1, int arg2, const char *value)
@@ -309,7 +295,6 @@ rule_operation(struct ctx *ctx, int arg1, int arg2, const char *value)
     return 0;
 }
 
-
 
 static int
 rule_start_offset(struct ctx *ctx, int arg1, int arg2, const char *value)
@@ -317,7 +302,6 @@ rule_start_offset(struct ctx *ctx, int arg1, int arg2, const char *value)
     return parse_offset(&detector_rule_start_offset(ctx->dr), value);
 }
 
-
 
 static int
 test_close(struct ctx *ctx, int arg1)
@@ -327,7 +311,6 @@ test_close(struct ctx *ctx, int arg1)
     return 0;
 }
 
-
 
 static int
 test_mask(struct ctx *ctx, int arg1, int arg2, const char *value)
@@ -335,7 +318,6 @@ test_mask(struct ctx *ctx, int arg1, int arg2, const char *value)
     return parse_hex(ctx->dt, &detector_test_mask(ctx->dt), value);
 }
 
-
 
 static int
 test_offset(struct ctx *ctx, int arg1, int arg2, const char *value)
@@ -343,7 +325,6 @@ test_offset(struct ctx *ctx, int arg1, int arg2, const char *value)
     return parse_offset(&detector_test_offset(ctx->dt), value);
 }
 
-
 
 static int
 test_open(struct ctx *ctx, int type)
@@ -354,7 +335,6 @@ test_open(struct ctx *ctx, int type)
     return 0;
 }
 
-
 
 static int
 test_operator(struct ctx *ctx, int arg1, int arg2, const char *value)
@@ -375,7 +355,6 @@ test_operator(struct ctx *ctx, int arg1, int arg2, const char *value)
     return 0;
 }
 
-
 
 static int
 test_result(struct ctx *ctx, int arg1, int arg2, const char *value)
@@ -395,7 +374,6 @@ test_result(struct ctx *ctx, int arg1, int arg2, const char *value)
     return 0;
 }
 
-
 
 static int
 test_size(struct ctx *ctx, int arg1, int arg2, const char *value)
@@ -403,7 +381,6 @@ test_size(struct ctx *ctx, int arg1, int arg2, const char *value)
     return parse_size(&detector_test_size(ctx->dt), value);
 }
 
-
 
 static int
 test_value(struct ctx *ctx, int arg1, int arg2, const char *value)
@@ -411,7 +388,6 @@ test_value(struct ctx *ctx, int arg1, int arg2, const char *value)
     return parse_hex(ctx->dt, &detector_test_value(ctx->dt), value);
 }
 
-
 
 static int
 text_author(struct ctx *ctx, const char *txt)
@@ -421,7 +397,6 @@ text_author(struct ctx *ctx, const char *txt)
     return 0;
 }
 
-
 
 static int
 text_name(struct ctx *ctx, const char *txt)
@@ -431,7 +406,6 @@ text_name(struct ctx *ctx, const char *txt)
     return 0;
 }
 
-
 
 static int
 text_version(struct ctx *ctx, const char *txt)

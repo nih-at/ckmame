@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,7 +80,6 @@ typedef array_t match_array_t;
 #define match_source_is_old(m)	(match_where(m) == FILE_OLD)
 #define match_where(m)		((m)->where)
 
-
 
 const char *match_file(match_t *);
 void match_finalize(match_t *);

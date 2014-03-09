@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 enum status {
     STATUS_OK, STATUS_BADDUMP, STATUS_NODUMP
@@ -136,7 +135,6 @@ typedef enum name_type name_type_t;
 #define FIX_COMPLETE_GAMES	0x400 /* complete in old or complete in roms */
 #endif
 
-
 
 int filetype_db_key(filetype_t);
 

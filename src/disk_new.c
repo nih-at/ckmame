@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdlib.h>
@@ -43,19 +42,16 @@
 #include "memdb.h"
 #include "xmalloc.h"
 
-
 
 struct meta_hash {
     unsigned char tag[4];
     unsigned char sha1[HASHES_SIZE_SHA1];
 };
 
-
 
 static int get_hashes(struct chd *, struct hashes *);
 static int meta_hash_cmp(const void *, const void *);
 
-
 
 disk_t *
 disk_new(const char *name, int flags)
@@ -144,7 +140,6 @@ disk_new(const char *name, int flags)
     return d;
 }
 
-
 
 void
 disk_free(disk_t *d)
@@ -163,7 +158,6 @@ disk_free(disk_t *d)
 #endif
 }
 
-
 
 void
 disk_real_free(disk_t *d)
@@ -175,7 +169,6 @@ disk_real_free(disk_t *d)
     free(d);
 }
 
-
 
 static int
 get_hashes(struct chd *chd, struct hashes *h)
@@ -301,7 +294,6 @@ get_hashes(struct chd *chd, struct hashes *h)
     return 0;
 }
 
-
 
 static int
 meta_hash_cmp(const void *a_, const void *b_)

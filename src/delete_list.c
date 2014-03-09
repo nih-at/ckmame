@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 #include <zip.h>
@@ -42,7 +41,6 @@
 #include "globals.h"
 #include "xmalloc.h"
 
-
 
 void
 delete_list_free(delete_list_t *dl)
@@ -54,7 +52,6 @@ delete_list_free(delete_list_t *dl)
     free(dl);
 }
 
-
 
 int
 delete_list_execute(delete_list_t *dl)
@@ -116,7 +113,6 @@ delete_list_execute(delete_list_t *dl)
     return ret;
 }
 
-
 
 void
 delete_list_mark(delete_list_t *dl)
@@ -124,7 +120,6 @@ delete_list_mark(delete_list_t *dl)
     dl->mark = parray_length(dl->array);
 }
 
-
 
 delete_list_t *
 delete_list_new(void)
@@ -138,7 +133,6 @@ delete_list_new(void)
     return dl;
 }
 
-
 
 void
 delete_list_rollback(delete_list_t *dl)

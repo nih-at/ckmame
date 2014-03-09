@@ -31,8 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,7 +108,6 @@ static int process_stdin(const parray_t *, const dat_entry_t *,
 			 output_context_t *);
 
 static int hashtypes;
-
 
 int
 main(int argc, char **argv)
@@ -259,7 +256,6 @@ main(int argc, char **argv)
     return 0;
 }
 
-
 
 int
 process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
@@ -320,7 +316,6 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
     }
 }
 
-
 
 int
 process_stdin(const parray_t *exclude, const dat_entry_t *dat,

@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "array.h"
 #include "disk.h"
@@ -59,7 +58,6 @@ struct game {
 
 typedef struct game game_t;
 
-
 
 #define game_cloneof(g, ft, i)		((g)->rs[ft].cloneof[i])
 #define game_dat_no(g)			((g)->dat_no)

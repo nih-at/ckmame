@@ -34,13 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "dat.h"
 #include "game.h"
 #include "detector.h"
 
-
 
 typedef struct output_context output_context_t;
 
@@ -60,7 +58,6 @@ enum output_format {
 
 typedef enum output_format output_format_t;
 
-
 
 output_context_t *output_cm_new(const char *);
 output_context_t *output_db_new(const char *);

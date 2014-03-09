@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,7 +77,6 @@ typedef struct result result_t;
 #define result_rom(res, i)	(match_array_get(result_roms(res), (i)))
 #define result_roms(res)	((res)->roms)
 
-
 
 void result_free(result_t *);
 result_t *result_new(const game_t *, const archive_t *, const images_t *);

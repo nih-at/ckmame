@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,7 +77,6 @@ detector_t *detector;
 sqlite3 *db;
 char *dbname;
 
-
 
 int
 main(int argc, char **argv)

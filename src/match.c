@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,7 +44,6 @@
 #include "util.h"
 #include "xmalloc.h"
 
-
 
 const char *
 match_file(match_t *m)
@@ -57,7 +55,6 @@ match_file(match_t *m)
 				     match_index(m)));
 }
 
-
 
 void
 match_finalize(match_t *m)
@@ -70,7 +67,6 @@ match_finalize(match_t *m)
 	archive_free(match_archive(m));
 }
 
-
 
 const char *
 match_game(match_t *m)
@@ -81,7 +77,6 @@ match_game(match_t *m)
 	return archive_name(match_archive(m));
 }
 
-
 
 void
 match_init(match_t *m)

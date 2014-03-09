@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdarg.h>
@@ -49,7 +48,6 @@ static const char *myerrorfn = DEFAULT_FN;
 static const char *myerrorzipn = DEFAULT_FN;
 static dbh_t *myerrdb = NULL;
 
-
 
 void
 myerror(int errtype, const char *fmt, ...)
@@ -83,7 +81,6 @@ myerror(int errtype, const char *fmt, ...)
     return;
 }
 
-
 
 void
 seterrdb(dbh_t *db)
@@ -91,7 +88,6 @@ seterrdb(dbh_t *db)
     myerrdb = db;
 }
 
-
 
 void
 seterrinfo(const char *fn, const char *zipn)

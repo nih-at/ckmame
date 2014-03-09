@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <string.h>
@@ -42,7 +41,6 @@
 #include "util.h"
 #include "xmalloc.h"
 
-
 
 const intstr_t hash_type_names[] = {
     { HASHES_TYPE_CRC, "crc" },
@@ -51,7 +49,6 @@ const intstr_t hash_type_names[] = {
     { 0, NULL }
 };
 
-
 
 const char *
 hash_to_string(char *str, int type, const hashes_t *hashes)
@@ -79,7 +76,6 @@ hash_to_string(char *str, int type, const hashes_t *hashes)
     return str;
 }
 
-
 
 int
 hash_types_from_str(const char *s)

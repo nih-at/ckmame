@@ -33,7 +33,6 @@
 
 #include "parray.h"
 
-
 
 /* return index of ELEM in sorted (by CMP) parray PA, -1 if not found */
 

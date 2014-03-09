@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "types.h"
 #include "archive.h"
@@ -49,7 +48,6 @@ struct tree {
 
 typedef struct tree tree_t;
 
-
 
 #define tree_check(t)	((t)->check)
 #define tree_checked(t)	((t)->checked)

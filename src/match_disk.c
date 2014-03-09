@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
@@ -39,7 +38,6 @@
 #include "match_disk.h"
 #include "xmalloc.h"
 
-
 
 void
 match_disk_finalize(match_disk_t *md)
@@ -47,7 +45,6 @@ match_disk_finalize(match_disk_t *md)
     free(md->name);
 }
 
-
 
 void
 match_disk_init(match_disk_t *md)
@@ -57,7 +54,6 @@ match_disk_init(match_disk_t *md)
     match_disk_quality(md) = QU_MISSING;
 }
 
-
 
 void
 match_disk_set_source(match_disk_t *md, const disk_t *d)

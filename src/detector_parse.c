@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdlib.h>
@@ -39,7 +38,6 @@
 
 #include "detector.h"
 
-
 
 detector_t *
 detector_parse(const char *fname)

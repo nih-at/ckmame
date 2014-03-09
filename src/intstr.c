@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
 #include "intstr.h"
 
-
 
 const char *
 int2str(int in, const intstr_t *m)
@@ -51,7 +49,6 @@ int2str(int in, const intstr_t *m)
     return m[i].s;
 }
 
-
 
 int
 str2int(const char *s, const intstr_t *m)

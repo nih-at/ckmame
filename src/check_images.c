@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "find.h"
 #include "funcs.h"
@@ -41,7 +40,6 @@
 #include "util.h"
 #include "xmalloc.h"
 
-
 
 void
 check_images(images_t *im, const char *gamename, result_t *res)

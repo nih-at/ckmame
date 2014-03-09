@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
@@ -70,11 +69,9 @@ typedef struct hashes hashes_t;
 
 typedef struct hashes_update hashes_update_t;
 
-
 
 extern const intstr_t hash_type_names[];
 
-
 
 
 #define hashes_are_crc_complement(h1, h2) \

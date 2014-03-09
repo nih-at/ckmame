@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "find.h"
 #include "funcs.h"
 #include "globals.h"
 
-
 
 void
 check_old(game_t *g, result_t *res)

@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stddef.h>
 
 #include "detector.h"
 
-
 
 void detector_rule_init(detector_rule_t *dr)
 {
@@ -47,7 +45,6 @@ void detector_rule_init(detector_rule_t *dr)
     dr->tests = array_new(sizeof(detector_test_t));
 }
 
-
 
 void detector_test_init(detector_test_t *dt)
 {

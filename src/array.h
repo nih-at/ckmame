@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 struct array {
     char *data;
@@ -45,7 +44,6 @@ struct array {
 
 typedef struct array array_t;
 
-
 
 #define array_length(a)		((a)->nentry)
 #define array_new(s)		(array_new_sized((s), 0))

@@ -39,7 +39,6 @@
 
 static int filetype_char(filetype_t);
 
-
 
 int
 file_location_default_hashtype(filetype_t ft)
@@ -50,7 +49,6 @@ file_location_default_hashtype(filetype_t ft)
 	return HASHES_TYPE_CRC;
 }
 
-
 
 const char *
 file_location_make_key(filetype_t filetype, const hashes_t *hash)
@@ -65,7 +63,6 @@ file_location_make_key(filetype_t filetype, const hashes_t *hash)
     return key;
 }
 
-
 
 static int
 filetype_char(enum filetype filetype)

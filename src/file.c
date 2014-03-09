@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
 #include "file.h"
 
-
 
 void
 file_init(file_t *r)
@@ -54,7 +52,6 @@ file_init(file_t *r)
     r->where = FILE_INZIP;
 }
 
-
 
 void
 file_finalize(file_t *r)

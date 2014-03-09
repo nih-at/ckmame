@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "archive.h"
 #include "find.h"
@@ -39,7 +38,6 @@
 #include "globals.h"
 #include "result.h"
 
-
 
 void
 check_archive(archive_t *a, const char *gamename, result_t *res)

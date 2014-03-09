@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
@@ -49,7 +48,6 @@ static struct option options[] = {
 };
 
 
-
 
 int
 cmd_add(int argc, char **argv)

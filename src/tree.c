@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <string.h>
@@ -51,7 +50,6 @@ static tree_t *tree_add_node(tree_t *, const char *, int);
 static tree_t *tree_new_full(const char *, int);
 static int tree_process(tree_t *, archive_t *, archive_t *, archive_t *);
 
-
 
 int
 tree_add(tree_t *tree, const char *name)
@@ -73,7 +71,6 @@ tree_add(tree_t *tree, const char *name)
     return 0;
 }
 
-
 
 void
 tree_free(tree_t *tree)
@@ -90,7 +87,6 @@ tree_free(tree_t *tree)
     }
 }
 
-
 
 tree_t *
 tree_new(void)
@@ -106,7 +102,6 @@ tree_new(void)
     return t;
 }
 
-
 
 void
 tree_recheck(const tree_t *tree, const char *name)
@@ -122,7 +117,6 @@ tree_recheck(const tree_t *tree, const char *name)
     }
 }
 
-
 
 int
 tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes)
@@ -160,7 +154,6 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes)
     return ret;
 }
 
-
 
 void
 tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent)
@@ -201,7 +194,6 @@ tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent)
     return;
 }
 
-
 
 static tree_t *
 tree_add_node(tree_t *tree, const char *name, int check)
@@ -250,7 +242,6 @@ tree_add_node(tree_t *tree, const char *name, int check)
     }
 }
 
-
 
 static tree_t *
 tree_new_full(const char *name, int check)
@@ -264,7 +255,6 @@ tree_new_full(const char *name, int check)
     return t;
 }
 
-
 
 static int
 tree_process(tree_t *tree, archive_t *child,

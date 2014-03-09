@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "array.h"
 
@@ -47,7 +46,6 @@ struct dat_entry {
 typedef array_t dat_t;
 typedef struct dat_entry dat_entry_t;
 
-
 
 #define dat_free(d)		(array_free(d, dat_entry_finalize))
 #define dat_entry_description(de)	((de)->description)

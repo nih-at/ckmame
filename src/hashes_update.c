@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "config.h"
 
@@ -51,7 +50,6 @@
 #include "hashes.h"
 #include "xmalloc.h"
 
-
 
 struct hashes_update {
     unsigned long crc;
@@ -61,7 +59,6 @@ struct hashes_update {
     struct hashes *h;
 };
 
-
 
 void
 hashes_update(struct hashes_update *hu, const unsigned char *buf, size_t len)
@@ -74,7 +71,6 @@ hashes_update(struct hashes_update *hu, const unsigned char *buf, size_t len)
 	SHA1Update(&hu->sha1, buf, len);
 }
 
-
 
 void
 hashes_update_final(struct hashes_update *hu)
@@ -89,7 +85,6 @@ hashes_update_final(struct hashes_update *hu)
     free(hu);
 }
 
-
 
 struct hashes_update *
 hashes_update_new(struct hashes *h)

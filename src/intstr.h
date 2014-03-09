@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 struct intstr {
     int i;
@@ -43,7 +42,6 @@ struct intstr {
 
 typedef struct intstr intstr_t;
 
-
 
 const char *int2str(int, const intstr_t *);
 int str2int(const char *, const intstr_t *);

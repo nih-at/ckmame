@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <sys/stat.h>
 #include <errno.h>
@@ -74,7 +73,6 @@ typedef struct dir_one dir_one_t;
 static int dir_one_free(dir_one_t *);
 static dir_one_t *dir_one_new(const char *);
 
-
 
 int
 dir_close(dir_t *dir)
@@ -92,7 +90,6 @@ dir_close(dir_t *dir)
     return ret;
 }
 
-
 
 dir_status_t
 dir_next(dir_t *dir, char *name, int len)
@@ -142,7 +139,6 @@ dir_next(dir_t *dir, char *name, int len)
     }
 }
 
-
 
 dir_t *
 dir_open(const char *name, int flags)
@@ -161,7 +157,6 @@ dir_open(const char *name, int flags)
     return dir;
 }
 
-
 
 static int
 dir_one_free(dir_one_t *d)
@@ -178,7 +173,6 @@ dir_one_free(dir_one_t *d)
     return ret;
 }
 
-
 
 static dir_one_t *
 dir_one_new(const char *name)

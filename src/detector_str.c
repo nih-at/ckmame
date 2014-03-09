@@ -31,11 +31,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "detector.h"
 
-
 
 const char *
 detector_file_test_type_str(detector_test_type_t t)
@@ -54,7 +52,6 @@ detector_file_test_type_str(detector_test_type_t t)
     
 }
 
-
 
 const char *detector_operation_str(detector_operation_t op)
 {
@@ -73,7 +70,6 @@ const char *detector_operation_str(detector_operation_t op)
     }
 }
 
-
 
 const char *detector_test_type_str(detector_test_type_t t)
 {

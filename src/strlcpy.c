@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
 #include "compat.h"
 
-
 
 size_t
 strlcpy(char *dst, const char *src, size_t size)

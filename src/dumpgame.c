@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <string.h>
@@ -111,7 +110,6 @@ romdb_t *db;
     "select file_type, count(name), sum(size) from file" \
     " group by file_type order by file_type"
 
-
 
 static void
 print_checksums(hashes_t *hashes)
@@ -127,7 +125,6 @@ print_checksums(hashes_t *hashes)
     }
 }
 
-
 
 static void
 print_diskline(disk_t *disk)
@@ -138,7 +135,6 @@ print_diskline(disk_t *disk)
     putc('\n', stdout);
 }
 
-
 
 static void
 print_footer(int matches, hashes_t *hash)
@@ -148,7 +144,6 @@ print_footer(int matches, hashes_t *hash)
     putc('\n', stdout);
 }
 
-
 
 static void
 print_romline(file_t *rom)
@@ -166,7 +161,6 @@ print_romline(file_t *rom)
     putc('\n', stdout);
 }
 
-
 
 static void
 print_match(game_t *game, filetype_t ft, int i)
@@ -186,7 +180,6 @@ print_match(game_t *game, filetype_t ft, int i)
 	print_romline(game_file(game, TYPE_ROM, i));
 }
 
-
 
 static void
 print_matches(filetype_t ft, hashes_t *hash)
@@ -224,7 +217,6 @@ print_matches(filetype_t ft, hashes_t *hash)
     print_footer(matches, hash);
 }
 
-
 
 int
 main(int argc, char **argv)
@@ -346,7 +338,6 @@ main(int argc, char **argv)
     return 0;
 }
 
-
 
 static void
 print_rs(game_t *game, filetype_t ft,
@@ -439,7 +430,6 @@ dump_game(const char *name, int brief_mode)
     return 0;
 }
 
-
 
 /*ARGSUSED1*/
 static int
@@ -454,7 +444,6 @@ dump_hashtypes(int dummy)
     return 0;
 }
 
-
 
 static int
 dump_list(int type)
@@ -475,7 +464,6 @@ dump_list(int type)
     return 0;
 }
 
-
 
 /*ARGSUSED1*/
 static int
@@ -499,7 +487,6 @@ dump_dat(int dummy)
     return 0;
 }
 
-
 
 /*ARGSUSED1*/
 static int
@@ -518,7 +505,6 @@ dump_detector(int dummy)
     return 0;
 }
 
-
 
 static int
 dump_special(const char *name)
@@ -550,7 +536,6 @@ dump_special(const char *name)
     return -1;
 }
 
-
 
 /*ARGSUSED1*/
 static int
@@ -624,7 +609,6 @@ dump_stats(int dummy)
 }
 
 
-
 
 static void
 print_dat(dat_t *d, int i)
@@ -634,7 +618,6 @@ print_dat(dat_t *d, int i)
 	   dat_version(d, i) ? dat_version(d, i) : "unknown");
 }
 
-
 
 #define DO(ht, x, s)	(((ht) & (x)) ?					   \
 			 printf("%s%s", (first ? first=0, "" : ", "), (s)) \

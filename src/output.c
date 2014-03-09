@@ -31,12 +31,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "error.h"
 #include "output.h"
 
-
 
 int
 output_close(output_context_t *ctx)
@@ -44,7 +42,6 @@ output_close(output_context_t *ctx)
     return ctx->close(ctx);
 }
 
-
 
 int
 output_detector(output_context_t *ctx, detector_t *detector)
@@ -55,7 +52,6 @@ output_detector(output_context_t *ctx, detector_t *detector)
     return ctx->output_detector(ctx, detector);
 }
 
-
 
 int
 output_game(output_context_t *ctx, game_t *g)
@@ -63,7 +59,6 @@ output_game(output_context_t *ctx, game_t *g)
     return ctx->output_game(ctx, g);
 }
 
-
 
 int
 output_header(output_context_t *ctx, dat_entry_t *de)
@@ -74,7 +69,6 @@ output_header(output_context_t *ctx, dat_entry_t *de)
     return ctx->output_header(ctx, de);
 }
 
-
 
 output_context_t *
 output_new(output_format_t fmt, const char *fname)
@@ -93,7 +87,6 @@ output_new(output_format_t fmt, const char *fname)
     }
 }
 
-
 
 void
 output_cond_print_string(FILE *f, const char *pre, const char *str,
@@ -112,7 +105,6 @@ output_cond_print_string(FILE *f, const char *pre, const char *str,
     fprintf(f, "%s%s%s%s%s", pre, q, str, q, post);
 }
 
-
 
 void
 output_cond_print_hash(FILE *f, const char *pre, int t, hashes_t *h, const char *post)

@@ -39,7 +39,6 @@
 #include "hashes.h"
 #include "myinttypes.h"
 
-
 
 void *sq3_get_blob(sqlite3_stmt *, int, size_t *);
 int sq3_get_int_default(sqlite3_stmt *, int, int);

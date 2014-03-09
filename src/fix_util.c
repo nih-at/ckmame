@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <sys/stat.h>
 #include <errno.h>
@@ -46,7 +45,6 @@
 #include "util.h"
 #include "xmalloc.h"
 
-
 
 #ifndef MAXPATHLEN
 #define MAXPATHLEN 1024
@@ -80,7 +78,6 @@ make_garbage_name(const char *name, int unique)
     return t;
 }
 
-
 
 char *
 make_unique_name(const char *ext, const char *fmt, ...)
@@ -109,7 +106,6 @@ make_unique_name(const char *ext, const char *fmt, ...)
     return NULL;
 }
 
-
 
 char *
 make_needed_name(const file_t *r)
@@ -123,7 +119,6 @@ make_needed_name(const file_t *r)
     return make_unique_name(roms_unzipped ? "" : "zip", "%s/%s", needed_dir, crc);
 }
 
-
 
 char *
 make_needed_name_disk(const disk_t *d)
@@ -137,7 +132,6 @@ make_needed_name_disk(const disk_t *d)
     return make_unique_name("chd", "%s/%s", needed_dir, md5);
 }
 
-
 
 int
 move_image_to_garbage(const char *fname)
@@ -169,7 +163,6 @@ remove_empty_archive(const char *name)
     }
 }
 
-
 
 void
 remove_from_superfluous(const char *name)
@@ -184,7 +177,6 @@ remove_from_superfluous(const char *name)
     }
 }
 
-
 
 int
 save_needed(archive_t *sa, int sidx, int do_save)
@@ -219,7 +211,6 @@ save_needed(archive_t *sa, int sidx, int do_save)
 	return 0;
 }
 
-
 
 int
 save_needed_disk(const char *fname, int do_save)

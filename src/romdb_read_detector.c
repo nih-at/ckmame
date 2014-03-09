@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
@@ -50,7 +49,6 @@
 
 static int romdb_read_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
-
 
 detector_t *
 romdb_read_detector(romdb_t *db)
@@ -85,7 +83,6 @@ romdb_read_detector(romdb_t *db)
     return d;
 }
 
-
 
 static int
 romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)

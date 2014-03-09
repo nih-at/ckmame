@@ -33,7 +33,6 @@
 
 #include "bswap.h"
 
-
 
 uint32_t
 bswap32(uint32_t i)

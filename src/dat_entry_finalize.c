@@ -35,7 +35,6 @@
 
 #include "dat.h"
 
-
 
 void
 dat_entry_finalize(dat_entry_t *de)

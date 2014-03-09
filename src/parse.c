@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <sys/stat.h>
 #include <stdio.h>
@@ -58,14 +57,12 @@
 
 #define SET_STATE(ctx, s)	((ctx)->state = (s))
 
-
 
 static int parse_header_end(parser_context_t *);
 
 static void disk_end(parser_context_t *);
 static void rom_end(parser_context_t *, filetype_t);
 
-
 
 int
 parse(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat,
@@ -94,7 +91,6 @@ parse(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat,
     return ret;
 }
 
-
 
 /*ARGSUSED3*/
 /*ARGSUSED4*/
@@ -121,7 +117,6 @@ parse_file_continue(parser_context_t *ctx, filetype_t ft, int ht,
     return 0;
 }
 
-
 
 int
 parse_file_end(parser_context_t *ctx, filetype_t ft)
@@ -138,7 +133,6 @@ parse_file_end(parser_context_t *ctx, filetype_t ft)
     return 0;
 }
 
-
 
 /*ARGSUSED3*/
 int
@@ -171,7 +165,6 @@ parse_file_status(parser_context_t *ctx, filetype_t ft, int ht,
     return 0;
 }
 
-
 
 int
 parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
@@ -199,7 +192,6 @@ parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
     return 0;
 }
 
-
 
 /*ARGSUSED3*/
 /*ARGSUSED4*/
@@ -220,7 +212,6 @@ parse_file_ignore(parser_context_t *ctx, filetype_t ft, int ht,
     return 0;
 }
 
-
 
 /*ARGSUSED3*/
 int
@@ -237,7 +228,6 @@ parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht,
     return 0;
 }
 
-
  
 /*ARGSUSED3*/
 int
@@ -262,7 +252,6 @@ parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy,
     return 0;
 }
 
-
 
 /*ARGSUSED3*/
 int
@@ -283,7 +272,6 @@ parse_file_size(parser_context_t *ctx, filetype_t ft, int dummy,
     return 0;
 }
 
-
 
 int
 parse_file_start(parser_context_t *ctx, filetype_t ft)
@@ -300,7 +288,6 @@ parse_file_start(parser_context_t *ctx, filetype_t ft)
     return 0;
 }
 
-
 
 /*ARGSUSED3*/
 int
@@ -317,7 +304,6 @@ parse_game_cloneof(parser_context_t *ctx, filetype_t ft, int ht,
     return 0;
 }
 
-
 
 int
 parse_game_description(parser_context_t *ctx, const char *attr)
@@ -329,7 +315,6 @@ parse_game_description(parser_context_t *ctx, const char *attr)
     return 0;
 }
 
-
 
 /*ARGSUSED2*/
 int
@@ -380,7 +365,6 @@ parse_game_end(parser_context_t *ctx, filetype_t ft)
 }
 
 
-
 
 /*ARGSUSED3*/
 int
@@ -392,7 +376,6 @@ parse_game_name(parser_context_t *ctx, filetype_t ft, int ht,
     return 0;
 }
 
-
 
 /*ARGSUSED2*/
 int
@@ -415,7 +398,6 @@ parse_game_start(parser_context_t *ctx, filetype_t ft)
     return 0;
 }
 
-
 
 int
 parse_prog_description(parser_context_t *ctx, const char *attr)
@@ -427,7 +409,6 @@ parse_prog_description(parser_context_t *ctx, const char *attr)
     return 0;
 }
 
-
 
 /* ARGSUSED3 */
 int
@@ -463,7 +444,6 @@ parse_prog_header(parser_context_t *ctx, const char *name, int dummy)
     return ret;
 }
 
-
 
 int
 parse_prog_name(parser_context_t *ctx, const char *attr)
@@ -475,7 +455,6 @@ parse_prog_name(parser_context_t *ctx, const char *attr)
     return 0;
 }
 
-
 
 int
 parse_prog_version(parser_context_t *ctx, const char *attr)
@@ -487,7 +466,6 @@ parse_prog_version(parser_context_t *ctx, const char *attr)
     return 0;
 }
 
-
 
 void
 parser_context_free(parser_context_t *ctx)
@@ -499,7 +477,6 @@ parser_context_free(parser_context_t *ctx)
     free(ctx);
 }
 
-
 
 parser_context_t *
 parser_context_new(parser_source_t *ps, const parray_t *exclude,
@@ -523,7 +500,6 @@ parser_context_new(parser_source_t *ps, const parray_t *exclude,
     return ctx;
 }
 
-
 
 static int
 parse_header_end(parser_context_t *ctx)
@@ -541,7 +517,6 @@ parse_header_end(parser_context_t *ctx)
     return 0;
 }
 
-
 
 static void
 disk_end(parser_context_t *ctx)
@@ -556,7 +531,6 @@ disk_end(parser_context_t *ctx)
     }
 }
 
-
 
 int
 name_matches(const char *name, const parray_t *patterns)
@@ -574,7 +548,6 @@ name_matches(const char *name, const parray_t *patterns)
     return 0;
 }
 
-
 
 static void
 rom_end(parser_context_t *ctx, filetype_t ft)

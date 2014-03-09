@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdlib.h>
@@ -86,7 +85,6 @@ static parser_source_t *_ps_file_open(const char *, const char *);
 static parser_source_t *_ps_new_zip(const char *, struct zip *, const char *,
 				    bool);
 
-
 
 int
 ps_close(parser_source_t *ps)
@@ -104,7 +102,6 @@ ps_close(parser_source_t *ps)
     return ret;
 }
 
-
 
 char *
 ps_getline(parser_source_t *ps)
@@ -142,7 +139,6 @@ ps_getline(parser_source_t *ps)
     
 }
 
-
 
 parser_source_t *
 ps_new(void *ud, parser_source_close fn_close, parser_source_open fn_open,
@@ -165,7 +161,6 @@ ps_new(void *ud, parser_source_close fn_close, parser_source_open fn_open,
     return ps;
 }
 
-
 
 parser_source_t *
 ps_new_file(const char *fname)
@@ -194,7 +189,6 @@ ps_new_file(const char *fname)
 		  (parser_source_read)psfile_read);
 }
 
-
 
 parser_source_t *
 ps_new_stdin(void)
@@ -202,7 +196,6 @@ ps_new_stdin(void)
     return ps_new_file(NULL);
 }
 
-
 
 parser_source_t *
 ps_new_zip(const char *zaname, struct zip *za, const char *fname)
@@ -210,7 +203,6 @@ ps_new_zip(const char *zaname, struct zip *za, const char *fname)
     return _ps_new_zip(zaname, za, fname, false);
 }
 
-
 
 parser_source_t *
 ps_open(parser_source_t *ps, const char *fname)
@@ -218,7 +210,6 @@ ps_open(parser_source_t *ps, const char *fname)
     return ps->open(ps->ud, fname);
 }
 
-
 
 int
 ps_peek(parser_source_t *ps)
@@ -231,7 +222,6 @@ ps_peek(parser_source_t *ps)
     return ps->cur[0];
 }
 
-
 
 int
 ps_read(parser_source_t *ps, void *buf, int n)
@@ -256,7 +246,6 @@ ps_read(parser_source_t *ps, void *buf, int n)
     return done;
 }
 
-
 
 static int
 psfile_close(psfile_ud_t *ud)
@@ -274,7 +263,6 @@ psfile_close(psfile_ud_t *ud)
     return ret;
 }
 
-
 
 static parser_source_t *
 psfile_open(psfile_ud_t *ud, const char *fname)
@@ -282,7 +270,6 @@ psfile_open(psfile_ud_t *ud, const char *fname)
     return _ps_file_open(fname, ud->fname);
 }
 
-
 
 static int
 psfile_read(psfile_ud_t *ud, void *b, int n)
@@ -290,7 +277,6 @@ psfile_read(psfile_ud_t *ud, void *b, int n)
     return fread(b, 1, n, ud->f);
 }
 
-
 
 static int
 pszip_close(pszip_ud_t *ud)
@@ -305,7 +291,6 @@ pszip_close(pszip_ud_t *ud)
     return ret;
 }
 
-
 
 static parser_source_t *
 pszip_open(pszip_ud_t *ud, const char *fname)
@@ -320,7 +305,6 @@ pszip_open(pszip_ud_t *ud, const char *fname)
     return ps;
 }
 
-
 
 static int
 pszip_read(pszip_ud_t *ud, void *b, int n)
@@ -328,7 +312,6 @@ pszip_read(pszip_ud_t *ud, void *b, int n)
     return zip_fread(ud->zf, b, n);
 }
 
-
 
 static void
 _buffer_consume(parser_source_t *ps, int n)
@@ -343,7 +326,6 @@ _buffer_consume(parser_source_t *ps, int n)
 	ps->cur = ps->data;
 }
 
-
 
 static void
 _buffer_fill(parser_source_t *ps, int n)
@@ -361,7 +343,6 @@ _buffer_fill(parser_source_t *ps, int n)
 	ps->len += done;
 }
 
-
 
 static void
 _buffer_grow(parser_source_t *ps, int n)
@@ -383,7 +364,6 @@ _buffer_grow(parser_source_t *ps, int n)
     }
 }
 
-
 
 static parser_source_t *
 _ps_file_open(const char *fname, const char *parent)
@@ -408,7 +388,6 @@ _ps_file_open(const char *fname, const char *parent)
     return ps;
 }
 
-
 
 static parser_source_t *
 _ps_new_zip(const char *zaname, struct zip *za, const char *fname, bool relaxed)

@@ -36,7 +36,6 @@
 #include "dat.h"
 #include "xmalloc.h"
 
-
 
 void
 dat_entry_init(dat_entry_t *de)
@@ -44,7 +43,6 @@ dat_entry_init(dat_entry_t *de)
     de->name = de->description = de->version = NULL;
 }
 
-
 
 #define de_copy_member(X)					\
 	(t->X = (hi && hi->X ? xstrdup(hi->X) 			\

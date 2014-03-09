@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 
@@ -61,7 +60,6 @@ void command_usage(FILE *, const char *);
 const cmd_t *find_command(const char *);
 const cmd_t *resolve_alias(const cmd_t *cmd);
 
-
 
 extern int cmd_add(int, char **);
 extern int cmd_check(int, char **);

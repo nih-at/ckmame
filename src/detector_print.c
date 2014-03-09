@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
@@ -43,7 +42,6 @@ static void pr_rule(FILE *, const detector_rule_t *);
 static void pr_string(FILE *, const char *, const char *);
 static void pr_test(FILE *, const detector_test_t *);
 
-
 
 int
 detector_print(const detector_t *d, FILE *fout)
@@ -64,7 +62,6 @@ detector_print(const detector_t *d, FILE *fout)
     return (ferror(fout));
 }
 
-
 
 static void
 pr_rule(FILE *fout, const detector_rule_t *dr)
@@ -91,7 +88,6 @@ pr_rule(FILE *fout, const detector_rule_t *dr)
     }
 }
 
-
 
 static void
 pr_string(FILE *fout, const char *name, const char *value)
@@ -102,7 +98,6 @@ pr_string(FILE *fout, const char *name, const char *value)
     fprintf(fout, "  <%s>%s</%s>\n", name, value, name);
 }
 
-
 
 static void
 pr_test(FILE *fout, const detector_test_t *dt)

@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <errno.h>
 #include <stdlib.h>
@@ -42,7 +41,6 @@
 #include "funcs.h"
 #include "xmalloc.h"
 
-
 
 struct zip *
 my_zip_open(const char *name, int flags)
@@ -62,7 +60,6 @@ my_zip_open(const char *name, int flags)
     return z;
 }
 
-
 
 int
 my_zip_rename(struct zip *za, int idx, const char *name)
@@ -86,7 +83,6 @@ my_zip_rename(struct zip *za, int idx, const char *name)
     return zip_rename(za, idx, name);
 }
 
-
 
 int
 my_zip_rename_to_unique(struct zip *za, int idx)

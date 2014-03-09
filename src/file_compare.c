@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <string.h>
 
@@ -44,7 +43,6 @@ file_compare_m(const file_t *fg, const file_t *fa)
 		  file_name(fa)) == 0;
 }
 
-
 
 bool
 file_compare_msc(const file_t *fg, const file_t *fa)
@@ -52,7 +50,6 @@ file_compare_msc(const file_t *fg, const file_t *fa)
     return file_compare_m(fg, fa) && file_compare_sc(fg, fa);
 }
 
-
 
 bool
 file_compare_nsc(const file_t *fg, const file_t *fa)
@@ -60,7 +57,6 @@ file_compare_nsc(const file_t *fg, const file_t *fa)
     return file_compare_n(fg, fa) && file_compare_sc(fg, fa);
 }
 
-
 
 bool
 file_compare_sc(const file_t *fg, const file_t *fa)
@@ -89,7 +85,6 @@ file_compare_sc(const file_t *fg, const file_t *fa)
     return false;
 }
 
-
 
 bool
 file_sh_is_set(const file_t *f, int i)

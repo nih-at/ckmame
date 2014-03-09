@@ -31,13 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdlib.h>
 
 #include "disk.h"
 
-
 
 void
 disk_init(disk_t *d)
@@ -48,7 +46,6 @@ disk_init(disk_t *d)
     d->status = STATUS_OK;
 }
 
-
 
 void
 disk_finalize(disk_t *d)

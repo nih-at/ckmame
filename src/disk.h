@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "hashes.h"
 #include "types.h"
@@ -53,7 +52,6 @@ typedef struct disk disk_t;
 #define DISK_FL_CHECK_INTEGRITY	0x2
 #define DISK_FL_QUIET		0x4
 
-
 
 #define disk_hashes(d)	(&(d)->hashes)
 #define disk_status(d)	((d)->status)

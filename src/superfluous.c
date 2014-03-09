@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <sys/stat.h>
 #include <stdio.h>
@@ -48,7 +47,6 @@
 #include "util.h"
 #include "xmalloc.h"
 
-
 
 parray_t *
 list_directory(const char *dirname, const char *dbname)
@@ -150,7 +148,6 @@ list_directory(const char *dirname, const char *dbname)
     return found;
 }
 
-
 
 void
 print_superfluous(const parray_t *files)

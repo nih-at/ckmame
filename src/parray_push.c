@@ -36,7 +36,6 @@
 #include "parray.h"
 #include "xmalloc.h"
 
-
 
 void
 parray_push(parray_t *pa, void *e)

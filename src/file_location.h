@@ -34,12 +34,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include "hashes.h"
 #include "types.h"
 
-
 
 struct file_location {
     char *name;
@@ -56,7 +54,6 @@ struct file_location_ext {
 
 typedef struct file_location_ext file_location_ext_t;
 
-
 
 #define file_location_name(a)	((a)->name)
 #define file_location_index(a)	((a)->index)

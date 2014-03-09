@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <signal.h>
 #include <stdio.h>
@@ -60,7 +59,6 @@ enum action {
 
 typedef enum action action_t;
 
-
 
 char *usage = "Usage: %s [-bcdFfhjKkLlnSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
 
@@ -160,11 +158,9 @@ struct option options[] = {
 
 static int ignore_extra;
 
-
 
 static void error_multiple_actions(void);
 
-
 
 int
 main(int argc, char **argv)
@@ -478,7 +474,6 @@ main(int argc, char **argv)
     return 0;
 }
 
-
 
 static void
 error_multiple_actions(void)

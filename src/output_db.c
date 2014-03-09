@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +41,6 @@
 #include "romdb.h"
 #include "xmalloc.h"
 
-
 
 struct output_context_db {
     output_context_t output;
@@ -62,7 +60,6 @@ struct fbh_context {
     filetype_t ft;
 };
 
-
 
 static void familymeeting(romdb_t *, filetype_t, game_t *, game_t *);
 static int handle_lost(output_context_db_t *);
@@ -72,7 +69,6 @@ static int output_db_detector(output_context_t *, detector_t *);
 static int output_db_game(output_context_t *, game_t *);
 static int output_db_header(output_context_t *, dat_entry_t *);
 
-
 
 output_context_t *
 output_db_new(const char *dbname)
@@ -101,7 +97,6 @@ output_db_new(const char *dbname)
     return (output_context_t *)ctx;
 }
 
-
 
 static void
 familymeeting(romdb_t *db, filetype_t ft, game_t *parent, game_t *child)
@@ -130,7 +125,6 @@ familymeeting(romdb_t *db, filetype_t ft, game_t *parent, game_t *child)
     return;
 }
 
-
 
 static int
 handle_lost(output_context_db_t *ctx)
@@ -195,7 +189,6 @@ handle_lost(output_context_db_t *ctx)
     return 0;
 }
 
-
 
 static int
 lost(output_context_db_t *ctx, game_t *g, filetype_t ft)
@@ -215,7 +208,6 @@ lost(output_context_db_t *ctx, game_t *g, filetype_t ft)
     return 0;
 }
 
-
 
 static int
 output_db_close(output_context_t *out)
@@ -248,7 +240,6 @@ output_db_close(output_context_t *out)
     return ret;
 }
 
-
 
 static int
 output_db_detector(output_context_t *out, detector_t *d)
@@ -266,7 +257,6 @@ output_db_detector(output_context_t *out, detector_t *d)
     return 0;
 }    
 
-
 
 static int
 output_db_game(output_context_t *out, game_t *g)
@@ -315,7 +305,6 @@ output_db_game(output_context_t *out, game_t *g)
     return 0;
 }
 
-
 
 static int
 output_db_header(output_context_t *out, dat_entry_t *dat)

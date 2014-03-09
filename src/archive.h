@@ -87,7 +87,6 @@ struct archive_ops {
 
 #define ARCHIVE_IFL_MODIFIED		0x10000
 
-
 
 #define archive_file(a, i)	((file_t *)array_get(archive_files(a), (i)))
 #define archive_files(a)	((a)->files)

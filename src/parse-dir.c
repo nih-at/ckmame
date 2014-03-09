@@ -128,7 +128,6 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
     return 0;
 }
 
-
 
 static int
 parse_archive(parser_context_t *ctx, archive_t *a, int hashtypes)

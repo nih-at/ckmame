@@ -37,7 +37,6 @@
 #include "array.h"
 #include "xmalloc.h"
 
-
 
 void
 array_free(array_t *a, void (*fn)(void *))
@@ -56,7 +55,6 @@ array_free(array_t *a, void (*fn)(void *))
     free(a);
 }
 
-
 
 void *
 array_get(const array_t *a, int i)
@@ -64,7 +62,6 @@ array_get(const array_t *a, int i)
     return (void *)(a->data + a->elem_size*i);
 }
 
-
 
 int
 array_index(const array_t *a, const void *key, int (*cmp)(/* const void *, const void * */))
@@ -79,7 +76,6 @@ array_index(const array_t *a, const void *key, int (*cmp)(/* const void *, const
     return -1;
 }
 
-
 
 array_t *
 array_new_sized(int size, int n)
@@ -102,7 +98,6 @@ array_new_sized(int size, int n)
     return a;
 }
 
-
 
 void
 array_set(array_t *a, int i, const void *d)

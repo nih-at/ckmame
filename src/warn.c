@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -44,7 +43,6 @@ static warn_type_t header_type;
 
 static void warn_ensure_header(void);
 
-
 
 void
 warn_disk(const disk_t *d, const char *fmt, ...)
@@ -74,7 +72,6 @@ warn_disk(const disk_t *d, const char *fmt, ...)
     return;
 }
 
-
 
 void
 warn_file(const file_t *r, const char *fmt, ...)
@@ -96,7 +93,6 @@ warn_file(const file_t *r, const char *fmt, ...)
     return;
 }
 
-
 
 void
 warn_image(const char *name, const char *fmt, ...)
@@ -116,7 +112,6 @@ warn_image(const char *name, const char *fmt, ...)
     return;
 }
 
-
 
 void
 warn_rom(const file_t *r, const char *fmt, ...)
@@ -166,7 +161,6 @@ warn_rom(const file_t *r, const char *fmt, ...)
     return;
 }
 
-
 
 void warn_set_info(warn_type_t type, const char *name)
 {
@@ -175,7 +169,6 @@ void warn_set_info(warn_type_t type, const char *name)
     header_done = 0;
 }
 
-
 
 static void
 warn_ensure_header(void)

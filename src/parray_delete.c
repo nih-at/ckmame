@@ -35,7 +35,6 @@
 
 #include "parray.h"
 
-
 
 void
 parray_delete(parray_t *pa, int index, void (*fn)(void *))

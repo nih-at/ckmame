@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 #include <stdio.h>
 
@@ -66,7 +65,6 @@ struct xmlu_entity {
 
 typedef struct xmlu_entity xmlu_entity_t;
 
-
 
 int xmlu_parse(parser_source_t *, void *, xmlu_lineno_cb, const xmlu_entity_t *, int);
 

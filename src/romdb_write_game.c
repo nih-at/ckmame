@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 
 /* write struct game to db */
 
@@ -47,7 +46,6 @@
 static int write_disks(romdb_t *, const game_t *);
 static int write_rs(romdb_t *, const game_t *, filetype_t);
 
-
 
 int
 romdb_delete_game(romdb_t *db, const char *name)
@@ -92,7 +90,6 @@ romdb_delete_game(romdb_t *db, const char *name)
     return ret;
 }
 
-
 
 int
 romdb_update_game(romdb_t *db, game_t *g)
@@ -126,7 +123,6 @@ romdb_update_game(romdb_t *db, game_t *g)
     return 0;
 }
 
-
 
 int
 romdb_update_game_parent(romdb_t *db, game_t *g, filetype_t ft)
@@ -162,7 +158,6 @@ romdb_update_game_parent(romdb_t *db, game_t *g, filetype_t ft)
 }
 
 
-
 
 int
 romdb_write_game(romdb_t *db, game_t *g)
@@ -199,7 +194,6 @@ romdb_write_game(romdb_t *db, game_t *g)
     return 0;
 }
 
-
 
 static int
 write_disks(romdb_t *db, const game_t *g)
@@ -235,7 +229,6 @@ write_disks(romdb_t *db, const game_t *g)
     return 0;
 }
 
-
 
 static int
 write_rs(romdb_t *db, const game_t *g, filetype_t ft)
