@@ -70,7 +70,6 @@
 - [compatibility] Accept CRCs of length<8 by zero-padding them (in front)
 - [cleanup] review types used for length/offset (use 64bit?)
 - [cleanup] use int2str/str2int
-- [cleanup] rename {r,w}__u{short,long} to {r,w}__uint{16,32}
 - [cleanup] refactor fixing code (one function per operation)
 - [cleanup] handle archive refreshing in archive.c
 - [cleanup] rename: file is part of zip archive, rom is part of game
