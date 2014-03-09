@@ -1,4 +1,4 @@
-description test single-rom game (no parent), correct partial ckmame db exists, game removed
+description test single-rom game (no parent), correct partial ckmame db exists, game removed, other games not checked
 archive-types dir
 return 0
 args -jFKLivc 1-4
