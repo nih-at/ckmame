@@ -47,26 +47,40 @@ my $roms_uncompressed = 0;
 sub check_ckmame_db {
 	my ($test, $dir) = @_;
 	
-	my @skip;
+	my $dump_expected = undef;
 	
-	if (defined($test->{test}->{'ckmamedb-skip'})) {
-		for my $skip_line (@{$test->{test}->{'ckmamedb-skip'}}) {
-			my ($skip_dir, $skip_archive) = split '/', $skip_line;
-			if ($skip_dir eq $dir) {
-				push @skip, $skip_archive;
+	if (defined($test->{test}->{'ckmamedb-after'})) {
+		for my $args (@{$test->{test}->{'ckmamedb-after'}}) {
+			if ($args->[0] eq $dir) {
+				my $dumpfile = $test->find_file($args->[1]);
+				return undef unless ($dumpfile);
+				
+				my $fh;
+				unless (open($fh, "< $dumpfile")) {
+					print STDERR "can't open $dumpfile: $!";
+					return undef;
+				}
+				$dump_expected = [ map { chomp; $_; } <$fh> ];
+				close($fh);
+				last;
 			}
 		}
 	}
-	my $db = new CkmameDB($dir, \@skip);
+	
+	my $db = new CkmameDB($dir);
 	
 	if (!$db) {
 		print "opening $dir/.ckmame.db failed\n" if ($test->{verbose});
 		return undef;
 	}
 
-	return undef unless ($db->read_db() && $db->read_archives() && $db->make_dump());
+	return undef unless ($db->read_db());
+	if (!defined($dump_expected)) {
+		return undef unless ($db->read_archives() && $db->make_dump());
+		$dump_expected = $db->{dump_expected};
+	}
 	
-	return $test->compare_arrays($db->{dump_expected}, $db->{dump_got}, "$dir/.ckmame.db");
+	return $test->compare_arrays($dump_expected, $db->{dump_got}, "$dir/.ckmame.db");
 }
 
 
@@ -196,8 +210,8 @@ sub post_copy_file {
 	}
 
 	if ($roms_uncompressed) {
-		if (defined($test->{test}->{ckmamedb})) {
-			for my $args (@{$test->{test}->{ckmamedb}}) {
+		if (defined($test->{test}->{'ckmamedb-before'})) {
+			for my $args (@{$test->{test}->{'ckmamedb-before'}}) {
 				my ($dir, $dump) = @$args;
 				my $dump_file = $test->find_file($dump);
 				return undef unless (defined($dump));
@@ -216,8 +230,8 @@ sub post_copy_file {
 
 $test->add_directive(mkdbargs => { type => 'string...', once => 1 });
 $test->add_directive('archive-types' => { type => 'string...', once => 1 });
-$test->add_directive('ckmamedb-skip' => { type => 'string' });
-$test->add_directive('ckmamedb' => { type => 'string string' });
+$test->add_directive('ckmamedb-before' => { type => 'string string' });
+$test->add_directive('ckmamedb-after' => { type => 'string string' });
 
 $test->add_comparator('db/dump', \&comparator_db);
 $test->add_comparator('zip/zip', \&comparator_zip);

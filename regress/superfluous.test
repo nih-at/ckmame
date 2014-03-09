@@ -4,7 +4,7 @@ args -FKLvc --superfluous
 file roms/foo.zip 1-4-ok.zip 1-4-ok.zip
 file roms/1-8.chd 108-5.chd 108-5.chd
 file roms/1-4 108-5.chd 108-5.chd
-ckmamedb-skip roms/foo
+ckmamedb-after roms ckmamedb-empty.dump
 stdout Extra files found:
 stdout roms/1-4
 stdout roms/1-8.chd
