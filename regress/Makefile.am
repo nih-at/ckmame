@@ -25,7 +25,8 @@ MAME_DB_BADDUMP=mamedb-baddump.db
 MAME_DB_CRCDIFF=mamedb-crcdiff.db
 MAME_DB_NOCOMMON=mamedb-parent-no-common.db
 MAME_DB_SMALL=mamedb-small.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL}
+MAME_DB_TWO_GAMES=mamedb-two-games.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL} ${MAME_DB_TWO_GAMES}
 
 ZIPCMP=@ZIPCMP@
 
@@ -169,8 +170,9 @@ TESTS=	\
 		tochild.test \
 		tochildfix.test \
 		tz-already.test \
-		uncompressed-ckmamedb-changed-new-mtime.test \
 		uncompressed-ckmamedb-add-game.test \
+		uncompressed-ckmamedb-changed-new-mtime.test \
+		uncompressed-ckmamedb-remove-game-3.test \
 		uncompressed-toplevel-extra.test \
 		wrong.test \
 		wrong2.test \
@@ -277,6 +279,7 @@ DBFILES=	\
 		mamedb-skipped.txt \
 		mamedb-small.dump \
 		mamedb-small.txt \
+		mamedb-two-games.txt \
 		mamedb.txt
 
 check-am: ${DBS} runtest
@@ -304,6 +307,9 @@ ${MAME_DB_NOCOMMON}: ../src/mkmamedb ${srcdir}/mamedb-parent-no-common.txt
 
 ${MAME_DB_SMALL}: ../src/mkmamedb ${srcdir}/mamedb-small.txt
 	../src/mkmamedb -o ${MAME_DB_SMALL} ${srcdir}/mamedb-small.txt
+
+${MAME_DB_TWO_GAMES}: ../src/mkmamedb ${srcdir}/mamedb-two-games.txt
+	../src/mkmamedb -o ${MAME_DB_TWO_GAMES} ${srcdir}/mamedb-two-games.txt
 
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} dbdump ../src/mkmamedb
 	./dbdump ${MAME_DB} > mamedb-ok.dump

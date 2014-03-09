@@ -35,6 +35,7 @@ Makefile.in$
 ^regress/mamedb-lost-parent-ok.db$
 ^regress/mamedb-parent-no-common.db$
 ^regress/mamedb-small.db$
+^regress/mamedb-two-games.db$
 ^regress/runtest$
 ^src/ckmame$
 ^src/detective$
