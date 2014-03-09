@@ -214,8 +214,6 @@ archive_file_move(archive_t *sa, int sidx, archive_t *da, const char *dname)
 int
 archive_file_rename(archive_t *a, int idx, const char *name)
 {
-    int other_idx;
-
     seterrinfo(archive_name(a), NULL);
 
     if (file_where(archive_file(a, idx)) != FILE_INZIP) {
@@ -230,11 +228,8 @@ archive_file_rename(archive_t *a, int idx, const char *name)
     }
 
     if (archive_is_writable(a)) {
-        if (a->ops->file_rename(a, idx, name) < 0) {
-	    if (other_idx != -1)
-		a->ops->file_rename(a, idx, name);
+        if (a->ops->file_rename(a, idx, name) < 0)
             return -1;
-	}
     }
     free(file_name(archive_file(a, idx)));
     file_name(archive_file(a, idx)) = xstrdup(name);
