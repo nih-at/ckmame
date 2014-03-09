@@ -169,6 +169,7 @@ TESTS=	\
 		tochild.test \
 		tochildfix.test \
 		tz-already.test \
+		uncompressed-ckmamedb-changed-new-mtime.test \
 		uncompressed-toplevel-extra.test \
 		wrong.test \
 		wrong2.test \
