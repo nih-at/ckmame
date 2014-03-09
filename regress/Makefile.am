@@ -187,6 +187,7 @@ BROKEN_TEST=	\
 		tz-from-romset.test \
 		uncompressed-ckmamedb-changed-same-mtime.test \
 		uncompressed-ckmamedb-no-change.test \
+		uncompressed-ckmamedb-remove-game.test \
 		uncompressed-toplevel-roms.test
 
 ZIPS=		1-4-2.zip \
