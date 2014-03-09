@@ -170,6 +170,7 @@ TESTS=	\
 		tochildfix.test \
 		tz-already.test \
 		uncompressed-ckmamedb-changed-new-mtime.test \
+		uncompressed-ckmamedb-add-game.test \
 		uncompressed-toplevel-extra.test \
 		wrong.test \
 		wrong2.test \
