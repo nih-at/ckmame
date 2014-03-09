@@ -1,6 +1,6 @@
 /*
   dumpgame.c -- print info about game (from data base)
-  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -77,7 +77,7 @@ char help[] = "\n\
 Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2013 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2014 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hbcD:dV"
@@ -100,7 +100,6 @@ static char *status_name[] = {
     "ok", "baddump", "nogooddump"
 };
 
-parray_t *list;
 romdb_t *db;
 
 #define QUERY_CLONES	\
@@ -235,6 +234,7 @@ main(int argc, char **argv)
     int c;
     int find_checksum, brief_mode;
     filetype_t filetype;
+    parray_t *list;
 
     setprogname(argv[0]);
 
