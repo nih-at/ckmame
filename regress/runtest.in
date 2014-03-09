@@ -199,12 +199,9 @@ sub post_copy_file {
 		if (defined($test->{test}->{ckmamedb})) {
 			for my $args (@{$test->{test}->{ckmamedb}}) {
 				my ($dir, $dump) = @$args;
-				print "restoring ckmamedb $dump in $dir\n";
-				
 				my $dump_file = $test->find_file($dump);
 				return undef unless (defined($dump));
 				
-				print "restoring ckmamedb $dump ($dump_file) in $dir\n";
 				unless (system('../dbrestore', '-t', 'ckmamedb', "$dump_file", "$dir/.ckmame.db") == 0) {
 					print STDERR "can't restore ckmamedb dump $dump: $!";
 					return undef;
