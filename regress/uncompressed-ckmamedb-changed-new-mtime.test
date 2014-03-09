@@ -1,4 +1,4 @@
-eescription test single-rom game (no parent), incorrect ckmame db exists, file has newer mtime
+description test single-rom game (no parent), incorrect ckmame db exists, file has newer mtime
 archive-types dir
 return 0
 args -D ../mamedb-small.db -jFKLivc
