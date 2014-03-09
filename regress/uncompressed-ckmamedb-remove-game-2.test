@@ -3,6 +3,7 @@ archive-types dir
 return 0
 args -jFKLivc 1-4
 ckmamedb-before roms ckmamedb-1-4-ok.dump
+ckmamedb-after roms ckmamedb-empty.dump
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found

@@ -1,0 +1,2 @@
+>>> table archive (archive_id, name)
+>>> table file (archive_id, name, mtime, status, size, crc, md5, sha1)

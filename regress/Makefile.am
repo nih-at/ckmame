@@ -10,7 +10,7 @@ noinst_LTLIBRARIES=	fwrite.la
 fwrite_la_SOURCES=	fwrite.c
 fwrite_la_LDFLAGS=	-module -avoid-version
 
-EXTRA_DIST=runtest.in NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
+EXTRA_DIST=runtest.in CkmameDB.pm NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in \
 		rom-from-superfluous-many-fixdat.fixdat \
 		04.rom
@@ -172,6 +172,10 @@ TESTS=	\
 		tz-already.test \
 		uncompressed-ckmamedb-add-game.test \
 		uncompressed-ckmamedb-changed-new-mtime.test \
+		uncompressed-ckmamedb-changed-same-mtime.test \
+		uncompressed-ckmamedb-no-change.test \
+		uncompressed-ckmamedb-remove-game.test \
+		uncompressed-ckmamedb-remove-game-2.test \
 		uncompressed-ckmamedb-remove-game-3.test \
 		uncompressed-toplevel-extra.test \
 		wrong.test \
@@ -187,10 +191,6 @@ BROKEN_TEST=	\
 		nogood-diskgood.test \
 		tz-ok.test \
 		tz-from-romset.test \
-		uncompressed-ckmamedb-changed-same-mtime.test \
-		uncompressed-ckmamedb-no-change.test \
-		uncompressed-ckmamedb-remove-game.test \
-		uncompressed-ckmamedb-remove-game-2.test \
 		uncompressed-toplevel-roms.test
 
 ZIPS=		1-4-2.zip \
@@ -248,6 +248,9 @@ CHDS=		108-2.chd \
 
 DBFILES=	\
 		detector.xml \
+		ckmamedb-1-4-ok.dump \
+		ckmamedb-1-4-ok-1-8-ok.dump \
+		ckmamedb-empty.dump \
 		mamedb-1-8-is-4.txt \
 		mamedb-2.txt \
 		mamedb-baddump.txt \

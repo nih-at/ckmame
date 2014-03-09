@@ -1,0 +1,6 @@
+>>> table archive (archive_id, name)
+1|1-4
+2|1-8
+>>> table file (archive_id, name, mtime, status, size, crc, md5, sha1)
+1|04.rom|1047614102|0|4|3632233996|<098f6bcd4621d373cade4e832627b4f6>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
+2|08.rom|1047649018|0|8|911640957|<095ca6fcc1279865662b553147eb8f6d>|<111bb8b7549e3386a996845405b02164f17c7b37>
