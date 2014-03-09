@@ -156,8 +156,6 @@ archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t
 
     /* in read-only case, archive data is not written into dirdb on commit, so we have to do it now */
     if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
-        ud_t *ud = archive_user_data(a);
-        
         if (SAVE_IN_CKMAME_DB(a)) {
             if (ud->id == 0 && archive_num_files(a) == 1) {
                 if ((ud->id = dbh_dir_write_archive(0, mybasename(archive_name(a)))) < 0)
