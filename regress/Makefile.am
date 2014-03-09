@@ -183,6 +183,8 @@ BROKEN_TEST=	\
 		nogood-diskgood.test \
 		tz-ok.test \
 		tz-from-romset.test \
+		uncompressed-ckmamedb-changed-same-mtime.test \
+		uncompressed-ckmamedb-no-change.test \
 		uncompressed-toplevel-roms.test
 
 ZIPS=		1-4-2.zip \

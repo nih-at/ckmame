@@ -1,0 +1,9 @@
+description test single-rom game (no parent), incorrect ckmame db exists, but file has same mtime
+archive-types dir
+return 0
+args -D ../mamedb-small.db -jFKLivc
+ckmamedb roms ckmamedb-1-4-ok.dump
+file roms/1-4.zip 1-4-wrong.zip 1-4-wrong.zip
+touch 1047614102 roms/1-4/04.rom
+stdout In game 1-4:
+stdout game 1-4                                     : correct
