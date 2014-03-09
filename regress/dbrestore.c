@@ -245,7 +245,6 @@ restore_table(dbh_t *dbh, FILE *f) {
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(dbh_db(dbh), query, -1, &stmt, NULL) != SQLITE_OK) {
         myerror(ERRDB, "can't query table %s", table_name);
-        free(query);
         return -1;
     }
     
