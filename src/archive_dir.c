@@ -461,8 +461,10 @@ op_commit(archive_t *a)
             dbh_dir_delete(ud->id);
 	if (!is_empty) {
 	    ud->id = dbh_dir_write(ud->id, mybasename(archive_name(a)), archive_files(a));
-	    if (ud->id < 0)
+	    if (ud->id < 0) {
+		myerror(ERRDEF, "%s: error writing to .ckmame.db", archive_name(a));
 		ud->id = 0;
+	    }
 	}
 	else
 	    ud->id = 0;
