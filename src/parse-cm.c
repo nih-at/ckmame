@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #include <stdio.h>
 #include <string.h>
 
@@ -39,11 +38,9 @@
 #include "parse.h"
 #include "util.h"
 
-
 enum parse_state { st_top, st_game, st_prog };
 
 static char *gettok(char **);
-
 
 
 int
@@ -86,8 +83,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		gettok(&l);
 		if (strcmp(gettok(&l), "name") != 0) {
 		    /* TODO: error */
-		    myerror(ERRFILE, "%d: expected token (name) not found",
-			    ctx->lineno);
+		    myerror(ERRFILE, "%d: expected token (name) not found", ctx->lineno);
 		    break;
 		}
 		parse_file_start(ctx, TYPE_ROM);
@@ -95,23 +91,23 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		
 		/* read remaining tokens and look for known tokens */
 		while ((p=gettok(&l)) != NULL) {
-		    if (strcmp(p, "crc") == 0 || strcmp(p, "crc32") == 0) {
+		    if (strcmp(p, "baddump") == 0 || strcmp(p, "nodump") == 0) {
+			if (parse_file_status(ctx, TYPE_ROM, 0, p) < 0)
+			    break;
+		    }
+		    else if (strcmp(p, "crc") == 0 || strcmp(p, "crc32") == 0) {
 			if ((p=gettok(&l)) == NULL) {
 			    /* TODO: error */
-			    myerror(ERRFILE, "%d: token crc missing argument",
-				    ctx->lineno);
+			    myerror(ERRFILE, "%d: token crc missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_ROM,
-					    HASHES_TYPE_CRC, p) < 0)
+			if (parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_CRC, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "flags") == 0) {
 			if ((p=gettok(&l)) == NULL) {
 			    /* TODO: error */
-			    myerror(ERRFILE,
-				    "%d: token flags missing argument",
-				    ctx->lineno);
+			    myerror(ERRFILE, "%d: token flags missing argument", ctx->lineno);
 			    break;
 			}
 			if (parse_file_status(ctx, TYPE_ROM, 0, p) < 0)
@@ -119,9 +115,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		    }
 		    else if (strcmp(p, "merge") == 0) {
 			if ((p=gettok(&l)) == NULL) {
-			    myerror(ERRFILE,
-				    "%d: token merge missing argument",
-				    ctx->lineno);
+			    myerror(ERRFILE, "%d: token merge missing argument", ctx->lineno);
 			    break;
 			}
 			if (parse_file_merge(ctx, TYPE_ROM, 0, p) < 0)
@@ -129,29 +123,24 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		    }
 		    else if (strcmp(p, "md5") == 0) {
 			if ((p=gettok(&l)) == NULL) {
-			    myerror(ERRFILE, "%d: token md5 missing argument",
-				    ctx->lineno);
+			    myerror(ERRFILE, "%d: token md5 missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_ROM,
-					    HASHES_TYPE_MD5, p) < 0)
+			if (parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_MD5, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "sha1") == 0) {
 			if ((p=gettok(&l)) == NULL) {
-			    myerror(ERRFILE, "%d: token sha1 missing argument",
-				    ctx->lineno);
+			    myerror(ERRFILE, "%d: token sha1 missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_ROM,
-					    HASHES_TYPE_SHA1, p) < 0)
+			if (parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_SHA1, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "size") == 0) {
 			if ((p=gettok(&l)) == NULL) {
 			    /* TODO: error */
-			    myerror(ERRFILE, "%d: token size missing argument",
-				    ctx->lineno);
+			    myerror(ERRFILE, "%d: token size missing argument", ctx->lineno);
 			    break;
 			}
 			if (parse_file_size(ctx, TYPE_ROM, 0, p) < 0)
@@ -169,8 +158,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		gettok(&l);
 		if (strcmp(gettok(&l), "name") != 0) {
 		    /* TODO: error */
-		    myerror(ERRFILE, "%d: expected token (name) not found",
-			    ctx->lineno);
+		    myerror(ERRFILE, "%d: expected token (name) not found", ctx->lineno);
 		    break;
 		}
 		
@@ -182,23 +170,19 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		    if (strcmp(p, "sha1") == 0) {
 			if ((p=gettok(&l)) == NULL) {
 			    /* TODO: error */
-			    myerror(ERRFILE, "%d: token sha1 missing argument",
-				    ctx->lineno);
+			    myerror(ERRFILE, "%d: token sha1 missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_DISK,
-					    HASHES_TYPE_SHA1, p) < 0)
+			if (parse_file_hash(ctx, TYPE_DISK, HASHES_TYPE_SHA1, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "md5") == 0) {
 			if ((p=gettok(&l)) == NULL) {
 			    /* TODO: error */
-			    myerror(ERRFILE, "%d: token md5 missing argument",
-				    ctx->lineno);
+			    myerror(ERRFILE, "%d: token md5 missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_DISK,
-					    HASHES_TYPE_MD5, p) < 0)
+			if (parse_file_hash(ctx, TYPE_DISK, HASHES_TYPE_MD5, p) < 0)
 			    break;
 		    }
 		    /*
