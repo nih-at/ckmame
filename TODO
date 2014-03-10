@@ -1,5 +1,5 @@
-* create .ckmame.db for extra dirs, dirs scanned by mkmamedb, unknown?
-* test rom-dir: moreroms/.ckmame.db is not checked
+* create .ckmame.db for extra dirs, unknown, needed, dirs scanned by mkmamedb
+* rom-dir.test: moreroms/.ckmame.db is not checked
 * mkmamedb doesn't handle chds (ignores for zipped, includes in games as rom for unzipped)
 - dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
 
