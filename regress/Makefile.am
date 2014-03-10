@@ -192,6 +192,7 @@ BROKEN_TEST=	\
 		nogood-diskgood.test \
 		tz-ok.test \
 		tz-from-romset.test \
+		uncompressed-ckmamedb-extra-dir.test \
 		uncompressed-toplevel-roms.test
 
 ZIPS=		1-4-2.zip \

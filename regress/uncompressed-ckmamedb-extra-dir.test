@@ -1,0 +1,10 @@
+description ckmame.db is created in extra dirs
+archive-types dir
+return 0
+args -D ../mamedb-small.db -e extra
+ckmamedb-after roms ckmamedb-empty.dump
+ckmamedb-after extra ckmamedb-1-4-ok-1-8-ok.dump
+file extra/1-4.zip 1-4-ok.zip 1-4-ok.zip
+file extra/1-8.zip 1-8-ok.zip 1-8-ok.zip
+stdout In game 1-4:
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4'
