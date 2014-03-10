@@ -252,6 +252,7 @@ DBFILES=	\
 		detector.xml \
 		ckmamedb-1-4-ok.dump \
 		ckmamedb-1-4-ok-1-8-ok.dump \
+		ckmamedb-1-8-ok.dump \
 		ckmamedb-empty.dump \
 		mamedb-1-8-is-4.txt \
 		mamedb-2.txt \
