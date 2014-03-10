@@ -115,7 +115,7 @@ dbh_dir_read(const char *name, array_t *files)
 	file_name(f) = sq3_get_string(stmt, 0);
 	file_mtime(f) = sqlite3_column_int(stmt, 1);
 	file_status(f) = sqlite3_column_int(stmt, 2);
-	file_size(f) = sqlite3_column_int(stmt, 3);
+	file_size(f) = sq3_get_int64_default(stmt, 3, SIZE_UNKNOWN);
 	sq3_get_hashes(file_hashes(f), stmt, 4);
     }
 
