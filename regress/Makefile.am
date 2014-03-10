@@ -107,7 +107,7 @@ TESTS=	\
 		needed-exists-same.test \
 		needed-keep.test \
 		needed.test \
-		nogood-allmissing.test \
+		nogood-allmissing-suppress.test \
 		nogood-miss-d.test \
 		nogood-miss.test \
 		nogood.test \
@@ -188,6 +188,7 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
+		nogood-allmissing.test \
 		nogood-diskgood.test \
 		tz-ok.test \
 		tz-from-romset.test \

@@ -1,3 +1,5 @@
-description test single-rom game with bad dump; with -d, so no output expected
+description test single-rom game with bad dump; without -d, so output expected
 return 0
-args -dFKLv nogood
+args nogood
+stdout In game nogood:
+stdout game nogood                                  : not a single rom found
