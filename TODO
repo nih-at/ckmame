@@ -39,7 +39,6 @@
                              ^
     Suggested solution: using iconv and LC_CTYPE, try transcribing invalid UTF-8 files to UTF-8
     if it fails or no iconv or LC_CTYPE available, replace invalid characters with '?'
-- [bug] check swap-roms-2 test, doesn't trigger bug
 - [bug] detector bugs (detector-interaction-with-headerless.test, detector-prefer-file-with-header.test)
 - [bug] fix BROKEN_TESTS
 - [feature] chd v5 support: maps, lzma, huffman, flac, a/v decompression
