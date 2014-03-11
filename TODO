@@ -98,7 +98,6 @@ code cleanups:
 - remove unneeded includes
 - make parse_cm table driven
 - split util*, funcs.h
-- use return value of w_game
 - fix all TODOs
 
 tests:
