@@ -1,0 +1,18 @@
+description test header detector: find file with header and use it instead of headerless one
+features LIBXML2
+return 0
+file detector.xml detector.xml detector.xml
+file mamedb-skipped.txt mamedb-skipped.txt mamedb-skipped.txt
+mkdir 755 extra
+mkdbargs --detector detector.xml mamedb-skipped.txt
+args -FKLijvc -e extra skipped
+file-del extra/short.zip 1-8-skip-ok.zip
+file-del extra/1-8-ok.zip 1-8-ok.zip
+file-new roms/skipped.zip 1-8-ok.zip
+stdout In game skipped:
+stdout rom  08.rom        size       4  crc 02404c40: is in 'extra/1-8-ok.zip'
+stdout roms/skipped.zip: add 'extra/1-8-ok.zip/08.rom' as '08.rom'
+stdout extra/1-8-ok.zip: delete used file '08.rom'
+stdout extra/1-8-ok.zip: remove empty archive
+stdout extra/short.zip: delete unused file '08.rom'
+stdout extra/short.zip: remove empty archive
