@@ -42,6 +42,7 @@ static int inited = 0;
 static size_t count = 0;
 static size_t max_write = 0;
 static size_t(*real_fwrite)(const void *ptr, size_t size, size_t nmemb, FILE * stream) = NULL;
+static int(*real_link)(const char *src, const char *dest) = NULL;
 
 static FILE *log;
 static const char *myname = NULL;
@@ -77,4 +78,16 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
 
     fprintf(log, "%s: wrote %lu*%lu = %lu bytes, sum %lu\n", myname, ret, size, ret * size, count);
     return ret;
+}
+
+int
+link(const char *src, const char *dest) {
+    if (getenv("LINK_ALWAYS_FAILS") != NULL)
+	return -1;
+
+    real_link = dlsym(RTLD_NEXT, "link");
+    if (!real_link)
+	abort();
+
+    return real_link(src, dest);
 }
