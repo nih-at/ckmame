@@ -1,0 +1,7 @@
+description parent has ROM with same name, different CRC (XML format)
+return 0
+program mkmamedb
+args -o mamedb-test.db mamedb.xml
+file mamedb.xml mamedb-parent-crcdiff-mame.xml mamedb-parent-crcdiff-mame.xml
+file-new mamedb-test.db mamedb-parent-crcdiff-mame.dump
+stderr some warning that the checksums don't match even though the dat says to merge the roms

@@ -188,6 +188,7 @@ TESTS=	\
 		zero-superfluous.test
 BROKEN_TEST=	\
 		disk-swapmerge.test \
+		mkmamedb-parent-crcdiff-mame.test \
 		nogood-allmissing.test \
 		nogood-diskgood.test \
 		tz-ok.test \
@@ -276,6 +277,8 @@ DBFILES=	\
 		mamedb-no-name.dump \
 		mamedb-no-name.txt \
 		mamedb-ok.dump \
+		mamedb-parent-crcdiff-mame.dump \
+		mamedb-parent-crcdiff-mame.xml \
 		mamedb-parent-crcdiff.dump \
 		mamedb-parent-crcdiff.txt \
 		mamedb-parent-no-common.dump \

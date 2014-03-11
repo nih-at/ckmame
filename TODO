@@ -19,7 +19,7 @@
 + [feature] mkmamedb: parser for mtree files
 + [feature] server mode: tell location/mamedb of ROM sets, serves files needed by remote ckmame client
 + [cleanup] ckmame: create fixdat only when necessary
-+ [bug] mkmamedb: warn if rom from parent has different crc
++ [bug] mkmamedb: warn if rom from parent has different crc (mkmamedb-parent-crcdiff-mame.test)
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
 + [feature] get needed files directly from parent (see inparent.test)
