@@ -2,6 +2,7 @@
 * rom-dir.test: moreroms/.ckmame.db is not checked
 * mkmamedb doesn't handle chds (ignores for zipped, includes in games as rom for unzipped)
 - dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
+* [bug] fix disk full bug in uncompressed mode (diskfull.test with LINK_ALWAYS_FAILS)
 
 * previously
 ! [feature] reorder cleanup step when renaming files to remove the copies
