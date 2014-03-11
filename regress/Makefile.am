@@ -39,10 +39,12 @@ TESTS=	\
 		archive-broken2.test \
 		baddump.test \
 		ckmame.test \
-		cleanup.test \
 		cleanup-disk.test \
 		cleanup-implicit.test \
+		cleanup.test \
 		delete-used-superfluous.test \
+		detector-interaction-with-headerless.test \
+		detector-prefer-file-with-header.test \
 		disk-chd-v5-integrity.test \
 		disk-from-extra-remove.test \
 		disk-from-extra.test \
@@ -51,13 +53,14 @@ TESTS=	\
 		disk-merge.test \
 		disk-miss.test \
 		disk-noext.test \
-		disk-nogood.test \
 		disk-nogood-copy.test \
 		disk-nogood-miss.test \
+		disk-nogood.test \
 		disk-ok.test \
 		disk-parent.test \
 		disk-superfluous.test \
 		disk-swap.test \
+		disk-swapmerge.test \
 		disk-to-needed.test \
 		disk-wrong.test \
 		disk-wrong2.test \
@@ -90,14 +93,19 @@ TESTS=	\
 		mkmamedb-broken-sha1.test \
 		mkmamedb-dir-in-name.test \
 		mkmamedb-duplicate-game.test \
+		mkmamedb-duplicate-nodump.test \
 		mkmamedb-duplicate-rom-name.test \
 		mkmamedb-input-dir.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-mame.test \
+		mkmamedb-merge-no-parent.test \
+		mkmamedb-merge-three-generations.test \
+		mkmamedb-merge-wrong-name.test \
 		mkmamedb-mess.test \
 		mkmamedb-multi-dats.test \
 		mkmamedb-no-name.test \
 		mkmamedb-ok.test \
+		mkmamedb-parent-crcdiff-mame.test \
 		mkmamedb-parent-crcdiff.test \
 		mkmamedb-parent-no-common.test \
 		mkmamedb-size-hex.test \
@@ -109,6 +117,8 @@ TESTS=	\
 		needed-keep.test \
 		needed.test \
 		nogood-allmissing-suppress.test \
+		nogood-allmissing.test \
+		nogood-diskgood.test \
 		nogood-miss-d.test \
 		nogood-miss.test \
 		nogood.test \
@@ -130,8 +140,8 @@ TESTS=	\
 		rom-duplicate-2nd.test \
 		rom-duplicate-ok.test \
 		rom-duplicate-wrong.test \
-		rom-from-extra-broken.test \
 		rom-from-extra-broken-unwanted.test \
+		rom-from-extra-broken.test \
 		rom-from-extra-child.test \
 		rom-from-extra-detector.test \
 		rom-from-extra-inconsistent.test \
@@ -146,8 +156,8 @@ TESTS=	\
 		rom-from-superfluous-cleanup.test \
 		rom-from-superfluous-detector.test \
 		rom-from-superfluous-dryrun.test \
-		rom-from-superfluous-many.test \
 		rom-from-superfluous-many-fixdat.test \
+		rom-from-superfluous-many.test \
 		rom-from-superfluous-some.test \
 		rom-from-superfluous.test \
 		rom-from-unknown.test \
@@ -158,36 +168,39 @@ TESTS=	\
 		sample-ok.test \
 		sample-parent-ok.test \
 		sample-superfluous.test \
-		skip.test \
 		skip-full.test \
+		skip.test \
 		skipbad.test \
 		superfluous-broken.test \
 		superfluous-cleanup.test \
 		superfluous-inconsistent.test \
 		superfluous.test \
-		swap.test \
-		swap-roms.test \
 		swap-roms-2.test \
+		swap-roms.test \
+		swap.test \
 		tochild.test \
 		tochildfix.test \
 		tz-already.test \
+		tz-from-romset.test \
+		tz-ok.test \
 		uncompressed-ckmamedb-add-game.test \
 		uncompressed-ckmamedb-changed-new-mtime.test \
 		uncompressed-ckmamedb-changed-same-mtime.test \
 		uncompressed-ckmamedb-no-change.test \
-		uncompressed-ckmamedb-remove-game.test \
 		uncompressed-ckmamedb-remove-game-2.test \
 		uncompressed-ckmamedb-remove-game-3.test \
+		uncompressed-ckmamedb-remove-game.test \
 		uncompressed-toplevel-extra.test \
+		uncompressed-toplevel-roms.test \
 		wrong.test \
 		wrong2.test \
-		zero.test \
 		zero-good.test \
-		zero-long.test \
 		zero-long-badcrc.test \
+		zero-long.test \
 		zero-miss.test \
-		zero-superfluous.test
-BROKEN_TEST=	\
+		zero-superfluous.test \
+		zero.test
+XFAIL_TESTS=	\
 		detector-interaction-with-headerless.test \
 		detector-prefer-file-with-header.test \
 		disk-swapmerge.test \
@@ -196,12 +209,14 @@ BROKEN_TEST=	\
 		mkmamedb-merge-three-generations.test \
 		mkmamedb-merge-wrong-name.test \
 		mkmamedb-parent-crcdiff-mame.test \
-		nogood-allmissing.test \
 		nogood-diskgood.test \
 		tz-ok.test \
 		tz-from-romset.test \
 		uncompressed-ckmamedb-extra-dir.test \
 		uncompressed-toplevel-roms.test
+# the following test needs more work in runtest before it even fails
+BROKEN_TEST=	\
+		uncompressed-ckmamedb-extra-dir.test
 
 ZIPS=		1-4-2.zip \
 		1-4-crcerror.zip \
