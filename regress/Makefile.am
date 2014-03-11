@@ -6,7 +6,7 @@ dbdump_LDADD=		../src/libckmame.a @SQLITE3_LIBS@
 dbrestore_LDADD=	../src/libckmame.a @SQLITE3_LIBS@
 noinst_SCRIPTS=		runtest
 
-noinst_LTLIBRARIES=	fwrite.la
+pkglib_LTLIBRARIES=	fwrite.la
 fwrite_la_SOURCES=	fwrite.c
 fwrite_la_LDFLAGS=	-module -avoid-version
 
