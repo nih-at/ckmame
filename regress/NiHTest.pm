@@ -3,6 +3,7 @@ package NiHTest;
 use strict;
 use warnings;
 
+use Cwd;
 use File::Copy;
 use File::Path qw(mkpath);
 use IPC::Open3;
@@ -258,7 +259,22 @@ sub runtest {
 	    $self->sandbox_leave();
 	    return 'SKIP';
 	}
+
+	for my $env (@{$self->{test}->{'setenv'}}) {
+	    $ok = 0 unless ($ENV{$env->[0]} = $env->[1]);
+	}
+	if (defined($self->{test}->{'preload'})) {
+	    $ok = 0 unless ($ENV{LD_PRELOAD} = cwd() . "/../.libs/$self->{test}->{'preload'}");
+	}
+
 	$self->run_program();
+
+	for my $env (@{$self->{test}->{'setenv'}}) {
+	    delete ${ENV{$env->[0]}};
+	}
+	if (defined($self->{test}->{'preload'})) {
+	    delete ${ENV{LD_PRELOAD}};
+	}
 
 	if ($self->{test}->{stdout}) {
 		$self->{expected_stdout} = [ @{$self->{test}->{stdout}} ];
