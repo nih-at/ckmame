@@ -48,7 +48,7 @@
 - [cleanup] access db directly in find_*
 - [cleanup] specify globally which parts of memdb/lists to fill/maintain
 - [cleanup] rom: use flag to specify whether we know the size
-- [bug] dumpgame: report real database version for /ckmame key
+- [bug] dumpgame: report real database version for /dat key
 - [bug] check if needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
@@ -57,7 +57,6 @@
 - [feature] add hash-types option to dumpgame
 - [feature] mkmamedb: split to original CM dat files + detector XML on export
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
-- [feature] dumpgame: dump samples
 - [feature] mkmamedb: add XML output format
 - [feature] database consistency checks during mkmamedb
   - are all roms of one set included in one other set
