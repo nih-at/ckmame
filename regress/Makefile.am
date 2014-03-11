@@ -191,6 +191,7 @@ BROKEN_TEST=	\
 		detector-interaction-with-headerless.test \
 		detector-prefer-file-with-header.test \
 		disk-swapmerge.test \
+		mkmamedb-merge-three-generations.test \
 		mkmamedb-merge-wrong-name.test \
 		mkmamedb-parent-crcdiff-mame.test \
 		nogood-allmissing.test \
@@ -275,6 +276,8 @@ DBFILES=	\
 		mamedb-lost-parent.txt \
 		mamedb-mame.dump \
 		mamedb-mame.xml \
+		mamedb-merge-parent.dump \
+		mamedb-merge-parent.txt \
 		mamedb-mess.dump \
 		mamedb-mess.xml \
 		mamedb-multi-dats.dump \
