@@ -278,6 +278,8 @@ DBFILES=	\
 		mamedb-mame.xml \
 		mamedb-merge-parent.dump \
 		mamedb-merge-parent.txt \
+		mamedb-merge-wrong-name.dump \
+		mamedb-merge-wrong-name.xml \
 		mamedb-mess.dump \
 		mamedb-mess.xml \
 		mamedb-multi-dats.dump \
