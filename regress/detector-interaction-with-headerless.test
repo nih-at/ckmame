@@ -1,4 +1,4 @@
-description test header detector
+description test header detector: which file is used when both versions (w, w/o header) are available
 features LIBXML2
 return 0
 file detector.xml detector.xml detector.xml
@@ -6,15 +6,14 @@ file mamedb-skipped.txt mamedb-skipped.txt mamedb-skipped.txt
 mkdir 755 extra
 mkdbargs --detector detector.xml mamedb-skipped.txt
 args -FKLijvc -e extra
-# alternatively
-#file roms/skipped.zip 1-8-ok.zip 1-8-skip-ok.zip
 file roms/skipped.zip 1-8-ok.zip 1-8-ok.zip
+# instead of the previous line, the next one would also be ok:
+#file roms/skipped.zip 1-8-ok.zip 1-8-skip-ok.zip
 file-del extra/short.zip 1-8-skip-ok.zip
 stdout In game skipped:
 stdout game skipped                                 : correct
-# this is wrong: it should find 08.rom from skipped.zip
 stdout In game unskipped:
-stdout game unskipped                               : not a single rom found
-# this is wrong: it should either just use this file in skipped.zip or clean it up
+stdout file 08.rom        size       8  crc 3656897d: is in 'extra/skipped.zip'
 stdout In archive extra/short.zip:
-stdout file 08.rom        size       4  crc 02404c40: needed elsewhere
+stdout extra/short.zip: delete unused file '08.rom'
+stdout extra/short.zip: remove empty archive

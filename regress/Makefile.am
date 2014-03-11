@@ -188,6 +188,7 @@ TESTS=	\
 		zero-miss.test \
 		zero-superfluous.test
 BROKEN_TEST=	\
+		detector-interaction-with-headerless.test \
 		detector-prefer-file-with-header.test \
 		disk-swapmerge.test \
 		mkmamedb-parent-crcdiff-mame.test \
