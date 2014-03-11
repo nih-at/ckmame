@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<mame build="1" debug="no" mameconfig="10">
+	<game name="parent" sourcefile="parent.c">
+		<description>Parent</description>
+		<year>2014</year>
+		<manufacturer>Made Up Games</manufacturer>
+		<rom name="parent-1" size="8" crc="12345678" sha1="1234567890123456789012345678901234567890" merge="grandparent-1" region="maincpu" offset="8000"/>
+		<rom name="parent-2" size="8" crc="90abcdef" sha1="2345678901234567890123456789012345678901" merge="grandparent-2" region="maincpu" offset="a000"/>
+	</game>
+</mame>

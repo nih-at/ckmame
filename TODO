@@ -85,7 +85,7 @@ other features:
 - mkmamedb: handle rom without crc
 - mkmamedb: handle "size 0 crc -"
 - mkmamedb: no error message for missing newline in last line
-- mkmamedb: warn about sets without parent that use "merge"
+- mkmamedb: warn about sets without parent that use "merge" (mamedb-merge-no-parent.dump)
 - complete raine support (multiple archive names: archive ( name
   "64th_street" name "64street" ))
 - handle two roms in one game with same size/hashes but different name
@@ -100,7 +100,6 @@ code cleanups:
 - fix all TODOs
 
 tests:
-* finish disk-full test
 * case differences (game name / archive / rom / file in archive)
 * extra cleanup done when all games checked
 * is superfluous file that needs detector cleaned up correctly?
