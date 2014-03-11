@@ -1,17 +1,17 @@
 description test copying file from extra, failing (disk full) and cleaning up extra
+archive-types zip
 return 0
 setenv FWRITE_MAX_WRITE 5
 preload fwrite.so
 args -Fjivc -D ../mamedb-lost-parent-ok.db -e extra
-file-del extra/wrongname.zip 2-48-ok.zip
-file-new roms/clone-8.zip 2-48-ok.zip
+file extra/wrongname.zip 2-48-ok.zip 2-48-ok.zip
 stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/wrongname.zip'
 stdout rom  08.rom        size       8  crc 3656897d: is in 'extra/wrongname.zip'
 stdout roms/clone-8.zip: add 'extra/wrongname.zip/04.rom' as '04.rom'
 stdout roms/clone-8.zip: add 'extra/wrongname.zip/08.rom' as '08.rom'
-stdout extra/wrongname.zip: delete used file '04.rom'
-stdout extra/wrongname.zip: delete used file '08.rom'
-stdout extra/wrongname.zip: remove empty archive
+stdout In archive extra/wrongname.zip:
+stdout file 04.rom        size       4  crc d87f7e0c: needed elsewhere
+stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
 stderr roms/clone-8.zip: cannot commit changes: Write error: No space left on device
 stderr roms/clone-8.zip: error closing zip: CRC error
