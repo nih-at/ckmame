@@ -21,9 +21,9 @@
 + [feature] server mode: tell location/mamedb of ROM sets, serves files needed by remote ckmame client
 + [cleanup] ckmame: create fixdat only when necessary
 + [bug] mkmamedb: warn if rom from parent has different crc (mkmamedb-parent-crcdiff-mame.test)
-+ [bug] mkmamedb: merge does not match name in parent: warning and fixup
++ [bug] mkmamedb: merge does not match name in parent: warning and fixup (mkmamedb-merge-wrong-name.test)
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
-+ [feature] get needed files directly from parent (see inparent.test)
++ [feature] get needed files directly from parent (inparent.test)
 + [feature] inconsistent zip in ROM set: copy files to new zip
 + [cleanup] merge disk_t into file_t
 + [feature] config file (provides defaults overridable on command line)
