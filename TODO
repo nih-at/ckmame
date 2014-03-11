@@ -22,6 +22,7 @@
 + [cleanup] ckmame: create fixdat only when necessary
 + [bug] mkmamedb: warn if rom from parent has different crc (mkmamedb-parent-crcdiff-mame.test)
 + [bug] mkmamedb: merge does not match name in parent: warning and fixup (mkmamedb-merge-wrong-name.test)
++ [bug] mkmamedb: does not warn about duplicate roms of type nodump or duplicate samples (mkmamedb-duplicate-nodump.test)
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
 + [feature] get needed files directly from parent (inparent.test)
 + [feature] inconsistent zip in ROM set: copy files to new zip
@@ -89,7 +90,6 @@ other features:
 - complete raine support (multiple archive names: archive ( name
   "64th_street" name "64street" ))
 - handle two roms in one game with same size/hashes but different name
-- handle (incorrect db) with two roms of the same name in one game
 - option to check if no good dumps are needed elsewhere
 
 code cleanups:
@@ -114,7 +114,6 @@ tests:
 * dumpgame
 * mkmamedb tests
   * mtree output format
-  * two different roms with same name (error)
   * /prog from command line
   * /prog from file
   * broken input

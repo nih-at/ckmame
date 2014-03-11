@@ -1,0 +1,7 @@
+description test mkmamedb database creation, duplicate rom name
+return 0
+program mkmamedb
+args -o mamedb-test.db mamedb.txt
+file mamedb.txt mamedb-duplicate-rom-name.txt mamedb-duplicate-rom-name.txt
+file-new mamedb-test.db mamedb-duplicate-rom-name.dump
+stderr mamedb.txt: 7: two different roms with same name (04.rom)

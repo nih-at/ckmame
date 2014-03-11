@@ -90,7 +90,7 @@ TESTS=	\
 		mkmamedb-broken-sha1.test \
 		mkmamedb-dir-in-name.test \
 		mkmamedb-duplicate-game.test \
-		mkmamedb-duplicate-nodump.test \
+		mkmamedb-duplicate-rom-name.test \
 		mkmamedb-input-dir.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-mame.test \
@@ -191,6 +191,7 @@ BROKEN_TEST=	\
 		detector-interaction-with-headerless.test \
 		detector-prefer-file-with-header.test \
 		disk-swapmerge.test \
+		mkmamedb-duplicate-nodump.test \
 		mkmamedb-merge-no-parent.test \
 		mkmamedb-merge-three-generations.test \
 		mkmamedb-merge-wrong-name.test \
@@ -269,6 +270,8 @@ DBFILES=	\
 		mamedb-dir-in-name.dump \
 		mamedb-dir-in-name.txt \
 		mamedb-disk.txt \
+		mamedb-duplicate-rom-name.dump \
+		mamedb-duplicate-rom-name.txt \
 		mamedb-duplicate-game.dump \
 		mamedb-duplicate-nodump.dump \
 		mamedb-duplicate-nodump.txt \

@@ -1,0 +1,8 @@
+game (
+        name doubleroms
+        description "game with two roms of same name"
+        manufacturer "synth"
+        year 2014
+        rom ( name 04.rom size 4 crc 12345678 )
+        rom ( name 04.rom size 4 crc 90ABCDEF )
+)
