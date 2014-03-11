@@ -261,10 +261,10 @@ sub runtest {
 	}
 
 	for my $env (@{$self->{test}->{'setenv'}}) {
-	    $ok = 0 unless ($ENV{$env->[0]} = $env->[1]);
+	    $ENV{$env->[0]} = $env->[1];
 	}
 	if (defined($self->{test}->{'preload'})) {
-	    $ok = 0 unless ($ENV{LD_PRELOAD} = cwd() . "/../.libs/$self->{test}->{'preload'}");
+	    $ENV{LD_PRELOAD} = cwd() . "/../.libs/$self->{test}->{'preload'}";
 	}
 
 	$self->run_program();
