@@ -144,6 +144,7 @@ TESTS=	\
 		rom-from-extra-broken.test \
 		rom-from-extra-child.test \
 		rom-from-extra-detector.test \
+		rom-from-extra-duplicate.test \
 		rom-from-extra-inconsistent.test \
 		rom-from-extra-keep-dir.test \
 		rom-from-extra-keep-zip.test \
@@ -210,6 +211,7 @@ XFAIL_TESTS=	\
 		mkmamedb-merge-wrong-name.test \
 		mkmamedb-parent-crcdiff-mame.test \
 		nogood-diskgood.test \
+		rom-from-extra-duplicate.test \
 		tz-ok.test \
 		tz-from-romset.test \
 		uncompressed-ckmamedb-extra-dir.test \
