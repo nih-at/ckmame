@@ -1,0 +1,9 @@
+description game contains garbage, garbage location already exists but no conflicts
+return 0
+args -FKLvc 1-4
+file-del roms/1-4.zip garbage.zip
+file unknown/1-4.zip 1-8-ok.zip garbage-1-8-ok.zip
+stdout In game 1-4:
+stdout game 1-4                                     : not a single rom found
+stdout file garbage       size       8  crc 01888242: unknown
+stdout roms/1-4.zip: mv unknown file 'garbage'

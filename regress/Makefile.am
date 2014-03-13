@@ -72,6 +72,7 @@ TESTS=	\
 		extra-file.test \
 		extra-size-mismatch.test \
 		gamelist-from-file.test \
+		garbage-archive-exists.test \
 		garbage.test \
 		garbage2.test \
 		hasherr-c.test \
@@ -253,6 +254,7 @@ ZIPS=		1-4-2.zip \
 		deadfish.zip \
 		deadfish4.zip \
 		deadpork.zip \
+		garbage-1-8-ok.zip \
 		garbage.zip \
 		garbage2.zip \
 		many.zip \
