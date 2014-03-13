@@ -14,6 +14,7 @@
 - [bug] detector bugs (detector-interaction-with-headerless.test, detector-prefer-file-with-header.test)
 
 * unsorted
++ support ^T inside a game, not only between games (e.g. while searching extra dirs)
 - mkmamedb doesn't handle chds (ignores for zipped, includes in games as rom for unzipped)
 ! [feature] reorder cleanup step when renaming files to remove the copies
   earlier; otherwise big renames on big sets don't work.
