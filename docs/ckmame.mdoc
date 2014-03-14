@@ -1,4 +1,4 @@
-.\" Copyright (c) 2003-2013 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2003-2014 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd June 8, 2013
+.Dd March 14, 2014
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -293,6 +293,18 @@ Files that will be needed by other games in the ROM set are moved
 to the
 .Pa needed
 directory.
+.Pp
+In unzipped mode
+.Pq Fl u ,
+.Nm
+creates
+.Pa .ckmame.db
+files in the rom directory as well as the directories given with
+.Fl e .
+These files are databases containing file names, sizes, and their
+hashes.
+The database information used when the file hasn't changed
+since the last run (i.e. same size and modification time).
 .Sh EXAMPLES
 Print a report about the current state of your ROM sets in the
 .Pa roms
