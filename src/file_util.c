@@ -43,7 +43,8 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 {
     FILE *fin, *fout;
     unsigned char b[8192];
-    size_t nr, nw, n, total;
+    size_t nr, nw, total;
+    ssize_t n;
     int err;
 
     if ((fin=fopen(old, "rb")) == NULL)
@@ -100,15 +101,15 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
     if (fclose(fout) != 0 || ferror(fin)) {
 	err = errno;
 	fclose(fin);
-	unlink(new);
+	remove(new);
 	errno = err;
 	return -1;
     }
+    fclose(fin);
     
     if (hashes)
         hashes_copy(hashes, &h);
 
-    fclose(fin);
     return 0;
 }
 

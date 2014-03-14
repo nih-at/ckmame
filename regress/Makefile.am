@@ -64,7 +64,8 @@ TESTS=	\
 		disk-to-needed.test \
 		disk-wrong.test \
 		disk-wrong2.test \
-		diskfull.test \
+		diskfull-dir.test \
+		diskfull-zip.test \
 		double.test \
 		doublezip.test \
 		dumpgame-stats.test \

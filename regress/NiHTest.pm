@@ -10,6 +10,7 @@ use IPC::Open3;
 use Symbol 'gensym';
 use UNIVERSAL;
 
+use Data::Dumper qw(Dumper);
 use Text::Diff;
 
 #  NiHTest -- package to run regression tests
@@ -93,6 +94,9 @@ use Text::Diff;
 #	    multiple stderr commands are used, the messages are
 #	    expected in the order given.
 #
+#       stderr-replace REGEX REPLACEMENT
+#           run regex replacement over expected and got stderr output.
+#
 #	stdout TEXT
 #	    program is expected to print TEXT to stdout.  If multiple
 #	    stdout commands are used, the messages are expected in
@@ -149,6 +153,7 @@ sub new {
 		'return' => { type => 'int', once => 1, required => 1 },
 		setenv => { type => 'string string' },
 		stderr => { type => 'string' },
+		'stderr-replace' => { type => 'string string' },
 		stdout => { type => 'string' },
 		touch => { type => 'int string' },
 		ulimit => { type => 'char string' }
@@ -709,7 +714,11 @@ sub parse_case() {
 	}
 	
 	return undef unless ($ok);
-	
+
+	if (defined($test{'stderr-replace'}) && defined($test{stderr})) {
+	    $test{stderr} = [ map { $self->stderr_rewrite($test{'stderr-replace'}, $_); } @{$test{stderr}} ];
+	}
+
 	if (!defined($test{program})) {
 		$test{program} = $self->{default_program};
 	}
@@ -832,6 +841,9 @@ sub run_program {
 	while (my $line = <$stderr>) {
 		chomp $line;
 		$line =~ s/^[^:]*: //; # TODO: make overridable
+		if (defined($self->{test}->{'stderr-replace'})) {
+		    $line = $self->stderr_rewrite($self->{test}->{'stderr-replace'}, $line);
+		}
 		push @{$self->{stderr}}, $line;
 	}
 	
@@ -941,6 +953,14 @@ sub warn_file_line {
 	my ($self, $msg) = @_;
 	
 	$self->warn("$self->{testcase_fname}:$.: $msg");
+}
+
+sub stderr_rewrite {
+    my ($self, $pattern, $line) = @_;
+    for my $repl (@{$pattern}) {
+	$line =~ s/$repl->[0]/$repl->[1]/;
+    }
+    return $line;
 }
 
 1;

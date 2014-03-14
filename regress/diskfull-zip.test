@@ -2,7 +2,6 @@ description test copying file from extra, failing (disk full) and cleaning up ex
 archive-types zip
 return 0
 setenv FWRITE_MAX_WRITE 5
-#setenv LINK_ALWAYS_FAILS 1
 preload fwrite.so
 args -Fjivc -D ../mamedb-lost-parent-ok.db -e extra
 file extra/wrongname.zip 2-48-ok.zip 2-48-ok.zip

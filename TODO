@@ -4,7 +4,6 @@
 ** do not rewrite .ckmame.db if no changes (per archive)
 ** rom-dir.test: moreroms/.ckmame.db is not checked
 ** dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
-** [bug] fix disk full bug in uncompressed mode (diskfull.test with LINK_ALWAYS_FAILS)
 ** [bug] existing no good rom is not accepted in uncompressed mode (nogood-diskgood.test)
 
 * bugs with test cases
