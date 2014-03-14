@@ -35,15 +35,18 @@
  */
 
 #include "array.h"
+#include "dbh.h"
 #include "file.h"
 
-int dbh_dir_close(void);
-int dbh_dir_delete(int);
-int dbh_dir_delete_files(int);
-int dbh_dir_read(const char *, array_t *);
-int dbh_dir_write(int, const char *, array_t *);
-int dbh_dir_write_archive(int id, const char *);
-int dbh_dir_write_file(int, const file_t *);
+int dbh_dir_close_all(void);
+int dbh_dir_delete(dbh_t *, int);
+int dbh_dir_delete_files(dbh_t *, int);
+dbh_t *dbh_dir_get_db_for_archive(const char *);
+int dbh_dir_read(dbh_t *, const char *, array_t *);
+int dbh_dir_register_cache_directory(const char *);
+int dbh_dir_write(dbh_t *, int, const char *, array_t *);
+int dbh_dir_write_archive(dbh_t *, int id, const char *);
+int dbh_dir_write_file(dbh_t *, int, const file_t *);
 int ensure_romset_dir_db(void);
 
 #endif /* dbh_dir.h */

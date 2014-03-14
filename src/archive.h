@@ -125,6 +125,7 @@ archive_t *archive_new(const char *, filetype_t, where_t, int);
 int archive_read_infos(archive_t *);
 void archive_real_free(archive_t *);
 int archive_refresh(archive_t *);
+int archive_register_cache_directory(const char *);
 int archive_rollback(archive_t *);
 
 /* internal */

@@ -38,6 +38,7 @@
 #include <string.h>
 
 #include "archive.h"
+#include "dbh_dir.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
@@ -387,6 +388,15 @@ archive_refresh(archive_t *a)
     return 0;
 }
 
+
+int
+archive_register_cache_directory(const char *name)
+{
+    if (roms_unzipped)
+	return dbh_dir_register_cache_directory(name);
+
+    return 0;
+}
 
 bool
 archive_is_empty(const archive_t *a)

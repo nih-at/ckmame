@@ -77,7 +77,7 @@ sub read_archives {
 	my ($self) = @_;
 	
 	my $dat;
-	unless (open $dat, "../../src/mkmamedb -F cm -u -o /dev/stdout $self->{dir} 2>/dev/null | ") {
+	unless (open $dat, "../../src/mkmamedb --no-directory-cache -F cm -u -o /dev/stdout $self->{dir} 2>/dev/null | ") {
 		print "mkmamedb using $self->{dir} failed: $!\n" if ($self->{verbose});
 		return undef;
 	}

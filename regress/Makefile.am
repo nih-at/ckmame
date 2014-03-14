@@ -188,6 +188,7 @@ TESTS=	\
 		uncompressed-ckmamedb-add-game.test \
 		uncompressed-ckmamedb-changed-new-mtime.test \
 		uncompressed-ckmamedb-changed-same-mtime.test \
+		uncompressed-ckmamedb-extra-dir.test \
 		uncompressed-ckmamedb-no-change.test \
 		uncompressed-ckmamedb-remove-game-2.test \
 		uncompressed-ckmamedb-remove-game-3.test \
@@ -215,11 +216,7 @@ XFAIL_TESTS=	\
 		rom-from-extra-duplicate.test \
 		tz-ok.test \
 		tz-from-romset.test \
-		uncompressed-ckmamedb-extra-dir.test \
 		uncompressed-toplevel-roms.test
-# the following test needs more work in runtest before it even fails
-BROKEN_TEST=	\
-		uncompressed-ckmamedb-extra-dir.test
 
 ZIPS=		1-4-2.zip \
 		1-4-crcerror.zip \

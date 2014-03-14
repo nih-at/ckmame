@@ -168,7 +168,7 @@ ensure_dir(const char *name, int strip_fname)
     struct stat st;
     int ret;
     
-    if (strip_fname) {
+    if (strip_fname || name[strlen(name)-1] == '/') {
 	p = strrchr(name, '/');
 	if (p == NULL)
 	    dir = xstrdup(".");

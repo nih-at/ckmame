@@ -73,7 +73,7 @@ typedef struct {
 } change_t;
 
 typedef struct {
-    dbh_t *db;
+    dbh_t *dbh;
     int id;
     array_t *change;
 } ud_t;
@@ -118,8 +118,6 @@ struct archive_ops ops_dir = {
 
 #define archive_file_change(a, idx)	(array_get(((ud_t *)archive_user_data(a))->change, (idx)))
 
-#define SAVE_IN_CKMAME_DB(a)    (file_type == TYPE_ROM && (archive_where(a) == FILE_ROMSET || archive_where(a) == FILE_SUPERFLUOUS))
-
 int
 archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t *sh)
 {
@@ -156,14 +154,16 @@ archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t
 
     /* in read-only case, archive data is not written into dirdb on commit, so we have to do it now */
     if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
-        if (SAVE_IN_CKMAME_DB(a)) {
-            if (ud->id == 0 && archive_num_files(a) == 1) {
-                if ((ud->id = dbh_dir_write_archive(0, mybasename(archive_name(a)))) < 0)
-                    ud->id = 0;
-            }
-            if (ud->id > 0)
-                dbh_dir_write_file(ud->id, archive_file(a, archive_num_files(a)-1));
-        }
+	if (ud->id == 0 && archive_num_files(a) == 1) {
+	    if (ud->dbh == NULL)
+		ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
+	    if (ud->dbh) {
+		if ((ud->id = dbh_dir_write_archive(ud->dbh, 0, mybasename(archive_name(a)))) < 0)
+		    ud->id = 0;
+	    }
+	}
+	if (ud->id > 0)
+	    dbh_dir_write_file(ud->dbh, ud->id, archive_file(a, archive_num_files(a)-1));
     }
 
     return 0;
@@ -179,9 +179,8 @@ archive_init_dir(archive_t *a)
 
     ud = xmalloc(sizeof(*ud));
 
-    /* TODO: ud->db = ? */
-    ud->db = NULL;
-    ud->id = -1;
+    ud->dbh = NULL;
+    ud->id = 0;
     ud->change = array_new(sizeof(change_t));
 
     archive_user_data(a) = ud;
@@ -456,19 +455,24 @@ op_commit(archive_t *a)
 	return 0;
 
     /* update db */
-    if (SAVE_IN_CKMAME_DB(a)) {
-        if (ud->id > 0)
-            dbh_dir_delete(ud->id);
+    if (!ud->dbh)
+	ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
+    if (ud->dbh) {
+	if (ud->id > 0)
+	    dbh_dir_delete(ud->dbh, ud->id);
 	if (!is_empty) {
-	    ud->id = dbh_dir_write(ud->id, mybasename(archive_name(a)), archive_files(a));
+	    ud->id = dbh_dir_write(ud->dbh, ud->id, mybasename(archive_name(a)), archive_files(a));
 	    if (ud->id < 0) {
-		myerror(ERRDEF, "%s: error writing to .ckmame.db", archive_name(a));
+		seterrdb(ud->dbh);
+		myerror(ERRDB, "%s: error writing to .ckmame.db", archive_name(a));
 		ud->id = 0;
 	    }
 	}
 	else
 	    ud->id = 0;
     }
+    else
+	ud->id = 0;
 
 
     int ret = 0;
@@ -723,7 +727,6 @@ op_file_strerror(void *f)
 static int
 op_read_infos(archive_t *a)
 {
-    int id = 0;
     array_t *files = NULL;    /* information on files from cache DB */
     file_t *fdb;
     ud_t *ud = archive_user_data(a);
@@ -732,23 +735,20 @@ op_read_infos(archive_t *a)
     char namebuf[8192];
     dir_status_t status;
 
-    if (SAVE_IN_CKMAME_DB(a)) {
-        if (ensure_romset_dir_db() < 0)
-            return -1;
-        
-        files = array_new(sizeof(file_t));
+    if (!ud->dbh)
+	ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
+    if (ud->dbh) {
+	files = array_new(sizeof(file_t));
 	
-        if ((id=dbh_dir_read(mybasename(archive_name(a)), files)) < 0)
-            id = 0;
+	if ((ud->id=dbh_dir_read(ud->dbh, mybasename(archive_name(a)), files)) < 0)
+	    ud->id = 0;
 
-        /* in read-only case, archive data is not written into dirdb on commit, so we have to do it now */
-        if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
-            if (id > 0)
-                dbh_dir_delete_files(id);
-        }
+	/* in read-only case, archive data is not written into dirdb on commit, so we have to do it now */
+	if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
+	    if (ud->id > 0)
+		dbh_dir_delete_files(ud->dbh, ud->id);
+	}
     }
-
-    ud->id = id;
 
     if ((dir=dir_open(archive_name(a), DIR_RECURSE)) == NULL) {
 	array_free(files, file_finalize);

@@ -339,6 +339,17 @@ main(int argc, char **argv)
 	    fix_options |= FIX_CLEANUP_EXTRA;
     }
 
+    if (file_type == TYPE_ROM) {
+	archive_register_cache_directory(get_directory(file_type));
+	archive_register_cache_directory(needed_dir);
+	/* archive_register_cache_directory(unknown_dir); */
+	int i;
+	for (i=0; i<parray_length(search_dirs); i++) {
+	    if (archive_register_cache_directory(parray_get(search_dirs, i)) < 0)
+		exit(1);
+	}
+    }
+
     if ((db=romdb_open(dbname, DBH_READ)) == NULL) {
 	myerror(ERRSTR, "can't open database '%s'", dbname);
 	exit(1);
@@ -422,10 +433,8 @@ main(int argc, char **argv)
     if (action != ACTION_CLEANUP_EXTRA_ONLY)
 	superfluous = list_directory(get_directory(file_type), dbname);
 
-    if ((fix_options & (FIX_DO|FIX_PRINT))
-	&& (fix_options & FIX_CLEANUP_EXTRA))
-	ensure_extra_maps((action==ACTION_CHECK_ROMSET ? DO_MAP : 0)
-			  | DO_LIST);
+    if ((fix_options & (FIX_DO|FIX_PRINT)) && (fix_options & FIX_CLEANUP_EXTRA))
+	ensure_extra_maps((action==ACTION_CHECK_ROMSET ? DO_MAP : 0) | DO_LIST);
 
 #ifdef SIGINFO
     signal(SIGINFO, sighandle);
@@ -469,7 +478,7 @@ main(int argc, char **argv)
 	print_superfluous(superfluous);
 
     if (roms_unzipped)
-	dbh_dir_close();
+	dbh_dir_close_all();
 
     return 0;
 }

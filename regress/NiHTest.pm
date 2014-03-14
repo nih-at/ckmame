@@ -412,6 +412,7 @@ sub compare_arrays() {
 	
 	if (!$ok && $self->{verbose}) {
 		print "Unexpected $tag:\n";
+		print "--- expected\n+++ got\n";
 		my @a = map { $_ . "\n"; } @$a;
 		my @b = map { $_ . "\n"; } @$b;
 		print diff(\@a, \@b);

@@ -86,17 +86,53 @@ sub check_ckmame_db {
 
 sub checks {
 	my ($test, $hook) = @_;
+
+	return 1 unless ($roms_uncompressed);
+
+	my %checked = ();
 	
-	if ($roms_uncompressed) {
-		my $ret = check_ckmame_db($test, 'roms');
+	my $ok = 1;
+
+	my $dir;
+	unless (opendir($dir, '.')) {
+	    print STDERR "cannot list '.': $!\n";
+	    return undef;
+	}
+
+	while (my $name = readdir $dir) {
+	    next if ($name eq '.' || $name eq '..' || $name =~ m/sample|unknown/);
+	    next unless (-d $name);
+
+	    my $ret = check_ckmame_db($test, $name);
+	    $checked{$name} = 1;
+	    
+	    if (!defined($ret)) {
+		return undef;
+	    }
+	    elsif ($ret != 1) {
+		$ok = 0;
+	    }
+	}
+	closedir $dir;
+
+	if (defined($test->{test}->{'ckmamedb-after'})) {
+	    for my $entry (@{$test->{test}->{'ckmamedb-after'}}) {
+		my $name = $entry->[0];
+		next if ($checked{$name});
+		
+		my $ret = check_ckmame_db($test, $name);
+		$checked{$name} = 1;
 		
 		if (!defined($ret)) {
-			return undef;
+		    return undef;
 		}
 		elsif ($ret != 1) {
-			push @{$test->{failed}}, 'ckmame.db';
+		    $ok = 0;
 		}
+	    }
 	}
+	    
+	push @{$test->{failed}}, 'ckmame.db' unless ($ok);
 	
 	return 1;
 }
@@ -149,8 +185,7 @@ sub post_list_files {
 		my %got = ();
 		
 		for my $file (@{$test->{files_got}}) {
-			next if ($file eq 'roms/.ckmame.db');
-			next if ($file eq 'moreroms/.ckmame.db');
+			next if ($file =~ '/.ckmame.db$');
 			if ($file =~ m,((?:extra|extradir|moreroms|needed|roms|samples|search|unknown)/[^/]*)/,) {
 				$got{"$1.zip"} = 1;
 			}

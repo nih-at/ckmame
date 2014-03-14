@@ -37,6 +37,7 @@
 #include <zip.h>
 
 #include "compat.h"
+#include "dbh_dir.h"
 #include "globals.h"
 #include "romdb.h"
 #include "funcs.h"
@@ -46,7 +47,7 @@
 #include "types.h"
 #include "xmalloc.h"
 
-char *usage = "Usage: %s [-huV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
+char *usage = "Usage: %s [-huV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--no-directory-cache] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
 
 char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
                    " Thomas Klausner\n\n";
@@ -60,6 +61,7 @@ char help[] = "\n"
 "  -u, --roms-unzipped             ROMs are files on disk, not contained in zip archives\n"
 "  -x, --exclude pat               exclude games matching shell glob PAT\n"
 "      --detector xml-file         use header detector\n"
+"      --no-directory-cache        don't create cache of scanned input directory\n"
 "      --only-files pat            only use zip members matching shell glob PAT\n"
 "      --prog-description d        set description of rominfo\n"
 "      --prog-name name            set name of program rominfo is from\n"
@@ -76,6 +78,7 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 enum {
     OPT_DETECTOR = 256,
+    OPT_NO_DIRECTORY_CACHE,
     OPT_ONLY_FILES,
     OPT_PROG_DESCRIPTION,
     OPT_PROG_NAME,
@@ -84,20 +87,21 @@ enum {
 };
 
 struct option options[] = {
-    { "help",             0, 0, 'h' },
-    { "version",          0, 0, 'V' },
-    { "detector",         1, 0, OPT_DETECTOR },
-    { "exclude",          1, 0, 'x' },
-    { "format",           1, 0, 'F' },
-    { "hash-types",       1, 0, 'C' },
-    { "output",           1, 0, 'o' },
-    { "only-files",       1, 0, OPT_ONLY_FILES },
-    { "prog-description", 1, 0, OPT_PROG_DESCRIPTION },
-    { "prog-name",        1, 0, OPT_PROG_NAME },
-    { "prog-version",     1, 0, OPT_PROG_VERSION },
-    { "roms-unzipped",    0, 0, 'u' },
-    { "skip-files",       1, 0, OPT_SKIP_FILES },
-    { NULL,               0, 0, 0 },
+    { "help",                0, 0, 'h' },
+    { "version",             0, 0, 'V' },
+    { "no-directory-cache",  0, 0, OPT_NO_DIRECTORY_CACHE },
+    { "detector",            1, 0, OPT_DETECTOR },
+    { "exclude",             1, 0, 'x' },
+    { "format",              1, 0, 'F' },
+    { "hash-types",          1, 0, 'C' },
+    { "output",              1, 0, 'o' },
+    { "only-files",          1, 0, OPT_ONLY_FILES },
+    { "prog-description",    1, 0, OPT_PROG_DESCRIPTION },
+    { "prog-name",           1, 0, OPT_PROG_NAME },
+    { "prog-version",        1, 0, OPT_PROG_VERSION },
+    { "roms-unzipped",       0, 0, 'u' },
+    { "skip-files",          1, 0, OPT_SKIP_FILES },
+    { NULL,                  0, 0, 0 },
 };
 
 #define DEFAULT_FILES_ONLY	"*.dat"
@@ -108,6 +112,7 @@ static int process_stdin(const parray_t *, const dat_entry_t *,
 			 output_context_t *);
 
 static int hashtypes;
+static bool cache_directory;
 
 int
 main(int argc, char **argv)
@@ -126,6 +131,7 @@ main(int argc, char **argv)
 
     detector = NULL;
     roms_unzipped = 0;
+    cache_directory = true;
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -183,6 +189,9 @@ main(int argc, char **argv)
 	    break;
 	case OPT_DETECTOR:
 	    detector_name = optarg;
+	    break;
+	case OPT_NO_DIRECTORY_CACHE:
+	    cache_directory = false;
 	    break;
 	case OPT_ONLY_FILES:
 	    if (only_files == NULL)
@@ -252,6 +261,8 @@ main(int argc, char **argv)
 	parray_free(only_files, free);
     if (skip_files)
 	parray_free(skip_files, free);
+    if (roms_unzipped)
+	dbh_dir_close_all();
 
     return 0;
 }
@@ -303,6 +314,9 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	    parser_context_t *ctx;
 	    int ret;
 	    
+	    if (cache_directory)
+		archive_register_cache_directory(fname);
+
 	    ctx = parser_context_new(NULL, exclude, dat, out);
 	    ret = parse_dir(fname, ctx, hashtypes);
 	    parser_context_free(ctx);

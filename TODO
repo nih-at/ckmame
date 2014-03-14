@@ -1,5 +1,7 @@
 * uncompressed support
-** create .ckmame.db for extra dirs, unknown, needed, dirs scanned by mkmamedb
+** automatically recognize dirs with .ckmame.db as uncompressed and warn/exit/dotherightthing
+** parallel ckmame execution -- locking?
+** do not rewrite .ckmame.db if no changes (per archive)
 ** rom-dir.test: moreroms/.ckmame.db is not checked
 ** dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
 ** [bug] fix disk full bug in uncompressed mode (diskfull.test with LINK_ALWAYS_FAILS)
