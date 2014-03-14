@@ -1,4 +1,4 @@
-.TH "MKMAMEDB" "1" "January 18, 2013" "NiH" "General Commands Manual"
+.TH "MKMAMEDB" "1" "March 14, 2014" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -7,7 +7,7 @@
 .SH "SYNOPSIS"
 .HP 9n
 \fBmkmamedb\fR
-[\fB\-hV\fR]
+[\fB\-huV\fR]
 [\fB\-C\fR\ \fIhashtypes\fR]
 [\fB\-F\fR\ \fIoutputformat\fR]
 [\fB\-o\fR\ \fIdbfile\fR]
@@ -16,9 +16,14 @@
 [\fB\-\fR\fB\-exclude\fR\ \fIpat\fR]
 [\fB\-\fR\fB\-hash\-types\fR\ \fItypes\fR]
 [\fB\-\fR\fB\-help\fR]
+[\fB\-\fR\fB\-no\-directory\-cache\fR]
+[\fB\-\fR\fB\-only\-files\fR\ \fIpattern\fR]
 [\fB\-\fR\fB\-output\fR\ \fIdbfile\fR]
+[\fB\-\fR\fB\-prog\-description\fR\ \fIdescription\fR]
 [\fB\-\fR\fB\-prog\-name\fR\ \fIname\fR]
 [\fB\-\fR\fB\-prog\-version\fR\ \fIversion\fR]
+[\fB\-\fR\fB\-roms\-unzipped\fR]
+[\fB\-\fR\fB\-skip\-files\fR\ \fIpattern\fR]
 [\fB\-\fR\fB\-version\fR]
 [\fIrominfo\-file\ ...\fR]
 .SH "DESCRIPTION"
@@ -57,6 +62,11 @@ database format
 .TP 4n
 \fBo\fR
 directory of zip archives
+.TP 4n
+\fBo\fR
+directory with subdirectories (with
+\fB\-u\fR);
+each sub-directory is taken as a game
 .RE
 Supported output formats are:
 .RS 6n
@@ -123,11 +133,41 @@ Write to database
 instead of the default
 \(lq\fImame.db\fR\(rq.
 .TP 31n
+\fB\-\fR\fB\-no\-directory\-cache\fR
+When
+\fBmkmamedb\fR
+is used to create a database from an input directory, it will by
+default write a
+\fI.ckmame.db\fR
+database file to it, caching the directory contents' hashes in it so
+that consecutive re-runs are faster.
+When
+\fBmkmamedb\fR
+finds such a database, it only computes the hashes for the files that
+have changed since the last run.
+.TP 31n
+\fB\-\fR\fB\-only\-files\fR \fIpattern\fR
+When reading files from the file system as input,
+only accept files matching the shell glob
+\fIpattern\fR.
+.TP 31n
+\fB\-\fR\fB\-prog\-description\fR \fIdescription\fR
+Set description for the program the ROM info is from.
+.TP 31n
 \fB\-\fR\fB\-prog\-name\fR \fIname\fR
 Set name of the program the ROM info is from.
 .TP 31n
 \fB\-\fR\fB\-prog\-version\fR \fIversion\fR
 Set version of the program the ROM info is from.
+.TP 31n
+\fB\-\fR\fB\-skip\-files\fR \fIpattern\fR
+When reading files from the file system as input,
+skip files matching the shell glob
+.TP 31n
+\fB\-u\fR, \fB\-\fR\fB\-roms\-unzipped\fR
+ROMs are files on the disk.
+Each game is represented by a directory instead of a ZIP archive.
+Only relevant when creating a database based on file system contents.
 .TP 31n
 \fB\-V\fR, \fB\-\fR\fB\-version\fR
 Display program name and version number.
