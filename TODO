@@ -2,7 +2,6 @@
 ** automatically recognize dirs with .ckmame.db as uncompressed and warn/exit/dotherightthing
 ** parallel ckmame execution -- locking?
 ** do not rewrite .ckmame.db if no changes (per archive)
-** rom-dir.test: moreroms/.ckmame.db is not checked
 ** dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
 ** [bug] existing no good rom is not accepted in uncompressed mode (nogood-diskgood.test)
 
