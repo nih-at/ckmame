@@ -39,6 +39,7 @@ TESTS=	\
 		archive-broken2.test \
 		baddump.test \
 		ckmame.test \
+		ckmame-extra-dir-and-subdir.test \
 		cleanup-disk.test \
 		cleanup-implicit.test \
 		cleanup.test \
@@ -205,6 +206,7 @@ TESTS=	\
 		zero-superfluous.test \
 		zero.test
 XFAIL_TESTS=	\
+		ckmame-extra-dir-and-subdir.test \
 		detector-interaction-with-headerless.test \
 		detector-prefer-file-with-header.test \
 		disk-swapmerge.test \

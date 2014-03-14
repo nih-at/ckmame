@@ -1,0 +1,6 @@
+description test command line: should not allow using both a directory and a subdirectory as input
+return 1
+args -F -e one -e one/two 1-4
+file one/two/1-4.zip 1-4-ok.zip 1-4-ok.zip
+ckmamedb-after one ckmamedb-empty.dump
+stderr can't cache in directory 'one/' and its parent 'one/two'
