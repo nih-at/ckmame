@@ -4,8 +4,11 @@
 ** do not rewrite .ckmame.db if no changes (per archive)
 ** dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
 ** [bug] existing no good rom is not accepted in uncompressed mode (nogood-diskgood.test)
+** ignore .ckmame.db in extra dir
 
 * bugs with test cases
+! [bug] ignore .ckmame.db in extra dirs (rom-from-extra-ignore-db.test)
+! [bug] do not add same game to database twice (rom-from-extra-ignore-db.test)
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct (nogood-diskgood.test)
 ! [bug] mkmamedb: three generation merge grandchild to child does not work (mamedb-merge-parent.dump)
 + [bug] ckmame: exit when foo and foo/bar are given as extra directories (ckmame-extra-dir-and-subdir.test)

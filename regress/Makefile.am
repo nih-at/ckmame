@@ -148,6 +148,7 @@ TESTS=	\
 		rom-from-extra-child.test \
 		rom-from-extra-detector.test \
 		rom-from-extra-duplicate.test \
+		rom-from-extra-ignore-db.test \
 		rom-from-extra-inconsistent.test \
 		rom-from-extra-keep-dir.test \
 		rom-from-extra-keep-zip.test \
@@ -217,6 +218,7 @@ XFAIL_TESTS=	\
 		mkmamedb-parent-crcdiff-mame.test \
 		nogood-diskgood.test \
 		rom-from-extra-duplicate.test \
+		rom-from-extra-ignore-db.test \
 		tz-ok.test \
 		tz-from-romset.test \
 		uncompressed-toplevel-roms.test
