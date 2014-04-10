@@ -1,9 +1,6 @@
 description test single-rom game (no parent), file is in superfluous, don't fix
 return 0
-args -FKLvcn 1-4
+args -KLc 1-4
 file roms/14.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/14.zip'
-stdout roms/1-4.zip: add 'roms/14.zip/04.rom' as '04.rom'
-stdout roms/14.zip: delete used file '04.rom'
-stdout roms/14.zip: remove empty archive

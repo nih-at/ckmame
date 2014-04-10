@@ -14,4 +14,5 @@ stdout In archive extra/wrongname.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
 stderr roms/clone-8.zip: cannot commit changes: Write error: No space left on device
+stderr roms/clone-8.zip: cannot commit changes: CRC error
 stderr roms/clone-8.zip: error closing zip: CRC error

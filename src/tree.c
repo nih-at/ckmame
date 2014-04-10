@@ -292,7 +292,7 @@ tree_process(tree_t *tree, archive_t *child,
 
     int ret;
 
-    if (fix_options & (FIX_DO|FIX_PRINT))
+    if (fix_options & FIX_DO)
 	ret = fix_game(g, child, images, res);
 
     /* TODO: includes too much when rechecking */

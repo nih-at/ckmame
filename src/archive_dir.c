@@ -75,11 +75,13 @@ typedef struct {
 typedef struct {
     dbh_t *dbh;
     int id;
+    bool dbh_changed;
     array_t *change;
 } ud_t;
 
 static void change_init(change_t *);
 
+static int add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t *sh);
 static int cmp_file_by_name(file_t *f, const char *);
 static int ensure_archive_dir(archive_t *);
 static char *get_full_name(archive_t *, int);
@@ -87,6 +89,7 @@ static char *make_full_name(archive_t *, const char *);
 static char *make_tmp_name(archive_t *, const char *);
 
 static int op_check(archive_t *);
+static int op_close(archive_t *);
 static int op_commit(archive_t *);
 static void op_commit_cleanup(archive_t *);
 static int op_file_add_empty(archive_t *, const char *);
@@ -101,7 +104,7 @@ static int op_rollback(archive_t *);
 
 struct archive_ops ops_dir = {
     op_check,
-    op_commit, /* close */
+    op_close,
     op_commit,
     op_commit_cleanup,
     op_file_add_empty,
@@ -119,7 +122,37 @@ struct archive_ops ops_dir = {
 #define archive_file_change(a, idx)	(array_get(((ud_t *)archive_user_data(a))->change, (idx)))
 
 int
-archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t *sh)
+archive_dir_add_file(archive_t *a, const char *fname, struct stat *st)
+{
+    return add_file(a, fname, st, NULL);
+}
+
+
+int
+archive_init_dir(archive_t *a)
+{
+    ud_t *ud;
+
+    a->ops = &ops_dir;
+
+    ud = xmalloc(sizeof(*ud));
+
+    ud->change = array_new(sizeof(change_t));
+
+    ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
+    ud->id = 0;
+    ud->dbh_changed = false;
+    if (ud->dbh)
+	ud->id = dbh_dir_get_archive_id(ud->dbh, mybasename(archive_name(a)));
+
+    archive_user_data(a) = ud;
+
+    return 0;
+}
+
+
+static int
+add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t *sh)
 {
     ud_t *ud = archive_user_data(a);
     file_t *fdir;
@@ -145,45 +178,14 @@ archive_dir_add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t
 
     if (sh)
 	memcpy(fdir->sh, sh, sizeof(fdir->sh));
-    else
+    else {
 	archive_file_compute_hashes(a, archive_num_files(a)-1, HASHES_TYPE_ALL);
+	ud->dbh_changed = true;
+    }
 
     /* normally, files are written to memdb in archive_new after read_infos is done */
     if ((archive_flags(a) & ARCHIVE_FL_DELAY_READINFO) && IS_EXTERNAL(archive_where(a)))
 	memdb_file_insert(NULL, a, archive_num_files(a)-1);
-
-    /* in read-only case, archive data is not written into dirdb on commit, so we have to do it now */
-    if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
-	if (ud->id == 0 && archive_num_files(a) == 1) {
-	    if (ud->dbh == NULL)
-		ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
-	    if (ud->dbh) {
-		if ((ud->id = dbh_dir_write_archive(ud->dbh, 0, mybasename(archive_name(a)))) < 0)
-		    ud->id = 0;
-	    }
-	}
-	if (ud->id > 0)
-	    dbh_dir_write_file(ud->dbh, ud->id, archive_file(a, archive_num_files(a)-1));
-    }
-
-    return 0;
-}
-
-
-int
-archive_init_dir(archive_t *a)
-{
-    ud_t *ud;
-
-    a->ops = &ops_dir;
-
-    ud = xmalloc(sizeof(*ud));
-
-    ud->dbh = NULL;
-    ud->id = 0;
-    ud->change = array_new(sizeof(change_t));
-
-    archive_user_data(a) = ud;
 
     return 0;
 }
@@ -432,16 +434,51 @@ op_check(archive_t *a)
 
 
 static int
+op_close(archive_t *a)
+{
+    ud_t *ud = archive_user_data(a);
+
+    if (ud == NULL) {
+	/* error during initialization, do nothing */
+	return 0;
+    }
+
+    if (ud->dbh_changed) {
+	/* update db */
+	if (!ud->dbh)
+	    ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
+	if (ud->dbh) {
+	    if (ud->id > 0)
+		dbh_dir_delete(ud->dbh, ud->id);
+	    if (archive_num_files(a) > 0) {
+		ud->id = dbh_dir_write(ud->dbh, ud->id, mybasename(archive_name(a)), archive_files(a));
+		if (ud->id < 0) {
+		    seterrdb(ud->dbh);
+		    myerror(ERRDB, "%s: error writing to " DBH_DIR_DB_NAME, archive_name(a));
+		    ud->id = 0;
+		}
+	    }
+	    else
+		ud->id = 0;
+	}
+	else
+	    ud->id = 0;
+	ud->dbh_changed = false;
+    }
+
+    return 0;
+}
+
+
+static int
 op_commit(archive_t *a)
 {
     int idx;
     ud_t *ud = archive_user_data(a);
     change_t *ch;
 
-    if (ud == NULL) {
-	/* error during initialization, do nothing */
+    if (!archive_is_modified(a))
 	return 0;
-    }
 
     bool is_empty = true;
     for (idx = 0; idx < archive_num_files(a); idx++) {
@@ -450,30 +487,6 @@ op_commit(archive_t *a)
 	    break;
 	}
     }
-
-    if (archive_flags(a) & ARCHIVE_FL_RDONLY)
-	return 0;
-
-    /* update db */
-    if (!ud->dbh)
-	ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
-    if (ud->dbh) {
-	if (ud->id > 0)
-	    dbh_dir_delete(ud->dbh, ud->id);
-	if (!is_empty) {
-	    ud->id = dbh_dir_write(ud->dbh, ud->id, mybasename(archive_name(a)), archive_files(a));
-	    if (ud->id < 0) {
-		seterrdb(ud->dbh);
-		myerror(ERRDB, "%s: error writing to " DBH_DIR_DB_NAME, archive_name(a));
-		ud->id = 0;
-	    }
-	}
-	else
-	    ud->id = 0;
-    }
-    else
-	ud->id = 0;
-
 
     int ret = 0;
     for (idx=0; idx<archive_num_files(a); idx++) {
@@ -485,13 +498,16 @@ op_commit(archive_t *a)
 	    ret = -1;
     }
 
-    if (is_empty && !(archive_flags(a) & ARCHIVE_FL_KEEP_EMPTY)) {
+    if (is_empty && archive_is_writable(a) && !(archive_flags(a) & ARCHIVE_FL_KEEP_EMPTY)) {
 	if (rmdir(archive_name(a)) < 0 && errno != ENOENT) {
 	    myerror(ERRZIP, "cannot remove empty archive '%s': %s", archive_name(a), strerror(errno));
 	    ret = -1;
 	}
     }
-    
+
+    if (archive_is_modified(a)) 
+	ud->dbh_changed = true;
+
     return ret;
 }
 
@@ -519,6 +535,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	return -1;
 
     char *tmpname = make_tmp_name(da, dname);
+    /* archive layer already grew archive files if didx < 0 */
     file_t *f = archive_file(da, (didx >= 0 ? didx : archive_num_files(da)-1));
     
     if (tmpname == NULL)
@@ -735,22 +752,15 @@ op_read_infos(archive_t *a)
     char namebuf[8192];
     dir_status_t status;
 
-    if (!ud->dbh)
-	ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
-    if (ud->dbh) {
-	files = array_new(sizeof(file_t));
-	
-	if ((ud->id=dbh_dir_read(ud->dbh, mybasename(archive_name(a)), files)) < 0)
-	    ud->id = 0;
-
-	/* in read-only case, archive data is not written into dirdb on commit, so we have to do it now */
-	if (archive_flags(a) & ARCHIVE_FL_RDONLY) {
-	    if (ud->id > 0)
-		dbh_dir_delete_files(ud->dbh, ud->id);
-	}
-    }
+    files = array_new(sizeof(file_t));
+    if (ud->dbh)
+	dbh_dir_read(ud->dbh, mybasename(archive_name(a)), files);
 
     if ((dir=dir_open(archive_name(a), DIR_RECURSE)) == NULL) {
+	if (array_length(files) > 0) {
+	    ud->dbh_changed = true;
+            /* TODO: if (!(a->flags & ARCHIVE_FL_CREATE)) write changes to db */
+	}
 	array_free(files, file_finalize);
 	return -1;
     }
@@ -777,9 +787,12 @@ op_read_infos(archive_t *a)
 			fdb = NULL;
 		}
 	    }
-	    archive_dir_add_file(a, fname, &sb, fdb ? fdb->sh : NULL);
+	    add_file(a, fname, &sb, fdb ? fdb->sh : NULL);
 	}
     }
+
+    if (archive_num_files(a) != array_length(files))
+	ud->dbh_changed = true;
 
     array_free(files, file_finalize);
 

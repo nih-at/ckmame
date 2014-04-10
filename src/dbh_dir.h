@@ -41,6 +41,7 @@
 int dbh_dir_close_all(void);
 int dbh_dir_delete(dbh_t *, int);
 int dbh_dir_delete_files(dbh_t *, int);
+int dbh_dir_get_archive_id(dbh_t *, const char *);
 dbh_t *dbh_dir_get_db_for_archive(const char *);
 bool dbh_dir_is_empty(dbh_t *);
 int dbh_dir_read(dbh_t *, const char *, array_t *);

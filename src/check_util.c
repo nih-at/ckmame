@@ -302,7 +302,7 @@ enter_file_in_map_and_list(int flags, parray_t *list, archive_t *dir_archive, co
 	    break;
     }
     if (roms_unzipped && !handled) {
-        archive_dir_add_file(dir_archive, name + strlen(archive_name(dir_archive))+1, NULL, NULL); /* TODO: handle error */
+        archive_dir_add_file(dir_archive, name + strlen(archive_name(dir_archive))+1, NULL); /* TODO: handle error */
     }
 
     return 0;

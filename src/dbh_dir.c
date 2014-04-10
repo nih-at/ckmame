@@ -110,6 +110,22 @@ int dbh_dir_delete_files(dbh_t *dbh, int id)
 }
 
 
+int
+dbh_dir_get_archive_id(dbh_t *dbh, const char *name)
+{
+    sqlite3_stmt *stmt;
+    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_ARCHIVE)) == NULL)
+	return 0;
+
+    if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK)
+	return 0;
+    if (sqlite3_step(stmt) != SQLITE_ROW)
+	return 0;
+
+    return sqlite3_column_int(stmt, 0);
+}
+
+
 dbh_t *
 dbh_dir_get_db_for_archive(const char *name)
 {
@@ -175,14 +191,10 @@ dbh_dir_read(dbh_t *dbh, const char *name, array_t *files)
     int ret;
     int archive_id;
 
-    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_ARCHIVE)) == NULL)
-	return -1;
-
-    if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK)
-	return -1;
-    if (sqlite3_step(stmt) != SQLITE_ROW)
-	return 0;
     archive_id = sqlite3_column_int(stmt, 0);
+
+    if ((archive_id = dbh_dir_get_archive_id(dbh, name)) == 0)
+	return 0;
 
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_FILE)) == NULL)
 	return -1;

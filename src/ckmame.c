@@ -60,7 +60,7 @@ enum action {
 typedef enum action action_t;
 
 
-char *usage = "Usage: %s [-bcdFfhjKkLlnSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
+char *usage = "Usage: %s [-bcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -85,7 +85,6 @@ char help[] = "\n"
 "  -k, --delete-unknown    delete unknown files when fixing\n"
 "  -L, --move-long         move long files when fixing (default)\n"
 "  -l, --delete-long       delete long files when fixing\n"
-"  -n, --dryrun            don't actually fix, only report what would be done\n"
 "  -O, --old-db dbfile     use mame-db dbfile for old roms\n"
 "  -R, --rom-dir dir       look for roms in rom-dir (default: 'roms')\n"
 "  -S, --samples           check samples instead of roms\n"
@@ -104,7 +103,7 @@ char version_string[] = PACKAGE " " VERSION "\n"
 "Copyright (C) 2014 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "bcD:de:FfhijKkLlnO:R:SsT:uVvwX"
+#define OPTIONS "bcD:de:FfhijKkLlO:R:SsT:uVvwX"
 
 enum {
     OPT_CLEANUP_EXTRA = 256,
@@ -128,7 +127,6 @@ struct option options[] = {
     { "delete-found",      0, 0, 'j' },
     { "delete-long",       0, 0, 'l' },
     { "delete-unknown",    0, 0, 'k' },
-    { "dryrun",            0, 0, 'n' },
     { "fix",               0, 0, 'F' },
     { "fixdat",            1, 0, OPT_FIXDAT },
     { "games-from",        1, 0, 'T' },
@@ -241,10 +239,6 @@ main(int argc, char **argv)
 	    break;
 	case 'l':
 	    fix_options &= ~FIX_MOVE_LONG;
-	    break;
-	case 'n':
-	    fix_options &= ~FIX_DO;
-	    fix_options |= FIX_PRINT;
 	    break;
 	case 'O':
 	    olddbname = optarg;
@@ -433,7 +427,7 @@ main(int argc, char **argv)
     if (action != ACTION_CLEANUP_EXTRA_ONLY)
 	superfluous = list_directory(get_directory(file_type), dbname);
 
-    if ((fix_options & (FIX_DO|FIX_PRINT)) && (fix_options & FIX_CLEANUP_EXTRA))
+    if ((fix_options & FIX_DO) && (fix_options & FIX_CLEANUP_EXTRA))
 	ensure_extra_maps((action==ACTION_CHECK_ROMSET ? DO_MAP : 0) | DO_LIST);
 
 #ifdef SIGINFO
@@ -444,7 +438,7 @@ main(int argc, char **argv)
 	tree_traverse(check_tree, NULL, NULL);
 	tree_traverse(check_tree, NULL, NULL);
 
-	if (fix_options & (FIX_DO|FIX_PRINT)) {
+	if (fix_options & FIX_DO) {
 	    if (fix_options & FIX_SUPERFLUOUS) {
 		parray_t *needed_list;
 
@@ -466,7 +460,7 @@ main(int argc, char **argv)
     if (fixdat)
 	output_close(fixdat);
 
-    if ((fix_options & (FIX_DO|FIX_PRINT))
+    if ((fix_options & FIX_DO)
 	&& (fix_options & FIX_CLEANUP_EXTRA))
 	cleanup_list(extra_list, extra_delete_list, 0);
     else if (extra_delete_list)

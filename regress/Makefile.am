@@ -91,7 +91,7 @@ TESTS=	\
 		inconsistent-without-i.test \
 		inparent.test \
 		mid.test \
-		misnamed-dryrun.test \
+		misnamed-nofix.test \
 		misnamed.test \
 		mkmamedb-broken-sha1.test \
 		mkmamedb-dir-in-name.test \
@@ -160,9 +160,9 @@ TESTS=	\
 		rom-from-romset2.test \
 		rom-from-superfluous-cleanup.test \
 		rom-from-superfluous-detector.test \
-		rom-from-superfluous-dryrun.test \
 		rom-from-superfluous-many-fixdat.test \
 		rom-from-superfluous-many.test \
+		rom-from-superfluous-nofix.test \
 		rom-from-superfluous-some.test \
 		rom-from-superfluous.test \
 		rom-from-unknown.test \
@@ -190,6 +190,7 @@ TESTS=	\
 		tz-ok.test \
 		uncompressed-ckmamedb-add-game.test \
 		uncompressed-ckmamedb-changed-new-mtime.test \
+		uncompressed-ckmamedb-changed-same-mtime-nofix.test \
 		uncompressed-ckmamedb-changed-same-mtime.test \
 		uncompressed-ckmamedb-extra-dir.test \
 		uncompressed-ckmamedb-no-change.test \
@@ -218,8 +219,6 @@ XFAIL_TESTS=	\
 		mkmamedb-parent-crcdiff-mame.test \
 		nogood-diskgood.test \
 		rom-from-extra-duplicate.test \
-		rom-from-extra-ignore-db.test \
-		rom-from-superfluous-dryrun.test \
 		tz-ok.test \
 		tz-from-romset.test \
 		uncompressed-toplevel-roms.test

@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd March 14, 2014
+.Dd April 10, 2014
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -34,7 +34,7 @@
 .Nd verify MAME ROM sets
 .Sh SYNOPSIS
 .Nm
-.Op Fl bcdFfhjKkLlnSsuVvwX
+.Op Fl bcdFfhjKkLlSsuVvwX
 .Op Fl D Ar dbfile
 .Op Fl e Ar dir
 .Op Fl O Ar dbfile
@@ -47,7 +47,6 @@
 .Op Fl Fl delete-found
 .Op Fl Fl delete-long
 .Op Fl Fl delete-unknown
-.Op Fl Fl dryrun
 .Op Fl Fl fix
 .Op Fl Fl fixdat Ar file
 .Op Fl Fl games-from Ar file
@@ -215,8 +214,6 @@ and
 Delete long files when fixing.
 See also
 .Fl L .
-.It Fl n , Fl Fl dryrun
-Don't actually fix anything, just report what would be done.
 .It Fl O Ar dbfile , Fl Fl old-db Ar dbfile
 Assume that files listed in
 .Ar dbfile
@@ -251,6 +248,8 @@ Each game is represented by a directory instead of a ZIP archive.
 Display program name and version number.
 .It Fl v , Fl Fl verbose
 Print fixes made.
+Only useful with
+.Fl F .
 .It Fl w , Fl Fl nowarnings
 Print only unfixable error, like missing or completely incorrect ROMs.
 See also

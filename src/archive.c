@@ -77,8 +77,12 @@ archive_check(archive_t *a)
 int
 archive_close(archive_t *a)
 {
+    int ret;
     seterrinfo(NULL, archive_name(a));
-    return a->ops->close(a);
+    
+    ret = archive_commit(a);
+
+    return a->ops->close(a) | ret;
 }
 
 

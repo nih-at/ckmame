@@ -50,6 +50,9 @@ archive_commit(archive_t *a)
 {
     int i;
 
+    if (!archive_is_modified(a))
+	return 0;
+
     seterrinfo(NULL, archive_name(a));
 
     if (a->ops->commit(a) < 0)
@@ -93,6 +96,8 @@ archive_commit(archive_t *a)
     if (a->ops->commit_cleanup)
 	a->ops->commit_cleanup(a);
     
+    archive_flags(a) &= ~ARCHIVE_IFL_MODIFIED;
+
     return 0;
 }
 
@@ -103,6 +108,12 @@ archive_file_add_empty(archive_t *a, const char *name)
     struct hashes_update *hu;
     file_t f;
     
+    if (!archive_is_writable(a)) {
+	seterrinfo(archive_name(a), NULL);
+        myerror(ERRZIP, "cannot add to read-only archive");
+	return -1;
+    }
+
     if (a->ops->file_add_empty(a, name) < 0)
         return -1;
     
@@ -137,6 +148,12 @@ archive_file_copy_or_move(archive_t *sa, int sidx, archive_t *da, const char *dn
 int
 archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname, off_t start, off_t len, const file_t *f)
 {
+    if (!archive_is_writable(da)) {
+	seterrinfo(archive_name(da), NULL);
+        myerror(ERRZIP, "cannot add to read-only archive");
+	return -1;
+    }
+
     if (archive_filetype(sa) != archive_filetype(da)) {
         seterrinfo(archive_name(sa), NULL);
         myerror(ERRZIP, "cannot copy to archive of different type '%s'", archive_name(da));
@@ -184,6 +201,12 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
 int
 archive_file_delete(archive_t *a, int idx)
 {
+    if (!archive_is_writable(a)) {
+	seterrinfo(archive_name(a), NULL);
+        myerror(ERRZIP, "cannot delete from read-only archive");
+	return -1;
+    }
+
     if (file_where(archive_file(a, idx)) != FILE_INZIP) {
         seterrinfo(archive_name(a), NULL);
         myerror(ERRZIP, "cannot delete broken/added/deleted file");
@@ -216,6 +239,10 @@ archive_file_rename(archive_t *a, int idx, const char *name)
 {
     seterrinfo(archive_name(a), NULL);
 
+    if (!archive_is_writable(a)) {
+        myerror(ERRZIP, "cannot rename in read-only archive");
+	return -1;
+    }
     if (file_where(archive_file(a, idx)) != FILE_INZIP) {
         myerror(ERRZIP, "cannot copy broken/added/deleted file");
         return -1;
@@ -233,6 +260,7 @@ archive_file_rename(archive_t *a, int idx, const char *name)
     }
     free(file_name(archive_file(a, idx)));
     file_name(archive_file(a, idx)) = xstrdup(name);
+    a->flags |= ARCHIVE_IFL_MODIFIED;
 
     return 0;
 }
@@ -241,8 +269,11 @@ archive_file_rename(archive_t *a, int idx, const char *name)
 int
 archive_file_rename_to_unique(archive_t *a, int idx)
 {
-    if (!archive_is_writable(a))
-        return 0;
+    if (!archive_is_writable(a)) {
+	seterrinfo(archive_name(a), NULL);
+        myerror(ERRZIP, "cannot rename in read-only archive");
+	return -1;
+    }
     
     char *new_name = archive_make_unique_name(a, file_name(archive_file(a, idx)));
     if (new_name == NULL)
@@ -257,10 +288,16 @@ archive_file_rename_to_unique(archive_t *a, int idx)
 int
 archive_rollback(archive_t *a)
 {
-    if (!(a->flags & ARCHIVE_IFL_MODIFIED))
+    int ret;
+
+    if (!archive_is_modified(a))
         return 0;
 
-    return a->ops->rollback(a);
+    ret = a->ops->rollback(a);
+    if (ret == 0)
+	archive_flags(a) &= ~ARCHIVE_IFL_MODIFIED;
+
+    return ret;
 }
 
 
@@ -282,36 +319,3 @@ _file_cmp_name(const file_t *a, const file_t *b)
 {
     return strcasecmp(file_name(a), file_name(b));
 }
-
-
-#if 0
-/* some not used here, but prototype must match others */
-/* ARGSUSED */
-static int
-_copy_chd(archive_t *sa, int sidx, archive_t *da, const char *dname,
-	  off_t start, off_t len)
-{
-    /* TODO: build new name */
-    return link_or_copy(archive_name(sa), archive_name(da));
-}
-
-
-
-/* ARGSUSED */
-static int
-_delete_chd(archive_t *a, int idx)
-{
-    return my_remove(archive_name(a));
-}
-
-
-
-
-/* ARGSUSED */
-static int
-_rename_chd(archive_t *a, int idx, const char *name)
-{
-    /* TODO */
-    return 0;
-}
-#endif

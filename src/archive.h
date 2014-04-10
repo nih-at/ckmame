@@ -103,7 +103,7 @@ archive_t *archive_by_id(int);
 int archive_check(archive_t *);
 int archive_close(archive_t *);
 int archive_commit(archive_t *);
-int archive_dir_add_file(archive_t *, const char *, struct stat *, file_sh_t *);
+int archive_dir_add_file(archive_t *, const char *, struct stat *);
 int archive_file_add_empty(archive_t *, const char *);
 int archive_file_compare_hashes(archive_t *, int, const hashes_t *);
 int archive_file_compute_hashes(archive_t *, int, int);
@@ -135,6 +135,7 @@ extern int _archive_global_flags;
 	(((a)->flags & ARCHIVE_FL_NOCACHE) == 0	\
 	 && IS_EXTERNAL(archive_where(a)))
 
+#define archive_is_modified(a)  ((a)->flags & ARCHIVE_IFL_MODIFIED) 
 #define archive_is_writable(a)	(((a)->flags & ARCHIVE_FL_RDONLY) == 0)
 
 int archive_init_dir(archive_t *);
