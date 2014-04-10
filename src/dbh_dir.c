@@ -66,8 +66,12 @@ dbh_dir_close_all(void)
     for (i = 0; i < array_length(cache_directories); i++) {
 	cache_directory_t *cd = array_get(cache_directories, i);
 
-	if (cd->dbh)
+	if (cd->dbh) {
+	    bool empty = dbh_dir_is_empty(cd->dbh);
 	    err |= dbh_close(cd->dbh);
+	    if (empty)
+		remove(sqlite3_db_filename(dbh_db(cd->dbh), "main"));
+	}
 	cd->dbh = NULL;
 	cd->initialized = false;
     }
@@ -147,6 +151,22 @@ dbh_dir_get_db_for_archive(const char *name)
 
     return NULL;
 }
+
+
+bool
+dbh_dir_is_empty(dbh_t *dbh)
+{
+    sqlite3_stmt *stmt;
+
+    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_COUNT_ARCHIVES)) == NULL)
+	return false;
+
+    if (sqlite3_step(stmt) != SQLITE_ROW)
+	return false;
+
+    return sqlite3_column_int(stmt, 0) == 0;
+}
+
 
 int
 dbh_dir_read(dbh_t *dbh, const char *name, array_t *files)
