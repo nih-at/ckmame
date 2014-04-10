@@ -219,6 +219,7 @@ XFAIL_TESTS=	\
 		nogood-diskgood.test \
 		rom-from-extra-duplicate.test \
 		rom-from-extra-ignore-db.test \
+		rom-from-superfluous-dryrun.test \
 		tz-ok.test \
 		tz-from-romset.test \
 		uncompressed-toplevel-roms.test
