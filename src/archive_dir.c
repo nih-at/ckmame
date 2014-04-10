@@ -464,7 +464,7 @@ op_commit(archive_t *a)
 	    ud->id = dbh_dir_write(ud->dbh, ud->id, mybasename(archive_name(a)), archive_files(a));
 	    if (ud->id < 0) {
 		seterrdb(ud->dbh);
-		myerror(ERRDB, "%s: error writing to .ckmame.db", archive_name(a));
+		myerror(ERRDB, "%s: error writing to " DBH_DIR_DB_NAME, archive_name(a));
 		ud->id = 0;
 	    }
 	}
