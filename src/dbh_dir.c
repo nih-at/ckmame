@@ -38,6 +38,7 @@
 #include "dbh_dir.h"
 #include "error.h"
 #include "funcs.h"
+#include "globals.h"
 #include "sq_util.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -119,6 +120,11 @@ dbh_dir_get_db_for_archive(const char *name)
 	    if (!cd->initialized) {
 		char *dbname = NULL;
 		cd->initialized = true;
+		if ((fix_options & FIX_DO) == 0) {
+		    struct stat st;
+		    if (stat(cd->name, &st) < 0 && errno == ENOENT)
+			return NULL; /* we won't write any files, so DB would remain empty */
+		}
 		if (ensure_dir(cd->name, 0) < 0)
 		    return NULL;
 
