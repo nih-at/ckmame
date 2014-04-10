@@ -4,8 +4,6 @@
 ** dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
 ** [bug] existing no good rom is not accepted in uncompressed mode (nogood-diskgood.test)
 
-* do not allow 'roms' in extra dirs
-
 * bugs with test cases
 ! [bug] diagnostics: -c for correct game outputs game correct + disk correct (nogood-diskgood.test)
 ! [bug] mkmamedb: three generation merge grandchild to child does not work (mamedb-merge-parent.dump)

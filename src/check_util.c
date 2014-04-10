@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 
 #include "dir.h"
+#include "error.h"
 #include "funcs.h"
 #include "globals.h"
 #include "memdb.h"
@@ -169,6 +170,18 @@ make_file_name(filetype_t ft, const char *name)
 }
 
 
+static bool
+is_romdir(const char *name)
+{
+    struct stat st;
+
+    if (stat(name, &st) < 0)
+	return false;
+
+    return (roms_device == st.st_dev && roms_inode == st.st_ino);
+}
+
+
 static int
 enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_flags, where_t where)
 {
@@ -177,7 +190,12 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_f
     char b[8192];
     archive_t *a;
 
-    if ((dir=dir_open(name, dir_flags)) == NULL)
+    if (is_romdir(name)) {
+	myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), name);
+	exit(1);
+    }
+
+    if ((dir=dir_open(name, dir_flags|DIR_RETURN_DIRECTORIES)) == NULL)
 	return -1;
 
     if (roms_unzipped) {
@@ -191,8 +209,17 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_f
 	    /* TODO: handle error */
 	    continue;
 	}
-        enter_file_in_map_and_list(flags, list, a, b, where);
-        /* TODO: handle error */
+	if (ds == DIR_DIRECTORY) {
+	    if (is_romdir(b)) {
+		myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), name);
+		dir_close(dir);
+		exit(1);
+	    }
+	}
+	else {
+	    enter_file_in_map_and_list(flags, list, a, b, where);
+	    /* TODO: handle error */
+	}
     }
 
     if (roms_unzipped) {
@@ -213,6 +240,11 @@ enter_dir_entries_in_map_and_list(int flags, parray_t *list, const char *name, i
     char b[8192];
     archive_t *a;
 
+    if (is_romdir(name)) {
+	myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), name);
+	exit(1);
+    }
+
     if (!roms_unzipped)
         return enter_dir_in_map_and_list(flags, list, name, dir_flags, where);
 
@@ -230,6 +262,10 @@ enter_dir_entries_in_map_and_list(int flags, parray_t *list, const char *name, i
 	if (stat(b, &sb) < 0)
 	    continue;
 	if (S_ISDIR(sb.st_mode)) {
+	    if (is_romdir(b)) {
+		myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), name);
+		exit(1);
+	    }
 	    enter_dir_in_map_and_list(flags, list, b, dir_flags, where);
 	} else if (S_ISREG(sb.st_mode)) {
             enter_file_in_map_and_list(flags, list, a, b, where);

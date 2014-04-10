@@ -38,6 +38,7 @@
 #include "parray.h"
 
 #define DIR_RECURSE	1
+#define DIR_RETURN_DIRECTORIES 2
 
 struct dir {
     int flags;
@@ -49,6 +50,7 @@ typedef struct dir dir_t;
 enum dir_status {
     DIR_ERROR = -1,
     DIR_OK,
+    DIR_DIRECTORY,
     DIR_EOD
 };
 

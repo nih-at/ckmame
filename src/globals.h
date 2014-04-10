@@ -3,7 +3,7 @@
 
 /*
   globals.h -- declaration of global variables
-  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,6 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <sys/stat.h>
 
 #include "delete_list.h"
 #include "detector.h"
@@ -41,6 +42,7 @@
 #include "parray.h"
 #include "romdb.h"
 #include "tree.h"
+
 
 /* option settings */
 
@@ -78,5 +80,9 @@ extern delete_list_t *superfluous_delete_list;
 
 extern tree_t *check_tree;
 extern output_context_t *fixdat;
+
+/* to identify roms directory uniquely */
+extern dev_t roms_device;
+extern ino_t roms_inode;
 
 #endif /* globals.h */

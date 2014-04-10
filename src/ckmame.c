@@ -169,7 +169,8 @@ main(int argc, char **argv)
     int c, found;
     parray_t *list;
     char *game_list;
-    
+    struct stat st;
+
     setprogname(argv[0]);
     output_options = WARN_ALL;
     file_type = TYPE_ROM;
@@ -423,7 +424,15 @@ main(int argc, char **argv)
 	/* TODO: merge in olddb */
 	detector = romdb_read_detector(db);
     }
-    
+
+    ensure_dir(get_directory(file_type), 0);
+    if (stat(get_directory(file_type), &st) < 0) {
+	myerror(ERRSTR, "can't stat directory '%s'", get_directory(file_type));
+	exit(1);
+    }
+    roms_device = st.st_dev;
+    roms_inode = st.st_ino;
+
     if (action != ACTION_CLEANUP_EXTRA_ONLY)
 	superfluous = list_directory(get_directory(file_type), dbname);
 

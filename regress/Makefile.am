@@ -138,6 +138,9 @@ TESTS=	\
 		rom-broken-without-i.test \
 		rom-broken.test \
 		rom-dir.test \
+		rom-dir-in-extra-dirs-subdir-dir.test \
+		rom-dir-in-extra-dirs-subdir-zip.test \
+		rom-dir-in-extra-dirs.test \
 		rom-duplicate-1st.test \
 		rom-duplicate-2nd.test \
 		rom-duplicate-ok.test \
@@ -224,6 +227,7 @@ XFAIL_TESTS=	\
 ZIPS=		1-4-2.zip \
 		1-4-crcerror.zip \
 		1-4-dup.zip \
+		1-4-foo.zip \
 		1-4-garbage.zip \
 		1-4-inconsistent.zip \
 		1-4-mid.zip \

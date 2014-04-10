@@ -1,0 +1,7 @@
+description when cleaning up extras and given roms/, don't, even when subdir.
+archive-types zip
+return 1
+args -R extra/foo -e extra --cleanup-extra
+ckmamedb-after extra/foo ckmamedb-empty.dump
+file extra/foo/1-4.zip 1-4-ok.zip 1-4-ok.zip
+stderr current ROM directory 'extra/foo' is in extra directory 'extra'

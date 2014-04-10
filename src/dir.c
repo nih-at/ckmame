@@ -123,7 +123,6 @@ dir_next(dir_t *dir, char *name, int len)
 	sprintf(name, "%s/%*s", d->name, l, de->d_name);
 
 	if (dir->flags & DIR_RECURSE) {
-
 	    if (stat(name, &st) < 0)
 		return DIR_ERROR;
 
@@ -132,6 +131,8 @@ dir_next(dir_t *dir, char *name, int len)
 		    return DIR_ERROR;
 
 		parray_push(dir->stack, d);
+		if (dir->flags & DIR_RETURN_DIRECTORIES)
+		    return DIR_DIRECTORY;
 		continue;
 	    }
 	}

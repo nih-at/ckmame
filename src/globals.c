@@ -69,3 +69,7 @@ delete_list_t *superfluous_delete_list = NULL;
 
 tree_t *check_tree = NULL;
 output_context_t *fixdat = NULL;
+
+/* roms dir */
+dev_t roms_device;
+ino_t roms_inode;
