@@ -480,6 +480,9 @@ main(int argc, char **argv)
     if (roms_unzipped)
 	dbh_dir_close_all();
 
+    if ((fix_options & FIX_DO) != 0)
+	(void)rmdir(needed_dir);
+
     return 0;
 }
 
