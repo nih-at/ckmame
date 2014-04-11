@@ -7,7 +7,7 @@ file-del extra/1-8-ok.zip 1-8-ok.zip
 file-new roms/2-48.zip 1-8-ok.zip
 stdout In game 2-48:
 stdout rom  04.rom        size       4  crc d87f7e0c: missing
-stdout rom  08.rom        size       8  crc 3656897d: is in 'extra/1-8-ok.zip'
+stdout rom  08.rom        size       8  crc 3656897d: is in 'extra/1-8-ok.zip/08.rom'
 stdout roms/2-48.zip: add 'extra/1-8-ok.zip/08.rom' as '08.rom'
 stdout extra/1-8-ok.zip: delete used file '08.rom'
 stdout extra/1-8-ok.zip: remove empty archive

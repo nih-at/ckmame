@@ -273,7 +273,7 @@ diagnostics_files(const game_t *game, const result_t *res)
 	    
 	case QU_COPIED:
 	    if (output_options & WARN_ELSEWHERE)
-		warn_rom(r, "is in '%s'", archive_name(match_archive(m)));
+		warn_rom(r, "is in '%s/%s'", archive_name(match_archive(m)), file_name(archive_file(match_archive(m), match_index(m))));
 	    break;
 	    
 	case QU_INZIP:

@@ -5,7 +5,7 @@ file roms/clone-8.zip 1-8-ok.zip 2-48-ok.zip
 file-del extra/2-48.zip 2-48-ok.zip
 file extra/2-4c.zip 2-4c-ok.zip 1-c-ok.zip
 stdout In game clone-8:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/2-48.zip'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/2-48.zip/04.rom'
 stdout roms/clone-8.zip: add 'extra/2-48.zip/04.rom' as '04.rom'
 stdout In archive extra/2-48.zip:
 stdout file 08.rom        size       8  crc 3656897d: not used
