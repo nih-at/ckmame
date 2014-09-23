@@ -174,6 +174,8 @@ op_commit(archive_t *a)
 	if (zip_close(archive_zip(a)) < 0) {
 	    seterrinfo(NULL, archive_name(a));
 	    myerror(ERRZIP, "cannot commit changes: %s", zip_strerror(archive_zip(a)));
+	    zip_discard(archive_zip(a));
+	    archive_zip(a) = NULL;
 	    return -1;
 	}
         
