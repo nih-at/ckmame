@@ -77,6 +77,9 @@ use Text::Diff;
 #	mkdir MODE NAME
 #	    create directory NAME with permissions MODE.
 #
+#	pipein COMMAND ARGS ...
+#	    pipe output of running COMMAND to program's stdin.
+#
 #	preload LIBRARY
 #	    pre-load LIBRARY before running program.
 #
@@ -148,6 +151,7 @@ sub new {
 		'file-del' => { type => 'string string' },
 		'file-new' => { type => 'string string' },
 		mkdir => { type => 'string string' },
+		pipein => { type => 'string', once => 1 },
 		preload => { type => 'string', once => 1 },
 		program => { type => 'string', once => 1 },
 		'return' => { type => 'int', once => 1, required => 1 },
@@ -244,6 +248,15 @@ sub end {
 	}
 
 	$self->end_test($result);
+}
+
+
+sub run {
+	my ($self, @argv) = @_;
+
+	$self->setup(@argv);
+
+	$self->end($self->runtest());
 }
 
 
@@ -469,7 +482,7 @@ sub compare_files() {
 	@files_got = sort @files_got;
 	my @files_should = ();
 	
-	for my $file (sort keys $self->{files}) {
+        for my $file (sort keys %{$self->{files}}) {
 		push @files_should, $file if ($self->{files}->{$file}->{result} || $self->{files}->{$file}->{ignore});
 	}
 
@@ -671,13 +684,13 @@ sub parse_case() {
 		
 		next if ($line =~ m/^\#/);
 		
-		unless ($line =~ m/(\S*)\s*(.*)/) {
+		unless ($line =~ m/(\S*)(?:\s(.*))?/) {
 			$self->warn_file_line("cannot parse line $line");
 			$ok = 0;
 			next;
 		}
-		my ($cmd, $argstring) = ($1, $2);
-		
+		my ($cmd, $argstring) = ($1, $2//"");
+            
 		my $def = $self->{directives}->{$cmd};
 		
 		unless ($def) {
@@ -687,7 +700,7 @@ sub parse_case() {
 		}
 		
 		my $args = $self->parse_args($def->{type}, $argstring);
-		
+            
 		next unless (defined($args));
 		
 		if ($def->{once}) {
@@ -833,21 +846,37 @@ sub run_program {
 	
 	$self->{stdout} = [];
 	$self->{stderr} = [];
+        
+        if ($self->{test}->{pipein}) {
+                my $fh;
+                open($fh, "$self->{test}->{pipein} |");
+                if (!defined($fh)) {
+                        $self->die("cannot run pipein command [$self->{test}->{pipein}: $!");
+                }
+                while (my $line = <$fh>) {
+                        print $stdin $line;
+                }
+                close($fh);
+                close($stdin);
+        }
 	
 	while (my $line = <$stdout>) {
 		chomp $line;
 		push @{$self->{stdout}}, $line;
 	}
+	my $prg = $self->{test}->{program};
+	$prg =~ s,.*/,,;
 	while (my $line = <$stderr>) {
 		chomp $line;
-		$line =~ s/^[^:]*: //; # TODO: make overridable
+
+		$line =~ s/^[^: ]*$prg: //;
 		if (defined($self->{test}->{'stderr-replace'})) {
 		    $line = $self->stderr_rewrite($self->{test}->{'stderr-replace'}, $line);
 		}
 		push @{$self->{stderr}}, $line;
 	}
 	
-	waitpid ($pid, 0);
+	waitpid($pid, 0);
 	
 	$self->{exit_status} = $? >> 8;
 }
@@ -856,7 +885,7 @@ sub run_program {
 sub sandbox_create {
 	my ($self, $tag) = @_;
 	
-	$tag = "-$tag" if ($tag);
+	$tag = ($tag ? "-$tag" : "");
 	$self->{sandbox_dir} = "sandbox-$self->{testname}$tag.d$$";
 	
 	$self->die("sandbox $self->{sandbox_dir} already exists") if (-e $self->{sandbox_dir});
