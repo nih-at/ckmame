@@ -66,7 +66,6 @@ TESTS=	\
 		disk-wrong2.test \
 		diskfull-dir.test \
 		diskfull-zip.test \
-		double.test \
 		doublezip.test \
 		dumpgame-stats.test \
 		dumpgame-unknown.test \
@@ -89,7 +88,6 @@ TESTS=	\
 		inconsistent-with-i.test \
 		inconsistent-without-i.test \
 		inparent.test \
-		mid.test \
 		misnamed-nofix.test \
 		misnamed.test \
 		mkmamedb-broken-sha1.test \
@@ -168,6 +166,9 @@ TESTS=	\
 		rom-from-superfluous-some.test \
 		rom-from-superfluous.test \
 		rom-from-unknown.test \
+		rom-long-double.test \
+		rom-long-end.test \
+		rom-long-mid.test \
 		rom-many.test \
 		rom-two-long.test \
 		rom-unused.test \
@@ -227,6 +228,7 @@ XFAIL_TESTS=	\
 ZIPS=		1-4-2.zip \
 		1-4-crcerror.zip \
 		1-4-dup.zip \
+		1-4-end.zip \
 		1-4-foo.zip \
 		1-4-garbage.zip \
 		1-4-inconsistent.zip \
