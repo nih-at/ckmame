@@ -1,11 +1,14 @@
-description test all games, no files found, create fixdat
+description test all games, some files found, create fixdat
 return 0
 args -Fvc -D ../mamedb-fixdat-tests.db --fixdat fix_test.dat
-file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip
+file roms/clone-8.zip 1-8-ok.zip 1-8-ok.zip
+file roms/nogoodclone.zip 1-8-ok.zip 1-8-ok.zip
 file-new fix_test.dat fixdat-missing-parent.dat
 stdout In game parent-4:
-stdout game parent-4                                : correct
+stdout game parent-4                                : not a single rom found
 stdout In game clone-8:
-stdout game clone-8                                 : not a single rom found
+stdout rom  04.rom        size       4  crc d87f7e0c: missing
+stdout rom  08.rom        size       8  crc 3656897d: correct
 stdout In game nogoodclone:
-stdout game nogoodclone                             : not a single rom found
+stdout rom  04.rom        size       4  no good dump: missing
+stdout rom  08.rom        size       8  crc 3656897d: correct
