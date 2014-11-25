@@ -15,6 +15,7 @@ EXTRA_DIST=runtest.in CkmameDB.pm NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES}
 		fixdat-missing-all.dat \
 		fixdat-missing-child.dat \
 		fixdat-missing-parent.dat \
+		fixdat-missing-part.dat \
 		rom-from-superfluous-many-fixdat.dat \
 		04.rom
 
@@ -221,6 +222,7 @@ XFAIL_TESTS=	\
 		detector-interaction-with-headerless.test \
 		detector-prefer-file-with-header.test \
 		disk-swapmerge.test \
+		fixdat-missing-part.test \
 		mkmamedb-duplicate-nodump.test \
 		mkmamedb-merge-no-parent.test \
 		mkmamedb-merge-three-generations.test \
