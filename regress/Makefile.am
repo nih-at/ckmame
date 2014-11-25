@@ -12,7 +12,8 @@ fwrite_la_LDFLAGS=	-module -avoid-version
 
 EXTRA_DIST=runtest.in CkmameDB.pm NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in \
-		fixdat-missing-all.test \
+		fixdat-missing-all.dat \
+		fixdat-missing-parent.dat \
 		rom-from-superfluous-many-fixdat.fixdat \
 		04.rom
 
@@ -74,6 +75,7 @@ TESTS=	\
 		extra-file.test \
 		extra-size-mismatch.test \
 		fixdat-missing-all.test \
+		fixdat-missing-parent.test \
 		gamelist-from-file.test \
 		garbage-archive-exists.test \
 		garbage.test \
