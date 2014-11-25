@@ -14,7 +14,7 @@ EXTRA_DIST=runtest.in CkmameDB.pm NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES}
 		gamelist-from-file.in \
 		fixdat-missing-all.dat \
 		fixdat-missing-parent.dat \
-		rom-from-superfluous-many-fixdat.fixdat \
+		rom-from-superfluous-many-fixdat.dat \
 		04.rom
 
 CLEANFILES=${DBS} runtest

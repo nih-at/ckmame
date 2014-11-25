@@ -29,7 +29,7 @@ file-new roms/parent-4.zip 1-4-ok.zip
 file-new roms/zero-4.zip zero-4-ok.zip
 file-new roms/zero.zip zero-ok.zip
 file-new roms/zerobadcrc.zip zero-ok.zip
-file-new fix_test.dat rom-from-superfluous-many-fixdat.fixdat
+file-new fix_test.dat rom-from-superfluous-many-fixdat.dat
 file roms/108-5.chd 108-5.chd 108-5.chd
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
