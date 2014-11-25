@@ -12,6 +12,7 @@ fwrite_la_LDFLAGS=	-module -avoid-version
 
 EXTRA_DIST=runtest.in CkmameDB.pm NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in \
+		fixdat-missing-all.test \
 		rom-from-superfluous-many-fixdat.fixdat \
 		04.rom
 
@@ -26,7 +27,8 @@ MAME_DB_CRCDIFF=mamedb-crcdiff.db
 MAME_DB_NOCOMMON=mamedb-parent-no-common.db
 MAME_DB_SMALL=mamedb-small.db
 MAME_DB_TWO_GAMES=mamedb-two-games.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL} ${MAME_DB_TWO_GAMES}
+MAME_DB_FIXDAT_TESTS=mamedb-fixdat-tests.db
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL} ${MAME_DB_TWO_GAMES} ${MAME_DB_FIXDAT_TESTS}
 
 ZIPCMP=@ZIPCMP@
 
@@ -71,6 +73,7 @@ TESTS=	\
 		dumpgame-unknown.test \
 		extra-file.test \
 		extra-size-mismatch.test \
+		fixdat-missing-all.test \
 		gamelist-from-file.test \
 		garbage-archive-exists.test \
 		garbage.test \
@@ -359,6 +362,9 @@ ${MAME_DB_SMALL}: ../src/mkmamedb ${srcdir}/mamedb-small.txt
 
 ${MAME_DB_TWO_GAMES}: ../src/mkmamedb ${srcdir}/mamedb-two-games.txt
 	../src/mkmamedb -o ${MAME_DB_TWO_GAMES} ${srcdir}/mamedb-two-games.txt
+
+${MAME_DB_FIXDAT_TESTS}: ../src/mkmamedb ${srcdir}/mamedb-merge-parent.txt
+	../src/mkmamedb -o ${MAME_DB_FIXDAT_TESTS} ${srcdir}/mamedb-merge-parent.txt
 
 update-mamedb.dump: ${MAME_DB} ${MAME_DB2} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} dbdump ../src/mkmamedb
 	./dbdump ${MAME_DB} > mamedb-ok.dump

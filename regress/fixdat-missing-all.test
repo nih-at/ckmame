@@ -1,0 +1,10 @@
+description test all games, no files found, create fixdat
+return 0
+args -Fvc -D ../mamedb-fixdat-tests.db --fixdat fix_test.dat
+file-new fix_test.dat fixdat-missing-all.dat
+stdout In game parent-4:
+stdout game parent-4                                : not a single rom found
+stdout In game clone-8:
+stdout game clone-8                                 : not a single rom found
+stdout In game nogoodclone:
+stdout game nogoodclone                             : not a single rom found

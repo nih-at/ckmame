@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE datafile PUBLIC "-//Logiqx//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">
+<datafile>
+	<header>
+		<name>Fixdat</name>
+		<description>Fixdat by ckmame</description>
+		<version>1</version>
+		<author>automatically generated</author>
+	</header>
+
+	<game name="parent-4">
+		<description>parent-4</description>
+		<rom name="04.rom" size="4" crc="d87f7e0c"/>
+	</game>
+
+	<game name="clone-8">
+		<description>clone-8</description>
+		<rom name="04.rom" size="4" crc="d87f7e0c" merge="04.rom"/>
+		<rom name="08.rom" size="8" crc="3656897d"/>
+	</game>
+
+	<game name="nogoodclone">
+		<description>nogoodclone</description>
+		<rom name="08.rom" size="8" crc="3656897d"/>
+	</game>
+
+</datafile>
