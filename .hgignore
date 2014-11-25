@@ -32,6 +32,7 @@ Makefile.in$
 ^regress/mamedb-crcdiff.db$
 ^regress/mamedb-dir-in-name.db$
 ^regress/mamedb-disk.db$
+^regress/mamedb-fixdat-tests.db$
 ^regress/mamedb-lost-parent-ok.db$
 ^regress/mamedb-parent-no-common.db$
 ^regress/mamedb-small.db$
