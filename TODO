@@ -82,6 +82,7 @@
 	rom_num_altnames
 
 other features:
+- fixdat: if only checking child, ROM missing in parent is not in fixdat
 - parse: add state checking to parse-cm.c
 - parse: check for duplicate attributes
 - add option to check integrity for roms only (not for disks, they take forever)

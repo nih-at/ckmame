@@ -46,7 +46,7 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im,
     game_t *gm;
     int i;
     
-    if (result_game(res) != GS_MISSING)
+    if (result_game(res) != GS_MISSING && result_game(res) != GS_PARTIAL)
 	return;
 
     gm = game_new();
@@ -61,7 +61,7 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im,
 	if (file_size(r) == 0)
 	    continue;
 
-	if (match_quality(m) != QU_MISSING || file_status(r) == STATUS_NODUMP)
+	if (match_quality(m) != QU_MISSING || file_status(r) == STATUS_NODUMP || file_where(r) != FILE_INZIP)
 	    continue;
 
 	file_t *rm = array_push(game_files(gm, TYPE_ROM), r);

@@ -79,6 +79,7 @@ TESTS=	\
 		fixdat-missing-all.test \
 		fixdat-missing-child.test \
 		fixdat-missing-parent.test \
+		fixdat-missing-part.test \
 		gamelist-from-file.test \
 		garbage-archive-exists.test \
 		garbage.test \
@@ -222,7 +223,6 @@ XFAIL_TESTS=	\
 		detector-interaction-with-headerless.test \
 		detector-prefer-file-with-header.test \
 		disk-swapmerge.test \
-		fixdat-missing-part.test \
 		mkmamedb-duplicate-nodump.test \
 		mkmamedb-merge-no-parent.test \
 		mkmamedb-merge-three-generations.test \

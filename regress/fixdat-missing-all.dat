@@ -15,7 +15,6 @@
 
 	<game name="clone-8">
 		<description>clone-8</description>
-		<rom name="04.rom" size="4" crc="d87f7e0c" merge="04.rom"/>
 		<rom name="08.rom" size="8" crc="3656897d"/>
 	</game>
 
