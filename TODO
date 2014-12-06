@@ -1,3 +1,5 @@
+* use cache DB also for zipped rom sets
+
 * uncompressed support
 ** automatically recognize dirs with .ckmame.db as uncompressed and warn/exit/dotherightthing
 ** parallel ckmame execution -- locking?
