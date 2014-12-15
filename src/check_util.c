@@ -338,7 +338,7 @@ enter_file_in_map_and_list(int flags, parray_t *list, archive_t *dir_archive, co
 	    break;
     }
     if (roms_unzipped && !handled) {
-        archive_dir_add_file(dir_archive, name + strlen(archive_name(dir_archive))+1, NULL); /* TODO: handle error */
+	fprintf(stderr, "unhandled case: ignoring '%s'", name + strlen(archive_name(dir_archive))+1);
     }
 
     return 0;
