@@ -257,7 +257,7 @@ enter_dir_entries_in_map_and_list(int flags, parray_t *list, const char *name, i
 
     while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
 	struct stat sb;
-	if (strcmp(mybasename(b), DBH_DIR_DB_NAME) == 0)
+	if (strcmp(mybasename(b), DBH_CACHE_DB_NAME) == 0)
 	    continue;
 	if (stat(b, &sb) < 0)
 	    continue;

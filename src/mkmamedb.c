@@ -37,7 +37,7 @@
 #include <zip.h>
 
 #include "compat.h"
-#include "dbh_dir.h"
+#include "dbh_cache.h"
 #include "globals.h"
 #include "romdb.h"
 #include "funcs.h"
@@ -262,7 +262,7 @@ main(int argc, char **argv)
     if (skip_files)
 	parray_free(skip_files, free);
     if (roms_unzipped)
-	dbh_dir_close_all();
+	dbh_cache_close_all();
 
     return 0;
 }

@@ -1,9 +1,9 @@
 * use cache DB also for zipped rom sets
 * clean up archives in .ckmame.db for manually removed dirs/zips
+* desupport combination of disks + roms_unzipped; add flag DONT_RECURSE
+  to archive_new; use for top-level files in roms_unzipped case
 
 * uncompressed support
-** automatically recognize dirs with .ckmame.db as uncompressed and warn/exit/dotherightthing
-** parallel ckmame execution -- locking?
 ** dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
 ** [bug] existing no good rom is not accepted in uncompressed mode (nogood-diskgood.test)
 

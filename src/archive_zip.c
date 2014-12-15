@@ -55,7 +55,8 @@ static int op_file_delete(archive_t *, int);
 static void *op_file_open(archive_t *, int);
 static int op_file_rename(archive_t *, int, const char *);
 static const char *op_file_strerror(void *);
-static int op_read_infos(archive_t *);
+static bool op_get_last_update(archive_t *a, time_t *mtime, off_t *size);
+static bool op_read_infos(archive_t *);
 static int op_rollback(archive_t *);
 
 struct archive_ops ops_zip = {
@@ -71,6 +72,7 @@ struct archive_ops ops_zip = {
     (int64_t (*)(void *, void *, uint64_t))zip_fread,
     op_file_rename,
     op_file_strerror,
+    op_get_last_update,
     op_read_infos,
     op_rollback
 };
@@ -300,7 +302,23 @@ op_file_strerror(void *zf)
 }
 
 
-static int
+static bool
+op_get_last_update(archive_t *a, time_t *mtime, off_t *size)
+{
+    struct stat st;
+    if (stat(archive_name(a), &st) < 0)
+	return false;
+
+    *mtime = st.st_mtime;
+    *size = st.st_size;
+
+    return true;
+}
+
+
+
+
+static bool
 op_read_infos(archive_t *a)
 {
     struct zip *za;
@@ -309,7 +327,7 @@ op_read_infos(archive_t *a)
     int i;
     
     if (ensure_zip(a) < 0)
-	return -1;
+	return false;
     
     za = (struct zip *)archive_user_data(a);
     
@@ -337,7 +355,7 @@ op_read_infos(archive_t *a)
 	    archive_file_compute_hashes(a, i, a->flags & ARCHIVE_FL_HASHTYPES_MASK);
     }
     
-    return 0;
+    return true;
     
 }
 

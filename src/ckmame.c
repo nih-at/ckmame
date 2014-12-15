@@ -39,7 +39,7 @@
 
 #include "compat.h"
 #include "dbh.h"
-#include "dbh_dir.h"
+#include "dbh_cache.h"
 #include "error.h"
 #include "globals.h"
 #include "funcs.h"
@@ -481,7 +481,7 @@ main(int argc, char **argv)
 	print_superfluous(superfluous);
 
     if (roms_unzipped)
-	dbh_dir_close_all();
+	dbh_cache_close_all();
 
     if ((fix_options & FIX_DO) != 0)
 	(void)rmdir(needed_dir);

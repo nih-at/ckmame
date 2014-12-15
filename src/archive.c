@@ -37,8 +37,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #include "archive.h"
-#include "dbh_dir.h"
+#include "dbh_cache.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
@@ -48,7 +49,10 @@
 
 #define BUFSIZE 8192
 
+static int cmp_file_by_name(const file_t *f, const char *name);
 static int get_hashes(archive_t *, void *, off_t, struct hashes *);
+static bool merge_files(archive_t *a, array_t *files);
+static void replace_files(archive_t *a, array_t *files);
 
 
 int _archive_global_flags = 0;
@@ -327,7 +331,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
 	    return NULL;
 	}
 	if (!(a->flags & ARCHIVE_FL_DELAY_READINFO)) {
-	    if (archive_read_infos(a) < 0) {
+	    if (!archive_read_infos(a)) {
 		if (!(a->flags & ARCHIVE_FL_CREATE)) {
 		    archive_real_free(a);
 		    return NULL;
@@ -362,10 +366,60 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
 
 
 
-int
+bool
 archive_read_infos(archive_t *a)
 {
-    return a->ops->read_infos(a);
+    array_t *files_cache = NULL;
+
+    a->cache_db = dbh_cache_get_db_for_archive(archive_name(a));
+    a->cache_changed = false;
+    if (a->cache_db) {
+	time_t mtime_cache, mtime_disk;
+	off_t size_cache, size_disk;
+	
+	a->cache_id = dbh_cache_get_archive_id(a->cache_db, mybasename(archive_name(a)));
+
+	if (a->cache_id > 0) {
+	    if (!dbh_cache_get_archive_last_change(a->cache_db, a->cache_id, &mtime_cache, &size_cache)
+		|| ! a->ops->get_last_update(a, &mtime_disk, &size_disk)) {
+		return false;
+	    }
+
+	    files_cache = array_new(sizeof(file_t));
+	    if (!dbh_cache_read(a->cache_db, mybasename(archive_name(a)), files_cache)) {
+		array_free(files_cache, file_finalize);
+		return false;
+	    }
+
+	    if (mtime_cache == mtime_disk && size_cache == size_disk) {
+		replace_files(a, files_cache);
+		return true;
+	    }
+	}
+    }
+    else {
+	a->cache_id = 0;
+    }
+
+    if (!a->ops->read_infos(a)) {
+	array_free(files_cache, file_finalize);
+	return false;
+    }
+
+    if (files_cache) {
+	if (!merge_files(a, files_cache)) {
+	    array_free(files_cache, file_finalize);
+	    return false;
+	}
+	    
+	array_free(files_cache, file_finalize);
+	a->cache_changed = true;
+    }
+    else {
+	a->cache_changed = (archive_num_files(a) > 0);
+    }
+
+    return true;
 }
 
 
@@ -397,7 +451,7 @@ int
 archive_register_cache_directory(const char *name)
 {
     if (roms_unzipped)
-	return dbh_dir_register_cache_directory(name);
+	return dbh_cache_register_cache_directory(name);
 
     return 0;
 }
@@ -412,6 +466,13 @@ archive_is_empty(const archive_t *a)
 	    return false;
 
     return true;
+}
+
+
+static int
+cmp_file_by_name(const file_t *f, const char *name)
+{
+    return strcmp(file_name(f), name);
 }
 
 
@@ -438,3 +499,41 @@ get_hashes(archive_t *a, void *f, off_t len, struct hashes *h)
     
     return 0;
 }
+
+
+static bool
+merge_files(archive_t *a, array_t *files)
+{
+    int i, idx;
+
+    for (i = 0; i < array_length(archive_files(a)); i++) {
+	file_t *file = archive_file(a, i);
+
+	if ((idx = array_index(files, file_name(file), cmp_file_by_name)) > 0) {
+	    file_t *cfile = array_get(files, idx);
+	    if (file_mtime(file) == file_mtime(cfile) && file_compare_nsc(file, cfile)) {
+		hashes_copy(file_hashes(file), file_hashes(cfile));
+	    }
+	}
+	else if (!hashes_has_type(file_hashes(file), HASHES_SIZE_CRC)) {
+	    if (archive_file_compute_hashes(a, i, HASHES_TYPE_ALL) < 0) {
+		return false;
+	    }
+	    if (detector) {
+		archive_file_match_detector(a, i);
+	    }
+	}
+    }
+
+    return true;
+}
+
+
+static void
+replace_files(archive_t *a, array_t *files)
+{
+    array_free(archive_files(a), file_finalize);
+    archive_files(a) = files;
+}
+
+

@@ -68,7 +68,7 @@ enum dbh_list {
 
 #define DBH_DEFAULT_DB_NAME	"mame.db"
 #define DBH_DEFAULT_OLD_DB_NAME	"old.db"
-#define DBH_DIR_DB_NAME		".ckmame.db"
+#define DBH_CACHE_DB_NAME		".ckmame.db"
 
 extern const char *sql_db_init[];
 extern const char *sql_db_init_2;

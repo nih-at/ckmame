@@ -46,7 +46,7 @@ libckmame_a_SOURCES= \
 	dat_push.c \
 	db_init.c \
 	dbh.c \
-	dbh_dir.c \
+	dbh_cache.c \
 	dbh_statements.c \
 	delete_list.c \
 	detector.c \
@@ -138,7 +138,7 @@ noinst_HEADERS=\
 	compat.h \
 	dat.h \
 	dbh.h \
-	dbh_dir.h \
+	dbh_cache.h \
 	dbh_statements.h \
 	delete_list.h \
 	detector.h \

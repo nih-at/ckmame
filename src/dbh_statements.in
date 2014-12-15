@@ -59,6 +59,6 @@
 #define DIR_DELETE_ARCHIVE  "delete from archive where archive_id = ?"
 #define DIR_COUNT_ARCHIVES  "select count(archive_id) from archive"
 
-#define DIR_INSERT_FILE     "insert into file (archive_id, name, mtime, status, size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?)"
-#define DIR_QUERY_FILE      "select name, mtime, status, size, crc, md5, sha1 from file where archive_id = ?"
+#define DIR_INSERT_FILE     "insert into file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+#define DIR_QUERY_FILE      "select name, mtime, status, size, crc, md5, sha1 from file where archive_id = ? order by file_idx"
 #define DIR_DELETE_FILE     "delete from file where archive_id = ?"

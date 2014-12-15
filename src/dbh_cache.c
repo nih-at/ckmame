@@ -1,5 +1,5 @@
 /*
- dbh_dir.c -- files in dirs sqlite3 data base
+ dbh_cache.c -- files in dirs sqlite3 data base
  Copyright (C) 2014 Dieter Baron and Thomas Klausner
  
  This file is part of ckmame, a program to check rom sets for MAME.
@@ -35,7 +35,7 @@
 #include <stddef.h>
 
 #include "array.h"
-#include "dbh_dir.h"
+#include "dbh_cache.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
@@ -51,11 +51,11 @@ typedef struct cache_directory {
 
 static array_t *cache_directories = NULL;
 
-static int dbh_dir_write_file_with_stmt(int id, const file_t *f, sqlite3_stmt *stmt);
+static int dbh_cache_write_file_with_stmt(int id, int idx, const file_t *f, sqlite3_stmt *stmt);
 
 
 int
-dbh_dir_close_all(void)
+dbh_cache_close_all(void)
 {
     int err = 0;
     int i;
@@ -67,7 +67,7 @@ dbh_dir_close_all(void)
 	cache_directory_t *cd = array_get(cache_directories, i);
 
 	if (cd->dbh) {
-	    bool empty = dbh_dir_is_empty(cd->dbh);
+	    bool empty = dbh_cache_is_empty(cd->dbh);
 	    err |= dbh_close(cd->dbh);
 	    if (empty)
 		remove(sqlite3_db_filename(dbh_db(cd->dbh), "main"));
@@ -81,11 +81,11 @@ dbh_dir_close_all(void)
 
 
 int
-dbh_dir_delete(dbh_t *dbh, int id)
+dbh_cache_delete(dbh_t *dbh, int id)
 {
     sqlite3_stmt *stmt;
 
-    if (dbh_dir_delete_files(dbh, id) < 0)
+    if (dbh_cache_delete_files(dbh, id) < 0)
         return -1;
     
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_DELETE_ARCHIVE)) == NULL)
@@ -97,7 +97,7 @@ dbh_dir_delete(dbh_t *dbh, int id)
 }
 
 
-int dbh_dir_delete_files(dbh_t *dbh, int id)
+int dbh_cache_delete_files(dbh_t *dbh, int id)
 {
     sqlite3_stmt *stmt;
 
@@ -111,7 +111,7 @@ int dbh_dir_delete_files(dbh_t *dbh, int id)
 
 
 int
-dbh_dir_get_archive_id(dbh_t *dbh, const char *name)
+dbh_cache_get_archive_id(dbh_t *dbh, const char *name)
 {
     sqlite3_stmt *stmt;
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_ARCHIVE_ID)) == NULL)
@@ -127,7 +127,7 @@ dbh_dir_get_archive_id(dbh_t *dbh, const char *name)
 
 
 bool
-dbh_dir_get_archive_last_change(dbh_t *dbh, int archive_id, time_t *mtime, off_t *size)
+dbh_cache_get_archive_last_change(dbh_t *dbh, int archive_id, time_t *mtime, off_t *size)
 {
     sqlite3_stmt *stmt;
 
@@ -147,7 +147,7 @@ dbh_dir_get_archive_last_change(dbh_t *dbh, int archive_id, time_t *mtime, off_t
 
 
 dbh_t *
-dbh_dir_get_db_for_archive(const char *name)
+dbh_cache_get_db_for_archive(const char *name)
 {
     int i;
 
@@ -168,7 +168,7 @@ dbh_dir_get_db_for_archive(const char *name)
 		if (ensure_dir(cd->name, 0) < 0)
 		    return NULL;
 
-		if (xasprintf(&dbname, "%s/%s", cd->name, DBH_DIR_DB_NAME) < 0) {
+		if (xasprintf(&dbname, "%s/%s", cd->name, DBH_CACHE_DB_NAME) < 0) {
 		    myerror(ERRSTR, "vasprintf failed");
 		    return NULL;
 		}
@@ -190,7 +190,7 @@ dbh_dir_get_db_for_archive(const char *name)
 
 
 bool
-dbh_dir_is_empty(dbh_t *dbh)
+dbh_cache_is_empty(dbh_t *dbh)
 {
     sqlite3_stmt *stmt;
 
@@ -205,7 +205,7 @@ dbh_dir_is_empty(dbh_t *dbh)
 
 
 parray_t *
-dbh_dir_list_archives(dbh_t *dbh)
+dbh_cache_list_archives(dbh_t *dbh)
 {
     sqlite3_stmt *stmt;
     parray_t *archives;
@@ -233,7 +233,7 @@ dbh_dir_list_archives(dbh_t *dbh)
 
 
 int
-dbh_dir_read(dbh_t *dbh, const char *name, array_t *files)
+dbh_cache_read(dbh_t *dbh, const char *name, array_t *files)
 {
     sqlite3_stmt *stmt;
     int ret;
@@ -241,7 +241,7 @@ dbh_dir_read(dbh_t *dbh, const char *name, array_t *files)
 
     archive_id = sqlite3_column_int(stmt, 0);
 
-    if ((archive_id = dbh_dir_get_archive_id(dbh, name)) == 0)
+    if ((archive_id = dbh_cache_get_archive_id(dbh, name)) == 0)
 	return 0;
 
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_FILE)) == NULL)
@@ -271,7 +271,7 @@ dbh_dir_read(dbh_t *dbh, const char *name, array_t *files)
 
 
 int
-dbh_dir_register_cache_directory(const char *directory_name)
+dbh_cache_register_cache_directory(const char *directory_name)
 {
     if (directory_name == NULL) {
 	errno = EINVAL;
@@ -320,17 +320,17 @@ dbh_dir_register_cache_directory(const char *directory_name)
 
 
 int
-dbh_dir_write(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size, array_t *files)
+dbh_cache_write(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size, array_t *files)
 {
     sqlite3_stmt *stmt;
     int i;
 
     if (id != 0) {
-	if (dbh_dir_delete(dbh, id) < 0)
+	if (dbh_cache_delete(dbh, id) < 0)
 	    return -1;
     }
     
-    if ((id = dbh_dir_write_archive(dbh, id, name, mtime, size)) < 0)
+    if ((id = dbh_cache_write_archive(dbh, id, name, mtime, size)) < 0)
         return -1;
     
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_INSERT_FILE)) == NULL)
@@ -340,7 +340,7 @@ dbh_dir_write(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size, ar
         return -1;
 
     for (i=0; i<array_length(files); i++) {
-        if (dbh_dir_write_file_with_stmt(id, array_get(files, i), stmt) < 0)
+        if (dbh_cache_write_file_with_stmt(id, i, array_get(files, i), stmt) < 0)
 	    return -1;
     }
 
@@ -348,7 +348,7 @@ dbh_dir_write(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size, ar
 }
 
 int
-dbh_dir_write_archive(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size)
+dbh_cache_write_archive(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size)
 {
     sqlite3_stmt *stmt;
 
@@ -372,7 +372,7 @@ dbh_dir_write_archive(dbh_t *dbh, int id, const char *name, time_t mtime, off_t 
     return id;
 }
 
-int dbh_dir_write_file(dbh_t *dbh, int id, const file_t *f)
+int dbh_cache_write_file(dbh_t *dbh, int id, int idx, const file_t *f)
 {
     sqlite3_stmt *stmt;
 
@@ -382,17 +382,18 @@ int dbh_dir_write_file(dbh_t *dbh, int id, const file_t *f)
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK)
         return -1;
 
-    return dbh_dir_write_file_with_stmt(id, f, stmt);
+    return dbh_cache_write_file_with_stmt(id, idx, f, stmt);
 }
 
 
-static int dbh_dir_write_file_with_stmt(int id, const file_t *f, sqlite3_stmt *stmt)
+static int dbh_cache_write_file_with_stmt(int id, int idx, const file_t *f, sqlite3_stmt *stmt)
 {
-    if (sq3_set_string(stmt, 2, file_name(f)) != SQLITE_OK
-        || sqlite3_bind_int(stmt, 3, file_mtime(f)) != SQLITE_OK
-        || sqlite3_bind_int(stmt, 4, file_status(f)) != SQLITE_OK
-        || sq3_set_int64_default(stmt, 5, file_size(f), SIZE_UNKNOWN) != SQLITE_OK
-        || sq3_set_hashes(stmt, 6, file_hashes(f), 1) != SQLITE_OK
+    if (sqlite3_bind_int(stmt, 2, idx) != SQLITE_OK
+	|| sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK
+        || sqlite3_bind_int(stmt, 4, file_mtime(f)) != SQLITE_OK
+        || sqlite3_bind_int(stmt, 5, file_status(f)) != SQLITE_OK
+        || sq3_set_int64_default(stmt, 6, file_size(f), SIZE_UNKNOWN) != SQLITE_OK
+        || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK
         || sqlite3_step(stmt) != SQLITE_DONE
         || sqlite3_reset(stmt) != SQLITE_OK)
         return -1;

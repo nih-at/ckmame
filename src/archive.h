@@ -39,6 +39,7 @@
 #include <sys/types.h>
 
 #include "array.h"
+#include "dbh.h"
 #include "file.h"
 
 
@@ -50,6 +51,9 @@ struct archive {
     where_t where;
     int flags;
     array_t *files;
+    dbh_t *cache_db;
+    int cache_id;
+    bool cache_changed;
     struct archive_ops *ops;
     void *ud;
 };
@@ -69,7 +73,8 @@ struct archive_ops {
     int64_t (*file_read)(void *, void *, uint64_t);
     int (*file_rename)(archive_t *, int, const char *);
     const char *(*file_strerror)(void *);
-    int (*read_infos)(archive_t *);
+    bool (*get_last_update)(archive_t *, time_t *, off_t *);
+    bool (*read_infos)(archive_t *);
     int (*rollback)(archive_t *);  /* never called if commit never fails */
 };
 
@@ -122,7 +127,7 @@ void archive_global_flags(int, bool);
 bool archive_is_empty(const archive_t *);
 char *archive_make_unique_name(archive_t *, const char *);
 archive_t *archive_new(const char *, filetype_t, where_t, int);
-int archive_read_infos(archive_t *);
+bool archive_read_infos(archive_t *);
 void archive_real_free(archive_t *);
 int archive_refresh(archive_t *);
 int archive_register_cache_directory(const char *);

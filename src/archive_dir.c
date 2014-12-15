@@ -34,12 +34,12 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <limits.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "funcs.h"
 
 #include "archive.h"
-#include "dbh_dir.h"
 #include "dir.h"
 #include "error.h"
 #include "globals.h"
@@ -73,16 +73,11 @@ typedef struct {
 } change_t;
 
 typedef struct {
-    dbh_t *dbh;
-    int id;
-    bool dbh_changed;
     array_t *change;
 } ud_t;
 
 static void change_init(change_t *);
 
-static int add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t *sh);
-static int cmp_file_by_name(file_t *f, const char *);
 static int ensure_archive_dir(archive_t *);
 static char *get_full_name(archive_t *, int);
 static char *make_full_name(archive_t *, const char *);
@@ -99,7 +94,8 @@ static void *op_file_open(archive_t *, int);
 static int64_t op_file_read(void *, void *, uint64_t);
 static int op_file_rename(archive_t *, int, const char *);
 static const char *op_file_strerror(void *);
-static int op_read_infos(archive_t *);
+static bool op_get_last_update(archive_t *a, time_t *mtime, off_t *size);
+static bool op_read_infos(archive_t *);
 static int op_rollback(archive_t *);
 
 struct archive_ops ops_dir = {
@@ -115,17 +111,12 @@ struct archive_ops ops_dir = {
     op_file_read,
     op_file_rename,
     op_file_strerror,
+    op_get_last_update,
     op_read_infos,
     op_rollback
 };
 
 #define archive_file_change(a, idx)	(array_get(((ud_t *)archive_user_data(a))->change, (idx)))
-
-int
-archive_dir_add_file(archive_t *a, const char *fname, struct stat *st)
-{
-    return add_file(a, fname, st, NULL);
-}
 
 
 int
@@ -139,53 +130,7 @@ archive_init_dir(archive_t *a)
 
     ud->change = array_new(sizeof(change_t));
 
-    ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
-    ud->id = 0;
-    ud->dbh_changed = false;
-    if (ud->dbh)
-	ud->id = dbh_dir_get_archive_id(ud->dbh, mybasename(archive_name(a)));
-
     archive_user_data(a) = ud;
-
-    return 0;
-}
-
-
-static int
-add_file(archive_t *a, const char *fname, struct stat *st, file_sh_t *sh)
-{
-    ud_t *ud = archive_user_data(a);
-    file_t *fdir;
-    struct stat stt;
-
-    fdir = array_grow(archive_files(a), file_init);
-    array_grow(ud->change, change_init);
-                
-    file_name(fdir) = xstrdup(fname);
-
-    if (!st) {
-	char *full_name = make_full_name(a, fname);
-	stat(full_name, &stt); /* TODO handle error */
-	free(full_name);
-	st = &stt;
-    }
-
-    file_size(fdir) = st->st_size;
-    file_mtime(fdir) = st->st_mtime;
-           
-    if (detector)
-	archive_file_match_detector(a, archive_num_files(a)-1);
-
-    if (sh)
-	memcpy(fdir->sh, sh, sizeof(fdir->sh));
-    else {
-	archive_file_compute_hashes(a, archive_num_files(a)-1, HASHES_TYPE_ALL);
-	ud->dbh_changed = true;
-    }
-
-    /* normally, files are written to memdb in archive_new after read_infos is done */
-    if ((archive_flags(a) & ARCHIVE_FL_DELAY_READINFO) && IS_EXTERNAL(archive_where(a)))
-	memdb_file_insert(NULL, a, archive_num_files(a)-1);
 
     return 0;
 }
@@ -354,12 +299,6 @@ change_rollback(archive_t *a, change_t *ch)
     change_init(ch);
 }
 
-static int
-cmp_file_by_name(file_t *f, const char *name)
-{
-    return strcmp(file_name(f), name);
-}
-
 
 static int
 ensure_archive_dir(archive_t *a)
@@ -443,18 +382,19 @@ op_close(archive_t *a)
 	return 0;
     }
 
+#if 0
     if (ud->dbh_changed) {
 	/* update db */
 	if (!ud->dbh)
-	    ud->dbh = dbh_dir_get_db_for_archive(archive_name(a));
+	    ud->dbh = dbh_cache_get_db_for_archive(archive_name(a));
 	if (ud->dbh) {
 	    if (ud->id > 0)
-		dbh_dir_delete(ud->dbh, ud->id);
+		dbh_cache_delete(ud->dbh, ud->id);
 	    if (archive_num_files(a) > 0) {
-		ud->id = dbh_dir_write(ud->dbh, ud->id, mybasename(archive_name(a)), 0, 0, archive_files(a));
+		ud->id = dbh_cache_write(ud->dbh, ud->id, mybasename(archive_name(a)), 0, 0, archive_files(a));
 		if (ud->id < 0) {
 		    seterrdb(ud->dbh);
-		    myerror(ERRDB, "%s: error writing to " DBH_DIR_DB_NAME, archive_name(a));
+		    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, archive_name(a));
 		    ud->id = 0;
 		}
 	    }
@@ -465,6 +405,7 @@ op_close(archive_t *a)
 	    ud->id = 0;
 	ud->dbh_changed = false;
     }
+#endif
 
     return 0;
 }
@@ -505,8 +446,10 @@ op_commit(archive_t *a)
 	}
     }
 
+#if 0
     if (archive_is_modified(a)) 
 	ud->dbh_changed = true;
+#endif
 
     return ret;
 }
@@ -741,28 +684,26 @@ op_file_strerror(void *f)
 }
 
 
-static int
+static bool
+op_get_last_update(archive_t *a, time_t *mtime, off_t *size)
+{
+    time(mtime);
+    *size = 0;
+
+    return true;
+}
+
+
+static bool
 op_read_infos(archive_t *a)
 {
-    array_t *files = NULL;    /* information on files from cache DB */
-    file_t *fdb;
     ud_t *ud = archive_user_data(a);
-    const char *fname;
     dir_t *dir;
     char namebuf[8192];
     dir_status_t status;
 
-    files = array_new(sizeof(file_t));
-    if (ud->dbh)
-	dbh_dir_read(ud->dbh, mybasename(archive_name(a)), files);
-
     if ((dir=dir_open(archive_name(a), DIR_RECURSE)) == NULL) {
-	if (array_length(files) > 0) {
-	    ud->dbh_changed = true;
-            /* TODO: if (!(a->flags & ARCHIVE_FL_CREATE)) write changes to db */
-	}
-	array_free(files, file_finalize);
-	return -1;
+	return false;
     }
 
     while ((status=dir_next(dir, namebuf, sizeof(namebuf))) == DIR_OK) {
@@ -771,42 +712,33 @@ op_read_infos(archive_t *a)
 	    continue;
 
 	if (stat(namebuf, &sb) < 0) {
-	    array_free(files, file_finalize);
 	    dir_close(dir);
-	    return -1;
+	    return false;
 	}
 
 	if (S_ISREG(sb.st_mode)) {
-	    fname = namebuf+strlen(archive_name(a))+1;
-	    fdb = NULL;
-	    if (files) {
-		int idx = array_index(files, fname, cmp_file_by_name);
-		if (idx >= 0) {
-		    fdb = array_get(files, idx);
-		    if (file_mtime(fdb) != sb.st_mtime || file_size(fdb) != sb.st_size)
-			fdb = NULL;
-		}
-	    }
-	    add_file(a, fname, &sb, fdb ? fdb->sh : NULL);
+	    file_t *f;
+	    
+	    f = array_grow(archive_files(a), file_init);
+	    array_grow(ud->change, change_init);
+	    
+	    file_name(f) = xstrdup(namebuf+strlen(archive_name(a))+1);
+	    file_size(f) = sb.st_size;
+	    file_mtime(f) = sb.st_mtime;
 	}
     }
-
-    if (archive_num_files(a) != array_length(files))
-	ud->dbh_changed = true;
-
-    array_free(files, file_finalize);
 
     if (status != DIR_EOD) {
 	myerror(ERRDEF, "error reading directory: %s", strerror(errno));
 	dir_close(dir);
-	return -1;
+	return false;
     }
     if (dir_close(dir) < 0) {
 	myerror(ERRDEF, "cannot close directory '%s': %s", archive_name(a), strerror(errno));
-	return -1;
+	return false;
     }
 
-    return 0;
+    return true;
 }
 
 

@@ -136,6 +136,7 @@ create index file_sha1 on file (sha1);\n\
 create index archive_name on archive (name);\n\
 create table file (\n\
 	archive_id integer not null,\n\
+	file_idx integer,\n\
 	name text not null,\n\
         mtime integer not null,\n\
 	status integer not null,\n\
@@ -144,7 +145,8 @@ create table file (\n\
 	md5 binary,\n\
 	sha1 binary\n\
 );\n\
-create index file_archive_id on file (archive_id);\n"
+create index file_archive_id on file (archive_id);\n\
+create index file_idx on file (file_idx);\n"
 };
 
 
