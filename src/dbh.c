@@ -50,7 +50,7 @@
 #define DBH_EMAX	3
 
 static const int format_version[] = {
-    2, 1, 1
+    2, 1, 2
 };
 #define USER_VERSION(fmt)	(format_version[fmt]+(fmt<<8)+17000)
 

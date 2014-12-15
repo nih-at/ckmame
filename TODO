@@ -1,4 +1,5 @@
 * use cache DB also for zipped rom sets
+* clean up archives in .ckmame.db for manually removed dirs/zips
 
 * uncompressed support
 ** automatically recognize dirs with .ckmame.db as uncompressed and warn/exit/dotherightthing

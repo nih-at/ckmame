@@ -451,7 +451,7 @@ op_close(archive_t *a)
 	    if (ud->id > 0)
 		dbh_dir_delete(ud->dbh, ud->id);
 	    if (archive_num_files(a) > 0) {
-		ud->id = dbh_dir_write(ud->dbh, ud->id, mybasename(archive_name(a)), archive_files(a));
+		ud->id = dbh_dir_write(ud->dbh, ud->id, mybasename(archive_name(a)), 0, 0, archive_files(a));
 		if (ud->id < 0) {
 		    seterrdb(ud->dbh);
 		    myerror(ERRDB, "%s: error writing to " DBH_DIR_DB_NAME, archive_name(a));

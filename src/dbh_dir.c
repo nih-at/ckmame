@@ -114,7 +114,7 @@ int
 dbh_dir_get_archive_id(dbh_t *dbh, const char *name)
 {
     sqlite3_stmt *stmt;
-    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_ARCHIVE)) == NULL)
+    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_ARCHIVE_ID)) == NULL)
 	return 0;
 
     if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK)
@@ -123,6 +123,26 @@ dbh_dir_get_archive_id(dbh_t *dbh, const char *name)
 	return 0;
 
     return sqlite3_column_int(stmt, 0);
+}
+
+
+bool
+dbh_dir_get_archive_last_change(dbh_t *dbh, int archive_id, time_t *mtime, off_t *size)
+{
+    sqlite3_stmt *stmt;
+
+    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_ARCHIVE_LAST_CHANGE)) == NULL || sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK) {
+	return false;
+    }
+
+    if (sqlite3_step(stmt) != SQLITE_ROW) {
+	return false;
+    }
+
+    *mtime = sqlite3_column_int64(stmt, 0);
+    *size = sqlite3_column_int64(stmt, 1);
+
+    return true;
 }
 
 
@@ -181,6 +201,34 @@ dbh_dir_is_empty(dbh_t *dbh)
 	return false;
 
     return sqlite3_column_int(stmt, 0) == 0;
+}
+
+
+parray_t *
+dbh_dir_list_archives(dbh_t *dbh)
+{
+    sqlite3_stmt *stmt;
+    parray_t *archives;
+    int ret;
+
+    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_LIST_ARCHIVES)) == NULL) {
+	return NULL;
+    }
+
+    if ((archives = parray_new()) == NULL) {
+	return NULL;
+    }
+
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	parray_push(archives, sq3_get_string(stmt, 0));
+    }
+
+    if (ret != SQLITE_DONE) {
+	parray_free(archives, free);
+	return NULL;
+    }
+
+    return archives;
 }
 
 
@@ -272,7 +320,7 @@ dbh_dir_register_cache_directory(const char *directory_name)
 
 
 int
-dbh_dir_write(dbh_t *dbh, int id, const char *name, array_t *files)
+dbh_dir_write(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size, array_t *files)
 {
     sqlite3_stmt *stmt;
     int i;
@@ -282,10 +330,9 @@ dbh_dir_write(dbh_t *dbh, int id, const char *name, array_t *files)
 	    return -1;
     }
     
-    if ((id = dbh_dir_write_archive(dbh, id, name)) < 0)
+    if ((id = dbh_dir_write_archive(dbh, id, name, mtime, size)) < 0)
         return -1;
     
-
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_INSERT_FILE)) == NULL)
 	return -1;
 
@@ -300,14 +347,16 @@ dbh_dir_write(dbh_t *dbh, int id, const char *name, array_t *files)
     return id;
 }
 
-int dbh_dir_write_archive(dbh_t *dbh, int id, const char *name)
+int
+dbh_dir_write_archive(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size)
 {
     sqlite3_stmt *stmt;
 
     stmt = dbh_get_statement(dbh, DBH_STMT_DIR_INSERT_ARCHIVE_ID);
     
-    if (stmt == NULL || sq3_set_string(stmt, 1, name) != SQLITE_OK)
+    if (stmt == NULL || sq3_set_string(stmt, 1, name) != SQLITE_OK || sqlite3_bind_int64(stmt, 3, mtime) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, size) != SQLITE_OK) {
 	return -1;
+    }
     
     if (id > 0) {
 	if (sqlite3_bind_int(stmt, 2, id) != SQLITE_OK)

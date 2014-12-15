@@ -42,12 +42,14 @@ int dbh_dir_close_all(void);
 int dbh_dir_delete(dbh_t *, int);
 int dbh_dir_delete_files(dbh_t *, int);
 int dbh_dir_get_archive_id(dbh_t *, const char *);
+bool dbh_dir_get_archive_last_change(dbh_t *, int, time_t *, off_t *);
 dbh_t *dbh_dir_get_db_for_archive(const char *);
 bool dbh_dir_is_empty(dbh_t *);
+parray_t *dbh_dir_list_archives(dbh_t *);
 int dbh_dir_read(dbh_t *, const char *, array_t *);
 int dbh_dir_register_cache_directory(const char *);
-int dbh_dir_write(dbh_t *, int, const char *, array_t *);
-int dbh_dir_write_archive(dbh_t *, int, const char *);
+int dbh_dir_write(dbh_t *, int, const char *, time_t, off_t, array_t *);
+int dbh_dir_write_archive(dbh_t *, int, const char *, time_t, off_t);
 int dbh_dir_write_file(dbh_t *, int, const file_t *);
 int ensure_romset_dir_db(void);
 

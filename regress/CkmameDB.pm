@@ -29,7 +29,7 @@ sub read_db {
 	my ($self) = @_;
 	
 	if (! -f "$self->{dir}/.ckmame.db") {
-		$self->{dump_got} = [ '>>> table archive (archive_id, name)', '>>> table file (archive_id, name, mtime, status, size, crc, md5, sha1)' ];
+		$self->{dump_got} = [ '>>> table archive (archive_id, name, mtime, size)', '>>> table file (archive_id, name, mtime, status, size, crc, md5, sha1)' ];
 		return 1;
 	}
 	
@@ -135,10 +135,10 @@ sub make_dump {
 	
 	my @dump = ();
 	
-	push @dump, '>>> table archive (archive_id, name)';
+	push @dump, '>>> table archive (archive_id, name, mtime, size)';
 	
 	for my $id (sort { $a <=> $b } keys %{$self->{archives_got}}) {
-		push @dump, "$id|$self->{archives_got}->{$id}->{name}";
+		push @dump, "$id|$self->{archives_got}->{$id}->{name}|0|0";
 	}
 	push @dump, '>>> table file (archive_id, name, mtime, status, size, crc, md5, sha1)';
 	for my $id (sort { $a <=> $b} keys %{$self->{archives_got}}) {
