@@ -46,7 +46,8 @@ const dbh_stmt_t query_hash_type[] = {
 static void read_hashtypes_ft(romdb_t *, filetype_t);
 
 
-int romdb_close(romdb_t *db)
+int
+romdb_close(romdb_t *db)
 {
     int ret = dbh_close(romdb_dbh(db));
 
@@ -56,7 +57,8 @@ int romdb_close(romdb_t *db)
 }
 
 
-int romdb_has_disks(romdb_t *db)
+int
+romdb_has_disks(romdb_t *db)
 {
     sqlite3_stmt *stmt = dbh_get_statement(db->dbh, DBH_STMT_QUERY_HAS_DISKS);
     if (stmt == NULL) {
@@ -76,7 +78,8 @@ int romdb_has_disks(romdb_t *db)
 }
 
 
-int romdb_hashtypes(romdb_t *db, filetype_t type)
+int
+romdb_hashtypes(romdb_t *db, filetype_t type)
 {
     if (type >= TYPE_MAX) {
 	errno = EINVAL;
