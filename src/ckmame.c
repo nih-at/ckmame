@@ -352,6 +352,11 @@ main(int argc, char **argv)
     /* TODO: check for errors other than ENOENT */
     old_db = romdb_open(olddbname, DBH_READ);
 
+    if (roms_unzipped && romdb_has_disks(db) == 1) {
+        fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", getprogname());
+        exit(1);
+    }
+
     if (action == ACTION_CHECK_ROMSET) {
 	/* build tree of games to check */
 

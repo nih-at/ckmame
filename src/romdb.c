@@ -56,6 +56,26 @@ int romdb_close(romdb_t *db)
 }
 
 
+int romdb_has_disks(romdb_t *db)
+{
+    sqlite3_stmt *stmt = dbh_get_statement(db->dbh, DBH_STMT_QUERY_HAS_DISKS);
+    if (stmt == NULL) {
+        return -1;
+    }
+
+    switch (sqlite3_step(stmt)) {
+        case SQLITE_ROW:
+            return 1;
+
+        case SQLITE_DONE:
+            return 0;
+
+        default:
+            return -1;
+    }
+}
+
+
 int romdb_hashtypes(romdb_t *db, filetype_t type)
 {
     if (type >= TYPE_MAX) {

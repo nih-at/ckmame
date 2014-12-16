@@ -13,10 +13,11 @@
 #define MEM_DEC_FILE_IDX    "update file set idx=idx-1 where game_id = ? and file_type = ? and file_idx > ?"
 
 
-/* mamedb */
+/* romdb */
 
 #define QUERY_DAT           "select name, description, version from dat where dat_idx >= 0 order by dat_idx"
 #define QUERY_FILE_FBH      "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = ? and f.status <> ? @HASH@"
+#define QUERY_HAS_DISKS     "select file_idx from file where file_type = 2 limit 1"
 #define QUERY_RULE	    "select rule_idx, start_offset, end_offset, operation from rule order by rule_idx"
 #define QUERY_TEST	    "select type, offset, size, mask, value, result from test where rule_idx = ? order by test_idx"
 #define QUERY_LIST_DISK    "select distinct name from file where file_type = 2 order by name"
@@ -50,7 +51,7 @@
 #define UPDATE_FILE	    "update file set location = ? where game_id = ? and file_type = ? and file_idx = ?"
 #define UPDATE_PARENT	    "update parent set parent = ? where game_id = ? and file_type = ?"
 
-/* dirdb */
+/* cachedb */
 #define DIR_INSERT_ARCHIVE  "insert into archive (name, mtime, size) values (?, ?, ?)"
 #define DIR_INSERT_ARCHIVE_ID	    "insert into archive (name, archive_id, mtime, size) values (?, ?, ?, ?)"
 #define DIR_LIST_ARCHIVES    "select name from archive"

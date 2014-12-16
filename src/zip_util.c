@@ -64,7 +64,8 @@ my_zip_open(const char *name, int flags)
 int
 my_zip_rename(struct zip *za, int idx, const char *name)
 {
-    int zerr, idx2;
+    int zerr;
+    zip_int64_t idx2;
 
     if (zip_rename(za, idx, name) == 0)
 	return 0;
@@ -77,7 +78,7 @@ my_zip_rename(struct zip *za, int idx, const char *name)
     idx2 = zip_name_locate(za, name, 0);
     if (idx2 == -1)
 	return -1;
-    if (my_zip_rename_to_unique(za, idx2) < 0)
+    if (my_zip_rename_to_unique(za, (zip_uint64_t)idx2) < 0)
 	return -1;
 
     return zip_rename(za, idx, name);
@@ -85,7 +86,7 @@ my_zip_rename(struct zip *za, int idx, const char *name)
 
 
 int
-my_zip_rename_to_unique(struct zip *za, int idx)
+my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx)
 {
     char *unique, *p;
     char n[4];

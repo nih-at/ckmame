@@ -46,6 +46,7 @@ typedef struct {
 
 int romdb_close(romdb_t *);
 int romdb_delete_game(romdb_t *, const char *);
+int romdb_has_disks(romdb_t *);
 romdb_t *romdb_open(const char *, int);
 dat_t *romdb_read_dat(romdb_t *);
 detector_t *romdb_read_detector(romdb_t *);
