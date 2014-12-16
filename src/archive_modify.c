@@ -116,10 +116,13 @@ archive_commit(archive_t *a)
                 }
             }
             if (archive_num_files(a) > 0) {
-                time_t mtime;
-                off_t size;
+                time_t mtime = 0;
+                off_t size = 0;
 
-                a->ops->get_last_update(a, &mtime, &size); /* TODO: handle errors */
+                if (a->ops->get_last_update) {
+                    a->ops->get_last_update(a, &mtime, &size); /* TODO: handle errors */
+                }
+
                 a->cache_id = dbh_cache_write(a->cache_db, a->cache_id, mybasename(archive_name(a)), mtime, size, archive_files(a));
                 if (a->cache_id < 0) {
                     seterrdb(a->cache_db);

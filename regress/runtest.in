@@ -67,7 +67,7 @@ sub check_ckmame_db {
 		}
 	}
 	
-	my $db = new CkmameDB($dir);
+	my $db = new CkmameDB($dir, undef, $roms_uncompressed);
 	
 	if (!$db) {
 		print "opening $dir/.ckmame.db failed\n" if ($test->{verbose});
@@ -181,21 +181,18 @@ sub mangle_program {
 sub post_list_files {
 	my ($test, $hook) = @_;
 
-	if ($roms_uncompressed) {
-		my %got = ();
+	my %got = ();
 		
-		for my $file (@{$test->{files_got}}) {
-			next if ($file =~ '/.ckmame.db$');
-			if ($file =~ m,((?:extra|extradir|moreroms|needed|roms|samples|search|unknown)/[^/]*)/,) {
-				$got{"$1.zip"} = 1;
-			}
-			else {
-				$got{$file} = 1;
-			}
+	for my $file (@{$test->{files_got}}) {
+		next if ($file =~ '/.ckmame.db$');
+		if ($file =~ m,((?:extra|extradir|moreroms|needed|roms|samples|search|unknown)/[^/]*)/,) {
+			$got{"$1.zip"} = 1;
 		}
-
-		$test->{files_got} = [sort keys %got];
+		else {
+			$got{$file} = 1;
+		}
 	}
+	$test->{files_got} = [sort keys %got];
 
 	return 1;
 }

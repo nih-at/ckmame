@@ -94,7 +94,6 @@ static void *op_file_open(archive_t *, int);
 static int64_t op_file_read(void *, void *, uint64_t);
 static int op_file_rename(archive_t *, int, const char *);
 static const char *op_file_strerror(void *);
-static bool op_get_last_update(archive_t *a, time_t *mtime, off_t *size);
 static bool op_read_infos(archive_t *);
 static int op_rollback(archive_t *);
 
@@ -111,7 +110,7 @@ struct archive_ops ops_dir = {
     op_file_read,
     op_file_rename,
     op_file_strerror,
-    op_get_last_update,
+    NULL,
     op_read_infos,
     op_rollback
 };
@@ -381,31 +380,6 @@ op_close(archive_t *a)
 	/* error during initialization, do nothing */
 	return 0;
     }
-
-#if 0
-    if (ud->dbh_changed) {
-	/* update db */
-	if (!ud->dbh)
-	    ud->dbh = dbh_cache_get_db_for_archive(archive_name(a));
-	if (ud->dbh) {
-	    if (ud->id > 0)
-		dbh_cache_delete(ud->dbh, ud->id);
-	    if (archive_num_files(a) > 0) {
-		ud->id = dbh_cache_write(ud->dbh, ud->id, mybasename(archive_name(a)), 0, 0, archive_files(a));
-		if (ud->id < 0) {
-		    seterrdb(ud->dbh);
-		    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, archive_name(a));
-		    ud->id = 0;
-		}
-	    }
-	    else
-		ud->id = 0;
-	}
-	else
-	    ud->id = 0;
-	ud->dbh_changed = false;
-    }
-#endif
 
     return 0;
 }
@@ -681,16 +655,6 @@ static const char *
 op_file_strerror(void *f)
 {
     return strerror(errno);
-}
-
-
-static bool
-op_get_last_update(archive_t *a, time_t *mtime, off_t *size)
-{
-    time(mtime);
-    *size = 0;
-
-    return true;
 }
 
 

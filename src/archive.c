@@ -49,6 +49,7 @@
 
 #define BUFSIZE 8192
 
+static int archive_cache_is_up_to_date(archive_t *a);
 static int cmp_file_by_name(const file_t *f, const char *name);
 static int get_hashes(archive_t *, void *, off_t, struct hashes *);
 static bool merge_files(archive_t *a, array_t *files);
@@ -373,28 +374,32 @@ archive_read_infos(archive_t *a)
     a->cache_db = dbh_cache_get_db_for_archive(archive_name(a));
     a->cache_changed = false;
     if (a->cache_db) {
-	time_t mtime_cache, mtime_disk;
-	off_t size_cache, size_disk;
-	
 	a->cache_id = dbh_cache_get_archive_id(a->cache_db, mybasename(archive_name(a)));
 
 	if (a->cache_id > 0) {
-	    if (!dbh_cache_get_archive_last_change(a->cache_db, a->cache_id, &mtime_cache, &size_cache)
-		|| ! a->ops->get_last_update(a, &mtime_disk, &size_disk)) {
-		return false;
-	    }
+            files_cache = array_new(sizeof(file_t));
+            if (!dbh_cache_read(a->cache_db, mybasename(archive_name(a)), files_cache)) {
+                array_free(files_cache, file_finalize);
+                return false;
+            }
 
-	    files_cache = array_new(sizeof(file_t));
-	    if (!dbh_cache_read(a->cache_db, mybasename(archive_name(a)), files_cache)) {
-		array_free(files_cache, file_finalize);
-		return false;
-	    }
+            switch (archive_cache_is_up_to_date(a)) {
+                case -1:
+                    array_free(files_cache, file_finalize);
+                    return false;
 
-	    if (mtime_cache == mtime_disk && size_cache == size_disk) {
-		replace_files(a, files_cache);
-		return true;
-	    }
-	}
+                case 0:
+                    break;
+
+                case 1:
+                    replace_files(a, files_cache);
+                    return true;
+            }
+
+            if (a->ops->get_last_update) {
+                a->cache_changed = true;
+            }
+        }
     }
     else {
 	a->cache_id = 0;
@@ -462,6 +467,29 @@ archive_is_empty(const archive_t *a)
 	    return false;
 
     return true;
+}
+
+
+
+static int
+archive_cache_is_up_to_date(archive_t *a)
+{
+    if (a->ops->get_last_update == NULL) {
+        return 0;
+    }
+
+    time_t mtime_cache, mtime_disk;
+    off_t size_cache, size_disk;
+
+    if (!dbh_cache_get_archive_last_change(a->cache_db, a->cache_id, &mtime_cache, &size_cache)) {
+        return -1;
+    }
+
+    if (!a->ops->get_last_update(a, &mtime_disk, &size_disk)) {
+        return -1;
+    }
+
+    return (mtime_cache == mtime_disk && size_cache == size_disk);
 }
 
 

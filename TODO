@@ -144,3 +144,9 @@ tools:
 	db make-parent CHILD
 [db] export to dat files
 	db export
+
+
+cachedb:
+- superfluous top level: non-recursive archive, all loose files are superfluous;
+- non-recursive archive: exclude .ckmame.db
+- test: zip with files not in alphabetical order, check that correct in .ckmame.db (via dump-after)

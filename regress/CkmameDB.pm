@@ -7,9 +7,10 @@ sub new {
 	my $class = UNIVERSAL::isa ($_[0], __PACKAGE__) ? shift : __PACKAGE__;
 	my $self = bless {}, $class;
 
-	my ($dir, $skip) = @_;
+	my ($dir, $skip, $unzipped) = @_;
 	
 	$self->{dir} = $dir;
+	$self->{unzipped} = $unzipped;
 	if ($skip) {
 		$self->{skip} = { map { $_ => 1} @$skip };
 	}
@@ -77,7 +78,8 @@ sub read_archives {
 	my ($self) = @_;
 	
 	my $dat;
-	unless (open $dat, "../../src/mkmamedb --no-directory-cache -F cm -u -o /dev/stdout $self->{dir} 2>/dev/null | ") {
+	my $opt = ($self->{unzipped} ? '-u' : '');
+	unless (open $dat, "../../src/mkmamedb --no-directory-cache -F cm $opt -o /dev/stdout $self->{dir} 2>/dev/null | ") {
 		print "mkmamedb using $self->{dir} failed: $!\n" if ($self->{verbose});
 		return undef;
 	}
@@ -105,6 +107,16 @@ sub read_archives {
 			}
 			
 			$archive->{name} = $1;
+			if ($self->{unzipped}) {
+				$archive->{mtime} = 0;
+				$archive->{size} = 0;
+			}
+			else {
+				$archive->{name} .= '.zip';
+				my @stat = stat("$self->{dir}/$archive->{name}");
+				$archive->{mtime} = $stat[9];
+				$archive->{size} = $stat[7];
+			}
 			if ($self->{archive_id}->{$archive->{name}}) {
 				$archive->{id} = $self->{archive_id}->{$archive->{name}};
 			}
@@ -118,7 +130,7 @@ sub read_archives {
 
 			my $rom = { split ' ', $1 };
 			
-			$rom->{mtime} = (stat("$self->{dir}/$archive->{name}/$rom->{name}"))[9];
+			$rom->{mtime} = (stat("$self->{dir}/$archive->{name}/$rom->{name}"))[9] || ""; # TODO: fix for zips
 			$rom->{crc} = hex($rom->{crc});
 			
 			$archive->{files}->{$rom->{name}} = $rom;
@@ -138,7 +150,8 @@ sub make_dump {
 	push @dump, '>>> table archive (archive_id, name, mtime, size)';
 	
 	for my $id (sort { $a <=> $b } keys %{$self->{archives_got}}) {
-		push @dump, "$id|$self->{archives_got}->{$id}->{name}|0|0";
+		my $archive = $self->{archives_got}->{$id};
+		push @dump, "$id|$archive->{name}|$archive->{mtime}|$archive->{size}";
 	}
 	push @dump, '>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1)';
 	my $idx = 0;
