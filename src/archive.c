@@ -330,13 +330,12 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
 	    archive_real_free(a);
 	    return NULL;
 	}
-	if (!(a->flags & ARCHIVE_FL_DELAY_READINFO)) {
-	    if (!archive_read_infos(a)) {
-		if (!(a->flags & ARCHIVE_FL_CREATE)) {
-		    archive_real_free(a);
-		    return NULL;
-		}
-	    }
+        if (!archive_read_infos(a)) {
+            /* TODO: return error if archive_read_infos failed for error other than archive doesn't exist */
+            if (!(a->flags & ARCHIVE_FL_CREATE)) {
+                archive_real_free(a);
+                return NULL;
+            }
 	}
 	break;
 
@@ -406,12 +405,12 @@ archive_read_infos(archive_t *a)
 	return false;
     }
 
+    if (!merge_files(a, files_cache)) {
+        array_free(files_cache, file_finalize);
+        return false;
+    }
+
     if (files_cache) {
-	if (!merge_files(a, files_cache)) {
-	    array_free(files_cache, file_finalize);
-	    return false;
-	}
-	    
 	array_free(files_cache, file_finalize);
 	a->cache_changed = true;
     }
@@ -450,10 +449,7 @@ archive_refresh(archive_t *a)
 int
 archive_register_cache_directory(const char *name)
 {
-    if (roms_unzipped)
-	return dbh_cache_register_cache_directory(name);
-
-    return 0;
+    return dbh_cache_register_cache_directory(name);
 }
 
 bool
@@ -509,7 +505,7 @@ merge_files(archive_t *a, array_t *files)
     for (i = 0; i < array_length(archive_files(a)); i++) {
 	file_t *file = archive_file(a, i);
 
-	if ((idx = array_index(files, file_name(file), cmp_file_by_name)) > 0) {
+	if (files && (idx = array_index(files, file_name(file), cmp_file_by_name)) > 0) {
 	    file_t *cfile = array_get(files, idx);
 	    if (file_mtime(file) == file_mtime(cfile) && file_compare_nsc(file, cfile)) {
 		hashes_copy(file_hashes(file), file_hashes(cfile));

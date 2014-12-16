@@ -290,7 +290,7 @@ tree_process(tree_t *tree, archive_t *child,
     /* write warnings/errors for me */
     diagnostics(g, child, images, res);
 
-    int ret;
+    int ret = 0;
 
     if (fix_options & FIX_DO)
 	ret = fix_game(g, child, images, res);

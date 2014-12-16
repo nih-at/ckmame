@@ -87,7 +87,7 @@ sub check_ckmame_db {
 sub checks {
 	my ($test, $hook) = @_;
 
-	return 1 unless ($roms_uncompressed);
+	#return 1 unless ($roms_uncompressed);
 
 	my %checked = ();
 	

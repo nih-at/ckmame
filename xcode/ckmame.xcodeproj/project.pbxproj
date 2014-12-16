@@ -374,7 +374,7 @@
 		4B5FAC9B1735919800B67C24 /* check_files.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = check_files.c; sourceTree = "<group>"; };
 		4B5FAC9C1735919800B67C24 /* check_images.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = check_images.c; sourceTree = "<group>"; };
 		4B5FAC9D1735919800B67C24 /* check_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = check_old.c; sourceTree = "<group>"; };
-		4B5FAC9E1735919800B67C24 /* check_util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = check_util.c; sourceTree = "<group>"; };
+		4B5FAC9E1735919800B67C24 /* check_util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = check_util.c; sourceTree = "<group>"; usesTabs = 1; };
 		4B5FAC9F1735919800B67C24 /* cleanup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cleanup.c; sourceTree = "<group>"; };
 		4B5FACA01735919800B67C24 /* dat_entry_finalize.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dat_entry_finalize.c; sourceTree = "<group>"; };
 		4B5FACA11735919800B67C24 /* dat_entry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dat_entry.c; sourceTree = "<group>"; };
@@ -475,7 +475,7 @@
 		4B5FAE6E173594C800B67C24 /* xmalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xmalloc.c; sourceTree = "<group>"; };
 		4B5FAE6F173594C800B67C24 /* xmlutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xmlutil.c; sourceTree = "<group>"; };
 		4B5FAE70173594C800B67C24 /* zip_util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip_util.c; sourceTree = "<group>"; };
-		4B5FAE8F1735953D00B67C24 /* ckmame.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ckmame.c; sourceTree = "<group>"; };
+		4B5FAE8F1735953D00B67C24 /* ckmame.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ckmame.c; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
 		4B5FAE911735954C00B67C24 /* detective.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = detective.c; sourceTree = "<group>"; };
 		4B5FAE931735955A00B67C24 /* dumpgame.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dumpgame.c; sourceTree = "<group>"; };
 		4B5FAE951735956B00B67C24 /* mkmamedb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mkmamedb.c; sourceTree = "<group>"; };
@@ -507,6 +507,8 @@
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmlutil.h; sourceTree = "<group>"; };
 		4B9292C917635B5500806C0A /* archive_zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_zip.c; sourceTree = "<group>"; };
 		4BC0362818C8B01B00D6D5AF /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 8; path = runtest.in; sourceTree = "<group>"; usesTabs = 1; };
+		4BD1BAA61A404BF300A70734 /* CkmameDB.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = CkmameDB.pm; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -615,6 +617,7 @@
 				4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */,
 				4B5FAEA817359A3700B67C24 /* libz.dylib */,
 				4B5FAC6217358FF000B67C24 /* ckmame */,
+				4BD1BAA41A404BA800A70734 /* regress */,
 				4B5FAC6117358FF000B67C24 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -849,6 +852,16 @@
 				4B5FAE991735998E00B67C24 /* sha1_own.h */,
 			);
 			name = compat;
+			sourceTree = "<group>";
+		};
+		4BD1BAA41A404BA800A70734 /* regress */ = {
+			isa = PBXGroup;
+			children = (
+				4BD1BAA61A404BF300A70734 /* CkmameDB.pm */,
+				4BD1BAA51A404BCB00A70734 /* runtest.in */,
+			);
+			name = regress;
+			path = ../regress;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

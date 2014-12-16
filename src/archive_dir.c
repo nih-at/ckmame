@@ -702,7 +702,7 @@ op_read_infos(archive_t *a)
     char namebuf[8192];
     dir_status_t status;
 
-    if ((dir=dir_open(archive_name(a), DIR_RECURSE)) == NULL) {
+    if ((dir=dir_open(archive_name(a), (a->flags & ARCHIVE_FL_TOP_LEVEL_ONLY) ? 0 : DIR_RECURSE)) == NULL) {
 	return false;
     }
 

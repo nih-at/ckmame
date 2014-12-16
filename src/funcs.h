@@ -80,7 +80,7 @@ int move_image_to_garbage(const char *);
 int my_remove(const char *name);
 struct zip *my_zip_open(const char *, int);
 int my_zip_rename(struct zip *, int, const char *);
-int my_zip_rename_to_unique(struct zip *, int);
+int my_zip_rename_to_unique(struct zip *, zip_uint64_t);
 int name_is_zip(const char *);
 void print_superfluous(const parray_t *);
 void remove_empty_archive(const char *);

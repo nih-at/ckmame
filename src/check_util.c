@@ -48,8 +48,9 @@
 int maps_done = 0;
 
 static int enter_dir_in_map_and_list(int, parray_t *, const char *, int, where_t);
-static int enter_dir_entries_in_map_and_list(int, parray_t *, const char *, int, where_t);
-static int enter_file_in_map_and_list(int flags, parray_t *list, archive_t *dir_archive, const char *name, where_t where);
+static int enter_dir_in_map_and_list_unzipped(int, parray_t *, const char *, int, where_t);
+static int enter_dir_in_map_and_list_zipped(int, parray_t *, const char *, int, where_t);
+static int enter_file_in_map_and_list(int flags, parray_t *list, const char *name, where_t where);
 
 
 void
@@ -102,7 +103,7 @@ ensure_extra_maps(int flags)
     }
 
     for (i=0; i<parray_length(search_dirs); i++)
-	enter_dir_entries_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
+	enter_dir_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
 
     if (flags & DO_LIST)
 	parray_sort(extra_list, strcmp);
@@ -118,7 +119,7 @@ ensure_needed_maps(void)
     maps_done |= NEEDED_MAPS;
     needed_delete_list = delete_list_new();
 
-    enter_dir_entries_in_map_and_list(DO_MAP, NULL, needed_dir, DIR_RECURSE, FILE_NEEDED);
+    enter_dir_in_map_and_list(DO_MAP, NULL, needed_dir, DIR_RECURSE, FILE_NEEDED);
 }
 
 
@@ -183,49 +184,71 @@ is_romdir(const char *name)
 
 
 static int
-enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_flags, where_t where)
+enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name, int dir_flags, where_t where)
 {
-    dir_t *dir;
-    dir_status_t ds;
-    char b[8192];
-    archive_t *a;
-
-    if (is_romdir(name)) {
-	myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), name);
+    if (is_romdir(directory_name)) { /* TODO: also check that b doesn't contain a ROM dir */
+	myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), directory_name);
 	exit(1);
     }
 
-    if ((dir=dir_open(name, dir_flags|DIR_RETURN_DIRECTORIES)) == NULL)
-	return -1;
-
     if (roms_unzipped) {
-	if ((a=archive_new(name, TYPE_ROM, where, ARCHIVE_FL_DELAY_READINFO)) == NULL) {
-	    /* TODO: handle error */
-	}
+	return enter_dir_in_map_and_list_unzipped(flags, list, directory_name, dir_flags, where);
+    }
+    else {
+	return enter_dir_in_map_and_list_zipped(flags, list, directory_name, dir_flags, where);
+    }
+}
+
+static int
+enter_dir_in_map_and_list_unzipped(int flags, parray_t *list, const char *directory_name, int dir_flags, where_t where)
+{
+    dir_t *dir;
+    dir_status_t ds;
+    char name[8192];
+    bool have_top_level_files = false;
+
+    if (is_romdir(directory_name)) { /* TODO: also check that b doesn't contain a ROM dir */
+        myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), directory_name);
+        exit(1);
     }
 
-    while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	if (ds == DIR_ERROR) {
-	    /* TODO: handle error */
-	    continue;
-	}
-	if (ds == DIR_DIRECTORY) {
-	    if (is_romdir(b)) {
-		myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), name);
-		dir_close(dir);
-		exit(1);
-	    }
-	}
-	else {
-	    enter_file_in_map_and_list(flags, list, a, b, where);
-	    /* TODO: handle error */
-	}
+    if (!roms_unzipped) {
+        return enter_dir_in_map_and_list(flags, list, directory_name, dir_flags, where);
     }
 
-    if (roms_unzipped) {
-	if ((flags & DO_LIST) && list)
-	    parray_push(list, xstrdup(name));
-	archive_free(a);
+    if ((dir=dir_open(directory_name, dir_flags & ~DIR_RECURSE)) == NULL) {
+        return -1;
+    }
+
+    while ((ds=dir_next(dir, name, sizeof(name))) != DIR_EOD) {
+        struct stat sb;
+        if (strcmp(mybasename(name), DBH_CACHE_DB_NAME) == 0) {
+            continue;
+        }
+        if (stat(name, &sb) < 0) {
+            continue;
+        }
+        if (S_ISDIR(sb.st_mode)) {
+            archive_t *a = archive_new(name, TYPE_ROM, where, 0);
+            if (a != NULL) {
+                archive_close(a);
+                if ((flags & DO_LIST) && list) {
+                    parray_push(list, xstrdup(name));
+                }
+            }
+        } else if (S_ISREG(sb.st_mode)) {
+            have_top_level_files = true;
+        }
+    }
+
+    if (have_top_level_files) {
+        archive_t *a = archive_new(directory_name, TYPE_ROM, where, ARCHIVE_FL_TOP_LEVEL_ONLY);
+        if (a != NULL) {
+            archive_close(a);
+            if ((flags & DO_LIST) && list) {
+                parray_push(list, xstrdup(directory_name));
+            }
+        }
     }
 
     return dir_close(dir);
@@ -233,50 +256,26 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *name, int dir_f
 
 
 static int
-enter_dir_entries_in_map_and_list(int flags, parray_t *list, const char *name, int dir_flags, where_t where)
+enter_dir_in_map_and_list_zipped(int flags, parray_t *list, const char *dir_name, int dir_flags, where_t where)
 {
     dir_t *dir;
     dir_status_t ds;
     char b[8192];
-    archive_t *a;
 
-    if (is_romdir(name)) {
-	myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), name);
-	exit(1);
-    }
-
-    if (!roms_unzipped)
-        return enter_dir_in_map_and_list(flags, list, name, dir_flags, where);
-
-    if ((dir=dir_open(name, dir_flags & ~DIR_RECURSE)) == NULL)
+    if ((dir=dir_open(dir_name, dir_flags)) == NULL) {
 	return -1;
-
-    if ((a=archive_new(name, TYPE_ROM, where, ARCHIVE_FL_DELAY_READINFO|ARCHIVE_FL_KEEP_EMPTY)) == NULL) {
-        /* TODO: handle error */
     }
 
     while ((ds=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	struct stat sb;
-	if (strcmp(mybasename(b), DBH_CACHE_DB_NAME) == 0)
-	    continue;
-	if (stat(b, &sb) < 0)
-	    continue;
-	if (S_ISDIR(sb.st_mode)) {
-	    if (is_romdir(b)) {
-		myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), name);
-		exit(1);
-	    }
-	    enter_dir_in_map_and_list(flags, list, b, dir_flags, where);
-	} else if (S_ISREG(sb.st_mode)) {
-            enter_file_in_map_and_list(flags, list, a, b, where);
+	if (ds == DIR_ERROR) {
 	    /* TODO: handle error */
+	    continue;
 	}
+
+	enter_file_in_map_and_list(flags, list, b, where);
+	/* TODO: handle error */
     }
 
-    if (archive_num_files(a) > 0 && (flags & DO_LIST) && list)
-        parray_push(list, xstrdup(name));
-    archive_free(a);
-    
     return dir_close(dir);
 }
 
@@ -304,20 +303,18 @@ enter_disk_in_map(const disk_t *d, where_t where)
 
 
 static int
-enter_file_in_map_and_list(int flags, parray_t *list, archive_t *dir_archive, const char *name, where_t where)
+enter_file_in_map_and_list(int flags, parray_t *list, const char *name, where_t where)
 {
     archive_t *a;
     disk_t *d;
     name_type_t nt;
 
-    bool handled = false;
     switch ((nt=name_type(name))) {
 	case NAME_ZIP:
-	    if (roms_unzipped)
-		break;
 	    if ((a=archive_new(name, TYPE_ROM, where, 0)) != NULL) {
-		if ((flags & DO_LIST) && list)
+		if ((flags & DO_LIST) && list) {
 		    parray_push(list, xstrdup(archive_name(a)));
+		}
 		archive_free(a);
 	    }
 	    break;
@@ -325,20 +322,18 @@ enter_file_in_map_and_list(int flags, parray_t *list, archive_t *dir_archive, co
 	case NAME_CHD:
 	case NAME_NOEXT:
 	    if ((d=disk_new(name, (nt==NAME_NOEXT ? DISK_FL_QUIET : 0))) != NULL) {
-		if (flags & DO_MAP)
+		if (flags & DO_MAP) {
 		    enter_disk_in_map(d, where);
-		if ((flags & DO_LIST) && list)
+		}
+		if ((flags & DO_LIST) && list) {
 		    parray_push(list, xstrdup(disk_name(d)));
+		}
 		disk_free(d);
-		handled = true;
 	    }
             
 	case NAME_UNKNOWN:
 	    /* ignore unknown files */
 	    break;
-    }
-    if (roms_unzipped && !handled) {
-	fprintf(stderr, "unhandled case: ignoring '%s'", name + strlen(archive_name(dir_archive))+1);
     }
 
     return 0;

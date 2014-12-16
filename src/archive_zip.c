@@ -340,6 +340,7 @@ op_read_infos(archive_t *a)
 	}
         
 	r = (file_t *)array_grow(archive_files(a), file_init);
+        file_mtime(r) = zsb.mtime;
 	file_size(r) = zsb.size;
 	file_name(r) = xstrdup(zsb.name);
 	file_status(r) = STATUS_OK;

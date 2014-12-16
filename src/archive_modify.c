@@ -34,10 +34,12 @@
 #include <errno.h>
 
 #include "archive.h"
+#include "dbh_cache.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
 #include "memdb.h"
+#include "util.h"
 #include "xmalloc.h"
 
 
@@ -50,53 +52,90 @@ archive_commit(archive_t *a)
 {
     int i;
 
-    if (!archive_is_modified(a))
-	return 0;
-
-    seterrinfo(NULL, archive_name(a));
-
-    if (a->ops->commit(a) < 0)
-        return -1;
-    
-    for (i=0; i<archive_num_files(a); i++) {
-	switch (file_where(archive_file(a, i))) {
-            case FILE_DELETED:
-                if (ARCHIVE_IS_INDEXED(a)) {
-                    /* TODO: handle error (how?) */
-                    memdb_file_delete(a, i, archive_is_writable(a));
-                }
-                
-                if (archive_is_writable(a)) {
-                    array_delete(archive_files(a), i, file_finalize);
-                    i--;
-                }
-                break;
-                
-            case FILE_ADDED:
-                if (ARCHIVE_IS_INDEXED(a)) {
-                    /* TODO: handle error (how?) */
-                    memdb_file_insert(NULL, a, i);
-                }
-                file_where(archive_file(a, i)) = FILE_INZIP;
-                break;
-                
-            default:
-                break;
-	}
-    }
-    
-    if (a->flags & ARCHIVE_FL_TORRENTZIP) {
-	/* Currently, only internal archives are torrentzipped and
-         only external archives are indexed.  So we don't need to
-         worry about memdb. */
+    if (archive_is_modified(a)) {
+        seterrinfo(NULL, archive_name(a));
         
-	array_sort(archive_files(a), _file_cmp_name);
+        a->cache_changed = true;
+
+        if (a->ops->commit(a) < 0) {
+            return -1;
+        }
+    
+        for (i=0; i<archive_num_files(a); i++) {
+            switch (file_where(archive_file(a, i))) {
+                case FILE_DELETED:
+                    if (ARCHIVE_IS_INDEXED(a)) {
+                        /* TODO: handle error (how?) */
+                        memdb_file_delete(a, i, archive_is_writable(a));
+                    }
+
+                    if (archive_is_writable(a)) {
+                        array_delete(archive_files(a), i, file_finalize);
+                        i--;
+                    }
+                    break;
+
+                case FILE_ADDED:
+                    if (ARCHIVE_IS_INDEXED(a)) {
+                        /* TODO: handle error (how?) */
+                        memdb_file_insert(NULL, a, i);
+                    }
+                    file_where(archive_file(a, i)) = FILE_INZIP;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        if (a->flags & ARCHIVE_FL_TORRENTZIP) {
+            /* Currently, only internal archives are torrentzipped and
+             only external archives are indexed.  So we don't need to
+             worry about memdb. */
+
+            array_sort(archive_files(a), _file_cmp_name);
+        }
+
+        if (a->ops->commit_cleanup) {
+            a->ops->commit_cleanup(a);
+        }
+
+        archive_flags(a) &= ~ARCHIVE_IFL_MODIFIED;
     }
 
-    if (a->ops->commit_cleanup)
-	a->ops->commit_cleanup(a);
-    
-    archive_flags(a) &= ~ARCHIVE_IFL_MODIFIED;
+    if (a->cache_changed) {
+        if (!a->cache_db) {
+            a->cache_db = dbh_cache_get_db_for_archive(archive_name(a));
+        }
+        if (a->cache_db) {
+            if (a->cache_id > 0) {
+                if (dbh_cache_delete(a->cache_db, a->cache_id) < 0) {
+                    seterrdb(a->cache_db);
+                    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, archive_name(a));
+                    /* TODO: handle errors */
+                }
+            }
+            if (archive_num_files(a) > 0) {
+                time_t mtime;
+                off_t size;
+
+                a->ops->get_last_update(a, &mtime, &size); /* TODO: handle errors */
+                a->cache_id = dbh_cache_write(a->cache_db, a->cache_id, mybasename(archive_name(a)), mtime, size, archive_files(a));
+                if (a->cache_id < 0) {
+                    seterrdb(a->cache_db);
+                    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, archive_name(a));
+                    a->cache_id = 0;
+                }
+            }
+            else {
+                a->cache_id = 0;
+            }
+        }
+        else {
+            a->cache_id = 0;
+        }
+        a->cache_changed = false;
+    }
 
     return 0;
 }
