@@ -1,0 +1,16 @@
+BEGIN
+
+clrmamepro (
+	name "ckmame test db"
+	version 1
+)
+
+game (
+	name 2-48
+	manufacturer "synth"
+	year 1991
+	rom ( name 04.rom size 4 crc32 d87f7e0c md5 098f6bcd4621d373cade4e832627b4f6 sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+        rom ( name 08.rom size 8 crc32 3656897d md5 095ca6fcc1279865662b553147eb8f6d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
+)
+
+END

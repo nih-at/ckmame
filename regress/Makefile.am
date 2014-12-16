@@ -30,8 +30,9 @@ MAME_DB_CRCDIFF=mamedb-crcdiff.db
 MAME_DB_NOCOMMON=mamedb-parent-no-common.db
 MAME_DB_SMALL=mamedb-small.db
 MAME_DB_TWO_GAMES=mamedb-two-games.db
+MAME_DB_ONE_GAME_TWO_ROMS=mamedb-one-game-two-roms.db
 MAME_DB_FIXDAT_TESTS=mamedb-fixdat-tests.db
-DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL} ${MAME_DB_TWO_GAMES} ${MAME_DB_FIXDAT_TESTS}
+DBS=${MAME_DB} ${MAME_DB2} ${MAME_DB3} ${MAME_DB_8_IS_4} ${MAME_DB_BADDUMP} ${MAME_DB_CRCDIFF} ${MAME_DB_NOCOMMON} ${MAME_DB_SMALL} ${MAME_DB_TWO_GAMES} ${MAME_DB_FIXDAT_TESTS} ${MAME_DB_ONE_GAME_TWO_ROMS}
 
 ZIPCMP=@ZIPCMP@
 
@@ -326,6 +327,7 @@ DBFILES=	\
 		mamedb-no-name.dump \
 		mamedb-no-name.txt \
 		mamedb-ok.dump \
+		mamedb-one-game-two-roms.txt \
 		mamedb-parent-crcdiff-mame.dump \
 		mamedb-parent-crcdiff-mame.xml \
 		mamedb-parent-crcdiff.dump \
@@ -368,6 +370,9 @@ ${MAME_DB_SMALL}: ../src/mkmamedb ${srcdir}/mamedb-small.txt
 
 ${MAME_DB_TWO_GAMES}: ../src/mkmamedb ${srcdir}/mamedb-two-games.txt
 	../src/mkmamedb -o ${MAME_DB_TWO_GAMES} ${srcdir}/mamedb-two-games.txt
+
+${MAME_DB_ONE_GAME_TWO_ROMS}: ../src/mkmamedb ${srcdir}/mamedb-one-game-two-roms.txt
+	../src/mkmamedb -o ${MAME_DB_ONE_GAME_TWO_ROMS} ${srcdir}/mamedb-one-game-two-roms.txt
 
 ${MAME_DB_FIXDAT_TESTS}: ../src/mkmamedb ${srcdir}/mamedb-merge-parent.txt
 	../src/mkmamedb -o ${MAME_DB_FIXDAT_TESTS} ${srcdir}/mamedb-merge-parent.txt

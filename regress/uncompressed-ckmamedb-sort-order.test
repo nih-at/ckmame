@@ -1,0 +1,8 @@
+description test double-rom game (no parent), check order of entries (forward)
+archive-types dir
+return 0
+args -D ../mamedb-one-game-two-roms.db -jFKLivc 2-48
+ckmamedb-after roms ckmamedb-2-48-ok.dump
+file roms/2-48.zip 2-48-ok.zip 2-48-ok.zip
+stdout In game 2-48:
+stdout game 2-48                                    : correct
