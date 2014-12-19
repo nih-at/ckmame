@@ -507,6 +507,7 @@
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmlutil.h; sourceTree = "<group>"; };
 		4B9292C917635B5500806C0A /* archive_zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_zip.c; sourceTree = "<group>"; };
 		4BC0362818C8B01B00D6D5AF /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		4BC78D0A1A4445A400A14E29 /* NiHTest.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = NiHTest.pm; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 8; path = runtest.in; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA61A404BF300A70734 /* CkmameDB.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = CkmameDB.pm; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */
@@ -857,6 +858,7 @@
 		4BD1BAA41A404BA800A70734 /* regress */ = {
 			isa = PBXGroup;
 			children = (
+				4BC78D0A1A4445A400A14E29 /* NiHTest.pm */,
 				4BD1BAA61A404BF300A70734 /* CkmameDB.pm */,
 				4BD1BAA51A404BCB00A70734 /* runtest.in */,
 			);
