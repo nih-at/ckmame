@@ -1,6 +1,6 @@
 description test game with disk, disk is wrong and exists in garbage
 return 0
-args -FKLivc disk
+args -D ../mamedb-disk-many.db -FKLivc disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/108-5.chd 12-1.chd
 file unknown/108-5.chd 108-5.chd 108-5.chd

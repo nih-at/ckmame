@@ -1,6 +1,6 @@
 description test single-rom game with no good dump disk, disk missing
 return 0
-args -FKLivc disk-nogood
+args -D ../mamedb-disk-many.db -FKLivc disk-nogood
 file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game disk-nogood:
 stdout game disk-nogood                             : correct

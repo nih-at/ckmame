@@ -1,6 +1,6 @@
 description test single-rom game with disk, disk wrong (not needed)
 return 0
-args -FKLivc disk-2
+args -D ../mamedb-disk-many.db -FKLivc disk-2
 file roms/disk-2.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/108-2.chd 108-5.chd
 file roms/108-5.chd 108-5.chd 108-5.chd

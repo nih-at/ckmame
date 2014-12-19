@@ -1,6 +1,6 @@
 description test all games, some files in superfluous, fix
 return 0
-args -Fvc --fixdat fix_test.dat
+args -D ../mamedb-disk-many.db -Fvc --fixdat fix_test.dat
 file-del roms/1-4-ok.zip 1-4-ok.zip
 file-del roms/1-8-ok.zip 1-8-ok.zip
 file-del roms/1-a-ok.zip 1-a-ok.zip

@@ -1,6 +1,6 @@
 description test game w/ disk, disk is in old
 return 0
-args -FKLivc -O ../mamedb-disk.db disk
+args -D ../mamedb-disk-many.db -FKLivc -O ../mamedb-disk.db disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/108-5.chd 108-5.chd
 stdout In game disk:

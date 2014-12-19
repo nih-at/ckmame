@@ -1,6 +1,6 @@
 description test chd v5 disk integrity and fail
 return 0
-args -FKLivc disk-3
+args -D ../mamedb-disk-many.db -FKLivc disk-3
 file roms/512v5.chd 512v5.chd 512v5.chd
 stdout In game disk-3:
 stdout game disk-3                                  : correct

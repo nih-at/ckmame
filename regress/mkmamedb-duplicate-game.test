@@ -2,7 +2,7 @@ description test mkmamedb database creation with duplicate game
 return 0
 program mkmamedb
 args -o mamedb-test.db mamedb.txt mamedb-lost-parent-ok.txt
-file mamedb.txt mame.txt mame.txt
+file mamedb.txt mamedb-disk-many.txt mamedb-disk-many.txt
 file mamedb-lost-parent-ok.txt mamedb-lost-parent-ok.txt mamedb-lost-parent-ok.txt
 file-new mamedb-test.db mamedb-duplicate-game.dump
 stderr duplicate game 'clone-8' skipped

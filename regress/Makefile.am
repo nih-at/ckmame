@@ -243,6 +243,7 @@ ZIPS=		1-4-2.zip \
 		1-8-broken.zip \
 		1-8-long.zip \
 		1-8-ok.zip \
+		1-8-skip-ok.zip \
 		1-a-ok.zip \
 		1-c-ok.zip \
 		12345678.zip \
@@ -283,11 +284,12 @@ CHDS=		108-2.chd \
 		diff.chd
 
 DBFILES=	\
-		detector.xml \
-		ckmamedb-1-4-ok.dump \
 		ckmamedb-1-4-ok-1-8-ok.dump \
+		ckmamedb-1-4-ok.dump \
 		ckmamedb-1-8-ok.dump \
 		ckmamedb-empty.dump \
+		detector.xml \
+		mame.txt \
 		mamedb-1-8-is-4.txt \
 		mamedb-2.txt \
 		mamedb-baddump.txt \
@@ -295,12 +297,13 @@ DBFILES=	\
 		mamedb-broken-sha1.txt \
 		mamedb-dir-in-name.dump \
 		mamedb-dir-in-name.txt \
+		mamedb-disk-many.txt \
 		mamedb-disk.txt \
-		mamedb-duplicate-rom-name.dump \
-		mamedb-duplicate-rom-name.txt \
 		mamedb-duplicate-game.dump \
 		mamedb-duplicate-nodump.dump \
 		mamedb-duplicate-nodump.txt \
+		mamedb-duplicate-rom-name.dump \
+		mamedb-duplicate-rom-name.txt \
 		mamedb-lost-parent-ok.txt \
 		mamedb-lost-parent.dump \
 		mamedb-lost-parent.txt \
@@ -329,8 +332,7 @@ DBFILES=	\
 		mamedb-skipped.txt \
 		mamedb-small.dump \
 		mamedb-small.txt \
-		mamedb-two-games.txt \
-		mamedb.txt
+		mamedb-two-games.txt
 
 check-am: ${DBS} runtest
 
@@ -339,6 +341,7 @@ DBS=\
 	mamedb-1-8-is-4.db \
 	mamedb-baddump.db \
 	mamedb-disk.db \
+	mamedb-disk-many.db \
 	mamedb-lost-parent-ok.db \
 	mamedb-merge-parent.db \
 	mamedb-parent-crcdiff.db \

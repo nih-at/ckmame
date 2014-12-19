@@ -111,6 +111,67 @@ game (
 )
 
 game (
+	name disk
+	description "1-4 with disk"
+	manufacturer "synth"
+	year 2004
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	disk ( name 108-5 md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 )
+)
+
+game (
+	name disk-2
+	description "1-4 with alternate disk"
+	manufacturer "synth"
+	year 2004
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	disk ( name 108-2 md5 d9cedd2875a8b4e11de39b0fe935e323 sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae )
+)
+
+game (
+	name disk-3
+	description "512 byte size disk"
+	manufacturer "synth"
+	year 2012
+	disk ( name 512v5 sha1 cf37d50e886519c332dcfe84440f1f085b98c634 )
+)
+
+game (
+	name diskchild
+	description "1-4 with disk (child)"
+	manufacturer "synth"
+	year 2007
+	romof disk
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	disk ( name 108-5c merge 108-5 md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 )
+)
+
+game (
+	name disk-nogood
+	description "1-4 with no good dump disk"
+	manufacturer "synth"
+	year 2004
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	disk ( name 108-5 )
+)
+
+game (
+	name disk-nogood2
+	description "1-8 with no good dump disk"
+	manufacturer "synth"
+	year 2004
+	rom ( name 08.rom size 8 crc32 3656897d )
+	disk ( name 208-7 )
+)
+game (
+	name diskgood-romnogood
+	description "no good rom with good disk"
+	manufacturer "synth"
+	year 2014
+        rom ( name 04.rom size 4 flags nodump )
+	disk ( name 108-5 md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 )
+)
+game (
 	name nogood
 	description "1-4 with no good dump"
 	manufacturer "synth"
