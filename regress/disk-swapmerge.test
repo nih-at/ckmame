@@ -1,6 +1,6 @@
 description test two games where child has parents merged disk under its name
 return 0
-args -FKLivc disk diskchild
+args -D ../mamedb-disk-many.db -FKLivc disk diskchild
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/108-5c.chd 108-5.chd
 file-new roms/108-5.chd 108-5.chd

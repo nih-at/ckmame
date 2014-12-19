@@ -1,6 +1,6 @@
 description test all games, some files found, create fixdat
 return 0
-args -Fvc -D ../mamedb-fixdat-tests.db --fixdat fix_test.dat
+args -Fvc -D ../mamedb-merge-parent.db --fixdat fix_test.dat
 file roms/clone-8.zip 1-8-ok.zip 1-8-ok.zip
 file roms/nogoodclone.zip 1-8-ok.zip 1-8-ok.zip
 file-new fix_test.dat fixdat-missing-parent.dat

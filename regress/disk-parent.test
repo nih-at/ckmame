@@ -1,6 +1,6 @@
 description test single-rom game with disk, disk image requires parent
 return 0
-args -FKLivc -e extra disk
+args -D ../mamedb-disk-many.db -FKLivc -e extra disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file extra/diff.chd diff.chd diff.chd
 stdout In game disk:
