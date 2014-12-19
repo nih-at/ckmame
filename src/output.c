@@ -71,17 +71,17 @@ output_header(output_context_t *ctx, dat_entry_t *de)
 
 
 output_context_t *
-output_new(output_format_t fmt, const char *fname)
+output_new(output_format_t fmt, const char *fname, int flags)
 {
     switch (fmt) {
     case OUTPUT_FMT_CM:
-	return output_cm_new(fname);
+	return output_cm_new(fname, flags);
     case OUTPUT_FMT_DB:
-	return output_db_new(fname);
+	return output_db_new(fname, flags);
     case OUTPUT_FMT_DATAFILE_XML:
-	return output_datafile_xml_new(fname);
+	return output_datafile_xml_new(fname, flags);
     case OUTPUT_FMT_MTREE:
-	return output_mtree_new(fname);
+	return output_mtree_new(fname, flags);
     default:
 	return NULL;
     }

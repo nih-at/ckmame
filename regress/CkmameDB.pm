@@ -79,34 +79,45 @@ sub read_archives {
 	
 	my $dat;
 	my $opt = ($self->{unzipped} ? '-u' : '');
-	unless (open $dat, "../../src/mkmamedb --no-directory-cache -F cm $opt -o /dev/stdout $self->{dir} 2>/dev/null | ") {
+	unless (open $dat, "../../src/mkmamedb --no-directory-cache -F mtree --mtime $opt -o /dev/stdout $self->{dir} 2>/dev/null | ") {
 		print "mkmamedb using $self->{dir} failed: $!\n" if ($self->{verbose});
 		return undef;
 	}
 
 	my $archive;
-	my $in_game = 0;
+	my $prefix;
 	while (my $line = <$dat>) {
 		chomp $line;
-		if ($line =~ m/^game \(/) {
-			$in_game = 1;
-			$archive = { files => {} };
+
+		unless ($line =~ m/^(\S+) (.*)/) {
+			print "can't parse mtree line '$line'\n" if ($self->{verbose});
+			return undef;
 		}
-		elsif (!$in_game) {
-			next;
+
+		my $name = $1;
+		my @args = split ' ', $2;
+		$name =~ s,^\./,,;
+		$name = destrsvis($name);
+		my %attributes = ();
+		for my $attr (@args) {
+			unless ($attr =~ m/^([^=]+)=(.*)/) {
+				print "can't parse mtree line '$line'\n" if ($self->{verbose});
+				return undef;
+			}
+			$attributes{$1} = $2;
 		}
-		if ($line =~ m/^\)/) {
-			$in_game = 0;
-			next;
-		}
-		
-		if ($line =~ m/^\s*name (.*)/) {
-			if ($self->{skip}->{$1}) {
+
+		next if ($name eq '.');
+
+		if ($attributes{type} eq 'dir') {
+			if ($self->{skip}->{$name}) {
 				undef $archive;
 				next;
 			}
-			
-			$archive->{name} = $1;
+
+			$prefix = $name;
+			$archive = { name => $name, files => {} };
+
 			if ($self->{unzipped}) {
 				$archive->{mtime} = 0;
 				$archive->{size} = 0;
@@ -125,14 +136,18 @@ sub read_archives {
 			}
 			$self->{archives_got}->{$archive->{id}} = $archive;
 		}
-		elsif ($line =~ m/rom \( (.*) \)/) {
+		elsif ($attributes{type} eq 'file') {
 			next unless ($archive);
 
-			my $rom = { split ' ', $1 };
-			
-			$rom->{mtime} = (stat("$self->{dir}/$archive->{name}/$rom->{name}"))[9] || ""; # TODO: fix for zips
-			$rom->{crc} = hex($rom->{crc});
-			
+			$name =~ s,^$prefix/,,;
+
+			my $rom = { name => $name };
+			for my $attr (qw(size sha1 md5)) {
+				$rom->{$attr} = $attributes{$attr};
+			}
+			$rom->{mtime} = $attributes{time};
+			$rom->{crc} = hex($attributes{crc});
+
 			$archive->{files}->{$rom->{name}} = $rom;
 		}
 	}
@@ -169,4 +184,20 @@ sub make_dump {
 	return 1;
 }
 
+
+sub destrsvis {
+	my ($str) = @_;
+
+	$str =~ s/\\a/\a/g;
+	$str =~ s/\\b/\b/g;
+	$str =~ s/\\f/\f/g;
+	$str =~ s/\\n/\n/g;
+	$str =~ s/\\r/\r/g;
+	$str =~ s/\\s/ /g;
+	$str =~ s/\\t/\t/g;
+	$str =~ s/\\v/\cK/g;
+	$str =~ s/\\(#|\\)/$1/g;
+
+	return $str;
+}
 1;

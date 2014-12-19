@@ -61,7 +61,7 @@ static int write_game(output_context_cm_t *, game_t *);
 
 
 output_context_t *
-output_cm_new(const char *fname)
+output_cm_new(const char *fname, int flags)
 {
     output_context_cm_t *ctx;
     FILE *f;

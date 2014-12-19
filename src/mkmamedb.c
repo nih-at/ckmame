@@ -83,7 +83,8 @@ enum {
     OPT_PROG_DESCRIPTION,
     OPT_PROG_NAME,
     OPT_PROG_VERSION,
-    OPT_SKIP_FILES
+    OPT_SKIP_FILES,
+    OPT_MTIME
 };
 
 struct option options[] = {
@@ -94,6 +95,7 @@ struct option options[] = {
     { "exclude",             1, 0, 'x' },
     { "format",              1, 0, 'F' },
     { "hash-types",          1, 0, 'C' },
+    { "mtime",               0, 0, OPT_MTIME }, /* include mtime in mtree output, used by test framework */
     { "output",              1, 0, 'o' },
     { "only-files",          1, 0, OPT_ONLY_FILES },
     { "prog-description",    1, 0, OPT_PROG_DESCRIPTION },
@@ -126,12 +128,14 @@ main(int argc, char **argv)
     output_format_t fmt;
     char *detector_name;
     int c, i;
+    int flags;
 
     setprogname(argv[0]);
 
     detector = NULL;
     roms_unzipped = 0;
     cache_directory = true;
+    flags = 0;
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -190,6 +194,9 @@ main(int argc, char **argv)
 	case OPT_DETECTOR:
 	    detector_name = optarg;
 	    break;
+        case OPT_MTIME:
+            flags |= OUTPUT_FL_MTIME;
+                break;
 	case OPT_NO_DIRECTORY_CACHE:
 	    cache_directory = false;
 	    break;
@@ -223,8 +230,11 @@ main(int argc, char **argv)
 		"%s: warning: multiple input files specified, \n\t"
 		"--prog-name and --prog-version are ignored", getprogname());
     }
+    if ((flags & OUTPUT_FL_MTIME) && fmt != OUTPUT_FMT_MTREE) {
+        fprintf(stderr, "%s: warning: --mtime is only supported by output format mtree and will be ignored", getprogname());
+    }
 
-    if ((out=output_new(fmt, dbname)) == NULL)
+    if ((out=output_new(fmt, dbname, flags)) == NULL)
 	    exit(1);
 
     if (detector_name) {

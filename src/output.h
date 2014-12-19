@@ -58,18 +58,19 @@ enum output_format {
 
 typedef enum output_format output_format_t;
 
+#define OUTPUT_FL_MTIME 1
 
-output_context_t *output_cm_new(const char *);
-output_context_t *output_db_new(const char *);
-output_context_t *output_datafile_xml_new(const char *);
-output_context_t *output_mtree_new(const char *);
+output_context_t *output_cm_new(const char *, int);
+output_context_t *output_db_new(const char *, int);
+output_context_t *output_datafile_xml_new(const char *, int);
+output_context_t *output_mtree_new(const char *, int);
 
 int output_close(output_context_t *);
 int output_detector(output_context_t *, detector_t *);
 int output_game(output_context_t *, game_t *);
 int output_header(output_context_t *, dat_entry_t *);
 
-output_context_t *output_new(output_format_t, const char *);
+output_context_t *output_new(output_format_t, const char *, int);
 
 /* for output_foo.c use only */
 void output_cond_print_string(FILE *, const char *, const char *, const char *);

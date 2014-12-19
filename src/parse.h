@@ -104,6 +104,7 @@ int parse_file_status(parser_context_t *, filetype_t, int, const char *);
 int parse_file_hash(parser_context_t *, filetype_t, int, const char *);
 int parse_file_ignore(parser_context_t *, filetype_t, int, const char *);
 int parse_file_merge(parser_context_t *, filetype_t, int, const char *);
+int parse_file_mtime(parser_context_t *, filetype_t, int, time_t);
 int parse_file_name(parser_context_t *, filetype_t, int, const char *);
 int parse_file_size(parser_context_t *, filetype_t, int, const char *);
 int parse_file_start(parser_context_t *, filetype_t);

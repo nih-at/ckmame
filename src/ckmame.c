@@ -285,7 +285,7 @@ main(int argc, char **argv)
 		de.description = "Fixdat by ckmame";
 		de.version = "1";
 		    
-		if ((fixdat=output_new(OUTPUT_FMT_DATAFILE_XML, optarg)) == NULL)
+		if ((fixdat=output_new(OUTPUT_FMT_DATAFILE_XML, optarg, 0)) == NULL)
 		    exit(1);
 
 		output_header(fixdat, &de);

@@ -71,7 +71,7 @@ static int output_db_header(output_context_t *, dat_entry_t *);
 
 
 output_context_t *
-output_db_new(const char *dbname)
+output_db_new(const char *dbname, int flags)
 {
     output_context_db_t *ctx;
 

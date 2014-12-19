@@ -231,6 +231,18 @@ parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht,
  
 /*ARGSUSED3*/
 int
+parse_file_mtime(parser_context_t *ctx, filetype_t ft, int ht, time_t mtime)
+{
+    if (ft == TYPE_ROM) {
+        file_mtime(ctx->r) = mtime;
+    }
+
+    return 0;
+}
+
+
+/*ARGSUSED3*/
+int
 parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy,
 		const char *attr)
 {

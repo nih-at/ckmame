@@ -58,7 +58,7 @@ static int output_datafile_xml_header(output_context_t *, dat_entry_t *);
 
 
 output_context_t *
-output_datafile_xml_new(const char *fname)
+output_datafile_xml_new(const char *fname, int flags)
 {
     output_context_xml_t *ctx;
     FILE *f;

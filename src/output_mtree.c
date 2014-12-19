@@ -45,6 +45,8 @@
 struct output_context_mtree {
     output_context_t output;
 
+    bool include_mtime;
+
     FILE *f;
     char *fname;
 };
@@ -58,7 +60,7 @@ static int output_mtree_header(output_context_t *, dat_entry_t *);
 
 
 output_context_t *
-output_mtree_new(const char *fname)
+output_mtree_new(const char *fname, int flags)
 {
     output_context_mtree_t *ctx;
     FILE *f;
@@ -82,6 +84,7 @@ output_mtree_new(const char *fname)
     ctx->output.output_game = output_mtree_game;
     ctx->output.output_header = output_mtree_header;
 
+    ctx->include_mtime = (flags & OUTPUT_FL_MTIME);
     ctx->f = f;
     ctx->fname = xstrdup(fname);
 
@@ -189,10 +192,6 @@ output_mtree_game(output_context_t *out, game_t *g)
 	filename = strsvis_cstyle(file_name(r));
 	fprintf(ctx->f, "./%s/%s type=file size=%" PRIu64, dirname, filename, file_size(r));
 	free(filename);
-#if 0
-	/* crc is not in the standard set supported on NetBSD */
-	output_cond_print_hash(ctx->f, " crc=", HASHES_TYPE_CRC, file_hashes(r), "");
-#endif
 	output_cond_print_hash(ctx->f, " sha1=", HASHES_TYPE_SHA1, file_hashes(r), "");
 	output_cond_print_hash(ctx->f, " md5=", HASHES_TYPE_MD5, file_hashes(r), "");
 	switch (file_status(r)) {
@@ -207,6 +206,12 @@ output_mtree_game(output_context_t *out, game_t *g)
 	    break;
 	}
 	output_cond_print_string(ctx->f, " status=", fl, "");
+        if (ctx->include_mtime) {
+            /* crc is not in the standard set supported on NetBSD, but we need it for runtest */
+            /* TODO: better named option or separate option? */
+            output_cond_print_hash(ctx->f, " crc=", HASHES_TYPE_CRC, file_hashes(r), "");
+            fprintf(ctx->f, " time=%llu", (unsigned long long)file_mtime(r));
+        }
 	fputs("\n", ctx->f);
     }
     for (i=0; i<game_num_disks(g); i++) {
