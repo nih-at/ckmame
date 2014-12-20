@@ -79,7 +79,7 @@ sub read_archives {
 	
 	my $dat;
 	my $opt = ($self->{unzipped} ? '-u' : '');
-	unless (open $dat, "../../src/mkmamedb --no-directory-cache -F mtree --mtime $opt -o /dev/stdout $self->{dir} 2>/dev/null | ") {
+	unless (open $dat, "../../src/mkmamedb --no-directory-cache -F mtree --extended $opt -o /dev/stdout $self->{dir} 2>/dev/null | ") {
 		print "mkmamedb using $self->{dir} failed: $!\n" if ($self->{verbose});
 		return undef;
 	}

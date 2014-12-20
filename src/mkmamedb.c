@@ -61,6 +61,7 @@ char help[] = "\n"
 "  -u, --roms-unzipped             ROMs are files on disk, not contained in zip archives\n"
 "  -x, --exclude pat               exclude games matching shell glob PAT\n"
 "      --detector xml-file         use header detector\n"
+"      --extended                  include CRC and last modification time (mtree format only)\n"
 "      --no-directory-cache        don't create cache of scanned input directory\n"
 "      --only-files pat            only use zip members matching shell glob PAT\n"
 "      --prog-description d        set description of rominfo\n"
@@ -78,13 +79,13 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 enum {
     OPT_DETECTOR = 256,
+    OPT_EXTENDED,
     OPT_NO_DIRECTORY_CACHE,
     OPT_ONLY_FILES,
     OPT_PROG_DESCRIPTION,
     OPT_PROG_NAME,
     OPT_PROG_VERSION,
-    OPT_SKIP_FILES,
-    OPT_MTIME
+    OPT_SKIP_FILES
 };
 
 struct option options[] = {
@@ -95,7 +96,7 @@ struct option options[] = {
     { "exclude",             1, 0, 'x' },
     { "format",              1, 0, 'F' },
     { "hash-types",          1, 0, 'C' },
-    { "mtime",               0, 0, OPT_MTIME }, /* include mtime in mtree output, used by test framework */
+    { "extended",            0, 0, OPT_EXTENDED },
     { "output",              1, 0, 'o' },
     { "only-files",          1, 0, OPT_ONLY_FILES },
     { "prog-description",    1, 0, OPT_PROG_DESCRIPTION },
@@ -194,9 +195,9 @@ main(int argc, char **argv)
 	case OPT_DETECTOR:
 	    detector_name = optarg;
 	    break;
-        case OPT_MTIME:
-            flags |= OUTPUT_FL_MTIME;
-                break;
+        case OPT_EXTENDED:
+            flags |= OUTPUT_FL_EXTENDED;
+            break;
 	case OPT_NO_DIRECTORY_CACHE:
 	    cache_directory = false;
 	    break;
@@ -230,7 +231,7 @@ main(int argc, char **argv)
 		"%s: warning: multiple input files specified, \n\t"
 		"--prog-name and --prog-version are ignored", getprogname());
     }
-    if ((flags & OUTPUT_FL_MTIME) && fmt != OUTPUT_FMT_MTREE) {
+    if ((flags & OUTPUT_FL_EXTENDED) && fmt != OUTPUT_FMT_MTREE) {
         fprintf(stderr, "%s: warning: --mtime is only supported by output format mtree and will be ignored", getprogname());
     }
 

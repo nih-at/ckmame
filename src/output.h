@@ -58,7 +58,7 @@ enum output_format {
 
 typedef enum output_format output_format_t;
 
-#define OUTPUT_FL_MTIME 1
+#define OUTPUT_FL_EXTENDED 1
 
 output_context_t *output_cm_new(const char *, int);
 output_context_t *output_db_new(const char *, int);

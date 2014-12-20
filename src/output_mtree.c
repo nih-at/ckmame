@@ -45,7 +45,7 @@
 struct output_context_mtree {
     output_context_t output;
 
-    bool include_mtime;
+    bool extended;
 
     FILE *f;
     char *fname;
@@ -84,7 +84,7 @@ output_mtree_new(const char *fname, int flags)
     ctx->output.output_game = output_mtree_game;
     ctx->output.output_header = output_mtree_header;
 
-    ctx->include_mtime = (flags & OUTPUT_FL_MTIME);
+    ctx->extended = (flags & OUTPUT_FL_EXTENDED);
     ctx->f = f;
     ctx->fname = xstrdup(fname);
 
@@ -206,9 +206,8 @@ output_mtree_game(output_context_t *out, game_t *g)
 	    break;
 	}
 	output_cond_print_string(ctx->f, " status=", fl, "");
-        if (ctx->include_mtime) {
-            /* crc is not in the standard set supported on NetBSD, but we need it for runtest */
-            /* TODO: better named option or separate option? */
+        if (ctx->extended) {
+            /* crc is not in the standard set supported on NetBSD */
             output_cond_print_hash(ctx->f, " crc=", HASHES_TYPE_CRC, file_hashes(r), "");
             fprintf(ctx->f, " time=%llu", (unsigned long long)file_mtime(r));
         }
