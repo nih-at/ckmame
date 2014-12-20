@@ -19,7 +19,7 @@ sub new {
 	}
 	
 	$self->{dump_got} = [];
-	$self->{archive_id} = {};
+	$self->{dump_archives} = {};
 	$self->{max_id} = 0;
 	$self->{archives_got} = {};
 	
@@ -40,6 +40,7 @@ sub read_db {
 		return undef;
 	}
 
+	my %archive_names;
 	my @files = ();
 
 	my $table = '';
@@ -47,8 +48,16 @@ sub read_db {
 		chomp $line;
 		
 		if ($table eq 'file') {
-			my ($id, $name) = split '\|', $line;
-			push @files, [ $id, $name, $line ];
+			my ($id, $idx, $name) = split '\|', $line;
+			push @files, [ $id, $idx, $line ];
+			if (exists($archive_names{$id})) {
+				my $dump_archive = $self->{dump_archives}->{$archive_names{$id}};
+
+				$dump_archive->{files}->{$name} = $idx;
+				if ($idx > $dump_archive->{max_idx}) {
+					$dump_archive->{max_idx} = $idx;
+				}
+			}
 			next;
 		}
 		push @{$self->{dump_got}}, $line;
@@ -58,7 +67,8 @@ sub read_db {
 		}
 		if ($table eq 'archive') {
 			my ($id, $name) = split '\|', $line;
-			$self->{archive_id}->{$name} = $id; 
+			$archive_names{$id} = $name;
+			$self->{dump_archives}->{$name} = { id => $id, files => {}, max_idx => 0 };
 			if ($id > $self->{max_id}) {
 				$self->{max_id} = $id;
 			}
@@ -86,6 +96,7 @@ sub read_archives {
 
 	my $archive;
 	my $prefix;
+	my $idx;
 	while (my $line = <$dat>) {
 		chomp $line;
 
@@ -116,7 +127,8 @@ sub read_archives {
 			}
 
 			$prefix = $name;
-			$archive = { name => $name, files => {} };
+			$archive = { name => $name, files => [] };
+			$idx = 0;
 
 			if ($self->{unzipped}) {
 				$archive->{mtime} = 0;
@@ -128,8 +140,8 @@ sub read_archives {
 				$archive->{mtime} = $stat[9];
 				$archive->{size} = $stat[7];
 			}
-			if ($self->{archive_id}->{$archive->{name}}) {
-				$archive->{id} = $self->{archive_id}->{$archive->{name}};
+			if ($self->{dump_archives}->{$archive->{name}}) {
+				$archive->{id} = $self->{dump_archives}->{$archive->{name}}->{id};
 			}
 			else {
 				$archive->{id} = ++$self->{max_id};
@@ -141,14 +153,14 @@ sub read_archives {
 
 			$name =~ s,^$prefix/,,;
 
-			my $rom = { name => $name };
+			my $rom = { name => $name, idx => $idx++ };
 			for my $attr (qw(size sha1 md5)) {
 				$rom->{$attr} = $attributes{$attr};
 			}
 			$rom->{mtime} = $attributes{time};
 			$rom->{crc} = hex($attributes{crc});
 
-			$archive->{files}->{$rom->{name}} = $rom;
+			push @{$archive->{files}}, $rom;
 		}
 	}
 
@@ -169,13 +181,30 @@ sub make_dump {
 		push @dump, "$id|$archive->{name}|$archive->{mtime}|$archive->{size}";
 	}
 	push @dump, '>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1)';
-	my $idx = 0;
+
 	for my $id (sort { $a <=> $b} keys %{$self->{archives_got}}) {
 		my $archive = $self->{archives_got}->{$id};
-		
-		for my $fname (sort keys %{$archive->{files}}) {
-			my $file = $archive->{files}->{$fname};
-			push @dump, join '|', $id, $idx++, $fname, $file->{mtime}, 0, $file->{size}, $file->{crc}, "<$file->{md5}>", "<$file->{sha1}>";
+
+		if ($self->{unzipped}) {
+			my $dump_archive;
+			my $next_idx = 0;
+			if (exists($self->{dump_archives}->{$archive->{name}})) {
+				$dump_archive = $self->{dump_archives}->{$archive->{name}};
+				$next_idx = $dump_archive->{max_idx} + 1;
+			}
+			for my $file (@{$archive->{files}}) {
+				if ($dump_archive && exists($dump_archive->{files}->{$file->{name}})) {
+					$file->{idx} = $dump_archive->{files}->{$file->{name}};
+				}
+				else {
+					$file->{idx} = $next_idx++;
+				}
+			}
+
+			$archive->{files} = [ sort { $a->{idx} <=> $b->{idx} } @{$archive->{files}} ];
+		}
+		for my $file (@{$archive->{files}}) {
+			push @dump, join '|', $id, $file->{idx}, $file->{name}, $file->{mtime}, 0, $file->{size}, $file->{crc}, "<$file->{md5}>", "<$file->{sha1}>";
 		}
 	}
 	
