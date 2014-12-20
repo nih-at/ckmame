@@ -1,6 +1,6 @@
 SUFFIXES=.db
 .txt.db:
-	../src/mkmamedb -o ${.TARGET} ${.IMPSRC}
+	../src/mkmamedb -o $@ $<
 
 AUTOMAKE_OPTIONS=	parallel-tests
 
