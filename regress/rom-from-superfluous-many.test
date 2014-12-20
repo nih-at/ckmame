@@ -1,4 +1,5 @@
 description test all games, some files in superfluous, fix
+archive-types zip
 return 0
 args -D ../mamedb-disk-many.db -Fvc
 file-del roms/1-4-ok.zip 1-4-ok.zip
