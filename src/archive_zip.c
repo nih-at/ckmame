@@ -191,6 +191,10 @@ op_commit(archive_t *a)
 
 static void
 op_commit_cleanup(archive_t *a) {
+    if (archive_num_files(a) == 0) {
+        return;
+    }
+    
     ensure_zip(a);
 
     int i;

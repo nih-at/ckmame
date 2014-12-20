@@ -76,7 +76,7 @@ sub read_db {
 	}
 	close($dump);
 
-	for my $file (sort { return $a->[1] cmp $b->[1] if ($a->[0] == $b->[0]) ; return $a->[0] <=> $b->[0]; } @files) {
+	for my $file (sort { return $a->[1] <=> $b->[1] if ($a->[0] == $b->[0]) ; return $a->[0] <=> $b->[0]; } @files) {
 		push @{$self->{dump_got}}, $file->[2];
 	}
 	
