@@ -255,6 +255,7 @@ ZIPS=		1-4-2.zip \
 		2-4a-ok.zip \
 		2-4c-ok.zip \
 		2-84.zip \
+		2-8c-ok.zip \
 		2-cc-ok.zip \
 		baddump.zip \
 		deadbeef.zip \
