@@ -48,6 +48,7 @@ static int match_detector(struct zip *, int, file_t *);
 static int op_check(archive_t *);
 static int op_close(archive_t *);
 static int op_commit(archive_t *);
+static int op_commit_cleanup(archive_t *);
 static int op_file_add_empty(archive_t *, const char *);
 static void op_file_close(void *);
 static int op_file_copy(archive_t *, int, archive_t *, int, const char *, off_t, off_t);
@@ -63,7 +64,7 @@ struct archive_ops ops_zip = {
     op_check,
     op_close,
     op_commit,
-    NULL, /* commit_cleanup */
+    op_commit_cleanup,
     op_file_add_empty,
     op_file_close,
     op_file_copy,
@@ -183,7 +184,28 @@ op_commit(archive_t *a)
         
 	archive_zip(a) = NULL;
     }
-    
+
+    return 0;
+}
+
+
+static int
+op_commit_cleanup(archive_t *a) {
+    ensure_zip(a);
+
+    int i;
+    for (i = 0; i < archive_num_files(a); i++) {
+        struct zip_stat st;
+
+        if (zip_stat_index(archive_zip(a), (zip_uint64_t)i, 0, &st) < 0) {
+            seterrinfo(NULL, archive_name(a));
+            myerror(ERRZIP, "cannot stat file %d: %s", i, zip_strerror(archive_zip(a)));
+            return -1;
+        }
+
+        file_mtime(archive_file(a, i)) = st.mtime;
+    }
+
     return 0;
 }
 
