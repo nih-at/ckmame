@@ -50,6 +50,7 @@ file_init(file_t *r)
     r->status = STATUS_OK;
     /* TODO: state */
     r->where = FILE_INZIP;
+    r->mtime = 0;
 }
 
 
