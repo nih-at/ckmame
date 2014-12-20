@@ -1,14 +1,14 @@
 description zip contains file needed elsewhere, creating needed archive fails
 return 0
-args -D ../mamedb-disk-many.db -FKLvc 1-4
+args -FKLvc 1-4
 file roms/1-4.zip 1-8-ok.zip 2-48-ok.zip
-file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
+file roms/2-48.zip 1-4-ok.zip 1-4-ok.zip
 mkdir 0555 needed
 stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/disk.zip/04.rom'
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/2-48.zip/04.rom'
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
 stdout roms/1-4.zip: save needed file '08.rom'
-stdout roms/1-4.zip: add 'roms/disk.zip/04.rom' as '04.rom'
+stdout roms/1-4.zip: add 'roms/2-48.zip/04.rom' as '04.rom'
 stderr <ZIP> needed/3656897d-000.zip: cannot commit changes: Failure to create temporary file: Permission denied
 stderr <DIR> can't open rom directory database for 'needed/': no database
 stderr <DIR> mkdir 'needed/3656897d-000' failed: Permission denied
