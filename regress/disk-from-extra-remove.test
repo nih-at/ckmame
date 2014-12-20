@@ -1,4 +1,5 @@
 description test single-rom game with disk, get missing disk from extra
+archive-types zip
 return 0
 args -Fvj -D ../mamedb-disk.db -e extradir
 file-del extradir/1234.chd 108-5.chd

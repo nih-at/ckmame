@@ -1,4 +1,5 @@
 description test game w/ disk, disk is in old
+archive-types zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivc -O ../mamedb-disk.db disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
