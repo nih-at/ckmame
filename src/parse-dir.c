@@ -146,18 +146,24 @@ parse_archive(parser_context_t *ctx, archive_t *a, int hashtypes)
     free(name);
 
     for (i=0; i<archive_num_files(a); i++) {
-	if (archive_file_compute_hashes(a, i, hashtypes) < 0)
-	    continue;
 	r = archive_file(a, i);
+        
+        if (archive_file_compute_hashes(a, i, hashtypes) < 0) {
+            file_status(r) = STATUS_NODUMP;
+        }
 
 	parse_file_start(ctx, TYPE_ROM);
 	parse_file_name(ctx, TYPE_ROM, 0, file_name(r));
 	sprintf(hstr, "%" PRIu64, file_size(r));
 	parse_file_size(ctx, TYPE_ROM, 0, hstr);
         parse_file_mtime(ctx, TYPE_ROM, 0, file_mtime(r));
+        if (file_status(r) != STATUS_OK) {
+            parse_file_status(ctx, TYPE_ROM, 0, file_status(r) == STATUS_BADDUMP ? "baddump" : "nodump");
+        }
 	for (ht=1; ht<=HASHES_TYPE_MAX; ht<<=1) {
-	    if (hashtypes & ht)
+            if ((hashtypes & ht) && hashes_has_type(file_hashes(r), ht)) {
 		parse_file_hash(ctx, TYPE_ROM, ht, hash_to_string(hstr, ht, file_hashes(r)));
+            }
 	}
 	parse_file_end(ctx,TYPE_ROM);
     }

@@ -541,8 +541,9 @@ merge_files(archive_t *a, array_t *files)
 	}
 	else if (!hashes_has_type(file_hashes(file), HASHES_SIZE_CRC)) {
 	    if (archive_file_compute_hashes(a, i, HASHES_TYPE_ALL) < 0) {
-		return false;
-	    }
+                file_status(file) = STATUS_BADDUMP;
+                continue;
+            }
 	    if (detector) {
 		archive_file_match_detector(a, i);
 	    }
