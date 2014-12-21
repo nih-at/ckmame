@@ -133,6 +133,8 @@ TESTS=	\
 		punknown.test \
 		punused.test \
 		replace-broken-rom.test \
+		rom-add-from-crc-different.test \
+		rom-add-from-crc-only.test \
 		rom-broken-replace.test \
 		rom-broken-without-i.test \
 		rom-broken.test \
