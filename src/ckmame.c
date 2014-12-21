@@ -485,8 +485,7 @@ main(int argc, char **argv)
 	|| action == ACTION_SUPERFLUOUS_ONLY)
 	print_superfluous(superfluous);
 
-    if (roms_unzipped)
-	dbh_cache_close_all();
+    dbh_cache_close_all();
 
     if ((fix_options & FIX_DO) != 0)
 	(void)rmdir(needed_dir);

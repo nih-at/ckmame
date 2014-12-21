@@ -409,6 +409,7 @@ archive_read_infos(archive_t *a)
 
     if (!a->ops->read_infos(a)) {
 	array_free(files_cache, file_finalize);
+        a->cache_changed = true;
 	return false;
     }
 
@@ -535,13 +536,13 @@ merge_files(archive_t *a, array_t *files)
     for (i = 0; i < array_length(archive_files(a)); i++) {
 	file_t *file = archive_file(a, i);
 
-	if (files && (idx = array_index(files, file_name(file), cmp_file_by_name)) > 0) {
+	if (files && (idx = array_index(files, file_name(file), cmp_file_by_name)) >= 0) {
 	    file_t *cfile = array_get(files, idx);
 	    if (file_mtime(file) == file_mtime(cfile) && file_compare_nsc(file, cfile)) {
 		hashes_copy(file_hashes(file), file_hashes(cfile));
 	    }
 	}
-	else if (!hashes_has_type(file_hashes(file), HASHES_TYPE_CRC)) {
+	if (!hashes_has_type(file_hashes(file), HASHES_TYPE_CRC)) {
 	    if (archive_file_compute_hashes(a, i, HASHES_TYPE_ALL) < 0) {
                 file_status(file) = STATUS_BADDUMP;
                 continue;

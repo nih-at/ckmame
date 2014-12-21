@@ -4,6 +4,7 @@ ulimit n 16
 args -FKLivc many
 file-del roms/wrongname.zip many.zip
 file-new roms/many.zip many.zip
+no-hashes roms many.zip
 stdout In game many:
 stdout rom  00            size       2  crc b84614a0: is in 'roms/wrongname.zip/00'
 stdout rom  01            size       2  crc cf412436: is in 'roms/wrongname.zip/01'

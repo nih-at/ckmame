@@ -254,11 +254,11 @@ sub omit_hashes {
 		$omit = 1;
 	}
 
+	return unless defined($omit);
+
 	if ($omit eq '1') {
 		$omit = 'md5,sha1';
 	}
-
-	return unless defined($omit);
 
 	$file->{status} = 0;
 	for my $hash (split ',', $omit) {
