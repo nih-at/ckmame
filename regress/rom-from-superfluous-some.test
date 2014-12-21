@@ -3,6 +3,7 @@ return 0
 args -FKLvc 1-4
 file roms/superfluous.zip 2-48-ok.zip 1-8-ok.zip
 file-new roms/1-4.zip 1-4-ok.zip
+no-hashes roms superfluous.zip 08.rom
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/superfluous.zip/04.rom'
 stdout roms/1-4.zip: add 'roms/superfluous.zip/04.rom' as '04.rom'
