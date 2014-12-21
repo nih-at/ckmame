@@ -3,6 +3,8 @@ package CkmameDB;
 use strict;
 use warnings;
 
+my %status = (baddump => 1, nodump => 2);
+
 sub new {
 	my $class = UNIVERSAL::isa ($_[0], __PACKAGE__) ? shift : __PACKAGE__;
 	my $self = bless {}, $class;
@@ -153,9 +155,16 @@ sub read_archives {
 
 			$name =~ s,^$prefix/,,;
 
-			my $rom = { name => $name, idx => $idx++ };
+			my $rom = { name => $name, idx => $idx++, status => 0 };
 			for my $attr (qw(size sha1 md5)) {
-				$rom->{$attr} = $attributes{$attr};
+				$rom->{$attr} = $attributes{$attr} // 'null';
+			}
+			if (exists($attributes{status})) {
+				if (!exists($status{$attributes{status}})) {
+					print "unknown file status '$attributes{status}'\n" if ($self->{verbose});
+					return undef;
+				}
+				$rom->{status} = $status{$attributes{status}};
 			}
 			$rom->{mtime} = $attributes{time};
 			$rom->{crc} = hex($attributes{crc});
@@ -204,7 +213,7 @@ sub make_dump {
 			$archive->{files} = [ sort { $a->{idx} <=> $b->{idx} } @{$archive->{files}} ];
 		}
 		for my $file (@{$archive->{files}}) {
-			push @dump, join '|', $id, $file->{idx}, $file->{name}, $file->{mtime}, 0, $file->{size}, $file->{crc}, "<$file->{md5}>", "<$file->{sha1}>";
+			push @dump, join '|', $id, $file->{idx}, $file->{name}, $file->{mtime}, $file->{status}, $file->{size}, $file->{crc}, "<$file->{md5}>", "<$file->{sha1}>";
 		}
 	}
 	

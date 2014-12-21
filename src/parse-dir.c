@@ -148,11 +148,9 @@ parse_archive(parser_context_t *ctx, archive_t *a, int hashtypes)
     for (i=0; i<archive_num_files(a); i++) {
 	r = archive_file(a, i);
         
-        if (archive_file_compute_hashes(a, i, hashtypes) < 0) {
-            file_status(r) = STATUS_NODUMP;
-        }
+        archive_file_compute_hashes(a, i, hashtypes);
 
-	parse_file_start(ctx, TYPE_ROM);
+        parse_file_start(ctx, TYPE_ROM);
 	parse_file_name(ctx, TYPE_ROM, 0, file_name(r));
 	sprintf(hstr, "%" PRIu64, file_size(r));
 	parse_file_size(ctx, TYPE_ROM, 0, hstr);
