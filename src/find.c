@@ -362,8 +362,10 @@ find_in_db(romdb_t *fdb, const file_t *r, archive_t * archive, const char *skip,
             if (archive && (hashes_types(file_hashes(gr)) & (hashes_types(file_hashes(r)))) != hashes_types(file_hashes(gr))) {
                 int idx = archive_file_index(archive, r);
                 if (idx >= 0) {
-                    archive_file_compute_hashes(archive, idx, hashes_types(file_hashes(gr))); /* TODO: handle error (how?) */
-                    ok = false;
+                    if (archive_file_compute_hashes(archive, idx, hashes_types(file_hashes(gr))) < 0) {
+                        /* TODO: handle error (how?) */
+                        ok = false;
+                    }
                 }
 
                 if (hashes_cmp(file_hashes(gr), file_hashes(r)) != HASHES_CMP_MATCH) {
