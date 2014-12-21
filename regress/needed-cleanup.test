@@ -3,6 +3,7 @@ return 0
 args -D ../mamedb-lost-parent-ok.db -FKLv
 file roms/clone-8.zip 1-4-ok.zip 1-4-ok.zip
 file-del needed/d87f7e0c-000.zip 1-4-ok.zip
+no-hashes roms clone-8.zip
 stdout In game clone-8:
 stdout rom  08.rom        size       8  crc 3656897d: missing
 stdout In archive needed/d87f7e0c-000.zip:
