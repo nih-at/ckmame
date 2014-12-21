@@ -239,8 +239,6 @@ dbh_cache_read(dbh_t *dbh, const char *name, array_t *files)
     int ret;
     int archive_id;
 
-    archive_id = sqlite3_column_int(stmt, 0);
-
     if ((archive_id = dbh_cache_get_archive_id(dbh, name)) == 0)
 	return 0;
 
