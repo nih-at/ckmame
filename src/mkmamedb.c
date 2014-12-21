@@ -232,7 +232,7 @@ main(int argc, char **argv)
 		"--prog-name and --prog-version are ignored", getprogname());
     }
     if ((flags & OUTPUT_FL_EXTENDED) && fmt != OUTPUT_FMT_MTREE) {
-        fprintf(stderr, "%s: warning: --mtime is only supported by output format mtree and will be ignored", getprogname());
+        fprintf(stderr, "%s: warning: --mtime is only supported by output format mtree and will be ignored\n", getprogname());
     }
 
     if ((out=output_new(fmt, dbname, flags)) == NULL)
