@@ -57,28 +57,15 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	if (result_file(res, i) == FS_USED)
 	    continue;
 
-	found = find_in_old(archive_file(a, i), NULL);
-	if (found == FIND_EXISTS && (hashes_types(file_hashes(archive_file(a, i))) & romdb_hashtypes(db, TYPE_ROM)) != romdb_hashtypes(db, TYPE_ROM)) {
-	    if (archive_file_compute_hashes(a, i, romdb_hashtypes(db, TYPE_ROM)) < 0) {
-		result_file(res, i) = FS_BROKEN;
-		continue;
-	    }
-	    found = find_in_old(archive_file(a, i), NULL);
-	}
+	found = find_in_old(archive_file(a, i), a, NULL);
 	if (found == FIND_EXISTS) {
 	    result_file(res, i) = FS_DUPLICATE;
 	    continue;
 	}
 
-	found = find_in_romset(archive_file(a, i), gamename, NULL);
-	if ((found == FIND_EXISTS || found == FIND_MISSING) && (hashes_types(file_hashes(archive_file(a, i))) & romdb_hashtypes(db, TYPE_ROM)) != romdb_hashtypes(db, TYPE_ROM)) {
-	    if (archive_file_compute_hashes(a, i, romdb_hashtypes(db, TYPE_ROM)) < 0) {
-		result_file(res, i) = FS_BROKEN;
-		continue;
-	    }
-	    found = find_in_romset(archive_file(a, i), gamename, NULL);
-	}
-	switch (found) {
+	found = find_in_romset(archive_file(a, i), a, gamename, NULL);
+
+        switch (found) {
 	case FIND_UNKNOWN:
 	    break;
 

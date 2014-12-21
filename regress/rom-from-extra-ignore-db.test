@@ -4,6 +4,8 @@ args -D ../mamedb-small.db -FKLvcj -e extra
 ckmamedb-before extra ckmamedb-1-8-ok.dump
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file extra/1-8.zip 1-8-ok.zip 1-8-ok.zip
+no-hashes roms 1-4.zip
+no-hashes extra 1-8.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout In archive extra/1-8.zip:

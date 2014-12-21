@@ -3,6 +3,7 @@ return 0
 args -Fvc -D ../mamedb-merge-parent.db --fixdat fix_test.dat
 file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip
 file-new fix_test.dat fixdat-missing-child.dat
+no-hashes roms parent-4.zip
 stdout In game parent-4:
 stdout game parent-4                                : correct
 stdout In game clone-8:

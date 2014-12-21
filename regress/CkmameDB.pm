@@ -9,10 +9,25 @@ sub new {
 	my $class = UNIVERSAL::isa ($_[0], __PACKAGE__) ? shift : __PACKAGE__;
 	my $self = bless {}, $class;
 
-	my ($dir, $skip, $unzipped) = @_;
+	my ($dir, $skip, $unzipped, $no_hashes) = @_;
 	
 	$self->{dir} = $dir;
 	$self->{unzipped} = $unzipped;
+	$self->{no_hashes} = {};
+
+	if (defined($no_hashes)) {
+		for my $no_hash (@$no_hashes) {
+			next unless ($no_hash->[0] eq $dir);
+
+			if (scalar(@$no_hash) == 2) {
+				$self->{no_hashes}->{$no_hash->[1]} = 1;
+			}
+			else {
+				$self->{no_hashes}->{$no_hash->[1]}->{$no_hash->[2]} = 1;
+			}
+		}
+	}
+
 	if ($skip) {
 		$self->{skip} = { map { $_ => 1} @$skip };
 	}
@@ -169,6 +184,13 @@ sub read_archives {
 			$rom->{mtime} = $attributes{time};
 			$rom->{crc} = hex($attributes{crc});
 
+			if ($self->omit_hashes($archive->{name}, $name)) {
+				$rom->{status} = 0;
+				for my $ht (qw(md5 sha1)) {
+					$rom->{$ht} = 'null';
+				}
+			}
+
 			push @{$archive->{files}}, $rom;
 		}
 	}
@@ -222,6 +244,19 @@ sub make_dump {
 	return 1;
 }
 
+
+sub omit_hashes {
+	my ($self, $archive, $file) = @_;
+
+	return 0 if ($self->{unzipped});
+	return 0 unless (exists($self->{no_hashes}->{$archive}));
+	if (ref($self->{no_hashes}->{$archive}) eq 'HASH') {
+		return $self->{no_hashes}->{$archive}->{$file};
+	}
+	else {
+		return 1;
+	}
+}
 
 sub destrsvis {
 	my ($str) = @_;

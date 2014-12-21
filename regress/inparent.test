@@ -2,5 +2,6 @@ description test 2-rom game (1 in parent), both roms in parent
 return 0
 args -cFKLv clone-8
 file roms/parent-4.zip 2-48-ok.zip 2-48-ok.zip
+no-hashes roms parent-4.zip
 stdout In game clone-8:
 stdout game clone-8                                 : not a single rom found

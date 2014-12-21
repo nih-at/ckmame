@@ -127,7 +127,7 @@ check_files(game_t *g, archive_t *as[3], result_t *res)
 		|| match_quality(m) == QU_HASHERR)
 	    && file_size(r) > 0 && file_status(r) != STATUS_NODUMP) {
 	    /* search for matching file in other games (via db) */
-	    if (find_in_romset(r, game_name(g), m) == FIND_EXISTS)
+	    if (find_in_romset(r, NULL, game_name(g), m) == FIND_EXISTS)
 		continue;
 	    
 	    /* search in needed, superfluous and update sets */

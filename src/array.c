@@ -55,6 +55,18 @@ array_free(array_t *a, void (*fn)(void *))
     free(a);
 }
 
+int
+array_element_index(const array_t *a, const void *element)
+{
+    ssize_t idx = ((const char *)element - a->data) / a->elem_size;
+
+    if (idx < 0 || idx > array_length(a)) {
+        return -1;
+    }
+
+    return (int)idx;
+}
+
 
 void *
 array_get(const array_t *a, int i)

@@ -3,5 +3,6 @@ return 0
 # TODO: -c reports game as correct
 args -FKLv nogood-2
 file roms/nogood-2.zip 1-8-ok.zip 1-8-ok.zip
+no-hashes roms nogood-2.zip
 stdout In game nogood-2:
 stdout rom  04.rom        size       4  no good dump: missing

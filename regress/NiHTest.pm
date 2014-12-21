@@ -639,9 +639,20 @@ sub parse_args {
 		}
 		my @types = split /\s+/, $type;
 		my @strs = split /\s+/, $str;
-		
-		if (!$ellipsis && scalar(@types) != scalar(@strs)) {
-			$self->warn_file_line("expected " . (scalar(@types)) . " arguments, got " . (scalar(@strs)));
+		my $optional = 0;
+		for (my $i = scalar(@types) - 1; $i >= 0; $i--) {
+			last unless ($types[$i] =~ m/(.*)\?$/);
+			$types[$i] = $1;
+			$optional++;
+		}
+
+		if ($ellipsis && $optional > 0) {
+			# TODO: check this when registering a directive
+			$self->warn_file_line("can't use ellipsis together with optional arguments");
+			return undef;
+		}
+		if (!$ellipsis && (scalar(@strs) < scalar(@types) - $optional || scalar(@strs) > scalar(@types))) {
+			$self->warn_file_line("expected " . (scalar(@types) - $optional) . "-" . (scalar(@types)) . " arguments, got " . (scalar(@strs)));
 			return undef;
 		}
 		

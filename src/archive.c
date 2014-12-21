@@ -129,6 +129,8 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
     }
     hashes_copy(file_hashes(r), &h);
 
+    a->cache_changed = true;
+
     return 0;
 }
 
@@ -539,7 +541,7 @@ merge_files(archive_t *a, array_t *files)
 		hashes_copy(file_hashes(file), file_hashes(cfile));
 	    }
 	}
-	else if (!hashes_has_type(file_hashes(file), HASHES_SIZE_CRC)) {
+	else if (!hashes_has_type(file_hashes(file), HASHES_TYPE_CRC)) {
 	    if (archive_file_compute_hashes(a, i, HASHES_TYPE_ALL) < 0) {
                 file_status(file) = STATUS_BADDUMP;
                 continue;

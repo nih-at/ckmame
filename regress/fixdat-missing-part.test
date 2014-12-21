@@ -3,6 +3,7 @@ return 0
 args -Fvc -D ../mamedb-lost-parent-ok.db --fixdat fix_test.dat
 file roms/clone-8.zip 1-4-ok.zip 1-4-ok.zip
 file-new fix_test.dat fixdat-missing-part.dat
+no-hashes roms clone-8.zip
 stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout rom  08.rom        size       8  crc 3656897d: missing

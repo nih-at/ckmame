@@ -3,6 +3,8 @@ return 0
 args -FKLvcj -e extradir 2-48
 file extradir/2-48.zip 2-48-ok.zip 1-4-ok.zip
 file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
+no-hashes roms 2-48.zip 04.rom
+no-hashes extradir 2-48.zip 04.rom
 stdout In game 2-48:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout rom  08.rom        size       8  crc 3656897d: is in 'extradir/2-48.zip/08.rom'

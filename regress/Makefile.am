@@ -296,6 +296,7 @@ DBFILES=	\
 		mamedb-baddump.txt \
 		mamedb-broken-sha1.dump \
 		mamedb-broken-sha1.txt \
+		mamedb-deadbeefish.txt \
 		mamedb-dir-in-name.dump \
 		mamedb-dir-in-name.txt \
 		mamedb-disk-many.txt \
@@ -342,6 +343,7 @@ DBS=\
 	mame.db \
 	mamedb-1-8-is-4.db \
 	mamedb-baddump.db \
+	mamedb-deadbeefish.db \
 	mamedb-disk.db \
 	mamedb-disk-many.db \
 	mamedb-lost-parent-ok.db \

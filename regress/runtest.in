@@ -67,7 +67,7 @@ sub check_ckmame_db {
 		}
 	}
 	
-	my $db = new CkmameDB($dir, undef, $roms_uncompressed);
+	my $db = new CkmameDB($dir, undef, $roms_uncompressed, $test->{test}->{'no-hashes'});
 	
 	if (!$db) {
 		print "opening $dir/.ckmame.db failed\n" if ($test->{verbose});
@@ -92,6 +92,7 @@ sub checks {
 	my %checked = ();
 	
 	my $ok = 1;
+	my $error = 0;
 
 	my $dir;
 	unless (opendir($dir, '.')) {
@@ -107,7 +108,8 @@ sub checks {
 	    $checked{$name} = 1;
 	    
 	    if (!defined($ret)) {
-		return undef;
+		    $error = 1;
+		    next;
 	    }
 	    elsif ($ret != 1) {
 		$ok = 0;
@@ -134,7 +136,7 @@ sub checks {
 	    
 	push @{$test->{failed}}, 'ckmame.db' unless ($ok);
 	
-	return 1;
+	return $error ? undef : 1;
 }
 
 sub comparator_db {
@@ -264,6 +266,7 @@ $test->add_directive(mkdbargs => { type => 'string...', once => 1 });
 $test->add_directive('archive-types' => { type => 'string...', once => 1 });
 $test->add_directive('ckmamedb-before' => { type => 'string string' });
 $test->add_directive('ckmamedb-after' => { type => 'string string' });
+$test->add_directive('no-hashes' => { type => 'string string string?' });
 
 $test->add_comparator('db/dump', \&comparator_db);
 $test->add_comparator('zip/zip', \&comparator_zip);

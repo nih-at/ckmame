@@ -54,23 +54,13 @@
 #define QUERY_FILE_LOCATION	3
 
 
-static find_result_t check_for_file_in_zip(const char *, const file_t *,
-					   match_t *);
-static find_result_t check_match_disk_old(const game_t *, const disk_t *,
-					  match_disk_t *);
-static find_result_t check_match_disk_romset(const game_t *, const disk_t *,
-					     match_disk_t *);
-static find_result_t check_match_old(const game_t *, const file_t *, match_t *);
-static find_result_t check_match_romset(const game_t *, const file_t *,
-					match_t *);
-static find_result_t find_disk_in_db(romdb_t *, const disk_t *, const char *,
-				     match_disk_t *,
-				     find_result_t (*)(const game_t *,
-						       const disk_t *,
-						       match_disk_t *));
-static find_result_t find_in_db(romdb_t *, const file_t *, const char *, match_t *,
-				find_result_t (*)(const game_t *,
-						  const file_t *, match_t *));
+static find_result_t check_for_file_in_zip(const char *, const file_t *, const file_t *, match_t *);
+static find_result_t check_match_disk_old(const game_t *, const disk_t *, match_disk_t *);
+static find_result_t check_match_disk_romset(const game_t *, const disk_t *, match_disk_t *);
+static find_result_t check_match_old(const game_t *, const file_t *, const file_t *, match_t *);
+static find_result_t check_match_romset(const game_t *, const file_t *, const file_t *, match_t *);
+static find_result_t find_disk_in_db(romdb_t *, const disk_t *, const char *, match_disk_t *, find_result_t (*)(const game_t *, const disk_t *, match_disk_t *));
+static find_result_t find_in_db(romdb_t *, const file_t *, archive_t *, const char *, match_t *, find_result_t (*)(const game_t *, const file_t *, const file_t *, match_t *));
 
 
 find_result_t
@@ -199,38 +189,48 @@ find_in_archives(const file_t *r, match_t *m)
 
 
 find_result_t
-find_in_old(const file_t *r, match_t *m)
+find_in_old(const file_t *r, archive_t *a, match_t *m)
 {
-    if (old_db == NULL)
+    if (old_db == NULL) {
 	return FIND_MISSING;
-    return find_in_db(old_db, r, NULL, m, check_match_old);
+    }
+
+    return find_in_db(old_db, r, a, NULL, m, check_match_old);
 }
 
 
 find_result_t
-find_in_romset(const file_t *r, const char *skip, match_t *m)
+find_in_romset(const file_t *r, archive_t *a, const char *skip, match_t *m)
 {
-    return find_in_db(db, r, skip, m, check_match_romset);
+    return find_in_db(db, r, a, skip, m, check_match_romset);
 }
 
 
 static find_result_t
-check_for_file_in_zip(const char *name, const file_t *r, match_t *m)
+check_for_file_in_zip(const char *name, const file_t *r, const file_t *f, match_t *m)
 {
     char *full_name;
     archive_t *a;
     int idx;
 
-    if ((full_name=findfile(name, TYPE_ROM)) == NULL
-	|| (a=archive_new(full_name, TYPE_ROM, FILE_ROMSET, 0)) == NULL) {
+    if ((full_name=findfile(name, TYPE_ROM)) == NULL || (a=archive_new(full_name, TYPE_ROM, FILE_ROMSET, 0)) == NULL) {
 	free(full_name);
 	return FIND_MISSING;
     }
     free(full_name);
 
-    if ((idx=archive_file_index_by_name(a, file_name(r))) >= 0
-	&& archive_file_compare_hashes(a, idx,
-				       file_hashes(r)) == HASHES_CMP_MATCH) {
+    if ((idx=archive_file_index_by_name(a, file_name(r))) >= 0 && archive_file_compare_hashes(a, idx, file_hashes(f)) == HASHES_CMP_MATCH) {
+        file_t *af = archive_file(a, idx);
+        if ((hashes_types(file_hashes(af)) & hashes_types(file_hashes(f))) != hashes_types(file_hashes(f))) {
+            if (archive_file_compute_hashes(a, idx, HASHES_TYPE_ALL) < 0) { /* TODO: only needed hash types */
+                archive_free(a);
+                return FIND_MISSING;
+            }
+            if (archive_file_compare_hashes(a, idx, file_hashes(f)) != HASHES_CMP_MATCH) {
+                archive_free(a);
+                return FIND_MISSING;
+            }
+        }
 	if (m) {
 	    match_archive(m) = a;
 	    match_index(m) = idx;
@@ -297,7 +297,7 @@ check_match_disk_romset(const game_t *g, const disk_t *d, match_disk_t *md)
 
 
 static find_result_t
-check_match_old(const game_t *g, const file_t *r, match_t *m)
+check_match_old(const game_t *g, const file_t *r, const file_t *f, match_t *m)
 {
     if (m) {
 	match_quality(m) = QU_OLD;
@@ -311,11 +311,11 @@ check_match_old(const game_t *g, const file_t *r, match_t *m)
 
 
 static find_result_t
-check_match_romset(const game_t *g, const file_t *r, match_t *m)
+check_match_romset(const game_t *g, const file_t *r, const file_t *f, match_t *m)
 {
     find_result_t status;
     
-    status = check_for_file_in_zip(game_name(g), r, m);
+    status = check_for_file_in_zip(game_name(g), r, f, m);
     if (m && status == FIND_EXISTS) {
 	match_quality(m) = QU_COPIED;
 	match_where(m) = FILE_ROMSET;
@@ -326,9 +326,7 @@ check_match_romset(const game_t *g, const file_t *r, match_t *m)
 
 
 static find_result_t
-find_in_db(romdb_t *fdb, const file_t *r, const char *skip, match_t *m,
-	   find_result_t (*check_match)(const game_t *, const file_t *,
-					match_t *))
+find_in_db(romdb_t *fdb, const file_t *r, archive_t * archive, const char *skip, match_t *m, find_result_t (*check_match)(const game_t *, const file_t *, const file_t *, match_t *))
 {
     array_t *a;
     file_location_t *fbh;
@@ -358,9 +356,24 @@ find_in_db(romdb_t *fdb, const file_t *r, const char *skip, match_t *m,
 
 	gr = game_file(g, TYPE_ROM, file_location_index(fbh));
 
-	if (file_size(r) == file_size(gr)
-	    && hashes_cmp(file_hashes(r), file_hashes(gr)) == HASHES_CMP_MATCH) {
-	    status = check_match(g, gr, m);
+	if (file_size(r) == file_size(gr) && hashes_cmp(file_hashes(r), file_hashes(gr)) == HASHES_CMP_MATCH) {
+            bool ok = true;
+
+            if (archive && (hashes_types(file_hashes(gr)) & (hashes_types(file_hashes(r)))) != hashes_types(file_hashes(gr))) {
+                int idx = archive_file_index(archive, r);
+                if (idx >= 0) {
+                    archive_file_compute_hashes(archive, idx, hashes_types(file_hashes(gr))); /* TODO: handle error (how?) */
+                    ok = false;
+                }
+
+                if (hashes_cmp(file_hashes(gr), file_hashes(r)) != HASHES_CMP_MATCH) {
+                    ok = false;
+                }
+            }
+
+            if (ok) {
+                status = check_match(g, gr, r, m);
+            }
 	}
 
 	game_free(g);

@@ -5,6 +5,7 @@ args -FKLivc -D ../mamedb-disk.db
 file roms/disk.zip 1-8-ok.zip 1-8-ok.zip
 file-del roms/108-5a.chd 108-5.chd
 file-new roms/108-5.chd 108-5.chd
+no-hashes roms disk.zip
 stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/108-5a.chd'

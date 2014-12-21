@@ -7,6 +7,8 @@ file extra/deadfish4.zip deadfish4.zip deadfish.zip
 file extra/2-4c.zip 2-4c-ok.zip 1-c-ok.zip
 file extra/1-4-crcerror.zip 1-4-crcerror.zip 1-4-crcerror.zip
 file-del extra/deadclonedbeef.zip deadclonedbeef.zip 
+no-hashes extra 1-4-crcerror.zip 04.rom
+no-hashes extra 2-4c.zip 0c.rom
 stdout In archive extra/1-4-crcerror.zip:
 stdout file 04.rom        size       4  crc d87e7e0c: unknown
 stdout In archive extra/2-4c.zip:

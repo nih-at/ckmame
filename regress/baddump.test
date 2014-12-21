@@ -3,6 +3,7 @@ return 0
 args -D ../mamedb-baddump.db -FKLvc -je extra
 file roms/baddump.zip baddump.zip baddump.zip
 file-del extra/baddump.zip baddump.zip
+no-hashes roms baddump.zip bad.rom
 stdout In game baddump:
 stdout game baddump                                 : correct
 stdout In archive extra/baddump.zip:

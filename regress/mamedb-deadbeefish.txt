@@ -1,0 +1,24 @@
+BEGIN
+
+clrmamepro (
+	name "deadbeef & fish"
+	version 1
+)
+
+game (
+	name deadbeef
+	description "deadbeef, CRC only"
+	manufacturer "dillo+wiz"
+	year 2014
+	rom ( name deadbeef size 8 crc deadbeef )
+)
+
+game (
+	name deadfish
+	description "deadfish, more hashes"
+	manufacturer "dillo+wiz"
+	year 2014
+	rom ( name deadfish size 8 crc deadbeef md5 88beb2c7d4f8383318c94934973d1e1a sha1 bcb42c24c15bb31ce69b12d629104efbcc461f00 )
+)
+
+END

@@ -149,4 +149,11 @@ tools:
 cachedb:
 - superfluous top level: non-recursive archive, all loose files are superfluous;
 - non-recursive archive: exclude .ckmame.db
-- test: zip with files not in alphabetical order, check that correct in .ckmame.db (via dump-after)
+- [feature] save detector hashes to cachedb
+- [cleanup] rename dbh_cache to cachedb
+- [bug] archive in subdirectory: subdirectory not reflected in archive name in cachedb (and mkmamedb output)
+- [feature] compute all hashes when called with -i
+- why no cachedb in unknown/?
+- [bug] taking ROM from game with only CRC for game with md5 doesn't check md5 (since it's already correct in CRC-only game)
+- [test] zip in cachedb, same size/mtime but different content: taken from cachedb
+

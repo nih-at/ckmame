@@ -3,5 +3,6 @@ return 0
 # TODO: -c reports game as correct
 args -cFKLv nogood
 file roms/nogood.zip 1-4-ok.zip 1-4-ok.zip
+no-hashes roms nogood.zip
 stdout In game nogood:
 stdout game nogood                                  : correct
