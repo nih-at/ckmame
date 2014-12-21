@@ -266,7 +266,11 @@ $test->add_directive(mkdbargs => { type => 'string...', once => 1 });
 $test->add_directive('archive-types' => { type => 'string...', once => 1 });
 $test->add_directive('ckmamedb-before' => { type => 'string string' });
 $test->add_directive('ckmamedb-after' => { type => 'string string' });
-$test->add_directive('no-hashes' => { type => 'string string string?' });
+$test->add_directive('no-hashes' => {
+	type => 'string string string? string?',
+	usage => 'directory archive [file] [hash-types]',
+	description => 'Specify that certain hashes are missing from cachedb. If HASH-TYPES is ommitted, only crc is present; if FILE is ommitted, it applies to all files from ARCHIVE.'
+});
 
 $test->add_comparator('db/dump', \&comparator_db);
 $test->add_comparator('zip/zip', \&comparator_zip);

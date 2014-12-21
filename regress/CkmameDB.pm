@@ -23,7 +23,7 @@ sub new {
 				$self->{no_hashes}->{$no_hash->[1]} = 1;
 			}
 			else {
-				$self->{no_hashes}->{$no_hash->[1]}->{$no_hash->[2]} = 1;
+				$self->{no_hashes}->{$no_hash->[1]}->{$no_hash->[2]} = $no_hash->[3] // 1;
 			}
 		}
 	}
@@ -184,12 +184,7 @@ sub read_archives {
 			$rom->{mtime} = $attributes{time};
 			$rom->{crc} = hex($attributes{crc});
 
-			if ($self->omit_hashes($archive->{name}, $name)) {
-				$rom->{status} = 0;
-				for my $ht (qw(md5 sha1)) {
-					$rom->{$ht} = 'null';
-				}
-			}
+			$self->omit_hashes($archive->{name}, $rom);
 
 			push @{$archive->{files}}, $rom;
 		}
@@ -248,15 +243,29 @@ sub make_dump {
 sub omit_hashes {
 	my ($self, $archive, $file) = @_;
 
-	return 0 if ($self->{unzipped});
-	return 0 unless (exists($self->{no_hashes}->{$archive}));
+	my $omit;
+
+	return if ($self->{unzipped});
+	return unless (exists($self->{no_hashes}->{$archive}));
 	if (ref($self->{no_hashes}->{$archive}) eq 'HASH') {
-		return $self->{no_hashes}->{$archive}->{$file};
+		$omit = $self->{no_hashes}->{$archive}->{$file->{name}};
 	}
 	else {
-		return 1;
+		$omit = 1;
+	}
+
+	if ($omit eq '1') {
+		$omit = 'md5,sha1';
+	}
+
+	return unless defined($omit);
+
+	$file->{status} = 0;
+	for my $hash (split ',', $omit) {
+		$file->{$hash} = 'null';
 	}
 }
+
 
 sub destrsvis {
 	my ($str) = @_;

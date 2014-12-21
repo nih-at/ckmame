@@ -8,6 +8,7 @@ file-del roms/108-2.chd 108-2.chd
 file-del roms/108-5.chd 108-5.chd
 file-new unknown/parent.zip 1-c-ok.zip
 file-new unknown/108-2.chd 108-2.chd
+no-hashes roms clone-8.zip
 stdout In archive roms/1-8.zip:
 stdout file 08.rom        size       8  crc 3656897d: duplicate
 stdout roms/1-8.zip: delete duplicate file '08.rom'

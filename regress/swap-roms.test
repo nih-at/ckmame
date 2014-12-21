@@ -3,6 +3,8 @@ return 0
 args -D ../mamedb-parent-crcdiff.db -Fv
 file roms/parent.zip 12345678.zip 2-48-ok.zip
 file roms/child.zip 2-48-ok.zip 12345678.zip
+no-hashes roms parent.zip
+no-hashes roms child.zip
 stdout In game parent:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/child.zip/04.rom'
 stdout rom  08.rom        size       8  crc 3656897d: missing

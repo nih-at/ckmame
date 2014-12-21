@@ -4,6 +4,9 @@ args -D ../mamedb-parent-no-common.db -Fv
 file roms/grandparent.zip 1-a-ok.zip 1-4-ok.zip
 file roms/parent.zip 1-4-ok.zip 1-8-ok.zip
 file roms/child.zip 1-8-ok.zip 1-a-ok.zip
+no-hashes roms child.zip
+no-hashes roms parent.zip
+no-hashes roms grandparent.zip
 stdout In game grandparent:
 stdout game grandparent                             : not a single rom found
 stdout file 0a.rom        size      10  crc 0b4a4cde: needed elsewhere

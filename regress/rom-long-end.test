@@ -3,6 +3,7 @@ return 0
 args -FKLvc 1-4
 file roms/1-4.zip 1-4-end.zip 1-4-ok.zip
 file-new unknown/1-4.zip 1-4-end.zip
+no-hashes roms 1-4.zip 04.rom md5
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 4 (8)
 stdout roms/1-4.zip: mv long file '04.rom'
