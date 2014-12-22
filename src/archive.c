@@ -369,6 +369,27 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
 }
 
 
+archive_t *
+archive_new_toplevel(const char *name, filetype_t ft, where_t where, int flags)
+{
+    char *slash;
+
+    if (xasprintf(&slash, "%s/", name) < 0) {
+        return NULL;
+    }
+
+    archive_t *a = archive_new(slash, ft, where, flags | ARCHIVE_FL_TOP_LEVEL_ONLY);
+
+    free(slash);
+
+    if (a != NULL && archive_num_files(a) == 0) {
+        archive_close(a);
+        a = NULL;
+    }
+
+    return a;
+}
+
 
 bool
 archive_read_infos(archive_t *a)
@@ -424,8 +445,8 @@ archive_read_infos(archive_t *a)
 	array_free(files_cache, file_finalize);
 	a->cache_changed = true;
     }
-    else {
-	a->cache_changed = (archive_num_files(a) > 0);
+    else if (archive_num_files(a) > 0) {
+        a->cache_changed = true;
     }
 
     return true;

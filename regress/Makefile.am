@@ -66,7 +66,8 @@ TESTS=	\
 		doublezip.test \
 		dumpgame-stats.test \
 		dumpgame-unknown.test \
-		extra-file.test \
+		extra-file-dir.test \
+		extra-file-zip.test \
 		extra-size-mismatch.test \
 		fixdat-missing-all.test \
 		fixdat-missing-child.test \
@@ -96,7 +97,8 @@ TESTS=	\
 		mkmamedb-duplicate-game.test \
 		mkmamedb-duplicate-nodump.test \
 		mkmamedb-duplicate-rom-name.test \
-		mkmamedb-input-dir.test \
+		mkmamedb-input-dir-dir.test \
+		mkmamedb-input-dir-zip.test \
 		mkmamedb-lost-parent.test \
 		mkmamedb-mame.test \
 		mkmamedb-merge-no-parent.test \
@@ -204,6 +206,7 @@ TESTS=	\
 		uncompressed-ckmamedb-remove-game-3.test \
 		uncompressed-ckmamedb-remove-game.test \
 		uncompressed-toplevel-extra.test \
+		uncompressed-toplevel-file.test \
 		uncompressed-toplevel-roms.test \
 		wrong.test \
 		wrong2.test \

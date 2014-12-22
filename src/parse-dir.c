@@ -59,6 +59,7 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
     char b[8192];
     dir_status_t ds;
     struct stat st;
+    bool have_loose_files = false;
 
     ctx->lineno = 0;
     
@@ -86,10 +87,24 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
                 }
             }
             else {
-                /* TOOD: if chd, include in dat */
 		if (S_ISREG(st.st_mode)) {
-		    myerror(ERRDEF, "skipping unknown file '%s'", b);
+                    /* TODO: always include loose files, separate flag? */
+                    if (ctx->full_archive_name) {
+                        have_loose_files = true;
+                    }
+                    else {
+                        myerror(ERRDEF, "skipping unknown file '%s'", b);
+                    }
 		}
+            }
+        }
+
+        if (have_loose_files) {
+            a = archive_new_toplevel(dname, TYPE_ROM, FILE_NOWHERE, 0);
+
+            if (a != NULL) {
+                parse_archive(ctx, a, hashtypes);
+                archive_close(a);
             }
         }
     }

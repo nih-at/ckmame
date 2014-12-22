@@ -413,7 +413,7 @@ op_commit(archive_t *a)
 	    ret = -1;
     }
 
-    if (is_empty && archive_is_writable(a) && !(archive_flags(a) & ARCHIVE_FL_KEEP_EMPTY)) {
+    if (is_empty && archive_is_writable(a) && !(archive_flags(a) & (ARCHIVE_FL_KEEP_EMPTY|ARCHIVE_FL_TOP_LEVEL_ONLY))) {
 	if (rmdir(archive_name(a)) < 0 && errno != ENOENT) {
 	    myerror(ERRZIP, "cannot remove empty archive '%s': %s", archive_name(a), strerror(errno));
 	    ret = -1;
@@ -681,12 +681,16 @@ op_read_infos(archive_t *a)
 	}
 
 	if (S_ISREG(sb.st_mode)) {
-	    file_t *f;
-	    
-	    f = array_grow(archive_files(a), file_init);
+            const char *name = namebuf+strlen(archive_name(a))+1;
+
+            if (strcmp(name, DBH_CACHE_DB_NAME) == 0) {
+                continue;
+            }
+
+            file_t *f = array_grow(archive_files(a), file_init);
 	    array_grow(ud->change, change_init);
 	    
-	    file_name(f) = xstrdup(namebuf+strlen(archive_name(a))+1);
+	    file_name(f) = xstrdup(name);
 	    file_size(f) = sb.st_size;
 	    file_mtime(f) = sb.st_mtime;
 	}

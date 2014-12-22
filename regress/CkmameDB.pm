@@ -128,6 +128,9 @@ sub read_archives {
 
 		my $name = $1;
 		my @args = split ' ', $2;
+
+		next if ($name eq '.');
+
 		$name =~ s,^\./$self->{dir}/,,;
 		$name = destrsvis($name);
 		my %attributes = ();
@@ -139,7 +142,6 @@ sub read_archives {
 			$attributes{$1} = $2;
 		}
 
-		next if ($name eq '.');
 
 		if ($attributes{type} eq 'dir') {
 			if ($self->{skip}->{$name}) {

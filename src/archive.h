@@ -132,6 +132,7 @@ void archive_global_flags(int, bool);
 bool archive_is_empty(const archive_t *);
 char *archive_make_unique_name(archive_t *, const char *);
 archive_t *archive_new(const char *, filetype_t, where_t, int);
+archive_t *archive_new_toplevel(const char *, filetype_t, where_t, int);
 bool archive_read_infos(archive_t *);
 void archive_real_free(archive_t *);
 int archive_refresh(archive_t *);

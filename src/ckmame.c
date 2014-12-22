@@ -213,9 +213,19 @@ main(int argc, char **argv)
 	case 'd':
 	    output_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
-	case 'e':
-	    parray_push(search_dirs, xstrdup(optarg));
+        case 'e': {
+	    char *name = xstrdup(optarg);
+	    for (size_t i = strlen(name) -1; i > 0; i--) {
+		if (name[i] == '/') {
+		    name[i] = '\0';
+		}
+		else {
+		    break;
+		}
+	    }
+	    parray_push(search_dirs, name);
 	    break;
+	}
 	case 'F':
 	    fix_options |= FIX_DO;
 	    break;

@@ -101,6 +101,12 @@ ensure_extra_maps(int flags)
 		break;
 	    }
 	}
+
+	if (roms_unzipped) {
+	    if ((a = archive_new_toplevel(rom_dir, TYPE_ROM, FILE_SUPERFLUOUS, 0)) != NULL) {
+		archive_free(a);
+	    }
+	}
     }
 
     for (i=0; i<parray_length(search_dirs); i++)
@@ -208,7 +214,6 @@ enter_dir_in_map_and_list_unzipped(int flags, parray_t *list, const char *direct
     dir_t *dir;
     dir_status_t ds;
     char name[8192];
-    bool have_top_level_files = false;
 
     if ((dir=dir_open(directory_name, dir_flags & ~DIR_RECURSE)) == NULL) {
         return -1;
@@ -230,19 +235,16 @@ enter_dir_in_map_and_list_unzipped(int flags, parray_t *list, const char *direct
                     parray_push(list, xstrdup(name));
                 }
             }
-        } else if (S_ISREG(sb.st_mode)) {
-            have_top_level_files = true;
         }
     }
 
-    if (have_top_level_files) {
-        archive_t *a = archive_new(directory_name, TYPE_ROM, where, ARCHIVE_FL_TOP_LEVEL_ONLY);
-        if (a != NULL) {
-            archive_close(a);
-            if ((flags & DO_LIST) && list) {
-                parray_push(list, xstrdup(directory_name));
-            }
-        }
+    archive_t *a = archive_new_toplevel(directory_name, TYPE_ROM, where, 0);
+
+    if (a != NULL) {
+	if ((flags & DO_LIST) && list) {
+	    parray_push(list, xstrdup(archive_name(a)));
+	}
+	archive_close(a);
     }
 
     return dir_close(dir);
