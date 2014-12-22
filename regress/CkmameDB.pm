@@ -154,8 +154,8 @@ sub read_archives {
 			else {
 				$archive->{name} .= '.zip';
 				my @stat = stat("$self->{dir}/$archive->{name}");
-				$archive->{mtime} = $stat[9];
-				$archive->{size} = $stat[7];
+				$archive->{mtime} = $stat[9] // 'null';
+				$archive->{size} = $stat[7] // 'null';
 			}
 			if ($self->{dump_archives}->{$archive->{name}}) {
 				$archive->{id} = $self->{dump_archives}->{$archive->{name}}->{id};
