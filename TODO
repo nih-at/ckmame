@@ -152,7 +152,6 @@ merge:
 - [bug] superfluous top level: non-recursive archive, all loose files are superfluous;
 - [bug] non-recursive archive: exclude .ckmame.db
 - [test] zip in cachedb, same size/mtime but different content: taken from cachedb
-- [test] split superfluous-cleanup into zip (with chd) and dir (without)
 
 maybe:
 - [test] run unzipped-ckmamedb-* for zip as well
