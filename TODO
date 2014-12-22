@@ -150,7 +150,6 @@ cachedb:
 
 merge:
 - [test] zip in cachedb, same size/mtime but different content: taken from cachedb
-- [test] split superfluous-cleanup into zip (with chd) and dir (without)
 
 maybe:
 - [test] unzipped: take ROM from top-level file in roms

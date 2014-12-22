@@ -15,6 +15,8 @@ fwrite_la_SOURCES=	fwrite.c
 fwrite_la_LDFLAGS=	-module -avoid-version
 
 EXTRA_DIST=runtest.in CkmameDB.pm NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
+		ckmamedb-2-4c-ok.dump \
+		ckmamedb-2-4c-reverse.dump \
 		gamelist-from-file.in \
 		fixdat-missing-all.dat \
 		fixdat-missing-child.dat \
@@ -186,6 +188,7 @@ TESTS=	\
 		skipbad.test \
 		superfluous-broken.test \
 		superfluous-cleanup.test \
+		superfluous-cleanup-disk.test \
 		superfluous-inconsistent.test \
 		superfluous.test \
 		swap-roms-2.test \
@@ -205,6 +208,8 @@ TESTS=	\
 		uncompressed-ckmamedb-remove-game-2.test \
 		uncompressed-ckmamedb-remove-game-3.test \
 		uncompressed-ckmamedb-remove-game.test \
+		uncompressed-ckmamedb-sort-order.test \
+		uncompressed-ckmamedb-sort-order-reverse.test \
 		uncompressed-toplevel-extra.test \
 		uncompressed-toplevel-file.test \
 		uncompressed-toplevel-roms.test \
@@ -259,6 +264,7 @@ ZIPS=		1-4-2.zip \
 		2-48-ok.tzip \
 		2-4a-ok.zip \
 		2-4c-ok.zip \
+		2-4c-reverse.zip \
 		2-84.zip \
 		2-8c-ok.zip \
 		2-cc-ok.zip \
@@ -353,6 +359,7 @@ DBS=\
 	mamedb-disk-many.db \
 	mamedb-lost-parent-ok.db \
 	mamedb-merge-parent.db \
+	mamedb-one-game-two-roms.db \
 	mamedb-parent-crcdiff.db \
 	mamedb-parent-no-common.db \
 	mamedb-small.db \
