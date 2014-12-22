@@ -243,17 +243,15 @@ sub post_copy_file {
 		mkdir('roms');
 	}
 
-	if ($roms_uncompressed) {
-		if (defined($test->{test}->{'ckmamedb-before'})) {
-			for my $args (@{$test->{test}->{'ckmamedb-before'}}) {
-				my ($dir, $dump) = @$args;
-				my $dump_file = $test->find_file($dump);
-				return undef unless (defined($dump));
-				
-				unless (system('../dbrestore', '-t', 'ckmamedb', "$dump_file", "$dir/.ckmame.db") == 0) {
-					print STDERR "can't restore ckmamedb dump $dump: $!";
-					return undef;
-				}
+	if (defined($test->{test}->{'ckmamedb-before'})) {
+		for my $args (@{$test->{test}->{'ckmamedb-before'}}) {
+			my ($dir, $dump) = @$args;
+			my $dump_file = $test->find_file($dump);
+			return undef unless (defined($dump));
+
+			unless (system('../dbrestore', '-t', 'ckmamedb', "$dump_file", "$dir/.ckmame.db") == 0) {
+				print STDERR "can't restore ckmamedb dump $dump: $!";
+				return undef;
 			}
 		}
 	}

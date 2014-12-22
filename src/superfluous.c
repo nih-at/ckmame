@@ -97,7 +97,7 @@ list_directory(const char *dirname, const char *dbname)
 	    continue;
 	}
 
-	if (roms_unzipped && strcmp(b+len_dir, DBH_CACHE_DB_NAME) == 0)
+	if (strcmp(b+len_dir, DBH_CACHE_DB_NAME) == 0)
 	    continue;
 
 	len_name = strlen(b+len_dir);
