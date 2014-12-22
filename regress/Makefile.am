@@ -15,8 +15,6 @@ fwrite_la_SOURCES=	fwrite.c
 fwrite_la_LDFLAGS=	-module -avoid-version
 
 EXTRA_DIST=runtest.in CkmameDB.pm NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
-		ckmamedb-2-4c-ok.dump \
-		ckmamedb-2-4c-reverse.dump \
 		gamelist-from-file.in \
 		fixdat-missing-all.dat \
 		fixdat-missing-child.dat \
@@ -202,14 +200,15 @@ TESTS=	\
 		uncompressed-ckmamedb-add-game.test \
 		uncompressed-ckmamedb-changed-new-mtime.test \
 		uncompressed-ckmamedb-changed-same-mtime-nofix.test \
+		uncompressed-ckmamedb-changed-same-mtime-zip.test \
 		uncompressed-ckmamedb-changed-same-mtime.test \
 		uncompressed-ckmamedb-extra-dir.test \
 		uncompressed-ckmamedb-no-change.test \
 		uncompressed-ckmamedb-remove-game-2.test \
 		uncompressed-ckmamedb-remove-game-3.test \
 		uncompressed-ckmamedb-remove-game.test \
-		uncompressed-ckmamedb-sort-order.test \
 		uncompressed-ckmamedb-sort-order-reverse.test \
+		uncompressed-ckmamedb-sort-order.test \
 		uncompressed-toplevel-extra.test \
 		uncompressed-toplevel-file.test \
 		uncompressed-toplevel-roms.test \
@@ -297,8 +296,11 @@ CHDS=		108-2.chd \
 
 DBFILES=	\
 		ckmamedb-1-4-ok-1-8-ok.dump \
+		ckmamedb-1-4-ok-with-mtime.dump \
 		ckmamedb-1-4-ok.dump \
 		ckmamedb-1-8-ok.dump \
+		ckmamedb-2-4c-ok.dump \
+		ckmamedb-2-4c-reverse.dump \
 		ckmamedb-empty.dump \
 		detector.xml \
 		mame.txt \
