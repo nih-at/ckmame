@@ -324,6 +324,8 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags)
     a->files = array_new(sizeof(file_t));
     a->ud = NULL;
     a->flags = ((flags|_archive_global_flags) & (ARCHIVE_FL_MASK|ARCHIVE_FL_HASHTYPES_MASK));
+    a->mtime = 0;
+    a->size = 0;
 
     switch (ft) {
     case TYPE_ROM:
@@ -376,11 +378,11 @@ archive_read_infos(archive_t *a)
     a->cache_db = dbh_cache_get_db_for_archive(archive_name(a));
     a->cache_changed = false;
     if (a->cache_db) {
-	a->cache_id = dbh_cache_get_archive_id(a->cache_db, mybasename(archive_name(a)));
+	a->cache_id = dbh_cache_get_archive_id(a->cache_db, archive_name(a));
 
 	if (a->cache_id > 0) {
             files_cache = array_new(sizeof(file_t));
-            if (!dbh_cache_read(a->cache_db, mybasename(archive_name(a)), files_cache)) {
+            if (!dbh_cache_read(a->cache_db, archive_name(a), files_cache)) {
                 array_free(files_cache, file_finalize);
                 return false;
             }
@@ -478,21 +480,23 @@ static int
 archive_cache_is_up_to_date(archive_t *a)
 {
     if (a->ops->get_last_update == NULL) {
+        archive_mtime(a) = 0;
+        archive_size(a) = 0;
         return 0;
     }
 
-    time_t mtime_cache, mtime_disk;
-    off_t size_cache, size_disk;
+    time_t mtime_cache;
+    off_t size_cache;
 
     if (!dbh_cache_get_archive_last_change(a->cache_db, a->cache_id, &mtime_cache, &size_cache)) {
         return -1;
     }
 
-    if (!a->ops->get_last_update(a, &mtime_disk, &size_disk)) {
+    if (!a->ops->get_last_update(a, &archive_mtime(a), &archive_size(a))) {
         return -1;
     }
 
-    return (mtime_cache == mtime_disk && size_cache == size_disk);
+    return (mtime_cache == archive_mtime(a) && size_cache == archive_size(a));
 }
 
 

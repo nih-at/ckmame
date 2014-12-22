@@ -66,12 +66,12 @@ static void rom_end(parser_context_t *, filetype_t);
 
 int
 parse(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat,
-	  output_context_t *out)
+	  output_context_t *out, int flags)
 {
     parser_context_t *ctx;
     int c, ret;
 
-    ctx = parser_context_new(ps, exclude, dat, out);
+    ctx = parser_context_new(ps, exclude, dat, out, flags);
 
     c = ps_peek(ps);
 
@@ -492,7 +492,7 @@ parser_context_free(parser_context_t *ctx)
 
 parser_context_t *
 parser_context_new(parser_source_t *ps, const parray_t *exclude,
-		   const dat_entry_t *dat, output_context_t *out)
+		   const dat_entry_t *dat, output_context_t *out, int flags)
 {
     parser_context_t *ctx;
 
@@ -501,6 +501,8 @@ parser_context_new(parser_source_t *ps, const parray_t *exclude,
     dat_entry_merge(&ctx->dat_default, dat, NULL);
     ctx->output = out;
     ctx->ignore = exclude;
+    ctx->full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
+
     ctx->state = PARSE_IN_HEADER;
 
     ctx->ps = ps;

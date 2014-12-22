@@ -169,7 +169,6 @@ main(int argc, char **argv)
     int c, found;
     parray_t *list;
     char *game_list;
-    struct stat st;
 
     setprogname(argv[0]);
     output_options = WARN_ALL;

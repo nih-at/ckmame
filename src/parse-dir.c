@@ -139,7 +139,12 @@ parse_archive(parser_context_t *ctx, archive_t *a, int hashtypes)
 
     parse_game_start(ctx, 0);
 
-    name = xstrdup(mybasename(archive_name(a)));
+    if (ctx->full_archive_name) {
+        name = xstrdup(archive_name(a));
+    }
+    else {
+        name = xstrdup(mybasename(archive_name(a)));
+    }
     if (strlen(name) > 4 && strcmp(name+strlen(name)-4, ".zip") == 0)
 	name[strlen(name)-4] = '\0';
     parse_game_name(ctx, 0, 0, name);

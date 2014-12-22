@@ -34,13 +34,12 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "array.h"
+#include "archive.h"
 #include "dbh.h"
 #include "file.h"
 
 int dbh_cache_close_all(void);
 int dbh_cache_delete(dbh_t *, int);
-int dbh_cache_delete_files(dbh_t *, int);
 int dbh_cache_get_archive_id(dbh_t *, const char *);
 bool dbh_cache_get_archive_last_change(dbh_t *, int, time_t *, off_t *);
 dbh_t *dbh_cache_get_db_for_archive(const char *);
@@ -48,9 +47,7 @@ bool dbh_cache_is_empty(dbh_t *);
 parray_t *dbh_cache_list_archives(dbh_t *);
 int dbh_cache_read(dbh_t *, const char *, array_t *);
 int dbh_cache_register_cache_directory(const char *);
-int dbh_cache_write(dbh_t *, int, const char *, time_t, off_t, array_t *);
-int dbh_cache_write_archive(dbh_t *, int, const char *, time_t, off_t);
-int dbh_cache_write_file(dbh_t *, int, int, const file_t *);
+int dbh_cache_write(dbh_t *, int, const archive_t *a);
 int ensure_romset_dir_db(void);
 
 #endif /* dbh_cache.h */

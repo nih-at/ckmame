@@ -116,14 +116,11 @@ archive_commit(archive_t *a)
                 }
             }
             if (archive_num_files(a) > 0) {
-                time_t mtime = 0;
-                off_t size = 0;
-
                 if (a->ops->get_last_update) {
-                    a->ops->get_last_update(a, &mtime, &size); /* TODO: handle errors */
+                    a->ops->get_last_update(a, &archive_mtime(a), &archive_size(a)); /* TODO: handle errors */
                 }
 
-                a->cache_id = dbh_cache_write(a->cache_db, a->cache_id, mybasename(archive_name(a)), mtime, size, archive_files(a));
+                a->cache_id = dbh_cache_write(a->cache_db, a->cache_id, a);
                 if (a->cache_id < 0) {
                     seterrdb(a->cache_db);
                     myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, archive_name(a));

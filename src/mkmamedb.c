@@ -61,12 +61,12 @@ char help[] = "\n"
 "  -u, --roms-unzipped             ROMs are files on disk, not contained in zip archives\n"
 "  -x, --exclude pat               exclude games matching shell glob PAT\n"
 "      --detector xml-file         use header detector\n"
-"      --extended                  include CRC and last modification time (mtree format only)\n"
 "      --no-directory-cache        don't create cache of scanned input directory\n"
 "      --only-files pat            only use zip members matching shell glob PAT\n"
 "      --prog-description d        set description of rominfo\n"
 "      --prog-name name            set name of program rominfo is from\n"
 "      --prog-version version      set version of program rominfo is from\n"
+"      --runtest                   output special format for use in ckmame test suite\n"
 "      --skip-files pat            don't use zip members matching shell glob PAT\n"
 "\n"
 "Report bugs to " PACKAGE_BUGREPORT ".\n";
@@ -79,12 +79,12 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 enum {
     OPT_DETECTOR = 256,
-    OPT_EXTENDED,
     OPT_NO_DIRECTORY_CACHE,
     OPT_ONLY_FILES,
     OPT_PROG_DESCRIPTION,
     OPT_PROG_NAME,
     OPT_PROG_VERSION,
+    OPT_RUNTEST,
     OPT_SKIP_FILES
 };
 
@@ -96,13 +96,13 @@ struct option options[] = {
     { "exclude",             1, 0, 'x' },
     { "format",              1, 0, 'F' },
     { "hash-types",          1, 0, 'C' },
-    { "extended",            0, 0, OPT_EXTENDED },
     { "output",              1, 0, 'o' },
     { "only-files",          1, 0, OPT_ONLY_FILES },
     { "prog-description",    1, 0, OPT_PROG_DESCRIPTION },
     { "prog-name",           1, 0, OPT_PROG_NAME },
     { "prog-version",        1, 0, OPT_PROG_VERSION },
     { "roms-unzipped",       0, 0, 'u' },
+    { "runtest" ,            0, 0, OPT_RUNTEST },
     { "skip-files",          1, 0, OPT_SKIP_FILES },
     { NULL,                  0, 0, 0 },
 };
@@ -116,6 +116,7 @@ static int process_stdin(const parray_t *, const dat_entry_t *,
 
 static int hashtypes;
 static bool cache_directory;
+static int parser_flags;
 
 int
 main(int argc, char **argv)
@@ -130,13 +131,16 @@ main(int argc, char **argv)
     char *detector_name;
     int c, i;
     int flags;
+    bool runtest;
 
     setprogname(argv[0]);
 
+    runtest = false;
     detector = NULL;
     roms_unzipped = 0;
     cache_directory = true;
     flags = 0;
+    parser_flags = 0;
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -195,9 +199,6 @@ main(int argc, char **argv)
 	case OPT_DETECTOR:
 	    detector_name = optarg;
 	    break;
-        case OPT_EXTENDED:
-            flags |= OUTPUT_FL_EXTENDED;
-            break;
 	case OPT_NO_DIRECTORY_CACHE:
 	    cache_directory = false;
 	    break;
@@ -212,6 +213,9 @@ main(int argc, char **argv)
 	case OPT_PROG_NAME:
 	    dat_entry_name(&dat) = xstrdup(optarg);
 	    break;
+        case OPT_RUNTEST:
+            runtest = true;
+            break;
 	case OPT_PROG_VERSION:
 	    dat_entry_version(&dat) = xstrdup(optarg);
 	    break;
@@ -231,8 +235,11 @@ main(int argc, char **argv)
 		"%s: warning: multiple input files specified, \n\t"
 		"--prog-name and --prog-version are ignored", getprogname());
     }
-    if ((flags & OUTPUT_FL_EXTENDED) && fmt != OUTPUT_FMT_MTREE) {
-        fprintf(stderr, "%s: warning: --mtime is only supported by output format mtree and will be ignored\n", getprogname());
+    if (runtest) {
+        fmt = OUTPUT_FMT_MTREE;
+        flags |= OUTPUT_FL_EXTENDED;
+        parser_flags = PARSER_FL_FULL_ARCHIVE_NAME;
+        cache_directory = false;
     }
 
     if ((out=output_new(fmt, dbname, flags)) == NULL)
@@ -307,7 +314,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 		err = -1;
 		continue;
 	    }
-	    if (parse(ps, exclude, dat, out) < 0)
+	    if (parse(ps, exclude, dat, out, parser_flags) < 0)
 		err = -1;
 	}
 	zip_close(za);
@@ -328,7 +335,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	    if (cache_directory)
 		archive_register_cache_directory(fname);
 
-	    ctx = parser_context_new(NULL, exclude, dat, out);
+            ctx = parser_context_new(NULL, exclude, dat, out, parser_flags);
 	    ret = parse_dir(fname, ctx, hashtypes);
 	    parser_context_free(ctx);
 	    return ret;
@@ -337,7 +344,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	if ((ps=ps_new_file(fname)) == NULL)
 	    return -1;
 	
-	return parse(ps, exclude, dat, out);
+	return parse(ps, exclude, dat, out, parser_flags);
     }
 }
 
@@ -351,5 +358,5 @@ process_stdin(const parray_t *exclude, const dat_entry_t *dat,
     if ((ps=ps_new_stdin()) == NULL)
 	return -1;
 
-    return parse(ps, exclude, dat, out);
+    return parse(ps, exclude, dat, out, parser_flags);
 }

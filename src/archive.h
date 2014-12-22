@@ -54,6 +54,8 @@ struct archive {
     dbh_t *cache_db;
     int cache_id;
     bool cache_changed;
+    time_t mtime;
+    off_t size;
     struct archive_ops *ops;
     void *ud;
 };
@@ -99,8 +101,10 @@ struct archive_ops {
 #define archive_filetype(a)	((a)->filetype)
 #define archive_flags(a)	((a)->flags)
 #define archive_id(a)		((a)->id)
+#define archive_mtime(a)        ((a)->mtime)
 #define archive_name(a)		((a)->name)
 #define archive_num_files(a)	(array_length(archive_files(a)))
+#define archive_size(a)         ((a)->size)
 #define archive_user_data(a)    ((a)->ud)
 #define archive_where(a)	((a)->where)
 

@@ -17,13 +17,17 @@ sub new {
 
 	if (defined($no_hashes)) {
 		for my $no_hash (@$no_hashes) {
-			next unless ($no_hash->[0] eq $dir);
+			my ($cache_dir, $archive, $file, $hashes) = @$no_hash;
 
-			if (scalar(@$no_hash) == 2) {
-				$self->{no_hashes}->{$no_hash->[1]} = 1;
+			next unless ($cache_dir eq $dir);
+
+			$archive =~ s/\.zip$//;
+
+			if (defined($file)) {
+				$self->{no_hashes}->{$archive}->{$file} = $hashes // 1;
 			}
 			else {
-				$self->{no_hashes}->{$no_hash->[1]}->{$no_hash->[2]} = $no_hash->[3] // 1;
+				$self->{no_hashes}->{$archive} = 1;
 			}
 		}
 	}
@@ -106,7 +110,7 @@ sub read_archives {
 	
 	my $dat;
 	my $opt = ($self->{unzipped} ? '-u' : '');
-	unless (open $dat, "../../src/mkmamedb --no-directory-cache -F mtree --extended $opt -o /dev/stdout $self->{dir} 2>/dev/null | ") {
+	unless (open $dat, "../../src/mkmamedb --runtest $opt -o /dev/stdout $self->{dir} 2>/dev/null | ") {
 		print "mkmamedb using $self->{dir} failed: $!\n" if ($self->{verbose});
 		return undef;
 	}
@@ -124,7 +128,7 @@ sub read_archives {
 
 		my $name = $1;
 		my @args = split ' ', $2;
-		$name =~ s,^\./,,;
+		$name =~ s,^\./$self->{dir}/,,;
 		$name = destrsvis($name);
 		my %attributes = ();
 		for my $attr (@args) {
@@ -152,10 +156,9 @@ sub read_archives {
 				$archive->{size} = 0;
 			}
 			else {
-				$archive->{name} .= '.zip';
-				my @stat = stat("$self->{dir}/$archive->{name}");
-				$archive->{mtime} = $stat[9] // 'null';
-				$archive->{size} = $stat[7] // 'null';
+				my @stat = stat("$self->{dir}/$archive->{name}.zip");
+				$archive->{mtime} = $stat[9] // '<null>';
+				$archive->{size} = $stat[7] // '<null>';
 			}
 			if ($self->{dump_archives}->{$archive->{name}}) {
 				$archive->{id} = $self->{dump_archives}->{$archive->{name}}->{id};

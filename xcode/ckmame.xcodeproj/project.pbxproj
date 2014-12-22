@@ -117,8 +117,6 @@
 		4B5FAE0C1735930100B67C24 /* output_mtree.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF21735924900B67C24 /* output_mtree.c */; };
 		4B5FAE0D1735930100B67C24 /* parray.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACFD1735924900B67C24 /* parray.c */; };
 		4B5FAE0F1735930100B67C24 /* parray_delete.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF51735924900B67C24 /* parray_delete.c */; };
-		4B5FAE101735930100B67C24 /* parray_index.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF71735924900B67C24 /* parray_index.c */; };
-		4B5FAE111735930100B67C24 /* parray_index_sorted.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF61735924900B67C24 /* parray_index_sorted.c */; };
 		4B5FAE121735930100B67C24 /* parray_new_from_data.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF81735924900B67C24 /* parray_new_from_data.c */; };
 		4B5FAE131735930100B67C24 /* parray_pop.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF91735924900B67C24 /* parray_pop.c */; };
 		4B5FAE141735930100B67C24 /* parray_push.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACFA1735924900B67C24 /* parray_push.c */; };
@@ -171,6 +169,8 @@
 		4B9232FD1780A77700096AA2 /* archive_dir.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B7F50691776479C00B4273C /* archive_dir.c */; };
 		4B9233001780B30400096AA2 /* dbh_cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B9232FE1780B2BA00096AA2 /* dbh_cache.c */; };
 		4B9292CA17635B5500806C0A /* archive_zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* archive_zip.c */; };
+		4BC199041A48424E005BE809 /* parray_find_sorted.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BC199021A48424E005BE809 /* parray_find_sorted.c */; };
+		4BC199051A48424E005BE809 /* parray_find.c in Sources */ = {isa = PBXBuildFile; fileRef = 4BC199031A48424E005BE809 /* parray_find.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -440,8 +440,6 @@
 		4B5FACF31735924900B67C24 /* output.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = output.c; sourceTree = "<group>"; };
 		4B5FACF41735924900B67C24 /* output.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = output.h; sourceTree = "<group>"; };
 		4B5FACF51735924900B67C24 /* parray_delete.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parray_delete.c; sourceTree = "<group>"; };
-		4B5FACF61735924900B67C24 /* parray_index_sorted.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parray_index_sorted.c; sourceTree = "<group>"; };
-		4B5FACF71735924900B67C24 /* parray_index.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parray_index.c; sourceTree = "<group>"; };
 		4B5FACF81735924900B67C24 /* parray_new_from_data.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parray_new_from_data.c; sourceTree = "<group>"; };
 		4B5FACF91735924900B67C24 /* parray_pop.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parray_pop.c; sourceTree = "<group>"; };
 		4B5FACFA1735924900B67C24 /* parray_push.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parray_push.c; sourceTree = "<group>"; };
@@ -507,6 +505,8 @@
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xmlutil.h; sourceTree = "<group>"; };
 		4B9292C917635B5500806C0A /* archive_zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_zip.c; sourceTree = "<group>"; };
 		4BC0362818C8B01B00D6D5AF /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		4BC199021A48424E005BE809 /* parray_find_sorted.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parray_find_sorted.c; sourceTree = "<group>"; };
+		4BC199031A48424E005BE809 /* parray_find.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parray_find.c; sourceTree = "<group>"; };
 		4BC78D0A1A4445A400A14E29 /* NiHTest.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = NiHTest.pm; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 8; path = runtest.in; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA61A404BF300A70734 /* CkmameDB.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = CkmameDB.pm; sourceTree = "<group>"; usesTabs = 1; };
@@ -772,8 +772,8 @@
 				4B5FACFD1735924900B67C24 /* parray.c */,
 				4B5FACFE1735924900B67C24 /* parray.h */,
 				4B5FACF51735924900B67C24 /* parray_delete.c */,
-				4B5FACF71735924900B67C24 /* parray_index.c */,
-				4B5FACF61735924900B67C24 /* parray_index_sorted.c */,
+				4BC199031A48424E005BE809 /* parray_find.c */,
+				4BC199021A48424E005BE809 /* parray_find_sorted.c */,
 				4B5FACF81735924900B67C24 /* parray_new_from_data.c */,
 				4B5FACF91735924900B67C24 /* parray_pop.c */,
 				4B5FACFA1735924900B67C24 /* parray_push.c */,
@@ -1072,6 +1072,7 @@
 				4B5FAE7D173594E400B67C24 /* db_init.c in Sources */,
 				4B5FAE7E173594E400B67C24 /* dbh.c in Sources */,
 				4B5FAE7F173594E400B67C24 /* file_compare.c in Sources */,
+				4BC199041A48424E005BE809 /* parray_find_sorted.c in Sources */,
 				4B5FAE82173594E400B67C24 /* result.c in Sources */,
 				4B5FAE83173594E400B67C24 /* sq_util.c in Sources */,
 				4B5F43C11889D059000C3B7C /* romdb.c in Sources */,
@@ -1079,6 +1080,7 @@
 				4B5FAE84173594E400B67C24 /* superfluous.c in Sources */,
 				4B5FAE85173594E400B67C24 /* tree.c in Sources */,
 				4B5FAE86173594E400B67C24 /* util.c in Sources */,
+				4BC199051A48424E005BE809 /* parray_find.c in Sources */,
 				4B5FAE8B173594E500B67C24 /* warn.c in Sources */,
 				4B5FAE8C173594E500B67C24 /* xmalloc.c in Sources */,
 				4B5FAE8D173594E500B67C24 /* xmlutil.c in Sources */,
@@ -1155,8 +1157,6 @@
 				4B5FAE0D1735930100B67C24 /* parray.c in Sources */,
 				4B5F43B91889D059000C3B7C /* romdb_read_dat.c in Sources */,
 				4B5FAE0F1735930100B67C24 /* parray_delete.c in Sources */,
-				4B5FAE101735930100B67C24 /* parray_index.c in Sources */,
-				4B5FAE111735930100B67C24 /* parray_index_sorted.c in Sources */,
 				4B5FAE121735930100B67C24 /* parray_new_from_data.c in Sources */,
 				4B5FAE131735930100B67C24 /* parray_pop.c in Sources */,
 				4B5FAE141735930100B67C24 /* parray_push.c in Sources */,

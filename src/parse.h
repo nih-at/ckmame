@@ -56,10 +56,13 @@ typedef enum parser_state parser_state_t;
 #define PARSE_FL_ROM_IGNORE	2
 #define PARSE_FL_ROM_CONTINUED	4
 
+#define PARSER_FL_FULL_ARCHIVE_NAME    1
+
 struct parser_context {
     /* config */
     const parray_t *ignore;
     dat_entry_t dat_default;
+    bool full_archive_name;
 
     /* output */
     output_context_t *output;
@@ -84,9 +87,9 @@ typedef struct parser_context parser_context_t;
 
 void parser_context_free(parser_context_t *);
 parser_context_t *parser_context_new(parser_source_t *, const parray_t *,
-				     const dat_entry_t *, output_context_t *);
+				     const dat_entry_t *, output_context_t *, int);
 
-int parse(parser_source_t *, const parray_t *, const dat_entry_t *, output_context_t *);
+int parse(parser_source_t *, const parray_t *, const dat_entry_t *, output_context_t *, int);
 int export_db(romdb_t *, const parray_t *, const dat_entry_t *, output_context_t *);
 
 /* backend parser functions */
