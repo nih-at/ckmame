@@ -652,7 +652,11 @@ sub parse_args {
 			return undef;
 		}
 		if (!$ellipsis && (scalar(@strs) < scalar(@types) - $optional || scalar(@strs) > scalar(@types))) {
-			$self->warn_file_line("expected " . (scalar(@types) - $optional) . "-" . (scalar(@types)) . " arguments, got " . (scalar(@strs)));
+			my $expected = scalar(@types);
+			if ($optional > 0) {
+				$expected = ($expected - $optional) . "-$expected";
+			}
+			$self->warn_file_line("expected $expected arguments, got " . (scalar(@strs)));
 			return undef;
 		}
 		
@@ -726,7 +730,10 @@ sub parse_case() {
 		
 		my $args = $self->parse_args($def->{type}, $argstring);
             
-		next unless (defined($args));
+		unless (defined($args)) {
+			$ok = 0;
+			next;
+		}
 		
 		if ($def->{once}) {
 			if (defined($test{$cmd})) {
