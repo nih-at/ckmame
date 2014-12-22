@@ -94,7 +94,7 @@ struct archive_ops {
 
 
 #define archive_file(a, i)	((file_t *)array_get(archive_files(a), (i)))
-#define archive_file_index(a, f)    (array_element_index(archive_files(a), (f)))
+#define archive_file_index(a, f)    (array_index(archive_files(a), (f)))
 #define archive_files(a)	((a)->files)
 #define archive_filetype(a)	((a)->filetype)
 #define archive_flags(a)	((a)->flags)

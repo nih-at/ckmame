@@ -306,7 +306,7 @@ main(int argc, char **argv)
 		    putc('\n', stdout);
 		dump_special(argv[i]);
 	    }
-	    else if (parray_index_sorted(list, argv[i], strcmp) >= 0) {
+	    else if (parray_find_sorted(list, argv[i], strcmp) >= 0) {
 		if (first)
 		    first = 0;
 		else

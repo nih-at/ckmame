@@ -111,7 +111,7 @@ list_directory(const char *dirname, const char *dbname)
 
 	if (S_ISDIR(st.st_mode)) {
 	    if (roms_unzipped && listf)
-		known = parray_index_sorted(listf, b+len_dir, strcmp) != -1;
+		known = parray_find_sorted(listf, b+len_dir, strcmp) != -1;
 	}
 	else {
 	    ext = NULL;
@@ -126,14 +126,14 @@ list_directory(const char *dirname, const char *dbname)
 
 	    if (ext) {
 		if (strcmp(ext, "chd") == 0 && listd)
-		    known = parray_index_sorted(listd, b+len_dir, strcmp) != -1;
+		    known = parray_find_sorted(listd, b+len_dir, strcmp) != -1;
 		else if (!roms_unzipped && strcmp(ext, "zip") == 0 && listf)
-		    known = parray_index_sorted(listf, b+len_dir, strcmp) != -1;
+		    known = parray_find_sorted(listf, b+len_dir, strcmp) != -1;
 		*p = '.';
 	    }
 	    else {
 		if (listd)
-		    known = parray_index_sorted(listd, b+len_dir, strcmp) != -1;
+		    known = parray_find_sorted(listd, b+len_dir, strcmp) != -1;
 	    }
 	}
 

@@ -269,7 +269,7 @@ fix_disks(game_t *g, images_t *im, result_t *res)
 		    rename_or_move(match_disk_name(md), fname);
 		    if (extra_list) {
 		    	int idx;
-		    	idx = parray_index_sorted(extra_list, match_disk_name(md), strcmp);
+		    	idx = parray_find_sorted(extra_list, match_disk_name(md), strcmp);
 		    	if (idx >= 0)
 		            parray_delete(extra_list, idx, free);
 		    }

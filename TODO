@@ -164,5 +164,4 @@ maybe:
 
 later:
 - [feature] save detector hashes to cachedb
-- [cleanup] rename array_index to array_find, array_element_index to array_index
 - fix Xcode warnings

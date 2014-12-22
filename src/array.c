@@ -56,7 +56,7 @@ array_free(array_t *a, void (*fn)(void *))
 }
 
 int
-array_element_index(const array_t *a, const void *element)
+array_index(const array_t *a, const void *element)
 {
     ssize_t idx = ((const char *)element - a->data) / a->elem_size;
 
@@ -76,7 +76,7 @@ array_get(const array_t *a, int i)
 
 
 int
-array_index(const array_t *a, const void *key, int (*cmp)(/* const void *, const void * */))
+array_find(const array_t *a, const void *key, int (*cmp)(/* const void *, const void * */))
 {
     int idx;
 

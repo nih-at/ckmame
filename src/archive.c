@@ -536,7 +536,7 @@ merge_files(archive_t *a, array_t *files)
     for (i = 0; i < array_length(archive_files(a)); i++) {
 	file_t *file = archive_file(a, i);
 
-	if (files && (idx = array_index(files, file_name(file), cmp_file_by_name)) >= 0) {
+	if (files && (idx = array_find(files, file_name(file), cmp_file_by_name)) >= 0) {
 	    file_t *cfile = array_get(files, idx);
 	    if (file_mtime(file) == file_mtime(cfile) && file_compare_nsc(file, cfile)) {
 		hashes_copy(file_hashes(file), file_hashes(cfile));

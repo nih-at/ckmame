@@ -1,5 +1,5 @@
 /*
-  parray_index.c -- find index of element
+  parray_find_sorted.c -- find index of element in sorted array
   Copyright (C) 2005 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -34,17 +34,27 @@
 #include "parray.h"
 
 
-/* return index of ELEM in parray PA, -1 if not found */
+/* return index of ELEM in sorted (by CMP) parray PA, -1 if not found */
 
 int
-parray_index(const parray_t *pa, const void *elem,
-	     int (*cmp)(const void *, const void *))
+parray_find_sorted(const parray_t *pa, const void *elem,
+		    int (*cmp)(const void *, const void *))
 {
-    int i;
+    int hi, lo, mid, c;
 
-    for (i=0; i<parray_length(pa); i++)
-	if (cmp(elem, parray_get(pa, i)) == 0)
-	    return i;
+    lo = 0;
+    hi = parray_length(pa)-1;
 
-    return -1;
+    while (lo <= hi) {
+	mid = lo + (hi-lo)/2;
+	c = cmp(elem, parray_get(pa, mid));
+	if (c == 0)
+	    return mid;
+	else if (c < 0)
+	    hi = mid-1;
+	else
+	    lo = mid+1;
+    }
+
+    return -1;	
 }

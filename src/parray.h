@@ -57,8 +57,8 @@ typedef struct parray parray_t;
 /* function arguments not specified to avoid lots of casts */
 void parray_delete(parray_t *, int, void (*)(/* void * */));
 void parray_free(parray_t *, void (*)(/* void * */));
-int parray_index(const parray_t *, const void *, int (*)(/* const void *, const void * */));
-int parray_index_sorted(const parray_t *, const void *, int (*)(/* const void *, const void * */));
+int parray_find(const parray_t *, const void *, int (*)(/* const void *, const void * */));
+int parray_find_sorted(const parray_t *, const void *, int (*)(/* const void *, const void * */));
 parray_t *parray_new_sized(int);
 parray_t *parray_new_from_data(void **, int);
 void *parray_pop(parray_t *);

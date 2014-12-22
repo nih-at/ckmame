@@ -387,7 +387,7 @@ main(int argc, char **argv)
 		    continue;
 		}
 
-		if (parray_index_sorted(list, b, strcmp) >= 0)
+		if (parray_find_sorted(list, b, strcmp) >= 0)
 		    tree_add(check_tree, b);
 		else
 		    myerror(ERRDEF, "game '%s' unknown", b);
@@ -402,7 +402,7 @@ main(int argc, char **argv)
 	else {
 	    for (i=optind; i<argc; i++) {
 		if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-		    if (parray_index_sorted(list, argv[i], strcmp) >= 0)
+		    if (parray_find_sorted(list, argv[i], strcmp) >= 0)
 			tree_add(check_tree, argv[i]);
 		    else
 			myerror(ERRDEF, "game '%s' unknown", argv[i]);

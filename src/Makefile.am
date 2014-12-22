@@ -96,8 +96,8 @@ libckmame_a_SOURCES= \
 	output_mtree.c \
 	parray.c \
 	parray_delete.c \
-	parray_index.c \
-	parray_index_sorted.c \
+	parray_find.c \
+	parray_find_sorted.c \
 	parray_new_from_data.c \
 	parray_pop.c \
 	parray_push.c \
