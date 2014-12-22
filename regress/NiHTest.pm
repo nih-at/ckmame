@@ -382,6 +382,8 @@ sub setup {
 	$self->die("error in test case definition") unless $self->parse_case($testcase_file);
 	
 	$self->check_features_requirement() if ($self->{test}->{features});
+
+	$self->end_test('SKIP') if ($self->{test}->{preload} && $^O eq 'darwin');
 }
 
 
