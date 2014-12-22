@@ -33,6 +33,7 @@
 
 #include "globals.h"
 
+#include <sys/param.h>
 /* option settings */
 
 char *needed_dir = "needed"; /* TODO: proper value */
@@ -71,5 +72,4 @@ tree_t *check_tree = NULL;
 output_context_t *fixdat = NULL;
 
 /* roms dir */
-dev_t roms_device;
-ino_t roms_inode;
+char rom_dir_normalized[MAXPATHLEN];

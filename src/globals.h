@@ -82,7 +82,6 @@ extern tree_t *check_tree;
 extern output_context_t *fixdat;
 
 /* to identify roms directory uniquely */
-extern dev_t roms_device;
-extern ino_t roms_inode;
+extern char rom_dir_normalized[];
 
 #endif /* globals.h */

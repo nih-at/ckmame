@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <sys/param.h>
 #include <sys/stat.h>
 
 #include "dir.h"
@@ -172,21 +173,23 @@ make_file_name(filetype_t ft, const char *name)
 
 
 static bool
-is_romdir(const char *name)
+contains_romdir(const char *name)
 {
-    struct stat st;
+    char normalized[MAXPATHLEN];
 
-    if (stat(name, &st) < 0)
+    if (realpath(name, normalized) == NULL) {
 	return false;
+    }
 
-    return (roms_device == st.st_dev && roms_inode == st.st_ino);
+    return (strncmp(normalized, rom_dir_normalized, MIN(strlen(normalized), strlen(rom_dir_normalized))) == 0);
 }
 
 
 static int
 enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name, int dir_flags, where_t where)
 {
-    if (is_romdir(directory_name)) { /* TODO: also check that b doesn't contain a ROM dir */
+    if (contains_romdir(directory_name)) {
+	/* TODO: improve error message: also if extra is in ROM directory. */
 	myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), directory_name);
 	exit(1);
     }
@@ -206,15 +209,6 @@ enter_dir_in_map_and_list_unzipped(int flags, parray_t *list, const char *direct
     dir_status_t ds;
     char name[8192];
     bool have_top_level_files = false;
-
-    if (is_romdir(directory_name)) { /* TODO: also check that b doesn't contain a ROM dir */
-        myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), directory_name);
-        exit(1);
-    }
-
-    if (!roms_unzipped) {
-        return enter_dir_in_map_and_list(flags, list, directory_name, dir_flags, where);
-    }
 
     if ((dir=dir_open(directory_name, dir_flags & ~DIR_RECURSE)) == NULL) {
         return -1;

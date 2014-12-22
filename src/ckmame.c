@@ -431,12 +431,11 @@ main(int argc, char **argv)
     }
 
     ensure_dir(get_directory(file_type), 0);
-    if (stat(get_directory(file_type), &st) < 0) {
-	myerror(ERRSTR, "can't stat directory '%s'", get_directory(file_type));
+    if (realpath(get_directory(file_type), rom_dir_normalized) == NULL) {
+	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable */
+	myerror(ERRSTR, "can't normlize directory '%s'", get_directory(file_type));
 	exit(1);
     }
-    roms_device = st.st_dev;
-    roms_inode = st.st_ino;
 
     if (action != ACTION_CLEANUP_EXTRA_ONLY)
 	superfluous = list_directory(get_directory(file_type), dbname);

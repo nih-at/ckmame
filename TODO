@@ -149,14 +149,15 @@ tools:
 cachedb:
 
 merge:
-- superfluous top level: non-recursive archive, all loose files are superfluous;
-- non-recursive archive: exclude .ckmame.db
+- [bug] superfluous top level: non-recursive archive, all loose files are superfluous;
+- [bug] non-recursive archive: exclude .ckmame.db
 - [bug] archive in subdirectory: subdirectory not reflected in archive name in cachedb (and mkmamedb output)
 - [test] zip in cachedb, same size/mtime but different content: taken from cachedb
 - [feature] remove .zip from archive name in cachedb
+- [test] split superfluous-cleanup into zip (with chd) and dir (without)
 
 maybe:
-- [test] run unzipped-ckmamedb for zip as well
+- [test] run unzipped-ckmamedb-* for zip as well
 - [cleanup] rename dbh_cache to cachedb
 - [feature] cachedb in unknown
 - [feature] compute all hashes when called with -i
@@ -164,3 +165,4 @@ maybe:
 later:
 - [feature] save detector hashes to cachedb
 - [cleanup] rename array_index to array_find, array_element_index to array_index
+- fix Xcode warnings
