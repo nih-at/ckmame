@@ -149,7 +149,7 @@ tools:
 cachedb:
 
 merge:
-- [test] zip in cachedb, same size/mtime but different content: taken from cachedb
+- [test] fix diskfull-zip.test
 
 maybe:
 - [test] unzipped: take ROM from top-level file in roms
