@@ -1,10 +1,6 @@
-* use cache DB also for zipped rom sets
 * clean up archives in .ckmame.db for manually removed dirs/zips
-* desupport combination of disks + roms_unzipped; add flag DONT_RECURSE
-  to archive_new; use for top-level files in roms_unzipped case
 
 * uncompressed support
-** dir mode: accept files at toplevel in roms/ directory (uncompressed-toplevel-roms.test)
 ** [bug] existing no good rom is not accepted in uncompressed mode (nogood-diskgood.test)
 
 * bugs with test cases
@@ -164,3 +160,6 @@ later:
 - [feature] save detector hashes to cachedb
 - fix Xcode warnings
 - [cleanup] make ARCHIVE_IFL_MODIFIED a bool member
+- [test] fix preload on OS X
+- [cleanup] don't install fwrite.so (noinst_ doesn't create shared library)
+- [feature] if .ckmame.db can't be opened, move aside and create new
