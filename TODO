@@ -152,6 +152,7 @@ merge:
 - [test] fix diskfull-zip.test
 
 maybe:
+- [feature] move database out of the way if it's an older version
 - [test] unzipped: take ROM from top-level file in roms
 - [test] run unzipped-ckmamedb-* for zip as well
 - [cleanup] rename dbh_cache to cachedb
