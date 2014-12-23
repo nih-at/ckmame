@@ -386,3 +386,6 @@ runtest: runtest.in
 
 cleanup:
 	rm -rf ${builddir}/sandbox-*.d[0-9]*/
+
+install-pkglibLTLIBRARIES:
+	@echo not installing shared objects needed only for testing

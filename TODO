@@ -161,5 +161,4 @@ later:
 - fix Xcode warnings
 - [cleanup] make ARCHIVE_IFL_MODIFIED a bool member
 - [test] fix preload on OS X
-- [cleanup] don't install fwrite.so (noinst_ doesn't create shared library)
 - [feature] if .ckmame.db can't be opened, move aside and create new
