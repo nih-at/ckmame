@@ -102,6 +102,16 @@ code cleanups:
 - fix all TODOs
 
 tests:
+- extend at least following tests to use md5/sha1 as well:
+  delete-used-superfluous.test
+  needed-cleanup.test
+  punused.test
+  rom-broken-replace.test
+  rom-from-extra-child.test
+  rom-unused.test
+  swap-roms-2.test
+  rom-many.test
+  swap-roms.test
 - case differences (game name / archive / rom / file in archive)
 - extra cleanup done when all games checked
 - is superfluous file that needs detector cleaned up correctly?
