@@ -303,6 +303,7 @@ DBFILES=	\
 		ckmamedb-2-4c-ok.dump \
 		ckmamedb-2-4c-reverse.dump \
 		ckmamedb-empty.dump \
+		ckmamedb-wrongname-nohash.dump \
 		detector.xml \
 		mame.txt \
 		mamedb-1-8-is-4.txt \

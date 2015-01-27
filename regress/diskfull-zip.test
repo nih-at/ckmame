@@ -4,7 +4,9 @@ return 0
 setenv FWRITE_MAX_WRITE 5
 preload fwrite.so
 args -Fjivc -D ../mamedb-lost-parent-ok.db -e extra
+ckmamedb-after extra ckmamedb-wrongname-nohash.dump
 file extra/wrongname.zip 2-48-ok.zip 2-48-ok.zip
+touch 1422359238 extra/wrongname.zip
 stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/wrongname.zip/04.rom'
 stdout rom  08.rom        size       8  crc 3656897d: is in 'extra/wrongname.zip/08.rom'
