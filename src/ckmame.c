@@ -165,6 +165,7 @@ main(int argc, char **argv)
 {
     action_t action;
     int i, j;
+    size_t k;
     char *dbname, *olddbname;
     int c, found;
     parray_t *list;
@@ -215,9 +216,9 @@ main(int argc, char **argv)
 	    break;
         case 'e': {
 	    char *name = xstrdup(optarg);
-	    for (size_t i = strlen(name) -1; i > 0; i--) {
-		if (name[i] == '/') {
-		    name[i] = '\0';
+	    for (k = strlen(name)-1; k > 0; k--) {
+		if (name[j] == '/') {
+		    name[j] = '\0';
 		}
 		else {
 		    break;
