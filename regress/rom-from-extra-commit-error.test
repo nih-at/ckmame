@@ -1,0 +1,13 @@
+description test single-rom game (no parent), extra zip contains file, can't copy
+archive-types zip
+return 0
+preload fwrite.so
+setenv RENAME_FAILS roms/1-4.zip
+args -Fvje extra -D ../mamedb-small.db
+file roms/1-4-wrong-name.zip 1-4-ok.zip 1-4-ok.zip
+stdout In game 1-4:
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4.zip/04.rom'
+stdout roms/1-4.zip: add 'extra/1-4.zip/04.rom' as '04.rom'
+stdout In archive extra/1-4.zip:
+stdout file 04.rom        size       4  crc d87f7e0c: needed elsewhere
+stderr roms/1-4.zip: cannot commit changes: Failure to create temporary file: Permission denied

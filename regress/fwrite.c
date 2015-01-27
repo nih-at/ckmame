@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #define __USE_GNU
 #include <dlfcn.h>
@@ -43,6 +44,7 @@ static size_t count = 0;
 static size_t max_write = 0;
 static size_t(*real_fwrite)(const void *ptr, size_t size, size_t nmemb, FILE * stream) = NULL;
 static int(*real_link)(const char *src, const char *dest) = NULL;
+static int(*real_rename)(const char *src, const char *dest) = NULL;
 
 static FILE *log;
 static const char *myname = NULL;
@@ -66,7 +68,7 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
 	inited = 1;
     }
  
-    if (count + size*nmemb > max_write) {
+    if (max_write > 0 && count + size*nmemb > max_write) {
 	fprintf(log, "%s: returned ENOSPC\n", myname);
 	errno = ENOSPC;
 	return -1;
@@ -81,13 +83,47 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
 }
 
 int
-link(const char *src, const char *dest) {
-    if (getenv("LINK_ALWAYS_FAILS") != NULL)
-	return -1;
+rename(const char *src, const char *dest) {
+    if (real_rename == NULL) {
+	real_rename = dlsym(RTLD_NEXT, "rename");
+	if (!real_rename)
+	    abort();
+    }
 
-    real_link = dlsym(RTLD_NEXT, "link");
-    if (!real_link)
-	abort();
+    if (getenv("RENAME_ALWAYS_FAILS") != NULL) {
+	errno = EPERM;
+	return -1;
+    }
+
+    if (getenv("RENAME_FAILS") != NULL) {
+	if (strcmp(getenv("RENAME_FAILS"), dest) == 0) {
+	    errno = EPERM;
+	    return -1;
+	}
+    }
+
+    return real_rename(src, dest);
+}
+
+int
+link(const char *src, const char *dest) {
+    if (real_link == NULL) {
+	real_link = dlsym(RTLD_NEXT, "link");
+	if (!real_link)
+	    abort();
+    }
+
+    if (getenv("LINK_ALWAYS_FAILS") != NULL) {
+	errno = EPERM;
+	return -1;
+    }
+
+    if (getenv("LINK_FAILS") != NULL) {
+	if (strcmp(getenv("LINK_FAILS"), dest) == 0) {
+	    errno = EPERM;
+	    return -1;
+	}
+    }
 
     return real_link(src, dest);
 }
