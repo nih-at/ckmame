@@ -169,6 +169,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 #endif
 
     if (archive_commit(a) < 0) {
+	archive_rollback(a);
 	if ((fix_options & FIX_DO) && extra_delete_list)
 	    delete_list_rollback(extra_delete_list);
 	if ((fix_options & FIX_DO) && needed_delete_list)

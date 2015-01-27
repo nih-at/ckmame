@@ -288,14 +288,32 @@ archive_file_rename_to_unique(archive_t *a, int idx)
 int
 archive_rollback(archive_t *a)
 {
-    int ret;
+    int i, ret;
 
     if (!archive_is_modified(a))
         return 0;
 
-    ret = a->ops->rollback(a);
-    if (ret == 0)
-	archive_flags(a) &= ~ARCHIVE_IFL_MODIFIED;
+    if ((ret = a->ops->rollback(a)) < 0) {
+	return -1;
+    }
+
+    archive_flags(a) &= ~ARCHIVE_IFL_MODIFIED;
+
+    for (i=0; i<archive_num_files(a); i++) {
+	switch (file_where(archive_file(a, i))) {
+	case FILE_DELETED:
+	    file_where(archive_file(a, i)) = FILE_INZIP;
+	    break;
+	    
+	case FILE_ADDED:
+	    array_delete(archive_files(a), i, file_finalize);
+	    i--;
+	    break;
+	    
+	default:
+	    break;
+	}
+    }
 
     return ret;
 }

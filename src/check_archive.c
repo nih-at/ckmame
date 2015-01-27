@@ -89,6 +89,11 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 	case FIND_MISSING:
 	    if (file_size(archive_file(a, i)) == 0)
 		result_file(res, i) = FS_SUPERFLUOUS;
+	    else if (archive_where(a) == FILE_NEEDED) {
+		/* this state does what we want, even if it sounds strange,
+		   and saves us from introducing a better one */
+		result_file(res, i) = FS_MISSING;
+	    }
 	    else {
 		match_t m;
 		ensure_needed_maps();
