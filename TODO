@@ -1,5 +1,5 @@
 * clean up archives in .ckmame.db for manually removed dirs/zips
-* fix .ckmame.db support for roms with headers
+* fix .ckmame.db support for roms with headers: store hashes with detector applied in .ckmame.db
 
 * uncompressed support
 ** [bug] existing no good rom is not accepted in uncompressed mode (nogood-diskgood.test)
