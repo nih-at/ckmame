@@ -100,7 +100,7 @@ char help[] = "\n"
 "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
-"Copyright (C) 2014 Dieter Baron and Thomas Klausner\n"
+"Copyright (C) 2015 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "bcD:de:FfhijKkLlO:R:SsT:uVvwX"
@@ -442,8 +442,8 @@ main(int argc, char **argv)
 
     ensure_dir(get_directory(file_type), 0);
     if (realpath(get_directory(file_type), rom_dir_normalized) == NULL) {
-	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable */
-	myerror(ERRSTR, "can't normlize directory '%s'", get_directory(file_type));
+	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
+	myerror(ERRSTR, "can't normalize directory '%s'", get_directory(file_type));
 	exit(1);
     }
 
