@@ -5,6 +5,7 @@ file detector.xml detector.xml detector.xml
 file mamedb-skipped.txt mamedb-skipped.txt mamedb-skipped.txt
 mkdbargs --detector detector.xml mamedb-skipped.txt
 args -FKLivc unskipped
+ckmamedb-after roms ckmamedb-empty.dump
 file roms/unskipped.zip 1-8-ok.zip 1-8-ok.zip
 stdout In game unskipped:
 stdout game unskipped                               : correct

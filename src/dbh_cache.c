@@ -72,7 +72,10 @@ dbh_cache_close_all(void)
 	if (cd->dbh) {
 	    bool empty = dbh_cache_is_empty(cd->dbh);
 	    err |= dbh_close(cd->dbh);
-	    if (empty)
+	    /* TODO: hack; cache should have detector-applied hashes
+	     * or both; currently only has useless ones without
+	     * detector applied, which breaks consecutive runs */
+	    if (empty || detector)
 		remove(sqlite3_db_filename(dbh_db(cd->dbh), "main"));
 	}
 	cd->dbh = NULL;
