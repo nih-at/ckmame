@@ -40,6 +40,7 @@
 
 int dbh_cache_close_all(void);
 int dbh_cache_delete(dbh_t *, int);
+int dbh_cache_delete_by_name(dbh_t *, const char *);
 int dbh_cache_get_archive_id(dbh_t *, const char *);
 bool dbh_cache_get_archive_last_change(dbh_t *, int, time_t *, off_t *);
 dbh_t *dbh_cache_get_db_for_archive(const char *);

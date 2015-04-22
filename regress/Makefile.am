@@ -152,6 +152,7 @@ TESTS=	\
 		rom-from-extra-broken.test \
 		rom-from-extra-child.test \
 		rom-from-extra-commit-error.test \
+		rom-from-extra-dbcache-cleanup.test \
 		rom-from-extra-detector.test \
 		rom-from-extra-duplicate.test \
 		rom-from-extra-ignore-db.test \

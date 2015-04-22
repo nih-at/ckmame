@@ -249,6 +249,9 @@ sub post_copy_file {
 			my $dump_file = $test->find_file($dump);
 			return undef unless (defined($dump));
 
+		        if (! -d $dir) {
+			        mkdir($dir);
+		        }
 			unless (system('../dbrestore', '-t', 'ckmamedb', "$dump_file", "$dir/.ckmame.db") == 0) {
 				print STDERR "can't restore ckmamedb dump $dump: $!";
 				return undef;

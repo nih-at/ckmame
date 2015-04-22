@@ -34,6 +34,7 @@
 #include <sys/param.h>
 #include <sys/stat.h>
 
+#include "dbh_cache.h"
 #include "dir.h"
 #include "error.h"
 #include "funcs.h"
@@ -200,12 +201,48 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 	exit(1);
     }
 
-    if (roms_unzipped) {
-	return enter_dir_in_map_and_list_unzipped(flags, list, directory_name, dir_flags, where);
+    parray_t *our_list;
+    
+    if (list == NULL) {
+	our_list = parray_new();
     }
     else {
-	return enter_dir_in_map_and_list_zipped(flags, list, directory_name, dir_flags, where);
+	our_list = list;
     }
+
+    int ret;
+    if (roms_unzipped) {
+	ret = enter_dir_in_map_and_list_unzipped(flags|DO_LIST, our_list, directory_name, dir_flags, where);
+    }
+    else {
+	ret = enter_dir_in_map_and_list_zipped(flags|DO_LIST, our_list, directory_name, dir_flags, where);
+    }
+
+    if (ret == 0) {
+	/* clean up cache db: remove archives no longer in file system */
+	char name[8192];
+	sprintf(name, "%s/", directory_name);
+	dbh_t *dbh = dbh_cache_get_db_for_archive(name);
+	if (dbh) {
+	    parray_t *list_db = dbh_cache_list_archives(dbh);
+	    if (list_db) {
+		int i;
+		parray_sort(our_list, strcmp);
+		for (i=0; i< parray_length(list_db); i++) {
+		    sprintf(name, "%s/%s%s", directory_name, parray_get(list_db, i), roms_unzipped ? "" : ".zip");
+		    if (parray_find_sorted(our_list, name, strcmp) == -1) {
+			dbh_cache_delete_by_name(dbh, name);
+		    }
+		}
+	    }
+	}
+    }
+    
+    if (list == NULL) {
+	parray_free(our_list, free);
+    }
+
+    return ret;
 }
 
 static int

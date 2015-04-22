@@ -103,6 +103,19 @@ dbh_cache_delete(dbh_t *dbh, int id)
 }
 
 
+int
+dbh_cache_delete_by_name(dbh_t *dbh, const char *name)
+{
+    int id = dbh_cache_get_archive_id(dbh, name);
+
+    if (id < 0) {
+	return -1;
+    }
+
+    return dbh_cache_delete(dbh, id);
+}
+
+
 int dbh_cache_delete_files(dbh_t *dbh, int id)
 {
     sqlite3_stmt *stmt;
