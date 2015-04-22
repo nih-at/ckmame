@@ -217,8 +217,8 @@ main(int argc, char **argv)
         case 'e': {
 	    char *name = xstrdup(optarg);
 	    for (k = strlen(name)-1; k > 0; k--) {
-		if (name[j] == '/') {
-		    name[j] = '\0';
+		if (name[k] == '/') {
+		    name[k] = '\0';
 		}
 		else {
 		    break;
