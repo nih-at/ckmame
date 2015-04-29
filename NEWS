@@ -3,6 +3,7 @@
 - support for ROMs in directories instead of in zip archives
 - fix all fixable ROM errors automatically in one run
 - speed up database operations by preparing statements only once
+- remove torrentzip support (removed in libzip)
 
 0.11 (2011-02-20)
 

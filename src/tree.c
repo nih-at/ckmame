@@ -170,8 +170,7 @@ tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent)
 	    print_info(tree->name);
 
 	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0)
-		 | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY|romdb_hashtypes(db, TYPE_ROM)) : 0)
-		 | ((fix_options & FIX_TORRENTZIP) ? ARCHIVE_FL_TORRENTZIP : 0));
+		 | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY|romdb_hashtypes(db, TYPE_ROM)) : 0));
 
 	full_name = findfile(tree->name, file_type);
 	if (full_name == NULL && tree->check) {

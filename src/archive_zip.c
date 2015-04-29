@@ -148,26 +148,10 @@ op_close(archive_t *a)
 static int
 op_commit(archive_t *a)
 {
-    if (a->flags & ARCHIVE_FL_TORRENTZIP) {
-	if (archive_zip(a) == NULL || zip_get_archive_flag(archive_zip(a), ZIP_AFL_TORRENT, 0) == 0)
-            a->flags |= ARCHIVE_IFL_MODIFIED;
-    }
-    
-    if ((archive_flags(a) & ARCHIVE_IFL_MODIFIED) && (archive_flags(a) & ARCHIVE_FL_RDONLY) == 0) {
-	if (archive_zip(a)) {
-	    if (!archive_is_empty(a)) {
-		if (ensure_dir(archive_name(a), 1) < 0)
-		    return -1;
-	    }
-	    
-	    if (a->flags & ARCHIVE_FL_TORRENTZIP) {
-		if (zip_set_archive_flag(archive_zip(a), ZIP_AFL_TORRENT, 1) < 0) {
-		    seterrinfo(NULL, archive_name(a));
-		    myerror(ERRZIP, "cannot torrentzip: %s", zip_strerror(archive_zip(a)));
-		    return -1;
-		}
-	    }
-	}
+    if ((archive_flags(a) & ARCHIVE_IFL_MODIFIED) && ((archive_flags(a) & ARCHIVE_FL_RDONLY) == 0)
+	&& archive_zip(a) && !archive_is_empty(a)) {
+	if (ensure_dir(archive_name(a), 1) < 0)
+	    return -1;
     }
 
     if (archive_zip(a)) {

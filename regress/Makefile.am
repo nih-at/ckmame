@@ -196,9 +196,6 @@ TESTS=	\
 		swap.test \
 		tochild.test \
 		tochildfix.test \
-		tz-already.test \
-		tz-from-romset.test \
-		tz-ok.test \
 		uncompressed-ckmamedb-add-game.test \
 		uncompressed-ckmamedb-changed-new-mtime.test \
 		uncompressed-ckmamedb-changed-same-mtime-nofix.test \
@@ -233,8 +230,6 @@ XFAIL_TESTS=	\
 		mkmamedb-parent-crcdiff-mame.test \
 		nogood-diskgood.test \
 		rom-from-extra-duplicate.test \
-		tz-ok.test \
-		tz-from-romset.test \
 		uncompressed-toplevel-roms.test
 
 ZIPS=		1-4-2.zip \
@@ -262,7 +257,6 @@ ZIPS=		1-4-2.zip \
 		2-48-broken.zip \
 		2-48-long.zip \
 		2-48-ok.zip \
-		2-48-ok.tzip \
 		2-4a-ok.zip \
 		2-4c-ok.zip \
 		2-4c-reverse.zip \

@@ -130,9 +130,8 @@ typedef enum name_type name_type_t;
 #define FIX_SUPERFLUOUS		0x040 /* move/delete superfluous */
 #define FIX_IGNORE_UNKNOWN	0x080 /* ignore unknown files during fixing */
 #define FIX_DELETE_DUPLICATE	0x100 /* delete files present in old.db */
-#define FIX_TORRENTZIP		0x200 /* TorrentZip ROM archives */
 #if 0 /* not supported (yet?) */
-#define FIX_COMPLETE_GAMES	0x400 /* complete in old or complete in roms */
+#define FIX_COMPLETE_GAMES	0x200 /* complete in old or complete in roms */
 #endif
 
 

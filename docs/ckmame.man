@@ -1,4 +1,4 @@
-.TH "CKMAME" "1" "March 14, 2014" "NiH" "General Commands Manual"
+.TH "CKMAME" "1" "April 29, 2015" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -7,7 +7,7 @@
 .SH "SYNOPSIS"
 .HP 7n
 \fBckmame\fR
-[\fB\-bcdFfhjKkLlnSsuVvwX\fR]
+[\fB\-bcdFfhjKkLlSsuVvwX\fR]
 [\fB\-D\fR\ \fIdbfile\fR]
 [\fB\-e\fR\ \fIdir\fR]
 [\fB\-O\fR\ \fIdbfile\fR]
@@ -20,7 +20,6 @@
 [\fB\-\fR\fB\-delete-found\fR]
 [\fB\-\fR\fB\-delete-long\fR]
 [\fB\-\fR\fB\-delete-unknown\fR]
-[\fB\-\fR\fB\-dryrun\fR]
 [\fB\-\fR\fB\-fix\fR]
 [\fB\-\fR\fB\-fixdat\fR\ \fIfile\fR]
 [\fB\-\fR\fB\-games-from\fR\ \fIfile\fR]
@@ -43,7 +42,6 @@
 [\fB\-\fR\fB\-samples\fR]
 [\fB\-\fR\fB\-search\fR\ \fIdir\fR]
 [\fB\-\fR\fB\-superfluous\fR]
-[\fB\-\fR\fB\-torrentzip\fR]
 [\fB\-\fR\fB\-verbose\fR]
 [\fB\-\fR\fB\-version\fR]
 [\fIgame\ ...\fR]
@@ -210,9 +208,6 @@ Delete long files when fixing.
 See also
 \fB\-L\fR.
 .TP 24n
-\fB\-n\fR, \fB\-\fR\fB\-dryrun\fR
-Don't actually fix anything, just report what would be done.
-.TP 24n
 \fB\-O\fR \fIdbfile\fR, \fB\-\fR\fB\-old-db\fR \fIdbfile\fR
 Assume that files listed in
 \fIdbfile\fR
@@ -237,16 +232,6 @@ Don't report superfluous (unneeded) files.
 Read list of games to check from
 \fIfile\fR.
 .TP 24n
-\fB\-\fR\fB\-torrentzip\fR
-Create TorrentZip ROM archives.
-This way, the archives can be more easily shared via BitTorrent.
-Using this flags loses information from the archive: time stamps,
-file and archive comments, and file order in the archive are not
-preserved.
-Only useful in combination with the
-\fB\-F\fR
-flag.
-.TP 24n
 \fB\-u\fR, \fB\-\fR\fB\-roms-unzipped\fR
 ROMs are files on the disk.
 Each game is represented by a directory instead of a ZIP archive.
@@ -256,6 +241,8 @@ Display program name and version number.
 .TP 24n
 \fB\-v\fR, \fB\-\fR\fB\-verbose\fR
 Print fixes made.
+Only useful with
+\fB\-F\fR.
 .TP 24n
 \fB\-w\fR, \fB\-\fR\fB\-nowarnings\fR
 Print only unfixable error, like missing or completely incorrect ROMs.

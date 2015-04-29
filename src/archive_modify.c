@@ -88,14 +88,6 @@ archive_commit(archive_t *a)
             }
         }
 
-        if (a->flags & ARCHIVE_FL_TORRENTZIP) {
-            /* Currently, only internal archives are torrentzipped and
-             only external archives are indexed.  So we don't need to
-             worry about memdb. */
-
-            array_sort(archive_files(a), _file_cmp_name);
-        }
-
         if (a->ops->commit_cleanup) {
             a->ops->commit_cleanup(a);
         }
