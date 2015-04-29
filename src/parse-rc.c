@@ -1,6 +1,6 @@
 /*
   parse-rc.c -- parse Romcenter format files
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>

@@ -1,6 +1,6 @@
 /*
   output_mtree.c -- write games to mtree(8) files
-  Copyright (C) 2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 2013-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>

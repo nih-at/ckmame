@@ -1,6 +1,6 @@
 /*
   ptr_sort.c -- sort pointers, opionally removing duplicates
-  Copyright (C) 2005-2010 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
   Copyright (C) Wikipedia
 
   This file is part of ckmame, a program to check rom sets for MAME.

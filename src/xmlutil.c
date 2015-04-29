@@ -1,6 +1,6 @@
 /*
   xmlutil.c -- parse XML file via callbacks
-  Copyright (C) 1999-2008 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>

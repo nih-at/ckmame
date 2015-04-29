@@ -1,6 +1,6 @@
 /*
   mamedb.c -- tool to edit mamedb
-  Copyright (C) 2007 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -60,7 +60,7 @@ individual commands.\n\
 Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "mamedb (" PACKAGE " " VERSION ")\n\
-Copyright (C) 2007 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "+hD:"
