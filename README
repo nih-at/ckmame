@@ -6,7 +6,7 @@ files.
 
   To use it, you need
 	- zlib (at least version 1.1.2)
-	- libzip (at least version 0.9)
+	- libzip (at least version 1.0)
 	- SQLite3
 	- optionally libxml2 (for M.A.M.E. -listxml and detectors)
 
