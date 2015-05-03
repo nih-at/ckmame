@@ -1,4 +1,4 @@
-0.12
+0.12 (2015-05-03)
 
 - support for ROMs in directories instead of in zip archives
 - fix all fixable ROM errors automatically in one run
