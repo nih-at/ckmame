@@ -1,5 +1,5 @@
 AC_PREREQ(2.54)
-AC_INIT([ckmame],[0.11a],[ckmame@nih.at])
+AC_INIT([ckmame],[0.12],[ckmame@nih.at])
 AC_CONFIG_SRCDIR([src/ckmame.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
