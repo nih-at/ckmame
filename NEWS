@@ -1,5 +1,6 @@
 0.12 (2015-05-03)
 
+- add support for on-disk caches to speed up consecutive runs
 - support for ROMs in directories instead of in zip archives
 - fix all fixable ROM errors automatically in one run
 - speed up database operations by preparing statements only once
