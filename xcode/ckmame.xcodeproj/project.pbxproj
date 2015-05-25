@@ -489,6 +489,10 @@
 		4B7F50691776479C00B4273C /* archive_dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_dir.c; sourceTree = "<group>"; };
 		4B7F506B1776523900B4273C /* THANKS */ = {isa = PBXFileReference; lastKnownFileType = text; name = THANKS; path = ../THANKS; sourceTree = "<group>"; };
 		4B7F506C1776523900B4273C /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; name = TODO; path = ../TODO; sourceTree = "<group>"; };
+		4B86CED01B134251003EF102 /* ckmame.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = ckmame.mdoc; sourceTree = "<group>"; };
+		4B86CED11B134251003EF102 /* detective.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = detective.mdoc; sourceTree = "<group>"; };
+		4B86CED21B134251003EF102 /* dumpgame.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = dumpgame.mdoc; sourceTree = "<group>"; };
+		4B86CED31B134251003EF102 /* mkmamedb.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = mkmamedb.mdoc; sourceTree = "<group>"; };
 		4B9232FE1780B2BA00096AA2 /* dbh_cache.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbh_cache.c; sourceTree = "<group>"; };
 		4B9232FF1780B2FC00096AA2 /* dbh_cache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dbh_cache.h; sourceTree = "<group>"; };
 		4B9292BC17633FFC00806C0A /* dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dir.h; sourceTree = "<group>"; };
@@ -611,6 +615,7 @@
 		4B5FAC5717358FF000B67C24 = {
 			isa = PBXGroup;
 			children = (
+				4B86CECF1B134233003EF102 /* man */,
 				4B7F506B1776523900B4273C /* THANKS */,
 				4B7F506C1776523900B4273C /* TODO */,
 				4B513F4D175BC6820096EF42 /* libxml2.dylib */,
@@ -853,6 +858,18 @@
 				4B5FAE991735998E00B67C24 /* sha1_own.h */,
 			);
 			name = compat;
+			sourceTree = "<group>";
+		};
+		4B86CECF1B134233003EF102 /* man */ = {
+			isa = PBXGroup;
+			children = (
+				4B86CED01B134251003EF102 /* ckmame.mdoc */,
+				4B86CED11B134251003EF102 /* detective.mdoc */,
+				4B86CED21B134251003EF102 /* dumpgame.mdoc */,
+				4B86CED31B134251003EF102 /* mkmamedb.mdoc */,
+			);
+			name = man;
+			path = ../docs;
 			sourceTree = "<group>";
 		};
 		4BD1BAA41A404BA800A70734 /* regress */ = {
