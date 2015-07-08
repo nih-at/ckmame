@@ -355,7 +355,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    break;
 
 	case QU_LONG:
-	    if (a == afrom && (fix_options & FIX_MOVE_LONG)) {
+	    if (a == afrom && (fix_options & FIX_MOVE_LONG) && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
 		if (fix_options & FIX_PRINT)
 		    printf("%s: mv long file '%s'\n", archive_name(afrom), REAL_NAME(afrom, match_index(m)));
 		if (garbage_add(gb, match_index(m), true) < 0)
@@ -373,7 +373,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size(r), r) < 0)
 		break;
 
-	    if (a == afrom) {
+	    if (a == afrom && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
 		if (!replacing_ourself && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
 		    printf("%s: delete long file '%s'\n", archive_name(afrom), file_name(r));
 		archive_file_delete(afrom, match_index(m));

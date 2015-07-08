@@ -201,8 +201,8 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
 	myerror(ERRZIPFILE, "not copying broken file");
 	return -1;
     }
-    if (file_where(archive_file(sa, sidx)) != FILE_INZIP) {
-        myerror(ERRZIP, "cannot copy broken/added/deleted file");
+    if (file_where(archive_file(sa, sidx)) != FILE_INZIP && file_where(archive_file(sa, sidx)) != FILE_DELETED) {
+        myerror(ERRZIP, "cannot copy broken/added file");
         return -1;
     }
     if (start < 0 || (len != -1 && (len < 0 || (uint64_t)(start+len) > file_size(archive_file(sa, sidx))))) {

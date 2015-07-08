@@ -177,6 +177,7 @@ TESTS=	\
 		rom-long-end.test \
 		rom-long-mid.test \
 		rom-many.test \
+		rom-need-partial-and-whole.test \
 		rom-two-long.test \
 		rom-unused.test \
 		sample-miss.test \
@@ -247,6 +248,7 @@ ZIPS=		1-4-2.zip \
 		1-4-wrong.zip \
 		1-4-wrong-renamed.zip \
 		1-8-broken.zip \
+		1-8-called-04.zip \
 		1-8-long.zip \
 		1-8-ok.zip \
 		1-8-skip-ok.zip \

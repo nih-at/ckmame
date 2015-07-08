@@ -317,6 +317,17 @@ get_full_name(archive_t *a, int idx)
     return make_full_name(a, file_name(archive_file(a, idx)));
 }
 
+static char *
+get_original_data(archive_t *a, int idx)
+{
+    change_t *ch = archive_file_change(a, idx);
+
+    if (ch->original.data)
+	return strdup(ch->original.data);
+
+    return make_full_name(a, file_name(archive_file(a, idx)));
+}
+
 
 static char *
 make_full_name(archive_t *a, const char *name)
@@ -461,7 +472,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
     char *srcname = NULL;
     
     if (sa) {
-	if ((srcname = get_full_name(sa, sidx)) == NULL) {
+	if ((srcname = get_original_data(sa, sidx)) == NULL) {
 	    free(tmpname);
 	    return -1;
 	}

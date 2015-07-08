@@ -240,7 +240,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
     if (ensure_zip(sa) < 0 || ensure_zip(da) < 0)
 	return -1;
     
-    if ((source=zip_source_zip(archive_zip(da), archive_zip(sa), sidx, didx >= 0 ? ZIP_FL_UNCHANGED : 0, start, len)) == NULL
+    if ((source=zip_source_zip(archive_zip(da), archive_zip(sa), sidx, ZIP_FL_UNCHANGED, start, len)) == NULL
         || (didx >= 0 ? zip_replace(archive_zip(da), didx, source) : zip_add(archive_zip(da), dname, source)) < 0) {
         zip_source_free(source);
         seterrinfo(archive_name(da), dname);
