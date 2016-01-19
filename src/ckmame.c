@@ -342,9 +342,9 @@ main(int argc, char **argv)
 	archive_register_cache_directory(get_directory(file_type));
 	archive_register_cache_directory(needed_dir);
 	/* archive_register_cache_directory(unknown_dir); */
-	int i;
-	for (i=0; i<parray_length(search_dirs); i++) {
-	    if (archive_register_cache_directory(parray_get(search_dirs, i)) < 0)
+	int m;
+	for (m=0; m<parray_length(search_dirs); m++) {
+	    if (archive_register_cache_directory(parray_get(search_dirs, m)) < 0)
 		exit(1);
 	}
     }
