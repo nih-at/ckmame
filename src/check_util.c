@@ -229,7 +229,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 		int i;
 		parray_sort(our_list, strcmp);
 		for (i=0; i< parray_length(list_db); i++) {
-		    sprintf(name, "%s/%s%s", directory_name, parray_get(list_db, i), roms_unzipped ? "" : ".zip");
+		    sprintf(name, "%s/%s%s", directory_name, (char *)parray_get(list_db, i), roms_unzipped ? "" : ".zip");
 		    if (parray_find_sorted(our_list, name, strcmp) == -1) {
 			dbh_cache_delete_by_name(dbh, name);
 		    }
