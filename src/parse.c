@@ -85,10 +85,27 @@ parse(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat,
     default:
 	ret = parse_cm(ps, ctx);
     }
-    
+
+    if (ret == 0) {
+	if (parse_eof(ctx) < 0) {
+	    ret = -1;
+	}
+    }
     parser_context_free(ctx);
 
     return ret;
+}
+
+
+int
+parse_eof(parser_context_t *ctx) {
+    if (ctx->state == PARSE_IN_HEADER) {
+	if (parse_header_end(ctx) < 0) {
+	    return -1;
+	}
+    }
+
+    return 0;
 }
 
 
@@ -393,8 +410,11 @@ parse_game_name(parser_context_t *ctx, filetype_t ft, int ht,
 int
 parse_game_start(parser_context_t *ctx, filetype_t ft)
 {
-    if (ctx->state == PARSE_IN_HEADER)
-	parse_header_end(ctx);
+    if (ctx->state == PARSE_IN_HEADER) {
+	if (parse_header_end(ctx) < 0) {
+	    return -1;
+	}
+    }
 
     CHECK_STATE(ctx, PARSE_OUTSIDE);
     

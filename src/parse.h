@@ -101,6 +101,7 @@ int parse_xml(parser_source_t *, parser_context_t *);
 
 /* callbacks */
 
+int parse_eof(parser_context_t *);
 int parse_file_continue(parser_context_t *, filetype_t, int, const char *);
 int parse_file_end(parser_context_t *, filetype_t);
 int parse_file_status(parser_context_t *, filetype_t, int, const char *);

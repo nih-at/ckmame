@@ -140,6 +140,9 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
     }
     
     dir_close(dir);
+
+    parse_eof(ctx);
+    
     return 0;
 }
 
