@@ -132,6 +132,7 @@ main(int argc, char **argv)
     int c, i;
     int flags;
     bool runtest;
+    int ret = 0;
 
     setprogname(argv[0]);
 
@@ -257,17 +258,23 @@ main(int argc, char **argv)
     if (optind == argc)
 	process_stdin(exclude, &dat, out);
     else {
+
 	if (only_files == NULL) {
 	    only_files = parray_new();
 	    parray_push(only_files, xstrdup(DEFAULT_FILES_ONLY));
 	}
 	
 	for (i=optind; i<argc; i++) {
-	    process_file(argv[i], exclude, &dat, only_files, skip_files, out);
+	    if (process_file(argv[i], exclude, &dat, only_files, skip_files, out) < 0) {
+		i = argc;
+		ret = -1;
+	    }
 	}
     }
 
-    output_close(out);
+    if (ret == 0) {
+	output_close(out);
+    }
 
     if (detector)
 	detector_free(detector);
@@ -297,7 +304,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
     
     if ((mdb=romdb_open(fname, DBH_READ)) != NULL)
 	return export_db(mdb, exclude, dat, out);
-    else if ((za=zip_open(fname, 0, NULL)) != NULL) {
+    else if (roms_unzipped == 0 && (za=zip_open(fname, 0, NULL)) != NULL) {
 	int i;
 	const char *name;
 	int err;
@@ -325,7 +332,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	struct stat st;
 
 	if (stat(fname, &st) == -1) {
-	    myerror(ERRSTR, "can't stat romlist file '%s'", fname);
+	    myerror(ERRSTR, "can't stat() file '%s'", fname);
 	    return -1;
 	}
 	if ((st.st_mode & S_IFMT) == S_IFDIR) {
@@ -339,6 +346,11 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	    ret = parse_dir(fname, ctx, hashtypes);
 	    parser_context_free(ctx);
 	    return ret;
+	}
+
+	if (roms_unzipped) {
+	    myerror(ERRDEF, "argument '%s' is not a directory", fname);
+	    return -1;
 	}
 
 	if ((ps=ps_new_file(fname)) == NULL)
