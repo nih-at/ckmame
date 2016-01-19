@@ -1,3 +1,5 @@
+* instead of looking in cloneof for roms, move all extra roms to needed
+
 * clean up archives in .ckmame.db for manually removed dirs/zips
 
 * fix .ckmame.db support for roms with headers: store hashes with
