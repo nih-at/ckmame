@@ -7,4 +7,4 @@ file extra/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file extra/plain-file runtest runtest
 file-new mamedb-test.db mamedb-small.dump
 ckmamedb-after extra ckmamedb-1-4-ok.dump
-stderr skipping unknown file 'extra/plain-file'
+stderr found file 'extra/plain-file' outside of game subdirectory
