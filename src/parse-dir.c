@@ -93,7 +93,7 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes)
                         have_loose_files = true;
                     }
                     else {
-                        myerror(ERRDEF, "skipping unknown file '%s'", b);
+                        myerror(ERRDEF, "found file '%s' outside of game subdirectory", b);
                     }
 		}
             }
