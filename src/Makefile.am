@@ -115,6 +115,7 @@ libckmame_a_SOURCES= \
 	romdb_read_dat.c \
 	romdb_read_detector.c \
 	romdb_read_file_by_hash.c \
+	romdb_read_file_by_name.c \
 	romdb_read_game.c \
 	romdb_read_list.c \
 	romdb_write_dat.c \

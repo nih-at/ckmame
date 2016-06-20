@@ -1,3 +1,5 @@
+* for {,p}arrays, add functions for free()ing data into initialization
+
 * instead of looking in cloneof for roms, move all extra roms to needed
 
 * clean up archives in .ckmame.db for manually removed dirs/zips

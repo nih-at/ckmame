@@ -17,6 +17,7 @@
 
 #define QUERY_DAT           "select name, description, version from dat where dat_idx >= 0 order by dat_idx"
 #define QUERY_FILE_FBH      "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = ? and f.status <> ? @HASH@"
+#define QUERY_FILE_FBN      "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = ? and f.name = ?"
 #define QUERY_HAS_DISKS     "select file_idx from file where file_type = 2 limit 1"
 #define QUERY_RULE	    "select rule_idx, start_offset, end_offset, operation from rule order by rule_idx"
 #define QUERY_TEST	    "select type, offset, size, mask, value, result from test where rule_idx = ? order by test_idx"

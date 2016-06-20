@@ -62,6 +62,34 @@ hashes_cmp(const struct hashes *h1, const struct hashes *h2)
 }
 
 
+bool
+hashes_cmp_strict(const struct hashes *h1, const struct hashes *h2)
+{
+    if (h1->types != h2->types) {
+	return false;
+    }
+
+    if (h1->types & HASHES_TYPE_CRC) {
+	if (h1->crc != h2->crc) {
+	    return false;
+	}
+    }
+
+    if (h1->types & HASHES_TYPE_MD5) {
+	if (memcmp(h1->md5, h2->md5, sizeof(h1->md5)) != 0) {
+	    return false;
+	}
+    }
+
+    if (h1->types & HASHES_TYPE_SHA1) {
+	if (memcmp(h1->sha1, h2->sha1, sizeof(h1->sha1)) != 0) {
+	    return false;
+	}
+    }
+
+    return true;
+}
+
 void
 hashes_init(struct hashes *h)
 {

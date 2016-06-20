@@ -1,9 +1,6 @@
-#ifndef _HAD_ROMDB_H
-#define _HAD_ROMDB_H
-
 /*
-  romdb.h -- mame.db sqlite3 data base
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  romdb_read_file_by_name.c -- find file by name in db
+  Copyright (C) 2016 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,34 +31,42 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "dbh.h"
 
-typedef struct {
-    dbh_t *dbh;
-    int hashtypes[TYPE_MAX];
-} romdb_t;
+#include <stdlib.h>
+#include <string.h>
 
-#define romdb_dbh(db)  ((db)->dbh)
-#define romdb_sqlite3(db)	(dbh_db(romdb_dbh(db)))
+#include "array.h"
+#include "file_location.h"
+#include "romdb.h"
+#include "sq_util.h"
 
-int romdb_close(romdb_t *);
-int romdb_delete_game(romdb_t *, const char *);
-int romdb_has_disks(romdb_t *);
-romdb_t *romdb_open(const char *, int);
-dat_t *romdb_read_dat(romdb_t *);
-detector_t *romdb_read_detector(romdb_t *);
-array_t *romdb_read_file_by_hash(romdb_t *, filetype_t, const hashes_t *);
-array_t *romdb_read_file_by_name(romdb_t *, filetype_t, const char *);
-struct game *romdb_read_game(romdb_t *, const char *);
-int romdb_hashtypes(romdb_t *, filetype_t);
-parray_t *romdb_read_list(romdb_t *, enum dbh_list);
-int romdb_update_game(romdb_t *, game_t *);
-int romdb_update_game_parent(romdb_t *, game_t *, filetype_t);
-int romdb_write_dat(romdb_t *, dat_t *);
-int romdb_write_detector(romdb_t *db, const detector_t *);
-int romdb_write_file_by_hash_parray(romdb_t *, filetype_t, const hashes_t *, parray_t *);
-int romdb_write_game(romdb_t *, game_t *);
-int romdb_write_hashtypes(romdb_t *, int, int);
-int romdb_write_list(romdb_t *, const char *, const parray_t *);
+array_t *
+romdb_read_file_by_name(romdb_t *db, filetype_t ft, const char *name)
+{
+    sqlite3_stmt *stmt;
+    array_t *a;
+    file_location_t *fl;
+    int ret;
 
-#endif /* romdb.h */
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE_FBN)) == NULL)
+	return NULL;
+
+    if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK
+	|| sq3_set_string(stmt, 2, name) != SQLITE_OK)
+	return NULL;
+
+    a = array_new(sizeof(file_location_t));
+
+    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+	fl = array_grow(a, NULL);
+	file_location_name(fl) = sq3_get_string(stmt, 0);
+	file_location_index(fl) = sqlite3_column_int(stmt, 1);
+    }
+
+    if (ret != SQLITE_DONE) {
+	array_free(a, file_location_finalize);
+	return NULL;
+    }
+
+    return a;
+}

@@ -86,6 +86,7 @@ extern const intstr_t hash_type_names[];
 #define hash_type_string(i)	(int2str((i), hash_type_names))
 
 hashes_cmp_t hashes_cmp(const hashes_t *, const hashes_t *);
+bool hashes_cmp_strict(const struct hashes *, const struct hashes *);
 void hashes_init(hashes_t *);
 void hashes_update(hashes_update_t *, const unsigned char *, size_t);
 void hashes_update_final(hashes_update_t *);

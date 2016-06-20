@@ -275,6 +275,45 @@ output_db_game(output_context_t *out, game_t *g)
 
     game_dat_no(g) = dat_length(ctx->dat)-1;
 
+    i = 0;
+    while (i < game_num_disks(g)) {
+	disk_t *disk = game_disk(g, i);
+	array_t *disks;
+
+	if ((disks = romdb_read_file_by_name(ctx->db, TYPE_DISK, file_name(disk))) == NULL) {
+	    /* TODO: warn */
+	    continue;
+	}
+
+	bool removed = false;
+	for (int j = 0; j < array_length(disks); j++) {
+	    file_location_t *location = array_get(disks, j);
+	    
+	    if ((g2 = romdb_read_game(ctx->db, file_location_name(location))) == NULL) {
+		/* TODO: warn */
+		continue;
+	    }
+
+	    disk_t *existing_disk = game_disk(g2, file_location_index(location));
+
+	    if (!hashes_cmp_strict(disk_hashes(disk), disk_hashes(existing_disk))) {
+		myerror(ERRDEF, "different disks with name '%s' exist in games '%s' and '%s', skipped", disk_name(disk), game_name(g2), game_name(g));
+		array_delete(game_disks(g), i, file_location_finalize);
+		game_free(g2);
+		removed = true;
+		break;
+	    }
+		
+	    game_free(g2);
+	}
+
+	array_free(disks, file_location_finalize);
+
+	if (!removed) {
+	    i++;
+	}
+    }
+
     to_do = 0;
     for (i=0; i<GAME_RS_MAX; i++) {
 	if (game_cloneof(g, i, 0)) {
