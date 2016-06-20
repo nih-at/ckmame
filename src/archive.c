@@ -181,6 +181,30 @@ archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
 
 
 int
+archive_file_index_by_hashes(const archive_t *a, const hashes_t *h)
+{
+    int i;
+
+    if (h->types == 0) {
+	return -1;
+    }
+    
+    for (i=0; i<archive_num_files(a); i++) {
+	file_t *f = archive_file(a, i);
+	
+	if (hashes_cmp(h, file_hashes(f)) == HASHES_CMP_MATCH) {
+	    if (file_where(f) == FILE_DELETED) {
+		return -1;
+	    }
+	    return i;
+	}
+    }
+
+    return -1;
+}
+
+
+int
 archive_file_index_by_name(const archive_t *a, const char *name)
 {
     int i;
