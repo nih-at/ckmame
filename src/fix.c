@@ -381,6 +381,20 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    break;
 
 	case QU_NAMEERR:
+	    if (file_where(r) == FILE_INCO || file_where(r) == FILE_INGCO) {
+		if (tree_recheck(check_tree, game_cloneof(g, TYPE_ROM, file_where(r)-1))) {
+		    if (fix_options & FIX_PRINT) {
+			printf("%s: save needed file '%s'\n", archive_name(a), file_name(archive_file(a, match_index(m))));
+		    }
+
+		    /* fall-through to rename in case save_needed fails */
+		    if (save_needed(a, match_index(m), fix_options & FIX_DO) == 0) {
+			tree_recheck_games_needing(check_tree, file_size(r), file_hashes(r));
+			break;
+		    }
+		}
+	    }
+	    
 	    if (fix_options & FIX_PRINT)
 		printf("%s: rename '%s' to '%s'\n", archive_name(a), REAL_NAME(a, match_index(m)), file_name(r));
 

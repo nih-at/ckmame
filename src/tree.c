@@ -103,18 +103,22 @@ tree_new(void)
 }
 
 
-void
+bool
 tree_recheck(const tree_t *tree, const char *name)
 {
     tree_t *t;
 
-    for (t=tree->child; t; t=t->next) {
-	if (tree_checked(t) && strcmp(tree_name(t), name) == 0) {
+    for (t = tree->child; t; t = t->next) {
+	if (strcmp(tree_name(t), name) == 0) {
 	    tree_checked(t) = false;
-	    break;
+	    return tree_check(t);
 	}
-	tree_recheck(t, name);
+	if (tree_recheck(t, name)) {
+	    return true;
+	}
     }
+
+    return false;
 }
 
 
