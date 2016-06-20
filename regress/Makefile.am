@@ -149,6 +149,7 @@ TESTS=	\
 		rom-duplicate-2nd.test \
 		rom-duplicate-ok.test \
 		rom-duplicate-wrong.test \
+		rom-from-child-renamed.test \
 		rom-from-extra-broken-unwanted.test \
 		rom-from-extra-broken.test \
 		rom-from-extra-child.test \
