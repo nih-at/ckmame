@@ -49,6 +49,5 @@ parray_t *dbh_cache_list_archives(dbh_t *);
 int dbh_cache_read(dbh_t *, const char *, array_t *);
 int dbh_cache_register_cache_directory(const char *);
 int dbh_cache_write(dbh_t *, int, const archive_t *a);
-int ensure_romset_dir_db(void);
 
 #endif /* dbh_cache.h */
