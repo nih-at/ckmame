@@ -45,6 +45,7 @@ TESTS=	\
 		disk-chd-v5-integrity.test \
 		disk-conflict.test \
 		disk-from-extra-remove.test \
+		disk-from-extra-using-copy-remove.test \
 		disk-from-extra.test \
 		disk-from-superfluous-all.test \
 		disk-from-superfluous.test \

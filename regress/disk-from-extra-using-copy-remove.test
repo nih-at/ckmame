@@ -1,0 +1,12 @@
+description test single-rom game with disk, get missing disk from extra, rename not allowed
+archive-types zip
+return 0
+preload fwrite.so
+setenv RENAME_FAILS roms/108-5.chd
+args -Fvj -D ../mamedb-disk.db -e extradir
+file-del extradir/1234.chd 108-5.chd
+file-new roms/108-5.chd 108-5.chd
+stdout In game disk:
+stdout game disk                                    : not a single rom found
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'extradir/1234.chd'
+stdout rename 'extradir/1234.chd' to 'roms/108-5.chd'
