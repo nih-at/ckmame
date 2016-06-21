@@ -90,6 +90,10 @@ rename(const char *src, const char *dest) {
 	    abort();
     }
 
+    if (getenv("RENAME_LOG") != NULL) {
+	fprintf(stderr, "LOG: rename '%s' -> '%s'\n", src, dest);
+    }
+
     if (getenv("RENAME_ALWAYS_FAILS") != NULL) {
 	errno = EPERM;
 	return -1;
