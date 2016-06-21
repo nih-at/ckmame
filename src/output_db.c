@@ -298,7 +298,7 @@ output_db_game(output_context_t *out, game_t *g)
 
 	    if (!hashes_cmp_strict(disk_hashes(disk), disk_hashes(existing_disk))) {
 		myerror(ERRDEF, "different disks with name '%s' exist in games '%s' and '%s', skipped", disk_name(disk), game_name(g2), game_name(g));
-		array_delete(game_disks(g), i, file_location_finalize);
+		array_delete(game_disks(g), i, disk_finalize);
 		game_free(g2);
 		removed = true;
 		break;
