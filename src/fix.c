@@ -427,6 +427,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 	    }
 	    
 	    if (archive_file_copy(afrom, match_index(m), a, file_name(r)) < 0) {
+		myerror(ERRDEF, "copying '%s' from '%s' to '%s' failed, not deleting", file_name(r), archive_name(afrom), archive_name(a));
 		/* TODO: if (idx >= 0) undo deletion of broken file */
 	    }
 	    else {
@@ -434,8 +435,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb)
 		    delete_list_add(needed_delete_list, archive_name(afrom), match_index(m));
 		else if (match_where(m) == FILE_SUPERFLUOUS)
 		    delete_list_add(superfluous_delete_list, archive_name(afrom), match_index(m));
-		else if (match_where(m) == FILE_EXTRA
-			 && (fix_options & FIX_DELETE_EXTRA))
+		else if (match_where(m) == FILE_EXTRA && (fix_options & FIX_DELETE_EXTRA))
 		    delete_list_add(extra_delete_list, archive_name(afrom), match_index(m));
 	    }
 	    break;
