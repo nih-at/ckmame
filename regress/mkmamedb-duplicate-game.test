@@ -5,4 +5,5 @@ args -o mamedb-test.db mamedb.txt mamedb-lost-parent-ok.txt
 file mamedb.txt mamedb-disk-many.txt mamedb-disk-many.txt
 file mamedb-lost-parent-ok.txt mamedb-lost-parent-ok.txt mamedb-lost-parent-ok.txt
 file-new mamedb-test.db mamedb-duplicate-game.dump
+stderr different disks with name '108-5' exist in games 'disk' and 'disk-nogood', skipped
 stderr duplicate game 'clone-8' skipped

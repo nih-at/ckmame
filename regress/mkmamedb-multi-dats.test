@@ -5,3 +5,4 @@ args -o mamedb-test.db mamedb.txt mamedb-2.txt
 file mamedb.txt mamedb-disk-many.txt mamedb-disk-many.txt
 file mamedb-2.txt mamedb-2.txt mamedb-2.txt
 file-new mamedb-test.db mamedb-multi-dats.dump
+stderr different disks with name '108-5' exist in games 'disk' and 'disk-nogood', skipped
