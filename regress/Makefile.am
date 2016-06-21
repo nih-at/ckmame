@@ -43,6 +43,7 @@ TESTS=	\
 		detector-interaction-with-headerless.test \
 		detector-prefer-file-with-header.test \
 		disk-chd-v5-integrity.test \
+		disk-conflict.test \
 		disk-from-extra-remove.test \
 		disk-from-extra.test \
 		disk-from-superfluous-all.test \
@@ -223,6 +224,7 @@ TESTS=	\
 XFAIL_TESTS=	\
 		detector-interaction-with-headerless.test \
 		detector-prefer-file-with-header.test \
+		disk-conflict.test \
 		disk-swapmerge.test \
 		mkmamedb-duplicate-nodump.test \
 		mkmamedb-merge-no-parent.test \
@@ -311,6 +313,7 @@ DBFILES=	\
 		mamedb-deadbeefish.txt \
 		mamedb-dir-in-name.dump \
 		mamedb-dir-in-name.txt \
+		mamedb-disk-conflict.txt \
 		mamedb-disk-many.txt \
 		mamedb-disk.txt \
 		mamedb-duplicate-game.dump \
@@ -357,6 +360,7 @@ DBS=\
 	mamedb-baddump.db \
 	mamedb-deadbeefish.db \
 	mamedb-disk.db \
+	mamedb-disk-conflict.db \
 	mamedb-disk-many.db \
 	mamedb-lost-parent-ok.db \
 	mamedb-merge-parent.db \

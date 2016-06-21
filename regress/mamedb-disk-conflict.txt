@@ -1,0 +1,25 @@
+BEGIN
+
+clrmamepro (
+	name "ckmame test db: game with disk"
+	version 1
+)
+game (
+	name disk
+	description "1-8 with disk"
+	manufacturer "synth"
+	year 2006
+	rom ( name 08.rom size 8 crc32 3656897d )
+	disk ( name 108-5 md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 )
+)
+
+game (
+	name disk2
+	description "1-8 with different (fake) disk, same name"
+	manufacturer "synth"
+	year 2006
+	rom ( name 08.rom size 8 crc32 3656897d )
+	disk ( name 108-5 md5 cf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 c570a907e20a51cbf6193ec6779b82d1967bb609 )
+)
+
+END
