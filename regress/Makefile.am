@@ -206,6 +206,7 @@ TESTS=	\
 		uncompressed-ckmamedb-changed-same-mtime-zip.test \
 		uncompressed-ckmamedb-changed-same-mtime.test \
 		uncompressed-ckmamedb-extra-dir.test \
+		uncompressed-ckmamedb-extra-remove.test \
 		uncompressed-ckmamedb-no-change.test \
 		uncompressed-ckmamedb-remove-game-2.test \
 		uncompressed-ckmamedb-remove-game-3.test \
