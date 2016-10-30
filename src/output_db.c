@@ -279,6 +279,7 @@ output_db_game(output_context_t *out, game_t *g)
     while (i < game_num_disks(g)) {
 	disk_t *disk = game_disk(g, i);
 	array_t *disks;
+	int j;
 
 	if ((disks = romdb_read_file_by_name(ctx->db, TYPE_DISK, file_name(disk))) == NULL) {
 	    /* TODO: warn */
@@ -286,7 +287,7 @@ output_db_game(output_context_t *out, game_t *g)
 	}
 
 	bool removed = false;
-	for (int j = 0; j < array_length(disks); j++) {
+	for (j = 0; j < array_length(disks); j++) {
 	    file_location_t *location = array_get(disks, j);
 	    
 	    if ((g2 = romdb_read_game(ctx->db, file_location_name(location))) == NULL) {
