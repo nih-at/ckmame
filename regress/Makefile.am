@@ -13,6 +13,7 @@ noinst_SCRIPTS=		runtest
 pkglib_LTLIBRARIES=	fwrite.la
 fwrite_la_SOURCES=	fwrite.c
 fwrite_la_LDFLAGS=	-module -avoid-version
+fwrite_la_LIBADD=	${DLSYM_LIB}
 
 EXTRA_DIST=runtest.in CkmameDB.pm NiHTest.pm ${TESTS} ${ZIPS} ${CHDS} ${DBFILES} \
 		gamelist-from-file.in \

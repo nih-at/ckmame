@@ -49,6 +49,10 @@ AC_SUBST([MANFMT])
 AC_SUBST([DBLIBS])
 AC_SUBST([DBTYPE])
 
+dnl assume dlsym in libc, but check in libdl
+DLSYM_LIB=
+AC_CHECK_LIB([dl], [dlsym], [DLSYM_LIB="-ldl"])
+AC_SUBST([DLSYM_LIB])
 
 case $host_os
 in
