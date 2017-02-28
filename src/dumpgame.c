@@ -590,7 +590,9 @@ dump_stats(int dummy)
 	size = sqlite3_column_int64(stmt, 2);
 	if (size > 0) {
 	    printf(" (");
-	    if (size > 1024*1024*1024)
+	    if (size > 1024ul*1024*1024*1024)
+		printf("%" PRIi64 ".%02" PRIi64 "TiB", size/(1024ul*1024*1024*1024), (((size/(1024ul*1024*1024))*10+512)/1024) % 100);
+	    else if (size > 1024*1024*1024)
 		printf("%" PRIi64 ".%02" PRIi64 "GiB", size/(1024*1024*1024), (((size/(1024*1024))*10+512)/1024) % 100);
 	    else if (size > 1024*1024)
 		printf("%" PRIi64 ".%02" PRIi64 "MiB", size/(1024*1024), (((size/1024)*10+512)/1024) % 100);
