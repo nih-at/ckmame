@@ -1,4 +1,4 @@
-.\" Copyright (c) 2003-2014 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2003-2017 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd April 29, 2015
+.Dd April 2, 2017
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -40,6 +40,7 @@
 .Op Fl O Ar dbfile
 .Op Fl R Ar dir
 .Op Fl T Ar file
+.Op Fl Fl autofixdat
 .Op Fl Fl cleanup-extra
 .Op Fl Fl correct
 .Op Fl Fl db Ar dbfile
@@ -126,6 +127,12 @@ You can use command line options to select which type of errors to report.
 .Ss OPTIONS
 Supported options:
 .Bl -tag -width 22n
+.It Fl Fl autofixdat
+Like
+.Fl Fl fixdat ,
+but automatically generates the output file name from the datfile's
+name and version number:
+.Dq Pa fix_$SYSTEM ($VERSION).dat .
 .It Fl b, Fl Fl nobroken
 Don't report unfixable errors.
 See also

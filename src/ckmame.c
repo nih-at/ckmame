@@ -1,6 +1,6 @@
 /*
   ckmame.c -- main routine for ckmame
-  Copyright (C) 1999-2015 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2017 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -65,6 +65,7 @@ char *usage = "Usage: %s [-bcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
 char help[] = "\n"
+"      --autofixdat        write fixdat to `fix_$NAME_OF_SET.dat'\n"
 "  -b, --nobroken          don't report unfixable errors\n"
 "      --cleanup-extra     clean up extra dirs (delete superfluous files)\n"
 "  -c, --correct           report correct sets\n"
@@ -99,7 +100,7 @@ char help[] = "\n"
 "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
-"Copyright (C) 1999-2015 Dieter Baron and Thomas Klausner\n"
+"Copyright (C) 1999-2017 Dieter Baron and Thomas Klausner\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "bcD:de:FfhijKkLlO:R:SsT:uVvwX"
@@ -107,6 +108,7 @@ PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 enum {
     OPT_CLEANUP_EXTRA = 256,
     OPT_DELETE_DUPLICATE,
+    OPT_AUTOFIXDAT,
     OPT_FIXDAT,
     OPT_IGNORE_UNKNOWN,
     OPT_KEEP_DUPLICATE,
@@ -118,6 +120,7 @@ struct option options[] = {
     { "help",              0, 0, 'h' },
     { "version",           0, 0, 'V' },
 
+    { "autofixdat",        0, 0, OPT_AUTOFIXDAT },
     { "cleanup-extra",     0, 0, OPT_CLEANUP_EXTRA },
     { "correct",           0, 0, 'c' }, /* +CORRECT */
     { "db",                1, 0, 'D' },
@@ -166,7 +169,9 @@ main(int argc, char **argv)
     char *dbname, *olddbname;
     int c, found;
     parray_t *list;
+    char *fixdat_name;
     char *game_list;
+    bool auto_fixdat;
 
     setprogname(argv[0]);
     output_options = WARN_ALL;
@@ -186,6 +191,7 @@ main(int argc, char **argv)
     game_list = NULL;
     rom_dir = NULL;
     fixdat = NULL;
+    auto_fixdat = false;
     
     opterr = 0;
     while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -284,19 +290,11 @@ main(int argc, char **argv)
 	case OPT_DELETE_DUPLICATE:
 	    fix_options |= FIX_DELETE_DUPLICATE;
 	    break;
+	case OPT_AUTOFIXDAT:
+	    auto_fixdat = true;
+	    break;
 	case OPT_FIXDAT:
-	    {
-		dat_entry_t de;
-
-		de.name = "Fixdat";
-		de.description = "Fixdat by ckmame";
-		de.version = "1";
-		    
-		if ((fixdat=output_new(OUTPUT_FMT_DATAFILE_XML, optarg, 0)) == NULL)
-		    exit(1);
-
-		output_header(fixdat, &de);
-	    }
+	    fixdat_name = optarg;
 	    break;
 	case OPT_IGNORE_UNKNOWN:
 	    fix_options |= FIX_IGNORE_UNKNOWN;
@@ -355,6 +353,37 @@ main(int argc, char **argv)
     }
     /* TODO: check for errors other than ENOENT */
     old_db = romdb_open(olddbname, DBH_READ);
+
+    if (auto_fixdat || fixdat != NULL) {
+	dat_entry_t de;
+
+	if (auto_fixdat) {
+	    dat_t *d;
+
+	    if (fixdat != NULL) {
+		myerror(ERRDEF, "do not use --autofixdat and --fixdat together");
+		exit(1);
+	    }
+	    if ((d=romdb_read_dat(db)) == NULL) {
+		myerror(ERRDEF, "database error reading /dat");
+		exit(1);
+	    }
+
+	    if (asprintf(&fixdat_name, "fix_%s (%s).dat", dat_name(d, 0), dat_version(d, 0)) < 0) {
+		myerror(ERRSTR, "error creating output file name");
+		exit(1);
+	    }
+	}
+
+	de.name = "Fixdat";
+	de.description = "Fixdat by ckmame";
+	de.version = "1";
+
+	if ((fixdat=output_new(OUTPUT_FMT_DATAFILE_XML, fixdat_name, 0)) == NULL)
+	    exit(1);
+
+	output_header(fixdat, &de);
+    }
 
     if (roms_unzipped && romdb_has_disks(db) == 1) {
         fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", getprogname());
