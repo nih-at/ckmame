@@ -400,7 +400,16 @@ int
 parse_game_name(parser_context_t *ctx, filetype_t ft, int ht,
 		const char *attr)
 {
+    size_t i;
+
     game_name(ctx->g) = xstrdup(attr);
+    /* slashes are directory separators on some systems, and at least
+     * one redump dat contained a slash in a rom name */
+    for (i=0; i<strlen(game_name(ctx->g)); i++) {
+	if (game_name(ctx->g)[i] == '/') {
+	    game_name(ctx->g)[i] = '-';
+	}
+    }
 
     return 0;
 }
