@@ -42,6 +42,7 @@
 #include "xmlutil.h"
 
 
+static int parse_xml_prog_header(parser_context_t *, filetype_t, int, const char *);
 static int parse_xml_loadflag(parser_context_t *, filetype_t, int,
 			      const char *);
 static int parse_xml_mame_build(parser_context_t *, filetype_t, int,
@@ -66,7 +67,7 @@ static const xmlu_attr_t attr_mess[] = {
 };
 
 static const xmlu_attr_t attr_clrmamepro [] = {
-    { "header",   XA(parse_prog_header),  0,           0,               },
+    { "header",   XA(parse_xml_prog_header),  0,           0,               },
     { NULL }
 };
 
@@ -136,6 +137,13 @@ parse_xml_lineno_cb(parser_context_t *ctx, int lineno)
 {
     ctx->lineno = lineno;
 }    
+
+
+static int
+parse_xml_prog_header(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
+{
+    return parse_prog_header(ctx, attr, 0);
+}
 
 
 static int
