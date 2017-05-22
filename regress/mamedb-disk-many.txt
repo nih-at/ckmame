@@ -152,7 +152,7 @@ game (
 	manufacturer "synth"
 	year 2004
 	rom ( name 04.rom size 4 crc32 d87f7e0c )
-	disk ( name 108-5 )
+	disk ( name 108-nogood )
 )
 
 game (
