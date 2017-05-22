@@ -184,6 +184,7 @@ main(int argc, char **argv)
     if (olddbname == NULL)
 	olddbname = DBH_DEFAULT_OLD_DB_NAME;
     fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
+    fixdat_name = NULL;
     ignore_extra = 0;
     check_integrity = 0;
     roms_unzipped = 0;
@@ -354,13 +355,13 @@ main(int argc, char **argv)
     /* TODO: check for errors other than ENOENT */
     old_db = romdb_open(olddbname, DBH_READ);
 
-    if (auto_fixdat || fixdat != NULL) {
+    if (auto_fixdat || fixdat_name != NULL) {
 	dat_entry_t de;
 
 	if (auto_fixdat) {
 	    dat_t *d;
 
-	    if (fixdat != NULL) {
+	    if (fixdat_name != NULL) {
 		myerror(ERRDEF, "do not use --autofixdat and --fixdat together");
 		exit(1);
 	    }

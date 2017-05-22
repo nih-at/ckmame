@@ -32,6 +32,7 @@ file-new roms/zero.zip zero-ok.zip
 file-new roms/zerobadcrc.zip zero-ok.zip
 file-new fix_test.dat rom-from-superfluous-many-fixdat.dat
 file roms/108-5.chd 108-5.chd 108-5.chd
+file roms/108-nogood.chd 108-5.chd 108-5.chd
 no-hashes roms baddump.zip bad.rom
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
@@ -88,7 +89,7 @@ stdout game disk-3                                  : correct
 stdout disk 512v5         sha1 cf37d50e886519c332dcfe84440f1f085b98c634: missing
 stdout In game disk-nogood:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
-stdout disk 108-5         no good dump              : exists
+stdout disk 108-nogood    no good dump              : exists
 stdout roms/disk-nogood.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
 stdout In game disk-nogood2:
 stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
