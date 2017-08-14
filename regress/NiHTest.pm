@@ -760,8 +760,8 @@ sub get_variable {
 sub mangle_test_for_variant {
 	my ($self) = @_;
 
-	$self->{test}->{expected_stdout} = $self->strip_tags($self->{variant}, $self->{test}->{expected_stdout});
-	$self->{test}->{expected_stderr} = $self->strip_tags($self->{variant}, $self->{test}->{expected_stderr});
+	$self->{test}->{stdout} = $self->strip_tags($self->{variant}, $self->{test}->{stdout});
+	$self->{test}->{stderr} = $self->strip_tags($self->{variant}, $self->{test}->{stderr});
 	$self->run_hook('mangle_test');
 
 	return 1;
@@ -1232,7 +1232,7 @@ sub strip_tags {
 	my @stripped = ();
 	
 	for my $line (@$lines) {
-		if ($line =~ m/^<(a-zA-Z0-9_]*)> (.*)/) {
+		if ($line =~ m/^<([a-zA-Z0-9_]*)> (.*)/) {
 			if ($1 eq $tag) {
 				push @stripped, $2;
 			}
