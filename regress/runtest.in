@@ -34,18 +34,19 @@
 
 use strict;
 
+#use Data::Dumper qw(Dumper);
+
 BEGIN { push @INC, '@abs_srcdir@'; }
 
 use CkmameDB;
 use NiHTest;
 
-my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@' });
+my $ROMDIRS = "extra|extradir|moreroms|needed|roms|samples|search|unknown";
 
-my $roms_uncompressed = 0;
-
+my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@', zipcmp_flags => '' });
 
 sub check_ckmame_db {
-	my ($test, $dir) = @_;
+	my ($test, $dir, $variant) = @_;
 	
 	my $dump_expected = undef;
 	
@@ -67,7 +68,7 @@ sub check_ckmame_db {
 		}
 	}
 	
-	my $db = new CkmameDB($dir, undef, $roms_uncompressed, $test->{test}->{'no-hashes'});
+	my $db = new CkmameDB($dir, undef, $variant eq 'dir', $test->{test}->{'no-hashes'});
 	
 	if (!$db) {
 		print "opening $dir/.ckmame.db failed\n" if ($test->{verbose});
@@ -85,9 +86,7 @@ sub check_ckmame_db {
 
 
 sub checks {
-	my ($test, $hook) = @_;
-
-	#return 1 unless ($roms_uncompressed);
+	my ($test, $hook, $variant) = @_;
 
 	my %checked = ();
 	
@@ -104,7 +103,7 @@ sub checks {
 	    next if ($name eq '.' || $name eq '..' || $name =~ m/sample|unknown/);
 	    next unless (-d $name);
 
-	    my $ret = check_ckmame_db($test, $name);
+	    my $ret = check_ckmame_db($test, $name, $variant);
 	    $checked{$name} = 1;
 	    
 	    if (!defined($ret)) {
@@ -122,7 +121,7 @@ sub checks {
 		my $name = $entry->[0];
 		next if ($checked{$name});
 		
-		my $ret = check_ckmame_db($test, $name);
+		my $ret = check_ckmame_db($test, $name, $variant);
 		$checked{$name} = 1;
 		
 		if (!defined($ret)) {
@@ -150,20 +149,16 @@ sub comparator_db {
 	return $ret == 0;
 }
 
-sub comparator_zip {
+sub dir_comparator_zip {
 	my ($test, $got, $expected) = @_;
-
-	return undef unless ($roms_uncompressed);
 
 	$got =~ s/\.zip//;
 	return NiHTest::comparator_zip($test, $got, $expected);
 }
 
 
-sub copier_zip {
+sub dir_copier_zip {
 	my ($test, $src, $dest) = @_;
-
-	return undef unless ($roms_uncompressed);
 
 	$dest =~ s/\.zip$//;
 
@@ -181,21 +176,24 @@ sub mangle_program {
 
 
 sub post_list_files {
-	my ($test, $hook) = @_;
+	my ($test, $hook, $variant) = @_;
 
 	my %got = ();
-		
+
+	#print(Dumper(\$test));
 	for my $file (@{$test->{files_got}}) {
 		next if ($file =~ '/.ckmame.db$');
-		if ($roms_uncompressed && $file =~ m,((?:extra|extradir|moreroms|needed|roms|samples|search|unknown)/[^/]*)/,) {
-			$got{"$1.zip"} = 1;
+		if ($variant eq 'dir') {
+			if ($file =~ m,^($ROMDIRS)/([^/]*)/,o) {
+				$got{"$1/$2.zip"} = 1;
+				next;
+			}
 		}
-		else {
-			$got{$file} = 1;
-		}
+
+		$got{$file} = 1;
 	}
 	$test->{files_got} = [sort keys %got];
-
+	#print(Dumper(\$test));
 	return 1;
 }
 
@@ -203,8 +201,10 @@ sub post_list_files {
 sub post_parse {
 	my ($test, $hook) = @_;
 
-	if (!defined($test->{test}->{'archive-types'})) {
-		$test->{test}->{'archive-types'} = $test->{test}->{program} =~ m/ckmame$/ ? ['zip', 'dir'] : ['zip'];
+	if (!defined($test->{test}->{variants})) {
+		if ($test->{test}->{program} !~ m/ckmame$/) {
+			$test->{test}->{variants} = [ 'zip' ];
+		}
 	}
 
 	if ($test->{test}->{mkdbargs}) {
@@ -213,19 +213,6 @@ sub post_parse {
 	else {
 		$test->add_file({ source => 'mame.db', destination => 'mame.db', result => 'mame.db'});
 	}
-
-	return 1;
-}
-
-
-sub post_run_program {
-	my ($test, $hook) = @_;
-
-	if ($roms_uncompressed) {
-		map { s,((?:extra|extradir|moreroms|needed|roms|samples|search|unknown)/[^ :]*)\.zip,$1,g; } @{$test->{expected_stdout}};
-	}
-        my $exclude_tag = ($roms_uncompressed ? 'ZIP' : 'DIR');
-        $test->{expected_stderr} = [ map { s/^<[A-Z]*> //; $_; } grep { $_ !~ /^<$exclude_tag> /; } @{$test->{expected_stderr}} ];
 
 	return 1;
 }
@@ -264,7 +251,6 @@ sub post_copy_file {
 
 
 $test->add_directive(mkdbargs => { type => 'string...', once => 1 });
-$test->add_directive('archive-types' => { type => 'string...', once => 1 });
 $test->add_directive('ckmamedb-before' => { type => 'string string' });
 $test->add_directive('ckmamedb-after' => { type => 'string string' });
 $test->add_directive('no-hashes' => {
@@ -274,37 +260,31 @@ $test->add_directive('no-hashes' => {
 });
 
 $test->add_comparator('db/dump', \&comparator_db);
-$test->add_comparator('zip/zip', \&comparator_zip);
-$test->add_copier('zip/zip', \&copier_zip);
+$test->add_comparator('dir/zip/zip', \&dir_comparator_zip);
+$test->add_comparator('zip/zip', \&NiHTest::comparator_zip);
+$test->add_copier('dir/zip/zip', \&dir_copier_zip);
 
 $test->add_hook('checks', \&checks);
 $test->add_hook('mangle_program', \&mangle_program);
 $test->add_hook('post_parse', \&post_parse);
 $test->add_hook('post_list_files', \&post_list_files);
-$test->add_hook('post_run_program', \&post_run_program);
 $test->add_hook('post_copy_files', \&post_copy_file);
 
-$test->setup(@ARGV);
+sub dir_mangle_test {
+    my ($test, $variant) = @_;
 
-my @results = ();
+    map { s,((?:$ROMDIRS)/[^ :]*)\.zip,$1,go; } @{$test->{expected_stdout}};
 
-for my $archive_type (reverse sort @{$test->{test}->{'archive-types'}}) {
-	next if ($ENV{SKIP_DIR} && $archive_type eq 'dir');
-	if ($archive_type eq 'dir') {
-		$roms_uncompressed = 1;
-		if ($test->{test}->{program} =~ m/(ckmame|mamedb)$/) {
-			unshift @{$test->{test}->{args}}, '-u';
-		}
-	}
+    if ($test->{test}->{program} =~ m/(ckmame|mamedb)$/) {
+	unshift @{$test->{test}->{args}}, '-u';
+    }
 
-	push @results, $test->runtest($archive_type);
+    
 
-	if ($archive_type eq 'dir') {
-		$roms_uncompressed = 0;
-		if ($test->{test}->{program} =~ m/ckmame$/) {
-			shift @{$test->{test}->{args}};
-		}
-	}
+    return 1;
 }
 
-$test->end(@results);
+$test->add_variant('zip', { });
+$test->add_variant('dir', { mangle_test => dir_mangle_test });
+
+$test->run(@ARGV);

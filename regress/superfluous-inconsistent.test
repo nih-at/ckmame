@@ -1,5 +1,5 @@
 description test single-rom game (no parent), superfluous zip is inconsistent
-archive-types zip
+variants zip
 return 0
 args -FiKLvc 1-4
 file-del roms/1-4-super.zip 1-4-inconsistent.zip

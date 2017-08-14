@@ -1,5 +1,5 @@
 description test game (no parent), zip is incomplete, looked-at zip is broken
-archive-types zip
+variants zip
 return 0
 args -FKLivc 1-4
 file roms/2-48.zip Makefile.am Makefile.am

@@ -1,5 +1,5 @@
 description test cleanup of superfluous files
-archive-types zip
+variants zip
 return 0
 args -O ../mamedb-disk.db -D ../mamedb-lost-parent-ok.db -FKLv
 file roms/clone-8.zip 1-4-ok.zip 1-4-ok.zip

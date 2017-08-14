@@ -1,5 +1,5 @@
 description test single-rom game (no parent), correct ckmame db exists
-archive-types dir
+variants dir
 return 0
 args -D ../mamedb-small.db -jFKLivc
 ckmamedb-before roms ckmamedb-1-4-ok.dump

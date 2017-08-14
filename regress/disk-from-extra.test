@@ -1,5 +1,5 @@
 description test game with disk, get disk from extra, but don't remove it
-archive-types zip
+variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivc -e extra disk
 mkdir 755 extra

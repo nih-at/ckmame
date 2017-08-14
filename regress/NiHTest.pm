@@ -5,17 +5,17 @@ use warnings;
 
 use Cwd;
 use File::Copy;
-use File::Path qw(mkpath);
+use File::Path qw(mkpath remove_tree);
 use Getopt::Long qw(:config posix_default bundling no_ignore_case);
 use IPC::Open3;
+use Storable qw(dclone);
 use Symbol 'gensym';
 use UNIVERSAL;
 
-use Data::Dumper qw(Dumper);
-use Text::Diff;
+#use Data::Dumper qw(Dumper);
 
 #  NiHTest -- package to run regression tests
-#  Copyright (C) 2002-2014 Dieter Baron and Thomas Klausner
+#  Copyright (C) 2002-2016 Dieter Baron and Thomas Klausner
 #
 #  This file is part of ckmame, a program to check rom sets for MAME.
 #  The authors can be contacted at <ckmame@nih.at>
@@ -134,6 +134,8 @@ my %EXIT_CODES = (
 	ERROR => 99
     );
 
+# MARK: - Public API
+
 sub new {
 	my $class = UNIVERSAL::isa ($_[0], __PACKAGE__) ? shift : __PACKAGE__;
 	my $self = bless {}, $class;
@@ -142,7 +144,7 @@ sub new {
 
 	$self->{default_program} = $opts->{default_program};
 	$self->{zipcmp} = $opts->{zipcmp} // 'zipcmp';
-	$self->{zipcmp_flags} = $opts->{zipcmp_flags};
+	$self->{zipcmp_flags} = $opts->{zipcmp_flags} // '-p';
 
 	$self->{directives} = {
 		args => { type => 'string...', once => 1, required => 1 },
@@ -168,15 +170,9 @@ sub new {
 	$self->{copy_by_type} = {};
 	$self->{hooks} = {};
 
-	$self->add_comparator('zip/zip', \&comparator_zip);
-	
-	$self->{srcdir} = $opts->{srcdir} // $ENV{srcdir};
-	
-	if (!defined($self->{srcdir}) || $self->{srcdir} eq '') {
-		$self->{srcdir} = `sed -n 's/^srcdir = \(.*\)/\1/p' Makefile`;
-		chomp($self->{srcdir});
-	}
-	
+	$self->get_variable('srcdir', $opts);
+	$self->get_variable('top_builddir', $opts);
+
 	$self->{in_sandbox} = 0;
 	
 	$self->{verbose} = $ENV{VERBOSE};
@@ -237,6 +233,25 @@ sub add_hook {
 }
 
 
+sub add_variant {
+	my ($self, $name, $hooks) = @_;
+
+	if (!defined($self->{variants})) {
+		$self->{variants} = [];
+		$self->add_directive('variants' => { type => 'string...', once => 1 });
+	}
+	for my $variant (@{$self->{variants}}) {
+		if ($variant->{name} eq $name) {
+			$self->die("variant $name already defined");
+		}
+	}
+
+	push @{$self->{variants}}, { name => $name, hooks => $hooks };
+
+	return 1;
+}
+
+
 sub end {
 	my ($self, @results) = @_;
 
@@ -262,8 +277,41 @@ sub run {
 
 
 sub runtest {
+	my ($self) = @_;
+
+	if (defined($self->{variants})) {
+		my @results = ();
+		$self->{original_test} = $self->{test};
+
+		my %variants;
+
+		if (defined($self->{test}->{variants})) {
+			%variants = map { $_ => 1; } @{$self->{test}->{variants}};
+		}
+		
+		for my $variant (@{$self->{variants}}) {
+			next if (defined($self->{test}->{variants}) && !exists($variants{$variant->{name}}));
+			
+			$self->{test} = dclone($self->{original_test});
+			$self->{variant} = $variant->{name};
+			$self->mangle_test_for_variant();
+			push @results, $self->runtest_one($variant->{name});
+		}
+
+		return @results;
+	}
+	else {
+		return $self->runtest_one();
+	}
+}
+
+
+sub runtest_one {
 	my ($self, $tag) = @_;
 
+	$ENV{TZ} = "UTC";
+	$ENV{LC_CTYPE} = "C";
+	$ENV{POSIXLY_CORRECT} = 1;
 	$self->sandbox_create($tag);
 	$self->sandbox_enter();
 	
@@ -275,24 +323,28 @@ sub runtest {
 	return 'ERROR' unless ($ok);
 
 	if ($self->{setup_only}) {
-	    $self->sandbox_leave();
-	    return 'SKIP';
+		$self->sandbox_leave();
+		return 'SKIP';
 	}
 
 	for my $env (@{$self->{test}->{'setenv'}}) {
-	    $ENV{$env->[0]} = $env->[1];
+		$ENV{$env->[0]} = $env->[1];
 	}
+        my $preload_env_var = 'LD_PRELOAD';
+        if ($^O eq 'darwin') {
+                $preload_env_var = 'DYLD_INSERT_LIBRARIES';
+        }
 	if (defined($self->{test}->{'preload'})) {
-	    $ENV{LD_PRELOAD} = cwd() . "/../.libs/$self->{test}->{'preload'}";
+		$ENV{$preload_env_var} = cwd() . "/../.libs/$self->{test}->{'preload'}";
 	}
 
 	$self->run_program();
 
 	for my $env (@{$self->{test}->{'setenv'}}) {
-	    delete ${ENV{$env->[0]}};
+		delete ${ENV{$env->[0]}};
 	}
 	if (defined($self->{test}->{'preload'})) {
-	    delete ${ENV{LD_PRELOAD}};
+		delete ${ENV{$preload_env_var}};
 	}
 
 	if ($self->{test}->{stdout}) {
@@ -312,7 +364,7 @@ sub runtest {
 
 	my @failed = ();
 	
-	if ($self->{exit_status} != $self->{test}->{return} // 0) {
+	if ($self->{exit_status} != ($self->{test}->{return} // 0)) {
 		push @failed, 'exit status';
 		if ($self->{verbose}) {
 			print "Unexpected exit status:\n";
@@ -354,7 +406,7 @@ sub setup {
 	@ARGV = @argv;
 	my $ok = GetOptions(
 		'help|h' => \my $help,
-		'keep-broken' => \$self->{keep_broken},
+		'keep-broken|k' => \$self->{keep_broken},
 		'no-cleanup' => \$self->{no_cleanup},
 		# 'run-gdb' => \$self->{run_gdb},
 		'setup-only' => \$self->{setup_only},
@@ -387,9 +439,7 @@ sub setup {
 }
 
 
-#
-# internal methods
-#
+# MARK: - Internal Methods
 
 sub add_file {
 	my ($self, $file) = @_;
@@ -407,9 +457,36 @@ sub add_file {
 
 sub check_features_requirement() {
 	my ($self) = @_;
-	
-	### TODO: implement
-	
+
+	my %features;
+
+	my $fh;
+	unless (open($fh, '<', "$self->{top_builddir}/config.h")) {
+		$self->die("cannot open config.h in top builddir $self->{top_builddir}");
+	}
+	while (my $line = <$fh>) {
+		if ($line =~ m/^#define HAVE_([A-Z0-9_a-z]*)/) {
+			$features{$1} = 1;
+		}
+	}
+	close($fh);
+
+	my @missing = ();
+	for my $feature (@{$self->{test}->{features}}) {
+		if (!$features{$feature}) {
+			push @missing, $feature;
+		}
+	}
+
+	if (scalar @missing > 0) {
+		my $reason = "missing features";
+		if (scalar(@missing) == 1) {
+			$reason = "missing feature";
+		}
+		$self->print_test_result('SKIP', "$reason: " . (join ' ', @missing));
+		$self->end_test('SKIP');
+	}
+
 	return 1;
 }
 
@@ -447,16 +524,33 @@ sub compare_arrays() {
 	if (!$ok && $self->{verbose}) {
 		print "Unexpected $tag:\n";
 		print "--- expected\n+++ got\n";
-		my @a = map { $_ . "\n"; } @$a;
-		my @b = map { $_ . "\n"; } @$b;
-		print diff(\@a, \@b);
+
+		diff_arrays($a, $b);
 	}
 	
 	return $ok;
 }
 
+sub file_cmp($$) {
+	my ($a, $b) = @_;
+	my $result = 0;
+	open my $fha, "< $a";
+	open my $fhb, "< $b";
+	binmode $fha;
+	binmode $fhb;
+	BYTE: while (!eof $fha && !eof $fhb) {
+		if (getc $fha ne getc $fhb) {
+			$result = 1;
+			last BYTE;
+		}
+	}
+	$result = 1 if eof $fha != eof $fhb;
+	close $fha;
+	close $fhb;
+	return $result;
+}
 
-sub compare_file() {
+sub compare_file($$$) {
 	my ($self, $got, $expected) = @_;
 	
 	my $real_expected = $self->find_file($expected);
@@ -468,7 +562,13 @@ sub compare_file() {
 	my $ok = $self->run_comparator($got, $real_expected);
 
 	if (!defined($ok)) {
-		my $ret = system('diff', $self->{verbose} ? '-u' : '-q', $real_expected, $got);
+		my $ret;
+		if ($self->{verbose}) {
+			$ret = system('diff', '-u', $real_expected, $got);
+		}
+		else {
+			$ret = file_cmp($real_expected, $got);
+		}
 		$ok = ($ret == 0);
 	}
 
@@ -481,20 +581,22 @@ sub compare_files() {
 	
 	my $ok = 1;
 	
-	my $ls;
-	open $ls, "find . -type f -print |";
-	unless ($ls) {
-		# TODO: handle error
-	}
-	my @files_got = ();
-	
-	while (my $line = <$ls>) {
-		chomp $line;
-		$line =~ s,^\./,,;
-		push @files_got, $line;
-	}
-	close($ls);
-	
+        my $ls;
+
+        # recursive list of files
+        open $ls, "find . -type f -print |";
+        unless ($ls) {
+                # TODO: handle error
+        }
+        my @files_got = ();
+        
+        while (my $line = <$ls>) {
+                chomp $line;
+                $line =~ s,^\./,,;
+                push @files_got, $line;
+        }
+        close($ls);
+        
 	@files_got = sort @files_got;
 	my @files_should = ();
 	
@@ -630,10 +732,64 @@ sub get_extension {
 }
 
 
+sub get_variable {
+	my ($self, $name, $opts) = @_;
+
+	$self->{$name} = $opts->{$name} // $ENV{$name};
+	if (!defined($self->{$name}) || $self->{$name} eq '') {
+		my $fh;
+		unless (open($fh, '<', 'Makefile')) {
+			$self->die("cannot open Makefile: $!");
+		}
+		while (my $line = <$fh>) {
+			chomp $line;
+			if ($line =~ m/^$name = (.*)/) {
+				$self->{$name} = $1;
+				last;
+			}
+		}
+		close ($fh);
+	}
+	if (!defined($self->{$name} || $self->{$name} eq '')) {
+		$self->die("cannot get variable $name");
+	}
+}
+
+
+sub mangle_test_for_variant {
+	my ($self) = @_;
+
+	$self->{test}->{expected_stdout} = $self->strip_tags($self->{variant}, $self->{test}->{expected_stdout});
+	$self->{test}->{expected_stderr} = $self->strip_tags($self->{variant}, $self->{test}->{expected_stderr});
+
+	return 1;
+}
+
 sub parse_args {
 	my ($self, $type, $str) = @_;
-	
-	if ($type =~ m/(\s|\.\.\.$)/) {
+
+	if ($type eq 'string...') {
+		my $args = [];
+
+		while ($str ne '') {
+			if ($str =~ m/^\"/) {
+				unless ($str =~ m/^\"([^\"]*)\"\s*(.*)/) {
+					$self->warn_file_line("unclosed quote in [$str]");
+					return undef;
+				}
+				push @$args, $1;
+				$str = $2;
+			}
+			else {
+				$str =~ m/^(\S+)\s*(.*)/;
+				push @$args, $1;
+				$str = $2;
+			}
+		}
+
+		return $args;
+	}
+	elsif ($type =~ m/(\s|\.\.\.$)/) {
 		my $ellipsis = 0;
 		if ($type =~ m/(.*)\.\.\.$/) {
 			$ellipsis = 1;
@@ -721,7 +877,7 @@ sub parse_case() {
 			next;
 		}
 		my ($cmd, $argstring) = ($1, $2//"");
-            
+		
 		my $def = $self->{directives}->{$cmd};
 		
 		unless ($def) {
@@ -759,11 +915,29 @@ sub parse_case() {
 			$ok = 0;
 		}
 	}
+
+	if (defined($self->{variants})) {
+		if (defined($test{variants})) {
+			for my $name (@{$test{variants}}) {
+				my $found = 0;
+				for my $variant (@{$self->{variants}}) {
+					if ($name eq $variant->{name}) {
+						$found = 1;
+						last;
+					}
+				}
+				if ($found == 0) {
+					$self->warn_file("unknown variant $name");
+					$ok = 0;
+				}
+			}
+		}
+	}
 	
 	return undef unless ($ok);
 
 	if (defined($test{'stderr-replace'}) && defined($test{stderr})) {
-	    $test{stderr} = [ map { $self->stderr_rewrite($test{'stderr-replace'}, $_); } @{$test{stderr}} ];
+		$test{stderr} = [ map { $self->stderr_rewrite($test{'stderr-replace'}, $_); } @{$test{stderr}} ];
 	}
 
 	if (!defined($test{program})) {
@@ -837,6 +1011,14 @@ sub run_file_proc {
 
 	my $ext = ($self->get_extension($got)) . '/' . ($self->get_extension($expected));
 
+	if ($self->{variant}) {
+		if (defined($self->{$proc}->{"$self->{variant}/$ext"})) {
+			for my $sub (@{$self->{$proc}->{"$self->{variant}/$ext"}}) {
+				my $ret = $sub->($self, $got, $expected);
+				return $ret if (defined($ret));
+			}
+		}
+	}
 	if (defined($self->{$proc}->{$ext})) {
 		for my $sub (@{$self->{$proc}->{$ext}}) {
 			my $ret = $sub->($self, $got, $expected);
@@ -855,7 +1037,7 @@ sub run_hook {
 	
 	if (defined($self->{hooks}->{$hook})) {
 		for my $sub (@{$self->{hooks}->{$hook}}) {
-			unless ($sub->($self, $hook)) {
+			unless ($sub->($self, $hook, $self->{variant})) {
 				$self->warn("hook $hook failed");
 				$ok = 0;
 			}
@@ -864,19 +1046,47 @@ sub run_hook {
 	
 	return $ok;
 }
+sub args_decode {
+
+
+	my ($str, $srcdir) = @_;
+
+	if ($str =~ m/\\/) {
+		$str =~ s/\\a/\a/gi;
+		$str =~ s/\\b/\b/gi;
+		$str =~ s/\\f/\f/gi;
+		$str =~ s/\\n/\n/gi;
+		$str =~ s/\\r/\r/gi;
+		$str =~ s/\\t/\t/gi;
+		$str =~ s/\\v/\cK/gi;
+		$str =~ s/\\s/ /gi;
+		# TODO: \xhh, \ooo
+		$str =~ s/\\(.)/$1/g;
+	}
+
+	if ($srcdir !~ m,^/,) {
+		$srcdir = "../$srcdir";
+	}
+
+	if ($str =~ m/^\$srcdir(.*)/) {
+		$str = "$srcdir$1";
+	}
+
+	return $str;
+}
 
 
 sub run_program {
 	my ($self) = @_;
-	
+	goto &pipein_win32 if $^O eq 'MSWin32' && $self->{test}->{pipein};
 	my ($stdin, $stdout, $stderr);
 	$stderr = gensym;
-	
-	my $cmd = '../' . $self->{test}->{program} . " " . (join ' ', @{$self->{test}->{args}});
-	
+
+	my @cmd = ('../' . $self->{test}->{program}, map ({ args_decode($_, $self->{srcdir}); } @{$self->{test}->{args}}));
+
 	### TODO: catch errors?
 	
-	my $pid = open3($stdin, $stdout, $stderr, $cmd);
+	my $pid = open3($stdin, $stdout, $stderr, @cmd);
 	
 	$self->{stdout} = [];
 	$self->{stderr} = [];
@@ -895,17 +1105,27 @@ sub run_program {
         }
 	
 	while (my $line = <$stdout>) {
-		chomp $line;
+		if ($^O eq 'MSWin32') {
+			$line =~ s/[\r\n]+$//;
+		}
+		else {
+			chomp $line;
+		}
 		push @{$self->{stdout}}, $line;
 	}
 	my $prg = $self->{test}->{program};
 	$prg =~ s,.*/,,;
 	while (my $line = <$stderr>) {
-		chomp $line;
+		if ($^O eq 'MSWin32') {
+			$line =~ s/[\r\n]+$//;
+		}
+		else {
+			chomp $line;
+		}
 
 		$line =~ s/^[^: ]*$prg: //;
 		if (defined($self->{test}->{'stderr-replace'})) {
-		    $line = $self->stderr_rewrite($self->{test}->{'stderr-replace'}, $line);
+			$line = $self->stderr_rewrite($self->{test}->{'stderr-replace'}, $line);
 		}
 		push @{$self->{stderr}}, $line;
 	}
@@ -915,6 +1135,39 @@ sub run_program {
 	$self->{exit_status} = $? >> 8;
 }
 
+sub pipein_win32() {
+	my ($self) = @_;
+
+	my $cmd = "$self->{test}->{pipein}| ..\\$self->{test}->{program} " . join(' ', map ({ args_decode($_, $self->{srcdir}); } @{$self->{test}->{args}}));
+	my ($success, $error_message, $full_buf, $stdout_buf, $stderr_buf) = IPC::Cmd::run(command => $cmd);
+	if (!$success) {
+		### TODO: catch errors?
+	}
+
+	my @stdout = map { s/[\r\n]+$// } @$stdout_buf;
+	$self->{stdout} = \@stdout;
+        $self->{stderr} = [];
+
+	my $prg = $self->{test}->{program};
+	$prg =~ s,.*/,,;
+	foreach my $line (@$stderr_buf) {
+		$line =~ s/[\r\n]+$//;
+
+		$line =~ s/^[^: ]*$prg: //;
+		if (defined($self->{test}->{'stderr-replace'})) {
+			$line = $self->stderr_rewrite($self->{test}->{'stderr-replace'}, $line);
+		}
+		push @{$self->{stderr}}, $line;
+	}
+
+	$self->{exit_status} = 1;
+	if ($success) {
+		$self->{exit_status} = 0;
+	}
+	elsif ($error_message =~ /exited with value ([0-9]+)$/) {
+		$self->{exit_status} = $1 + 0;
+	}
+}
 
 sub sandbox_create {
 	my ($self, $tag) = @_;
@@ -937,7 +1190,7 @@ sub sandbox_enter {
 
 	return if ($self->{in_sandbox});
 
-	chdir($self->{sandbox_dir}) or $self->die("cant cd into sandbox $self->{sandbox_dir}: $!");
+	chdir($self->{sandbox_dir}) or $self->die("cannot cd into sandbox $self->{sandbox_dir}: $!");
 	
 	$self->{in_sandbox} = 1;
 }
@@ -958,15 +1211,29 @@ sub sandbox_remove {
 	my ($self) = @_;
 
 	my $ok = 1;
-	unless (system('chmod', '-R', 'u+rwx', $self->{sandbox_dir}) == 0) {
-		$self->warn("can't ensure that sandbox is writable: $!");
-	}
-	unless (system('rm', '-rf', $self->{sandbox_dir}) == 0) {
-		$self->warn("can't remove sandbox: $!");
-		$ok = 0;
-	}
-	
+	remove_tree($self->{sandbox_dir});
+
 	return $ok;
+}
+
+
+sub strip_tags {
+	my ($self, $tag, $lines) = @_;
+
+	my @stripped = ();
+	
+	for my $line (@$lines) {
+		if ($line =~ m/^<(a-zA-Z0-9_]*)> (.*)/) {
+			if ($1 eq $tag) {
+				push @stripped, $2;
+			}
+		}
+		else {
+			push @stripped, $line;
+		}
+	}
+
+	return \@stripped;	
 }
 
 
@@ -1019,11 +1286,87 @@ sub warn_file_line {
 }
 
 sub stderr_rewrite {
-    my ($self, $pattern, $line) = @_;
-    for my $repl (@{$pattern}) {
-	$line =~ s/$repl->[0]/$repl->[1]/;
-    }
-    return $line;
+	my ($self, $pattern, $line) = @_;
+	for my $repl (@{$pattern}) {
+		$line =~ s/$repl->[0]/$repl->[1]/;
+	}
+	return $line;
+}
+
+
+# MARK: array diff
+
+sub diff_arrays {
+	my ($a, $b) = @_;
+
+	my ($i, $j);
+	for ($i = $j = 0; $i < scalar(@$a) || $j < scalar(@$b);) {
+		if ($i >= scalar(@$a)) {
+			print "+$b->[$j]\n";
+			$j++;
+		}
+		elsif ($j >= scalar(@$b)) {
+			print "-$a->[$i]\n";
+			$i++;
+		}
+		elsif ($a->[$i] eq $b->[$j]) {
+			print " $a->[$i]\n";
+			$i++;
+			$j++;
+		}
+		else {
+			my ($off_a, $off_b) = find_best_offsets($a, $i, $b, $j);
+			my ($off_b_2, $off_a_2) = find_best_offsets($b, $j, $a, $i);
+
+			if ($off_a + $off_b > $off_a_2 + $off_b_2) {
+				$off_a = $off_a_2;
+				$off_b = $off_b_2;
+			}
+
+			for (my $off = 0; $off < $off_a; $off++) {
+				print "-$a->[$i]\n";
+				$i++;
+			}
+			for (my $off = 0; $off < $off_b; $off++) {
+				print "+$b->[$j]\n";
+				$j++;
+			}
+		}
+	}
+
+}
+
+sub find_best_offsets {
+	my ($a, $i, $b, $j) = @_;
+
+	my ($best_a, $best_b);
+
+	for (my $off_a = 0; $off_a < (defined($best_a) ? $best_a + $best_b : scalar(@$a) - $i); $off_a++) {
+		my $off_b = find_entry($a->[$i+$off_a], $b, $j, defined($best_a) ? $best_a + $best_b - $off_a : scalar(@$b) - $j);
+
+		next unless (defined($off_b));
+
+		if (!defined($best_a) || $best_a + $best_b > $off_a + $off_b) {
+			$best_a = $off_a;
+			$best_b = $off_b;
+		}
+	}
+
+	if (!defined($best_a)) {
+		return (scalar(@$a) - $i, scalar(@$b) - $j);
+	}
+	
+	return ($best_a, $best_b);
+}
+
+sub find_entry {
+	my ($entry, $array, $start, $max_offset) = @_;
+
+	for (my $offset = 0; $offset < $max_offset; $offset++) {
+		return $offset if ($array->[$start + $offset] eq $entry);
+	}
+
+	return undef;
 }
 
 1;

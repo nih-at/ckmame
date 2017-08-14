@@ -1,5 +1,5 @@
 description test single-rom game (no parent), correct partial ckmame db exists in extra, game moved to rom dir
-archive-types dir
+variants dir
 return 0
 args -jFKLivc -e extra 1-4
 ckmamedb-before extra ckmamedb-1-4-ok.dump

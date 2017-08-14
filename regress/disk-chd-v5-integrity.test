@@ -1,5 +1,5 @@
 description test chd v5 disk integrity and fail
-archive-types zip
+variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivc disk-3
 file roms/512v5.chd 512v5.chd 512v5.chd

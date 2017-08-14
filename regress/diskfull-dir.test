@@ -1,5 +1,5 @@
 description test copying file from extra, failing (disk full) and cleaning up extra
-archive-types dir
+variants dir
 return 0
 setenv FWRITE_MAX_WRITE 5
 setenv LINK_ALWAYS_FAILS 1

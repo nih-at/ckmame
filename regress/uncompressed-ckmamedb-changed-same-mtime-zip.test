@@ -1,5 +1,5 @@
 description test single-rom game (no parent), incorrect ckmame db exists, but archive has same mtime
-archive-types zip
+variants zip
 return 0
 touch 1419260288 roms/1-4.zip
 args -D ../mamedb-small.db -jFKLivc

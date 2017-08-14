@@ -1,5 +1,5 @@
 description test mkmamedb database creation from input directory (zip)
-archive-types zip
+variants zip
 return 0
 program mkmamedb
 args -o mamedb-test.db --prog-name "ckmame test db" --prog-version "1" extra

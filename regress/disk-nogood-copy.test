@@ -1,5 +1,5 @@
 description test 2 single-rom game with no good dump disks, name matching disk exists
-archive-types zip
+variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivcj -e extras disk-nogood disk-nogood2
 file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip

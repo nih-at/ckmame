@@ -1,5 +1,5 @@
 description clean up disk images from extra dirs
-archive-types zip
+variants zip
 return 0
 args -O ../mamedb-disk-many.db -v --cleanup-extra -e extra
 file roms/108-2.chd 108-2.chd 108-2.chd

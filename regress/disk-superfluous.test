@@ -1,5 +1,5 @@
 description test single-rom game with disk, disk wrong (not needed)
-archive-types zip
+variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivc disk-2
 file roms/disk-2.zip 1-4-ok.zip 1-4-ok.zip

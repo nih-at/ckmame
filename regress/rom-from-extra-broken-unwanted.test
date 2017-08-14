@@ -1,5 +1,5 @@
 description test single-rom game (no parent), extra zip contains unknown broken
-archive-types zip
+variants zip
 return 0
 args -FijKLvc -e extra 2-48
 file extra/1-4-crcerror.zip 1-4-crcerror.zip 1-4-crcerror.zip

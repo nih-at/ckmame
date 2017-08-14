@@ -1,5 +1,5 @@
 description clean up extra dirs
-archive-types zip
+variants zip
 return 0
 args -O ../mamedb-lost-parent-ok.db -v --cleanup-extra -e extra
 file roms/deadbeef.zip deadbeef.zip deadbeef.zip 

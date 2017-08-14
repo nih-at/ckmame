@@ -1,5 +1,5 @@
 description test single-rom game (no parent), zip is correct, extra file exists (dir)
-archive-types dir
+variants dir
 return 0
 args -D ../mamedb-small.db -FKLivc
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip

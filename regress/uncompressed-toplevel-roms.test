@@ -1,5 +1,5 @@
 description test single-rom game (no parent), missing file is at top-level in roms dir
-archive-types dir
+variants dir
 return 0
 args -D ../mamedb-small.db -jFKLivc
 file-new roms/1-4.zip 1-4-ok.zip

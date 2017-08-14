@@ -1,5 +1,5 @@
 description fix broken rom by replacing it with a proper copy
-archive-types zip
+variants zip
 return 0
 args -FjKLivc -e extra 1-4
 file roms/1-4.zip 1-4-crcerror.zip 1-4-ok.zip

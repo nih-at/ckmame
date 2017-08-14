@@ -1,5 +1,5 @@
 description check all (game with disk), disk wrong name
-archive-types zip
+variants zip
 return 0
 args -FKLivc -D ../mamedb-disk.db
 file roms/disk.zip 1-8-ok.zip 1-8-ok.zip
