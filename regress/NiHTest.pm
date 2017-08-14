@@ -291,7 +291,8 @@ sub runtest {
 		
 		for my $variant (@{$self->{variants}}) {
 			next if (defined($self->{test}->{variants}) && !exists($variants{$variant->{name}}));
-			
+
+			$self->{variant_hooks} = $variant->{hooks};
 			$self->{test} = dclone($self->{original_test});
 			$self->{variant} = $variant->{name};
 			$self->mangle_test_for_variant();
@@ -761,6 +762,7 @@ sub mangle_test_for_variant {
 
 	$self->{test}->{expected_stdout} = $self->strip_tags($self->{variant}, $self->{test}->{expected_stdout});
 	$self->{test}->{expected_stderr} = $self->strip_tags($self->{variant}, $self->{test}->{expected_stderr});
+	$self->run_hook('mangle_test');
 
 	return 1;
 }
@@ -1034,13 +1036,20 @@ sub run_hook {
 	my ($self, $hook) = @_;
 	
 	my $ok = 1;
+
+	my @hooks = ();
 	
+	if (defined($self->{variant_hooks}) && defined($self->{variant_hooks}->{$hook})) {
+		push @hooks, $self->{variant_hooks}->{$hook};
+	}
 	if (defined($self->{hooks}->{$hook})) {
-		for my $sub (@{$self->{hooks}->{$hook}}) {
-			unless ($sub->($self, $hook, $self->{variant})) {
-				$self->warn("hook $hook failed");
-				$ok = 0;
-			}
+		push @hooks, @{$self->{hooks}->{$hook}};
+	}
+	
+	for my $sub (@hooks) {
+		unless ($sub->($self, $hook, $self->{variant})) {
+			$self->warn("hook $hook failed");
+			$ok = 0;
 		}
 	}
 	
