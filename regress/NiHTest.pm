@@ -580,29 +580,46 @@ sub compare_file($$$) {
 	return $ok;
 }
 
+sub list_files {
+	my ($root) = @_;
+        my $ls;
+
+	my @files = ();
+	my @dirs = ($root);
+
+	while (scalar(@dirs) > 0) {
+		my $dir = shift @dirs;
+		
+		opendir($ls, $dir);
+		unless ($ls) {
+			# TODO: handle error
+		}
+		while (my $entry = readdir($ls)) {
+			my $file = "$dir/$entry";
+			if ($dir eq '.') {
+				$file = $entry;
+			}
+			
+			if (-f $file) {
+				push @files, "$file";
+			}
+			if (-d $file && $entry ne '.' && $entry ne '..') {
+				push @dirs, "$file";
+			}
+		}
+		closedir($ls);
+	}
+
+	return @files;
+}
 
 sub compare_files() {
 	my ($self) = @_;
 
 	my $ok = 1;
 
-        my $ls;
 
-        # recursive list of files
-        open $ls, "find . -type f -print |";
-        unless ($ls) {
-                # TODO: handle error
-        }
-        my @files_got = ();
-
-        while (my $line = <$ls>) {
-                chomp $line;
-                $line =~ s,^\./,,;
-                push @files_got, $line;
-        }
-        close($ls);
-
-	@files_got = sort @files_got;
+	my @files_got = sort(list_files("."));
 	my @files_should = ();
 
         for my $file (sort keys %{$self->{files}}) {
