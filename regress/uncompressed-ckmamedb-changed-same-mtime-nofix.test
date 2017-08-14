@@ -5,6 +5,6 @@ args -D ../mamedb-small.db -jKLic
 ckmamedb-before roms ckmamedb-1-4-ok.dump
 ckmamedb-after roms ckmamedb-1-4-ok.dump
 file roms/1-4.zip 1-4-wrong.zip 1-4-wrong.zip
-touch 1047614102 roms/1-4/04.rom
+touch 1047617702 roms/1-4/04.rom
 stdout In game 1-4:
 stdout game 1-4                                     : correct
