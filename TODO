@@ -1,3 +1,5 @@
+* mkmamedb: analyze speed, make it faster
+
 * mkmamedb: use/update .ckmame.db files
 
 * needed/ not always deleted when empty, find out why
