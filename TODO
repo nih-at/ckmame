@@ -1,3 +1,5 @@
+* mkmamedb: use/update .ckmame.db files
+
 * needed/ not always deleted when empty, find out why
 
 * some runs use roms from extra, but then mark them as "not used", find out why
