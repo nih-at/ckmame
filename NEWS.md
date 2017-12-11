@@ -13,7 +13,7 @@
 * MESS Software Lists support
 * retire `mkmamedb-xmame.sh`, use `mame -listxml | mkmamedb` instead
 * link/copy disks from extra if `-j` (`--delete-found`) isn't specified
-* `ckmame`: display current game on `SIGINFO` (`Ctrl-T`)
+* `ckmame`: display current game on `SIGINFO` (`CTRL-T`)
 * removed `ROMPATH` support since mame uses a path in the config file nowadays
 
 0.10 (2008-07-25)
