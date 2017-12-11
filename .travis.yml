@@ -1,0 +1,16 @@
+language: c
+compiler:
+  - clang
+  - gcc
+os:
+ - linux
+ - osx
+before_install:
+ - brew update
+ - brew uninstall libzip
+ - brew install libzip
+script:
+ - autoreconf -fiv
+ - ./configure
+ - make
+ - make check
