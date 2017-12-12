@@ -22,7 +22,8 @@ script:
  - autoreconf -fiv
  - ./configure
  - make
- - make check
+ - VERBOSE=yes make check
+ - for test in $(grep -l ' FAIL' *trs | sed 's/.trs//'); do echo $test:; cat $test.log; echo; done
 notifications:
   email:
     recipients:
