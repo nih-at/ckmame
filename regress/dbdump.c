@@ -38,6 +38,7 @@
 
 #include <sqlite3.h>
 
+#include "compat.h"
 #include "error.h"
 #include "util.h"
 
