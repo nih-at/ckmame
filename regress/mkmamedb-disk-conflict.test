@@ -1,0 +1,7 @@
+description test mkmamedb database creation with duplicate disk
+return 0
+program mkmamedb
+args -o mamedb-disk-conflict.db mamedb-disk-conflict.txt
+file mamedb-disk-conflict.txt mamedb-disk-conflict.txt mamedb-disk-conflict.txt
+file-new mamedb-disk-conflict.db mamedb-disk-conflict.dump
+stderr different disks with name '108-5' exist in games 'disk' and 'disk2', skipped
