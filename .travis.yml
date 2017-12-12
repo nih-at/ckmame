@@ -6,9 +6,14 @@ os:
  - linux
  - osx
 before_install:
- - brew update
- - brew uninstall libzip
- - brew install libzip
+ - if [ "$TRAVIS_OS_NAME" != "linux" ]; then
+     brew update;
+     brew uninstall libzip;
+     brew install libzip;
+   else
+     sudo apt-get -qq update;
+     sudo apt-get install -y libxml2-dev libzip-dev libzip4 libsqlite3-0;
+   fi
 script:
  - autoreconf -fiv
  - ./configure
