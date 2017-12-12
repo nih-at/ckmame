@@ -12,7 +12,7 @@ before_install:
      brew install libzip;
    else
      sudo apt-get -qq update;
-     sudo apt-get install -y libxml2-dev libzip-dev libzip4 libsqlite3-0;
+     sudo apt-get install -y libxml2-dev libzip-dev libsqlite3-0;
    fi
 script:
  - autoreconf -fiv
