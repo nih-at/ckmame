@@ -13,13 +13,19 @@ before_install:
    else
      sudo apt-get -qq update;
      sudo apt-get install -y libxml2-dev libsqlite3-0 wget;
-     wget http://ubuntu.mirrors.tds.net/ubuntu/pool/universe/libz/libzip/libzip4_1.1.2-1.1_amd64.deb
-     sudo dpkg -i libzip4_1.1.2-1.1_amd64.deb
-     wget http://ubuntu.mirrors.tds.net/ubuntu/pool/universe/libz/libzip/libzip-dev_1.1.2-1.1_amd64.deb
-     sudo dpkg -i libzip-dev_1.1.2-1.1_amd64.deb
+     wget http://ubuntu.mirrors.tds.net/ubuntu/pool/universe/libz/libzip/libzip4_1.1.2-1.1_amd64.deb;
+     sudo dpkg -i libzip4_1.1.2-1.1_amd64.deb;
+     wget http://ubuntu.mirrors.tds.net/ubuntu/pool/universe/libz/libzip/libzip-dev_1.1.2-1.1_amd64.deb;
+     sudo dpkg -i libzip-dev_1.1.2-1.1_amd64.deb;
    fi
 script:
  - autoreconf -fiv
  - ./configure
  - make
  - make check
+notifications:
+  email:
+    recipients:
+      - dillo@nih.at,tk@giga.or.at
+    on_success: change
+    on_failure: change
