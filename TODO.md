@@ -1,8 +1,10 @@
 # Soon
 
-* convert runtest to use ziptool instead of unzip
+* sort lists of files in diagnostics output
 
 # Later
+
+* convert runtest to use ziptool instead of unzip
 
 * `mkmamedb`: analyze speed, make it faster
 
