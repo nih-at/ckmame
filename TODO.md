@@ -1,3 +1,9 @@
+# Soon
+
+* convert runtest to use ziptool instead of unzip
+
+# Later
+
 * `mkmamedb`: analyze speed, make it faster
 
 * `mkmamedb`: use/update `.ckmame.db` files
