@@ -47,6 +47,7 @@ static int(*real_link)(const char *src, const char *dest) = NULL;
 static int(*real_rename)(const char *src, const char *dest) = NULL;
 
 static FILE *logfile;
+static const char *myname = NULL;
 
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
 {
@@ -54,10 +55,13 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
 
     if (!inited) {
 	char *foo;
+	myname = getprogname();
         logfile = fopen("/tmp/fwrite.log", "a");
+	if (!myname)
+	    myname = "(unknown)";
 	if ((foo=getenv("FWRITE_MAX_WRITE")) != NULL)
 	    max_write = strtoul(foo, NULL, 0);
-	fprintf(logfile, "fwrite: max_write set to %lu\n", max_write);
+	fprintf(logfile, "%s: max_write set to %lu\n", myname, max_write);
 	real_fwrite = dlsym(RTLD_NEXT, "fwrite");
 	if (!real_fwrite)
 	    abort();
@@ -65,7 +69,7 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
     }
  
     if (max_write > 0 && count + size*nmemb > max_write) {
-	fprintf(logfile, "fwrite: returned ENOSPC\n");
+	fprintf(logfile, "%s: returned ENOSPC\n", myname);
 	errno = ENOSPC;
 	return -1;
     }
@@ -74,7 +78,7 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
     ret = real_fwrite(ptr, size, nmemb, stream);
     count += ret * size;
 
-    fprintf(logfile, "fwrite: wrote %lu*%lu = %lu bytes, sum %lu\n", ret, size, ret * size, count);
+    fprintf(logfile, "%s: wrote %lu*%lu = %lu bytes, sum %lu\n", myname, ret, size, ret * size, count);
     return ret;
 }
 
