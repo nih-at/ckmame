@@ -39,37 +39,26 @@
 #include <dlfcn.h>
 #undef __USE_GNU
 
-static int inited = 0;
 static size_t count = 0;
 static size_t max_write = 0;
 static size_t(*real_fwrite)(const void *ptr, size_t size, size_t nmemb, FILE * stream) = NULL;
 static int(*real_link)(const char *src, const char *dest) = NULL;
 static int(*real_rename)(const char *src, const char *dest) = NULL;
 
-static FILE *logfile;
-static const char *myname = NULL;
-
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
 {
     size_t ret;
 
-    if (!inited) {
+    if (real_fwrite == NULL) {
 	char *foo;
-	myname = getprogname();
-        logfile = fopen("/tmp/fwrite.log", "a");
-	if (!myname)
-	    myname = "(unknown)";
 	if ((foo=getenv("FWRITE_MAX_WRITE")) != NULL)
 	    max_write = strtoul(foo, NULL, 0);
-	fprintf(logfile, "%s: max_write set to %lu\n", myname, max_write);
 	real_fwrite = dlsym(RTLD_NEXT, "fwrite");
 	if (!real_fwrite)
 	    abort();
-	inited = 1;
     }
  
     if (max_write > 0 && count + size*nmemb > max_write) {
-	fprintf(logfile, "%s: returned ENOSPC\n", myname);
 	errno = ENOSPC;
 	return -1;
     }
@@ -78,7 +67,6 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
     ret = real_fwrite(ptr, size, nmemb, stream);
     count += ret * size;
 
-    fprintf(logfile, "%s: wrote %lu*%lu = %lu bytes, sum %lu\n", myname, ret, size, ret * size, count);
     return ret;
 }
 
