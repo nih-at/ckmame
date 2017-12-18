@@ -38,7 +38,7 @@ before_install:
      done
    fi
 script:
- - if [ "$TRAVIS_BRANCH" != coverity_scan ]; then
+ - if [ "$TRAVIS_BRANCH" != coverity-scan ]; then
      autoreconf -fiv;
      ./configure;
      make;
