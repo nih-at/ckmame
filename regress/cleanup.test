@@ -20,6 +20,6 @@ stdout file deadclonedbeef  size       8  crc deadbeef: not used
 stdout extra/deadclonedbeef.zip: delete unused file 'deadclonedbeef'
 stdout extra/deadclonedbeef.zip: remove empty archive
 stdout In archive extra/deadfish4.zip:
-stdout file deadbeef      size       8  crc deadbeef: unknown
 stdout file 04.rom        size       4  crc d87f7e0c: duplicate
+stdout file deadbeef      size       8  crc deadbeef: unknown
 stdout extra/deadfish4.zip: delete duplicate file '04.rom'

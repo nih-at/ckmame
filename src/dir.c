@@ -1,6 +1,6 @@
 /*
   dir.h -- reading a directory
-  Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2017 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -63,14 +63,15 @@
 #include "xmalloc.h"
 
 struct dir_one {
-    DIR *dir;
+    parray_t *entries;
+    size_t index;
     char *name;
     int len;
 };
 
 typedef struct dir_one dir_one_t;
 
-static int dir_one_free(dir_one_t *);
+static void dir_one_free(dir_one_t *);
 static dir_one_t *dir_one_new(const char *);
 
 
@@ -82,8 +83,8 @@ dir_close(dir_t *dir)
 
     ret = 0;
     while ((d=parray_pop(dir->stack)) != NULL)
-	ret |= dir_one_free(d);
-    
+	dir_one_free(d);
+
     parray_free(dir->stack, (void (*)())dir_one_free);
     free(dir);
 
@@ -94,33 +95,30 @@ dir_close(dir_t *dir)
 dir_status_t
 dir_next(dir_t *dir, char *name, int len)
 {
-    struct dirent *de;
+    char *entry;
     dir_one_t *d;
     int l;
     struct stat st;
 
     d = parray_get_last(dir->stack);
+
     for (;;) {
-	if ((de=readdir(d->dir)) == NULL) {
+	if (d->index == parray_length(d->entries)) {
 	    dir_one_free(d);
 	    parray_pop(dir->stack);
 	    if ((d=parray_get_last(dir->stack)) == NULL)
 		return DIR_EOD;
 	    continue;
 	}
-	
-	l = NAMLEN(de);
 
-	if ((l == 1 && strncmp(de->d_name, ".", 1) == 0)
-	    || (l == 2 && strncmp(de->d_name, "..", 2) == 0))
-	    continue;
-	    
-	if (d->len + l + 2 > len) {
+	entry = parray_get(d->entries, d->index++);
+
+	if (d->len + strlen(entry) + 2 > len) {
 	    errno = ENAMETOOLONG;
 	    return DIR_ERROR;
 	}
 	
-	sprintf(name, "%s/%*s", d->name, l, de->d_name);
+	sprintf(name, "%s/%s", d->name, entry);
 
 	if (dir->flags & DIR_RECURSE) {
 	    if (stat(name, &st) < 0)
@@ -159,19 +157,16 @@ dir_open(const char *name, int flags)
 }
 
 
-static int
+static void
 dir_one_free(dir_one_t *d)
 {
-    int ret;
+    if (d == NULL) {
+	return;
+    }
 
-    if (d == NULL)
-	return 0;
-    
-    ret = closedir(d->dir);
+    parray_free(d->entries, free);
     free(d->name);
     free(d);
-
-    return ret;
 }
 
 
@@ -180,14 +175,45 @@ dir_one_new(const char *name)
 {
     DIR *dir;
     dir_one_t *d;
+    parray_t *entries;
+    size_t l;
+    char *entry;
+    struct dirent *de;
 
-    if ((dir=opendir(name)) == NULL)
+    if ((dir=opendir(name)) == NULL) {
 	return NULL;
+    }
+
+    entries = parray_new();
+
+    while ((de = readdir(dir)) != NULL) {
+	l = NAMLEN(de);
+
+	if ((l == 1 && strncmp(de->d_name, ".", 1) == 0)
+	    || (l == 2 && strncmp(de->d_name, "..", 2) == 0)) {
+	    continue;
+	}
+	if (asprintf(&entry, "%.*s", l, de->d_name) < 0) {
+	    parray_free(entries, free);
+	    closedir(dir);
+	    return NULL;
+	}
+	
+	parray_push(entries, entry);
+    }
+
+    if (closedir(dir) < 0) {
+	parray_free(entries, free);
+	return NULL;
+    }
+
+    parray_sort(entries, strcmp);
 
     d = xmalloc(sizeof(*d));
-    d->dir = dir;
     d->name = xstrdup(name);
     d->len = strlen(name);
+    d->entries = entries;
+    d->index = 0;
 
     return d;
 }

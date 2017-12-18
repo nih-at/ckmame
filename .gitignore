@@ -5,12 +5,15 @@
 Makefile
 Makefile.in
 *.a
+*.db
 *.la
 *.lo
 *.o
 *.gcov
 *.gcda
 *.gcno
+*.log
+*.trs
 aclocal.m4
 autom4te.cache
 build/
