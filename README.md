@@ -20,3 +20,5 @@ distribution site
 The latest version can always be found there.
 
 Mail suggestions and bug reports to <ckmame@nih.at>.
+
+![Travis Build Status](https://api.travis-ci.org/nih-at/ckmame.svg?branch=master)
