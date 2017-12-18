@@ -1,10 +1,10 @@
 /*
  dbh_cache.c -- files in dirs sqlite3 data base
  Copyright (C) 2014-2015 Dieter Baron and Thomas Klausner
- 
+
  This file is part of ckmame, a program to check rom sets for MAME.
  The authors can be contacted at <ckmame@nih.at>
- 
+
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -17,7 +17,7 @@
  3. The name of the author may not be used to endorse or promote
  products derived from this software without specific prior
  written permission.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -93,7 +93,7 @@ dbh_cache_delete(dbh_t *dbh, int id)
 
     if (dbh_cache_delete_files(dbh, id) < 0)
         return -1;
-    
+
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_DELETE_ARCHIVE)) == NULL)
 	return -1;
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
@@ -146,10 +146,13 @@ dbh_cache_get_archive_id(dbh_t *dbh, const char *name)
         free(archive_name);
         return 0;
     }
-    free(archive_name);
 
-    if (sqlite3_step(stmt) != SQLITE_ROW)
+    if (sqlite3_step(stmt) != SQLITE_ROW) {
+	free(archive_name);
 	return 0;
+    }
+
+    free(archive_name);
 
     return sqlite3_column_int(stmt, 0);
 }
@@ -399,7 +402,7 @@ static char *
 dbh_cache_archive_name(dbh_t *dbh, const char *name)
 {
     int i;
-   
+
     for (i=0; i<array_length(cache_directories); i++) {
         cache_directory_t *cd = array_get(cache_directories, i);
         if (strncmp(cd->name, name, strlen(cd->name)) == 0) {
@@ -430,21 +433,21 @@ dbh_cache_write_archive(dbh_t *dbh, int id, const char *name, time_t mtime, off_
     sqlite3_stmt *stmt;
 
     stmt = dbh_get_statement(dbh, DBH_STMT_DIR_INSERT_ARCHIVE_ID);
-    
+
     if (stmt == NULL || sq3_set_string(stmt, 1, name) != SQLITE_OK || sqlite3_bind_int64(stmt, 3, mtime) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, size) != SQLITE_OK) {
 	return -1;
     }
-    
+
     if (id > 0) {
 	if (sqlite3_bind_int(stmt, 2, id) != SQLITE_OK)
 	    return -1;
     }
-    
+
     if (sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
-    
+
     if (id <= 0)
 	id = (int)sqlite3_last_insert_rowid(dbh_db(dbh)); /* TODO: use int64_t as id */
-    
+
     return id;
 }
