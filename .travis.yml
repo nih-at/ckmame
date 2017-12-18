@@ -1,10 +1,28 @@
 language: c
+
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "Y2gkWJywGQ/p3Z2P5hzetXFq2CUX1WvwbHxBp3KUenYIwcJnue34eJL4thSbgqP040rmxT/dMC6sKwp1CykcSDS3CPeN1oI8SmwsCnCLrdoVOorv7Civb+hibV/vt5YAS7fckKKBZLNk1UnTRbX/Ls2vIn94ESsfRPPGCcgLY1sD7zL7KnSAGBla7OmZjNRYoRgSFlSf8SQCGDeBRi262FWXte4c0XNqHFzSUW1dfGayClJnju8vUz2dyvqR7JchyWaPINT/eE7Opfq4EjPiINwqdesF27B/uX5D2nofbjZjgmFrgvSZQuKOoTzeA5JCwB+VoGngd8NLeCh6sx5CDgzIraNjyqWbuWxIqkVTDCDTCbEVSN0mUMecUHlBipOVF+DIIhJ26ALVwbs3NtHGZY7EN2daoMJgFRhqsjRSYCO4NA4OjwB/frgRs5pLZLmbr2lCRtZf6mqYRaQTQycL+vtaqZea4xZUlhQd9CyiST9eMj1JC+li3f+2YegJX0/vxXlf7fbtXtdr4IPuIKG8BU1Qpx9bqJKddxsKvScX+jlH+2SUdlvDTDC2YnX6paqt4RBu6qwkHrRqgFdTYGhfvTeRIs+WNnHE9n4COniKDvrxfND+cXpIbmwZWencuuCnNJ5EiIiGmOTv0jYT7+xChfA2OVIxuBhRDSd/NGnICdo="
+
 compiler:
   - clang
   - gcc
 os:
  - linux
  - osx
+
+addons:
+  coverity_scan:
+    project:
+      name: "nih-at/ckmame"
+      description: "Check ROM sets and dat files for MAME and other emulators"
+    notification_email: dillo@nih.at,tk@giga.or.at
+    build_command_prepend: "autoreconf -fiv; ./configure"
+    build_command:   "make"
+    branch_pattern: coverity_scan
+
 before_install:
  - if [ "$TRAVIS_OS_NAME" != "linux" ]; then
      brew update;
@@ -20,10 +38,12 @@ before_install:
      done
    fi
 script:
- - autoreconf -fiv
- - ./configure
- - make
- - VERBOSE=yes make check
+ - if [ "$TRAVIS_BRANCH" != coverity-scan ]; then
+     autoreconf -fiv;
+     ./configure;
+     make;
+     VERBOSE=yes make check;
+   fi
 notifications:
   email:
     recipients:
