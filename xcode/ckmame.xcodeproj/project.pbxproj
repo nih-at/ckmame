@@ -26,18 +26,12 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		4B41077318CC8F25002C3052 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEA817359A3700B67C24 /* libz.dylib */; };
-		4B41077418CC8F25002C3052 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B41077518CC8F25002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
-		4B41078218CC8F66002C3052 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEA817359A3700B67C24 /* libz.dylib */; };
-		4B41078318CC8F66002C3052 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
 		4B41078518CC8F66002C3052 /* libzip.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */; };
 		4B41078E18CC8FEE002C3052 /* dbdump.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B41078D18CC8FEE002C3052 /* dbdump.c */; };
 		4B41079118CC9017002C3052 /* dbrestore.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B41079018CC9017002C3052 /* dbrestore.c */; };
 		4B513F4C175B52B70096EF42 /* dbh_statements.in in Sources */ = {isa = PBXBuildFile; fileRef = 4B513F49175B52700096EF42 /* dbh_statements.in */; };
-		4B513F4E175BC6820096EF42 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B513F4D175BC6820096EF42 /* libxml2.dylib */; };
-		4B513F4F175BC68F0096EF42 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B513F4D175BC6820096EF42 /* libxml2.dylib */; };
 		4B5F43AC1889CEE7000C3B7C /* globals.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F43AB1889CE83000C3B7C /* globals.c */; };
 		4B5F43AE1889D005000C3B7C /* file_util.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F43AD1889CFFB000C3B7C /* file_util.c */; };
 		4B5F43B91889D059000C3B7C /* romdb_read_dat.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F43AF1889D059000C3B7C /* romdb_read_dat.c */; };
@@ -154,18 +148,10 @@
 		4B5FAE9E173599C100B67C24 /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE9A1735998E00B67C24 /* sha1.c */; };
 		4B5FAEA617359A1B00B67C24 /* bswap16.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE9F173599E300B67C24 /* bswap16.c */; };
 		4B5FAEA717359A1B00B67C24 /* bswap32.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAEA0173599E300B67C24 /* bswap32.c */; };
-		4B5FAEA917359A3700B67C24 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEA817359A3700B67C24 /* libz.dylib */; };
-		4B5FAEAA17359A4200B67C24 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEA817359A3700B67C24 /* libz.dylib */; };
-		4B5FAEAB17359A4A00B67C24 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEA817359A3700B67C24 /* libz.dylib */; };
-		4B5FAEAC17359A5100B67C24 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEA817359A3700B67C24 /* libz.dylib */; };
 		4B5FAEAE17359A6300B67C24 /* libzip.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */; };
 		4B5FAEAF17359A8F00B67C24 /* libzip.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */; };
 		4B5FAEB017359A9400B67C24 /* libzip.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */; };
 		4B5FAEB117359A9800B67C24 /* libzip.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */; };
-		4B5FAEB317359AAA00B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
-		4B5FAEB417359AAE00B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
-		4B5FAEB517359AB100B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
-		4B5FAEB617359AB400B67C24 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */; };
 		4B9232FD1780A77700096AA2 /* archive_dir.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B7F50691776479C00B4273C /* archive_dir.c */; };
 		4B9233001780B30400096AA2 /* dbh_cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B9232FE1780B2BA00096AA2 /* dbh_cache.c */; };
 		4B9292CA17635B5500806C0A /* archive_zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* archive_zip.c */; };
@@ -333,12 +319,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4B07BFB71FE810930068A600 /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = TODO.md; path = ../TODO.md; sourceTree = "<group>"; };
+		4B07BFB81FE811C40068A600 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		4B07BFB91FE811C40068A600 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		4B07BFBA1FE811C40068A600 /* NEWS.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = NEWS.md; path = ../NEWS.md; sourceTree = "<group>"; };
+		4B07BFBB1FE811C40068A600 /* README-snapshot.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = "README-snapshot.md"; path = "../README-snapshot.md"; sourceTree = "<group>"; };
+		4B07BFBC1FE811C40068A600 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AUTHORS; path = ../AUTHORS; sourceTree = "<group>"; };
 		4B41077B18CC8F25002C3052 /* dbdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078D18CC8FEE002C3052 /* dbdump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbdump.c; sourceTree = "<group>"; };
 		4B41079018CC9017002C3052 /* dbrestore.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbrestore.c; sourceTree = "<group>"; };
 		4B513F49175B52700096EF42 /* dbh_statements.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dbh_statements.in; sourceTree = "<group>"; };
-		4B513F4D175BC6820096EF42 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		4B513F51175BCC440096EF42 /* dbh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dbh.h; sourceTree = "<group>"; };
 		4B5F43AA1889CE83000C3B7C /* array_set.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = array_set.c; sourceTree = "<group>"; };
 		4B5F43AB1889CE83000C3B7C /* globals.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = globals.c; sourceTree = "<group>"; };
@@ -483,12 +474,9 @@
 		4B5FAE9A1735998E00B67C24 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
 		4B5FAE9F173599E300B67C24 /* bswap16.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bswap16.c; sourceTree = "<group>"; };
 		4B5FAEA0173599E300B67C24 /* bswap32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bswap32.c; sourceTree = "<group>"; };
-		4B5FAEA817359A3700B67C24 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzip.2.dylib; path = ../../../../nih/lib/libzip.2.dylib; sourceTree = "<group>"; };
-		4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		4B7F50691776479C00B4273C /* archive_dir.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = archive_dir.c; sourceTree = "<group>"; };
 		4B7F506B1776523900B4273C /* THANKS */ = {isa = PBXFileReference; lastKnownFileType = text; name = THANKS; path = ../THANKS; sourceTree = "<group>"; };
-		4B7F506C1776523900B4273C /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; name = TODO; path = ../TODO; sourceTree = "<group>"; };
 		4B86CED01B134251003EF102 /* ckmame.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = ckmame.mdoc; sourceTree = "<group>"; };
 		4B86CED11B134251003EF102 /* detective.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = detective.mdoc; sourceTree = "<group>"; };
 		4B86CED21B134251003EF102 /* dumpgame.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = dumpgame.mdoc; sourceTree = "<group>"; };
@@ -522,8 +510,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B41077318CC8F25002C3052 /* libz.dylib in Frameworks */,
-				4B41077418CC8F25002C3052 /* libsqlite3.dylib in Frameworks */,
 				4B41077518CC8F25002C3052 /* liblibckmame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -532,8 +518,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B41078218CC8F66002C3052 /* libz.dylib in Frameworks */,
-				4B41078318CC8F66002C3052 /* libsqlite3.dylib in Frameworks */,
 				4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */,
 				4B41078518CC8F66002C3052 /* libzip.2.dylib in Frameworks */,
 			);
@@ -544,8 +528,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B5FAEAE17359A6300B67C24 /* libzip.2.dylib in Frameworks */,
-				4B5FAEA917359A3700B67C24 /* libz.dylib in Frameworks */,
-				4B5FAEB617359AB400B67C24 /* libsqlite3.dylib in Frameworks */,
 				4B5FAE261735932200B67C24 /* liblibckmame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -561,10 +543,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B513F4E175BC6820096EF42 /* libxml2.dylib in Frameworks */,
-				4B5FAEAA17359A4200B67C24 /* libz.dylib in Frameworks */,
 				4B5FAE341735936100B67C24 /* liblibckmame.a in Frameworks */,
-				4B5FAEB517359AB100B67C24 /* libsqlite3.dylib in Frameworks */,
 				4B5FAEAF17359A8F00B67C24 /* libzip.2.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -573,8 +552,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B5FAEAB17359A4A00B67C24 /* libz.dylib in Frameworks */,
-				4B5FAEB417359AAE00B67C24 /* libsqlite3.dylib in Frameworks */,
 				4B5FAE3C1735937100B67C24 /* liblibckmame.a in Frameworks */,
 				4B5FAEB017359A9400B67C24 /* libzip.2.dylib in Frameworks */,
 			);
@@ -584,9 +561,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B513F4F175BC68F0096EF42 /* libxml2.dylib in Frameworks */,
-				4B5FAEB317359AAA00B67C24 /* libsqlite3.dylib in Frameworks */,
-				4B5FAEAC17359A5100B67C24 /* libz.dylib in Frameworks */,
 				4B5FAE4B1735939000B67C24 /* liblibckmame.a in Frameworks */,
 				4B5FAEB117359A9800B67C24 /* libzip.2.dylib in Frameworks */,
 			);
@@ -618,11 +592,13 @@
 			children = (
 				4B86CECF1B134233003EF102 /* man */,
 				4B7F506B1776523900B4273C /* THANKS */,
-				4B7F506C1776523900B4273C /* TODO */,
-				4B513F4D175BC6820096EF42 /* libxml2.dylib */,
-				4B5FAEB217359AAA00B67C24 /* libsqlite3.dylib */,
+				4B07BFB71FE810930068A600 /* TODO.md */,
+				4B07BFBC1FE811C40068A600 /* AUTHORS */,
+				4B07BFB91FE811C40068A600 /* LICENSE */,
+				4B07BFBA1FE811C40068A600 /* NEWS.md */,
+				4B07BFBB1FE811C40068A600 /* README-snapshot.md */,
+				4B07BFB81FE811C40068A600 /* README.md */,
 				4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */,
-				4B5FAEA817359A3700B67C24 /* libz.dylib */,
 				4B5FAC6217358FF000B67C24 /* ckmame */,
 				4BD1BAA41A404BA800A70734 /* regress */,
 				4B5FAC6117358FF000B67C24 /* Products */,
