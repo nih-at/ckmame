@@ -24,7 +24,6 @@ addons:
     branch_pattern: coverity_scan
 
 before_install:
- - test "$TRAVIS_BRANCH" != coverity_scan -o ${TRAVIS_JOB_NUMBER##*.} = 1 || exit 0
  - if [ "$TRAVIS_OS_NAME" != "linux" ]; then
      brew update;
      brew uninstall libzip;
@@ -39,11 +38,12 @@ before_install:
      done
    fi
 script:
- - test "$TRAVIS_BRANCH" != coverity_scan || exit 0
- - autoreconf -fiv
- - ./configure
- - make
- - VERBOSE=yes make check
+ - if [ "$TRAVIS_BRANCH" != coverity_scan ]; then
+     autoreconf -fiv;
+     ./configure;
+     make;
+     VERBOSE=yes make check;
+   fi
 notifications:
   email:
     recipients:
