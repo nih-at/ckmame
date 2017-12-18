@@ -1,7 +1,5 @@
 # Soon
 
-* sort lists of files in diagnostics output
-
 # Later
 
 * convert runtest to use ziptool instead of unzip
