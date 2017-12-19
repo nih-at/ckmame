@@ -1,3 +1,10 @@
+0.xx (201x-xx-xx)
+=================
+
+* add --autofixdat to create fixdat with a name based on the dat name
+* improve MAME (neogeo set) support
+* fix up regression test suite
+
 0.12 (2015-05-03)
 =================
 
