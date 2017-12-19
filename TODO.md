@@ -1,5 +1,7 @@
 # Soon
 
+- fix coverity issues
+
 # Later
 
 * convert runtest to use ziptool instead of unzip
