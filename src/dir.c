@@ -34,6 +34,7 @@
 
 #include <sys/stat.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,7 +67,7 @@ struct dir_one {
     parray_t *entries;
     size_t index;
     char *name;
-    int len;
+    size_t len;
 };
 
 typedef struct dir_one dir_one_t;
@@ -85,7 +86,7 @@ dir_close(dir_t *dir)
     while ((d=parray_pop(dir->stack)) != NULL)
 	dir_one_free(d);
 
-    parray_free(dir->stack, (void (*)())dir_one_free);
+    parray_free(dir->stack, (void (*)(void *))dir_one_free);
     free(dir);
 
     return ret;
@@ -97,7 +98,6 @@ dir_next(dir_t *dir, char *name, int len)
 {
     char *entry;
     dir_one_t *d;
-    int l;
     struct stat st;
 
     d = parray_get_last(dir->stack);
@@ -193,7 +193,12 @@ dir_one_new(const char *name)
 	    || (l == 2 && strncmp(de->d_name, "..", 2) == 0)) {
 	    continue;
 	}
-	if (asprintf(&entry, "%.*s", l, de->d_name) < 0) {
+        if (l > INT_MAX) {
+            closedir(dir);
+            errno = ENAMETOOLONG;
+            return NULL;
+        }
+	if (asprintf(&entry, "%.*s", (int)l, de->d_name) < 0) {
 	    parray_free(entries, free);
 	    closedir(dir);
 	    return NULL;
