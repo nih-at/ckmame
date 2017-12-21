@@ -39,6 +39,7 @@
 #include "compat.h"
 #include "dat.h"
 #include "error.h"
+#include "globals.h"
 #include "file_location.h"
 #include "hashes.h"
 #include "sq_util.h"
@@ -98,8 +99,6 @@ static char *where_name[] = {
 static char *status_name[] = {
     "ok", "baddump", "nogooddump"
 };
-
-romdb_t *db;
 
 #define QUERY_CLONES	\
     "select g.name from game g, parent p where g.game_id = p.game_id" \
