@@ -196,6 +196,7 @@ dir_one_new(const char *name)
         if (l > INT_MAX) {
             closedir(dir);
             errno = ENAMETOOLONG;
+            parray_free(entries, free);
             return NULL;
         }
 	if (asprintf(&entry, "%.*s", (int)l, de->d_name) < 0) {
