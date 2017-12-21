@@ -335,14 +335,14 @@ restore_table(dbh_t *dbh, FILE *f) {
                     {
                         size_t length = strlen(value);
 
-                        if (value[0] != '<' || value[strlen(value)-1] != '>' || (length & 1 /* length is odd */)) {
+                        if (value[0] != '<' || value[length-1] != '>' || (length & 1 /* length is odd */)) {
                             myerror(ERRFILE, "invalid binary value: %s", value);
                             ret = SQLITE_ERROR;
                             break;
                         }
+                        value[length-1] = '\0';
                         value++;
-                        value[strlen(value)-1] = '\0';
-                        unsigned int len = (unsigned int)length/2;
+                        unsigned int len = (unsigned int)(length / 2 - 1);
                         unsigned char *bin = xmalloc(len);
                         if (hex2bin(bin, value, len) < 0) {
                             free(bin);
