@@ -333,16 +333,19 @@ restore_table(dbh_t *dbh, FILE *f) {
                         
                     case SQLITE_BLOB:
                     {
-                        if (value[0] != '<' || value[strlen(value)-1] != '>') {
+                        size_t length = strlen(value);
+
+                        if (value[0] != '<' || value[strlen(value)-1] != '>' || (length & 1 /* length is odd */)) {
                             myerror(ERRFILE, "invalid binary value: %s", value);
                             ret = SQLITE_ERROR;
                             break;
                         }
                         value++;
                         value[strlen(value)-1] = '\0';
-                        unsigned int len = (unsigned int)strlen(value)/2;
+                        unsigned int len = (unsigned int)length/2;
                         unsigned char *bin = xmalloc(len);
                         if (hex2bin(bin, value, len) < 0) {
+                            free(bin);
                             myerror(ERRFILE, "invalid binary value: %s", value);
                             ret = SQLITE_ERROR;
                             break;
