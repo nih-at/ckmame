@@ -26,6 +26,18 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		4B07BFBF1FEC1B190068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
+		4B07BFC01FEC1B370068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
+		4B07BFC21FEC1B5C0068A600 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
+		4B07BFC31FEC1B600068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
+		4B07BFC51FEC1B700068A600 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC41FEC1B700068A600 /* libxml2.tbd */; };
+		4B07BFC61FEC1B880068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
+		4B07BFC71FEC1B930068A600 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC41FEC1B700068A600 /* libxml2.tbd */; };
+		4B07BFC81FEC1B980068A600 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
+		4B07BFC91FEC1BB60068A600 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
+		4B07BFCA1FEC1BBB0068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
+		4B07BFCB1FEC1BD00068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
+		4B07BFCD1FEC1C2D0068A600 /* romdb_read_file_by_name.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.c */; };
 		4B41077518CC8F25002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
 		4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
 		4B41078518CC8F66002C3052 /* libzip.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAEAD17359A6300B67C24 /* libzip.2.dylib */; };
@@ -325,6 +337,10 @@
 		4B07BFBA1FE811C40068A600 /* NEWS.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = NEWS.md; path = ../NEWS.md; sourceTree = "<group>"; };
 		4B07BFBB1FE811C40068A600 /* README-snapshot.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = "README-snapshot.md"; path = "../README-snapshot.md"; sourceTree = "<group>"; };
 		4B07BFBC1FE811C40068A600 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AUTHORS; path = ../AUTHORS; sourceTree = "<group>"; };
+		4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		4B07BFC11FEC1B5B0068A600 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		4B07BFC41FEC1B700068A600 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
+		4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = romdb_read_file_by_name.c; sourceTree = "<group>"; };
 		4B41077B18CC8F25002C3052 /* dbdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078D18CC8FEE002C3052 /* dbdump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbdump.c; sourceTree = "<group>"; };
@@ -510,6 +526,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B07BFBF1FEC1B190068A600 /* libsqlite3.tbd in Frameworks */,
 				4B41077518CC8F25002C3052 /* liblibckmame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -518,6 +535,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B07BFC01FEC1B370068A600 /* libsqlite3.tbd in Frameworks */,
 				4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */,
 				4B41078518CC8F66002C3052 /* libzip.2.dylib in Frameworks */,
 			);
@@ -527,6 +545,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B07BFCA1FEC1BBB0068A600 /* libsqlite3.tbd in Frameworks */,
+				4B07BFC91FEC1BB60068A600 /* libz.tbd in Frameworks */,
 				4B5FAEAE17359A6300B67C24 /* libzip.2.dylib in Frameworks */,
 				4B5FAE261735932200B67C24 /* liblibckmame.a in Frameworks */,
 			);
@@ -543,6 +563,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B07BFC51FEC1B700068A600 /* libxml2.tbd in Frameworks */,
+				4B07BFC31FEC1B600068A600 /* libsqlite3.tbd in Frameworks */,
+				4B07BFC21FEC1B5C0068A600 /* libz.tbd in Frameworks */,
 				4B5FAE341735936100B67C24 /* liblibckmame.a in Frameworks */,
 				4B5FAEAF17359A8F00B67C24 /* libzip.2.dylib in Frameworks */,
 			);
@@ -552,6 +575,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B07BFCB1FEC1BD00068A600 /* libsqlite3.tbd in Frameworks */,
 				4B5FAE3C1735937100B67C24 /* liblibckmame.a in Frameworks */,
 				4B5FAEB017359A9400B67C24 /* libzip.2.dylib in Frameworks */,
 			);
@@ -561,6 +585,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B07BFC81FEC1B980068A600 /* libz.tbd in Frameworks */,
+				4B07BFC71FEC1B930068A600 /* libxml2.tbd in Frameworks */,
+				4B07BFC61FEC1B880068A600 /* libsqlite3.tbd in Frameworks */,
 				4B5FAE4B1735939000B67C24 /* liblibckmame.a in Frameworks */,
 				4B5FAEB117359A9800B67C24 /* libzip.2.dylib in Frameworks */,
 			);
@@ -569,6 +596,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4B07BFBD1FEC1B190068A600 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4B07BFC41FEC1B700068A600 /* libxml2.tbd */,
+				4B07BFC11FEC1B5B0068A600 /* libz.tbd */,
+				4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4B41078B18CC8F8A002C3052 /* dbdump */ = {
 			isa = PBXGroup;
 			children = (
@@ -602,6 +639,7 @@
 				4B5FAC6217358FF000B67C24 /* ckmame */,
 				4BD1BAA41A404BA800A70734 /* regress */,
 				4B5FAC6117358FF000B67C24 /* Products */,
+				4B07BFBD1FEC1B190068A600 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 			tabWidth = 8;
@@ -647,6 +685,7 @@
 				4B9292C917635B5500806C0A /* archive_zip.c */,
 				4B5FAC8A1735914600B67C24 /* array.c */,
 				4B5FAC8B1735914600B67C24 /* array.h */,
+				4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.c */,
 				4B5FAC821735914600B67C24 /* array_delete.c */,
 				4B5FAC831735914600B67C24 /* array_grow.c */,
 				4B5FAC841735914600B67C24 /* array_insert.c */,
@@ -1115,6 +1154,7 @@
 				4B5FADDC1735930100B67C24 /* diagnostics.c in Sources */,
 				4B5FADDD1735930100B67C24 /* dir.c in Sources */,
 				4B5FADDE1735930100B67C24 /* disk.c in Sources */,
+				4B07BFCD1FEC1C2D0068A600 /* romdb_read_file_by_name.c in Sources */,
 				4B5FADE01735930100B67C24 /* disk_new.c in Sources */,
 				4B5FADE11735930100B67C24 /* error.c in Sources */,
 				4B5FADE31735930100B67C24 /* export_db.c in Sources */,
@@ -1277,6 +1317,7 @@
 					"\"$(SRCROOT)/../../../../nih/lib\"",
 				);
 				PRODUCT_NAME = dbdump;
+				USER_HEADER_SEARCH_PATHS = "../src ../xcode";
 			};
 			name = Debug;
 		};
@@ -1288,6 +1329,7 @@
 					"\"$(SRCROOT)/../../../../nih/lib\"",
 				);
 				PRODUCT_NAME = dbdump;
+				USER_HEADER_SEARCH_PATHS = "../src ../xcode";
 			};
 			name = Release;
 		};
@@ -1332,7 +1374,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -1385,7 +1427,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
