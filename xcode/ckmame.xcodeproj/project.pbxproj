@@ -341,6 +341,7 @@
 		4B07BFC11FEC1B5B0068A600 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4B07BFC41FEC1B700068A600 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = romdb_read_file_by_name.c; sourceTree = "<group>"; };
+		4B07BFCE1FECE8230068A600 /* configure.ac */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = configure.ac; sourceTree = "<group>"; };
 		4B41077B18CC8F25002C3052 /* dbdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078D18CC8FEE002C3052 /* dbdump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbdump.c; sourceTree = "<group>"; };
@@ -606,6 +607,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4B07BFCF1FECE8290068A600 /* build */ = {
+			isa = PBXGroup;
+			children = (
+				4B07BFCE1FECE8230068A600 /* configure.ac */,
+			);
+			name = build;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		4B41078B18CC8F8A002C3052 /* dbdump */ = {
 			isa = PBXGroup;
 			children = (
@@ -627,6 +637,7 @@
 		4B5FAC5717358FF000B67C24 = {
 			isa = PBXGroup;
 			children = (
+				4B07BFCF1FECE8290068A600 /* build */,
 				4B86CECF1B134233003EF102 /* man */,
 				4B7F506B1776523900B4273C /* THANKS */,
 				4B07BFB71FE810930068A600 /* TODO.md */,
