@@ -232,7 +232,7 @@ ps_read(parser_source_t *ps, void *buf, size_t n)
 	done = (ps->len<n ? ps->len : n);
 	memcpy(buf, ps->cur, done);
 	_buffer_consume(ps, n);
-	buf += done;
+	buf = (char*)buf + done;
 	n -= done;
     }
     else
