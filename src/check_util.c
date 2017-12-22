@@ -321,7 +321,7 @@ enter_disk_in_map(const disk_t *d, where_t where)
     if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int(stmt, 1, disk_id(d)) != SQLITE_OK
+    if (sqlite3_bind_int64(stmt, 1, disk_id(d)) != SQLITE_OK
         || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK
         || sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK
         || sqlite3_bind_int(stmt, 4, FILE_SH_FULL) != SQLITE_OK

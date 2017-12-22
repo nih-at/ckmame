@@ -99,9 +99,9 @@ mydirname(const char *fname)
 
 
 char *
-bin2hex(char *b, const unsigned char *s, unsigned int len)
+bin2hex(char *b, const unsigned char *s, size_t len)
 {
-    unsigned int i;
+    size_t i;
 
     for (i=0; i<len; i++)
 	sprintf(b+2*i, "%02x", (unsigned char)s[i]);
@@ -116,7 +116,7 @@ bin2hex(char *b, const unsigned char *s, unsigned int len)
 			 : (c)-'a'+10)
 
 int
-hex2bin(unsigned char *t, const char *s, int unsigned tlen)
+hex2bin(unsigned char *t, const char *s, size_t tlen)
 {
     unsigned int i;
     

@@ -44,7 +44,7 @@
 
 
 struct archive {
-    int id;
+    uint64_t id;
     int refcount;
     char *name;
     filetype_t filetype;
@@ -124,7 +124,7 @@ int archive_file_match_detector(archive_t *, int);
 int archive_file_move(archive_t *, int, archive_t *, const char *);
 int archive_file_rename(archive_t *, int, const char *);
 int archive_file_rename_to_unique(archive_t *, int);
-off_t archive_file_find_offset(archive_t *, int, int, const hashes_t *);
+off_t archive_file_find_offset(archive_t *, int, off_t, const hashes_t *);
 int archive_file_index_by_hashes(const archive_t *, const hashes_t *);
 int archive_file_index_by_name(const archive_t *, const char *);
 int archive_free(archive_t *);

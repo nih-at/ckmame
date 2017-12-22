@@ -48,7 +48,7 @@ struct rs {
 #define GAME_RS_MAX	2
 
 struct game {
-    int id;
+    uint64_t id;
     char *name;
     char *description;
     int dat_no;

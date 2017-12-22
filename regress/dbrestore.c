@@ -335,7 +335,7 @@ restore_table(dbh_t *dbh, FILE *f) {
                     {
                         size_t length = strlen(value);
 
-                        if (value[0] != '<' || value[length-1] != '>' || (length & 1 /* length is odd */)) {
+                        if (value[0] != '<' || value[length-1] != '>' || length % 2) {
                             myerror(ERRFILE, "invalid binary value: %s", value);
                             ret = SQLITE_ERROR;
                             break;

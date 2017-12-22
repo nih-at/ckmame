@@ -327,7 +327,7 @@ execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx)
 		}
 	}
 	else {
-	    int cmp;
+	    int64_t cmp;
 	    
 	    cmp = detector_test_size(dt) - file_size(r);
 

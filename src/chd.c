@@ -150,13 +150,14 @@ chd_open(const char *name, int *errp)
 }
 
 
-int
-chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
+int64_t
+chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b)
 {
-    int i, n, err;
+    uint64_t n;
+    int i, err;
     uint32_t compression_type;
 
-    if (idx < 0 || (unsigned int)idx > chd->total_hunks) {
+    if (idx > chd->total_hunks) {
 	chd->error = CHD_ERR_INVAL;
 	return -1;
     }
@@ -200,13 +201,13 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 	    chd->error = CHD_ERR_SEEK;
 	    return -1;
 	}
-	if ((n=fread(chd->buf, 1, chd->map[idx].length, chd->f)) < 0) {
+	if ((n=fread(chd->buf, 1, chd->map[idx].length, chd->f)) != chd->map[idx].length) {
 	    chd->error = CHD_ERR_READ;
 	    return -1;
 	}
 
 	chd->z.next_in = (Bytef *)chd->buf;
-	chd->z.avail_in = n;
+	chd->z.avail_in = (int)n;
 	chd->z.next_out = (Bytef *)b;
 	chd->z.avail_out = chd->hunk_len;
 	/* TODO: should use Z_FINISH, but that returns Z_BUF_ERROR */
@@ -224,7 +225,7 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
 	    return -1;
 	}
 	/* TODO: use chd->hunk_len instead? */
-	if ((n=fread(b, 1, chd->map[idx].length, chd->f)) < 0) {
+	if ((n=fread(b, 1, chd->map[idx].length, chd->f)) != chd->map[idx].length) {
 	    chd->error = CHD_ERR_READ;
 	    return -1;
 	}
@@ -258,7 +259,8 @@ chd_read_hunk(struct chd *chd, int idx, unsigned char *b)
     }
     
     if ((chd->map[idx].flags & CHD_MAP_FL_NOCRC) == 0) {
-	if (crc32(0, (Bytef *)b, n) != chd->map[idx].crc) {
+        /* TODO: Can n be > INT_MAX? If so, loop */
+	if (crc32(0, (Bytef *)b, (int)n) != chd->map[idx].crc) {
 	    chd->error = CHD_ERR_CRC;
 	    return -1;
 	}
@@ -295,11 +297,11 @@ chd_read_metadata(struct chd* chd, const struct chd_metadata_entry *e,
 }
 
 
-int
-chd_read_range(struct chd *chd, unsigned char *b, int off, int len)
+int64_t
+chd_read_range(struct chd *chd, unsigned char *b, uint64_t off, uint64_t len)
 {
-    int i, s, n;
-    unsigned int copied, o2, l2;
+    uint64_t i, s, n;
+    uint64_t copied, o2, l2;
 
     /* TODO: error handling */
 
@@ -333,7 +335,7 @@ chd_read_range(struct chd *chd, unsigned char *b, int off, int len)
 	    if (s+i != chd->hno) {
 		if (chd_read_hunk(chd, s+i, chd->hbuf) < 0)
 		    return  -1;
-		chd->hno = s+i;
+		chd->hno = (uint32_t)(s+i); /* can't overflow since chd_read_hunk() succeeded */
 	    }
 	    memcpy(b+copied, chd->hbuf+o2, l2);
 	    copied += l2;

@@ -195,7 +195,7 @@ xml_close(void *ctx)
 static int
 xml_read(void *ctx, char *b, int len)
 {
-    return ps_read(ctx, b, len);
+    return (int)ps_read(ctx, b, len);
 }
 
 #endif /* HAVE_LIBXML2 */

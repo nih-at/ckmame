@@ -168,7 +168,7 @@ parse_enum(int *ep, const char *value,
 static int
 parse_hex(detector_test_t *dt, uint8_t **vp, const char *value)
 {
-    uint64_t len;
+    size_t len;
     uint8_t *v;
 
     len = strlen(value);

@@ -136,7 +136,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes)
 
 
 off_t
-archive_file_find_offset(archive_t *a, int idx, int size, const hashes_t *h)
+archive_file_find_offset(archive_t *a, int idx, off_t size, const hashes_t *h)
 {
     void *f;
     hashes_t hn;
@@ -332,7 +332,8 @@ archive_t *
 archive_new(const char *name, filetype_t ft, where_t where, int flags)
 {
     archive_t *a;
-    int i, id;
+    int i;
+    int64_t id;
 
     if ((a=memdb_get_ptr(name, ft)) != 0) {
 	/* TODO: check for compatibility of a->flags and flags */

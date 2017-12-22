@@ -44,7 +44,6 @@
 
 
 static void _add_file(archive_t *, int, const char *, const file_t *);
-static int _file_cmp_name(const file_t *, const file_t *);
 
 
 int
@@ -362,9 +361,3 @@ _add_file(archive_t *a, int idx, const char *name, const file_t *f)
     a->flags |= ARCHIVE_IFL_MODIFIED;
 }
 
-
-static int
-_file_cmp_name(const file_t *a, const file_t *b)
-{
-    return strcasecmp(file_name(a), file_name(b));
-}

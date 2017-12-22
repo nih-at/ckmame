@@ -92,7 +92,7 @@ read_disks(romdb_t *db, game_t *g)
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
+    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK)
 	return -1;
 
@@ -118,7 +118,7 @@ read_rs(romdb_t *db, game_t *g, filetype_t ft)
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_PARENT)) == NULL)
 	return -1;
-    if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
+    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
 	return -1;
 
@@ -145,7 +145,7 @@ read_rs(romdb_t *db, game_t *g, filetype_t ft)
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int(stmt, 1, game_id(g)) != SQLITE_OK
+    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK
 	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
 	return -1;
 

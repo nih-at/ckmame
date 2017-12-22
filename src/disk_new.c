@@ -59,7 +59,8 @@ disk_new(const char *name, int flags)
     disk_t *d;
     struct chd *chd;
     hashes_t *h;
-    int err, id;
+    int err;
+    int64_t id;
 
     if (name == NULL)
 	return NULL;

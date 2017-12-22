@@ -31,7 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #include <stddef.h>
 
 #include "sq_util.h"
@@ -104,7 +103,7 @@ sq3_set_blob(sqlite3_stmt *stmt, int col, const void *p, size_t s)
 {
     if (s == 0 || p == NULL)
 	return sqlite3_bind_null(stmt, col);
-    return sqlite3_bind_blob(stmt, col, p, s, SQLITE_STATIC);
+    return sqlite3_bind_blob64(stmt, col, p, s, SQLITE_STATIC);
 }
 
 

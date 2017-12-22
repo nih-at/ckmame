@@ -42,8 +42,8 @@
 
 typedef int (*cmpfunc)(const void *, const void *);
 
-char *bin2hex(char *, const unsigned char *, unsigned int);
-int hex2bin(unsigned char *, const char *, unsigned int);
+char *bin2hex(char *, const unsigned char *, size_t);
+int hex2bin(unsigned char *, const char *, size_t);
 int is_writable_directory(const char *);
 const char *mybasename(const char *);
 char *mydirname(const char *);

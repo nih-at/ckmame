@@ -39,7 +39,7 @@
 #include "types.h"
 
 struct disk {
-    int id;
+    uint64_t id;
     int refcount;
     char *name;
     char *merge;

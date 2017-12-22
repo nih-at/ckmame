@@ -43,7 +43,7 @@ typedef struct parser_source parser_source_t;
 
 typedef int (*parser_source_close)(void *);
 typedef parser_source_t *(*parser_source_open)(void *, const char *);
-typedef int (*parser_source_read)(void *, void *, int); 
+typedef ssize_t (*parser_source_read)(void *, void *, size_t);
 
 int ps_close(parser_source_t *);
 char *ps_getline(parser_source_t *);
@@ -54,6 +54,6 @@ parser_source_t *ps_new_stdin(void);
 parser_source_t *ps_new_zip(const char *, struct zip *, const char *);
 parser_source_t *ps_open(parser_source_t *, const char *);
 int ps_peek(parser_source_t *);
-int ps_read(parser_source_t *, void *, int);
+ssize_t ps_read(parser_source_t *, void *, size_t);
 
 #endif /* parser_source.h */

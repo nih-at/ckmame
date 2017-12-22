@@ -54,7 +54,6 @@ static array_t *cache_directories = NULL;
 static char *dbh_cache_archive_name(dbh_t *dbh, const char *name);
 static int dbh_cache_delete_files(dbh_t *, int);
 static int dbh_cache_write_archive(dbh_t *, int, const char *, time_t, off_t);
-static int dbh_cache_write_file_with_stmt(int id, int idx, const file_t *f, sqlite3_stmt *stmt);
 
 
 int
@@ -384,7 +383,7 @@ dbh_cache_write(dbh_t *dbh, int id, const archive_t *a)
 
         if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK
             || sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK
-            || sqlite3_bind_int(stmt, 4, file_mtime(f)) != SQLITE_OK
+            || sqlite3_bind_int64(stmt, 4, file_mtime(f)) != SQLITE_OK
             || sqlite3_bind_int(stmt, 5, file_status(f)) != SQLITE_OK
             || sq3_set_int64_default(stmt, 6, file_size(f), SIZE_UNKNOWN) != SQLITE_OK
             || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK

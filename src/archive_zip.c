@@ -43,7 +43,6 @@
 #define archive_zip(a)  (archive_user_data(a))
 
 static int ensure_zip(archive_t *);
-static int match_detector(struct zip *, int, file_t *);
 
 static int op_check(archive_t *);
 static int op_close(archive_t *);

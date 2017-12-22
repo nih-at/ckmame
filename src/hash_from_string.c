@@ -57,7 +57,7 @@ hash_from_string(hashes_t *h, const char *str)
     switch (l/2) {
     case HASHES_SIZE_CRC:
 	type = HASHES_TYPE_CRC;
-	h->crc = strtoul(str, NULL, 16);
+	h->crc = (uint32_t)strtoul(str, NULL, 16);
 	break;
 
     case HASHES_SIZE_MD5:

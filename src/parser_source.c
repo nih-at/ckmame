@@ -45,14 +45,14 @@
 
 struct parser_source {
     parser_source_t *(*open)(void *, const char *);
-    int (*read)(void *, void *, int); 
+    ssize_t (*read)(void *, void *, size_t);
     int (*close)(void *);
     void *ud;
 
     char *data;
-    int size;
+    size_t size;
     char *cur;
-    int len;
+    size_t len;
 };
 
 struct pszip_ud {
@@ -72,14 +72,14 @@ typedef struct psfile_ud psfile_ud_t;
 
 static int psfile_close(psfile_ud_t *);
 static parser_source_t *psfile_open(psfile_ud_t *, const char *);
-static int psfile_read(psfile_ud_t *, void *, int);
+static ssize_t psfile_read(psfile_ud_t *, void *, size_t);
 static int pszip_close(pszip_ud_t *);
 static parser_source_t *pszip_open(pszip_ud_t *, const char *);
-static int pszip_read(pszip_ud_t *, void *, int);
+static ssize_t pszip_read(pszip_ud_t *, void *, size_t);
 
-static void _buffer_consume(parser_source_t *, int);
-static void _buffer_fill(parser_source_t *, int);
-static void _buffer_grow(parser_source_t *, int);
+static void _buffer_consume(parser_source_t *, size_t);
+static void _buffer_fill(parser_source_t *, size_t);
+static void _buffer_grow(parser_source_t *, size_t);
 
 static parser_source_t *_ps_file_open(const char *, const char *);
 static parser_source_t *_ps_new_zip(const char *, struct zip *, const char *,
@@ -107,7 +107,7 @@ char *
 ps_getline(parser_source_t *ps)
 {
     char *line, *p;
-    int len;
+    size_t len;
 
     for (;;) {
 	if (ps->len > 0 && (p=memchr(ps->cur, '\n', ps->len)) != NULL) {
@@ -223,10 +223,10 @@ ps_peek(parser_source_t *ps)
 }
 
 
-int
-ps_read(parser_source_t *ps, void *buf, int n)
+ssize_t
+ps_read(parser_source_t *ps, void *buf, size_t n)
 {
-    int done, ret;
+    ssize_t done, ret;
     
     if (ps->len > 0) {
 	done = (ps->len<n ? ps->len : n);
@@ -271,8 +271,8 @@ psfile_open(psfile_ud_t *ud, const char *fname)
 }
 
 
-static int
-psfile_read(psfile_ud_t *ud, void *b, int n)
+static ssize_t
+psfile_read(psfile_ud_t *ud, void *b, size_t n)
 {
     return fread(b, 1, n, ud->f);
 }
@@ -306,15 +306,15 @@ pszip_open(pszip_ud_t *ud, const char *fname)
 }
 
 
-static int
-pszip_read(pszip_ud_t *ud, void *b, int n)
+static ssize_t
+pszip_read(pszip_ud_t *ud, void *b, size_t n)
 {
     return zip_fread(ud->zf, b, n);
 }
 
 
 static void
-_buffer_consume(parser_source_t *ps, int n)
+_buffer_consume(parser_source_t *ps, size_t n)
 {
     if (n > ps->len)
 	n = ps->len;
@@ -328,9 +328,9 @@ _buffer_consume(parser_source_t *ps, int n)
 
 
 static void
-_buffer_fill(parser_source_t *ps, int n)
+_buffer_fill(parser_source_t *ps, size_t n)
 {
-    int done;
+    ssize_t done;
     
     if (ps->len >= n)
 	return;
@@ -345,9 +345,9 @@ _buffer_fill(parser_source_t *ps, int n)
 
 
 static void
-_buffer_grow(parser_source_t *ps, int n)
+_buffer_grow(parser_source_t *ps, size_t n)
 {
-    int new_size;
+    size_t new_size;
 
     if (ps->len && ps->cur > ps->data) {
 	memmove(ps->data, ps->cur, ps->len);
@@ -357,7 +357,7 @@ _buffer_grow(parser_source_t *ps, int n)
     new_size = n+ps->len+1;
 
     if (ps->size < new_size) {
-	int off = ps->cur - ps->data;
+	size_t off = ps->cur - ps->data;
 	ps->data = xrealloc(ps->data, new_size);
 	ps->size = new_size;
 	ps->cur = ps->data + off;

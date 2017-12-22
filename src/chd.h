@@ -103,7 +103,7 @@ struct chd {
     uint32_t version;		/* drive format version */
     uint32_t flags;		/* flags field */
     uint32_t hunk_len;		/* number of bytes per hunk */
-    uint32_t total_hunks;	/* total # of hunks represented */
+    uint64_t total_hunks;	/* total # of hunks represented */
     uint64_t total_len;		/* logical size of the data */
     uint64_t map_offset;        /* offset of hunk map in file */
     uint64_t meta_offset;	/* offset in file of first metadata */
@@ -117,7 +117,7 @@ struct chd {
     struct chd_map_entry *map;	/* hunk map */
     char *buf;			/* decompression buffer */
     z_stream z;			/* decompressor */
-    int hno;			/* hunk currently in hbuf */
+    uint32_t hno;			/* hunk currently in hbuf */
     unsigned char *hbuf;	/* hunk data buffer */
 
     struct chd_metadata_entry *meta; /* list of meta data entries */
@@ -127,9 +127,9 @@ struct chd {
 void chd_close(struct chd *);
 struct chd_metadata_entry *chd_get_metadata_list(struct chd *);
 struct chd *chd_open(const char *, int *);
-int chd_read_hunk(struct chd *, int, unsigned char *);
+int64_t chd_read_hunk(struct chd *, uint64_t, unsigned char *);
 int chd_read_metadata(struct chd*, const struct chd_metadata_entry *,
 		      unsigned char *);
-int chd_read_range(struct chd *, unsigned char *, int, int);
+int64_t chd_read_range(struct chd *, unsigned char *, uint64_t, uint64_t);
 
 #endif /* chd.h */

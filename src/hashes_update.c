@@ -34,6 +34,7 @@
 
 #include "config.h"
 
+#include <limits.h>
 #include <stdlib.h>
 #ifdef HAVE_MD5INIT
 #include <md5.h>
@@ -63,12 +64,20 @@ struct hashes_update {
 void
 hashes_update(struct hashes_update *hu, const unsigned char *buf, size_t len)
 {
-    if (hu->h->types & HASHES_TYPE_CRC)
-	hu->crc = crc32(hu->crc, (const Bytef *)buf, len);
-    if (hu->h->types & HASHES_TYPE_MD5)
-	MD5Update(&hu->md5, buf, len);
-    if (hu->h->types & HASHES_TYPE_SHA1)
-	SHA1Update(&hu->sha1, buf, len);
+    size_t i = 0;
+
+    while (i < len) {
+        size_t n = len - i > INT_MAX ? UINT_MAX : len - i;
+
+        if (hu->h->types & HASHES_TYPE_CRC)
+            hu->crc = (uint32_t)crc32(hu->crc, (const Bytef *)buf, (unsigned int )n);
+        if (hu->h->types & HASHES_TYPE_MD5)
+            MD5Update(&hu->md5, buf, (unsigned int )n);
+        if (hu->h->types & HASHES_TYPE_SHA1)
+            SHA1Update(&hu->sha1, buf, (unsigned int )n);
+
+        i += n;
+    }
 }
 
 
@@ -96,7 +105,7 @@ hashes_update_new(struct hashes *h)
     hu->h = h;
 
     if (h->types & HASHES_TYPE_CRC)
-	hu->crc = crc32(0, NULL, 0);
+	hu->crc = (uint32_t)crc32(0, NULL, 0);
     if (h->types & HASHES_TYPE_MD5)
 	MD5Init(&hu->md5);
     if (h->types & HASHES_TYPE_SHA1)
