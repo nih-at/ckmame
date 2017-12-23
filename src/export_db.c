@@ -34,7 +34,7 @@
 
 #include "error.h"
 #include "parse.h"
-
+#include <stdlib.h>
 
 int
 export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out)
@@ -76,5 +76,6 @@ export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_c
 	game_free(g);
     }
 
+    parray_free(list, free);
     return 0;
 }
