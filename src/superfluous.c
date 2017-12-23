@@ -72,6 +72,7 @@ list_directory(const char *dirname, const char *dbname)
 	    if ((listd=romdb_read_list(db, DBH_KEY_LIST_DISK)) == NULL) {
 	        myerror(ERRDEF, "list of disks not found in database '%s'",
 		        dbname);
+		parray_free(listf, free);
 	        exit(1);
 	    }
         }
@@ -86,8 +87,11 @@ list_directory(const char *dirname, const char *dbname)
 
     found = parray_new();
 
-    if ((dir=dir_open(dirname, 0)) == NULL)
+    if ((dir=dir_open(dirname, 0)) == NULL) {
+	parray_free(listd, free);
+	parray_free(listf, free);
 	return found;
+    }
 
     len_dir = strlen(dirname)+1;
 
@@ -140,6 +144,8 @@ list_directory(const char *dirname, const char *dbname)
 	if (!known)
 	    parray_push(found, xstrdup(b));
     }
+    parray_free(listd, free);
+    parray_free(listf, free);
     dir_close(dir);
 
     if (parray_length(found) > 0)
