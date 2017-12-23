@@ -146,6 +146,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res)
 	    /* TODO: error message? (or is message from archive_close enough?) */
 	    /* TODO: handle error (how?) */
 	    archive_rollback(a);
+	    garbage_discard(gb);
 	    myerror(ERRZIP, "committing garbage failed");
 	    return -1;
 	}

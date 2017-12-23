@@ -89,6 +89,16 @@ garbage_close(garbage_t *g)
 }
 
 
+
+void
+garbage_discard(garbage_t *g)
+{
+    if (g == NULL)
+	return;
+    free(g);
+}
+
+
 int
 garbage_commit(garbage_t *g)
 {
