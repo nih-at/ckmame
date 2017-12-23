@@ -365,7 +365,7 @@ read_header(struct chd *chd)
 
     p = b+TAG_LEN;
     len = GET_UINT32(p);
-    if (len > MAX_HEADERLEN) {
+    if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
 	chd->error = CHD_ERR_NO_CHD;
 	return -1;
     }
