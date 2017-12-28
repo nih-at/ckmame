@@ -1,0 +1,9 @@
+description test single-rom game (no parent), game exists, extra file known
+variants dir
+return 0
+args -D ../mamedb-small.db -jFc
+file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
+file-del roms/1-4/04.rom.old 04.rom
+stdout In game 1-4:
+stdout game 1-4                                     : correct
+# should clean up extra file, not report it as 'unknown'
