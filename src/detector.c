@@ -41,11 +41,15 @@
 void
 detector_free(detector_t *d)
 {
+    if (d == NULL) {
+        return;
+    }
     free(d->name);
     free(d->author);
     free(d->version);
     array_free(d->rules, detector_rule_finalize);
     free(d->buf);
+    free(d);
 }
 
 
