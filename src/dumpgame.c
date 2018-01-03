@@ -399,6 +399,7 @@ dump_game(const char *name, int brief_mode)
 
     if ((game=romdb_read_game(db, name)) == NULL) {
 	myerror(ERRDEF, "game unknown (or database error): '%s'", name);
+        dat_free(dat);
 	return -1;
     }
 
@@ -425,6 +426,7 @@ dump_game(const char *name, int brief_mode)
     }
     
     game_free(game);
+    dat_free(dat);
 
     return 0;
 }
@@ -483,6 +485,7 @@ dump_dat(int dummy)
 	putc('\n', stdout);
     }
     
+    dat_free(d);
     return 0;
 }
 
