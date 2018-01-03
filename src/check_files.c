@@ -44,6 +44,7 @@
 #include "match.h"
 #include "util.h"
 #include "warn.h"
+#include "xmalloc.h"
 
 
 enum test {
@@ -134,7 +135,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res)
 
     archive_t *archive = archives[0];
     if (archive && archive_num_files(archive) > 0) {
-	int *user = malloc(sizeof(int) * archive_num_files(archive));
+	int *user = xmalloc(sizeof(int) * archive_num_files(archive));
 	for (i = 0; i < archive_num_files(archive); i++) {
 	    user[i] = -1;
 	}
