@@ -304,7 +304,7 @@ restore_table(dbh_t *dbh, FILE *f) {
     while ((line = get_line(f))) {
         if (strncmp(line, ">>> table ", 10) == 0) {
             unget_line(line);
-            return 0;
+            break;
         }
         
         for (i = 0; i < array_length(column_types); i++) {
@@ -374,6 +374,7 @@ restore_table(dbh_t *dbh, FILE *f) {
         }
     }
     
+    array_free(column_types, NULL);
     return 0;
 }
 
