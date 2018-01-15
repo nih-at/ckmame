@@ -142,12 +142,13 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 static void
 cleanup_archive(archive_t *a, result_t *res, int flags)
 {
-    garbage_t *gb;
+    garbage_t *gb = NULL;
     int i, move;
     char *reason;
     
-    if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO))
+    if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
 	gb = garbage_new(a);
+    }
 	    
     for (i=0; i<archive_num_files(a); i++) {
 	switch (result_file(res, i)) {
@@ -201,18 +202,25 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 			   file_name(archive_file(a, i)));
 
 		/* TODO: handle error (how?) */
-		if (move)
-		    garbage_add(gb, i, false);
-		else
+		if (move) {
+		    if (fix_options & FIX_DO) {
+			garbage_add(gb, i, false);
+		    }
+		    else {
+			/* when FIX_DO is not set, this only updates in-memory representation of a */
+			archive_file_delete(a, i);
+		    }
+		}
+		else {
 		    archive_file_delete(a, i);
+		}
 	    }
 	    break;
 	}
     }
     
-    if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
-	if (garbage_close(gb) < 0)
-	    archive_rollback(a);
+    if (garbage_close(gb) < 0) {
+	archive_rollback(a);
     }
 
     archive_commit(a);
