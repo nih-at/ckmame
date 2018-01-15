@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,15 +42,14 @@
 
 
 void
-check_images(images_t *im, const char *gamename, result_t *res)
-{
+check_images(images_t *im, const char *gamename, result_t *res) {
     disk_t *d;
     int i;
 
     if (im == NULL)
 	return;
 
-    for (i=0; i<images_length(im); i++) {
+    for (i = 0; i < images_length(im); i++) {
 	d = images_get(im, i);
 
 	if (d == NULL) {
@@ -83,27 +82,24 @@ check_images(images_t *im, const char *gamename, result_t *res)
 	    result_image(res, i) = FS_SUPERFLUOUS;
 	    break;
 
-	case FIND_MISSING:
-	    {
-		match_disk_t md;
-		match_disk_init(&md);
-		ensure_needed_maps();
-		if (find_disk(d, &md) != FIND_EXISTS)
+	case FIND_MISSING: {
+	    match_disk_t md;
+	    match_disk_init(&md);
+	    ensure_needed_maps();
+	    if (find_disk(d, &md) != FIND_EXISTS)
+		result_image(res, i) = FS_NEEDED;
+	    else {
+		if (match_disk_where(&md) == FILE_NEEDED)
+		    result_image(res, i) = FS_SUPERFLUOUS;
+		else
 		    result_image(res, i) = FS_NEEDED;
-		else {
-		    if (match_disk_where(&md) == FILE_NEEDED)
-			result_image(res, i) = FS_SUPERFLUOUS;
-		    else
-			result_image(res, i) = FS_NEEDED;
-		}
-		match_disk_finalize(&md);
 	    }
-	    break;
+	    match_disk_finalize(&md);
+	} break;
 
 	case FIND_ERROR:
 	    /* TODO: how to handle? */
 	    break;
 	}
-	
     }
 }

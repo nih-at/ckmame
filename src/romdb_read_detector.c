@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,12 +38,11 @@
 #include "romdb.h"
 #include "sq_util.h"
 
-#define QUERY_DAT	\
-    "select name, author, version from dat where dat_idx = -1"
-#define QUERY_RULE	\
+#define QUERY_DAT "select name, author, version from dat where dat_idx = -1"
+#define QUERY_RULE                                         \
     "select rule_idx, start_offset, end_offset, operation" \
     " from rule order by rule_idx"
-#define QUERY_TEST	\
+#define QUERY_TEST                                             \
     "select type, offset, size, mask, value, result from test" \
     " where rule_idx = ? order by test_idx"
 
@@ -51,13 +50,12 @@ static int romdb_read_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
 
 detector_t *
-romdb_read_detector(romdb_t *db)
-{
+romdb_read_detector(romdb_t *db) {
     sqlite3_stmt *stmt, *stmt2;
     detector_t *d;
     int ret;
 
-    if ((stmt=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT_DETECTOR)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT_DETECTOR)) == NULL)
 	return NULL;
 
     if (sqlite3_step(stmt) != SQLITE_ROW)
@@ -69,8 +67,7 @@ romdb_read_detector(romdb_t *db)
     detector_author(d) = sq3_get_string(stmt, 1);
     detector_version(d) = sq3_get_string(stmt, 2);
 
-    if ((stmt=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_RULE)) == NULL
-	|| (stmt2=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_TEST)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_RULE)) == NULL || (stmt2 = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_TEST)) == NULL)
 	return NULL;
 
     ret = romdb_read_rules(d, stmt, stmt2);
@@ -85,8 +82,7 @@ romdb_read_detector(romdb_t *db)
 
 
 static int
-romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
-{
+romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
     array_t *rs, *ts;
     detector_rule_t *r;
     detector_test_t *t;
@@ -95,23 +91,21 @@ romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
     size_t lmask, lvalue;
 
     rs = detector_rules(d);
-    
-    while ((ret=sqlite3_step(st_r)) == SQLITE_ROW) {
+
+    while ((ret = sqlite3_step(st_r)) == SQLITE_ROW) {
 	r = (detector_rule_t *)array_grow(rs, detector_rule_init);
 
 	idx = sqlite3_column_int(st_r, 0);
 	detector_rule_start_offset(r) = sq3_get_int64_default(st_r, 1, 0);
-	detector_rule_end_offset(r)
-	    = sq3_get_int64_default(st_r, 2, DETECTOR_OFFSET_EOF);
-	detector_rule_operation(r)
-	    = sq3_get_int_default(st_r, 3, DETECTOR_OP_NONE);
+	detector_rule_end_offset(r) = sq3_get_int64_default(st_r, 2, DETECTOR_OFFSET_EOF);
+	detector_rule_operation(r) = sq3_get_int_default(st_r, 3, DETECTOR_OP_NONE);
 
 	if (sqlite3_bind_int(st_t, 1, idx) != SQLITE_OK)
 	    return -1;
 
 	ts = detector_rule_tests(r);
-	
-	while ((ret=sqlite3_step(st_t)) == SQLITE_ROW) {
+
+	while ((ret = sqlite3_step(st_t)) == SQLITE_ROW) {
 	    t = (detector_test_t *)array_grow(ts, detector_test_init);
 
 	    detector_test_type(t) = sqlite3_column_int(st_t, 0);
@@ -136,8 +130,7 @@ romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
 		break;
 	    }
 	}
-	if (ret != SQLITE_DONE
-	    || sqlite3_reset(st_t) != SQLITE_OK)
+	if (ret != SQLITE_DONE || sqlite3_reset(st_t) != SQLITE_OK)
 	    return -1;
     }
 

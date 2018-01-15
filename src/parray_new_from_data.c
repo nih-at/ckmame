@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,8 +38,7 @@
 
 
 parray_t *
-parray_new_from_data(void **data, int n)
-{
+parray_new_from_data(void **data, int n) {
     parray_t *pa;
 
     pa = xmalloc(sizeof(*pa));

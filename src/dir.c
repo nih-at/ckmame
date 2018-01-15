@@ -32,32 +32,32 @@
 */
 
 
-#include <sys/stat.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 /* copied from autoconf manual (AC_HEADER_DIRENT) */
 
 #include "config.h"
 
 #if HAVE_DIRENT_H
-# include <dirent.h>
-# define NAMLEN(dirent) strlen((dirent)->d_name)
+#include <dirent.h>
+#define NAMLEN(dirent) strlen((dirent)->d_name)
 #else
-# define dirent direct
-# define NAMLEN(dirent) (dirent)->d_namlen
-# if HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif
-# if HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif
-# if HAVE_NDIR_H
-#  include <ndir.h>
-# endif
+#define dirent direct
+#define NAMLEN(dirent) (dirent)->d_namlen
+#if HAVE_SYS_NDIR_H
+#include <sys/ndir.h>
+#endif
+#if HAVE_SYS_DIR_H
+#include <sys/dir.h>
+#endif
+#if HAVE_NDIR_H
+#include <ndir.h>
+#endif
 #endif
 
 #include "dir.h"
@@ -77,13 +77,12 @@ static dir_one_t *dir_one_new(const char *);
 
 
 int
-dir_close(dir_t *dir)
-{
+dir_close(dir_t *dir) {
     dir_one_t *d;
     int ret;
 
     ret = 0;
-    while ((d=parray_pop(dir->stack)) != NULL)
+    while ((d = parray_pop(dir->stack)) != NULL)
 	dir_one_free(d);
 
     parray_free(dir->stack, (void (*)(void *))dir_one_free);
@@ -94,8 +93,7 @@ dir_close(dir_t *dir)
 
 
 dir_status_t
-dir_next(dir_t *dir, char *name, int len)
-{
+dir_next(dir_t *dir, char *name, int len) {
     char *entry;
     dir_one_t *d;
     struct stat st;
@@ -106,7 +104,7 @@ dir_next(dir_t *dir, char *name, int len)
 	if (d->index == parray_length(d->entries)) {
 	    dir_one_free(d);
 	    parray_pop(dir->stack);
-	    if ((d=parray_get_last(dir->stack)) == NULL)
+	    if ((d = parray_get_last(dir->stack)) == NULL)
 		return DIR_EOD;
 	    continue;
 	}
@@ -117,7 +115,7 @@ dir_next(dir_t *dir, char *name, int len)
 	    errno = ENAMETOOLONG;
 	    return DIR_ERROR;
 	}
-	
+
 	sprintf(name, "%s/%s", d->name, entry);
 
 	if (dir->flags & DIR_RECURSE) {
@@ -125,7 +123,7 @@ dir_next(dir_t *dir, char *name, int len)
 		return DIR_ERROR;
 
 	    if ((st.st_mode & S_IFMT) == S_IFDIR) {
-		if ((d=dir_one_new(name)) == NULL)
+		if ((d = dir_one_new(name)) == NULL)
 		    return DIR_ERROR;
 
 		parray_push(dir->stack, d);
@@ -140,12 +138,11 @@ dir_next(dir_t *dir, char *name, int len)
 
 
 dir_t *
-dir_open(const char *name, int flags)
-{
+dir_open(const char *name, int flags) {
     dir_one_t *d;
     dir_t *dir;
 
-    if ((d=dir_one_new(name)) == NULL)
+    if ((d = dir_one_new(name)) == NULL)
 	return NULL;
 
     dir = xmalloc(sizeof(*dir));
@@ -158,8 +155,7 @@ dir_open(const char *name, int flags)
 
 
 static void
-dir_one_free(dir_one_t *d)
-{
+dir_one_free(dir_one_t *d) {
     if (d == NULL) {
 	return;
     }
@@ -171,8 +167,7 @@ dir_one_free(dir_one_t *d)
 
 
 static dir_one_t *
-dir_one_new(const char *name)
-{
+dir_one_new(const char *name) {
     DIR *dir;
     dir_one_t *d;
     parray_t *entries;
@@ -180,7 +175,7 @@ dir_one_new(const char *name)
     char *entry;
     struct dirent *de;
 
-    if ((dir=opendir(name)) == NULL) {
+    if ((dir = opendir(name)) == NULL) {
 	return NULL;
     }
 
@@ -189,22 +184,21 @@ dir_one_new(const char *name)
     while ((de = readdir(dir)) != NULL) {
 	l = NAMLEN(de);
 
-	if ((l == 1 && strncmp(de->d_name, ".", 1) == 0)
-	    || (l == 2 && strncmp(de->d_name, "..", 2) == 0)) {
+	if ((l == 1 && strncmp(de->d_name, ".", 1) == 0) || (l == 2 && strncmp(de->d_name, "..", 2) == 0)) {
 	    continue;
 	}
-        if (l > INT_MAX) {
-            closedir(dir);
-            errno = ENAMETOOLONG;
-            parray_free(entries, free);
-            return NULL;
-        }
+	if (l > INT_MAX) {
+	    closedir(dir);
+	    errno = ENAMETOOLONG;
+	    parray_free(entries, free);
+	    return NULL;
+	}
 	if (asprintf(&entry, "%.*s", (int)l, de->d_name) < 0) {
 	    parray_free(entries, free);
 	    closedir(dir);
 	    return NULL;
 	}
-	
+
 	parray_push(entries, entry);
     }
 

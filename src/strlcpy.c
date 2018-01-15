@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,15 +38,14 @@
 
 
 size_t
-strlcpy(char *dst, const char *src, size_t size)
-{
+strlcpy(char *dst, const char *src, size_t size) {
     size_t len;
 
     len = strlen(src);
-    strncpy(dst, src, size-1);
+    strncpy(dst, src, size - 1);
 
-    if (len > size-1)
-	dst[size-1] = '\0';
+    if (len > size - 1)
+	dst[size - 1] = '\0';
 
     return len;
 }

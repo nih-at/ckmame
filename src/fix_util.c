@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,11 +32,11 @@
 */
 
 
-#include <sys/stat.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "error.h"
@@ -52,21 +52,20 @@
 
 
 char *
-make_garbage_name(const char *name, int unique)
-{
+make_garbage_name(const char *name, int unique) {
     const char *s;
     char *t, *u, *ext;
     struct stat st;
 
     s = mybasename(name);
 
-    t = (char *)xmalloc(strlen(unknown_dir)+strlen(s)+2);
+    t = (char *)xmalloc(strlen(unknown_dir) + strlen(s) + 2);
 
     sprintf(t, "%s/%s", unknown_dir, s);
 
     if (unique && (stat(t, &st) == 0 || errno != ENOENT)) {
 	ext = strchr(t, '.');
-	if (ext) 
+	if (ext)
 	    *(ext++) = '\0';
 	else
 	    ext = "";
@@ -80,8 +79,7 @@ make_garbage_name(const char *name, int unique)
 
 
 char *
-make_unique_name(const char *ext, const char *fmt, ...)
-{
+make_unique_name(const char *ext, const char *fmt, ...) {
     char ret[MAXPATHLEN];
     int i, len;
     struct stat st;
@@ -92,25 +90,24 @@ make_unique_name(const char *ext, const char *fmt, ...)
     va_end(ap);
 
     /* already used space, "-XXX.", extension, 0 */
-    if (len+5+strlen(ext)+1 > sizeof(ret)) {
+    if (len + 5 + strlen(ext) + 1 > sizeof(ret)) {
 	return NULL;
     }
 
-    for (i=0; i<1000; i++) {
-	sprintf(ret+len, "-%03d%s%s", i, (ext[0] ? "." : ""), ext);
+    for (i = 0; i < 1000; i++) {
+	sprintf(ret + len, "-%03d%s%s", i, (ext[0] ? "." : ""), ext);
 
 	if (stat(ret, &st) == -1 && errno == ENOENT)
 	    return xstrdup(ret);
     }
-    
+
     return NULL;
 }
 
 
 char *
-make_needed_name(const file_t *r)
-{
-    char crc[HASHES_SIZE_CRC*2+1];
+make_needed_name(const file_t *r) {
+    char crc[HASHES_SIZE_CRC * 2 + 1];
 
     /* <needed_dir>/<crc>-nnn.zip */
 
@@ -121,9 +118,8 @@ make_needed_name(const file_t *r)
 
 
 char *
-make_needed_name_disk(const disk_t *d)
-{
-    char md5[HASHES_SIZE_MD5*2+1];
+make_needed_name_disk(const disk_t *d) {
+    char md5[HASHES_SIZE_MD5 * 2 + 1];
 
     /* <needed_dir>/<md5>-nnn.zip */
 
@@ -134,8 +130,7 @@ make_needed_name_disk(const disk_t *d)
 
 
 int
-move_image_to_garbage(const char *fname)
-{
+move_image_to_garbage(const char *fname) {
     char *to_name;
     int ret;
 
@@ -149,8 +144,7 @@ move_image_to_garbage(const char *fname)
 
 
 void
-remove_empty_archive(const char *name)
-{
+remove_empty_archive(const char *name) {
     int idx;
 
     if (fix_options & FIX_PRINT)
@@ -165,8 +159,7 @@ remove_empty_archive(const char *name)
 
 
 void
-remove_from_superfluous(const char *name)
-{
+remove_from_superfluous(const char *name) {
     int idx;
 
     if (superfluous) {
@@ -179,24 +172,22 @@ remove_from_superfluous(const char *name)
 
 
 int
-save_needed(archive_t *sa, int sidx, int do_save)
-{
+save_needed(archive_t *sa, int sidx, int do_save) {
     char *tmp;
     archive_t *da;
 
-    if ((tmp=make_needed_name(archive_file(sa, sidx))) == NULL) {
+    if ((tmp = make_needed_name(archive_file(sa, sidx))) == NULL) {
 	myerror(ERRDEF, "cannot create needed file name");
 	return -1;
     }
 
-    if ((da=archive_new(tmp, archive_filetype(sa), FILE_NEEDED, ARCHIVE_FL_CREATE | (do_save ? 0 : ARCHIVE_FL_RDONLY))) == NULL)
+    if ((da = archive_new(tmp, archive_filetype(sa), FILE_NEEDED, ARCHIVE_FL_CREATE | (do_save ? 0 : ARCHIVE_FL_RDONLY))) == NULL)
 	return -1;
 
     free(tmp);
 
-    
-    if (archive_file_copy(sa, sidx, da, file_name(archive_file(sa, sidx))) < 0
-	|| archive_commit(da) < 0) {
+
+    if (archive_file_copy(sa, sidx, da, file_name(archive_file(sa, sidx))) < 0 || archive_commit(da) < 0) {
 	archive_rollback(da);
 	archive_free(da);
 	return -1;
@@ -206,20 +197,19 @@ save_needed(archive_t *sa, int sidx, int do_save)
 	return -1;
 
     if (do_save)
-        return archive_file_delete(sa, sidx);
+	return archive_file_delete(sa, sidx);
     else
 	return 0;
 }
 
 
 int
-save_needed_disk(const char *fname, int do_save)
-{
+save_needed_disk(const char *fname, int do_save) {
     char *tmp;
     int ret;
     disk_t *d;
 
-    if ((d=disk_new(fname, 0)) == NULL)
+    if ((d = disk_new(fname, 0)) == NULL)
 	return -1;
 
     ret = 0;

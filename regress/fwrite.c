@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,38 +31,38 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 #define __USE_GNU
 #include <dlfcn.h>
 #undef __USE_GNU
 
 static size_t count = 0;
 static size_t max_write = 0;
-static size_t(*real_fwrite)(const void *ptr, size_t size, size_t nmemb, FILE * stream) = NULL;
-static int(*real_link)(const char *src, const char *dest) = NULL;
-static int(*real_rename)(const char *src, const char *dest) = NULL;
+static size_t (*real_fwrite)(const void *ptr, size_t size, size_t nmemb, FILE *stream) = NULL;
+static int (*real_link)(const char *src, const char *dest) = NULL;
+static int (*real_rename)(const char *src, const char *dest) = NULL;
 
-size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE * stream)
-{
+size_t
+fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t ret;
 
     if (real_fwrite == NULL) {
 	char *foo;
-	if ((foo=getenv("FWRITE_MAX_WRITE")) != NULL)
+	if ((foo = getenv("FWRITE_MAX_WRITE")) != NULL)
 	    max_write = strtoul(foo, NULL, 0);
 	real_fwrite = dlsym(RTLD_NEXT, "fwrite");
 	if (!real_fwrite)
 	    abort();
     }
- 
-    if (max_write > 0 && count + size*nmemb > max_write) {
+
+    if (max_write > 0 && count + size * nmemb > max_write) {
 	errno = ENOSPC;
 	return -1;
     }
-    
+
 
     ret = real_fwrite(ptr, size, nmemb, stream);
     count += ret * size;

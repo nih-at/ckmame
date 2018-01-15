@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -60,8 +60,7 @@ static int output_mtree_header(output_context_t *, dat_entry_t *);
 
 
 output_context_t *
-output_mtree_new(const char *fname, int flags)
-{
+output_mtree_new(const char *fname, int flags) {
     output_context_mtree_t *ctx;
     FILE *f;
 
@@ -72,7 +71,7 @@ output_mtree_new(const char *fname, int flags)
 	fname = "*stdout*";
     }
     else {
-	if ((f=fopen(fname, "w")) == NULL) {
+	if ((f = fopen(fname, "w")) == NULL) {
 	    myerror(ERRDEF, "cannot create '%s': %s", fname, strerror(errno));
 	    free(ctx);
 	    return NULL;
@@ -93,8 +92,7 @@ output_mtree_new(const char *fname, int flags)
 
 
 static int
-output_mtree_close(output_context_t *out)
-{
+output_mtree_close(output_context_t *out) {
     output_context_mtree_t *ctx;
     int ret;
 
@@ -113,16 +111,15 @@ output_mtree_close(output_context_t *out)
 
 
 static char *
-strsvis_cstyle(const char *in)
-{
+strsvis_cstyle(const char *in) {
     char *out;
     int inpos, outpos;
     /* maximal extension = 2/char */
-    out = (char *)xmalloc(2*strlen(in));
+    out = (char *)xmalloc(2 * strlen(in));
 
     outpos = 0;
-    for (inpos = 0; inpos<strlen(in); inpos++) {
-	switch(in[inpos]) {
+    for (inpos = 0; inpos < strlen(in); inpos++) {
+	switch (in[inpos]) {
 	case '\007':
 	    out[outpos++] = '\\';
 	    out[outpos++] = 'a';
@@ -171,8 +168,7 @@ strsvis_cstyle(const char *in)
 
 
 static int
-output_mtree_game(output_context_t *out, game_t *g)
-{
+output_mtree_game(output_context_t *out, game_t *g) {
     output_context_mtree_t *ctx;
     file_t *r;
     disk_t *d;
@@ -186,7 +182,7 @@ output_mtree_game(output_context_t *out, game_t *g)
     dirname = strsvis_cstyle(game_name(g));
 
     fprintf(ctx->f, "./%s type=dir\n", dirname);
-    for (i=0; i<game_num_files(g, TYPE_ROM); i++) {
+    for (i = 0; i < game_num_files(g, TYPE_ROM); i++) {
 	r = game_file(g, TYPE_ROM, i);
 
 	filename = strsvis_cstyle(file_name(r));
@@ -206,14 +202,14 @@ output_mtree_game(output_context_t *out, game_t *g)
 	    break;
 	}
 	output_cond_print_string(ctx->f, " status=", fl, "");
-        if (ctx->extended) {
-            /* crc is not in the standard set supported on NetBSD */
-            output_cond_print_hash(ctx->f, " crc=", HASHES_TYPE_CRC, file_hashes(r), "");
-            fprintf(ctx->f, " time=%llu", (unsigned long long)file_mtime(r));
-        }
+	if (ctx->extended) {
+	    /* crc is not in the standard set supported on NetBSD */
+	    output_cond_print_hash(ctx->f, " crc=", HASHES_TYPE_CRC, file_hashes(r), "");
+	    fprintf(ctx->f, " time=%llu", (unsigned long long)file_mtime(r));
+	}
 	fputs("\n", ctx->f);
     }
-    for (i=0; i<game_num_disks(g); i++) {
+    for (i = 0; i < game_num_disks(g); i++) {
 	d = game_disk(g, i);
 
 	filename = strsvis_cstyle(disk_name(d));
@@ -235,7 +231,7 @@ output_mtree_game(output_context_t *out, game_t *g)
 	output_cond_print_string(ctx->f, " status=", fl, "");
 	fputs("\n", ctx->f);
     }
-    for (i=0; i<game_num_files(g, TYPE_SAMPLE); i++) {
+    for (i = 0; i < game_num_files(g, TYPE_SAMPLE); i++) {
 	r = game_file(g, TYPE_SAMPLE, i);
 	filename = strsvis_cstyle(file_name(r));
 	fprintf(ctx->f, "./%s/%s\n", dirname, filename);
@@ -248,8 +244,7 @@ output_mtree_game(output_context_t *out, game_t *g)
 
 
 static int
-output_mtree_header(output_context_t *out, dat_entry_t *dat)
-{
+output_mtree_header(output_context_t *out, dat_entry_t *dat) {
     output_context_mtree_t *ctx;
 
     ctx = (output_context_mtree_t *)out;

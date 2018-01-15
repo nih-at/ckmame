@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,8 +41,7 @@
 
 
 int
-hash_from_string(hashes_t *h, const char *str)
-{
+hash_from_string(hashes_t *h, const char *str) {
     size_t l;
     int type;
 
@@ -50,11 +49,11 @@ hash_from_string(hashes_t *h, const char *str)
 	str += 2;
 
     l = strlen(str);
-    
+
     if (l % 2 != 0 || strspn(str, "0123456789ABCDEFabcdef") != l)
 	return -1;
 
-    switch (l/2) {
+    switch (l / 2) {
     case HASHES_SIZE_CRC:
 	type = HASHES_TYPE_CRC;
 	h->crc = (uint32_t)strtoul(str, NULL, 16);

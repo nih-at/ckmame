@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,15 +37,13 @@
 
 
 void
-parray_delete(parray_t *pa, int index, void (*fn)(void *))
-{
+parray_delete(parray_t *pa, int index, void (*fn)(void *)) {
     if (index < 0 || index >= parray_length(pa))
 	return;
 
     if (fn)
 	fn(parray_get(pa, index));
-    
-    memmove(pa->entry+index, pa->entry+index+1,
-	    sizeof(pa->entry[0]) * (parray_length(pa)-index-1));
+
+    memmove(pa->entry + index, pa->entry + index + 1, sizeof(pa->entry[0]) * (parray_length(pa) - index - 1));
     pa->nentry--;
 }

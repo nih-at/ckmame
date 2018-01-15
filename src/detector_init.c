@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,8 +37,8 @@
 #include "detector.h"
 
 
-void detector_rule_init(detector_rule_t *dr)
-{
+void
+detector_rule_init(detector_rule_t *dr) {
     dr->start_offset = 0;
     dr->end_offset = 0;
     dr->operation = DETECTOR_OP_NONE;
@@ -46,8 +46,8 @@ void detector_rule_init(detector_rule_t *dr)
 }
 
 
-void detector_test_init(detector_test_t *dt)
-{
+void
+detector_test_init(detector_test_t *dt) {
     dt->type = DETECTOR_TEST_DATA;
     dt->offset = 0;
     dt->length = 0;

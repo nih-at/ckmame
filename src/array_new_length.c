@@ -1,5 +1,5 @@
 /*
-  array_new_length.c -- new array of given length 
+  array_new_length.c -- new array of given length
   Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,8 +37,7 @@
 
 
 array_t *
-array_new_length(int size, int n, void (*fn)(void *))
-{
+array_new_length(int size, int n, void (*fn)(void *)) {
     array_t *a;
     int i;
 
@@ -46,7 +45,7 @@ array_new_length(int size, int n, void (*fn)(void *))
 
     array_length(a) = n;
 
-    for (i=0; i<n; i++)
+    for (i = 0; i < n; i++)
 	fn(array_get(a, i));
 
     return a;

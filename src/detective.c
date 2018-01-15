@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,36 +45,27 @@
 char *usage = "Usage: %s [-hV] [-C types] [-D dbfile] [--detector detector] zip-archive [...]\n";
 
 char help_head[] = "detective (" PACKAGE ") by Dieter Baron and"
-                   " Thomas Klausner\n\n";
+		   " Thomas Klausner\n\n";
 
 char help[] = "\n"
-"  -h, --help               display this help message\n"
-"  -V, --version            display version number\n"
-"  -C, --hash-types types   specify hash types to compute (default: all)\n"
-"  -D, --db dbfile          use mame-db dbfile\n"
-"      --detector xml-file  use header detector\n"
-"  -u, --roms-unzipped      ROMs are files on disk, not contained in zip archives\n"
-"\n"
-"Report bugs to " PACKAGE_BUGREPORT ".\n";
+	      "  -h, --help               display this help message\n"
+	      "  -V, --version            display version number\n"
+	      "  -C, --hash-types types   specify hash types to compute (default: all)\n"
+	      "  -D, --db dbfile          use mame-db dbfile\n"
+	      "      --detector xml-file  use header detector\n"
+	      "  -u, --roms-unzipped      ROMs are files on disk, not contained in zip archives\n"
+	      "\n"
+	      "Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "detective (" PACKAGE " " VERSION ")\n"
-"Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner\n"
-PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+			"Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hC:DuV"
 
-enum {
-    OPT_DETECTOR = 256
-};
+enum { OPT_DETECTOR = 256 };
 
 struct option options[] = {
-    { "help",             0, 0, 'h' },
-    { "version",          0, 0, 'V' },
-    { "db",               1, 0, 'D' },
-    { "detector",         1, 0, OPT_DETECTOR },
-    { "hash-types",       1, 0, 'C' },
-    { "roms-unzipped",    0, 0, 'u' },
-    { NULL,               0, 0, 0 },
+    {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {"db", 1, 0, 'D'}, {"detector", 1, 0, OPT_DETECTOR}, {"hash-types", 1, 0, 'C'}, {"roms-unzipped", 0, 0, 'u'}, {NULL, 0, 0, 0},
 };
 
 
@@ -83,8 +74,7 @@ static void print_checksums(hashes_t *, int);
 
 
 int
-main(int argc, char **argv)
-{
+main(int argc, char **argv) {
     char *dbname;
     char *detector_name;
     int c, i, ret;
@@ -103,7 +93,7 @@ main(int argc, char **argv)
     roms_unzipped = 0;
 
     opterr = 0;
-    while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
+    while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
 	case 'h':
 	    fputs(help_head, stdout);
@@ -123,13 +113,13 @@ main(int argc, char **argv)
 	case 'D':
 	    dbname = optarg;
 	    break;
-        case 'u':
-            roms_unzipped = 1;
+	case 'u':
+	    roms_unzipped = 1;
 	    break;
 	case OPT_DETECTOR:
 	    detector_name = optarg;
 	    break;
-    	default:
+	default:
 	    fprintf(stderr, usage, getprogname());
 	    exit(1);
 	}
@@ -141,13 +131,13 @@ main(int argc, char **argv)
     }
 
     if (detector_name) {
-	if ((detector=detector_parse(detector_name)) == NULL) {
+	if ((detector = detector_parse(detector_name)) == NULL) {
 	    myerror(ERRSTR, "cannot parse detector '%s'", detector_name);
 	    exit(1);
 	}
     }
 
-    if ((ddb=romdb_open(dbname, DBH_READ)) == NULL) {
+    if ((ddb = romdb_open(dbname, DBH_READ)) == NULL) {
 	if (detector == 0) {
 	    myerror(ERRSTR, "can't open database '%s'", dbname);
 	    exit(1);
@@ -162,7 +152,7 @@ main(int argc, char **argv)
     }
 
     ret = 0;
-    for (i=optind; i<argc; i++)
+    for (i = optind; i < argc; i++)
 	ret |= print_archive(argv[i], hashtypes);
 
     return ret ? 1 : 0;
@@ -170,19 +160,18 @@ main(int argc, char **argv)
 
 
 static int
-print_archive(const char *fname, int hashtypes)
-{
+print_archive(const char *fname, int hashtypes) {
     archive_t *a;
     file_t *f;
     int i, j, ret;
 
-    if ((a=archive_new(fname, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) == NULL)
+    if ((a = archive_new(fname, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) == NULL)
 	return -1;
 
     printf("%s\n", archive_name(a));
 
     ret = 0;
-    for (i=0; i<archive_num_files(a); i++) {
+    for (i = 0; i < archive_num_files(a); i++) {
 	if (archive_file_compute_hashes(a, i, hashtypes) < 0) {
 	    ret = -1;
 	    continue;
@@ -200,7 +189,6 @@ print_archive(const char *fname, int hashtypes)
 	if (j == FILE_SH_DETECTOR)
 	    printf("  (header skipped)");
 	printf("\n");
-	
     }
 
     return ret;
@@ -208,12 +196,11 @@ print_archive(const char *fname, int hashtypes)
 
 
 static void
-print_checksums(hashes_t *hashes, int hashtypes)
-{
+print_checksums(hashes_t *hashes, int hashtypes) {
     int i;
-    char h[HASHES_SIZE_MAX*2 + 1];
+    char h[HASHES_SIZE_MAX * 2 + 1];
 
-    for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
+    for (i = 1; i <= HASHES_TYPE_MAX; i <<= 1) {
 	if (hashes_has_type(hashes, i) && (hashtypes & i)) {
 	    printf(" %s %s", hash_type_string(i), hash_to_string(h, i, hashes));
 	}

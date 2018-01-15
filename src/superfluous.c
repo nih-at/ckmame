@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,10 +32,10 @@
 */
 
 
-#include <sys/stat.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
 
 
 #include "dir.h"
@@ -49,8 +49,7 @@
 
 
 parray_t *
-list_directory(const char *dirname, const char *dbname)
-{
+list_directory(const char *dirname, const char *dbname) {
     dir_t *dir;
     char b[8192], *p, *ext;
     parray_t *listf, *listd, *found;
@@ -58,53 +57,50 @@ list_directory(const char *dirname, const char *dbname)
     size_t len_dir, len_name;
     bool known;
     struct stat st;
-    
+
     p = NULL;
     listf = listd = NULL;
 
     if (dbname) {
 	if (file_type == TYPE_ROM) {
-	    if ((listf=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
-	        myerror(ERRDEF, "list of games not found in database '%s'",
-		        dbname);
-	        exit(1);
+	    if ((listf = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+		myerror(ERRDEF, "list of games not found in database '%s'", dbname);
+		exit(1);
 	    }
-	    if ((listd=romdb_read_list(db, DBH_KEY_LIST_DISK)) == NULL) {
-	        myerror(ERRDEF, "list of disks not found in database '%s'",
-		        dbname);
+	    if ((listd = romdb_read_list(db, DBH_KEY_LIST_DISK)) == NULL) {
+		myerror(ERRDEF, "list of disks not found in database '%s'", dbname);
 		parray_free(listf, free);
-	        exit(1);
+		exit(1);
 	    }
-        }
-        else {
-	    if ((listf=romdb_read_list(db, DBH_KEY_LIST_SAMPLE)) == NULL) {
-	        myerror(ERRDEF, "list of samples not found in database '%s'",
-		        dbname);
-	        exit(1);
+	}
+	else {
+	    if ((listf = romdb_read_list(db, DBH_KEY_LIST_SAMPLE)) == NULL) {
+		myerror(ERRDEF, "list of samples not found in database '%s'", dbname);
+		exit(1);
 	    }
-        }
+	}
     }
 
     found = parray_new();
 
-    if ((dir=dir_open(dirname, 0)) == NULL) {
+    if ((dir = dir_open(dirname, 0)) == NULL) {
 	parray_free(listd, free);
 	parray_free(listf, free);
 	return found;
     }
 
-    len_dir = strlen(dirname)+1;
+    len_dir = strlen(dirname) + 1;
 
-    while ((err=dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+    while ((err = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
 	if (err == DIR_ERROR) {
 	    /* TODO: handle error */
 	    continue;
 	}
 
-	if (strcmp(b+len_dir, DBH_CACHE_DB_NAME) == 0)
+	if (strcmp(b + len_dir, DBH_CACHE_DB_NAME) == 0)
 	    continue;
 
-	len_name = strlen(b+len_dir);
+	len_name = strlen(b + len_dir);
 
 	if (stat(b, &st) < 0) {
 	    /* TODO: handle error */
@@ -115,29 +111,29 @@ list_directory(const char *dirname, const char *dbname)
 
 	if (S_ISDIR(st.st_mode)) {
 	    if (roms_unzipped && listf)
-		known = parray_find_sorted(listf, b+len_dir, strcmp) != -1;
+		known = parray_find_sorted(listf, b + len_dir, strcmp) != -1;
 	}
 	else {
 	    ext = NULL;
 
 	    if (len_name > 4) {
-		p = b+len_dir+len_name-4;
+		p = b + len_dir + len_name - 4;
 		if (*p == '.') {
-		    ext = p+1;
+		    ext = p + 1;
 		    *p = '\0';
 		}
 	    }
 
 	    if (ext) {
 		if (strcmp(ext, "chd") == 0 && listd)
-		    known = parray_find_sorted(listd, b+len_dir, strcmp) != -1;
+		    known = parray_find_sorted(listd, b + len_dir, strcmp) != -1;
 		else if (!roms_unzipped && strcmp(ext, "zip") == 0 && listf)
-		    known = parray_find_sorted(listf, b+len_dir, strcmp) != -1;
+		    known = parray_find_sorted(listf, b + len_dir, strcmp) != -1;
 		*p = '.';
 	    }
 	    else {
 		if (listd)
-		    known = parray_find_sorted(listd, b+len_dir, strcmp) != -1;
+		    known = parray_find_sorted(listd, b + len_dir, strcmp) != -1;
 	    }
 	}
 
@@ -156,15 +152,14 @@ list_directory(const char *dirname, const char *dbname)
 
 
 void
-print_superfluous(const parray_t *files)
-{
+print_superfluous(const parray_t *files) {
     int i;
 
     if (parray_length(files) == 0)
 	return;
 
     printf("Extra files found:\n");
-    
-    for (i=0; i<parray_length(files); i++)
+
+    for (i = 0; i < parray_length(files); i++)
 	printf("%s\n", (char *)parray_get(files, i));
 }

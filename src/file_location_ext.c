@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,8 +38,7 @@
 
 
 void
-file_location_ext_free(file_location_ext_t *e)
-{
+file_location_ext_free(file_location_ext_t *e) {
     if (e == NULL)
 	return;
 
@@ -49,8 +48,7 @@ file_location_ext_free(file_location_ext_t *e)
 
 
 file_location_ext_t *
-file_location_ext_new(const char *name, int idx, where_t where)
-{
+file_location_ext_new(const char *name, int idx, where_t where) {
     file_location_ext_t *e;
 
     e = xmalloc(sizeof(*e));

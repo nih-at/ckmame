@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,16 +37,13 @@
 
 
 void
-array_delete(array_t *a, int index, void (*fn)(void *))
-{
+array_delete(array_t *a, int index, void (*fn)(void *)) {
     if (index < 0 || index >= array_length(a))
 	return;
 
     if (fn)
 	fn(array_get(a, index));
-    
-    memmove(a->data + index*a->elem_size,
-	    a->data + (index+1)*a->elem_size,
-	    a->elem_size * (array_length(a)-index-1));
+
+    memmove(a->data + index * a->elem_size, a->data + (index + 1) * a->elem_size, a->elem_size * (array_length(a) - index - 1));
     a->nentry--;
 }

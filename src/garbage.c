@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,8 +43,8 @@
 static int garbage_open(garbage_t *);
 
 
-int garbage_add(garbage_t *g, int idx, bool copyp)
-{
+int
+garbage_add(garbage_t *g, int idx, bool copyp) {
     if (garbage_open(g) < 0)
 	return -1;
 
@@ -64,8 +64,7 @@ int garbage_add(garbage_t *g, int idx, bool copyp)
 
 
 int
-garbage_close(garbage_t *g)
-{
+garbage_close(garbage_t *g) {
     archive_t *da;
 
     if (g == NULL)
@@ -89,10 +88,8 @@ garbage_close(garbage_t *g)
 }
 
 
-
 void
-garbage_discard(garbage_t *g)
-{
+garbage_discard(garbage_t *g) {
     if (g == NULL)
 	return;
     free(g);
@@ -100,8 +97,7 @@ garbage_discard(garbage_t *g)
 
 
 int
-garbage_commit(garbage_t *g)
-{
+garbage_commit(garbage_t *g) {
     if (g->da == NULL)
 	return 0;
 
@@ -109,8 +105,8 @@ garbage_commit(garbage_t *g)
 }
 
 
-garbage_t *garbage_new(archive_t *a)
-{
+garbage_t *
+garbage_new(archive_t *a) {
     garbage_t *g;
 
     g = (garbage_t *)xmalloc(sizeof(*g));
@@ -124,8 +120,7 @@ garbage_t *garbage_new(archive_t *a)
 
 
 static int
-garbage_open(garbage_t *g)
-{
+garbage_open(garbage_t *g) {
     char *name;
 
     if (!g->opened) {

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,33 +47,15 @@
 static int rc_plugin(parser_context_t *, const char *);
 
 
-enum section {
-    RC_UNKNOWN = -1,
-    RC_CREDITS,
-    RC_DAT,
-    RC_EMULATOR,
-    RC_GAMES
-};
+enum section { RC_UNKNOWN = -1, RC_CREDITS, RC_DAT, RC_EMULATOR, RC_GAMES };
 
-intstr_t sections[] = {
-    { RC_CREDITS,  "[CREDITS]" },
-    { RC_DAT,      "[DAT]" },
-    { RC_EMULATOR, "[EMULATOR]" },
-    { RC_GAMES,    "[GAMES]" },
-    { RC_GAMES,    "[RESOURCES]" },
-    { RC_UNKNOWN,   NULL }
-};
+intstr_t sections[] = {{RC_CREDITS, "[CREDITS]"}, {RC_DAT, "[DAT]"}, {RC_EMULATOR, "[EMULATOR]"}, {RC_GAMES, "[GAMES]"}, {RC_GAMES, "[RESOURCES]"}, {RC_UNKNOWN, NULL}};
 
 struct {
     enum section section;
     char *name;
     int (*cb)(parser_context_t *, const char *);
-} fields[] = {
-    { RC_CREDITS,  "version", parse_prog_version },
-    { RC_DAT,      "plugin",  rc_plugin },
-    { RC_EMULATOR, "refname", parse_prog_name },
-    { RC_EMULATOR, "version", parse_prog_description }
-};
+} fields[] = {{RC_CREDITS, "version", parse_prog_version}, {RC_DAT, "plugin", rc_plugin}, {RC_EMULATOR, "refname", parse_prog_name}, {RC_EMULATOR, "version", parse_prog_description}};
 
 int nfields = sizeof(fields) / sizeof(fields[0]);
 
@@ -82,8 +64,7 @@ static int rc_romline(parser_context_t *, char *);
 
 
 int
-parse_rc(parser_source_t *ps, parser_context_t *ctx)
-{
+parse_rc(parser_source_t *ps, parser_context_t *ctx) {
     char *line, *val;
     enum section sect;
     int i;
@@ -93,32 +74,28 @@ parse_rc(parser_source_t *ps, parser_context_t *ctx)
 
     rc_romline(ctx, NULL);
 
-    while ((line=ps_getline(ps))) {
+    while ((line = ps_getline(ps))) {
 	ctx->lineno++;
 
 	if (line[0] == '[') {
 	    sect = str2int(line, sections);
 	    continue;
 	}
-	
+
 	if (sect == RC_GAMES) {
 	    if (rc_romline(ctx, line) < 0) {
-		myerror(ERRFILE, "%d: cannot parse ROM line, skipping",
-			ctx->lineno);
+		myerror(ERRFILE, "%d: cannot parse ROM line, skipping", ctx->lineno);
 	    }
 	}
 	else {
-	    if ((val=strchr(line, '=')) == NULL) {
-		myerror(ERRFILE, "%d: no `=' found",
-			ctx->lineno);
+	    if ((val = strchr(line, '=')) == NULL) {
+		myerror(ERRFILE, "%d: no `=' found", ctx->lineno);
 		continue;
 	    }
 	    *(val++) = '\0';
-	    
-	    for (i=0; i<nfields; i++) {
-		
-		if (fields[i].section == sect
-		    && strcmp(line, fields[i].name) == 0) {
+
+	    for (i = 0; i < nfields; i++) {
+		if (fields[i].section == sect && strcmp(line, fields[i].name) == 0) {
 		    fields[i].cb(ctx, val);
 		    break;
 		}
@@ -131,8 +108,7 @@ parse_rc(parser_source_t *ps, parser_context_t *ctx)
 
 
 static char *
-gettok(char **linep)
-{
+gettok(char **linep) {
     char *p, *q;
 
     p = *linep;
@@ -154,19 +130,15 @@ gettok(char **linep)
 
 
 static int
-rc_plugin(parser_context_t *ctx, const char *value)
-{
-    myerror(ERRFILE, "%d: warning: RomCenter plugins not supported,",
-	    ctx->lineno);
-    myerror(ERRFILE, "%d: warning: DAT won't work as expected.",
-	    ctx->lineno);
+rc_plugin(parser_context_t *ctx, const char *value) {
+    myerror(ERRFILE, "%d: warning: RomCenter plugins not supported,", ctx->lineno);
+    myerror(ERRFILE, "%d: warning: DAT won't work as expected.", ctx->lineno);
     return -1;
 }
 
 
 static int
-rc_romline(parser_context_t *ctx, char *line)
-{
+rc_romline(parser_context_t *ctx, char *line) {
     static char *gamename = NULL;
 
     char *p;

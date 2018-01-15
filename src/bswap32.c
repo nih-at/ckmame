@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,7 +35,6 @@
 
 
 uint32_t
-bswap32(uint32_t i)
-{
-    return (i>>24) | ((i>>8) & 0xff00) | ((i<<8) & 0xff0000) | (i<<24);
+bswap32(uint32_t i) {
+    return (i >> 24) | ((i >> 8) & 0xff00) | ((i << 8) & 0xff0000) | (i << 24);
 }

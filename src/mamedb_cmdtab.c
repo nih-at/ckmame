@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,61 +38,62 @@
 #include "mamedb.h"
 #include "myinttypes.h"
 
-#define ADD_DESC	"add games from archives"
-#define ADD_USAGE	"[-C hashtypes] [-d dat-no] archive [...]"
-#define ADD_HELP	"\
+#define ADD_DESC "add games from archives"
+#define ADD_USAGE "[-C hashtypes] [-d dat-no] archive [...]"
+#define ADD_HELP \
+    "\
   -C, --hash-types types    specify hash types to compute (default: all)\n\
   -d, --dat-no no           specify which dat game belongs to (default: 0)\n\
 "
 
-#define CHECK_DESC	"check consistency"
-#define CHECK_USAGE	""
-#define CHECK_HELP	""
+#define CHECK_DESC "check consistency"
+#define CHECK_USAGE ""
+#define CHECK_HELP ""
 
-#define CLONE_OF_DESC	"set clone-of"
-#define CLONE_OF_USAGE	"child parent"
-#define CLONE_OF_HELP	""
+#define CLONE_OF_DESC "set clone-of"
+#define CLONE_OF_USAGE "child parent"
+#define CLONE_OF_HELP ""
 
-#define EXPORT_DESC	"export to dat files"
-#define EXPORT_USAGE	"[-d dat-no]"
-#define EXPORT_HELP	"\
+#define EXPORT_DESC "export to dat files"
+#define EXPORT_USAGE "[-d dat-no]"
+#define EXPORT_HELP \
+    "\
   -d, --dat-no no           specify which dat to export (default: all)\n\
 "
 
-#define FIND_CLONES_DESC	"find possible clones"
-#define FIND_CLONES_USAGE	"[game]"
-#define FIND_CLONES_HELP	""
+#define FIND_CLONES_DESC "find possible clones"
+#define FIND_CLONES_USAGE "[game]"
+#define FIND_CLONES_HELP ""
 
-#define HELP_DESC	"print list of commands or help on specific command" 
-#define HELP_USAGE	"[cmd]"
-#define HELP_HELP	NULL
+#define HELP_DESC "print list of commands or help on specific command"
+#define HELP_USAGE "[cmd]"
+#define HELP_HELP NULL
 
-#define IMPORT_DESC	"import dat file"
-#define IMPORT_USAGE	"[-x pat] [file ...]"
-#define IMPORT_HELP	"\
+#define IMPORT_DESC "import dat file"
+#define IMPORT_USAGE "[-x pat] [file ...]"
+#define IMPORT_HELP \
+    "\
   -x, --exclude pat         exclude games matching shell glob PAT\n\
 "
 
-#define MAKE_PARENT_DESC	"set parent of a clone set"
-#define MAKE_PARENT_USAGE	"child"
-#define MAKE_PARENT_HELP	""
+#define MAKE_PARENT_DESC "set parent of a clone set"
+#define MAKE_PARENT_USAGE "child"
+#define MAKE_PARENT_HELP ""
 
-#define NEW_DESC	"create new database"
-#define NEW_USAGE	""
-#define NEW_HELP	NULL
+#define NEW_DESC "create new database"
+#define NEW_USAGE ""
+#define NEW_HELP NULL
 
-#define REMOVE_DESC	"remove games"
-#define REMOVE_USAGE	"game [...]"
-#define REMOVE_HELP	""
+#define REMOVE_DESC "remove games"
+#define REMOVE_USAGE "game [...]"
+#define REMOVE_HELP ""
 
 
-#define XX(N)		N##_DESC, N##_USAGE, N##_HELP
-#define ALIAS(N)	cmd_##N, CMD_FL_ALIAS, NULL, NULL, NULL
+#define XX(N) N##_DESC, N##_USAGE, N##_HELP
+#define ALIAS(N) cmd_##N, CMD_FL_ALIAS, NULL, NULL, NULL
 
 cmd_t cmdtab[] = {
-    { "add",           cmd_add,         0,           XX(ADD) },
-    { "help",          cmd_help,        CMD_FL_NODB, XX(HELP) },
-    { "new",           cmd_new,         CMD_FL_NODB, XX(NEW) },
+    {"add", cmd_add, 0, XX(ADD)}, {"help", cmd_help, CMD_FL_NODB, XX(HELP)}, {"new", cmd_new, CMD_FL_NODB, XX(NEW)},
 
 #if 0 /* not yet */
     { "check",         cmd_check,       0,           XX(CHECK) },
@@ -107,12 +108,11 @@ cmd_t cmdtab[] = {
     /* TODO: add/remove/edit single ROM */
     /* TODO: change dat info */
 };
-int ncmdtab = sizeof(cmdtab)/sizeof(cmdtab[0]);
+int ncmdtab = sizeof(cmdtab) / sizeof(cmdtab[0]);
 
 
 const cmd_t *
-find_command(const char *name)
-{
+find_command(const char *name) {
     cmd_t *cmd;
     size_t len;
     int i;
@@ -120,12 +120,11 @@ find_command(const char *name)
 
     len = strlen(name);
     abbrev = false;
-    for (i=0; i<ncmdtab; i++) {
+    for (i = 0; i < ncmdtab; i++) {
 	if (strcmp(name, cmdtab[i].name) == 0)
-	    cmd = cmdtab+i;
+	    cmd = cmdtab + i;
 
-	if (len < strlen(cmdtab[i].name)
-	    && strncmp(name, cmdtab[i].name, len) == 0) {
+	if (len < strlen(cmdtab[i].name) && strncmp(name, cmdtab[i].name, len) == 0) {
 	    if (abbrev) {
 		myerror(ERRDEF, "ambigous abbreviation '%s'", name);
 		return NULL;
@@ -137,7 +136,7 @@ find_command(const char *name)
     }
 
     if (abbrev)
-	cmd = cmdtab+(i-1);
+	cmd = cmdtab + (i - 1);
 
     if (cmd == NULL) {
 	myerror(ERRDEF, "unknown command '%s'", name);
@@ -145,11 +144,10 @@ find_command(const char *name)
     }
 
     if (cmd->flags & CMD_FL_ALIAS) {
-	for (i=0; i<ncmdtab; i++)
-	    if (cmd->fn == cmdtab[i].fn
-		&& (cmdtab[i].flags & CMD_FL_ALIAS) == 0)
-		return cmdtab+i;
-	
+	for (i = 0; i < ncmdtab; i++)
+	    if (cmd->fn == cmdtab[i].fn && (cmdtab[i].flags & CMD_FL_ALIAS) == 0)
+		return cmdtab + i;
+
 	myerror(ERRDEF, "unresolved alias '%s'");
     }
 

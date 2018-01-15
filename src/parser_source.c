@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,7 +41,7 @@
 #include "util.h"
 #include "xmalloc.h"
 
-#define PSBLKSIZE	1024
+#define PSBLKSIZE 1024
 
 struct parser_source {
     parser_source_t *(*open)(void *, const char *);
@@ -82,13 +82,11 @@ static void _buffer_fill(parser_source_t *, size_t);
 static void _buffer_grow(parser_source_t *, size_t);
 
 static parser_source_t *_ps_file_open(const char *, const char *);
-static parser_source_t *_ps_new_zip(const char *, struct zip *, const char *,
-				    bool);
+static parser_source_t *_ps_new_zip(const char *, struct zip *, const char *, bool);
 
 
 int
-ps_close(parser_source_t *ps)
-{
+ps_close(parser_source_t *ps) {
     int ret;
 
     if (ps->close)
@@ -104,30 +102,29 @@ ps_close(parser_source_t *ps)
 
 
 char *
-ps_getline(parser_source_t *ps)
-{
+ps_getline(parser_source_t *ps) {
     char *line, *p;
     size_t len;
 
     for (;;) {
-	if (ps->len > 0 && (p=memchr(ps->cur, '\n', ps->len)) != NULL) {
+	if (ps->len > 0 && (p = memchr(ps->cur, '\n', ps->len)) != NULL) {
 	    line = ps->cur;
 	    len = p - ps->cur;
-	    if (len > 0 && line[len-1] == '\r')
-		line[len-1] = '\0';
+	    if (len > 0 && line[len - 1] == '\r')
+		line[len - 1] = '\0';
 	    else
 		line[len] = '\0';
-	    _buffer_consume(ps, len+1);
+	    _buffer_consume(ps, len + 1);
 	    break;
 	}
 
 	len = ps->len;
-	_buffer_fill(ps, (ps->len/PSBLKSIZE+1)*PSBLKSIZE);
-	
+	_buffer_fill(ps, (ps->len / PSBLKSIZE + 1) * PSBLKSIZE);
+
 	if (len == ps->len) {
 	    if (ps->len == 0)
 		return NULL;
-	    
+
 	    line = ps->cur;
 	    ps->cur[ps->len] = '\0';
 	    _buffer_consume(ps, ps->len);
@@ -136,14 +133,11 @@ ps_getline(parser_source_t *ps)
     }
 
     return line;
-    
 }
 
 
 parser_source_t *
-ps_new(void *ud, parser_source_close fn_close, parser_source_open fn_open,
-			parser_source_read fn_read)
-{
+ps_new(void *ud, parser_source_close fn_close, parser_source_open fn_open, parser_source_read fn_read) {
     parser_source_t *ps;
 
     ps = xmalloc(sizeof(*ps));
@@ -163,13 +157,12 @@ ps_new(void *ud, parser_source_close fn_close, parser_source_open fn_open,
 
 
 parser_source_t *
-ps_new_file(const char *fname)
-{
+ps_new_file(const char *fname) {
     psfile_ud_t *ud;
     FILE *f;
 
     if (fname) {
-	if ((f=fopen(fname, "r")) == NULL)
+	if ((f = fopen(fname, "r")) == NULL)
 	    return NULL;
     }
     else
@@ -184,36 +177,30 @@ ps_new_file(const char *fname)
     ud->f = f;
 
     seterrinfo(fname, NULL);
-    return ps_new(ud, (parser_source_close)psfile_close,
-		  (parser_source_open)psfile_open,
-		  (parser_source_read)psfile_read);
+    return ps_new(ud, (parser_source_close)psfile_close, (parser_source_open)psfile_open, (parser_source_read)psfile_read);
 }
 
 
 parser_source_t *
-ps_new_stdin(void)
-{
+ps_new_stdin(void) {
     return ps_new_file(NULL);
 }
 
 
 parser_source_t *
-ps_new_zip(const char *zaname, struct zip *za, const char *fname)
-{
+ps_new_zip(const char *zaname, struct zip *za, const char *fname) {
     return _ps_new_zip(zaname, za, fname, false);
 }
 
 
 parser_source_t *
-ps_open(parser_source_t *ps, const char *fname)
-{
+ps_open(parser_source_t *ps, const char *fname) {
     return ps->open(ps->ud, fname);
 }
 
 
 int
-ps_peek(parser_source_t *ps)
-{
+ps_peek(parser_source_t *ps) {
     _buffer_fill(ps, 1);
 
     if (ps->len == 0)
@@ -224,15 +211,14 @@ ps_peek(parser_source_t *ps)
 
 
 ssize_t
-ps_read(parser_source_t *ps, void *buf, size_t n)
-{
+ps_read(parser_source_t *ps, void *buf, size_t n) {
     ssize_t done, ret;
-    
+
     if (ps->len > 0) {
-	done = (ps->len<n ? ps->len : n);
+	done = (ps->len < n ? ps->len : n);
 	memcpy(buf, ps->cur, done);
 	_buffer_consume(ps, n);
-	buf = (char*)buf + done;
+	buf = (char *)buf + done;
 	n -= done;
     }
     else
@@ -248,8 +234,7 @@ ps_read(parser_source_t *ps, void *buf, size_t n)
 
 
 static int
-psfile_close(psfile_ud_t *ud)
-{
+psfile_close(psfile_ud_t *ud) {
     int ret;
 
     if (ud->fname)
@@ -265,22 +250,19 @@ psfile_close(psfile_ud_t *ud)
 
 
 static parser_source_t *
-psfile_open(psfile_ud_t *ud, const char *fname)
-{
+psfile_open(psfile_ud_t *ud, const char *fname) {
     return _ps_file_open(fname, ud->fname);
 }
 
 
 static ssize_t
-psfile_read(psfile_ud_t *ud, void *b, size_t n)
-{
+psfile_read(psfile_ud_t *ud, void *b, size_t n) {
     return fread(b, 1, n, ud->f);
 }
 
 
 static int
-pszip_close(pszip_ud_t *ud)
-{
+pszip_close(pszip_ud_t *ud) {
     int ret;
 
     ret = zip_fclose(ud->zf);
@@ -293,8 +275,7 @@ pszip_close(pszip_ud_t *ud)
 
 
 static parser_source_t *
-pszip_open(pszip_ud_t *ud, const char *fname)
-{
+pszip_open(pszip_ud_t *ud, const char *fname) {
     parser_source_t *ps;
 
     ps = _ps_new_zip(ud->fname, ud->za, fname, true);
@@ -307,15 +288,13 @@ pszip_open(pszip_ud_t *ud, const char *fname)
 
 
 static ssize_t
-pszip_read(pszip_ud_t *ud, void *b, size_t n)
-{
+pszip_read(pszip_ud_t *ud, void *b, size_t n) {
     return zip_fread(ud->zf, b, n);
 }
 
 
 static void
-_buffer_consume(parser_source_t *ps, size_t n)
-{
+_buffer_consume(parser_source_t *ps, size_t n) {
     if (n > ps->len)
 	n = ps->len;
 
@@ -328,16 +307,15 @@ _buffer_consume(parser_source_t *ps, size_t n)
 
 
 static void
-_buffer_fill(parser_source_t *ps, size_t n)
-{
+_buffer_fill(parser_source_t *ps, size_t n) {
     ssize_t done;
-    
+
     if (ps->len >= n)
 	return;
 
     _buffer_grow(ps, n);
 
-    done = ps->read(ps->ud, ps->cur+ps->len, n-ps->len);
+    done = ps->read(ps->ud, ps->cur + ps->len, n - ps->len);
 
     if (done > 0)
 	ps->len += done;
@@ -345,8 +323,7 @@ _buffer_fill(parser_source_t *ps, size_t n)
 
 
 static void
-_buffer_grow(parser_source_t *ps, size_t n)
-{
+_buffer_grow(parser_source_t *ps, size_t n) {
     size_t new_size;
 
     if (ps->len && ps->cur > ps->data) {
@@ -354,7 +331,7 @@ _buffer_grow(parser_source_t *ps, size_t n)
 	ps->cur = ps->data;
     }
 
-    new_size = n+ps->len+1;
+    new_size = n + ps->len + 1;
 
     if (ps->size < new_size) {
 	size_t off = ps->cur - ps->data;
@@ -366,8 +343,7 @@ _buffer_grow(parser_source_t *ps, size_t n)
 
 
 static parser_source_t *
-_ps_file_open(const char *fname, const char *parent)
-{
+_ps_file_open(const char *fname, const char *parent) {
     parser_source_t *ps;
     char *full_name = NULL;
 
@@ -377,12 +353,12 @@ _ps_file_open(const char *fname, const char *parent)
 	full_name = NULL;
 
 	dir = mydirname(parent);
-	full_name = xmalloc(strlen(dir)+strlen(fname)+2);
+	full_name = xmalloc(strlen(dir) + strlen(fname) + 2);
 	sprintf(full_name, "%s/%s", dir, fname);
 	free(dir);
 	fname = full_name;
     }
-    
+
     ps = ps_new_file(fname);
     free(full_name);
     return ps;
@@ -390,15 +366,14 @@ _ps_file_open(const char *fname, const char *parent)
 
 
 static parser_source_t *
-_ps_new_zip(const char *zaname, struct zip *za, const char *fname, bool relaxed)
-{
+_ps_new_zip(const char *zaname, struct zip *za, const char *fname, bool relaxed) {
     struct zip_file *zf;
     pszip_ud_t *ud;
     int flags;
 
-    flags = (relaxed ? ZIP_FL_NOCASE|ZIP_FL_NODIR : 0); 
+    flags = (relaxed ? ZIP_FL_NOCASE | ZIP_FL_NODIR : 0);
 
-    if ((zf=zip_fopen(za, fname, flags)) == NULL) {
+    if ((zf = zip_fopen(za, fname, flags)) == NULL) {
 	int zer, ser;
 
 	zip_error_get(za, &zer, &ser);
@@ -423,7 +398,5 @@ _ps_new_zip(const char *zaname, struct zip *za, const char *fname, bool relaxed)
     ud->za = za;
     ud->zf = zf;
 
-    return ps_new(ud, (parser_source_close)pszip_close,
-		  (parser_source_open)pszip_open,
-		  (parser_source_read)pszip_read);
+    return ps_new(ud, (parser_source_close)pszip_close, (parser_source_open)pszip_open, (parser_source_read)pszip_read);
 }

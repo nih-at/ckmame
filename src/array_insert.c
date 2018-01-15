@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,8 +39,7 @@
 
 
 void *
-array_insert(array_t *a, int idx, const void *d)
-{
+array_insert(array_t *a, int idx, const void *d) {
     if (idx == -1)
 	idx = array_length(a);
 
@@ -49,9 +48,7 @@ array_insert(array_t *a, int idx, const void *d)
 
     array_grow(a, NULL);
 
-    memmove(a->data + (idx+1)*a->elem_size,
-	    a->data + idx*a->elem_size,
-	    a->elem_size * (array_length(a)-idx-1));
+    memmove(a->data + (idx + 1) * a->elem_size, a->data + idx * a->elem_size, a->elem_size * (array_length(a) - idx - 1));
 
     if (d)
 	array_set(a, idx, d);

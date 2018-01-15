@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,9 +39,7 @@
 
 
 void
-parray_sort_real(parray_t *pa, int omit_duplicates, int lo, int hi,
-		 int (*cmp)(const void *, const void *))
-{
+parray_sort_real(parray_t *pa, int omit_duplicates, int lo, int hi, int (*cmp)(const void *, const void *)) {
     int n, shrink;
     void **data;
 
@@ -52,16 +50,15 @@ parray_sort_real(parray_t *pa, int omit_duplicates, int lo, int hi,
     if (hi < lo)
 	hi = lo;
 
-    if (hi-lo < 2)
+    if (hi - lo < 2)
 	return;
 
-    data = pa->entry+lo;
-    n = ptr_sort(data, hi-lo, omit_duplicates, cmp);
-    shrink = ((hi-lo) - n);
+    data = pa->entry + lo;
+    n = ptr_sort(data, hi - lo, omit_duplicates, cmp);
+    shrink = ((hi - lo) - n);
 
     if (shrink > 0 && hi < parray_length(pa))
-	memmove(data+n, data+n+shrink,
-		(parray_length(pa)-hi) * sizeof(pa->entry[0]));
+	memmove(data + n, data + n + shrink, (parray_length(pa) - hi) * sizeof(pa->entry[0]));
 
     parray_length(pa) -= shrink;
 }

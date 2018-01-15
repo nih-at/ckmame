@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,48 +37,39 @@
 #include "file.h"
 
 bool
-file_compare_m(const file_t *fg, const file_t *fa)
-{
-    return strcmp(file_merge(fg) ? file_merge(fg) : file_name(fg),
-		  file_name(fa)) == 0;
+file_compare_m(const file_t *fg, const file_t *fa) {
+    return strcmp(file_merge(fg) ? file_merge(fg) : file_name(fg), file_name(fa)) == 0;
 }
 
 
 bool
-file_compare_msc(const file_t *fg, const file_t *fa)
-{
+file_compare_msc(const file_t *fg, const file_t *fa) {
     return file_compare_m(fg, fa) && file_compare_sc(fg, fa);
 }
 
 
 bool
-file_compare_nsc(const file_t *fg, const file_t *fa)
-{
+file_compare_nsc(const file_t *fg, const file_t *fa) {
     return file_compare_n(fg, fa) && file_compare_sc(fg, fa);
 }
 
 
 bool
-file_compare_sc(const file_t *fg, const file_t *fa)
-{
+file_compare_sc(const file_t *fg, const file_t *fa) {
     int i;
 
-    for (i=0; i<FILE_SH_MAX; i++) {
+    for (i = 0; i < FILE_SH_MAX; i++) {
 	if (!file_sh_is_set(fa, i) && i != FILE_SH_FULL)
 	    continue;
-	
-	if (file_size_known(fg) && file_size_xxx_known(fa, i)
-	    && file_size(fg) != file_size_xxx(fa, i))
+
+	if (file_size_known(fg) && file_size_xxx_known(fa, i) && file_size(fg) != file_size_xxx(fa, i))
 	    continue;
 
 	if (hashes_types(file_hashes(fg)) == 0)
 	    return true;
 
 	/* TODO: don't hardcode CRC, doesn't work for disks */
-	if ((hashes_types(file_hashes(fg))
-	     & hashes_types(file_hashes_xxx(fa, i)) & HASHES_TYPE_CRC)
-	    && (hashes_crc(file_hashes(fg))
-		== hashes_crc(file_hashes_xxx(fa, i))))
+	if ((hashes_types(file_hashes(fg)) & hashes_types(file_hashes_xxx(fa, i)) & HASHES_TYPE_CRC) && (hashes_crc(file_hashes(fg)) == hashes_crc(file_hashes_xxx(fa, i))))
 	    return true;
     }
 
@@ -87,8 +78,6 @@ file_compare_sc(const file_t *fg, const file_t *fa)
 
 
 bool
-file_sh_is_set(const file_t *f, int i)
-{
-    return file_size_xxx_known(f, i)
-	&& hashes_types(file_hashes_xxx(f, i)) != 0;
+file_sh_is_set(const file_t *f, int i) {
+    return file_size_xxx_known(f, i) && hashes_types(file_hashes_xxx(f, i)) != 0;
 }

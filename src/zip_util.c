@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,8 +43,7 @@
 
 
 struct zip *
-my_zip_open(const char *name, int flags)
-{
+my_zip_open(const char *name, int flags) {
     struct zip *z;
     char errbuf[80];
     int err;
@@ -52,9 +51,7 @@ my_zip_open(const char *name, int flags)
     z = zip_open(name, flags, &err);
     if (z == NULL) {
 	zip_error_to_str(errbuf, sizeof(errbuf), err, errno);
-	myerror(ERRDEF, "error %s zip archive '%s': %s",
-		(flags & ZIP_CREATE ? "creating" : "opening"), name,
-		errbuf);
+	myerror(ERRDEF, "error %s zip archive '%s': %s", (flags & ZIP_CREATE ? "creating" : "opening"), name, errbuf);
     }
 
     return z;
@@ -62,8 +59,7 @@ my_zip_open(const char *name, int flags)
 
 
 int
-my_zip_rename(struct zip *za, int idx, const char *name)
-{
+my_zip_rename(struct zip *za, int idx, const char *name) {
     int zerr;
     zip_int64_t idx2;
 
@@ -86,32 +82,31 @@ my_zip_rename(struct zip *za, int idx, const char *name)
 
 
 int
-my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx)
-{
+my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx) {
     char *unique, *p;
     char n[4];
     const char *name, *ext;
     int i, ret, zerr;
 
-    if ((name=zip_get_name(za, idx, 0)) == NULL)
+    if ((name = zip_get_name(za, idx, 0)) == NULL)
 	return -1;
 
-    unique = (char *)xmalloc(strlen(name)+5);
+    unique = (char *)xmalloc(strlen(name) + 5);
 
     ext = strrchr(name, '.');
     if (ext == NULL) {
 	strcpy(unique, name);
-	p = unique+strlen(unique);
+	p = unique + strlen(unique);
 	p[4] = '\0';
     }
     else {
-	strncpy(unique, name, ext-name);
-	p = unique + (ext-name);
-	strcpy(p+4, ext);
-    }	
+	strncpy(unique, name, ext - name);
+	p = unique + (ext - name);
+	strcpy(p + 4, ext);
+    }
     *(p++) = '-';
 
-    for (i=0; i<1000; i++) {
+    for (i = 0; i < 1000; i++) {
 	sprintf(n, "%03d", i);
 	strncpy(p, n, 3);
 

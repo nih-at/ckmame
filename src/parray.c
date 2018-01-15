@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,15 +38,14 @@
 
 
 void
-parray_free(parray_t *pa, void (*fn)(void *))
-{
+parray_free(parray_t *pa, void (*fn)(void *)) {
     int i;
-    
+
     if (pa == NULL)
 	return;
 
     if (fn) {
-	for (i=0; i<parray_length(pa); i++)
+	for (i = 0; i < parray_length(pa); i++)
 	    fn(parray_get(pa, i));
     }
 
@@ -56,11 +55,10 @@ parray_free(parray_t *pa, void (*fn)(void *))
 
 
 parray_t *
-parray_new_sized(int n)
-{
+parray_new_sized(int n) {
     parray_t *pa;
 
-    if (n<0)
+    if (n < 0)
 	n = 0;
 
     pa = xmalloc(sizeof(*pa));
@@ -68,7 +66,7 @@ parray_new_sized(int n)
     if (n == 0)
 	pa->entry = 0;
     else
-	pa->entry = xmalloc(n*sizeof(pa->entry[0]));
+	pa->entry = xmalloc(n * sizeof(pa->entry[0]));
     pa->nentry = 0;
     pa->alloc_len = n;
 

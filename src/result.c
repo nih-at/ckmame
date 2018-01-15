@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,14 +32,13 @@
 */
 
 
-#include "globals.h"
 #include "result.h"
+#include "globals.h"
 #include "xmalloc.h"
 
 
 void
-result_free(result_t *res)
-{
+result_free(result_t *res) {
     if (res == NULL)
 	return;
 
@@ -51,10 +50,8 @@ result_free(result_t *res)
 }
 
 
-
 result_t *
-result_new(const game_t *g, const archive_t *a, const images_t *im)
-{
+result_new(const game_t *g, const archive_t *a, const images_t *im) {
     result_t *res;
 
     res = (result_t *)xmalloc(sizeof(*res));
@@ -64,14 +61,14 @@ result_new(const game_t *g, const archive_t *a, const images_t *im)
     result_files(res) = NULL;
     result_disks(res) = NULL;
     result_images(res) = NULL;
-    
+
     if (g) {
 	res->roms = match_array_new(game_num_files(g, file_type));
 
 	if (game_num_disks(g) > 0 && file_type == TYPE_ROM)
 	    result_disks(res) = match_disk_array_new(game_num_disks(g));
     }
-    
+
     if (a)
 	result_files(res) = file_status_array_new(archive_num_files(a));
 

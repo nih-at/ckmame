@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -78,57 +78,27 @@ static int text_name(struct ctx *, const char *);
 static int text_version(struct ctx *, const char *);
 
 
-#define XA(f)	((xmlu_attr_cb)f)
-#define XC(f)	((xmlu_tag_cb)f)
-#define XO(f)	((xmlu_tag_cb)f)
-#define XT(f)	((xmlu_text_cb)f)
+#define XA(f) ((xmlu_attr_cb)f)
+#define XC(f) ((xmlu_tag_cb)f)
+#define XO(f) ((xmlu_tag_cb)f)
+#define XT(f) ((xmlu_text_cb)f)
 
-static const xmlu_attr_t attr_bit[] = {
-    { "offset",       XA(test_offset), 0, 0 },
-    { "mask",         XA(test_mask), 0, 0 },
-    { "value",        XA(test_value), 0, 0 },
-    { "result",       XA(test_result), 0, 0 },
-    { NULL }
-};
+static const xmlu_attr_t attr_bit[] = {{"offset", XA(test_offset), 0, 0}, {"mask", XA(test_mask), 0, 0}, {"value", XA(test_value), 0, 0}, {"result", XA(test_result), 0, 0}, {NULL}};
 
-static const xmlu_attr_t attr_data[] = {
-    { "offset",       XA(test_offset), 0, 0 },
-    { "value",        XA(test_value), 0, 0 },
-    { "result",       XA(test_result), 0, 0 },
-    { NULL }
-};
+static const xmlu_attr_t attr_data[] = {{"offset", XA(test_offset), 0, 0}, {"value", XA(test_value), 0, 0}, {"result", XA(test_result), 0, 0}, {NULL}};
 
-static const xmlu_attr_t attr_file[] = {
-    { "size",         XA(test_size), 0, 0 },
-    { "operator",     XA(test_operator), 0, 0 },
-    { "result",       XA(test_result), 0, 0 },
-    { NULL }
-};
+static const xmlu_attr_t attr_file[] = {{"size", XA(test_size), 0, 0}, {"operator", XA(test_operator), 0, 0}, {"result", XA(test_result), 0, 0}, {NULL}};
 
-static const xmlu_attr_t attr_rule[] = {
-    { "start_offset", XA(rule_start_offset), 0, 0 },
-    { "end_offset",   XA(rule_end_offset), 0, 0 },
-    { "operation",    XA(rule_operation), 0, 0 },
-    { NULL }
-};
+static const xmlu_attr_t attr_rule[] = {{"start_offset", XA(rule_start_offset), 0, 0}, {"end_offset", XA(rule_end_offset), 0, 0}, {"operation", XA(rule_operation), 0, 0}, {NULL}};
 
 static const xmlu_entity_t entities[] = {
-    { "and", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_AND },
-    { "author", NULL, NULL, NULL, XT(text_author), 0 },
-    { "data", attr_data, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_DATA },
-    { "file", attr_file, XO(test_open), XC(test_close), NULL, 0 },
-    { "name", NULL, NULL, NULL, XT(text_name), 0 },
-    { "or", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_OR },
-    { "rule", attr_rule, XO(rule_open), XC(rule_close), NULL, 0 },
-    { "version", NULL, NULL, NULL, XT(text_version), 0 },
-    { "xor", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_XOR },
+    {"and", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_AND}, {"author", NULL, NULL, NULL, XT(text_author), 0}, {"data", attr_data, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_DATA}, {"file", attr_file, XO(test_open), XC(test_close), NULL, 0}, {"name", NULL, NULL, NULL, XT(text_name), 0}, {"or", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_OR}, {"rule", attr_rule, XO(rule_open), XC(rule_close), NULL, 0}, {"version", NULL, NULL, NULL, XT(text_version), 0}, {"xor", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_XOR},
 };
-static const int nentities = sizeof(entities)/sizeof(entities[0]);
+static const int nentities = sizeof(entities) / sizeof(entities[0]);
 
 
 detector_t *
-detector_parse_ps(parser_source_t *ps)
-{
+detector_parse_ps(parser_source_t *ps) {
     struct ctx ctx;
 
     ctx.d = detector_new();
@@ -146,14 +116,12 @@ detector_parse_ps(parser_source_t *ps)
 
 
 static int
-parse_enum(int *ep, const char *value,
-	   const struct str_enum *enums, int nenums)
-{
+parse_enum(int *ep, const char *value, const struct str_enum *enums, int nenums) {
     int i;
 
     /* TODO: use bsearch? */
 
-    for (i=0; i<nenums; i++) {
+    for (i = 0; i < nenums; i++) {
 	if (strcmp(value, enums[i].name) == 0) {
 	    *ep = enums[i].value;
 	    return 0;
@@ -166,8 +134,7 @@ parse_enum(int *ep, const char *value,
 
 
 static int
-parse_hex(detector_test_t *dt, uint8_t **vp, const char *value)
-{
+parse_hex(detector_test_t *dt, uint8_t **vp, const char *value) {
     size_t len;
     uint8_t *v;
 
@@ -198,8 +165,7 @@ parse_hex(detector_test_t *dt, uint8_t **vp, const char *value)
 
 
 static int
-parse_number(int64_t *offsetp, const char *value)
-{
+parse_number(int64_t *offsetp, const char *value) {
     intmax_t i;
     char *end;
 
@@ -227,8 +193,7 @@ parse_number(int64_t *offsetp, const char *value)
 
 
 static int
-parse_offset(int64_t *offsetp, const char *value)
-{
+parse_offset(int64_t *offsetp, const char *value) {
     if (strcmp(value, "EOF") == 0) {
 	*offsetp = DETECTOR_OFFSET_EOF;
 	return 0;
@@ -239,8 +204,7 @@ parse_offset(int64_t *offsetp, const char *value)
 
 
 static int
-parse_size(int64_t *offsetp, const char *value)
-{
+parse_size(int64_t *offsetp, const char *value) {
     if (strcmp(value, "PO2") == 0) {
 	*offsetp = DETECTOR_SIZE_PO2;
 	return 0;
@@ -251,8 +215,7 @@ parse_size(int64_t *offsetp, const char *value)
 
 
 static int
-rule_close(struct ctx *ctx, int arg1)
-{
+rule_close(struct ctx *ctx, int arg1) {
     ctx->dr = NULL;
 
     return 0;
@@ -260,15 +223,13 @@ rule_close(struct ctx *ctx, int arg1)
 
 
 static int
-rule_end_offset(struct ctx *ctx, int arg1, int arg2, const char *value)
-{
+rule_end_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
     return parse_offset(&detector_rule_end_offset(ctx->dr), value);
 }
 
 
 static int
-rule_open(struct ctx *ctx, int arg1)
-{
+rule_open(struct ctx *ctx, int arg1) {
     ctx->dr = array_grow(detector_rules(ctx->d), detector_rule_init);
 
     return 0;
@@ -276,15 +237,9 @@ rule_open(struct ctx *ctx, int arg1)
 
 
 static int
-rule_operation(struct ctx *ctx, int arg1, int arg2, const char *value)
-{
-    static const struct str_enum op[] = {
-	{ "bitswap", DETECTOR_OP_BITSWAP },
-	{ "byteswap", DETECTOR_OP_BYTESWAP },
-	{ "none", DETECTOR_OP_NONE },
-	{ "wordswap", DETECTOR_OP_WORDSWAP }
-    };
-    static const int nop = sizeof(op)/sizeof(op[0]);
+rule_operation(struct ctx *ctx, int arg1, int arg2, const char *value) {
+    static const struct str_enum op[] = {{"bitswap", DETECTOR_OP_BITSWAP}, {"byteswap", DETECTOR_OP_BYTESWAP}, {"none", DETECTOR_OP_NONE}, {"wordswap", DETECTOR_OP_WORDSWAP}};
+    static const int nop = sizeof(op) / sizeof(op[0]);
 
     int i;
 
@@ -297,15 +252,13 @@ rule_operation(struct ctx *ctx, int arg1, int arg2, const char *value)
 
 
 static int
-rule_start_offset(struct ctx *ctx, int arg1, int arg2, const char *value)
-{
+rule_start_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
     return parse_offset(&detector_rule_start_offset(ctx->dr), value);
 }
 
 
 static int
-test_close(struct ctx *ctx, int arg1)
-{
+test_close(struct ctx *ctx, int arg1) {
     ctx->dt = NULL;
 
     return 0;
@@ -313,22 +266,19 @@ test_close(struct ctx *ctx, int arg1)
 
 
 static int
-test_mask(struct ctx *ctx, int arg1, int arg2, const char *value)
-{
+test_mask(struct ctx *ctx, int arg1, int arg2, const char *value) {
     return parse_hex(ctx->dt, &detector_test_mask(ctx->dt), value);
 }
 
 
 static int
-test_offset(struct ctx *ctx, int arg1, int arg2, const char *value)
-{
+test_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
     return parse_offset(&detector_test_offset(ctx->dt), value);
 }
 
 
 static int
-test_open(struct ctx *ctx, int type)
-{
+test_open(struct ctx *ctx, int type) {
     ctx->dt = array_grow(detector_rule_tests(ctx->dr), detector_test_init);
     detector_test_type(ctx->dt) = type;
 
@@ -337,14 +287,13 @@ test_open(struct ctx *ctx, int type)
 
 
 static int
-test_operator(struct ctx *ctx, int arg1, int arg2, const char *value)
-{
+test_operator(struct ctx *ctx, int arg1, int arg2, const char *value) {
     static const struct str_enum en[] = {
-	{ "equal", DETECTOR_TEST_FILE_EQ },
-	{ "greater", DETECTOR_TEST_FILE_GR },
-	{ "less", DETECTOR_TEST_FILE_LE },
+	{"equal", DETECTOR_TEST_FILE_EQ},
+	{"greater", DETECTOR_TEST_FILE_GR},
+	{"less", DETECTOR_TEST_FILE_LE},
     };
-    static const int nen = sizeof(en)/sizeof(en[0]);
+    static const int nen = sizeof(en) / sizeof(en[0]);
 
     int i;
 
@@ -357,13 +306,12 @@ test_operator(struct ctx *ctx, int arg1, int arg2, const char *value)
 
 
 static int
-test_result(struct ctx *ctx, int arg1, int arg2, const char *value)
-{
+test_result(struct ctx *ctx, int arg1, int arg2, const char *value) {
     static const struct str_enum en[] = {
-	{ "false", false },
-	{ "true", true },
+	{"false", false},
+	{"true", true},
     };
-    static const int nen = sizeof(en)/sizeof(en[0]);
+    static const int nen = sizeof(en) / sizeof(en[0]);
 
     int i;
 
@@ -376,22 +324,19 @@ test_result(struct ctx *ctx, int arg1, int arg2, const char *value)
 
 
 static int
-test_size(struct ctx *ctx, int arg1, int arg2, const char *value)
-{
+test_size(struct ctx *ctx, int arg1, int arg2, const char *value) {
     return parse_size(&detector_test_size(ctx->dt), value);
 }
 
 
 static int
-test_value(struct ctx *ctx, int arg1, int arg2, const char *value)
-{
+test_value(struct ctx *ctx, int arg1, int arg2, const char *value) {
     return parse_hex(ctx->dt, &detector_test_value(ctx->dt), value);
 }
 
 
 static int
-text_author(struct ctx *ctx, const char *txt)
-{
+text_author(struct ctx *ctx, const char *txt) {
     detector_author(ctx->d) = xstrdup(txt);
 
     return 0;
@@ -399,8 +344,7 @@ text_author(struct ctx *ctx, const char *txt)
 
 
 static int
-text_name(struct ctx *ctx, const char *txt)
-{
+text_name(struct ctx *ctx, const char *txt) {
     detector_name(ctx->d) = xstrdup(txt);
 
     return 0;
@@ -408,8 +352,7 @@ text_name(struct ctx *ctx, const char *txt)
 
 
 static int
-text_version(struct ctx *ctx, const char *txt)
-{
+text_version(struct ctx *ctx, const char *txt) {
     detector_version(ctx->d) = xstrdup(txt);
 
     return 0;

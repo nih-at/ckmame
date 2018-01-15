@@ -57,8 +57,7 @@ static int dbh_cache_write_archive(dbh_t *, int, const char *, time_t, off_t);
 
 
 int
-dbh_cache_close_all(void)
-{
+dbh_cache_close_all(void) {
     int err = 0;
     int i;
 
@@ -86,12 +85,11 @@ dbh_cache_close_all(void)
 
 
 int
-dbh_cache_delete(dbh_t *dbh, int id)
-{
+dbh_cache_delete(dbh_t *dbh, int id) {
     sqlite3_stmt *stmt;
 
     if (dbh_cache_delete_files(dbh, id) < 0)
-        return -1;
+	return -1;
 
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_DELETE_ARCHIVE)) == NULL)
 	return -1;
@@ -103,8 +101,7 @@ dbh_cache_delete(dbh_t *dbh, int id)
 
 
 int
-dbh_cache_delete_by_name(dbh_t *dbh, const char *name)
-{
+dbh_cache_delete_by_name(dbh_t *dbh, const char *name) {
     int id = dbh_cache_get_archive_id(dbh, name);
 
     if (id < 0) {
@@ -115,8 +112,8 @@ dbh_cache_delete_by_name(dbh_t *dbh, const char *name)
 }
 
 
-int dbh_cache_delete_files(dbh_t *dbh, int id)
-{
+int
+dbh_cache_delete_files(dbh_t *dbh, int id) {
     sqlite3_stmt *stmt;
 
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_DELETE_FILE)) == NULL)
@@ -129,8 +126,7 @@ int dbh_cache_delete_files(dbh_t *dbh, int id)
 
 
 int
-dbh_cache_get_archive_id(dbh_t *dbh, const char *name)
-{
+dbh_cache_get_archive_id(dbh_t *dbh, const char *name) {
     sqlite3_stmt *stmt;
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_ARCHIVE_ID)) == NULL) {
 	return 0;
@@ -138,12 +134,12 @@ dbh_cache_get_archive_id(dbh_t *dbh, const char *name)
 
     char *archive_name = dbh_cache_archive_name(dbh, name);
     if (archive_name == NULL) {
-        return 0;
+	return 0;
     }
 
     if (sqlite3_bind_text(stmt, 1, archive_name, -1, SQLITE_STATIC) != SQLITE_OK) {
-        free(archive_name);
-        return 0;
+	free(archive_name);
+	return 0;
     }
 
     if (sqlite3_step(stmt) != SQLITE_ROW) {
@@ -158,8 +154,7 @@ dbh_cache_get_archive_id(dbh_t *dbh, const char *name)
 
 
 bool
-dbh_cache_get_archive_last_change(dbh_t *dbh, int archive_id, time_t *mtime, off_t *size)
-{
+dbh_cache_get_archive_last_change(dbh_t *dbh, int archive_id, time_t *mtime, off_t *size) {
     sqlite3_stmt *stmt;
 
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_ARCHIVE_LAST_CHANGE)) == NULL || sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK) {
@@ -178,14 +173,13 @@ dbh_cache_get_archive_last_change(dbh_t *dbh, int archive_id, time_t *mtime, off
 
 
 dbh_t *
-dbh_cache_get_db_for_archive(const char *name)
-{
+dbh_cache_get_db_for_archive(const char *name) {
     int i;
 
     if (cache_directories == NULL)
 	return NULL;
 
-    for (i=0; i<array_length(cache_directories); i++) {
+    for (i = 0; i < array_length(cache_directories); i++) {
 	cache_directory_t *cd = array_get(cache_directories, i);
 	if (strncmp(cd->name, name, strlen(cd->name)) == 0) {
 	    if (!cd->initialized) {
@@ -204,7 +198,7 @@ dbh_cache_get_db_for_archive(const char *name)
 		    return NULL;
 		}
 
-		if ((cd->dbh=dbh_open(dbname, DBH_FMT_DIR|DBH_CREATE|DBH_WRITE)) == NULL) {
+		if ((cd->dbh = dbh_open(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE)) == NULL) {
 		    myerror(ERRDB, "can't open rom directory database for '%s'", cd->name);
 		    free(dbname);
 		    return NULL;
@@ -221,8 +215,7 @@ dbh_cache_get_db_for_archive(const char *name)
 
 
 bool
-dbh_cache_is_empty(dbh_t *dbh)
-{
+dbh_cache_is_empty(dbh_t *dbh) {
     sqlite3_stmt *stmt;
 
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_COUNT_ARCHIVES)) == NULL)
@@ -236,8 +229,7 @@ dbh_cache_is_empty(dbh_t *dbh)
 
 
 parray_t *
-dbh_cache_list_archives(dbh_t *dbh)
-{
+dbh_cache_list_archives(dbh_t *dbh) {
     sqlite3_stmt *stmt;
     parray_t *archives;
     int ret;
@@ -250,7 +242,7 @@ dbh_cache_list_archives(dbh_t *dbh)
 	return NULL;
     }
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	parray_push(archives, sq3_get_string(stmt, 0));
     }
 
@@ -264,8 +256,7 @@ dbh_cache_list_archives(dbh_t *dbh)
 
 
 int
-dbh_cache_read(dbh_t *dbh, const char *name, array_t *files)
-{
+dbh_cache_read(dbh_t *dbh, const char *name, array_t *files) {
     sqlite3_stmt *stmt;
     int ret;
     int archive_id;
@@ -280,7 +271,7 @@ dbh_cache_read(dbh_t *dbh, const char *name, array_t *files)
 
     array_truncate(files, 0, file_finalize);
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	file_t *f = (file_t *)array_grow(files, file_init);
 
 	file_name(f) = sq3_get_string(stmt, 0);
@@ -300,8 +291,7 @@ dbh_cache_read(dbh_t *dbh, const char *name, array_t *files)
 
 
 int
-dbh_cache_register_cache_directory(const char *directory_name)
-{
+dbh_cache_register_cache_directory(const char *directory_name) {
     if (directory_name == NULL) {
 	errno = EINVAL;
 	myerror(ERRDEF, "directory_name can't be NULL");
@@ -313,7 +303,7 @@ dbh_cache_register_cache_directory(const char *directory_name)
 
     size_t dn_len = strlen(directory_name);
     char *name;
-    if (directory_name[dn_len-1] == '/')
+    if (directory_name[dn_len - 1] == '/')
 	name = xstrdup(directory_name);
     else {
 	if (xasprintf(&name, "%s/", directory_name) < 0) {
@@ -324,7 +314,7 @@ dbh_cache_register_cache_directory(const char *directory_name)
     }
 
     int i;
-    for (i=0; i<array_length(cache_directories); i++) {
+    for (i = 0; i < array_length(cache_directories); i++) {
 	cache_directory_t *cd = array_get(cache_directories, i);
 	size_t cd_len = strlen(cd->name);
 
@@ -349,25 +339,24 @@ dbh_cache_register_cache_directory(const char *directory_name)
 
 
 int
-dbh_cache_write(dbh_t *dbh, int id, const archive_t *a)
-{
+dbh_cache_write(dbh_t *dbh, int id, const archive_t *a) {
     sqlite3_stmt *stmt;
     int i;
 
     if (id != 0) {
-        if (dbh_cache_delete(dbh, id) < 0) {
+	if (dbh_cache_delete(dbh, id) < 0) {
 	    return -1;
-        }
+	}
     }
 
     char *name = dbh_cache_archive_name(dbh, archive_name(a));
     if (name == NULL) {
-        return -1;
+	return -1;
     }
 
     if ((id = dbh_cache_write_archive(dbh, id, name, archive_mtime(a), archive_size(a))) < 0) {
-        free(name);
-        return -1;
+	free(name);
+	return -1;
     }
 
     free(name);
@@ -376,21 +365,14 @@ dbh_cache_write(dbh_t *dbh, int id, const archive_t *a)
 	return -1;
 
     if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK)
-        return -1;
+	return -1;
 
-    for (i=0; i<array_length(archive_files(a)); i++) {
-        file_t *f = archive_file(a, i);
+    for (i = 0; i < array_length(archive_files(a)); i++) {
+	file_t *f = archive_file(a, i);
 
-        if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK
-            || sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK
-            || sqlite3_bind_int64(stmt, 4, file_mtime(f)) != SQLITE_OK
-            || sqlite3_bind_int(stmt, 5, file_status(f)) != SQLITE_OK
-            || sq3_set_int64_default(stmt, 6, file_size(f), SIZE_UNKNOWN) != SQLITE_OK
-            || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK
-            || sqlite3_step(stmt) != SQLITE_DONE
-            || sqlite3_reset(stmt) != SQLITE_OK) {
-            return -1;
-        }
+	if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK || sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, file_mtime(f)) != SQLITE_OK || sqlite3_bind_int(stmt, 5, file_status(f)) != SQLITE_OK || sq3_set_int64_default(stmt, 6, file_size(f), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+	    return -1;
+	}
     }
 
     return id;
@@ -398,28 +380,27 @@ dbh_cache_write(dbh_t *dbh, int id, const archive_t *a)
 
 
 static char *
-dbh_cache_archive_name(dbh_t *dbh, const char *name)
-{
+dbh_cache_archive_name(dbh_t *dbh, const char *name) {
     int i;
 
-    for (i=0; i<array_length(cache_directories); i++) {
-        cache_directory_t *cd = array_get(cache_directories, i);
-        if (strncmp(cd->name, name, strlen(cd->name)) == 0) {
-            char *dbname = strdup(name + strlen(cd->name));
-            if (dbname == NULL) {
-                return NULL;
-            }
+    for (i = 0; i < array_length(cache_directories); i++) {
+	cache_directory_t *cd = array_get(cache_directories, i);
+	if (strncmp(cd->name, name, strlen(cd->name)) == 0) {
+	    char *dbname = strdup(name + strlen(cd->name));
+	    if (dbname == NULL) {
+		return NULL;
+	    }
 
-            if (!roms_unzipped) {
-                size_t len = strlen(dbname);
+	    if (!roms_unzipped) {
+		size_t len = strlen(dbname);
 
-                if (len >= 4 && strcmp(dbname+len-4, ".zip") == 0) {
-                    dbname[len-4] = '\0';
-                }
-            }
+		if (len >= 4 && strcmp(dbname + len - 4, ".zip") == 0) {
+		    dbname[len - 4] = '\0';
+		}
+	    }
 
-            return dbname;
-        }
+	    return dbname;
+	}
     }
 
     return NULL;
@@ -427,8 +408,7 @@ dbh_cache_archive_name(dbh_t *dbh, const char *name)
 
 
 static int
-dbh_cache_write_archive(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size)
-{
+dbh_cache_write_archive(dbh_t *dbh, int id, const char *name, time_t mtime, off_t size) {
     sqlite3_stmt *stmt;
 
     stmt = dbh_get_statement(dbh, DBH_STMT_DIR_INSERT_ARCHIVE_ID);

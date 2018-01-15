@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,10 +38,9 @@
 
 
 int
-file_location_cmp(const file_location_t *a, const file_location_t *b)
-{
+file_location_cmp(const file_location_t *a, const file_location_t *b) {
     int ret;
-    
+
     ret = strcmp(file_location_name(a), file_location_name(b));
     if (ret == 0)
 	ret = file_location_index(a) - file_location_index(b);
@@ -50,10 +49,8 @@ file_location_cmp(const file_location_t *a, const file_location_t *b)
 }
 
 
-
 void
-file_location_free(file_location_t *e)
-{
+file_location_free(file_location_t *e) {
     if (e == NULL)
 	return;
 
@@ -63,8 +60,7 @@ file_location_free(file_location_t *e)
 
 
 file_location_t *
-file_location_new(const char *name, int idx)
-{
+file_location_new(const char *name, int idx) {
     file_location_t *e;
 
     e = xmalloc(sizeof(*e));

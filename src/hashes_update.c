@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -62,28 +62,26 @@ struct hashes_update {
 
 
 void
-hashes_update(struct hashes_update *hu, const unsigned char *buf, size_t len)
-{
+hashes_update(struct hashes_update *hu, const unsigned char *buf, size_t len) {
     size_t i = 0;
 
     while (i < len) {
-        size_t n = len - i > INT_MAX ? UINT_MAX : len - i;
+	size_t n = len - i > INT_MAX ? UINT_MAX : len - i;
 
-        if (hu->h->types & HASHES_TYPE_CRC)
-            hu->crc = (uint32_t)crc32(hu->crc, (const Bytef *)buf, (unsigned int )n);
-        if (hu->h->types & HASHES_TYPE_MD5)
-            MD5Update(&hu->md5, buf, (unsigned int )n);
-        if (hu->h->types & HASHES_TYPE_SHA1)
-            SHA1Update(&hu->sha1, buf, (unsigned int )n);
+	if (hu->h->types & HASHES_TYPE_CRC)
+	    hu->crc = (uint32_t)crc32(hu->crc, (const Bytef *)buf, (unsigned int)n);
+	if (hu->h->types & HASHES_TYPE_MD5)
+	    MD5Update(&hu->md5, buf, (unsigned int)n);
+	if (hu->h->types & HASHES_TYPE_SHA1)
+	    SHA1Update(&hu->sha1, buf, (unsigned int)n);
 
-        i += n;
+	i += n;
     }
 }
 
 
 void
-hashes_update_final(struct hashes_update *hu)
-{
+hashes_update_final(struct hashes_update *hu) {
     if (hu->h->types & HASHES_TYPE_CRC)
 	hu->h->crc = hu->crc;
     if (hu->h->types & HASHES_TYPE_MD5)
@@ -96,8 +94,7 @@ hashes_update_final(struct hashes_update *hu)
 
 
 struct hashes_update *
-hashes_update_new(struct hashes *h)
-{
+hashes_update_new(struct hashes *h) {
     struct hashes_update *hu;
 
     hu = xmalloc(sizeof(*hu));

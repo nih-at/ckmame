@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,14 +42,13 @@
 
 
 int
-archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h)
-{
+archive_file_compare_hashes(archive_t *a, int i, const hashes_t *h) {
     hashes_t *rh;
 
     rh = file_hashes(archive_file(a, i));
 
     if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h))
-	archive_file_compute_hashes(a, i, hashes_types(h)|romdb_hashtypes(db, TYPE_ROM));
+	archive_file_compute_hashes(a, i, hashes_types(h) | romdb_hashtypes(db, TYPE_ROM));
 
     if (file_status(archive_file(a, i)) != STATUS_OK)
 	return HASHES_CMP_NOCOMMON;

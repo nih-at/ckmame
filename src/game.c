@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,8 +39,7 @@
 
 
 game_t *
-game_new(void)
-{
+game_new(void) {
     game_t *g;
     int i;
 
@@ -48,12 +47,12 @@ game_new(void)
 
     g->id = -1;
     g->name = g->description = NULL;
-    
-    for (i=0; i<GAME_RS_MAX; i++) {
+
+    for (i = 0; i < GAME_RS_MAX; i++) {
 	g->rs[i].cloneof[0] = g->rs[i].cloneof[1] = NULL;
 	g->rs[i].files = array_new(sizeof(file_t));
     }
-    
+
     g->disks = array_new(sizeof(disk_t));
 
     return g;
@@ -61,8 +60,7 @@ game_new(void)
 
 
 void
-game_free(game_t *g)
-{
+game_free(game_t *g) {
     int i;
 
     if (g == NULL)
@@ -71,7 +69,7 @@ game_free(game_t *g)
     free(g->name);
     free(g->description);
 
-    for (i=0; i<GAME_RS_MAX; i++) {
+    for (i = 0; i < GAME_RS_MAX; i++) {
 	free(g->rs[i].cloneof[0]);
 	free(g->rs[i].cloneof[1]);
 	array_free(g->rs[i].files, file_finalize);

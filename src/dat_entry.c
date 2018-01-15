@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,19 +38,15 @@
 
 
 void
-dat_entry_init(dat_entry_t *de)
-{
+dat_entry_init(dat_entry_t *de) {
     de->name = de->description = de->version = NULL;
 }
 
 
-#define de_copy_member(X)					\
-	(t->X = (hi && hi->X ? xstrdup(hi->X) 			\
-		 : lo && lo->X ? xstrdup(lo->X) : NULL))
+#define de_copy_member(X) (t->X = (hi && hi->X ? xstrdup(hi->X) : lo && lo->X ? xstrdup(lo->X) : NULL))
 
 void
-dat_entry_merge(dat_entry_t *t, const dat_entry_t *hi, const dat_entry_t *lo)
-{
+dat_entry_merge(dat_entry_t *t, const dat_entry_t *hi, const dat_entry_t *lo) {
     dat_entry_init(t);
 
     de_copy_member(name);

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,8 +41,7 @@
 #include "sq_util.h"
 
 array_t *
-romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const hashes_t *hash)
-{
+romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const hashes_t *hash) {
     sqlite3_stmt *stmt;
     array_t *a;
     file_location_t *fl;
@@ -51,14 +50,12 @@ romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const hashes_t *hash)
     if ((stmt = dbh_get_statement(romdb_dbh(db), dbh_stmt_with_hashes_and_size(DBH_STMT_QUERY_FILE_FBH, hash, 0))) == NULL)
 	return NULL;
 
-    if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, STATUS_NODUMP) != SQLITE_OK
-	|| sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK)
+    if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 2, STATUS_NODUMP) != SQLITE_OK || sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK)
 	return NULL;
 
     a = array_new(sizeof(file_location_t));
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	fl = array_grow(a, NULL);
 	file_location_name(fl) = sq3_get_string(stmt, 0);
 	file_location_index(fl) = sqlite3_column_int(stmt, 1);

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,30 +42,28 @@
 #include "xmalloc.h"
 
 int
-xasprintf(char **ret, const char *format,  ...)
-{
+xasprintf(char **ret, const char *format, ...) {
     va_list va;
     int retval;
 
     va_start(va, format);
 
-    if (((retval=vasprintf(ret, format, va)) < 0) && (errno == ENOMEM)) {
+    if (((retval = vasprintf(ret, format, va)) < 0) && (errno == ENOMEM)) {
 	myerror(ERRDEF, "malloc failure");
 	exit(1);
     }
 
     va_end(va);
-    
+
     return retval;
 }
 
 
 void *
-xmalloc(size_t size)
-{
+xmalloc(size_t size) {
     void *p;
 
-    if ((p=malloc(size)) == NULL) {
+    if ((p = malloc(size)) == NULL) {
 	myerror(ERRDEF, "malloc failure");
 	exit(1);
     }
@@ -75,10 +73,9 @@ xmalloc(size_t size)
 
 
 void *
-xmemdup(const void *src, size_t size)
-{
+xmemdup(const void *src, size_t size) {
     void *dst;
-    
+
     dst = xmalloc(size);
     memcpy(dst, src, size);
 
@@ -87,30 +84,28 @@ xmemdup(const void *src, size_t size)
 
 
 char *
-xstrdup(const char *str)
-{
+xstrdup(const char *str) {
     char *p;
 
     if (str == NULL)
 	return NULL;
-    
-    if ((p=malloc(strlen(str)+1)) == NULL) {
+
+    if ((p = malloc(strlen(str) + 1)) == NULL) {
 	myerror(ERRDEF, "malloc failure");
 	exit(1);
     }
 
     strcpy(p, str);
-    
+
     return p;
 }
 
 void *
-xrealloc(void *p, size_t size)
-{
+xrealloc(void *p, size_t size) {
     if (p == NULL)
 	return xmalloc(size);
 
-    if ((p=realloc(p, size)) == NULL) {
+    if ((p = realloc(p, size)) == NULL) {
 	myerror(ERRDEF, "malloc failure");
 	exit(1);
     }

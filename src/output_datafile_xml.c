@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -58,8 +58,7 @@ static int output_datafile_xml_header(output_context_t *, dat_entry_t *);
 
 
 output_context_t *
-output_datafile_xml_new(const char *fname, int flags)
-{
+output_datafile_xml_new(const char *fname, int flags) {
     output_context_xml_t *ctx;
     FILE *f;
 
@@ -70,7 +69,7 @@ output_datafile_xml_new(const char *fname, int flags)
 	fname = "*stdout*";
     }
     else {
-	if ((f=fopen(fname, "w")) == NULL) {
+	if ((f = fopen(fname, "w")) == NULL) {
 	    myerror(ERRDEF, "cannot create '%s': %s", fname, strerror(errno));
 	    free(ctx);
 	    return NULL;
@@ -90,8 +89,7 @@ output_datafile_xml_new(const char *fname, int flags)
 
 
 static int
-output_datafile_xml_close(output_context_t *out)
-{
+output_datafile_xml_close(output_context_t *out) {
     output_context_xml_t *ctx;
     int ret;
 
@@ -114,8 +112,7 @@ output_datafile_xml_close(output_context_t *out)
 
 
 static int
-output_datafile_xml_game(output_context_t *out, game_t *g)
-{
+output_datafile_xml_game(output_context_t *out, game_t *g) {
     output_context_xml_t *ctx;
     file_t *r;
     disk_t *d;
@@ -129,20 +126,17 @@ output_datafile_xml_game(output_context_t *out, game_t *g)
     output_cond_print_string(ctx->f, " sampleof=\"", game_cloneof(g, TYPE_SAMPLE, 0), "\"");
     fputs(">\n", ctx->f);
     /* description is actually required */
-    fprintf(ctx->f, "\t\t<description>%s</description>\n",
-	    game_description(g) ? game_description(g) : game_name(g));
-    for (i=0; i<game_num_files(g, TYPE_ROM); i++) {
+    fprintf(ctx->f, "\t\t<description>%s</description>\n", game_description(g) ? game_description(g) : game_name(g));
+    for (i = 0; i < game_num_files(g, TYPE_ROM); i++) {
 	r = game_file(g, TYPE_ROM, i);
-	
+
 	fprintf(ctx->f, "\t\t<rom name=\"%s\"", file_name(r));
 	fprintf(ctx->f, " size=\"%" PRIu64 "\"", file_size(r));
 	output_cond_print_hash(ctx->f, " crc=\"", HASHES_TYPE_CRC, file_hashes(r), "\"");
 	output_cond_print_hash(ctx->f, " sha1=\"", HASHES_TYPE_SHA1, file_hashes(r), "\"");
 	output_cond_print_hash(ctx->f, " md5=\"", HASHES_TYPE_MD5, file_hashes(r), "\"");
 	if (file_where(r) != FILE_INZIP)
-	    output_cond_print_string(ctx->f, " merge=\"",
-			 file_merge(r) ? file_merge(r) : file_name(r),
-			 "\"");
+	    output_cond_print_string(ctx->f, " merge=\"", file_merge(r) ? file_merge(r) : file_name(r), "\"");
 	switch (file_status(r)) {
 	case STATUS_OK:
 	    fl = NULL;
@@ -157,7 +151,7 @@ output_datafile_xml_game(output_context_t *out, game_t *g)
 	output_cond_print_string(ctx->f, " status=\"", fl, "\"");
 	fputs("/>\n", ctx->f);
     }
-    for (i=0; i<game_num_disks(g); i++) {
+    for (i = 0; i < game_num_disks(g); i++) {
 	d = game_disk(g, i);
 
 	fprintf(ctx->f, "\t\t<disk name=\"%s\"", disk_name(d));
@@ -177,7 +171,7 @@ output_datafile_xml_game(output_context_t *out, game_t *g)
 	output_cond_print_string(ctx->f, " status=\"", fl, "\"");
 	fputs("/>\n", ctx->f);
     }
-    for (i=0; i<game_num_files(g, TYPE_SAMPLE); i++) {
+    for (i = 0; i < game_num_files(g, TYPE_SAMPLE); i++) {
 	r = game_file(g, TYPE_SAMPLE, i);
 	fprintf(ctx->f, "\t\t<sample name=\"%s\"/>\n", file_name(r));
     }
@@ -188,13 +182,13 @@ output_datafile_xml_game(output_context_t *out, game_t *g)
 
 
 static int
-output_datafile_xml_header(output_context_t *out, dat_entry_t *dat)
-{
+output_datafile_xml_header(output_context_t *out, dat_entry_t *dat) {
     output_context_xml_t *ctx;
 
     ctx = (output_context_xml_t *)out;
 
-    fprintf(ctx->f, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    fprintf(ctx->f,
+	    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 	    "<!DOCTYPE datafile PUBLIC \"-//Logiqx//DTD ROM Management Datafile//EN\" \"http://www.logiqx.com/Dats/datafile.dtd\">\n"
 	    "<datafile>\n"
 	    "\t<header>\n"
@@ -202,10 +196,8 @@ output_datafile_xml_header(output_context_t *out, dat_entry_t *dat)
 	    "\t\t<description>%s</description>\n"
 	    "\t\t<version>%s</version>\n"
 	    "\t\t<author>automatically generated</author>\n"
-	    "\t</header>\n\n", dat_entry_name(dat),
-	    (dat_entry_description(dat)
-	     ? dat_entry_description(dat) : dat_entry_name(dat)), 
-	    dat_entry_version(dat));
+	    "\t</header>\n\n",
+	    dat_entry_name(dat), (dat_entry_description(dat) ? dat_entry_description(dat) : dat_entry_name(dat)), dat_entry_version(dat));
 
     return 0;
 }

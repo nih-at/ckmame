@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,12 +38,11 @@
 
 
 void
-file_init(file_t *r)
-{
+file_init(file_t *r) {
     int i;
 
     r->name = r->merge = NULL;
-    for (i=0; i<FILE_SH_MAX; i++) {
+    for (i = 0; i < FILE_SH_MAX; i++) {
 	r->sh[i].size = SIZE_UNKNOWN;
 	hashes_init(&r->sh[i].hashes);
     }
@@ -55,8 +54,7 @@ file_init(file_t *r)
 
 
 void
-file_finalize(file_t *r)
-{
+file_finalize(file_t *r) {
     free(r->name);
     free(r->merge);
 }

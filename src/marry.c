@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,35 +39,32 @@
 #include "types.h"
 #include "xmalloc.h"
 
-#define Z(m)		(z[match_zno(m)][match_fno(m)])
-#define DELETE_NEXT(i)	(parray_delete(match_array_matches(ma, (i)), 1, NULL),\
-			 NEXT(i))
-#define NEXT(i)		((match_array_num_matches(ma, (i)) > 1)	\
-			 ? match_array_get(ma, (i), 1) : NULL)
-#define FIRST(i)	(match_array_get(ma, (i), 0))
+#define Z(m) (z[match_zno(m)][match_fno(m)])
+#define DELETE_NEXT(i) (parray_delete(match_array_matches(ma, (i)), 1, NULL), NEXT(i))
+#define NEXT(i) ((match_array_num_matches(ma, (i)) > 1) ? match_array_get(ma, (i), 1) : NULL)
+#define FIRST(i) (match_array_get(ma, (i), 0))
 
 void
-marry(match_array_t *ma, const int *noz)
-{
+marry(match_array_t *ma, const int *noz) {
     int i, j, now, other;
     int *z[3];
     match_t *m;
 
-    for (i=0; i<3; i++)
+    for (i = 0; i < 3; i++)
 	if (noz[i] > 0) {
-	    z[i] = (int *)xmalloc(sizeof(int)*noz[i]);
-	    for (j=0; j<noz[i]; j++)
+	    z[i] = (int *)xmalloc(sizeof(int) * noz[i]);
+	    for (j = 0; j < noz[i]; j++)
 		z[i][j] = -1;
 	}
 	else
 	    z[i] = NULL;
 
-    for (i=0; i<match_array_length(ma); i++)
+    for (i = 0; i < match_array_length(ma); i++)
 	match_array_sort(ma, i);
 
-    for (i=0; i<match_array_length(ma); i++) {
+    for (i = 0; i < match_array_length(ma); i++) {
 	now = i;
-	while ((now != -1) && (m=NEXT(now))) {
+	while ((now != -1) && (m = NEXT(now))) {
 	    if (Z(m) == -1) {
 		/* first match for this file; take it */
 		match_copy(FIRST(now), m);
@@ -98,10 +95,10 @@ marry(match_array_t *ma, const int *noz)
 	}
     }
 
-    for (i=0; i<3; i++)
+    for (i = 0; i < 3; i++)
 	free(z[i]);
 
     /* worse choices are used for determining unused files */
-    
+
     return;
 }

@@ -18,7 +18,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,18 +40,16 @@
 	http://en.wikipedia.org/wiki/Heaptr_sort
 */
 
-#define HEAP(j)		(data[(length-1) - (j)])
+#define HEAP(j) (data[(length - 1) - (j)])
 
 int
-ptr_sort(void **data, int length, int omit_duplicates,
-      int (*cmp)(const void *, const void *))
-{
+ptr_sort(void **data, int length, int omit_duplicates, int (*cmp)(const void *, const void *)) {
     int heap_size, array_end, sort_node, node, child;
     void *p;
 
     array_end = 0;
     heap_size = length;
-    sort_node = heap_size/2;
+    sort_node = heap_size / 2;
 
     for (;;) {
 	if (sort_node > 0)
@@ -59,8 +57,7 @@ ptr_sort(void **data, int length, int omit_duplicates,
 	else {
 	    p = HEAP(--heap_size);
 	    /* copy smallest element from heap to sorted array */
-	    if (array_end == 0 || !omit_duplicates
-		|| cmp(data[array_end-1], HEAP(0)) != 0) {
+	    if (array_end == 0 || !omit_duplicates || cmp(data[array_end - 1], HEAP(0)) != 0) {
 		data[array_end++] = HEAP(0);
 	    }
 	    /* if heap is empty, we're done */
@@ -69,16 +66,16 @@ ptr_sort(void **data, int length, int omit_duplicates,
 	}
 
 	node = sort_node;
-	child = node*2 + 1;
+	child = node * 2 + 1;
 
 	while (child < heap_size) {
-	    if (child+1 < heap_size && cmp(HEAP(child+1), HEAP(child)) < 0)
+	    if (child + 1 < heap_size && cmp(HEAP(child + 1), HEAP(child)) < 0)
 		child++;
 
 	    if (cmp(HEAP(child), p) < 0) {
 		HEAP(node) = HEAP(child);
 		node = child;
-		child = node*2 + 1;
+		child = node * 2 + 1;
 	    }
 	    else
 		break;

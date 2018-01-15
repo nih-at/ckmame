@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,10 +38,9 @@
 
 
 int
-file_by_hash_entry_cmp(const file_by_hash_t *a, const file_by_hash_t *b)
-{
+file_by_hash_entry_cmp(const file_by_hash_t *a, const file_by_hash_t *b) {
     int ret;
-    
+
     ret = strcmp(a->game, b->game);
     if (ret == 0)
 	ret = a->index - b->index;
@@ -50,10 +49,8 @@ file_by_hash_entry_cmp(const file_by_hash_t *a, const file_by_hash_t *b)
 }
 
 
-
 void
-file_by_hash_free(file_by_hash_t *e)
-{
+file_by_hash_free(file_by_hash_t *e) {
     if (e == NULL)
 	return;
 
@@ -63,8 +60,7 @@ file_by_hash_free(file_by_hash_t *e)
 
 
 file_by_hash_t *
-file_by_hash_new(const char *game, int idx)
-{
+file_by_hash_new(const char *game, int idx) {
     file_by_hash_t *e;
 
     e = xmalloc(sizeof(*e));

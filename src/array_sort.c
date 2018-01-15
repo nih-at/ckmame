@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,7 +37,6 @@
 
 
 void
-array_sort(array_t *a, int (*cmp)(const void *, const void *))
-{
+array_sort(array_t *a, int (*cmp)(const void *, const void *)) {
     qsort(a->data, array_length(a), a->elem_size, cmp);
 }

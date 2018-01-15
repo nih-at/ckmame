@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,24 +37,22 @@
 /* return index of ELEM in sorted (by CMP) parray PA, -1 if not found */
 
 int
-parray_find_sorted(const parray_t *pa, const void *elem,
-		    int (*cmp)(const void *, const void *))
-{
+parray_find_sorted(const parray_t *pa, const void *elem, int (*cmp)(const void *, const void *)) {
     int hi, lo, mid, c;
 
     lo = 0;
-    hi = parray_length(pa)-1;
+    hi = parray_length(pa) - 1;
 
     while (lo <= hi) {
-	mid = lo + (hi-lo)/2;
+	mid = lo + (hi - lo) / 2;
 	c = cmp(elem, parray_get(pa, mid));
 	if (c == 0)
 	    return mid;
 	else if (c < 0)
-	    hi = mid-1;
+	    hi = mid - 1;
 	else
-	    lo = mid+1;
+	    lo = mid + 1;
     }
 
-    return -1;	
+    return -1;
 }

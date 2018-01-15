@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,8 +32,8 @@
 */
 
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "dat.h"
 #include "romdb.h"
@@ -41,21 +41,20 @@
 #include "xmalloc.h"
 
 dat_t *
-romdb_read_dat(romdb_t *db)
-{
+romdb_read_dat(romdb_t *db) {
     sqlite3_stmt *stmt;
     dat_t *dat;
     dat_entry_t *de;
     int ret;
 
-    if ((stmt=dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT)) == NULL) {
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT)) == NULL) {
 	/* TODO */
 	return NULL;
     }
 
     dat = dat_new();
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	de = (dat_entry_t *)array_grow(dat, dat_entry_init);
 
 	de->name = sq3_get_string(stmt, 0);
@@ -68,6 +67,6 @@ romdb_read_dat(romdb_t *db)
 	dat_free(dat);
 	return NULL;
     }
-    
+
     return dat;
 }

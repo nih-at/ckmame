@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,8 +43,7 @@ static void cleanup_disk(images_t *, result_t *, int);
 
 
 void
-cleanup_list(parray_t *list, delete_list_t *del, int flags)
-{
+cleanup_list(parray_t *list, delete_list_t *del, int flags) {
     archive_t *a;
     images_t *im;
     result_t *res;
@@ -63,10 +62,10 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
     i = 0;
     while (i < n) {
 	name = (char *)parray_get(list, i);
-	switch ((nt=name_type(name))) {
+	switch ((nt = name_type(name))) {
 	case NAME_ZIP:
 	    /* TODO: where? */
-	    if ((a=archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL) {
+	    if ((a = archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL) {
 		/* TODO */
 		continue;
 	    }
@@ -75,7 +74,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	    while (di < len) {
 		fl = delete_list_get(del, di);
 		cmp = strcmp(name, file_location_name(fl));
-		
+
 		if (cmp == 0)
 		    result_file(res, file_location_index(fl)) = FS_USED;
 		else if (cmp < 0)
@@ -85,10 +84,10 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	    }
 
 	    check_archive(a, NULL, res);
-	    
+
 	    warn_set_info(WARN_TYPE_ARCHIVE, archive_name(a));
 	    diagnostics_archive(a, res);
-	    
+
 	    cleanup_archive(a, res, flags);
 
 	    result_free(res);
@@ -98,8 +97,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 
 	case NAME_CHD:
 	case NAME_NOEXT:
-	    if ((im=images_new_name(name,
-			    nt==NAME_NOEXT ? DISK_FL_QUIET : 0)) == NULL) {
+	    if ((im = images_new_name(name, nt == NAME_NOEXT ? DISK_FL_QUIET : 0)) == NULL) {
 		/* TODO */
 		continue;
 	    }
@@ -109,7 +107,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	    while (di < len) {
 		fl = delete_list_get(del, di++);
 		cmp = strcmp(name, file_location_name(fl));
-		
+
 		if (cmp == 0)
 		    result_image(res, 0) = FS_USED;
 		else if (cmp < 0)
@@ -117,7 +115,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 	    }
 
 	    check_images(im, NULL, res);
-	    
+
 	    warn_set_info(WARN_TYPE_IMAGE, name);
 	    diagnostics_images(im, res);
 
@@ -140,17 +138,16 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags)
 
 
 static void
-cleanup_archive(archive_t *a, result_t *res, int flags)
-{
+cleanup_archive(archive_t *a, result_t *res, int flags) {
     garbage_t *gb = NULL;
     int i, move;
     char *reason;
-    
+
     if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
 	gb = garbage_new(a);
     }
-	    
-    for (i=0; i<archive_num_files(a); i++) {
+
+    for (i = 0; i < archive_num_files(a); i++) {
 	switch (result_file(res, i)) {
 	case FS_SUPERFLUOUS:
 	case FS_DUPLICATE:
@@ -169,37 +166,31 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 		reason = "[internal error]";
 		break;
 	    }
-	    
+
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete %s file '%s'\n",
-		       archive_name(a), reason,
-		       file_name(archive_file(a, i)));
+		printf("%s: delete %s file '%s'\n", archive_name(a), reason, file_name(archive_file(a, i)));
 	    archive_file_delete(a, i);
 	    break;
-	    
+
 	case FS_BROKEN:
 	case FS_MISSING:
 	case FS_PARTUSED:
 	    break;
-	    
+
 	case FS_NEEDED:
 	    if (flags & CLEANUP_NEEDED) {
 		if (fix_options & FIX_PRINT)
-		    printf("%s: save needed file '%s'\n",
-			   archive_name(a), file_name(archive_file(a, i)));
+		    printf("%s: save needed file '%s'\n", archive_name(a), file_name(archive_file(a, i)));
 		/* TODO: handle error (how?) */
 		save_needed(a, i, fix_options & FIX_DO);
 	    }
 	    break;
-	    
+
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
 		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT)
-		    printf("%s: %s unknown file '%s'\n",
-			   archive_name(a),
-			   (move ? "mv" : "delete"),
-			   file_name(archive_file(a, i)));
+		    printf("%s: %s unknown file '%s'\n", archive_name(a), (move ? "mv" : "delete"), file_name(archive_file(a, i)));
 
 		/* TODO: handle error (how?) */
 		if (move) {
@@ -218,7 +209,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 	    break;
 	}
     }
-    
+
     if (garbage_close(gb) < 0) {
 	archive_rollback(a);
     }
@@ -231,13 +222,12 @@ cleanup_archive(archive_t *a, result_t *res, int flags)
 
 
 static void
-cleanup_disk(images_t *im, result_t *res, int flags)
-{
+cleanup_disk(images_t *im, result_t *res, int flags) {
     int i, move, ret;
     const char *name, *reason;
-    
-    for (i=0; i<images_length(im); i++) {
-	if ((name=images_name(im, i)) == NULL)
+
+    for (i = 0; i < images_length(im); i++) {
+	if ((name = images_name(im, i)) == NULL)
 	    continue;
 
 	switch (result_image(res, i)) {
@@ -258,20 +248,20 @@ cleanup_disk(images_t *im, result_t *res, int flags)
 		reason = "[internal error]";
 		break;
 	    }
-	    
+
 	    if (fix_options & FIX_PRINT)
 		printf("%s: delete %s image\n", name, reason);
 	    if (fix_options & FIX_DO) {
 		if (my_remove(name) == 0)
 		    remove_from_superfluous(name);
-	    }		
+	    }
 	    break;
-	    
+
 	case FS_BROKEN:
 	case FS_MISSING:
 	case FS_PARTUSED:
 	    break;
-	    
+
 	case FS_NEEDED:
 	    if (flags & CLEANUP_NEEDED) {
 		if (fix_options & FIX_PRINT)
@@ -281,13 +271,12 @@ cleanup_disk(images_t *im, result_t *res, int flags)
 		    remove_from_superfluous(name);
 	    }
 	    break;
-	    
+
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
 		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT)
-		    printf("%s: %s unknown image\n",
-			   name, (move ? "mv" : "delete"));
+		    printf("%s: %s unknown image\n", name, (move ? "mv" : "delete"));
 		if (fix_options & FIX_DO) {
 		    if (move)
 			ret = move_image_to_garbage(name);

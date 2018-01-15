@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,8 +35,8 @@
 #include "dbh.h"
 
 const char *sql_db_init[] = {
-/* DBH_FMT_MAME	-- mame.db format */
-"\
+    /* DBH_FMT_MAME	-- mame.db format */
+    "\
 create table dat (\n\
 	dat_idx integer primary key,\n\
 	name text,\n\
@@ -97,8 +97,8 @@ create table test (\n\
 );\n\
 ",
 
-/* DBH_FMT_MEM -- in-memory db format */
-"\
+    /* DBH_FMT_MEM -- in-memory db format */
+    "\
 create table ptr_cache (\n\
 	game_id integer primary key,\n\
 	name text not null,\n\
@@ -125,9 +125,9 @@ create index file_crc on file (crc);\n\
 create index file_md5 on file (md5);\n\
 create index file_sha1 on file (sha1);\n\
 ",
-    
-/* DBH_FMT_DIR -- unpacked dirs db format */
-"create table archive (\n\
+
+    /* DBH_FMT_DIR -- unpacked dirs db format */
+    "create table archive (\n\
 	archive_id integer primary key autoincrement,\n\
 	name text not null,\n\
         mtime integer not null,\n\
@@ -146,8 +146,7 @@ create table file (\n\
 	sha1 binary\n\
 );\n\
 create index file_archive_id on file (archive_id);\n\
-create index file_idx on file (file_idx);\n"
-};
+create index file_idx on file (file_idx);\n"};
 
 
 const char *sql_db_init_2 = "\

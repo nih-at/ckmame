@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,9 +32,9 @@
 */
 
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "error.h"
@@ -46,19 +46,16 @@
 
 
 const char *
-match_file(match_t *m)
-{
+match_file(match_t *m) {
     if (match_source_is_old(m))
 	return match_old_file(m);
     else
-	return file_name(archive_file(match_archive(m),
-				     match_index(m)));
+	return file_name(archive_file(match_archive(m), match_index(m)));
 }
 
 
 void
-match_finalize(match_t *m)
-{
+match_finalize(match_t *m) {
     if (match_source_is_old(m)) {
 	free(match_old_game(m));
 	free(match_old_file(m));
@@ -69,8 +66,7 @@ match_finalize(match_t *m)
 
 
 const char *
-match_game(match_t *m)
-{
+match_game(match_t *m) {
     if (match_source_is_old(m))
 	return match_old_game(m);
     else
@@ -79,8 +75,7 @@ match_game(match_t *m)
 
 
 void
-match_init(match_t *m)
-{
+match_init(match_t *m) {
     match_quality(m) = QU_MISSING;
     match_where(m) = FILE_NOWHERE;
     match_archive(m) = NULL;

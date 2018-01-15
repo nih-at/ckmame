@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,10 +39,9 @@
 
 
 void
-detector_free(detector_t *d)
-{
+detector_free(detector_t *d) {
     if (d == NULL) {
-        return;
+	return;
     }
     free(d->name);
     free(d->author);
@@ -54,8 +53,7 @@ detector_free(detector_t *d)
 
 
 detector_t *
-detector_new(void)
-{
+detector_new(void) {
     detector_t *d;
 
     d = xmalloc(sizeof(*d));
@@ -72,15 +70,13 @@ detector_new(void)
 
 
 void
-detector_rule_finalize(detector_rule_t *dr)
-{
+detector_rule_finalize(detector_rule_t *dr) {
     array_free(dr->tests, detector_test_finalize);
 }
 
 
 void
-detector_test_finalize(detector_test_t *dt)
-{
+detector_test_finalize(detector_test_t *dt) {
     free(dt->mask);
     free(dt->value);
 }

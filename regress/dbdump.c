@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,9 +32,9 @@
 */
 
 
-#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include <sqlite3.h>
 
@@ -42,11 +42,11 @@
 #include "error.h"
 #include "util.h"
 
-#define QUERY_TABLES	\
+#define QUERY_TABLES                                    \
     "select name from sqlite_master where type='table'" \
     " and name not like 'sqlite_%' order by name"
 
-#define QUERY_COLS_FMT	"pragma table_info(%s)"
+#define QUERY_COLS_FMT "pragma table_info(%s)"
 
 const char *usage = "usage: %s db-file\n";
 
@@ -55,8 +55,7 @@ static int dump_table(sqlite3 *, const char *);
 
 
 int
-main(int argc, char *argv[])
-{
+main(int argc, char *argv[]) {
     sqlite3 *db;
     char *fname;
     struct stat st;
@@ -86,8 +85,8 @@ main(int argc, char *argv[])
     }
 
     /* seterrdb(db); */
-    
-    if ((ret=dump_db(db)) < 0)
+
+    if ((ret = dump_db(db)) < 0)
 	myerror(ERRDB, "can't dump database '%s'", fname);
 
     sqlite3_close(db);
@@ -97,15 +96,14 @@ main(int argc, char *argv[])
 
 
 static int
-dump_db(sqlite3 *db)
-{
+dump_db(sqlite3 *db) {
     sqlite3_stmt *stmt;
     int ret;
 
     if (sqlite3_prepare_v2(db, QUERY_TABLES, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	if (dump_table(db, (const char *)sqlite3_column_text(stmt, 0)) < 0)
 	    break;
     }
@@ -120,8 +118,7 @@ dump_db(sqlite3 *db)
 
 
 static int
-dump_table(sqlite3 *db, const char *tbl)
-{
+dump_table(sqlite3 *db, const char *tbl) {
     sqlite3_stmt *stmt;
     char b[8192];
     int first_col, first_key;
@@ -136,16 +133,12 @@ dump_table(sqlite3 *db, const char *tbl)
     sprintf(b, "select * from %s", tbl);
     first_col = first_key = 1;
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
-	printf("%s%s",
-	       first_col ? "" : ", ",
-	       sqlite3_column_text(stmt, 1));
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
+	printf("%s%s", first_col ? "" : ", ", sqlite3_column_text(stmt, 1));
 	first_col = 0;
 
 	if (sqlite3_column_int(stmt, 5)) {
-	    sprintf(b+strlen(b), "%s%s",
-		    first_key ? " order by " : ", ",
-		    sqlite3_column_text(stmt, 1));
+	    sprintf(b + strlen(b), "%s%s", first_key ? " order by " : ", ", sqlite3_column_text(stmt, 1));
 	    first_key = 0;
 	}
     }
@@ -159,8 +152,8 @@ dump_table(sqlite3 *db, const char *tbl)
     if (sqlite3_prepare_v2(db, b, -1, &stmt, NULL) != SQLITE_OK)
 	return -1;
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
-	for (i=0; i<sqlite3_column_count(stmt); i++) {
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
+	for (i = 0; i < sqlite3_column_count(stmt); i++) {
 	    if (i > 0)
 		printf("|");
 
@@ -174,8 +167,7 @@ dump_table(sqlite3 *db, const char *tbl)
 		printf("<null>");
 		break;
 	    case SQLITE_BLOB:
-		bin2hex(b, sqlite3_column_blob(stmt, i),
-			sqlite3_column_bytes(stmt, i));
+		bin2hex(b, sqlite3_column_blob(stmt, i), sqlite3_column_bytes(stmt, i));
 		printf("<%s>", b);
 		break;
 	    }

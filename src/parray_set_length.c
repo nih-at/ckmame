@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,29 +32,25 @@
 */
 
 #include "parray.h"
-#include  "xmalloc.h"
-
+#include "xmalloc.h"
 
 
 void
-parray_set_length(parray_t *pa, int len, void *(*fn_alloc)(void),
-		  void (*fn_free)(/* void * */))
-{
+parray_set_length(parray_t *pa, int len, void *(*fn_alloc)(void), void (*fn_free)(/* void * */)) {
     int i;
-    
+
     if (len == parray_length(pa))
 	return;
     else if (len < parray_length(pa)) {
-	for (i=len; i<parray_length(pa); i++)
+	for (i = len; i < parray_length(pa); i++)
 	    fn_free(parray_get(pa, i));
     }
     else {
 	if (len >= pa->alloc_len) {
 	    pa->alloc_len = len;
-	    pa->entry = xrealloc(pa->entry,
-				 sizeof(pa->entry[0])*pa->alloc_len);
-	    
-	    for (i=parray_length(pa); i<len; i++)
+	    pa->entry = xrealloc(pa->entry, sizeof(pa->entry[0]) * pa->alloc_len);
+
+	    for (i = parray_length(pa); i < len; i++)
 		parray_get(pa, i) = fn_alloc();
 	}
     }

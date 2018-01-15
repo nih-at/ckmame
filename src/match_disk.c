@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,15 +40,13 @@
 
 
 void
-match_disk_finalize(match_disk_t *md)
-{
+match_disk_finalize(match_disk_t *md) {
     free(md->name);
 }
 
 
 void
-match_disk_init(match_disk_t *md)
-{
+match_disk_init(match_disk_t *md) {
     match_disk_name(md) = NULL;
     hashes_init(match_disk_hashes(md));
     match_disk_quality(md) = QU_MISSING;
@@ -56,8 +54,7 @@ match_disk_init(match_disk_t *md)
 
 
 void
-match_disk_set_source(match_disk_t *md, const disk_t *d)
-{
+match_disk_set_source(match_disk_t *md, const disk_t *d) {
     free(match_disk_name(md));
     match_disk_name(md) = xstrdup(disk_name(d));
     hashes_copy(match_disk_hashes(md), disk_hashes(d));

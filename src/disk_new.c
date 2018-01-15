@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -54,8 +54,7 @@ static int meta_hash_cmp(const void *, const void *);
 
 
 disk_t *
-disk_new(const char *name, int flags)
-{
+disk_new(const char *name, int flags) {
     disk_t *d;
     struct chd *chd;
     hashes_t *h;
@@ -65,16 +64,15 @@ disk_new(const char *name, int flags)
     if (name == NULL)
 	return NULL;
 
-    if ((d=memdb_get_ptr(name, TYPE_DISK)) != 0) {
+    if ((d = memdb_get_ptr(name, TYPE_DISK)) != 0) {
 	d->refcount++;
 	return d;
     }
 
     seterrinfo(name, NULL);
-    if ((chd=chd_open(name, &err)) == NULL) {
+    if ((chd = chd_open(name, &err)) == NULL) {
 	/* no error if file doesn't exist */
-	if (!((err == CHD_ERR_OPEN && errno == ENOENT)
-	      || ((flags & DISK_FL_QUIET) && err == CHD_ERR_NO_CHD))) {
+	if (!((err == CHD_ERR_OPEN && errno == ENOENT) || ((flags & DISK_FL_QUIET) && err == CHD_ERR_NO_CHD))) {
 	    /* TODO: include err */
 	    myerror(ERRFILESTR, "error opening disk");
 	}
@@ -97,7 +95,7 @@ disk_new(const char *name, int flags)
 
     if (flags & DISK_FL_CHECK_INTEGRITY) {
 	hashes_types(h) = romdb_hashtypes(db, TYPE_DISK);
-	
+
 	err = get_hashes(chd, h);
 	chd_close(chd);
 
@@ -132,7 +130,7 @@ disk_new(const char *name, int flags)
     if (chd->version > 2 && (hashes_types(h) & HASHES_TYPE_SHA1) == 0)
 	hashes_set(h, HASHES_TYPE_SHA1, chd->sha1);
 
-    if ((id=memdb_put_ptr(name, TYPE_DISK, d)) < 0) {
+    if ((id = memdb_put_ptr(name, TYPE_DISK, d)) < 0) {
 	disk_real_free(d);
 	return NULL;
     }
@@ -143,8 +141,7 @@ disk_new(const char *name, int flags)
 
 
 void
-disk_free(disk_t *d)
-{
+disk_free(disk_t *d) {
     if (d == NULL)
 	return;
 
@@ -161,8 +158,7 @@ disk_free(disk_t *d)
 
 
 void
-disk_real_free(disk_t *d)
-{
+disk_real_free(disk_t *d) {
     if (d == NULL)
 	return;
 
@@ -172,8 +168,7 @@ disk_real_free(disk_t *d)
 
 
 static int
-get_hashes(struct chd *chd, struct hashes *h)
-{
+get_hashes(struct chd *chd, struct hashes *h) {
     struct hashes h_raw;
     struct hashes_update *hu;
     uint32_t hunk;
@@ -196,7 +191,7 @@ get_hashes(struct chd *chd, struct hashes *h)
 
     buf = xmalloc(chd->hunk_len);
     len = chd->total_len;
-    for (hunk=0; hunk<chd->total_hunks; hunk++) {
+    for (hunk = 0; hunk < chd->total_hunks; hunk++) {
 	n = chd->hunk_len > len ? len : chd->hunk_len;
 
 	if (chd_read_hunk(chd, hunk, buf) != (int)chd->hunk_len) {
@@ -214,17 +209,15 @@ get_hashes(struct chd *chd, struct hashes *h)
 	hashes_update(hu, buf, n);
 	len -= n;
     }
-    
+
     hashes_update_final(hu);
 
-    if ((chd->version < 4 && memcmp(h_raw.md5, chd->md5, HASHES_SIZE_MD5) != 0)
-	|| (chd->version > 2 && memcmp(h_raw.sha1, chd->raw_sha1,
-				       HASHES_SIZE_SHA1) != 0)) {
+    if ((chd->version < 4 && memcmp(h_raw.md5, chd->md5, HASHES_SIZE_MD5) != 0) || (chd->version > 2 && memcmp(h_raw.sha1, chd->raw_sha1, HASHES_SIZE_SHA1) != 0)) {
 	myerror(ERRFILE, "checksum mismatch for raw data");
 	free(buf);
 	return -1;
     }
-    
+
     if (chd->version < 4) {
 	hashes_copy(h, &h_raw);
     }
@@ -233,7 +226,7 @@ get_hashes(struct chd *chd, struct hashes *h)
 	struct chd_metadata_entry *meta, *e;
 	struct meta_hash *meta_hash;
 	int n_meta_hash, i;
-	
+
 	hu = hashes_update_new(h);
 	hashes_update(hu, h_raw.sha1, HASHES_SIZE_SHA1);
 
@@ -243,25 +236,25 @@ get_hashes(struct chd *chd, struct hashes *h)
 
 	n_meta_hash = 0;
 
-	for (e=meta; e; e=e->next) {
+	for (e = meta; e; e = e->next) {
 	    if (e->flags & CHD_META_FL_CHECKSUM)
 		n_meta_hash++;
 	}
 
-	meta_hash = xmalloc(n_meta_hash*sizeof(*meta_hash));
+	meta_hash = xmalloc(n_meta_hash * sizeof(*meta_hash));
 
 	len = chd->hunk_len; /* current size of buf */
 
-	for (i=0,e=meta; e; e=e->next) {
+	for (i = 0, e = meta; e; e = e->next) {
 	    if ((e->flags & CHD_META_FL_CHECKSUM) == 0)
 		continue;
-	    
+
 	    if (e->length > len) {
 		free(buf);
 		len = e->length;
 		buf = xmalloc(len);
 	    }
-	    
+
 	    if (chd_read_metadata(chd, e, buf) < 0) {
 		/* TODO: include chd->error */
 		myerror(ERRFILESTR, "error reading hunk %d", hunk);
@@ -282,7 +275,7 @@ get_hashes(struct chd *chd, struct hashes *h)
 
 	qsort(meta_hash, n_meta_hash, sizeof(*meta_hash), meta_hash_cmp);
 
-	for (i=0; i<n_meta_hash; i++) {
+	for (i = 0; i < n_meta_hash; i++) {
 	    hashes_update(hu, meta_hash[i].tag, 4);
 	    hashes_update(hu, meta_hash[i].sha1, HASHES_SIZE_SHA1);
 	}
@@ -297,8 +290,7 @@ get_hashes(struct chd *chd, struct hashes *h)
 
 
 static int
-meta_hash_cmp(const void *a_, const void *b_)
-{
+meta_hash_cmp(const void *a_, const void *b_) {
     const struct meta_hash *a, *b;
     int ret;
 

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,14 +38,13 @@
 
 
 void
-parray_push(parray_t *pa, void *e)
-{
+parray_push(parray_t *pa, void *e) {
     if (pa->nentry >= pa->alloc_len) {
 	if (pa->alloc_len == 0)
 	    pa->alloc_len = 1;
 	else
 	    pa->alloc_len *= 2;
-	pa->entry = xrealloc(pa->entry, sizeof(pa->entry[0])*pa->alloc_len);
+	pa->entry = xrealloc(pa->entry, sizeof(pa->entry[0]) * pa->alloc_len);
     }
 
     pa->entry[pa->nentry++] = e;

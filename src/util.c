@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,11 +33,11 @@
 
 
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "error.h"
@@ -47,8 +47,7 @@
 
 
 int
-is_writable_directory(const char *name)
-{
+is_writable_directory(const char *name) {
     struct stat st;
 
     if (stat(name, &st) < 0)
@@ -59,31 +58,29 @@ is_writable_directory(const char *name)
 	return 0;
     }
 
-    return access(name, R_OK|W_OK|X_OK) == 0;
+    return access(name, R_OK | W_OK | X_OK) == 0;
 }
 
 
 const char *
-mybasename(const char *fname)
-{
+mybasename(const char *fname) {
     const char *p;
 
-    if ((p=strrchr(fname, '/')) == NULL)
+    if ((p = strrchr(fname, '/')) == NULL)
 	return fname;
-    return p+1;
+    return p + 1;
 }
 
 
 char *
-mydirname(const char *fname)
-{
+mydirname(const char *fname) {
     const char *p;
     char *d;
     size_t l;
 
     /* TODO: ignore trailing slashes */
 
-    if ((p=strrchr(fname, '/')) == NULL)
+    if ((p = strrchr(fname, '/')) == NULL)
 	return xstrdup(".");
 
     l = p - fname;
@@ -91,7 +88,7 @@ mydirname(const char *fname)
     if (l == 0)
 	return xstrdup("/");
 
-    d = xmalloc(l+1);
+    d = xmalloc(l + 1);
     strncpy(d, fname, l);
     d[l] = '\0';
     return d;
@@ -99,41 +96,35 @@ mydirname(const char *fname)
 
 
 char *
-bin2hex(char *b, const unsigned char *s, size_t len)
-{
+bin2hex(char *b, const unsigned char *s, size_t len) {
     size_t i;
 
-    for (i=0; i<len; i++)
-	sprintf(b+2*i, "%02x", (unsigned char)s[i]);
-    b[2*i] = '\0';
+    for (i = 0; i < len; i++)
+	sprintf(b + 2 * i, "%02x", (unsigned char)s[i]);
+    b[2 * i] = '\0';
 
     return b;
 }
 
 
-#define HEX2BIN(c)	(((c)>='0' && (c)<='9') ? (c)-'0'	\
-			 : ((c)>='A' && (c)<='F') ? (c)-'A'+10	\
-			 : (c)-'a'+10)
+#define HEX2BIN(c) (((c) >= '0' && (c) <= '9') ? (c) - '0' : ((c) >= 'A' && (c) <= 'F') ? (c) - 'A' + 10 : (c) - 'a' + 10)
 
 int
-hex2bin(unsigned char *t, const char *s, size_t tlen)
-{
+hex2bin(unsigned char *t, const char *s, size_t tlen) {
     unsigned int i;
-    
-    if (strspn(s, "0123456789AaBbCcDdEeFf") != tlen*2
-	|| s[tlen*2] != '\0')
+
+    if (strspn(s, "0123456789AaBbCcDdEeFf") != tlen * 2 || s[tlen * 2] != '\0')
 	return -1;
 
-    for (i=0; i<tlen; i++)
-	t[i] = HEX2BIN(s[i*2])<<4 | HEX2BIN(s[i*2+1]);
-    
+    for (i = 0; i < tlen; i++)
+	t[i] = HEX2BIN(s[i * 2]) << 4 | HEX2BIN(s[i * 2 + 1]);
+
     return 0;
 }
 
 
 name_type_t
-name_type(const char *name)
-{
+name_type(const char *name) {
     size_t l;
 
     if (roms_unzipped) {
@@ -151,9 +142,9 @@ name_type(const char *name)
 	return NAME_NOEXT;
 
     if (l > 4) {
-	if (strcmp(name+l-4, ".chd") == 0)
+	if (strcmp(name + l - 4, ".chd") == 0)
 	    return NAME_CHD;
-	if (!roms_unzipped && strcasecmp(name+l-4, ".zip") == 0)
+	if (!roms_unzipped && strcasecmp(name + l - 4, ".zip") == 0)
 	    return NAME_ZIP;
     }
 
@@ -161,25 +152,24 @@ name_type(const char *name)
 }
 
 int
-ensure_dir(const char *name, int strip_fname)
-{
+ensure_dir(const char *name, int strip_fname) {
     const char *p;
     char *dir;
     struct stat st;
     int ret;
-    
-    if (strip_fname || name[strlen(name)-1] == '/') {
+
+    if (strip_fname || name[strlen(name) - 1] == '/') {
 	p = strrchr(name, '/');
 	if (p == NULL)
 	    dir = xstrdup(".");
 	else {
-	    dir = xmalloc(p-name+1);
-	    strncpy(dir, name, p-name);
-	    dir[p-name] = 0;
+	    dir = xmalloc(p - name + 1);
+	    strncpy(dir, name, p - name);
+	    dir[p - name] = 0;
 	}
 	name = dir;
     }
-    
+
     ret = 0;
     if (stat(name, &st) < 0) {
 	if (strchr(name, '/')) {
@@ -196,17 +186,16 @@ ensure_dir(const char *name, int strip_fname)
 	myerror(ERRDEF, "'%s' is not a directory", name);
 	ret = -1;
     }
-    
+
     if (strip_fname)
 	free(dir);
-    
+
     return ret;
-}		    
+}
 
 
 const char *
-get_directory(filetype_t ft)
-{
+get_directory(filetype_t ft) {
     if (ft == TYPE_SAMPLE)
 	return "samples";
     else if (rom_dir)
@@ -216,8 +205,7 @@ get_directory(filetype_t ft)
 }
 
 int
-remove_file_and_containing_empty_dirs(const char *name, const char *base)
-{
+remove_file_and_containing_empty_dirs(const char *name, const char *base) {
     if (base == NULL) {
 	errno = EINVAL;
 	return -1;
@@ -233,12 +221,12 @@ remove_file_and_containing_empty_dirs(const char *name, const char *base)
     if (unlink(name) < 0)
 	return -1;
 
-    if (strchr(name+n+1, '/') == NULL)
+    if (strchr(name + n + 1, '/') == NULL)
 	return 0;
 
     char *tmp = xstrdup(name);
     char *r;
-    while ((r=strrchr(tmp+n+1, '/')) != NULL) {
+    while ((r = strrchr(tmp + n + 1, '/')) != NULL) {
 	*r = '\0';
 	if (rmdir(tmp) < 0) {
 	    free(tmp);

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,20 +40,18 @@
 
 
 void
-write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im,
-		   const result_t *res)
-{
+write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im, const result_t *res) {
     game_t *gm;
     int i;
-    
+
     if (result_game(res) != GS_MISSING && result_game(res) != GS_PARTIAL)
 	return;
 
     gm = game_new();
     game_name(gm) = strdup(game_name(game));
 
-    
-    for (i=0; i<game_num_files(game, TYPE_ROM); i++) {
+
+    for (i = 0; i < game_num_files(game, TYPE_ROM); i++) {
 	match_t *m = result_rom(res, i);
 	file_t *r = game_file(game, TYPE_ROM, i);
 
@@ -70,7 +68,7 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im,
 	    file_merge(rm) = strdup(file_merge(r));
     }
 
-    for (i=0; i<game_num_disks(game); i++) {
+    for (i = 0; i < game_num_disks(game); i++) {
 	match_disk_t *m = result_disk(res, i);
 	disk_t *d = game_disk(game, i);
 

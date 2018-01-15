@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,17 +41,11 @@
 #include "xmalloc.h"
 
 /* keep in sync with dbh.h:enum list */
-const dbh_stmt_t query_list[] = {
-    DBH_STMT_QUERY_LIST_DISK,
-    DBH_STMT_QUERY_LIST_GAME,
-    DBH_STMT_QUERY_LIST_SAMPLE
-};
-
+const dbh_stmt_t query_list[] = {DBH_STMT_QUERY_LIST_DISK, DBH_STMT_QUERY_LIST_GAME, DBH_STMT_QUERY_LIST_SAMPLE};
 
 
 parray_t *
-romdb_read_list(romdb_t *db, enum dbh_list type)
-{
+romdb_read_list(romdb_t *db, enum dbh_list type) {
     parray_t *pa;
     sqlite3_stmt *stmt;
     int ret;
@@ -64,13 +58,13 @@ romdb_read_list(romdb_t *db, enum dbh_list type)
 
     pa = parray_new();
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW)
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
 	parray_push(pa, sq3_get_string(stmt, 0));
 
     if (ret != SQLITE_DONE) {
 	parray_free(pa, free);
 	return NULL;
     }
-    
+
     return pa;
 }

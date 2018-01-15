@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,8 +33,8 @@
 
 
 #include <stddef.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "dat.h"
 #include "romdb.h"
@@ -43,21 +43,15 @@
 
 
 int
-romdb_write_dat(romdb_t *db, dat_t *d)
-{
+romdb_write_dat(romdb_t *db, dat_t *d) {
     sqlite3_stmt *stmt;
     int i;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT)) == NULL)
 	return -1;
 
-    for (i=0; i<dat_length(d); i++) {
-	if (sqlite3_bind_int(stmt, 1, i) != SQLITE_OK
-	    || sq3_set_string(stmt, 2, dat_name(d, i)) != SQLITE_OK
-	    || sq3_set_string(stmt, 3, dat_description(d, i)) != SQLITE_OK
-	    || sq3_set_string(stmt, 4, dat_version(d, i)) != SQLITE_OK
-	    || sqlite3_step(stmt) != SQLITE_DONE
-	    || sqlite3_reset(stmt) != SQLITE_OK)
+    for (i = 0; i < dat_length(d); i++) {
+	if (sqlite3_bind_int(stmt, 1, i) != SQLITE_OK || sq3_set_string(stmt, 2, dat_name(d, i)) != SQLITE_OK || sq3_set_string(stmt, 3, dat_description(d, i)) != SQLITE_OK || sq3_set_string(stmt, 4, dat_version(d, i)) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
 	    return -1;
     }
 

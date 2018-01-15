@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -43,8 +43,7 @@
 
 
 void
-delete_list_free(delete_list_t *dl)
-{
+delete_list_free(delete_list_t *dl) {
     if (dl == NULL)
 	return;
 
@@ -54,8 +53,7 @@ delete_list_free(delete_list_t *dl)
 
 
 int
-delete_list_execute(delete_list_t *dl)
-{
+delete_list_execute(delete_list_t *dl) {
     int i;
     const char *name;
     const file_location_t *fbh;
@@ -67,7 +65,7 @@ delete_list_execute(delete_list_t *dl)
     name = NULL;
     a = NULL;
     ret = 0;
-    for (i=0; i<delete_list_length(dl); i++) {
+    for (i = 0; i < delete_list_length(dl); i++) {
 	fbh = delete_list_get(dl, i);
 
 	if (name == NULL || strcmp(file_location_name(fbh), name) != 0) {
@@ -76,23 +74,21 @@ delete_list_execute(delete_list_t *dl)
 		    archive_rollback(a);
 		    ret = -1;
 		}
-		
+
 		if (archive_is_empty(a))
 		    remove_empty_archive(name);
-		
+
 		archive_free(a);
 	    }
 
 	    name = file_location_name(fbh);
 	    /* TODO: don't hardcode location */
-	    if ((a=archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL)
+	    if ((a = archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL)
 		ret = -1;
 	}
 	if (a) {
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete used file '%s'\n",
-		       name,
-		       file_name(archive_file(a, file_location_index(fbh))));
+		printf("%s: delete used file '%s'\n", name, file_name(archive_file(a, file_location_index(fbh))));
 	    /* TODO: check for error */
 	    archive_file_delete(a, file_location_index(fbh));
 	}
@@ -103,27 +99,25 @@ delete_list_execute(delete_list_t *dl)
 	    archive_rollback(a);
 	    ret = -1;
 	}
-	
+
 	if (archive_is_empty(a))
 	    remove_empty_archive(name);
-	
+
 	archive_free(a);
     }
-    
+
     return ret;
 }
 
 
 void
-delete_list_mark(delete_list_t *dl)
-{
+delete_list_mark(delete_list_t *dl) {
     dl->mark = parray_length(dl->array);
 }
 
 
 delete_list_t *
-delete_list_new(void)
-{
+delete_list_new(void) {
     delete_list_t *dl;
 
     dl = xmalloc(sizeof(*dl));
@@ -135,7 +129,6 @@ delete_list_new(void)
 
 
 void
-delete_list_rollback(delete_list_t *dl)
-{
+delete_list_rollback(delete_list_t *dl) {
     parray_set_length(dl->array, dl->mark, NULL, file_location_free);
 }

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,8 +34,8 @@
 
 /* read struct game from db */
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "game.h"
 #include "romdb.h"
@@ -47,8 +47,7 @@ static int read_rs(romdb_t *, game_t *, filetype_t);
 
 
 game_t *
-romdb_read_game(romdb_t *db, const char *name)
-{
+romdb_read_game(romdb_t *db, const char *name) {
     sqlite3_stmt *stmt;
     game_t *game;
     int i;
@@ -56,8 +55,7 @@ romdb_read_game(romdb_t *db, const char *name)
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_GAME)) == NULL)
 	return NULL;
 
-    if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK
-	|| sqlite3_step(stmt) != SQLITE_ROW)
+    if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_ROW)
 	return NULL;
 
     game = game_new();
@@ -66,7 +64,7 @@ romdb_read_game(romdb_t *db, const char *name)
     game->description = sq3_get_string(stmt, 1);
     game->dat_no = sqlite3_column_int(stmt, 2);
 
-    for (i=0; i<GAME_RS_MAX; i++) {
+    for (i = 0; i < GAME_RS_MAX; i++) {
 	if (read_rs(db, game, i) < 0) {
 	    game_free(game);
 	    return NULL;
@@ -83,8 +81,7 @@ romdb_read_game(romdb_t *db, const char *name)
 
 
 static int
-read_disks(romdb_t *db, game_t *g)
-{
+read_disks(romdb_t *db, game_t *g) {
     sqlite3_stmt *stmt;
     int ret;
     disk_t *d;
@@ -92,11 +89,10 @@ read_disks(romdb_t *db, game_t *g)
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK)
+    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK)
 	return -1;
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	d = (disk_t *)array_grow(game_disks(g), disk_init);
 
 	disk_name(d) = sq3_get_string(stmt, 0);
@@ -110,19 +106,17 @@ read_disks(romdb_t *db, game_t *g)
 
 
 static int
-read_rs(romdb_t *db, game_t *g, filetype_t ft)
-{
+read_rs(romdb_t *db, game_t *g, filetype_t ft) {
     sqlite3_stmt *stmt;
     int ret;
     file_t *r;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_PARENT)) == NULL)
 	return -1;
-    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
+    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
 	return -1;
 
-    if ((ret=sqlite3_step(stmt)) == SQLITE_ROW)
+    if ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
 	game_cloneof(g, ft, 0) = sq3_get_string(stmt, 0);
 
     if (ret != SQLITE_ROW && ret != SQLITE_DONE)
@@ -131,13 +125,12 @@ read_rs(romdb_t *db, game_t *g, filetype_t ft)
     if (game_cloneof(g, ft, 0)) {
 	if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_GPARENT)) == NULL)
 	    return -1;
-	if (sq3_set_string(stmt, 1, game_cloneof(g, ft, 0)) != SQLITE_OK
-	    || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
+	if (sq3_set_string(stmt, 1, game_cloneof(g, ft, 0)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
 	    return -1;
 
-	if ((ret=sqlite3_step(stmt)) == SQLITE_ROW)
+	if ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
 	    game_cloneof(g, ft, 1) = sq3_get_string(stmt, 0);
-	
+
 	if (ret != SQLITE_ROW && ret != SQLITE_DONE)
 	    return -1;
     }
@@ -145,11 +138,10 @@ read_rs(romdb_t *db, game_t *g, filetype_t ft)
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK
-	|| sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
+    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
 	return -1;
 
-    while ((ret=sqlite3_step(stmt)) == SQLITE_ROW) {
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	r = (file_t *)array_grow(game_files(g, ft), file_init);
 
 	file_name(r) = sq3_get_string(stmt, 0);

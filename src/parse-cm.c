@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,34 +44,31 @@ static char *gettok(char **);
 
 
 int
-parse_cm(parser_source_t *ps, parser_context_t *ctx)
-{
+parse_cm(parser_source_t *ps, parser_context_t *ctx) {
     char *cmd, *p, *l;
     enum parse_state state;
-    
+
     ctx->lineno = 0;
     state = st_top;
-    
-    while ((l=ps_getline(ps))) {
+
+    while ((l = ps_getline(ps))) {
 	ctx->lineno++;
-	
+
 	cmd = gettok(&l);
 	if (cmd == NULL)
 	    continue;
-	
+
 	switch (state) {
 	case st_top:
 	    /* game/resource for MAME/Raine, machine for MESS */
-	    if (strcmp(cmd, "game") == 0 || strcmp(cmd, "machine") == 0
-		||strcmp(cmd, "resource") == 0) {
+	    if (strcmp(cmd, "game") == 0 || strcmp(cmd, "machine") == 0 || strcmp(cmd, "resource") == 0) {
 		parse_game_start(ctx, TYPE_ROM);
 		state = st_game;
 	    }
-	    else if (strcmp(cmd, "emulator") == 0
-		     || strcmp(cmd, "clrmamepro") == 0)
+	    else if (strcmp(cmd, "emulator") == 0 || strcmp(cmd, "clrmamepro") == 0)
 		state = st_prog;
 	    break;
-	    
+
 	case st_game:
 	    if (strcmp(cmd, "name") == 0)
 		parse_game_name(ctx, TYPE_ROM, 0, gettok(&l));
@@ -88,15 +85,15 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		}
 		parse_file_start(ctx, TYPE_ROM);
 		parse_file_name(ctx, TYPE_ROM, 0, gettok(&l));
-		
+
 		/* read remaining tokens and look for known tokens */
-		while ((p=gettok(&l)) != NULL) {
+		while ((p = gettok(&l)) != NULL) {
 		    if (strcmp(p, "baddump") == 0 || strcmp(p, "nodump") == 0) {
 			if (parse_file_status(ctx, TYPE_ROM, 0, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "crc") == 0 || strcmp(p, "crc32") == 0) {
-			if ((p=gettok(&l)) == NULL) {
+			if ((p = gettok(&l)) == NULL) {
 			    /* TODO: error */
 			    myerror(ERRFILE, "%d: token crc missing argument", ctx->lineno);
 			    break;
@@ -105,7 +102,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 			    break;
 		    }
 		    else if (strcmp(p, "flags") == 0) {
-			if ((p=gettok(&l)) == NULL) {
+			if ((p = gettok(&l)) == NULL) {
 			    /* TODO: error */
 			    myerror(ERRFILE, "%d: token flags missing argument", ctx->lineno);
 			    break;
@@ -114,7 +111,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 			    break;
 		    }
 		    else if (strcmp(p, "merge") == 0) {
-			if ((p=gettok(&l)) == NULL) {
+			if ((p = gettok(&l)) == NULL) {
 			    myerror(ERRFILE, "%d: token merge missing argument", ctx->lineno);
 			    break;
 			}
@@ -122,7 +119,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 			    break;
 		    }
 		    else if (strcmp(p, "md5") == 0) {
-			if ((p=gettok(&l)) == NULL) {
+			if ((p = gettok(&l)) == NULL) {
 			    myerror(ERRFILE, "%d: token md5 missing argument", ctx->lineno);
 			    break;
 			}
@@ -130,7 +127,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 			    break;
 		    }
 		    else if (strcmp(p, "sha1") == 0) {
-			if ((p=gettok(&l)) == NULL) {
+			if ((p = gettok(&l)) == NULL) {
 			    myerror(ERRFILE, "%d: token sha1 missing argument", ctx->lineno);
 			    break;
 			}
@@ -138,7 +135,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 			    break;
 		    }
 		    else if (strcmp(p, "size") == 0) {
-			if ((p=gettok(&l)) == NULL) {
+			if ((p = gettok(&l)) == NULL) {
 			    /* TODO: error */
 			    myerror(ERRFILE, "%d: token size missing argument", ctx->lineno);
 			    break;
@@ -161,14 +158,14 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		    myerror(ERRFILE, "%d: expected token (name) not found", ctx->lineno);
 		    break;
 		}
-		
+
 		parse_file_start(ctx, TYPE_DISK);
 		parse_file_name(ctx, TYPE_DISK, 0, gettok(&l));
 
 		/* read remaining tokens and look for known tokens */
-		while ((p=gettok(&l)) != NULL) {
+		while ((p = gettok(&l)) != NULL) {
 		    if (strcmp(p, "sha1") == 0) {
-			if ((p=gettok(&l)) == NULL) {
+			if ((p = gettok(&l)) == NULL) {
 			    /* TODO: error */
 			    myerror(ERRFILE, "%d: token sha1 missing argument", ctx->lineno);
 			    break;
@@ -177,7 +174,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 			    break;
 		    }
 		    else if (strcmp(p, "md5") == 0) {
-			if ((p=gettok(&l)) == NULL) {
+			if ((p = gettok(&l)) == NULL) {
 			    /* TODO: error */
 			    myerror(ERRFILE, "%d: token md5 missing argument", ctx->lineno);
 			    break;
@@ -207,7 +204,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 		state = st_top;
 	    }
 	    break;
-	    
+
 	case st_prog:
 	    if (strcmp(cmd, "name") == 0)
 		parse_prog_name(ctx, gettok(&l));
@@ -228,12 +225,11 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx)
 
 
 static char *
-gettok(char **p)
-{
+gettok(char **p) {
     char *s, *e;
 
     s = *p;
-    
+
     if (s == NULL)
 	return NULL;
 
@@ -245,14 +241,14 @@ gettok(char **p)
     case '\r':
 	*p = NULL;
 	return NULL;
-	
+
     case '\"':
 	s++;
-	e = s+strcspn(s, "\"");
+	e = s + strcspn(s, "\"");
 	break;
 
     default:
-	e = s+strcspn(s, " \t\n\r");
+	e = s + strcspn(s, " \t\n\r");
 	break;
     }
 

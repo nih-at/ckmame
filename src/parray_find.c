@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,12 +37,10 @@
 /* return index of ELEM in parray PA, -1 if not found */
 
 int
-parray_find(const parray_t *pa, const void *elem,
-	     int (*cmp)(const void *, const void *))
-{
+parray_find(const parray_t *pa, const void *elem, int (*cmp)(const void *, const void *)) {
     int i;
 
-    for (i=0; i<parray_length(pa); i++)
+    for (i = 0; i < parray_length(pa); i++)
 	if (cmp(elem, parray_get(pa, i)) == 0)
 	    return i;
 

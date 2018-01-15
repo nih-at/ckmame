@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,7 +42,7 @@
 #include "dbh.h"
 #include "error.h"
 
-#define DEFAULT_FN	"<unknown>"
+#define DEFAULT_FN "<unknown>"
 
 static const char *myerrorfn = DEFAULT_FN;
 static const char *myerrorzipn = DEFAULT_FN;
@@ -50,8 +50,7 @@ static dbh_t *myerrdb = NULL;
 
 
 void
-myerror(int errtype, const char *fmt, ...)
-{
+myerror(int errtype, const char *fmt, ...) {
     va_list va;
 
     fprintf(stderr, "%s: ", getprogname());
@@ -59,9 +58,9 @@ myerror(int errtype, const char *fmt, ...)
     if ((errtype & ERRZIPFILE) == ERRZIPFILE)
 	fprintf(stderr, "%s (%s): ", myerrorfn, myerrorzipn);
     else if (errtype & ERRZIP)
-	    fprintf(stderr, "%s: ", myerrorzipn);
+	fprintf(stderr, "%s: ", myerrorzipn);
     else if (errtype & ERRFILE)
-	    fprintf(stderr, "%s: ", myerrorfn);
+	fprintf(stderr, "%s: ", myerrorfn);
 
     va_start(va, fmt);
     vfprintf(stderr, fmt, va);
@@ -75,7 +74,7 @@ myerror(int errtype, const char *fmt, ...)
 	else
 	    fprintf(stderr, ": %s", dbh_error(myerrdb));
     }
-    
+
     putc('\n', stderr);
 
     return;
@@ -83,15 +82,13 @@ myerror(int errtype, const char *fmt, ...)
 
 
 void
-seterrdb(dbh_t *db)
-{
+seterrdb(dbh_t *db) {
     myerrdb = db;
 }
 
 
 void
-seterrinfo(const char *fn, const char *zipn)
-{
+seterrinfo(const char *fn, const char *zipn) {
     if (fn)
 	myerrorfn = fn;
     else
@@ -99,9 +96,8 @@ seterrinfo(const char *fn, const char *zipn)
 
     if (zipn)
 	myerrorzipn = zipn;
-    else 
+    else
 	myerrorzipn = DEFAULT_FN;
-    
+
     return;
 }
-

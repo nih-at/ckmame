@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,18 +37,13 @@
 #include "romdb.h"
 #include "xmalloc.h"
 
-const dbh_stmt_t query_hash_type[] = {
-    DBH_STMT_QUERY_HASH_TYPE_CRC,
-    DBH_STMT_QUERY_HASH_TYPE_MD5,
-    DBH_STMT_QUERY_HASH_TYPE_SHA1
-};
+const dbh_stmt_t query_hash_type[] = {DBH_STMT_QUERY_HASH_TYPE_CRC, DBH_STMT_QUERY_HASH_TYPE_MD5, DBH_STMT_QUERY_HASH_TYPE_SHA1};
 
 static void read_hashtypes_ft(romdb_t *, filetype_t);
 
 
 int
-romdb_close(romdb_t *db)
-{
+romdb_close(romdb_t *db) {
     int ret = dbh_close(romdb_dbh(db));
 
     free(db);
@@ -58,29 +53,27 @@ romdb_close(romdb_t *db)
 
 
 int
-romdb_has_disks(romdb_t *db)
-{
+romdb_has_disks(romdb_t *db) {
     sqlite3_stmt *stmt = dbh_get_statement(db->dbh, DBH_STMT_QUERY_HAS_DISKS);
     if (stmt == NULL) {
-        return -1;
+	return -1;
     }
 
     switch (sqlite3_step(stmt)) {
-        case SQLITE_ROW:
-            return 1;
+    case SQLITE_ROW:
+	return 1;
 
-        case SQLITE_DONE:
-            return 0;
+    case SQLITE_DONE:
+	return 0;
 
-        default:
-            return -1;
+    default:
+	return -1;
     }
 }
 
 
 int
-romdb_hashtypes(romdb_t *db, filetype_t type)
-{
+romdb_hashtypes(romdb_t *db, filetype_t type) {
     if (type >= TYPE_MAX) {
 	errno = EINVAL;
 	return -1;
@@ -94,8 +87,7 @@ romdb_hashtypes(romdb_t *db, filetype_t type)
 
 
 romdb_t *
-romdb_open(const char *name, int mode)
-{
+romdb_open(const char *name, int mode) {
     dbh_t *dbh = dbh_open(name, mode);
 
     if (dbh == NULL)
@@ -106,7 +98,7 @@ romdb_open(const char *name, int mode)
     db->dbh = dbh;
 
     int i;
-    for (i=0; i<TYPE_MAX; i++) {
+    for (i = 0; i < TYPE_MAX; i++) {
 	db->hashtypes[i] = -1;
     }
 
@@ -115,19 +107,18 @@ romdb_open(const char *name, int mode)
 
 
 static void
-read_hashtypes_ft(romdb_t *db, filetype_t ft)
-{
+read_hashtypes_ft(romdb_t *db, filetype_t ft) {
     int type;
     sqlite3_stmt *stmt;
 
     db->hashtypes[ft] = 0;
 
-    for (type=0; (1<<type)<=HASHES_TYPE_MAX; type++) {
+    for (type = 0; (1 << type) <= HASHES_TYPE_MAX; type++) {
 	if ((stmt = dbh_get_statement(romdb_dbh(db), query_hash_type[type])) == NULL)
 	    continue;
 	if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK)
 	    continue;
 	if (sqlite3_step(stmt) == SQLITE_ROW)
-	    db->hashtypes[ft] |= (1<<type);
+	    db->hashtypes[ft] |= (1 << type);
     }
 }

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,8 +37,8 @@
 
 #include "compat.h"
 #include "dbh.h"
-#include "funcs.h"
 #include "error.h"
+#include "funcs.h"
 #include "mamedb.h"
 #include "output.h"
 #include "parse.h"
@@ -48,7 +48,7 @@
 char *usage = "Usage: %s [-hV] [-D dbfile] cmd [args ...]\n";
 
 char help_head[] = "mamedb (" PACKAGE ") by Dieter Baron and"
-                   " Thomas Klausner\n\n";
+		   " Thomas Klausner\n\n";
 
 char help[] = "\n\
   -h, --help                display this help message\n\
@@ -66,10 +66,10 @@ Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner\n\
 #define OPTIONS "+hD:"
 
 static struct option options[] = {
-    { "help",             0, 0, 'h' },
-    { "version",          0, 0, 'V' },
-    { "db",               1, 0, 'o' },
-    { NULL,               0, 0, 0 },
+    {"help", 0, 0, 'h'},
+    {"version", 0, 0, 'V'},
+    {"db", 1, 0, 'o'},
+    {NULL, 0, 0, 0},
 };
 
 int romdb_hashtypes(db, TYPE_ROM);
@@ -79,8 +79,7 @@ char *dbname;
 
 
 int
-main(int argc, char **argv)
-{
+main(int argc, char **argv) {
     const cmd_t *cmd;
     int c, ret;
 
@@ -89,10 +88,10 @@ main(int argc, char **argv)
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
-    romdb_hashtypes(db, TYPE_ROM) = HASHES_TYPE_CRC|HASHES_TYPE_MD5|HASHES_TYPE_SHA1;
+    romdb_hashtypes(db, TYPE_ROM) = HASHES_TYPE_CRC | HASHES_TYPE_MD5 | HASHES_TYPE_SHA1;
 
     opterr = 0;
-    while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
+    while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
 	case 'h':
 	    fputs(help_head, stdout);
@@ -105,7 +104,7 @@ main(int argc, char **argv)
 	case 'D':
 	    dbname = optarg;
 	    break;
-    	default:
+	default:
 	    fprintf(stderr, usage, getprogname());
 	    exit(1);
 	}
@@ -116,7 +115,7 @@ main(int argc, char **argv)
 	exit(1);
     }
 
-    if ((cmd=find_command(argv[optind])) == NULL) {
+    if ((cmd = find_command(argv[optind])) == NULL) {
 	exit(1);
     }
 
@@ -125,14 +124,14 @@ main(int argc, char **argv)
 
     if ((cmd->flags & CMD_FL_NODB) == 0) {
 	/* TODO: use proper mode */
-	if ((db=dbh_open(dbname, DBL_WRITE)) == NULL) {
+	if ((db = dbh_open(dbname, DBL_WRITE)) == NULL) {
 	    myerror(ERRDB, "can't open database '%s'", dbname);
 	    exit(1);
 	}
 	seterrdb(db);
     }
 
-    if (cmd->fn(argc-optind, argv+optind) < 0)
+    if (cmd->fn(argc - optind, argv + optind) < 0)
 	ret = 1;
 
     if (db)

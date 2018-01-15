@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,14 +45,13 @@ static void warn_ensure_header(void);
 
 
 void
-warn_disk(const disk_t *d, const char *fmt, ...)
-{
+warn_disk(const disk_t *d, const char *fmt, ...) {
     va_list va;
-    char buf[HASHES_SIZE_MAX*2 + 1];
+    char buf[HASHES_SIZE_MAX * 2 + 1];
     const hashes_t *h;
 
     warn_ensure_header();
-    
+
     printf("disk %-12s  ", disk_name(d));
 
     h = disk_hashes(d);
@@ -62,7 +61,7 @@ warn_disk(const disk_t *d, const char *fmt, ...)
 	printf("md5 %s         : ", hash_to_string(buf, HASHES_TYPE_MD5, h));
     else
 	printf("no good dump              : ");
-    
+
     va_start(va, fmt);
     vprintf(fmt, va);
     va_end(va);
@@ -74,16 +73,14 @@ warn_disk(const disk_t *d, const char *fmt, ...)
 
 
 void
-warn_file(const file_t *r, const char *fmt, ...)
-{
+warn_file(const file_t *r, const char *fmt, ...) {
     va_list va;
 
     warn_ensure_header();
-    
+
     /* TODO */
-    printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": ",
-	   file_name(r), file_size(r), hashes_crc(file_hashes(r)));
-    
+    printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": ", file_name(r), file_size(r), hashes_crc(file_hashes(r)));
+
     va_start(va, fmt);
     vprintf(fmt, va);
     va_end(va);
@@ -95,14 +92,13 @@ warn_file(const file_t *r, const char *fmt, ...)
 
 
 void
-warn_image(const char *name, const char *fmt, ...)
-{
+warn_image(const char *name, const char *fmt, ...) {
     va_list va;
 
     warn_ensure_header();
-    
+
     printf("image %-12s: ", name);
-    
+
     va_start(va, fmt);
     vprintf(fmt, va);
     va_end(va);
@@ -114,19 +110,18 @@ warn_image(const char *name, const char *fmt, ...)
 
 
 void
-warn_rom(const file_t *r, const char *fmt, ...)
-{
+warn_rom(const file_t *r, const char *fmt, ...) {
     va_list va;
     char buf[100], *p;
 
     warn_ensure_header();
-    
+
     if (r) {
 	printf("rom  %-12s  ", file_name(r));
 	if (SIZE_IS_KNOWN(file_size(r))) {
 	    sprintf(buf, "size %7" PRIu64 "  ", file_size(r));
 	    p = buf + strlen(buf);
-	    
+
 	    /* TODO */
 	    if (hashes_has_type(file_hashes(r), HASHES_TYPE_CRC)) {
 		switch (file_status(r)) {
@@ -139,9 +134,9 @@ warn_rom(const file_t *r, const char *fmt, ...)
 		case STATUS_NODUMP:
 		    sprintf(p, "no good dump: ");
 		}
-	    } else
+	    }
+	    else
 		sprintf(p, "no good dump: ");
-
 	}
 	else
 	    sprintf(buf, "                          : ");
@@ -151,7 +146,7 @@ warn_rom(const file_t *r, const char *fmt, ...)
 	/* TODO: use warn_game */
 	printf("game %-40s: ", header_name);
     }
-    
+
     va_start(va, fmt);
     vprintf(fmt, va);
     va_end(va);
@@ -162,8 +157,8 @@ warn_rom(const file_t *r, const char *fmt, ...)
 }
 
 
-void warn_set_info(warn_type_t type, const char *name)
-{
+void
+warn_set_info(warn_type_t type, const char *name) {
     header_type = type;
     header_name = name;
     header_done = 0;
@@ -171,14 +166,9 @@ void warn_set_info(warn_type_t type, const char *name)
 
 
 static void
-warn_ensure_header(void)
-{
+warn_ensure_header(void) {
     /* keep in sync with warn_type_t in warn.h */
-    static char *tname[] = {
-	"archive",
-	"game",
-	"image"
-    };
+    static char *tname[] = {"archive", "game", "image"};
 
     if (header_done == 0) {
 	printf("In %s %s:\n", tname[header_type], header_name);

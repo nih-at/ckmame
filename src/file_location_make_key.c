@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,9 +41,8 @@ static int filetype_char(filetype_t);
 
 
 int
-file_location_default_hashtype(filetype_t ft)
-{
-    if (ft == TYPE_DISK)	
+file_location_default_hashtype(filetype_t ft) {
+    if (ft == TYPE_DISK)
 	return HASHES_TYPE_MD5;
     else
 	return HASHES_TYPE_CRC;
@@ -51,22 +50,20 @@ file_location_default_hashtype(filetype_t ft)
 
 
 const char *
-file_location_make_key(filetype_t filetype, const hashes_t *hash)
-{
-    static char key[HASHES_SIZE_MAX*2 + 4];
+file_location_make_key(filetype_t filetype, const hashes_t *hash) {
+    static char key[HASHES_SIZE_MAX * 2 + 4];
 
     key[0] = '/';
     key[1] = filetype_char(filetype);
     key[2] = '/';
-    hash_to_string(key+3, file_location_default_hashtype(filetype), hash);
+    hash_to_string(key + 3, file_location_default_hashtype(filetype), hash);
 
     return key;
 }
 
 
 static int
-filetype_char(enum filetype filetype)
-{
+filetype_char(enum filetype filetype) {
     /* TODO: I hate these fucking switch statements! */
 
     switch (filetype) {

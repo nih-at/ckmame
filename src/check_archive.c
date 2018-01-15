@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,15 +40,14 @@
 
 
 void
-check_archive(archive_t *a, const char *gamename, result_t *res)
-{
+check_archive(archive_t *a, const char *gamename, result_t *res) {
     int i;
     find_result_t found;
 
     if (a == NULL)
 	return;
 
-    for (i=0; i<archive_num_files(a); i++) {
+    for (i = 0; i < archive_num_files(a); i++) {
 	if (file_status(archive_file(a, i)) != STATUS_OK) {
 	    result_file(res, i) = FS_BROKEN;
 	    continue;
@@ -65,7 +64,7 @@ check_archive(archive_t *a, const char *gamename, result_t *res)
 
 	found = find_in_romset(archive_file(a, i), a, gamename, NULL);
 
-        switch (found) {
+	switch (found) {
 	case FIND_UNKNOWN:
 	    break;
 

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,8 +38,7 @@
 
 
 void
-check_old(game_t *g, result_t *res)
-{
+check_old(game_t *g, result_t *res) {
     int i;
     int all_old;
 
@@ -47,15 +46,14 @@ check_old(game_t *g, result_t *res)
 	return;
 
     all_old = 1;
-    for (i=0; i<game_num_files(g, file_type); i++) {
-	if (find_in_old(game_file(g, file_type, i), NULL, result_rom(res, i))
-	    != FIND_EXISTS)
+    for (i = 0; i < game_num_files(g, file_type); i++) {
+	if (find_in_old(game_file(g, file_type, i), NULL, result_rom(res, i)) != FIND_EXISTS)
 	    all_old = 0;
     }
 
     if (all_old)
 	result_game(res) = GS_OLD;
 
-    for (i=0; i<game_num_disks(g); i++)
+    for (i = 0; i < game_num_disks(g); i++)
 	find_disk_in_old(game_disk(g, i), result_disk(res, i));
 }

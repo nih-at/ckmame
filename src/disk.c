@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,8 +38,7 @@
 
 
 void
-disk_init(disk_t *d)
-{
+disk_init(disk_t *d) {
     d->refcount = 0;
     d->name = d->merge = NULL;
     hashes_init(&d->hashes);
@@ -48,8 +47,7 @@ disk_init(disk_t *d)
 
 
 void
-disk_finalize(disk_t *d)
-{
+disk_finalize(disk_t *d) {
     free(d->name);
     free(d->merge);
 }

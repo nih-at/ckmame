@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,8 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <stdio.h>
 #include <signal.h>
+#include <stdio.h>
 
 #include "sighandle.h"
 
@@ -40,9 +40,8 @@ volatile int siginfo_caught;
 
 
 void
-sighandle(int signo)
-{
-    switch(signo) {
+sighandle(int signo) {
+    switch (signo) {
 #ifdef SIGINFO
     case SIGINFO:
 	siginfo_caught = 1;
@@ -57,8 +56,7 @@ sighandle(int signo)
 
 
 void
-print_info(const char *gamename)
-{
+print_info(const char *gamename) {
     printf("ckmame: currently checking %s\n", gamename);
     siginfo_caught = 0;
     return;

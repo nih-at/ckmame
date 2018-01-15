@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -61,8 +61,7 @@ static int write_game(output_context_cm_t *, game_t *);
 
 
 output_context_t *
-output_cm_new(const char *fname, int flags)
-{
+output_cm_new(const char *fname, int flags) {
     output_context_cm_t *ctx;
     FILE *f;
 
@@ -73,7 +72,7 @@ output_cm_new(const char *fname, int flags)
 	fname = "*stdout*";
     }
     else {
-	if ((f=fopen(fname, "w")) == NULL) {
+	if ((f = fopen(fname, "w")) == NULL) {
 	    myerror(ERRDEF, "cannot create '%s': %s", fname, strerror(errno));
 	    free(ctx);
 	    return NULL;
@@ -94,15 +93,14 @@ output_cm_new(const char *fname, int flags)
 
 
 static int
-output_cm_close(output_context_t *out)
-{
+output_cm_close(output_context_t *out) {
     output_context_cm_t *ctx;
     int i, ret;
 
     ctx = (output_context_cm_t *)out;
 
     parray_sort(ctx->games, cmp_games);
-    for (i=0; i<parray_length(ctx->games); i++)
+    for (i = 0; i < parray_length(ctx->games); i++)
 	write_game(ctx, parray_get(ctx->games, i));
     parray_free(ctx->games, game_free);
 
@@ -117,8 +115,8 @@ output_cm_close(output_context_t *out)
 }
 
 
-static int output_cm_game(output_context_t *out, game_t *g)
-{
+static int
+output_cm_game(output_context_t *out, game_t *g) {
     output_context_cm_t *ctx;
 
     ctx = (output_context_cm_t *)out;
@@ -130,17 +128,14 @@ static int output_cm_game(output_context_t *out, game_t *g)
 
 
 static int
-output_cm_header(output_context_t *out, dat_entry_t *dat)
-{
+output_cm_header(output_context_t *out, dat_entry_t *dat) {
     output_context_cm_t *ctx;
 
     ctx = (output_context_cm_t *)out;
 
     fputs("clrmamepro (\n", ctx->f);
     output_cond_print_string(ctx->f, "\tname ", dat_entry_name(dat), "\n");
-    output_cond_print_string(ctx->f, "\tdescription ",
-		 (dat_entry_description(dat)
-		  ? dat_entry_description(dat) : dat_entry_name(dat)), "\n");
+    output_cond_print_string(ctx->f, "\tdescription ", (dat_entry_description(dat) ? dat_entry_description(dat) : dat_entry_name(dat)), "\n");
     output_cond_print_string(ctx->f, "\tversion ", dat_entry_version(dat), "\n");
     fputs(")\n\n", ctx->f);
 
@@ -149,35 +144,29 @@ output_cm_header(output_context_t *out, dat_entry_t *dat)
 
 
 static int
-cmp_games(const game_t *g1, const game_t *g2)
-{
+cmp_games(const game_t *g1, const game_t *g2) {
     return strcasecmp(game_name(g1), game_name(g2));
 }
 
 
 static int
-write_game(output_context_cm_t *ctx, game_t *g)
-{
+write_game(output_context_cm_t *ctx, game_t *g) {
     file_t *r;
     int i;
     char *fl;
 
     fputs("game (\n", ctx->f);
     output_cond_print_string(ctx->f, "\tname ", game_name(g), "\n");
-    output_cond_print_string(ctx->f, "\tdescription ",
-		 game_description(g) ? game_description(g) : game_name(g),
-		 "\n");
+    output_cond_print_string(ctx->f, "\tdescription ", game_description(g) ? game_description(g) : game_name(g), "\n");
     output_cond_print_string(ctx->f, "\tcloneof ", game_cloneof(g, TYPE_ROM, 0), "\n");
     output_cond_print_string(ctx->f, "\tromof ", game_cloneof(g, TYPE_ROM, 0), "\n");
-    for (i=0; i<game_num_files(g, TYPE_ROM); i++) {
+    for (i = 0; i < game_num_files(g, TYPE_ROM); i++) {
 	r = game_file(g, TYPE_ROM, i);
-	
+
 	fputs("\trom ( ", ctx->f);
 	output_cond_print_string(ctx->f, "name ", file_name(r), " ");
 	if (file_where(r) != FILE_INZIP)
-	    output_cond_print_string(ctx->f, "merge ",
-			 file_merge(r) ? file_merge(r) : file_name(r),
-			 " ");
+	    output_cond_print_string(ctx->f, "merge ", file_merge(r) ? file_merge(r) : file_name(r), " ");
 	fprintf(ctx->f, "size %" PRIu64 " ", file_size(r));
 	output_cond_print_hash(ctx->f, "crc ", HASHES_TYPE_CRC, file_hashes(r), " ");
 	output_cond_print_hash(ctx->f, "sha1 ", HASHES_TYPE_SHA1, file_hashes(r), " ");

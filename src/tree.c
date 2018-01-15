@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -33,8 +33,8 @@
 
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "archive.h"
 #include "dbh.h"
@@ -52,11 +52,10 @@ static int tree_process(tree_t *, archive_t *, archive_t *, archive_t *);
 
 
 int
-tree_add(tree_t *tree, const char *name)
-{
+tree_add(tree_t *tree, const char *name) {
     game_t *g;
 
-    if ((g=romdb_read_game(db, name)) == NULL)
+    if ((g = romdb_read_game(db, name)) == NULL)
 	return -1;
 
     if (game_cloneof(g, file_type, 1))
@@ -67,16 +66,15 @@ tree_add(tree_t *tree, const char *name)
     tree_add_node(tree, name, 1);
 
     game_free(g);
-    
+
     return 0;
 }
 
 
 void
-tree_free(tree_t *tree)
-{
+tree_free(tree_t *tree) {
     tree_t *t;
-    
+
     while (tree) {
 	if (tree->child)
 	    tree_free(tree->child);
@@ -89,14 +87,14 @@ tree_free(tree_t *tree)
 
 
 tree_t *
-tree_new(void)
-{
+tree_new(void) {
     tree_t *t;
 
     t = xmalloc(sizeof(*t));
 
     t->name = NULL;
-    t->check = t->checked = false;;
+    t->check = t->checked = false;
+    ;
     t->child = t->next = NULL;
 
     return t;
@@ -104,8 +102,7 @@ tree_new(void)
 
 
 bool
-tree_recheck(const tree_t *tree, const char *name)
-{
+tree_recheck(const tree_t *tree, const char *name) {
     tree_t *t;
 
     for (t = tree->child; t; t = t->next) {
@@ -123,23 +120,21 @@ tree_recheck(const tree_t *tree, const char *name)
 
 
 int
-tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes)
-{
+tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) {
     array_t *a;
     file_location_t *fbh;
     game_t *g;
     const file_t *gr;
     int i, ret;
 
-    if ((a=romdb_read_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
+    if ((a = romdb_read_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
 	return 0;
 
     ret = 0;
-    for (i=0; i<array_length(a); i++) {
+    for (i = 0; i < array_length(a); i++) {
 	fbh = array_get(a, i);
 
-	if ((g=romdb_read_game(db, file_location_name(fbh))) == NULL
-	    || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
+	if ((g = romdb_read_game(db, file_location_name(fbh))) == NULL || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
 	    /* TODO: internal error: db inconsistency */
 	    ret = -1;
 	    continue;
@@ -160,8 +155,7 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes)
 
 
 void
-tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent)
-{
+tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent) {
     tree_t *t;
     archive_t *child;
     char *full_name;
@@ -173,8 +167,7 @@ tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent)
 	if (siginfo_caught)
 	    print_info(tree->name);
 
-	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0)
-		 | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY|romdb_hashtypes(db, TYPE_ROM)) : 0));
+	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | romdb_hashtypes(db, TYPE_ROM)) : 0));
 
 	full_name = findfile(tree->name, file_type);
 	if (full_name == NULL && tree->check) {
@@ -188,7 +181,7 @@ tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent)
 	    tree_process(tree, child, parent, gparent);
     }
 
-    for (t=tree->child; t; t=t->next)
+    for (t = tree->child; t; t = t->next)
 	tree_traverse(t, child, parent);
 
     if (child)
@@ -199,8 +192,7 @@ tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent)
 
 
 static tree_t *
-tree_add_node(tree_t *tree, const char *name, int check)
-{
+tree_add_node(tree_t *tree, const char *name, int check) {
     tree_t *t;
     int cmp;
 
@@ -223,7 +215,7 @@ tree_add_node(tree_t *tree, const char *name, int check)
 	    return t;
 	}
 	else {
-	    for (tree=tree->child; tree->next; tree=tree->next) {
+	    for (tree = tree->child; tree->next; tree = tree->next) {
 		cmp = strcmp(tree->next->name, name);
 		if (cmp == 0) {
 		    if (check)
@@ -247,8 +239,7 @@ tree_add_node(tree_t *tree, const char *name, int check)
 
 
 static tree_t *
-tree_new_full(const char *name, int check)
-{
+tree_new_full(const char *name, int check) {
     tree_t *t;
 
     t = tree_new();
@@ -260,16 +251,14 @@ tree_new_full(const char *name, int check)
 
 
 static int
-tree_process(tree_t *tree, archive_t *child,
-	     archive_t *parent, archive_t *gparent)
-{
+tree_process(tree_t *tree, archive_t *child, archive_t *parent, archive_t *gparent) {
     archive_t *all[3];
     game_t *g;
     result_t *res;
     images_t *images;
 
     /* check me */
-    if ((g=romdb_read_game(db, tree->name)) == NULL) {
+    if ((g = romdb_read_game(db, tree->name)) == NULL) {
 	myerror(ERRDEF, "db error: %s not found", tree->name);
 	return -1;
     }

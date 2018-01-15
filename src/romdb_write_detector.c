@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -34,17 +34,17 @@
 
 #include <stdlib.h>
 
-#include "romdb.h"
 #include "detector.h"
+#include "romdb.h"
 #include "sq_util.h"
 
-#define INSERT_DAT	\
+#define INSERT_DAT                                     \
     "insert into dat (dat_idx, name, author, version)" \
     " values (-1, ?, ?, ?)"
-#define INSERT_RULE	\
+#define INSERT_RULE                                                    \
     "insert into rule (rule_idx, start_offset, end_offset, operation)" \
     " values (?, ?, ?, ?)"
-#define INSERT_TEST	\
+#define INSERT_TEST                                                   \
     "insert into test (rule_idx, test_idx, type, offset, size, mask," \
     " value, result) values (?, ?, ?, ?, ?, ?, ?, ?)"
 
@@ -52,17 +52,13 @@ static int romdb_write_rules(const detector_t *, sqlite3_stmt *, sqlite3_stmt *)
 
 
 int
-romdb_write_detector(romdb_t *db, const detector_t *d)
-{
+romdb_write_detector(romdb_t *db, const detector_t *d) {
     sqlite3_stmt *stmt, *stmt2;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT_DETECTOR)) == NULL)
 	return -1;
 
-    if (sq3_set_string(stmt, 1, detector_name(d)) != SQLITE_OK
-	|| sq3_set_string(stmt, 2, detector_author(d)) != SQLITE_OK
-	|| sq3_set_string(stmt, 3, detector_version(d)) != SQLITE_OK
-	|| sqlite3_step(stmt) != SQLITE_DONE)
+    if (sq3_set_string(stmt, 1, detector_name(d)) != SQLITE_OK || sq3_set_string(stmt, 2, detector_author(d)) != SQLITE_OK || sq3_set_string(stmt, 3, detector_version(d)) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_RULE)) == NULL)
@@ -75,37 +71,21 @@ romdb_write_detector(romdb_t *db, const detector_t *d)
 
 
 static int
-romdb_write_rules(const detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
-{
+romdb_write_rules(const detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
     int i, j;
     detector_rule_t *r;
     detector_test_t *t;
 
-    for (i=0; i<detector_num_rules(d); i++) {
+    for (i = 0; i < detector_num_rules(d); i++) {
 	r = detector_rule(d, i);
 
-	if (sqlite3_bind_int(st_r, 1, i) != SQLITE_OK
-	    || sqlite3_bind_int(st_t, 1, i) != SQLITE_OK
-	    || sq3_set_int64_default(st_r, 2, detector_rule_start_offset(r),
-				     0) != SQLITE_OK
-	    || sq3_set_int64_default(st_r, 3, detector_rule_end_offset(r),
-				     DETECTOR_OFFSET_EOF) != SQLITE_OK
-	    || sq3_set_int_default(st_r, 4, detector_rule_operation(r),
-				   DETECTOR_OP_NONE) != SQLITE_OK
-	    || sqlite3_step(st_r) != SQLITE_DONE
-	    || sqlite3_reset(st_r) != SQLITE_OK)
+	if (sqlite3_bind_int(st_r, 1, i) != SQLITE_OK || sqlite3_bind_int(st_t, 1, i) != SQLITE_OK || sq3_set_int64_default(st_r, 2, detector_rule_start_offset(r), 0) != SQLITE_OK || sq3_set_int64_default(st_r, 3, detector_rule_end_offset(r), DETECTOR_OFFSET_EOF) != SQLITE_OK || sq3_set_int_default(st_r, 4, detector_rule_operation(r), DETECTOR_OP_NONE) != SQLITE_OK || sqlite3_step(st_r) != SQLITE_DONE || sqlite3_reset(st_r) != SQLITE_OK)
 	    return -1;
 
-	for (j=0; j<detector_rule_num_tests(r); j++) {
+	for (j = 0; j < detector_rule_num_tests(r); j++) {
 	    t = detector_rule_test(r, j);
 
-	    if (sqlite3_bind_int(st_t, 2, j) != SQLITE_OK
-		|| (sqlite3_bind_int(st_t, 3, detector_test_type(t))
-		    != SQLITE_OK)
-		|| sqlite3_bind_int64(st_t, 4,
-				      detector_test_offset(t)) != SQLITE_OK
-		|| (sqlite3_bind_int(st_t, 8, detector_test_result(t))
-		    != SQLITE_OK))
+	    if (sqlite3_bind_int(st_t, 2, j) != SQLITE_OK || (sqlite3_bind_int(st_t, 3, detector_test_type(t)) != SQLITE_OK) || sqlite3_bind_int64(st_t, 4, detector_test_offset(t)) != SQLITE_OK || (sqlite3_bind_int(st_t, 8, detector_test_result(t)) != SQLITE_OK))
 		return -1;
 
 	    switch (detector_test_type(t)) {
@@ -113,30 +93,21 @@ romdb_write_rules(const detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t)
 	    case DETECTOR_TEST_OR:
 	    case DETECTOR_TEST_AND:
 	    case DETECTOR_TEST_XOR:
-		if (sqlite3_bind_null(st_t, 5) != SQLITE_OK
-		    || sq3_set_blob(st_t, 6, detector_test_mask(t),
-				    detector_test_length(t)) != SQLITE_OK
-		    || sq3_set_blob(st_t, 7, detector_test_value(t),
-				    detector_test_length(t)) != SQLITE_OK)
+		if (sqlite3_bind_null(st_t, 5) != SQLITE_OK || sq3_set_blob(st_t, 6, detector_test_mask(t), detector_test_length(t)) != SQLITE_OK || sq3_set_blob(st_t, 7, detector_test_value(t), detector_test_length(t)) != SQLITE_OK)
 		    return -1;
 		break;
 
 	    case DETECTOR_TEST_FILE_EQ:
 	    case DETECTOR_TEST_FILE_LE:
 	    case DETECTOR_TEST_FILE_GR:
-		if ((sqlite3_bind_int64(st_t, 5, detector_test_length(t))
-		     != SQLITE_OK)
-		    || sqlite3_bind_null(st_t, 6) != SQLITE_OK
-		    || sqlite3_bind_null(st_t, 7) != SQLITE_OK)
+		if ((sqlite3_bind_int64(st_t, 5, detector_test_length(t)) != SQLITE_OK) || sqlite3_bind_null(st_t, 6) != SQLITE_OK || sqlite3_bind_null(st_t, 7) != SQLITE_OK)
 		    return -1;
 		break;
 	    }
 
-	    if (sqlite3_step(st_t) != SQLITE_DONE
-		|| sqlite3_reset(st_t) != SQLITE_OK)
+	    if (sqlite3_step(st_t) != SQLITE_DONE || sqlite3_reset(st_t) != SQLITE_OK)
 		return -1;
 	}
-
     }
 
     return 0;

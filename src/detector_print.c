@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,8 +44,7 @@ static void pr_test(FILE *, const detector_test_t *);
 
 
 int
-detector_print(const detector_t *d, FILE *fout)
-{
+detector_print(const detector_t *d, FILE *fout) {
     int i;
 
     fprintf(fout, "<?xml version=\"1.0\"?>\n\n<detector>\n\n");
@@ -54,7 +53,7 @@ detector_print(const detector_t *d, FILE *fout)
     pr_string(fout, "version", detector_version(d));
     fprintf(fout, "\n");
 
-    for (i=0; i<detector_num_rules(d); i++)
+    for (i = 0; i < detector_num_rules(d); i++)
 	pr_rule(fout, detector_rule(d, i));
 
     fprintf(fout, "</detector>\n");
@@ -64,25 +63,21 @@ detector_print(const detector_t *d, FILE *fout)
 
 
 static void
-pr_rule(FILE *fout, const detector_rule_t *dr)
-{
+pr_rule(FILE *fout, const detector_rule_t *dr) {
     int i;
 
     fprintf(fout, "  <rule");
     if (detector_rule_start_offset(dr) != 0)
-	fprintf(fout, " start_offset=\"%jx\"",
-		(intmax_t)detector_rule_start_offset(dr));
+	fprintf(fout, " start_offset=\"%jx\"", (intmax_t)detector_rule_start_offset(dr));
     if (detector_rule_end_offset(dr) != DETECTOR_OFFSET_EOF)
-	fprintf(fout, " end_offset=\"%jx\"",
-		(intmax_t)detector_rule_end_offset(dr));
+	fprintf(fout, " end_offset=\"%jx\"", (intmax_t)detector_rule_end_offset(dr));
     if (detector_rule_operation(dr) != DETECTOR_OP_NONE)
-	fprintf(fout, " operation=\"%s\"",
-		detector_operation_str(detector_rule_operation(dr)));
+	fprintf(fout, " operation=\"%s\"", detector_operation_str(detector_rule_operation(dr)));
     if (detector_rule_num_tests(dr) == 0)
 	fprintf(fout, "/>\n\n");
     else {
 	fprintf(fout, ">\n");
-	for (i=0; i<detector_rule_num_tests(dr); i++)
+	for (i = 0; i < detector_rule_num_tests(dr); i++)
 	    pr_test(fout, detector_rule_test(dr, i));
 	fprintf(fout, "  </rule>\n\n");
     }
@@ -90,8 +85,7 @@ pr_rule(FILE *fout, const detector_rule_t *dr)
 
 
 static void
-pr_string(FILE *fout, const char *name, const char *value)
-{
+pr_string(FILE *fout, const char *name, const char *value) {
     if (value == NULL)
 	return;
 
@@ -100,28 +94,22 @@ pr_string(FILE *fout, const char *name, const char *value)
 
 
 static void
-pr_test(FILE *fout, const detector_test_t *dt)
-{
+pr_test(FILE *fout, const detector_test_t *dt) {
     char *hex;
-    
+
     fprintf(fout, "    <%s", detector_test_type_str(detector_test_type(dt)));
     switch (detector_test_type(dt)) {
     case DETECTOR_TEST_DATA:
     case DETECTOR_TEST_OR:
     case DETECTOR_TEST_AND:
     case DETECTOR_TEST_XOR:
-	hex = xmalloc(detector_test_length(dt)*2+1);
+	hex = xmalloc(detector_test_length(dt) * 2 + 1);
 
 	if (detector_test_offset(dt) != 0)
-	    fprintf(fout, " offset=\"%jx\"",
-		    (intmax_t)detector_test_offset(dt));
+	    fprintf(fout, " offset=\"%jx\"", (intmax_t)detector_test_offset(dt));
 	if (detector_test_mask(dt))
-	    fprintf(fout, " mask=\"%s\"",
-		    bin2hex(hex, detector_test_mask(dt),
-			    detector_test_length(dt)));
-	fprintf(fout, " value=\"%s\"",
-		bin2hex(hex, detector_test_value(dt),
-			detector_test_length(dt)));
+	    fprintf(fout, " mask=\"%s\"", bin2hex(hex, detector_test_mask(dt), detector_test_length(dt)));
+	fprintf(fout, " value=\"%s\"", bin2hex(hex, detector_test_value(dt), detector_test_length(dt)));
 
 	free(hex);
 	break;
@@ -136,8 +124,7 @@ pr_test(FILE *fout, const detector_test_t *dt)
 	    fprintf(fout, "%jx", (intmax_t)detector_test_size(dt));
 	fprintf(fout, "\"");
 	if (detector_test_type(dt) != DETECTOR_TEST_FILE_EQ)
-	    fprintf(fout, " operator=\"%s\"",
-		    detector_file_test_type_str(detector_test_type(dt)));
+	    fprintf(fout, " operator=\"%s\"", detector_file_test_type_str(detector_test_type(dt)));
 	break;
     }
 

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,8 +36,7 @@
 
 
 const char *
-detector_file_test_type_str(detector_test_type_t t)
-{
+detector_file_test_type_str(detector_test_type_t t) {
     switch (t) {
     case DETECTOR_TEST_FILE_EQ:
 	return "equal";
@@ -49,12 +48,11 @@ detector_file_test_type_str(detector_test_type_t t)
     default:
 	return "unknown";
     }
-    
 }
 
 
-const char *detector_operation_str(detector_operation_t op)
-{
+const char *
+detector_operation_str(detector_operation_t op) {
     switch (op) {
     case DETECTOR_OP_NONE:
 	return "none";
@@ -71,8 +69,8 @@ const char *detector_operation_str(detector_operation_t op)
 }
 
 
-const char *detector_test_type_str(detector_test_type_t t)
-{
+const char *
+detector_test_type_str(detector_test_type_t t) {
     switch (t) {
     case DETECTOR_TEST_DATA:
 	return "data";

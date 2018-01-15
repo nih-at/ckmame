@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,16 +42,14 @@
 #define OPTIONS "C:d:"
 
 static struct option options[] = {
-    { "dat-no",           1, 0, 'd' },
-    { "hash-types",       1, 0, 'C' },
-    { NULL,               0, 0, 0 },
+    {"dat-no", 1, 0, 'd'},
+    {"hash-types", 1, 0, 'C'},
+    {NULL, 0, 0, 0},
 };
 
 
-
 int
-cmd_add(int argc, char **argv)
-{
+cmd_add(int argc, char **argv) {
     int datno, hashtypes;
     int c;
 
@@ -59,20 +57,20 @@ cmd_add(int argc, char **argv)
     hashtypes = HASHES_TYPE_ALL;
 
     opterr = 0;
-    while ((c=getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
+    while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
 	switch (c) {
 	case 'C':
 	    hashtypes = hash_types_from_str(optarg);
-            if (hashtypes == 0) {
+	    if (hashtypes == 0) {
 		myerror(ERRDEF, "illegal hash types '%s'", optarg);
-                return -1;
-            }
+		return -1;
+	    }
 	    break;
 	case 'd':
 	    datno = atoi(optarg); /* TODO: check valid input */
 	    break;
 
-    	default:
+	default:
 	    command_usage(stderr, argv[0]);
 	    return -1;
 	}

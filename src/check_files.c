@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,20 +47,11 @@
 #include "xmalloc.h"
 
 
-enum test {
-    TEST_NAME_SIZE_CHECKSUM,
-    TEST_MERGENAME_SIZE_CHECKSUM,
-    TEST_SIZE_CHECKSUM,
-    TEST_LONG
-};
+enum test { TEST_NAME_SIZE_CHECKSUM, TEST_MERGENAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG };
 
 typedef enum test test_t;
 
-enum test_result {
-    TEST_NOTFOUND,
-    TEST_UNUSABLE,
-    TEST_USABLE
-};
+enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 
 typedef enum test_result test_result_t;
 
@@ -69,15 +60,10 @@ static void update_game_status(const game_t *, result_t *);
 
 
 void
-check_files(game_t *g, archive_t *archives[3], result_t *res)
-{
-    static const test_t tests[] = {
-	TEST_NAME_SIZE_CHECKSUM,
-	TEST_SIZE_CHECKSUM,
-	TEST_LONG
-    };
-    static const int tests_count = sizeof(tests)/sizeof(tests[0]);
-    
+check_files(game_t *g, archive_t *archives[3], result_t *res) {
+    static const test_t tests[] = {TEST_NAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG};
+    static const int tests_count = sizeof(tests) / sizeof(tests[0]);
+
     int i, j;
     test_result_t result;
 
@@ -98,11 +84,11 @@ check_files(game_t *g, archive_t *archives[3], result_t *res)
 	/* check if it's in ancestor */
 	if (file_where(rom) != FILE_INZIP && expected_archive != NULL && (result = match_files(expected_archive, TEST_MERGENAME_SIZE_CHECKSUM, rom, match)) != TEST_NOTFOUND) {
 	    match_where(match) = file_where(rom);
-	    if (result == TEST_USABLE) {		
+	    if (result == TEST_USABLE) {
 		continue;
 	    }
 	}
-	
+
 	/* search for matching file in game's zip */
 	if (archives[0]) {
 	    for (j = 0; j < tests_count; j++) {
@@ -123,7 +109,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res)
 	    if (find_in_romset(rom, NULL, game_name(g), match) == FIND_EXISTS) {
 		continue;
 	    }
-	    
+
 	    /* search in needed, superfluous and update sets */
 	    ensure_needed_maps();
 	    ensure_extra_maps(DO_MAP);
@@ -139,7 +125,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res)
 	for (i = 0; i < archive_num_files(archive); i++) {
 	    user[i] = -1;
 	}
-    
+
 	for (i = 0; i < game_num_files(g, file_type); i++) {
 	    match_t *match = result_rom(res, i);
 	    if (match_where(match) == FILE_INZIP && match_quality(match) != QU_HASHERR) {
@@ -147,7 +133,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res)
 		if (result_file(res, j) != FS_USED) {
 		    result_file(res, j) = match_quality(match) == QU_LONG ? FS_PARTUSED : FS_USED;
 		}
-		
+
 		if (match_quality(match) != QU_LONG && match_quality(match) != QU_INZIP) {
 		    if (user[j] == -1) {
 			user[j] = i;
@@ -171,8 +157,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res)
 
 
 static test_result_t
-match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match)
-{
+match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match) {
     int i;
     const file_t *file;
     test_result_t result;
@@ -180,7 +165,7 @@ match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match)
     match_offset(match) = -1;
 
     result = TEST_NOTFOUND;
-	
+
     for (i = 0; result != TEST_USABLE && i < archive_num_files(archive); i++) {
 	file = archive_file(archive, i);
 
@@ -193,12 +178,10 @@ match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match)
 	case TEST_MERGENAME_SIZE_CHECKSUM:
 	    if ((test == TEST_NAME_SIZE_CHECKSUM ? (file_compare_n(rom, file)) : (file_compare_m(rom, file))) && file_compare_sc(rom, file)) {
 		/* TODO: this is exceedingly ugly */
-		if ((hashes_cmp(file_hashes(rom), file_hashes(file)) != HASHES_CMP_MATCH)
-		    && (!file_sh_is_set(file, FILE_SH_DETECTOR)
-			|| (hashes_cmp(file_hashes(rom), file_hashes_xxx(file, FILE_SH_DETECTOR)) != HASHES_CMP_MATCH))) {
+		if ((hashes_cmp(file_hashes(rom), file_hashes(file)) != HASHES_CMP_MATCH) && (!file_sh_is_set(file, FILE_SH_DETECTOR) || (hashes_cmp(file_hashes(rom), file_hashes_xxx(file, FILE_SH_DETECTOR)) != HASHES_CMP_MATCH))) {
 		    if (match_quality(match) == QU_HASHERR)
 			break;
-		    
+
 		    match_quality(match) = QU_HASHERR;
 		    result = TEST_UNUSABLE;
 		}
@@ -215,14 +198,14 @@ match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match)
 	    /* roms without hashes are only matched with correct name */
 	    if (hashes_types(file_hashes(rom)) == 0)
 		break;
-	    
+
 	    if (file_compare_sc(rom, file)) {
 		if (archive_file_compare_hashes(archive, i, file_hashes(rom)) != 0) {
 		    if (file_status(archive_file(archive, i)) != STATUS_OK)
 			break;
 		    if (match_quality(match) == QU_HASHERR)
 			break;
-		    
+
 		    match_quality(match) = QU_HASHERR;
 		    result = TEST_UNUSABLE;
 		}
@@ -239,12 +222,8 @@ match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match)
 	    /* roms without hashes are only matched with correct name */
 	    if (hashes_types(file_hashes(rom)) == 0 || file_size(rom) == 0)
 		break;
-	    
-	    if (file_compare_n(rom, file)
-		&& file_size(file) > file_size(rom)
-		&& (match_offset(match)=archive_file_find_offset(archive, i, file_size(rom),
-							     file_hashes(rom)))
-		!= -1) {
+
+	    if (file_compare_n(rom, file) && file_size(file) > file_size(rom) && (match_offset(match) = archive_file_find_offset(archive, i, file_size(rom), file_hashes(rom))) != -1) {
 		match_archive(match) = archive;
 		match_index(match) = i;
 		match_quality(match) = QU_LONG;
@@ -259,8 +238,7 @@ match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match)
 
 
 static void
-update_game_status(const game_t *g, result_t *res)
-{
+update_game_status(const game_t *g, result_t *res) {
     int i;
     int all_dead, all_own_dead, all_correct, all_fixable, has_own;
     const match_t *m;
@@ -269,7 +247,7 @@ update_game_status(const game_t *g, result_t *res)
     all_own_dead = all_dead = all_correct = all_fixable = 1;
     has_own = 0;
 
-    for (i=0; i<game_num_files(g, file_type); i++) {
+    for (i = 0; i < game_num_files(g, file_type); i++) {
 	m = result_rom(res, i);
 	r = game_file(g, file_type, i);
 
@@ -284,9 +262,7 @@ update_game_status(const game_t *g, result_t *res)
 	}
 	/* TODO: using output_options here is a bit of a hack,
 	   but so is all of the result_game processing */
-	if (match_quality(m) != QU_OK
-	    && (file_status(r) != STATUS_NODUMP
-		|| (output_options & WARN_NO_GOOD_DUMP)))
+	if (match_quality(m) != QU_OK && (file_status(r) != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP)))
 	    all_correct = 0;
     }
 

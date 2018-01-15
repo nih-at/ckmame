@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,15 +39,14 @@
 #include "hashes.h"
 
 int
-copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t *hashes)
-{
+copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t *hashes) {
     FILE *fin, *fout;
     unsigned char b[8192];
     size_t nr, nw, total;
     ssize_t n;
     int err;
 
-    if ((fin=fopen(old, "rb")) == NULL)
+    if ((fin = fopen(old, "rb")) == NULL)
 	return -1;
 
     if (start > 0) {
@@ -57,29 +56,29 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 	}
     }
 
-    if ((fout=fopen(new, "wb")) == NULL) {
+    if ((fout = fopen(new, "wb")) == NULL) {
 	fclose(fin);
 	return -1;
     }
-    
+
     hashes_update_t *hu = NULL;
     hashes_t h;
 
     if (hashes) {
-        hashes_types(&h) = HASHES_TYPE_ALL;
-        hu = hashes_update_new(&h);
+	hashes_types(&h) = HASHES_TYPE_ALL;
+	hu = hashes_update_new(&h);
     }
 
     total = 0;
     while ((len >= 0 && total < (size_t)len) || !feof(fin)) {
 	nr = sizeof(b);
-	if (len > 0 && nr > (size_t)len-total)
-	    nr = (size_t)len-total;
+	if (len > 0 && nr > (size_t)len - total)
+	    nr = (size_t)len - total;
 	if ((nr = fread(b, 1, nr, fin)) == 0)
-            break;
+	    break;
 	nw = 0;
-	while (nw<nr) {
-	    if ((n=fwrite(b+nw, 1, nr-nw, fout)) <= 0) {
+	while (nw < nr) {
+	    if ((n = fwrite(b + nw, 1, nr - nw, fout)) <= 0) {
 		err = errno;
 		fclose(fin);
 		fclose(fout);
@@ -87,16 +86,16 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 		errno = err;
 		return -1;
 	    }
-            
-            if (hashes)
-                hashes_update(hu, b+nw, nr-nw);
+
+	    if (hashes)
+		hashes_update(hu, b + nw, nr - nw);
 	    nw += n;
 	}
 	total += nw;
     }
-    
+
     if (hashes)
-        hashes_update_final(hu);
+	hashes_update_final(hu);
 
     if (fclose(fout) != 0 || ferror(fin)) {
 	err = errno;
@@ -106,17 +105,16 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 	return -1;
     }
     fclose(fin);
-    
+
     if (hashes)
-        hashes_copy(hashes, &h);
+	hashes_copy(hashes, &h);
 
     return 0;
 }
 
 
 int
-link_or_copy(const char *old, const char *new)
-{
+link_or_copy(const char *old, const char *new) {
     if (link(old, new) < 0) {
 	if (copy_file(old, new, 0, -1, NULL) < 0) {
 	    seterrinfo(old, NULL);
@@ -130,8 +128,7 @@ link_or_copy(const char *old, const char *new)
 
 
 int
-my_remove(const char *name)
-{
+my_remove(const char *name) {
     if (remove(name) != 0) {
 	seterrinfo(name, NULL);
 	myerror(ERRFILESTR, "cannot remove");
@@ -143,8 +140,7 @@ my_remove(const char *name)
 
 
 int
-rename_or_move(const char *old, const char *new)
-{
+rename_or_move(const char *old, const char *new) {
     if (rename(old, new) < 0) {
 	if (copy_file(old, new, 0, -1, NULL) < 0) {
 	    seterrinfo(old, NULL);

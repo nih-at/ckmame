@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,11 +37,10 @@
 
 
 void
-dat_entry_finalize(dat_entry_t *de)
-{
+dat_entry_finalize(dat_entry_t *de) {
     free(de->name);
     free(de->description);
     free(de->version);
-    
+
     de->name = de->description = de->version = NULL;
 }

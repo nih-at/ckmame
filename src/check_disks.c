@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,8 +42,7 @@
 
 
 void
-check_disks(game_t *game, images_t *im, result_t *res)
-{
+check_disks(game_t *game, images_t *im, result_t *res) {
     disk_t *d, *f;
     match_disk_t *md;
     int i;
@@ -51,7 +50,7 @@ check_disks(game_t *game, images_t *im, result_t *res)
     if (game_num_disks(game) == 0)
 	return;
 
-    for (i=0; i<game_num_disks(game); i++) {
+    for (i = 0; i < game_num_disks(game); i++) {
 	md = result_disk(res, i);
 	d = game_disk(game, i);
 	f = images_get(im, i);
@@ -61,7 +60,7 @@ check_disks(game_t *game, images_t *im, result_t *res)
 
 	if (f) {
 	    match_disk_set_source(md, f);
-	    
+
 	    switch (hashes_cmp(disk_hashes(d), disk_hashes(f))) {
 	    case HASHES_CMP_NOCOMMON:
 		match_disk_quality(md) = QU_NOHASH;
@@ -78,12 +77,11 @@ check_disks(game_t *game, images_t *im, result_t *res)
 	}
 
 	if (hashes_types(disk_hashes(d)) == 0) {
-	  /* TODO: search for disk by name */
-	  continue;
+	    /* TODO: search for disk by name */
+	    continue;
 	}
 
-	if (match_disk_quality(md) != QU_OK
-	    && match_disk_quality(md) != QU_OLD) {
+	if (match_disk_quality(md) != QU_OK && match_disk_quality(md) != QU_OLD) {
 	    /* search in needed, superfluous and extra dirs */
 	    ensure_extra_maps(DO_MAP);
 	    ensure_needed_maps();

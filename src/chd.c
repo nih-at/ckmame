@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,36 +41,27 @@
 #include "compat.h"
 
 
-#define MAX_HEADERLEN	124		/* maximum header length */
-#define TAG		"MComprHD"
-#define TAG_LEN		8		/* length of tag */
-#define TAG_AND_LEN	12		/* length of tag + header length */
+#define MAX_HEADERLEN 124 /* maximum header length */
+#define TAG "MComprHD"
+#define TAG_LEN 8      /* length of tag */
+#define TAG_AND_LEN 12 /* length of tag + header length */
 
-#define META_HEADERLEN	16
+#define META_HEADERLEN 16
 
-#define MAP_ENTRY_SIZE_V12	8	/* size of map entry, versions 1 & 2 */
-#define MAP_ENTRY_SIZE_V3	16	/* size of map entry, version 3 */
+#define MAP_ENTRY_SIZE_V12 8 /* size of map entry, versions 1 & 2 */
+#define MAP_ENTRY_SIZE_V3 16 /* size of map entry, version 3 */
 
-#define HEADER_LEN_V5	124
+#define HEADER_LEN_V5 124
 
-#define GET_UINT16(b)	(b+=2,((b)[-2]<<8)|(b)[-1])
-#define GET_UINT32(b)	(b+=4,((b)[-4]<<24)|((b)[-3]<<16)|((b)[-2]<<8)|(b)[-1])
-#define GET_UINT64(b)	(b+=8,((uint64_t)(b)[-8]<<56)|((uint64_t)(b)[-7]<<48) \
-			 |((uint64_t)(b)[-6]<<40)|((uint64_t)(b)[-5]<<32)     \
-			 |((uint64_t)(b)[-4]<<24)|((uint64_t)(b)[-3]<<16)     \
-			 |((uint64_t)(b)[-2]<<8)|((uint64_t)(b)[-1]))
+#define GET_UINT16(b) (b += 2, ((b)[-2] << 8) | (b)[-1])
+#define GET_UINT32(b) (b += 4, ((b)[-4] << 24) | ((b)[-3] << 16) | ((b)[-2] << 8) | (b)[-1])
+#define GET_UINT64(b) (b += 8, ((uint64_t)(b)[-8] << 56) | ((uint64_t)(b)[-7] << 48) | ((uint64_t)(b)[-6] << 40) | ((uint64_t)(b)[-5] << 32) | ((uint64_t)(b)[-4] << 24) | ((uint64_t)(b)[-3] << 16) | ((uint64_t)(b)[-2] << 8) | ((uint64_t)(b)[-1]))
 
 #define MAKE_TAG(a, b, c, d) (((a) << 24) | ((b) << 16) | ((c) << 8) | (d))
-static uint32_t v4_compressors[] = {
-    0,
-    CHD_CODEC_ZLIB,
-    CHD_CODEC_ZLIB, /* TODO: zlib plus */
-    CHD_CODEC_AVHUFF
-};
+static uint32_t v4_compressors[] = {0, CHD_CODEC_ZLIB, CHD_CODEC_ZLIB, /* TODO: zlib plus */
+				    CHD_CODEC_AVHUFF};
 
-static uint8_t  v4_map_types[] = {
-    0, CHD_MAP_TYPE_COMPRESSOR0, CHD_MAP_TYPE_UNCOMPRESSED, CHD_MAP_TYPE_MINI, CHD_MAP_TYPE_SELF_REF, CHD_MAP_TYPE_PARENT_REF
-};
+static uint8_t v4_map_types[] = {0, CHD_MAP_TYPE_COMPRESSOR0, CHD_MAP_TYPE_UNCOMPRESSED, CHD_MAP_TYPE_MINI, CHD_MAP_TYPE_SELF_REF, CHD_MAP_TYPE_PARENT_REF};
 
 #if 0
 static uint8_t  v5_map_types[] = {
@@ -87,20 +78,18 @@ static int read_meta_headers(struct chd *chd);
 
 
 void
-chd_close(struct chd *chd)
-{
+chd_close(struct chd *chd) {
     fclose(chd->f);
     free(chd->name);
     free(chd->map);
     free(chd->buf);
     free(chd->hbuf);
     free(chd);
-}   
+}
 
 
 struct chd_metadata_entry *
-chd_get_metadata_list(struct chd *chd)
-{
+chd_get_metadata_list(struct chd *chd) {
     /* TODO: handle/propagate error */
     read_meta_headers(chd);
 
@@ -109,18 +98,17 @@ chd_get_metadata_list(struct chd *chd)
 
 
 struct chd *
-chd_open(const char *name, int *errp)
-{
+chd_open(const char *name, int *errp) {
     struct chd *chd;
     FILE *f;
 
-    if ((f=fopen(name, "rb")) == NULL) {
+    if ((f = fopen(name, "rb")) == NULL) {
 	if (errp)
 	    *errp = CHD_ERR_OPEN;
 	return NULL;
     }
 
-    if ((chd=malloc(sizeof(*chd))) == NULL) {
+    if ((chd = malloc(sizeof(*chd))) == NULL) {
 	if (errp)
 	    *errp = CHD_ERR_NOMEM;
 	return NULL;
@@ -133,7 +121,7 @@ chd_open(const char *name, int *errp)
     chd->hbuf = NULL;
     chd->meta = NULL;
 
-    if ((chd->name=strdup(name)) == NULL) {
+    if ((chd->name = strdup(name)) == NULL) {
 	if (errp)
 	    *errp = CHD_ERR_NOMEM;
 	chd_close(chd);
@@ -151,8 +139,7 @@ chd_open(const char *name, int *errp)
 
 
 int64_t
-chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b)
-{
+chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b) {
     uint64_t n;
     int i, err;
     uint32_t compression_type;
@@ -176,11 +163,11 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b)
 	compression_type = chd->compressors[chd->map[idx].type];
     else
 	compression_type = chd->map[idx].type;
-	
+
     switch (compression_type) {
     case CHD_CODEC_ZLIB:
 	if (chd->buf == NULL) {
-	    if ((chd->buf=malloc(chd->hunk_len)) == NULL) {
+	    if ((chd->buf = malloc(chd->hunk_len)) == NULL) {
 		chd->error = CHD_ERR_NOMEM;
 		return -1;
 	    }
@@ -201,7 +188,7 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b)
 	    chd->error = CHD_ERR_SEEK;
 	    return -1;
 	}
-	if ((n=fread(chd->buf, 1, chd->map[idx].length, chd->f)) != chd->map[idx].length) {
+	if ((n = fread(chd->buf, 1, chd->map[idx].length, chd->f)) != chd->map[idx].length) {
 	    chd->error = CHD_ERR_READ;
 	    return -1;
 	}
@@ -211,7 +198,7 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b)
 	chd->z.next_out = (Bytef *)b;
 	chd->z.avail_out = chd->hunk_len;
 	/* TODO: should use Z_FINISH, but that returns Z_BUF_ERROR */
-	if ((err=inflate(&chd->z, 0)) != Z_OK && err != Z_STREAM_END) {
+	if ((err = inflate(&chd->z, 0)) != Z_OK && err != Z_STREAM_END) {
 	    chd->error = CHD_ERR_ZLIB;
 	    return -1;
 	}
@@ -225,7 +212,7 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b)
 	    return -1;
 	}
 	/* TODO: use chd->hunk_len instead? */
-	if ((n=fread(b, 1, chd->map[idx].length, chd->f)) != chd->map[idx].length) {
+	if ((n = fread(b, 1, chd->map[idx].length, chd->f)) != chd->map[idx].length) {
 	    chd->error = CHD_ERR_READ;
 	    return -1;
 	}
@@ -241,8 +228,8 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b)
 	b[6] = (chd->map[idx].offset >> 8) & 0xff;
 	b[7] = chd->map[idx].offset & 0xff;
 	n = chd->hunk_len;
-	for (i=8; i<n; i++)
-	    b[i] = b[i-8];
+	for (i = 8; i < n; i++)
+	    b[i] = b[i - 8];
 	break;
 
     case CHD_MAP_TYPE_SELF_REF:
@@ -257,23 +244,21 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b)
 	chd->error = CHD_ERR_NOTSUP;
 	return -1;
     }
-    
+
     if ((chd->map[idx].flags & CHD_MAP_FL_NOCRC) == 0) {
-        /* TODO: Can n be > INT_MAX? If so, loop */
+	/* TODO: Can n be > INT_MAX? If so, loop */
 	if (crc32(0, (Bytef *)b, (int)n) != chd->map[idx].crc) {
 	    chd->error = CHD_ERR_CRC;
 	    return -1;
 	}
     }
-    
+
     return n;
 }
 
 
 int
-chd_read_metadata(struct chd* chd, const struct chd_metadata_entry *e,
-		  unsigned char *b)
-{
+chd_read_metadata(struct chd *chd, const struct chd_metadata_entry *e, unsigned char *b) {
     if (e == NULL) {
 	chd->error = CHD_ERR_INVAL;
 	return -1;
@@ -298,46 +283,45 @@ chd_read_metadata(struct chd* chd, const struct chd_metadata_entry *e,
 
 
 int64_t
-chd_read_range(struct chd *chd, unsigned char *b, uint64_t off, uint64_t len)
-{
+chd_read_range(struct chd *chd, unsigned char *b, uint64_t off, uint64_t len) {
     uint64_t i, s, n;
     uint64_t copied, o2, l2;
 
     /* TODO: error handling */
 
-    s = off/chd->hunk_len;
-    n = (off+len+chd->hunk_len-1)/chd->hunk_len - s;
+    s = off / chd->hunk_len;
+    n = (off + len + chd->hunk_len - 1) / chd->hunk_len - s;
 
     copied = 0;
     o2 = off % chd->hunk_len;
     l2 = chd->hunk_len - o2;
 
-    for (i=0; i<n; i++) {
+    for (i = 0; i < n; i++) {
 	if (i == 1) {
 	    o2 = 0;
 	    l2 = chd->hunk_len;
 	}
-	if (i == n-1) {
-	    if (l2 > len-copied)
-		l2 = len-copied;
+	if (i == n - 1) {
+	    if (l2 > len - copied)
+		l2 = len - copied;
 	}
-	if (o2 == 0 && l2 == chd->hunk_len && s+i != chd->hno) {
-	    if (chd_read_hunk(chd, s+i, b+copied) < 0)
+	if (o2 == 0 && l2 == chd->hunk_len && s + i != chd->hno) {
+	    if (chd_read_hunk(chd, s + i, b + copied) < 0)
 		return -1;
 	    copied += chd->hunk_len;
 	}
 	else {
 	    if (chd->hbuf == NULL)
-		if ((chd->hbuf=malloc(chd->hunk_len)) == NULL) {
+		if ((chd->hbuf = malloc(chd->hunk_len)) == NULL) {
 		    chd->error = CHD_ERR_NOMEM;
 		    return -1;
 		}
-	    if (s+i != chd->hno) {
-		if (chd_read_hunk(chd, s+i, chd->hbuf) < 0)
-		    return  -1;
-		chd->hno = (uint32_t)(s+i); /* can't overflow since chd_read_hunk() succeeded */
+	    if (s + i != chd->hno) {
+		if (chd_read_hunk(chd, s + i, chd->hbuf) < 0)
+		    return -1;
+		chd->hno = (uint32_t)(s + i); /* can't overflow since chd_read_hunk() succeeded */
 	    }
-	    memcpy(b+copied, chd->hbuf+o2, l2);
+	    memcpy(b + copied, chd->hbuf + o2, l2);
 	    copied += l2;
 	}
     }
@@ -347,8 +331,7 @@ chd_read_range(struct chd *chd, unsigned char *b, uint64_t off, uint64_t len)
 
 
 static int
-read_header(struct chd *chd)
-{
+read_header(struct chd *chd) {
     uint32_t len;
 
     unsigned char b[MAX_HEADERLEN], *p;
@@ -363,17 +346,17 @@ read_header(struct chd *chd)
 	return -1;
     }
 
-    p = b+TAG_LEN;
+    p = b + TAG_LEN;
     len = GET_UINT32(p);
     if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
 	chd->error = CHD_ERR_NO_CHD;
 	return -1;
     }
-    if (fread(p, len-TAG_AND_LEN, 1, chd->f) != 1) {
+    if (fread(p, len - TAG_AND_LEN, 1, chd->f) != 1) {
 	chd->error = CHD_ERR_READ;
 	return -1;
     }
-    
+
     chd->hdr_length = len;
     chd->version = GET_UINT32(p);
 
@@ -381,10 +364,10 @@ read_header(struct chd *chd)
 	chd->error = CHD_ERR_VERSION;
 	return -1;
     }
-    
+
     if (chd->version >= 5)
 	return read_header_v5(chd, b);
-    
+
     chd->flags = GET_UINT32(p);
     chd->compressors[0] = v4_compressors[GET_UINT32(p)];
 
@@ -424,9 +407,9 @@ read_header(struct chd *chd)
 	    memset(chd->md5, 0, sizeof(chd->md5));
 	    memset(chd->parent_md5, 0, sizeof(chd->parent_md5));
 	}
-	
+
 	chd->hunk_len = GET_UINT32(p);
-	
+
 	memcpy(chd->sha1, p, sizeof(chd->sha1));
 	p += sizeof(chd->sha1);
 	memcpy(chd->parent_sha1, p, sizeof(chd->parent_sha1));
@@ -441,16 +424,14 @@ read_header(struct chd *chd)
     }
 
     chd->map_offset = chd->hdr_length;
-    
+
     return 0;
 }
 
 
-
 static int
-read_header_v5(struct chd *chd, unsigned char *header)
-{
-    /* 
+read_header_v5(struct chd *chd, unsigned char *header) {
+    /*
     V5 header:
 
     [  0] char   tag[8];        // 'MComprHD'
@@ -474,11 +455,11 @@ read_header_v5(struct chd *chd, unsigned char *header)
 
     unsigned char *p = header + TAG_AND_LEN + 4;
     int i;
-    
+
     if (chd->hdr_length < HEADER_LEN_V5)
 	return -1;
 
-    for (i=0; i<4; i++)
+    for (i = 0; i < 4; i++)
 	chd->compressors[i] = GET_UINT32(p);
 
     chd->total_len = GET_UINT64(p);
@@ -487,10 +468,10 @@ read_header_v5(struct chd *chd, unsigned char *header)
     chd->meta_offset = GET_UINT64(p);
 
     chd->hunk_len = GET_UINT32(p);
-    chd->total_hunks = (chd->total_len+chd->hunk_len-1) / chd->hunk_len;
-    
+    chd->total_hunks = (chd->total_len + chd->hunk_len - 1) / chd->hunk_len;
+
     p += 4; /* unit bytes */
-    
+
     memcpy(chd->raw_sha1, p, sizeof(chd->raw_sha1));
     p += sizeof(chd->raw_sha1);
     memcpy(chd->sha1, p, sizeof(chd->sha1));
@@ -499,19 +480,18 @@ read_header_v5(struct chd *chd, unsigned char *header)
     p += sizeof(chd->parent_sha1);
 
     chd->flags = 0;
-    for (i=0; i<sizeof(chd->parent_sha1); i++)
+    for (i = 0; i < sizeof(chd->parent_sha1); i++)
 	if (chd->parent_sha1[i] != 0) {
 	    chd->flags = CHD_FLAG_HAS_PARENT;
 	    break;
 	}
-    
+
     return 0;
 }
 
 
 static int
-read_map(struct chd *chd)
-{
+read_map(struct chd *chd) {
     unsigned char b[MAP_ENTRY_SIZE_V3], *p;
     unsigned int i, len;
     uint64_t v;
@@ -521,7 +501,7 @@ read_map(struct chd *chd)
 	return -1;
     }
 
-    if ((chd->map=malloc(sizeof(*chd->map)*chd->total_hunks)) == NULL) {
+    if ((chd->map = malloc(sizeof(*chd->map) * chd->total_hunks)) == NULL) {
 	chd->error = CHD_ERR_NOMEM;
 	return -1;
     }
@@ -534,7 +514,7 @@ read_map(struct chd *chd)
     else
 	len = MAP_ENTRY_SIZE_V3;
 
-    for (i=0; i<chd->total_hunks; i++) {
+    for (i = 0; i < chd->total_hunks; i++) {
 	if (fread(b, len, 1, chd->f) != 1) {
 	    chd->error = CHD_ERR_READ;
 	    return -1;
@@ -571,10 +551,9 @@ read_map(struct chd *chd)
 
 
 static int
-read_map_v5(struct chd *chd)
-{
+read_map_v5(struct chd *chd) {
     chd->error = CHD_ERR_NOTSUP;
-    
+
     if (chd->compressors[0] == 0) {
 	/* TODO: uncompressed map */
 
@@ -585,8 +564,7 @@ read_map_v5(struct chd *chd)
 
 
 static int
-read_meta_headers(struct chd *chd)
-{
+read_meta_headers(struct chd *chd) {
     struct chd_metadata_entry *meta, *prev;
     uint64_t offset, next;
     unsigned char b[META_HEADERLEN], *p;
@@ -605,7 +583,7 @@ read_meta_headers(struct chd *chd)
 	    return -1;
 	}
 
-	if ((meta=malloc(sizeof(*meta))) == NULL) {
+	if ((meta = malloc(sizeof(*meta))) == NULL) {
 	    chd->error = CHD_ERR_NOMEM;
 	    return -1;
 	}

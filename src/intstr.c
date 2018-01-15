@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,11 +38,10 @@
 
 
 const char *
-int2str(int in, const intstr_t *m)
-{
+int2str(int in, const intstr_t *m) {
     int i;
 
-    for (i=0; m[i].s; i++)
+    for (i = 0; m[i].s; i++)
 	if (m[i].i == in)
 	    break;
 
@@ -51,11 +50,10 @@ int2str(int in, const intstr_t *m)
 
 
 int
-str2int(const char *s, const intstr_t *m)
-{
+str2int(const char *s, const intstr_t *m) {
     int i;
 
-    for (i=0; m[i].s; i++)
+    for (i = 0; m[i].s; i++)
 	if (strcmp(m[i].s, s) == 0)
 	    break;
 

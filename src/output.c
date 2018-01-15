@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,20 +32,18 @@
 */
 
 
-#include "error.h"
 #include "output.h"
+#include "error.h"
 
 
 int
-output_close(output_context_t *ctx)
-{
+output_close(output_context_t *ctx) {
     return ctx->close(ctx);
 }
 
 
 int
-output_detector(output_context_t *ctx, detector_t *detector)
-{
+output_detector(output_context_t *ctx, detector_t *detector) {
     if (ctx->output_detector == NULL)
 	return 0;
 
@@ -54,15 +52,13 @@ output_detector(output_context_t *ctx, detector_t *detector)
 
 
 int
-output_game(output_context_t *ctx, game_t *g)
-{
+output_game(output_context_t *ctx, game_t *g) {
     return ctx->output_game(ctx, g);
 }
 
 
 int
-output_header(output_context_t *ctx, dat_entry_t *de)
-{
+output_header(output_context_t *ctx, dat_entry_t *de) {
     if (ctx->output_header == NULL)
 	return 0;
 
@@ -71,8 +67,7 @@ output_header(output_context_t *ctx, dat_entry_t *de)
 
 
 output_context_t *
-output_new(output_format_t fmt, const char *fname, int flags)
-{
+output_new(output_format_t fmt, const char *fname, int flags) {
     switch (fmt) {
     case OUTPUT_FMT_CM:
 	return output_cm_new(fname, flags);
@@ -89,9 +84,7 @@ output_new(output_format_t fmt, const char *fname, int flags)
 
 
 void
-output_cond_print_string(FILE *f, const char *pre, const char *str,
-			 const char *post)
-{
+output_cond_print_string(FILE *f, const char *pre, const char *str, const char *post) {
     char *q;
 
     if (str == NULL)
@@ -107,9 +100,8 @@ output_cond_print_string(FILE *f, const char *pre, const char *str,
 
 
 void
-output_cond_print_hash(FILE *f, const char *pre, int t, hashes_t *h, const char *post)
-{
-    char hstr[HASHES_SIZE_MAX*2+1];
+output_cond_print_hash(FILE *f, const char *pre, int t, hashes_t *h, const char *post) {
+    char hstr[HASHES_SIZE_MAX * 2 + 1];
 
     output_cond_print_string(f, pre, hash_to_string(hstr, t, h), post);
 }

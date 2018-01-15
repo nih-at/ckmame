@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,15 +39,14 @@
 
 
 void
-array_free(array_t *a, void (*fn)(void *))
-{
+array_free(array_t *a, void (*fn)(void *)) {
     int i;
-    
+
     if (a == NULL)
 	return;
 
     if (fn) {
-	for (i=0; i<array_length(a); i++)
+	for (i = 0; i < array_length(a); i++)
 	    fn(array_get(a, i));
     }
 
@@ -56,12 +55,11 @@ array_free(array_t *a, void (*fn)(void *))
 }
 
 int
-array_index(const array_t *a, const void *element)
-{
+array_index(const array_t *a, const void *element) {
     ssize_t idx = ((const char *)element - a->data) / a->elem_size;
 
     if (idx < 0 || idx > array_length(a)) {
-        return -1;
+	return -1;
     }
 
     return (int)idx;
@@ -69,18 +67,16 @@ array_index(const array_t *a, const void *element)
 
 
 void *
-array_get(const array_t *a, int i)
-{
-    return (void *)(a->data + a->elem_size*i);
+array_get(const array_t *a, int i) {
+    return (void *)(a->data + a->elem_size * i);
 }
 
 
 int
-array_find(const array_t *a, const void *key, int (*cmp)(/* const void *, const void * */))
-{
+array_find(const array_t *a, const void *key, int (*cmp)(/* const void *, const void * */)) {
     int idx;
 
-    for (idx=0; idx<array_length(a); idx++) {
+    for (idx = 0; idx < array_length(a); idx++) {
 	if (cmp(array_get(a, idx), key) == 0)
 	    return idx;
     }
@@ -90,11 +86,10 @@ array_find(const array_t *a, const void *key, int (*cmp)(/* const void *, const 
 
 
 array_t *
-array_new_sized(int size, int n)
-{
+array_new_sized(int size, int n) {
     array_t *a;
 
-    if (n<0)
+    if (n < 0)
 	n = 0;
 
     a = xmalloc(sizeof(*a));
@@ -102,7 +97,7 @@ array_new_sized(int size, int n)
     if (n == 0)
 	a->data = 0;
     else
-	a->data = xmalloc(n*size);
+	a->data = xmalloc(n * size);
     a->elem_size = size;
     a->nentry = 0;
     a->alloc_len = n;
@@ -112,7 +107,6 @@ array_new_sized(int size, int n)
 
 
 void
-array_set(array_t *a, int i, const void *d)
-{
+array_set(array_t *a, int i, const void *d) {
     memcpy(array_get(a, i), d, a->elem_size);
 }

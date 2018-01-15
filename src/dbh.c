@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,11 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <sys/stat.h>
 #include <errno.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <zlib.h>
 
@@ -46,25 +46,22 @@
 #define EFTYPE EINVAL
 #endif
 
-#define DBH_ENOERR	0
-#define DBH_EVERSION	2	/* version mismatch */
-#define DBH_EMAX	3
+#define DBH_ENOERR 0
+#define DBH_EVERSION 2 /* version mismatch */
+#define DBH_EMAX 3
 
-static const int format_version[] = {
-    2, 1, 2
-};
-#define USER_VERSION(fmt)	(format_version[fmt]+(fmt<<8)+17000)
+static const int format_version[] = {2, 1, 2};
+#define USER_VERSION(fmt) (format_version[fmt] + (fmt << 8) + 17000)
 
-#define SET_VERSION_FMT	"pragma user_version = %d"
+#define SET_VERSION_FMT "pragma user_version = %d"
 
-#define PRAGMAS		"PRAGMA synchronous = OFF; "
+#define PRAGMAS "PRAGMA synchronous = OFF; "
 
 static int init_db(dbh_t *);
 
 
 static int
-dbh_check_version(dbh_t *db)
-{
+dbh_check_version(dbh_t *db) {
     sqlite3_stmt *stmt;
     int version;
 
@@ -83,15 +80,14 @@ dbh_check_version(dbh_t *db)
 	db->dbh_errno = DBH_EVERSION;
 	return -1;
     }
-    
+
     db->dbh_errno = DBH_ENOERR;
     return 0;
 }
 
 
 int
-dbh_close(dbh_t *db)
-{
+dbh_close(dbh_t *db) {
     if (db == NULL)
 	return 0;
 
@@ -99,19 +95,14 @@ dbh_close(dbh_t *db)
 
     if (dbh_db(db))
 	return sqlite3_close(dbh_db(db));
-    
+
     return 0;
 }
 
 
 const char *
-dbh_error(dbh_t *db)
-{
-    static const char *str[] = {
-	"No error",
-	"Database format version mismatch",
-	"Unknown error"
-    };
+dbh_error(dbh_t *db) {
+    static const char *str[] = {"No error", "Database format version mismatch", "Unknown error"};
 
     if (db == NULL)
 	return strerror(ENOMEM);
@@ -120,20 +111,19 @@ dbh_error(dbh_t *db)
     if (db->dbh_errno == DBH_ENOERR)
 	return sqlite3_errmsg(dbh_db(db));
 
-    return str[db->dbh_errno<0||db->dbh_errno>DBH_EMAX ? DBH_EMAX : db->dbh_errno];
+    return str[db->dbh_errno < 0 || db->dbh_errno > DBH_EMAX ? DBH_EMAX : db->dbh_errno];
 }
 
 
 dbh_t *
-dbh_open(const char *name, int mode)
-{
+dbh_open(const char *name, int mode) {
     dbh_t *db;
     struct stat st;
     unsigned int i;
     int sql3_flags;
     int needs_init = 0;
 
-    if (DBH_FMT(mode) > sizeof(format_version)/sizeof(format_version[0])) {
+    if (DBH_FMT(mode) > sizeof(format_version) / sizeof(format_version[0])) {
 	errno = EINVAL;
 	return NULL;
     }
@@ -142,7 +132,7 @@ dbh_open(const char *name, int mode)
 	return NULL;
 
     db->db = NULL;
-    for (i=0; i<DBH_STMT_MAX; i++)
+    for (i = 0; i < DBH_STMT_MAX; i++)
 	db->statements[i] = NULL;
 
     db->format = DBH_FMT(mode);
@@ -196,14 +186,13 @@ dbh_open(const char *name, int mode)
 	errno = EFTYPE;
 	return NULL;
     }
-    
+
     return db;
 }
 
 
 static int
-init_db(dbh_t *db)
-{
+init_db(dbh_t *db) {
     char b[256];
 
     sprintf(b, SET_VERSION_FMT, USER_VERSION(db->format));
@@ -217,23 +206,21 @@ init_db(dbh_t *db)
 }
 
 dbh_stmt_t
-dbh_stmt_with_hashes_and_size(dbh_stmt_t stmt, const hashes_t *hash, int have_size)
-{
+dbh_stmt_with_hashes_and_size(dbh_stmt_t stmt, const hashes_t *hash, int have_size) {
     unsigned int i;
 
-    for (i=1; i<=HASHES_TYPE_MAX; i<<=1) {
+    for (i = 1; i <= HASHES_TYPE_MAX; i <<= 1) {
 	if (hashes_has_type(hash, i))
 	    stmt += i;
     }
     if (have_size)
-	stmt += HASHES_TYPE_MAX<<1;
+	stmt += HASHES_TYPE_MAX << 1;
 
     return stmt;
 }
 
 sqlite3_stmt *
-dbh_get_statement(dbh_t *db, dbh_stmt_t stmt_id)
-{
+dbh_get_statement(dbh_t *db, dbh_stmt_t stmt_id) {
     if (stmt_id >= DBH_STMT_MAX)
 	return NULL;
 

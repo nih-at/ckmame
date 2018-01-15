@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,10 +37,9 @@
 
 
 const char *
-images_name(const images_t *im, int i)
-{
+images_name(const images_t *im, int i) {
     disk_t *d;
-    
+
     d = images_get(im, i);
 
     return d ? disk_name(d) : NULL;
@@ -48,8 +47,7 @@ images_name(const images_t *im, int i)
 
 
 images_t *
-images_new(const game_t *g, int flags)
-{
+images_new(const game_t *g, int flags) {
     images_t *im;
     char *fname;
     int i;
@@ -59,7 +57,7 @@ images_new(const game_t *g, int flags)
 
     im = parray_new_sized(game_num_disks(g));
 
-    for (i=0; i<game_num_disks(g); i++) {
+    for (i = 0; i < game_num_disks(g); i++) {
 	fname = findfile(disk_name(game_disk(g, i)), TYPE_DISK);
 	if (fname == NULL && disk_merge(game_disk(g, i)) != NULL)
 	    fname = findfile(disk_merge(game_disk(g, i)), TYPE_DISK);
@@ -76,8 +74,7 @@ images_new(const game_t *g, int flags)
 
 
 images_t *
-images_new_name(const char *name, int flags)
-{
+images_new_name(const char *name, int flags) {
     images_t *im;
 
     im = parray_new_sized(1);

@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,8 +42,7 @@ static void help_one(const char *);
 
 
 int
-cmd_help(int argc, char **argv)
-{
+cmd_help(int argc, char **argv) {
     switch (argc) {
     case 1:
 	help_all();
@@ -63,26 +62,23 @@ cmd_help(int argc, char **argv)
 
 
 void
-command_usage(FILE *fout, const char *name)
-{
+command_usage(FILE *fout, const char *name) {
     const cmd_t *cmd;
-    
-    if ((cmd=find_command(name)) == NULL)
+
+    if ((cmd = find_command(name)) == NULL)
 	return;
 
-    fprintf(fout, "Usage: %s %s %s\n",
-	    getprogname(), cmd->name, cmd->usage);
+    fprintf(fout, "Usage: %s %s %s\n", getprogname(), cmd->name, cmd->usage);
 }
 
 
 static void
-help_all(void)
-{
+help_all(void) {
     int i;
 
     printf("list of commands:\n\n");
 
-    for (i=0; i<ncmdtab; i++) {
+    for (i = 0; i < ncmdtab; i++) {
 	/* skip aliases */
 	if (cmdtab[i].usage == NULL)
 	    continue;
@@ -90,17 +86,15 @@ help_all(void)
 	printf("  %-16s %s\n", cmdtab[i].name, cmdtab[i].description);
     }
 
-    printf("\nUse %s help CMD for help on a specific command.\n",
-	   getprogname());
+    printf("\nUse %s help CMD for help on a specific command.\n", getprogname());
 }
 
 
 static void
-help_one(const char *name)
-{
+help_one(const char *name) {
     const cmd_t *cmd;
 
-    if ((cmd=find_command(name)) == NULL)
+    if ((cmd = find_command(name)) == NULL)
 	return;
 
     command_usage(stdout, name);

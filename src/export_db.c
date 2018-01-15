@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,8 +37,7 @@
 #include <stdlib.h>
 
 int
-export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out)
-{
+export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out) {
     parray_t *list;
     int i;
     game_t *g;
@@ -53,21 +52,19 @@ export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_c
     }
 
     /* TODO: export detector */
-    
-    dat_entry_merge(&de, dat,
-		    ((db_dat && dat_length(db_dat) == 1)
-		     ? dat_get(db_dat, 0) : NULL));
+
+    dat_entry_merge(&de, dat, ((db_dat && dat_length(db_dat) == 1) ? dat_get(db_dat, 0) : NULL));
     output_header(out, &de);
     dat_entry_finalize(&de);
     dat_free(db_dat);
 
-    if ((list=romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+    if ((list = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
 	myerror(ERRDEF, "db error reading game list");
 	return -1;
     }
 
-    for (i=0; i<parray_length(list); i++) {
-	if ((g=romdb_read_game(db, parray_get(list, i))) == NULL) {
+    for (i = 0; i < parray_length(list); i++) {
+	if ((g = romdb_read_game(db, parray_get(list, i))) == NULL) {
 	    /* TODO: error */
 	    continue;
 	}

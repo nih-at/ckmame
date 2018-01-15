@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,8 +38,7 @@
 
 
 hashes_cmp_t
-hashes_cmp(const struct hashes *h1, const struct hashes *h2)
-{
+hashes_cmp(const struct hashes *h1, const struct hashes *h2) {
     if (h1->types == 0 || h2->types == 0)
 	return HASHES_CMP_MATCH;
 
@@ -63,8 +62,7 @@ hashes_cmp(const struct hashes *h1, const struct hashes *h2)
 
 
 bool
-hashes_cmp_strict(const struct hashes *h1, const struct hashes *h2)
-{
+hashes_cmp_strict(const struct hashes *h1, const struct hashes *h2) {
     if (h1->types != h2->types) {
 	return false;
     }
@@ -91,8 +89,7 @@ hashes_cmp_strict(const struct hashes *h1, const struct hashes *h2)
 }
 
 void
-hashes_init(struct hashes *h)
-{
+hashes_init(struct hashes *h) {
     h->types = 0;
     h->crc = 0;
 }

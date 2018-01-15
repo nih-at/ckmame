@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -42,17 +42,11 @@
 #include "xmalloc.h"
 
 
-const intstr_t hash_type_names[] = {
-    { HASHES_TYPE_CRC, "crc" },
-    { HASHES_TYPE_MD5, "md5" },
-    { HASHES_TYPE_SHA1, "sha1" },
-    { 0, NULL }
-};
+const intstr_t hash_type_names[] = {{HASHES_TYPE_CRC, "crc"}, {HASHES_TYPE_MD5, "md5"}, {HASHES_TYPE_SHA1, "sha1"}, {0, NULL}};
 
 
 const char *
-hash_to_string(char *str, int type, const hashes_t *hashes)
-{
+hash_to_string(char *str, int type, const hashes_t *hashes) {
     if (!hashes_has_type(hashes, type))
 	return NULL;
 
@@ -78,8 +72,7 @@ hash_to_string(char *str, int type, const hashes_t *hashes)
 
 
 int
-hash_types_from_str(const char *s)
-{
+hash_types_from_str(const char *s) {
     const char *p, *q;
     char b[16];
     int types, t;
@@ -87,16 +80,16 @@ hash_types_from_str(const char *s)
     types = 0;
     p = s;
     do {
-	q = p+strcspn(p, ",");
-	if ((size_t)(q-p) >= sizeof(b))
+	q = p + strcspn(p, ",");
+	if ((size_t)(q - p) >= sizeof(b))
 	    return 0;
-	strlcpy(b, p, q-p+1);
-	if ((t=hash_type_from_str(b)) == 0)
+	strlcpy(b, p, q - p + 1);
+	if ((t = hash_type_from_str(b)) == 0)
 	    return 0;
 	types |= t;
 
-	p = q+1;
+	p = q + 1;
     } while (*q);
-    
+
     return types;
 }

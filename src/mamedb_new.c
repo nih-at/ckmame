@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,14 +41,13 @@
 
 
 int
-cmd_new(int argc, char **argv)
-{
+cmd_new(int argc, char **argv) {
     if (argc != 1) {
 	command_usage(stderr, argv[0]);
 	return -1;
     }
 
-    if ((db=dbh_open(dbname, DBL_NEW)) == NULL) {
+    if ((db = dbh_open(dbname, DBL_NEW)) == NULL) {
 	myerror(ERRDB, "can't create database '%s'", dbname);
 	return -1;
     }
@@ -60,6 +59,6 @@ cmd_new(int argc, char **argv)
 	remove(dbname);
 	return -1;
     }
-    
+
     return 0;
 }

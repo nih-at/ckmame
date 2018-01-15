@@ -17,7 +17,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,8 +39,7 @@
 
 
 void *
-array_grow(array_t *a, void (*fn)(void *))
-{
+array_grow(array_t *a, void (*fn)(void *)) {
     void *ne;
 
     if (a->nentry >= a->alloc_len) {
@@ -48,11 +47,11 @@ array_grow(array_t *a, void (*fn)(void *))
 	    a->alloc_len = 1;
 	else
 	    a->alloc_len *= 2;
-	a->data = xrealloc(a->data, a->elem_size*a->alloc_len);
+	a->data = xrealloc(a->data, a->elem_size * a->alloc_len);
     }
     a->nentry++;
 
-    ne = array_get(a, array_length(a)-1);
+    ne = array_get(a, array_length(a) - 1);
 
     if (fn)
 	fn(ne);
