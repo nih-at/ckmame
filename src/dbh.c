@@ -48,7 +48,7 @@
 
 #define DBH_ENOERR 0
 #define DBH_EVERSION 2 /* version mismatch */
-#define DBH_EMAX 3
+#define DBH_EMAX 2
 
 static const int format_version[] = {2, 1, 2};
 #define USER_VERSION(fmt) (format_version[fmt] + (fmt << 8) + 17000)
