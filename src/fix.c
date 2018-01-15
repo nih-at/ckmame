@@ -181,7 +181,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
     disk_t *d;
     match_disk_t *md;
     const char *name;
-    char *fname;
+    char *fname = NULL;
     bool do_copy;
 
     for (i = 0; i < game_num_disks(g); i++) {
