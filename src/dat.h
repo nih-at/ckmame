@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,16 +47,16 @@ typedef array_t dat_t;
 typedef struct dat_entry dat_entry_t;
 
 
-#define dat_free(d)		(array_free(d, dat_entry_finalize))
-#define dat_entry_description(de)	((de)->description)
-#define dat_entry_name(de)	((de)->name)
-#define dat_entry_version(de)	((de)->version)
-#define dat_get(d, i)		((dat_entry_t *)array_get((d), (i)))
-#define dat_length		array_length
-#define dat_description(d, i)	(dat_entry_description(dat_get((d), (i))))
-#define dat_name(d, i)		(dat_entry_name(dat_get((d), (i))))
-#define dat_new()		(array_new(sizeof(dat_entry_t)))
-#define dat_version(d, i)	(dat_entry_version(dat_get((d), (i))))
+#define dat_free(d) (array_free(d, dat_entry_finalize))
+#define dat_entry_description(de) ((de)->description)
+#define dat_entry_name(de) ((de)->name)
+#define dat_entry_version(de) ((de)->version)
+#define dat_get(d, i) ((dat_entry_t *)array_get((d), (i)))
+#define dat_length array_length
+#define dat_description(d, i) (dat_entry_description(dat_get((d), (i))))
+#define dat_name(d, i) (dat_entry_name(dat_get((d), (i))))
+#define dat_new() (array_new(sizeof(dat_entry_t)))
+#define dat_version(d, i) (dat_entry_version(dat_get((d), (i))))
 
 void dat_entry_finalize(dat_entry_t *);
 void dat_entry_merge(dat_entry_t *, const dat_entry_t *, const dat_entry_t *);

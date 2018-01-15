@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,8 +41,8 @@ typedef struct {
     int hashtypes[TYPE_MAX];
 } romdb_t;
 
-#define romdb_dbh(db)  ((db)->dbh)
-#define romdb_sqlite3(db)	(dbh_db(romdb_dbh(db)))
+#define romdb_dbh(db) ((db)->dbh)
+#define romdb_sqlite3(db) (dbh_db(romdb_dbh(db)))
 
 int romdb_close(romdb_t *);
 int romdb_delete_game(romdb_t *, const char *);

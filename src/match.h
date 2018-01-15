@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -56,29 +56,28 @@ struct match {
 	    char *file;
 	} old;
     } source;
-    off_t offset;              /* offset of correct part if QU_LONG */
+    off_t offset; /* offset of correct part if QU_LONG */
 };
 
 typedef struct match match_t;
 
 typedef array_t match_array_t;
 
-#define match_array_free(ma)	(array_free(ma, match_finalize))
-#define match_array_get(ma, i)	((match_t *)array_get((ma), (i)))
-#define match_array_new(n)	\
-	(array_new_length(sizeof(match_t), (n), match_init))
-#define match_array_length	array_length
+#define match_array_free(ma) (array_free(ma, match_finalize))
+#define match_array_get(ma, i) ((match_t *)array_get((ma), (i)))
+#define match_array_new(n) (array_new_length(sizeof(match_t), (n), match_init))
+#define match_array_length array_length
 
-#define match_archive(m)	((m)->source.archive.archive)
-#define match_copy(m1, m2)	(memcpy(m1, m2, sizeof(match_t)))
-#define match_free		free
-#define match_index(m)		((m)->source.archive.index)
-#define match_offset(m)		((m)->offset)
-#define match_old_game(m)	((m)->source.old.game)
-#define match_old_file(m)	((m)->source.old.file)
-#define match_quality(m)	((m)->quality)
-#define match_source_is_old(m)	(match_where(m) == FILE_OLD)
-#define match_where(m)		((m)->where)
+#define match_archive(m) ((m)->source.archive.archive)
+#define match_copy(m1, m2) (memcpy(m1, m2, sizeof(match_t)))
+#define match_free free
+#define match_index(m) ((m)->source.archive.index)
+#define match_offset(m) ((m)->offset)
+#define match_old_game(m) ((m)->source.old.game)
+#define match_old_file(m) ((m)->source.old.file)
+#define match_quality(m) ((m)->quality)
+#define match_source_is_old(m) (match_where(m) == FILE_OLD)
+#define match_where(m) ((m)->where)
 
 
 const char *match_file(match_t *);

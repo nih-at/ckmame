@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,12 +40,7 @@
 #include "match.h"
 #include "match_disk.h"
 
-enum find_result {
-    FIND_ERROR = -1,
-    FIND_UNKNOWN,
-    FIND_MISSING,
-    FIND_EXISTS
-};
+enum find_result { FIND_ERROR = -1, FIND_UNKNOWN, FIND_MISSING, FIND_EXISTS };
 
 typedef enum find_result find_result_t;
 

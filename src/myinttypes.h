@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -50,88 +50,88 @@
 #include <stdint.h>
 #endif
 
-# ifndef HAVE_INT8_T
+#ifndef HAVE_INT8_T
 typedef signed char int8_t;
-# endif
+#endif
 
-# ifndef HAVE_UINT8_T
+#ifndef HAVE_UINT8_T
 typedef unsigned char uint8_t;
-# endif
+#endif
 
 #if !defined(HAVE_INT16_T) || !defined(HAVE_UINT16_T)
-#  if SIZEOF_SHORT == 2
-#    ifndef HAVE_INT16_T
+#if SIZEOF_SHORT == 2
+#ifndef HAVE_INT16_T
 typedef short int16_t;
-#    endif
-#    ifndef HAVE_UINT16_T
+#endif
+#ifndef HAVE_UINT16_T
 typedef unsigned short uint16_t;
-#    endif
-#  else
+#endif
+#else
 #error no 2-byte integer type found
-#  endif
+#endif
 #endif
 
 #if !defined(HAVE_INT32_T) || !defined(HAVE_UINT32_T)
-#  if SIZEOF_INT == 4
-#    ifndef HAVE_INT32_T
+#if SIZEOF_INT == 4
+#ifndef HAVE_INT32_T
 typedef int int32_t;
-#    endif
-#    ifndef HAVE_UINT32_T
+#endif
+#ifndef HAVE_UINT32_T
 typedef unsigned int uint32_t;
-#    endif
-#  elif SIZEOF_LONG == 4
-#    ifndef HAVE_INT32_T
+#endif
+#elif SIZEOF_LONG == 4
+#ifndef HAVE_INT32_T
 typedef long int32_t;
-#    endif
-#    ifndef HAVE_UINT32_T
+#endif
+#ifndef HAVE_UINT32_T
 typedef unsigned long uint32_t;
-#    endif
-#  elif SIZEOF_SHORT == 4
-#    ifndef HAVE_INT32_T
+#endif
+#elif SIZEOF_SHORT == 4
+#ifndef HAVE_INT32_T
 typedef short int32_t;
-#    endif
-#    ifndef HAVE_UINT32_T
+#endif
+#ifndef HAVE_UINT32_T
 typedef unsigned short uint32_t;
-#    endif
-#  else
+#endif
+#else
 #error no 4-byte integer type found
-#  endif
+#endif
 #endif
 
 #if !defined(HAVE_INT64_T) || !defined(HAVE_UINT64_T) || !defined(PRIu64)
-#  if SIZEOF_INT == 8
-#    ifndef HAVE_INT64_T
+#if SIZEOF_INT == 8
+#ifndef HAVE_INT64_T
 typedef int int64_t;
-#    endif
-#    ifndef HAVE_UINT64_T
+#endif
+#ifndef HAVE_UINT64_T
 typedef unsigned int uint64_t;
-#    endif
-#    ifndef PRIu64
+#endif
+#ifndef PRIu64
 #define PRIu64 "u"
-#    endif
-#  elif SIZEOF_LONG == 8
-#    ifndef HAVE_INT64_T
+#endif
+#elif SIZEOF_LONG == 8
+#ifndef HAVE_INT64_T
 typedef long int64_t;
-#    endif
-#    ifndef HAVE_UINT64_T
+#endif
+#ifndef HAVE_UINT64_T
 typedef unsigned long uint64_t;
-#    endif
-#    ifndef PRIu64
+#endif
+#ifndef PRIu64
 #define PRIu64 "ul"
-#    endif
-#  elif SIZEOF_LONG_LONG == 8
-#    ifndef HAVE_INT64_T
+#endif
+#elif SIZEOF_LONG_LONG == 8
+#ifndef HAVE_INT64_T
 typedef long long int64_t;
-#    endif
-#    ifndef HAVE_UINT64_T
+#endif
+#ifndef HAVE_UINT64_T
 typedef unsigned long long uint64_t;
-#    endif
-#    ifndef PRIu64
+#endif
+#ifndef PRIu64
 #define PRIu64 "ull"
-#    endif
-#  else
+#endif
+#else
 #error no 4-byte integer type found
-#  endif
+#endif
 #endif
 
 #endif /* myinttypes.h */

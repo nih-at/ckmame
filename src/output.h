@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,8 +36,8 @@
 
 
 #include "dat.h"
-#include "game.h"
 #include "detector.h"
+#include "game.h"
 
 
 typedef struct output_context output_context_t;
@@ -49,12 +49,7 @@ struct output_context {
     int (*output_header)(output_context_t *, dat_entry_t *);
 };
 
-enum output_format {
-    OUTPUT_FMT_CM,
-    OUTPUT_FMT_DATAFILE_XML,
-    OUTPUT_FMT_DB,
-    OUTPUT_FMT_MTREE
-};
+enum output_format { OUTPUT_FMT_CM, OUTPUT_FMT_DATAFILE_XML, OUTPUT_FMT_DB, OUTPUT_FMT_MTREE };
 
 typedef enum output_format output_format_t;
 

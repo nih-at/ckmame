@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -77,35 +77,35 @@ struct archive_ops {
     const char *(*file_strerror)(void *);
     bool (*get_last_update)(archive_t *, time_t *, off_t *);
     bool (*read_infos)(archive_t *);
-    int (*rollback)(archive_t *);  /* never called if commit never fails */
+    int (*rollback)(archive_t *); /* never called if commit never fails */
 };
 
-#define ARCHIVE_FL_CREATE		0x00100
-#define ARCHIVE_FL_CHECK_INTEGRITY	0x00200
-#define ARCHIVE_FL_QUIET		0x00400
-#define ARCHIVE_FL_NOCACHE		0x00800
-#define ARCHIVE_FL_RDONLY		0x01000
-#define ARCHIVE_FL_TOP_LEVEL_ONLY	0x02000
-#define ARCHIVE_FL_KEEP_EMPTY           0x04000
+#define ARCHIVE_FL_CREATE 0x00100
+#define ARCHIVE_FL_CHECK_INTEGRITY 0x00200
+#define ARCHIVE_FL_QUIET 0x00400
+#define ARCHIVE_FL_NOCACHE 0x00800
+#define ARCHIVE_FL_RDONLY 0x01000
+#define ARCHIVE_FL_TOP_LEVEL_ONLY 0x02000
+#define ARCHIVE_FL_KEEP_EMPTY 0x04000
 
-#define ARCHIVE_FL_HASHTYPES_MASK	0x000ff
-#define ARCHIVE_FL_MASK			0x0ff00
+#define ARCHIVE_FL_HASHTYPES_MASK 0x000ff
+#define ARCHIVE_FL_MASK 0x0ff00
 
-#define ARCHIVE_IFL_MODIFIED		0x10000
+#define ARCHIVE_IFL_MODIFIED 0x10000
 
 
-#define archive_file(a, i)	((file_t *)array_get(archive_files(a), (i)))
-#define archive_file_index(a, f)    (array_index(archive_files(a), (f)))
-#define archive_files(a)	((a)->files)
-#define archive_filetype(a)	((a)->filetype)
-#define archive_flags(a)	((a)->flags)
-#define archive_id(a)		((a)->id)
-#define archive_mtime(a)        ((a)->mtime)
-#define archive_name(a)		((a)->name)
-#define archive_num_files(a)	(array_length(archive_files(a)))
-#define archive_size(a)         ((a)->size)
-#define archive_user_data(a)    ((a)->ud)
-#define archive_where(a)	((a)->where)
+#define archive_file(a, i) ((file_t *)array_get(archive_files(a), (i)))
+#define archive_file_index(a, f) (array_index(archive_files(a), (f)))
+#define archive_files(a) ((a)->files)
+#define archive_filetype(a) ((a)->filetype)
+#define archive_flags(a) ((a)->flags)
+#define archive_id(a) ((a)->id)
+#define archive_mtime(a) ((a)->mtime)
+#define archive_name(a) ((a)->name)
+#define archive_num_files(a) (array_length(archive_files(a)))
+#define archive_size(a) ((a)->size)
+#define archive_user_data(a) ((a)->ud)
+#define archive_where(a) ((a)->where)
 
 
 archive_t *archive_by_id(int);
@@ -142,12 +142,10 @@ int archive_rollback(archive_t *);
 /* internal */
 extern int _archive_global_flags;
 
-#define ARCHIVE_IS_INDEXED(a)			\
-	(((a)->flags & ARCHIVE_FL_NOCACHE) == 0	\
-	 && IS_EXTERNAL(archive_where(a)))
+#define ARCHIVE_IS_INDEXED(a) (((a)->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(archive_where(a)))
 
-#define archive_is_modified(a)  ((a)->flags & ARCHIVE_IFL_MODIFIED) 
-#define archive_is_writable(a)	(((a)->flags & ARCHIVE_FL_RDONLY) == 0)
+#define archive_is_modified(a) ((a)->flags & ARCHIVE_IFL_MODIFIED)
+#define archive_is_writable(a) (((a)->flags & ARCHIVE_FL_RDONLY) == 0)
 
 int archive_init_dir(archive_t *);
 int archive_init_zip(archive_t *);

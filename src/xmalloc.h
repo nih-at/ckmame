@@ -22,7 +22,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -36,7 +36,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-int xasprintf(char **, const char *, ...) __attribute__ ((format (printf, 2, 3))); 
+int xasprintf(char **, const char *, ...) __attribute__((format(printf, 2, 3)));
 void *xrealloc(void *, size_t);
 void *xmalloc(size_t size);
 void *xmemdup(const void *, size_t);

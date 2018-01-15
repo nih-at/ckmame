@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -58,24 +58,18 @@ struct result {
 typedef struct result result_t;
 
 
-#define result_disk(res, i)	(match_disk_array_get(result_disks(res), (i)))
-#define result_disks(res)	((res)->disks)
-#define result_file(res, i)	(file_status_array_get(result_files(res), (i)))
-#define result_files(res)	((res)->files)
-#define result_game(res) 	((res)->game)
-#define result_image(res, i)	\
-	(file_status_array_get(result_images(res), (i)))
-#define result_images(res)	((res)->images)
-#define result_num_disks(res)					\
-	(result_disks(res)					\
-	 ? match_disk_array_length(result_disks(res)) : 0)
-#define result_num_files(res)					\
-	(result_files(res)					\
-	 ? file_status_array_length(result_files(res)) : 0)
-#define result_num_roms(res)	\
-	(result_roms(res) ? match_array_length(result_roms(res)) : 0)
-#define result_rom(res, i)	(match_array_get(result_roms(res), (i)))
-#define result_roms(res)	((res)->roms)
+#define result_disk(res, i) (match_disk_array_get(result_disks(res), (i)))
+#define result_disks(res) ((res)->disks)
+#define result_file(res, i) (file_status_array_get(result_files(res), (i)))
+#define result_files(res) ((res)->files)
+#define result_game(res) ((res)->game)
+#define result_image(res, i) (file_status_array_get(result_images(res), (i)))
+#define result_images(res) ((res)->images)
+#define result_num_disks(res) (result_disks(res) ? match_disk_array_length(result_disks(res)) : 0)
+#define result_num_files(res) (result_files(res) ? file_status_array_length(result_files(res)) : 0)
+#define result_num_roms(res) (result_roms(res) ? match_array_length(result_roms(res)) : 0)
+#define result_rom(res, i) (match_array_get(result_roms(res), (i)))
+#define result_roms(res) ((res)->roms)
 
 
 void result_free(result_t *);

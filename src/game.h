@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@ struct rs {
     array_t *files;
 };
 
-#define GAME_RS_MAX	2
+#define GAME_RS_MAX 2
 
 struct game {
     uint64_t id;
@@ -59,25 +59,23 @@ struct game {
 typedef struct game game_t;
 
 
-#define game_cloneof(g, ft, i)		((g)->rs[ft].cloneof[i])
-#define game_dat_no(g)			((g)->dat_no)
-#define game_description(g)		((g)->description)
+#define game_cloneof(g, ft, i) ((g)->rs[ft].cloneof[i])
+#define game_dat_no(g) ((g)->dat_no)
+#define game_description(g) ((g)->description)
 
-#define game_disk(g, i)			\
-	((disk_t *)array_get(game_disks(g), (i)))
+#define game_disk(g, i) ((disk_t *)array_get(game_disks(g), (i)))
 
-#define game_disks(g)			((g)->disks)
+#define game_disks(g) ((g)->disks)
 
-#define game_file(g, ft, i)   		\
-	((file_t *)array_get(game_files((g), (ft)), (i)))
+#define game_file(g, ft, i) ((file_t *)array_get(game_files((g), (ft)), (i)))
 
-#define game_files(g, ft)		((g)->rs[ft].files)
+#define game_files(g, ft) ((g)->rs[ft].files)
 
-#define game_id(g)			((g)->id)
-#define game_num_clones(g, ft)		(array_length(game_clones((g), (ft))))
-#define game_num_disks(g)		(array_length(game_disks(g)))
-#define game_num_files(g, ft)		(array_length(game_files((g), (ft))))
-#define game_name(g)			((g)->name)
+#define game_id(g) ((g)->id)
+#define game_num_clones(g, ft) (array_length(game_clones((g), (ft))))
+#define game_num_disks(g) (array_length(game_disks(g)))
+#define game_num_files(g, ft) (array_length(game_files((g), (ft))))
+#define game_name(g) ((g)->name)
 
 void game_add_clone(game_t *, filetype_t, const char *);
 void game_free(game_t *);

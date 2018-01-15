@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,15 +44,13 @@ struct parray {
 typedef struct parray parray_t;
 
 
-#define parray_get(a, i)	((a)->entry[i])
-#define parray_get_last(a)	\
-	(parray_length(a) ? parray_get((a), parray_length(a)-1) : NULL)
-#define parray_length(a)	((a)->nentry)
-#define parray_sort(a, cmp)	(parray_sort_real((a), 0, -1, -1, (cmp)))
-#define parray_sort_part(a, lo, hi, cmp) \
-	(parray_sort_real((a), 0, (lo), (hi), (cmp)))
+#define parray_get(a, i) ((a)->entry[i])
+#define parray_get_last(a) (parray_length(a) ? parray_get((a), parray_length(a) - 1) : NULL)
+#define parray_length(a) ((a)->nentry)
+#define parray_sort(a, cmp) (parray_sort_real((a), 0, -1, -1, (cmp)))
+#define parray_sort_part(a, lo, hi, cmp) (parray_sort_real((a), 0, (lo), (hi), (cmp)))
 #define parray_sort_unique(a, cmp) (parray_sort_real((a), 1, -1, -1, (cmp)))
-#define parray_new()		(parray_new_sized(0))
+#define parray_new() (parray_new_sized(0))
 
 /* function arguments not specified to avoid lots of casts */
 void parray_delete(parray_t *, int, void (*)(/* void * */));

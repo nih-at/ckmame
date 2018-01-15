@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,25 +38,20 @@
 #include <stdio.h>
 
 #include "dat.h"
-#include "romdb.h"
 #include "game.h"
 #include "output.h"
 #include "parser_source.h"
+#include "romdb.h"
 
-enum parser_state {
-    PARSE_IN_HEADER,
-    PARSE_IN_GAME,
-    PARSE_IN_FILE,
-    PARSE_OUTSIDE
-};
+enum parser_state { PARSE_IN_HEADER, PARSE_IN_GAME, PARSE_IN_FILE, PARSE_OUTSIDE };
 
 typedef enum parser_state parser_state_t;
 
-#define PARSE_FL_ROM_DELETED	1
-#define PARSE_FL_ROM_IGNORE	2
-#define PARSE_FL_ROM_CONTINUED	4
+#define PARSE_FL_ROM_DELETED 1
+#define PARSE_FL_ROM_IGNORE 2
+#define PARSE_FL_ROM_CONTINUED 4
 
-#define PARSER_FL_FULL_ARCHIVE_NAME    1
+#define PARSER_FL_FULL_ARCHIVE_NAME 1
 
 struct parser_context {
     /* config */
@@ -70,15 +65,15 @@ struct parser_context {
     /* current source */
     parser_source_t *ps;
     /* TODO: move out of context */
-    int lineno;			/* current line number in input file */
+    int lineno; /* current line number in input file */
 
     /* state */
     int flags;
     parser_state_t state;
-    dat_entry_t de;		/* info about dat file */
-    game_t *g;			/* current game */
-    file_t *r;			/* current ROM */
-    disk_t *d;			/* current disk */
+    dat_entry_t de; /* info about dat file */
+    game_t *g;      /* current game */
+    file_t *r;      /* current ROM */
+    disk_t *d;      /* current disk */
 };
 
 typedef struct parser_context parser_context_t;
@@ -86,8 +81,7 @@ typedef struct parser_context parser_context_t;
 /* parser functions */
 
 void parser_context_free(parser_context_t *);
-parser_context_t *parser_context_new(parser_source_t *, const parray_t *,
-				     const dat_entry_t *, output_context_t *, int);
+parser_context_t *parser_context_new(parser_source_t *, const parray_t *, const dat_entry_t *, output_context_t *, int);
 
 int parse(parser_source_t *, const parray_t *, const dat_entry_t *, output_context_t *, int);
 int export_db(romdb_t *, const parray_t *, const dat_entry_t *, output_context_t *);

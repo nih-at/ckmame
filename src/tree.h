@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,9 +35,9 @@
 */
 
 
-#include "types.h"
 #include "archive.h"
 #include "hashes.h"
+#include "types.h"
 
 struct tree {
     char *name;
@@ -49,9 +49,9 @@ struct tree {
 typedef struct tree tree_t;
 
 
-#define tree_check(t)	((t)->check)
-#define tree_checked(t)	((t)->checked)
-#define tree_name(t)	((t)->name)
+#define tree_check(t) ((t)->check)
+#define tree_checked(t) ((t)->checked)
+#define tree_name(t) ((t)->name)
 
 int tree_add(tree_t *, const char *);
 void tree_free(tree_t *);

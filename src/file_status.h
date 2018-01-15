@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,12 +41,10 @@
 
 typedef array_t file_status_array_t;
 
-#define file_status_array_free(ma)	(array_free(ma, NULL))
-#define file_status_array_get(ma, i)	\
-	(*(file_status_t *)array_get((ma), (i)))
-#define file_status_array_new(n)	\
-	(array_new_length(sizeof(file_status_t), (n), file_status_init))
-#define file_status_array_length	array_length
+#define file_status_array_free(ma) (array_free(ma, NULL))
+#define file_status_array_get(ma, i) (*(file_status_t *)array_get((ma), (i)))
+#define file_status_array_new(n) (array_new_length(sizeof(file_status_t), (n), file_status_init))
+#define file_status_array_length array_length
 
 
 void file_status_init(file_status_t *);

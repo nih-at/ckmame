@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -50,20 +50,16 @@ typedef struct match_disk match_disk_t;
 
 typedef array_t match_disk_array_t;
 
-#define match_disk_array_free(ma)	\
-	(array_free((ma), (void (*)())match_disk_finalize))
-#define match_disk_array_get(ma, i)	\
-	((match_disk_t *)array_get((ma), (i)))
-#define match_disk_array_new(n)		\
-	(array_new_length(sizeof(match_disk_t), n,	\
-			  (void (*)())match_disk_init))
+#define match_disk_array_free(ma) (array_free((ma), (void (*)())match_disk_finalize))
+#define match_disk_array_get(ma, i) ((match_disk_t *)array_get((ma), (i)))
+#define match_disk_array_new(n) (array_new_length(sizeof(match_disk_t), n, (void (*)())match_disk_init))
 
-#define match_disk_array_length	array_length
+#define match_disk_array_length array_length
 
-#define match_disk_hashes(m)	(&(m)->hashes)
-#define match_disk_name(m)	((m)->name)
-#define match_disk_quality(m)	((m)->quality)
-#define match_disk_where(m)	((m)->where)
+#define match_disk_hashes(m) (&(m)->hashes)
+#define match_disk_name(m) ((m)->name)
+#define match_disk_quality(m) ((m)->quality)
+#define match_disk_where(m) ((m)->where)
 
 
 void match_disk_finalize(match_disk_t *);

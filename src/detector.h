@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -38,8 +38,8 @@
 #include <stdio.h>
 
 #include "array.h"
-#include "myinttypes.h"
 #include "file.h"
+#include "myinttypes.h"
 #include "parser_source.h"
 
 struct detector {
@@ -53,16 +53,11 @@ struct detector {
     size_t buf_size;
 };
 
-typedef struct detector detector_t ;
+typedef struct detector detector_t;
 
 /* keep in sync with ops in detector_execute.c */
 
-enum detector_operation {
-    DETECTOR_OP_NONE,
-    DETECTOR_OP_BITSWAP,
-    DETECTOR_OP_BYTESWAP,
-    DETECTOR_OP_WORDSWAP
-};
+enum detector_operation { DETECTOR_OP_NONE, DETECTOR_OP_BITSWAP, DETECTOR_OP_BYTESWAP, DETECTOR_OP_WORDSWAP };
 
 typedef enum detector_operation detector_operation_t;
 
@@ -76,18 +71,10 @@ struct detector_rule {
 
 typedef struct detector_rule detector_rule_t;
 
-enum detector_test_type {
-    DETECTOR_TEST_DATA,
-    DETECTOR_TEST_OR,
-    DETECTOR_TEST_AND,
-    DETECTOR_TEST_XOR,
-    DETECTOR_TEST_FILE_EQ,
-    DETECTOR_TEST_FILE_LE,
-    DETECTOR_TEST_FILE_GR
-};
+enum detector_test_type { DETECTOR_TEST_DATA, DETECTOR_TEST_OR, DETECTOR_TEST_AND, DETECTOR_TEST_XOR, DETECTOR_TEST_FILE_EQ, DETECTOR_TEST_FILE_LE, DETECTOR_TEST_FILE_GR };
 
-#define DETECTOR_OFFSET_EOF	0
-#define DETECTOR_SIZE_PO2	(-1)
+#define DETECTOR_OFFSET_EOF 0
+#define DETECTOR_SIZE_PO2 (-1)
 
 typedef enum detector_test_type detector_test_type_t;
 
@@ -105,29 +92,27 @@ typedef struct detector_test detector_test_t;
 typedef int64_t (*detector_read_cb)(void *, void *, uint64_t);
 
 
-#define detector_author(d)	((d)->author)
-#define detector_name(d)	((d)->name)
-#define detector_num_rules(d)	(array_length(detector_rules(d)))
-#define detector_rule(d, i)	\
-	((detector_rule_t *)array_get(detector_rules(d), (i)))
-#define detector_rules(d)	((d)->rules)
-#define detector_version(d)	((d)->version)
+#define detector_author(d) ((d)->author)
+#define detector_name(d) ((d)->name)
+#define detector_num_rules(d) (array_length(detector_rules(d)))
+#define detector_rule(d, i) ((detector_rule_t *)array_get(detector_rules(d), (i)))
+#define detector_rules(d) ((d)->rules)
+#define detector_version(d) ((d)->version)
 
-#define detector_rule_end_offset(r)	((r)->end_offset)
-#define detector_rule_operation(r)	((r)->operation)
-#define detector_rule_num_tests(d)	(array_length(detector_rule_tests(d)))
-#define detector_rule_start_offset(r)	((r)->start_offset)
-#define detector_rule_test(d, i)	\
-	((detector_test_t *)array_get(detector_rule_tests(d), (i)))
-#define detector_rule_tests(r)		((r)->tests)
+#define detector_rule_end_offset(r) ((r)->end_offset)
+#define detector_rule_operation(r) ((r)->operation)
+#define detector_rule_num_tests(d) (array_length(detector_rule_tests(d)))
+#define detector_rule_start_offset(r) ((r)->start_offset)
+#define detector_rule_test(d, i) ((detector_test_t *)array_get(detector_rule_tests(d), (i)))
+#define detector_rule_tests(r) ((r)->tests)
 
-#define detector_test_length(t)	((t)->length)
-#define detector_test_mask(t)	((t)->mask)
-#define detector_test_offset(t)	((t)->offset)
-#define detector_test_result(t)	((t)->result)
-#define detector_test_size	detector_test_offset
-#define detector_test_type(t)	((t)->type)
-#define detector_test_value(t)	((t)->value)
+#define detector_test_length(t) ((t)->length)
+#define detector_test_mask(t) ((t)->mask)
+#define detector_test_offset(t) ((t)->offset)
+#define detector_test_result(t) ((t)->result)
+#define detector_test_size detector_test_offset
+#define detector_test_type(t) ((t)->type)
+#define detector_test_value(t) ((t)->value)
 
 int detector_execute(detector_t *, file_t *, detector_read_cb, void *);
 void detector_free(detector_t *);

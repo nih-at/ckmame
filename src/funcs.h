@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,11 +44,11 @@
 #include "result.h"
 #include "tree.h"
 
-#define DO_MAP  0x1
-#define DO_LIST	0x2
+#define DO_MAP 0x1
+#define DO_LIST 0x2
 
-#define CLEANUP_NEEDED	0x1
-#define CLEANUP_UNKNOWN	0x2
+#define CLEANUP_NEEDED 0x1
+#define CLEANUP_UNKNOWN 0x2
 
 
 void check_archive(archive_t *, const char *, result_t *);
@@ -58,8 +58,7 @@ void check_images(images_t *, const char *, result_t *);
 void check_old(game_t *, result_t *);
 void cleanup_list(parray_t *, delete_list_t *, int);
 int copy_file(const char *, const char *, size_t, ssize_t, hashes_t *);
-void diagnostics(const game_t *, const archive_t *, const images_t *,
-		 const result_t *);
+void diagnostics(const game_t *, const archive_t *, const images_t *, const result_t *);
 void diagnostics_archive(const archive_t *, const result_t *);
 void diagnostics_images(const images_t *, const result_t *);
 int ensure_dir(const char *, int);

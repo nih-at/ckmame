@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -46,29 +46,24 @@
 #include "types.h"
 
 
-#define DBH_FMT_MAME	0x0	/* mame.db format */
-#define DBH_FMT_MEM	0x1	/* in-memory db format */
-#define DBH_FMT_DIR	0x2	/* unpacked dirs db format */
-#define DBH_FMT(m)	((m) & 0xf)
+#define DBH_FMT_MAME 0x0 /* mame.db format */
+#define DBH_FMT_MEM 0x1  /* in-memory db format */
+#define DBH_FMT_DIR 0x2  /* unpacked dirs db format */
+#define DBH_FMT(m) ((m)&0xf)
 
-#define DBH_READ	0x00	/* open readonly */
-#define DBH_WRITE	0x10	/* open for writing */
-#define DBH_CREATE	0x20	/* create database if it doesn't exist */
-#define DBH_TRUNCATE	0x40	/* delete database if it exists */
-#define DBH_NEW		(DBH_CREATE|DBH_TRUNCATE|DBH_WRITE)	/* create new writable empty database */
-#define DBH_FLAGS(m)	((m) & 0xf0)
+#define DBH_READ 0x00                                   /* open readonly */
+#define DBH_WRITE 0x10                                  /* open for writing */
+#define DBH_CREATE 0x20                                 /* create database if it doesn't exist */
+#define DBH_TRUNCATE 0x40                               /* delete database if it exists */
+#define DBH_NEW (DBH_CREATE | DBH_TRUNCATE | DBH_WRITE) /* create new writable empty database */
+#define DBH_FLAGS(m) ((m)&0xf0)
 
 /* keep in sync with romdb_read_list.c:query_list */
-enum dbh_list {
-    DBH_KEY_LIST_DISK,
-    DBH_KEY_LIST_GAME,
-    DBH_KEY_LIST_SAMPLE,
-    DBH_KEY_LIST_MAX
-};
+enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME, DBH_KEY_LIST_SAMPLE, DBH_KEY_LIST_MAX };
 
-#define DBH_DEFAULT_DB_NAME	"mame.db"
-#define DBH_DEFAULT_OLD_DB_NAME	"old.db"
-#define DBH_CACHE_DB_NAME		".ckmame.db"
+#define DBH_DEFAULT_DB_NAME "mame.db"
+#define DBH_DEFAULT_OLD_DB_NAME "old.db"
+#define DBH_CACHE_DB_NAME ".ckmame.db"
 
 extern const char *sql_db_init[];
 extern const char *sql_db_init_2;
@@ -81,11 +76,11 @@ struct dbh {
 };
 typedef struct dbh dbh_t;
 
-#define dbh_db(dbh)	((dbh)->db)
+#define dbh_db(dbh) ((dbh)->db)
 
 int dbh_close(dbh_t *);
 const char *dbh_error(dbh_t *);
-dbh_t* dbh_open(const char *, int);
+dbh_t *dbh_open(const char *, int);
 
 sqlite3_stmt *dbh_get_statement(dbh_t *, dbh_stmt_t);
 dbh_stmt_t dbh_stmt_with_hashes_and_size(dbh_stmt_t, const hashes_t *, int);

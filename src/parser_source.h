@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,8 +47,7 @@ typedef ssize_t (*parser_source_read)(void *, void *, size_t);
 
 int ps_close(parser_source_t *);
 char *ps_getline(parser_source_t *);
-parser_source_t *ps_new(void *, parser_source_close, parser_source_open,
-			parser_source_read);
+parser_source_t *ps_new(void *, parser_source_close, parser_source_open, parser_source_read);
 parser_source_t *ps_new_file(const char *);
 parser_source_t *ps_new_stdin(void);
 parser_source_t *ps_new_zip(const char *, struct zip *, const char *);

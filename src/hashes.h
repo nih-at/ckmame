@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,25 +37,21 @@
 
 #include <string.h>
 
-#include "myinttypes.h"
 #include "intstr.h"
+#include "myinttypes.h"
 
-#define HASHES_SIZE_CRC		4
-#define HASHES_SIZE_MD5		16
-#define HASHES_SIZE_SHA1	20
-#define HASHES_SIZE_MAX		HASHES_SIZE_SHA1
+#define HASHES_SIZE_CRC 4
+#define HASHES_SIZE_MD5 16
+#define HASHES_SIZE_SHA1 20
+#define HASHES_SIZE_MAX HASHES_SIZE_SHA1
 
-#define HASHES_TYPE_CRC		1
-#define HASHES_TYPE_MD5		2
-#define HASHES_TYPE_SHA1	4
-#define HASHES_TYPE_MAX		HASHES_TYPE_SHA1
-#define HASHES_TYPE_ALL		((HASHES_TYPE_MAX<<1)-1)
+#define HASHES_TYPE_CRC 1
+#define HASHES_TYPE_MD5 2
+#define HASHES_TYPE_SHA1 4
+#define HASHES_TYPE_MAX HASHES_TYPE_SHA1
+#define HASHES_TYPE_ALL ((HASHES_TYPE_MAX << 1) - 1)
 
-enum hashes_cmp {
-    HASHES_CMP_NOCOMMON = -1,
-    HASHES_CMP_MATCH,
-    HASHES_CMP_MISMATCH
-};
+enum hashes_cmp { HASHES_CMP_NOCOMMON = -1, HASHES_CMP_MATCH, HASHES_CMP_MISMATCH };
 
 typedef enum hashes_cmp hashes_cmp_t;
 
@@ -74,16 +70,14 @@ typedef struct hashes_update hashes_update_t;
 extern const intstr_t hash_type_names[];
 
 
+#define hashes_are_crc_complement(h1, h2) ((((h1)->crc ^ (h2)->crc) & 0xffffffff) == 0xffffffff)
+#define hashes_crc(h) ((h)->crc)
+#define hashes_copy(h1, h2) (memcpy((h1), (h2), sizeof(hashes_t)))
+#define hashes_has_type(h, t) (hashes_types(h) & (t))
+#define hashes_types(h) ((h)->types)
 
-#define hashes_are_crc_complement(h1, h2) \
-	((((h1)->crc ^ (h2)->crc) & 0xffffffff) == 0xffffffff)
-#define hashes_crc(h)		((h)->crc)
-#define hashes_copy(h1, h2)	(memcpy((h1), (h2), sizeof(hashes_t)))
-#define hashes_has_type(h, t)	(hashes_types(h) & (t))
-#define hashes_types(h)		((h)->types)
-
-#define hash_type_from_str(s)	(str2int((s), hash_type_names))
-#define hash_type_string(i)	(int2str((i), hash_type_names))
+#define hash_type_from_str(s) (str2int((s), hash_type_names))
+#define hash_type_string(i) (int2str((i), hash_type_names))
 
 hashes_cmp_t hashes_cmp(const hashes_t *, const hashes_t *);
 bool hashes_cmp_strict(const struct hashes *, const struct hashes *);

@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,7 +37,7 @@
 
 #include "parray.h"
 
-#define DIR_RECURSE	1
+#define DIR_RECURSE 1
 #define DIR_RETURN_DIRECTORIES 2
 
 struct dir {
@@ -47,12 +47,7 @@ struct dir {
 
 typedef struct dir dir_t;
 
-enum dir_status {
-    DIR_ERROR = -1,
-    DIR_OK,
-    DIR_DIRECTORY,
-    DIR_EOD
-};
+enum dir_status { DIR_ERROR = -1, DIR_OK, DIR_DIRECTORY, DIR_EOD };
 
 typedef enum dir_status dir_status_t;
 

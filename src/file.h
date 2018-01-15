@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -50,12 +50,8 @@ struct file_sh {
 
 typedef struct file_sh file_sh_t;
 
-enum {
-    FILE_SH_FULL,
-    FILE_SH_DETECTOR,
-    FILE_SH_MAX
-};
-  
+enum { FILE_SH_FULL, FILE_SH_DETECTOR, FILE_SH_MAX };
+
 struct file {
     char *name;
     char *merge;
@@ -68,20 +64,19 @@ struct file {
 typedef struct file file_t;
 
 
-#define file_hashes(f)		(file_hashes_xxx((f), FILE_SH_FULL))
-#define file_hashes_xxx(f, i)	(&(f)->sh[(i)].hashes)
-#define file_merge(f)		((f)->merge)
-#define file_mtime(f)           ((f)->mtime)
-#define file_name(f)		((f)->name)
-#define file_size(f)		(file_size_xxx((f), FILE_SH_FULL))
-#define file_size_known(f)	(file_size_xxx_known((f), FILE_SH_FULL))
-#define file_size_xxx(f, i)	((f)->sh[(i)].size)
-#define file_size_xxx_known(f, i)	\
-		(file_size_xxx((f), (i)) != SIZE_UNKNOWN)
-#define file_status(f)		((f)->status)
-#define file_where(f)		((f)->where)
+#define file_hashes(f) (file_hashes_xxx((f), FILE_SH_FULL))
+#define file_hashes_xxx(f, i) (&(f)->sh[(i)].hashes)
+#define file_merge(f) ((f)->merge)
+#define file_mtime(f) ((f)->mtime)
+#define file_name(f) ((f)->name)
+#define file_size(f) (file_size_xxx((f), FILE_SH_FULL))
+#define file_size_known(f) (file_size_xxx_known((f), FILE_SH_FULL))
+#define file_size_xxx(f, i) ((f)->sh[(i)].size)
+#define file_size_xxx_known(f, i) (file_size_xxx((f), (i)) != SIZE_UNKNOWN)
+#define file_status(f) ((f)->status)
+#define file_where(f) ((f)->where)
 
-#define file_compare_n(f1, f2)	(strcmp(file_name(f1), file_name(f2)) == 0)
+#define file_compare_n(f1, f2) (strcmp(file_name(f1), file_name(f2)) == 0)
 
 bool file_compare_m(const file_t *, const file_t *);
 bool file_compare_msc(const file_t *, const file_t *);

@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,8 +47,8 @@ struct file_by_hash {
 typedef struct file_by_hash file_by_hash_t;
 
 
-#define file_by_hash_get(a, i)	((file_by_hash_t *)array_get((a), (i)))
-#define file_by_hash_game(a, i)	(file_by_hash_get((a), (i))->game)
+#define file_by_hash_get(a, i) ((file_by_hash_t *)array_get((a), (i)))
+#define file_by_hash_game(a, i) (file_by_hash_get((a), (i))->game)
 #define file_by_hash_index(a, i) (file_by_hash_get((a), (i))->index)
 
 const char *file_by_hash_make_key(filetype_t, const hashes_t *);

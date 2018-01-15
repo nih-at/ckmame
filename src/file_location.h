@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -55,8 +55,8 @@ struct file_location_ext {
 typedef struct file_location_ext file_location_ext_t;
 
 
-#define file_location_name(a)	((a)->name)
-#define file_location_index(a)	((a)->index)
+#define file_location_name(a) ((a)->name)
+#define file_location_index(a) ((a)->index)
 
 const char *file_location_make_key(filetype_t, const hashes_t *);
 int file_location_default_hashtype(filetype_t);
@@ -66,9 +66,9 @@ void file_location_free(file_location_t *);
 void file_location_finalize(file_location_t *);
 file_location_t *file_location_new(const char *, int);
 
-#define file_location_ext_name(a)	((a)->name)
-#define file_location_ext_index(a)	((a)->index)
-#define file_location_ext_where(a)	((a)->where)
+#define file_location_ext_name(a) ((a)->name)
+#define file_location_ext_index(a) ((a)->index)
+#define file_location_ext_where(a) ((a)->where)
 
 void file_location_ext_free(file_location_ext_t *);
 file_location_ext_t *file_location_ext_new(const char *, int, where_t);

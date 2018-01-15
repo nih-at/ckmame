@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -49,17 +49,17 @@ struct disk {
 
 typedef struct disk disk_t;
 
-#define DISK_FL_CHECK_INTEGRITY	0x2
-#define DISK_FL_QUIET		0x4
+#define DISK_FL_CHECK_INTEGRITY 0x2
+#define DISK_FL_QUIET 0x4
 
 
-#define disk_hashes(d)	(&(d)->hashes)
-#define disk_status(d)	((d)->status)
-#define disk_merge(d)	((d)->merge)
-#define disk_name(d)	((d)->name)
-#define disk_id(d)	((d)->id)
+#define disk_hashes(d) (&(d)->hashes)
+#define disk_status(d) ((d)->status)
+#define disk_merge(d) ((d)->merge)
+#define disk_name(d) ((d)->name)
+#define disk_id(d) ((d)->id)
 
-#define disk_by_id(i)	((disk_t *)memdb_get_ptr_by_id(i))
+#define disk_by_id(i) ((disk_t *)memdb_get_ptr_by_id(i))
 
 void disk_finalize(disk_t *);
 void disk_free(disk_t *);

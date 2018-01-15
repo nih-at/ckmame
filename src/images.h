@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -41,13 +41,13 @@
 
 typedef parray_t images_t;
 
-#define images_free(im)		(parray_free((im), disk_free))
-#define images_get(im, i)	((disk_t *)parray_get((im), (i)))
-#define images_length(im)	(parray_length(im))
+#define images_free(im) (parray_free((im), disk_free))
+#define images_get(im, i) ((disk_t *)parray_get((im), (i)))
+#define images_length(im) (parray_length(im))
 
 
 const char *images_name(const images_t *, int);
 images_t *images_new(const game_t *, int);
-images_t *images_new_name(const char  *, int);
+images_t *images_new_name(const char *, int);
 
 #endif /* images.h */

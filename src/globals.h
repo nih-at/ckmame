@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -52,10 +52,10 @@ extern const char *rom_dir;
 
 extern parray_t *search_dirs;
 
-extern int check_integrity;	/* full integrity check of ROM set */
-extern int roms_unzipped;       /* ROMs are files on disk, not contained in zip archives */
+extern int check_integrity; /* full integrity check of ROM set */
+extern int roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
 
-extern filetype_t file_type;	/* type of files to check (ROMs or samples) */
+extern filetype_t file_type; /* type of files to check (ROMs or samples) */
 
 extern int output_options;
 extern int fix_options;

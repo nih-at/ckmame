@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,16 +37,16 @@
 
 #include "dbh.h"
 
-#define ERRDEF	0x0	/* no additional info */
-#define ERRZIP	0x1	/* prepend zipfile name */
-#define ERRFILE	0x2	/* prepend file name */
-#define ERRSTR	0x4	/* append strerror(errno) */
-#define ERRDB	0x8	/* append dbh_error() */
+#define ERRDEF 0x0  /* no additional info */
+#define ERRZIP 0x1  /* prepend zipfile name */
+#define ERRFILE 0x2 /* prepend file name */
+#define ERRSTR 0x4  /* append strerror(errno) */
+#define ERRDB 0x8   /* append dbh_error() */
 
-#define ERRZIPFILE	(ERRZIP|ERRFILE)
-#define	ERRZIPSTR	(ERRZIP|ERRSTR)
-#define ERRFILESTR	(ERRFILE|ERRSTR)
-#define ERRZIPFILESTR	(ERRZIPFILE|ERRSTR)
+#define ERRZIPFILE (ERRZIP | ERRFILE)
+#define ERRZIPSTR (ERRZIP | ERRSTR)
+#define ERRFILESTR (ERRFILE | ERRSTR)
+#define ERRZIPFILESTR (ERRZIPFILE | ERRSTR)
 
 void myerror(int, const char *, ...);
 void seterrdb(dbh_t *);

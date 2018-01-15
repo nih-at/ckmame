@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,8 +45,8 @@ struct array {
 typedef struct array array_t;
 
 
-#define array_length(a)		((a)->nentry)
-#define array_new(s)		(array_new_sized((s), 0))
+#define array_length(a) ((a)->nentry)
+#define array_new(s) (array_new_sized((s), 0))
 
 /* function arguments not specified to avoid lots of casts */
 void array_delete(array_t *, int, void (*)(/* void * */));

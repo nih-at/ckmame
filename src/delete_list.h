@@ -20,7 +20,7 @@
   3. The name of the author may not be used to endorse or promote
      products derived from this software without specific prior
      written permission.
- 
+
   THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS
   OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,16 +47,13 @@ struct delete_list {
 typedef struct delete_list delete_list_t;
 
 
-#define delete_list_add(dl, n, i)	\
-	(parray_push((dl)->array, file_location_new((n), (i))))
-			
-#define delete_list_get(dl, i)	\
-	((file_location_t *)parray_get((dl)->array, (i)))
+#define delete_list_add(dl, n, i) (parray_push((dl)->array, file_location_new((n), (i))))
 
-#define delete_list_length(dl)	(parray_length((dl)->array))
+#define delete_list_get(dl, i) ((file_location_t *)parray_get((dl)->array, (i)))
 
-#define delete_list_sort(dl)					\
-	(parray_sort_unique(dl->array, file_location_cmp))
+#define delete_list_length(dl) (parray_length((dl)->array))
+
+#define delete_list_sort(dl) (parray_sort_unique(dl->array, file_location_cmp))
 
 int delete_list_execute(delete_list_t *);
 void delete_list_free(delete_list_t *);
