@@ -126,12 +126,6 @@ chd_open(const char *name, int *errp)
 	return NULL;
     }
     chd->f = f;
-    if ((chd->name=strdup(name)) == NULL) {
-	if (errp)
-	    *errp = CHD_ERR_NOMEM;
-	chd_close(chd);
-	return NULL;
-    }
     chd->error = 0;
     chd->map = NULL;
     chd->buf = NULL;
@@ -139,6 +133,12 @@ chd_open(const char *name, int *errp)
     chd->hbuf = NULL;
     chd->meta = NULL;
 
+    if ((chd->name=strdup(name)) == NULL) {
+	if (errp)
+	    *errp = CHD_ERR_NOMEM;
+	chd_close(chd);
+	return NULL;
+    }
     if (read_header(chd) < 0) {
 	if (errp)
 	    *errp = chd->error;
