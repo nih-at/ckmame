@@ -100,7 +100,7 @@ sub checks {
 	}
 
 	while (my $name = readdir $dir) {
-	    next if ($name eq '.' || $name eq '..' || $name =~ m/sample|unknown/);
+	    next if ($name eq '.' || $name eq '..' || $name =~ m/sample/);
 	    next unless (-d $name);
 
 	    my $ret = check_ckmame_db($test, $name, $variant);

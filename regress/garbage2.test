@@ -7,6 +7,8 @@ file unknown/1-4.zip garbage.zip garbage2.zip
 file unknown/1-8.zip 1-c-ok.zip 2-cc-ok.zip
 no-hashes roms 1-4.zip 04.rom
 no-hashes roms 1-8.zip 08.rom
+no-hashes unknown 1-4.zip
+no-hashes unknown 1-8.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout file garbage       size       8  crc 01888242: unknown

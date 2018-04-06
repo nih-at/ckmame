@@ -4,6 +4,7 @@ args -FKLivSc samptest-child
 file samples/samptest-child.zip samptest3.zip samptest2.zip
 file-new unknown/samptest-child.zip samptest3-garbage.zip
 file samples/samptest.zip samptest.zip samptest.zip
+ckmamedb-after unknown ckmamedb-empty.dump
 stdout In game samptest-child:
 stdout game samptest-child                          : correct
 stdout file boing.wav     size       8  crc 1cfbd7ab: unknown

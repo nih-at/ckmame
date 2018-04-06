@@ -326,7 +326,7 @@ main(int argc, char **argv) {
     if (file_type == TYPE_ROM) {
 	archive_register_cache_directory(get_directory(file_type));
 	archive_register_cache_directory(needed_dir);
-	/* archive_register_cache_directory(unknown_dir); */
+	archive_register_cache_directory(unknown_dir);
 	int m;
 	for (m = 0; m < parray_length(search_dirs); m++) {
 	    if (archive_register_cache_directory(parray_get(search_dirs, m)) < 0)

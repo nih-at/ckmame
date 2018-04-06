@@ -3,6 +3,7 @@ return 0
 args -FKLvc 1-4
 file-del roms/1-4.zip garbage.zip
 file-new unknown/1-4.zip garbage.zip
+no-hashes unknown 1-4.zip garbage
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found
 stdout file garbage       size       8  crc 01888242: unknown
