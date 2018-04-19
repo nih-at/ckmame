@@ -1,6 +1,14 @@
 # for config.h
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/..)
 
+SET(COMPATIBILITY)
+IF(NOT HAVE_GETPROGRAME)
+  LIST(APPEND COMPATIBILITY getprogname.c)
+ENDIF()
+IF(NOT HAVE_STRLCPY)
+  LIST(APPEND COMPATIBILITY strlcpy.c)
+ENDIF()
+
 SET(COMMON_SOURCES
   archive.c
   archive_dir.c
@@ -112,6 +120,7 @@ SET(COMMON_SOURCES
   xmalloc.c
   xmlutil.c
   zip_util.c
+  ${COMPATIBILITY}
 )
 
 ADD_LIBRARY(libckmame ${COMMON_SOURCES})
