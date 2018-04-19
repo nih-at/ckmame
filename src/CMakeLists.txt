@@ -126,6 +126,10 @@ FOREACH(PROGRAM detective mkmamedb)
   TARGET_LINK_LIBRARIES(${PROGRAM} ${SUPPORT_LIBS_ABSOLUTE})
 ENDFOREACH()
 
+#ADD_EXECUTABLE(mamedb mamedb.c mamedb_add.c mamedb_cmdtab.c mamedb_help.c mamedb_new.c)
+#TARGET_LINK_LIBRARIES(mamedb ${MAIN_LIBS_ABSOLUTE} libckmame)
+#INSTALL(TARGETS mamedb RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
 ADD_CUSTOM_TARGET(update_dbh_statements
   COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/mkstatements.pl ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.in ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.c ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.h
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.in ${CMAKE_CURRENT_SOURCE_DIR}/mkstatements.pl
