@@ -43,7 +43,7 @@
 
 #include "config.h"
 
-#if HAVE_DIRENT_H
+#if defined(HAVE_DIRENT_H)
 #include <dirent.h>
 #define NAMLEN(dirent) strlen((dirent)->d_name)
 #else
