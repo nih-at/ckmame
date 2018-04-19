@@ -13,4 +13,9 @@ docs/softwarelist.dtd export-ignore
 docs/wwwprofiler.txt export-ignore
 docs/xmlheaders.txt export-ignore
 schema.sql export-ignore
+src/mamedb.c export-ignore
+src/mamedb_add.c export-ignore
+src/mamedb_cmdtab.c export-ignore
+src/mamedb_help.c export-ignore
+src/mamedb_new.c export-ignore
 xcode export-ignore
