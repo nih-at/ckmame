@@ -2,7 +2,7 @@ description test game (no parent), zip is incomplete, looked-at zip is broken
 variants zip
 return 0
 args -FKLivc 1-4
-file roms/2-48.zip Makefile.am Makefile.am
+file roms/2-48.zip CMakeLists.txt CMakeLists.txt
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found
 stderr error opening zip archive 'roms/2-48.zip': Not a zip archive
