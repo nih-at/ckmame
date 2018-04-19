@@ -43,7 +43,6 @@ regress/dbrestore
 regress/runtest
 regress/sandbox
 src/ckmame
-src/dbh_statements.[ch]
 src/detective
 src/dumpgame
 src/mamedb
