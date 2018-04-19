@@ -23,10 +23,11 @@ before_install:
    fi
 
 script:
- - autoreconf -fiv
- - ./configure
+ - mkdir build
+ - cd build
+ - cmake ..
  - make
- - VERBOSE=yes make check
+ - make test
 
 notifications:
   email:
