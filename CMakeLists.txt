@@ -10,6 +10,7 @@ INCLUDE(FindPkgConfig)
 #INCLUDE(CheckSymbolExists)
 INCLUDE(CheckTypeSize)
 INCLUDE(GNUInstallDirs)
+INCLUDE(FindZLIB)
 
 FIND_PROGRAM(MDOCTOOL NAMES mandoc groff)
 IF (MDOCTOOL)
@@ -89,8 +90,7 @@ CHECK_TYPE_SIZE("long" HAVE_LONG)
 CHECK_TYPE_SIZE("long long" HAVE_LONG_LONG)
 CHECK_TYPE_SIZE("off_t" HAVE_SIZEOF_OFF_T)
 
-FIND_PACKAGE(ZLIB REQUIRED)
-INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
 
 PKG_CHECK_MODULES(LIBZIP REQUIRED libzip)
 INCLUDE_DIRECTORIES(${LIBZIP_INCLUDE_DIRS})
@@ -111,7 +111,7 @@ ELSE()
 ENDIF()
 
 # Instead of using `link_directories`, collect absolute paths to libraries.
-SET(MAIN_LIBS_ABSOLUTE ${ZLIB_LIBRARY})
+SET(MAIN_LIBS_ABSOLUTE ${ZLIB_LIBRARIES})
 FOREACH(libname LIBZIP SQLITE3)
   FOREACH(lib ${${libname}_LIBRARIES})
     # Choose name of variable, which will contain result of `find_library`
