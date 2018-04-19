@@ -4,6 +4,7 @@
 * add --autofixdat to create fixdat with a name based on the dat name
 * improve MAME (neogeo set) support
 * fix up regression test suite
+* switched to CMake build system
 
 0.12 (2015-05-03)
 =================
