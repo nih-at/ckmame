@@ -1,0 +1,36 @@
+#ifndef HAD_CONFIG_H
+#define HAD_CONFIG_H
+#define PACKAGE "@PACKAGE@"
+#define PACKAGE_BUGREPORT "@PACKAGE_BUGREPORT@"
+#define VERSION "@VERSION@"
+
+#cmakedefine HAVE_LIBXML2
+
+#cmakedefine HAVE_FNMATCH
+#cmakedefine HAVE_FSEEKO
+#cmakedefine HAVE_GETOPT_LONG
+#cmakedefine HAVE_GETPROGNAME
+#cmakedefine HAVE_STRLCPY
+
+#cmakedefine HAVE_DIRENT_H
+#cmakedefine HAVE_INTTYPES_H
+#cmakedefine HAVE_NDIR_H
+#cmakedefine HAVE_STDBOOL_H
+#cmakedefine HAVE_STDINT_H
+#cmakedefine HAVE_SYS_DIR_H
+#cmakedefine HAVE_SYS_NDIR_H
+
+#cmakedefine HAVE_INT8_T
+#cmakedefine HAVE_UINT8_T
+#cmakedefine HAVE_INT16_T
+#cmakedefine HAVE_UINT16_T
+#cmakedefine HAVE_INT32_T
+#cmakedefine HAVE_UINT32_T
+#cmakedefine HAVE_INT64_T
+#cmakedefine HAVE_UINT64_T
+#cmakedefine HAVE_SHORT
+#cmakedefine HAVE_INT
+#cmakedefine HAVE_LONG
+#cmakedefine HAVE_LONG_LONG
+#cmakedefine HAVE_SIZEOF_OFF_T
+#endif /* HAD_CONFIG_H */

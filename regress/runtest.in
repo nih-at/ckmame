@@ -43,7 +43,7 @@ use NiHTest;
 
 my $ROMDIRS = "extra|extradir|moreroms|needed|roms|samples|search|unknown";
 
-my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@', zipcmp_flags => '' });
+my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@', top_builddir => '@top_builddir@', zipcmp_flags => '' });
 
 sub check_ckmame_db {
 	my ($test, $dir, $variant) = @_;
