@@ -4,11 +4,8 @@ tells you which ROM files are missing or have a wrong checksum, and
 can delete unknown and unused files from the ROM sets, and rename or
 move ROM files.
 
-To use it, you need
-- [zlib](http://www.zlib.net/) (at least version 1.1.2)
-- [libzip](https://libzip.org/) (at least version 1.0)
-- [SQLite3](https://www.sqlite.org/)
-- optionally [libxml2](http://xmlsoft.org/) (for M.A.M.E. -listxml and detectors)
+See the [INSTALL.md](INSTALL.md) file for installation instructions and
+dependencies.
 
 You will also need a description of the ROM set you want to check. For
 MAME, it can be obtained by running `mame -listxml`.
