@@ -134,7 +134,6 @@ libckmame_a_SOURCES= \
 noinst_HEADERS=\
 	archive.h \
 	array.h \
-	bswap.h \
 	chd.h \
 	compat.h \
 	dat.h \
@@ -178,8 +177,6 @@ noinst_HEADERS=\
 	xmlutil.h
 
 EXTRA_DIST=\
-	bswap16.c \
-	bswap32.c \
 	compat_fnmatch.h \
 	dbh_statements.in \
 	getopt_long.h \

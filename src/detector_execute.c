@@ -34,7 +34,6 @@
 
 #include <stdlib.h>
 
-#include "bswap.h"
 #include "detector.h"
 #include "xmalloc.h"
 
@@ -319,6 +318,17 @@ op_bitswap(uint8_t *b, size_t len) {
 }
 
 
+static uint16_t
+mybswap16(uint16_t i) {
+    return (i >> 8) | (i << 8);
+}
+
+static uint32_t
+mybswap32(uint32_t i) {
+    return (i >> 24) | ((i >> 8) & 0xff00) | ((i << 8) & 0xff0000) | (i << 24);
+}
+
+
 static void
 op_byteswap(uint8_t *b, size_t len) {
     uint16_t *bw;
@@ -327,7 +337,7 @@ op_byteswap(uint8_t *b, size_t len) {
     bw = (uint16_t *)b;
 
     for (i = 0; i < len / 2; i++)
-	bw[i] = bswap16(bw[i]);
+	bw[i] = mybswap16(bw[i]);
 }
 
 
@@ -339,5 +349,5 @@ op_wordswap(uint8_t *b, size_t len) {
     bl = (uint32_t *)b;
 
     for (i = 0; i < len / 4; i++)
-	bl[i] = bswap32(bl[i]);
+	bl[i] = mybswap32(bl[i]);
 }
