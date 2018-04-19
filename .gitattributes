@@ -13,3 +13,4 @@ docs/softwarelist.dtd export-ignore
 docs/wwwprofiler.txt export-ignore
 docs/xmlheaders.txt export-ignore
 schema.sql export-ignore
+xcode export-ignore
