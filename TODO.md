@@ -2,6 +2,12 @@
 
 - fix coverity issues
 
+- rar read support
+
+- 7z read support
+
+- option: only create complete games, move away others
+
 # Later
 
 * convert runtest to use ziptool instead of unzip
