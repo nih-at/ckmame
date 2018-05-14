@@ -8,6 +8,8 @@
 
 - option: only create complete games, move away others
 
+- generate mame.db in /tmp and move in place when finished
+
 # Later
 
 * convert runtest to use ziptool instead of unzip
