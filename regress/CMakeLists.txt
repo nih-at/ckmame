@@ -122,6 +122,10 @@ SET(EXTRA_TESTS
   identical-once.test
   ignore-unknown.test
   inchild.test
+  incomplete-basic.test
+  incomplete-existing.test
+  incomplete-from-extra.test
+  incomplete-merge.test
   inconsistent-with-i.test
   inconsistent-without-i.test
   inparent.test

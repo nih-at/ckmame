@@ -1,0 +1,9 @@
+description test incomplete game, moves files to needed
+return 0
+args -FKLvcC 2-48
+file-del roms/2-48.zip 1-4-ok.zip
+file needed/d87f7e0c-000.zip 1-4-ok.zip 1-4-ok.zip
+stdout In game 2-48:
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout rom  08.rom        size       8  crc 3656897d: missing
+stdout roms/2-48.zip: delete unneeded file '04.rom'

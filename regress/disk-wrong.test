@@ -9,4 +9,4 @@ stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: wrong checksum
 stdout image roms/108-5.chd: unknown
-stdout roms/108-5.chd: mv unknown image
+stdout roms/108-5.chd: move unknown image

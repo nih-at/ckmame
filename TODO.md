@@ -6,8 +6,6 @@
 
 - 7z read support
 
-- option: only create complete games, move away others
-
 - generate mame.db in /tmp and move in place when finished
 
 # Later

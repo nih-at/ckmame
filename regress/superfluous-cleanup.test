@@ -23,5 +23,5 @@ stdout In archive roms/parent.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: duplicate
 stdout file 0a.rom        size      10  crc 0b4a4cde: unknown
 stdout roms/parent.zip: delete duplicate file '04.rom'
-stdout roms/parent.zip: mv unknown file '0a.rom'
+stdout roms/parent.zip: move unknown file '0a.rom'
 stdout roms/parent.zip: remove empty archive

@@ -9,4 +9,4 @@ touch 1047614103 roms/1-4/04.rom
 stdout In game 1-4:
 stdout game 1-4                                     : not a single rom found
 stdout file 04.rom        size       4  crc e027b67c: unknown
-stdout roms/1-4: mv unknown file '04.rom'
+stdout roms/1-4: move unknown file '04.rom'

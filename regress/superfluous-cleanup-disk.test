@@ -17,7 +17,7 @@ stdout roms/1-8.zip: delete duplicate file '08.rom'
 stdout roms/1-8.zip: remove empty archive
 stdout In image roms/108-2.chd:
 stdout image roms/108-2.chd: unknown
-stdout roms/108-2.chd: mv unknown image
+stdout roms/108-2.chd: move unknown image
 stdout In image roms/108-5.chd:
 stdout image roms/108-5.chd: duplicate
 stdout roms/108-5.chd: delete duplicate image
@@ -25,5 +25,5 @@ stdout In archive roms/parent.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: not used
 stdout file 0c.rom        size      12  crc 0623c932: unknown
 stdout roms/parent.zip: delete unused file '04.rom'
-stdout roms/parent.zip: mv unknown file '0c.rom'
+stdout roms/parent.zip: move unknown file '0c.rom'
 stdout roms/parent.zip: remove empty archive

@@ -8,4 +8,4 @@ no-hashes unknown 1-4.zip garbage
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout file garbage       size       8  crc 01888242: unknown
-stdout roms/1-4.zip: mv unknown file 'garbage'
+stdout roms/1-4.zip: move unknown file 'garbage'
