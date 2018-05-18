@@ -132,3 +132,29 @@ void
 delete_list_rollback(delete_list_t *dl) {
     parray_set_length(dl->array, dl->mark, NULL, file_location_free);
 }
+
+
+void
+delete_list_used(archive_t *a, int index) {
+    delete_list_t *list = NULL;
+    
+    switch (archive_where(a)) {
+    case FILE_NEEDED:
+	list = needed_delete_list;
+	break;
+	
+    case FILE_SUPERFLUOUS:
+	list = superfluous_delete_list;
+	break;
+
+    case FILE_EXTRA:
+	if (fix_options & FIX_DELETE_EXTRA) {
+	    list = extra_delete_list;
+	}
+	break;
+    }
+
+    if (list) {
+	delete_list_add(list, archive_name(a), index);
+    }
+}

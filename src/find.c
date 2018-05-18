@@ -118,7 +118,7 @@ find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md) {
 
 
 find_result_t
-find_in_archives(const file_t *r, match_t *m) {
+find_in_archives(const file_t *r, match_t *m, bool needed_only) {
     sqlite3_stmt *stmt;
     archive_t *a;
     file_t *f;
@@ -143,6 +143,11 @@ find_in_archives(const file_t *r, match_t *m) {
 	    ret = SQLITE_ERROR;
 	    break;
 	}
+	if (needed_only && archive_where(a) != FILE_NEEDED) {
+	    archive_free(a);
+	    continue;
+	}
+
 	i = sqlite3_column_int(stmt, QUERY_FILE_FILE_IDX);
 	sh = sqlite3_column_int(stmt, QUERY_FILE_FILE_SH);
 	f = archive_file(a, i);

@@ -84,7 +84,7 @@ check_archive(archive_t *a, const char *gamename, result_t *res) {
 		match_t m;
 		ensure_needed_maps();
 		match_init(&m);
-		if (find_in_archives(archive_file(a, i), &m) != FIND_EXISTS)
+		if (find_in_archives(archive_file(a, i), &m, false) != FIND_EXISTS)
 		    result_file(res, i) = FS_NEEDED;
 		else {
 		    if (match_where(&m) == FILE_NEEDED)

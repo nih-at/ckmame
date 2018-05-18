@@ -179,10 +179,11 @@ cleanup_archive(archive_t *a, result_t *res, int flags) {
 
 	case FS_NEEDED:
 	    if (flags & CLEANUP_NEEDED) {
-		if (fix_options & FIX_PRINT)
-		    printf("%s: save needed file '%s'\n", archive_name(a), file_name(archive_file(a, i)));
 		/* TODO: handle error (how?) */
-		save_needed(a, i, fix_options & FIX_DO);
+		if (save_needed(a, i, NULL) == 0) {
+		    /* save_needed delays deletes in archives with where != FILE_ROM */
+		    archive_file_delete(a, i);
+		}
 	    }
 	    break;
 
@@ -190,7 +191,7 @@ cleanup_archive(archive_t *a, result_t *res, int flags) {
 	    if (flags & CLEANUP_UNKNOWN) {
 		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT)
-		    printf("%s: %s unknown file '%s'\n", archive_name(a), (move ? "mv" : "delete"), file_name(archive_file(a, i)));
+		    printf("%s: %s unknown file '%s'\n", archive_name(a), (move ? "move" : "delete"), file_name(archive_file(a, i)));
 
 		/* TODO: handle error (how?) */
 		if (move) {
@@ -276,7 +277,7 @@ cleanup_disk(images_t *im, result_t *res, int flags) {
 	    if (flags & CLEANUP_UNKNOWN) {
 		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT)
-		    printf("%s: %s unknown image\n", name, (move ? "mv" : "delete"));
+		    printf("%s: %s unknown image\n", name, (move ? "move" : "delete"));
 		if (fix_options & FIX_DO) {
 		    if (move)
 			ret = move_image_to_garbage(name);

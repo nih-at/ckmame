@@ -113,7 +113,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
 	    /* search in needed, superfluous and update sets */
 	    ensure_needed_maps();
 	    ensure_extra_maps(DO_MAP);
-	    if (find_in_archives(rom, match) == FIND_EXISTS) {
+	    if (find_in_archives(rom, match, false) == FIND_EXISTS) {
 		continue;
 	    }
 	}

@@ -115,7 +115,7 @@ int archive_commit(archive_t *);
 int archive_dir_add_file(archive_t *, const char *, struct stat *);
 int archive_file_add_empty(archive_t *, const char *);
 int archive_file_compare_hashes(archive_t *, int, const hashes_t *);
-int archive_file_compute_hashes(archive_t *, int, int);
+int archive_file_compute_hashes(archive_t *a, int idx, int hashtypes);
 int archive_file_copy(archive_t *, int, archive_t *, const char *);
 int archive_file_copy_or_move(archive_t *, int, archive_t *, const char *, int);
 int archive_file_copy_part(archive_t *, int, archive_t *, const char *, off_t, off_t, const file_t *);

@@ -35,6 +35,7 @@
 */
 
 
+#include "archive.h"
 #include "file_location.h"
 #include "parray.h"
 
@@ -60,5 +61,7 @@ void delete_list_free(delete_list_t *);
 void delete_list_mark(delete_list_t *);
 delete_list_t *delete_list_new(void);
 void delete_list_rollback(delete_list_t *);
+
+void delete_list_used(archive_t *a, int idx);
 
 #endif /* delete_list.h */

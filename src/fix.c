@@ -55,11 +55,13 @@
 
 static int fix_disks(game_t *, images_t *, result_t *);
 static int fix_files(game_t *, archive_t *, result_t *, garbage_t *);
+static int fix_files_incomplete(game_t *g, archive_t *a, result_t *res, garbage_t *gb);
 
 
 int
 fix_game(game_t *g, archive_t *a, images_t *im, result_t *res) {
     int i;
+    int ret;
     bool move;
     garbage_t *gb;
 
@@ -100,7 +102,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res) {
 		break;
 	    move = (fix_options & FIX_MOVE_UNKNOWN);
 	    if (fix_options & FIX_PRINT)
-		printf("%s: %s unknown file '%s'\n", archive_name(a), (move ? "mv" : "delete"), file_name(archive_file(a, i)));
+		printf("%s: %s unknown file '%s'\n", archive_name(a), (move ? "move" : "delete"), file_name(archive_file(a, i)));
 
 	    if (move)
 		garbage_add(gb, i, false); /* TODO: check return value */
@@ -121,11 +123,8 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res) {
 	    break;
 
 	case FS_NEEDED:
-	    if (fix_options & FIX_PRINT)
-		printf("%s: save needed file '%s'\n", archive_name(a), file_name(archive_file(a, i)));
-
 	    /* TODO: handle error (how?) */
-	    if (save_needed(a, i, fix_options & FIX_DO) == 0)
+	    if (save_needed(a, i, game_name(g)) == 0)
 		tree_recheck_games_needing(check_tree, file_size(archive_file(a, i)), file_hashes(archive_file(a, i)));
 	    break;
 
@@ -149,7 +148,12 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res) {
 	}
     }
 
-    int ret = fix_files(g, a, res, gb);
+    if ((fix_options & FIX_COMPLETE_ONLY) == 0 || res->game == GS_CORRECT || res->game == GS_FIXABLE) {
+	ret = fix_files(g, a, res, gb);
+    }
+    else {
+	ret = fix_files_incomplete(g, a, res, gb);
+    }
 
     if (fix_options & FIX_DO) {
 	if (garbage_close(gb) < 0) {
@@ -192,7 +196,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 	case FS_UNKNOWN:
 	case FS_BROKEN:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: %s unknown image\n", name, ((fix_options & FIX_MOVE_UNKNOWN) ? "mv" : "delete"));
+		printf("%s: %s unknown image\n", name, ((fix_options & FIX_MOVE_UNKNOWN) ? "move" : "delete"));
 	    if (fix_options & FIX_DO) {
 		if (fix_options & FIX_MOVE_UNKNOWN)
 		    move_image_to_garbage(name);
@@ -343,7 +347,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 	case QU_LONG:
 	    if (a == afrom && (fix_options & FIX_MOVE_LONG) && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
 		if (fix_options & FIX_PRINT)
-		    printf("%s: mv long file '%s'\n", archive_name(afrom), REAL_NAME(afrom, match_index(m)));
+		    printf("%s: move long file '%s'\n", archive_name(afrom), REAL_NAME(afrom, match_index(m)));
 		if (garbage_add(gb, match_index(m), true) < 0)
 		    break;
 	    }
@@ -368,12 +372,8 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 	case QU_NAMEERR:
 	    if (file_where(r) == FILE_INCO || file_where(r) == FILE_INGCO) {
 		if (tree_recheck(check_tree, game_cloneof(g, TYPE_ROM, file_where(r) - 1))) {
-		    if (fix_options & FIX_PRINT) {
-			printf("%s: save needed file '%s'\n", archive_name(a), file_name(archive_file(a, match_index(m))));
-		    }
-
 		    /* fall-through to rename in case save_needed fails */
-		    if (save_needed(a, match_index(m), fix_options & FIX_DO) == 0) {
+		    if (save_needed(a, match_index(m), game_name(g)) == 0) {
 			tree_recheck_games_needing(check_tree, file_size(r), file_hashes(r));
 			break;
 		    }
@@ -394,11 +394,8 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 	    if (gb && afrom == gb->da) {
 		/* we can't copy from our own garbage archive, since we're copying to it, and libzip doesn't support cross copying */
 
-		if (fix_options & FIX_PRINT)
-		    printf("%s: save needed file '%s'\n", archive_name(afrom), file_name(archive_file(afrom, match_index(m))));
-
 		/* TODO: handle error (how?) */
-		if (save_needed(afrom, match_index(m), fix_options & FIX_DO) == 0)
+		if (save_needed(afrom, match_index(m), game_name(g)) == 0)
 		    needs_recheck = true;
 
 		break;
@@ -416,17 +413,12 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 		/* TODO: if (idx >= 0) undo deletion of broken file */
 	    }
 	    else {
-		if (match_where(m) == FILE_NEEDED)
-		    delete_list_add(needed_delete_list, archive_name(afrom), match_index(m));
-		else if (match_where(m) == FILE_SUPERFLUOUS)
-		    delete_list_add(superfluous_delete_list, archive_name(afrom), match_index(m));
-		else if (match_where(m) == FILE_EXTRA && (fix_options & FIX_DELETE_EXTRA))
-		    delete_list_add(extra_delete_list, archive_name(afrom), match_index(m));
+		delete_list_used(afrom, match_index(m));
 	    }
 	    break;
 
 	case QU_INZIP:
-	    /* ancestor must copy it first */
+	    /* TODO: save to needed */
 	    break;
 
 	case QU_OK:
@@ -449,4 +441,72 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
     free(original_names);
 
     return needs_recheck ? 1 : 0;
+}
+
+
+static int
+fix_files_incomplete(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
+    archive_t *afrom;
+    match_t *m;
+    file_t *r;
+    int i;
+
+    seterrinfo(NULL, archive_name(a));
+
+    for (i = 0; i < game_num_files(g, file_type); i++) {
+	m = result_rom(res, i);
+	if (match_source_is_old(m))
+	    afrom = NULL;
+	else
+	    afrom = match_archive(m);
+	r = game_file(g, file_type, i);
+	seterrinfo(file_name(r), archive_name(a));
+
+	switch (match_quality(m)) {
+	case QU_MISSING:
+	case QU_OLD:
+	    /* nothing to do */
+	    break;
+
+	case QU_NOHASH:
+	    /* only used for disks */
+	    break;
+	    
+	case QU_HASHERR:
+	    /* all is lost */
+	    break;
+
+	case QU_LONG:
+	    save_needed_part(afrom, match_index(m), game_name(g), match_offset(m), file_size(r), r); /* TODO: handle error */
+	    break;
+
+	case QU_COPIED:
+	    switch(match_where(m)) {
+	    case FILE_INZIP:
+	    case FILE_SUPERFLUOUS:
+	    case FILE_EXTRA:
+		/* TODO: handle error (how?) */
+		save_needed(afrom, match_index(m), game_name(g));
+		archive_commit(afrom);
+		break;
+		
+	    case FILE_INCO:
+	    case FILE_INGCO:
+	    case FILE_ROMSET:
+	    case FILE_NEEDED:
+	    case FILE_OLD:
+		/* file is already where we will find it later */
+		break;
+	    }
+	    break;
+
+	case QU_NAMEERR:
+	case QU_OK:
+	case QU_INZIP:
+	    save_needed(a, i, game_name(g)); /* TODO: handle error */
+	    break;
+	}
+    }
+
+    return 0;
 }

@@ -57,7 +57,7 @@ enum action { ACTION_UNSPECIFIED, ACTION_CHECK_ROMSET, ACTION_SUPERFLUOUS_ONLY, 
 typedef enum action action_t;
 
 
-char *usage = "Usage: %s [-bcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
+char *usage = "Usage: %s [-bCcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
@@ -65,6 +65,7 @@ char help[] = "\n"
 	      "      --autofixdat        write fixdat to `fix_$NAME_OF_SET.dat'\n"
 	      "  -b, --nobroken          don't report unfixable errors\n"
 	      "      --cleanup-extra     clean up extra dirs (delete superfluous files)\n"
+	      "  -C, --complete-only     only keep complete sets in rom-dir\n"
 	      "  -c, --correct           report correct sets\n"
 	      "  -D, --db dbfile         use mame-db dbfile\n"
 	      "  -d, --nonogooddumps     don't report roms with no good dumps\n"
@@ -97,9 +98,9 @@ char help[] = "\n"
 	      "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
-				"Copyright (C) 1999-2017 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+				"Copyright (C) 1999-2018 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "bcD:de:FfhijKkLlO:R:SsT:uVvwX"
+#define OPTIONS "bCcD:de:FfhijKkLlO:R:SsT:uVvwX"
 
 enum { OPT_CLEANUP_EXTRA = 256, OPT_DELETE_DUPLICATE, OPT_AUTOFIXDAT, OPT_FIXDAT, OPT_IGNORE_UNKNOWN, OPT_KEEP_DUPLICATE, OPT_KEEP_FOUND, OPT_SUPERFLUOUS };
 
@@ -109,6 +110,7 @@ struct option options[] = {
 
     {"autofixdat", 0, 0, OPT_AUTOFIXDAT},
     {"cleanup-extra", 0, 0, OPT_CLEANUP_EXTRA},
+    {"complete-only", 0, 0, 'C'},
     {"correct", 0, 0, 'c'}, /* +CORRECT */
     {"db", 1, 0, 'D'},
     {"delete-duplicate", 0, 0, OPT_DELETE_DUPLICATE}, /*+DELETE_DUPLICATE */
@@ -194,6 +196,9 @@ main(int argc, char **argv) {
 
 	case 'b':
 	    output_options &= ~WARN_BROKEN;
+	    break;
+	case 'C':
+	    fix_options |= FIX_COMPLETE_ONLY;
 	    break;
 	case 'c':
 	    output_options |= WARN_CORRECT;

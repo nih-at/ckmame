@@ -48,7 +48,7 @@ typedef enum find_result find_result_t;
 find_result_t find_disk(const disk_t *, match_disk_t *);
 find_result_t find_disk_in_old(const disk_t *, match_disk_t *);
 find_result_t find_disk_in_romset(const disk_t *, const char *, match_disk_t *);
-find_result_t find_in_archives(const file_t *, match_t *);
+find_result_t find_in_archives(const file_t *r, match_t *m, bool needed_only);
 find_result_t find_in_old(const file_t *, archive_t *, match_t *);
 find_result_t find_in_romset(const file_t *, archive_t *, const char *, match_t *);
 

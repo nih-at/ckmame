@@ -40,6 +40,7 @@
 #include <unistd.h>
 
 #include "error.h"
+#include "find.h"
 #include "funcs.h"
 #include "globals.h"
 #include "util.h"
@@ -172,34 +173,78 @@ remove_from_superfluous(const char *name) {
 
 
 int
-save_needed(archive_t *sa, int sidx, int do_save) {
+save_needed_part(archive_t *sa, int sidx, const char *gamename, off_t start, off_t length, file_t *f) {
     char *tmp;
     archive_t *da;
+    bool do_save = fix_options & FIX_DO;
 
-    if ((tmp = make_needed_name(archive_file(sa, sidx))) == NULL) {
-	myerror(ERRDEF, "cannot create needed file name");
+    bool needed = true;
+
+    if (archive_file_compute_hashes(sa, sidx, romdb_hashtypes(db, TYPE_ROM)) < 0) {
 	return -1;
     }
-
-    if ((da = archive_new(tmp, archive_filetype(sa), FILE_NEEDED, ARCHIVE_FL_CREATE | (do_save ? 0 : ARCHIVE_FL_RDONLY))) == NULL)
-	return -1;
-
-    free(tmp);
-
-
-    if (archive_file_copy(sa, sidx, da, file_name(archive_file(sa, sidx))) < 0 || archive_commit(da) < 0) {
-	archive_rollback(da);
-	archive_free(da);
-	return -1;
+    
+    if (find_in_romset(f, sa, gamename, NULL) == FIND_EXISTS) {
+	needed = false;	
+    }
+    else {
+	ensure_needed_maps();
+	if (find_in_archives(f, NULL, true) == FIND_EXISTS) {
+	    needed = false;
+	}
     }
 
-    if (archive_free(da) < 0)
-	return -1;
+    if (needed) {
+	if (fix_options & FIX_PRINT) {
+	    if (length == -1) {
+		printf("%s: save needed file '%s'\n", archive_name(sa), file_name(archive_file(sa, sidx)));
+	    }
+	    else {
+		printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", archive_name(sa), (uint64_t)start, (uint64_t)length, file_name(archive_file(sa, sidx)));
+	    }
+	}
 
-    if (do_save)
-	return archive_file_delete(sa, sidx);
-    else
-	return 0;
+	if ((tmp = make_needed_name(f)) == NULL) {
+	    myerror(ERRDEF, "cannot create needed file name");
+	    return -1;
+	}
+	
+	if ((da = archive_new(tmp, archive_filetype(sa), FILE_NEEDED, ARCHIVE_FL_CREATE | (do_save ? 0 : ARCHIVE_FL_RDONLY))) == NULL)
+	    return -1;
+	
+	free(tmp);
+	
+	if (archive_file_copy_part(sa, sidx, da, file_name(archive_file(sa, sidx)), start, length, f) < 0 || archive_commit(da) < 0) {
+	    archive_rollback(da);
+	    archive_free(da);
+	    return -1;
+	}
+	
+	if (archive_free(da) < 0) {
+	    return -1;
+	}
+    }
+    else {
+	if (length == -1 && (fix_options & FIX_PRINT)) {
+	    printf("%s: delete unneeded file '%s'\n", archive_name(sa), file_name(archive_file(sa, sidx)));
+	}
+    }
+	
+    if (do_save && length == -1) {
+	if (archive_where(sa) == FILE_ROMSET) {
+	    return archive_file_delete(sa, sidx);
+	}
+	else {
+	    delete_list_used(sa, sidx);
+	}
+    }
+
+    return 0;
+}
+
+int
+save_needed(archive_t *sa, int sidx, const char *gamename) {
+    return save_needed_part(sa, sidx, gamename, 0, -1, archive_file(sa, sidx));
 }
 
 

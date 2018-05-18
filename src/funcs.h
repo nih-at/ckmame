@@ -85,8 +85,9 @@ void print_superfluous(const parray_t *);
 void remove_empty_archive(const char *);
 void remove_from_superfluous(const char *);
 int rename_or_move(const char *, const char *);
-int save_needed(archive_t *, int, int);
+int save_needed(archive_t *sa, int sidx, const char *gamename);
 int save_needed_disk(const char *, int);
+int save_needed_part(archive_t *sa, int sidx, const char *gamename, off_t start, off_t length, file_t *f);
 void write_fixdat_entry(const game_t *, const archive_t *, const images_t *, const result_t *);
 
 #endif /* funcs.h */
