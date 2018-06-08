@@ -56,7 +56,7 @@
 			</dataarea>
 			<dataarea name="audiocpu" size="196608">
 				<rom name="039-m1.bin" size="131072" crc="0c5b2ad5" sha1="15eb5ea10fecdbdbcfd06225ae6d88bb239592e7" offset="0x000000" />
-				<rom size="131072" offset="0x010000" loadflag="reload" />
+				<rom size="131072" offset="0x010000" loadflag="reload_plain" />
 			</dataarea>
 			<dataarea name="ymsnd" size="3145728">
 				<rom name="039-v2.bin" size="2097152" crc="86d34b25" sha1="89bdb614b0c63d678962da52e2f596750d20828c" offset="0x000000" />

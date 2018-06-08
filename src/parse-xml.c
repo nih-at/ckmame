@@ -96,7 +96,7 @@ static int
 parse_xml_loadflag(parser_context_t *ctx, filetype_t ft, int ht, const char *value) {
     if ((strcmp(value, "continue") == 0) || (strcmp(value, "ignore") == 0))
 	return parse_file_continue(ctx, ft, ht, NULL);
-    else if (strcmp(value, "reload") == 0 || strcmp(value, "fill") == 0)
+    else if (strcmp(value, "reload") == 0 || strcmp(value, "reload_plain") == 0 || strcmp(value, "fill") == 0)
 	return parse_file_ignore(ctx, ft, ht, NULL);
 
     return 0;
