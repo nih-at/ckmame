@@ -688,15 +688,12 @@
 		4B5FAC6C1735902400B67C24 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				4B5FAC7D173590FB00B67C24 /* archive.c */,
-				4B5FAC811735914600B67C24 /* archive.h */,
+				4B7F50691776479C00B4273C /* archive_dir.c */,
 				4B5FAC7F1735914600B67C24 /* archive_file_compare_hashes.c */,
 				4B5FAC801735914600B67C24 /* archive_modify.c */,
-				4B7F50691776479C00B4273C /* archive_dir.c */,
 				4B9292C917635B5500806C0A /* archive_zip.c */,
-				4B5FAC8A1735914600B67C24 /* array.c */,
-				4B5FAC8B1735914600B67C24 /* array.h */,
-				4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.c */,
+				4B5FAC7D173590FB00B67C24 /* archive.c */,
+				4B5FAC811735914600B67C24 /* archive.h */,
 				4B5FAC821735914600B67C24 /* array_delete.c */,
 				4B5FAC831735914600B67C24 /* array_grow.c */,
 				4B5FAC841735914600B67C24 /* array_insert.c */,
@@ -705,6 +702,8 @@
 				4B5F43AA1889CE83000C3B7C /* array_set.c */,
 				4B5FAC881735914600B67C24 /* array_sort.c */,
 				4B5FAC891735914600B67C24 /* array_truncate.c */,
+				4B5FAC8A1735914600B67C24 /* array.c */,
+				4B5FAC8B1735914600B67C24 /* array.h */,
 				4B5FAC971735919800B67C24 /* chd.c */,
 				4B5FAC981735919800B67C24 /* chd.h */,
 				4B5FAC991735919800B67C24 /* check_archive.c */,
@@ -714,52 +713,51 @@
 				4B5FAC9D1735919800B67C24 /* check_old.c */,
 				4B5FAC9E1735919800B67C24 /* check_util.c */,
 				4B5FAC9F1735919800B67C24 /* cleanup.c */,
-				4B5FACA31735919800B67C24 /* dat.h */,
-				4B5FACA11735919800B67C24 /* dat_entry.c */,
 				4B5FACA01735919800B67C24 /* dat_entry_finalize.c */,
+				4B5FACA11735919800B67C24 /* dat_entry.c */,
 				4B5FACA21735919800B67C24 /* dat_push.c */,
+				4B5FACA31735919800B67C24 /* dat.h */,
 				4B5FAE591735941D00B67C24 /* db_init.c */,
-				4B5FAE5A1735941D00B67C24 /* dbh.c */,
-				4B513F51175BCC440096EF42 /* dbh.h */,
 				4B9232FE1780B2BA00096AA2 /* dbh_cache.c */,
 				4B9232FF1780B2FC00096AA2 /* dbh_cache.h */,
 				4B513F49175B52700096EF42 /* dbh_statements.in */,
+				4B5FAE5A1735941D00B67C24 /* dbh.c */,
+				4B513F51175BCC440096EF42 /* dbh.h */,
 				4B5FACA41735919800B67C24 /* delete_list.c */,
 				4B5FACA51735919800B67C24 /* delete_list.h */,
-				4B5FACAC1735919800B67C24 /* detector.c */,
-				4B5FACAD1735919800B67C24 /* detector.h */,
 				4B5FACA61735919800B67C24 /* detector_execute.c */,
 				4B5FACA71735919800B67C24 /* detector_init.c */,
-				4B5FACA91735919800B67C24 /* detector_parse.c */,
 				4B5FACA81735919800B67C24 /* detector_parse_ps.c */,
+				4B5FACA91735919800B67C24 /* detector_parse.c */,
 				4B5FACAA1735919800B67C24 /* detector_print.c */,
 				4B5FACAB1735919800B67C24 /* detector_str.c */,
+				4B5FACAC1735919800B67C24 /* detector.c */,
+				4B5FACAD1735919800B67C24 /* detector.h */,
 				4B5FACAE1735919800B67C24 /* diagnostics.c */,
 				4B5FACAF1735919800B67C24 /* dir.c */,
 				4B9292BC17633FFC00806C0A /* dir.h */,
-				4BC0362818C8B01B00D6D5AF /* types.h */,
+				4B5FACC51735924900B67C24 /* disk_new.c */,
 				4B5FACC61735924900B67C24 /* disk.c */,
 				4B5FACC71735924900B67C24 /* disk.h */,
-				4B5FACC51735924900B67C24 /* disk_new.c */,
 				4B5FACC81735924900B67C24 /* error.c */,
 				4B5FACC91735924900B67C24 /* error.h */,
 				4B5FACCA1735924900B67C24 /* export_db.c */,
-				4B5FACD31735924900B67C24 /* file.c */,
-				4B5FACD41735924900B67C24 /* file.h */,
 				4B5FAE5D1735944400B67C24 /* file_compare.c */,
-				4B5FACCF1735924900B67C24 /* file_location.c */,
-				4B5FACD01735924900B67C24 /* file_location.h */,
 				4B5FACCC1735924900B67C24 /* file_location_ext.c */,
 				4B5FACCD1735924900B67C24 /* file_location_finalize.c */,
 				4B5FACCE1735924900B67C24 /* file_location_make_key.c */,
+				4B5FACCF1735924900B67C24 /* file_location.c */,
+				4B5FACD01735924900B67C24 /* file_location.h */,
 				4B5FACD11735924900B67C24 /* file_status.c */,
 				4B5FACD21735924900B67C24 /* file_status.h */,
 				4B5F43AD1889CFFB000C3B7C /* file_util.c */,
+				4B5FACD31735924900B67C24 /* file.c */,
+				4B5FACD41735924900B67C24 /* file.h */,
 				4B5FACD51735924900B67C24 /* filetype_db_key.c */,
 				4B5FACD61735924900B67C24 /* find.c */,
 				4B9292BD17633FFC00806C0A /* find.h */,
-				4B5FACD81735924900B67C24 /* fix.c */,
 				4B5FACD71735924900B67C24 /* fix_util.c */,
+				4B5FACD81735924900B67C24 /* fix.c */,
 				4B5FACD91735924900B67C24 /* fixdat.c */,
 				4B9292BE17633FFC00806C0A /* funcs.h */,
 				4B5FACDA1735924900B67C24 /* game.c */,
@@ -770,47 +768,37 @@
 				4B9292BF17633FFC00806C0A /* globals.h */,
 				4B5FACDE1735924900B67C24 /* hash_from_string.c */,
 				4B5FACDF1735924900B67C24 /* hash_to_string.c */,
-				4B5FACE31735924900B67C24 /* hashes.c */,
-				4B5FACE41735924900B67C24 /* hashes.h */,
 				4B5FACE01735924900B67C24 /* hashes_set.c */,
 				4B5FACE11735924900B67C24 /* hashes_update.c */,
 				4B5FACE21735924900B67C24 /* hashes_verify.c */,
+				4B5FACE31735924900B67C24 /* hashes.c */,
+				4B5FACE41735924900B67C24 /* hashes.h */,
 				4B5FACE51735924900B67C24 /* images.c */,
 				4B5FACE61735924900B67C24 /* images.h */,
 				4B5FACE71735924900B67C24 /* intstr.c */,
 				4B5FACE81735924900B67C24 /* intstr.h */,
-				4B5FACEB1735924900B67C24 /* match.c */,
-				4B5FACEC1735924900B67C24 /* match.h */,
 				4B5FACE91735924900B67C24 /* match_disk.c */,
 				4B5FACEA1735924900B67C24 /* match_disk.h */,
+				4B5FACEB1735924900B67C24 /* match.c */,
+				4B5FACEC1735924900B67C24 /* match.h */,
 				4B5FACED1735924900B67C24 /* memdb.c */,
 				4B5FACEE1735924900B67C24 /* memdb.h */,
+				4B5FACEF1735924900B67C24 /* output_cm.c */,
+				4B5FACF01735924900B67C24 /* output_datafile_xml.c */,
+				4B5FACF11735924900B67C24 /* output_db.c */,
+				4B5FACF21735924900B67C24 /* output_mtree.c */,
 				4B5FACF31735924900B67C24 /* output.c */,
 				4B5FACF41735924900B67C24 /* output.h */,
-				4B5FACEF1735924900B67C24 /* output_cm.c */,
-				4B5FACF11735924900B67C24 /* output_db.c */,
-				4B5FACF01735924900B67C24 /* output_datafile_xml.c */,
-				4B5FACF21735924900B67C24 /* output_mtree.c */,
-				4B5F43AF1889D059000C3B7C /* romdb_read_dat.c */,
-				4B5F43B01889D059000C3B7C /* romdb_read_detector.c */,
-				4B5F43B11889D059000C3B7C /* romdb_read_file_by_hash.c */,
-				4B5F43B21889D059000C3B7C /* romdb_read_game.c */,
-				4B5F43B31889D059000C3B7C /* romdb_read_list.c */,
-				4B5F43B41889D059000C3B7C /* romdb_write_dat.c */,
-				4B5F43B51889D059000C3B7C /* romdb_write_detector.c */,
-				4B5F43B61889D059000C3B7C /* romdb_write_game.c */,
-				4B5F43B71889D059000C3B7C /* romdb.c */,
-				4B5F43B81889D059000C3B7C /* romdb.h */,
-				4B5FACFD1735924900B67C24 /* parray.c */,
-				4B5FACFE1735924900B67C24 /* parray.h */,
 				4B5FACF51735924900B67C24 /* parray_delete.c */,
-				4BC199031A48424E005BE809 /* parray_find.c */,
 				4BC199021A48424E005BE809 /* parray_find_sorted.c */,
+				4BC199031A48424E005BE809 /* parray_find.c */,
 				4B5FACF81735924900B67C24 /* parray_new_from_data.c */,
 				4B5FACF91735924900B67C24 /* parray_pop.c */,
 				4B5FACFA1735924900B67C24 /* parray_push.c */,
 				4B5FACFB1735924900B67C24 /* parray_set_length.c */,
 				4B5FACFC1735924900B67C24 /* parray_sort_real.c */,
+				4B5FACFD1735924900B67C24 /* parray.c */,
+				4B5FACFE1735924900B67C24 /* parray.h */,
 				4B5FACFF1735924900B67C24 /* parse-cm.c */,
 				4B5FAD001735924900B67C24 /* parse-dir.c */,
 				4B5FAD011735924900B67C24 /* parse-rc.c */,
@@ -822,6 +810,17 @@
 				4B5FAD071735924900B67C24 /* ptr_sort.c */,
 				4B5FAE611735949900B67C24 /* result.c */,
 				4B9292C017633FFC00806C0A /* result.h */,
+				4B5F43AF1889D059000C3B7C /* romdb_read_dat.c */,
+				4B5F43B01889D059000C3B7C /* romdb_read_detector.c */,
+				4B5F43B11889D059000C3B7C /* romdb_read_file_by_hash.c */,
+				4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.c */,
+				4B5F43B21889D059000C3B7C /* romdb_read_game.c */,
+				4B5F43B31889D059000C3B7C /* romdb_read_list.c */,
+				4B5F43B41889D059000C3B7C /* romdb_write_dat.c */,
+				4B5F43B51889D059000C3B7C /* romdb_write_detector.c */,
+				4B5F43B61889D059000C3B7C /* romdb_write_game.c */,
+				4B5F43B71889D059000C3B7C /* romdb.c */,
+				4B5F43B81889D059000C3B7C /* romdb.h */,
 				4B5FAD401735929E00B67C24 /* sighandle.c */,
 				4B9292C117633FFC00806C0A /* sighandle.h */,
 				4B5FAE65173594C800B67C24 /* sq_util.c */,
@@ -829,6 +828,7 @@
 				4B5FAE66173594C800B67C24 /* superfluous.c */,
 				4B5FAE67173594C800B67C24 /* tree.c */,
 				4B9292C317633FFC00806C0A /* tree.h */,
+				4BC0362818C8B01B00D6D5AF /* types.h */,
 				4B5FAE68173594C800B67C24 /* util.c */,
 				4B9292C417633FFC00806C0A /* util.h */,
 				4B5FAE6D173594C800B67C24 /* warn.c */,
@@ -1057,7 +1057,7 @@
 		4B5FAC5817358FF000B67C24 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = NiH;
 			};
 			buildConfigurationList = 4B5FAC5B17358FF000B67C24 /* Build configuration list for PBXProject "ckmame" */;
@@ -1323,6 +1323,7 @@
 		4B41077918CC8F25002C3052 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1335,6 +1336,7 @@
 		4B41077A18CC8F25002C3052 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1347,6 +1349,7 @@
 		4B41078818CC8F66002C3052 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1359,6 +1362,7 @@
 		4B41078918CC8F66002C3052 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1378,11 +1382,13 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
@@ -1431,11 +1437,13 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
@@ -1469,6 +1477,7 @@
 		4B5FAC6A17358FF000B67C24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1480,6 +1489,7 @@
 		4B5FAC6B17358FF000B67C24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1491,6 +1501,7 @@
 		4B5FAD48173592D700B67C24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1500,6 +1511,7 @@
 		4B5FAD49173592D700B67C24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1509,6 +1521,7 @@
 		4B5FAE321735934C00B67C24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1520,6 +1533,7 @@
 		4B5FAE331735934C00B67C24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1531,6 +1545,7 @@
 		4B5FAE3F1735937100B67C24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1542,6 +1557,7 @@
 		4B5FAE401735937100B67C24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1553,6 +1569,7 @@
 		4B5FAE441735938400B67C24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1561,6 +1578,7 @@
 		4B5FAE451735938400B67C24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1569,6 +1587,7 @@
 		4B5FAE4E1735939000B67C24 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
@@ -1580,6 +1599,7 @@
 		4B5FAE4F1735939000B67C24 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../../nih/lib\"",
