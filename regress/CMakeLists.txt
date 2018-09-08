@@ -34,6 +34,7 @@ SET(DBS
   mamedb-parent-no-common.db
   mamedb-small.db
   mamedb-two-games.db
+  mamedb-xml-quoting.db
   )
 
 FOREACH(db ${DBS})
@@ -108,6 +109,7 @@ SET(EXTRA_TESTS
   fixdat-missing-child.test
   fixdat-missing-parent.test
   fixdat-missing-part.test
+  fixdat-xml-quoting.test
   gamelist-from-file.test
   garbage-archive-exists.test
   garbage.test
@@ -268,6 +270,7 @@ SET(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   disk-swapmerge.test
+  fixdat-xml-quoting.test
   mkmamedb-duplicate-nodump.test
   mkmamedb-merge-no-parent.test
   mkmamedb-merge-three-generations.test
