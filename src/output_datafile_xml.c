@@ -155,7 +155,7 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
     set_attribute(game, "cloneof", game_cloneof(g, TYPE_ROM, 0));
     set_attribute(game, "sampleof", game_cloneof(g, TYPE_SAMPLE, 0));
     /* description is actually required */
-    xmlNewChild(game, NULL, (const xmlChar *)"description", (const xmlChar *)(game_description(g) ? game_description(g) : game_name(g)));
+    xmlNewTextChild(game, NULL, (const xmlChar *)"description", (const xmlChar *)(game_description(g) ? game_description(g) : game_name(g)));
 
     for (i = 0; i < game_num_files(g, TYPE_ROM); i++) {
 	r = game_file(g, TYPE_ROM, i);
@@ -226,10 +226,10 @@ output_datafile_xml_header(output_context_t *out, dat_entry_t *dat) {
     
     xmlNodePtr header = xmlNewChild(ctx->root, NULL, (const xmlChar *)"header", NULL);
     
-    xmlNewChild(header, NULL, (const xmlChar *)"name", (const xmlChar *)dat_entry_name(dat));
-    xmlNewChild(header, NULL, (const xmlChar *)"description", (const xmlChar *)(dat_entry_description(dat) ? dat_entry_description(dat) : dat_entry_name(dat)));
-    xmlNewChild(header, NULL, (const xmlChar *)"version", (const xmlChar *)dat_entry_version(dat));
-    xmlNewChild(header, NULL, (const xmlChar *)"author", (const xmlChar *)"automatically generated");
+    xmlNewTextChild(header, NULL, (const xmlChar *)"name", (const xmlChar *)dat_entry_name(dat));
+    xmlNewTextChild(header, NULL, (const xmlChar *)"description", (const xmlChar *)(dat_entry_description(dat) ? dat_entry_description(dat) : dat_entry_name(dat)));
+    xmlNewTextChild(header, NULL, (const xmlChar *)"version", (const xmlChar *)dat_entry_version(dat));
+    xmlNewTextChild(header, NULL, (const xmlChar *)"author", (const xmlChar *)"automatically generated");
 
     return 0;
 }
