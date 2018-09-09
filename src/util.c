@@ -1,6 +1,6 @@
 /*
   util.c -- utility functions
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2018 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -236,4 +236,17 @@ remove_file_and_containing_empty_dirs(const char *name, const char *base) {
 
     free(tmp);
     return 0;
+}
+
+
+void
+print_human_number(FILE *f, uint64_t value) {
+    if (value > 1024ul * 1024 * 1024 * 1024)
+        printf("%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024), (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
+    else if (value > 1024 * 1024 * 1024)
+        printf("%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024), (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
+    else if (value > 1024 * 1024)
+        printf("%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024), (((value / 1024) * 10 + 512) / 1024) % 100);
+    else
+        printf("%" PRIi64 " bytes", value);
 }

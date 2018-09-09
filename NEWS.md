@@ -1,7 +1,8 @@
 0.xx (201x-xx-xx)
 =================
 
-* add --autofixdat to create fixdat with a name based on the dat name
+* add `--summary` to print stats about the state of the ROM set
+* add `--autofixdat` to create fixdat with a name based on the dat name
 * improve MAME (neogeo set) support
 * fix up regression test suite
 * switched to CMake build system

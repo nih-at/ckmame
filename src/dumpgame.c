@@ -1,6 +1,6 @@
 /*
   dumpgame.c -- print info about game (from data base)
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2018 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -500,11 +500,8 @@ dump_special(const char *name) {
 /*ARGSUSED1*/
 static int
 dump_stats(int dummy) {
-    static const char *ft_name[] = {"ROMs:", "Samples:", "Disks:"};
-
     sqlite3_stmt *stmt;
     int i, ft;
-    int64_t size;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_GAMES)) == NULL) {
 	myerror(ERRDB, "can't get number of games");
@@ -515,7 +512,8 @@ dump_stats(int dummy) {
 	return -1;
     }
 
-    printf("Games:  \t%d\n", sqlite3_column_int(stmt, 0));
+    summary_t *summary = summary_new();
+    summary->games_total = (uint64_t)sqlite3_column_int(stmt, 0);
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_FILES)) == NULL) {
 	myerror(ERRDB, "can't get file stats");
@@ -538,25 +536,15 @@ dump_stats(int dummy) {
 	    }
 	}
 
-	if (ft != i)
+        if (ft != i) {
 	    continue;
-
-	printf("%-8s\t%d", ft_name[i], sqlite3_column_int(stmt, 1));
-	size = sqlite3_column_int64(stmt, 2);
-	if (size > 0) {
-	    printf(" (");
-	    if (size > 1024ul * 1024 * 1024 * 1024)
-		printf("%" PRIi64 ".%02" PRIi64 "TiB", size / (1024ul * 1024 * 1024 * 1024), (((size / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
-	    else if (size > 1024 * 1024 * 1024)
-		printf("%" PRIi64 ".%02" PRIi64 "GiB", size / (1024 * 1024 * 1024), (((size / (1024 * 1024)) * 10 + 512) / 1024) % 100);
-	    else if (size > 1024 * 1024)
-		printf("%" PRIi64 ".%02" PRIi64 "MiB", size / (1024 * 1024), (((size / 1024) * 10 + 512) / 1024) % 100);
-	    else
-		printf("%" PRIi64 " bytes", size);
-	    printf(")");
-	}
-	printf("\n");
+        }
+        
+        summary->files[i].files_total = (uint64_t)sqlite3_column_int(stmt, 1);
+        summary->files[i].bytes_total = (uint64_t)sqlite3_column_int64(stmt, 2);
     }
+    
+    summary_print(summary, stdout, true);
 
     return 0;
 }

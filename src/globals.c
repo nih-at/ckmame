@@ -73,3 +73,5 @@ output_context_t *fixdat = NULL;
 
 /* roms dir */
 char rom_dir_normalized[MAXPATHLEN];
+
+summary_t *summary = NULL;
