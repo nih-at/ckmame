@@ -1,5 +1,5 @@
 This is ckmame, a program to check ROM sets for
-[MAME](http://mamedev.org), the Multiple Arcade Machine Emulator. It
+[MAME](https://www.mamedev.org/), the Multiple Arcade Machine Emulator. It
 tells you which ROM files are missing or have a wrong checksum, and
 can delete unknown and unused files from the ROM sets, and rename or
 move ROM files.
