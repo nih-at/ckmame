@@ -1,0 +1,8 @@
+description test incomplete game, moves files from extra to needed
+return 0
+args -FKLvbCje extra 2-48
+file-del extra/2-48.zip 1-4-ok.zip
+file-new needed/d87f7e0c-000.zip 1-4-ok.zip
+stdout extra/2-48.zip: save needed file '04.rom'
+stdout extra/2-48.zip: delete used file '04.rom'
+stdout extra/2-48.zip: remove empty archive

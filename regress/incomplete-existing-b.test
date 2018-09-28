@@ -1,0 +1,6 @@
+description test incomplete game, moves files to needed
+return 0
+args -FKLvbC 2-48
+file-del roms/2-48.zip 1-4-ok.zip
+file needed/d87f7e0c-000.zip 1-4-ok.zip 1-4-ok.zip
+stdout roms/2-48.zip: delete unneeded file '04.rom'

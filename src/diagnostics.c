@@ -206,6 +206,10 @@ diagnostics_files(const game_t *game, const result_t *res) {
     default:
 	break;
     }
+    
+    if ((fix_options & FIX_COMPLETE_ONLY) && (output_options & WARN_BROKEN) == 0 && result_game(res) != GS_FIXABLE) {
+        return;
+    }
 
     for (i = 0; i < game_num_files(game, file_type); i++) {
 	m = result_rom(res, i);
