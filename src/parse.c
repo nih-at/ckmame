@@ -557,9 +557,25 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
     r = ctx->r;
     n = game_num_files(ctx->g, ft) - 1;
 
-    /* some dats don't record crc for 0-byte files, so set it here */
-    if (file_size(r) == 0 && !hashes_has_type(file_hashes(r), HASHES_TYPE_CRC))
-	hashes_set(file_hashes(r), HASHES_TYPE_CRC, (unsigned char *)"\0\0\0\0");
+    if (file_size(r) == 0) {
+        unsigned char zeroes[HASHES_SIZE_MAX];
+        hashes_t *h = file_hashes(r);
+        
+        memset(zeroes, 0, sizeof(zeroes));
+        
+        /* some dats don't record crc for 0-byte files, so set it here */
+        if (!hashes_has_type(h, HASHES_TYPE_CRC)) {
+            hashes_set(h, HASHES_TYPE_CRC, zeroes);
+        }
+        
+        /* some dats record all-zeroes md5 and sha1 for 0 byte files, fix */
+        if (hashes_has_type(h, HASHES_TYPE_MD5) && hashes_verify(h, HASHES_TYPE_MD5, zeroes)) {
+            hashes_set(h, HASHES_TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
+        }
+        if (hashes_has_type(h, HASHES_TYPE_SHA1) && hashes_verify(h, HASHES_TYPE_SHA1, zeroes)) {
+            hashes_set(h, HASHES_TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
+        }
+    }
 
     /* omit duplicates */
     deleted = 0;
