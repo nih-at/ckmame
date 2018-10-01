@@ -152,6 +152,9 @@ delete_list_used(archive_t *a, int index) {
 	    list = extra_delete_list;
 	}
 	break;
+            
+    default:
+        break;
     }
 
     if (list) {

@@ -211,7 +211,7 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
         r = game_file(g, TYPE_SAMPLE, i);
         xmlNodePtr sample = xmlNewChild(game, NULL, (const xmlChar *)"sample", NULL);
         
-        set_attribute(sample, "name", file_name(d));
+        set_attribute(sample, "name", file_name(r));
     }
 
     return 0;

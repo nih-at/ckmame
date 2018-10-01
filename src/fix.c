@@ -495,6 +495,9 @@ fix_files_incomplete(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 	    case FILE_ROMSET:
 	    case FILE_NEEDED:
 	    case FILE_OLD:
+            case FILE_NOWHERE:
+            case FILE_ADDED:
+            case FILE_DELETED:
 		/* file is already where we will find it later */
 		break;
 	    }
