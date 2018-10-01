@@ -178,7 +178,7 @@ game (
 	description "game with 0 byte rom"
 	manufacturer "synth"
 	year 2006
-	rom ( name zero size 0 crc32 00000000 )
+	rom ( name zero size 0 crc32 00000000 md5 00000000000000000000000000000000 sha1 0000000000000000000000000000000000000000 )
 )
 
 game (
