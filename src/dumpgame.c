@@ -512,7 +512,7 @@ dump_stats(int dummy) {
 	return -1;
     }
 
-    summary_t *summary = summary_new();
+    summary = summary_new();
     summary->games_total = (uint64_t)sqlite3_column_int(stmt, 0);
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_FILES)) == NULL) {
