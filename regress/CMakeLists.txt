@@ -124,14 +124,14 @@ SET(EXTRA_TESTS
   identical-once.test
   ignore-unknown.test
   inchild.test
-  incomplete-basic.test
   incomplete-basic-b.test
-  incomplete-existing.test
+  incomplete-basic.test
   incomplete-existing-b.test
-  incomplete-from-extra.test
+  incomplete-existing.test
   incomplete-from-extra-b.test
-  incomplete-merge.test
+  incomplete-from-extra.test
   incomplete-merge-b.test
+  incomplete-merge.test
   inconsistent-with-i.test
   inconsistent-without-i.test
   inparent.test
@@ -178,18 +178,16 @@ SET(EXTRA_TESTS
   old-disk.test
   old-keep.test
   old-partial.test
-  punknown.test
-  punused.test
   replace-broken-rom.test
   rom-add-from-crc-different.test
   rom-add-from-crc-only.test
   rom-broken-replace.test
   rom-broken-without-i.test
   rom-broken.test
-  rom-dir.test
   rom-dir-in-extra-dirs-subdir-dir.test
   rom-dir-in-extra-dirs-subdir-zip.test
   rom-dir-in-extra-dirs.test
+  rom-dir.test
   rom-duplicate-1st.test
   rom-duplicate-2nd.test
   rom-duplicate-ok.test
@@ -234,8 +232,8 @@ SET(EXTRA_TESTS
   skip.test
   skipbad.test
   superfluous-broken.test
-  superfluous-cleanup.test
   superfluous-cleanup-disk.test
+  superfluous-cleanup.test
   superfluous-inconsistent.test
   superfluous.test
   swap-roms-2.test
@@ -260,6 +258,8 @@ SET(EXTRA_TESTS
   uncompressed-toplevel-extra.test
   uncompressed-toplevel-file.test
   uncompressed-toplevel-roms.test
+  unknown-in-parent.test
+  unused-in-parent.test
   wrong.test
   wrong2.test
   zero-good.test
