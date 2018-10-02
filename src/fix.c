@@ -63,7 +63,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res) {
     int i;
     int ret;
     bool move;
-    garbage_t *gb;
+    garbage_t *gb = NULL;
 
     if (fix_options & FIX_DO) {
 	gb = garbage_new(a);
@@ -104,10 +104,12 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res) {
 	    if (fix_options & FIX_PRINT)
 		printf("%s: %s unknown file '%s'\n", archive_name(a), (move ? "move" : "delete"), file_name(archive_file(a, i)));
 
-	    if (move)
-		garbage_add(gb, i, false); /* TODO: check return value */
-	    else
-		archive_file_delete(a, i); /* TODO: check return value */
+	    if (fix_options & FIX_DO) {
+		if (move)
+		    garbage_add(gb, i, false); /* TODO: check return value */
+		else
+		    archive_file_delete(a, i); /* TODO: check return value */
+	    }
 	    break;
 
 	case FS_DUPLICATE:
@@ -189,7 +191,6 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
     bool do_copy;
 
     for (i = 0; i < game_num_disks(g); i++) {
-	d = game_disk(g, i);
 	name = images_name(im, i);
 
 	switch (result_image(res, i)) {
@@ -234,10 +235,11 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 	switch (match_disk_quality(md)) {
 	case QU_COPIED:
 	    if ((name = findfile(disk_name(d), TYPE_DISK)) != NULL) {
-		/* TODO: move to garbage */
+		myerror(ERRDEF, "internal error: unknown disk '%s' exists, skipping", name);
+		continue;
 	    }
-	    else
-		fname = make_file_name(TYPE_DISK, disk_name(d));
+
+	    fname = make_file_name(TYPE_DISK, disk_name(d));
 
 	    do_copy = ((fix_options & FIX_DELETE_EXTRA) == 0 && match_disk_where(md) == FILE_EXTRA);
 
