@@ -8,6 +8,8 @@
 
 - generate mame.db in /tmp and move in place when finished
 
+- add option to keep ROMs with detector applied
+
 # Later
 
 * convert runtest to use ziptool instead of unzip
