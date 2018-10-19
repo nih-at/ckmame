@@ -419,7 +419,7 @@ read_header(struct chd *chd) {
 	    memcpy(chd->raw_sha1, chd->sha1, sizeof(chd->raw_sha1));
 	else {
 	    memcpy(chd->raw_sha1, p, sizeof(chd->raw_sha1));
-	    p += sizeof(chd->raw_sha1);
+	    /* p += sizeof(chd->raw_sha1); */
 	}
     }
 
@@ -477,7 +477,7 @@ read_header_v5(struct chd *chd, unsigned char *header) {
     memcpy(chd->sha1, p, sizeof(chd->sha1));
     p += sizeof(chd->sha1);
     memcpy(chd->parent_sha1, p, sizeof(chd->parent_sha1));
-    p += sizeof(chd->parent_sha1);
+    /* p += sizeof(chd->parent_sha1); */
 
     chd->flags = 0;
     for (i = 0; i < sizeof(chd->parent_sha1); i++)
