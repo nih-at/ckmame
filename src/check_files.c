@@ -155,9 +155,9 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
     
     update_game_status(g, res);
     
-    summary_add_game(summary, result_game(res));
+    stats_add_game(stats, result_game(res));
     for (i = 0; i < game_num_files(g, file_type); i++) {
-        summary_add_rom(summary, file_type, game_file(g, file_type, i), match_quality(result_rom(res, i)));
+        stats_add_rom(stats, file_type, game_file(g, file_type, i), match_quality(result_rom(res, i)));
     }
 
 }

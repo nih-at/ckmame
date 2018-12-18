@@ -122,7 +122,7 @@ SET(COMMON_SOURCES
   romdb_write_game.c
   sighandle.c
   sq_util.c
-  summary.c
+  stats.c
   superfluous.c
   tree.c
   util.c

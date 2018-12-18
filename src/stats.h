@@ -1,8 +1,8 @@
-#ifndef _HAD_SUMMARY_H
-#define _HAD_SUMMARY_H
+#ifndef _HAD_STATS_H
+#define _HAD_STATS_H
 
 /*
- summary.h -- store stats of the ROM set
+ stats.h -- store stats of the ROM set
  Copyright (C) 2018 Dieter Baron and Thomas Klausner
 
  This file is part of ckmame, a program to check rom sets for MAME.
@@ -41,29 +41,29 @@
 #include "file.h"
 #include "types.h"
 
-struct summary_files {
+struct stats_files {
     uint64_t files_total;
     uint64_t files_good;
     uint64_t bytes_total;
     uint64_t bytes_good;
 };
 
-typedef struct summary_files summary_files_t;
+typedef struct stats_files stats_files_t;
 
-struct summary {
+struct stats {
     uint64_t games_total;
     uint64_t games_good;
     uint64_t games_partial;
-    summary_files_t files[TYPE_MAX];
+    stats_files_t files[TYPE_MAX];
 };
 
-typedef struct summary summary_t;
+typedef struct stats stats_t;
 
-void summary_add_disk(summary_t *summary, const disk_t *disk, quality_t status);
-void summary_add_game(summary_t *summary, game_status_t status);
-void summary_add_rom(summary_t *summary, int type, const file_t *rom, quality_t status);
-void summary_free(summary_t *summary);
-summary_t *summary_new();
-void summary_print(summary_t *summary, FILE *f, bool total_only);
+void stats_add_disk(stats_t *stats, const disk_t *disk, quality_t status);
+void stats_add_game(stats_t *stats, game_status_t status);
+void stats_add_rom(stats_t *stats, int type, const file_t *rom, quality_t status);
+void stats_free(stats_t *stats);
+stats_t *stats_new();
+void stats_print(stats_t *stats, FILE *f, bool total_only);
 
-#endif /* _HAD_SUMMARY_H */
+#endif /* _HAD_STATS_H */

@@ -41,7 +41,7 @@
 #include "output.h"
 #include "parray.h"
 #include "romdb.h"
-#include "summary.h"
+#include "stats.h"
 #include "tree.h"
 
 
@@ -85,5 +85,5 @@ extern output_context_t *fixdat;
 /* to identify roms directory uniquely */
 extern char rom_dir_normalized[];
 
-extern summary_t *summary;
+extern stats_t *stats;
 #endif /* globals.h */

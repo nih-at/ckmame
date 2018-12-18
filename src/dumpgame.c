@@ -512,8 +512,8 @@ dump_stats(int dummy) {
 	return -1;
     }
 
-    summary = summary_new();
-    summary->games_total = (uint64_t)sqlite3_column_int(stmt, 0);
+    stats = stats_new();
+    stats->games_total = (uint64_t)sqlite3_column_int(stmt, 0);
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_FILES)) == NULL) {
 	myerror(ERRDB, "can't get file stats");
@@ -540,11 +540,11 @@ dump_stats(int dummy) {
 	    continue;
         }
         
-        summary->files[i].files_total = (uint64_t)sqlite3_column_int(stmt, 1);
-        summary->files[i].bytes_total = (uint64_t)sqlite3_column_int64(stmt, 2);
+        stats->files[i].files_total = (uint64_t)sqlite3_column_int(stmt, 1);
+        stats->files[i].bytes_total = (uint64_t)sqlite3_column_int64(stmt, 2);
     }
     
-    summary_print(summary, stdout, true);
+    stats_print(stats, stdout, true);
 
     return 0;
 }

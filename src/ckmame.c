@@ -87,7 +87,7 @@ char help[] = "\n"
 	      "  -O, --old-db dbfile     use mame-db dbfile for old roms\n"
 	      "  -R, --rom-dir dir       look for roms in rom-dir (default: 'roms')\n"
 	      "  -S, --samples           check samples instead of roms\n"
-	      "      --summary           print summary of checked ROMs\n"
+	      "      --stats             print stats of checked ROMs\n"
 	      "      --superfluous       only check for superfluous files in rom sets\n"
 	      "  -s, --nosuperfluous     don't report superfluous files in rom sets\n"
 	      "  -T, --games-from file   read games to check from file\n"
@@ -103,7 +103,7 @@ char version_string[] = PACKAGE " " VERSION "\n"
 
 #define OPTIONS "bCcD:de:FfhijKkLlO:R:SsT:uVvwX"
 
-enum { OPT_CLEANUP_EXTRA = 256, OPT_DELETE_DUPLICATE, OPT_AUTOFIXDAT, OPT_FIXDAT, OPT_IGNORE_UNKNOWN, OPT_KEEP_DUPLICATE, OPT_KEEP_FOUND, OPT_SUPERFLUOUS, OPT_SUMMARY };
+enum { OPT_CLEANUP_EXTRA = 256, OPT_DELETE_DUPLICATE, OPT_AUTOFIXDAT, OPT_FIXDAT, OPT_IGNORE_UNKNOWN, OPT_KEEP_DUPLICATE, OPT_KEEP_FOUND, OPT_SUPERFLUOUS, OPT_STATS };
 
 struct option options[] = {
     {"help", 0, 0, 'h'},
@@ -138,7 +138,7 @@ struct option options[] = {
     {"roms-unzipped", 0, 0, 'u'},
     {"samples", 0, 0, 'S'},
     {"search", 1, 0, 'e'},
-    {"summary", 0, 0, OPT_SUMMARY},
+    {"stats", 0, 0, OPT_STATS},
     {"superfluous", 0, 0, OPT_SUPERFLUOUS},
     {"verbose", 0, 0, 'v'},
 
@@ -299,8 +299,8 @@ main(int argc, char **argv) {
 	case OPT_KEEP_FOUND:
 	    fix_options &= ~FIX_DELETE_EXTRA;
 	    break;
-        case OPT_SUMMARY:
-	    summary = summary_new();
+        case OPT_STATS:
+	    stats = stats_new();
 	    break;
 	case OPT_SUPERFLUOUS:
 	    if (action != ACTION_UNSPECIFIED)
@@ -507,9 +507,9 @@ main(int argc, char **argv) {
     if ((action == ACTION_CHECK_ROMSET && (optind == argc && (output_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY)
 	print_superfluous(superfluous);
     
-    if (summary) {
-	summary_print(summary, stdout, false);
-	summary_free(summary);
+    if (stats) {
+	stats_print(stats, stdout, false);
+	stats_free(stats);
     }
 
     dbh_cache_close_all();

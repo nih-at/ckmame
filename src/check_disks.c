@@ -91,6 +91,6 @@ check_disks(game_t *game, images_t *im, result_t *res) {
     }
     
     for (i = 0; i < game_num_disks(game); i++) {
-        summary_add_disk(summary, game_disk(game, i), match_quality(result_disk(res, i)));
+        stats_add_disk(stats, game_disk(game, i), match_quality(result_disk(res, i)));
     }
 }

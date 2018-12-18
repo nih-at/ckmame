@@ -1,7 +1,7 @@
-0.xx (201x-xx-xx)
+1.0 (2018-12-18)
 =================
 
-* add `--summary` to print stats about the state of the ROM set
+* add `--stats` to print stats about the state of the ROM set
 * add support to only keep complete games in ROM set
 * add `--autofixdat` to create fixdat with a name based on the dat name
 * improve MAME (neogeo set) support
