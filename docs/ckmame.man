@@ -1,5 +1,5 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
-.\" Copyright (c) 2003-2017 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2003-2018 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "CKMAME" "1" "April 2, 2017" "NiH" "General Commands Manual"
+.TH "CKMAME" "1" "December 18, 2018" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -36,7 +36,7 @@
 .SH "SYNOPSIS"
 .HP 7n
 \fBckmame\fR
-[\fB\-bcdFfhjKkLlSsuVvwX\fR]
+[\fB\-bCcdFfhjKkLlSsuVvwX\fR]
 [\fB\-D\fR\ \fIdbfile\fR]
 [\fB\-e\fR\ \fIdir\fR]
 [\fB\-O\fR\ \fIdbfile\fR]
@@ -71,6 +71,7 @@
 [\fB\-\fR\fB\-roms-unzipped\fR]
 [\fB\-\fR\fB\-samples\fR]
 [\fB\-\fR\fB\-search\fR\ \fIdir\fR]
+[\fB\-\fR\fB\-stats\fR]
 [\fB\-\fR\fB\-superfluous\fR]
 [\fB\-\fR\fB\-verbose\fR]
 [\fB\-\fR\fB\-version\fR]
@@ -145,6 +146,12 @@ and
 .TP 24n
 \fB\-\fR\fB\-cleanup-extra\fR
 Remove files already in ROM set from extra directories.
+.TP 24n
+\fB\-C\fR, \fB\-\fR\fB\-complete-only\fR
+Only create complete sets.
+ROMs for incomplete sets are moved to the
+\fIneeded\fR
+directory.
 .TP 24n
 \fB\-c\fR, \fB\-\fR\fB\-correct\fR
 Report correct sets.
@@ -258,6 +265,9 @@ Default is
 .TP 24n
 \fB\-S\fR, \fB\-\fR\fB\-samples\fR
 Check samples instead of ROMs.
+.TP 24n
+\fB\-\fR\fB\-stats\fR
+Display completeness statistics of ROM set at end of run.
 .TP 24n
 \fB\-\fR\fB\-superfluous\fR
 Only check for superfluous files in ROM sets.
