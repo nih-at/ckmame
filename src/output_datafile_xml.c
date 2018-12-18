@@ -106,9 +106,9 @@ output_datafile_xml_close(output_context_t *out) {
         if (xmlDocFormatDump(ctx->f, ctx->doc, 1) < 0) {
             ret = -1;
         }
-    }
-    if (ctx->f != stdout) {
-	ret |= fclose(ctx->f);
+	if (ctx->f != stdout) {
+	    ret |= fclose(ctx->f);
+	}
     }
 
     xmlFreeDoc(ctx->doc);
