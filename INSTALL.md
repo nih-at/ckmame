@@ -8,6 +8,8 @@ To use ckmame, you need
 - [SQLite3](https://www.sqlite.org/)
 - optionally [libxml2](http://xmlsoft.org/) (for M.A.M.E. -listxml and detectors)
 
+For running the test suite, you also need to install [perl](https://www.perl.org/).
+
 The basic usage is
 ```sh
 mkdir build
