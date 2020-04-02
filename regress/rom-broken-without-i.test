@@ -1,4 +1,4 @@
-description test game (no parent), zip is partially broken; without -i noone notices
+description test game (no parent), zip is partially broken; without -i no one notices
 variants zip
 return 0
 args -FKLvc 2-48

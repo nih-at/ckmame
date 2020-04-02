@@ -126,7 +126,7 @@ find_command(const char *name) {
 
 	if (len < strlen(cmdtab[i].name) && strncmp(name, cmdtab[i].name, len) == 0) {
 	    if (abbrev) {
-		myerror(ERRDEF, "ambigous abbreviation '%s'", name);
+		myerror(ERRDEF, "ambiguous abbreviation '%s'", name);
 		return NULL;
 	    }
 	    abbrev = true;

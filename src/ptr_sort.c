@@ -1,5 +1,5 @@
 /*
-  ptr_sort.c -- sort pointers, opionally removing duplicates
+  ptr_sort.c -- sort pointers, optionally removing duplicates
   Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
   Copyright (C) Wikipedia
 

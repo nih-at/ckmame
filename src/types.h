@@ -87,7 +87,7 @@ enum where {
     FILE_EXTRA,
     FILE_OLD,
 
-    /* uncommited changes to archive */
+    /* uncommitted changes to archive */
     FILE_DELETED,
     FILE_ADDED
 };
