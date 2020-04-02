@@ -32,12 +32,6 @@
  -->
 <head>
   <meta charset="utf-8"/>
-  <style>
-    table.head, table.foot { width: 100%; }
-    td.head-rtitle, td.foot-os { text-align: right; }
-    td.head-vol { text-align: center; }
-    div.Pp { margin: 1ex 0ex; }
-  </style>
   <link rel="stylesheet" href="../nih-man.css" type="text/css" media="all"/>
   <title>MKMAMEDB(1)</title>
 </head>
@@ -50,225 +44,193 @@
   </tr>
 </table>
 <div class="manual-text">
-<h1 class="Sh" title="Sh" id="NAME"><a class="selflink" href="#NAME">NAME</a></h1>
-<b class="Nm" title="Nm">mkmamedb</b> &#x2014;
-  <span class="Nd" title="Nd">create database for use by ckmame</span>
-<h1 class="Sh" title="Sh" id="SYNOPSIS"><a class="selflink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">mkmamedb</code> &#x2014;
+<div class="Nd">create database for use by ckmame</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
 <table class="Nm">
   <tr>
-    <td><b class="Nm" title="Nm">mkmamedb</b></td>
-    <td>[<span class="Op"><b class="Fl" title="Fl">-huV</b></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-C</b>
-      <var class="Ar" title="Ar">hashtypes</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-F</b>
-      <var class="Ar" title="Ar">outputformat</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-o</b>
-      <var class="Ar" title="Ar">dbfile</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-x</b>
-      <var class="Ar" title="Ar">pat</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-detector</b>
-      <var class="Ar" title="Ar">file</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-exclude</b>
-      <var class="Ar" title="Ar">pat</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-hash-types</b>
-      <var class="Ar" title="Ar">types</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-help</b></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-no-directory-cache</b></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-only-files</b>
-      <var class="Ar" title="Ar">pattern</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-output</b>
-      <var class="Ar" title="Ar">dbfile</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-prog-description</b>
-      <var class="Ar" title="Ar">description</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-prog-name</b>
-      <var class="Ar" title="Ar">name</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-prog-version</b>
-      <var class="Ar" title="Ar">version</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-roms-unzipped</b></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-skip-files</b>
-      <var class="Ar" title="Ar">pattern</var></span>]
-      [<span class="Op"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-version</b></span>]
-      [<span class="Op"><var class="Ar" title="Ar">rominfo-file
-      ...</var></span>]</td>
+    <td><code class="Nm">mkmamedb</code></td>
+    <td>[<code class="Fl">-huV</code>] [<code class="Fl">-C</code>
+      <var class="Ar">hashtypes</var>] [<code class="Fl">-F</code>
+      <var class="Ar">outputformat</var>] [<code class="Fl">-o</code>
+      <var class="Ar">dbfile</var>] [<code class="Fl">-x</code>
+      <var class="Ar">pat</var>]
+      [<code class="Fl">-</code><code class="Fl">-detector</code>
+      <var class="Ar">file</var>]
+      [<code class="Fl">-</code><code class="Fl">-exclude</code>
+      <var class="Ar">pat</var>]
+      [<code class="Fl">-</code><code class="Fl">-hash-types</code>
+      <var class="Ar">types</var>]
+      [<code class="Fl">-</code><code class="Fl">-help</code>]
+      [<code class="Fl">-</code><code class="Fl">-no-directory-cache</code>]
+      [<code class="Fl">-</code><code class="Fl">-only-files</code>
+      <var class="Ar">pattern</var>]
+      [<code class="Fl">-</code><code class="Fl">-output</code>
+      <var class="Ar">dbfile</var>]
+      [<code class="Fl">-</code><code class="Fl">-prog-description</code>
+      <var class="Ar">description</var>]
+      [<code class="Fl">-</code><code class="Fl">-prog-name</code>
+      <var class="Ar">name</var>]
+      [<code class="Fl">-</code><code class="Fl">-prog-version</code>
+      <var class="Ar">version</var>]
+      [<code class="Fl">-</code><code class="Fl">-roms-unzipped</code>]
+      [<code class="Fl">-</code><code class="Fl">-skip-files</code>
+      <var class="Ar">pattern</var>]
+      [<code class="Fl">-</code><code class="Fl">-version</code>]
+      [<var class="Ar">rominfo-file ...</var>]</td>
   </tr>
 </table>
-<h1 class="Sh" title="Sh" id="DESCRIPTION"><a class="selflink" href="#DESCRIPTION">DESCRIPTION</a></h1>
-<b class="Nm" title="Nm">mkmamedb</b> converts ROM set descriptions from one
-  format to another.
-<div class="Pp"></div>
-The ROM set description is read from the specified files (or directories) or the
-  standard input if no files are specified. The default output file is
-  <i class="Pa" title="Pa">mame.db</i>. You can override it with the
-  <b class="Fl" title="Fl">-o</b> option or the
-  <code class="Ev" title="Ev">MAMEDB</code> environment variable.
-<div class="Pp"></div>
-Supported input formats are:
-<ul class="Bl-bullet Bl-compact" style="margin-left: 6.00ex;">
-  <li class="It-bullet">CMPro dat file</li>
-  <li class="It-bullet">MAME XML file</li>
-  <li class="It-bullet">MESS Softlist XML file</li>
-  <li class="It-bullet">Romcenter dat file</li>
-  <li class="It-bullet"><a class="Xr" title="Xr" href="ckmame.html">ckmame(1)</a>
-      database format</li>
-  <li class="It-bullet">directory of zip archives</li>
-  <li class="It-bullet">directory with subdirectories (with
-      <b class="Fl" title="Fl">-u</b>); each sub-directory is taken as a
-    game</li>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">mkmamedb</code> converts ROM set descriptions from one format
+  to another.
+<p class="Pp">The ROM set description is read from the specified files (or
+    directories) or the standard input if no files are specified. The default
+    output file is <span class="Pa">mame.db</span>. You can override it with the
+    <code class="Fl">-o</code> option or the <code class="Ev">MAMEDB</code>
+    environment variable.</p>
+<p class="Pp">Supported input formats are:</p>
+<ul class="Bl-bullet Bd-indent Bl-compact">
+  <li>CMPro dat file</li>
+  <li>MAME XML file</li>
+  <li>MESS Softlist XML file</li>
+  <li>Romcenter dat file</li>
+  <li><a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a> database format</li>
+  <li>directory of zip archives</li>
+  <li>directory with subdirectories (with <code class="Fl">-u</code>); each
+      sub-directory is taken as a game</li>
 </ul>
 Supported output formats are:
-<ul class="Bl-bullet Bl-compact" style="margin-left: 6.00ex;">
-  <li class="It-bullet"><a class="Xr" title="Xr" href="ckmame.html">ckmame(1)</a>
-      database format</li>
-  <li class="It-bullet">CMPro dat file</li>
-  <li class="It-bullet">Logiqx XML dat file</li>
-  <li class="It-bullet"><a class="Xr" title="Xr" href="mtree.html">mtree(8)</a>
-      file</li>
+<ul class="Bl-bullet Bd-indent Bl-compact">
+  <li><a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a> database format</li>
+  <li>CMPro dat file</li>
+  <li>Logiqx XML dat file</li>
+  <li><a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mtree.html">mtree(8)</a> file</li>
 </ul>
-<div class="Pp"></div>
-The CMPro file format is described at
-  <i class="Pa" title="Pa">http://www.logiqx.com/FAQs/CMPro.shtml</i>, the DTD
-  for MAME xml can be found in
-  <i class="Pa" title="Pa">PREFIX/share/doc/ckmame/</i>.
-<h2 class="Ss" title="Ss" id="OPTIONS"><a class="selflink" href="#OPTIONS">OPTIONS</a></h2>
-<b class="Nm" title="Nm">mkmamedb</b> supports the following options:
-<dl class="Bl-tag" style="margin-left: 37.80ex;">
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><a class="selflink" href="#C"><b class="Fl" title="Fl" id="C">-C</b></a>
-    <var class="Ar" title="Ar">types</var>,
-    <b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-hash-types</b>
-    <var class="Ar" title="Ar">types</var></dt>
-  <dd class="It-tag">A comma separated list of hash types to compute when
-      creating a ROM set description from a directory of zip archives. Supported
-      hash types are: crc, md5, sha1. Default are all.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><a class="selflink" href="#F"><b class="Fl" title="Fl" id="F">-F</b></a>
-    <var class="Ar" title="Ar">outputformat</var>,
-    <b class="Fl" title="Fl">-</b> <b class="Fl" title="Fl">-format</b>
-    <var class="Ar" title="Ar">outputformat</var></dt>
-  <dd class="It-tag">Specify output format. Supported formats are
-      <b class="Cm" title="Cm">cm</b> (clrmamepro dat file),
-      <b class="Cm" title="Cm">dat</b> (XML datfile),
-      <b class="Cm" title="Cm">db</b>
-      (<a class="Xr" title="Xr" href="ckmame.html">ckmame(1)</a> database), and
-      <b class="Cm" title="Cm">mtree</b>
-      (<a class="Xr" title="Xr" href="mtree.html">mtree(8)</a> file). The
-      default is cm.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-detector</b>
-    <var class="Ar" title="Ar">file</var></dt>
-  <dd class="It-tag">Use CMPro XML header skip detector description from
-      <var class="Ar" title="Ar">file</var>. This overrides any detectors given
-      in the file itself. <b class="Nm" title="Nm">mkmamedb</b> looks for the
-      detector in the input file (if it is a zip file) or the directory of the
-      input file.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><a class="selflink" href="#h"><b class="Fl" title="Fl" id="h">-h</b></a>,
-    <b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-help</b></dt>
-  <dd class="It-tag">Display a short help message.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><a class="selflink" href="#o"><b class="Fl" title="Fl" id="o">-o</b></a>
-    <var class="Ar" title="Ar">dbfile</var>,
-    <b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-output</b>
-    <var class="Ar" title="Ar">dbfile</var></dt>
-  <dd class="It-tag">Write to database <var class="Ar" title="Ar">dbfile</var>
-      instead of the default
-      &#x201C;<i class="Pa" title="Pa">mame.db</i>&#x201D;.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-no-directory-cache</b></dt>
-  <dd class="It-tag">When <b class="Nm" title="Nm">mkmamedb</b> is used to
-      create a database from an input directory, it will by default write a
-      <i class="Pa" title="Pa">.ckmame.db</i> database file to it, caching the
+<p class="Pp">The CMPro file format is described at
+    <span class="Pa">http://www.logiqx.com/FAQs/CMPro.shtml</span>, the DTD for
+    MAME xml can be found in
+  <span class="Pa">PREFIX/share/doc/ckmame/</span>.</p>
+<section class="Ss">
+<h2 class="Ss" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h2>
+<code class="Nm">mkmamedb</code> supports the following options:
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#C"><code class="Fl" id="C">-C</code></a>
+    <var class="Ar">types</var>,
+    <code class="Fl">-</code><code class="Fl">-hash-types</code>
+    <var class="Ar">types</var></dt>
+  <dd>A comma separated list of hash types to compute when creating a ROM set
+      description from a directory of zip archives. Supported hash types are:
+      crc, md5, sha1. Default are all.</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a>
+    <var class="Ar">outputformat</var>,
+    <code class="Fl">-</code><code class="Fl">-format</code>
+    <var class="Ar">outputformat</var></dt>
+  <dd>Specify output format. Supported formats are <code class="Cm">cm</code>
+      (clrmamepro dat file), <code class="Cm">dat</code> (XML datfile),
+      <code class="Cm">db</code> (<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>
+      database), and <code class="Cm">mtree</code>
+      (<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mtree.html">mtree(8)</a> file). The default is
+    cm.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-detector</code>
+    <var class="Ar">file</var></dt>
+  <dd>Use CMPro XML header skip detector description from
+      <var class="Ar">file</var>. This overrides any detectors given in the file
+      itself. <code class="Nm">mkmamedb</code> looks for the detector in the
+      input file (if it is a zip file) or the directory of the input file.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
+    <code class="Fl">-</code><code class="Fl">-help</code></dt>
+  <dd>Display a short help message.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">dbfile</var>,
+    <code class="Fl">-</code><code class="Fl">-output</code>
+    <var class="Ar">dbfile</var></dt>
+  <dd>Write to database <var class="Ar">dbfile</var> instead of the default
+      &#x201C;<span class="Pa">mame.db</span>&#x201D;.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-no-directory-cache</code></dt>
+  <dd>When <code class="Nm">mkmamedb</code> is used to create a database from an
+      input directory, it will by default write a
+      <span class="Pa">.ckmame.db</span> database file to it, caching the
       directory contents' hashes in it so that consecutive re-runs are faster.
-      When <b class="Nm" title="Nm">mkmamedb</b> finds such a database, it only
+      When <code class="Nm">mkmamedb</code> finds such a database, it only
       computes the hashes for the files that have changed since the last
     run.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-only-files</b>
-    <var class="Ar" title="Ar">pattern</var></dt>
-  <dd class="It-tag">When reading files from the file system as input, only
-      accept files matching the shell glob
-      <var class="Ar" title="Ar">pattern</var>.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-prog-description</b>
-    <var class="Ar" title="Ar">description</var></dt>
-  <dd class="It-tag">Set description for the program the ROM info is from.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-prog-name</b>
-    <var class="Ar" title="Ar">name</var></dt>
-  <dd class="It-tag">Set name of the program the ROM info is from.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-prog-version</b>
-    <var class="Ar" title="Ar">version</var></dt>
-  <dd class="It-tag">Set version of the program the ROM info is from.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-skip-files</b>
-    <var class="Ar" title="Ar">pattern</var></dt>
-  <dd class="It-tag">When reading files from the file system as input, skip
-      files matching the shell glob</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><a class="selflink" href="#u"><b class="Fl" title="Fl" id="u">-u</b></a>,
-    <b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-roms-unzipped</b></dt>
-  <dd class="It-tag">ROMs are files on the disk. Each game is represented by a
-      directory instead of a ZIP archive. Only relevant when creating a database
-      based on file system contents.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><a class="selflink" href="#V"><b class="Fl" title="Fl" id="V">-V</b></a>,
-    <b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-version</b></dt>
-  <dd class="It-tag">Display program name and version number.</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -37.80ex;"><a class="selflink" href="#x"><b class="Fl" title="Fl" id="x">-x</b></a>
-    <var class="Ar" title="Ar">pat</var>,
-    <b class="Fl" title="Fl">-</b><b class="Fl" title="Fl">-exclude</b>
-    <var class="Ar" title="Ar">pat</var></dt>
-  <dd class="It-tag">Exclude games with names matching
-      <var class="Ar" title="Ar">pat</var> from the created database.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-only-files</code>
+    <var class="Ar">pattern</var></dt>
+  <dd>When reading files from the file system as input, only accept files
+      matching the shell glob <var class="Ar">pattern</var>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-prog-description</code>
+    <var class="Ar">description</var></dt>
+  <dd>Set description for the program the ROM info is from.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-prog-name</code>
+    <var class="Ar">name</var></dt>
+  <dd>Set name of the program the ROM info is from.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-prog-version</code>
+    <var class="Ar">version</var></dt>
+  <dd>Set version of the program the ROM info is from.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-skip-files</code>
+    <var class="Ar">pattern</var></dt>
+  <dd>When reading files from the file system as input, skip files matching the
+      shell glob</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a>,
+    <code class="Fl">-</code><code class="Fl">-roms-unzipped</code></dt>
+  <dd>ROMs are files on the disk. Each game is represented by a directory
+      instead of a ZIP archive. Only relevant when creating a database based on
+      file system contents.</dd>
+  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
+    <code class="Fl">-</code><code class="Fl">-version</code></dt>
+  <dd>Display program name and version number.</dd>
+  <dt><a class="permalink" href="#x"><code class="Fl" id="x">-x</code></a>
+    <var class="Ar">pat</var>,
+    <code class="Fl">-</code><code class="Fl">-exclude</code>
+    <var class="Ar">pat</var></dt>
+  <dd>Exclude games with names matching <var class="Ar">pat</var> from the
+      created database.</dd>
 </dl>
-<h1 class="Sh" title="Sh" id="ENVIRONMENT"><a class="selflink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
-<dl class="Bl-tag" style="margin-left: 15.00ex;">
-  <dt class="It-tag" style="margin-left: -15.00ex;">&#x00A0;</dt>
-  <dd class="It-tag">&#x00A0;</dd>
-  <dt class="It-tag" style="margin-left: -15.00ex;"><a class="selflink" href="#MAMEDB"><code class="Ev" title="Ev" id="MAMEDB">MAMEDB</code></a></dt>
-  <dd class="It-tag">Location for the database file. Can be overridden with the
-      <b class="Fl" title="Fl">-o</b> option. Defaults to
-      &#x201C;<i class="Pa" title="Pa">mame.db</i>&#x201D;.</dd>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+<dl class="Bl-tag">
+  <dt><a class="permalink" href="#MAMEDB"><code class="Ev" id="MAMEDB">MAMEDB</code></a></dt>
+  <dd>Location for the database file. Can be overridden with the
+      <code class="Fl">-o</code> option. Defaults to
+      &#x201C;<span class="Pa">mame.db</span>&#x201D;.</dd>
 </dl>
-<h1 class="Sh" title="Sh" id="EXAMPLES"><a class="selflink" href="#EXAMPLES">EXAMPLES</a></h1>
-Get an input file for
-  <a class="Xr" title="Xr" href="mkmamedb.html">mkmamedb(1)</a> from MAME and
-  convert it to the internal database format:
-<div class="Pp"></div>
-<div class="Bd" style="margin-left: 0.00ex;">
-<pre class="Li">
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+Get an input file for <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a> from
+  MAME and convert it to the internal database format:
+<div class="Bd Pp">
+<pre>
 # mame -listxml | mkmamedb
 </pre>
 </div>
-<h1 class="Sh" title="Sh" id="SEE_ALSO"><a class="selflink" href="#SEE_ALSO">SEE
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
   ALSO</a></h1>
-<a class="Xr" title="Xr" href="ckmame.html">ckmame(1)</a>,
-  <a class="Xr" title="Xr" href="dumpgame.html">dumpgame(1)</a>
-<h1 class="Sh" title="Sh" id="AUTHORS"><a class="selflink" href="#AUTHORS">AUTHORS</a></h1>
-<b class="Nm" title="Nm">mkmamedb</b> was written by
-  <span class="An" title="An">Dieter Baron</span> &#x27E8;dillo@nih.at&#x27E9;
-  and <span class="An" title="An">Thomas Klausner</span>
-  &lt;<a class="Mt" title="Mt" href="mailto:tk@giga.or.at">tk@giga.or.at</a>&gt;.</div>
+<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>,
+  <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/dumpgame.html">dumpgame(1)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<code class="Nm">mkmamedb</code> was written by <span class="An">Dieter
+  Baron</span> &#x27E8;dillo@nih.at&#x27E9; and <span class="An">Thomas
+  Klausner</span>
+  &lt;<a class="Mt" href="mailto:tk@giga.or.at">tk@giga.or.at</a>&gt;.
+</section>
+</div>
 <table class="foot">
   <tr>
     <td class="foot-date">March 14, 2014</td>
-    <td class="foot-os">NetBSD 8.99.14</td>
+    <td class="foot-os">NetBSD 9.99.52</td>
   </tr>
 </table>
 </body>

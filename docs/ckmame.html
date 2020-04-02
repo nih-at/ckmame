@@ -44,385 +44,307 @@
   </tr>
 </table>
 <div class="manual-text">
-<h1 class="Sh" title="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
-<code class="Nm" title="Nm">ckmame</code> &#x2014;
-<div class="Nd" title="Nd">verify MAME ROM sets</div>
-<h1 class="Sh" title="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">ckmame</code> &#x2014;
+<div class="Nd">verify MAME ROM sets</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
 <table class="Nm">
   <tr>
-    <td><code class="Nm" title="Nm">ckmame</code></td>
-    <td>[<div class="Op"><code class="Fl" title="Fl">-bCcdFfhjKkLlSsuVvwX</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-D</code>
-      <var class="Ar" title="Ar">dbfile</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-e</code>
-      <var class="Ar" title="Ar">dir</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-O</code>
-      <var class="Ar" title="Ar">dbfile</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-R</code>
-      <var class="Ar" title="Ar">dir</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-T</code>
-      <var class="Ar" title="Ar">file</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-autofixdat</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-cleanup-extra</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-correct</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-db</code>
-      <var class="Ar" title="Ar">dbfile</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-delete-duplicate</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-delete-found</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-delete-long</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-delete-unknown</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-fix</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-fixdat</code>
-      <var class="Ar" title="Ar">file</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-games-from</code>
-      <var class="Ar" title="Ar">file</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-help</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-ignore-extra</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-ignore-unknown</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-integrity</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-keep-duplicate</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-keep-found</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-move-long</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-move-unknown</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nobroken</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nofixable</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nonogooddumps</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nosuperfluous</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nowarnings</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-old-db</code>
-      <var class="Ar" title="Ar">dbfile</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-rom-dir</code>
-      <var class="Ar" title="Ar">dir</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-roms-unzipped</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-samples</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-search</code>
-      <var class="Ar" title="Ar">dir</var></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-stats</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-superfluous</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-verbose</code></div>]
-      [<div class="Op"><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-version</code></div>]
-      [<div class="Op"><var class="Ar" title="Ar">game ...</var></div>]</td>
+    <td><code class="Nm">ckmame</code></td>
+    <td>[<code class="Fl">-bCcdFfhjKkLlSsuVvwX</code>]
+      [<code class="Fl">-D</code> <var class="Ar">dbfile</var>]
+      [<code class="Fl">-e</code> <var class="Ar">dir</var>]
+      [<code class="Fl">-O</code> <var class="Ar">dbfile</var>]
+      [<code class="Fl">-R</code> <var class="Ar">dir</var>]
+      [<code class="Fl">-T</code> <var class="Ar">file</var>]
+      [<code class="Fl">-</code><code class="Fl">-autofixdat</code>]
+      [<code class="Fl">-</code><code class="Fl">-cleanup-extra</code>]
+      [<code class="Fl">-</code><code class="Fl">-correct</code>]
+      [<code class="Fl">-</code><code class="Fl">-db</code>
+      <var class="Ar">dbfile</var>]
+      [<code class="Fl">-</code><code class="Fl">-delete-duplicate</code>]
+      [<code class="Fl">-</code><code class="Fl">-delete-found</code>]
+      [<code class="Fl">-</code><code class="Fl">-delete-long</code>]
+      [<code class="Fl">-</code><code class="Fl">-delete-unknown</code>]
+      [<code class="Fl">-</code><code class="Fl">-fix</code>]
+      [<code class="Fl">-</code><code class="Fl">-fixdat</code>
+      <var class="Ar">file</var>]
+      [<code class="Fl">-</code><code class="Fl">-games-from</code>
+      <var class="Ar">file</var>]
+      [<code class="Fl">-</code><code class="Fl">-help</code>]
+      [<code class="Fl">-</code><code class="Fl">-ignore-extra</code>]
+      [<code class="Fl">-</code><code class="Fl">-ignore-unknown</code>]
+      [<code class="Fl">-</code><code class="Fl">-integrity</code>]
+      [<code class="Fl">-</code><code class="Fl">-keep-duplicate</code>]
+      [<code class="Fl">-</code><code class="Fl">-keep-found</code>]
+      [<code class="Fl">-</code><code class="Fl">-move-long</code>]
+      [<code class="Fl">-</code><code class="Fl">-move-unknown</code>]
+      [<code class="Fl">-</code><code class="Fl">-nobroken</code>]
+      [<code class="Fl">-</code><code class="Fl">-nofixable</code>]
+      [<code class="Fl">-</code><code class="Fl">-nonogooddumps</code>]
+      [<code class="Fl">-</code><code class="Fl">-nosuperfluous</code>]
+      [<code class="Fl">-</code><code class="Fl">-nowarnings</code>]
+      [<code class="Fl">-</code><code class="Fl">-old-db</code>
+      <var class="Ar">dbfile</var>]
+      [<code class="Fl">-</code><code class="Fl">-rom-dir</code>
+      <var class="Ar">dir</var>]
+      [<code class="Fl">-</code><code class="Fl">-roms-unzipped</code>]
+      [<code class="Fl">-</code><code class="Fl">-samples</code>]
+      [<code class="Fl">-</code><code class="Fl">-search</code>
+      <var class="Ar">dir</var>]
+      [<code class="Fl">-</code><code class="Fl">-stats</code>]
+      [<code class="Fl">-</code><code class="Fl">-superfluous</code>]
+      [<code class="Fl">-</code><code class="Fl">-verbose</code>]
+      [<code class="Fl">-</code><code class="Fl">-version</code>]
+      [<var class="Ar">game ...</var>]</td>
   </tr>
 </table>
-<h1 class="Sh" title="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
-<code class="Nm" title="Nm">ckmame</code> is a program to check ROM sets for
-  MAME, the Multiple Arcade Machine Emulator (see
-  <span class="Pa" title="Pa">http://www.mame.net/</span>), or other emulators
-  that provide ROM set information in a compatible way (e.g., Raine, Impact, or
-  other emulators). This is the same format as clrmamepro dat files.
-  <code class="Nm" title="Nm">ckmame</code> tells you which ROM files are
-  missing or have a wrong checksum, can delete unknown and unused files from the
-  ROM sets, and rename or move files.
-<div class="Pp"></div>
-MAME is an emulator for numerous arcade machines (video games, ranging from the
-  1970s to today). Since MAME is emulating the games, it uses the original
-  images from the arcade machines' original ROM chips. MAME's internal database
-  contains extensive information on the ROMs, including the sizes and checksums
-  of the used ROMs. Since some arcade games are variants of others and share
-  some of the same ROMs, there are also internal dependencies between these so
-  called clones. To save space, ROMs can be archived in zip files and
-  dynamically unzipped by MAME when you play a game.
-  <code class="Nm" title="Nm">ckmame</code> does only support ROM sets stored as
-  zip files.
-<div class="Pp"></div>
-<code class="Nm" title="Nm">ckmame</code> tries to create a &#x201C;split ROM
-  set&#x201D; from your current collection. This means that all files needed by
-  the parent are kept in the parent's zip file, and only the files needed by the
-  clone (or child) that are different from the parent's are kept in the child's
-  zip file. For identifying the ROMs ckmame uses the sizes and checksums; names
-  are only used for verification, since the MAME team often renames ROMs.
-<div class="Pp"></div>
-While <code class="Nm" title="Nm">ckmame</code> uses MAME's ROM database, it
-  must be converted into a more efficient format before use. See
-  <a class="Xr" title="Xr" href="mkmamedb.html">mkmamedb(1)</a> for details.
-<div class="Pp"></div>
-By default, <code class="Nm" title="Nm">ckmame</code> will check the games named
-  on the command line, or all games if none are given. Shell wildcards are
-  allowed. You can use command line options to select which type of errors to
-  report.
-<h2 class="Ss" title="Ss" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h2>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">ckmame</code> is a program to check ROM sets for MAME, the
+  Multiple Arcade Machine Emulator (see
+  <span class="Pa">http://www.mame.net/</span>), or other emulators that provide
+  ROM set information in a compatible way (e.g., Raine, Impact, or other
+  emulators). This is the same format as clrmamepro dat files.
+  <code class="Nm">ckmame</code> tells you which ROM files are missing or have a
+  wrong checksum, can delete unknown and unused files from the ROM sets, and
+  rename or move files.
+<p class="Pp">MAME is an emulator for numerous arcade machines (video games,
+    ranging from the 1970s to today). Since MAME is emulating the games, it uses
+    the original images from the arcade machines' original ROM chips. MAME's
+    internal database contains extensive information on the ROMs, including the
+    sizes and checksums of the used ROMs. Since some arcade games are variants
+    of others and share some of the same ROMs, there are also internal
+    dependencies between these so called clones. To save space, ROMs can be
+    archived in zip files and dynamically unzipped by MAME when you play a game.
+    <code class="Nm">ckmame</code> does only support ROM sets stored as zip
+    files.</p>
+<p class="Pp"><code class="Nm">ckmame</code> tries to create a &#x201C;split ROM
+    set&#x201D; from your current collection. This means that all files needed
+    by the parent are kept in the parent's zip file, and only the files needed
+    by the clone (or child) that are different from the parent's are kept in the
+    child's zip file. For identifying the ROMs ckmame uses the sizes and
+    checksums; names are only used for verification, since the MAME team often
+    renames ROMs.</p>
+<p class="Pp">While <code class="Nm">ckmame</code> uses MAME's ROM database, it
+    must be converted into a more efficient format before use. See
+    <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a> for details.</p>
+<p class="Pp">By default, <code class="Nm">ckmame</code> will check the games
+    named on the command line, or all games if none are given. Shell wildcards
+    are allowed. You can use command line options to select which type of errors
+    to report.</p>
+<section class="Ss">
+<h2 class="Ss" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h2>
 Supported options:
 <dl class="Bl-tag">
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-autofixdat</code></dt>
-  <dd>Like
-      <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-fixdat</code>,
-      but automatically generates the output file name from the datfile's name
-      and version number: &#x201C;<span class="Pa" title="Pa">fix_$SYSTEM
+  <dt><code class="Fl">-</code><code class="Fl">-autofixdat</code></dt>
+  <dd>Like <code class="Fl">-</code><code class="Fl">-fixdat</code>, but
+      automatically generates the output file name from the datfile's name and
+      version number: &#x201C;<span class="Pa">fix_$SYSTEM
       ($VERSION).dat</span>&#x201D;.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#b,"><code class="Fl" title="Fl" id="b,">-b,</code></a>
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nobroken</code></dt>
-  <dd>Don't report unfixable errors. See also
-      <code class="Fl" title="Fl">-f</code> and
-      <code class="Fl" title="Fl">-w</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-cleanup-extra</code></dt>
+  <dt><a class="permalink" href="#b,"><code class="Fl" id="b,">-b,</code></a>
+    <code class="Fl">-</code><code class="Fl">-nobroken</code></dt>
+  <dd>Don't report unfixable errors. See also <code class="Fl">-f</code> and
+      <code class="Fl">-w</code>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-cleanup-extra</code></dt>
   <dd>Remove files already in ROM set from extra directories.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#C"><code class="Fl" title="Fl" id="C">-C</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-complete-only</code></dt>
+  <dt><a class="permalink" href="#C"><code class="Fl" id="C">-C</code></a>,
+    <code class="Fl">-</code><code class="Fl">-complete-only</code></dt>
   <dd>Only create complete sets. ROMs for incomplete sets are moved to the
-      <span class="Pa" title="Pa">needed</span> directory.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#c"><code class="Fl" title="Fl" id="c">-c</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-correct</code></dt>
+      <span class="Pa">needed</span> directory.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>,
+    <code class="Fl">-</code><code class="Fl">-correct</code></dt>
   <dd>Report correct sets. Normally they are not mentioned.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#D"><code class="Fl" title="Fl" id="D">-D</code></a>
-    <var class="Ar" title="Ar">dbfile</var>,
-    <code class="Fl" title="Fl">-</code> <code class="Fl" title="Fl">-db</code>
-    <var class="Ar" title="Ar">dbfile</var></dt>
-  <dd>Use <var class="Ar" title="Ar">dbfile</var> as database file.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#d"><code class="Fl" title="Fl" id="d">-d</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nonogooddumps</code></dt>
+  <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a>
+    <var class="Ar">dbfile</var>,
+    <code class="Fl">-</code><code class="Fl">-db</code>
+    <var class="Ar">dbfile</var></dt>
+  <dd>Use <var class="Ar">dbfile</var> as database file.</dd>
+  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>,
+    <code class="Fl">-</code><code class="Fl">-nonogooddumps</code></dt>
   <dd>Don't report ROMs with no known good dumps.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-delete-duplicate</code></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-delete-duplicate</code></dt>
   <dd>Delete files present in old ROM database (default). See also
-      <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-keep-duplicate</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#e"><code class="Fl" title="Fl" id="e">-e</code></a>
-    <var class="Ar" title="Ar">dir</var>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-search</code>
-    <var class="Ar" title="Ar">dir</var></dt>
-  <dd>Look for missing files in directory <var class="Ar" title="Ar">dir</var>
-      and its subdirectories. Recommended for use with update sets. See also
-      <code class="Fl" title="Fl">-j</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#F"><code class="Fl" title="Fl" id="F">-F</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-fix</code></dt>
+      <code class="Fl">-</code><code class="Fl">-keep-duplicate</code>.</dd>
+  <dt><a class="permalink" href="#e"><code class="Fl" id="e">-e</code></a>
+    <var class="Ar">dir</var>,
+    <code class="Fl">-</code><code class="Fl">-search</code>
+    <var class="Ar">dir</var></dt>
+  <dd>Look for missing files in directory <var class="Ar">dir</var> and its
+      subdirectories. Recommended for use with update sets. See also
+      <code class="Fl">-j</code>.</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a>,
+    <code class="Fl">-</code><code class="Fl">-fix</code></dt>
   <dd>Fix ROM sets; do as much as possible, such as renaming and moving
     files.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#f"><code class="Fl" title="Fl" id="f">-f</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nofixable</code></dt>
-  <dd>Don't report fixable errors. See also
-      <code class="Fl" title="Fl">-b</code> and
-      <code class="Fl" title="Fl">-w</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-fixdat</code>
-    <var class="Ar" title="Ar">name</var></dt>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>,
+    <code class="Fl">-</code><code class="Fl">-nofixable</code></dt>
+  <dd>Don't report fixable errors. See also <code class="Fl">-b</code> and
+      <code class="Fl">-w</code>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-fixdat</code>
+    <var class="Ar">name</var></dt>
   <dd>Create a clrmamepro-style &#x201C;fixdat&#x201D; file, i.e. an XML file
       containing only the files missing in the ROM set compared to the database
       used.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#h"><code class="Fl" title="Fl" id="h">-h</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-help</code></dt>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
+    <code class="Fl">-</code><code class="Fl">-help</code></dt>
   <dd>Display a short help message.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-ignore-unknown</code></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-ignore-unknown</code></dt>
   <dd>Ignore unknown files when fixing. They will still be reported.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#i"><code class="Fl" title="Fl" id="i">-i</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-integrity</code></dt>
+  <dt><a class="permalink" href="#i"><code class="Fl" id="i">-i</code></a>,
+    <code class="Fl">-</code><code class="Fl">-integrity</code></dt>
   <dd>Check integrity of zip archives and disk images by computing checksums and
       comparing them with the internally saved ones.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#j"><code class="Fl" title="Fl" id="j">-j</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-delete-found</code></dt>
-  <dd>When using <code class="Fl" title="Fl">-e</code>, delete files that are
-      copied to the ROM set. See also
-      <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-keep-found</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-keep-duplicate</code></dt>
+  <dt><a class="permalink" href="#j"><code class="Fl" id="j">-j</code></a>,
+    <code class="Fl">-</code><code class="Fl">-delete-found</code></dt>
+  <dd>When using <code class="Fl">-e</code>, delete files that are copied to the
+      ROM set. See also
+      <code class="Fl">-</code><code class="Fl">-keep-found</code>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-keep-duplicate</code></dt>
   <dd>Keep files present in old ROM database. See also
-      <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-delete-duplicate</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-keep-found</code></dt>
-  <dd>When using <code class="Fl" title="Fl">-e</code>, do not remove files that
-      are copied to the ROM set (default). See also
-      <code class="Fl" title="Fl">-j</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#K"><code class="Fl" title="Fl" id="K">-K</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-move-unknown</code></dt>
+      <code class="Fl">-</code><code class="Fl">-delete-duplicate</code>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-keep-found</code></dt>
+  <dd>When using <code class="Fl">-e</code>, do not remove files that are copied
+      to the ROM set (default). See also <code class="Fl">-j</code>.</dd>
+  <dt><a class="permalink" href="#K"><code class="Fl" id="K">-K</code></a>,
+    <code class="Fl">-</code><code class="Fl">-move-unknown</code></dt>
   <dd>Move unknown files when fixing (default). They are moved into a zip file
-      with the same name under <span class="Pa" title="Pa">roms/garbage</span>.
-      See also <code class="Fl" title="Fl">-k</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#k"><code class="Fl" title="Fl" id="k">-k</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-delete-unknown</code></dt>
+      with the same name under <span class="Pa">roms/garbage</span>. See also
+      <code class="Fl">-k</code>.</dd>
+  <dt><a class="permalink" href="#k"><code class="Fl" id="k">-k</code></a>,
+    <code class="Fl">-</code><code class="Fl">-delete-unknown</code></dt>
   <dd>Delete unknown files when fixing. See also
-      <code class="Fl" title="Fl">-K</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#L"><code class="Fl" title="Fl" id="L">-L</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-move-long</code></dt>
+    <code class="Fl">-K</code>.</dd>
+  <dt><a class="permalink" href="#L"><code class="Fl" id="L">-L</code></a>,
+    <code class="Fl">-</code><code class="Fl">-move-long</code></dt>
   <dd>Move too long files when fixing (default). See also
-      <code class="Fl" title="Fl">-K</code> and
-      <code class="Fl" title="Fl">-l</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#l"><code class="Fl" title="Fl" id="l">-l</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-delete-long</code></dt>
-  <dd>Delete long files when fixing. See also
-      <code class="Fl" title="Fl">-L</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#O"><code class="Fl" title="Fl" id="O">-O</code></a>
-    <var class="Ar" title="Ar">dbfile</var>,
-    <code class="Fl" title="Fl">-</code>
-    <code class="Fl" title="Fl">-old-db</code>
-    <var class="Ar" title="Ar">dbfile</var></dt>
-  <dd>Assume that files listed in <var class="Ar" title="Ar">dbfile</var> exist
-      elsewhere.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#R"><code class="Fl" title="Fl" id="R">-R</code></a>
-    <var class="Ar" title="Ar">dir</var>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-rom-dir</code>
-    <var class="Ar" title="Ar">dir</var></dt>
-  <dd>Look for roms in <var class="Ar" title="Ar">dir</var>. Default is
+      <code class="Fl">-K</code> and <code class="Fl">-l</code>.</dd>
+  <dt><a class="permalink" href="#l"><code class="Fl" id="l">-l</code></a>,
+    <code class="Fl">-</code><code class="Fl">-delete-long</code></dt>
+  <dd>Delete long files when fixing. See also <code class="Fl">-L</code>.</dd>
+  <dt><a class="permalink" href="#O"><code class="Fl" id="O">-O</code></a>
+    <var class="Ar">dbfile</var>,
+    <code class="Fl">-</code><code class="Fl">-old-db</code>
+    <var class="Ar">dbfile</var></dt>
+  <dd>Assume that files listed in <var class="Ar">dbfile</var> exist
+    elsewhere.</dd>
+  <dt><a class="permalink" href="#R"><code class="Fl" id="R">-R</code></a>
+    <var class="Ar">dir</var>,
+    <code class="Fl">-</code><code class="Fl">-rom-dir</code>
+    <var class="Ar">dir</var></dt>
+  <dd>Look for roms in <var class="Ar">dir</var>. Default is
       &#x201C;roms&#x201D;.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#S"><code class="Fl" title="Fl" id="S">-S</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-samples</code></dt>
+  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a>,
+    <code class="Fl">-</code><code class="Fl">-samples</code></dt>
   <dd>Check samples instead of ROMs.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-stats</code></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-stats</code></dt>
   <dd>Display completeness statistics of ROM set at end of run.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-superfluous</code></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-superfluous</code></dt>
   <dd>Only check for superfluous files in ROM sets.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#s"><code class="Fl" title="Fl" id="s">-s</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nosuperfluous</code></dt>
+  <dt><a class="permalink" href="#s"><code class="Fl" id="s">-s</code></a>,
+    <code class="Fl">-</code><code class="Fl">-nosuperfluous</code></dt>
   <dd>Don't report superfluous (unneeded) files.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#T"><code class="Fl" title="Fl" id="T">-T</code></a>
-    <var class="Ar" title="Ar">file</var>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-games-from</code>
-    <var class="Ar" title="Ar">file</var></dt>
-  <dd>Read list of games to check from
-    <var class="Ar" title="Ar">file</var>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#u"><code class="Fl" title="Fl" id="u">-u</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-roms-unzipped</code></dt>
+  <dt><a class="permalink" href="#T"><code class="Fl" id="T">-T</code></a>
+    <var class="Ar">file</var>,
+    <code class="Fl">-</code><code class="Fl">-games-from</code>
+    <var class="Ar">file</var></dt>
+  <dd>Read list of games to check from <var class="Ar">file</var>.</dd>
+  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a>,
+    <code class="Fl">-</code><code class="Fl">-roms-unzipped</code></dt>
   <dd>ROMs are files on the disk. Each game is represented by a directory
       instead of a ZIP archive.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#V"><code class="Fl" title="Fl" id="V">-V</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-version</code></dt>
+  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
+    <code class="Fl">-</code><code class="Fl">-version</code></dt>
   <dd>Display program name and version number.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#v"><code class="Fl" title="Fl" id="v">-v</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-verbose</code></dt>
-  <dd>Print fixes made. Only useful with
-    <code class="Fl" title="Fl">-F</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#w"><code class="Fl" title="Fl" id="w">-w</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-nowarnings</code></dt>
+  <dt><a class="permalink" href="#v"><code class="Fl" id="v">-v</code></a>,
+    <code class="Fl">-</code><code class="Fl">-verbose</code></dt>
+  <dd>Print fixes made. Only useful with <code class="Fl">-F</code>.</dd>
+  <dt><a class="permalink" href="#w"><code class="Fl" id="w">-w</code></a>,
+    <code class="Fl">-</code><code class="Fl">-nowarnings</code></dt>
   <dd>Print only unfixable error, like missing or completely incorrect ROMs. See
-      also <code class="Fl" title="Fl">-b</code> and
-      <code class="Fl" title="Fl">-f</code>.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#X"><code class="Fl" title="Fl" id="X">-X</code></a>,
-    <code class="Fl" title="Fl">-</code><code class="Fl" title="Fl">-ignore-extra</code></dt>
+      also <code class="Fl">-b</code> and <code class="Fl">-f</code>.</dd>
+  <dt><a class="permalink" href="#X"><code class="Fl" id="X">-X</code></a>,
+    <code class="Fl">-</code><code class="Fl">-ignore-extra</code></dt>
   <dd>Do not mention extra files that are in the ROMs or samples dirs
       respectively. Most of the time these are ROM sets whose names have
-      changed. Additionally, <code class="Nm" title="Nm">ckmame</code> creates a
-      <span class="Pa" title="Pa">roms/garbage</span> directory (see also
-      <code class="Fl" title="Fl">-K</code>), which you will also be warned
-      about.</dd>
+      changed. Additionally, <code class="Nm">ckmame</code> creates a
+      <span class="Pa">roms/garbage</span> directory (see also
+      <code class="Fl">-K</code>), which you will also be warned about.</dd>
 </dl>
-<h1 class="Sh" title="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="ENVIRONMENT"><a class="permalink" href="#ENVIRONMENT">ENVIRONMENT</a></h1>
 <dl class="Bl-tag">
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#MAMEDB"><code class="Ev" title="Ev" id="MAMEDB">MAMEDB</code></a></dt>
+  <dt><a class="permalink" href="#MAMEDB"><code class="Ev" id="MAMEDB">MAMEDB</code></a></dt>
   <dd>Location for the database file. Can be overridden with the
-      <code class="Fl" title="Fl">-D</code> option. Defaults to
-      &#x201C;<span class="Pa" title="Pa">mame.db</span>&#x201D;.</dd>
-  <dt>&#x00A0;</dt>
-  <dd>&#x00A0;</dd>
-  <dt><a class="permalink" href="#MAMEDB_OLD"><code class="Ev" title="Ev" id="MAMEDB_OLD">MAMEDB_OLD</code></a></dt>
+      <code class="Fl">-D</code> option. Defaults to
+      &#x201C;<span class="Pa">mame.db</span>&#x201D;.</dd>
+  <dt><a class="permalink" href="#MAMEDB_OLD"><code class="Ev" id="MAMEDB_OLD">MAMEDB_OLD</code></a></dt>
   <dd>Location for the database file of files that exist elsewhere. Can be
-      overridden with the <code class="Fl" title="Fl">-O</code> option. Defaults
-      to &#x201C;<span class="Pa" title="Pa">old.db</span>&#x201D;.</dd>
+      overridden with the <code class="Fl">-O</code> option. Defaults to
+      &#x201C;<span class="Pa">old.db</span>&#x201D;.</dd>
 </dl>
-<h1 class="Sh" title="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
-Unknown files are moved to the sub-directory
-  <span class="Pa" title="Pa">unknown</span>. Files that will be needed by other
-  games in the ROM set are moved to the
-  <span class="Pa" title="Pa">needed</span> directory.
-<div class="Pp"></div>
-In unzipped mode (<code class="Fl" title="Fl">-u</code>),
-  <code class="Nm" title="Nm">ckmame</code> creates
-  <span class="Pa" title="Pa">.ckmame.db</span> files in the rom directory as
-  well as the directories given with <code class="Fl" title="Fl">-e</code>.
-  These files are databases containing file names, sizes, and their hashes. The
-  database information used when the file hasn't changed since the last run
-  (i.e. same size and modification time).
-<h1 class="Sh" title="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+Unknown files are moved to the sub-directory <span class="Pa">unknown</span>.
+  Files that will be needed by other games in the ROM set are moved to the
+  <span class="Pa">needed</span> directory.
+<p class="Pp">In unzipped mode (<code class="Fl">-u</code>),
+    <code class="Nm">ckmame</code> creates <span class="Pa">.ckmame.db</span>
+    files in the rom directory as well as the directories given with
+    <code class="Fl">-e</code>. These files are databases containing file names,
+    sizes, and their hashes. The database information used when the file hasn't
+    changed since the last run (i.e. same size and modification time).</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
 Print a report about the current state of your ROM sets in the
-  <span class="Pa" title="Pa">roms</span> subdir of the current dir:
+  <span class="Pa">roms</span> subdir of the current dir:
 <div class="Bd
-  Bd-indent"><code class="Li"><code class="Ic" title="Ic">ckmame</code></code></div>
-<div class="Pp"></div>
-Fix all sets and only report unfixable errors, omitting those ROMs where no good
-  dump exists:
-<div class="Bd Bd-indent"><code class="Li"><code class="Ic" title="Ic">ckmame
+  Bd-indent"><code class="Li"><code class="Ic">ckmame</code></code></div>
+<p class="Pp">Fix all sets and only report unfixable errors, omitting those ROMs
+    where no good dump exists:</p>
+<div class="Bd Bd-indent"><code class="Li"><code class="Ic">ckmame
   -Fwd</code></code></div>
-<div class="Pp"></div>
-Fix all sets using the files found in
-  <var class="Ar" title="Ar">updatedir</var>, removing files from there that are
-  copied to the ROM set:
-<div class="Bd Bd-indent"><code class="Li"><code class="Ic" title="Ic">ckmame
-  -Fj -e updatedir</code></code></div>
-<h1 class="Sh" title="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
+<p class="Pp">Fix all sets using the files found in
+    <var class="Ar">updatedir</var>, removing files from there that are copied
+    to the ROM set:</p>
+<div class="Bd Bd-indent"><code class="Li"><code class="Ic">ckmame -Fj -e
+  updatedir</code></code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
 Most messages should be straightforward. Two need special explanations:
-<div class="Pp"></div>
-If a file is marked as &#x201C;broken&#x201D;, it means that the computed
-  checksum is not the same as the checksum stored in the zip archive, usually
-  because there has been a decompression error.
-<div class="Pp"></div>
-If a ROM or disk is marked with &#x201C;checksum mismatch&#x201D;, the primary
-  checksum matches, but one of the other checksums does not. The primary
-  checksum for ROMs is CRC32, for disks MD5.
-<h1 class="Sh" title="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+<p class="Pp">If a file is marked as &#x201C;broken&#x201D;, it means that the
+    computed checksum is not the same as the checksum stored in the zip archive,
+    usually because there has been a decompression error.</p>
+<p class="Pp">If a ROM or disk is marked with &#x201C;checksum mismatch&#x201D;,
+    the primary checksum matches, but one of the other checksums does not. The
+    primary checksum for ROMs is CRC32, for disks MD5.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
   ALSO</a></h1>
-<a class="Xr" title="Xr" href="dumpgame.html">dumpgame(1)</a>,
-  <a class="Xr" title="Xr" href="mkmamedb.html">mkmamedb(1)</a>
-<h1 class="Sh" title="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
-<code class="Nm" title="Nm">ckmame</code> was written by
-  <span class="An" title="An">Dieter Baron</span> &#x27E8;dillo@nih.at&#x27E9;
-  and <span class="An" title="An">Thomas Klausner</span>
-  &#x27E8;tk@giga.or.at&#x27E9;.</div>
+<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/dumpgame.html">dumpgame(1)</a>,
+  <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<code class="Nm">ckmame</code> was written by <span class="An">Dieter
+  Baron</span> &#x27E8;dillo@nih.at&#x27E9; and <span class="An">Thomas
+  Klausner</span> &#x27E8;tk@giga.or.at&#x27E9;.
+</section>
+</div>
 <table class="foot">
   <tr>
     <td class="foot-date">December 18, 2018</td>
-    <td class="foot-os">NetBSD 8.99.27</td>
+    <td class="foot-os">NetBSD 9.99.52</td>
   </tr>
 </table>
 </body>
