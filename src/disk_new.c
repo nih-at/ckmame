@@ -115,7 +115,7 @@ disk_new(const char *name, int flags) {
 
 	if (chd->version > 2 && (romdb_hashtypes(db, TYPE_DISK) & HASHES_TYPE_SHA1 & h->types)) {
 	    if (!hashes_verify(h, HASHES_TYPE_SHA1, chd->sha1)) {
-		myerror(ERRFILE, "sha1 mismatch in '%s'");
+		myerror(ERRFILE, "sha1 mismatch");
 		chd_close(chd);
 		disk_real_free(d);
 		return NULL;

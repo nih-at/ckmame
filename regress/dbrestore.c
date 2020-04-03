@@ -360,7 +360,7 @@ restore_table(dbh_t *dbh, FILE *f) {
 	    return -1;
 	}
 	if (sqlite3_reset(stmt) != SQLITE_OK) {
-	    myerror(ERRDB, "can't reset statement", table_name);
+	    myerror(ERRDB, "can't reset statement");
 	    array_free(column_types, NULL);
 	    return -1;
 	}

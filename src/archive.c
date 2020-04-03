@@ -117,7 +117,7 @@ archive_file_compute_hashes(archive_t *a, int idx, int hashtypes) {
 
     if (hashes_types(file_hashes(r)) & hashtypes & HASHES_TYPE_CRC) {
 	if (file_hashes(r)->crc != h.crc) {
-	    myerror(ERRDEF, "%s: %s: CRC error: %lx != %lx", archive_name(a), file_name(r), h.crc, file_hashes(r)->crc);
+	    myerror(ERRDEF, "%s: %s: CRC error: %x != %x", archive_name(a), file_name(r), h.crc, file_hashes(r)->crc);
 	    file_status(r) = STATUS_BADDUMP;
 	    return -1;
 	}
