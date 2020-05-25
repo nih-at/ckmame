@@ -11,6 +11,8 @@ environment:
 
 before_build:
   cmd: >-
+    vcpkg update
+
     vcpkg install zlib:%TRIPLET% libzip:%TRIPLET% sqlite3:%TRIPLET% libxml2:%TRIPLET%
 
     mkdir build
