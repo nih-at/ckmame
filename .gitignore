@@ -1,6 +1,7 @@
 *~
-build/
-ckmame-*.tar.*
+/build/
+/ckmame-*.tar.*
+/compile_commands.json
 cov-int/
 xcode/ckmame.xcodeproj/project.xcworkspace/xcshareddata
 xcode/ckmame.xcodeproj/project.xcworkspace/xcuserdata
