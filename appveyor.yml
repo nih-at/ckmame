@@ -1,0 +1,36 @@
+os:
+- Visual Studio 2017
+
+environment:
+  matrix:
+    - GENERATOR: "Visual Studio 15 2017 Win64"
+      TRIPLET: x64-windows
+      CMAKE_OPTS: "-DBUILD_SHARED_LIBS=off"
+      CMAKE_CONFIG: Release
+      RUN_TESTS: yes
+
+before_build:
+  cmd: >-
+    vcpkg install zlib:%TRIPLET% libzip:%TRIPLET% sqlite3:%TRIPLET% libxml2:%TRIPLET%
+
+    mkdir build
+
+    cd build
+
+    cmake -DCMAKE_TOOLCHAIN_FILE=C:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake .. -G "%GENERATOR%" %CMAKE_OPTS%
+
+    appveyor PushArtifact config.h
+
+    appveyor PushArtifact CMakeCache.txt
+
+build_script:
+  cmd: >-
+    cmake --build . --config %CMAKE_CONFIG% --target INSTALL
+
+    cmake --build . --config %CMAKE_CONFIG%
+
+test_script:
+  cmd: >-
+    set VERBOSE=yes
+
+    IF %RUN_TESTS%==yes ( ctest -C %CMAKE_CONFIG% --output-on-failure )
