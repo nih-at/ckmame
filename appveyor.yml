@@ -11,15 +11,23 @@ environment:
 
 before_build:
   cmd: >-
-    vcpkg update
+    git clone https://github.com/Microsoft/vcpkg
 
-    vcpkg install zlib:%TRIPLET% libzip:%TRIPLET% sqlite3:%TRIPLET% libxml2:%TRIPLET%
+    cd vcpkg
+
+    .\bootstrap-vcpkg.bat
+
+    .\vcpkg integrate install
+
+    .\vcpkg install zlib:%TRIPLET% bzip2:%TRIPLET% liblzma:%TRIPLET%
+
+    cd ..
 
     mkdir build
 
     cd build
 
-    cmake -DCMAKE_TOOLCHAIN_FILE=C:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake .. -G "%GENERATOR%" %CMAKE_OPTS%
+    cmake -DCMAKE_TOOLCHAIN_FILE=%cd%/../vcpkg/scripts/buildsystems/vcpkg.cmake .. -G "%GENERATOR%" %CMAKE_OPTS%
 
     appveyor PushArtifact config.h
 
