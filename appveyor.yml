@@ -19,7 +19,7 @@ before_build:
 
     .\vcpkg integrate install
 
-    .\vcpkg install zlib:%TRIPLET% libzip:%TRIPLET% sqlite3:%TRIPLET% libxml2:%TRIPLET%
+    .\vcpkg install zlib:%TRIPLET% libzip:%TRIPLET% sqlite3:%TRIPLET% libxml2:%TRIPLET% pkg-config:%TRIPLET%
 
     cd ..
 
