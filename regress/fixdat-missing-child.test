@@ -1,4 +1,5 @@
 description test all games, some files found, create fixdat
+features LIBXML2
 return 0
 args -Fvc -D ../mamedb-merge-parent.db --fixdat fix_test.dat
 file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip

@@ -1,4 +1,5 @@
 description test all games, no files found, create fixdat
+features LIBXML2
 return 0
 args -Fvc -D ../mamedb-merge-parent.db --fixdat fix_test.dat
 file-new fix_test.dat fixdat-missing-all.dat

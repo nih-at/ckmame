@@ -51,8 +51,6 @@ SET(COMMON_SOURCES
   detector.c
   detector_execute.c
   detector_init.c
-  detector_parse.c
-  detector_parse_ps.c
   detector_print.c
   detector_str.c
   diagnostics.c
@@ -90,7 +88,6 @@ SET(COMMON_SOURCES
   memdb.c
   output.c
   output_cm.c
-  output_datafile_xml.c
   output_db.c
   output_mtree.c
   parray.c
@@ -105,7 +102,6 @@ SET(COMMON_SOURCES
   parse-cm.c
   parse-dir.c
   parse-rc.c
-  parse-xml.c
   parse.c
   parser_source.c
   ptr_sort.c
@@ -128,10 +124,22 @@ SET(COMMON_SOURCES
   util.c
   warn.c
   xmalloc.c
-  xmlutil.c
   zip_util.c
   ${COMPATIBILITY}
-)
+  )
+
+SET(LIBXML2_SOURCES
+  detector_parse.c
+  detector_parse_ps.c
+  output_datafile_xml.c
+  parse-xml.c
+  xmlutil.c
+  )  
+
+IF(LIBXML2_FOUND)
+  LIST(APPEND COMMON_SOURCES ${LIBXML2_SOURCES})
+ENDIF()
+
 
 ADD_LIBRARY(libckmame ${COMMON_SOURCES})
 TARGET_LINK_LIBRARIES(libckmame ${ZLIB_LIBRARIES})

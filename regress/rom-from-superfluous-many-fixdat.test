@@ -1,4 +1,5 @@
 description test all games, some files in superfluous, fix
+features LIBXML2
 variants zip
 return 0
 args -D ../mamedb-disk-many.db -Fvc --fixdat fix_test.dat

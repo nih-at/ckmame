@@ -131,10 +131,14 @@ main(int argc, char **argv) {
     }
 
     if (detector_name) {
+#if defined(HAVE_LIBXML2)
 	if ((detector = detector_parse(detector_name)) == NULL) {
 	    myerror(ERRSTR, "cannot parse detector '%s'", detector_name);
 	    exit(1);
 	}
+#else
+	myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
+#endif
     }
 
     if ((ddb = romdb_open(dbname, DBH_READ)) == NULL) {

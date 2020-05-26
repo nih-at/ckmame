@@ -73,8 +73,10 @@ output_new(output_format_t fmt, const char *fname, int flags) {
 	return output_cm_new(fname, flags);
     case OUTPUT_FMT_DB:
 	return output_db_new(fname, flags);
+#if defined(HAVE_LIBXML2)
     case OUTPUT_FMT_DATAFILE_XML:
 	return output_datafile_xml_new(fname, flags);
+#endif
     case OUTPUT_FMT_MTREE:
 	return output_mtree_new(fname, flags);
     default:

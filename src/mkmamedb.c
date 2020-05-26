@@ -219,10 +219,14 @@ main(int argc, char **argv) {
 	exit(1);
 
     if (detector_name) {
+#if defined(HAVE_LIBXML2)
 	seterrinfo(detector_name, NULL);
 	detector = detector_parse(detector_name);
 	if (detector != NULL)
 	    output_detector(out, detector);
+#else
+	myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
+#endif
     }
 
 

@@ -74,9 +74,11 @@ parse(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat, outp
     c = ps_peek(ps);
 
     switch (c) {
+#if defined(HAVE_LIBXML2)
     case '<':
 	ret = parse_xml(ps, ctx);
 	break;
+#endif
     case '[':
 	ret = parse_rc(ps, ctx);
 	break;
@@ -437,12 +439,13 @@ parse_prog_header(parser_context_t *ctx, const char *name, int dummy) {
 	myerror(ERRFILESTR, "%d: cannot open detector '%s'", ctx->lineno, name);
 	return -1;
     }
-
+#if defined(HAVE_LIBXML2)
     if ((detector = detector_parse_ps(ps)) == NULL) {
 	myerror(ERRFILESTR, "%d: cannot parse detector '%s'", ctx->lineno, name);
 	ret = -1;
     }
     else
+#endif
 	ret = output_detector(ctx->output, detector);
 
     ps_close(ps);
