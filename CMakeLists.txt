@@ -8,10 +8,11 @@ PROJECT(ckmame
 
 INCLUDE(CheckFunctionExists)
 INCLUDE(CheckIncludeFiles)
-INCLUDE(FindPkgConfig)
 #INCLUDE(CheckSymbolExists)
 INCLUDE(CheckTypeSize)
 INCLUDE(GNUInstallDirs)
+INCLUDE(FindLibXml2)
+INCLUDE(FindSQLite3)
 INCLUDE(FindZLIB)
 
 FIND_PROGRAM(MDOCTOOL NAMES mandoc groff)
@@ -87,16 +88,22 @@ CHECK_TYPE_SIZE("long" HAVE_LONG)
 CHECK_TYPE_SIZE("long long" HAVE_LONG_LONG)
 CHECK_TYPE_SIZE("off_t" HAVE_SIZEOF_OFF_T)
 
-INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+IF(ZLIB_FOUND)
+  INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
+ELSE()
+  MESSAGE(ERROR "-- zlib library not found (required)")
+ENDIF()
 
 FIND_PACKAGE(libzip REQUIRED)
 INCLUDE_DIRECTORIES(${LIBZIP_INCLUDE_DIRS})
 
-PKG_CHECK_MODULES(SQLITE3 REQUIRED sqlite3)
-INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIRS})
+IF(SQLite3_FOUND)
+  INCLUDE_DIRECTORIES(${SQLite3_INCLUDE_DIRS})
+ELSE()
+  MESSAGE(ERROR "-- sqlite3 library not found (required)")
+ENDIF()
 
-PKG_CHECK_MODULES(LIBXML2 libxml-2.0)
-IF(LIBXML2_FOUND)
+IF(LibXml2_FOUND)
   SET (HAVE_LIBXML2 1)
 
   INCLUDE_DIRECTORIES(${LIBXML2_INCLUDE_DIRS})
@@ -104,28 +111,8 @@ ELSE()
   MESSAGE(WARNING "-- libxml2 library not found; XML support disabled")
 ENDIF()
 
-# Instead of using `link_directories`, collect absolute paths to libraries.
-# XXX: this should not be necessary, why is it?
-SET(MAIN_LIBS_ABSOLUTE ${ZLIB_LIBRARIES} ${LIBZIP_LIBRARIES})
-FOREACH(libname SQLITE3)
-  FOREACH(lib ${${libname}_LIBRARIES})
-    # Choose name of variable, which will contain result of `find_library`
-    # for specific library.
-    SET(var_name MAIN_${lib}_ABS)
-    # Search library under dirs, returned by pkg-config.
-    FIND_LIBRARY(${var_name} ${lib} ${${libname}_LIBRARY_DIRS})
-    LIST(APPEND MAIN_LIBS_ABSOLUTE ${${var_name}})
-  ENDFOREACH()
-ENDFOREACH()
-SET(SUPPORT_LIBS_ABSOLUTE)
-FOREACH(lib ${LIBXML2_LIBRARIES})
-  # Choose name of variable, which will contain result of `find_library`
-  # for specific library.
-  SET(var_name MAIN_${lib}_ABS)
-  # Search library under dirs, returned by pkg-config.
-  FIND_LIBRARY(${var_name} ${lib} ${${libname}_LIBRARY_DIRS})
-  LIST(APPEND SUPPORT_LIBS_ABSOLUTE ${${var_name}})
-ENDFOREACH()
+SET(MAIN_LIBS_ABSOLUTE ${ZLIB_LIBRARIES} ${LIBZIP_LIBRARIES} ${SQLite3_LIBRARIES})
+SET(SUPPORT_LIBS_ABSOLUTE ${LIBXML2_LIBRARIES})
 
 ADD_DEFINITIONS("-DHAVE_CONFIG_H")
 
