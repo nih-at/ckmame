@@ -1,42 +1,42 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.0.2)
 
-SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
-PROJECT(ckmame
+project(ckmame
   VERSION 1.0
   LANGUAGES C)
 
-INCLUDE(CheckFunctionExists)
-INCLUDE(CheckIncludeFiles)
-#INCLUDE(CheckSymbolExists)
-INCLUDE(CheckTypeSize)
-INCLUDE(GNUInstallDirs)
-INCLUDE(FindLibXml2)
-INCLUDE(FindSQLite3)
-INCLUDE(FindZLIB)
+include(CheckFunctionExists)
+include(CheckIncludeFiles)
+#include(CheckSymbolExists)
+include(CheckTypeSize)
+include(GNUInstallDirs)
+include(FindLibXml2)
+include(FindSQLite3)
+include(FindZLIB)
 
-FIND_PROGRAM(MDOCTOOL NAMES mandoc groff)
-IF (MDOCTOOL)
-  SET(DOCUMENTATION_FORMAT "mdoc" CACHE STRING "Documentation format")
-ELSE()
-  FIND_PROGRAM(MANTOOL NAMES nroff)
-  IF (MANTOOL)
-    SET(DOCUMENTATION_FORMAT "man" CACHE STRING "Documentation format")
-  ELSE()
-    SET(DOCUMENTATION_FORMAT "html" CACHE STRING "Documentation format")
-  ENDIF()
-ENDIF()
+find_program(MDOCTOOL NAMES mandoc groff)
+if(MDOCTOOL)
+  set(DOCUMENTATION_FORMAT "mdoc" CACHE STRING "Documentation format")
+else()
+  find_program(MANTOOL NAMES nroff)
+  if(MANTOOL)
+    set(DOCUMENTATION_FORMAT "man" CACHE STRING "Documentation format")
+  else()
+    set(DOCUMENTATION_FORMAT "html" CACHE STRING "Documentation format")
+  endif()
+endif()
 
-SET(PACKAGE_BUGREPORT "ckmame@nih.at")
+set(PACKAGE_BUGREPORT "ckmame@nih.at")
 
-SET(ARCHIVE_NAME ${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION})
-ADD_CUSTOM_TARGET(dist
+set(ARCHIVE_NAME ${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION})
+add_custom_target(dist
   COMMAND git config tar.tar.xz.command "xz -c"
   COMMAND git archive --prefix=${ARCHIVE_NAME}/ -o ${ARCHIVE_NAME}.tar.gz HEAD
   COMMAND git archive --prefix=${ARCHIVE_NAME}/ -o ${ARCHIVE_NAME}.tar.xz HEAD
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   )
-ADD_CUSTOM_TARGET(distcheck
+add_custom_target(distcheck
   COMMAND chmod -R u+w ${ARCHIVE_NAME} ${ARCHIVE_NAME}-build ${ARCHIVE_NAME}-dest 2>/dev/null || true
   COMMAND rm -rf ${ARCHIVE_NAME} ${ARCHIVE_NAME}-build ${ARCHIVE_NAME}-dest
   COMMAND cmake -E tar xf ${ARCHIVE_NAME}.tar.gz
@@ -55,94 +55,94 @@ ADD_CUSTOM_TARGET(distcheck
   COMMAND echo "${ARCHIVE_NAME}.tar.gz is ready for distribution."
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   )
-ADD_DEPENDENCIES(distcheck dist)
+add_dependencies(distcheck dist)
 
-CHECK_FUNCTION_EXISTS(MD5Init HAVE_MD5INIT)
-CHECK_FUNCTION_EXISTS(SHA1Init HAVE_SHA1INIT)
-CHECK_FUNCTION_EXISTS(fnmatch HAVE_FNMATCH)
-CHECK_FUNCTION_EXISTS(fseeko HAVE_FSEEKO)
-CHECK_FUNCTION_EXISTS(getopt_long HAVE_GETOPT_LONG)
-CHECK_FUNCTION_EXISTS(getprogname HAVE_GETPROGNAME)
-CHECK_FUNCTION_EXISTS(strlcpy HAVE_STRLCPY)
-CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
+check_function_exists(MD5Init HAVE_MD5INIT)
+check_function_exists(SHA1Init HAVE_SHA1INIT)
+check_function_exists(fnmatch HAVE_FNMATCH)
+check_function_exists(fseeko HAVE_FSEEKO)
+check_function_exists(getopt_long HAVE_GETOPT_LONG)
+check_function_exists(getprogname HAVE_GETPROGNAME)
+check_function_exists(strlcpy HAVE_STRLCPY)
+check_function_exists(vasprintf HAVE_VASPRINTF)
 
-CHECK_INCLUDE_FILES(dirent.h HAVE_DIRENT_H)
-CHECK_INCLUDE_FILES(inttypes.h HAVE_INTTYPES_H)
-CHECK_INCLUDE_FILES(ndir.h HAVE_NDIR_H)
-CHECK_INCLUDE_FILES(stdbool.h HAVE_STDBOOL_H)
-CHECK_INCLUDE_FILES(stdint.h HAVE_STDINT_H)
-CHECK_INCLUDE_FILES(sys/dir.h HAVE_SYS_DIR_H)
-CHECK_INCLUDE_FILES(sys/ndir.h HAVE_SYS_NDIR_H)
+check_include_files(dirent.h HAVE_DIRENT_H)
+check_include_files(inttypes.h HAVE_INTTYPES_H)
+check_include_files(ndir.h HAVE_NDIR_H)
+check_include_files(stdbool.h HAVE_STDBOOL_H)
+check_include_files(stdint.h HAVE_STDINT_H)
+check_include_files(sys/dir.h HAVE_SYS_DIR_H)
+check_include_files(sys/ndir.h HAVE_SYS_NDIR_H)
 
-CHECK_TYPE_SIZE(int8_t HAVE_INT8_T)
-CHECK_TYPE_SIZE(uint8_t HAVE_UINT8_T)
-CHECK_TYPE_SIZE(int16_t HAVE_INT16_T)
-CHECK_TYPE_SIZE(uint16_t HAVE_UINT16_T)
-CHECK_TYPE_SIZE(int32_t HAVE_INT32_T)
-CHECK_TYPE_SIZE(uint32_t HAVE_UINT32_T)
-CHECK_TYPE_SIZE(int64_t HAVE_INT64_T)
-CHECK_TYPE_SIZE(uint64_t HAVE_UINT64_T)
-CHECK_TYPE_SIZE("short" HAVE_SHORT)
-CHECK_TYPE_SIZE("int" HAVE_INT)
-CHECK_TYPE_SIZE("long" HAVE_LONG)
-CHECK_TYPE_SIZE("long long" HAVE_LONG_LONG)
-CHECK_TYPE_SIZE("off_t" HAVE_SIZEOF_OFF_T)
+check_type_size(int8_t HAVE_INT8_T)
+check_type_size(uint8_t HAVE_UINT8_T)
+check_type_size(int16_t HAVE_INT16_T)
+check_type_size(uint16_t HAVE_UINT16_T)
+check_type_size(int32_t HAVE_INT32_T)
+check_type_size(uint32_t HAVE_UINT32_T)
+check_type_size(int64_t HAVE_INT64_T)
+check_type_size(uint64_t HAVE_UINT64_T)
+check_type_size("short" HAVE_SHORT)
+check_type_size("int" HAVE_INT)
+check_type_size("long" HAVE_LONG)
+check_type_size("long long" HAVE_LONG_LONG)
+check_type_size("off_t" HAVE_SIZEOF_OFF_T)
 
-IF(ZLIB_FOUND)
-  INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
-ELSE()
-  MESSAGE(ERROR "-- zlib library not found (required)")
-ENDIF()
+if(ZLIB_FOUND)
+  include_directories(${ZLIB_INCLUDE_DIRS})
+else()
+  message(ERROR "-- zlib library not found (required)")
+endif()
 
-FIND_PACKAGE(libzip REQUIRED)
-INCLUDE_DIRECTORIES(${LIBZIP_INCLUDE_DIRS})
+find_package(libzip REQUIRED)
+include_directories(${LIBZIP_INCLUDE_DIRS})
 
-IF(SQLite3_FOUND)
-  INCLUDE_DIRECTORIES(${SQLite3_INCLUDE_DIRS})
-ELSE()
-  MESSAGE(ERROR "-- sqlite3 library not found (required)")
-ENDIF()
+if(SQLite3_FOUND)
+  include_directories(${SQLite3_INCLUDE_DIRS})
+else()
+  message(ERROR "-- sqlite3 library not found (required)")
+endif()
 
-IF(LibXml2_FOUND)
-  SET (HAVE_LIBXML2 1)
+if(LibXml2_FOUND)
+  set(HAVE_LIBXML2 1)
 
-  INCLUDE_DIRECTORIES(${LIBXML2_INCLUDE_DIRS})
-ELSE()
-  MESSAGE(WARNING "-- libxml2 library not found; XML support disabled")
-ENDIF()
+  include_directories(${LIBXML2_INCLUDE_DIRS})
+else()
+  message(WARNING "-- libxml2 library not found; XML support disabled")
+endif()
 
-SET(MAIN_LIBS_ABSOLUTE ${ZLIB_LIBRARIES} ${LIBZIP_LIBRARIES} ${SQLite3_LIBRARIES})
-SET(SUPPORT_LIBS_ABSOLUTE ${LIBXML2_LIBRARIES})
+set(MAIN_LIBS_ABSOLUTE ${ZLIB_LIBRARIES} ${LIBZIP_LIBRARIES} ${SQLite3_LIBRARIES})
+set(SUPPORT_LIBS_ABSOLUTE ${LIBXML2_LIBRARIES})
 
-ADD_DEFINITIONS("-DHAVE_CONFIG_H")
+add_definitions("-DHAVE_CONFIG_H")
 
 # install with rpath
-IF(NOT CMAKE_SYSTEM_NAME MATCHES Linux)
-  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-ENDIF()
+if(NOT CMAKE_SYSTEM_NAME MATCHES Linux)
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+endif()
 
 # Testing
-ENABLE_TESTING()
+enable_testing()
 
 # Targets
-ADD_SUBDIRECTORY(docs)
-ADD_SUBDIRECTORY(src)
-ADD_SUBDIRECTORY(regress)
+add_subdirectory(docs)
+add_subdirectory(src)
+add_subdirectory(regress)
 
 # write out config file
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/cmake-config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake-config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # for code completion frameworks
-SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # for tests
 
-SET(srcdir ${CMAKE_CURRENT_SOURCE_DIR}/regress)
-SET(abs_srcdir ${CMAKE_CURRENT_SOURCE_DIR}/regress)
-SET(top_builddir ${CMAKE_BINARY_DIR})
+set(srcdir ${CMAKE_CURRENT_SOURCE_DIR}/regress)
+set(abs_srcdir ${CMAKE_CURRENT_SOURCE_DIR}/regress)
+set(top_builddir ${CMAKE_BINARY_DIR})
 
-CONFIGURE_FILE(regress/runtest.in ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/runtest @ONLY)
-FILE(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/runtest
+configure_file(regress/runtest.in ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/runtest @ONLY)
+file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/runtest
   DESTINATION ${CMAKE_BINARY_DIR}/regress
   FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )

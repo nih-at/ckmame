@@ -1,26 +1,26 @@
 # for config.h
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/..)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/..)
 
-SET(SUPPORT_PROGRAMS
+set(SUPPORT_PROGRAMS
   dbdump
   dbrestore
 )
 
-SET(ENV{srcdir} ${CMAKE_CURRENT_SOURCE_DIR})
+set(ENV{srcdir} ${CMAKE_CURRENT_SOURCE_DIR})
 
-FOREACH(PROGRAM ${SUPPORT_PROGRAMS})
-  ADD_EXECUTABLE(${PROGRAM} ${PROGRAM}.c)
-  TARGET_LINK_LIBRARIES(${PROGRAM} libckmame ${MAIN_LIBS_ABSOLUTE})
-ENDFOREACH()
+foreach(PROGRAM ${SUPPORT_PROGRAMS})
+  add_executable(${PROGRAM} ${PROGRAM}.c)
+  target_link_libraries(${PROGRAM} libckmame ${MAIN_LIBS_ABSOLUTE})
+endforeach()
 
-ADD_LIBRARY(fwrite MODULE fwrite.c)
-TARGET_LINK_LIBRARIES(fwrite ${CMAKE_DL_LIBS})
+add_library(fwrite MODULE fwrite.c)
+target_link_libraries(fwrite ${CMAKE_DL_LIBS})
 
-ADD_CUSTOM_TARGET(cleanup
+add_custom_target(cleanup
   COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/cleanup.cmake
   )
 
-SET(DBS
+set(DBS
   mame.db
   mamedb-1-8-is-4.db
   mamedb-baddump.db
@@ -37,22 +37,22 @@ SET(DBS
   mamedb-xml-quoting.db
   )
 
-FOREACH(db ${DBS})
-  GET_FILENAME_COMPONENT(main ${db} NAME_WE)
-  ADD_CUSTOM_COMMAND(OUTPUT "${db}"
+foreach(db ${DBS})
+  get_filename_component(main ${db} NAME_WE)
+  add_custom_command(OUTPUT "${db}"
     COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/${main}.txt"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${main}.txt"
     COMMENT "Generating ${db}"
     )
-ENDFOREACH()
+endforeach()
 
-ADD_CUSTOM_TARGET(testinput
+add_custom_target(testinput
   ALL
   VERBATIM
   DEPENDS ${DBS}
   )
 
-ADD_CUSTOM_TARGET(update-mamedb.dump
+add_custom_target(update-mamedb.dump
   COMMAND dbdump ${CMAKE_CURRENT_BINARY_DIR}/mame.db > ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-ok.dump
   COMMAND dbdump ${CMAKE_CURRENT_BINARY_DIR}/mamedb-lost-parent-ok.db > ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-lost-parent.dump
   COMMAND mkmamedb -o mame.db.tmp ${CMAKE_CURRENT_SOURCE_DIR}/mame.txt ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-lost-parent-ok.txt
@@ -66,7 +66,7 @@ ADD_CUSTOM_TARGET(update-mamedb.dump
   DEPENDS ${DBS}
 )
 
-SET(EXTRA_TESTS
+set(EXTRA_TESTS
   archive-broken.test
   archive-broken2.test
   baddump.test
@@ -270,7 +270,7 @@ SET(EXTRA_TESTS
   zero.test
 )
 
-SET(XFAIL_TESTS
+set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   disk-swapmerge.test
@@ -285,15 +285,15 @@ SET(XFAIL_TESTS
   uncompressed-toplevel-roms.test
 )
 	      
-FOREACH(CASE ${EXTRA_TESTS})
-  ADD_TEST(${CASE} perl ${CMAKE_BINARY_DIR}/regress/runtest ${CMAKE_CURRENT_SOURCE_DIR}/${CASE})
-  SET_TESTS_PROPERTIES(${CASE} PROPERTIES SKIP_RETURN_CODE 77)
-ENDFOREACH()
+foreach(CASE ${EXTRA_TESTS})
+  add_test(${CASE} perl ${CMAKE_BINARY_DIR}/regress/runtest ${CMAKE_CURRENT_SOURCE_DIR}/${CASE})
+  set_tests_properties(${CASE} PROPERTIES SKIP_RETURN_CODE 77)
+endforeach()
 
-FOREACH(CASE ${XFAIL_TESTS})
-  SET_TESTS_PROPERTIES(${CASE} PROPERTIES WILL_FAIL TRUE)
-ENDFOREACH()
+foreach(CASE ${XFAIL_TESTS})
+  set_tests_properties(${CASE} PROPERTIES WILL_FAIL TRUE)
+endforeach()
 
-INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/../src CMAKE_CURRENT_BINARY_DIR}/../src)
+include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/../src CMAKE_CURRENT_BINARY_DIR}/../src)
 
-ADD_CUSTOM_TARGET(check COMMAND ${CMAKE_CTEST_COMMAND})
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})

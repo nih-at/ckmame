@@ -1,24 +1,24 @@
 # for config.h
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/..)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/..)
 
-SET(COMPATIBILITY)
-IF(NOT HAVE_GETPROGRAME)
-  LIST(APPEND COMPATIBILITY getprogname.c)
-ENDIF()
-IF(NOT HAVE_MD5INIT)
-  LIST(APPEND COMPATIBILITY md5.c)
-ENDIF()
-IF(NOT HAVE_SHA1INIT)
-  LIST(APPEND COMPATIBILITY sha1.c)
-ENDIF()
-IF(NOT HAVE_STRLCPY)
-  LIST(APPEND COMPATIBILITY strlcpy.c)
-ENDIF()
-IF(NOT HAVE_VASPRINTF)
-  LIST(APPEND COMPATIBILITY vasprintf.c)
-ENDIF()
+set(COMPATIBILITY)
+if(NOT HAVE_GETPROGRAME)
+  list(APPEND COMPATIBILITY getprogname.c)
+endif()
+if(NOT HAVE_MD5INIT)
+  list(APPEND COMPATIBILITY md5.c)
+endif()
+if(NOT HAVE_SHA1INIT)
+  list(APPEND COMPATIBILITY sha1.c)
+endif()
+if(NOT HAVE_STRLCPY)
+  list(APPEND COMPATIBILITY strlcpy.c)
+endif()
+if(NOT HAVE_VASPRINTF)
+  list(APPEND COMPATIBILITY vasprintf.c)
+endif()
 
-SET(COMMON_SOURCES
+set(COMMON_SOURCES
   archive.c
   archive_dir.c
   archive_file_compare_hashes.c
@@ -128,7 +128,7 @@ SET(COMMON_SOURCES
   ${COMPATIBILITY}
   )
 
-SET(LIBXML2_SOURCES
+set(LIBXML2_SOURCES
   detector_parse.c
   detector_parse_ps.c
   output_datafile_xml.c
@@ -136,33 +136,33 @@ SET(LIBXML2_SOURCES
   xmlutil.c
   )  
 
-IF(LIBXML2_FOUND)
-  LIST(APPEND COMMON_SOURCES ${LIBXML2_SOURCES})
-ENDIF()
+if(LIBXML2_FOUND)
+  list(APPEND COMMON_SOURCES ${LIBXML2_SOURCES})
+endif()
 
 
-ADD_LIBRARY(libckmame ${COMMON_SOURCES})
-TARGET_LINK_LIBRARIES(libckmame ${ZLIB_LIBRARIES})
-SET_PROPERTY(TARGET libckmame PROPERTY C_STANDARD 99)
-SET_PROPERTY(TARGET libckmame PROPERTY C_STANDARD_REQUIRED ON)
+add_library(libckmame ${COMMON_SOURCES})
+target_link_libraries(libckmame ${ZLIB_LIBRARIES})
+set_property(TARGET libckmame PROPERTY C_STANDARD 99)
+set_property(TARGET libckmame PROPERTY C_STANDARD_REQUIRED ON)
 
-FOREACH(PROGRAM ckmame detective dumpgame mkmamedb)
-  ADD_EXECUTABLE(${PROGRAM} ${PROGRAM}.c)
-  TARGET_LINK_LIBRARIES(${PROGRAM} libckmame ${MAIN_LIBS_ABSOLUTE})
-  INSTALL(TARGETS ${PROGRAM} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-  SET_PROPERTY(TARGET ${PROGRAM} PROPERTY C_STANDARD 99)
-  SET_PROPERTY(TARGET ${PROGRAM} PROPERTY C_STANDARD_REQUIRED ON)
-ENDFOREACH()
+foreach(PROGRAM ckmame detective dumpgame mkmamedb)
+  add_executable(${PROGRAM} ${PROGRAM}.c)
+  target_link_libraries(${PROGRAM} libckmame ${MAIN_LIBS_ABSOLUTE})
+  install(TARGETS ${PROGRAM} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  set_property(TARGET ${PROGRAM} PROPERTY C_STANDARD 99)
+  set_property(TARGET ${PROGRAM} PROPERTY C_STANDARD_REQUIRED ON)
+endforeach()
 
-FOREACH(PROGRAM ckmame detective mkmamedb)
-  TARGET_LINK_LIBRARIES(${PROGRAM} ${SUPPORT_LIBS_ABSOLUTE})
-ENDFOREACH()
+foreach(PROGRAM ckmame detective mkmamedb)
+  target_link_libraries(${PROGRAM} ${SUPPORT_LIBS_ABSOLUTE})
+endforeach()
 
-#ADD_EXECUTABLE(mamedb mamedb.c mamedb_add.c mamedb_cmdtab.c mamedb_help.c mamedb_new.c)
-#TARGET_LINK_LIBRARIES(mamedb libckmame ${MAIN_LIBS_ABSOLUTE})
-#INSTALL(TARGETS mamedb RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+#add_executable(mamedb mamedb.c mamedb_add.c mamedb_cmdtab.c mamedb_help.c mamedb_new.c)
+#target_link_libraries(mamedb libckmame ${MAIN_LIBS_ABSOLUTE})
+#install(TARGETS mamedb RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-ADD_CUSTOM_TARGET(update_dbh_statements
+add_custom_target(update_dbh_statements
   COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/mkstatements.pl ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.in ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.c ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.h
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.in ${CMAKE_CURRENT_SOURCE_DIR}/mkstatements.pl
 )
