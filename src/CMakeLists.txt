@@ -138,9 +138,9 @@ endif()
 
 
 add_library(libckmame ${COMMON_SOURCES})
-target_link_libraries(libckmame PRIVATE ZLIB::ZLIB)
+target_link_libraries(libckmame PRIVATE ZLIB::ZLIB libzip::zip)
 # for config.h
-target_include_directories(libckmame PRIVATE ${PROJECT_BINARY_DIR} ${LIBRARY_INCLUDE_DIRS})
+target_include_directories(libckmame PRIVATE ${PROJECT_BINARY_DIR})
 set_property(TARGET libckmame PROPERTY C_STANDARD 99)
 set_property(TARGET libckmame PROPERTY C_STANDARD_REQUIRED ON)
 
@@ -148,7 +148,7 @@ foreach(PROGRAM ckmame detective dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.c)
   target_link_libraries(${PROGRAM} PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
   # for config.h
-  target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR} ${LIBRARY_INCLUDE_DIRS})
+  target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
 
   install(TARGETS ${PROGRAM} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
   set_property(TARGET ${PROGRAM} PROPERTY C_STANDARD 99)
@@ -156,8 +156,8 @@ foreach(PROGRAM ckmame detective dumpgame mkmamedb)
 endforeach()
 
 if(LibXml2_FOUND)
-  foreach(PROGRAM ckmame detective mkmamedb)
-    target_link_libraries(${PROGRAM} PRIVATE LibXml2::LibXml2)
+  foreach(TARGET ckmame detective mkmamedb libckmame)
+    target_link_libraries(${TARGET} PRIVATE LibXml2::LibXml2)
   endforeach()
 endif()
 

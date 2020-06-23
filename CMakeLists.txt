@@ -104,8 +104,6 @@ else()
   message(WARNING "-- libxml2 library not found; XML support disabled")
 endif()
 
-set(LIBRARY_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS} ${LIBZIP_INCLUDE_DIRS} ${SQLite3_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS})
-
 # install with rpath
 if(NOT CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
