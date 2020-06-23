@@ -1,6 +1,3 @@
-# for config.h
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/..)
-
 set(COMPATIBILITY)
 if(NOT HAVE_GETPROGRAME)
   list(APPEND COMPATIBILITY getprogname.c)
@@ -143,12 +140,16 @@ endif()
 
 add_library(libckmame ${COMMON_SOURCES})
 target_link_libraries(libckmame ${ZLIB_LIBRARIES})
+# for config.h
+target_include_directories(libckmame PRIVATE ${PROJECT_BINARY_DIR} ${LIBRARY_INCLUDE_DIRS})
 set_property(TARGET libckmame PROPERTY C_STANDARD 99)
 set_property(TARGET libckmame PROPERTY C_STANDARD_REQUIRED ON)
 
 foreach(PROGRAM ckmame detective dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.c)
   target_link_libraries(${PROGRAM} libckmame ${MAIN_LIBS_ABSOLUTE})
+  # for config.h
+  target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR} ${LIBRARY_INCLUDE_DIRS})
   install(TARGETS ${PROGRAM} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
   set_property(TARGET ${PROGRAM} PROPERTY C_STANDARD 99)
   set_property(TARGET ${PROGRAM} PROPERTY C_STANDARD_REQUIRED ON)

@@ -88,29 +88,23 @@ check_type_size("long" HAVE_LONG)
 check_type_size("long long" HAVE_LONG_LONG)
 check_type_size("off_t" HAVE_SIZEOF_OFF_T)
 
-if(ZLIB_FOUND)
-  include_directories(${ZLIB_INCLUDE_DIRS})
-else()
+if(NOT ZLIB_FOUND)
   message(ERROR "-- zlib library not found (required)")
 endif()
 
 find_package(libzip REQUIRED)
-include_directories(${LIBZIP_INCLUDE_DIRS})
 
-if(SQLite3_FOUND)
-  include_directories(${SQLite3_INCLUDE_DIRS})
-else()
+if(NOT SQLite3_FOUND)
   message(ERROR "-- sqlite3 library not found (required)")
 endif()
 
 if(LibXml2_FOUND)
   set(HAVE_LIBXML2 1)
-
-  include_directories(${LIBXML2_INCLUDE_DIRS})
 else()
   message(WARNING "-- libxml2 library not found; XML support disabled")
 endif()
 
+set(LIBRARY_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS} ${LIBZIP_INCLUDE_DIRS} ${SQLite3_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS})
 set(MAIN_LIBS_ABSOLUTE ${ZLIB_LIBRARIES} ${LIBZIP_LIBRARIES} ${SQLite3_LIBRARIES})
 set(SUPPORT_LIBS_ABSOLUTE ${LIBXML2_LIBRARIES})
 

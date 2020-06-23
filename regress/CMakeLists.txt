@@ -1,6 +1,3 @@
-# for config.h
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/..)
-
 set(SUPPORT_PROGRAMS
   dbdump
   dbrestore
@@ -10,6 +7,10 @@ set(ENV{srcdir} ${CMAKE_CURRENT_SOURCE_DIR})
 
 foreach(PROGRAM ${SUPPORT_PROGRAMS})
   add_executable(${PROGRAM} ${PROGRAM}.c)
+  # for config.h
+  target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
+  # compat.h
+  target_include_directories(${PROGRAM} BEFORE PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src)
   target_link_libraries(${PROGRAM} libckmame ${MAIN_LIBS_ABSOLUTE})
 endforeach()
 
@@ -293,7 +294,5 @@ endforeach()
 foreach(CASE ${XFAIL_TESTS})
   set_tests_properties(${CASE} PROPERTIES WILL_FAIL TRUE)
 endforeach()
-
-include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/../src CMAKE_CURRENT_BINARY_DIR}/../src)
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
