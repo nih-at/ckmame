@@ -150,7 +150,7 @@ foreach(PROGRAM ckmame detective dumpgame mkmamedb)
   # for config.h
   target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
 
-  install(TARGETS ${PROGRAM} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  install(TARGETS ${PROGRAM} RUNTIME DESTINATION bin)
   set_property(TARGET ${PROGRAM} PROPERTY C_STANDARD 99)
   set_property(TARGET ${PROGRAM} PROPERTY C_STANDARD_REQUIRED ON)
 endforeach()
@@ -163,7 +163,7 @@ endif()
 
 #add_executable(mamedb mamedb.c mamedb_add.c mamedb_cmdtab.c mamedb_help.c mamedb_new.c)
 #target_link_libraries(mamedb PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
-#install(TARGETS mamedb RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+#install(TARGETS mamedb RUNTIME DESTINATION bin)
 
 add_custom_target(update_dbh_statements
   COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/mkstatements.pl ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.in ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.c ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.h
