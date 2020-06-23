@@ -138,7 +138,7 @@ endif()
 
 
 add_library(libckmame ${COMMON_SOURCES})
-target_link_libraries(libckmame ZLIB::ZLIB)
+target_link_libraries(libckmame PRIVATE ZLIB::ZLIB)
 # for config.h
 target_include_directories(libckmame PRIVATE ${PROJECT_BINARY_DIR} ${LIBRARY_INCLUDE_DIRS})
 set_property(TARGET libckmame PROPERTY C_STANDARD 99)
@@ -146,7 +146,7 @@ set_property(TARGET libckmame PROPERTY C_STANDARD_REQUIRED ON)
 
 foreach(PROGRAM ckmame detective dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.c)
-  target_link_libraries(${PROGRAM} libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
+  target_link_libraries(${PROGRAM} PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
   # for config.h
   target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR} ${LIBRARY_INCLUDE_DIRS})
 
@@ -157,12 +157,12 @@ endforeach()
 
 if(LibXml2_FOUND)
   foreach(PROGRAM ckmame detective mkmamedb)
-    target_link_libraries(${PROGRAM} LibXml2::LibXml2)
+    target_link_libraries(${PROGRAM} PRIVATE LibXml2::LibXml2)
   endforeach()
 endif()
 
 #add_executable(mamedb mamedb.c mamedb_add.c mamedb_cmdtab.c mamedb_help.c mamedb_new.c)
-#target_link_libraries(mamedb libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
+#target_link_libraries(mamedb PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
 #install(TARGETS mamedb RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 add_custom_target(update_dbh_statements
