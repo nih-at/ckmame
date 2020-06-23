@@ -36,11 +36,9 @@
 
 /* From heimdal lib/roken/snprintf.c. */
 
-#ifdef HAVE_CONFIG_H
 #include <config.h>
 #if 0
 RCSID("$Id: snprintf.c,v 1.1 2002/10/10 15:22:14 dillo Exp $");
-#endif
 #endif
 #include <ctype.h>
 #include <stdarg.h>
