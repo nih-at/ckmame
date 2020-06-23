@@ -11,7 +11,7 @@ foreach(PROGRAM ${SUPPORT_PROGRAMS})
   target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
   # compat.h
   target_include_directories(${PROGRAM} BEFORE PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src)
-  target_link_libraries(${PROGRAM} libckmame ${MAIN_LIBS_ABSOLUTE})
+  target_link_libraries(${PROGRAM} libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
 endforeach()
 
 add_library(fwrite MODULE fwrite.c)
