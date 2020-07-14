@@ -10,6 +10,8 @@
 
 - add option to keep ROMs with detector applied
 
+- bug: when creating a fixdat and re-checks happen, games end up in the fixdat multiple times
+
 # Later
 
 * convert runtest to use ziptool instead of unzip
