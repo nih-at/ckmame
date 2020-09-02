@@ -322,13 +322,13 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
     original_names = xmalloc(sizeof(original_names[0]) * num_names);
     memset(original_names, 0, sizeof(original_names[0]) * num_names);
 
-    for (i = 0; i < game_num_files(g); i++) {
+    for (i = 0; i < game_num_roms(g); i++) {
 	m = result_rom(res, i);
 	if (match_source_is_old(m))
 	    afrom = NULL;
 	else
 	    afrom = match_archive(m);
-	r = game_file(g, i);
+	r = game_rom(g, i);
 	seterrinfo(file_name(r), archive_name(a));
 
 	switch (match_quality(m)) {
@@ -456,13 +456,13 @@ fix_files_incomplete(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 
     seterrinfo(NULL, archive_name(a));
 
-    for (i = 0; i < game_num_files(g); i++) {
+    for (i = 0; i < game_num_roms(g); i++) {
 	m = result_rom(res, i);
 	if (match_source_is_old(m))
 	    afrom = NULL;
 	else
 	    afrom = match_archive(m);
-	r = game_file(g, i);
+	r = game_rom(g, i);
 	seterrinfo(file_name(r), archive_name(a));
 
 	switch (match_quality(m)) {

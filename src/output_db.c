@@ -109,10 +109,10 @@ familymeeting(romdb_t *db, filetype_t ft, game_t *parent, game_t *child) {
 
 
     /* look for ROMs in parent */
-    for (i = 0; i < game_num_files(child); i++) {
-	cr = game_file(child, i);
-	for (j = 0; j < game_num_files(parent); j++) {
-	    pr = game_file(parent, j);
+    for (i = 0; i < game_num_roms(child); i++) {
+	cr = game_rom(child, i);
+	for (j = 0; j < game_num_roms(parent); j++) {
+	    pr = game_rom(parent, j);
 	    if (file_compare_msc(cr, pr)) {
 		file_where(cr) = (where_t)(file_where(pr) + 1);
 		break;

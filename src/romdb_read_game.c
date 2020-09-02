@@ -50,7 +50,6 @@ game_t *
 romdb_read_game(romdb_t *db, const char *name) {
     sqlite3_stmt *stmt;
     game_t *game;
-    int i;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_GAME)) == NULL)
 	return NULL;
@@ -140,7 +139,7 @@ read_rs(romdb_t *db, game_t *g) {
 	return -1;
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	r = (file_t *)array_grow(game_files(g), file_init);
+	r = (file_t *)array_grow(game_roms(g), file_init);
 
 	file_name(r) = sq3_get_string(stmt, 0);
 	file_merge(r) = sq3_get_string(stmt, 1);

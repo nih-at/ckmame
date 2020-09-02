@@ -63,7 +63,7 @@ result_new(const game_t *g, const archive_t *a, const images_t *im) {
     result_images(res) = NULL;
 
     if (g) {
-	res->roms = match_array_new(game_num_files(g));
+	res->roms = match_array_new(game_num_roms(g));
 
 	if (game_num_disks(g) > 0)
 	    result_disks(res) = match_disk_array_new(game_num_disks(g));

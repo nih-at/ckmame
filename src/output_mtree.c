@@ -182,8 +182,8 @@ output_mtree_game(output_context_t *out, game_t *g) {
     dirname = strsvis_cstyle(game_name(g));
 
     fprintf(ctx->f, "./%s type=dir\n", dirname);
-    for (i = 0; i < game_num_files(g); i++) {
-	r = game_file(g, i);
+    for (i = 0; i < game_num_roms(g); i++) {
+	r = game_rom(g, i);
 
 	filename = strsvis_cstyle(file_name(r));
 	fprintf(ctx->f, "./%s/%s type=file size=%" PRIu64, dirname, filename, file_size(r));

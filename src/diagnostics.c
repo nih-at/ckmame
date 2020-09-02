@@ -187,7 +187,7 @@ diagnostics_files(const game_t *game, const result_t *res) {
 	    return;
 	else {
 	    all_same = 1;
-	    for (i = 1; i < game_num_files(game); i++) {
+	    for (i = 1; i < game_num_roms(game); i++) {
 		if (strcmp(match_old_game(result_rom(res, 0)), match_old_game(result_rom(res, i))) != 0) {
 		    all_same = 0;
 		    break;
@@ -211,9 +211,9 @@ diagnostics_files(const game_t *game, const result_t *res) {
         return;
     }
 
-    for (i = 0; i < game_num_files(game); i++) {
+    for (i = 0; i < game_num_roms(game); i++) {
 	m = result_rom(res, i);
-	r = game_file(game, i);
+	r = game_rom(game, i);
 	if (!match_source_is_old(m) && match_archive(m))
 	    f = archive_file(match_archive(m), match_index(m));
 	else

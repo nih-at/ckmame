@@ -41,7 +41,6 @@
 game_t *
 game_new(void) {
     game_t *g;
-    int i;
 
     g = xmalloc(sizeof(*g));
 
@@ -58,7 +57,6 @@ game_new(void) {
 
 void
 game_free(game_t *g) {
-    int i;
 
     if (g == NULL)
 	return;

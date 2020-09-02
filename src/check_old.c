@@ -46,8 +46,8 @@ check_old(game_t *g, result_t *res) {
 	return;
 
     all_old = 1;
-    for (i = 0; i < game_num_files(g); i++) {
-	if (find_in_old(game_file(g, i), NULL, result_rom(res, i)) != FIND_EXISTS)
+    for (i = 0; i < game_num_roms(g); i++) {
+	if (find_in_old(game_rom(g, i), NULL, result_rom(res, i)) != FIND_EXISTS)
 	    all_old = 0;
     }
 

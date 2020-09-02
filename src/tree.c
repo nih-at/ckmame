@@ -134,13 +134,13 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
     for (i = 0; i < array_length(a); i++) {
 	fbh = array_get(a, i);
 
-	if ((g = romdb_read_game(db, file_location_name(fbh))) == NULL || game_num_files(g) <= file_location_index(fbh)) {
+	if ((g = romdb_read_game(db, file_location_name(fbh))) == NULL || game_num_roms(g) <= file_location_index(fbh)) {
 	    /* TODO: internal error: db inconsistency */
 	    ret = -1;
 	    continue;
 	}
 
-	gr = game_file(g, file_location_index(fbh));
+	gr = game_rom(g, file_location_index(fbh));
 
 	if (size == file_size(gr) && hashes_cmp(hashes, file_hashes(gr)) == HASHES_CMP_MATCH && file_where(gr) == FILE_INZIP)
 	    tree_recheck(tree, game_name(g));

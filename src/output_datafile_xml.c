@@ -156,8 +156,8 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
     /* description is actually required */
     xmlNewTextChild(game, NULL, (const xmlChar *)"description", (const xmlChar *)(game_description(g) ? game_description(g) : game_name(g)));
 
-    for (i = 0; i < game_num_files(g); i++) {
-	r = game_file(g, i);
+    for (i = 0; i < game_num_roms(g); i++) {
+	r = game_rom(g, i);
         xmlNodePtr rom = xmlNewChild(game, NULL, (const xmlChar *)"rom", NULL);
         
         set_attribute(rom, "name", file_name(r));

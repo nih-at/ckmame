@@ -158,7 +158,7 @@ print_match(game_t *game, filetype_t ft, int i) {
     if (ft == TYPE_DISK)
 	print_diskline(game_disk(game, i));
     else
-	print_romline(game_file(game, i));
+	print_romline(game_rom(game, i));
 }
 
 
@@ -351,10 +351,10 @@ print_rs(game_t *game, const char *co, const char *gco, const char *cs, const ch
 	return;
     }
 
-    if (game_num_files(game) > 0) {
+    if (game_num_roms(game) > 0) {
 	printf("%s:\n", fs);
-	for (i = 0; i < game_num_files(game); i++)
-	    print_romline(game_file(game, i));
+	for (i = 0; i < game_num_roms(game); i++)
+	    print_romline(game_rom(game, i));
     }
 }
 

@@ -61,14 +61,14 @@ typedef struct game game_t;
 
 #define game_disks(g) ((g)->disks)
 
-#define game_file(g, i) ((file_t *)array_get(game_files(g), (i)))
+#define game_rom(g, i) ((file_t *)array_get(game_roms(g), (i)))
 
-#define game_files(g) ((g)->roms)
+#define game_roms(g) ((g)->roms)
 
 #define game_id(g) ((g)->id)
 #define game_num_clones(g) (array_length(game_clones(g)))
 #define game_num_disks(g) (array_length(game_disks(g)))
-#define game_num_files(g) (array_length(game_files(g)))
+#define game_num_roms(g) (array_length(game_roms(g)))
 #define game_name(g) ((g)->name)
 
 void game_add_clone(game_t *, filetype_t, const char *);
