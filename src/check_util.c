@@ -88,8 +88,7 @@ ensure_extra_maps(int flags) {
 		}
 		break;
 	    case NAME_CHD:
-	    case NAME_NOEXT:
-		if ((d = disk_new(file, (nt == NAME_NOEXT ? DISK_FL_QUIET : 0))) != NULL) {
+		if ((d = disk_new(file, 0)) != NULL) {
 		    enter_disk_in_map(d, FILE_SUPERFLUOUS);
 		    disk_free(d);
 		}
@@ -129,7 +128,7 @@ ensure_needed_maps(void) {
 
 
 char *
-findfile(const char *name, filetype_t what) {
+findfile(const char *name, filetype_t what, const char *game_name) {
     char *fn;
     struct stat st;
 
@@ -140,7 +139,7 @@ findfile(const char *name, filetype_t what) {
 	    return NULL;
     }
 
-    fn = make_file_name(what, name);
+    fn = make_file_name(what, name, game_name);
     if (stat(fn, &st) == 0)
 	return fn;
     if (what == TYPE_DISK) {
@@ -155,20 +154,21 @@ findfile(const char *name, filetype_t what) {
 
 
 char *
-make_file_name(filetype_t ft, const char *name) {
+make_file_name(filetype_t ft, const char *name, const char *game_name) {
     char *fn;
     const char *dir, *ext;
 
     dir = get_directory(ft);
 
-    if (ft == TYPE_DISK)
+    if (ft == TYPE_DISK) {
 	ext = ".chd";
-    else
+    }
+    else {
 	ext = roms_unzipped ? "" : ".zip";
+	game_name = NULL;
+    }
 
-    fn = xmalloc(strlen(dir) + strlen(name) + 7);
-
-    sprintf(fn, "%s/%s%s", dir, name, ext);
+    xasprintf(&fn, "%s/%s%s%s%s", dir, game_name ? game_name : "", game_name ? "/" : "", name, ext);
 
     return fn;
 }
@@ -335,8 +335,7 @@ enter_file_in_map_and_list(int flags, parray_t *list, const char *name, where_t 
 	break;
 
     case NAME_CHD:
-    case NAME_NOEXT:
-	if ((d = disk_new(name, (nt == NAME_NOEXT ? DISK_FL_QUIET : 0))) != NULL) {
+	if ((d = disk_new(name, 0)) != NULL) {
 	    if (flags & DO_MAP) {
 		enter_disk_in_map(d, where);
 	    }

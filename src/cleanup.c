@@ -96,8 +96,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
 	    break;
 
 	case NAME_CHD:
-	case NAME_NOEXT:
-	    if ((im = images_new_name(name, nt == NAME_NOEXT ? DISK_FL_QUIET : 0)) == NULL) {
+	    if ((im = images_new_name(name, 0)) == NULL) {
 		/* TODO */
 		continue;
 	    }

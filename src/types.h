@@ -113,7 +113,7 @@ enum filetype {
 
 typedef enum filetype filetype_t;
 
-enum name_type { NAME_ZIP, NAME_CHD, NAME_NOEXT, NAME_UNKNOWN };
+enum name_type { NAME_ZIP, NAME_CHD, NAME_UNKNOWN };
 
 typedef enum name_type name_type_t;
 

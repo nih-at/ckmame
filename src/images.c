@@ -58,9 +58,9 @@ images_new(const game_t *g, int flags) {
     im = parray_new_sized(game_num_disks(g));
 
     for (i = 0; i < game_num_disks(g); i++) {
-	fname = findfile(disk_name(game_disk(g, i)), TYPE_DISK);
+	fname = findfile(disk_name(game_disk(g, i)), TYPE_DISK, game_name(g));
 	if (fname == NULL && disk_merge(game_disk(g, i)) != NULL)
-	    fname = findfile(disk_merge(game_disk(g, i)), TYPE_DISK);
+	    fname = findfile(disk_merge(game_disk(g, i)), TYPE_DISK, game_name(g));
 	if (fname == NULL)
 	    parray_push(im, NULL);
 	else {

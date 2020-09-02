@@ -3,10 +3,10 @@ variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivc disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file-del roms/108-5.chd 108-2.chd
+file-del roms/disk/108-5.chd 108-2.chd
 file-new needed/d9cedd2875a8b4e11de39b0fe935e323-000.chd 108-2.chd
 stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: wrong checksum
-stdout image roms/108-5.chd: needed elsewhere
-stdout roms/108-5.chd: save needed image
+stdout image roms/disk/108-5.chd: needed elsewhere
+stdout roms/disk/108-5.chd: save needed image

@@ -169,9 +169,9 @@ tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent) {
 
 	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | romdb_hashtypes(db, TYPE_ROM)) : 0));
 
-	full_name = findfile(tree->name, file_type);
+	full_name = findfile(tree->name, file_type, NULL);
 	if (full_name == NULL && tree->check) {
-	    full_name = make_file_name(file_type, tree->name);
+	    full_name = make_file_name(file_type, tree->name, NULL);
 	}
 	if (full_name)
 	    child = archive_new(full_name, TYPE_ROM, FILE_ROMSET, flags);
