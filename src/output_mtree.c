@@ -173,7 +173,7 @@ output_mtree_game(output_context_t *out, game_t *g) {
     file_t *r;
     disk_t *d;
     int i;
-    char *fl;
+    char *fl = NULL;
     char *dirname;
     char *filename;
 

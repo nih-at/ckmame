@@ -229,7 +229,7 @@ execute_rule(detector_t *d, detector_rule_t *dr, file_t *r, struct ctx *ctx) {
 static int
 execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx) {
     int64_t off;
-    int ret;
+    int ret = 0;
 
     switch (detector_test_type(dt)) {
     case DETECTOR_TEST_DATA:
