@@ -1,3 +1,8 @@
+1.1 (2020-xx-xx)
+=================
+* Follow MAME in expecting disk images in subdirectories.
+* Remove broken support for checking samples.
+
 1.0 (2018-12-18)
 =================
 
