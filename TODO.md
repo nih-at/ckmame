@@ -12,7 +12,9 @@
 
 - bug: when creating a fixdat and re-checks happen, games end up in the fixdat multiple times
 
-- remove sample support (currently broken, and no checksums available so no useful checking possible)
+- clean up database statements with hardcoded filetype, like sqlite3_bind_int(x, y, TYPE_ROM)
+
+- clean up src/output_db.c (loops over 1 iteration)
 
 # Later
 

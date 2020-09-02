@@ -75,7 +75,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 	    else if (strcmp(cmd, "description") == 0)
 		parse_game_description(ctx, gettok(&l));
 	    else if (strcmp(cmd, "romof") == 0)
-		parse_game_cloneof(ctx, TYPE_ROM, 0, gettok(&l));
+		parse_game_cloneof(ctx, 0, gettok(&l));
 	    else if (strcmp(cmd, "rom") == 0) {
 		gettok(&l);
 		if (strcmp(gettok(&l), "name") != 0) {
@@ -188,13 +188,6 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 		    */
 		}
 		parse_file_end(ctx, TYPE_DISK);
-	    }
-	    else if (strcmp(cmd, "sampleof") == 0)
-		parse_game_cloneof(ctx, TYPE_SAMPLE, 0, gettok(&l));
-	    else if (strcmp(cmd, "sample") == 0) {
-		parse_file_start(ctx, TYPE_SAMPLE);
-		parse_file_name(ctx, TYPE_SAMPLE, 0, gettok(&l));
-		parse_file_end(ctx, TYPE_SAMPLE);
 	    }
 	    else if (strcmp(cmd, "archive") == 0) {
 		/* TODO: archive names */

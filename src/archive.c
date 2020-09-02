@@ -340,7 +340,6 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags) {
 
     switch (ft) {
     case TYPE_ROM:
-    case TYPE_SAMPLE:
 	archive_filetype(a) = TYPE_ROM;
 	if ((roms_unzipped ? archive_init_dir(a) : archive_init_zip(a)) < 0) {
 	    archive_real_free(a);

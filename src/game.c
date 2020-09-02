@@ -48,10 +48,8 @@ game_new(void) {
     g->id = -1;
     g->name = g->description = NULL;
 
-    for (i = 0; i < GAME_RS_MAX; i++) {
-	g->rs[i].cloneof[0] = g->rs[i].cloneof[1] = NULL;
-	g->rs[i].files = array_new(sizeof(file_t));
-    }
+    g->rs.cloneof[0] = g->rs.cloneof[1] = NULL;
+    g->rs.files = array_new(sizeof(file_t));
 
     g->disks = array_new(sizeof(disk_t));
 
@@ -69,11 +67,10 @@ game_free(game_t *g) {
     free(g->name);
     free(g->description);
 
-    for (i = 0; i < GAME_RS_MAX; i++) {
-	free(g->rs[i].cloneof[0]);
-	free(g->rs[i].cloneof[1]);
-	array_free(g->rs[i].files, file_finalize);
-    }
+    free(g->rs.cloneof[0]);
+    free(g->rs.cloneof[1]);
+    array_free(g->rs.files, file_finalize);
+
     array_free(g->disks, disk_finalize);
     free(g);
 }

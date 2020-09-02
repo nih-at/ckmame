@@ -56,7 +56,7 @@ static int dump_special(const char *);
 static int dump_stats(int);
 static void print_dat(dat_t *, int);
 static void print_hashtypes(int);
-static void print_rs(game_t *, filetype_t, const char *, const char *, const char *, const char *);
+static void print_rs(game_t *, const char *, const char *, const char *, const char *);
 
 char *usage = "Usage: %s [-h|-V]\n\
        %s [-b] [-D dbfile] [game ...]\n\
@@ -158,7 +158,7 @@ print_match(game_t *game, filetype_t ft, int i) {
     if (ft == TYPE_DISK)
 	print_diskline(game_disk(game, i));
     else
-	print_romline(game_file(game, TYPE_ROM, i));
+	print_romline(game_file(game, i));
 }
 
 
@@ -316,20 +316,20 @@ main(int argc, char **argv) {
 
 
 static void
-print_rs(game_t *game, filetype_t ft, const char *co, const char *gco, const char *cs, const char *fs) {
+print_rs(game_t *game, const char *co, const char *gco, const char *cs, const char *fs) {
     int i, ret;
     sqlite3_stmt *stmt;
 
-    if (game_cloneof(game, ft, 0))
-	printf("%s:\t%s\n", co, game_cloneof(game, ft, 0));
-    if (game_cloneof(game, ft, 1))
-	printf("%s:\t%s\n", gco, game_cloneof(game, ft, 1));
+    if (game_cloneof(game, 0))
+	printf("%s:\t%s\n", co, game_cloneof(game, 0));
+    if (game_cloneof(game, 1))
+	printf("%s:\t%s\n", gco, game_cloneof(game, 1));
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_CLONES)) == NULL) {
 	myerror(ERRDB, "cannot get clones for '%s'", game_name(game));
 	return;
     }
-    if (sq3_set_string(stmt, 1, game_name(game)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
+    if (sq3_set_string(stmt, 1, game_name(game)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK) {
 	myerror(ERRDB, "cannot get clones for '%s'", game_name(game));
 	return;
     }
@@ -351,10 +351,10 @@ print_rs(game_t *game, filetype_t ft, const char *co, const char *gco, const cha
 	return;
     }
 
-    if (game_num_files(game, ft) > 0) {
+    if (game_num_files(game) > 0) {
 	printf("%s:\n", fs);
-	for (i = 0; i < game_num_files(game, ft); i++)
-	    print_romline(game_file(game, ft, i));
+	for (i = 0; i < game_num_files(game); i++)
+	    print_romline(game_file(game, i));
     }
 }
 
@@ -387,8 +387,7 @@ dump_game(const char *name, int brief_mode) {
 	printf("Description:\t%s\n", game_description(game));
 
     if (!brief_mode) {
-	print_rs(game, TYPE_ROM, "Cloneof", "Grand-Cloneof", "Clones", "ROMs");
-	print_rs(game, TYPE_SAMPLE, "Sampleof", "Grand-Sampleof", "Sample Clones", "Samples");
+	print_rs(game, "Cloneof", "Grand-Cloneof", "Clones", "ROMs");
 
 	if (game_num_disks(game) > 0) {
 	    printf("Disks:\n");
@@ -482,7 +481,7 @@ dump_special(const char *name) {
 	const char *key;
 	int (*f)(int);
 	int arg;
-    } keys[] = {{"/dat", dump_dat, 0}, {"/detector", dump_detector, 0}, {"/hashtypes", dump_hashtypes, 0}, {"/list", dump_list, DBH_KEY_LIST_GAME}, {"/list/disk", dump_list, DBH_KEY_LIST_DISK}, {"/list/game", dump_list, DBH_KEY_LIST_GAME}, {"/list/sample", dump_list, DBH_KEY_LIST_SAMPLE}, {"/stats", dump_stats, 0}};
+    } keys[] = {{"/dat", dump_dat, 0}, {"/detector", dump_detector, 0}, {"/hashtypes", dump_hashtypes, 0}, {"/list", dump_list, DBH_KEY_LIST_GAME}, {"/list/disk", dump_list, DBH_KEY_LIST_DISK}, {"/list/game", dump_list, DBH_KEY_LIST_GAME}, {"/stats", dump_stats, 0}};
     static const int nkeys = sizeof(keys) / sizeof(keys[0]);
 
     int i;
@@ -522,6 +521,9 @@ dump_stats(int dummy) {
 
     ft = -1;
     for (i = 0; i < TYPE_MAX; i++) {
+	if (i == OBSOLETE_TYPE_SAMPLE) {
+	    continue;
+	}
 	if (ft < i) {
 	    switch (sqlite3_step(stmt)) {
 	    case SQLITE_ROW:

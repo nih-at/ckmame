@@ -34,9 +34,10 @@
 #include <stdlib.h>
 
 #include "stats.h"
+#include "types.h"
 #include "util.h"
 
-static void stats_add_file(stats_t *stats, int type, uint64_t size, quality_t status);
+static void stats_add_file(stats_t *stats, enum filetype type, uint64_t size, quality_t status);
 
 void
 stats_free(stats_t *stats) {
@@ -99,7 +100,7 @@ stats_add_game(stats_t *stats, game_status_t status) {
 
 
 void
-stats_add_rom(stats_t *stats, int type, const file_t *rom, quality_t status) {
+stats_add_rom(stats_t *stats, enum filetype type, const file_t *rom, quality_t status) {
     // TODO: only own ROMs? (what does dumpgame /stats count?)
     
     stats_add_file(stats, type, file_size(rom), status);
@@ -127,7 +128,7 @@ stats_print(stats_t *stats, FILE *f, bool total_only) {
         fprintf(f, "%" PRIu64 "\n", stats->games_total);
     }
     
-    for (int type = 0; type < TYPE_MAX; type++) {
+    for (enum filetype type = 0; type < TYPE_MAX; type++) {
         if (stats->files[type].files_total > 0) {
             fprintf(f, "%-8s\t", ft_name[type]);
             if (!total_only) {
@@ -151,7 +152,7 @@ stats_print(stats_t *stats, FILE *f, bool total_only) {
 
 
 static void
-stats_add_file(stats_t *stats, int type, uint64_t size, quality_t status) {
+stats_add_file(stats_t *stats, enum filetype type, uint64_t size, quality_t status) {
     if (stats == NULL) {
         return;
     }

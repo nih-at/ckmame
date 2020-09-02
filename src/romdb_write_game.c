@@ -44,7 +44,7 @@
 #include "util.h"
 
 static int write_disks(romdb_t *, const game_t *);
-static int write_rs(romdb_t *, const game_t *, filetype_t);
+static int write_rs(romdb_t *, const game_t *);
 
 
 int
@@ -90,7 +90,7 @@ romdb_delete_game(romdb_t *db, const char *name) {
 int
 romdb_update_game(romdb_t *db, game_t *g) {
     sqlite3_stmt *stmt;
-    int ft, i;
+    int i;
     file_t *r;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_UPDATE_FILE)) == NULL)
@@ -99,18 +99,16 @@ romdb_update_game(romdb_t *db, game_t *g) {
     if (sqlite3_bind_int64(stmt, 2, game_id(g)) != SQLITE_OK)
 	return -1;
 
-    for (ft = 0; ft < GAME_RS_MAX; ft++) {
-	if (sqlite3_bind_int(stmt, 3, ft) != SQLITE_OK)
+    if (sqlite3_bind_int(stmt, 3, TYPE_ROM) != SQLITE_OK)
+	return -1;
+
+    for (i = 0; i < game_num_files(g); i++) {
+	r = game_file(g, i);
+	if (file_where(r) == FILE_INZIP)
+	    continue;
+
+	if (sqlite3_bind_int(stmt, 1, file_where(r)) != SQLITE_OK || sqlite3_bind_int(stmt, 4, i) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	    return -1;
-
-	for (i = 0; i < game_num_files(g, ft); i++) {
-	    r = game_file(g, ft, i);
-	    if (file_where(r) == FILE_INZIP)
-		continue;
-
-	    if (sqlite3_bind_int(stmt, 1, file_where(r)) != SQLITE_OK || sqlite3_bind_int(stmt, 4, i) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
-		return -1;
-	}
     }
 
     return 0;
@@ -123,7 +121,7 @@ romdb_update_game_parent(romdb_t *db, game_t *g, filetype_t ft) {
     dbh_stmt_t query;
     int off;
 
-    if (game_cloneof(g, ft, 0)) {
+    if (game_cloneof(g, 0)) {
 	query = DBH_STMT_UPDATE_PARENT;
 	off = 2;
     }
@@ -138,7 +136,7 @@ romdb_update_game_parent(romdb_t *db, game_t *g, filetype_t ft) {
     if (sqlite3_bind_int64(stmt, off, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, off + 1, ft) != SQLITE_OK)
 	return -1;
 
-    if (game_cloneof(g, ft, 0) && sqlite3_bind_text(stmt, 1, game_cloneof(g, ft, 0), -1, SQLITE_STATIC) != SQLITE_OK)
+    if (game_cloneof(g, 0) && sqlite3_bind_text(stmt, 1, game_cloneof(g, 0), -1, SQLITE_STATIC) != SQLITE_OK)
 	return -1;
 
     if (sqlite3_step(stmt) != SQLITE_DONE)
@@ -169,11 +167,9 @@ romdb_write_game(romdb_t *db, game_t *g) {
     }
 
 
-    for (i = 0; i < GAME_RS_MAX; i++) {
-	if (write_rs(db, g, i) < 0) {
-	    romdb_delete_game(db, game_name(g));
-	    return -1;
-	}
+    if (write_rs(db, g) < 0) {
+	romdb_delete_game(db, game_name(g));
+	return -1;
     }
 
     return 0;
@@ -207,30 +203,30 @@ write_disks(romdb_t *db, const game_t *g) {
 
 
 static int
-write_rs(romdb_t *db, const game_t *g, filetype_t ft) {
+write_rs(romdb_t *db, const game_t *g) {
     sqlite3_stmt *stmt;
     int i;
     file_t *r;
 
-    if (game_cloneof(g, ft, 0)) {
+    if (game_cloneof(g, 0)) {
 	if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_PARENT)) == NULL)
 	    return -1;
 
-	if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK || sq3_set_string(stmt, 3, game_cloneof(g, ft, 0)) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
+	if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK || sq3_set_string(stmt, 3, game_cloneof(g, 0)) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	    return -1;
     }
 
-    if (game_num_files(g, ft) == 0)
+    if (game_num_files(g) == 0)
 	return 0;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_FILE)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK)
+    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK)
 	return -1;
 
-    for (i = 0; i < game_num_files(g, ft); i++) {
-	r = game_file(g, ft, i);
+    for (i = 0; i < game_num_files(g); i++) {
+	r = game_file(g, i);
 
 	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK || sq3_set_string(stmt, 4, file_name(r)) != SQLITE_OK || sq3_set_string(stmt, 5, file_merge(r)) != SQLITE_OK || sqlite3_bind_int(stmt, 6, file_status(r)) != SQLITE_OK || sqlite3_bind_int(stmt, 7, file_where(r)) != SQLITE_OK || sq3_set_int64_default(stmt, 8, file_size(r), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 9, file_hashes(r), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
 	    return -1;

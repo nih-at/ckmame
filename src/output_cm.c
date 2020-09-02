@@ -158,10 +158,10 @@ write_game(output_context_cm_t *ctx, game_t *g) {
     fputs("game (\n", ctx->f);
     output_cond_print_string(ctx->f, "\tname ", game_name(g), "\n");
     output_cond_print_string(ctx->f, "\tdescription ", game_description(g) ? game_description(g) : game_name(g), "\n");
-    output_cond_print_string(ctx->f, "\tcloneof ", game_cloneof(g, TYPE_ROM, 0), "\n");
-    output_cond_print_string(ctx->f, "\tromof ", game_cloneof(g, TYPE_ROM, 0), "\n");
-    for (i = 0; i < game_num_files(g, TYPE_ROM); i++) {
-	r = game_file(g, TYPE_ROM, i);
+    output_cond_print_string(ctx->f, "\tcloneof ", game_cloneof(g, 0), "\n");
+    output_cond_print_string(ctx->f, "\tromof ", game_cloneof(g, 0), "\n");
+    for (i = 0; i < game_num_files(g); i++) {
+	r = game_file(g, i);
 
 	fputs("\trom ( ", ctx->f);
 	output_cond_print_string(ctx->f, "name ", file_name(r), " ");
@@ -185,7 +185,6 @@ write_game(output_context_cm_t *ctx, game_t *g) {
 	output_cond_print_string(ctx->f, "flags ", fl, " ");
 	fputs(")\n", ctx->f);
     }
-    /* TODO: samples */
     /* TODO: disks */
     fputs(")\n\n", ctx->f);
 

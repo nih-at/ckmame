@@ -102,17 +102,17 @@ familymeeting(romdb_t *db, filetype_t ft, game_t *parent, game_t *child) {
     int i, j;
     file_t *cr, *pr;
 
-    if (game_cloneof(parent, ft, 0)) {
+    if (game_cloneof(parent, 0)) {
 	/* tell child of his grandfather */
-	game_cloneof(child, ft, 1) = xstrdup(game_cloneof(parent, ft, 0));
+	game_cloneof(child, 1) = xstrdup(game_cloneof(parent, 0));
     }
 
 
     /* look for ROMs in parent */
-    for (i = 0; i < game_num_files(child, ft); i++) {
-	cr = game_file(child, ft, i);
-	for (j = 0; j < game_num_files(parent, ft); j++) {
-	    pr = game_file(parent, ft, j);
+    for (i = 0; i < game_num_files(child); i++) {
+	cr = game_file(child, i);
+	for (j = 0; j < game_num_files(parent); j++) {
+	    pr = game_file(parent, j);
 	    if (file_compare_msc(cr, pr)) {
 		file_where(cr) = (where_t)(file_where(pr) + 1);
 		break;
@@ -143,16 +143,16 @@ handle_lost(output_context_db_t *ctx) {
 	    types = *((int *)array_get(ctx->lost_children_types, i));
 	    old_types = types;
 
-	    for (ft = 0; ft < GAME_RS_MAX; ft++) {
+	    for (ft = 0; ft < 1; ft++) {
 		if ((types & (1 << ft)) == 0)
 		    continue;
 
-		if ((parent = romdb_read_game(ctx->db, game_cloneof(child, ft, 0))) == NULL) {
-		    myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", game_name(child), game_cloneof(child, ft, 0));
+		if ((parent = romdb_read_game(ctx->db, game_cloneof(child, 0))) == NULL) {
+		    myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", game_name(child), game_cloneof(child, 0));
 
 		    /* remove non-existent cloneof */
-		    free(game_cloneof(child, ft, 0));
-		    game_cloneof(child, ft, 0) = NULL;
+		    free(game_cloneof(child, 0));
+		    game_cloneof(child, 0) = NULL;
 		    romdb_update_game_parent(ctx->db, child, ft);
 		    types &= ~(1 << ft);
 		    continue;
@@ -191,7 +191,7 @@ static int
 lost(output_context_db_t *ctx, game_t *g, filetype_t ft) {
     int i, type;
 
-    if (game_cloneof(g, ft, 0) == NULL)
+    if (game_cloneof(g, 0) == NULL)
 	return 0;
 
     for (i = 0; i < parray_length(ctx->lost_children); i++) {
@@ -309,9 +309,9 @@ output_db_game(output_context_t *out, game_t *g) {
     }
 
     to_do = 0;
-    for (i = 0; i < GAME_RS_MAX; i++) {
-	if (game_cloneof(g, i, 0)) {
-	    if (((parent = romdb_read_game(ctx->db, game_cloneof(g, i, 0))) == NULL) || lost(ctx, parent, (filetype_t)i)) {
+    for (i = 0; i < 1; i++) {
+	if (game_cloneof(g, 0)) {
+	    if (((parent = romdb_read_game(ctx->db, game_cloneof(g, 0))) == NULL) || lost(ctx, parent, (filetype_t)i)) {
 		to_do |= 1 << i;
 		if (parent)
 		    game_free(parent);

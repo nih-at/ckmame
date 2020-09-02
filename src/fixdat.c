@@ -51,9 +51,9 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im, c
     game_name(gm) = strdup(game_name(game));
 
 
-    for (i = 0; i < game_num_files(game, TYPE_ROM); i++) {
+    for (i = 0; i < game_num_files(game); i++) {
 	match_t *m = result_rom(res, i);
-	file_t *r = game_file(game, TYPE_ROM, i);
+	file_t *r = game_file(game, i);
 
 	/* no use requesting zero byte files */
 	if (file_size(r) == 0)
@@ -62,7 +62,7 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im, c
 	if (match_quality(m) != QU_MISSING || file_status(r) == STATUS_NODUMP || file_where(r) != FILE_INZIP)
 	    continue;
 
-	file_t *rm = array_push(game_files(gm, TYPE_ROM), r);
+	file_t *rm = array_push(game_files(gm), r);
 	file_name(rm) = strdup(file_name(r));
 	if (file_merge(r))
 	    file_merge(rm) = strdup(file_merge(r));
@@ -81,7 +81,7 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im, c
 	    disk_merge(dm) = strdup(disk_merge(d));
     }
 
-    if (game_num_files(gm, TYPE_ROM) > 0 || game_num_disks(gm) > 0)
+    if (game_num_files(gm) > 0 || game_num_disks(gm) > 0)
 	output_game(fixdat, gm);
 
     game_free(gm);

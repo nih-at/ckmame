@@ -59,7 +59,7 @@
 #define DBH_FLAGS(m) ((m)&0xf0)
 
 /* keep in sync with romdb_read_list.c:query_list */
-enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME, DBH_KEY_LIST_SAMPLE, DBH_KEY_LIST_MAX };
+enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME, DBH_KEY_LIST_MAX };
 
 #define DBH_DEFAULT_DB_NAME "mame.db"
 #define DBH_DEFAULT_OLD_DB_NAME "old.db"

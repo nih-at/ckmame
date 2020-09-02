@@ -74,7 +74,7 @@ romdb_has_disks(romdb_t *db) {
 
 int
 romdb_hashtypes(romdb_t *db, filetype_t type) {
-    if (type >= TYPE_MAX) {
+    if (type >= TYPE_MAX || type == OBSOLETE_TYPE_SAMPLE) {
 	errno = EINVAL;
 	return -1;
     }

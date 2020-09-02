@@ -38,17 +38,6 @@
 4|0|5|rl-06.3|<null>|0|0|1024|616680770|<null>|<fe32ecea77a3777f8137ca248b8f371db37b8b85>
 4|0|6|rl-08.43|<null>|0|0|1024|3601140396|<null>|<0a0c2cefc556e4e15085318fcac485b82bac2416>
 4|0|7|rl-07.40|<null>|0|0|1024|3125957123|<null>|<1c261cc1259787a7a248766264fefe140226e465>
-4|1|0|sound1-1.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|1|sound1-2.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|2|sound2.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|3|sound3.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|4|sound4-1.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|5|sound4-2.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|6|sound5-1.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|7|sound5-2.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|8|sound6.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|9|sound7.wav|<null>|0|0|<null>|<null>|<null>|<null>
-4|1|10|sound8.wav|<null>|0|0|<null>|<null>|<null>|<null>
 5|0|0|bh03|<null>|0|0|8192|1969011701|<null>|<e3ea146f8c344af1e9bf51548ae4902cb09e589a>
 5|0|1|bh02|<null>|0|0|8192|2458842736|<null>|<6f56454aaf76418ae94da2bd16b4e8309aca29a6>
 5|0|2|bh01|<null>|0|0|8192|2105977608|<null>|<26b7eb089ca3fe3f8b1531316ce8f95e33b380e5>
@@ -96,10 +85,6 @@
 8|0|4|tb1-5.2k|<null>|0|0|2048|2864533425|<null>|<5cff659b531d0f1b6faa503f7c06045c3a209a84>
 8|0|5|bct1-1.l3|<null>|0|0|256|3514112188|<null>|<f3b0deffa586808bc59e9a24ec1699c54ebe84cc>
 8|0|6|prom.2d|<null>|2|0|256|<null>|<null>|<null>
-8|1|0|fire.wav|<null>|0|0|<null>|<null>|<null>|<null>
-8|1|1|engine1.wav|<null>|0|0|<null>|<null>|<null>|<null>
-8|1|2|engine2.wav|<null>|0|0|<null>|<null>|<null>|<null>
-8|1|3|explode1.wav|<null>|0|0|<null>|<null>|<null>|<null>
 >>> table game (game_id, name, description, dat_idx)
 1|puckman|PuckMan (Japan set 1)|0
 2|csplayh5|Mahjong Hanafuda Cosplay Tengoku 5 (Japan)|0

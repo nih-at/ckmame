@@ -104,7 +104,7 @@ typedef enum where where_t;
 /* also, bump database version on change */
 enum filetype {
     TYPE_ROM,
-    TYPE_SAMPLE,
+    OBSOLETE_TYPE_SAMPLE,
     TYPE_DISK,
     TYPE_MAX,
     /* for archive_new only */

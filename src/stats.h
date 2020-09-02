@@ -61,7 +61,7 @@ typedef struct stats stats_t;
 
 void stats_add_disk(stats_t *stats, const disk_t *disk, quality_t status);
 void stats_add_game(stats_t *stats, game_status_t status);
-void stats_add_rom(stats_t *stats, int type, const file_t *rom, quality_t status);
+void stats_add_rom(stats_t *stats, enum filetype type, const file_t *rom, quality_t status);
 void stats_free(stats_t *stats);
 stats_t *stats_new();
 void stats_print(stats_t *stats, FILE *f, bool total_only);

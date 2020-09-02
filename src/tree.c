@@ -58,10 +58,10 @@ tree_add(tree_t *tree, const char *name) {
     if ((g = romdb_read_game(db, name)) == NULL)
 	return -1;
 
-    if (game_cloneof(g, file_type, 1))
-	tree = tree_add_node(tree, game_cloneof(g, file_type, 1), 0);
-    if (game_cloneof(g, file_type, 0))
-	tree = tree_add_node(tree, game_cloneof(g, file_type, 0), 0);
+    if (game_cloneof(g, 1))
+	tree = tree_add_node(tree, game_cloneof(g, 1), 0);
+    if (game_cloneof(g, 0))
+	tree = tree_add_node(tree, game_cloneof(g, 0), 0);
 
     tree_add_node(tree, name, 1);
 
@@ -134,13 +134,13 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
     for (i = 0; i < array_length(a); i++) {
 	fbh = array_get(a, i);
 
-	if ((g = romdb_read_game(db, file_location_name(fbh))) == NULL || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
+	if ((g = romdb_read_game(db, file_location_name(fbh))) == NULL || game_num_files(g) <= file_location_index(fbh)) {
 	    /* TODO: internal error: db inconsistency */
 	    ret = -1;
 	    continue;
 	}
 
-	gr = game_file(g, TYPE_ROM, file_location_index(fbh));
+	gr = game_file(g, file_location_index(fbh));
 
 	if (size == file_size(gr) && hashes_cmp(hashes, file_hashes(gr)) == HASHES_CMP_MATCH && file_where(gr) == FILE_INZIP)
 	    tree_recheck(tree, game_name(g));
@@ -169,9 +169,9 @@ tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent) {
 
 	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | romdb_hashtypes(db, TYPE_ROM)) : 0));
 
-	full_name = findfile(tree->name, file_type);
+	full_name = findfile(tree->name, TYPE_ROM);
 	if (full_name == NULL && tree->check) {
-	    full_name = make_file_name(file_type, tree->name);
+	    full_name = make_file_name(TYPE_ROM, tree->name);
 	}
 	if (full_name)
 	    child = archive_new(full_name, TYPE_ROM, FILE_ROMSET, flags);
@@ -274,10 +274,8 @@ tree_process(tree_t *tree, archive_t *child, archive_t *parent, archive_t *gpare
     check_old(g, res);
     check_files(g, all, res);
     check_archive(child, game_name(g), res);
-    if (file_type == TYPE_ROM) {
-	check_disks(g, images, res);
-	check_images(images, game_name(g), res);
-    }
+    check_disks(g, images, res);
+    check_images(images, game_name(g), res);
 
     /* write warnings/errors for me */
     diagnostics(g, child, images, res);
@@ -288,7 +286,7 @@ tree_process(tree_t *tree, archive_t *child, archive_t *parent, archive_t *gpare
 	ret = fix_game(g, child, images, res);
 
     /* TODO: includes too much when rechecking */
-    if (file_type != TYPE_SAMPLE && fixdat)
+    if (fixdat)
 	write_fixdat_entry(g, child, images, res);
 
     /* clean up */

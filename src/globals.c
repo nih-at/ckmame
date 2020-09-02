@@ -45,8 +45,6 @@ parray_t *search_dirs = NULL;
 int check_integrity = 0; /* full integrity check of ROM set */
 int roms_unzipped = 0;   /* ROMs are files on disk, not contained in zip archives */
 
-filetype_t file_type = TYPE_ROM; /* type of files to check (ROMs or samples) */
-
 int output_options = 0;
 int fix_options = 0;
 

@@ -182,8 +182,8 @@ output_mtree_game(output_context_t *out, game_t *g) {
     dirname = strsvis_cstyle(game_name(g));
 
     fprintf(ctx->f, "./%s type=dir\n", dirname);
-    for (i = 0; i < game_num_files(g, TYPE_ROM); i++) {
-	r = game_file(g, TYPE_ROM, i);
+    for (i = 0; i < game_num_files(g); i++) {
+	r = game_file(g, i);
 
 	filename = strsvis_cstyle(file_name(r));
 	fprintf(ctx->f, "./%s/%s type=file size=%" PRIu64, dirname, filename, file_size(r));
@@ -230,12 +230,6 @@ output_mtree_game(output_context_t *out, game_t *g) {
 	}
 	output_cond_print_string(ctx->f, " status=", fl, "");
 	fputs("\n", ctx->f);
-    }
-    for (i = 0; i < game_num_files(g, TYPE_SAMPLE); i++) {
-	r = game_file(g, TYPE_SAMPLE, i);
-	filename = strsvis_cstyle(file_name(r));
-	fprintf(ctx->f, "./%s/%s\n", dirname, filename);
-	free(filename);
     }
 
     free(dirname);

@@ -327,13 +327,13 @@ find_in_db(romdb_t *fdb, const file_t *r, archive_t *archive, const char *skip, 
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
 
-	if ((g = romdb_read_game(fdb, file_location_name(fbh))) == NULL || game_num_files(g, TYPE_ROM) <= file_location_index(fbh)) {
+	if ((g = romdb_read_game(fdb, file_location_name(fbh))) == NULL || game_num_files(g) <= file_location_index(fbh)) {
 	    /* TODO: internal error: database inconsistency */
 	    status = FIND_ERROR;
 	    break;
 	}
 
-	gr = game_file(g, TYPE_ROM, file_location_index(fbh));
+	gr = game_file(g, file_location_index(fbh));
 
 	if (file_size(r) == file_size(gr) && hashes_cmp(file_hashes(r), file_hashes(gr)) == HASHES_CMP_MATCH) {
 	    bool ok = true;

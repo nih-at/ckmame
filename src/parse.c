@@ -288,7 +288,7 @@ parse_file_start(parser_context_t *ctx, filetype_t ft) {
     if (ft == TYPE_DISK)
 	ctx->d = array_grow(game_disks(ctx->g), disk_init);
     else
-	ctx->r = array_grow(game_files(ctx->g, ft), file_init);
+	ctx->r = array_grow(game_files(ctx->g), file_init);
 
     SET_STATE(ctx, PARSE_IN_FILE);
 
@@ -298,13 +298,10 @@ parse_file_start(parser_context_t *ctx, filetype_t ft) {
 
 /*ARGSUSED3*/
 int
-parse_game_cloneof(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
+parse_game_cloneof(parser_context_t *ctx, int ht, const char *attr) {
     CHECK_STATE(ctx, PARSE_IN_GAME);
 
-    if (ft == TYPE_DISK)
-	return -1;
-
-    game_cloneof(ctx->g, ft, 0) = xstrdup(attr);
+    game_cloneof(ctx->g, 0) = xstrdup(attr);
 
     return 0;
 }
@@ -340,13 +337,10 @@ parse_game_end(parser_context_t *ctx, filetype_t ft) {
 	    game_description(g) = NULL;
 	}
 
-	for (i = 0; i < GAME_RS_MAX; i++) {
-	    if (game_cloneof(g, i, 0)) {
-		if (strcmp(game_cloneof(g, i, 0), game_name(g)) == 0) {
-		    free(game_cloneof(g, i, 0));
-		    game_cloneof(g, i, 0) = NULL;
-		    continue;
-		}
+	if (game_cloneof(g, 0)) {
+	    if (strcmp(game_cloneof(g, 0), game_name(g)) == 0) {
+		free(game_cloneof(g, 0));
+		game_cloneof(g, 0) = NULL;
 	    }
 	}
 
@@ -558,7 +552,7 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
     int j, n;
 
     r = ctx->r;
-    n = game_num_files(ctx->g, ft) - 1;
+    n = game_num_files(ctx->g) - 1;
 
     if (file_size(r) == 0) {
         unsigned char zeroes[HASHES_SIZE_MAX];
@@ -586,7 +580,7 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
     if (ctx->flags & PARSE_FL_ROM_IGNORE)
 	deleted = 1;
     else if (ctx->flags & PARSE_FL_ROM_CONTINUED) {
-	r2 = game_file(ctx->g, ft, n - 1);
+	r2 = game_file(ctx->g, n - 1);
 	file_size(r2) += file_size(r);
 	deleted = 1;
     }
@@ -595,7 +589,7 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
 	deleted = 1;
     }
     for (j = 0; j < n && !deleted; j++) {
-	r2 = game_file(ctx->g, ft, j);
+	r2 = game_file(ctx->g, j);
 	if (file_compare_sc(r, r2)) {
 	    /* TODO: merge in additional hash types? */
 	    if (file_compare_n(r, r2)) {
@@ -616,7 +610,7 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
     }
     if (deleted) {
 	ctx->flags = (ctx->flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;
-	array_delete(game_files(ctx->g, ft), n, file_finalize);
+	array_delete(game_files(ctx->g), n, file_finalize);
     }
     else {
 	ctx->flags = 0;

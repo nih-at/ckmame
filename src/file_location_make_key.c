@@ -70,9 +70,6 @@ filetype_char(enum filetype filetype) {
     case TYPE_ROM:
 	return 'r';
 
-    case TYPE_SAMPLE:
-	return 's';
-
     case TYPE_DISK:
 	return 'd';
 

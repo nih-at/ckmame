@@ -195,10 +195,8 @@ ensure_dir(const char *name, int strip_fname) {
 
 
 const char *
-get_directory(filetype_t ft) {
-    if (ft == TYPE_SAMPLE)
-	return "samples";
-    else if (rom_dir)
+get_directory(void) {
+    if (rom_dir)
 	return rom_dir;
     else
 	return "roms";

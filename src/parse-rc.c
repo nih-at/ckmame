@@ -173,7 +173,7 @@ rc_romline(parser_context_t *ctx, char *line) {
 	if (desc)
 	    parse_game_description(ctx, desc);
 	if (parent && strcmp(parent, name) != 0)
-	    parse_game_cloneof(ctx, 0, 0, parent);
+	    parse_game_cloneof(ctx, 0, parent);
     }
 
     p = gettok(&line);

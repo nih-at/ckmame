@@ -23,7 +23,6 @@
 #define QUERY_TEST	    "select type, offset, size, mask, value, result from test where rule_idx = ? order by test_idx"
 #define QUERY_LIST_DISK    "select distinct name from file where file_type = 2 order by name"
 #define QUERY_LIST_GAME    "select name from game order by name"
-#define QUERY_LIST_SAMPLE  "select distinct g.name from game g, file f where g.game_id=f.game_id and f.file_type = 1 order by g.name"
 
 /*#define DELETE_DAT	    "delete from dat where dat_idx >= 0"*/
 #define DELETE_FILE	    "delete from file where game_id = ?"

@@ -70,8 +70,8 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
     if (result_game(res) == GS_OLD)
         return;
     
-    for (i = 0; i < game_num_files(g, file_type); i++) {
-        file_t *rom = game_file(g, file_type, i);
+    for (i = 0; i < game_num_files(g); i++) {
+        file_t *rom = game_file(g, i);
         match_t *match = result_rom(res, i);
         archive_t *expected_archive = archives[file_where(rom)];
         
@@ -126,7 +126,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
             user[i] = -1;
         }
         
-        for (i = 0; i < game_num_files(g, file_type); i++) {
+        for (i = 0; i < game_num_files(g); i++) {
             match_t *match = result_rom(res, i);
             if (match_where(match) == FILE_INZIP && match_quality(match) != QU_HASHERR) {
                 j = match_index(match);
@@ -156,8 +156,8 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
     update_game_status(g, res);
     
     stats_add_game(stats, result_game(res));
-    for (i = 0; i < game_num_files(g, file_type); i++) {
-        stats_add_rom(stats, file_type, game_file(g, file_type, i), match_quality(result_rom(res, i)));
+    for (i = 0; i < game_num_files(g); i++) {
+        stats_add_rom(stats, TYPE_ROM, game_file(g, i), match_quality(result_rom(res, i)));
     }
 
 }
@@ -254,9 +254,9 @@ update_game_status(const game_t *g, result_t *res) {
     all_own_dead = all_dead = all_correct = all_fixable = 1;
     has_own = 0;
 
-    for (i = 0; i < game_num_files(g, file_type); i++) {
+    for (i = 0; i < game_num_files(g); i++) {
 	m = result_rom(res, i);
-	r = game_file(g, file_type, i);
+	r = game_file(g, i);
 
 	if (file_where(r) == FILE_INZIP)
 	    has_own = 1;

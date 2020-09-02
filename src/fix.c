@@ -321,13 +321,13 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
     original_names = xmalloc(sizeof(original_names[0]) * num_names);
     memset(original_names, 0, sizeof(original_names[0]) * num_names);
 
-    for (i = 0; i < game_num_files(g, file_type); i++) {
+    for (i = 0; i < game_num_files(g); i++) {
 	m = result_rom(res, i);
 	if (match_source_is_old(m))
 	    afrom = NULL;
 	else
 	    afrom = match_archive(m);
-	r = game_file(g, file_type, i);
+	r = game_file(g, i);
 	seterrinfo(file_name(r), archive_name(a));
 
 	switch (match_quality(m)) {
@@ -373,7 +373,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 
 	case QU_NAMEERR:
 	    if (file_where(r) == FILE_INCO || file_where(r) == FILE_INGCO) {
-		if (tree_recheck(check_tree, game_cloneof(g, TYPE_ROM, file_where(r) - 1))) {
+		if (tree_recheck(check_tree, game_cloneof(g, file_where(r) - 1))) {
 		    /* fall-through to rename in case save_needed fails */
 		    if (save_needed(a, match_index(m), game_name(g)) == 0) {
 			tree_recheck_games_needing(check_tree, file_size(r), file_hashes(r));
@@ -455,13 +455,13 @@ fix_files_incomplete(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 
     seterrinfo(NULL, archive_name(a));
 
-    for (i = 0; i < game_num_files(g, file_type); i++) {
+    for (i = 0; i < game_num_files(g); i++) {
 	m = result_rom(res, i);
 	if (match_source_is_old(m))
 	    afrom = NULL;
 	else
 	    afrom = match_archive(m);
-	r = game_file(g, file_type, i);
+	r = game_file(g, i);
 	seterrinfo(file_name(r), archive_name(a));
 
 	switch (match_quality(m)) {

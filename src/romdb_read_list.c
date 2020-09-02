@@ -41,7 +41,7 @@
 #include "xmalloc.h"
 
 /* keep in sync with dbh.h:enum list */
-const dbh_stmt_t query_list[] = {DBH_STMT_QUERY_LIST_DISK, DBH_STMT_QUERY_LIST_GAME, DBH_STMT_QUERY_LIST_SAMPLE};
+const dbh_stmt_t query_list[] = {DBH_STMT_QUERY_LIST_DISK, DBH_STMT_QUERY_LIST_GAME};
 
 
 parray_t *

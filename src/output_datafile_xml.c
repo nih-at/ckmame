@@ -152,13 +152,12 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
     xmlNodePtr game = xmlNewChild(ctx->root, NULL, (const xmlChar *)"game", NULL);
     
     set_attribute(game, "name", game_name(g));
-    set_attribute(game, "cloneof", game_cloneof(g, TYPE_ROM, 0));
-    set_attribute(game, "sampleof", game_cloneof(g, TYPE_SAMPLE, 0));
+    set_attribute(game, "cloneof", game_cloneof(g, 0));
     /* description is actually required */
     xmlNewTextChild(game, NULL, (const xmlChar *)"description", (const xmlChar *)(game_description(g) ? game_description(g) : game_name(g)));
 
-    for (i = 0; i < game_num_files(g, TYPE_ROM); i++) {
-	r = game_file(g, TYPE_ROM, i);
+    for (i = 0; i < game_num_files(g); i++) {
+	r = game_file(g, i);
         xmlNodePtr rom = xmlNewChild(game, NULL, (const xmlChar *)"rom", NULL);
         
         set_attribute(rom, "name", file_name(r));
@@ -207,13 +206,6 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
         set_attribute(disk, "status", fl);
     }
     
-    for (i = 0; i < game_num_files(g, TYPE_SAMPLE); i++) {
-        r = game_file(g, TYPE_SAMPLE, i);
-        xmlNodePtr sample = xmlNewChild(game, NULL, (const xmlChar *)"sample", NULL);
-        
-        set_attribute(sample, "name", file_name(r));
-    }
-
     return 0;
 }
 

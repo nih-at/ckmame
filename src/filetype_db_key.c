@@ -43,9 +43,6 @@ filetype_db_key(filetype_t ft) {
     case TYPE_ROM:
 	return DBH_KEY_LIST_GAME;
 
-    case TYPE_SAMPLE:
-	return DBH_KEY_LIST_SAMPLE;
-
     case TYPE_DISK:
 	return DBH_KEY_LIST_DISK;
 

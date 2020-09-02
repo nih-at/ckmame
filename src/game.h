@@ -45,21 +45,19 @@ struct rs {
     array_t *files;
 };
 
-#define GAME_RS_MAX 2
-
 struct game {
     uint64_t id;
     char *name;
     char *description;
     int dat_no;
-    struct rs rs[GAME_RS_MAX];
+    struct rs rs;
     array_t *disks;
 };
 
 typedef struct game game_t;
 
 
-#define game_cloneof(g, ft, i) ((g)->rs[ft].cloneof[i])
+#define game_cloneof(g, i) ((g)->rs.cloneof[i])
 #define game_dat_no(g) ((g)->dat_no)
 #define game_description(g) ((g)->description)
 
@@ -67,14 +65,14 @@ typedef struct game game_t;
 
 #define game_disks(g) ((g)->disks)
 
-#define game_file(g, ft, i) ((file_t *)array_get(game_files((g), (ft)), (i)))
+#define game_file(g, i) ((file_t *)array_get(game_files(g), (i)))
 
-#define game_files(g, ft) ((g)->rs[ft].files)
+#define game_files(g) ((g)->rs.files)
 
 #define game_id(g) ((g)->id)
-#define game_num_clones(g, ft) (array_length(game_clones((g), (ft))))
+#define game_num_clones(g) (array_length(game_clones(g)))
 #define game_num_disks(g) (array_length(game_disks(g)))
-#define game_num_files(g, ft) (array_length(game_files((g), (ft))))
+#define game_num_files(g) (array_length(game_files(g)))
 #define game_name(g) ((g)->name)
 
 void game_add_clone(game_t *, filetype_t, const char *);

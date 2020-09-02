@@ -1,6 +1,0 @@
-description test samples, zip is correct
-return 0
-args -FKLivSc samptest
-file samples/samptest.zip samptest.zip samptest.zip
-stdout In game samptest:
-stdout game samptest                                : correct

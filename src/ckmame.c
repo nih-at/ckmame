@@ -86,7 +86,6 @@ char help[] = "\n"
 	      "  -l, --delete-long       delete long files when fixing\n"
 	      "  -O, --old-db dbfile     use mame-db dbfile for old roms\n"
 	      "  -R, --rom-dir dir       look for roms in rom-dir (default: 'roms')\n"
-	      "  -S, --samples           check samples instead of roms\n"
 	      "      --stats             print stats of checked ROMs\n"
 	      "      --superfluous       only check for superfluous files in rom sets\n"
 	      "  -s, --nosuperfluous     don't report superfluous files in rom sets\n"
@@ -95,7 +94,7 @@ char help[] = "\n"
 	      "  -V, --version           display version number\n"
 	      "  -v, --verbose           print fixes made\n"
 	      "  -w, --nowarnings        print only unfixable errors\n"
-	      "  -X, --ignore-extra      ignore extra files in rom/samples dirs\n"
+	      "  -X, --ignore-extra      ignore extra files in rom dirs\n"
 	      "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
@@ -136,7 +135,6 @@ struct option options[] = {
     {"old-db", 1, 0, 'O'},
     {"rom-dir", 1, 0, 'R'},
     {"roms-unzipped", 0, 0, 'u'},
-    {"samples", 0, 0, 'S'},
     {"search", 1, 0, 'e'},
     {"stats", 0, 0, OPT_STATS},
     {"superfluous", 0, 0, OPT_SUPERFLUOUS},
@@ -165,7 +163,6 @@ main(int argc, char **argv) {
 
     setprogname(argv[0]);
     output_options = WARN_ALL;
-    file_type = TYPE_ROM;
     action = ACTION_UNSPECIFIED;
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -254,9 +251,6 @@ main(int argc, char **argv) {
 	case 'R':
 	    rom_dir = optarg;
 	    break;
-	case 'S':
-	    file_type = TYPE_SAMPLE;
-	    break;
 	case 's':
 	    output_options &= ~WARN_SUPERFLUOUS;
 	    break;
@@ -333,15 +327,13 @@ main(int argc, char **argv) {
 	    fix_options |= FIX_CLEANUP_EXTRA;
     }
 
-    if (file_type == TYPE_ROM) {
-	archive_register_cache_directory(get_directory(file_type));
-	archive_register_cache_directory(needed_dir);
-	archive_register_cache_directory(unknown_dir);
-	int m;
-	for (m = 0; m < parray_length(search_dirs); m++) {
-	    if (archive_register_cache_directory(parray_get(search_dirs, m)) < 0)
-		exit(1);
-	}
+    archive_register_cache_directory(get_directory());
+    archive_register_cache_directory(needed_dir);
+    archive_register_cache_directory(unknown_dir);
+    int m;
+    for (m = 0; m < parray_length(search_dirs); m++) {
+	if (archive_register_cache_directory(parray_get(search_dirs, m)) < 0)
+	    exit(1);
     }
 
     if ((db = romdb_open(dbname, DBH_READ)) == NULL) {
@@ -458,15 +450,15 @@ main(int argc, char **argv) {
 	detector = romdb_read_detector(db);
     }
 
-    ensure_dir(get_directory(file_type), 0);
-    if (realpath(get_directory(file_type), rom_dir_normalized) == NULL) {
+    ensure_dir(get_directory(), 0);
+    if (realpath(get_directory(), rom_dir_normalized) == NULL) {
 	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
-	myerror(ERRSTR, "can't normalize directory '%s'", get_directory(file_type));
+	myerror(ERRSTR, "can't normalize directory '%s'", get_directory());
 	exit(1);
     }
 
     if (action != ACTION_CLEANUP_EXTRA_ONLY)
-	superfluous = list_directory(get_directory(file_type), dbname);
+	superfluous = list_directory(get_directory(), dbname);
 
     if ((fix_options & FIX_DO) && (fix_options & FIX_CLEANUP_EXTRA))
 	ensure_extra_maps((action == ACTION_CHECK_ROMSET ? DO_MAP : 0) | DO_LIST);

@@ -225,10 +225,6 @@ set(EXTRA_TESTS
   rom-need-partial-and-whole.test
   rom-two-long.test
   rom-unused.test
-  sample-miss.test
-  sample-ok.test
-  sample-parent-ok.test
-  sample-superfluous.test
   skip-full.test
   skip.test
   skipbad.test

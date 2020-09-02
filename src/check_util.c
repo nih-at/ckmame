@@ -159,7 +159,7 @@ make_file_name(filetype_t ft, const char *name) {
     char *fn;
     const char *dir, *ext;
 
-    dir = get_directory(ft);
+    dir = get_directory();
 
     if (ft == TYPE_DISK)
 	ext = ".chd";
@@ -190,7 +190,7 @@ static int
 enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name, int dir_flags, where_t where) {
     if (contains_romdir(directory_name)) {
 	/* TODO: improve error message: also if extra is in ROM directory. */
-	myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(file_type), directory_name);
+	myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(), directory_name);
 	exit(1);
     }
 
