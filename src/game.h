@@ -40,24 +40,20 @@
 #include "file.h"
 #include "parray.h"
 
-struct rs {
-    char *cloneof[2];
-    array_t *files;
-};
-
 struct game {
     uint64_t id;
     char *name;
     char *description;
     int dat_no;
-    struct rs rs;
+    char *cloneof[2];
+    array_t *roms;
     array_t *disks;
 };
 
 typedef struct game game_t;
 
 
-#define game_cloneof(g, i) ((g)->rs.cloneof[i])
+#define game_cloneof(g, i) ((g)->cloneof[i])
 #define game_dat_no(g) ((g)->dat_no)
 #define game_description(g) ((g)->description)
 
@@ -67,7 +63,7 @@ typedef struct game game_t;
 
 #define game_file(g, i) ((file_t *)array_get(game_files(g), (i)))
 
-#define game_files(g) ((g)->rs.files)
+#define game_files(g) ((g)->roms)
 
 #define game_id(g) ((g)->id)
 #define game_num_clones(g) (array_length(game_clones(g)))
