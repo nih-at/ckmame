@@ -113,9 +113,6 @@ List names of all disks in the database.
 \fI/list/game\fR
 List names of all games in the database.
 .TP 17n
-\fI/list/sample\fR
-List names of all games with samples in the database.
-.TP 17n
 \fI/stats\fR
 List some statistics about the contents of the database.
 .SH "ENVIRONMENT"

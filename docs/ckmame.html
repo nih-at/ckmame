@@ -92,7 +92,6 @@
       [<code class="Fl">-</code><code class="Fl">-rom-dir</code>
       <var class="Ar">dir</var>]
       [<code class="Fl">-</code><code class="Fl">-roms-unzipped</code>]
-      [<code class="Fl">-</code><code class="Fl">-samples</code>]
       [<code class="Fl">-</code><code class="Fl">-search</code>
       <var class="Ar">dir</var>]
       [<code class="Fl">-</code><code class="Fl">-stats</code>]
@@ -238,9 +237,6 @@ Supported options:
     <var class="Ar">dir</var></dt>
   <dd>Look for roms in <var class="Ar">dir</var>. Default is
       &#x201C;roms&#x201D;.</dd>
-  <dt><a class="permalink" href="#S"><code class="Fl" id="S">-S</code></a>,
-    <code class="Fl">-</code><code class="Fl">-samples</code></dt>
-  <dd>Check samples instead of ROMs.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-stats</code></dt>
   <dd>Display completeness statistics of ROM set at end of run.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-superfluous</code></dt>
@@ -269,9 +265,9 @@ Supported options:
       also <code class="Fl">-b</code> and <code class="Fl">-f</code>.</dd>
   <dt><a class="permalink" href="#X"><code class="Fl" id="X">-X</code></a>,
     <code class="Fl">-</code><code class="Fl">-ignore-extra</code></dt>
-  <dd>Do not mention extra files that are in the ROMs or samples dirs
-      respectively. Most of the time these are ROM sets whose names have
-      changed. Additionally, <code class="Nm">ckmame</code> creates a
+  <dd>Do not mention extra files that are in the ROM dirs. Most of the time
+      these are ROM sets whose names have changed. Additionally,
+      <code class="Nm">ckmame</code> creates a
       <span class="Pa">roms/garbage</span> directory (see also
       <code class="Fl">-K</code>), which you will also be warned about.</dd>
 </dl>
@@ -343,8 +339,8 @@ Most messages should be straightforward. Two need special explanations:
 </div>
 <table class="foot">
   <tr>
-    <td class="foot-date">December 18, 2018</td>
-    <td class="foot-os">NetBSD 9.99.67</td>
+    <td class="foot-date">September 2, 2020</td>
+    <td class="foot-os">NiH</td>
   </tr>
 </table>
 </body>
