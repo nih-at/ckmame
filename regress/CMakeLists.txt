@@ -96,6 +96,8 @@ set(EXTRA_TESTS
   disk-swapmerge.test
   disk-to-needed.test
   disk-toplevel.test
+  disk-unrelated.test
+  disk-unrelated-fix.test
   disk-wrong.test
   disk-wrong2.test
   diskfull-dir.test
@@ -271,6 +273,7 @@ set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   disk-swapmerge.test
+  disk-unrelated-fix.test
   mkmamedb-duplicate-nodump.test
   mkmamedb-merge-no-parent.test
   mkmamedb-merge-three-generations.test

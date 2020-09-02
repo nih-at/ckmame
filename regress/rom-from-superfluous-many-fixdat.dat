@@ -15,6 +15,11 @@
     <description>deadbeef</description>
     <rom name="deadbeef" size="8" crc="deadbeef" sha1="0b0dcdf77237b4e5d920990b92d4b59ad264910f"/>
   </game>
+  <game name="disk-same">
+    <description>disk-same</description>
+    <rom name="16.rom" size="16" crc="12345678"/>
+    <disk name="108-5" sha1="7570a907e20a51cbf6193ec6779b82d1967bb609" md5="bf5c9c39eb49bcf5a55a06dbb4deccb3"/>
+  </game>
   <game name="many">
     <description>many</description>
     <rom name="00" size="2" crc="b84614a0"/>

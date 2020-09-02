@@ -95,6 +95,9 @@ stdout In game disk-nogood2:
 stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
 stdout disk 208-7         no good dump              : missing
 stdout roms/disk-nogood2.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
+stdout In game disk-same:
+stdout game disk-same                               : not a single rom found
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
 stdout In game diskgood-romnogood:
 # TODO: next line is wrong
 stdout game diskgood-romnogood                      : not a single rom found

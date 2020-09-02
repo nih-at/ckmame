@@ -75,6 +75,8 @@
 30|0|29|1D|<null>|0|0|2|4130705604|<null>|<null>
 30|0|30|1E|<null>|0|0|2|2167578706|<null>|<null>
 30|0|31|1F|<null>|0|0|2|406581736|<null>|<null>
+31|0|0|16.rom|<null>|0|0|16|305419896|<null>|<null>
+31|2|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
 >>> table game (game_id, name, description, dat_idx)
 1|1-4|one four byte file|0
 2|1-8|one eight byte file|0
@@ -106,6 +108,7 @@
 28|zero-4|game with 0 byte rom and a bigger one|0
 29|zerobadcrc|game with 0 byte rom, impossible CRC|0
 30|many|game with many (32) roms|0
+31|disk-same|some non-existent 16 byte rom with disk|0
 >>> table parent (game_id, file_type, parent)
 8|0|parent-4
 10|0|deadbeef
