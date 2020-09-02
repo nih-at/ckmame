@@ -1,4 +1,4 @@
-description test single-rom game with disk, disk wrong name
+description test single-rom game with disk, disk in wrong place
 variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivc disk

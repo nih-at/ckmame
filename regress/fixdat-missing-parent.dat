@@ -7,8 +7,8 @@
     <version>1</version>
     <author>automatically generated</author>
   </header>
-  <game name="parent-4">
-    <description>parent-4</description>
+  <game name="grandparent">
+    <description>grandparent</description>
     <rom name="04.rom" size="4" crc="d87f7e0c"/>
   </game>
 </datafile>

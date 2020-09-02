@@ -7,16 +7,16 @@
     <version>1</version>
     <author>automatically generated</author>
   </header>
-  <game name="parent-4">
-    <description>parent-4</description>
+  <game name="grandparent">
+    <description>grandparent</description>
     <rom name="04.rom" size="4" crc="d87f7e0c"/>
   </game>
-  <game name="clone-8">
-    <description>clone-8</description>
+  <game name="parent">
+    <description>parent</description>
     <rom name="08.rom" size="8" crc="3656897d"/>
   </game>
-  <game name="nogoodclone">
-    <description>nogoodclone</description>
+  <game name="child">
+    <description>child</description>
     <rom name="08.rom" size="8" crc="3656897d"/>
   </game>
 </datafile>

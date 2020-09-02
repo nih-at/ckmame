@@ -3,9 +3,9 @@ features LIBXML2
 return 0
 args -Fvc -D ../mamedb-merge-parent.db --fixdat fix_test.dat
 file-new fix_test.dat fixdat-missing-all.dat
-stdout In game parent-4:
-stdout game parent-4                                : not a single rom found
-stdout In game clone-8:
-stdout game clone-8                                 : not a single rom found
-stdout In game nogoodclone:
-stdout game nogoodclone                             : not a single rom found
+stdout In game grandparent:
+stdout game grandparent                             : not a single rom found
+stdout In game parent:
+stdout game parent                                  : not a single rom found
+stdout In game child:
+stdout game child                                   : not a single rom found

@@ -1,4 +1,4 @@
-description test single-rom game with disk, both are correct
+description test single-rom game with disk, disk is one level higher (like usual some years ago)
 variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivc disk

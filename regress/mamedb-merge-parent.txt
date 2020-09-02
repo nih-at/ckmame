@@ -6,27 +6,27 @@ clrmamepro (
 )
 
 game (
-	name clone-8
+	name parent
 	description "two roms, one in parent"
 	manufacturer "synth"
 	year 1992
-	romof parent-4
+	romof grandparent
 	rom ( name 04.rom merge 04.rom size 4 crc32 d87f7e0c )
 	rom ( name 08.rom size 8 crc32 3656897d )
 )
 
 game (
-	name nogoodclone
-	description "clone-8 with no good dump"
+	name child
+	description "one bad dump, other from parent"
 	manufacturer "synth"
 	year 1994
-	romof clone-8
+	romof parent
 	rom ( name 04.rom size 4 flags nodump )
 	rom ( name 08.rom merge 08.rom size 8 crc32 3656897d )
 )
 
 game (
-	name parent-4
+	name grandparent
 	description "one four byte file, has clone"
 	manufacturer "synth"
 	year 1991

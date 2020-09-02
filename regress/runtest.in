@@ -41,7 +41,7 @@ BEGIN { push @INC, '@abs_srcdir@'; }
 use CkmameDB;
 use NiHTest;
 
-my $ROMDIRS = "extra|extradir|moreroms|needed|roms|samples|search|unknown";
+my $ROMDIRS = "extra|extradir|moreroms|needed|roms|search|unknown";
 
 my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@', top_builddir => '@top_builddir@', zipcmp_flags => '' });
 
@@ -100,15 +100,15 @@ sub checks {
 	}
 
 	while (my $name = readdir $dir) {
-	    next if ($name eq '.' || $name eq '..' || $name =~ m/sample/);
+	    next if ($name eq '.' || $name eq '..');
 	    next unless (-d $name);
 
 	    my $ret = check_ckmame_db($test, $name, $variant);
 	    $checked{$name} = 1;
 	    
 	    if (!defined($ret)) {
-		    $error = 1;
-		    next;
+		$error = 1;
+		next;
 	    }
 	    elsif ($ret != 1) {
 		$ok = 0;

@@ -2,12 +2,12 @@ description test all games, some files found, create fixdat
 features LIBXML2
 return 0
 args -Fvc -D ../mamedb-merge-parent.db --fixdat fix_test.dat
-file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip
+file roms/grandparent.zip 1-4-ok.zip 1-4-ok.zip
 file-new fix_test.dat fixdat-missing-child.dat
-no-hashes roms parent-4.zip
-stdout In game parent-4:
-stdout game parent-4                                : correct
-stdout In game clone-8:
-stdout game clone-8                                 : not a single rom found
-stdout In game nogoodclone:
-stdout game nogoodclone                             : not a single rom found
+no-hashes roms grandparent.zip
+stdout In game grandparent:
+stdout game grandparent                             : correct
+stdout In game parent:
+stdout game parent                                  : not a single rom found
+stdout In game child:
+stdout game child                                   : not a single rom found

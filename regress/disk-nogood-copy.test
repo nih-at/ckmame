@@ -3,7 +3,7 @@ variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivcj -e extras disk-nogood disk-nogood2
 file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
-file extras/108-5.chd 108-5.chd 108-5.chd
+file extras/108-nogood.chd 108-5.chd 108-5.chd
 stdout In game disk-nogood:
 stdout game disk-nogood                             : correct
 # file name alone shouldn't be enough

@@ -3,8 +3,8 @@ variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivc disk diskchild
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file-del roms/108-5c.chd 108-5.chd
-file-new roms/108-5.chd 108-5.chd
+file-new roms/disk/108-5.chd 108-5.chd
+file-del roms/diskchild/108-5c.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at '108-5c.chd'
