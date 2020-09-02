@@ -12,6 +12,8 @@
 
 - bug: when creating a fixdat and re-checks happen, games end up in the fixdat multiple times
 
+- remove sample support (currently broken, and no checksums available so no useful checking possible)
+
 # Later
 
 * convert runtest to use ziptool instead of unzip
