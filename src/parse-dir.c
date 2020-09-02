@@ -124,7 +124,6 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
 
 	    case NAME_CHD:
 		/* TODO: include disks in dat */
-	    case NAME_NOEXT:
 	    case NAME_UNKNOWN:
 		if (stat(b, &st) < 0) {
 		    myerror(ERRSTR, "can't stat '%s', skipped", b);

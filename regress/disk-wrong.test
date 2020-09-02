@@ -3,10 +3,10 @@ variants zip
 return 0
 args -D ../mamedb-disk-many.db -FKLivc disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file-del roms/108-5.chd 12-1.chd
+file-del roms/disk/108-5.chd 12-1.chd
 file-new unknown/108-5.chd 12-1.chd
 stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: wrong checksum
-stdout image roms/108-5.chd: unknown
-stdout roms/108-5.chd: move unknown image
+stdout image roms/disk/108-5.chd: unknown
+stdout roms/disk/108-5.chd: move unknown image

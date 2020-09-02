@@ -47,36 +47,31 @@
 #include "util.h"
 #include "xmalloc.h"
 
+static void list_game_directory(parray_t *found, const char *dirname, bool dir_known);
 
 parray_t *
 list_directory(const char *dirname, const char *dbname) {
     dir_t *dir;
     char b[8192], *p, *ext;
-    parray_t *listf, *listd, *found;
+    parray_t *listf, *found;
     dir_status_t err;
     size_t len_dir, len_name;
     bool known;
     struct stat st;
 
     p = NULL;
-    listf = listd = NULL;
-
+    listf = NULL;
+    
     if (dbname) {
-	if ((listf = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
-	    myerror(ERRDEF, "list of games not found in database '%s'", dbname);
-	    exit(1);
-	}
-	if ((listd = romdb_read_list(db, DBH_KEY_LIST_DISK)) == NULL) {
-	    myerror(ERRDEF, "list of disks not found in database '%s'", dbname);
-	    parray_free(listf, free);
-	    exit(1);
-	}
+        if ((listf = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+            myerror(ERRDEF, "list of games not found in database '%s'", dbname);
+            exit(1);
+        }
     }
 
     found = parray_new();
 
     if ((dir = dir_open(dirname, 0)) == NULL) {
-	parray_free(listd, free);
 	parray_free(listf, free);
 	return found;
     }
@@ -102,8 +97,16 @@ list_directory(const char *dirname, const char *dbname) {
 	known = false;
 
 	if (S_ISDIR(st.st_mode)) {
-	    if (roms_unzipped && listf)
-		known = parray_find_sorted(listf, b + len_dir, strcmp) != -1;
+            if (roms_unzipped) {
+                if (listf) {
+                    known = parray_find_sorted(listf, b + len_dir, strcmp) != -1;
+                }
+            }
+            else {
+                bool dir_known = listf ? parray_find_sorted(listf, b + len_dir, strcmp) != -1 : false;
+                list_game_directory(found, b, dir_known);
+                known = true; /* we don't want directories in superfluous list (I think) */
+            }
 	}
 	else {
 	    ext = NULL;
@@ -117,22 +120,16 @@ list_directory(const char *dirname, const char *dbname) {
 	    }
 
 	    if (ext) {
-		if (strcmp(ext, "chd") == 0 && listd)
-		    known = parray_find_sorted(listd, b + len_dir, strcmp) != -1;
-		else if (!roms_unzipped && strcmp(ext, "zip") == 0 && listf)
+                if (!roms_unzipped && strcmp(ext, "zip") == 0 && listf)
 		    known = parray_find_sorted(listf, b + len_dir, strcmp) != -1;
 		*p = '.';
 	    }
-	    else {
-		if (listd)
-		    known = parray_find_sorted(listd, b + len_dir, strcmp) != -1;
-	    }
 	}
 
-	if (!known)
-	    parray_push(found, xstrdup(b));
+        if (!known) {
+            parray_push(found, xstrdup(b));
+        }
     }
-    parray_free(listd, free);
     parray_free(listf, free);
     dir_close(dir);
 
@@ -154,4 +151,54 @@ print_superfluous(const parray_t *files) {
 
     for (i = 0; i < parray_length(files); i++)
 	printf("%s\n", (char *)parray_get(files, i));
+}
+
+
+static void
+list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
+    dir_t *dir;
+    game_t *g = NULL;
+    dir_status_t err;
+    char b[8192];
+    size_t len_dir;
+
+    if (dir_known) {
+        g = romdb_read_game(db, mybasename(dirname));
+    }
+    
+    if ((dir = dir_open(dirname, 0)) == NULL) {
+        game_free(g);
+        return;
+    }
+
+    len_dir = strlen(dirname) + 1;
+
+    while ((err = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+        if (err == DIR_ERROR) {
+            /* TODO: handle error */
+            continue;
+        }
+        
+        bool known = false;
+        if (g) {
+            char *p = strrchr(b + len_dir, '.');
+            if (p != NULL && strcmp(p + 1, "chd") == 0) {
+                *p = '\0';
+                for (int i = 0; i < game_num_disks(g); i++) {
+                    if (strcmp(disk_name(game_disk(g, i)), b + len_dir) == 0) {
+                        known = true;
+                        break;
+                    }
+                }
+                *p = '.';
+            }
+        }
+        
+        if (!known) {
+            parray_push(found, xstrdup(b));
+        }
+    }
+    
+    dir_close(dir);
+    game_free(g);
 }

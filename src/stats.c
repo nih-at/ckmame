@@ -129,6 +129,9 @@ stats_print(stats_t *stats, FILE *f, bool total_only) {
     }
     
     for (enum filetype type = 0; type < TYPE_MAX; type++) {
+	if (type == OBSOLETE_TYPE_SAMPLE) {
+	    continue;
+	}
         if (stats->files[type].files_total > 0) {
             fprintf(f, "%-8s\t", ft_name[type]);
             if (!total_only) {

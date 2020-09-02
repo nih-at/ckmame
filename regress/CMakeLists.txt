@@ -86,7 +86,6 @@ set(EXTRA_TESTS
   disk-from-superfluous.test
   disk-merge.test
   disk-miss.test
-  disk-noext.test
   disk-nogood-copy.test
   disk-nogood-miss.test
   disk-nogood.test
@@ -96,6 +95,7 @@ set(EXTRA_TESTS
   disk-swap.test
   disk-swapmerge.test
   disk-to-needed.test
+  disk-toplevel.test
   disk-wrong.test
   disk-wrong2.test
   diskfull-dir.test

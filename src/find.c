@@ -200,7 +200,7 @@ check_for_file_in_zip(const char *name, const file_t *r, const file_t *f, match_
     archive_t *a;
     int idx;
 
-    if ((full_name = findfile(name, TYPE_ROM)) == NULL || (a = archive_new(full_name, TYPE_ROM, FILE_ROMSET, 0)) == NULL) {
+    if ((full_name = findfile(name, TYPE_ROM, NULL)) == NULL || (a = archive_new(full_name, TYPE_ROM, FILE_ROMSET, 0)) == NULL) {
 	free(full_name);
 	return FIND_MISSING;
     }
@@ -252,7 +252,7 @@ check_match_disk_romset(const game_t *g, const disk_t *d, match_disk_t *md) {
     char *file_name;
     disk_t *f;
 
-    file_name = findfile(disk_name(d), TYPE_DISK);
+    file_name = findfile(disk_name(d), TYPE_DISK, game_name(g));
     if (file_name == NULL)
 	return FIND_MISSING;
 
@@ -270,8 +270,8 @@ check_match_disk_romset(const game_t *g, const disk_t *d, match_disk_t *md) {
 	}
 	else {
 	    free(file_name);
-	    disk_free(f);
 	}
+        disk_free(f);
 	return FIND_EXISTS;
     }
 

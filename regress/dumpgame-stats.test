@@ -4,5 +4,4 @@ program dumpgame
 args -D ../mamedb-disk-many.db /stats
 stdout Games:  	30
 stdout ROMs:   	67 (3301 bytes)
-stdout Samples:	4
 stdout Disks:  	7

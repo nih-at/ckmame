@@ -521,9 +521,6 @@ dump_stats(int dummy) {
 
     ft = -1;
     for (i = 0; i < TYPE_MAX; i++) {
-	if (i == OBSOLETE_TYPE_SAMPLE) {
-	    continue;
-	}
 	if (ft < i) {
 	    switch (sqlite3_step(stmt)) {
 	    case SQLITE_ROW:

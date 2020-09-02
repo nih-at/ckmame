@@ -234,18 +234,19 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 
 	switch (match_disk_quality(md)) {
 	case QU_COPIED:
-	    if ((name = findfile(disk_name(d), TYPE_DISK)) != NULL) {
+	    if ((name = findfile(disk_name(d), TYPE_DISK, game_name(g))) != NULL) {
 		myerror(ERRDEF, "internal error: unknown disk '%s' exists, skipping", name);
 		continue;
 	    }
 
-	    fname = make_file_name(TYPE_DISK, disk_name(d));
+	    fname = make_file_name(TYPE_DISK, disk_name(d), game_name(g));
 
-	    do_copy = ((fix_options & FIX_DELETE_EXTRA) == 0 && match_disk_where(md) == FILE_EXTRA);
-
+            do_copy = ((fix_options & FIX_DELETE_EXTRA) == 0 && match_disk_where(md) == FILE_EXTRA);
+            
 	    if (fix_options & FIX_PRINT)
 		printf("%s '%s' to '%s'\n", do_copy ? "copy" : "rename", match_disk_name(md), fname);
 	    if (fix_options & FIX_DO) {
+                ensure_dir(fname, 1);
 		if (do_copy) {
 		    link_or_copy(match_disk_name(md), fname);
 #if 0

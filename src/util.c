@@ -138,9 +138,6 @@ name_type(const char *name) {
 
     l = strlen(name);
 
-    if (strchr(name, '.') == NULL)
-	return NAME_NOEXT;
-
     if (l > 4) {
 	if (strcmp(name + l - 4, ".chd") == 0)
 	    return NAME_CHD;
