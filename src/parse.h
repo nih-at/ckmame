@@ -106,7 +106,7 @@ int parse_file_mtime(parser_context_t *, filetype_t, int, time_t);
 int parse_file_name(parser_context_t *, filetype_t, int, const char *);
 int parse_file_size(parser_context_t *, filetype_t, int, const char *);
 int parse_file_start(parser_context_t *, filetype_t);
-int parse_game_cloneof(parser_context_t *, int, const char *);
+int parse_game_cloneof(parser_context_t *, filetype_t, int, const char *);
 int parse_game_description(parser_context_t *, const char *);
 int parse_game_end(parser_context_t *, filetype_t);
 int parse_game_name(parser_context_t *, filetype_t, int, const char *);

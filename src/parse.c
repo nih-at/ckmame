@@ -298,7 +298,7 @@ parse_file_start(parser_context_t *ctx, filetype_t ft) {
 
 /*ARGSUSED3*/
 int
-parse_game_cloneof(parser_context_t *ctx, int ht, const char *attr) {
+parse_game_cloneof(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
     CHECK_STATE(ctx, PARSE_IN_GAME);
 
     game_cloneof(ctx->g, 0) = xstrdup(attr);

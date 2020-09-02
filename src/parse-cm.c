@@ -75,7 +75,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 	    else if (strcmp(cmd, "description") == 0)
 		parse_game_description(ctx, gettok(&l));
 	    else if (strcmp(cmd, "romof") == 0)
-		parse_game_cloneof(ctx, 0, gettok(&l));
+		parse_game_cloneof(ctx, TYPE_ROM, 0, gettok(&l));
 	    else if (strcmp(cmd, "rom") == 0) {
 		gettok(&l);
 		if (strcmp(gettok(&l), "name") != 0) {
