@@ -7,8 +7,10 @@ file-new roms/disk/108-5.chd 108-5.chd
 file-del roms/diskchild/108-5c.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at '108-5c.chd'
-stdout rename 'roms/108-5c.chd' to 'roms/108-5.chd'
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/diskchild/108-5c.chd'
+stdout copy 'roms/diskchild/108-5c.chd' to 'roms/disk/108-5.chd'
 stdout In game diskchild:
 stdout game diskchild                               : correct
-stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: unused
+stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
+stdout image roms/diskchild/108-5c.chd: not used
+stdout roms/diskchild/108-5c.chd: delete unused image
