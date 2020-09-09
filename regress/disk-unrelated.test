@@ -1,12 +1,12 @@
-description two games that use the same disk but are not connected as parent/child
+description two games that use the same disk under the same name
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -KLivc disk disk-same
+args -D ../mamedb-disk-many.db -KLivc disk diskgood-romnogood
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-5.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
-stdout In game disk-same:
-stdout game disk-same                               : not a single rom found
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
+stdout In game diskgood-romnogood:
+stdout game diskgood-romnogood                      : not a single rom found
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/disk/108-5.chd'

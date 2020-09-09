@@ -704,6 +704,10 @@
 		4B86CED11B134251003EF102 /* detective.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = detective.mdoc; sourceTree = "<group>"; };
 		4B86CED21B134251003EF102 /* dumpgame.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = dumpgame.mdoc; sourceTree = "<group>"; };
 		4B86CED31B134251003EF102 /* mkmamedb.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = mkmamedb.mdoc; sourceTree = "<group>"; };
+		4B918BCC2508EAE0002D8F29 /* disk-parent-merge.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-parent-merge.test"; sourceTree = "<group>"; };
+		4B918BCD2508EAE0002D8F29 /* disk-parent-same.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-parent-same.test"; sourceTree = "<group>"; };
+		4B918BCE2508EAE0002D8F29 /* disk-unrelated-fix.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-unrelated-fix.test"; sourceTree = "<group>"; };
+		4B918BCF2508EAE0002D8F29 /* disk-unrelated.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-unrelated.test"; sourceTree = "<group>"; };
 		4B9232FE1780B2BA00096AA2 /* dbh_cache.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dbh_cache.c; sourceTree = "<group>"; };
 		4B9232FF1780B2FC00096AA2 /* dbh_cache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dbh_cache.h; sourceTree = "<group>"; };
 		4B9292BC17633FFC00806C0A /* dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dir.h; sourceTree = "<group>"; };
@@ -1119,12 +1123,16 @@
 				4B6B146C24FF946A00D3F3FB /* disk-nogood-miss.test */,
 				4B6B148624FF9F5C00D3F3FB /* disk-nogood.test */,
 				4B6B147924FF9F5B00D3F3FB /* disk-ok.test */,
+				4B918BCC2508EAE0002D8F29 /* disk-parent-merge.test */,
+				4B918BCD2508EAE0002D8F29 /* disk-parent-same.test */,
 				4B6B148424FF9F5C00D3F3FB /* disk-parent.test */,
 				4B6B148324FF9F5C00D3F3FB /* disk-superfluous.test */,
 				4B6B148124FF9F5C00D3F3FB /* disk-swap.test */,
 				4B6B148824FF9F5C00D3F3FB /* disk-swapmerge.test */,
 				4B6B147B24FF9F5C00D3F3FB /* disk-to-needed.test */,
 				4B6B147424FF946A00D3F3FB /* disk-toplevel.test */,
+				4B918BCE2508EAE0002D8F29 /* disk-unrelated-fix.test */,
+				4B918BCF2508EAE0002D8F29 /* disk-unrelated.test */,
 				4B6B148724FF9F5C00D3F3FB /* disk-wrong.test */,
 				4B6B147E24FF9F5C00D3F3FB /* disk-wrong2.test */,
 				4B6B147824FF9F5B00D3F3FB /* diskfull-dir.test */,

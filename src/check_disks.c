@@ -98,6 +98,14 @@ check_disks(game_t *game, images_t *im[], result_t *res) {
 	}
 
 	if (match_disk_quality(md) != QU_OK && match_disk_quality(md) != QU_OLD) {
+            match_disk_t disk_match;
+            match_disk_init(&disk_match);
+            
+            if (find_disk_in_romset(disk, game_name(game), &disk_match) == FIND_EXISTS) {
+                match_disk_copy(md, &disk_match);
+                match_disk_where(md) = FILE_ROMSET;
+                continue;
+            }
 	    /* search in needed, superfluous and extra dirs */
 	    ensure_extra_maps(DO_MAP);
 	    ensure_needed_maps();

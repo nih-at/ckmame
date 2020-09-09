@@ -241,7 +241,31 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 
 	    fname = make_file_name(TYPE_DISK, disk_name(d), game_name(g));
 
-            do_copy = ((fix_options & FIX_DELETE_EXTRA) == 0 && match_disk_where(md) == FILE_EXTRA);
+            switch (match_disk_where(md)) {
+            case FILE_INGAME:
+            case FILE_NEEDED:
+            case FILE_SUPERFLUOUS:
+                do_copy = 0;
+                break;
+                
+            case FILE_INCO:
+            case FILE_INGCO:
+            case FILE_ROMSET:
+                do_copy = 1;
+                break;
+                
+            case FILE_EXTRA:
+                do_copy = (fix_options & FIX_DELETE_EXTRA) == 0;
+                break;
+                
+            case FILE_NOWHERE:
+            case FILE_OLD:
+            case FILE_DELETED:
+            case FILE_ADDED:
+                /* shouldn't happen */
+                do_copy = 1;
+                break;
+            }
             
 	    if (fix_options & FIX_PRINT)
 		printf("%s '%s' to '%s'\n", do_copy ? "copy" : "rename", match_disk_name(md), fname);

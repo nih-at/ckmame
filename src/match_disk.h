@@ -56,6 +56,8 @@ typedef array_t match_disk_array_t;
 
 #define match_disk_array_length array_length
 
+#define match_disk_copy(m1, m2) (memcpy(m1, m2, sizeof(match_disk_t)))
+
 #define match_disk_hashes(m) (&(m)->hashes)
 #define match_disk_name(m) ((m)->name)
 #define match_disk_quality(m) ((m)->quality)

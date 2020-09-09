@@ -33,6 +33,7 @@ file-new roms/zerobadcrc.zip zero-ok.zip
 file roms/disk/108-5.chd 108-5.chd 108-5.chd
 file roms/disk-nogood/108-nogood.chd 108-5.chd 108-5.chd
 file roms/diskgood-romnogood/108-5.chd 108-5.chd 108-5.chd
+file-new roms/disk-same/108-5.chd 108-5.chd
 no-hashes roms baddump.zip bad.rom
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
@@ -97,7 +98,8 @@ stdout disk 208-7         no good dump              : missing
 stdout roms/disk-nogood2.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
 stdout In game disk-same:
 stdout game disk-same                               : not a single rom found
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/disk/108-5.chd'
+stdout copy 'roms/disk/108-5.chd' to 'roms/disk-same/108-5.chd'
 stdout In game diskgood-romnogood:
 # TODO: next line is wrong
 stdout game diskgood-romnogood                      : not a single rom found

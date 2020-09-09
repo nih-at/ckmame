@@ -92,7 +92,6 @@ set(EXTRA_TESTS
   disk-ok.test
   disk-parent.test
   disk-parent-merge.test
-  disk-parent-same.test
   disk-superfluous.test
   disk-swap.test
   disk-swapmerge.test
@@ -274,8 +273,6 @@ set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   disk-swapmerge.test
-  disk-parent-same.test
-  disk-unrelated-fix.test
   mkmamedb-duplicate-nodump.test
   mkmamedb-merge-no-parent.test
   mkmamedb-merge-three-generations.test
