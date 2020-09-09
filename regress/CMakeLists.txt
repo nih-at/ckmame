@@ -79,6 +79,7 @@ set(EXTRA_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   disk-chd-v5-integrity.test
+  disk-fixdat
   disk-from-extra-remove.test
   disk-from-extra-using-copy-remove.test
   disk-from-extra.test
