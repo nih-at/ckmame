@@ -52,7 +52,7 @@
 
 
 void check_archive(archive_t *, const char *, result_t *);
-void check_disks(game_t *, images_t *, result_t *);
+void check_disks(game_t *, images_t *[], result_t *);
 void check_files(game_t *, archive_t *[], result_t *);
 void check_images(images_t *, const char *, result_t *);
 void check_old(game_t *, result_t *);

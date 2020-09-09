@@ -46,8 +46,9 @@ check_images(images_t *im, const char *gamename, result_t *res) {
     disk_t *d;
     int i;
 
-    if (im == NULL)
+    if (im == NULL) {
 	return;
+    }
 
     for (i = 0; i < images_length(im); i++) {
 	d = images_get(im, i);

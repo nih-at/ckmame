@@ -544,7 +544,6 @@
 		4B6B148A24FFA12A00D3F3FB /* mkmamedb-no-name.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mkmamedb-no-name.test"; sourceTree = "<group>"; };
 		4B6B148B24FFA12A00D3F3FB /* mkmamedb-duplicate-game.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mkmamedb-duplicate-game.test"; sourceTree = "<group>"; };
 		4B6B148C24FFA12A00D3F3FB /* mkmamedb-ok.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mkmamedb-ok.test"; sourceTree = "<group>"; };
-		4B6B148D24FFA12A00D3F3FB /* mkmamedb-disk-conflict.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mkmamedb-disk-conflict.test"; sourceTree = "<group>"; };
 		4B6B148E24FFA12A00D3F3FB /* nogood-miss-d.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "nogood-miss-d.test"; sourceTree = "<group>"; };
 		4B6B148F24FFA12A00D3F3FB /* needed-error.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "needed-error.test"; sourceTree = "<group>"; };
 		4B6B149024FFA12A00D3F3FB /* nonexist.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = nonexist.test; sourceTree = "<group>"; };
@@ -1170,7 +1169,6 @@
 				4B6B149224FFA12A00D3F3FB /* misnamed.test */,
 				4B6B14B124FFA12C00D3F3FB /* mkmamedb-broken-sha1.test */,
 				4B6B14AA24FFA12B00D3F3FB /* mkmamedb-dir-in-name.test */,
-				4B6B148D24FFA12A00D3F3FB /* mkmamedb-disk-conflict.test */,
 				4B6B148B24FFA12A00D3F3FB /* mkmamedb-duplicate-game.test */,
 				4B6B14A424FFA12B00D3F3FB /* mkmamedb-duplicate-nodump.test */,
 				4B6B149424FFA12A00D3F3FB /* mkmamedb-duplicate-rom-name.test */,

@@ -43,11 +43,11 @@ typedef parray_t images_t;
 
 #define images_free(im) (parray_free((im), disk_free))
 #define images_get(im, i) ((disk_t *)parray_get((im), (i)))
-#define images_length(im) (parray_length(im))
+#define images_length(im) ((im) ? parray_length(im) : 0)
 
-
+int images_find(const images_t *images, const char *name);
 const char *images_name(const images_t *, int);
-images_t *images_new(const game_t *, int);
+images_t *images_new(const char *name, int flags);
 images_t *images_new_name(const char *, int);
 
 #endif /* images.h */

@@ -109,7 +109,7 @@ stats_add_rom(stats_t *stats, enum filetype type, const file_t *rom, quality_t s
 
 void
 stats_print(stats_t *stats, FILE *f, bool total_only) {
-    static const char *ft_name[] = {"ROMs:", "Samples:", "Disks:"};
+    static const char *ft_name[] = {"ROMs:", "Disks:"};
 
     if (stats->games_total > 0) {
         fprintf(f, "Games:  \t");
@@ -129,9 +129,6 @@ stats_print(stats_t *stats, FILE *f, bool total_only) {
     }
     
     for (enum filetype type = 0; type < TYPE_MAX; type++) {
-	if (type == OBSOLETE_TYPE_SAMPLE) {
-	    continue;
-	}
         if (stats->files[type].files_total > 0) {
             fprintf(f, "%-8s\t", ft_name[type]);
             if (!total_only) {

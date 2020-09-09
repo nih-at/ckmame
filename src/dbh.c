@@ -50,7 +50,7 @@
 #define DBH_EVERSION 2 /* version mismatch */
 #define DBH_EMAX 2
 
-static const int format_version[] = {2, 1, 2};
+static const int format_version[] = {3, 1, 2};
 #define USER_VERSION(fmt) (format_version[fmt] + (fmt << 8) + 17000)
 
 #define SET_VERSION_FMT "pragma user_version = %d"

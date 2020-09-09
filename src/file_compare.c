@@ -38,7 +38,7 @@
 
 bool
 file_compare_m(const file_t *fg, const file_t *fa) {
-    return strcmp(file_merge(fg) ? file_merge(fg) : file_name(fg), file_name(fa)) == 0;
+    return strcmp(file_merged_name(fg), file_name(fa)) == 0;
 }
 
 

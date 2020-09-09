@@ -144,7 +144,6 @@ set(EXTRA_TESTS
   misnamed.test
   mkmamedb-broken-sha1.test
   mkmamedb-dir-in-name.test
-  mkmamedb-disk-conflict.test
   mkmamedb-duplicate-game.test
   mkmamedb-duplicate-nodump.test
   mkmamedb-duplicate-rom-name.test
@@ -275,7 +274,6 @@ set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   disk-swapmerge.test
-  disk-parent-merge.test
   disk-parent-same.test
   disk-unrelated-fix.test
   mkmamedb-duplicate-nodump.test

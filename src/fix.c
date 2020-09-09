@@ -190,7 +190,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
     char *fname = NULL;
     bool do_copy;
 
-    for (i = 0; i < game_num_disks(g); i++) {
+    for (i = 0; i < images_length(im); i++) {
 	name = images_name(im, i);
 
 	switch (result_image(res, i)) {
@@ -485,7 +485,7 @@ fix_files_incomplete(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 
 	case QU_COPIED:
 	    switch(match_where(m)) {
-	    case FILE_INZIP:
+	    case FILE_INGAME:
 	    case FILE_SUPERFLUOUS:
 	    case FILE_EXTRA:
 		/* TODO: handle error (how?) */

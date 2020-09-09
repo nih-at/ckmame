@@ -182,7 +182,14 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 			if (parse_file_hash(ctx, TYPE_DISK, HASHES_TYPE_MD5, p) < 0)
 			    break;
 		    }
-		    /*
+                    else if (strcmp(p, "merge") == 0) {
+                        if ((p = gettok(&l)) == NULL) {
+                            myerror(ERRFILE, "%d: token merge missing argument", ctx->lineno);
+                            break;
+                        }
+                        if (parse_file_merge(ctx, TYPE_DISK, 0, p) < 0)
+                            break;
+                    }		    /*
 		      else
 		      myerror(ERRFILE, "%d: ignoring token '%s'", ctx->lineno, p);
 		    */

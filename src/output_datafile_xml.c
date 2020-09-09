@@ -166,7 +166,7 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
         set_attribute_hash(rom, "sha1", HASHES_TYPE_SHA1, file_hashes(r));
         set_attribute_hash(rom, "md5", HASHES_TYPE_MD5, file_hashes(r));
 
-        if (file_where(r) != FILE_INZIP) {
+        if (file_where(r) != FILE_INGAME) {
             set_attribute(rom, "merge", file_merge(r) ? file_merge(r) : file_name(r));
         }
 

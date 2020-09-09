@@ -48,18 +48,11 @@ create table dat (\n\
 create table game (\n\
 	game_id integer primary key autoincrement,\n\
 	name text not null,\n\
+        parent text,\n\
 	description text,\n\
 	dat_idx integer not null\n\
 );\n\
 create index game_name on game (name);\n\
-\n\
-create table parent (\n\
-	game_id integer,\n\
-	file_type integer,\n\
-	parent integer not null,\n\
-	primary key (game_id, file_type)\n\
-);\n\
-create index parnet_parent on parent (parent);\n\
 \n\
 create table file (\n\
 	game_id integer,\n\

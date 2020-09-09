@@ -48,7 +48,8 @@
 
 static tree_t *tree_add_node(tree_t *, const char *, int);
 static tree_t *tree_new_full(const char *, int);
-static int tree_process(tree_t *, archive_t *, archive_t *, archive_t *);
+static int tree_process(tree_t *, archive_t *[], images_t *[]);
+static void tree_traverse_internal(tree_t *, archive_t *[], images_t *[]);
 
 
 int
@@ -142,7 +143,7 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
 
 	gr = game_rom(g, file_location_index(fbh));
 
-	if (size == file_size(gr) && hashes_cmp(hashes, file_hashes(gr)) == HASHES_CMP_MATCH && file_where(gr) == FILE_INZIP)
+	if (size == file_size(gr) && hashes_cmp(hashes, file_hashes(gr)) == HASHES_CMP_MATCH && file_where(gr) == FILE_INGAME)
 	    tree_recheck(tree, game_name(g));
 
 	game_free(g);
@@ -155,14 +156,21 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
 
 
 void
-tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent) {
+tree_traverse(tree_t *tree) {
+    archive_t *archives[] = { NULL, NULL, NULL };
+    images_t *images[] = { NULL, NULL, NULL };
+    tree_traverse_internal(tree, archives, images);
+}
+
+static void
+tree_traverse_internal(tree_t *tree, archive_t *ancestor_archives[], images_t *ancestor_images[]) {
     tree_t *t;
-    archive_t *child;
     char *full_name;
     int flags;
 
-    child = NULL;
-
+    archive_t *archives[] = { NULL, ancestor_archives[0], ancestor_archives[1] };
+    images_t *images[] = { NULL, ancestor_images[0], ancestor_images[1] };
+    
     if (tree->name) {
 	if (siginfo_caught)
 	    print_info(tree->name);
@@ -174,18 +182,21 @@ tree_traverse(tree_t *tree, archive_t *parent, archive_t *gparent) {
 	    full_name = make_file_name(TYPE_ROM, tree->name, 0);
 	}
 	if (full_name)
-	    child = archive_new(full_name, TYPE_ROM, FILE_ROMSET, flags);
+	    archives[0] = archive_new(full_name, TYPE_ROM, FILE_ROMSET, flags);
 	free(full_name);
-
+        
+        images[0] = images_new(tree->name, check_integrity ? DISK_FL_CHECK_INTEGRITY : 0);
+        
 	if (tree_check(tree) && !tree_checked(tree))
-	    tree_process(tree, child, parent, gparent);
+            tree_process(tree, archives, images);
     }
 
-    for (t = tree->child; t; t = t->next)
-	tree_traverse(t, child, parent);
+    for (t = tree->child; t; t = t->next) {
+	tree_traverse_internal(t, archives, images);
+    }
 
-    if (child)
-	archive_free(child);
+    archive_free(archives[0]);
+    images_free(images[0]);
 
     return;
 }
@@ -251,11 +262,9 @@ tree_new_full(const char *name, int check) {
 
 
 static int
-tree_process(tree_t *tree, archive_t *child, archive_t *parent, archive_t *gparent) {
-    archive_t *all[3];
+tree_process(tree_t *tree, archive_t *archives[], images_t *images[]) {
     game_t *g;
     result_t *res;
-    images_t *images;
 
     /* check me */
     if ((g = romdb_read_game(db, tree->name)) == NULL) {
@@ -263,36 +272,29 @@ tree_process(tree_t *tree, archive_t *child, archive_t *parent, archive_t *gpare
 	return -1;
     }
 
-    all[0] = child;
-    all[1] = parent;
-    all[2] = gparent;
-
-    images = images_new(g, check_integrity ? DISK_FL_CHECK_INTEGRITY : 0);
-
-    res = result_new(g, child, images);
+    res = result_new(g, archives[0], images[0]);
 
     check_old(g, res);
-    check_files(g, all, res);
-    check_archive(child, game_name(g), res);
+    check_files(g, archives, res);
+    check_archive(archives[0], game_name(g), res);
     check_disks(g, images, res);
-    check_images(images, game_name(g), res);
+    check_images(images[0], game_name(g), res);
 
     /* write warnings/errors for me */
-    diagnostics(g, child, images, res);
+    diagnostics(g, archives[0], images[0], res);
 
     int ret = 0;
 
     if (fix_options & FIX_DO)
-	ret = fix_game(g, child, images, res);
+	ret = fix_game(g, archives[0], images[0], res);
 
     /* TODO: includes too much when rechecking */
     if (fixdat)
-	write_fixdat_entry(g, child, images, res);
+	write_fixdat_entry(g, archives[0], images[0], res);
 
     /* clean up */
     result_free(res);
     game_free(g);
-    images_free(images);
 
     if (ret != 1)
 	tree_checked(tree) = true;

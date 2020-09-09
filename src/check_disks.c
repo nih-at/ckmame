@@ -42,42 +42,58 @@
 
 
 void
-check_disks(game_t *game, images_t *im, result_t *res) {
-    disk_t *d, *f;
+check_disks(game_t *game, images_t *im[], result_t *res) {
+    disk_t *disk;
     match_disk_t *md;
-    int i;
+    int i, j;
 
     if (game_num_disks(game) == 0)
 	return;
-
+    
     for (i = 0; i < game_num_disks(game); i++) {
 	md = result_disk(res, i);
-	d = game_disk(game, i);
-	f = images_get(im, i);
+	disk = game_disk(game, i);
 
 	if (match_disk_quality(md) == QU_OLD)
 	    continue;
 
-	if (f) {
-	    match_disk_set_source(md, f);
+        j = images_find(im[disk_where(disk)], disk_merged_name(disk));
 
-	    switch (hashes_cmp(disk_hashes(d), disk_hashes(f))) {
-	    case HASHES_CMP_NOCOMMON:
-		match_disk_quality(md) = QU_NOHASH;
-		result_image(res, i) = FS_USED;
-		break;
+        if (j != -1) {
+            disk_t *expected_image = images_get(im[disk_where(disk)], j);
+            match_disk_where(md) = disk_where(disk);
+	    match_disk_set_source(md, expected_image);
+
+	    switch (hashes_cmp(disk_hashes(disk), disk_hashes(expected_image))) {
 	    case HASHES_CMP_MATCH:
 		match_disk_quality(md) = QU_OK;
-		result_image(res, i) = FS_USED;
+                if (disk_where(disk) == FILE_INGAME) {
+                    result_image(res, j) = FS_USED;
+                }
 		break;
 	    case HASHES_CMP_MISMATCH:
 		match_disk_quality(md) = QU_HASHERR;
 		break;
+                
+            default:
+                break;
 	    }
 	}
 
-	if (hashes_types(disk_hashes(d)) == 0) {
-	    /* TODO: search for disk by name */
+        if (disk_where(disk) == FILE_INGAME && match_disk_quality(md) != QU_OK && im[0] != NULL) {
+            for (i = 0; i < images_length(im[0]); i++) {
+                disk_t *image = images_get(im[0], i);
+                
+                if (hashes_cmp(disk_hashes(disk), disk_hashes(image)) == HASHES_CMP_MATCH) {
+                    match_disk_where(md) = FILE_INGAME;
+                    match_disk_set_source(md, image);
+                    match_disk_quality(md) = QU_NAMEERR;
+                    result_image(res, i) = FS_USED;
+                }
+            }
+        }
+
+	if (hashes_types(disk_hashes(disk)) == 0) {
 	    continue;
 	}
 
@@ -85,7 +101,7 @@ check_disks(game_t *game, images_t *im, result_t *res) {
 	    /* search in needed, superfluous and extra dirs */
 	    ensure_extra_maps(DO_MAP);
 	    ensure_needed_maps();
-	    if (find_disk(d, md) == FIND_EXISTS)
+	    if (find_disk(disk, md) == FIND_EXISTS)
 		continue;
 	}
     }

@@ -468,8 +468,8 @@ main(int argc, char **argv) {
 #endif
 
     if (action == ACTION_CHECK_ROMSET) {
-	tree_traverse(check_tree, NULL, NULL);
-	tree_traverse(check_tree, NULL, NULL);
+	tree_traverse(check_tree);
+	tree_traverse(check_tree); /* handle rechecks */
 
 	if (fix_options & FIX_DO) {
 	    if (fix_options & FIX_SUPERFLUOUS) {

@@ -17,7 +17,7 @@
 2|0|3|11.ic51|<null>|0|0|131072|194119686|<null>|<95f50ebfb296ba29aaa8079a41f5362cb9e879cc>
 2|0|4|3.ic40|<null>|0|0|524288|2304466463|<null>|<9398ee95d391f74d62fe641cb75311f31d4d1c8d>
 2|0|5|4.ic41|<null>|0|0|524288|289242774|<null>|<f3fb9c719544417a6a018b82f07c65bf73de21ff>
-2|2|0|csplayh5|<null>|0|0|<null>|<null>|<null>|<ce4883ce1351ce5299e41bfbd9a5ae8078b82b8c>
+2|1|0|csplayh5|<null>|0|0|<null>|<null>|<null>|<ce4883ce1351ce5299e41bfbd9a5ae8078b82b8c>
 3|0|0|au03-2|<null>|0|0|8192|2399834042|<null>|<8e11d2bd665a5ca6b3bb11aa2b707458c1534327>
 3|0|1|au02-2|<null>|0|0|8192|2108758735|<null>|<1eebae0741f5735bc8966f3c31a9c07dac2e3916>
 3|0|2|au01-2|<null>|0|0|8192|1379784950|<null>|<47bd4c9b2272e9a710e6e97f2505075df68101ed>
@@ -29,7 +29,7 @@
 3|0|8|au08|<null>|0|0|8192|1662354036|<null>|<c728e8ba0a11ea67cf508877ad74a3aab9ef26fc>
 3|0|9|au09|<null>|0|0|8192|1961440148|<null>|<7a1470cf2008b1bef8d950939b758707297b3655>
 3|0|10|z03_1001_vyw-053_v1-0.bin|<null>|0|0|8192|837568135|<null>|<52f91c304a878ba02b2fa1cda1a9489d6dd5a34f>
-3|2|0|cobra|<null>|0|0|<null>|<null>|<null>|<8390498294aca97a5d1769032e7b115d1a42f5d3>
+3|1|0|cobra|<null>|0|0|<null>|<null>|<null>|<8390498294aca97a5d1769032e7b115d1a42f5d3>
 4|0|0|rl-01.9|<null>|0|0|1024|3480683465|<null>|<b4182df9332b355edaa518462217a6e31e1c07b2>
 4|0|1|rl-02.1|<null>|0|0|1024|269741267|<null>|<2fe367db8ca367b36c5378cb7d5ff918db243c78>
 4|0|2|rl-03.10|<null>|0|0|1024|2220120212|<null>|<377494ceeac5ad58b70f77b2b27b609491cb7ffd>
@@ -51,7 +51,7 @@
 5|0|10|bh07|<null>|0|0|8192|4182141138|<null>|<b5c3a54cf80097ac447a8140bd5877a66712e240>
 5|0|11|bh06|<null>|0|0|8192|2876013809|<null>|<3625f2e00a333552036bff99af25edeac5915d78>
 5|0|12|pr-8210_mcu_ud6005a.bin|<null>|0|0|2048|303015995|<null>|<b514326ca1f52d6d89056868f9d17eabd4e3f31d>
-5|2|0|cobra|<null>|0|0|<null>|<null>|<null>|<8390498294aca97a5d1769032e7b115d1a42f5d3>
+5|1|0|cobra|<null>|0|1|<null>|<null>|<null>|<8390498294aca97a5d1769032e7b115d1a42f5d3>
 6|0|0|1.bin|<null>|0|0|2048|2173620564|<null>|<8c0f555a3ab1d20a2c284d721b31278a0ddf9e51>
 6|0|1|5.bin|<null>|0|0|2048|2763136403|<null>|<923b7a06f9146c7bcda4cdb16b15d2bbbec95eab>
 6|0|2|2.bin|<null>|0|0|2048|1568285677|<null>|<242fd973b0bde91c38e1f5e7f6c53d737019ec9c>
@@ -77,7 +77,7 @@
 7|0|6|7.10h|<null>|0|0|131072|196713018|<null>|<1c896f50f74a52fcf96a40ca536502908bab85c9>
 7|0|7|8.10j|<null>|0|0|131072|603640890|<null>|<7276b92623dc4559e62d2f4742c8a68233c1dfe5>
 7|0|8|9.10k|<null>|0|0|65536|3382034906|<null>|<c8a1f4919296221c375763b0d9838f31ed53135d>
-7|2|0|hnageman|<null>|2|0|<null>|<null>|<null>|<null>
+7|1|0|hnageman|<null>|2|0|<null>|<null>|<null>|<null>
 8|0|0|tb1-1.1a|<null>|0|0|2048|663358348|<null>|<11ea8fe8401b3cd986616a30a759c0ac1a5ce73b>
 8|0|1|tb1-2.1b|<null>|0|0|2048|3767677808|<null>|<8d3dbea877bed9f9c267d8002dc180f6eb1e5a8f>
 8|0|2|tb1-3.1c|<null>|0|0|2048|2231393956|<null>|<91583081803a5ef600fb90bee34be9edd87f157e>
@@ -85,16 +85,14 @@
 8|0|4|tb1-5.2k|<null>|0|0|2048|2864533425|<null>|<5cff659b531d0f1b6faa503f7c06045c3a209a84>
 8|0|5|bct1-1.l3|<null>|0|0|256|3514112188|<null>|<f3b0deffa586808bc59e9a24ec1699c54ebe84cc>
 8|0|6|prom.2d|<null>|2|0|256|<null>|<null>|<null>
->>> table game (game_id, name, description, dat_idx)
-1|puckman|PuckMan (Japan set 1)|0
-2|csplayh5|Mahjong Hanafuda Cosplay Tengoku 5 (Japan)|0
-3|cobra|Cobra Command (Data East LD)|0
-4|safarir|Safari Rally (Japan)|0
-5|cobram3|Cobra Command (M.A.C.H. 3 hardware)|0
-6|eggor|Eggor|0
-7|hnageman|AV Hanafuda Hana no Ageman (Japan 900716)|0
-8|tankbatt|Tank Battalion|0
->>> table parent (game_id, file_type, parent)
-5|0|cobra
+>>> table game (game_id, name, parent, description, dat_idx)
+1|puckman|<null>|PuckMan (Japan set 1)|0
+2|csplayh5|<null>|Mahjong Hanafuda Cosplay Tengoku 5 (Japan)|0
+3|cobra|<null>|Cobra Command (Data East LD)|0
+4|safarir|<null>|Safari Rally (Japan)|0
+5|cobram3|cobra|Cobra Command (M.A.C.H. 3 hardware)|0
+6|eggor|<null>|Eggor|0
+7|hnageman|<null>|AV Hanafuda Hana no Ageman (Japan 900716)|0
+8|tankbatt|<null>|Tank Battalion|0
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

@@ -48,7 +48,6 @@ struct tree {
 
 typedef struct tree tree_t;
 
-
 #define tree_check(t) ((t)->check)
 #define tree_checked(t) ((t)->checked)
 #define tree_name(t) ((t)->name)
@@ -58,6 +57,6 @@ void tree_free(tree_t *);
 tree_t *tree_new(void);
 bool tree_recheck(const tree_t *, const char *);
 int tree_recheck_games_needing(tree_t *, uint64_t, const hashes_t *);
-void tree_traverse(tree_t *, archive_t *, archive_t *);
+void tree_traverse(tree_t *);
 
 #endif /* tree.h */

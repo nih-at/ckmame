@@ -33,7 +33,29 @@
 
 
 #include "images.h"
+
+#include "dir.h"
 #include "funcs.h"
+#include "util.h"
+#include "xmalloc.h"
+
+int
+images_find(const images_t *images, const char *name) { 
+    if (images == NULL) {
+        return -1;
+    }
+    
+    char *full_name;
+    xasprintf(&full_name, "%s.chd", name);
+    
+    for (int i = 0; i < images_length(images); i++) {
+        if (strcmp(mybasename(disk_name(images_get(images, i))), full_name) == 0) {
+            return i;
+        }
+    }
+    
+    return -1;
+}
 
 
 const char *
@@ -47,27 +69,35 @@ images_name(const images_t *im, int i) {
 
 
 images_t *
-images_new(const game_t *g, int flags) {
+images_new(const char *name, int flags) {
     images_t *im;
-    char *fname;
-    int i;
+    dir_t *dir;
+    dir_status_t err;
+    char b[8192];
+    char *dirname;
 
-    if (game_num_disks(g) == 0)
-	return NULL;
+    xasprintf(&dirname, "%s/%s", get_directory(), name);
 
-    im = parray_new_sized(game_num_disks(g));
-
-    for (i = 0; i < game_num_disks(g); i++) {
-	fname = findfile(disk_name(game_disk(g, i)), TYPE_DISK, game_name(g));
-	if (fname == NULL && disk_merge(game_disk(g, i)) != NULL)
-	    fname = findfile(disk_merge(game_disk(g, i)), TYPE_DISK, game_name(g));
-	if (fname == NULL)
-	    parray_push(im, NULL);
-	else {
-	    parray_push(im, disk_new(fname, flags));
-	    free(fname);
-	}
+    if ((dir = dir_open(dirname, 0)) == NULL) {
+        free(dirname);
+        return NULL;
     }
+    
+    im = parray_new();
+
+    while ((err = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
+        if (err == DIR_ERROR) {
+            /* TODO: handle error */
+            continue;
+        }
+
+        if (name_type(b) == NAME_CHD) {
+            parray_push(im, disk_new(b, flags));
+        }
+    }
+
+    dir_close(dir);
+    free(dirname);
 
     return im;
 }

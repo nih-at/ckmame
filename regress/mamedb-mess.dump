@@ -40,10 +40,9 @@
 3|0|13|251-c6.bin|<null>|0|0|8388608|1706816129|<null>|<79ae174667a23dabcfe865b6cd6133c86098452e>
 3|0|14|251-c7.bin|<null>|0|0|8388608|4284872238|<null>|<7cd335fede05b56e15db90ce407c1183a78da4e9>
 3|0|15|251-c8.bin|<null>|0|0|8388608|2375162984|<null>|<42acf1d27d52a8e3b6262eb7df50693c0b135565>
->>> table game (game_id, name, description, dat_idx)
-1|nam1975|NAM-1975|0
-2|kotm2|King of the Monsters 2 - The Next Thing|0
-3|kof99|The King of Fighters '99 - Millennium Battle|0
->>> table parent (game_id, file_type, parent)
+>>> table game (game_id, name, parent, description, dat_idx)
+1|nam1975|<null>|NAM-1975|0
+2|kotm2|<null>|King of the Monsters 2 - The Next Thing|0
+3|kof99|<null>|The King of Fighters '99 - Millennium Battle|0
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

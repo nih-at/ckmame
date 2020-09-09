@@ -45,6 +45,7 @@ struct disk {
     char *merge;
     hashes_t hashes;
     status_t status;
+    where_t where;
 };
 
 typedef struct disk disk_t;
@@ -55,12 +56,17 @@ typedef struct disk disk_t;
 
 #define disk_hashes(d) (&(d)->hashes)
 #define disk_status(d) ((d)->status)
+#define disk_where(d) ((d)->where)
 #define disk_merge(d) ((d)->merge)
+#define disk_merged_name(d) ((d)->merge ? (d)->merge : (d)->name)
 #define disk_name(d) ((d)->name)
 #define disk_id(d) ((d)->id)
 
 #define disk_by_id(i) ((disk_t *)memdb_get_ptr_by_id(i))
 
+bool disk_compare_merge(const disk_t *a, const disk_t *b);
+bool disk_compare_merge_hashes(const disk_t *a, const disk_t *b);
+bool disk_compare_hashes(const disk_t *a, const disk_t *b);
 void disk_finalize(disk_t *);
 void disk_free(disk_t *);
 void disk_init(disk_t *);

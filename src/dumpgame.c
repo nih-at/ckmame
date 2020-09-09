@@ -85,19 +85,9 @@ struct option options[] = {
     {"brief", 0, 0, 'b'}, {"checksum", 0, 0, 'c'}, {"db", 1, 0, 'D'}, {"disk", 0, 0, 'd'}, {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {NULL, 0, 0, 0},
 };
 
-static char *where_name[] = {"zip", "cloneof", "grand-cloneof"};
+static char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 
 static char *status_name[] = {"ok", "baddump", "nogooddump"};
-
-#define QUERY_CLONES                                                  \
-    "select g.name from game g, parent p where g.game_id = p.game_id" \
-    " and p.parent = ? and file_type = ?"
-
-#define QUERY_STATS_GAMES "select count(name) from game"
-#define QUERY_STATS_FILES                                \
-    "select file_type, count(name), sum(size) from file" \
-    " group by file_type order by file_type"
-
 
 static void
 print_checksums(hashes_t *hashes) {
@@ -116,7 +106,9 @@ static void
 print_diskline(disk_t *disk) {
     printf("\t\tdisk %-12s", disk->name);
     print_checksums(&disk->hashes);
-    printf(" status %s", status_name[disk_status(disk)]);
+    printf(" status %s in %s", status_name[disk_status(disk)], where_name[disk_where(disk)]);
+    if (disk_merge(disk) && strcmp(disk_name(disk), disk_merge(disk)) != 0)
+        printf(" (%s)", disk_merge(disk));
     putc('\n', stdout);
 }
 
@@ -245,7 +237,7 @@ main(int argc, char **argv) {
     }
 
     if ((db = romdb_open(dbname, DBH_READ)) == NULL) {
-	myerror(ERRSTR, "can't open database '%s'", dbname);
+	myerror(ERRDB, "can't open database '%s'", dbname);
 	exit(1);
     }
     seterrdb(romdb_dbh(db));
@@ -329,7 +321,7 @@ print_rs(game_t *game, const char *co, const char *gco, const char *cs, const ch
 	myerror(ERRDB, "cannot get clones for '%s'", game_name(game));
 	return;
     }
-    if (sq3_set_string(stmt, 1, game_name(game)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK) {
+    if (sq3_set_string(stmt, 1, game_name(game)) != SQLITE_OK) {
 	myerror(ERRDB, "cannot get clones for '%s'", game_name(game));
 	return;
     }

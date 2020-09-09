@@ -9,4 +9,4 @@ stdout game disk                                    : correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
 stdout In game diskchild:
 stdout game diskchild                               : correct
-stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
+stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct

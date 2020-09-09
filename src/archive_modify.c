@@ -78,7 +78,7 @@ archive_commit(archive_t *a) {
 		    /* TODO: handle error (how?) */
 		    memdb_file_insert(NULL, a, i);
 		}
-		file_where(archive_file(a, i)) = FILE_INZIP;
+		file_where(archive_file(a, i)) = FILE_INGAME;
 		break;
 
 	    default:
@@ -195,7 +195,7 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
 	myerror(ERRZIPFILE, "not copying broken file");
 	return -1;
     }
-    if (file_where(archive_file(sa, sidx)) != FILE_INZIP && file_where(archive_file(sa, sidx)) != FILE_DELETED) {
+    if (file_where(archive_file(sa, sidx)) != FILE_INGAME && file_where(archive_file(sa, sidx)) != FILE_DELETED) {
 	myerror(ERRZIP, "cannot copy broken/added file");
 	return -1;
     }
@@ -230,7 +230,7 @@ archive_file_delete(archive_t *a, int idx) {
 	return -1;
     }
 
-    if (file_where(archive_file(a, idx)) != FILE_INZIP) {
+    if (file_where(archive_file(a, idx)) != FILE_INGAME) {
 	seterrinfo(archive_name(a), NULL);
 	myerror(ERRZIP, "cannot delete broken/added/deleted file");
 	return -1;
@@ -263,7 +263,7 @@ archive_file_rename(archive_t *a, int idx, const char *name) {
 	myerror(ERRZIP, "cannot rename in read-only archive");
 	return -1;
     }
-    if (file_where(archive_file(a, idx)) != FILE_INZIP) {
+    if (file_where(archive_file(a, idx)) != FILE_INGAME) {
 	myerror(ERRZIP, "cannot copy broken/added/deleted file");
 	return -1;
     }
@@ -320,7 +320,7 @@ archive_rollback(archive_t *a) {
     for (i = 0; i < archive_num_files(a); i++) {
 	switch (file_where(archive_file(a, i))) {
 	case FILE_DELETED:
-	    file_where(archive_file(a, i)) = FILE_INZIP;
+	    file_where(archive_file(a, i)) = FILE_INGAME;
 	    break;
 
 	case FILE_ADDED:

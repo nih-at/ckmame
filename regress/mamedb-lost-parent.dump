@@ -3,8 +3,7 @@
 >>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1)
 1|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
 1|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
->>> table game (game_id, name, description, dat_idx)
-1|clone-8|two roms, one in parent|0
->>> table parent (game_id, file_type, parent)
+>>> table game (game_id, name, parent, description, dat_idx)
+1|clone-8|<null>|two roms, one in parent|0
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

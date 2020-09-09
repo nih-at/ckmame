@@ -78,7 +78,7 @@ typedef enum game_status game_status_t;
 
 enum where {
     FILE_NOWHERE = -1,
-    FILE_INZIP,
+    FILE_INGAME,
     FILE_INCO,
     FILE_INGCO,
     FILE_ROMSET,
@@ -100,11 +100,9 @@ typedef enum where where_t;
 #define SIZE_UNKNOWN UINT64_MAX
 #define SIZE_IS_KNOWN(s) ((s) != SIZE_UNKNOWN)
 
-/* keep in sync with archive_modify.c:ops */
-/* also, bump database version on change */
+/* bump database version on change */
 enum filetype {
     TYPE_ROM,
-    OBSOLETE_TYPE_SAMPLE,
     TYPE_DISK,
     TYPE_MAX,
     /* for archive_new only */

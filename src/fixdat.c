@@ -59,7 +59,7 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im, c
 	if (file_size(r) == 0)
 	    continue;
 
-	if (match_quality(m) != QU_MISSING || file_status(r) == STATUS_NODUMP || file_where(r) != FILE_INZIP)
+	if (match_quality(m) != QU_MISSING || file_status(r) == STATUS_NODUMP || file_where(r) != FILE_INGAME)
 	    continue;
 
 	file_t *rm = array_push(game_roms(gm), r);

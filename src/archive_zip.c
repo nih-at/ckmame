@@ -347,7 +347,7 @@ op_rollback(archive_t *a) {
 	}
 
 	if (file_where(archive_file(a, i)) == FILE_DELETED)
-	    file_where(archive_file(a, i)) = FILE_INZIP;
+	    file_where(archive_file(a, i)) = FILE_INGAME;
 
 	if (strcmp(file_name(archive_file(a, i)), zip_get_name(archive_zip(a), i, 0)) != 0) {
 	    free(file_name(archive_file(a, i)));

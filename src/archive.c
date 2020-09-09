@@ -361,7 +361,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags) {
 
     for (i = 0; i < archive_num_files(a); i++) {
 	/* TODO: file_state(archive_file(a, i)) = FILE_UNKNOWN; */
-	file_where(archive_file(a, i)) = FILE_INZIP;
+	file_where(archive_file(a, i)) = FILE_INGAME;
     }
 
     if (!(a->flags & ARCHIVE_FL_NOCACHE)) {

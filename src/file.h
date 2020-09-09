@@ -67,6 +67,7 @@ typedef struct file file_t;
 #define file_hashes(f) (file_hashes_xxx((f), FILE_SH_FULL))
 #define file_hashes_xxx(f, i) (&(f)->sh[(i)].hashes)
 #define file_merge(f) ((f)->merge)
+#define file_merged_name(f) ((f)->merge ? (f)->merge : (f)->name)
 #define file_mtime(f) ((f)->mtime)
 #define file_name(f) ((f)->name)
 #define file_size(f) (file_size_xxx((f), FILE_SH_FULL))

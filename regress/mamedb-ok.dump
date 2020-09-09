@@ -19,18 +19,18 @@
 11|0|0|deadclonedbeef|deadbeef|0|1|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
 12|0|0|some/path/to/file.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 13|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-13|2|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
+13|1|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
 14|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-14|2|0|108-2|<null>|0|0|<null>|<null>|<d9cedd2875a8b4e11de39b0fe935e323>|<9fffa910f0ca90f61e1ab3fab0d1da225be992ae>
-15|2|0|512v5|<null>|0|0|<null>|<null>|<null>|<cf37d50e886519c332dcfe84440f1f085b98c634>
+14|1|0|108-2|<null>|0|0|<null>|<null>|<d9cedd2875a8b4e11de39b0fe935e323>|<9fffa910f0ca90f61e1ab3fab0d1da225be992ae>
+15|1|0|512v5|<null>|0|0|<null>|<null>|<null>|<cf37d50e886519c332dcfe84440f1f085b98c634>
 16|0|0|04.rom|<null>|0|1|4|3632233996|<null>|<null>
-16|2|0|108-5c|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
+16|1|0|108-5c|108-5|0|1|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
 17|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-17|2|0|108-nogood|<null>|2|0|<null>|<null>|<null>|<null>
+17|1|0|108-nogood|<null>|2|0|<null>|<null>|<null>|<null>
 18|0|0|08.rom|<null>|0|0|8|911640957|<null>|<null>
-18|2|0|208-7|<null>|2|0|<null>|<null>|<null>|<null>
+18|1|0|208-7|<null>|2|0|<null>|<null>|<null>|<null>
 19|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
-19|2|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
+19|1|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
 20|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
 21|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
 21|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
@@ -76,44 +76,38 @@
 30|0|30|1E|<null>|0|0|2|2167578706|<null>|<null>
 30|0|31|1F|<null>|0|0|2|406581736|<null>|<null>
 31|0|0|16.rom|<null>|0|0|16|305419896|<null>|<null>
-31|2|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
->>> table game (game_id, name, description, dat_idx)
-1|1-4|one four byte file|0
-2|1-8|one eight byte file|0
-3|1-8a|one eight byte file (alternate)|0
-4|2-44|two identical files|0
-5|2-48|two files|0
-6|2-4a|two files, one other|0
-7|baddump|bad dump|0
-8|clone-8|two roms, one in parent|0
-9|deadbeef|Dead Beef|0
-10|deadbeefchild|Dead Beef Child|0
-11|deadclonedbeef|Dead Cloned Beef|0
-12|dir-in-rom-name|directory in rom name|0
-13|disk|1-4 with disk|0
-14|disk-2|1-4 with alternate disk|0
-15|disk-3|512 byte size disk|0
-16|diskchild|1-4 with disk (child)|0
-17|disk-nogood|1-4 with no good dump disk|0
-18|disk-nogood2|1-8 with no good dump disk|0
-19|diskgood-romnogood|no good rom with good disk|0
-20|nogood|1-4 with no good dump|0
-21|nogood-2|clone-8 with no good dump|0
-22|nogoodclone|clone-8 with no good dump|0
-23|norom|no rom|0
-24|parent-4|one four byte file, has clone|0
-25|samptest|sample test|0
-26|samptest-child|sample test child|0
-27|zero|game with 0 byte rom|0
-28|zero-4|game with 0 byte rom and a bigger one|0
-29|zerobadcrc|game with 0 byte rom, impossible CRC|0
-30|many|game with many (32) roms|0
-31|disk-same|some non-existent 16 byte rom with disk|0
->>> table parent (game_id, file_type, parent)
-8|0|parent-4
-10|0|deadbeef
-11|0|deadbeef
-16|0|disk
-22|0|1-8
+31|1|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
+>>> table game (game_id, name, parent, description, dat_idx)
+1|1-4|<null>|one four byte file|0
+2|1-8|<null>|one eight byte file|0
+3|1-8a|<null>|one eight byte file (alternate)|0
+4|2-44|<null>|two identical files|0
+5|2-48|<null>|two files|0
+6|2-4a|<null>|two files, one other|0
+7|baddump|<null>|bad dump|0
+8|clone-8|parent-4|two roms, one in parent|0
+9|deadbeef|<null>|Dead Beef|0
+10|deadbeefchild|deadbeef|Dead Beef Child|0
+11|deadclonedbeef|deadbeef|Dead Cloned Beef|0
+12|dir-in-rom-name|<null>|directory in rom name|0
+13|disk|<null>|1-4 with disk|0
+14|disk-2|<null>|1-4 with alternate disk|0
+15|disk-3|<null>|512 byte size disk|0
+16|diskchild|disk|1-4 with disk (child)|0
+17|disk-nogood|<null>|1-4 with no good dump disk|0
+18|disk-nogood2|<null>|1-8 with no good dump disk|0
+19|diskgood-romnogood|<null>|no good rom with good disk|0
+20|nogood|<null>|1-4 with no good dump|0
+21|nogood-2|<null>|clone-8 with no good dump|0
+22|nogoodclone|1-8|clone-8 with no good dump|0
+23|norom|<null>|no rom|0
+24|parent-4|<null>|one four byte file, has clone|0
+25|samptest|<null>|sample test|0
+26|samptest-child|<null>|sample test child|0
+27|zero|<null>|game with 0 byte rom|0
+28|zero-4|<null>|game with 0 byte rom and a bigger one|0
+29|zerobadcrc|<null>|game with 0 byte rom, impossible CRC|0
+30|many|<null>|game with many (32) roms|0
+31|disk-same|<null>|some non-existent 16 byte rom with disk|0
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

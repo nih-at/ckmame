@@ -82,7 +82,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
         match_quality(match) = QU_MISSING;
         
         /* check if it's in ancestor */
-        if (file_where(rom) != FILE_INZIP && expected_archive != NULL && (result = match_files(expected_archive, TEST_MERGENAME_SIZE_CHECKSUM, rom, match)) != TEST_NOTFOUND) {
+        if (file_where(rom) != FILE_INGAME && expected_archive != NULL && (result = match_files(expected_archive, TEST_MERGENAME_SIZE_CHECKSUM, rom, match)) != TEST_NOTFOUND) {
             match_where(match) = file_where(rom);
             if (result == TEST_USABLE) {
                 continue;
@@ -93,8 +93,8 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
         if (archives[0]) {
             for (j = 0; j < tests_count; j++) {
                 if ((result = match_files(archives[0], tests[j], rom, match)) != TEST_NOTFOUND) {
-                    match_where(match) = FILE_INZIP;
-                    if (file_where(rom) != FILE_INZIP && match_quality(match) == QU_OK) {
+                    match_where(match) = FILE_INGAME;
+                    if (file_where(rom) != FILE_INGAME && match_quality(match) == QU_OK) {
                         match_quality(match) = QU_INZIP;
                     }
                     if (result == TEST_USABLE) {
@@ -104,7 +104,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
             }
         }
         
-        if (file_where(rom) == FILE_INZIP && (match_quality(match) == QU_MISSING || match_quality(match) == QU_HASHERR) && file_size(rom) > 0 && file_status(rom) != STATUS_NODUMP) {
+        if (file_where(rom) == FILE_INGAME && (match_quality(match) == QU_MISSING || match_quality(match) == QU_HASHERR) && file_size(rom) > 0 && file_status(rom) != STATUS_NODUMP) {
             /* search for matching file in other games (via db) */
             if (find_in_romset(rom, NULL, game_name(g), match) == FIND_EXISTS) {
                 continue;
@@ -128,7 +128,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
         
         for (i = 0; i < game_num_roms(g); i++) {
             match_t *match = result_rom(res, i);
-            if (match_where(match) == FILE_INZIP && match_quality(match) != QU_HASHERR) {
+            if (match_where(match) == FILE_INGAME && match_quality(match) != QU_HASHERR) {
                 j = match_index(match);
                 if (result_file(res, j) != FS_USED) {
                     result_file(res, j) = match_quality(match) == QU_LONG ? FS_PARTUSED : FS_USED;
@@ -149,8 +149,8 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
                     }
                 }
             }
-            
         }
+        free(user);
     }
     
     update_game_status(g, res);
@@ -258,13 +258,13 @@ update_game_status(const game_t *g, result_t *res) {
 	m = result_rom(res, i);
 	r = game_rom(g, i);
 
-	if (file_where(r) == FILE_INZIP)
+	if (file_where(r) == FILE_INGAME)
 	    has_own = 1;
 	if (match_quality(m) == QU_MISSING)
 	    all_fixable = 0;
 	else {
 	    all_dead = 0;
-	    if (file_where(r) == FILE_INZIP)
+	    if (file_where(r) == FILE_INGAME)
 		all_own_dead = 0;
 	}
 	/* TODO: using output_options here is a bit of a hack,
