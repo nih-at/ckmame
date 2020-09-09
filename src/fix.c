@@ -258,10 +258,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
                 do_copy = (fix_options & FIX_DELETE_EXTRA) == 0;
                 break;
                 
-            case FILE_NOWHERE:
-            case FILE_OLD:
-            case FILE_DELETED:
-            case FILE_ADDED:
+	    default:
                 /* shouldn't happen */
                 do_copy = 1;
                 break;
