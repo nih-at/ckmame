@@ -189,7 +189,17 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
                         }
                         if (parse_file_merge(ctx, TYPE_DISK, 0, p) < 0)
                             break;
-                    }		    /*
+                    }
+		    else if (strcmp(p, "flags") == 0) {
+			if ((p = gettok(&l)) == NULL) {
+			    /* TODO: error */
+			    myerror(ERRFILE, "%d: token flags missing argument", ctx->lineno);
+			    break;
+			}
+			if (parse_file_status(ctx, TYPE_DISK, 0, p) < 0)
+			    break;
+		    }
+		    /*
 		      else
 		      myerror(ERRFILE, "%d: ignoring token '%s'", ctx->lineno, p);
 		    */
