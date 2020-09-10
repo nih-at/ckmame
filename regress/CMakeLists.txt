@@ -93,6 +93,7 @@ set(EXTRA_TESTS
   disk-ok.test
   disk-parent.test
   disk-parent-merge.test
+  disk-parent-merge-exists.test
   disk-superfluous.test
   disk-swap.test
   disk-swapmerge.test
