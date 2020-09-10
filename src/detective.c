@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -143,7 +144,7 @@ main(int argc, char **argv) {
 
     if ((ddb = romdb_open(dbname, DBH_READ)) == NULL) {
 	if (detector == 0) {
-	    myerror(ERRDB, "can't open database '%s'", dbname);
+	    myerror(0, "can't open database '%s': %s", dbname, errno == EFTYPE ? "unsupported database version, please recreate" : strerror(errno) );
 	    exit(1);
 	}
     }

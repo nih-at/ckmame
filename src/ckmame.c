@@ -33,6 +33,7 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -337,7 +338,7 @@ main(int argc, char **argv) {
     }
 
     if ((db = romdb_open(dbname, DBH_READ)) == NULL) {
-	myerror(ERRDB, "can't open database '%s'", dbname);
+	myerror(0, "can't open database '%s': %s", dbname, errno == EFTYPE ? "unsupported database version, please recreate" : strerror(errno) );
 	exit(1);
     }
     /* TODO: check for errors other than ENOENT */
