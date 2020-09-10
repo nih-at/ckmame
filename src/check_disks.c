@@ -80,7 +80,12 @@ check_disks(game_t *game, images_t *im[], result_t *res) {
 	    }
 	}
 
-        if (disk_where(disk) == FILE_INGAME && match_disk_quality(md) != QU_OK && im[0] != NULL) {
+	if (disk_where(disk) != FILE_INGAME || hashes_types(disk_hashes(disk)) == 0) {
+	    /* stop searching if disk is not supposed to be in this location, or we have no checksums */
+	    continue;
+	}
+
+	if (match_disk_quality(md) != QU_OK && im[0] != NULL) {
             for (i = 0; i < images_length(im[0]); i++) {
                 disk_t *image = images_get(im[0], i);
                 
@@ -92,10 +97,6 @@ check_disks(game_t *game, images_t *im[], result_t *res) {
                 }
             }
         }
-
-	if (hashes_types(disk_hashes(disk)) == 0) {
-	    continue;
-	}
 
 	if (match_disk_quality(md) != QU_OK && match_disk_quality(md) != QU_OLD) {
             match_disk_t disk_match;
