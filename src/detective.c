@@ -143,7 +143,7 @@ main(int argc, char **argv) {
 
     if ((ddb = romdb_open(dbname, DBH_READ)) == NULL) {
 	if (detector == 0) {
-	    myerror(ERRSTR, "can't open database '%s'", dbname);
+	    myerror(ERRDB, "can't open database '%s'", dbname);
 	    exit(1);
 	}
     }

@@ -337,7 +337,7 @@ main(int argc, char **argv) {
     }
 
     if ((db = romdb_open(dbname, DBH_READ)) == NULL) {
-	myerror(ERRSTR, "can't open database '%s'", dbname);
+	myerror(ERRDB, "can't open database '%s'", dbname);
 	exit(1);
     }
     /* TODO: check for errors other than ENOENT */
