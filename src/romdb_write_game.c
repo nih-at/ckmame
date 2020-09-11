@@ -83,7 +83,7 @@ romdb_delete_game(romdb_t *db, const char *name) {
 
 
 int
-romdb_update_game(romdb_t *db, game_t *g) {
+romdb_update_file_location(romdb_t *db, game_t *g) {
     sqlite3_stmt *stmt;
     int i;
     file_t *r;

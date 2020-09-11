@@ -110,7 +110,8 @@ familymeeting(romdb_t *db, game_t *parent, game_t *child) {
 	cr = game_rom(child, i);
 	for (j = 0; j < game_num_roms(parent); j++) {
 	    pr = game_rom(parent, j);
-	    if (file_compare_msc(cr, pr)) {
+	    if ((hashes_types(file_hashes(cr)) == 0 && hashes_types(file_hashes(pr)) == 0) ||
+		((hashes_types(file_hashes(cr)) != 0 && hashes_types(file_hashes(pr)) != 0) && file_compare_msc(cr, pr))) {
 		file_where(cr) = (where_t)(file_where(pr) + 1);
 		break;
 	    }
@@ -166,7 +167,7 @@ handle_lost(output_context_db_t *ctx) {
             }
             
             if (!is_lost) {
-                romdb_update_game(ctx->db, child);
+                romdb_update_file_location(ctx->db, child);
                 parray_delete(ctx->lost_children, i, free);
             }
             game_free(parent);
@@ -183,7 +184,7 @@ lost(output_context_db_t *ctx, game_t *g) {
     int i;
 
     if (game_cloneof(g, 0) == NULL)
-	return 0;
+	return false;
 
     for (i = 0; i < parray_length(ctx->lost_children); i++) {
 	if (strcmp(parray_get(ctx->lost_children, i), game_name(g)) == 0) {

@@ -277,7 +277,6 @@ set(XFAIL_TESTS
   disk-swapmerge.test
   mkmamedb-duplicate-nodump.test
   mkmamedb-merge-no-parent.test
-  mkmamedb-merge-three-generations.test
   mkmamedb-merge-wrong-name.test
   mkmamedb-parent-crcdiff-mame.test
   nogood-diskgood.test

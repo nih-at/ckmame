@@ -15,8 +15,4 @@
     <description>parent</description>
     <rom name="08.rom" size="8" crc="3656897d"/>
   </game>
-  <game name="child">
-    <description>child</description>
-    <rom name="08.rom" size="8" crc="3656897d"/>
-  </game>
 </datafile>
