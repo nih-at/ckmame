@@ -70,6 +70,7 @@ bool disk_compare_hashes(const disk_t *a, const disk_t *b);
 void disk_finalize(disk_t *);
 void disk_free(disk_t *);
 void disk_init(disk_t *);
+bool disk_mergeable(const disk_t *a, const disk_t *b);
 disk_t *disk_new(const char *, int);
 void disk_real_free(disk_t *);
 

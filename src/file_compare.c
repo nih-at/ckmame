@@ -81,3 +81,24 @@ bool
 file_sh_is_set(const file_t *f, int i) {
     return file_size_xxx_known(f, i) && hashes_types(file_hashes_xxx(f, i)) != 0;
 }
+
+bool
+file_mergeable(const file_t *fg, const file_t *fa) {
+    /* name must be the (merged) name */
+    if (strcmp(file_merged_name(fg), file_name(fa)) != 0) {
+	return false;
+    }
+
+    /* both can be bad dumps */
+    if (hashes_types(file_hashes(fg)) == 0 && hashes_types(file_hashes(fa)) == 0) {
+	return true;
+    }
+    /* or the hashes must match */
+    if (hashes_types(file_hashes(fg)) != 0 && hashes_types(file_hashes(fa)) != 0 && file_compare_msc(fg, fa)) {
+	return true;
+    }
+
+    return false;
+}
+
+ 

@@ -85,6 +85,7 @@ bool file_compare_nsc(const file_t *, const file_t *);
 bool file_compare_sc(const file_t *, const file_t *);
 void file_init(file_t *);
 void file_finalize(file_t *);
+bool file_mergeable(const file_t *, const file_t *);
 bool file_sh_is_set(const file_t *, int);
 
 #endif /* file.h */

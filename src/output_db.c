@@ -110,8 +110,7 @@ familymeeting(romdb_t *db, game_t *parent, game_t *child) {
 	cr = game_rom(child, i);
 	for (j = 0; j < game_num_roms(parent); j++) {
 	    pr = game_rom(parent, j);
-	    if ((hashes_types(file_hashes(cr)) == 0 && hashes_types(file_hashes(pr)) == 0) ||
-		((hashes_types(file_hashes(cr)) != 0 && hashes_types(file_hashes(pr)) != 0) && file_compare_msc(cr, pr))) {
+	    if (file_mergeable(cr, pr)) {
 		file_where(cr) = (where_t)(file_where(pr) + 1);
 		break;
 	    }
@@ -122,8 +121,7 @@ familymeeting(romdb_t *db, game_t *parent, game_t *child) {
         disk_t *cd = game_disk(child, i);
         for (j = 0; j < game_num_disks(parent); j++) {
             disk_t *pd = game_disk(parent, j);
-            if ((hashes_types(disk_hashes(cd)) == 0 && hashes_types(disk_hashes(pd)) == 0 && disk_compare_merge(cd, pd)) ||
-		(hashes_types(disk_hashes(cd)) != 0 && hashes_types(disk_hashes(pd)) != 0 && disk_compare_merge_hashes(cd, pd))) {
+            if (disk_mergeable(cd, pd)) {
                 disk_where(cd) = (where_t)(disk_where(pd) + 1);
             }
         }

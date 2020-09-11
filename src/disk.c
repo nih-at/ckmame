@@ -48,6 +48,22 @@ bool disk_compare_hashes(const disk_t *a, const disk_t *b) {
     return hashes_cmp(disk_hashes(a), disk_hashes(b)) != HASHES_CMP_MISMATCH;
 }
 
+bool disk_mergeable(const disk_t *a, const disk_t *b) {
+    /* name must match (merged) name */
+    if (!disk_compare_merge(a, b)) {
+	return false;
+    }
+    /* both can be bad dumps */
+    if (hashes_types(disk_hashes(a)) == 0 && hashes_types(disk_hashes(b)) == 0) {
+	return true;
+    }
+    /* or the hashes must match */
+    if (hashes_types(disk_hashes(a)) != 0 && hashes_types(disk_hashes(b)) != 0 && disk_compare_merge_hashes(a, b)) {
+	return true;
+    }
+    return false;
+}
+
 void
 disk_init(disk_t *d) {
     d->refcount = 0;
