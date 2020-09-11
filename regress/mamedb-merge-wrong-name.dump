@@ -5,10 +5,8 @@
 1|0|1|parent-2|<null>|0|0|8|2427178479|<null>|<2345678901234567890123456789012345678901>
 2|0|0|child-1|wrongname|0|0|8|305419896|<null>|<1234567890123456789012345678901234567890>
 2|0|1|parent-2|parent-1|0|0|8|2427178479|<null>|<2345678901234567890123456789012345678901>
->>> table game (game_id, name, description, dat_idx)
-1|parent|Parent|0
-2|clone|Clone|0
->>> table parent (game_id, file_type, parent)
-2|0|parent
+>>> table game (game_id, name, parent, description, dat_idx)
+1|parent|<null>|Parent|0
+2|clone|parent|Clone|0
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)
