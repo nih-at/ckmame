@@ -86,7 +86,6 @@ int
 romdb_update_file_location(romdb_t *db, game_t *g) {
     sqlite3_stmt *stmt;
     int i;
-    file_t *r;
 
     for (i = 0; i < game_num_roms(g); i++) {
 	if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_UPDATE_FILE)) == NULL)
@@ -98,11 +97,29 @@ romdb_update_file_location(romdb_t *db, game_t *g) {
 	if (sqlite3_bind_int(stmt, 3, TYPE_ROM) != SQLITE_OK)
 	    return -1;
 
-	r = game_rom(g, i);
+	file_t *r = game_rom(g, i);
 	if (file_where(r) == FILE_INGAME)
 	    continue;
 
 	if (sqlite3_bind_int(stmt, 1, file_where(r)) != SQLITE_OK || sqlite3_bind_int(stmt, 4, i) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
+	    return -1;
+    }
+
+    for (i = 0; i < game_num_disks(g); i++) {
+	if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_UPDATE_FILE)) == NULL)
+	    return -1;
+
+	if (sqlite3_bind_int64(stmt, 2, game_id(g)) != SQLITE_OK)
+	    return -1;
+
+	if (sqlite3_bind_int(stmt, 3, TYPE_DISK) != SQLITE_OK)
+	    return -1;
+
+	disk_t *d = game_disk(g, i);
+	if (disk_where(d) == FILE_INGAME)
+	    continue;
+
+	if (sqlite3_bind_int(stmt, 1, disk_where(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 4, i) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	    return -1;
     }
 
@@ -165,7 +182,7 @@ write_disks(romdb_t *db, const game_t *g) {
 	if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_FILE)) == NULL)
 	    return -1;
 
-	if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK || sqlite3_bind_int(stmt, 7, 0) != SQLITE_OK)
+	if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK)
 	    return -1;
 
 	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK || sq3_set_string(stmt, 4, disk_name(d)) != SQLITE_OK || sq3_set_string(stmt, 5, disk_merge(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 6, disk_status(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 7, disk_where(d)) != SQLITE_OK || sq3_set_hashes(stmt, 9, disk_hashes(d), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
