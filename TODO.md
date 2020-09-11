@@ -18,6 +18,8 @@
 
 - fixdat-missing-all: two copies of the same file (romof) in fixdat; depends on order of games in datfile
 
+- clean up empty directories for disks after moving all files out
+
 # Later
 
 * convert runtest to use ziptool instead of unzip
