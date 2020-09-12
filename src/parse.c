@@ -609,6 +609,9 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
 	    break;
 	}
     }
+    if (file_merge(r) && game_cloneof(ctx->g, 0) == NULL) {
+	myerror(ERRFILE, "%d: rom '%s' has merge information but game '%s' has no parent", ctx->lineno, file_name(r), game_name(ctx->g));
+    }
     if (deleted) {
 	ctx->flags = (ctx->flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;
 	array_delete(game_roms(ctx->g), n, file_finalize);

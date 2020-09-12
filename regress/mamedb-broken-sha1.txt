@@ -3,5 +3,5 @@ game (
 	description "broken SHA1"
 	manufacturer "synth"
 	year 2008
-	rom ( name 04.rom merge 04.rom size 4 crc32 d87f7e0c sha1 1234567890 )
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 1234567890 )
 )

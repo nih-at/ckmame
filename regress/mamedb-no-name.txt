@@ -3,6 +3,6 @@ game (
 	description "two roms, one without name"
 	manufacturer "synth"
 	year 2011
-	rom ( name 04.rom merge 04.rom size 4 crc32 d87f7e0c )
+	rom ( name 04.rom size 4 crc32 d87f7e0c )
 	rom ( size 4 offset 0x4 loadflag reload )
 )

@@ -4,4 +4,5 @@ program mkmamedb
 args -o mamedb-test.db mamedb.xml
 file mamedb.xml mamedb-merge-no-parent.xml mamedb-merge-no-parent.xml
 file-new mamedb-test.db mamedb-merge-no-parent.dump
-stderr some warning that game has no parent
+stderr mamedb.xml: 9: rom 'parent-1' has merge information but game 'parent' has no parent
+stderr mamedb.xml: 9: rom 'parent-2' has merge information but game 'parent' has no parent
