@@ -3,7 +3,6 @@ return 0
 program mkmamedb
 args -o mamedb-test.db mamedb.xml
 file mamedb.xml mamedb-merge-wrong-name.xml mamedb-merge-wrong-name.xml
-# TODO: dump needs to be fixed
 file-new mamedb-test.db mamedb-merge-wrong-name.dump
-stderr some warning that wrongname is not found in parent
-stderr some warning that parent-1 does not have the expected checksums
+stderr mamedb.xml: In game 'clone': 'child-1': merged from 'wrongname', but parent does not contain matching file
+stderr mamedb.xml: In game 'clone': 'parent-2': merged from 'parent-1', but parent does not contain matching file

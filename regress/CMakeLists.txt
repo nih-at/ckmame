@@ -275,7 +275,6 @@ set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   disk-swapmerge.test
-  mkmamedb-merge-wrong-name.test
   mkmamedb-parent-crcdiff-mame.test
   nogood-diskgood.test
   rom-from-extra-duplicate.test

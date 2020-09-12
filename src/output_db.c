@@ -115,8 +115,10 @@ familymeeting(romdb_t *db, game_t *parent, game_t *child) {
 		break;
 	    }
 	}
+	if (file_where(cr) == FILE_INGAME && file_merge(cr) != NULL) {
+	    myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but parent does not contain matching file", game_name(child), file_name(cr), file_merge(cr));
+	}
     }
-    
     for (i = 0; i < game_num_disks(child); i++) {
         disk_t *cd = game_disk(child, i);
         for (j = 0; j < game_num_disks(parent); j++) {
