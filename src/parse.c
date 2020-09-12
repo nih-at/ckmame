@@ -592,11 +592,13 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
 	if (file_compare_sc(r, r2)) {
 	    /* TODO: merge in additional hash types? */
 	    if (file_compare_n(r, r2)) {
+		myerror(ERRFILE, "%d: the same rom listed multiple times (%s)", ctx->lineno, file_name(r));
 		deleted = 1;
 		break;
 	    }
 	    else if (file_merge(r2) && file_merge(r) && strcmp(file_merge(r2), file_merge(r)) != 0) {
 		/* file_add_altname(r2, file_name(r)); */
+		myerror(ERRFILE, "%d: the same rom listed multiple times (%s, merge-name %s)", ctx->lineno, file_name(r), file_merge(r));
 		deleted = 1;
 		break;
 	    }
