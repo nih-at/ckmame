@@ -282,7 +282,7 @@ set(XFAIL_TESTS
 )
 	      
 foreach(CASE ${EXTRA_TESTS})
-  add_test(${CASE} perl ${CMAKE_BINARY_DIR}/regress/runtest ${CMAKE_CURRENT_SOURCE_DIR}/${CASE})
+  add_test(NAME ${CASE} COMMAND perl ${CMAKE_CURRENT_BINARY_DIR}/runtest --bin-sub-directory $<CONFIG> ${CMAKE_CURRENT_SOURCE_DIR}/${CASE})
   set_tests_properties(${CASE} PROPERTIES SKIP_RETURN_CODE 77)
 endforeach()
 
