@@ -182,7 +182,9 @@ sub post_list_files {
 
 	#print(Dumper(\$test));
 	for my $file (@{$test->{files_got}}) {
-		next if ($file =~ '/.ckmame.db$');
+		next if ($file =~ m,/.ckmame.db$,);
+		next if ($file =~ m,($ROMDIRS)/$,o);
+		next if ($file =~ m,extra/foo/$,); # TODO: add empty dir directive to NiHTest, move to test case.
 		if ($variant eq 'dir') {
 			if ($file =~ m,^($ROMDIRS)/([^/]*)/,o) {
 				$got{"$1/$2.zip"} = 1;

@@ -599,6 +599,7 @@ sub compare_file($$$) {
 sub list_files {
 	my ($root) = @_;
         my $ls;
+	my $count;
 
 	my @files = ();
 	my @dirs = ($root);
@@ -610,6 +611,8 @@ sub list_files {
 		unless ($ls) {
 			# TODO: handle error
 		}
+		# add empty directories to file list
+		$count = 0;
 		while (my $entry = readdir($ls)) {
 			my $file = "$dir/$entry";
 			if ($dir eq '.') {
@@ -618,10 +621,15 @@ sub list_files {
 
 			if (-f $file) {
 				push @files, "$file";
+				$count++;
 			}
 			if (-d $file && $entry ne '.' && $entry ne '..') {
-				push @dirs, "$file";
+			        $count++;
+			        push @dirs, "$file";
 			}
+		}
+		if ($count == 0) {
+		    push @files, "$dir/";
 		}
 		closedir($ls);
 	}

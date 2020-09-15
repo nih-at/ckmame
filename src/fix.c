@@ -39,6 +39,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <zip.h>
 
 #include "archive.h"
@@ -189,6 +190,8 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
     const char *name;
     char *fname = NULL;
     bool do_copy;
+    int removed = 0;
+    bool added = false;
 
     for (i = 0; i < images_length(im); i++) {
 	name = images_name(im, i);
@@ -199,10 +202,13 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 	    if (fix_options & FIX_PRINT)
 		printf("%s: %s unknown image\n", name, ((fix_options & FIX_MOVE_UNKNOWN) ? "move" : "delete"));
 	    if (fix_options & FIX_DO) {
-		if (fix_options & FIX_MOVE_UNKNOWN)
+                if (fix_options & FIX_MOVE_UNKNOWN) {
 		    move_image_to_garbage(name);
-		else
+                }
+                else {
 		    my_remove(name);
+                }
+                removed += 1;
 	    }
 	    break;
 
@@ -210,8 +216,10 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 	case FS_SUPERFLUOUS:
 	    if (fix_options & FIX_PRINT)
 		printf("%s: delete %s image\n", name, (result_image(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"));
-	    if (fix_options & FIX_DO)
+            if (fix_options & FIX_DO) {
 		my_remove(name);
+                removed += 1;
+            }
 	    remove_from_superfluous(name);
 	    break;
 
@@ -219,6 +227,9 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 	    if (fix_options & FIX_PRINT)
 		printf("%s: save needed image\n", name);
 	    save_needed_disk(name, (fix_options & FIX_DO));
+            if (fix_options & FIX_DO) {
+                removed += 1;
+            }
 	    break;
 
 	case FS_MISSING:
@@ -277,7 +288,9 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 #endif
 		}
 		else {
+                    char *dir = mydirname(match_disk_name(md));
 		    rename_or_move(match_disk_name(md), fname);
+                    (void)rmdir(dir);
 		    if (extra_list) {
 			int idx;
 			idx = parray_find_sorted(extra_list, match_disk_name(md), strcmp);
@@ -285,6 +298,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 			    parray_delete(extra_list, idx, free);
 		    }
 		}
+                added = true;
 	    }
 	    remove_from_superfluous(match_disk_name(md));
 
@@ -299,6 +313,13 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 	    /* no fix necessary/possible */
 	    break;
 	}
+    }
+    
+    if (!added && removed == images_length(im)) {
+        char *dir;
+        xasprintf(&dir, "%s/%s", get_directory(), game_name(g));
+        (void)rmdir(dir);
+        free(dir);
     }
 
     return 0;
