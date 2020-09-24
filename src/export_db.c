@@ -44,12 +44,12 @@ export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_c
     dat_entry_t de;
     dat_t *db_dat;
 
-    db_dat = romdb_read_dat(db);
-
     if (out == NULL) {
 	/* TODO: split into original dat files */
 	return 0;
     }
+
+    db_dat = romdb_read_dat(db);
 
     /* TODO: export detector */
 
