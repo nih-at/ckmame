@@ -231,8 +231,10 @@ dbh_get_statement(dbh_t *db, dbh_stmt_t stmt_id) {
 	}
     }
     else {
-	sqlite3_reset(db->statements[stmt_id]);
-	sqlite3_clear_bindings(db->statements[stmt_id]);
+	if (sqlite3_reset(db->statements[stmt_id]) != SQLITE_OK || sqlite3_clear_bindings(db->statements[stmt_id]) != SQLITE_OK) {
+	    db->statements[stmt_id] = NULL;
+            return NULL;
+	}
     }
 
     return db->statements[stmt_id];
