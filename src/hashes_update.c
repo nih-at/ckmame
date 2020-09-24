@@ -92,6 +92,10 @@ hashes_update_final(struct hashes_update *hu) {
     free(hu);
 }
 
+void
+hashes_update_discard(struct hashes_update *hu) {
+    free(hu);
+}
 
 struct hashes_update *
 hashes_update_new(struct hashes *h) {

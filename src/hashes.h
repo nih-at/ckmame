@@ -83,6 +83,7 @@ hashes_cmp_t hashes_cmp(const hashes_t *, const hashes_t *);
 bool hashes_cmp_strict(const struct hashes *, const struct hashes *);
 void hashes_init(hashes_t *);
 void hashes_update(hashes_update_t *, const unsigned char *, size_t);
+void hashes_update_discard(struct hashes_update *);
 void hashes_update_final(hashes_update_t *);
 struct hashes_update *hashes_update_new(hashes_t *);
 void hashes_set(hashes_t *, int, const unsigned char *);

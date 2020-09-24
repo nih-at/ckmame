@@ -86,6 +86,7 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 		    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new);
 		}
 		errno = err;
+		hashes_update_discard(hu);
 		return -1;
 	    }
 
@@ -106,6 +107,7 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 	    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new);
 	}
 	errno = err;
+	hashes_update_discard(hu);
 	return -1;
     }
     fclose(fin);
