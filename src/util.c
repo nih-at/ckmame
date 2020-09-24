@@ -154,16 +154,18 @@ ensure_dir(const char *name, int strip_fname) {
     char *dir;
     struct stat st;
     int ret;
+    bool free_dir = false;
 
     if (strip_fname || name[strlen(name) - 1] == '/') {
 	p = strrchr(name, '/');
-	if (p == NULL)
+	if (p == NULL) {
 	    dir = xstrdup(".");
-	else {
+	} else {
 	    dir = xmalloc(p - name + 1);
 	    strncpy(dir, name, p - name);
 	    dir[p - name] = 0;
 	}
+	free_dir = true;
 	name = dir;
     }
 
@@ -184,8 +186,9 @@ ensure_dir(const char *name, int strip_fname) {
 	ret = -1;
     }
 
-    if (strip_fname)
+    if (free_dir) {
 	free(dir);
+    }
 
     return ret;
 }
