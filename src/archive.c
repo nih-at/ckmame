@@ -72,6 +72,10 @@ archive_by_id(int id) {
 
 int
 archive_check(archive_t *a) {
+    if (a == NULL) {
+	return -1;
+    }
+
     return a->ops->check(a);
 }
 
