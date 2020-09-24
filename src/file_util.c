@@ -82,7 +82,9 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 		err = errno;
 		fclose(fin);
 		fclose(fout);
-		remove(new);
+		if (remove(new) != 0) {
+		    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new);
+		}
 		errno = err;
 		return -1;
 	    }
@@ -100,7 +102,9 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
     if (fclose(fout) != 0 || ferror(fin)) {
 	err = errno;
 	fclose(fin);
-	remove(new);
+	if (remove(new) != 0) {
+	    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new);
+	}
 	errno = err;
 	return -1;
     }
