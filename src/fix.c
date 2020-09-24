@@ -291,6 +291,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
                     char *dir = mydirname(match_disk_name(md));
 		    rename_or_move(match_disk_name(md), fname);
                     (void)rmdir(dir);
+		    free(dir);
 		    if (extra_list) {
 			int idx;
 			idx = parray_find_sorted(extra_list, match_disk_name(md), strcmp);
