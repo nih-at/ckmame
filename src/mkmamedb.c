@@ -274,8 +274,11 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
     parser_source_t *ps;
     struct zip *za;
 
-    if ((mdb = romdb_open(fname, DBH_READ)) != NULL)
-	return export_db(mdb, exclude, dat, out);
+    if ((mdb = romdb_open(fname, DBH_READ)) != NULL) {
+	int ret = export_db(mdb, exclude, dat, out);
+	romdb_close(mdb);
+	return ret;
+    }
     else if (roms_unzipped == 0 && (za = zip_open(fname, 0, NULL)) != NULL) {
 	int i;
 	const char *name;
