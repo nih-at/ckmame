@@ -74,18 +74,23 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res) {
 
 	    /* opening the zip file failed, rename it and create new one */
 
-	    if ((new_name = make_unique_name("broken", "%s", archive_name(a))) == NULL)
+	    if ((new_name = make_unique_name("broken", "%s", archive_name(a))) == NULL) {
+		garbage_discard(gb);
 		return -1;
+	    }
 
 	    if (fix_options & FIX_PRINT)
 		printf("%s: rename broken archive to '%s'\n", archive_name(a), new_name);
 	    if (rename_or_move(archive_name(a), new_name) < 0) {
 		free(new_name);
+		garbage_discard(gb);
 		return -1;
 	    }
 	    free(new_name);
-	    if (archive_check(a) < 0)
+	    if (archive_check(a) < 0) {
+		garbage_discard(gb);
 		return -1;
+	    }
 	}
 
 	if (extra_delete_list)
