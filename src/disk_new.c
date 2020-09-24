@@ -201,6 +201,7 @@ get_hashes(struct chd *chd, struct hashes *h) {
 	    if (chd->error == CHD_ERR_NOTSUP) {
 		myerror(ERRFILE, "warning: unsupported CHD type, integrity not checked");
 		h->types = 0;
+		hashes_update_discard(hu);
 		return 0;
 	    }
 	    myerror(ERRFILESTR, "error reading hunk %d: error %d", hunk, chd->error);
