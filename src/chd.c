@@ -111,6 +111,7 @@ chd_open(const char *name, int *errp) {
     if ((chd = malloc(sizeof(*chd))) == NULL) {
 	if (errp)
 	    *errp = CHD_ERR_NOMEM;
+	fclose(f);
 	return NULL;
     }
     chd->f = f;
