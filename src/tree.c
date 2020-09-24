@@ -138,6 +138,7 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
 	if ((g = romdb_read_game(db, file_location_name(fbh))) == NULL || game_num_roms(g) <= file_location_index(fbh)) {
 	    /* TODO: internal error: db inconsistency */
 	    ret = -1;
+	    game_free(g);
 	    continue;
 	}
 
