@@ -32,6 +32,7 @@
 */
 
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -83,7 +84,10 @@ output_db_new(const char *dbname, int flags) {
     ctx->dat = dat_new();
     ctx->lost_children = parray_new();
 
-    remove(dbname);
+    if (remove(dbname) != 0 && errno != ENOENT) {
+	myerror(ERRSTR, "can't remove '%s'", dbname);
+	return NULL;
+    }
     ctx->db = romdb_open(dbname, DBH_NEW);
     if (ctx->db == NULL) {
 	output_db_close((output_context_t *)ctx);
