@@ -227,6 +227,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 			dbh_cache_delete_by_name(dbh, name);
 		    }
 		}
+		parray_free(list_db, free);
 	    }
 	}
     }
