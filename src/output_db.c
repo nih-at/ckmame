@@ -83,8 +83,10 @@ output_db_new(const char *dbname, int flags) {
 
     ctx->dat = dat_new();
     ctx->lost_children = parray_new();
+    ctx->db = NULL;
 
     if (remove(dbname) != 0 && errno != ENOENT) {
+	output_db_close((output_context_t *)ctx);
 	myerror(ERRSTR, "can't remove '%s'", dbname);
 	return NULL;
     }
