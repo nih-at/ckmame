@@ -329,6 +329,7 @@ find_in_db(romdb_t *fdb, const file_t *r, archive_t *archive, const char *skip, 
 
 	if ((g = romdb_read_game(fdb, file_location_name(fbh))) == NULL || game_num_roms(g) <= file_location_index(fbh)) {
 	    /* TODO: internal error: database inconsistency */
+	    game_free(g);
 	    status = FIND_ERROR;
 	    break;
 	}
