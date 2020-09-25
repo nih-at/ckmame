@@ -73,8 +73,12 @@ dbh_cache_close_all(void) {
 	    /* TODO: hack; cache should have detector-applied hashes
 	     * or both; currently only has useless ones without
 	     * detector applied, which breaks consecutive runs */
-	    if (empty || detector)
-		remove(sqlite3_db_filename(dbh_db(cd->dbh), "main"));
+	    if (empty || detector) {
+		if (remove(sqlite3_db_filename(dbh_db(cd->dbh), "main")) != 0) {
+		    myerror(ERRSTR, "can't remove empty database '%s'", sqlite3_db_filename(dbh_db(cd->dbh), "main"));
+		    err |= 1;
+		}
+	    }
 	}
 	cd->dbh = NULL;
 	cd->initialized = false;
