@@ -544,8 +544,10 @@ get_hashes(archive_t *a, void *f, off_t len, struct hashes *h) {
     while (len > 0) {
 	n = len > sizeof(buf) ? sizeof(buf) : len;
 
-	if (a->ops->file_read(f, buf, n) != n)
+	if (a->ops->file_read(f, buf, n) != n) {
+	    hashes_update_discard(hu);
 	    return -1;
+	}
 
 	hashes_update(hu, buf, n);
 	len -= n;
