@@ -113,7 +113,8 @@ output_mtree_close(output_context_t *out) {
 static char *
 strsvis_cstyle(const char *in) {
     char *out;
-    int inpos, outpos;
+    int outpos;
+    size_t inpos;
     /* maximal extension = 2/char */
     out = (char *)xmalloc(2 * strlen(in));
 
