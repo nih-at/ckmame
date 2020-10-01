@@ -299,7 +299,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 		    free(dir);
 		    if (extra_list) {
 			int idx;
-			idx = parray_find_sorted(extra_list, match_disk_name(md), strcmp);
+			idx = parray_find_sorted(extra_list, match_disk_name(md), reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
 			if (idx >= 0)
 			    parray_delete(extra_list, idx, free);
 		    }
@@ -333,7 +333,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 
 
 static int
-make_space(archive_t *a, const char *name, char **original_names, size_t num_names) {
+make_space(archive_t *a, const char *name, char **original_names, int num_names) {
     int idx = archive_file_index_by_name(a, name);
 
     if (idx < 0)
@@ -366,7 +366,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 
     seterrinfo(NULL, archive_name(a));
 
-    size_t num_names = archive_num_files(a);
+    int num_names = archive_num_files(a);
     original_names = static_cast<char **>(xmalloc(sizeof(original_names[0]) * num_names));
     memset(original_names, 0, sizeof(original_names[0]) * num_names);
 
@@ -406,17 +406,17 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 	    if (fix_options & FIX_PRINT)
 		printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n", archive_name(a), (intmax_t)match_offset(m), file_size(r), REAL_NAME(afrom, match_index(m)), file_name(r));
 
-	    bool replacing_ourself = (a == afrom && match_index(m) == archive_file_index_by_name(afrom, file_name(r)));
-
-	    if (make_space(a, file_name(r), original_names, num_names) < 0)
-		break;
-	    if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size(r), r) < 0)
-		break;
-
-	    if (a == afrom && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
-		if (!replacing_ourself && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
-		    printf("%s: delete long file '%s'\n", archive_name(afrom), file_name(r));
-		archive_file_delete(afrom, match_index(m));
+	    {
+		bool replacing_ourself = (a == afrom && match_index(m) == archive_file_index_by_name(afrom, file_name(r)));
+		if (make_space(a, file_name(r), original_names, num_names) < 0)
+		    break;
+		if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size(r), r) < 0)
+		    break;
+		if (a == afrom && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
+		    if (!replacing_ourself && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
+			printf("%s: delete long file '%s'\n", archive_name(afrom), file_name(r));
+		    archive_file_delete(afrom, match_index(m));
+		}
 	    }
 	    break;
 
@@ -486,8 +486,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 	}
     }
 
-    size_t ii;
-    for (ii = 0; ii < num_names; ii++)
+    for (int ii = 0; ii < num_names; ii++)
 	free(original_names[ii]);
     free(original_names);
 
