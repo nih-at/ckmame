@@ -68,9 +68,7 @@ make_garbage_name(const char *name, int unique) {
 	ext = strchr(t, '.');
 	if (ext)
 	    *(ext++) = '\0';
-	else
-	    ext = "";
-	u = make_unique_name(ext, "%s", t);
+	u = make_unique_name(ext ? ext : "", "%s", t);
 	free(t);
 	return u;
     }
