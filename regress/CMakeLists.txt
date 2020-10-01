@@ -6,7 +6,7 @@ set(SUPPORT_PROGRAMS
 set(ENV{srcdir} ${CMAKE_CURRENT_SOURCE_DIR})
 
 foreach(PROGRAM ${SUPPORT_PROGRAMS})
-  add_executable(${PROGRAM} ${PROGRAM}.c)
+  add_executable(${PROGRAM} ${PROGRAM}.cc)
   # for config.h
   target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
   # compat.h

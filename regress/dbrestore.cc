@@ -335,7 +335,7 @@ restore_table(dbh_t *dbh, FILE *f) {
 		    value[length - 1] = '\0';
 		    value++;
 		    unsigned int len = (unsigned int)(length / 2 - 1);
-		    unsigned char *bin = xmalloc(len);
+		    unsigned char *bin = static_cast<unsigned char *>(xmalloc(len));
 		    if (hex2bin(bin, value, len) < 0) {
 			free(bin);
 			myerror(ERRFILE, "invalid binary value: %s", value);
