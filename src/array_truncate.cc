@@ -35,7 +35,7 @@
 
 
 void
-array_truncate(array_t *a, int len, void (*finalize)(/* void * */)) {
+array_truncate(array_t *a, int len, void (*finalize)(void *)) {
     int i;
 
     if (len >= array_length(a))
