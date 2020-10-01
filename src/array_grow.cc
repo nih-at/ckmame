@@ -47,7 +47,7 @@ array_grow(array_t *a, void (*fn)(void *)) {
 	    a->alloc_len = 1;
 	else
 	    a->alloc_len *= 2;
-	a->data = xrealloc(a->data, a->elem_size * a->alloc_len);
+	a->data = static_cast<char *>(xrealloc(a->data, a->elem_size * a->alloc_len));
     }
     a->nentry++;
 
