@@ -63,7 +63,7 @@ file_location_t *
 file_location_new(const char *name, int idx) {
     file_location_t *e;
 
-    e = xmalloc(sizeof(*e));
+    e = static_cast<file_location_t *>(xmalloc(sizeof(*e)));
 
     e->name = xstrdup(name);
     e->index = idx;
