@@ -40,7 +40,8 @@
 
 #define BUFSIZE 8192
 
-#define archive_zip(a) (archive_user_data(a))
+#define archive_zip_lvalue(a) (archive_user_data(a))
+#define archive_zip(a) (static_cast<zip_t *>(archive_zip_lvalue(a)))
 
 static int ensure_zip(archive_t *);
 
@@ -83,7 +84,7 @@ ensure_zip(archive_t *a) {
     if (a->flags & ARCHIVE_FL_CREATE)
 	flags |= ZIP_CREATE;
 
-    if ((archive_zip(a) = my_zip_open(archive_name(a), flags)) == NULL)
+    if ((archive_zip_lvalue(a) = my_zip_open(archive_name(a), flags)) == NULL)
 	return -1;
 #ifdef FD_DEBUGGING
     fprintf(stderr, "zip_open: %s\n", archive_name(a));
@@ -114,11 +115,11 @@ op_close(archive_t *a) {
 	/* TODO: really do this here? */
 	/* discard all changes and close zipfile */
 	zip_discard(archive_zip(a));
-	archive_zip(a) = NULL;
+	archive_zip_lvalue(a) = NULL;
 	return -1;
     }
 
-    archive_zip(a) = NULL;
+    archive_zip_lvalue(a) = NULL;
 
     return 0;
 }
@@ -139,11 +140,11 @@ op_commit(archive_t *a) {
 	    seterrinfo(NULL, archive_name(a));
 	    myerror(ERRZIP, "cannot commit changes: %s", zip_strerror(archive_zip(a)));
 	    zip_discard(archive_zip(a));
-	    archive_zip(a) = NULL;
+	    archive_zip_lvalue(a) = NULL;
 	    return -1;
 	}
 
-	archive_zip(a) = NULL;
+	archive_zip_lvalue(a) = NULL;
     }
 
     return 0;
@@ -201,7 +202,7 @@ op_file_add_empty(archive_t *a, const char *name) {
 
 static void
 op_file_close(void *zf) {
-    zip_fclose(zf);
+    zip_fclose(static_cast<zip_file_t *>(zf));
 }
 
 
@@ -273,7 +274,7 @@ op_file_rename(archive_t *a, int idx, const char *name) {
 
 static const char *
 op_file_strerror(void *zf) {
-    return zip_file_strerror(zf);
+    return zip_file_strerror(static_cast<zip_file_t *>(zf));
 }
 
 
@@ -310,7 +311,7 @@ op_read_infos(archive_t *a) {
 	    continue;
 	}
 
-	r = (file_t *)array_grow(archive_files(a), file_init);
+	r = (file_t *)array_grow(archive_files(a), reinterpret_cast<void (*)(void *)>(file_init));
 	file_mtime(r) = zsb.mtime;
 	file_size(r) = zsb.size;
 	file_name(r) = xstrdup(zsb.name);
@@ -342,7 +343,7 @@ op_rollback(archive_t *a) {
 
     for (i = 0; i < archive_num_files(a); i++) {
 	if (file_where(archive_file(a, i)) == FILE_ADDED) {
-	    array_truncate(archive_files(a), i, file_finalize);
+	    array_truncate(archive_files(a), i, reinterpret_cast<void (*)(void *)>(file_finalize));
 	    break;
 	}
 

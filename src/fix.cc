@@ -395,30 +395,30 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 	    /* all is lost */
 	    break;
 
-	case QU_LONG:
-	    if (a == afrom && (fix_options & FIX_MOVE_LONG) && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
-		if (fix_options & FIX_PRINT)
-		    printf("%s: move long file '%s'\n", archive_name(afrom), REAL_NAME(afrom, match_index(m)));
-		if (garbage_add(gb, match_index(m), true) < 0)
-		    break;
-	    }
-
-	    if (fix_options & FIX_PRINT)
-		printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n", archive_name(a), (intmax_t)match_offset(m), file_size(r), REAL_NAME(afrom, match_index(m)), file_name(r));
-
-	    {
-		bool replacing_ourself = (a == afrom && match_index(m) == archive_file_index_by_name(afrom, file_name(r)));
-		if (make_space(a, file_name(r), original_names, num_names) < 0)
-		    break;
-		if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size(r), r) < 0)
-		    break;
-		if (a == afrom && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
-		    if (!replacing_ourself && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
-			printf("%s: delete long file '%s'\n", archive_name(afrom), file_name(r));
-		    archive_file_delete(afrom, match_index(m));
-		}
-	    }
-	    break;
+        case QU_LONG:
+            {
+                if (a == afrom && (fix_options & FIX_MOVE_LONG) && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
+                    if (fix_options & FIX_PRINT)
+                        printf("%s: move long file '%s'\n", archive_name(afrom), REAL_NAME(afrom, match_index(m)));
+                    if (garbage_add(gb, match_index(m), true) < 0)
+                        break;
+                }
+                
+                if (fix_options & FIX_PRINT)
+                    printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n", archive_name(a), (intmax_t)match_offset(m), file_size(r), REAL_NAME(afrom, match_index(m)), file_name(r));
+                
+                bool replacing_ourself = (a == afrom && match_index(m) == archive_file_index_by_name(afrom, file_name(r)));
+                if (make_space(a, file_name(r), original_names, num_names) < 0)
+                    break;
+                if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size(r), r) < 0)
+                    break;
+                if (a == afrom && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
+                    if (!replacing_ourself && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
+                        printf("%s: delete long file '%s'\n", archive_name(afrom), file_name(r));
+                    archive_file_delete(afrom, match_index(m));
+                }
+                break;
+            }
 
 	case QU_NAMEERR:
 	    if (file_where(r) == FILE_INCO || file_where(r) == FILE_INGCO) {

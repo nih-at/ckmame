@@ -286,9 +286,9 @@ parse_file_start(parser_context_t *ctx, filetype_t ft) {
     CHECK_STATE(ctx, PARSE_IN_GAME);
 
     if (ft == TYPE_DISK)
-	ctx->d = array_grow(game_disks(ctx->g), disk_init);
+	ctx->d = static_cast<disk_t *>(array_grow(game_disks(ctx->g), reinterpret_cast<void (*)(void *)>(disk_init)));
     else
-	ctx->r = array_grow(game_roms(ctx->g), file_init);
+        ctx->r = static_cast<file_t *>(array_grow(game_roms(ctx->g), reinterpret_cast<void (*)(void *)>(file_init)));
 
     SET_STATE(ctx, PARSE_IN_FILE);
 
@@ -614,7 +614,7 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
     }
     if (deleted) {
 	ctx->flags = (ctx->flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;
-	array_delete(game_roms(ctx->g), n, file_finalize);
+	array_delete(game_roms(ctx->g), n, reinterpret_cast<void (*)(void *)>(file_finalize));
     }
     else {
 	ctx->flags = 0;
