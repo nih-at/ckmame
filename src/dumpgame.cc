@@ -274,7 +274,7 @@ main(int argc, char **argv) {
 		    putc('\n', stdout);
 		dump_special(argv[i]);
 	    }
-	    else if (parray_find_sorted(list, argv[i], strcmp) >= 0) {
+	    else if (parray_find_sorted(list, argv[i], reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) >= 0) {
 		if (first)
 		    first = 0;
 		else
@@ -287,12 +287,12 @@ main(int argc, char **argv) {
 	else {
 	    found = 0;
 	    for (j = 0; j < parray_length(list); j++) {
-		if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
+		if (fnmatch(argv[i], static_cast<char *>(parray_get(list, j)), 0) == 0) {
 		    if (first)
 			first = 0;
 		    else
 			putc('\n', stdout);
-		    dump_game(parray_get(list, j), brief_mode);
+		    dump_game(static_cast<char *>(parray_get(list, j)), brief_mode);
 		    found = 1;
 		}
 	    }
@@ -413,7 +413,7 @@ dump_list(int type) {
     int i;
     parray_t *list;
 
-    if ((list = romdb_read_list(db, type)) == NULL) {
+    if ((list = romdb_read_list(db, static_cast<enum dbh_list>(type))) == NULL) {
 	myerror(ERRDB, "db error reading list");
 	return -1;
     }
