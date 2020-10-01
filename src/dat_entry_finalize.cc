@@ -37,7 +37,8 @@
 
 
 void
-dat_entry_finalize(dat_entry_t *de) {
+dat_entry_finalize(void *vde) {
+    dat_entry_t *de = static_cast<dat_entry_t *>(vde);
     free(de->name);
     free(de->description);
     free(de->version);
