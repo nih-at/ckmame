@@ -99,9 +99,9 @@ output_cm_close(output_context_t *out) {
 
     ctx = (output_context_cm_t *)out;
 
-    parray_sort(ctx->games, cmp_games);
+    parray_sort(ctx->games, reinterpret_cast<int (*)(const void *, const void *)>(cmp_games));
     for (i = 0; i < parray_length(ctx->games); i++)
-	write_game(ctx, parray_get(ctx->games, i));
+	write_game(ctx, static_cast<game_t *>(parray_get(ctx->games, i)));
     parray_free(ctx->games, reinterpret_cast<void (*)(void *)>(game_free));
 
     if (ctx->f == NULL || ctx->f == stdout)

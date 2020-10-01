@@ -62,7 +62,7 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im, c
 	if (match_quality(m) != QU_MISSING || file_status(r) == STATUS_NODUMP || file_where(r) != FILE_INGAME)
 	    continue;
 
-	file_t *rm = array_push(game_roms(gm), r);
+	file_t *rm = static_cast<file_t *>(array_push(game_roms(gm), r));
 	file_name(rm) = strdup(file_name(r));
 	if (file_merge(r))
 	    file_merge(rm) = strdup(file_merge(r));
@@ -75,7 +75,7 @@ write_fixdat_entry(const game_t *game, const archive_t *a, const images_t *im, c
 	if (match_disk_quality(m) != QU_MISSING || disk_status(d) == STATUS_NODUMP)
 	    continue;
 
-	disk_t *dm = array_push(game_disks(gm), d);
+	disk_t *dm = static_cast<disk_t *>(array_push(game_disks(gm), d));
 	disk_name(dm) = strdup(disk_name(d));
 	if (disk_merge(d))
 	    disk_merge(dm) = strdup(disk_merge(d));

@@ -65,7 +65,7 @@ dbh_cache_close_all(void) {
 	return 0;
 
     for (i = 0; i < array_length(cache_directories); i++) {
-	cache_directory_t *cd = array_get(cache_directories, i);
+	cache_directory_t *cd = static_cast<cache_directory_t *>(array_get(cache_directories, i));
 
 	if (cd->dbh) {
 	    bool empty = dbh_cache_is_empty(cd->dbh);
@@ -184,7 +184,7 @@ dbh_cache_get_db_for_archive(const char *name) {
 	return NULL;
 
     for (i = 0; i < array_length(cache_directories); i++) {
-	cache_directory_t *cd = array_get(cache_directories, i);
+	cache_directory_t *cd = static_cast<cache_directory_t *>(array_get(cache_directories, i));
 	if (strncmp(cd->name, name, strlen(cd->name)) == 0) {
 	    if (!cd->initialized) {
 		char *dbname = NULL;
@@ -273,20 +273,20 @@ dbh_cache_read(dbh_t *dbh, const char *name, array_t *files) {
     if (sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK)
 	return -1;
 
-    array_truncate(files, 0, file_finalize);
+    array_truncate(files, 0, reinterpret_cast<void (*)(void *)>(file_finalize));
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	file_t *f = (file_t *)array_grow(files, file_init);
+	file_t *f = (file_t *)array_grow(files, reinterpret_cast<void (*)(void *)>(file_init));
 
 	file_name(f) = sq3_get_string(stmt, 0);
 	file_mtime(f) = sqlite3_column_int(stmt, 1);
-	file_status(f) = sqlite3_column_int(stmt, 2);
+	file_status(f) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
 	file_size(f) = sq3_get_int64_default(stmt, 3, SIZE_UNKNOWN);
 	sq3_get_hashes(file_hashes(f), stmt, 4);
     }
 
     if (ret != SQLITE_DONE) {
-	array_truncate(files, 0, file_finalize);
+	array_truncate(files, 0, reinterpret_cast<void (*)(void *)>(file_finalize));
 	return -1;
     }
 
@@ -319,7 +319,7 @@ dbh_cache_register_cache_directory(const char *directory_name) {
 
     int i;
     for (i = 0; i < array_length(cache_directories); i++) {
-	cache_directory_t *cd = array_get(cache_directories, i);
+	cache_directory_t *cd = static_cast<cache_directory_t *>(array_get(cache_directories, i));
 	size_t cd_len = strlen(cd->name);
 
 	if (strncmp(directory_name, cd->name, (cd_len < dn_len ? cd_len : dn_len)) == 0) {
@@ -332,7 +332,7 @@ dbh_cache_register_cache_directory(const char *directory_name) {
 	}
     }
 
-    cache_directory_t *cd = array_grow(cache_directories, NULL);
+    cache_directory_t *cd = static_cast<cache_directory_t *>(array_grow(cache_directories, NULL));
 
     cd->name = name;
     cd->dbh = NULL;
@@ -388,7 +388,7 @@ dbh_cache_archive_name(dbh_t *dbh, const char *name) {
     int i;
 
     for (i = 0; i < array_length(cache_directories); i++) {
-	cache_directory_t *cd = array_get(cache_directories, i);
+	cache_directory_t *cd = static_cast<cache_directory_t *>(array_get(cache_directories, i));
 	if (strncmp(cd->name, name, strlen(cd->name)) == 0) {
 	    char *dbname = strdup(name + strlen(cd->name));
 	    if (dbname == NULL) {
