@@ -142,7 +142,8 @@ chd_open(const char *name, int *errp) {
 int64_t
 chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b) {
     uint64_t n;
-    int i, err;
+    int err;
+    uint64_t i;
     uint32_t compression_type;
 
     if (idx > chd->total_hunks) {
@@ -455,7 +456,7 @@ read_header_v5(struct chd *chd, unsigned char *header) {
     */
 
     unsigned char *p = header + TAG_AND_LEN + 4;
-    int i;
+    uint64_t i;
 
     if (chd->hdr_length < HEADER_LEN_V5)
 	return -1;
