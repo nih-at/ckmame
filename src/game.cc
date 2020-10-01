@@ -66,7 +66,7 @@ game_free(game_t *g) {
 
     free(g->cloneof[0]);
     free(g->cloneof[1]);
-    array_free(g->roms, file_finalize);
-    array_free(g->disks, disk_finalize);
+    array_free(g->roms, reinterpret_cast<void (*)(void *)>(file_finalize));
+    array_free(g->disks, reinterpret_cast<void (*)(void *)>(disk_finalize));
     free(g);
 }
