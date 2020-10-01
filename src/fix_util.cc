@@ -151,7 +151,7 @@ remove_empty_archive(const char *name) {
     if (fix_options & FIX_PRINT)
 	printf("%s: remove empty archive\n", name);
     if (superfluous) {
-	idx = parray_find(superfluous, name, strcmp);
+	idx = parray_find(superfluous, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
 	/* "needed" zip archives are not in list */
 	if (idx >= 0)
 	    parray_delete(superfluous, idx, free);
@@ -164,7 +164,7 @@ remove_from_superfluous(const char *name) {
     int idx;
 
     if (superfluous) {
-	idx = parray_find(superfluous, name, strcmp);
+	idx = parray_find(superfluous, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
 	/* "needed" images are not in list */
 	if (idx >= 0)
 	    parray_delete(superfluous, idx, free);
