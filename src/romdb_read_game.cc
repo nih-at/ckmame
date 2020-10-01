@@ -112,7 +112,7 @@ read_disks(romdb_t *db, game_t *g) {
 	return -1;
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	d = (disk_t *)array_grow(game_disks(g), disk_init);
+	d = (disk_t *)array_grow(game_disks(g), reinterpret_cast<void (*)(void *)>(disk_init));
 
 	disk_name(d) = sq3_get_string(stmt, 0);
 	disk_merge(d) = sq3_get_string(stmt, 1);
@@ -138,7 +138,7 @@ read_roms(romdb_t *db, game_t *g) {
 	return -1;
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	r = (file_t *)array_grow(game_roms(g), file_init);
+	r = (file_t *)array_grow(game_roms(g), reinterpret_cast<void (*)(void *)>(file_init));
 
 	file_name(r) = sq3_get_string(stmt, 0);
 	file_merge(r) = sq3_get_string(stmt, 1);

@@ -443,18 +443,18 @@ archive_read_infos(archive_t *a) {
     }
 
     if (!a->ops->read_infos(a)) {
-	array_free(files_cache, file_finalize);
+	array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
 	a->cache_changed = true;
 	return false;
     }
 
     if (!merge_files(a, files_cache)) {
-	array_free(files_cache, file_finalize);
+	array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
 	return false;
     }
 
     if (files_cache) {
-	array_free(files_cache, file_finalize);
+	array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
 	a->cache_changed = true;
     }
     else if (archive_num_files(a) > 0) {
@@ -472,7 +472,7 @@ archive_real_free(archive_t *a) {
 
     archive_close(a);
     free(a->name);
-    array_free(archive_files(a), file_finalize);
+    array_free(archive_files(a), reinterpret_cast<void (*)(void *)>(file_finalize));
     free(a);
 }
 
@@ -480,7 +480,7 @@ archive_real_free(archive_t *a) {
 int
 archive_refresh(archive_t *a) {
     archive_close(a);
-    array_truncate(archive_files(a), 0, file_finalize);
+    array_truncate(archive_files(a), 0, reinterpret_cast<void (*)(void *)>(file_finalize));
     archive_read_infos(a);
 
     return 0;
@@ -566,8 +566,8 @@ merge_files(archive_t *a, array_t *files) {
     for (i = 0; i < array_length(archive_files(a)); i++) {
 	file_t *file = archive_file(a, i);
 
-	if (files && (idx = array_find(files, file_name(file), cmp_file_by_name)) >= 0) {
-	    file_t *cfile = array_get(files, idx);
+	if (files && (idx = array_find(files, file_name(file), reinterpret_cast<int (*)(const void *, const void *)>(cmp_file_by_name))) >= 0) {
+	    file_t *cfile = static_cast<file_t *>(array_get(files, idx));
 	    if (file_mtime(file) == file_mtime(cfile) && file_compare_nsc(file, cfile)) {
 		hashes_copy(file_hashes(file), file_hashes(cfile));
 	    }
@@ -589,6 +589,6 @@ merge_files(archive_t *a, array_t *files) {
 
 static void
 replace_files(archive_t *a, array_t *files) {
-    array_free(archive_files(a), file_finalize);
+    array_free(archive_files(a), reinterpret_cast<void (*)(void *)>(file_finalize));
     archive_files(a) = files;
 }

@@ -64,7 +64,7 @@ export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_c
     }
 
     for (i = 0; i < parray_length(list); i++) {
-	if ((g = romdb_read_game(db, parray_get(list, i))) == NULL) {
+	if ((g = romdb_read_game(db, static_cast<const char *>(parray_get(list, i)))) == NULL) {
 	    /* TODO: error */
 	    continue;
 	}
