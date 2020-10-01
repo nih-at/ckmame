@@ -83,7 +83,7 @@ find_disk(const disk_t *d, match_disk_t *md) {
 	    match_disk_name(md) = xstrdup(disk_name(dm));
 	    hashes_copy(match_disk_hashes(md), disk_hashes(dm));
 	    match_disk_quality(md) = QU_COPIED;
-	    match_disk_where(md) = sqlite3_column_int(stmt, QUERY_FILE_LOCATION);
+	    match_disk_where(md) = static_cast<where_t>(sqlite3_column_int(stmt, QUERY_FILE_LOCATION));
 	}
 	disk_free(dm);
 	ret = FIND_EXISTS;
@@ -98,7 +98,7 @@ find_disk(const disk_t *d, match_disk_t *md) {
 	break;
     }
 
-    return ret;
+    return static_cast<find_result_t>(ret);
 }
 
 
@@ -165,7 +165,7 @@ find_in_archives(const file_t *r, match_t *m, bool needed_only) {
 	if (m) {
 	    match_archive(m) = a;
 	    match_index(m) = i;
-	    match_where(m) = sqlite3_column_int(stmt, QUERY_FILE_LOCATION);
+	    match_where(m) = static_cast<where_t>(sqlite3_column_int(stmt, QUERY_FILE_LOCATION));
 	    match_quality(m) = QU_COPIED;
 	}
 	else
@@ -322,7 +322,7 @@ find_in_db(romdb_t *fdb, const file_t *r, archive_t *archive, const char *skip, 
 
     status = FIND_UNKNOWN;
     for (i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < array_length(a); i++) {
-	fbh = array_get(a, i);
+	fbh = static_cast<file_location_t *>(array_get(a, i));
 
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
@@ -361,7 +361,7 @@ find_in_db(romdb_t *fdb, const file_t *r, archive_t *archive, const char *skip, 
 	game_free(g);
     }
 
-    array_free(a, file_location_finalize);
+    array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
 
     return status;
 }
@@ -383,7 +383,7 @@ find_disk_in_db(romdb_t *fdb, const disk_t *d, const char *skip, match_disk_t *m
 
     status = FIND_UNKNOWN;
     for (i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < array_length(a); i++) {
-	fbh = array_get(a, i);
+	fbh = static_cast<file_location_t *>(array_get(a, i));
 
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
@@ -402,7 +402,7 @@ find_disk_in_db(romdb_t *fdb, const disk_t *d, const char *skip, match_disk_t *m
 	game_free(g);
     }
 
-    array_free(a, file_location_finalize);
+    array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
 
     return status;
 }
