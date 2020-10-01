@@ -65,7 +65,7 @@
 
 struct dir_one {
     parray_t *entries;
-    size_t index;
+    int index;
     char *name;
     size_t len;
 };
@@ -93,7 +93,7 @@ dir_close(dir_t *dir) {
 
 
 dir_status_t
-dir_next(dir_t *dir, char *name, int len) {
+dir_next(dir_t *dir, char *name, size_t len) {
     char *entry;
     dir_one_t *d;
     struct stat st;
