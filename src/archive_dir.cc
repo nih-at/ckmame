@@ -93,7 +93,7 @@ static int op_rollback(archive_t *);
 
 struct archive_ops ops_dir = {op_check, op_close, op_commit, op_commit_cleanup, op_file_add_empty, (void (*)(void *))fclose, op_file_copy, op_file_delete, op_file_open, op_file_read, op_file_rename, op_file_strerror, NULL, op_read_infos, op_rollback};
 
-#define archive_file_change(a, idx) (array_get(((ud_t *)archive_user_data(a))->change, (idx)))
+#define archive_file_change(a, idx) (static_cast<change_t *>(array_get((static_cast<ud_t *>(archive_user_data(a)))->change, (idx))))
 
 
 int
@@ -347,7 +347,7 @@ op_close(archive_t *a) {
 static int
 op_commit(archive_t *a) {
     int idx;
-    ud_t *ud = archive_user_data(a);
+    ud_t *ud = static_cast<ud_t *>(archive_user_data(a));
     change_t *ch;
 
     if (!archive_is_modified(a))
@@ -365,7 +365,7 @@ op_commit(archive_t *a) {
     for (idx = 0; idx < archive_num_files(a); idx++) {
 	if (idx >= array_length(ud->change))
 	    break;
-	ch = array_get(ud->change, idx);
+	ch = static_cast<change_t *>(array_get(ud->change, idx));
 
 	if (change_apply(a, idx, ch) < 0)
 	    ret = -1;
@@ -389,9 +389,9 @@ op_commit(archive_t *a) {
 
 static void
 op_commit_cleanup(archive_t *a) {
-    ud_t *ud = archive_user_data(a);
+    ud_t *ud = static_cast<ud_t *>(archive_user_data(a));
 
-    array_truncate(ud->change, archive_num_files(a), change_fini);
+    array_truncate(ud->change, archive_num_files(a), reinterpret_cast<void (*)(void *)>(change_fini));
 }
 
 
@@ -449,12 +449,12 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	fclose(fout);
     }
 
-    ud_t *ud = archive_user_data(da);
+    ud_t *ud = static_cast<ud_t *>(archive_user_data(da));
     change_t *ch;
 
     bool err = false;
     if (didx >= 0 && didx < array_length(ud->change)) {
-	ch = array_get(ud->change, didx);
+	ch = static_cast<change_t *>(array_get(ud->change, didx));
 
 	if (!change_is_added(ch)) {
 	    if (strcmp(dname, file_name(archive_file(da, didx))) != 0) {
@@ -470,7 +470,7 @@ op_file_copy(archive_t *sa, int sidx, archive_t *da, int didx, const char *dname
 	}
     }
     else {
-	if ((ch = array_grow(ud->change, change_init)) == NULL) {
+	if ((ch = static_cast<change_t *>(array_grow(ud->change, reinterpret_cast<void (*)(void *)>(change_init)))) == NULL) {
 	    myerror(ERRDEF, "cannot grow array: %s", strerror(errno));
 	    err = true;
 	}
@@ -539,7 +539,7 @@ op_file_read(void *f, void *buf, uint64_t n) {
 	errno = EINVAL;
 	return -1;
     }
-    return fread(buf, 1, n, f);
+    return fread(buf, 1, n, static_cast<FILE *>(f));
 }
 
 
@@ -608,7 +608,7 @@ op_file_strerror(void *f) {
 
 static bool
 op_read_infos(archive_t *a) {
-    ud_t *ud = archive_user_data(a);
+    ud_t *ud = static_cast<ud_t *>(archive_user_data(a));
     dir_t *dir;
     char namebuf[8192];
     dir_status_t status;
@@ -634,8 +634,8 @@ op_read_infos(archive_t *a) {
 		continue;
 	    }
 
-	    file_t *f = array_grow(archive_files(a), file_init);
-	    array_grow(ud->change, change_init);
+	    file_t *f = static_cast<file_t *>(array_grow(archive_files(a), reinterpret_cast<void (*)(void *)>(file_init)));
+	    array_grow(ud->change, reinterpret_cast<void (*)(void *)>(change_init));
 
 	    file_name(f) = xstrdup(name);
 	    file_size(f) = sb.st_size;
@@ -660,13 +660,13 @@ op_read_infos(archive_t *a) {
 static int
 op_rollback(archive_t *a) {
     int idx;
-    ud_t *ud = archive_user_data(a);
+    ud_t *ud = static_cast<ud_t *>(archive_user_data(a));
     change_t *ch;
 
     for (idx = 0; idx < archive_num_files(a); idx++) {
 	if (idx >= array_length(ud->change))
 	    break;
-	ch = array_get(ud->change, idx);
+	ch = static_cast<change_t *>(array_get(ud->change, idx));
 	change_rollback(a, ch);
     }
 
