@@ -76,7 +76,7 @@ static void print_checksums(hashes_t *, int);
 
 int
 main(int argc, char **argv) {
-    char *dbname;
+    const char *dbname;
     char *detector_name;
     int c, i, ret;
     romdb_t *ddb;
