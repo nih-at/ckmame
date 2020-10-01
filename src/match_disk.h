@@ -50,9 +50,9 @@ typedef struct match_disk match_disk_t;
 
 typedef array_t match_disk_array_t;
 
-#define match_disk_array_free(ma) (array_free((ma), (void (*)())match_disk_finalize))
+#define match_disk_array_free(ma) (array_free((ma), reinterpret_cast<void (*)(void *)>(match_disk_finalize)))
 #define match_disk_array_get(ma, i) ((match_disk_t *)array_get((ma), (i)))
-#define match_disk_array_new(n) (array_new_length(sizeof(match_disk_t), n, (void (*)())match_disk_init))
+#define match_disk_array_new(n) (array_new_length(sizeof(match_disk_t), n, reinterpret_cast<void (*)(void *)>(match_disk_init)))
 
 #define match_disk_array_length array_length
 

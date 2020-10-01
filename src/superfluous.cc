@@ -99,11 +99,11 @@ list_directory(const char *dirname, const char *dbname) {
 	if (S_ISDIR(st.st_mode)) {
             if (roms_unzipped) {
                 if (listf) {
-                    known = parray_find_sorted(listf, b + len_dir, strcmp) != -1;
+                    known = parray_find_sorted(listf, b + len_dir, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1;
                 }
             }
             else {
-                bool dir_known = listf ? parray_find_sorted(listf, b + len_dir, strcmp) != -1 : false;
+                bool dir_known = listf ? parray_find_sorted(listf, b + len_dir, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1 : false;
                 list_game_directory(found, b, dir_known);
                 known = true; /* we don't want directories in superfluous list (I think) */
             }
@@ -121,7 +121,7 @@ list_directory(const char *dirname, const char *dbname) {
 
 	    if (ext) {
                 if (!roms_unzipped && strcmp(ext, "zip") == 0 && listf)
-		    known = parray_find_sorted(listf, b + len_dir, strcmp) != -1;
+		    known = parray_find_sorted(listf, b + len_dir, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1;
 		*p = '.';
 	    }
 	}
@@ -134,7 +134,7 @@ list_directory(const char *dirname, const char *dbname) {
     dir_close(dir);
 
     if (parray_length(found) > 0)
-	parray_sort_unique(found, strcmp);
+	parray_sort_unique(found, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
 
     return found;
 }

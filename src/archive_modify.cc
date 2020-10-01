@@ -68,7 +68,7 @@ archive_commit(archive_t *a) {
 		}
 
 		if (archive_is_writable(a)) {
-		    array_delete(archive_files(a), i, file_finalize);
+		    array_delete(archive_files(a), i, reinterpret_cast<void (*)(void *)>(file_finalize));
 		    i--;
 		}
 		break;
@@ -212,7 +212,7 @@ archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname
 
     if (archive_is_writable(da)) {
 	if (sa->ops->file_copy(sa, sidx, da, -1, dname, start, len) < 0) {
-	    array_delete(archive_files(da), archive_num_files(da) - 1, file_finalize);
+	    array_delete(archive_files(da), archive_num_files(da) - 1, reinterpret_cast<void (*)(void *)>(file_finalize));
 	    return -1;
 	}
     }
@@ -324,7 +324,7 @@ archive_rollback(archive_t *a) {
 	    break;
 
 	case FILE_ADDED:
-	    array_delete(archive_files(a), i, file_finalize);
+	    array_delete(archive_files(a), i, reinterpret_cast<void (*)(void *)>(file_finalize));
 	    i--;
 	    break;
 
@@ -341,7 +341,7 @@ static void
 _add_file(archive_t *a, int idx, const char *name, const file_t *f) {
     file_t *nf;
 
-    nf = array_insert(archive_files(a), idx, f);
+    nf = static_cast<file_t *>(array_insert(archive_files(a), idx, f));
 
     file_name(nf) = xstrdup(name);
     file_where(nf) = FILE_ADDED;

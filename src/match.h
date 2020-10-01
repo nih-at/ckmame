@@ -63,9 +63,9 @@ typedef struct match match_t;
 
 typedef array_t match_array_t;
 
-#define match_array_free(ma) (array_free(ma, match_finalize))
+#define match_array_free(ma) (array_free(ma, reinterpret_cast<void (*)(void *)>(match_finalize)))
 #define match_array_get(ma, i) ((match_t *)array_get((ma), (i)))
-#define match_array_new(n) (array_new_length(sizeof(match_t), (n), match_init))
+#define match_array_new(n) (array_new_length(sizeof(match_t), (n), reinterpret_cast<void (*)(void *)>(match_init)))
 #define match_array_length array_length
 
 #define match_archive(m) ((m)->source.archive.archive)
