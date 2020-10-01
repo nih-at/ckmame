@@ -41,7 +41,7 @@ parray_t *
 parray_new_from_data(void **data, int n) {
     parray_t *pa;
 
-    pa = xmalloc(sizeof(*pa));
+    pa = static_cast<parray_t *>(xmalloc(sizeof(*pa)));
 
     pa->entry = data;
     pa->nentry = n;
