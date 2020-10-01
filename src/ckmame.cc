@@ -365,14 +365,15 @@ main(int argc, char **argv) {
 	    }
 	}
 
-	de.name = "Fixdat";
-	de.description = "Fixdat by ckmame";
-	de.version = "1";
+	de.name = strdup("Fixdat");
+	de.description = strdup("Fixdat by ckmame");
+	de.version = strdup("1");
 
 	if ((fixdat = output_new(OUTPUT_FMT_DATAFILE_XML, fixdat_name, 0)) == NULL)
 	    exit(1);
 
 	output_header(fixdat, &de);
+	dat_entry_finalize(&de);
     }
 
     if (roms_unzipped && romdb_has_disks(db) == 1) {
