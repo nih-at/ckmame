@@ -128,7 +128,7 @@ stats_print(stats_t *stats, FILE *f, bool total_only) {
         fprintf(f, "%" PRIu64 "\n", stats->games_total);
     }
     
-    for (enum filetype type = 0; type < TYPE_MAX; type++) {
+    for (int type = 0; type < TYPE_MAX; type++) {
         if (stats->files[type].files_total > 0) {
             fprintf(f, "%-8s\t", ft_name[type]);
             if (!total_only) {
