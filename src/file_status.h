@@ -43,7 +43,7 @@ typedef array_t file_status_array_t;
 
 #define file_status_array_free(ma) (array_free(ma, NULL))
 #define file_status_array_get(ma, i) (*(file_status_t *)array_get((ma), (i)))
-#define file_status_array_new(n) (array_new_length(sizeof(file_status_t), (n), file_status_init))
+#define file_status_array_new(n) (array_new_length(sizeof(file_status_t), (n), reinterpret_cast<void (*)(void *)>(file_status_init)))
 #define file_status_array_length array_length
 
 

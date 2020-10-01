@@ -211,10 +211,10 @@ dbh_stmt_with_hashes_and_size(dbh_stmt_t stmt, const hashes_t *hash, int have_si
 
     for (i = 1; i <= HASHES_TYPE_MAX; i <<= 1) {
 	if (hashes_has_type(hash, i))
-	    stmt += i;
+	    stmt = static_cast<dbh_stmt_t>(stmt + i);
     }
     if (have_size)
-	stmt += HASHES_TYPE_MAX << 1;
+	stmt = static_cast<dbh_stmt_t>(stmt + (HASHES_TYPE_MAX << 1));
 
     return stmt;
 }

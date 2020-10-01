@@ -56,13 +56,13 @@ romdb_read_file_by_name(romdb_t *db, filetype_t ft, const char *name) {
     a = array_new(sizeof(file_location_t));
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	fl = array_grow(a, NULL);
+	fl = static_cast<file_location_t *>(array_grow(a, NULL));
 	file_location_name(fl) = sq3_get_string(stmt, 0);
 	file_location_index(fl) = sqlite3_column_int(stmt, 1);
     }
 
     if (ret != SQLITE_DONE) {
-	array_free(a, file_location_finalize);
+	array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
 	return NULL;
     }
 
