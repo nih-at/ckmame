@@ -56,7 +56,7 @@ detector_t *
 detector_new(void) {
     detector_t *d;
 
-    d = xmalloc(sizeof(*d));
+    d = static_cast<detector_t *>(xmalloc(sizeof(*d)));
 
     d->name = NULL;
     d->author = NULL;

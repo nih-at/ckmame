@@ -122,7 +122,7 @@ bit_cmp(const uint8_t *b, const uint8_t *value, const uint8_t *mask, detector_te
 static void
 buf_grow(detector_t *d, size_t size) {
     if (d->buf_size < size) {
-	d->buf = xrealloc(d->buf, size);
+	d->buf = static_cast<unsigned char *>(xrealloc(d->buf, size));
 	d->buf_size = size;
     }
 }

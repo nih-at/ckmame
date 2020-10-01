@@ -108,7 +108,7 @@ chd_open(const char *name, int *errp) {
 	return NULL;
     }
 
-    if ((chd = malloc(sizeof(*chd))) == NULL) {
+    if ((chd = static_cast<struct chd *>(malloc(sizeof(*chd)))) == NULL) {
 	if (errp)
 	    *errp = CHD_ERR_NOMEM;
 	fclose(f);
@@ -168,7 +168,7 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b) {
     switch (compression_type) {
     case CHD_CODEC_ZLIB:
 	if (chd->buf == NULL) {
-	    if ((chd->buf = malloc(chd->hunk_len)) == NULL) {
+	    if ((chd->buf = static_cast<char *>(malloc(chd->hunk_len))) == NULL) {
 		chd->error = CHD_ERR_NOMEM;
 		return -1;
 	    }
@@ -313,7 +313,7 @@ chd_read_range(struct chd *chd, unsigned char *b, uint64_t off, uint64_t len) {
 	}
 	else {
 	    if (chd->hbuf == NULL)
-		if ((chd->hbuf = malloc(chd->hunk_len)) == NULL) {
+		if ((chd->hbuf = static_cast<unsigned char *>(malloc(chd->hunk_len))) == NULL) {
 		    chd->error = CHD_ERR_NOMEM;
 		    return -1;
 		}
@@ -502,7 +502,7 @@ read_map(struct chd *chd) {
 	return -1;
     }
 
-    if ((chd->map = malloc(sizeof(*chd->map) * chd->total_hunks)) == NULL) {
+    if ((chd->map = static_cast<struct chd_map_entry *>(malloc(sizeof(*chd->map) * chd->total_hunks))) == NULL) {
 	chd->error = CHD_ERR_NOMEM;
 	return -1;
     }
@@ -584,7 +584,7 @@ read_meta_headers(struct chd *chd) {
 	    return -1;
 	}
 
-	if ((meta = malloc(sizeof(*meta))) == NULL) {
+	if ((meta = static_cast<struct chd_metadata_entry *>(malloc(sizeof(*meta)))) == NULL) {
 	    chd->error = CHD_ERR_NOMEM;
 	    return -1;
 	}

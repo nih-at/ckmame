@@ -151,7 +151,7 @@ parse_hex(detector_test_t *dt, uint8_t **vp, const char *value) {
 	return -1;
     }
 
-    v = xmalloc(len);
+    v = static_cast<uint8_t *>(xmalloc(len));
     if (hex2bin(v, value, len) < 0) {
 	free(v);
 	errno = EINVAL;

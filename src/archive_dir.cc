@@ -102,7 +102,7 @@ archive_init_dir(archive_t *a) {
 
     a->ops = &ops_dir;
 
-    ud = xmalloc(sizeof(*ud));
+    ud = static_cast<ud_t *>(xmalloc(sizeof(*ud)));
 
     ud->change = array_new(sizeof(change_t));
 
@@ -295,7 +295,7 @@ make_full_name(archive_t *a, const char *name) {
 
     len = strlen(archive_name(a)) + strlen(name) + 2;
 
-    if ((s = malloc(len)) == NULL)
+    if ((s = static_cast<char *>(malloc(len))) == NULL)
 	return NULL;
 
     snprintf(s, len, "%s/%s", archive_name(a), name);
@@ -315,7 +315,7 @@ make_tmp_name(archive_t *a, const char *name) {
 
     len = strlen(archive_name(a)) + strlen(name) + 17;
 
-    if ((s = malloc(len)) == NULL)
+    if ((s = static_cast<char *>(malloc(len))) == NULL)
 	return NULL;
 
     snprintf(s, len, "%s/.ckmame-%s.XXXXXX", archive_name(a), name);

@@ -85,7 +85,7 @@ disk_new(const char *name, int flags) {
 	return NULL;
     }
 
-    d = (disk_t *)xmalloc(sizeof(*d));
+    d = static_cast<disk_t *>(xmalloc(sizeof(*d)));
     disk_init(d);
     d->name = xstrdup(name);
     d->refcount = 1;
@@ -192,7 +192,7 @@ get_hashes(struct chd *chd, struct hashes *h) {
 
     hu = hashes_update_new(&h_raw);
 
-    buf = xmalloc(chd->hunk_len);
+    buf = static_cast<unsigned char *>(xmalloc(chd->hunk_len));
     len = chd->total_len;
     for (hunk = 0; hunk < chd->total_hunks; hunk++) {
 	n = chd->hunk_len > len ? len : chd->hunk_len;
@@ -245,7 +245,7 @@ get_hashes(struct chd *chd, struct hashes *h) {
 		n_meta_hash++;
 	}
 
-	meta_hash = xmalloc(n_meta_hash * sizeof(*meta_hash));
+	meta_hash = static_cast<struct meta_hash *>(xmalloc(n_meta_hash * sizeof(*meta_hash)));
 
 	len = chd->hunk_len; /* current size of buf */
 
@@ -256,7 +256,7 @@ get_hashes(struct chd *chd, struct hashes *h) {
 	    if (e->length > len) {
 		free(buf);
 		len = e->length;
-		buf = xmalloc(len);
+		buf = static_cast<unsigned char *>(xmalloc(len));
 	    }
 
 	    if (chd_read_metadata(chd, e, buf) < 0) {

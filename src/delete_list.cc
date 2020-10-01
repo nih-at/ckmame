@@ -120,7 +120,7 @@ delete_list_t *
 delete_list_new(void) {
     delete_list_t *dl;
 
-    dl = xmalloc(sizeof(*dl));
+    dl = static_cast<delete_list_t *>(xmalloc(sizeof(*dl)));
     dl->array = parray_new();
     dl->mark = 0;
 

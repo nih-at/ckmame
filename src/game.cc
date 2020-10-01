@@ -42,7 +42,7 @@ game_t *
 game_new(void) {
     game_t *g;
 
-    g = xmalloc(sizeof(*g));
+    g = static_cast<game_t *>(xmalloc(sizeof(*g)));
 
     g->id = -1;
     g->name = g->description = NULL;
