@@ -141,8 +141,6 @@ add_library(libckmame ${COMMON_SOURCES})
 target_link_libraries(libckmame PRIVATE ZLIB::ZLIB libzip::zip)
 # for config.h
 target_include_directories(libckmame PRIVATE ${PROJECT_BINARY_DIR})
-set_property(TARGET libckmame PROPERTY C_STANDARD 99)
-set_property(TARGET libckmame PROPERTY C_STANDARD_REQUIRED ON)
 
 foreach(PROGRAM ckmame detective dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.cc)
@@ -151,8 +149,6 @@ foreach(PROGRAM ckmame detective dumpgame mkmamedb)
   target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
 
   install(TARGETS ${PROGRAM} RUNTIME DESTINATION bin)
-  set_property(TARGET ${PROGRAM} PROPERTY C_STANDARD 99)
-  set_property(TARGET ${PROGRAM} PROPERTY C_STANDARD_REQUIRED ON)
 endforeach()
 
 if(LibXml2_FOUND)

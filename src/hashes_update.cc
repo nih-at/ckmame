@@ -34,6 +34,7 @@
 
 #include "config.h"
 
+extern "C" {
 #include <limits.h>
 #include <stdlib.h>
 #ifdef HAVE_MD5INIT
@@ -47,10 +48,10 @@
 #include "sha1_own.h"
 #endif
 #include <zlib.h>
+}
 
 #include "hashes.h"
 #include "xmalloc.h"
-
 
 struct hashes_update {
     uint32_t crc;
