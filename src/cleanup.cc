@@ -140,7 +140,7 @@ static void
 cleanup_archive(archive_t *a, result_t *res, int flags) {
     garbage_t *gb = NULL;
     int i, move;
-    char *reason;
+    const char *reason;
 
     if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
 	gb = garbage_new(a);
