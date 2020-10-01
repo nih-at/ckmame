@@ -88,7 +88,7 @@ mydirname(const char *fname) {
     if (l == 0)
 	return xstrdup("/");
 
-    d = xmalloc(l + 1);
+    d = static_cast<char *>(xmalloc(l + 1));
     strncpy(d, fname, l);
     d[l] = '\0';
     return d;
@@ -161,7 +161,7 @@ ensure_dir(const char *name, int strip_fname) {
 	if (p == NULL) {
 	    dir = xstrdup(".");
 	} else {
-	    dir = xmalloc(p - name + 1);
+	    dir = static_cast<char *>(xmalloc(p - name + 1));
 	    strncpy(dir, name, p - name);
 	    dir[p - name] = 0;
 	}

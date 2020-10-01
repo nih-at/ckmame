@@ -36,8 +36,8 @@
 #include <sys/param.h>
 /* option settings */
 
-char *needed_dir = "needed";   /* TODO: proper value */
-char *unknown_dir = "unknown"; /* TODO: proper value */
+const char *needed_dir = "needed";   /* TODO: proper value */
+const char *unknown_dir = "unknown"; /* TODO: proper value */
 const char *rom_dir = NULL;
 
 parray_t *search_dirs = NULL;

@@ -150,7 +150,7 @@ SHA1Init(SHA1_CTX *ctx) {
 
 static void
 sha_transform(struct sha_ctx *ctx, uint32_t *data) {
-    register uint32_t A, B, C, D, E; /* Local vars */
+    uint32_t A, B, C, D, E; /* Local vars */
 
     /* Set up first buffer and local data buffer */
     A = ctx->digest[0];

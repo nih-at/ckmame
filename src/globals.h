@@ -47,8 +47,8 @@
 
 /* option settings */
 
-extern char *needed_dir;
-extern char *unknown_dir;
+extern const char *needed_dir;
+extern const char *unknown_dir;
 extern const char *rom_dir;
 
 extern parray_t *search_dirs;

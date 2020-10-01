@@ -4,7 +4,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 project(ckmame
   VERSION 1.0
-  LANGUAGES C)
+  LANGUAGES C CXX)
 
 include(CheckFunctionExists)
 include(CheckIncludeFiles)

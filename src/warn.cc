@@ -168,7 +168,7 @@ warn_set_info(warn_type_t type, const char *name) {
 static void
 warn_ensure_header(void) {
     /* keep in sync with warn_type_t in warn.h */
-    static char *tname[] = {"archive", "game", "image"};
+    static const char *tname[] = {"archive", "game", "image"};
 
     if (header_done == 0) {
 	printf("In %s %s:\n", tname[header_type], header_name);

@@ -116,8 +116,8 @@ read_disks(romdb_t *db, game_t *g) {
 
 	disk_name(d) = sq3_get_string(stmt, 0);
 	disk_merge(d) = sq3_get_string(stmt, 1);
-	disk_status(d) = sqlite3_column_int(stmt, 2);
-        disk_where(d) = sqlite3_column_int(stmt, 3);
+	disk_status(d) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+        disk_where(d) = static_cast<where_t>(sqlite3_column_int(stmt, 3));
 	sq3_get_hashes(disk_hashes(d), stmt, 5);
     }
 
@@ -142,8 +142,8 @@ read_roms(romdb_t *db, game_t *g) {
 
 	file_name(r) = sq3_get_string(stmt, 0);
 	file_merge(r) = sq3_get_string(stmt, 1);
-	file_status(r) = sqlite3_column_int(stmt, 2);
-	file_where(r) = sqlite3_column_int(stmt, 3);
+	file_status(r) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+	file_where(r) = static_cast<where_t>(sqlite3_column_int(stmt, 3));
 	file_size(r) = sq3_get_int64_default(stmt, 4, SIZE_UNKNOWN);
 	sq3_get_hashes(file_hashes(r), stmt, 5);
     }

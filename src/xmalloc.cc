@@ -90,7 +90,7 @@ xstrdup(const char *str) {
     if (str == NULL)
 	return NULL;
 
-    if ((p = malloc(strlen(str) + 1)) == NULL) {
+    if ((p = static_cast<char *>(malloc(strlen(str) + 1))) == NULL) {
 	myerror(ERRDEF, "malloc failure");
 	exit(1);
     }
