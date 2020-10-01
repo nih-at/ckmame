@@ -73,7 +73,7 @@ array_get(const array_t *a, int i) {
 
 
 int
-array_find(const array_t *a, const void *key, int (*cmp)(/* const void *, const void * */)) {
+array_find(const array_t *a, const void *key, int (*cmp)(const void *, const void *)) {
     int idx;
 
     for (idx = 0; idx < array_length(a); idx++) {
@@ -92,12 +92,12 @@ array_new_sized(int size, int n) {
     if (n < 0)
 	n = 0;
 
-    a = xmalloc(sizeof(*a));
+    a = static_cast<array *>(xmalloc(sizeof(*a)));
 
     if (n == 0)
 	a->data = 0;
     else
-	a->data = xmalloc(n * size);
+	a->data = static_cast<char *>(xmalloc(n * size));
     a->elem_size = size;
     a->nentry = 0;
     a->alloc_len = n;
