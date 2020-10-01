@@ -133,7 +133,7 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
 
     ret = 0;
     for (i = 0; i < array_length(a); i++) {
-	fbh = array_get(a, i);
+	fbh = static_cast<file_location_t *>(array_get(a, i));
 
 	if ((g = romdb_read_game(db, file_location_name(fbh))) == NULL || game_num_roms(g) <= file_location_index(fbh)) {
 	    /* TODO: internal error: db inconsistency */
@@ -150,7 +150,7 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
 	game_free(g);
     }
 
-    array_free(a, file_location_finalize);
+    array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
 
     return ret;
 }

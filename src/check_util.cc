@@ -80,7 +80,7 @@ ensure_extra_maps(int flags) {
 
     if (flags & DO_MAP) {
 	for (i = 0; i < parray_length(superfluous); i++) {
-	    file = parray_get(superfluous, i);
+	    file = static_cast<const char *>(parray_get(superfluous, i));
 	    switch ((nt = name_type(file))) {
 	    case NAME_ZIP:
 		if ((a = archive_new(file, TYPE_ROM, FILE_SUPERFLUOUS, 0)) != NULL) {
@@ -108,10 +108,10 @@ ensure_extra_maps(int flags) {
     }
 
     for (i = 0; i < parray_length(search_dirs); i++)
-	enter_dir_in_map_and_list(flags, extra_list, parray_get(search_dirs, i), DIR_RECURSE, FILE_EXTRA);
+	enter_dir_in_map_and_list(flags, extra_list, static_cast<const char *>(parray_get(search_dirs, i)), DIR_RECURSE, FILE_EXTRA);
 
     if (flags & DO_LIST)
-	parray_sort(extra_list, strcmp);
+	parray_sort(extra_list, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
 }
 
 
@@ -220,10 +220,10 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 	    parray_t *list_db = dbh_cache_list_archives(dbh);
 	    if (list_db) {
 		int i;
-		parray_sort(our_list, strcmp);
+		parray_sort(our_list, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
 		for (i = 0; i < parray_length(list_db); i++) {
 		    sprintf(name, "%s/%s%s", directory_name, (char *)parray_get(list_db, i), roms_unzipped ? "" : ".zip");
-		    if (parray_find_sorted(our_list, name, strcmp) == -1) {
+		    if (parray_find_sorted(our_list, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) == -1) {
 			dbh_cache_delete_by_name(dbh, name);
 		    }
 		}
