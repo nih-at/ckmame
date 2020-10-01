@@ -43,12 +43,12 @@
 #include "hashes.h"
 #include "romdb.h"
 
-char *usage = "Usage: %s [-hV] [-C types] [-D dbfile] [--detector detector] zip-archive [...]\n";
+const char *usage = "Usage: %s [-hV] [-C types] [-D dbfile] [--detector detector] zip-archive [...]\n";
 
-char help_head[] = "detective (" PACKAGE ") by Dieter Baron and"
+const char help_head[] = "detective (" PACKAGE ") by Dieter Baron and"
 		   " Thomas Klausner\n\n";
 
-char help[] = "\n"
+const char help[] = "\n"
 	      "  -h, --help               display this help message\n"
 	      "  -V, --version            display version number\n"
 	      "  -C, --hash-types types   specify hash types to compute (default: all)\n"
@@ -58,7 +58,7 @@ char help[] = "\n"
 	      "\n"
 	      "Report bugs to " PACKAGE_BUGREPORT ".\n";
 
-char version_string[] = "detective (" PACKAGE " " VERSION ")\n"
+const char version_string[] = "detective (" PACKAGE " " VERSION ")\n"
 			"Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "hC:DuV"

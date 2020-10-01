@@ -58,14 +58,14 @@ static void print_dat(dat_t *, int);
 static void print_hashtypes(int);
 static void print_rs(game_t *, const char *, const char *, const char *, const char *);
 
-char *usage = "Usage: %s [-h|-V]\n\
+const char *usage = "Usage: %s [-h|-V]\n\
        %s [-b] [-D dbfile] [game ...]\n\
        %s [-b] [-D dbfile] [-c | -d] [checksum ...]\n";
 
-char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and"
+const char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and"
 		   " Thomas Klausner\n\n";
 
-char help[] = "\n\
+const char help[] = "\n\
   -b, --brief          brief listing (omit ROM details)\n\
   -c, --checksum       find games containing ROMs with given checksums\n\
   -D, --db dbfile      use database dbfile\n\
@@ -75,7 +75,7 @@ char help[] = "\n\
 \n\
 Report bugs to " PACKAGE_BUGREPORT ".\n";
 
-char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
+const char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
 Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
@@ -85,9 +85,9 @@ struct option options[] = {
     {"brief", 0, 0, 'b'}, {"checksum", 0, 0, 'c'}, {"db", 1, 0, 'D'}, {"disk", 0, 0, 'd'}, {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {NULL, 0, 0, 0},
 };
 
-static char *where_name[] = {"game", "cloneof", "grand-cloneof"};
+static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 
-static char *status_name[] = {"ok", "baddump", "nogooddump"};
+static const char *status_name[] = {"ok", "baddump", "nogooddump"};
 
 static void
 print_checksums(hashes_t *hashes) {
@@ -191,7 +191,7 @@ print_matches(filetype_t ft, hashes_t *hash) {
 int
 main(int argc, char **argv) {
     int i, j, found, first;
-    char *dbname;
+    const char *dbname;
     int c;
     int find_checksum, brief_mode;
     filetype_t filetype;
@@ -326,7 +326,7 @@ print_rs(game_t *game, const char *co, const char *gco, const char *cs, const ch
 	return;
     }
 
-    for (i = 0; ((ret = sqlite3_step(stmt)) == SQLITE_ROW); i++) {
+    for (i = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW; i++) {
 	if (i == 0)
 	    printf("%s", cs);
 	if (i % 6 == 0)
