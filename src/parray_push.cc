@@ -44,7 +44,7 @@ parray_push(parray_t *pa, void *e) {
 	    pa->alloc_len = 1;
 	else
 	    pa->alloc_len *= 2;
-	pa->entry = xrealloc(pa->entry, sizeof(pa->entry[0]) * pa->alloc_len);
+	pa->entry = static_cast<void **>(xrealloc(pa->entry, sizeof(pa->entry[0]) * pa->alloc_len));
     }
 
     pa->entry[pa->nentry++] = e;

@@ -61,12 +61,12 @@ parray_new_sized(int n) {
     if (n < 0)
 	n = 0;
 
-    pa = xmalloc(sizeof(*pa));
+    pa = static_cast<parray_t *>(xmalloc(sizeof(*pa)));
 
     if (n == 0)
 	pa->entry = 0;
     else
-	pa->entry = xmalloc(n * sizeof(pa->entry[0]));
+	pa->entry = static_cast<void **>(xmalloc(n * sizeof(pa->entry[0])));
     pa->nentry = 0;
     pa->alloc_len = n;
 

@@ -101,7 +101,7 @@ struct hashes_update *
 hashes_update_new(struct hashes *h) {
     struct hashes_update *hu;
 
-    hu = xmalloc(sizeof(*hu));
+    hu = static_cast<struct hashes_update *>(xmalloc(sizeof(*hu)));
 
     hu->h = h;
 

@@ -48,7 +48,7 @@ parray_set_length(parray_t *pa, int len, void *(*fn_alloc)(void), void (*fn_free
     else {
 	if (len >= pa->alloc_len) {
 	    pa->alloc_len = len;
-	    pa->entry = xrealloc(pa->entry, sizeof(pa->entry[0]) * pa->alloc_len);
+	    pa->entry = static_cast<void **>(xrealloc(pa->entry, sizeof(pa->entry[0]) * pa->alloc_len));
 
 	    for (i = parray_length(pa); i < len; i++)
 		parray_get(pa, i) = fn_alloc();
