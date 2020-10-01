@@ -542,7 +542,7 @@ get_hashes(archive_t *a, void *f, off_t len, struct hashes *h) {
     hu = hashes_update_new(h);
 
     while (len > 0) {
-	n = len > sizeof(buf) ? sizeof(buf) : len;
+	n = static_cast<size_t>(len) > sizeof(buf) ? sizeof(buf) : len;
 
 	if (a->ops->file_read(f, buf, n) != n) {
 	    hashes_update_discard(hu);
