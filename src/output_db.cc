@@ -151,7 +151,7 @@ handle_lost(output_context_db_t *ctx) {
 	for (i = parray_length(ctx->lost_children) - 1; i >= 0; --i) {
 	    /* get current lost child from database, get parent,
 	       look if parent is still lost, if not, do child */
-	    if ((child = romdb_read_game(ctx->db, parray_get(ctx->lost_children, i))) == NULL) {
+	    if ((child = romdb_read_game(ctx->db, static_cast<const char *>(parray_get(ctx->lost_children, i)))) == NULL) {
 		myerror(ERRDEF, "internal database error: child %s not in database", (const char *)parray_get(ctx->lost_children, i));
 		return -1;
 	    }
@@ -194,7 +194,7 @@ lost(output_context_db_t *ctx, game_t *g) {
 	return false;
 
     for (i = 0; i < parray_length(ctx->lost_children); i++) {
-	if (strcmp(parray_get(ctx->lost_children, i), game_name(g)) == 0) {
+	if (strcmp(static_cast<const char *>(parray_get(ctx->lost_children, i)), game_name(g)) == 0) {
             return true;
 	}
     }
