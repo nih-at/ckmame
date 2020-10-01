@@ -340,13 +340,6 @@ op_check(archive_t *a) {
 
 static int
 op_close(archive_t *a) {
-    ud_t *ud = archive_user_data(a);
-
-    if (ud == NULL) {
-	/* error during initialization, do nothing */
-	return 0;
-    }
-
     return 0;
 }
 
