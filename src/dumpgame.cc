@@ -169,7 +169,7 @@ print_matches(filetype_t ft, hashes_t *hash) {
     }
 
     for (i = 0; i < array_length(fbha); i++) {
-	fbh = array_get(fbha, i);
+	fbh = static_cast<file_location_t *>(array_get(fbha, i));
 	if ((game = romdb_read_game(db, file_location_name(fbh))) == NULL) {
 	    myerror(ERRDEF, "db error: %s not found, though in hash index", file_location_name(fbh));
 	    /* TODO: remember error */
@@ -182,7 +182,7 @@ print_matches(filetype_t ft, hashes_t *hash) {
 	game_free(game);
     }
 
-    array_free(fbha, file_location_finalize);
+    array_free(fbha, reinterpret_cast<void (*)(void *)>(file_location_finalize));
 
     print_footer(matches, hash);
 }
@@ -301,7 +301,7 @@ main(int argc, char **argv) {
 	}
     }
 
-    parray_free(list, free);
+    parray_free(list, reinterpret_cast<void (*)(void *)>(free));
 
     return 0;
 }
@@ -421,7 +421,7 @@ dump_list(int type) {
     for (i = 0; i < parray_length(list); i++)
 	printf("%s\n", (char *)parray_get(list, i));
 
-    parray_free(list, free);
+    parray_free(list, reinterpret_cast<void (*)(void *)>(free));
 
     return 0;
 }
