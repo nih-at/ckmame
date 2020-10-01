@@ -152,7 +152,7 @@ parse_archive(parser_context_t *ctx, archive_t *a, int hashtypes) {
     file_t *r;
     char hstr[HASHES_SIZE_MAX * 2 + 1];
 
-    parse_game_start(ctx, 0);
+    parse_game_start(ctx, TYPE_ROM);
 
     if (ctx->full_archive_name) {
 	name = xstrdup(archive_name(a));
@@ -162,7 +162,7 @@ parse_archive(parser_context_t *ctx, archive_t *a, int hashtypes) {
     }
     if (strlen(name) > 4 && strcmp(name + strlen(name) - 4, ".zip") == 0)
 	name[strlen(name) - 4] = '\0';
-    parse_game_name(ctx, 0, 0, name);
+    parse_game_name(ctx, TYPE_ROM, 0, name);
     free(name);
 
     for (i = 0; i < archive_num_files(a); i++) {
@@ -186,7 +186,7 @@ parse_archive(parser_context_t *ctx, archive_t *a, int hashtypes) {
 	parse_file_end(ctx, TYPE_ROM);
     }
 
-    parse_game_end(ctx, 0);
+    parse_game_end(ctx, TYPE_ROM);
 
     return 0;
 }

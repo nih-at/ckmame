@@ -95,12 +95,12 @@ romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
     rs = detector_rules(d);
 
     while ((ret = sqlite3_step(st_r)) == SQLITE_ROW) {
-	r = (detector_rule_t *)array_grow(rs, detector_rule_init);
+	r = (detector_rule_t *)array_grow(rs, reinterpret_cast<void (*)(void *)>(detector_rule_init));
 
 	idx = sqlite3_column_int(st_r, 0);
 	detector_rule_start_offset(r) = sq3_get_int64_default(st_r, 1, 0);
 	detector_rule_end_offset(r) = sq3_get_int64_default(st_r, 2, DETECTOR_OFFSET_EOF);
-	detector_rule_operation(r) = sq3_get_int_default(st_r, 3, DETECTOR_OP_NONE);
+	detector_rule_operation(r) = static_cast<detector_operation_t>(sq3_get_int_default(st_r, 3, DETECTOR_OP_NONE));
 
 	if (sqlite3_bind_int(st_t, 1, idx) != SQLITE_OK)
 	    return -1;
@@ -108,9 +108,9 @@ romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
 	ts = detector_rule_tests(r);
 
 	while ((ret = sqlite3_step(st_t)) == SQLITE_ROW) {
-	    t = (detector_test_t *)array_grow(ts, detector_test_init);
+	    t = (detector_test_t *)array_grow(ts, reinterpret_cast<void (*)(void *)>(detector_test_init));
 
-	    detector_test_type(t) = sqlite3_column_int(st_t, 0);
+	    detector_test_type(t) = static_cast<detector_test_type_t>(sqlite3_column_int(st_t, 0));
 	    detector_test_offset(t) = sqlite3_column_int64(st_t, 1);
 	    detector_test_result(t) = sqlite3_column_int64(st_t, 5);
 
@@ -119,8 +119,8 @@ romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
 	    case DETECTOR_TEST_OR:
 	    case DETECTOR_TEST_AND:
 	    case DETECTOR_TEST_XOR:
-		detector_test_mask(t) = sq3_get_blob(st_t, 3, &lmask);
-		detector_test_value(t) = sq3_get_blob(st_t, 4, &lvalue);
+		detector_test_mask(t) = static_cast<uint8_t *>(sq3_get_blob(st_t, 3, &lmask));
+		detector_test_value(t) = static_cast<uint8_t *>(sq3_get_blob(st_t, 4, &lvalue));
 		if (lmask > 0 && lmask != lvalue)
 		    return -1;
 		detector_test_length(t) = lmask;
