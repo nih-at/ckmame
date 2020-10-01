@@ -64,7 +64,7 @@ disk_new(const char *name, int flags) {
     if (name == NULL)
 	return NULL;
 
-    if ((d = memdb_get_ptr(name, TYPE_DISK)) != 0) {
+    if ((d = static_cast<disk_t *>(memdb_get_ptr(name, TYPE_DISK))) != 0) {
 	d->refcount++;
 	return d;
     }
@@ -298,8 +298,8 @@ meta_hash_cmp(const void *a_, const void *b_) {
     const struct meta_hash *a, *b;
     int ret;
 
-    a = a_;
-    b = b_;
+    a = static_cast<const struct meta_hash *>(a_);
+    b = static_cast<const struct meta_hash *>(b_);
 
     ret = memcmp(a->tag, b->tag, sizeof(a->tag));
     if (ret == 0)
