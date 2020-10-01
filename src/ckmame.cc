@@ -333,7 +333,7 @@ main(int argc, char **argv) {
     archive_register_cache_directory(unknown_dir);
     int m;
     for (m = 0; m < parray_length(search_dirs); m++) {
-	if (archive_register_cache_directory(parray_get(search_dirs, m)) < 0)
+	if (archive_register_cache_directory(static_cast<char *>(parray_get(search_dirs, m))) < 0)
 	    exit(1);
     }
 
@@ -409,7 +409,7 @@ main(int argc, char **argv) {
 		    continue;
 		}
 
-		if (parray_find_sorted(list, b, strcmp) >= 0)
+		if (parray_find_sorted(list, b, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) >= 0)
 		    tree_add(check_tree, b);
 		else
 		    myerror(ERRDEF, "game '%s' unknown", b);
@@ -419,12 +419,12 @@ main(int argc, char **argv) {
 	}
 	else if (optind == argc) {
 	    for (i = 0; i < parray_length(list); i++)
-		tree_add(check_tree, parray_get(list, i));
+		tree_add(check_tree, static_cast<char *>(parray_get(list, i)));
 	}
 	else {
 	    for (i = optind; i < argc; i++) {
 		if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-		    if (parray_find_sorted(list, argv[i], strcmp) >= 0)
+		    if (parray_find_sorted(list, argv[i], reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) >= 0)
 			tree_add(check_tree, argv[i]);
 		    else
 			myerror(ERRDEF, "game '%s' unknown", argv[i]);
@@ -432,8 +432,8 @@ main(int argc, char **argv) {
 		else {
 		    found = 0;
 		    for (j = 0; j < parray_length(list); j++) {
-			if (fnmatch(argv[i], parray_get(list, j), 0) == 0) {
-			    tree_add(check_tree, parray_get(list, j));
+			if (fnmatch(argv[i], static_cast<char *>(parray_get(list, j)), 0) == 0) {
+			    tree_add(check_tree, static_cast<char *>(parray_get(list, j)));
 			    found = 1;
 			}
 		    }
