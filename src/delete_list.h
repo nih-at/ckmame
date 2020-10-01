@@ -54,7 +54,7 @@ typedef struct delete_list delete_list_t;
 
 #define delete_list_length(dl) (parray_length((dl)->array))
 
-#define delete_list_sort(dl) (parray_sort_unique(dl->array, file_location_cmp))
+#define delete_list_sort(dl) (parray_sort_unique(dl->array, reinterpret_cast<int (*)(const void *, const void *)>(file_location_cmp)))
 
 int delete_list_execute(delete_list_t *);
 void delete_list_free(delete_list_t *);

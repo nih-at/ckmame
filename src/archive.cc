@@ -325,7 +325,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags) {
     int i;
     int64_t id;
 
-    if ((a = memdb_get_ptr(name, ft)) != 0) {
+    if ((a = static_cast<archive_t *>(memdb_get_ptr(name, ft))) != 0) {
 	/* TODO: check for compatibility of a->flags and flags */
 	a->refcount++;
 	return a;
@@ -416,13 +416,13 @@ archive_read_infos(archive_t *a) {
 	if (a->cache_id > 0) {
 	    files_cache = array_new(sizeof(file_t));
 	    if (!dbh_cache_read(a->cache_db, archive_name(a), files_cache)) {
-		array_free(files_cache, file_finalize);
+		array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
 		return false;
 	    }
 
 	    switch (archive_cache_is_up_to_date(a)) {
 	    case -1:
-		array_free(files_cache, file_finalize);
+		array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
 		return false;
 
 	    case 0:

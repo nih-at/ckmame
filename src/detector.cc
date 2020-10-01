@@ -46,7 +46,7 @@ detector_free(detector_t *d) {
     free(d->name);
     free(d->author);
     free(d->version);
-    array_free(d->rules, detector_rule_finalize);
+    array_free(d->rules, reinterpret_cast<void (*)(void *)>(detector_rule_finalize));
     free(d->buf);
     free(d);
 }
@@ -71,7 +71,7 @@ detector_new(void) {
 
 void
 detector_rule_finalize(detector_rule_t *dr) {
-    array_free(dr->tests, detector_test_finalize);
+    array_free(dr->tests, reinterpret_cast<void (*)(void *)>(detector_test_finalize));
 }
 
 

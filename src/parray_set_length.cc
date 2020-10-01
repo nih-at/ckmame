@@ -36,7 +36,7 @@
 
 
 void
-parray_set_length(parray_t *pa, int len, void *(*fn_alloc)(void), void (*fn_free)(/* void * */)) {
+parray_set_length(parray_t *pa, int len, void *(*fn_alloc)(void), void (*fn_free)(void *)) {
     int i;
 
     if (len == parray_length(pa))

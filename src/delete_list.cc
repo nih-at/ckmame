@@ -47,7 +47,7 @@ delete_list_free(delete_list_t *dl) {
     if (dl == NULL)
 	return;
 
-    parray_free(dl->array, file_location_free);
+    parray_free(dl->array, reinterpret_cast<void (*)(void *)>(file_location_free));
     free(dl);
 }
 
@@ -130,7 +130,7 @@ delete_list_new(void) {
 
 void
 delete_list_rollback(delete_list_t *dl) {
-    parray_set_length(dl->array, dl->mark, NULL, file_location_free);
+    parray_set_length(dl->array, dl->mark, NULL, reinterpret_cast<void (*)(void *)>(file_location_free));
 }
 
 

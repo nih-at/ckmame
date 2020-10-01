@@ -41,7 +41,7 @@
 
 typedef parray_t images_t;
 
-#define images_free(im) (parray_free((im), disk_free))
+#define images_free(im) (parray_free((im), reinterpret_cast<void (*)(void *)>(disk_free)))
 #define images_get(im, i) ((disk_t *)parray_get((im), (i)))
 #define images_length(im) ((im) ? parray_length(im) : 0)
 
