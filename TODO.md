@@ -1,7 +1,5 @@
 # Soon
 
-- fix coverity issues
-
 - rar read support
 
 - 7z read support
@@ -17,8 +15,6 @@
 - clean up src/output_db.c (loops over 1 iteration)
 
 - fixdat-missing-all: two copies of the same file (romof) in fixdat; depends on order of games in datfile
-
-- clean up empty directories for disks after moving all files out
 
 # Later
 
