@@ -78,7 +78,7 @@ parse_rc(parser_source_t *ps, parser_context_t *ctx) {
 	ctx->lineno++;
 
 	if (line[0] == '[') {
-	    sect = str2int(line, sections);
+	    sect = static_cast<enum section>(str2int(line, sections));
 	    continue;
 	}
 
@@ -146,7 +146,7 @@ rc_romline(parser_context_t *ctx, char *line) {
 
     if (line == NULL) {
 	if (gamename) {
-	    parse_game_end(ctx, 0);
+	    parse_game_end(ctx, TYPE_ROM);
 	    free(gamename);
 	}
 	gamename = NULL;
@@ -168,8 +168,8 @@ rc_romline(parser_context_t *ctx, char *line) {
 	rc_romline(ctx, NULL); /* flush old game (if any) */
 
 	gamename = xstrdup(name);
-	parse_game_start(ctx, 0);
-	parse_game_name(ctx, 0, 0, name);
+	parse_game_start(ctx, TYPE_ROM);
+	parse_game_name(ctx, TYPE_ROM, 0, name);
 	if (desc)
 	    parse_game_description(ctx, desc);
 	if (parent && strcmp(parent, name) != 0)
