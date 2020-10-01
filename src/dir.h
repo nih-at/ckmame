@@ -52,7 +52,7 @@ enum dir_status { DIR_ERROR = -1, DIR_OK, DIR_DIRECTORY, DIR_EOD };
 typedef enum dir_status dir_status_t;
 
 int dir_close(dir_t *);
-dir_status_t dir_next(dir_t *, char *, int);
+dir_status_t dir_next(dir_t *, char *, size_t);
 dir_t *dir_open(const char *, int);
 
 #endif /* dir.h */
