@@ -145,7 +145,7 @@ dir_open(const char *name, int flags) {
     if ((d = dir_one_new(name)) == NULL)
 	return NULL;
 
-    dir = xmalloc(sizeof(*dir));
+    dir = static_cast<dir_t *>(xmalloc(sizeof(*dir)));
     dir->stack = parray_new();
     parray_push(dir->stack, d);
     dir->flags = flags;
@@ -209,7 +209,7 @@ dir_one_new(const char *name) {
 
     parray_sort(entries, strcmp);
 
-    d = xmalloc(sizeof(*d));
+    d = static_cast<dir_one_t *>(xmalloc(sizeof(*d)));
     d->name = xstrdup(name);
     d->len = strlen(name);
     d->entries = entries;

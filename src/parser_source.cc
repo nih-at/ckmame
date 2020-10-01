@@ -140,7 +140,7 @@ parser_source_t *
 ps_new(void *ud, parser_source_close fn_close, parser_source_open fn_open, parser_source_read fn_read) {
     parser_source_t *ps;
 
-    ps = xmalloc(sizeof(*ps));
+    ps = static_cast<parser_source *>(xmalloc(sizeof(*ps)));
 
     ps->ud = ud;
     ps->close = fn_close;
@@ -168,7 +168,7 @@ ps_new_file(const char *fname) {
     else
 	f = stdin;
 
-    ud = xmalloc(sizeof(*ud));
+    ud = static_cast<psfile_ud_t *>(xmalloc(sizeof(*ud)));
 
     if (fname)
 	ud->fname = xstrdup(fname);
@@ -335,7 +335,7 @@ _buffer_grow(parser_source_t *ps, size_t n) {
 
     if (ps->size < new_size) {
 	size_t off = ps->cur - ps->data;
-	ps->data = xrealloc(ps->data, new_size);
+	ps->data = static_cast<char *>(xrealloc(ps->data, new_size));
 	ps->size = new_size;
 	ps->cur = ps->data + off;
     }
@@ -353,7 +353,7 @@ _ps_file_open(const char *fname, const char *parent) {
 	full_name = NULL;
 
 	dir = mydirname(parent);
-	full_name = xmalloc(strlen(dir) + strlen(fname) + 2);
+	full_name = static_cast<char *>(xmalloc(strlen(dir) + strlen(fname) + 2));
 	sprintf(full_name, "%s/%s", dir, fname);
 	free(dir);
 	fname = full_name;
@@ -393,7 +393,7 @@ _ps_new_zip(const char *zaname, struct zip *za, const char *fname, bool relaxed)
 	return NULL;
     }
 
-    ud = xmalloc(sizeof(*ud));
+    ud = static_cast<pszip_ud_t *>(xmalloc(sizeof(*ud)));
     ud->fname = xstrdup(zaname);
     ud->za = za;
     ud->zf = zf;

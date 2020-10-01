@@ -281,7 +281,7 @@ archive_make_unique_name(archive_t *a, const char *name) {
     if (idx < 0)
 	return xstrdup(name);
 
-    unique = (char *)xmalloc(strlen(name) + 5);
+    unique = static_cast<char *>(xmalloc(strlen(name) + 5));
 
     ext = strrchr(name, '.');
     if (ext == NULL) {
@@ -331,7 +331,7 @@ archive_new(const char *name, filetype_t ft, where_t where, int flags) {
 	return a;
     }
 
-    a = xmalloc(sizeof(*a));
+    a = static_cast<archive *>(xmalloc(sizeof(*a)));
     a->id = -1;
     a->name = xstrdup(name);
     a->refcount = 1;

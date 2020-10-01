@@ -367,7 +367,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
     seterrinfo(NULL, archive_name(a));
 
     size_t num_names = archive_num_files(a);
-    original_names = xmalloc(sizeof(original_names[0]) * num_names);
+    original_names = static_cast<char **>(xmalloc(sizeof(original_names[0]) * num_names));
     memset(original_names, 0, sizeof(original_names[0]) * num_names);
 
     for (i = 0; i < game_num_roms(g); i++) {

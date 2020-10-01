@@ -103,7 +103,7 @@ pr_test(FILE *fout, const detector_test_t *dt) {
     case DETECTOR_TEST_OR:
     case DETECTOR_TEST_AND:
     case DETECTOR_TEST_XOR:
-	hex = xmalloc(detector_test_length(dt) * 2 + 1);
+	hex = static_cast<char *>(xmalloc(detector_test_length(dt) * 2 + 1));
 
 	if (detector_test_offset(dt) != 0)
 	    fprintf(fout, " offset=\"%jx\"", (intmax_t)detector_test_offset(dt));
