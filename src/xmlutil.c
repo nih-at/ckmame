@@ -90,6 +90,9 @@ xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb, const xmlu_
 	    name = (const char *)xmlTextReaderConstName(reader);
 	    if (path + strlen(path) + strlen(name) + 2 > path + sizeof(path)) {
 		/* TODO */
+                xmlFreeTextReader(reader);
+                printf("element path too long\n");
+                return -1;
 	    }
 	    else {
 		sprintf(path + strlen(path), "/%s", name);
