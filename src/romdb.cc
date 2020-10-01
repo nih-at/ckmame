@@ -88,7 +88,7 @@ romdb_open(const char *name, int mode) {
     if (dbh == NULL)
 	return NULL;
 
-    romdb_t *db = xmalloc(sizeof(*db));
+    romdb_t *db = static_cast<romdb_t *>(xmalloc(sizeof(*db)));
 
     db->dbh = dbh;
 

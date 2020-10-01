@@ -39,7 +39,7 @@
 #include "hashes.h"
 
 int
-copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t *hashes) {
+copy_file(const char *old, const char *new_name, size_t start, ssize_t len, hashes_t *hashes) {
     FILE *fin, *fout;
     unsigned char b[8192];
     size_t nr, nw, total;
@@ -56,7 +56,7 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 	}
     }
 
-    if ((fout = fopen(new, "wb")) == NULL) {
+    if ((fout = fopen(new_name, "wb")) == NULL) {
 	fclose(fin);
 	return -1;
     }
@@ -82,8 +82,8 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 		err = errno;
 		fclose(fin);
 		fclose(fout);
-		if (remove(new) != 0) {
-		    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new);
+		if (remove(new_name) != 0) {
+		    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new_name);
 		}
 		errno = err;
 		hashes_update_discard(hu);
@@ -103,8 +103,8 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
     if (fclose(fout) != 0 || ferror(fin)) {
 	err = errno;
 	fclose(fin);
-	if (remove(new) != 0) {
-	    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new);
+	if (remove(new_name) != 0) {
+	    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new_name);
 	}
 	errno = err;
 	return -1;
@@ -119,11 +119,11 @@ copy_file(const char *old, const char *new, size_t start, ssize_t len, hashes_t 
 
 
 int
-link_or_copy(const char *old, const char *new) {
-    if (link(old, new) < 0) {
-	if (copy_file(old, new, 0, -1, NULL) < 0) {
+link_or_copy(const char *old, const char *new_name) {
+    if (link(old, new_name) < 0) {
+	if (copy_file(old, new_name, 0, -1, NULL) < 0) {
 	    seterrinfo(old, NULL);
-	    myerror(ERRFILESTR, "cannot link to '%s'", new);
+	    myerror(ERRFILESTR, "cannot link to '%s'", new_name);
 	    return -1;
 	}
     }
@@ -145,11 +145,11 @@ my_remove(const char *name) {
 
 
 int
-rename_or_move(const char *old, const char *new) {
-    if (rename(old, new) < 0) {
-	if (copy_file(old, new, 0, -1, NULL) < 0) {
+rename_or_move(const char *old, const char *new_name) {
+    if (rename(old, new_name) < 0) {
+	if (copy_file(old, new_name, 0, -1, NULL) < 0) {
 	    seterrinfo(old, NULL);
-	    myerror(ERRFILESTR, "cannot rename to '%s'", new);
+	    myerror(ERRFILESTR, "cannot rename to '%s'", new_name);
 	    return -1;
 	}
 	unlink(old);

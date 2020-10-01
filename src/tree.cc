@@ -91,7 +91,7 @@ tree_t *
 tree_new(void) {
     tree_t *t;
 
-    t = xmalloc(sizeof(*t));
+    t = static_cast<tree_t *>(xmalloc(sizeof(*t)));
 
     t->name = NULL;
     t->check = t->checked = false;
