@@ -82,7 +82,7 @@ dir_close(dir_t *dir) {
     int ret;
 
     ret = 0;
-    while ((d = parray_pop(dir->stack)) != NULL)
+    while ((d = static_cast<dir_one_t *>(parray_pop(dir->stack))) != NULL)
 	dir_one_free(d);
 
     parray_free(dir->stack, (void (*)(void *))dir_one_free);
@@ -98,18 +98,18 @@ dir_next(dir_t *dir, char *name, int len) {
     dir_one_t *d;
     struct stat st;
 
-    d = parray_get_last(dir->stack);
+    d = static_cast<dir_one_t *>(parray_get_last(dir->stack));
 
     for (;;) {
 	if (d->index == parray_length(d->entries)) {
 	    dir_one_free(d);
 	    parray_pop(dir->stack);
-	    if ((d = parray_get_last(dir->stack)) == NULL)
+	    if ((d = static_cast<dir_one_t *>(parray_get_last(dir->stack))) == NULL)
 		return DIR_EOD;
 	    continue;
 	}
 
-	entry = parray_get(d->entries, d->index++);
+	entry = static_cast<char *>(parray_get(d->entries, d->index++));
 
 	if (d->len + strlen(entry) + 2 > len) {
 	    errno = ENAMETOOLONG;
@@ -207,7 +207,7 @@ dir_one_new(const char *name) {
 	return NULL;
     }
 
-    parray_sort(entries, strcmp);
+    parray_sort(entries, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
 
     d = static_cast<dir_one_t *>(xmalloc(sizeof(*d)));
     d->name = xstrdup(name);

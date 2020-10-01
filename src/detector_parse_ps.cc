@@ -230,7 +230,7 @@ rule_end_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
 
 static int
 rule_open(struct ctx *ctx, int arg1) {
-    ctx->dr = array_grow(detector_rules(ctx->d), detector_rule_init);
+    ctx->dr = static_cast<detector_rule_t *>(array_grow(detector_rules(ctx->d), reinterpret_cast<void (*)(void *)>(detector_rule_init)));
 
     return 0;
 }
@@ -246,7 +246,7 @@ rule_operation(struct ctx *ctx, int arg1, int arg2, const char *value) {
     if (parse_enum(&i, value, op, nop) < 0)
 	return -1;
 
-    detector_rule_operation(ctx->dr) = i;
+    detector_rule_operation(ctx->dr) = static_cast<detector_operation_t>(i);
     return 0;
 }
 
@@ -279,8 +279,8 @@ test_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
 
 static int
 test_open(struct ctx *ctx, int type) {
-    ctx->dt = array_grow(detector_rule_tests(ctx->dr), detector_test_init);
-    detector_test_type(ctx->dt) = type;
+    ctx->dt = static_cast<detector_test_t *>(array_grow(detector_rule_tests(ctx->dr), reinterpret_cast<void (*)(void *)>(detector_test_init)));
+    detector_test_type(ctx->dt) = static_cast<detector_test_type_t>(type);
 
     return 0;
 }
@@ -300,7 +300,7 @@ test_operator(struct ctx *ctx, int arg1, int arg2, const char *value) {
     if (parse_enum(&i, value, en, nen) < 0)
 	return -1;
 
-    detector_test_type(ctx->dt) = i;
+    detector_test_type(ctx->dt) = static_cast<detector_test_type_t>(i);
     return 0;
 }
 
