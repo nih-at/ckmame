@@ -107,7 +107,7 @@ ps_getline(parser_source_t *ps) {
     size_t len;
 
     for (;;) {
-	if (ps->len > 0 && (p = memchr(ps->cur, '\n', ps->len)) != NULL) {
+	if (ps->len > 0 && (p = static_cast<char *>(memchr(ps->cur, '\n', ps->len))) != NULL) {
 	    line = ps->cur;
 	    len = p - ps->cur;
 	    if (len > 0 && line[len - 1] == '\r')
