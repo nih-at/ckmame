@@ -47,12 +47,12 @@
 #include "types.h"
 #include "xmalloc.h"
 
-char *usage = "Usage: %s [-huV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--no-directory-cache] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
+const char *usage = "Usage: %s [-huV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--no-directory-cache] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
 
-char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
+const char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
 		   " Thomas Klausner\n\n";
 
-char help[] = "\n"
+const char help[] = "\n"
 	      "  -h, --help                      display this help message\n"
 	      "  -V, --version                   display version number\n"
 	      "  -C, --hash-types types          specify hash types to compute (default: all)\n"
@@ -94,7 +94,7 @@ static int parser_flags;
 int
 main(int argc, char **argv) {
     output_context_t *out;
-    char *dbname;
+    const char *dbname;
     parray_t *exclude;
     parray_t *only_files;
     parray_t *skip_files;

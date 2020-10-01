@@ -87,7 +87,7 @@ output_new(output_format_t fmt, const char *fname, int flags) {
 
 void
 output_cond_print_string(FILE *f, const char *pre, const char *str, const char *post) {
-    char *q;
+    const char *q;
 
     if (str == NULL)
 	return;

@@ -53,7 +53,7 @@ intstr_t sections[] = {{RC_CREDITS, "[CREDITS]"}, {RC_DAT, "[DAT]"}, {RC_EMULATO
 
 struct {
     enum section section;
-    char *name;
+    const char *name;
     int (*cb)(parser_context_t *, const char *);
 } fields[] = {{RC_CREDITS, "version", parse_prog_version}, {RC_DAT, "plugin", rc_plugin}, {RC_EMULATOR, "refname", parse_prog_name}, {RC_EMULATOR, "version", parse_prog_description}};
 

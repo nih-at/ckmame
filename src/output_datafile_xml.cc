@@ -145,7 +145,7 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
     file_t *r;
     disk_t *d;
     int i;
-    char *fl = NULL;
+    const char *fl = NULL;
 
     ctx = (output_context_xml_t *)out;
     

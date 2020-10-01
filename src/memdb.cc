@@ -59,7 +59,7 @@ static int _update_file(uint64_t, filetype_t, int, const hashes_t *);
 
 int
 memdb_ensure(void) {
-    char *dbname;
+    const char *dbname;
 
     if (memdb_inited)
 	return (memdb != NULL) ? 0 : -1;

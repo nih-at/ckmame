@@ -153,7 +153,7 @@ static int
 write_game(output_context_cm_t *ctx, game_t *g) {
     file_t *r;
     int i;
-    char *fl = NULL;
+    const char *fl = NULL;
 
     fputs("game (\n", ctx->f);
     output_cond_print_string(ctx->f, "\tname ", game_name(g), "\n");

@@ -536,7 +536,7 @@ name_matches(const char *name, const parray_t *patterns) {
 	return 0;
 
     for (i = 0; i < parray_length(patterns); i++) {
-	if (fnmatch(parray_get(patterns, i), name, 0) == 0)
+	if (fnmatch(static_cast<const char *>(parray_get(patterns, i)), name, 0) == 0)
 	    return 1;
     }
 

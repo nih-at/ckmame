@@ -58,11 +58,11 @@ enum action { ACTION_UNSPECIFIED, ACTION_CHECK_ROMSET, ACTION_SUPERFLUOUS_ONLY, 
 typedef enum action action_t;
 
 
-char *usage = "Usage: %s [-bCcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
+const char *usage = "Usage: %s [-bCcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
 
-char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
+const char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
-char help[] = "\n"
+const char help[] = "\n"
 	      "      --autofixdat        write fixdat to `fix_$NAME_OF_SET.dat'\n"
 	      "  -b, --nobroken          don't report unfixable errors\n"
 	      "      --cleanup-extra     clean up extra dirs (delete superfluous files)\n"
@@ -98,7 +98,7 @@ char help[] = "\n"
 	      "  -X, --ignore-extra      ignore extra files in rom dirs\n"
 	      "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
-char version_string[] = PACKAGE " " VERSION "\n"
+const char version_string[] = PACKAGE " " VERSION "\n"
 				"Copyright (C) 1999-2018 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #define OPTIONS "bCcD:de:FfhijKkLlO:R:SsT:uVvwX"
@@ -155,7 +155,7 @@ main(int argc, char **argv) {
     action_t action;
     int i, j;
     size_t k;
-    char *dbname, *olddbname;
+    const char *dbname, *olddbname;
     int c, found;
     parray_t *list;
     char *fixdat_name;
