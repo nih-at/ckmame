@@ -1,6 +1,6 @@
 /*
   mkmamedb.c -- create mamedb
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -47,7 +47,7 @@
 #include "types.h"
 #include "xmalloc.h"
 
-const char *usage = "Usage: %s [-huV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--no-directory-cache] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
+const char *usage = "Usage: %s [-htuV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--no-directory-cache] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
 
 const char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and"
 		   " Thomas Klausner\n\n";
@@ -58,6 +58,7 @@ const char help[] = "\n"
 	      "  -C, --hash-types types          specify hash types to compute (default: all)\n"
 	      "  -F, --format [cm|dat|db|mtree]  specify output format [default: db]\n"
 	      "  -o, --output dbfile             write to database dbfile\n"
+	      "  -t, --use-temp-directory        create output in temporary directory, move when done\n"
 	      "  -u, --roms-unzipped             ROMs are files on disk, not contained in zip archives\n"
 	      "  -x, --exclude pat               exclude games matching shell glob PAT\n"
 	      "      --detector xml-file         use header detector\n"
@@ -72,14 +73,30 @@ const char help[] = "\n"
 	      "Report bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n"
-			"Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+			"Copyright (C) 1999-2020 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "hC:F:o:uVx:"
+#define OPTIONS "hC:F:o:tuVx:"
 
 enum { OPT_DETECTOR = 256, OPT_NO_DIRECTORY_CACHE, OPT_ONLY_FILES, OPT_PROG_DESCRIPTION, OPT_PROG_NAME, OPT_PROG_VERSION, OPT_RUNTEST, OPT_SKIP_FILES };
 
 struct option options[] = {
-    {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {"no-directory-cache", 0, 0, OPT_NO_DIRECTORY_CACHE}, {"detector", 1, 0, OPT_DETECTOR}, {"exclude", 1, 0, 'x'}, {"format", 1, 0, 'F'}, {"hash-types", 1, 0, 'C'}, {"output", 1, 0, 'o'}, {"only-files", 1, 0, OPT_ONLY_FILES}, {"prog-description", 1, 0, OPT_PROG_DESCRIPTION}, {"prog-name", 1, 0, OPT_PROG_NAME}, {"prog-version", 1, 0, OPT_PROG_VERSION}, {"roms-unzipped", 0, 0, 'u'}, {"runtest", 0, 0, OPT_RUNTEST}, {"skip-files", 1, 0, OPT_SKIP_FILES}, {NULL, 0, 0, 0},
+    {"help", 0, 0, 'h'},
+    {"version", 0, 0, 'V'},
+    {"no-directory-cache", 0, 0, OPT_NO_DIRECTORY_CACHE},
+    {"detector", 1, 0, OPT_DETECTOR},
+    {"exclude", 1, 0, 'x'},
+    {"format", 1, 0, 'F'},
+    {"hash-types", 1, 0, 'C'},
+    {"output", 1, 0, 'o'},
+    {"only-files", 1, 0, OPT_ONLY_FILES},
+    {"prog-description", 1, 0, OPT_PROG_DESCRIPTION},
+    {"prog-name", 1, 0, OPT_PROG_NAME},
+    {"prog-version", 1, 0, OPT_PROG_VERSION},
+    {"roms-unzipped", 0, 0, 'u'},
+    {"runtest", 0, 0, OPT_RUNTEST},
+    {"skip-files", 1, 0, OPT_SKIP_FILES},
+    {"use-temp-directory", 0, 0, 't'},
+    {NULL, 0, 0, 0},
 };
 
 #define DEFAULT_FILES_ONLY "*.dat"
@@ -94,7 +111,8 @@ static int parser_flags;
 int
 main(int argc, char **argv) {
     output_context_t *out;
-    const char *dbname;
+    const char *dbname, *dbname_real;
+    char tmpnam_buffer[L_tmpnam];
     parray_t *exclude;
     parray_t *only_files;
     parray_t *skip_files;
@@ -115,6 +133,7 @@ main(int argc, char **argv) {
     flags = 0;
     parser_flags = 0;
 
+    dbname_real = NULL;
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
@@ -159,6 +178,9 @@ main(int argc, char **argv) {
 	    break;
 	case 'o':
 	    dbname = optarg;
+	    break;
+	case 't':
+	    flags |= OUTPUT_FL_TEMP;
 	    break;
 	case 'u':
 	    roms_unzipped = 1;
@@ -215,6 +237,15 @@ main(int argc, char **argv) {
 	cache_directory = false;
     }
 
+    if (flags & OUTPUT_FL_TEMP) {
+	dbname_real = dbname;
+	dbname = tmpnam(tmpnam_buffer);
+	if (dbname == NULL) {
+	    myerror(ERRSTR, "tmpnam() failed");
+	    exit(1);
+	}
+    }
+
     if ((out = output_new(fmt, dbname, flags)) == NULL)
 	exit(1);
 
@@ -263,6 +294,13 @@ main(int argc, char **argv) {
 	parray_free(skip_files, free);
     if (roms_unzipped)
 	dbh_cache_close_all();
+
+    if (flags & OUTPUT_FL_TEMP) {
+	if (rename_or_move(dbname, dbname_real) != 0) {
+	    myerror(ERRDEF, "could not copy temporary output '%s' to '%s'", dbname, dbname_real);
+	    return 1;
+	}
+    }
 
     return 0;
 }
