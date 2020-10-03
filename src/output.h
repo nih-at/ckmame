@@ -54,6 +54,7 @@ enum output_format { OUTPUT_FMT_CM, OUTPUT_FMT_DATAFILE_XML, OUTPUT_FMT_DB, OUTP
 typedef enum output_format output_format_t;
 
 #define OUTPUT_FL_EXTENDED 1
+#define OUTPUT_FL_TEMP     2
 
 output_context_t *output_cm_new(const char *, int);
 output_context_t *output_db_new(const char *, int);
