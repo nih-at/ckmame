@@ -157,8 +157,8 @@
 		4B5FAE921735954C00B67C24 /* detective.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE911735954C00B67C24 /* detective.cc */; };
 		4B5FAE941735955A00B67C24 /* dumpgame.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE931735955A00B67C24 /* dumpgame.cc */; };
 		4B5FAE961735956B00B67C24 /* mkmamedb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE951735956B00B67C24 /* mkmamedb.cc */; };
-		4B5FAE9D173599B700B67C24 /* md5.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE981735998E00B67C24 /* md5.cc */; };
-		4B5FAE9E173599C100B67C24 /* sha1.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE9A1735998E00B67C24 /* sha1.cc */; };
+		4B5FAE9D173599B700B67C24 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE981735998E00B67C24 /* md5.c */; };
+		4B5FAE9E173599C100B67C24 /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE9A1735998E00B67C24 /* sha1.c */; };
 		4B6B145324FF905900D3F3FB /* stats.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6B145124FF905900D3F3FB /* stats.h */; };
 		4B6B145424FF905900D3F3FB /* stats.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B6B145224FF905900D3F3FB /* stats.cc */; };
 		4B6B145624FF918700D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
@@ -489,9 +489,9 @@
 		4B5FAE931735955A00B67C24 /* dumpgame.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dumpgame.cc; sourceTree = "<group>"; };
 		4B5FAE951735956B00B67C24 /* mkmamedb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = mkmamedb.cc; sourceTree = "<group>"; };
 		4B5FAE971735998D00B67C24 /* md5_own.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = md5_own.h; sourceTree = "<group>"; };
-		4B5FAE981735998E00B67C24 /* md5.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = md5.cc; sourceTree = "<group>"; };
+		4B5FAE981735998E00B67C24 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
 		4B5FAE991735998E00B67C24 /* sha1_own.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = sha1_own.h; sourceTree = "<group>"; };
-		4B5FAE9A1735998E00B67C24 /* sha1.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = sha1.cc; sourceTree = "<group>"; };
+		4B5FAE9A1735998E00B67C24 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
 		4B5FAEAD17359A6300B67C24 /* libzip.5.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzip.5.0.dylib; path = ../../../../nih/lib/libzip.5.0.dylib; sourceTree = "<group>"; };
 		4B6B145124FF905900D3F3FB /* stats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = stats.h; sourceTree = "<group>"; };
 		4B6B145224FF905900D3F3FB /* stats.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = stats.cc; sourceTree = "<group>"; };
@@ -1090,9 +1090,9 @@
 		4B5FAEA3173599EC00B67C24 /* compat */ = {
 			isa = PBXGroup;
 			children = (
-				4B5FAE981735998E00B67C24 /* md5.cc */,
+				4B5FAE981735998E00B67C24 /* md5.c */,
 				4B5FAE971735998D00B67C24 /* md5_own.h */,
-				4B5FAE9A1735998E00B67C24 /* sha1.cc */,
+				4B5FAE9A1735998E00B67C24 /* sha1.c */,
 				4B5FAE991735998E00B67C24 /* sha1_own.h */,
 			);
 			name = compat;
@@ -1647,9 +1647,9 @@
 				4B5F43BE1889D059000C3B7C /* romdb_write_dat.cc in Sources */,
 				4B5FAE1F1735930100B67C24 /* ptr_sort.cc in Sources */,
 				4B5FAE231735930100B67C24 /* sighandle.cc in Sources */,
-				4B5FAE9D173599B700B67C24 /* md5.cc in Sources */,
+				4B5FAE9D173599B700B67C24 /* md5.c in Sources */,
 				4B5F43BF1889D059000C3B7C /* romdb_write_detector.cc in Sources */,
-				4B5FAE9E173599C100B67C24 /* sha1.cc in Sources */,
+				4B5FAE9E173599C100B67C24 /* sha1.c in Sources */,
 				4B5F43C01889D059000C3B7C /* romdb_write_game.cc in Sources */,
 				4B9292CA17635B5500806C0A /* archive_zip.cc in Sources */,
 				4B9232FD1780A77700096AA2 /* archive_dir.cc in Sources */,
@@ -1858,7 +1858,7 @@
 					/usr/local/lib/libzip/include,
 					/usr/include/libxml2,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = .;
@@ -1913,7 +1913,7 @@
 					/usr/local/lib/libzip/include,
 					/usr/include/libxml2,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = .;
 			};
@@ -1974,6 +1974,7 @@
 					"$(inherited)",
 					/usr/local/lib,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1987,6 +1988,7 @@
 					"$(inherited)",
 					/usr/local/lib,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
