@@ -130,7 +130,7 @@ typedef unsigned long long uint64_t;
 #define PRIu64 "ull"
 #endif
 #else
-#error no 4-byte integer type found
+#error no 8-byte integer type found
 #endif
 #endif
 

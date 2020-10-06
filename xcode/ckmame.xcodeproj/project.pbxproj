@@ -344,6 +344,10 @@
 		4B07BFC11FEC1B5B0068A600 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4B07BFC41FEC1B700068A600 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = romdb_read_file_by_name.cc; sourceTree = "<group>"; };
+		4B33F987252C6CAB007EC283 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		4B33F988252C6CCD007EC283 /* cmake-config.h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = "cmake-config.h.in"; sourceTree = "<group>"; };
+		4B33F989252C6D1D007EC283 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		4B33F98A252C6E01007EC283 /* myinttypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = myinttypes.h; sourceTree = "<group>"; };
 		4B41077B18CC8F25002C3052 /* dbdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078D18CC8FEE002C3052 /* dbdump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbdump.cc; sourceTree = "<group>"; };
@@ -822,6 +826,8 @@
 		4B07BFCF1FECE8290068A600 /* build */ = {
 			isa = PBXGroup;
 			children = (
+				4B33F988252C6CCD007EC283 /* cmake-config.h.in */,
+				4B33F987252C6CAB007EC283 /* CMakeLists.txt */,
 			);
 			name = build;
 			path = ..;
@@ -882,6 +888,7 @@
 		4B5FAC6217358FF000B67C24 /* ckmame */ = {
 			isa = PBXGroup;
 			children = (
+				4B33F989252C6D1D007EC283 /* CMakeLists.txt */,
 				4B5FAEA3173599EC00B67C24 /* compat */,
 				4B5FAC6C1735902400B67C24 /* common */,
 				4B5FAC6D1735902A00B67C24 /* ckmame */,
@@ -994,6 +1001,7 @@
 				4B5FACEC1735924900B67C24 /* match.h */,
 				4B5FACED1735924900B67C24 /* memdb.cc */,
 				4B5FACEE1735924900B67C24 /* memdb.h */,
+				4B33F98A252C6E01007EC283 /* myinttypes.h */,
 				4B5FACEF1735924900B67C24 /* output_cm.cc */,
 				4B5FACF01735924900B67C24 /* output_datafile_xml.cc */,
 				4B5FACF11735924900B67C24 /* output_db.cc */,
