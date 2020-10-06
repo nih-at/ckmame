@@ -64,7 +64,6 @@ check_function_exists(fnmatch HAVE_FNMATCH)
 check_function_exists(fseeko HAVE_FSEEKO)
 check_function_exists(getopt_long HAVE_GETOPT_LONG)
 check_function_exists(getprogname HAVE_GETPROGNAME)
-check_function_exists(strlcpy HAVE_STRLCPY)
 check_function_exists(vasprintf HAVE_VASPRINTF)
 
 check_include_files(dirent.h HAVE_DIRENT_H)
