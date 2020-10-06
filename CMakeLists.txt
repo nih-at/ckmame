@@ -72,14 +72,6 @@ check_include_files(ndir.h HAVE_NDIR_H)
 check_include_files(sys/dir.h HAVE_SYS_DIR_H)
 check_include_files(sys/ndir.h HAVE_SYS_NDIR_H)
 
-# for uint32_t for  sha1/md5 replacement functions
-check_include_files(inttypes.h HAVE_INTTYPES_H)
-check_include_files(stdint.h HAVE_STDINT_H)
-check_type_size(uint32_t HAVE_UINT32_T)
-check_type_size("short" SIZEOF_SHORT)
-check_type_size("int" SIZEOF_INT)
-check_type_size("long" SIZEOF_LONG)
-
 if(NOT ZLIB_FOUND)
   message(ERROR "-- zlib library not found (required)")
 endif()

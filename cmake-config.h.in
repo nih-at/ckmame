@@ -6,6 +6,8 @@
 
 #cmakedefine HAVE_LIBXML2
 
+#cmakedefine HAVE_MD5INIT
+#cmakedefine HAVE_SHA1INIT
 #cmakedefine HAVE_FNMATCH
 #cmakedefine HAVE_FSEEKO
 #cmakedefine HAVE_GETOPT_LONG
@@ -16,13 +18,5 @@
 #cmakedefine HAVE_NDIR_H
 #cmakedefine HAVE_SYS_DIR_H
 #cmakedefine HAVE_SYS_NDIR_H
-
-/* for uint32_t for sha1/md5 replacement functions */
-#cmakedefine HAVE_INTTYPES_H
-#cmakedefine HAVE_STDINT_H
-#cmakedefine HAVE_UINT32_T
-#cmakedefine SIZEOF_SHORT ${SIZEOF_SHORT}
-#cmakedefine SIZEOF_INT ${SIZEOF_INT}
-#cmakedefine SIZEOF_LONG ${SIZEOF_LONG}
 
 #endif /* HAD_CONFIG_H */
