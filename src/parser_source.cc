@@ -31,12 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
 
 #include <errno.h>
 #include <stdlib.h>
 
 #include "error.h"
-#include "myinttypes.h"
 #include "parser_source.h"
 #include "util.h"
 #include "xmalloc.h"

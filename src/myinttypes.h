@@ -2,8 +2,8 @@
 #define HAD_MYINTTYPES_H
 
 /*
-  myinttypes.h -- ensure that {u,}int{8,16,32,64}_t and PRIu64 are defined
-  Copyright (C) 2005-2008 Dieter Baron and Thomas Klausner
+  myinttypes.h -- ensure that uint32_t is defined
+  Copyright (C) 2005-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -36,101 +36,27 @@
 
 #include "config.h"
 
-#ifdef HAVE_STDBOOL_H
-#include <stdbool.h>
-#else
-#define bool char
-#define true 1
-#define false 0
-#endif
-
 #if defined(HAVE_INTTYPES_H)
 #include <inttypes.h>
 #elif defined(HAVE_STDINT_H)
 #include <stdint.h>
 #endif
 
-#ifndef HAVE_INT8_T
-typedef signed char int8_t;
-#endif
-
-#ifndef HAVE_UINT8_T
-typedef unsigned char uint8_t;
-#endif
-
-#if !defined(HAVE_INT16_T) || !defined(HAVE_UINT16_T)
-#if SIZEOF_SHORT == 2
-#ifndef HAVE_INT16_T
-typedef short int16_t;
-#endif
-#ifndef HAVE_UINT16_T
-typedef unsigned short uint16_t;
-#endif
-#else
-#error no 2-byte integer type found
-#endif
-#endif
-
-#if !defined(HAVE_INT32_T) || !defined(HAVE_UINT32_T)
+#if !defined(HAVE_UINT32_T)
 #if SIZEOF_INT == 4
-#ifndef HAVE_INT32_T
-typedef int int32_t;
-#endif
 #ifndef HAVE_UINT32_T
 typedef unsigned int uint32_t;
 #endif
 #elif SIZEOF_LONG == 4
-#ifndef HAVE_INT32_T
-typedef long int32_t;
-#endif
 #ifndef HAVE_UINT32_T
 typedef unsigned long uint32_t;
 #endif
 #elif SIZEOF_SHORT == 4
-#ifndef HAVE_INT32_T
-typedef short int32_t;
-#endif
 #ifndef HAVE_UINT32_T
 typedef unsigned short uint32_t;
 #endif
 #else
 #error no 4-byte integer type found
-#endif
-#endif
-
-#if !defined(HAVE_INT64_T) || !defined(HAVE_UINT64_T) || !defined(PRIu64)
-#if SIZEOF_INT == 8
-#ifndef HAVE_INT64_T
-typedef int int64_t;
-#endif
-#ifndef HAVE_UINT64_T
-typedef unsigned int uint64_t;
-#endif
-#ifndef PRIu64
-#define PRIu64 "u"
-#endif
-#elif SIZEOF_LONG == 8
-#ifndef HAVE_INT64_T
-typedef long int64_t;
-#endif
-#ifndef HAVE_UINT64_T
-typedef unsigned long uint64_t;
-#endif
-#ifndef PRIu64
-#define PRIu64 "ul"
-#endif
-#elif SIZEOF_LONG_LONG == 8
-#ifndef HAVE_INT64_T
-typedef long long int64_t;
-#endif
-#ifndef HAVE_UINT64_T
-typedef unsigned long long uint64_t;
-#endif
-#ifndef PRIu64
-#define PRIu64 "ull"
-#endif
-#else
-#error no 8-byte integer type found
 #endif
 #endif
 

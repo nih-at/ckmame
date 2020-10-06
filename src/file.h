@@ -34,12 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
 
 #include <time.h>
 
-
 #include "hashes.h"
-#include "myinttypes.h"
 #include "parray.h"
 #include "types.h"
 

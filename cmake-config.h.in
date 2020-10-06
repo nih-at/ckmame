@@ -13,25 +13,16 @@
 #cmakedefine HAVE_STRLCPY
 
 #cmakedefine HAVE_DIRENT_H
-#cmakedefine HAVE_INTTYPES_H
 #cmakedefine HAVE_NDIR_H
-#cmakedefine HAVE_STDBOOL_H
-#cmakedefine HAVE_STDINT_H
 #cmakedefine HAVE_SYS_DIR_H
 #cmakedefine HAVE_SYS_NDIR_H
 
-#cmakedefine HAVE_INT8_T
-#cmakedefine HAVE_UINT8_T
-#cmakedefine HAVE_INT16_T
-#cmakedefine HAVE_UINT16_T
-#cmakedefine HAVE_INT32_T
+/* for uint32_t for sha1/md5 replacement functions */
+#cmakedefine HAVE_INTTYPES_H
+#cmakedefine HAVE_STDINT_H
 #cmakedefine HAVE_UINT32_T
-#cmakedefine HAVE_INT64_T
-#cmakedefine HAVE_UINT64_T
 #cmakedefine SIZEOF_SHORT ${SIZEOF_SHORT}
 #cmakedefine SIZEOF_INT ${SIZEOF_INT}
 #cmakedefine SIZEOF_LONG ${SIZEOF_LONG}
-#cmakedefine SIZEOF_LONG_LONG ${SIZEOF_LONG_LONG}
-#cmakedefine SIZEOF_SIZEOF_OFF_T ${SIZEOF_OFF_T}
 
 #endif /* HAD_CONFIG_H */

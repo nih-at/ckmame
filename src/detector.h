@@ -34,12 +34,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
 
 #include <stdio.h>
 
 #include "array.h"
 #include "file.h"
-#include "myinttypes.h"
 #include "parser_source.h"
 
 struct detector {
