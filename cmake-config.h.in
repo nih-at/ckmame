@@ -12,7 +12,6 @@
 #cmakedefine HAVE_FSEEKO
 #cmakedefine HAVE_GETOPT_LONG
 #cmakedefine HAVE_GETPROGNAME
-#cmakedefine HAVE_STRLCPY
 
 #cmakedefine HAVE_DIRENT_H
 #cmakedefine HAVE_NDIR_H
