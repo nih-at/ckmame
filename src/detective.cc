@@ -35,6 +35,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "config.h"
+
 #include "archive.h"
 #include "compat.h"
 #include "detector.h"

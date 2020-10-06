@@ -37,6 +37,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "config.h"
+
 #include "compat.h"
 #include "dat.h"
 #include "error.h"
