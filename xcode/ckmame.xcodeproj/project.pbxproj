@@ -58,7 +58,6 @@
 		4B5F43C11889D059000C3B7C /* romdb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F43B71889D059000C3B7C /* romdb.cc */; };
 		4B5F43C21889D059000C3B7C /* romdb.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B5F43B81889D059000C3B7C /* romdb.h */; };
 		4B5FADB71735930100B67C24 /* archive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAC7D173590FB00B67C24 /* archive.cc */; };
-		4B5FADB91735930100B67C24 /* archive_file_compare_hashes.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAC7F1735914600B67C24 /* archive_file_compare_hashes.cc */; };
 		4B5FADBA1735930100B67C24 /* archive_modify.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAC801735914600B67C24 /* archive_modify.cc */; };
 		4B5FADBB1735930100B67C24 /* array.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAC8A1735914600B67C24 /* array.cc */; };
 		4B5FADBD1735930100B67C24 /* array_delete.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAC821735914600B67C24 /* array_delete.cc */; };
@@ -157,8 +156,8 @@
 		4B5FAE921735954C00B67C24 /* detective.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE911735954C00B67C24 /* detective.cc */; };
 		4B5FAE941735955A00B67C24 /* dumpgame.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE931735955A00B67C24 /* dumpgame.cc */; };
 		4B5FAE961735956B00B67C24 /* mkmamedb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE951735956B00B67C24 /* mkmamedb.cc */; };
-		4B5FAE9D173599B700B67C24 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE981735998E00B67C24 /* md5.c */; };
-		4B5FAE9E173599C100B67C24 /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE9A1735998E00B67C24 /* sha1.c */; };
+		4B5FAE9D173599B700B67C24 /* md5.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE981735998E00B67C24 /* md5.cc */; };
+		4B5FAE9E173599C100B67C24 /* sha1.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE9A1735998E00B67C24 /* sha1.cc */; };
 		4B6B145324FF905900D3F3FB /* stats.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6B145124FF905900D3F3FB /* stats.h */; };
 		4B6B145424FF905900D3F3FB /* stats.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B6B145224FF905900D3F3FB /* stats.cc */; };
 		4B6B145624FF918700D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
@@ -168,9 +167,11 @@
 		4B6B145A24FF91B400D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4B9232FD1780A77700096AA2 /* archive_dir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B7F50691776479C00B4273C /* archive_dir.cc */; };
 		4B9233001780B30400096AA2 /* dbh_cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9232FE1780B2BA00096AA2 /* dbh_cache.cc */; };
-		4B9292CA17635B5500806C0A /* archive_zip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* archive_zip.cc */; };
+		4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* ArchiveZip.cc */; };
 		4BC199041A48424E005BE809 /* parray_find_sorted.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC199021A48424E005BE809 /* parray_find_sorted.cc */; };
 		4BC199051A48424E005BE809 /* parray_find.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC199031A48424E005BE809 /* parray_find.cc */; };
+		4BD482982535B23C00D0002B /* ArchiveDir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BD482962535B23C00D0002B /* ArchiveDir.cc */; };
+		4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD482972535B23C00D0002B /* ArchiveDir.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -347,7 +348,7 @@
 		4B33F987252C6CAB007EC283 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		4B33F988252C6CCD007EC283 /* cmake-config.h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = "cmake-config.h.in"; sourceTree = "<group>"; };
 		4B33F989252C6D1D007EC283 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		4B33F98A252C6E01007EC283 /* myinttypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = myinttypes.h; sourceTree = "<group>"; };
+		4B33F98B252C7889007EC283 /* ArchiveZip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveZip.h; sourceTree = "<group>"; };
 		4B41077B18CC8F25002C3052 /* dbdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078D18CC8FEE002C3052 /* dbdump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbdump.cc; sourceTree = "<group>"; };
@@ -370,7 +371,6 @@
 		4B5F43B81889D059000C3B7C /* romdb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = romdb.h; sourceTree = "<group>"; };
 		4B5FAC6017358FF000B67C24 /* ckmame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ckmame; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B5FAC7D173590FB00B67C24 /* archive.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = archive.cc; sourceTree = "<group>"; };
-		4B5FAC7F1735914600B67C24 /* archive_file_compare_hashes.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = archive_file_compare_hashes.cc; sourceTree = "<group>"; };
 		4B5FAC801735914600B67C24 /* archive_modify.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = archive_modify.cc; sourceTree = "<group>"; };
 		4B5FAC811735914600B67C24 /* archive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = archive.h; sourceTree = "<group>"; };
 		4B5FAC821735914600B67C24 /* array_delete.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = array_delete.cc; sourceTree = "<group>"; };
@@ -493,9 +493,9 @@
 		4B5FAE931735955A00B67C24 /* dumpgame.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dumpgame.cc; sourceTree = "<group>"; };
 		4B5FAE951735956B00B67C24 /* mkmamedb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = mkmamedb.cc; sourceTree = "<group>"; };
 		4B5FAE971735998D00B67C24 /* md5_own.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = md5_own.h; sourceTree = "<group>"; };
-		4B5FAE981735998E00B67C24 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
+		4B5FAE981735998E00B67C24 /* md5.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = md5.cc; sourceTree = "<group>"; };
 		4B5FAE991735998E00B67C24 /* sha1_own.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = sha1_own.h; sourceTree = "<group>"; };
-		4B5FAE9A1735998E00B67C24 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
+		4B5FAE9A1735998E00B67C24 /* sha1.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha1.cc; sourceTree = "<group>"; };
 		4B5FAEAD17359A6300B67C24 /* libzip.5.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzip.5.0.dylib; path = ../../../../nih/lib/libzip.5.0.dylib; sourceTree = "<group>"; };
 		4B6B145124FF905900D3F3FB /* stats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = stats.h; sourceTree = "<group>"; };
 		4B6B145224FF905900D3F3FB /* stats.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = stats.cc; sourceTree = "<group>"; };
@@ -726,13 +726,15 @@
 		4B9292C517633FFC00806C0A /* warn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = warn.h; sourceTree = "<group>"; };
 		4B9292C617633FFC00806C0A /* xmalloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = xmalloc.h; sourceTree = "<group>"; };
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = xmlutil.h; sourceTree = "<group>"; };
-		4B9292C917635B5500806C0A /* archive_zip.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = archive_zip.cc; sourceTree = "<group>"; };
+		4B9292C917635B5500806C0A /* ArchiveZip.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveZip.cc; sourceTree = "<group>"; };
 		4BC0362818C8B01B00D6D5AF /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = types.h; sourceTree = "<group>"; };
 		4BC199021A48424E005BE809 /* parray_find_sorted.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = parray_find_sorted.cc; sourceTree = "<group>"; };
 		4BC199031A48424E005BE809 /* parray_find.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = parray_find.cc; sourceTree = "<group>"; };
 		4BC78D0A1A4445A400A14E29 /* NiHTest.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = NiHTest.pm; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 8; path = runtest.in; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA61A404BF300A70734 /* CkmameDB.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = CkmameDB.pm; sourceTree = "<group>"; usesTabs = 1; };
+		4BD482962535B23C00D0002B /* ArchiveDir.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveDir.cc; sourceTree = "<group>"; };
+		4BD482972535B23C00D0002B /* ArchiveDir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveDir.h; sourceTree = "<group>"; };
 		4BFF2B371FE1195E006EF3F3 /* fwrite.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = fwrite.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -906,11 +908,13 @@
 			isa = PBXGroup;
 			children = (
 				4B7F50691776479C00B4273C /* archive_dir.cc */,
-				4B5FAC7F1735914600B67C24 /* archive_file_compare_hashes.cc */,
 				4B5FAC801735914600B67C24 /* archive_modify.cc */,
-				4B9292C917635B5500806C0A /* archive_zip.cc */,
+				4B9292C917635B5500806C0A /* ArchiveZip.cc */,
 				4B5FAC7D173590FB00B67C24 /* archive.cc */,
 				4B5FAC811735914600B67C24 /* archive.h */,
+				4BD482962535B23C00D0002B /* ArchiveDir.cc */,
+				4BD482972535B23C00D0002B /* ArchiveDir.h */,
+				4B33F98B252C7889007EC283 /* ArchiveZip.h */,
 				4B5FAC821735914600B67C24 /* array_delete.cc */,
 				4B5FAC831735914600B67C24 /* array_grow.cc */,
 				4B5FAC841735914600B67C24 /* array_insert.cc */,
@@ -1001,7 +1005,6 @@
 				4B5FACEC1735924900B67C24 /* match.h */,
 				4B5FACED1735924900B67C24 /* memdb.cc */,
 				4B5FACEE1735924900B67C24 /* memdb.h */,
-				4B33F98A252C6E01007EC283 /* myinttypes.h */,
 				4B5FACEF1735924900B67C24 /* output_cm.cc */,
 				4B5FACF01735924900B67C24 /* output_datafile_xml.cc */,
 				4B5FACF11735924900B67C24 /* output_db.cc */,
@@ -1098,9 +1101,9 @@
 		4B5FAEA3173599EC00B67C24 /* compat */ = {
 			isa = PBXGroup;
 			children = (
-				4B5FAE981735998E00B67C24 /* md5.c */,
+				4B5FAE981735998E00B67C24 /* md5.cc */,
 				4B5FAE971735998D00B67C24 /* md5_own.h */,
-				4B5FAE9A1735998E00B67C24 /* sha1.c */,
+				4B5FAE9A1735998E00B67C24 /* sha1.cc */,
 				4B5FAE991735998E00B67C24 /* sha1_own.h */,
 			);
 			name = compat;
@@ -1352,6 +1355,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B6B145324FF905900D3F3FB /* stats.h in Headers */,
+				4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */,
 				4B5F43C21889D059000C3B7C /* romdb.h in Headers */,
 				4B59E59221625A06002262C8 /* dbh_statements.h in Headers */,
 			);
@@ -1566,7 +1570,7 @@
 				4B5FAE8D173594E500B67C24 /* xmlutil.cc in Sources */,
 				4B5FAE8E173594E500B67C24 /* zip_util.cc in Sources */,
 				4B5FADB71735930100B67C24 /* archive.cc in Sources */,
-				4B5FADB91735930100B67C24 /* archive_file_compare_hashes.cc in Sources */,
+				4BD482982535B23C00D0002B /* ArchiveDir.cc in Sources */,
 				4B5FADBA1735930100B67C24 /* archive_modify.cc in Sources */,
 				4B5F43AE1889D005000C3B7C /* file_util.cc in Sources */,
 				4B5FADBB1735930100B67C24 /* array.cc in Sources */,
@@ -1655,11 +1659,11 @@
 				4B5F43BE1889D059000C3B7C /* romdb_write_dat.cc in Sources */,
 				4B5FAE1F1735930100B67C24 /* ptr_sort.cc in Sources */,
 				4B5FAE231735930100B67C24 /* sighandle.cc in Sources */,
-				4B5FAE9D173599B700B67C24 /* md5.c in Sources */,
+				4B5FAE9D173599B700B67C24 /* md5.cc in Sources */,
 				4B5F43BF1889D059000C3B7C /* romdb_write_detector.cc in Sources */,
-				4B5FAE9E173599C100B67C24 /* sha1.c in Sources */,
+				4B5FAE9E173599C100B67C24 /* sha1.cc in Sources */,
 				4B5F43C01889D059000C3B7C /* romdb_write_game.cc in Sources */,
-				4B9292CA17635B5500806C0A /* archive_zip.cc in Sources */,
+				4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */,
 				4B9232FD1780A77700096AA2 /* archive_dir.cc in Sources */,
 				4B9233001780B30400096AA2 /* dbh_cache.cc in Sources */,
 			);
@@ -1816,8 +1820,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -1878,8 +1882,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "compiler-default";
 				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;

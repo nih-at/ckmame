@@ -167,11 +167,11 @@ write_game(output_context_cm_t *ctx, game_t *g) {
 	output_cond_print_string(ctx->f, "name ", file_name(r), " ");
 	if (file_where(r) != FILE_INGAME)
 	    output_cond_print_string(ctx->f, "merge ", file_merge(r) ? file_merge(r) : file_name(r), " ");
-	fprintf(ctx->f, "size %" PRIu64 " ", file_size(r));
+	fprintf(ctx->f, "size %" PRIu64 " ", file_size_(r));
 	output_cond_print_hash(ctx->f, "crc ", HASHES_TYPE_CRC, file_hashes(r), " ");
 	output_cond_print_hash(ctx->f, "sha1 ", HASHES_TYPE_SHA1, file_hashes(r), " ");
 	output_cond_print_hash(ctx->f, "md5 ", HASHES_TYPE_MD5, file_hashes(r), " ");
-	switch (file_status(r)) {
+	switch (file_status_(r)) {
 	case STATUS_OK:
 	    fl = NULL;
 	    break;

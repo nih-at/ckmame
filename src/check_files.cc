@@ -55,12 +55,12 @@ enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 
 typedef enum test_result test_result_t;
 
-static test_result_t match_files(archive_t *, test_t, const file_t *, match_t *);
+static test_result_t match_files(Archive *, test_t, const file_t *, match_t *);
 static void update_game_status(const game_t *, result_t *);
 
 
 void
-check_files(game_t *g, archive_t *archives[3], result_t *res) {
+check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
     static const test_t tests[] = {TEST_NAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG};
     static const int tests_count = sizeof(tests) / sizeof(tests[0]);
     
@@ -73,7 +73,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
     for (i = 0; i < game_num_roms(g); i++) {
         file_t *rom = game_rom(g, i);
         match_t *match = result_rom(res, i);
-        archive_t *expected_archive = archives[file_where(rom)];
+        Archive *expected_archive = archives[file_where(rom)].get();
         
         if (match_quality(match) == QU_OLD) {
             continue;
@@ -92,7 +92,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
         /* search for matching file in game's zip */
         if (archives[0]) {
             for (j = 0; j < tests_count; j++) {
-                if ((result = match_files(archives[0], tests[j], rom, match)) != TEST_NOTFOUND) {
+                if ((result = match_files(archives[0].get(), tests[j], rom, match)) != TEST_NOTFOUND) {
                     match_where(match) = FILE_INGAME;
                     if (file_where(rom) != FILE_INGAME && match_quality(match) == QU_OK) {
                         match_quality(match) = QU_INZIP;
@@ -104,7 +104,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
             }
         }
         
-        if (file_where(rom) == FILE_INGAME && (match_quality(match) == QU_MISSING || match_quality(match) == QU_HASHERR) && file_size(rom) > 0 && file_status(rom) != STATUS_NODUMP) {
+        if (file_where(rom) == FILE_INGAME && (match_quality(match) == QU_MISSING || match_quality(match) == QU_HASHERR) && file_size_(rom) > 0 && file_status_(rom) != STATUS_NODUMP) {
             /* search for matching file in other games (via db) */
             if (find_in_romset(rom, NULL, game_name(g), match) == FIND_EXISTS) {
                 continue;
@@ -119,10 +119,10 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
         }
     }
     
-    archive_t *archive = archives[0];
-    if (archive && archive_num_files(archive) > 0) {
-        int *user = static_cast<int *>(xmalloc(sizeof(int) * archive_num_files(archive)));
-        for (i = 0; i < archive_num_files(archive); i++) {
+    Archive *archive = archives[0].get();
+    if (archive && !archive->files.empty()) {
+        int user[archive->files.size()];
+        for (size_t i = 0; i < archive->files.size(); i++) {
             user[i] = -1;
         }
         
@@ -150,7 +150,6 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
                 }
             }
         }
-        free(user);
     }
     
     update_game_status(g, res);
@@ -164,8 +163,7 @@ check_files(game_t *g, archive_t *archives[3], result_t *res) {
 
 
 static test_result_t
-match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match) {
-    int i;
+match_files(Archive *archive, test_t test, const file_t *rom, match_t *match) {
     const file_t *file;
     test_result_t result;
 
@@ -173,10 +171,10 @@ match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match) 
 
     result = TEST_NOTFOUND;
 
-    for (i = 0; result != TEST_USABLE && i < archive_num_files(archive); i++) {
-	file = archive_file(archive, i);
+    for (size_t i = 0; result != TEST_USABLE && i < archive->files.size(); i++) {
+        file = &archive->files[i];
 
-	if (file_status(file) != STATUS_OK) {
+	if (file_status_(file) != STATUS_OK) {
 	    continue;
 	}
 
@@ -207,8 +205,8 @@ match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match) 
 		break;
 
 	    if (file_compare_sc(rom, file)) {
-		if (archive_file_compare_hashes(archive, i, file_hashes(rom)) != 0) {
-		    if (file_status(archive_file(archive, i)) != STATUS_OK)
+		if (archive->file_compare_hashes(i, file_hashes(rom)) != 0) {
+		    if (file_status_(&archive->files[i]) != STATUS_OK)
 			break;
 		    if (match_quality(match) == QU_HASHERR)
 			break;
@@ -227,15 +225,19 @@ match_files(archive_t *archive, test_t test, const file_t *rom, match_t *match) 
 
 	case TEST_LONG:
 	    /* roms without hashes are only matched with correct name */
-	    if (hashes_types(file_hashes(rom)) == 0 || file_size(rom) == 0)
+	    if (hashes_types(file_hashes(rom)) == 0 || file_size_(rom) == 0)
 		break;
 
-	    if (file_compare_n(rom, file) && file_size(file) > file_size(rom) && (match_offset(match) = archive_file_find_offset(archive, i, file_size(rom), file_hashes(rom))) != -1) {
-		match_archive(match) = archive;
-		match_index(match) = i;
-		match_quality(match) = QU_LONG;
-		return TEST_USABLE;
-	    }
+                if (file_compare_n(rom, file) && file_size_(file) > file_size_(rom)) {
+                    auto offset = archive->file_find_offset(i, file_size_(rom), file_hashes(rom));
+                    if (offset.has_value()) {
+                        match_offset(match) = offset.value();
+                        match_archive(match) = archive;
+                        match_index(match) = i;
+                        match_quality(match) = QU_LONG;
+                        return TEST_USABLE;
+                    }
+                }
 	    break;
 	}
     }
@@ -269,7 +271,7 @@ update_game_status(const game_t *g, result_t *res) {
 	}
 	/* TODO: using output_options here is a bit of a hack,
 	   but so is all of the result_game processing */
-	if (match_quality(m) != QU_OK && (file_status(r) != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP)))
+	if (match_quality(m) != QU_OK && (file_status_(r) != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP)))
 	    all_correct = 0;
     }
 

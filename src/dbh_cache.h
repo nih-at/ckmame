@@ -48,6 +48,6 @@ bool dbh_cache_is_empty(dbh_t *);
 parray_t *dbh_cache_list_archives(dbh_t *);
 int dbh_cache_read(dbh_t *, const char *, array_t *);
 int dbh_cache_register_cache_directory(const char *);
-int dbh_cache_write(dbh_t *, int, const archive_t *a);
+int dbh_cache_write(dbh_t *, int, const Archive *a);
 
 #endif /* dbh_cache.h */

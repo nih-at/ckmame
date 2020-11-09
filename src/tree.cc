@@ -48,8 +48,8 @@
 
 static tree_t *tree_add_node(tree_t *, const char *, int);
 static tree_t *tree_new_full(const char *, int);
-static int tree_process(tree_t *, archive_t *[], images_t *[]);
-static void tree_traverse_internal(tree_t *, archive_t *[], images_t *[]);
+static int tree_process(tree_t *, ArchivePtr [], images_t *[]);
+static void tree_traverse_internal(tree_t *, ArchivePtr [], images_t *[]);
 
 
 int
@@ -144,7 +144,7 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
 
 	gr = game_rom(g, file_location_index(fbh));
 
-	if (size == file_size(gr) && hashes_cmp(hashes, file_hashes(gr)) == HASHES_CMP_MATCH && file_where(gr) == FILE_INGAME)
+	if (size == file_size_(gr) && hashes_cmp(hashes, file_hashes(gr)) == HASHES_CMP_MATCH && file_where(gr) == FILE_INGAME)
 	    tree_recheck(tree, game_name(g));
 
 	game_free(g);
@@ -158,18 +158,18 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
 
 void
 tree_traverse(tree_t *tree) {
-    archive_t *archives[] = { NULL, NULL, NULL };
+    ArchivePtr archives[] = { NULL, NULL, NULL };
     images_t *images[] = { NULL, NULL, NULL };
     tree_traverse_internal(tree, archives, images);
 }
 
 static void
-tree_traverse_internal(tree_t *tree, archive_t *ancestor_archives[], images_t *ancestor_images[]) {
+tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], images_t *ancestor_images[]) {
     tree_t *t;
     char *full_name;
     int flags;
 
-    archive_t *archives[] = { NULL, ancestor_archives[0], ancestor_archives[1] };
+    ArchivePtr archives[] = { NULL, ancestor_archives[0], ancestor_archives[1] };
     images_t *images[] = { NULL, ancestor_images[0], ancestor_images[1] };
     
     if (tree->name) {
@@ -183,7 +183,7 @@ tree_traverse_internal(tree_t *tree, archive_t *ancestor_archives[], images_t *a
 	    full_name = make_file_name(TYPE_ROM, tree->name, 0);
 	}
 	if (full_name)
-	    archives[0] = archive_new(full_name, TYPE_ROM, FILE_ROMSET, flags);
+	    archives[0] = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, flags);
 	free(full_name);
         
         images[0] = images_new(tree->name, check_integrity ? DISK_FL_CHECK_INTEGRITY : 0);
@@ -196,7 +196,6 @@ tree_traverse_internal(tree_t *tree, archive_t *ancestor_archives[], images_t *a
 	tree_traverse_internal(t, archives, images);
     }
 
-    archive_free(archives[0]);
     images_free(images[0]);
 
     return;
@@ -263,7 +262,7 @@ tree_new_full(const char *name, int check) {
 
 
 static int
-tree_process(tree_t *tree, archive_t *archives[], images_t *images[]) {
+tree_process(tree_t *tree, ArchivePtr archives[], images_t *images[]) {
     game_t *g;
     result_t *res;
 
@@ -273,7 +272,7 @@ tree_process(tree_t *tree, archive_t *archives[], images_t *images[]) {
 	return -1;
     }
 
-    res = result_new(g, archives[0], images[0]);
+    res = result_new(g, archives[0].get(), images[0]);
 
     check_old(g, res);
     check_files(g, archives, res);

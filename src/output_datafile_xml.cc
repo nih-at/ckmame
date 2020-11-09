@@ -161,7 +161,7 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
         xmlNodePtr rom = xmlNewChild(game, NULL, (const xmlChar *)"rom", NULL);
         
         set_attribute(rom, "name", file_name(r));
-        set_attribute_u64(rom, "size", file_size(r));
+        set_attribute_u64(rom, "size", file_size_(r));
         set_attribute_hash(rom, "crc", HASHES_TYPE_CRC, file_hashes(r));
         set_attribute_hash(rom, "sha1", HASHES_TYPE_SHA1, file_hashes(r));
         set_attribute_hash(rom, "md5", HASHES_TYPE_MD5, file_hashes(r));
@@ -170,7 +170,7 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
             set_attribute(rom, "merge", file_merge(r) ? file_merge(r) : file_name(r));
         }
 
-        switch (file_status(r)) {
+        switch (file_status_(r)) {
 	case STATUS_OK:
 	    fl = NULL;
 	    break;

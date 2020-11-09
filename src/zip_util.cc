@@ -42,24 +42,8 @@
 #include "xmalloc.h"
 
 
-struct zip *
-my_zip_open(const char *name, int flags) {
-    struct zip *z;
-    char errbuf[80];
-    int err;
-
-    z = zip_open(name, flags, &err);
-    if (z == NULL) {
-	zip_error_to_str(errbuf, sizeof(errbuf), err, errno);
-	myerror(ERRDEF, "error %s zip archive '%s': %s", (flags & ZIP_CREATE ? "creating" : "opening"), name, errbuf);
-    }
-
-    return z;
-}
-
-
 int
-my_zip_rename(struct zip *za, int idx, const char *name) {
+my_zip_rename(struct zip *za, uint64_t idx, const char *name) {
     int zerr;
     zip_int64_t idx2;
 

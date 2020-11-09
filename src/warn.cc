@@ -79,7 +79,7 @@ warn_file(const file_t *r, const char *fmt, ...) {
     warn_ensure_header();
 
     /* TODO */
-    printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": ", file_name(r), file_size(r), hashes_crc(file_hashes(r)));
+    printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": ", file_name(r), file_size_(r), hashes_crc(file_hashes(r)));
 
     va_start(va, fmt);
     vprintf(fmt, va);
@@ -118,13 +118,13 @@ warn_rom(const file_t *r, const char *fmt, ...) {
 
     if (r) {
 	printf("rom  %-12s  ", file_name(r));
-	if (SIZE_IS_KNOWN(file_size(r))) {
-	    sprintf(buf, "size %7" PRIu64 "  ", file_size(r));
+	if (SIZE_IS_KNOWN(file_size_(r))) {
+	    sprintf(buf, "size %7" PRIu64 "  ", file_size_(r));
 	    p = buf + strlen(buf);
 
 	    /* TODO */
 	    if (hashes_has_type(file_hashes(r), HASHES_TYPE_CRC)) {
-		switch (file_status(r)) {
+		switch (file_status_(r)) {
 		case STATUS_OK:
 		    sprintf(p, "crc %.8" PRIx32 ": ", hashes_crc(file_hashes(r)));
 		    break;

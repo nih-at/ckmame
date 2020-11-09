@@ -57,7 +57,7 @@ static find_result_t check_match_disk_romset(const game_t *, const disk_t *, mat
 static find_result_t check_match_old(const game_t *, const file_t *, const file_t *, match_t *);
 static find_result_t check_match_romset(const game_t *, const file_t *, const file_t *, match_t *);
 static find_result_t find_disk_in_db(romdb_t *, const disk_t *, const char *, match_disk_t *, find_result_t (*)(const game_t *, const disk_t *, match_disk_t *));
-static find_result_t find_in_db(romdb_t *, const file_t *, archive_t *, const char *, match_t *, find_result_t (*)(const game_t *, const file_t *, const file_t *, match_t *));
+static find_result_t find_in_db(romdb_t *, const file_t *, Archive *, const char *, match_t *, find_result_t (*)(const game_t *, const file_t *, const file_t *, match_t *));
 
 
 find_result_t
@@ -120,17 +120,17 @@ find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md) {
 find_result_t
 find_in_archives(const file_t *r, match_t *m, bool needed_only) {
     sqlite3_stmt *stmt;
-    archive_t *a;
+    Archive *a;
     file_t *f;
     int i, ret, hcol, sh;
 
-    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, file_hashes(r), file_size(r) != SIZE_UNKNOWN))) == NULL)
+    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, file_hashes(r), file_size_(r) != SIZE_UNKNOWN))) == NULL)
 	return FIND_ERROR;
 
     hcol = 2;
-    if (file_size(r) != SIZE_UNKNOWN) {
+    if (file_size_(r) != SIZE_UNKNOWN) {
 	hcol++;
-	if (sqlite3_bind_int64(stmt, 2, file_size(r)) != SQLITE_OK)
+	if (sqlite3_bind_int64(stmt, 2, file_size_(r)) != SQLITE_OK)
 	    return FIND_ERROR;
     }
 
@@ -157,7 +157,7 @@ find_in_archives(const file_t *r, match_t *m, bool needed_only) {
 	    memdb_update_file(a, i);
 	}
 
-	if (file_status(f) != STATUS_OK || (hashes_cmp(file_hashes_xxx(f, sh), file_hashes(r)) != HASHES_CMP_MATCH)) {
+	if (file_status_(f) != STATUS_OK || (hashes_cmp(file_hashes_xxx(f, sh), file_hashes(r)) != HASHES_CMP_MATCH)) {
 	    archive_free(a);
 	    continue;
 	}
@@ -179,7 +179,7 @@ find_in_archives(const file_t *r, match_t *m, bool needed_only) {
 
 
 find_result_t
-find_in_old(const file_t *r, archive_t *a, match_t *m) {
+find_in_old(const file_t *r, Archive *a, match_t *m) {
     if (old_db == NULL) {
 	return FIND_MISSING;
     }
@@ -189,7 +189,7 @@ find_in_old(const file_t *r, archive_t *a, match_t *m) {
 
 
 find_result_t
-find_in_romset(const file_t *r, archive_t *a, const char *skip, match_t *m) {
+find_in_romset(const file_t *r, Archive *a, const char *skip, match_t *m) {
     return find_in_db(db, r, a, skip, m, check_match_romset);
 }
 
@@ -197,7 +197,7 @@ find_in_romset(const file_t *r, archive_t *a, const char *skip, match_t *m) {
 static find_result_t
 check_for_file_in_zip(const char *name, const file_t *r, const file_t *f, match_t *m) {
     char *full_name;
-    archive_t *a;
+    Archive *a;
     int idx;
 
     if ((full_name = findfile(name, TYPE_ROM, NULL)) == NULL || (a = archive_new(full_name, TYPE_ROM, FILE_ROMSET, 0)) == NULL) {
@@ -309,7 +309,7 @@ check_match_romset(const game_t *g, const file_t *r, const file_t *f, match_t *m
 
 
 static find_result_t
-find_in_db(romdb_t *fdb, const file_t *r, archive_t *archive, const char *skip, match_t *m, find_result_t (*check_match)(const game_t *, const file_t *, const file_t *, match_t *)) {
+find_in_db(romdb_t *fdb, const file_t *r, Archive *archive, const char *skip, match_t *m, find_result_t (*check_match)(const game_t *, const file_t *, const file_t *, match_t *)) {
     array_t *a;
     file_location_t *fbh;
     game_t *g;
@@ -336,7 +336,7 @@ find_in_db(romdb_t *fdb, const file_t *r, archive_t *archive, const char *skip, 
 
 	gr = game_rom(g, file_location_index(fbh));
 
-	if (file_size(r) == file_size(gr) && hashes_cmp(file_hashes(r), file_hashes(gr)) == HASHES_CMP_MATCH) {
+	if (file_size_(r) == file_size_(gr) && hashes_cmp(file_hashes(r), file_hashes(gr)) == HASHES_CMP_MATCH) {
 	    bool ok = true;
 
 	    if (archive && (hashes_types(file_hashes(gr)) & (hashes_types(file_hashes(r)))) != hashes_types(file_hashes(gr))) {

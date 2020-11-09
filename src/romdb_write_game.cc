@@ -211,7 +211,7 @@ write_roms(romdb_t *db, const game_t *g) {
 	if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK)
 	    return -1;
 
-	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK || sq3_set_string(stmt, 4, file_name(r)) != SQLITE_OK || sq3_set_string(stmt, 5, file_merge(r)) != SQLITE_OK || sqlite3_bind_int(stmt, 6, file_status(r)) != SQLITE_OK || sqlite3_bind_int(stmt, 7, file_where(r)) != SQLITE_OK || sq3_set_int64_default(stmt, 8, file_size(r), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 9, file_hashes(r), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
+	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK || sq3_set_string(stmt, 4, file_name(r)) != SQLITE_OK || sq3_set_string(stmt, 5, file_merge(r)) != SQLITE_OK || sqlite3_bind_int(stmt, 6, file_status_(r)) != SQLITE_OK || sqlite3_bind_int(stmt, 7, file_where(r)) != SQLITE_OK || sq3_set_int64_default(stmt, 8, file_size_(r), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 9, file_hashes(r), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
 	    return -1;
     }
 

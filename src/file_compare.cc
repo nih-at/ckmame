@@ -62,7 +62,7 @@ file_compare_sc(const file_t *fg, const file_t *fa) {
 	if (!file_sh_is_set(fa, i) && i != FILE_SH_FULL)
 	    continue;
 
-	if (file_size_known(fg) && file_size_xxx_known(fa, i) && file_size(fg) != file_size_xxx(fa, i))
+	if (file_size__known(fg) && file_size__xxx_known(fa, i) && file_size_(fg) != file_size__xxx(fa, i))
 	    continue;
 
 	if (hashes_types(file_hashes(fg)) == 0)
@@ -79,7 +79,7 @@ file_compare_sc(const file_t *fg, const file_t *fa) {
 
 bool
 file_sh_is_set(const file_t *f, int i) {
-    return file_size_xxx_known(f, i) && hashes_types(file_hashes_xxx(f, i)) != 0;
+    return file_size__xxx_known(f, i) && hashes_types(file_hashes_xxx(f, i)) != 0;
 }
 
 bool

@@ -187,7 +187,7 @@ rc_romline(parser_context_t *ctx, char *line) {
 	parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_CRC, p);
     p = gettok(&line);
     if (p)
-	parse_file_size(ctx, TYPE_ROM, 0, p);
+	parse_file_size_(ctx, TYPE_ROM, 0, p);
     (void)gettok(&line);
     p = gettok(&line);
     if (p)

@@ -49,7 +49,7 @@ int memdb_inited = 0;
 #define INSERT_FILE_FILE_IDX 3
 #define INSERT_FILE_FILE_SH 4
 #define INSERT_FILE_LOCATION 5
-#define INSERT_FILE_SIZE 6
+#define INSERT_file_size_ 6
 #define INSERT_FILE_HASHES 7
 
 
@@ -187,10 +187,10 @@ memdb_put_ptr(const char *name, filetype_t type, void *ptr) {
 
 
 int
-memdb_file_delete(const archive_t *a, int idx, bool adjust_idx) {
+memdb_file_delete(const Archive *a, int idx, bool adjust_idx) {
     sqlite3_stmt *stmt;
 
-    if (_delete_file(archive_id(a), archive_filetype(a), idx) < 0)
+    if (_delete_file(a->id, a->filetype, idx) < 0)
 	return -1;
 
     if (!adjust_idx)
@@ -199,7 +199,7 @@ memdb_file_delete(const archive_t *a, int idx, bool adjust_idx) {
     if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_DEC_FILE_IDX)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int64(stmt, 1, archive_id(a)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, archive_filetype(a)) != SQLITE_OK || sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
+    if (sqlite3_bind_int64(stmt, 1, a->id) != SQLITE_OK || sqlite3_bind_int(stmt, 2, a->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
 
     return 0;
@@ -207,20 +207,19 @@ memdb_file_delete(const archive_t *a, int idx, bool adjust_idx) {
 
 
 int
-memdb_file_insert(sqlite3_stmt *stmt, const archive_t *a, int idx) {
-    file_t *r;
+memdb_file_insert(sqlite3_stmt *stmt, const Archive *a, int idx) {
     int i, err;
 
     if (memdb_ensure() < 0)
 	return -1;
 
-    r = archive_file(a, idx);
+    auto r = &a->files[idx];
 
     if (stmt == NULL) {
 	if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	    return -1;
 
-	if (sqlite3_bind_int64(stmt, INSERT_FILE_GAME_ID, archive_id(a)) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive_filetype(a)) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive_where(a)) != SQLITE_OK)
+	if (sqlite3_bind_int64(stmt, INSERT_FILE_GAME_ID, a->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, a->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, a->where) != SQLITE_OK)
 	    return -1;
     }
 
@@ -233,7 +232,7 @@ memdb_file_insert(sqlite3_stmt *stmt, const archive_t *a, int idx) {
 	    if (!file_sh_is_set(r, i) && i != FILE_SH_FULL)
 		continue;
 
-	    if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_SH, i) != SQLITE_OK || sq3_set_int64_default(stmt, INSERT_FILE_SIZE, file_size_xxx(r, i), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, INSERT_FILE_HASHES, file_hashes_xxx(r, i), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+	    if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_SH, i) != SQLITE_OK || sq3_set_int64_default(stmt, INSERT_file_size_, file_size__xxx(r, i), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, INSERT_FILE_HASHES, file_hashes_xxx(r, i), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
 		err = -1;
 		continue;
 	    }
@@ -245,7 +244,7 @@ memdb_file_insert(sqlite3_stmt *stmt, const archive_t *a, int idx) {
 
 
 int
-memdb_file_insert_archive(const archive_t *a) {
+memdb_file_insert_archive(const Archive *archive) {
     sqlite3_stmt *stmt;
     int i, err;
 
@@ -255,14 +254,14 @@ memdb_file_insert_archive(const archive_t *a) {
     if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int64(stmt, INSERT_FILE_GAME_ID, archive_id(a)) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive_filetype(a)) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive_where(a)) != SQLITE_OK)
+    if (sqlite3_bind_int64(stmt, INSERT_FILE_GAME_ID, archive->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive->where) != SQLITE_OK)
 	return -1;
 
     err = 0;
-    for (i = 0; i < archive_num_files(a); i++) {
-	if (file_status(archive_file(a, i)) != STATUS_OK)
+    for (size_t i = 0; i < archive->files.size(); i++) {
+        if (file_status_(&archive->files[i]) != STATUS_OK)
 	    continue;
-	if (memdb_file_insert(stmt, a, i) < 0)
+	if (memdb_file_insert(stmt, archive, i) < 0)
 	    err = -1;
     }
 
@@ -277,11 +276,11 @@ memdb_update_disk(const disk_t *d) {
 
 
 int
-memdb_update_file(const archive_t *a, int idx) {
-    if (file_status(archive_file(a, idx)) != STATUS_OK)
-	return _delete_file(archive_id(a), archive_filetype(a), idx);
+memdb_update_file(const Archive *archive, int idx) {
+    if (file_status_(&archive->files[idx]) != STATUS_OK)
+	return _delete_file(archive->id, archive->filetype, idx);
 
-    return _update_file(archive_id(a), archive_filetype(a), idx, file_hashes(archive_file(a, idx)));
+    return _update_file(archive->id, archive->filetype, idx, file_hashes(&archive->files[idx]));
 }
 
 

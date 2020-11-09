@@ -38,13 +38,13 @@
 #include "util.h"
 #include "warn.h"
 
-static void cleanup_archive(archive_t *, result_t *, int);
+static void cleanup_archive(Archive *, result_t *, int);
 static void cleanup_disk(images_t *, result_t *, int);
 
 
 void
 cleanup_list(parray_t *list, delete_list_t *del, int flags) {
-    archive_t *a;
+    ArchivePtr a;
     images_t *im;
     result_t *res;
     char *name;
@@ -63,73 +63,73 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
     while (i < n) {
 	name = (char *)parray_get(list, i);
 	switch ((nt = name_type(name))) {
-	case NAME_ZIP:
-	    /* TODO: where? */
-	    if ((a = archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL) {
-		/* TODO */
-		continue;
-	    }
-	    res = result_new(NULL, a, NULL);
+            case NAME_ZIP: {
+                ArchivePtr a = Archive::open(name, TYPE_ROM, FILE_NOWHERE, 0);
+                
+                if (!a) {
+                    /* TODO */
+                    continue;
+                }
+                res = result_new(NULL, a.get(), NULL);
 
-	    while (di < len) {
-		fl = delete_list_get(del, di);
-		cmp = strcmp(name, file_location_name(fl));
+                while (di < len) {
+                    fl = delete_list_get(del, di);
+                    cmp = strcmp(name, file_location_name(fl));
+                    
+                    if (cmp == 0)
+                        result_file(res, file_location_index(fl)) = FS_USED;
+                    else if (cmp < 0)
+                        break;
+                    
+                    di++;
+                }
+                
+                check_archive(a, NULL, res);
+                
+                warn_set_info(WARN_TYPE_ARCHIVE, a->name.c_str());
+                diagnostics_archive(a, res);
+                
+                cleanup_archive(a.get(), res, flags);
+                
+                result_free(res);
+                break;
+            }
 
-		if (cmp == 0)
-		    result_file(res, file_location_index(fl)) = FS_USED;
-		else if (cmp < 0)
-		    break;
-
-		di++;
-	    }
-
-	    check_archive(a, NULL, res);
-
-	    warn_set_info(WARN_TYPE_ARCHIVE, archive_name(a));
-	    diagnostics_archive(a, res);
-
-	    cleanup_archive(a, res, flags);
-
-	    result_free(res);
-	    archive_free(a);
-
-	    break;
-
-	case NAME_CHD:
-	    if ((im = images_new_name(name, 0)) == NULL) {
-		/* TODO */
-		continue;
-	    }
-
-	    res = result_new(NULL, NULL, im);
-
-	    while (di < len) {
-		fl = delete_list_get(del, di++);
-		cmp = strcmp(name, file_location_name(fl));
-
-		if (cmp == 0)
-		    result_image(res, 0) = FS_USED;
-		else if (cmp < 0)
-		    break;
-	    }
-
-	    check_images(im, NULL, res);
-
-	    warn_set_info(WARN_TYPE_IMAGE, name);
-	    diagnostics_images(im, res);
-
-	    cleanup_disk(im, res, flags);
-
-	    result_free(res);
-	    images_free(im);
-
-	case NAME_UNKNOWN:
-	    /* unknown files shouldn't be in list */
-	    break;
-	}
-
-	if (n != parray_length(list))
-	    n = parray_length(list);
+            case NAME_CHD:
+                if ((im = images_new_name(name, 0)) == NULL) {
+                    /* TODO */
+                    continue;
+                }
+                
+                res = result_new(NULL, NULL, im);
+                
+                while (di < len) {
+                    fl = delete_list_get(del, di++);
+                    cmp = strcmp(name, file_location_name(fl));
+                    
+                    if (cmp == 0)
+                        result_image(res, 0) = FS_USED;
+                    else if (cmp < 0)
+                        break;
+                }
+                
+                check_images(im, NULL, res);
+                
+                warn_set_info(WARN_TYPE_IMAGE, name);
+                diagnostics_images(im, res);
+                
+                cleanup_disk(im, res, flags);
+                
+                result_free(res);
+                images_free(im);
+                
+            case NAME_UNKNOWN:
+                /* unknown files shouldn't be in list */
+                break;
+        }
+        
+        if (n != parray_length(list))
+            n = parray_length(list);
 	else
 	    i++;
     }
@@ -137,7 +137,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
 
 
 static void
-cleanup_archive(archive_t *a, result_t *res, int flags) {
+cleanup_archive(Archive *a, result_t *res, int flags) {
     garbage_t *gb = NULL;
     int i, move;
     const char *reason;
@@ -146,78 +146,79 @@ cleanup_archive(archive_t *a, result_t *res, int flags) {
 	gb = garbage_new(a);
     }
 
-    for (i = 0; i < archive_num_files(a); i++) {
+    for (size_t i = 0; i < a->files.size(); i++) {
 	switch (result_file(res, i)) {
-	case FS_SUPERFLUOUS:
-	case FS_DUPLICATE:
-	case FS_USED:
-	    switch (result_file(res, i)) {
-	    case FS_SUPERFLUOUS:
-		reason = "unused";
-		break;
-	    case FS_DUPLICATE:
-		reason = "duplicate";
-		break;
-	    case FS_USED:
-		reason = "used";
-		break;
-	    default:
-		reason = "[internal error]";
-		break;
-	    }
-
-	    if (fix_options & FIX_PRINT)
-		printf("%s: delete %s file '%s'\n", archive_name(a), reason, file_name(archive_file(a, i)));
-	    archive_file_delete(a, i);
-	    break;
-
-	case FS_BROKEN:
-	case FS_MISSING:
-	case FS_PARTUSED:
-	    break;
-
-	case FS_NEEDED:
-	    if (flags & CLEANUP_NEEDED) {
-		/* TODO: handle error (how?) */
-		if (save_needed(a, i, NULL) == 0) {
-		    /* save_needed delays deletes in archives with where != FILE_ROM */
-		    archive_file_delete(a, i);
-		}
-	    }
-	    break;
-
-	case FS_UNKNOWN:
-	    if (flags & CLEANUP_UNKNOWN) {
-		move = fix_options & FIX_MOVE_UNKNOWN;
-		if (fix_options & FIX_PRINT)
-		    printf("%s: %s unknown file '%s'\n", archive_name(a), (move ? "move" : "delete"), file_name(archive_file(a, i)));
-
-		/* TODO: handle error (how?) */
-		if (move) {
-		    if (fix_options & FIX_DO) {
-			garbage_add(gb, i, false);
-		    }
-		    else {
-			/* when FIX_DO is not set, this only updates in-memory representation of a */
-			archive_file_delete(a, i);
-		    }
-		}
-		else {
-		    archive_file_delete(a, i);
-		}
-	    }
-	    break;
-	}
+            case FS_SUPERFLUOUS:
+            case FS_DUPLICATE:
+            case FS_USED:
+                switch (result_file(res, i)) {
+                    case FS_SUPERFLUOUS:
+                        reason = "unused";
+                        break;
+                    case FS_DUPLICATE:
+                        reason = "duplicate";
+                        break;
+                    case FS_USED:
+                        reason = "used";
+                        break;
+                    default:
+                        reason = "[internal error]";
+                        break;
+                }
+                
+                if (fix_options & FIX_PRINT)
+                    printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, file_name(&a->files[i]));
+                a->file_delete(i);
+                break;
+                
+            case FS_BROKEN:
+            case FS_MISSING:
+            case FS_PARTUSED:
+                break;
+                
+            case FS_NEEDED:
+                if (flags & CLEANUP_NEEDED) {
+                    /* TODO: handle error (how?) */
+                    if (save_needed(a, i, NULL) == 0) {
+                        /* save_needed delays deletes in archives with where != FILE_ROM */
+                        a->file_delete(i);
+                    }
+                }
+                break;
+                
+            case FS_UNKNOWN:
+                if (flags & CLEANUP_UNKNOWN) {
+                    move = fix_options & FIX_MOVE_UNKNOWN;
+                    if (fix_options & FIX_PRINT)
+                        printf("%s: %s unknown file '%s'\n", a->name.c_str(), (move ? "move" : "delete"), file_name(&a->files[i]));
+                    
+                    /* TODO: handle error (how?) */
+                    if (move) {
+                        if (fix_options & FIX_DO) {
+                            garbage_add(gb, i, false);
+                        }
+                        else {
+                            /* when FIX_DO is not set, this only updates in-memory representation of a */
+                            a->file_delete(i);
+                        }
+                    }
+                    else {
+                        a->file_delete(i);
+                    }
+                }
+                break;
+        }
     }
 
     if (garbage_close(gb) < 0) {
-	archive_rollback(a);
+        a->rollback();
     }
 
-    archive_commit(a);
+    a->commit();
 
-    if (archive_is_empty(a))
-	remove_empty_archive(archive_name(a));
+    if (a->is_empty()) {
+        remove_empty_archive(a->name.c_str());
+    }
 }
 
 

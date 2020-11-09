@@ -187,11 +187,11 @@ output_mtree_game(output_context_t *out, game_t *g) {
 	r = game_rom(g, i);
 
 	filename = strsvis_cstyle(file_name(r));
-	fprintf(ctx->f, "./%s/%s type=file size=%" PRIu64, dirname, filename, file_size(r));
+	fprintf(ctx->f, "./%s/%s type=file size=%" PRIu64, dirname, filename, file_size_(r));
 	free(filename);
 	output_cond_print_hash(ctx->f, " sha1=", HASHES_TYPE_SHA1, file_hashes(r), "");
 	output_cond_print_hash(ctx->f, " md5=", HASHES_TYPE_MD5, file_hashes(r), "");
-	switch (file_status(r)) {
+	switch (file_status_(r)) {
 	case STATUS_OK:
 	    fl = NULL;
 	    break;

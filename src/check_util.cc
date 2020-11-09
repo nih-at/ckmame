@@ -59,7 +59,6 @@ void
 ensure_extra_maps(int flags) {
     int i;
     const char *file;
-    archive_t *a;
     disk_t *d;
     name_type_t nt;
 
@@ -82,11 +81,14 @@ ensure_extra_maps(int flags) {
 	for (i = 0; i < parray_length(superfluous); i++) {
 	    file = static_cast<const char *>(parray_get(superfluous, i));
 	    switch ((nt = name_type(file))) {
-	    case NAME_ZIP:
-		if ((a = archive_new(file, TYPE_ROM, FILE_SUPERFLUOUS, 0)) != NULL) {
-		    archive_free(a);
+		case NAME_ZIP: {
+		    ArchivePtr a = Archive::open(file, TYPE_ROM, FILE_SUPERFLUOUS, 0);
+		    if (a) {
+			a->close();
+		    }
 		}
 		break;
+		    
 	    case NAME_CHD:
 		if ((d = disk_new(file, 0)) != NULL) {
 		    enter_disk_in_map(d, FILE_SUPERFLUOUS);
@@ -101,8 +103,9 @@ ensure_extra_maps(int flags) {
 	}
 
 	if (roms_unzipped) {
-	    if ((a = archive_new_toplevel(rom_dir, TYPE_ROM, FILE_SUPERFLUOUS, 0)) != NULL) {
-		archive_free(a);
+	    ArchivePtr a = Archive::open_toplevel(rom_dir, TYPE_ROM, FILE_SUPERFLUOUS, 0);
+	    if (a) {
+		a->close();
 	    }
 	}
     }
@@ -258,23 +261,22 @@ enter_dir_in_map_and_list_unzipped(int flags, parray_t *list, const char *direct
 	    continue;
 	}
 	if (S_ISDIR(sb.st_mode)) {
-	    archive_t *a = archive_new(name, TYPE_ROM, where, 0);
-	    if (a != NULL) {
-		archive_close(a);
+	    auto a = Archive::open(name, TYPE_ROM, where, 0);
+	    if (a) {
 		if ((flags & DO_LIST) && list) {
 		    parray_push(list, xstrdup(name));
 		}
+		a->close();
 	    }
 	}
     }
 
-    archive_t *a = archive_new_toplevel(directory_name, TYPE_ROM, where, 0);
-
-    if (a != NULL) {
+    auto a = Archive::open_toplevel(directory_name, TYPE_ROM, where, 0);
+    if (a) {
 	if ((flags & DO_LIST) && list) {
-	    parray_push(list, xstrdup(archive_name(a)));
+	    parray_push(list, xstrdup(a->name.c_str()));
 	}
-	archive_close(a);
+	a->close();
     }
 
     return dir_close(dir);
@@ -321,34 +323,35 @@ enter_disk_in_map(const disk_t *d, where_t where) {
 
 static int
 enter_file_in_map_and_list(int flags, parray_t *list, const char *name, where_t where) {
-    archive_t *a;
     disk_t *d;
     name_type_t nt;
 
     switch ((nt = name_type(name))) {
-    case NAME_ZIP:
-	if ((a = archive_new(name, TYPE_ROM, where, 0)) != NULL) {
-	    if ((flags & DO_LIST) && list) {
-		parray_push(list, xstrdup(archive_name(a)));
+	case NAME_ZIP: {
+	    auto a = Archive::open(name, TYPE_ROM, where, 0);
+	    if (a) {
+		if ((flags & DO_LIST) && list) {
+		    parray_push(list, xstrdup(a->name.c_str()));
+		}
+		a->close();
 	    }
-	    archive_free(a);
-	}
-	break;
-
-    case NAME_CHD:
-	if ((d = disk_new(name, 0)) != NULL) {
-	    if (flags & DO_MAP) {
-		enter_disk_in_map(d, where);
-	    }
-	    if ((flags & DO_LIST) && list) {
-		parray_push(list, xstrdup(disk_name(d)));
-	    }
-	    disk_free(d);
+	    break;
 	}
 
-    case NAME_UNKNOWN:
-	/* ignore unknown files */
-	break;
+	case NAME_CHD:
+	    if ((d = disk_new(name, 0)) != NULL) {
+		if (flags & DO_MAP) {
+		    enter_disk_in_map(d, where);
+		}
+		if ((flags & DO_LIST) && list) {
+		    parray_push(list, xstrdup(disk_name(d)));
+		}
+		disk_free(d);
+	    }
+	    
+	case NAME_UNKNOWN:
+	    /* ignore unknown files */
+	    break;
     }
 
     return 0;

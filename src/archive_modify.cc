@@ -43,307 +43,309 @@
 #include "xmalloc.h"
 
 
-static void _add_file(archive_t *, int, const char *, const file_t *);
+static void _add_file(Archive *, int, const char *, const file_t *);
 
 
-int
-archive_commit(archive_t *a) {
-    int i;
+bool Archive::commit() {
+    if (is_modified()) {
+        seterrinfo(NULL, name.c_str());
 
-    if (archive_is_modified(a)) {
-	seterrinfo(NULL, archive_name(a));
+        cache_changed = true;
 
-	a->cache_changed = true;
-
-	if (a->ops->commit(a) < 0) {
-	    return -1;
+        if (!commit_xxx()) {
+            return false;
 	}
 
-	for (i = 0; i < archive_num_files(a); i++) {
-	    switch (file_where(archive_file(a, i))) {
-	    case FILE_DELETED:
-		if (ARCHIVE_IS_INDEXED(a)) {
-		    /* TODO: handle error (how?) */
-		    memdb_file_delete(a, i, archive_is_writable(a));
-		}
+        for (size_t i = 0; i < files.size(); i++) {
+	    switch (file_where(&files[i])) {
+                case FILE_DELETED:
+                    if (is_indexed()) {
+                        /* TODO: handle error (how?) */
+                        memdb_file_delete(this, i, is_writable());
+                    }
 
-		if (archive_is_writable(a)) {
-		    array_delete(archive_files(a), i, reinterpret_cast<void (*)(void *)>(file_finalize));
+                    if (is_writable()) {
+                        files.erase(files.begin() + i);
 		    i--;
 		}
 		break;
 
-	    case FILE_ADDED:
-		if (ARCHIVE_IS_INDEXED(a)) {
-		    /* TODO: handle error (how?) */
-		    memdb_file_insert(NULL, a, i);
-		}
-		file_where(archive_file(a, i)) = FILE_INGAME;
-		break;
+                case FILE_ADDED:
+                    if (is_indexed()) {
+                        /* TODO: handle error (how?) */
+                        memdb_file_insert(NULL, this, i);
+                    }
+                    file_where(&files[i]) = FILE_INGAME;
+                    break;
 
-	    default:
-		break;
+                default:
+                    break;
 	    }
 	}
 
-	if (a->ops->commit_cleanup) {
-	    a->ops->commit_cleanup(a);
-	}
+        commit_cleanup();
 
-	archive_flags(a) &= ~ARCHIVE_IFL_MODIFIED;
+	flags &= ~ARCHIVE_IFL_MODIFIED;
     }
 
-    if (a->cache_changed) {
-	if (!a->cache_db) {
-	    a->cache_db = dbh_cache_get_db_for_archive(archive_name(a));
+    if (cache_changed) {
+        if (cache_db == NULL) {
+            cache_db = dbh_cache_get_db_for_archive(name.c_str());
 	}
-	if (a->cache_db) {
-	    if (a->cache_id > 0) {
-		if (dbh_cache_delete(a->cache_db, a->cache_id) < 0) {
-		    seterrdb(a->cache_db);
-		    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, archive_name(a));
+        if (cache_db != NULL) {
+            if (cache_id > 0) {
+		if (dbh_cache_delete(cache_db, cache_id) < 0) {
+		    seterrdb(cache_db);
+                    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
 		    /* TODO: handle errors */
 		}
 	    }
-	    if (archive_num_files(a) > 0) {
-		if (a->ops->get_last_update) {
-		    a->ops->get_last_update(a, &archive_mtime(a), &archive_size(a)); /* TODO: handle errors */
-		}
+            if (!files.empty()) {
+                get_last_update();
+                /* TODO: handle errors */
 
-		a->cache_id = dbh_cache_write(a->cache_db, a->cache_id, a);
-		if (a->cache_id < 0) {
-		    seterrdb(a->cache_db);
-		    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, archive_name(a));
-		    a->cache_id = 0;
+		cache_id = dbh_cache_write(cache_db, cache_id, this);
+                if (cache_id < 0) {
+                    seterrdb(cache_db);
+                    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
+                    cache_id = 0;
 		}
 	    }
 	    else {
-		a->cache_id = 0;
+                cache_id = 0;
 	    }
 	}
-	else {
-	    a->cache_id = 0;
+        else {
+            cache_id = 0;
 	}
-	a->cache_changed = false;
+        cache_changed = false;
     }
 
     return 0;
 }
 
 
-int
-archive_file_add_empty(archive_t *a, const char *name) {
-    struct hashes_update *hu;
-    file_t f;
+bool Archive::file_add_empty(const std::string &filename) {
 
-    if (!archive_is_writable(a)) {
-	seterrinfo(archive_name(a), NULL);
+    if (!is_writable()) {
+	seterrinfo(name.c_str(), NULL);
 	myerror(ERRZIP, "cannot add to read-only archive");
-	return -1;
+	return false;
     }
 
-    if (a->ops->file_add_empty(a, name) < 0)
-	return -1;
+    if (!file_add_empty_xxx(filename)) {
+	return false;
+    }
 
+    file_t f;
     file_init(&f);
-    file_size(&f) = 0;
+    file_size_(&f) = 0;
     hashes_types(file_hashes(&f)) = HASHES_TYPE_ALL;
-    hu = hashes_update_new(file_hashes(&f));
+    struct hashes_update *hu = hashes_update_new(file_hashes(&f));
     hashes_update_final(hu);
 
-    _add_file(a, -1, name, &f);
+    add_file(std::optional<uint64_t>(), filename, &f);
 
     return 0;
 }
 
 
-int
-archive_file_copy(archive_t *sa, int sidx, archive_t *da, const char *dname) {
-    return archive_file_copy_part(sa, sidx, da, dname, 0, -1, archive_file(sa, sidx));
+bool Archive::file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename) {
+    return file_copy_part(source_archive, source_index, filename, 0, std::optional<uint64_t>(), &source_archive->files[source_index]);
 }
 
-int
-archive_file_copy_or_move(archive_t *sa, int sidx, archive_t *da, const char *dname, int copyp) {
-    if (copyp)
-	return archive_file_copy(sa, sidx, da, dname);
-    else
-	return archive_file_move(sa, sidx, da, dname);
+bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy) {
+    if (copy) {
+        return file_copy(source_archive, source_index, filename);
+    }
+    else {
+        return file_move(source_archive, source_index, filename);
+    }
 }
 
 
-int
-archive_file_copy_part(archive_t *sa, int sidx, archive_t *da, const char *dname, off_t start, off_t len, const file_t *f) {
-    if (!archive_is_writable(da)) {
-	seterrinfo(archive_name(da), NULL);
+bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const file_t *f) {
+    if (!is_writable()) {
+        seterrinfo(name.c_str(), NULL);
 	myerror(ERRZIP, "cannot add to read-only archive");
-	return -1;
+	return false;
     }
 
-    if (archive_filetype(sa) != archive_filetype(da)) {
-	seterrinfo(archive_name(sa), NULL);
-	myerror(ERRZIP, "cannot copy to archive of different type '%s'", archive_name(da));
-	return -1;
+    if (filetype != source_archive->filetype) {
+        seterrinfo(name.c_str(), NULL);
+	myerror(ERRZIP, "cannot copy to archive of different type '%s'", name.c_str()); // TODO: filetype name, not archive name
+	return false;
     }
-    if (archive_file_index_by_name(da, dname) != -1) {
-	seterrinfo(archive_name(da), NULL);
+    if (file_index_by_name(filename).has_value()) {
+        seterrinfo(name.c_str(), NULL);
 	errno = EEXIST;
-	myerror(ERRZIP, "can't copy to %s: %s", dname, strerror(errno));
-	return -1;
+	myerror(ERRZIP, "can't copy to %s: %s", filename.c_str(), strerror(errno));
+	return false;
     }
-    seterrinfo(archive_name(sa), file_name(archive_file(sa, sidx)));
-    if (file_status(archive_file(sa, sidx)) == STATUS_BADDUMP) {
+    seterrinfo(name.c_str(), source_archive->files[source_index].name);
+    if (file_status_(&source_archive->files[source_index]) == STATUS_BADDUMP) {
 	myerror(ERRZIPFILE, "not copying broken file");
-	return -1;
+	return false;
     }
-    if (file_where(archive_file(sa, sidx)) != FILE_INGAME && file_where(archive_file(sa, sidx)) != FILE_DELETED) {
+    if (file_where(&source_archive->files[source_index]) != FILE_INGAME && file_where(&source_archive->files[source_index]) != FILE_DELETED) {
 	myerror(ERRZIP, "cannot copy broken/added file");
-	return -1;
+	return false;
     }
-    if (start < 0 || (len != -1 && (len < 0 || (uint64_t)(start + len) > file_size(archive_file(sa, sidx))))) {
-	/* TODO: print off_t properly */
-	myerror(ERRZIP, "invalid range (%ld, %ld)", (long)start, (long)len);
-	return -1;
+    if (length.has_value()) {
+        if (start + length.value() > file_size_(&source_archive->files[source_index])) {
+            myerror(ERRZIP, "invalid range (%" PRIu64 ", %" PRIu64 ")", start, length.value());
+            return false;
+        }
+    }
+    else {
+        if (start > file_size_(&source_archive->files[source_index])) {
+            myerror(ERRZIP, "invalid start offset %" PRIu64, start);
+            return false;
+        }
     }
 
-    if (start == 0 && (len == -1 || (uint64_t)len == file_size(archive_file(sa, sidx))))
-	_add_file(da, -1, dname, archive_file(sa, sidx));
-    else
-	_add_file(da, -1, dname, f);
+    if (start == 0 && (!length.has_value() || length.value() == file_size_(&source_archive->files[source_index]))) {
+        add_file(std::optional<uint64_t>(), filename, &source_archive->files[source_index]);
+    }
+    else {
+        add_file(std::optional<uint64_t>(), filename, f);
+    }
 
-    if (archive_is_writable(da)) {
-	if (sa->ops->file_copy(sa, sidx, da, -1, dname, start, len) < 0) {
-	    array_delete(archive_files(da), archive_num_files(da) - 1, reinterpret_cast<void (*)(void *)>(file_finalize));
-	    return -1;
+    if (is_writable()) {
+        if (!file_copy_xxx(std::optional<uint64_t>(), source_archive, source_index, filename, start, length)) {
+            files.erase(files.end() - 1);
+	    return false;
 	}
     }
-
 
     return 0;
 }
 
 
-int
-archive_file_delete(archive_t *a, int idx) {
-    if (!archive_is_writable(a)) {
-	seterrinfo(archive_name(a), NULL);
+bool Archive::file_delete(uint64_t index) {
+    if (!is_writable()) {
+	seterrinfo(name.c_str(), NULL);
 	myerror(ERRZIP, "cannot delete from read-only archive");
-	return -1;
+	return false;
     }
 
-    if (file_where(archive_file(a, idx)) != FILE_INGAME) {
-	seterrinfo(archive_name(a), NULL);
+    if (file_where(&files[index]) != FILE_INGAME) {
+	seterrinfo(name.c_str(), NULL);
 	myerror(ERRZIP, "cannot delete broken/added/deleted file");
-	return -1;
+	return false;
     }
 
-    if (archive_is_writable(a))
-	if (a->ops->file_delete(a, idx) < 0)
-	    return -1;
+    if (!file_delete_xxx(index)) {
+        return false;
+    }
 
-    file_where(archive_file(a, idx)) = FILE_DELETED;
-    a->flags |= ARCHIVE_IFL_MODIFIED;
+    file_where(&files[index]) = FILE_DELETED;
+    flags |= ARCHIVE_IFL_MODIFIED;
 
-    return 0;
+    return true;
 }
 
 
-int
-archive_file_move(archive_t *sa, int sidx, archive_t *da, const char *dname) {
-    if (archive_file_copy(sa, sidx, da, dname) < 0)
-	return -1;
+bool Archive::file_move(Archive *source_archive, uint64_t source_index, const std::string &filename) {
+    if (!file_copy(source_archive, source_index, filename)) {
+        return false;
+    }
 
-    return archive_file_delete(sa, sidx);
+    return source_archive->file_delete(source_index);
 }
 
-int
-archive_file_rename(archive_t *a, int idx, const char *name) {
-    seterrinfo(archive_name(a), NULL);
+bool Archive::file_rename(uint64_t index, const std::string &filename) {
+    seterrinfo(name.c_str(), NULL);
 
-    if (!archive_is_writable(a)) {
+    if (!is_writable()) {
 	myerror(ERRZIP, "cannot rename in read-only archive");
-	return -1;
+	return false;
     }
-    if (file_where(archive_file(a, idx)) != FILE_INGAME) {
+    if (file_where(&files[index]) != FILE_INGAME) {
 	myerror(ERRZIP, "cannot copy broken/added/deleted file");
-	return -1;
+	return false;
     }
 
-    if (archive_file_index_by_name(a, name) != -1) {
+    if (file_index_by_name(filename).has_value()) {
 	errno = EEXIST;
-	myerror(ERRZIP, "can't rename %s to %s: %s", file_name(archive_file(a, idx)), name, strerror(errno));
-	return -1;
+	myerror(ERRZIP, "can't rename %s to %s: %s", file_name(&files[index]), filename.c_str(), strerror(errno));
+	return false;
     }
 
-    if (archive_is_writable(a)) {
-	if (a->ops->file_rename(a, idx, name) < 0)
-	    return -1;
+    if (!file_rename_xxx(index, filename)) {
+        return false;
     }
-    free(file_name(archive_file(a, idx)));
-    file_name(archive_file(a, idx)) = xstrdup(name);
-    a->flags |= ARCHIVE_IFL_MODIFIED;
+    
+    free(files[index].name);
+    file_name(&files[index]) = xstrdup(filename.c_str());
+    flags |= ARCHIVE_IFL_MODIFIED;
 
-    return 0;
+    return true;
 }
 
 
-int
-archive_file_rename_to_unique(archive_t *a, int idx) {
-    if (!archive_is_writable(a)) {
-	seterrinfo(archive_name(a), NULL);
+bool Archive::file_rename_to_unique(uint64_t index) {
+    if (!is_writable()) {
+	seterrinfo(name.c_str(), NULL);
 	myerror(ERRZIP, "cannot rename in read-only archive");
-	return -1;
+	return false;
     }
 
-    char *new_name = archive_make_unique_name(a, file_name(archive_file(a, idx)));
-    if (new_name == NULL)
-	return -1;
+    auto new_name = make_unique_name(file_name(&files[index]));
+    if (new_name.empty()) {
+        return false;
+    }
 
-    int ret = archive_file_rename(a, idx, new_name);
-    free(new_name);
-    return ret;
+    return file_rename(index, new_name);
 }
 
 
-int
-archive_rollback(archive_t *a) {
-    int i, ret;
-
-    if (!archive_is_modified(a))
-	return 0;
-
-    if ((ret = a->ops->rollback(a)) < 0) {
-	return -1;
+bool Archive::rollback() {
+    if (!is_modified()) {
+        return false;
     }
 
-    archive_flags(a) &= ~ARCHIVE_IFL_MODIFIED;
-
-    for (i = 0; i < archive_num_files(a); i++) {
-	switch (file_where(archive_file(a, i))) {
-	case FILE_DELETED:
-	    file_where(archive_file(a, i)) = FILE_INGAME;
-	    break;
-
-	case FILE_ADDED:
-	    array_delete(archive_files(a), i, reinterpret_cast<void (*)(void *)>(file_finalize));
-	    i--;
-	    break;
-
-	default:
-	    break;
-	}
+    if (!rollback_xxx()) {
+        return false;
     }
 
-    return ret;
+    flags &= ~ARCHIVE_IFL_MODIFIED;
+
+    for (uint64_t i = 0; i < files.size(); i++) {
+        auto &file = files[i];
+        
+        switch (file_where(&file)) {
+            case FILE_DELETED:
+                file_where(&file) = FILE_INGAME;
+                break;
+                
+            case FILE_ADDED:
+                files.erase(files.begin() + i);
+                i--;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    return true;
 }
 
 
-static void
-_add_file(archive_t *a, int idx, const char *name, const file_t *f) {
-    file_t *nf;
+void Archive::add_file(std::optional<uint64_t> index, const std::string &filename, const file_t *file) {
+    file_t nf;
+    
+    file_init(&nf);
+    file_name(&nf) = xstrdup(name.c_str());
+    file_where(&nf) = FILE_ADDED;
 
-    nf = static_cast<file_t *>(array_insert(archive_files(a), idx, f));
+    if (index.has_value()) {
+        files.insert(files.begin() + index.value(), nf);
+    }
+    else {
+        files.push_back(nf);
+    }
 
-    file_name(nf) = xstrdup(name);
-    file_where(nf) = FILE_ADDED;
-    a->flags |= ARCHIVE_IFL_MODIFIED;
+    flags |= ARCHIVE_IFL_MODIFIED;
 }

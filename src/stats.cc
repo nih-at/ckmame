@@ -103,7 +103,7 @@ void
 stats_add_rom(stats_t *stats, enum filetype type, const file_t *rom, quality_t status) {
     // TODO: only own ROMs? (what does dumpgame /stats count?)
     
-    stats_add_file(stats, type, file_size(rom), status);
+    stats_add_file(stats, type, file_size_(rom), status);
 }
 
 

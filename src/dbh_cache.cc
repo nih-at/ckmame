@@ -280,8 +280,8 @@ dbh_cache_read(dbh_t *dbh, const char *name, array_t *files) {
 
 	file_name(f) = sq3_get_string(stmt, 0);
 	file_mtime(f) = sqlite3_column_int(stmt, 1);
-	file_status(f) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
-	file_size(f) = sq3_get_int64_default(stmt, 3, SIZE_UNKNOWN);
+	file_status_(f) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+	file_size_(f) = sq3_get_int64_default(stmt, 3, SIZE_UNKNOWN);
 	sq3_get_hashes(file_hashes(f), stmt, 4);
     }
 
@@ -343,7 +343,7 @@ dbh_cache_register_cache_directory(const char *directory_name) {
 
 
 int
-dbh_cache_write(dbh_t *dbh, int id, const archive_t *a) {
+dbh_cache_write(dbh_t *dbh, int id, const Archive *a) {
     sqlite3_stmt *stmt;
     int i;
 
@@ -374,7 +374,7 @@ dbh_cache_write(dbh_t *dbh, int id, const archive_t *a) {
     for (i = 0; i < array_length(archive_files(a)); i++) {
 	file_t *f = archive_file(a, i);
 
-	if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK || sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, file_mtime(f)) != SQLITE_OK || sqlite3_bind_int(stmt, 5, file_status(f)) != SQLITE_OK || sq3_set_int64_default(stmt, 6, file_size(f), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+	if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK || sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, file_mtime(f)) != SQLITE_OK || sqlite3_bind_int(stmt, 5, file_status_(f)) != SQLITE_OK || sq3_set_int64_default(stmt, 6, file_size_(f), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
 	    return -1;
 	}
     }

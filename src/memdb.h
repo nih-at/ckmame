@@ -46,10 +46,10 @@ int memdb_ensure(void);
 void *memdb_get_ptr(const char *, filetype_t);
 void *memdb_get_ptr_by_id(int);
 int64_t memdb_put_ptr(const char *, filetype_t, void *);
-int memdb_file_delete(const archive_t *, int, bool);
-int memdb_file_insert(sqlite3_stmt *, const archive_t *, int);
-int memdb_file_insert_archive(const archive_t *);
+int memdb_file_delete(const Archive *, int, bool);
+int memdb_file_insert(sqlite3_stmt *, const Archive *, int);
+int memdb_file_insert_archive(const Archive *);
 int memdb_update_disk(const disk_t *);
-int memdb_update_file(const archive_t *, int);
+int memdb_update_file(const Archive *, int);
 
 #endif /* memdb.h */

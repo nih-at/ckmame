@@ -53,7 +53,7 @@ static void diagnostics_files(const game_t *, const result_t *);
 
 
 void
-diagnostics(const game_t *game, const archive_t *a, const images_t *im, const result_t *res) {
+diagnostics(const game_t *game, const ArchivePtr a, const images_t *im, const result_t *res) {
     warn_set_info(WARN_TYPE_GAME, game_name(game));
 
     diagnostics_files(game, res);
@@ -64,15 +64,13 @@ diagnostics(const game_t *game, const archive_t *a, const images_t *im, const re
 
 
 void
-diagnostics_archive(const archive_t *a, const result_t *res) {
-    int i;
-    file_t *f;
-
-    if (a == NULL)
+diagnostics_archive(const ArchivePtr a, const result_t *res) {
+    if (!a) {
 	return;
+    }
 
-    for (i = 0; i < archive_num_files(a); i++) {
-	f = archive_file(a, i);
+    for (size_t i = 0; i < a->files.size(); i++) {
+        auto f = &a->files[i];
 
 	switch (result_file(res, i)) {
 	case FS_UNKNOWN:
@@ -215,14 +213,14 @@ diagnostics_files(const game_t *game, const result_t *res) {
 	m = result_rom(res, i);
 	r = game_rom(game, i);
 	if (!match_source_is_old(m) && match_archive(m))
-	    f = archive_file(match_archive(m), match_index(m));
+	    f = &match_archive(m)->files[match_index(m)];
 	else
 	    f = NULL;
 
 	switch (match_quality(m)) {
 	case QU_MISSING:
 	    if (output_options & WARN_MISSING) {
-		if (file_status(r) != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP))
+		if (file_status_(r) != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP))
 		    warn_rom(r, "missing");
 	    }
 	    break;
@@ -234,21 +232,21 @@ diagnostics_files(const game_t *game, const result_t *res) {
 
 	case QU_LONG:
 	    if (output_options & WARN_LONGOK)
-		warn_rom(r, "too long, valid subsection at byte %jd (%" PRIu64 ")%s%s", (intmax_t)match_offset(m), file_size(f), (file_where(r) != match_where(m) ? ", should be in " : ""), zname[file_where(r)]);
+		warn_rom(r, "too long, valid subsection at byte %jd (%" PRIu64 ")%s%s", (intmax_t)match_offset(m), file_size_(f), (file_where(r) != match_where(m) ? ", should be in " : ""), zname[file_where(r)]);
 	    break;
 
 	case QU_OK:
 	    if (output_options & WARN_CORRECT) {
-		if (file_status(r) == STATUS_OK)
+		if (file_status_(r) == STATUS_OK)
 		    warn_rom(r, "correct");
 		else
-		    warn_rom(r, file_status(r) == STATUS_BADDUMP ? "best bad dump" : "exists");
+		    warn_rom(r, file_status_(r) == STATUS_BADDUMP ? "best bad dump" : "exists");
 	    }
 	    break;
 
 	case QU_COPIED:
 	    if (output_options & WARN_ELSEWHERE)
-		warn_rom(r, "is in '%s/%s'", archive_name(match_archive(m)), file_name(archive_file(match_archive(m), match_index(m))));
+		warn_rom(r, "is in '%s/%s'", match_archive(m)->name.c_str(), file_name(&match_archive(m)->files[match_index(m)]));
 	    break;
 
 	case QU_INZIP:

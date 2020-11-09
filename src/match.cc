@@ -47,10 +47,12 @@
 
 const char *
 match_file(match_t *m) {
-    if (match_source_is_old(m))
+    if (match_source_is_old(m)) {
 	return match_old_file(m);
-    else
-	return file_name(archive_file(match_archive(m), match_index(m)));
+    }
+    else {
+        return file_name(&match_archive(m)->files[match_index(m)]);
+    }
 }
 
 
@@ -60,8 +62,6 @@ match_finalize(match_t *m) {
 	free(match_old_game(m));
 	free(match_old_file(m));
     }
-    else if (IS_ELSEWHERE(match_where(m)))
-	archive_free(match_archive(m));
 }
 
 
@@ -70,7 +70,7 @@ match_game(match_t *m) {
     if (match_source_is_old(m))
 	return match_old_game(m);
     else
-	return archive_name(match_archive(m));
+	return match_archive(m)->name.c_str();
 }
 
 

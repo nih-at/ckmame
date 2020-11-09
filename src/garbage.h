@@ -38,8 +38,8 @@
 #include "archive.h"
 
 struct garbage {
-    archive_t *sa;
-    archive_t *da;
+    Archive *sa;
+    Archive *da;
     bool opened;
 };
 
@@ -50,6 +50,6 @@ int garbage_add(garbage_t *, int, bool);
 int garbage_close(garbage_t *);
 int garbage_commit(garbage_t *);
 void garbage_discard(garbage_t *);
-garbage_t *garbage_new(archive_t *);
+garbage_t *garbage_new(Archive *);
 
 #endif /* garbage.h */

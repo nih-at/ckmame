@@ -65,7 +65,7 @@ garbage_add(garbage_t *g, int idx, bool copyp) {
 
 int
 garbage_close(garbage_t *g) {
-    archive_t *da;
+    Archive *da;
 
     if (g == NULL)
 	return 0;
@@ -106,7 +106,7 @@ garbage_commit(garbage_t *g) {
 
 
 garbage_t *
-garbage_new(archive_t *a) {
+garbage_new(Archive *a) {
     garbage_t *g;
 
     g = (garbage_t *)xmalloc(sizeof(*g));

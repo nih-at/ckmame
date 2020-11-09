@@ -43,15 +43,15 @@ result_free(result_t *res) {
 	return;
 
     match_array_free(res->roms);
-    file_status_array_free(res->files);
+    file_status__array_free(res->files);
     match_disk_array_free(res->disks);
-    file_status_array_free(res->images);
+    file_status__array_free(res->images);
     free(res);
 }
 
 
 result_t *
-result_new(const game_t *g, const archive_t *a, const images_t *im) {
+result_new(const game_t *g, const Archive *a, const images_t *im) {
     result_t *res;
 
     res = (result_t *)xmalloc(sizeof(*res));
@@ -70,10 +70,10 @@ result_new(const game_t *g, const archive_t *a, const images_t *im) {
     }
 
     if (a)
-	result_files(res) = file_status_array_new(archive_num_files(a));
+	result_files(res) = file_status__array_new(a->files.size());
 
     if (im)
-	result_images(res) = file_status_array_new(images_length(im));
+	result_images(res) = file_status__array_new(images_length(im));
 
     return res;
 }

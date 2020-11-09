@@ -13,10 +13,9 @@ endif()
 
 set(COMMON_SOURCES
   archive.cc
-  archive_dir.cc
-  archive_file_compare_hashes.cc
+  ArchiveDir.cc
   archive_modify.cc
-  archive_zip.cc
+  ArchiveZip.cc
   array.cc
   array_delete.cc
   array_grow.cc

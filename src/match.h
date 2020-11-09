@@ -48,7 +48,7 @@ struct match {
     where_t where;
     union {
 	struct {
-	    archive_t *archive;
+	    Archive *archive;
 	    int index;
 	} archive;
 	struct {
@@ -84,7 +84,7 @@ const char *match_file(match_t *);
 void match_finalize(match_t *);
 const char *match_game(match_t *);
 void match_init(match_t *);
-/*void match_merge(match_array_t *, archive_t **, int, int); */
+/*void match_merge(match_array_t *, Archive **, int, int); */
 /*int matchcmp(const match_t *, const match_t *); */
 
 #endif /* match.h */

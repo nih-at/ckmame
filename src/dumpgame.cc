@@ -124,12 +124,12 @@ print_footer(int matches, hashes_t *hash) {
 static void
 print_romline(file_t *rom) {
     printf("\t\tfile %-12s  size ", file_name(rom));
-    if (file_size_known(rom))
-	printf("%7" PRIu64, file_size(rom));
+    if (file_size__known(rom))
+	printf("%7" PRIu64, file_size_(rom));
     else
 	printf("unknown");
     print_checksums(file_hashes(rom));
-    printf(" status %s in %s", status_name[file_status(rom)], where_name[file_where(rom)]);
+    printf(" status %s in %s", status_name[file_status_(rom)], where_name[file_where(rom)]);
     if (file_merge(rom) && strcmp(file_name(rom), file_merge(rom)) != 0)
 	printf(" (%s)", file_merge(rom));
     putc('\n', stdout);

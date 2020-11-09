@@ -48,13 +48,12 @@
 #include "xmalloc.h"
 
 
-static int parse_archive(parser_context_t *, archive_t *, int hashtypes);
+static int parse_archive(parser_context_t *, Archive *, int hashtypes);
 
 
 int
 parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
     dir_t *dir;
-    archive_t *a;
     char b[8192];
     dir_status_t ds;
     struct stat st;
@@ -80,9 +79,9 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
 
 	    if (S_ISDIR(st.st_mode)) {
 		/* TODO: handle errors */
-		if ((a = archive_new(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) != NULL) {
-		    parse_archive(ctx, a, hashtypes);
-		    archive_close(a);
+                auto a = Archive::open(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                if (a) {
+		    parse_archive(ctx, a.get(), hashtypes);
 		}
 	    }
 	    else {
@@ -99,11 +98,10 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
 	}
 
 	if (have_loose_files) {
-	    a = archive_new_toplevel(dname, TYPE_ROM, FILE_NOWHERE, 0);
+            auto a = Archive::open_toplevel(dname, TYPE_ROM, FILE_NOWHERE, 0);
 
-	    if (a != NULL) {
-		parse_archive(ctx, a, hashtypes);
-		archive_close(a);
+	    if (a) {
+		parse_archive(ctx, a.get(), hashtypes);
 	    }
 	}
     }
@@ -114,27 +112,28 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
 		continue;
 	    }
 	    switch (name_type(b)) {
-	    case NAME_ZIP:
-		/* TODO: handle errors */
-		if ((a = archive_new(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) != NULL) {
-		    parse_archive(ctx, a, hashtypes);
-		    archive_free(a);
-		}
-		break;
+                case NAME_ZIP: {
+                    /* TODO: handle errors */
+                    auto a = Archive::open(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                    if (a) {
+                        parse_archive(ctx, a.get(), hashtypes);
+                    }
+                    break;
+                }
 
-	    case NAME_CHD:
-		/* TODO: include disks in dat */
-	    case NAME_UNKNOWN:
-		if (stat(b, &st) < 0) {
-		    myerror(ERRSTR, "can't stat '%s', skipped", b);
-		    break;
-		}
-		if (S_ISREG(st.st_mode)) {
-		    myerror(ERRDEF, "skipping unknown file '%s'", b);
-		}
-		break;
-	    }
-	}
+                case NAME_CHD:
+                    /* TODO: include disks in dat */
+                case NAME_UNKNOWN:
+                    if (stat(b, &st) < 0) {
+                        myerror(ERRSTR, "can't stat '%s', skipped", b);
+                        break;
+                    }
+                    if (S_ISREG(st.st_mode)) {
+                        myerror(ERRDEF, "skipping unknown file '%s'", b);
+                    }
+                    break;
+            }
+        }
     }
 
     dir_close(dir);
@@ -146,37 +145,37 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
 
 
 static int
-parse_archive(parser_context_t *ctx, archive_t *a, int hashtypes) {
+parse_archive(parser_context_t *ctx, Archive *a, int hashtypes) {
     char *name;
-    int i, ht;
-    file_t *r;
+    int ht;
     char hstr[HASHES_SIZE_MAX * 2 + 1];
 
     parse_game_start(ctx, TYPE_ROM);
 
     if (ctx->full_archive_name) {
-	name = xstrdup(archive_name(a));
+	name = xstrdup(a->name.c_str());
     }
     else {
-	name = xstrdup(mybasename(archive_name(a)));
+        name = xstrdup(mybasename(a->name.c_str()));
     }
-    if (strlen(name) > 4 && strcmp(name + strlen(name) - 4, ".zip") == 0)
-	name[strlen(name) - 4] = '\0';
+    if (strlen(name) > 4 && strcmp(name + strlen(name) - 4, ".zip") == 0) {
+        name[strlen(name) - 4] = '\0';
+    }
     parse_game_name(ctx, TYPE_ROM, 0, name);
     free(name);
 
-    for (i = 0; i < archive_num_files(a); i++) {
-	r = archive_file(a, i);
+    for (size_t i = 0; i < a->files.size(); i++) {
+        auto r = &a->files[i];
 
-	archive_file_compute_hashes(a, i, hashtypes);
+	a->file_compute_hashes(i, hashtypes);
 
 	parse_file_start(ctx, TYPE_ROM);
 	parse_file_name(ctx, TYPE_ROM, 0, file_name(r));
-	sprintf(hstr, "%" PRIu64, file_size(r));
-	parse_file_size(ctx, TYPE_ROM, 0, hstr);
+	sprintf(hstr, "%" PRIu64, file_size_(r));
+	parse_file_size_(ctx, TYPE_ROM, 0, hstr);
 	parse_file_mtime(ctx, TYPE_ROM, 0, file_mtime(r));
-	if (file_status(r) != STATUS_OK) {
-	    parse_file_status(ctx, TYPE_ROM, 0, file_status(r) == STATUS_BADDUMP ? "baddump" : "nodump");
+	if (file_status_(r) != STATUS_OK) {
+	    parse_file_status_(ctx, TYPE_ROM, 0, file_status_(r) == STATUS_BADDUMP ? "baddump" : "nodump");
 	}
 	for (ht = 1; ht <= HASHES_TYPE_MAX; ht <<= 1) {
 	    if ((hashtypes & ht) && hashes_has_type(file_hashes(r), ht)) {

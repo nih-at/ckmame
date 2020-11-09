@@ -55,12 +55,12 @@
 #include "xmalloc.h"
 
 static int fix_disks(game_t *, images_t *, result_t *);
-static int fix_files(game_t *, archive_t *, result_t *, garbage_t *);
-static int fix_files_incomplete(game_t *g, archive_t *a, result_t *res, garbage_t *gb);
+static int fix_files(game_t *, Archive *, result_t *, garbage_t *);
+static int fix_files_incomplete(game_t *g, Archive *a, result_t *res, garbage_t *gb);
 
 
 int
-fix_game(game_t *g, archive_t *a, images_t *im, result_t *res) {
+fix_game(game_t *g, Archive *a, images_t *im, result_t *res) {
     int i;
     int ret;
     bool move;
@@ -133,7 +133,7 @@ fix_game(game_t *g, archive_t *a, images_t *im, result_t *res) {
 	case FS_NEEDED:
 	    /* TODO: handle error (how?) */
 	    if (save_needed(a, i, game_name(g)) == 0)
-		tree_recheck_games_needing(check_tree, file_size(archive_file(a, i)), file_hashes(archive_file(a, i)));
+		tree_recheck_games_needing(check_tree, file_size_(archive_file(a, i)), file_hashes(archive_file(a, i)));
 	    break;
 
 	case FS_BROKEN:
@@ -333,7 +333,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 
 
 static int
-make_space(archive_t *a, const char *name, char **original_names, int num_names) {
+make_space(Archive *a, const char *name, char **original_names, int num_names) {
     int idx = archive_file_index_by_name(a, name);
 
     if (idx < 0)
@@ -342,7 +342,7 @@ make_space(archive_t *a, const char *name, char **original_names, int num_names)
     if (idx < num_names && original_names[idx] == NULL)
 	original_names[idx] = xstrdup(name);
 
-    if (file_status(archive_file(a, idx)) == STATUS_BADDUMP) {
+    if (file_status_(archive_file(a, idx)) == STATUS_BADDUMP) {
 	if (fix_options & FIX_PRINT)
 	    printf("%s: delete broken '%s'\n", archive_name(a), name);
 	return archive_file_delete(a, idx);
@@ -355,8 +355,8 @@ make_space(archive_t *a, const char *name, char **original_names, int num_names)
 #define REAL_NAME(aa, ii) ((aa) == a && (ii) < num_names && original_names[(ii)] ? original_names[(ii)] : file_name(archive_file((aa), (ii))))
 
 static int
-fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
-    archive_t *afrom;
+fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
+    Archive *afrom;
     match_t *m;
     file_t *r;
     int i;
@@ -381,7 +381,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 
 	switch (match_quality(m)) {
 	case QU_MISSING:
-	    if (file_size(r) == 0) {
+	    if (file_size_(r) == 0) {
 		/* create missing empty file */
 		if (fix_options & FIX_PRINT)
 		    printf("%s: create empty file '%s'\n", archive_name(a), file_name(r));
@@ -405,12 +405,12 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
                 }
                 
                 if (fix_options & FIX_PRINT)
-                    printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n", archive_name(a), (intmax_t)match_offset(m), file_size(r), REAL_NAME(afrom, match_index(m)), file_name(r));
+                    printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n", archive_name(a), (intmax_t)match_offset(m), file_size_(r), REAL_NAME(afrom, match_index(m)), file_name(r));
                 
                 bool replacing_ourself = (a == afrom && match_index(m) == archive_file_index_by_name(afrom, file_name(r)));
                 if (make_space(a, file_name(r), original_names, num_names) < 0)
                     break;
-                if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size(r), r) < 0)
+                if (archive_file_copy_part(afrom, match_index(m), a, file_name(r), match_offset(m), file_size_(r), r) < 0)
                     break;
                 if (a == afrom && file_where(archive_file(afrom, match_index(m))) != FILE_DELETED) {
                     if (!replacing_ourself && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT))
@@ -425,7 +425,7 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 		if (tree_recheck(check_tree, game_cloneof(g, file_where(r) - 1))) {
 		    /* fall-through to rename in case save_needed fails */
 		    if (save_needed(a, match_index(m), game_name(g)) == 0) {
-			tree_recheck_games_needing(check_tree, file_size(r), file_hashes(r));
+			tree_recheck_games_needing(check_tree, file_size_(r), file_hashes(r));
 			break;
 		    }
 		}
@@ -495,8 +495,8 @@ fix_files(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 
 
 static int
-fix_files_incomplete(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
-    archive_t *afrom;
+fix_files_incomplete(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
+    Archive *afrom;
     match_t *m;
     file_t *r;
     int i;
@@ -527,7 +527,7 @@ fix_files_incomplete(game_t *g, archive_t *a, result_t *res, garbage_t *gb) {
 	    break;
 
 	case QU_LONG:
-	    save_needed_part(afrom, match_index(m), game_name(g), match_offset(m), file_size(r), r); /* TODO: handle error */
+	    save_needed_part(afrom, match_index(m), game_name(g), match_offset(m), file_size_(r), r); /* TODO: handle error */
 	    break;
 
 	case QU_COPIED:

@@ -168,7 +168,7 @@ main(int argc, char **argv) {
 
 static int
 print_archive(const char *fname, int hashtypes) {
-    archive_t *a;
+    Archive *a;
     file_t *f;
     int i, j, ret;
 
@@ -191,7 +191,7 @@ print_archive(const char *fname, int hashtypes) {
 	else
 	    j = FILE_SH_FULL;
 
-	printf("\tfile %-12s  size %7" PRIu64, file_name(f), file_size_xxx(f, j));
+	printf("\tfile %-12s  size %7" PRIu64, file_name(f), file_size__xxx(f, j));
 	print_checksums(file_hashes_xxx(f, j), hashtypes);
 	if (j == FILE_SH_DETECTOR)
 	    printf("  (header skipped)");

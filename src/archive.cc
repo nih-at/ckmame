@@ -39,6 +39,8 @@
 
 
 #include "archive.h"
+#include "ArchiveDir.h"
+#include "ArchiveZip.h"
 #include "dbh_cache.h"
 #include "error.h"
 #include "funcs.h"
@@ -49,215 +51,165 @@
 
 #define BUFSIZE 8192
 
-static int archive_cache_is_up_to_date(archive_t *a);
+static int archive_cache_is_up_to_date(Archive *a);
 static int cmp_file_by_name(const file_t *f, const char *name);
-static int get_hashes(archive_t *, void *, off_t, struct hashes *);
-static bool merge_files(archive_t *a, array_t *files);
-static void replace_files(archive_t *a, array_t *files);
+static int get_hashes(Archive *, void *, off_t, struct hashes *);
+static bool merge_files(Archive *a, array_t *files);
+static void replace_files(Archive *a, array_t *files);
 
 
-int _archive_global_flags = 0;
+int Archive::close() {
+    int ret;
+    seterrinfo(NULL, name.c_str());
 
-archive_t *
-archive_by_id(int id) {
-    archive_t *a;
+    ret = commit();
 
-    a = (archive_t *)memdb_get_ptr_by_id(id);
-
-    if (a != NULL)
-	a->refcount++;
-
-    return a;
+    return close_xxx() | ret;
 }
 
-int
-archive_check(archive_t *a) {
-    if (a == NULL) {
-	return -1;
+int Archive::file_compare_hashes(uint64_t index, const hashes_t *h) {
+    auto rh = file_hashes(&files[index]);
+
+    if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h)) {
+        file_compute_hashes(index, hashes_types(h) | romdb_hashtypes(db, TYPE_ROM));
     }
 
-    return a->ops->check(a);
+    if (file_status_(&files[index]) != STATUS_OK) {
+        return HASHES_CMP_NOCOMMON;
+    }
+
+    return hashes_cmp(rh, h);
 }
 
 
-int
-archive_close(archive_t *a) {
-    int ret;
-    seterrinfo(NULL, archive_name(a));
-
-    ret = archive_commit(a);
-
-    return a->ops->close(a) | ret;
-}
-
-
-int
-archive_file_compute_hashes(archive_t *a, int idx, int hashtypes) {
+bool Archive::file_compute_hashes(uint64_t idx, int hashtypes) {
     hashes_t h;
-    file_t *r;
-    void *f;
-
-    r = archive_file(a, idx);
+    auto r = &files[idx];
 
     if ((hashes_types(file_hashes(r)) & hashtypes) == hashtypes)
-	return 0;
+	return true;
 
     hashes_types(&h) = HASHES_TYPE_ALL;
 
-    if ((f = a->ops->file_open(a, idx)) == NULL) {
-	myerror(ERRDEF, "%s: %s: can't open: %s", archive_name(a), file_name(r), strerror(errno));
-	file_status(r) = STATUS_BADDUMP;
-	return -1;
+    auto f = file_open(idx);
+    if (!f) {
+	myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file_name(r), strerror(errno));
+	file_status_(r) = STATUS_BADDUMP;
+	return false;
     }
 
-    if (get_hashes(a, f, file_size(r), &h) < 0) {
-	myerror(ERRDEF, "%s: %s: can't compute hashes: %s", archive_name(a), file_name(r), strerror(errno));
-	file_status(r) = STATUS_BADDUMP;
-	a->ops->file_close(f);
-	return -1;
+    if (!get_hashes(f.get(), file_size_(r), &h)) {
+	myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file_name(r), strerror(errno));
+	file_status_(r) = STATUS_BADDUMP;
+	return false;
     }
-
-    a->ops->file_close(f);
 
     if (hashes_types(file_hashes(r)) & hashtypes & HASHES_TYPE_CRC) {
 	if (file_hashes(r)->crc != h.crc) {
-	    myerror(ERRDEF, "%s: %s: CRC error: %x != %x", archive_name(a), file_name(r), h.crc, file_hashes(r)->crc);
-	    file_status(r) = STATUS_BADDUMP;
-	    return -1;
+	    myerror(ERRDEF, "%s: %s: CRC error: %x != %x", name.c_str(), file_name(r), h.crc, file_hashes(r)->crc);
+	    file_status_(r) = STATUS_BADDUMP;
+	    return false;
 	}
     }
     hashes_copy(file_hashes(r), &h);
 
-    a->cache_changed = true;
+    cache_changed = true;
 
-    return 0;
+    return true;
 }
 
 
-off_t
-archive_file_find_offset(archive_t *a, int idx, off_t size, const hashes_t *h) {
-    void *f;
+std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const hashes_t *h) {
     hashes_t hn;
-    int found;
-    off_t offset;
 
     hashes_init(&hn);
     hashes_types(&hn) = hashes_types(h);
 
-    file_t *r = archive_file(a, idx);
+    auto r = &files[idx];
 
-    if ((f = a->ops->file_open(a, idx)) == NULL) {
-	file_status(r) = STATUS_BADDUMP;
-	return -1;
+    auto f = file_open(idx);
+    if (!f) {
+	file_status_(r) = STATUS_BADDUMP;
+        return {};
     }
 
-    found = 0;
-    offset = 0;
-    while ((uint64_t)offset + size <= file_size(r)) {
-	if (get_hashes(a, f, size, &hn) < 0) {
-	    a->ops->file_close(f);
-	    file_status(r) = STATUS_BADDUMP;
-	    return -1;
+    auto found = false;
+    size_t offset = 0;
+    while (offset + size <= file_size_(r)) {
+	if (!get_hashes(f.get(), size, &hn)) {
+	    file_status_(r) = STATUS_BADDUMP;
+            return {};
 	}
 
 	if (hashes_cmp(h, &hn) == HASHES_CMP_MATCH) {
-	    found = 1;
+	    found = true;
 	    break;
 	}
 
 	offset += size;
     }
 
-    a->ops->file_close(f);
-
-    if (found)
+    if (found) {
 	return offset;
+    }
 
-    return -1;
+    return {};
 }
 
 
-int
-archive_file_index_by_hashes(const archive_t *a, const hashes_t *h) {
-    int i;
-
+std::optional<size_t> Archive::file_index_by_hashes(const hashes_t *h) const {
     if (h->types == 0) {
-	return -1;
+        return {};
     }
 
-    for (i = 0; i < archive_num_files(a); i++) {
-	file_t *f = archive_file(a, i);
+    for (size_t i = 0; i < files.size(); i++) {
+        auto *f = &files[i];
 
 	if (hashes_cmp(h, file_hashes(f)) == HASHES_CMP_MATCH) {
 	    if (file_where(f) == FILE_DELETED) {
-		return -1;
+                return {};
 	    }
 	    return i;
 	}
     }
 
-    return -1;
+    return {};
 }
 
 
-int
-archive_file_index_by_name(const archive_t *a, const char *name) {
-    int i;
+std::optional<size_t> Archive::file_index_by_name(const std::string &filename) const {
+    for (size_t i = 0; i < files.size(); i++) {
+        auto *f = &files[i];
 
-    for (i = 0; i < archive_num_files(a); i++) {
-	if (strcmp(file_name(archive_file(a, i)), name) == 0) {
-	    if (file_where(archive_file(a, i)) == FILE_DELETED)
-		return -1;
+        if (filename == file_name(f)) {
+            if (file_where(f) == FILE_DELETED) {
+                return {};
+            }
 	    return i;
 	}
     }
 
-    return -1;
+    return {};
 }
 
 
-int
-archive_file_match_detector(archive_t *a, int idx) {
-    void *f;
-    file_t *r;
-    int ret;
+void Archive::file_match_detector(uint64_t index) {
+    auto file = &files[index];
 
-    r = archive_file(a, idx);
-
-    if ((f = a->ops->file_open(a, idx)) == NULL) {
-	myerror(ERRZIP, "%s: can't open: %s", file_name(r), strerror(errno));
-	file_status(r) = STATUS_BADDUMP;
-	return -1;
+    auto fp = file_open(index);
+    if (!fp) {
+        myerror(ERRZIP, "%s: can't open: %s", file_name(file), strerror(errno));
+        file_status_(file) = STATUS_BADDUMP;
     }
-
-    ret = detector_execute(detector, r, a->ops->file_read, f);
-
-    a->ops->file_close(f);
-
-    return ret;
+    
+    detector_execute(detector, file, Archive::file_read_c, fp.get());
 }
 
 
-int
-archive_free(archive_t *a) {
-    int ret;
-
-    if (a == NULL)
-	return 0;
-
-    if (--a->refcount != 0)
-	return 0;
-
-    if (a->flags & ARCHIVE_IFL_MODIFIED) {
-	/* TODO: warn about freeing modified archive */
-    }
-
-    ret = archive_close(a);
-
-    if (a->flags & ARCHIVE_FL_NOCACHE)
-	archive_real_free(a);
-
-    return ret;
+int64_t Archive::file_read_c(void *fp, void *data, uint64_t length) {
+    auto file = static_cast<Archive::File *>(fp);
+    
+    return file->read(data, length);
 }
 
 
@@ -270,134 +222,105 @@ archive_global_flags(int fl, bool setp) {
 }
 
 
-char *
-archive_make_unique_name(archive_t *a, const char *name) {
+std::string Archive::make_unique_name(const std::string &filename) {
     char *unique, *p;
     char n[4];
-    const char *ext;
-    int idx, i, j;
 
-    idx = archive_file_index_by_name(a, name);
-    if (idx < 0)
-	return xstrdup(name);
+    if (!file_index_by_name(filename).has_value()) {
+        return filename;
+    }
 
-    unique = static_cast<char *>(xmalloc(strlen(name) + 5));
+    unique = static_cast<char *>(xmalloc(filename.size() + 5));
 
-    ext = strrchr(name, '.');
-    if (ext == NULL) {
-	strcpy(unique, name);
+    auto ext_index = filename.find_last_of(".");
+    if (ext_index == std::string::npos) {
+        strcpy(unique, name.c_str());
 	p = unique + strlen(unique);
 	p[4] = '\0';
     }
     else {
-	strncpy(unique, name, ext - name);
-	p = unique + (ext - name);
-	strcpy(p + 4, ext);
+        strncpy(unique, name.c_str(), ext_index);
+        p = unique + ext_index;
+	strcpy(p + 4, name.c_str() + ext_index);
     }
     *(p++) = '-';
 
-    for (i = 0; i < 1000; i++) {
+    for (int i = 0; i < 1000; i++) {
 	sprintf(n, "%03d", i);
 	strncpy(p, n, 3);
 
-	int exists = 0;
-	for (j = 0; j < archive_num_files(a); j++) {
-	    if (j == idx)
-		continue;
-	    if (strcmp(file_name(archive_file(a, j)), unique) == 0) {
-		exists = 1;
-		break;
-	    }
+	auto exists = false;
+        
+        for (auto &file : files) {
+            if (file.name == unique) {
+                exists = true;
+                break;
+            }
 	}
 
-	if (!exists)
+        if (!exists) {
 	    return unique;
+        }
     }
 
     free(unique);
-    return NULL;
+    return "";
 }
 
-
-archive_t *
-archive_new(const char *name, filetype_t ft, where_t where, int flags) {
-    archive_t *a;
-    int i;
-    int64_t id;
-
-    if ((a = static_cast<archive_t *>(memdb_get_ptr(name, ft))) != 0) {
-	/* TODO: check for compatibility of a->flags and flags */
-	a->refcount++;
-	return a;
+ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t where, int flags) {
+    auto it = archive_by_name.find(name);
+    if (it != archive_by_name.end()) {
+        return it->second;
     }
 
-    a = static_cast<archive *>(xmalloc(sizeof(*a)));
-    a->id = -1;
-    a->name = xstrdup(name);
-    a->refcount = 1;
-    a->where = where;
-    a->files = array_new(sizeof(file_t));
-    a->ud = NULL;
-    a->flags = ((flags | _archive_global_flags) & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK));
-    a->mtime = 0;
-    a->size = 0;
-
-    switch (ft) {
-    case TYPE_ROM:
-	archive_filetype(a) = TYPE_ROM;
-	if ((roms_unzipped ? archive_init_dir(a) : archive_init_zip(a)) < 0) {
-	    archive_real_free(a);
-	    return NULL;
-	}
-	if (!archive_read_infos(a)) {
-	    /* TODO: return error if archive_read_infos failed for error other than archive doesn't exist */
-	    if (!(a->flags & ARCHIVE_FL_CREATE)) {
-		archive_real_free(a);
-		return NULL;
-	    }
-	}
-	break;
-
-    default:
-	archive_real_free(a);
-	return NULL;
+    ArchivePtr archive;
+    
+    try {
+        switch (filetype) {
+            case TYPE_ROM:
+                if (roms_unzipped) {
+                    archive = std::make_shared<ArchiveDir>(name, filetype, where, flags);
+                }
+                else {
+                    archive = std::make_shared<ArchiveZip>(name, filetype, where, flags);
+                }
+                break;
+                // TODO: disks
+                
+            default:
+                break;
+        }
+    }
+    catch (...) {
+        return ArchivePtr();
+    }
+        
+    for (auto file : archive->files) {
+	/* TODO: file_state(file) = FILE_UNKNOWN; */
+	file_where(&file) = FILE_INGAME;
     }
 
-    for (i = 0; i < archive_num_files(a); i++) {
-	/* TODO: file_state(archive_file(a, i)) = FILE_UNKNOWN; */
-	file_where(archive_file(a, i)) = FILE_INGAME;
+    if (!(archive->flags & ARCHIVE_FL_NOCACHE)) {
+        archive->id = ++next_id;
+        archive_by_id[archive->id] = archive;
+        
+        if (IS_EXTERNAL(archive->where)) {
+	    memdb_file_insert_archive(archive.get());
+        }
     }
 
-    if (!(a->flags & ARCHIVE_FL_NOCACHE)) {
-	if ((id = memdb_put_ptr(name, archive_filetype(a), a)) < 0) {
-	    archive_real_free(a);
-	    return NULL;
-	}
-	a->id = id;
+    archive->flags = ((flags | _archive_global_flags) & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK));
 
-	if (IS_EXTERNAL(archive_where(a)))
-	    memdb_file_insert_archive(a);
-    }
-
-    return a;
+    return archive;
 }
 
+Archive::Archive(const std::string &name_, filetype_t ft, where_t where_, int flags_) : id(0), name(name_), filetype(ft), where(where_), flags(0), cache_db(NULL), cache_changed(false), mtime(0), size(0), modified(false) { }
 
-archive_t *
-archive_new_toplevel(const char *name, filetype_t ft, where_t where, int flags) {
-    char *slash;
+ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags) {
+    ArchivePtr a = open(name + "/", filetype, where, flags | ARCHIVE_FL_TOP_LEVEL_ONLY);
 
-    if (xasprintf(&slash, "%s/", name) < 0) {
-	return NULL;
-    }
-
-    archive_t *a = archive_new(slash, ft, where, flags | ARCHIVE_FL_TOP_LEVEL_ONLY);
-
-    free(slash);
-
-    if (a != NULL && archive_num_files(a) == 0) {
-	archive_close(a);
-	a = NULL;
+    if (a && a->files.empty()) {
+        return NULL;
     }
 
     return a;
@@ -405,7 +328,7 @@ archive_new_toplevel(const char *name, filetype_t ft, where_t where, int flags) 
 
 
 bool
-archive_read_infos(archive_t *a) {
+archive_read_infos(Archive *a) {
     array_t *files_cache = NULL;
 
     a->cache_db = dbh_cache_get_db_for_archive(archive_name(a));
@@ -465,20 +388,8 @@ archive_read_infos(archive_t *a) {
 }
 
 
-void
-archive_real_free(archive_t *a) {
-    if (a == NULL)
-	return;
-
-    archive_close(a);
-    free(a->name);
-    array_free(archive_files(a), reinterpret_cast<void (*)(void *)>(file_finalize));
-    free(a);
-}
-
-
 int
-archive_refresh(archive_t *a) {
+archive_refresh(Archive *a) {
     archive_close(a);
     array_truncate(archive_files(a), 0, reinterpret_cast<void (*)(void *)>(file_finalize));
     archive_read_infos(a);
@@ -493,7 +404,7 @@ archive_register_cache_directory(const char *name) {
 }
 
 bool
-archive_is_empty(const archive_t *a) {
+archive_is_empty(const Archive *a) {
     int i;
 
     for (i = 0; i < archive_num_files(a); i++)
@@ -505,7 +416,7 @@ archive_is_empty(const archive_t *a) {
 
 
 static int
-archive_cache_is_up_to_date(archive_t *a) {
+archive_cache_is_up_to_date(Archive *a) {
     if (a->ops->get_last_update == NULL) {
 	archive_mtime(a) = 0;
 	archive_size(a) = 0;
@@ -533,20 +444,19 @@ cmp_file_by_name(const file_t *f, const char *name) {
 }
 
 
-static int
-get_hashes(archive_t *a, void *f, off_t len, struct hashes *h) {
+bool Archive::get_hashes(File *f, size_t len, struct hashes *h) {
     hashes_update_t *hu;
     unsigned char buf[BUFSIZE];
-    off_t n;
+    size_t n;
 
     hu = hashes_update_new(h);
 
     while (len > 0) {
 	n = static_cast<size_t>(len) > sizeof(buf) ? sizeof(buf) : len;
 
-	if (a->ops->file_read(f, buf, n) != n) {
+	if (f->read(buf, n) != n) {
 	    hashes_update_discard(hu);
-	    return -1;
+            return false;
 	}
 
 	hashes_update(hu, buf, n);
@@ -555,12 +465,12 @@ get_hashes(archive_t *a, void *f, off_t len, struct hashes *h) {
 
     hashes_update_final(hu);
 
-    return 0;
+    return true;
 }
 
 
 static bool
-merge_files(archive_t *a, array_t *files) {
+merge_files(Archive *a, array_t *files) {
     int i, idx;
 
     for (i = 0; i < array_length(archive_files(a)); i++) {
@@ -574,7 +484,7 @@ merge_files(archive_t *a, array_t *files) {
 	}
 	if (!hashes_has_type(file_hashes(file), HASHES_TYPE_CRC)) {
 	    if (archive_file_compute_hashes(a, i, HASHES_TYPE_ALL) < 0) {
-		file_status(file) = STATUS_BADDUMP;
+		file_status_(file) = STATUS_BADDUMP;
 		continue;
 	    }
 	    if (detector) {
@@ -588,7 +498,7 @@ merge_files(archive_t *a, array_t *files) {
 
 
 static void
-replace_files(archive_t *a, array_t *files) {
+replace_files(Archive *a, array_t *files) {
     array_free(archive_files(a), reinterpret_cast<void (*)(void *)>(file_finalize));
     archive_files(a) = files;
 }

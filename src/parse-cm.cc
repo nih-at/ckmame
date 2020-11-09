@@ -89,7 +89,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 		/* read remaining tokens and look for known tokens */
 		while ((p = gettok(&l)) != NULL) {
 		    if (strcmp(p, "baddump") == 0 || strcmp(p, "nodump") == 0) {
-			if (parse_file_status(ctx, TYPE_ROM, 0, p) < 0)
+			if (parse_file_status_(ctx, TYPE_ROM, 0, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "crc") == 0 || strcmp(p, "crc32") == 0) {
@@ -107,7 +107,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 			    myerror(ERRFILE, "%d: token flags missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_status(ctx, TYPE_ROM, 0, p) < 0)
+			if (parse_file_status_(ctx, TYPE_ROM, 0, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "merge") == 0) {
@@ -140,7 +140,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 			    myerror(ERRFILE, "%d: token size missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_size(ctx, TYPE_ROM, 0, p) < 0)
+			if (parse_file_size_(ctx, TYPE_ROM, 0, p) < 0)
 			    break;
 		    }
 		    /*
@@ -196,7 +196,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 			    myerror(ERRFILE, "%d: token flags missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_status(ctx, TYPE_DISK, 0, p) < 0)
+			if (parse_file_status_(ctx, TYPE_DISK, 0, p) < 0)
 			    break;
 		    }
 		    /*

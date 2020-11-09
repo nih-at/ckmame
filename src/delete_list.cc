@@ -57,7 +57,7 @@ delete_list_execute(delete_list_t *dl) {
     int i;
     const char *name;
     const file_location_t *fbh;
-    archive_t *a;
+    ArchivePtr a;
     int ret;
 
     delete_list_sort(dl);
@@ -70,40 +70,40 @@ delete_list_execute(delete_list_t *dl) {
 
 	if (name == NULL || strcmp(file_location_name(fbh), name) != 0) {
 	    if (a) {
-		if (archive_commit(a) < 0) {
-		    archive_rollback(a);
+		if (!a->commit()) {
+		    a->rollback();
 		    ret = -1;
 		}
 
-		if (archive_is_empty(a))
+		if (a->is_empty())
 		    remove_empty_archive(name);
 
-		archive_free(a);
+                a = NULL;
 	    }
 
 	    name = file_location_name(fbh);
 	    /* TODO: don't hardcode location */
-	    if ((a = archive_new(name, TYPE_ROM, FILE_NOWHERE, 0)) == NULL)
-		ret = -1;
+            a = Archive::open(name, TYPE_ROM, FILE_NOWHERE, 0);
+            if (!a) {
+                ret = -1;
+            }
 	}
 	if (a) {
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete used file '%s'\n", name, file_name(archive_file(a, file_location_index(fbh))));
+		printf("%s: delete used file '%s'\n", name, file_name(&a->files[file_location_index(fbh)]));
 	    /* TODO: check for error */
-	    archive_file_delete(a, file_location_index(fbh));
+	    a->file_delete(file_location_index(fbh));
 	}
     }
 
     if (a) {
-	if (archive_commit(a) < 0) {
-	    archive_rollback(a);
+	if (!a->commit()) {
+            a->rollback();
 	    ret = -1;
 	}
 
-	if (archive_is_empty(a))
-	    remove_empty_archive(name);
-
-	archive_free(a);
+	if (a->is_empty())
+            remove_empty_archive(name);
     }
 
     return ret;
@@ -135,10 +135,10 @@ delete_list_rollback(delete_list_t *dl) {
 
 
 void
-delete_list_used(archive_t *a, int index) {
+delete_list_used(Archive *a, int index) {
     delete_list_t *list = NULL;
     
-    switch (archive_where(a)) {
+    switch (a->where) {
     case FILE_NEEDED:
 	list = needed_delete_list;
 	break;
@@ -158,6 +158,6 @@ delete_list_used(archive_t *a, int index) {
     }
 
     if (list) {
-	delete_list_add(list, archive_name(a), index);
+	delete_list_add(list, a->name.c_str(), index);
     }
 }

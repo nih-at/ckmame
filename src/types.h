@@ -53,7 +53,7 @@ enum quality {
 
 typedef enum quality quality_t;
 
-enum file_status {
+enum file_status_ {
     FS_MISSING,     /* file does not exist (only used for disks) */
     FS_UNKNOWN,     /* unknown */
     FS_BROKEN,      /* file in zip broken (invalid data / crc error) */
@@ -64,7 +64,7 @@ enum file_status {
     FS_DUPLICATE    /* exists in old */
 };
 
-typedef enum file_status file_status_t;
+typedef enum file_status_ file_status__t;
 
 enum game_status {
     GS_MISSING, /* not a single own ROM found */

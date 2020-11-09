@@ -1,5 +1,5 @@
 /*
-  file_status.c -- information about status of a file in an archive
+  file_status_.c -- information about status of a file in an archive
   Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -35,6 +35,6 @@
 #include "file_status.h"
 
 void
-file_status_init(file_status_t *fs) {
+file_status__init(file_status__t *fs) {
     *fs = FS_UNKNOWN;
 }

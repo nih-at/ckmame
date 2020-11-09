@@ -62,6 +62,6 @@ void delete_list_mark(delete_list_t *);
 delete_list_t *delete_list_new(void);
 void delete_list_rollback(delete_list_t *);
 
-void delete_list_used(archive_t *a, int idx);
+void delete_list_used(Archive *a, int idx);
 
 #endif /* delete_list.h */

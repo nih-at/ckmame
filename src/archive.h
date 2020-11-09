@@ -38,47 +38,19 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "array.h"
+#include <memory>
+#include <optional>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "dbh.h"
 #include "file.h"
 
+class Archive;
+class ArchiveFile;
 
-struct archive {
-    uint64_t id;
-    int refcount;
-    char *name;
-    filetype_t filetype;
-    where_t where;
-    int flags;
-    array_t *files;
-    dbh_t *cache_db;
-    int cache_id;
-    bool cache_changed;
-    time_t mtime;
-    off_t size;
-    struct archive_ops *ops;
-    void *ud;
-};
-
-typedef struct archive archive_t;
-
-struct archive_ops {
-    int (*check)(archive_t *);
-    int (*close)(archive_t *);
-    int (*commit)(archive_t *);
-    void (*commit_cleanup)(archive_t *);
-    int (*file_add_empty)(archive_t *, const char *name);
-    void (*file_close)(void *);
-    int (*file_copy)(archive_t *, int, archive_t *, int, const char *, off_t, off_t);
-    int (*file_delete)(archive_t *, int);
-    void *(*file_open)(archive_t *, int);
-    int64_t (*file_read)(void *, void *, uint64_t);
-    int (*file_rename)(archive_t *, int, const char *);
-    const char *(*file_strerror)(void *);
-    bool (*get_last_update)(archive_t *, time_t *, off_t *);
-    bool (*read_infos)(archive_t *);
-    int (*rollback)(archive_t *); /* never called if commit never fails */
-};
+typedef std::shared_ptr<Archive> ArchivePtr;
 
 #define ARCHIVE_FL_CREATE 0x00100
 #define ARCHIVE_FL_CHECK_INTEGRITY 0x00200
@@ -93,61 +65,90 @@ struct archive_ops {
 
 #define ARCHIVE_IFL_MODIFIED 0x10000
 
-
-#define archive_file(a, i) ((file_t *)array_get(archive_files(a), (i)))
-#define archive_file_index(a, f) (array_index(archive_files(a), (f)))
-#define archive_files(a) ((a)->files)
-#define archive_filetype(a) ((a)->filetype)
-#define archive_flags(a) ((a)->flags)
-#define archive_id(a) ((a)->id)
-#define archive_mtime(a) ((a)->mtime)
-#define archive_name(a) ((a)->name)
-#define archive_num_files(a) (array_length(archive_files(a)))
-#define archive_size(a) ((a)->size)
-#define archive_user_data(a) ((a)->ud)
-#define archive_where(a) ((a)->where)
-
-
-archive_t *archive_by_id(int);
-int archive_check(archive_t *);
-int archive_close(archive_t *);
-int archive_commit(archive_t *);
-int archive_dir_add_file(archive_t *, const char *, struct stat *);
-int archive_file_add_empty(archive_t *, const char *);
-int archive_file_compare_hashes(archive_t *, int, const hashes_t *);
-int archive_file_compute_hashes(archive_t *a, int idx, int hashtypes);
-int archive_file_copy(archive_t *, int, archive_t *, const char *);
-int archive_file_copy_or_move(archive_t *, int, archive_t *, const char *, int);
-int archive_file_copy_part(archive_t *, int, archive_t *, const char *, off_t, off_t, const file_t *);
-int archive_file_delete(archive_t *, int);
-int archive_file_match_detector(archive_t *, int);
-int archive_file_move(archive_t *, int, archive_t *, const char *);
-int archive_file_rename(archive_t *, int, const char *);
-int archive_file_rename_to_unique(archive_t *, int);
-off_t archive_file_find_offset(archive_t *, int, off_t, const hashes_t *);
-int archive_file_index_by_hashes(const archive_t *, const hashes_t *);
-int archive_file_index_by_name(const archive_t *, const char *);
-int archive_free(archive_t *);
-void archive_global_flags(int, bool);
-bool archive_is_empty(const archive_t *);
-char *archive_make_unique_name(archive_t *, const char *);
-archive_t *archive_new(const char *, filetype_t, where_t, int);
-archive_t *archive_new_toplevel(const char *, filetype_t, where_t, int);
-bool archive_read_infos(archive_t *);
-void archive_real_free(archive_t *);
-int archive_refresh(archive_t *);
-int archive_register_cache_directory(const char *);
-int archive_rollback(archive_t *);
-
 /* internal */
 extern int _archive_global_flags;
 
 #define ARCHIVE_IS_INDEXED(a) (((a)->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(archive_where(a)))
 
-#define archive_is_modified(a) ((a)->flags & ARCHIVE_IFL_MODIFIED)
-#define archive_is_writable(a) (((a)->flags & ARCHIVE_FL_RDONLY) == 0)
 
-int archive_init_dir(archive_t *);
-int archive_init_zip(archive_t *);
+class Archive {
+public:
+    class File {
+    public:
+        virtual void close() = 0;
+        virtual int64_t read(void *, uint64_t) = 0;
+        virtual const char *strerror() = 0;
+    };
+    typedef std::shared_ptr<File> FilePtr;
+
+    static ArchivePtr by_id(uint64_t id) { return archive_by_id[id]; }
+    
+    static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
+    static ArchivePtr open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags);
+    
+    static int64_t file_read_c(void *fp, void *data, uint64_t length);
+
+    int close();
+    bool commit();
+    bool file_add_empty(const std::string &filename);
+    int file_compare_hashes(uint64_t idx, const hashes_t *h);
+    bool file_compute_hashes(uint64_t idx, int hashtypes);
+    bool file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename);
+    bool file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy);
+    bool file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const file_t *f);
+    bool file_delete(uint64_t index);
+    std::optional<size_t> file_find_offset(size_t idx, size_t size, const hashes_t *h);
+    std::optional<size_t> file_index_by_hashes(const hashes_t *h) const;
+    std::optional<size_t> file_index_by_name(const std::string &name) const;
+    void file_match_detector(uint64_t idx);
+    bool file_move(Archive *source_archive, uint64_t source_index, const std::string &filename);
+    bool file_rename(uint64_t index, const std::string &filename);
+    bool file_rename_to_unique(uint64_t index);
+    std::string make_unique_name(const std::string &filename);
+    bool read_infos();
+    int refresh();
+    bool rollback();
+    bool is_empty() const;
+    bool is_writable() const { return (flags & ARCHIVE_FL_RDONLY) == 0; }
+    bool is_modified() const { return flags & ARCHIVE_IFL_MODIFIED; }
+    bool is_indexed() const { return (flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where);
+}
+    virtual bool check() { return true; } // This is done as part of the constructor, remove?
+    virtual bool close_xxx() = 0;
+    virtual bool commit_xxx() = 0;
+    virtual void commit_cleanup() = 0;
+    virtual bool file_add_empty_xxx(const std::string &filename) = 0;
+    virtual bool file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length) = 0;
+    virtual bool file_delete_xxx(uint64_t index) = 0;
+    virtual FilePtr file_open(uint64_t index) = 0;
+    virtual bool file_rename_xxx(uint64_t index, const std::string &filename) = 0;
+    virtual bool get_last_update() = 0;
+    virtual bool read_infos_xxx() = 0;
+    virtual bool rollback_xxx() = 0; /* never called if commit never fails */
+    
+    uint64_t id;
+    std::string name;
+    filetype_t filetype;
+    where_t where;
+    int flags;
+    std::vector<file_t> files;
+    dbh_t *cache_db;
+    int cache_id;
+    bool cache_changed;
+    time_t mtime;
+    off_t size;
+    bool modified;
+    
+protected:
+    Archive(const std::string &name, filetype_t filetype, where_t where, int flags);
+
+private:
+    void add_file(std::optional<uint64_t> index, const std::string &filename, const file_t *file);
+    bool get_hashes(File *f, size_t len, struct hashes *h);
+    
+    static uint64_t next_id;
+    static std::unordered_map<std::string, ArchivePtr> archive_by_name;
+    static std::unordered_map<uint64_t, ArchivePtr> archive_by_id;
+};
 
 #endif /* archive.h */

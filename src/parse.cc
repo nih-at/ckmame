@@ -150,7 +150,7 @@ parse_file_end(parser_context_t *ctx, filetype_t ft) {
 
 /*ARGSUSED3*/
 int
-parse_file_status(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
+parse_file_status_(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
     status_t status;
 
     CHECK_STATE(ctx, PARSE_IN_FILE);
@@ -171,7 +171,7 @@ parse_file_status(parser_context_t *ctx, filetype_t ft, int ht, const char *attr
     if (ft == TYPE_DISK)
 	disk_status(ctx->d) = status;
     else
-	file_status(ctx->r) = status;
+	file_status_(ctx->r) = status;
 
     return 0;
 }
@@ -268,7 +268,7 @@ parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy, const char *att
 
 /*ARGSUSED3*/
 int
-parse_file_size(parser_context_t *ctx, filetype_t ft, int dummy, const char *attr) {
+parse_file_size_(parser_context_t *ctx, filetype_t ft, int dummy, const char *attr) {
     CHECK_STATE(ctx, PARSE_IN_FILE);
 
     if (ft == TYPE_DISK) {
@@ -277,7 +277,7 @@ parse_file_size(parser_context_t *ctx, filetype_t ft, int dummy, const char *att
     }
 
     /* TODO: check for strol errors */
-    file_size(ctx->r) = strtol(attr, NULL, 0);
+    file_size_(ctx->r) = strtol(attr, NULL, 0);
 
     return 0;
 }
@@ -555,7 +555,7 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
     r = ctx->r;
     n = game_num_roms(ctx->g) - 1;
 
-    if (file_size(r) == 0) {
+    if (file_size_(r) == 0) {
         unsigned char zeroes[HASHES_SIZE_MAX];
         hashes_t *h = file_hashes(r);
         
@@ -582,7 +582,7 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
 	deleted = 1;
     else if (ctx->flags & PARSE_FL_ROM_CONTINUED) {
 	r2 = game_rom(ctx->g, n - 1);
-	file_size(r2) += file_size(r);
+	file_size_(r2) += file_size_(r);
 	deleted = 1;
     }
     else if (file_name(r) == NULL) {

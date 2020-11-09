@@ -191,7 +191,7 @@ compute_values(detector_t *d, file_t *r, uint64_t start, uint64_t end, detector_
 
     hashes_update_final(hu);
 
-    file_size_xxx(r, FILE_SH_DETECTOR) = size;
+    file_size__xxx(r, FILE_SH_DETECTOR) = size;
     memcpy(file_hashes_xxx(r, FILE_SH_DETECTOR), &h, sizeof(h));
 
     return 0;
@@ -205,14 +205,14 @@ execute_rule(detector_t *d, detector_rule_t *dr, file_t *r, struct ctx *ctx) {
 
     start = detector_rule_start_offset(dr);
     if (start < 0)
-	start += file_size(r);
+	start += file_size_(r);
     end = detector_rule_end_offset(dr);
     if (end == DETECTOR_OFFSET_EOF)
-	end = file_size(r);
+	end = file_size_(r);
     else if (end < 0)
-	end += file_size(r);
+	end += file_size_(r);
 
-    if (start < 0 || (uint64_t)start > file_size(r) || end < 0 || (uint64_t)end > file_size(r) || start > end)
+    if (start < 0 || (uint64_t)start > file_size_(r) || end < 0 || (uint64_t)end > file_size_(r) || start > end)
 	return 0;
 
     for (i = 0; i < detector_rule_num_tests(dr); i++) {
@@ -238,9 +238,9 @@ execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx) {
     case DETECTOR_TEST_XOR:
 	off = detector_test_offset(dt);
 	if (off < 0)
-	    off = file_size(r) + detector_test_offset(dt);
+	    off = file_size_(r) + detector_test_offset(dt);
 
-	if (off < 0 || off + detector_test_length(dt) > file_size(r))
+	if (off < 0 || off + detector_test_length(dt) > file_size_(r))
 	    return 0;
 
 	if (off + detector_test_length(dt) > ctx->bytes_read) {
@@ -262,7 +262,7 @@ execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx) {
 
 	    ret = 0;
 	    for (i = 0; i < 64; i++)
-		if (file_size(r) == ((uint64_t)1) << i) {
+		if (file_size_(r) == ((uint64_t)1) << i) {
 		    ret = 1;
 		    break;
 		}
@@ -270,7 +270,7 @@ execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx) {
 	else {
 	    int64_t cmp;
 
-	    cmp = detector_test_size(dt) - file_size(r);
+	    cmp = detector_test_size(dt) - file_size_(r);
 
 	    switch (detector_test_type(dt)) {
 	    case DETECTOR_TEST_FILE_EQ:

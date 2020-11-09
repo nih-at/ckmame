@@ -40,29 +40,31 @@
 
 
 void
-check_archive(archive_t *a, const char *gamename, result_t *res) {
-    int i;
+check_archive(Archive *a, const char *gamename, result_t *res) {
     find_result_t found;
 
     if (a == NULL)
 	return;
 
-    for (i = 0; i < archive_num_files(a); i++) {
-	if (file_status(archive_file(a, i)) != STATUS_OK) {
+    for (size_t i = 0; i < a->files.size(); i++) {
+        auto &file = a->files[i];
+        
+	if (file_status_(&file) != STATUS_OK) {
 	    result_file(res, i) = FS_BROKEN;
 	    continue;
 	}
 
-	if (result_file(res, i) == FS_USED)
+        if (result_file(res, i) == FS_USED) {
 	    continue;
+        }
 
-	found = find_in_old(archive_file(a, i), a, NULL);
+	found = find_in_old(&file, a, NULL);
 	if (found == FIND_EXISTS) {
 	    result_file(res, i) = FS_DUPLICATE;
 	    continue;
 	}
 
-	found = find_in_romset(archive_file(a, i), a, gamename, NULL);
+	found = find_in_romset(&file, a, gamename, NULL);
 
 	switch (found) {
 	case FIND_UNKNOWN:
@@ -73,9 +75,9 @@ check_archive(archive_t *a, const char *gamename, result_t *res) {
 	    break;
 
 	case FIND_MISSING:
-	    if (file_size(archive_file(a, i)) == 0)
+	    if (file_size_(&file) == 0)
 		result_file(res, i) = FS_SUPERFLUOUS;
-	    else if (archive_where(a) == FILE_NEEDED) {
+	    else if (a->where == FILE_NEEDED) {
 		/* this state does what we want, even if it sounds strange,
 		   and saves us from introducing a better one */
 		result_file(res, i) = FS_MISSING;
@@ -84,7 +86,7 @@ check_archive(archive_t *a, const char *gamename, result_t *res) {
 		match_t m;
 		ensure_needed_maps();
 		match_init(&m);
-		if (find_in_archives(archive_file(a, i), &m, false) != FIND_EXISTS)
+		if (find_in_archives(&file, &m, false) != FIND_EXISTS)
 		    result_file(res, i) = FS_NEEDED;
 		else {
 		    if (match_where(&m) == FILE_NEEDED)

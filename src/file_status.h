@@ -1,8 +1,8 @@
-#ifndef _HAD_FILE_STATUS_H
-#define _HAD_FILE_STATUS_H
+#ifndef _HAD_file_status__H
+#define _HAD_file_status__H
 
 /*
-  file_status.h -- information about status of a file in an archive
+  file_status_.h -- information about status of a file in an archive
   Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -39,14 +39,14 @@
 #include "types.h"
 
 
-typedef array_t file_status_array_t;
+typedef array_t file_status__array_t;
 
-#define file_status_array_free(ma) (array_free(ma, NULL))
-#define file_status_array_get(ma, i) (*(file_status_t *)array_get((ma), (i)))
-#define file_status_array_new(n) (array_new_length(sizeof(file_status_t), (n), reinterpret_cast<void (*)(void *)>(file_status_init)))
-#define file_status_array_length array_length
+#define file_status__array_free(ma) (array_free(ma, NULL))
+#define file_status__array_get(ma, i) (*(file_status__t *)array_get((ma), (i)))
+#define file_status__array_new(n) (array_new_length(sizeof(file_status__t), (n), reinterpret_cast<void (*)(void *)>(file_status__init)))
+#define file_status__array_length array_length
 
 
-void file_status_init(file_status_t *);
+void file_status__init(file_status__t *);
 
-#endif /* file_status.h */
+#endif /* file_status_.h */
