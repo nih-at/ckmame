@@ -1,7 +1,7 @@
 #ifndef SHA1_OWN_H
 #define SHA1_OWN_H
 
-#include "myinttypes.h"
+#include <cinttypes>
 
 #define SHA_DATASIZE 64
 #define SHA_DATALEN 16

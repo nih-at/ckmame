@@ -35,9 +35,9 @@
 */
 
 
+#include <cinttypes>
 #include <stdio.h>
 
-#include "myinttypes.h"
 #include "parser_source.h"
 
 typedef void (*xmlu_lineno_cb)(void *, int);

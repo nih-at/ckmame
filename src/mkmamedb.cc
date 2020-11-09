@@ -36,6 +36,8 @@
 #include <sys/stat.h>
 #include <zip.h>
 
+#include "config.h"
+
 #include "compat.h"
 #include "dbh_cache.h"
 #include "error.h"

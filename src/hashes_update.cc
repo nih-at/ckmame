@@ -34,19 +34,24 @@
 
 #include "config.h"
 
-extern "C" {
-#include <limits.h>
-#include <stdlib.h>
 #ifdef HAVE_MD5INIT
+extern "C" {
 #include <md5.h>
+}
 #else
 #include "md5_own.h"
 #endif
 #ifdef HAVE_SHA1INIT
+extern "C" {
 #include <sha1.h>
+}
 #else
 #include "sha1_own.h"
 #endif
+
+extern "C" {
+#include <limits.h>
+#include <stdlib.h>
 #include <zlib.h>
 }
 

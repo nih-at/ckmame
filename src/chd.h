@@ -33,10 +33,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
+
 #include <stdio.h>
 #include <zlib.h>
-
-#include "myinttypes.h"
 
 #define CHD_ERR_NONE 0    /* N no error */
 #define CHD_ERR_OPEN 1    /* S cannot open file */

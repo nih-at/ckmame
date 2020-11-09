@@ -31,12 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
 
 #include <string.h>
 
 #include "error.h"
 #include "mamedb.h"
-#include "myinttypes.h"
 
 #define ADD_DESC "add games from archives"
 #define ADD_USAGE "[-C hashtypes] [-d dat-no] archive [...]"

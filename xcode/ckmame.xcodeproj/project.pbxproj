@@ -157,8 +157,8 @@
 		4B5FAE921735954C00B67C24 /* detective.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE911735954C00B67C24 /* detective.cc */; };
 		4B5FAE941735955A00B67C24 /* dumpgame.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE931735955A00B67C24 /* dumpgame.cc */; };
 		4B5FAE961735956B00B67C24 /* mkmamedb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE951735956B00B67C24 /* mkmamedb.cc */; };
-		4B5FAE9D173599B700B67C24 /* md5.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE981735998E00B67C24 /* md5.cc */; };
-		4B5FAE9E173599C100B67C24 /* sha1.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE9A1735998E00B67C24 /* sha1.cc */; };
+		4B5FAE9D173599B700B67C24 /* md5.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE981735998E00B67C24 /* md5.c */; };
+		4B5FAE9E173599C100B67C24 /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE9A1735998E00B67C24 /* sha1.c */; };
 		4B6B145324FF905900D3F3FB /* stats.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B6B145124FF905900D3F3FB /* stats.h */; };
 		4B6B145424FF905900D3F3FB /* stats.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B6B145224FF905900D3F3FB /* stats.cc */; };
 		4B6B145624FF918700D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
@@ -344,6 +344,10 @@
 		4B07BFC11FEC1B5B0068A600 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4B07BFC41FEC1B700068A600 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = romdb_read_file_by_name.cc; sourceTree = "<group>"; };
+		4B33F987252C6CAB007EC283 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		4B33F988252C6CCD007EC283 /* cmake-config.h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = "cmake-config.h.in"; sourceTree = "<group>"; };
+		4B33F989252C6D1D007EC283 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		4B33F98A252C6E01007EC283 /* myinttypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = myinttypes.h; sourceTree = "<group>"; };
 		4B41077B18CC8F25002C3052 /* dbdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078D18CC8FEE002C3052 /* dbdump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbdump.cc; sourceTree = "<group>"; };
@@ -489,9 +493,9 @@
 		4B5FAE931735955A00B67C24 /* dumpgame.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dumpgame.cc; sourceTree = "<group>"; };
 		4B5FAE951735956B00B67C24 /* mkmamedb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = mkmamedb.cc; sourceTree = "<group>"; };
 		4B5FAE971735998D00B67C24 /* md5_own.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = md5_own.h; sourceTree = "<group>"; };
-		4B5FAE981735998E00B67C24 /* md5.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = md5.cc; sourceTree = "<group>"; };
+		4B5FAE981735998E00B67C24 /* md5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = md5.c; sourceTree = "<group>"; };
 		4B5FAE991735998E00B67C24 /* sha1_own.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = sha1_own.h; sourceTree = "<group>"; };
-		4B5FAE9A1735998E00B67C24 /* sha1.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = sha1.cc; sourceTree = "<group>"; };
+		4B5FAE9A1735998E00B67C24 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
 		4B5FAEAD17359A6300B67C24 /* libzip.5.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzip.5.0.dylib; path = ../../../../nih/lib/libzip.5.0.dylib; sourceTree = "<group>"; };
 		4B6B145124FF905900D3F3FB /* stats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = stats.h; sourceTree = "<group>"; };
 		4B6B145224FF905900D3F3FB /* stats.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = stats.cc; sourceTree = "<group>"; };
@@ -822,6 +826,8 @@
 		4B07BFCF1FECE8290068A600 /* build */ = {
 			isa = PBXGroup;
 			children = (
+				4B33F988252C6CCD007EC283 /* cmake-config.h.in */,
+				4B33F987252C6CAB007EC283 /* CMakeLists.txt */,
 			);
 			name = build;
 			path = ..;
@@ -882,6 +888,7 @@
 		4B5FAC6217358FF000B67C24 /* ckmame */ = {
 			isa = PBXGroup;
 			children = (
+				4B33F989252C6D1D007EC283 /* CMakeLists.txt */,
 				4B5FAEA3173599EC00B67C24 /* compat */,
 				4B5FAC6C1735902400B67C24 /* common */,
 				4B5FAC6D1735902A00B67C24 /* ckmame */,
@@ -994,6 +1001,7 @@
 				4B5FACEC1735924900B67C24 /* match.h */,
 				4B5FACED1735924900B67C24 /* memdb.cc */,
 				4B5FACEE1735924900B67C24 /* memdb.h */,
+				4B33F98A252C6E01007EC283 /* myinttypes.h */,
 				4B5FACEF1735924900B67C24 /* output_cm.cc */,
 				4B5FACF01735924900B67C24 /* output_datafile_xml.cc */,
 				4B5FACF11735924900B67C24 /* output_db.cc */,
@@ -1090,9 +1098,9 @@
 		4B5FAEA3173599EC00B67C24 /* compat */ = {
 			isa = PBXGroup;
 			children = (
-				4B5FAE981735998E00B67C24 /* md5.cc */,
+				4B5FAE981735998E00B67C24 /* md5.c */,
 				4B5FAE971735998D00B67C24 /* md5_own.h */,
-				4B5FAE9A1735998E00B67C24 /* sha1.cc */,
+				4B5FAE9A1735998E00B67C24 /* sha1.c */,
 				4B5FAE991735998E00B67C24 /* sha1_own.h */,
 			);
 			name = compat;
@@ -1647,9 +1655,9 @@
 				4B5F43BE1889D059000C3B7C /* romdb_write_dat.cc in Sources */,
 				4B5FAE1F1735930100B67C24 /* ptr_sort.cc in Sources */,
 				4B5FAE231735930100B67C24 /* sighandle.cc in Sources */,
-				4B5FAE9D173599B700B67C24 /* md5.cc in Sources */,
+				4B5FAE9D173599B700B67C24 /* md5.c in Sources */,
 				4B5F43BF1889D059000C3B7C /* romdb_write_detector.cc in Sources */,
-				4B5FAE9E173599C100B67C24 /* sha1.cc in Sources */,
+				4B5FAE9E173599C100B67C24 /* sha1.c in Sources */,
 				4B5F43C01889D059000C3B7C /* romdb_write_game.cc in Sources */,
 				4B9292CA17635B5500806C0A /* archive_zip.cc in Sources */,
 				4B9232FD1780A77700096AA2 /* archive_dir.cc in Sources */,
@@ -1810,6 +1818,7 @@
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -1817,6 +1826,7 @@
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
@@ -1825,6 +1835,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -1843,7 +1854,9 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -1853,7 +1866,7 @@
 					/usr/local/lib/libzip/include,
 					/usr/include/libxml2,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = .;
@@ -1867,6 +1880,7 @@
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_UNDEFINED_BEHAVIOR_SANITIZER_INTEGER = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -1874,6 +1888,7 @@
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
@@ -1882,6 +1897,7 @@
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
+				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -1893,7 +1909,9 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -1903,7 +1921,7 @@
 					/usr/local/lib/libzip/include,
 					/usr/include/libxml2,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = .;
 			};
@@ -1964,6 +1982,7 @@
 					"$(inherited)",
 					/usr/local/lib,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1977,6 +1996,7 @@
 					"$(inherited)",
 					/usr/local/lib,
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

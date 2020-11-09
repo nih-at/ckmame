@@ -83,7 +83,8 @@ hash_types_from_str(const char *s) {
 	q = p + strcspn(p, ",");
 	if ((size_t)(q - p) >= sizeof(b))
 	    return 0;
-	strlcpy(b, p, q - p + 1);
+	strncpy(b, p, q - p);
+	b[q-p] = '\0';
 	if ((t = hash_type_from_str(b)) == 0)
 	    return 0;
 	types |= t;

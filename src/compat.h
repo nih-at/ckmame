@@ -58,8 +58,4 @@ const char *getprogname(void);
 void setprogname(const char *);
 #endif
 
-#ifndef HAVE_STRLCPY
-size_t strlcpy(char *, const char *, size_t);
-#endif
-
 #endif /* compat.h */

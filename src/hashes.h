@@ -34,11 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
 
 #include <string.h>
 
 #include "intstr.h"
-#include "myinttypes.h"
 
 #define HASHES_SIZE_CRC 4
 #define HASHES_SIZE_MD5 16
