@@ -246,7 +246,7 @@ memdb_file_insert(sqlite3_stmt *stmt, const Archive *a, int idx) {
 int
 memdb_file_insert_archive(const Archive *archive) {
     sqlite3_stmt *stmt;
-    int i, err;
+    int err;
 
     if (memdb_ensure() < 0)
 	return -1;
