@@ -37,43 +37,25 @@
 #include "xmalloc.h"
 
 
-void
-result_free(result_t *res) {
-    if (res == NULL)
-	return;
-
-    match_array_free(res->roms);
-    file_status__array_free(res->files);
-    match_disk_array_free(res->disks);
-    file_status__array_free(res->images);
-    free(res);
-}
-
-
-result_t *
-result_new(const game_t *g, const Archive *a, const images_t *im) {
-    result_t *res;
-
-    res = (result_t *)xmalloc(sizeof(*res));
-
-    result_game(res) = GS_MISSING;
-    result_roms(res) = NULL;
-    result_files(res) = NULL;
-    result_disks(res) = NULL;
-    result_images(res) = NULL;
+Result::Result(const game_t *g, const Archive *a, const images_t *im) : game(GS_MISSING), disks(NULL) {
 
     if (g) {
-	res->roms = match_array_new(game_num_roms(g));
+        roms.resize(game_num_roms(g));
 
-	if (game_num_disks(g) > 0)
-	    result_disks(res) = match_disk_array_new(game_num_disks(g));
+        if (game_num_disks(g) > 0) {
+            disks = match_disk_array_new(game_num_disks(g));
+        }
     }
 
-    if (a)
-	result_files(res) = file_status__array_new(a->files.size());
+    if (a) {
+        files.resize(a->files.size(), FS_UNKNOWN);
+    }
 
-    if (im)
-	result_images(res) = file_status__array_new(images_length(im));
+    if (im) {
+        images.resize(images_length(im), FS_UNKNOWN);
+    }
+}
 
-    return res;
+Result::~Result() {
+    match_disk_array_free(disks);
 }

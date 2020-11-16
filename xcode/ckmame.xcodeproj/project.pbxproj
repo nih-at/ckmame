@@ -165,7 +165,6 @@
 		4B6B145824FF919E00D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4B6B145924FF91A800D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4B6B145A24FF91B400D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
-		4B9232FD1780A77700096AA2 /* archive_dir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B7F50691776479C00B4273C /* archive_dir.cc */; };
 		4B9233001780B30400096AA2 /* dbh_cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9232FE1780B2BA00096AA2 /* dbh_cache.cc */; };
 		4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* ArchiveZip.cc */; };
 		4BC199041A48424E005BE809 /* parray_find_sorted.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC199021A48424E005BE809 /* parray_find_sorted.cc */; };
@@ -702,7 +701,6 @@
 		4B6B152524FFA9D700D3F3FB /* uncompressed-ckmamedb-extra-dir.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "uncompressed-ckmamedb-extra-dir.test"; sourceTree = "<group>"; };
 		4B6B152624FFA9D700D3F3FB /* swap-roms-2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "swap-roms-2.test"; sourceTree = "<group>"; };
 		4B6D02EF21441D71007D2F93 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
-		4B7F50691776479C00B4273C /* archive_dir.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = archive_dir.cc; sourceTree = "<group>"; };
 		4B7F506B1776523900B4273C /* THANKS */ = {isa = PBXFileReference; lastKnownFileType = text; name = THANKS; path = ../THANKS; sourceTree = "<group>"; };
 		4B86CED01B134251003EF102 /* ckmame.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = ckmame.mdoc; sourceTree = "<group>"; };
 		4B86CED11B134251003EF102 /* detective.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = detective.mdoc; sourceTree = "<group>"; };
@@ -907,7 +905,6 @@
 		4B5FAC6C1735902400B67C24 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				4B7F50691776479C00B4273C /* archive_dir.cc */,
 				4B5FAC801735914600B67C24 /* archive_modify.cc */,
 				4B9292C917635B5500806C0A /* ArchiveZip.cc */,
 				4B5FAC7D173590FB00B67C24 /* archive.cc */,
@@ -1664,7 +1661,6 @@
 				4B5FAE9E173599C100B67C24 /* sha1.cc in Sources */,
 				4B5F43C01889D059000C3B7C /* romdb_write_game.cc in Sources */,
 				4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */,
-				4B9232FD1780A77700096AA2 /* archive_dir.cc in Sources */,
 				4B9233001780B30400096AA2 /* dbh_cache.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -88,6 +88,10 @@ public:
     
     static int64_t file_read_c(void *fp, void *data, uint64_t length);
 
+    static int register_cache_directory(const std::string &name);
+    
+    virtual ~Archive();
+
     int close();
     bool commit();
     bool file_add_empty(const std::string &filename);
@@ -100,13 +104,14 @@ public:
     std::optional<size_t> file_find_offset(size_t idx, size_t size, const hashes_t *h);
     std::optional<size_t> file_index_by_hashes(const hashes_t *h) const;
     std::optional<size_t> file_index_by_name(const std::string &name) const;
+    std::optional<size_t> file_index(const file_t *file) const;
     void file_match_detector(uint64_t idx);
     bool file_move(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_rename(uint64_t index, const std::string &filename);
     bool file_rename_to_unique(uint64_t index);
     std::string make_unique_name(const std::string &filename);
     bool read_infos();
-    int refresh();
+    void refresh();
     bool rollback();
     bool is_empty() const;
     bool is_writable() const { return (flags & ARCHIVE_FL_RDONLY) == 0; }
@@ -114,7 +119,7 @@ public:
     bool is_indexed() const { return (flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where);
 }
     virtual bool check() { return true; } // This is done as part of the constructor, remove?
-    virtual bool close_xxx() = 0;
+    virtual bool close_xxx() { return true; }
     virtual bool commit_xxx() = 0;
     virtual void commit_cleanup() = 0;
     virtual bool file_add_empty_xxx(const std::string &filename) = 0;
@@ -122,7 +127,7 @@ public:
     virtual bool file_delete_xxx(uint64_t index) = 0;
     virtual FilePtr file_open(uint64_t index) = 0;
     virtual bool file_rename_xxx(uint64_t index, const std::string &filename) = 0;
-    virtual bool get_last_update() = 0;
+    virtual void get_last_update() { mtime = 0; size = 0; }
     virtual bool read_infos_xxx() = 0;
     virtual bool rollback_xxx() = 0; /* never called if commit never fails */
     
@@ -136,7 +141,7 @@ public:
     int cache_id;
     bool cache_changed;
     time_t mtime;
-    off_t size;
+    uint64_t size;
     bool modified;
     
 protected:
@@ -145,6 +150,8 @@ protected:
 private:
     void add_file(std::optional<uint64_t> index, const std::string &filename, const file_t *file);
     bool get_hashes(File *f, size_t len, struct hashes *h);
+    int cache_is_up_to_date();
+    void merge_files(const std::vector<file_t> &files_cache);
     
     static uint64_t next_id;
     static std::unordered_map<std::string, ArchivePtr> archive_by_name;

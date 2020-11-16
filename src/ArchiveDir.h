@@ -52,9 +52,10 @@ class ArchiveDir : public Archive {
         FILE *f;
     };
 
-protected:
+public:
     ArchiveDir(const std::string &name, filetype_t filetype, where_t where, int flags);
 
+protected:
     virtual bool commit_xxx();
     virtual void commit_cleanup();
     virtual bool file_add_empty_xxx(const std::string &filename);
@@ -62,7 +63,7 @@ protected:
     virtual bool file_delete_xxx(uint64_t index);
     virtual FilePtr file_open(uint64_t index);
     virtual bool file_rename_xxx(uint64_t index, const std::string &filename);
-    virtual bool get_last_update(time_t *last_update, uint64_t *size);
+    virtual void get_last_update();
     virtual bool read_infos_xxx();
     virtual bool rollback_xxx(); /* never called if commit never fails */
 

@@ -46,7 +46,6 @@ void
 cleanup_list(parray_t *list, delete_list_t *del, int flags) {
     ArchivePtr a;
     images_t *im;
-    result_t *res;
     char *name;
     int i, di, len, cmp, n;
     file_location_t *fl;
@@ -70,58 +69,64 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
                     /* TODO */
                     continue;
                 }
-                res = result_new(NULL, a.get(), NULL);
+                
+                Result res(NULL, a.get(), NULL);
 
                 while (di < len) {
                     fl = delete_list_get(del, di);
                     cmp = strcmp(name, file_location_name(fl));
                     
-                    if (cmp == 0)
-                        result_file(res, file_location_index(fl)) = FS_USED;
-                    else if (cmp < 0)
+                    if (cmp == 0) {
+                        res.files[file_location_index(fl)] = FS_USED;
+                    }
+                    else if (cmp < 0) {
                         break;
+                    }
                     
                     di++;
                 }
                 
-                check_archive(a, NULL, res);
+                check_archive(a, NULL, &res);
                 
                 warn_set_info(WARN_TYPE_ARCHIVE, a->name.c_str());
-                diagnostics_archive(a, res);
+                diagnostics_archive(a, &res);
                 
-                cleanup_archive(a.get(), res, flags);
+                cleanup_archive(a.get(), &res, flags);
                 
-                result_free(res);
                 break;
             }
 
-            case NAME_CHD:
+            case NAME_CHD: {
                 if ((im = images_new_name(name, 0)) == NULL) {
                     /* TODO */
                     continue;
                 }
                 
-                res = result_new(NULL, NULL, im);
+                Result res(NULL, NULL, im);
                 
                 while (di < len) {
                     fl = delete_list_get(del, di++);
                     cmp = strcmp(name, file_location_name(fl));
                     
-                    if (cmp == 0)
-                        result_image(res, 0) = FS_USED;
-                    else if (cmp < 0)
+                    if (cmp == 0) {
+                        res.images[0] = FS_USED;
+                    }
+                    else if (cmp < 0) {
                         break;
+                    }
                 }
                 
-                check_images(im, NULL, res);
+                check_images(im, NULL, &res);
                 
                 warn_set_info(WARN_TYPE_IMAGE, name);
-                diagnostics_images(im, res);
+                diagnostics_images(im, &res);
                 
-                cleanup_disk(im, res, flags);
+                cleanup_disk(im, &res, flags);
                 
-                result_free(res);
                 images_free(im);
+                
+                break;
+            }
                 
             case NAME_UNKNOWN:
                 /* unknown files shouldn't be in list */
@@ -138,12 +143,12 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
 
 static void
 cleanup_archive(Archive *a, result_t *res, int flags) {
-    garbage_t *gb = NULL;
-    int i, move;
+    GarbagePtr gb;
+    int move;
     const char *reason;
 
     if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
-	gb = garbage_new(a);
+        gb = std::make_shared<Garbage>(a);
     }
 
     for (size_t i = 0; i < a->files.size(); i++) {
@@ -195,7 +200,7 @@ cleanup_archive(Archive *a, result_t *res, int flags) {
                     /* TODO: handle error (how?) */
                     if (move) {
                         if (fix_options & FIX_DO) {
-                            garbage_add(gb, i, false);
+                            gb->add(i, false);
                         }
                         else {
                             /* when FIX_DO is not set, this only updates in-memory representation of a */
@@ -210,7 +215,7 @@ cleanup_archive(Archive *a, result_t *res, int flags) {
         }
     }
 
-    if (garbage_close(gb) < 0) {
+    if (gb && !gb->close()) {
         a->rollback();
     }
 

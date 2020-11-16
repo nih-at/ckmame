@@ -102,7 +102,6 @@ bool Archive::commit() {
 	    }
             if (!files.empty()) {
                 get_last_update();
-                /* TODO: handle errors */
 
 		cache_id = dbh_cache_write(cache_db, cache_id, this);
                 if (cache_id < 0) {

@@ -34,22 +34,28 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <memory>
 
 #include "archive.h"
 
-struct garbage {
+class Garbage {
+public:
     Archive *sa;
-    Archive *da;
+    ArchivePtr da;
     bool opened;
+    
+    Garbage(Archive *sa_ = NULL) : sa(sa_), opened(false) { }
+    
+    bool add(uint64_t index, bool copy);
+    bool close();
+    bool commit();
+    
+private:
+    bool open();
 };
 
-typedef struct garbage garbage_t;
+typedef Garbage garbage_t;
 
-
-int garbage_add(garbage_t *, int, bool);
-int garbage_close(garbage_t *);
-int garbage_commit(garbage_t *);
-void garbage_discard(garbage_t *);
-garbage_t *garbage_new(Archive *);
+typedef std::shared_ptr<Garbage> GarbagePtr;
 
 #endif /* garbage.h */

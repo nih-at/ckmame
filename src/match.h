@@ -43,42 +43,38 @@
 #include "parray.h"
 #include "types.h"
 
-struct match {
+class Match {
+public:
+    Match() : quality(QU_MISSING), where(FILE_NOWHERE), index(-1), offset(-1) { }
+    
     quality_t quality;
     where_t where;
-    union {
-	struct {
-	    Archive *archive;
-	    int index;
-	} archive;
-	struct {
-	    char *game;
-	    char *file;
-	} old;
-    } source;
-    off_t offset; /* offset of correct part if QU_LONG */
+    
+    ArchivePtr archive;
+    int64_t index;
+
+    /* for where == old */
+    std::string old_game;
+    std::string old_file;
+
+    int64_t offset; /* offset of correct part if QU_LONG */
+    
+    std::string game() const;
+    bool source_is_old() const { return where == FILE_OLD; }
+    std::string file() const;
 };
 
-typedef struct match match_t;
+typedef struct Match match_t;
 
-typedef array_t match_array_t;
-
-#define match_array_free(ma) (array_free(ma, reinterpret_cast<void (*)(void *)>(match_finalize)))
-#define match_array_get(ma, i) ((match_t *)array_get((ma), (i)))
-#define match_array_new(n) (array_new_length(sizeof(match_t), (n), reinterpret_cast<void (*)(void *)>(match_init)))
-#define match_array_length array_length
-
-#define match_archive(m) ((m)->source.archive.archive)
-#define match_copy(m1, m2) (memcpy(m1, m2, sizeof(match_t)))
-#define match_free free
-#define match_index(m) ((m)->source.archive.index)
+#define match_archive(m) ((m)->archive.get())
+#define match_copy(m1, m2) ((m1) = (m2))
+#define match_index(m) ((m)->index)
 #define match_offset(m) ((m)->offset)
-#define match_old_game(m) ((m)->source.old.game)
-#define match_old_file(m) ((m)->source.old.file)
+#define match_old_game(m) ((m)->old_game)
+#define match_old_file(m) ((m)->old_file)
 #define match_quality(m) ((m)->quality)
-#define match_source_is_old(m) (match_where(m) == FILE_OLD)
+#define match_source_is_old(m) ((m)->source_is_old())
 #define match_where(m) ((m)->where)
-
 
 const char *match_file(match_t *);
 void match_finalize(match_t *);

@@ -46,7 +46,7 @@ bool dbh_cache_get_archive_last_change(dbh_t *, int, time_t *, off_t *);
 dbh_t *dbh_cache_get_db_for_archive(const char *);
 bool dbh_cache_is_empty(dbh_t *);
 parray_t *dbh_cache_list_archives(dbh_t *);
-int dbh_cache_read(dbh_t *, const char *, array_t *);
+int dbh_cache_read(dbh_t *, const std::string &, std::vector<file_t> *);
 int dbh_cache_register_cache_directory(const char *);
 int dbh_cache_write(dbh_t *, int, const Archive *a);
 

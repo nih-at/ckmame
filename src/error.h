@@ -34,6 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <string>
+
 
 #include "dbh.h"
 
@@ -50,6 +52,6 @@
 
 void myerror(int, const char *, ...);
 void seterrdb(dbh_t *);
-void seterrinfo(const char *, const char *);
+void seterrinfo(const std::string &, const std::string &);
 
 #endif /* error.h */

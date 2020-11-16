@@ -46,33 +46,33 @@
 #include "match_disk.h"
 #include "parray.h"
 
-struct result {
+class Result {
+public:
+    Result(const game_t *g, const Archive *a, const images_t *im);
+    ~Result();
     game_status_t game;
-    match_array_t *roms;
-    file_status__array_t *files;
+
+    std::vector<Match> roms;
+    std::vector<file_status_> files;
 
     match_disk_array_t *disks;
-    file_status__array_t *images;
+    std::vector<file_status_> images;
 };
 
-typedef struct result result_t;
+typedef Result result_t;
 
 
-#define result_disk(res, i) (match_disk_array_get(result_disks(res), (i)))
+#define result_disk(res, i) (match_disk_array_get((res)->disks, (i)))
 #define result_disks(res) ((res)->disks)
-#define result_file(res, i) (file_status__array_get(result_files(res), (i)))
+#define result_file(res, i) ((res)->files[i])
 #define result_files(res) ((res)->files)
 #define result_game(res) ((res)->game)
-#define result_image(res, i) (file_status__array_get(result_images(res), (i)))
+#define result_image(res, i) ((res)->images[i])
 #define result_images(res) ((res)->images)
-#define result_num_disks(res) (result_disks(res) ? match_disk_array_length(result_disks(res)) : 0)
-#define result_num_files(res) (result_files(res) ? file_status__array_length(result_files(res)) : 0)
-#define result_num_roms(res) (result_roms(res) ? match_array_length(result_roms(res)) : 0)
-#define result_rom(res, i) (match_array_get(result_roms(res), (i)))
+#define result_num_disks(res) ((res)->disks != NULL ? match_disk_array_length((res)->disks) : 0)
+#define result_num_files(res) ((res)->files.size())
+#define result_num_roms(res) ((res)->roms.size())
+#define result_rom(res, i) (&(res)->roms[i])
 #define result_roms(res) ((res)->roms)
-
-
-void result_free(result_t *);
-result_t *result_new(const game_t *, const Archive *, const images_t *);
 
 #endif /* result.h */

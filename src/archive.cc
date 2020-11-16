@@ -327,114 +327,79 @@ ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, 
 }
 
 
-bool
-archive_read_infos(Archive *a) {
-    array_t *files_cache = NULL;
+bool Archive::read_infos() {
+    std::vector<file_t> files_cache;
 
-    a->cache_db = dbh_cache_get_db_for_archive(archive_name(a));
-    a->cache_changed = false;
-    if (a->cache_db) {
-	a->cache_id = dbh_cache_get_archive_id(a->cache_db, archive_name(a));
+    cache_db = dbh_cache_get_db_for_archive(name.c_str());
+    cache_id = cache_db ? dbh_cache_get_archive_id(cache_db, name.c_str()) : 0;
+    cache_changed = false;
+    if (cache_id > 0) {
+        if (!dbh_cache_read(cache_db, name, &files_cache)) {
+            return false;
+        }
 
-	if (a->cache_id > 0) {
-	    files_cache = array_new(sizeof(file_t));
-	    if (!dbh_cache_read(a->cache_db, archive_name(a), files_cache)) {
-		array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
-		return false;
-	    }
-
-	    switch (archive_cache_is_up_to_date(a)) {
-	    case -1:
-		array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
-		return false;
-
-	    case 0:
+        switch (cache_is_up_to_date()) {
+            case -1:
+                return false;
+                
+            case 0:
+                cache_changed = true;
 		break;
 
 	    case 1:
-		replace_files(a, files_cache);
+                files = files_cache;
 		return true;
 	    }
-
-	    if (a->ops->get_last_update) {
-		a->cache_changed = true;
-	    }
-	}
-    }
-    else {
-	a->cache_id = 0;
     }
 
-    if (!a->ops->read_infos(a)) {
-	array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
-	a->cache_changed = true;
+    if (!read_infos_xxx()) {
+        cache_changed = true;
 	return false;
     }
 
-    if (!merge_files(a, files_cache)) {
-	array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
-	return false;
-    }
+    merge_files(files_cache);
 
-    if (files_cache) {
-	array_free(files_cache, reinterpret_cast<void (*)(void *)>(file_finalize));
-	a->cache_changed = true;
-    }
-    else if (archive_num_files(a) > 0) {
-	a->cache_changed = true;
+    return true;
+}
+
+
+void Archive::refresh() {
+    close();
+    files.clear();
+    read_infos();
+}
+
+
+int Archive::register_cache_directory(const std::string &name) {
+    return dbh_cache_register_cache_directory(name.c_str());
+}
+
+bool Archive::is_empty() const {
+    for (auto &file : files) {
+        if (file_where(&file) != FILE_DELETED) {
+            return false;
+        }
     }
 
     return true;
 }
 
 
-int
-archive_refresh(Archive *a) {
-    archive_close(a);
-    array_truncate(archive_files(a), 0, reinterpret_cast<void (*)(void *)>(file_finalize));
-    archive_read_infos(a);
+int Archive::cache_is_up_to_date() {
+    get_last_update();
 
-    return 0;
-}
-
-
-int
-archive_register_cache_directory(const char *name) {
-    return dbh_cache_register_cache_directory(name);
-}
-
-bool
-archive_is_empty(const Archive *a) {
-    int i;
-
-    for (i = 0; i < archive_num_files(a); i++)
-	if (file_where(archive_file(a, i)) != FILE_DELETED)
-	    return false;
-
-    return true;
-}
-
-
-static int
-archive_cache_is_up_to_date(Archive *a) {
-    if (a->ops->get_last_update == NULL) {
-	archive_mtime(a) = 0;
-	archive_size(a) = 0;
-	return 0;
+    if (mtime == 0 && size == 0) {
+        return 0;
     }
 
     time_t mtime_cache;
     off_t size_cache;
 
-    if (!dbh_cache_get_archive_last_change(a->cache_db, a->cache_id, &mtime_cache, &size_cache)) {
+    if (!dbh_cache_get_archive_last_change(cache_db, cache_id, &mtime_cache, &size_cache)) {
 	return -1;
     }
 
-    if (!a->ops->get_last_update(a, &archive_mtime(a), &archive_size(a))) {
-	return -1;
-    }
-
-    return (mtime_cache == archive_mtime(a) && size_cache == archive_size(a));
+    return (mtime_cache == mtime && size_cache == size);
 }
 
 
@@ -469,36 +434,49 @@ bool Archive::get_hashes(File *f, size_t len, struct hashes *h) {
 }
 
 
-static bool
-merge_files(Archive *a, array_t *files) {
-    int i, idx;
-
-    for (i = 0; i < array_length(archive_files(a)); i++) {
-	file_t *file = archive_file(a, i);
-
-	if (files && (idx = array_find(files, file_name(file), reinterpret_cast<int (*)(const void *, const void *)>(cmp_file_by_name))) >= 0) {
-	    file_t *cfile = static_cast<file_t *>(array_get(files, idx));
-	    if (file_mtime(file) == file_mtime(cfile) && file_compare_nsc(file, cfile)) {
-		hashes_copy(file_hashes(file), file_hashes(cfile));
-	    }
-	}
-	if (!hashes_has_type(file_hashes(file), HASHES_TYPE_CRC)) {
-	    if (archive_file_compute_hashes(a, i, HASHES_TYPE_ALL) < 0) {
-		file_status_(file) = STATUS_BADDUMP;
-		continue;
-	    }
-	    if (detector) {
-		archive_file_match_detector(a, i);
-	    }
-	}
+void Archive::merge_files(const std::vector<file_t> &files_cache) {
+    for (uint64_t i = 0; i < files.size(); i++) {
+        auto &file = files[i];
+        
+        auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const file_t &file_cache){ return file.name == file_cache.name; });
+        if (it != files_cache.cend()) {
+            if (file_mtime(&file) == file_mtime(&(*it)) && file_compare_nsc(&file, &(*it))) {
+                hashes_copy(file_hashes(&file), file_hashes(&(*it)));
+            }
+            else {
+                cache_changed = true;
+            }
+        }
+        else {
+            cache_changed = true;
+        }
+        
+        if (!hashes_has_type(file_hashes(&file), HASHES_TYPE_CRC)) {
+            if (!file_compute_hashes(i, HASHES_TYPE_ALL)) {
+                file_status_(&file) = STATUS_BADDUMP;
+                if (it == files_cache.cend() || file_status_(&(*it)) != STATUS_BADDUMP) {
+                    cache_changed = true;
+                }
+                continue;
+            }
+            if (detector) {
+                file_match_detector(i);
+            }
+            cache_changed = true;
+        }
     }
-
-    return true;
+    
+    if (files.size() != files_cache.size()) {
+        cache_changed = true;
+    }
 }
 
-
-static void
-replace_files(Archive *a, array_t *files) {
-    array_free(archive_files(a), reinterpret_cast<void (*)(void *)>(file_finalize));
-    archive_files(a) = files;
+std::optional<size_t> Archive::file_index(const file_t *file) const {
+    for (size_t index = 0; index < files.size(); index++) {
+        if (&files[index] == file) {
+            return index;
+        }
+    }
+    
+    return {};
 }

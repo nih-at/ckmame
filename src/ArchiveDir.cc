@@ -511,3 +511,16 @@ bool ArchiveDir::rollback_xxx() {
 
     return true;
 }
+
+
+void ArchiveDir::get_last_update() {
+    struct stat st;
+
+    size = 0;
+    if (stat(name.c_str(), &st) < 0) {
+        mtime = 0;
+        return;
+    }
+
+    mtime = st.st_mtime;
+}

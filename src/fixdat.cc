@@ -52,14 +52,14 @@ write_fixdat_entry(const game_t *game, const Archive *a, const images_t *im, con
 
 
     for (i = 0; i < game_num_roms(game); i++) {
-	match_t *m = result_rom(res, i);
+        auto &match = res->roms[i];
 	file_t *r = game_rom(game, i);
 
 	/* no use requesting zero byte files */
 	if (file_size_(r) == 0)
 	    continue;
 
-	if (match_quality(m) != QU_MISSING || file_status_(r) == STATUS_NODUMP || file_where(r) != FILE_INGAME)
+	if (match.quality != QU_MISSING || file_status_(r) == STATUS_NODUMP || file_where(r) != FILE_INGAME)
 	    continue;
 
 	file_t *rm = static_cast<file_t *>(array_push(game_roms(gm), r));

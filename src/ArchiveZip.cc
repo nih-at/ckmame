@@ -156,7 +156,7 @@ void ArchiveZip::File::close() {
 }
 
 
-bool ArchiveZip::file_copy_xxx(uint64_t index, Archive *source_archive_, uint64_t source_index, const std::string &filename, uint64_t start, uint64_t length) {
+bool ArchiveZip::file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive_, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length_) {
     struct zip_source *source;
 
     auto source_archive = static_cast<ArchiveZip *>(source_archive_);
@@ -164,8 +164,11 @@ bool ArchiveZip::file_copy_xxx(uint64_t index, Archive *source_archive_, uint64_
     if (!ensure_zip() || !source_archive->ensure_zip()) {
         return false;
     }
+    
+    // TODO: overflow check
+    int64_t length = length_.has_value() ? static_cast<int64_t>(length_.value()) : -1;
 
-    if ((source = zip_source_zip(za, source_archive->za, source_index, ZIP_FL_UNCHANGED, start, static_cast<int64_t>(length))) == NULL || (index >= 0 ? zip_replace(za, index, source) : zip_add(za, filename.c_str(), source)) < 0) {
+    if ((source = zip_source_zip(za, source_archive->za, source_index, ZIP_FL_UNCHANGED, start, length)) == NULL || (index.has_value() ? zip_replace(za, index.value(), source) : zip_add(za, filename.c_str(), source)) < 0) {
 	zip_source_free(source);
 	seterrinfo(name.c_str(), filename.c_str());
 	myerror(ERRZIPFILE, "error adding '%s' from `%s': %s", file_name(&source_archive->files[source_index]), source_archive->name.c_str(), zip_strerror(za));
@@ -228,16 +231,16 @@ const char *ArchiveZip::File::strerror() {
 }
 
 
-bool ArchiveZip::get_last_update(time_t *last_update, uint64_t *size) {
+void ArchiveZip::get_last_update() {
     struct stat st;
     if (stat(name.c_str(), &st) < 0) {
-	return false;
+        size = 0;
+        mtime = 0;
+        return;
     }
 
-    *last_update = st.st_mtime;
-    *size = static_cast<uint64_t>(st.st_size);
-
-    return true;
+    mtime = st.st_mtime;
+    size = static_cast<uint64_t>(st.st_size);
 }
 
 

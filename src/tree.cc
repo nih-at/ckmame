@@ -264,7 +264,6 @@ tree_new_full(const char *name, int check) {
 static int
 tree_process(tree_t *tree, ArchivePtr archives[], images_t *images[]) {
     game_t *g;
-    result_t *res;
 
     /* check me */
     if ((g = romdb_read_game(db, tree->name)) == NULL) {
@@ -272,28 +271,27 @@ tree_process(tree_t *tree, ArchivePtr archives[], images_t *images[]) {
 	return -1;
     }
 
-    res = result_new(g, archives[0].get(), images[0]);
+    Result res(g, archives[0].get(), images[0]);
 
-    check_old(g, res);
-    check_files(g, archives, res);
-    check_archive(archives[0], game_name(g), res);
-    check_disks(g, images, res);
-    check_images(images[0], game_name(g), res);
+    check_old(g, &res);
+    check_files(g, archives, &res);
+    check_archive(archives[0], game_name(g), &res);
+    check_disks(g, images, &res);
+    check_images(images[0], game_name(g), &res);
 
     /* write warnings/errors for me */
-    diagnostics(g, archives[0], images[0], res);
+    diagnostics(g, archives[0], images[0], &res);
 
     int ret = 0;
 
     if (fix_options & FIX_DO)
-	ret = fix_game(g, archives[0], images[0], res);
+	ret = fix_game(g, archives[0], images[0], &res);
 
     /* TODO: includes too much when rechecking */
     if (fixdat)
-	write_fixdat_entry(g, archives[0], images[0], res);
+	write_fixdat_entry(g, archives[0], images[0], &res);
 
     /* clean up */
-    result_free(res);
     game_free(g);
 
     if (ret != 1)

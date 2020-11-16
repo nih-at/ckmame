@@ -45,40 +45,21 @@
 #include "xmalloc.h"
 
 
-const char *
-match_file(match_t *m) {
-    if (match_source_is_old(m)) {
-	return match_old_file(m);
+std::string Match::file() const {
+    if (source_is_old()) {
+	return old_file;
     }
     else {
-        return file_name(&match_archive(m)->files[match_index(m)]);
+        return file_name(&archive->files[index]);
     }
 }
 
 
-void
-match_finalize(match_t *m) {
-    if (match_source_is_old(m)) {
-	free(match_old_game(m));
-	free(match_old_file(m));
+std::string Match::game() const {
+    if (source_is_old()) {
+        return old_game;
     }
-}
-
-
-const char *
-match_game(match_t *m) {
-    if (match_source_is_old(m))
-	return match_old_game(m);
-    else
-	return match_archive(m)->name.c_str();
-}
-
-
-void
-match_init(match_t *m) {
-    match_quality(m) = QU_MISSING;
-    match_where(m) = FILE_NOWHERE;
-    match_archive(m) = NULL;
-    match_index(m) = -1;
-    match_offset(m) = -1;
+    else {
+        return archive->name;
+    }
 }

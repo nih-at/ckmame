@@ -40,99 +40,60 @@
 #include "xmalloc.h"
 
 
-static int garbage_open(garbage_t *);
-
-
-int
-garbage_add(garbage_t *g, int idx, bool copyp) {
-    if (garbage_open(g) < 0)
-	return -1;
-
-    char *source_name = file_name(archive_file(g->sa, idx));
-    char *destination_name = source_name;
-    if (archive_file_index_by_name(g->da, source_name) >= 0) {
-	destination_name = archive_make_unique_name(g->da, source_name);
+bool Garbage::add(uint64_t index, bool copy) {
+    if (!open()) {
+	return false;
     }
 
-    int ret = archive_file_copy_or_move(g->sa, idx, g->da, destination_name, copyp);
-
-    if (destination_name != source_name)
-	free(destination_name);
-
-    return ret;
-}
-
-
-int
-garbage_close(garbage_t *g) {
-    Archive *da;
-
-    if (g == NULL)
-	return 0;
-
-    da = g->da;
-
-    free(g);
-
-    if (da == NULL)
-	return 0;
-
-    if (!archive_is_empty(da)) {
-	if (ensure_dir(archive_name(da), 1) < 0)
-	    return -1;
+    std::string source_name = file_name(&sa->files[index]);
+    std::string destination_name = source_name;
+    
+    if (da->file_index_by_name(source_name) >= 0) {
+        destination_name = da->make_unique_name(source_name);
     }
 
-    if (archive_close(da) < 0)
-	return -1;
-    return archive_free(da);
+    return da->file_copy_or_move(sa, index, destination_name, copy);
 }
 
 
-void
-garbage_discard(garbage_t *g) {
-    if (g == NULL)
-	return;
-    free(g);
+bool Garbage::close() {
+    if (!da) {
+	return true;
+    }
+
+    if (!da->is_empty()) {
+        if (ensure_dir(da->name.c_str(), 1) < 0) {
+	    return false;
+        }
+    }
+
+    if (!da->close()) {
+	return false;
+    }
+    
+    return true;
 }
 
 
-int
-garbage_commit(garbage_t *g) {
-    if (g->da == NULL)
-	return 0;
+bool Garbage::commit() {
+    if (!da) {
+        return true;
+    }
 
-    return archive_commit(g->da);
+    return da->commit();
 }
 
 
-garbage_t *
-garbage_new(Archive *a) {
-    garbage_t *g;
-
-    g = (garbage_t *)xmalloc(sizeof(*g));
-
-    g->sa = a;
-    g->da = NULL;
-    g->opened = false;
-
-    return g;
-}
-
-
-static int
-garbage_open(garbage_t *g) {
-    char *name;
-
-    if (!g->opened) {
-	g->opened = true;
-	name = make_garbage_name(archive_name(g->sa), 0);
-	g->da = archive_new(name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_CREATE);
+bool Garbage::open() {
+    if (!opened) {
+        opened = true;
+	char *name = make_garbage_name(sa->name.c_str(), 0);
+        da = Archive::open(name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_CREATE);
 	free(name);
-	if (archive_check(g->da) < 0) {
-	    archive_free(g->da);
-	    g->da = NULL;
+        if (!da->check()) {
+            da = NULL;
 	}
     }
 
-    return (g->da != NULL ? 0 : -1);
+    return !!da;
 }

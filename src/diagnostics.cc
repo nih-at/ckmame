@@ -171,9 +171,8 @@ diagnostics_disks(const game_t *game, const result_t *res) {
 
 static void
 diagnostics_files(const game_t *game, const result_t *res) {
-    match_t *m;
     file_t *f, *r;
-    int i, all_same;
+    bool all_same;
 
     switch (result_game(res)) {
     case GS_CORRECT:
@@ -184,15 +183,15 @@ diagnostics_files(const game_t *game, const result_t *res) {
 	if (!(output_options & WARN_CORRECT))
 	    return;
 	else {
-	    all_same = 1;
-	    for (i = 1; i < game_num_roms(game); i++) {
-		if (strcmp(match_old_game(result_rom(res, 0)), match_old_game(result_rom(res, i))) != 0) {
-		    all_same = 0;
+	    all_same = true;
+	    for (size_t i = 1; i < game_num_roms(game); i++) {
+                if (res->roms[0].old_game == res->roms[i].old_game) {
+		    all_same = false;
 		    break;
 		}
 	    }
 	    if (all_same) {
-		warn_rom(NULL, "old in '%s'", match_old_game(result_rom(res, 0)));
+		warn_rom(NULL, "old in '%s'", res->roms[0].old_game.c_str());
 		return;
 	    }
 	}
@@ -209,15 +208,16 @@ diagnostics_files(const game_t *game, const result_t *res) {
         return;
     }
 
-    for (i = 0; i < game_num_roms(game); i++) {
-	m = result_rom(res, i);
+    for (size_t i = 0; i < game_num_roms(game); i++) {
+        auto &m = res->roms[i];
 	r = game_rom(game, i);
-	if (!match_source_is_old(m) && match_archive(m))
-	    f = &match_archive(m)->files[match_index(m)];
+        if (!m.source_is_old() && m.archive) {
+            f = &m.archive->files[m.index];
+        }
 	else
 	    f = NULL;
 
-	switch (match_quality(m)) {
+	switch (m.quality) {
 	case QU_MISSING:
 	    if (output_options & WARN_MISSING) {
 		if (file_status_(r) != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP))
@@ -227,12 +227,12 @@ diagnostics_files(const game_t *game, const result_t *res) {
 
 	case QU_NAMEERR:
 	    if (output_options & WARN_WRONG_NAME)
-		warn_rom(r, "wrong name (%s)%s%s", file_name(f), (file_where(r) != match_where(m) ? ", should be in " : ""), zname[file_where(r)]);
+		warn_rom(r, "wrong name (%s)%s%s", file_name(f), (file_where(r) != m.where ? ", should be in " : ""), zname[file_where(r)]);
 	    break;
 
 	case QU_LONG:
 	    if (output_options & WARN_LONGOK)
-		warn_rom(r, "too long, valid subsection at byte %jd (%" PRIu64 ")%s%s", (intmax_t)match_offset(m), file_size_(f), (file_where(r) != match_where(m) ? ", should be in " : ""), zname[file_where(r)]);
+		warn_rom(r, "too long, valid subsection at byte %jd (%" PRIu64 ")%s%s", (intmax_t)m.offset, file_size_(f), (file_where(r) != m.where ? ", should be in " : ""), zname[file_where(r)]);
 	    break;
 
 	case QU_OK:
@@ -246,7 +246,7 @@ diagnostics_files(const game_t *game, const result_t *res) {
 
 	case QU_COPIED:
 	    if (output_options & WARN_ELSEWHERE)
-		warn_rom(r, "is in '%s/%s'", match_archive(m)->name.c_str(), file_name(&match_archive(m)->files[match_index(m)]));
+		warn_rom(r, "is in '%s/%s'", m.archive->name.c_str(), file_name(&m.archive->files[m.index]));
 	    break;
 
 	case QU_INZIP:
@@ -256,13 +256,13 @@ diagnostics_files(const game_t *game, const result_t *res) {
 
 	case QU_HASHERR:
 	    if (output_options & WARN_MISSING) {
-		warn_rom(r, "checksum mismatch%s%s", (file_where(r) != match_where(m) ? ", should be in " : ""), (file_where(r) != match_where(m) ? zname[file_where(r)] : ""));
+		warn_rom(r, "checksum mismatch%s%s", (file_where(r) != m.where ? ", should be in " : ""), (file_where(r) != m.where ? zname[file_where(r)] : ""));
 	    }
 	    break;
 
 	case QU_OLD:
 	    if (output_options & WARN_CORRECT)
-		warn_rom(r, "old in '%s'", match_old_game(m));
+		warn_rom(r, "old in '%s'", m.old_game.c_str());
 	    break;
 	case QU_NOHASH:
 	    /* only used for disks */

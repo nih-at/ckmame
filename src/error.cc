@@ -44,8 +44,8 @@
 
 #define DEFAULT_FN "<unknown>"
 
-static const char *myerrorfn = DEFAULT_FN;
-static const char *myerrorzipn = DEFAULT_FN;
+static std::string myerrorfn = DEFAULT_FN;
+static std::string myerrorzipn = DEFAULT_FN;
 static dbh_t *myerrdb = NULL;
 
 
@@ -56,11 +56,11 @@ myerror(int errtype, const char *fmt, ...) {
     fprintf(stderr, "%s: ", getprogname());
 
     if ((errtype & ERRZIPFILE) == ERRZIPFILE)
-	fprintf(stderr, "%s (%s): ", myerrorfn, myerrorzipn);
+	fprintf(stderr, "%s (%s): ", myerrorfn.c_str(), myerrorzipn.c_str());
     else if (errtype & ERRZIP)
-	fprintf(stderr, "%s: ", myerrorzipn);
+	fprintf(stderr, "%s: ", myerrorzipn.c_str());
     else if (errtype & ERRFILE)
-	fprintf(stderr, "%s: ", myerrorfn);
+	fprintf(stderr, "%s: ", myerrorfn.c_str());
 
     va_start(va, fmt);
     vfprintf(stderr, fmt, va);
@@ -88,16 +88,18 @@ seterrdb(dbh_t *db) {
 
 
 void
-seterrinfo(const char *fn, const char *zipn) {
-    if (fn)
-	myerrorfn = fn;
-    else
-	myerrorfn = DEFAULT_FN;
+seterrinfo(const std::string &fn, const std::string &zipn) {
+    if (fn.empty()) {
+        myerrorfn = DEFAULT_FN;
+    }
+    else {
+        myerrorfn = fn;
+    }
 
-    if (zipn)
-	myerrorzipn = zipn;
-    else
-	myerrorzipn = DEFAULT_FN;
-
-    return;
+    if (zipn.empty()) {
+        myerrorzipn = DEFAULT_FN;
+    }
+    else {
+        myerrorzipn = zipn;
+    }
 }
