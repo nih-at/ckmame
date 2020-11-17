@@ -60,7 +60,7 @@ static void replace_files(Archive *a, array_t *files);
 
 int Archive::close() {
     int ret;
-    seterrinfo(NULL, name.c_str());
+    seterrinfo(NULL, name);
 
     ret = commit();
 

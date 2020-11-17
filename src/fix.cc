@@ -373,7 +373,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 
     bool needs_recheck = false;
 
-    seterrinfo(NULL, a->name.c_str());
+    seterrinfo(NULL, a->name);
 
     size_t num_names = a->files.size();
     std::string original_names[num_names];
@@ -388,7 +388,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 	    afrom = match_archive(m);
         }
         file_t *r = game_rom(g, i);
-	seterrinfo(file_name(r), a->name.c_str());
+	seterrinfo(file_name(r), a->name);
 
 	switch (match_quality(m)) {
 	case QU_MISSING:
