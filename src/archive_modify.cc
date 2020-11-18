@@ -43,9 +43,6 @@
 #include "xmalloc.h"
 
 
-static void _add_file(Archive *, int, const char *, const file_t *);
-
-
 bool Archive::commit() {
     if (is_modified()) {
         seterrinfo("", name);
