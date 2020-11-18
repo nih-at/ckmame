@@ -68,6 +68,8 @@ typedef std::shared_ptr<Archive> ArchivePtr;
 /* internal */
 extern int _archive_global_flags;
 
+void archive_global_flags(int fl, bool setp);
+
 #define ARCHIVE_IS_INDEXED(a) (((a)->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(archive_where(a)))
 
 

@@ -55,7 +55,7 @@ enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 
 typedef enum test_result test_result_t;
 
-static test_result_t match_files(Archive *, test_t, const file_t *, match_t *);
+static test_result_t match_files(ArchivePtr, test_t, const file_t *, match_t *);
 static void update_game_status(const game_t *, result_t *);
 
 
@@ -73,7 +73,7 @@ check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
     for (i = 0; i < game_num_roms(g); i++) {
         file_t *rom = game_rom(g, i);
         match_t *match = result_rom(res, i);
-        Archive *expected_archive = archives[file_where(rom)].get();
+        auto expected_archive = archives[file_where(rom)];
         
         if (match_quality(match) == QU_OLD) {
             continue;
@@ -92,7 +92,7 @@ check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
         /* search for matching file in game's zip */
         if (archives[0]) {
             for (j = 0; j < tests_count; j++) {
-                if ((result = match_files(archives[0].get(), tests[j], rom, match)) != TEST_NOTFOUND) {
+                if ((result = match_files(archives[0], tests[j], rom, match)) != TEST_NOTFOUND) {
                     match_where(match) = FILE_INGAME;
                     if (file_where(rom) != FILE_INGAME && match_quality(match) == QU_OK) {
                         match_quality(match) = QU_INZIP;
@@ -163,7 +163,7 @@ check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
 
 
 static test_result_t
-match_files(Archive *archive, test_t test, const file_t *rom, match_t *match) {
+match_files(ArchivePtr archive, test_t test, const file_t *rom, match_t *match) {
     const file_t *file;
     test_result_t result;
 
@@ -194,7 +194,7 @@ match_files(Archive *archive, test_t test, const file_t *rom, match_t *match) {
 		    match_quality(match) = QU_OK;
 		    result = TEST_USABLE;
 		}
-		match_archive(match) = archive;
+                match->archive = archive;
 		match_index(match) = i;
 	    }
 	    break;
@@ -219,7 +219,7 @@ match_files(Archive *archive, test_t test, const file_t *rom, match_t *match) {
 		    result = TEST_USABLE;
 		}
 	    }
-	    match_archive(match) = archive;
+	    match->archive = archive;
 	    match_index(match) = i;
 	    break;
 
@@ -232,7 +232,7 @@ match_files(Archive *archive, test_t test, const file_t *rom, match_t *match) {
                     auto offset = archive->file_find_offset(i, file_size_(rom), file_hashes(rom));
                     if (offset.has_value()) {
                         match_offset(match) = offset.value();
-                        match_archive(match) = archive;
+                        match->archive = archive;
                         match_index(match) = i;
                         match_quality(match) = QU_LONG;
                         return TEST_USABLE;

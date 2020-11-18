@@ -328,12 +328,12 @@ main(int argc, char **argv) {
 	    fix_options |= FIX_CLEANUP_EXTRA;
     }
 
-    archive_register_cache_directory(get_directory());
-    archive_register_cache_directory(needed_dir);
-    archive_register_cache_directory(unknown_dir);
+    Archive::register_cache_directory(get_directory());
+    Archive::register_cache_directory(needed_dir);
+    Archive::register_cache_directory(unknown_dir);
     int m;
     for (m = 0; m < parray_length(search_dirs); m++) {
-	if (archive_register_cache_directory(static_cast<char *>(parray_get(search_dirs, m))) < 0)
+	if (Archive::register_cache_directory(static_cast<char *>(parray_get(search_dirs, m))) < 0)
 	    exit(1);
     }
 

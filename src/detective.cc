@@ -168,31 +168,31 @@ main(int argc, char **argv) {
 
 static int
 print_archive(const char *fname, int hashtypes) {
-    Archive *a;
-    file_t *f;
-    int i, j, ret;
+    int j, ret;
 
-    if ((a = archive_new(fname, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE)) == NULL)
+    auto archive = Archive::open(fname, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+    if (!archive) {
 	return -1;
+    }
 
-    printf("%s\n", archive_name(a));
+    printf("%s\n", archive->name.c_str());
 
     ret = 0;
-    for (i = 0; i < archive_num_files(a); i++) {
-	if (archive_file_compute_hashes(a, i, hashtypes) < 0) {
+    for (size_t i = 0; i < archive->files.size(); i++) {
+	if (archive->file_compute_hashes(i, hashtypes) < 0) {
 	    ret = -1;
 	    continue;
 	}
 
-	f = archive_file(a, i);
+        auto &f = archive->files[i];
 
-	if (file_sh_is_set(f, FILE_SH_DETECTOR))
+	if (file_sh_is_set(&f, FILE_SH_DETECTOR))
 	    j = FILE_SH_DETECTOR;
 	else
 	    j = FILE_SH_FULL;
 
-	printf("\tfile %-12s  size %7" PRIu64, file_name(f), file_size__xxx(f, j));
-	print_checksums(file_hashes_xxx(f, j), hashtypes);
+	printf("\tfile %-12s  size %7" PRIu64, file_name(&f), file_size__xxx(&f, j));
+	print_checksums(file_hashes_xxx(&f, j), hashtypes);
 	if (j == FILE_SH_DETECTOR)
 	    printf("  (header skipped)");
 	printf("\n");

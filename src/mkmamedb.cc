@@ -354,7 +354,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	    int ret;
 
 	    if (cache_directory)
-		archive_register_cache_directory(fname);
+		Archive::register_cache_directory(fname);
 
 	    ctx = parser_context_new(NULL, exclude, dat, out, parser_flags);
 	    ret = parse_dir(fname, ctx, hashtypes);
