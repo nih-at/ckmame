@@ -40,7 +40,7 @@
 
 
 void
-write_fixdat_entry(const game_t *game, const Archive *a, const images_t *im, const result_t *res) {
+write_fixdat_entry(const game_t *game, const result_t *res) {
     game_t *gm;
     int i;
 

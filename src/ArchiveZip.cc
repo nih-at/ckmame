@@ -156,6 +156,11 @@ void ArchiveZip::File::close() {
 }
 
 
+int64_t ArchiveZip::File::read(void *data, uint64_t length) {
+    return zip_fread(zf, data, length);
+}
+
+
 bool ArchiveZip::file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive_, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length_) {
     struct zip_source *source;
 
@@ -244,11 +249,11 @@ void ArchiveZip::get_last_update() {
 }
 
 
-ArchiveZip::ArchiveZip(const std::string &name_, filetype_t filetype_, where_t where_, int flags_) : Archive(name_, filetype_, where_, flags_), za(NULL) {
+bool ArchiveZip::read_infos_xxx() {
     struct zip_stat zsb;
 
     if (!ensure_zip()) {
-        throw(std::exception());
+        return false;
     }
     
     seterrinfo(NULL, name);
@@ -281,7 +286,10 @@ ArchiveZip::ArchiveZip(const std::string &name_, filetype_t filetype_, where_t w
 	    file_compute_hashes(i, flags & ARCHIVE_FL_HASHTYPES_MASK);
         }
     }
+    
+    return true;
 }
+
 
 bool ArchiveZip::rollback_xxx() {
     if (za == NULL) {

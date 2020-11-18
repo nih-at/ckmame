@@ -53,7 +53,7 @@ class ArchiveDir : public Archive {
     };
 
 public:
-    ArchiveDir(const std::string &name, filetype_t filetype, where_t where, int flags);
+    ArchiveDir(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(name, filetype, where, flags) { }
 
 protected:
     virtual bool commit_xxx();

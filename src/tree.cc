@@ -285,11 +285,11 @@ tree_process(tree_t *tree, ArchivePtr archives[], images_t *images[]) {
     int ret = 0;
 
     if (fix_options & FIX_DO)
-	ret = fix_game(g, archives[0], images[0], &res);
+	ret = fix_game(g, archives[0].get(), images[0], &res);
 
     /* TODO: includes too much when rechecking */
     if (fixdat)
-	write_fixdat_entry(g, archives[0], images[0], &res);
+	write_fixdat_entry(g, &res);
 
     /* clean up */
     game_free(g);

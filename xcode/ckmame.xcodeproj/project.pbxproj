@@ -906,11 +906,11 @@
 			isa = PBXGroup;
 			children = (
 				4B5FAC801735914600B67C24 /* archive_modify.cc */,
-				4B9292C917635B5500806C0A /* ArchiveZip.cc */,
 				4B5FAC7D173590FB00B67C24 /* archive.cc */,
 				4B5FAC811735914600B67C24 /* archive.h */,
 				4BD482962535B23C00D0002B /* ArchiveDir.cc */,
 				4BD482972535B23C00D0002B /* ArchiveDir.h */,
+				4B9292C917635B5500806C0A /* ArchiveZip.cc */,
 				4B33F98B252C7889007EC283 /* ArchiveZip.h */,
 				4B5FAC821735914600B67C24 /* array_delete.cc */,
 				4B5FAC831735914600B67C24 /* array_grow.cc */,

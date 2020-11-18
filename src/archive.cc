@@ -59,6 +59,9 @@ static int get_hashes(Archive *, void *, off_t, struct hashes *);
 static bool merge_files(Archive *a, array_t *files);
 static void replace_files(Archive *a, array_t *files);
 
+uint64_t Archive::next_id;
+std::unordered_map<std::string, ArchivePtr> Archive::archive_by_name;
+std::unordered_map<uint64_t, ArchivePtr> Archive::archive_by_id;
 
 int Archive::close() {
     int ret;
@@ -214,6 +217,7 @@ int64_t Archive::file_read_c(void *fp, void *data, uint64_t length) {
     return file->read(data, length);
 }
 
+int _archive_global_flags;
 
 void
 archive_global_flags(int fl, bool setp) {

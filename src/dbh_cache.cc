@@ -260,12 +260,12 @@ dbh_cache_list_archives(dbh_t *dbh) {
 
 
 int
-dbh_cache_read(dbh_t *dbh, const char *name, array_t *files) {
+dbh_cache_read(dbh_t *dbh, const std::string &name, std::vector<file_t> *files) {
     sqlite3_stmt *stmt;
     int ret;
     int archive_id;
 
-    if ((archive_id = dbh_cache_get_archive_id(dbh, name)) == 0)
+    if ((archive_id = dbh_cache_get_archive_id(dbh, name.c_str())) == 0)
 	return 0;
 
     if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_FILE)) == NULL)
@@ -273,20 +273,23 @@ dbh_cache_read(dbh_t *dbh, const char *name, array_t *files) {
     if (sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK)
 	return -1;
 
-    array_truncate(files, 0, reinterpret_cast<void (*)(void *)>(file_finalize));
+    files->clear();
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	file_t *f = (file_t *)array_grow(files, reinterpret_cast<void (*)(void *)>(file_init));
+        file_t file;
 
-	file_name(f) = sq3_get_string(stmt, 0);
-	file_mtime(f) = sqlite3_column_int(stmt, 1);
-	file_status_(f) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
-	file_size_(f) = sq3_get_int64_default(stmt, 3, SIZE_UNKNOWN);
-	sq3_get_hashes(file_hashes(f), stmt, 4);
+        file.name = sq3_get_string(stmt, 0);
+        file.mtime = sqlite3_column_int(stmt, 1);
+	file_status_(&file) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+	file_size_(&file) = sq3_get_int64_default(stmt, 3, SIZE_UNKNOWN);
+	sq3_get_hashes(file_hashes(&file), stmt, 4);
+
+        files->push_back(file);
+
     }
 
     if (ret != SQLITE_DONE) {
-	array_truncate(files, 0, reinterpret_cast<void (*)(void *)>(file_finalize));
+        files->clear();
 	return -1;
     }
 

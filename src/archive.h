@@ -92,7 +92,7 @@ public:
 
     static int register_cache_directory(const std::string &name);
     
-    virtual ~Archive();
+    virtual ~Archive() { }
 
     int close();
     bool commit();

@@ -390,6 +390,13 @@ Archive::FilePtr ArchiveDir::file_open(uint64_t index) {
     return Archive::FilePtr(new File(f));
 }
 
+void ArchiveDir::File::close() {
+    if (f != NULL) {
+        fclose(f);
+        f = NULL;
+    }
+}
+
 
 int64_t ArchiveDir::File::read(void *data, uint64_t length) {
     if (length > SIZE_T_MAX) {
