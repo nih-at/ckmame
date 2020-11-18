@@ -53,12 +53,6 @@
 
 #define BUFSIZE 8192
 
-static int archive_cache_is_up_to_date(Archive *a);
-static int cmp_file_by_name(const file_t *f, const char *name);
-static int get_hashes(Archive *, void *, off_t, struct hashes *);
-static bool merge_files(Archive *a, array_t *files);
-static void replace_files(Archive *a, array_t *files);
-
 uint64_t Archive::next_id;
 std::unordered_map<std::string, ArchivePtr> Archive::archive_by_name;
 std::unordered_map<uint64_t, ArchivePtr> Archive::archive_by_id;
