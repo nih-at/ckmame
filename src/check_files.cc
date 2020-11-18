@@ -225,19 +225,20 @@ match_files(ArchivePtr archive, test_t test, const file_t *rom, match_t *match) 
 
 	case TEST_LONG:
 	    /* roms without hashes are only matched with correct name */
-	    if (hashes_types(file_hashes(rom)) == 0 || file_size_(rom) == 0)
+	    if (hashes_types(file_hashes(rom)) == 0 || file_size_(rom) == 0) {
 		break;
+	    }
 
-                if (file_compare_n(rom, file) && file_size_(file) > file_size_(rom)) {
-                    auto offset = archive->file_find_offset(i, file_size_(rom), file_hashes(rom));
-                    if (offset.has_value()) {
-                        match_offset(match) = offset.value();
-                        match->archive = archive;
-                        match_index(match) = i;
-                        match_quality(match) = QU_LONG;
-                        return TEST_USABLE;
-                    }
-                }
+	    if (file_compare_n(rom, file) && file_size_(file) > file_size_(rom)) {
+		auto offset = archive->file_find_offset(i, file_size_(rom), file_hashes(rom));
+		if (offset.has_value()) {
+		    match_offset(match) = offset.value();
+		    match->archive = archive;
+		    match_index(match) = i;
+		    match_quality(match) = QU_LONG;
+		    return TEST_USABLE;
+		}
+	    }
 	    break;
 	}
     }
