@@ -348,7 +348,6 @@ dbh_cache_register_cache_directory(const char *directory_name) {
 int
 dbh_cache_write(dbh_t *dbh, int id, const Archive *a) {
     sqlite3_stmt *stmt;
-    int i;
 
     if (id != 0) {
 	if (dbh_cache_delete(dbh, id) < 0) {
@@ -376,7 +375,7 @@ dbh_cache_write(dbh_t *dbh, int id, const Archive *a) {
 	return -1;
     }
 
-    for (i = 0; i < a->files.size(); i++) {
+    for (size_t i = 0; i < a->files.size(); i++) {
 	const file_t *f = &a->files[i];
 	if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK || sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, file_mtime(f)) != SQLITE_OK || sqlite3_bind_int(stmt, 5, file_status_(f)) != SQLITE_OK || sq3_set_int64_default(stmt, 6, file_size_(f), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
 	    return -1;
