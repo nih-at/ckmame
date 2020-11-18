@@ -407,12 +407,6 @@ int Archive::cache_is_up_to_date() {
 }
 
 
-static int
-cmp_file_by_name(const file_t *f, const char *name) {
-    return strcmp(file_name(f), name);
-}
-
-
 bool Archive::get_hashes(File *f, size_t len, struct hashes *h) {
     hashes_update_t *hu;
     unsigned char buf[BUFSIZE];
