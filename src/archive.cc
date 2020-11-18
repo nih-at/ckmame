@@ -300,6 +300,10 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
     catch (...) {
         return ArchivePtr();
     }
+    
+    if (!archive->read_infos()) {
+        return ArchivePtr();
+    }
         
     for (auto file : archive->files) {
 	/* TODO: file_state(file) = FILE_UNKNOWN; */

@@ -176,7 +176,7 @@ bool ArchiveDir::ensure_archive_dir() {
 
 
 std::filesystem::path ArchiveDir::get_full_name(uint64_t index) {
-    if (!changes[index].destination.data_file_name.empty()) {
+    if (index < changes.size() && !changes[index].destination.data_file_name.empty()) {
         return changes[index].destination.data_file_name;
     }
 
@@ -184,7 +184,7 @@ std::filesystem::path ArchiveDir::get_full_name(uint64_t index) {
 }
 
 std::filesystem::path ArchiveDir::get_original_data(uint64_t index) {
-    if (!changes[index].original.data_file_name.empty()) {
+    if (index < changes.size() && !changes[index].original.data_file_name.empty()) {
         return changes[index].original.data_file_name;
     }
 

@@ -412,7 +412,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
                     if (fix_options & FIX_PRINT) {
                         printf("%s: move long file '%s'\n", afrom->name.c_str(), REAL_NAME(afrom, match_index(m)));
                     }
-                    if (gb->add(match_index(m), true) < 0) {
+                    if (!gb->add(match_index(m), true)) {
                         break;
                     }
                 }
@@ -422,10 +422,12 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
                 }
                 
                 bool replacing_ourself = (a == afrom && match_index(m) == afrom->file_index_by_name(file_name(r)));
-                if (make_space(a, file_name(r), original_names, num_names) < 0)
+                if (make_space(a, file_name(r), original_names, num_names) < 0) {
                     break;
-                if (a->file_copy_part(afrom, match_index(m), file_name(r), match_offset(m), file_size_(r), r) < 0)
+                }
+                if (!a->file_copy_part(afrom, match_index(m), file_name(r), match_offset(m), file_size_(r), r)) {
                     break;
+                }
                 if (a == afrom && file_where(&afrom->files[match_index(m)]) != FILE_DELETED) {
                     if (!replacing_ourself && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT)) {
                         printf("%s: delete long file '%s'\n", afrom->name.c_str(), file_name(r));
@@ -476,7 +478,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 		break;
 	    }
 
-            if (a->file_copy(afrom, match_index(m), file_name(r)) < 0) {
+            if (!a->file_copy(afrom, match_index(m), file_name(r))) {
 		myerror(ERRDEF, "copying '%s' from '%s' to '%s' failed, not deleting", file_name(r), afrom->name.c_str(), a->name.c_str());
 		/* TODO: if (idx >= 0) undo deletion of broken file */
 	    }

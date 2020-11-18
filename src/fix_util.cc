@@ -177,7 +177,7 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 
     bool needed = true;
 
-    if (sa->file_compute_hashes(sidx, romdb_hashtypes(db, TYPE_ROM)) < 0) {
+    if (!sa->file_compute_hashes(sidx, romdb_hashtypes(db, TYPE_ROM))) {
 	return -1;
     }
     
@@ -197,7 +197,7 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 		printf("%s: save needed file '%s'\n", sa->name.c_str(), file_name(&sa->files[sidx]));
 	    }
 	    else {
-                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str()), (uint64_t)start, (uint64_t)length, file_name(&sa->files[sidx]);
+                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), (uint64_t)start, (uint64_t)length, file_name(&sa->files[sidx]));
 	    }
 	}
 
@@ -214,7 +214,7 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 	
 	free(tmp);
 	
-        if (da->file_copy_part(sa, sidx, file_name(&sa->files[sidx]), start, length, f) < 0 || !da->commit()) {
+        if (!da->file_copy_part(sa, sidx, file_name(&sa->files[sidx]), start, length, f) || !da->commit()) {
             da->rollback();
 	    return -1;
 	}

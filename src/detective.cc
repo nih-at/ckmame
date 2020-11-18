@@ -179,7 +179,7 @@ print_archive(const char *fname, int hashtypes) {
 
     ret = 0;
     for (size_t i = 0; i < archive->files.size(); i++) {
-	if (archive->file_compute_hashes(i, hashtypes) < 0) {
+	if (!archive->file_compute_hashes(i, hashtypes)) {
 	    ret = -1;
 	    continue;
 	}
