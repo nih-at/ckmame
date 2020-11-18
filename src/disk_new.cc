@@ -69,7 +69,7 @@ disk_new(const char *name, int flags) {
 	return d;
     }
 
-    seterrinfo(name, NULL);
+    seterrinfo(name, "");
     if ((chd = chd_open(name, &err)) == NULL) {
 	/* no error if file doesn't exist */
 	if (!((err == CHD_ERR_OPEN && errno == ENOENT) || ((flags & DISK_FL_QUIET) && err == CHD_ERR_NO_CHD))) {

@@ -122,7 +122,7 @@ int
 link_or_copy(const char *old, const char *new_name) {
     if (link(old, new_name) < 0) {
 	if (copy_file(old, new_name, 0, -1, NULL) < 0) {
-	    seterrinfo(old, NULL);
+	    seterrinfo(old, "");
 	    myerror(ERRFILESTR, "cannot link to '%s'", new_name);
 	    return -1;
 	}
@@ -135,7 +135,7 @@ link_or_copy(const char *old, const char *new_name) {
 int
 my_remove(const char *name) {
     if (remove(name) != 0) {
-	seterrinfo(name, NULL);
+	seterrinfo(name, "");
 	myerror(ERRFILESTR, "cannot remove");
 	return -1;
     }
@@ -148,7 +148,7 @@ int
 rename_or_move(const char *old, const char *new_name) {
     if (rename(old, new_name) < 0) {
 	if (copy_file(old, new_name, 0, -1, NULL) < 0) {
-	    seterrinfo(old, NULL);
+	    seterrinfo(old, "");
 	    myerror(ERRFILESTR, "cannot rename to '%s'", new_name);
 	    return -1;
 	}

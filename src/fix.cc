@@ -373,7 +373,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 
     bool needs_recheck = false;
 
-    seterrinfo(NULL, a->name);
+    seterrinfo("", a->name);
 
     size_t num_names = a->files.size();
     std::string original_names[num_names];
@@ -514,7 +514,7 @@ fix_files_incomplete(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
     file_t *r;
     int i;
 
-    seterrinfo(NULL, a->name);
+    seterrinfo("", a->name);
 
     for (i = 0; i < game_num_roms(g); i++) {
 	m = result_rom(res, i);

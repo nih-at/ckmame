@@ -65,7 +65,7 @@ std::unordered_map<uint64_t, ArchivePtr> Archive::archive_by_id;
 
 int Archive::close() {
     int ret;
-    seterrinfo(NULL, name);
+    seterrinfo("", name);
 
     ret = commit();
 

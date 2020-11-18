@@ -395,7 +395,7 @@ main(int argc, char **argv) {
 	    FILE *f;
 	    char b[8192];
 
-	    seterrinfo(game_list, NULL);
+	    seterrinfo(game_list, "");
 
 	    if ((f = fopen(game_list, "r")) == NULL) {
 		myerror(ERRZIPSTR, "cannot open game list");

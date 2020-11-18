@@ -382,7 +382,7 @@ Archive::FilePtr ArchiveDir::file_open(uint64_t index) {
     FILE *f;
 
     if ((f = fopen(get_full_name(index).c_str(), "rb")) == NULL) {
-        seterrinfo(NULL, name);
+        seterrinfo("", name);
         myerror(ERRZIP, "cannot open '%s': %s", files[index].name, strerror(errno));
         return NULL;
     }

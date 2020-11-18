@@ -115,7 +115,7 @@ void ArchiveZip::commit_cleanup() {
 	struct zip_stat st;
 
 	if (zip_stat_index(za, i, 0, &st) < 0) {
-	    seterrinfo(NULL, name);
+	    seterrinfo("", name);
 	    myerror(ERRZIP, "cannot stat file %d: %s", i, zip_strerror(za));
 	    continue;
 	}
@@ -129,7 +129,7 @@ bool ArchiveZip::file_add_empty_xxx(const std::string &filename) {
     struct zip_source *source;
 
     if (filetype != TYPE_ROM) {
-	seterrinfo(name, NULL);
+	seterrinfo(name, "");
 	myerror(ERRZIP, "cannot add files to disk");
 	return false;
     }
@@ -190,7 +190,7 @@ bool ArchiveZip::file_delete_xxx(uint64_t index) {
     }
 
     if (zip_delete(za, index) < 0) {
-	seterrinfo(NULL, name);
+	seterrinfo("", name);
 	myerror(ERRZIP, "cannot delete '%s': %s", zip_get_name(za, index, 0), zip_strerror(za));
 	return false;
     }
@@ -207,7 +207,7 @@ Archive::FilePtr ArchiveZip::file_open(uint64_t index) {
     struct zip_file *zf;
 
     if ((zf = zip_fopen_index(za, index, 0)) == NULL) {
-	seterrinfo(NULL, name);
+	seterrinfo("", name);
 	myerror(ERRZIP, "cannot open '%s': %s", file_name(&files[index]), zip_strerror(za));
 	return NULL;
     }
@@ -222,7 +222,7 @@ bool ArchiveZip::file_rename_xxx(uint64_t index, const std::string &filename) {
     }
 
     if (my_zip_rename(za, index, filename.c_str()) < 0) {
-	seterrinfo(NULL, name);
+	seterrinfo("", name);
 	myerror(ERRZIP, "cannot rename '%s' to `%s': %s", zip_get_name(za, index, 0), filename.c_str(), zip_strerror(za));
 	return false;
     }
@@ -256,7 +256,7 @@ bool ArchiveZip::read_infos_xxx() {
         return false;
     }
     
-    seterrinfo(NULL, name);
+    seterrinfo("", name);
 
     zip_uint64_t n = static_cast<zip_uint64_t>(zip_get_num_entries(za, 0));
     
