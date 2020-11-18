@@ -295,7 +295,9 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
         return ArchivePtr();
     }
     
-    if (!archive->read_infos()) {
+    archive->flags = ((flags | _archive_global_flags) & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK));
+    
+    if (!archive->read_infos() && (flags & ARCHIVE_FL_CREATE) == 0) {
         return ArchivePtr();
     }
         
@@ -312,8 +314,6 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
 	    memdb_file_insert_archive(archive.get());
         }
     }
-
-    archive->flags = ((flags | _archive_global_flags) & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK));
 
     return archive;
 }

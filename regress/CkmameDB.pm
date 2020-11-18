@@ -154,7 +154,8 @@ sub read_archives {
 			$idx = 0;
 
 			if ($self->{unzipped}) {
-				$archive->{mtime} = 0;
+				my @stat = stat("$self->{dir}/$archive->{name}");
+				$archive->{mtime} = $stat[9] // '<null>';
 				$archive->{size} = 0;
 			}
 			else {

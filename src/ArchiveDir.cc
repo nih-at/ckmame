@@ -267,12 +267,11 @@ void ArchiveDir::commit_cleanup() {
 
 
 bool ArchiveDir::file_add_empty_xxx(const std::string &filename) {
-    return file_copy_xxx(std::optional<uint64_t>(), NULL, 0, filename, 0, 0);
+    return file_copy_xxx({}, NULL, 0, filename, 0, 0);
 }
 
 
 bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length) {
-
     if (!ensure_archive_dir()) {
         return false;
     }
@@ -336,6 +335,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
         }
     }
     else {
+        /* TODO: real_index > changes.size(): grow archive by more than 1 */
         changes.push_back(Change());
         change = &changes[changes.size() - 1];
     }
@@ -353,7 +353,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
     change->destination.name = full_name;
     change->destination.data_file_name = tmpname;
     
-    return 0;
+    return true;
 }
 
 

@@ -368,15 +368,16 @@ dbh_cache_write(dbh_t *dbh, int id, const Archive *a) {
 
     free(name);
 
-    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_INSERT_FILE)) == NULL)
+    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_INSERT_FILE)) == NULL) {
 	return -1;
+    }
 
-    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK)
+    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
 	return -1;
+    }
 
     for (i = 0; i < a->files.size(); i++) {
 	const file_t *f = &a->files[i];
-
 	if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK || sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, file_mtime(f)) != SQLITE_OK || sqlite3_bind_int(stmt, 5, file_status_(f)) != SQLITE_OK || sq3_set_int64_default(stmt, 6, file_size_(f), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
 	    return -1;
 	}

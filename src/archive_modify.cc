@@ -96,7 +96,7 @@ bool Archive::commit() {
             if (cache_id > 0) {
 		if (dbh_cache_delete(cache_db, cache_id) < 0) {
 		    seterrdb(cache_db);
-                    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
+                    myerror(ERRDB, "%s: error deleting from " DBH_CACHE_DB_NAME, name.c_str());
 		    /* TODO: handle errors */
 		}
 	    }
@@ -120,19 +120,14 @@ bool Archive::commit() {
         cache_changed = false;
     }
 
-    return 0;
+    return true;
 }
 
 
 bool Archive::file_add_empty(const std::string &filename) {
-
     if (!is_writable()) {
 	seterrinfo(name, "");
 	myerror(ERRZIP, "cannot add to read-only archive");
-	return false;
-    }
-
-    if (!file_add_empty_xxx(filename)) {
 	return false;
     }
 
@@ -145,7 +140,12 @@ bool Archive::file_add_empty(const std::string &filename) {
 
     add_file(std::optional<uint64_t>(), filename, &f);
 
-    return 0;
+    if (!file_add_empty_xxx(filename)) {
+        files.pop_back();
+        return false;
+    }
+        
+    return true;
 }
 
 
@@ -217,7 +217,7 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 	}
     }
 
-    return 0;
+    return true;
 }
 
 
@@ -333,18 +333,19 @@ bool Archive::rollback() {
 
 
 void Archive::add_file(std::optional<uint64_t> index, const std::string &filename, const file_t *file) {
-    file_t nf;
-    
-    file_init(&nf);
-    file_name(&nf) = xstrdup(name.c_str());
-    file_where(&nf) = FILE_ADDED;
+    file_t *nf;
 
     if (index.has_value()) {
-        files.insert(files.begin() + index.value(), nf);
+        files.insert(files.begin() + index.value(), *file);
+        nf = &files[index.value()];
     }
     else {
-        files.push_back(nf);
+        files.push_back(*file);
+        nf = &files[files.size() - 1];
     }
+
+    file_name(nf) = xstrdup(filename.c_str());
+    file_where(nf) = FILE_ADDED;
 
     flags |= ARCHIVE_IFL_MODIFIED;
 }

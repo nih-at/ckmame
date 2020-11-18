@@ -316,5 +316,5 @@ bool ArchiveZip::rollback_xxx() {
 	}
     }
 
-    return 0;
+    return true;
 }
