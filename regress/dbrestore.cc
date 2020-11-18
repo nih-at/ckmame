@@ -114,7 +114,7 @@ main(int argc, char *argv[]) {
     const char *dump_fname = argv[optind];
     const char *db_fname = argv[optind + 1];
 
-    seterrinfo(dump_fname, NULL);
+    seterrinfo(dump_fname, "");
 
     FILE *f = fopen(dump_fname, "r");
     if (f == NULL) {
