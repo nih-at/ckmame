@@ -6,7 +6,7 @@ class ArchiveZip : public Archive {
     class File: public Archive::File {
     public:
         File(zip_file_t *zf_) : zf(zf_) { }
-        ~File() { close(); }
+        virtual ~File() { close(); }
         
         virtual void close();
         virtual int64_t read(void *, uint64_t);

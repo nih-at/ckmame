@@ -379,7 +379,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
     std::string original_names[num_names];
     
     for (size_t i = 0; i < game_num_roms(g); i++) {
-        match_t *m = result_rom(res, i);
+        Match *m = result_rom(res, i);
         
         if (match_source_is_old(m)) {
 	    afrom = NULL;
@@ -512,7 +512,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 static int
 fix_files_incomplete(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
     Archive *afrom;
-    match_t *m;
+    Match *m;
     file_t *r;
     int i;
 

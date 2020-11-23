@@ -64,8 +64,6 @@ public:
     std::string file() const;
 };
 
-typedef struct Match match_t;
-
 #define match_archive(m) ((m)->archive.get())
 #define match_copy(m1, m2) ((m1) = (m2))
 #define match_index(m) ((m)->index)
@@ -76,11 +74,11 @@ typedef struct Match match_t;
 #define match_source_is_old(m) ((m)->source_is_old())
 #define match_where(m) ((m)->where)
 
-const char *match_file(match_t *);
-void match_finalize(match_t *);
-const char *match_game(match_t *);
-void match_init(match_t *);
+const char *match_file(Match *);
+void match_finalize(Match *);
+const char *match_game(Match *);
+void match_init(Match *);
 /*void match_merge(match_array_t *, Archive **, int, int); */
-/*int matchcmp(const match_t *, const match_t *); */
+/*int matchcmp(const Match *, const Match *); */
 
 #endif /* match.h */

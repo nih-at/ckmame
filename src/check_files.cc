@@ -55,7 +55,7 @@ enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 
 typedef enum test_result test_result_t;
 
-static test_result_t match_files(ArchivePtr, test_t, const file_t *, match_t *);
+static test_result_t match_files(ArchivePtr, test_t, const file_t *, Match *);
 static void update_game_status(const game_t *, result_t *);
 
 
@@ -72,7 +72,7 @@ check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
     
     for (i = 0; i < game_num_roms(g); i++) {
         file_t *rom = game_rom(g, i);
-        match_t *match = result_rom(res, i);
+        Match *match = result_rom(res, i);
         auto expected_archive = archives[file_where(rom)];
         
         if (match_quality(match) == QU_OLD) {
@@ -127,7 +127,7 @@ check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
         }
         
         for (i = 0; i < game_num_roms(g); i++) {
-            match_t *match = result_rom(res, i);
+            Match *match = result_rom(res, i);
             if (match_where(match) == FILE_INGAME && match_quality(match) != QU_HASHERR) {
                 j = match_index(match);
                 if (result_file(res, j) != FS_USED) {
@@ -163,7 +163,7 @@ check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
 
 
 static test_result_t
-match_files(ArchivePtr archive, test_t test, const file_t *rom, match_t *match) {
+match_files(ArchivePtr archive, test_t test, const file_t *rom, Match *match) {
     const file_t *file;
     test_result_t result;
 
@@ -251,7 +251,7 @@ static void
 update_game_status(const game_t *g, result_t *res) {
     int i;
     int all_dead, all_own_dead, all_correct, all_fixable, has_own;
-    const match_t *m;
+    const Match *m;
     const file_t *r;
 
     all_own_dead = all_dead = all_correct = all_fixable = 1;

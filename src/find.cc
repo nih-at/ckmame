@@ -51,13 +51,13 @@
 #define QUERY_FILE_LOCATION 3
 
 
-static find_result_t check_for_file_in_zip(const char *, const file_t *, const file_t *, match_t *);
+static find_result_t check_for_file_in_zip(const char *, const file_t *, const file_t *, Match *);
 static find_result_t check_match_disk_old(const game_t *, const disk_t *, match_disk_t *);
 static find_result_t check_match_disk_romset(const game_t *, const disk_t *, match_disk_t *);
-static find_result_t check_match_old(const game_t *, const file_t *, const file_t *, match_t *);
-static find_result_t check_match_romset(const game_t *, const file_t *, const file_t *, match_t *);
+static find_result_t check_match_old(const game_t *, const file_t *, const file_t *, Match *);
+static find_result_t check_match_romset(const game_t *, const file_t *, const file_t *, Match *);
 static find_result_t find_disk_in_db(romdb_t *, const disk_t *, const char *, match_disk_t *, find_result_t (*)(const game_t *, const disk_t *, match_disk_t *));
-static find_result_t find_in_db(romdb_t *, const file_t *, Archive *, const char *, match_t *, find_result_t (*)(const game_t *, const file_t *, const file_t *, match_t *));
+static find_result_t find_in_db(romdb_t *, const file_t *, Archive *, const char *, Match *, find_result_t (*)(const game_t *, const file_t *, const file_t *, Match *));
 
 
 find_result_t
@@ -118,7 +118,7 @@ find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md) {
 
 
 find_result_t
-find_in_archives(const file_t *r, match_t *m, bool needed_only) {
+find_in_archives(const file_t *r, Match *m, bool needed_only) {
     sqlite3_stmt *stmt;
     file_t *f;
     int i, ret, hcol, sh;
@@ -175,7 +175,7 @@ find_in_archives(const file_t *r, match_t *m, bool needed_only) {
 
 
 find_result_t
-find_in_old(const file_t *r, Archive *a, match_t *m) {
+find_in_old(const file_t *r, Archive *a, Match *m) {
     if (old_db == NULL) {
 	return FIND_MISSING;
     }
@@ -185,13 +185,13 @@ find_in_old(const file_t *r, Archive *a, match_t *m) {
 
 
 find_result_t
-find_in_romset(const file_t *r, Archive *a, const char *skip, match_t *m) {
+find_in_romset(const file_t *r, Archive *a, const char *skip, Match *m) {
     return find_in_db(db, r, a, skip, m, check_match_romset);
 }
 
 
 static find_result_t
-check_for_file_in_zip(const char *name, const file_t *r, const file_t *f, match_t *m) {
+check_for_file_in_zip(const char *name, const file_t *r, const file_t *f, Match *m) {
     char *full_name;
     ArchivePtr a;
 
@@ -274,7 +274,7 @@ check_match_disk_romset(const game_t *g, const disk_t *d, match_disk_t *md) {
 
 
 static find_result_t
-check_match_old(const game_t *g, const file_t *r, const file_t *f, match_t *m) {
+check_match_old(const game_t *g, const file_t *r, const file_t *f, Match *m) {
     if (m) {
 	match_quality(m) = QU_OLD;
 	match_where(m) = FILE_OLD;
@@ -287,7 +287,7 @@ check_match_old(const game_t *g, const file_t *r, const file_t *f, match_t *m) {
 
 
 static find_result_t
-check_match_romset(const game_t *g, const file_t *r, const file_t *f, match_t *m) {
+check_match_romset(const game_t *g, const file_t *r, const file_t *f, Match *m) {
     find_result_t status;
 
     status = check_for_file_in_zip(game_name(g), r, f, m);
@@ -301,7 +301,7 @@ check_match_romset(const game_t *g, const file_t *r, const file_t *f, match_t *m
 
 
 static find_result_t
-find_in_db(romdb_t *fdb, const file_t *r, Archive *archive, const char *skip, match_t *m, find_result_t (*check_match)(const game_t *, const file_t *, const file_t *, match_t *)) {
+find_in_db(romdb_t *fdb, const file_t *r, Archive *archive, const char *skip, Match *m, find_result_t (*check_match)(const game_t *, const file_t *, const file_t *, Match *)) {
     array_t *a;
     file_location_t *fbh;
     game_t *g;
