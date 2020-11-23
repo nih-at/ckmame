@@ -95,10 +95,10 @@ bool ArchiveDir::FileInfo::discard(ArchiveDir *archive) const {
 
 /* returns: -1 on error, 1 if file was moved, 0 if nothing needed to be done */
 int ArchiveDir::move_original_file_out_of_the_way(uint64_t index) {
-    auto &change = changes[index];
+    auto change = get_change(index, true);
     auto filename = file_name(&files[index]);
 
-    if (change.is_added() || !change.original.name.empty()) {
+    if (change->is_added() || !change->original.name.empty()) {
         return 0;
     }
 
@@ -110,8 +110,8 @@ int ArchiveDir::move_original_file_out_of_the_way(uint64_t index) {
         return false;
     }
 
-    change.original.name = full_name;
-    change.original.data_file_name = tmp;
+    change->original.name = full_name;
+    change->original.data_file_name = tmp;
 
     return 1;
 }
@@ -175,17 +175,34 @@ bool ArchiveDir::ensure_archive_dir() {
 }
 
 
+ArchiveDir::Change *ArchiveDir::get_change(uint64_t index, bool create) {
+    if (changes.size() <= index) {
+        if (!create) {
+            return NULL;
+        }
+        else {
+            changes.resize(index + 1);
+        }
+    }
+    
+    return &changes[index];
+}
+
 std::filesystem::path ArchiveDir::get_full_name(uint64_t index) {
-    if (index < changes.size() && !changes[index].destination.data_file_name.empty()) {
-        return changes[index].destination.data_file_name;
+    auto change = get_change(index);
+    
+    if (change != NULL && !change->destination.data_file_name.empty()) {
+        return change->destination.data_file_name;
     }
 
     return make_full_name(files[index].name);
 }
 
 std::filesystem::path ArchiveDir::get_original_data(uint64_t index) {
-    if (index < changes.size() && !changes[index].original.data_file_name.empty()) {
-        return changes[index].original.data_file_name;
+    auto change = get_change(index);
+    
+    if (change != NULL && !change->original.data_file_name.empty()) {
+        return change->original.data_file_name;
     }
 
     return make_full_name(files[index].name);
@@ -234,16 +251,11 @@ bool ArchiveDir::commit_xxx() {
 
     auto ok = true;
     
-    for (size_t index = 0; index < files.size(); index++) {
-        if (index >= changes.size()) {
-            break;
-        }
-        
+    for (size_t index = 0; index < changes.size(); index++) {
         if (!changes[index].apply(this, index)) {
             ok = false;
         }
     }
-    
     
     if (is_empty && is_writable() && !(flags & (ARCHIVE_FL_KEEP_EMPTY | ARCHIVE_FL_TOP_LEVEL_ONLY))) {
         if (rmdir(name.c_str()) < 0 && errno != ENOENT) {
@@ -316,11 +328,9 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
 
     auto err = false;
     
-    Change *change;
+    Change *change = get_change(real_index, true);
     
-    if (index.has_value() && real_index < changes.size()) {
-        change = &changes[real_index];
-        
+    if (index.has_value()) {
         if (!change->is_added()) {
             if (strcmp(filename.c_str(), file_name(&files[real_index])) != 0) {
                 if (move_original_file_out_of_the_way(real_index) < 0)
@@ -333,11 +343,6 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
                 }
             }
         }
-    }
-    else {
-        /* TODO: real_index > changes.size(): grow archive by more than 1 */
-        changes.push_back(Change());
-        change = &changes[changes.size() - 1];
     }
     
     if (err) {
@@ -358,7 +363,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
 
 
 bool ArchiveDir::file_delete_xxx(uint64_t index) {
-    auto &change = changes[index];
+    auto change = get_change(index, true);
 
     if (!move_original_file_out_of_the_way(index)) {
         return false;
@@ -366,12 +371,12 @@ bool ArchiveDir::file_delete_xxx(uint64_t index) {
 
     auto ok = true;
 
-    if (change.has_new_data()) {
-        if (!change.destination.discard(this)) {
+    if (change->has_new_data()) {
+        if (!change->destination.discard(this)) {
             ok = false;
         }
     }
-    change.destination.clear();
+    change->destination.clear();
 
     return ok;
 }
@@ -423,9 +428,9 @@ bool ArchiveDir::file_will_exist_after_commit(std::filesystem::path filename) {
 
 
 bool ArchiveDir::file_rename_xxx(uint64_t index, const std::string &filename) {
-    auto &change = changes[index];
+    auto change = get_change(index, true);
 
-    if (change.is_deleted()) {
+    if (change->is_deleted()) {
         myerror(ERRZIP, "cannot rename deleted file '%s'", files[index].name);
         return false;
     }
@@ -443,14 +448,14 @@ bool ArchiveDir::file_rename_xxx(uint64_t index, const std::string &filename) {
             return false;
 
         case 1:
-            change.destination.data_file_name = change.original.data_file_name;
+            change->destination.data_file_name = change->original.data_file_name;
             break;
 
         default:
             break;
     }
 
-    change.destination.name = final_name;
+    change->destination.name = final_name;
 
     return true;
 }
@@ -491,6 +496,7 @@ bool ArchiveDir::read_infos_xxx() {
             files.push_back(file_t());
             auto &f = files[files.size() - 1];
             
+            file_init(&f);
             f.name = xstrdup(filename);
             file_size_(&f) = static_cast<uint64_t>(sb.st_size);
             f.mtime = sb.st_mtime;

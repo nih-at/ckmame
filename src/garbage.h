@@ -44,7 +44,7 @@ public:
     ArchivePtr da;
     bool opened;
     
-    Garbage(Archive *sa_ = NULL) : sa(sa_), opened(false) { }
+    Garbage(Archive *sa_) : sa(sa_), opened(false) { }
     
     bool add(uint64_t index, bool copy);
     bool close();

@@ -267,6 +267,7 @@ bool ArchiveZip::read_infos_xxx() {
 	}
 
         file_t r;
+        file_init(&r);
 	file_mtime(&r) = zsb.mtime;
 	file_size_(&r) = zsb.size;
 	file_name(&r) = xstrdup(zsb.name);

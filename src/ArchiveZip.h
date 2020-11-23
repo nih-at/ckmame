@@ -20,6 +20,8 @@ class ArchiveZip : public Archive {
 public:
     ArchiveZip(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(name, filetype, where, flags), za(NULL) { }
     
+    virtual ~ArchiveZip() { update_cache(); }
+
     virtual bool check();
     virtual bool close_xxx();
     virtual bool commit_xxx();

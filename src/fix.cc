@@ -66,7 +66,7 @@ fix_game(game_t *g, Archive *a, images_t *im, result_t *res) {
     GarbagePtr gb;
 
     if (fix_options & FIX_DO) {
-        gb = std::make_shared<Garbage>();
+        gb = std::make_shared<Garbage>(a);
 
         if (!a->check()) {
 	    char *new_name;

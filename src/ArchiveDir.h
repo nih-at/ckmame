@@ -54,6 +54,7 @@ class ArchiveDir : public Archive {
 
 public:
     ArchiveDir(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(name, filetype, where, flags) { }
+    virtual ~ArchiveDir() { update_cache(); }
 
 protected:
     virtual bool commit_xxx();
@@ -78,9 +79,11 @@ private:
         void clear();
     };
     
-    struct Change {
+    class Change {
+    public:
         Change() : mtime(0) { }
 
+        // original.name is set if the file has been renamed
         FileInfo original;
         FileInfo destination;
         time_t mtime;
@@ -105,6 +108,7 @@ private:
     
     std::vector<Change> changes;
     
+    Change *get_change(uint64_t index, bool create = false);
     bool ensure_archive_dir();
     bool file_will_exist_after_commit(std::filesystem::path filename);
     int move_original_file_out_of_the_way(uint64_t index);

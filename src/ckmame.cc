@@ -507,6 +507,8 @@ main(int argc, char **argv) {
     }
 
     dbh_cache_close_all();
+    
+    Archive::flush_cache();
 
     if ((fix_options & FIX_DO) != 0)
 	(void)rmdir(needed_dir);

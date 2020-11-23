@@ -303,6 +303,8 @@ main(int argc, char **argv) {
 	    return 1;
 	}
     }
+    
+    Archive::flush_cache();
 
     return 0;
 }

@@ -84,40 +84,46 @@ bool Archive::commit() {
 
 	flags &= ~ARCHIVE_IFL_MODIFIED;
     }
+    
+    update_cache();
+    return true;
+}
 
-    if (cache_changed) {
-        if (cache_db == NULL) {
-            cache_db = dbh_cache_get_db_for_archive(name.c_str());
-	}
-        if (cache_db != NULL) {
-            if (cache_id > 0) {
-		if (dbh_cache_delete(cache_db, cache_id) < 0) {
-		    seterrdb(cache_db);
-                    myerror(ERRDB, "%s: error deleting from " DBH_CACHE_DB_NAME, name.c_str());
-		    /* TODO: handle errors */
-		}
-	    }
-            if (!files.empty()) {
-                get_last_update();
-
-		cache_id = dbh_cache_write(cache_db, cache_id, this);
-                if (cache_id < 0) {
-                    seterrdb(cache_db);
-                    myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
-                    cache_id = 0;
-		}
-	    }
-	    else {
+void Archive::update_cache() {
+    if (!cache_changed) {
+        return;
+    }
+    
+    if (cache_db == NULL) {
+        cache_db = dbh_cache_get_db_for_archive(name.c_str());
+    }
+    if (cache_db != NULL) {
+        if (cache_id > 0) {
+            if (dbh_cache_delete(cache_db, cache_id) < 0) {
+                seterrdb(cache_db);
+                myerror(ERRDB, "%s: error deleting from " DBH_CACHE_DB_NAME, name.c_str());
+                /* TODO: handle errors */
+            }
+        }
+        if (!files.empty()) {
+            get_last_update();
+            
+            cache_id = dbh_cache_write(cache_db, cache_id, this);
+            if (cache_id < 0) {
+                seterrdb(cache_db);
+                myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
                 cache_id = 0;
-	    }
-	}
+            }
+        }
         else {
             cache_id = 0;
-	}
-        cache_changed = false;
+        }
+    }
+    else {
+        cache_id = 0;
     }
 
-    return true;
+    cache_changed = false;
 }
 
 
@@ -135,7 +141,7 @@ bool Archive::file_add_empty(const std::string &filename) {
     struct hashes_update *hu = hashes_update_new(file_hashes(&f));
     hashes_update_final(hu);
 
-    add_file(std::optional<uint64_t>(), filename, &f);
+    add_file(filename, &f);
 
     if (!file_add_empty_xxx(filename)) {
         files.pop_back();
@@ -147,7 +153,7 @@ bool Archive::file_add_empty(const std::string &filename) {
 
 
 bool Archive::file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename) {
-    return file_copy_part(source_archive, source_index, filename, 0, std::optional<uint64_t>(), &source_archive->files[source_index]);
+    return file_copy_part(source_archive, source_index, filename, 0, {}, &source_archive->files[source_index]);
 }
 
 bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy) {
@@ -201,10 +207,10 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
     }
 
     if (start == 0 && (!length.has_value() || length.value() == file_size_(&source_archive->files[source_index]))) {
-        add_file(std::optional<uint64_t>(), filename, &source_archive->files[source_index]);
+        add_file(filename, &source_archive->files[source_index]);
     }
     else {
-        add_file(std::optional<uint64_t>(), filename, f);
+        add_file(filename, f);
     }
 
     if (is_writable()) {
@@ -329,17 +335,11 @@ bool Archive::rollback() {
 }
 
 
-void Archive::add_file(std::optional<uint64_t> index, const std::string &filename, const file_t *file) {
+void Archive::add_file(const std::string &filename, const file_t *file) {
     file_t *nf;
 
-    if (index.has_value()) {
-        files.insert(files.begin() + index.value(), *file);
-        nf = &files[index.value()];
-    }
-    else {
-        files.push_back(*file);
-        nf = &files[files.size() - 1];
-    }
+    files.push_back(*file);
+    nf = &files[files.size() - 1];
 
     file_name(nf) = xstrdup(filename.c_str());
     file_where(nf) = FILE_ADDED;

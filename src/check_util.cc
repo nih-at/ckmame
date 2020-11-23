@@ -103,7 +103,7 @@ ensure_extra_maps(int flags) {
 	}
 
 	if (roms_unzipped) {
-	    ArchivePtr a = Archive::open_toplevel(rom_dir, TYPE_ROM, FILE_SUPERFLUOUS, 0);
+	    ArchivePtr a = Archive::open_toplevel(get_directory(), TYPE_ROM, FILE_SUPERFLUOUS, 0);
 	    if (a) {
 		a->close();
 	    }

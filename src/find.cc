@@ -123,6 +123,10 @@ find_in_archives(const file_t *r, Match *m, bool needed_only) {
     file_t *f;
     int i, ret, hcol, sh;
 
+    if (memdb_ensure() < 0) {
+        return FIND_ERROR;
+    }
+    
     if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, file_hashes(r), file_size_(r) != SIZE_UNKNOWN))) == NULL)
 	return FIND_ERROR;
 

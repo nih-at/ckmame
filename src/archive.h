@@ -88,6 +88,8 @@ public:
     static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
     static ArchivePtr open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags);
     
+    static void flush_cache();
+    
     static int64_t file_read_c(void *fp, void *data, uint64_t length);
 
     static int register_cache_directory(const std::string &name);
@@ -129,7 +131,7 @@ public:
     virtual bool file_delete_xxx(uint64_t index) = 0;
     virtual FilePtr file_open(uint64_t index) = 0;
     virtual bool file_rename_xxx(uint64_t index, const std::string &filename) = 0;
-    virtual void get_last_update() { mtime = 0; size = 0; }
+    virtual void get_last_update() = 0;
     virtual bool read_infos_xxx() = 0;
     virtual bool rollback_xxx() = 0; /* never called if commit never fails */
     
@@ -148,9 +150,10 @@ public:
     
 protected:
     Archive(const std::string &name, filetype_t filetype, where_t where, int flags);
+    void update_cache();
 
 private:
-    void add_file(std::optional<uint64_t> index, const std::string &filename, const file_t *file);
+    void add_file(const std::string &filename, const file_t *file);
     bool get_hashes(File *f, size_t len, struct hashes *h);
     int cache_is_up_to_date();
     void merge_files(const std::vector<file_t> &files_cache);

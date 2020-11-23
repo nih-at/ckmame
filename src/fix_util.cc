@@ -214,7 +214,7 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 	
 	free(tmp);
 	
-        if (!da->file_copy_part(sa, sidx, file_name(&sa->files[sidx]), start, length, f) || !da->commit()) {
+        if (!da->file_copy_part(sa, sidx, file_name(&sa->files[sidx]), start, length == -1 ? std::optional<uint64_t>() : length, f) || !da->commit()) {
             da->rollback();
 	    return -1;
 	}
