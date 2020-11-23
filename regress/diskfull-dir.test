@@ -15,6 +15,6 @@ stdout roms/clone-8.zip: add 'extra/wrongname.zip/08.rom' as '08.rom'
 stdout In archive extra/wrongname.zip:
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
 stdout extra/wrongname: delete used file '04.rom'
-stderr extra/wrongname/08.rom: cannot link to 'roms/clone-8/.ckmame-08.rom.28518b': No space left on device
+stderr extra/wrongname/08.rom: cannot link to 'roms/clone-8/08.rom.XXXXXXX': No space left on device
 stderr copying '08.rom' from 'extra/wrongname' to 'roms/clone-8' failed, not deleting
-stderr-replace .ckmame-08.rom.[0-9A-Za-z]* .ckmame-08.rom.XXXXXXX
+stderr-replace /08\.rom\.[0-9A-Za-z]* /08\.rom\.XXXXXXX
