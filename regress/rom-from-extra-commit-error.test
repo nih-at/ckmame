@@ -13,4 +13,4 @@ stdout In archive roms/1-4-wrong-name.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 stdout roms/1-4-wrong-name.zip: save needed file '04.rom'
 stdout roms/1-4-wrong-name.zip: remove empty archive
-stderr roms/1-4.zip: cannot commit changes: Renaming temporary file failed: Operation not permitted
+stderr roms/1-4.zip: error closing zip: Renaming temporary file failed: Operation not permitted
