@@ -24,7 +24,7 @@ const char *dbh_stmt_sql[] = {
     "select pointer from ptr_cache where game_id = ?",
     "update file set crc = ?, md5 = ?, sha1 = ? where game_id = ? and file_type = ? and file_idx = ? and file_sh = ?",
     "delete from file where game_id = ? and file_type = ? and file_idx = ?",
-    "update file set idx=idx-1 where game_id = ? and file_type = ? and file_idx > ?",
+    "update file set file_idx=file_idx-1 where game_id = ? and file_type = ? and file_idx > ?",
     "select name, description, version from dat where dat_idx >= 0 order by dat_idx",
     "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = ? and f.status <> ?",
     "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = ? and f.status <> ? and (f.crc = ? or f.crc is null)",

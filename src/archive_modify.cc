@@ -63,8 +63,8 @@ bool Archive::commit() {
 
                     if (is_writable()) {
                         files.erase(files.begin() + i);
-		    i--;
-		}
+                        i--;
+                    }
 		break;
 
                 case FILE_ADDED:
@@ -98,14 +98,17 @@ void Archive::update_cache() {
         cache_db = dbh_cache_get_db_for_archive(name.c_str());
     }
     if (cache_db != NULL) {
-        if (cache_id > 0) {
-            if (dbh_cache_delete(cache_db, cache_id) < 0) {
-                seterrdb(cache_db);
-                myerror(ERRDB, "%s: error deleting from " DBH_CACHE_DB_NAME, name.c_str());
-                /* TODO: handle errors */
+        if (files.empty()) {
+            if (cache_id > 0) {
+                if (dbh_cache_delete(cache_db, cache_id) < 0) {
+                    seterrdb(cache_db);
+                    myerror(ERRDB, "%s: error deleting from " DBH_CACHE_DB_NAME, name.c_str());
+                    /* TODO: handle errors */
+                }
             }
+            cache_id = 0;
         }
-        if (!files.empty()) {
+        else {
             get_last_update();
             
             cache_id = dbh_cache_write(cache_db, cache_id, this);
@@ -114,9 +117,6 @@ void Archive::update_cache() {
                 myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
                 cache_id = 0;
             }
-        }
-        else {
-            cache_id = 0;
         }
     }
     else {

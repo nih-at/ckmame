@@ -68,14 +68,16 @@ dbh_cache_close_all(void) {
 	cache_directory_t *cd = static_cast<cache_directory_t *>(array_get(cache_directories, i));
 
 	if (cd->dbh) {
-	    bool empty = dbh_cache_is_empty(cd->dbh);
+            bool empty = dbh_cache_is_empty(cd->dbh);
+            std::string filename = sqlite3_db_filename(dbh_db(cd->dbh), "main");
+            
 	    err |= dbh_close(cd->dbh);
 	    /* TODO: hack; cache should have detector-applied hashes
 	     * or both; currently only has useless ones without
 	     * detector applied, which breaks consecutive runs */
 	    if (empty || detector) {
-		if (remove(sqlite3_db_filename(dbh_db(cd->dbh), "main")) != 0) {
-		    myerror(ERRSTR, "can't remove empty database '%s'", sqlite3_db_filename(dbh_db(cd->dbh), "main"));
+		if (remove(filename.c_str()) != 0) {
+		    myerror(ERRSTR, "can't remove empty database '%s'", filename.c_str());
 		    err |= 1;
 		}
 	    }
@@ -278,6 +280,7 @@ dbh_cache_read(dbh_t *dbh, const std::string &name, std::vector<file_t> *files) 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
         file_t file;
 
+        file_init(&file);
         file.name = sq3_get_string(stmt, 0);
         file.mtime = sqlite3_column_int(stmt, 1);
 	file_status_(&file) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
@@ -348,6 +351,10 @@ dbh_cache_register_cache_directory(const char *directory_name) {
 int
 dbh_cache_write(dbh_t *dbh, int id, const Archive *a) {
     sqlite3_stmt *stmt;
+
+    if (id == 0) {
+        id = dbh_cache_get_archive_id(dbh, a->name.c_str());
+    }
 
     if (id != 0) {
 	if (dbh_cache_delete(dbh, id) < 0) {

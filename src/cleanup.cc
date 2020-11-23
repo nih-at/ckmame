@@ -184,7 +184,7 @@ cleanup_archive(Archive *a, result_t *res, int flags) {
             case FS_NEEDED:
                 if (flags & CLEANUP_NEEDED) {
                     /* TODO: handle error (how?) */
-                    if (save_needed(a, i, NULL) == 0) {
+                    if (save_needed(a, i, NULL)) {
                         /* save_needed delays deletes in archives with where != FILE_ROM */
                         a->file_delete(i);
                     }

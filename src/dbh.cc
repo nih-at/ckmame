@@ -91,7 +91,12 @@ dbh_close(dbh_t *db) {
     if (db == NULL)
 	return 0;
 
-    /* TODO finalize/free statements */
+    for (size_t i = 0; i < DBH_STMT_MAX; i++) {
+        if (db->statements[i] != NULL) {
+            sqlite3_finalize(db->statements[i]);
+            db->statements[i] = NULL;
+        }
+    }
 
     if (dbh_db(db))
 	return sqlite3_close(dbh_db(db));

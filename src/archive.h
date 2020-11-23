@@ -159,7 +159,7 @@ private:
     void merge_files(const std::vector<file_t> &files_cache);
     
     static uint64_t next_id;
-    static std::unordered_map<std::string, ArchivePtr> archive_by_name;
+    static std::unordered_map<std::string, std::weak_ptr<Archive>> archive_by_name;
     static std::unordered_map<uint64_t, ArchivePtr> archive_by_id;
 };
 

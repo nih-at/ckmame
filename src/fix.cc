@@ -138,8 +138,9 @@ fix_game(game_t *g, Archive *a, images_t *im, result_t *res) {
 
 	case FS_NEEDED:
 	    /* TODO: handle error (how?) */
-	    if (save_needed(a, i, game_name(g)) == 0)
+                if (save_needed(a, i, game_name(g))) {
 		tree_recheck_games_needing(check_tree, file_size_(&a->files[i]), file_hashes(&a->files[i]));
+                }
 	    break;
 
 	case FS_BROKEN:
@@ -341,7 +342,7 @@ fix_disks(game_t *g, images_t *im, result_t *res) {
 
 
 static int
-make_space(Archive *a, const char *name, std::string original_names[], int num_names) {
+make_space(Archive *a, const char *name, std::vector<std::string> *original_names, size_t num_names) {
     auto idx = a->file_index_by_name(name);
 
     if (!idx.has_value()) {
@@ -350,8 +351,8 @@ make_space(Archive *a, const char *name, std::string original_names[], int num_n
     
     auto index = idx.value();
 
-    if (index < num_names && !original_names[index].empty()) {
-	original_names[index] = name;
+    if (index < num_names && (*original_names)[index].empty()) {
+	(*original_names)[index] = name;
     }
 
     if (file_status_(&a->files[index]) == STATUS_BADDUMP) {
@@ -376,7 +377,8 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
     seterrinfo("", a->name);
 
     size_t num_names = a->files.size();
-    std::string original_names[num_names];
+    std::vector<std::string> original_names;
+    original_names.resize(num_names);
     
     for (size_t i = 0; i < game_num_roms(g); i++) {
         Match *m = result_rom(res, i);
@@ -422,7 +424,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
                 }
                 
                 bool replacing_ourself = (a == afrom && match_index(m) == afrom->file_index_by_name(file_name(r)));
-                if (make_space(a, file_name(r), original_names, num_names) < 0) {
+                if (make_space(a, file_name(r), &original_names, num_names) < 0) {
                     break;
                 }
                 if (!a->file_copy_part(afrom, match_index(m), file_name(r), match_offset(m), file_size_(r), r)) {
@@ -441,7 +443,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 	    if (file_where(r) == FILE_INCO || file_where(r) == FILE_INGCO) {
 		if (tree_recheck(check_tree, game_cloneof(g, file_where(r) - 1))) {
 		    /* fall-through to rename in case save_needed fails */
-		    if (save_needed(a, match_index(m), game_name(g)) == 0) {
+		    if (save_needed(a, match_index(m), game_name(g))) {
 			tree_recheck_games_needing(check_tree, file_size_(r), file_hashes(r));
 			break;
 		    }
@@ -452,7 +454,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 		printf("%s: rename '%s' to '%s'\n", a->name.c_str(), REAL_NAME(a, match_index(m)), file_name(r));
 
 	    /* TODO: handle errors (how?) */
-	    if (make_space(a, file_name(r), original_names, num_names) < 0)
+	    if (make_space(a, file_name(r), &original_names, num_names) < 0)
 		break;
 	    a->file_rename(match_index(m), file_name(r));
 
@@ -463,7 +465,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 		/* we can't copy from our own garbage archive, since we're copying to it, and libzip doesn't support cross copying */
 
 		/* TODO: handle error (how?) */
-                if (save_needed(afrom, match_index(m), game_name(g)) == 0) {
+                if (save_needed(afrom, match_index(m), game_name(g))) {
 		    needs_recheck = true;
                 }
 
@@ -473,7 +475,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 		printf("%s: add '%s/%s' as '%s'\n", a->name.c_str(), afrom->name.c_str(), REAL_NAME(afrom, match_index(m)), file_name(r));
             }
 
-	    if (make_space(a, file_name(r), original_names, num_names) < 0) {
+	    if (make_space(a, file_name(r), &original_names, num_names) < 0) {
 		/* TODO: if (idx >= 0) undo deletion of broken file */
 		break;
 	    }

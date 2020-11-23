@@ -127,7 +127,7 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
     game_t *g;
     const file_t *gr;
     int i, ret;
-
+    
     if ((a = romdb_read_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
 	return 0;
 

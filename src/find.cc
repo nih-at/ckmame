@@ -65,6 +65,10 @@ find_disk(const disk_t *d, match_disk_t *md) {
     sqlite3_stmt *stmt;
     disk_t *dm;
     int ret;
+    
+    if (memdb == NULL) {
+        return FIND_UNKNOWN;
+    }
 
     if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, disk_hashes(d), 0))) == NULL)
 	return FIND_ERROR;

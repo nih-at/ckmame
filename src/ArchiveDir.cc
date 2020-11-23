@@ -107,7 +107,7 @@ int ArchiveDir::move_original_file_out_of_the_way(uint64_t index) {
 
     if (rename(full_name.c_str(), tmp.c_str()) < 0) {
         myerror(ERRZIP, "move: cannot rename '%s' to '%s': %s", filename, tmp.c_str(), strerror(errno));
-        return false;
+        return -1;
     }
 
     change->original.name = full_name;
@@ -365,7 +365,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
 bool ArchiveDir::file_delete_xxx(uint64_t index) {
     auto change = get_change(index, true);
 
-    if (!move_original_file_out_of_the_way(index)) {
+    if (move_original_file_out_of_the_way(index) == -1) {
         return false;
     }
 

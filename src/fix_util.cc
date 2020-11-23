@@ -170,7 +170,7 @@ remove_from_superfluous(const char *name) {
 }
 
 
-int
+bool
 save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, file_t *f) {
     char *tmp;
     bool do_save = fix_options & FIX_DO;
@@ -178,7 +178,7 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
     bool needed = true;
 
     if (!sa->file_compute_hashes(sidx, romdb_hashtypes(db, TYPE_ROM))) {
-	return -1;
+        return false;
     }
     
     if (find_in_romset(f, sa, gamename, NULL) == FIND_EXISTS) {
@@ -203,21 +203,21 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 
 	if ((tmp = make_needed_name(f)) == NULL) {
 	    myerror(ERRDEF, "cannot create needed file name");
-	    return -1;
+            return false;
 	}
 	
         ArchivePtr da  = Archive::open(tmp, sa->filetype, FILE_NEEDED, ARCHIVE_FL_CREATE | (do_save ? 0 : ARCHIVE_FL_RDONLY));
 
         if (!da) {
-	    return -1;
+            return false;
         }
 	
 	free(tmp);
 	
         if (!da->file_copy_part(sa, sidx, file_name(&sa->files[sidx]), start, length == -1 ? std::optional<uint64_t>() : length, f) || !da->commit()) {
             da->rollback();
-	    return -1;
-	}
+            return false;
+        }
     }
     else {
 	if (length == -1 && (fix_options & FIX_PRINT)) {
@@ -234,10 +234,10 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 	}
     }
 
-    return 0;
+    return true;
 }
 
-int
+bool
 save_needed(Archive *sa, int sidx, const char *gamename) {
     return save_needed_part(sa, sidx, gamename, 0, -1, &sa->files[sidx]);
 }

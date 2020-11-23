@@ -10,7 +10,7 @@
 #define MEM_QUERY_PTR_ID    "select pointer from ptr_cache where game_id = ?"
 #define MEM_UPDATE_FILE     "update file set crc = ?, md5 = ?, sha1 = ? where game_id = ? and file_type = ? and file_idx = ? and file_sh = ?"
 #define MEM_DELETE_FILE     "delete from file where game_id = ? and file_type = ? and file_idx = ?"
-#define MEM_DEC_FILE_IDX    "update file set idx=idx-1 where game_id = ? and file_type = ? and file_idx > ?"
+#define MEM_DEC_FILE_IDX    "update file set file_idx=file_idx-1 where game_id = ? and file_type = ? and file_idx > ?"
 
 
 /* romdb */

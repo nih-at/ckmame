@@ -54,7 +54,7 @@
 #define BUFSIZE 8192
 
 uint64_t Archive::next_id;
-std::unordered_map<std::string, ArchivePtr> Archive::archive_by_name;
+std::unordered_map<std::string, std::weak_ptr<Archive>> Archive::archive_by_name;
 std::unordered_map<uint64_t, ArchivePtr> Archive::archive_by_id;
 
 int Archive::close() {
@@ -234,14 +234,14 @@ std::string Archive::make_unique_name(const std::string &filename) {
 
     auto ext_index = filename.find_last_of(".");
     if (ext_index == std::string::npos) {
-        strcpy(unique, name.c_str());
+        strcpy(unique, filename.c_str());
 	p = unique + strlen(unique);
 	p[4] = '\0';
     }
     else {
-        strncpy(unique, name.c_str(), ext_index);
+        strncpy(unique, filename.c_str(), ext_index);
         p = unique + ext_index;
-	strcpy(p + 4, name.c_str() + ext_index);
+	strcpy(p + 4, filename.c_str() + ext_index);
     }
     *(p++) = '-';
 
@@ -270,7 +270,9 @@ std::string Archive::make_unique_name(const std::string &filename) {
 ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t where, int flags) {
     auto it = archive_by_name.find(name);
     if (it != archive_by_name.end()) {
-        return it->second;
+        if (!it->second.expired()) {
+            return it->second.lock();
+        }
     }
 
     ArchivePtr archive;
@@ -314,6 +316,8 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
 	    memdb_file_insert_archive(archive.get());
         }
     }
+
+    archive_by_name[name] = archive;
 
     return archive;
 }
