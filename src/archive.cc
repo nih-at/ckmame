@@ -332,7 +332,7 @@ void Archive::flush_cache() {
 Archive::Archive(const std::string &name_, filetype_t ft, where_t where_, int flags_) : id(0), name(name_), filetype(ft), where(where_), flags(0), cache_db(NULL), cache_changed(false), mtime(0), size(0), modified(false) { }
 
 ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags) {
-    ArchivePtr a = open(name + "/", filetype, where, flags | ARCHIVE_FL_TOP_LEVEL_ONLY);
+    ArchivePtr a = open(name, filetype, where, flags | ARCHIVE_FL_TOP_LEVEL_ONLY);
 
     if (a && a->files.empty()) {
         return NULL;

@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/param.h>
 
 #include "compat.h"
 #include "dbh.h"
@@ -147,6 +148,7 @@ struct option options[] = {
 static int ignore_extra;
 
 
+static bool contains_romdir(const char *name);
 static void error_multiple_actions(void);
 
 
@@ -328,13 +330,27 @@ main(int argc, char **argv) {
 	    fix_options |= FIX_CLEANUP_EXTRA;
     }
 
+    ensure_dir(get_directory(), 0);
+    if (realpath(get_directory(), rom_dir_normalized) == NULL) {
+	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
+	myerror(ERRSTR, "can't normalize directory '%s'", get_directory());
+	exit(1);
+    }
+
     Archive::register_cache_directory(get_directory());
     Archive::register_cache_directory(needed_dir);
     Archive::register_cache_directory(unknown_dir);
     int m;
     for (m = 0; m < parray_length(search_dirs); m++) {
-	if (Archive::register_cache_directory(static_cast<char *>(parray_get(search_dirs, m))) < 0)
+	auto name = static_cast<char *>(parray_get(search_dirs, m));
+	if (contains_romdir(name)) {
+	    /* TODO: improve error message: also if extra is in ROM directory. */
+	    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(), name);
 	    exit(1);
+	}
+	if (Archive::register_cache_directory(name) < 0) {
+	    exit(1);
+	}
     }
 
     if ((db = romdb_open(dbname, DBH_READ)) == NULL) {
@@ -452,13 +468,6 @@ main(int argc, char **argv) {
 	detector = romdb_read_detector(db);
     }
 
-    ensure_dir(get_directory(), 0);
-    if (realpath(get_directory(), rom_dir_normalized) == NULL) {
-	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
-	myerror(ERRSTR, "can't normalize directory '%s'", get_directory());
-	exit(1);
-    }
-
     if (action != ACTION_CLEANUP_EXTRA_ONLY)
 	superfluous = list_directory(get_directory(), dbname);
 
@@ -524,4 +533,17 @@ error_multiple_actions(void) {
 	    "game can be used\n",
 	    getprogname());
     exit(1);
+}
+
+
+static bool
+contains_romdir(const char *name) {
+    char normalized[MAXPATHLEN];
+
+    if (realpath(name, normalized) == NULL) {
+	printf("can't normalize\n");
+	return false;
+    }
+
+    return (strncmp(normalized, rom_dir_normalized, MIN(strlen(normalized), strlen(rom_dir_normalized))) == 0);
 }

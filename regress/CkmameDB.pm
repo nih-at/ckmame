@@ -131,7 +131,7 @@ sub read_archives {
 
 		next if ($name eq '.');
 
-		$name =~ s,^\./$self->{dir}/,,;
+		$name =~ s,^\./$self->{dir}/?,,;
 		$name = destrsvis($name);
 		my %attributes = ();
 		for my $attr (@args) {

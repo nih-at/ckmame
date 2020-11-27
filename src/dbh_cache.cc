@@ -45,6 +45,7 @@
 
 typedef struct cache_directory {
     char *name;
+    size_t name_length;
     dbh_t *dbh;
     bool initialized;
 } cache_directory_t;
@@ -93,7 +94,7 @@ dbh_cache_close_all(void) {
 int
 dbh_cache_delete(dbh_t *dbh, int id) {
     sqlite3_stmt *stmt;
-
+    
     if (dbh_cache_delete_files(dbh, id) < 0)
 	return -1;
 
@@ -187,7 +188,7 @@ dbh_cache_get_db_for_archive(const char *name) {
 
     for (i = 0; i < array_length(cache_directories); i++) {
 	cache_directory_t *cd = static_cast<cache_directory_t *>(array_get(cache_directories, i));
-	if (strncmp(cd->name, name, strlen(cd->name)) == 0) {
+	if (strncmp(cd->name, name, cd->name_length) == 0 && (name[cd->name_length] == '\0' || name[cd->name_length] == '/')) {
 	    if (!cd->initialized) {
 		char *dbname = NULL;
 		cd->initialized = true;
@@ -312,26 +313,20 @@ dbh_cache_register_cache_directory(const char *directory_name) {
 	cache_directories = array_new(sizeof(cache_directory_t));
 
     size_t dn_len = strlen(directory_name);
-    char *name;
-    if (directory_name[dn_len - 1] == '/')
-	name = xstrdup(directory_name);
-    else {
-	if (xasprintf(&name, "%s/", directory_name) < 0) {
-	    myerror(ERRSTR, "asprintf failed");
-	    return -1;
-	}
-	dn_len++;
+    char *name = xstrdup(directory_name);
+    if (name[dn_len - 1] == '/') {
+        name[dn_len - 1] = '\0';
     }
 
-    int i;
-    for (i = 0; i < array_length(cache_directories); i++) {
+    for (int i = 0; i < array_length(cache_directories); i++) {
 	cache_directory_t *cd = static_cast<cache_directory_t *>(array_get(cache_directories, i));
-	size_t cd_len = strlen(cd->name);
 
-	if (strncmp(directory_name, cd->name, (cd_len < dn_len ? cd_len : dn_len)) == 0) {
+        size_t length = cd->name_length < dn_len ? cd->name_length : dn_len;
+        
+	if (strncmp(directory_name, cd->name, length) == 0 && (directory_name[length] == '\0' || directory_name[length] == '/') && (cd->name[length] == '\0' || cd->name[length] == '/')) {
 	    free(name);
-	    if (dn_len != cd_len) {
-		myerror(ERRDEF, "can't cache in directory '%s' and its parent '%s'", (cd_len < dn_len ? cd->name : directory_name), (cd_len > dn_len ? cd->name : directory_name));
+	    if (dn_len != cd->name_length) {
+		myerror(ERRDEF, "can't cache in directory '%s' and its parent '%s'", (cd->name_length < dn_len ? directory_name : cd->name), (cd->name_length < dn_len ? cd->name : directory_name));
 		return -1;
 	    }
 	    return 0;
@@ -341,6 +336,7 @@ dbh_cache_register_cache_directory(const char *directory_name) {
     cache_directory_t *cd = static_cast<cache_directory_t *>(array_grow(cache_directories, NULL));
 
     cd->name = name;
+    cd->name_length = dn_len;
     cd->dbh = NULL;
     cd->initialized = false;
 
@@ -399,8 +395,9 @@ dbh_cache_archive_name(dbh_t *dbh, const char *name) {
 
     for (i = 0; i < array_length(cache_directories); i++) {
 	cache_directory_t *cd = static_cast<cache_directory_t *>(array_get(cache_directories, i));
-	if (strncmp(cd->name, name, strlen(cd->name)) == 0) {
-	    char *dbname = strdup(name + strlen(cd->name));
+        if (cd->dbh == dbh) {
+            size_t offset = name[cd->name_length] == '/' ? 1 : 0;
+	    char *dbname = strdup(name + cd->name_length + offset);
 	    if (dbname == NULL) {
 		return NULL;
 	    }

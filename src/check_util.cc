@@ -177,26 +177,8 @@ make_file_name(filetype_t ft, const char *name, const char *game_name) {
 }
 
 
-static bool
-contains_romdir(const char *name) {
-    char normalized[MAXPATHLEN];
-
-    if (realpath(name, normalized) == NULL) {
-	return false;
-    }
-
-    return (strncmp(normalized, rom_dir_normalized, MIN(strlen(normalized), strlen(rom_dir_normalized))) == 0);
-}
-
-
 static int
 enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name, int dir_flags, where_t where) {
-    if (contains_romdir(directory_name)) {
-	/* TODO: improve error message: also if extra is in ROM directory. */
-	myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(), directory_name);
-	exit(1);
-    }
-
     parray_t *our_list;
 
     if (list == NULL) {
@@ -217,7 +199,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
     if (ret == 0) {
 	/* clean up cache db: remove archives no longer in file system */
 	char name[8192];
-	sprintf(name, "%s/", directory_name);
+	sprintf(name, "%s", directory_name);
 	dbh_t *dbh = dbh_cache_get_db_for_archive(name);
 	if (dbh) {
 	    parray_t *list_db = dbh_cache_list_archives(dbh);
@@ -225,7 +207,8 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 		int i;
 		parray_sort(our_list, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
 		for (i = 0; i < parray_length(list_db); i++) {
-		    sprintf(name, "%s/%s%s", directory_name, (char *)parray_get(list_db, i), roms_unzipped ? "" : ".zip");
+		    char *entry_name = static_cast<char *>(parray_get(list_db, i));
+		    sprintf(name, "%s%s%s%s", directory_name, entry_name[0] == '\0' ? "" : "/", entry_name, roms_unzipped ? "" : ".zip");
 		    if (parray_find_sorted(our_list, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) == -1) {
 			dbh_cache_delete_by_name(dbh, name);
 		    }
