@@ -729,7 +729,7 @@
 		4BC199021A48424E005BE809 /* parray_find_sorted.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = parray_find_sorted.cc; sourceTree = "<group>"; };
 		4BC199031A48424E005BE809 /* parray_find.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = parray_find.cc; sourceTree = "<group>"; };
 		4BC78D0A1A4445A400A14E29 /* NiHTest.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = NiHTest.pm; sourceTree = "<group>"; usesTabs = 1; };
-		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 8; path = runtest.in; sourceTree = "<group>"; usesTabs = 1; };
+		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 4; path = runtest.in; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		4BD1BAA61A404BF300A70734 /* CkmameDB.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = CkmameDB.pm; sourceTree = "<group>"; usesTabs = 1; };
 		4BD482962535B23C00D0002B /* ArchiveDir.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveDir.cc; sourceTree = "<group>"; };
 		4BD482972535B23C00D0002B /* ArchiveDir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveDir.h; sourceTree = "<group>"; };

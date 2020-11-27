@@ -5,5 +5,6 @@ args -jFKLivc 1-8
 ckmamedb-before roms ckmamedb-1-4-ok.dump
 ckmamedb-after roms ckmamedb-1-4-ok-1-8-ok.dump
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
+touch 1422359888 roms/1-8.zip
 stdout In game 1-8:
 stdout game 1-8                                     : correct

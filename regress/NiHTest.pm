@@ -1296,16 +1296,16 @@ sub touch_files {
 		for my $args (@{$self->{test}->{touch}}) {
 			my ($mtime, $fname) = @$args;
 
-			if (!-f $fname) {
+			if (!-e $fname) {
 				my $fh;
 				unless (open($fh, "> $fname") and close($fh)) {
-					# TODO: error message
+					$self->warn_file("can't create '$fname': $!");
 					$ok = 0;
 					next;
 				}
 			}
 			unless (utime($mtime, $mtime, $fname) == 1) {
-				# TODO: error message
+				$self->warn_file("can't change mtime for '$fname': $!");
 				$ok = 0;
 			}
 		}

@@ -4,7 +4,6 @@ return 0
 args -jFKLivc -e extra 1-4
 ckmamedb-before extra ckmamedb-1-4-ok.dump
 ckmamedb-after extra ckmamedb-empty.dump
-ckmamedb-after roms ckmamedb-1-4-ok.dump
 file-del extra/1-4.zip 1-4-ok.zip
 file-new roms/1-4.zip 1-4-ok.zip
 stdout In game 1-4:

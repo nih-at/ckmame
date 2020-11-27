@@ -276,6 +276,9 @@ sub dir_mangle_test {
     my ($test, $variant) = @_;
 
     map { s,((?:$ROMDIRS)/[^ :]*)\.zip,$1,go; } @{$test->{test}->{stdout}};
+    for my $args (@{$test->{test}->{touch}}) {
+	    $args->[1] =~ s,((?:$ROMDIRS)/[^ :]*)\.zip,$1,go;
+	}
 
     if ($test->{test}->{program} =~ m/(ckmame|mamedb)$/) {
 	unshift @{$test->{test}->{args}}, '-u';
