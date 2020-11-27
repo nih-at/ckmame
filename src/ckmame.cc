@@ -541,7 +541,6 @@ contains_romdir(const char *name) {
     char normalized[MAXPATHLEN];
 
     if (realpath(name, normalized) == NULL) {
-	printf("can't normalize\n");
 	return false;
     }
 
