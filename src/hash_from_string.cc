@@ -54,19 +54,19 @@ hash_from_string(Hashes *h, const char *str) {
 	return -1;
 
     switch (l / 2) {
-    case HASHES_SIZE_CRC:
+    case Hashes::SIZE_CRC:
 	type = Hashes::TYPE_CRC;
 	h->crc = (uint32_t)strtoul(str, NULL, 16);
 	break;
 
-    case HASHES_SIZE_MD5:
+    case Hashes::SIZE_MD5:
 	type = Hashes::TYPE_MD5;
-	hex2bin(h->md5, str, HASHES_SIZE_MD5);
+	hex2bin(h->md5, str, Hashes::SIZE_MD5);
 	break;
 
-    case HASHES_SIZE_SHA1:
+    case Hashes::SIZE_SHA1:
 	type = Hashes::TYPE_SHA1;
-	hex2bin(h->sha1, str, HASHES_SIZE_SHA1);
+	hex2bin(h->sha1, str, Hashes::SIZE_SHA1);
 	break;
 
     default:
