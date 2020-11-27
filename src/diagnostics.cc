@@ -185,7 +185,7 @@ diagnostics_files(const game_t *game, const result_t *res) {
 	else {
 	    all_same = true;
 	    for (size_t i = 1; i < game_num_roms(game); i++) {
-                if (res->roms[0].old_game == res->roms[i].old_game) {
+                if (res->roms[0].old_game != res->roms[i].old_game) {
 		    all_same = false;
 		    break;
 		}
