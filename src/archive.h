@@ -75,13 +75,15 @@ void archive_global_flags(int fl, bool setp);
 
 class Archive {
 public:
-    class File {
+    class ArchiveFile {
     public:
+        virtual ~ArchiveFile() { }
+        
         virtual void close() = 0;
         virtual int64_t read(void *, uint64_t) = 0;
         virtual const char *strerror() = 0;
     };
-    typedef std::shared_ptr<File> FilePtr;
+    typedef std::shared_ptr<ArchiveFile> ArchiveFilePtr;
 
     static ArchivePtr by_id(uint64_t id) { return archive_by_id[id]; }
     
@@ -99,16 +101,16 @@ public:
     int close();
     bool commit();
     bool file_add_empty(const std::string &filename);
-    int file_compare_hashes(uint64_t idx, const hashes_t *h);
+    int file_compare_hashes(uint64_t idx, const Hashes *h);
     bool file_compute_hashes(uint64_t idx, int hashtypes);
     bool file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy);
-    bool file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const file_t *f);
+    bool file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const File *f);
     bool file_delete(uint64_t index);
-    std::optional<size_t> file_find_offset(size_t idx, size_t size, const hashes_t *h);
-    std::optional<size_t> file_index_by_hashes(const hashes_t *h) const;
+    std::optional<size_t> file_find_offset(size_t idx, size_t size, const Hashes *h);
+    std::optional<size_t> file_index_by_hashes(const Hashes *h) const;
     std::optional<size_t> file_index_by_name(const std::string &name) const;
-    std::optional<size_t> file_index(const file_t *file) const;
+    std::optional<size_t> file_index(const File *file) const;
     void file_match_detector(uint64_t idx);
     bool file_move(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_rename(uint64_t index, const std::string &filename);
@@ -129,7 +131,7 @@ public:
     virtual bool file_add_empty_xxx(const std::string &filename) = 0;
     virtual bool file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length) = 0;
     virtual bool file_delete_xxx(uint64_t index) = 0;
-    virtual FilePtr file_open(uint64_t index) = 0;
+    virtual ArchiveFilePtr file_open(uint64_t index) = 0;
     virtual bool file_rename_xxx(uint64_t index, const std::string &filename) = 0;
     virtual void get_last_update() = 0;
     virtual bool read_infos_xxx() = 0;
@@ -140,7 +142,7 @@ public:
     filetype_t filetype;
     where_t where;
     int flags;
-    std::vector<file_t> files;
+    std::vector<File> files;
     dbh_t *cache_db;
     int cache_id;
     bool cache_changed;
@@ -153,10 +155,10 @@ protected:
     void update_cache();
 
 private:
-    void add_file(const std::string &filename, const file_t *file);
+    void add_file(const std::string &filename, const File *file);
     bool get_hashes(File *f, size_t len, struct hashes *h);
     int cache_is_up_to_date();
-    void merge_files(const std::vector<file_t> &files_cache);
+    void merge_files(const std::vector<File> &files_cache);
     
     static uint64_t next_id;
     static std::unordered_map<std::string, std::weak_ptr<Archive>> archive_by_name;

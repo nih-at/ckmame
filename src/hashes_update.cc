@@ -58,65 +58,60 @@ extern "C" {
 #include "hashes.h"
 #include "xmalloc.h"
 
-struct hashes_update {
+class HashesContexts {
+public:
     uint32_t crc;
     MD5_CTX md5;
     SHA1_CTX sha1;
-
-    struct hashes *h;
 };
 
+Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
+    contexts = new HashesContexts();
 
-void
-hashes_update(struct hashes_update *hu, const unsigned char *buf, size_t len) {
+    if (hashes->has_type(TYPE_CRC)) {
+        contexts->crc = static_cast<uint32_t>(crc32(0, NULL, 0));
+    }
+    if (hashes->has_type(TYPE_MD5)) {
+        MD5Init(&contexts->md5);
+    }
+    if (hashes->has_type(TYPE_SHA1)) {
+        SHA1Init(&contexts->sha1);
+    }
+}
+
+Hashes::Update::~Update() {
+    delete contexts;
+}
+
+void Hashes::Update::update(const void *data, size_t length) {
     size_t i = 0;
 
-    while (i < len) {
-	size_t n = len - i > INT_MAX ? UINT_MAX : len - i;
+    while (i < length) {
+	unsigned int n = length - i > UINT_MAX ? UINT_MAX : static_cast<unsigned int>(length - i);
 
-	if (hu->h->types & HASHES_TYPE_CRC)
-	    hu->crc = (uint32_t)crc32(hu->crc, (const Bytef *)buf, (unsigned int)n);
-	if (hu->h->types & HASHES_TYPE_MD5)
-	    MD5Update(&hu->md5, buf, (unsigned int)n);
-	if (hu->h->types & HASHES_TYPE_SHA1)
-	    SHA1Update(&hu->sha1, buf, (unsigned int)n);
+        if (hashes->has_type(TYPE_CRC)) {
+            contexts->crc = static_cast<uint32_t>(crc32(contexts->crc, static_cast<const Bytef *>(data), n));
+        }
+        if (hashes->has_type(TYPE_MD5)) {
+            MD5Update(&contexts->md5, static_cast<const unsigned char *>(data), n);
+        }
+        if (hashes->has_type(TYPE_SHA1)) {
+            SHA1Update(&contexts->sha1, static_cast<const uint8_t *>(data), n);
+        }
 
-	i += n;
+        i += n;
     }
 }
 
 
-void
-hashes_update_final(struct hashes_update *hu) {
-    if (hu->h->types & HASHES_TYPE_CRC)
-	hu->h->crc = hu->crc;
-    if (hu->h->types & HASHES_TYPE_MD5)
-	MD5Final(hu->h->md5, &hu->md5);
-    if (hu->h->types & HASHES_TYPE_SHA1)
-	SHA1Final(hu->h->sha1, &hu->sha1);
-
-    free(hu);
-}
-
-void
-hashes_update_discard(struct hashes_update *hu) {
-    free(hu);
-}
-
-struct hashes_update *
-hashes_update_new(struct hashes *h) {
-    struct hashes_update *hu;
-
-    hu = static_cast<struct hashes_update *>(xmalloc(sizeof(*hu)));
-
-    hu->h = h;
-
-    if (h->types & HASHES_TYPE_CRC)
-	hu->crc = (uint32_t)crc32(0, NULL, 0);
-    if (h->types & HASHES_TYPE_MD5)
-	MD5Init(&hu->md5);
-    if (h->types & HASHES_TYPE_SHA1)
-	SHA1Init(&hu->sha1);
-
-    return hu;
+void Hashes::Update::end() {
+    if (hashes->has_type(TYPE_CRC)) {
+        hashes->crc = contexts->crc;
+    }
+    if (hashes->has_type(TYPE_MD5)) {
+        MD5Final(hashes->md5, &contexts->md5);
+    }
+    if (hashes->has_type(TYPE_SHA1)) {
+        SHA1Final(hashes->sha1, &contexts->sha1);
+    }
 }

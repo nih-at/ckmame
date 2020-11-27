@@ -66,7 +66,7 @@ int Archive::close() {
     return close_xxx() | ret;
 }
 
-int Archive::file_compare_hashes(uint64_t index, const hashes_t *h) {
+int Archive::file_compare_hashes(uint64_t index, const Hashes *h) {
     auto rh = file_hashes(&files[index]);
 
     if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h)) {
@@ -82,7 +82,7 @@ int Archive::file_compare_hashes(uint64_t index, const hashes_t *h) {
 
 
 bool Archive::file_compute_hashes(uint64_t idx, int hashtypes) {
-    hashes_t h;
+    Hashes h;
     auto r = &files[idx];
 
     if ((hashes_types(file_hashes(r)) & hashtypes) == hashtypes)
@@ -103,7 +103,7 @@ bool Archive::file_compute_hashes(uint64_t idx, int hashtypes) {
 	return false;
     }
 
-    if (hashes_types(file_hashes(r)) & hashtypes & HASHES_TYPE_CRC) {
+    if (hashes_types(file_hashes(r)) & hashtypes & Hashes::TYPE_CRC) {
 	if (file_hashes(r)->crc != h.crc) {
 	    myerror(ERRDEF, "%s: %s: CRC error: %x != %x", name.c_str(), file_name(r), h.crc, file_hashes(r)->crc);
 	    file_status_(r) = STATUS_BADDUMP;
@@ -118,8 +118,8 @@ bool Archive::file_compute_hashes(uint64_t idx, int hashtypes) {
 }
 
 
-std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const hashes_t *h) {
-    hashes_t hn;
+std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const Hashes *h) {
+    Hashes hn;
 
     hashes_init(&hn);
     hashes_types(&hn) = hashes_types(h);
@@ -156,7 +156,7 @@ std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const h
 }
 
 
-std::optional<size_t> Archive::file_index_by_hashes(const hashes_t *h) const {
+std::optional<size_t> Archive::file_index_by_hashes(const Hashes *h) const {
     if (h->types == 0) {
         return {};
     }
@@ -206,7 +206,7 @@ void Archive::file_match_detector(uint64_t index) {
 
 
 int64_t Archive::file_read_c(void *fp, void *data, uint64_t length) {
-    auto file = static_cast<Archive::File *>(fp);
+    auto file = static_cast<Archive::ArchiveFile *>(fp);
     
     return file->read(data, length);
 }
@@ -418,7 +418,7 @@ int Archive::cache_is_up_to_date() {
 }
 
 
-bool Archive::get_hashes(File *f, size_t len, struct hashes *h) {
+bool Archive::get_hashes(ArchiveFile *f, size_t len, struct hashes *h) {
     hashes_update_t *hu;
     unsigned char buf[BUFSIZE];
     size_t n;
@@ -443,11 +443,11 @@ bool Archive::get_hashes(File *f, size_t len, struct hashes *h) {
 }
 
 
-void Archive::merge_files(const std::vector<file_t> &files_cache) {
+void Archive::merge_files(const std::vector<File> &files_cache) {
     for (uint64_t i = 0; i < files.size(); i++) {
         auto &file = files[i];
         
-        auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const file_t &file_cache){ return file.name == file_cache.name; });
+        auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const File &file_cache){ return file.name == file_cache.name; });
         if (it != files_cache.cend()) {
             if (file_mtime(&file) == file_mtime(&(*it)) && file_compare_nsc(&file, &(*it))) {
                 hashes_copy(file_hashes(&file), file_hashes(&(*it)));
@@ -460,7 +460,7 @@ void Archive::merge_files(const std::vector<file_t> &files_cache) {
             cache_changed = true;
         }
         
-        if (!hashes_has_type(file_hashes(&file), HASHES_TYPE_CRC)) {
+        if (!hashes_has_type(file_hashes(&file), Hashes::TYPE_CRC)) {
             if (!file_compute_hashes(i, HASHES_TYPE_ALL)) {
                 file_status_(&file) = STATUS_BADDUMP;
                 if (it == files_cache.cend() || file_status_(&(*it)) != STATUS_BADDUMP) {
@@ -480,7 +480,7 @@ void Archive::merge_files(const std::vector<file_t> &files_cache) {
     }
 }
 
-std::optional<size_t> Archive::file_index(const file_t *file) const {
+std::optional<size_t> Archive::file_index(const File *file) const {
     for (size_t index = 0; index < files.size(); index++) {
         if (&files[index] == file) {
             return index;

@@ -41,7 +41,7 @@
 
 
 int
-hash_from_string(hashes_t *h, const char *str) {
+hash_from_string(Hashes *h, const char *str) {
     size_t l;
     int type;
 
@@ -55,17 +55,17 @@ hash_from_string(hashes_t *h, const char *str) {
 
     switch (l / 2) {
     case HASHES_SIZE_CRC:
-	type = HASHES_TYPE_CRC;
+	type = Hashes::TYPE_CRC;
 	h->crc = (uint32_t)strtoul(str, NULL, 16);
 	break;
 
     case HASHES_SIZE_MD5:
-	type = HASHES_TYPE_MD5;
+	type = Hashes::TYPE_MD5;
 	hex2bin(h->md5, str, HASHES_SIZE_MD5);
 	break;
 
     case HASHES_SIZE_SHA1:
-	type = HASHES_TYPE_SHA1;
+	type = Hashes::TYPE_SHA1;
 	hex2bin(h->sha1, str, HASHES_SIZE_SHA1);
 	break;
 

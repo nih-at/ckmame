@@ -42,24 +42,24 @@
 #include "xmalloc.h"
 
 
-const intstr_t hash_type_names[] = {{HASHES_TYPE_CRC, "crc"}, {HASHES_TYPE_MD5, "md5"}, {HASHES_TYPE_SHA1, "sha1"}, {0, NULL}};
+const intstr_t hash_type_names[] = {{Hashes::TYPE_CRC, "crc"}, {Hashes::TYPE_MD5, "md5"}, {Hashes::TYPE_SHA1, "sha1"}, {0, NULL}};
 
 
 const char *
-hash_to_string(char *str, int type, const hashes_t *hashes) {
+hash_to_string(char *str, int type, const Hashes *hashes) {
     if (!hashes_has_type(hashes, type))
 	return NULL;
 
     switch (type) {
-    case HASHES_TYPE_CRC:
+    case Hashes::TYPE_CRC:
 	sprintf(str, "%.8" PRIx32, hashes->crc);
 	break;
 
-    case HASHES_TYPE_MD5:
+    case Hashes::TYPE_MD5:
 	bin2hex(str, hashes->md5, HASHES_SIZE_MD5);
 	break;
 
-    case HASHES_TYPE_SHA1:
+    case Hashes::TYPE_SHA1:
 	bin2hex(str, hashes->sha1, HASHES_SIZE_SHA1);
 	break;
 
@@ -71,26 +71,3 @@ hash_to_string(char *str, int type, const hashes_t *hashes) {
 }
 
 
-int
-hash_types_from_str(const char *s) {
-    const char *p, *q;
-    char b[16];
-    int types, t;
-
-    types = 0;
-    p = s;
-    do {
-	q = p + strcspn(p, ",");
-	if ((size_t)(q - p) >= sizeof(b))
-	    return 0;
-	strncpy(b, p, q - p);
-	b[q-p] = '\0';
-	if ((t = hash_type_from_str(b)) == 0)
-	    return 0;
-	types |= t;
-
-	p = q + 1;
-    } while (*q);
-
-    return types;
-}

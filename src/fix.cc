@@ -54,13 +54,13 @@
 #include "util.h"
 #include "xmalloc.h"
 
-static int fix_disks(game_t *, images_t *, result_t *);
-static int fix_files(game_t *, Archive *, result_t *, garbage_t *);
-static int fix_files_incomplete(game_t *g, Archive *a, result_t *res, garbage_t *gb);
+static int fix_disks(Game *, images_t *, result_t *);
+static int fix_files(Game *, Archive *, result_t *, garbage_t *);
+static int fix_files_incomplete(Game *g, Archive *a, result_t *res, garbage_t *gb);
 
 
 int
-fix_game(game_t *g, Archive *a, images_t *im, result_t *res) {
+fix_game(Game *g, Archive *a, images_t *im, result_t *res) {
     int ret;
     bool move;
     GarbagePtr gb;
@@ -197,7 +197,7 @@ fix_game(game_t *g, Archive *a, images_t *im, result_t *res) {
 
 
 static int
-fix_disks(game_t *g, images_t *im, result_t *res) {
+fix_disks(Game *g, images_t *im, result_t *res) {
     int i;
     disk_t *d;
     match_disk_t *md;
@@ -369,7 +369,7 @@ make_space(Archive *a, const char *name, std::vector<std::string> *original_name
 #define REAL_NAME(aa, ii) ((aa) == a && (ii) < num_names && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : file_name(&(aa)->files[ii]))
 
 static int
-fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
+fix_files(Game *g, Archive *a, result_t *res, garbage_t *gb) {
     Archive *afrom;
 
     bool needs_recheck = false;
@@ -389,7 +389,7 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
         else {
 	    afrom = match_archive(m);
         }
-        file_t *r = game_rom(g, i);
+        File *r = game_rom(g, i);
 	seterrinfo(file_name(r), a->name);
 
 	switch (match_quality(m)) {
@@ -512,10 +512,10 @@ fix_files(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
 
 
 static int
-fix_files_incomplete(game_t *g, Archive *a, result_t *res, garbage_t *gb) {
+fix_files_incomplete(Game *g, Archive *a, result_t *res, garbage_t *gb) {
     Archive *afrom;
     Match *m;
-    file_t *r;
+    File *r;
     int i;
 
     seterrinfo("", a->name);

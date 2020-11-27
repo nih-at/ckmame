@@ -42,11 +42,11 @@
 
 void *sq3_get_blob(sqlite3_stmt *, int, size_t *);
 int sq3_get_int_default(sqlite3_stmt *, int, int);
-void sq3_get_hashes(hashes_t *, sqlite3_stmt *, int);
+void sq3_get_hashes(Hashes *, sqlite3_stmt *, int);
 int64_t sq3_get_int64_default(sqlite3_stmt *, int, int64_t);
 char *sq3_get_string(sqlite3_stmt *, int);
 int sq3_set_blob(sqlite3_stmt *, int, const void *, size_t);
-int sq3_set_hashes(sqlite3_stmt *, int, const hashes_t *, int);
+int sq3_set_hashes(sqlite3_stmt *, int, const Hashes *, int);
 int sq3_set_int_default(sqlite3_stmt *, int, int, int);
 int sq3_set_int64_default(sqlite3_stmt *, int, int64_t, int64_t);
 int sq3_set_string(sqlite3_stmt *, int, const char *);

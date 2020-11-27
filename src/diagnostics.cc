@@ -48,12 +48,12 @@
 
 static const char *zname[] = {"", "cloneof", "grand-cloneof"};
 
-static void diagnostics_disks(const game_t *, const result_t *);
-static void diagnostics_files(const game_t *, const result_t *);
+static void diagnostics_disks(const Game *, const result_t *);
+static void diagnostics_files(const Game *, const result_t *);
 
 
 void
-diagnostics(const game_t *game, const ArchivePtr a, const images_t *im, const result_t *res) {
+diagnostics(const Game *game, const ArchivePtr a, const images_t *im, const result_t *res) {
     warn_set_info(WARN_TYPE_GAME, game_name(game));
 
     diagnostics_files(game, res);
@@ -108,7 +108,7 @@ diagnostics_archive(const ArchivePtr a, const result_t *res) {
 
 
 static void
-diagnostics_disks(const game_t *game, const result_t *res) {
+diagnostics_disks(const Game *game, const result_t *res) {
     int i;
     disk_t *d;
     match_disk_t *md;
@@ -170,8 +170,8 @@ diagnostics_disks(const game_t *game, const result_t *res) {
 
 
 static void
-diagnostics_files(const game_t *game, const result_t *res) {
-    file_t *f, *r;
+diagnostics_files(const Game *game, const result_t *res) {
+    File *f, *r;
     bool all_same;
 
     switch (result_game(res)) {

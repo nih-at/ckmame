@@ -42,14 +42,14 @@
 #include "sq_util.h"
 #include "xmalloc.h"
 
-static int read_disks(romdb_t *, game_t *);
-static int read_roms(romdb_t *, game_t *);
+static int read_disks(romdb_t *, Game *);
+static int read_roms(romdb_t *, Game *);
 
 
-game_t *
+Game *
 romdb_read_game(romdb_t *db, const char *name) {
     sqlite3_stmt *stmt;
-    game_t *game;
+    Game *game;
     int ret;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_GAME)) == NULL) {
@@ -100,7 +100,7 @@ romdb_read_game(romdb_t *db, const char *name) {
 
 
 static int
-read_disks(romdb_t *db, game_t *g) {
+read_disks(romdb_t *db, Game *g) {
     sqlite3_stmt *stmt;
     int ret;
     disk_t *d;
@@ -126,10 +126,10 @@ read_disks(romdb_t *db, game_t *g) {
 
 
 static int
-read_roms(romdb_t *db, game_t *g) {
+read_roms(romdb_t *db, Game *g) {
     sqlite3_stmt *stmt;
     int ret;
-    file_t *r;
+    File *r;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
 	return -1;
@@ -138,7 +138,7 @@ read_roms(romdb_t *db, game_t *g) {
 	return -1;
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	r = (file_t *)array_grow(game_roms(g), reinterpret_cast<void (*)(void *)>(file_init));
+	r = (File *)array_grow(game_roms(g), reinterpret_cast<void (*)(void *)>(file_init));
 
 	file_name(r) = sq3_get_string(stmt, 0);
 	file_merge(r) = sq3_get_string(stmt, 1);

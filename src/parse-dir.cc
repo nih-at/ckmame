@@ -148,7 +148,7 @@ static int
 parse_archive(parser_context_t *ctx, Archive *a, int hashtypes) {
     char *name;
     int ht;
-    char hstr[HASHES_SIZE_MAX * 2 + 1];
+    char hstr[Hashes::MAX_SIZE * 2 + 1];
 
     parse_game_start(ctx, TYPE_ROM);
 

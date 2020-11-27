@@ -43,7 +43,7 @@ struct disk {
     int refcount;
     char *name;
     char *merge;
-    hashes_t hashes;
+    Hashes hashes;
     status_t status;
     where_t where;
 };

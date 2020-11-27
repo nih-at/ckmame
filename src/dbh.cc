@@ -211,15 +211,15 @@ init_db(dbh_t *db) {
 }
 
 dbh_stmt_t
-dbh_stmt_with_hashes_and_size(dbh_stmt_t stmt, const hashes_t *hash, int have_size) {
-    unsigned int i;
-
-    for (i = 1; i <= HASHES_TYPE_MAX; i <<= 1) {
-	if (hashes_has_type(hash, i))
+dbh_stmt_with_hashes_and_size(dbh_stmt_t stmt, const Hashes *hashes, int have_size) {
+    for (int i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
+        if (hashes->has_type(i)) {
 	    stmt = static_cast<dbh_stmt_t>(stmt + i);
+        }
     }
-    if (have_size)
-	stmt = static_cast<dbh_stmt_t>(stmt + (HASHES_TYPE_MAX << 1));
+    if (have_size) {
+	stmt = static_cast<dbh_stmt_t>(stmt + (Hashes::TYPE_MAX << 1));
+    }
 
     return stmt;
 }

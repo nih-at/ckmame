@@ -73,7 +73,7 @@ struct option options[] = {
 
 
 static int print_archive(const char *, int);
-static void print_checksums(hashes_t *, int);
+static void print_checksums(Hashes *, int);
 
 
 int
@@ -203,9 +203,9 @@ print_archive(const char *fname, int hashtypes) {
 
 
 static void
-print_checksums(hashes_t *hashes, int hashtypes) {
+print_checksums(Hashes *hashes, int hashtypes) {
     int i;
-    char h[HASHES_SIZE_MAX * 2 + 1];
+    char h[Hashes::MAX_SIZE * 2 + 1];
 
     for (i = 1; i <= HASHES_TYPE_MAX; i <<= 1) {
 	if (hashes_has_type(hashes, i) && (hashtypes & i)) {

@@ -279,7 +279,7 @@ dbh_cache_read(dbh_t *dbh, const std::string &name, std::vector<file_t> *files) 
     files->clear();
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        file_t file;
+        File file;
 
         file_init(&file);
         file.name = sq3_get_string(stmt, 0);
@@ -379,7 +379,7 @@ dbh_cache_write(dbh_t *dbh, int id, const Archive *a) {
     }
 
     for (size_t i = 0; i < a->files.size(); i++) {
-	const file_t *f = &a->files[i];
+	const File *f = &a->files[i];
 	if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK || sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, file_mtime(f)) != SQLITE_OK || sqlite3_bind_int(stmt, 5, file_status_(f)) != SQLITE_OK || sq3_set_int64_default(stmt, 6, file_size_(f), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
 	    return -1;
 	}

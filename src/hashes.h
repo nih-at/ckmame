@@ -35,61 +35,86 @@
 */
 
 #include <cinttypes>
+#include <string>
+#include <unordered_map>
 
 #include <string.h>
 
 #include "intstr.h"
 
-#define HASHES_SIZE_CRC 4
-#define HASHES_SIZE_MD5 16
-#define HASHES_SIZE_SHA1 20
-#define HASHES_SIZE_MAX HASHES_SIZE_SHA1
-
-#define HASHES_TYPE_CRC 1
-#define HASHES_TYPE_MD5 2
-#define HASHES_TYPE_SHA1 4
-#define HASHES_TYPE_MAX HASHES_TYPE_SHA1
-#define HASHES_TYPE_ALL ((HASHES_TYPE_MAX << 1) - 1)
+class HashesContexts;
 
 enum hashes_cmp { HASHES_CMP_NOCOMMON = -1, HASHES_CMP_MATCH, HASHES_CMP_MISMATCH };
 
 typedef enum hashes_cmp hashes_cmp_t;
-
-struct hashes {
+class Hashes {
+public:
+    class Update {
+    public:
+        Update(Hashes *hashes);
+        ~Update();
+        
+        void update(const void *data, size_t length);
+        void end();
+        
+    private:
+        HashesContexts *contexts;
+        Hashes *hashes;
+    };
+    
+    enum {
+        TYPE_CRC = 1,
+        TYPE_MD5 = 2,
+        TYPE_SHA1 = 4,
+        TYPE_MAX = 4,
+        TYPE_ALL = 7
+    };
+    enum {
+        SIZE_CRC = 4,
+        SIZE_MD5 = 16,
+        SIZE_SHA1 = 20,
+        MAX_SIZE = 20
+    };
+    enum Compare {
+        NOCOMMON = -1,
+        MATCH,
+        MISMATCH
+    };
+    
     int types;
     uint32_t crc;
-    uint8_t md5[HASHES_SIZE_MD5];
-    uint8_t sha1[HASHES_SIZE_SHA1];
-};
+    uint8_t md5[SIZE_MD5];
+    uint8_t sha1[SIZE_SHA1];
+    
+    Hashes() : types(0), crc(0) { }
+    
+    bool are_crc_complement(const Hashes &other) const;
+    bool has_type(int type) const;
+    Compare compare(const Hashes &other) const;
+    bool operator==(const Hashes &other) const;
+    bool verify(int type, const void *data) const;
+    std::string to_string(int type) const;
+    bool empty() const { return types == 0; }
 
-typedef struct hashes hashes_t;
+    void set(int type, const void *data);
+    void set_crc(uint32_t crc_) { types |= TYPE_CRC; crc = crc_; }
+    bool set_from_string(const std::string s);
+
+    static int types_from_string(const std::string &s);
+    
+    static size_t hash_size(int type);
+
+private:
+    static std::unordered_map<std::string, int> name_to_type;
+    static std::unordered_map<int, std::string> type_to_name;
+    
+    const void *hash_data(int type) const;
+};
 
 typedef struct hashes_update hashes_update_t;
 
 
-extern const intstr_t hash_type_names[];
 
-
-#define hashes_are_crc_complement(h1, h2) ((((h1)->crc ^ (h2)->crc) & 0xffffffff) == 0xffffffff)
-#define hashes_crc(h) ((h)->crc)
-#define hashes_copy(h1, h2) (memcpy((h1), (h2), sizeof(hashes_t)))
-#define hashes_has_type(h, t) (hashes_types(h) & (t))
-#define hashes_types(h) ((h)->types)
-
-#define hash_type_from_str(s) (str2int((s), hash_type_names))
-#define hash_type_string(i) (int2str((i), hash_type_names))
-
-hashes_cmp_t hashes_cmp(const hashes_t *, const hashes_t *);
-bool hashes_cmp_strict(const struct hashes *, const struct hashes *);
-void hashes_init(hashes_t *);
-void hashes_update(hashes_update_t *, const unsigned char *, size_t);
-void hashes_update_discard(struct hashes_update *);
-void hashes_update_final(hashes_update_t *);
-struct hashes_update *hashes_update_new(hashes_t *);
-void hashes_set(hashes_t *, int, const unsigned char *);
-int hashes_verify(const hashes_t *, int, const unsigned char *);
-int hash_from_string(hashes_t *, const char *);
-const char *hash_to_string(char *, int, const hashes_t *);
 int hash_types_from_str(const char *);
 
 #endif /* hashes.h */

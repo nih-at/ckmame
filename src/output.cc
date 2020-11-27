@@ -53,7 +53,7 @@ output_detector(output_context_t *ctx, detector_t *detector) {
 
 
 int
-output_game(output_context_t *ctx, game_t *g) {
+output_game(output_context_t *ctx, Game *g) {
     return ctx->output_game(ctx, g);
 }
 
@@ -103,8 +103,8 @@ output_cond_print_string(FILE *f, const char *pre, const char *str, const char *
 
 
 void
-output_cond_print_hash(FILE *f, const char *pre, int t, hashes_t *h, const char *post) {
-    char hstr[HASHES_SIZE_MAX * 2 + 1];
+output_cond_print_hash(FILE *f, const char *pre, int t, Hashes *h, const char *post) {
+    char hstr[Hashes::MAX_SIZE * 2 + 1];
 
     output_cond_print_string(f, pre, hash_to_string(hstr, t, h), post);
 }

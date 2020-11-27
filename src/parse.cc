@@ -179,7 +179,7 @@ parse_file_status_(parser_context_t *ctx, filetype_t ft, int ht, const char *att
 
 int
 parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    hashes_t *h;
+    Hashes *h;
 
     CHECK_STATE(ctx, PARSE_IN_FILE);
 
@@ -290,7 +290,7 @@ parse_file_start(parser_context_t *ctx, filetype_t ft) {
     if (ft == TYPE_DISK)
 	ctx->d = static_cast<disk_t *>(array_grow(game_disks(ctx->g), reinterpret_cast<void (*)(void *)>(disk_init)));
     else
-        ctx->r = static_cast<file_t *>(array_grow(game_roms(ctx->g), reinterpret_cast<void (*)(void *)>(file_init)));
+        ctx->r = static_cast<File *>(array_grow(game_roms(ctx->g), reinterpret_cast<void (*)(void *)>(file_init)));
 
     SET_STATE(ctx, PARSE_IN_FILE);
 
@@ -322,7 +322,7 @@ parse_game_description(parser_context_t *ctx, const char *attr) {
 /*ARGSUSED2*/
 int
 parse_game_end(parser_context_t *ctx, filetype_t ft) {
-    game_t *g;
+    Game *g;
     int keep_g, ret;
 
     CHECK_STATE(ctx, PARSE_IN_GAME);
@@ -548,7 +548,7 @@ name_matches(const char *name, const parray_t *patterns) {
 
 static void
 rom_end(parser_context_t *ctx, filetype_t ft) {
-    file_t *r, *r2;
+    File *r, *r2;
     int deleted;
     int j, n;
 
@@ -556,22 +556,22 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
     n = game_num_roms(ctx->g) - 1;
 
     if (file_size_(r) == 0) {
-        unsigned char zeroes[HASHES_SIZE_MAX];
-        hashes_t *h = file_hashes(r);
+        unsigned char zeroes[Hashes::MAX_SIZE];
+        Hashes *h = file_hashes(r);
         
         memset(zeroes, 0, sizeof(zeroes));
         
         /* some dats don't record crc for 0-byte files, so set it here */
-        if (!hashes_has_type(h, HASHES_TYPE_CRC)) {
-            hashes_set(h, HASHES_TYPE_CRC, zeroes);
+        if (!hashes_has_type(h, Hashes::TYPE_CRC)) {
+            hashes_set(h, Hashes::TYPE_CRC, zeroes);
         }
         
         /* some dats record all-zeroes md5 and sha1 for 0 byte files, fix */
-        if (hashes_has_type(h, HASHES_TYPE_MD5) && hashes_verify(h, HASHES_TYPE_MD5, zeroes)) {
-            hashes_set(h, HASHES_TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
+        if (hashes_has_type(h, Hashes::TYPE_MD5) && hashes_verify(h, Hashes::TYPE_MD5, zeroes)) {
+            hashes_set(h, Hashes::TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
         }
-        if (hashes_has_type(h, HASHES_TYPE_SHA1) && hashes_verify(h, HASHES_TYPE_SHA1, zeroes)) {
-            hashes_set(h, HASHES_TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
+        if (hashes_has_type(h, Hashes::TYPE_SHA1) && hashes_verify(h, Hashes::TYPE_SHA1, zeroes)) {
+            hashes_set(h, Hashes::TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
         }
     }
 

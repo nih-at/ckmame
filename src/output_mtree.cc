@@ -55,7 +55,7 @@ typedef struct output_context_mtree output_context_mtree_t;
 
 
 static int output_mtree_close(output_context_t *);
-static int output_mtree_game(output_context_t *, game_t *);
+static int output_mtree_game(output_context_t *, Game *);
 static int output_mtree_header(output_context_t *, dat_entry_t *);
 
 
@@ -169,9 +169,9 @@ strsvis_cstyle(const char *in) {
 
 
 static int
-output_mtree_game(output_context_t *out, game_t *g) {
+output_mtree_game(output_context_t *out, Game *g) {
     output_context_mtree_t *ctx;
-    file_t *r;
+    File *r;
     disk_t *d;
     int i;
     const char *fl = NULL;
@@ -189,8 +189,8 @@ output_mtree_game(output_context_t *out, game_t *g) {
 	filename = strsvis_cstyle(file_name(r));
 	fprintf(ctx->f, "./%s/%s type=file size=%" PRIu64, dirname, filename, file_size_(r));
 	free(filename);
-	output_cond_print_hash(ctx->f, " sha1=", HASHES_TYPE_SHA1, file_hashes(r), "");
-	output_cond_print_hash(ctx->f, " md5=", HASHES_TYPE_MD5, file_hashes(r), "");
+	output_cond_print_hash(ctx->f, " sha1=", Hashes::TYPE_SHA1, file_hashes(r), "");
+	output_cond_print_hash(ctx->f, " md5=", Hashes::TYPE_MD5, file_hashes(r), "");
 	switch (file_status_(r)) {
 	case STATUS_OK:
 	    fl = NULL;
@@ -205,7 +205,7 @@ output_mtree_game(output_context_t *out, game_t *g) {
 	output_cond_print_string(ctx->f, " status=", fl, "");
 	if (ctx->extended) {
 	    /* crc is not in the standard set supported on NetBSD */
-	    output_cond_print_hash(ctx->f, " crc=", HASHES_TYPE_CRC, file_hashes(r), "");
+	    output_cond_print_hash(ctx->f, " crc=", Hashes::TYPE_CRC, file_hashes(r), "");
 	    fprintf(ctx->f, " time=%llu", (unsigned long long)file_mtime(r));
 	}
 	fputs("\n", ctx->f);
@@ -216,8 +216,8 @@ output_mtree_game(output_context_t *out, game_t *g) {
 	filename = strsvis_cstyle(disk_name(d));
 	fprintf(ctx->f, "./%s/%s type=file" PRIu64, dirname, filename);
 	free(filename);
-	output_cond_print_hash(ctx->f, " sha1=", HASHES_TYPE_SHA1, disk_hashes(d), "");
-	output_cond_print_hash(ctx->f, " md5=", HASHES_TYPE_MD5, disk_hashes(d), "");
+	output_cond_print_hash(ctx->f, " sha1=", Hashes::TYPE_SHA1, disk_hashes(d), "");
+	output_cond_print_hash(ctx->f, " md5=", Hashes::TYPE_MD5, disk_hashes(d), "");
 	switch (disk_status(d)) {
 	case STATUS_OK:
 	    fl = NULL;

@@ -55,12 +55,12 @@ enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 
 typedef enum test_result test_result_t;
 
-static test_result_t match_files(ArchivePtr, test_t, const file_t *, Match *);
-static void update_game_status(const game_t *, result_t *);
+static test_result_t match_files(ArchivePtr, test_t, const File *, Match *);
+static void update_game_status(const Game *, result_t *);
 
 
 void
-check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
+check_files(Game *g, ArchivePtr archives[3], result_t *res) {
     static const test_t tests[] = {TEST_NAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG};
     static const int tests_count = sizeof(tests) / sizeof(tests[0]);
     
@@ -71,7 +71,7 @@ check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
         return;
     
     for (i = 0; i < game_num_roms(g); i++) {
-        file_t *rom = game_rom(g, i);
+        File *rom = game_rom(g, i);
         Match *match = result_rom(res, i);
         auto expected_archive = archives[file_where(rom)];
         
@@ -163,8 +163,8 @@ check_files(game_t *g, ArchivePtr archives[3], result_t *res) {
 
 
 static test_result_t
-match_files(ArchivePtr archive, test_t test, const file_t *rom, Match *match) {
-    const file_t *file;
+match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
+    const File *file;
     test_result_t result;
 
     match_offset(match) = -1;
@@ -248,11 +248,11 @@ match_files(ArchivePtr archive, test_t test, const file_t *rom, Match *match) {
 
 
 static void
-update_game_status(const game_t *g, result_t *res) {
+update_game_status(const Game *g, result_t *res) {
     int i;
     int all_dead, all_own_dead, all_correct, all_fixable, has_own;
     const Match *m;
-    const file_t *r;
+    const File *r;
 
     all_own_dead = all_dead = all_correct = all_fixable = 1;
     has_own = 0;

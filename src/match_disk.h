@@ -41,7 +41,7 @@
 
 struct match_disk {
     char *name;
-    hashes_t hashes;
+    Hashes hashes;
     quality_t quality;
     where_t where;
 };

@@ -105,12 +105,12 @@ make_unique_name(const char *ext, const char *fmt, ...) {
 
 
 char *
-make_needed_name(const file_t *r) {
+make_needed_name(const File *r) {
     char crc[HASHES_SIZE_CRC * 2 + 1];
 
     /* <needed_dir>/<crc>-nnn.zip */
 
-    hash_to_string(crc, HASHES_TYPE_CRC, file_hashes(r));
+    hash_to_string(crc, Hashes::TYPE_CRC, file_hashes(r));
 
     return make_unique_name(roms_unzipped ? "" : "zip", "%s/%s", needed_dir, crc);
 }
@@ -122,7 +122,7 @@ make_needed_name_disk(const disk_t *d) {
 
     /* <needed_dir>/<md5>-nnn.zip */
 
-    hash_to_string(md5, HASHES_TYPE_MD5, disk_hashes(d));
+    hash_to_string(md5, Hashes::TYPE_MD5, disk_hashes(d));
 
     return make_unique_name("chd", "%s/%s", needed_dir, md5);
 }
@@ -171,7 +171,7 @@ remove_from_superfluous(const char *name) {
 
 
 bool
-save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, file_t *f) {
+save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, File *f) {
     char *tmp;
     bool do_save = fix_options & FIX_DO;
 

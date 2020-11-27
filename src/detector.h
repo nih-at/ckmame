@@ -114,7 +114,7 @@ typedef int64_t (*detector_read_cb)(void *, void *, uint64_t);
 #define detector_test_type(t) ((t)->type)
 #define detector_test_value(t) ((t)->value)
 
-int detector_execute(detector_t *, file_t *, detector_read_cb, void *);
+int detector_execute(detector_t *, File *, detector_read_cb, void *);
 void detector_free(detector_t *);
 detector_t *detector_parse(const char *);
 detector_t *detector_parse_ps(parser_source_t *);

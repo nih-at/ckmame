@@ -41,7 +41,7 @@
 #include "sq_util.h"
 
 array_t *
-romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const hashes_t *hash) {
+romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const Hashes *hash) {
     sqlite3_stmt *stmt;
     array_t *a;
     file_location_t *fl;

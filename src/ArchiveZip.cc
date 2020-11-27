@@ -120,7 +120,7 @@ void ArchiveZip::commit_cleanup() {
 	    continue;
 	}
 
-	file_mtime(&files[i]) = st.mtime;
+        files[i].mtime = st.mtime;
     }
 }
 
@@ -151,12 +151,12 @@ bool ArchiveZip::file_add_empty_xxx(const std::string &filename) {
 }
 
 
-void ArchiveZip::File::close() {
+void ArchiveZip::ArchiveFile::close() {
     zip_fclose(zf);
 }
 
 
-int64_t ArchiveZip::File::read(void *data, uint64_t length) {
+int64_t ArchiveZip::ArchiveFile::read(void *data, uint64_t length) {
     return zip_fread(zf, data, length);
 }
 
@@ -176,7 +176,7 @@ bool ArchiveZip::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
     if ((source = zip_source_zip(za, source_archive->za, source_index, ZIP_FL_UNCHANGED, start, length)) == NULL || (index.has_value() ? zip_replace(za, index.value(), source) : zip_add(za, filename.c_str(), source)) < 0) {
 	zip_source_free(source);
 	seterrinfo(name, filename);
-	myerror(ERRZIPFILE, "error adding '%s' from `%s': %s", file_name(&source_archive->files[source_index]), source_archive->name.c_str(), zip_strerror(za));
+	myerror(ERRZIPFILE, "error adding '%s' from `%s': %s", source_archive->files[source_index].name.c_str(), source_archive->name.c_str(), zip_strerror(za));
 	return false;
     }
 
@@ -199,7 +199,7 @@ bool ArchiveZip::file_delete_xxx(uint64_t index) {
 }
 
 
-Archive::FilePtr ArchiveZip::file_open(uint64_t index) {
+Archive::ArchiveFilePtr ArchiveZip::file_open(uint64_t index) {
     if (!ensure_zip()) {
 	return NULL;
     }
@@ -208,11 +208,11 @@ Archive::FilePtr ArchiveZip::file_open(uint64_t index) {
 
     if ((zf = zip_fopen_index(za, index, 0)) == NULL) {
 	seterrinfo("", name);
-	myerror(ERRZIP, "cannot open '%s': %s", file_name(&files[index]), zip_strerror(za));
+	myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), zip_strerror(za));
 	return NULL;
     }
 
-    return Archive::FilePtr(new File(zf));
+    return Archive::ArchiveFilePtr(new ArchiveFile(zf));
 }
 
 
@@ -231,7 +231,7 @@ bool ArchiveZip::file_rename_xxx(uint64_t index, const std::string &filename) {
 }
 
 
-const char *ArchiveZip::File::strerror() {
+const char *ArchiveZip::ArchiveFile::strerror() {
     return zip_file_strerror(zf);
 }
 
@@ -266,16 +266,12 @@ bool ArchiveZip::read_infos_xxx() {
 	    continue;
 	}
 
-        file_t r;
-        file_init(&r);
-	file_mtime(&r) = zsb.mtime;
-	file_size_(&r) = zsb.size;
-	file_name(&r) = xstrdup(zsb.name);
-	file_status_(&r) = STATUS_OK;
-
-	hashes_init(file_hashes(&r));
-	file_hashes(&r)->types = HASHES_TYPE_CRC;
-	file_hashes(&r)->crc = zsb.crc;
+        File r;
+        r.mtime = zsb.mtime;
+	r.size = zsb.size;
+	r.name = zsb.name;
+        r.status = STATUS_OK;
+        r.hashes.set_crc(zsb.crc);
         
         files.push_back(r);
 
@@ -302,18 +298,17 @@ bool ArchiveZip::rollback_xxx() {
     }
     
     for (uint64_t i = 0; i < files.size(); i++) {
-	if (file_where(&files[i]) == FILE_ADDED) {
+	if (files[i].where == FILE_ADDED) {
             files.resize(i);
 	    break;
 	}
 
-        if (file_where(&files[i]) == FILE_DELETED) {
-	    file_where(&files[i]) = FILE_INGAME;
+        if (files[i].where == FILE_DELETED) {
+	    files[i].where = FILE_INGAME;
         }
 
-	if (strcmp(file_name(&files[i]), zip_get_name(za, i, 0)) != 0) {
-	    free(file_name(&files[i]));
-	    file_name(&files[i]) = xstrdup(zip_get_name(za, i, 0));
+        if (files[i].name != zip_get_name(za, i, 0)) {
+            files[i].name = zip_get_name(za, i, 0);
 	}
     }
 

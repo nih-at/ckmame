@@ -143,7 +143,7 @@ main(int argc, char **argv) {
     exclude = NULL;
     only_files = skip_files = NULL;
     fmt = OUTPUT_FMT_DB;
-    hashtypes = HASHES_TYPE_CRC | HASHES_TYPE_MD5 | HASHES_TYPE_SHA1;
+    hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
     detector_name = NULL;
 
     opterr = 0;

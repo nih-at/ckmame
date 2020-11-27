@@ -40,7 +40,7 @@ int
 export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out) {
     parray_t *list;
     int i;
-    game_t *g;
+    Game *g;
     dat_entry_t de;
     dat_t *db_dat;
 

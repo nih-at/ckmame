@@ -54,10 +54,10 @@ typedef struct output_context_cm output_context_cm_t;
 
 
 static int output_cm_close(output_context_t *);
-static int output_cm_game(output_context_t *, game_t *);
+static int output_cm_game(output_context_t *, Game *);
 static int output_cm_header(output_context_t *, dat_entry_t *);
-static int cmp_games(const game_t *, const game_t *);
-static int write_game(output_context_cm_t *, game_t *);
+static int cmp_games(const Game *, const Game *);
+static int write_game(output_context_cm_t *, Game *);
 
 
 output_context_t *
@@ -101,7 +101,7 @@ output_cm_close(output_context_t *out) {
 
     parray_sort(ctx->games, reinterpret_cast<int (*)(const void *, const void *)>(cmp_games));
     for (i = 0; i < parray_length(ctx->games); i++)
-	write_game(ctx, static_cast<game_t *>(parray_get(ctx->games, i)));
+	write_game(ctx, static_cast<Game *>(parray_get(ctx->games, i)));
     parray_free(ctx->games, reinterpret_cast<void (*)(void *)>(game_free));
 
     if (ctx->f == NULL || ctx->f == stdout)
@@ -116,7 +116,7 @@ output_cm_close(output_context_t *out) {
 
 
 static int
-output_cm_game(output_context_t *out, game_t *g) {
+output_cm_game(output_context_t *out, Game *g) {
     output_context_cm_t *ctx;
 
     ctx = (output_context_cm_t *)out;
@@ -144,14 +144,14 @@ output_cm_header(output_context_t *out, dat_entry_t *dat) {
 
 
 static int
-cmp_games(const game_t *g1, const game_t *g2) {
+cmp_games(const Game *g1, const Game *g2) {
     return strcasecmp(game_name(g1), game_name(g2));
 }
 
 
 static int
-write_game(output_context_cm_t *ctx, game_t *g) {
-    file_t *r;
+write_game(output_context_cm_t *ctx, Game *g) {
+    File *r;
     int i;
     const char *fl = NULL;
 
@@ -168,9 +168,9 @@ write_game(output_context_cm_t *ctx, game_t *g) {
 	if (file_where(r) != FILE_INGAME)
 	    output_cond_print_string(ctx->f, "merge ", file_merge(r) ? file_merge(r) : file_name(r), " ");
 	fprintf(ctx->f, "size %" PRIu64 " ", file_size_(r));
-	output_cond_print_hash(ctx->f, "crc ", HASHES_TYPE_CRC, file_hashes(r), " ");
-	output_cond_print_hash(ctx->f, "sha1 ", HASHES_TYPE_SHA1, file_hashes(r), " ");
-	output_cond_print_hash(ctx->f, "md5 ", HASHES_TYPE_MD5, file_hashes(r), " ");
+	output_cond_print_hash(ctx->f, "crc ", Hashes::TYPE_CRC, file_hashes(r), " ");
+	output_cond_print_hash(ctx->f, "sha1 ", Hashes::TYPE_SHA1, file_hashes(r), " ");
+	output_cond_print_hash(ctx->f, "md5 ", Hashes::TYPE_MD5, file_hashes(r), " ");
 	switch (file_status_(r)) {
 	case STATUS_OK:
 	    fl = NULL;

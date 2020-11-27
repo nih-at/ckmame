@@ -63,14 +63,14 @@ static const uint8_t bitswap[] = {0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0
 
 static int bit_cmp(const uint8_t *, const uint8_t *, const uint8_t *, detector_test_type_t, size_t);
 static void buf_grow(detector_t *, size_t);
-static int compute_values(detector_t *, file_t *, uint64_t, uint64_t, detector_operation_t, struct ctx *);
-static int execute_rule(detector_t *, detector_rule_t *, file_t *, struct ctx *);
-static int execute_test(detector_t *, detector_test_t *, file_t *, struct ctx *);
+static int compute_values(detector_t *, File *, uint64_t, uint64_t, detector_operation_t, struct ctx *);
+static int execute_rule(detector_t *, detector_rule_t *, File *, struct ctx *);
+static int execute_test(detector_t *, detector_test_t *, File *, struct ctx *);
 static int fill_buffer(detector_t *, uint64_t, struct ctx *);
 
 
 int
-detector_execute(detector_t *d, file_t *r, detector_read_cb cb_read, void *ud) {
+detector_execute(detector_t *d, File *r, detector_read_cb cb_read, void *ud) {
     struct ctx ctx;
     int i, ret;
 
@@ -129,8 +129,8 @@ buf_grow(detector_t *d, size_t size) {
 
 
 static int
-compute_values(detector_t *d, file_t *r, uint64_t start, uint64_t end, detector_operation_t op, struct ctx *ctx) {
-    hashes_t h;
+compute_values(detector_t *d, File *r, uint64_t start, uint64_t end, detector_operation_t op, struct ctx *ctx) {
+    Hashes h;
     hashes_update_t *hu;
     size_t off;
     uint64_t len;
@@ -146,7 +146,7 @@ compute_values(detector_t *d, file_t *r, uint64_t start, uint64_t end, detector_
 	    return -1;
     }
 
-    hashes_types(&h) = HASHES_TYPE_CRC | HASHES_TYPE_MD5 | HASHES_TYPE_SHA1; /* TODO */
+    hashes_types(&h) = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1; /* TODO */
     hu = hashes_update_new(&h);
 
     while (start < end) {
@@ -199,7 +199,7 @@ compute_values(detector_t *d, file_t *r, uint64_t start, uint64_t end, detector_
 
 
 static int
-execute_rule(detector_t *d, detector_rule_t *dr, file_t *r, struct ctx *ctx) {
+execute_rule(detector_t *d, detector_rule_t *dr, File *r, struct ctx *ctx) {
     int i, ret;
     int64_t start, end;
 
@@ -227,7 +227,7 @@ execute_rule(detector_t *d, detector_rule_t *dr, file_t *r, struct ctx *ctx) {
 
 
 static int
-execute_test(detector_t *d, detector_test_t *dt, file_t *r, struct ctx *ctx) {
+execute_test(detector_t *d, detector_test_t *dt, File *r, struct ctx *ctx) {
     int64_t off;
     int ret = 0;
 

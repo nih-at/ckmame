@@ -98,7 +98,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 			    myerror(ERRFILE, "%d: token crc missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_CRC, p) < 0)
+			if (parse_file_hash(ctx, TYPE_ROM, Hashes::TYPE_CRC, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "flags") == 0) {
@@ -123,7 +123,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 			    myerror(ERRFILE, "%d: token md5 missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_MD5, p) < 0)
+			if (parse_file_hash(ctx, TYPE_ROM, Hashes::TYPE_MD5, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "sha1") == 0) {
@@ -131,7 +131,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 			    myerror(ERRFILE, "%d: token sha1 missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_ROM, HASHES_TYPE_SHA1, p) < 0)
+			if (parse_file_hash(ctx, TYPE_ROM, Hashes::TYPE_SHA1, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "size") == 0) {
@@ -170,7 +170,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 			    myerror(ERRFILE, "%d: token sha1 missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_DISK, HASHES_TYPE_SHA1, p) < 0)
+			if (parse_file_hash(ctx, TYPE_DISK, Hashes::TYPE_SHA1, p) < 0)
 			    break;
 		    }
 		    else if (strcmp(p, "md5") == 0) {
@@ -179,7 +179,7 @@ parse_cm(parser_source_t *ps, parser_context_t *ctx) {
 			    myerror(ERRFILE, "%d: token md5 missing argument", ctx->lineno);
 			    break;
 			}
-			if (parse_file_hash(ctx, TYPE_DISK, HASHES_TYPE_MD5, p) < 0)
+			if (parse_file_hash(ctx, TYPE_DISK, Hashes::TYPE_MD5, p) < 0)
 			    break;
 		    }
                     else if (strcmp(p, "merge") == 0) {

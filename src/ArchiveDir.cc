@@ -295,7 +295,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
     /* archive layer already grew archive files if didx < 0 */
     auto real_index = index.has_value() ? index.value() : files.size() - 1;
     
-    file_t *f = &files[real_index];
+    File *f = &files[real_index];
 
     if (source_archive != NULL) {
         auto sa = static_cast<ArchiveDir *>(source_archive);
@@ -382,20 +382,20 @@ bool ArchiveDir::file_delete_xxx(uint64_t index) {
 }
 
 
-Archive::FilePtr ArchiveDir::file_open(uint64_t index) {
+Archive::ArchiveFilePtr ArchiveDir::file_open(uint64_t index) {
 
     FILE *f;
 
     if ((f = fopen(get_full_name(index).c_str(), "rb")) == NULL) {
         seterrinfo("", name);
-        myerror(ERRZIP, "cannot open '%s': %s", files[index].name, strerror(errno));
+        myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), strerror(errno));
         return NULL;
     }
 
-    return Archive::FilePtr(new File(f));
+    return Archive::ArchiveFilePtr(new ArchiveFile(f));
 }
 
-void ArchiveDir::File::close() {
+void ArchiveDir::ArchiveFile::close() {
     if (f != NULL) {
         fclose(f);
         f = NULL;
@@ -403,7 +403,7 @@ void ArchiveDir::File::close() {
 }
 
 
-int64_t ArchiveDir::File::read(void *data, uint64_t length) {
+int64_t ArchiveDir::ArchiveFile::read(void *data, uint64_t length) {
     if (length > SIZE_T_MAX) {
         errno = EINVAL;
         return -1;
@@ -461,7 +461,7 @@ bool ArchiveDir::file_rename_xxx(uint64_t index, const std::string &filename) {
 }
 
 
-const char *ArchiveDir::File::strerror() {
+const char *ArchiveDir::ArchiveFile::strerror() {
     return ::strerror(errno);
 }
 
@@ -493,7 +493,7 @@ bool ArchiveDir::read_infos_xxx() {
                 continue;
             }
 
-            files.push_back(file_t());
+            files.push_back(File());
             auto &f = files[files.size() - 1];
             
             file_init(&f);

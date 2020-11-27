@@ -38,7 +38,7 @@
 
 
 void
-check_old(game_t *g, result_t *res) {
+check_old(Game *g, result_t *res) {
     int i;
     int all_old;
 

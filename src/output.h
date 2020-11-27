@@ -45,7 +45,7 @@ typedef struct output_context output_context_t;
 struct output_context {
     int (*close)(output_context_t *);
     int (*output_detector)(output_context_t *, detector_t *);
-    int (*output_game)(output_context_t *, game_t *);
+    int (*output_game)(output_context_t *, Game *);
     int (*output_header)(output_context_t *, dat_entry_t *);
 };
 
@@ -63,13 +63,13 @@ output_context_t *output_mtree_new(const char *, int);
 
 int output_close(output_context_t *);
 int output_detector(output_context_t *, detector_t *);
-int output_game(output_context_t *, game_t *);
+int output_game(output_context_t *, Game *);
 int output_header(output_context_t *, dat_entry_t *);
 
 output_context_t *output_new(output_format_t, const char *, int);
 
 /* for output_foo.c use only */
 void output_cond_print_string(FILE *, const char *, const char *, const char *);
-void output_cond_print_hash(FILE *, const char *, int, hashes_t *, const char *);
+void output_cond_print_hash(FILE *, const char *, int, Hashes *, const char *);
 
 #endif /* output.h */

@@ -57,7 +57,7 @@ typedef struct output_context_xml output_context_xml_t;
 
 
 static int output_datafile_xml_close(output_context_t *);
-static int output_datafile_xml_game(output_context_t *, game_t *);
+static int output_datafile_xml_game(output_context_t *, Game *);
 static int output_datafile_xml_header(output_context_t *, dat_entry_t *);
 
 
@@ -133,16 +133,16 @@ set_attribute_u64(xmlNodePtr node, const char *name, uint64_t value) {
 }
 
 static void
-set_attribute_hash(xmlNodePtr node, const char *name, int type, hashes_t *hashes) {
-    char hstr[HASHES_SIZE_MAX * 2 + 1];
+set_attribute_hash(xmlNodePtr node, const char *name, int type, Hashes *hashes) {
+    char hstr[Hashes::MAX_SIZE * 2 + 1];
     
     set_attribute(node, name, hash_to_string(hstr, type, hashes));
 }
 
 static int
-output_datafile_xml_game(output_context_t *out, game_t *g) {
+output_datafile_xml_game(output_context_t *out, Game *g) {
     output_context_xml_t *ctx;
-    file_t *r;
+    File *r;
     disk_t *d;
     int i;
     const char *fl = NULL;
@@ -162,9 +162,9 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
         
         set_attribute(rom, "name", file_name(r));
         set_attribute_u64(rom, "size", file_size_(r));
-        set_attribute_hash(rom, "crc", HASHES_TYPE_CRC, file_hashes(r));
-        set_attribute_hash(rom, "sha1", HASHES_TYPE_SHA1, file_hashes(r));
-        set_attribute_hash(rom, "md5", HASHES_TYPE_MD5, file_hashes(r));
+        set_attribute_hash(rom, "crc", Hashes::TYPE_CRC, file_hashes(r));
+        set_attribute_hash(rom, "sha1", Hashes::TYPE_SHA1, file_hashes(r));
+        set_attribute_hash(rom, "md5", Hashes::TYPE_MD5, file_hashes(r));
 
         if (file_where(r) != FILE_INGAME) {
             set_attribute(rom, "merge", file_merge(r) ? file_merge(r) : file_name(r));
@@ -189,8 +189,8 @@ output_datafile_xml_game(output_context_t *out, game_t *g) {
         xmlNodePtr disk = xmlNewChild(game, NULL, (const xmlChar *)"disk", NULL);
 
         set_attribute(disk, "name", disk_name(d));
-        set_attribute_hash(disk, "sha1", HASHES_TYPE_SHA1, disk_hashes(d));
-        set_attribute_hash(disk, "md5", HASHES_TYPE_MD5, disk_hashes(d));
+        set_attribute_hash(disk, "sha1", Hashes::TYPE_SHA1, disk_hashes(d));
+        set_attribute_hash(disk, "md5", Hashes::TYPE_MD5, disk_hashes(d));
 
         switch (disk_status(d)) {
 	case STATUS_OK:

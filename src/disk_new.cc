@@ -57,7 +57,7 @@ disk_t *
 disk_new(const char *name, int flags) {
     disk_t *d;
     struct chd *chd;
-    hashes_t *h;
+    Hashes *h;
     int err;
     int64_t id;
 
@@ -104,8 +104,8 @@ disk_new(const char *name, int flags) {
 	    return NULL;
 	}
 
-	if (romdb_hashtypes(db, TYPE_DISK) & HASHES_TYPE_MD5 & h->types) {
-	    if (!hashes_verify(h, HASHES_TYPE_MD5, chd->md5)) {
+	if (romdb_hashtypes(db, TYPE_DISK) & Hashes::TYPE_MD5 & h->types) {
+	    if (!hashes_verify(h, Hashes::TYPE_MD5, chd->md5)) {
 		myerror(ERRFILE, "md5 mismatch");
 		chd_close(chd);
 		disk_real_free(d);
@@ -113,8 +113,8 @@ disk_new(const char *name, int flags) {
 	    }
 	}
 
-	if (chd->version > 2 && (romdb_hashtypes(db, TYPE_DISK) & HASHES_TYPE_SHA1 & h->types)) {
-	    if (!hashes_verify(h, HASHES_TYPE_SHA1, chd->sha1)) {
+	if (chd->version > 2 && (romdb_hashtypes(db, TYPE_DISK) & Hashes::TYPE_SHA1 & h->types)) {
+	    if (!hashes_verify(h, Hashes::TYPE_SHA1, chd->sha1)) {
 		myerror(ERRFILE, "sha1 mismatch");
 		chd_close(chd);
 		disk_real_free(d);
@@ -126,10 +126,10 @@ disk_new(const char *name, int flags) {
 	h->types = 0;
     }
 
-    if (chd->version < 4 && (hashes_types(h) & HASHES_TYPE_MD5) == 0)
-	hashes_set(h, HASHES_TYPE_MD5, chd->md5);
-    if (chd->version > 2 && (hashes_types(h) & HASHES_TYPE_SHA1) == 0)
-	hashes_set(h, HASHES_TYPE_SHA1, chd->sha1);
+    if (chd->version < 4 && (hashes_types(h) & Hashes::TYPE_MD5) == 0)
+	hashes_set(h, Hashes::TYPE_MD5, chd->md5);
+    if (chd->version > 2 && (hashes_types(h) & Hashes::TYPE_SHA1) == 0)
+	hashes_set(h, Hashes::TYPE_SHA1, chd->sha1);
 
     chd_close(chd);
 
@@ -180,15 +180,15 @@ get_hashes(struct chd *chd, struct hashes *h) {
 
     if (chd->version > 3) {
 	/* version 4 only defines hash for SHA1 */
-	h->types = HASHES_TYPE_SHA1;
+	h->types = Hashes::TYPE_SHA1;
     }
 
     h_raw.types = h->types;
 
     if (chd->version > 2)
-	h_raw.types |= HASHES_TYPE_SHA1;
+	h_raw.types |= Hashes::TYPE_SHA1;
     if (chd->version < 4)
-	h_raw.types |= HASHES_TYPE_MD5;
+	h_raw.types |= Hashes::TYPE_MD5;
 
     hu = hashes_update_new(&h_raw);
 
@@ -234,7 +234,7 @@ get_hashes(struct chd *chd, struct hashes *h) {
 	hu = hashes_update_new(h);
 	hashes_update(hu, h_raw.sha1, HASHES_SIZE_SHA1);
 
-	h_raw.types = HASHES_TYPE_SHA1;
+	h_raw.types = Hashes::TYPE_SHA1;
 
 	meta = chd_get_metadata_list(chd);
 

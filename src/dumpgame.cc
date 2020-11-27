@@ -56,7 +56,7 @@ static int dump_special(const char *);
 static int dump_stats(int);
 static void print_dat(dat_t *, int);
 static void print_hashtypes(int);
-static void print_rs(game_t *, const char *, const char *, const char *, const char *);
+static void print_rs(Game *, const char *, const char *, const char *, const char *);
 
 const char *usage = "Usage: %s [-h|-V]\n\
        %s [-b] [-D dbfile] [game ...]\n\
@@ -90,9 +90,9 @@ static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 static const char *status_name[] = {"ok", "baddump", "nogooddump"};
 
 static void
-print_checksums(hashes_t *hashes) {
+print_checksums(Hashes *hashes) {
     int i;
-    char h[HASHES_SIZE_MAX * 2 + 1];
+    char h[Hashes::MAX_SIZE * 2 + 1];
 
     for (i = 1; i <= HASHES_TYPE_MAX; i <<= 1) {
 	if (hashes_has_type(hashes, i)) {
@@ -114,7 +114,7 @@ print_diskline(disk_t *disk) {
 
 
 static void
-print_footer(int matches, hashes_t *hash) {
+print_footer(int matches, Hashes *hash) {
     printf("%d matches found for checksum", matches);
     print_checksums(hash);
     putc('\n', stdout);
@@ -122,7 +122,7 @@ print_footer(int matches, hashes_t *hash) {
 
 
 static void
-print_romline(file_t *rom) {
+print_romline(File *rom) {
     printf("\t\tfile %-12s  size ", file_name(rom));
     if (file_size__known(rom))
 	printf("%7" PRIu64, file_size_(rom));
@@ -137,7 +137,7 @@ print_romline(file_t *rom) {
 
 
 static void
-print_match(game_t *game, filetype_t ft, int i) {
+print_match(Game *game, filetype_t ft, int i) {
     static char *name = NULL;
 
     if (name == NULL || strcmp(game_name(game), name) != 0) {
@@ -155,8 +155,8 @@ print_match(game_t *game, filetype_t ft, int i) {
 
 
 static void
-print_matches(filetype_t ft, hashes_t *hash) {
-    game_t *game;
+print_matches(filetype_t ft, Hashes *hash) {
+    Game *game;
     int i, matches;
     array_t *fbha;
     file_location_t *fbh;
@@ -249,7 +249,7 @@ main(int argc, char **argv) {
 
     /* find matches for ROMs */
     if (find_checksum != 0) {
-	hashes_t match;
+	Hashes match;
 
 	for (i = optind; i < argc; i++) {
 	    /* checksum */
@@ -308,7 +308,7 @@ main(int argc, char **argv) {
 
 
 static void
-print_rs(game_t *game, const char *co, const char *gco, const char *cs, const char *fs) {
+print_rs(Game *game, const char *co, const char *gco, const char *cs, const char *fs) {
     int i, ret;
     sqlite3_stmt *stmt;
 
@@ -354,7 +354,7 @@ print_rs(game_t *game, const char *co, const char *gco, const char *cs, const ch
 static int
 dump_game(const char *name, int brief_mode) {
     int i;
-    game_t *game;
+    Game *game;
     dat_t *dat;
 
     if ((dat = romdb_read_dat(db)) == NULL) {
@@ -556,7 +556,7 @@ print_hashtypes(int ht) {
 
     first = 1;
 
-    DO(ht, HASHES_TYPE_CRC, "crc");
-    DO(ht, HASHES_TYPE_MD5, "md5");
-    DO(ht, HASHES_TYPE_SHA1, "sha1");
+    DO(ht, Hashes::TYPE_CRC, "crc");
+    DO(ht, Hashes::TYPE_MD5, "md5");
+    DO(ht, Hashes::TYPE_SHA1, "sha1");
 }

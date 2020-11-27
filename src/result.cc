@@ -37,13 +37,13 @@
 #include "xmalloc.h"
 
 
-Result::Result(const game_t *g, const Archive *a, const images_t *im) : game(GS_MISSING), disks(NULL) {
+Result::Result(const Game *game, const Archive *a, const images_t *im) : game(GS_MISSING), disks(NULL) {
 
-    if (g) {
-        roms.resize(game_num_roms(g));
+    if (game) {
+        roms.resize(game->roms.size());
 
-        if (game_num_disks(g) > 0) {
-            disks = match_disk_array_new(game_num_disks(g));
+        if (!game->disks.empty()) {
+            disks = match_disk_array_new(game->disks.size());
         }
     }
 

@@ -54,7 +54,7 @@ bool Archive::commit() {
 	}
 
         for (size_t i = 0; i < files.size(); i++) {
-	    switch (file_where(&files[i])) {
+	    switch (files[i].where) {
                 case FILE_DELETED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
@@ -72,7 +72,7 @@ bool Archive::commit() {
                         /* TODO: handle error (how?) */
                         memdb_file_insert(NULL, this, i);
                     }
-                    file_where(&files[i]) = FILE_INGAME;
+                    files[i].where = FILE_INGAME;
                     break;
 
                 default:
@@ -134,14 +134,13 @@ bool Archive::file_add_empty(const std::string &filename) {
 	return false;
     }
 
-    file_t f;
-    file_init(&f);
-    file_size_(&f) = 0;
-    hashes_types(file_hashes(&f)) = HASHES_TYPE_ALL;
-    struct hashes_update *hu = hashes_update_new(file_hashes(&f));
-    hashes_update_final(hu);
+    File file;
+    file.size = 0;
+    file.hashes.types = Hashes::TYPE_ALL;
+    Hashes::Update hu(&file.hashes);
+    hu.end();
 
-    add_file(filename, &f);
+    add_file(filename, &file);
 
     if (!file_add_empty_xxx(filename)) {
         files.pop_back();
@@ -166,7 +165,7 @@ bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, 
 }
 
 
-bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const file_t *f) {
+bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const File *f) {
     if (!is_writable()) {
         seterrinfo(name, "");
 	myerror(ERRZIP, "cannot add to read-only archive");
@@ -185,11 +184,11 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 	return false;
     }
     seterrinfo(name, source_archive->files[source_index].name);
-    if (file_status_(&source_archive->files[source_index]) == STATUS_BADDUMP) {
+    if (source_archive->files[source_index].status == STATUS_BADDUMP) {
 	myerror(ERRZIPFILE, "not copying broken file");
 	return false;
     }
-    if (file_where(&source_archive->files[source_index]) != FILE_INGAME && file_where(&source_archive->files[source_index]) != FILE_DELETED) {
+    if (source_archive->files[source_index].where != FILE_INGAME && source_archive->files[source_index].where != FILE_DELETED) {
 	myerror(ERRZIP, "cannot copy broken/added file");
 	return false;
     }
@@ -231,7 +230,7 @@ bool Archive::file_delete(uint64_t index) {
 	return false;
     }
 
-    if (file_where(&files[index]) != FILE_INGAME) {
+    if (files[index].where != FILE_INGAME) {
 	seterrinfo(name, "");
 	myerror(ERRZIP, "cannot delete broken/added/deleted file");
 	return false;
@@ -241,7 +240,7 @@ bool Archive::file_delete(uint64_t index) {
         return false;
     }
 
-    file_where(&files[index]) = FILE_DELETED;
+    files[index].where = FILE_DELETED;
     flags |= ARCHIVE_IFL_MODIFIED;
 
     return true;
@@ -263,14 +262,14 @@ bool Archive::file_rename(uint64_t index, const std::string &filename) {
 	myerror(ERRZIP, "cannot rename in read-only archive");
 	return false;
     }
-    if (file_where(&files[index]) != FILE_INGAME) {
+    if (files[index].where != FILE_INGAME) {
 	myerror(ERRZIP, "cannot copy broken/added/deleted file");
 	return false;
     }
 
     if (file_index_by_name(filename).has_value()) {
 	errno = EEXIST;
-	myerror(ERRZIP, "can't rename %s to %s: %s", file_name(&files[index]), filename.c_str(), strerror(errno));
+	myerror(ERRZIP, "can't rename %s to %s: %s", files[index].name.c_str(), filename.c_str(), strerror(errno));
 	return false;
     }
 
@@ -278,8 +277,7 @@ bool Archive::file_rename(uint64_t index, const std::string &filename) {
         return false;
     }
     
-    free(files[index].name);
-    file_name(&files[index]) = xstrdup(filename.c_str());
+    files[index].name = filename;
     flags |= ARCHIVE_IFL_MODIFIED;
 
     return true;
@@ -293,7 +291,7 @@ bool Archive::file_rename_to_unique(uint64_t index) {
 	return false;
     }
 
-    auto new_name = make_unique_name(file_name(&files[index]));
+    auto new_name = make_unique_name(files[index].name);
     if (new_name.empty()) {
         return false;
     }
@@ -316,9 +314,9 @@ bool Archive::rollback() {
     for (uint64_t i = 0; i < files.size(); i++) {
         auto &file = files[i];
         
-        switch (file_where(&file)) {
+        switch (file.where) {
             case FILE_DELETED:
-                file_where(&file) = FILE_INGAME;
+                file.where = FILE_INGAME;
                 break;
                 
             case FILE_ADDED:
@@ -335,14 +333,14 @@ bool Archive::rollback() {
 }
 
 
-void Archive::add_file(const std::string &filename, const file_t *file) {
-    file_t *nf;
+void Archive::add_file(const std::string &filename, const File *file) {
+    File *nf;
 
     files.push_back(*file);
     nf = &files[files.size() - 1];
 
-    file_name(nf) = xstrdup(filename.c_str());
-    file_where(nf) = FILE_ADDED;
+    nf->name = filename;
+    nf->where = FILE_ADDED;
 
     flags |= ARCHIVE_IFL_MODIFIED;
 }

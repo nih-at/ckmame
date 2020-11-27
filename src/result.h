@@ -48,7 +48,7 @@
 
 class Result {
 public:
-    Result(const game_t *g, const Archive *a, const images_t *im);
+    Result(const Game *g, const Archive *a, const images_t *im);
     ~Result();
     game_status_t game;
 

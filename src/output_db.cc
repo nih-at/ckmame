@@ -61,12 +61,12 @@ struct fbh_context {
 };
 
 
-static void familymeeting(romdb_t *, game_t *, game_t *);
+static void familymeeting(romdb_t *, Game *, Game *);
 static int handle_lost(output_context_db_t *);
-static bool lost(output_context_db_t *, game_t *);
+static bool lost(output_context_db_t *, Game *);
 static int output_db_close(output_context_t *);
 static int output_db_detector(output_context_t *, detector_t *);
-static int output_db_game(output_context_t *, game_t *);
+static int output_db_game(output_context_t *, Game *);
 static int output_db_header(output_context_t *, dat_entry_t *);
 
 
@@ -102,9 +102,9 @@ output_db_new(const char *dbname, int flags) {
 
 
 static void
-familymeeting(romdb_t *db, game_t *parent, game_t *child) {
+familymeeting(romdb_t *db, Game *parent, Game *child) {
     int i, j;
-    file_t *cr, *pr;
+    File *cr, *pr;
 
     if (game_cloneof(parent, 0)) {
 	/* tell child of his grandfather */
@@ -141,7 +141,7 @@ familymeeting(romdb_t *db, game_t *parent, game_t *child) {
 
 static int
 handle_lost(output_context_db_t *ctx) {
-    game_t *child, *parent;
+    Game *child, *parent;
     int i;
     bool is_lost;
 
@@ -187,7 +187,7 @@ handle_lost(output_context_db_t *ctx) {
 
 
 static bool
-lost(output_context_db_t *ctx, game_t *g) {
+lost(output_context_db_t *ctx, Game *g) {
     int i;
 
     if (game_cloneof(g, 0) == NULL)
@@ -250,9 +250,9 @@ output_db_detector(output_context_t *out, detector_t *d) {
 
 
 static int
-output_db_game(output_context_t *out, game_t *g) {
+output_db_game(output_context_t *out, Game *g) {
     output_context_db_t *ctx;
-    game_t *g2, *parent;
+    Game *g2, *parent;
 
     ctx = (output_context_db_t *)out;
 

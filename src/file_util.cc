@@ -39,7 +39,7 @@
 #include "hashes.h"
 
 int
-copy_file(const char *old, const char *new_name, size_t start, ssize_t len, hashes_t *hashes) {
+copy_file(const char *old, const char *new_name, size_t start, ssize_t len, Hashes *hashes) {
     FILE *fin, *fout;
     unsigned char b[8192];
     size_t nr, nw, total;
@@ -61,12 +61,12 @@ copy_file(const char *old, const char *new_name, size_t start, ssize_t len, hash
 	return -1;
     }
 
-    hashes_update_t *hu = NULL;
-    hashes_t h;
+    std::unique_ptr<Hashes::Update> hu;
+    Hashes h;
 
     if (hashes) {
-	hashes_types(&h) = HASHES_TYPE_ALL;
-	hu = hashes_update_new(&h);
+	h.types = Hashes::TYPE_ALL;
+        hu = std::make_unique<Hashes::Update>(&h);
     }
 
     total = 0;
@@ -86,19 +86,20 @@ copy_file(const char *old, const char *new_name, size_t start, ssize_t len, hash
 		    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new_name);
 		}
 		errno = err;
-		hashes_update_discard(hu);
 		return -1;
 	    }
 
-	    if (hashes)
-		hashes_update(hu, b + nw, nr - nw);
+            if (hashes) {
+                hu->update(b + nw, nr - nw);
+            }
 	    nw += n;
 	}
 	total += nw;
     }
 
-    if (hashes)
-	hashes_update_final(hu);
+    if (hashes) {
+        hu->end();
+    }
 
     if (fclose(fout) != 0 || ferror(fin)) {
 	err = errno;
@@ -111,8 +112,9 @@ copy_file(const char *old, const char *new_name, size_t start, ssize_t len, hash
     }
     fclose(fin);
 
-    if (hashes)
-	hashes_copy(hashes, &h);
+    if (hashes) {
+        *hashes = h;
+    }
 
     return 0;
 }

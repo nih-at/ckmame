@@ -54,19 +54,20 @@ static void tree_traverse_internal(tree_t *, ArchivePtr [], images_t *[]);
 
 int
 tree_add(tree_t *tree, const char *name) {
-    game_t *g;
-
-    if ((g = romdb_read_game(db, name)) == NULL)
+    GamePtr game = romdb_read_game(db, name);
+    
+    if (!game) {
 	return -1;
+    }
 
-    if (game_cloneof(g, 1))
-	tree = tree_add_node(tree, game_cloneof(g, 1), 0);
-    if (game_cloneof(g, 0))
-	tree = tree_add_node(tree, game_cloneof(g, 0), 0);
+    if (!game->cloneof[1].empty()) {
+	tree = tree_add_node(tree, game->cloneof[1].c_str(), 0);
+    }
+    if (!game->cloneof[0].empty()) {
+        tree = tree_add_node(tree, game->cloneof[0].c_str(), 0);
+    }
 
     tree_add_node(tree, name, 1);
-
-    game_free(g);
 
     return 0;
 }
@@ -95,7 +96,6 @@ tree_new(void) {
 
     t->name = NULL;
     t->check = t->checked = false;
-    ;
     t->child = t->next = NULL;
 
     return t;
@@ -121,11 +121,11 @@ tree_recheck(const tree_t *tree, const char *name) {
 
 
 int
-tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) {
+tree_recheck_games_needing(tree_t *tree, uint64_t size, const Hashes *hashes) {
     array_t *a;
     file_location_t *fbh;
-    game_t *g;
-    const file_t *gr;
+    GamePtr game;
+    const File *gr;
     int i, ret;
     
     if ((a = romdb_read_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
@@ -135,19 +135,17 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const hashes_t *hashes) 
     for (i = 0; i < array_length(a); i++) {
 	fbh = static_cast<file_location_t *>(array_get(a, i));
 
-	if ((g = romdb_read_game(db, file_location_name(fbh))) == NULL || game_num_roms(g) <= file_location_index(fbh)) {
-	    /* TODO: internal error: db inconsistency */
+        game = romdb_read_game(db, file_location_name(fbh));
+        if (!game || game->roms.size() <= file_location_index(fbh)) {
+            /* TODO: internal error: db inconsistency */
 	    ret = -1;
-	    game_free(g);
 	    continue;
 	}
 
-	gr = game_rom(g, file_location_index(fbh));
+        gr = &game->roms[file_location_index(fbh)];
 
-	if (size == file_size_(gr) && hashes_cmp(hashes, file_hashes(gr)) == HASHES_CMP_MATCH && file_where(gr) == FILE_INGAME)
-	    tree_recheck(tree, game_name(g));
-
-	game_free(g);
+	if (size == gr->size && hashes->compare(gr->hashes) == Hashes::MATCH && gr->where == FILE_INGAME)
+	    tree_recheck(tree, game->name.c_str());
     }
 
     array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
@@ -263,39 +261,39 @@ tree_new_full(const char *name, int check) {
 
 static int
 tree_process(tree_t *tree, ArchivePtr archives[], images_t *images[]) {
-    game_t *g;
+    GamePtr game;
 
     /* check me */
-    if ((g = romdb_read_game(db, tree->name)) == NULL) {
+    if (!(game = romdb_read_game(db, tree->name))) {
 	myerror(ERRDEF, "db error: %s not found", tree->name);
 	return -1;
     }
 
-    Result res(g, archives[0].get(), images[0]);
+    Result res(game.get(), archives[0].get(), images[0]);
 
-    check_old(g, &res);
-    check_files(g, archives, &res);
-    check_archive(archives[0], game_name(g), &res);
-    check_disks(g, images, &res);
-    check_images(images[0], game_name(g), &res);
+    check_old(game.get(), &res);
+    check_files(game.get(), archives, &res);
+    check_archive(archives[0], game->name.c_str(), &res);
+    check_disks(game.get(), images, &res);
+    check_images(images[0], game->name.c_str(), &res);
 
     /* write warnings/errors for me */
-    diagnostics(g, archives[0], images[0], &res);
+    diagnostics(game.get(), archives[0], images[0], &res);
 
     int ret = 0;
 
-    if (fix_options & FIX_DO)
-	ret = fix_game(g, archives[0].get(), images[0], &res);
+    if (fix_options & FIX_DO) {
+	ret = fix_game(game.get(), archives[0].get(), images[0], &res);
+    }
 
     /* TODO: includes too much when rechecking */
-    if (fixdat)
-	write_fixdat_entry(g, &res);
+    if (fixdat) {
+	write_fixdat_entry(game.get(), &res);
+    }
 
-    /* clean up */
-    game_free(g);
-
-    if (ret != 1)
+    if (ret != 1) {
 	tree_checked(tree) = true;
+    }
 
     return 0;
 }

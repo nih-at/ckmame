@@ -54,7 +54,7 @@ int memdb_inited = 0;
 
 
 static int _delete_file(uint64_t, filetype_t, int);
-static int _update_file(uint64_t, filetype_t, int, const hashes_t *);
+static int _update_file(uint64_t, filetype_t, int, const Hashes *);
 
 
 int
@@ -285,7 +285,7 @@ memdb_update_file(const Archive *archive, int idx) {
 
 
 static int
-_update_file(uint64_t id, filetype_t ft, int idx, const hashes_t *h) {
+_update_file(uint64_t id, filetype_t ft, int idx, const Hashes *h) {
     sqlite3_stmt *stmt;
 
     /* FILE_SH_DETECTOR hashes are always completely filled in */

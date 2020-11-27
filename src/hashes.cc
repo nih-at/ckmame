@@ -36,51 +36,102 @@
 
 #include "hashes.h"
 
+std::unordered_map<std::string, int> Hashes::name_to_type = {
+    { "crc", TYPE_CRC },
+    { "md5", TYPE_MD5},
+    { "sha1", TYPE_SHA1 }
+};
 
-hashes_cmp_t
-hashes_cmp(const struct hashes *h1, const struct hashes *h2) {
-    if (h1->types == 0 || h2->types == 0)
-	return HASHES_CMP_MATCH;
+std::unordered_map<int, std::string> Hashes::type_to_name = {
+    { TYPE_CRC, "crc" },
+    { TYPE_MD5, "md5" },
+    { TYPE_SHA1, "sha1" }
+};
 
-    if ((h1->types & h2->types) == 0)
-	return HASHES_CMP_NOCOMMON;
+int Hashes::types_from_string(const std::string &s) {
+    char b[16];
+    
+    int types = 0;
+    auto p = s.c_str();
+    const char *q;
+    do {
+        q = p + strcspn(p, ",");
+        if (static_cast<size_t>(q - p) >= sizeof(b)) {
+            return 0;
+        }
+        strncpy(b, p, static_cast<size_t>(q - p));
+        b[q-p] = '\0';
+        auto it = name_to_type.find(b);
+        if (it == name_to_type.end()) {
+            return 0;
+        }
+        types |= it->second;
 
-    if (h1->types & h2->types & HASHES_TYPE_CRC)
-	if (h1->crc != h2->crc)
-	    return HASHES_CMP_MISMATCH;
+        p = q + 1;
+    } while (*q);
 
-    if (h1->types & h2->types & HASHES_TYPE_MD5)
-	if (memcmp(h1->md5, h2->md5, sizeof(h1->md5)) != 0)
-	    return HASHES_CMP_MISMATCH;
+    return types;
+}
 
-    if (h1->types & h2->types & HASHES_TYPE_SHA1)
-	if (memcmp(h1->sha1, h2->sha1, sizeof(h1->sha1)) != 0)
-	    return HASHES_CMP_MISMATCH;
+bool Hashes::are_crc_complement(const Hashes &other) const {
+    if (!has_type(TYPE_CRC) || !other.has_type(TYPE_CRC)) {
+        return false;
+    }
+    return ((crc ^ other.crc) & 0xffffffff) == 0xffffffff;
+}
 
-    return HASHES_CMP_MATCH;
+Hashes::Compare Hashes::compare(const Hashes &other) const {
+    if (types == 0 || other.types == 0) {
+        return MATCH;
+    }
+
+    auto common_types = (types & other.types);
+    
+    if (common_types == 0) {
+	return NOCOMMON;
+    }
+
+    if ((common_types & TYPE_CRC) != 0) {
+        if (crc != other.crc) {
+            return MISMATCH;
+        }
+    }
+
+    if ((common_types & TYPE_MD5) != 0) {
+        if (memcmp(md5, other.md5, SIZE_MD5) != 0) {
+            return MISMATCH;
+        }
+    }
+
+    if ((common_types & TYPE_SHA1) != 0) {
+        if (memcmp(sha1, other.sha1, SIZE_SHA1) != 0) {
+	    return MISMATCH;
+        }
+    }
+
+    return MATCH;
 }
 
 
-bool
-hashes_cmp_strict(const struct hashes *h1, const struct hashes *h2) {
-    if (h1->types != h2->types) {
+bool Hashes::operator==(const Hashes &other) const {
+    if (types != other.types) {
 	return false;
     }
 
-    if (h1->types & HASHES_TYPE_CRC) {
-	if (h1->crc != h2->crc) {
+    if (types & TYPE_CRC) {
+	if (crc != other.crc) {
 	    return false;
 	}
     }
 
-    if (h1->types & HASHES_TYPE_MD5) {
-	if (memcmp(h1->md5, h2->md5, sizeof(h1->md5)) != 0) {
+    if (types & TYPE_MD5) {
+	if (memcmp(md5, other.md5, SIZE_MD5) != 0) {
 	    return false;
 	}
     }
 
-    if (h1->types & HASHES_TYPE_SHA1) {
-	if (memcmp(h1->sha1, h2->sha1, sizeof(h1->sha1)) != 0) {
+    if (types & TYPE_SHA1) {
+	if (memcmp(sha1, other.sha1, SIZE_SHA1) != 0) {
 	    return false;
 	}
     }
@@ -88,8 +139,56 @@ hashes_cmp_strict(const struct hashes *h1, const struct hashes *h2) {
     return true;
 }
 
-void
-hashes_init(struct hashes *h) {
-    h->types = 0;
-    h->crc = 0;
+
+size_t Hashes::hash_size(int type) {
+    switch (type) {
+        case TYPE_CRC:
+            return SIZE_CRC;
+
+        case TYPE_MD5:
+            return SIZE_MD5;
+
+        case TYPE_SHA1:
+            return SIZE_SHA1;
+
+        default:
+            return 0;
+    }
+}
+
+const void *Hashes::hash_data(int type) const {
+    switch (type) {
+        case TYPE_CRC:
+            return &crc;
+            
+        case TYPE_MD5:
+            return md5;
+
+        case TYPE_SHA1:
+            return sha1;
+
+        default:
+            return NULL;
+    }
+}
+
+void Hashes::set(int type, const void *data) {
+    auto length = hash_size(type);
+
+    if (length == 0) {
+        return;
+    }
+    memcpy(const_cast<void *>(hash_data(type)), data, length);
+    types |= type;
+}
+
+
+bool Hashes::verify(int type, const void *data) const {
+    auto length = hash_size(type);
+    
+    if (length == 0) {
+        return false;
+    }
+
+    return memcmp(data, hash_data(type), length) == 0;
 }
