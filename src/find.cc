@@ -124,7 +124,6 @@ find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md) {
 find_result_t
 find_in_archives(const File *rom, Match *m, bool needed_only) {
     sqlite3_stmt *stmt;
-    File *f;
     int i, ret, hcol, sh;
 
     if (memdb_ensure() < 0) {
@@ -322,14 +321,14 @@ find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Matc
 	return FIND_UNKNOWN;
 
     status = FIND_UNKNOWN;
-    for (size_t i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < array_length(a); i++) {
+    for (int i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < array_length(a); i++) {
 	fbh = static_cast<file_location_t *>(array_get(a, i));
 
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
 
         GamePtr game = romdb_read_game(fdb, file_location_name(fbh));
-        if (!game || game->roms.size() <= file_location_index(fbh)) {
+        if (!game || game->roms.size() <= static_cast<size_t>(file_location_index(fbh))) {
 	    /* TODO: internal error: database inconsistency */
 	    status = FIND_ERROR;
 	    break;
@@ -370,7 +369,6 @@ find_result_t
 find_disk_in_db(romdb_t *fdb, const disk_t *d, const char *skip, match_disk_t *md, find_result_t (*check_match)(const Game *, const disk_t *, match_disk_t *)) {
     array_t *a;
     file_location_t *fbh;
-    const disk_t *gd;
     int i;
     find_result_t status;
 

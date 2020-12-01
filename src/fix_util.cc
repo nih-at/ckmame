@@ -106,25 +106,21 @@ make_unique_name(const char *ext, const char *fmt, ...) {
 
 char *
 make_needed_name(const File *r) {
-    char crc[HASHES_SIZE_CRC * 2 + 1];
-
     /* <needed_dir>/<crc>-nnn.zip */
 
-    hash_to_string(crc, Hashes::TYPE_CRC, file_hashes(r));
+    auto crc = r->hashes.to_string(Hashes::TYPE_CRC);
 
-    return make_unique_name(roms_unzipped ? "" : "zip", "%s/%s", needed_dir, crc);
+    return make_unique_name(roms_unzipped ? "" : "zip", "%s/%s", needed_dir, crc.c_str());
 }
 
 
 char *
 make_needed_name_disk(const disk_t *d) {
-    char md5[HASHES_SIZE_MD5 * 2 + 1];
-
     /* <needed_dir>/<md5>-nnn.zip */
 
-    hash_to_string(md5, Hashes::TYPE_MD5, disk_hashes(d));
+    auto md5 = d->hashes.to_string(Hashes::TYPE_MD5);
 
-    return make_unique_name("chd", "%s/%s", needed_dir, md5);
+    return make_unique_name("chd", "%s/%s", needed_dir, md5.c_str());
 }
 
 
@@ -194,10 +190,10 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
     if (needed) {
 	if (fix_options & FIX_PRINT) {
 	    if (length == -1) {
-		printf("%s: save needed file '%s'\n", sa->name.c_str(), file_name(&sa->files[sidx]));
+		printf("%s: save needed file '%s'\n", sa->name.c_str(), sa->files[sidx].name.c_str());
 	    }
 	    else {
-                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), (uint64_t)start, (uint64_t)length, file_name(&sa->files[sidx]));
+                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), (uint64_t)start, (uint64_t)length, sa->files[sidx].name.c_str());
 	    }
 	}
 
@@ -214,14 +210,14 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 	
 	free(tmp);
 	
-        if (!da->file_copy_part(sa, sidx, file_name(&sa->files[sidx]), start, length == -1 ? std::optional<uint64_t>() : length, f) || !da->commit()) {
+        if (!da->file_copy_part(sa, sidx, sa->files[sidx].name.c_str(), start, length == -1 ? std::optional<uint64_t>() : length, f) || !da->commit()) {
             da->rollback();
             return false;
         }
     }
     else {
 	if (length == -1 && (fix_options & FIX_PRINT)) {
-            printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), file_name(&sa->files[sidx]));
+            printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), sa->files[sidx].name.c_str());
 	}
     }
 	

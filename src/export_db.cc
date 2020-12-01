@@ -60,7 +60,7 @@ export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_c
 	return -1;
     }
 
-    for (size_t i = 0; i < parray_length(list); i++) {
+    for (int i = 0; i < parray_length(list); i++) {
         GamePtr game = romdb_read_game(db, static_cast<const char *>(parray_get(list, i)));
         if (!game) {
 	    /* TODO: error */

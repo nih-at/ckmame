@@ -250,7 +250,7 @@ dbh_cache_list_archives(dbh_t *dbh) {
     }
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	parray_push(archives, sq3_get_string(stmt, 0));
+	parray_push(archives, const_cast<char *>(sq3_get_string(stmt, 0).c_str()));
     }
 
     if (ret != SQLITE_DONE) {
@@ -263,30 +263,32 @@ dbh_cache_list_archives(dbh_t *dbh) {
 
 
 int
-dbh_cache_read(dbh_t *dbh, const std::string &name, std::vector<file_t> *files) {
+dbh_cache_read(dbh_t *dbh, const std::string &name, std::vector<File> *files) {
     sqlite3_stmt *stmt;
     int ret;
     int archive_id;
 
-    if ((archive_id = dbh_cache_get_archive_id(dbh, name.c_str())) == 0)
+    if ((archive_id = dbh_cache_get_archive_id(dbh, name.c_str())) == 0) {
 	return 0;
+    }
 
-    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_FILE)) == NULL)
+    if ((stmt = dbh_get_statement(dbh, DBH_STMT_DIR_QUERY_FILE)) == NULL) {
 	return -1;
-    if (sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK)
+    }
+    if (sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK) {
 	return -1;
+    }
 
     files->clear();
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
         File file;
 
-        file_init(&file);
         file.name = sq3_get_string(stmt, 0);
         file.mtime = sqlite3_column_int(stmt, 1);
-	file_status_(&file) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
-	file_size_(&file) = sq3_get_int64_default(stmt, 3, SIZE_UNKNOWN);
-	sq3_get_hashes(file_hashes(&file), stmt, 4);
+	file.status = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+	file.size = sq3_get_int64_default(stmt, 3, SIZE_UNKNOWN);
+	sq3_get_hashes(&file.hashes, stmt, 4);
 
         files->push_back(file);
 
@@ -380,7 +382,7 @@ dbh_cache_write(dbh_t *dbh, int id, const Archive *a) {
 
     for (size_t i = 0; i < a->files.size(); i++) {
 	const File *f = &a->files[i];
-	if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK || sq3_set_string(stmt, 3, file_name(f)) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, file_mtime(f)) != SQLITE_OK || sqlite3_bind_int(stmt, 5, file_status_(f)) != SQLITE_OK || sq3_set_int64_default(stmt, 6, file_size_(f), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 7, file_hashes(f), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+	if (sqlite3_bind_int(stmt, 2, i) != SQLITE_OK || sq3_set_string(stmt, 3, f->name.c_str()) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, f->mtime) != SQLITE_OK || sqlite3_bind_int(stmt, 5, f->status) != SQLITE_OK || sq3_set_int64_default(stmt, 6, f->size, SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 7, &f->hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
 	    return -1;
 	}
     }
