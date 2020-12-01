@@ -228,11 +228,13 @@ memdb_file_insert(sqlite3_stmt *stmt, const Archive *a, int idx) {
     if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_IDX, idx) != SQLITE_OK)
 	err = -1;
     else {
-	for (i = 0; i < FILE_SH_MAX; i++) {
-	    if (!file_sh_is_set(r, i) && i != FILE_SH_FULL)
+	for (i = 0; i < 2; i++) {
+	    bool detector = (i == 1);
+	    if (detector && !r->size_hashes_are_set(detector)) {
 		continue;
+	    }
 
-	    if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_SH, i) != SQLITE_OK || sq3_set_int64_default(stmt, INSERT_file_size_, file_size__xxx(r, i), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, INSERT_FILE_HASHES, file_hashes_xxx(r, i), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+	    if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_SH, i) != SQLITE_OK || sq3_set_int64_default(stmt, INSERT_file_size_, r->get_size(detector), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, INSERT_FILE_HASHES, &r->get_hashes(detector), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
 		err = -1;
 		continue;
 	    }
@@ -259,7 +261,7 @@ memdb_file_insert_archive(const Archive *archive) {
 
     err = 0;
     for (size_t i = 0; i < archive->files.size(); i++) {
-        if (file_status_(&archive->files[i]) != STATUS_OK)
+        if (archive->files[i].status != STATUS_OK)
 	    continue;
 	if (memdb_file_insert(stmt, archive, i) < 0)
 	    err = -1;
@@ -277,10 +279,10 @@ memdb_update_disk(const disk_t *d) {
 
 int
 memdb_update_file(const Archive *archive, int idx) {
-    if (file_status_(&archive->files[idx]) != STATUS_OK)
+    if (archive->files[idx].status != STATUS_OK)
 	return _delete_file(archive->id, archive->filetype, idx);
 
-    return _update_file(archive->id, archive->filetype, idx, file_hashes(&archive->files[idx]));
+    return _update_file(archive->id, archive->filetype, idx, &archive->files[idx].hashes);
 }
 
 
@@ -293,7 +295,7 @@ _update_file(uint64_t id, filetype_t ft, int idx, const Hashes *h) {
     if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_UPDATE_FILE)) == NULL)
 	return -1;
 
-    if (sq3_set_hashes(stmt, 1, h, 1) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, id) != SQLITE_OK || sqlite3_bind_int(stmt, 5, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 6, idx) != SQLITE_OK || sqlite3_bind_int(stmt, 7, FILE_SH_FULL) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
+    if (sq3_set_hashes(stmt, 1, h, 1) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, id) != SQLITE_OK || sqlite3_bind_int(stmt, 5, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 6, idx) != SQLITE_OK || sqlite3_bind_int(stmt, 7, 0) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
 
     return 0;

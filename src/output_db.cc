@@ -184,7 +184,7 @@ lost(output_context_db_t *ctx, Game *game) {
 	return false;
     }
 
-    for (size_t i = 0; i < parray_length(ctx->lost_children); i++) {
+    for (int i = 0; i < parray_length(ctx->lost_children); i++) {
 	if (strcmp(static_cast<const char *>(parray_get(ctx->lost_children, i)), game->name.c_str()) == 0) {
             return true;
 	}
@@ -244,7 +244,7 @@ static int
 output_db_game(output_context_t *out, GamePtr game) {
     auto ctx = reinterpret_cast<output_context_db_t *>(out);
 
-    auto g2 = romdb_read_game(ctx->db, game->name.c_str());
+    auto g2 = romdb_read_game(ctx->db, game->name);
     
     if (g2) {
         myerror(ERRDEF, "duplicate game '%s' skipped", game->name.c_str());

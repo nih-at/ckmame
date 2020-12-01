@@ -141,6 +141,14 @@ bool Hashes::operator==(const Hashes &other) const {
 }
 
 
+bool
+Hashes::has_type(int requested_type) const {
+    if ((types & requested_type) == requested_type) {
+	return true;
+    }
+    return false;
+}
+
 size_t Hashes::hash_size(int type) {
     switch (type) {
         case TYPE_CRC:

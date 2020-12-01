@@ -47,7 +47,7 @@ static int read_roms(romdb_t *, Game *);
 
 
 GamePtr
-romdb_read_game(romdb_t *db, const char *name) {
+romdb_read_game(romdb_t *db, const std::string &name) {
     sqlite3_stmt *stmt;
     int ret;
 
@@ -55,13 +55,13 @@ romdb_read_game(romdb_t *db, const char *name) {
 	return NULL;
     }
 
-    if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_ROW) {
+    if (sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_ROW) {
 	return NULL;
     }
 
     auto game = std::make_shared<Game>();
     game->id = sqlite3_column_int(stmt, 0);
-    game->name = xstrdup(name);
+    game->name = name;
     game->description = sq3_get_string(stmt, 1);
     game->dat_no = sqlite3_column_int(stmt, 2);
     game->cloneof[0] = sq3_get_string(stmt, 3);
@@ -82,13 +82,13 @@ romdb_read_game(romdb_t *db, const char *name) {
 
     if (read_roms(db, game.get()) < 0) {
         // TODO: use error reporting function
-        printf("can't read roms for %s\n", name);
+        printf("can't read roms for %s\n", name.c_str());
 	return NULL;
     }
 
     if (read_disks(db, game.get()) < 0) {
         // TODO: use error reporting function
-        printf("can't read disks for %s\n", name);
+        printf("can't read disks for %s\n", name.c_str());
 	return NULL;
     }
 

@@ -47,6 +47,10 @@ bool File::compare_merged_size_crc(const File &other) const {
 }
 
 
+bool File::compare_name(const File &other) const {
+    return name == other.name;
+}
+
 bool File::compare_name_size_crc(const File &other) const {
     return compare_name(other) && compare_size_crc(other);
 }
