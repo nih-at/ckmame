@@ -73,7 +73,7 @@ struct option options[] = {
 
 
 static int print_archive(const char *, int);
-static void print_checksums(Hashes *, int);
+static void print_checksums(const Hashes *, int);
 
 
 int
@@ -179,22 +179,23 @@ print_archive(const char *fname, int hashtypes) {
 
     ret = 0;
     for (size_t i = 0; i < archive->files.size(); i++) {
+	bool use_detector = false;
 	if (!archive->file_compute_hashes(i, hashtypes)) {
 	    ret = -1;
 	    continue;
 	}
 
-        auto &f = archive->files[i];
+        auto &file = archive->files[i];
 
-	if (file_sh_is_set(&f, FILE_SH_DETECTOR))
-	    j = FILE_SH_DETECTOR;
-	else
-	    j = FILE_SH_FULL;
+	if (file.size_hashes_are_set(true)) {
+	    use_detector = true;
+	}
 
-	printf("\tfile %-12s  size %7" PRIu64, file_name(&f), file_size__xxx(&f, j));
-	print_checksums(file_hashes_xxx(&f, j), hashtypes);
-	if (j == FILE_SH_DETECTOR)
+	printf("\tfile %-12s  size %7" PRIu64, file.name.c_str(), file.get_size(use_detector));
+	print_checksums(&file.get_hashes(use_detector), hashtypes);
+	if (use_detector) {
 	    printf("  (header skipped)");
+	}
 	printf("\n");
     }
 
@@ -203,13 +204,12 @@ print_archive(const char *fname, int hashtypes) {
 
 
 static void
-print_checksums(Hashes *hashes, int hashtypes) {
+print_checksums(const Hashes *hashes, int hashtypes) {
     int i;
-    char h[Hashes::MAX_SIZE * 2 + 1];
 
-    for (i = 1; i <= HASHES_TYPE_MAX; i <<= 1) {
-	if (hashes_has_type(hashes, i) && (hashtypes & i)) {
-	    printf(" %s %s", hash_type_string(i), hash_to_string(h, i, hashes));
+    for (i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
+	if (hashes->has_type(i) && (hashtypes & i)) {
+	    printf(" %s %s", Hashes::type_name(i).c_str(), hashes->to_string(i).c_str());
 	}
     }
 }
