@@ -50,7 +50,7 @@ std::string Match::file() const {
 	return old_file;
     }
     else {
-        return file_name(&archive->files[index]);
+        return archive->files[index].name;
     }
 }
 
