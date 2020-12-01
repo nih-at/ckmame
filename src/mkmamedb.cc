@@ -158,7 +158,7 @@ main(int argc, char **argv) {
 	    fputs(version_string, stdout);
 	    exit(0);
 	case 'C':
-	    hashtypes = hash_types_from_str(optarg);
+	    hashtypes = Hashes::types_from_string(optarg);
 	    if (hashtypes == 0) {
 		fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), optarg);
 		exit(1);

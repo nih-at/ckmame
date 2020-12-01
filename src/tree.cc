@@ -136,7 +136,7 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const Hashes *hashes) {
 	fbh = static_cast<file_location_t *>(array_get(a, i));
 
         game = romdb_read_game(db, file_location_name(fbh));
-        if (!game || game->roms.size() <= file_location_index(fbh)) {
+        if (!game || game->roms.size() <= static_cast<size_t>(file_location_index(fbh))) {
             /* TODO: internal error: db inconsistency */
 	    ret = -1;
 	    continue;

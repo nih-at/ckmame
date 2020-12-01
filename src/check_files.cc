@@ -64,7 +64,8 @@ check_files(Game *game, ArchivePtr archives[3], result_t *res) {
     static const test_t tests[] = {TEST_NAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG};
     static const int tests_count = sizeof(tests) / sizeof(tests[0]);
     
-    int i, j;
+    int j;
+    size_t i;
     test_result_t result;
     
     if (result_game(res) == GS_OLD)

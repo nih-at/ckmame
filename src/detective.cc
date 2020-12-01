@@ -107,7 +107,7 @@ main(int argc, char **argv) {
 	    fputs(version_string, stdout);
 	    exit(0);
 	case 'C':
-	    hashtypes = hash_types_from_str(optarg);
+	    hashtypes = Hashes::types_from_string(optarg);
 	    if (hashtypes == 0) {
 		fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), optarg);
 		exit(1);
@@ -168,7 +168,7 @@ main(int argc, char **argv) {
 
 static int
 print_archive(const char *fname, int hashtypes) {
-    int j, ret;
+    int ret;
 
     auto archive = Archive::open(fname, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
     if (!archive) {

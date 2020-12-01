@@ -110,10 +110,4 @@ private:
     const void *hash_data(int type) const;
 };
 
-typedef struct hashes_update hashes_update_t;
-
-
-
-int hash_types_from_str(const char *);
-
 #endif /* hashes.h */

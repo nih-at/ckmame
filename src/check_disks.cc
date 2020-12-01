@@ -55,7 +55,7 @@ check_disks(Game *game, images_t *im[], result_t *res) {
 	    continue;
         }
 
-        size_t j = images_find(im[disk_where(disk)], disk_merged_name(disk));
+        int j = images_find(im[disk_where(disk)], disk_merged_name(disk));
 
         if (j != -1) {
             disk_t *expected_image = images_get(im[disk_where(disk)], j);
@@ -85,14 +85,14 @@ check_disks(Game *game, images_t *im[], result_t *res) {
 	}
 
 	if (match_disk_quality(md) != QU_OK && im[0] != NULL) {
-            for (i = 0; i < images_length(im[0]); i++) {
-                disk_t *image = images_get(im[0], i);
+            for (auto k = 0; k < images_length(im[0]); k++) {
+                disk_t *image = images_get(im[0], k);
                 
                 if (disk_hashes(disk)->compare(*disk_hashes(image)) == Hashes::MATCH) {
                     match_disk_where(md) = FILE_INGAME;
                     match_disk_set_source(md, image);
                     match_disk_quality(md) = QU_NAMEERR;
-                    result_image(res, i) = FS_USED;
+                    result_image(res, k) = FS_USED;
                 }
             }
         }

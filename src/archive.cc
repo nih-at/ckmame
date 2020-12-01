@@ -74,7 +74,7 @@ int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
     }
 
     if (files[index].status != STATUS_OK) {
-        return HASHES_CMP_NOCOMMON;
+        return Hashes::NOCOMMON;
     }
 
     return file_hashes.compare(*hashes);
@@ -140,7 +140,7 @@ std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const H
             return {};
 	}
 
-	if (hashes->compare(hashes_part) == HASHES_CMP_MATCH) {
+	if (hashes->compare(hashes_part) == Hashes::MATCH) {
             found = true;
             break;
 	}
@@ -414,30 +414,28 @@ int Archive::cache_is_up_to_date() {
 	return -1;
     }
 
-    return (mtime_cache == mtime && size_cache == size);
+    return (mtime_cache == mtime && static_cast<size_t>(size_cache) == size);
 }
 
 
-bool Archive::get_hashes(ArchiveFile *f, size_t len, struct hashes *h) {
-    hashes_update_t *hu;
+bool Archive::get_hashes(ArchiveFile *f, size_t len, Hashes *h) {
     unsigned char buf[BUFSIZE];
     size_t n;
 
-    hu = hashes_update_new(h);
+    auto hu = Hashes::Update(h);
 
     while (len > 0) {
 	n = static_cast<size_t>(len) > sizeof(buf) ? sizeof(buf) : len;
 
-	if (f->read(buf, n) != n) {
-	    hashes_update_discard(hu);
+	if (f->read(buf, n) != static_cast<int64_t>(n)) {
             return false;
 	}
 
-	hashes_update(hu, buf, n);
+	hu.update(buf, n);
 	len -= n;
     }
 
-    hashes_update_final(hu);
+    hu.end();
 
     return true;
 }
@@ -449,8 +447,8 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
         
         auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const File &file_cache){ return file.name == file_cache.name; });
         if (it != files_cache.cend()) {
-            if (file_mtime(&file) == file_mtime(&(*it)) && file_compare_nsc(&file, &(*it))) {
-                hashes_copy(file_hashes(&file), file_hashes(&(*it)));
+            if (file.mtime == (*it).mtime && file.compare_name_size_crc(*it)) {
+                file.hashes = (*it).hashes;
             }
             else {
                 cache_changed = true;
@@ -460,10 +458,10 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
             cache_changed = true;
         }
         
-        if (!hashes_has_type(file_hashes(&file), Hashes::TYPE_CRC)) {
-            if (!file_compute_hashes(i, HASHES_TYPE_ALL)) {
-                file_status_(&file) = STATUS_BADDUMP;
-                if (it == files_cache.cend() || file_status_(&(*it)) != STATUS_BADDUMP) {
+        if (!file.hashes.has_type(Hashes::TYPE_CRC)) {
+            if (!file_compute_hashes(i, Hashes::TYPE_ALL)) {
+                file.status = STATUS_BADDUMP;
+                if (it == files_cache.cend() || (*it).status != STATUS_BADDUMP) {
                     cache_changed = true;
                 }
                 continue;

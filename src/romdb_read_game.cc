@@ -100,7 +100,6 @@ static int
 read_disks(romdb_t *db, Game *game) {
     sqlite3_stmt *stmt;
     int ret;
-    disk_t *d;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
 	return -1;
