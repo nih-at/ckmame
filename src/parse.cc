@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -155,23 +156,29 @@ parse_file_status_(parser_context_t *ctx, filetype_t ft, int ht, const char *att
 
     CHECK_STATE(ctx, PARSE_IN_FILE);
 
-    if (strcmp(attr, "good") == 0)
+    if (strcmp(attr, "good") == 0) {
 	status = STATUS_OK;
-    else if (strcmp(attr, "verified") == 0)
+    }
+    else if (strcmp(attr, "verified") == 0) {
 	status = STATUS_OK;
-    else if (strcmp(attr, "baddump") == 0)
+    }
+    else if (strcmp(attr, "baddump") == 0) {
 	status = STATUS_BADDUMP;
-    else if (strcmp(attr, "nodump") == 0)
+    }
+    else if (strcmp(attr, "nodump") == 0) {
 	status = STATUS_NODUMP;
+    }
     else {
 	myerror(ERRFILE, "%d: illegal status '%s'", ctx->lineno, attr);
 	return -1;
     }
-
-    if (ft == TYPE_DISK)
+ 
+    if (ft == TYPE_DISK) {
 	disk_status(ctx->d) = status;
-    else
-	file_status_(ctx->r) = status;
+    }
+    else {
+	ctx->r->status = status;
+    }
 
     return 0;
 }
@@ -188,13 +195,15 @@ parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) 
 	return 0;
     }
 
-    if (ft == TYPE_DISK)
+    if (ft == TYPE_DISK) {
 	h = disk_hashes(ctx->d);
-    else
-	h = file_hashes(ctx->r);
+    }
+    else {
+        h = &ctx->r->hashes;
+    }
 
-    if (hash_from_string(h, attr) != ht) {
-	myerror(ERRFILE, "%d: invalid argument for %s", ctx->lineno, hash_type_string(ht));
+    if (h->set_from_string(attr) != ht) {
+	myerror(ERRFILE, "%d: invalid argument for %s", ctx->lineno, Hashes::type_name(ht).c_str());
 	return -1;
     }
 
@@ -224,10 +233,12 @@ int
 parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
     CHECK_STATE(ctx, PARSE_IN_FILE);
 
-    if (ft == TYPE_DISK)
-	disk_merge(ctx->d) = xstrdup(attr);
-    else
-	file_merge(ctx->r) = xstrdup(attr);
+    if (ft == TYPE_DISK) {
+        disk_merge(ctx->d) = xstrdup(attr);
+    }
+    else {
+	ctx->r->merge = attr;
+    }
 
     return 0;
 }
@@ -237,7 +248,7 @@ parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht, const char *attr)
 int
 parse_file_mtime(parser_context_t *ctx, filetype_t ft, int ht, time_t mtime) {
     if (ft == TYPE_ROM) {
-	file_mtime(ctx->r) = mtime;
+        ctx->r->mtime = mtime;
     }
 
     return 0;
@@ -247,19 +258,18 @@ parse_file_mtime(parser_context_t *ctx, filetype_t ft, int ht, time_t mtime) {
 /*ARGSUSED3*/
 int
 parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy, const char *attr) {
-    char *p;
-
     CHECK_STATE(ctx, PARSE_IN_FILE);
 
-    if (ft == TYPE_DISK)
+    if (ft == TYPE_DISK) {
 	disk_name(ctx->d) = xstrdup(attr);
+    }
     else {
-	file_name(ctx->r) = xstrdup(attr);
-
-	/* TODO: warn about broken dat file? */
-	p = file_name(ctx->r);
-	while ((p = strchr(p, '\\')))
-	    *(p++) = '/';
+        auto name = std::string(attr);
+        
+        /* TODO: warn about broken dat file? */
+        std::replace(name.begin(), name.end(), '\\', '/');
+        
+        ctx->r->name = name;
     }
 
     return 0;
@@ -277,7 +287,7 @@ parse_file_size_(parser_context_t *ctx, filetype_t ft, int dummy, const char *at
     }
 
     /* TODO: check for strol errors */
-    file_size_(ctx->r) = strtol(attr, NULL, 0);
+    ctx->r->size = strtol(attr, NULL, 0);
 
     return 0;
 }
@@ -287,10 +297,15 @@ int
 parse_file_start(parser_context_t *ctx, filetype_t ft) {
     CHECK_STATE(ctx, PARSE_IN_GAME);
 
-    if (ft == TYPE_DISK)
-	ctx->d = static_cast<disk_t *>(array_grow(game_disks(ctx->g), reinterpret_cast<void (*)(void *)>(disk_init)));
-    else
-        ctx->r = static_cast<File *>(array_grow(game_roms(ctx->g), reinterpret_cast<void (*)(void *)>(file_init)));
+    if (ft == TYPE_DISK) {
+        ctx->g->disks.push_back(disk_t());
+        ctx->d = &ctx->g->disks[ctx->g->disks.size() - 1];
+        disk_init(ctx->d);
+    }
+    else {
+        ctx->g->roms.push_back(File());
+        ctx->r = &ctx->g->roms[ctx->g->roms.size() - 1];
+    }
 
     SET_STATE(ctx, PARSE_IN_FILE);
 
@@ -303,7 +318,7 @@ int
 parse_game_cloneof(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
     CHECK_STATE(ctx, PARSE_IN_GAME);
 
-    game_cloneof(ctx->g, 0) = xstrdup(attr);
+    ctx->g->cloneof[0] = attr;
 
     return 0;
 }
@@ -313,7 +328,7 @@ int
 parse_game_description(parser_context_t *ctx, const char *attr) {
     CHECK_STATE(ctx, PARSE_IN_GAME);
 
-    game_description(ctx->g) = xstrdup(attr);
+    ctx->g->description = attr;
 
     return 0;
 }
@@ -322,38 +337,30 @@ parse_game_description(parser_context_t *ctx, const char *attr) {
 /*ARGSUSED2*/
 int
 parse_game_end(parser_context_t *ctx, filetype_t ft) {
-    Game *g;
-    int keep_g, ret;
-
     CHECK_STATE(ctx, PARSE_IN_GAME);
-
-    keep_g = ret = 0;
-
-    if (!name_matches(game_name(ctx->g), ctx->ignore)) {
-	g = ctx->g;
+    
+    int ret = 0;
+    
+    if (!name_matches(ctx->g->name.c_str(), ctx->ignore)) {
+        Game *game = ctx->g.get();
 
 	/* omit description if same as name (to save space) */
-	if (game_name(g) && game_description(g) && strcmp(game_name(g), game_description(g)) == 0) {
-	    free(game_description(g));
-	    game_description(g) = NULL;
+        if (game->name == game->description) {
+            game->description = "";
 	}
 
-	if (game_cloneof(g, 0)) {
-	    if (strcmp(game_cloneof(g, 0), game_name(g)) == 0) {
-		free(game_cloneof(g, 0));
-		game_cloneof(g, 0) = NULL;
+        if (!game->cloneof[0].empty()) {
+	    if (game->cloneof[0] == game->name) {
+                game->cloneof[0] = "";
 	    }
 	}
 
 	ret = output_game(ctx->output, ctx->g);
 	if (ret == 1) {
-	    keep_g = 1;
 	    ret = 0;
 	}
     }
 
-    if (!keep_g)
-	game_free(ctx->g);
     ctx->g = NULL;
 
     SET_STATE(ctx, PARSE_OUTSIDE);
@@ -365,18 +372,12 @@ parse_game_end(parser_context_t *ctx, filetype_t ft) {
 /*ARGSUSED3*/
 int
 parse_game_name(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    size_t i;
-
-    game_name(ctx->g) = xstrdup(attr);
+    ctx->g->name = attr;
 
     if (!ctx->full_archive_name) {
 	/* slashes are directory separators on some systems, and at least
 	 * one redump dat contained a slash in a rom name */
-	for (i = 0; i < strlen(game_name(ctx->g)); i++) {
-	    if (game_name(ctx->g)[i] == '/') {
-		game_name(ctx->g)[i] = '-';
-	    }
-	}
+        std::replace(ctx->g->name.begin(), ctx->g->name.end(), '/', '-');
     }
 
     return 0;
@@ -399,7 +400,7 @@ parse_game_start(parser_context_t *ctx, filetype_t ft) {
 	return -1;
     }
 
-    ctx->g = game_new();
+    ctx->g = std::make_shared<Game>();
 
     SET_STATE(ctx, PARSE_IN_GAME);
 
@@ -471,8 +472,6 @@ parse_prog_version(parser_context_t *ctx, const char *attr) {
 
 void
 parser_context_free(parser_context_t *ctx) {
-    game_free(ctx->g);
-    ctx->g = NULL;
     dat_entry_finalize(&ctx->de);
 
     free(ctx);
@@ -520,8 +519,9 @@ parse_header_end(parser_context_t *ctx) {
 
 static void
 disk_end(parser_context_t *ctx) {
-    if (hashes_types(disk_hashes(ctx->d)) == 0)
+    if (disk_hashes(ctx->d)->empty()) {
 	disk_status(ctx->d) = STATUS_NODUMP;
+    }
 
     if (disk_merge(ctx->d) != NULL && strcmp(disk_name(ctx->d), disk_merge(ctx->d)) == 0) {
 	free(disk_merge(ctx->d));
@@ -548,81 +548,64 @@ name_matches(const char *name, const parray_t *patterns) {
 
 static void
 rom_end(parser_context_t *ctx, filetype_t ft) {
-    File *r, *r2;
-    int deleted;
-    int j, n;
+    auto rom = ctx->r;
+    size_t n = ctx->g->roms.size() - 1;
 
-    r = ctx->r;
-    n = game_num_roms(ctx->g) - 1;
-
-    if (file_size_(r) == 0) {
-        unsigned char zeroes[Hashes::MAX_SIZE];
-        Hashes *h = file_hashes(r);
+    if (rom->size == 0) {
+        auto &hashes = rom->hashes;
         
-        memset(zeroes, 0, sizeof(zeroes));
-        
-        /* some dats don't record crc for 0-byte files, so set it here */
-        if (!hashes_has_type(h, Hashes::TYPE_CRC)) {
-            hashes_set(h, Hashes::TYPE_CRC, zeroes);
-        }
-        
-        /* some dats record all-zeroes md5 and sha1 for 0 byte files, fix */
-        if (hashes_has_type(h, Hashes::TYPE_MD5) && hashes_verify(h, Hashes::TYPE_MD5, zeroes)) {
-            hashes_set(h, Hashes::TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
-        }
-        if (hashes_has_type(h, Hashes::TYPE_SHA1) && hashes_verify(h, Hashes::TYPE_SHA1, zeroes)) {
-            hashes_set(h, Hashes::TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
-        }
+        auto hu = Hashes::Update(&hashes);
+        hu.end();
     }
 
     /* omit duplicates */
-    deleted = 0;
+    auto deleted = false;
 
-    if (ctx->flags & PARSE_FL_ROM_IGNORE)
-	deleted = 1;
+    if (ctx->flags & PARSE_FL_ROM_IGNORE) {
+        deleted = true;
+    }
     else if (ctx->flags & PARSE_FL_ROM_CONTINUED) {
-	r2 = game_rom(ctx->g, n - 1);
-	file_size_(r2) += file_size_(r);
-	deleted = 1;
+        auto &rom2 = ctx->g->roms[n - 1];
+        rom2.size += rom->size;
+	deleted = true;
     }
-    else if (file_name(r) == NULL) {
-	myerror(ERRFILE, "%d: roms without name", ctx->lineno);
-	deleted = 1;
+    else if (rom->name.empty()) {
+	myerror(ERRFILE, "%d: ROM without name", ctx->lineno);
+	deleted = true;
     }
-    for (j = 0; j < n && !deleted; j++) {
-	r2 = game_rom(ctx->g, j);
-	if (file_compare_sc(r, r2)) {
+    for (size_t j = 0; j < n && !deleted; j++) {
+        auto &rom2 = ctx->g->roms[j];
+        if (rom->compare_size_crc(rom2)) {
 	    /* TODO: merge in additional hash types? */
-	    if (file_compare_n(r, r2)) {
-		myerror(ERRFILE, "%d: the same rom listed multiple times (%s)", ctx->lineno, file_name(r));
-		deleted = 1;
+            if (rom->compare_name(rom2)) {
+		myerror(ERRFILE, "%d: the same rom listed multiple times (%s)", ctx->lineno, rom->name.c_str());
+		deleted = true;
 		break;
 	    }
-	    else if (file_merge(r2) && file_merge(r) && strcmp(file_merge(r2), file_merge(r)) != 0) {
+            else if (!rom2.merge.empty() && rom->merge == rom2.merge) {
 		/* file_add_altname(r2, file_name(r)); */
-		myerror(ERRFILE, "%d: the same rom listed multiple times (%s, merge-name %s)", ctx->lineno, file_name(r), file_merge(r));
-		deleted = 1;
+		myerror(ERRFILE, "%d: the same rom listed multiple times (%s, merge-name %s)", ctx->lineno, rom->name.c_str(), rom->merge.c_str());
+		deleted = true;
 		break;
 	    }
 	}
-	else if (file_compare_n(r, r2)) {
-	    myerror(ERRFILE, "%d: two different roms with same name (%s)", ctx->lineno, file_name(r));
-	    deleted = 1;
+        else if (rom->compare_name(rom2)) {
+	    myerror(ERRFILE, "%d: two different roms with same name (%s)", ctx->lineno, rom->name.c_str());
+	    deleted = true;
 	    break;
 	}
     }
-    if (file_merge(r) && game_cloneof(ctx->g, 0) == NULL) {
-	myerror(ERRFILE, "%d: rom '%s' has merge information but game '%s' has no parent", ctx->lineno, file_name(r), game_name(ctx->g));
+    if (!rom->merge.empty() && ctx->g->cloneof[0].empty()) {
+        myerror(ERRFILE, "%d: rom '%s' has merge information but game '%s' has no parent", ctx->lineno, rom->name.c_str(), ctx->g->name.c_str());
     }
     if (deleted) {
 	ctx->flags = (ctx->flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;
-	array_delete(game_roms(ctx->g), n, reinterpret_cast<void (*)(void *)>(file_finalize));
+        ctx->g->roms.pop_back();
     }
     else {
 	ctx->flags = 0;
-	if (file_merge(r) != NULL && strcmp(file_name(r), file_merge(r)) == 0) {
-	    free(file_merge(r));
-	    file_merge(r) = NULL;
+        if (!rom->merge.empty() && rom->merge == rom->name) {
+            rom->merge = "";
 	}
     }
 }

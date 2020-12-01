@@ -95,13 +95,14 @@ mydirname(const char *fname) {
 }
 
 
-char *
-bin2hex(char *b, const unsigned char *s, size_t len) {
-    size_t i;
+std::string
+bin2hex(const uint8_t *data, size_t length) {
+    char b[length * 2 + 1];
 
-    for (i = 0; i < len; i++)
-	sprintf(b + 2 * i, "%02x", (unsigned char)s[i]);
-    b[2 * i] = '\0';
+    for (size_t i = 0; i < length; i++) {
+        sprintf(b + 2 * i, "%02x", data[i]);
+    }
+    b[2 * length] = '\0';
 
     return b;
 }

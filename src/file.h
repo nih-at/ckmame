@@ -69,6 +69,7 @@ public:
     bool compare_merged_size_crc(const File &other) const;
     bool compare_name_size_crc(const File &other) const;
     bool compare_size_crc(const File &other) const;
+    Hashes::Compare compare_hashes(const File &other) const;
     bool is_mergable(const File &other) const;
     bool size_hashes_are_set(bool detector) const;
     

@@ -66,7 +66,7 @@ static int handle_lost(output_context_db_t *);
 static bool lost(output_context_db_t *, Game *);
 static int output_db_close(output_context_t *);
 static int output_db_detector(output_context_t *, detector_t *);
-static int output_db_game(output_context_t *, Game *);
+static int output_db_game(output_context_t *, GamePtr);
 static int output_db_header(output_context_t *, dat_entry_t *);
 
 
@@ -103,32 +103,29 @@ output_db_new(const char *dbname, int flags) {
 
 static void
 familymeeting(romdb_t *db, Game *parent, Game *child) {
-    int i, j;
-    File *cr, *pr;
-
-    if (game_cloneof(parent, 0)) {
+    if (!parent->cloneof[0].empty()) {
 	/* tell child of his grandfather */
-	game_cloneof(child, 1) = xstrdup(game_cloneof(parent, 0));
+        child->cloneof[1] = parent->cloneof[0];
     }
 
     /* look for ROMs in parent */
-    for (i = 0; i < game_num_roms(child); i++) {
-	cr = game_rom(child, i);
-	for (j = 0; j < game_num_roms(parent); j++) {
-	    pr = game_rom(parent, j);
-	    if (file_mergeable(cr, pr)) {
-		file_where(cr) = (where_t)(file_where(pr) + 1);
+    for (size_t i = 0; i < child->roms.size(); i++) {
+        auto &cr = child->roms[i];
+        for (size_t j = 0; j < parent->roms.size(); j++) {
+            auto &pr = parent->roms[j];
+            if (cr.is_mergable(pr)) {
+                cr.where = static_cast<where_t>(pr.where + 1);
 		break;
 	    }
 	}
-	if (file_where(cr) == FILE_INGAME && file_merge(cr) != NULL) {
-	    myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but parent does not contain matching file", game_name(child), file_name(cr), file_merge(cr));
+        if (cr.where == FILE_INGAME && !cr.merge.empty()) {
+            myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but parent does not contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
 	}
     }
-    for (i = 0; i < game_num_disks(child); i++) {
-        disk_t *cd = game_disk(child, i);
-        for (j = 0; j < game_num_disks(parent); j++) {
-            disk_t *pd = game_disk(parent, j);
+    for (size_t i = 0; i < child->disks.size(); i++) {
+        auto cd = &child->disks[i];
+        for (size_t j = 0; j < parent->disks.size(); j++) {
+            auto pd = &parent->disks[j];
             if (disk_mergeable(cd, pd)) {
                 disk_where(cd) = (where_t)(disk_where(pd) + 1);
             }
@@ -141,44 +138,39 @@ familymeeting(romdb_t *db, Game *parent, Game *child) {
 
 static int
 handle_lost(output_context_db_t *ctx) {
-    Game *child, *parent;
-    int i;
-    bool is_lost;
-
     while (parray_length(ctx->lost_children) > 0) {
 	/* processing order does not matter and deleting last
 	   element is cheaper */
-	for (i = parray_length(ctx->lost_children) - 1; i >= 0; --i) {
+	for (size_t i = parray_length(ctx->lost_children) - 1; i >= 0; --i) {
 	    /* get current lost child from database, get parent,
 	       look if parent is still lost, if not, do child */
-	    if ((child = romdb_read_game(ctx->db, static_cast<const char *>(parray_get(ctx->lost_children, i)))) == NULL) {
+            auto child = romdb_read_game(ctx->db, static_cast<const char *>(parray_get(ctx->lost_children, i)));
+            if (!child) {
 		myerror(ERRDEF, "internal database error: child %s not in database", (const char *)parray_get(ctx->lost_children, i));
 		return -1;
 	    }
 
-            is_lost = true;
+            bool is_lost = true;
 
-            if ((parent = romdb_read_game(ctx->db, game_cloneof(child, 0))) == NULL) {
-                myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", game_name(child), game_cloneof(child, 0));
+            auto parent = romdb_read_game(ctx->db, child->cloneof[0]);
+            if (!parent) {
+                myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", child->name.c_str(), child->cloneof[0].c_str());
                 
                 /* remove non-existent cloneof */
-                free(game_cloneof(child, 0));
-                game_cloneof(child, 0) = NULL;
-                romdb_update_game_parent(ctx->db, child);
+                child->cloneof[0] = "";
+                romdb_update_game_parent(ctx->db, child.get());
                 is_lost = false;
             }
-            else if (!lost(ctx, parent)) {
+            else if (!lost(ctx, parent.get())) {
                 /* parent found */
-                familymeeting(ctx->db, parent, child);
+                familymeeting(ctx->db, parent.get(), child.get());
                 is_lost = false;
             }
             
             if (!is_lost) {
-                romdb_update_file_location(ctx->db, child);
+                romdb_update_file_location(ctx->db, child.get());
                 parray_delete(ctx->lost_children, i, free);
             }
-            game_free(parent);
-            game_free(child);
         }
     }
 
@@ -187,14 +179,13 @@ handle_lost(output_context_db_t *ctx) {
 
 
 static bool
-lost(output_context_db_t *ctx, Game *g) {
-    int i;
-
-    if (game_cloneof(g, 0) == NULL)
+lost(output_context_db_t *ctx, Game *game) {
+    if (game->cloneof[0].empty()) {
 	return false;
+    }
 
-    for (i = 0; i < parray_length(ctx->lost_children); i++) {
-	if (strcmp(static_cast<const char *>(parray_get(ctx->lost_children, i)), game_name(g)) == 0) {
+    for (size_t i = 0; i < parray_length(ctx->lost_children); i++) {
+	if (strcmp(static_cast<const char *>(parray_get(ctx->lost_children, i)), game->name.c_str()) == 0) {
             return true;
 	}
     }
@@ -250,33 +241,31 @@ output_db_detector(output_context_t *out, detector_t *d) {
 
 
 static int
-output_db_game(output_context_t *out, Game *g) {
-    output_context_db_t *ctx;
-    Game *g2, *parent;
+output_db_game(output_context_t *out, GamePtr game) {
+    auto ctx = reinterpret_cast<output_context_db_t *>(out);
 
-    ctx = (output_context_db_t *)out;
-
-    if ((g2 = romdb_read_game(ctx->db, game_name(g))) != NULL) {
-	myerror(ERRDEF, "duplicate game '%s' skipped", game_name(g));
-	game_free(g2);
+    auto g2 = romdb_read_game(ctx->db, game->name.c_str());
+    
+    if (g2) {
+        myerror(ERRDEF, "duplicate game '%s' skipped", game->name.c_str());
 	return -1;
     }
 
-    game_dat_no(g) = dat_length(ctx->dat) - 1;
+    game->dat_no = dat_length(ctx->dat) - 1;
 
-    if (game_cloneof(g, 0)) {
-        if (((parent = romdb_read_game(ctx->db, game_cloneof(g, 0))) == NULL) || lost(ctx, parent)) {
-            parray_push(ctx->lost_children, xstrdup(game_name(g)));
+    if (!game->cloneof[0].empty()) {
+        auto parent = romdb_read_game(ctx->db, game->cloneof[0]);
+        if (!parent || lost(ctx, parent.get())) {
+            parray_push(ctx->lost_children, xstrdup(game->name.c_str()));
         }
         else {
-            familymeeting(ctx->db, parent, g);
+            familymeeting(ctx->db, parent.get(), game.get());
             /* TODO: check error */
         }
-        game_free(parent);
     }
 
-    if (romdb_write_game(ctx->db, g) != 0) {
-	myerror(ERRDB, "can't write game '%s' to db", game_name(g));
+    if (romdb_write_game(ctx->db, game.get()) != 0) {
+	myerror(ERRDB, "can't write game '%s' to db", game->name.c_str());
 	return -1;
     }
 

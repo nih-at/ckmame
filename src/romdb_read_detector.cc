@@ -63,9 +63,9 @@ romdb_read_detector(romdb_t *db) {
 
     d = detector_new();
 
-    detector_name(d) = sq3_get_string(stmt, 0);
-    detector_author(d) = sq3_get_string(stmt, 1);
-    detector_version(d) = sq3_get_string(stmt, 2);
+    detector_name(d) = strdup(sq3_get_string(stmt, 0).c_str());
+    detector_author(d) = strdup(sq3_get_string(stmt, 1).c_str());
+    detector_version(d) = strdup(sq3_get_string(stmt, 2).c_str());
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_RULE)) == NULL || (stmt2 = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_TEST)) == NULL) {
 	detector_free(d);

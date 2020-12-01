@@ -41,48 +41,45 @@
 
 void
 write_fixdat_entry(const Game *game, const result_t *res) {
-    Game *gm;
-    int i;
-
-    if (result_game(res) != GS_MISSING && result_game(res) != GS_PARTIAL)
+    if (result_game(res) != GS_MISSING && result_game(res) != GS_PARTIAL) {
 	return;
-
-    gm = game_new();
-    game_name(gm) = strdup(game_name(game));
-
-
-    for (i = 0; i < game_num_roms(game); i++) {
-        auto &match = res->roms[i];
-	File *r = game_rom(game, i);
-
-	/* no use requesting zero byte files */
-	if (file_size_(r) == 0)
-	    continue;
-
-	if (match.quality != QU_MISSING || file_status_(r) == STATUS_NODUMP || file_where(r) != FILE_INGAME)
-	    continue;
-
-	File *rm = static_cast<File *>(array_push(game_roms(gm), r));
-	file_name(rm) = strdup(file_name(r));
-	if (file_merge(r))
-	    file_merge(rm) = strdup(file_merge(r));
     }
 
-    for (i = 0; i < game_num_disks(game); i++) {
-	match_disk_t *m = result_disk(res, i);
-	disk_t *d = game_disk(game, i);
+    auto gm = std::make_shared<Game>();
+    gm->name = game->name;
 
-	if (match_disk_quality(m) != QU_MISSING || disk_status(d) == STATUS_NODUMP)
+    for (size_t i = 0; i < game->roms.size(); i++) {
+        auto &match = res->roms[i];
+        auto &rom = game->roms[i];
+
+	/* no use requesting zero byte files */
+        if (rom.size == 0) {
 	    continue;
+        }
 
-	disk_t *dm = static_cast<disk_t *>(array_push(game_disks(gm), d));
-	disk_name(dm) = strdup(disk_name(d));
+        if (match.quality != QU_MISSING || rom.status == STATUS_NODUMP || rom.where != FILE_INGAME) {
+	    continue;
+        }
+
+        gm->roms.push_back(rom);
+    }
+
+    for (size_t i = 0; i < game->disks.size(); i++) {
+        match_disk_t *m = result_disk(res, i);
+        auto *d = &game->disks[i];
+
+        if (match_disk_quality(m) != QU_MISSING || disk_status(d) == STATUS_NODUMP) {
+	    continue;
+        }
+
+        gm->disks.push_back(*d);
+        auto *dm = &gm->disks[gm->disks.size() - 1];
+        disk_name(dm) = strdup(disk_name(d));
 	if (disk_merge(d))
 	    disk_merge(dm) = strdup(disk_merge(d));
     }
 
-    if (game_num_roms(gm) > 0 || game_num_disks(gm) > 0)
+    if (!gm->roms.empty() || !gm->disks.empty()) {
 	output_game(fixdat, gm);
-
-    game_free(gm);
+    }
 }

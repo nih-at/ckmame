@@ -98,3 +98,18 @@ bool File::is_mergable(const File &other) const {
 
     return false;
 }
+
+
+Hashes::Compare File::compare_hashes(const File &other) const {
+    auto result = hashes.compare(other.hashes);
+    
+    if (result == Hashes::MATCH) {
+        return result;
+    }
+    
+    if (!hashes.empty() && !other.hashes_detector.empty() && hashes.compare(other.hashes_detector) == Hashes::MATCH) {
+        return Hashes::MATCH;
+    }
+    
+    return result;
+}

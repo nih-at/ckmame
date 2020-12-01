@@ -65,8 +65,6 @@ set(COMMON_SOURCES
   fixdat.cc
   garbage.cc
   globals.cc
-  hash_from_string.cc
-  hash_to_string.cc
   hashes.cc
   hashes_update.cc
   images.cc

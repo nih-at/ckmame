@@ -44,9 +44,6 @@
 
 class HashesContexts;
 
-enum hashes_cmp { HASHES_CMP_NOCOMMON = -1, HASHES_CMP_MATCH, HASHES_CMP_MISMATCH };
-
-typedef enum hashes_cmp hashes_cmp_t;
 class Hashes {
 public:
     class Update {
@@ -90,6 +87,8 @@ public:
     
     bool are_crc_complement(const Hashes &other) const;
     bool has_type(int type) const;
+    bool has_all_types(const Hashes &other) const { return has_all_types(other.types); }
+    bool has_all_types(int requested_types) const { return (types & requested_types) == requested_types; }
     Compare compare(const Hashes &other) const;
     bool operator==(const Hashes &other) const;
     bool verify(int type, const void *data) const;
@@ -98,10 +97,10 @@ public:
 
     void set(int type, const void *data);
     void set_crc(uint32_t crc_) { types |= TYPE_CRC; crc = crc_; }
-    bool set_from_string(const std::string s);
+    int set_from_string(const std::string s);
 
     static int types_from_string(const std::string &s);
-    
+    static std::string type_name(int type);
     static size_t hash_size(int type);
 
 private:

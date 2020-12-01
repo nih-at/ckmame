@@ -45,7 +45,7 @@ bool Garbage::add(uint64_t index, bool copy) {
 	return false;
     }
 
-    std::string source_name = file_name(&sa->files[index]);
+    std::string source_name = sa->files[index].name;
     std::string destination_name = source_name;
     
     if (da->file_index_by_name(source_name) >= 0) {

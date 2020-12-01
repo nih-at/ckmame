@@ -45,11 +45,11 @@
 
 struct meta_hash {
     unsigned char tag[4];
-    unsigned char sha1[HASHES_SIZE_SHA1];
+    unsigned char sha1[Hashes::SIZE_SHA1];
 };
 
 
-static int get_hashes(struct chd *, struct hashes *);
+static int get_hashes(struct chd *, Hashes *);
 static int meta_hash_cmp(const void *, const void *);
 
 
@@ -91,10 +91,9 @@ disk_new(const char *name, int flags) {
     d->refcount = 1;
 
     h = disk_hashes(d);
-    hashes_init(h);
 
     if (flags & DISK_FL_CHECK_INTEGRITY) {
-	hashes_types(h) = romdb_hashtypes(db, TYPE_DISK);
+	h->types = romdb_hashtypes(db, TYPE_DISK);
 
 	err = get_hashes(chd, h);
 
@@ -105,7 +104,7 @@ disk_new(const char *name, int flags) {
 	}
 
 	if (romdb_hashtypes(db, TYPE_DISK) & Hashes::TYPE_MD5 & h->types) {
-	    if (!hashes_verify(h, Hashes::TYPE_MD5, chd->md5)) {
+	    if (!h->verify(Hashes::TYPE_MD5, chd->md5)) {
 		myerror(ERRFILE, "md5 mismatch");
 		chd_close(chd);
 		disk_real_free(d);
@@ -114,7 +113,7 @@ disk_new(const char *name, int flags) {
 	}
 
 	if (chd->version > 2 && (romdb_hashtypes(db, TYPE_DISK) & Hashes::TYPE_SHA1 & h->types)) {
-	    if (!hashes_verify(h, Hashes::TYPE_SHA1, chd->sha1)) {
+	    if (!h->verify(Hashes::TYPE_SHA1, chd->sha1)) {
 		myerror(ERRFILE, "sha1 mismatch");
 		chd_close(chd);
 		disk_real_free(d);
@@ -126,10 +125,10 @@ disk_new(const char *name, int flags) {
 	h->types = 0;
     }
 
-    if (chd->version < 4 && (hashes_types(h) & Hashes::TYPE_MD5) == 0)
-	hashes_set(h, Hashes::TYPE_MD5, chd->md5);
-    if (chd->version > 2 && (hashes_types(h) & Hashes::TYPE_SHA1) == 0)
-	hashes_set(h, Hashes::TYPE_SHA1, chd->sha1);
+    if (chd->version < 4 && (h->types & Hashes::TYPE_MD5) == 0)
+        h->set(Hashes::TYPE_MD5, chd->md5);
+    if (chd->version > 2 && (h->types & Hashes::TYPE_SHA1) == 0)
+        h->set(Hashes::TYPE_SHA1, chd->sha1);
 
     chd_close(chd);
 
@@ -171,9 +170,8 @@ disk_real_free(disk_t *d) {
 
 
 static int
-get_hashes(struct chd *chd, struct hashes *h) {
-    struct hashes h_raw;
-    struct hashes_update *hu;
+get_hashes(struct chd *chd, Hashes *h) {
+    Hashes h_raw;
     uint32_t hunk;
     uint64_t n, len;
     unsigned char *buf;
@@ -190,7 +188,7 @@ get_hashes(struct chd *chd, struct hashes *h) {
     if (chd->version < 4)
 	h_raw.types |= Hashes::TYPE_MD5;
 
-    hu = hashes_update_new(&h_raw);
+    auto hu = Hashes::Update(&h_raw);
 
     buf = static_cast<unsigned char *>(xmalloc(chd->hunk_len));
     len = chd->total_len;
@@ -201,38 +199,35 @@ get_hashes(struct chd *chd, struct hashes *h) {
 	    if (chd->error == CHD_ERR_NOTSUP) {
 		myerror(ERRFILE, "warning: unsupported CHD type, integrity not checked");
 		h->types = 0;
-		hashes_update_discard(hu);
 		return 0;
 	    }
 	    myerror(ERRFILESTR, "error reading hunk %d: error %d", hunk, chd->error);
 	    free(buf);
-	    hashes_update_final(hu);
 	    return -1;
 	}
 
-	hashes_update(hu, buf, n);
+	hu.update(buf, n);
 	len -= n;
     }
 
-    hashes_update_final(hu);
+    hu.end();
 
-    if ((chd->version < 4 && memcmp(h_raw.md5, chd->md5, HASHES_SIZE_MD5) != 0) || (chd->version > 2 && memcmp(h_raw.sha1, chd->raw_sha1, HASHES_SIZE_SHA1) != 0)) {
+    if ((chd->version < 4 && memcmp(h_raw.md5, chd->md5, Hashes::SIZE_MD5) != 0) || (chd->version > 2 && memcmp(h_raw.sha1, chd->raw_sha1, Hashes::SIZE_SHA1) != 0)) {
 	myerror(ERRFILE, "checksum mismatch for raw data");
 	free(buf);
 	return -1;
     }
 
     if (chd->version < 4) {
-	hashes_copy(h, &h_raw);
+        *h = h_raw;
     }
     else {
-	struct hashes_update *hu_meta;
 	struct chd_metadata_entry *meta, *e;
 	struct meta_hash *meta_hash;
 	int n_meta_hash, i;
 
-	hu = hashes_update_new(h);
-	hashes_update(hu, h_raw.sha1, HASHES_SIZE_SHA1);
+	hu = Hashes::Update(h);
+        hu.update(h_raw.sha1, Hashes::SIZE_SHA1);
 
 	h_raw.types = Hashes::TYPE_SHA1;
 
@@ -264,26 +259,25 @@ get_hashes(struct chd *chd, struct hashes *h) {
 		myerror(ERRFILESTR, "error reading hunk %d", hunk);
 		free(buf);
 		free(meta_hash);
-		hashes_update_final(hu);
 		return -1;
 	    }
 
-	    hu_meta = hashes_update_new(&h_raw);
-	    hashes_update(hu_meta, buf, e->length);
-	    hashes_update_final(hu_meta);
+	    auto hu_meta = Hashes::Update(&h_raw);
+            hu_meta.update(buf, e->length);
+            hu_meta.end();
 
 	    memcpy(meta_hash[i].tag, e->tag, 4);
-	    memcpy(meta_hash[i].sha1, h_raw.sha1, HASHES_SIZE_SHA1);
+	    memcpy(meta_hash[i].sha1, h_raw.sha1, Hashes::SIZE_SHA1);
 	    i++;
 	}
 
 	qsort(meta_hash, n_meta_hash, sizeof(*meta_hash), meta_hash_cmp);
 
 	for (i = 0; i < n_meta_hash; i++) {
-	    hashes_update(hu, meta_hash[i].tag, 4);
-	    hashes_update(hu, meta_hash[i].sha1, HASHES_SIZE_SHA1);
+            hu.update(meta_hash[i].tag, 4);
+	    hu.update(meta_hash[i].sha1, Hashes::SIZE_SHA1);
 	}
-	hashes_update_final(hu);
+        hu.end();
 	free(meta_hash);
     }
 

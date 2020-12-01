@@ -66,51 +66,52 @@ int Archive::close() {
     return close_xxx() | ret;
 }
 
-int Archive::file_compare_hashes(uint64_t index, const Hashes *h) {
-    auto rh = file_hashes(&files[index]);
+int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
+    auto &file_hashes = files[index].hashes;
 
-    if ((hashes_types(rh) & hashes_types(h)) != hashes_types(h)) {
-        file_compute_hashes(index, hashes_types(h) | romdb_hashtypes(db, TYPE_ROM));
+    if ((file_hashes.types & hashes->types) != hashes->types) {
+        file_compute_hashes(index, hashes->types | romdb_hashtypes(db, TYPE_ROM));
     }
 
-    if (file_status_(&files[index]) != STATUS_OK) {
+    if (files[index].status != STATUS_OK) {
         return HASHES_CMP_NOCOMMON;
     }
 
-    return hashes_cmp(rh, h);
+    return file_hashes.compare(*hashes);
 }
 
 
 bool Archive::file_compute_hashes(uint64_t idx, int hashtypes) {
-    Hashes h;
-    auto r = &files[idx];
+    Hashes hashes;
+    auto &file = files[idx];
 
-    if ((hashes_types(file_hashes(r)) & hashtypes) == hashtypes)
+    if ((file.hashes.types & hashtypes) == hashtypes) {
 	return true;
+    }
 
-    hashes_types(&h) = HASHES_TYPE_ALL;
+    hashes.types = Hashes::TYPE_ALL;
 
     auto f = file_open(idx);
     if (!f) {
-	myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file_name(r), strerror(errno));
-	file_status_(r) = STATUS_BADDUMP;
+	myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), strerror(errno));
+	file.status = STATUS_BADDUMP;
 	return false;
     }
 
-    if (!get_hashes(f.get(), file_size_(r), &h)) {
-	myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file_name(r), strerror(errno));
-	file_status_(r) = STATUS_BADDUMP;
+    if (!get_hashes(f.get(), file.size, &hashes)) {
+	myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
+	file.status = STATUS_BADDUMP;
 	return false;
     }
 
-    if (hashes_types(file_hashes(r)) & hashtypes & Hashes::TYPE_CRC) {
-	if (file_hashes(r)->crc != h.crc) {
-	    myerror(ERRDEF, "%s: %s: CRC error: %x != %x", name.c_str(), file_name(r), h.crc, file_hashes(r)->crc);
-	    file_status_(r) = STATUS_BADDUMP;
+    if (file.hashes.types & hashtypes & Hashes::TYPE_CRC) {
+	if (file.hashes.crc != hashes.crc) {
+            myerror(ERRDEF, "%s: %s: CRC error: %x != %x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
+            file.status = STATUS_BADDUMP;
 	    return false;
 	}
     }
-    hashes_copy(file_hashes(r), &h);
+    file.hashes = hashes;
 
     cache_changed = true;
 
@@ -118,31 +119,30 @@ bool Archive::file_compute_hashes(uint64_t idx, int hashtypes) {
 }
 
 
-std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const Hashes *h) {
-    Hashes hn;
+std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const Hashes *hashes) {
+    Hashes hashes_part;
 
-    hashes_init(&hn);
-    hashes_types(&hn) = hashes_types(h);
+    hashes_part.types = hashes->types;
 
-    auto r = &files[idx];
+    auto &file = files[idx];
 
     auto f = file_open(idx);
     if (!f) {
-	file_status_(r) = STATUS_BADDUMP;
+        file.status = STATUS_BADDUMP;
         return {};
     }
 
     auto found = false;
     size_t offset = 0;
-    while (offset + size <= file_size_(r)) {
-	if (!get_hashes(f.get(), size, &hn)) {
-	    file_status_(r) = STATUS_BADDUMP;
+    while (offset + size <= file.size) {
+        if (!get_hashes(f.get(), size, &hashes_part)) {
+            file.status = STATUS_BADDUMP;
             return {};
 	}
 
-	if (hashes_cmp(h, &hn) == HASHES_CMP_MATCH) {
-	    found = true;
-	    break;
+	if (hashes->compare(hashes_part) == HASHES_CMP_MATCH) {
+            found = true;
+            break;
 	}
 
 	offset += size;
@@ -156,16 +156,16 @@ std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const H
 }
 
 
-std::optional<size_t> Archive::file_index_by_hashes(const Hashes *h) const {
-    if (h->types == 0) {
+std::optional<size_t> Archive::file_index_by_hashes(const Hashes *hashes) const {
+    if (hashes->empty()) {
         return {};
     }
 
     for (size_t i = 0; i < files.size(); i++) {
-        auto *f = &files[i];
+        auto &file = files[i];
 
-	if (hashes_cmp(h, file_hashes(f)) == HASHES_CMP_MATCH) {
-	    if (file_where(f) == FILE_DELETED) {
+	if (hashes->compare(file.hashes) == Hashes::MATCH) {
+	    if (file.where == FILE_DELETED) {
                 return {};
 	    }
 	    return i;
@@ -178,10 +178,10 @@ std::optional<size_t> Archive::file_index_by_hashes(const Hashes *h) const {
 
 std::optional<size_t> Archive::file_index_by_name(const std::string &filename) const {
     for (size_t i = 0; i < files.size(); i++) {
-        auto *f = &files[i];
+        auto &file = files[i];
 
-        if (filename == file_name(f)) {
-            if (file_where(f) == FILE_DELETED) {
+        if (filename == file.name) {
+            if (file.where == FILE_DELETED) {
                 return {};
             }
 	    return i;
@@ -193,15 +193,15 @@ std::optional<size_t> Archive::file_index_by_name(const std::string &filename) c
 
 
 void Archive::file_match_detector(uint64_t index) {
-    auto file = &files[index];
+    auto &file = files[index];
 
     auto fp = file_open(index);
     if (!fp) {
-        myerror(ERRZIP, "%s: can't open: %s", file_name(file), strerror(errno));
-        file_status_(file) = STATUS_BADDUMP;
+        myerror(ERRZIP, "%s: can't open: %s", file.name.c_str(), strerror(errno));
+        file.status = STATUS_BADDUMP;
     }
     
-    detector_execute(detector, file, Archive::file_read_c, fp.get());
+    detector_execute(detector, &file, Archive::file_read_c, fp.get());
 }
 
 
@@ -303,9 +303,9 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
         return ArchivePtr();
     }
         
-    for (auto file : archive->files) {
-	/* TODO: file_state(file) = FILE_UNKNOWN; */
-	file_where(&file) = FILE_INGAME;
+    for (auto &file : archive->files) {
+	/* TODO: file.state = FILE_UNKNOWN; */
+	file.where = FILE_INGAME;
     }
 
     if (!(archive->flags & ARCHIVE_FL_NOCACHE)) {
@@ -343,7 +343,7 @@ ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, 
 
 
 bool Archive::read_infos() {
-    std::vector<file_t> files_cache;
+    std::vector<File> files_cache;
 
     cache_db = dbh_cache_get_db_for_archive(name.c_str());
     cache_id = cache_db ? dbh_cache_get_archive_id(cache_db, name.c_str()) : 0;
@@ -391,7 +391,7 @@ int Archive::register_cache_directory(const std::string &name) {
 
 bool Archive::is_empty() const {
     for (auto &file : files) {
-        if (file_where(&file) != FILE_DELETED) {
+        if (file.where != FILE_DELETED) {
             return false;
         }
     }

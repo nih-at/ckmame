@@ -95,41 +95,41 @@ pr_string(FILE *fout, const char *name, const char *value) {
 
 static void
 pr_test(FILE *fout, const detector_test_t *dt) {
-    char *hex;
-
     fprintf(fout, "    <%s", detector_test_type_str(detector_test_type(dt)));
     switch (detector_test_type(dt)) {
-    case DETECTOR_TEST_DATA:
-    case DETECTOR_TEST_OR:
-    case DETECTOR_TEST_AND:
-    case DETECTOR_TEST_XOR:
-	hex = static_cast<char *>(xmalloc(detector_test_length(dt) * 2 + 1));
-
-	if (detector_test_offset(dt) != 0)
-	    fprintf(fout, " offset=\"%jx\"", (intmax_t)detector_test_offset(dt));
-	if (detector_test_mask(dt))
-	    fprintf(fout, " mask=\"%s\"", bin2hex(hex, detector_test_mask(dt), detector_test_length(dt)));
-	fprintf(fout, " value=\"%s\"", bin2hex(hex, detector_test_value(dt), detector_test_length(dt)));
-
-	free(hex);
+        case DETECTOR_TEST_DATA:
+        case DETECTOR_TEST_OR:
+        case DETECTOR_TEST_AND:
+        case DETECTOR_TEST_XOR:
+            if (detector_test_offset(dt) != 0) {
+                fprintf(fout, " offset=\"%jx\"", (intmax_t)detector_test_offset(dt));
+            }
+            if (detector_test_mask(dt)) {
+                fprintf(fout, " mask=\"%s\"", bin2hex(detector_test_mask(dt), detector_test_length(dt)).c_str());
+            }
+            fprintf(fout, " value=\"%s\"", bin2hex(detector_test_value(dt), detector_test_length(dt)).c_str());
 	break;
 
-    case DETECTOR_TEST_FILE_EQ:
-    case DETECTOR_TEST_FILE_LE:
-    case DETECTOR_TEST_FILE_GR:
-	fprintf(fout, " size=\"");
-	if (detector_test_size(dt) == DETECTOR_SIZE_PO2)
-	    fprintf(fout, "PO2");
-	else
-	    fprintf(fout, "%jx", (intmax_t)detector_test_size(dt));
-	fprintf(fout, "\"");
-	if (detector_test_type(dt) != DETECTOR_TEST_FILE_EQ)
-	    fprintf(fout, " operator=\"%s\"", detector_file_test_type_str(detector_test_type(dt)));
-	break;
+        case DETECTOR_TEST_FILE_EQ:
+        case DETECTOR_TEST_FILE_LE:
+        case DETECTOR_TEST_FILE_GR:
+            fprintf(fout, " size=\"");
+            if (detector_test_size(dt) == DETECTOR_SIZE_PO2) {
+                fprintf(fout, "PO2");
+            }
+            else {
+                fprintf(fout, "%jx", (intmax_t)detector_test_size(dt));
+            }
+            fprintf(fout, "\"");
+            if (detector_test_type(dt) != DETECTOR_TEST_FILE_EQ) {
+                fprintf(fout, " operator=\"%s\"", detector_file_test_type_str(detector_test_type(dt)));
+            }
+            break;
     }
-
-    if (detector_test_result(dt) != true)
-	fprintf(fout, " result=\"false\"");
+    
+    if (detector_test_result(dt) != true) {
+        fprintf(fout, " result=\"false\"");
+    }
 
     fprintf(fout, "/>\n");
 }

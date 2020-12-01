@@ -130,8 +130,6 @@ buf_grow(detector_t *d, size_t size) {
 
 static int
 compute_values(detector_t *d, File *r, uint64_t start, uint64_t end, detector_operation_t op, struct ctx *ctx) {
-    Hashes h;
-    hashes_update_t *hu;
     size_t off;
     uint64_t len;
     uint64_t size;
@@ -146,8 +144,10 @@ compute_values(detector_t *d, File *r, uint64_t start, uint64_t end, detector_op
 	    return -1;
     }
 
-    hashes_types(&h) = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1; /* TODO */
-    hu = hashes_update_new(&h);
+    Hashes hashes;
+    
+    hashes.types = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1; /* TODO */
+    Hashes::Update hu(&hashes);
 
     while (start < end) {
 	if (start < ctx->bytes_read) {
@@ -164,7 +164,6 @@ compute_values(detector_t *d, File *r, uint64_t start, uint64_t end, detector_op
 		len = end - start;
 
 	    if (ctx->cb_read(ctx->ud, d->buf, len) < 0) {
-		hashes_update_final(hu);
 		return -1;
 	    }
 	}
@@ -174,7 +173,6 @@ compute_values(detector_t *d, File *r, uint64_t start, uint64_t end, detector_op
 	    if (len % align != 0) {
 		len += align - (len % align);
 		if (fill_buffer(d, off + len, ctx) < 0) {
-		    hashes_update_final(hu);
 		    return -1;
 		}
 	    }
@@ -185,14 +183,14 @@ compute_values(detector_t *d, File *r, uint64_t start, uint64_t end, detector_op
 	    ops[op].op(d->buf + off, len);
 	}
 
-	hashes_update(hu, d->buf + off, len);
+        hu.update(d->buf + off, len);
 	start += len;
     }
 
-    hashes_update_final(hu);
+    hu.end();
 
-    file_size__xxx(r, FILE_SH_DETECTOR) = size;
-    memcpy(file_hashes_xxx(r, FILE_SH_DETECTOR), &h, sizeof(h));
+    r->size_detector = size;
+    r->hashes_detector = hashes;
 
     return 0;
 }
@@ -204,24 +202,30 @@ execute_rule(detector_t *d, detector_rule_t *dr, File *r, struct ctx *ctx) {
     int64_t start, end;
 
     start = detector_rule_start_offset(dr);
-    if (start < 0)
-	start += file_size_(r);
+    if (start < 0) {
+        start += r->size;
+    }
     end = detector_rule_end_offset(dr);
-    if (end == DETECTOR_OFFSET_EOF)
-	end = file_size_(r);
-    else if (end < 0)
-	end += file_size_(r);
-
-    if (start < 0 || (uint64_t)start > file_size_(r) || end < 0 || (uint64_t)end > file_size_(r) || start > end)
+    if (end == DETECTOR_OFFSET_EOF) {
+        end = static_cast<int64_t>(r->size);
+    }
+    else if (end < 0) {
+        end += r->size;
+    }
+    
+    if (start < 0 || static_cast<uint64_t>(start) > r->size || end < 0 || static_cast<uint64_t>(end) > r->size || start > end) {
 	return 0;
+    }
 
     for (i = 0; i < detector_rule_num_tests(dr); i++) {
 	if ((ret = execute_test(d, detector_rule_test(dr, i), r, ctx)) != 1)
 	    return ret;
     }
 
-    if (compute_values(d, r, start, end, detector_rule_operation(dr), ctx) < 0)
+    if (compute_values(d, r, static_cast<uint64_t>(start), static_cast<uint64_t>(end), detector_rule_operation(dr), ctx) < 0) {
 	return -1;
+    }
+    
     return 1;
 }
 
@@ -232,67 +236,75 @@ execute_test(detector_t *d, detector_test_t *dt, File *r, struct ctx *ctx) {
     int ret = 0;
 
     switch (detector_test_type(dt)) {
-    case DETECTOR_TEST_DATA:
-    case DETECTOR_TEST_OR:
-    case DETECTOR_TEST_AND:
-    case DETECTOR_TEST_XOR:
-	off = detector_test_offset(dt);
-	if (off < 0)
-	    off = file_size_(r) + detector_test_offset(dt);
+        case DETECTOR_TEST_DATA:
+        case DETECTOR_TEST_OR:
+        case DETECTOR_TEST_AND:
+        case DETECTOR_TEST_XOR:
+            off = detector_test_offset(dt);
+            if (off < 0) {
+                off = r->size + detector_test_offset(dt);
+            }
 
-	if (off < 0 || off + detector_test_length(dt) > file_size_(r))
-	    return 0;
+            if (off < 0 || off + detector_test_length(dt) > r->size) {
+                return 0;
+            }
 
-	if (off + detector_test_length(dt) > ctx->bytes_read) {
-	    if (fill_buffer(d, off + detector_test_length(dt), ctx) < 0)
-		return -1;
-	}
+            if (off + detector_test_length(dt) > ctx->bytes_read) {
+                if (fill_buffer(d, off + detector_test_length(dt), ctx) < 0) {
+                    return -1;
+                }
+            }
 
-	if (detector_test_mask(dt) == 0)
-	    ret = (memcmp(d->buf + off, detector_test_value(dt), detector_test_length(dt)) == 0);
-	else
-	    ret = bit_cmp(d->buf + off, detector_test_value(dt), detector_test_mask(dt), detector_test_type(dt), detector_test_length(dt));
-	break;
+            if (detector_test_mask(dt) == 0) {
+                ret = (memcmp(d->buf + off, detector_test_value(dt), detector_test_length(dt)) == 0);
+            }
+            else {
+                ret = bit_cmp(d->buf + off, detector_test_value(dt), detector_test_mask(dt), detector_test_type(dt), detector_test_length(dt));
+            }
+            break;
 
-    case DETECTOR_TEST_FILE_EQ:
-    case DETECTOR_TEST_FILE_LE:
-    case DETECTOR_TEST_FILE_GR:
-	if (detector_test_size(dt) == DETECTOR_SIZE_PO2) {
-	    int i;
+        case DETECTOR_TEST_FILE_EQ:
+        case DETECTOR_TEST_FILE_LE:
+        case DETECTOR_TEST_FILE_GR:
+            if (detector_test_size(dt) == DETECTOR_SIZE_PO2) {
+                int i;
 
-	    ret = 0;
-	    for (i = 0; i < 64; i++)
-		if (file_size_(r) == ((uint64_t)1) << i) {
-		    ret = 1;
-		    break;
-		}
-	}
-	else {
-	    int64_t cmp;
+                ret = 0;
+                for (i = 0; i < 64; i++) {
+                    if (r->size == (static_cast<uint64_t>(1) << i)) {
+                        ret = 1;
+                        break;
+                    }
+                }
+            }
+            else {
+                int64_t cmp;
 
-	    cmp = detector_test_size(dt) - file_size_(r);
+                cmp = detector_test_size(dt) - r->size;
 
-	    switch (detector_test_type(dt)) {
-	    case DETECTOR_TEST_FILE_EQ:
-		ret = (cmp == 0);
-		break;
-	    case DETECTOR_TEST_FILE_LE:
-		ret = (cmp < 0);
-		break;
-	    case DETECTOR_TEST_FILE_GR:
-		ret = (cmp > 0);
-		break;
-
-	    default:
-		ret = 0;
-	    }
-	}
+                switch (detector_test_type(dt)) {
+                    case DETECTOR_TEST_FILE_EQ:
+                        ret = (cmp == 0);
+                        break;
+                    case DETECTOR_TEST_FILE_LE:
+                        ret = (cmp < 0);
+                        break;
+                    case DETECTOR_TEST_FILE_GR:
+                        ret = (cmp > 0);
+                        break;
+                        
+                    default:
+                        ret = 0;
+                }
+            }
     }
 
-    if (ret)
+    if (ret) {
 	return detector_test_result(dt);
-    else
+    }
+    else {
 	return !detector_test_result(dt);
+    }
 }
 
 

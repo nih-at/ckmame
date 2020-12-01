@@ -34,6 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <string>
+
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -43,7 +45,7 @@
 
 typedef int (*cmpfunc)(const void *, const void *);
 
-char *bin2hex(char *, const unsigned char *, size_t);
+std::string bin2hex(const uint8_t *data, size_t length);
 int hex2bin(unsigned char *, const char *, size_t);
 int is_writable_directory(const char *);
 const char *mybasename(const char *);

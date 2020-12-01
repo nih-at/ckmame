@@ -71,7 +71,7 @@ struct parser_context {
     int flags;
     parser_state_t state;
     dat_entry_t de; /* info about dat file */
-    Game *g;      /* current game */
+    GamePtr g;      /* current game */
     File *r;      /* current ROM */
     disk_t *d;      /* current disk */
 };

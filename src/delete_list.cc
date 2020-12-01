@@ -89,8 +89,9 @@ delete_list_execute(delete_list_t *dl) {
             }
 	}
 	if (a) {
-	    if (fix_options & FIX_PRINT)
-		printf("%s: delete used file '%s'\n", name, file_name(&a->files[file_location_index(fbh)]));
+            if (fix_options & FIX_PRINT) {
+		printf("%s: delete used file '%s'\n", name, a->files[file_location_index(fbh)].name.c_str());
+            }
 	    /* TODO: check for error */
 	    a->file_delete(file_location_index(fbh));
 	}

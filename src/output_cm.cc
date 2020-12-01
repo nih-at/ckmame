@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 
 #include <errno.h>
 #include <stdio.h>
@@ -47,25 +48,28 @@ struct output_context_cm {
 
     FILE *f;
     char *fname;
-    parray_t *games;
+    std::vector<GamePtr> games;
 };
+
+static struct {
+    bool operator()(GamePtr a, GamePtr b) const {
+        return a->name < b->name;
+    }
+} cmp_game;
 
 typedef struct output_context_cm output_context_cm_t;
 
 
 static int output_cm_close(output_context_t *);
-static int output_cm_game(output_context_t *, Game *);
+static int output_cm_game(output_context_t *, GamePtr);
 static int output_cm_header(output_context_t *, dat_entry_t *);
-static int cmp_games(const Game *, const Game *);
 static int write_game(output_context_cm_t *, Game *);
 
 
 output_context_t *
 output_cm_new(const char *fname, int flags) {
-    output_context_cm_t *ctx;
+    auto ctx = new output_context_cm_t();
     FILE *f;
-
-    ctx = (output_context_cm_t *)xmalloc(sizeof(*ctx));
 
     if (fname == NULL) {
 	f = stdout;
@@ -86,7 +90,6 @@ output_cm_new(const char *fname, int flags) {
 
     ctx->f = f;
     ctx->fname = xstrdup(fname);
-    ctx->games = parray_new();
 
     return (output_context_t *)ctx;
 }
@@ -94,20 +97,19 @@ output_cm_new(const char *fname, int flags) {
 
 static int
 output_cm_close(output_context_t *out) {
-    output_context_cm_t *ctx;
-    int i, ret;
+    auto ctx = reinterpret_cast<output_context_cm_t *>(out);
 
-    ctx = (output_context_cm_t *)out;
+    std::sort(ctx->games.begin(), ctx->games.end(), cmp_game);
 
-    parray_sort(ctx->games, reinterpret_cast<int (*)(const void *, const void *)>(cmp_games));
-    for (i = 0; i < parray_length(ctx->games); i++)
-	write_game(ctx, static_cast<Game *>(parray_get(ctx->games, i)));
-    parray_free(ctx->games, reinterpret_cast<void (*)(void *)>(game_free));
+    for (auto &game : ctx->games) {
+        write_game(ctx, game.get());
+    }
 
-    if (ctx->f == NULL || ctx->f == stdout)
-	ret = 0;
-    else
-	ret = fclose(ctx->f);
+    int ret = 0;
+    
+    if (ctx->f != NULL && ctx->f != stdout) {
+        ret = fclose(ctx->f);
+    }
 
     free(ctx);
 
@@ -116,12 +118,10 @@ output_cm_close(output_context_t *out) {
 
 
 static int
-output_cm_game(output_context_t *out, Game *g) {
-    output_context_cm_t *ctx;
+output_cm_game(output_context_t *out, GamePtr g) {
+    auto ctx = reinterpret_cast<output_context_cm_t *>(out);
 
-    ctx = (output_context_cm_t *)out;
-
-    parray_push(ctx->games, g);
+    ctx->games.push_back(g);
 
     return 1;
 }
@@ -144,46 +144,36 @@ output_cm_header(output_context_t *out, dat_entry_t *dat) {
 
 
 static int
-cmp_games(const Game *g1, const Game *g2) {
-    return strcasecmp(game_name(g1), game_name(g2));
-}
-
-
-static int
-write_game(output_context_cm_t *ctx, Game *g) {
-    File *r;
-    int i;
-    const char *fl = NULL;
-
+write_game(output_context_cm_t *ctx, Game *game) {
     fputs("game (\n", ctx->f);
-    output_cond_print_string(ctx->f, "\tname ", game_name(g), "\n");
-    output_cond_print_string(ctx->f, "\tdescription ", game_description(g) ? game_description(g) : game_name(g), "\n");
-    output_cond_print_string(ctx->f, "\tcloneof ", game_cloneof(g, 0), "\n");
-    output_cond_print_string(ctx->f, "\tromof ", game_cloneof(g, 0), "\n");
-    for (i = 0; i < game_num_roms(g); i++) {
-	r = game_rom(g, i);
-
+    output_cond_print_string(ctx->f, "\tname ", game->name, "\n");
+    output_cond_print_string(ctx->f, "\tdescription ", game->description.empty() ? game->name : game->description, "\n");
+    output_cond_print_string(ctx->f, "\tcloneof ", game->cloneof[0], "\n");
+    output_cond_print_string(ctx->f, "\tromof ", game->cloneof[0], "\n");
+    for (auto &rom : game->roms) {
 	fputs("\trom ( ", ctx->f);
-	output_cond_print_string(ctx->f, "name ", file_name(r), " ");
-	if (file_where(r) != FILE_INGAME)
-	    output_cond_print_string(ctx->f, "merge ", file_merge(r) ? file_merge(r) : file_name(r), " ");
-	fprintf(ctx->f, "size %" PRIu64 " ", file_size_(r));
-	output_cond_print_hash(ctx->f, "crc ", Hashes::TYPE_CRC, file_hashes(r), " ");
-	output_cond_print_hash(ctx->f, "sha1 ", Hashes::TYPE_SHA1, file_hashes(r), " ");
-	output_cond_print_hash(ctx->f, "md5 ", Hashes::TYPE_MD5, file_hashes(r), " ");
-	switch (file_status_(r)) {
-	case STATUS_OK:
-	    fl = NULL;
-	    break;
-	case STATUS_BADDUMP:
-	    fl = "baddump";
-	    break;
-	case STATUS_NODUMP:
-	    fl = "nodump";
-	    break;
-	}
-	output_cond_print_string(ctx->f, "flags ", fl, " ");
-	fputs(")\n", ctx->f);
+        output_cond_print_string(ctx->f, "name ", rom.name, " ");
+        if (rom.where != FILE_INGAME) {
+            output_cond_print_string(ctx->f, "merge ", rom.merge.empty() ? rom.name : rom.merge, " ");
+        }
+        fprintf(ctx->f, "size %" PRIu64 " ", rom.size);
+        output_cond_print_hash(ctx->f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
+        output_cond_print_hash(ctx->f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
+        output_cond_print_hash(ctx->f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
+        const char *fl = NULL;
+        switch (rom.status) {
+            case STATUS_OK:
+                fl = NULL;
+                break;
+            case STATUS_BADDUMP:
+                fl = "baddump";
+                break;
+            case STATUS_NODUMP:
+                fl = "nodump";
+                break;
+        }
+        output_cond_print_string(ctx->f, "flags ", fl, " ");
+        fputs(")\n", ctx->f);
     }
     /* TODO: disks */
     fputs(")\n\n", ctx->f);

@@ -31,10 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "hashes.h"
 
 #include <string.h>
 
-#include "hashes.h"
+#include "util.h"
 
 std::unordered_map<std::string, int> Hashes::name_to_type = {
     { "crc", TYPE_CRC },
@@ -191,4 +192,82 @@ bool Hashes::verify(int type, const void *data) const {
     }
 
     return memcmp(data, hash_data(type), length) == 0;
+}
+
+
+std::string Hashes::to_string(int type) const {
+    if (!has_type(type)) {
+        return "";
+    }
+
+    switch (type) {
+        case Hashes::TYPE_CRC: {
+            char str[10];
+            sprintf(str, "%.8" PRIx32, crc);
+            return str;
+        }
+
+        case Hashes::TYPE_MD5:
+            return bin2hex(md5, SIZE_MD5);
+            break;
+            
+        case Hashes::TYPE_SHA1:
+            return bin2hex(sha1, SIZE_SHA1);
+            break;
+            
+        default:
+            return "";
+    }
+    
+}
+
+
+int Hashes::set_from_string(const std::string s) {
+    const char *str = s.c_str();
+    
+    if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
+        str += 2;
+    }
+
+    size_t length = strlen(str);
+
+    if (length % 2 != 0 || strspn(str, "0123456789ABCDEFabcdef") != length) {
+        return -1;
+    }
+
+    int type = 0;
+
+    switch (length / 2) {
+        case Hashes::SIZE_CRC:
+            type = Hashes::TYPE_CRC;
+            crc = (uint32_t)strtoul(str, NULL, 16);
+            break;
+            
+        case Hashes::SIZE_MD5:
+            type = Hashes::TYPE_MD5;
+            hex2bin(md5, str, Hashes::SIZE_MD5);
+            break;
+            
+        case Hashes::SIZE_SHA1:
+            type = Hashes::TYPE_SHA1;
+            hex2bin(sha1, str, Hashes::SIZE_SHA1);
+            break;
+            
+        default:
+            return -1;
+    }
+    
+    types |= type;
+    return type;
+}
+
+
+std::string Hashes::type_name(int type) {
+    auto it = type_to_name.find(type);
+    
+    if (it == type_to_name.end()) {
+        return "";
+    }
+    
+    return it->second;
 }

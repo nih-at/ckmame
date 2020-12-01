@@ -57,7 +57,7 @@ typedef struct output_context_xml output_context_xml_t;
 
 
 static int output_datafile_xml_close(output_context_t *);
-static int output_datafile_xml_game(output_context_t *, Game *);
+static int output_datafile_xml_game(output_context_t *, GamePtr);
 static int output_datafile_xml_header(output_context_t *, dat_entry_t *);
 
 
@@ -118,11 +118,11 @@ output_datafile_xml_close(output_context_t *out) {
 }
 
 static void
-set_attribute(xmlNodePtr node, const char *name, const char *value) {
-    if (value == NULL) {
+set_attribute(xmlNodePtr node, const std::string &name, const std::string &value) {
+    if (value.empty()) {
         return;
     }
-    xmlSetProp(node, (const xmlChar *)name, (const xmlChar *)value);
+    xmlSetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()), reinterpret_cast<const xmlChar *>(value.c_str()));
 }
 
 static void
@@ -134,67 +134,63 @@ set_attribute_u64(xmlNodePtr node, const char *name, uint64_t value) {
 
 static void
 set_attribute_hash(xmlNodePtr node, const char *name, int type, Hashes *hashes) {
-    char hstr[Hashes::MAX_SIZE * 2 + 1];
-    
-    set_attribute(node, name, hash_to_string(hstr, type, hashes));
+    set_attribute(node, name, hashes->to_string(type));
 }
 
 static int
-output_datafile_xml_game(output_context_t *out, Game *g) {
-    output_context_xml_t *ctx;
-    File *r;
-    disk_t *d;
-    int i;
-    const char *fl = NULL;
-
-    ctx = (output_context_xml_t *)out;
+output_datafile_xml_game(output_context_t *out, GamePtr game) {
+    auto ctx = reinterpret_cast<output_context_xml_t *>(out);
     
-    xmlNodePtr game = xmlNewChild(ctx->root, NULL, (const xmlChar *)"game", NULL);
+    xmlNodePtr xmlGame = xmlNewChild(ctx->root, NULL, reinterpret_cast<const xmlChar *>("game"), NULL);
     
-    set_attribute(game, "name", game_name(g));
-    set_attribute(game, "cloneof", game_cloneof(g, 0));
+    set_attribute(xmlGame, "name", game->name);
+    set_attribute(xmlGame, "cloneof", game->cloneof[0]);
     /* description is actually required */
-    xmlNewTextChild(game, NULL, (const xmlChar *)"description", (const xmlChar *)(game_description(g) ? game_description(g) : game_name(g)));
+    xmlNewTextChild(xmlGame, NULL, reinterpret_cast<const xmlChar *>("description"), reinterpret_cast<const xmlChar *>(!game->description.empty() ? game->description.c_str() : game->name.c_str()));
 
-    for (i = 0; i < game_num_roms(g); i++) {
-	r = game_rom(g, i);
-        xmlNodePtr rom = xmlNewChild(game, NULL, (const xmlChar *)"rom", NULL);
+    for (size_t i = 0; i < game->roms.size(); i++) {
+        auto &rom = game->roms[i];
+        xmlNodePtr xmlRom = xmlNewChild(xmlGame, NULL, reinterpret_cast<const xmlChar *>("rom"), NULL);
         
-        set_attribute(rom, "name", file_name(r));
-        set_attribute_u64(rom, "size", file_size_(r));
-        set_attribute_hash(rom, "crc", Hashes::TYPE_CRC, file_hashes(r));
-        set_attribute_hash(rom, "sha1", Hashes::TYPE_SHA1, file_hashes(r));
-        set_attribute_hash(rom, "md5", Hashes::TYPE_MD5, file_hashes(r));
+        set_attribute(xmlRom, "name", rom.name);
+        set_attribute_u64(xmlRom, "size", rom.size);
+        set_attribute_hash(xmlRom, "crc", Hashes::TYPE_CRC, &rom.hashes);
+        set_attribute_hash(xmlRom, "sha1", Hashes::TYPE_SHA1, &rom.hashes);
+        set_attribute_hash(xmlRom, "md5", Hashes::TYPE_MD5, &rom.hashes);
 
-        if (file_where(r) != FILE_INGAME) {
-            set_attribute(rom, "merge", file_merge(r) ? file_merge(r) : file_name(r));
+        if (rom.where != FILE_INGAME) {
+            set_attribute(xmlRom, "merge", rom.merge.empty() ? rom.name : rom.merge);
         }
 
-        switch (file_status_(r)) {
-	case STATUS_OK:
-	    fl = NULL;
-	    break;
-	case STATUS_BADDUMP:
-	    fl = "baddump";
-	    break;
-	case STATUS_NODUMP:
-	    fl = "nodump";
-	    break;
-	}
-        set_attribute(rom, "status", fl);
+        std::string fl;
+        switch (rom.status) {
+            case STATUS_BADDUMP:
+                fl = "baddump";
+                break;
+
+            case STATUS_NODUMP:
+                fl = "nodump";
+                break;
+                
+            default:
+                break;
+        }
+        set_attribute(xmlRom, "status", fl);
     }
 
-    for (i = 0; i < game_num_disks(g); i++) {
-	d = game_disk(g, i);
-        xmlNodePtr disk = xmlNewChild(game, NULL, (const xmlChar *)"disk", NULL);
+    for (size_t i = 0; i < game->disks.size(); i++) {
+        auto d = &game->disks[i];
+        xmlNodePtr disk = xmlNewChild(xmlGame, NULL, reinterpret_cast<const xmlChar *>("disk"), NULL);
 
         set_attribute(disk, "name", disk_name(d));
         set_attribute_hash(disk, "sha1", Hashes::TYPE_SHA1, disk_hashes(d));
         set_attribute_hash(disk, "md5", Hashes::TYPE_MD5, disk_hashes(d));
 
+        std::string fl;
+        
         switch (disk_status(d)) {
 	case STATUS_OK:
-	    fl = NULL;
+	    fl = "";
 	    break;
 	case STATUS_BADDUMP:
 	    fl = "baddump";

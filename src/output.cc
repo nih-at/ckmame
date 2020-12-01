@@ -53,7 +53,7 @@ output_detector(output_context_t *ctx, detector_t *detector) {
 
 
 int
-output_game(output_context_t *ctx, Game *g) {
+output_game(output_context_t *ctx, GamePtr g) {
     return ctx->output_game(ctx, g);
 }
 
@@ -87,24 +87,25 @@ output_new(output_format_t fmt, const char *fname, int flags) {
 
 
 void
-output_cond_print_string(FILE *f, const char *pre, const char *str, const char *post) {
+output_cond_print_string(FILE *f, const char *pre, const std::string &str, const char *post) {
     const char *q;
 
-    if (str == NULL)
+    if (str.empty()) {
 	return;
+    }
 
-    if (strcspn(str, " \t") == strlen(str))
+    if (strcspn(str.c_str(), " \t") == str.length()) {
 	q = "";
-    else
+    }
+    else {
 	q = "\"";
+    }
 
-    fprintf(f, "%s%s%s%s%s", pre, q, str, q, post);
+    fprintf(f, "%s%s%s%s%s", pre, q, str.c_str(), q, post);
 }
 
 
 void
 output_cond_print_hash(FILE *f, const char *pre, int t, Hashes *h, const char *post) {
-    char hstr[Hashes::MAX_SIZE * 2 + 1];
-
-    output_cond_print_string(f, pre, hash_to_string(hstr, t, h), post);
+    output_cond_print_string(f, pre, h->to_string(t).c_str(), post);
 }

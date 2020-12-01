@@ -57,9 +57,9 @@ romdb_read_dat(romdb_t *db) {
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	de = (dat_entry_t *)array_grow(dat, reinterpret_cast<void (*)(void *)>(dat_entry_init));
 
-	de->name = sq3_get_string(stmt, 0);
-	de->description = sq3_get_string(stmt, 1);
-	de->version = sq3_get_string(stmt, 2);
+	de->name = strdup(sq3_get_string(stmt, 0).c_str());
+	de->description = strdup(sq3_get_string(stmt, 1).c_str());
+	de->version = strdup(sq3_get_string(stmt, 2).c_str());
     }
 
     if (ret != SQLITE_DONE) {

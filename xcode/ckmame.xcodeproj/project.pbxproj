@@ -104,8 +104,6 @@
 		4B5FADF01735930100B67C24 /* fix_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACD71735924900B67C24 /* fix_util.cc */; };
 		4B5FADF11735930100B67C24 /* fixdat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACD91735924900B67C24 /* fixdat.cc */; };
 		4B5FADF41735930100B67C24 /* garbage.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACDC1735924900B67C24 /* garbage.cc */; };
-		4B5FADF61735930100B67C24 /* hash_from_string.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACDE1735924900B67C24 /* hash_from_string.cc */; };
-		4B5FADF71735930100B67C24 /* hash_to_string.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACDF1735924900B67C24 /* hash_to_string.cc */; };
 		4B5FADF81735930100B67C24 /* hashes.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACE31735924900B67C24 /* hashes.cc */; };
 		4B5FADFB1735930100B67C24 /* hashes_update.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACE11735924900B67C24 /* hashes_update.cc */; };
 		4B5FADFD1735930100B67C24 /* images.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACE51735924900B67C24 /* images.cc */; };
@@ -425,8 +423,6 @@
 		4B5FACDB1735924900B67C24 /* game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = game.h; sourceTree = "<group>"; };
 		4B5FACDC1735924900B67C24 /* garbage.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = garbage.cc; sourceTree = "<group>"; };
 		4B5FACDD1735924900B67C24 /* garbage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = garbage.h; sourceTree = "<group>"; };
-		4B5FACDE1735924900B67C24 /* hash_from_string.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = hash_from_string.cc; sourceTree = "<group>"; };
-		4B5FACDF1735924900B67C24 /* hash_to_string.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = hash_to_string.cc; sourceTree = "<group>"; };
 		4B5FACE11735924900B67C24 /* hashes_update.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = hashes_update.cc; sourceTree = "<group>"; };
 		4B5FACE31735924900B67C24 /* hashes.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = hashes.cc; sourceTree = "<group>"; };
 		4B5FACE41735924900B67C24 /* hashes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = hashes.h; sourceTree = "<group>"; };
@@ -975,8 +971,6 @@
 				4B5FACDD1735924900B67C24 /* garbage.h */,
 				4B5F43AB1889CE83000C3B7C /* globals.cc */,
 				4B9292BF17633FFC00806C0A /* globals.h */,
-				4B5FACDE1735924900B67C24 /* hash_from_string.cc */,
-				4B5FACDF1735924900B67C24 /* hash_to_string.cc */,
 				4B5FACE11735924900B67C24 /* hashes_update.cc */,
 				4B5FACE31735924900B67C24 /* hashes.cc */,
 				4B5FACE41735924900B67C24 /* hashes.h */,
@@ -1606,8 +1600,6 @@
 				4B5FADF01735930100B67C24 /* fix_util.cc in Sources */,
 				4B5FADF11735930100B67C24 /* fixdat.cc in Sources */,
 				4B5FADF41735930100B67C24 /* garbage.cc in Sources */,
-				4B5FADF61735930100B67C24 /* hash_from_string.cc in Sources */,
-				4B5FADF71735930100B67C24 /* hash_to_string.cc in Sources */,
 				4B5FADF81735930100B67C24 /* hashes.cc in Sources */,
 				4B5FADFB1735930100B67C24 /* hashes_update.cc in Sources */,
 				4B5FADFD1735930100B67C24 /* images.cc in Sources */,

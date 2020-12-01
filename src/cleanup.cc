@@ -172,7 +172,7 @@ cleanup_archive(Archive *a, result_t *res, int flags) {
                 }
                 
                 if (fix_options & FIX_PRINT)
-                    printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, file_name(&a->files[i]));
+                    printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, a->files[i].name.c_str());
                 a->file_delete(i);
                 break;
                 
@@ -195,7 +195,7 @@ cleanup_archive(Archive *a, result_t *res, int flags) {
                 if (flags & CLEANUP_UNKNOWN) {
                     move = fix_options & FIX_MOVE_UNKNOWN;
                     if (fix_options & FIX_PRINT)
-                        printf("%s: %s unknown file '%s'\n", a->name.c_str(), (move ? "move" : "delete"), file_name(&a->files[i]));
+                        printf("%s: %s unknown file '%s'\n", a->name.c_str(), (move ? "move" : "delete"), a->files[i].name.c_str());
                     
                     /* TODO: handle error (how?) */
                     if (move) {

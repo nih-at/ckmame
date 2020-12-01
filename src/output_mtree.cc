@@ -55,7 +55,7 @@ typedef struct output_context_mtree output_context_mtree_t;
 
 
 static int output_mtree_close(output_context_t *);
-static int output_mtree_game(output_context_t *, Game *);
+static int output_mtree_game(output_context_t *, GamePtr);
 static int output_mtree_header(output_context_t *, dat_entry_t *);
 
 
@@ -169,67 +169,63 @@ strsvis_cstyle(const char *in) {
 
 
 static int
-output_mtree_game(output_context_t *out, Game *g) {
-    output_context_mtree_t *ctx;
-    File *r;
-    disk_t *d;
-    int i;
-    const char *fl = NULL;
-    char *dirname;
-    char *filename;
+output_mtree_game(output_context_t *out, GamePtr game) {
+    auto ctx = reinterpret_cast<output_context_mtree_t *>(out);
 
-    ctx = (output_context_mtree_t *)out;
-
-    dirname = strsvis_cstyle(game_name(g));
+    auto dirname = strsvis_cstyle(game->name.c_str());
 
     fprintf(ctx->f, "./%s type=dir\n", dirname);
-    for (i = 0; i < game_num_roms(g); i++) {
-	r = game_rom(g, i);
+    for (size_t i = 0; i < game->roms.size(); i++) {
+        auto &rom = game->roms[i];
 
-	filename = strsvis_cstyle(file_name(r));
-	fprintf(ctx->f, "./%s/%s type=file size=%" PRIu64, dirname, filename, file_size_(r));
+        auto filename = strsvis_cstyle(rom.name.c_str());
+        fprintf(ctx->f, "./%s/%s type=file size=%" PRIu64, dirname, filename, rom.size);
 	free(filename);
-	output_cond_print_hash(ctx->f, " sha1=", Hashes::TYPE_SHA1, file_hashes(r), "");
-	output_cond_print_hash(ctx->f, " md5=", Hashes::TYPE_MD5, file_hashes(r), "");
-	switch (file_status_(r)) {
-	case STATUS_OK:
-	    fl = NULL;
-	    break;
-	case STATUS_BADDUMP:
-	    fl = "baddump";
-	    break;
-	case STATUS_NODUMP:
-	    fl = "nodump";
-	    break;
-	}
+	output_cond_print_hash(ctx->f, " sha1=", Hashes::TYPE_SHA1, &rom.hashes, "");
+        output_cond_print_hash(ctx->f, " md5=", Hashes::TYPE_MD5, &rom.hashes, "");
+        const char *fl;
+	switch (rom.status) {
+            case STATUS_BADDUMP:
+                fl = "baddump";
+                break;
+                
+            case STATUS_NODUMP:
+                fl = "nodump";
+                break;
+                
+            default:
+                fl = NULL;
+                break;
+        }
 	output_cond_print_string(ctx->f, " status=", fl, "");
 	if (ctx->extended) {
 	    /* crc is not in the standard set supported on NetBSD */
-	    output_cond_print_hash(ctx->f, " crc=", Hashes::TYPE_CRC, file_hashes(r), "");
-	    fprintf(ctx->f, " time=%llu", (unsigned long long)file_mtime(r));
+	    output_cond_print_hash(ctx->f, " crc=", Hashes::TYPE_CRC, &rom.hashes, "");
+            fprintf(ctx->f, " time=%llu", static_cast<unsigned long long>(rom.mtime));
 	}
 	fputs("\n", ctx->f);
     }
-    for (i = 0; i < game_num_disks(g); i++) {
-	d = game_disk(g, i);
+    for (size_t i = 0; i < game->disks.size(); i++) {
+        auto d = &game->disks[i];
 
-	filename = strsvis_cstyle(disk_name(d));
+        auto filename = strsvis_cstyle(disk_name(d));
 	fprintf(ctx->f, "./%s/%s type=file" PRIu64, dirname, filename);
 	free(filename);
 	output_cond_print_hash(ctx->f, " sha1=", Hashes::TYPE_SHA1, disk_hashes(d), "");
 	output_cond_print_hash(ctx->f, " md5=", Hashes::TYPE_MD5, disk_hashes(d), "");
+        const char *fl;
 	switch (disk_status(d)) {
-	case STATUS_OK:
-	    fl = NULL;
-	    break;
-	case STATUS_BADDUMP:
-	    fl = "baddump";
-	    break;
-	case STATUS_NODUMP:
-	    fl = "nodump";
-	    break;
-	}
-	output_cond_print_string(ctx->f, " status=", fl, "");
+            case STATUS_BADDUMP:
+                fl = "baddump";
+                break;
+            case STATUS_NODUMP:
+                fl = "nodump";
+                break;
+            default:
+                fl = NULL;
+                break;
+        }
+        output_cond_print_string(ctx->f, " status=", fl, "");
 	fputs("\n", ctx->f);
     }
 

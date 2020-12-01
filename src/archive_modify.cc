@@ -193,19 +193,19 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 	return false;
     }
     if (length.has_value()) {
-        if (start + length.value() > file_size_(&source_archive->files[source_index])) {
+        if (start + length.value() > source_archive->files[source_index].size) {
             myerror(ERRZIP, "invalid range (%" PRIu64 ", %" PRIu64 ")", start, length.value());
             return false;
         }
     }
     else {
-        if (start > file_size_(&source_archive->files[source_index])) {
+        if (start > source_archive->files[source_index].size) {
             myerror(ERRZIP, "invalid start offset %" PRIu64, start);
             return false;
         }
     }
 
-    if (start == 0 && (!length.has_value() || length.value() == file_size_(&source_archive->files[source_index]))) {
+    if (start == 0 && (!length.has_value() || length.value() == source_archive->files[source_index].size)) {
         add_file(filename, &source_archive->files[source_index]);
     }
     else {

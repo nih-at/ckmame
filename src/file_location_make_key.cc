@@ -56,7 +56,9 @@ file_location_make_key(filetype_t filetype, const Hashes *hash) {
     key[0] = '/';
     key[1] = filetype_char(filetype);
     key[2] = '/';
-    hash_to_string(key + 3, file_location_default_hashtype(filetype), hash);
+    
+    auto str = hash->to_string(file_location_default_hashtype(filetype));
+    strcpy(key + 3, str.c_str());
 
     return key;
 }

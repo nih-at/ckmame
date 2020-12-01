@@ -156,7 +156,7 @@ protected:
 
 private:
     void add_file(const std::string &filename, const File *file);
-    bool get_hashes(File *f, size_t len, struct hashes *h);
+    bool get_hashes(ArchiveFile *f, size_t len, Hashes *h);
     int cache_is_up_to_date();
     void merge_files(const std::vector<File> &files_cache);
     

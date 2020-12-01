@@ -165,21 +165,21 @@ parse_archive(parser_context_t *ctx, Archive *a, int hashtypes) {
     free(name);
 
     for (size_t i = 0; i < a->files.size(); i++) {
-        auto r = &a->files[i];
+        auto &file = a->files[i];
 
 	a->file_compute_hashes(i, hashtypes);
 
 	parse_file_start(ctx, TYPE_ROM);
-	parse_file_name(ctx, TYPE_ROM, 0, file_name(r));
-	sprintf(hstr, "%" PRIu64, file_size_(r));
+	parse_file_name(ctx, TYPE_ROM, 0, file.name.c_str());
+	sprintf(hstr, "%" PRIu64, file.size);
 	parse_file_size_(ctx, TYPE_ROM, 0, hstr);
-	parse_file_mtime(ctx, TYPE_ROM, 0, file_mtime(r));
-	if (file_status_(r) != STATUS_OK) {
-	    parse_file_status_(ctx, TYPE_ROM, 0, file_status_(r) == STATUS_BADDUMP ? "baddump" : "nodump");
+	parse_file_mtime(ctx, TYPE_ROM, 0, file.mtime);
+        if (file.status != STATUS_OK) {
+	    parse_file_status_(ctx, TYPE_ROM, 0, file.status == STATUS_BADDUMP ? "baddump" : "nodump");
 	}
-	for (ht = 1; ht <= HASHES_TYPE_MAX; ht <<= 1) {
-	    if ((hashtypes & ht) && hashes_has_type(file_hashes(r), ht)) {
-		parse_file_hash(ctx, TYPE_ROM, ht, hash_to_string(hstr, ht, file_hashes(r)));
+        for (ht = 1; ht <= Hashes::TYPE_MAX; ht <<= 1) {
+            if ((hashtypes & ht) && file.hashes.has_type(ht)) {
+                parse_file_hash(ctx, TYPE_ROM, ht, file.hashes.to_string(ht).c_str());
 	    }
 	}
 	parse_file_end(ctx, TYPE_ROM);

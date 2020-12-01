@@ -81,12 +81,12 @@ sq3_get_int64_default(sqlite3_stmt *stmt, int col, int64_t def) {
 }
 
 
-char *
+std::string
 sq3_get_string(sqlite3_stmt *stmt, int i) {
     if (sqlite3_column_type(stmt, i) == SQLITE_NULL)
-	return NULL;
+	return "";
 
-    return xstrdup((const char *)sqlite3_column_text(stmt, i));
+    return reinterpret_cast<const char *>(sqlite3_column_text(stmt, i));
 }
 
 

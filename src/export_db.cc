@@ -38,18 +38,14 @@
 
 int
 export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out) {
-    parray_t *list;
-    int i;
-    Game *g;
     dat_entry_t de;
-    dat_t *db_dat;
 
     if (out == NULL) {
 	/* TODO: split into original dat files */
 	return 0;
     }
 
-    db_dat = romdb_read_dat(db);
+    auto db_dat = romdb_read_dat(db);
 
     /* TODO: export detector */
 
@@ -58,19 +54,21 @@ export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_c
     dat_entry_finalize(&de);
     dat_free(db_dat);
 
-    if ((list = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+    auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
+    if (list == NULL) {
 	myerror(ERRDEF, "db error reading game list");
 	return -1;
     }
 
-    for (i = 0; i < parray_length(list); i++) {
-	if ((g = romdb_read_game(db, static_cast<const char *>(parray_get(list, i)))) == NULL) {
+    for (size_t i = 0; i < parray_length(list); i++) {
+        GamePtr game = romdb_read_game(db, static_cast<const char *>(parray_get(list, i)));
+        if (!game) {
 	    /* TODO: error */
 	    continue;
 	}
-	if (!name_matches(game_name(g), exclude))
-	    output_game(out, g);
-	game_free(g);
+        if (!name_matches(game->name.c_str(), exclude)) {
+	    output_game(out, game);
+        }
     }
 
     parray_free(list, free);
