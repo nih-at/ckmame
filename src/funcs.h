@@ -51,29 +51,29 @@
 #define CLEANUP_UNKNOWN 0x2
 
 
-void check_archive(ArchivePtr, const char *, result_t *);
-void check_disks(Game *, images_t *[], result_t *);
-void check_files(Game *, ArchivePtr [], result_t *);
-void check_images(images_t *, const char *, result_t *);
-void check_old(Game *, result_t *);
+void check_archive(ArchivePtr, const char *, Result *);
+void check_disks(Game *, Images *[], Result *);
+void check_files(Game *, ArchivePtr [], Result *);
+void check_images(Images *, const char *, Result *);
+void check_old(Game *, Result *);
 void cleanup_list(parray_t *, delete_list_t *, int);
 int copy_file(const char *, const char *, size_t, ssize_t, Hashes *);
-void diagnostics(const Game *, const ArchivePtr, const images_t *, const result_t *);
-void diagnostics_archive(const ArchivePtr, const result_t *);
-void diagnostics_images(const images_t *, const result_t *);
+void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
+void diagnostics_archive(const ArchivePtr, const Result *);
+void diagnostics_images(const Images *, const Result *);
 int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
-int enter_disk_in_map(const disk_t *, where_t);
+int enter_disk_in_map(const Disk *, where_t);
 char *findfile(const char *, filetype_t, const char *);
-int fix_game(Game *, Archive *, images_t *, result_t *);
+int fix_game(Game *, Archive *, Images *, Result *);
 parray_t *list_directory(const char *, const char *);
 const char *get_directory(void);
 int link_or_copy(const char *, const char *);
 char *make_file_name(filetype_t, const char *, const char *);
 char *make_garbage_name(const char *, int);
 char *make_needed_name(const File *);
-char *make_needed_name_disk(const disk_t *);
+char *make_needed_name_disk(const Disk *);
 char *make_unique_name(const char *, const char *, ...);
 int move_image_to_garbage(const char *);
 int my_remove(const char *name);
@@ -87,6 +87,6 @@ int rename_or_move(const char *, const char *);
 bool save_needed(Archive *sa, int sidx, const char *gamename);
 int save_needed_disk(const char *, int);
 bool save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, File *f);
-void write_fixdat_entry(const Game *, const result_t *);
+void write_fixdat_entry(const Game *, const Result *);
 
 #endif /* funcs.h */

@@ -40,7 +40,7 @@
 
 
 void
-check_archive(ArchivePtr archive, const char *gamename, result_t *res) {
+check_archive(ArchivePtr archive, const char *gamename, Result *res) {
     find_result_t found;
 
     if (!archive) {

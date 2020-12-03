@@ -184,7 +184,7 @@ list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
             if (p != NULL && strcmp(p + 1, "chd") == 0) {
                 *p = '\0';
                 for (size_t i = 0; i < game->disks.size(); i++) {
-                    if (strcmp(disk_name(&game->disks[i]), b + len_dir) == 0) {
+                    if (game->disks[i].name == b + len_dir) {
                         known = true;
                         break;
                     }

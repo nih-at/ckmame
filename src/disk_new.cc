@@ -53,24 +53,22 @@ static int get_hashes(struct chd *, Hashes *);
 static int meta_hash_cmp(const void *, const void *);
 
 
-disk_t *
-disk_new(const char *name, int flags) {
-    disk_t *d;
-    struct chd *chd;
-    Hashes *h;
-    int err;
-    int64_t id;
-
-    if (name == NULL)
+DiskPtr Disk::from_file(const std::string &name, int flags) {
+    if (name.empty()) {
 	return NULL;
+    }
 
-    if ((d = static_cast<disk_t *>(memdb_get_ptr(name, TYPE_DISK))) != 0) {
-	d->refcount++;
-	return d;
+    auto disk = by_name(name);
+    
+    if (disk) {
+        return disk;
     }
 
     seterrinfo(name, "");
-    if ((chd = chd_open(name, &err)) == NULL) {
+
+    int err;
+    auto chd = chd_open(name.c_str(), &err);
+    if (chd == NULL) {
 	/* no error if file doesn't exist */
 	if (!((err == CHD_ERR_OPEN && errno == ENOENT) || ((flags & DISK_FL_QUIET) && err == CHD_ERR_NO_CHD))) {
 	    /* TODO: include err */
@@ -85,87 +83,50 @@ disk_new(const char *name, int flags) {
 	return NULL;
     }
 
-    d = static_cast<disk_t *>(xmalloc(sizeof(*d)));
-    disk_init(d);
-    d->name = xstrdup(name);
-    d->refcount = 1;
-
-    h = disk_hashes(d);
+    disk = std::make_shared<Disk>();
+    disk->name = name;
 
     if (flags & DISK_FL_CHECK_INTEGRITY) {
-	h->types = romdb_hashtypes(db, TYPE_DISK);
+        disk->hashes.types = romdb_hashtypes(db, TYPE_DISK);
 
-	err = get_hashes(chd, h);
+	err = get_hashes(chd, &disk->hashes);
 
 	if (err < 0) {
 	    chd_close(chd);
-	    disk_real_free(d);
 	    return NULL;
 	}
 
-	if (romdb_hashtypes(db, TYPE_DISK) & Hashes::TYPE_MD5 & h->types) {
-	    if (!h->verify(Hashes::TYPE_MD5, chd->md5)) {
+        if (disk->hashes.has_type(Hashes::TYPE_MD5)) {
+            if (!disk->hashes.verify(Hashes::TYPE_MD5, chd->md5)) {
 		myerror(ERRFILE, "md5 mismatch");
 		chd_close(chd);
-		disk_real_free(d);
 		return NULL;
 	    }
 	}
 
-	if (chd->version > 2 && (romdb_hashtypes(db, TYPE_DISK) & Hashes::TYPE_SHA1 & h->types)) {
-	    if (!h->verify(Hashes::TYPE_SHA1, chd->sha1)) {
+        if (chd->version > 2 && disk->hashes.has_type(Hashes::TYPE_SHA1)) {
+            if (!disk->hashes.verify(Hashes::TYPE_SHA1, chd->sha1)) {
 		myerror(ERRFILE, "sha1 mismatch");
 		chd_close(chd);
-		disk_real_free(d);
 		return NULL;
 	    }
 	}
     }
-    else {
-	h->types = 0;
-    }
 
-    if (chd->version < 4 && (h->types & Hashes::TYPE_MD5) == 0)
-        h->set(Hashes::TYPE_MD5, chd->md5);
-    if (chd->version > 2 && (h->types & Hashes::TYPE_SHA1) == 0)
-        h->set(Hashes::TYPE_SHA1, chd->sha1);
+    if (chd->version < 4 && !disk->hashes.has_type(Hashes::TYPE_MD5)) {
+        disk->hashes.set(Hashes::TYPE_MD5, chd->md5);
+    }
+    if (chd->version > 2 && !disk->hashes.has_type(Hashes::TYPE_SHA1)) {
+        disk->hashes.set(Hashes::TYPE_SHA1, chd->sha1);
+    }
 
     chd_close(chd);
 
-    if ((id = memdb_put_ptr(name, TYPE_DISK, d)) < 0) {
-	disk_real_free(d);
-	return NULL;
-    }
-    d->id = id;
+    disk->id = ++next_id;
+    disk_by_id[disk->id] = disk;
+    disk_by_name[name] = disk;
 
-    return d;
-}
-
-
-void
-disk_free(disk_t *d) {
-    if (d == NULL)
-	return;
-
-    if (--d->refcount != 0)
-	return;
-
-#ifdef DONT_CACHE_UNUSED
-    if (_dmap)
-	disk_map_delete(_dmap, disk_name(d));
-    else
-	disk_real_free(d);
-#endif
-}
-
-
-void
-disk_real_free(disk_t *d) {
-    if (d == NULL)
-	return;
-
-    disk_finalize(d);
-    free(d);
+    return disk;
 }
 
 

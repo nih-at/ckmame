@@ -51,7 +51,7 @@ public:
     int dat_no;
     std::string cloneof[2];
     std::vector<File> roms;
-    std::vector<disk_t> disks;
+    std::vector<Disk> disks;
     
     Game() : id(UINT64_MAX), dat_no(0) { }
 };

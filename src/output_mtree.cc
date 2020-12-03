@@ -195,7 +195,7 @@ output_mtree_game(output_context_t *out, GamePtr game) {
     for (size_t i = 0; i < game->disks.size(); i++) {
         auto d = &game->disks[i];
 
-        auto filename = strsvis_cstyle(disk_name(d));
+        auto filename = strsvis_cstyle(d->name.c_str());
 	fprintf(ctx->f, "./%s/%s type=file" PRIu64, dirname, filename);
 	free(filename);
 	output_cond_print_hash(ctx->f, " sha1=", Hashes::TYPE_SHA1, disk_hashes(d), "");

@@ -52,47 +52,48 @@
 
 
 static find_result_t check_for_file_in_zip(const char *, const File *, const File *, Match *);
-static find_result_t check_match_disk_old(const Game *, const disk_t *, match_disk_t *);
-static find_result_t check_match_disk_romset(const Game *, const disk_t *, match_disk_t *);
+static find_result_t check_match_disk_old(const Game *, const Disk *, MatchDisk *);
+static find_result_t check_match_disk_romset(const Game *, const Disk *, MatchDisk *);
 static find_result_t check_match_old(const Game *, const File *, const File *, Match *);
 static find_result_t check_match_romset(const Game *, const File *, const File *, Match *);
-static find_result_t find_disk_in_db(romdb_t *, const disk_t *, const char *, match_disk_t *, find_result_t (*)(const Game *, const disk_t *, match_disk_t *));
+static find_result_t find_disk_in_db(romdb_t *, const Disk *, const char *, MatchDisk *, find_result_t (*)(const Game *, const Disk *, MatchDisk *));
 static find_result_t find_in_db(romdb_t *, const File *, Archive *, const char *, Match *, find_result_t (*)(const Game *, const File *, const File *, Match *));
 
 
 find_result_t
-find_disk(const disk_t *d, match_disk_t *md) {
+find_disk(const Disk *disk, MatchDisk *match_disk) {
     sqlite3_stmt *stmt;
-    disk_t *dm;
     int ret;
     
     if (memdb == NULL) {
         return FIND_UNKNOWN;
     }
 
-    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, disk_hashes(d), 0))) == NULL)
+    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, disk_hashes(disk), 0))) == NULL)
 	return FIND_ERROR;
 
-    if (sqlite3_bind_int(stmt, 1, TYPE_DISK) != SQLITE_OK || sq3_set_hashes(stmt, 2, disk_hashes(d), 0) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, 1, TYPE_DISK) != SQLITE_OK || sq3_set_hashes(stmt, 2, disk_hashes(disk), 0) != SQLITE_OK) {
 	return FIND_ERROR;
     }
 
     switch (sqlite3_step(stmt)) {
-    case SQLITE_ROW:
-	if ((dm = disk_by_id(sqlite3_column_int(stmt, QUERY_FILE_GAME_ID))) == NULL) {
-	    ret = FIND_ERROR;
-	    break;
-	}
-	if (md) {
-	    match_disk_name(md) = xstrdup(disk_name(dm));
-            *match_disk_hashes(md) = *disk_hashes(dm);
-	    match_disk_quality(md) = QU_COPIED;
-	    match_disk_where(md) = static_cast<where_t>(sqlite3_column_int(stmt, QUERY_FILE_LOCATION));
-	}
-	disk_free(dm);
-	ret = FIND_EXISTS;
-	break;
+        case SQLITE_ROW: {
+            auto dm = disk_by_id(sqlite3_column_int(stmt, QUERY_FILE_GAME_ID));
+            if (!dm) {
+                ret = FIND_ERROR;
+                break;
+            }
 
+            if (match_disk) {
+                match_disk->name = dm->name;
+                match_disk->hashes = dm->hashes;
+                match_disk->quality = QU_COPIED;
+                match_disk->where = static_cast<where_t>(sqlite3_column_int(stmt, QUERY_FILE_LOCATION));
+            }
+            ret = FIND_EXISTS;
+            break;
+        }
+            
     case SQLITE_DONE:
 	ret = FIND_UNKNOWN;
 	break;
@@ -107,7 +108,7 @@ find_disk(const disk_t *d, match_disk_t *md) {
 
 
 find_result_t
-find_disk_in_old(const disk_t *d, match_disk_t *md) {
+find_disk_in_old(const Disk *d, MatchDisk *md) {
     if (old_db == NULL)
 	return FIND_UNKNOWN;
 
@@ -116,7 +117,7 @@ find_disk_in_old(const disk_t *d, match_disk_t *md) {
 
 
 find_result_t
-find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md) {
+find_disk_in_romset(const Disk *d, const char *skip, MatchDisk *md) {
     return find_disk_in_db(db, d, skip, md, check_match_disk_romset);
 }
 
@@ -238,7 +239,7 @@ check_for_file_in_zip(const char *name, const File *rom, const File *file, Match
 
 /*ARGSUSED1*/
 static find_result_t
-check_match_disk_old(const Game *g, const disk_t *d, match_disk_t *md) {
+check_match_disk_old(const Game *g, const Disk *d, MatchDisk *md) {
     if (md) {
 	match_disk_quality(md) = QU_OLD;
 	match_disk_name(md) = xstrdup(disk_name(d));
@@ -251,9 +252,9 @@ check_match_disk_old(const Game *g, const disk_t *d, match_disk_t *md) {
 
 /*ARGSUSED1*/
 static find_result_t
-check_match_disk_romset(const Game *game, const disk_t *d, match_disk_t *md) {
+check_match_disk_romset(const Game *game, const Disk *d, MatchDisk *md) {
     char *file_name;
-    disk_t *f;
+    Disk *f;
 
     file_name = findfile(disk_name(d), TYPE_DISK, game->name.c_str());
     if (file_name == NULL) {
@@ -369,7 +370,7 @@ find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Matc
 
 
 find_result_t
-find_disk_in_db(romdb_t *fdb, const disk_t *d, const char *skip, match_disk_t *md, find_result_t (*check_match)(const Game *, const disk_t *, match_disk_t *)) {
+find_disk_in_db(romdb_t *fdb, const Disk *d, const char *skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *)) {
     array_t *a;
     file_location_t *fbh;
     int i;

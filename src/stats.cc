@@ -69,7 +69,7 @@ stats_new() {
 
 
 void
-stats_add_disk(stats_t *stats, const disk_t *disk, quality_t status) {
+stats_add_disk(stats_t *stats, const Disk *disk, quality_t status) {
     stats_add_file(stats, TYPE_DISK, 0, status);
 }
 

@@ -115,7 +115,7 @@ make_needed_name(const File *r) {
 
 
 char *
-make_needed_name_disk(const disk_t *d) {
+make_needed_name_disk(const Disk *d) {
     /* <needed_dir>/<md5>-nnn.zip */
 
     auto md5 = d->hashes.to_string(Hashes::TYPE_MD5);
@@ -243,7 +243,7 @@ int
 save_needed_disk(const char *fname, int do_save) {
     char *tmp;
     int ret;
-    disk_t *d;
+    Disk *d;
 
     if ((d = disk_new(fname, 0)) == NULL)
 	return -1;

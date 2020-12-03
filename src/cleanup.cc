@@ -38,14 +38,14 @@
 #include "util.h"
 #include "warn.h"
 
-static void cleanup_archive(Archive *, result_t *, int);
-static void cleanup_disk(images_t *, result_t *, int);
+static void cleanup_archive(Archive *, Result *, int);
+static void cleanup_disk(Images *, Result *, int);
 
 
 void
 cleanup_list(parray_t *list, delete_list_t *del, int flags) {
     ArchivePtr a;
-    images_t *im;
+    Images *im;
     char *name;
     int i, di, len, cmp, n;
     file_location_t *fl;
@@ -97,12 +97,14 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
             }
 
             case NAME_CHD: {
-                if ((im = images_new_name(name, 0)) == NULL) {
+                ImagesPtr im = Images::from_file(name);
+
+                if (im == NULL) {
                     /* TODO */
                     continue;
                 }
                 
-                Result res(NULL, NULL, im);
+                Result res(NULL, NULL, im.get());
                 
                 while (di < len) {
                     fl = delete_list_get(del, di++);
@@ -116,15 +118,13 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
                     }
                 }
                 
-                check_images(im, NULL, &res);
+                check_images(im.get(), NULL, &res);
                 
                 warn_set_info(WARN_TYPE_IMAGE, name);
-                diagnostics_images(im, &res);
+                diagnostics_images(im.get(), &res);
                 
-                cleanup_disk(im, &res, flags);
-                
-                images_free(im);
-                
+                cleanup_disk(im.get(), &res, flags);
+                                
                 break;
             }
                 
@@ -142,7 +142,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
 
 
 static void
-cleanup_archive(Archive *a, result_t *res, int flags) {
+cleanup_archive(Archive *a, Result *res, int flags) {
     GarbagePtr gb;
     int move;
     const char *reason;
@@ -228,7 +228,7 @@ cleanup_archive(Archive *a, result_t *res, int flags) {
 
 
 static void
-cleanup_disk(images_t *im, result_t *res, int flags) {
+cleanup_disk(Images *im, Result *res, int flags) {
     int i, move, ret;
     const char *name, *reason;
 

@@ -38,17 +38,37 @@
 #include "hashes.h"
 #include "types.h"
 
-struct disk {
+class Disk;
+
+typedef std::shared_ptr<Disk> DiskPtr;
+
+class Disk {
+public:
     uint64_t id;
     int refcount;
-    char *name;
-    char *merge;
+    std::string name;
+    std::string merge;
     Hashes hashes;
     status_t status;
     where_t where;
-};
+    
+    Disk() : status(STATUS_OK), where(FILE_INGAME) { }
+    
+    static DiskPtr from_file(const std::string &name, int flags);
+    
+    static DiskPtr by_id(uint64_t id);
+    static DiskPtr by_name(const std::string &name);
+    
+    const std::string &merged_name() const { return merge.empty() ? name : merge; }
+    bool compare_merge(const Disk &other) const;
+    bool compare_merge_hashes(const Disk &other) const;
+    bool compare_hashes(const Disk &other) const;
+    bool is_mergeable(const Disk &other) const;
 
-typedef struct disk disk_t;
+    static uint64_t next_id;
+    static std::unordered_map<std::string, std::weak_ptr<Disk>> disk_by_name;
+    static std::unordered_map<uint64_t, DiskPtr> disk_by_id;
+};
 
 #define DISK_FL_CHECK_INTEGRITY 0x2
 #define DISK_FL_QUIET 0x4
@@ -58,20 +78,15 @@ typedef struct disk disk_t;
 #define disk_status(d) ((d)->status)
 #define disk_where(d) ((d)->where)
 #define disk_merge(d) ((d)->merge)
-#define disk_merged_name(d) ((d)->merge ? (d)->merge : (d)->name)
+#define disk_merged_name(d) ((d)->merged_name())
 #define disk_name(d) ((d)->name)
 #define disk_id(d) ((d)->id)
 
-#define disk_by_id(i) ((disk_t *)memdb_get_ptr_by_id(i))
+#define disk_by_id(i) (Disk::by_id(i))
 
-bool disk_compare_merge(const disk_t *a, const disk_t *b);
-bool disk_compare_merge_hashes(const disk_t *a, const disk_t *b);
-bool disk_compare_hashes(const disk_t *a, const disk_t *b);
-void disk_finalize(disk_t *);
-void disk_free(disk_t *);
-void disk_init(disk_t *);
-bool disk_mergeable(const disk_t *a, const disk_t *b);
-disk_t *disk_new(const char *, int);
-void disk_real_free(disk_t *);
+#define disk_compare_merge(a, b) ((a)->compare_merge(*(b)))
+#define disk_compare_merge_hashes(a, b) ((a)->compare_merge_hashes(*(b)))
+#define disk_compare_hashes(a, b) ((a)->compare_hashes(*(b)))
+#define disk_mergeable(a, b) ((a)->is_mergeable(*(b)))
 
 #endif /* disk.h */

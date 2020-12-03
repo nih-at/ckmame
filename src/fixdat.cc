@@ -40,7 +40,7 @@
 
 
 void
-write_fixdat_entry(const Game *game, const result_t *res) {
+write_fixdat_entry(const Game *game, const Result *res) {
     if (result_game(res) != GS_MISSING && result_game(res) != GS_PARTIAL) {
 	return;
     }
@@ -65,18 +65,17 @@ write_fixdat_entry(const Game *game, const result_t *res) {
     }
 
     for (size_t i = 0; i < game->disks.size(); i++) {
-        match_disk_t *m = result_disk(res, i);
-        auto *d = &game->disks[i];
+        auto &match_disk = res->disks[i];
+        auto &disk = game->disks[i];
 
-        if (match_disk_quality(m) != QU_MISSING || disk_status(d) == STATUS_NODUMP) {
+        if (match_disk.quality != QU_MISSING || disk.status == STATUS_NODUMP) {
 	    continue;
         }
 
-        gm->disks.push_back(*d);
-        auto *dm = &gm->disks[gm->disks.size() - 1];
-        disk_name(dm) = strdup(disk_name(d));
-	if (disk_merge(d))
-	    disk_merge(dm) = strdup(disk_merge(d));
+        gm->disks.push_back(disk);
+        auto &dm = gm->disks[gm->disks.size() - 1];
+        dm.name = disk.name;
+        dm.merge = disk.merge;
     }
 
     if (!gm->roms.empty() || !gm->disks.empty()) {

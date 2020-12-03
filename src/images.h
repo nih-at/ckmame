@@ -39,15 +39,27 @@
 #include "game.h"
 #include "parray.h"
 
-typedef parray_t images_t;
+class Images;
 
-#define images_free(im) (parray_free((im), reinterpret_cast<void (*)(void *)>(disk_free)))
-#define images_get(im, i) ((disk_t *)parray_get((im), (i)))
-#define images_length(im) ((im) ? parray_length(im) : 0)
+typedef std::shared_ptr<Images> ImagesPtr;
 
-int images_find(const images_t *images, const char *name);
-const char *images_name(const images_t *, int);
-images_t *images_new(const char *name, int flags);
-images_t *images_new_name(const char *, int);
+class Images {
+public:
+    std::vector<DiskPtr> disks;
+    
+    Images();
+
+    static ImagesPtr from_directory(const std::string &directory, bool check_integrity);
+    static ImagesPtr from_file(const std::string &name);
+
+    int find(const std::string &name) const;
+    const std::string &name(int) const;
+};
+
+#define images_get(im, i) ((im)->disks[i])
+#define images_length(im) ((im)->disks.size())
+
+int images_find(const Images *images, const char *name);
+const char *images_name(const Images *, int);
 
 #endif /* images.h */

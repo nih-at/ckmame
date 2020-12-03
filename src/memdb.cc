@@ -272,7 +272,7 @@ memdb_file_insert_archive(const Archive *archive) {
 
 
 int
-memdb_update_disk(const disk_t *d) {
+memdb_update_disk(const Disk *d) {
     return _update_file(disk_id(d), TYPE_DISK, 0, disk_hashes(d));
 }
 

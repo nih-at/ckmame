@@ -108,14 +108,13 @@ read_disks(romdb_t *db, Game *game) {
 	return -1;
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        disk_t disk;
-        disk_init(&disk);
+        Disk disk;
         
-	disk_name(&disk) = xstrdup(sq3_get_string(stmt, 0).c_str());
-	disk_merge(&disk) = xstrdup(sq3_get_string(stmt, 1).c_str());
-	disk.status = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+        disk.name = sq3_get_string(stmt, 0);
+        disk.merge = sq3_get_string(stmt, 1);
+        disk.status = static_cast<status_t>(sqlite3_column_int(stmt, 2));
         disk.where = static_cast<where_t>(sqlite3_column_int(stmt, 3));
-	sq3_get_hashes(disk_hashes(&disk), stmt, 5);
+	sq3_get_hashes(&disk.hashes, stmt, 5);
         
         game->disks.push_back(disk);
     }

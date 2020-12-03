@@ -49,7 +49,7 @@ int64_t memdb_put_ptr(const char *, filetype_t, void *);
 int memdb_file_delete(const Archive *, int, bool);
 int memdb_file_insert(sqlite3_stmt *, const Archive *, int);
 int memdb_file_insert_archive(const Archive *);
-int memdb_update_disk(const disk_t *);
+int memdb_update_disk(const Disk *);
 int memdb_update_file(const Archive *, int);
 
 #endif /* memdb.h */

@@ -114,7 +114,7 @@ romdb_update_file_location(romdb_t *db, Game *game) {
 	if (sqlite3_bind_int(stmt, 3, TYPE_DISK) != SQLITE_OK)
 	    return -1;
 
-        disk_t *d = &game->disks[i];
+        Disk *d = &game->disks[i];
 	if (disk_where(d) == FILE_INGAME)
 	    continue;
 
@@ -171,7 +171,7 @@ write_disks(romdb_t *db, const Game *game) {
     sqlite3_stmt *stmt;
 
     for (size_t i = 0; i < game->disks.size(); i++) {
-        const disk_t *d = &game->disks[i];
+        auto &disk = game->disks[i];
 
 	if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_FILE)) == NULL)
 	    return -1;
@@ -179,7 +179,7 @@ write_disks(romdb_t *db, const Game *game) {
 	if (sqlite3_bind_int64(stmt, 1, game->id) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK)
 	    return -1;
 
-	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK || sq3_set_string(stmt, 4, disk_name(d)) != SQLITE_OK || sq3_set_string(stmt, 5, disk_merge(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 6, disk_status(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 7, disk_where(d)) != SQLITE_OK || sq3_set_hashes(stmt, 9, disk_hashes(d), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
+	if (sqlite3_bind_int(stmt, 3, i) != SQLITE_OK || sq3_set_string(stmt, 4, disk.name.c_str()) != SQLITE_OK || sq3_set_string(stmt, 5, disk.merge.c_str()) != SQLITE_OK || sqlite3_bind_int(stmt, 6, disk.status) != SQLITE_OK || sqlite3_bind_int(stmt, 7, disk.where) != SQLITE_OK || sq3_set_hashes(stmt, 9, &disk.hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
 	    return -1;
     }
 

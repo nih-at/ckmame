@@ -56,11 +56,11 @@ enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 typedef enum test_result test_result_t;
 
 static test_result_t match_files(ArchivePtr, test_t, const File *, Match *);
-static void update_game_status(const Game *, result_t *);
+static void update_game_status(const Game *, Result *);
 
 
 void
-check_files(Game *game, ArchivePtr archives[3], result_t *res) {
+check_files(Game *game, ArchivePtr archives[3], Result *res) {
     static const test_t tests[] = {TEST_NAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG};
     static const int tests_count = sizeof(tests) / sizeof(tests[0]);
     
@@ -251,7 +251,7 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
 
 
 static void
-update_game_status(const Game *game, result_t *res) {
+update_game_status(const Game *game, Result *res) {
     bool all_dead, all_own_dead, all_correct, all_fixable, has_own;
 
     all_own_dead = all_dead = all_correct = all_fixable = true;

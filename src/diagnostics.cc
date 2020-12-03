@@ -48,12 +48,12 @@
 
 static const char *zname[] = {"", "cloneof", "grand-cloneof"};
 
-static void diagnostics_disks(const Game *, const result_t *);
-static void diagnostics_files(const Game *, const result_t *);
+static void diagnostics_disks(const Game *, const Result *);
+static void diagnostics_files(const Game *, const Result *);
 
 
 void
-diagnostics(const Game *game, const ArchivePtr a, const images_t *im, const result_t *res) {
+diagnostics(const Game *game, const ArchivePtr a, const Images *im, const Result *res) {
     warn_set_info(WARN_TYPE_GAME, game->name.c_str());
 
     diagnostics_files(game, res);
@@ -64,7 +64,7 @@ diagnostics(const Game *game, const ArchivePtr a, const images_t *im, const resu
 
 
 void
-diagnostics_archive(const ArchivePtr a, const result_t *res) {
+diagnostics_archive(const ArchivePtr a, const Result *res) {
     if (!a) {
 	return;
     }
@@ -108,7 +108,7 @@ diagnostics_archive(const ArchivePtr a, const result_t *res) {
 
 
 static void
-diagnostics_disks(const Game *game, const result_t *res) {
+diagnostics_disks(const Game *game, const Result *res) {
     if (game->disks.empty()) {
 	return;
     }
@@ -167,7 +167,7 @@ diagnostics_disks(const Game *game, const result_t *res) {
 
 
 static void
-diagnostics_files(const Game *game, const result_t *res) {
+diagnostics_files(const Game *game, const Result *res) {
     switch (result_game(res)) {
     case GS_CORRECT:
 	if (output_options & WARN_CORRECT)
@@ -276,7 +276,7 @@ diagnostics_files(const Game *game, const result_t *res) {
 
 
 void
-diagnostics_images(const images_t *im, const result_t *res) {
+diagnostics_images(const Images *im, const Result *res) {
     int i;
 
     if (im == NULL)

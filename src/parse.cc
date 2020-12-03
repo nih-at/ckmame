@@ -298,9 +298,8 @@ parse_file_start(parser_context_t *ctx, filetype_t ft) {
     CHECK_STATE(ctx, PARSE_IN_GAME);
 
     if (ft == TYPE_DISK) {
-        ctx->g->disks.push_back(disk_t());
+        ctx->g->disks.push_back(Disk());
         ctx->d = &ctx->g->disks[ctx->g->disks.size() - 1];
-        disk_init(ctx->d);
     }
     else {
         ctx->g->roms.push_back(File());
@@ -522,9 +521,8 @@ disk_end(parser_context_t *ctx) {
 	disk_status(ctx->d) = STATUS_NODUMP;
     }
 
-    if (disk_merge(ctx->d) != NULL && strcmp(disk_name(ctx->d), disk_merge(ctx->d)) == 0) {
-	free(disk_merge(ctx->d));
-	disk_merge(ctx->d) = NULL;
+    if (!ctx->d->merge.empty() && ctx->d->name == ctx->d->merge) {
+        ctx->d->merge = "";
     }
 }
 

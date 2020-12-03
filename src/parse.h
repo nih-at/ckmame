@@ -73,7 +73,7 @@ struct parser_context {
     dat_entry_t de; /* info about dat file */
     GamePtr g;      /* current game */
     File *r;      /* current ROM */
-    disk_t *d;      /* current disk */
+    Disk *d;      /* current disk */
 };
 
 typedef struct parser_context parser_context_t;

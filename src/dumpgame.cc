@@ -98,7 +98,7 @@ print_checksums(const Hashes *hashes) {
 
 
 static void
-print_diskline(disk_t *disk) {
+print_diskline(Disk *disk) {
     printf("\t\tdisk %-12s", disk->name);
     print_checksums(&disk->hashes);
     printf(" status %s in %s", status_name(disk_status(disk), true).c_str(), where_name[disk_where(disk)]);

@@ -39,24 +39,24 @@
 #include "parray.h"
 #include "types.h"
 
-struct match_disk {
-    char *name;
+class MatchDisk {
+public:
+    std::string name;
     Hashes hashes;
     quality_t quality;
     where_t where;
+    
+    MatchDisk() : quality(QU_MISSING), where(FILE_NOWHERE) { }
+    
+    void set_source(Disk *disk);
 };
 
-typedef struct match_disk match_disk_t;
 
-typedef array_t match_disk_array_t;
+#define match_disk_array_get(ma, i) ((ma)[i])
 
-#define match_disk_array_free(ma) (array_free((ma), reinterpret_cast<void (*)(void *)>(match_disk_finalize)))
-#define match_disk_array_get(ma, i) ((match_disk_t *)array_get((ma), (i)))
-#define match_disk_array_new(n) (array_new_length(sizeof(match_disk_t), n, reinterpret_cast<void (*)(void *)>(match_disk_init)))
+#define match_disk_array_length(ma) ((ma).size())
 
-#define match_disk_array_length array_length
-
-#define match_disk_copy(m1, m2) (memcpy(m1, m2, sizeof(match_disk_t)))
+#define match_disk_copy(m1, m2) ((m1) = (m2))
 
 #define match_disk_hashes(m) (&(m)->hashes)
 #define match_disk_name(m) ((m)->name)
@@ -64,8 +64,6 @@ typedef array_t match_disk_array_t;
 #define match_disk_where(m) ((m)->where)
 
 
-void match_disk_finalize(match_disk_t *);
-void match_disk_init(match_disk_t *);
-void match_disk_set_source(match_disk_t *, const disk_t *);
+void match_disk_set_source(MatchDisk *, const Disk *);
 
 #endif /* match_disk.h */
