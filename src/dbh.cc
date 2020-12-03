@@ -169,13 +169,13 @@ dbh_open(const char *name, int mode) {
     }
 
     if (sqlite3_exec(dbh_db(db), PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
-	int save;
-	save = errno;
-	dbh_close(db);
-	errno = save;
-	return NULL;
+        int save;
+        save = errno;
+        dbh_close(db);
+        errno = save;
+        return NULL;
     }
-
+        
     if (needs_init) {
 	if (init_db(db) < 0) {
 	    int save;

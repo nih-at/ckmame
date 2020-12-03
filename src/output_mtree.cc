@@ -39,6 +39,7 @@
 
 #include "error.h"
 #include "output.h"
+#include "util.h"
 #include "xmalloc.h"
 
 
@@ -183,21 +184,7 @@ output_mtree_game(output_context_t *out, GamePtr game) {
 	free(filename);
 	output_cond_print_hash(ctx->f, " sha1=", Hashes::TYPE_SHA1, &rom.hashes, "");
         output_cond_print_hash(ctx->f, " md5=", Hashes::TYPE_MD5, &rom.hashes, "");
-        const char *fl;
-	switch (rom.status) {
-            case STATUS_BADDUMP:
-                fl = "baddump";
-                break;
-                
-            case STATUS_NODUMP:
-                fl = "nodump";
-                break;
-                
-            default:
-                fl = NULL;
-                break;
-        }
-	output_cond_print_string(ctx->f, " status=", fl, "");
+	output_cond_print_string(ctx->f, " status=", status_name(rom.status), "");
 	if (ctx->extended) {
 	    /* crc is not in the standard set supported on NetBSD */
 	    output_cond_print_hash(ctx->f, " crc=", Hashes::TYPE_CRC, &rom.hashes, "");
@@ -213,19 +200,7 @@ output_mtree_game(output_context_t *out, GamePtr game) {
 	free(filename);
 	output_cond_print_hash(ctx->f, " sha1=", Hashes::TYPE_SHA1, disk_hashes(d), "");
 	output_cond_print_hash(ctx->f, " md5=", Hashes::TYPE_MD5, disk_hashes(d), "");
-        const char *fl;
-	switch (disk_status(d)) {
-            case STATUS_BADDUMP:
-                fl = "baddump";
-                break;
-            case STATUS_NODUMP:
-                fl = "nodump";
-                break;
-            default:
-                fl = NULL;
-                break;
-        }
-        output_cond_print_string(ctx->f, " status=", fl, "");
+        output_cond_print_string(ctx->f, " status=", status_name(disk_status(d)), "");
 	fputs("\n", ctx->f);
     }
 

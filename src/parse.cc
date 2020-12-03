@@ -474,7 +474,7 @@ void
 parser_context_free(parser_context_t *ctx) {
     dat_entry_finalize(&ctx->de);
 
-    free(ctx);
+    delete ctx;
 }
 
 
@@ -482,7 +482,7 @@ parser_context_t *
 parser_context_new(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out, int flags) {
     parser_context_t *ctx;
 
-    ctx = (parser_context_t *)xmalloc(sizeof(*ctx));
+    ctx = new parser_context_t();
 
     dat_entry_merge(&ctx->dat_default, dat, NULL);
     ctx->output = out;
@@ -494,7 +494,6 @@ parser_context_new(parser_source_t *ps, const parray_t *exclude, const dat_entry
     ctx->ps = ps;
     ctx->lineno = 0;
     dat_entry_init(&ctx->de);
-    ctx->g = NULL;
     ctx->flags = 0;
 
     return ctx;
@@ -552,10 +551,22 @@ rom_end(parser_context_t *ctx, filetype_t ft) {
     size_t n = ctx->g->roms.size() - 1;
 
     if (rom->size == 0) {
-        auto &hashes = rom->hashes;
+        unsigned char zeroes[Hashes::MAX_SIZE];
+
+        memset(zeroes, 0, sizeof(zeroes));
         
-        auto hu = Hashes::Update(&hashes);
-        hu.end();
+        /* some dats don't record crc for 0-byte files, so set it here */
+        if (!rom->hashes.has_type(Hashes::TYPE_CRC)) {
+            rom->hashes.set(Hashes::TYPE_CRC, zeroes);
+        }
+        
+        /* some dats record all-zeroes md5 and sha1 for 0 byte files, fix */
+        if (rom->hashes.has_type(Hashes::TYPE_MD5) && rom->hashes.verify(Hashes::TYPE_MD5, zeroes)) {
+            rom->hashes.set(Hashes::TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
+        }
+        if (rom->hashes.has_type(Hashes::TYPE_SHA1) && rom->hashes.verify(Hashes::TYPE_SHA1, zeroes)) {
+            rom->hashes.set(Hashes::TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
+        }
     }
 
     /* omit duplicates */

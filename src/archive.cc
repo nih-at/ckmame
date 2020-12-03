@@ -69,7 +69,7 @@ int Archive::close() {
 int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
     auto &file_hashes = files[index].hashes;
 
-    if ((file_hashes.types & hashes->types) != hashes->types) {
+    if (!file_hashes.has_all_types(*hashes)) {
         file_compute_hashes(index, hashes->types | romdb_hashtypes(db, TYPE_ROM));
     }
 
@@ -85,7 +85,7 @@ bool Archive::file_compute_hashes(uint64_t idx, int hashtypes) {
     Hashes hashes;
     auto &file = files[idx];
 
-    if ((file.hashes.types & hashtypes) == hashtypes) {
+    if (file.hashes.has_all_types(hashtypes)) {
 	return true;
     }
 

@@ -195,8 +195,8 @@ find_in_old(const File *r, Archive *a, Match *m) {
 
 
 find_result_t
-find_in_romset(const File *r, Archive *a, const char *skip, Match *m) {
-    return find_in_db(db, r, a, skip, m, check_match_romset);
+find_in_romset(const File *file, Archive *archive, const char *skip, Match *m) {
+    return find_in_db(db, file, archive, skip, m, check_match_romset);
 }
 
 
@@ -216,6 +216,7 @@ check_for_file_in_zip(const char *name, const File *rom, const File *file, Match
     if (idx.has_value() && a->file_compare_hashes(idx.value(), &file->hashes) == Hashes::MATCH) {
         auto index = idx.value();
         File *af = &a->files[index];
+        
         if (!af->hashes.has_all_types(file->hashes)) {
             if (!a->file_compute_hashes(index, Hashes::TYPE_ALL)) { /* TODO: only needed hash types */
                 return FIND_MISSING;
@@ -317,15 +318,17 @@ find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Matc
     file_location_t *fbh;
     find_result_t status;
 
-    if ((a = romdb_read_file_by_hash(fdb, TYPE_ROM, &r->hashes)) == NULL)
+    if ((a = romdb_read_file_by_hash(fdb, TYPE_ROM, &r->hashes)) == NULL) {
 	return FIND_UNKNOWN;
+    }
 
     status = FIND_UNKNOWN;
     for (int i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < array_length(a); i++) {
 	fbh = static_cast<file_location_t *>(array_get(a, i));
 
-	if (skip && strcmp(file_location_name(fbh), skip) == 0)
+        if (skip && strcmp(file_location_name(fbh), skip) == 0) {
 	    continue;
+        }
 
         GamePtr game = romdb_read_game(fdb, file_location_name(fbh));
         if (!game || game->roms.size() <= static_cast<size_t>(file_location_index(fbh))) {
@@ -339,7 +342,7 @@ find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Matc
         if (r->size == game_rom.size && r->hashes.compare(game_rom.hashes) == Hashes::MATCH) {
 	    bool ok = true;
 
-            if (archive && !game_rom.hashes.has_all_types(r->hashes)) {
+            if (archive && !r->hashes.has_all_types(game_rom.hashes)) {
 		auto idx = archive->file_index(r);
                 if (idx.has_value()) {
                     if (!archive->file_compute_hashes(idx.value(), game_rom.hashes.types)) {

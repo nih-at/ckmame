@@ -141,7 +141,7 @@ handle_lost(output_context_db_t *ctx) {
     while (parray_length(ctx->lost_children) > 0) {
 	/* processing order does not matter and deleting last
 	   element is cheaper */
-	for (size_t i = parray_length(ctx->lost_children) - 1; i >= 0; --i) {
+	for (int i = parray_length(ctx->lost_children) - 1; i >= 0; --i) {
 	    /* get current lost child from database, get parent,
 	       look if parent is still lost, if not, do child */
             auto child = romdb_read_game(ctx->db, static_cast<const char *>(parray_get(ctx->lost_children, i)));

@@ -40,6 +40,7 @@
 
 #include "error.h"
 #include "output.h"
+#include "util.h"
 #include "xmalloc.h"
 
 
@@ -160,19 +161,7 @@ write_game(output_context_cm_t *ctx, Game *game) {
         output_cond_print_hash(ctx->f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
         output_cond_print_hash(ctx->f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
         output_cond_print_hash(ctx->f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
-        const char *fl = NULL;
-        switch (rom.status) {
-            case STATUS_OK:
-                fl = NULL;
-                break;
-            case STATUS_BADDUMP:
-                fl = "baddump";
-                break;
-            case STATUS_NODUMP:
-                fl = "nodump";
-                break;
-        }
-        output_cond_print_string(ctx->f, "flags ", fl, " ");
+        output_cond_print_string(ctx->f, "flags ", status_name(rom.status), " ");
         fputs(")\n", ctx->f);
     }
     /* TODO: disks */

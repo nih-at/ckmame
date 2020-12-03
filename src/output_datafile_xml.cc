@@ -41,6 +41,7 @@
 
 #include "error.h"
 #include "output.h"
+#include "util.h"
 #include "xmalloc.h"
 
 
@@ -162,20 +163,7 @@ output_datafile_xml_game(output_context_t *out, GamePtr game) {
             set_attribute(xmlRom, "merge", rom.merge.empty() ? rom.name : rom.merge);
         }
 
-        std::string fl;
-        switch (rom.status) {
-            case STATUS_BADDUMP:
-                fl = "baddump";
-                break;
-
-            case STATUS_NODUMP:
-                fl = "nodump";
-                break;
-                
-            default:
-                break;
-        }
-        set_attribute(xmlRom, "status", fl);
+        set_attribute(xmlRom, "status", status_name(rom.status));
     }
 
     for (size_t i = 0; i < game->disks.size(); i++) {
@@ -185,21 +173,7 @@ output_datafile_xml_game(output_context_t *out, GamePtr game) {
         set_attribute(disk, "name", disk_name(d));
         set_attribute_hash(disk, "sha1", Hashes::TYPE_SHA1, disk_hashes(d));
         set_attribute_hash(disk, "md5", Hashes::TYPE_MD5, disk_hashes(d));
-
-        std::string fl;
-        
-        switch (disk_status(d)) {
-	case STATUS_OK:
-	    fl = "";
-	    break;
-	case STATUS_BADDUMP:
-	    fl = "baddump";
-	    break;
-	case STATUS_NODUMP:
-	    fl = "nodump";
-	    break;
-	}
-        set_attribute(disk, "status", fl);
+        set_attribute(disk, "status", status_name(disk_status(d)));
     }
     
     return 0;

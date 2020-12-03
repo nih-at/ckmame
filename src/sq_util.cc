@@ -60,7 +60,7 @@ sq3_get_hashes(Hashes *hashes, sqlite3_stmt *stmt, int col) {
         hashes->set(Hashes::TYPE_MD5, sqlite3_column_blob(stmt, col + 1));
     }
     if (sqlite3_column_type(stmt, col + 2) != SQLITE_NULL) {
-        hashes->set(Hashes::TYPE_SHA1, sqlite3_column_blob(stmt, col + 1));
+        hashes->set(Hashes::TYPE_SHA1, sqlite3_column_blob(stmt, col + 2));
     }
 }
 
@@ -156,8 +156,10 @@ sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def) {
 
 int
 sq3_set_string(sqlite3_stmt *stmt, int i, const char *s) {
-    if (s)
+    if (s && s[0] != '\0') {
 	return sqlite3_bind_text(stmt, i, s, -1, SQLITE_STATIC);
-    else
+    }
+    else {
 	return sqlite3_bind_null(stmt, i);
+    }
 }

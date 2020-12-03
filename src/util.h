@@ -54,5 +54,6 @@ name_type_t name_type(const char *);
 void print_human_number(FILE *f, uint64_t value);
 int ptr_sort(void **, int, int, int (*)(const void *, const void *));
 int remove_file_and_containing_empty_dirs(const char *, const char *);
+std::string status_name(status_t status, bool verbose = false);
 
 #endif

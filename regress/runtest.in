@@ -54,7 +54,10 @@ sub check_ckmame_db {
 		for my $args (@{$test->{test}->{'ckmamedb-after'}}) {
 			if ($args->[0] eq $dir) {
 				my $dumpfile = $test->find_file($args->[1]);
-				return undef unless ($dumpfile);
+				unless ($dumpfile) {
+					print STDERR "can't find $dumpfile";
+					return undef;
+				}
 				
 				my $fh;
 				unless (open($fh, "< $dumpfile")) {
@@ -68,7 +71,7 @@ sub check_ckmame_db {
 		}
 	}
 	
-	my $db = new CkmameDB($dir, undef, $variant eq 'dir', $test->{test}->{'no-hashes'});
+	my $db = new CkmameDB($dir, undef, $variant eq 'dir', $test->{test}->{'no-hashes'}, $test->{verbose});
 	
 	if (!$db) {
 		print "opening $dir/.ckmame.db failed\n" if ($test->{verbose});
@@ -77,7 +80,10 @@ sub check_ckmame_db {
 
 	return undef unless ($db->read_db());
 	if (!defined($dump_expected)) {
-		return undef unless ($db->read_archives() && $db->make_dump());
+		unless ($db->read_archives() && $db->make_dump()) {
+			print STDERR "can't create archives dump\n";
+			return undef;
+		}
 		$dump_expected = $db->{dump_expected};
 	}
 	
@@ -107,12 +113,13 @@ sub checks {
 	    $checked{$name} = 1;
 	    
 	    if (!defined($ret)) {
-		$error = 1;
-		next;
+			print STDERR "can't check ckmame db for '$name': $!\n";
+			$error = 1;
+			next;
 	    }
 	    elsif ($ret != 1) {
-		$ok = 0;
-	    }
+			$ok = 0;
+		}
 	}
 	closedir $dir;
 
@@ -125,6 +132,7 @@ sub checks {
 		$checked{$name} = 1;
 		
 		if (!defined($ret)) {
+			print STDERR "can't check ckmame db for '$name': $!\n";
 		    return undef;
 		}
 		elsif ($ret != 1) {

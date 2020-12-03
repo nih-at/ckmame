@@ -87,8 +87,6 @@ struct option options[] = {
 
 static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 
-static const char *status_name[] = {"ok", "baddump", "nogooddump"};
-
 static void
 print_checksums(const Hashes *hashes) {
     for (size_t i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
@@ -103,7 +101,7 @@ static void
 print_diskline(disk_t *disk) {
     printf("\t\tdisk %-12s", disk->name);
     print_checksums(&disk->hashes);
-    printf(" status %s in %s", status_name[disk_status(disk)], where_name[disk_where(disk)]);
+    printf(" status %s in %s", status_name(disk_status(disk), true).c_str(), where_name[disk_where(disk)]);
     if (disk_merge(disk) && strcmp(disk_name(disk), disk_merge(disk)) != 0)
         printf(" (%s)", disk_merge(disk));
     putc('\n', stdout);
@@ -128,7 +126,7 @@ print_romline(File *rom) {
 	printf("unknown");
     }
     print_checksums(&rom->hashes);
-    printf(" status %s in %s", status_name[rom->status], where_name[rom->where]);
+    printf(" status %s in %s", status_name(rom->status, true).c_str(), where_name[rom->where]);
     if (!rom->merge.empty() && rom->name != rom->merge) {
 	printf(" (%s)", rom->merge.c_str());
     }

@@ -181,7 +181,7 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
 	switch (test) {
             case TEST_NAME_SIZE_CHECKSUM:
             case TEST_MERGENAME_SIZE_CHECKSUM:
-                if (test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : (rom->compare_merged(file) && rom->compare_size_crc(file))) {
+                if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file)) && rom->compare_size_crc(file)) {
                     if (rom->compare_hashes(file) != Hashes::MATCH) {
                         if (match_quality(match) == QU_HASHERR) {
                             break;
