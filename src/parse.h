@@ -55,17 +55,11 @@ typedef enum parser_state parser_state_t;
 
 class ParserContext {
 public:
-    static bool parse(const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output, int flags);
+    static bool parse(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output, int flags);
 
-private:
-    ParserContext(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags);
-    ~ParserContext();
-    
-    bool parse_cm();
-    bool parse_dir();
-    bool parse_rc();
-    bool parse_xml();
-    
+    /* TODO: move out of context */
+    size_t lineno; /* current line number in input file */
+
     // callbacks
     bool eof();
     bool file_continue(filetype_t ft);
@@ -87,6 +81,16 @@ private:
     bool prog_header(const std::string attr);
     bool prog_name(const std::string &attr);
     bool prog_version(const std::string &attr);
+
+private:
+    ParserContext(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags);
+    ~ParserContext();
+    
+    bool parse_cm();
+    bool parse_dir();
+    bool parse_rc();
+    bool parse_xml();
+    
     
     bool header_end();
     void disk_end();
@@ -103,8 +107,6 @@ private:
 
     /* current source */
     ParserSourcePtr ps;
-    /* TODO: move out of context */
-    int lineno; /* current line number in input file */
 
     /* state */
     int flags;

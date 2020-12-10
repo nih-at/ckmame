@@ -60,24 +60,24 @@
 
 
 bool ParserContext::parse(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *out, int flags) {
-    ParserContext ctx(ps, exclude, dat, out, flags);
+    ParserContext ctx(source, exclude, dat, out, flags);
 
     bool ok;
-    auto c = ps->peek();
+    auto c = source->peek();
 
     switch (c) {
         case '<':
-            ok = parse_xml();
+            ok = ctx.parse_xml();
             break;
         case '[':
-            ok = parse_rc();
+            ok = ctx.parse_rc();
             break;
         default:
-            ok = parse_cm();
+            ok = ctx.parse_cm();
     }
 
     if (ok) {
-        if (!eof()) {
+        if (!ctx.eof()) {
             ok = false;
 	}
     }
@@ -426,7 +426,7 @@ ParserContext::~ParserContext() {
 }
 
 
-ParserContext::ParserContext(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags) : ignore(exclude), output(output_), ps(source), lineno(0), flags(0), state(PARSE_IN_HEADER), r(NULL), d(NULL) {
+ParserContext::ParserContext(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER), r(NULL), d(NULL) {
     dat_entry_merge(&dat_default, dat, NULL);
     full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
     dat_entry_init(&de);

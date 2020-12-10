@@ -98,7 +98,7 @@ static const int nentities = sizeof(entities) / sizeof(entities[0]);
 
 
 detector_t *
-detector_parse_ps(parser_source_t *ps) {
+detector_parse_ps(ParserSource *ps) {
     struct ctx ctx;
 
     ctx.d = detector_new();
