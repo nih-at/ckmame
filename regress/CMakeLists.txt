@@ -162,6 +162,7 @@ set(EXTRA_TESTS
   mkmamedb-parent-crcdiff-mame.test
   mkmamedb-parent-crcdiff.test
   mkmamedb-parent-no-common.test
+  mkmamedb-rc-ok.test
   mkmamedb-size-hex.test
   multi.test
   needed-cleanup.test
