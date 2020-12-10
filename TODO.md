@@ -18,7 +18,15 @@
 
 - bug: CM game parser does not error out on repeated 'game' name or opening '('
 
-- C++ cleanups: remove array, parray, xstrdup
+- C++ cleanups:
+  - remove array
+  - remove parray
+  - remove xstrdup
+  - move lineno into ParserSource
+  - add tests for all tokens in all parser backends:
+    - cm
+    - rc
+    - xml
 
 # Later
 
