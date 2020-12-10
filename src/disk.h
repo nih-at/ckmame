@@ -38,6 +38,8 @@
 #include "hashes.h"
 #include "types.h"
 
+#include <memory>
+
 class Disk;
 
 typedef std::shared_ptr<Disk> DiskPtr;
