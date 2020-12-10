@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!-- This is an automatically generated file.  Do not edit.
-   Copyright (c) 2005-2014 Dieter Baron and Thomas Klausner.
+   Copyright (c) 2005-2020 Dieter Baron and Thomas Klausner.
    All rights reserved.
   
    Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@
 <table class="Nm">
   <tr>
     <td><code class="Nm">mkmamedb</code></td>
-    <td>[<code class="Fl">-huV</code>] [<code class="Fl">-C</code>
+    <td>[<code class="Fl">-hutV</code>] [<code class="Fl">-C</code>
       <var class="Ar">hashtypes</var>] [<code class="Fl">-F</code>
       <var class="Ar">outputformat</var>] [<code class="Fl">-o</code>
       <var class="Ar">dbfile</var>] [<code class="Fl">-x</code>
@@ -177,6 +177,12 @@ Supported output formats are:
     <var class="Ar">pattern</var></dt>
   <dd>When reading files from the file system as input, skip files matching the
       shell glob</dd>
+  <dt><a class="permalink" href="#t"><code class="Fl" id="t">-t</code></a>,
+    <code class="Fl">-</code><code class="Fl">-use-temp-directory</code></dt>
+  <dd>Create the output in a temporary directory and move it to the real output
+      when finished. This might speed up the creation e.g. of
+      <span class="Pa">mame.db</span> when your current working directory is on
+      a slow file system.</dd>
   <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a>,
     <code class="Fl">-</code><code class="Fl">-roms-unzipped</code></dt>
   <dd>ROMs are files on the disk. Each game is represented by a directory
@@ -229,7 +235,7 @@ Get an input file for <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9
 </div>
 <table class="foot">
   <tr>
-    <td class="foot-date">March 14, 2014</td>
+    <td class="foot-date">October 3, 2020</td>
     <td class="foot-os">NiH</td>
   </tr>
 </table>
