@@ -42,12 +42,12 @@
 #include "xmlutil.h"
 
 
-static int parse_xml_prog_header(parser_context_t *, filetype_t, int, const char *);
-static int parse_xml_loadflag(parser_context_t *, filetype_t, int, const char *);
-static int parse_xml_mame_build(parser_context_t *, filetype_t, int, const char *);
-static int parse_xml_softwarelist(parser_context_t *, filetype_t, int, const char *);
+static int parse_xml_prog_header(ParserContext *, filetype_t, int, const char *);
+static int parse_xml_loadflag(ParserContext *, filetype_t, int, const char *);
+static int parse_xml_mame_build(ParserContext *, filetype_t, int, const char *);
+static int parse_xml_softwarelist(ParserContext *, filetype_t, int, const char *);
 
-static void parse_xml_lineno_cb(parser_context_t *, int);
+static void parse_xml_lineno_cb(ParserContext *, int);
 
 #define XA(f) ((xmlu_attr_cb)f)
 #define XC(f) ((xmlu_tag_cb)f)
@@ -74,25 +74,25 @@ static const int nentities = sizeof(entities) / sizeof(entities[0]);
 
 
 int
-parse_xml(parser_source_t *ps, parser_context_t *ctx) {
+parse_xml(parser_source_t *ps, ParserContext *ctx) {
     return xmlu_parse(ps, ctx, (xmlu_lineno_cb)parse_xml_lineno_cb, entities, nentities);
 }
 
 
 static void
-parse_xml_lineno_cb(parser_context_t *ctx, int lineno) {
+parse_xml_lineno_cb(ParserContext *ctx, int lineno) {
     ctx->lineno = lineno;
 }
 
 
 static int
-parse_xml_prog_header(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
+parse_xml_prog_header(ParserContext *ctx, filetype_t ft, int ht, const char *attr) {
     return parse_prog_header(ctx, attr, 0);
 }
 
 
 static int
-parse_xml_loadflag(parser_context_t *ctx, filetype_t ft, int ht, const char *value) {
+parse_xml_loadflag(ParserContext *ctx, filetype_t ft, int ht, const char *value) {
     if ((strcmp(value, "continue") == 0) || (strcmp(value, "ignore") == 0))
 	return parse_file_continue(ctx, ft, ht, NULL);
     else if (strcmp(value, "reload") == 0 || strcmp(value, "reload_plain") == 0 || strcmp(value, "fill") == 0)
@@ -102,7 +102,7 @@ parse_xml_loadflag(parser_context_t *ctx, filetype_t ft, int ht, const char *val
 }
 
 static int
-parse_xml_mame_build(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
+parse_xml_mame_build(ParserContext *ctx, filetype_t ft, int ht, const char *attr) {
     int err;
     char *s, *p;
 
@@ -118,7 +118,7 @@ parse_xml_mame_build(parser_context_t *ctx, filetype_t ft, int ht, const char *a
 }
 
 static int
-parse_xml_softwarelist(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
+parse_xml_softwarelist(ParserContext *ctx, filetype_t ft, int ht, const char *attr) {
     /* sadly, no version information */
     return parse_prog_name(ctx, attr);
 }

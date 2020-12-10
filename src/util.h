@@ -49,7 +49,7 @@ std::string bin2hex(const uint8_t *data, size_t length);
 int hex2bin(unsigned char *, const char *, size_t);
 int is_writable_directory(const char *);
 const char *mybasename(const char *);
-char *mydirname(const char *);
+std::string mydirname(const std::string &filename);
 name_type_t name_type(const char *);
 void print_human_number(FILE *f, uint64_t value);
 int ptr_sort(void **, int, int, int (*)(const void *, const void *));

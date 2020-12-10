@@ -49,8 +49,8 @@ check_images(Images *im, const char *gamename, Result *res) {
 	return;
     }
 
-    for (i = 0; i < images_length(im); i++) {
-	auto disk = images_get(im, i);
+    for (i = 0; i < im->disks.size(); i++) {
+        auto disk = im->disks[i];
 
 	if (disk == NULL) {
 	    result_image(res, i) = FS_MISSING;

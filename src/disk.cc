@@ -34,6 +34,32 @@
 
 #include "disk.h"
 
+uint64_t Disk::next_id;
+std::unordered_map<std::string, std::weak_ptr<Disk>> Disk::disk_by_name;
+std::unordered_map<uint64_t, DiskPtr> Disk::disk_by_id;
+
+
+DiskPtr Disk::by_id(uint64_t id) {
+    auto it = disk_by_id.find(id);
+    
+    if (it == disk_by_id.end()) {
+        return NULL;
+    }
+    return it->second;
+}
+
+
+DiskPtr Disk::by_name(const std::string &name) {
+    auto it = disk_by_name.find(name);
+    
+    if (it == disk_by_name.end()) {
+        return NULL;
+    }
+    
+    return it->second.lock();
+}
+
+
 bool Disk::compare_merge(const Disk &other) const {
     return merged_name() == other.name;
 }

@@ -48,30 +48,30 @@ check_disks(Game *game, Images *im[], Result *res) {
     }
     
     for (size_t i = 0; i < game->disks.size(); i++) {
-        auto md = &res->disks[i];
+        auto &match_disk = res->disks[i];
         auto &disk = game->disks[i];
 
-        if (match_disk_quality(md) == QU_OLD) {
+        if (match_disk.quality == QU_OLD) {
 	    continue;
         }
 
         int j = images_find(im[disk.where], disk.merged_name().c_str());
 
         if (j != -1) {
-            auto expected_image = images_get(im[disk.where], j);
-            match_disk_where(md) = disk.where;
-	    match_disk_set_source(md, expected_image.get());
+            auto expected_image = im[disk.where]->disks[j];
+            match_disk.where = disk.where;
+	    match_disk.set_source(expected_image.get());
 
             switch (disk.hashes.compare(*disk_hashes(expected_image))) {
                 case Hashes::MATCH:
-                    match_disk_quality(md) = QU_OK;
+                    match_disk.quality = QU_OK;
                     if (disk.where == FILE_INGAME) {
                         result_image(res, j) = FS_USED;
                     }
                     break;
                     
                 case Hashes::MISMATCH:
-                    match_disk_quality(md) = QU_HASHERR;
+                    match_disk.quality = QU_HASHERR;
                     break;
                 
                 default:
@@ -84,31 +84,31 @@ check_disks(Game *game, Images *im[], Result *res) {
 	    continue;
 	}
 
-	if (match_disk_quality(md) != QU_OK && im[0] != NULL) {
-            for (auto k = 0; k < images_length(im[0]); k++) {
-                auto image = images_get(im[0], k);
+	if (match_disk.quality != QU_OK && im[0] != NULL) {
+            for (auto k = 0; k < im[0]->disks.size(); k++) {
+                auto image = im[0]->disks[k];
                 
                 if (disk.hashes.compare(*disk_hashes(image)) == Hashes::MATCH) {
-                    match_disk_where(md) = FILE_INGAME;
-                    match_disk_set_source(md, image.get());
-                    match_disk_quality(md) = QU_NAMEERR;
+                    match_disk.where = FILE_INGAME;
+                    match_disk.set_source(image.get());
+                    match_disk.quality = QU_NAMEERR;
                     result_image(res, k) = FS_USED;
                 }
             }
         }
 
-	if (match_disk_quality(md) != QU_OK && match_disk_quality(md) != QU_OLD) {
+	if (match_disk.quality != QU_OK && match_disk.quality != QU_OLD) {
             MatchDisk disk_match;
             
             if (find_disk_in_romset(&disk, game->name.c_str(), &disk_match) == FIND_EXISTS) {
-                match_disk_copy(md, &disk_match);
-                match_disk_where(md) = FILE_ROMSET;
+                match_disk = disk_match;
+                match_disk.where = FILE_ROMSET;
                 continue;
             }
 	    /* search in needed, superfluous and extra dirs */
 	    ensure_extra_maps(DO_MAP);
 	    ensure_needed_maps();
-	    if (find_disk(&disk, md) == FIND_EXISTS)
+	    if (find_disk(&disk, &match_disk) == FIND_EXISTS)
 		continue;
 	}
     }

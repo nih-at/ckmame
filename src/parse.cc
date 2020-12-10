@@ -50,218 +50,189 @@
 #include "util.h"
 #include "xmalloc.h"
 
-#define CHECK_STATE(ctx, s)                                        \
+#define CHECK_STATE(s)                                        \
     do {                                                           \
-	if ((ctx)->state != (s)) {                                 \
-	    myerror(ERRFILE, "%d: in wrong state", (ctx)->lineno); \
-	    return -1;                                             \
+	if (state != (s)) {                                 \
+	    myerror(ERRFILE, "%d: in wrong state", lineno); \
+	    return false;                                             \
 	}                                                          \
     } while (0)
 
-#define SET_STATE(ctx, s) ((ctx)->state = (s))
 
+bool ParserContext::parse(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *out, int flags) {
+    ParserContext ctx(ps, exclude, dat, out, flags);
 
-static int parse_header_end(parser_context_t *);
-
-static void disk_end(parser_context_t *);
-static void rom_end(parser_context_t *, filetype_t);
-
-
-int
-parse(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out, int flags) {
-    parser_context_t *ctx;
-    int c, ret;
-
-    ctx = parser_context_new(ps, exclude, dat, out, flags);
-
-    c = ps_peek(ps);
+    bool ok;
+    auto c = ps->peek();
 
     switch (c) {
-#if defined(HAVE_LIBXML2)
-    case '<':
-	ret = parse_xml(ps, ctx);
-	break;
-#endif
-    case '[':
-	ret = parse_rc(ps, ctx);
-	break;
-    default:
-	ret = parse_cm(ps, ctx);
+        case '<':
+            ok = parse_xml();
+            break;
+        case '[':
+            ok = parse_rc();
+            break;
+        default:
+            ok = parse_cm();
     }
 
-    if (ret == 0) {
-	if (parse_eof(ctx) < 0) {
-	    ret = -1;
-	}
-    }
-    parser_context_free(ctx);
-
-    return ret;
-}
-
-
-int
-parse_eof(parser_context_t *ctx) {
-    if (ctx->state == PARSE_IN_HEADER) {
-	if (parse_header_end(ctx) < 0) {
-	    return -1;
+    if (ok) {
+        if (!eof()) {
+            ok = false;
 	}
     }
 
-    return 0;
+    return ok;
 }
 
 
-/*ARGSUSED3*/
-/*ARGSUSED4*/
-int
-parse_file_continue(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_FILE);
+bool ParserContext::eof() {
+    if (state == PARSE_IN_HEADER) {
+        return header_end();
+    }
+
+    return true;
+}
+
+
+bool ParserContext::file_continue(filetype_t ft) {
+    CHECK_STATE(PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
-	myerror(ERRFILE, "%d: file continuation only supported for ROMs", ctx->lineno);
-	return -1;
+	myerror(ERRFILE, "%d: file continuation only supported for ROMs", lineno);
+	return false;
     }
 
-    if (ctx->flags & PARSE_FL_ROM_DELETED) {
-	myerror(ERRFILE, "%d: internal error: trying to continue deleted file", ctx->lineno);
-	return -1;
+    if (flags & PARSE_FL_ROM_DELETED) {
+        myerror(ERRFILE, "%d: internal error: trying to continue deleted file", lineno);
+	return false;
     }
 
-    ctx->flags |= PARSE_FL_ROM_CONTINUED;
+    flags |= PARSE_FL_ROM_CONTINUED;
 
-    return 0;
+    return true;
 }
 
 
-int
-parse_file_end(parser_context_t *ctx, filetype_t ft) {
-    CHECK_STATE(ctx, PARSE_IN_FILE);
+bool ParserContext::file_end(filetype_t ft) {
+    CHECK_STATE(PARSE_IN_FILE);
 
-    if (ft == TYPE_DISK)
-	disk_end(ctx);
-    else
-	rom_end(ctx, ft);
-
-    SET_STATE(ctx, PARSE_IN_GAME);
-
-    return 0;
-}
-
-
-/*ARGSUSED3*/
-int
-parse_file_status_(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    status_t status;
-
-    CHECK_STATE(ctx, PARSE_IN_FILE);
-
-    if (strcmp(attr, "good") == 0) {
-	status = STATUS_OK;
-    }
-    else if (strcmp(attr, "verified") == 0) {
-	status = STATUS_OK;
-    }
-    else if (strcmp(attr, "baddump") == 0) {
-	status = STATUS_BADDUMP;
-    }
-    else if (strcmp(attr, "nodump") == 0) {
-	status = STATUS_NODUMP;
+    if (ft == TYPE_DISK) {
+        disk_end();
     }
     else {
-	myerror(ERRFILE, "%d: illegal status '%s'", ctx->lineno, attr);
-	return -1;
+	rom_end(ft);
+    }
+
+    state = PARSE_IN_GAME;
+
+    return 0;
+}
+
+
+bool ParserContext::file_status(filetype_t ft, const std::string &attr) {
+    status_t status;
+
+    CHECK_STATE(PARSE_IN_FILE);
+
+    if (attr == "good") {
+	status = STATUS_OK;
+    }
+    else if (attr == "verified") {
+        status = STATUS_OK;
+    }
+    else if (attr == "baddump") {
+        status = STATUS_BADDUMP;
+    }
+    else if (attr == "nodump") {
+        status = STATUS_NODUMP;
+    }
+    else {
+        myerror(ERRFILE, "%d: illegal status '%s'", lineno, attr.c_str());
+	return false;
     }
  
     if (ft == TYPE_DISK) {
-	disk_status(ctx->d) = status;
+        d->status = status;
     }
     else {
-	ctx->r->status = status;
+        r->status = status;
     }
 
-    return 0;
+    return true;
 }
 
 
-int
-parse_file_hash(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
+bool ParserContext::file_hash(filetype_t ft, int ht, const std::string &attr) {
     Hashes *h;
 
-    CHECK_STATE(ctx, PARSE_IN_FILE);
+    CHECK_STATE(PARSE_IN_FILE);
 
-    if (strcmp(attr, "-") == 0) {
+    if (attr == "-") {
 	/* some dat files record crc - for 0-byte files, so skip it */
 	return 0;
     }
 
     if (ft == TYPE_DISK) {
-	h = disk_hashes(ctx->d);
+        h = &d->hashes;
     }
     else {
-        h = &ctx->r->hashes;
+        h = &r->hashes;
     }
 
     if (h->set_from_string(attr) != ht) {
-	myerror(ERRFILE, "%d: invalid argument for %s", ctx->lineno, Hashes::type_name(ht).c_str());
-	return -1;
+	myerror(ERRFILE, "%d: invalid argument for %s", lineno, Hashes::type_name(ht).c_str());
+	return false;
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED3*/
-/*ARGSUSED4*/
-int
-parse_file_ignore(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_FILE);
+bool ParserContext::file_ignore(filetype_t ft) {
+    CHECK_STATE(PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
-	myerror(ERRFILE, "%d: file ignoring only supported for ROMs", ctx->lineno);
-	return -1;
+        myerror(ERRFILE, "%d: file ignoring only supported for ROMs", lineno);
+	return false;
     }
 
-    ctx->flags |= PARSE_FL_ROM_IGNORE;
+    flags |= PARSE_FL_ROM_IGNORE;
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED3*/
-int
-parse_file_merge(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_FILE);
+bool ParserContext::file_merge(filetype_t ft, const std::string &attr) {
+    CHECK_STATE(PARSE_IN_FILE);
 
     if (ft == TYPE_DISK) {
-        disk_merge(ctx->d) = xstrdup(attr);
+        d->merge = attr;
     }
     else {
-	ctx->r->merge = attr;
+        r->merge = attr;
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED3*/
-int
-parse_file_mtime(parser_context_t *ctx, filetype_t ft, int ht, time_t mtime) {
+bool ParserContext::file_mtime(filetype_t ft, time_t mtime) {
+    CHECK_STATE(PARSE_IN_FILE);
+
     if (ft == TYPE_ROM) {
-        ctx->r->mtime = mtime;
+        r->mtime = mtime;
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED3*/
-int
-parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_FILE);
+bool ParserContext::file_name(filetype_t ft, const std::string &attr) {
+    CHECK_STATE(PARSE_IN_FILE);
 
     if (ft == TYPE_DISK) {
-	disk_name(ctx->d) = xstrdup(attr);
+        d->name = attr;
     }
     else {
         auto name = std::string(attr);
@@ -269,352 +240,306 @@ parse_file_name(parser_context_t *ctx, filetype_t ft, int dummy, const char *att
         /* TODO: warn about broken dat file? */
         std::replace(name.begin(), name.end(), '\\', '/');
         
-        ctx->r->name = name;
+        r->name = name;
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED3*/
-int
-parse_file_size_(parser_context_t *ctx, filetype_t ft, int dummy, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_FILE);
+bool ParserContext::file_size(filetype_t ft, const std::string &attr) {
+    CHECK_STATE(PARSE_IN_FILE);
 
     if (ft == TYPE_DISK) {
-	myerror(ERRFILE, "%d: unknown attribute `size' for disk", ctx->lineno);
-	return -1;
+	myerror(ERRFILE, "%d: unknown attribute `size' for disk", lineno);
+	return false;
     }
 
     /* TODO: check for strol errors */
-    ctx->r->size = strtol(attr, NULL, 0);
+    r->size = strtol(attr.c_str(), NULL, 0);
 
-    return 0;
+    return true;
 }
 
 
-int
-parse_file_start(parser_context_t *ctx, filetype_t ft) {
-    CHECK_STATE(ctx, PARSE_IN_GAME);
+bool ParserContext::file_start(filetype_t ft) {
+    CHECK_STATE(PARSE_IN_GAME);
 
     if (ft == TYPE_DISK) {
-        ctx->g->disks.push_back(Disk());
-        ctx->d = &ctx->g->disks[ctx->g->disks.size() - 1];
+        g->disks.push_back(Disk());
+        d = &g->disks[g->disks.size() - 1];
     }
     else {
-        ctx->g->roms.push_back(File());
-        ctx->r = &ctx->g->roms[ctx->g->roms.size() - 1];
+        g->roms.push_back(File());
+        r = &g->roms[g->roms.size() - 1];
     }
 
-    SET_STATE(ctx, PARSE_IN_FILE);
+    state = PARSE_IN_FILE;
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED3*/
-int
-parse_game_cloneof(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_GAME);
+bool ParserContext::game_cloneof(filetype_t ft, const std::string &attr) {
+    CHECK_STATE(PARSE_IN_GAME);
 
-    ctx->g->cloneof[0] = attr;
+    g->cloneof[0] = attr;
 
-    return 0;
+    return true;
 }
 
 
-int
-parse_game_description(parser_context_t *ctx, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_GAME);
+bool ParserContext::game_description(const std::string &attr) {
+    CHECK_STATE(PARSE_IN_GAME);
 
-    ctx->g->description = attr;
+    g->description = attr;
 
-    return 0;
+    return true;
 }
 
-
-/*ARGSUSED2*/
-int
-parse_game_end(parser_context_t *ctx, filetype_t ft) {
-    CHECK_STATE(ctx, PARSE_IN_GAME);
+bool ParserContext::game_end() {
+    CHECK_STATE(PARSE_IN_GAME);
     
-    int ret = 0;
+    auto ok = true;
     
-    if (!name_matches(ctx->g->name.c_str(), ctx->ignore)) {
-        Game *game = ctx->g.get();
-
+    if (ignore_game(g->name)) {
 	/* omit description if same as name (to save space) */
-        if (game->name == game->description) {
-            game->description = "";
+        if (g->name == g->description) {
+            g->description = "";
 	}
 
-        if (!game->cloneof[0].empty()) {
-	    if (game->cloneof[0] == game->name) {
-                game->cloneof[0] = "";
+        if (!g->cloneof[0].empty()) {
+	    if (g->cloneof[0] == g->name) {
+                g->cloneof[0] = "";
 	    }
 	}
 
-	ret = output_game(ctx->output, ctx->g);
-	if (ret == 1) {
-	    ret = 0;
-	}
+        ok = output_game(output, g) >= 0;
     }
 
-    ctx->g = NULL;
+    g = NULL;
 
-    SET_STATE(ctx, PARSE_OUTSIDE);
+    state = PARSE_OUTSIDE;
 
-    return ret;
+    return ok;
 }
 
 
-/*ARGSUSED3*/
-int
-parse_game_name(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    ctx->g->name = attr;
+bool ParserContext::game_name(const std::string &attr) {
+    CHECK_STATE(PARSE_IN_GAME);
 
-    if (!ctx->full_archive_name) {
+    g->name = attr;
+
+    if (!full_archive_name) {
 	/* slashes are directory separators on some systems, and at least
 	 * one redump dat contained a slash in a rom name */
-        std::replace(ctx->g->name.begin(), ctx->g->name.end(), '/', '-');
+        std::replace(g->name.begin(), g->name.end(), '/', '-');
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED2*/
-int
-parse_game_start(parser_context_t *ctx, filetype_t ft) {
-    if (ctx->state == PARSE_IN_HEADER) {
-	if (parse_header_end(ctx) < 0) {
-	    return -1;
+bool ParserContext::game_start() {
+    if (state == PARSE_IN_HEADER) {
+        if (!header_end()) {
+            return false;
 	}
     }
 
-    CHECK_STATE(ctx, PARSE_OUTSIDE);
+    CHECK_STATE(PARSE_OUTSIDE);
 
-    if (ctx->g) {
-	myerror(ERRFILE, "%d: game inside game", ctx->lineno);
-	return -1;
+    if (g) {
+	myerror(ERRFILE, "%d: game inside game", lineno);
+	return false;
     }
 
-    ctx->g = std::make_shared<Game>();
+    g = std::make_shared<Game>();
 
-    SET_STATE(ctx, PARSE_IN_GAME);
+    state = PARSE_IN_GAME;
+
+    return true;
+}
+
+
+bool ParserContext::prog_description(const std::string &attr) {
+    CHECK_STATE(PARSE_IN_HEADER);
+
+    dat_entry_description(&de) = xstrdup(attr.c_str());
 
     return 0;
 }
 
 
-int
-parse_prog_description(parser_context_t *ctx, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_HEADER);
-
-    dat_entry_description(&ctx->de) = xstrdup(attr);
-
-    return 0;
-}
-
-
-/* ARGSUSED3 */
-int
-parse_prog_header(parser_context_t *ctx, const char *name, int dummy) {
-    parser_source_t *ps;
-    int ret;
-
-    CHECK_STATE(ctx, PARSE_IN_HEADER);
+bool ParserContext::prog_header(const std::string attr) {
+    CHECK_STATE(PARSE_IN_HEADER);
 
     if (detector != 0) {
-	myerror(ERRFILE, "%d: warning: detector already defined, header '%s' ignored", ctx->lineno, name);
-	return 0;
+	myerror(ERRFILE, "%d: warning: detector already defined, header '%s' ignored", lineno, attr.c_str());
+	return true;
     }
 
-    if ((ps = ps_open(ctx->ps, name)) == NULL) {
-	myerror(ERRFILESTR, "%d: cannot open detector '%s'", ctx->lineno, name);
-	return -1;
+    auto ok = true;
+    
+    ParserSourcePtr dps = ps->open(attr);
+    if (!dps) {
+        myerror(ERRFILESTR, "%d: cannot open detector '%s'", lineno, attr.c_str());
+	return false;
     }
 #if defined(HAVE_LIBXML2)
-    if ((detector = detector_parse_ps(ps)) == NULL) {
-	myerror(ERRFILESTR, "%d: cannot parse detector '%s'", ctx->lineno, name);
-	ret = -1;
+    if ((detector = detector_parse_ps(dps.get())) == NULL) {
+	myerror(ERRFILESTR, "%d: cannot parse detector '%s'", lineno, attr.c_str());
+        ok = false;
     }
     else
 #endif
-	ret = output_detector(ctx->output, detector);
+    {
+        if (output_detector(output, detector) < 0) {
+            ok = false;
+        }
+    }
 
-    ps_close(ps);
-
-    return ret;
+    return ok;
 }
 
 
-int
-parse_prog_name(parser_context_t *ctx, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_HEADER);
+bool ParserContext::prog_name(const std::string &attr) {
+    CHECK_STATE(PARSE_IN_HEADER);
 
-    dat_entry_name(&ctx->de) = xstrdup(attr);
+    dat_entry_name(&de) = xstrdup(attr.c_str());
 
-    return 0;
+    return true;
 }
 
 
-int
-parse_prog_version(parser_context_t *ctx, const char *attr) {
-    CHECK_STATE(ctx, PARSE_IN_HEADER);
+bool ParserContext::prog_version(const std::string &attr) {
+    CHECK_STATE(PARSE_IN_HEADER);
 
-    dat_entry_version(&ctx->de) = xstrdup(attr);
+    dat_entry_version(&de) = xstrdup(attr.c_str());
 
-    return 0;
+    return true;
 }
 
 
-void
-parser_context_free(parser_context_t *ctx) {
-    dat_entry_finalize(&ctx->de);
-
-    delete ctx;
+ParserContext::~ParserContext() {
+    dat_entry_finalize(&de);
 }
 
 
-parser_context_t *
-parser_context_new(parser_source_t *ps, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out, int flags) {
-    parser_context_t *ctx;
-
-    ctx = new parser_context_t();
-
-    dat_entry_merge(&ctx->dat_default, dat, NULL);
-    ctx->output = out;
-    ctx->ignore = exclude;
-    ctx->full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
-
-    ctx->state = PARSE_IN_HEADER;
-
-    ctx->ps = ps;
-    ctx->lineno = 0;
-    dat_entry_init(&ctx->de);
-    ctx->flags = 0;
-
-    return ctx;
+ParserContext::ParserContext(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags) : ignore(exclude), output(output_), ps(source), lineno(0), flags(0), state(PARSE_IN_HEADER), r(NULL), d(NULL) {
+    dat_entry_merge(&dat_default, dat, NULL);
+    full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
+    dat_entry_init(&de);
 }
 
 
-static int
-parse_header_end(parser_context_t *ctx) {
+bool ParserContext::header_end() {
     dat_entry_t de;
 
-    CHECK_STATE(ctx, PARSE_IN_HEADER);
+    CHECK_STATE(PARSE_IN_HEADER);
 
-    dat_entry_merge(&de, &ctx->dat_default, &ctx->de);
-    output_header(ctx->output, &de);
+    dat_entry_merge(&de, &dat_default, &de);
+    output_header(output, &de);
     dat_entry_finalize(&de);
 
-    SET_STATE(ctx, PARSE_OUTSIDE);
+    state = PARSE_OUTSIDE;
 
-    return 0;
+    return true;
 }
 
 
-static void
-disk_end(parser_context_t *ctx) {
-    if (disk_hashes(ctx->d)->empty()) {
-	disk_status(ctx->d) = STATUS_NODUMP;
+void ParserContext::disk_end() {
+    if (d->hashes.empty()) {
+        d->status = STATUS_NODUMP;
     }
 
-    if (!ctx->d->merge.empty() && ctx->d->name == ctx->d->merge) {
-        ctx->d->merge = "";
+    if (d->name == d->merge) {
+        d->merge = "";
     }
 }
 
 
-int
-name_matches(const char *name, const parray_t *patterns) {
-    int i;
-
-    if (patterns == NULL)
-	return 0;
-
-    for (i = 0; i < parray_length(patterns); i++) {
-	if (fnmatch(static_cast<const char *>(parray_get(patterns, i)), name, 0) == 0)
-	    return 1;
+bool ParserContext::ignore_game(const std::string &name) {
+    for (auto &pattern : ignore) {
+        if (fnmatch(pattern.c_str(), name.c_str(), 0) == 0) {
+	    return true;
+        }
     }
 
-    return 0;
+    return false;
 }
 
 
-static void
-rom_end(parser_context_t *ctx, filetype_t ft) {
-    auto rom = ctx->r;
-    size_t n = ctx->g->roms.size() - 1;
+void ParserContext::rom_end(filetype_t) {
+    size_t n = g->roms.size() - 1;
 
-    if (rom->size == 0) {
+    if (r->size == 0) {
         unsigned char zeroes[Hashes::MAX_SIZE];
 
         memset(zeroes, 0, sizeof(zeroes));
         
         /* some dats don't record crc for 0-byte files, so set it here */
-        if (!rom->hashes.has_type(Hashes::TYPE_CRC)) {
-            rom->hashes.set(Hashes::TYPE_CRC, zeroes);
+        if (!r->hashes.has_type(Hashes::TYPE_CRC)) {
+            r->hashes.set(Hashes::TYPE_CRC, zeroes);
         }
         
         /* some dats record all-zeroes md5 and sha1 for 0 byte files, fix */
-        if (rom->hashes.has_type(Hashes::TYPE_MD5) && rom->hashes.verify(Hashes::TYPE_MD5, zeroes)) {
-            rom->hashes.set(Hashes::TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
+        if (r->hashes.has_type(Hashes::TYPE_MD5) && r->hashes.verify(Hashes::TYPE_MD5, zeroes)) {
+            r->hashes.set(Hashes::TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
         }
-        if (rom->hashes.has_type(Hashes::TYPE_SHA1) && rom->hashes.verify(Hashes::TYPE_SHA1, zeroes)) {
-            rom->hashes.set(Hashes::TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
+        if (r->hashes.has_type(Hashes::TYPE_SHA1) && r->hashes.verify(Hashes::TYPE_SHA1, zeroes)) {
+            r->hashes.set(Hashes::TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
         }
     }
 
     /* omit duplicates */
     auto deleted = false;
 
-    if (ctx->flags & PARSE_FL_ROM_IGNORE) {
+    if (flags & PARSE_FL_ROM_IGNORE) {
         deleted = true;
     }
-    else if (ctx->flags & PARSE_FL_ROM_CONTINUED) {
-        auto &rom2 = ctx->g->roms[n - 1];
-        rom2.size += rom->size;
+    else if (flags & PARSE_FL_ROM_CONTINUED) {
+        auto &rom2 = g->roms[n - 1];
+        rom2.size += r->size;
 	deleted = true;
     }
-    else if (rom->name.empty()) {
-	myerror(ERRFILE, "%d: ROM without name", ctx->lineno);
+    else if (r->name.empty()) {
+	myerror(ERRFILE, "%d: ROM without name", lineno);
 	deleted = true;
     }
     for (size_t j = 0; j < n && !deleted; j++) {
-        auto &rom2 = ctx->g->roms[j];
-        if (rom->compare_size_crc(rom2)) {
+        auto &rom2 = g->roms[j];
+        if (r->compare_size_crc(rom2)) {
 	    /* TODO: merge in additional hash types? */
-            if (rom->compare_name(rom2)) {
-		myerror(ERRFILE, "%d: the same rom listed multiple times (%s)", ctx->lineno, rom->name.c_str());
+            if (r->compare_name(rom2)) {
+		myerror(ERRFILE, "%d: the same rom listed multiple times (%s)", lineno, r->name.c_str());
 		deleted = true;
 		break;
 	    }
-            else if (!rom2.merge.empty() && rom->merge == rom2.merge) {
+            else if (!rom2.merge.empty() && r->merge == rom2.merge) {
 		/* file_add_altname(r2, file_name(r)); */
-		myerror(ERRFILE, "%d: the same rom listed multiple times (%s, merge-name %s)", ctx->lineno, rom->name.c_str(), rom->merge.c_str());
+		myerror(ERRFILE, "%d: the same rom listed multiple times (%s, merge-name %s)", lineno, r->name.c_str(), r->merge.c_str());
 		deleted = true;
 		break;
 	    }
 	}
-        else if (rom->compare_name(rom2)) {
-	    myerror(ERRFILE, "%d: two different roms with same name (%s)", ctx->lineno, rom->name.c_str());
+        else if (r->compare_name(rom2)) {
+	    myerror(ERRFILE, "%d: two different roms with same name (%s)", lineno, r->name.c_str());
 	    deleted = true;
 	    break;
 	}
     }
-    if (!rom->merge.empty() && ctx->g->cloneof[0].empty()) {
-        myerror(ERRFILE, "%d: rom '%s' has merge information but game '%s' has no parent", ctx->lineno, rom->name.c_str(), ctx->g->name.c_str());
+    if (!r->merge.empty() && g->cloneof[0].empty()) {
+        myerror(ERRFILE, "%d: rom '%s' has merge information but game '%s' has no parent", lineno, r->name.c_str(), g->name.c_str());
     }
     if (deleted) {
-	ctx->flags = (ctx->flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;
-        ctx->g->roms.pop_back();
+	flags = (flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;
+        g->roms.pop_back();
     }
     else {
-	ctx->flags = 0;
-        if (!rom->merge.empty() && rom->merge == rom->name) {
-            rom->merge = "";
+	flags = 0;
+        if (!r->merge.empty() && r->merge == r->name) {
+            r->merge = "";
 	}
     }
 }

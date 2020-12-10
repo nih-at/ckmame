@@ -34,25 +34,45 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
-#include <stdio.h>
-#include <zip.h>
+class ParserSource;
+
+typedef std::shared_ptr<ParserSource> ParserSourcePtr;
+    
+class ParserSource {
+public:
+    ParserSource();
+    virtual ~ParserSource();
+
+    virtual bool close() { return true; }
+    virtual size_t read_xxx(void *data, size_t length) = 0;
+    virtual ParserSourcePtr open(const std::string &name) = 0;
+
+    std::optional<std::string> getline();
+    int peek();
+    size_t read(void *data, size_t length);
+    
+private:
+    std::vector<uint8_t> data;
+    uint8_t *current; // current position in data buffer
+    size_t available; // length of remaining valid data (from current)
+    
+    void buffer_consume(size_t n);
+    void buffer_fill(size_t n);
+    void buffer_allocate(size_t n); // ensure space for n bytes of valid data (from current)
+};
 
 typedef struct parser_source parser_source_t;
 
 
-typedef int (*parser_source_close)(void *);
-typedef parser_source_t *(*parser_source_open)(void *, const char *);
-typedef ssize_t (*parser_source_read)(void *, void *, size_t);
-
-int ps_close(parser_source_t *);
-char *ps_getline(parser_source_t *);
-parser_source_t *ps_new(void *, parser_source_close, parser_source_open, parser_source_read);
 parser_source_t *ps_new_file(const char *);
 parser_source_t *ps_new_stdin(void);
 parser_source_t *ps_new_zip(const char *, struct zip *, const char *);
 parser_source_t *ps_open(parser_source_t *, const char *);
-int ps_peek(parser_source_t *);
-ssize_t ps_read(parser_source_t *, void *, size_t);
 
 #endif /* parser_source.h */

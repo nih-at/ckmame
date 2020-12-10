@@ -44,7 +44,7 @@
 
 #define RC_SEP 0xac
 
-static int rc_plugin(parser_context_t *, const char *);
+static int rc_plugin(ParserContext *, const char *);
 
 
 enum section { RC_UNKNOWN = -1, RC_CREDITS, RC_DAT, RC_EMULATOR, RC_GAMES };
@@ -54,17 +54,17 @@ intstr_t sections[] = {{RC_CREDITS, "[CREDITS]"}, {RC_DAT, "[DAT]"}, {RC_EMULATO
 struct {
     enum section section;
     const char *name;
-    int (*cb)(parser_context_t *, const char *);
+    int (*cb)(ParserContext *, const char *);
 } fields[] = {{RC_CREDITS, "version", parse_prog_version}, {RC_DAT, "plugin", rc_plugin}, {RC_EMULATOR, "refname", parse_prog_name}, {RC_EMULATOR, "version", parse_prog_description}};
 
 int nfields = sizeof(fields) / sizeof(fields[0]);
 
 static char *gettok(char **);
-static int rc_romline(parser_context_t *, char *);
+static int rc_romline(ParserContext *, char *);
 
 
 int
-parse_rc(parser_source_t *ps, parser_context_t *ctx) {
+parse_rc(parser_source_t *ps, ParserContext *ctx) {
     char *line, *val;
     enum section sect;
     int i;
@@ -130,7 +130,7 @@ gettok(char **linep) {
 
 
 static int
-rc_plugin(parser_context_t *ctx, const char *value) {
+rc_plugin(ParserContext *ctx, const char *value) {
     myerror(ERRFILE, "%d: warning: RomCenter plugins not supported,", ctx->lineno);
     myerror(ERRFILE, "%d: warning: DAT won't work as expected.", ctx->lineno);
     return -1;
@@ -138,7 +138,7 @@ rc_plugin(parser_context_t *ctx, const char *value) {
 
 
 static int
-rc_romline(parser_context_t *ctx, char *line) {
+rc_romline(ParserContext *ctx, char *line) {
     static char *gamename = NULL;
 
     char *p;

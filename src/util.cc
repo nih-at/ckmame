@@ -72,26 +72,21 @@ mybasename(const char *fname) {
 }
 
 
-char *
-mydirname(const char *fname) {
-    const char *p;
-    char *d;
-    size_t l;
-
+std::string
+mydirname(const std::string &fname) {
     /* TODO: ignore trailing slashes */
 
-    if ((p = strrchr(fname, '/')) == NULL)
-	return xstrdup(".");
+    auto length = fname.find_last_of('/');
+    
+    if (length == std::string::npos) {
+        return ".";
+    }
 
-    l = p - fname;
+    if (length == 0) {
+        return "/";
+    }
 
-    if (l == 0)
-	return xstrdup("/");
-
-    d = static_cast<char *>(xmalloc(l + 1));
-    strncpy(d, fname, l);
-    d[l] = '\0';
-    return d;
+    return fname.substr(0, length);
 }
 
 

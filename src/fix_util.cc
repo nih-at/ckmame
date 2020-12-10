@@ -241,18 +241,15 @@ save_needed(Archive *sa, int sidx, const char *gamename) {
 
 int
 save_needed_disk(const char *fname, int do_save) {
-    char *tmp;
-    int ret;
-    Disk *d;
-
-    if ((d = disk_new(fname, 0)) == NULL)
+    DiskPtr d = Disk::from_file(fname, 0);
+    if (!d) {
 	return -1;
+    }
 
-    ret = 0;
-    tmp = NULL;
+    int ret = 0;
 
     if (do_save) {
-	tmp = make_needed_name_disk(d);
+        auto tmp = make_needed_name_disk(d.get());
 	if (tmp == NULL) {
 	    myerror(ERRDEF, "cannot create needed file name");
 	    ret = -1;
@@ -262,14 +259,12 @@ save_needed_disk(const char *fname, int do_save) {
 	else if (rename_or_move(fname, tmp) != 0)
 	    ret = -1;
 	else {
-	    disk_free(d);
-	    d = disk_new(tmp, 0);
+            d = Disk::from_file(tmp, 0);
 	}
+        free(tmp);
     }
 
     ensure_needed_maps();
-    enter_disk_in_map(d, FILE_NEEDED);
-    disk_free(d);
-    free(tmp);
+    enter_disk_in_map(d.get(), FILE_NEEDED);
     return ret;
 }

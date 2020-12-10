@@ -1,9 +1,6 @@
-#ifndef HAD_MATCH_DISK_H
-#define HAD_MATCH_DISK_H
-
 /*
-  match_disk.h -- matching files with disks
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  ParserSourceFile.cc -- reading parser input data from file
+  Copyright (C) 2008-2019 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,33 +31,62 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "ParserSourceFile.h"
 
-#include "disk.h"
-#include "parray.h"
-#include "types.h"
+#include <algorithm>
 
-class MatchDisk {
-public:
-    std::string name;
-    Hashes hashes;
-    quality_t quality;
-    where_t where;
+#include "error.h"
+#include "util.h"
+
+ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(NULL) {
+    if (!file_name.empty()) {
+        if ((f = fopen(file_name.c_str(), "r")) == NULL) {
+            // TODO: throw XXX;
+        }
+    }
+    else {
+        f = stdin;
+    }
+
+    seterrinfo(file_name, "");
+}
+
+ParserSourceFile::~ParserSourceFile() {
+    close();
+}
+
+bool ParserSourceFile::close() {
+    auto ok = true;
     
-    MatchDisk() : quality(QU_MISSING), where(FILE_NOWHERE) { }
+    if (!file_name.empty()) {
+        ok = fclose(f) >= 0;
+        file_name = "";
+    }
     
-    void set_source(Disk *disk);
-};
+    f = NULL;
+
+    return ok;
+}
 
 
-#define match_disk_array_get(ma, i) ((ma)[i])
+ParserSourcePtr ParserSourceFile::open(const std::string &name) {
+    std::string full_name;
+    
+    if (!file_name.empty()) {
+        auto dir = mydirname(file_name);
+        full_name = dir + "/" + name;
+    }
+    
+    return static_cast<ParserSourcePtr>(std::make_shared<ParserSourceFile>(full_name));
+}
 
-#define match_disk_array_length(ma) ((ma).size())
 
-#define match_disk_copy(m1, m2) ((m1) = (m2))
-
-#define match_disk_hashes(m) (&(m)->hashes)
-#define match_disk_name(m) ((m)->name)
-#define match_disk_quality(m) ((m)->quality)
-#define match_disk_where(m) ((m)->where)
-
-#endif /* match_disk.h */
+size_t ParserSourceFile::read_xxx(void *data, size_t length) {
+    if (f == NULL) {
+        return 0;
+    }
+    
+    auto done = fread(data, 1, length, f);
+    
+    return done < 0 ? 0 : done;
+}

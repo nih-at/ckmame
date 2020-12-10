@@ -91,19 +91,20 @@ static void
 print_checksums(const Hashes *hashes) {
     for (size_t i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
 	if (hashes->has_type(i)) {
-	    printf(" %s %s", Hashes::type_name(i).c_str(), hashes->to_string(i).c_str());
-	}
+            printf(" %s %s", Hashes::type_name(i).c_str(), hashes->to_string(i).c_str());
+        }
     }
 }
 
 
 static void
 print_diskline(Disk *disk) {
-    printf("\t\tdisk %-12s", disk->name);
+    printf("\t\tdisk %-12s", disk->name.c_str());
     print_checksums(&disk->hashes);
-    printf(" status %s in %s", status_name(disk_status(disk), true).c_str(), where_name[disk_where(disk)]);
-    if (disk_merge(disk) && strcmp(disk_name(disk), disk_merge(disk)) != 0)
-        printf(" (%s)", disk_merge(disk));
+    printf(" status %s in %s", status_name(disk->status, true).c_str(), where_name[disk->where]);
+    if (!disk->merge.empty() && disk->name != disk->merge) {
+        printf(" (%s)", disk->merge.c_str());
+    }
     putc('\n', stdout);
 }
 

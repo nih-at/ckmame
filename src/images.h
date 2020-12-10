@@ -47,17 +47,12 @@ class Images {
 public:
     std::vector<DiskPtr> disks;
     
-    Images();
-
     static ImagesPtr from_directory(const std::string &directory, bool check_integrity);
     static ImagesPtr from_file(const std::string &name);
 
     int find(const std::string &name) const;
     const std::string &name(int) const;
 };
-
-#define images_get(im, i) ((im)->disks[i])
-#define images_length(im) ((im)->disks.size())
 
 int images_find(const Images *images, const char *name);
 const char *images_name(const Images *, int);

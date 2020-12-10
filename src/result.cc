@@ -51,6 +51,6 @@ Result::Result(const Game *game, const Archive *a, const Images *im) : game(GS_M
     }
 
     if (im) {
-        images.resize(images_length(im), FS_UNKNOWN);
+        images.resize(im->disks.size(), FS_UNKNOWN);
     }
 }

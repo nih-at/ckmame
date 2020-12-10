@@ -239,11 +239,11 @@ check_for_file_in_zip(const char *name, const File *rom, const File *file, Match
 
 /*ARGSUSED1*/
 static find_result_t
-check_match_disk_old(const Game *g, const Disk *d, MatchDisk *md) {
-    if (md) {
-	match_disk_quality(md) = QU_OLD;
-	match_disk_name(md) = xstrdup(disk_name(d));
-        *match_disk_hashes(md) = *disk_hashes(d);
+check_match_disk_old(const Game *g, const Disk *disk, MatchDisk *match_disk) {
+    if (match_disk) {
+        match_disk->quality = QU_OLD;
+        match_disk->name = disk->name;
+        match_disk->hashes = disk->hashes;
     }
 
     return FIND_EXISTS;
@@ -252,36 +252,29 @@ check_match_disk_old(const Game *g, const Disk *d, MatchDisk *md) {
 
 /*ARGSUSED1*/
 static find_result_t
-check_match_disk_romset(const Game *game, const Disk *d, MatchDisk *md) {
-    char *file_name;
-    Disk *f;
-
-    file_name = findfile(disk_name(d), TYPE_DISK, game->name.c_str());
+check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_disk) {
+    auto file_name = findfile(disk->name.c_str(), TYPE_DISK, game->name.c_str());
     if (file_name == NULL) {
 	return FIND_MISSING;
     }
 
-    f = disk_new(file_name, DISK_FL_QUIET);
+    auto f = Disk::from_file(file_name, DISK_FL_QUIET);
     if (!f) {
 	free(file_name);
 	return FIND_MISSING;
     }
 
-    if (disk_hashes(d)->compare(*disk_hashes(f)) == Hashes::MATCH) {
-	if (md) {
-	    match_disk_quality(md) = QU_COPIED;
-	    match_disk_name(md) = file_name;
-            *match_disk_hashes(md) = *disk_hashes(f);
+    if (disk->hashes.compare(f->hashes) == Hashes::MATCH) {
+	if (match_disk) {
+	    match_disk->quality = QU_COPIED;
+	    match_disk->name = file_name;
+            match_disk->hashes = f->hashes;
 	}
-	else {
-	    free(file_name);
-	}
-        disk_free(f);
+        free(file_name);
 	return FIND_EXISTS;
     }
 
     free(file_name);
-    disk_free(f);
     return FIND_MISSING;
 }
 

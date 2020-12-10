@@ -1,9 +1,9 @@
-#ifndef HAD_MATCH_DISK_H
-#define HAD_MATCH_DISK_H
+#ifndef HAD_PARSER_SOURCE_FILE_H
+#define HAD_PARSER_SOURCE_FILE_H
 
 /*
-  match_disk.h -- matching files with disks
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  ParserSourceFile.h -- reading parser input data from file
+  Copyright (C) 2008-2019 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,33 +34,23 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cstdio>
+#include <string>
 
-#include "disk.h"
-#include "parray.h"
-#include "types.h"
+#include "parser_source.h"
 
-class MatchDisk {
+class ParserSourceFile : public ParserSource {
 public:
-    std::string name;
-    Hashes hashes;
-    quality_t quality;
-    where_t where;
+    ParserSourceFile(const std::string &fname);
+    virtual ~ParserSourceFile();
     
-    MatchDisk() : quality(QU_MISSING), where(FILE_NOWHERE) { }
+    virtual bool close();
+    virtual ParserSourcePtr open(const std::string &name);
+    virtual size_t read_xxx(void *data, size_t length);
     
-    void set_source(Disk *disk);
+private:
+    std::string file_name;
+    FILE *f;
 };
 
-
-#define match_disk_array_get(ma, i) ((ma)[i])
-
-#define match_disk_array_length(ma) ((ma).size())
-
-#define match_disk_copy(m1, m2) ((m1) = (m2))
-
-#define match_disk_hashes(m) (&(m)->hashes)
-#define match_disk_name(m) ((m)->name)
-#define match_disk_quality(m) ((m)->quality)
-#define match_disk_where(m) ((m)->where)
-
-#endif /* match_disk.h */
+#endif // HAD_PARSER_SOURCE_FILE_H

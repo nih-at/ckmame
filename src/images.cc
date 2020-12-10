@@ -48,7 +48,7 @@ images_find(const Images *images, const char *name) {
     char *full_name;
     xasprintf(&full_name, "%s.chd", name);
     
-    for (int i = 0; i < images_length(images); i++) {
+    for (int i = 0; i < images->disks.size(); i++) {
         if (strcmp(mybasename(images->disks[i]->name.c_str()), full_name) == 0) {
             return i;
         }

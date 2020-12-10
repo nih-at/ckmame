@@ -48,11 +48,11 @@
 #include "xmalloc.h"
 
 
-static int parse_archive(parser_context_t *, Archive *, int hashtypes);
+static int parse_archive(ParserContext *, Archive *, int hashtypes);
 
 
 int
-parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
+parse_dir(const char *dname, ParserContext *ctx, int hashtypes) {
     dir_t *dir;
     char b[8192];
     dir_status_t ds;
@@ -145,7 +145,7 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
 
 
 static int
-parse_archive(parser_context_t *ctx, Archive *a, int hashtypes) {
+parse_archive(ParserContext *ctx, Archive *a, int hashtypes) {
     char *name;
     int ht;
     char hstr[Hashes::MAX_SIZE * 2 + 1];

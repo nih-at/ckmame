@@ -161,6 +161,10 @@
 		4B6B145A24FF91B400D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4B9233001780B30400096AA2 /* dbh_cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9232FE1780B2BA00096AA2 /* dbh_cache.cc */; };
 		4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* ArchiveZip.cc */; };
+		4BB51D2A25823D770047BE72 /* ParserSourceFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BB51D2825823D770047BE72 /* ParserSourceFile.cc */; };
+		4BB51D2B25823D770047BE72 /* ParserSourceFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB51D2925823D770047BE72 /* ParserSourceFile.h */; };
+		4BB51D46258247330047BE72 /* ParserSourceZip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BB51D44258247330047BE72 /* ParserSourceZip.cc */; };
+		4BB51D47258247330047BE72 /* ParserSourceZip.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB51D45258247330047BE72 /* ParserSourceZip.h */; };
 		4BC199041A48424E005BE809 /* parray_find_sorted.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC199021A48424E005BE809 /* parray_find_sorted.cc */; };
 		4BC199051A48424E005BE809 /* parray_find.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC199031A48424E005BE809 /* parray_find.cc */; };
 		4BD482982535B23C00D0002B /* ArchiveDir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BD482962535B23C00D0002B /* ArchiveDir.cc */; };
@@ -333,7 +337,6 @@
 		4B07BFB81FE811C40068A600 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		4B07BFB91FE811C40068A600 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		4B07BFBA1FE811C40068A600 /* NEWS.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = NEWS.md; path = ../NEWS.md; sourceTree = "<group>"; };
-		4B07BFBC1FE811C40068A600 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AUTHORS; path = ../AUTHORS; sourceTree = "<group>"; };
 		4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		4B07BFC11FEC1B5B0068A600 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4B07BFC41FEC1B700068A600 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
@@ -713,6 +716,10 @@
 		4B9292C617633FFC00806C0A /* xmalloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = xmalloc.h; sourceTree = "<group>"; };
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = xmlutil.h; sourceTree = "<group>"; };
 		4B9292C917635B5500806C0A /* ArchiveZip.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveZip.cc; sourceTree = "<group>"; };
+		4BB51D2825823D770047BE72 /* ParserSourceFile.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParserSourceFile.cc; sourceTree = "<group>"; };
+		4BB51D2925823D770047BE72 /* ParserSourceFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserSourceFile.h; sourceTree = "<group>"; };
+		4BB51D44258247330047BE72 /* ParserSourceZip.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParserSourceZip.cc; sourceTree = "<group>"; };
+		4BB51D45258247330047BE72 /* ParserSourceZip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserSourceZip.h; sourceTree = "<group>"; };
 		4BC0362818C8B01B00D6D5AF /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = types.h; sourceTree = "<group>"; };
 		4BC199021A48424E005BE809 /* parray_find_sorted.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = parray_find_sorted.cc; sourceTree = "<group>"; };
 		4BC199031A48424E005BE809 /* parray_find.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = parray_find.cc; sourceTree = "<group>"; };
@@ -845,7 +852,6 @@
 				4B86CECF1B134233003EF102 /* man */,
 				4B7F506B1776523900B4273C /* THANKS */,
 				4B07BFB71FE810930068A600 /* TODO.md */,
-				4B07BFBC1FE811C40068A600 /* AUTHORS */,
 				4B07BFB91FE811C40068A600 /* LICENSE */,
 				4B07BFBA1FE811C40068A600 /* NEWS.md */,
 				4B07BFB81FE811C40068A600 /* README.md */,
@@ -1007,6 +1013,10 @@
 				4B5FAD041735924900B67C24 /* parse.h */,
 				4B5FAD051735924900B67C24 /* parser_source.cc */,
 				4B5FAD061735924900B67C24 /* parser_source.h */,
+				4BB51D2825823D770047BE72 /* ParserSourceFile.cc */,
+				4BB51D2925823D770047BE72 /* ParserSourceFile.h */,
+				4BB51D44258247330047BE72 /* ParserSourceZip.cc */,
+				4BB51D45258247330047BE72 /* ParserSourceZip.h */,
 				4B5FAD071735924900B67C24 /* ptr_sort.cc */,
 				4B5FAE611735949900B67C24 /* result.cc */,
 				4B9292C017633FFC00806C0A /* result.h */,
@@ -1331,10 +1341,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BB51D47258247330047BE72 /* ParserSourceZip.h in Headers */,
 				4B6B145324FF905900D3F3FB /* stats.h in Headers */,
 				4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */,
 				4B5F43C21889D059000C3B7C /* romdb.h in Headers */,
 				4B59E59221625A06002262C8 /* dbh_statements.h in Headers */,
+				4BB51D2B25823D770047BE72 /* ParserSourceFile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1575,6 +1587,7 @@
 				4B5FADD61735930100B67C24 /* detector_execute.cc in Sources */,
 				4B5FADD71735930100B67C24 /* detector_init.cc in Sources */,
 				4B5FADD81735930100B67C24 /* detector_parse.cc in Sources */,
+				4BB51D46258247330047BE72 /* ParserSourceZip.cc in Sources */,
 				4B5FADD91735930100B67C24 /* detector_parse_ps.cc in Sources */,
 				4B5FADDA1735930100B67C24 /* detector_print.cc in Sources */,
 				4B5FADDB1735930100B67C24 /* detector_str.cc in Sources */,
@@ -1618,6 +1631,7 @@
 				4B5FAE121735930100B67C24 /* parray_new_from_data.cc in Sources */,
 				4B5FAE131735930100B67C24 /* parray_pop.cc in Sources */,
 				4B5FAE141735930100B67C24 /* parray_push.cc in Sources */,
+				4BB51D2A25823D770047BE72 /* ParserSourceFile.cc in Sources */,
 				4B5F43BC1889D059000C3B7C /* romdb_read_game.cc in Sources */,
 				4B5FAE151735930100B67C24 /* parray_set_length.cc in Sources */,
 				4B5FAE161735930100B67C24 /* parray_sort_real.cc in Sources */,

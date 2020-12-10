@@ -352,7 +352,7 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	    return -1;
 	}
 	if ((st.st_mode & S_IFMT) == S_IFDIR) {
-	    parser_context_t *ctx;
+	    ParserContext *ctx;
 	    int ret;
 
 	    if (cache_directory)

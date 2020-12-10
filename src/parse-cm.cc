@@ -44,7 +44,7 @@ static char *gettok(char **);
 
 
 int
-parse_cm(parser_source_t *ps, parser_context_t *ctx) {
+parse_cm(parser_source_t *ps, ParserContext *ctx) {
     char *cmd, *p, *l;
     enum parse_state state;
 

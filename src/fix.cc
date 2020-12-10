@@ -199,14 +199,13 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
 static int
 fix_disks(Game *g, Images *im, Result *res) {
     int i;
-    MatchDisk *md;
     const char *name;
     char *fname = NULL;
     bool do_copy;
     int removed = 0;
     bool added = false;
 
-    for (i = 0; i < images_length(im); i++) {
+    for (i = 0; i < im->disks.size(); i++) {
 	name = images_name(im, i);
 
 	switch (result_image(res, i)) {
@@ -253,19 +252,19 @@ fix_disks(Game *g, Images *im, Result *res) {
     }
 
     for (size_t i = 0; i < g->disks.size(); i++) {
-	auto d = &g->disks[i];
-	md = result_disk(res, i);
+	auto disk = &g->disks[i];
+        auto &match_disk = res->disks[i];
 
-	switch (match_disk_quality(md)) {
+	switch (match_disk.quality) {
 	case QU_COPIED:
-	    if ((name = findfile(disk_name(d), TYPE_DISK, g->name.c_str())) != NULL) {
+                if ((name = findfile(disk->name.c_str(), TYPE_DISK, g->name.c_str())) != NULL) {
 		myerror(ERRDEF, "internal error: unknown disk '%s' exists, skipping", name);
 		continue;
 	    }
 
-	    fname = make_file_name(TYPE_DISK, disk_name(d), g->name.c_str());
+                fname = make_file_name(TYPE_DISK, disk->name.c_str(), g->name.c_str());
 
-            switch (match_disk_where(md)) {
+            switch (match_disk.where) {
             case FILE_INGAME:
             case FILE_NEEDED:
             case FILE_SUPERFLUOUS:
@@ -289,11 +288,11 @@ fix_disks(Game *g, Images *im, Result *res) {
             }
 
 	    if (fix_options & FIX_PRINT)
-		printf("%s '%s' to '%s'\n", do_copy ? "copy" : "rename", match_disk_name(md), fname);
+		printf("%s '%s' to '%s'\n", do_copy ? "copy" : "rename", match_disk.name.c_str(), fname);
 	    if (fix_options & FIX_DO) {
                 ensure_dir(fname, 1);
 		if (do_copy) {
-		    link_or_copy(match_disk_name(md), fname);
+		    link_or_copy(match_disk.name.c_str(), fname);
 #if 0
 		    /* delete_list_execute can't currently handle disks */
 		    if (extra_delete_list)
@@ -301,20 +300,19 @@ fix_disks(Game *g, Images *im, Result *res) {
 #endif
 		}
 		else {
-                    char *dir = mydirname(match_disk_name(md));
-		    rename_or_move(match_disk_name(md), fname);
-                    (void)rmdir(dir);
-		    free(dir);
+                    auto dir = mydirname(match_disk.name);
+                    rename_or_move(match_disk.name.c_str(), fname);
+                    (void)rmdir(dir.c_str());
 		    if (extra_list) {
 			int idx;
-			idx = parray_find_sorted(extra_list, match_disk_name(md), reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
+			idx = parray_find_sorted(extra_list, match_disk.name.c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
 			if (idx >= 0)
 			    parray_delete(extra_list, idx, free);
 		    }
 		}
                 added = true;
 	    }
-	    remove_from_superfluous(match_disk_name(md));
+	    remove_from_superfluous(match_disk.name.c_str());
 
 	    free(fname);
 	    break;
@@ -329,7 +327,7 @@ fix_disks(Game *g, Images *im, Result *res) {
 	}
     }
 
-    if (!added && removed == images_length(im)) {
+    if (!added && removed == im->disks.size()) {
         char *dir;
         xasprintf(&dir, "%s/%s", get_directory(), g->name.c_str());
         (void)rmdir(dir);

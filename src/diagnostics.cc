@@ -114,10 +114,10 @@ diagnostics_disks(const Game *game, const Result *res) {
     }
 
     for (size_t i = 0; i < game->disks.size(); i++) {
-        auto md = result_disk(res, i);
+        auto match_disk = result_disk(res, i);
         auto d = &game->disks[i];
 
-	switch (match_disk_quality(md)) {
+	switch (match_disk.quality) {
             case QU_MISSING:
                 if ((disk_status(d) != STATUS_NODUMP && (output_options & WARN_MISSING)) || (output_options & WARN_NO_GOOD_DUMP))
                     warn_disk(d, "missing");
@@ -151,12 +151,12 @@ diagnostics_disks(const Game *game, const Result *res) {
                 
             case QU_COPIED:
                 if (output_options & WARN_ELSEWHERE)
-                    warn_disk(d, "is at '%s'", match_disk_name(md));
+                    warn_disk(d, "is at '%s'", match_disk.name.c_str());
                 break;
                 
             case QU_NAMEERR:
                 if (output_options & WARN_WRONG_NAME)
-                    warn_disk(d, "wrong name (%s)", match_disk_name(md));
+                    warn_disk(d, "wrong name (%s)", match_disk.name.c_str());
                 break;
                 
             default:
@@ -282,7 +282,7 @@ diagnostics_images(const Images *im, const Result *res) {
     if (im == NULL)
 	return;
 
-    for (i = 0; i < images_length(im); i++) {
+    for (i = 0; i < im->disks.size(); i++) {
 	switch (result_image(res, i)) {
 	case FS_UNKNOWN:
 	    if (output_options & WARN_UNKNOWN)

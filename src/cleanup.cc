@@ -232,7 +232,7 @@ cleanup_disk(Images *im, Result *res, int flags) {
     int i, move, ret;
     const char *name, *reason;
 
-    for (i = 0; i < images_length(im); i++) {
+    for (i = 0; i < im->disks.size(); i++) {
 	if ((name = images_name(im, i)) == NULL)
 	    continue;
 
