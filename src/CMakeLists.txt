@@ -42,9 +42,7 @@ set(COMMON_SOURCES
   delete_list.cc
   detector.cc
   detector_execute.cc
-  detector_init.cc
   detector_print.cc
-  detector_str.cc
   diagnostics.cc
   dir.cc
   disk.cc

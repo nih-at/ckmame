@@ -60,6 +60,8 @@ public:
     /* TODO: move out of context */
     size_t lineno; /* current line number in input file */
 
+    bool full_archive_name;
+
     // callbacks
     bool eof();
     bool file_continue(filetype_t ft);
@@ -71,6 +73,7 @@ public:
     bool file_mtime(filetype_t ft, time_t mtime);
     bool file_name(filetype_t ft, const std::string &attr);
     bool file_size(filetype_t ft, const std::string &attr);
+    bool file_size(filetype_t ft, uint64_t size);
     bool file_start(filetype_t ft);
     bool game_cloneof(filetype_t ft, const std::string &attr);
     bool game_description(const std::string &attr);
@@ -87,7 +90,7 @@ private:
     ~ParserContext();
     
     bool parse_cm();
-    bool parse_dir();
+    bool parse_dir(const std::string &dname, int hashtypes);
     bool parse_rc();
     bool parse_xml();
     
@@ -100,7 +103,6 @@ private:
     /* config */
     std::vector<std::string> ignore;
     dat_entry_t dat_default;
-    bool full_archive_name;
 
     /* output */
     output_context_t *output;

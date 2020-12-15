@@ -38,96 +38,92 @@
 #include "util.h"
 #include "xmalloc.h"
 
-static void pr_rule(FILE *, const detector_rule_t *);
-static void pr_string(FILE *, const char *, const char *);
-static void pr_test(FILE *, const detector_test_t *);
+static void pr_string(FILE *fout, const char *name, const std::string &value) {
+    if (value.empty()) {
+        return;
+    }
 
+    fprintf(fout, "  <%s>%s</%s>\n", name, value.c_str(), name);
+}
 
-int
-detector_print(const detector_t *d, FILE *fout) {
-    int i;
-
+bool Detector::print(FILE *fout) const {
     fprintf(fout, "<?xml version=\"1.0\"?>\n\n<detector>\n\n");
-    pr_string(fout, "name", detector_name(d));
-    pr_string(fout, "author", detector_author(d));
-    pr_string(fout, "version", detector_version(d));
+    pr_string(fout, "name", name);
+    pr_string(fout, "author", author);
+    pr_string(fout, "version", version);
     fprintf(fout, "\n");
 
-    for (i = 0; i < detector_num_rules(d); i++)
-	pr_rule(fout, detector_rule(d, i));
+    for (auto &rule : rules) {
+        rule.print(fout);
+    }
 
     fprintf(fout, "</detector>\n");
 
-    return (ferror(fout));
+    return (ferror(fout) == 0);
 }
 
 
-static void
-pr_rule(FILE *fout, const detector_rule_t *dr) {
-    int i;
-
+void Detector::Rule::print(FILE *fout) const {
     fprintf(fout, "  <rule");
-    if (detector_rule_start_offset(dr) != 0)
-	fprintf(fout, " start_offset=\"%jx\"", (intmax_t)detector_rule_start_offset(dr));
-    if (detector_rule_end_offset(dr) != DETECTOR_OFFSET_EOF)
-	fprintf(fout, " end_offset=\"%jx\"", (intmax_t)detector_rule_end_offset(dr));
-    if (detector_rule_operation(dr) != DETECTOR_OP_NONE)
-	fprintf(fout, " operation=\"%s\"", detector_operation_str(detector_rule_operation(dr)));
-    if (detector_rule_num_tests(dr) == 0)
-	fprintf(fout, "/>\n\n");
+    if (start_offset != 0) {
+        fprintf(fout, " start_offset=\"%" PRId64 "\"", start_offset);
+        if (end_offset != DETECTOR_OFFSET_EOF) {
+            fprintf(fout, " end_offset=\"%" PRId64 "\"", end_offset);
+        }
+    }
+    
+    if (operation != OP_NONE) {
+        fprintf(fout, " operation=\"%s\"", operation_name(operation).c_str());
+    }
+    
+    if (tests.empty()) {
+        fprintf(fout, "/>\n\n");
+    }
     else {
-	fprintf(fout, ">\n");
-	for (i = 0; i < detector_rule_num_tests(dr); i++)
-	    pr_test(fout, detector_rule_test(dr, i));
-	fprintf(fout, "  </rule>\n\n");
+        fprintf(fout, ">\n");
+        for (auto &test: tests) {
+            test.print(fout);
+        }
+        fprintf(fout, "  </rule>\n\n");
     }
 }
 
 
-static void
-pr_string(FILE *fout, const char *name, const char *value) {
-    if (value == NULL)
-	return;
+void Detector::Test::print(FILE *fout) const {
+    fprintf(fout, "    <%s", test_type_name(type).c_str());
 
-    fprintf(fout, "  <%s>%s</%s>\n", name, value, name);
-}
-
-
-static void
-pr_test(FILE *fout, const detector_test_t *dt) {
-    fprintf(fout, "    <%s", detector_test_type_str(detector_test_type(dt)));
-    switch (detector_test_type(dt)) {
-        case DETECTOR_TEST_DATA:
-        case DETECTOR_TEST_OR:
-        case DETECTOR_TEST_AND:
-        case DETECTOR_TEST_XOR:
-            if (detector_test_offset(dt) != 0) {
-                fprintf(fout, " offset=\"%jx\"", (intmax_t)detector_test_offset(dt));
+    switch (type) {
+        case TEST_DATA:
+        case TEST_OR:
+        case TEST_AND:
+        case TEST_XOR:
+            if (offset != 0) {
+                fprintf(fout, " offset=\"%" PRId64 "\"", offset);
             }
-            if (detector_test_mask(dt)) {
-                fprintf(fout, " mask=\"%s\"", bin2hex(detector_test_mask(dt), detector_test_length(dt)).c_str());
+            if (!mask.empty()) {
+                fprintf(fout, " mask=\"%s\"", bin2hex(mask.data(), mask.size()).c_str());
             }
-            fprintf(fout, " value=\"%s\"", bin2hex(detector_test_value(dt), detector_test_length(dt)).c_str());
-	break;
+            fprintf(fout, " value=\"%s\"", bin2hex(value.data(), value.size()).c_str());
+            break;
 
-        case DETECTOR_TEST_FILE_EQ:
-        case DETECTOR_TEST_FILE_LE:
-        case DETECTOR_TEST_FILE_GR:
+        case TEST_FILE_EQ:
+        case TEST_FILE_LE:
+        case TEST_FILE_GR:
             fprintf(fout, " size=\"");
-            if (detector_test_size(dt) == DETECTOR_SIZE_PO2) {
+            if (offset == DETECTOR_SIZE_POWER_OF_2) {
                 fprintf(fout, "PO2");
             }
             else {
-                fprintf(fout, "%jx", (intmax_t)detector_test_size(dt));
+                fprintf(fout, "%" PRId64, offset);
             }
             fprintf(fout, "\"");
-            if (detector_test_type(dt) != DETECTOR_TEST_FILE_EQ) {
-                fprintf(fout, " operator=\"%s\"", detector_file_test_type_str(detector_test_type(dt)));
+            if (type != TEST_FILE_EQ) {
+                fprintf(fout, " operator=\"%s\"", file_test_type_name(type).c_str());
             }
             break;
     }
     
-    if (detector_test_result(dt) != true) {
+    if (result != true) {
         fprintf(fout, " result=\"false\"");
     }
 

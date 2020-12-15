@@ -43,7 +43,10 @@
 #include "xmlutil.h"
 
 
-struct ctx {
+class Context {
+public:
+    Context() : d(detector_new()), dr(NULL), dt(NULL) { }
+    
     detector_t *d;
     detector_rule_t *dr;
     detector_test_t *dt;
@@ -60,22 +63,22 @@ static int parse_hex(detector_test_t *, uint8_t **, const char *);
 static int parse_number(int64_t *, const char *);
 static int parse_offset(int64_t *, const char *);
 static int parse_size(int64_t *, const char *);
-static int rule_close(struct ctx *, int);
-static int rule_end_offset(struct ctx *, int, int, const char *);
-static int rule_open(struct ctx *, int);
-static int rule_operation(struct ctx *, int, int, const char *);
-static int rule_start_offset(struct ctx *, int, int, const char *);
-static int test_close(struct ctx *, int);
-static int test_mask(struct ctx *, int, int, const char *);
-static int test_offset(struct ctx *, int, int, const char *);
-static int test_open(struct ctx *, int);
-static int test_operator(struct ctx *ctx, int, int, const char *);
-static int test_result(struct ctx *, int, int, const char *);
-static int test_size(struct ctx *, int, int, const char *);
-static int test_value(struct ctx *, int, int, const char *);
-static int text_author(struct ctx *, const char *);
-static int text_name(struct ctx *, const char *);
-static int text_version(struct ctx *, const char *);
+static int rule_close(struct Context *, int);
+static int rule_end_offset(struct Context *, int, int, const char *);
+static int rule_open(struct Context *, int);
+static int rule_operation(struct Context *, int, int, const char *);
+static int rule_start_offset(struct Context *, int, int, const char *);
+static int test_close(struct Context *, int);
+static int test_mask(struct Context *, int, int, const char *);
+static int test_offset(struct Context *, int, int, const char *);
+static int test_open(struct Context *, int);
+static int test_operator(struct Context *ctx, int, int, const char *);
+static int test_result(struct Context *, int, int, const char *);
+static int test_size(struct Context *, int, int, const char *);
+static int test_value(struct Context *, int, int, const char *);
+static int text_author(struct Context *, const char *);
+static int text_name(struct Context *, const char *);
+static int text_version(struct Context *, const char *);
 
 
 #define XA(f) ((xmlu_attr_cb)f)
@@ -99,11 +102,7 @@ static const int nentities = sizeof(entities) / sizeof(entities[0]);
 
 detector_t *
 detector_parse_ps(ParserSource *ps) {
-    struct ctx ctx;
-
-    ctx.d = detector_new();
-    ctx.dr = NULL;
-    ctx.dt = NULL;
+    Context ctx;
 
     /* TODO: lineno callback */
     if (xmlu_parse(ps, &ctx, NULL, entities, nentities) < 0) {
@@ -206,7 +205,7 @@ parse_offset(int64_t *offsetp, const char *value) {
 static int
 parse_size(int64_t *offsetp, const char *value) {
     if (strcmp(value, "PO2") == 0) {
-	*offsetp = DETECTOR_SIZE_PO2;
+	*offsetp = DETECTOR_SIZE_POWER_OF_2;
 	return 0;
     }
 
@@ -214,30 +213,27 @@ parse_size(int64_t *offsetp, const char *value) {
 }
 
 
-static int
-rule_close(struct ctx *ctx, int arg1) {
-    ctx->dr = NULL;
+static bool rule_close(void *ctx, int arg1) {
+    static_cast<Context *>(ctx)->dr = NULL;
+
+    return true;
+}
+
+
+static bool rule_end_offset(void *ctx, int arg1, int arg2, const std::string &value) {
+    return parse_offset(&detector_rule_end_offset(static_cast<Context *>(ctx)->dr), value);
+}
+
+
+static bool rule_open(void *ctx, int arg1) {
+    static_cast<Context *>(ctx)->dr = static_cast<detector_rule_t *>(array_grow(detector_rules(ctx->d), reinterpret_cast<void (*)(void *)>(detector_rule_init)));
 
     return 0;
 }
 
 
 static int
-rule_end_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    return parse_offset(&detector_rule_end_offset(ctx->dr), value);
-}
-
-
-static int
-rule_open(struct ctx *ctx, int arg1) {
-    ctx->dr = static_cast<detector_rule_t *>(array_grow(detector_rules(ctx->d), reinterpret_cast<void (*)(void *)>(detector_rule_init)));
-
-    return 0;
-}
-
-
-static int
-rule_operation(struct ctx *ctx, int arg1, int arg2, const char *value) {
+rule_operation(struct Context *ctx, int arg1, int arg2, const char *value) {
     static const struct str_enum op[] = {{"bitswap", DETECTOR_OP_BITSWAP}, {"byteswap", DETECTOR_OP_BYTESWAP}, {"none", DETECTOR_OP_NONE}, {"wordswap", DETECTOR_OP_WORDSWAP}};
     static const int nop = sizeof(op) / sizeof(op[0]);
 
@@ -252,13 +248,13 @@ rule_operation(struct ctx *ctx, int arg1, int arg2, const char *value) {
 
 
 static int
-rule_start_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
+rule_start_offset(struct Context *ctx, int arg1, int arg2, const char *value) {
     return parse_offset(&detector_rule_start_offset(ctx->dr), value);
 }
 
 
 static int
-test_close(struct ctx *ctx, int arg1) {
+test_close(struct Context *ctx, int arg1) {
     ctx->dt = NULL;
 
     return 0;
@@ -266,19 +262,19 @@ test_close(struct ctx *ctx, int arg1) {
 
 
 static int
-test_mask(struct ctx *ctx, int arg1, int arg2, const char *value) {
+test_mask(struct Context *ctx, int arg1, int arg2, const char *value) {
     return parse_hex(ctx->dt, &detector_test_mask(ctx->dt), value);
 }
 
 
 static int
-test_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
+test_offset(struct Context *ctx, int arg1, int arg2, const char *value) {
     return parse_offset(&detector_test_offset(ctx->dt), value);
 }
 
 
 static int
-test_open(struct ctx *ctx, int type) {
+test_open(struct Context *ctx, int type) {
     ctx->dt = static_cast<detector_test_t *>(array_grow(detector_rule_tests(ctx->dr), reinterpret_cast<void (*)(void *)>(detector_test_init)));
     detector_test_type(ctx->dt) = static_cast<detector_test_type_t>(type);
 
@@ -287,7 +283,7 @@ test_open(struct ctx *ctx, int type) {
 
 
 static int
-test_operator(struct ctx *ctx, int arg1, int arg2, const char *value) {
+test_operator(struct Context *ctx, int arg1, int arg2, const char *value) {
     static const struct str_enum en[] = {
 	{"equal", DETECTOR_TEST_FILE_EQ},
 	{"greater", DETECTOR_TEST_FILE_GR},
@@ -306,7 +302,7 @@ test_operator(struct ctx *ctx, int arg1, int arg2, const char *value) {
 
 
 static int
-test_result(struct ctx *ctx, int arg1, int arg2, const char *value) {
+test_result(struct Context *ctx, int arg1, int arg2, const char *value) {
     static const struct str_enum en[] = {
 	{"false", false},
 	{"true", true},
@@ -324,19 +320,19 @@ test_result(struct ctx *ctx, int arg1, int arg2, const char *value) {
 
 
 static int
-test_size(struct ctx *ctx, int arg1, int arg2, const char *value) {
+test_size(struct Context *ctx, int arg1, int arg2, const char *value) {
     return parse_size(&detector_test_size(ctx->dt), value);
 }
 
 
 static int
-test_value(struct ctx *ctx, int arg1, int arg2, const char *value) {
+test_value(struct Context *ctx, int arg1, int arg2, const char *value) {
     return parse_hex(ctx->dt, &detector_test_value(ctx->dt), value);
 }
 
 
 static int
-text_author(struct ctx *ctx, const char *txt) {
+text_author(struct Context *ctx, const char *txt) {
     detector_author(ctx->d) = xstrdup(txt);
 
     return 0;
@@ -344,7 +340,7 @@ text_author(struct ctx *ctx, const char *txt) {
 
 
 static int
-text_name(struct ctx *ctx, const char *txt) {
+text_name(struct Context *ctx, const char *txt) {
     detector_name(ctx->d) = xstrdup(txt);
 
     return 0;
@@ -352,7 +348,7 @@ text_name(struct ctx *ctx, const char *txt) {
 
 
 static int
-text_version(struct ctx *ctx, const char *txt) {
+text_version(struct Context *ctx, const char *txt) {
     detector_version(ctx->d) = xstrdup(txt);
 
     return 0;

@@ -32,51 +32,57 @@
 */
 
 
-#include <stdlib.h>
-
 #include "detector.h"
-#include "xmalloc.h"
 
-
-void
-detector_free(detector_t *d) {
-    if (d == NULL) {
-	return;
+std::string Detector::file_test_type_name(TestType type) {
+    switch (type) {
+        case TEST_FILE_EQ:
+            return "equal";
+        case TEST_FILE_LE:
+            return "less";
+        case TEST_FILE_GR:
+            return "greater";
+            
+        default:
+            return "unknown";
     }
-    free(d->name);
-    free(d->author);
-    free(d->version);
-    array_free(d->rules, reinterpret_cast<void (*)(void *)>(detector_rule_finalize));
-    free(d->buf);
-    free(d);
 }
 
 
-detector_t *
-detector_new(void) {
-    detector_t *d;
-
-    d = static_cast<detector_t *>(xmalloc(sizeof(*d)));
-
-    d->name = NULL;
-    d->author = NULL;
-    d->version = NULL;
-    d->rules = array_new(sizeof(detector_rule_t));
-    d->buf = NULL;
-    d->buf_size = 0;
-
-    return d;
+std::string Detector::operation_name(Operation operation) {
+    switch (operation) {
+        case OP_NONE:
+            return "none";
+        case OP_BITSWAP:
+            return "bitswap";
+        case OP_BYTESWAP:
+            return "byteswap";
+        case OP_WORDSWAP:
+            return "wordswap";
+            
+        default:
+            return "unknown";
+    }
 }
 
 
-void
-detector_rule_finalize(detector_rule_t *dr) {
-    array_free(dr->tests, reinterpret_cast<void (*)(void *)>(detector_test_finalize));
-}
-
-
-void
-detector_test_finalize(detector_test_t *dt) {
-    free(dt->mask);
-    free(dt->value);
+std::string Detector::test_type_name(TestType type) {
+    switch (type) {
+        case TEST_DATA:
+            return "data";
+        case TEST_OR:
+            return "or";
+        case TEST_AND:
+            return "and";
+        case TEST_XOR:
+            return "xor";
+            
+        case TEST_FILE_EQ:
+        case TEST_FILE_LE:
+        case TEST_FILE_GR:
+            return "file";
+            
+        default:
+            return "unknown";
+    }
 }
