@@ -124,7 +124,7 @@ void ParserSource::buffer_consume(size_t length) {
     }
 }
 
-
+// make N bytes available
 void ParserSource::buffer_fill(size_t n) {
     if (available >= n) {
 	return;
@@ -132,21 +132,21 @@ void ParserSource::buffer_fill(size_t n) {
 
     buffer_allocate(n);
 
-    auto done = read(current + available, n - available);
+    auto done = read_xxx(current + available, n - available);
 
     if (done > 0) {
         available += static_cast<size_t>(done);
     }
 }
 
-
+// make sure buffer is at least N + 1 bytes long (+1 for terminating NUL)
 void ParserSource::buffer_allocate(size_t n) {
     if (available > 0 && current > data.data()) {
         memmove(data.data(), current, available);
         current = data.data();
     }
 
-    auto new_size = n + available + 1;
+    auto new_size = n + 1;
 
     if (data.size() < new_size) {
         data.resize(new_size);

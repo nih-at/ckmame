@@ -42,13 +42,14 @@ enum parse_state { st_top, st_game, st_prog };
 
 class CmTokenizer {
 public:
-    CmTokenizer(const std::string &s) : string(s), position(0) { }
+    CmTokenizer(const std::string &s) : string(s), position(s.c_str()), end(s.c_str() + s.length()) { }
     
     std::string get();
     
 private:
     std::string string;
-    size_t position;
+    const char *position;
+    const char *end;
 };
 
 
@@ -93,10 +94,12 @@ bool ParserContext::parse_cm() {
                     game_cloneof(TYPE_ROM, tokenizer.get());
                 }
                 else if (cmd == "rom") {
-                    tokenizer.get();
-                    if (tokenizer.get() != "name") {
+                    auto brace = tokenizer.get();
+                    auto name = tokenizer.get();
+//                    if (tokenizer.get() != "name") {
+                    if (name != "name") {
                         /* TODO: error */
-                        myerror(ERRFILE, "%d: expected token (name) not found", lineno);
+                        myerror(ERRFILE, "%d: expected token (name) not found ('%s', '%s')", lineno, brace.c_str(), name.c_str());
                         break;
                     }
                     file_start(TYPE_ROM);
@@ -179,10 +182,12 @@ bool ParserContext::parse_cm() {
                     file_end(TYPE_ROM);
                 }
                 else if (cmd == "disk") {
-                    tokenizer.get();
-                    if (tokenizer.get() != "name") {
+                    auto brace = tokenizer.get();
+                    auto name = tokenizer.get();
+//                    if (tokenizer.get() != "name") {
+                    if (name != "name") {
                         /* TODO: error */
-                        myerror(ERRFILE, "%d: expected token (name) not found", lineno);
+                        myerror(ERRFILE, "%d: expected token (name) not found ('%s', '%s')", lineno, brace.c_str(), name.c_str());
                         break;
                     }
 
@@ -273,19 +278,18 @@ bool ParserContext::parse_cm() {
 
 
 std::string CmTokenizer::get() {
-    if (position == std::string::npos) {
+    if (position >= end) {
         return "";
     }
 
-    auto s = string.c_str() + position;
-    s += strspn(s, " \t");
+    auto s = position + strspn(position, " \t");
     const char *e;
 
     switch (*s) {
         case '\0':
         case '\n':
         case '\r':
-            position = std::string::npos;
+            position = end;
             return "";
 
         case '\"':
@@ -299,8 +303,8 @@ std::string CmTokenizer::get() {
     }
 
     auto length = static_cast<size_t>(e - s);
-    position += length;
-    if (*e != '\0') {
+    position = e;
+    if (*position != '\0') {
         position++;
     }
 
