@@ -277,12 +277,10 @@ diagnostics_files(const Game *game, const Result *res) {
 
 void
 diagnostics_images(const Images *im, const Result *res) {
-    int i;
-
     if (im == NULL)
 	return;
 
-    for (i = 0; i < im->disks.size(); i++) {
+    for (size_t i = 0; i < im->disks.size(); i++) {
 	switch (result_image(res, i)) {
 	case FS_UNKNOWN:
 	    if (output_options & WARN_UNKNOWN)

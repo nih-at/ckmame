@@ -85,7 +85,7 @@ check_disks(Game *game, Images *im[], Result *res) {
 	}
 
 	if (match_disk.quality != QU_OK && im[0] != NULL) {
-            for (auto k = 0; k < im[0]->disks.size(); k++) {
+            for (size_t k = 0; k < im[0]->disks.size(); k++) {
                 auto image = im[0]->disks[k];
                 
                 if (disk.hashes.compare(*disk_hashes(image)) == Hashes::MATCH) {

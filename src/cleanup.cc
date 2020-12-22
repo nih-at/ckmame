@@ -45,7 +45,6 @@ static void cleanup_disk(Images *, Result *, int);
 void
 cleanup_list(parray_t *list, delete_list_t *del, int flags) {
     ArchivePtr a;
-    Images *im;
     char *name;
     int i, di, len, cmp, n;
     file_location_t *fl;
@@ -229,10 +228,9 @@ cleanup_archive(Archive *a, Result *res, int flags) {
 
 static void
 cleanup_disk(Images *im, Result *res, int flags) {
-    int i, move, ret;
     const char *name, *reason;
 
-    for (i = 0; i < im->disks.size(); i++) {
+    for (size_t i = 0; i < im->disks.size(); i++) {
 	if ((name = images_name(im, i)) == NULL)
 	    continue;
 
@@ -280,6 +278,8 @@ cleanup_disk(Images *im, Result *res, int flags) {
 
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
+		int move, ret;
+
 		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT)
 		    printf("%s: %s unknown image\n", name, (move ? "move" : "delete"));

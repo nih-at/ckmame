@@ -43,13 +43,11 @@
 
 void
 check_images(Images *im, const char *gamename, Result *res) {
-    int i;
-
     if (im == NULL) {
 	return;
     }
 
-    for (i = 0; i < im->disks.size(); i++) {
+    for (size_t i = 0; i < im->disks.size(); i++) {
         auto disk = im->disks[i];
 
 	if (disk == NULL) {

@@ -45,7 +45,6 @@
 int
 romdb_write_dat(romdb_t *db, const std::vector<DatEntry> &dat) {
     sqlite3_stmt *stmt;
-    int i;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT)) == NULL)
 	return -1;

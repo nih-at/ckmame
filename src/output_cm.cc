@@ -54,12 +54,6 @@ static struct {
 typedef struct output_context_cm output_context_cm_t;
 
 
-static int output_cm_close(output_context_t *);
-static int output_cm_game(output_context_t *, GamePtr);
-static int output_cm_header(output_context_t *, DatEntry *);
-static int write_game(output_context_cm_t *, Game *);
-
-
 OutputContextCm::OutputContextCm(const std::string &fname_, int flags_) {
     if (fname_.empty()) {
         f = stdout;

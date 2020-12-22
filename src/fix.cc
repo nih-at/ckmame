@@ -198,14 +198,13 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
 
 static int
 fix_disks(Game *g, Images *im, Result *res) {
-    int i;
     const char *name;
     char *fname = NULL;
     bool do_copy;
-    int removed = 0;
+    size_t removed = 0;
     bool added = false;
 
-    for (i = 0; i < im->disks.size(); i++) {
+    for (size_t i = 0; i < im->disks.size(); i++) {
 	name = images_name(im, i);
 
 	switch (result_image(res, i)) {

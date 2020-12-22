@@ -46,9 +46,9 @@ public:
     virtual bool header(DatEntry *dat);
     
 private:
+    std::string fname;
     bool extended;
     FILE *f;
-    std::string fname;
     
     bool write_game(Game *game);
 };

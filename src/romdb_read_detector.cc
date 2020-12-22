@@ -81,8 +81,6 @@ romdb_read_detector(romdb_t *db) {
 
 static bool
 romdb_read_rules(Detector *detector, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
-    size_t lmask, lvalue;
-
     int ret;
     while ((ret = sqlite3_step(st_r)) == SQLITE_ROW) {
         Detector::Rule rule;

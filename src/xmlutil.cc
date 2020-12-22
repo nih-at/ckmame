@@ -55,7 +55,6 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 
 #define XMLU_MAX_PATH 8192
 
-static const xmlu_entity_t *find_entity(const char *, const xmlu_entity_t *, int);
 static int xml_close(void *);
 static int xml_read(void *source, char *buffer, int length);
 
