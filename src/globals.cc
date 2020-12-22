@@ -54,7 +54,7 @@ int fix_options = 0;
 romdb_t *db = NULL;
 romdb_t *old_db = NULL;
 
-detector_t *detector = NULL;
+DetectorPtr detector;
 
 parray_t *superfluous = NULL;
 

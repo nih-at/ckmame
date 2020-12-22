@@ -45,6 +45,8 @@
 #include "globals.h"
 #include "output.h"
 #include "parse.h"
+#include "ParserSourceFile.h"
+#include "ParserSourceZip.h"
 #include "romdb.h"
 #include "types.h"
 #include "xmalloc.h"
@@ -103,8 +105,8 @@ struct option options[] = {
 
 #define DEFAULT_FILES_ONLY "*.dat"
 
-static int process_file(const char *, const parray_t *, const dat_entry_t *, const parray_t *, const parray_t *, output_context_t *);
-static int process_stdin(const parray_t *, const dat_entry_t *, output_context_t *);
+static int process_file(const char *, const std::unordered_set<std::string> &, const dat_entry_t *, const std::unordered_set<std::string> &, const std::unordered_set<std::string> &, output_context_t *);
+static int process_stdin(const std::unordered_set<std::string> &, const dat_entry_t *, output_context_t *);
 
 static int hashtypes;
 static bool cache_directory;
@@ -115,9 +117,9 @@ main(int argc, char **argv) {
     output_context_t *out;
     const char *dbname, *dbname_real;
     char tmpnam_buffer[L_tmpnam];
-    parray_t *exclude;
-    parray_t *only_files;
-    parray_t *skip_files;
+    std::unordered_set<std::string> exclude;
+    std::unordered_set<std::string> only_files;
+    std::unordered_set<std::string> skip_files;
     dat_entry_t dat;
     output_format_t fmt;
     char *detector_name;
@@ -140,90 +142,86 @@ main(int argc, char **argv) {
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
     dat_entry_init(&dat);
-    exclude = NULL;
-    only_files = skip_files = NULL;
     fmt = OUTPUT_FMT_DB;
     hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
     detector_name = NULL;
 
     opterr = 0;
     while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
-	switch (c) {
-	case 'h':
-	    fputs(help_head, stdout);
-	    printf(usage, getprogname());
-	    fputs(help, stdout);
-	    exit(0);
-	case 'V':
-	    fputs(version_string, stdout);
-	    exit(0);
-	case 'C':
-	    hashtypes = Hashes::types_from_string(optarg);
-	    if (hashtypes == 0) {
-		fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), optarg);
-		exit(1);
-	    }
-	    break;
-	case 'F':
-	    if (strcmp(optarg, "cm") == 0)
-		fmt = OUTPUT_FMT_CM;
-	    else if (strcmp(optarg, "dat") == 0)
-		fmt = OUTPUT_FMT_DATAFILE_XML;
-	    else if (strcmp(optarg, "db") == 0)
-		fmt = OUTPUT_FMT_DB;
-	    else if (strcmp(optarg, "mtree") == 0)
-		fmt = OUTPUT_FMT_MTREE;
-	    else {
-		fprintf(stderr, "%s: unknown output format '%s'\n", getprogname(), optarg);
-		exit(1);
-	    }
-	    break;
-	case 'o':
-	    dbname = optarg;
-	    break;
-	case 't':
-	    flags |= OUTPUT_FL_TEMP;
-	    break;
-	case 'u':
-	    roms_unzipped = 1;
-	    break;
-	case 'x':
-	    if (exclude == NULL)
-		exclude = parray_new();
-	    parray_push(exclude, xstrdup(optarg));
-	    break;
-	case OPT_DETECTOR:
-	    detector_name = optarg;
-	    break;
-	case OPT_NO_DIRECTORY_CACHE:
-	    cache_directory = false;
-	    break;
-	case OPT_ONLY_FILES:
-	    if (only_files == NULL)
-		only_files = parray_new();
-	    parray_push(only_files, xstrdup(optarg));
-	    break;
-	case OPT_PROG_DESCRIPTION:
-	    dat_entry_description(&dat) = xstrdup(optarg);
-	    break;
-	case OPT_PROG_NAME:
-	    dat_entry_name(&dat) = xstrdup(optarg);
-	    break;
-	case OPT_RUNTEST:
-	    runtest = true;
-	    break;
-	case OPT_PROG_VERSION:
-	    dat_entry_version(&dat) = xstrdup(optarg);
-	    break;
-	case OPT_SKIP_FILES:
-	    if (skip_files == NULL)
-		skip_files = parray_new();
-	    parray_push(skip_files, xstrdup(optarg));
-	    break;
-	default:
-	    fprintf(stderr, usage, getprogname());
-	    exit(1);
-	}
+        switch (c) {
+            case 'h':
+                fputs(help_head, stdout);
+                printf(usage, getprogname());
+                fputs(help, stdout);
+                exit(0);
+            case 'V':
+                fputs(version_string, stdout);
+                exit(0);
+            case 'C':
+                hashtypes = Hashes::types_from_string(optarg);
+                if (hashtypes == 0) {
+                    fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), optarg);
+                    exit(1);
+                }
+                break;
+            case 'F':
+                if (strcmp(optarg, "cm") == 0) {
+                    fmt = OUTPUT_FMT_CM;
+                }
+                else if (strcmp(optarg, "dat") == 0) {
+                    fmt = OUTPUT_FMT_DATAFILE_XML;
+                }
+                else if (strcmp(optarg, "db") == 0) {
+                    fmt = OUTPUT_FMT_DB;
+                }
+                else if (strcmp(optarg, "mtree") == 0) {
+                    fmt = OUTPUT_FMT_MTREE;
+                }
+                else {
+                    fprintf(stderr, "%s: unknown output format '%s'\n", getprogname(), optarg);
+                    exit(1);
+                }
+                break;
+            case 'o':
+                dbname = optarg;
+                break;
+            case 't':
+                flags |= OUTPUT_FL_TEMP;
+                break;
+            case 'u':
+                roms_unzipped = 1;
+                break;
+            case 'x':
+                exclude.insert(optarg);
+                break;
+            case OPT_DETECTOR:
+                detector_name = optarg;
+                break;
+            case OPT_NO_DIRECTORY_CACHE:
+                cache_directory = false;
+                break;
+            case OPT_ONLY_FILES:
+                only_files.insert(optarg);
+                break;
+            case OPT_PROG_DESCRIPTION:
+                dat_entry_description(&dat) = xstrdup(optarg);
+                break;
+            case OPT_PROG_NAME:
+                dat_entry_name(&dat) = xstrdup(optarg);
+                break;
+            case OPT_RUNTEST:
+                runtest = true;
+                break;
+            case OPT_PROG_VERSION:
+                dat_entry_version(&dat) = xstrdup(optarg);
+                break;
+            case OPT_SKIP_FILES:
+                skip_files.insert(optarg);
+                break;
+            default:
+                fprintf(stderr, usage, getprogname());
+                exit(1);
+        }
     }
 
     if (argc - optind > 1 && dat_entry_name(&dat)) {
@@ -254,9 +252,10 @@ main(int argc, char **argv) {
     if (detector_name) {
 #if defined(HAVE_LIBXML2)
 	seterrinfo(detector_name, "");
-	detector = detector_parse(detector_name);
-	if (detector != NULL)
-	    output_detector(out, detector);
+	detector = Detector::parse(detector_name);
+        if (detector != NULL) {
+	    output_detector(out, detector.get());
+        }
 #else
 	myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
 #endif
@@ -264,13 +263,11 @@ main(int argc, char **argv) {
 
 
     /* TODO: handle errors */
-    if (optind == argc)
+    if (optind == argc) {
 	process_stdin(exclude, &dat, out);
+    }
     else {
-	if (only_files == NULL) {
-	    only_files = parray_new();
-	    parray_push(only_files, xstrdup(DEFAULT_FILES_ONLY));
-	}
+        only_files.insert(DEFAULT_FILES_ONLY);
 
 	for (i = optind; i < argc; i++) {
 	    if (process_file(argv[i], exclude, &dat, only_files, skip_files, out) < 0) {
@@ -284,18 +281,9 @@ main(int argc, char **argv) {
 	output_close(out);
     }
 
-    if (detector)
-	detector_free(detector);
-
-    if (exclude)
-	parray_free(exclude, free);
-
-    if (only_files)
-	parray_free(only_files, free);
-    if (skip_files)
-	parray_free(skip_files, free);
-    if (roms_unzipped)
+    if (roms_unzipped) {
 	dbh_cache_close_all();
+    }
 
     if (flags & OUTPUT_FL_TEMP) {
 	if (rename_or_move(dbname, dbname_real) != 0) {
@@ -311,9 +299,8 @@ main(int argc, char **argv) {
 
 
 int
-process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat, const parray_t *files_only, const parray_t *files_skip, output_context_t *out) {
+process_file(const char *fname, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, const std::unordered_set<std::string> &files_only, const std::unordered_set<std::string> &files_skip, output_context_t *out) {
     romdb_t *mdb;
-    parser_source_t *ps;
     struct zip *za;
 
     if ((mdb = romdb_open(fname, DBH_READ)) != NULL) {
@@ -330,16 +317,22 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	for (i = 0; i < zip_get_num_files(za); i++) {
 	    name = zip_get_name(za, i, 0);
 
-	    if (!name_matches(name, files_only) || name_matches(name, files_skip))
+            if (files_only.find(name) == files_only.end() || files_skip.find(name) != files_skip.end()) {
 		continue;
+            }
 
-	    if ((ps = ps_new_zip(fname, za, name)) == NULL) {
+            try {
+                auto ps = std::make_shared<ParserSourceZip>(fname, za, name);
+
+                if (!ParserContext::parse(ps, exclude, dat, out, parser_flags)) {
+                    err = -1;
+                }
+           }
+            catch (std::exception &e) {
 		err = -1;
 		continue;
 	    }
-	    if (parse(ps, exclude, dat, out, parser_flags) < 0)
-		err = -1;
-	}
+ 	}
 	zip_close(za);
 
 	return err;
@@ -352,16 +345,12 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	    return -1;
 	}
 	if ((st.st_mode & S_IFMT) == S_IFDIR) {
-	    ParserContext *ctx;
-	    int ret;
-
-	    if (cache_directory)
+            if (cache_directory) {
 		Archive::register_cache_directory(fname);
+            }
 
-	    ctx = parser_context_new(NULL, exclude, dat, out, parser_flags);
-	    ret = parse_dir(fname, ctx, hashtypes);
-	    parser_context_free(ctx);
-	    return ret;
+            auto ctx = ParserContext(NULL, exclude, dat, out, parser_flags);
+            return ctx.parse_dir(fname, hashtypes);
 	}
 
 	if (roms_unzipped) {
@@ -369,20 +358,25 @@ process_file(const char *fname, const parray_t *exclude, const dat_entry_t *dat,
 	    return -1;
 	}
 
-	if ((ps = ps_new_file(fname)) == NULL)
+        try {
+            auto ps = std::make_shared<ParserSourceFile>(fname);
+            return ParserContext::parse(ps, exclude, dat, out, parser_flags);
+        }
+        catch (std::exception &e) {
 	    return -1;
-
-	return parse(ps, exclude, dat, out, parser_flags);
+        }
     }
 }
 
 
 int
-process_stdin(const parray_t *exclude, const dat_entry_t *dat, output_context_t *out) {
-    parser_source_t *ps;
+process_stdin(const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *out) {
+    try {
+        auto ps = std::make_shared<ParserSourceFile>("");
 
-    if ((ps = ps_new_stdin()) == NULL)
-	return -1;
-
-    return parse(ps, exclude, dat, out, parser_flags);
+        return ParserContext::parse(ps, exclude, dat, out, parser_flags);
+    }
+    catch (std::exception &e) {
+        return -1;
+    }
 }

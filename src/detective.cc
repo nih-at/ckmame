@@ -135,7 +135,7 @@ main(int argc, char **argv) {
 
     if (detector_name) {
 #if defined(HAVE_LIBXML2)
-	if ((detector = detector_parse(detector_name)) == NULL) {
+        if ((detector = Detector::parse(detector_name)) == NULL) {
 	    myerror(ERRSTR, "cannot parse detector '%s'", detector_name);
 	    exit(1);
 	}

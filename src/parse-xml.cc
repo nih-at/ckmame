@@ -200,9 +200,8 @@ static const std::unordered_map<std::string, XmluEntity> entities = {
 };
 
 
-int
-parse_xml(ParserSource *ps, ParserContext *ctx) {
-    return xmlu_parse(ps, ctx, parse_xml_lineno_cb, entities);
+bool ParserContext::parse_xml() {
+    return xmlu_parse(ps.get(), this, parse_xml_lineno_cb, entities);
 }
 
 

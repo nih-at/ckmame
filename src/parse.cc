@@ -59,7 +59,7 @@
     } while (0)
 
 
-bool ParserContext::parse(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *out, int flags) {
+bool ParserContext::parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *out, int flags) {
     ParserContext ctx(source, exclude, dat, out, flags);
 
     bool ok;
@@ -248,16 +248,20 @@ bool ParserContext::file_name(filetype_t ft, const std::string &attr) {
 
 
 bool ParserContext::file_size(filetype_t ft, const std::string &attr) {
+    /* TODO: check for strol errors */
+    return file_size(ft, strtouq(attr.c_str(), NULL, 0));
+}
+
+
+bool ParserContext::file_size(filetype_t ft, uint64_t size) {
     CHECK_STATE(PARSE_IN_FILE);
 
     if (ft == TYPE_DISK) {
-	myerror(ERRFILE, "%d: unknown attribute `size' for disk", lineno);
-	return false;
+        myerror(ERRFILE, "%d: unknown attribute `size' for disk", lineno);
+        return false;
     }
 
-    /* TODO: check for strol errors */
-    r->size = strtol(attr.c_str(), NULL, 0);
-
+    r->size = size;
     return true;
 }
 
@@ -374,7 +378,7 @@ bool ParserContext::prog_description(const std::string &attr) {
 bool ParserContext::prog_header(const std::string attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
-    if (detector != 0) {
+    if (detector) {
 	myerror(ERRFILE, "%d: warning: detector already defined, header '%s' ignored", lineno, attr.c_str());
 	return true;
     }
@@ -387,14 +391,15 @@ bool ParserContext::prog_header(const std::string attr) {
 	return false;
     }
 #if defined(HAVE_LIBXML2)
-    if ((detector = detector_parse_ps(dps.get())) == NULL) {
-	myerror(ERRFILESTR, "%d: cannot parse detector '%s'", lineno, attr.c_str());
+    detector = Detector::parse(dps.get());
+    if (!detector) {
+        myerror(ERRFILESTR, "%d: cannot parse detector '%s'", lineno, attr.c_str());
         ok = false;
     }
     else
 #endif
     {
-        if (output_detector(output, detector) < 0) {
+        if (output_detector(output, detector.get()) < 0) {
             ok = false;
         }
     }
@@ -426,7 +431,7 @@ ParserContext::~ParserContext() {
 }
 
 
-ParserContext::ParserContext(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER), r(NULL), d(NULL) {
+ParserContext::ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER), r(NULL), d(NULL) {
     dat_entry_merge(&dat_default, dat, NULL);
     full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
     dat_entry_init(&de);

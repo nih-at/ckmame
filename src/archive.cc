@@ -201,7 +201,7 @@ void Archive::file_match_detector(uint64_t index) {
         file.status = STATUS_BADDUMP;
     }
     
-    detector_execute(detector, &file, Archive::file_read_c, fp.get());
+    detector->execute(&file, Archive::file_read_c, fp.get());
 }
 
 

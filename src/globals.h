@@ -65,7 +65,7 @@ extern int fix_options;
 extern romdb_t *db;
 extern romdb_t *old_db;
 
-extern detector_t *detector;
+extern DetectorPtr detector;
 
 extern parray_t *superfluous;
 

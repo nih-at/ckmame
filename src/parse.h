@@ -35,7 +35,8 @@
 */
 
 
-#include <stdio.h>
+#include <cstdio>
+#include <unordered_set>
 
 #include "dat.h"
 #include "game.h"
@@ -55,7 +56,7 @@ typedef enum parser_state parser_state_t;
 
 class ParserContext {
 public:
-    static bool parse(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output, int flags);
+    static bool parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *output, int flags);
 
     /* TODO: move out of context */
     size_t lineno; /* current line number in input file */
@@ -85,8 +86,7 @@ public:
     bool prog_name(const std::string &attr);
     bool prog_version(const std::string &attr);
 
-private:
-    ParserContext(ParserSourcePtr source, const std::vector<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags);
+    ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags);
     ~ParserContext();
     
     bool parse_cm();
@@ -94,14 +94,15 @@ private:
     bool parse_rc();
     bool parse_xml();
     
-    
+private:
+
     bool header_end();
     void disk_end();
     void rom_end(filetype_t);
     bool ignore_game(const std::string &name);
 
     /* config */
-    std::vector<std::string> ignore;
+    std::unordered_set<std::string> ignore;
     dat_entry_t dat_default;
 
     /* output */
@@ -122,11 +123,6 @@ private:
 /* parser functions */
 
 
-int export_db(romdb_t *, const parray_t *, const dat_entry_t *, output_context_t *);
-
-
-/* util functions */
-
-int name_matches(const char *, const parray_t *);
+int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *context);
 
 #endif /* parse.h */

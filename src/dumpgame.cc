@@ -448,14 +448,14 @@ dump_dat(int dummy) {
 /*ARGSUSED1*/
 static int
 dump_detector(int dummy) {
-    detector_t *d;
+    DetectorPtr detector;
 
-    if ((d = romdb_read_detector(db)) != NULL) {
-	printf("%s", detector_name(d));
-	if (detector_version(d))
-	    printf(" (%s)", detector_version(d));
+    if ((detector = romdb_read_detector(db))) {
+        printf("%s", detector->name.c_str());
+        if (!detector->version.empty()) {
+            printf(" (%s)", detector->version.c_str());
+        }
 	printf("\n");
-	detector_free(d);
     }
 
     return 0;

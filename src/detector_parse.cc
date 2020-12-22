@@ -37,21 +37,15 @@
 #include <string.h>
 
 #include "detector.h"
+#include "ParserSourceFile.h"
 
+DetectorPtr Detector::parse(const std::string &filename) {
+    try {
+        auto ps = ParserSourceFile(filename);
 
-detector_t *
-detector_parse(const char *fname) {
-    parser_source_t *ps;
-    detector_t *d;
-
-    if ((ps = ps_new_file(fname)) == NULL) {
-	/* TODO: error */
-	return NULL;
+        return Detector::parse(&ps);
+    } catch (std::exception &e) {
+        // TODO: report error
+        return NULL;
     }
-
-    d = detector_parse_ps(ps);
-
-    ps_close(ps);
-
-    return d;
 }

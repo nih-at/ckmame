@@ -40,9 +40,9 @@
 
 enum parse_state { st_top, st_game, st_prog };
 
-class Tokenizer {
+class CmTokenizer {
 public:
-    Tokenizer(const std::string &s) : string(s), position(0) { }
+    CmTokenizer(const std::string &s) : string(s), position(0) { }
     
     std::string get();
     
@@ -62,7 +62,7 @@ bool ParserContext::parse_cm() {
     while ((line = ps->getline()).has_value()) {
         lineno++;
         
-        auto tokenizer = Tokenizer(line.value());
+        auto tokenizer = CmTokenizer(line.value());
         
         auto cmd = tokenizer.get();
         
@@ -272,7 +272,7 @@ bool ParserContext::parse_cm() {
 }
 
 
-std::string Tokenizer::get() {
+std::string CmTokenizer::get() {
     if (position == std::string::npos) {
         return "";
     }

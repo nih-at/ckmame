@@ -43,8 +43,7 @@
 #include "error.h"
 
 /*ARGSUSED1*/
-int
-xmlu_parse(void *ps, void *ctx, xmlu_lineno_cb lineno_cb, const xmlu_entity_t *entities, int nentities) {
+int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
     myerror(ERRFILE, "support for XML parsing not compiled in.");
     return -1;
 }
@@ -61,8 +60,7 @@ static int xml_close(void *);
 static int xml_read(void *source, char *buffer, int length);
 
 
-int
-xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
+int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
     auto reader = xmlReaderForIO(xml_read, xml_close, ps, NULL, NULL, 0);
     if (reader == NULL) {
 	/* TODO */

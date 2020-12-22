@@ -72,9 +72,9 @@ struct {
 
 size_t nfields = sizeof(fields) / sizeof(fields[0]);
 
-class Tokenizer {
+class RcTokenizer {
 public:
-    Tokenizer(const std::string &s) : string(s), position(0) { }
+    RcTokenizer(const std::string &s) : string(s), position(0) { }
     
     std::string get();
     
@@ -144,7 +144,7 @@ bool ParserContext::parse_rc() {
     return 0;
 }
 
-std::string Tokenizer::get() {
+std::string RcTokenizer::get() {
     if (position == std::string::npos) {
         return "";
     }
@@ -194,7 +194,7 @@ void ROMLine::flush() {
 }
 
 bool ROMLine::process(const std::string &line) {
-    auto tokenizer = Tokenizer(line);
+    auto tokenizer = RcTokenizer(line);
 
     if (!tokenizer.get().empty()) {
         return false;

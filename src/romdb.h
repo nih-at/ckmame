@@ -49,7 +49,7 @@ int romdb_delete_game(romdb_t *, const char *);
 int romdb_has_disks(romdb_t *);
 romdb_t *romdb_open(const char *, int);
 dat_t *romdb_read_dat(romdb_t *);
-detector_t *romdb_read_detector(romdb_t *);
+DetectorPtr romdb_read_detector(romdb_t *db);
 array_t *romdb_read_file_by_hash(romdb_t *, filetype_t, const Hashes *);
 array_t *romdb_read_file_by_name(romdb_t *, filetype_t, const char *);
 GamePtr romdb_read_game(romdb_t *db, const std::string &name);

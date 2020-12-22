@@ -31,13 +31,13 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <unordered_set>
 
 #include "error.h"
 #include "parse.h"
 #include <stdlib.h>
 
-int
-export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out) {
+int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *out) {
     dat_entry_t de;
 
     if (out == NULL) {
@@ -66,7 +66,8 @@ export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_c
 	    /* TODO: error */
 	    continue;
 	}
-        if (!name_matches(game->name.c_str(), exclude)) {
+        
+        if (exclude.find(game->name) == exclude.end()) {
 	    output_game(out, game);
         }
     }
