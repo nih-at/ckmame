@@ -31,29 +31,16 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "OutputContextDb.h"
 
+#include <algorithm>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "error.h"
 #include "file_location.h"
-#include "output.h"
-#include "romdb.h"
 #include "xmalloc.h"
-
-
-struct output_context_db {
-    output_context_t output;
-
-    romdb_t *db;
-
-    dat_t *dat;
-
-    parray_t *lost_children;
-};
-
-typedef struct output_context_db output_context_db_t;
 
 struct fbh_context {
     sqlite3 *db;
@@ -61,48 +48,26 @@ struct fbh_context {
 };
 
 
-static void familymeeting(romdb_t *, Game *, Game *);
-static int handle_lost(output_context_db_t *);
-static bool lost(output_context_db_t *, Game *);
-static int output_db_close(output_context_t *);
-static int output_db_detector(output_context_t *, detector_t *);
-static int output_db_game(output_context_t *, GamePtr);
-static int output_db_header(output_context_t *, dat_entry_t *);
-
-
-output_context_t *
-output_db_new(const char *dbname, int flags) {
-    output_context_db_t *ctx;
-
-    ctx = (output_context_db_t *)xmalloc(sizeof(*ctx));
-
-    ctx->output.close = output_db_close;
-    ctx->output.output_detector = output_db_detector;
-    ctx->output.output_game = output_db_game;
-    ctx->output.output_header = output_db_header;
-
-    ctx->dat = dat_new();
-    ctx->lost_children = parray_new();
-    ctx->db = NULL;
-
-    if (remove(dbname) != 0 && errno != ENOENT) {
-	output_db_close((output_context_t *)ctx);
-	myerror(ERRSTR, "can't remove '%s'", dbname);
-	return NULL;
+OutputContextDb::OutputContextDb(const std::string &dbname, int flags) : db(NULL) {
+    if (remove(dbname.c_str()) != 0 && errno != ENOENT) {
+	myerror(ERRSTR, "can't remove '%s'", dbname.c_str());
+        throw std::exception();
     }
-    ctx->db = romdb_open(dbname, DBH_NEW);
-    if (ctx->db == NULL) {
-	output_db_close((output_context_t *)ctx);
+    
+    db = romdb_open(dbname.c_str(), DBH_NEW);
+    if (db == NULL) {
 	myerror(ERRDB, "can't create hash table");
-	return NULL;
+        throw std::exception();
     }
-
-    return (output_context_t *)ctx;
 }
 
 
-static void
-familymeeting(romdb_t *db, Game *parent, Game *child) {
+OutputContextDb::~OutputContextDb() {
+    close();
+}
+
+
+void OutputContextDb::familymeeting(Game *parent, Game *child) {
     if (!parent->cloneof[0].empty()) {
 	/* tell child of his grandfather */
         child->cloneof[1] = parent->cloneof[0];
@@ -136,150 +101,122 @@ familymeeting(romdb_t *db, Game *parent, Game *child) {
 }
 
 
-static int
-handle_lost(output_context_db_t *ctx) {
-    while (parray_length(ctx->lost_children) > 0) {
+bool OutputContextDb::handle_lost() {
+    while (!lost_children.empty()) {
 	/* processing order does not matter and deleting last
 	   element is cheaper */
-	for (int i = parray_length(ctx->lost_children) - 1; i >= 0; --i) {
+	for (size_t i = lost_children.size() - 1; i >= 0; --i) {
 	    /* get current lost child from database, get parent,
 	       look if parent is still lost, if not, do child */
-            auto child = romdb_read_game(ctx->db, static_cast<const char *>(parray_get(ctx->lost_children, i)));
+            auto child = romdb_read_game(db, lost_children[i]);
             if (!child) {
-		myerror(ERRDEF, "internal database error: child %s not in database", (const char *)parray_get(ctx->lost_children, i));
-		return -1;
+                myerror(ERRDEF, "internal database error: child %s not in database", lost_children[i].c_str());
+		return false;
 	    }
 
             bool is_lost = true;
 
-            auto parent = romdb_read_game(ctx->db, child->cloneof[0]);
+            auto parent = romdb_read_game(db, child->cloneof[0]);
             if (!parent) {
                 myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", child->name.c_str(), child->cloneof[0].c_str());
                 
                 /* remove non-existent cloneof */
                 child->cloneof[0] = "";
-                romdb_update_game_parent(ctx->db, child.get());
+                romdb_update_game_parent(db, child.get());
                 is_lost = false;
             }
-            else if (!lost(ctx, parent.get())) {
+            else if (!lost(parent.get())) {
                 /* parent found */
-                familymeeting(ctx->db, parent.get(), child.get());
+                familymeeting(parent.get(), child.get());
                 is_lost = false;
             }
             
             if (!is_lost) {
-                romdb_update_file_location(ctx->db, child.get());
-                parray_delete(ctx->lost_children, i, free);
+                romdb_update_file_location(db, child.get());
+                lost_children.erase(lost_children.begin() + static_cast<long>(i));
             }
         }
     }
 
-    return 0;
+    return true;
 }
 
 
-static bool
-lost(output_context_db_t *ctx, Game *game) {
+bool OutputContextDb::lost(Game *game) {
     if (game->cloneof[0].empty()) {
 	return false;
     }
 
-    for (int i = 0; i < parray_length(ctx->lost_children); i++) {
-	if (strcmp(static_cast<const char *>(parray_get(ctx->lost_children, i)), game->name.c_str()) == 0) {
-            return true;
-	}
-    }
-
-    return false;
+    return std::find(lost_children.begin(), lost_children.end(), game->name) != lost_children.end();
 }
 
 
-static int
-output_db_close(output_context_t *out) {
-    output_context_db_t *ctx;
-    int ret;
+bool OutputContextDb::close() {
+    auto ok = true;
 
-    ctx = (output_context_db_t *)out;
+    if (db) {
+        romdb_write_dat(db, dat);
 
-    ret = 0;
+        if (!handle_lost()) {
+            ok = false;
+        }
 
-    if (ctx->db) {
-	romdb_write_dat(ctx->db, ctx->dat);
+        if (sqlite3_exec(romdb_sqlite3(db), sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
+            ok = false;
+        }
 
-	if (handle_lost(ctx) < 0)
-	    ret = -1;
-
-	if (sqlite3_exec(romdb_sqlite3(ctx->db), sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK)
-	    ret = -1;
-
-	romdb_close(ctx->db);
+        romdb_close(db);
+        
+        db = NULL;
     }
 
-    dat_free(ctx->dat);
-    parray_free(ctx->lost_children, free);
-
-    free(ctx);
-
-    return ret;
+    return ok;
 }
 
 
-static int
-output_db_detector(output_context_t *out, detector_t *d) {
-    output_context_db_t *ctx;
-
-    ctx = (output_context_db_t *)out;
-
-    if (romdb_write_detector(ctx->db, d) != 0) {
-	seterrdb(romdb_dbh(ctx->db));
+bool OutputContextDb::detector(detector_t *d) {
+    if (romdb_write_detector(db, d) != 0) {
+	seterrdb(romdb_dbh(db));
 	myerror(ERRDB, "can't write detector to db");
-	return -1;
+	return false;
     }
 
-    return 0;
+    return true;
 }
 
 
-static int
-output_db_game(output_context_t *out, GamePtr game) {
-    auto ctx = reinterpret_cast<output_context_db_t *>(out);
-
-    auto g2 = romdb_read_game(ctx->db, game->name);
+bool OutputContextDb::game(GamePtr game) {
+    auto g2 = romdb_read_game(db, game->name);
     
     if (g2) {
         myerror(ERRDEF, "duplicate game '%s' skipped", game->name.c_str());
-	return -1;
+	return false;
     }
 
-    game->dat_no = dat_length(ctx->dat) - 1;
+    game->dat_no = dat.size() - 1;
 
     if (!game->cloneof[0].empty()) {
-        auto parent = romdb_read_game(ctx->db, game->cloneof[0]);
-        if (!parent || lost(ctx, parent.get())) {
-            parray_push(ctx->lost_children, xstrdup(game->name.c_str()));
+        auto parent = romdb_read_game(db, game->cloneof[0]);
+        if (!parent || lost(parent.get())) {
+            lost_children.push_back(game->name);
         }
         else {
-            familymeeting(ctx->db, parent.get(), game.get());
+            familymeeting(parent.get(), game.get());
             /* TODO: check error */
         }
     }
 
-    if (romdb_write_game(ctx->db, game.get()) != 0) {
+    if (romdb_write_game(db, game.get()) != 0) {
 	myerror(ERRDB, "can't write game '%s' to db", game->name.c_str());
-	return -1;
+	return false;
     }
 
-    return 0;
+    return true;
 }
 
 
-static int
-output_db_header(output_context_t *out, dat_entry_t *dat) {
-    output_context_db_t *ctx;
-
-    ctx = (output_context_db_t *)out;
-
-    dat_push(ctx->dat, dat, NULL);
-
-    return 0;
+bool OutputContextDb::header(DatEntry *entry) {
+    dat.push_back(*entry);
+ 
+    return true;
 }

@@ -1,5 +1,8 @@
+#ifndef HAD_OUTPUT_CM_H
+#define HAD_OUTPUT_CM_H
+
 /*
-  romdb_write_dat.c -- write dat struct to db
+  OutputContextCm.h -- write games to clrmamepro dat files
   Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -31,29 +34,23 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "output.h"
 
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
+class OutputContextCm : public OutputContext {
+public:
+    OutputContextCm(const std::string &fname, int flags);
+    virtual ~OutputContextCm();
+    
+    virtual bool close();
+    virtual bool game(GamePtr game);
+    virtual bool header(DatEntry *dat);
+    
+private:
+    FILE *f;
+    std::string fname;
+    std::vector<GamePtr> games;
+    
+    bool write_game(Game *game);
+};
 
-#include "dat.h"
-#include "romdb.h"
-#include "sq_util.h"
-#include "types.h"
-
-
-int
-romdb_write_dat(romdb_t *db, const std::vector<DatEntry> &dat) {
-    sqlite3_stmt *stmt;
-    int i;
-
-    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT)) == NULL)
-	return -1;
-
-    for (size_t i = 0; i < dat.size(); i++) {
-        if (sqlite3_bind_int(stmt, 1, i) != SQLITE_OK || sq3_set_string(stmt, 2, dat[i].name) != SQLITE_OK || sq3_set_string(stmt, 3, dat[i].description) != SQLITE_OK || sq3_set_string(stmt, 4, dat[i].version) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
-	    return -1;
-    }
-
-    return 0;
-}
+#endif // HAD_OUTPUT_CM_H

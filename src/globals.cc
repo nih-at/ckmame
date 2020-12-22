@@ -67,7 +67,7 @@ delete_list_t *needed_delete_list = NULL;
 delete_list_t *superfluous_delete_list = NULL;
 
 tree_t *check_tree = NULL;
-output_context_t *fixdat = NULL;
+OutputContextPtr fixdat;
 
 /* roms dir */
 char rom_dir_normalized[MAXPATHLEN];

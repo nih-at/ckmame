@@ -1,5 +1,8 @@
+#ifndef HAD_OUTPUT_XML_H
+#define HAD_OUTPUT_XML_H
+
 /*
-  dat_entry_free.c -- free dat entry
+  OutputContextXml.h -- write games to datafile.dtd XML files
   Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -31,17 +34,24 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <stdlib.h>
+#include "output.h"
 
-#include "dat.h"
+#include <libxml/tree.h>
 
+class OutputContextXml : public OutputContext {
+public:
+    OutputContextXml(const std::string &fname, int flags);
+    virtual ~OutputContextXml();
+    
+    virtual bool close();
+    virtual bool game(GamePtr game);
+    virtual bool header(DatEntry *dat);
+    
+private:
+    xmlDocPtr doc;
+    xmlNodePtr root;
+    FILE *f;
+    std::string fname;
+};
 
-void
-dat_entry_finalize(void *vde) {
-    dat_entry_t *de = static_cast<dat_entry_t *>(vde);
-    free(de->name);
-    free(de->description);
-    free(de->version);
-
-    de->name = de->description = de->version = NULL;
-}
+#endif // HAD_OUTPUT_XML_H

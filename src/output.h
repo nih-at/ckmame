@@ -34,42 +34,42 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <memory>
 
 #include "dat.h"
 #include "detector.h"
 #include "game.h"
 
+class OutputContext;
+
+typedef std::shared_ptr<OutputContext> OutputContextPtr;
 
 typedef struct output_context output_context_t;
-
-struct output_context {
-    int (*close)(output_context_t *);
-    int (*output_detector)(output_context_t *, detector_t *);
-    int (*output_game)(output_context_t *, GamePtr);
-    int (*output_header)(output_context_t *, dat_entry_t *);
-};
-
-enum output_format { OUTPUT_FMT_CM, OUTPUT_FMT_DATAFILE_XML, OUTPUT_FMT_DB, OUTPUT_FMT_MTREE };
-
-typedef enum output_format output_format_t;
 
 #define OUTPUT_FL_EXTENDED 1
 #define OUTPUT_FL_TEMP     2
 
-output_context_t *output_cm_new(const char *, int);
-output_context_t *output_db_new(const char *, int);
-output_context_t *output_datafile_xml_new(const char *, int);
-output_context_t *output_mtree_new(const char *, int);
+class OutputContext {
+public:
+    enum Format {
+        FORMAT_CM,
+        FORMAT_DATAFILE_XML,
+        FORMAT_DB,
+        FORMAT_MTREE
+    };
+    
+    virtual ~OutputContext() { }
 
-int output_close(output_context_t *);
-int output_detector(output_context_t *, detector_t *);
-int output_game(output_context_t *, GamePtr);
-int output_header(output_context_t *, dat_entry_t *);
+    static OutputContextPtr create(Format format, const std::string &fname, int flags);
 
-output_context_t *output_new(output_format_t, const char *, int);
-
-/* for output_foo.c use only */
-void output_cond_print_string(FILE *, const char *, const std::string &, const char *);
-void output_cond_print_hash(FILE *, const char *, int, Hashes *, const char *);
+    virtual bool close() = 0;
+    virtual bool detector(Detector *detector) { return true; }
+    virtual bool game(GamePtr game) = 0;
+    virtual bool header(DatEntry *dat) { return true; }
+    
+protected:
+    void cond_print_string(FILE *f, const char *prefix, const std::string &string, const char *postfix);
+    void cond_print_hash(FILE *f, const char *prefix, int types, const Hashes *hashes, const char *postfix);
+};
 
 #endif /* output.h */

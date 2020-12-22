@@ -33,8 +33,6 @@ set(COMMON_SOURCES
   check_util.cc
   cleanup.cc
   dat_entry.cc
-  dat_entry_finalize.cc
-  dat_push.cc
   db_init.cc
   dbh.cc
   dbh_cache.cc
@@ -88,6 +86,8 @@ set(COMMON_SOURCES
   parse-rc.cc
   parse.cc
   parser_source.cc
+  ParserSourceFile.cc
+  ParserSourceZip.cc
   ptr_sort.cc
   result.cc
   romdb.cc

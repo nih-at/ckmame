@@ -160,7 +160,7 @@ main(int argc, char **argv) {
     const char *dbname, *olddbname;
     int c, found;
     parray_t *list;
-    char *fixdat_name;
+    std::string fixdat_name;
     char *game_list;
     bool auto_fixdat;
 
@@ -174,7 +174,6 @@ main(int argc, char **argv) {
     if (olddbname == NULL)
 	olddbname = DBH_DEFAULT_OLD_DB_NAME;
     fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
-    fixdat_name = NULL;
     ignore_extra = 0;
     check_integrity = 0;
     roms_unzipped = 0;
@@ -360,36 +359,34 @@ main(int argc, char **argv) {
     /* TODO: check for errors other than ENOENT */
     old_db = romdb_open(olddbname, DBH_READ);
 
-    if (auto_fixdat || fixdat_name != NULL) {
-	dat_entry_t de;
+    if (auto_fixdat || !fixdat_name.empty()) {
+	DatEntry de;
 
 	if (auto_fixdat) {
-	    dat_t *d;
-
-	    if (fixdat_name != NULL) {
+	    if (!fixdat_name.empty()) {
 		myerror(ERRDEF, "do not use --autofixdat and --fixdat together");
 		exit(1);
 	    }
-	    if ((d = romdb_read_dat(db)) == NULL) {
+
+	    auto d = romdb_read_dat(db);
+
+	    if (d.empty()) {
 		myerror(ERRDEF, "database error reading /dat");
 		exit(1);
 	    }
 
-	    if (asprintf(&fixdat_name, "fix_%s (%s).dat", dat_name(d, 0), dat_version(d, 0)) < 0) {
-		myerror(ERRSTR, "error creating output file name");
-		exit(1);
-	    }
+	    fixdat_name = "fix_" + d[0].name + " (" + d[0].version + ").dat";
 	}
 
-	de.name = strdup("Fixdat");
-	de.description = strdup("Fixdat by ckmame");
-	de.version = strdup("1");
+	de.name = "Fixdat";
+	de.description = "Fixdat by ckmame";
+	de.version = "1";
 
-	if ((fixdat = output_new(OUTPUT_FMT_DATAFILE_XML, fixdat_name, 0)) == NULL)
+	if ((fixdat = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, fixdat_name, 0)) == NULL) {
 	    exit(1);
+	}
 
-	output_header(fixdat, &de);
-	dat_entry_finalize(&de);
+	fixdat->header(&de);
     }
 
     if (roms_unzipped && romdb_has_disks(db) == 1) {
@@ -499,8 +496,9 @@ main(int argc, char **argv) {
 	}
     }
 
-    if (fixdat)
-	output_close(fixdat);
+    if (fixdat) {
+	fixdat->close();
+    }
 
     if ((fix_options & FIX_DO) && (fix_options & FIX_CLEANUP_EXTRA))
 	cleanup_list(extra_list, extra_delete_list, 0);

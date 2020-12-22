@@ -31,91 +31,59 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "OutputContextXml.h"
 
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <libxml/tree.h>
-
 #include "error.h"
 #include "output.h"
 #include "util.h"
-#include "xmalloc.h"
 
+#define xml_string(X) (reinterpret_cast<const xmlChar *>(X))
 
-struct output_context_xml {
-    output_context_t output;
-
-    xmlDocPtr doc;
-    xmlNodePtr root;
-    FILE *f;
-    char *fname;
-};
-
-typedef struct output_context_xml output_context_xml_t;
-
-
-static int output_datafile_xml_close(output_context_t *);
-static int output_datafile_xml_game(output_context_t *, GamePtr);
-static int output_datafile_xml_header(output_context_t *, dat_entry_t *);
-
-
-output_context_t *
-output_datafile_xml_new(const char *fname, int flags) {
-    output_context_xml_t *ctx;
-    FILE *f;
-
-    ctx = (output_context_xml_t *)xmalloc(sizeof(*ctx));
-
-    if (fname == NULL) {
+OutputContextXml::OutputContextXml(const std::string &fname_, int flags) : fname(fname_) {
+    if (fname.empty()) {
 	f = stdout;
 	fname = "*stdout*";
     }
     else {
-	if ((f = fopen(fname, "w")) == NULL) {
-	    myerror(ERRDEF, "cannot create '%s': %s", fname, strerror(errno));
-	    free(ctx);
-	    return NULL;
+	if ((f = fopen(fname.c_str(), "w")) == NULL) {
+	    myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
+            throw std::exception();
 	}
     }
 
-    ctx->output.close = output_datafile_xml_close;
-    ctx->output.output_detector = NULL;
-    ctx->output.output_game = output_datafile_xml_game;
-    ctx->output.output_header = output_datafile_xml_header;
-
-    ctx->f = f;
-    ctx->fname = xstrdup(fname);
-    ctx->doc = xmlNewDoc((const xmlChar *)"1.0");
-    ctx->doc->encoding = (const xmlChar *)strdup("UTF-8");
-    xmlCreateIntSubset(ctx->doc, (const xmlChar *)"datafile", (const xmlChar *)"-//Logiqx//DTD ROM Management Datafile//EN", (const xmlChar *)"http://www.logiqx.com/Dats/datafile.dtd");
-    ctx->root = xmlNewNode(NULL, (const xmlChar *)"datafile");
-    xmlDocSetRootElement(ctx->doc, ctx->root);
-
-    return (output_context_t *)ctx;
+    doc = xmlNewDoc(xml_string("1.0"));
+    doc->encoding = xml_string(strdup("UTF-8"));
+    xmlCreateIntSubset(doc, xml_string("datafile"), xml_string("-//Logiqx//DTD ROM Management Datafile//EN"), xml_string("http://www.logiqx.com/Dats/datafile.dtd"));
+    root = xmlNewNode(NULL, xml_string("datafile"));
+    xmlDocSetRootElement(doc, root);
 }
 
+OutputContextXml::~OutputContextXml() {
+    close();
 
-static int
-output_datafile_xml_close(output_context_t *out) {
-    output_context_xml_t *ctx = (output_context_xml_t *)out;
+    xmlFreeDoc(doc);
+}
 
-    int ret = 0;
-    if (ctx->f != NULL) {
-        if (xmlDocFormatDump(ctx->f, ctx->doc, 1) < 0) {
-            ret = -1;
+bool OutputContextXml::close() {
+    auto ok = true;
+
+    if (f != NULL) {
+        if (xmlDocFormatDump(f, doc, 1) < 0) {
+            ok = false;
         }
-	if (ctx->f != stdout) {
-	    ret |= fclose(ctx->f);
+	if (f != stdout) {
+            if (fclose(f) < 0) {
+                ok = false;
+            }
 	}
     }
 
-    xmlFreeDoc(ctx->doc);
-    free(ctx);
-
-    return ret;
+    return ok;
 }
 
 static void
@@ -123,7 +91,7 @@ set_attribute(xmlNodePtr node, const std::string &name, const std::string &value
     if (value.empty()) {
         return;
     }
-    xmlSetProp(node, reinterpret_cast<const xmlChar *>(name.c_str()), reinterpret_cast<const xmlChar *>(value.c_str()));
+    xmlSetProp(node, xml_string(name.c_str()), xml_string(value.c_str()));
 }
 
 static void
@@ -138,20 +106,18 @@ set_attribute_hash(xmlNodePtr node, const char *name, int type, Hashes *hashes) 
     set_attribute(node, name, hashes->to_string(type));
 }
 
-static int
-output_datafile_xml_game(output_context_t *out, GamePtr game) {
-    auto ctx = reinterpret_cast<output_context_xml_t *>(out);
-    
-    xmlNodePtr xmlGame = xmlNewChild(ctx->root, NULL, reinterpret_cast<const xmlChar *>("game"), NULL);
+
+bool OutputContextXml::game(GamePtr game) {
+    xmlNodePtr xmlGame = xmlNewChild(root, NULL, xml_string("game"), NULL);
     
     set_attribute(xmlGame, "name", game->name);
     set_attribute(xmlGame, "cloneof", game->cloneof[0]);
     /* description is actually required */
-    xmlNewTextChild(xmlGame, NULL, reinterpret_cast<const xmlChar *>("description"), reinterpret_cast<const xmlChar *>(!game->description.empty() ? game->description.c_str() : game->name.c_str()));
+    xmlNewTextChild(xmlGame, NULL, xml_string("description"), xml_string(!game->description.empty() ? game->description.c_str() : game->name.c_str()));
 
     for (size_t i = 0; i < game->roms.size(); i++) {
         auto &rom = game->roms[i];
-        xmlNodePtr xmlRom = xmlNewChild(xmlGame, NULL, reinterpret_cast<const xmlChar *>("rom"), NULL);
+        xmlNodePtr xmlRom = xmlNewChild(xmlGame, NULL, xml_string("rom"), NULL);
         
         set_attribute(xmlRom, "name", rom.name);
         set_attribute_u64(xmlRom, "size", rom.size);
@@ -168,7 +134,7 @@ output_datafile_xml_game(output_context_t *out, GamePtr game) {
 
     for (size_t i = 0; i < game->disks.size(); i++) {
         auto d = &game->disks[i];
-        xmlNodePtr disk = xmlNewChild(xmlGame, NULL, reinterpret_cast<const xmlChar *>("disk"), NULL);
+        xmlNodePtr disk = xmlNewChild(xmlGame, NULL, xml_string("disk"), NULL);
 
         set_attribute(disk, "name", disk_name(d));
         set_attribute_hash(disk, "sha1", Hashes::TYPE_SHA1, disk_hashes(d));
@@ -176,22 +142,17 @@ output_datafile_xml_game(output_context_t *out, GamePtr game) {
         set_attribute(disk, "status", status_name(disk_status(d)));
     }
     
-    return 0;
+    return true;
 }
 
 
-static int
-output_datafile_xml_header(output_context_t *out, dat_entry_t *dat) {
-    output_context_xml_t *ctx;
-
-    ctx = (output_context_xml_t *)out;
+bool OutputContextXml::header(DatEntry *dat) {
+    xmlNodePtr header = xmlNewChild(root, NULL, xml_string("header"), NULL);
     
-    xmlNodePtr header = xmlNewChild(ctx->root, NULL, (const xmlChar *)"header", NULL);
-    
-    xmlNewTextChild(header, NULL, (const xmlChar *)"name", (const xmlChar *)dat_entry_name(dat));
-    xmlNewTextChild(header, NULL, (const xmlChar *)"description", (const xmlChar *)(dat_entry_description(dat) ? dat_entry_description(dat) : dat_entry_name(dat)));
-    xmlNewTextChild(header, NULL, (const xmlChar *)"version", (const xmlChar *)dat_entry_version(dat));
-    xmlNewTextChild(header, NULL, (const xmlChar *)"author", (const xmlChar *)"automatically generated");
+    xmlNewTextChild(header, NULL, xml_string("name"), xml_string(dat->name.c_str()));
+    xmlNewTextChild(header, NULL, xml_string("description"), xml_string(dat->description.empty() ? dat->name.c_str() : dat->description.c_str()));
+    xmlNewTextChild(header, NULL, xml_string("version"), xml_string(dat->version.c_str()));
+    xmlNewTextChild(header, NULL, xml_string("author"), xml_string("automatically generated"));
 
-    return 0;
+    return true;
 }

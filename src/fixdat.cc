@@ -79,6 +79,6 @@ write_fixdat_entry(const Game *game, const Result *res) {
     }
 
     if (!gm->roms.empty() || !gm->disks.empty()) {
-	output_game(fixdat, gm);
+	fixdat->game(gm);
     }
 }

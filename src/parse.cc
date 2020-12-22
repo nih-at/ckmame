@@ -59,7 +59,7 @@
     } while (0)
 
 
-bool ParserContext::parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *out, int flags) {
+bool ParserContext::parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {
     ParserContext ctx(source, exclude, dat, out, flags);
 
     bool ok;
@@ -318,7 +318,7 @@ bool ParserContext::game_end() {
 	    }
 	}
 
-        ok = output_game(output, g) >= 0;
+        ok = output->game(g);
     }
 
     g = NULL;
@@ -369,9 +369,9 @@ bool ParserContext::game_start() {
 bool ParserContext::prog_description(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
-    dat_entry_description(&de) = xstrdup(attr.c_str());
+    de.description = attr;
 
-    return 0;
+    return true;
 }
 
 
@@ -399,7 +399,7 @@ bool ParserContext::prog_header(const std::string attr) {
     else
 #endif
     {
-        if (output_detector(output, detector.get()) < 0) {
+        if (!output->detector(detector.get())) {
             ok = false;
         }
     }
@@ -411,7 +411,7 @@ bool ParserContext::prog_header(const std::string attr) {
 bool ParserContext::prog_name(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
-    dat_entry_name(&de) = xstrdup(attr.c_str());
+    de.name = attr;
 
     return true;
 }
@@ -420,32 +420,29 @@ bool ParserContext::prog_name(const std::string &attr) {
 bool ParserContext::prog_version(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
-    dat_entry_version(&de) = xstrdup(attr.c_str());
+    de.version = attr;
 
     return true;
 }
 
 
 ParserContext::~ParserContext() {
-    dat_entry_finalize(&de);
 }
 
 
-ParserContext::ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER), r(NULL), d(NULL) {
-    dat_entry_merge(&dat_default, dat, NULL);
+ParserContext::ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER), r(NULL), d(NULL) {
+    dat_default.merge(dat, NULL);
     full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
-    dat_entry_init(&de);
 }
 
 
 bool ParserContext::header_end() {
-    dat_entry_t de;
+    DatEntry de;
 
     CHECK_STATE(PARSE_IN_HEADER);
 
-    dat_entry_merge(&de, &dat_default, &de);
-    output_header(output, &de);
-    dat_entry_finalize(&de);
+    de.merge(&dat_default, &de);
+    output->header(&de);
 
     state = PARSE_OUTSIDE;
 

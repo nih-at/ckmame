@@ -105,8 +105,8 @@ struct option options[] = {
 
 #define DEFAULT_FILES_ONLY "*.dat"
 
-static int process_file(const char *, const std::unordered_set<std::string> &, const dat_entry_t *, const std::unordered_set<std::string> &, const std::unordered_set<std::string> &, output_context_t *);
-static int process_stdin(const std::unordered_set<std::string> &, const dat_entry_t *, output_context_t *);
+static int process_file(const char *, const std::unordered_set<std::string> &, const DatEntry *, const std::unordered_set<std::string> &, const std::unordered_set<std::string> &, OutputContext *);
+static int process_stdin(const std::unordered_set<std::string> &, const DatEntry *, OutputContext *);
 
 static int hashtypes;
 static bool cache_directory;
@@ -114,14 +114,14 @@ static int parser_flags;
 
 int
 main(int argc, char **argv) {
-    output_context_t *out;
+    OutputContextPtr out;
     const char *dbname, *dbname_real;
     char tmpnam_buffer[L_tmpnam];
     std::unordered_set<std::string> exclude;
     std::unordered_set<std::string> only_files;
     std::unordered_set<std::string> skip_files;
-    dat_entry_t dat;
-    output_format_t fmt;
+    DatEntry dat;
+    OutputContext::Format fmt;
     char *detector_name;
     int c, i;
     int flags;
@@ -141,8 +141,7 @@ main(int argc, char **argv) {
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
-    dat_entry_init(&dat);
-    fmt = OUTPUT_FMT_DB;
+    fmt = OutputContext::FORMAT_DB;
     hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
     detector_name = NULL;
 
@@ -166,16 +165,16 @@ main(int argc, char **argv) {
                 break;
             case 'F':
                 if (strcmp(optarg, "cm") == 0) {
-                    fmt = OUTPUT_FMT_CM;
+                    fmt = OutputContext::FORMAT_CM;
                 }
                 else if (strcmp(optarg, "dat") == 0) {
-                    fmt = OUTPUT_FMT_DATAFILE_XML;
+                    fmt = OutputContext::FORMAT_DATAFILE_XML;
                 }
                 else if (strcmp(optarg, "db") == 0) {
-                    fmt = OUTPUT_FMT_DB;
+                    fmt = OutputContext::FORMAT_DB;
                 }
                 else if (strcmp(optarg, "mtree") == 0) {
-                    fmt = OUTPUT_FMT_MTREE;
+                    fmt = OutputContext::FORMAT_MTREE;
                 }
                 else {
                     fprintf(stderr, "%s: unknown output format '%s'\n", getprogname(), optarg);
@@ -204,16 +203,16 @@ main(int argc, char **argv) {
                 only_files.insert(optarg);
                 break;
             case OPT_PROG_DESCRIPTION:
-                dat_entry_description(&dat) = xstrdup(optarg);
+                dat.description = optarg;
                 break;
             case OPT_PROG_NAME:
-                dat_entry_name(&dat) = xstrdup(optarg);
+                dat.name = optarg;
                 break;
             case OPT_RUNTEST:
                 runtest = true;
                 break;
             case OPT_PROG_VERSION:
-                dat_entry_version(&dat) = xstrdup(optarg);
+                dat.version = optarg;
                 break;
             case OPT_SKIP_FILES:
                 skip_files.insert(optarg);
@@ -224,14 +223,14 @@ main(int argc, char **argv) {
         }
     }
 
-    if (argc - optind > 1 && dat_entry_name(&dat)) {
+    if (argc - optind > 1 && !dat.name.empty()) {
 	fprintf(stderr,
 		"%s: warning: multiple input files specified, \n\t"
 		"--prog-name and --prog-version are ignored",
 		getprogname());
     }
     if (runtest) {
-	fmt = OUTPUT_FMT_MTREE;
+	fmt = OutputContext::FORMAT_MTREE;
 	flags |= OUTPUT_FL_EXTENDED;
 	parser_flags = PARSER_FL_FULL_ARCHIVE_NAME;
 	cache_directory = false;
@@ -246,15 +245,16 @@ main(int argc, char **argv) {
 	}
     }
 
-    if ((out = output_new(fmt, dbname, flags)) == NULL)
+    if ((out = OutputContext::create(fmt, dbname, flags)) == NULL) {
 	exit(1);
+    }
 
     if (detector_name) {
 #if defined(HAVE_LIBXML2)
 	seterrinfo(detector_name, "");
 	detector = Detector::parse(detector_name);
         if (detector != NULL) {
-	    output_detector(out, detector.get());
+            out->detector(detector.get());
         }
 #else
 	myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
@@ -264,13 +264,13 @@ main(int argc, char **argv) {
 
     /* TODO: handle errors */
     if (optind == argc) {
-	process_stdin(exclude, &dat, out);
+	process_stdin(exclude, &dat, out.get());
     }
     else {
         only_files.insert(DEFAULT_FILES_ONLY);
 
 	for (i = optind; i < argc; i++) {
-	    if (process_file(argv[i], exclude, &dat, only_files, skip_files, out) < 0) {
+	    if (process_file(argv[i], exclude, &dat, only_files, skip_files, out.get()) < 0) {
 		i = argc;
 		ret = -1;
 	    }
@@ -278,7 +278,7 @@ main(int argc, char **argv) {
     }
 
     if (ret == 0) {
-	output_close(out);
+	out->close();
     }
 
     if (roms_unzipped) {
@@ -299,7 +299,7 @@ main(int argc, char **argv) {
 
 
 int
-process_file(const char *fname, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, const std::unordered_set<std::string> &files_only, const std::unordered_set<std::string> &files_skip, output_context_t *out) {
+process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::unordered_set<std::string> &files_only, const std::unordered_set<std::string> &files_skip, OutputContext *out) {
     romdb_t *mdb;
     struct zip *za;
 
@@ -370,7 +370,7 @@ process_file(const char *fname, const std::unordered_set<std::string> &exclude, 
 
 
 int
-process_stdin(const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *out) {
+process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
     try {
         auto ps = std::make_shared<ParserSourceFile>("");
 

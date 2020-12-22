@@ -38,19 +38,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "OutputContextCm.h"
+
 #include "error.h"
-#include "output.h"
 #include "util.h"
 #include "xmalloc.h"
 
-
-struct output_context_cm {
-    output_context_t output;
-
-    FILE *f;
-    char *fname;
-    std::vector<GamePtr> games;
-};
 
 static struct {
     bool operator()(GamePtr a, GamePtr b) const {
@@ -63,109 +56,89 @@ typedef struct output_context_cm output_context_cm_t;
 
 static int output_cm_close(output_context_t *);
 static int output_cm_game(output_context_t *, GamePtr);
-static int output_cm_header(output_context_t *, dat_entry_t *);
+static int output_cm_header(output_context_t *, DatEntry *);
 static int write_game(output_context_cm_t *, Game *);
 
 
-output_context_t *
-output_cm_new(const char *fname, int flags) {
-    auto ctx = new output_context_cm_t();
-    FILE *f;
-
-    if (fname == NULL) {
-	f = stdout;
+OutputContextCm::OutputContextCm(const std::string &fname_, int flags_) {
+    if (fname_.empty()) {
+        f = stdout;
 	fname = "*stdout*";
     }
     else {
-	if ((f = fopen(fname, "w")) == NULL) {
-	    myerror(ERRDEF, "cannot create '%s': %s", fname, strerror(errno));
-	    free(ctx);
-	    return NULL;
+	if ((f = fopen(fname.c_str(), "w")) == NULL) {
+            myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
+            throw std::exception();
 	}
     }
-
-    ctx->output.close = output_cm_close;
-    ctx->output.output_detector = NULL;
-    ctx->output.output_game = output_cm_game;
-    ctx->output.output_header = output_cm_header;
-
-    ctx->f = f;
-    ctx->fname = xstrdup(fname);
-
-    return (output_context_t *)ctx;
 }
 
+OutputContextCm::~OutputContextCm() {
+    close();
+}
 
-static int
-output_cm_close(output_context_t *out) {
-    auto ctx = reinterpret_cast<output_context_cm_t *>(out);
-
-    std::sort(ctx->games.begin(), ctx->games.end(), cmp_game);
-
-    for (auto &game : ctx->games) {
-        write_game(ctx, game.get());
+bool OutputContextCm::close() {
+    if (f == NULL) {
+        return false;
     }
-
-    int ret = 0;
     
-    if (ctx->f != NULL && ctx->f != stdout) {
-        ret = fclose(ctx->f);
+    std::sort(games.begin(), games.end(), cmp_game);
+
+    for (auto &game : games) {
+        write_game(game.get());
     }
 
-    free(ctx);
+    auto ok = true;
+    
+    if (f != NULL && f != stdout) {
+        ok = fclose(f) >= 0;
+    }
+    
+    f = NULL;
 
-    return ret;
+    return ok;
 }
 
 
-static int
-output_cm_game(output_context_t *out, GamePtr g) {
-    auto ctx = reinterpret_cast<output_context_cm_t *>(out);
+bool OutputContextCm::game(GamePtr game) {
+    games.push_back(game);
 
-    ctx->games.push_back(g);
-
-    return 1;
+    return true;
 }
 
 
-static int
-output_cm_header(output_context_t *out, dat_entry_t *dat) {
-    output_context_cm_t *ctx;
+bool OutputContextCm::header(DatEntry *dat) {
+    fputs("clrmamepro (\n", f);
+    cond_print_string(f, "\tname ", dat->name, "\n");
+    cond_print_string(f, "\tdescription ", (dat->description.empty() ? dat->name : dat->description), "\n");
+    cond_print_string(f, "\tversion ", dat->version, "\n");
+    fputs(")\n\n", f);
 
-    ctx = (output_context_cm_t *)out;
-
-    fputs("clrmamepro (\n", ctx->f);
-    output_cond_print_string(ctx->f, "\tname ", dat_entry_name(dat), "\n");
-    output_cond_print_string(ctx->f, "\tdescription ", (dat_entry_description(dat) ? dat_entry_description(dat) : dat_entry_name(dat)), "\n");
-    output_cond_print_string(ctx->f, "\tversion ", dat_entry_version(dat), "\n");
-    fputs(")\n\n", ctx->f);
-
-    return 0;
+    return true;
 }
 
 
-static int
-write_game(output_context_cm_t *ctx, Game *game) {
-    fputs("game (\n", ctx->f);
-    output_cond_print_string(ctx->f, "\tname ", game->name, "\n");
-    output_cond_print_string(ctx->f, "\tdescription ", game->description.empty() ? game->name : game->description, "\n");
-    output_cond_print_string(ctx->f, "\tcloneof ", game->cloneof[0], "\n");
-    output_cond_print_string(ctx->f, "\tromof ", game->cloneof[0], "\n");
+bool OutputContextCm::write_game(Game *game) {
+    fputs("game (\n", f);
+    cond_print_string(f, "\tname ", game->name, "\n");
+    cond_print_string(f, "\tdescription ", game->description.empty() ? game->name : game->description, "\n");
+    cond_print_string(f, "\tcloneof ", game->cloneof[0], "\n");
+    cond_print_string(f, "\tromof ", game->cloneof[0], "\n");
     for (auto &rom : game->roms) {
-	fputs("\trom ( ", ctx->f);
-        output_cond_print_string(ctx->f, "name ", rom.name, " ");
+	fputs("\trom ( ", f);
+        cond_print_string(f, "name ", rom.name, " ");
         if (rom.where != FILE_INGAME) {
-            output_cond_print_string(ctx->f, "merge ", rom.merge.empty() ? rom.name : rom.merge, " ");
+            cond_print_string(f, "merge ", rom.merge.empty() ? rom.name : rom.merge, " ");
         }
-        fprintf(ctx->f, "size %" PRIu64 " ", rom.size);
-        output_cond_print_hash(ctx->f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
-        output_cond_print_hash(ctx->f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
-        output_cond_print_hash(ctx->f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
-        output_cond_print_string(ctx->f, "flags ", status_name(rom.status), " ");
-        fputs(")\n", ctx->f);
+        fprintf(f, "size %" PRIu64 " ", rom.size);
+        cond_print_hash(f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
+        cond_print_hash(f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
+        cond_print_hash(f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
+        cond_print_string(f, "flags ", status_name(rom.status), " ");
+        fputs(")\n", f);
     }
     /* TODO: disks */
-    fputs(")\n\n", ctx->f);
+    fputs(")\n\n", f);
 
-    return 0;
+    return true;
 }

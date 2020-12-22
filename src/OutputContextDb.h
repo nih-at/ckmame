@@ -1,5 +1,8 @@
+#ifndef HAD_OUTPUT_DB_H
+#define HAD_OUTPUT_DB_H
+
 /*
-  dat_push.c -- add dat entry
+  OutputContextDb.h -- write games to DB
   Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -31,18 +34,30 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <string.h>
+#include "output.h"
+#include "romdb.h"
 
-#include "dat.h"
 
+class OutputContextDb : public OutputContext {
+public:
+    OutputContextDb(const std::string &fname, int flags);
+    virtual ~OutputContextDb();
+    
+    virtual bool close();
+    virtual bool detector(Detector *detector);
+    virtual bool game(GamePtr game);
+    virtual bool header(DatEntry *dat);
+    
+private:
+    romdb_t *db;
 
-void *
-dat_push(dat_t *d, const dat_entry_t *hi, const dat_entry_t *lo) {
-    dat_entry_t *de;
+    std::vector<DatEntry> dat;
 
-    de = (dat_entry_t *)array_grow(d, NULL);
+    std::vector<std::string> lost_children;
+    
+    void familymeeting(Game *, Game *);
+    bool handle_lost();
+    bool lost(Game *);
+};
 
-    dat_entry_merge(de, hi, lo);
-
-    return de;
-}
+#endif // HAD_OUTPUT_DB_H

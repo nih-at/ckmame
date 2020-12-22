@@ -37,8 +37,8 @@
 #include "parse.h"
 #include <stdlib.h>
 
-int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *out) {
-    dat_entry_t de;
+int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
+    DatEntry de;
 
     if (out == NULL) {
 	/* TODO: split into original dat files */
@@ -49,10 +49,8 @@ int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const
 
     /* TODO: export detector */
 
-    dat_entry_merge(&de, dat, ((db_dat && dat_length(db_dat) == 1) ? dat_get(db_dat, 0) : NULL));
-    output_header(out, &de);
-    dat_entry_finalize(&de);
-    dat_free(db_dat);
+    de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : NULL));
+    out->header(&de);
 
     auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
     if (list == NULL) {
@@ -68,7 +66,7 @@ int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const
 	}
         
         if (exclude.find(game->name) == exclude.end()) {
-	    output_game(out, game);
+	    out->game(game);
         }
     }
 

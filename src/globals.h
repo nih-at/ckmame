@@ -78,7 +78,7 @@ extern delete_list_t *needed_delete_list;
 extern delete_list_t *superfluous_delete_list;
 
 extern tree_t *check_tree;
-extern output_context_t *fixdat;
+extern OutputContextPtr fixdat;
 
 /* to identify roms directory uniquely */
 extern char rom_dir_normalized[];

@@ -54,7 +54,7 @@ static int dump_list(int);
 static int dump_dat(int);
 static int dump_special(const char *);
 static int dump_stats(int);
-static void print_dat(dat_t *, int);
+static void print_dat(const DatEntry &de);
 static void print_hashtypes(int);
 static void print_rs(GamePtr, const char *, const char *, const char *, const char *);
 
@@ -351,24 +351,25 @@ print_rs(GamePtr game, const char *co, const char *gco, const char *cs, const ch
 static int
 dump_game(const char *name, int brief_mode) {
     GamePtr game;
-    dat_t *dat;
+    std::vector<DatEntry> dat;
 
-    if ((dat = romdb_read_dat(db)) == NULL) {
+    dat = romdb_read_dat(db);
+
+    if (dat.empty()) {
 	myerror(ERRDEF, "cannot read dat info");
 	return -1;
     }
 
     if ((game = romdb_read_game(db, name)) == NULL) {
 	myerror(ERRDEF, "game unknown (or database error): '%s'", name);
-	dat_free(dat);
 	return -1;
     }
 
     /* TODO: use print_* functions */
     printf("Name:\t\t%s\n", game->name.c_str());
-    if (dat_length(dat) > 1) {
+    if (dat.size() > 1) {
 	printf("Source:\t\t");
-	print_dat(dat, game->dat_no);
+        print_dat(dat[game->dat_no]);
 	putc('\n', stdout);
     }
     if (!game->description.empty()) {
@@ -385,8 +386,6 @@ dump_game(const char *name, int brief_mode) {
 	    }
 	}
     }
-
-    dat_free(dat);
 
     return 0;
 }
@@ -426,21 +425,21 @@ dump_list(int type) {
 /*ARGSUSED1*/
 static int
 dump_dat(int dummy) {
-    dat_t *d;
-
-    if ((d = romdb_read_dat(db)) == NULL) {
+    auto dat = romdb_read_dat(db);
+    
+    if (dat.empty()) {
 	myerror(ERRDEF, "db error reading /dat");
 	return -1;
     }
 
-    for (auto i = 0; i < dat_length(d); i++) {
-	if (dat_length(d) > 1)
-	    printf("%2d: ", i);
-	print_dat(d, i);
+    for (size_t i = 0; i < dat.size(); i++) {
+        if (dat.size() > 1) {
+            printf("%2zu: ", i);
+        }
+        print_dat(dat[i]);
 	putc('\n', stdout);
     }
 
-    dat_free(d);
     return 0;
 }
 
@@ -534,9 +533,8 @@ dump_stats(int dummy) {
 }
 
 
-static void
-print_dat(dat_t *d, int i) {
-    printf("%s (%s)", dat_name(d, i) ? dat_name(d, i) : "unknown", dat_version(d, i) ? dat_version(d, i) : "unknown");
+static void print_dat(const DatEntry &de) {
+    printf("%s (%s)", de.name.empty() ? "unknown" : de.name.c_str(), de.version.empty() ? "unknown" : de.version.c_str());
 }
 
 

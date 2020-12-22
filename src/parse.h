@@ -56,7 +56,7 @@ typedef enum parser_state parser_state_t;
 
 class ParserContext {
 public:
-    static bool parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *output, int flags);
+    static bool parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags);
 
     /* TODO: move out of context */
     size_t lineno; /* current line number in input file */
@@ -86,7 +86,7 @@ public:
     bool prog_name(const std::string &attr);
     bool prog_version(const std::string &attr);
 
-    ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *output_, int flags);
+    ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags);
     ~ParserContext();
     
     bool parse_cm();
@@ -103,10 +103,10 @@ private:
 
     /* config */
     std::unordered_set<std::string> ignore;
-    dat_entry_t dat_default;
+    DatEntry dat_default;
 
     /* output */
-    output_context_t *output;
+    OutputContext *output;
 
     /* current source */
     ParserSourcePtr ps;
@@ -114,7 +114,7 @@ private:
     /* state */
     int flags;
     parser_state_t state;
-    dat_entry_t de; /* info about dat file */
+    DatEntry de; /* info about dat file */
     GamePtr g;      /* current game */
     File *r;      /* current ROM */
     Disk *d;      /* current disk */
@@ -123,6 +123,6 @@ private:
 /* parser functions */
 
 
-int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const dat_entry_t *dat, output_context_t *context);
+int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *context);
 
 #endif /* parse.h */
