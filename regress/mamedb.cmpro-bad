@@ -1,0 +1,67 @@
+BEGIN
+
+clrmamepro (
+	name "ckmame test db"
+	version 1
+)
+
+game (
+)
+
+game ( (
+	name "too many opening braces"
+)
+
+game (
+	name "too many closing braces"
+)
+)
+
+game (
+	name this is missing quotes
+)
+
+     game      
+   (
+ name          "weird whitespace"
+  )
+
+game (
+	name
+	"with newline"
+)
+
+game (
+	description "name missing but description there"
+)
+
+game (
+        manufacturer "name missing but manufacturer there"
+)
+
+game (
+        year "name missing but year there"
+)
+
+game (
+        year 2020
+)
+
+game (
+        rom ( name "rom without game" )
+)
+
+game (
+        description "one eight byte file (alternate)"
+        manufacturer "synth"
+        year 2004
+        rom ( name 08.rom size 8 crc32 12345678 )
+	name "name last"
+)
+
+game (
+	game "rom data in weird order"
+	romm ( crc32 12345678 size 8 name 08.rom )
+)
+
+END

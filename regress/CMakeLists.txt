@@ -144,6 +144,8 @@ set(EXTRA_TESTS
   misnamed-nofix.test
   misnamed.test
   mkmamedb-broken-sha1.test
+# causes core dump
+#  mkmamedb-cmpro-bad.test
   mkmamedb-dir-in-name.test
   mkmamedb-duplicate-game.test
   mkmamedb-duplicate-nodump.test
