@@ -34,7 +34,7 @@
 
 #include "images.h"
 
-#include "dir_old.h"
+#include "Dir.h"
 #include "funcs.h"
 #include "util.h"
 #include "xmalloc.h"
@@ -66,30 +66,22 @@ images_name(const Images *im, int i) {
 }
 
 ImagesPtr Images::from_directory(const std::string &directory, bool check_integrity) {
-    dir_t *dir;
-    dir_status_t err;
-    char b[8192];
-
     auto images = std::make_shared<Images>();
 
     auto dirname = std::string(get_directory()) + "/" + directory;
 
-    if ((dir = dir_open(dirname.c_str(), 0)) == NULL) {
-        return images;
+    try {
+	 Dir dir(dirname, false);
+	 std::filesystem::path filepath;
+
+	 while ((filepath = dir.next()) != "") {
+	     if (name_type(filepath.c_str()) == NAME_CHD) {
+		 images->disks.push_back(Disk::from_file(filepath, check_integrity ? DISK_FL_CHECK_INTEGRITY : 0));                                                                                                                                                           }
+	 }
     }
-
-    while ((err = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-        if (err == DIR_ERROR) {
-            /* TODO: handle error */
-            continue;
-        }
-
-        if (name_type(b) == NAME_CHD) {
-            images->disks.push_back(Disk::from_file(b, check_integrity ? DISK_FL_CHECK_INTEGRITY : 0));
-        }
+    catch (...) {
+	return images;
     }
-
-    dir_close(dir);
 
     return images;
 }
