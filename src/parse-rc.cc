@@ -245,5 +245,5 @@ bool ROMLine::process(const std::string &line) {
     }
     ctx->file_end(TYPE_ROM);
 
-    return 0;
+    return true;
 }
