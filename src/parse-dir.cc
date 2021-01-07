@@ -39,7 +39,7 @@
 #include <string.h>
 
 #include "archive.h"
-#include "dir.h"
+#include "dir_old.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"

@@ -1,5 +1,5 @@
 /*
-  dir.h -- reading a directory
+  dir_old.cc -- reading a directory
   Copyright (C) 2005-2017 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -60,7 +60,7 @@
 #endif
 #endif
 
-#include "dir.h"
+#include "dir_old.h"
 #include "xmalloc.h"
 
 struct dir_one {

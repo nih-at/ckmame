@@ -34,7 +34,7 @@
 
 #include "images.h"
 
-#include "dir.h"
+#include "dir_old.h"
 #include "funcs.h"
 #include "util.h"
 #include "xmalloc.h"

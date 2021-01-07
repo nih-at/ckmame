@@ -1,8 +1,8 @@
-#ifndef HAD_DIR_H
-#define HAD_DIR_H
+#ifndef HAD_DIR_OLD_H
+#define HAD_DIR_OLD_H
 
 /*
-  dir.h -- reading a directory
+  dir_old.h -- reading a directory
   Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -56,4 +56,4 @@ int dir_close(dir_t *);
 dir_status_t dir_next(dir_t *, char *, size_t);
 dir_t *dir_open(const char *, int);
 
-#endif /* dir.h */
+#endif /* HAD_DIR_OLD_H */

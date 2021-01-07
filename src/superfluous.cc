@@ -38,7 +38,7 @@
 #include <sys/stat.h>
 
 
-#include "dir.h"
+#include "dir_old.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
