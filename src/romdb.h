@@ -35,6 +35,7 @@
 */
 
 #include "dbh.h"
+#include "parray.h"
 
 typedef struct {
     dbh_t *dbh;

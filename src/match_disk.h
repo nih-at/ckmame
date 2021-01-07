@@ -36,7 +36,6 @@
 
 
 #include "disk.h"
-#include "parray.h"
 #include "types.h"
 
 class MatchDisk {

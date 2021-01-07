@@ -40,7 +40,6 @@
 #include <string.h>
 
 #include "archive.h"
-#include "parray.h"
 #include "types.h"
 
 class Match {

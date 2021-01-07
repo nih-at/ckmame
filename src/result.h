@@ -44,7 +44,6 @@
 #include "images.h"
 #include "match.h"
 #include "match_disk.h"
-#include "parray.h"
 
 class Result {
 public:

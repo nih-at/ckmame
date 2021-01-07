@@ -37,7 +37,6 @@
 
 #include "disk.h"
 #include "game.h"
-#include "parray.h"
 
 class Images;
 

@@ -41,7 +41,6 @@
 #include "array.h"
 #include "disk.h"
 #include "file.h"
-#include "parray.h"
 
 struct Game {
 public:
