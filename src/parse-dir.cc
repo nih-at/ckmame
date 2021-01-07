@@ -39,7 +39,7 @@
 #include <string.h>
 
 #include "archive.h"
-#include "dir_old.h"
+#include "Dir.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
@@ -52,69 +52,50 @@ static bool parse_archive(ParserContext *, Archive *, int hashtypes);
 
 
 bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
-    dir_t *dir;
-    char b[8192];
-    dir_status_t ds;
-    struct stat st;
     bool have_loose_files = false;
 
     lineno = 0;
 
-    if ((dir = dir_open(dname.c_str(), roms_unzipped ? 0 : DIR_RECURSE)) == NULL) {
-        return false;
-    }
+    try {
+	Dir dir(dname, roms_unzipped ? false : true);
+	std::filesystem::path filepath;
 
-    if (roms_unzipped) {
-	while ((ds = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	    if (ds == DIR_ERROR) {
-		myerror(ERRSTR, "error reading directory entry '%s', skipped", b);
-		continue;
+	if (roms_unzipped) {
+	    while ((filepath = dir.next()) != "") {
+		if (std::filesystem::is_directory(filepath)) {
+		    /* TODO: handle errors */
+		    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+		    if (a) {
+			parse_archive(this, a.get(), hashtypes);
+		    }
+		}
+		else {
+		    if (std::filesystem::is_regular_file(filepath)) {
+			/* TODO: always include loose files, separate flag? */
+			if (full_archive_name) {
+			    have_loose_files = true;
+			}
+			else {
+			    myerror(ERRDEF, "found file '%s' outside of game subdirectory", filepath.c_str());
+			}
+		    }
+		}
 	    }
 
-	    if (stat(b, &st) < 0) {
-		myerror(ERRSTR, "can't stat '%s', skipped", b);
-		/* TODO: handle error */
-		continue;
-	    }
+	    if (have_loose_files) {
+		auto a = Archive::open_toplevel(dname, TYPE_ROM, FILE_NOWHERE, 0);
 
-	    if (S_ISDIR(st.st_mode)) {
-		/* TODO: handle errors */
-                auto a = Archive::open(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
-                if (a) {
+		if (a) {
 		    parse_archive(this, a.get(), hashtypes);
 		}
 	    }
-	    else {
-		if (S_ISREG(st.st_mode)) {
-		    /* TODO: always include loose files, separate flag? */
-		    if (full_archive_name) {
-			have_loose_files = true;
-		    }
-		    else {
-			myerror(ERRDEF, "found file '%s' outside of game subdirectory", b);
-		    }
-		}
-	    }
 	}
-
-	if (have_loose_files) {
-            auto a = Archive::open_toplevel(dname, TYPE_ROM, FILE_NOWHERE, 0);
-
-	    if (a) {
-		parse_archive(this, a.get(), hashtypes);
-	    }
-	}
-    }
-    else {
-	while ((ds = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	    if (ds == DIR_ERROR) {
-		myerror(ERRSTR, "error reading directory entry '%s', skipped", b);
-		continue;
-	    }
-	    switch (name_type(b)) {
+	else {
+	    while ((filepath = dir.next()) != "") {
+		switch (name_type(filepath.c_str())) {
                 case NAME_ZIP: {
                     /* TODO: handle errors */
-                    auto a = Archive::open(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
                     if (a) {
                         parse_archive(this, a.get(), hashtypes);
                     }
@@ -124,21 +105,19 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
                 case NAME_CHD:
                     /* TODO: include disks in dat */
                 case NAME_UNKNOWN:
-                    if (stat(b, &st) < 0) {
-                        myerror(ERRSTR, "can't stat '%s', skipped", b);
-                        break;
-                    }
-                    if (S_ISREG(st.st_mode)) {
-                        myerror(ERRDEF, "skipping unknown file '%s'", b);
+		    if (std::filesystem::is_regular_file(filepath)) {
+                        myerror(ERRDEF, "skipping unknown file '%s'", filepath.c_str());
                     }
                     break;
-            }
-        }
+		}
+	    }
+	}
+
+	eof();
     }
-
-    dir_close(dir);
-
-    eof();
+    catch (...) {
+	return false;
+    }
 
     return true;
 }
