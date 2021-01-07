@@ -48,18 +48,16 @@
 
 class Result {
 public:
-    Result(const game_t *g, const Archive *a, const images_t *im);
-    ~Result();
+    Result(const Game *g, const Archive *a, const Images *im);
+    
     game_status_t game;
 
     std::vector<Match> roms;
     std::vector<file_status_> files;
 
-    match_disk_array_t *disks;
+    std::vector<MatchDisk> disks;
     std::vector<file_status_> images;
 };
-
-typedef Result result_t;
 
 
 #define result_disk(res, i) (match_disk_array_get((res)->disks, (i)))

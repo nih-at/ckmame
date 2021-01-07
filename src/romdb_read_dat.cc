@@ -40,32 +40,30 @@
 #include "sq_util.h"
 #include "xmalloc.h"
 
-dat_t *
-romdb_read_dat(romdb_t *db) {
+std::vector<DatEntry> romdb_read_dat(romdb_t *db) {
     sqlite3_stmt *stmt;
-    dat_t *dat;
-    dat_entry_t *de;
-    int ret;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT)) == NULL) {
 	/* TODO */
-	return NULL;
+	return {};
     }
 
-    dat = dat_new();
+    std::vector<DatEntry> dat;
 
+    int ret;
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	de = (dat_entry_t *)array_grow(dat, reinterpret_cast<void (*)(void *)>(dat_entry_init));
+        DatEntry de;
 
-	de->name = sq3_get_string(stmt, 0);
-	de->description = sq3_get_string(stmt, 1);
-	de->version = sq3_get_string(stmt, 2);
+        de.name = sq3_get_string(stmt, 0);
+        de.description = sq3_get_string(stmt, 1);
+        de.version = sq3_get_string(stmt, 2);
+        
+        dat.push_back(de);
     }
 
     if (ret != SQLITE_DONE) {
 	/* TODO */
-	dat_free(dat);
-	return NULL;
+        return {};
     }
 
     return dat;

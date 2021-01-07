@@ -46,95 +46,89 @@
     "select type, offset, size, mask, value, result from test" \
     " where rule_idx = ? order by test_idx"
 
-static int romdb_read_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
+static bool romdb_read_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
 
 
-detector_t *
+DetectorPtr
 romdb_read_detector(romdb_t *db) {
     sqlite3_stmt *stmt, *stmt2;
-    detector_t *d;
-    int ret;
 
-    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT_DETECTOR)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_DAT_DETECTOR)) == NULL) {
 	return NULL;
+    }
 
-    if (sqlite3_step(stmt) != SQLITE_ROW)
+    if (sqlite3_step(stmt) != SQLITE_ROW) {
 	return NULL;
+    }
 
-    d = detector_new();
+    auto detector = std::make_shared<Detector>();
 
-    detector_name(d) = sq3_get_string(stmt, 0);
-    detector_author(d) = sq3_get_string(stmt, 1);
-    detector_version(d) = sq3_get_string(stmt, 2);
+    detector->name = sq3_get_string(stmt, 0);
+    detector->author = sq3_get_string(stmt, 1);
+    detector->version = sq3_get_string(stmt, 2);
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_RULE)) == NULL || (stmt2 = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_TEST)) == NULL) {
-	detector_free(d);
 	return NULL;
     }
 
-    ret = romdb_read_rules(d, stmt, stmt2);
-
-    if (ret < 0) {
-	detector_free(d);
+    if (!romdb_read_rules(detector.get(), stmt, stmt2)) {
 	return NULL;
     }
 
-    return d;
+    return detector;
 }
 
 
-static int
-romdb_read_rules(detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
-    array_t *rs, *ts;
-    detector_rule_t *r;
-    detector_test_t *t;
+static bool
+romdb_read_rules(Detector *detector, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
     int ret;
-    int idx;
-    size_t lmask, lvalue;
-
-    rs = detector_rules(d);
-
     while ((ret = sqlite3_step(st_r)) == SQLITE_ROW) {
-	r = (detector_rule_t *)array_grow(rs, reinterpret_cast<void (*)(void *)>(detector_rule_init));
+        Detector::Rule rule;
 
-	idx = sqlite3_column_int(st_r, 0);
-	detector_rule_start_offset(r) = sq3_get_int64_default(st_r, 1, 0);
-	detector_rule_end_offset(r) = sq3_get_int64_default(st_r, 2, DETECTOR_OFFSET_EOF);
-	detector_rule_operation(r) = static_cast<detector_operation_t>(sq3_get_int_default(st_r, 3, DETECTOR_OP_NONE));
+        auto idx = sqlite3_column_int(st_r, 0);
+	rule.start_offset = sq3_get_int64_default(st_r, 1, 0);
+	rule.end_offset = sq3_get_int64_default(st_r, 2, DETECTOR_OFFSET_EOF);
+        rule.operation = static_cast<Detector::Operation>(sq3_get_int_default(st_r, 3, Detector::OP_NONE));
 
-	if (sqlite3_bind_int(st_t, 1, idx) != SQLITE_OK)
-	    return -1;
-
-	ts = detector_rule_tests(r);
+        if (sqlite3_bind_int(st_t, 1, idx) != SQLITE_OK) {
+	    return false;
+        }
 
 	while ((ret = sqlite3_step(st_t)) == SQLITE_ROW) {
-	    t = (detector_test_t *)array_grow(ts, reinterpret_cast<void (*)(void *)>(detector_test_init));
+            Detector::Test test;
 
-	    detector_test_type(t) = static_cast<detector_test_type_t>(sqlite3_column_int(st_t, 0));
-	    detector_test_offset(t) = sqlite3_column_int64(st_t, 1);
-	    detector_test_result(t) = sqlite3_column_int64(st_t, 5);
+            test.type = static_cast<Detector::TestType>(sqlite3_column_int(st_t, 0));
+	    test.offset = sqlite3_column_int64(st_t, 1);
+	    test.result = sqlite3_column_int64(st_t, 5);
 
-	    switch (detector_test_type(t)) {
-	    case DETECTOR_TEST_DATA:
-	    case DETECTOR_TEST_OR:
-	    case DETECTOR_TEST_AND:
-	    case DETECTOR_TEST_XOR:
-		detector_test_mask(t) = static_cast<uint8_t *>(sq3_get_blob(st_t, 3, &lmask));
-		detector_test_value(t) = static_cast<uint8_t *>(sq3_get_blob(st_t, 4, &lvalue));
-		if (lmask > 0 && lmask != lvalue)
-		    return -1;
-		detector_test_length(t) = lmask;
-		break;
-	    case DETECTOR_TEST_FILE_EQ:
-	    case DETECTOR_TEST_FILE_LE:
-	    case DETECTOR_TEST_FILE_GR:
-		detector_test_length(t) = sqlite3_column_int64(st_t, 2);
-		break;
-	    }
+	    switch (test.type) {
+                case Detector::TEST_DATA:
+                case Detector::TEST_OR:
+                case Detector::TEST_AND:
+                case Detector::TEST_XOR:
+                    test.mask = sq3_get_blob(st_t, 3);
+                    test.value = sq3_get_blob(st_t, 4);
+                    if (!test.mask.empty() && test.mask.size() != test.value.size()) {
+                        return false;
+                    }
+                    test.length = test.value.size();
+                    break;
+                    
+                case Detector::TEST_FILE_EQ:
+                case Detector::TEST_FILE_LE:
+                case Detector::TEST_FILE_GR:
+                    test.length = static_cast<uint64_t>(sqlite3_column_int64(st_t, 2));
+                    break;
+            }
+            
+            rule.tests.push_back(test);
 	}
-	if (ret != SQLITE_DONE || sqlite3_reset(st_t) != SQLITE_OK)
-	    return -1;
+        if (ret != SQLITE_DONE || sqlite3_reset(st_t) != SQLITE_OK) {
+	    return false;
+        }
+        
+        detector->rules.push_back(rule);
     }
 
-    return 0;
+    return true;
 }

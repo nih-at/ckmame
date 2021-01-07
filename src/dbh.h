@@ -80,10 +80,10 @@ typedef struct dbh dbh_t;
 
 int dbh_close(dbh_t *);
 const char *dbh_error(dbh_t *);
-dbh_t *dbh_open(const char *, int);
+dbh_t *dbh_open(const std::string &name, int mode);
 
 sqlite3_stmt *dbh_get_statement(dbh_t *, dbh_stmt_t);
-dbh_stmt_t dbh_stmt_with_hashes_and_size(dbh_stmt_t, const hashes_t *, int);
+dbh_stmt_t dbh_stmt_with_hashes_and_size(dbh_stmt_t, const Hashes *, int);
 
 
 #endif /* dbh.h */

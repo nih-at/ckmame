@@ -40,7 +40,7 @@
 #include "xmalloc.h"
 
 int
-images_find(const images_t *images, const char *name) { 
+images_find(const Images *images, const char *name) { 
     if (images == NULL) {
         return -1;
     }
@@ -48,8 +48,8 @@ images_find(const images_t *images, const char *name) {
     char *full_name;
     xasprintf(&full_name, "%s.chd", name);
     
-    for (int i = 0; i < images_length(images); i++) {
-        if (strcmp(mybasename(disk_name(images_get(images, i))), full_name) == 0) {
+    for (size_t i = 0; i < images->disks.size(); i++) {
+        if (strcmp(mybasename(images->disks[i]->name.c_str()), full_name) == 0) {
             return i;
         }
     }
@@ -59,31 +59,24 @@ images_find(const images_t *images, const char *name) {
 
 
 const char *
-images_name(const images_t *im, int i) {
-    disk_t *d;
+images_name(const Images *im, int i) {
+    auto d = im->disks[i];
 
-    d = images_get(im, i);
-
-    return d ? disk_name(d) : NULL;
+    return d ? disk_name(d).c_str() : NULL;
 }
 
-
-images_t *
-images_new(const char *name, int flags) {
-    images_t *im;
+ImagesPtr Images::from_directory(const std::string &directory, bool check_integrity) {
     dir_t *dir;
     dir_status_t err;
     char b[8192];
-    char *dirname;
 
-    xasprintf(&dirname, "%s/%s", get_directory(), name);
+    auto images = std::make_shared<Images>();
 
-    if ((dir = dir_open(dirname, 0)) == NULL) {
-        free(dirname);
-        return NULL;
+    auto dirname = std::string(get_directory()) + "/" + directory;
+
+    if ((dir = dir_open(dirname.c_str(), 0)) == NULL) {
+        return images;
     }
-    
-    im = parray_new();
 
     while ((err = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
         if (err == DIR_ERROR) {
@@ -92,24 +85,26 @@ images_new(const char *name, int flags) {
         }
 
         if (name_type(b) == NAME_CHD) {
-            parray_push(im, disk_new(b, flags));
+            images->disks.push_back(Disk::from_file(b, check_integrity ? DISK_FL_CHECK_INTEGRITY : 0));
         }
     }
 
     dir_close(dir);
-    free(dirname);
 
-    return im;
+    return images;
 }
 
 
-images_t *
-images_new_name(const char *name, int flags) {
-    images_t *im;
-
-    im = parray_new_sized(1);
-
-    parray_push(im, disk_new(name, flags));
-
-    return im;
+ImagesPtr Images::from_file(const std::string &name) {
+    auto disk = Disk::from_file(name, 0);
+    
+    if (!disk) {
+        return NULL;
+    }
+    
+    auto images = std::make_shared<Images>();
+    
+    images->disks.push_back(disk);
+    
+    return images;
 }

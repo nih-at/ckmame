@@ -31,46 +31,43 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <unordered_set>
 
 #include "error.h"
 #include "parse.h"
 #include <stdlib.h>
 
-int
-export_db(romdb_t *db, const parray_t *exclude, const dat_entry_t *dat, output_context_t *out) {
-    parray_t *list;
-    int i;
-    game_t *g;
-    dat_entry_t de;
-    dat_t *db_dat;
+int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
+    DatEntry de;
 
     if (out == NULL) {
 	/* TODO: split into original dat files */
 	return 0;
     }
 
-    db_dat = romdb_read_dat(db);
+    auto db_dat = romdb_read_dat(db);
 
     /* TODO: export detector */
 
-    dat_entry_merge(&de, dat, ((db_dat && dat_length(db_dat) == 1) ? dat_get(db_dat, 0) : NULL));
-    output_header(out, &de);
-    dat_entry_finalize(&de);
-    dat_free(db_dat);
+    de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : NULL));
+    out->header(&de);
 
-    if ((list = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+    auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
+    if (list == NULL) {
 	myerror(ERRDEF, "db error reading game list");
 	return -1;
     }
 
-    for (i = 0; i < parray_length(list); i++) {
-	if ((g = romdb_read_game(db, static_cast<const char *>(parray_get(list, i)))) == NULL) {
+    for (int i = 0; i < parray_length(list); i++) {
+        GamePtr game = romdb_read_game(db, static_cast<const char *>(parray_get(list, i)));
+        if (!game) {
 	    /* TODO: error */
 	    continue;
 	}
-	if (!name_matches(game_name(g), exclude))
-	    output_game(out, g);
-	game_free(g);
+        
+        if (exclude.find(game->name) == exclude.end()) {
+	    out->game(game);
+        }
     }
 
     parray_free(list, free);

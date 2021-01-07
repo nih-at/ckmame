@@ -9,11 +9,12 @@ sub new {
 	my $class = UNIVERSAL::isa ($_[0], __PACKAGE__) ? shift : __PACKAGE__;
 	my $self = bless {}, $class;
 
-	my ($dir, $skip, $unzipped, $no_hashes) = @_;
+	my ($dir, $skip, $unzipped, $no_hashes, $verbose) = @_;
 	
 	$self->{dir} = $dir;
 	$self->{unzipped} = $unzipped;
 	$self->{no_hashes} = {};
+	$self->{verbose} = $verbose;
 
 	if (defined($no_hashes)) {
 		for my $no_hash (@$no_hashes) {
@@ -150,7 +151,7 @@ sub read_archives {
 			}
 
 			$prefix = $name;
-			$archive = { name => $name, files => [] };
+			$archive = { name => $name eq "" ? "." : $name, files => [] };
 			$idx = 0;
 
 			if ($self->{unzipped}) {

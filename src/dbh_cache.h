@@ -34,20 +34,23 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <string>
+#include <vector>
+
 #include "archive.h"
 #include "dbh.h"
 #include "file.h"
 
-int dbh_cache_close_all(void);
+bool dbh_cache_close_all(void);
 int dbh_cache_delete(dbh_t *, int);
 int dbh_cache_delete_by_name(dbh_t *, const char *);
 int dbh_cache_get_archive_id(dbh_t *, const char *);
 bool dbh_cache_get_archive_last_change(dbh_t *, int, time_t *, off_t *);
-dbh_t *dbh_cache_get_db_for_archive(const char *);
+dbh_t *dbh_cache_get_db_for_archive(const std::string &name);
 bool dbh_cache_is_empty(dbh_t *);
-parray_t *dbh_cache_list_archives(dbh_t *);
-int dbh_cache_read(dbh_t *, const std::string &, std::vector<file_t> *);
-int dbh_cache_register_cache_directory(const char *);
+std::vector<std::string> dbh_cache_list_archives(dbh_t *);
+int dbh_cache_read(dbh_t *, const std::string &, std::vector<File> *);
+int dbh_cache_register_cache_directory(const std::string &directory);
 int dbh_cache_write(dbh_t *, int, const Archive *a);
 
 #endif /* dbh_cache.h */

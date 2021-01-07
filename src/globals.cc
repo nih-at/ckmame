@@ -54,7 +54,7 @@ int fix_options = 0;
 romdb_t *db = NULL;
 romdb_t *old_db = NULL;
 
-detector_t *detector = NULL;
+DetectorPtr detector;
 
 parray_t *superfluous = NULL;
 
@@ -67,7 +67,7 @@ delete_list_t *needed_delete_list = NULL;
 delete_list_t *superfluous_delete_list = NULL;
 
 tree_t *check_tree = NULL;
-output_context_t *fixdat = NULL;
+OutputContextPtr fixdat;
 
 /* roms dir */
 char rom_dir_normalized[MAXPATHLEN];

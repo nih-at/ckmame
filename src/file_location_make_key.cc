@@ -43,20 +43,22 @@ static int filetype_char(filetype_t);
 int
 file_location_default_hashtype(filetype_t ft) {
     if (ft == TYPE_DISK)
-	return HASHES_TYPE_MD5;
+	return Hashes::TYPE_MD5;
     else
-	return HASHES_TYPE_CRC;
+	return Hashes::TYPE_CRC;
 }
 
 
 const char *
-file_location_make_key(filetype_t filetype, const hashes_t *hash) {
-    static char key[HASHES_SIZE_MAX * 2 + 4];
+file_location_make_key(filetype_t filetype, const Hashes *hash) {
+    static char key[Hashes::MAX_SIZE * 2 + 4];
 
     key[0] = '/';
     key[1] = filetype_char(filetype);
     key[2] = '/';
-    hash_to_string(key + 3, file_location_default_hashtype(filetype), hash);
+    
+    auto str = hash->to_string(file_location_default_hashtype(filetype));
+    strcpy(key + 3, str.c_str());
 
     return key;
 }

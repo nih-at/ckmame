@@ -31,29 +31,16 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "OutputContextDb.h"
 
+#include <algorithm>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "error.h"
 #include "file_location.h"
-#include "output.h"
-#include "romdb.h"
 #include "xmalloc.h"
-
-
-struct output_context_db {
-    output_context_t output;
-
-    romdb_t *db;
-
-    dat_t *dat;
-
-    parray_t *lost_children;
-};
-
-typedef struct output_context_db output_context_db_t;
 
 struct fbh_context {
     sqlite3 *db;
@@ -61,74 +48,49 @@ struct fbh_context {
 };
 
 
-static void familymeeting(romdb_t *, game_t *, game_t *);
-static int handle_lost(output_context_db_t *);
-static bool lost(output_context_db_t *, game_t *);
-static int output_db_close(output_context_t *);
-static int output_db_detector(output_context_t *, detector_t *);
-static int output_db_game(output_context_t *, game_t *);
-static int output_db_header(output_context_t *, dat_entry_t *);
-
-
-output_context_t *
-output_db_new(const char *dbname, int flags) {
-    output_context_db_t *ctx;
-
-    ctx = (output_context_db_t *)xmalloc(sizeof(*ctx));
-
-    ctx->output.close = output_db_close;
-    ctx->output.output_detector = output_db_detector;
-    ctx->output.output_game = output_db_game;
-    ctx->output.output_header = output_db_header;
-
-    ctx->dat = dat_new();
-    ctx->lost_children = parray_new();
-    ctx->db = NULL;
-
-    if (remove(dbname) != 0 && errno != ENOENT) {
-	output_db_close((output_context_t *)ctx);
-	myerror(ERRSTR, "can't remove '%s'", dbname);
-	return NULL;
+OutputContextDb::OutputContextDb(const std::string &dbname, int flags) : db(NULL) {
+    if (remove(dbname.c_str()) != 0 && errno != ENOENT) {
+	myerror(ERRSTR, "can't remove '%s'", dbname.c_str());
+        throw std::exception();
     }
-    ctx->db = romdb_open(dbname, DBH_NEW);
-    if (ctx->db == NULL) {
-	output_db_close((output_context_t *)ctx);
+    
+    db = romdb_open(dbname.c_str(), DBH_NEW);
+    if (db == NULL) {
 	myerror(ERRDB, "can't create hash table");
-	return NULL;
+        throw std::exception();
     }
-
-    return (output_context_t *)ctx;
 }
 
 
-static void
-familymeeting(romdb_t *db, game_t *parent, game_t *child) {
-    int i, j;
-    file_t *cr, *pr;
+OutputContextDb::~OutputContextDb() {
+    close();
+}
 
-    if (game_cloneof(parent, 0)) {
+
+void OutputContextDb::familymeeting(Game *parent, Game *child) {
+    if (!parent->cloneof[0].empty()) {
 	/* tell child of his grandfather */
-	game_cloneof(child, 1) = xstrdup(game_cloneof(parent, 0));
+        child->cloneof[1] = parent->cloneof[0];
     }
 
     /* look for ROMs in parent */
-    for (i = 0; i < game_num_roms(child); i++) {
-	cr = game_rom(child, i);
-	for (j = 0; j < game_num_roms(parent); j++) {
-	    pr = game_rom(parent, j);
-	    if (file_mergeable(cr, pr)) {
-		file_where(cr) = (where_t)(file_where(pr) + 1);
+    for (size_t i = 0; i < child->roms.size(); i++) {
+        auto &cr = child->roms[i];
+        for (size_t j = 0; j < parent->roms.size(); j++) {
+            auto &pr = parent->roms[j];
+            if (cr.is_mergable(pr)) {
+                cr.where = static_cast<where_t>(pr.where + 1);
 		break;
 	    }
 	}
-	if (file_where(cr) == FILE_INGAME && file_merge(cr) != NULL) {
-	    myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but parent does not contain matching file", game_name(child), file_name(cr), file_merge(cr));
+        if (cr.where == FILE_INGAME && !cr.merge.empty()) {
+            myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but parent does not contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
 	}
     }
-    for (i = 0; i < game_num_disks(child); i++) {
-        disk_t *cd = game_disk(child, i);
-        for (j = 0; j < game_num_disks(parent); j++) {
-            disk_t *pd = game_disk(parent, j);
+    for (size_t i = 0; i < child->disks.size(); i++) {
+        auto cd = &child->disks[i];
+        for (size_t j = 0; j < parent->disks.size(); j++) {
+            auto pd = &parent->disks[j];
             if (disk_mergeable(cd, pd)) {
                 disk_where(cd) = (where_t)(disk_where(pd) + 1);
             }
@@ -139,158 +101,120 @@ familymeeting(romdb_t *db, game_t *parent, game_t *child) {
 }
 
 
-static int
-handle_lost(output_context_db_t *ctx) {
-    game_t *child, *parent;
-    int i;
-    bool is_lost;
-
-    while (parray_length(ctx->lost_children) > 0) {
-	/* processing order does not matter and deleting last
-	   element is cheaper */
-	for (i = parray_length(ctx->lost_children) - 1; i >= 0; --i) {
-	    /* get current lost child from database, get parent,
-	       look if parent is still lost, if not, do child */
-	    if ((child = romdb_read_game(ctx->db, static_cast<const char *>(parray_get(ctx->lost_children, i)))) == NULL) {
-		myerror(ERRDEF, "internal database error: child %s not in database", (const char *)parray_get(ctx->lost_children, i));
-		return -1;
-	    }
-
-            is_lost = true;
-
-            if ((parent = romdb_read_game(ctx->db, game_cloneof(child, 0))) == NULL) {
-                myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", game_name(child), game_cloneof(child, 0));
+bool OutputContextDb::handle_lost() {
+    while (!lost_children.empty()) {
+        for (size_t i = 0; i < lost_children.size(); i++) {
+            /* get current lost child from database, get parent,
+             look if parent is still lost, if not, do child */
+            auto child = romdb_read_game(db, lost_children[i]);
+            if (!child) {
+                myerror(ERRDEF, "internal database error: child %s not in database", lost_children[i].c_str());
+                return false;
+            }
+            
+            bool is_lost = true;
+            
+            auto parent = romdb_read_game(db, child->cloneof[0]);
+            if (!parent) {
+                myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", child->name.c_str(), child->cloneof[0].c_str());
                 
                 /* remove non-existent cloneof */
-                free(game_cloneof(child, 0));
-                game_cloneof(child, 0) = NULL;
-                romdb_update_game_parent(ctx->db, child);
+                child->cloneof[0] = "";
+                romdb_update_game_parent(db, child.get());
                 is_lost = false;
             }
-            else if (!lost(ctx, parent)) {
+            else if (!lost(parent.get())) {
                 /* parent found */
-                familymeeting(ctx->db, parent, child);
+                familymeeting(parent.get(), child.get());
                 is_lost = false;
             }
             
             if (!is_lost) {
-                romdb_update_file_location(ctx->db, child);
-                parray_delete(ctx->lost_children, i, free);
+                romdb_update_file_location(db, child.get());
+                lost_children.erase(lost_children.begin() + static_cast<long>(i));
             }
-            game_free(parent);
-            game_free(child);
         }
     }
-
-    return 0;
+        
+    return true;
 }
 
 
-static bool
-lost(output_context_db_t *ctx, game_t *g) {
-    int i;
-
-    if (game_cloneof(g, 0) == NULL)
+bool OutputContextDb::lost(Game *game) {
+    if (game->cloneof[0].empty()) {
 	return false;
-
-    for (i = 0; i < parray_length(ctx->lost_children); i++) {
-	if (strcmp(static_cast<const char *>(parray_get(ctx->lost_children, i)), game_name(g)) == 0) {
-            return true;
-	}
     }
 
-    return false;
+    return std::find(lost_children.begin(), lost_children.end(), game->name) != lost_children.end();
 }
 
 
-static int
-output_db_close(output_context_t *out) {
-    output_context_db_t *ctx;
-    int ret;
+bool OutputContextDb::close() {
+    auto ok = true;
 
-    ctx = (output_context_db_t *)out;
+    if (db) {
+        romdb_write_dat(db, dat);
 
-    ret = 0;
+        if (!handle_lost()) {
+            ok = false;
+        }
 
-    if (ctx->db) {
-	romdb_write_dat(ctx->db, ctx->dat);
+        if (sqlite3_exec(romdb_sqlite3(db), sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
+            ok = false;
+        }
 
-	if (handle_lost(ctx) < 0)
-	    ret = -1;
-
-	if (sqlite3_exec(romdb_sqlite3(ctx->db), sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK)
-	    ret = -1;
-
-	romdb_close(ctx->db);
+        romdb_close(db);
+        
+        db = NULL;
     }
 
-    dat_free(ctx->dat);
-    parray_free(ctx->lost_children, free);
-
-    free(ctx);
-
-    return ret;
+    return ok;
 }
 
 
-static int
-output_db_detector(output_context_t *out, detector_t *d) {
-    output_context_db_t *ctx;
-
-    ctx = (output_context_db_t *)out;
-
-    if (romdb_write_detector(ctx->db, d) != 0) {
-	seterrdb(romdb_dbh(ctx->db));
+bool OutputContextDb::detector(detector_t *d) {
+    if (romdb_write_detector(db, d) != 0) {
+	seterrdb(romdb_dbh(db));
 	myerror(ERRDB, "can't write detector to db");
-	return -1;
+	return false;
     }
 
-    return 0;
+    return true;
 }
 
 
-static int
-output_db_game(output_context_t *out, game_t *g) {
-    output_context_db_t *ctx;
-    game_t *g2, *parent;
-
-    ctx = (output_context_db_t *)out;
-
-    if ((g2 = romdb_read_game(ctx->db, game_name(g))) != NULL) {
-	myerror(ERRDEF, "duplicate game '%s' skipped", game_name(g));
-	game_free(g2);
-	return -1;
+bool OutputContextDb::game(GamePtr game) {
+    auto g2 = romdb_read_game(db, game->name);
+    
+    if (g2) {
+        myerror(ERRDEF, "duplicate game '%s' skipped", game->name.c_str());
+	return false;
     }
 
-    game_dat_no(g) = dat_length(ctx->dat) - 1;
+    game->dat_no = dat.size() - 1;
 
-    if (game_cloneof(g, 0)) {
-        if (((parent = romdb_read_game(ctx->db, game_cloneof(g, 0))) == NULL) || lost(ctx, parent)) {
-            parray_push(ctx->lost_children, xstrdup(game_name(g)));
+    if (!game->cloneof[0].empty()) {
+        auto parent = romdb_read_game(db, game->cloneof[0]);
+        if (!parent || lost(parent.get())) {
+            lost_children.push_back(game->name);
         }
         else {
-            familymeeting(ctx->db, parent, g);
+            familymeeting(parent.get(), game.get());
             /* TODO: check error */
         }
-        game_free(parent);
     }
 
-    if (romdb_write_game(ctx->db, g) != 0) {
-	myerror(ERRDB, "can't write game '%s' to db", game_name(g));
-	return -1;
+    if (romdb_write_game(db, game.get()) != 0) {
+	myerror(ERRDB, "can't write game '%s' to db", game->name.c_str());
+	return false;
     }
 
-    return 0;
+    return true;
 }
 
 
-static int
-output_db_header(output_context_t *out, dat_entry_t *dat) {
-    output_context_db_t *ctx;
-
-    ctx = (output_context_db_t *)out;
-
-    dat_push(ctx->dat, dat, NULL);
-
-    return 0;
+bool OutputContextDb::header(DatEntry *entry) {
+    dat.push_back(*entry);
+ 
+    return true;
 }

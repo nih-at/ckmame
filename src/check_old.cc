@@ -38,23 +38,24 @@
 
 
 void
-check_old(game_t *g, result_t *res) {
-    int i;
-    int all_old;
-
-    if (old_db == NULL)
+check_old(Game *game, Result *res) {
+    if (old_db == NULL) {
 	return;
+    }
 
-    all_old = 1;
-    for (i = 0; i < game_num_roms(g); i++) {
-        if (find_in_old(game_rom(g, i), NULL, result_rom(res, i)) != FIND_EXISTS) {
-	    all_old = 0;
+    auto all_old = true;
+    
+    for (size_t i = 0; i < game->roms.size(); i++) {
+        if (find_in_old(&game->roms[i], NULL, result_rom(res, i)) != FIND_EXISTS) {
+	    all_old = false;
         }
     }
 
-    if (all_old)
+    if (all_old) {
 	result_game(res) = GS_OLD;
+    }
 
-    for (i = 0; i < game_num_disks(g); i++)
-	find_disk_in_old(game_disk(g, i), result_disk(res, i));
+    for (size_t i = 0; i < game->disks.size(); i++) {
+        find_disk_in_old(&game->disks[i], &res->disks[i]);
+    }
 }

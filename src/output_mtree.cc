@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "OutputContextMtree.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -39,87 +40,47 @@
 
 #include "error.h"
 #include "output.h"
+#include "util.h"
 #include "xmalloc.h"
 
 
-struct output_context_mtree {
-    output_context_t output;
-
-    bool extended;
-
-    FILE *f;
-    char *fname;
-};
-
-typedef struct output_context_mtree output_context_mtree_t;
-
-
-static int output_mtree_close(output_context_t *);
-static int output_mtree_game(output_context_t *, game_t *);
-static int output_mtree_header(output_context_t *, dat_entry_t *);
-
-
-output_context_t *
-output_mtree_new(const char *fname, int flags) {
-    output_context_mtree_t *ctx;
-    FILE *f;
-
-    ctx = (output_context_mtree_t *)xmalloc(sizeof(*ctx));
-
-    if (fname == NULL) {
+OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : fname(fname_), extended(flags & OUTPUT_FL_EXTENDED) {
+    if (fname.empty()) {
 	f = stdout;
 	fname = "*stdout*";
     }
     else {
-	if ((f = fopen(fname, "w")) == NULL) {
-	    myerror(ERRDEF, "cannot create '%s': %s", fname, strerror(errno));
-	    free(ctx);
-	    return NULL;
+        if ((f = fopen(fname.c_str(), "w")) == NULL) {
+	    myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
+            throw std::exception();
 	}
     }
+}
 
-    ctx->output.close = output_mtree_close;
-    ctx->output.output_detector = NULL;
-    ctx->output.output_game = output_mtree_game;
-    ctx->output.output_header = output_mtree_header;
-
-    ctx->extended = (flags & OUTPUT_FL_EXTENDED);
-    ctx->f = f;
-    ctx->fname = xstrdup(fname);
-
-    return (output_context_t *)ctx;
+OutputContextMtree::~OutputContextMtree() {
+    close();
 }
 
 
-static int
-output_mtree_close(output_context_t *out) {
-    output_context_mtree_t *ctx;
-    int ret;
-
-    ctx = (output_context_mtree_t *)out;
-
-    if (ctx->f == NULL || ctx->f == stdout)
-	ret = 0;
-    else {
-	ret = fclose(ctx->f);
+bool OutputContextMtree::close() {
+    auto ok = true;
+    
+    if (f != NULL && f != stdout) {
+        ok = fclose(f) > 0;
+        f = NULL;
     }
 
-    free(ctx);
-
-    return ret;
+    return ok;
 }
 
 
-static char *
-strsvis_cstyle(const char *in) {
-    char *out;
-    int outpos;
-    size_t inpos;
+static std::string
+strsvis_cstyle(const std::string &in) {
     /* maximal extension = 2/char */
-    out = (char *)xmalloc(2 * strlen(in));
+    auto out = std::string(2 * in.length(), 0);
 
-    outpos = 0;
-    for (inpos = 0; inpos < strlen(in); inpos++) {
+    size_t outpos = 0;
+    for (size_t inpos = 0; inpos < in.length(); inpos++) {
 	switch (in[inpos]) {
 	case '\007':
 	    out[outpos++] = '\\';
@@ -162,89 +123,46 @@ strsvis_cstyle(const char *in) {
 	    break;
 	}
     }
-    out[outpos++] = '\0';
+    out.resize(outpos);
 
     return out;
 }
 
 
-static int
-output_mtree_game(output_context_t *out, game_t *g) {
-    output_context_mtree_t *ctx;
-    file_t *r;
-    disk_t *d;
-    int i;
-    const char *fl = NULL;
-    char *dirname;
-    char *filename;
+bool OutputContextMtree::game(GamePtr game) {
+    auto dirname = strsvis_cstyle(game->name);
 
-    ctx = (output_context_mtree_t *)out;
+    fprintf(f, "./%s type=dir\n", dirname.c_str());
+    for (size_t i = 0; i < game->roms.size(); i++) {
+        auto &rom = game->roms[i];
 
-    dirname = strsvis_cstyle(game_name(g));
-
-    fprintf(ctx->f, "./%s type=dir\n", dirname);
-    for (i = 0; i < game_num_roms(g); i++) {
-	r = game_rom(g, i);
-
-	filename = strsvis_cstyle(file_name(r));
-	fprintf(ctx->f, "./%s/%s type=file size=%" PRIu64, dirname, filename, file_size_(r));
-	free(filename);
-	output_cond_print_hash(ctx->f, " sha1=", HASHES_TYPE_SHA1, file_hashes(r), "");
-	output_cond_print_hash(ctx->f, " md5=", HASHES_TYPE_MD5, file_hashes(r), "");
-	switch (file_status_(r)) {
-	case STATUS_OK:
-	    fl = NULL;
-	    break;
-	case STATUS_BADDUMP:
-	    fl = "baddump";
-	    break;
-	case STATUS_NODUMP:
-	    fl = "nodump";
-	    break;
+        fprintf(f, "./%s/%s type=file size=%" PRIu64, dirname.c_str(), strsvis_cstyle(rom.name).c_str(), rom.size);
+        cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &rom.hashes, "");
+        cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &rom.hashes, "");
+        cond_print_string(f, " status=", status_name(rom.status), "");
+        if (extended) {
+            /* crc is not in the standard set supported on NetBSD */
+            cond_print_hash(f, " crc=", Hashes::TYPE_CRC, &rom.hashes, "");
+            fprintf(f, " time=%llu", static_cast<unsigned long long>(rom.mtime));
 	}
-	output_cond_print_string(ctx->f, " status=", fl, "");
-	if (ctx->extended) {
-	    /* crc is not in the standard set supported on NetBSD */
-	    output_cond_print_hash(ctx->f, " crc=", HASHES_TYPE_CRC, file_hashes(r), "");
-	    fprintf(ctx->f, " time=%llu", (unsigned long long)file_mtime(r));
-	}
-	fputs("\n", ctx->f);
+	fputs("\n", f);
     }
-    for (i = 0; i < game_num_disks(g); i++) {
-	d = game_disk(g, i);
+    for (size_t i = 0; i < game->disks.size(); i++) {
+        auto d = &game->disks[i];
 
-	filename = strsvis_cstyle(disk_name(d));
-	fprintf(ctx->f, "./%s/%s type=file" PRIu64, dirname, filename);
-	free(filename);
-	output_cond_print_hash(ctx->f, " sha1=", HASHES_TYPE_SHA1, disk_hashes(d), "");
-	output_cond_print_hash(ctx->f, " md5=", HASHES_TYPE_MD5, disk_hashes(d), "");
-	switch (disk_status(d)) {
-	case STATUS_OK:
-	    fl = NULL;
-	    break;
-	case STATUS_BADDUMP:
-	    fl = "baddump";
-	    break;
-	case STATUS_NODUMP:
-	    fl = "nodump";
-	    break;
-	}
-	output_cond_print_string(ctx->f, " status=", fl, "");
-	fputs("\n", ctx->f);
+	fprintf(f, "./%s/%s type=file" PRIu64, dirname.c_str(), strsvis_cstyle(d->name).c_str());
+        cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, disk_hashes(d), "");
+	cond_print_hash(f, " md5=", Hashes::TYPE_MD5, disk_hashes(d), "");
+        cond_print_string(f, " status=", status_name(disk_status(d)), "");
+	fputs("\n", f);
     }
 
-    free(dirname);
-    return 0;
+    return true;
 }
 
 
-static int
-output_mtree_header(output_context_t *out, dat_entry_t *dat) {
-    output_context_mtree_t *ctx;
+bool OutputContextMtree::header(DatEntry *dat) {
+    fprintf(f, ". type=dir\n");
 
-    ctx = (output_context_mtree_t *)out;
-
-    fprintf(ctx->f, ". type=dir\n");
-
-    return 0;
+    return true;
 }

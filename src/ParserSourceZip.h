@@ -1,6 +1,9 @@
+#ifndef HAD_PARSER_SOURCE_ZIP_H
+#define HAD_PARSER_SOURCE_ZIP_H
+
 /*
-  detector_str.c -- return string representation of detector enums
-  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
+  ParserSourceFile.h -- reading parser input data from zip archive
+  Copyright (C) 2008-2019 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,62 +34,23 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "parser_source.h"
 
-#include "detector.h"
+#include <zip.h>
 
+class ParserSourceZip : public ParserSource {
+public:
+    ParserSourceZip(const std::string &archive_name, struct zip *za, const std::string &file_name, bool relaxed = false);
+    virtual ~ParserSourceZip();
+    
+    virtual bool close();
+    virtual ParserSourcePtr open(const std::string &name);
+    virtual size_t read_xxx(void *data, size_t length);
+    
+private:
+    std::string archive_name;
+    struct zip *za;
+    struct zip_file *zf;
+};
 
-const char *
-detector_file_test_type_str(detector_test_type_t t) {
-    switch (t) {
-    case DETECTOR_TEST_FILE_EQ:
-	return "equal";
-    case DETECTOR_TEST_FILE_LE:
-	return "less";
-    case DETECTOR_TEST_FILE_GR:
-	return "greater";
-
-    default:
-	return "unknown";
-    }
-}
-
-
-const char *
-detector_operation_str(detector_operation_t op) {
-    switch (op) {
-    case DETECTOR_OP_NONE:
-	return "none";
-    case DETECTOR_OP_BITSWAP:
-	return "bitswap";
-    case DETECTOR_OP_BYTESWAP:
-	return "byteswap";
-    case DETECTOR_OP_WORDSWAP:
-	return "wordswap";
-
-    default:
-	return "unknown";
-    }
-}
-
-
-const char *
-detector_test_type_str(detector_test_type_t t) {
-    switch (t) {
-    case DETECTOR_TEST_DATA:
-	return "data";
-    case DETECTOR_TEST_OR:
-	return "or";
-    case DETECTOR_TEST_AND:
-	return "and";
-    case DETECTOR_TEST_XOR:
-	return "xor";
-
-    case DETECTOR_TEST_FILE_EQ:
-    case DETECTOR_TEST_FILE_LE:
-    case DETECTOR_TEST_FILE_GR:
-	return "file";
-
-    default:
-	return "unknown";
-    }
-}
+#endif // HAD_PARSER_SOURCE_ZIP_H

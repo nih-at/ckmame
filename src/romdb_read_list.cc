@@ -50,16 +50,19 @@ romdb_read_list(romdb_t *db, enum dbh_list type) {
     sqlite3_stmt *stmt;
     int ret;
 
-    if (type >= DBH_KEY_LIST_MAX)
+    if (type >= DBH_KEY_LIST_MAX) {
 	return NULL;
+    }
 
-    if ((stmt = dbh_get_statement(romdb_dbh(db), query_list[type])) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), query_list[type])) == NULL) {
 	return NULL;
+    }
 
     pa = parray_new();
 
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW)
-	parray_push(pa, sq3_get_string(stmt, 0));
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
+	parray_push(pa, xstrdup(sq3_get_string(stmt, 0).c_str()));
+    }
 
     if (ret != SQLITE_DONE) {
 	parray_free(pa, free);

@@ -37,32 +37,30 @@
 #include "sq_util.h"
 #include "xmalloc.h"
 
-
-void *
-sq3_get_blob(sqlite3_stmt *stmt, int col, size_t *sizep) {
+std::vector<uint8_t>
+sq3_get_blob(sqlite3_stmt *stmt, int col) {
     if (sqlite3_column_type(stmt, col) == SQLITE_NULL) {
-	*sizep = 0;
-	return NULL;
+        return {};
     }
 
-    *sizep = sqlite3_column_bytes(stmt, col);
-    return xmemdup(sqlite3_column_blob(stmt, col), *sizep);
+    auto size = sqlite3_column_bytes(stmt, col);
+    auto bytes = reinterpret_cast<const uint8_t *>(sqlite3_column_blob(stmt, col));
+    
+    return std::vector<uint8_t>(bytes, bytes + size);
 }
 
 
 void
-sq3_get_hashes(hashes_t *h, sqlite3_stmt *stmt, int col) {
+sq3_get_hashes(Hashes *hashes, sqlite3_stmt *stmt, int col) {
     if (sqlite3_column_type(stmt, col) != SQLITE_NULL) {
-	hashes_crc(h) = sqlite3_column_int64(stmt, col) & 0xffffffff;
-	hashes_types(h) |= HASHES_TYPE_CRC;
+	hashes->crc = sqlite3_column_int64(stmt, col) & 0xffffffff;
+	hashes->types |= Hashes::TYPE_CRC;
     }
     if (sqlite3_column_type(stmt, col + 1) != SQLITE_NULL) {
-	memcpy(h->md5, sqlite3_column_blob(stmt, col + 1), HASHES_SIZE_MD5);
-	hashes_types(h) |= HASHES_TYPE_MD5;
+        hashes->set(Hashes::TYPE_MD5, sqlite3_column_blob(stmt, col + 1));
     }
     if (sqlite3_column_type(stmt, col + 2) != SQLITE_NULL) {
-	memcpy(h->sha1, sqlite3_column_blob(stmt, col + 2), HASHES_SIZE_SHA1);
-	hashes_types(h) |= HASHES_TYPE_SHA1;
+        hashes->set(Hashes::TYPE_SHA1, sqlite3_column_blob(stmt, col + 2));
     }
 }
 
@@ -83,50 +81,59 @@ sq3_get_int64_default(sqlite3_stmt *stmt, int col, int64_t def) {
 }
 
 
-char *
+std::string
 sq3_get_string(sqlite3_stmt *stmt, int i) {
     if (sqlite3_column_type(stmt, i) == SQLITE_NULL)
-	return NULL;
+	return "";
 
-    return xstrdup((const char *)sqlite3_column_text(stmt, i));
+    return reinterpret_cast<const char *>(sqlite3_column_text(stmt, i));
 }
 
 
 int
-sq3_set_blob(sqlite3_stmt *stmt, int col, const void *p, size_t s) {
-    if (s == 0 || p == NULL)
-	return sqlite3_bind_null(stmt, col);
-    if (s > INT_MAX) {
+sq3_set_blob(sqlite3_stmt *stmt, int col, const std::vector<uint8_t> &value) {
+    if (value.empty()) {
+        return sqlite3_bind_null(stmt, col);
+    }
+    if (value.size() > INT_MAX) {
 	return SQLITE_TOOBIG;
     }
-    return sqlite3_bind_blob(stmt, col, p, (int)s, SQLITE_STATIC);
+    return sqlite3_bind_blob(stmt, col, value.data(), static_cast<int>(value.size()), SQLITE_STATIC);
 }
 
 
 int
-sq3_set_hashes(sqlite3_stmt *stmt, int col, const hashes_t *h, int nullp) {
+sq3_set_hashes(sqlite3_stmt *stmt, int col, const Hashes *hashes, int nullp) {
     int ret;
 
     ret = SQLITE_OK;
-
-    if (hashes_has_type(h, HASHES_TYPE_CRC))
-	ret = sqlite3_bind_int64(stmt, col++, hashes_crc(h));
-    else if (nullp)
-	ret = sqlite3_bind_null(stmt, col++);
-    if (ret != SQLITE_OK)
+    
+    if (hashes->has_type(Hashes::TYPE_CRC)) {
+        ret = sqlite3_bind_int64(stmt, col++, hashes->crc);
+    }
+    else if (nullp) {
+        ret = sqlite3_bind_null(stmt, col++);
+    }
+    if (ret != SQLITE_OK) {
 	return ret;
+    }
 
-    if (hashes_has_type(h, HASHES_TYPE_MD5))
-	ret = sqlite3_bind_blob(stmt, col++, h->md5, HASHES_SIZE_MD5, SQLITE_STATIC);
-    else if (nullp)
-	ret = sqlite3_bind_null(stmt, col++);
-    if (ret != SQLITE_OK)
+    if (hashes->has_type(Hashes::TYPE_MD5)) {
+        ret = sqlite3_bind_blob(stmt, col++, hashes->md5, Hashes::SIZE_MD5, SQLITE_STATIC);
+    }
+    else if (nullp) {
+        ret = sqlite3_bind_null(stmt, col++);
+    }
+    if (ret != SQLITE_OK) {
 	return ret;
+    }
 
-    if (hashes_has_type(h, HASHES_TYPE_SHA1))
-	ret = sqlite3_bind_blob(stmt, col++, h->sha1, HASHES_SIZE_SHA1, SQLITE_STATIC);
-    else if (nullp)
+    if (hashes->has_type(Hashes::TYPE_SHA1)) {
+        ret = sqlite3_bind_blob(stmt, col++, hashes->sha1, Hashes::SIZE_SHA1, SQLITE_STATIC);
+    }
+    else if (nullp) {
 	ret = sqlite3_bind_null(stmt, col++);
+    }
 
     return ret;
 }
@@ -149,9 +156,11 @@ sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def) {
 
 
 int
-sq3_set_string(sqlite3_stmt *stmt, int i, const char *s) {
-    if (s)
-	return sqlite3_bind_text(stmt, i, s, -1, SQLITE_STATIC);
-    else
+sq3_set_string(sqlite3_stmt *stmt, int i, const std::string &s) {
+    if (!s.empty()) {
+	return sqlite3_bind_text(stmt, i, s.c_str(), -1, SQLITE_STATIC);
+    }
+    else {
 	return sqlite3_bind_null(stmt, i);
+    }
 }

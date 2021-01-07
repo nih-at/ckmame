@@ -48,21 +48,21 @@
 #include "xmalloc.h"
 
 
-static int parse_archive(parser_context_t *, Archive *, int hashtypes);
+static bool parse_archive(ParserContext *, Archive *, int hashtypes);
 
 
-int
-parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
+bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
     dir_t *dir;
     char b[8192];
     dir_status_t ds;
     struct stat st;
     bool have_loose_files = false;
 
-    ctx->lineno = 0;
+    lineno = 0;
 
-    if ((dir = dir_open(dname, roms_unzipped ? 0 : DIR_RECURSE)) == NULL)
-	return -1;
+    if ((dir = dir_open(dname.c_str(), roms_unzipped ? 0 : DIR_RECURSE)) == NULL) {
+        return false;
+    }
 
     if (roms_unzipped) {
 	while ((ds = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
@@ -81,13 +81,13 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
 		/* TODO: handle errors */
                 auto a = Archive::open(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
                 if (a) {
-		    parse_archive(ctx, a.get(), hashtypes);
+		    parse_archive(this, a.get(), hashtypes);
 		}
 	    }
 	    else {
 		if (S_ISREG(st.st_mode)) {
 		    /* TODO: always include loose files, separate flag? */
-		    if (ctx->full_archive_name) {
+		    if (full_archive_name) {
 			have_loose_files = true;
 		    }
 		    else {
@@ -101,7 +101,7 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
             auto a = Archive::open_toplevel(dname, TYPE_ROM, FILE_NOWHERE, 0);
 
 	    if (a) {
-		parse_archive(ctx, a.get(), hashtypes);
+		parse_archive(this, a.get(), hashtypes);
 	    }
 	}
     }
@@ -116,7 +116,7 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
                     /* TODO: handle errors */
                     auto a = Archive::open(b, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
                     if (a) {
-                        parse_archive(ctx, a.get(), hashtypes);
+                        parse_archive(this, a.get(), hashtypes);
                     }
                     break;
                 }
@@ -138,54 +138,50 @@ parse_dir(const char *dname, parser_context_t *ctx, int hashtypes) {
 
     dir_close(dir);
 
-    parse_eof(ctx);
+    eof();
 
-    return 0;
+    return true;
 }
 
 
-static int
-parse_archive(parser_context_t *ctx, Archive *a, int hashtypes) {
-    char *name;
-    int ht;
-    char hstr[HASHES_SIZE_MAX * 2 + 1];
+static bool
+parse_archive(ParserContext *ctx, Archive *a, int hashtypes) {
+    std::string name;
 
-    parse_game_start(ctx, TYPE_ROM);
+    ctx->game_start();
 
     if (ctx->full_archive_name) {
-	name = xstrdup(a->name.c_str());
+        name = a->name;
     }
     else {
-        name = xstrdup(mybasename(a->name.c_str()));
+        name = mybasename(a->name.c_str());
     }
-    if (strlen(name) > 4 && strcmp(name + strlen(name) - 4, ".zip") == 0) {
-        name[strlen(name) - 4] = '\0';
+    if (name.length() > 4 && name.substr(name.length() - 4) == ".zip") {
+        name.resize(name.length() - 4);
     }
-    parse_game_name(ctx, TYPE_ROM, 0, name);
-    free(name);
+    ctx->game_name(name);
 
     for (size_t i = 0; i < a->files.size(); i++) {
-        auto r = &a->files[i];
+        auto &file = a->files[i];
 
 	a->file_compute_hashes(i, hashtypes);
 
-	parse_file_start(ctx, TYPE_ROM);
-	parse_file_name(ctx, TYPE_ROM, 0, file_name(r));
-	sprintf(hstr, "%" PRIu64, file_size_(r));
-	parse_file_size_(ctx, TYPE_ROM, 0, hstr);
-	parse_file_mtime(ctx, TYPE_ROM, 0, file_mtime(r));
-	if (file_status_(r) != STATUS_OK) {
-	    parse_file_status_(ctx, TYPE_ROM, 0, file_status_(r) == STATUS_BADDUMP ? "baddump" : "nodump");
+        ctx->file_start(TYPE_ROM);
+        ctx->file_name(TYPE_ROM, file.name);
+        ctx->file_size(TYPE_ROM, file.size);
+        ctx->file_mtime(TYPE_ROM, file.mtime);
+        if (file.status != STATUS_OK) {
+            ctx->file_status(TYPE_ROM, file.status == STATUS_BADDUMP ? "baddump" : "nodump");
 	}
-	for (ht = 1; ht <= HASHES_TYPE_MAX; ht <<= 1) {
-	    if ((hashtypes & ht) && hashes_has_type(file_hashes(r), ht)) {
-		parse_file_hash(ctx, TYPE_ROM, ht, hash_to_string(hstr, ht, file_hashes(r)));
+        for (int ht = 1; ht <= Hashes::TYPE_MAX; ht <<= 1) {
+            if ((hashtypes & ht) && file.hashes.has_type(ht)) {
+                ctx->file_hash(TYPE_ROM, ht, file.hashes.to_string(ht));
 	    }
 	}
-	parse_file_end(ctx, TYPE_ROM);
+        ctx->file_end(TYPE_ROM);
     }
 
-    parse_game_end(ctx, TYPE_ROM);
+    ctx->game_end();
 
-    return 0;
+    return true;
 }

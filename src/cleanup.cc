@@ -38,14 +38,13 @@
 #include "util.h"
 #include "warn.h"
 
-static void cleanup_archive(Archive *, result_t *, int);
-static void cleanup_disk(images_t *, result_t *, int);
+static void cleanup_archive(Archive *, Result *, int);
+static void cleanup_disk(Images *, Result *, int);
 
 
 void
 cleanup_list(parray_t *list, delete_list_t *del, int flags) {
     ArchivePtr a;
-    images_t *im;
     char *name;
     int i, di, len, cmp, n;
     file_location_t *fl;
@@ -97,12 +96,14 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
             }
 
             case NAME_CHD: {
-                if ((im = images_new_name(name, 0)) == NULL) {
+                ImagesPtr im = Images::from_file(name);
+
+                if (im == NULL) {
                     /* TODO */
                     continue;
                 }
                 
-                Result res(NULL, NULL, im);
+                Result res(NULL, NULL, im.get());
                 
                 while (di < len) {
                     fl = delete_list_get(del, di++);
@@ -116,15 +117,13 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
                     }
                 }
                 
-                check_images(im, NULL, &res);
+                check_images(im.get(), NULL, &res);
                 
                 warn_set_info(WARN_TYPE_IMAGE, name);
-                diagnostics_images(im, &res);
+                diagnostics_images(im.get(), &res);
                 
-                cleanup_disk(im, &res, flags);
-                
-                images_free(im);
-                
+                cleanup_disk(im.get(), &res, flags);
+                                
                 break;
             }
                 
@@ -142,7 +141,7 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
 
 
 static void
-cleanup_archive(Archive *a, result_t *res, int flags) {
+cleanup_archive(Archive *a, Result *res, int flags) {
     GarbagePtr gb;
     int move;
     const char *reason;
@@ -172,7 +171,7 @@ cleanup_archive(Archive *a, result_t *res, int flags) {
                 }
                 
                 if (fix_options & FIX_PRINT)
-                    printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, file_name(&a->files[i]));
+                    printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, a->files[i].name.c_str());
                 a->file_delete(i);
                 break;
                 
@@ -195,7 +194,7 @@ cleanup_archive(Archive *a, result_t *res, int flags) {
                 if (flags & CLEANUP_UNKNOWN) {
                     move = fix_options & FIX_MOVE_UNKNOWN;
                     if (fix_options & FIX_PRINT)
-                        printf("%s: %s unknown file '%s'\n", a->name.c_str(), (move ? "move" : "delete"), file_name(&a->files[i]));
+                        printf("%s: %s unknown file '%s'\n", a->name.c_str(), (move ? "move" : "delete"), a->files[i].name.c_str());
                     
                     /* TODO: handle error (how?) */
                     if (move) {
@@ -228,11 +227,10 @@ cleanup_archive(Archive *a, result_t *res, int flags) {
 
 
 static void
-cleanup_disk(images_t *im, result_t *res, int flags) {
-    int i, move, ret;
+cleanup_disk(Images *im, Result *res, int flags) {
     const char *name, *reason;
 
-    for (i = 0; i < images_length(im); i++) {
+    for (size_t i = 0; i < im->disks.size(); i++) {
 	if ((name = images_name(im, i)) == NULL)
 	    continue;
 
@@ -280,6 +278,8 @@ cleanup_disk(images_t *im, result_t *res, int flags) {
 
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
+		int move, ret;
+
 		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT)
 		    printf("%s: %s unknown image\n", name, (move ? "move" : "delete"));

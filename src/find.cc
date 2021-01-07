@@ -51,48 +51,49 @@
 #define QUERY_FILE_LOCATION 3
 
 
-static find_result_t check_for_file_in_zip(const char *, const file_t *, const file_t *, Match *);
-static find_result_t check_match_disk_old(const game_t *, const disk_t *, match_disk_t *);
-static find_result_t check_match_disk_romset(const game_t *, const disk_t *, match_disk_t *);
-static find_result_t check_match_old(const game_t *, const file_t *, const file_t *, Match *);
-static find_result_t check_match_romset(const game_t *, const file_t *, const file_t *, Match *);
-static find_result_t find_disk_in_db(romdb_t *, const disk_t *, const char *, match_disk_t *, find_result_t (*)(const game_t *, const disk_t *, match_disk_t *));
-static find_result_t find_in_db(romdb_t *, const file_t *, Archive *, const char *, Match *, find_result_t (*)(const game_t *, const file_t *, const file_t *, Match *));
+static find_result_t check_for_file_in_zip(const char *, const File *, const File *, Match *);
+static find_result_t check_match_disk_old(const Game *, const Disk *, MatchDisk *);
+static find_result_t check_match_disk_romset(const Game *, const Disk *, MatchDisk *);
+static find_result_t check_match_old(const Game *, const File *, const File *, Match *);
+static find_result_t check_match_romset(const Game *, const File *, const File *, Match *);
+static find_result_t find_disk_in_db(romdb_t *, const Disk *, const char *, MatchDisk *, find_result_t (*)(const Game *, const Disk *, MatchDisk *));
+static find_result_t find_in_db(romdb_t *, const File *, Archive *, const char *, Match *, find_result_t (*)(const Game *, const File *, const File *, Match *));
 
 
 find_result_t
-find_disk(const disk_t *d, match_disk_t *md) {
+find_disk(const Disk *disk, MatchDisk *match_disk) {
     sqlite3_stmt *stmt;
-    disk_t *dm;
     int ret;
     
     if (memdb == NULL) {
         return FIND_UNKNOWN;
     }
 
-    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, disk_hashes(d), 0))) == NULL)
+    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, disk_hashes(disk), 0))) == NULL)
 	return FIND_ERROR;
 
-    if (sqlite3_bind_int(stmt, 1, TYPE_DISK) != SQLITE_OK || sq3_set_hashes(stmt, 2, disk_hashes(d), 0) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, 1, TYPE_DISK) != SQLITE_OK || sq3_set_hashes(stmt, 2, disk_hashes(disk), 0) != SQLITE_OK) {
 	return FIND_ERROR;
     }
 
     switch (sqlite3_step(stmt)) {
-    case SQLITE_ROW:
-	if ((dm = disk_by_id(sqlite3_column_int(stmt, QUERY_FILE_GAME_ID))) == NULL) {
-	    ret = FIND_ERROR;
-	    break;
-	}
-	if (md) {
-	    match_disk_name(md) = xstrdup(disk_name(dm));
-	    hashes_copy(match_disk_hashes(md), disk_hashes(dm));
-	    match_disk_quality(md) = QU_COPIED;
-	    match_disk_where(md) = static_cast<where_t>(sqlite3_column_int(stmt, QUERY_FILE_LOCATION));
-	}
-	disk_free(dm);
-	ret = FIND_EXISTS;
-	break;
+        case SQLITE_ROW: {
+            auto dm = disk_by_id(sqlite3_column_int(stmt, QUERY_FILE_GAME_ID));
+            if (!dm) {
+                ret = FIND_ERROR;
+                break;
+            }
 
+            if (match_disk) {
+                match_disk->name = dm->name;
+                match_disk->hashes = dm->hashes;
+                match_disk->quality = QU_COPIED;
+                match_disk->where = static_cast<where_t>(sqlite3_column_int(stmt, QUERY_FILE_LOCATION));
+            }
+            ret = FIND_EXISTS;
+            break;
+        }
+            
     case SQLITE_DONE:
 	ret = FIND_UNKNOWN;
 	break;
@@ -107,7 +108,7 @@ find_disk(const disk_t *d, match_disk_t *md) {
 
 
 find_result_t
-find_disk_in_old(const disk_t *d, match_disk_t *md) {
+find_disk_in_old(const Disk *d, MatchDisk *md) {
     if (old_db == NULL)
 	return FIND_UNKNOWN;
 
@@ -116,33 +117,35 @@ find_disk_in_old(const disk_t *d, match_disk_t *md) {
 
 
 find_result_t
-find_disk_in_romset(const disk_t *d, const char *skip, match_disk_t *md) {
+find_disk_in_romset(const Disk *d, const char *skip, MatchDisk *md) {
     return find_disk_in_db(db, d, skip, md, check_match_disk_romset);
 }
 
 
 find_result_t
-find_in_archives(const file_t *r, Match *m, bool needed_only) {
+find_in_archives(const File *rom, Match *m, bool needed_only) {
     sqlite3_stmt *stmt;
-    file_t *f;
     int i, ret, hcol, sh;
 
     if (memdb_ensure() < 0) {
         return FIND_ERROR;
     }
     
-    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, file_hashes(r), file_size_(r) != SIZE_UNKNOWN))) == NULL)
+    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, &rom->hashes, rom->size != SIZE_UNKNOWN))) == NULL) {
 	return FIND_ERROR;
-
-    hcol = 2;
-    if (file_size_(r) != SIZE_UNKNOWN) {
-	hcol++;
-	if (sqlite3_bind_int64(stmt, 2, file_size_(r)) != SQLITE_OK)
-	    return FIND_ERROR;
     }
 
-    if (sqlite3_bind_int(stmt, 1, TYPE_ROM) != SQLITE_OK || sq3_set_hashes(stmt, hcol, file_hashes(r), 0) != SQLITE_OK)
+    hcol = 2;
+    if (rom->size != SIZE_UNKNOWN) {
+	hcol++;
+        if (sqlite3_bind_int64(stmt, 2, rom->size) != SQLITE_OK) {
+	    return FIND_ERROR;
+        }
+    }
+
+    if (sqlite3_bind_int(stmt, 1, TYPE_ROM) != SQLITE_OK || sq3_set_hashes(stmt, hcol, &rom->hashes, 0) != SQLITE_OK) {
 	return FIND_ERROR;
+    }
 
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
@@ -157,14 +160,14 @@ find_in_archives(const file_t *r, Match *m, bool needed_only) {
 
 	i = sqlite3_column_int(stmt, QUERY_FILE_FILE_IDX);
 	sh = sqlite3_column_int(stmt, QUERY_FILE_FILE_SH);
-        f = &a->files[i];
+        auto &file = a->files[i];
 
-	if (sh == FILE_SH_FULL && ((hashes_types(file_hashes(r)) & hashes_types(file_hashes(f))) != hashes_types(file_hashes(r)))) {
-	    a->file_compute_hashes(i, hashes_types(file_hashes(r)) | romdb_hashtypes(db, TYPE_ROM));
+        if (sh == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
+            a->file_compute_hashes(i, rom->hashes.types | romdb_hashtypes(db, TYPE_ROM));
 	    memdb_update_file(a.get(), i);
 	}
 
-	if (file_status_(f) != STATUS_OK || (hashes_cmp(file_hashes_xxx(f, sh), file_hashes(r)) != HASHES_CMP_MATCH)) {
+	if (file.status != STATUS_OK || file.get_hashes(sh != 0).compare(rom->hashes) != Hashes::MATCH) {
 	    continue;
 	}
 
@@ -183,7 +186,7 @@ find_in_archives(const file_t *r, Match *m, bool needed_only) {
 
 
 find_result_t
-find_in_old(const file_t *r, Archive *a, Match *m) {
+find_in_old(const File *r, Archive *a, Match *m) {
     if (old_db == NULL) {
 	return FIND_MISSING;
     }
@@ -193,13 +196,13 @@ find_in_old(const file_t *r, Archive *a, Match *m) {
 
 
 find_result_t
-find_in_romset(const file_t *r, Archive *a, const char *skip, Match *m) {
-    return find_in_db(db, r, a, skip, m, check_match_romset);
+find_in_romset(const File *file, Archive *archive, const char *skip, Match *m) {
+    return find_in_db(db, file, archive, skip, m, check_match_romset);
 }
 
 
 static find_result_t
-check_for_file_in_zip(const char *name, const file_t *r, const file_t *f, Match *m) {
+check_for_file_in_zip(const char *name, const File *rom, const File *file, Match *m) {
     char *full_name;
     ArchivePtr a;
 
@@ -209,16 +212,17 @@ check_for_file_in_zip(const char *name, const file_t *r, const file_t *f, Match 
     }
     free(full_name);
 
-    auto idx = a->file_index_by_name(file_name(r));
+    auto idx = a->file_index_by_name(rom->name);
     
-    if (idx.has_value() && a->file_compare_hashes(idx.value(), file_hashes(f)) == HASHES_CMP_MATCH) {
+    if (idx.has_value() && a->file_compare_hashes(idx.value(), &file->hashes) == Hashes::MATCH) {
         auto index = idx.value();
-        file_t *af = &a->files[index];
-	if ((hashes_types(file_hashes(af)) & hashes_types(file_hashes(f))) != hashes_types(file_hashes(f))) {
-	    if (!a->file_compute_hashes(index, HASHES_TYPE_ALL)) { /* TODO: only needed hash types */
-		return FIND_MISSING;
+        File *af = &a->files[index];
+        
+        if (!af->hashes.has_all_types(file->hashes)) {
+            if (!a->file_compute_hashes(index, Hashes::TYPE_ALL)) { /* TODO: only needed hash types */
+                return FIND_MISSING;
 	    }
-	    if (a->file_compare_hashes(index, file_hashes(f)) != HASHES_CMP_MATCH) {
+	    if (a->file_compare_hashes(index, &file->hashes) != Hashes::MATCH) {
 		return FIND_MISSING;
 	    }
 	}
@@ -235,11 +239,11 @@ check_for_file_in_zip(const char *name, const file_t *r, const file_t *f, Match 
 
 /*ARGSUSED1*/
 static find_result_t
-check_match_disk_old(const game_t *g, const disk_t *d, match_disk_t *md) {
-    if (md) {
-	match_disk_quality(md) = QU_OLD;
-	match_disk_name(md) = xstrdup(disk_name(d));
-	hashes_copy(match_disk_hashes(md), disk_hashes(d));
+check_match_disk_old(const Game *g, const Disk *disk, MatchDisk *match_disk) {
+    if (match_disk) {
+        match_disk->quality = QU_OLD;
+        match_disk->name = disk->name;
+        match_disk->hashes = disk->hashes;
     }
 
     return FIND_EXISTS;
@@ -248,46 +252,40 @@ check_match_disk_old(const game_t *g, const disk_t *d, match_disk_t *md) {
 
 /*ARGSUSED1*/
 static find_result_t
-check_match_disk_romset(const game_t *g, const disk_t *d, match_disk_t *md) {
-    char *file_name;
-    disk_t *f;
-
-    file_name = findfile(disk_name(d), TYPE_DISK, game_name(g));
-    if (file_name == NULL)
+check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_disk) {
+    auto file_name = findfile(disk->name.c_str(), TYPE_DISK, game->name.c_str());
+    if (file_name == NULL) {
 	return FIND_MISSING;
+    }
 
-    f = disk_new(file_name, DISK_FL_QUIET);
+    auto f = Disk::from_file(file_name, DISK_FL_QUIET);
     if (!f) {
 	free(file_name);
 	return FIND_MISSING;
     }
 
-    if (hashes_cmp(disk_hashes(d), disk_hashes(f)) == HASHES_CMP_MATCH) {
-	if (md) {
-	    match_disk_quality(md) = QU_COPIED;
-	    match_disk_name(md) = file_name;
-	    hashes_copy(match_disk_hashes(md), disk_hashes(f));
+    if (disk->hashes.compare(f->hashes) == Hashes::MATCH) {
+	if (match_disk) {
+	    match_disk->quality = QU_COPIED;
+	    match_disk->name = file_name;
+            match_disk->hashes = f->hashes;
 	}
-	else {
-	    free(file_name);
-	}
-        disk_free(f);
+        free(file_name);
 	return FIND_EXISTS;
     }
 
     free(file_name);
-    disk_free(f);
     return FIND_MISSING;
 }
 
 
 static find_result_t
-check_match_old(const game_t *g, const file_t *r, const file_t *f, Match *m) {
+check_match_old(const Game *g, const File *r, const File *f, Match *m) {
     if (m) {
 	match_quality(m) = QU_OLD;
 	match_where(m) = FILE_OLD;
-	match_old_game(m) = game_name(g);
-	match_old_file(m) = file_name(r);
+        match_old_game(m) = g->name.c_str();
+        match_old_file(m) = r->name.c_str();
     }
 
     return FIND_EXISTS;
@@ -295,10 +293,10 @@ check_match_old(const game_t *g, const file_t *r, const file_t *f, Match *m) {
 
 
 static find_result_t
-check_match_romset(const game_t *g, const file_t *r, const file_t *f, Match *m) {
+check_match_romset(const Game *game, const File *r, const File *f, Match *m) {
     find_result_t status;
 
-    status = check_for_file_in_zip(game_name(g), r, f, m);
+    status = check_for_file_in_zip(game->name.c_str(), r, f, m);
     if (m && status == FIND_EXISTS) {
 	match_quality(m) = QU_COPIED;
 	match_where(m) = FILE_ROMSET;
@@ -309,56 +307,53 @@ check_match_romset(const game_t *g, const file_t *r, const file_t *f, Match *m) 
 
 
 static find_result_t
-find_in_db(romdb_t *fdb, const file_t *r, Archive *archive, const char *skip, Match *m, find_result_t (*check_match)(const game_t *, const file_t *, const file_t *, Match *)) {
+find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Match *m, find_result_t (*check_match)(const Game *, const File *, const File *, Match *)) {
     array_t *a;
     file_location_t *fbh;
-    game_t *g;
-    const file_t *gr;
-    int i;
     find_result_t status;
 
-    if ((a = romdb_read_file_by_hash(fdb, TYPE_ROM, file_hashes(r))) == NULL)
+    if ((a = romdb_read_file_by_hash(fdb, TYPE_ROM, &r->hashes)) == NULL) {
 	return FIND_UNKNOWN;
+    }
 
     status = FIND_UNKNOWN;
-    for (i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < array_length(a); i++) {
+    for (int i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < array_length(a); i++) {
 	fbh = static_cast<file_location_t *>(array_get(a, i));
 
-	if (skip && strcmp(file_location_name(fbh), skip) == 0)
+        if (skip && strcmp(file_location_name(fbh), skip) == 0) {
 	    continue;
+        }
 
-	if ((g = romdb_read_game(fdb, file_location_name(fbh))) == NULL || game_num_roms(g) <= file_location_index(fbh)) {
+        GamePtr game = romdb_read_game(fdb, file_location_name(fbh));
+        if (!game || game->roms.size() <= static_cast<size_t>(file_location_index(fbh))) {
 	    /* TODO: internal error: database inconsistency */
-	    game_free(g);
 	    status = FIND_ERROR;
 	    break;
 	}
 
-	gr = game_rom(g, file_location_index(fbh));
+        auto &game_rom = game->roms[file_location_index(fbh)];
 
-	if (file_size_(r) == file_size_(gr) && hashes_cmp(file_hashes(r), file_hashes(gr)) == HASHES_CMP_MATCH) {
+        if (r->size == game_rom.size && r->hashes.compare(game_rom.hashes) == Hashes::MATCH) {
 	    bool ok = true;
 
-	    if (archive && (hashes_types(file_hashes(gr)) & (hashes_types(file_hashes(r)))) != hashes_types(file_hashes(gr))) {
+            if (archive && !r->hashes.has_all_types(game_rom.hashes)) {
 		auto idx = archive->file_index(r);
                 if (idx.has_value()) {
-		    if (!archive->file_compute_hashes(idx.value(), hashes_types(file_hashes(gr)))) {
+                    if (!archive->file_compute_hashes(idx.value(), game_rom.hashes.types)) {
 			/* TODO: handle error (how?) */
 			ok = false;
 		    }
 		}
 
-		if (hashes_cmp(file_hashes(gr), file_hashes(r)) != HASHES_CMP_MATCH) {
+                if (game_rom.hashes.compare(r->hashes) != Hashes::MATCH) {
 		    ok = false;
 		}
 	    }
 
 	    if (ok) {
-		status = check_match(g, gr, r, m);
+                status = check_match(game.get(), &game_rom, r, m);
 	    }
 	}
-
-	game_free(g);
     }
 
     array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
@@ -368,11 +363,9 @@ find_in_db(romdb_t *fdb, const file_t *r, Archive *archive, const char *skip, Ma
 
 
 find_result_t
-find_disk_in_db(romdb_t *fdb, const disk_t *d, const char *skip, match_disk_t *md, find_result_t (*check_match)(const game_t *, const disk_t *, match_disk_t *)) {
+find_disk_in_db(romdb_t *fdb, const Disk *d, const char *skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *)) {
     array_t *a;
     file_location_t *fbh;
-    game_t *g;
-    const disk_t *gd;
     int i;
     find_result_t status;
 
@@ -388,18 +381,18 @@ find_disk_in_db(romdb_t *fdb, const disk_t *d, const char *skip, match_disk_t *m
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
 
-	if ((g = romdb_read_game(fdb, file_location_name(fbh))) == NULL) {
+        GamePtr game = romdb_read_game(fdb, file_location_name(fbh));
+        if (!game) {
 	    /* TODO: internal error: db inconsistency */
 	    status = FIND_ERROR;
 	    break;
 	}
 
-	gd = game_disk(g, file_location_index(fbh));
+	auto gd = &game->disks[file_location_index(fbh)];
 
-	if (hashes_cmp(disk_hashes(d), disk_hashes(gd)) == HASHES_CMP_MATCH)
-	    status = check_match(g, gd, md);
-
-	game_free(g);
+        if (d->hashes.compare(gd->hashes) == Hashes::MATCH) {
+	    status = check_match(game.get(), gd, md);
+        }
     }
 
     array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));

@@ -32,50 +32,60 @@
 */
 
 
-#include <stdlib.h>
-
 #include "disk.h"
 
-bool disk_compare_merge(const disk_t *a, const disk_t *b) {
-    return strcmp(disk_merged_name(a), disk_name(b)) == 0;
+uint64_t Disk::next_id;
+std::unordered_map<std::string, std::weak_ptr<Disk>> Disk::disk_by_name;
+std::unordered_map<uint64_t, DiskPtr> Disk::disk_by_id;
+
+
+DiskPtr Disk::by_id(uint64_t id) {
+    auto it = disk_by_id.find(id);
+    
+    if (it == disk_by_id.end()) {
+        return NULL;
+    }
+    return it->second;
 }
 
-bool disk_compare_merge_hashes(const disk_t *a, const disk_t *b) {
-    return disk_compare_merge(a, b) && disk_compare_hashes(a, b);
+
+DiskPtr Disk::by_name(const std::string &name) {
+    auto it = disk_by_name.find(name);
+    
+    if (it == disk_by_name.end()) {
+        return NULL;
+    }
+    
+    return it->second.lock();
 }
 
-bool disk_compare_hashes(const disk_t *a, const disk_t *b) {
-    return hashes_cmp(disk_hashes(a), disk_hashes(b)) != HASHES_CMP_MISMATCH;
+
+bool Disk::compare_merge(const Disk &other) const {
+    return merged_name() == other.name;
 }
 
-bool disk_mergeable(const disk_t *a, const disk_t *b) {
+
+bool Disk::compare_merge_hashes(const Disk &other) const {
+    return compare_merge(other) && compare_hashes(other);
+}
+
+bool Disk::compare_hashes(const Disk &other) const {
+    return hashes.compare(other.hashes) != Hashes::MISMATCH;
+}
+
+
+bool Disk::is_mergeable(const Disk &other) const {
     /* name must match (merged) name */
-    if (!disk_compare_merge(a, b)) {
+    if (!compare_merge(other)) {
 	return false;
     }
     /* both can be bad dumps */
-    if (hashes_types(disk_hashes(a)) == 0 && hashes_types(disk_hashes(b)) == 0) {
+    if (hashes.empty() && other.hashes.empty()) {
 	return true;
     }
     /* or the hashes must match */
-    if (hashes_types(disk_hashes(a)) != 0 && hashes_types(disk_hashes(b)) != 0 && disk_compare_merge_hashes(a, b)) {
+    if (!hashes.empty() && !other.hashes.empty() && compare_hashes(other)) {
 	return true;
     }
     return false;
-}
-
-void
-disk_init(disk_t *d) {
-    d->refcount = 0;
-    d->name = d->merge = NULL;
-    hashes_init(&d->hashes);
-    d->status = STATUS_OK;
-    d->where = FILE_INGAME;
-}
-
-
-void
-disk_finalize(disk_t *d) {
-    free(d->name);
-    free(d->merge);
 }

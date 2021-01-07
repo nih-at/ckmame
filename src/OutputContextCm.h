@@ -1,6 +1,9 @@
+#ifndef HAD_OUTPUT_CM_H
+#define HAD_OUTPUT_CM_H
+
 /*
-  hashes_verify.c -- compare hash to memory
-  Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
+  OutputContextCm.h -- write games to clrmamepro dat files
+  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,36 +34,23 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "output.h"
 
-#include <string.h>
+class OutputContextCm : public OutputContext {
+public:
+    OutputContextCm(const std::string &fname, int flags);
+    virtual ~OutputContextCm();
+    
+    virtual bool close();
+    virtual bool game(GamePtr game);
+    virtual bool header(DatEntry *dat);
+    
+private:
+    FILE *f;
+    std::string fname;
+    std::vector<GamePtr> games;
+    
+    bool write_game(Game *game);
+};
 
-#include "hashes.h"
-
-
-int
-hashes_verify(const hashes_t *h, int type, const unsigned char *b) {
-    const unsigned char *t;
-    int s;
-
-    switch (type) {
-    case HASHES_TYPE_CRC:
-	t = (const unsigned char *)&h->crc;
-	s = sizeof(h->crc);
-	break;
-
-    case HASHES_TYPE_MD5:
-	t = h->md5;
-	s = HASHES_SIZE_MD5;
-	break;
-
-    case HASHES_TYPE_SHA1:
-	t = h->sha1;
-	s = HASHES_SIZE_SHA1;
-	break;
-
-    default:
-	return -1;
-    }
-
-    return memcmp(t, b, s) == 0;
-}
+#endif // HAD_OUTPUT_CM_H

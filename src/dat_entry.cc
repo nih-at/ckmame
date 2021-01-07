@@ -36,19 +36,9 @@
 #include "dat.h"
 #include "xmalloc.h"
 
+#define de_copy_member(X) (X = (high && !high->X.empty() ? high->X : low && !low->X.empty() ? low->X : ""))
 
-void
-dat_entry_init(dat_entry_t *de) {
-    de->name = de->description = de->version = NULL;
-}
-
-
-#define de_copy_member(X) (t->X = (hi && hi->X ? xstrdup(hi->X) : lo && lo->X ? xstrdup(lo->X) : NULL))
-
-void
-dat_entry_merge(dat_entry_t *t, const dat_entry_t *hi, const dat_entry_t *lo) {
-    dat_entry_init(t);
-
+void DatEntry::merge(const DatEntry *high, const DatEntry *low) {
     de_copy_member(name);
     de_copy_member(description);
     de_copy_member(version);

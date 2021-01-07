@@ -35,6 +35,7 @@
 */
 
 #include <cinttypes>
+#include <string>
 
 #include <time.h>
 
@@ -42,49 +43,38 @@
 #include "parray.h"
 #include "types.h"
 
-struct file_sh {
+
+class File {
+public:
+    std::string name;
+    std::string merge;
     uint64_t size;
-    hashes_t hashes;
-};
-
-typedef struct file_sh file_sh_t;
-
-enum { FILE_SH_FULL, FILE_SH_DETECTOR, FILE_SH_MAX };
-
-struct file {
-    char *name;
-    char *merge;
-    file_sh_t sh[FILE_SH_MAX];
+    Hashes hashes;
+    uint64_t size_detector;
+    Hashes hashes_detector;
     time_t mtime;
     status_t status;
     where_t where;
+    
+    File() : size(SIZE_UNKNOWN), size_detector(SIZE_UNKNOWN), mtime(0), status(STATUS_OK), where(FILE_INGAME) { }
+    
+    uint64_t get_size(bool detector) const { return detector ? size_detector : size; }
+    const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
+    
+    const std::string &merged_name() const { return merge.empty() ? name : merge; }
+    bool is_size_known(bool detector = false) const { return get_size(detector) != SIZE_UNKNOWN; }
+    
+    bool compare_name(const File &other) const;
+    bool compare_merged(const File &other) const;
+    bool compare_merged_size_crc(const File &other) const;
+    bool compare_name_size_crc(const File &other) const;
+    bool compare_size_crc(const File &other) const;
+    Hashes::Compare compare_hashes(const File &other) const;
+    bool is_mergable(const File &other) const;
+    bool size_hashes_are_set(bool detector) const;
+    
+private:
+    bool compare_size_crc_one(const File &other, bool detector) const;
 };
-
-typedef struct file file_t;
-
-
-#define file_hashes(f) (file_hashes_xxx((f), FILE_SH_FULL))
-#define file_hashes_xxx(f, i) (&(f)->sh[(i)].hashes)
-#define file_merge(f) ((f)->merge)
-#define file_merged_name(f) ((f)->merge ? (f)->merge : (f)->name)
-#define file_mtime(f) ((f)->mtime)
-#define file_name(f) ((f)->name)
-#define file_size_(f) (file_size__xxx((f), FILE_SH_FULL))
-#define file_size__known(f) (file_size__xxx_known((f), FILE_SH_FULL))
-#define file_size__xxx(f, i) ((f)->sh[(i)].size)
-#define file_size__xxx_known(f, i) (file_size__xxx((f), (i)) != SIZE_UNKNOWN)
-#define file_status_(f) ((f)->status)
-#define file_where(f) ((f)->where)
-
-#define file_compare_n(f1, f2) (strcmp(file_name(f1), file_name(f2)) == 0)
-
-bool file_compare_m(const file_t *, const file_t *);
-bool file_compare_msc(const file_t *, const file_t *);
-bool file_compare_nsc(const file_t *, const file_t *);
-bool file_compare_sc(const file_t *, const file_t *);
-void file_init(file_t *);
-void file_finalize(file_t *);
-bool file_mergeable(const file_t *, const file_t *);
-bool file_sh_is_set(const file_t *, int);
 
 #endif /* file.h */

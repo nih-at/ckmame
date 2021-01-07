@@ -43,8 +43,7 @@
 #include "error.h"
 
 /*ARGSUSED1*/
-int
-xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb, const xmlu_entity_t *entities, int nentities) {
+int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
     myerror(ERRFILE, "support for XML parsing not compiled in.");
     return -1;
 }
@@ -56,127 +55,102 @@ xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb, const xmlu_
 
 #define XMLU_MAX_PATH 8192
 
-static const xmlu_entity_t *find_entity(const char *, const xmlu_entity_t *, int);
 static int xml_close(void *);
-static int xml_read(void *, char *, int);
+static const XmluEntity *xml_find(const std::unordered_map<std::string, XmluEntity> &entities, const std::string &path);
+static int xml_read(void *source, char *buffer, int length);
 
 
-int
-xmlu_parse(parser_source_t *ps, void *ctx, xmlu_lineno_cb lineno_cb, const xmlu_entity_t *entities, int nentities) {
-    xmlTextReaderPtr reader;
-    int i, ret;
-    const char *name;
-    char path[XMLU_MAX_PATH];
-    char *attr;
-    const xmlu_entity_t *e, *e_txt;
-    const xmlu_attr_t *a;
-
-    reader = xmlReaderForIO(xml_read, xml_close, ps, NULL, NULL, 0);
+int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
+    auto reader = xmlReaderForIO(xml_read, xml_close, ps, NULL, NULL, 0);
     if (reader == NULL) {
 	/* TODO */
 	printf("opening error\n");
 	return -1;
     }
 
-    e_txt = NULL;
-    path[0] = '\0';
+    auto ok = true;
+    const XmluEntity *entity_text = NULL;
+    std::string path;
 
+    int ret;
     while ((ret = xmlTextReaderRead(reader)) == 1) {
 	if (lineno_cb)
 	    lineno_cb(ctx, xmlTextReaderGetParserLineNumber(reader));
 
 	switch (xmlTextReaderNodeType(reader)) {
-	case XML_READER_TYPE_ELEMENT:
-	    name = (const char *)xmlTextReaderConstName(reader);
-	    if (path + strlen(path) + strlen(name) + 2 > path + sizeof(path)) {
-		/* TODO */
-                xmlFreeTextReader(reader);
-                printf("element path too long\n");
-                return -1;
-	    }
-	    else {
-		sprintf(path + strlen(path), "/%s", name);
-	    }
+            case XML_READER_TYPE_ELEMENT: {
+                auto name = std::string(reinterpret_cast<const char *>(xmlTextReaderConstName(reader)));
+                path = path + '/' + name;
+                
+                auto entity = xml_find(entities, path);
+                if (entity != NULL) {
+                    if (entity->cb_open) {
+                        if (!entity->cb_open(ctx, entity->arg1)) {
+                            ok = false;
+                        }
+                    }
+                    
+                    for (auto it : entity->attr) {
+                        auto &attribute = it.second;
+                        auto value = reinterpret_cast<char *>(xmlTextReaderGetAttribute(reader, reinterpret_cast<const xmlChar *>(it.first.c_str())));
 
-	    if ((e = find_entity(path, entities, nentities)) != NULL) {
-		if (e->cb_open)
-		    ret |= e->cb_open(ctx, e->arg1);
+                        if (value != NULL) {
+                            if (!attribute.cb_attr(ctx, attribute.arg1, attribute.arg2, value)) {
+                                ok = false;
+                            }
+                            free(value);
+                        }
+                    }
+                    
+                    if (entity->cb_text) {
+                        entity_text = entity;
+                    }
+                }
+                
+                if (!xmlTextReaderIsEmptyElement(reader)) {
+                    break;
+                }
+            }
+                /*
+                 Fallthrough for empty elements, as we won't get an
+                 extra close.
+                 */
 
-		a = e->attr;
-		for (i = 0; a && a[i].name; i++) {
-		    if ((attr = (char *)xmlTextReaderGetAttribute(reader, (const xmlChar *)e->attr[i].name)) != NULL) {
-			ret |= a[i].cb_attr(ctx, a[i].arg1, a[i].arg2, attr);
-			free(attr);
-		    }
-		}
+            case XML_READER_TYPE_END_ELEMENT: {
+                auto entity = xml_find(entities, path);
+                if (entity != NULL) {
+                    if (entity->cb_close) {
+                        if (!entity->cb_close(ctx, entity->arg1)) {
+                            ok = false;
+                        }
+                    }
+                }
 
-		if (e->cb_text)
-		    e_txt = e;
-	    }
+                path.resize(path.find_last_of('/'));
+                entity_text = NULL;
 
-	    if (!xmlTextReaderIsEmptyElement(reader))
-		break;
-	    /*
-	      Fallthrough for empty elements, as we won't get an
-	      extra close.
-	    */
-
-	case XML_READER_TYPE_END_ELEMENT:
-	    if ((e = find_entity(path, entities, nentities)) != NULL) {
-		if (e->cb_close)
-		    ret |= e->cb_close(ctx, e->arg1);
-	    }
-
-	    *(strrchr(path, '/')) = '\0';
-	    e_txt = NULL;
-
-	    break;
-
+                break;
+            }
+                
 	case XML_READER_TYPE_TEXT:
-	    if (e_txt)
-		e_txt->cb_text(ctx, (const char *)xmlTextReaderConstValue(reader));
-	    break;
+                if (entity_text) {
+                    entity_text->cb_text(ctx, (const char *)xmlTextReaderConstValue(reader));
+                }
+                break;
 
-	default:
-	    break;
-	}
+            default:
+                break;
+        }
     }
     xmlFreeTextReader(reader);
 
     if (ret != 0) {
 	/* TODO: parse error */
 	printf("parse error\n");
-	return -1;
+	return false;
     }
 
-    return 0;
-}
-
-
-static const xmlu_entity_t *
-find_entity(const char *path, const xmlu_entity_t *entities, int nentities) {
-    int i;
-    const char *path_end;
-    size_t name_len;
-
-    path_end = path + strlen(path);
-
-    for (i = 0; i < nentities; i++) {
-	if (entities[i].name[0] == '/') {
-	    if (strcmp(path, entities[i].name) == 0)
-		break;
-	}
-	else {
-	    name_len = strlen(entities[i].name);
-	    if (path_end[-name_len - 1] == '/' && strcmp(path_end - name_len, entities[i].name) == 0)
-		break;
-	}
-    }
-
-    if (i != nentities)
-	return entities + i;
-
-    return NULL;
+    return ok;
 }
 
 
@@ -186,9 +160,25 @@ xml_close(void *ctx) {
 }
 
 
+static const XmluEntity *xml_find(const std::unordered_map<std::string, XmluEntity> &entities, const std::string &path) {
+    for (auto &pair : entities) {
+        auto &name = pair.first;
+        if (name == path) {
+            return &pair.second;
+        }
+
+        if (name.length() < path.length() && path[path.length() - name.length() - 1] == '/' && path.compare(path.length() - name.length(), name.length(), name) == 0) {
+            return &pair.second;
+       }
+    }
+    
+    return NULL;
+}
+
+
 static int
-xml_read(void *ctx, char *b, int len) {
-    return (int)ps_read(static_cast<parser_source_t *>(ctx), b, len);
+xml_read(void *source, char *b, int len) {
+    return static_cast<int>(static_cast<ParserSource *>(source)->read(b, static_cast<size_t>(len)));
 }
 
 #endif /* HAVE_LIBXML2 */

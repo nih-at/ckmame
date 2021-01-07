@@ -37,24 +37,83 @@
 #include "file.h"
 
 
-void
-file_init(file_t *r) {
-    int i;
-
-    r->name = r->merge = NULL;
-    for (i = 0; i < FILE_SH_MAX; i++) {
-	r->sh[i].size = SIZE_UNKNOWN;
-	hashes_init(&r->sh[i].hashes);
-    }
-    r->status = STATUS_OK;
-    /* TODO: state */
-    r->where = FILE_INGAME;
-    r->mtime = 0;
+bool File::compare_merged(const File &other) const {
+    return merged_name() == other.merged_name();
 }
 
 
-void
-file_finalize(file_t *r) {
-    free(r->name);
-    free(r->merge);
+bool File::compare_merged_size_crc(const File &other) const {
+    return compare_merged(other) && compare_size_crc(other);
+}
+
+
+bool File::compare_name(const File &other) const {
+    return name == other.name;
+}
+
+bool File::compare_name_size_crc(const File &other) const {
+    return compare_name(other) && compare_size_crc(other);
+}
+
+bool File::compare_size_crc(const File &other) const {
+    return compare_size_crc_one(other, false) || compare_size_crc_one(other, true);
+}
+
+bool File::compare_size_crc_one(const File &other, bool detector) const {
+    if (detector && !other.size_hashes_are_set(detector)) {
+        return false;
+    }
+    
+    if (is_size_known() && other.is_size_known(detector) && size != other.get_size(detector)) {
+        return false;
+    }
+    
+    if (hashes.empty()) {
+        return true;
+    }
+    
+    // TODO: don't hardcode CRC, doesn't work for disks
+    if (hashes.has_type(Hashes::TYPE_CRC) && other.get_hashes(detector).has_type(Hashes::TYPE_CRC) && hashes.crc == other.get_hashes(detector).crc) {
+        return true;
+    }
+    
+    return false;
+}
+
+
+bool File::size_hashes_are_set(bool detector) const {
+    return is_size_known(detector) && !get_hashes(detector).empty();
+}
+
+bool File::is_mergable(const File &other) const {
+    /* name must be the (merged) name */
+    if (merged_name() != other.name) {
+        return false;
+    }
+
+    /* both can be bad dumps */
+    if (hashes.empty() && other.hashes.empty()) {
+        return true;
+    }
+    /* or the hashes must match */
+    if (!hashes.empty() && !other.hashes.empty() && compare_size_crc(other)) {
+        return true;
+    }
+
+    return false;
+}
+
+
+Hashes::Compare File::compare_hashes(const File &other) const {
+    auto result = hashes.compare(other.hashes);
+    
+    if (result == Hashes::MATCH) {
+        return result;
+    }
+    
+    if (!hashes.empty() && !other.hashes_detector.empty() && hashes.compare(other.hashes_detector) == Hashes::MATCH) {
+        return Hashes::MATCH;
+    }
+    
+    return result;
 }

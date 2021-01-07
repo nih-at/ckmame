@@ -120,8 +120,7 @@ dbh_error(dbh_t *db) {
 }
 
 
-dbh_t *
-dbh_open(const char *name, int mode) {
+dbh_t *dbh_open(const std::string &name, int mode) {
     dbh_t *db;
     struct stat st;
     unsigned int i;
@@ -145,7 +144,7 @@ dbh_open(const char *name, int mode) {
     if (DBH_FLAGS(mode) & DBH_TRUNCATE) {
 	/* do not delete special cases (like memdb) */
 	if (name[0] != ':')
-	    unlink(name);
+	    unlink(name.c_str());
 	needs_init = 1;
     }
 
@@ -156,11 +155,11 @@ dbh_open(const char *name, int mode) {
 
     if (DBH_FLAGS(mode) & DBH_CREATE) {
 	sql3_flags |= SQLITE_OPEN_CREATE;
-	if (name[0] == ':' || (stat(name, &st) < 0 && errno == ENOENT))
+	if (name[0] == ':' || (stat(name.c_str(), &st) < 0 && errno == ENOENT))
 	    needs_init = 1;
     }
 
-    if (sqlite3_open_v2(name, &dbh_db(db), sql3_flags, NULL) != SQLITE_OK) {
+    if (sqlite3_open_v2(name.c_str(), &dbh_db(db), sql3_flags, NULL) != SQLITE_OK) {
 	int save;
 	save = errno;
 	dbh_close(db);
@@ -169,19 +168,19 @@ dbh_open(const char *name, int mode) {
     }
 
     if (sqlite3_exec(dbh_db(db), PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
-	int save;
-	save = errno;
-	dbh_close(db);
-	errno = save;
-	return NULL;
+        int save;
+        save = errno;
+        dbh_close(db);
+        errno = save;
+        return NULL;
     }
-
+        
     if (needs_init) {
 	if (init_db(db) < 0) {
 	    int save;
 	    save = errno;
 	    dbh_close(db);
-	    unlink(name);
+	    unlink(name.c_str());
 	    errno = save;
 	    return NULL;
 	}
@@ -211,15 +210,15 @@ init_db(dbh_t *db) {
 }
 
 dbh_stmt_t
-dbh_stmt_with_hashes_and_size(dbh_stmt_t stmt, const hashes_t *hash, int have_size) {
-    unsigned int i;
-
-    for (i = 1; i <= HASHES_TYPE_MAX; i <<= 1) {
-	if (hashes_has_type(hash, i))
+dbh_stmt_with_hashes_and_size(dbh_stmt_t stmt, const Hashes *hashes, int have_size) {
+    for (int i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
+        if (hashes->has_type(i)) {
 	    stmt = static_cast<dbh_stmt_t>(stmt + i);
+        }
     }
-    if (have_size)
-	stmt = static_cast<dbh_stmt_t>(stmt + (HASHES_TYPE_MAX << 1));
+    if (have_size) {
+	stmt = static_cast<dbh_stmt_t>(stmt + (Hashes::TYPE_MAX << 1));
+    }
 
     return stmt;
 }

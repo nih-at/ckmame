@@ -402,9 +402,16 @@ sub runtest_one {
 
 	$self->{failed} = \@failed;
 
-	$self->run_hook('checks');
+	my $hook_ok = $self->run_hook('checks');
 
-	my $result = scalar(@{$self->{failed}}) == 0 ? 'PASS' : 'FAIL';
+	my $result;
+	
+	if ($hook_ok) {
+		$result = scalar(@{$self->{failed}}) == 0 ? 'PASS' : 'FAIL';
+	}
+	else {
+		$result = "ERROR";
+	}
 
 	$self->sandbox_leave();
 	if (!($self->{no_cleanup} || ($self->{keep_broken} && $result eq 'FAIL'))) {

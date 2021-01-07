@@ -42,56 +42,53 @@
 #include "sq_util.h"
 #include "xmalloc.h"
 
-static int read_disks(romdb_t *, game_t *);
-static int read_roms(romdb_t *, game_t *);
+static int read_disks(romdb_t *, Game *);
+static int read_roms(romdb_t *, Game *);
 
 
-game_t *
-romdb_read_game(romdb_t *db, const char *name) {
+GamePtr
+romdb_read_game(romdb_t *db, const std::string &name) {
     sqlite3_stmt *stmt;
-    game_t *game;
     int ret;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_GAME)) == NULL) {
 	return NULL;
     }
 
-    if (sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_ROW) {
+    if (sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_ROW) {
 	return NULL;
     }
 
-    game = game_new();
+    auto game = std::make_shared<Game>();
     game->id = sqlite3_column_int(stmt, 0);
-    game->name = xstrdup(name);
+    game->name = name;
     game->description = sq3_get_string(stmt, 1);
     game->dat_no = sqlite3_column_int(stmt, 2);
     game->cloneof[0] = sq3_get_string(stmt, 3);
 
-    if (game_cloneof(game, 0)) {
-        if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_PARENT_BY_NAME)) == NULL || sq3_set_string(stmt, 1, game_cloneof(game, 0)) != SQLITE_OK) {
-            game_free(game);
+    if (!game->cloneof[0].empty()) {
+        if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_PARENT_BY_NAME)) == NULL || sq3_set_string(stmt, 1, game->cloneof[0].c_str()) != SQLITE_OK) {
             return NULL;
         }
         
         if ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-            game_cloneof(game, 1) = sq3_get_string(stmt, 0);
+            game->cloneof[1] = sq3_get_string(stmt, 0);
         }
         
         if (ret != SQLITE_ROW && ret != SQLITE_DONE) {
-            game_free(game);
             return NULL;
         }
     }
 
-    if (read_roms(db, game) < 0) {
-	game_free(game);
-        printf("can't read roms for %s\n", name);
+    if (read_roms(db, game.get()) < 0) {
+        // TODO: use error reporting function
+        printf("can't read roms for %s\n", name.c_str());
 	return NULL;
     }
 
-    if (read_disks(db, game) < 0) {
-	game_free(game);
-        printf("can't read disks for %s\n", name);
+    if (read_disks(db, game.get()) < 0) {
+        // TODO: use error reporting function
+        printf("can't read disks for %s\n", name.c_str());
 	return NULL;
     }
 
@@ -100,25 +97,26 @@ romdb_read_game(romdb_t *db, const char *name) {
 
 
 static int
-read_disks(romdb_t *db, game_t *g) {
+read_disks(romdb_t *db, Game *game) {
     sqlite3_stmt *stmt;
     int ret;
-    disk_t *d;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK)
+    if (sqlite3_bind_int64(stmt, 1, game->id) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK)
 	return -1;
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	d = (disk_t *)array_grow(game_disks(g), reinterpret_cast<void (*)(void *)>(disk_init));
-
-	disk_name(d) = sq3_get_string(stmt, 0);
-	disk_merge(d) = sq3_get_string(stmt, 1);
-	disk_status(d) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
-        disk_where(d) = static_cast<where_t>(sqlite3_column_int(stmt, 3));
-	sq3_get_hashes(disk_hashes(d), stmt, 5);
+        Disk disk;
+        
+        disk.name = sq3_get_string(stmt, 0);
+        disk.merge = sq3_get_string(stmt, 1);
+        disk.status = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+        disk.where = static_cast<where_t>(sqlite3_column_int(stmt, 3));
+	sq3_get_hashes(&disk.hashes, stmt, 5);
+        
+        game->disks.push_back(disk);
     }
 
     return (ret == SQLITE_DONE ? 0 : -1);
@@ -126,26 +124,29 @@ read_disks(romdb_t *db, game_t *g) {
 
 
 static int
-read_roms(romdb_t *db, game_t *g) {
+read_roms(romdb_t *db, Game *game) {
     sqlite3_stmt *stmt;
     int ret;
-    file_t *r;
 
-    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL)
+    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_FILE)) == NULL) {
 	return -1;
+    }
 
-    if (sqlite3_bind_int64(stmt, 1, game_id(g)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK)
+    if (sqlite3_bind_int64(stmt, 1, game->id) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_ROM) != SQLITE_OK) {
 	return -1;
+    }
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	r = (file_t *)array_grow(game_roms(g), reinterpret_cast<void (*)(void *)>(file_init));
+        File rom;
 
-	file_name(r) = sq3_get_string(stmt, 0);
-	file_merge(r) = sq3_get_string(stmt, 1);
-	file_status_(r) = static_cast<status_t>(sqlite3_column_int(stmt, 2));
-	file_where(r) = static_cast<where_t>(sqlite3_column_int(stmt, 3));
-	file_size_(r) = sq3_get_int64_default(stmt, 4, SIZE_UNKNOWN);
-	sq3_get_hashes(file_hashes(r), stmt, 5);
+        rom.name = sq3_get_string(stmt, 0);
+	rom.merge = sq3_get_string(stmt, 1);
+	rom.status = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+	rom.where = static_cast<where_t>(sqlite3_column_int(stmt, 3));
+	rom.size = sq3_get_int64_default(stmt, 4, SIZE_UNKNOWN);
+	sq3_get_hashes(&rom.hashes, stmt, 5);
+        
+        game->roms.push_back(rom);
     }
 
     return (ret == SQLITE_DONE ? 0 : -1);

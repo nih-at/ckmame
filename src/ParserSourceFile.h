@@ -1,6 +1,9 @@
+#ifndef HAD_PARSER_SOURCE_FILE_H
+#define HAD_PARSER_SOURCE_FILE_H
+
 /*
-  game.c -- create / free game structure
-  Copyright (C) 2004-2014 Dieter Baron and Thomas Klausner
+  ParserSourceFile.h -- reading parser input data from file
+  Copyright (C) 2008-2019 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,42 +34,23 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cstdio>
+#include <string>
 
-#include <stdlib.h>
+#include "parser_source.h"
 
-#include "game.h"
-#include "xmalloc.h"
+class ParserSourceFile : public ParserSource {
+public:
+    ParserSourceFile(const std::string &fname);
+    virtual ~ParserSourceFile();
+    
+    virtual bool close();
+    virtual ParserSourcePtr open(const std::string &name);
+    virtual size_t read_xxx(void *data, size_t length);
+    
+private:
+    std::string file_name;
+    FILE *f;
+};
 
-
-game_t *
-game_new(void) {
-    game_t *g;
-
-    g = static_cast<game_t *>(xmalloc(sizeof(*g)));
-
-    g->id = -1;
-    g->name = g->description = NULL;
-
-    g->cloneof[0] = g->cloneof[1] = NULL;
-    g->roms = array_new(sizeof(file_t));
-    g->disks = array_new(sizeof(disk_t));
-
-    return g;
-}
-
-
-void
-game_free(game_t *g) {
-
-    if (g == NULL)
-	return;
-
-    free(g->name);
-    free(g->description);
-
-    free(g->cloneof[0]);
-    free(g->cloneof[1]);
-    array_free(g->roms, reinterpret_cast<void (*)(void *)>(file_finalize));
-    array_free(g->disks, reinterpret_cast<void (*)(void *)>(disk_finalize));
-    free(g);
-}
+#endif // HAD_PARSER_SOURCE_FILE_H

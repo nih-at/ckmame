@@ -1,6 +1,9 @@
+#ifndef HAD_OUTPUT_XML_H
+#define HAD_OUTPUT_XML_H
+
 /*
-  hash_from_string.c -- convert string to hashes_t
-  Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
+  OutputContextXml.h -- write games to datafile.dtd XML files
+  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,48 +34,24 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <errno.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <string.h>
+#include "output.h"
 
-#include "hashes.h"
-#include "util.h"
+#include <libxml/tree.h>
 
+class OutputContextXml : public OutputContext {
+public:
+    OutputContextXml(const std::string &fname, int flags);
+    virtual ~OutputContextXml();
+    
+    virtual bool close();
+    virtual bool game(GamePtr game);
+    virtual bool header(DatEntry *dat);
+    
+private:
+    xmlDocPtr doc;
+    xmlNodePtr root;
+    FILE *f;
+    std::string fname;
+};
 
-int
-hash_from_string(hashes_t *h, const char *str) {
-    size_t l;
-    int type;
-
-    if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
-	str += 2;
-
-    l = strlen(str);
-
-    if (l % 2 != 0 || strspn(str, "0123456789ABCDEFabcdef") != l)
-	return -1;
-
-    switch (l / 2) {
-    case HASHES_SIZE_CRC:
-	type = HASHES_TYPE_CRC;
-	h->crc = (uint32_t)strtoul(str, NULL, 16);
-	break;
-
-    case HASHES_SIZE_MD5:
-	type = HASHES_TYPE_MD5;
-	hex2bin(h->md5, str, HASHES_SIZE_MD5);
-	break;
-
-    case HASHES_SIZE_SHA1:
-	type = HASHES_TYPE_SHA1;
-	hex2bin(h->sha1, str, HASHES_SIZE_SHA1);
-	break;
-
-    default:
-	return -1;
-    }
-
-    h->types |= type;
-    return type;
-}
+#endif // HAD_OUTPUT_XML_H

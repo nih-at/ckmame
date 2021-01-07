@@ -1,6 +1,9 @@
+#ifndef HAD_OUTPUT_DB_H
+#define HAD_OUTPUT_DB_H
+
 /*
-  hash_to_string.c -- return string representation of hash
-  Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
+  OutputContextDb.h -- write games to DB
+  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,66 +34,30 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <stdio.h>
-#include <string.h>
-
-#include "compat.h"
-#include "hashes.h"
-#include "types.h"
-#include "util.h"
-#include "xmalloc.h"
+#include "output.h"
+#include "romdb.h"
 
 
-const intstr_t hash_type_names[] = {{HASHES_TYPE_CRC, "crc"}, {HASHES_TYPE_MD5, "md5"}, {HASHES_TYPE_SHA1, "sha1"}, {0, NULL}};
+class OutputContextDb : public OutputContext {
+public:
+    OutputContextDb(const std::string &fname, int flags);
+    virtual ~OutputContextDb();
+    
+    virtual bool close();
+    virtual bool detector(Detector *detector);
+    virtual bool game(GamePtr game);
+    virtual bool header(DatEntry *dat);
+    
+private:
+    romdb_t *db;
 
+    std::vector<DatEntry> dat;
 
-const char *
-hash_to_string(char *str, int type, const hashes_t *hashes) {
-    if (!hashes_has_type(hashes, type))
-	return NULL;
+    std::vector<std::string> lost_children;
+    
+    void familymeeting(Game *, Game *);
+    bool handle_lost();
+    bool lost(Game *);
+};
 
-    switch (type) {
-    case HASHES_TYPE_CRC:
-	sprintf(str, "%.8" PRIx32, hashes->crc);
-	break;
-
-    case HASHES_TYPE_MD5:
-	bin2hex(str, hashes->md5, HASHES_SIZE_MD5);
-	break;
-
-    case HASHES_TYPE_SHA1:
-	bin2hex(str, hashes->sha1, HASHES_SIZE_SHA1);
-	break;
-
-    default:
-	return NULL;
-    }
-
-    return str;
-}
-
-
-int
-hash_types_from_str(const char *s) {
-    const char *p, *q;
-    char b[16];
-    int types, t;
-
-    types = 0;
-    p = s;
-    do {
-	q = p + strcspn(p, ",");
-	if ((size_t)(q - p) >= sizeof(b))
-	    return 0;
-	strncpy(b, p, q - p);
-	b[q-p] = '\0';
-	if ((t = hash_type_from_str(b)) == 0)
-	    return 0;
-	types |= t;
-
-	p = q + 1;
-    } while (*q);
-
-    return types;
-}
+#endif // HAD_OUTPUT_DB_H

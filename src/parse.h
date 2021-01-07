@@ -35,7 +35,8 @@
 */
 
 
-#include <stdio.h>
+#include <cstdio>
+#include <unordered_set>
 
 #include "dat.h"
 #include "game.h"
@@ -53,71 +54,75 @@ typedef enum parser_state parser_state_t;
 
 #define PARSER_FL_FULL_ARCHIVE_NAME 1
 
-struct parser_context {
-    /* config */
-    const parray_t *ignore;
-    dat_entry_t dat_default;
+class ParserContext {
+public:
+    static bool parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags);
+
+    /* TODO: move out of context */
+    size_t lineno; /* current line number in input file */
+
     bool full_archive_name;
 
+    // callbacks
+    bool eof();
+    bool file_continue(filetype_t ft);
+    bool file_end(filetype_t ft);
+    bool file_status(filetype_t ft, const std::string &attr);
+    bool file_hash(filetype_t ft, int ht, const std::string &attr);
+    bool file_ignore(filetype_t ft);
+    bool file_merge(filetype_t ft, const std::string &attr);
+    bool file_mtime(filetype_t ft, time_t mtime);
+    bool file_name(filetype_t ft, const std::string &attr);
+    bool file_size(filetype_t ft, const std::string &attr);
+    bool file_size(filetype_t ft, uint64_t size);
+    bool file_start(filetype_t ft);
+    bool game_cloneof(filetype_t ft, const std::string &attr);
+    bool game_description(const std::string &attr);
+    bool game_end();
+    bool game_name(const std::string &attr);
+    bool game_start();
+    bool prog_description(const std::string &attr);
+    bool prog_header(const std::string attr);
+    bool prog_name(const std::string &attr);
+    bool prog_version(const std::string &attr);
+
+    ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags);
+    ~ParserContext();
+    
+    bool parse_cm();
+    bool parse_dir(const std::string &dname, int hashtypes);
+    bool parse_rc();
+    bool parse_xml();
+    
+private:
+
+    bool header_end();
+    void disk_end();
+    void rom_end(filetype_t);
+    bool ignore_game(const std::string &name);
+
+    /* config */
+    std::unordered_set<std::string> ignore;
+    DatEntry dat_default;
+
     /* output */
-    output_context_t *output;
+    OutputContext *output;
 
     /* current source */
-    parser_source_t *ps;
-    /* TODO: move out of context */
-    int lineno; /* current line number in input file */
+    ParserSourcePtr ps;
 
     /* state */
     int flags;
     parser_state_t state;
-    dat_entry_t de; /* info about dat file */
-    game_t *g;      /* current game */
-    file_t *r;      /* current ROM */
-    disk_t *d;      /* current disk */
+    DatEntry de; /* info about dat file */
+    GamePtr g;      /* current game */
+    File *r;      /* current ROM */
+    Disk *d;      /* current disk */
 };
-
-typedef struct parser_context parser_context_t;
 
 /* parser functions */
 
-void parser_context_free(parser_context_t *);
-parser_context_t *parser_context_new(parser_source_t *, const parray_t *, const dat_entry_t *, output_context_t *, int);
 
-int parse(parser_source_t *, const parray_t *, const dat_entry_t *, output_context_t *, int);
-int export_db(romdb_t *, const parray_t *, const dat_entry_t *, output_context_t *);
-
-/* backend parser functions */
-
-int parse_cm(parser_source_t *, parser_context_t *);
-int parse_dir(const char *, parser_context_t *, int);
-int parse_rc(parser_source_t *, parser_context_t *);
-int parse_xml(parser_source_t *, parser_context_t *);
-
-/* callbacks */
-
-int parse_eof(parser_context_t *);
-int parse_file_continue(parser_context_t *, filetype_t, int, const char *);
-int parse_file_end(parser_context_t *, filetype_t);
-int parse_file_status_(parser_context_t *, filetype_t, int, const char *);
-int parse_file_hash(parser_context_t *, filetype_t, int, const char *);
-int parse_file_ignore(parser_context_t *, filetype_t, int, const char *);
-int parse_file_merge(parser_context_t *, filetype_t, int, const char *);
-int parse_file_mtime(parser_context_t *, filetype_t, int, time_t);
-int parse_file_name(parser_context_t *, filetype_t, int, const char *);
-int parse_file_size_(parser_context_t *, filetype_t, int, const char *);
-int parse_file_start(parser_context_t *, filetype_t);
-int parse_game_cloneof(parser_context_t *, filetype_t, int, const char *);
-int parse_game_description(parser_context_t *, const char *);
-int parse_game_end(parser_context_t *, filetype_t);
-int parse_game_name(parser_context_t *, filetype_t, int, const char *);
-int parse_game_start(parser_context_t *, filetype_t);
-int parse_prog_description(parser_context_t *, const char *);
-int parse_prog_header(parser_context_t *, const char *, int);
-int parse_prog_name(parser_context_t *, const char *);
-int parse_prog_version(parser_context_t *, const char *);
-
-/* util functions */
-
-int name_matches(const char *, const parray_t *);
+int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *context);
 
 #endif /* parse.h */

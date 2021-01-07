@@ -71,42 +71,43 @@ romdb_write_detector(romdb_t *db, const detector_t *d) {
 
 
 static int
-romdb_write_rules(const detector_t *d, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
-    int i, j;
-    detector_rule_t *r;
-    detector_test_t *t;
+romdb_write_rules(const detector_t *detector, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
+    for (size_t i = 0; i < detector->rules.size(); i++) {
+        auto &rule = detector->rules[i];
 
-    for (i = 0; i < detector_num_rules(d); i++) {
-	r = detector_rule(d, i);
+        if (sqlite3_bind_int(st_r, 1, i) != SQLITE_OK || sqlite3_bind_int(st_t, 1, i) != SQLITE_OK || sq3_set_int64_default(st_r, 2, rule.start_offset, 0) != SQLITE_OK || sq3_set_int64_default(st_r, 3, rule.end_offset, DETECTOR_OFFSET_EOF) != SQLITE_OK || sq3_set_int_default(st_r, 4, rule.operation, Detector::OP_NONE) != SQLITE_OK || sqlite3_step(st_r) != SQLITE_DONE || sqlite3_reset(st_r) != SQLITE_OK) {
+            return -1;
+        }
+        
+        for (size_t j = 0; j < rule.tests.size(); j++) {
+            auto &test = rule.tests[j];
 
-	if (sqlite3_bind_int(st_r, 1, i) != SQLITE_OK || sqlite3_bind_int(st_t, 1, i) != SQLITE_OK || sq3_set_int64_default(st_r, 2, detector_rule_start_offset(r), 0) != SQLITE_OK || sq3_set_int64_default(st_r, 3, detector_rule_end_offset(r), DETECTOR_OFFSET_EOF) != SQLITE_OK || sq3_set_int_default(st_r, 4, detector_rule_operation(r), DETECTOR_OP_NONE) != SQLITE_OK || sqlite3_step(st_r) != SQLITE_DONE || sqlite3_reset(st_r) != SQLITE_OK)
-	    return -1;
-
-	for (j = 0; j < detector_rule_num_tests(r); j++) {
-	    t = detector_rule_test(r, j);
-
-	    if (sqlite3_bind_int(st_t, 2, j) != SQLITE_OK || (sqlite3_bind_int(st_t, 3, detector_test_type(t)) != SQLITE_OK) || sqlite3_bind_int64(st_t, 4, detector_test_offset(t)) != SQLITE_OK || (sqlite3_bind_int(st_t, 8, detector_test_result(t)) != SQLITE_OK))
+            if (sqlite3_bind_int(st_t, 2, j) != SQLITE_OK || (sqlite3_bind_int(st_t, 3, test.type) != SQLITE_OK) || sqlite3_bind_int64(st_t, 4, test.offset) != SQLITE_OK || (sqlite3_bind_int(st_t, 8, test.result) != SQLITE_OK)) {
 		return -1;
+            }
 
-	    switch (detector_test_type(t)) {
-	    case DETECTOR_TEST_DATA:
-	    case DETECTOR_TEST_OR:
-	    case DETECTOR_TEST_AND:
-	    case DETECTOR_TEST_XOR:
-		if (sqlite3_bind_null(st_t, 5) != SQLITE_OK || sq3_set_blob(st_t, 6, detector_test_mask(t), detector_test_length(t)) != SQLITE_OK || sq3_set_blob(st_t, 7, detector_test_value(t), detector_test_length(t)) != SQLITE_OK)
-		    return -1;
-		break;
+	    switch (test.type) {
+                case Detector::TEST_DATA:
+                case Detector::TEST_OR:
+                case Detector::TEST_AND:
+                case Detector::TEST_XOR:
+                    if (sqlite3_bind_null(st_t, 5) != SQLITE_OK || sq3_set_blob(st_t, 6, test.mask) != SQLITE_OK || sq3_set_blob(st_t, 7, test.value) != SQLITE_OK) {
+                        return -1;
+                    }
+                    break;
 
-	    case DETECTOR_TEST_FILE_EQ:
-	    case DETECTOR_TEST_FILE_LE:
-	    case DETECTOR_TEST_FILE_GR:
-		if ((sqlite3_bind_int64(st_t, 5, detector_test_length(t)) != SQLITE_OK) || sqlite3_bind_null(st_t, 6) != SQLITE_OK || sqlite3_bind_null(st_t, 7) != SQLITE_OK)
-		    return -1;
-		break;
-	    }
+                case Detector::TEST_FILE_EQ:
+                case Detector::TEST_FILE_LE:
+                case Detector::TEST_FILE_GR:
+                    if ((sqlite3_bind_int64(st_t, 5, test.length) != SQLITE_OK) || sqlite3_bind_null(st_t, 6) != SQLITE_OK || sqlite3_bind_null(st_t, 7) != SQLITE_OK) {
+                        return -1;
+                    }
+                    break;
+            }
 
-	    if (sqlite3_step(st_t) != SQLITE_DONE || sqlite3_reset(st_t) != SQLITE_OK)
-		return -1;
+            if (sqlite3_step(st_t) != SQLITE_DONE || sqlite3_reset(st_t) != SQLITE_OK) {
+                return -1;
+            }
 	}
     }
 

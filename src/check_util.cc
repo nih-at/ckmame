@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
+
 #include <sys/param.h>
 #include <sys/stat.h>
 
@@ -59,14 +61,15 @@ void
 ensure_extra_maps(int flags) {
     int i;
     const char *file;
-    disk_t *d;
     name_type_t nt;
 
-    if ((flags & (DO_MAP | DO_LIST)) == 0)
+    if ((flags & (DO_MAP | DO_LIST)) == 0) {
 	return;
+    }
 
-    if (((maps_done & EXTRA_MAPS) && !(flags & DO_LIST)) || (extra_list != NULL && !(flags & DO_MAP)))
+    if (((maps_done & EXTRA_MAPS) && !(flags & DO_LIST)) || (extra_list != NULL && !(flags & DO_MAP))) {
 	return;
+    }
 
     if (!(maps_done & EXTRA_MAPS) && (flags & DO_MAP)) {
 	maps_done |= EXTRA_MAPS;
@@ -78,23 +81,25 @@ ensure_extra_maps(int flags) {
 	extra_list = parray_new();
 
     if (flags & DO_MAP) {
+	memdb_ensure();
 	for (i = 0; i < parray_length(superfluous); i++) {
 	    file = static_cast<const char *>(parray_get(superfluous, i));
 	    switch ((nt = name_type(file))) {
 		case NAME_ZIP: {
-		    ArchivePtr a = Archive::open(file, TYPE_ROM, FILE_SUPERFLUOUS, 0);
+		    auto a = Archive::open(file, TYPE_ROM, FILE_SUPERFLUOUS, 0);
 		    if (a) {
 			a->close();
 		    }
+		    break;
 		}
-		break;
-		    
-	    case NAME_CHD:
-		if ((d = disk_new(file, 0)) != NULL) {
-		    enter_disk_in_map(d, FILE_SUPERFLUOUS);
-		    disk_free(d);
+
+		case NAME_CHD: {
+		    auto disk = Disk::from_file(file, 0);
+		    if (disk) {
+			enter_disk_in_map(disk.get(), FILE_SUPERFLUOUS);
+		    }
+		    break;
 		}
-		break;
 
 	    default:
 		/* ignore unknown files */
@@ -198,22 +203,24 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 
     if (ret == 0) {
 	/* clean up cache db: remove archives no longer in file system */
-	char name[8192];
-	sprintf(name, "%s", directory_name);
-	dbh_t *dbh = dbh_cache_get_db_for_archive(name);
+	dbh_t *dbh = dbh_cache_get_db_for_archive(directory_name);
 	if (dbh) {
-	    parray_t *list_db = dbh_cache_list_archives(dbh);
-	    if (list_db) {
-		int i;
-		parray_sort(our_list, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-		for (i = 0; i < parray_length(list_db); i++) {
-		    char *entry_name = static_cast<char *>(parray_get(list_db, i));
-		    sprintf(name, "%s%s%s%s", directory_name, entry_name[0] == '\0' ? "" : "/", entry_name, roms_unzipped ? "" : ".zip");
-		    if (parray_find_sorted(our_list, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) == -1) {
-			dbh_cache_delete_by_name(dbh, name);
+	    auto list_db = dbh_cache_list_archives(dbh);
+	    if (!list_db.empty()) {
+		std::sort(list_db.begin(), list_db.end());
+
+		for (auto entry_name : list_db) {
+		    std::string name = directory_name;
+		    if (entry_name != ".") {
+			name += '/' + entry_name;
+			if (!roms_unzipped) {
+			    name += ".zip";
+			}
+		    }
+		    if (parray_find(our_list, name.c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) == -1) {
+			dbh_cache_delete_by_name(dbh, name.c_str());
 		    }
 		}
-		parray_free(list_db, free);
 	    }
 	}
     }
@@ -291,13 +298,13 @@ enter_dir_in_map_and_list_zipped(int flags, parray_t *list, const char *dir_name
 
 
 int
-enter_disk_in_map(const disk_t *d, where_t where) {
+enter_disk_in_map(const Disk *d, where_t where) {
     sqlite3_stmt *stmt;
 
     if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	return -1;
 
-    if (sqlite3_bind_int64(stmt, 1, disk_id(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK || sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 4, FILE_SH_FULL) != SQLITE_OK || sqlite3_bind_int(stmt, 5, where) != SQLITE_OK || sqlite3_bind_null(stmt, 6) != SQLITE_OK || sq3_set_hashes(stmt, 7, disk_hashes(d), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
+    if (sqlite3_bind_int64(stmt, 1, disk_id(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK || sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 4, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 5, where) != SQLITE_OK || sqlite3_bind_null(stmt, 6) != SQLITE_OK || sq3_set_hashes(stmt, 7, disk_hashes(d), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
 
     return 0;
@@ -306,7 +313,6 @@ enter_disk_in_map(const disk_t *d, where_t where) {
 
 static int
 enter_file_in_map_and_list(int flags, parray_t *list, const char *name, where_t where) {
-    disk_t *d;
     name_type_t nt;
 
     switch ((nt = name_type(name))) {
@@ -321,16 +327,18 @@ enter_file_in_map_and_list(int flags, parray_t *list, const char *name, where_t 
 	    break;
 	}
 
-	case NAME_CHD:
-	    if ((d = disk_new(name, 0)) != NULL) {
+	case NAME_CHD: {
+	    auto disk = Disk::from_file(name, 0);
+	    if (disk) {
 		if (flags & DO_MAP) {
-		    enter_disk_in_map(d, where);
+		    enter_disk_in_map(disk.get(), where);
 		}
 		if ((flags & DO_LIST) && list) {
-		    parray_push(list, xstrdup(disk_name(d)));
+		    parray_push(list, xstrdup(disk->name.c_str()));
 		}
-		disk_free(d);
 	    }
+	    break;
+	}
 	    
 	case NAME_UNKNOWN:
 	    /* ignore unknown files */

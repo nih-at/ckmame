@@ -72,36 +72,32 @@ mybasename(const char *fname) {
 }
 
 
-char *
-mydirname(const char *fname) {
-    const char *p;
-    char *d;
-    size_t l;
-
+std::string
+mydirname(const std::string &fname) {
     /* TODO: ignore trailing slashes */
 
-    if ((p = strrchr(fname, '/')) == NULL)
-	return xstrdup(".");
+    auto length = fname.find_last_of('/');
+    
+    if (length == std::string::npos) {
+        return ".";
+    }
 
-    l = p - fname;
+    if (length == 0) {
+        return "/";
+    }
 
-    if (l == 0)
-	return xstrdup("/");
-
-    d = static_cast<char *>(xmalloc(l + 1));
-    strncpy(d, fname, l);
-    d[l] = '\0';
-    return d;
+    return fname.substr(0, length);
 }
 
 
-char *
-bin2hex(char *b, const unsigned char *s, size_t len) {
-    size_t i;
+std::string
+bin2hex(const uint8_t *data, size_t length) {
+    char b[length * 2 + 1];
 
-    for (i = 0; i < len; i++)
-	sprintf(b + 2 * i, "%02x", (unsigned char)s[i]);
-    b[2 * i] = '\0';
+    for (size_t i = 0; i < length; i++) {
+        sprintf(b + 2 * i, "%02x", data[i]);
+    }
+    b[2 * length] = '\0';
 
     return b;
 }
@@ -247,4 +243,26 @@ print_human_number(FILE *f, uint64_t value) {
         printf("%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024), (((value / 1024) * 10 + 512) / 1024) % 100);
     else
         printf("%" PRIi64 " bytes", value);
+}
+
+
+std::string status_name(status_t status, bool verbose) {
+    switch (status) {
+        case STATUS_OK:
+            if (verbose) {
+                return "ok";
+            }
+            else {
+                return "";
+            }
+
+        case STATUS_BADDUMP:
+            return "baddump";
+
+        case STATUS_NODUMP:
+            return "nodump";
+
+        default:
+            return "";
+    }
 }

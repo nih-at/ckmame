@@ -58,7 +58,7 @@ typedef struct file_location_ext file_location_ext_t;
 #define file_location_name(a) ((a)->name)
 #define file_location_index(a) ((a)->index)
 
-const char *file_location_make_key(filetype_t, const hashes_t *);
+const char *file_location_make_key(filetype_t, const Hashes *);
 int file_location_default_hashtype(filetype_t);
 
 int file_location_cmp(const file_location_t *, const file_location_t *);

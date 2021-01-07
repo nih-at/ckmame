@@ -41,7 +41,7 @@
 #include "sq_util.h"
 
 array_t *
-romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const hashes_t *hash) {
+romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const Hashes *hash) {
     sqlite3_stmt *stmt;
     array_t *a;
     file_location_t *fl;
@@ -57,7 +57,7 @@ romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const hashes_t *hash) {
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	fl = static_cast<file_location_t *>(array_grow(a, NULL));
-	file_location_name(fl) = sq3_get_string(stmt, 0);
+	file_location_name(fl) = strdup(sq3_get_string(stmt, 0).c_str());
 	file_location_index(fl) = sqlite3_column_int(stmt, 1);
     }
 

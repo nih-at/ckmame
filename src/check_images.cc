@@ -42,23 +42,20 @@
 
 
 void
-check_images(images_t *im, const char *gamename, result_t *res) {
-    disk_t *d;
-    int i;
-
+check_images(Images *im, const char *gamename, Result *res) {
     if (im == NULL) {
 	return;
     }
 
-    for (i = 0; i < images_length(im); i++) {
-	d = images_get(im, i);
+    for (size_t i = 0; i < im->disks.size(); i++) {
+        auto disk = im->disks[i];
 
-	if (d == NULL) {
+	if (disk == NULL) {
 	    result_image(res, i) = FS_MISSING;
 	    continue;
 	}
 
-	if (disk_status(d) != STATUS_OK) {
+	if (disk_status(disk) != STATUS_OK) {
 	    result_image(res, i) = FS_BROKEN;
 	    continue;
 	}
@@ -66,16 +63,16 @@ check_images(images_t *im, const char *gamename, result_t *res) {
 	if (result_image(res, i) == FS_USED)
 	    continue;
 
-	if ((hashes_types(disk_hashes(d)) & romdb_hashtypes(db, TYPE_DISK)) != romdb_hashtypes(db, TYPE_DISK)) {
+        if ((disk_hashes(disk)->types & romdb_hashtypes(db, TYPE_DISK)) != romdb_hashtypes(db, TYPE_DISK)) {
 	    /* TODO: compute missing hashes */
 	}
 
-	if (find_disk_in_old(d, NULL) == FIND_EXISTS) {
+	if (find_disk_in_old(disk.get(), NULL) == FIND_EXISTS) {
 	    result_image(res, i) = FS_DUPLICATE;
 	    continue;
 	}
 
-	switch (find_disk_in_romset(d, gamename, NULL)) {
+	switch (find_disk_in_romset(disk.get(), gamename, NULL)) {
 	case FIND_UNKNOWN:
 	    break;
 
@@ -84,10 +81,10 @@ check_images(images_t *im, const char *gamename, result_t *res) {
 	    break;
 
 	case FIND_MISSING: {
-	    match_disk_t md;
-	    match_disk_init(&md);
-	    ensure_needed_maps();
-	    if (find_disk(d, &md) != FIND_EXISTS)
+	    MatchDisk md;
+
+            ensure_needed_maps();
+	    if (find_disk(disk.get(), &md) != FIND_EXISTS)
 		result_image(res, i) = FS_NEEDED;
 	    else {
 		if (match_disk_where(&md) == FILE_NEEDED)
@@ -95,7 +92,6 @@ check_images(images_t *im, const char *gamename, result_t *res) {
 		else
 		    result_image(res, i) = FS_NEEDED;
 	    }
-	    match_disk_finalize(&md);
 	} break;
 
 	case FIND_ERROR:

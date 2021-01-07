@@ -108,7 +108,7 @@ read_hashtypes_ft(romdb_t *db, filetype_t ft) {
 
     db->hashtypes[ft] = 0;
 
-    for (type = 0; (1 << type) <= HASHES_TYPE_MAX; type++) {
+    for (type = 0; (1 << type) <= Hashes::TYPE_MAX; type++) {
 	if ((stmt = dbh_get_statement(romdb_dbh(db), query_hash_type[type])) == NULL)
 	    continue;
 	if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK)

@@ -96,7 +96,7 @@ bool ArchiveDir::FileInfo::discard(ArchiveDir *archive) const {
 /* returns: -1 on error, 1 if file was moved, 0 if nothing needed to be done */
 int ArchiveDir::move_original_file_out_of_the_way(uint64_t index) {
     auto change = get_change(index, true);
-    auto filename = file_name(&files[index]);
+    auto filename = files[index].name;
 
     if (change->is_added() || !change->original.name.empty()) {
         return 0;
@@ -106,7 +106,7 @@ int ArchiveDir::move_original_file_out_of_the_way(uint64_t index) {
     auto tmp = make_tmp_name(filename);
 
     if (rename(full_name.c_str(), tmp.c_str()) < 0) {
-        myerror(ERRZIP, "move: cannot rename '%s' to '%s': %s", filename, tmp.c_str(), strerror(errno));
+        myerror(ERRZIP, "move: cannot rename '%s' to '%s': %s", filename.c_str(), tmp.c_str(), strerror(errno));
         return -1;
     }
 
@@ -133,7 +133,7 @@ bool ArchiveDir::Change::apply(ArchiveDir *archive, uint64_t index) {
             myerror(ERRZIP, "can't stat created file '%s': %s", destination.name.c_str(), strerror(errno));
             return false;
         }
-        file_mtime(&archive->files[index]) = st.st_mtime;
+        archive->files[index].mtime = st.st_mtime;
     }
 
     if (!is_renamed()) {
@@ -243,7 +243,7 @@ bool ArchiveDir::commit_xxx() {
     bool is_empty = true;
 
     for (auto &file : files) {
-        if (file_where(&file) != FILE_DELETED) {
+        if (file.where != FILE_DELETED) {
             is_empty = false;
             break;
         }
@@ -295,7 +295,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
     /* archive layer already grew archive files if didx < 0 */
     auto real_index = index.has_value() ? index.value() : files.size() - 1;
     
-    file_t *f = &files[real_index];
+    File *f = &files[real_index];
 
     if (source_archive != NULL) {
         auto sa = static_cast<ArchiveDir *>(source_archive);
@@ -304,13 +304,13 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
             return false;
         }
 
-        if (start == 0 && (!length.has_value() || length == file_size_(&sa->files[source_index]))) {
+        if (start == 0 && (!length.has_value() || length == sa->files[source_index].size)) {
             if (link_or_copy(source_name.c_str(), tmpname.c_str()) < 0) {
                 return false;
             }
         }
         else {
-            if (copy_file(source_name.c_str(), tmpname.c_str(), start, static_cast<ssize_t>(length.value()), file_hashes(f)) < 0) {
+            if (copy_file(source_name.c_str(), tmpname.c_str(), start, static_cast<ssize_t>(length.value()), &f->hashes) < 0) {
                 myerror(ERRZIP, "cannot copy '%s' to '%s': %s", source_name.c_str(), tmpname.c_str(), strerror(errno));
                 return false;
             }
@@ -332,9 +332,10 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
     
     if (index.has_value()) {
         if (!change->is_added()) {
-            if (strcmp(filename.c_str(), file_name(&files[real_index])) != 0) {
-                if (move_original_file_out_of_the_way(real_index) < 0)
+            if (filename != files[real_index].name) {
+                if (move_original_file_out_of_the_way(real_index) < 0) {
                     err = true;
+                }
             }
             else {
                 if (change->is_unchanged()) {
@@ -382,20 +383,20 @@ bool ArchiveDir::file_delete_xxx(uint64_t index) {
 }
 
 
-Archive::FilePtr ArchiveDir::file_open(uint64_t index) {
+Archive::ArchiveFilePtr ArchiveDir::file_open(uint64_t index) {
 
     FILE *f;
 
     if ((f = fopen(get_full_name(index).c_str(), "rb")) == NULL) {
         seterrinfo("", name);
-        myerror(ERRZIP, "cannot open '%s': %s", files[index].name, strerror(errno));
+        myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), strerror(errno));
         return NULL;
     }
 
-    return Archive::FilePtr(new File(f));
+    return Archive::ArchiveFilePtr(new ArchiveFile(f));
 }
 
-void ArchiveDir::File::close() {
+void ArchiveDir::ArchiveFile::close() {
     if (f != NULL) {
         fclose(f);
         f = NULL;
@@ -403,7 +404,7 @@ void ArchiveDir::File::close() {
 }
 
 
-int64_t ArchiveDir::File::read(void *data, uint64_t length) {
+int64_t ArchiveDir::ArchiveFile::read(void *data, uint64_t length) {
     if (length > SIZE_T_MAX) {
         errno = EINVAL;
         return -1;
@@ -431,7 +432,7 @@ bool ArchiveDir::file_rename_xxx(uint64_t index, const std::string &filename) {
     auto change = get_change(index, true);
 
     if (change->is_deleted()) {
-        myerror(ERRZIP, "cannot rename deleted file '%s'", files[index].name);
+        myerror(ERRZIP, "cannot rename deleted file '%s'", files[index].name.c_str());
         return false;
     }
 
@@ -439,7 +440,7 @@ bool ArchiveDir::file_rename_xxx(uint64_t index, const std::string &filename) {
 
     if (file_will_exist_after_commit(final_name)) {
         errno = EEXIST;
-        myerror(ERRZIP, "cannot rename '%s' to '%s': %s", files[index].name, filename.c_str(), strerror(errno));
+        myerror(ERRZIP, "cannot rename '%s' to '%s': %s", files[index].name.c_str(), filename.c_str(), strerror(errno));
         return false;
     }
 
@@ -461,7 +462,7 @@ bool ArchiveDir::file_rename_xxx(uint64_t index, const std::string &filename) {
 }
 
 
-const char *ArchiveDir::File::strerror() {
+const char *ArchiveDir::ArchiveFile::strerror() {
     return ::strerror(errno);
 }
 
@@ -493,12 +494,11 @@ bool ArchiveDir::read_infos_xxx() {
                 continue;
             }
 
-            files.push_back(file_t());
+            files.push_back(File());
             auto &f = files[files.size() - 1];
             
-            file_init(&f);
-            f.name = xstrdup(filename);
-            file_size_(&f) = static_cast<uint64_t>(sb.st_size);
+            f.name = filename;
+            f.size = static_cast<uint64_t>(sb.st_size);
             f.mtime = sb.st_mtime;
         }
     }

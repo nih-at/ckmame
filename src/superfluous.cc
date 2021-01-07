@@ -157,17 +157,16 @@ print_superfluous(const parray_t *files) {
 static void
 list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
     dir_t *dir;
-    game_t *g = NULL;
+    GamePtr game;
     dir_status_t err;
     char b[8192];
     size_t len_dir;
 
     if (dir_known) {
-        g = romdb_read_game(db, mybasename(dirname));
+        game = romdb_read_game(db, mybasename(dirname));
     }
     
     if ((dir = dir_open(dirname, 0)) == NULL) {
-        game_free(g);
         return;
     }
 
@@ -180,12 +179,12 @@ list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
         }
         
         bool known = false;
-        if (g) {
+        if (game) {
             char *p = strrchr(b + len_dir, '.');
             if (p != NULL && strcmp(p + 1, "chd") == 0) {
                 *p = '\0';
-                for (int i = 0; i < game_num_disks(g); i++) {
-                    if (strcmp(disk_name(game_disk(g, i)), b + len_dir) == 0) {
+                for (size_t i = 0; i < game->disks.size(); i++) {
+                    if (game->disks[i].name == b + len_dir) {
                         known = true;
                         break;
                     }
@@ -200,5 +199,4 @@ list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
     }
     
     dir_close(dir);
-    game_free(g);
 }

@@ -45,22 +45,24 @@ static void warn_ensure_header(void);
 
 
 void
-warn_disk(const disk_t *d, const char *fmt, ...) {
+warn_disk(const Disk *disk, const char *fmt, ...) {
     va_list va;
-    char buf[HASHES_SIZE_MAX * 2 + 1];
-    const hashes_t *h;
+    const Hashes *h;
 
     warn_ensure_header();
 
-    printf("disk %-12s  ", disk_name(d));
+    printf("disk %-12s  ", disk->name.c_str());
 
-    h = disk_hashes(d);
-    if (hashes_has_type(h, HASHES_TYPE_SHA1))
-	printf("sha1 %s: ", hash_to_string(buf, HASHES_TYPE_SHA1, h));
-    else if (hashes_has_type(h, HASHES_TYPE_MD5))
-	printf("md5 %s         : ", hash_to_string(buf, HASHES_TYPE_MD5, h));
-    else
+    h = disk_hashes(disk);
+    if (h->has_type(Hashes::TYPE_SHA1)) {
+        printf("sha1 %s: ", h->to_string(Hashes::TYPE_SHA1).c_str());
+    }
+    else if (h->has_type(Hashes::TYPE_MD5)) {
+        printf("md5 %s         : ", h->to_string(Hashes::TYPE_MD5).c_str());
+    }
+    else {
 	printf("no good dump              : ");
+    }
 
     va_start(va, fmt);
     vprintf(fmt, va);
@@ -73,13 +75,13 @@ warn_disk(const disk_t *d, const char *fmt, ...) {
 
 
 void
-warn_file(const file_t *r, const char *fmt, ...) {
+warn_file(const File *r, const char *fmt, ...) {
     va_list va;
 
     warn_ensure_header();
 
     /* TODO */
-    printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": ", file_name(r), file_size_(r), hashes_crc(file_hashes(r)));
+    printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": ", r->name.c_str(), r->size, r->hashes.crc);
 
     va_start(va, fmt);
     vprintf(fmt, va);
@@ -110,23 +112,23 @@ warn_image(const char *name, const char *fmt, ...) {
 
 
 void
-warn_rom(const file_t *r, const char *fmt, ...) {
+warn_rom(const File *r, const char *fmt, ...) {
     va_list va;
     char buf[100], *p;
 
     warn_ensure_header();
 
     if (r) {
-	printf("rom  %-12s  ", file_name(r));
-	if (SIZE_IS_KNOWN(file_size_(r))) {
-	    sprintf(buf, "size %7" PRIu64 "  ", file_size_(r));
+	printf("rom  %-12s  ", r->name.c_str());
+	if (r->is_size_known()) {
+            sprintf(buf, "size %7" PRIu64 "  ", r->size);
 	    p = buf + strlen(buf);
 
 	    /* TODO */
-	    if (hashes_has_type(file_hashes(r), HASHES_TYPE_CRC)) {
-		switch (file_status_(r)) {
+	    if (r->hashes.has_type(Hashes::TYPE_CRC)) {
+		switch (r->status) {
 		case STATUS_OK:
-		    sprintf(p, "crc %.8" PRIx32 ": ", hashes_crc(file_hashes(r)));
+		    sprintf(p, "crc %.8" PRIx32 ": ", r->hashes.crc);
 		    break;
 		case STATUS_BADDUMP:
 		    sprintf(p, "bad dump    : ");

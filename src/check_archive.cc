@@ -40,7 +40,7 @@
 
 
 void
-check_archive(ArchivePtr archive, const char *gamename, result_t *res) {
+check_archive(ArchivePtr archive, const char *gamename, Result *res) {
     find_result_t found;
 
     if (!archive) {
@@ -50,7 +50,7 @@ check_archive(ArchivePtr archive, const char *gamename, result_t *res) {
     for (size_t i = 0; i < archive->files.size(); i++) {
         auto &file = archive->files[i];
         
-	if (file_status_(&file) != STATUS_OK) {
+	if (file.status != STATUS_OK) {
 	    result_file(res, i) = FS_BROKEN;
 	    continue;
 	}
@@ -76,7 +76,7 @@ check_archive(ArchivePtr archive, const char *gamename, result_t *res) {
 	    break;
 
 	case FIND_MISSING:
-	    if (file_size_(&file) == 0)
+	    if (file.size == 0)
 		result_file(res, i) = FS_SUPERFLUOUS;
 	    else if (archive->where == FILE_NEEDED) {
 		/* this state does what we want, even if it sounds strange,

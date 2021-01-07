@@ -34,77 +34,53 @@
 #include "config.h"
 
 #include "output.h"
+#include "OutputContextCm.h"
+#include "OutputContextDb.h"
+#include "OutputContextMtree.h"
+#include "OutputContextXml.h"
 #include "error.h"
 
 
-int
-output_close(output_context_t *ctx) {
-    return ctx->close(ctx);
-}
-
-
-int
-output_detector(output_context_t *ctx, detector_t *detector) {
-    if (ctx->output_detector == NULL)
-	return 0;
-
-    return ctx->output_detector(ctx, detector);
-}
-
-
-int
-output_game(output_context_t *ctx, game_t *g) {
-    return ctx->output_game(ctx, g);
-}
-
-
-int
-output_header(output_context_t *ctx, dat_entry_t *de) {
-    if (ctx->output_header == NULL)
-	return 0;
-
-    return ctx->output_header(ctx, de);
-}
-
-
-output_context_t *
-output_new(output_format_t fmt, const char *fname, int flags) {
-    switch (fmt) {
-    case OUTPUT_FMT_CM:
-	return output_cm_new(fname, flags);
-    case OUTPUT_FMT_DB:
-	return output_db_new(fname, flags);
+OutputContextPtr OutputContext::create(OutputContext::Format format, const std::string &fname, int flags) {
+    switch (format) {
+        case FORMAT_CM:
+            return std::make_shared<OutputContextCm>(fname, flags);
+            
+        case FORMAT_DB:
+            return std::make_shared<OutputContextDb>(fname, flags);
+            
 #if defined(HAVE_LIBXML2)
-    case OUTPUT_FMT_DATAFILE_XML:
-	return output_datafile_xml_new(fname, flags);
+        case FORMAT_DATAFILE_XML:
+            return std::make_shared<OutputContextXml>(fname, flags);
 #endif
-    case OUTPUT_FMT_MTREE:
-	return output_mtree_new(fname, flags);
-    default:
-	return NULL;
+            
+        case FORMAT_MTREE:
+            return std::make_shared<OutputContextMtree>(fname, flags);
+            
+        default:
+            return NULL;
     }
 }
 
 
-void
-output_cond_print_string(FILE *f, const char *pre, const char *str, const char *post) {
+void OutputContext::cond_print_string(FILE *f, const char *pre, const std::string &str, const char *post) {
     const char *q;
 
-    if (str == NULL)
+    if (str.empty()) {
 	return;
+    }
 
-    if (strcspn(str, " \t") == strlen(str))
+    if (strcspn(str.c_str(), " \t") == str.length()) {
 	q = "";
-    else
+    }
+    else {
 	q = "\"";
+    }
 
-    fprintf(f, "%s%s%s%s%s", pre, q, str, q, post);
+    fprintf(f, "%s%s%s%s%s", pre, q, str.c_str(), q, post);
 }
 
 
-void
-output_cond_print_hash(FILE *f, const char *pre, int t, hashes_t *h, const char *post) {
-    char hstr[HASHES_SIZE_MAX * 2 + 1];
-
-    output_cond_print_string(f, pre, hash_to_string(hstr, t, h), post);
+void OutputContext::cond_print_hash(FILE *f, const char *pre, int t, const Hashes *h, const char *post) {
+    cond_print_string(f, pre, h->to_string(t).c_str(), post);
 }

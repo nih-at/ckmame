@@ -35,61 +35,117 @@
 */
 
 #include <cinttypes>
+#include <cstdio>
 
-#include <stdio.h>
-
-#include "array.h"
 #include "file.h"
 #include "parser_source.h"
 
-struct detector {
-    char *name;
-    char *author;
-    char *version;
-
-    array_t *rules;
-
-    unsigned char *buf;
-    size_t buf_size;
-};
-
-typedef struct detector detector_t;
-
-/* keep in sync with ops in detector_execute.c */
-
-enum detector_operation { DETECTOR_OP_NONE, DETECTOR_OP_BITSWAP, DETECTOR_OP_BYTESWAP, DETECTOR_OP_WORDSWAP };
-
-typedef enum detector_operation detector_operation_t;
-
-struct detector_rule {
-    int64_t start_offset;
-    int64_t end_offset;
-    detector_operation_t operation;
-
-    array_t *tests;
-};
-
-typedef struct detector_rule detector_rule_t;
-
-enum detector_test_type { DETECTOR_TEST_DATA, DETECTOR_TEST_OR, DETECTOR_TEST_AND, DETECTOR_TEST_XOR, DETECTOR_TEST_FILE_EQ, DETECTOR_TEST_FILE_LE, DETECTOR_TEST_FILE_GR };
-
 #define DETECTOR_OFFSET_EOF 0
-#define DETECTOR_SIZE_PO2 (-1)
+#define DETECTOR_SIZE_POWER_OF_2 (-1)
 
-typedef enum detector_test_type detector_test_type_t;
+class Detector;
 
-struct detector_test {
-    detector_test_type_t type;
-    int64_t offset;
-    uint64_t length;
-    uint8_t *mask;
-    uint8_t *value;
-    bool result;
-};
-
-typedef struct detector_test detector_test_t;
+typedef std::shared_ptr<Detector> DetectorPtr;
 
 typedef int64_t (*detector_read_cb)(void *, void *, uint64_t);
+
+
+
+class Detector {
+public:
+    enum Result {
+        MATCH,
+        MISMATCH,
+        ERROR
+    };
+    
+    enum Operation {
+        OP_NONE,
+        OP_BITSWAP,
+        OP_BYTESWAP,
+        OP_WORDSWAP
+    };
+    
+    enum TestType {
+        TEST_DATA,
+        TEST_OR,
+        TEST_AND,
+        TEST_XOR,
+        TEST_FILE_EQ,
+        TEST_FILE_LE,
+        TEST_FILE_GR
+    };
+
+    class Context {
+    public:
+        Context(detector_read_cb cb_read_, void *ud_) : bytes_read(0), cb_read(cb_read_), ud(ud_) { }
+        
+        uint64_t bytes_read;
+        detector_read_cb cb_read;
+        void *ud;
+
+        std::vector<uint8_t> buf;
+        
+        bool compute_values(File *file, Operation operation, uint64_t start, uint64_t end);
+        bool fill_buffer(uint64_t length);
+        
+    private:
+        bool skip(uint64_t length);
+        void update(Hashes::Update *hu, Operation operation, uint64_t offset, uint64_t length);
+    };
+    
+    class Test {
+    public:
+        Test() : type(TEST_DATA), offset(0), length(0), result(true) { }
+        
+        TestType type;
+        int64_t offset;
+        uint64_t length;
+        std::vector<uint8_t> mask;
+        std::vector<uint8_t> value;
+        bool result;
+
+        Result execute(File *file, Context *ctx) const;
+        void print(FILE *fout) const;
+        
+    private:
+        bool bit_cmp(const uint8_t *data) const;
+    };
+
+    class Rule {
+    public:
+        Rule() : start_offset(0), end_offset(DETECTOR_OFFSET_EOF), operation(OP_NONE) { }
+        
+        int64_t start_offset;
+        int64_t end_offset;
+        Operation operation;
+        std::vector<Test> tests;
+        
+        Result execute(File *file, Context *ctx) const;
+        void print(FILE *fout) const;
+    };
+    
+
+    std::string name;
+    std::string author;
+    std::string version;
+    
+    std::vector<Rule> rules;
+
+    static DetectorPtr parse(const std::string &filename);
+    static DetectorPtr parse(ParserSource *source);
+
+    Result execute(File *file, detector_read_cb read_cb, void *ud) const;
+    bool print(FILE *) const;
+
+    static std::string file_test_type_name(TestType type);
+    static std::string operation_name(Operation operation);
+    static std::string test_type_name(TestType type);
+};
+
+typedef Detector detector_t;
+
+
 
 
 #define detector_author(d) ((d)->author)
@@ -113,20 +169,5 @@ typedef int64_t (*detector_read_cb)(void *, void *, uint64_t);
 #define detector_test_size detector_test_offset
 #define detector_test_type(t) ((t)->type)
 #define detector_test_value(t) ((t)->value)
-
-int detector_execute(detector_t *, file_t *, detector_read_cb, void *);
-void detector_free(detector_t *);
-detector_t *detector_parse(const char *);
-detector_t *detector_parse_ps(parser_source_t *);
-int detector_print(const detector_t *, FILE *);
-detector_t *detector_new(void);
-
-const char *detector_file_test_type_str(detector_test_type_t);
-const char *detector_operation_str(detector_operation_t);
-const char *detector_test_type_str(detector_test_type_t);
-void detector_rule_init(detector_rule_t *);
-void detector_rule_finalize(detector_rule_t *);
-void detector_test_init(detector_test_t *);
-void detector_test_finalize(detector_test_t *);
 
 #endif /* detector.h */

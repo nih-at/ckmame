@@ -33,8 +33,6 @@ set(COMMON_SOURCES
   check_util.cc
   cleanup.cc
   dat_entry.cc
-  dat_entry_finalize.cc
-  dat_push.cc
   db_init.cc
   dbh.cc
   dbh_cache.cc
@@ -42,9 +40,7 @@ set(COMMON_SOURCES
   delete_list.cc
   detector.cc
   detector_execute.cc
-  detector_init.cc
   detector_print.cc
-  detector_str.cc
   diagnostics.cc
   dir.cc
   disk.cc
@@ -52,7 +48,6 @@ set(COMMON_SOURCES
   error.cc
   export_db.cc
   file.cc
-  file_compare.cc
   file_location.cc
   file_location_ext.cc
   file_location_finalize.cc
@@ -64,15 +59,10 @@ set(COMMON_SOURCES
   fix.cc
   fix_util.cc
   fixdat.cc
-  game.cc
   garbage.cc
   globals.cc
-  hash_from_string.cc
-  hash_to_string.cc
   hashes.cc
-  hashes_set.cc
   hashes_update.cc
-  hashes_verify.cc
   images.cc
   intstr.cc
   match.cc
@@ -96,6 +86,8 @@ set(COMMON_SOURCES
   parse-rc.cc
   parse.cc
   parser_source.cc
+  ParserSourceFile.cc
+  ParserSourceZip.cc
   ptr_sort.cc
   result.cc
   romdb.cc

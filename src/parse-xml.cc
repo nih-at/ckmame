@@ -42,83 +42,168 @@
 #include "xmlutil.h"
 
 
-static int parse_xml_prog_header(parser_context_t *, filetype_t, int, const char *);
-static int parse_xml_loadflag(parser_context_t *, filetype_t, int, const char *);
-static int parse_xml_mame_build(parser_context_t *, filetype_t, int, const char *);
-static int parse_xml_softwarelist(parser_context_t *, filetype_t, int, const char *);
-
-static void parse_xml_lineno_cb(parser_context_t *, int);
-
-#define XA(f) ((xmlu_attr_cb)f)
-#define XC(f) ((xmlu_tag_cb)f)
-#define XO(f) ((xmlu_tag_cb)f)
-#define XT(f) ((xmlu_text_cb)f)
-
-static const xmlu_attr_t attr_mame[] = {{"build", XA(parse_xml_mame_build), 0, 0}, {NULL}};
-static const xmlu_attr_t attr_mess[] = {{"build", XA(parse_xml_mame_build), 1, 0}, {NULL}};
-
-static const xmlu_attr_t attr_clrmamepro[] = {{
-						  "header",
-						  XA(parse_xml_prog_header),
-						  0,
-						  0,
-					      },
-					      {NULL}};
-
-static const xmlu_attr_t attr_disk[] = {{"md5", XA(parse_file_hash), TYPE_DISK, HASHES_TYPE_MD5}, {"merge", XA(parse_file_merge), TYPE_DISK, 0}, {"name", XA(parse_file_name), TYPE_DISK, 0}, {"sha1", XA(parse_file_hash), TYPE_DISK, HASHES_TYPE_SHA1}, {"status", XA(parse_file_status_), TYPE_DISK, 0}, {NULL}};
-static const xmlu_attr_t attr_game[] = {{"name", XA(parse_game_name), 0, 0}, {"romof", XA(parse_game_cloneof), TYPE_ROM, 0}, {NULL}};
-static const xmlu_attr_t attr_rom[] = {{"crc", XA(parse_file_hash), TYPE_ROM, HASHES_TYPE_CRC}, {"loadflag", XA(parse_xml_loadflag), TYPE_ROM, 0}, {"md5", XA(parse_file_hash), TYPE_ROM, HASHES_TYPE_MD5}, {"merge", XA(parse_file_merge), TYPE_ROM, 0}, {"name", XA(parse_file_name), TYPE_ROM, 0}, {"sha1", XA(parse_file_hash), TYPE_ROM, HASHES_TYPE_SHA1}, {"size", XA(parse_file_size_), TYPE_ROM, 0}, {"status", XA(parse_file_status_), TYPE_ROM, 0}, {NULL}};
-static const xmlu_attr_t attr_softwarelist[] = {{"description", XA(parse_xml_softwarelist), 0, 0}, {NULL}};
-static const xmlu_entity_t entities[] = {{"clrmamepro", attr_clrmamepro, NULL, NULL, NULL, 0}, {"disk", attr_disk, XO(parse_file_start), XC(parse_file_end), NULL, TYPE_DISK}, {"game", attr_game, XO(parse_game_start), XC(parse_game_end), NULL, 0}, {"game/description", NULL, NULL, NULL, XT(parse_game_description), 0}, {"header/description", NULL, NULL, NULL, XT(parse_prog_description), 0}, {"header/name", NULL, NULL, NULL, XT(parse_prog_name), 0}, {"header/version", NULL, NULL, NULL, XT(parse_prog_version), 0}, {"machine", attr_game, XO(parse_game_start), XC(parse_game_end), NULL, 0}, {"machine/description", NULL, NULL, NULL, XT(parse_game_description), 0}, {"mame", attr_mame, NULL, NULL, NULL, 0}, {"mess", attr_mess, NULL, NULL, NULL, 0}, {"rom", attr_rom, XO(parse_file_start), XC(parse_file_end), NULL, TYPE_ROM}, {"software", attr_game, XO(parse_game_start), XC(parse_game_end), NULL, 0}, {"software/description", NULL, NULL, NULL, XT(parse_game_description), 0}, {"softwarelist", attr_softwarelist, NULL, NULL, NULL, 0}};
-static const int nentities = sizeof(entities) / sizeof(entities[0]);
-
-
-int
-parse_xml(parser_source_t *ps, parser_context_t *ctx) {
-    return xmlu_parse(ps, ctx, (xmlu_lineno_cb)parse_xml_lineno_cb, entities, nentities);
+static void parse_xml_lineno_cb(void *ctx, int lineno) {
+    static_cast<ParserContext *>(ctx)->lineno = static_cast<size_t>(lineno);
 }
 
 
-static void
-parse_xml_lineno_cb(parser_context_t *ctx, int lineno) {
-    ctx->lineno = lineno;
+static bool parse_xml_file_end(void *ctx, int file_type) {
+    return static_cast<ParserContext *>(ctx)->file_end(static_cast<filetype_t>(file_type));
+}
+
+static bool parse_xml_file_hash(void *ctx, int file_type, int hash_type, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->file_hash(static_cast<filetype_t>(file_type), hash_type, value);
+}
+
+static bool parse_xml_file_loadflag(void *ctx, int file_type, int hash_type, const std::string &value) {
+    if (value == "continue" || value == "ignore") {
+        return static_cast<ParserContext *>(ctx)->file_continue(static_cast<filetype_t>(file_type));
+    }
+    else if (value == "reload" || value == "reload_plain" || value == "fill") {
+        return static_cast<ParserContext *>(ctx)->file_ignore(static_cast<filetype_t>(file_type));
+    }
+    return true;
+}
+
+static bool parse_xml_file_merge(void *ctx, int file_type, int hash_type, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->file_merge(static_cast<filetype_t>(file_type), value);
+}
+
+static bool parse_xml_file_name(void *ctx, int file_type, int hash_type, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->file_name(static_cast<filetype_t>(file_type), value);
+}
+
+static bool parse_xml_file_start(void *ctx, int file_type) {
+    return static_cast<ParserContext *>(ctx)->file_start(static_cast<filetype_t>(file_type));
+}
+
+static bool parse_xml_file_status(void *ctx, int file_type, int hash_type, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->file_status(static_cast<filetype_t>(file_type), value);
+}
+
+static bool parse_xml_file_size(void *ctx, int file_type, int hash_type, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->file_size(static_cast<filetype_t>(file_type), value);
 }
 
 
-static int
-parse_xml_prog_header(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    return parse_prog_header(ctx, attr, 0);
+static bool parse_xml_game_cloneof(void *ctx, int file_type, int hash_type, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->game_cloneof(static_cast<filetype_t>(file_type), value);
+}
+
+static bool parse_xml_game_description(void *ctx, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->game_description(value);
+}
+
+static bool parse_xml_game_end(void *ctx, int file_type) {
+    return static_cast<ParserContext *>(ctx)->game_end();
+}
+
+static bool parse_xml_game_name(void *ctx, int file_type, int hash_type, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->game_name(value);
+}
+
+static bool parse_xml_game_start(void *ctx, int file_type) {
+    return static_cast<ParserContext *>(ctx)->game_start();
 }
 
 
-static int
-parse_xml_loadflag(parser_context_t *ctx, filetype_t ft, int ht, const char *value) {
-    if ((strcmp(value, "continue") == 0) || (strcmp(value, "ignore") == 0))
-	return parse_file_continue(ctx, ft, ht, NULL);
-    else if (strcmp(value, "reload") == 0 || strcmp(value, "reload_plain") == 0 || strcmp(value, "fill") == 0)
-	return parse_file_ignore(ctx, ft, ht, NULL);
+static bool parse_xml_mame_build(void *ctx, int ft, int ht, const std::string &value) {
+    auto parser_context = static_cast<ParserContext *>(ctx);
 
-    return 0;
+    if (!parser_context->prog_name(ft == 0 ? "M.A.M.E." : "M.E.S.S.")) {
+        return false;
+    }
+
+    return parser_context->prog_version(value.substr(0, value.find(' ')));
 }
 
-static int
-parse_xml_mame_build(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
-    int err;
-    char *s, *p;
 
-    if ((err = parse_prog_name(ctx, (ft == 0 ? "M.A.M.E." : "M.E.S.S."))) != 0)
-	return err;
-
-    s = xstrdup(attr);
-    if ((p = strchr(s, ' ')) != NULL)
-	*p = '\0';
-    err = parse_prog_version(ctx, s);
-    free(s);
-    return err;
+static bool parse_xml_prog_description(void *ctx, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->prog_description(value);
 }
 
-static int
-parse_xml_softwarelist(parser_context_t *ctx, filetype_t ft, int ht, const char *attr) {
+static bool parse_xml_prog_header(void *ctx, int ft, int ht, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->prog_header(value);
+}
+
+static bool parse_xml_prog_name(void *ctx, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->prog_name(value);
+}
+
+static bool parse_xml_prog_version(void *ctx, const std::string &value) {
+    return static_cast<ParserContext *>(ctx)->prog_version(value);
+}
+
+
+static bool parse_xml_softwarelist(void *ctx, int ft, int ht, const std::string &value) {
     /* sadly, no version information */
-    return parse_prog_name(ctx, attr);
+    return static_cast<ParserContext *>(ctx)->prog_name(value);
 }
+
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_mame = {
+    { "build", { parse_xml_mame_build, 0, 0} }
+};
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_mess = {
+    { "build", { parse_xml_mame_build, 1, 0 } }
+};
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_clrmamepro = {
+    { "header", { parse_xml_prog_header , 0, 0 } }
+};
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_disk = {
+    { "md5", { parse_xml_file_hash, TYPE_DISK, Hashes::TYPE_MD5 } },
+    { "merge", { parse_xml_file_merge, TYPE_DISK, 0 } },
+    { "name", { parse_xml_file_name, TYPE_DISK, 0 } },
+    { "sha1", { parse_xml_file_hash, TYPE_DISK, Hashes::TYPE_SHA1 } },
+    { "status", { parse_xml_file_status, TYPE_DISK, 0 } }
+};
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_game = {
+    { "name", { parse_xml_game_name, 0, 0} },
+    { "romof", { parse_xml_game_cloneof, TYPE_ROM, 0 } }
+};
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_rom = {
+    { "crc", { parse_xml_file_hash, TYPE_ROM, Hashes::TYPE_CRC } },
+    { "loadflag", { parse_xml_file_loadflag, TYPE_ROM, 0} },
+    { "md5", { parse_xml_file_hash, TYPE_ROM, Hashes::TYPE_MD5 } },
+    { "merge", { parse_xml_file_merge, TYPE_ROM, 0 } },
+    { "name", { parse_xml_file_name, TYPE_ROM, 0 } },
+    { "sha1", { parse_xml_file_hash, TYPE_ROM, Hashes::TYPE_SHA1 } },
+    { "size", { parse_xml_file_size, TYPE_ROM, 0} },
+    { "status", { parse_xml_file_status, TYPE_ROM, 0} }
+};
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_softwarelist = {
+    { "description", { parse_xml_softwarelist , 0, 0} }
+};
+
+static const std::unordered_map<std::string, XmluEntity> entities = {
+    { "clrmamepro", XmluEntity(attr_clrmamepro) },
+    { "disk", XmluEntity(attr_disk, parse_xml_file_start, parse_xml_file_end, TYPE_DISK) },
+    { "game", XmluEntity(attr_game, parse_xml_game_start, parse_xml_game_end) },
+    { "game/description", XmluEntity(parse_xml_game_description) },
+    { "header/description", XmluEntity(parse_xml_prog_description) },
+    { "header/name", XmluEntity(parse_xml_prog_name) },
+    { "header/version", XmluEntity(parse_xml_prog_version) },
+    { "machine", XmluEntity(attr_game, parse_xml_game_start, parse_xml_game_end) },
+    { "machine/description", XmluEntity(parse_xml_game_description) },
+    { "mame", XmluEntity(attr_mame) },
+    { "mess", XmluEntity(attr_mess) },
+    { "rom", XmluEntity(attr_rom, parse_xml_file_start, parse_xml_file_end, TYPE_ROM) },
+    { "software", XmluEntity(attr_game, parse_xml_game_start, parse_xml_game_end) },
+    { "software/description", XmluEntity(parse_xml_game_description) },
+    { "softwarelist", XmluEntity(attr_softwarelist) }
+};
+
+
+bool ParserContext::parse_xml() {
+    return xmlu_parse(ps.get(), this, parse_xml_lineno_cb, entities);
+}
+
+
+
+

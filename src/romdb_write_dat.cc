@@ -43,15 +43,14 @@
 
 
 int
-romdb_write_dat(romdb_t *db, dat_t *d) {
+romdb_write_dat(romdb_t *db, const std::vector<DatEntry> &dat) {
     sqlite3_stmt *stmt;
-    int i;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT)) == NULL)
 	return -1;
 
-    for (i = 0; i < dat_length(d); i++) {
-	if (sqlite3_bind_int(stmt, 1, i) != SQLITE_OK || sq3_set_string(stmt, 2, dat_name(d, i)) != SQLITE_OK || sq3_set_string(stmt, 3, dat_description(d, i)) != SQLITE_OK || sq3_set_string(stmt, 4, dat_version(d, i)) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
+    for (size_t i = 0; i < dat.size(); i++) {
+        if (sqlite3_bind_int(stmt, 1, i) != SQLITE_OK || sq3_set_string(stmt, 2, dat[i].name) != SQLITE_OK || sq3_set_string(stmt, 3, dat[i].description) != SQLITE_OK || sq3_set_string(stmt, 4, dat[i].version) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
 	    return -1;
     }
 

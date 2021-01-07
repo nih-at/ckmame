@@ -3,10 +3,10 @@
 #include "archive.h"
 
 class ArchiveZip : public Archive {
-    class File: public Archive::File {
+    class ArchiveFile: public Archive::ArchiveFile {
     public:
-        File(zip_file_t *zf_) : zf(zf_) { }
-        virtual ~File() { close(); }
+        ArchiveFile(zip_file_t *zf_) : zf(zf_) { }
+        virtual ~ArchiveFile() { close(); }
         
         virtual void close();
         virtual int64_t read(void *, uint64_t);
@@ -29,7 +29,7 @@ public:
     virtual bool file_add_empty_xxx(const std::string &filename);
     virtual bool file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length);
     virtual bool file_delete_xxx(uint64_t index);
-    virtual FilePtr file_open(uint64_t index);
+    virtual ArchiveFilePtr file_open(uint64_t index);
     virtual bool file_rename_xxx(uint64_t index, const std::string &filename);
     virtual void get_last_update();
     virtual bool read_infos_xxx();

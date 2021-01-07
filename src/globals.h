@@ -65,7 +65,7 @@ extern int fix_options;
 extern romdb_t *db;
 extern romdb_t *old_db;
 
-extern detector_t *detector;
+extern DetectorPtr detector;
 
 extern parray_t *superfluous;
 
@@ -78,7 +78,7 @@ extern delete_list_t *needed_delete_list;
 extern delete_list_t *superfluous_delete_list;
 
 extern tree_t *check_tree;
-extern output_context_t *fixdat;
+extern OutputContextPtr fixdat;
 
 /* to identify roms directory uniquely */
 extern char rom_dir_normalized[];

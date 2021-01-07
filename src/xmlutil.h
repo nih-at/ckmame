@@ -36,17 +36,17 @@
 
 
 #include <cinttypes>
-#include <stdio.h>
+#include <cstdio>
+#include <unordered_map>
 
 #include "parser_source.h"
 
 typedef void (*xmlu_lineno_cb)(void *, int);
-typedef int (*xmlu_attr_cb)(void *, int, int, const char *);
-typedef int (*xmlu_tag_cb)(void *, int);
-typedef int (*xmlu_text_cb)(void *, const char *);
+typedef bool (*xmlu_attr_cb)(void *ctx, int file_type, int hash_type, const std::string &value);
+typedef bool (*xmlu_tag_cb)(void *ctx, int file_type);
+typedef bool (*xmlu_text_cb)(void *ctx, const std::string &value);
 
 struct xmlu_attr {
-    const char *name;
     xmlu_attr_cb cb_attr;
     int arg1;
     int arg2;
@@ -54,19 +54,20 @@ struct xmlu_attr {
 
 typedef struct xmlu_attr xmlu_attr_t;
 
-struct xmlu_entity {
-    const char *name;
-    const xmlu_attr_t *attr;
+struct XmluEntity {
+    XmluEntity(const std::unordered_map<std::string, xmlu_attr> &attributes_, xmlu_tag_cb cb_open_ = NULL, xmlu_tag_cb cb_close_ = NULL, int arg1_ = 0) : attr(attributes_), cb_open(cb_open_), cb_close(cb_close_), cb_text(NULL), arg1(arg1_) { }
+    XmluEntity(xmlu_text_cb cb_text_ = NULL, int arg1_ = 0) : cb_open(NULL), cb_close(NULL), cb_text(cb_text_), arg1(arg1_) { }
+    std::unordered_map<std::string, xmlu_attr_t> attr;
     xmlu_tag_cb cb_open;
     xmlu_tag_cb cb_close;
     xmlu_text_cb cb_text;
     int arg1;
 };
 
-typedef struct xmlu_entity xmlu_entity_t;
+typedef XmluEntity xmlu_entity_t;
 
 
-int xmlu_parse(parser_source_t *, void *, xmlu_lineno_cb, const xmlu_entity_t *, int);
+int xmlu_parse(ParserSource *, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities);
 
 
 #endif /* xmlutil.h */

@@ -105,26 +105,22 @@ make_unique_name(const char *ext, const char *fmt, ...) {
 
 
 char *
-make_needed_name(const file_t *r) {
-    char crc[HASHES_SIZE_CRC * 2 + 1];
-
+make_needed_name(const File *r) {
     /* <needed_dir>/<crc>-nnn.zip */
 
-    hash_to_string(crc, HASHES_TYPE_CRC, file_hashes(r));
+    auto crc = r->hashes.to_string(Hashes::TYPE_CRC);
 
-    return make_unique_name(roms_unzipped ? "" : "zip", "%s/%s", needed_dir, crc);
+    return make_unique_name(roms_unzipped ? "" : "zip", "%s/%s", needed_dir, crc.c_str());
 }
 
 
 char *
-make_needed_name_disk(const disk_t *d) {
-    char md5[HASHES_SIZE_MD5 * 2 + 1];
-
+make_needed_name_disk(const Disk *d) {
     /* <needed_dir>/<md5>-nnn.zip */
 
-    hash_to_string(md5, HASHES_TYPE_MD5, disk_hashes(d));
+    auto md5 = d->hashes.to_string(Hashes::TYPE_MD5);
 
-    return make_unique_name("chd", "%s/%s", needed_dir, md5);
+    return make_unique_name("chd", "%s/%s", needed_dir, md5.c_str());
 }
 
 
@@ -171,7 +167,7 @@ remove_from_superfluous(const char *name) {
 
 
 bool
-save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, file_t *f) {
+save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, File *f) {
     char *tmp;
     bool do_save = fix_options & FIX_DO;
 
@@ -194,10 +190,10 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
     if (needed) {
 	if (fix_options & FIX_PRINT) {
 	    if (length == -1) {
-		printf("%s: save needed file '%s'\n", sa->name.c_str(), file_name(&sa->files[sidx]));
+		printf("%s: save needed file '%s'\n", sa->name.c_str(), sa->files[sidx].name.c_str());
 	    }
 	    else {
-                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), (uint64_t)start, (uint64_t)length, file_name(&sa->files[sidx]));
+                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), (uint64_t)start, (uint64_t)length, sa->files[sidx].name.c_str());
 	    }
 	}
 
@@ -214,14 +210,14 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 	
 	free(tmp);
 	
-        if (!da->file_copy_part(sa, sidx, file_name(&sa->files[sidx]), start, length == -1 ? std::optional<uint64_t>() : length, f) || !da->commit()) {
+        if (!da->file_copy_part(sa, sidx, sa->files[sidx].name.c_str(), start, length == -1 ? std::optional<uint64_t>() : length, f) || !da->commit()) {
             da->rollback();
             return false;
         }
     }
     else {
 	if (length == -1 && (fix_options & FIX_PRINT)) {
-            printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), file_name(&sa->files[sidx]));
+            printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), sa->files[sidx].name.c_str());
 	}
     }
 	
@@ -245,18 +241,15 @@ save_needed(Archive *sa, int sidx, const char *gamename) {
 
 int
 save_needed_disk(const char *fname, int do_save) {
-    char *tmp;
-    int ret;
-    disk_t *d;
-
-    if ((d = disk_new(fname, 0)) == NULL)
+    DiskPtr d = Disk::from_file(fname, 0);
+    if (!d) {
 	return -1;
+    }
 
-    ret = 0;
-    tmp = NULL;
+    int ret = 0;
 
     if (do_save) {
-	tmp = make_needed_name_disk(d);
+        auto tmp = make_needed_name_disk(d.get());
 	if (tmp == NULL) {
 	    myerror(ERRDEF, "cannot create needed file name");
 	    ret = -1;
@@ -266,14 +259,12 @@ save_needed_disk(const char *fname, int do_save) {
 	else if (rename_or_move(fname, tmp) != 0)
 	    ret = -1;
 	else {
-	    disk_free(d);
-	    d = disk_new(tmp, 0);
+            d = Disk::from_file(tmp, 0);
 	}
+        free(tmp);
     }
 
     ensure_needed_maps();
-    enter_disk_in_map(d, FILE_NEEDED);
-    disk_free(d);
-    free(tmp);
+    enter_disk_in_map(d.get(), FILE_NEEDED);
     return ret;
 }

@@ -39,321 +39,336 @@
 
 #include "detector.h"
 #include "util.h"
-#include "xmalloc.h"
 #include "xmlutil.h"
 
 
-struct ctx {
-    detector_t *d;
-    detector_rule_t *dr;
-    detector_test_t *dt;
+class DetectorParserContext {
+public:
+    DetectorParserContext() : detector(std::make_shared<Detector>()), rule(NULL), test(NULL) { }
+    
+    DetectorPtr detector;
+    Detector::Rule *rule;
+    Detector::Test *test;
 };
 
-struct str_enum {
-    const char *name;
-    int value;
+
+static std::optional<int> parse_enum(const std::string &value, const std::unordered_map<std::string, int> &enums);
+static bool parse_hex(Detector::Test *test, std::vector<uint8_t> *result, const std::string &value);
+static bool parse_number(int64_t *result, const std::string &value);
+static bool parse_offset(int64_t *result, const std::string &value);
+static bool parse_size(int64_t *result, const std::string &value);
+
+static bool rule_close(void *, int);
+static bool rule_end_offset(void *, int, int, const std::string &);
+static bool rule_open(void *, int);
+static bool rule_operation(void *, int, int, const std::string &);
+static bool rule_start_offset(void *, int, int, const std::string &);
+
+static bool test_close(void *, int);
+static bool test_mask(void *, int, int, const std::string &);
+static bool test_offset(void *, int, int, const std::string &);
+static bool test_open(void *, int);
+static bool test_operator(void *ctx, int, int, const std::string &);
+static bool test_result(void *, int, int, const std::string &);
+static bool test_size(void *, int, int, const std::string &);
+static bool test_value(void *, int, int, const std::string &);
+
+static bool text_author(void *, const std::string &);
+static bool text_name(void *, const std::string &);
+static bool text_version(void *, const std::string &);
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_bit = {
+    { "offset", { test_offset, 0, 0 } },
+    { "mask", { test_mask, 0, 0 } },
+    { "value", { test_value, 0, 0 } },
+    { "result", { test_result, 0, 0 } }
+};
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_data = {
+    { "offset", { test_offset, 0, 0 } },
+    { "value", { test_value, 0, 0 } },
+    { "result", { test_result, 0, 0 } }
+};
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_file = {
+    { "size", { test_size, 0, 0 } },
+    { "operator", { test_operator, 0, 0 } },
+    { "result", { test_result, 0, 0} }
+};
+
+static const std::unordered_map<std::string, xmlu_attr_t> attr_rule = {
+    { "start_offset", { rule_start_offset, 0, 0 } },
+    { "end_offset", { rule_end_offset, 0, 0 } },
+    { "operation", { rule_operation, 0, 0 } }
+};
+
+static const std::unordered_map<std::string, XmluEntity> entities = {
+    { "and", XmluEntity(attr_bit, test_open, test_close, Detector::TEST_AND) },
+    { "author", XmluEntity(text_author) },
+    { "data", XmluEntity(attr_data, test_open, test_close, Detector::TEST_DATA) },
+    { "file", XmluEntity(attr_file, test_open, test_close) },
+    { "name", XmluEntity(text_name) },
+    { "or", XmluEntity(attr_bit, test_open, test_close, Detector::TEST_OR) },
+    { "rule", XmluEntity(attr_rule, rule_open, rule_close) },
+    { "version", XmluEntity(text_version) },
+    { "xor", XmluEntity(attr_bit, test_open, test_close, Detector::TEST_XOR) }
 };
 
 
-static int parse_enum(int *, const char *, const struct str_enum *, int);
-static int parse_hex(detector_test_t *, uint8_t **, const char *);
-static int parse_number(int64_t *, const char *);
-static int parse_offset(int64_t *, const char *);
-static int parse_size(int64_t *, const char *);
-static int rule_close(struct ctx *, int);
-static int rule_end_offset(struct ctx *, int, int, const char *);
-static int rule_open(struct ctx *, int);
-static int rule_operation(struct ctx *, int, int, const char *);
-static int rule_start_offset(struct ctx *, int, int, const char *);
-static int test_close(struct ctx *, int);
-static int test_mask(struct ctx *, int, int, const char *);
-static int test_offset(struct ctx *, int, int, const char *);
-static int test_open(struct ctx *, int);
-static int test_operator(struct ctx *ctx, int, int, const char *);
-static int test_result(struct ctx *, int, int, const char *);
-static int test_size(struct ctx *, int, int, const char *);
-static int test_value(struct ctx *, int, int, const char *);
-static int text_author(struct ctx *, const char *);
-static int text_name(struct ctx *, const char *);
-static int text_version(struct ctx *, const char *);
-
-
-#define XA(f) ((xmlu_attr_cb)f)
-#define XC(f) ((xmlu_tag_cb)f)
-#define XO(f) ((xmlu_tag_cb)f)
-#define XT(f) ((xmlu_text_cb)f)
-
-static const xmlu_attr_t attr_bit[] = {{"offset", XA(test_offset), 0, 0}, {"mask", XA(test_mask), 0, 0}, {"value", XA(test_value), 0, 0}, {"result", XA(test_result), 0, 0}, {NULL}};
-
-static const xmlu_attr_t attr_data[] = {{"offset", XA(test_offset), 0, 0}, {"value", XA(test_value), 0, 0}, {"result", XA(test_result), 0, 0}, {NULL}};
-
-static const xmlu_attr_t attr_file[] = {{"size", XA(test_size), 0, 0}, {"operator", XA(test_operator), 0, 0}, {"result", XA(test_result), 0, 0}, {NULL}};
-
-static const xmlu_attr_t attr_rule[] = {{"start_offset", XA(rule_start_offset), 0, 0}, {"end_offset", XA(rule_end_offset), 0, 0}, {"operation", XA(rule_operation), 0, 0}, {NULL}};
-
-static const xmlu_entity_t entities[] = {
-    {"and", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_AND}, {"author", NULL, NULL, NULL, XT(text_author), 0}, {"data", attr_data, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_DATA}, {"file", attr_file, XO(test_open), XC(test_close), NULL, 0}, {"name", NULL, NULL, NULL, XT(text_name), 0}, {"or", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_OR}, {"rule", attr_rule, XO(rule_open), XC(rule_close), NULL, 0}, {"version", NULL, NULL, NULL, XT(text_version), 0}, {"xor", attr_bit, XO(test_open), XC(test_close), NULL, DETECTOR_TEST_XOR},
-};
-static const int nentities = sizeof(entities) / sizeof(entities[0]);
-
-
-detector_t *
-detector_parse_ps(parser_source_t *ps) {
-    struct ctx ctx;
-
-    ctx.d = detector_new();
-    ctx.dr = NULL;
-    ctx.dt = NULL;
+DetectorPtr
+Detector::parse(ParserSource *ps) {
+    DetectorParserContext ctx;
 
     /* TODO: lineno callback */
-    if (xmlu_parse(ps, &ctx, NULL, entities, nentities) < 0) {
-	detector_free(ctx.d);
+    if (xmlu_parse(ps, &ctx, NULL, entities) < 0) {
 	return NULL;
     }
 
-    return ctx.d;
+    return ctx.detector;
 }
 
 
-static int
-parse_enum(int *ep, const char *value, const struct str_enum *enums, int nenums) {
-    int i;
-
-    /* TODO: use bsearch? */
-
-    for (i = 0; i < nenums; i++) {
-	if (strcmp(value, enums[i].name) == 0) {
-	    *ep = enums[i].value;
-	    return 0;
-	}
+static std::optional<int> parse_enum(const std::string &value, const std::unordered_map<std::string, int> &enums) {
+    auto it = enums.find(value);
+    
+    if (it == enums.end()) {
+        errno = EINVAL;
+        return {};
     }
 
-    errno = EINVAL;
-    return -1;
+    return it->second;
 }
 
 
-static int
-parse_hex(detector_test_t *dt, uint8_t **vp, const char *value) {
-    size_t len;
-    uint8_t *v;
-
-    len = strlen(value);
-
-    if (len % 2) {
-	errno = EINVAL;
-	return -1;
+static bool parse_hex(Detector::Test *test, std::vector<uint8_t> *result, const std::string &value) {
+    if (value.size() % 2 != 0) {
+        errno = EINVAL;
+	return false;
     }
-    len /= 2;
+    auto length = value.size() / 2;
 
-    if (dt->length != 0 && dt->length != len) {
+    if (test->length != 0 && test->length != length) {
 	errno = EINVAL;
-	return -1;
+	return false;
     }
 
-    v = static_cast<uint8_t *>(xmalloc(len));
-    if (hex2bin(v, value, len) < 0) {
-	free(v);
+    result->resize(length);
+    if (hex2bin(result->data(), value.c_str(), length) < 0) {
 	errno = EINVAL;
-	return -1;
+	return false;
     }
 
-    dt->length = len;
-    *vp = v;
-    return 0;
+    test->length = length;
+    return true;
 }
 
 
-static int
-parse_number(int64_t *offsetp, const char *value) {
+static bool parse_number(int64_t *offsetp, const std::string &value) {
     intmax_t i;
     char *end;
 
-    if (value[0] == '\0') {
+    if (value.empty()) {
 	errno = EINVAL;
-	return -1;
+	return false;
     }
 
     errno = 0;
-    i = strtoimax(value, &end, 16);
+    i = strtoimax(value.c_str(), &end, 16);
 
     if (*end != '\0') {
 	errno = EINVAL;
-	return -1;
+	return false;
     }
 
     if (errno == ERANGE || i < INT64_MIN || i > INT64_MAX) {
 	errno = ERANGE;
-	return -1;
+	return false;
     }
 
     *offsetp = i;
-    return 0;
+    return true;
 }
 
 
-static int
-parse_offset(int64_t *offsetp, const char *value) {
-    if (strcmp(value, "EOF") == 0) {
+static bool parse_offset(int64_t *offsetp, const std::string &value) {
+    if (value == "EOF") {
 	*offsetp = DETECTOR_OFFSET_EOF;
-	return 0;
+	return true;
     }
 
     return parse_number(offsetp, value);
 }
 
 
-static int
-parse_size(int64_t *offsetp, const char *value) {
-    if (strcmp(value, "PO2") == 0) {
-	*offsetp = DETECTOR_SIZE_PO2;
-	return 0;
+static bool parse_size(int64_t *offsetp, const std::string &value) {
+    if (value == "PO2") {
+	*offsetp = DETECTOR_SIZE_POWER_OF_2;
+	return true;
     }
 
     return parse_number(offsetp, value);
 }
 
 
-static int
-rule_close(struct ctx *ctx, int arg1) {
-    ctx->dr = NULL;
+static bool rule_close(void *ctx, int arg1) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return 0;
+    context->rule = NULL;
+
+    return true;
 }
 
 
-static int
-rule_end_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    return parse_offset(&detector_rule_end_offset(ctx->dr), value);
+static bool rule_end_offset(void *ctx, int arg1, int arg2, const std::string &value) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
+
+    return parse_offset(&context->rule->end_offset, value);
 }
 
 
-static int
-rule_open(struct ctx *ctx, int arg1) {
-    ctx->dr = static_cast<detector_rule_t *>(array_grow(detector_rules(ctx->d), reinterpret_cast<void (*)(void *)>(detector_rule_init)));
+static bool rule_open(void *ctx, int arg1) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
+    
+    context->detector->rules.push_back(Detector::Rule());
+    context->rule = &context->detector->rules[context->detector->rules.size() - 1];
 
-    return 0;
+    return true;
 }
 
 
-static int
-rule_operation(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    static const struct str_enum op[] = {{"bitswap", DETECTOR_OP_BITSWAP}, {"byteswap", DETECTOR_OP_BYTESWAP}, {"none", DETECTOR_OP_NONE}, {"wordswap", DETECTOR_OP_WORDSWAP}};
-    static const int nop = sizeof(op) / sizeof(op[0]);
-
-    int i;
-
-    if (parse_enum(&i, value, op, nop) < 0)
-	return -1;
-
-    detector_rule_operation(ctx->dr) = static_cast<detector_operation_t>(i);
-    return 0;
-}
-
-
-static int
-rule_start_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    return parse_offset(&detector_rule_start_offset(ctx->dr), value);
-}
-
-
-static int
-test_close(struct ctx *ctx, int arg1) {
-    ctx->dt = NULL;
-
-    return 0;
-}
-
-
-static int
-test_mask(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    return parse_hex(ctx->dt, &detector_test_mask(ctx->dt), value);
-}
-
-
-static int
-test_offset(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    return parse_offset(&detector_test_offset(ctx->dt), value);
-}
-
-
-static int
-test_open(struct ctx *ctx, int type) {
-    ctx->dt = static_cast<detector_test_t *>(array_grow(detector_rule_tests(ctx->dr), reinterpret_cast<void (*)(void *)>(detector_test_init)));
-    detector_test_type(ctx->dt) = static_cast<detector_test_type_t>(type);
-
-    return 0;
-}
-
-
-static int
-test_operator(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    static const struct str_enum en[] = {
-	{"equal", DETECTOR_TEST_FILE_EQ},
-	{"greater", DETECTOR_TEST_FILE_GR},
-	{"less", DETECTOR_TEST_FILE_LE},
+static bool rule_operation(void *ctx, int arg1, int arg2, const std::string &value) {
+    static const std::unordered_map<std::string, int> op = {
+        { "bitswap", Detector::OP_BITSWAP },
+        { "byteswap", Detector::OP_BYTESWAP },
+        { "none", Detector::OP_NONE },
+        { "wordswap", Detector::OP_WORDSWAP }
     };
-    static const int nen = sizeof(en) / sizeof(en[0]);
 
-    int i;
+    auto context = static_cast<DetectorParserContext *>(ctx);
+    auto i = parse_enum(value, op);
+    
+    if (!i.has_value()) {
+	return false;
+    }
 
-    if (parse_enum(&i, value, en, nen) < 0)
-	return -1;
-
-    detector_test_type(ctx->dt) = static_cast<detector_test_type_t>(i);
-    return 0;
+    context->rule->operation = static_cast<Detector::Operation>(i.value());
+    return true;
 }
 
 
-static int
-test_result(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    static const struct str_enum en[] = {
+static bool rule_start_offset(void *ctx, int arg1, int arg2, const std::string &value) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
+
+    return parse_offset(&context->rule->start_offset, value);
+}
+
+
+static bool test_close(void *ctx, int arg1) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
+
+    context->test = NULL;
+
+    return true;
+}
+
+
+static bool test_mask(void *ctx, int arg1, int arg2, const std::string &value) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
+
+    return parse_hex(context->test, &context->test->mask, value);
+}
+
+
+static bool test_offset(void *ctx, int arg1, int arg2, const std::string &value) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
+
+    return parse_offset(&context->test->offset, value);
+}
+
+
+static bool test_open(void *ctx, int type) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
+
+    context->rule->tests.push_back(Detector::Test());
+    context->test = &context->rule->tests[context->rule->tests.size() - 1];
+
+    return true;
+}
+
+
+static bool test_operator(void *ctx, int arg1, int arg2, const std::string &value) {
+    static std::unordered_map<std::string, int> enums = {
+        { "equal", Detector::TEST_FILE_EQ },
+	{ "greater", Detector::TEST_FILE_GR },
+        { "less", Detector::TEST_FILE_LE }
+    };
+
+    auto context = static_cast<DetectorParserContext *>(ctx);
+    auto i = parse_enum(value, enums);
+    
+    if (!i.has_value()) {
+    return false;
+    }
+
+    context->test->type = static_cast<Detector::TestType>(i.value());
+    return true;
+}
+
+
+static bool test_result(void *ctx, int arg1, int arg2, const std::string &value) {
+    static std::unordered_map<std::string, int> enums = {
 	{"false", false},
 	{"true", true},
     };
-    static const int nen = sizeof(en) / sizeof(en[0]);
 
-    int i;
+    auto context = static_cast<DetectorParserContext *>(ctx);
+    auto i = parse_enum(value, enums);
+    
+    if (!i.has_value()) {
+        return false;
+    }
 
-    if (parse_enum(&i, value, en, nen) < 0)
-	return -1;
-
-    detector_test_result(ctx->dt) = i;
-    return 0;
+    context->test->result = i.value();
+    return true;
 }
 
 
-static int
-test_size(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    return parse_size(&detector_test_size(ctx->dt), value);
+static bool test_size(void *ctx, int arg1, int arg2, const std::string &value) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
+
+    return parse_size(&context->test->offset, value);
 }
 
 
-static int
-test_value(struct ctx *ctx, int arg1, int arg2, const char *value) {
-    return parse_hex(ctx->dt, &detector_test_value(ctx->dt), value);
+static bool test_value(void *ctx, int arg1, int arg2, const std::string &value) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
+
+    return parse_hex(context->test, &context->test->value, value);
 }
 
 
-static int
-text_author(struct ctx *ctx, const char *txt) {
-    detector_author(ctx->d) = xstrdup(txt);
+static bool text_author(void *ctx, const std::string &txt) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return 0;
+    context->detector->author = txt;
+    
+    return true;
 }
 
 
-static int
-text_name(struct ctx *ctx, const char *txt) {
-    detector_name(ctx->d) = xstrdup(txt);
+static bool text_name(void *ctx, const std::string &txt) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return 0;
+    context->detector->name = txt;
+
+    return true;
 }
 
 
-static int
-text_version(struct ctx *ctx, const char *txt) {
-    detector_version(ctx->d) = xstrdup(txt);
+static bool text_version(void *ctx, const std::string &txt) {
+    auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return 0;
+    context->detector->version = txt;
+
+    return true;
 }

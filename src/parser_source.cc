@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 #include <cinttypes>
 
 #include <errno.h>
@@ -43,360 +44,112 @@
 
 #define PSBLKSIZE 1024
 
-struct parser_source {
-    parser_source_t *(*open)(void *, const char *);
-    ssize_t (*read)(void *, void *, size_t);
-    int (*close)(void *);
-    void *ud;
 
-    char *data;
-    size_t size;
-    char *cur;
-    size_t len;
-};
+ParserSource::ParserSource() : current(NULL), available(0) { }
 
-struct pszip_ud {
-    char *fname;
-    struct zip *za;
-    struct zip_file *zf;
-};
-
-typedef struct pszip_ud pszip_ud_t;
-
-struct psfile_ud {
-    char *fname;
-    FILE *f;
-};
-
-typedef struct psfile_ud psfile_ud_t;
-
-static int psfile_close(psfile_ud_t *);
-static parser_source_t *psfile_open(psfile_ud_t *, const char *);
-static ssize_t psfile_read(psfile_ud_t *, void *, size_t);
-static int pszip_close(pszip_ud_t *);
-static parser_source_t *pszip_open(pszip_ud_t *, const char *);
-static ssize_t pszip_read(pszip_ud_t *, void *, size_t);
-
-static void _buffer_consume(parser_source_t *, size_t);
-static void _buffer_fill(parser_source_t *, size_t);
-static void _buffer_grow(parser_source_t *, size_t);
-
-static parser_source_t *_ps_file_open(const char *, const char *);
-static parser_source_t *_ps_new_zip(const char *, struct zip *, const char *, bool);
-
-
-int
-ps_close(parser_source_t *ps) {
-    int ret;
-
-    if (ps->close)
-	ret = ps->close(ps->ud);
-    else
-	ret = 0;
-
-    free(ps->data);
-    free(ps);
-
-    return ret;
+ParserSource::~ParserSource() {
+    close();
 }
 
 
-char *
-ps_getline(parser_source_t *ps) {
-    char *line, *p;
-    size_t len;
-
+std::optional<std::string> ParserSource::getline() {
     for (;;) {
-	if (ps->len > 0 && (p = static_cast<char *>(memchr(ps->cur, '\n', ps->len))) != NULL) {
-	    line = ps->cur;
-	    len = p - ps->cur;
-	    if (len > 0 && line[len - 1] == '\r')
-		line[len - 1] = '\0';
-	    else
-		line[len] = '\0';
-	    _buffer_consume(ps, len + 1);
-	    break;
+        char *p;
+        if (available > 0 && (p = reinterpret_cast<char *>(memchr(current, '\n', available))) != NULL) {
+            auto line = reinterpret_cast<char *>(current);
+            size_t line_length = static_cast<size_t>(p - line);
+            if (line_length > 0 && line[line_length - 1] == '\r') {
+		line[line_length - 1] = '\0';
+            }
+            else {
+		line[line_length] = '\0';
+            }
+            buffer_consume(line_length + 1);
+            return line;
 	}
 
-	len = ps->len;
-	_buffer_fill(ps, (ps->len / PSBLKSIZE + 1) * PSBLKSIZE);
+        auto old_remaining = available;
+        buffer_fill((available / PSBLKSIZE + 1) * PSBLKSIZE);
 
-	if (len == ps->len) {
-	    if (ps->len == 0)
-		return NULL;
+        if (old_remaining == available) {
+            if (available == 0) {
+                return {};
+            }
 
-	    line = ps->cur;
-	    ps->cur[ps->len] = '\0';
-	    _buffer_consume(ps, ps->len);
-	    break;
+            auto line = reinterpret_cast<char *>(current);
+            line[available] = '\0';
+            buffer_consume(available);
+            return line;
 	}
     }
-
-    return line;
 }
 
 
-parser_source_t *
-ps_new(void *ud, parser_source_close fn_close, parser_source_open fn_open, parser_source_read fn_read) {
-    parser_source_t *ps;
+int ParserSource::peek() {
+    buffer_fill(1);
 
-    ps = static_cast<parser_source *>(xmalloc(sizeof(*ps)));
-
-    ps->ud = ud;
-    ps->close = fn_close;
-    ps->open = fn_open;
-    ps->read = fn_read;
-
-    ps->data = NULL;
-    ps->size = 0;
-    ps->cur = NULL;
-    ps->len = 0;
-
-    return ps;
-}
-
-
-parser_source_t *
-ps_new_file(const char *fname) {
-    psfile_ud_t *ud;
-    FILE *f;
-
-    if (fname) {
-	if ((f = fopen(fname, "r")) == NULL)
-	    return NULL;
-    }
-    else
-	f = stdin;
-
-    ud = static_cast<psfile_ud_t *>(xmalloc(sizeof(*ud)));
-
-    if (fname)
-	ud->fname = xstrdup(fname);
-    else
-	ud->fname = NULL;
-    ud->f = f;
-
-    seterrinfo(fname, "");
-    return ps_new(ud, (parser_source_close)psfile_close, (parser_source_open)psfile_open, (parser_source_read)psfile_read);
-}
-
-
-parser_source_t *
-ps_new_stdin(void) {
-    return ps_new_file(NULL);
-}
-
-
-parser_source_t *
-ps_new_zip(const char *zaname, struct zip *za, const char *fname) {
-    return _ps_new_zip(zaname, za, fname, false);
-}
-
-
-parser_source_t *
-ps_open(parser_source_t *ps, const char *fname) {
-    return ps->open(ps->ud, fname);
-}
-
-
-int
-ps_peek(parser_source_t *ps) {
-    _buffer_fill(ps, 1);
-
-    if (ps->len == 0)
+    if (available == 0) {
 	return EOF;
-
-    return ps->cur[0];
-}
-
-
-ssize_t
-ps_read(parser_source_t *ps, void *buf, size_t n) {
-    ssize_t done, ret;
-
-    if (ps->len > 0) {
-	done = (ps->len < n ? ps->len : n);
-	memcpy(buf, ps->cur, done);
-	_buffer_consume(ps, n);
-	buf = (char *)buf + done;
-	n -= done;
     }
-    else
-	done = 0;
 
-    ret = ps->read(ps->ud, buf, n);
-
-    if (ret >= 0)
-	done += ret;
-
-    return done;
+    return current[0];
 }
 
 
-static int
-psfile_close(psfile_ud_t *ud) {
-    int ret;
+size_t ParserSource::read(void *data, size_t length) {
+    uint8_t *buffer = reinterpret_cast<uint8_t *>(data);
 
-    if (ud->fname)
-	ret = fclose(ud->f);
-    else
-	ret = 0;
+    size_t done = 0;
+    
+    if (available > 0) {
+        done = std::min(available,  length);
+	memcpy(buffer, current, done);
+        buffer_consume(done);
+        buffer += done;
+	length -= done;
+    }
 
-    free(ud->fname);
-    free(ud);
-
-    return ret;
+    return done + read_xxx(buffer, length);
 }
 
 
-static parser_source_t *
-psfile_open(psfile_ud_t *ud, const char *fname) {
-    return _ps_file_open(fname, ud->fname);
+void ParserSource::buffer_consume(size_t length) {
+    length = std::min(length, available);
+    
+    available -= length;
+    current += length;
+
+    if (available == 0) {
+        current = data.data();
+    }
 }
 
-
-static ssize_t
-psfile_read(psfile_ud_t *ud, void *b, size_t n) {
-    return fread(b, 1, n, ud->f);
-}
-
-
-static int
-pszip_close(pszip_ud_t *ud) {
-    int ret;
-
-    ret = zip_fclose(ud->zf);
-
-    free(ud->fname);
-    free(ud);
-
-    return ret;
-}
-
-
-static parser_source_t *
-pszip_open(pszip_ud_t *ud, const char *fname) {
-    parser_source_t *ps;
-
-    ps = _ps_new_zip(ud->fname, ud->za, fname, true);
-
-    if (ps == NULL && errno == ENOENT)
-	ps = _ps_file_open(fname, ud->fname);
-
-    return ps;
-}
-
-
-static ssize_t
-pszip_read(pszip_ud_t *ud, void *b, size_t n) {
-    return zip_fread(ud->zf, b, n);
-}
-
-
-static void
-_buffer_consume(parser_source_t *ps, size_t n) {
-    if (n > ps->len)
-	n = ps->len;
-
-    ps->len -= n;
-    ps->cur += n;
-
-    if (ps->len == 0)
-	ps->cur = ps->data;
-}
-
-
-static void
-_buffer_fill(parser_source_t *ps, size_t n) {
-    ssize_t done;
-
-    if (ps->len >= n)
+// make N bytes available
+void ParserSource::buffer_fill(size_t n) {
+    if (available >= n) {
 	return;
-
-    _buffer_grow(ps, n);
-
-    done = ps->read(ps->ud, ps->cur + ps->len, n - ps->len);
-
-    if (done > 0)
-	ps->len += done;
-}
-
-
-static void
-_buffer_grow(parser_source_t *ps, size_t n) {
-    size_t new_size;
-
-    if (ps->len && ps->cur > ps->data) {
-	memmove(ps->data, ps->cur, ps->len);
-	ps->cur = ps->data;
     }
 
-    new_size = n + ps->len + 1;
+    buffer_allocate(n);
 
-    if (ps->size < new_size) {
-	size_t off = ps->cur - ps->data;
-	ps->data = static_cast<char *>(xrealloc(ps->data, new_size));
-	ps->size = new_size;
-	ps->cur = ps->data + off;
+    auto done = read_xxx(current + available, n - available);
+
+    if (done > 0) {
+        available += static_cast<size_t>(done);
     }
 }
 
-
-static parser_source_t *
-_ps_file_open(const char *fname, const char *parent) {
-    parser_source_t *ps;
-    char *full_name = NULL;
-
-    if (parent != NULL) {
-	char *dir;
-
-	full_name = NULL;
-
-	dir = mydirname(parent);
-	full_name = static_cast<char *>(xmalloc(strlen(dir) + strlen(fname) + 2));
-	sprintf(full_name, "%s/%s", dir, fname);
-	free(dir);
-	fname = full_name;
+// make sure buffer is at least N + 1 bytes long (+1 for terminating NUL)
+void ParserSource::buffer_allocate(size_t n) {
+    if (available > 0 && current > data.data()) {
+        memmove(data.data(), current, available);
+        current = data.data();
     }
 
-    ps = ps_new_file(fname);
-    free(full_name);
-    return ps;
-}
+    auto new_size = n + 1;
 
-
-static parser_source_t *
-_ps_new_zip(const char *zaname, struct zip *za, const char *fname, bool relaxed) {
-    struct zip_file *zf;
-    pszip_ud_t *ud;
-    int flags;
-
-    flags = (relaxed ? ZIP_FL_NOCASE | ZIP_FL_NODIR : 0);
-
-    if ((zf = zip_fopen(za, fname, flags)) == NULL) {
-	int zer, ser;
-
-	zip_error_get(za, &zer, &ser);
-
-	switch (zer) {
-	case ZIP_ER_NOENT:
-	    errno = ENOENT;
-	    break;
-	case ZIP_ER_MEMORY:
-	    errno = ENOMEM;
-	    break;
-	default:
-	    errno = EIO;
-	    break;
-	}
-
-	return NULL;
+    if (data.size() < new_size) {
+        data.resize(new_size);
+        current = data.data();
     }
-
-    ud = static_cast<pszip_ud_t *>(xmalloc(sizeof(*ud)));
-    ud->fname = xstrdup(zaname);
-    ud->za = za;
-    ud->zf = zf;
-
-    return ps_new(ud, (parser_source_close)pszip_close, (parser_source_open)pszip_open, (parser_source_read)pszip_read);
 }

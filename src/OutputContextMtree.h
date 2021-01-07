@@ -1,6 +1,9 @@
+#ifndef HAD_OUTPUT_MTREE_H
+#define HAD_OUTPUT_MTREE_H
+
 /*
-  detector_init.c -- initialize detector structures
-  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
+  OutputContextMtree.h -- write games to mtree(8) files
+  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,27 +34,23 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "output.h"
 
-#include <stddef.h>
+class OutputContextMtree : public OutputContext {
+public:
+    OutputContextMtree(const std::string &fname, int flags);
+    virtual ~OutputContextMtree();
+    
+    virtual bool close();
+    virtual bool game(GamePtr game);
+    virtual bool header(DatEntry *dat);
+    
+private:
+    std::string fname;
+    bool extended;
+    FILE *f;
+    
+    bool write_game(Game *game);
+};
 
-#include "detector.h"
-
-
-void
-detector_rule_init(detector_rule_t *dr) {
-    dr->start_offset = 0;
-    dr->end_offset = 0;
-    dr->operation = DETECTOR_OP_NONE;
-    dr->tests = array_new(sizeof(detector_test_t));
-}
-
-
-void
-detector_test_init(detector_test_t *dt) {
-    dt->type = DETECTOR_TEST_DATA;
-    dt->offset = 0;
-    dt->length = 0;
-    dt->value = NULL;
-    dt->mask = NULL;
-    dt->result = true;
-}
+#endif // HAD_OUTPUT_MTREE_H

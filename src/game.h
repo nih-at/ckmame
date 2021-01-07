@@ -34,45 +34,28 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "array.h"
 #include "disk.h"
 #include "file.h"
 #include "parray.h"
 
-struct game {
+struct Game {
+public:
     uint64_t id;
-    char *name;
-    char *description;
+    std::string name;
+    std::string description;
     int dat_no;
-    char *cloneof[2];
-    array_t *roms;
-    array_t *disks;
+    std::string cloneof[2];
+    std::vector<File> roms;
+    std::vector<Disk> disks;
+    
+    Game() : id(UINT64_MAX), dat_no(0) { }
 };
 
-typedef struct game game_t;
-
-
-#define game_cloneof(g, i) ((g)->cloneof[i])
-#define game_dat_no(g) ((g)->dat_no)
-#define game_description(g) ((g)->description)
-
-#define game_disk(g, i) ((disk_t *)array_get(game_disks(g), (i)))
-
-#define game_disks(g) ((g)->disks)
-
-#define game_rom(g, i) ((file_t *)array_get(game_roms(g), (i)))
-
-#define game_roms(g) ((g)->roms)
-
-#define game_id(g) ((g)->id)
-#define game_num_clones(g) (array_length(game_clones(g)))
-#define game_num_disks(g) (array_length(game_disks(g)))
-#define game_num_roms(g) (array_length(game_roms(g)))
-#define game_name(g) ((g)->name)
-
-void game_add_clone(game_t *, filetype_t, const char *);
-void game_free(game_t *);
-game_t *game_new(void);
+typedef std::shared_ptr<Game> GamePtr;
 
 #endif /* game.h */
