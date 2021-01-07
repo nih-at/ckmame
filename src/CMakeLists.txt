@@ -42,6 +42,7 @@ set(COMMON_SOURCES
   detector_execute.cc
   detector_print.cc
   diagnostics.cc
+  Dir.cc
   dir.cc
   disk.cc
   disk_new.cc

@@ -31,6 +31,8 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <filesystem>
+
 #include <errno.h>
 #include <limits.h>
 #include <sys/stat.h>
@@ -40,7 +42,7 @@
 #include "funcs.h"
 
 #include "ArchiveDir.h"
-#include "dir.h"
+#include "Dir.h"
 #include "error.h"
 #include "globals.h"
 #include "memdb.h"
@@ -468,49 +470,38 @@ const char *ArchiveDir::ArchiveFile::strerror() {
 
 
 bool ArchiveDir::read_infos_xxx() {
-    dir_t *dir;
-    char namebuf[8192];
-    dir_status_t status;
+    try {
+	 Dir dir(name, flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
+	 std::filesystem::path filepath;
 
-    if ((dir = dir_open(name.c_str(), (flags & ARCHIVE_FL_TOP_LEVEL_ONLY) ? 0 : DIR_RECURSE)) == NULL) {
-        return false;
+	 while ((filepath = dir.next()) != "") {
+	     if (name == filepath) {
+		 continue;
+	     }
+	     if (std::filesystem::is_regular_file(filepath)) {
+		 if (filepath.filename() == DBH_CACHE_DB_NAME) {
+		     continue;
+		 }
+		 struct stat sb;
+
+		 if (stat(filepath.c_str(), &sb) != 0) {
+		     continue;
+		 }
+
+		 files.push_back(File());
+		 auto &f = files[files.size() - 1];
+
+		 f.name = filepath.string().substr(name.size() + 1);
+		 // f.size = static_cast<uint64_t>(sb.st_size);
+		 f.size = std::filesystem::file_size(filepath);
+		 // auto ftime = std::filesystem::last_write_time(filepath);
+		 // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
+		 f.mtime = sb.st_mtime;
+	     }
+	 }
     }
-
-    while ((status = dir_next(dir, namebuf, sizeof(namebuf))) == DIR_OK) {
-        struct stat sb;
-        if (name == namebuf) {
-            continue;
-        }
-        
-        if (stat(namebuf, &sb) < 0) {
-            dir_close(dir);
-            return false;
-        }
-        
-        if (S_ISREG(sb.st_mode)) {
-            const char *filename = namebuf + name.size() + 1;
-            
-            if (strcmp(filename, DBH_CACHE_DB_NAME) == 0) {
-                continue;
-            }
-
-            files.push_back(File());
-            auto &f = files[files.size() - 1];
-            
-            f.name = filename;
-            f.size = static_cast<uint64_t>(sb.st_size);
-            f.mtime = sb.st_mtime;
-        }
-    }
-
-    if (status != DIR_EOD) {
-        myerror(ERRDEF, "error reading directory: %s", strerror(errno));
-        dir_close(dir);
-        return false;
-    }
-    if (dir_close(dir) < 0) {
-        myerror(ERRDEF, "cannot close directory '%s': %s", name.c_str(), strerror(errno));
-        return false;
+    catch (...) {
+	return false;
     }
 
     return true;
