@@ -64,7 +64,7 @@ void diagnostics_images(const Images *, const Result *);
 int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
-int enter_disk_in_map(const Disk *, where_t);
+bool enter_disk_in_map(const Disk *, where_t);
 char *findfile(const char *, filetype_t, const char *);
 int fix_game(Game *, Archive *, Images *, Result *);
 parray_t *list_directory(const char *, const char *);
