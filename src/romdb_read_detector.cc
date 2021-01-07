@@ -111,7 +111,7 @@ romdb_read_rules(Detector *detector, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
                     if (!test.mask.empty() && test.mask.size() != test.value.size()) {
                         return false;
                     }
-                    test.length = test.mask.size();
+                    test.length = test.value.size();
                     break;
                     
                 case Detector::TEST_FILE_EQ:
@@ -123,11 +123,12 @@ romdb_read_rules(Detector *detector, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
             
             rule.tests.push_back(test);
 	}
-	if (ret != SQLITE_DONE || sqlite3_reset(st_t) != SQLITE_OK)
-	    return -1;
+        if (ret != SQLITE_DONE || sqlite3_reset(st_t) != SQLITE_OK) {
+	    return false;
+        }
         
         detector->rules.push_back(rule);
     }
 
-    return 0;
+    return true;
 }

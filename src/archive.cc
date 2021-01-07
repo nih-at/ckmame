@@ -345,7 +345,7 @@ ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, 
 bool Archive::read_infos() {
     std::vector<File> files_cache;
 
-    cache_db = dbh_cache_get_db_for_archive(name.c_str());
+    cache_db = dbh_cache_get_db_for_archive(name);
     cache_id = cache_db ? dbh_cache_get_archive_id(cache_db, name.c_str()) : 0;
     cache_changed = false;
     if (cache_id > 0) {
@@ -386,7 +386,7 @@ void Archive::refresh() {
 
 
 int Archive::register_cache_directory(const std::string &name) {
-    return dbh_cache_register_cache_directory(name.c_str());
+    return dbh_cache_register_cache_directory(name);
 }
 
 bool Archive::is_empty() const {

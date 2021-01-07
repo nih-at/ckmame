@@ -151,7 +151,7 @@ sub read_archives {
 			}
 
 			$prefix = $name;
-			$archive = { name => $name, files => [] };
+			$archive = { name => $name eq "" ? "." : $name, files => [] };
 			$idx = 0;
 
 			if ($self->{unzipped}) {

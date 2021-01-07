@@ -61,11 +61,13 @@ ensure_extra_maps(int flags) {
     const char *file;
     name_type_t nt;
 
-    if ((flags & (DO_MAP | DO_LIST)) == 0)
+    if ((flags & (DO_MAP | DO_LIST)) == 0) {
 	return;
+    }
 
-    if (((maps_done & EXTRA_MAPS) && !(flags & DO_LIST)) || (extra_list != NULL && !(flags & DO_MAP)))
+    if (((maps_done & EXTRA_MAPS) && !(flags & DO_LIST)) || (extra_list != NULL && !(flags & DO_MAP))) {
 	return;
+    }
 
     if (!(maps_done & EXTRA_MAPS) && (flags & DO_MAP)) {
 	maps_done |= EXTRA_MAPS;
@@ -77,6 +79,7 @@ ensure_extra_maps(int flags) {
 	extra_list = parray_new();
 
     if (flags & DO_MAP) {
+	memdb_ensure();
 	for (i = 0; i < parray_length(superfluous); i++) {
 	    file = static_cast<const char *>(parray_get(superfluous, i));
 	    switch ((nt = name_type(file))) {
@@ -198,22 +201,24 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 
     if (ret == 0) {
 	/* clean up cache db: remove archives no longer in file system */
-	char name[8192];
-	sprintf(name, "%s", directory_name);
-	dbh_t *dbh = dbh_cache_get_db_for_archive(name);
+	dbh_t *dbh = dbh_cache_get_db_for_archive(directory_name);
 	if (dbh) {
-	    parray_t *list_db = dbh_cache_list_archives(dbh);
-	    if (list_db) {
-		int i;
-		parray_sort(our_list, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-		for (i = 0; i < parray_length(list_db); i++) {
-		    char *entry_name = static_cast<char *>(parray_get(list_db, i));
-		    sprintf(name, "%s%s%s%s", directory_name, entry_name[0] == '\0' ? "" : "/", entry_name, roms_unzipped ? "" : ".zip");
-		    if (parray_find_sorted(our_list, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) == -1) {
-			dbh_cache_delete_by_name(dbh, name);
+	    auto list_db = dbh_cache_list_archives(dbh);
+	    if (!list_db.empty()) {
+		std::sort(list_db.begin(), list_db.end());
+
+		for (auto entry_name : list_db) {
+		    std::string name = directory_name;
+		    if (entry_name != ".") {
+			name += '/' + entry_name;
+			if (!roms_unzipped) {
+			    name += ".zip";
+			}
+		    }
+		    if (parray_find(our_list, name.c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) == -1) {
+			dbh_cache_delete_by_name(dbh, name.c_str());
 		    }
 		}
-		parray_free(list_db, free);
 	    }
 	}
     }

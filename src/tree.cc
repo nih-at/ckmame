@@ -48,8 +48,8 @@
 
 static tree_t *tree_add_node(tree_t *, const char *, int);
 static tree_t *tree_new_full(const char *, int);
-static int tree_process(tree_t *, ArchivePtr [], Images *[]);
-static void tree_traverse_internal(tree_t *, ArchivePtr [], Images *[]);
+static int tree_process(tree_t *, ArchivePtr [], ImagesPtr []);
+static void tree_traverse_internal(tree_t *, ArchivePtr [], ImagesPtr []);
 
 
 int
@@ -157,18 +157,18 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const Hashes *hashes) {
 void
 tree_traverse(tree_t *tree) {
     ArchivePtr archives[] = { NULL, NULL, NULL };
-    Images *images[] = { NULL, NULL, NULL };
+    ImagesPtr images[] = { std::make_shared<Images>(), std::make_shared<Images>(), std::make_shared<Images>() };
     tree_traverse_internal(tree, archives, images);
 }
 
 static void
-tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], Images *ancestor_images[]) {
+tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], ImagesPtr ancestor_images[]) {
     tree_t *t;
     char *full_name;
     int flags;
 
     ArchivePtr archives[] = { NULL, ancestor_archives[0], ancestor_archives[1] };
-    Images *images[] = { NULL, ancestor_images[0], ancestor_images[1] };
+    ImagesPtr images[] = { std::make_shared<Images>(), ancestor_images[0], ancestor_images[1] };
     
     ImagesPtr self_images;
     
@@ -187,7 +187,7 @@ tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], Images *anc
 	free(full_name);
         
         self_images = Images::from_directory(tree->name, check_integrity);
-        images[0] = self_images.get();
+        images[0] = self_images;
         
 	if (tree_check(tree) && !tree_checked(tree))
             tree_process(tree, archives, images);
@@ -261,7 +261,7 @@ tree_new_full(const char *name, int check) {
 
 
 static int
-tree_process(tree_t *tree, ArchivePtr archives[], Images *images[]) {
+tree_process(tree_t *tree, ArchivePtr archives[], ImagesPtr images[]) {
     GamePtr game;
 
     /* check me */
@@ -270,21 +270,21 @@ tree_process(tree_t *tree, ArchivePtr archives[], Images *images[]) {
 	return -1;
     }
 
-    Result res(game.get(), archives[0].get(), images[0]);
+    Result res(game.get(), archives[0].get(), images[0].get());
 
     check_old(game.get(), &res);
     check_files(game.get(), archives, &res);
     check_archive(archives[0], game->name.c_str(), &res);
     check_disks(game.get(), images, &res);
-    check_images(images[0], game->name.c_str(), &res);
+    check_images(images[0].get(), game->name.c_str(), &res);
 
     /* write warnings/errors for me */
-    diagnostics(game.get(), archives[0], images[0], &res);
+    diagnostics(game.get(), archives[0], images[0].get(), &res);
 
     int ret = 0;
 
     if (fix_options & FIX_DO) {
-	ret = fix_game(game.get(), archives[0].get(), images[0], &res);
+	ret = fix_game(game.get(), archives[0].get(), images[0].get(), &res);
     }
 
     /* TODO: includes too much when rechecking */

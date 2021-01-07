@@ -82,6 +82,8 @@ bool OutputContextXml::close() {
             }
 	}
     }
+    
+    f = NULL;
 
     return ok;
 }

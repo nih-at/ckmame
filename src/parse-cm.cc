@@ -99,7 +99,7 @@ bool ParserContext::parse_cm() {
 //                    if (tokenizer.get() != "name") {
                     if (name != "name") {
                         /* TODO: error */
-                        myerror(ERRFILE, "%d: expected token (name) not found ('%s', '%s')", lineno, brace.c_str(), name.c_str());
+                        myerror(ERRFILE, "%d: expected token (name) not found", lineno);
                         break;
                     }
                     file_start(TYPE_ROM);
@@ -213,7 +213,7 @@ bool ParserContext::parse_cm() {
                                 myerror(ERRFILE, "%d: token md5 missing argument", lineno);
                                 break;
                             }
-                            if (file_hash(TYPE_DISK, Hashes::TYPE_MD5, token)) {
+                            if (!file_hash(TYPE_DISK, Hashes::TYPE_MD5, token)) {
                                 break;
                             }
                         }

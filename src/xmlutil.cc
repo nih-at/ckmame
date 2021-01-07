@@ -56,6 +56,7 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 #define XMLU_MAX_PATH 8192
 
 static int xml_close(void *);
+static const XmluEntity *xml_find(const std::unordered_map<std::string, XmluEntity> &entities, const std::string &path);
 static int xml_read(void *source, char *buffer, int length);
 
 
@@ -81,16 +82,15 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                 auto name = std::string(reinterpret_cast<const char *>(xmlTextReaderConstName(reader)));
                 path = path + '/' + name;
                 
-                auto it = entities.find(path);
-                if (it != entities.end()) {
-                    auto &entity = it->second;
-                    if (entity.cb_open) {
-                        if (!entity.cb_open(ctx, entity.arg1)) {
+                auto entity = xml_find(entities, path);
+                if (entity != NULL) {
+                    if (entity->cb_open) {
+                        if (!entity->cb_open(ctx, entity->arg1)) {
                             ok = false;
                         }
                     }
                     
-                    for (auto it : entity.attr) {
+                    for (auto it : entity->attr) {
                         auto &attribute = it.second;
                         auto value = reinterpret_cast<char *>(xmlTextReaderGetAttribute(reader, reinterpret_cast<const xmlChar *>(it.first.c_str())));
 
@@ -102,8 +102,8 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                         }
                     }
                     
-                    if (entity.cb_text) {
-                        entity_text = &entity;
+                    if (entity->cb_text) {
+                        entity_text = entity;
                     }
                 }
                 
@@ -117,12 +117,10 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                  */
 
             case XML_READER_TYPE_END_ELEMENT: {
-                auto it = entities.find(path);
-                if (it != entities.end()) {
-                    auto &entity = it->second;
-
-                    if (entity.cb_close) {
-                        if (!entity.cb_close(ctx, entity.arg1)) {
+                auto entity = xml_find(entities, path);
+                if (entity != NULL) {
+                    if (entity->cb_close) {
+                        if (!entity->cb_close(ctx, entity->arg1)) {
                             ok = false;
                         }
                     }
@@ -159,6 +157,22 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 static int
 xml_close(void *ctx) {
     return 0;
+}
+
+
+static const XmluEntity *xml_find(const std::unordered_map<std::string, XmluEntity> &entities, const std::string &path) {
+    for (auto &pair : entities) {
+        auto &name = pair.first;
+        if (name == path) {
+            return &pair.second;
+        }
+
+        if (name.length() < path.length() && path[path.length() - name.length() - 1] == '/' && path.compare(path.length() - name.length(), name.length(), name) == 0) {
+            return &pair.second;
+       }
+    }
+    
+    return NULL;
 }
 
 

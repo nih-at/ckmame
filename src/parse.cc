@@ -306,7 +306,7 @@ bool ParserContext::game_end() {
     
     auto ok = true;
     
-    if (ignore_game(g->name)) {
+    if (!ignore_game(g->name)) {
 	/* omit description if same as name (to save space) */
         if (g->name == g->description) {
             g->description = "";
@@ -437,8 +437,6 @@ ParserContext::ParserContext(ParserSourcePtr source, const std::unordered_set<st
 
 
 bool ParserContext::header_end() {
-    DatEntry de;
-
     CHECK_STATE(PARSE_IN_HEADER);
 
     de.merge(&dat_default, &de);

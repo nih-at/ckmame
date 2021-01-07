@@ -103,19 +103,17 @@ void OutputContextDb::familymeeting(Game *parent, Game *child) {
 
 bool OutputContextDb::handle_lost() {
     while (!lost_children.empty()) {
-	/* processing order does not matter and deleting last
-	   element is cheaper */
-	for (size_t i = lost_children.size() - 1; i >= 0; --i) {
-	    /* get current lost child from database, get parent,
-	       look if parent is still lost, if not, do child */
+        for (size_t i = 0; i < lost_children.size(); i++) {
+            /* get current lost child from database, get parent,
+             look if parent is still lost, if not, do child */
             auto child = romdb_read_game(db, lost_children[i]);
             if (!child) {
                 myerror(ERRDEF, "internal database error: child %s not in database", lost_children[i].c_str());
-		return false;
-	    }
-
+                return false;
+            }
+            
             bool is_lost = true;
-
+            
             auto parent = romdb_read_game(db, child->cloneof[0]);
             if (!parent) {
                 myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", child->name.c_str(), child->cloneof[0].c_str());
@@ -137,7 +135,7 @@ bool OutputContextDb::handle_lost() {
             }
         }
     }
-
+        
     return true;
 }
 

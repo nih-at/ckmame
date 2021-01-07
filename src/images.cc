@@ -70,13 +70,13 @@ ImagesPtr Images::from_directory(const std::string &directory, bool check_integr
     dir_status_t err;
     char b[8192];
 
+    auto images = std::make_shared<Images>();
+
     auto dirname = std::string(get_directory()) + "/" + directory;
 
     if ((dir = dir_open(dirname.c_str(), 0)) == NULL) {
-        return NULL;
+        return images;
     }
-
-    auto images = std::make_shared<Images>();
 
     while ((err = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
         if (err == DIR_ERROR) {

@@ -120,8 +120,7 @@ dbh_error(dbh_t *db) {
 }
 
 
-dbh_t *
-dbh_open(const char *name, int mode) {
+dbh_t *dbh_open(const std::string &name, int mode) {
     dbh_t *db;
     struct stat st;
     unsigned int i;
@@ -145,7 +144,7 @@ dbh_open(const char *name, int mode) {
     if (DBH_FLAGS(mode) & DBH_TRUNCATE) {
 	/* do not delete special cases (like memdb) */
 	if (name[0] != ':')
-	    unlink(name);
+	    unlink(name.c_str());
 	needs_init = 1;
     }
 
@@ -156,11 +155,11 @@ dbh_open(const char *name, int mode) {
 
     if (DBH_FLAGS(mode) & DBH_CREATE) {
 	sql3_flags |= SQLITE_OPEN_CREATE;
-	if (name[0] == ':' || (stat(name, &st) < 0 && errno == ENOENT))
+	if (name[0] == ':' || (stat(name.c_str(), &st) < 0 && errno == ENOENT))
 	    needs_init = 1;
     }
 
-    if (sqlite3_open_v2(name, &dbh_db(db), sql3_flags, NULL) != SQLITE_OK) {
+    if (sqlite3_open_v2(name.c_str(), &dbh_db(db), sql3_flags, NULL) != SQLITE_OK) {
 	int save;
 	save = errno;
 	dbh_close(db);
@@ -181,7 +180,7 @@ dbh_open(const char *name, int mode) {
 	    int save;
 	    save = errno;
 	    dbh_close(db);
-	    unlink(name);
+	    unlink(name.c_str());
 	    errno = save;
 	    return NULL;
 	}

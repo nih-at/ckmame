@@ -95,7 +95,7 @@ void Archive::update_cache() {
     }
     
     if (cache_db == NULL) {
-        cache_db = dbh_cache_get_db_for_archive(name.c_str());
+        cache_db = dbh_cache_get_db_for_archive(name);
     }
     if (cache_db != NULL) {
         if (files.empty()) {
