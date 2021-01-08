@@ -133,8 +133,9 @@ static void
 list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
     GamePtr game;
 
+    auto component = std::filesystem::path(dirname).filename();
     if (dir_known) {
-        game = romdb_read_game(db, mybasename(dirname));
+        game = romdb_read_game(db, component);
     }
 
     try {
