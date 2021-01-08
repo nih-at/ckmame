@@ -34,6 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <string>
 
 #include <zip.h>
 
@@ -65,12 +66,12 @@ int ensure_dir(const char *, int);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
 bool enter_disk_in_map(const Disk *, where_t);
-char *findfile(const char *, filetype_t, const char *);
+std::string findfile(const std::string &name, filetype_t ft, const std::string &game_name);
 int fix_game(Game *, Archive *, Images *, Result *);
 parray_t *list_directory(const char *, const char *);
 const char *get_directory(void);
 int link_or_copy(const char *, const char *);
-char *make_file_name(filetype_t, const char *, const char *);
+std::string make_file_name(filetype_t, const std::string &name, const std::string &game_name);
 char *make_garbage_name(const char *, int);
 char *make_needed_name(const File *);
 char *make_needed_name_disk(const Disk *);

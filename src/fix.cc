@@ -198,14 +198,12 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
 
 static int
 fix_disks(Game *g, Images *im, Result *res) {
-    const char *name;
-    char *fname = NULL;
     bool do_copy;
     size_t removed = 0;
     bool added = false;
 
     for (size_t i = 0; i < im->disks.size(); i++) {
-	name = images_name(im, i);
+	const char *name = images_name(im, i);
 
 	switch (result_image(res, i)) {
 	case FS_UNKNOWN:
@@ -255,13 +253,14 @@ fix_disks(Game *g, Images *im, Result *res) {
         auto &match_disk = res->disks[i];
 
 	switch (match_disk.quality) {
-	case QU_COPIED:
-                if ((name = findfile(disk->name.c_str(), TYPE_DISK, g->name.c_str())) != NULL) {
-		myerror(ERRDEF, "internal error: unknown disk '%s' exists, skipping", name);
+	case QU_COPIED: {
+	    auto name = findfile(disk->name, TYPE_DISK, g->name);
+	    if (name != "") {
+		myerror(ERRDEF, "internal error: unknown disk '%s' exists, skipping", name.c_str());
 		continue;
 	    }
 
-                fname = make_file_name(TYPE_DISK, disk->name.c_str(), g->name.c_str());
+	    auto fname = make_file_name(TYPE_DISK, disk->name, g->name);
 
             switch (match_disk.where) {
             case FILE_INGAME:
@@ -287,11 +286,11 @@ fix_disks(Game *g, Images *im, Result *res) {
             }
 
 	    if (fix_options & FIX_PRINT)
-		printf("%s '%s' to '%s'\n", do_copy ? "copy" : "rename", match_disk.name.c_str(), fname);
+		printf("%s '%s' to '%s'\n", do_copy ? "copy" : "rename", match_disk.name.c_str(), fname.c_str());
 	    if (fix_options & FIX_DO) {
-                ensure_dir(fname, 1);
+                ensure_dir(fname.c_str(), 1);
 		if (do_copy) {
-		    link_or_copy(match_disk.name.c_str(), fname);
+		    link_or_copy(match_disk.name.c_str(), fname.c_str());
 #if 0
 		    /* delete_list_execute can't currently handle disks */
 		    if (extra_delete_list)
@@ -300,7 +299,7 @@ fix_disks(Game *g, Images *im, Result *res) {
 		}
 		else {
                     auto dir = mydirname(match_disk.name);
-                    rename_or_move(match_disk.name.c_str(), fname);
+                    rename_or_move(match_disk.name.c_str(), fname.c_str());
                     (void)rmdir(dir.c_str());
 		    if (extra_list) {
 			int idx;
@@ -313,9 +312,8 @@ fix_disks(Game *g, Images *im, Result *res) {
 	    }
 	    remove_from_superfluous(match_disk.name.c_str());
 
-	    free(fname);
 	    break;
-
+	}
 	case QU_HASHERR:
 	    /* TODO: move to garbage */
 	    break;

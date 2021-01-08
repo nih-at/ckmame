@@ -32,6 +32,7 @@
 */
 
 #include <algorithm>
+#include <filesystem>
 
 #include <sys/param.h>
 #include <sys/stat.h>
@@ -136,50 +137,49 @@ ensure_needed_maps(void) {
 }
 
 
-char *
-findfile(const char *name, filetype_t what, const char *game_name) {
-    char *fn;
-    struct stat st;
-
+std::string findfile(const std::string &name, filetype_t what, const std::string &game_name) {
     if (what == TYPE_FULL_PATH) {
-	if (stat(name, &st) == 0)
-	    return xstrdup(name);
-	else
-	    return NULL;
+	if (std::filesystem::exists(name)) {
+	    return name;
+	}
+	else {
+	    return "";
+	}
     }
 
-    fn = make_file_name(what, name, game_name);
-    if (stat(fn, &st) == 0)
+    auto fn = make_file_name(what, name, game_name);
+    if (std::filesystem::exists(fn)) {
 	return fn;
-    if (what == TYPE_DISK) {
-	fn[strlen(fn) - 4] = '\0';
-	if (stat(fn, &st) == 0)
-	    return fn;
     }
-    free(fn);
+    if (what == TYPE_DISK) {
+	/* strip off ".chd" */
+	fn = fn.substr(0, fn.size() - 4);
+	if (std::filesystem::exists(fn)) {
+	    return fn;
+	}
+    }
 
-    return NULL;
+    return "";
 }
 
 
-char *
-make_file_name(filetype_t ft, const char *name, const char *game_name) {
-    char *fn;
-    const char *dir, *ext;
+std::string make_file_name(filetype_t ft, const std::string &name, const std::string &game_name) {
+    std::string result;
 
-    dir = get_directory();
-
+    result = std::string(get_directory()) + "/";
     if (ft == TYPE_DISK) {
-	ext = ".chd";
+	result += game_name + "/";
     }
-    else {
-	ext = roms_unzipped ? "" : ".zip";
-	game_name = NULL;
+    result += name;
+    if (ft == TYPE_DISK) {
+	result += ".chd";
+    } else {
+	if (!roms_unzipped) {
+	    result += ".zip";
+	}
     }
 
-    xasprintf(&fn, "%s/%s%s%s%s", dir, game_name ? game_name : "", game_name ? "/" : "", name, ext);
-
-    return fn;
+    return result;
 }
 
 

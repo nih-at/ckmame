@@ -203,14 +203,12 @@ find_in_romset(const File *file, Archive *archive, const char *skip, Match *m) {
 
 static find_result_t
 check_for_file_in_zip(const char *name, const File *rom, const File *file, Match *m) {
-    char *full_name;
     ArchivePtr a;
 
-    if ((full_name = findfile(name, TYPE_ROM, NULL)) == NULL || !(a = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, 0))) {
-	free(full_name);
+    auto full_name = findfile(name, TYPE_ROM, "");
+    if (full_name == "" || !(a = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, 0))) {
 	return FIND_MISSING;
     }
-    free(full_name);
 
     auto idx = a->file_index_by_name(rom->name);
     
@@ -253,14 +251,13 @@ check_match_disk_old(const Game *g, const Disk *disk, MatchDisk *match_disk) {
 /*ARGSUSED1*/
 static find_result_t
 check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_disk) {
-    auto file_name = findfile(disk->name.c_str(), TYPE_DISK, game->name.c_str());
-    if (file_name == NULL) {
+    auto file_name = findfile(disk->name, TYPE_DISK, game->name);
+    if (file_name == "") {
 	return FIND_MISSING;
     }
 
     auto f = Disk::from_file(file_name, DISK_FL_QUIET);
     if (!f) {
-	free(file_name);
 	return FIND_MISSING;
     }
 
@@ -270,11 +267,9 @@ check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_dis
 	    match_disk->name = file_name;
             match_disk->hashes = f->hashes;
 	}
-        free(file_name);
 	return FIND_EXISTS;
     }
 
-    free(file_name);
     return FIND_MISSING;
 }
 

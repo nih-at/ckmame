@@ -164,7 +164,6 @@ tree_traverse(tree_t *tree) {
 static void
 tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], ImagesPtr ancestor_images[]) {
     tree_t *t;
-    char *full_name;
     int flags;
 
     ArchivePtr archives[] = { NULL, ancestor_archives[0], ancestor_archives[1] };
@@ -178,13 +177,12 @@ tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], ImagesPtr a
 
 	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | romdb_hashtypes(db, TYPE_ROM)) : 0));
 
-	full_name = findfile(tree->name, TYPE_ROM, 0);
-	if (full_name == NULL && tree->check) {
-	    full_name = make_file_name(TYPE_ROM, tree->name, 0);
+	auto full_name = findfile(tree->name, TYPE_ROM, "");
+	if (full_name == "" && tree->check) {
+	    full_name = make_file_name(TYPE_ROM, tree->name, "");
 	}
-	if (full_name)
+	if (full_name != "")
 	    archives[0] = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, flags);
-	free(full_name);
         
         self_images = Images::from_directory(tree->name, check_integrity);
         images[0] = self_images;
