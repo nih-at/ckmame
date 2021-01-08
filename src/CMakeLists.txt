@@ -49,7 +49,6 @@ set(COMMON_SOURCES
   export_db.cc
   file.cc
   file_location.cc
-  file_location_ext.cc
   file_location_finalize.cc
   file_status.cc
   file_util.cc
