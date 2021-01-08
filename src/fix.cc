@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
+#include <string>
 
 #include <errno.h>
 #include <stdarg.h>
@@ -298,9 +300,10 @@ fix_disks(Game *g, Images *im, Result *res) {
 #endif
 		}
 		else {
+		    std::error_code ec;
                     auto dir = mydirname(match_disk.name);
                     rename_or_move(match_disk.name.c_str(), fname.c_str());
-                    (void)rmdir(dir.c_str());
+		    std::filesystem::remove(dir, ec);
 		    if (extra_list) {
 			int idx;
 			idx = parray_find_sorted(extra_list, match_disk.name.c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
@@ -325,10 +328,9 @@ fix_disks(Game *g, Images *im, Result *res) {
     }
 
     if (!added && removed == im->disks.size()) {
-        char *dir;
-        xasprintf(&dir, "%s/%s", get_directory(), g->name.c_str());
-        (void)rmdir(dir);
-        free(dir);
+	std::error_code ec;
+	std::string path = std::string(get_directory()) + "/" + g->name;
+	std::filesystem::remove(path, ec);
     }
 
     return 0;

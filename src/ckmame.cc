@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
+
 #include "config.h"
 
 #include <errno.h>
@@ -517,8 +519,10 @@ main(int argc, char **argv) {
 
     dbh_cache_close_all();
     
-    if ((fix_options & FIX_DO) != 0)
-	(void)rmdir(needed_dir);
+    if ((fix_options & FIX_DO) != 0) {
+	std::error_code ec;
+	std::filesystem::remove(needed_dir, ec);
+    }
 
     return 0;
 }

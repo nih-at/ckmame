@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
 
 #include <errno.h>
 #include <stdio.h>
@@ -221,10 +222,11 @@ remove_file_and_containing_empty_dirs(const char *name, const char *base) {
     char *tmp = xstrdup(name);
     char *r;
     while ((r = strrchr(tmp + n + 1, '/')) != NULL) {
+	std::error_code ec;
 	*r = '\0';
-	if (rmdir(tmp) < 0) {
+	if (!std::filesystem::remove(tmp, ec)) {
 	    free(tmp);
-	    return errno == ENOTEMPTY ? 0 : -1;
+	    return ec.value() == ENOTEMPTY ? 0 : -1;
 	}
     }
 

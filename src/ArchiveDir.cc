@@ -260,8 +260,9 @@ bool ArchiveDir::commit_xxx() {
     }
     
     if (is_empty && is_writable() && !(flags & (ARCHIVE_FL_KEEP_EMPTY | ARCHIVE_FL_TOP_LEVEL_ONLY))) {
-        if (rmdir(name.c_str()) < 0 && errno != ENOENT) {
-            myerror(ERRZIP, "cannot remove empty archive '%s': %s", name.c_str(), strerror(errno));
+	std::error_code ec;
+	if (!std::filesystem::remove(name, ec)) {
+            myerror(ERRZIP, "cannot remove empty archive '%s': %s", name.c_str(), ec.message().c_str());
             ok = false;
         }
     }
