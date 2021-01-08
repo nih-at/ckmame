@@ -51,7 +51,6 @@ set(COMMON_SOURCES
   file_location.cc
   file_location_ext.cc
   file_location_finalize.cc
-  file_location_make_key.cc
   file_status.cc
   file_util.cc
   filetype_db_key.cc
