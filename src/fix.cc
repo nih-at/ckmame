@@ -205,19 +205,19 @@ fix_disks(Game *g, Images *im, Result *res) {
     bool added = false;
 
     for (size_t i = 0; i < im->disks.size(); i++) {
-	const char *name = images_name(im, i);
+	std::string name = images_name(im, i);
 
 	switch (result_image(res, i)) {
 	case FS_UNKNOWN:
 	case FS_BROKEN:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: %s unknown image\n", name, ((fix_options & FIX_MOVE_UNKNOWN) ? "move" : "delete"));
+		printf("%s: %s unknown image\n", name.c_str(), ((fix_options & FIX_MOVE_UNKNOWN) ? "move" : "delete"));
 	    if (fix_options & FIX_DO) {
                 if (fix_options & FIX_MOVE_UNKNOWN) {
 		    move_image_to_garbage(name);
                 }
                 else {
-		    my_remove(name);
+		    my_remove(name.c_str());
                 }
                 removed += 1;
 	    }
@@ -226,18 +226,19 @@ fix_disks(Game *g, Images *im, Result *res) {
 	case FS_DUPLICATE:
 	case FS_SUPERFLUOUS:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete %s image\n", name, (result_image(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"));
+		printf("%s: delete %s image\n", name.c_str(), (result_image(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"));
             if (fix_options & FIX_DO) {
-		my_remove(name);
+		my_remove(name.c_str());
                 removed += 1;
             }
-	    remove_from_superfluous(name);
+	    remove_from_superfluous(name.c_str());
 	    break;
 
 	case FS_NEEDED:
-	    if (fix_options & FIX_PRINT)
-		printf("%s: save needed image\n", name);
-	    save_needed_disk(name, (fix_options & FIX_DO));
+	    if (fix_options & FIX_PRINT) {
+		printf("%s: save needed image\n", name.c_str());
+	    }
+	    save_needed_disk(name.c_str(), (fix_options & FIX_DO));
             if (fix_options & FIX_DO) {
                 removed += 1;
             }

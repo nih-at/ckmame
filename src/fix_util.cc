@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
 
 #include <errno.h>
 #include <stdarg.h>
@@ -52,24 +53,18 @@
 #endif
 
 
-char *
-make_garbage_name(const char *name, int unique) {
-    const char *s;
-    char *t, *u, *ext;
-    struct stat st;
+std::string
+make_garbage_name(const std::string &name, int unique) {
+    auto s = std::filesystem::path(name).filename();
 
-    s = mybasename(name);
-
-    t = (char *)xmalloc(strlen(unknown_dir) + strlen(s) + 2);
-
-    sprintf(t, "%s/%s", unknown_dir, s);
-
-    if (unique && (stat(t, &st) == 0 || errno != ENOENT)) {
-	ext = strchr(t, '.');
-	if (ext)
-	    *(ext++) = '\0';
-	u = make_unique_name(ext ? ext : "", "%s", t);
-	free(t);
+    auto t = std::filesystem::path(unknown_dir) / s;
+    
+    if (unique && std::filesystem::exists(t)) {
+	/* skip '.' */
+	auto ext = s.extension().string().substr(1);
+	/* path and filename, but no extension */
+	auto t_no_ext = t.parent_path() / t.stem();
+	auto u = make_unique_name(ext.c_str(), "%s", t_no_ext.c_str());
 	return u;
     }
 
@@ -125,14 +120,12 @@ make_needed_name_disk(const Disk *d) {
 
 
 int
-move_image_to_garbage(const char *fname) {
-    char *to_name;
+move_image_to_garbage(const std::string &fname) {
     int ret;
 
-    to_name = make_garbage_name(fname, 1);
-    ensure_dir(to_name, 1);
-    ret = rename_or_move(fname, to_name);
-    free(to_name);
+    auto to_name = make_garbage_name(fname, 1);
+    ensure_dir(to_name.c_str(), 1);
+    ret = rename_or_move(fname.c_str(), to_name.c_str());
 
     return ret;
 }
