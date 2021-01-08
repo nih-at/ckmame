@@ -52,13 +52,13 @@ static int romdb_write_rules(const detector_t *, sqlite3_stmt *, sqlite3_stmt *)
 
 
 int
-romdb_write_detector(romdb_t *db, const detector_t *d) {
+romdb_write_detector(romdb_t *db, const detector_t *detector) {
     sqlite3_stmt *stmt, *stmt2;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT_DETECTOR)) == NULL)
 	return -1;
 
-    if (sq3_set_string(stmt, 1, detector_name(d)) != SQLITE_OK || sq3_set_string(stmt, 2, detector_author(d)) != SQLITE_OK || sq3_set_string(stmt, 3, detector_version(d)) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
+    if (sq3_set_string(stmt, 1, detector->name) != SQLITE_OK || sq3_set_string(stmt, 2, detector->author) != SQLITE_OK || sq3_set_string(stmt, 3, detector->version) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_RULE)) == NULL)
@@ -66,7 +66,7 @@ romdb_write_detector(romdb_t *db, const detector_t *d) {
     if ((stmt2 = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_TEST)) == NULL)
 	return -1;
 
-    return romdb_write_rules(d, stmt, stmt2);
+    return romdb_write_rules(detector, stmt, stmt2);
 }
 
 

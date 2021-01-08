@@ -39,7 +39,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "file_status.h"
 #include "game.h"
 #include "images.h"
 #include "match.h"
@@ -57,7 +56,6 @@ public:
     std::vector<MatchDisk> disks;
     std::vector<file_status_> images;
 };
-
 
 #define result_disk(res, i) (match_disk_array_get((res)->disks, (i)))
 #define result_disks(res) ((res)->disks)

@@ -45,7 +45,6 @@ set(COMMON_SOURCES
   error.cc
   export_db.cc
   file.cc
-  file_status.cc
   file_util.cc
   filetype_db_key.cc
   find.cc

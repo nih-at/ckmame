@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "array.h"
 #include "file_location.h"
 #include "romdb.h"
 #include "sq_util.h"

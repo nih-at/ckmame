@@ -34,7 +34,6 @@
 #include <errno.h>
 #include <stddef.h>
 
-#include "array.h"
 #include "dbh_cache.h"
 #include "error.h"
 #include "funcs.h"

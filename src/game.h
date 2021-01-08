@@ -38,7 +38,6 @@
 #include <string>
 #include <vector>
 
-#include "array.h"
 #include "disk.h"
 #include "file.h"
 

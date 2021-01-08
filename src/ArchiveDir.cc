@@ -49,11 +49,6 @@
 #include "util.h"
 #include "xmalloc.h"
 
-#define BUFSIZE 8192
-
-#define archive_file_change(a, idx) (static_cast<change_t *>(array_get((static_cast<ud_t *>(archive_user_data(a)))->change, (idx))))
-
-
 bool ArchiveDir::Change::is_renamed() const {
     if (original.data_file_name.empty() || destination.data_file_name.empty()) {
         return false;
