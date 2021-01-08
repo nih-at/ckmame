@@ -54,17 +54,6 @@ xmalloc(size_t size) {
 }
 
 
-void *
-xmemdup(const void *src, size_t size) {
-    void *dst;
-
-    dst = xmalloc(size);
-    memcpy(dst, src, size);
-
-    return dst;
-}
-
-
 char *
 xstrdup(const char *str) {
     char *p;
