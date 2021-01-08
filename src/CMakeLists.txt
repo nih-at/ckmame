@@ -62,7 +62,6 @@ set(COMMON_SOURCES
   hashes.cc
   hashes_update.cc
   images.cc
-  intstr.cc
   match.cc
   match_disk.cc
   memdb.cc
