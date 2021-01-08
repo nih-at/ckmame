@@ -37,8 +37,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-
-#include "dir_old.h"
+#include "Dir.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
@@ -51,15 +50,8 @@ static void list_game_directory(parray_t *found, const char *dirname, bool dir_k
 
 parray_t *
 list_directory(const char *dirname, const char *dbname) {
-    dir_t *dir;
-    char b[8192], *p, *ext;
     parray_t *listf, *found;
-    dir_status_t err;
-    size_t len_dir, len_name;
-    bool known;
-    struct stat st;
 
-    p = NULL;
     listf = NULL;
     
     if (dbname) {
@@ -71,70 +63,53 @@ list_directory(const char *dirname, const char *dbname) {
 
     found = parray_new();
 
-    if ((dir = dir_open(dirname, 0)) == NULL) {
+    try {
+	 Dir dir(dirname, false);
+	 std::filesystem::path filepath;
+
+	 while ((filepath = dir.next()) != "") {
+	     if (filepath.filename() == DBH_CACHE_DB_NAME) {
+		 continue;
+	     }
+
+	     bool known = false;
+
+	     if (std::filesystem::is_directory(filepath)) {
+		 if (roms_unzipped) {
+		     if (listf) {
+			 known = parray_find_sorted(listf, filepath.filename().c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1;
+		     }
+		 }
+		 else {
+		     bool dir_known = listf ? parray_find_sorted(listf, filepath.filename().c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1 : false;
+		     list_game_directory(found, filepath.c_str(), dir_known);
+		     known = true; /* we don't want directories in superfluous list (I think) */
+		 }
+	     }
+	     else {
+		 auto ext = filepath.extension();
+		 if (ext != "") {
+		     if (!roms_unzipped && ext == ".zip" && listf) {
+			 known = parray_find_sorted(listf, filepath.stem().c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1;
+		     }
+		 }
+	     }
+
+	     if (!known) {
+		 parray_push(found, xstrdup(filepath.c_str()));
+	     }
+	 }
+    }
+    catch (...) {
 	parray_free(listf, free);
 	return found;
     }
 
-    len_dir = strlen(dirname) + 1;
-
-    while ((err = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	if (err == DIR_ERROR) {
-	    /* TODO: handle error */
-	    continue;
-	}
-
-	if (strcmp(b + len_dir, DBH_CACHE_DB_NAME) == 0)
-	    continue;
-
-	len_name = strlen(b + len_dir);
-
-	if (stat(b, &st) < 0) {
-	    /* TODO: handle error */
-	    continue;
-	}
-
-	known = false;
-
-	if (S_ISDIR(st.st_mode)) {
-            if (roms_unzipped) {
-                if (listf) {
-                    known = parray_find_sorted(listf, b + len_dir, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1;
-                }
-            }
-            else {
-                bool dir_known = listf ? parray_find_sorted(listf, b + len_dir, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1 : false;
-                list_game_directory(found, b, dir_known);
-                known = true; /* we don't want directories in superfluous list (I think) */
-            }
-	}
-	else {
-	    ext = NULL;
-
-	    if (len_name > 4) {
-		p = b + len_dir + len_name - 4;
-		if (*p == '.') {
-		    ext = p + 1;
-		    *p = '\0';
-		}
-	    }
-
-	    if (ext) {
-                if (!roms_unzipped && strcmp(ext, "zip") == 0 && listf)
-		    known = parray_find_sorted(listf, b + len_dir, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1;
-		*p = '.';
-	    }
-	}
-
-        if (!known) {
-            parray_push(found, xstrdup(b));
-        }
-    }
     parray_free(listf, free);
-    dir_close(dir);
 
-    if (parray_length(found) > 0)
+    if (parray_length(found) > 0) {
 	parray_sort_unique(found, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
+    }
 
     return found;
 }
@@ -156,47 +131,35 @@ print_superfluous(const parray_t *files) {
 
 static void
 list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
-    dir_t *dir;
     GamePtr game;
-    dir_status_t err;
-    char b[8192];
-    size_t len_dir;
 
     if (dir_known) {
         game = romdb_read_game(db, mybasename(dirname));
     }
-    
-    if ((dir = dir_open(dirname, 0)) == NULL) {
-        return;
-    }
 
-    len_dir = strlen(dirname) + 1;
+    try {
+	Dir dir(dirname, false);
+	std::filesystem::path filepath;
 
-    while ((err = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-        if (err == DIR_ERROR) {
-            /* TODO: handle error */
-            continue;
-        }
-        
-        bool known = false;
-        if (game) {
-            char *p = strrchr(b + len_dir, '.');
-            if (p != NULL && strcmp(p + 1, "chd") == 0) {
-                *p = '\0';
-                for (size_t i = 0; i < game->disks.size(); i++) {
-                    if (game->disks[i].name == b + len_dir) {
-                        known = true;
-                        break;
-                    }
-                }
-                *p = '.';
-            }
-        }
-        
-        if (!known) {
-            parray_push(found, xstrdup(b));
-        }
+	while ((filepath = dir.next()) != "") {
+	    bool known = false;
+	    if (game) {
+		if (filepath.extension() == ".chd") {
+		    for (size_t i = 0; i < game->disks.size(); i++) {
+			if (game->disks[i].name == filepath.stem()) {
+			    known = true;
+			    break;
+			}
+		    }
+		}
+	    }
+	    
+	    if (!known) {
+		parray_push(found, xstrdup(filepath.c_str()));
+	    }
+	}
     }
-    
-    dir_close(dir);
+    catch (...) {
+	return;
+    }
 }
