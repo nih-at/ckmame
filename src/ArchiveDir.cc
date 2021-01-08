@@ -82,15 +82,27 @@ bool ArchiveDir::FileInfo::apply() const {
 }
 
 bool ArchiveDir::FileInfo::discard(ArchiveDir *archive) const {
+    std::error_code ec;
+
     if (name.empty() || name == data_file_name) {
         return true;
     }
 
-    /* TODO: stop before removing archive_name itself, e.g. extra_dir */
-    if (remove_file_and_containing_empty_dirs(data_file_name.c_str(), archive->name.c_str()) < 0) {
-        myerror(ERRZIP, "cannot delete '%s': %s", data_file_name.c_str(), strerror(errno));
-        return false;
+    std::filesystem::remove(data_file_name);
+    if (ec) {
+        myerror(ERRZIP, "cannot delete '%s': %s", data_file_name.c_str(), ec.message().c_str());
+	return false;
     }
+    auto path = std::filesystem::path(data_file_name).parent_path();
+    /* TODO: stop before removing archive_name itself, e.g. extra_dir */
+    while (true) {
+	std::filesystem::remove(path, ec);
+	if (ec) {
+	    break;
+	}
+	path = path.parent_path();
+    }
+
     return true;
 }
 
@@ -261,7 +273,8 @@ bool ArchiveDir::commit_xxx() {
     
     if (is_empty && is_writable() && !(flags & (ARCHIVE_FL_KEEP_EMPTY | ARCHIVE_FL_TOP_LEVEL_ONLY))) {
 	std::error_code ec;
-	if (!std::filesystem::remove(name, ec)) {
+	std::filesystem::remove(name, ec);
+	if (ec) {
             myerror(ERRZIP, "cannot remove empty archive '%s': %s", name.c_str(), ec.message().c_str());
             ok = false;
         }

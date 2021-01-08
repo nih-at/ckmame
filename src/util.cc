@@ -132,41 +132,6 @@ get_directory(void) {
 	return "roms";
 }
 
-int
-remove_file_and_containing_empty_dirs(const char *name, const char *base) {
-    if (base == NULL) {
-	errno = EINVAL;
-	return -1;
-    }
-
-    size_t n = strlen(base);
-
-    if (n >= strlen(name) || strncmp(base, name, n) != 0 || name[n] != '/') {
-	errno = EINVAL;
-	return -1;
-    }
-
-    if (unlink(name) < 0)
-	return -1;
-
-    if (strchr(name + n + 1, '/') == NULL)
-	return 0;
-
-    char *tmp = xstrdup(name);
-    char *r;
-    while ((r = strrchr(tmp + n + 1, '/')) != NULL) {
-	std::error_code ec;
-	*r = '\0';
-	if (!std::filesystem::remove(tmp, ec)) {
-	    free(tmp);
-	    return ec.value() == ENOTEMPTY ? 0 : -1;
-	}
-    }
-
-    free(tmp);
-    return 0;
-}
-
 
 void
 print_human_number(FILE *f, uint64_t value) {
