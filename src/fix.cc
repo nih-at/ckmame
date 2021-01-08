@@ -302,14 +302,15 @@ fix_disks(Game *g, Images *im, Result *res) {
 		}
 		else {
 		    std::error_code ec;
-                    auto dir = mydirname(match_disk.name);
+                    auto dir = std::filesystem::path(match_disk.name).parent_path();
                     rename_or_move(match_disk.name.c_str(), fname.c_str());
 		    std::filesystem::remove(dir, ec);
 		    if (extra_list) {
 			int idx;
 			idx = parray_find_sorted(extra_list, match_disk.name.c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-			if (idx >= 0)
+			if (idx >= 0) {
 			    parray_delete(extra_list, idx, free);
+			}
 		    }
 		}
                 added = true;

@@ -48,24 +48,6 @@
 
 
 std::string
-mydirname(const std::string &fname) {
-    /* TODO: ignore trailing slashes */
-
-    auto length = fname.find_last_of('/');
-    
-    if (length == std::string::npos) {
-        return ".";
-    }
-
-    if (length == 0) {
-        return "/";
-    }
-
-    return fname.substr(0, length);
-}
-
-
-std::string
 bin2hex(const uint8_t *data, size_t length) {
     char b[length * 2 + 1];
 

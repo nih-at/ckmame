@@ -34,6 +34,7 @@
 #include "ParserSourceFile.h"
 
 #include <algorithm>
+#include <filesystem>
 
 #include "error.h"
 #include "util.h"
@@ -73,8 +74,7 @@ ParserSourcePtr ParserSourceFile::open(const std::string &name) {
     std::string full_name;
     
     if (!file_name.empty()) {
-        auto dir = mydirname(file_name);
-        full_name = dir + "/" + name;
+        full_name = std::filesystem::path(file_name).parent_path() / name;
     }
     
     return static_cast<ParserSourcePtr>(std::make_shared<ParserSourceFile>(full_name));
