@@ -40,20 +40,19 @@
 #include "xmalloc.h"
 
 int
-images_find(const Images *images, const char *name) { 
+images_find(const Images *images, const std::string &name) {
     if (images == NULL) {
         return -1;
     }
-    
-    char *full_name;
-    xasprintf(&full_name, "%s.chd", name);
-    
+
+    auto full_name = name + ".chd";
+
     for (size_t i = 0; i < images->disks.size(); i++) {
-        if (strcmp(mybasename(images->disks[i]->name.c_str()), full_name) == 0) {
+	if (std::filesystem::path(images->disks[i]->name).filename() == full_name) {
             return i;
         }
     }
-    
+
     return -1;
 }
 
@@ -89,14 +88,14 @@ ImagesPtr Images::from_directory(const std::string &directory, bool check_integr
 
 ImagesPtr Images::from_file(const std::string &name) {
     auto disk = Disk::from_file(name, 0);
-    
+
     if (!disk) {
         return NULL;
     }
-    
+
     auto images = std::make_shared<Images>();
-    
+
     images->disks.push_back(disk);
-    
+
     return images;
 }

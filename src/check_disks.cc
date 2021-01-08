@@ -55,7 +55,7 @@ check_disks(Game *game, ImagesPtr im[], Result *res) {
 	    continue;
         }
 
-        int j = images_find(im[disk.where].get(), disk.merged_name().c_str());
+        int j = images_find(im[disk.where].get(), disk.merged_name());
 
         if (j != -1) {
             auto expected_image = im[disk.where]->disks[j];

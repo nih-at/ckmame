@@ -53,7 +53,7 @@ public:
     const std::string &name(int) const;
 };
 
-int images_find(const Images *images, const char *name);
+int images_find(const Images *images, const std::string &name);
 const char *images_name(const Images *, int);
 
 #endif /* images.h */
