@@ -13,14 +13,6 @@ set(COMMON_SOURCES
   ArchiveDir.cc
   archive_modify.cc
   ArchiveZip.cc
-  array.cc
-  array_delete.cc
-  array_grow.cc
-  array_insert.cc
-  array_new_length.cc
-  array_push.cc
-  array_sort.cc
-  array_truncate.cc
   chd.cc
   check_archive.cc
   check_disks.cc
