@@ -63,16 +63,6 @@ is_writable_directory(const char *name) {
 }
 
 
-const char *
-mybasename(const char *fname) {
-    const char *p;
-
-    if ((p = strrchr(fname, '/')) == NULL)
-	return fname;
-    return p + 1;
-}
-
-
 std::string
 mydirname(const std::string &fname) {
     /* TODO: ignore trailing slashes */

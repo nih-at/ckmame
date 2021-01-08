@@ -133,7 +133,7 @@ parse_archive(ParserContext *ctx, Archive *a, int hashtypes) {
         name = a->name;
     }
     else {
-        name = mybasename(a->name.c_str());
+        name = std::filesystem::path(a->name).filename();
     }
     if (name.length() > 4 && name.substr(name.length() - 4) == ".zip") {
         name.resize(name.length() - 4);
