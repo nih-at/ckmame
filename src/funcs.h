@@ -62,7 +62,7 @@ int copy_file(const char *, const char *, size_t, ssize_t, Hashes *);
 void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
 void diagnostics_archive(const ArchivePtr, const Result *);
 void diagnostics_images(const Images *, const Result *);
-int ensure_dir(const char *, int);
+bool ensure_dir(const std::string &name, bool strip_filename);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
 bool enter_disk_in_map(const Disk *, where_t);

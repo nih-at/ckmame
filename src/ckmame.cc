@@ -331,7 +331,7 @@ main(int argc, char **argv) {
 	    fix_options |= FIX_CLEANUP_EXTRA;
     }
 
-    ensure_dir(get_directory(), 0);
+    ensure_dir(get_directory(), false);
     if (realpath(get_directory(), rom_dir_normalized) == NULL) {
 	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
 	myerror(ERRSTR, "can't normalize directory '%s'", get_directory());

@@ -124,7 +124,7 @@ move_image_to_garbage(const std::string &fname) {
     int ret;
 
     auto to_name = make_garbage_name(fname, 1);
-    ensure_dir(to_name.c_str(), 1);
+    ensure_dir(to_name, true);
     ret = rename_or_move(fname.c_str(), to_name.c_str());
 
     return ret;
@@ -247,10 +247,12 @@ save_needed_disk(const char *fname, int do_save) {
 	    myerror(ERRDEF, "cannot create needed file name");
 	    ret = -1;
 	}
-	else if (ensure_dir(tmp, 1) < 0)
+	else if (!ensure_dir(tmp, true)) {
 	    ret = -1;
-	else if (rename_or_move(fname, tmp) != 0)
+	}
+	else if (rename_or_move(fname, tmp) != 0) {
 	    ret = -1;
+	}
 	else {
             d = Disk::from_file(tmp, 0);
 	}

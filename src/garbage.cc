@@ -62,7 +62,7 @@ bool Garbage::close() {
     }
 
     if (!da->is_empty()) {
-        if (ensure_dir(da->name.c_str(), 1) < 0) {
+        if (!ensure_dir(da->name, true)) {
 	    return false;
         }
     }

@@ -135,49 +135,26 @@ name_type(const char *name) {
     return NAME_UNKNOWN;
 }
 
-int
-ensure_dir(const char *name, int strip_fname) {
-    const char *p;
-    char *dir;
-    struct stat st;
-    int ret;
-    bool free_dir = false;
+bool
+ensure_dir(const std::string &name, bool strip_filename) {
+    std::error_code ec;
+    std::string dir = name;
 
-    if (strip_fname || name[strlen(name) - 1] == '/') {
-	p = strrchr(name, '/');
-	if (p == NULL) {
-	    dir = xstrdup(".");
-	} else {
-	    dir = static_cast<char *>(xmalloc(p - name + 1));
-	    strncpy(dir, name, p - name);
-	    dir[p - name] = 0;
-	}
-	free_dir = true;
-	name = dir;
-    }
-
-    ret = 0;
-    if (stat(name, &st) < 0) {
-	if (strchr(name, '/')) {
-	    ret = ensure_dir(name, 1);
-	}
-	if (ret == 0) {
-	    if (mkdir(name, 0777) < 0) {
-		myerror(ERRSTR, "mkdir '%s' failed", name);
-		ret = -1;
-	    }
+    if (strip_filename) {
+	dir = std::filesystem::path(name).parent_path();
+	if (dir == "") {
+	    return true;
 	}
     }
-    else if (!(st.st_mode & S_IFDIR)) {
-	myerror(ERRDEF, "'%s' is not a directory", name);
-	ret = -1;
+
+    std::filesystem::create_directories(dir, ec);
+
+    if (ec) {
+	myerror(ERRDEF, "cannot create '%s': %s", dir.c_str(), ec.message().c_str());
+	return false;
     }
 
-    if (free_dir) {
-	free(dir);
-    }
-
-    return ret;
+    return true;
 }
 
 

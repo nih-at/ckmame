@@ -11,4 +11,4 @@ stdout roms/1-4.zip: save needed file '08.rom'
 stdout roms/1-4.zip: add 'roms/2-48.zip/04.rom' as '04.rom'
 stderr can't open rom directory database for 'needed': no database
 stderr <zip> needed/3656897d-000.zip: error closing zip: Failure to create temporary file: Permission denied
-stderr <dir> mkdir 'needed/3656897d-000' failed: Permission denied
+stderr <dir> cannot create 'needed/3656897d-000': Permission denied

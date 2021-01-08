@@ -291,7 +291,7 @@ fix_disks(Game *g, Images *im, Result *res) {
 	    if (fix_options & FIX_PRINT)
 		printf("%s '%s' to '%s'\n", do_copy ? "copy" : "rename", match_disk.name.c_str(), fname.c_str());
 	    if (fix_options & FIX_DO) {
-                ensure_dir(fname.c_str(), 1);
+                ensure_dir(fname, true);
 		if (do_copy) {
 		    link_or_copy(match_disk.name.c_str(), fname.c_str());
 #if 0

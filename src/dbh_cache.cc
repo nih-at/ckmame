@@ -183,7 +183,7 @@ dbh_cache_get_db_for_archive(const std::string &name) {
 		    if (stat(directory.name.c_str(), &st) < 0 && errno == ENOENT)
 			return NULL; /* we won't write any files, so DB would remain empty */
 		}
-                if (ensure_dir(directory.name.c_str(), 0) < 0) {
+                if (!ensure_dir(directory.name, false)) {
 		    return NULL;
                 }
 

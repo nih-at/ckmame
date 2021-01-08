@@ -121,7 +121,7 @@ int ArchiveDir::move_original_file_out_of_the_way(uint64_t index) {
 
 bool ArchiveDir::Change::apply(ArchiveDir *archive, uint64_t index) {
     if (!destination.name.empty()) {
-        if (ensure_dir(destination.name.c_str(), 1) < 0) {
+        if (!ensure_dir(destination.name, true)) {
             myerror(ERRZIP, "destination directory cannot be created: %s", strerror(errno));
             return false;
         }
@@ -173,7 +173,7 @@ void ArchiveDir::FileInfo::clear() {
 
 
 bool ArchiveDir::ensure_archive_dir() {
-    return ensure_dir(name.c_str(), 0) == 0;
+    return ensure_dir(name, false);
 }
 
 
