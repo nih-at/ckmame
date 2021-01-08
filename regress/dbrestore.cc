@@ -38,7 +38,6 @@
 
 #include <sqlite3.h>
 
-#include "array.h"
 #include "compat.h"
 #include "dbh.h"
 #include "error.h"
@@ -243,12 +242,11 @@ restore_table(dbh_t *dbh, FILE *f) {
 	return -1;
     }
 
-    array_t *column_types = array_new(sizeof(int));
+    std::vector<int> column_types;
     int ret;
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	if (columns == NULL) {
 	    myerror(ERRFILE, "too few columns in dump for table %s", table_name);
-	    array_free(column_types, NULL);
 	    return -1;
 	}
 	char *column = columns;
@@ -259,32 +257,28 @@ restore_table(dbh_t *dbh, FILE *f) {
 	    columns = NULL;
 	else {
 	    myerror(ERRFILE, "invalid format of table header");
-	    array_free(column_types, NULL);
 	    return -1;
 	}
 	*p = '\0';
 
 	if (strcmp(column, (const char *)sqlite3_column_text(stmt, 1)) != 0) {
 	    myerror(ERRFILE, "column %s in dump doesn't match column in db %s for table %s", column, sqlite3_column_text(stmt, 1), table_name);
-	    array_free(column_types, NULL);
 	    return -1;
 	}
 
 	int coltype = column_type((const char *)sqlite3_column_text(stmt, 2));
 	if (coltype < 0) {
 	    myerror(ERRDB, "unsupported column type %s for column %s of table %s", sqlite3_column_text(stmt, 1), column, table_name);
-	    array_free(column_types, NULL);
 	    return -1;
 	}
-	array_push(column_types, &coltype);
+	column_types.push_back(coltype);
     }
 
     sqlite3_finalize(stmt);
 
     sprintf(query, "insert into %s values (", table_name);
     p = query + strlen(query);
-    int i;
-    for (i = 0; i < array_length(column_types); i++) {
+    for (size_t i = 0; i < column_types.size(); i++) {
 	sprintf(p, "%s?", i == 0 ? "" : ", ");
 	p += strlen(p);
     }
@@ -292,7 +286,6 @@ restore_table(dbh_t *dbh, FILE *f) {
 
     if (sqlite3_prepare_v2(dbh_db(dbh), query, -1, &stmt, NULL) != SQLITE_OK) {
 	myerror(ERRDB, "can't prepare insert statement for table %s", table_name);
-	array_free(column_types, NULL);
 	return -1;
     }
 
@@ -302,19 +295,18 @@ restore_table(dbh_t *dbh, FILE *f) {
 	    break;
 	}
 
-	for (i = 0; i < array_length(column_types); i++) {
+	for (size_t i = 0; i < column_types.size(); i++) {
 	    char *value = strtok(i == 0 ? line : NULL, "|");
 
 	    if (value == NULL) {
 		myerror(ERRFILE, "too few columns in row for table %s", table_name);
-		array_free(column_types, NULL);
 		return -1;
 	    }
 
 	    if (strcmp(value, "<null>") == 0)
 		ret = sqlite3_bind_null(stmt, i + 1);
 	    else {
-		switch (*(int *)array_get(column_types, i)) {
+		switch (column_types[i]) {
 		case SQLITE_TEXT:
 		    ret = sq3_set_string(stmt, i + 1, value);
 		    break;
@@ -350,24 +342,20 @@ restore_table(dbh_t *dbh, FILE *f) {
 
 	    if (ret != SQLITE_OK) {
 		myerror(ERRDB, "can't bind column");
-		array_free(column_types, NULL);
 		return -1;
 	    }
 	}
 
 	if (sqlite3_step(stmt) != SQLITE_DONE) {
 	    myerror(ERRDB, "can't insert row into table %s", table_name);
-	    array_free(column_types, NULL);
 	    return -1;
 	}
 	if (sqlite3_reset(stmt) != SQLITE_OK) {
 	    myerror(ERRDB, "can't reset statement");
-	    array_free(column_types, NULL);
 	    return -1;
 	}
     }
 
-    array_free(column_types, NULL);
     return 0;
 }
 
