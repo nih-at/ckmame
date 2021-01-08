@@ -36,7 +36,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-int xasprintf(char **, const char *, ...) __attribute__((format(printf, 2, 3)));
 void *xrealloc(void *, size_t);
 void *xmalloc(size_t size);
 void *xmemdup(const void *, size_t);

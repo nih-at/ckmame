@@ -7,9 +7,6 @@ endif()
 if(NOT HAVE_SHA1INIT)
   list(APPEND COMPATIBILITY sha1.cc)
 endif()
-if(NOT HAVE_VASPRINTF)
-  list(APPEND COMPATIBILITY vasprintf.cc)
-endif()
 
 set(COMMON_SOURCES
   archive.cc
