@@ -39,7 +39,6 @@
 #include "dat.h"
 #include "dbh_statements.h"
 #include "detector.h"
-#include "file_location.h"
 #include "game.h"
 #include "hashes.h"
 #include "types.h"

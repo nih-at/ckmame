@@ -38,6 +38,7 @@
 #include <sys/stat.h>
 
 #include "dbh_cache.h"
+#include "delete_list.h"
 #include "Dir.h"
 #include "error.h"
 #include "funcs.h"
@@ -74,8 +75,8 @@ ensure_extra_maps(int flags) {
 
     if (!(maps_done & EXTRA_MAPS) && (flags & DO_MAP)) {
 	maps_done |= EXTRA_MAPS;
-	extra_delete_list = delete_list_new();
-	superfluous_delete_list = delete_list_new();
+	extra_delete_list = std::make_shared<DeleteList>();
+	superfluous_delete_list = std::make_shared<DeleteList>();
     }
 
     if (extra_list == NULL && (flags & DO_LIST))
@@ -131,7 +132,7 @@ ensure_needed_maps(void) {
 	return;
 
     maps_done |= NEEDED_MAPS;
-    needed_delete_list = delete_list_new();
+    needed_delete_list = std::make_shared<DeleteList>();
 
     enter_dir_in_map_and_list(DO_MAP, NULL, needed_dir, true, FILE_NEEDED);
 }

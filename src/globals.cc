@@ -61,10 +61,10 @@ parray_t *superfluous = NULL;
 
 /* check state */
 
-delete_list_t *extra_delete_list = NULL;
+DeleteListPtr extra_delete_list = NULL;
 parray_t *extra_list = NULL;
-delete_list_t *needed_delete_list = NULL;
-delete_list_t *superfluous_delete_list = NULL;
+DeleteListPtr needed_delete_list = NULL;
+DeleteListPtr superfluous_delete_list = NULL;
 
 tree_t *check_tree = NULL;
 OutputContextPtr fixdat;

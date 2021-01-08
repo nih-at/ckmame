@@ -37,31 +37,21 @@
 
 #include "archive.h"
 #include "file_location.h"
-#include "parray.h"
 
 
-struct delete_list {
-    parray_t *array;
-    int mark;
+class DeleteList {
+ public:
+    std::vector<FileLocation> entries;
+    size_t mark;
+
+    DeleteList() : mark(0) { };
 };
 
-typedef struct delete_list delete_list_t;
+typedef std::shared_ptr<DeleteList> DeleteListPtr;
 
-
-#define delete_list_add(dl, n, i) (parray_push((dl)->array, file_location_new((n), (i))))
-
-#define delete_list_get(dl, i) ((file_location_t *)parray_get((dl)->array, (i)))
-
-#define delete_list_length(dl) (parray_length((dl)->array))
-
-#define delete_list_sort(dl) (parray_sort_unique(dl->array, reinterpret_cast<int (*)(const void *, const void *)>(file_location_cmp)))
-
-int delete_list_execute(delete_list_t *);
-void delete_list_free(delete_list_t *);
-void delete_list_mark(delete_list_t *);
-delete_list_t *delete_list_new(void);
-void delete_list_rollback(delete_list_t *);
-
-void delete_list_used(Archive *a, int idx);
+int delete_list_execute(DeleteListPtr dl);
+void delete_list_mark(DeleteListPtr dl);
+void delete_list_rollback(DeleteListPtr dl);
+void delete_list_used(Archive *a, size_t idx);
 
 #endif /* delete_list.h */

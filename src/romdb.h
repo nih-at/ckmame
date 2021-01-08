@@ -35,6 +35,7 @@
 */
 
 #include "dbh.h"
+#include "file_location.h"
 #include "parray.h"
 
 typedef struct {
@@ -51,8 +52,7 @@ int romdb_has_disks(romdb_t *);
 romdb_t *romdb_open(const char *, int);
 std::vector<DatEntry> romdb_read_dat(romdb_t *db);
 DetectorPtr romdb_read_detector(romdb_t *db);
-array_t *romdb_read_file_by_hash(romdb_t *, filetype_t, const Hashes *);
-array_t *romdb_read_file_by_name(romdb_t *, filetype_t, const char *);
+std::vector<FileLocation> romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const Hashes *hash);
 GamePtr romdb_read_game(romdb_t *db, const std::string &name);
 int romdb_hashtypes(romdb_t *, filetype_t);
 parray_t *romdb_read_list(romdb_t *, enum dbh_list);

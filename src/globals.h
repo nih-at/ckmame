@@ -72,10 +72,10 @@ extern parray_t *superfluous;
 
 /* check state */
 
-extern delete_list_t *extra_delete_list;
+extern DeleteListPtr extra_delete_list;
 extern parray_t *extra_list;
-extern delete_list_t *needed_delete_list;
-extern delete_list_t *superfluous_delete_list;
+extern DeleteListPtr needed_delete_list;
+extern DeleteListPtr superfluous_delete_list;
 
 extern tree_t *check_tree;
 extern OutputContextPtr fixdat;

@@ -120,35 +120,32 @@ tree_recheck(const tree_t *tree, const char *name) {
 }
 
 
-int
+bool
 tree_recheck_games_needing(tree_t *tree, uint64_t size, const Hashes *hashes) {
-    array_t *a;
-    file_location_t *fbh;
     GamePtr game;
     const File *gr;
-    int i, ret;
     
-    if ((a = romdb_read_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
+    auto roms = romdb_read_file_by_hash(db, TYPE_ROM, hashes);
+    if (roms.empty()) {
 	return 0;
+    }
 
-    ret = 0;
-    for (i = 0; i < array_length(a); i++) {
-	fbh = static_cast<file_location_t *>(array_get(a, i));
+    auto ret = true;
+    for (size_t i = 0; i < roms.size(); i++) {
+	auto rom = roms[i];
 
-        game = romdb_read_game(db, file_location_name(fbh));
-        if (!game || game->roms.size() <= static_cast<size_t>(file_location_index(fbh))) {
+        game = romdb_read_game(db, rom.name);
+        if (!game || game->roms.size() <= rom.index) {
             /* TODO: internal error: db inconsistency */
-	    ret = -1;
+	    ret = false;
 	    continue;
 	}
 
-        gr = &game->roms[file_location_index(fbh)];
+        gr = &game->roms[rom.index];
 
 	if (size == gr->size && hashes->compare(gr->hashes) == Hashes::MATCH && gr->where == FILE_INGAME)
 	    tree_recheck(tree, game->name.c_str());
     }
-
-    array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
 
     return ret;
 }

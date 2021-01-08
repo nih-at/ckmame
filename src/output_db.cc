@@ -39,7 +39,6 @@
 #include <stdlib.h>
 
 #include "error.h"
-#include "file_location.h"
 #include "xmalloc.h"
 
 struct fbh_context {

@@ -57,7 +57,7 @@ void check_disks(Game *, ImagesPtr [], Result *);
 void check_files(Game *, ArchivePtr [], Result *);
 void check_images(Images *, const char *, Result *);
 void check_old(Game *, Result *);
-void cleanup_list(parray_t *, delete_list_t *, int);
+void cleanup_list(parray_t *, DeleteListPtr, int);
 int copy_file(const char *, const char *, size_t, ssize_t, Hashes *);
 void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
 void diagnostics_archive(const ArchivePtr, const Result *);
@@ -85,9 +85,9 @@ void print_superfluous(const parray_t *);
 void remove_empty_archive(const char *);
 void remove_from_superfluous(const char *);
 int rename_or_move(const char *, const char *);
-bool save_needed(Archive *sa, int sidx, const char *gamename);
+bool save_needed(Archive *sa, size_t sidx, const char *gamename);
 int save_needed_disk(const char *, int);
-bool save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, File *f);
+bool save_needed_part(Archive *sa, size_t sidx, const char *gamename, off_t start, off_t length, File *f);
 void write_fixdat_entry(const Game *, const Result *);
 
 #endif /* funcs.h */

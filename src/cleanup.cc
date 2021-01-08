@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 
 #include "funcs.h"
 #include "garbage.h"
@@ -43,17 +44,17 @@ static void cleanup_disk(Images *, Result *, int);
 
 
 void
-cleanup_list(parray_t *list, delete_list_t *del, int flags) {
+cleanup_list(parray_t *list, DeleteListPtr del, int flags) {
     ArchivePtr a;
     char *name;
-    int i, di, len, cmp, n;
-    file_location_t *fl;
+    int i, cmp, n;
     name_type_t nt;
+    size_t di, len;
 
     di = len = 0;
     if (del) {
-	delete_list_sort(del);
-	len = delete_list_length(del);
+	std::sort(del->entries.begin(), del->entries.end());
+	len = del->entries.size();
     }
 
     n = parray_length(list);
@@ -72,11 +73,11 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
                 Result res(NULL, a.get(), NULL);
 
                 while (di < len) {
-                    fl = delete_list_get(del, di);
-                    cmp = strcmp(name, file_location_name(fl));
+                    auto fl = del->entries[di];
+                    cmp = strcmp(name, fl.name.c_str());
 
                     if (cmp == 0) {
-                        res.files[file_location_index(fl)] = FS_USED;
+                        res.files[fl.index] = FS_USED;
                     }
                     else if (cmp < 0) {
                         break;
@@ -106,8 +107,8 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
                 Result res(NULL, NULL, im.get());
 
                 while (di < len) {
-                    fl = delete_list_get(del, di++);
-                    cmp = strcmp(name, file_location_name(fl));
+		    auto fl = del->entries[di++];
+                    cmp = strcmp(name, fl.name.c_str());
 
                     if (cmp == 0) {
                         res.images[0] = FS_USED;

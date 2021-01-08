@@ -35,7 +35,6 @@
 #include "archive.h"
 #include "dbh.h"
 #include "file.h"
-#include "file_location.h"
 #include "find.h"
 #include "funcs.h"
 #include "game.h"

@@ -39,7 +39,6 @@
 #include "compat.h"
 #include "dat.h"
 #include "error.h"
-#include "file_location.h"
 #include "globals.h"
 #include "hashes.h"
 #include "romdb.h"
@@ -153,33 +152,28 @@ print_match(GamePtr game, filetype_t ft, int i) {
 
 static void
 print_matches(filetype_t ft, Hashes *hash) {
-    int matches;
-    array_t *fbha;
-    file_location_t *fbh;
+    int matches_count = 0;
 
-    matches = 0;
-
-    if ((fbha = romdb_read_file_by_hash(db, ft, hash)) == NULL) {
+    auto matches = romdb_read_file_by_hash(db, ft, hash);
+    if (matches.empty()) {
 	print_footer(0, hash);
 	return;
     }
 
-    for (auto i = 0; i < array_length(fbha); i++) {
-	fbh = static_cast<file_location_t *>(array_get(fbha, i));
-	auto game = romdb_read_game(db, file_location_name(fbh));
+    for (size_t i = 0; i < matches.size(); i++) {
+	auto match = matches[i];
+	auto game = romdb_read_game(db, match.name);
 	if (!game) {
-	    myerror(ERRDEF, "db error: %s not found, though in hash index", file_location_name(fbh));
+	    myerror(ERRDEF, "db error: %s not found, though in hash index", match.name.c_str());
 	    /* TODO: remember error */
 	    continue;
 	}
 
-	print_match(game, ft, file_location_index(fbh));
-	matches++;
+	print_match(game, ft, match.index);
+	matches_count++;
     }
 
-    array_free(fbha, reinterpret_cast<void (*)(void *)>(file_location_finalize));
-
-    print_footer(matches, hash);
+    print_footer(matches_count, hash);
 }
 
 

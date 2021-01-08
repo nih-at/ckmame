@@ -160,7 +160,7 @@ remove_from_superfluous(const char *name) {
 
 
 bool
-save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, File *f) {
+save_needed_part(Archive *sa, size_t sidx, const char *gamename, off_t start, off_t length, File *f) {
     char *tmp;
     bool do_save = fix_options & FIX_DO;
 
@@ -227,7 +227,7 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 }
 
 bool
-save_needed(Archive *sa, int sidx, const char *gamename) {
+save_needed(Archive *sa, size_t sidx, const char *gamename) {
     return save_needed_part(sa, sidx, gamename, 0, -1, &sa->files[sidx]);
 }
 

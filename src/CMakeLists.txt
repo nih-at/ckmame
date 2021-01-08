@@ -45,8 +45,6 @@ set(COMMON_SOURCES
   error.cc
   export_db.cc
   file.cc
-  file_location.cc
-  file_location_finalize.cc
   file_status.cc
   file_util.cc
   filetype_db_key.cc
@@ -88,7 +86,6 @@ set(COMMON_SOURCES
   romdb_read_dat.cc
   romdb_read_detector.cc
   romdb_read_file_by_hash.cc
-  romdb_read_file_by_name.cc
   romdb_read_game.cc
   romdb_read_list.cc
   romdb_write_dat.cc

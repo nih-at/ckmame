@@ -35,23 +35,15 @@
 */
 
 
-#include "hashes.h"
-#include "types.h"
+#include <string>
 
+class FileLocation {
+ public:
+    FileLocation(std::string name_, int index_) : name(name_), index(index_) { };
 
-struct file_location {
-    char *name;
-    int index;
+    bool operator<(FileLocation other) const { return (name == other.name) ? (index < other.index) : (name < other.name); }
+    std::string name;
+    size_t index;
 };
-
-typedef struct file_location file_location_t;
-
-#define file_location_name(a) ((a)->name)
-#define file_location_index(a) ((a)->index)
-
-int file_location_cmp(const file_location_t *, const file_location_t *);
-void file_location_free(file_location_t *);
-void file_location_finalize(file_location_t *);
-file_location_t *file_location_new(const char *, int);
 
 #endif /* file_location.h */
