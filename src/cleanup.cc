@@ -44,10 +44,10 @@ static void cleanup_disk(Images *, Result *, int);
 
 
 void
-cleanup_list(parray_t *list, DeleteListPtr del, int flags) {
+cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
     ArchivePtr a;
-    char *name;
-    int i, cmp, n;
+    std::string name;
+    int cmp;
     name_type_t nt;
     size_t di, len;
 
@@ -57,11 +57,11 @@ cleanup_list(parray_t *list, DeleteListPtr del, int flags) {
 	len = del->entries.size();
     }
 
-    n = parray_length(list);
-    i = 0;
+    auto n = list.size();
+    size_t i = 0;
     while (i < n) {
-	name = (char *)parray_get(list, i);
-	switch ((nt = name_type(name))) {
+	name = list[i];
+	switch ((nt = name_type(name.c_str()))) {
             case NAME_ZIP: {
                 ArchivePtr a = Archive::open(name, TYPE_ROM, FILE_NOWHERE, 0);
 
@@ -74,7 +74,7 @@ cleanup_list(parray_t *list, DeleteListPtr del, int flags) {
 
                 while (di < len) {
                     auto fl = del->entries[di];
-                    cmp = strcmp(name, fl.name.c_str());
+                    cmp = name.compare(fl.name);
 
                     if (cmp == 0) {
                         res.files[fl.index] = FS_USED;
@@ -108,7 +108,7 @@ cleanup_list(parray_t *list, DeleteListPtr del, int flags) {
 
                 while (di < len) {
 		    auto fl = del->entries[di++];
-                    cmp = strcmp(name, fl.name.c_str());
+                    cmp = name.compare(fl.name);
 
                     if (cmp == 0) {
                         res.images[0] = FS_USED;
@@ -120,7 +120,7 @@ cleanup_list(parray_t *list, DeleteListPtr del, int flags) {
 
                 check_images(im.get(), NULL, &res);
 
-                warn_set_info(WARN_TYPE_IMAGE, name);
+                warn_set_info(WARN_TYPE_IMAGE, name.c_str());
                 diagnostics_images(im.get(), &res);
 
                 cleanup_disk(im.get(), &res, flags);
@@ -133,10 +133,12 @@ cleanup_list(parray_t *list, DeleteListPtr del, int flags) {
                 break;
         }
 
-        if (n != parray_length(list))
-            n = parray_length(list);
-	else
+        if (n != list.size()) {
+	    n = list.size();
+	}
+	else {
 	    i++;
+	}
     }
 }
 

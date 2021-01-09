@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,22 +47,19 @@
 #include "util.h"
 #include "xmalloc.h"
 
-static void list_game_directory(parray_t *found, const char *dirname, bool dir_known);
+static void list_game_directory(std::vector<std::string> &found, const char *dirname, bool dir_known);
 
-parray_t *
-list_directory(const char *dirname, const char *dbname) {
-    parray_t *listf, *found;
+std::vector<std::string>
+list_directory(const std::string &dirname, const std::string &dbname) {
+    std::vector<std::string> result;
+    parray_t *listf = NULL;
 
-    listf = NULL;
-    
-    if (dbname) {
+    if (dbname != "") {
         if ((listf = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
-            myerror(ERRDEF, "list of games not found in database '%s'", dbname);
+            myerror(ERRDEF, "list of games not found in database '%s'", dbname.c_str());
             exit(1);
         }
     }
-
-    found = parray_new();
 
     try {
 	 Dir dir(dirname, false);
@@ -82,7 +80,7 @@ list_directory(const char *dirname, const char *dbname) {
 		 }
 		 else {
 		     bool dir_known = listf ? parray_find_sorted(listf, filepath.filename().c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1 : false;
-		     list_game_directory(found, filepath.c_str(), dir_known);
+		     list_game_directory(result, filepath.c_str(), dir_known);
 		     known = true; /* we don't want directories in superfluous list (I think) */
 		 }
 	     }
@@ -96,41 +94,39 @@ list_directory(const char *dirname, const char *dbname) {
 	     }
 
 	     if (!known) {
-		 parray_push(found, xstrdup(filepath.c_str()));
+		 result.push_back(filepath);
 	     }
 	 }
     }
     catch (...) {
 	parray_free(listf, free);
-	return found;
+	return result;
     }
 
     parray_free(listf, free);
 
-    if (parray_length(found) > 0) {
-	parray_sort_unique(found, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-    }
+    std::sort(result.begin(), result.end());
 
-    return found;
+    return result;
 }
 
 
 void
-print_superfluous(const parray_t *files) {
-    int i;
-
-    if (parray_length(files) == 0)
+print_superfluous(std::vector<std::string> &files) {
+    if (files.empty()) {
 	return;
+    }
 
     printf("Extra files found:\n");
 
-    for (i = 0; i < parray_length(files); i++)
-	printf("%s\n", (char *)parray_get(files, i));
+    for (size_t i = 0; i < files.size(); i++) {
+	printf("%s\n", files[i].c_str());
+    }
 }
 
 
 static void
-list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
+list_game_directory(std::vector<std::string> &found, const char *dirname, bool dir_known) {
     GamePtr game;
 
     auto component = std::filesystem::path(dirname).filename();
@@ -156,7 +152,7 @@ list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
 	    }
 	    
 	    if (!known) {
-		parray_push(found, xstrdup(filepath.c_str()));
+		found.push_back(filepath);
 	    }
 	}
     }

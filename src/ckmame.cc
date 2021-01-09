@@ -483,10 +483,10 @@ main(int argc, char **argv) {
 
 	if (fix_options & FIX_DO) {
 	    if (fix_options & FIX_SUPERFLUOUS) {
-		parray_t *needed_list;
+		std::vector<std::string> needed_list;
 
 		cleanup_list(superfluous, superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN);
-		needed_list = list_directory(needed_dir, NULL);
+		needed_list = list_directory(needed_dir, "");
 		cleanup_list(needed_list, needed_delete_list, CLEANUP_UNKNOWN);
 	    }
 	    else {

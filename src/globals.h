@@ -67,13 +67,13 @@ extern romdb_t *old_db;
 
 extern DetectorPtr detector;
 
-extern parray_t *superfluous;
+extern std::vector<std::string> superfluous;
 
 
 /* check state */
 
 extern DeleteListPtr extra_delete_list;
-extern parray_t *extra_list;
+extern std::vector<std::string> extra_list;
 extern DeleteListPtr needed_delete_list;
 extern DeleteListPtr superfluous_delete_list;
 

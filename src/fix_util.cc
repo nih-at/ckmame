@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 #include <filesystem>
 
 #include <errno.h>
@@ -132,29 +133,20 @@ move_image_to_garbage(const std::string &fname) {
 
 
 void
-remove_empty_archive(const char *name) {
-    int idx;
-
-    if (fix_options & FIX_PRINT)
-	printf("%s: remove empty archive\n", name);
-    if (superfluous) {
-	idx = parray_find(superfluous, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-	/* "needed" zip archives are not in list */
-	if (idx >= 0)
-	    parray_delete(superfluous, idx, free);
+remove_empty_archive(const std::string &name) {
+    if (fix_options & FIX_PRINT) {
+	printf("%s: remove empty archive\n", name.c_str());
     }
+    remove_from_superfluous(name);
 }
 
 
 void
-remove_from_superfluous(const char *name) {
-    int idx;
-
-    if (superfluous) {
-	idx = parray_find(superfluous, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-	/* "needed" images are not in list */
-	if (idx >= 0)
-	    parray_delete(superfluous, idx, free);
+remove_from_superfluous(const std::string &name) {
+    auto entry = std::find(superfluous.begin(), superfluous.end(), name);
+    if (entry != superfluous.end()) {
+	/* "needed" zip archives are not in list */
+	superfluous.erase(entry);
     }
 }
 

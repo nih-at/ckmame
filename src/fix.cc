@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 #include <filesystem>
 #include <string>
 
@@ -304,12 +305,9 @@ fix_disks(Game *g, Images *im, Result *res) {
                     auto dir = std::filesystem::path(match_disk.name).parent_path();
                     rename_or_move(match_disk.name.c_str(), fname.c_str());
 		    std::filesystem::remove(dir, ec);
-		    if (extra_list) {
-			int idx;
-			idx = parray_find_sorted(extra_list, match_disk.name.c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-			if (idx >= 0) {
-			    parray_delete(extra_list, idx, free);
-			}
+		    auto entry = std::find(extra_list.begin(), extra_list.end(), match_disk.name);
+		    if (entry != extra_list.end()) {
+			extra_list.erase(entry);
 		    }
 		}
                 added = true;

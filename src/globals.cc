@@ -56,13 +56,13 @@ romdb_t *old_db = NULL;
 
 DetectorPtr detector;
 
-parray_t *superfluous = NULL;
+std::vector<std::string> superfluous;
 
 
 /* check state */
 
 DeleteListPtr extra_delete_list = NULL;
-parray_t *extra_list = NULL;
+std::vector<std::string> extra_list;
 DeleteListPtr needed_delete_list = NULL;
 DeleteListPtr superfluous_delete_list = NULL;
 
