@@ -40,7 +40,7 @@ const char *needed_dir = "needed";   /* TODO: proper value */
 const char *unknown_dir = "unknown"; /* TODO: proper value */
 const char *rom_dir = NULL;
 
-parray_t *search_dirs = NULL;
+std::vector<std::string> search_dirs;
 
 int check_integrity = 0; /* full integrity check of ROM set */
 int roms_unzipped = 0;   /* ROMs are files on disk, not contained in zip archives */

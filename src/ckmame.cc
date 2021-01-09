@@ -179,7 +179,6 @@ main(int argc, char **argv) {
     ignore_extra = 0;
     check_integrity = 0;
     roms_unzipped = 0;
-    search_dirs = parray_new();
     game_list = NULL;
     rom_dir = NULL;
     fixdat = NULL;
@@ -213,8 +212,8 @@ main(int argc, char **argv) {
 	    output_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
 	case 'e': {
-	    char *name = xstrdup(optarg);
-	    for (k = strlen(name) - 1; k > 0; k--) {
+	    std::string name = optarg;
+	    for (k = name.size() - 1; k > 0; k--) {
 		if (name[k] == '/') {
 		    name[k] = '\0';
 		}
@@ -222,7 +221,7 @@ main(int argc, char **argv) {
 		    break;
 		}
 	    }
-	    parray_push(search_dirs, name);
+	    search_dirs.push_back(name);
 	    break;
 	}
 	case 'F':
@@ -341,12 +340,11 @@ main(int argc, char **argv) {
     Archive::register_cache_directory(get_directory());
     Archive::register_cache_directory(needed_dir);
     Archive::register_cache_directory(unknown_dir);
-    int m;
-    for (m = 0; m < parray_length(search_dirs); m++) {
-	auto name = static_cast<char *>(parray_get(search_dirs, m));
-	if (contains_romdir(name)) {
+    for (size_t m = 0; m < search_dirs.size(); m++) {
+	auto name = search_dirs[m];
+	if (contains_romdir(name.c_str())) {
 	    /* TODO: improve error message: also if extra is in ROM directory. */
-	    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(), name);
+	    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(), name.c_str());
 	    exit(1);
 	}
 	if (Archive::register_cache_directory(name) < 0) {

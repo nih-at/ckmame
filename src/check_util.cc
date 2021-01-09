@@ -112,8 +112,8 @@ ensure_extra_maps(int flags) {
 	}
     }
 
-    for (int i = 0; i < parray_length(search_dirs); i++) {
-	enter_dir_in_map_and_list(flags, extra_list, static_cast<const char *>(parray_get(search_dirs, i)), true, FILE_EXTRA);
+    for (size_t i = 0; i < search_dirs.size(); i++) {
+	enter_dir_in_map_and_list(flags, extra_list, search_dirs[i].c_str(), true, FILE_EXTRA);
     }
 
     if (flags & DO_LIST) {

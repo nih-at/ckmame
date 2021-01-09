@@ -39,7 +39,6 @@
 #include "delete_list.h"
 #include "detector.h"
 #include "output.h"
-#include "parray.h"
 #include "romdb.h"
 #include "stats.h"
 #include "tree.h"
@@ -51,7 +50,7 @@ extern const char *needed_dir;
 extern const char *unknown_dir;
 extern const char *rom_dir;
 
-extern parray_t *search_dirs;
+extern std::vector<std::string> search_dirs;
 
 extern int check_integrity; /* full integrity check of ROM set */
 extern int roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
