@@ -52,10 +52,11 @@ static void list_game_directory(std::vector<std::string> &found, const char *dir
 std::vector<std::string>
 list_directory(const std::string &dirname, const std::string &dbname) {
     std::vector<std::string> result;
-    parray_t *listf = NULL;
+    std::vector<std::string> list;
 
     if (dbname != "") {
-        if ((listf = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+        list = romdb_read_list(db, DBH_KEY_LIST_GAME);
+	if (list.empty()) {
             myerror(ERRDEF, "list of games not found in database '%s'", dbname.c_str());
             exit(1);
         }
@@ -74,12 +75,10 @@ list_directory(const std::string &dirname, const std::string &dbname) {
 
 	     if (std::filesystem::is_directory(filepath)) {
 		 if (roms_unzipped) {
-		     if (listf) {
-			 known = parray_find_sorted(listf, filepath.filename().c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1;
-		     }
+		     known = (std::find(list.begin(), list.end(), filepath.filename()) != list.end());
 		 }
 		 else {
-		     bool dir_known = listf ? parray_find_sorted(listf, filepath.filename().c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1 : false;
+		     bool dir_known = (std::find(list.begin(), list.end(), filepath.filename()) != list.end());
 		     list_game_directory(result, filepath.c_str(), dir_known);
 		     known = true; /* we don't want directories in superfluous list (I think) */
 		 }
@@ -87,8 +86,8 @@ list_directory(const std::string &dirname, const std::string &dbname) {
 	     else {
 		 auto ext = filepath.extension();
 		 if (ext != "") {
-		     if (!roms_unzipped && ext == ".zip" && listf) {
-			 known = parray_find_sorted(listf, filepath.stem().c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) != -1;
+		     if (!roms_unzipped && ext == ".zip") {
+			 known = (std::find(list.begin(), list.end(), filepath.stem()) != list.end());
 		     }
 		 }
 	     }
@@ -99,11 +98,8 @@ list_directory(const std::string &dirname, const std::string &dbname) {
 	 }
     }
     catch (...) {
-	parray_free(listf, free);
 	return result;
     }
-
-    parray_free(listf, free);
 
     std::sort(result.begin(), result.end());
 
@@ -150,7 +146,7 @@ list_game_directory(std::vector<std::string> &found, const char *dirname, bool d
 		    }
 		}
 	    }
-	    
+
 	    if (!known) {
 		found.push_back(filepath);
 	    }

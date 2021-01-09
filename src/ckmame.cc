@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 #include <filesystem>
 
 #include "config.h"
@@ -157,11 +158,9 @@ static void error_multiple_actions(void);
 int
 main(int argc, char **argv) {
     action_t action;
-    int i, j;
     size_t k;
     const char *dbname, *olddbname;
     int c, found;
-    parray_t *list;
     std::string fixdat_name;
     char *game_list;
     bool auto_fixdat;
@@ -396,8 +395,8 @@ main(int argc, char **argv) {
 
     if (action == ACTION_CHECK_ROMSET) {
 	/* build tree of games to check */
-
-	if ((list = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+	auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
+	if (list.empty()) {
 	    myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	    exit(1);
 	}
@@ -423,31 +422,36 @@ main(int argc, char **argv) {
 		    continue;
 		}
 
-		if (parray_find_sorted(list, b, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) >= 0)
+		if (std::find(list.begin(), list.end(), b) != list.end()) {
 		    tree_add(check_tree, b);
-		else
+		}
+		else {
 		    myerror(ERRDEF, "game '%s' unknown", b);
+		}
 	    }
 
 	    fclose(f);
 	}
 	else if (optind == argc) {
-	    for (i = 0; i < parray_length(list); i++)
-		tree_add(check_tree, static_cast<char *>(parray_get(list, i)));
+	    for (size_t i = 0; i < list.size(); i++) {
+		tree_add(check_tree, list[i].c_str());
+	    }
 	}
 	else {
-	    for (i = optind; i < argc; i++) {
+	    for (auto i = optind; i < argc; i++) {
 		if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-		    if (parray_find_sorted(list, argv[i], reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) >= 0)
+		    if (std::find(list.begin(), list.end(), argv[i]) != list.end()) {
 			tree_add(check_tree, argv[i]);
-		    else
+		    }
+		    else {
 			myerror(ERRDEF, "game '%s' unknown", argv[i]);
+		    }
 		}
 		else {
 		    found = 0;
-		    for (j = 0; j < parray_length(list); j++) {
-			if (fnmatch(argv[i], static_cast<char *>(parray_get(list, j)), 0) == 0) {
-			    tree_add(check_tree, static_cast<char *>(parray_get(list, j)));
+		    for (size_t j = 0; j < list.size(); j++) {
+			if (fnmatch(argv[i], list[j].c_str(), 0) == 0) {
+			    tree_add(check_tree, list[j].c_str());
 			    found = 1;
 			}
 		    }
@@ -456,8 +460,6 @@ main(int argc, char **argv) {
 		}
 	    }
 	}
-
-	parray_free(list, free);
     }
 
     if (action != ACTION_SUPERFLUOUS_ONLY) {

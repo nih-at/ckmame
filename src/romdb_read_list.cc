@@ -44,30 +44,28 @@
 const dbh_stmt_t query_list[] = {DBH_STMT_QUERY_LIST_DISK, DBH_STMT_QUERY_LIST_GAME};
 
 
-parray_t *
+std::vector<std::string>
 romdb_read_list(romdb_t *db, enum dbh_list type) {
-    parray_t *pa;
     sqlite3_stmt *stmt;
     int ret;
+    std::vector<std::string> result;
 
     if (type >= DBH_KEY_LIST_MAX) {
-	return NULL;
+	return result;
     }
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), query_list[type])) == NULL) {
-	return NULL;
+	return result;
     }
 
-    pa = parray_new();
-
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	parray_push(pa, xstrdup(sq3_get_string(stmt, 0).c_str()));
+	result.push_back(sq3_get_string(stmt, 0));
     }
 
     if (ret != SQLITE_DONE) {
-	parray_free(pa, free);
-	return NULL;
+	result.clear();
+	return result;
     }
 
-    return pa;
+    return result;
 }

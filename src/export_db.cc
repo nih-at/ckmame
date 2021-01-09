@@ -53,13 +53,13 @@ int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const
     out->header(&de);
 
     auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
-    if (list == NULL) {
+    if (list.empty()) {
 	myerror(ERRDEF, "db error reading game list");
 	return -1;
     }
 
-    for (int i = 0; i < parray_length(list); i++) {
-        GamePtr game = romdb_read_game(db, static_cast<const char *>(parray_get(list, i)));
+    for (size_t i = 0; i < list.size(); i++) {
+        GamePtr game = romdb_read_game(db, list[i]);
         if (!game) {
 	    /* TODO: error */
 	    continue;
@@ -70,6 +70,5 @@ int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const
         }
     }
 
-    parray_free(list, free);
     return 0;
 }
