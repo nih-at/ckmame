@@ -361,7 +361,7 @@ make_space(Archive *a, const char *name, std::vector<std::string> *original_name
 }
 
 
-#define REAL_NAME(aa, ii) ((aa) == a && (ii) < num_names && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].name.c_str())
+#define REAL_NAME(aa, ii) ((aa) == a && (ii) < static_cast<int64_t>(num_names) && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].name.c_str())
 
 static int
 fix_files(Game *g, Archive *a, Result *res, garbage_t *gb) {
