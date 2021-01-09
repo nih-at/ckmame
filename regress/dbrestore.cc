@@ -41,7 +41,6 @@
 #include "compat.h"
 #include "dbh.h"
 #include "error.h"
-#include "parray.h"
 #include "sq_util.h"
 #include "util.h"
 #include "xmalloc.h"

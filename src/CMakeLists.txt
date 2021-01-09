@@ -55,15 +55,6 @@ set(COMMON_SOURCES
   output_cm.cc
   output_db.cc
   output_mtree.cc
-  parray.cc
-  parray_delete.cc
-  parray_find.cc
-  parray_find_sorted.cc
-  parray_new_from_data.cc
-  parray_pop.cc
-  parray_push.cc
-  parray_set_length.cc
-  parray_sort_real.cc
   parse-cm.cc
   parse-dir.cc
   parse-rc.cc

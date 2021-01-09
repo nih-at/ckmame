@@ -35,7 +35,6 @@
 */
 
 #include "dbh.h"
-#include "parray.h"
 #include "file_location.h"
 
 typedef struct {
@@ -60,9 +59,7 @@ int romdb_update_file_location(romdb_t *, Game *);
 int romdb_update_game_parent(romdb_t *, const Game *);
 int romdb_write_dat(romdb_t *db, const std::vector<DatEntry> &dats);
 int romdb_write_detector(romdb_t *db, const detector_t *);
-int romdb_write_file_by_hash_parray(romdb_t *, filetype_t, const Hashes *, parray_t *);
 int romdb_write_game(romdb_t *, Game *);
 int romdb_write_hashtypes(romdb_t *, int, int);
-int romdb_write_list(romdb_t *, const char *, const parray_t *);
 
 #endif /* romdb.h */
