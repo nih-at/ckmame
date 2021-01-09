@@ -42,9 +42,6 @@
 
 #include "types.h"
 
-
-typedef int (*cmpfunc)(const void *, const void *);
-
 std::string bin2hex(const uint8_t *data, size_t length);
 int hex2bin(unsigned char *, const char *, size_t);
 name_type_t name_type(const char *);
