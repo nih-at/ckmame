@@ -86,7 +86,5 @@ size_t ParserSourceFile::read_xxx(void *data, size_t length) {
         return 0;
     }
     
-    auto done = fread(data, 1, length, f);
-    
-    return done < 0 ? 0 : done;
+    return fread(data, 1, length, f);
 }
