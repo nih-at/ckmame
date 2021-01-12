@@ -132,37 +132,44 @@ dbh_t *dbh_open(const std::string &name, int mode) {
 	return NULL;
     }
 
-    if ((db = (dbh_t *)malloc(sizeof(*db))) == NULL)
+    if ((db = (dbh_t *)malloc(sizeof(*db))) == NULL) {
 	return NULL;
+    }
 
     db->db = NULL;
-    for (i = 0; i < DBH_STMT_MAX; i++)
+    for (i = 0; i < DBH_STMT_MAX; i++) {
 	db->statements[i] = NULL;
+    }
 
     db->format = DBH_FMT(mode);
 
     if (DBH_FLAGS(mode) & DBH_TRUNCATE) {
 	/* do not delete special cases (like memdb) */
-	if (name[0] != ':')
+	if (name[0] != ':') {
 	    unlink(name.c_str());
+	}
 	needs_init = 1;
     }
 
-    if (DBH_FLAGS(mode) & DBH_WRITE)
+    if (DBH_FLAGS(mode) & DBH_WRITE) {
 	sql3_flags = SQLITE_OPEN_READWRITE;
-    else
+    }
+    else {
 	sql3_flags = SQLITE_OPEN_READONLY;
+    }
 
     if (DBH_FLAGS(mode) & DBH_CREATE) {
 	sql3_flags |= SQLITE_OPEN_CREATE;
-	if (name[0] == ':' || (stat(name.c_str(), &st) < 0 && errno == ENOENT))
+	if (name[0] == ':' || (stat(name.c_str(), &st) < 0 && errno == ENOENT)) {
 	    needs_init = 1;
+	}
     }
 
     if (sqlite3_open_v2(name.c_str(), &dbh_db(db), sql3_flags, NULL) != SQLITE_OK) {
 	int save;
 	save = errno;
 	dbh_close(db);
+	free(db);
 	errno = save;
 	return NULL;
     }
@@ -171,6 +178,7 @@ dbh_t *dbh_open(const std::string &name, int mode) {
         int save;
         save = errno;
         dbh_close(db);
+	free(db);
         errno = save;
         return NULL;
     }
@@ -180,6 +188,7 @@ dbh_t *dbh_open(const std::string &name, int mode) {
 	    int save;
 	    save = errno;
 	    dbh_close(db);
+	    free(db);
 	    unlink(name.c_str());
 	    errno = save;
 	    return NULL;
@@ -187,6 +196,7 @@ dbh_t *dbh_open(const std::string &name, int mode) {
     }
     else if (dbh_check_version(db) != 0) {
 	dbh_close(db);
+	free(db);
 	errno = EFTYPE;
 	return NULL;
     }
