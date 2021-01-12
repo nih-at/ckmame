@@ -62,7 +62,6 @@ set(COMMON_SOURCES
   parser_source.cc
   ParserSourceFile.cc
   ParserSourceZip.cc
-  ptr_sort.cc
   result.cc
   romdb.cc
   romdb_read_dat.cc
