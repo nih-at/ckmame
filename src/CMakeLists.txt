@@ -38,7 +38,6 @@ set(COMMON_SOURCES
   export_db.cc
   file.cc
   file_util.cc
-  filetype_db_key.cc
   find.cc
   fix.cc
   fix_util.cc

@@ -129,7 +129,4 @@ typedef enum name_type name_type_t;
 #define FIX_COMPLETE_GAMES 0x400   /* complete in old or complete in roms */
 #endif
 
-
-int filetype_db_key(filetype_t);
-
 #endif /* types.h */
