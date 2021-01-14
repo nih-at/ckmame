@@ -209,6 +209,7 @@ set(EXTRA_TESTS
   rom-from-extra-detector.test
   rom-from-extra-duplicate.test
   rom-from-extra-inconsistent.test
+  rom-from-extra-keep-dir-clean.test
   rom-from-extra-keep-dir.test
   rom-from-extra-keep-zip.test
   rom-from-extra-partial.test
