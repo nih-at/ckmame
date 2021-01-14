@@ -3,7 +3,7 @@
 
 /*
  stats.h -- store stats of the ROM set
- Copyright (C) 2018 Dieter Baron and Thomas Klausner
+ Copyright (C) 2018-2020 Dieter Baron and Thomas Klausner
 
  This file is part of ckmame, a program to check rom sets for MAME.
  The authors can be contacted at <ckmame@nih.at>
