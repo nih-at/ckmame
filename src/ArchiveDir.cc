@@ -83,12 +83,12 @@ bool ArchiveDir::FileInfo::discard(ArchiveDir *archive) const {
         return true;
     }
 
-    std::filesystem::remove(data_file_name);
+    std::filesystem::remove(data_file_name, ec);
     if (ec) {
         myerror(ERRZIP, "cannot delete '%s': %s", data_file_name.c_str(), ec.message().c_str());
 	return false;
     }
-    auto path = std::filesystem::path(data_file_name).parent_path();
+    auto path = std::filesystem::path(name).parent_path();
     /* TODO: stop before removing archive_name itself, e.g. extra_dir */
     while (true) {
 	std::filesystem::remove(path, ec);
