@@ -76,7 +76,7 @@ extern std::vector<std::string> extra_list;
 extern DeleteListPtr needed_delete_list;
 extern DeleteListPtr superfluous_delete_list;
 
-extern tree_t *check_tree;
+extern Tree check_tree;
 extern OutputContextPtr fixdat;
 
 /* to identify roms directory uniquely */

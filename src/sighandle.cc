@@ -56,8 +56,8 @@ sighandle(int signo) {
 
 
 void
-print_info(const char *gamename) {
-    printf("ckmame: currently checking %s\n", gamename);
+print_info(const std::string &gamename) {
+    printf("ckmame: currently checking %s\n", gamename.c_str());
     siginfo_caught = 0;
     return;
 }

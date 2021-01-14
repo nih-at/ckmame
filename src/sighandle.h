@@ -34,10 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <string>
 
 extern volatile int siginfo_caught;
 
-void print_info(const char *);
+void print_info(const std::string &name);
 void sighandle(int);
 
 #endif /* sighandle.h */

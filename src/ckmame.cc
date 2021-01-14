@@ -401,8 +401,6 @@ main(int argc, char **argv) {
 	    exit(1);
 	}
 
-	check_tree = tree_new();
-
 	if (game_list) {
 	    FILE *f;
 	    char b[8192];
@@ -423,7 +421,7 @@ main(int argc, char **argv) {
 		}
 
 		if (std::find(list.begin(), list.end(), b) != list.end()) {
-		    tree_add(check_tree, b);
+		    check_tree.add(b);
 		}
 		else {
 		    myerror(ERRDEF, "game '%s' unknown", b);
@@ -434,14 +432,14 @@ main(int argc, char **argv) {
 	}
 	else if (optind == argc) {
 	    for (size_t i = 0; i < list.size(); i++) {
-		tree_add(check_tree, list[i].c_str());
+		check_tree.add(list[i].c_str());
 	    }
 	}
 	else {
 	    for (auto i = optind; i < argc; i++) {
 		if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 		    if (std::find(list.begin(), list.end(), argv[i]) != list.end()) {
-			tree_add(check_tree, argv[i]);
+			check_tree.add(argv[i]);
 		    }
 		    else {
 			myerror(ERRDEF, "game '%s' unknown", argv[i]);
@@ -451,7 +449,7 @@ main(int argc, char **argv) {
 		    found = 0;
 		    for (size_t j = 0; j < list.size(); j++) {
 			if (fnmatch(argv[i], list[j].c_str(), 0) == 0) {
-			    tree_add(check_tree, list[j].c_str());
+			    check_tree.add(list[j]);
 			    found = 1;
 			}
 		    }
@@ -478,8 +476,8 @@ main(int argc, char **argv) {
 #endif
 
     if (action == ACTION_CHECK_ROMSET) {
-	tree_traverse(check_tree);
-	tree_traverse(check_tree); /* handle rechecks */
+	check_tree.traverse();
+	check_tree.traverse(); /* handle rechecks */
 
 	if (fix_options & FIX_DO) {
 	    if (fix_options & FIX_SUPERFLUOUS) {

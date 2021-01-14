@@ -141,7 +141,7 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
 	case FS_NEEDED:
 	    /* TODO: handle error (how?) */
 	    if (save_needed(a, i, g->name.c_str())) {
-		tree_recheck_games_needing(check_tree, a->files[i].size, &a->files[i].hashes);
+                check_tree.recheck_games_needing(a->files[i].size, &a->files[i].hashes);
 	    }
 	    break;
 
@@ -436,10 +436,10 @@ fix_files(Game *g, Archive *a, Result *res, garbage_t *gb) {
 
 	case QU_NAMEERR:
 	    if (r->where == FILE_INCO || r->where == FILE_INGCO) {
-		if (tree_recheck(check_tree, g->cloneof[r->where - 1].c_str())) {
+                if (check_tree.recheck(g->cloneof[r->where - 1])) {
 		    /* fall-through to rename in case save_needed fails */
 		    if (save_needed(a, match_index(m), g->name.c_str())) {
-			tree_recheck_games_needing(check_tree, r->size, &r->hashes);
+                        check_tree.recheck_games_needing(r->size, &r->hashes);
 			break;
 		    }
 		}

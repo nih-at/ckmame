@@ -66,7 +66,7 @@ std::vector<std::string> extra_list;
 DeleteListPtr needed_delete_list = NULL;
 DeleteListPtr superfluous_delete_list = NULL;
 
-tree_t *check_tree = NULL;
+Tree check_tree;
 OutputContextPtr fixdat;
 
 /* roms dir */
