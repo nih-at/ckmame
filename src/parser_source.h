@@ -67,12 +67,4 @@ private:
     void buffer_allocate(size_t n); // ensure space for n bytes of valid data (from current)
 };
 
-typedef struct parser_source parser_source_t;
-
-
-parser_source_t *ps_new_file(const char *);
-parser_source_t *ps_new_stdin(void);
-parser_source_t *ps_new_zip(const char *, struct zip *, const char *);
-parser_source_t *ps_open(parser_source_t *, const char *);
-
 #endif /* parser_source.h */
