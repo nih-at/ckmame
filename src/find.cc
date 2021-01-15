@@ -68,16 +68,16 @@ find_disk(const Disk *disk, MatchDisk *match_disk) {
         return FIND_UNKNOWN;
     }
 
-    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, disk_hashes(disk), 0))) == NULL)
+    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, &disk->hashes, 0))) == NULL)
 	return FIND_ERROR;
 
-    if (sqlite3_bind_int(stmt, 1, TYPE_DISK) != SQLITE_OK || sq3_set_hashes(stmt, 2, disk_hashes(disk), 0) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, 1, TYPE_DISK) != SQLITE_OK || sq3_set_hashes(stmt, 2, &disk->hashes, 0) != SQLITE_OK) {
 	return FIND_ERROR;
     }
 
     switch (sqlite3_step(stmt)) {
         case SQLITE_ROW: {
-            auto dm = disk_by_id(sqlite3_column_int(stmt, QUERY_FILE_GAME_ID));
+            auto dm = Disk::by_id(sqlite3_column_int(stmt, QUERY_FILE_GAME_ID));
             if (!dm) {
                 ret = FIND_ERROR;
                 break;
@@ -356,7 +356,7 @@ find_result_t
 find_disk_in_db(romdb_t *fdb, const Disk *d, const char *skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *)) {
     find_result_t status;
 
-    auto disks = romdb_read_file_by_hash(fdb, TYPE_DISK, disk_hashes(d));
+    auto disks = romdb_read_file_by_hash(fdb, TYPE_DISK, &d->hashes);
     if (disks.empty()) {
 	/* TODO: internal error: database inconsistency */
 	return FIND_ERROR;

@@ -114,11 +114,11 @@ romdb_update_file_location(romdb_t *db, Game *game) {
 	if (sqlite3_bind_int(stmt, 3, TYPE_DISK) != SQLITE_OK)
 	    return -1;
 
-        Disk *d = &game->disks[i];
-	if (disk_where(d) == FILE_INGAME)
+        Disk *disk = &game->disks[i];
+	if (disk->where == FILE_INGAME)
 	    continue;
 
-	if (sqlite3_bind_int(stmt, 1, disk_where(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 4, i) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
+	if (sqlite3_bind_int(stmt, 1, disk->where) != SQLITE_OK || sqlite3_bind_int(stmt, 4, i) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	    return -1;
     }
 

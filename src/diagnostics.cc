@@ -119,7 +119,7 @@ diagnostics_disks(const Game *game, const Result *res) {
 
 	switch (match_disk.quality) {
             case QU_MISSING:
-                if ((disk_status(d) != STATUS_NODUMP && (output_options & WARN_MISSING)) || (output_options & WARN_NO_GOOD_DUMP))
+                if ((d->status != STATUS_NODUMP && (output_options & WARN_MISSING)) || (output_options & WARN_NO_GOOD_DUMP))
                     warn_disk(d, "missing");
                 break;
                 
@@ -131,7 +131,7 @@ diagnostics_disks(const Game *game, const Result *res) {
                 break;
                 
             case QU_NOHASH:
-                if (disk_status(d) == STATUS_NODUMP && (output_options & WARN_NO_GOOD_DUMP))
+                if (d->status == STATUS_NODUMP && (output_options & WARN_NO_GOOD_DUMP))
                     warn_disk(d, "exists");
                 else if (output_options & WARN_WRONG_CRC) {
                     /* TODO: display checksum(s) */
@@ -141,7 +141,7 @@ diagnostics_disks(const Game *game, const Result *res) {
                 
             case QU_OK:
                 if (output_options & WARN_CORRECT)
-                    warn_disk(d, disk_status(d) == STATUS_OK ? "correct" : "exists");
+                    warn_disk(d, d->status == STATUS_OK ? "correct" : "exists");
                 break;
                 
             case QU_OLD:

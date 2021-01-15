@@ -47,18 +47,17 @@ static void warn_ensure_header(void);
 void
 warn_disk(const Disk *disk, const char *fmt, ...) {
     va_list va;
-    const Hashes *h;
 
     warn_ensure_header();
 
     printf("disk %-12s  ", disk->name.c_str());
 
-    h = disk_hashes(disk);
-    if (h->has_type(Hashes::TYPE_SHA1)) {
-        printf("sha1 %s: ", h->to_string(Hashes::TYPE_SHA1).c_str());
+    auto &h = disk->hashes;
+    if (h.has_type(Hashes::TYPE_SHA1)) {
+        printf("sha1 %s: ", h.to_string(Hashes::TYPE_SHA1).c_str());
     }
-    else if (h->has_type(Hashes::TYPE_MD5)) {
-        printf("md5 %s         : ", h->to_string(Hashes::TYPE_MD5).c_str());
+    else if (h.has_type(Hashes::TYPE_MD5)) {
+        printf("md5 %s         : ", h.to_string(Hashes::TYPE_MD5).c_str());
     }
     else {
 	printf("no good dump              : ");

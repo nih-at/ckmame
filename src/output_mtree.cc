@@ -151,9 +151,9 @@ bool OutputContextMtree::game(GamePtr game) {
         auto d = &game->disks[i];
 
 	fprintf(f, "./%s/%s type=file" PRIu64, dirname.c_str(), strsvis_cstyle(d->name).c_str());
-        cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, disk_hashes(d), "");
-	cond_print_hash(f, " md5=", Hashes::TYPE_MD5, disk_hashes(d), "");
-        cond_print_string(f, " status=", status_name(disk_status(d)), "");
+        cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &d->hashes, "");
+	cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &d->hashes, "");
+        cond_print_string(f, " status=", status_name(d->status), "");
 	fputs("\n", f);
     }
 

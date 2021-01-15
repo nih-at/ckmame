@@ -55,7 +55,7 @@ check_images(Images *im, const char *gamename, Result *res) {
 	    continue;
 	}
 
-	if (disk_status(disk) != STATUS_OK) {
+	if (disk->status != STATUS_OK) {
 	    result_image(res, i) = FS_BROKEN;
 	    continue;
 	}
@@ -63,7 +63,7 @@ check_images(Images *im, const char *gamename, Result *res) {
 	if (result_image(res, i) == FS_USED)
 	    continue;
 
-        if ((disk_hashes(disk)->types & romdb_hashtypes(db, TYPE_DISK)) != romdb_hashtypes(db, TYPE_DISK)) {
+        if ((disk->hashes.types & romdb_hashtypes(db, TYPE_DISK)) != romdb_hashtypes(db, TYPE_DISK)) {
 	    /* TODO: compute missing hashes */
 	}
 

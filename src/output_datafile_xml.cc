@@ -138,10 +138,10 @@ bool OutputContextXml::game(GamePtr game) {
         auto d = &game->disks[i];
         xmlNodePtr disk = xmlNewChild(xmlGame, NULL, xml_string("disk"), NULL);
 
-        set_attribute(disk, "name", disk_name(d));
-        set_attribute_hash(disk, "sha1", Hashes::TYPE_SHA1, disk_hashes(d));
-        set_attribute_hash(disk, "md5", Hashes::TYPE_MD5, disk_hashes(d));
-        set_attribute(disk, "status", status_name(disk_status(d)));
+        set_attribute(disk, "name", d->name);
+        set_attribute_hash(disk, "sha1", Hashes::TYPE_SHA1, &d->hashes);
+        set_attribute_hash(disk, "md5", Hashes::TYPE_MD5, &d->hashes);
+        set_attribute(disk, "status", status_name(d->status));
     }
     
     return true;
