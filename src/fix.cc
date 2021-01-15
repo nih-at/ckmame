@@ -93,13 +93,13 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
 	}
 
         if (extra_delete_list) {
-	    delete_list_mark(extra_delete_list);
+	    extra_delete_list->mark();
         }
         if (needed_delete_list) {
-	    delete_list_mark(needed_delete_list);
+	    needed_delete_list->mark();
         }
         if (superfluous_delete_list) {
-	    delete_list_mark(superfluous_delete_list);
+	    superfluous_delete_list->mark();
         }
     }
 
@@ -182,13 +182,13 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
     if (!a->commit()) {
         a->rollback();
         if ((fix_options & FIX_DO) && extra_delete_list) {
-	    delete_list_rollback(extra_delete_list);
+	    extra_delete_list->rollback();
         }
         if ((fix_options & FIX_DO) && needed_delete_list) {
-	    delete_list_rollback(needed_delete_list);
+	    needed_delete_list->rollback();
         }
         if ((fix_options & FIX_DO) && superfluous_delete_list) {
-	    delete_list_rollback(superfluous_delete_list);
+	    superfluous_delete_list->rollback();
         }
     }
 
@@ -297,7 +297,7 @@ fix_disks(Game *g, Images *im, Result *res) {
 #if 0
 		    /* delete_list_execute can't currently handle disks */
 		    if (extra_delete_list)
-		        delete_list_add(extra_delete_list, match_disk_name(md), 0);
+		        extra_delete_list->add(match_disk_name(md), 0);
 #endif
 		}
 		else {
@@ -480,7 +480,7 @@ fix_files(Game *g, Archive *a, Result *res, garbage_t *gb) {
 		/* TODO: if (idx >= 0) undo deletion of broken file */
 	    }
 	    else {
-		delete_list_used(afrom, match_index(m));
+		DeleteList::used(afrom, match_index(m));
 	    }
 	    break;
 

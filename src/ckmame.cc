@@ -488,10 +488,12 @@ main(int argc, char **argv) {
 		cleanup_list(needed_list, needed_delete_list, CLEANUP_UNKNOWN);
 	    }
 	    else {
-		if (needed_delete_list)
-		    delete_list_execute(needed_delete_list);
-		if (superfluous_delete_list)
-		    delete_list_execute(superfluous_delete_list);
+		if (needed_delete_list) {
+		    needed_delete_list->execute();
+		}
+		if (superfluous_delete_list) {
+		    superfluous_delete_list->execute();
+		}
 	    }
 	}
     }
@@ -500,10 +502,12 @@ main(int argc, char **argv) {
 	fixdat->close();
     }
 
-    if ((fix_options & FIX_DO) && (fix_options & FIX_CLEANUP_EXTRA))
+    if ((fix_options & FIX_DO) && (fix_options & FIX_CLEANUP_EXTRA)) {
 	cleanup_list(extra_list, extra_delete_list, 0);
-    else if (extra_delete_list)
-	delete_list_execute(extra_delete_list);
+    }
+    else if (extra_delete_list) {
+	extra_delete_list->execute();
+    }
 
     if ((action == ACTION_CHECK_ROMSET && (optind == argc && (output_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY)
 	print_superfluous(superfluous);

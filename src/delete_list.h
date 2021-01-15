@@ -42,16 +42,16 @@
 class DeleteList {
  public:
     std::vector<FileLocation> entries;
-    size_t mark;
+    size_t mark_size;
 
-    DeleteList() : mark(0) { };
+    DeleteList() : mark_size(0) { };
+    int execute();
+    void mark();
+    void rollback();
+
+    static void used(Archive *a, size_t idx);
 };
 
 typedef std::shared_ptr<DeleteList> DeleteListPtr;
-
-int delete_list_execute(DeleteListPtr dl);
-void delete_list_mark(DeleteListPtr dl);
-void delete_list_rollback(DeleteListPtr dl);
-void delete_list_used(Archive *a, size_t idx);
 
 #endif /* delete_list.h */
