@@ -171,7 +171,7 @@ bool OutputContextDb::close() {
 }
 
 
-bool OutputContextDb::detector(detector_t *d) {
+bool OutputContextDb::detector(Detector *d) {
     if (romdb_write_detector(db, d) != 0) {
 	seterrdb(romdb_dbh(db));
 	myerror(ERRDB, "can't write detector to db");

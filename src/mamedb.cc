@@ -73,7 +73,7 @@ static struct option options[] = {
 };
 
 int romdb_hashtypes(db, TYPE_ROM);
-detector_t *detector;
+Detector *detector;
 sqlite3 *db;
 char *dbname;
 

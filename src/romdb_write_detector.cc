@@ -48,11 +48,11 @@
     "insert into test (rule_idx, test_idx, type, offset, size, mask," \
     " value, result) values (?, ?, ?, ?, ?, ?, ?, ?)"
 
-static int romdb_write_rules(const detector_t *, sqlite3_stmt *, sqlite3_stmt *);
+static int romdb_write_rules(const Detector *, sqlite3_stmt *, sqlite3_stmt *);
 
 
 int
-romdb_write_detector(romdb_t *db, const detector_t *detector) {
+romdb_write_detector(romdb_t *db, const Detector *detector) {
     sqlite3_stmt *stmt, *stmt2;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_INSERT_DAT_DETECTOR)) == NULL)
@@ -71,7 +71,7 @@ romdb_write_detector(romdb_t *db, const detector_t *detector) {
 
 
 static int
-romdb_write_rules(const detector_t *detector, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
+romdb_write_rules(const Detector *detector, sqlite3_stmt *st_r, sqlite3_stmt *st_t) {
     for (size_t i = 0; i < detector->rules.size(); i++) {
         auto &rule = detector->rules[i];
 

@@ -58,7 +58,7 @@ std::vector<std::string> romdb_read_list(romdb_t *db, enum dbh_list type);
 int romdb_update_file_location(romdb_t *, Game *);
 int romdb_update_game_parent(romdb_t *, const Game *);
 int romdb_write_dat(romdb_t *db, const std::vector<DatEntry> &dats);
-int romdb_write_detector(romdb_t *db, const detector_t *);
+int romdb_write_detector(romdb_t *db, const Detector *);
 int romdb_write_game(romdb_t *, Game *);
 int romdb_write_hashtypes(romdb_t *, int, int);
 

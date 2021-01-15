@@ -143,6 +143,4 @@ public:
     static std::string test_type_name(TestType type);
 };
 
-typedef Detector detector_t;
-
 #endif /* detector.h */

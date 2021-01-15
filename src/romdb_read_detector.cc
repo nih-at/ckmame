@@ -46,7 +46,7 @@
     "select type, offset, size, mask, value, result from test" \
     " where rule_idx = ? order by test_idx"
 
-static bool romdb_read_rules(detector_t *, sqlite3_stmt *, sqlite3_stmt *);
+static bool romdb_read_rules(Detector *, sqlite3_stmt *, sqlite3_stmt *);
 
 
 DetectorPtr
