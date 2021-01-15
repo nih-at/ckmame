@@ -57,8 +57,8 @@
 #include "xmalloc.h"
 
 static int fix_disks(Game *, Images *, Result *);
-static int fix_files(Game *, Archive *, Result *, garbage_t *);
-static int fix_files_incomplete(Game *g, Archive *a, Result *res, garbage_t *gb);
+static int fix_files(Game *, Archive *, Result *, Garbage *);
+static int fix_files_incomplete(Game *g, Archive *a, Result *res, Garbage *gb);
 
 
 int
@@ -364,7 +364,7 @@ make_space(Archive *a, const char *name, std::vector<std::string> *original_name
 #define REAL_NAME(aa, ii) ((aa) == a && (ii) < static_cast<int64_t>(num_names) && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].name.c_str())
 
 static int
-fix_files(Game *g, Archive *a, Result *res, garbage_t *gb) {
+fix_files(Game *g, Archive *a, Result *res, Garbage *gb) {
     Archive *afrom;
 
     bool needs_recheck = false;
@@ -507,7 +507,7 @@ fix_files(Game *g, Archive *a, Result *res, garbage_t *gb) {
 
 
 static int
-fix_files_incomplete(Game *g, Archive *a, Result *res, garbage_t *gb) {
+fix_files_incomplete(Game *g, Archive *a, Result *res, Garbage *gb) {
     Archive *afrom;
     Match *m;
 
