@@ -40,7 +40,7 @@
 
 
 void
-check_archive(ArchivePtr archive, const char *gamename, Result *res) {
+check_archive(ArchivePtr archive, const char *gamename, Result *result) {
     find_result_t found;
 
     if (!archive) {
@@ -51,17 +51,17 @@ check_archive(ArchivePtr archive, const char *gamename, Result *res) {
         auto &file = archive->files[i];
         
 	if (file.status != STATUS_OK) {
-	    result_file(res, i) = FS_BROKEN;
+	    result->files[i] = FS_BROKEN;
 	    continue;
 	}
 
-        if (result_file(res, i) == FS_USED) {
+        if (result->files[i] == FS_USED) {
 	    continue;
         }
 
 	found = find_in_old(&file, archive.get(), NULL);
 	if (found == FIND_EXISTS) {
-	    result_file(res, i) = FS_DUPLICATE;
+	    result->files[i] = FS_DUPLICATE;
 	    continue;
 	}
 
@@ -72,27 +72,27 @@ check_archive(ArchivePtr archive, const char *gamename, Result *res) {
 	    break;
 
 	case FIND_EXISTS:
-	    result_file(res, i) = FS_SUPERFLUOUS;
+	    result->files[i] = FS_SUPERFLUOUS;
 	    break;
 
 	case FIND_MISSING:
 	    if (file.size == 0)
-		result_file(res, i) = FS_SUPERFLUOUS;
+		result->files[i] = FS_SUPERFLUOUS;
 	    else if (archive->where == FILE_NEEDED) {
 		/* this state does what we want, even if it sounds strange,
 		   and saves us from introducing a better one */
-		result_file(res, i) = FS_MISSING;
+		result->files[i] = FS_MISSING;
 	    }
 	    else {
 		Match match;
 		ensure_needed_maps();
 		if (find_in_archives(&file, &match, false) != FIND_EXISTS)
-		    result_file(res, i) = FS_NEEDED;
+		    result->files[i] = FS_NEEDED;
 		else {
 		    if (match.where == FILE_NEEDED)
-			result_file(res, i) = FS_SUPERFLUOUS;
+			result->files[i] = FS_SUPERFLUOUS;
 		    else
-			result_file(res, i) = FS_NEEDED;
+			result->files[i] = FS_NEEDED;
 		}
 	    }
 	    break;

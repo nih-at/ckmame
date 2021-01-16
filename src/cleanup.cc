@@ -144,7 +144,7 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
 
 
 static void
-cleanup_archive(Archive *a, Result *res, int flags) {
+cleanup_archive(Archive *a, Result *result, int flags) {
     GarbagePtr gb;
     int move;
 
@@ -153,12 +153,12 @@ cleanup_archive(Archive *a, Result *res, int flags) {
     }
 
     for (size_t i = 0; i < a->files.size(); i++) {
-	switch (result_file(res, i)) {
+	switch (result->files[i]) {
 	case FS_SUPERFLUOUS:
 	case FS_DUPLICATE:
 	case FS_USED: {
 	    const char *reason;
-	    switch (result_file(res, i)) {
+	    switch (result->files[i]) {
 	    case FS_SUPERFLUOUS:
 		reason = "unused";
 		break;
@@ -232,19 +232,19 @@ cleanup_archive(Archive *a, Result *res, int flags) {
 
 
 static void
-cleanup_disk(Images *im, Result *res, int flags) {
+cleanup_disk(Images *im, Result *result, int flags) {
     for (size_t i = 0; i < im->disks.size(); i++) {
 	std::string name = images_name(im, i);
 	if (name == "") {
 	    continue;
 	}
 
-	switch (result_image(res, i)) {
+	switch (result->images[i]) {
 	case FS_SUPERFLUOUS:
 	case FS_DUPLICATE:
 	case FS_USED: {
 	    const char *reason;
-	    switch (result_image(res, i)) {
+	    switch (result->images[i]) {
 	    case FS_SUPERFLUOUS:
 		reason = "unused";
 		break;

@@ -42,13 +42,13 @@
 
 
 void
-check_disks(Game *game, ImagesPtr im[], Result *res) {
+check_disks(Game *game, ImagesPtr im[], Result *result) {
     if (game->disks.empty()) {
 	return;
     }
     
     for (size_t i = 0; i < game->disks.size(); i++) {
-        auto &match_disk = res->disks[i];
+        auto &match_disk = result->disks[i];
         auto &disk = game->disks[i];
 
         if (match_disk.quality == QU_OLD) {
@@ -66,7 +66,7 @@ check_disks(Game *game, ImagesPtr im[], Result *res) {
                 case Hashes::MATCH:
                     match_disk.quality = QU_OK;
                     if (disk.where == FILE_INGAME) {
-                        result_image(res, j) = FS_USED;
+                        result->images[j] = FS_USED;
                     }
                     break;
                     
@@ -92,7 +92,7 @@ check_disks(Game *game, ImagesPtr im[], Result *res) {
                     match_disk.where = FILE_INGAME;
                     match_disk.set_source(image.get());
                     match_disk.quality = QU_NAMEERR;
-                    result_image(res, k) = FS_USED;
+                    result->images[k] = FS_USED;
                 }
             }
         }
@@ -114,6 +114,6 @@ check_disks(Game *game, ImagesPtr im[], Result *res) {
     }
     
     for (size_t i = 0; i < game->disks.size(); i++) {
-        stats_add_disk(stats, &game->disks[i], res->disks[i].quality);
+        stats_add_disk(stats, &game->disks[i], result->disks[i].quality);
     }
 }

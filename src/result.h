@@ -57,17 +57,4 @@ public:
     std::vector<file_status_> images;
 };
 
-#define result_disk(res, i) ((res)->disks[i])
-#define result_disks(res) ((res)->disks)
-#define result_file(res, i) ((res)->files[i])
-#define result_files(res) ((res)->files)
-#define result_game(res) ((res)->game)
-#define result_image(res, i) ((res)->images[i])
-#define result_images(res) ((res)->images)
-#define result_num_disks(res) ((res)->disks.size())
-#define result_num_files(res) ((res)->files.size())
-#define result_num_roms(res) ((res)->roms.size())
-#define result_rom(res, i) (&(res)->roms[i])
-#define result_roms(res) ((res)->roms)
-
 #endif /* result.h */

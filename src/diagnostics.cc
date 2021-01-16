@@ -53,18 +53,18 @@ static void diagnostics_files(const Game *, const Result *);
 
 
 void
-diagnostics(const Game *game, const ArchivePtr a, const Images *im, const Result *res) {
+diagnostics(const Game *game, const ArchivePtr a, const Images *im, const Result *result) {
     warn_set_info(WARN_TYPE_GAME, game->name.c_str());
 
-    diagnostics_files(game, res);
-    diagnostics_archive(a, res);
-    diagnostics_disks(game, res);
-    diagnostics_images(im, res);
+    diagnostics_files(game, result);
+    diagnostics_archive(a, result);
+    diagnostics_disks(game, result);
+    diagnostics_images(im, result);
 }
 
 
 void
-diagnostics_archive(const ArchivePtr a, const Result *res) {
+diagnostics_archive(const ArchivePtr a, const Result *result) {
     if (!a) {
 	return;
     }
@@ -72,7 +72,7 @@ diagnostics_archive(const ArchivePtr a, const Result *res) {
     for (size_t i = 0; i < a->files.size(); i++) {
         auto f = &a->files[i];
 
-	switch (result_file(res, i)) {
+	switch (result->files[i]) {
 	case FS_UNKNOWN:
 	    if (output_options & WARN_UNKNOWN)
 		warn_file(f, "unknown");
@@ -108,13 +108,13 @@ diagnostics_archive(const ArchivePtr a, const Result *res) {
 
 
 static void
-diagnostics_disks(const Game *game, const Result *res) {
+diagnostics_disks(const Game *game, const Result *result) {
     if (game->disks.empty()) {
 	return;
     }
 
     for (size_t i = 0; i < game->disks.size(); i++) {
-        auto match_disk = result_disk(res, i);
+        auto match_disk = result->disks[i];
         auto d = &game->disks[i];
 
 	switch (match_disk.quality) {
@@ -167,8 +167,8 @@ diagnostics_disks(const Game *game, const Result *res) {
 
 
 static void
-diagnostics_files(const Game *game, const Result *res) {
-    switch (result_game(res)) {
+diagnostics_files(const Game *game, const Result *result) {
+    switch (result->game) {
     case GS_CORRECT:
 	if (output_options & WARN_CORRECT)
 	    warn_rom(NULL, "correct");
@@ -179,13 +179,13 @@ diagnostics_files(const Game *game, const Result *res) {
 	else {
 	    auto all_same = true;
 	    for (size_t i = 1; i < game->roms.size(); i++) {
-                if (res->roms[0].old_game != res->roms[i].old_game) {
+                if (result->roms[0].old_game != result->roms[i].old_game) {
 		    all_same = false;
 		    break;
 		}
 	    }
 	    if (all_same) {
-		warn_rom(NULL, "old in '%s'", res->roms[0].old_game.c_str());
+		warn_rom(NULL, "old in '%s'", result->roms[0].old_game.c_str());
 		return;
 	    }
 	}
@@ -198,12 +198,12 @@ diagnostics_files(const Game *game, const Result *res) {
 	break;
     }
     
-    if ((fix_options & FIX_COMPLETE_ONLY) && (output_options & WARN_BROKEN) == 0 && result_game(res) != GS_FIXABLE) {
+    if ((fix_options & FIX_COMPLETE_ONLY) && (output_options & WARN_BROKEN) == 0 && result->game != GS_FIXABLE) {
         return;
     }
 
     for (size_t i = 0; i < game->roms.size(); i++) {
-        auto &match = res->roms[i];
+        auto &match = result->roms[i];
         auto &rom = game->roms[i];
         File *file = NULL;
         
@@ -276,12 +276,12 @@ diagnostics_files(const Game *game, const Result *res) {
 
 
 void
-diagnostics_images(const Images *im, const Result *res) {
+diagnostics_images(const Images *im, const Result *result) {
     if (im == NULL)
 	return;
 
     for (size_t i = 0; i < im->disks.size(); i++) {
-	switch (result_image(res, i)) {
+	switch (result->images[i]) {
 	case FS_UNKNOWN:
 	    if (output_options & WARN_UNKNOWN)
 		warn_image(images_name(im, i), "unknown");

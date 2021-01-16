@@ -67,12 +67,12 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
     size_t i;
     test_result_t result;
     
-    if (result_game(res) == GS_OLD)
+    if (res->game == GS_OLD)
         return;
     
     for (i = 0; i < game->roms.size(); i++) {
         auto &rom = game->roms[i];
-        Match *match = result_rom(res, i);
+        Match *match = &res->roms[i];
         auto expected_archive = archives[rom.where];
         
         if (match->quality == QU_OLD) {
@@ -127,11 +127,11 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
         }
         
         for (i = 0; i < game->roms.size(); i++) {
-            Match *match = result_rom(res, i);
+            Match *match = &res->roms[i];
             if (match->where == FILE_INGAME && match->quality != QU_HASHERR) {
                 j = match->index;
-                if (result_file(res, j) != FS_USED) {
-                    result_file(res, j) = match->quality == QU_LONG ? FS_PARTUSED : FS_USED;
+                if (res->files[j] != FS_USED) {
+                    res->files[j] = match->quality == QU_LONG ? FS_PARTUSED : FS_USED;
                 }
                 
                 if (match->quality != QU_LONG && match->quality != QU_INZIP) {
@@ -140,7 +140,7 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
                     }
                     else {
                         if (match->quality == QU_OK) {
-                            result_rom(res, user[j])->quality = QU_COPIED;
+                            res->roms[user[j]].quality = QU_COPIED;
                             user[j] = i;
                         }
                         else {
@@ -154,9 +154,9 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
     
     update_game_status(game, res);
     
-    stats_add_game(stats, result_game(res));
+    stats_add_game(stats, res->game);
     for (i = 0; i < game->roms.size(); i++) {
-        stats_add_rom(stats, TYPE_ROM, &game->roms[i], result_rom(res, i)->quality);
+        stats_add_rom(stats, TYPE_ROM, &game->roms[i], res->roms[i].quality);
     }
 
 }
@@ -250,14 +250,14 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
 
 
 static void
-update_game_status(const Game *game, Result *res) {
+update_game_status(const Game *game, Result *result) {
     bool all_dead, all_own_dead, all_correct, all_fixable, has_own;
 
     all_own_dead = all_dead = all_correct = all_fixable = true;
     has_own = false;
 
     for (size_t i = 0; i < game->roms.size(); i++) {
-        auto match = result_rom(res, i);
+        auto match = &result->roms[i];
         auto &rom = game->roms[i];
 
         if (rom.where == FILE_INGAME) {
@@ -273,22 +273,22 @@ update_game_status(const Game *game, Result *res) {
             }
 	}
 	/* TODO: using output_options here is a bit of a hack,
-	   but so is all of the result_game processing */
+	   but so is all of the result->game processing */
         if (match->quality != QU_OK && (rom.status != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP))) {
 	    all_correct = false;
         }
     }
 
     if (all_correct) {
-        result_game(res) = GS_CORRECT;
+        result->game = GS_CORRECT;
     }
     else if (all_dead || (has_own && all_own_dead)) {
-	result_game(res) = GS_MISSING;
+	result->game = GS_MISSING;
     }
     else if (all_fixable) {
-	result_game(res) = GS_FIXABLE;
+	result->game = GS_FIXABLE;
     }
     else {
-	result_game(res) = GS_PARTIAL;
+	result->game = GS_PARTIAL;
     }
 }

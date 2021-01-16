@@ -38,7 +38,7 @@
 
 
 void
-check_old(Game *game, Result *res) {
+check_old(Game *game, Result *result) {
     if (old_db == NULL) {
 	return;
     }
@@ -46,16 +46,16 @@ check_old(Game *game, Result *res) {
     auto all_old = true;
     
     for (size_t i = 0; i < game->roms.size(); i++) {
-        if (find_in_old(&game->roms[i], NULL, result_rom(res, i)) != FIND_EXISTS) {
+        if (find_in_old(&game->roms[i], NULL, &result->roms[i]) != FIND_EXISTS) {
 	    all_old = false;
         }
     }
 
     if (all_old) {
-	result_game(res) = GS_OLD;
+	result->game = GS_OLD;
     }
 
     for (size_t i = 0; i < game->disks.size(); i++) {
-        find_disk_in_old(&game->disks[i], &res->disks[i]);
+        find_disk_in_old(&game->disks[i], &result->disks[i]);
     }
 }

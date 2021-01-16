@@ -62,7 +62,7 @@ static int fix_files_incomplete(Game *g, Archive *a, Result *res, Garbage *gb);
 
 
 int
-fix_game(Game *g, Archive *a, Images *im, Result *res) {
+fix_game(Game *g, Archive *a, Images *im, Result *result) {
     int ret;
     bool move;
     GarbagePtr gb;
@@ -104,7 +104,7 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
     }
 
     for (uint64_t i = 0; i < a->files.size(); i++) {
-        switch (result_file(res, i)) {
+        switch (result->files[i]) {
         case FS_UNKNOWN:
             if (fix_options & FIX_IGNORE_UNKNOWN) {
                 break;
@@ -131,7 +131,7 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
 	    /* fallthrough */
 	case FS_SUPERFLUOUS:
             if (fix_options & FIX_PRINT) {
-		printf("%s: delete %s file '%s'\n", a->name.c_str(), (result_file(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"), a->files[i].name.c_str());
+		printf("%s: delete %s file '%s'\n", a->name.c_str(), (result->files[i] == FS_SUPERFLUOUS ? "unused" : "duplicate"), a->files[i].name.c_str());
             }
 
 	    /* TODO: handle error (how?) */
@@ -164,11 +164,11 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
 	}
     }
 
-    if ((fix_options & FIX_COMPLETE_ONLY) == 0 || res->game == GS_CORRECT || res->game == GS_FIXABLE) {
-	ret = fix_files(g, a, res, gb.get());
+    if ((fix_options & FIX_COMPLETE_ONLY) == 0 || result->game == GS_CORRECT || result->game == GS_FIXABLE) {
+	ret = fix_files(g, a, result, gb.get());
     }
     else {
-	ret = fix_files_incomplete(g, a, res, gb.get());
+	ret = fix_files_incomplete(g, a, result, gb.get());
     }
 
     if (fix_options & FIX_DO) {
@@ -192,14 +192,14 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
         }
     }
 
-    fix_disks(g, im, res);
+    fix_disks(g, im, result);
 
     return ret;
 }
 
 
 static int
-fix_disks(Game *g, Images *im, Result *res) {
+fix_disks(Game *g, Images *im, Result *result) {
     bool do_copy;
     size_t removed = 0;
     bool added = false;
@@ -207,7 +207,7 @@ fix_disks(Game *g, Images *im, Result *res) {
     for (size_t i = 0; i < im->disks.size(); i++) {
 	std::string name = images_name(im, i);
 
-	switch (result_image(res, i)) {
+	switch (result->images[i]) {
 	case FS_UNKNOWN:
 	case FS_BROKEN:
 	    if (fix_options & FIX_PRINT)
@@ -226,7 +226,7 @@ fix_disks(Game *g, Images *im, Result *res) {
 	case FS_DUPLICATE:
 	case FS_SUPERFLUOUS:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete %s image\n", name.c_str(), (result_image(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"));
+		printf("%s: delete %s image\n", name.c_str(), (result->images[i] == FS_SUPERFLUOUS ? "unused" : "duplicate"));
             if (fix_options & FIX_DO) {
 		my_remove(name.c_str());
                 removed += 1;
@@ -253,7 +253,7 @@ fix_disks(Game *g, Images *im, Result *res) {
 
     for (size_t i = 0; i < g->disks.size(); i++) {
 	auto disk = &g->disks[i];
-        auto &match_disk = res->disks[i];
+        auto &match_disk = result->disks[i];
 
 	switch (match_disk.quality) {
 	case QU_COPIED: {
@@ -364,7 +364,7 @@ make_space(Archive *a, const char *name, std::vector<std::string> *original_name
 #define REAL_NAME(aa, ii) ((aa) == a && (ii) < static_cast<int64_t>(num_names) && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].name.c_str())
 
 static int
-fix_files(Game *g, Archive *a, Result *res, Garbage *gb) {
+fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
     Archive *afrom;
 
     bool needs_recheck = false;
@@ -376,7 +376,7 @@ fix_files(Game *g, Archive *a, Result *res, Garbage *gb) {
     original_names.resize(num_names);
 
     for (size_t i = 0; i < g->roms.size(); i++) {
-        Match *match = result_rom(res, i);
+        Match *match = &result->roms[i];
 
         if (match->source_is_old()) {
 	    afrom = NULL;
@@ -507,13 +507,13 @@ fix_files(Game *g, Archive *a, Result *res, Garbage *gb) {
 
 
 static int
-fix_files_incomplete(Game *g, Archive *a, Result *res, Garbage *gb) {
+fix_files_incomplete(Game *g, Archive *a, Result *result, Garbage *gb) {
     Archive *afrom;
 
     seterrinfo("", a->name);
 
     for (size_t i = 0; i < g->roms.size(); i++) {
-	auto match = result_rom(res, i);
+	auto match = &result->roms[i];
 	if (match->source_is_old())
 	    afrom = NULL;
 	else
