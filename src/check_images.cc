@@ -81,13 +81,13 @@ check_images(Images *im, const char *gamename, Result *res) {
 	    break;
 
 	case FIND_MISSING: {
-	    MatchDisk md;
+	    MatchDisk match_disk;
 
             ensure_needed_maps();
-	    if (find_disk(disk.get(), &md) != FIND_EXISTS)
+	    if (find_disk(disk.get(), &match_disk) != FIND_EXISTS)
 		result_image(res, i) = FS_NEEDED;
 	    else {
-		if (match_disk_where(&md) == FILE_NEEDED)
+		if (match_disk.where == FILE_NEEDED)
 		    result_image(res, i) = FS_SUPERFLUOUS;
 		else
 		    result_image(res, i) = FS_NEEDED;
