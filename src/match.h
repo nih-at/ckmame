@@ -63,21 +63,4 @@ public:
     std::string file() const;
 };
 
-#define match_archive(m) ((m)->archive.get())
-#define match_copy(m1, m2) ((m1) = (m2))
-#define match_index(m) ((m)->index)
-#define match_offset(m) ((m)->offset)
-#define match_old_game(m) ((m)->old_game)
-#define match_old_file(m) ((m)->old_file)
-#define match_quality(m) ((m)->quality)
-#define match_source_is_old(m) ((m)->source_is_old())
-#define match_where(m) ((m)->where)
-
-const char *match_file(Match *);
-void match_finalize(Match *);
-const char *match_game(Match *);
-void match_init(Match *);
-/*void match_merge(match_array_t *, Archive **, int, int); */
-/*int matchcmp(const Match *, const Match *); */
-
 #endif /* match.h */

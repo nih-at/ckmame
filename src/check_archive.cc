@@ -84,12 +84,12 @@ check_archive(ArchivePtr archive, const char *gamename, Result *res) {
 		result_file(res, i) = FS_MISSING;
 	    }
 	    else {
-		Match m;
+		Match match;
 		ensure_needed_maps();
-		if (find_in_archives(&file, &m, false) != FIND_EXISTS)
+		if (find_in_archives(&file, &match, false) != FIND_EXISTS)
 		    result_file(res, i) = FS_NEEDED;
 		else {
-		    if (match_where(&m) == FILE_NEEDED)
+		    if (match.where == FILE_NEEDED)
 			result_file(res, i) = FS_SUPERFLUOUS;
 		    else
 			result_file(res, i) = FS_NEEDED;

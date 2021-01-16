@@ -75,15 +75,15 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
         Match *match = result_rom(res, i);
         auto expected_archive = archives[rom.where];
         
-        if (match_quality(match) == QU_OLD) {
+        if (match->quality == QU_OLD) {
             continue;
         }
         
-        match_quality(match) = QU_MISSING;
+        match->quality = QU_MISSING;
         
         /* check if it's in ancestor */
         if (rom.where != FILE_INGAME && expected_archive != NULL && (result = match_files(expected_archive, TEST_MERGENAME_SIZE_CHECKSUM, &rom, match)) != TEST_NOTFOUND) {
-            match_where(match) = rom.where;
+            match->where = rom.where;
             if (result == TEST_USABLE) {
                 continue;
             }
@@ -93,9 +93,9 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
         if (archives[0]) {
             for (j = 0; j < tests_count; j++) {
                 if ((result = match_files(archives[0], tests[j], &rom, match)) != TEST_NOTFOUND) {
-                    match_where(match) = FILE_INGAME;
-                    if (rom.where != FILE_INGAME && match_quality(match) == QU_OK) {
-                        match_quality(match) = QU_INZIP;
+                    match->where = FILE_INGAME;
+                    if (rom.where != FILE_INGAME && match->quality == QU_OK) {
+                        match->quality = QU_INZIP;
                     }
                     if (result == TEST_USABLE) {
                         break;
@@ -104,7 +104,7 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
             }
         }
         
-        if (rom.where == FILE_INGAME && (match_quality(match) == QU_MISSING || match_quality(match) == QU_HASHERR) && rom.size > 0 && rom.status != STATUS_NODUMP) {
+        if (rom.where == FILE_INGAME && (match->quality == QU_MISSING || match->quality == QU_HASHERR) && rom.size > 0 && rom.status != STATUS_NODUMP) {
             /* search for matching file in other games (via db) */
             if (find_in_romset(&rom, NULL, game->name.c_str(), match) == FIND_EXISTS) {
                 continue;
@@ -128,23 +128,23 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
         
         for (i = 0; i < game->roms.size(); i++) {
             Match *match = result_rom(res, i);
-            if (match_where(match) == FILE_INGAME && match_quality(match) != QU_HASHERR) {
-                j = match_index(match);
+            if (match->where == FILE_INGAME && match->quality != QU_HASHERR) {
+                j = match->index;
                 if (result_file(res, j) != FS_USED) {
-                    result_file(res, j) = match_quality(match) == QU_LONG ? FS_PARTUSED : FS_USED;
+                    result_file(res, j) = match->quality == QU_LONG ? FS_PARTUSED : FS_USED;
                 }
                 
-                if (match_quality(match) != QU_LONG && match_quality(match) != QU_INZIP) {
+                if (match->quality != QU_LONG && match->quality != QU_INZIP) {
                     if (user[j] == -1) {
                         user[j] = i;
                     }
                     else {
-                        if (match_quality(match) == QU_OK) {
-                            match_quality(result_rom(res, user[j])) = QU_COPIED;
+                        if (match->quality == QU_OK) {
+                            result_rom(res, user[j])->quality = QU_COPIED;
                             user[j] = i;
                         }
                         else {
-                            match_quality(match) = QU_COPIED;
+                            match->quality = QU_COPIED;
                         }
                     }
                 }
@@ -156,7 +156,7 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
     
     stats_add_game(stats, result_game(res));
     for (i = 0; i < game->roms.size(); i++) {
-        stats_add_rom(stats, TYPE_ROM, &game->roms[i], match_quality(result_rom(res, i)));
+        stats_add_rom(stats, TYPE_ROM, &game->roms[i], result_rom(res, i)->quality);
     }
 
 }
@@ -166,7 +166,7 @@ static test_result_t
 match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
     test_result_t result;
 
-    match_offset(match) = -1;
+    match->offset = -1;
 
     result = TEST_NOTFOUND;
 
@@ -182,19 +182,19 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
             case TEST_MERGENAME_SIZE_CHECKSUM:
                 if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file)) && rom->compare_size_crc(file)) {
                     if (rom->compare_hashes(file) != Hashes::MATCH) {
-                        if (match_quality(match) == QU_HASHERR) {
+                        if (match->quality == QU_HASHERR) {
                             break;
                         }
                         
-                        match_quality(match) = QU_HASHERR;
+                        match->quality = QU_HASHERR;
                         result = TEST_UNUSABLE;
                     }
                     else {
-                        match_quality(match) = QU_OK;
+                        match->quality = QU_OK;
                         result = TEST_USABLE;
                     }
                     match->archive = archive;
-                    match_index(match) = i;
+                    match->index = i;
                 }
                 break;
 
@@ -209,20 +209,20 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
                         if (file.status != STATUS_OK) {
                             break;
                         }
-                        if (match_quality(match) == QU_HASHERR) {
+                        if (match->quality == QU_HASHERR) {
                             break;
                         }
 
-                        match_quality(match) = QU_HASHERR;
+                        match->quality = QU_HASHERR;
                         result = TEST_UNUSABLE;
                     }
                     else {
-                        match_quality(match) = QU_NAMEERR;
+                        match->quality = QU_NAMEERR;
                         result = TEST_USABLE;
                     }
                 }
                 match->archive = archive;
-                match_index(match) = i;
+                match->index = i;
                 break;
 
             case TEST_LONG:
@@ -234,10 +234,10 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
                 if (rom->compare_name(file) && file.size > rom->size) {
                     auto offset = archive->file_find_offset(i, rom->size, &rom->hashes);
                     if (offset.has_value()) {
-                        match_offset(match) = offset.value();
+                        match->offset = offset.value();
                         match->archive = archive;
-                        match_index(match) = i;
-                        match_quality(match) = QU_LONG;
+                        match->index = i;
+                        match->quality = QU_LONG;
                         return TEST_USABLE;
                     }
                 }
@@ -257,13 +257,13 @@ update_game_status(const Game *game, Result *res) {
     has_own = false;
 
     for (size_t i = 0; i < game->roms.size(); i++) {
-        auto m = result_rom(res, i);
+        auto match = result_rom(res, i);
         auto &rom = game->roms[i];
 
         if (rom.where == FILE_INGAME) {
             has_own = true;
         }
-        if (match_quality(m) == QU_MISSING) {
+        if (match->quality == QU_MISSING) {
 	    all_fixable = false;
         }
 	else {
@@ -274,7 +274,7 @@ update_game_status(const Game *game, Result *res) {
 	}
 	/* TODO: using output_options here is a bit of a hack,
 	   but so is all of the result_game processing */
-        if (match_quality(m) != QU_OK && (rom.status != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP))) {
+        if (match->quality != QU_OK && (rom.status != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP))) {
 	    all_correct = false;
         }
     }

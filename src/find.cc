@@ -274,12 +274,12 @@ check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_dis
 
 
 static find_result_t
-check_match_old(const Game *g, const File *r, const File *f, Match *m) {
-    if (m) {
-	match_quality(m) = QU_OLD;
-	match_where(m) = FILE_OLD;
-        match_old_game(m) = g->name.c_str();
-        match_old_file(m) = r->name.c_str();
+check_match_old(const Game *g, const File *r, const File *f, Match *match) {
+    if (match) {
+	match->quality = QU_OLD;
+	match->where = FILE_OLD;
+        match->old_game = g->name.c_str();
+        match->old_file = r->name.c_str();
     }
 
     return FIND_EXISTS;
@@ -287,13 +287,13 @@ check_match_old(const Game *g, const File *r, const File *f, Match *m) {
 
 
 static find_result_t
-check_match_romset(const Game *game, const File *r, const File *f, Match *m) {
+check_match_romset(const Game *game, const File *r, const File *f, Match *match) {
     find_result_t status;
 
-    status = check_for_file_in_zip(game->name.c_str(), r, f, m);
-    if (m && status == FIND_EXISTS) {
-	match_quality(m) = QU_COPIED;
-	match_where(m) = FILE_ROMSET;
+    status = check_for_file_in_zip(game->name.c_str(), r, f, match);
+    if (match && status == FIND_EXISTS) {
+	match->quality = QU_COPIED;
+	match->where = FILE_ROMSET;
     }
 
     return status;
