@@ -108,10 +108,6 @@ if(LibXml2_FOUND)
   endforeach()
 endif()
 
-#add_executable(mamedb mamedb.cc mamedb_add.cc mamedb_cmdtab.cc mamedb_help.cc mamedb_new.cc)
-#target_link_libraries(mamedb PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
-#install(TARGETS mamedb RUNTIME DESTINATION bin)
-
 add_custom_target(update_dbh_statements
   COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/mkstatements.pl ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.in ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.cc ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.h
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.in ${CMAKE_CURRENT_SOURCE_DIR}/mkstatements.pl

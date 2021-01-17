@@ -384,7 +384,7 @@ bool RomDB::write_dat(const std::vector<DatEntry> &dats) {
 }
 
 
-bool RomDB::write_detector(const detector_t *detector) {
+bool RomDB::write_detector(const Detector *detector) {
     auto stmt = db.get_statement(DBH_STMT_INSERT_DAT_DETECTOR);
     if (stmt == NULL) {
         return false;

@@ -144,6 +144,8 @@ set(EXTRA_TESTS
   misnamed-nofix.test
   misnamed.test
   mkmamedb-broken-sha1.test
+# causes core dump
+#  mkmamedb-cmpro-bad.test
   mkmamedb-dir-in-name.test
   mkmamedb-duplicate-game.test
   mkmamedb-duplicate-nodump.test
@@ -162,6 +164,7 @@ set(EXTRA_TESTS
   mkmamedb-parent-crcdiff-mame.test
   mkmamedb-parent-crcdiff.test
   mkmamedb-parent-no-common.test
+  mkmamedb-rc-ok.test
   mkmamedb-size-hex.test
   multi.test
   needed-cleanup.test
@@ -206,6 +209,7 @@ set(EXTRA_TESTS
   rom-from-extra-detector.test
   rom-from-extra-duplicate.test
   rom-from-extra-inconsistent.test
+  rom-from-extra-keep-dir-clean.test
   rom-from-extra-keep-dir.test
   rom-from-extra-keep-zip.test
   rom-from-extra-partial.test

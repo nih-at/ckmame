@@ -1,0 +1,20 @@
+[CREDITS]
+author=Dieter Baron & Thomas Klausner
+version=20201210
+comment=ckmame test database
+[DAT]
+version=2.50
+plugin=dummy.dll
+split=1
+merge=1
+[EMULATOR]
+refname=Test
+version=Test v2.56
+[GAMES]
+¬4¬Only 4 bytes¬4¬Only 4 bytes¬04.rom¬d87f7e0c¬4¬¬¬
+¬2-48¬4 and 8 bytes¬2-48¬4 and 8 bytes¬04.rom¬d87f7e0c¬4¬¬¬
+¬2-48¬4 and 8 bytes¬2-48¬4 and 8 bytes¬08.rom¬3656897d¬8¬¬¬
+¬4¬Only 4 bytes¬8¬Only 8 bytes¬04.rom¬d87f7e0c¬4¬4¬04.rom¬
+¬4¬Only 4 bytes¬8¬Only 8 bytes¬08.rom¬3656897d¬8¬4¬¬
+[RESOURCES]
+¬0a¬Only 10 bytes¬0a¬Only 10 bytes¬0a.rom¬0b4a4cde¬10¬¬¬

@@ -50,16 +50,4 @@ public:
     void set_source(Disk *disk);
 };
 
-
-#define match_disk_array_get(ma, i) ((ma)[i])
-
-#define match_disk_array_length(ma) ((ma).size())
-
-#define match_disk_copy(m1, m2) ((m1) = (m2))
-
-#define match_disk_hashes(m) (&(m)->hashes)
-#define match_disk_name(m) ((m)->name)
-#define match_disk_quality(m) ((m)->quality)
-#define match_disk_where(m) ((m)->where)
-
 #endif /* match_disk.h */

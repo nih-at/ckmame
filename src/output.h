@@ -44,8 +44,6 @@ class OutputContext;
 
 typedef std::shared_ptr<OutputContext> OutputContextPtr;
 
-typedef struct output_context output_context_t;
-
 #define OUTPUT_FL_EXTENDED 1
 #define OUTPUT_FL_TEMP     2
 

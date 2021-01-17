@@ -1,0 +1,43 @@
+description test many games
+return 0
+args -KLvd
+# ulimit -n 12
+file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
+file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
+file roms/2-44.zip 2-44-ok.zip 2-44-ok.zip
+file roms/2-48.zip 2-48-ok.zip 2-48-ok.zip
+file roms/2-4a.zip 2-4a-ok.zip 2-4a-ok.zip
+file roms/baddump.zip baddump.zip baddump.zip
+file roms/clone-8.zip 1-8-ok.zip 1-8-ok.zip
+file roms/deadbeef.zip deadbeef.zip deadbeef.zip
+file roms/deadbeefchild.zip 1-4-ok.zip 1-4-ok.zip
+file roms/dir-in-rom-name.zip 1-4-ok.zip 1-4-ok.zip
+file roms/many.zip many.zip many.zip
+file roms/nogood-2.zip 1-8-ok.zip 1-8-ok.zip
+file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip
+file roms/zero-4.zip zero-4-ok.zip zero-4-ok.zip
+file roms/zero.zip zero-ok.zip zero-ok.zip
+no-hashes roms 1-4.zip
+no-hashes roms 1-8.zip
+no-hashes roms 2-44.zip
+no-hashes roms 2-48.zip
+no-hashes roms 2-4a.zip
+no-hashes roms baddump.zip
+no-hashes roms clone-8.zip
+no-hashes roms deadbeef.zip
+no-hashes roms deadbeefchild.zip
+no-hashes roms many.zip
+no-hashes roms nogood-2.zip
+no-hashes roms parent-4.zip
+no-hashes roms zero-4.zip
+no-hashes roms zero.zip
+stdout In game 1-8a:
+stdout game 1-8a                                    : not a single rom found
+stdout In game dir-in-rom-name:
+stdout rom  some/path/to/file.rom  size       4  crc d87f7e0c: wrong name (04.rom)
+stdout In game samptest:
+stdout game samptest                                : not a single rom found
+stdout In game samptest-child:
+stdout game samptest-child                          : not a single rom found
+stdout In game zerobadcrc:
+stdout game zerobadcrc                              : not a single rom found

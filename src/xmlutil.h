@@ -64,10 +64,6 @@ struct XmluEntity {
     int arg1;
 };
 
-typedef XmluEntity xmlu_entity_t;
-
-
 int xmlu_parse(ParserSource *, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities);
-
 
 #endif /* xmlutil.h */

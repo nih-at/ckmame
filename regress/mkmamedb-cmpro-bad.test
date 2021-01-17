@@ -1,0 +1,7 @@
+description test mkmamedb database creation from CMPro file with errors
+return 0
+program mkmamedb
+args -o mamedb-test.db mamedb.cmpro-bad
+file mamedb.cmpro-bad mamedb.cmpro-bad mamedb.cmpro-bad
+file-new mamedb-test.db mamedb-cmpro-bad-ok.dump
+stderr mamedb.cmpro-bad: 7: TODO lots of errors about problems

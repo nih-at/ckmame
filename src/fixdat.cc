@@ -40,8 +40,8 @@
 
 
 void
-write_fixdat_entry(const Game *game, const Result *res) {
-    if (result_game(res) != GS_MISSING && result_game(res) != GS_PARTIAL) {
+write_fixdat_entry(const Game *game, const Result *result) {
+    if (result->game != GS_MISSING && result->game != GS_PARTIAL) {
 	return;
     }
 
@@ -49,7 +49,7 @@ write_fixdat_entry(const Game *game, const Result *res) {
     gm->name = game->name;
 
     for (size_t i = 0; i < game->roms.size(); i++) {
-        auto &match = res->roms[i];
+        auto &match = result->roms[i];
         auto &rom = game->roms[i];
 
 	/* no use requesting zero byte files */
@@ -65,7 +65,7 @@ write_fixdat_entry(const Game *game, const Result *res) {
     }
 
     for (size_t i = 0; i < game->disks.size(); i++) {
-        auto &match_disk = res->disks[i];
+        auto &match_disk = result->disks[i];
         auto &disk = game->disks[i];
 
         if (match_disk.quality != QU_MISSING || disk.status == STATUS_NODUMP) {

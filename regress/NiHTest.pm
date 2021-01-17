@@ -117,9 +117,6 @@ use UNIVERSAL;
 #	    set last modified timestamp of FILE to MTIME (seconds since epoch).
 #	    If FILE doesn't exist, an empty file is created.
 #
-#	ulimit C VALUE
-#	    set ulimit -C to VALUE while running the program.
-#
 # exit status
 #	runtest uses the following exit codes:
 #	    0: test passed
@@ -172,7 +169,6 @@ sub new {
 		'stdin-file' => { type => 'string', once => 1 },
 		stdout => { type => 'string' },
 		touch => { type => 'int string' },
-		ulimit => { type => 'char string' }
 	};
 
 	$self->{compare_by_type} = {};

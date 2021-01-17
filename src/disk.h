@@ -75,20 +75,4 @@ public:
 #define DISK_FL_CHECK_INTEGRITY 0x2
 #define DISK_FL_QUIET 0x4
 
-
-#define disk_hashes(d) (&(d)->hashes)
-#define disk_status(d) ((d)->status)
-#define disk_where(d) ((d)->where)
-#define disk_merge(d) ((d)->merge)
-#define disk_merged_name(d) ((d)->merged_name())
-#define disk_name(d) ((d)->name)
-#define disk_id(d) ((d)->id)
-
-#define disk_by_id(i) (Disk::by_id(i))
-
-#define disk_compare_merge(a, b) ((a)->compare_merge(*(b)))
-#define disk_compare_merge_hashes(a, b) ((a)->compare_merge_hashes(*(b)))
-#define disk_compare_hashes(a, b) ((a)->compare_hashes(*(b)))
-#define disk_mergeable(a, b) ((a)->is_mergeable(*(b)))
-
 #endif /* disk.h */

@@ -122,6 +122,8 @@ sub read_archives {
 	while (my $line = <$dat>) {
 		chomp $line;
 
+		next if ($line =~ m/^#/);
+
 		unless ($line =~ m/^(\S+) (.*)/) {
 			print "can't parse mtree line '$line'\n" if ($self->{verbose});
 			return undef;

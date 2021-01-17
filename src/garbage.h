@@ -54,8 +54,6 @@ private:
     bool open();
 };
 
-typedef Garbage garbage_t;
-
 typedef std::shared_ptr<Garbage> GarbagePtr;
 
 #endif /* garbage.h */

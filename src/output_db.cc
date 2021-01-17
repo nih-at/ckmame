@@ -85,9 +85,9 @@ void OutputContextDb::familymeeting(Game *parent, Game *child) {
     for (size_t i = 0; i < child->disks.size(); i++) {
         auto cd = &child->disks[i];
         for (size_t j = 0; j < parent->disks.size(); j++) {
-            auto pd = &parent->disks[j];
-            if (disk_mergeable(cd, pd)) {
-                disk_where(cd) = (where_t)(disk_where(pd) + 1);
+            auto &pd = parent->disks[j];
+            if (cd->is_mergeable(pd)) {
+                cd->where = (where_t)(pd.where + 1);
             }
         }
     }
@@ -166,7 +166,7 @@ bool OutputContextDb::close() {
 }
 
 
-bool OutputContextDb::detector(detector_t *detector) {
+bool OutputContextDb::detector(Detector *detector) {
     if (!db->write_detector(detector)) {
         seterrdb(&db->db);
         myerror(ERRDB, "can't write detector to db");

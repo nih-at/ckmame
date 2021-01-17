@@ -42,7 +42,7 @@
 
 
 void
-check_images(Images *im, const char *gamename, Result *res) {
+check_images(Images *im, const char *gamename, Result *result) {
     if (im == NULL) {
 	return;
     }
@@ -51,24 +51,24 @@ check_images(Images *im, const char *gamename, Result *res) {
         auto disk = im->disks[i];
 
 	if (disk == NULL) {
-	    result_image(res, i) = FS_MISSING;
+	    result->images[i] = FS_MISSING;
 	    continue;
 	}
 
-	if (disk_status(disk) != STATUS_OK) {
-	    result_image(res, i) = FS_BROKEN;
+	if (disk->status != STATUS_OK) {
+	    result->images[i] = FS_BROKEN;
 	    continue;
 	}
 
-	if (result_image(res, i) == FS_USED)
+	if (result->images[i] == FS_USED)
 	    continue;
 
-        if ((disk_hashes(disk)->types & db->hashtypes(TYPE_DISK)) != db->hashtypes(TYPE_DISK)) {
+        if ((disk->hashes.types & db->hashtypes(TYPE_DISK)) != db->hashtypes(TYPE_DISK)) {
 	    /* TODO: compute missing hashes */
 	}
 
 	if (find_disk_in_old(disk.get(), NULL) == FIND_EXISTS) {
-	    result_image(res, i) = FS_DUPLICATE;
+	    result->images[i] = FS_DUPLICATE;
 	    continue;
 	}
 
@@ -77,20 +77,20 @@ check_images(Images *im, const char *gamename, Result *res) {
 	    break;
 
 	case FIND_EXISTS:
-	    result_image(res, i) = FS_SUPERFLUOUS;
+	    result->images[i] = FS_SUPERFLUOUS;
 	    break;
 
 	case FIND_MISSING: {
-	    MatchDisk md;
+	    MatchDisk match_disk;
 
             ensure_needed_maps();
-	    if (find_disk(disk.get(), &md) != FIND_EXISTS)
-		result_image(res, i) = FS_NEEDED;
+	    if (find_disk(disk.get(), &match_disk) != FIND_EXISTS)
+		result->images[i] = FS_NEEDED;
 	    else {
-		if (match_disk_where(&md) == FILE_NEEDED)
-		    result_image(res, i) = FS_SUPERFLUOUS;
+		if (match_disk.where == FILE_NEEDED)
+		    result->images[i] = FS_SUPERFLUOUS;
 		else
-		    result_image(res, i) = FS_NEEDED;
+		    result->images[i] = FS_NEEDED;
 	    }
 	} break;
 

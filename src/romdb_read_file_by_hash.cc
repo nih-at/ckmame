@@ -35,36 +35,31 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "array.h"
 #include "file_location.h"
 #include "romdb.h"
 #include "sq_util.h"
 
-array_t *
+std::vector<FileLocation>
 romdb_read_file_by_hash(romdb_t *db, filetype_t ft, const Hashes *hash) {
     sqlite3_stmt *stmt;
-    array_t *a;
-    file_location_t *fl;
     int ret;
+    std::vector<FileLocation> result;
 
     if ((stmt = dbh_get_statement(romdb_dbh(db), dbh_stmt_with_hashes_and_size(DBH_STMT_QUERY_FILE_FBH, hash, 0))) == NULL)
-	return NULL;
+	return result;
 
     if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 2, STATUS_NODUMP) != SQLITE_OK || sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK)
-	return NULL;
-
-    a = array_new(sizeof(file_location_t));
+	return result;
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	fl = static_cast<file_location_t *>(array_grow(a, NULL));
-	file_location_name(fl) = strdup(sq3_get_string(stmt, 0).c_str());
-	file_location_index(fl) = sqlite3_column_int(stmt, 1);
+	FileLocation fl(sq3_get_string(stmt, 0), sqlite3_column_int(stmt, 1));
+	result.push_back(fl);
     }
 
     if (ret != SQLITE_DONE) {
-	array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
-	return NULL;
+	result.clear();
+	return result;
     }
 
-    return a;
+    return result;
 }

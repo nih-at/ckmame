@@ -211,7 +211,7 @@ save_needed_part(Archive *sa, size_t sidx, const char *gamename, off_t start, of
 	    return sa->file_delete(sidx);
 	}
 	else {
-	    delete_list_used(sa, sidx);
+	    DeleteList::used(sa, sidx);
 	}
     }
 

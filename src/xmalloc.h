@@ -36,7 +36,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-void *xrealloc(void *, size_t);
 void *xmalloc(size_t size);
 char *xstrdup(const char *);
 

@@ -42,16 +42,15 @@
 #include "globals.h"
 
 
-int
-delete_list_execute(DeleteListPtr dl) {
+int DeleteList::execute() {
     std::string name;
     ArchivePtr a = NULL;
 
-    std::sort(dl->entries.begin(), dl->entries.end());
+    std::sort(entries.begin(), entries.end());
 
     int ret = 0;
-    for (size_t i = 0; i < dl->entries.size(); i++) {
-	auto entry = dl->entries[i];
+    for (size_t i = 0; i < entries.size(); i++) {
+	auto entry = entries[i];
 
 	if (name == "" || entry.name != name) {
 	    if (a) {
@@ -97,22 +96,19 @@ delete_list_execute(DeleteListPtr dl) {
 }
 
 
-void
-delete_list_mark(DeleteListPtr dl) {
-    dl->mark = dl->entries.size();
+void DeleteList::mark() {
+    mark_size = entries.size();
 }
 
 
-void
-delete_list_rollback(DeleteListPtr dl) {
+void DeleteList::rollback() {
     /* this function should only remove items, so dummy should not be used */
     FileLocation dummy("", 0);
-    dl->entries.resize(dl->mark, dummy);
+    entries.resize(mark_size, dummy);
 }
 
 
-void
-delete_list_used(Archive *a, size_t index) {
+void DeleteList::used(Archive *a, size_t index) {
     FileLocation fl(a->name, index);
 
     switch (a->where) {

@@ -33,8 +33,6 @@
 
 #include "config.h"
 
-#include <errno.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -67,19 +65,6 @@ xstrdup(const char *str) {
     }
 
     strcpy(p, str);
-
-    return p;
-}
-
-void *
-xrealloc(void *p, size_t size) {
-    if (p == NULL)
-	return xmalloc(size);
-
-    if ((p = realloc(p, size)) == NULL) {
-	myerror(ERRDEF, "malloc failure");
-	exit(1);
-    }
 
     return p;
 }

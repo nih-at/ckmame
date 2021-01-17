@@ -41,29 +41,30 @@
 #include "file.h"
 #include "types.h"
 
-struct stats_files {
+class StatsFiles {
+ public:
+    StatsFiles() : files_total(0), files_good(0), bytes_total(0), bytes_good(0) { }
     uint64_t files_total;
     uint64_t files_good;
     uint64_t bytes_total;
     uint64_t bytes_good;
 };
 
-typedef struct stats_files stats_files_t;
-
-struct stats {
+class Stats {
+ public:
+    Stats() : games_total(0), games_good(0), games_partial(0) {}
     uint64_t games_total;
     uint64_t games_good;
     uint64_t games_partial;
-    stats_files_t files[TYPE_MAX];
+    StatsFiles files[TYPE_MAX];
+
+    void add_disk(const Disk *disk, quality_t status);
+    void add_game(game_status_t status);
+    void add_rom(enum filetype type, const File *rom, quality_t status);
+    void print(FILE *f, bool total_only);
+
+ private:
+    void add_file(enum filetype type, uint64_t size, quality_t status);
 };
-
-typedef struct stats stats_t;
-
-void stats_add_disk(stats_t *stats, const Disk *disk, quality_t status);
-void stats_add_game(stats_t *stats, game_status_t status);
-void stats_add_rom(stats_t *stats, enum filetype type, const File *rom, quality_t status);
-void stats_free(stats_t *stats);
-stats_t *stats_new();
-void stats_print(stats_t *stats, FILE *f, bool total_only);
 
 #endif /* _HAD_STATS_H */

@@ -275,14 +275,14 @@ enter_dir_in_map_and_list_zipped(int flags, std::vector<std::string> &list, cons
 
 
 bool
-enter_disk_in_map(const Disk *d, where_t where) {
+enter_disk_in_map(const Disk *disk, where_t where) {
     sqlite3_stmt *stmt;
 
     if ((stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_FILE)) == NULL) {
 	return false;
     }
 
-    if (sqlite3_bind_int64(stmt, 1, disk_id(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK || sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 4, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 5, where) != SQLITE_OK || sqlite3_bind_null(stmt, 6) != SQLITE_OK || sq3_set_hashes(stmt, 7, disk_hashes(d), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
+    if (sqlite3_bind_int64(stmt, 1, disk->id) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK || sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 4, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 5, where) != SQLITE_OK || sqlite3_bind_null(stmt, 6) != SQLITE_OK || sq3_set_hashes(stmt, 7, &disk->hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
 	return false;
     }
 

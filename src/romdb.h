@@ -56,7 +56,7 @@ public:
     bool update_file_location(Game *game);
     bool update_game_parent(const Game *game);
     bool write_dat(const std::vector<DatEntry> &dats);
-    bool write_detector(const detector_t *detector);
+    bool write_detector(const Detector *detector);
     bool write_game(Game *game);
     bool write_hashtypes(int, int);
 
@@ -73,6 +73,5 @@ private:
 };
 
 typedef class RomDB romdb_t;
-
 
 #endif /* romdb.h */

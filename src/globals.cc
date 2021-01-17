@@ -72,4 +72,4 @@ OutputContextPtr fixdat;
 /* roms dir */
 char rom_dir_normalized[MAXPATHLEN];
 
-stats_t *stats = NULL;
+Stats stats;
