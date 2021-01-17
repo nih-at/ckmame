@@ -4,15 +4,11 @@
 
 - 7z read support
 
-- generate mame.db in /tmp and move in place when finished
-
 - add option to keep ROMs with detector applied
 
 - bug: when creating a fixdat and re-checks happen, games end up in the fixdat multiple times
 
 - clean up database statements with hardcoded filetype, like sqlite3_bind_int(x, y, TYPE_ROM)
-
-- clean up src/output_db.c (loops over 1 iteration)
 
 - fixdat-missing-all: two copies of the same file (romof) in fixdat; depends on order of games in datfile
 
@@ -42,11 +38,7 @@
 
 * `mkmamedb`: use/update `.ckmame.db` files
 
-* `needed/` not always deleted when empty, find out why
-
 * some runs use roms from `extra`, but then mark them as "not used", find out why
-
-* for {,p}arrays, add functions for `free()`ing data into initialization
 
 * instead of looking in cloneof for roms, move all extra roms to `needed`
 
@@ -108,9 +100,6 @@
     Suggested solution: using `iconv` and `LC_CTYPE`, try transcribing invalid UTF-8 files to UTF-8
     if it fails or no `iconv` or `LC_CTYPE` available, replace invalid characters with `'?'`
 - [feature] chd v5 support: maps, lzma, huffman, flac, a/v decompression
-- [feature] better support for chds in separate chds/gamename/chdname.chd
-- [cleanup] consistently use `asprintf()` instead of `malloc()`+`str*`
-- [cleanup] reduce code duplication
 - [cleanup] access db directly in `find_*`
 - [cleanup] specify globally which parts of memdb/lists to fill/maintain
 - [cleanup] rom: use flag to specify whether we know the size
@@ -129,20 +118,9 @@
 - [feature] `--cleanup-extra`: remove (unnecessary?) directories
 - [feature] support multiple `-O` arguments
 - [compatibility] Accept CRCs of length < 8 by zero-padding them (in front)
-- [cleanup] review types used for length/offset (use 64-bit?)
-- [cleanup] use `int2str`/`str2int`
 - [cleanup] refactor fixing code (one function per operation)
 - [cleanup] handle archive refreshing in `archive.c`
 - [cleanup] rename: file is part of zip archive, rom is part of game
-- [cleanup] generic `string` <-> `int` mappings
-- [cleanup] no macros that evaluate arguments twice
-  - `parray_get_last`
-  - `result_num_*`
-  - `rom_compare_m`
-  - `rom_compare_msc`
-  - `rom_compare_nsc`
-  - `rom_copmare_sc`
-  - `rom_num_altnames`
 
 other features:
 - fixdat: if only checking child, ROM missing in parent is not in fixdat
@@ -153,13 +131,10 @@ other features:
 - `mkmamedb`: handle `size 0 crc -`
 - `mkmamedb`: no error message for missing newline in last line
 - `mkmamedb`: warn about sets without parent that use "merge" (`mamedb-merge-no-parent.dump`)
-- complete raine support (multiple archive names: `archive ( name
-  "64th_street" name "64street" ))`
-- handle two roms in one game with same size/hashes but different name
+- complete raine support (multiple archive names: `archive ( name "64th_street" name "64street" ))`
 - option to check if no good dumps are needed elsewhere
 
 * code cleanups:
-  - refactor hashes_set and hashes_verify
   - remove unneeded includes
   - make `parse_cm` table driven
   - split `util*`, `funcs.h`
@@ -194,21 +169,6 @@ other features:
   - `/prog` from file
   - broken input
 
-* tools
-
-- [db, rom] fully merge game to dir/zip
-- [archive, detector] view/extract/copy files with detector applied
-
-- [db] import dat file / db: `db import [FILE]`
-- [db] consistency checks
-- [db] find possible cloneofs: `db find-clones [GAME]`
-- [db, archive, cloneof-info] add game to db: `db add ZIP`
-- [db, name] remove game from db: `db remove GAME`
-- [db, name, cloneof-info] merge games: `db clone-of CHILD PARENT`
-- [db, name] make parent: `db make-parent CHILD`
-- [db] export to dat files: `db export`
-
-
 * cachedb
 
 ** maybe:
@@ -216,7 +176,6 @@ other features:
 - [test] unzipped: take ROM from top-level file in roms
 - [test] run unzipped-`ckmamedb`-* for zip as well
 - [cleanup] rename `dbh_cache` to `cachedb`
-- [feature] cachedb in unknown
 - [feature] compute all hashes when called with `-i`
 - [test] unzipped, dir with name ending in `.zip`
 
