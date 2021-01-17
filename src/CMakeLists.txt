@@ -35,7 +35,6 @@ set(COMMON_SOURCES
   disk.cc
   disk_new.cc
   error.cc
-  export_db.cc
   file.cc
   file_util.cc
   find.cc

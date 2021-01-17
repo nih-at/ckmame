@@ -300,15 +300,17 @@ main(int argc, char **argv) {
 
 int
 process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::unordered_set<std::string> &files_only, const std::unordered_set<std::string> &files_skip, OutputContext *out) {
-    romdb_t *mdb;
     struct zip *za;
 
-    if ((mdb = romdb_open(fname, DBH_READ)) != NULL) {
-	int ret = export_db(mdb, exclude, dat, out);
-	romdb_close(mdb);
-	return ret;
+    try {
+	auto mdb = new RomDB(fname, DBH_READ);
+	return mdb->export_db(exclude, dat, out);
     }
-    else if (roms_unzipped == 0 && (za = zip_open(fname, 0, NULL)) != NULL) {
+    catch (std::exception &e) {
+	/* that's fine */
+    }
+
+    if (roms_unzipped == 0 && (za = zip_open(fname, 0, NULL)) != NULL) {
 	int i;
 	const char *name;
 	int err;

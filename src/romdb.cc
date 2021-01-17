@@ -31,10 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <errno.h>
-#include <stdlib.h>
-
 #include "romdb.h"
+#include "error.h"
 #include "sq_util.h"
 
 const dbh_stmt_t query_hash_type[] = {DBH_STMT_QUERY_HASH_TYPE_CRC, DBH_STMT_QUERY_HASH_TYPE_MD5, DBH_STMT_QUERY_HASH_TYPE_SHA1};
@@ -612,4 +610,40 @@ bool RomDB::write_roms(Game *game) {
     }
 
     return true;
+}
+
+int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
+    DatEntry de;
+
+    if (out == NULL) {
+	/* TODO: split into original dat files */
+	return 0;
+    }
+
+    auto db_dat = read_dat();
+
+    /* TODO: export detector */
+
+    de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : NULL));
+    out->header(&de);
+
+    auto list = read_list(DBH_KEY_LIST_GAME);
+    if (list.empty()) {
+	myerror(ERRDEF, "db error reading game list");
+	return -1;
+    }
+
+    for (size_t i = 0; i < list.size(); i++) {
+        GamePtr game = read_game(list[i]);
+        if (!game) {
+	    /* TODO: error */
+	    continue;
+	}
+        
+        if (exclude.find(game->name) == exclude.end()) {
+	    out->game(game);
+        }
+    }
+
+    return 0;
 }

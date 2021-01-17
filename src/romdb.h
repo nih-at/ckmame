@@ -34,8 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <unordered_set>
+
 #include "dbh.h"
 #include "file_location.h"
+#include "output.h"
 
 class RomDB {
 public:
@@ -59,7 +62,7 @@ public:
     bool write_detector(const Detector *detector);
     bool write_game(Game *game);
     bool write_hashtypes(int, int);
-
+    int export_db(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
 private:
     int hashtypes_[TYPE_MAX];
     
