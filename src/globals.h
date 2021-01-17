@@ -3,7 +3,7 @@
 
 /*
   globals.h -- declaration of global variables
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -39,7 +39,6 @@
 #include "delete_list.h"
 #include "detector.h"
 #include "output.h"
-#include "parray.h"
 #include "romdb.h"
 #include "stats.h"
 #include "tree.h"
@@ -51,7 +50,7 @@ extern const char *needed_dir;
 extern const char *unknown_dir;
 extern const char *rom_dir;
 
-extern parray_t *search_dirs;
+extern std::vector<std::string> search_dirs;
 
 extern int check_integrity; /* full integrity check of ROM set */
 extern int roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
@@ -67,17 +66,17 @@ extern romdb_t *old_db;
 
 extern DetectorPtr detector;
 
-extern parray_t *superfluous;
+extern std::vector<std::string> superfluous;
 
 
 /* check state */
 
-extern delete_list_t *extra_delete_list;
-extern parray_t *extra_list;
-extern delete_list_t *needed_delete_list;
-extern delete_list_t *superfluous_delete_list;
+extern DeleteListPtr extra_delete_list;
+extern std::vector<std::string> extra_list;
+extern DeleteListPtr needed_delete_list;
+extern DeleteListPtr superfluous_delete_list;
 
-extern tree_t *check_tree;
+extern Tree check_tree;
 extern OutputContextPtr fixdat;
 
 /* to identify roms directory uniquely */

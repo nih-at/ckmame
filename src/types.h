@@ -3,7 +3,7 @@
 
 /*
   types.h -- type definitions
-  Copyright (C) 1999-2015 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -128,8 +128,5 @@ typedef enum name_type name_type_t;
 #if 0                              /* not supported (yet?) */
 #define FIX_COMPLETE_GAMES 0x400   /* complete in old or complete in roms */
 #endif
-
-
-int filetype_db_key(filetype_t);
 
 #endif /* types.h */

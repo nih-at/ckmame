@@ -3,7 +3,7 @@
 
 /*
   romdb.h -- mame.db sqlite3 data base
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -35,6 +35,7 @@
 */
 
 #include "dbh.h"
+#include "file_location.h"
 
 class RomDB {
 public:
@@ -73,27 +74,5 @@ private:
 
 typedef class RomDB romdb_t;
 
-<<<<<<< Updated upstream
-int romdb_close(romdb_t *);
-int romdb_delete_game(romdb_t *, const char *);
-int romdb_has_disks(romdb_t *);
-romdb_t *romdb_open(const char *, int);
-std::vector<DatEntry> romdb_read_dat(romdb_t *db);
-DetectorPtr romdb_read_detector(romdb_t *db);
-array_t *romdb_read_file_by_hash(romdb_t *, filetype_t, const Hashes *);
-array_t *romdb_read_file_by_name(romdb_t *, filetype_t, const char *);
-GamePtr romdb_read_game(romdb_t *db, const std::string &name);
-int romdb_hashtypes(romdb_t *, filetype_t);
-parray_t *romdb_read_list(romdb_t *, enum dbh_list);
-int romdb_update_file_location(romdb_t *, Game *);
-int romdb_update_game_parent(romdb_t *, const Game *);
-int romdb_write_dat(romdb_t *db, const std::vector<DatEntry> &dats);
-int romdb_write_detector(romdb_t *db, const detector_t *);
-int romdb_write_file_by_hash_parray(romdb_t *, filetype_t, const Hashes *, parray_t *);
-int romdb_write_game(romdb_t *, Game *);
-int romdb_write_hashtypes(romdb_t *, int, int);
-int romdb_write_list(romdb_t *, const char *, const parray_t *);
-=======
->>>>>>> Stashed changes
 
 #endif /* romdb.h */

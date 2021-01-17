@@ -46,78 +46,38 @@
 #include "tree.h"
 #include "xmalloc.h"
 
-static tree_t *tree_add_node(tree_t *, const char *, int);
-static tree_t *tree_new_full(const char *, int);
-static int tree_process(tree_t *, ArchivePtr [], ImagesPtr []);
-static void tree_traverse_internal(tree_t *, ArchivePtr [], ImagesPtr []);
 
-<<<<<<< Updated upstream
-
-int
-tree_add(tree_t *tree, const char *name) {
-    GamePtr game = romdb_read_game(db, name);
-=======
 bool Tree::add(const std::string &game_name) {
     GamePtr game = db->read_game(game_name);
->>>>>>> Stashed changes
     
     if (!game) {
-	return -1;
+	return false;
     }
+    
+    auto tree = this;
 
     if (!game->cloneof[1].empty()) {
-	tree = tree_add_node(tree, game->cloneof[1].c_str(), 0);
+	tree = tree->add_node(game->cloneof[1], false);
     }
     if (!game->cloneof[0].empty()) {
-        tree = tree_add_node(tree, game->cloneof[0].c_str(), 0);
+        tree = tree->add_node(game->cloneof[0], false);
     }
 
-    tree_add_node(tree, name, 1);
+    tree->add_node(game_name, true);
 
-    return 0;
+    return true;
 }
 
 
-void
-tree_free(tree_t *tree) {
-    tree_t *t;
-
-    while (tree) {
-	if (tree->child)
-	    tree_free(tree->child);
-	t = tree;
-	tree = tree->next;
-	free(t->name);
-	free(t);
+bool Tree::recheck(const std::string &game_name) {
+    if (game_name == name) {
+        checked = false;
+        return check;
     }
-}
 
-
-tree_t *
-tree_new(void) {
-    tree_t *t;
-
-    t = static_cast<tree_t *>(xmalloc(sizeof(*t)));
-
-    t->name = NULL;
-    t->check = t->checked = false;
-    t->child = t->next = NULL;
-
-    return t;
-}
-
-
-bool
-tree_recheck(const tree_t *tree, const char *name) {
-    tree_t *t;
-
-    for (t = tree->child; t; t = t->next) {
-	if (strcmp(tree_name(t), name) == 0) {
-	    tree_checked(t) = false;
-	    return tree_check(t);
-	}
-	if (tree_recheck(t, name)) {
-	    return true;
+    for (auto it : children) {
+        if (it.second->recheck(game_name)) {
+            return true;
 	}
     }
 
@@ -125,92 +85,53 @@ tree_recheck(const tree_t *tree, const char *name) {
 }
 
 
-<<<<<<< Updated upstream
-int
-tree_recheck_games_needing(tree_t *tree, uint64_t size, const Hashes *hashes) {
-    array_t *a;
-    file_location_t *fbh;
-    GamePtr game;
-    const File *gr;
-    int i, ret;
-    
-    if ((a = romdb_read_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
-	return 0;
-=======
 bool Tree::recheck_games_needing(uint64_t size, const Hashes *hashes) {
     auto roms = db->read_file_by_hash(TYPE_ROM, hashes);
     if (roms.empty()) {
 	return true;
     }
->>>>>>> Stashed changes
 
-    ret = 0;
-    for (i = 0; i < array_length(a); i++) {
-	fbh = static_cast<file_location_t *>(array_get(a, i));
+    auto ok = true;
+    for (size_t i = 0; i < roms.size(); i++) {
+        auto &rom = roms[i];
 
-<<<<<<< Updated upstream
-        game = romdb_read_game(db, file_location_name(fbh));
-        if (!game || game->roms.size() <= static_cast<size_t>(file_location_index(fbh))) {
-=======
         auto game = db->read_game(rom.name);
         if (!game || game->roms.size() <= rom.index) {
->>>>>>> Stashed changes
             /* TODO: internal error: db inconsistency */
-	    ret = -1;
+	    ok = false;
 	    continue;
 	}
 
-        gr = &game->roms[file_location_index(fbh)];
+        auto gr = &game->roms[rom.index];
 
-	if (size == gr->size && hashes->compare(gr->hashes) == Hashes::MATCH && gr->where == FILE_INGAME)
-	    tree_recheck(tree, game->name.c_str());
+        if (size == gr->size && hashes->compare(gr->hashes) == Hashes::MATCH && gr->where == FILE_INGAME) {
+            recheck(game->name);
+        }
     }
 
-    array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
-
-    return ret;
+    return ok;
 }
 
 
-void
-tree_traverse(tree_t *tree) {
+void Tree::traverse() {
     ArchivePtr archives[] = { NULL, NULL, NULL };
     ImagesPtr images[] = { std::make_shared<Images>(), std::make_shared<Images>(), std::make_shared<Images>() };
-    tree_traverse_internal(tree, archives, images);
+
+    for (auto it : children) {
+        it.second->traverse_internal(archives, images);
+    }
 }
 
-static void
-tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], ImagesPtr ancestor_images[]) {
-    tree_t *t;
-    char *full_name;
-    int flags;
-
+void Tree::traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_images) {
     ArchivePtr archives[] = { NULL, ancestor_archives[0], ancestor_archives[1] };
     ImagesPtr images[] = { std::make_shared<Images>(), ancestor_images[0], ancestor_images[1] };
     
     ImagesPtr self_images;
     
-    if (tree->name) {
-	if (siginfo_caught)
-	    print_info(tree->name);
+    if (siginfo_caught) {
+        print_info(name);
+    }
 
-<<<<<<< Updated upstream
-	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | romdb_hashtypes(db, TYPE_ROM)) : 0));
-
-	full_name = findfile(tree->name, TYPE_ROM, 0);
-	if (full_name == NULL && tree->check) {
-	    full_name = make_file_name(TYPE_ROM, tree->name, 0);
-	}
-	if (full_name)
-	    archives[0] = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, flags);
-	free(full_name);
-        
-        self_images = Images::from_directory(tree->name, check_integrity);
-        images[0] = self_images;
-        
-	if (tree_check(tree) && !tree_checked(tree))
-            tree_process(tree, archives, images);
-=======
     auto flags = ((check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | db->hashtypes(TYPE_ROM)) : 0));
     
     auto full_name = findfile(name, TYPE_ROM, "");
@@ -226,93 +147,37 @@ tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], ImagesPtr a
     
     if (check && !checked) {
         process(archives, images);
->>>>>>> Stashed changes
     }
 
-    for (t = tree->child; t; t = t->next) {
-	tree_traverse_internal(t, archives, images);
+    for (auto it : children) {
+        it.second->traverse_internal(archives, images);
     }
-
-    return;
 }
 
 
-static tree_t *
-tree_add_node(tree_t *tree, const char *name, int check) {
-    tree_t *t;
-    int cmp;
-
-    if (tree->child == NULL) {
-	t = tree_new_full(name, check);
-	tree->child = t;
-	return t;
+Tree *Tree::add_node(const std::string &game_name, bool do_check) {
+    auto it = children.find(game_name);
+    
+    if (it == children.end()) {
+        auto child = std::make_shared<Tree>(game_name, do_check);
+        children[game_name] = child;
+        return child.get();
     }
     else {
-	cmp = strcmp(tree->child->name, name);
-	if (cmp == 0) {
-	    if (check)
-		tree->child->check = 1;
-	    return tree->child;
-	}
-	else if (cmp > 0) {
-	    t = tree_new_full(name, check);
-	    t->next = tree->child;
-	    tree->child = t;
-	    return t;
-	}
-	else {
-	    for (tree = tree->child; tree->next; tree = tree->next) {
-		cmp = strcmp(tree->next->name, name);
-		if (cmp == 0) {
-		    if (check)
-			tree->next->check = 1;
-		    return tree->next;
-		}
-		else if (cmp > 0) {
-		    t = tree_new_full(name, check);
-		    t->next = tree->next;
-		    tree->next = t;
-		    return t;
-		}
-	    }
-
-	    t = tree_new_full(name, check);
-	    tree->next = t;
-	    return t;
-	}
+        if (do_check) {
+            it->second->check = true;
+        }
+        return it->second.get();
     }
 }
 
 
-<<<<<<< Updated upstream
-static tree_t *
-tree_new_full(const char *name, int check) {
-    tree_t *t;
-
-    t = tree_new();
-    t->name = xstrdup(name);
-    t->check = check;
-
-    return t;
-}
-
-
-static int
-tree_process(tree_t *tree, ArchivePtr archives[], ImagesPtr images[]) {
-    GamePtr game;
-
-    /* check me */
-    if (!(game = romdb_read_game(db, tree->name))) {
-	myerror(ERRDEF, "db error: %s not found", tree->name);
-	return -1;
-=======
 void Tree::process(ArchivePtr *archives, ImagesPtr *images) {
     auto game = db->read_game(name);
     
     if (!game) {
 	myerror(ERRDEF, "db error: %s not found", name.c_str());
         return;
->>>>>>> Stashed changes
     }
 
     Result res(game.get(), archives[0].get(), images[0].get());
@@ -338,8 +203,6 @@ void Tree::process(ArchivePtr *archives, ImagesPtr *images) {
     }
 
     if (ret != 1) {
-	tree_checked(tree) = true;
+	checked = true;
     }
-
-    return 0;
 }

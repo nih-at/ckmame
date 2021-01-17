@@ -3,7 +3,7 @@
 
 /*
   tree.h -- traverse tree of games to check
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,29 +34,37 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <map>
 
 #include "archive.h"
 #include "hashes.h"
+#include "images.h"
 #include "types.h"
 
-struct tree {
-    char *name;
+class Tree;
+
+typedef std::shared_ptr<Tree> TreePtr;
+
+class Tree {
+public:
+    Tree() : check(false), checked(false) { }
+    Tree(const std::string &name_, bool check_) : name(name_), check(check_), checked(false) { }
+    
+    std::string name;
     bool check;
     bool checked;
-    struct tree *next, *child;
+    
+    std::map<std::string, TreePtr> children;
+    
+    bool add(const std::string &game_name);
+    bool recheck(const std::string &game_name);
+    bool recheck_games_needing(uint64_t size, const Hashes *hashes);
+    void traverse();
+    
+private:
+    Tree *add_node(const std::string &game_name, bool check);
+    void traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_images);
+    void process(ArchivePtr *archives, ImagesPtr *images);
 };
-
-typedef struct tree tree_t;
-
-#define tree_check(t) ((t)->check)
-#define tree_checked(t) ((t)->checked)
-#define tree_name(t) ((t)->name)
-
-int tree_add(tree_t *, const char *);
-void tree_free(tree_t *);
-tree_t *tree_new(void);
-bool tree_recheck(const tree_t *, const char *);
-int tree_recheck_games_needing(tree_t *, uint64_t, const Hashes *);
-void tree_traverse(tree_t *);
 
 #endif /* tree.h */

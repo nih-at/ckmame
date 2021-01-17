@@ -3,7 +3,7 @@
 
 /*
   match_disk.h -- matching files with disks
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -36,7 +36,6 @@
 
 
 #include "disk.h"
-#include "parray.h"
 #include "types.h"
 
 class MatchDisk {

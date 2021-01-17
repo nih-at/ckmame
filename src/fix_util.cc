@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
+#include <filesystem>
 
 #include <errno.h>
 #include <stdarg.h>
@@ -52,24 +54,18 @@
 #endif
 
 
-char *
-make_garbage_name(const char *name, int unique) {
-    const char *s;
-    char *t, *u, *ext;
-    struct stat st;
+std::string
+make_garbage_name(const std::string &name, int unique) {
+    auto s = std::filesystem::path(name).filename();
 
-    s = mybasename(name);
-
-    t = (char *)xmalloc(strlen(unknown_dir) + strlen(s) + 2);
-
-    sprintf(t, "%s/%s", unknown_dir, s);
-
-    if (unique && (stat(t, &st) == 0 || errno != ENOENT)) {
-	ext = strchr(t, '.');
-	if (ext)
-	    *(ext++) = '\0';
-	u = make_unique_name(ext ? ext : "", "%s", t);
-	free(t);
+    auto t = std::filesystem::path(unknown_dir) / s;
+    
+    if (unique && std::filesystem::exists(t)) {
+	/* skip '.' */
+	auto ext = s.extension().string().substr(1);
+	/* path and filename, but no extension */
+	auto t_no_ext = t.parent_path() / t.stem();
+	auto u = make_unique_name(ext.c_str(), "%s", t_no_ext.c_str());
 	return u;
     }
 
@@ -125,49 +121,38 @@ make_needed_name_disk(const Disk *d) {
 
 
 int
-move_image_to_garbage(const char *fname) {
-    char *to_name;
+move_image_to_garbage(const std::string &fname) {
     int ret;
 
-    to_name = make_garbage_name(fname, 1);
-    ensure_dir(to_name, 1);
-    ret = rename_or_move(fname, to_name);
-    free(to_name);
+    auto to_name = make_garbage_name(fname, 1);
+    ensure_dir(to_name, true);
+    ret = rename_or_move(fname.c_str(), to_name.c_str());
 
     return ret;
 }
 
 
 void
-remove_empty_archive(const char *name) {
-    int idx;
-
-    if (fix_options & FIX_PRINT)
-	printf("%s: remove empty archive\n", name);
-    if (superfluous) {
-	idx = parray_find(superfluous, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-	/* "needed" zip archives are not in list */
-	if (idx >= 0)
-	    parray_delete(superfluous, idx, free);
+remove_empty_archive(const std::string &name) {
+    if (fix_options & FIX_PRINT) {
+	printf("%s: remove empty archive\n", name.c_str());
     }
+    remove_from_superfluous(name);
 }
 
 
 void
-remove_from_superfluous(const char *name) {
-    int idx;
-
-    if (superfluous) {
-	idx = parray_find(superfluous, name, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-	/* "needed" images are not in list */
-	if (idx >= 0)
-	    parray_delete(superfluous, idx, free);
+remove_from_superfluous(const std::string &name) {
+    auto entry = std::find(superfluous.begin(), superfluous.end(), name);
+    if (entry != superfluous.end()) {
+	/* "needed" zip archives are not in list */
+	superfluous.erase(entry);
     }
 }
 
 
 bool
-save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, File *f) {
+save_needed_part(Archive *sa, size_t sidx, const char *gamename, off_t start, off_t length, File *f) {
     char *tmp;
     bool do_save = fix_options & FIX_DO;
 
@@ -234,7 +219,7 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 }
 
 bool
-save_needed(Archive *sa, int sidx, const char *gamename) {
+save_needed(Archive *sa, size_t sidx, const char *gamename) {
     return save_needed_part(sa, sidx, gamename, 0, -1, &sa->files[sidx]);
 }
 
@@ -254,10 +239,12 @@ save_needed_disk(const char *fname, int do_save) {
 	    myerror(ERRDEF, "cannot create needed file name");
 	    ret = -1;
 	}
-	else if (ensure_dir(tmp, 1) < 0)
+	else if (!ensure_dir(tmp, true)) {
 	    ret = -1;
-	else if (rename_or_move(fname, tmp) != 0)
+	}
+	else if (rename_or_move(fname, tmp) != 0) {
 	    ret = -1;
+	}
 	else {
             d = Disk::from_file(tmp, 0);
 	}

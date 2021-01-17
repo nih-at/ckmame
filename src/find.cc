@@ -33,7 +33,6 @@
 
 #include "find.h"
 #include "dbh.h"
-#include "file_location.h"
 #include "funcs.h"
 #include "game.h"
 #include "globals.h"
@@ -203,14 +202,12 @@ find_in_romset(const File *file, Archive *archive, const char *skip, Match *m) {
 
 static find_result_t
 check_for_file_in_zip(const char *name, const File *rom, const File *file, Match *m) {
-    char *full_name;
     ArchivePtr a;
 
-    if ((full_name = findfile(name, TYPE_ROM, NULL)) == NULL || !(a = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, 0))) {
-	free(full_name);
+    auto full_name = findfile(name, TYPE_ROM, "");
+    if (full_name == "" || !(a = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, 0))) {
 	return FIND_MISSING;
     }
-    free(full_name);
 
     auto idx = a->file_index_by_name(rom->name);
     
@@ -253,14 +250,13 @@ check_match_disk_old(const Game *g, const Disk *disk, MatchDisk *match_disk) {
 /*ARGSUSED1*/
 static find_result_t
 check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_disk) {
-    auto file_name = findfile(disk->name.c_str(), TYPE_DISK, game->name.c_str());
-    if (file_name == NULL) {
+    auto file_name = findfile(disk->name, TYPE_DISK, game->name);
+    if (file_name == "") {
 	return FIND_MISSING;
     }
 
     auto f = Disk::from_file(file_name, DISK_FL_QUIET);
     if (!f) {
-	free(file_name);
 	return FIND_MISSING;
     }
 
@@ -270,11 +266,9 @@ check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_dis
 	    match_disk->name = file_name;
             match_disk->hashes = f->hashes;
 	}
-        free(file_name);
 	return FIND_EXISTS;
     }
 
-    free(file_name);
     return FIND_MISSING;
 }
 
@@ -308,39 +302,28 @@ check_match_romset(const Game *game, const File *r, const File *f, Match *m) {
 
 static find_result_t
 find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Match *m, find_result_t (*check_match)(const Game *, const File *, const File *, Match *)) {
-<<<<<<< Updated upstream
-    array_t *a;
-    file_location_t *fbh;
-    find_result_t status;
-=======
     auto roms = fdb->read_file_by_hash(TYPE_ROM, &r->hashes);
->>>>>>> Stashed changes
 
-    if ((a = romdb_read_file_by_hash(fdb, TYPE_ROM, &r->hashes)) == NULL) {
+    if (roms.empty()) {
 	return FIND_UNKNOWN;
     }
 
-    status = FIND_UNKNOWN;
-    for (int i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < array_length(a); i++) {
-	fbh = static_cast<file_location_t *>(array_get(a, i));
+    find_result_t status = FIND_UNKNOWN;
+    for (size_t i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < roms.size(); i++) {
+	auto rom = roms[i];
 
-        if (skip && strcmp(file_location_name(fbh), skip) == 0) {
+        if (skip && rom.name == skip) {
 	    continue;
         }
 
-<<<<<<< Updated upstream
-        GamePtr game = romdb_read_game(fdb, file_location_name(fbh));
-        if (!game || game->roms.size() <= static_cast<size_t>(file_location_index(fbh))) {
-=======
         GamePtr game = fdb->read_game(rom.name);
         if (!game || game->roms.size() <= rom.index) {
->>>>>>> Stashed changes
 	    /* TODO: internal error: database inconsistency */
 	    status = FIND_ERROR;
 	    break;
 	}
 
-        auto &game_rom = game->roms[file_location_index(fbh)];
+        auto &game_rom = game->roms[rom.index];
 
         if (r->size == game_rom.size && r->hashes.compare(game_rom.hashes) == Hashes::MATCH) {
 	    bool ok = true;
@@ -365,55 +348,41 @@ find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Matc
 	}
     }
 
-    array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
-
     return status;
 }
 
 
 find_result_t
 find_disk_in_db(romdb_t *fdb, const Disk *d, const char *skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *)) {
-    array_t *a;
-    file_location_t *fbh;
-    int i;
     find_result_t status;
 
-<<<<<<< Updated upstream
-    if ((a = romdb_read_file_by_hash(fdb, TYPE_DISK, disk_hashes(d))) == NULL) {
-=======
     auto disks = fdb->read_file_by_hash(TYPE_DISK, disk_hashes(d));
     if (disks.empty()) {
->>>>>>> Stashed changes
 	/* TODO: internal error: database inconsistency */
 	return FIND_ERROR;
     }
 
     status = FIND_UNKNOWN;
-    for (i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < array_length(a); i++) {
-	fbh = static_cast<file_location_t *>(array_get(a, i));
+    for (size_t i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < disks.size(); i++) {
+	auto disk = disks[i];
 
-	if (skip && strcmp(file_location_name(fbh), skip) == 0)
+	if (skip && disk.name == skip) {
 	    continue;
+	}
 
-<<<<<<< Updated upstream
-        GamePtr game = romdb_read_game(fdb, file_location_name(fbh));
-=======
         GamePtr game = fdb->read_game(disk.name);
->>>>>>> Stashed changes
         if (!game) {
 	    /* TODO: internal error: db inconsistency */
 	    status = FIND_ERROR;
 	    break;
 	}
 
-	auto gd = &game->disks[file_location_index(fbh)];
+	auto gd = &game->disks[disk.index];
 
         if (d->hashes.compare(gd->hashes) == Hashes::MATCH) {
 	    status = check_match(game.get(), gd, md);
         }
     }
-
-    array_free(a, reinterpret_cast<void (*)(void *)>(file_location_finalize));
 
     return status;
 }

@@ -2,8 +2,8 @@
 #define HAD_DIR_H
 
 /*
-  dir.h -- reading a directory
-  Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
+  Dir.h -- reading a directory
+  Copyright (C) 2005-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,26 +34,18 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cstring>
+#include <filesystem>
+#include <string>
+#include <vector>
 
-#include "parray.h"
+class Dir {
+ public:
+    Dir(std::string path, bool recursive);
 
-#define DIR_RECURSE 1
-#define DIR_RETURN_DIRECTORIES 2
+    std::filesystem::path next();
 
-struct dir {
-    int flags;
-    parray_t *stack;
+ private:
+    std::vector<std::filesystem::path> entries;
 };
 
-typedef struct dir dir_t;
-
-enum dir_status { DIR_ERROR = -1, DIR_OK, DIR_DIRECTORY, DIR_EOD };
-
-typedef enum dir_status dir_status_t;
-
-int dir_close(dir_t *);
-dir_status_t dir_next(dir_t *, char *, size_t);
-dir_t *dir_open(const char *, int);
-
-#endif /* dir.h */
+#endif /* HAD_DIR_H */

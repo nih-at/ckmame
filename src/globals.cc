@@ -40,7 +40,7 @@ const char *needed_dir = "needed";   /* TODO: proper value */
 const char *unknown_dir = "unknown"; /* TODO: proper value */
 const char *rom_dir = NULL;
 
-parray_t *search_dirs = NULL;
+std::vector<std::string> search_dirs;
 
 int check_integrity = 0; /* full integrity check of ROM set */
 int roms_unzipped = 0;   /* ROMs are files on disk, not contained in zip archives */
@@ -56,17 +56,17 @@ romdb_t *old_db = NULL;
 
 DetectorPtr detector;
 
-parray_t *superfluous = NULL;
+std::vector<std::string> superfluous;
 
 
 /* check state */
 
-delete_list_t *extra_delete_list = NULL;
-parray_t *extra_list = NULL;
-delete_list_t *needed_delete_list = NULL;
-delete_list_t *superfluous_delete_list = NULL;
+DeleteListPtr extra_delete_list = NULL;
+std::vector<std::string> extra_list;
+DeleteListPtr needed_delete_list = NULL;
+DeleteListPtr superfluous_delete_list = NULL;
 
-tree_t *check_tree = NULL;
+Tree check_tree;
 OutputContextPtr fixdat;
 
 /* roms dir */

@@ -95,7 +95,7 @@ bool ArchiveZip::close_xxx() {
 
 bool ArchiveZip::commit_xxx() {
     if (modified && ((flags & ARCHIVE_FL_RDONLY) == 0) && za != NULL && !files.empty()) {
-        if (!ensure_dir(name.c_str(), 1)) {
+        if (!ensure_dir(name, true)) {
 	    return false;
         }
     }

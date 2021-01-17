@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -39,7 +41,6 @@
 #include "compat.h"
 #include "dat.h"
 #include "error.h"
-#include "file_location.h"
 #include "globals.h"
 #include "hashes.h"
 #include "romdb.h"
@@ -48,7 +49,7 @@
 #include "util.h"
 #include "xmalloc.h"
 
-static int dump_game(const char *, int);
+static int dump_game(const std::string &, int);
 static int dump_hashtypes(int);
 static int dump_list(int);
 static int dump_dat(int);
@@ -153,44 +154,38 @@ print_match(GamePtr game, filetype_t ft, int i) {
 
 static void
 print_matches(filetype_t ft, Hashes *hash) {
-    int matches;
-    array_t *fbha;
-    file_location_t *fbh;
+    int matches_count = 0;
 
-    matches = 0;
-
-    if ((fbha = romdb_read_file_by_hash(db, ft, hash)) == NULL) {
+    auto matches = romdb_read_file_by_hash(db, ft, hash);
+    if (matches.empty()) {
 	print_footer(0, hash);
 	return;
     }
 
-    for (auto i = 0; i < array_length(fbha); i++) {
-	fbh = static_cast<file_location_t *>(array_get(fbha, i));
-	auto game = romdb_read_game(db, file_location_name(fbh));
+    for (size_t i = 0; i < matches.size(); i++) {
+	auto match = matches[i];
+	auto game = romdb_read_game(db, match.name);
 	if (!game) {
-	    myerror(ERRDEF, "db error: %s not found, though in hash index", file_location_name(fbh));
+	    myerror(ERRDEF, "db error: %s not found, though in hash index", match.name.c_str());
 	    /* TODO: remember error */
 	    continue;
 	}
 
-	print_match(game, ft, file_location_index(fbh));
-	matches++;
+	print_match(game, ft, match.index);
+	matches_count++;
     }
 
-    array_free(fbha, reinterpret_cast<void (*)(void *)>(file_location_finalize));
-
-    print_footer(matches, hash);
+    print_footer(matches_count, hash);
 }
 
 
 int
 main(int argc, char **argv) {
-    int i, j, found, first;
+    int found, first;
     const char *dbname;
     int c;
     int find_checksum, brief_mode;
     filetype_t filetype = TYPE_ROM;
-    parray_t *list;
 
     setprogname(argv[0]);
 
@@ -237,7 +232,8 @@ main(int argc, char **argv) {
     }
     seterrdb(romdb_dbh(db));
 
-    if ((list = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+    auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
+    if (list.empty()) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
     }
@@ -246,7 +242,7 @@ main(int argc, char **argv) {
     if (find_checksum != 0) {
 	Hashes match;
 
-	for (i = optind; i < argc; i++) {
+	for (auto i = optind; i < argc; i++) {
 	    /* checksum */
 	    if ((match.set_from_string(argv[i])) == -1) {
 		myerror(ERRDEF, "error parsing checksum '%s'", argv[i]);
@@ -259,7 +255,7 @@ main(int argc, char **argv) {
     }
 
     first = 1;
-    for (i = optind; i < argc; i++) {
+    for (auto i = optind; i < argc; i++) {
 	if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
 	    if (argv[i][0] == '/') {
 		if (first)
@@ -268,7 +264,7 @@ main(int argc, char **argv) {
 		    putc('\n', stdout);
 		dump_special(argv[i]);
 	    }
-	    else if (parray_find_sorted(list, argv[i], reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) >= 0) {
+	    else if (std::find(list.begin(), list.end(), argv[i]) != list.end()) {
 		if (first)
 		    first = 0;
 		else
@@ -280,13 +276,15 @@ main(int argc, char **argv) {
 	}
 	else {
 	    found = 0;
-	    for (j = 0; j < parray_length(list); j++) {
-		if (fnmatch(argv[i], static_cast<char *>(parray_get(list, j)), 0) == 0) {
-		    if (first)
+	    for (size_t j = 0; j < list.size(); j++) {
+		if (fnmatch(argv[i], list[j].c_str(), 0) == 0) {
+		    if (first) {
 			first = 0;
-		    else
+		    }
+		    else {
 			putc('\n', stdout);
-		    dump_game(static_cast<char *>(parray_get(list, j)), brief_mode);
+		    }
+		    dump_game(list[j], brief_mode);
 		    found = 1;
 		}
 	    }
@@ -294,8 +292,6 @@ main(int argc, char **argv) {
 		myerror(ERRDEF, "no game matching '%s' found", argv[i]);
 	}
     }
-
-    parray_free(list, reinterpret_cast<void (*)(void *)>(free));
 
     return 0;
 }
@@ -349,7 +345,7 @@ print_rs(GamePtr game, const char *co, const char *gco, const char *cs, const ch
 
 
 static int
-dump_game(const char *name, int brief_mode) {
+dump_game(const std::string &name, int brief_mode) {
     GamePtr game;
     std::vector<DatEntry> dat;
 
@@ -361,7 +357,7 @@ dump_game(const char *name, int brief_mode) {
     }
 
     if ((game = romdb_read_game(db, name)) == NULL) {
-	myerror(ERRDEF, "game unknown (or database error): '%s'", name);
+	myerror(ERRDEF, "game unknown (or database error): '%s'", name.c_str());
 	return -1;
     }
 
@@ -406,17 +402,16 @@ dump_hashtypes(int dummy) {
 
 static int
 dump_list(int type) {
-    parray_t *list;
 
-    if ((list = romdb_read_list(db, static_cast<enum dbh_list>(type))) == NULL) {
+    auto list = romdb_read_list(db, static_cast<enum dbh_list>(type));
+    if (list.empty()) {
 	myerror(ERRDB, "db error reading list");
 	return -1;
     }
 
-    for (auto i = 0; i < parray_length(list); i++)
-	printf("%s\n", (char *)parray_get(list, i));
-
-    parray_free(list, reinterpret_cast<void (*)(void *)>(free));
+    for (size_t i = 0; i < list.size(); i++) {
+	printf("%s\n", list[i].c_str());
+    }
 
     return 0;
 }

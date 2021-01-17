@@ -120,13 +120,13 @@ bool ParserContext::parse_rc() {
 
 	if (sect == RC_GAMES) {
             if (!romline.process(line)) {
-                myerror(ERRFILE, "%d: cannot parse ROM line, skipping", lineno);
+                myerror(ERRFILE, "%zu: cannot parse ROM line, skipping", lineno);
             }
         }
         else {
             auto position = line.find('=');
             if (position == std::string::npos) {
-                myerror(ERRFILE, "%d: no `=' found", lineno);
+                myerror(ERRFILE, "%zu: no `=' found", lineno);
                 continue;
             }
             auto key = line.substr(0, position);
@@ -180,8 +180,8 @@ static bool parse_prog_version(ParserContext *ctx, const std::string &attr) {
 
 static bool
 rc_plugin(ParserContext *ctx, const std::string &attr) {
-    myerror(ERRFILE, "%d: warning: RomCenter plugins not supported,", ctx->lineno);
-    myerror(ERRFILE, "%d: warning: DAT won't work as expected.", ctx->lineno);
+    myerror(ERRFILE, "%zu: warning: RomCenter plugins not supported,", ctx->lineno);
+    myerror(ERRFILE, "%zu: warning: DAT won't work as expected.", ctx->lineno);
     return false;
 }
 
@@ -245,5 +245,5 @@ bool ROMLine::process(const std::string &line) {
     }
     ctx->file_end(TYPE_ROM);
 
-    return 0;
+    return true;
 }

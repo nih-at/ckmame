@@ -3,7 +3,7 @@
 
 /*
   util.h -- miscellaneous utility functions
-  Copyright (C) 1999-2018 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -42,18 +42,10 @@
 
 #include "types.h"
 
-
-typedef int (*cmpfunc)(const void *, const void *);
-
 std::string bin2hex(const uint8_t *data, size_t length);
 int hex2bin(unsigned char *, const char *, size_t);
-int is_writable_directory(const char *);
-const char *mybasename(const char *);
-std::string mydirname(const std::string &filename);
 name_type_t name_type(const char *);
 void print_human_number(FILE *f, uint64_t value);
-int ptr_sort(void **, int, int, int (*)(const void *, const void *));
-int remove_file_and_containing_empty_dirs(const char *, const char *);
 std::string status_name(status_t status, bool verbose = false);
 
 #endif

@@ -7,23 +7,12 @@ endif()
 if(NOT HAVE_SHA1INIT)
   list(APPEND COMPATIBILITY sha1.cc)
 endif()
-if(NOT HAVE_VASPRINTF)
-  list(APPEND COMPATIBILITY vasprintf.cc)
-endif()
 
 set(COMMON_SOURCES
   archive.cc
   ArchiveDir.cc
   archive_modify.cc
   ArchiveZip.cc
-  array.cc
-  array_delete.cc
-  array_grow.cc
-  array_insert.cc
-  array_new_length.cc
-  array_push.cc
-  array_sort.cc
-  array_truncate.cc
   chd.cc
   check_archive.cc
   check_disks.cc
@@ -42,19 +31,13 @@ set(COMMON_SOURCES
   detector_execute.cc
   detector_print.cc
   diagnostics.cc
-  dir.cc
+  Dir.cc
   disk.cc
   disk_new.cc
   error.cc
   export_db.cc
   file.cc
-  file_location.cc
-  file_location_ext.cc
-  file_location_finalize.cc
-  file_location_make_key.cc
-  file_status.cc
   file_util.cc
-  filetype_db_key.cc
   find.cc
   fix.cc
   fix_util.cc
@@ -64,7 +47,6 @@ set(COMMON_SOURCES
   hashes.cc
   hashes_update.cc
   images.cc
-  intstr.cc
   match.cc
   match_disk.cc
   memdb.cc
@@ -72,15 +54,6 @@ set(COMMON_SOURCES
   output_cm.cc
   output_db.cc
   output_mtree.cc
-  parray.cc
-  parray_delete.cc
-  parray_find.cc
-  parray_find_sorted.cc
-  parray_new_from_data.cc
-  parray_pop.cc
-  parray_push.cc
-  parray_set_length.cc
-  parray_sort_real.cc
   parse-cm.cc
   parse-dir.cc
   parse-rc.cc
@@ -88,21 +61,8 @@ set(COMMON_SOURCES
   parser_source.cc
   ParserSourceFile.cc
   ParserSourceZip.cc
-  ptr_sort.cc
   result.cc
   romdb.cc
-<<<<<<< Updated upstream
-  romdb_read_dat.cc
-  romdb_read_detector.cc
-  romdb_read_file_by_hash.cc
-  romdb_read_file_by_name.cc
-  romdb_read_game.cc
-  romdb_read_list.cc
-  romdb_write_dat.cc
-  romdb_write_detector.cc
-  romdb_write_game.cc
-=======
->>>>>>> Stashed changes
   sighandle.cc
   sq_util.cc
   stats.cc

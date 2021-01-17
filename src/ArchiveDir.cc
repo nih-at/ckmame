@@ -31,6 +31,8 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <filesystem>
+
 #include <errno.h>
 #include <limits.h>
 #include <sys/stat.h>
@@ -40,17 +42,12 @@
 #include "funcs.h"
 
 #include "ArchiveDir.h"
-#include "dir.h"
+#include "Dir.h"
 #include "error.h"
 #include "globals.h"
 #include "memdb.h"
 #include "util.h"
 #include "xmalloc.h"
-
-#define BUFSIZE 8192
-
-#define archive_file_change(a, idx) (static_cast<change_t *>(array_get((static_cast<ud_t *>(archive_user_data(a)))->change, (idx))))
-
 
 bool ArchiveDir::Change::is_renamed() const {
     if (original.data_file_name.empty() || destination.data_file_name.empty()) {
@@ -80,15 +77,27 @@ bool ArchiveDir::FileInfo::apply() const {
 }
 
 bool ArchiveDir::FileInfo::discard(ArchiveDir *archive) const {
+    std::error_code ec;
+
     if (name.empty() || name == data_file_name) {
         return true;
     }
 
-    /* TODO: stop before removing archive_name itself, e.g. extra_dir */
-    if (remove_file_and_containing_empty_dirs(data_file_name.c_str(), archive->name.c_str()) < 0) {
-        myerror(ERRZIP, "cannot delete '%s': %s", data_file_name.c_str(), strerror(errno));
-        return false;
+    std::filesystem::remove(data_file_name, ec);
+    if (ec) {
+        myerror(ERRZIP, "cannot delete '%s': %s", data_file_name.c_str(), ec.message().c_str());
+	return false;
     }
+    auto path = std::filesystem::path(name).parent_path();
+    /* TODO: stop before removing archive_name itself, e.g. extra_dir */
+    while (true) {
+	std::filesystem::remove(path, ec);
+	if (ec) {
+	    break;
+	}
+	path = path.parent_path();
+    }
+
     return true;
 }
 
@@ -119,7 +128,7 @@ int ArchiveDir::move_original_file_out_of_the_way(uint64_t index) {
 
 bool ArchiveDir::Change::apply(ArchiveDir *archive, uint64_t index) {
     if (!destination.name.empty()) {
-        if (ensure_dir(destination.name.c_str(), 1) < 0) {
+        if (!ensure_dir(destination.name, true)) {
             myerror(ERRZIP, "destination directory cannot be created: %s", strerror(errno));
             return false;
         }
@@ -171,7 +180,7 @@ void ArchiveDir::FileInfo::clear() {
 
 
 bool ArchiveDir::ensure_archive_dir() {
-    return ensure_dir(name.c_str(), 0) == 0;
+    return ensure_dir(name, false);
 }
 
 
@@ -258,8 +267,10 @@ bool ArchiveDir::commit_xxx() {
     }
     
     if (is_empty && is_writable() && !(flags & (ARCHIVE_FL_KEEP_EMPTY | ARCHIVE_FL_TOP_LEVEL_ONLY))) {
-        if (rmdir(name.c_str()) < 0 && errno != ENOENT) {
-            myerror(ERRZIP, "cannot remove empty archive '%s': %s", name.c_str(), strerror(errno));
+	std::error_code ec;
+	std::filesystem::remove(name, ec);
+	if (ec) {
+            myerror(ERRZIP, "cannot remove empty archive '%s': %s", name.c_str(), ec.message().c_str());
             ok = false;
         }
     }
@@ -468,49 +479,38 @@ const char *ArchiveDir::ArchiveFile::strerror() {
 
 
 bool ArchiveDir::read_infos_xxx() {
-    dir_t *dir;
-    char namebuf[8192];
-    dir_status_t status;
+    try {
+	 Dir dir(name, flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
+	 std::filesystem::path filepath;
 
-    if ((dir = dir_open(name.c_str(), (flags & ARCHIVE_FL_TOP_LEVEL_ONLY) ? 0 : DIR_RECURSE)) == NULL) {
-        return false;
+	 while ((filepath = dir.next()) != "") {
+	     if (name == filepath) {
+		 continue;
+	     }
+	     if (std::filesystem::is_regular_file(filepath)) {
+		 if (filepath.filename() == DBH_CACHE_DB_NAME) {
+		     continue;
+		 }
+		 struct stat sb;
+
+		 if (stat(filepath.c_str(), &sb) != 0) {
+		     continue;
+		 }
+
+		 files.push_back(File());
+		 auto &f = files[files.size() - 1];
+
+		 f.name = filepath.string().substr(name.size() + 1);
+		 // f.size = static_cast<uint64_t>(sb.st_size);
+		 f.size = std::filesystem::file_size(filepath);
+		 // auto ftime = std::filesystem::last_write_time(filepath);
+		 // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
+		 f.mtime = sb.st_mtime;
+	     }
+	 }
     }
-
-    while ((status = dir_next(dir, namebuf, sizeof(namebuf))) == DIR_OK) {
-        struct stat sb;
-        if (name == namebuf) {
-            continue;
-        }
-        
-        if (stat(namebuf, &sb) < 0) {
-            dir_close(dir);
-            return false;
-        }
-        
-        if (S_ISREG(sb.st_mode)) {
-            const char *filename = namebuf + name.size() + 1;
-            
-            if (strcmp(filename, DBH_CACHE_DB_NAME) == 0) {
-                continue;
-            }
-
-            files.push_back(File());
-            auto &f = files[files.size() - 1];
-            
-            f.name = filename;
-            f.size = static_cast<uint64_t>(sb.st_size);
-            f.mtime = sb.st_mtime;
-        }
-    }
-
-    if (status != DIR_EOD) {
-        myerror(ERRDEF, "error reading directory: %s", strerror(errno));
-        dir_close(dir);
-        return false;
-    }
-    if (dir_close(dir) < 0) {
-        myerror(ERRDEF, "cannot close directory '%s': %s", name.c_str(), strerror(errno));
-        return false;
+    catch (...) {
+	return false;
     }
 
     return true;

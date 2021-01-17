@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 
 #include "funcs.h"
 #include "garbage.h"
@@ -43,55 +44,55 @@ static void cleanup_disk(Images *, Result *, int);
 
 
 void
-cleanup_list(parray_t *list, delete_list_t *del, int flags) {
+cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
     ArchivePtr a;
-    char *name;
-    int i, di, len, cmp, n;
-    file_location_t *fl;
+    std::string name;
+    int cmp;
     name_type_t nt;
+    size_t di, len;
 
     di = len = 0;
     if (del) {
-	delete_list_sort(del);
-	len = delete_list_length(del);
+	std::sort(del->entries.begin(), del->entries.end());
+	len = del->entries.size();
     }
 
-    n = parray_length(list);
-    i = 0;
+    auto n = list.size();
+    size_t i = 0;
     while (i < n) {
-	name = (char *)parray_get(list, i);
-	switch ((nt = name_type(name))) {
+	name = list[i];
+	switch ((nt = name_type(name.c_str()))) {
             case NAME_ZIP: {
                 ArchivePtr a = Archive::open(name, TYPE_ROM, FILE_NOWHERE, 0);
-                
+
                 if (!a) {
                     /* TODO */
                     continue;
                 }
-                
+
                 Result res(NULL, a.get(), NULL);
 
                 while (di < len) {
-                    fl = delete_list_get(del, di);
-                    cmp = strcmp(name, file_location_name(fl));
-                    
+                    auto fl = del->entries[di];
+                    cmp = name.compare(fl.name);
+
                     if (cmp == 0) {
-                        res.files[file_location_index(fl)] = FS_USED;
+                        res.files[fl.index] = FS_USED;
                     }
                     else if (cmp < 0) {
                         break;
                     }
-                    
+
                     di++;
                 }
-                
+
                 check_archive(a, NULL, &res);
-                
+
                 warn_set_info(WARN_TYPE_ARCHIVE, a->name.c_str());
                 diagnostics_archive(a, &res);
-                
+
                 cleanup_archive(a.get(), &res, flags);
-                
+
                 break;
             }
 
@@ -102,13 +103,13 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
                     /* TODO */
                     continue;
                 }
-                
+
                 Result res(NULL, NULL, im.get());
-                
+
                 while (di < len) {
-                    fl = delete_list_get(del, di++);
-                    cmp = strcmp(name, file_location_name(fl));
-                    
+		    auto fl = del->entries[di++];
+                    cmp = name.compare(fl.name);
+
                     if (cmp == 0) {
                         res.images[0] = FS_USED;
                     }
@@ -116,26 +117,28 @@ cleanup_list(parray_t *list, delete_list_t *del, int flags) {
                         break;
                     }
                 }
-                
+
                 check_images(im.get(), NULL, &res);
-                
-                warn_set_info(WARN_TYPE_IMAGE, name);
+
+                warn_set_info(WARN_TYPE_IMAGE, name.c_str());
                 diagnostics_images(im.get(), &res);
-                
+
                 cleanup_disk(im.get(), &res, flags);
-                                
+
                 break;
             }
-                
+
             case NAME_UNKNOWN:
                 /* unknown files shouldn't be in list */
                 break;
         }
-        
-        if (n != parray_length(list))
-            n = parray_length(list);
-	else
+
+        if (n != list.size()) {
+	    n = list.size();
+	}
+	else {
 	    i++;
+	}
     }
 }
 
@@ -144,7 +147,6 @@ static void
 cleanup_archive(Archive *a, Result *res, int flags) {
     GarbagePtr gb;
     int move;
-    const char *reason;
 
     if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
         gb = std::make_shared<Garbage>(a);
@@ -152,65 +154,68 @@ cleanup_archive(Archive *a, Result *res, int flags) {
 
     for (size_t i = 0; i < a->files.size(); i++) {
 	switch (result_file(res, i)) {
-            case FS_SUPERFLUOUS:
-            case FS_DUPLICATE:
-            case FS_USED:
-                switch (result_file(res, i)) {
-                    case FS_SUPERFLUOUS:
-                        reason = "unused";
-                        break;
-                    case FS_DUPLICATE:
-                        reason = "duplicate";
-                        break;
-                    case FS_USED:
-                        reason = "used";
-                        break;
-                    default:
-                        reason = "[internal error]";
-                        break;
-                }
-                
-                if (fix_options & FIX_PRINT)
-                    printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, a->files[i].name.c_str());
-                a->file_delete(i);
-                break;
-                
-            case FS_BROKEN:
-            case FS_MISSING:
-            case FS_PARTUSED:
-                break;
-                
-            case FS_NEEDED:
-                if (flags & CLEANUP_NEEDED) {
-                    /* TODO: handle error (how?) */
-                    if (save_needed(a, i, NULL)) {
-                        /* save_needed delays deletes in archives with where != FILE_ROM */
-                        a->file_delete(i);
-                    }
-                }
-                break;
-                
-            case FS_UNKNOWN:
-                if (flags & CLEANUP_UNKNOWN) {
-                    move = fix_options & FIX_MOVE_UNKNOWN;
-                    if (fix_options & FIX_PRINT)
-                        printf("%s: %s unknown file '%s'\n", a->name.c_str(), (move ? "move" : "delete"), a->files[i].name.c_str());
-                    
-                    /* TODO: handle error (how?) */
-                    if (move) {
-                        if (fix_options & FIX_DO) {
-                            gb->add(i, false);
-                        }
-                        else {
-                            /* when FIX_DO is not set, this only updates in-memory representation of a */
-                            a->file_delete(i);
-                        }
-                    }
-                    else {
-                        a->file_delete(i);
-                    }
-                }
-                break;
+	case FS_SUPERFLUOUS:
+	case FS_DUPLICATE:
+	case FS_USED: {
+	    const char *reason;
+	    switch (result_file(res, i)) {
+	    case FS_SUPERFLUOUS:
+		reason = "unused";
+		break;
+	    case FS_DUPLICATE:
+		reason = "duplicate";
+		break;
+	    case FS_USED:
+		reason = "used";
+		break;
+	    default:
+		reason = "[internal error]";
+		break;
+	    }
+
+	    if (fix_options & FIX_PRINT)
+		printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, a->files[i].name.c_str());
+	    a->file_delete(i);
+	    break;
+
+	}
+	case FS_BROKEN:
+	case FS_MISSING:
+	case FS_PARTUSED:
+	    break;
+
+	case FS_NEEDED:
+	    if (flags & CLEANUP_NEEDED) {
+		/* TODO: handle error (how?) */
+		if (save_needed(a, i, NULL)) {
+		    /* save_needed delays deletes in archives with where != FILE_ROM */
+		    a->file_delete(i);
+		}
+	    }
+	    break;
+
+	case FS_UNKNOWN:
+	    if (flags & CLEANUP_UNKNOWN) {
+		move = fix_options & FIX_MOVE_UNKNOWN;
+		if (fix_options & FIX_PRINT) {
+		    printf("%s: %s unknown file '%s'\n", a->name.c_str(), (move ? "move" : "delete"), a->files[i].name.c_str());
+		}
+
+		/* TODO: handle error (how?) */
+		if (move) {
+		    if (fix_options & FIX_DO) {
+			gb->add(i, false);
+		    }
+		    else {
+			/* when FIX_DO is not set, this only updates in-memory representation of a */
+			a->file_delete(i);
+		    }
+		}
+		else {
+		    a->file_delete(i);
+		}
+	    }
+	    break;
         }
     }
 
@@ -228,16 +233,17 @@ cleanup_archive(Archive *a, Result *res, int flags) {
 
 static void
 cleanup_disk(Images *im, Result *res, int flags) {
-    const char *name, *reason;
-
     for (size_t i = 0; i < im->disks.size(); i++) {
-	if ((name = images_name(im, i)) == NULL)
+	std::string name = images_name(im, i);
+	if (name == "") {
 	    continue;
+	}
 
 	switch (result_image(res, i)) {
 	case FS_SUPERFLUOUS:
 	case FS_DUPLICATE:
-	case FS_USED:
+	case FS_USED: {
+	    const char *reason;
 	    switch (result_image(res, i)) {
 	    case FS_SUPERFLUOUS:
 		reason = "unused";
@@ -253,14 +259,16 @@ cleanup_disk(Images *im, Result *res, int flags) {
 		break;
 	    }
 
-	    if (fix_options & FIX_PRINT)
-		printf("%s: delete %s image\n", name, reason);
+	    if (fix_options & FIX_PRINT) {
+		printf("%s: delete %s image\n", name.c_str(), reason);
+	    }
 	    if (fix_options & FIX_DO) {
-		if (my_remove(name) == 0)
-		    remove_from_superfluous(name);
+		if (my_remove(name.c_str()) == 0) {
+		    remove_from_superfluous(name.c_str());
+		}
 	    }
 	    break;
-
+	}
 	case FS_BROKEN:
 	case FS_MISSING:
 	case FS_PARTUSED:
@@ -268,11 +276,13 @@ cleanup_disk(Images *im, Result *res, int flags) {
 
 	case FS_NEEDED:
 	    if (flags & CLEANUP_NEEDED) {
-		if (fix_options & FIX_PRINT)
-		    printf("%s: save needed image\n", name);
-		save_needed_disk(name, (fix_options & FIX_DO));
-		if (fix_options & FIX_DO)
-		    remove_from_superfluous(name);
+		if (fix_options & FIX_PRINT) {
+		    printf("%s: save needed image\n", name.c_str());
+		}
+		save_needed_disk(name.c_str(), (fix_options & FIX_DO));
+		if (fix_options & FIX_DO) {
+		    remove_from_superfluous(name.c_str());
+		}
 	    }
 	    break;
 
@@ -281,15 +291,19 @@ cleanup_disk(Images *im, Result *res, int flags) {
 		int move, ret;
 
 		move = fix_options & FIX_MOVE_UNKNOWN;
-		if (fix_options & FIX_PRINT)
-		    printf("%s: %s unknown image\n", name, (move ? "move" : "delete"));
+		if (fix_options & FIX_PRINT) {
+		    printf("%s: %s unknown image\n", name.c_str(), (move ? "move" : "delete"));
+		}
 		if (fix_options & FIX_DO) {
-		    if (move)
+		    if (move) {
 			ret = move_image_to_garbage(name);
-		    else
-			ret = my_remove(name);
-		    if (ret == 0)
-			remove_from_superfluous(name);
+		    }
+		    else {
+			ret = my_remove(name.c_str());
+		    }
+		    if (ret == 0) {
+			remove_from_superfluous(name.c_str());
+		    }
 		}
 	    }
 	    break;

@@ -31,6 +31,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
+#include <filesystem>
+#include <string>
 
 #include <errno.h>
 #include <stdarg.h>
@@ -44,7 +47,6 @@
 
 #include "archive.h"
 #include "error.h"
-#include "file_location.h"
 #include "funcs.h"
 #include "game.h"
 #include "garbage.h"
@@ -139,7 +141,7 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
 	case FS_NEEDED:
 	    /* TODO: handle error (how?) */
 	    if (save_needed(a, i, g->name.c_str())) {
-		tree_recheck_games_needing(check_tree, a->files[i].size, &a->files[i].hashes);
+                check_tree.recheck_games_needing(a->files[i].size, &a->files[i].hashes);
 	    }
 	    break;
 
@@ -198,26 +200,24 @@ fix_game(Game *g, Archive *a, Images *im, Result *res) {
 
 static int
 fix_disks(Game *g, Images *im, Result *res) {
-    const char *name;
-    char *fname = NULL;
     bool do_copy;
     size_t removed = 0;
     bool added = false;
 
     for (size_t i = 0; i < im->disks.size(); i++) {
-	name = images_name(im, i);
+	std::string name = images_name(im, i);
 
 	switch (result_image(res, i)) {
 	case FS_UNKNOWN:
 	case FS_BROKEN:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: %s unknown image\n", name, ((fix_options & FIX_MOVE_UNKNOWN) ? "move" : "delete"));
+		printf("%s: %s unknown image\n", name.c_str(), ((fix_options & FIX_MOVE_UNKNOWN) ? "move" : "delete"));
 	    if (fix_options & FIX_DO) {
                 if (fix_options & FIX_MOVE_UNKNOWN) {
 		    move_image_to_garbage(name);
                 }
                 else {
-		    my_remove(name);
+		    my_remove(name.c_str());
                 }
                 removed += 1;
 	    }
@@ -226,18 +226,19 @@ fix_disks(Game *g, Images *im, Result *res) {
 	case FS_DUPLICATE:
 	case FS_SUPERFLUOUS:
 	    if (fix_options & FIX_PRINT)
-		printf("%s: delete %s image\n", name, (result_image(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"));
+		printf("%s: delete %s image\n", name.c_str(), (result_image(res, i) == FS_SUPERFLUOUS ? "unused" : "duplicate"));
             if (fix_options & FIX_DO) {
-		my_remove(name);
+		my_remove(name.c_str());
                 removed += 1;
             }
-	    remove_from_superfluous(name);
+	    remove_from_superfluous(name.c_str());
 	    break;
 
 	case FS_NEEDED:
-	    if (fix_options & FIX_PRINT)
-		printf("%s: save needed image\n", name);
-	    save_needed_disk(name, (fix_options & FIX_DO));
+	    if (fix_options & FIX_PRINT) {
+		printf("%s: save needed image\n", name.c_str());
+	    }
+	    save_needed_disk(name.c_str(), (fix_options & FIX_DO));
             if (fix_options & FIX_DO) {
                 removed += 1;
             }
@@ -255,13 +256,14 @@ fix_disks(Game *g, Images *im, Result *res) {
         auto &match_disk = res->disks[i];
 
 	switch (match_disk.quality) {
-	case QU_COPIED:
-                if ((name = findfile(disk->name.c_str(), TYPE_DISK, g->name.c_str())) != NULL) {
-		myerror(ERRDEF, "internal error: unknown disk '%s' exists, skipping", name);
+	case QU_COPIED: {
+	    auto name = findfile(disk->name, TYPE_DISK, g->name);
+	    if (name != "") {
+		myerror(ERRDEF, "internal error: unknown disk '%s' exists, skipping", name.c_str());
 		continue;
 	    }
 
-                fname = make_file_name(TYPE_DISK, disk->name.c_str(), g->name.c_str());
+	    auto fname = make_file_name(TYPE_DISK, disk->name, g->name);
 
             switch (match_disk.where) {
             case FILE_INGAME:
@@ -287,11 +289,11 @@ fix_disks(Game *g, Images *im, Result *res) {
             }
 
 	    if (fix_options & FIX_PRINT)
-		printf("%s '%s' to '%s'\n", do_copy ? "copy" : "rename", match_disk.name.c_str(), fname);
+		printf("%s '%s' to '%s'\n", do_copy ? "copy" : "rename", match_disk.name.c_str(), fname.c_str());
 	    if (fix_options & FIX_DO) {
-                ensure_dir(fname, 1);
+                ensure_dir(fname, true);
 		if (do_copy) {
-		    link_or_copy(match_disk.name.c_str(), fname);
+		    link_or_copy(match_disk.name.c_str(), fname.c_str());
 #if 0
 		    /* delete_list_execute can't currently handle disks */
 		    if (extra_delete_list)
@@ -299,23 +301,21 @@ fix_disks(Game *g, Images *im, Result *res) {
 #endif
 		}
 		else {
-                    auto dir = mydirname(match_disk.name);
-                    rename_or_move(match_disk.name.c_str(), fname);
-                    (void)rmdir(dir.c_str());
-		    if (extra_list) {
-			int idx;
-			idx = parray_find_sorted(extra_list, match_disk.name.c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
-			if (idx >= 0)
-			    parray_delete(extra_list, idx, free);
+		    std::error_code ec;
+                    auto dir = std::filesystem::path(match_disk.name).parent_path();
+                    rename_or_move(match_disk.name.c_str(), fname.c_str());
+		    std::filesystem::remove(dir, ec);
+		    auto entry = std::find(extra_list.begin(), extra_list.end(), match_disk.name);
+		    if (entry != extra_list.end()) {
+			extra_list.erase(entry);
 		    }
 		}
                 added = true;
 	    }
 	    remove_from_superfluous(match_disk.name.c_str());
 
-	    free(fname);
 	    break;
-
+	}
 	case QU_HASHERR:
 	    /* TODO: move to garbage */
 	    break;
@@ -327,10 +327,9 @@ fix_disks(Game *g, Images *im, Result *res) {
     }
 
     if (!added && removed == im->disks.size()) {
-        char *dir;
-        xasprintf(&dir, "%s/%s", get_directory(), g->name.c_str());
-        (void)rmdir(dir);
-        free(dir);
+	std::error_code ec;
+	std::string path = std::string(get_directory()) + "/" + g->name;
+	std::filesystem::remove(path, ec);
     }
 
     return 0;
@@ -362,7 +361,7 @@ make_space(Archive *a, const char *name, std::vector<std::string> *original_name
 }
 
 
-#define REAL_NAME(aa, ii) ((aa) == a && (ii) < num_names && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].name.c_str())
+#define REAL_NAME(aa, ii) ((aa) == a && (ii) < static_cast<int64_t>(num_names) && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].name.c_str())
 
 static int
 fix_files(Game *g, Archive *a, Result *res, garbage_t *gb) {
@@ -437,10 +436,10 @@ fix_files(Game *g, Archive *a, Result *res, garbage_t *gb) {
 
 	case QU_NAMEERR:
 	    if (r->where == FILE_INCO || r->where == FILE_INGCO) {
-		if (tree_recheck(check_tree, g->cloneof[r->where - 1].c_str())) {
+                if (check_tree.recheck(g->cloneof[r->where - 1])) {
 		    /* fall-through to rename in case save_needed fails */
 		    if (save_needed(a, match_index(m), g->name.c_str())) {
-			tree_recheck_games_needing(check_tree, r->size, &r->hashes);
+                        check_tree.recheck_games_needing(r->size, &r->hashes);
 			break;
 		    }
 		}

@@ -32,12 +32,14 @@
 */
 
 #include <algorithm>
+#include <filesystem>
 
 #include <sys/param.h>
 #include <sys/stat.h>
 
 #include "dbh_cache.h"
-#include "dir.h"
+#include "delete_list.h"
+#include "Dir.h"
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
@@ -51,40 +53,35 @@
 
 int maps_done = 0;
 
-static int enter_dir_in_map_and_list(int, parray_t *, const char *, int, where_t);
-static int enter_dir_in_map_and_list_unzipped(int, parray_t *, const char *, int, where_t);
-static int enter_dir_in_map_and_list_zipped(int, parray_t *, const char *, int, where_t);
-static int enter_file_in_map_and_list(int flags, parray_t *list, const char *name, where_t where);
+static bool enter_dir_in_map_and_list(int, std::vector<std::string> &, const char *, bool recursive, where_t);
+static bool enter_dir_in_map_and_list_unzipped(int, std::vector<std::string> &, const char *, bool recursive, where_t);
+static bool enter_dir_in_map_and_list_zipped(int, std::vector<std::string> &, const char *, bool recursive, where_t);
+static bool enter_file_in_map_and_list(int flags,  std::vector<std::string> &, const char *name, where_t where);
 
 
 void
 ensure_extra_maps(int flags) {
-    int i;
-    const char *file;
     name_type_t nt;
 
     if ((flags & (DO_MAP | DO_LIST)) == 0) {
 	return;
     }
 
-    if (((maps_done & EXTRA_MAPS) && !(flags & DO_LIST)) || (extra_list != NULL && !(flags & DO_MAP))) {
+    if (((maps_done & EXTRA_MAPS) && !(flags & DO_LIST)) || (!extra_list.empty() && !(flags & DO_MAP))) {
 	return;
     }
 
     if (!(maps_done & EXTRA_MAPS) && (flags & DO_MAP)) {
 	maps_done |= EXTRA_MAPS;
-	extra_delete_list = delete_list_new();
-	superfluous_delete_list = delete_list_new();
+	extra_delete_list = std::make_shared<DeleteList>();
+	superfluous_delete_list = std::make_shared<DeleteList>();
     }
-
-    if (extra_list == NULL && (flags & DO_LIST))
-	extra_list = parray_new();
 
     if (flags & DO_MAP) {
 	memdb_ensure();
-	for (i = 0; i < parray_length(superfluous); i++) {
-	    file = static_cast<const char *>(parray_get(superfluous, i));
-	    switch ((nt = name_type(file))) {
+	for (size_t i = 0; i < superfluous.size(); i++) {
+	    auto file = superfluous[i];
+	    switch ((nt = name_type(file.c_str()))) {
 		case NAME_ZIP: {
 		    auto a = Archive::open(file, TYPE_ROM, FILE_SUPERFLUOUS, 0);
 		    if (a) {
@@ -115,93 +112,86 @@ ensure_extra_maps(int flags) {
 	}
     }
 
-    for (i = 0; i < parray_length(search_dirs); i++)
-	enter_dir_in_map_and_list(flags, extra_list, static_cast<const char *>(parray_get(search_dirs, i)), DIR_RECURSE, FILE_EXTRA);
+    for (size_t i = 0; i < search_dirs.size(); i++) {
+	enter_dir_in_map_and_list(flags, extra_list, search_dirs[i].c_str(), true, FILE_EXTRA);
+    }
 
-    if (flags & DO_LIST)
-	parray_sort(extra_list, reinterpret_cast<int (*)(const void *, const void *)>(strcmp));
+    if (flags & DO_LIST) {
+	std::sort(extra_list.begin(), extra_list.end());
+    }
 }
 
 
 void
 ensure_needed_maps(void) {
+    std::vector<std::string> dummy;
     if (maps_done & NEEDED_MAPS)
 	return;
 
     maps_done |= NEEDED_MAPS;
-    needed_delete_list = delete_list_new();
+    needed_delete_list = std::make_shared<DeleteList>();
 
-    enter_dir_in_map_and_list(DO_MAP, NULL, needed_dir, DIR_RECURSE, FILE_NEEDED);
+    enter_dir_in_map_and_list(DO_MAP, dummy, needed_dir, true, FILE_NEEDED);
 }
 
 
-char *
-findfile(const char *name, filetype_t what, const char *game_name) {
-    char *fn;
-    struct stat st;
-
+std::string findfile(const std::string &name, filetype_t what, const std::string &game_name) {
     if (what == TYPE_FULL_PATH) {
-	if (stat(name, &st) == 0)
-	    return xstrdup(name);
-	else
-	    return NULL;
+	if (std::filesystem::exists(name)) {
+	    return name;
+	}
+	else {
+	    return "";
+	}
     }
 
-    fn = make_file_name(what, name, game_name);
-    if (stat(fn, &st) == 0)
+    auto fn = make_file_name(what, name, game_name);
+    if (std::filesystem::exists(fn)) {
 	return fn;
+    }
     if (what == TYPE_DISK) {
-	fn[strlen(fn) - 4] = '\0';
-	if (stat(fn, &st) == 0)
+	/* strip off ".chd" */
+	fn = fn.substr(0, fn.size() - 4);
+	if (std::filesystem::exists(fn)) {
 	    return fn;
+	}
     }
-    free(fn);
 
-    return NULL;
+    return "";
 }
 
 
-char *
-make_file_name(filetype_t ft, const char *name, const char *game_name) {
-    char *fn;
-    const char *dir, *ext;
+std::string make_file_name(filetype_t ft, const std::string &name, const std::string &game_name) {
+    std::string result;
 
-    dir = get_directory();
-
+    result = std::string(get_directory()) + "/";
     if (ft == TYPE_DISK) {
-	ext = ".chd";
+	result += game_name + "/";
     }
-    else {
-	ext = roms_unzipped ? "" : ".zip";
-	game_name = NULL;
+    result += name;
+    if (ft == TYPE_DISK) {
+	result += ".chd";
+    } else {
+	if (!roms_unzipped) {
+	    result += ".zip";
+	}
     }
 
-    xasprintf(&fn, "%s/%s%s%s%s", dir, game_name ? game_name : "", game_name ? "/" : "", name, ext);
-
-    return fn;
+    return result;
 }
 
 
-static int
-enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name, int dir_flags, where_t where) {
-    parray_t *our_list;
-
-    if (list == NULL) {
-	our_list = parray_new();
-    }
-    else {
-	our_list = list;
-    }
-
-    int ret;
+static bool
+enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list, const char *directory_name, bool recursive, where_t where) {
+    bool ret;
     if (roms_unzipped) {
-	ret = enter_dir_in_map_and_list_unzipped(flags | DO_LIST, our_list, directory_name, dir_flags, where);
+	ret = enter_dir_in_map_and_list_unzipped(flags | DO_LIST, list, directory_name, recursive, where);
     }
     else {
-	ret = enter_dir_in_map_and_list_zipped(flags | DO_LIST, our_list, directory_name, dir_flags, where);
+	ret = enter_dir_in_map_and_list_zipped(flags | DO_LIST, list, directory_name, recursive, where);
     }
 
-    if (ret == 0) {
+    if (ret) {
 	/* clean up cache db: remove archives no longer in file system */
 	DB *dbh = dbh_cache_get_db_for_archive(directory_name);
 	if (dbh) {
@@ -217,7 +207,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 			    name += ".zip";
 			}
 		    }
-		    if (parray_find(our_list, name.c_str(), reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) == -1) {
+		    if (std::find(list.begin(), list.end(), name) == list.end()) {
 			dbh_cache_delete_by_name(dbh, name.c_str());
 		    }
 		}
@@ -225,108 +215,91 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 	}
     }
 
-    if (list == NULL) {
-	parray_free(our_list, free);
-    }
-
     return ret;
 }
 
-static int
-enter_dir_in_map_and_list_unzipped(int flags, parray_t *list, const char *directory_name, int dir_flags, where_t where) {
-    dir_t *dir;
-    dir_status_t ds;
-    char name[8192];
+static bool
+enter_dir_in_map_and_list_unzipped(int flags, std::vector<std::string> &list, const char *directory_name, bool recursive, where_t where) {
+    try {
+	 Dir dir(directory_name, false);
+	 std::filesystem::path filepath;
 
-    if ((dir = dir_open(directory_name, dir_flags & ~DIR_RECURSE)) == NULL) {
-	return -1;
+	 while ((filepath = dir.next()) != "") {
+	     if (filepath.filename() == DBH_CACHE_DB_NAME) {
+		 continue;
+	     }
+	     if (std::filesystem::is_directory(filepath)) {
+		 auto a = Archive::open(filepath, TYPE_ROM, where, 0);
+		 if (a) {
+		     if (flags & DO_LIST) {
+			 list.push_back(filepath);
+		     }
+		     a->close();
+		 }
+
+	     }
+	 }
+
+	 auto a = Archive::open_toplevel(directory_name, TYPE_ROM, where, 0);
+	 if (a) {
+	     if (flags & DO_LIST) {
+		 list.push_back(a->name);
+	     }
+	     a->close();
+	 }
+    }
+    catch (...) {
+	return false;
     }
 
-    while ((ds = dir_next(dir, name, sizeof(name))) != DIR_EOD) {
-	struct stat sb;
-	if (strcmp(mybasename(name), DBH_CACHE_DB_NAME) == 0) {
-	    continue;
-	}
-	if (stat(name, &sb) < 0) {
-	    continue;
-	}
-	if (S_ISDIR(sb.st_mode)) {
-	    auto a = Archive::open(name, TYPE_ROM, where, 0);
-	    if (a) {
-		if ((flags & DO_LIST) && list) {
-		    parray_push(list, xstrdup(name));
-		}
-		a->close();
-	    }
-	}
-    }
-
-    auto a = Archive::open_toplevel(directory_name, TYPE_ROM, where, 0);
-    if (a) {
-	if ((flags & DO_LIST) && list) {
-	    parray_push(list, xstrdup(a->name.c_str()));
-	}
-	a->close();
-    }
-
-    return dir_close(dir);
+    return true;
 }
 
 
-static int
-enter_dir_in_map_and_list_zipped(int flags, parray_t *list, const char *dir_name, int dir_flags, where_t where) {
-    dir_t *dir;
-    dir_status_t ds;
-    char b[8192];
+static bool
+enter_dir_in_map_and_list_zipped(int flags, std::vector<std::string> &list, const char *dir_name, bool recursive, where_t where) {
+    try {
+	 Dir dir(dir_name, recursive);
+	 std::filesystem::path filepath;
 
-    if ((dir = dir_open(dir_name, dir_flags)) == NULL) {
-	return -1;
+	 while ((filepath = dir.next()) != "") {
+	     enter_file_in_map_and_list(flags, list, filepath.c_str(), where);
+	 }
+    }
+    catch (...) {
+	return false;
     }
 
-    while ((ds = dir_next(dir, b, sizeof(b))) != DIR_EOD) {
-	if (ds == DIR_ERROR) {
-	    /* TODO: handle error */
-	    continue;
-	}
-
-	enter_file_in_map_and_list(flags, list, b, where);
-	/* TODO: handle error */
-    }
-
-    return dir_close(dir);
+    return true;
 }
 
 
-int
+bool
 enter_disk_in_map(const Disk *d, where_t where) {
     sqlite3_stmt *stmt;
 
-<<<<<<< Updated upstream
-    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
-	return -1;
-=======
     if ((stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_FILE)) == NULL) {
 	return false;
     }
->>>>>>> Stashed changes
 
-    if (sqlite3_bind_int64(stmt, 1, disk_id(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK || sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 4, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 5, where) != SQLITE_OK || sqlite3_bind_null(stmt, 6) != SQLITE_OK || sq3_set_hashes(stmt, 7, disk_hashes(d), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
-	return -1;
+    if (sqlite3_bind_int64(stmt, 1, disk_id(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK || sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 4, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 5, where) != SQLITE_OK || sqlite3_bind_null(stmt, 6) != SQLITE_OK || sq3_set_hashes(stmt, 7, disk_hashes(d), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
+	return false;
+    }
 
-    return 0;
+    return true;
 }
 
 
-static int
-enter_file_in_map_and_list(int flags, parray_t *list, const char *name, where_t where) {
+static bool
+enter_file_in_map_and_list(int flags, std::vector<std::string> &list, const char *name, where_t where) {
     name_type_t nt;
 
     switch ((nt = name_type(name))) {
 	case NAME_ZIP: {
 	    auto a = Archive::open(name, TYPE_ROM, where, 0);
 	    if (a) {
-		if ((flags & DO_LIST) && list) {
-		    parray_push(list, xstrdup(a->name.c_str()));
+		if (flags & DO_LIST) {
+		    list.push_back(a->name);
 		}
 		a->close();
 	    }
@@ -339,17 +312,17 @@ enter_file_in_map_and_list(int flags, parray_t *list, const char *name, where_t 
 		if (flags & DO_MAP) {
 		    enter_disk_in_map(disk.get(), where);
 		}
-		if ((flags & DO_LIST) && list) {
-		    parray_push(list, xstrdup(disk->name.c_str()));
+		if (flags & DO_LIST) {
+		    list.push_back(disk->name);
 		}
 	    }
 	    break;
 	}
-	    
+
 	case NAME_UNKNOWN:
 	    /* ignore unknown files */
 	    break;
     }
 
-    return 0;
+    return true;
 }

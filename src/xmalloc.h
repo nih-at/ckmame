@@ -5,7 +5,7 @@
 
 /*
   xmalloc.h -- malloc routines with exit on failure
-  Copyright (C) 1999-2013 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -36,10 +36,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-int xasprintf(char **, const char *, ...) __attribute__((format(printf, 2, 3)));
 void *xrealloc(void *, size_t);
 void *xmalloc(size_t size);
-void *xmemdup(const void *, size_t);
 char *xstrdup(const char *);
 
 #endif /* xmalloc.h */

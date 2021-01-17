@@ -3,7 +3,7 @@
 
 /*
   funcs.h -- tree functions
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,13 +34,13 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <string>
 
 #include <zip.h>
 
 #include "archive.h"
 #include "delete_list.h"
 #include "game.h"
-#include "parray.h"
 #include "result.h"
 #include "tree.h"
 
@@ -56,37 +56,37 @@ void check_disks(Game *, ImagesPtr [], Result *);
 void check_files(Game *, ArchivePtr [], Result *);
 void check_images(Images *, const char *, Result *);
 void check_old(Game *, Result *);
-void cleanup_list(parray_t *, delete_list_t *, int);
+void cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags);
 int copy_file(const char *, const char *, size_t, ssize_t, Hashes *);
 void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
 void diagnostics_archive(const ArchivePtr, const Result *);
 void diagnostics_images(const Images *, const Result *);
-int ensure_dir(const char *, int);
+bool ensure_dir(const std::string &name, bool strip_filename);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);
-int enter_disk_in_map(const Disk *, where_t);
-char *findfile(const char *, filetype_t, const char *);
+bool enter_disk_in_map(const Disk *, where_t);
+std::string findfile(const std::string &name, filetype_t ft, const std::string &game_name);
 int fix_game(Game *, Archive *, Images *, Result *);
-parray_t *list_directory(const char *, const char *);
+std::vector<std::string> list_directory(const std::string &dirname, const std::string &dbname);
 const char *get_directory(void);
 int link_or_copy(const char *, const char *);
-char *make_file_name(filetype_t, const char *, const char *);
-char *make_garbage_name(const char *, int);
+std::string make_file_name(filetype_t, const std::string &name, const std::string &game_name);
+std::string make_garbage_name(const std::string &, int);
 char *make_needed_name(const File *);
 char *make_needed_name_disk(const Disk *);
 char *make_unique_name(const char *, const char *, ...);
-int move_image_to_garbage(const char *);
+int move_image_to_garbage(const std::string &fname);
 int my_remove(const char *name);
 int my_zip_rename(struct zip *, uint64_t, const char *);
 int my_zip_rename_to_unique(struct zip *, zip_uint64_t);
 int name_is_zip(const char *);
-void print_superfluous(const parray_t *);
-void remove_empty_archive(const char *);
-void remove_from_superfluous(const char *);
+void print_superfluous(std::vector<std::string> &files);
+void remove_empty_archive(const std::string &name);
+void remove_from_superfluous(const std::string &name);
 int rename_or_move(const char *, const char *);
-bool save_needed(Archive *sa, int sidx, const char *gamename);
+bool save_needed(Archive *sa, size_t sidx, const char *gamename);
 int save_needed_disk(const char *, int);
-bool save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t length, File *f);
+bool save_needed_part(Archive *sa, size_t sidx, const char *gamename, off_t start, off_t length, File *f);
 void write_fixdat_entry(const Game *, const Result *);
 
 #endif /* funcs.h */

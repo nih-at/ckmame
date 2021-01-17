@@ -3,7 +3,7 @@
 
 /*
   result.h -- result of game check
-  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 2006-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -39,12 +39,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "file_status.h"
 #include "game.h"
 #include "images.h"
 #include "match.h"
 #include "match_disk.h"
-#include "parray.h"
 
 class Result {
 public:
@@ -58,7 +56,6 @@ public:
     std::vector<MatchDisk> disks;
     std::vector<file_status_> images;
 };
-
 
 #define result_disk(res, i) (match_disk_array_get((res)->disks, (i)))
 #define result_disks(res) ((res)->disks)

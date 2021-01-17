@@ -3,7 +3,7 @@
 
 /*
   detector.h -- clrmamepro XML header skip detector
-  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 2007-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -144,30 +144,5 @@ public:
 };
 
 typedef Detector detector_t;
-
-
-
-
-#define detector_author(d) ((d)->author)
-#define detector_name(d) ((d)->name)
-#define detector_num_rules(d) (array_length(detector_rules(d)))
-#define detector_rule(d, i) ((detector_rule_t *)array_get(detector_rules(d), (i)))
-#define detector_rules(d) ((d)->rules)
-#define detector_version(d) ((d)->version)
-
-#define detector_rule_end_offset(r) ((r)->end_offset)
-#define detector_rule_operation(r) ((r)->operation)
-#define detector_rule_num_tests(d) (array_length(detector_rule_tests(d)))
-#define detector_rule_start_offset(r) ((r)->start_offset)
-#define detector_rule_test(d, i) ((detector_test_t *)array_get(detector_rule_tests(d), (i)))
-#define detector_rule_tests(r) ((r)->tests)
-
-#define detector_test_length(t) ((t)->length)
-#define detector_test_mask(t) ((t)->mask)
-#define detector_test_offset(t) ((t)->offset)
-#define detector_test_result(t) ((t)->result)
-#define detector_test_size detector_test_offset
-#define detector_test_type(t) ((t)->type)
-#define detector_test_value(t) ((t)->value)
 
 #endif /* detector.h */

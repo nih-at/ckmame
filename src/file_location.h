@@ -3,7 +3,7 @@
 
 /*
   file_location.h -- location of a file
-  Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 2005-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -35,42 +35,15 @@
 */
 
 
-#include "hashes.h"
-#include "types.h"
+#include <string>
 
+class FileLocation {
+ public:
+    FileLocation(std::string name_, int index_) : name(name_), index(index_) { };
 
-struct file_location {
-    char *name;
-    int index;
+    bool operator<(FileLocation other) const { return (name == other.name) ? (index < other.index) : (name < other.name); }
+    std::string name;
+    size_t index;
 };
-
-typedef struct file_location file_location_t;
-
-struct file_location_ext {
-    char *name;
-    int index;
-    where_t where;
-};
-
-typedef struct file_location_ext file_location_ext_t;
-
-
-#define file_location_name(a) ((a)->name)
-#define file_location_index(a) ((a)->index)
-
-const char *file_location_make_key(filetype_t, const Hashes *);
-int file_location_default_hashtype(filetype_t);
-
-int file_location_cmp(const file_location_t *, const file_location_t *);
-void file_location_free(file_location_t *);
-void file_location_finalize(file_location_t *);
-file_location_t *file_location_new(const char *, int);
-
-#define file_location_ext_name(a) ((a)->name)
-#define file_location_ext_index(a) ((a)->index)
-#define file_location_ext_where(a) ((a)->where)
-
-void file_location_ext_free(file_location_ext_t *);
-file_location_ext_t *file_location_ext_new(const char *, int, where_t);
 
 #endif /* file_location.h */

@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 
 #include <stdlib.h>
 #include <zip.h>
@@ -39,36 +40,20 @@
 #include "error.h"
 #include "funcs.h"
 #include "globals.h"
-#include "xmalloc.h"
-
-
-void
-delete_list_free(delete_list_t *dl) {
-    if (dl == NULL)
-	return;
-
-    parray_free(dl->array, reinterpret_cast<void (*)(void *)>(file_location_free));
-    free(dl);
-}
 
 
 int
-delete_list_execute(delete_list_t *dl) {
-    int i;
-    const char *name;
-    const file_location_t *fbh;
-    ArchivePtr a;
-    int ret;
+delete_list_execute(DeleteListPtr dl) {
+    std::string name;
+    ArchivePtr a = NULL;
 
-    delete_list_sort(dl);
+    std::sort(dl->entries.begin(), dl->entries.end());
 
-    name = NULL;
-    a = NULL;
-    ret = 0;
-    for (i = 0; i < delete_list_length(dl); i++) {
-	fbh = delete_list_get(dl, i);
+    int ret = 0;
+    for (size_t i = 0; i < dl->entries.size(); i++) {
+	auto entry = dl->entries[i];
 
-	if (name == NULL || strcmp(file_location_name(fbh), name) != 0) {
+	if (name == "" || entry.name != name) {
 	    if (a) {
 		if (!a->commit()) {
 		    a->rollback();
@@ -76,12 +61,12 @@ delete_list_execute(delete_list_t *dl) {
 		}
 
 		if (a->is_empty())
-		    remove_empty_archive(name);
+		    remove_empty_archive(name.c_str());
 
                 a = NULL;
 	    }
 
-	    name = file_location_name(fbh);
+	    name = entry.name;
 	    /* TODO: don't hardcode location */
             a = Archive::open(name, TYPE_ROM, FILE_NOWHERE, 0);
             if (!a) {
@@ -90,10 +75,10 @@ delete_list_execute(delete_list_t *dl) {
 	}
 	if (a) {
             if (fix_options & FIX_PRINT) {
-		printf("%s: delete used file '%s'\n", name, a->files[file_location_index(fbh)].name.c_str());
+		printf("%s: delete used file '%s'\n", name.c_str(), a->files[entry.index].name.c_str());
             }
 	    /* TODO: check for error */
-	    a->file_delete(file_location_index(fbh));
+	    a->file_delete(entry.index);
 	}
     }
 
@@ -103,8 +88,9 @@ delete_list_execute(delete_list_t *dl) {
 	    ret = -1;
 	}
 
-	if (a->is_empty())
-            remove_empty_archive(name);
+	if (a->is_empty()) {
+            remove_empty_archive(name.c_str());
+	}
     }
 
     return ret;
@@ -112,53 +98,39 @@ delete_list_execute(delete_list_t *dl) {
 
 
 void
-delete_list_mark(delete_list_t *dl) {
-    dl->mark = parray_length(dl->array);
-}
-
-
-delete_list_t *
-delete_list_new(void) {
-    delete_list_t *dl;
-
-    dl = static_cast<delete_list_t *>(xmalloc(sizeof(*dl)));
-    dl->array = parray_new();
-    dl->mark = 0;
-
-    return dl;
+delete_list_mark(DeleteListPtr dl) {
+    dl->mark = dl->entries.size();
 }
 
 
 void
-delete_list_rollback(delete_list_t *dl) {
-    parray_set_length(dl->array, dl->mark, NULL, reinterpret_cast<void (*)(void *)>(file_location_free));
+delete_list_rollback(DeleteListPtr dl) {
+    /* this function should only remove items, so dummy should not be used */
+    FileLocation dummy("", 0);
+    dl->entries.resize(dl->mark, dummy);
 }
 
 
 void
-delete_list_used(Archive *a, int index) {
-    delete_list_t *list = NULL;
-    
+delete_list_used(Archive *a, size_t index) {
+    FileLocation fl(a->name, index);
+
     switch (a->where) {
     case FILE_NEEDED:
-	list = needed_delete_list;
+	needed_delete_list->entries.push_back(fl);
 	break;
 	
     case FILE_SUPERFLUOUS:
-	list = superfluous_delete_list;
+	superfluous_delete_list->entries.push_back(fl);
 	break;
 
     case FILE_EXTRA:
 	if (fix_options & FIX_DELETE_EXTRA) {
-	    list = extra_delete_list;
+	    extra_delete_list->entries.push_back(fl);
 	}
 	break;
             
     default:
         break;
-    }
-
-    if (list) {
-	delete_list_add(list, a->name.c_str(), index);
     }
 }

@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
 
 #include <errno.h>
 #include <stdio.h>
@@ -44,50 +45,6 @@
 #include "globals.h"
 #include "util.h"
 #include "xmalloc.h"
-
-
-int
-is_writable_directory(const char *name) {
-    struct stat st;
-
-    if (stat(name, &st) < 0)
-	return 0;
-
-    if (!S_ISDIR(st.st_mode)) {
-	errno = ENOTDIR;
-	return 0;
-    }
-
-    return access(name, R_OK | W_OK | X_OK) == 0;
-}
-
-
-const char *
-mybasename(const char *fname) {
-    const char *p;
-
-    if ((p = strrchr(fname, '/')) == NULL)
-	return fname;
-    return p + 1;
-}
-
-
-std::string
-mydirname(const std::string &fname) {
-    /* TODO: ignore trailing slashes */
-
-    auto length = fname.find_last_of('/');
-    
-    if (length == std::string::npos) {
-        return ".";
-    }
-
-    if (length == 0) {
-        return "/";
-    }
-
-    return fname.substr(0, length);
-}
 
 
 std::string
@@ -144,49 +101,26 @@ name_type(const char *name) {
     return NAME_UNKNOWN;
 }
 
-int
-ensure_dir(const char *name, int strip_fname) {
-    const char *p;
-    char *dir;
-    struct stat st;
-    int ret;
-    bool free_dir = false;
+bool
+ensure_dir(const std::string &name, bool strip_filename) {
+    std::error_code ec;
+    std::string dir = name;
 
-    if (strip_fname || name[strlen(name) - 1] == '/') {
-	p = strrchr(name, '/');
-	if (p == NULL) {
-	    dir = xstrdup(".");
-	} else {
-	    dir = static_cast<char *>(xmalloc(p - name + 1));
-	    strncpy(dir, name, p - name);
-	    dir[p - name] = 0;
-	}
-	free_dir = true;
-	name = dir;
-    }
-
-    ret = 0;
-    if (stat(name, &st) < 0) {
-	if (strchr(name, '/')) {
-	    ret = ensure_dir(name, 1);
-	}
-	if (ret == 0) {
-	    if (mkdir(name, 0777) < 0) {
-		myerror(ERRSTR, "mkdir '%s' failed", name);
-		ret = -1;
-	    }
+    if (strip_filename) {
+	dir = std::filesystem::path(name).parent_path();
+	if (dir == "") {
+	    return true;
 	}
     }
-    else if (!(st.st_mode & S_IFDIR)) {
-	myerror(ERRDEF, "'%s' is not a directory", name);
-	ret = -1;
+
+    std::filesystem::create_directories(dir, ec);
+
+    if (ec) {
+	myerror(ERRDEF, "cannot create '%s': %s", dir.c_str(), ec.message().c_str());
+	return false;
     }
 
-    if (free_dir) {
-	free(dir);
-    }
-
-    return ret;
+    return true;
 }
 
 
@@ -196,40 +130,6 @@ get_directory(void) {
 	return rom_dir;
     else
 	return "roms";
-}
-
-int
-remove_file_and_containing_empty_dirs(const char *name, const char *base) {
-    if (base == NULL) {
-	errno = EINVAL;
-	return -1;
-    }
-
-    size_t n = strlen(base);
-
-    if (n >= strlen(name) || strncmp(base, name, n) != 0 || name[n] != '/') {
-	errno = EINVAL;
-	return -1;
-    }
-
-    if (unlink(name) < 0)
-	return -1;
-
-    if (strchr(name + n + 1, '/') == NULL)
-	return 0;
-
-    char *tmp = xstrdup(name);
-    char *r;
-    while ((r = strrchr(tmp + n + 1, '/')) != NULL) {
-	*r = '\0';
-	if (rmdir(tmp) < 0) {
-	    free(tmp);
-	    return errno == ENOTEMPTY ? 0 : -1;
-	}
-    }
-
-    free(tmp);
-    return 0;
 }
 
 

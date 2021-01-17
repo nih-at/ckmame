@@ -104,18 +104,9 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
         throw std::exception();
     }
 
-<<<<<<< Updated upstream
-    if ((db = (dbh_t *)malloc(sizeof(*db))) == NULL)
-	return NULL;
-
-    db->db = NULL;
-    for (i = 0; i < DBH_STMT_MAX; i++)
-	db->statements[i] = NULL;
-=======
     for (size_t i = 0; i < DBH_STMT_MAX; i++) {
         statements[i] = NULL;
     }
->>>>>>> Stashed changes
 
     format = DBH_FMT(mode);
 
@@ -123,14 +114,6 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
     
     if (DBH_FLAGS(mode) & DBH_TRUNCATE) {
 	/* do not delete special cases (like memdb) */
-<<<<<<< Updated upstream
-	if (name[0] != ':')
-	    unlink(name.c_str());
-	needs_init = 1;
-    }
-
-    if (DBH_FLAGS(mode) & DBH_WRITE)
-=======
 	if (name[0] != ':') {
             std::filesystem::remove(name);
 	}
@@ -140,21 +123,17 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
     int sql3_flags;
     
     if (DBH_FLAGS(mode) & DBH_WRITE) {
->>>>>>> Stashed changes
 	sql3_flags = SQLITE_OPEN_READWRITE;
-    else
+    }
+    else {
 	sql3_flags = SQLITE_OPEN_READONLY;
+    }
 
     if (DBH_FLAGS(mode) & DBH_CREATE) {
 	sql3_flags |= SQLITE_OPEN_CREATE;
-<<<<<<< Updated upstream
-	if (name[0] == ':' || (stat(name.c_str(), &st) < 0 && errno == ENOENT))
-	    needs_init = 1;
-=======
         if (name[0] == ':' || !std::filesystem::exists(name)) {
 	    needs_init = true;
 	}
->>>>>>> Stashed changes
     }
     
     if (!open(name, sql3_flags, needs_init)) {
@@ -165,38 +144,6 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
     }
 }
 
-<<<<<<< Updated upstream
-    if (sqlite3_open_v2(name.c_str(), &dbh_db(db), sql3_flags, NULL) != SQLITE_OK) {
-	int save;
-	save = errno;
-	dbh_close(db);
-	errno = save;
-	return NULL;
-    }
-
-    if (sqlite3_exec(dbh_db(db), PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
-        int save;
-        save = errno;
-        dbh_close(db);
-        errno = save;
-        return NULL;
-    }
-        
-    if (needs_init) {
-	if (init_db(db) < 0) {
-	    int save;
-	    save = errno;
-	    dbh_close(db);
-	    unlink(name.c_str());
-	    errno = save;
-	    return NULL;
-	}
-    }
-    else if (dbh_check_version(db) != 0) {
-	dbh_close(db);
-	errno = EFTYPE;
-	return NULL;
-=======
 
 bool DB::open(const std::string &name, int sql3_flags, bool needs_init) {
     if (sqlite3_open_v2(name.c_str(), &db, sql3_flags, NULL) != SQLITE_OK) {
@@ -214,7 +161,6 @@ bool DB::open(const std::string &name, int sql3_flags, bool needs_init) {
     }
     else if (!check_version()) {
         return false;
->>>>>>> Stashed changes
     }
 
     return true;

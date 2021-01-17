@@ -31,6 +31,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
+#include <filesystem>
+
 #include "config.h"
 
 #include <errno.h>
@@ -155,11 +158,9 @@ static void error_multiple_actions(void);
 int
 main(int argc, char **argv) {
     action_t action;
-    int i, j;
     size_t k;
     const char *dbname, *olddbname;
     int c, found;
-    parray_t *list;
     std::string fixdat_name;
     char *game_list;
     bool auto_fixdat;
@@ -177,7 +178,6 @@ main(int argc, char **argv) {
     ignore_extra = 0;
     check_integrity = 0;
     roms_unzipped = 0;
-    search_dirs = parray_new();
     game_list = NULL;
     rom_dir = NULL;
     fixdat = NULL;
@@ -211,8 +211,8 @@ main(int argc, char **argv) {
 	    output_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
 	case 'e': {
-	    char *name = xstrdup(optarg);
-	    for (k = strlen(name) - 1; k > 0; k--) {
+	    std::string name = optarg;
+	    for (k = name.size() - 1; k > 0; k--) {
 		if (name[k] == '/') {
 		    name[k] = '\0';
 		}
@@ -220,7 +220,7 @@ main(int argc, char **argv) {
 		    break;
 		}
 	    }
-	    parray_push(search_dirs, name);
+	    search_dirs.push_back(name);
 	    break;
 	}
 	case 'F':
@@ -329,7 +329,7 @@ main(int argc, char **argv) {
 	    fix_options |= FIX_CLEANUP_EXTRA;
     }
 
-    ensure_dir(get_directory(), 0);
+    ensure_dir(get_directory(), false);
     if (realpath(get_directory(), rom_dir_normalized) == NULL) {
 	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
 	myerror(ERRSTR, "can't normalize directory '%s'", get_directory());
@@ -339,12 +339,11 @@ main(int argc, char **argv) {
     Archive::register_cache_directory(get_directory());
     Archive::register_cache_directory(needed_dir);
     Archive::register_cache_directory(unknown_dir);
-    int m;
-    for (m = 0; m < parray_length(search_dirs); m++) {
-	auto name = static_cast<char *>(parray_get(search_dirs, m));
-	if (contains_romdir(name)) {
+    for (size_t m = 0; m < search_dirs.size(); m++) {
+	auto name = search_dirs[m];
+	if (contains_romdir(name.c_str())) {
 	    /* TODO: improve error message: also if extra is in ROM directory. */
-	    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(), name);
+	    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(), name.c_str());
 	    exit(1);
 	}
 	if (Archive::register_cache_directory(name) < 0) {
@@ -396,13 +395,11 @@ main(int argc, char **argv) {
 
     if (action == ACTION_CHECK_ROMSET) {
 	/* build tree of games to check */
-
-	if ((list = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
+	auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
+	if (list.empty()) {
 	    myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	    exit(1);
 	}
-
-	check_tree = tree_new();
 
 	if (game_list) {
 	    FILE *f;
@@ -423,31 +420,36 @@ main(int argc, char **argv) {
 		    continue;
 		}
 
-		if (parray_find_sorted(list, b, reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) >= 0)
-		    tree_add(check_tree, b);
-		else
+		if (std::find(list.begin(), list.end(), b) != list.end()) {
+		    check_tree.add(b);
+		}
+		else {
 		    myerror(ERRDEF, "game '%s' unknown", b);
+		}
 	    }
 
 	    fclose(f);
 	}
 	else if (optind == argc) {
-	    for (i = 0; i < parray_length(list); i++)
-		tree_add(check_tree, static_cast<char *>(parray_get(list, i)));
+	    for (size_t i = 0; i < list.size(); i++) {
+		check_tree.add(list[i].c_str());
+	    }
 	}
 	else {
-	    for (i = optind; i < argc; i++) {
+	    for (auto i = optind; i < argc; i++) {
 		if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-		    if (parray_find_sorted(list, argv[i], reinterpret_cast<int (*)(const void *, const void *)>(strcmp)) >= 0)
-			tree_add(check_tree, argv[i]);
-		    else
+		    if (std::find(list.begin(), list.end(), argv[i]) != list.end()) {
+			check_tree.add(argv[i]);
+		    }
+		    else {
 			myerror(ERRDEF, "game '%s' unknown", argv[i]);
+		    }
 		}
 		else {
 		    found = 0;
-		    for (j = 0; j < parray_length(list); j++) {
-			if (fnmatch(argv[i], static_cast<char *>(parray_get(list, j)), 0) == 0) {
-			    tree_add(check_tree, static_cast<char *>(parray_get(list, j)));
+		    for (size_t j = 0; j < list.size(); j++) {
+			if (fnmatch(argv[i], list[j].c_str(), 0) == 0) {
+			    check_tree.add(list[j]);
 			    found = 1;
 			}
 		    }
@@ -456,8 +458,6 @@ main(int argc, char **argv) {
 		}
 	    }
 	}
-
-	parray_free(list, free);
     }
 
     if (action != ACTION_SUPERFLUOUS_ONLY) {
@@ -476,15 +476,15 @@ main(int argc, char **argv) {
 #endif
 
     if (action == ACTION_CHECK_ROMSET) {
-	tree_traverse(check_tree);
-	tree_traverse(check_tree); /* handle rechecks */
+	check_tree.traverse();
+	check_tree.traverse(); /* handle rechecks */
 
 	if (fix_options & FIX_DO) {
 	    if (fix_options & FIX_SUPERFLUOUS) {
-		parray_t *needed_list;
+		std::vector<std::string> needed_list;
 
 		cleanup_list(superfluous, superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN);
-		needed_list = list_directory(needed_dir, NULL);
+		needed_list = list_directory(needed_dir, "");
 		cleanup_list(needed_list, needed_delete_list, CLEANUP_UNKNOWN);
 	    }
 	    else {
@@ -517,8 +517,10 @@ main(int argc, char **argv) {
 
     dbh_cache_close_all();
     
-    if ((fix_options & FIX_DO) != 0)
-	(void)rmdir(needed_dir);
+    if ((fix_options & FIX_DO) != 0) {
+	std::error_code ec;
+	std::filesystem::remove(needed_dir, ec);
+    }
 
     return 0;
 }

@@ -3,7 +3,7 @@
 
 /*
   sighandle.h -- signal handling
-  Copyright (C) 2008-2014 Dieter Baron and Thomas Klausner
+  Copyright (C) 2008-2018 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,10 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <string>
 
 extern volatile int siginfo_caught;
 
-void print_info(const char *);
+void print_info(const std::string &name);
 void sighandle(int);
 
 #endif /* sighandle.h */
