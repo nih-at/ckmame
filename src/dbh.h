@@ -88,15 +88,4 @@ private:
     bool init();
 };
 
-/*
-#define dbh_db(dbh) ((dbh)->db)
-
-int dbh_close(DB *);
-const char *dbh_error(DB *);
-DB *dbh_open(const std::string &name, int mode);
-
-sqlite3_stmt *dbh_get_statement(DB *, dbh_stmt_t);
-dbh_stmt_t dbh_stmt_with_hashes_and_size(dbh_stmt_t, const Hashes *, int);
-*/
-
 #endif /* dbh.h */

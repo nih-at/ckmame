@@ -23,8 +23,6 @@
     - xml
   - convert to C++:
     - chd.h
-    - dbh.h
-    - romdb.h
     - xmlutil.h
     - md5_own.h ?
     - sha1_own.h ?
