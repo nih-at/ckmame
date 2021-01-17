@@ -114,6 +114,6 @@ check_disks(Game *game, ImagesPtr im[], Result *result) {
     }
     
     for (size_t i = 0; i < game->disks.size(); i++) {
-        stats_add_disk(stats, &game->disks[i], result->disks[i].quality);
+        stats.add_disk(&game->disks[i], result->disks[i].quality);
     }
 }

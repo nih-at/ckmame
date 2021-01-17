@@ -82,5 +82,5 @@ extern OutputContextPtr fixdat;
 /* to identify roms directory uniquely */
 extern char rom_dir_normalized[];
 
-extern stats_t *stats;
+extern Stats stats;
 #endif /* globals.h */

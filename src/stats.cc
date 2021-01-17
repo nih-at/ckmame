@@ -37,112 +37,74 @@
 #include "types.h"
 #include "util.h"
 
-static void stats_add_file(stats_t *stats, enum filetype type, uint64_t size, quality_t status);
 
-void
-stats_free(stats_t *stats) {
-    free(stats);
+void Stats::add_disk(const Disk *disk, quality_t status) {
+    add_file(TYPE_DISK, 0, status);
 }
 
 
-stats_t *
-stats_new() {
-    stats_t *stats = (stats_t *)malloc(sizeof(*stats));
-    
-    if (stats == NULL) {
-        return NULL;
-    }
-    
-    stats->games_good = 0;
-    stats->games_partial = 0;
-    stats->games_total = 0;
-    
-    for (int i = 0; i < TYPE_MAX; i++) {
-        stats->files[i].bytes_good = 0;
-        stats->files[i].bytes_total = 0;
-        stats->files[i].files_good = 0;
-        stats->files[i].files_total = 0;
-    }
-    
-    return stats;
-}
-
-
-void
-stats_add_disk(stats_t *stats, const Disk *disk, quality_t status) {
-    stats_add_file(stats, TYPE_DISK, 0, status);
-}
-
-
-void
-stats_add_game(stats_t *stats, game_status_t status) {
-    if (stats == NULL) {
-        return;
-    }
-    
+void Stats::add_game(game_status_t status) {
     switch (status) {
         case GS_OLD:
         case GS_CORRECT:
         case GS_FIXABLE:
-            stats->games_good++;
+            games_good++;
             break;
             
         case GS_PARTIAL:
-            stats->games_partial++;
+            games_partial++;
             break;
             
         case GS_MISSING:
             break;
     }
     
-    stats->games_total++;
+    games_total++;
 }
 
 
-void
-stats_add_rom(stats_t *stats, enum filetype type, const File *rom, quality_t status) {
+void Stats::add_rom(enum filetype type, const File *rom, quality_t status) {
     // TODO: only own ROMs? (what does dumpgame /stats count?)
     
-    stats_add_file(stats, type, rom->size, status);
+    add_file(type, rom->size, status);
 }
 
 
-void
-stats_print(stats_t *stats, FILE *f, bool total_only) {
+void Stats::print(FILE *f, bool total_only) {
     static const char *ft_name[] = {"ROMs:", "Disks:"};
 
-    if (stats->games_total > 0) {
+    if (games_total > 0) {
         fprintf(f, "Games:  \t");
         if (!total_only) {
-            if (stats->games_good > 0 || stats->games_partial == 0) {
-                fprintf(f, "%" PRIu64, stats->games_good);
+            if (games_good > 0 || games_partial == 0) {
+                fprintf(f, "%" PRIu64, games_good);
             }
-            if (stats->games_partial > 0) {
-                if (stats->games_good > 0) {
+            if (games_partial > 0) {
+                if (games_good > 0) {
                     fprintf(f, " complete, ");
                 }
-                fprintf(f, "%" PRIu64 " partial", stats->games_partial);
+                fprintf(f, "%" PRIu64 " partial", games_partial);
             }
             fprintf(f, " / ");
         }
-        fprintf(f, "%" PRIu64 "\n", stats->games_total);
+        fprintf(f, "%" PRIu64 "\n", games_total);
     }
     
     for (int type = 0; type < TYPE_MAX; type++) {
-        if (stats->files[type].files_total > 0) {
+        if (files[type].files_total > 0) {
             fprintf(f, "%-8s\t", ft_name[type]);
             if (!total_only) {
-                fprintf(f, "%" PRIu64 " / ", stats->files[type].files_good);
+                fprintf(f, "%" PRIu64 " / ", files[type].files_good);
             }
-            fprintf(f, "%" PRIu64, stats->files[type].files_total);
+            fprintf(f, "%" PRIu64, files[type].files_total);
             
-            if (stats->files[type].bytes_total > 0) {
+            if (files[type].bytes_total > 0) {
                 printf(" (");
                 if (!total_only) {
-                    print_human_number(f, stats->files[type].bytes_good);
+                    print_human_number(f, files[type].bytes_good);
                     fprintf(f, " / ");
                 }
-                print_human_number(f, stats->files[type].bytes_total);
+                print_human_number(f, files[type].bytes_total);
                 fprintf(f, ")");
             }
             fprintf(f, "\n");
@@ -151,17 +113,12 @@ stats_print(stats_t *stats, FILE *f, bool total_only) {
 }
 
 
-static void
-stats_add_file(stats_t *stats, enum filetype type, uint64_t size, quality_t status) {
-    if (stats == NULL) {
-        return;
-    }
-    
+void Stats::add_file(enum filetype type, uint64_t size, quality_t status) {
     if (status != QU_MISSING) {
-        stats->files[type].bytes_good += size;
-        stats->files[type].files_good++;
+        files[type].bytes_good += size;
+        files[type].files_good++;
     }
     
-    stats->files[type].bytes_total += size;
-    stats->files[type].files_total++;
+    files[type].bytes_total += size;
+    files[type].files_total++;
 }

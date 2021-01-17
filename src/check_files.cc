@@ -154,9 +154,9 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
     
     update_game_status(game, res);
     
-    stats_add_game(stats, res->game);
+    stats.add_game(res->game);
     for (i = 0; i < game->roms.size(); i++) {
-        stats_add_rom(stats, TYPE_ROM, &game->roms[i], res->roms[i].quality);
+        stats.add_rom(TYPE_ROM, &game->roms[i], res->roms[i].quality);
     }
 
 }

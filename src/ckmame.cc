@@ -164,6 +164,7 @@ main(int argc, char **argv) {
     std::string fixdat_name;
     char *game_list;
     bool auto_fixdat;
+    bool print_stats = false;
 
     setprogname(argv[0]);
     output_options = WARN_ALL;
@@ -296,7 +297,7 @@ main(int argc, char **argv) {
 	    fix_options &= ~FIX_DELETE_EXTRA;
 	    break;
         case OPT_STATS:
-	    stats = stats_new();
+	    print_stats = true;
 	    break;
 	case OPT_SUPERFLUOUS:
 	    if (action != ACTION_UNSPECIFIED)
@@ -512,9 +513,8 @@ main(int argc, char **argv) {
     if ((action == ACTION_CHECK_ROMSET && (optind == argc && (output_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY)
 	print_superfluous(superfluous);
     
-    if (stats) {
-	stats_print(stats, stdout, false);
-	stats_free(stats);
+    if (print_stats) {
+	stats.print(stdout, false);
     }
 
     Archive::flush_cache();
