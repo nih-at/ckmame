@@ -352,12 +352,19 @@ main(int argc, char **argv) {
 	}
     }
 
-    if ((db = romdb_open(dbname, DBH_READ)) == NULL) {
+    try {
+        db = new RomDB(dbname, DBH_READ);
+    }
+    catch (std::exception &e) {
 	myerror(0, "can't open database '%s': %s", dbname, errno == EFTYPE ? "unsupported database version, please recreate" : strerror(errno) );
 	exit(1);
     }
-    /* TODO: check for errors other than ENOENT */
-    old_db = romdb_open(olddbname, DBH_READ);
+    try {
+	old_db = new RomDB(olddbname, DBH_READ);
+    }
+    catch (std::exception &e) {
+	/* TODO: check for errors other than ENOENT */
+    }
 
     if (auto_fixdat || !fixdat_name.empty()) {
 	DatEntry de;
@@ -368,7 +375,7 @@ main(int argc, char **argv) {
 		exit(1);
 	    }
 
-	    auto d = romdb_read_dat(db);
+	    auto d = db->read_dat();;
 
 	    if (d.empty()) {
 		myerror(ERRDEF, "database error reading /dat");
@@ -389,14 +396,14 @@ main(int argc, char **argv) {
 	fixdat->header(&de);
     }
 
-    if (roms_unzipped && romdb_has_disks(db) == 1) {
+    if (roms_unzipped && db->has_disks() == 1) {
 	fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", getprogname());
 	exit(1);
     }
 
     if (action == ACTION_CHECK_ROMSET) {
 	/* build tree of games to check */
-	auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
+	auto list = db->read_list(DBH_KEY_LIST_GAME);
 	if (list.empty()) {
 	    myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	    exit(1);
@@ -463,7 +470,7 @@ main(int argc, char **argv) {
 
     if (action != ACTION_SUPERFLUOUS_ONLY) {
 	/* TODO: merge in olddb */
-	detector = romdb_read_detector(db);
+	detector = db->read_detector();
     }
 
     if (action != ACTION_CLEANUP_EXTRA_ONLY)
