@@ -27,12 +27,11 @@
     - xml
   - convert to C++:
     - chd.h
-	- dbh.h
-    - mamedb.h
+    - dbh.h
     - romdb.h
     - stats.h
     - xmlutil.h
-	- md5_own.h ?
+    - md5_own.h ?
     - sha1_own.h ?
 
 
