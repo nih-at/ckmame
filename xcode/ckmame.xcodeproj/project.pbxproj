@@ -1000,18 +1000,6 @@
 				4B5FAD071735924900B67C24 /* ptr_sort.cc */,
 				4B5FAE611735949900B67C24 /* result.cc */,
 				4B9292C017633FFC00806C0A /* result.h */,
-<<<<<<< Updated upstream
-				4B5F43AF1889D059000C3B7C /* romdb_read_dat.cc */,
-				4B5F43B01889D059000C3B7C /* romdb_read_detector.cc */,
-				4B5F43B11889D059000C3B7C /* romdb_read_file_by_hash.cc */,
-				4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.cc */,
-				4B5F43B21889D059000C3B7C /* romdb_read_game.cc */,
-				4B5F43B31889D059000C3B7C /* romdb_read_list.cc */,
-				4B5F43B41889D059000C3B7C /* romdb_write_dat.cc */,
-				4B5F43B51889D059000C3B7C /* romdb_write_detector.cc */,
-				4B5F43B61889D059000C3B7C /* romdb_write_game.cc */,
-=======
->>>>>>> Stashed changes
 				4B5F43B71889D059000C3B7C /* romdb.cc */,
 				4B5F43B81889D059000C3B7C /* romdb.h */,
 				4B5FAD401735929E00B67C24 /* sighandle.cc */,
@@ -1592,11 +1580,6 @@
 				4B5FADF81735930100B67C24 /* hashes.cc in Sources */,
 				4B5FADFB1735930100B67C24 /* hashes_update.cc in Sources */,
 				4B5FADFD1735930100B67C24 /* images.cc in Sources */,
-<<<<<<< Updated upstream
-				4B5FADFF1735930100B67C24 /* intstr.cc in Sources */,
-				4B5F43BA1889D059000C3B7C /* romdb_read_detector.cc in Sources */,
-=======
->>>>>>> Stashed changes
 				4B5FAE011735930100B67C24 /* match.cc in Sources */,
 				4B5FAE031735930100B67C24 /* match_disk.cc in Sources */,
 				4B5FAE051735930100B67C24 /* memdb.cc in Sources */,
@@ -1605,31 +1588,13 @@
 				4B5FAE0A1735930100B67C24 /* output_datafile_xml.cc in Sources */,
 				4B5FAE0B1735930100B67C24 /* output_db.cc in Sources */,
 				4B5FAE0C1735930100B67C24 /* output_mtree.cc in Sources */,
-<<<<<<< Updated upstream
-				4B5FAE0D1735930100B67C24 /* parray.cc in Sources */,
-				4B5F43B91889D059000C3B7C /* romdb_read_dat.cc in Sources */,
-				4B5FAE0F1735930100B67C24 /* parray_delete.cc in Sources */,
-				4B5FAE121735930100B67C24 /* parray_new_from_data.cc in Sources */,
-				4B5FAE131735930100B67C24 /* parray_pop.cc in Sources */,
-				4B5FAE141735930100B67C24 /* parray_push.cc in Sources */,
 				4BB51D2A25823D770047BE72 /* ParserSourceFile.cc in Sources */,
-				4B5F43BC1889D059000C3B7C /* romdb_read_game.cc in Sources */,
-				4B5FAE151735930100B67C24 /* parray_set_length.cc in Sources */,
-				4B5FAE161735930100B67C24 /* parray_sort_real.cc in Sources */,
-=======
-				4BB51D2A25823D770047BE72 /* ParserSourceFile.cc in Sources */,
->>>>>>> Stashed changes
 				4B5FAE171735930100B67C24 /* parse-cm.cc in Sources */,
 				4B5FAE181735930100B67C24 /* parse-dir.cc in Sources */,
 				4B5FAE191735930100B67C24 /* parse-rc.cc in Sources */,
 				4B5FAE1A1735930100B67C24 /* parse-xml.cc in Sources */,
 				4B5FAE1B1735930100B67C24 /* parse.cc in Sources */,
 				4B5FAE1D1735930100B67C24 /* parser_source.cc in Sources */,
-<<<<<<< Updated upstream
-				4B5F43BE1889D059000C3B7C /* romdb_write_dat.cc in Sources */,
-				4B5FAE1F1735930100B67C24 /* ptr_sort.cc in Sources */,
-=======
->>>>>>> Stashed changes
 				4B5FAE231735930100B67C24 /* sighandle.cc in Sources */,
 				4B5FAE9D173599B700B67C24 /* md5.cc in Sources */,
 				4B5FAE9E173599C100B67C24 /* sha1.cc in Sources */,
