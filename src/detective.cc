@@ -81,7 +81,6 @@ main(int argc, char **argv) {
     const char *dbname;
     char *detector_name;
     int c, i, ret;
-    romdb_t *ddb;
     int hashtypes;
 
     setprogname(argv[0]);
@@ -144,18 +143,20 @@ main(int argc, char **argv) {
 #endif
     }
 
-    if ((ddb = romdb_open(dbname, DBH_READ)) == NULL) {
+    try {
+	auto ddb = new RomDB(dbname, DBH_READ);
+	if (detector == NULL) {
+	    detector = ddb->read_detector();
+	}
+	if (hashtypes == -1) {
+	    hashtypes = ddb->hashtypes(TYPE_ROM);
+	}
+    }
+    catch (std::exception &e) {
 	if (detector == 0) {
 	    myerror(0, "can't open database '%s': %s", dbname, errno == EFTYPE ? "unsupported database version, please recreate" : strerror(errno) );
 	    exit(1);
 	}
-    }
-    else {
-	if (detector == NULL)
-	    detector = romdb_read_detector(ddb);
-	if (hashtypes == -1)
-	    hashtypes = romdb_hashtypes(ddb, TYPE_ROM);
-	romdb_close(ddb);
     }
 
     ret = 0;
