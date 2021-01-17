@@ -156,7 +156,7 @@ static void
 print_matches(filetype_t ft, Hashes *hash) {
     int matches_count = 0;
 
-    auto matches = romdb_read_file_by_hash(db, ft, hash);
+    auto matches = db->read_file_by_hash(ft, hash);
     if (matches.empty()) {
 	print_footer(0, hash);
 	return;
@@ -164,7 +164,7 @@ print_matches(filetype_t ft, Hashes *hash) {
 
     for (size_t i = 0; i < matches.size(); i++) {
 	auto match = matches[i];
-	auto game = romdb_read_game(db, match.name);
+	auto game = db->read_game(match.name);
 	if (!game) {
 	    myerror(ERRDEF, "db error: %s not found, though in hash index", match.name.c_str());
 	    /* TODO: remember error */
@@ -226,13 +226,16 @@ main(int argc, char **argv) {
 	}
     }
 
-    if ((db = romdb_open(dbname, DBH_READ)) == NULL) {
+    try {
+	db = new RomDB(dbname, DBH_READ);
+    }
+    catch (std::exception &e) {
 	myerror(0, "can't open database '%s': %s", dbname, errno == EFTYPE ? "unsupported database version, please recreate" : strerror(errno) );
 	exit(1);
     }
-    seterrdb(romdb_dbh(db));
+    seterrdb(&db->db);
 
-    auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
+    auto list = db->read_list(DBH_KEY_LIST_GAME);
     if (list.empty()) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
@@ -310,7 +313,7 @@ print_rs(GamePtr game, const char *co, const char *gco, const char *cs, const ch
 	printf("%s:\t%s\n", gco, game->cloneof[1].c_str());
     }
 
-    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_CLONES)) == NULL) {
+    if ((stmt = db->db.get_statement(DBH_STMT_QUERY_CLONES)) == NULL) {
 	myerror(ERRDB, "cannot get clones for '%s'", game->name.c_str());
 	return;
     }
@@ -347,16 +350,15 @@ print_rs(GamePtr game, const char *co, const char *gco, const char *cs, const ch
 static int
 dump_game(const std::string &name, int brief_mode) {
     GamePtr game;
-    std::vector<DatEntry> dat;
 
-    dat = romdb_read_dat(db);
+    auto dat = db->read_dat();
 
     if (dat.empty()) {
 	myerror(ERRDEF, "cannot read dat info");
 	return -1;
     }
 
-    if ((game = romdb_read_game(db, name)) == NULL) {
+    if ((game = db->read_game(name)) == NULL) {
 	myerror(ERRDEF, "game unknown (or database error): '%s'", name.c_str());
 	return -1;
     }
@@ -391,9 +393,9 @@ dump_game(const std::string &name, int brief_mode) {
 static int
 dump_hashtypes(int dummy) {
     printf("roms: ");
-    print_hashtypes(romdb_hashtypes(db, TYPE_ROM));
+    print_hashtypes(db->hashtypes(TYPE_ROM));
     printf("\ndisks: ");
-    print_hashtypes(romdb_hashtypes(db, TYPE_DISK));
+    print_hashtypes(db->hashtypes(TYPE_DISK));
     putc('\n', stdout);
 
     return 0;
@@ -403,7 +405,7 @@ dump_hashtypes(int dummy) {
 static int
 dump_list(int type) {
 
-    auto list = romdb_read_list(db, static_cast<enum dbh_list>(type));
+    auto list = db->read_list(static_cast<enum dbh_list>(type));
     if (list.empty()) {
 	myerror(ERRDB, "db error reading list");
 	return -1;
@@ -420,7 +422,7 @@ dump_list(int type) {
 /*ARGSUSED1*/
 static int
 dump_dat(int dummy) {
-    auto dat = romdb_read_dat(db);
+    auto dat = db->read_dat();
     
     if (dat.empty()) {
 	myerror(ERRDEF, "db error reading /dat");
@@ -444,7 +446,7 @@ static int
 dump_detector(int dummy) {
     DetectorPtr detector;
 
-    if ((detector = romdb_read_detector(db))) {
+    if ((detector = db->read_detector())) {
         printf("%s", detector->name.c_str());
         if (!detector->version.empty()) {
             printf(" (%s)", detector->version.c_str());
@@ -481,7 +483,7 @@ dump_stats(int dummy) {
     sqlite3_stmt *stmt;
     int i, ft;
 
-    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_GAMES)) == NULL) {
+    if ((stmt = db->db.get_statement(DBH_STMT_QUERY_STATS_GAMES)) == NULL) {
 	myerror(ERRDB, "can't get number of games");
 	return -1;
     }
@@ -492,7 +494,7 @@ dump_stats(int dummy) {
 
     stats.games_total = (uint64_t)sqlite3_column_int(stmt, 0);
 
-    if ((stmt = dbh_get_statement(romdb_dbh(db), DBH_STMT_QUERY_STATS_FILES)) == NULL) {
+    if ((stmt = db->db.get_statement(DBH_STMT_QUERY_STATS_FILES)) == NULL) {
 	myerror(ERRDB, "can't get file stats");
 	return -1;
     }
