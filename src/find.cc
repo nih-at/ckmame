@@ -55,8 +55,8 @@ static find_result_t check_match_disk_old(const Game *, const Disk *, MatchDisk 
 static find_result_t check_match_disk_romset(const Game *, const Disk *, MatchDisk *);
 static find_result_t check_match_old(const Game *, const File *, const File *, Match *);
 static find_result_t check_match_romset(const Game *, const File *, const File *, Match *);
-static find_result_t find_disk_in_db(romdb_t *, const Disk *, const char *, MatchDisk *, find_result_t (*)(const Game *, const Disk *, MatchDisk *));
-static find_result_t find_in_db(romdb_t *, const File *, Archive *, const char *, Match *, find_result_t (*)(const Game *, const File *, const File *, Match *));
+static find_result_t find_disk_in_db(RomDB *, const Disk *, const char *, MatchDisk *, find_result_t (*)(const Game *, const Disk *, MatchDisk *));
+static find_result_t find_in_db(RomDB *, const File *, Archive *, const char *, Match *, find_result_t (*)(const Game *, const File *, const File *, Match *));
 
 
 find_result_t
@@ -301,7 +301,7 @@ check_match_romset(const Game *game, const File *r, const File *f, Match *match)
 
 
 static find_result_t
-find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Match *m, find_result_t (*check_match)(const Game *, const File *, const File *, Match *)) {
+find_in_db(RomDB *fdb, const File *r, Archive *archive, const char *skip, Match *m, find_result_t (*check_match)(const Game *, const File *, const File *, Match *)) {
     auto roms = fdb->read_file_by_hash(TYPE_ROM, &r->hashes);
 
     if (roms.empty()) {
@@ -353,7 +353,7 @@ find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Matc
 
 
 find_result_t
-find_disk_in_db(romdb_t *fdb, const Disk *d, const char *skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *)) {
+find_disk_in_db(RomDB *fdb, const Disk *d, const char *skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *)) {
     find_result_t status;
 
     auto disks = fdb->read_file_by_hash(TYPE_DISK, &d->hashes);

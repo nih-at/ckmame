@@ -51,8 +51,8 @@ int fix_options = 0;
 
 /* check input (read only) */
 
-romdb_t *db = NULL;
-romdb_t *old_db = NULL;
+RomDB *db = NULL;
+RomDB *old_db = NULL;
 
 DetectorPtr detector;
 

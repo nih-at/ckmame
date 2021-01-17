@@ -49,7 +49,7 @@ public:
     virtual bool header(DatEntry *dat);
     
 private:
-    romdb_t *db;
+    RomDB *db;
 
     std::vector<DatEntry> dat;
 

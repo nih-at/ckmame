@@ -61,8 +61,8 @@ extern int fix_options;
 
 /* check input (read only) */
 
-extern romdb_t *db;
-extern romdb_t *old_db;
+extern RomDB *db;
+extern RomDB *old_db;
 
 extern DetectorPtr detector;
 

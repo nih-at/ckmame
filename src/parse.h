@@ -120,9 +120,4 @@ private:
     Disk *d;      /* current disk */
 };
 
-/* parser functions */
-
-
-int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *context);
-
 #endif /* parse.h */

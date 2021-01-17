@@ -75,6 +75,4 @@ private:
     bool write_rules(const Detector *detector);
 };
 
-typedef class RomDB romdb_t;
-
 #endif /* romdb.h */
