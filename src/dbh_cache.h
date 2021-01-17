@@ -42,15 +42,15 @@
 #include "file.h"
 
 bool dbh_cache_close_all(void);
-int dbh_cache_delete(dbh_t *, int);
-int dbh_cache_delete_by_name(dbh_t *, const char *);
-int dbh_cache_get_archive_id(dbh_t *, const char *);
-bool dbh_cache_get_archive_last_change(dbh_t *, int, time_t *, off_t *);
-dbh_t *dbh_cache_get_db_for_archive(const std::string &name);
-bool dbh_cache_is_empty(dbh_t *);
-std::vector<std::string> dbh_cache_list_archives(dbh_t *);
-int dbh_cache_read(dbh_t *, const std::string &, std::vector<File> *);
+int dbh_cache_delete(DB *, int);
+int dbh_cache_delete_by_name(DB *, const char *);
+int dbh_cache_get_archive_id(DB *, const char *);
+bool dbh_cache_get_archive_last_change(DB *, int, time_t *, off_t *);
+DB *dbh_cache_get_db_for_archive(const std::string &name);
+bool dbh_cache_is_empty(DB *);
+std::vector<std::string> dbh_cache_list_archives(DB *);
+int dbh_cache_read(DB *, const std::string &, std::vector<File> *);
 int dbh_cache_register_cache_directory(const std::string &directory);
-int dbh_cache_write(dbh_t *, int, const Archive *a);
+int dbh_cache_write(DB *, int, const Archive *a);
 
 #endif /* dbh_cache.h */

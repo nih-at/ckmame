@@ -46,7 +46,7 @@
 
 static std::string myerrorfn = DEFAULT_FN;
 static std::string myerrorzipn = DEFAULT_FN;
-static dbh_t *myerrdb = NULL;
+static DB *myerrdb = NULL;
 
 
 void
@@ -72,7 +72,7 @@ myerror(int errtype, const char *fmt, ...) {
 	if (myerrdb == NULL)
 	    fprintf(stderr, ": no database");
 	else
-	    fprintf(stderr, ": %s", dbh_error(myerrdb));
+            fprintf(stderr, ": %s", myerrdb->error().c_str());
     }
 
     putc('\n', stderr);
@@ -82,7 +82,7 @@ myerror(int errtype, const char *fmt, ...) {
 
 
 void
-seterrdb(dbh_t *db) {
+seterrdb(DB *db) {
     myerrdb = db;
 }
 

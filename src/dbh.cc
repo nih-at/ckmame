@@ -35,20 +35,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <zlib.h>
+
+#include <filesystem>
 
 #include "dbh.h"
-#include "xmalloc.h"
-
-#ifndef EFTYPE
-#define EFTYPE EINVAL
-#endif
-
-#define DBH_ENOERR 0
-#define DBH_EVERSION 2 /* version mismatch */
-#define DBH_EMAX 2
 
 static const int format_version[] = {3, 1, 2};
 #define USER_VERSION(fmt) (format_version[fmt] + (fmt << 8) + 17000)
@@ -57,108 +47,125 @@ static const int format_version[] = {3, 1, 2};
 
 #define PRAGMAS "PRAGMA synchronous = OFF; "
 
-static int init_db(dbh_t *);
 
-
-static int
-dbh_check_version(dbh_t *db) {
+bool DB::check_version() {
     sqlite3_stmt *stmt;
-    int version;
 
-    if ((stmt = dbh_get_statement(db, DBH_STMT_QUERY_VERSION)) == NULL) {
+    if ((stmt = get_statement(DBH_STMT_QUERY_VERSION)) == NULL) {
 	/* TODO */
-	return -1;
+	return false;
     }
     if (sqlite3_step(stmt) != SQLITE_ROW) {
 	/* TODO */
-	return -1;
+	return false;
     }
 
-    version = sqlite3_column_int(stmt, 0);
+    version_ok = (sqlite3_column_int(stmt, 0) == USER_VERSION(format));
 
-    if (version != USER_VERSION(db->format)) {
-	db->dbh_errno = DBH_EVERSION;
-	return -1;
-    }
-
-    db->dbh_errno = DBH_ENOERR;
-    return 0;
+    return version_ok;
 }
 
 
-int
-dbh_close(dbh_t *db) {
-    if (db == NULL)
-	return 0;
+DB::~DB() {
+    close();
+}
 
+void DB::close() {
     for (size_t i = 0; i < DBH_STMT_MAX; i++) {
-        if (db->statements[i] != NULL) {
-            sqlite3_finalize(db->statements[i]);
-            db->statements[i] = NULL;
+        if (statements[i] != NULL) {
+            sqlite3_finalize(statements[i]);
+            statements[i] = NULL;
         }
     }
 
-    if (dbh_db(db))
-	return sqlite3_close(dbh_db(db));
-
-    return 0;
+    if (db) {
+        sqlite3_close(db);
+    }
 }
 
 
-const char *
-dbh_error(dbh_t *db) {
-    static const char *str[] = {"No error", "Database format version mismatch", "Unknown error"};
-
-    if (db == NULL)
+std::string DB::error() {
+    if (db == NULL) {
 	return strerror(ENOMEM);
-
-    /* TODO */
-    if (db->dbh_errno == DBH_ENOERR)
-	return sqlite3_errmsg(dbh_db(db));
-
-    return str[db->dbh_errno < 0 || db->dbh_errno > DBH_EMAX ? DBH_EMAX : db->dbh_errno];
-}
-
-
-dbh_t *dbh_open(const std::string &name, int mode) {
-    dbh_t *db;
-    struct stat st;
-    unsigned int i;
-    int sql3_flags;
-    int needs_init = 0;
-
-    if (DBH_FMT(mode) > sizeof(format_version) / sizeof(format_version[0])) {
-	errno = EINVAL;
-	return NULL;
     }
 
+    if (!version_ok) {
+        return "Database format version mismatch";
+    }
+    else {
+        return sqlite3_errmsg(db);
+    }
+}
+
+
+DB::DB(const std::string &name, int mode) : db(NULL) {
+    if (DBH_FMT(mode) > sizeof(format_version) / sizeof(format_version[0])) {
+	errno = EINVAL;
+        throw std::exception();
+    }
+
+<<<<<<< Updated upstream
     if ((db = (dbh_t *)malloc(sizeof(*db))) == NULL)
 	return NULL;
 
     db->db = NULL;
     for (i = 0; i < DBH_STMT_MAX; i++)
 	db->statements[i] = NULL;
+=======
+    for (size_t i = 0; i < DBH_STMT_MAX; i++) {
+        statements[i] = NULL;
+    }
+>>>>>>> Stashed changes
 
-    db->format = DBH_FMT(mode);
+    format = DBH_FMT(mode);
 
+    auto needs_init = false;
+    
     if (DBH_FLAGS(mode) & DBH_TRUNCATE) {
 	/* do not delete special cases (like memdb) */
+<<<<<<< Updated upstream
 	if (name[0] != ':')
 	    unlink(name.c_str());
 	needs_init = 1;
     }
 
     if (DBH_FLAGS(mode) & DBH_WRITE)
+=======
+	if (name[0] != ':') {
+            std::filesystem::remove(name);
+	}
+	needs_init = true;
+    }
+
+    int sql3_flags;
+    
+    if (DBH_FLAGS(mode) & DBH_WRITE) {
+>>>>>>> Stashed changes
 	sql3_flags = SQLITE_OPEN_READWRITE;
     else
 	sql3_flags = SQLITE_OPEN_READONLY;
 
     if (DBH_FLAGS(mode) & DBH_CREATE) {
 	sql3_flags |= SQLITE_OPEN_CREATE;
+<<<<<<< Updated upstream
 	if (name[0] == ':' || (stat(name.c_str(), &st) < 0 && errno == ENOENT))
 	    needs_init = 1;
+=======
+        if (name[0] == ':' || !std::filesystem::exists(name)) {
+	    needs_init = true;
+	}
+>>>>>>> Stashed changes
     }
+    
+    if (!open(name, sql3_flags, needs_init)) {
+        auto save = errno;
+        close();
+        errno = save;
+        throw std::exception();
+    }
+}
 
+<<<<<<< Updated upstream
     if (sqlite3_open_v2(name.c_str(), &dbh_db(db), sql3_flags, NULL) != SQLITE_OK) {
 	int save;
 	save = errno;
@@ -189,57 +196,77 @@ dbh_t *dbh_open(const std::string &name, int mode) {
 	dbh_close(db);
 	errno = EFTYPE;
 	return NULL;
+=======
+
+bool DB::open(const std::string &name, int sql3_flags, bool needs_init) {
+    if (sqlite3_open_v2(name.c_str(), &db, sql3_flags, NULL) != SQLITE_OK) {
+        return false;
     }
 
-    return db;
+    if (sqlite3_exec(db, PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
+        return false;
+    }
+        
+    if (needs_init) {
+        if (!init()) {
+            return false;
+        }
+    }
+    else if (!check_version()) {
+        return false;
+>>>>>>> Stashed changes
+    }
+
+    return true;
 }
 
 
-static int
-init_db(dbh_t *db) {
+bool DB::init() {
     char b[256];
 
-    sprintf(b, SET_VERSION_FMT, USER_VERSION(db->format));
-    if (sqlite3_exec(dbh_db(db), b, NULL, NULL, NULL) != SQLITE_OK)
-	return -1;
+    sprintf(b, SET_VERSION_FMT, USER_VERSION(format));
+    if (sqlite3_exec(db, b, NULL, NULL, NULL) != SQLITE_OK)
+        return false;
 
-    if (sqlite3_exec(dbh_db(db), sql_db_init[db->format], NULL, NULL, NULL) != SQLITE_OK)
-	return -1;
+    if (sqlite3_exec(db, sql_db_init[format], NULL, NULL, NULL) != SQLITE_OK)
+        return false;
 
-    return 0;
+    return true;
 }
 
-dbh_stmt_t
-dbh_stmt_with_hashes_and_size(dbh_stmt_t stmt, const Hashes *hashes, int have_size) {
+
+sqlite3_stmt *DB::get_statement(dbh_stmt_t stmt_id, const Hashes *hashes, bool have_size) {
     for (int i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
         if (hashes->has_type(i)) {
-	    stmt = static_cast<dbh_stmt_t>(stmt + i);
+            stmt_id = static_cast<dbh_stmt_t>(stmt_id + i);
         }
     }
     if (have_size) {
-	stmt = static_cast<dbh_stmt_t>(stmt + (Hashes::TYPE_MAX << 1));
+        stmt_id = static_cast<dbh_stmt_t>(stmt_id + (Hashes::TYPE_MAX << 1));
     }
 
-    return stmt;
+    return get_statement(stmt_id);
 }
 
-sqlite3_stmt *
-dbh_get_statement(dbh_t *db, dbh_stmt_t stmt_id) {
-    if (stmt_id >= DBH_STMT_MAX)
-	return NULL;
 
-    if (db->statements[stmt_id] == NULL) {
-	if (sqlite3_prepare_v2(dbh_db(db), dbh_stmt_sql[stmt_id], -1, &(db->statements[stmt_id]), NULL) != SQLITE_OK) {
-	    db->statements[stmt_id] = NULL;
+sqlite3_stmt *DB::get_statement(dbh_stmt_t stmt_id) {
+    if (stmt_id >= DBH_STMT_MAX) {
+	return NULL;
+    }
+
+    if (statements[stmt_id] == NULL) {
+        if (sqlite3_prepare_v2(db, dbh_stmt_sql[stmt_id], -1, &(statements[stmt_id]), NULL) != SQLITE_OK) {
+            statements[stmt_id] = NULL;
 	    return NULL;
 	}
     }
     else {
-	if (sqlite3_reset(db->statements[stmt_id]) != SQLITE_OK || sqlite3_clear_bindings(db->statements[stmt_id]) != SQLITE_OK) {
-	    db->statements[stmt_id] = NULL;
+        if (sqlite3_reset(statements[stmt_id]) != SQLITE_OK || sqlite3_clear_bindings(statements[stmt_id]) != SQLITE_OK) {
+            sqlite3_finalize(statements[stmt_id]);
+            statements[stmt_id] = NULL;
             return NULL;
 	}
     }
-
-    return db->statements[stmt_id];
+    
+    return statements[stmt_id];
 }

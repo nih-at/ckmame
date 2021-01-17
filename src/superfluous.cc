@@ -47,6 +47,7 @@
 #include "util.h"
 #include "xmalloc.h"
 
+<<<<<<< Updated upstream
 static void list_game_directory(parray_t *found, const char *dirname, bool dir_known);
 
 parray_t *
@@ -65,6 +66,19 @@ list_directory(const char *dirname, const char *dbname) {
     if (dbname) {
         if ((listf = romdb_read_list(db, DBH_KEY_LIST_GAME)) == NULL) {
             myerror(ERRDEF, "list of games not found in database '%s'", dbname);
+=======
+static void list_game_directory(std::vector<std::string> &found, const char *dirname, bool dir_known);
+
+std::vector<std::string>
+list_directory(const std::string &dirname, const std::string &dbname) {
+    std::vector<std::string> result;
+    std::vector<std::string> list;
+
+    if (dbname != "") {
+        list = db->read_list(DBH_KEY_LIST_GAME);
+	if (list.empty()) {
+            myerror(ERRDEF, "list of games not found in database '%s'", dbname.c_str());
+>>>>>>> Stashed changes
             exit(1);
         }
     }
@@ -163,11 +177,15 @@ list_game_directory(parray_t *found, const char *dirname, bool dir_known) {
     size_t len_dir;
 
     if (dir_known) {
+<<<<<<< Updated upstream
         game = romdb_read_game(db, mybasename(dirname));
     }
     
     if ((dir = dir_open(dirname, 0)) == NULL) {
         return;
+=======
+        game = db->read_game(component);
+>>>>>>> Stashed changes
     }
 
     len_dir = strlen(dirname) + 1;

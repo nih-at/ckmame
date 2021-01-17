@@ -51,7 +51,7 @@
 #define ERRZIPFILESTR (ERRZIPFILE | ERRSTR)
 
 void myerror(int, const char *, ...);
-void seterrdb(dbh_t *);
+void seterrdb(DB *);
 void seterrinfo(const std::string &fn, const std::string &zipn);
 
 #endif /* error.h */

@@ -58,7 +58,6 @@
 #define DBH_NEW (DBH_CREATE | DBH_TRUNCATE | DBH_WRITE) /* create new writable empty database */
 #define DBH_FLAGS(m) ((m)&0xf0)
 
-/* keep in sync with romdb_read_list.c:query_list */
 enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME, DBH_KEY_LIST_MAX };
 
 #define DBH_DEFAULT_DB_NAME "mame.db"
@@ -68,22 +67,38 @@ enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME, DBH_KEY_LIST_MAX };
 extern const char *sql_db_init[];
 extern const char *sql_db_init_2;
 
-struct dbh {
+class DB {
+public:
+    DB(const std::string &name, int mode);
+    ~DB();
+    
     sqlite3 *db;
     sqlite3_stmt *statements[DBH_STMT_MAX];
-    int dbh_errno;
     int format;
-};
-typedef struct dbh dbh_t;
+    
+    std::string error();
 
+    sqlite3_stmt *get_statement(dbh_stmt_t stmt_id);
+    sqlite3_stmt *get_statement(dbh_stmt_t stmt_id, const Hashes *hashes, bool have_size);
+    
+private:
+    bool version_ok;
+
+    bool check_version();
+    bool open(const std::string &name, int sql3_flags, bool needs_init);
+    void close();
+    bool init();
+};
+
+/*
 #define dbh_db(dbh) ((dbh)->db)
 
-int dbh_close(dbh_t *);
-const char *dbh_error(dbh_t *);
-dbh_t *dbh_open(const std::string &name, int mode);
+int dbh_close(DB *);
+const char *dbh_error(DB *);
+DB *dbh_open(const std::string &name, int mode);
 
-sqlite3_stmt *dbh_get_statement(dbh_t *, dbh_stmt_t);
+sqlite3_stmt *dbh_get_statement(DB *, dbh_stmt_t);
 dbh_stmt_t dbh_stmt_with_hashes_and_size(dbh_stmt_t, const Hashes *, int);
-
+*/
 
 #endif /* dbh.h */

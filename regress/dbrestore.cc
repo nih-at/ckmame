@@ -49,8 +49,8 @@
 static int column_type(const char *name);
 static int db_type(const char *name);
 static char *get_line(FILE *f);
-static int restore_db(dbh_t *dbh, FILE *f);
-static int restore_table(dbh_t *dbh, FILE *f);
+static int restore_db(DB *dbh, FILE *f);
+static int restore_table(DB *dbh, FILE *f);
 static void unget_line(char *line);
 
 
@@ -122,9 +122,13 @@ main(int argc, char *argv[]) {
 	exit(1);
     }
 
-    dbh_t *dbh = dbh_open(db_fname, type | DBH_TRUNCATE | DBH_WRITE | DBH_CREATE);
-    if (dbh == NULL) {
-	myerror(ERRDB, "can't create database '%s'", db_fname);
+    DB *dbh;
+    
+    try {
+        dbh = new DB(db_fname, type | DBH_TRUNCATE | DBH_WRITE | DBH_CREATE);
+    }
+    catch (std::exception &e) {
+        myerror(ERRDB, "can't create database '%s'", db_fname);
 	exit(1);
     }
 
@@ -134,13 +138,11 @@ main(int argc, char *argv[]) {
 	exit(1);
 
     if (type == DBH_FMT_MAME) {
-	if (sqlite3_exec(dbh_db(dbh), sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
+	if (sqlite3_exec(dbh->db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
 	    myerror(ERRDB, "can't create indices");
 	    exit(1);
 	}
     }
-
-    dbh_close(dbh);
 
     exit(0);
 }
@@ -194,7 +196,7 @@ get_line(FILE *f) {
 }
 
 static int
-restore_db(dbh_t *dbh, FILE *f) {
+restore_db(DB *dbh, FILE *f) {
     ungot_line = NULL;
 
     while (!feof(f)) {
@@ -212,7 +214,7 @@ restore_db(dbh_t *dbh, FILE *f) {
 
 
 static int
-restore_table(dbh_t *dbh, FILE *f) {
+restore_table(DB *dbh, FILE *f) {
     char query[8192];
 
     char *line = get_line(f);
@@ -237,7 +239,7 @@ restore_table(dbh_t *dbh, FILE *f) {
 
     sprintf(query, QUERY_COLS_FMT, table_name);
     sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(dbh_db(dbh), query, -1, &stmt, NULL) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbh->db, query, -1, &stmt, NULL) != SQLITE_OK) {
 	myerror(ERRDB, "can't query table %s", table_name);
 	return -1;
     }
@@ -289,7 +291,7 @@ restore_table(dbh_t *dbh, FILE *f) {
     }
     sprintf(p, ")");
 
-    if (sqlite3_prepare_v2(dbh_db(dbh), query, -1, &stmt, NULL) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(dbh->db, query, -1, &stmt, NULL) != SQLITE_OK) {
 	myerror(ERRDB, "can't prepare insert statement for table %s", table_name);
 	array_free(column_types, NULL);
 	return -1;

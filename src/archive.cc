@@ -70,7 +70,7 @@ int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
     auto &file_hashes = files[index].hashes;
 
     if (!file_hashes.has_all_types(*hashes)) {
-        file_compute_hashes(index, hashes->types | romdb_hashtypes(db, TYPE_ROM));
+        file_compute_hashes(index, hashes->types | db->hashtypes(TYPE_ROM));
     }
 
     if (files[index].status != STATUS_OK) {

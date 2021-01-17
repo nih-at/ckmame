@@ -45,21 +45,31 @@ int export_db(romdb_t *db, const std::unordered_set<std::string> &exclude, const
 	return 0;
     }
 
-    auto db_dat = romdb_read_dat(db);
+    auto db_dat = db->read_dat();
 
     /* TODO: export detector */
 
     de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : NULL));
     out->header(&de);
 
+<<<<<<< Updated upstream
     auto list = romdb_read_list(db, DBH_KEY_LIST_GAME);
     if (list == NULL) {
+=======
+    auto list = db->read_list(DBH_KEY_LIST_GAME);
+    if (list.empty()) {
+>>>>>>> Stashed changes
 	myerror(ERRDEF, "db error reading game list");
 	return -1;
     }
 
+<<<<<<< Updated upstream
     for (int i = 0; i < parray_length(list); i++) {
         GamePtr game = romdb_read_game(db, static_cast<const char *>(parray_get(list, i)));
+=======
+    for (size_t i = 0; i < list.size(); i++) {
+        GamePtr game = db->read_game(list[i]);
+>>>>>>> Stashed changes
         if (!game) {
 	    /* TODO: error */
 	    continue;

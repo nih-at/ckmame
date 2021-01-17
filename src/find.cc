@@ -69,7 +69,7 @@ find_disk(const Disk *disk, MatchDisk *match_disk) {
         return FIND_UNKNOWN;
     }
 
-    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, disk_hashes(disk), 0))) == NULL)
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_FILE, disk_hashes(disk), 0)) == NULL)
 	return FIND_ERROR;
 
     if (sqlite3_bind_int(stmt, 1, TYPE_DISK) != SQLITE_OK || sq3_set_hashes(stmt, 2, disk_hashes(disk), 0) != SQLITE_OK) {
@@ -131,7 +131,7 @@ find_in_archives(const File *rom, Match *m, bool needed_only) {
         return FIND_ERROR;
     }
     
-    if ((stmt = dbh_get_statement(memdb, dbh_stmt_with_hashes_and_size(DBH_STMT_MEM_QUERY_FILE, &rom->hashes, rom->size != SIZE_UNKNOWN))) == NULL) {
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_FILE, &rom->hashes, rom->size != SIZE_UNKNOWN)) == NULL) {
 	return FIND_ERROR;
     }
 
@@ -163,7 +163,7 @@ find_in_archives(const File *rom, Match *m, bool needed_only) {
         auto &file = a->files[i];
 
         if (sh == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
-            a->file_compute_hashes(i, rom->hashes.types | romdb_hashtypes(db, TYPE_ROM));
+            a->file_compute_hashes(i, rom->hashes.types | db->hashtypes(TYPE_ROM));
 	    memdb_update_file(a.get(), i);
 	}
 
@@ -308,9 +308,13 @@ check_match_romset(const Game *game, const File *r, const File *f, Match *m) {
 
 static find_result_t
 find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Match *m, find_result_t (*check_match)(const Game *, const File *, const File *, Match *)) {
+<<<<<<< Updated upstream
     array_t *a;
     file_location_t *fbh;
     find_result_t status;
+=======
+    auto roms = fdb->read_file_by_hash(TYPE_ROM, &r->hashes);
+>>>>>>> Stashed changes
 
     if ((a = romdb_read_file_by_hash(fdb, TYPE_ROM, &r->hashes)) == NULL) {
 	return FIND_UNKNOWN;
@@ -324,8 +328,13 @@ find_in_db(romdb_t *fdb, const File *r, Archive *archive, const char *skip, Matc
 	    continue;
         }
 
+<<<<<<< Updated upstream
         GamePtr game = romdb_read_game(fdb, file_location_name(fbh));
         if (!game || game->roms.size() <= static_cast<size_t>(file_location_index(fbh))) {
+=======
+        GamePtr game = fdb->read_game(rom.name);
+        if (!game || game->roms.size() <= rom.index) {
+>>>>>>> Stashed changes
 	    /* TODO: internal error: database inconsistency */
 	    status = FIND_ERROR;
 	    break;
@@ -369,7 +378,12 @@ find_disk_in_db(romdb_t *fdb, const Disk *d, const char *skip, MatchDisk *md, fi
     int i;
     find_result_t status;
 
+<<<<<<< Updated upstream
     if ((a = romdb_read_file_by_hash(fdb, TYPE_DISK, disk_hashes(d))) == NULL) {
+=======
+    auto disks = fdb->read_file_by_hash(TYPE_DISK, disk_hashes(d));
+    if (disks.empty()) {
+>>>>>>> Stashed changes
 	/* TODO: internal error: database inconsistency */
 	return FIND_ERROR;
     }
@@ -381,7 +395,11 @@ find_disk_in_db(romdb_t *fdb, const Disk *d, const char *skip, MatchDisk *md, fi
 	if (skip && strcmp(file_location_name(fbh), skip) == 0)
 	    continue;
 
+<<<<<<< Updated upstream
         GamePtr game = romdb_read_game(fdb, file_location_name(fbh));
+=======
+        GamePtr game = fdb->read_game(disk.name);
+>>>>>>> Stashed changes
         if (!game) {
 	    /* TODO: internal error: db inconsistency */
 	    status = FIND_ERROR;

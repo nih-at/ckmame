@@ -41,7 +41,7 @@
 #include "sq_util.h"
 
 
-dbh_t *memdb = NULL;
+DB *memdb = NULL;
 int memdb_inited = 0;
 
 #define INSERT_FILE_GAME_ID 1
@@ -72,8 +72,11 @@ memdb_ensure(void) {
 
     memdb_inited = 1;
 
-    if ((memdb = dbh_open(dbname, DBH_FMT_MEM | DBH_NEW)) == NULL) {
-	myerror(ERRSTR, "cannot create in-memory db");
+    try {
+        memdb = new DB(dbname, DBH_FMT_MEM | DBH_NEW);
+    }
+    catch (std::exception &e) {
+        myerror(ERRSTR, "cannot create in-memory db");
 	return -1;
     }
 
@@ -89,7 +92,7 @@ memdb_get_ptr(const char *name, filetype_t type) {
     if (!memdb_inited)
 	return NULL;
 
-    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_QUERY_PTR)) == NULL) {
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_PTR)) == NULL) {
 	seterrdb(memdb);
 	myerror(ERRDB, "cannot get '%s' from file cache", name);
 	return NULL;
@@ -128,7 +131,7 @@ memdb_get_ptr_by_id(int id) {
     if (!memdb_inited)
 	return NULL;
 
-    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_QUERY_PTR_ID)) == NULL) {
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_PTR_ID)) == NULL) {
 	seterrdb(memdb);
 	myerror(ERRDB, "cannot get '%d' from file cache", id);
 	return NULL;
@@ -167,14 +170,14 @@ memdb_put_ptr(const char *name, filetype_t type, void *ptr) {
     if (memdb_ensure() < 0)
 	return -1;
 
-    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_PTR)) == NULL)
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_PTR)) == NULL)
 	ret = -1;
     else {
 	if (sq3_set_string(stmt, 1, name) != SQLITE_OK || sqlite3_bind_int(stmt, 2, type) != SQLITE_OK || sqlite3_bind_blob(stmt, 3, &ptr, sizeof(void *), SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
 	    ret = -1;
 	}
 	else
-	    ret = sqlite3_last_insert_rowid(dbh_db(memdb));
+	    ret = sqlite3_last_insert_rowid(memdb->db);
     }
 
     if (ret < 0) {
@@ -196,7 +199,7 @@ memdb_file_delete(const Archive *a, int idx, bool adjust_idx) {
     if (!adjust_idx)
 	return 0;
 
-    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_DEC_FILE_IDX)) == NULL)
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_DEC_FILE_IDX)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int64(stmt, 1, a->id) != SQLITE_OK || sqlite3_bind_int(stmt, 2, a->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
@@ -216,7 +219,7 @@ memdb_file_insert(sqlite3_stmt *stmt, const Archive *a, int idx) {
     auto r = &a->files[idx];
 
     if (stmt == NULL) {
-	if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
+	if ((stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	    return -1;
 
 	if (sqlite3_bind_int64(stmt, INSERT_FILE_GAME_ID, a->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, a->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, a->where) != SQLITE_OK)
@@ -253,7 +256,7 @@ memdb_file_insert_archive(const Archive *archive) {
     if (memdb_ensure() < 0)
 	return -1;
 
-    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int64(stmt, INSERT_FILE_GAME_ID, archive->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive->where) != SQLITE_OK)
@@ -292,7 +295,7 @@ _update_file(uint64_t id, filetype_t ft, int idx, const Hashes *h) {
 
     /* FILE_SH_DETECTOR hashes are always completely filled in */
 
-    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_UPDATE_FILE)) == NULL)
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_UPDATE_FILE)) == NULL)
 	return -1;
 
     if (sq3_set_hashes(stmt, 1, h, 1) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, id) != SQLITE_OK || sqlite3_bind_int(stmt, 5, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 6, idx) != SQLITE_OK || sqlite3_bind_int(stmt, 7, 0) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
@@ -306,7 +309,7 @@ static int
 _delete_file(uint64_t id, filetype_t ft, int idx) {
     sqlite3_stmt *stmt;
 
-    if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_DELETE_FILE)) == NULL)
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_DELETE_FILE)) == NULL)
 	return -1;
 
     if (sqlite3_bind_int64(stmt, 1, id) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 3, idx) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)

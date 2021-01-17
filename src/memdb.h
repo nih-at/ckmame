@@ -39,7 +39,7 @@
 #include "dbh.h"
 #include "disk.h"
 
-extern dbh_t *memdb;
+extern DB *memdb;
 
 
 int memdb_ensure(void);

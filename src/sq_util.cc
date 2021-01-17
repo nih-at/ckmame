@@ -75,11 +75,19 @@ sq3_get_int_default(sqlite3_stmt *stmt, int col, int def) {
 
 int64_t
 sq3_get_int64_default(sqlite3_stmt *stmt, int col, int64_t def) {
-    if (sqlite3_column_type(stmt, col) == SQLITE_NULL)
+    if (sqlite3_column_type(stmt, col) == SQLITE_NULL) {
 	return def;
+    }
     return sqlite3_column_int64(stmt, col);
 }
 
+uint64_t
+sq3_get_uint64_default(sqlite3_stmt *stmt, int col, uint64_t def) {
+    if (sqlite3_column_type(stmt, col) == SQLITE_NULL) {
+        return def;
+    }
+    return static_cast<uint64_t>(sqlite3_column_int64(stmt, col));
+}
 
 std::string
 sq3_get_string(sqlite3_stmt *stmt, int i) {
@@ -164,3 +172,13 @@ sq3_set_string(sqlite3_stmt *stmt, int i, const std::string &s) {
 	return sqlite3_bind_null(stmt, i);
     }
 }
+
+
+int
+sq3_set_uint64_default(sqlite3_stmt *stmt, int col, uint64_t val, uint64_t def) {
+    if (val == def) {
+        return sqlite3_bind_null(stmt, col);
+    }
+    return sqlite3_bind_int64(stmt, static_cast<int64_t>(col), val);
+}
+

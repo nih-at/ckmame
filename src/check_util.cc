@@ -203,7 +203,7 @@ enter_dir_in_map_and_list(int flags, parray_t *list, const char *directory_name,
 
     if (ret == 0) {
 	/* clean up cache db: remove archives no longer in file system */
-	dbh_t *dbh = dbh_cache_get_db_for_archive(directory_name);
+	DB *dbh = dbh_cache_get_db_for_archive(directory_name);
 	if (dbh) {
 	    auto list_db = dbh_cache_list_archives(dbh);
 	    if (!list_db.empty()) {
@@ -301,8 +301,14 @@ int
 enter_disk_in_map(const Disk *d, where_t where) {
     sqlite3_stmt *stmt;
 
+<<<<<<< Updated upstream
     if ((stmt = dbh_get_statement(memdb, DBH_STMT_MEM_INSERT_FILE)) == NULL)
 	return -1;
+=======
+    if ((stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_FILE)) == NULL) {
+	return false;
+    }
+>>>>>>> Stashed changes
 
     if (sqlite3_bind_int64(stmt, 1, disk_id(d)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, TYPE_DISK) != SQLITE_OK || sqlite3_bind_int(stmt, 3, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 4, 0) != SQLITE_OK || sqlite3_bind_int(stmt, 5, where) != SQLITE_OK || sqlite3_bind_null(stmt, 6) != SQLITE_OK || sq3_set_hashes(stmt, 7, disk_hashes(d), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
 	return -1;

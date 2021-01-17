@@ -51,10 +51,15 @@ static tree_t *tree_new_full(const char *, int);
 static int tree_process(tree_t *, ArchivePtr [], ImagesPtr []);
 static void tree_traverse_internal(tree_t *, ArchivePtr [], ImagesPtr []);
 
+<<<<<<< Updated upstream
 
 int
 tree_add(tree_t *tree, const char *name) {
     GamePtr game = romdb_read_game(db, name);
+=======
+bool Tree::add(const std::string &game_name) {
+    GamePtr game = db->read_game(game_name);
+>>>>>>> Stashed changes
     
     if (!game) {
 	return -1;
@@ -120,6 +125,7 @@ tree_recheck(const tree_t *tree, const char *name) {
 }
 
 
+<<<<<<< Updated upstream
 int
 tree_recheck_games_needing(tree_t *tree, uint64_t size, const Hashes *hashes) {
     array_t *a;
@@ -130,13 +136,25 @@ tree_recheck_games_needing(tree_t *tree, uint64_t size, const Hashes *hashes) {
     
     if ((a = romdb_read_file_by_hash(db, TYPE_ROM, hashes)) == NULL)
 	return 0;
+=======
+bool Tree::recheck_games_needing(uint64_t size, const Hashes *hashes) {
+    auto roms = db->read_file_by_hash(TYPE_ROM, hashes);
+    if (roms.empty()) {
+	return true;
+    }
+>>>>>>> Stashed changes
 
     ret = 0;
     for (i = 0; i < array_length(a); i++) {
 	fbh = static_cast<file_location_t *>(array_get(a, i));
 
+<<<<<<< Updated upstream
         game = romdb_read_game(db, file_location_name(fbh));
         if (!game || game->roms.size() <= static_cast<size_t>(file_location_index(fbh))) {
+=======
+        auto game = db->read_game(rom.name);
+        if (!game || game->roms.size() <= rom.index) {
+>>>>>>> Stashed changes
             /* TODO: internal error: db inconsistency */
 	    ret = -1;
 	    continue;
@@ -176,6 +194,7 @@ tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], ImagesPtr a
 	if (siginfo_caught)
 	    print_info(tree->name);
 
+<<<<<<< Updated upstream
 	flags = ((tree->check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | romdb_hashtypes(db, TYPE_ROM)) : 0));
 
 	full_name = findfile(tree->name, TYPE_ROM, 0);
@@ -191,6 +210,23 @@ tree_traverse_internal(tree_t *tree, ArchivePtr ancestor_archives[], ImagesPtr a
         
 	if (tree_check(tree) && !tree_checked(tree))
             tree_process(tree, archives, images);
+=======
+    auto flags = ((check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | db->hashtypes(TYPE_ROM)) : 0));
+    
+    auto full_name = findfile(name, TYPE_ROM, "");
+    if (full_name.empty() && check) {
+        full_name = make_file_name(TYPE_ROM, name, "");
+    }
+    if (!full_name.empty()) {
+        archives[0] = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, flags);
+    }
+    
+    self_images = Images::from_directory(name, check_integrity);
+    images[0] = self_images;
+    
+    if (check && !checked) {
+        process(archives, images);
+>>>>>>> Stashed changes
     }
 
     for (t = tree->child; t; t = t->next) {
@@ -248,6 +284,7 @@ tree_add_node(tree_t *tree, const char *name, int check) {
 }
 
 
+<<<<<<< Updated upstream
 static tree_t *
 tree_new_full(const char *name, int check) {
     tree_t *t;
@@ -268,6 +305,14 @@ tree_process(tree_t *tree, ArchivePtr archives[], ImagesPtr images[]) {
     if (!(game = romdb_read_game(db, tree->name))) {
 	myerror(ERRDEF, "db error: %s not found", tree->name);
 	return -1;
+=======
+void Tree::process(ArchivePtr *archives, ImagesPtr *images) {
+    auto game = db->read_game(name);
+    
+    if (!game) {
+	myerror(ERRDEF, "db error: %s not found", name.c_str());
+        return;
+>>>>>>> Stashed changes
     }
 
     Result res(game.get(), archives[0].get(), images[0].get());

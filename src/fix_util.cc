@@ -173,7 +173,7 @@ save_needed_part(Archive *sa, int sidx, const char *gamename, off_t start, off_t
 
     bool needed = true;
 
-    if (!sa->file_compute_hashes(sidx, romdb_hashtypes(db, TYPE_ROM))) {
+    if (!sa->file_compute_hashes(sidx, db->hashtypes(TYPE_ROM))) {
         return false;
     }
     

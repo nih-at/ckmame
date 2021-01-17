@@ -54,11 +54,7 @@ OutputContextDb::OutputContextDb(const std::string &dbname, int flags) : db(NULL
         throw std::exception();
     }
     
-    db = romdb_open(dbname.c_str(), DBH_NEW);
-    if (db == NULL) {
-	myerror(ERRDB, "can't create hash table");
-        throw std::exception();
-    }
+    db = new RomDB(dbname, DBH_NEW);
 }
 
 
@@ -106,7 +102,7 @@ bool OutputContextDb::handle_lost() {
         for (size_t i = 0; i < lost_children.size(); i++) {
             /* get current lost child from database, get parent,
              look if parent is still lost, if not, do child */
-            auto child = romdb_read_game(db, lost_children[i]);
+            auto child = db->read_game(lost_children[i]);
             if (!child) {
                 myerror(ERRDEF, "internal database error: child %s not in database", lost_children[i].c_str());
                 return false;
@@ -114,13 +110,13 @@ bool OutputContextDb::handle_lost() {
             
             bool is_lost = true;
             
-            auto parent = romdb_read_game(db, child->cloneof[0]);
+            auto parent = db->read_game(child->cloneof[0]);
             if (!parent) {
                 myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", child->name.c_str(), child->cloneof[0].c_str());
                 
                 /* remove non-existent cloneof */
                 child->cloneof[0] = "";
-                romdb_update_game_parent(db, child.get());
+                db->update_game_parent(child.get());
                 is_lost = false;
             }
             else if (!lost(parent.get())) {
@@ -130,7 +126,7 @@ bool OutputContextDb::handle_lost() {
             }
             
             if (!is_lost) {
-                romdb_update_file_location(db, child.get());
+                db->update_file_location(child.get());
                 lost_children.erase(lost_children.begin() + static_cast<long>(i));
             }
         }
@@ -153,18 +149,17 @@ bool OutputContextDb::close() {
     auto ok = true;
 
     if (db) {
-        romdb_write_dat(db, dat);
+        db->write_dat(dat);
 
         if (!handle_lost()) {
             ok = false;
         }
 
-        if (sqlite3_exec(romdb_sqlite3(db), sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
+        if (sqlite3_exec(db->db.db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
             ok = false;
         }
 
-        romdb_close(db);
-        
+        delete db;
         db = NULL;
     }
 
@@ -172,11 +167,11 @@ bool OutputContextDb::close() {
 }
 
 
-bool OutputContextDb::detector(detector_t *d) {
-    if (romdb_write_detector(db, d) != 0) {
-	seterrdb(romdb_dbh(db));
-	myerror(ERRDB, "can't write detector to db");
-	return false;
+bool OutputContextDb::detector(detector_t *detector) {
+    if (!db->write_detector(detector)) {
+        seterrdb(&db->db);
+        myerror(ERRDB, "can't write detector to db");
+        return false;
     }
 
     return true;
@@ -184,7 +179,7 @@ bool OutputContextDb::detector(detector_t *d) {
 
 
 bool OutputContextDb::game(GamePtr game) {
-    auto g2 = romdb_read_game(db, game->name);
+    auto g2 = db->read_game(game->name);
     
     if (g2) {
         myerror(ERRDEF, "duplicate game '%s' skipped", game->name.c_str());
@@ -194,7 +189,7 @@ bool OutputContextDb::game(GamePtr game) {
     game->dat_no = dat.size() - 1;
 
     if (!game->cloneof[0].empty()) {
-        auto parent = romdb_read_game(db, game->cloneof[0]);
+        auto parent = db->read_game(game->cloneof[0]);
         if (!parent || lost(parent.get())) {
             lost_children.push_back(game->name);
         }
@@ -204,7 +199,7 @@ bool OutputContextDb::game(GamePtr game) {
         }
     }
 
-    if (romdb_write_game(db, game.get()) != 0) {
+    if (!db->write_game(game.get())) {
 	myerror(ERRDB, "can't write game '%s' to db", game->name.c_str());
 	return false;
     }

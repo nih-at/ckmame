@@ -87,7 +87,7 @@ DiskPtr Disk::from_file(const std::string &name, int flags) {
     disk->name = name;
 
     if (flags & DISK_FL_CHECK_INTEGRITY) {
-        disk->hashes.types = romdb_hashtypes(db, TYPE_DISK);
+        disk->hashes.types = db->hashtypes(TYPE_DISK);
 
 	err = get_hashes(chd, &disk->hashes);
 

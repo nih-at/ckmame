@@ -91,6 +91,7 @@ set(COMMON_SOURCES
   ptr_sort.cc
   result.cc
   romdb.cc
+<<<<<<< Updated upstream
   romdb_read_dat.cc
   romdb_read_detector.cc
   romdb_read_file_by_hash.cc
@@ -100,6 +101,8 @@ set(COMMON_SOURCES
   romdb_write_dat.cc
   romdb_write_detector.cc
   romdb_write_game.cc
+=======
+>>>>>>> Stashed changes
   sighandle.cc
   sq_util.cc
   stats.cc

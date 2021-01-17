@@ -143,7 +143,7 @@ public:
     where_t where;
     int flags;
     std::vector<File> files;
-    dbh_t *cache_db;
+    DB *cache_db;
     int cache_id;
     bool cache_changed;
     time_t mtime;
