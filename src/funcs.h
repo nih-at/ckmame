@@ -85,7 +85,7 @@ void remove_empty_archive(const std::string &name);
 void remove_from_superfluous(const std::string &name);
 bool rename_or_move(const std::string &old, const std::string &new_name);
 bool save_needed(Archive *sa, size_t sidx, const char *gamename);
-int save_needed_disk(const char *, int);
+bool save_needed_disk(const std::string &fname, bool do_save);
 bool save_needed_part(Archive *sa, size_t sidx, const char *gamename, off_t start, off_t length, File *f);
 void write_fixdat_entry(const Game *, const Result *);
 

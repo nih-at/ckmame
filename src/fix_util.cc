@@ -221,8 +221,8 @@ save_needed(Archive *sa, size_t sidx, const char *gamename) {
 }
 
 
-int
-save_needed_disk(const char *fname, int do_save) {
+bool
+save_needed_disk(const std::string &fname, bool do_save) {
     DiskPtr d = Disk::from_file(fname, 0);
     if (!d) {
         return -1;

@@ -235,7 +235,7 @@ fix_disks(Game *g, Images *im, Result *result) {
 	    if (fix_options & FIX_PRINT) {
 		printf("%s: save needed image\n", name.c_str());
 	    }
-	    save_needed_disk(name.c_str(), (fix_options & FIX_DO));
+	    save_needed_disk(name, (fix_options & FIX_DO));
             if (fix_options & FIX_DO) {
                 removed += 1;
             }
