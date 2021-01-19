@@ -48,7 +48,6 @@
 #include "globals.h"
 #include "memdb.h"
 #include "util.h"
-#include "xmalloc.h"
 
 #define BUFSIZE 8192
 
@@ -283,31 +282,16 @@ archive_global_flags(int fl, bool setp) {
 
 
 std::string Archive::make_unique_name(const std::string &filename) {
-    char *unique, *p;
-    char n[4];
-
     if (!file_index_by_name(filename).has_value()) {
         return filename;
     }
 
-    unique = static_cast<char *>(xmalloc(filename.size() + 5));
-
-    auto ext_index = filename.find_last_of(".");
-    if (ext_index == std::string::npos) {
-        strcpy(unique, filename.c_str());
-	p = unique + strlen(unique);
-	p[4] = '\0';
-    }
-    else {
-        strncpy(unique, filename.c_str(), ext_index);
-        p = unique + ext_index;
-	strcpy(p + 4, filename.c_str() + ext_index);
-    }
-    *(p++) = '-';
+    std::string ext = std::filesystem::path(filename).extension();
 
     for (int i = 0; i < 1000; i++) {
-	sprintf(n, "%03d", i);
-	strncpy(p, n, 3);
+	char n[5];
+	sprintf(n, "-%03d", i);
+	auto unique = filename.substr(0, filename.length() - ext.length()) + n + ext;
 
 	auto exists = false;
         
@@ -323,7 +307,6 @@ std::string Archive::make_unique_name(const std::string &filename) {
         }
     }
 
-    free(unique);
     return "";
 }
 
