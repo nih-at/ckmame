@@ -24,8 +24,6 @@
   - convert to C++:
     - chd.h
     - xmlutil.h
-    - md5_own.h ?
-    - sha1_own.h ?
 
 
 # Later
