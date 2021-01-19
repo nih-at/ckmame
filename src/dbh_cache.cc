@@ -180,9 +180,10 @@ dbh_cache_get_db_for_archive(const std::string &name) {
             if (!directory.initialized) {
 		directory.initialized = true;
 		if ((fix_options & FIX_DO) == 0) {
-		    struct stat st;
-		    if (stat(directory.name.c_str(), &st) < 0 && errno == ENOENT)
+		    std::error_code ec;
+		    if (!std::filesystem::exists(directory.name, ec)) {
 			return NULL; /* we won't write any files, so DB would remain empty */
+		    }
 		}
                 if (!ensure_dir(directory.name, false)) {
 		    return NULL;

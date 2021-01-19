@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -338,19 +340,19 @@ process_file(const char *fname, const std::unordered_set<std::string> &exclude, 
 	return err;
     }
     else {
-	struct stat st;
-
-	if (stat(fname, &st) == -1) {
-	    myerror(ERRSTR, "can't stat() file '%s'", fname);
-	    return -1;
-	}
-	if ((st.st_mode & S_IFMT) == S_IFDIR) {
+	std::error_code ec;
+	if (std::filesystem::is_directory(fname, ec)) {
             if (cache_directory) {
 		Archive::register_cache_directory(fname);
             }
 
             auto ctx = ParserContext(NULL, exclude, dat, out, parser_flags);
             return ctx.parse_dir(fname, hashtypes);
+	}
+
+	if (ec) {
+	    myerror(ERRDEF, "cannot stat() file '%s': %s", fname, ec.message().c_str());
+	    return -1;
 	}
 
 	if (roms_unzipped) {
