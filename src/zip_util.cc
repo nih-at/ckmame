@@ -33,78 +33,61 @@
 
 #include "zip_util.h"
 
-#include <errno.h>
-#include <stdlib.h>
+#include <filesystem>
 
-#include <zip.h>
-
-#include "error.h"
-#include "xmalloc.h"
-
-
-static int my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx);
-
+static bool my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx);
 
 int
 my_zip_rename(struct zip *za, uint64_t idx, const char *name) {
     int zerr;
     zip_int64_t idx2;
 
-    if (zip_rename(za, idx, name) == 0)
+    if (zip_rename(za, idx, name) == 0) {
 	return 0;
+    }
 
     zip_error_get(za, &zerr, NULL);
 
-    if (zerr != ZIP_ER_EXISTS)
+    if (zerr != ZIP_ER_EXISTS) {
 	return -1;
+    }
 
     idx2 = zip_name_locate(za, name, 0);
-    if (idx2 == -1)
+    if (idx2 == -1) {
 	return -1;
-    if (my_zip_rename_to_unique(za, (zip_uint64_t)idx2) < 0)
+    }
+    if (!my_zip_rename_to_unique(za, (zip_uint64_t)idx2)) {
 	return -1;
+    }
 
     return zip_rename(za, idx, name);
 }
 
 
-static int
+static bool
 my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx) {
-    char *unique, *p;
-    char n[4];
-    const char *name, *ext;
-    int i, ret, zerr;
 
-    if ((name = zip_get_name(za, idx, 0)) == NULL)
-	return -1;
-
-    unique = (char *)xmalloc(strlen(name) + 5);
-
-    ext = strrchr(name, '.');
-    if (ext == NULL) {
-	strcpy(unique, name);
-	p = unique + strlen(unique);
-	p[4] = '\0';
+    std::string name = zip_get_name(za, idx, 0);
+    if (name.empty()) {
+	return false;
     }
-    else {
-	strncpy(unique, name, ext - name);
-	p = unique + (ext - name);
-	strcpy(p + 4, ext);
-    }
-    *(p++) = '-';
 
-    for (i = 0; i < 1000; i++) {
-	sprintf(n, "%03d", i);
-	strncpy(p, n, 3);
+    std::string ext = std::filesystem::path(name).extension();
+    name.resize(name.length() - ext.length());
 
-	ret = zip_rename(za, idx, unique);
+    for (int i = 0; i < 1000; i++) {
+	char n[5];
+	int zerr;
+
+	sprintf(n, "-%03d", i);
+	auto unique = name + n + ext;
+
+	int ret = zip_rename(za, idx, unique.c_str());
 	zip_error_get(za, &zerr, NULL);
 	if (ret == 0 || zerr != ZIP_ER_EXISTS) {
-	    free(unique);
-	    return ret;
+	    return ret == 0;
 	}
     }
 
-    free(unique);
-    return -1;
+    return false;
 }
