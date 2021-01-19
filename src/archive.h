@@ -49,8 +49,10 @@
 
 class Archive;
 class ArchiveFile;
+class ArchiveContents;
 
 typedef std::shared_ptr<Archive> ArchivePtr;
+typedef std::shared_ptr<ArchiveContents> ArchiveContentsPtr;
 
 #define ARCHIVE_FL_CREATE 0x00100
 #define ARCHIVE_FL_CHECK_INTEGRITY 0x00200
@@ -63,14 +65,51 @@ typedef std::shared_ptr<Archive> ArchivePtr;
 #define ARCHIVE_FL_HASHTYPES_MASK 0x000ff
 #define ARCHIVE_FL_MASK 0x0ff00
 
-#define ARCHIVE_IFL_MODIFIED 0x10000
-
 /* internal */
 extern int _archive_global_flags;
 
 void archive_global_flags(int fl, bool setp);
 
 #define ARCHIVE_IS_INDEXED(a) (((a)->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(archive_where(a)))
+
+enum ArchiveType {
+    ARCHIVE_ZIP,
+    ARCHIVE_DIR
+};
+
+class ArchiveContents {
+public:
+    ArchiveContents(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flags);
+
+    uint64_t id;
+    std::string name;
+    std::vector<File> files;
+    filetype_t filetype;
+    where_t where;
+
+    DB *cache_db;
+    int cache_id;
+    int flags;
+    time_t mtime;
+    uint64_t size;
+    
+    ArchiveType archive_type;
+    std::weak_ptr<Archive> open_archive;
+    
+  
+    bool read_infos_from_cachedb(std::vector<File> *files);
+    int is_cache_up_to_date();
+
+    static void enter_in_maps(ArchiveContentsPtr contents);
+    static ArchiveContentsPtr by_id(uint64_t id);
+    static ArchiveContentsPtr by_name(const std::string &name);
+
+private:
+    static uint64_t next_id;
+    static std::unordered_map<std::string, std::weak_ptr<ArchiveContents>> archive_by_name;
+    static std::unordered_map<uint64_t, ArchiveContentsPtr> archive_by_id;
+
+};
 
 
 class Archive {
@@ -85,18 +124,19 @@ public:
     };
     typedef std::shared_ptr<ArchiveFile> ArchiveFilePtr;
 
-    static ArchivePtr by_id(uint64_t id) { return archive_by_id[id]; }
+    static ArchivePtr by_id(uint64_t id);
     
     static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
     static ArchivePtr open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags);
     
-    static void flush_cache();
-    
+    static ArchivePtr open(ArchiveContentsPtr contents);
+        
     static int64_t file_read_c(void *fp, void *data, uint64_t length);
 
     static int register_cache_directory(const std::string &name);
     
-    virtual ~Archive() { }
+    Archive(ArchiveContentsPtr contents_);
+    virtual ~Archive() { /*printf("# destroying %s\n", name.c_str());*/ }
 
     int close();
     bool commit();
@@ -120,9 +160,8 @@ public:
     void refresh();
     bool rollback();
     bool is_empty() const;
-    bool is_writable() const { return (flags & ARCHIVE_FL_RDONLY) == 0; }
-    bool is_modified() const { return flags & ARCHIVE_IFL_MODIFIED; }
-    bool is_indexed() const { return (flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where);
+    bool is_writable() const { return (contents->flags & ARCHIVE_FL_RDONLY) == 0; }
+    bool is_indexed() const { return (contents->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where);
 }
     virtual bool check() { return true; } // This is done as part of the constructor, remove?
     virtual bool close_xxx() { return true; }
@@ -137,32 +176,23 @@ public:
     virtual bool read_infos_xxx() = 0;
     virtual bool rollback_xxx() = 0; /* never called if commit never fails */
     
-    uint64_t id;
-    std::string name;
-    filetype_t filetype;
-    where_t where;
-    int flags;
-    std::vector<File> files;
-    DB *cache_db;
-    int cache_id;
+    ArchiveContentsPtr contents;
+    std::vector<File> &files;
+    std::string &name;
+    const filetype_t filetype;
+    const where_t where;
+    
     bool cache_changed;
-    time_t mtime;
-    uint64_t size;
     bool modified;
     
 protected:
-    Archive(const std::string &name, filetype_t filetype, where_t where, int flags);
+    Archive(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flags);
     void update_cache();
 
-private:
     void add_file(const std::string &filename, const File *file);
     bool get_hashes(ArchiveFile *f, size_t len, Hashes *h);
-    int cache_is_up_to_date();
     void merge_files(const std::vector<File> &files_cache);
     
-    static uint64_t next_id;
-    static std::unordered_map<std::string, std::weak_ptr<Archive>> archive_by_name;
-    static std::unordered_map<uint64_t, ArchivePtr> archive_by_id;
 };
 
 #endif /* archive.h */

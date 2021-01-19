@@ -90,7 +90,7 @@ bool ArchiveDir::FileInfo::discard(ArchiveDir *archive) const {
     }
     auto path = std::filesystem::path(name).parent_path();
     /* TODO: stop before removing archive_name itself, e.g. extra_dir */
-    while (true) {
+    while (!path.empty()) {
 	std::filesystem::remove(path, ec);
 	if (ec) {
 	    break;
@@ -245,7 +245,7 @@ std::filesystem::path ArchiveDir::make_tmp_name(const std::filesystem::path &fil
 
 
 bool ArchiveDir::commit_xxx() {
-    if (!is_modified()) {
+    if (!modified) {
         return true;
     }
 
@@ -266,7 +266,7 @@ bool ArchiveDir::commit_xxx() {
         }
     }
     
-    if (is_empty && is_writable() && !(flags & (ARCHIVE_FL_KEEP_EMPTY | ARCHIVE_FL_TOP_LEVEL_ONLY))) {
+    if (is_empty && is_writable() && !(contents->flags & (ARCHIVE_FL_KEEP_EMPTY | ARCHIVE_FL_TOP_LEVEL_ONLY))) {
 	std::error_code ec;
 	std::filesystem::remove(name, ec);
 	if (ec) {
@@ -480,7 +480,7 @@ const char *ArchiveDir::ArchiveFile::strerror() {
 
 bool ArchiveDir::read_infos_xxx() {
     try {
-	 Dir dir(name, flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
+	 Dir dir(name, contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
 	 std::filesystem::path filepath;
 
 	 while ((filepath = dir.next()) != "") {
@@ -529,11 +529,11 @@ bool ArchiveDir::rollback_xxx() {
 void ArchiveDir::get_last_update() {
     struct stat st;
 
-    size = 0;
+    contents->size = 0;
     if (stat(name.c_str(), &st) < 0) {
-        mtime = 0;
+        contents->mtime = 0;
         return;
     }
 
-    mtime = st.st_mtime;
+    contents->mtime = st.st_mtime;
 }

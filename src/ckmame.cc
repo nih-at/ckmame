@@ -524,8 +524,6 @@ main(int argc, char **argv) {
 	stats.print(stdout, false);
     }
 
-    Archive::flush_cache();
-
     dbh_cache_close_all();
     
     if ((fix_options & FIX_DO) != 0) {

@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
+
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -146,16 +148,18 @@ my_remove(const char *name) {
 }
 
 
-int
-rename_or_move(const char *old, const char *new_name) {
-    if (rename(old, new_name) < 0) {
-	if (copy_file(old, new_name, 0, -1, NULL) < 0) {
+bool rename_or_move(const std::string &old, const std::string &new_name) {
+    std::error_code ec;
+    std::filesystem::rename(old, new_name, ec);
+    if (ec) {
+        std::filesystem::copy_file(old, new_name, ec);
+        if (ec) {
 	    seterrinfo(old, "");
-	    myerror(ERRFILESTR, "cannot rename to '%s'", new_name);
-	    return -1;
+	    myerror(ERRFILESTR, "cannot rename to '%s'", new_name.c_str());
+	    return false;
 	}
-	unlink(old);
+	std::filesystem::remove(old);
     }
 
-    return 0;
+    return true;
 }

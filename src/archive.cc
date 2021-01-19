@@ -53,9 +53,70 @@
 
 #define BUFSIZE 8192
 
-uint64_t Archive::next_id;
-std::unordered_map<std::string, std::weak_ptr<Archive>> Archive::archive_by_name;
-std::unordered_map<uint64_t, ArchivePtr> Archive::archive_by_id;
+//#define DEBUG_LC
+
+uint64_t ArchiveContents::next_id;
+std::unordered_map<std::string, std::weak_ptr<ArchiveContents>> ArchiveContents::archive_by_name;
+std::unordered_map<uint64_t, ArchiveContentsPtr> ArchiveContents::archive_by_id;
+
+ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, filetype_t filetype_, where_t where_, int flags_) :
+    id(0),
+    name(name_),
+    filetype(filetype_),
+    where(where_),
+    cache_db(NULL),
+    cache_id(0),
+    flags(0),
+    mtime(0),
+    size(0),
+    archive_type(type_) { }
+
+Archive::Archive(ArchiveContentsPtr contents_) :
+    contents(contents_),
+    files(contents->files),
+    name(contents->name),
+    filetype(contents->filetype),
+    where(contents->where),
+    cache_changed(false),
+    modified(false) { }
+
+Archive::Archive(ArchiveType type, const std::string &name_, filetype_t ft, where_t where_, int flags_) : Archive(std::make_shared<ArchiveContents>(type, name_, ft, where_, flags_)) { }
+
+ArchivePtr Archive::open(ArchiveContentsPtr contents) {
+    ArchivePtr archive;
+    
+    if (contents->open_archive.expired()) {
+        switch (contents->archive_type) {
+            case ARCHIVE_ZIP:
+                archive = std::make_shared<ArchiveZip>(contents);
+                break;
+                
+            case ARCHIVE_DIR:
+                archive = std::make_shared<ArchiveDir>(contents);
+                break;
+        }
+
+        //printf("# reopening %s\n", archive->name.c_str());
+        contents->open_archive = archive;
+    }
+    else {
+        //printf("# already open %s\n", archive->name.c_str());
+        archive = contents->open_archive.lock();
+    }
+    
+    return archive;
+}
+
+ArchivePtr Archive::by_id(uint64_t id) {
+    auto contents = ArchiveContents::by_id(id);
+    
+    if (!contents) {
+        return NULL;
+    }
+    
+    return open(contents);
+}
+
 
 int Archive::close() {
     int ret;
@@ -268,11 +329,10 @@ std::string Archive::make_unique_name(const std::string &filename) {
 }
 
 ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t where, int flags) {
-    auto it = archive_by_name.find(name);
-    if (it != archive_by_name.end()) {
-        if (!it->second.expired()) {
-            return it->second.lock();
-        }
+    auto contents = ArchiveContents::by_name(name);
+
+    if (contents) {
+        return open(contents);
     }
 
     ArchivePtr archive;
@@ -297,7 +357,8 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
         return ArchivePtr();
     }
     
-    archive->flags = ((flags | _archive_global_flags) & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK));
+    archive->contents->open_archive = archive;
+    archive->contents->flags = ((flags | _archive_global_flags) & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK));
     
     if (!archive->read_infos() && (flags & ARCHIVE_FL_CREATE) == 0) {
         return ArchivePtr();
@@ -308,28 +369,12 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
 	file.where = FILE_INGAME;
     }
 
-    if (!(archive->flags & ARCHIVE_FL_NOCACHE)) {
-        archive->id = ++next_id;
-        archive_by_id[archive->id] = archive;
-        
-        if (IS_EXTERNAL(archive->where)) {
-	    memdb_file_insert_archive(archive.get());
-        }
-    }
+    ArchiveContents::enter_in_maps(archive->contents);
 
-    archive_by_name[name] = archive;
-
+    //printf("# opening %s\n", archive->name.c_str());
     return archive;
 }
 
-
-void Archive::flush_cache() {
-    archive_by_id.clear();
-    archive_by_name.clear();
-}
-
-
-Archive::Archive(const std::string &name_, filetype_t ft, where_t where_, int flags_) : id(0), name(name_), filetype(ft), where(where_), flags(0), cache_db(NULL), cache_id(0), cache_changed(false), mtime(0), size(0), modified(false) { }
 
 ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags) {
     ArchivePtr a = open(name, filetype, where, flags | ARCHIVE_FL_TOP_LEVEL_ONLY);
@@ -345,15 +390,12 @@ ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, 
 bool Archive::read_infos() {
     std::vector<File> files_cache;
 
-    cache_db = dbh_cache_get_db_for_archive(name);
-    cache_id = cache_db ? dbh_cache_get_archive_id(cache_db, name.c_str()) : 0;
     cache_changed = false;
-    if (cache_id > 0) {
-        if (!dbh_cache_read(cache_db, name, &files_cache)) {
-            return false;
-        }
+    
+    contents->read_infos_from_cachedb(&files_cache);
 
-        switch (cache_is_up_to_date()) {
+    if (contents->cache_id > 0) {
+        switch (contents->is_cache_up_to_date()) {
             case -1:
                 return false;
                 
@@ -400,8 +442,12 @@ bool Archive::is_empty() const {
 }
 
 
-int Archive::cache_is_up_to_date() {
-    get_last_update();
+int ArchiveContents::is_cache_up_to_date() {
+    if (open_archive.expired()) {
+        return 0;
+    }
+    
+    open_archive.lock()->get_last_update();
 
     if (mtime == 0 && size == 0) {
         return 0;
@@ -486,4 +532,53 @@ std::optional<size_t> Archive::file_index(const File *file) const {
     }
     
     return {};
+}
+
+
+// MARK: - ArchiveContents
+
+bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
+    cache_db = dbh_cache_get_db_for_archive(name);
+    cache_id = cache_db ? dbh_cache_get_archive_id(cache_db, name.c_str()) : 0;
+
+    if (cache_id > 0) {
+        if (!dbh_cache_read(cache_db, name, files)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void ArchiveContents::enter_in_maps(ArchiveContentsPtr contents) {
+    if (!(contents->flags & ARCHIVE_FL_NOCACHE)) {
+        contents->id = ++next_id;
+        archive_by_id[contents->id] = contents;
+        
+        if (IS_EXTERNAL(contents->where)) {
+            memdb_file_insert_archive(contents.get());
+        }
+    }
+
+    archive_by_name[contents->name] = contents;
+}
+
+ArchiveContentsPtr ArchiveContents::by_id(uint64_t id) {
+    auto it = archive_by_id.find(id);
+    
+    if (it == archive_by_id.end()) {
+        return NULL;
+    }
+    
+    return it->second;
+}
+
+ArchiveContentsPtr ArchiveContents::by_name(const std::string &name) {
+    auto it = archive_by_name.find(name);
+    
+    if (it == archive_by_name.end() || it->second.expired()) {
+        return NULL;
+    }
+    
+    return it->second.lock();
 }

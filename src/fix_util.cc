@@ -65,42 +65,41 @@ make_garbage_name(const std::string &name, int unique) {
 	auto ext = s.extension().string().substr(1);
 	/* path and filename, but no extension */
 	auto t_no_ext = t.parent_path() / t.stem();
-	auto u = make_unique_name(ext.c_str(), "%s", t_no_ext.c_str());
-	return u;
+	return make_unique_name(ext, "%s", t_no_ext.c_str());
     }
 
     return t;
 }
 
 
-char *
-make_unique_name(const char *ext, const char *fmt, ...) {
+std::string
+make_unique_name(const std::string &ext, const char *fmt, ...) {
     char ret[MAXPATHLEN];
-    int i, len;
     struct stat st;
     va_list ap;
 
     va_start(ap, fmt);
-    len = vsnprintf(ret, sizeof(ret), fmt, ap);
+    auto len = static_cast<size_t>(vsnprintf(ret, sizeof(ret), fmt, ap));
     va_end(ap);
 
     /* already used space, "-XXX.", extension, 0 */
-    if (len + 5 + strlen(ext) + 1 > sizeof(ret)) {
+    if (len + 5 + ext.length() + 1 > sizeof(ret)) {
 	return NULL;
     }
 
-    for (i = 0; i < 1000; i++) {
-	sprintf(ret + len, "-%03d%s%s", i, (ext[0] ? "." : ""), ext);
+    for (int i = 0; i < 1000; i++) {
+	sprintf(ret + len, "-%03d%s%s", i, (ext[0] ? "." : ""), ext.c_str());
 
-	if (stat(ret, &st) == -1 && errno == ENOENT)
-	    return xstrdup(ret);
+        if (stat(ret, &st) == -1 && errno == ENOENT) {
+	    return ret;
+        }
     }
 
-    return NULL;
+    return "";
 }
 
 
-char *
+std::string
 make_needed_name(const File *r) {
     /* <needed_dir>/<crc>-nnn.zip */
 
@@ -110,7 +109,7 @@ make_needed_name(const File *r) {
 }
 
 
-char *
+std::string
 make_needed_name_disk(const Disk *d) {
     /* <needed_dir>/<md5>-nnn.zip */
 
@@ -126,9 +125,9 @@ move_image_to_garbage(const std::string &fname) {
 
     auto to_name = make_garbage_name(fname, 1);
     ensure_dir(to_name, true);
-    ret = rename_or_move(fname.c_str(), to_name.c_str());
+    ret = rename_or_move(fname, to_name);
 
-    return ret;
+    return ret ? 0 : -1;
 }
 
 
@@ -153,7 +152,6 @@ remove_from_superfluous(const std::string &name) {
 
 bool
 save_needed_part(Archive *sa, size_t sidx, const char *gamename, off_t start, off_t length, File *f) {
-    char *tmp;
     bool do_save = fix_options & FIX_DO;
 
     bool needed = true;
@@ -163,58 +161,57 @@ save_needed_part(Archive *sa, size_t sidx, const char *gamename, off_t start, of
     }
     
     if (find_in_romset(f, sa, gamename, NULL) == FIND_EXISTS) {
-	needed = false;	
+        needed = false;
     }
     else {
-	ensure_needed_maps();
-	if (find_in_archives(f, NULL, true) == FIND_EXISTS) {
-	    needed = false;
-	}
+        ensure_needed_maps();
+        if (find_in_archives(f, NULL, true) == FIND_EXISTS) {
+            needed = false;
+        }
     }
-
+    
     if (needed) {
-	if (fix_options & FIX_PRINT) {
-	    if (length == -1) {
-		printf("%s: save needed file '%s'\n", sa->name.c_str(), sa->files[sidx].name.c_str());
-	    }
-	    else {
+        if (fix_options & FIX_PRINT) {
+            if (length == -1) {
+                printf("%s: save needed file '%s'\n", sa->name.c_str(), sa->files[sidx].name.c_str());
+            }
+            else {
                 printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), (uint64_t)start, (uint64_t)length, sa->files[sidx].name.c_str());
-	    }
-	}
-
-	if ((tmp = make_needed_name(f)) == NULL) {
-	    myerror(ERRDEF, "cannot create needed file name");
+            }
+        }
+        
+        auto tmp = make_needed_name(f);
+        if (tmp.empty()) {
+            myerror(ERRDEF, "cannot create needed file name");
             return false;
-	}
-	
+        }
+        
         ArchivePtr da  = Archive::open(tmp, sa->filetype, FILE_NEEDED, ARCHIVE_FL_CREATE | (do_save ? 0 : ARCHIVE_FL_RDONLY));
-
+        
         if (!da) {
             return false;
         }
-	
-	free(tmp);
-	
+        
         if (!da->file_copy_part(sa, sidx, sa->files[sidx].name.c_str(), start, length == -1 ? std::optional<uint64_t>() : length, f) || !da->commit()) {
             da->rollback();
             return false;
         }
     }
     else {
-	if (length == -1 && (fix_options & FIX_PRINT)) {
+        if (length == -1 && (fix_options & FIX_PRINT)) {
             printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), sa->files[sidx].name.c_str());
-	}
+        }
     }
-	
+    
     if (do_save && length == -1) {
         if (sa->where == FILE_ROMSET) {
-	    return sa->file_delete(sidx);
-	}
-	else {
-	    DeleteList::used(sa, sidx);
-	}
+            return sa->file_delete(sidx);
+        }
+        else {
+            DeleteList::used(sa, sidx);
+        }
     }
-
+    
     return true;
 }
 
@@ -228,27 +225,26 @@ int
 save_needed_disk(const char *fname, int do_save) {
     DiskPtr d = Disk::from_file(fname, 0);
     if (!d) {
-	return -1;
+        return -1;
     }
-
+    
     int ret = 0;
-
+    
     if (do_save) {
         auto tmp = make_needed_name_disk(d.get());
-	if (tmp == NULL) {
-	    myerror(ERRDEF, "cannot create needed file name");
-	    ret = -1;
-	}
-	else if (!ensure_dir(tmp, true)) {
-	    ret = -1;
-	}
-	else if (rename_or_move(fname, tmp) != 0) {
-	    ret = -1;
-	}
-	else {
+        if (tmp.empty()) {
+            myerror(ERRDEF, "cannot create needed file name");
+            ret = -1;
+        }
+        else if (!ensure_dir(tmp, true)) {
+            ret = -1;
+        }
+        else if (!rename_or_move(fname, tmp)) {
+            ret = -1;
+        }
+        else {
             d = Disk::from_file(tmp, 0);
-	}
-        free(tmp);
+        }
     }
 
     ensure_needed_maps();

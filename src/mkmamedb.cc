@@ -286,14 +286,12 @@ main(int argc, char **argv) {
     }
 
     if (flags & OUTPUT_FL_TEMP) {
-	if (rename_or_move(dbname, dbname_real) != 0) {
+	if (!rename_or_move(dbname, dbname_real)) {
 	    myerror(ERRDEF, "could not copy temporary output '%s' to '%s'", dbname, dbname_real);
 	    return 1;
 	}
     }
     
-    Archive::flush_cache();
-
     return 0;
 }
 
