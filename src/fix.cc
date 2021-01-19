@@ -214,7 +214,7 @@ fix_disks(Game *g, Images *im, Result *result) {
 		    move_image_to_garbage(name);
                 }
                 else {
-		    my_remove(name.c_str());
+		    my_remove(name);
                 }
                 removed += 1;
 	    }
@@ -225,10 +225,10 @@ fix_disks(Game *g, Images *im, Result *result) {
 	    if (fix_options & FIX_PRINT)
 		printf("%s: delete %s image\n", name.c_str(), (result->images[i] == FS_SUPERFLUOUS ? "unused" : "duplicate"));
             if (fix_options & FIX_DO) {
-		my_remove(name.c_str());
+		my_remove(name);
                 removed += 1;
             }
-	    remove_from_superfluous(name.c_str());
+	    remove_from_superfluous(name);
 	    break;
 
 	case FS_NEEDED:
@@ -309,7 +309,7 @@ fix_disks(Game *g, Images *im, Result *result) {
 		}
                 added = true;
 	    }
-	    remove_from_superfluous(match_disk.name.c_str());
+	    remove_from_superfluous(match_disk.name);
 
 	    break;
 	}

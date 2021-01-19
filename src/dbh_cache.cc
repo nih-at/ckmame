@@ -31,6 +31,8 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <filesystem>
+
 #include <errno.h>
 #include <stddef.h>
 
@@ -72,8 +74,10 @@ bool dbh_cache_close_all(void) {
 	     * or both; currently only has useless ones without
 	     * detector applied, which breaks consecutive runs */
 	    if (empty || detector) {
-                if (remove(filename.c_str()) != 0) {
-		    myerror(ERRSTR, "can't remove empty database '%s'", filename.c_str());
+		std::error_code ec;
+		std::filesystem::remove(filename);
+		if (ec) {
+		    myerror(ERRDEF, "can't remove empty database '%s': %s", filename.c_str(), ec.message().c_str());
                     ok = false;
 		}
 	    }

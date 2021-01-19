@@ -84,7 +84,9 @@ copy_file(const char *old, const char *new_name, size_t start, ssize_t len, Hash
 		err = errno;
 		fclose(fin);
 		fclose(fout);
-		if (remove(new_name) != 0) {
+		std::error_code ec;
+		std::filesystem::remove(new_name);
+		if (ec) {
 		    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new_name);
 		}
 		errno = err;
@@ -106,7 +108,9 @@ copy_file(const char *old, const char *new_name, size_t start, ssize_t len, Hash
     if (fclose(fout) != 0 || ferror(fin)) {
 	err = errno;
 	fclose(fin);
-	if (remove(new_name) != 0) {
+	std::error_code ec;
+	std::filesystem::remove(new_name);
+	if (ec) {
 	    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new_name);
 	}
 	errno = err;
@@ -136,15 +140,17 @@ link_or_copy(const char *old, const char *new_name) {
 }
 
 
-int
-my_remove(const char *name) {
-    if (remove(name) != 0) {
+bool
+my_remove(const std::string &name) {
+    std::error_code ec;
+    std::filesystem::remove(name, ec);
+    if (ec) {
 	seterrinfo(name, "");
-	myerror(ERRFILESTR, "cannot remove");
-	return -1;
+	myerror(ERRFILE, "cannot remove: %s", ec.message().c_str());
+	return false;
     }
 
-    return 0;
+    return true;
 }
 
 

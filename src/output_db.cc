@@ -34,6 +34,8 @@
 #include "OutputContextDb.h"
 
 #include <algorithm>
+#include <filesystem>
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,11 +50,7 @@ struct fbh_context {
 
 
 OutputContextDb::OutputContextDb(const std::string &dbname, int flags) : db(NULL) {
-    if (remove(dbname.c_str()) != 0 && errno != ENOENT) {
-	myerror(ERRSTR, "can't remove '%s'", dbname.c_str());
-        throw std::exception();
-    }
-    
+    std::filesystem::remove(dbname);
     db = new RomDB(dbname, DBH_NEW);
 }
 

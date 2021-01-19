@@ -226,7 +226,7 @@ cleanup_archive(Archive *a, Result *result, int flags) {
     a->commit();
 
     if (a->is_empty()) {
-        remove_empty_archive(a->name.c_str());
+        remove_empty_archive(a->name);
     }
 }
 
@@ -263,8 +263,8 @@ cleanup_disk(Images *im, Result *result, int flags) {
 		printf("%s: delete %s image\n", name.c_str(), reason);
 	    }
 	    if (fix_options & FIX_DO) {
-		if (my_remove(name.c_str()) == 0) {
-		    remove_from_superfluous(name.c_str());
+		if (my_remove(name)) {
+		    remove_from_superfluous(name);
 		}
 	    }
 	    break;
@@ -281,28 +281,29 @@ cleanup_disk(Images *im, Result *result, int flags) {
 		}
 		save_needed_disk(name, (fix_options & FIX_DO));
 		if (fix_options & FIX_DO) {
-		    remove_from_superfluous(name.c_str());
+		    remove_from_superfluous(name);
 		}
 	    }
 	    break;
 
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
-		int move, ret;
+		bool move;
 
 		move = fix_options & FIX_MOVE_UNKNOWN;
 		if (fix_options & FIX_PRINT) {
 		    printf("%s: %s unknown image\n", name.c_str(), (move ? "move" : "delete"));
 		}
 		if (fix_options & FIX_DO) {
+		    bool ok;
 		    if (move) {
-			ret = move_image_to_garbage(name);
+			ok = move_image_to_garbage(name) == 0;
 		    }
 		    else {
-			ret = my_remove(name.c_str());
+			ok = my_remove(name);
 		    }
-		    if (ret == 0) {
-			remove_from_superfluous(name.c_str());
+		    if (ok) {
+			remove_from_superfluous(name);
 		    }
 		}
 	    }

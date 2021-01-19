@@ -60,7 +60,7 @@ int DeleteList::execute() {
 		}
 
 		if (a->is_empty())
-		    remove_empty_archive(name.c_str());
+		    remove_empty_archive(name);
 
                 a = NULL;
 	    }
@@ -88,7 +88,7 @@ int DeleteList::execute() {
 	}
 
 	if (a->is_empty()) {
-            remove_empty_archive(name.c_str());
+            remove_empty_archive(name);
 	}
     }
 

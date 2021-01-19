@@ -76,7 +76,7 @@ std::string make_needed_name(const File *);
 std::string make_needed_name_disk(const Disk *);
 std::string make_unique_name(const std::string &prefix, const std::string &ext);
 int move_image_to_garbage(const std::string &fname);
-int my_remove(const char *name);
+bool my_remove(const std::string &name);
 int my_zip_rename(struct zip *, uint64_t, const char *);
 int my_zip_rename_to_unique(struct zip *, zip_uint64_t);
 int name_is_zip(const char *);
