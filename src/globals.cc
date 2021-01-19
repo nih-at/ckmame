@@ -61,10 +61,10 @@ std::vector<std::string> superfluous;
 
 /* check state */
 
-DeleteListPtr extra_delete_list = NULL;
+DeleteListPtr extra_delete_list;
 std::vector<std::string> extra_list;
-DeleteListPtr needed_delete_list = NULL;
-DeleteListPtr superfluous_delete_list = NULL;
+DeleteListPtr needed_delete_list;
+DeleteListPtr superfluous_delete_list;
 
 Tree check_tree;
 OutputContextPtr fixdat;
