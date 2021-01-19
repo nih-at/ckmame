@@ -1,8 +1,8 @@
-#ifndef _HAD_CHECK_H
-#define _HAD_CHECK_H
+#ifndef _HAD_DELETE_LIST_H
+#define _HAD_DELETE_LIST_H
 
 /*
-  check.h -- archive/disk/file checkers
+  cleanup.h -- clean up list of zip archives
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -34,13 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "archive.h"
-#include "result.h"
+#include "delete_list.h"
 
-void check_archive(ArchivePtr archive, const std::string &gamename, Result *result);
-void check_disks(Game *, ImagesPtr [], Result *);
-void check_files(Game *, ArchivePtr [], Result *);
-void check_images(Images *, const char *, Result *);
-void check_old(Game *, Result *);
+void cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags);
 
-#endif /* _HAD_CHECK_H */
+#endif /* _HAD_DELETE_LIST_H */

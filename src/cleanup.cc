@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cleanup.h"
+
 #include <algorithm>
 
 #include "check.h"

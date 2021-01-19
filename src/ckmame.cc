@@ -44,6 +44,7 @@
 #include <unistd.h>
 #include <sys/param.h>
 
+#include "cleanup.h"
 #include "compat.h"
 #include "dbh.h"
 #include "dbh_cache.h"

@@ -51,7 +51,6 @@
 #define CLEANUP_UNKNOWN 0x2
 
 
-void cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags);
 void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
 void diagnostics_archive(const ArchivePtr, const Result *);
 void diagnostics_images(const Images *, const Result *);
