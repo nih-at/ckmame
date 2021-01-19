@@ -38,6 +38,7 @@
 
 #include "delete_list.h"
 #include "error.h"
+#include "fix_util.h"
 #include "funcs.h"
 #include "globals.h"
 

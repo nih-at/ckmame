@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "fix_util.h"
+
 #include <algorithm>
 #include <filesystem>
 
@@ -47,11 +49,6 @@
 #include "globals.h"
 #include "util.h"
 #include "xmalloc.h"
-
-
-#ifndef MAXPATHLEN
-#define MAXPATHLEN 1024
-#endif
 
 
 std::string

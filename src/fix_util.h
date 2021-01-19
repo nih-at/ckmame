@@ -1,8 +1,8 @@
-#ifndef _HAD_FUNCS_H
-#define _HAD_FUNCS_H
+#ifndef _HAD_FIX_UTIL_H
+#define _HAD_FIX_UTIL_H
 
 /*
-  funcs.h -- tree functions
+  fix_util.h -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -36,37 +36,15 @@
 
 #include <string>
 
-#include <zip.h>
-
 #include "archive.h"
-#include "delete_list.h"
-#include "game.h"
-#include "result.h"
-#include "tree.h"
 
-#define DO_MAP 0x1
-#define DO_LIST 0x2
-
-#define CLEANUP_NEEDED 0x1
-#define CLEANUP_UNKNOWN 0x2
-
-
-bool ensure_dir(const std::string &name, bool strip_filename);
-void ensure_extra_maps(int);
-void ensure_needed_maps(void);
-bool enter_disk_in_map(const Disk *, where_t);
-std::string findfile(const std::string &name, filetype_t ft, const std::string &game_name);
-int fix_game(Game *, Archive *, Images *, Result *);
-std::vector<std::string> list_directory(const std::string &dirname, const std::string &dbname);
-const char *get_directory(void);
-bool link_or_copy(const std::string &old, const std::string &new_name);
-std::string make_file_name(filetype_t, const std::string &name, const std::string &game_name);
-bool my_remove(const std::string &name);
-int my_zip_rename(struct zip *, uint64_t, const char *);
-int my_zip_rename_to_unique(struct zip *, zip_uint64_t);
-int name_is_zip(const char *);
-void print_superfluous(std::vector<std::string> &files);
-bool rename_or_move(const std::string &old, const std::string &new_name);
-void write_fixdat_entry(const Game *, const Result *);
-
-#endif /* funcs.h */
+std::string make_garbage_name(const std::string &name, int unique);
+std::string make_unique_name(const std::string &prefix, const std::string &ext);
+int move_image_to_garbage(const std::string &fname);
+void remove_empty_archive(const std::string &name);
+void remove_from_superfluous(const std::string &name);
+bool save_needed(Archive *sa, size_t sidx, const std::string &gamename);
+bool save_needed_disk(const std::string &fname, bool do_save);
+bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t start, off_t length, File *f);
+    
+#endif /* _HAD_FIX_UTIL_H */
