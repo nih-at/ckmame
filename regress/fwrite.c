@@ -44,6 +44,9 @@ static size_t max_write = 0;
 static size_t (*real_fwrite)(const void *ptr, size_t size, size_t nmemb, FILE *stream) = NULL;
 static int (*real_link)(const char *src, const char *dest) = NULL;
 static int (*real_rename)(const char *src, const char *dest) = NULL;
+#if 0
+static size_t (*real_write)(int d, const void *buf, size_t nbytes) = NULL;
+#endif
 
 size_t
 fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
@@ -68,6 +71,29 @@ fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
     count += ret * size;
 
     return ret;
+}
+
+int
+link(const char *src, const char *dest) {
+    if (real_link == NULL) {
+	real_link = dlsym(RTLD_NEXT, "link");
+	if (!real_link)
+	    abort();
+    }
+
+    if (getenv("LINK_ALWAYS_FAILS") != NULL) {
+	errno = EPERM;
+	return -1;
+    }
+
+    if (getenv("LINK_FAILS") != NULL) {
+	if (strcmp(getenv("LINK_FAILS"), dest) == 0) {
+	    errno = EPERM;
+	    return -1;
+	}
+    }
+
+    return real_link(src, dest);
 }
 
 int
@@ -97,25 +123,33 @@ rename(const char *src, const char *dest) {
     return real_rename(src, dest);
 }
 
-int
-link(const char *src, const char *dest) {
-    if (real_link == NULL) {
-	real_link = dlsym(RTLD_NEXT, "link");
-	if (!real_link)
+#if 0
+ssize_t
+write(int d, const void *buf, size_t nbytes) {
+    size_t ret;
+
+    if (real_write == NULL) {
+	char *foo;
+	if ((foo = getenv("WRITE_MAX_WRITE")) != NULL)
+	    max_write = strtoul(foo, NULL, 0);
+	real_write = dlsym(RTLD_NEXT, "write");
+	if (!real_write)
 	    abort();
     }
 
-    if (getenv("LINK_ALWAYS_FAILS") != NULL) {
-	errno = EPERM;
+    /* ignore stdin, stdout, stderr */
+    if (d > 2 && max_write > 0 && count + nbytes > max_write) {
+	errno = ENOSPC;
 	return -1;
     }
 
-    if (getenv("LINK_FAILS") != NULL) {
-	if (strcmp(getenv("LINK_FAILS"), dest) == 0) {
-	    errno = EPERM;
-	    return -1;
-	}
+
+    ret = real_write(d, buf, nbytes);
+    if (d > 2) {
+	count += ret;
     }
 
-    return real_link(src, dest);
+    return ret;
+
 }
+#endif
