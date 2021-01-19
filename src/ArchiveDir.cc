@@ -69,8 +69,10 @@ bool ArchiveDir::FileInfo::apply() const {
         return true;
     }
 
-    if (rename(data_file_name.c_str(), name.c_str()) < 0) {
-        myerror(ERRZIP, "apply: cannot rename '%s' to '%s': %s", data_file_name.c_str(), name.c_str(), strerror(errno));
+    std::error_code ec;
+    std::filesystem::rename(data_file_name, name, ec);
+    if (ec) {
+        myerror(ERRZIP, "apply: cannot rename '%s' to '%s': %s", data_file_name.c_str(), name.c_str(), ec.message());
         return false;
     }
     return true;
@@ -114,7 +116,9 @@ int ArchiveDir::move_original_file_out_of_the_way(uint64_t index) {
     auto full_name = get_full_name(index);
     auto tmp = make_tmp_name(filename);
 
-    if (rename(full_name.c_str(), tmp.c_str()) < 0) {
+    std::error_code ec;
+    std::filesystem::rename(full_name, tmp, ec);
+    if (ec) {
         myerror(ERRZIP, "move: cannot rename '%s' to '%s': %s", filename.c_str(), tmp.c_str(), strerror(errno));
         return -1;
     }
