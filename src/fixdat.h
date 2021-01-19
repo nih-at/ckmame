@@ -1,8 +1,11 @@
-/*
-  fixdat.cc -- write fixdat
-  Copyright (C) 2012-2014 Dieter Baron and Thomas Klausner
+#ifndef _HAD_FIXDAT_H
+#define _HAD_FIXDAT_H
 
-  This file is part of ckmame, a program to check rom sets for MAME.
+/*
+  fixdat.h -- write fixdat
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
+
+  This file is part of ckmame, a program to fixdat rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
 
   Redistribution and use in source and binary forms, with or without
@@ -31,55 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "fixdat.h"
+#include "result.h"
 
-#include "funcs.h"
-#include "globals.h"
-#include "match.h"
-#include "match_disk.h"
-#include "output.h"
+void write_fixdat_entry(const Game *game, const Result *result);
 
-
-void
-write_fixdat_entry(const Game *game, const Result *result) {
-    if (result->game != GS_MISSING && result->game != GS_PARTIAL) {
-	return;
-    }
-
-    auto gm = std::make_shared<Game>();
-    gm->name = game->name;
-
-    for (size_t i = 0; i < game->roms.size(); i++) {
-        auto &match = result->roms[i];
-        auto &rom = game->roms[i];
-
-	/* no use requesting zero byte files */
-        if (rom.size == 0) {
-	    continue;
-        }
-
-        if (match.quality != QU_MISSING || rom.status == STATUS_NODUMP || rom.where != FILE_INGAME) {
-	    continue;
-        }
-
-        gm->roms.push_back(rom);
-    }
-
-    for (size_t i = 0; i < game->disks.size(); i++) {
-        auto &match_disk = result->disks[i];
-        auto &disk = game->disks[i];
-
-        if (match_disk.quality != QU_MISSING || disk.status == STATUS_NODUMP) {
-	    continue;
-        }
-
-        gm->disks.push_back(disk);
-        auto &dm = gm->disks[gm->disks.size() - 1];
-        dm.name = disk.name;
-        dm.merge = disk.merge;
-    }
-
-    if (!gm->roms.empty() || !gm->disks.empty()) {
-	fixdat->game(gm);
-    }
-}
+#endif /* _HAD_FIXDAT_H */

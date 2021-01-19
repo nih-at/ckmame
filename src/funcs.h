@@ -50,8 +50,4 @@
 #define CLEANUP_NEEDED 0x1
 #define CLEANUP_UNKNOWN 0x2
 
-
-int name_is_zip(const char *);
-void write_fixdat_entry(const Game *, const Result *);
-
 #endif /* funcs.h */
