@@ -49,6 +49,8 @@
 #include "util.h"
 #include "xmalloc.h"
 
+static bool copy_file(const std::string &old, const std::string &new_name, size_t start, ssize_t len, Hashes *hashes);
+
 bool ArchiveDir::Change::is_renamed() const {
     if (original.data_file_name.empty() || destination.data_file_name.empty()) {
         return false;
@@ -325,7 +327,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
             }
         }
         else {
-            if (copy_file(source_name.c_str(), tmpname.c_str(), start, static_cast<ssize_t>(length.value()), &f->hashes) < 0) {
+            if (!copy_file(source_name.c_str(), tmpname.c_str(), start, static_cast<ssize_t>(length.value()), &f->hashes)) {
                 myerror(ERRZIP, "cannot copy '%s' to '%s': %s", source_name.c_str(), tmpname.c_str(), strerror(errno));
                 return false;
             }
@@ -540,4 +542,90 @@ void ArchiveDir::get_last_update() {
     }
 
     contents->mtime = st.st_mtime;
+}
+
+static bool
+copy_file(const std::string &old, const std::string &new_name, size_t start, ssize_t len, Hashes *hashes) {
+    FILE *fin, *fout;
+
+    if ((fin = fopen(old.c_str(), "rb")) == NULL)
+	return false;
+
+    if (start > 0) {
+	if (fseeko(fin, start, SEEK_SET) < 0) {
+	    fclose(fin);
+	    return false;
+	}
+    }
+
+    if ((fout = fopen(new_name.c_str(), "wb")) == NULL) {
+	fclose(fin);
+	return false;
+    }
+
+    std::unique_ptr<Hashes::Update> hu;
+    Hashes h;
+
+    if (hashes) {
+	h.types = Hashes::TYPE_ALL;
+        hu = std::make_unique<Hashes::Update>(&h);
+    }
+
+    size_t total = 0;
+    while ((len >= 0 && total < (size_t)len) || !feof(fin)) {
+	unsigned char b[8192];
+	size_t nr = sizeof(b);
+
+	if (len > 0 && nr > len - total) {
+	    nr = len - total;
+	}
+	if ((nr = fread(b, 1, nr, fin)) == 0) {
+	    break;
+	}
+	size_t nw = 0;
+	while (nw < nr) {
+	    ssize_t n;
+	    if ((n = fwrite(b + nw, 1, nr - nw, fout)) <= 0) {
+		int err = errno;
+		fclose(fin);
+		fclose(fout);
+		std::error_code ec;
+		std::filesystem::remove(new_name);
+		if (ec) {
+		    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new_name.c_str());
+		}
+		errno = err;
+		return false;
+	    }
+
+            if (hashes) {
+                hu->update(b + nw, nr - nw);
+            }
+	    nw += n;
+	}
+	total += nw;
+    }
+
+    if (hashes) {
+        hu->end();
+    }
+
+    if (fclose(fout) != 0 || ferror(fin)) {
+	int err = errno;
+	fclose(fin);
+	std::error_code ec;
+	std::filesystem::remove(new_name);
+	if (ec) {
+	    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new_name.c_str());
+	}
+	errno = err;
+	return false;
+    }
+    fclose(fin);
+
+    if (hashes) {
+        *hashes = h;
+    }
+
+    return true;
 }

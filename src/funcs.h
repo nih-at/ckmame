@@ -57,7 +57,6 @@ void check_files(Game *, ArchivePtr [], Result *);
 void check_images(Images *, const char *, Result *);
 void check_old(Game *, Result *);
 void cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags);
-int copy_file(const char *, const char *, size_t, ssize_t, Hashes *);
 void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
 void diagnostics_archive(const ArchivePtr, const Result *);
 void diagnostics_images(const Images *, const Result *);
