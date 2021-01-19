@@ -39,7 +39,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "funcs.h"
 
 #include "ArchiveDir.h"
 #include "Dir.h"

@@ -35,7 +35,6 @@
 
 #include <cerrno>
 
-#include "funcs.h"
 
 #include "archive.h"
 #include "error.h"

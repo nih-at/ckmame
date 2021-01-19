@@ -38,7 +38,6 @@
 
 #include "dbh_cache.h"
 #include "error.h"
-#include "funcs.h"
 #include "globals.h"
 #include "sq_util.h"
 #include "util.h"

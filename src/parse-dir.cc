@@ -41,7 +41,6 @@
 #include "archive.h"
 #include "Dir.h"
 #include "error.h"
-#include "funcs.h"
 #include "globals.h"
 #include "parse.h"
 #include "util.h"

@@ -40,7 +40,6 @@
 
 #include "Dir.h"
 #include "error.h"
-#include "funcs.h"
 #include "globals.h"
 #include "romdb.h"
 #include "types.h"

@@ -36,7 +36,6 @@
 #include "check_util.h"
 
 #include "find.h"
-#include "funcs.h"
 #include "game.h"
 #include "globals.h"
 #include "match_disk.h"

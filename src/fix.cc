@@ -52,7 +52,6 @@
 #include "error.h"
 #include "file_util.h"
 #include "fix_util.h"
-#include "funcs.h"
 #include "game.h"
 #include "garbage.h"
 #include "globals.h"

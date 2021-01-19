@@ -33,7 +33,6 @@
 
 #include "fixdat.h"
 
-#include "funcs.h"
 #include "globals.h"
 #include "match.h"
 #include "match_disk.h"

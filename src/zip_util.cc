@@ -39,7 +39,6 @@
 #include <zip.h>
 
 #include "error.h"
-#include "funcs.h"
 #include "xmalloc.h"
 
 

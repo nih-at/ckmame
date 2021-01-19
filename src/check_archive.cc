@@ -35,7 +35,6 @@
 
 #include "check_util.h"
 #include "find.h"
-#include "funcs.h"
 
 void
 check_archive(ArchivePtr archive, const std::string &gamename, Result *result) {

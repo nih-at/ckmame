@@ -43,7 +43,6 @@
 #include "delete_list.h"
 #include "Dir.h"
 #include "error.h"
-#include "funcs.h"
 #include "globals.h"
 #include "memdb.h"
 #include "sq_util.h"

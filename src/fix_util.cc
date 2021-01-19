@@ -47,7 +47,6 @@
 #include "error.h"
 #include "file_util.h"
 #include "find.h"
-#include "funcs.h"
 #include "globals.h"
 #include "util.h"
 

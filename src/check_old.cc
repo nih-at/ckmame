@@ -34,7 +34,6 @@
 #include "check.h"
 
 #include "find.h"
-#include "funcs.h"
 #include "globals.h"
 
 

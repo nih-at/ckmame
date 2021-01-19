@@ -44,7 +44,6 @@
 #include "dbh_cache.h"
 #include "error.h"
 #include "file_util.h"
-#include "funcs.h"
 #include "globals.h"
 #include "output.h"
 #include "parse.h"

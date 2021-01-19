@@ -35,7 +35,6 @@
 #include "images.h"
 
 #include "Dir.h"
-#include "funcs.h"
 #include "util.h"
 
 int

@@ -36,7 +36,6 @@
 #include "archive.h"
 #include "dbh_cache.h"
 #include "error.h"
-#include "funcs.h"
 #include "globals.h"
 #include "memdb.h"
 #include "util.h"

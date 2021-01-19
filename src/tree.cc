@@ -44,7 +44,6 @@
 #include "error.h"
 #include "fix.h"
 #include "fixdat.h"
-#include "funcs.h"
 #include "game.h"
 #include "globals.h"
 #include "sighandle.h"

@@ -36,6 +36,9 @@
 
 #include "delete_list.h"
 
+#define CLEANUP_NEEDED 0x1
+#define CLEANUP_UNKNOWN 0x2
+
 void cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags);
 
 #endif /* _HAD_DELETE_LIST_H */

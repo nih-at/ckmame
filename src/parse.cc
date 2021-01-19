@@ -43,7 +43,6 @@
 #include "compat.h"
 #include "dat.h"
 #include "error.h"
-#include "funcs.h"
 #include "globals.h"
 #include "parse.h"
 #include "types.h"

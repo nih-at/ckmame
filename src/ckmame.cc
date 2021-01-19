@@ -50,7 +50,6 @@
 #include "dbh.h"
 #include "dbh_cache.h"
 #include "error.h"
-#include "funcs.h"
 #include "globals.h"
 #include "sighandle.h"
 #include "superfluous.h"

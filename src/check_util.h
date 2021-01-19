@@ -39,6 +39,9 @@
 #include "disk.h"
 #include "types.h"
 
+#define DO_MAP 0x1
+#define DO_LIST 0x2
+
 void ensure_extra_maps(int flags);
 void ensure_needed_maps(void);
 bool enter_disk_in_map(const Disk *disk, where_t where);
