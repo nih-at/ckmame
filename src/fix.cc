@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "fix.h"
+
 #include <algorithm>
 #include <filesystem>
 #include <string>

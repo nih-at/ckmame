@@ -42,6 +42,7 @@
 #include "diagnostics.h"
 #include "dbh.h"
 #include "error.h"
+#include "fix.h"
 #include "funcs.h"
 #include "game.h"
 #include "globals.h"
