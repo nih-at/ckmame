@@ -15,6 +15,7 @@ set(COMMON_SOURCES
   ArchiveZip.cc
   chd.cc
   check_archive.cc
+  check_disks.cc
   check_files.cc
   check_images.cc
   check_old.cc
