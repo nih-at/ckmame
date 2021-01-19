@@ -71,22 +71,19 @@ fix_game(Game *g, Archive *a, Images *im, Result *result) {
         gb = std::make_shared<Garbage>(a);
 
         if (!a->check()) {
-	    char *new_name;
-
 	    /* opening the zip file failed, rename it and create new one */
 
-	    if ((new_name = make_unique_name("broken", "%s", a->name.c_str())) == NULL) {
+            auto new_name = make_unique_name("broken", "%s", a->name.c_str());
+            if (new_name.empty()) {
 		return -1;
 	    }
 
             if (fix_options & FIX_PRINT) {
-		printf("%s: rename broken archive to '%s'\n", a->name.c_str(), new_name);
+		printf("%s: rename broken archive to '%s'\n", a->name.c_str(), new_name.c_str());
             }
-	    if (rename_or_move(a->name.c_str(), new_name) < 0) {
-		free(new_name);
+	    if (!rename_or_move(a->name, new_name)) {
 		return -1;
 	    }
-	    free(new_name);
             if (!a->check()) {
 		return -1;
 	    }
@@ -303,7 +300,7 @@ fix_disks(Game *g, Images *im, Result *result) {
 		else {
 		    std::error_code ec;
                     auto dir = std::filesystem::path(match_disk.name).parent_path();
-                    rename_or_move(match_disk.name.c_str(), fname.c_str());
+                    rename_or_move(match_disk.name, fname);
 		    std::filesystem::remove(dir, ec);
 		    auto entry = std::find(extra_list.begin(), extra_list.end(), match_disk.name);
 		    if (entry != extra_list.end()) {
