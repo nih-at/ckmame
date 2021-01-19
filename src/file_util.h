@@ -1,11 +1,11 @@
-#ifndef _HAD_FUNCS_H
-#define _HAD_FUNCS_H
+#ifndef _HAD_FILE_UTIL_H
+#define _HAD_FILE_UTIL_H
 
 /*
-  funcs.h -- tree functions
+  file_util.h -- utility functions for manipulating files
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
-  This file is part of ckmame, a program to check rom sets for MAME.
+  This file is part of ckmame, a program to file_util rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
 
   Redistribution and use in source and binary forms, with or without
@@ -36,24 +36,9 @@
 
 #include <string>
 
-#include <zip.h>
-
-#include "archive.h"
-#include "delete_list.h"
-#include "game.h"
-#include "result.h"
-#include "tree.h"
-
-#define DO_MAP 0x1
-#define DO_LIST 0x2
-
-#define CLEANUP_NEEDED 0x1
-#define CLEANUP_UNKNOWN 0x2
+bool link_or_copy(const std::string &old, const std::string &new_name);
+bool my_remove(const std::string &name);
+bool rename_or_move(const std::string &old, const std::string &new_name);
 
 
-int my_zip_rename(struct zip *, uint64_t, const char *);
-int my_zip_rename_to_unique(struct zip *, zip_uint64_t);
-int name_is_zip(const char *);
-void write_fixdat_entry(const Game *, const Result *);
-
-#endif /* funcs.h */
+#endif /* _HAD_FILE_UTIL_H */

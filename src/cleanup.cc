@@ -37,6 +37,7 @@
 
 #include "check.h"
 #include "diagnostics.h"
+#include "file_util.h"
 #include "fix_util.h"
 #include "funcs.h"
 #include "garbage.h"

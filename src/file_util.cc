@@ -1,5 +1,5 @@
 /*
-  file_util.c -- utility functions for manipulating files
+  file_util.cc -- utility functions for manipulating files
   Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -30,6 +30,8 @@
   OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+#include "file_util.h"
 
 #include <filesystem>
 

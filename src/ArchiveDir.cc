@@ -44,6 +44,7 @@
 #include "ArchiveDir.h"
 #include "Dir.h"
 #include "error.h"
+#include "file_util.h"
 #include "globals.h"
 #include "memdb.h"
 #include "util.h"
