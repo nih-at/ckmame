@@ -143,7 +143,8 @@ print_human_number(FILE *f, uint64_t value) {
 }
 
 
-std::string status_name(status_t status, bool verbose) {
+std::string
+status_name(status_t status, bool verbose) {
     switch (status) {
         case STATUS_OK:
             if (verbose) {

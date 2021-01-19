@@ -38,6 +38,7 @@
 #include "fix_util.h"
 #include "funcs.h"
 #include "garbage.h"
+#include "util.h"
 #include "xmalloc.h"
 
 
