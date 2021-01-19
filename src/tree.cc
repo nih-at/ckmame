@@ -40,6 +40,7 @@
 #include "check_archive.h"
 #include "dbh.h"
 #include "error.h"
+#include "find.h"
 #include "funcs.h"
 #include "game.h"
 #include "globals.h"
@@ -47,14 +48,15 @@
 #include "tree.h"
 #include "xmalloc.h"
 
+static void check_disks(Game *game, ImagesPtr im[], Result *result);
 
 bool Tree::add(const std::string &game_name) {
     GamePtr game = db->read_game(game_name);
-    
+
     if (!game) {
 	return false;
     }
-    
+
     auto tree = this;
 
     if (!game->cloneof[1].empty()) {
@@ -126,15 +128,15 @@ void Tree::traverse() {
 void Tree::traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_images) {
     ArchivePtr archives[] = { NULL, ancestor_archives[0], ancestor_archives[1] };
     ImagesPtr images[] = { std::make_shared<Images>(), ancestor_images[0], ancestor_images[1] };
-    
+
     ImagesPtr self_images;
-    
+
     if (siginfo_caught) {
         print_info(name);
     }
 
     auto flags = ((check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | db->hashtypes(TYPE_ROM)) : 0));
-    
+
     auto full_name = findfile(name, TYPE_ROM, "");
     if (full_name.empty() && check) {
         full_name = make_file_name(TYPE_ROM, name, "");
@@ -142,10 +144,10 @@ void Tree::traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_
     if (!full_name.empty()) {
         archives[0] = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, flags);
     }
-    
+
     self_images = Images::from_directory(name, check_integrity);
     images[0] = self_images;
-    
+
     if (check && !checked) {
         process(archives, images);
     }
@@ -158,7 +160,7 @@ void Tree::traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_
 
 Tree *Tree::add_node(const std::string &game_name, bool do_check) {
     auto it = children.find(game_name);
-    
+
     if (it == children.end()) {
         auto child = std::make_shared<Tree>(game_name, do_check);
         children[game_name] = child;
@@ -175,7 +177,7 @@ Tree *Tree::add_node(const std::string &game_name, bool do_check) {
 
 void Tree::process(ArchivePtr *archives, ImagesPtr *images) {
     auto game = db->read_game(name);
-    
+
     if (!game) {
 	myerror(ERRDEF, "db error: %s not found", name.c_str());
         return;
@@ -205,5 +207,82 @@ void Tree::process(ArchivePtr *archives, ImagesPtr *images) {
 
     if (ret != 1) {
 	checked = true;
+    }
+}
+
+static void
+check_disks(Game *game, ImagesPtr im[], Result *result) {
+    if (game->disks.empty()) {
+	return;
+    }
+
+    for (size_t i = 0; i < game->disks.size(); i++) {
+        auto &match_disk = result->disks[i];
+        auto &disk = game->disks[i];
+
+        if (match_disk.quality == QU_OLD) {
+	    continue;
+        }
+
+        int j = images_find(im[disk.where].get(), disk.merged_name());
+
+        if (j != -1) {
+            auto expected_image = im[disk.where]->disks[j];
+            match_disk.where = disk.where;
+	    match_disk.set_source(expected_image.get());
+
+            switch (disk.hashes.compare(expected_image->hashes)) {
+                case Hashes::MATCH:
+                    match_disk.quality = QU_OK;
+                    if (disk.where == FILE_INGAME) {
+                        result->images[j] = FS_USED;
+                    }
+                    break;
+
+                case Hashes::MISMATCH:
+                    match_disk.quality = QU_HASHERR;
+                    break;
+
+                default:
+                    break;
+            }
+	}
+
+	if (disk.where != FILE_INGAME || disk.hashes.empty()) {
+            /* stop searching if disk is not supposed to be in this location, or we have no checksums */
+	    continue;
+	}
+
+	if (match_disk.quality != QU_OK && im[0] != NULL) {
+            for (size_t k = 0; k < im[0]->disks.size(); k++) {
+                auto image = im[0]->disks[k];
+
+                if (disk.hashes.compare(image->hashes) == Hashes::MATCH) {
+                    match_disk.where = FILE_INGAME;
+                    match_disk.set_source(image.get());
+                    match_disk.quality = QU_NAMEERR;
+                    result->images[k] = FS_USED;
+                }
+            }
+        }
+
+	if (match_disk.quality != QU_OK && match_disk.quality != QU_OLD) {
+            MatchDisk disk_match;
+
+            if (find_disk_in_romset(&disk, game->name.c_str(), &disk_match) == FIND_EXISTS) {
+                match_disk = disk_match;
+                match_disk.where = FILE_ROMSET;
+                continue;
+            }
+	    /* search in needed, superfluous and extra dirs */
+	    ensure_extra_maps(DO_MAP);
+	    ensure_needed_maps();
+	    if (find_disk(&disk, &match_disk) == FIND_EXISTS)
+		continue;
+	}
+    }
+
+    for (size_t i = 0; i < game->disks.size(); i++) {
+        stats.add_disk(&game->disks[i], result->disks[i].quality);
     }
 }
