@@ -45,7 +45,6 @@
 #include "match.h"
 #include "util.h"
 #include "warn.h"
-#include "xmalloc.h"
 
 
 enum test { TEST_NAME_SIZE_CHECKSUM, TEST_MERGENAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG };

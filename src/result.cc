@@ -34,7 +34,6 @@
 
 #include "result.h"
 #include "globals.h"
-#include "xmalloc.h"
 
 
 Result::Result(const Game *game, const Archive *a, const Images *im) : game(GS_MISSING) {

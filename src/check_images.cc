@@ -39,7 +39,6 @@
 #include "globals.h"
 #include "match_disk.h"
 #include "util.h"
-#include "xmalloc.h"
 
 
 void

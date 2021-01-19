@@ -31,13 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "config.h"
+#include "xmalloc.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 #include "error.h"
-#include "xmalloc.h"
 
 void *
 xmalloc(size_t size) {

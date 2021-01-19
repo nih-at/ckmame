@@ -51,7 +51,6 @@
 #include "ParserSourceZip.h"
 #include "romdb.h"
 #include "types.h"
-#include "xmalloc.h"
 
 const char *usage = "Usage: %s [-htuV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--no-directory-cache] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
 

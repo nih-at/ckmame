@@ -46,7 +46,6 @@
 #include "globals.h"
 #include "sighandle.h"
 #include "tree.h"
-#include "xmalloc.h"
 
 
 bool Tree::add(const std::string &game_name) {

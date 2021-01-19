@@ -41,7 +41,6 @@
 #include <stdlib.h>
 
 #include "error.h"
-#include "xmalloc.h"
 
 struct fbh_context {
     sqlite3 *db;

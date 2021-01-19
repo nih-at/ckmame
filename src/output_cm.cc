@@ -42,7 +42,6 @@
 
 #include "error.h"
 #include "util.h"
-#include "xmalloc.h"
 
 
 static struct {

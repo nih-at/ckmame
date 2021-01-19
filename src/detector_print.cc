@@ -36,7 +36,6 @@
 
 #include "detector.h"
 #include "util.h"
-#include "xmalloc.h"
 
 static void pr_string(FILE *fout, const char *name, const std::string &value) {
     if (value.empty()) {

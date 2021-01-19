@@ -39,7 +39,6 @@
 #include "funcs.h"
 #include "garbage.h"
 #include "util.h"
-#include "xmalloc.h"
 
 
 bool Garbage::add(uint64_t index, bool copy) {

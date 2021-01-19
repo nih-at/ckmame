@@ -46,7 +46,6 @@
 #include "memdb.h"
 #include "sq_util.h"
 #include "util.h"
-#include "xmalloc.h"
 
 #define EXTRA_MAPS 0x1
 #define NEEDED_MAPS 0x2

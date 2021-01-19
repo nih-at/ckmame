@@ -39,7 +39,6 @@
 #include "error.h"
 #include "globals.h"
 #include "util.h"
-#include "xmalloc.h"
 
 #include "ArchiveZip.h"
 

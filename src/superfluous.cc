@@ -45,7 +45,6 @@
 #include "romdb.h"
 #include "types.h"
 #include "util.h"
-#include "xmalloc.h"
 
 static void list_game_directory(std::vector<std::string> &found, const char *dirname, bool dir_known);
 

@@ -34,7 +34,6 @@
 #include <string.h>
 
 #include "dat.h"
-#include "xmalloc.h"
 
 #define de_copy_member(X) (X = (high && !high->X.empty() ? high->X : low && !low->X.empty() ? low->X : ""))
 

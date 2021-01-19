@@ -45,7 +45,6 @@
 #include "globals.h"
 #include "parse.h"
 #include "util.h"
-#include "xmalloc.h"
 
 
 static bool parse_archive(ParserContext *, Archive *, int hashtypes);

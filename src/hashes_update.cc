@@ -56,7 +56,6 @@ extern "C" {
 }
 
 #include "hashes.h"
-#include "xmalloc.h"
 
 class HashesContexts {
 public:

@@ -39,7 +39,6 @@
 #include "hashes.h"
 #include "memdb.h"
 #include "sq_util.h"
-#include "xmalloc.h"
 
 #define QUERY_FILE "select game_id, file_idx, file_sh, location from file where file_type = ?"
 #define QUERY_FILE_HASH_FMT " and (%s = ? or %s is null)"

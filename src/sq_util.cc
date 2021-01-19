@@ -35,7 +35,6 @@
 #include <stddef.h>
 
 #include "sq_util.h"
-#include "xmalloc.h"
 
 std::vector<uint8_t>
 sq3_get_blob(sqlite3_stmt *stmt, int col) {

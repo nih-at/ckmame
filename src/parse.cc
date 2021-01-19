@@ -48,7 +48,6 @@
 #include "parse.h"
 #include "types.h"
 #include "util.h"
-#include "xmalloc.h"
 
 #define CHECK_STATE(s)                                        \
     do {                                                           \

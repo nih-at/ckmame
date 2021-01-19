@@ -42,7 +42,6 @@
 #include "match.h"
 #include "types.h"
 #include "util.h"
-#include "xmalloc.h"
 
 
 std::string Match::file() const {

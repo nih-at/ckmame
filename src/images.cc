@@ -37,7 +37,6 @@
 #include "Dir.h"
 #include "funcs.h"
 #include "util.h"
-#include "xmalloc.h"
 
 int
 images_find(const Images *images, const std::string &name) {

@@ -39,7 +39,6 @@
 #include "error.h"
 #include "parse.h"
 #include "util.h"
-#include "xmalloc.h"
 
 
 #define RC_SEP static_cast<char>(0xac)

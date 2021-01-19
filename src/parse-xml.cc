@@ -38,7 +38,6 @@
 
 #include "error.h"
 #include "parse.h"
-#include "xmalloc.h"
 #include "xmlutil.h"
 
 

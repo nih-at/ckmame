@@ -42,7 +42,6 @@
 #include "globals.h"
 #include "sq_util.h"
 #include "util.h"
-#include "xmalloc.h"
 
 class CacheDirectory {
 public:

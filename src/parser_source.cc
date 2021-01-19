@@ -40,7 +40,6 @@
 #include "error.h"
 #include "parser_source.h"
 #include "util.h"
-#include "xmalloc.h"
 
 #define PSBLKSIZE 1024
 

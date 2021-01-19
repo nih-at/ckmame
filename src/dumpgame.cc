@@ -47,7 +47,6 @@
 #include "sq_util.h"
 #include "types.h"
 #include "util.h"
-#include "xmalloc.h"
 
 static int dump_game(const std::string &, int);
 static int dump_hashtypes(int);

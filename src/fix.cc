@@ -55,7 +55,6 @@
 #include "match.h"
 #include "types.h"
 #include "util.h"
-#include "xmalloc.h"
 
 static int fix_disks(Game *, Images *, Result *);
 static int fix_files(Game *, Archive *, Result *, Garbage *);

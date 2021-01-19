@@ -57,7 +57,6 @@
 #include "types.h"
 #include "util.h"
 #include "warn.h"
-#include "xmalloc.h"
 
 enum action { ACTION_UNSPECIFIED, ACTION_CHECK_ROMSET, ACTION_SUPERFLUOUS_ONLY, ACTION_CLEANUP_EXTRA_ONLY };
 

@@ -41,7 +41,6 @@
 #include "error.h"
 #include "output.h"
 #include "util.h"
-#include "xmalloc.h"
 
 
 OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : fname(fname_), extended(flags & OUTPUT_FL_EXTENDED) {

@@ -40,7 +40,6 @@
 #include "globals.h"
 #include "memdb.h"
 #include "util.h"
-#include "xmalloc.h"
 
 
 bool Archive::commit() {
