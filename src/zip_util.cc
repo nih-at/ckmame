@@ -1,5 +1,5 @@
 /*
-  zip_util.c -- utility functions for zip needed only by ckmame itself
+  zip_util.cc -- utility functions for zip needed only by ckmame itself
   Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "zip_util.h"
 
 #include <errno.h>
 #include <stdlib.h>
@@ -40,6 +41,9 @@
 #include "error.h"
 #include "funcs.h"
 #include "xmalloc.h"
+
+
+static int my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx);
 
 
 int
@@ -65,7 +69,7 @@ my_zip_rename(struct zip *za, uint64_t idx, const char *name) {
 }
 
 
-int
+static int
 my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx) {
     char *unique, *p;
     char n[4];

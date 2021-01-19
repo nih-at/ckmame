@@ -1,11 +1,11 @@
-#ifndef _HAD_FUNCS_H
-#define _HAD_FUNCS_H
+#ifndef _HAD_ZIP_UTIL_H
+#define _HAD_ZIP_UTIL_H
 
 /*
-  funcs.h -- tree functions
+  zip_util.h -- utility functions for zip needed only by ckmame itself
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
-  This file is part of ckmame, a program to check rom sets for MAME.
+  This file is part of ckmame, a program to zip_util rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
 
   Redistribution and use in source and binary forms, with or without
@@ -34,24 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <string>
-
 #include <zip.h>
 
-#include "archive.h"
-#include "delete_list.h"
-#include "game.h"
-#include "result.h"
-#include "tree.h"
+int my_zip_rename(struct zip *za, uint64_t idx, const char *name);
 
-#define DO_MAP 0x1
-#define DO_LIST 0x2
-
-#define CLEANUP_NEEDED 0x1
-#define CLEANUP_UNKNOWN 0x2
-
-
-int name_is_zip(const char *);
-void write_fixdat_entry(const Game *, const Result *);
-
-#endif /* funcs.h */
+#endif /* _HAD_ZIP_UTIL_H */

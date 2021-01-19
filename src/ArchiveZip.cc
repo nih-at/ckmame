@@ -31,6 +31,8 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "ArchiveZip.h"
+
 #include <cerrno>
 
 #include "funcs.h"
@@ -39,8 +41,8 @@
 #include "error.h"
 #include "globals.h"
 #include "util.h"
+#include "zip_util.h"
 
-#include "ArchiveZip.h"
 
 #define BUFSIZE 8192
 
