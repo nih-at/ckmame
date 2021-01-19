@@ -51,9 +51,6 @@
 #define CLEANUP_UNKNOWN 0x2
 
 
-void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
-void diagnostics_archive(const ArchivePtr, const Result *);
-void diagnostics_images(const Images *, const Result *);
 bool ensure_dir(const std::string &name, bool strip_filename);
 void ensure_extra_maps(int);
 void ensure_needed_maps(void);

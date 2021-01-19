@@ -36,6 +36,7 @@
 #include <algorithm>
 
 #include "check.h"
+#include "diagnostics.h"
 #include "funcs.h"
 #include "garbage.h"
 #include "globals.h"
