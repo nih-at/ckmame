@@ -49,8 +49,8 @@ bool ArchiveZip::ensure_zip() {
         return true;
     }
 
-    int zip_flags = (flags & ARCHIVE_FL_CHECK_INTEGRITY) ? ZIP_CHECKCONS : 0;
-    if (flags & ARCHIVE_FL_CREATE)
+    int zip_flags = (contents->flags & ARCHIVE_FL_CHECK_INTEGRITY) ? ZIP_CHECKCONS : 0;
+    if (contents->flags & ARCHIVE_FL_CREATE)
 	zip_flags |= ZIP_CREATE;
 
     int err;
@@ -58,7 +58,7 @@ bool ArchiveZip::ensure_zip() {
         char errbuf[80];
 
         zip_error_to_str(errbuf, sizeof(errbuf), err, errno);
-        myerror(ERRDEF, "error %s zip archive '%s': %s", (flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), errbuf);
+        myerror(ERRDEF, "error %s zip archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), errbuf);
 	return false;
     }
     
@@ -94,7 +94,7 @@ bool ArchiveZip::close_xxx() {
 
 
 bool ArchiveZip::commit_xxx() {
-    if (modified && ((flags & ARCHIVE_FL_RDONLY) == 0) && za != NULL && !files.empty()) {
+    if (modified && ((contents->flags & ARCHIVE_FL_RDONLY) == 0) && za != NULL && !files.empty()) {
         if (!ensure_dir(name, true)) {
 	    return false;
         }
@@ -239,13 +239,13 @@ const char *ArchiveZip::ArchiveFile::strerror() {
 void ArchiveZip::get_last_update() {
     struct stat st;
     if (stat(name.c_str(), &st) < 0) {
-        size = 0;
-        mtime = 0;
+        contents->size = 0;
+        contents->mtime = 0;
         return;
     }
 
-    mtime = st.st_mtime;
-    size = static_cast<uint64_t>(st.st_size);
+    contents->mtime = st.st_mtime;
+    contents->size = static_cast<uint64_t>(st.st_size);
 }
 
 
@@ -279,8 +279,8 @@ bool ArchiveZip::read_infos_xxx() {
 	    file_match_detector(i);
         }
 
-        if (flags & ARCHIVE_FL_CHECK_INTEGRITY) {
-	    file_compute_hashes(i, flags & ARCHIVE_FL_HASHTYPES_MASK);
+        if (contents->flags & ARCHIVE_FL_CHECK_INTEGRITY) {
+	    file_compute_hashes(i, contents->flags & ARCHIVE_FL_HASHTYPES_MASK);
         }
     }
     

@@ -292,8 +292,6 @@ main(int argc, char **argv) {
 	}
     }
     
-    Archive::flush_cache();
-
     return 0;
 }
 

@@ -301,7 +301,6 @@
 		4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		4B07BFC11FEC1B5B0068A600 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4B07BFC41FEC1B700068A600 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
-		4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = romdb_read_file_by_name.cc; sourceTree = "<group>"; };
 		4B33F987252C6CAB007EC283 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		4B33F988252C6CCD007EC283 /* cmake-config.h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = "cmake-config.h.in"; sourceTree = "<group>"; };
 		4B33F989252C6D1D007EC283 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -749,14 +748,6 @@
 			path = ..;
 			sourceTree = "<group>";
 		};
-		4B3274A225B57930006AEF16 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				4B07BFCC1FEC1C230068A600 /* romdb_read_file_by_name.cc */,
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		4B41078B18CC8F8A002C3052 /* dbdump */ = {
 			isa = PBXGroup;
 			children = (
@@ -789,7 +780,6 @@
 				4BD1BAA41A404BA800A70734 /* regress */,
 				4B5FAC6117358FF000B67C24 /* Products */,
 				4B07BFBD1FEC1B190068A600 /* Frameworks */,
-				4B3274A225B57930006AEF16 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 			tabWidth = 8;

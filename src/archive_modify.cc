@@ -44,7 +44,7 @@
 
 
 bool Archive::commit() {
-    if (is_modified()) {
+    if (modified) {
         seterrinfo("", name);
 
         cache_changed = true;
@@ -58,7 +58,7 @@ bool Archive::commit() {
                 case FILE_DELETED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
-                        memdb_file_delete(this, i, is_writable());
+                        memdb_file_delete(contents.get(), i, is_writable());
                     }
 
                     if (is_writable()) {
@@ -70,7 +70,7 @@ bool Archive::commit() {
                 case FILE_ADDED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
-                        memdb_file_insert(NULL, this, i);
+                        memdb_file_insert(NULL, contents.get(), i);
                     }
                     files[i].where = FILE_INGAME;
                     break;
@@ -82,7 +82,7 @@ bool Archive::commit() {
 
         commit_cleanup();
 
-	flags &= ~ARCHIVE_IFL_MODIFIED;
+        modified = false;
     }
     
     update_cache();
@@ -94,35 +94,35 @@ void Archive::update_cache() {
         return;
     }
     
-    if (cache_db == NULL) {
-        cache_db = dbh_cache_get_db_for_archive(name);
+    if (contents->cache_db == NULL) {
+        contents->cache_db = dbh_cache_get_db_for_archive(name);
     }
-    if (cache_db != NULL) {
+    if (contents->cache_db != NULL) {
         if (files.empty()) {
-            if (cache_id > 0) {
-                if (dbh_cache_delete(cache_db, cache_id) < 0) {
-                    seterrdb(cache_db);
+            if (contents->cache_id > 0) {
+                if (dbh_cache_delete(contents->cache_db, contents->cache_id) < 0) {
+                    seterrdb(contents->cache_db);
                     myerror(ERRDB, "%s: error deleting from " DBH_CACHE_DB_NAME, name.c_str());
                     /* TODO: handle errors */
                 }
             }
-            cache_id = 0;
+            contents->cache_id = 0;
         }
         else {
             get_last_update();
             
-            cache_id = dbh_cache_write(cache_db, cache_id, this);
-            if (cache_id < 0) {
-                seterrdb(cache_db);
+            contents->cache_id = dbh_cache_write(contents->cache_db, contents->cache_id, contents.get());
+            if (contents->cache_id < 0) {
+                seterrdb(contents->cache_db);
                 myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
-                cache_id = 0;
+                contents->cache_id = 0;
             }
         }
     }
     else {
-        cache_id = 0;
+        contents->cache_id = 0;
     }
-
+    
     cache_changed = false;
 }
 
@@ -241,7 +241,7 @@ bool Archive::file_delete(uint64_t index) {
     }
 
     files[index].where = FILE_DELETED;
-    flags |= ARCHIVE_IFL_MODIFIED;
+    modified = true;
 
     return true;
 }
@@ -278,7 +278,7 @@ bool Archive::file_rename(uint64_t index, const std::string &filename) {
     }
     
     files[index].name = filename;
-    flags |= ARCHIVE_IFL_MODIFIED;
+    modified = true;
 
     return true;
 }
@@ -301,7 +301,7 @@ bool Archive::file_rename_to_unique(uint64_t index) {
 
 
 bool Archive::rollback() {
-    if (!is_modified()) {
+    if (!modified) {
         return false;
     }
 
@@ -309,8 +309,8 @@ bool Archive::rollback() {
         return false;
     }
 
-    flags &= ~ARCHIVE_IFL_MODIFIED;
-
+    modified = false;
+    
     for (uint64_t i = 0; i < files.size(); i++) {
         auto &file = files[i];
         
@@ -342,5 +342,5 @@ void Archive::add_file(const std::string &filename, const File *file) {
     nf->name = filename;
     nf->where = FILE_ADDED;
 
-    flags |= ARCHIVE_IFL_MODIFIED;
+    modified = true;
 }

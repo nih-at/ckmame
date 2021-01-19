@@ -163,7 +163,7 @@ find_in_archives(const File *rom, Match *m, bool needed_only) {
 
         if (sh == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
             a->file_compute_hashes(i, rom->hashes.types | db->hashtypes(TYPE_ROM));
-	    memdb_update_file(a.get(), i);
+            memdb_update_file(a->contents.get(), i);
 	}
 
 	if (file.status != STATUS_OK || file.get_hashes(sh != 0).compare(rom->hashes) != Hashes::MATCH) {

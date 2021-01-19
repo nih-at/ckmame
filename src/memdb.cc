@@ -84,113 +84,8 @@ memdb_ensure(void) {
 }
 
 
-void *
-memdb_get_ptr(const char *name, filetype_t type) {
-    sqlite3_stmt *stmt;
-    void *ptr;
-
-    if (!memdb_inited)
-	return NULL;
-
-    if ((stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_PTR)) == NULL) {
-	seterrdb(memdb);
-	myerror(ERRDB, "cannot get '%s' from file cache", name);
-	return NULL;
-    }
-
-    if (sq3_set_string(stmt, 1, name) != SQLITE_OK || sqlite3_bind_int(stmt, 2, type) != SQLITE_OK) {
-	seterrdb(memdb);
-	myerror(ERRDB, "cannot get '%s' from file cache", name);
-	return NULL;
-    }
-
-    switch (sqlite3_step(stmt)) {
-    case SQLITE_ROW:
-	memcpy(&ptr, sqlite3_column_blob(stmt, 0), sizeof(ptr));
-	break;
-
-    case SQLITE_DONE:
-	ptr = NULL;
-	break;
-
-    default:
-	ptr = NULL;
-	seterrdb(memdb);
-	myerror(ERRDB, "cannot get '%s' from file cache", name);
-    }
-
-    return ptr;
-}
-
-
-void *
-memdb_get_ptr_by_id(int id) {
-    sqlite3_stmt *stmt;
-    void *ptr;
-
-    if (!memdb_inited)
-	return NULL;
-
-    if ((stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_PTR_ID)) == NULL) {
-	seterrdb(memdb);
-	myerror(ERRDB, "cannot get '%d' from file cache", id);
-	return NULL;
-    }
-
-    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
-	seterrdb(memdb);
-	myerror(ERRDB, "cannot get '%d' from file cache", id);
-	return NULL;
-    }
-
-    switch (sqlite3_step(stmt)) {
-    case SQLITE_ROW:
-	memcpy(&ptr, sqlite3_column_blob(stmt, 0), sizeof(ptr));
-	break;
-
-    case SQLITE_DONE:
-	ptr = NULL;
-	break;
-
-    default:
-	ptr = NULL;
-	seterrdb(memdb);
-	myerror(ERRDB, "cannot get '%d' from file cache", id);
-    }
-
-    return ptr;
-}
-
-
-int64_t
-memdb_put_ptr(const char *name, filetype_t type, void *ptr) {
-    sqlite3_stmt *stmt;
-    int64_t ret;
-
-    if (memdb_ensure() < 0)
-	return -1;
-
-    if ((stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_PTR)) == NULL)
-	ret = -1;
-    else {
-	if (sq3_set_string(stmt, 1, name) != SQLITE_OK || sqlite3_bind_int(stmt, 2, type) != SQLITE_OK || sqlite3_bind_blob(stmt, 3, &ptr, sizeof(void *), SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-	    ret = -1;
-	}
-	else
-	    ret = sqlite3_last_insert_rowid(memdb->db);
-    }
-
-    if (ret < 0) {
-	seterrdb(memdb);
-	myerror(ERRDB, "cannot insert '%s' into file cache", name);
-    }
-
-    return ret;
-}
-
-
 int
-memdb_file_delete(const Archive *a, int idx, bool adjust_idx) {
+memdb_file_delete(const ArchiveContents *a, int idx, bool adjust_idx) {
     sqlite3_stmt *stmt;
 
     if (_delete_file(a->id, a->filetype, idx) < 0)
@@ -210,7 +105,7 @@ memdb_file_delete(const Archive *a, int idx, bool adjust_idx) {
 
 
 int
-memdb_file_insert(sqlite3_stmt *stmt, const Archive *a, int idx) {
+memdb_file_insert(sqlite3_stmt *stmt, const ArchiveContents *a, int idx) {
     int i, err;
 
     if (memdb_ensure() < 0)
@@ -249,7 +144,7 @@ memdb_file_insert(sqlite3_stmt *stmt, const Archive *a, int idx) {
 
 
 int
-memdb_file_insert_archive(const Archive *archive) {
+memdb_file_insert_archive(const ArchiveContents *archive) {
     sqlite3_stmt *stmt;
     int err;
 
@@ -281,7 +176,7 @@ memdb_update_disk(const Disk *disk) {
 
 
 int
-memdb_update_file(const Archive *archive, int idx) {
+memdb_update_file(const ArchiveContents *archive, int idx) {
     if (archive->files[idx].status != STATUS_OK)
 	return _delete_file(archive->id, archive->filetype, idx);
 

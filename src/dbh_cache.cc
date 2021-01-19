@@ -314,7 +314,7 @@ dbh_cache_register_cache_directory(const std::string &directory_name) {
 
 
 int
-dbh_cache_write(DB *dbh, int id, const Archive *a) {
+dbh_cache_write(DB *dbh, int id, const ArchiveContents *a) {
     sqlite3_stmt *stmt;
 
     if (id == 0) {
