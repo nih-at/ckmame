@@ -93,7 +93,7 @@ make_unique_name(const std::string &prefix, const std::string &ext) {
 }
 
 
-std::string
+static std::string
 make_needed_name(const File *r) {
     /* <needed_dir>/<crc>-nnn.zip */
 
@@ -104,7 +104,7 @@ make_needed_name(const File *r) {
 }
 
 
-std::string
+static std::string
 make_needed_name_disk(const Disk *d) {
     /* <needed_dir>/<md5>-nnn.zip */
 
