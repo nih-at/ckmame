@@ -31,16 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include "archive.h"
+#include "check_archive.h"
 #include "find.h"
 #include "funcs.h"
-#include "globals.h"
-#include "result.h"
-
 
 void
-check_archive(ArchivePtr archive, const char *gamename, Result *result) {
+check_archive(ArchivePtr archive, const std::string &gamename, Result *result) {
     find_result_t found;
 
     if (!archive) {

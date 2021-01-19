@@ -106,7 +106,7 @@ check_files(Game *game, ArchivePtr archives[3], Result *res) {
         
         if (rom.where == FILE_INGAME && (match->quality == QU_MISSING || match->quality == QU_HASHERR) && rom.size > 0 && rom.status != STATUS_NODUMP) {
             /* search for matching file in other games (via db) */
-            if (find_in_romset(&rom, NULL, game->name.c_str(), match) == FIND_EXISTS) {
+            if (find_in_romset(&rom, NULL, game->name, match) == FIND_EXISTS) {
                 continue;
             }
             

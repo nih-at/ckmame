@@ -137,7 +137,7 @@ fix_game(Game *g, Archive *a, Images *im, Result *result) {
 
 	case FS_NEEDED:
 	    /* TODO: handle error (how?) */
-	    if (save_needed(a, i, g->name.c_str())) {
+	    if (save_needed(a, i, g->name)) {
                 check_tree.recheck_games_needing(a->files[i].size, &a->files[i].hashes);
 	    }
 	    break;
@@ -435,7 +435,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
 	    if (r->where == FILE_INCO || r->where == FILE_INGCO) {
                 if (check_tree.recheck(g->cloneof[r->where - 1])) {
 		    /* fall-through to rename in case save_needed fails */
-		    if (save_needed(a, match->index, g->name.c_str())) {
+		    if (save_needed(a, match->index, g->name)) {
                         check_tree.recheck_games_needing(r->size, &r->hashes);
 			break;
 		    }
@@ -457,7 +457,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
 		/* we can't copy from our own garbage archive, since we're copying to it, and libzip doesn't support cross copying */
 
 		/* TODO: handle error (how?) */
-                if (save_needed(afrom, match->index, g->name.c_str())) {
+                if (save_needed(afrom, match->index, g->name)) {
 		    needs_recheck = true;
                 }
 
@@ -533,7 +533,7 @@ fix_files_incomplete(Game *g, Archive *a, Result *result, Garbage *gb) {
 	    break;
 
 	case QU_LONG:
-	    save_needed_part(afrom, match->index, g->name.c_str(), match->offset, r->size, r); /* TODO: handle error */
+	    save_needed_part(afrom, match->index, g->name, match->offset, r->size, r); /* TODO: handle error */
 	    break;
 
 	case QU_COPIED:
@@ -542,7 +542,7 @@ fix_files_incomplete(Game *g, Archive *a, Result *result, Garbage *gb) {
 	    case FILE_SUPERFLUOUS:
 	    case FILE_EXTRA:
 		/* TODO: handle error (how?) */
-		save_needed(afrom, match->index, g->name.c_str());
+		save_needed(afrom, match->index, g->name);
 		afrom->commit();
 		break;
 
@@ -562,7 +562,7 @@ fix_files_incomplete(Game *g, Archive *a, Result *result, Garbage *gb) {
 	case QU_NAMEERR:
 	case QU_OK:
 	case QU_INZIP:
-	    save_needed(a, i, g->name.c_str()); /* TODO: handle error */
+	    save_needed(a, i, g->name); /* TODO: handle error */
 	    break;
 	}
     }

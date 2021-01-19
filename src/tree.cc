@@ -37,6 +37,7 @@
 #include <string.h>
 
 #include "archive.h"
+#include "check_archive.h"
 #include "dbh.h"
 #include "error.h"
 #include "funcs.h"
@@ -184,7 +185,7 @@ void Tree::process(ArchivePtr *archives, ImagesPtr *images) {
 
     check_old(game.get(), &res);
     check_files(game.get(), archives, &res);
-    check_archive(archives[0], game->name.c_str(), &res);
+    check_archive(archives[0], game->name, &res);
     check_disks(game.get(), images, &res);
     check_images(images[0].get(), game->name.c_str(), &res);
 

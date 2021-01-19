@@ -33,6 +33,7 @@
 
 #include <algorithm>
 
+#include "check_archive.h"
 #include "funcs.h"
 #include "garbage.h"
 #include "globals.h"
@@ -86,7 +87,7 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
                     di++;
                 }
 
-                check_archive(a, NULL, &res);
+                check_archive(a, "", &res);
 
                 warn_set_info(WARN_TYPE_ARCHIVE, a->name.c_str());
                 diagnostics_archive(a, &res);
@@ -187,7 +188,7 @@ cleanup_archive(Archive *a, Result *result, int flags) {
 	case FS_NEEDED:
 	    if (flags & CLEANUP_NEEDED) {
 		/* TODO: handle error (how?) */
-		if (save_needed(a, i, NULL)) {
+		if (save_needed(a, i, "")) {
 		    /* save_needed delays deletes in archives with where != FILE_ROM */
 		    a->file_delete(i);
 		}

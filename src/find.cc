@@ -56,7 +56,7 @@ static find_result_t check_match_disk_romset(const Game *, const Disk *, MatchDi
 static find_result_t check_match_old(const Game *, const File *, const File *, Match *);
 static find_result_t check_match_romset(const Game *, const File *, const File *, Match *);
 static find_result_t find_disk_in_db(RomDB *, const Disk *, const char *, MatchDisk *, find_result_t (*)(const Game *, const Disk *, MatchDisk *));
-static find_result_t find_in_db(RomDB *, const File *, Archive *, const char *, Match *, find_result_t (*)(const Game *, const File *, const File *, Match *));
+static find_result_t find_in_db(RomDB *, const File *, Archive *, const std::string &, Match *, find_result_t (*)(const Game *, const File *, const File *, Match *));
 
 
 find_result_t
@@ -190,12 +190,12 @@ find_in_old(const File *r, Archive *a, Match *m) {
 	return FIND_MISSING;
     }
 
-    return find_in_db(old_db, r, a, NULL, m, check_match_old);
+    return find_in_db(old_db, r, a, "", m, check_match_old);
 }
 
 
 find_result_t
-find_in_romset(const File *file, Archive *archive, const char *skip, Match *m) {
+find_in_romset(const File *file, Archive *archive, const std::string &skip, Match *m) {
     return find_in_db(db, file, archive, skip, m, check_match_romset);
 }
 
@@ -301,7 +301,7 @@ check_match_romset(const Game *game, const File *r, const File *f, Match *match)
 
 
 static find_result_t
-find_in_db(RomDB *fdb, const File *r, Archive *archive, const char *skip, Match *m, find_result_t (*check_match)(const Game *, const File *, const File *, Match *)) {
+find_in_db(RomDB *fdb, const File *r, Archive *archive, const std::string &skip, Match *m, find_result_t (*check_match)(const Game *, const File *, const File *, Match *)) {
     auto roms = fdb->read_file_by_hash(TYPE_ROM, &r->hashes);
 
     if (roms.empty()) {
@@ -312,7 +312,7 @@ find_in_db(RomDB *fdb, const File *r, Archive *archive, const char *skip, Match 
     for (size_t i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < roms.size(); i++) {
 	auto rom = roms[i];
 
-        if (skip && rom.name == skip) {
+        if (rom.name == skip) {
 	    continue;
         }
 

@@ -1,9 +1,9 @@
-#ifndef HAD_FIND_H
-#define HAD_FIND_H
+#ifndef _HAD_CHECK_ARCHIVE_H
+#define _HAD_CHECK_ARCHIVE_H
 
 /*
-  find.h -- find ROM in ROM set or archives
-  Copyright (C) 2005-2020 Dieter Baron and Thomas Klausner
+  check_archive.h -- check an archive
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,22 +34,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "archive.h"
+#include "result.h"
 
-#include "disk.h"
-#include "file.h"
-#include "match.h"
-#include "match_disk.h"
+void check_archive(ArchivePtr archive, const std::string &gamename, Result *result);
 
-enum find_result { FIND_ERROR = -1, FIND_UNKNOWN, FIND_MISSING, FIND_EXISTS };
-
-typedef enum find_result find_result_t;
-
-
-find_result_t find_disk(const Disk *, MatchDisk *);
-find_result_t find_disk_in_old(const Disk *, MatchDisk *);
-find_result_t find_disk_in_romset(const Disk *, const char *, MatchDisk *);
-find_result_t find_in_archives(const File *r, Match *m, bool needed_only);
-find_result_t find_in_old(const File *, Archive *, Match *);
-find_result_t find_in_romset(const File *, Archive *, const std::string &, Match *);
-
-#endif /* find.h */
+#endif /* _HAD_CHECK_ARCHIVE_H */

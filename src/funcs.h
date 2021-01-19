@@ -51,7 +51,6 @@
 #define CLEANUP_UNKNOWN 0x2
 
 
-void check_archive(ArchivePtr, const char *, Result *);
 void check_disks(Game *, ImagesPtr [], Result *);
 void check_files(Game *, ArchivePtr [], Result *);
 void check_images(Images *, const char *, Result *);
@@ -83,9 +82,9 @@ void print_superfluous(std::vector<std::string> &files);
 void remove_empty_archive(const std::string &name);
 void remove_from_superfluous(const std::string &name);
 bool rename_or_move(const std::string &old, const std::string &new_name);
-bool save_needed(Archive *sa, size_t sidx, const char *gamename);
+bool save_needed(Archive *sa, size_t sidx, const std::string &gamename);
 bool save_needed_disk(const std::string &fname, bool do_save);
-bool save_needed_part(Archive *sa, size_t sidx, const char *gamename, off_t start, off_t length, File *f);
+bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t start, off_t length, File *f);
 void write_fixdat_entry(const Game *, const Result *);
 
 #endif /* funcs.h */
