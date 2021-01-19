@@ -320,7 +320,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
         }
 
         if (start == 0 && (!length.has_value() || length == sa->files[source_index].size)) {
-            if (link_or_copy(source_name.c_str(), tmpname.c_str()) < 0) {
+            if (!link_or_copy(source_name, tmpname)) {
                 return false;
             }
         }

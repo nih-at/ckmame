@@ -290,7 +290,7 @@ fix_disks(Game *g, Images *im, Result *result) {
 	    if (fix_options & FIX_DO) {
                 ensure_dir(fname, true);
 		if (do_copy) {
-		    link_or_copy(match_disk.name.c_str(), fname.c_str());
+		    link_or_copy(match_disk.name, fname);
 #if 0
 		    /* delete_list_execute can't currently handle disks */
 		    if (extra_delete_list)
@@ -516,7 +516,7 @@ fix_files_incomplete(Game *g, Archive *a, Result *result, Garbage *gb) {
 	else
 	    afrom = match->archive.get();
 	auto r = &g->roms[i];
-	seterrinfo(r->name.c_str(), a->name);
+	seterrinfo(r->name, a->name);
 
 	switch (match->quality) {
 	case QU_MISSING:

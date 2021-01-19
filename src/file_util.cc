@@ -126,17 +126,19 @@ copy_file(const char *old, const char *new_name, size_t start, ssize_t len, Hash
 }
 
 
-int
-link_or_copy(const char *old, const char *new_name) {
-    if (link(old, new_name) < 0) {
-	if (copy_file(old, new_name, 0, -1, NULL) < 0) {
+bool
+link_or_copy(const std::string &old, const std::string &new_name) {
+    std::error_code ec;
+    std::filesystem::create_hard_link(old, new_name, ec);
+    if (ec) {
+	if (!std::filesystem::copy_file(old, new_name, ec) || ec) {
 	    seterrinfo(old, "");
-	    myerror(ERRFILESTR, "cannot link to '%s'", new_name);
-	    return -1;
+	    myerror(ERRFILESTR, "cannot link to '%s'", new_name.c_str());
+	    return false;
 	}
     }
 
-    return 0;
+    return true;;
 }
 
 

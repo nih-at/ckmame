@@ -69,7 +69,7 @@ std::string findfile(const std::string &name, filetype_t ft, const std::string &
 int fix_game(Game *, Archive *, Images *, Result *);
 std::vector<std::string> list_directory(const std::string &dirname, const std::string &dbname);
 const char *get_directory(void);
-int link_or_copy(const char *, const char *);
+bool link_or_copy(const std::string &old, const std::string &new_name);
 std::string make_file_name(filetype_t, const std::string &name, const std::string &game_name);
 std::string make_garbage_name(const std::string &, int);
 std::string make_needed_name(const File *);
