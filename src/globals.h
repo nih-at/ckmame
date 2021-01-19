@@ -46,7 +46,7 @@
 
 /* option settings */
 
-extern const char *needed_dir;
+extern std::string needed_dir;
 extern const char *unknown_dir;
 extern const char *rom_dir;
 

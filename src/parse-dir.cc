@@ -92,7 +92,7 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
 	}
 	else {
 	    while ((filepath = dir.next()) != "") {
-		switch (name_type(filepath.c_str())) {
+		switch (name_type(filepath)) {
                 case NAME_ZIP: {
                     /* TODO: handle errors */
                     auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);

@@ -74,7 +74,7 @@ ImagesPtr Images::from_directory(const std::string &directory, bool check_integr
 	 std::filesystem::path filepath;
 
 	 while ((filepath = dir.next()) != "") {
-	     if (name_type(filepath.c_str()) == NAME_CHD) {
+	     if (name_type(filepath) == NAME_CHD) {
 		 images->disks.push_back(Disk::from_file(filepath, check_integrity ? DISK_FL_CHECK_INTEGRITY : 0));                                                                                                                                                           }
 	 }
     }

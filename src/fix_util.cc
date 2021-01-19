@@ -62,10 +62,10 @@ make_garbage_name(const std::string &name, int unique) {
     
     if (unique && std::filesystem::exists(t)) {
 	/* skip '.' */
-	auto ext = s.extension().string().substr(1);
+	auto ext = s.extension();
 	/* path and filename, but no extension */
 	auto t_no_ext = t.parent_path() / t.stem();
-	return make_unique_name(ext, "%s", t_no_ext.c_str());
+	return make_unique_name(t_no_ext, ext);
     }
 
     return t;
@@ -73,26 +73,20 @@ make_garbage_name(const std::string &name, int unique) {
 
 
 std::string
-make_unique_name(const std::string &ext, const char *fmt, ...) {
-    char ret[MAXPATHLEN];
-    struct stat st;
-    va_list ap;
-
-    va_start(ap, fmt);
-    auto len = static_cast<size_t>(vsnprintf(ret, sizeof(ret), fmt, ap));
-    va_end(ap);
-
-    /* already used space, "-XXX.", extension, 0 */
-    if (len + 5 + ext.length() + 1 > sizeof(ret)) {
-	return NULL;
-    }
+make_unique_name(const std::string &prefix, const std::string &ext) {
+    char buf[5];
 
     for (int i = 0; i < 1000; i++) {
-	sprintf(ret + len, "-%03d%s%s", i, (ext[0] ? "." : ""), ext.c_str());
-
-        if (stat(ret, &st) == -1 && errno == ENOENT) {
-	    return ret;
-        }
+	std::error_code ec;
+	sprintf(buf, "-%03d", i);
+	auto testname = prefix + buf + ext;
+	if (std::filesystem::exists(testname, ec)) {
+	    continue;
+	}
+	if (ec) {
+	    continue;
+	}
+	return testname;
     }
 
     return "";
@@ -104,8 +98,9 @@ make_needed_name(const File *r) {
     /* <needed_dir>/<crc>-nnn.zip */
 
     auto crc = r->hashes.to_string(Hashes::TYPE_CRC);
+    auto prefix = std::filesystem::path(needed_dir) / crc;
 
-    return make_unique_name(roms_unzipped ? "" : "zip", "%s/%s", needed_dir, crc.c_str());
+    return make_unique_name(prefix, roms_unzipped ? "" : ".zip");
 }
 
 
@@ -114,8 +109,9 @@ make_needed_name_disk(const Disk *d) {
     /* <needed_dir>/<md5>-nnn.zip */
 
     auto md5 = d->hashes.to_string(Hashes::TYPE_MD5);
+    auto prefix = std::filesystem::path(needed_dir) / md5;
 
-    return make_unique_name("chd", "%s/%s", needed_dir, md5.c_str());
+    return make_unique_name(prefix, ".chd");
 }
 
 

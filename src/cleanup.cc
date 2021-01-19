@@ -61,7 +61,7 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
     size_t i = 0;
     while (i < n) {
 	name = list[i];
-	switch ((nt = name_type(name.c_str()))) {
+	switch ((nt = name_type(name))) {
             case NAME_ZIP: {
                 ArchivePtr a = Archive::open(name, TYPE_ROM, FILE_NOWHERE, 0);
 

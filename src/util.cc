@@ -77,25 +77,22 @@ hex2bin(unsigned char *t, const char *s, size_t tlen) {
 
 
 name_type_t
-name_type(const char *name) {
-    size_t l;
-
+name_type(const std::string &name) {
     if (roms_unzipped) {
-	struct stat st;
-
-	if (stat(name, &st) < 0)
+	if (!std::filesystem::exists(name)) {
 	    return NAME_UNKNOWN;
-	if (S_ISDIR(st.st_mode))
+	}
+	if (std::filesystem::is_directory(name)) {
 	    return NAME_ZIP;
+	}
     }
 
-    l = strlen(name);
-
-    if (l > 4) {
-	if (strcmp(name + l - 4, ".chd") == 0)
-	    return NAME_CHD;
-	if (!roms_unzipped && strcasecmp(name + l - 4, ".zip") == 0)
-	    return NAME_ZIP;
+    auto ext = std::filesystem::path(name).extension();
+    if (ext == ".chd") {
+	return NAME_CHD;
+    }
+    if (!roms_unzipped && strcasecmp(ext.c_str(), ".zip") == 0) {
+	return NAME_ZIP;
     }
 
     return NAME_UNKNOWN;

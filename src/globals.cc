@@ -36,7 +36,7 @@
 #include <sys/param.h>
 /* option settings */
 
-const char *needed_dir = "needed";   /* TODO: proper value */
+std::string needed_dir = "needed";   /* TODO: proper value */
 const char *unknown_dir = "unknown"; /* TODO: proper value */
 const char *rom_dir = NULL;
 

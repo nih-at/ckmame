@@ -73,7 +73,7 @@ fix_game(Game *g, Archive *a, Images *im, Result *result) {
         if (!a->check()) {
 	    /* opening the zip file failed, rename it and create new one */
 
-            auto new_name = make_unique_name("broken", "%s", a->name.c_str());
+            auto new_name = make_unique_name(a->name, ".broken");
             if (new_name.empty()) {
 		return -1;
 	    }

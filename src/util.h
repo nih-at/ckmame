@@ -44,7 +44,7 @@
 
 std::string bin2hex(const uint8_t *data, size_t length);
 int hex2bin(unsigned char *, const char *, size_t);
-name_type_t name_type(const char *);
+name_type_t name_type(const std::string &name);
 void print_human_number(FILE *f, uint64_t value);
 std::string status_name(status_t status, bool verbose = false);
 
