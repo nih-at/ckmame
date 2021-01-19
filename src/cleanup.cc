@@ -33,7 +33,7 @@
 
 #include <algorithm>
 
-#include "check_archive.h"
+#include "check.h"
 #include "funcs.h"
 #include "garbage.h"
 #include "globals.h"

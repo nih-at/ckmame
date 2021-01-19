@@ -51,10 +51,6 @@
 #define CLEANUP_UNKNOWN 0x2
 
 
-void check_disks(Game *, ImagesPtr [], Result *);
-void check_files(Game *, ArchivePtr [], Result *);
-void check_images(Images *, const char *, Result *);
-void check_old(Game *, Result *);
 void cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags);
 void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
 void diagnostics_archive(const ArchivePtr, const Result *);

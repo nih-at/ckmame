@@ -1,8 +1,8 @@
-#ifndef _HAD_CHECK_ARCHIVE_H
-#define _HAD_CHECK_ARCHIVE_H
+#ifndef _HAD_CHECK_H
+#define _HAD_CHECK_H
 
 /*
-  check_archive.h -- check an archive
+  check.h -- archive/disk/file checkers
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -38,5 +38,9 @@
 #include "result.h"
 
 void check_archive(ArchivePtr archive, const std::string &gamename, Result *result);
+void check_disks(Game *, ImagesPtr [], Result *);
+void check_files(Game *, ArchivePtr [], Result *);
+void check_images(Images *, const char *, Result *);
+void check_old(Game *, Result *);
 
 #endif /* _HAD_CHECK_ARCHIVE_H */

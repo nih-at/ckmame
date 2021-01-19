@@ -37,7 +37,7 @@
 #include <string.h>
 
 #include "archive.h"
-#include "check_archive.h"
+#include "check.h"
 #include "dbh.h"
 #include "error.h"
 #include "funcs.h"

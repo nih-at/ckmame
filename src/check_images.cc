@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "check.h"
 
 #include "find.h"
 #include "funcs.h"

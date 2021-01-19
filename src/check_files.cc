@@ -32,6 +32,8 @@
 */
 
 
+#include "check.h"
+
 #include "archive.h"
 #include "dbh.h"
 #include "file.h"
