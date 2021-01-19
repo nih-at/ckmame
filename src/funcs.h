@@ -51,13 +51,8 @@
 #define CLEANUP_UNKNOWN 0x2
 
 
-void ensure_extra_maps(int);
-void ensure_needed_maps(void);
-bool enter_disk_in_map(const Disk *, where_t);
-std::string findfile(const std::string &name, filetype_t ft, const std::string &game_name);
 int fix_game(Game *, Archive *, Images *, Result *);
 bool link_or_copy(const std::string &old, const std::string &new_name);
-std::string make_file_name(filetype_t, const std::string &name, const std::string &game_name);
 bool my_remove(const std::string &name);
 int my_zip_rename(struct zip *, uint64_t, const char *);
 int my_zip_rename_to_unique(struct zip *, zip_uint64_t);

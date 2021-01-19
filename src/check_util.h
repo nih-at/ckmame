@@ -1,6 +1,9 @@
+#ifndef _HAD_CHECK_UTIL_H
+#define _HAD_CHECK_UTIL_H
+
 /*
-  check_images.c -- match files against disks
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  check_util.h -- utility functions needed only by ckmame itself
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,74 +34,15 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "check.h"
+#include <string>
 
-#include "check_util.h"
+#include "disk.h"
+#include "types.h"
 
-#include "find.h"
-#include "funcs.h"
-#include "game.h"
-#include "globals.h"
-#include "match_disk.h"
-#include "util.h"
+void ensure_extra_maps(int flags);
+void ensure_needed_maps(void);
+bool enter_disk_in_map(const Disk *disk, where_t where);
+std::string findfile(const std::string &name, filetype_t what, const std::string &game_name);
+std::string make_file_name(filetype_t ft, const std::string &name, const std::string &game_name);
 
-
-void
-check_images(Images *im, const char *gamename, Result *result) {
-    if (im == NULL) {
-	return;
-    }
-
-    for (size_t i = 0; i < im->disks.size(); i++) {
-        auto disk = im->disks[i];
-
-	if (disk == NULL) {
-	    result->images[i] = FS_MISSING;
-	    continue;
-	}
-
-	if (disk->status != STATUS_OK) {
-	    result->images[i] = FS_BROKEN;
-	    continue;
-	}
-
-	if (result->images[i] == FS_USED)
-	    continue;
-
-        if ((disk->hashes.types & db->hashtypes(TYPE_DISK)) != db->hashtypes(TYPE_DISK)) {
-	    /* TODO: compute missing hashes */
-	}
-
-	if (find_disk_in_old(disk.get(), NULL) == FIND_EXISTS) {
-	    result->images[i] = FS_DUPLICATE;
-	    continue;
-	}
-
-	switch (find_disk_in_romset(disk.get(), gamename, NULL)) {
-	case FIND_UNKNOWN:
-	    break;
-
-	case FIND_EXISTS:
-	    result->images[i] = FS_SUPERFLUOUS;
-	    break;
-
-	case FIND_MISSING: {
-	    MatchDisk match_disk;
-
-            ensure_needed_maps();
-	    if (find_disk(disk.get(), &match_disk) != FIND_EXISTS)
-		result->images[i] = FS_NEEDED;
-	    else {
-		if (match_disk.where == FILE_NEEDED)
-		    result->images[i] = FS_SUPERFLUOUS;
-		else
-		    result->images[i] = FS_NEEDED;
-	    }
-	} break;
-
-	case FIND_ERROR:
-	    /* TODO: how to handle? */
-	    break;
-	}
-    }
-}
+#endif /* _HAD_CHECK_UTIL_H */

@@ -32,6 +32,8 @@
 */
 
 #include "find.h"
+
+#include "check_util.h"
 #include "dbh.h"
 #include "funcs.h"
 #include "game.h"

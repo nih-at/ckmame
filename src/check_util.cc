@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "check_util.h"
+
 #include <algorithm>
 #include <filesystem>
 
@@ -50,7 +52,7 @@
 #define EXTRA_MAPS 0x1
 #define NEEDED_MAPS 0x2
 
-int maps_done = 0;
+static int maps_done = 0;
 
 static bool enter_dir_in_map_and_list(int, std::vector<std::string> &, const std::string &, bool recursive, where_t);
 static bool enter_dir_in_map_and_list_unzipped(int, std::vector<std::string> &, const std::string &, bool recursive, where_t);

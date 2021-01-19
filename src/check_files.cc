@@ -35,6 +35,7 @@
 #include "check.h"
 
 #include "archive.h"
+#include "check_util.h"
 #include "dbh.h"
 #include "file.h"
 #include "find.h"

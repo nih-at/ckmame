@@ -46,6 +46,7 @@
 #include <zip.h>
 
 #include "archive.h"
+#include "check_util.h"
 #include "error.h"
 #include "fix_util.h"
 #include "funcs.h"

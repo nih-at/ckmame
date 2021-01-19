@@ -38,6 +38,7 @@
 
 #include "archive.h"
 #include "check.h"
+#include "check_util.h"
 #include "diagnostics.h"
 #include "dbh.h"
 #include "error.h"

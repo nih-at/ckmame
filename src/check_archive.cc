@@ -32,6 +32,8 @@
 */
 
 #include "check.h"
+
+#include "check_util.h"
 #include "find.h"
 #include "funcs.h"
 

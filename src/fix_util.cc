@@ -43,6 +43,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "check_util.h"
 #include "error.h"
 #include "find.h"
 #include "funcs.h"
