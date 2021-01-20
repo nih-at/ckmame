@@ -74,7 +74,7 @@ bool ArchiveDir::FileInfo::apply() const {
     std::error_code ec;
     std::filesystem::rename(data_file_name, name, ec);
     if (ec) {
-        myerror(ERRZIP, "apply: cannot rename '%s' to '%s': %s", data_file_name.c_str(), name.c_str(), ec.message());
+        myerror(ERRZIP, "apply: cannot rename '%s' to '%s': %s", data_file_name.c_str(), name.c_str(), ec.message().c_str());
         return false;
     }
     return true;
