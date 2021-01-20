@@ -34,7 +34,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "output.h"
 #include "result.h"
+
+extern OutputContextPtr fixdat;
 
 void write_fixdat_entry(const Game *game, const Result *result);
 

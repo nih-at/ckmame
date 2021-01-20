@@ -68,7 +68,5 @@ extern std::vector<std::string> extra_list;
 extern DeleteListPtr needed_delete_list;
 extern DeleteListPtr superfluous_delete_list;
 
-extern OutputContextPtr fixdat;
-
 extern Stats stats;
 #endif /* globals.h */

@@ -36,8 +36,8 @@
 #include "globals.h"
 #include "match.h"
 #include "match_disk.h"
-#include "output.h"
 
+OutputContextPtr fixdat;
 
 void
 write_fixdat_entry(const Game *game, const Result *result) {

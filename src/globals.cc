@@ -57,6 +57,4 @@ std::vector<std::string> extra_list;
 DeleteListPtr needed_delete_list;
 DeleteListPtr superfluous_delete_list;
 
-OutputContextPtr fixdat;
-
 Stats stats;
