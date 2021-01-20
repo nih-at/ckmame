@@ -49,6 +49,7 @@
 #include "sighandle.h"
 #include "tree.h"
 
+Tree check_tree;
 
 bool Tree::add(const std::string &game_name) {
     GamePtr game = db->read_game(game_name);

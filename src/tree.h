@@ -67,4 +67,6 @@ private:
     void process(ArchivePtr *archives, ImagesPtr *images);
 };
 
+extern Tree check_tree;
+
 #endif /* tree.h */
