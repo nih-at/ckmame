@@ -95,7 +95,7 @@ public:
 
     void set(int type, const void *data);
     void set_crc(uint32_t crc_) { types |= TYPE_CRC; crc = crc_; }
-    int set_from_string(const std::string s);
+    int set_from_string(const std::string &s);
 
     static int types_from_string(const std::string &s);
     static std::string type_name(int type);

@@ -231,16 +231,16 @@ std::string Hashes::to_string(int type) const {
 }
 
 
-int Hashes::set_from_string(const std::string s) {
-    const char *str = s.c_str();
+int Hashes::set_from_string(const std::string &s) {
+    auto str = s;
 
     if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
-        str += 2;
+        str = str.substr(2);
     }
 
-    size_t length = strlen(str);
+    size_t length = str.length();
 
-    if (length % 2 != 0 || strspn(str, "0123456789ABCDEFabcdef") != length) {
+    if (length % 2 != 0 || str.find_first_not_of("0123456789ABCDEFabcdef") != std::string::npos) {
         return -1;
     }
 
@@ -249,17 +249,17 @@ int Hashes::set_from_string(const std::string s) {
     switch (length / 2) {
         case Hashes::SIZE_CRC:
             type = Hashes::TYPE_CRC;
-            crc = (uint32_t)strtoul(str, NULL, 16);
+            crc = std::stoul(str, NULL, 16);
             break;
 
         case Hashes::SIZE_MD5:
             type = Hashes::TYPE_MD5;
-            hex2bin(md5, str, Hashes::SIZE_MD5);
+            hex2bin(md5, str.c_str(), Hashes::SIZE_MD5);
             break;
 
         case Hashes::SIZE_SHA1:
             type = Hashes::TYPE_SHA1;
-            hex2bin(sha1, str, Hashes::SIZE_SHA1);
+            hex2bin(sha1, str.c_str(), Hashes::SIZE_SHA1);
             break;
 
         default:
