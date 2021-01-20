@@ -46,10 +46,6 @@
 
 /* option settings */
 
-extern std::string needed_dir;
-extern const char *unknown_dir;
-extern const char *rom_dir;
-
 extern std::vector<std::string> search_dirs;
 
 extern int check_integrity; /* full integrity check of ROM set */
@@ -78,9 +74,6 @@ extern DeleteListPtr superfluous_delete_list;
 
 extern Tree check_tree;
 extern OutputContextPtr fixdat;
-
-/* to identify roms directory uniquely */
-extern char rom_dir_normalized[];
 
 extern Stats stats;
 #endif /* globals.h */

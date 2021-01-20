@@ -65,7 +65,7 @@ images_name(const Images *im, int i) {
 ImagesPtr Images::from_directory(const std::string &directory, bool check_integrity) {
     auto images = std::make_shared<Images>();
 
-    auto dirname = std::string(get_directory()) + "/" + directory;
+    auto dirname = get_directory() + "/" + directory;
 
     try {
 	 Dir dir(dirname, false);

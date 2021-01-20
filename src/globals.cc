@@ -36,10 +36,6 @@
 #include <sys/param.h>
 /* option settings */
 
-std::string needed_dir = "needed";   /* TODO: proper value */
-const char *unknown_dir = "unknown"; /* TODO: proper value */
-const char *rom_dir = NULL;
-
 std::vector<std::string> search_dirs;
 
 int check_integrity = 0; /* full integrity check of ROM set */
@@ -68,8 +64,5 @@ DeleteListPtr superfluous_delete_list;
 
 Tree check_tree;
 OutputContextPtr fixdat;
-
-/* roms dir */
-char rom_dir_normalized[MAXPATHLEN];
 
 Stats stats;

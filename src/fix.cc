@@ -328,7 +328,7 @@ fix_disks(Game *g, Images *im, Result *result) {
 
     if (!added && removed == im->disks.size()) {
 	std::error_code ec;
-	std::string path = std::string(get_directory()) + "/" + g->name;
+	std::string path = get_directory() + "/" + g->name;
 	std::filesystem::remove(path, ec);
     }
 

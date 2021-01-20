@@ -45,6 +45,7 @@
 #include "globals.h"
 #include "util.h"
 
+std::string rom_dir;
 
 std::string
 bin2hex(const uint8_t *data, size_t length) {
@@ -120,12 +121,11 @@ ensure_dir(const std::string &name, bool strip_filename) {
 }
 
 
-const char *
-get_directory(void) {
-    if (rom_dir)
+const std::string get_directory(void) {
+    if (!rom_dir.empty()) {
 	return rom_dir;
-    else
-	return "roms";
+    }
+    return "roms";
 }
 
 

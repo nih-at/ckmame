@@ -62,6 +62,8 @@ enum action { ACTION_UNSPECIFIED, ACTION_CHECK_ROMSET, ACTION_SUPERFLUOUS_ONLY, 
 
 typedef enum action action_t;
 
+/* to identify roms directory uniquely */
+std::string rom_dir_normalized;
 
 const char *usage = "Usage: %s [-bCcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
 
@@ -152,7 +154,7 @@ struct option options[] = {
 static int ignore_extra;
 
 
-static bool contains_romdir(const char *name);
+static bool contains_romdir(std::string &ame);
 static void error_multiple_actions(void);
 
 
@@ -181,7 +183,6 @@ main(int argc, char **argv) {
     check_integrity = 0;
     roms_unzipped = 0;
     game_list = NULL;
-    rom_dir = NULL;
     fixdat = NULL;
     auto_fixdat = false;
 
@@ -332,9 +333,11 @@ main(int argc, char **argv) {
     }
 
     ensure_dir(get_directory(), false);
-    if (realpath(get_directory(), rom_dir_normalized) == NULL) {
+    std::error_code ec;
+    rom_dir_normalized = std::filesystem::relative(get_directory(), "/", ec);
+    if (ec || rom_dir_normalized.empty()) {
 	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
-	myerror(ERRSTR, "can't normalize directory '%s'", get_directory());
+	myerror(ERRSTR, "can't normalize directory '%s'", get_directory().c_str());
 	exit(1);
     }
 
@@ -343,9 +346,9 @@ main(int argc, char **argv) {
     Archive::register_cache_directory(unknown_dir);
     for (size_t m = 0; m < search_dirs.size(); m++) {
 	auto name = search_dirs[m];
-	if (contains_romdir(name.c_str())) {
+	if (contains_romdir(name)) {
 	    /* TODO: improve error message: also if extra is in ROM directory. */
-	    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory(), name.c_str());
+	    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory().c_str(), name.c_str());
 	    exit(1);
 	}
 	if (Archive::register_cache_directory(name) < 0) {
@@ -547,12 +550,13 @@ error_multiple_actions(void) {
 
 
 static bool
-contains_romdir(const char *name) {
-    char normalized[MAXPATHLEN];
-
-    if (realpath(name, normalized) == NULL) {
+contains_romdir(std::string &name) {
+    std::error_code ec;
+    std::string normalized = std::filesystem::relative(name, "/", ec);
+    if (ec || normalized.empty()) {
 	return false;
     }
 
-    return (strncmp(normalized, rom_dir_normalized, MIN(strlen(normalized), strlen(rom_dir_normalized))) == 0);
+    size_t length = MIN(normalized.length(), rom_dir_normalized.length());
+    return (normalized.substr(0, length) == rom_dir_normalized.substr(0, length));
 }

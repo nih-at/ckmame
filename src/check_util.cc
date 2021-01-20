@@ -48,6 +48,9 @@
 #include "sq_util.h"
 #include "util.h"
 
+const std::string needed_dir = "needed";   /* TODO: proper value */
+const std::string unknown_dir = "unknown"; /* TODO: proper value */
+
 #define EXTRA_MAPS 0x1
 #define NEEDED_MAPS 0x2
 
@@ -164,7 +167,7 @@ std::string findfile(const std::string &name, filetype_t what, const std::string
 std::string make_file_name(filetype_t ft, const std::string &name, const std::string &game_name) {
     std::string result;
 
-    result = std::string(get_directory()) + "/";
+    result = get_directory() + "/";
     if (ft == TYPE_DISK) {
 	result += game_name + "/";
     }
