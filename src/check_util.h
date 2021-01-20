@@ -48,6 +48,8 @@ extern const std::string unknown_dir;
 
 extern std::vector<std::string> search_dirs;
 
+extern std::vector<std::string> superfluous;
+
 void ensure_extra_maps(int flags);
 void ensure_needed_maps(void);
 bool enter_disk_in_map(const Disk *disk, where_t where);

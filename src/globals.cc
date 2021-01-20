@@ -49,8 +49,6 @@ RomDB *old_db = NULL;
 
 DetectorPtr detector;
 
-std::vector<std::string> superfluous;
-
 
 /* check state */
 

@@ -59,7 +59,6 @@ extern RomDB *old_db;
 
 extern DetectorPtr detector;
 
-extern std::vector<std::string> superfluous;
 
 
 /* check state */

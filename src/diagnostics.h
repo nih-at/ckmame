@@ -39,6 +39,5 @@
 void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
 void diagnostics_archive(const ArchivePtr, const Result *);
 void diagnostics_images(const Images *, const Result *);
-void check_old(Game *, Result *);
 
 #endif /* _HAD_DIAGNOSTICS_H */
