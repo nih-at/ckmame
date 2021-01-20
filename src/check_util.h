@@ -35,6 +35,7 @@
 */
 
 #include <string>
+#include <vector>
 
 #include "disk.h"
 #include "types.h"
@@ -44,6 +45,8 @@
 
 extern const std::string needed_dir;
 extern const std::string unknown_dir;
+
+extern std::vector<std::string> search_dirs;
 
 void ensure_extra_maps(int flags);
 void ensure_needed_maps(void);
