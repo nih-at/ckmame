@@ -50,26 +50,27 @@ std::unordered_map<int, std::string> Hashes::type_to_name = {
 };
 
 int Hashes::types_from_string(const std::string &s) {
-    char b[16];
-    
     int types = 0;
-    auto p = s.c_str();
-    const char *q;
-    do {
-        q = p + strcspn(p, ",");
-        if (static_cast<size_t>(q - p) >= sizeof(b)) {
-            return 0;
-        }
-        strncpy(b, p, static_cast<size_t>(q - p));
-        b[q-p] = '\0';
-        auto it = name_to_type.find(b);
-        if (it == name_to_type.end()) {
-            return 0;
-        }
-        types |= it->second;
 
-        p = q + 1;
-    } while (*q);
+    auto rest = s;
+    do {
+	std::string type;
+	auto comma = rest.find(',');
+
+	if (comma == std::string::npos) {
+	    type = rest;
+	    rest = "";
+	} else {
+	    type = rest.substr(0, comma-1);
+	    rest = rest.substr(comma+1);
+	}
+
+	auto it = name_to_type.find(type);
+	if (it == name_to_type.end()) {
+	    return 0;
+	}
+	types |= it->second;
+    } while (!rest.empty());
 
     return types;
 }
@@ -87,7 +88,7 @@ Hashes::Compare Hashes::compare(const Hashes &other) const {
     }
 
     auto common_types = (types & other.types);
-    
+
     if (common_types == 0) {
 	return NOCOMMON;
     }
@@ -169,7 +170,7 @@ const void *Hashes::hash_data(int type) const {
     switch (type) {
         case TYPE_CRC:
             return &crc;
-            
+
         case TYPE_MD5:
             return md5;
 
@@ -194,7 +195,7 @@ void Hashes::set(int type, const void *data) {
 
 bool Hashes::verify(int type, const void *data) const {
     auto length = hash_size(type);
-    
+
     if (length == 0) {
         return false;
     }
@@ -218,21 +219,21 @@ std::string Hashes::to_string(int type) const {
         case Hashes::TYPE_MD5:
             return bin2hex(md5, SIZE_MD5);
             break;
-            
+
         case Hashes::TYPE_SHA1:
             return bin2hex(sha1, SIZE_SHA1);
             break;
-            
+
         default:
             return "";
     }
-    
+
 }
 
 
 int Hashes::set_from_string(const std::string s) {
     const char *str = s.c_str();
-    
+
     if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
         str += 2;
     }
@@ -250,21 +251,21 @@ int Hashes::set_from_string(const std::string s) {
             type = Hashes::TYPE_CRC;
             crc = (uint32_t)strtoul(str, NULL, 16);
             break;
-            
+
         case Hashes::SIZE_MD5:
             type = Hashes::TYPE_MD5;
             hex2bin(md5, str, Hashes::SIZE_MD5);
             break;
-            
+
         case Hashes::SIZE_SHA1:
             type = Hashes::TYPE_SHA1;
             hex2bin(sha1, str, Hashes::SIZE_SHA1);
             break;
-            
+
         default:
             return -1;
     }
-    
+
     types |= type;
     return type;
 }
@@ -272,10 +273,10 @@ int Hashes::set_from_string(const std::string s) {
 
 std::string Hashes::type_name(int type) {
     auto it = type_to_name.find(type);
-    
+
     if (it == type_to_name.end()) {
         return "";
     }
-    
+
     return it->second;
 }
