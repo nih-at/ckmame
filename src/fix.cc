@@ -56,6 +56,7 @@
 #include "garbage.h"
 #include "globals.h"
 #include "match.h"
+#include "tree.h"
 #include "types.h"
 #include "util.h"
 

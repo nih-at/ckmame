@@ -34,15 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <sys/stat.h>
 
 #include "delete_list.h"
 #include "detector.h"
-#include "output.h"
 #include "romdb.h"
 #include "stats.h"
-#include "tree.h"
-
 
 /* option settings */
 
@@ -51,15 +47,12 @@ extern int roms_unzipped;   /* ROMs are files on disk, not contained in zip arch
 extern int output_options;
 extern int fix_options;
 
-
 /* check input (read only) */
 
 extern RomDB *db;
 extern RomDB *old_db;
 
 extern DetectorPtr detector;
-
-
 
 /* check state */
 
