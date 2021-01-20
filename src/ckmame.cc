@@ -441,7 +441,7 @@ main(int argc, char **argv) {
 	}
 	else if (optind == argc) {
 	    for (size_t i = 0; i < list.size(); i++) {
-		check_tree.add(list[i].c_str());
+		check_tree.add(list[i]);
 	    }
 	}
 	else {
