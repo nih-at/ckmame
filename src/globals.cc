@@ -36,7 +36,6 @@
 #include <sys/param.h>
 /* option settings */
 
-int check_integrity = 0; /* full integrity check of ROM set */
 int roms_unzipped = 0;   /* ROMs are files on disk, not contained in zip archives */
 
 int output_options = 0;

@@ -59,11 +59,11 @@ public:
     bool add(const std::string &game_name);
     bool recheck(const std::string &game_name);
     bool recheck_games_needing(uint64_t size, const Hashes *hashes);
-    void traverse();
+    void traverse(bool check_integrity);
     
 private:
     Tree *add_node(const std::string &game_name, bool check);
-    void traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_images);
+    void traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_images, bool check_integrity);
     void process(ArchivePtr *archives, ImagesPtr *images);
 };
 

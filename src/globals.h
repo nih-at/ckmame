@@ -46,7 +46,6 @@
 
 /* option settings */
 
-extern int check_integrity; /* full integrity check of ROM set */
 extern int roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
 
 extern int output_options;

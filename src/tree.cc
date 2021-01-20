@@ -116,16 +116,16 @@ bool Tree::recheck_games_needing(uint64_t size, const Hashes *hashes) {
 }
 
 
-void Tree::traverse() {
+void Tree::traverse(bool check_integrity) {
     ArchivePtr archives[] = { NULL, NULL, NULL };
     ImagesPtr images[] = { std::make_shared<Images>(), std::make_shared<Images>(), std::make_shared<Images>() };
 
     for (auto it : children) {
-        it.second->traverse_internal(archives, images);
+        it.second->traverse_internal(archives, images, check_integrity);
     }
 }
 
-void Tree::traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_images) {
+void Tree::traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_images, bool check_integrity) {
     ArchivePtr archives[] = { NULL, ancestor_archives[0], ancestor_archives[1] };
     ImagesPtr images[] = { std::make_shared<Images>(), ancestor_images[0], ancestor_images[1] };
     
@@ -153,7 +153,7 @@ void Tree::traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_
     }
 
     for (auto it : children) {
-        it.second->traverse_internal(archives, images);
+        it.second->traverse_internal(archives, images, check_integrity);
     }
 }
 

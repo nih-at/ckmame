@@ -180,7 +180,7 @@ main(int argc, char **argv) {
 	olddbname = DBH_DEFAULT_OLD_DB_NAME;
     fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
     ignore_extra = 0;
-    check_integrity = 0;
+    bool check_integrity = false;
     roms_unzipped = 0;
     game_list = NULL;
     fixdat = NULL;
@@ -233,7 +233,7 @@ main(int argc, char **argv) {
 	    output_options &= ~WARN_FIXABLE;
 	    break;
 	case 'i':
-	    check_integrity = 1;
+	    check_integrity = true;
 	    break;
 	case 'j':
 	    fix_options |= FIX_DELETE_EXTRA;
@@ -488,8 +488,8 @@ main(int argc, char **argv) {
 #endif
 
     if (action == ACTION_CHECK_ROMSET) {
-	check_tree.traverse();
-	check_tree.traverse(); /* handle rechecks */
+	check_tree.traverse(check_integrity);
+	check_tree.traverse(check_integrity); /* handle rechecks */
 
 	if (fix_options & FIX_DO) {
 	    if (fix_options & FIX_SUPERFLUOUS) {
