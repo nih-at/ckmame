@@ -37,7 +37,7 @@
 
 #include "warn.h"
 
-static const char *header_name;
+static std::string header_name;
 static int header_done;
 static warn_type_t header_type;
 
@@ -45,9 +45,7 @@ static void warn_ensure_header(void);
 
 
 void
-warn_disk(const Disk *disk, const char *fmt, ...) {
-    va_list va;
-
+warn_disk(const Disk *disk, const std::string &reason) {
     warn_ensure_header();
 
     printf("disk %-12s  ", disk->name.c_str());
@@ -62,104 +60,66 @@ warn_disk(const Disk *disk, const char *fmt, ...) {
     else {
 	printf("no good dump              : ");
     }
-
-    va_start(va, fmt);
-    vprintf(fmt, va);
-    va_end(va);
-
-    putc('\n', stdout);
-
-    return;
+    printf("%s\n", reason.c_str());
 }
 
 
 void
-warn_file(const File *r, const char *fmt, ...) {
-    va_list va;
-
+warn_file(const File *r, const std::string &reason) {
     warn_ensure_header();
 
     /* TODO */
-    printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": ", r->name.c_str(), r->size, r->hashes.crc);
-
-    va_start(va, fmt);
-    vprintf(fmt, va);
-    va_end(va);
-
-    putc('\n', stdout);
-
-    return;
+    printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s\n", r->name.c_str(), r->size, r->hashes.crc, reason.c_str());
 }
 
 
 void
-warn_image(const char *name, const char *fmt, ...) {
-    va_list va;
-
+warn_image(const std::string &name, const std::string &reason) {
     warn_ensure_header();
 
-    printf("image %-12s: ", name);
-
-    va_start(va, fmt);
-    vprintf(fmt, va);
-    va_end(va);
-
-    putc('\n', stdout);
-
-    return;
+    printf("image %-12s: %s\n", name.c_str(), reason.c_str());
 }
 
 
 void
-warn_rom(const File *r, const char *fmt, ...) {
-    va_list va;
-    char buf[100], *p;
-
+warn_rom(const File *r, const std::string &reason) {
     warn_ensure_header();
 
     if (r) {
 	printf("rom  %-12s  ", r->name.c_str());
 	if (r->is_size_known()) {
-            sprintf(buf, "size %7" PRIu64 "  ", r->size);
-	    p = buf + strlen(buf);
+            printf("size %7" PRIu64 "  ", r->size);
 
 	    /* TODO */
 	    if (r->hashes.has_type(Hashes::TYPE_CRC)) {
 		switch (r->status) {
 		case STATUS_OK:
-		    sprintf(p, "crc %.8" PRIx32 ": ", r->hashes.crc);
+		    printf("crc %.8" PRIx32 ": ", r->hashes.crc);
 		    break;
 		case STATUS_BADDUMP:
-		    sprintf(p, "bad dump    : ");
+		    printf("bad dump    : ");
 		    break;
 		case STATUS_NODUMP:
-		    sprintf(p, "no good dump: ");
+		    printf("no good dump: ");
 		}
 	    }
 	    else
-		sprintf(p, "no good dump: ");
+		printf("no good dump: ");
 	}
 	else
-	    sprintf(buf, "                          : ");
-	fputs(buf, stdout);
+	    printf("                          : ");
     }
     else {
 	/* TODO: use warn_game */
-	printf("game %-40s: ", header_name);
+	printf("game %-40s: ", header_name.c_str());
     }
 
-    va_start(va, fmt);
-    vprintf(fmt, va);
-    va_end(va);
-
-    putc('\n', stdout);
-
-    return;
+    printf("%s\n", reason.c_str());
 }
 
 
 void
-warn_set_info(warn_type_t type, const char *name) {
+warn_set_info(warn_type_t type, const std::string &name) {
     header_type = type;
     header_name = name;
     header_done = 0;
@@ -172,7 +132,7 @@ warn_ensure_header(void) {
     static const char *tname[] = {"archive", "game", "image"};
 
     if (header_done == 0) {
-	printf("In %s %s:\n", tname[header_type], header_name);
+	printf("In %s %s:\n", tname[header_type], header_name.c_str());
 	header_done = 1;
     }
 }

@@ -54,6 +54,6 @@ public:
 };
 
 int images_find(const Images *images, const std::string &name);
-const char *images_name(const Images *, int);
+std::string images_name(const Images *im, int i);
 
 #endif /* images.h */

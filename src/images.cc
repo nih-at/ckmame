@@ -55,11 +55,11 @@ images_find(const Images *images, const std::string &name) {
 }
 
 
-const char *
+std::string
 images_name(const Images *im, int i) {
     auto disk = im->disks[i];
 
-    return disk ? disk->name.c_str() : NULL;
+    return disk ? disk->name : "";
 }
 
 ImagesPtr Images::from_directory(const std::string &directory, bool check_integrity) {

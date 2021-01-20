@@ -34,6 +34,8 @@
 
 #include "diagnostics.h"
 
+#include <sstream>
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -47,7 +49,7 @@
 #include "types.h"
 #include "warn.h"
 
-static const char *zname[] = {"", "cloneof", "grand-cloneof"};
+static const std::string zname[] = {"", "cloneof", "grand-cloneof"};
 
 static void diagnostics_disks(const Game *, const Result *);
 static void diagnostics_files(const Game *, const Result *);
@@ -152,12 +154,12 @@ diagnostics_disks(const Game *game, const Result *result) {
                 
             case QU_COPIED:
                 if (output_options & WARN_ELSEWHERE)
-                    warn_disk(d, "is at '%s'", match_disk.name.c_str());
+                    warn_disk(d, "is at '" + match_disk.name + "'");
                 break;
                 
             case QU_NAMEERR:
                 if (output_options & WARN_WRONG_NAME)
-                    warn_disk(d, "wrong name (%s)", match_disk.name.c_str());
+                    warn_disk(d, "wrong name (" + match_disk.name + ")");
                 break;
                 
             default:
@@ -186,7 +188,7 @@ diagnostics_files(const Game *game, const Result *result) {
 		}
 	    }
 	    if (all_same) {
-		warn_rom(NULL, "old in '%s'", result->roms[0].old_game.c_str());
+		warn_rom(NULL, "old in '" + result->roms[0].old_game + "'");
 		return;
 	    }
 	}
@@ -223,13 +225,15 @@ diagnostics_files(const Game *game, const Result *result) {
 
             case QU_NAMEERR:
                 if (output_options & WARN_WRONG_NAME) {
-                    warn_rom(&rom, "wrong name (%s)%s%s", file->name.c_str(), (rom.where != match.where ? ", should be in " : ""), zname[rom.where]);
+                    warn_rom(&rom, "wrong name (" + file->name + ")" + (rom.where != match.where ? ", should be in " : "") + zname[rom.where]);
                 }
                 break;
 
             case QU_LONG:
                 if (output_options & WARN_LONGOK) {
-                    warn_rom(&rom, "too long, valid subsection at byte %jd (%" PRIu64 ")%s%s", static_cast<intmax_t>(match.offset), file->size, (rom.where != match.where ? ", should be in " : ""), zname[rom.where]);
+		    std::ostringstream out;
+		    out << "too long, valid subsection at byte " << match.offset << " (" << file->size << ")" << (rom.where != match.where ? ", should be in " : "") << zname[rom.where];
+                    warn_rom(&rom, out.str());
                 }
                 break;
 
@@ -246,25 +250,25 @@ diagnostics_files(const Game *game, const Result *result) {
 
             case QU_COPIED:
                 if (output_options & WARN_ELSEWHERE) {
-                    warn_rom(&rom, "is in '%s/%s'", match.archive->name.c_str(), match.archive->files[match.index].name.c_str());
+                    warn_rom(&rom, "is in '" + match.archive->name + "/" + match.archive->files[match.index].name + "'");
                 }
                 break;
 
             case QU_INZIP:
                 if (output_options & WARN_WRONG_ZIP) {
-                    warn_rom(&rom, "should be in %s", zname[rom.where]);
+                    warn_rom(&rom, "should be in " + zname[rom.where]);
                 }
                 break;
 
             case QU_HASHERR:
                 if (output_options & WARN_MISSING) {
-                    warn_rom(&rom, "checksum mismatch%s%s", (rom.where != match.where ? ", should be in " : ""), (rom.where != match.where ? zname[rom.where] : ""));
+                    warn_rom(&rom, "checksum mismatch" + (rom.where != match.where ? ", should be in " + zname[rom.where] : ""));
                 }
                 break;
 
             case QU_OLD:
                 if (output_options & WARN_CORRECT) {
-                    warn_rom(&rom, "old in '%s'", match.old_game.c_str());
+                    warn_rom(&rom, "old in '" + match.old_game + "'");
                 }
                 break;
                 
