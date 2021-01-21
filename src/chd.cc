@@ -84,7 +84,6 @@ static int meta_hash_cmp(const void *, const void *);
 static int read_header(struct chd *);
 static int read_header_v5(struct chd *, unsigned char *);
 static int read_map(struct chd *);
-static int read_map_v5(struct chd *);
 static int read_meta_headers(struct chd *chd);
 
 
@@ -163,8 +162,9 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b) {
     }
 
     if (chd->map == NULL) {
-	if (read_map(chd) < 0)
+	if (read_map(chd) < 0) {
 	    return -1;
+	}
     }
 
     if (chd->map[idx].length > chd->hunk_len) {
@@ -470,13 +470,17 @@ read_map(struct chd *chd) {
 	return -1;
     }
 
-    if (chd->version >= 5)
-	return read_map_v5(chd);
+    if (chd->version >= 5) {
+	chd->error = CHD_ERR_NOTSUP;
+	return -1;
+    }
 
-    if (chd->version < 3)
+    if (chd->version < 3) {
 	len = MAP_ENTRY_SIZE_V12;
-    else
+    }
+    else {
 	len = MAP_ENTRY_SIZE_V3;
+    }
 
     for (i = 0; i < chd->total_hunks; i++) {
 	if (fread(b, len, 1, chd->f) != 1) {
@@ -511,19 +515,6 @@ read_map(struct chd *chd) {
     }
 
     return 0;
-}
-
-
-static int
-read_map_v5(struct chd *chd) {
-    chd->error = CHD_ERR_NOTSUP;
-
-    if (chd->compressors[0] == 0) {
-	/* TODO: uncompressed map */
-
-	return -1;
-    }
-    return -1;
 }
 
 
