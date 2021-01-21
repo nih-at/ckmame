@@ -98,7 +98,7 @@ public:
 
     int64_t read_hunk(uint64_t, unsigned char *);
     int64_t read_range(unsigned char *, uint64_t, uint64_t);
-    int get_hashes(Hashes *);
+    bool get_hashes(Hashes *);
 
     int error;
     uint32_t flags;          /* flags field */
@@ -126,9 +126,9 @@ private:
     uint32_t hno;              /* hunk currently in hbuf */
     unsigned char *hbuf;       /* hunk data buffer */
 
-    int read_header(void);
-    int read_header_v5(unsigned char *header);
-    int read_map(void);
+    bool read_header(void);
+    bool read_header_v5(unsigned char *header);
+    bool read_map(void);
 };
 
 #endif /* chd.h */

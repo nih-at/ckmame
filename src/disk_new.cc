@@ -52,7 +52,6 @@ DiskPtr Disk::from_file(const std::string &name, int flags) {
 
     seterrinfo(name, "");
 
-    int err;
     try {
 	auto chd = new Chd(name);
 
@@ -67,9 +66,7 @@ DiskPtr Disk::from_file(const std::string &name, int flags) {
 	if (flags & DISK_FL_CHECK_INTEGRITY) {
 	    disk->hashes.types = db->hashtypes(TYPE_DISK);
 
-	    err = chd->get_hashes(&disk->hashes);
-
-	    if (err < 0) {
+	    if (!chd->get_hashes(&disk->hashes)) {
 		return NULL;
 	    }
 

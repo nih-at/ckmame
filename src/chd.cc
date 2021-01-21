@@ -59,7 +59,6 @@
 #define GET_UINT32(b) (b += 4, ((b)[-4] << 24) | ((b)[-3] << 16) | ((b)[-2] << 8) | (b)[-1])
 #define GET_UINT64(b) (b += 8, ((uint64_t)(b)[-8] << 56) | ((uint64_t)(b)[-7] << 48) | ((uint64_t)(b)[-6] << 40) | ((uint64_t)(b)[-5] << 32) | ((uint64_t)(b)[-4] << 24) | ((uint64_t)(b)[-3] << 16) | ((uint64_t)(b)[-2] << 8) | ((uint64_t)(b)[-1]))
 
-#define MAKE_TAG(a, b, c, d) (((a) << 24) | ((b) << 16) | ((c) << 8) | (d))
 static uint32_t v4_compressors[] = {0, CHD_CODEC_ZLIB, CHD_CODEC_ZLIB, /* TODO: zlib plus */
 				    CHD_CODEC_AVHUFF};
 
@@ -85,7 +84,7 @@ Chd::Chd(const std::string &name) : error(0), map(NULL), buf(NULL), hno(-1), hbu
     if (!f) {
 	throw;
     }
-    if (read_header() < 0) {
+    if (!read_header()) {
 	throw;
     }
 }
@@ -104,7 +103,7 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
     }
 
     if (map == NULL) {
-	if (read_map() < 0) {
+	if (!read_map()) {
 	    return -1;
 	}
     }
@@ -212,7 +211,7 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
 }
 
 
-int
+bool
 Chd::read_header(void) {
     uint32_t len;
 
@@ -220,23 +219,23 @@ Chd::read_header(void) {
 
     if (fread(b, TAG_AND_LEN, 1, f.get()) != 1) {
 	error = feof(f.get()) ? CHD_ERR_NO_CHD : CHD_ERR_READ;
-	return -1;
+	return false;
     }
 
     if (memcmp(b, TAG, TAG_LEN) != 0) {
 	error = CHD_ERR_NO_CHD;
-	return -1;
+	return false;
     }
 
     p = b + TAG_LEN;
     len = GET_UINT32(p);
     if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
 	error = CHD_ERR_NO_CHD;
-	return -1;
+	return false;
     }
     if (fread(p, len - TAG_AND_LEN, 1, f.get()) != 1) {
 	error = CHD_ERR_READ;
-	return -1;
+	return false;
     }
 
     hdr_length = len;
@@ -244,7 +243,7 @@ Chd::read_header(void) {
 
     if (version > 5) {
 	error = CHD_ERR_VERSION;
-	return -1;
+	return false;
     }
 
     if (version >= 5)
@@ -307,11 +306,11 @@ Chd::read_header(void) {
 
     map_offset = hdr_length;
 
-    return 0;
+    return true;
 }
 
 
-int
+bool
 Chd::read_header_v5(unsigned char *header) {
     /*
     V5 header:
@@ -338,11 +337,13 @@ Chd::read_header_v5(unsigned char *header) {
     unsigned char *p = header + TAG_AND_LEN + 4;
     uint64_t i;
 
-    if (hdr_length < HEADER_LEN_V5)
-	return -1;
+    if (hdr_length < HEADER_LEN_V5) {
+	return false;
+    }
 
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++) {
 	compressors[i] = GET_UINT32(p);
+    }
 
     total_len = GET_UINT64(p);
 
@@ -368,11 +369,11 @@ Chd::read_header_v5(unsigned char *header) {
 	    break;
 	}
 
-    return 0;
+    return true;
 }
 
 
-int
+bool
 Chd::read_map(void) {
     unsigned char b[MAP_ENTRY_SIZE_V3], *p;
     unsigned int i, len;
@@ -380,17 +381,17 @@ Chd::read_map(void) {
 
     if (fseek(f.get(), map_offset, SEEK_SET) < 0) {
 	error = CHD_ERR_SEEK;
-	return -1;
+	return false;
     }
 
     if ((map = static_cast<ChdMapEntry *>(malloc(sizeof(*map) * total_hunks))) == NULL) {
 	error = CHD_ERR_NOMEM;
-	return -1;
+	return false;
     }
 
     if (version >= 5) {
 	error = CHD_ERR_NOTSUP;
-	return -1;
+	return false;
     }
 
     if (version < 3) {
@@ -403,7 +404,7 @@ Chd::read_map(void) {
     for (i = 0; i < total_hunks; i++) {
 	if (fread(b, len, 1, f.get()) != 1) {
 	    error = CHD_ERR_READ;
-	    return -1;
+	    return false;
 	}
 	p = b;
 
@@ -432,11 +433,11 @@ Chd::read_map(void) {
 	}
     }
 
-    return 0;
+    return true;
 }
 
 
-int
+bool
 Chd::get_hashes(Hashes *h) {
     Hashes h_raw;
     uint32_t hunk;
@@ -466,11 +467,11 @@ Chd::get_hashes(Hashes *h) {
 	    if (error == CHD_ERR_NOTSUP) {
 		myerror(ERRFILE, "warning: unsupported CHD type, integrity not checked");
 		h->types = 0;
-		return 0;
+		return true;
 	    }
 	    myerror(ERRFILESTR, "error reading hunk %d: error %d", hunk, error);
 	    free(buf);
-	    return -1;
+	    return false;
 	}
 
 	hu.update(buf, n);
@@ -481,11 +482,11 @@ Chd::get_hashes(Hashes *h) {
 
     if ((version < 4 && memcmp(h_raw.md5, md5, Hashes::SIZE_MD5) != 0) || (version > 2 && memcmp(h_raw.sha1, raw_sha1, Hashes::SIZE_SHA1) != 0)) {
 	myerror(ERRFILE, "checksum mismatch for raw data");
-	return -1;
+	return false;
     }
     if (version < 4) {
         *h = h_raw;
     }
 
-    return 0;
+    return true;
 }
