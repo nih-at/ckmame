@@ -41,7 +41,8 @@
 #include "sq_util.h"
 
 
-DB *memdb = NULL;
+std::unique_ptr<DB> memdb;
+
 int memdb_inited = 0;
 
 #define INSERT_FILE_GAME_ID 1
@@ -67,13 +68,14 @@ memdb_ensure(void) {
     if (getenv("CKMAME_DEBUG_MEMDB")) {
 	dbname = "memdb.sqlite3";
     }
-    else
+    else {
 	dbname = ":memory:";
+    }
 
     memdb_inited = 1;
 
     try {
-        memdb = new DB(dbname, DBH_FMT_MEM | DBH_NEW);
+        memdb = std::unique_ptr<DB>(new DB(dbname, DBH_FMT_MEM | DBH_NEW));
     }
     catch (std::exception &e) {
         myerror(ERRSTR, "cannot create in-memory db");

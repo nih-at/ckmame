@@ -39,7 +39,7 @@
 #include "dbh.h"
 #include "disk.h"
 
-extern DB *memdb;
+extern std::unique_ptr<DB> memdb;
 
 
 int memdb_ensure(void);

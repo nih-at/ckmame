@@ -48,9 +48,9 @@ struct fbh_context {
 };
 
 
-OutputContextDb::OutputContextDb(const std::string &dbname, int flags) : db(NULL) {
+OutputContextDb::OutputContextDb(const std::string &dbname, int flags) {
     std::filesystem::remove(dbname);
-    db = new RomDB(dbname, DBH_NEW);
+    db = std::unique_ptr<RomDB>(new RomDB(dbname, DBH_NEW));
 }
 
 
@@ -155,7 +155,6 @@ bool OutputContextDb::close() {
             ok = false;
         }
 
-        delete db;
         db = NULL;
     }
 

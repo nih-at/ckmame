@@ -302,7 +302,7 @@ process_file(const char *fname, const std::unordered_set<std::string> &exclude, 
     struct zip *za;
 
     try {
-	auto mdb = new RomDB(fname, DBH_READ);
+	auto mdb = std::unique_ptr<RomDB>(new RomDB(fname, DBH_READ));
 	return mdb->export_db(exclude, dat, out);
     }
     catch (std::exception &e) {
