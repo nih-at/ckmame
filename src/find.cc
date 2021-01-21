@@ -50,7 +50,7 @@
 #define QUERY_FILE_LOCATION 3
 
 
-static find_result_t check_for_file_in_zip(const char *, const File *, const File *, Match *);
+static find_result_t check_for_file_in_zip(const std::string &name, const File *rom, const File *file, Match *m);
 static find_result_t check_match_disk_old(const Game *, const Disk *, MatchDisk *);
 static find_result_t check_match_disk_romset(const Game *, const Disk *, MatchDisk *);
 static find_result_t check_match_old(const Game *, const File *, const File *, Match *);
@@ -201,7 +201,7 @@ find_in_romset(const File *file, Archive *archive, const std::string &skip, Matc
 
 
 static find_result_t
-check_for_file_in_zip(const char *name, const File *rom, const File *file, Match *m) {
+check_for_file_in_zip(const std::string &name, const File *rom, const File *file, Match *m) {
     ArchivePtr a;
 
     auto full_name = findfile(name, TYPE_ROM, "");
@@ -278,8 +278,8 @@ check_match_old(const Game *g, const File *r, const File *f, Match *match) {
     if (match) {
 	match->quality = QU_OLD;
 	match->where = FILE_OLD;
-        match->old_game = g->name.c_str();
-        match->old_file = r->name.c_str();
+        match->old_game = g->name;
+        match->old_file = r->name;
     }
 
     return FIND_EXISTS;
