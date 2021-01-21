@@ -164,24 +164,25 @@ static bool parse_hex(Detector::Test *test, std::vector<uint8_t> *result, const 
 
 
 static bool parse_number(int64_t *offsetp, const std::string &value) {
-    intmax_t i;
-    char *end;
+    int64_t i;
 
     if (value.empty()) {
 	errno = EINVAL;
 	return false;
     }
 
-    errno = 0;
-    i = strtoimax(value.c_str(), &end, 16);
+    try {
+	size_t end;
 
-    if (*end != '\0') {
-	errno = EINVAL;
-	return false;
+	i = std::stoll(value, &end, 16);
+
+	if (end != value.length()) {
+	    errno = EINVAL;
+	    return false;
+	}
     }
-
-    if (errno == ERANGE || i < INT64_MIN || i > INT64_MAX) {
-	errno = ERANGE;
+    catch (...) {
+	errno = EINVAL;
 	return false;
     }
 
