@@ -247,7 +247,7 @@ bool ParserContext::file_name(filetype_t ft, const std::string &attr) {
 
 bool ParserContext::file_size(filetype_t ft, const std::string &attr) {
     /* TODO: check for strol errors */
-    return file_size(ft, strtouq(attr.c_str(), NULL, 0));
+    return file_size(ft, std::stoull(attr, NULL, 0));
 }
 
 
