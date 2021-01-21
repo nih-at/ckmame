@@ -521,7 +521,7 @@ std::optional<size_t> Archive::file_index(const File *file) const {
 
 bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
     cache_db = dbh_cache_get_db_for_archive(name);
-    cache_id = cache_db ? dbh_cache_get_archive_id(cache_db, name.c_str()) : 0;
+    cache_id = cache_db ? dbh_cache_get_archive_id(cache_db, name) : 0;
 
     if (cache_id > 0) {
         if (!dbh_cache_read(cache_db, name, files)) {

@@ -215,7 +215,7 @@ enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list, const std:
 			}
 		    }
 		    if (std::find(list.begin(), list.end(), name) == list.end()) {
-			dbh_cache_delete_by_name(dbh, name.c_str());
+			dbh_cache_delete_by_name(dbh, name);
 		    }
 		}
 	    }

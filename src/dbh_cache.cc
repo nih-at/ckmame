@@ -104,7 +104,7 @@ dbh_cache_delete(DB *dbh, int id) {
 
 
 int
-dbh_cache_delete_by_name(DB *dbh, const char *name) {
+dbh_cache_delete_by_name(DB *dbh, const std::string &name) {
     int id = dbh_cache_get_archive_id(dbh, name);
 
     if (id < 0) {
@@ -129,7 +129,7 @@ dbh_cache_delete_files(DB *dbh, int id) {
 
 
 int
-dbh_cache_get_archive_id(DB *dbh, const char *name) {
+dbh_cache_get_archive_id(DB *dbh, const std::string &name) {
     sqlite3_stmt *stmt;
     if ((stmt = dbh->get_statement(DBH_STMT_DIR_QUERY_ARCHIVE_ID)) == NULL) {
 	return 0;
@@ -246,7 +246,7 @@ dbh_cache_read(DB *dbh, const std::string &name, std::vector<File> *files) {
     int ret;
     int archive_id;
 
-    if ((archive_id = dbh_cache_get_archive_id(dbh, name.c_str())) == 0) {
+    if ((archive_id = dbh_cache_get_archive_id(dbh, name)) == 0) {
 	return 0;
     }
 
@@ -321,7 +321,7 @@ dbh_cache_write(DB *dbh, int id, const ArchiveContents *a) {
     sqlite3_stmt *stmt;
 
     if (id == 0) {
-        id = dbh_cache_get_archive_id(dbh, a->name.c_str());
+        id = dbh_cache_get_archive_id(dbh, a->name);
     }
 
     if (id != 0) {

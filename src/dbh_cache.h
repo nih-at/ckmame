@@ -43,8 +43,8 @@
 
 bool dbh_cache_close_all(void);
 int dbh_cache_delete(DB *, int);
-int dbh_cache_delete_by_name(DB *, const char *);
-int dbh_cache_get_archive_id(DB *, const char *);
+int dbh_cache_delete_by_name(DB *dbh, const std::string &name);
+int dbh_cache_get_archive_id(DB *dbh, const std::string &name);
 bool dbh_cache_get_archive_last_change(DB *, int, time_t *, off_t *);
 DB *dbh_cache_get_db_for_archive(const std::string &name);
 bool dbh_cache_is_empty(DB *);
