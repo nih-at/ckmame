@@ -79,7 +79,7 @@ Chd::~Chd() {
 }
 
 
-Chd::Chd(const std::string &name) : error(0), map(NULL), buf(NULL), hno(-1), hbuf(NULL) {
+Chd::Chd(const std::string &name) : map(NULL), buf(NULL), hno(-1), hbuf(NULL) {
     f = make_shared_file(name, "rb");
     if (!f) {
 	throw;
@@ -98,31 +98,31 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
     uint32_t compression_type;
 
     if (idx > total_hunks) {
-	error = CHD_ERR_INVAL;
 	return -1;
     }
 
     if (map == NULL) {
 	if (!read_map()) {
-	    return -1;
+	    /* special error code for unsupported integrity checks */
+	    return -2;
 	}
     }
 
     if (map[idx].length > hunk_len) {
-	error = CHD_ERR_NOTSUP;
 	return -1;
     }
 
-    if (map[idx].type < 4)
+    if (map[idx].type < 4) {
 	compression_type = compressors[map[idx].type];
-    else
+    }
+    else {
 	compression_type = map[idx].type;
+    }
 
     switch (compression_type) {
     case CHD_CODEC_ZLIB:
 	if (buf == NULL) {
 	    if ((buf = static_cast<char *>(malloc(hunk_len))) == NULL) {
-		error = CHD_ERR_NOMEM;
 		return -1;
 	    }
 	    z.avail_in = 0;
@@ -134,16 +134,13 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
 	else
 	    err = inflateReset(&z);
 	if (err != Z_OK) {
-	    error = CHD_ERR_ZLIB;
 	    return -1;
 	}
 
 	if (fseeko(f.get(), map[idx].offset, SEEK_SET) == -1) {
-	    error = CHD_ERR_SEEK;
 	    return -1;
 	}
 	if ((n = fread(buf, 1, map[idx].length, f.get())) != map[idx].length) {
-	    error = CHD_ERR_READ;
 	    return -1;
 	}
 
@@ -153,7 +150,6 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
 	z.avail_out = hunk_len;
 	/* TODO: should use Z_FINISH, but that returns Z_BUF_ERROR */
 	if ((err = inflate(&z, 0)) != Z_OK && err != Z_STREAM_END) {
-	    error = CHD_ERR_ZLIB;
 	    return -1;
 	}
 	/* TODO: z.avail_out should be 0 */
@@ -162,12 +158,10 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
 
     case CHD_MAP_TYPE_UNCOMPRESSED:
 	if (fseeko(f.get(), map[idx].offset, SEEK_SET) == -1) {
-	    error = CHD_ERR_SEEK;
 	    return -1;
 	}
 	/* TODO: use hunk_len instead? */
 	if ((n = fread(b, 1, map[idx].length, f.get())) != map[idx].length) {
-	    error = CHD_ERR_READ;
 	    return -1;
 	}
 	break;
@@ -191,18 +185,15 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
 	return read_hunk(map[idx].offset, b);
 
     case CHD_MAP_TYPE_PARENT_REF:
-	error = CHD_ERR_NOTSUP;
 	return -1;
 
     default:
-	error = CHD_ERR_NOTSUP;
 	return -1;
     }
 
     if ((map[idx].flags & CHD_MAP_FL_NOCRC) == 0) {
 	/* TODO: Can n be > INT_MAX? If so, loop */
 	if (crc32(0, (Bytef *)b, (int)n) != map[idx].crc) {
-	    error = CHD_ERR_CRC;
 	    return -1;
 	}
     }
@@ -218,23 +209,19 @@ Chd::read_header(void) {
     unsigned char b[MAX_HEADERLEN], *p;
 
     if (fread(b, TAG_AND_LEN, 1, f.get()) != 1) {
-	error = feof(f.get()) ? CHD_ERR_NO_CHD : CHD_ERR_READ;
 	return false;
     }
 
     if (memcmp(b, TAG, TAG_LEN) != 0) {
-	error = CHD_ERR_NO_CHD;
 	return false;
     }
 
     p = b + TAG_LEN;
     len = GET_UINT32(p);
     if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
-	error = CHD_ERR_NO_CHD;
 	return false;
     }
     if (fread(p, len - TAG_AND_LEN, 1, f.get()) != 1) {
-	error = CHD_ERR_READ;
 	return false;
     }
 
@@ -242,12 +229,12 @@ Chd::read_header(void) {
     version = GET_UINT32(p);
 
     if (version > 5) {
-	error = CHD_ERR_VERSION;
 	return false;
     }
 
-    if (version >= 5)
+    if (version >= 5) {
 	return read_header_v5(b);
+    }
 
     flags = GET_UINT32(p);
     compressors[0] = v4_compressors[GET_UINT32(p)];
@@ -335,13 +322,12 @@ Chd::read_header_v5(unsigned char *header) {
     */
 
     unsigned char *p = header + TAG_AND_LEN + 4;
-    uint64_t i;
 
     if (hdr_length < HEADER_LEN_V5) {
 	return false;
     }
 
-    for (i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
 	compressors[i] = GET_UINT32(p);
     }
 
@@ -363,11 +349,12 @@ Chd::read_header_v5(unsigned char *header) {
     /* p += sizeof(parent_sha1); */
 
     flags = 0;
-    for (i = 0; i < sizeof(parent_sha1); i++)
+    for (size_t i = 0; i < sizeof(parent_sha1); i++) {
 	if (parent_sha1[i] != 0) {
 	    flags = CHD_FLAG_HAS_PARENT;
 	    break;
 	}
+    }
 
     return true;
 }
@@ -380,17 +367,14 @@ Chd::read_map(void) {
     uint64_t v;
 
     if (fseek(f.get(), map_offset, SEEK_SET) < 0) {
-	error = CHD_ERR_SEEK;
 	return false;
     }
 
     if ((map = static_cast<ChdMapEntry *>(malloc(sizeof(*map) * total_hunks))) == NULL) {
-	error = CHD_ERR_NOMEM;
 	return false;
     }
 
     if (version >= 5) {
-	error = CHD_ERR_NOTSUP;
 	return false;
     }
 
@@ -403,7 +387,6 @@ Chd::read_map(void) {
 
     for (i = 0; i < total_hunks; i++) {
 	if (fread(b, len, 1, f.get()) != 1) {
-	    error = CHD_ERR_READ;
 	    return false;
 	}
 	p = b;
@@ -462,14 +445,14 @@ Chd::get_hashes(Hashes *h) {
     len = total_len;
     for (hunk = 0; hunk < total_hunks; hunk++) {
 	n = hunk_len > len ? len : hunk_len;
-
-	if (read_hunk(hunk, buf) != (int)hunk_len) {
-	    if (error == CHD_ERR_NOTSUP) {
+	auto ret = read_hunk(hunk, buf);
+	if (ret != (int)hunk_len) {
+	    if (ret == -2) {
 		myerror(ERRFILE, "warning: unsupported CHD type, integrity not checked");
 		h->types = 0;
 		return true;
 	    }
-	    myerror(ERRFILESTR, "error reading hunk %d: error %d", hunk, error);
+	    myerror(ERRFILESTR, "error reading hunk %d", hunk);
 	    free(buf);
 	    return false;
 	}

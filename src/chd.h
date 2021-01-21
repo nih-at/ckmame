@@ -42,18 +42,6 @@
 #include "hashes.h"
 #include "SharedFile.h"
 
-#define CHD_ERR_NONE 0    /* N no error */
-#define CHD_ERR_OPEN 1    /* S cannot open file */
-#define CHD_ERR_READ 2    /* S read error */
-#define CHD_ERR_NO_CHD 3  /* N not a CHD file */
-#define CHD_ERR_VERSION 4 /* N unsupported version */
-#define CHD_ERR_INVAL 5   /* N invalid argument */
-#define CHD_ERR_SEEK 6    /* S seek error */
-#define CHD_ERR_NOTSUP 7  /* N unsupported chd feature */
-#define CHD_ERR_ZLIB 8    /* Z zlib error */
-#define CHD_ERR_CRC 9     /* N CRC mismatch */
-#define CHD_ERR_NOMEM 10  /* N out of memory */
-
 #define CHD_FLAG_HAS_PARENT 0x01
 
 #define CHD_MAP_TYPE_COMPRESSOR0 0x00
@@ -100,7 +88,6 @@ public:
     int64_t read_range(unsigned char *, uint64_t, uint64_t);
     bool get_hashes(Hashes *);
 
-    int error;
     uint32_t flags;          /* flags field */
     uint8_t md5[16];         /* MD5 checksum of raw data */
     uint8_t sha1[20];        /* SHA1 checksum of raw data */

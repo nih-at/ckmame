@@ -93,7 +93,6 @@ DiskPtr Disk::from_file(const std::string &name, int flags) {
 	}
     }
     catch (...) {
-	/*	if (!((err == CHD_ERR_OPEN && errno == ENOENT) || ((flags & DISK_FL_QUIET) && err == CHD_ERR_NO_CHD))) { */
 	myerror(ERRFILESTR, "error opening disk");
     }
 
