@@ -98,11 +98,11 @@ chd_get_metadata_list(struct chd *chd) {
 
 
 struct chd *
-chd_open(const char *name, int *errp) {
+chd_open(const std::string &name, int *errp) {
     struct chd *chd;
     FILE *f;
 
-    if ((f = fopen(name, "rb")) == NULL) {
+    if ((f = fopen(name.c_str(), "rb")) == NULL) {
 	if (errp)
 	    *errp = CHD_ERR_OPEN;
 	return NULL;
@@ -122,7 +122,7 @@ chd_open(const char *name, int *errp) {
     chd->hbuf = NULL;
     chd->meta = NULL;
 
-    if ((chd->name = strdup(name)) == NULL) {
+    if ((chd->name = strdup(name.c_str())) == NULL) {
 	if (errp)
 	    *errp = CHD_ERR_NOMEM;
 	chd_close(chd);

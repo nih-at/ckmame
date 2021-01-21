@@ -34,6 +34,7 @@
 */
 
 #include <cinttypes>
+#include <string>
 
 #include <stdio.h>
 #include <zlib.h>
@@ -126,7 +127,7 @@ struct chd {
 
 void chd_close(struct chd *);
 struct chd_metadata_entry *chd_get_metadata_list(struct chd *);
-struct chd *chd_open(const char *, int *);
+struct chd *chd_open(const std::string &name, int *errp);
 int64_t chd_read_hunk(struct chd *, uint64_t, unsigned char *);
 int chd_read_metadata(struct chd *, const struct chd_metadata_entry *, unsigned char *);
 int64_t chd_read_range(struct chd *, unsigned char *, uint64_t, uint64_t);
