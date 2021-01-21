@@ -41,7 +41,7 @@
 class ArchiveDir : public Archive {
     class ArchiveFile: public Archive::ArchiveFile {
     public:
-        ArchiveFile(FILE *f_) : f(f_) { }
+        ArchiveFile(std::shared_ptr<std::FILE> f_) : f(f_) { }
         virtual ~ArchiveFile() { close(); }
         
         virtual void close();
@@ -49,7 +49,7 @@ class ArchiveDir : public Archive {
         virtual const char *strerror();
         
     private:
-        FILE *f;
+        std::shared_ptr<std::FILE> f;
     };
 
 public:

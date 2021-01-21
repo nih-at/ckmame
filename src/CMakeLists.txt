@@ -62,6 +62,7 @@ set(COMMON_SOURCES
   ParserSourceZip.cc
   result.cc
   romdb.cc
+  SharedFile.cc
   sighandle.cc
   sq_util.cc
   stats.cc

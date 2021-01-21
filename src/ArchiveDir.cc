@@ -46,6 +46,7 @@
 #include "file_util.h"
 #include "globals.h"
 #include "memdb.h"
+#include "SharedFile.h"
 #include "util.h"
 #include "xmalloc.h"
 
@@ -334,13 +335,11 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
         }
     }
     else {
-        FILE *fout;
-        
-        if ((fout = fopen(tmpname.c_str(), "w")) == NULL) {
+	auto fout = make_shared_file(tmpname, "w");
+	if (!fout) {
             myerror(ERRZIP, "cannot open '%s': %s", tmpname.c_str(), strerror(errno));
             return false;
         }
-        fclose(fout);
     }
 
     auto err = false;
@@ -401,11 +400,9 @@ bool ArchiveDir::file_delete_xxx(uint64_t index) {
 
 
 Archive::ArchiveFilePtr ArchiveDir::file_open(uint64_t index) {
-
-    FILE *f;
-
-    if ((f = fopen(get_full_name(index).c_str(), "rb")) == NULL) {
-        seterrinfo("", name);
+    auto f = make_shared_file(get_full_name(index), "rb");
+    if (!f) {
+	seterrinfo("", name);
         myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), strerror(errno));
         return NULL;
     }
@@ -414,10 +411,7 @@ Archive::ArchiveFilePtr ArchiveDir::file_open(uint64_t index) {
 }
 
 void ArchiveDir::ArchiveFile::close() {
-    if (f != NULL) {
-        fclose(f);
-        f = NULL;
-    }
+    f = NULL;
 }
 
 
@@ -426,7 +420,7 @@ int64_t ArchiveDir::ArchiveFile::read(void *data, uint64_t length) {
         errno = EINVAL;
         return -1;
     }
-    return static_cast<int64_t>(fread(data, 1, length, f));
+    return static_cast<int64_t>(fread(data, 1, length, f.get()));
 }
 
 
@@ -546,20 +540,20 @@ void ArchiveDir::get_last_update() {
 
 static bool
 copy_file(const std::string &old, const std::string &new_name, size_t start, ssize_t len, Hashes *hashes) {
-    FILE *fin, *fout;
+    auto fin = make_shared_file(old, "rb");
 
-    if ((fin = fopen(old.c_str(), "rb")) == NULL)
+    if (!fin) {
 	return false;
+    }
 
     if (start > 0) {
-	if (fseeko(fin, start, SEEK_SET) < 0) {
-	    fclose(fin);
+	if (fseeko(fin.get(), start, SEEK_SET) < 0) {
 	    return false;
 	}
     }
 
-    if ((fout = fopen(new_name.c_str(), "wb")) == NULL) {
-	fclose(fin);
+    auto fout = make_shared_file(new_name, "wb");
+    if (!fout) {
 	return false;
     }
 
@@ -572,23 +566,21 @@ copy_file(const std::string &old, const std::string &new_name, size_t start, ssi
     }
 
     size_t total = 0;
-    while ((len >= 0 && total < (size_t)len) || !feof(fin)) {
+    while ((len >= 0 && total < (size_t)len) || !feof(fin.get())) {
 	unsigned char b[8192];
 	size_t nr = sizeof(b);
 
 	if (len > 0 && nr > len - total) {
 	    nr = len - total;
 	}
-	if ((nr = fread(b, 1, nr, fin)) == 0) {
+	if ((nr = fread(b, 1, nr, fin.get())) == 0) {
 	    break;
 	}
 	size_t nw = 0;
 	while (nw < nr) {
 	    ssize_t n;
-	    if ((n = fwrite(b + nw, 1, nr - nw, fout)) <= 0) {
+	    if ((n = fwrite(b + nw, 1, nr - nw, fout.get())) <= 0) {
 		int err = errno;
-		fclose(fin);
-		fclose(fout);
 		std::error_code ec;
 		std::filesystem::remove(new_name);
 		if (ec) {
@@ -610,9 +602,8 @@ copy_file(const std::string &old, const std::string &new_name, size_t start, ssi
         hu->end();
     }
 
-    if (fclose(fout) != 0 || ferror(fin)) {
+    if (fflush(fout.get()) != 0 || ferror(fin.get())) {
 	int err = errno;
-	fclose(fin);
 	std::error_code ec;
 	std::filesystem::remove(new_name);
 	if (ec) {
@@ -621,7 +612,6 @@ copy_file(const std::string &old, const std::string &new_name, size_t start, ssi
 	errno = err;
 	return false;
     }
-    fclose(fin);
 
     if (hashes) {
         *hashes = h;
