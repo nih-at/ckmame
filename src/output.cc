@@ -81,5 +81,5 @@ void OutputContext::cond_print_string(FILE *f, const std::string &pre, const std
 
 
 void OutputContext::cond_print_hash(FILE *f, const std::string &pre, int t, const Hashes *h, const std::string &post) {
-    cond_print_string(f, pre, h->to_string(t).c_str(), post);
+    cond_print_string(f, pre, h->to_string(t), post);
 }
