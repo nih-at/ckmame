@@ -53,60 +53,52 @@ DiskPtr Disk::from_file(const std::string &name, int flags) {
     seterrinfo(name, "");
 
     int err;
-    auto chd = chd_open(name, &err);
-    if (chd == NULL) {
-	/* no error if file doesn't exist */
-	if (!((err == CHD_ERR_OPEN && errno == ENOENT) || ((flags & DISK_FL_QUIET) && err == CHD_ERR_NO_CHD))) {
-	    /* TODO: include err */
-	    myerror(ERRFILESTR, "error opening disk");
-	}
-	return NULL;
-    }
+    try {
+	auto chd = new Chd(name);
 
-    if (chd->flags & CHD_FLAG_HAS_PARENT) {
-	chd_close(chd);
-	myerror(ERRFILE, "error opening disk: parent image required");
-	return NULL;
-    }
-
-    disk = std::make_shared<Disk>();
-    disk->name = name;
-
-    if (flags & DISK_FL_CHECK_INTEGRITY) {
-        disk->hashes.types = db->hashtypes(TYPE_DISK);
-
-	err = chd_get_hashes(chd, &disk->hashes);
-
-	if (err < 0) {
-	    chd_close(chd);
+	if (chd->flags & CHD_FLAG_HAS_PARENT) {
+	    myerror(ERRFILE, "error opening disk: parent image required");
 	    return NULL;
 	}
 
-        if (disk->hashes.has_type(Hashes::TYPE_MD5)) {
-            if (!disk->hashes.verify(Hashes::TYPE_MD5, chd->md5)) {
-		myerror(ERRFILE, "md5 mismatch");
-		chd_close(chd);
+	disk = std::make_shared<Disk>();
+	disk->name = name;
+
+	if (flags & DISK_FL_CHECK_INTEGRITY) {
+	    disk->hashes.types = db->hashtypes(TYPE_DISK);
+
+	    err = chd->get_hashes(&disk->hashes);
+
+	    if (err < 0) {
 		return NULL;
+	    }
+
+	    if (disk->hashes.has_type(Hashes::TYPE_MD5)) {
+		if (!disk->hashes.verify(Hashes::TYPE_MD5, chd->md5)) {
+		    myerror(ERRFILE, "md5 mismatch");
+		    return NULL;
+		}
+	    }
+
+	    if (chd->version > 2 && disk->hashes.has_type(Hashes::TYPE_SHA1)) {
+		if (!disk->hashes.verify(Hashes::TYPE_SHA1, chd->sha1)) {
+		    myerror(ERRFILE, "sha1 mismatch");
+		    return NULL;
+		}
 	    }
 	}
 
-        if (chd->version > 2 && disk->hashes.has_type(Hashes::TYPE_SHA1)) {
-            if (!disk->hashes.verify(Hashes::TYPE_SHA1, chd->sha1)) {
-		myerror(ERRFILE, "sha1 mismatch");
-		chd_close(chd);
-		return NULL;
-	    }
+	if (chd->version < 4 && !disk->hashes.has_type(Hashes::TYPE_MD5)) {
+	    disk->hashes.set(Hashes::TYPE_MD5, chd->md5);
+	}
+	if (chd->version > 2 && !disk->hashes.has_type(Hashes::TYPE_SHA1)) {
+	    disk->hashes.set(Hashes::TYPE_SHA1, chd->sha1);
 	}
     }
-
-    if (chd->version < 4 && !disk->hashes.has_type(Hashes::TYPE_MD5)) {
-        disk->hashes.set(Hashes::TYPE_MD5, chd->md5);
+    catch (...) {
+	/*	if (!((err == CHD_ERR_OPEN && errno == ENOENT) || ((flags & DISK_FL_QUIET) && err == CHD_ERR_NO_CHD))) { */
+	myerror(ERRFILESTR, "error opening disk");
     }
-    if (chd->version > 2 && !disk->hashes.has_type(Hashes::TYPE_SHA1)) {
-        disk->hashes.set(Hashes::TYPE_SHA1, chd->sha1);
-    }
-
-    chd_close(chd);
 
     disk->id = ++next_id;
     disk_by_id[disk->id] = disk;

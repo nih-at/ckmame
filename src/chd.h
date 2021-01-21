@@ -40,6 +40,7 @@
 #include <zlib.h>
 
 #include "hashes.h"
+#include "SharedFile.h"
 
 #define CHD_ERR_NONE 0    /* N no error */
 #define CHD_ERR_OPEN 1    /* S cannot open file */
@@ -81,7 +82,8 @@
 #define CHD_CODEC_AVHUFF MAKE_TAG('a', 'v', 'h', 'u')
 
 
-struct chd_map_entry {
+class ChdMapEntry {
+public:
     uint64_t offset; /* offset within the file of the data */
     uint32_t crc;    /* 32-bit CRC of the data */
     uint16_t length; /* length of the data */
@@ -89,38 +91,44 @@ struct chd_map_entry {
     uint8_t flags;   /* misc flags */
 };
 
-struct chd {
-    FILE *f;
-    char *name;
+class Chd {
+public:
+    Chd(const std::string &name_);
+    ~Chd();
+
+    int64_t read_hunk(uint64_t, unsigned char *);
+    int64_t read_range(unsigned char *, uint64_t, uint64_t);
+    int get_hashes(Hashes *);
+
     int error;
+    uint32_t flags;          /* flags field */
+    uint8_t md5[16];         /* MD5 checksum of raw data */
+    uint8_t sha1[20];        /* SHA1 checksum of raw data */
+    uint32_t version;        /* drive format version */
+
+private:
+    FILEPtr f;
 
     uint32_t hdr_length;     /* length of header data */
-    uint32_t version;        /* drive format version */
-    uint32_t flags;          /* flags field */
     uint32_t hunk_len;       /* number of bytes per hunk */
     uint64_t total_hunks;    /* total # of hunks represented */
     uint64_t total_len;      /* logical size of the data */
     uint64_t map_offset;     /* offset of hunk map in file */
     uint64_t meta_offset;    /* offset in file of first metadata */
-    uint8_t md5[16];         /* MD5 checksum of raw data */
     uint8_t parent_md5[16];  /* MD5 checksum of parent file */
-    uint8_t sha1[20];        /* SHA1 checksum of raw data */
     uint8_t parent_sha1[20]; /* SHA1 checksum of parent file */
     uint8_t raw_sha1[20];    /* SHA1 checksum of raw data */
     uint32_t compressors[4]; /* compression algorithms used */
 
-    struct chd_map_entry *map; /* hunk map */
+    ChdMapEntry *map;          /* hunk map */
     char *buf;                 /* decompression buffer */
     z_stream z;                /* decompressor */
     uint32_t hno;              /* hunk currently in hbuf */
     unsigned char *hbuf;       /* hunk data buffer */
+
+    int read_header(void);
+    int read_header_v5(unsigned char *header);
+    int read_map(void);
 };
-
-
-void chd_close(struct chd *);
-struct chd *chd_open(const std::string &name, int *errp);
-int64_t chd_read_hunk(struct chd *, uint64_t, unsigned char *);
-int64_t chd_read_range(struct chd *, unsigned char *, uint64_t, uint64_t);
-int chd_get_hashes(struct chd *, Hashes *);
 
 #endif /* chd.h */

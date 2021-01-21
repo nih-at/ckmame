@@ -73,176 +73,137 @@ static uint8_t  v5_map_types[] = {
 #endif
 
 
-static int read_header(struct chd *);
-static int read_header_v5(struct chd *, unsigned char *);
-static int read_map(struct chd *);
-
-
-void
-chd_close(struct chd *chd) {
-    fclose(chd->f);
-    free(chd->name);
-    free(chd->map);
-    free(chd->buf);
-    free(chd->hbuf);
-    free(chd);
+Chd::~Chd() {
+    free(map);
+    free(buf);
+    free(hbuf);
 }
 
 
-struct chd *
-chd_open(const std::string &name, int *errp) {
-    struct chd *chd;
-    FILE *f;
-
-    if ((f = fopen(name.c_str(), "rb")) == NULL) {
-	if (errp)
-	    *errp = CHD_ERR_OPEN;
-	return NULL;
+Chd::Chd(const std::string &name) : error(0), map(NULL), buf(NULL), hno(-1), hbuf(NULL) {
+    f = make_shared_file(name, "rb");
+    if (!f) {
+	throw;
     }
-
-    if ((chd = static_cast<struct chd *>(malloc(sizeof(*chd)))) == NULL) {
-	if (errp)
-	    *errp = CHD_ERR_NOMEM;
-	fclose(f);
-	return NULL;
+    if (read_header() < 0) {
+	throw;
     }
-    chd->f = f;
-    chd->error = 0;
-    chd->map = NULL;
-    chd->buf = NULL;
-    chd->hno = -1;
-    chd->hbuf = NULL;
-
-    if ((chd->name = strdup(name.c_str())) == NULL) {
-	if (errp)
-	    *errp = CHD_ERR_NOMEM;
-	chd_close(chd);
-	return NULL;
-    }
-    if (read_header(chd) < 0) {
-	if (errp)
-	    *errp = chd->error;
-	chd_close(chd);
-	return NULL;
-    }
-
-    return chd;
 }
 
 
 int64_t
-chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b) {
+Chd::read_hunk(uint64_t idx, unsigned char *b) {
     uint64_t n;
     int err;
     uint64_t i;
     uint32_t compression_type;
 
-    if (idx > chd->total_hunks) {
-	chd->error = CHD_ERR_INVAL;
+    if (idx > total_hunks) {
+	error = CHD_ERR_INVAL;
 	return -1;
     }
 
-    if (chd->map == NULL) {
-	if (read_map(chd) < 0) {
+    if (map == NULL) {
+	if (read_map() < 0) {
 	    return -1;
 	}
     }
 
-    if (chd->map[idx].length > chd->hunk_len) {
-	chd->error = CHD_ERR_NOTSUP;
+    if (map[idx].length > hunk_len) {
+	error = CHD_ERR_NOTSUP;
 	return -1;
     }
 
-    if (chd->map[idx].type < 4)
-	compression_type = chd->compressors[chd->map[idx].type];
+    if (map[idx].type < 4)
+	compression_type = compressors[map[idx].type];
     else
-	compression_type = chd->map[idx].type;
+	compression_type = map[idx].type;
 
     switch (compression_type) {
     case CHD_CODEC_ZLIB:
-	if (chd->buf == NULL) {
-	    if ((chd->buf = static_cast<char *>(malloc(chd->hunk_len))) == NULL) {
-		chd->error = CHD_ERR_NOMEM;
+	if (buf == NULL) {
+	    if ((buf = static_cast<char *>(malloc(hunk_len))) == NULL) {
+		error = CHD_ERR_NOMEM;
 		return -1;
 	    }
-	    chd->z.avail_in = 0;
-	    chd->z.zalloc = Z_NULL;
-	    chd->z.zfree = Z_NULL;
-	    chd->z.opaque = NULL;
-	    err = inflateInit2(&chd->z, -MAX_WBITS);
+	    z.avail_in = 0;
+	    z.zalloc = Z_NULL;
+	    z.zfree = Z_NULL;
+	    z.opaque = NULL;
+	    err = inflateInit2(&z, -MAX_WBITS);
 	}
 	else
-	    err = inflateReset(&chd->z);
+	    err = inflateReset(&z);
 	if (err != Z_OK) {
-	    chd->error = CHD_ERR_ZLIB;
+	    error = CHD_ERR_ZLIB;
 	    return -1;
 	}
 
-	if (fseeko(chd->f, chd->map[idx].offset, SEEK_SET) == -1) {
-	    chd->error = CHD_ERR_SEEK;
+	if (fseeko(f.get(), map[idx].offset, SEEK_SET) == -1) {
+	    error = CHD_ERR_SEEK;
 	    return -1;
 	}
-	if ((n = fread(chd->buf, 1, chd->map[idx].length, chd->f)) != chd->map[idx].length) {
-	    chd->error = CHD_ERR_READ;
+	if ((n = fread(buf, 1, map[idx].length, f.get())) != map[idx].length) {
+	    error = CHD_ERR_READ;
 	    return -1;
 	}
 
-	chd->z.next_in = (Bytef *)chd->buf;
-	chd->z.avail_in = (int)n;
-	chd->z.next_out = (Bytef *)b;
-	chd->z.avail_out = chd->hunk_len;
+	z.next_in = (Bytef *)buf;
+	z.avail_in = (int)n;
+	z.next_out = (Bytef *)b;
+	z.avail_out = hunk_len;
 	/* TODO: should use Z_FINISH, but that returns Z_BUF_ERROR */
-	if ((err = inflate(&chd->z, 0)) != Z_OK && err != Z_STREAM_END) {
-	    chd->error = CHD_ERR_ZLIB;
+	if ((err = inflate(&z, 0)) != Z_OK && err != Z_STREAM_END) {
+	    error = CHD_ERR_ZLIB;
 	    return -1;
 	}
-	/* TODO: chd->z.avail_out should be 0 */
-	n = chd->hunk_len - chd->z.avail_out;
+	/* TODO: z.avail_out should be 0 */
+	n = hunk_len - z.avail_out;
 	break;
 
     case CHD_MAP_TYPE_UNCOMPRESSED:
-	if (fseeko(chd->f, chd->map[idx].offset, SEEK_SET) == -1) {
-	    chd->error = CHD_ERR_SEEK;
+	if (fseeko(f.get(), map[idx].offset, SEEK_SET) == -1) {
+	    error = CHD_ERR_SEEK;
 	    return -1;
 	}
-	/* TODO: use chd->hunk_len instead? */
-	if ((n = fread(b, 1, chd->map[idx].length, chd->f)) != chd->map[idx].length) {
-	    chd->error = CHD_ERR_READ;
+	/* TODO: use hunk_len instead? */
+	if ((n = fread(b, 1, map[idx].length, f.get())) != map[idx].length) {
+	    error = CHD_ERR_READ;
 	    return -1;
 	}
 	break;
 
     case CHD_MAP_TYPE_MINI:
-	b[0] = (chd->map[idx].offset >> 56) & 0xff;
-	b[1] = (chd->map[idx].offset >> 48) & 0xff;
-	b[2] = (chd->map[idx].offset >> 40) & 0xff;
-	b[3] = (chd->map[idx].offset >> 32) & 0xff;
-	b[4] = (chd->map[idx].offset >> 24) & 0xff;
-	b[5] = (chd->map[idx].offset >> 16) & 0xff;
-	b[6] = (chd->map[idx].offset >> 8) & 0xff;
-	b[7] = chd->map[idx].offset & 0xff;
-	n = chd->hunk_len;
+	b[0] = (map[idx].offset >> 56) & 0xff;
+	b[1] = (map[idx].offset >> 48) & 0xff;
+	b[2] = (map[idx].offset >> 40) & 0xff;
+	b[3] = (map[idx].offset >> 32) & 0xff;
+	b[4] = (map[idx].offset >> 24) & 0xff;
+	b[5] = (map[idx].offset >> 16) & 0xff;
+	b[6] = (map[idx].offset >> 8) & 0xff;
+	b[7] = map[idx].offset & 0xff;
+	n = hunk_len;
 	for (i = 8; i < n; i++)
 	    b[i] = b[i - 8];
 	break;
 
     case CHD_MAP_TYPE_SELF_REF:
 	/* TODO: check CRC here too? */
-	return chd_read_hunk(chd, chd->map[idx].offset, b);
+	return read_hunk(map[idx].offset, b);
 
     case CHD_MAP_TYPE_PARENT_REF:
-	chd->error = CHD_ERR_NOTSUP;
+	error = CHD_ERR_NOTSUP;
 	return -1;
 
     default:
-	chd->error = CHD_ERR_NOTSUP;
+	error = CHD_ERR_NOTSUP;
 	return -1;
     }
 
-    if ((chd->map[idx].flags & CHD_MAP_FL_NOCRC) == 0) {
+    if ((map[idx].flags & CHD_MAP_FL_NOCRC) == 0) {
 	/* TODO: Can n be > INT_MAX? If so, loop */
-	if (crc32(0, (Bytef *)b, (int)n) != chd->map[idx].crc) {
-	    chd->error = CHD_ERR_CRC;
+	if (crc32(0, (Bytef *)b, (int)n) != map[idx].crc) {
+	    error = CHD_ERR_CRC;
 	    return -1;
 	}
     }
@@ -251,107 +212,107 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b) {
 }
 
 
-static int
-read_header(struct chd *chd) {
+int
+Chd::read_header(void) {
     uint32_t len;
 
     unsigned char b[MAX_HEADERLEN], *p;
 
-    if (fread(b, TAG_AND_LEN, 1, chd->f) != 1) {
-	chd->error = feof(chd->f) ? CHD_ERR_NO_CHD : CHD_ERR_READ;
+    if (fread(b, TAG_AND_LEN, 1, f.get()) != 1) {
+	error = feof(f.get()) ? CHD_ERR_NO_CHD : CHD_ERR_READ;
 	return -1;
     }
 
     if (memcmp(b, TAG, TAG_LEN) != 0) {
-	chd->error = CHD_ERR_NO_CHD;
+	error = CHD_ERR_NO_CHD;
 	return -1;
     }
 
     p = b + TAG_LEN;
     len = GET_UINT32(p);
     if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
-	chd->error = CHD_ERR_NO_CHD;
+	error = CHD_ERR_NO_CHD;
 	return -1;
     }
-    if (fread(p, len - TAG_AND_LEN, 1, chd->f) != 1) {
-	chd->error = CHD_ERR_READ;
-	return -1;
-    }
-
-    chd->hdr_length = len;
-    chd->version = GET_UINT32(p);
-
-    if (chd->version > 5) {
-	chd->error = CHD_ERR_VERSION;
+    if (fread(p, len - TAG_AND_LEN, 1, f.get()) != 1) {
+	error = CHD_ERR_READ;
 	return -1;
     }
 
-    if (chd->version >= 5)
-	return read_header_v5(chd, b);
+    hdr_length = len;
+    version = GET_UINT32(p);
 
-    chd->flags = GET_UINT32(p);
-    chd->compressors[0] = v4_compressors[GET_UINT32(p)];
+    if (version > 5) {
+	error = CHD_ERR_VERSION;
+	return -1;
+    }
 
-    /* TODO: check chd->hdr_length against expected value for version */
+    if (version >= 5)
+	return read_header_v5(b);
 
-    if (chd->version < 3) {
-	chd->hunk_len = GET_UINT32(p);
-	chd->total_hunks = GET_UINT32(p);
+    flags = GET_UINT32(p);
+    compressors[0] = v4_compressors[GET_UINT32(p)];
+
+    /* TODO: check hdr_length against expected value for version */
+
+    if (version < 3) {
+	hunk_len = GET_UINT32(p);
+	total_hunks = GET_UINT32(p);
 	p += 12; /* skip c/h/s */
-	memcpy(chd->md5, p, sizeof(chd->md5));
-	p += sizeof(chd->md5);
-	memcpy(chd->parent_md5, p, sizeof(chd->parent_md5));
-	p += sizeof(chd->parent_md5);
+	memcpy(md5, p, sizeof(md5));
+	p += sizeof(md5);
+	memcpy(parent_md5, p, sizeof(parent_md5));
+	p += sizeof(parent_md5);
 
-	if (chd->version == 1)
-	    chd->hunk_len *= 512;
+	if (version == 1)
+	    hunk_len *= 512;
 	else
-	    chd->hunk_len *= GET_UINT32(p);
-	chd->total_len = chd->hunk_len * chd->total_hunks;
-	chd->meta_offset = 0;
-	memset(chd->sha1, 0, sizeof(chd->sha1));
-	memset(chd->parent_sha1, 0, sizeof(chd->parent_sha1));
-	memset(chd->raw_sha1, 0, sizeof(chd->raw_sha1));
+	    hunk_len *= GET_UINT32(p);
+	total_len = hunk_len * total_hunks;
+	meta_offset = 0;
+	memset(sha1, 0, sizeof(sha1));
+	memset(parent_sha1, 0, sizeof(parent_sha1));
+	memset(raw_sha1, 0, sizeof(raw_sha1));
     }
     else {
-	chd->total_hunks = GET_UINT32(p);
-	chd->total_len = GET_UINT64(p);
-	chd->meta_offset = GET_UINT64(p);
+	total_hunks = GET_UINT32(p);
+	total_len = GET_UINT64(p);
+	meta_offset = GET_UINT64(p);
 
-	if (chd->version == 3) {
-	    memcpy(chd->md5, p, sizeof(chd->md5));
-	    p += sizeof(chd->md5);
-	    memcpy(chd->parent_md5, p, sizeof(chd->parent_md5));
-	    p += sizeof(chd->parent_md5);
+	if (version == 3) {
+	    memcpy(md5, p, sizeof(md5));
+	    p += sizeof(md5);
+	    memcpy(parent_md5, p, sizeof(parent_md5));
+	    p += sizeof(parent_md5);
 	}
 	else {
-	    memset(chd->md5, 0, sizeof(chd->md5));
-	    memset(chd->parent_md5, 0, sizeof(chd->parent_md5));
+	    memset(md5, 0, sizeof(md5));
+	    memset(parent_md5, 0, sizeof(parent_md5));
 	}
 
-	chd->hunk_len = GET_UINT32(p);
+	hunk_len = GET_UINT32(p);
 
-	memcpy(chd->sha1, p, sizeof(chd->sha1));
-	p += sizeof(chd->sha1);
-	memcpy(chd->parent_sha1, p, sizeof(chd->parent_sha1));
-	p += sizeof(chd->parent_sha1);
+	memcpy(sha1, p, sizeof(sha1));
+	p += sizeof(sha1);
+	memcpy(parent_sha1, p, sizeof(parent_sha1));
+	p += sizeof(parent_sha1);
 
-	if (chd->version == 3)
-	    memcpy(chd->raw_sha1, chd->sha1, sizeof(chd->raw_sha1));
+	if (version == 3)
+	    memcpy(raw_sha1, sha1, sizeof(raw_sha1));
 	else {
-	    memcpy(chd->raw_sha1, p, sizeof(chd->raw_sha1));
-	    /* p += sizeof(chd->raw_sha1); */
+	    memcpy(raw_sha1, p, sizeof(raw_sha1));
+	    /* p += sizeof(raw_sha1); */
 	}
     }
 
-    chd->map_offset = chd->hdr_length;
+    map_offset = hdr_length;
 
     return 0;
 }
 
 
-static int
-read_header_v5(struct chd *chd, unsigned char *header) {
+int
+Chd::read_header_v5(unsigned char *header) {
     /*
     V5 header:
 
@@ -377,33 +338,33 @@ read_header_v5(struct chd *chd, unsigned char *header) {
     unsigned char *p = header + TAG_AND_LEN + 4;
     uint64_t i;
 
-    if (chd->hdr_length < HEADER_LEN_V5)
+    if (hdr_length < HEADER_LEN_V5)
 	return -1;
 
     for (i = 0; i < 4; i++)
-	chd->compressors[i] = GET_UINT32(p);
+	compressors[i] = GET_UINT32(p);
 
-    chd->total_len = GET_UINT64(p);
+    total_len = GET_UINT64(p);
 
-    chd->map_offset = GET_UINT64(p);
-    chd->meta_offset = GET_UINT64(p);
+    map_offset = GET_UINT64(p);
+    meta_offset = GET_UINT64(p);
 
-    chd->hunk_len = GET_UINT32(p);
-    chd->total_hunks = (chd->total_len + chd->hunk_len - 1) / chd->hunk_len;
+    hunk_len = GET_UINT32(p);
+    total_hunks = (total_len + hunk_len - 1) / hunk_len;
 
     p += 4; /* unit bytes */
 
-    memcpy(chd->raw_sha1, p, sizeof(chd->raw_sha1));
-    p += sizeof(chd->raw_sha1);
-    memcpy(chd->sha1, p, sizeof(chd->sha1));
-    p += sizeof(chd->sha1);
-    memcpy(chd->parent_sha1, p, sizeof(chd->parent_sha1));
-    /* p += sizeof(chd->parent_sha1); */
+    memcpy(raw_sha1, p, sizeof(raw_sha1));
+    p += sizeof(raw_sha1);
+    memcpy(sha1, p, sizeof(sha1));
+    p += sizeof(sha1);
+    memcpy(parent_sha1, p, sizeof(parent_sha1));
+    /* p += sizeof(parent_sha1); */
 
-    chd->flags = 0;
-    for (i = 0; i < sizeof(chd->parent_sha1); i++)
-	if (chd->parent_sha1[i] != 0) {
-	    chd->flags = CHD_FLAG_HAS_PARENT;
+    flags = 0;
+    for (i = 0; i < sizeof(parent_sha1); i++)
+	if (parent_sha1[i] != 0) {
+	    flags = CHD_FLAG_HAS_PARENT;
 	    break;
 	}
 
@@ -411,63 +372,63 @@ read_header_v5(struct chd *chd, unsigned char *header) {
 }
 
 
-static int
-read_map(struct chd *chd) {
+int
+Chd::read_map(void) {
     unsigned char b[MAP_ENTRY_SIZE_V3], *p;
     unsigned int i, len;
     uint64_t v;
 
-    if (fseek(chd->f, chd->map_offset, SEEK_SET) < 0) {
-	chd->error = CHD_ERR_SEEK;
+    if (fseek(f.get(), map_offset, SEEK_SET) < 0) {
+	error = CHD_ERR_SEEK;
 	return -1;
     }
 
-    if ((chd->map = static_cast<struct chd_map_entry *>(malloc(sizeof(*chd->map) * chd->total_hunks))) == NULL) {
-	chd->error = CHD_ERR_NOMEM;
+    if ((map = static_cast<ChdMapEntry *>(malloc(sizeof(*map) * total_hunks))) == NULL) {
+	error = CHD_ERR_NOMEM;
 	return -1;
     }
 
-    if (chd->version >= 5) {
-	chd->error = CHD_ERR_NOTSUP;
+    if (version >= 5) {
+	error = CHD_ERR_NOTSUP;
 	return -1;
     }
 
-    if (chd->version < 3) {
+    if (version < 3) {
 	len = MAP_ENTRY_SIZE_V12;
     }
     else {
 	len = MAP_ENTRY_SIZE_V3;
     }
 
-    for (i = 0; i < chd->total_hunks; i++) {
-	if (fread(b, len, 1, chd->f) != 1) {
-	    chd->error = CHD_ERR_READ;
+    for (i = 0; i < total_hunks; i++) {
+	if (fread(b, len, 1, f.get()) != 1) {
+	    error = CHD_ERR_READ;
 	    return -1;
 	}
 	p = b;
 
 	/* TODO: why? */
-	if (i == 1832 && chd->version < 3)
-	    chd->version = 3;
+	if (i == 1832 && version < 3)
+	    version = 3;
 
-	if (chd->version < 3) {
+	if (version < 3) {
 	    v = GET_UINT64(p);
-	    chd->map[i].offset = v & 0xFFFFFFFFFFFLL;
-	    chd->map[i].crc = 0;
-	    chd->map[i].length = v >> 44;
-	    chd->map[i].flags = CHD_MAP_FL_NOCRC;
-	    if (chd->map[i].length == chd->hunk_len)
-		chd->map[i].type = CHD_MAP_TYPE_UNCOMPRESSED;
+	    map[i].offset = v & 0xFFFFFFFFFFFLL;
+	    map[i].crc = 0;
+	    map[i].length = v >> 44;
+	    map[i].flags = CHD_MAP_FL_NOCRC;
+	    if (map[i].length == hunk_len)
+		map[i].type = CHD_MAP_TYPE_UNCOMPRESSED;
 	    else
-		chd->map[i].type = CHD_MAP_TYPE_COMPRESSOR0;
+		map[i].type = CHD_MAP_TYPE_COMPRESSOR0;
 	}
 	else {
-	    chd->map[i].offset = GET_UINT64(p);
-	    chd->map[i].crc = GET_UINT32(p);
-	    chd->map[i].length = GET_UINT16(p);
-	    chd->map[i].flags = GET_UINT16(p);
-	    chd->map[i].type = v4_map_types[chd->map[i].flags & 0x0f];
-	    chd->map[i].flags &= 0xf0;
+	    map[i].offset = GET_UINT64(p);
+	    map[i].crc = GET_UINT32(p);
+	    map[i].length = GET_UINT16(p);
+	    map[i].flags = GET_UINT16(p);
+	    map[i].type = v4_map_types[map[i].flags & 0x0f];
+	    map[i].flags &= 0xf0;
 	}
     }
 
@@ -476,38 +437,38 @@ read_map(struct chd *chd) {
 
 
 int
-chd_get_hashes(struct chd *chd, Hashes *h) {
+Chd::get_hashes(Hashes *h) {
     Hashes h_raw;
     uint32_t hunk;
     uint64_t n, len;
     unsigned char *buf;
 
-    if (chd->version > 3) {
+    if (version > 3) {
 	/* version 4 only defines hash for SHA1 */
 	h->types = Hashes::TYPE_SHA1;
     }
 
     h_raw.types = h->types;
 
-    if (chd->version > 2)
+    if (version > 2)
 	h_raw.types |= Hashes::TYPE_SHA1;
-    if (chd->version < 4)
+    if (version < 4)
 	h_raw.types |= Hashes::TYPE_MD5;
 
     auto hu = Hashes::Update(&h_raw);
 
-    buf = static_cast<unsigned char *>(xmalloc(chd->hunk_len));
-    len = chd->total_len;
-    for (hunk = 0; hunk < chd->total_hunks; hunk++) {
-	n = chd->hunk_len > len ? len : chd->hunk_len;
+    buf = static_cast<unsigned char *>(xmalloc(hunk_len));
+    len = total_len;
+    for (hunk = 0; hunk < total_hunks; hunk++) {
+	n = hunk_len > len ? len : hunk_len;
 
-	if (chd_read_hunk(chd, hunk, buf) != (int)chd->hunk_len) {
-	    if (chd->error == CHD_ERR_NOTSUP) {
+	if (read_hunk(hunk, buf) != (int)hunk_len) {
+	    if (error == CHD_ERR_NOTSUP) {
 		myerror(ERRFILE, "warning: unsupported CHD type, integrity not checked");
 		h->types = 0;
 		return 0;
 	    }
-	    myerror(ERRFILESTR, "error reading hunk %d: error %d", hunk, chd->error);
+	    myerror(ERRFILESTR, "error reading hunk %d: error %d", hunk, error);
 	    free(buf);
 	    return -1;
 	}
@@ -518,11 +479,11 @@ chd_get_hashes(struct chd *chd, Hashes *h) {
     free(buf);
     hu.end();
 
-    if ((chd->version < 4 && memcmp(h_raw.md5, chd->md5, Hashes::SIZE_MD5) != 0) || (chd->version > 2 && memcmp(h_raw.sha1, chd->raw_sha1, Hashes::SIZE_SHA1) != 0)) {
+    if ((version < 4 && memcmp(h_raw.md5, md5, Hashes::SIZE_MD5) != 0) || (version > 2 && memcmp(h_raw.sha1, raw_sha1, Hashes::SIZE_SHA1) != 0)) {
 	myerror(ERRFILE, "checksum mismatch for raw data");
 	return -1;
     }
-    if (chd->version < 4) {
+    if (version < 4) {
         *h = h_raw;
     }
 
