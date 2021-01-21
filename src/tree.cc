@@ -190,7 +190,7 @@ void Tree::process(ArchivePtr *archives, ImagesPtr *images) {
     check_files(game.get(), archives, &res);
     check_archive(archives[0], game->name, &res);
     check_disks(game.get(), images, &res);
-    check_images(images[0].get(), game->name.c_str(), &res);
+    check_images(images[0].get(), game->name, &res);
 
     /* write warnings/errors for me */
     diagnostics(game.get(), archives[0], images[0].get(), &res);

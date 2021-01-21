@@ -100,7 +100,7 @@ check_disks(Game *game, ImagesPtr im[], Result *result) {
 	if (match_disk.quality != QU_OK && match_disk.quality != QU_OLD) {
             MatchDisk disk_match;
             
-            if (find_disk_in_romset(&disk, game->name.c_str(), &disk_match) == FIND_EXISTS) {
+            if (find_disk_in_romset(&disk, game->name, &disk_match) == FIND_EXISTS) {
                 match_disk = disk_match;
                 match_disk.where = FILE_ROMSET;
                 continue;

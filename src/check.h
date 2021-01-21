@@ -40,7 +40,7 @@
 void check_archive(ArchivePtr archive, const std::string &gamename, Result *result);
 void check_disks(Game *, ImagesPtr [], Result *);
 void check_files(Game *, ArchivePtr [], Result *);
-void check_images(Images *, const char *, Result *);
+void check_images(Images *im, const std::string &gamename, Result *result);
 void check_old(Game *, Result *);
 
 #endif /* _HAD_CHECK_H */

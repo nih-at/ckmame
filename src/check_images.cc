@@ -43,7 +43,7 @@
 
 
 void
-check_images(Images *im, const char *gamename, Result *result) {
+check_images(Images *im, const std::string &gamename, Result *result) {
     if (im == NULL) {
 	return;
     }

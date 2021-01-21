@@ -55,7 +55,7 @@ static find_result_t check_match_disk_old(const Game *, const Disk *, MatchDisk 
 static find_result_t check_match_disk_romset(const Game *, const Disk *, MatchDisk *);
 static find_result_t check_match_old(const Game *, const File *, const File *, Match *);
 static find_result_t check_match_romset(const Game *, const File *, const File *, Match *);
-static find_result_t find_disk_in_db(RomDB *, const Disk *, const char *, MatchDisk *, find_result_t (*)(const Game *, const Disk *, MatchDisk *));
+static find_result_t find_disk_in_db(RomDB *fdb, const Disk *d, const std::string &skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *));
 static find_result_t find_in_db(RomDB *, const File *, Archive *, const std::string &, Match *, find_result_t (*)(const Game *, const File *, const File *, Match *));
 
 
@@ -111,12 +111,12 @@ find_disk_in_old(const Disk *d, MatchDisk *md) {
     if (old_db == NULL)
 	return FIND_UNKNOWN;
 
-    return find_disk_in_db(old_db, d, NULL, md, check_match_disk_old);
+    return find_disk_in_db(old_db, d, "", md, check_match_disk_old);
 }
 
 
 find_result_t
-find_disk_in_romset(const Disk *d, const char *skip, MatchDisk *md) {
+find_disk_in_romset(const Disk *d, const std::string &skip, MatchDisk *md) {
     return find_disk_in_db(db, d, skip, md, check_match_disk_romset);
 }
 
@@ -352,8 +352,8 @@ find_in_db(RomDB *fdb, const File *r, Archive *archive, const std::string &skip,
 }
 
 
-find_result_t
-find_disk_in_db(RomDB *fdb, const Disk *d, const char *skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *)) {
+static find_result_t
+find_disk_in_db(RomDB *fdb, const Disk *d, const std::string &skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *)) {
     find_result_t status;
 
     auto disks = fdb->read_file_by_hash(TYPE_DISK, &d->hashes);
@@ -366,7 +366,7 @@ find_disk_in_db(RomDB *fdb, const Disk *d, const char *skip, MatchDisk *md, find
     for (size_t i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < disks.size(); i++) {
 	auto disk = disks[i];
 
-	if (skip && disk.name == skip) {
+	if (disk.name == skip) {
 	    continue;
 	}
 

@@ -123,7 +123,7 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
                     }
                 }
 
-                check_images(im.get(), NULL, &res);
+                check_images(im.get(), "", &res);
 
                 warn_set_info(WARN_TYPE_IMAGE, name);
                 diagnostics_images(im.get(), &res);
