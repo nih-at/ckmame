@@ -327,7 +327,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
             }
         }
         else {
-            if (!copy_file(source_name.c_str(), tmpname.c_str(), start, static_cast<ssize_t>(length.value()), &f->hashes)) {
+            if (!copy_file(source_name, tmpname, start, static_cast<ssize_t>(length.value()), &f->hashes)) {
                 myerror(ERRZIP, "cannot copy '%s' to '%s': %s", source_name.c_str(), tmpname.c_str(), strerror(errno));
                 return false;
             }
