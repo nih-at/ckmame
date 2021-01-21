@@ -396,7 +396,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
 		    printf("%s: create empty file '%s'\n", a->name.c_str(), r->name.c_str());
 
 		/* TODO: handle error (how?) */
-		a->file_add_empty(r->name.c_str());
+		a->file_add_empty(r->name);
 	    }
 	    break;
 
