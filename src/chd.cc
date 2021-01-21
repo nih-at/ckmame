@@ -294,55 +294,6 @@ chd_read_metadata(struct chd *chd, const struct chd_metadata_entry *e, unsigned 
     return 0;
 }
 
-
-int64_t
-chd_read_range(struct chd *chd, unsigned char *b, uint64_t off, uint64_t len) {
-    uint64_t i, s, n;
-    uint64_t copied, o2, l2;
-
-    /* TODO: error handling */
-
-    s = off / chd->hunk_len;
-    n = (off + len + chd->hunk_len - 1) / chd->hunk_len - s;
-
-    copied = 0;
-    o2 = off % chd->hunk_len;
-    l2 = chd->hunk_len - o2;
-
-    for (i = 0; i < n; i++) {
-	if (i == 1) {
-	    o2 = 0;
-	    l2 = chd->hunk_len;
-	}
-	if (i == n - 1) {
-	    if (l2 > len - copied)
-		l2 = len - copied;
-	}
-	if (o2 == 0 && l2 == chd->hunk_len && s + i != chd->hno) {
-	    if (chd_read_hunk(chd, s + i, b + copied) < 0)
-		return -1;
-	    copied += chd->hunk_len;
-	}
-	else {
-	    if (chd->hbuf == NULL)
-		if ((chd->hbuf = static_cast<unsigned char *>(malloc(chd->hunk_len))) == NULL) {
-		    chd->error = CHD_ERR_NOMEM;
-		    return -1;
-		}
-	    if (s + i != chd->hno) {
-		if (chd_read_hunk(chd, s + i, chd->hbuf) < 0)
-		    return -1;
-		chd->hno = (uint32_t)(s + i); /* can't overflow since chd_read_hunk() succeeded */
-	    }
-	    memcpy(b + copied, chd->hbuf + o2, l2);
-	    copied += l2;
-	}
-    }
-
-    return len;
-}
-
-
 static int
 read_header(struct chd *chd) {
     uint32_t len;
@@ -671,7 +622,6 @@ chd_get_hashes(struct chd *chd, Hashes *h) {
 	free(buf);
 	return -1;
     }
-
     if (chd->version < 4) {
         *h = h_raw;
     }
