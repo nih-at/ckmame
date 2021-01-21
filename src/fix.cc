@@ -423,7 +423,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
                 if (make_space(a, r->name, &original_names, num_names) < 0) {
                     break;
                 }
-                if (!a->file_copy_part(afrom, match->index, r->name.c_str(), match->offset, r->size, r)) {
+                if (!a->file_copy_part(afrom, match->index, r->name, match->offset, r->size, r)) {
                     break;
                 }
                 if (a == afrom && afrom->files[match->index].where != FILE_DELETED) {
