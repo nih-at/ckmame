@@ -32,6 +32,7 @@
 */
 
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,7 +40,8 @@
 
 #include "chd.h"
 #include "compat.h"
-
+#include "error.h"
+#include "xmalloc.h"
 
 #define MAX_HEADERLEN 124 /* maximum header length */
 #define TAG "MComprHD"
@@ -69,6 +71,15 @@ static uint8_t  v5_map_types[] = {
     CHD_MAP_TYPE_COMPRESSOR0, CHD_MAP_TYPE_COMPRESSOR1, CHD_MAP_TYPE_COMPRESSOR2, CHD_MAP_TYPE_COMPRESSOR3
 };
 #endif
+
+struct meta_hash {
+    unsigned char tag[4];
+    unsigned char sha1[Hashes::SIZE_SHA1];
+};
+
+
+static int meta_hash_cmp(const void *, const void *);
+
 
 static int read_header(struct chd *);
 static int read_header_v5(struct chd *, unsigned char *);
@@ -610,4 +621,137 @@ read_meta_headers(struct chd *chd) {
     }
 
     return 0;
+}
+
+int
+chd_get_hashes(struct chd *chd, Hashes *h) {
+    Hashes h_raw;
+    uint32_t hunk;
+    uint64_t n, len;
+    unsigned char *buf;
+
+    if (chd->version > 3) {
+	/* version 4 only defines hash for SHA1 */
+	h->types = Hashes::TYPE_SHA1;
+    }
+
+    h_raw.types = h->types;
+
+    if (chd->version > 2)
+	h_raw.types |= Hashes::TYPE_SHA1;
+    if (chd->version < 4)
+	h_raw.types |= Hashes::TYPE_MD5;
+
+    auto hu = Hashes::Update(&h_raw);
+
+    buf = static_cast<unsigned char *>(xmalloc(chd->hunk_len));
+    len = chd->total_len;
+    for (hunk = 0; hunk < chd->total_hunks; hunk++) {
+	n = chd->hunk_len > len ? len : chd->hunk_len;
+
+	if (chd_read_hunk(chd, hunk, buf) != (int)chd->hunk_len) {
+	    if (chd->error == CHD_ERR_NOTSUP) {
+		myerror(ERRFILE, "warning: unsupported CHD type, integrity not checked");
+		h->types = 0;
+		return 0;
+	    }
+	    myerror(ERRFILESTR, "error reading hunk %d: error %d", hunk, chd->error);
+	    free(buf);
+	    return -1;
+	}
+
+	hu.update(buf, n);
+	len -= n;
+    }
+
+    hu.end();
+
+    if ((chd->version < 4 && memcmp(h_raw.md5, chd->md5, Hashes::SIZE_MD5) != 0) || (chd->version > 2 && memcmp(h_raw.sha1, chd->raw_sha1, Hashes::SIZE_SHA1) != 0)) {
+	myerror(ERRFILE, "checksum mismatch for raw data");
+	free(buf);
+	return -1;
+    }
+
+    if (chd->version < 4) {
+        *h = h_raw;
+    }
+    else {
+	struct chd_metadata_entry *meta, *e;
+	struct meta_hash *meta_hash;
+	int n_meta_hash, i;
+
+	hu = Hashes::Update(h);
+        hu.update(h_raw.sha1, Hashes::SIZE_SHA1);
+
+	h_raw.types = Hashes::TYPE_SHA1;
+
+	meta = chd_get_metadata_list(chd);
+
+	n_meta_hash = 0;
+
+	for (e = meta; e; e = e->next) {
+	    if (e->flags & CHD_META_FL_CHECKSUM)
+		n_meta_hash++;
+	}
+
+	meta_hash = static_cast<struct meta_hash *>(xmalloc(n_meta_hash * sizeof(*meta_hash)));
+
+	len = chd->hunk_len; /* current size of buf */
+
+	for (i = 0, e = meta; e; e = e->next) {
+	    if ((e->flags & CHD_META_FL_CHECKSUM) == 0)
+		continue;
+
+	    if (e->length > len) {
+		free(buf);
+		len = e->length;
+		buf = static_cast<unsigned char *>(xmalloc(len));
+	    }
+
+	    if (chd_read_metadata(chd, e, buf) < 0) {
+		/* TODO: include chd->error */
+		myerror(ERRFILESTR, "error reading hunk %d", hunk);
+		free(buf);
+		free(meta_hash);
+		return -1;
+	    }
+
+	    auto hu_meta = Hashes::Update(&h_raw);
+            hu_meta.update(buf, e->length);
+            hu_meta.end();
+
+	    memcpy(meta_hash[i].tag, e->tag, 4);
+	    memcpy(meta_hash[i].sha1, h_raw.sha1, Hashes::SIZE_SHA1);
+	    i++;
+	}
+
+	qsort(meta_hash, n_meta_hash, sizeof(*meta_hash), meta_hash_cmp);
+
+	for (i = 0; i < n_meta_hash; i++) {
+            hu.update(meta_hash[i].tag, 4);
+	    hu.update(meta_hash[i].sha1, Hashes::SIZE_SHA1);
+	}
+        hu.end();
+	free(meta_hash);
+    }
+
+    free(buf);
+
+    return 0;
+}
+
+
+static int
+meta_hash_cmp(const void *a_, const void *b_) {
+    const struct meta_hash *a, *b;
+    int ret;
+
+    a = static_cast<const struct meta_hash *>(a_);
+    b = static_cast<const struct meta_hash *>(b_);
+
+    ret = memcmp(a->tag, b->tag, sizeof(a->tag));
+    if (ret == 0)
+	ret = memcmp(a->sha1, b->sha1, sizeof(a->sha1));
+
+    return ret;
 }

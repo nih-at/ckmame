@@ -39,6 +39,8 @@
 #include <stdio.h>
 #include <zlib.h>
 
+#include "hashes.h"
+
 #define CHD_ERR_NONE 0    /* N no error */
 #define CHD_ERR_OPEN 1    /* S cannot open file */
 #define CHD_ERR_READ 2    /* S read error */
@@ -131,5 +133,6 @@ struct chd *chd_open(const std::string &name, int *errp);
 int64_t chd_read_hunk(struct chd *, uint64_t, unsigned char *);
 int chd_read_metadata(struct chd *, const struct chd_metadata_entry *, unsigned char *);
 int64_t chd_read_range(struct chd *, unsigned char *, uint64_t, uint64_t);
+int chd_get_hashes(struct chd *, Hashes *);
 
 #endif /* chd.h */
