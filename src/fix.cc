@@ -452,7 +452,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
 	    /* TODO: handle errors (how?) */
 	    if (make_space(a, r->name, &original_names, num_names) < 0)
 		break;
-	    a->file_rename(match->index, r->name.c_str());
+	    a->file_rename(match->index, r->name);
 
 	    break;
 
@@ -476,7 +476,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
 		break;
 	    }
 
-            if (!a->file_copy(afrom, match->index, r->name.c_str())) {
+            if (!a->file_copy(afrom, match->index, r->name)) {
 		myerror(ERRDEF, "copying '%s' from '%s' to '%s' failed, not deleting", r->name.c_str(), afrom->name.c_str(), a->name.c_str());
 		/* TODO: if (idx >= 0) undo deletion of broken file */
 	    }
