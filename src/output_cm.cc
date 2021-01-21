@@ -41,6 +41,7 @@
 #include "OutputContextCm.h"
 
 #include "error.h"
+#include "SharedFile.h"
 #include "util.h"
 
 
@@ -55,11 +56,12 @@ typedef struct output_context_cm output_context_cm_t;
 
 OutputContextCm::OutputContextCm(const std::string &fname_, int flags_) {
     if (fname_.empty()) {
-        f = stdout;
+        f = std::shared_ptr<std::FILE>(stdout);
 	fname = "*stdout*";
     }
     else {
-	if ((f = fopen(fname.c_str(), "w")) == NULL) {
+	f = make_shared_file(fname, "W");
+	if (!f) {
             myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
 	}
@@ -83,8 +85,8 @@ bool OutputContextCm::close() {
 
     auto ok = true;
     
-    if (f != NULL && f != stdout) {
-        ok = fclose(f) >= 0;
+    if (f) {
+        ok = fflush(f.get()) == 0;
     }
     
     f = NULL;
@@ -101,37 +103,37 @@ bool OutputContextCm::game(GamePtr game) {
 
 
 bool OutputContextCm::header(DatEntry *dat) {
-    fputs("clrmamepro (\n", f);
+    fputs("clrmamepro (\n", f.get());
     cond_print_string(f, "\tname ", dat->name, "\n");
     cond_print_string(f, "\tdescription ", (dat->description.empty() ? dat->name : dat->description), "\n");
     cond_print_string(f, "\tversion ", dat->version, "\n");
-    fputs(")\n\n", f);
+    fputs(")\n\n", f.get());
 
     return true;
 }
 
 
 bool OutputContextCm::write_game(Game *game) {
-    fputs("game (\n", f);
+    fputs("game (\n", f.get());
     cond_print_string(f, "\tname ", game->name, "\n");
     cond_print_string(f, "\tdescription ", game->description.empty() ? game->name : game->description, "\n");
     cond_print_string(f, "\tcloneof ", game->cloneof[0], "\n");
     cond_print_string(f, "\tromof ", game->cloneof[0], "\n");
     for (auto &rom : game->roms) {
-	fputs("\trom ( ", f);
+	fputs("\trom ( ", f.get());
         cond_print_string(f, "name ", rom.name, " ");
         if (rom.where != FILE_INGAME) {
             cond_print_string(f, "merge ", rom.merge.empty() ? rom.name : rom.merge, " ");
         }
-        fprintf(f, "size %" PRIu64 " ", rom.size);
+        fprintf(f.get(), "size %" PRIu64 " ", rom.size);
         cond_print_hash(f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
         cond_print_hash(f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
         cond_print_hash(f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
         cond_print_string(f, "flags ", status_name(rom.status), " ");
-        fputs(")\n", f);
+        fputs(")\n", f.get());
     }
     /* TODO: disks */
-    fputs(")\n\n", f);
+    fputs(")\n\n", f.get());
 
     return true;
 }

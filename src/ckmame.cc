@@ -52,6 +52,7 @@
 #include "error.h"
 #include "fixdat.h"
 #include "globals.h"
+#include "SharedFile.h"
 #include "sighandle.h"
 #include "superfluous.h"
 #include "tree.h"
@@ -415,17 +416,17 @@ main(int argc, char **argv) {
 	}
 
 	if (game_list) {
-	    FILE *f;
 	    char b[8192];
 
 	    seterrinfo(game_list, "");
 
-	    if ((f = fopen(game_list, "r")) == NULL) {
+	    auto f = make_shared_file(game_list, "r");
+	    if (!f) {
 		myerror(ERRZIPSTR, "cannot open game list");
 		exit(1);
 	    }
 
-	    while (fgets(b, sizeof(b), f)) {
+	    while (fgets(b, sizeof(b), f.get())) {
 		if (b[strlen(b) - 1] == '\n')
 		    b[strlen(b) - 1] = '\0';
 		else {
@@ -440,8 +441,6 @@ main(int argc, char **argv) {
 		    myerror(ERRDEF, "game '%s' unknown", b);
 		}
 	    }
-
-	    fclose(f);
 	}
 	else if (optind == argc) {
 	    for (size_t i = 0; i < list.size(); i++) {

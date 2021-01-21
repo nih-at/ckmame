@@ -50,7 +50,7 @@ public:
     
 private:
     std::string file_name;
-    FILE *f;
+    std::shared_ptr<std::FILE> f;
 };
 
 #endif // HAD_PARSER_SOURCE_FILE_H

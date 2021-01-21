@@ -48,7 +48,7 @@ public:
 private:
     std::string fname;
     bool extended;
-    FILE *f;
+    std::shared_ptr<std::FILE> f;
     
     bool write_game(Game *game);
 };

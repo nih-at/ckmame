@@ -45,11 +45,12 @@
 
 OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : fname(fname_), extended(flags & OUTPUT_FL_EXTENDED) {
     if (fname.empty()) {
-	f = stdout;
+	f = std::shared_ptr<std::FILE>(stdout);
 	fname = "*stdout*";
     }
     else {
-        if ((f = fopen(fname.c_str(), "w")) == NULL) {
+	f = make_shared_file(fname, "w");
+	if (!f) {
 	    myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
 	}
@@ -64,8 +65,8 @@ OutputContextMtree::~OutputContextMtree() {
 bool OutputContextMtree::close() {
     auto ok = true;
     
-    if (f != NULL && f != stdout) {
-        ok = fclose(f) > 0;
+    if (f != NULL) {
+        ok = fflush(f.get()) == 0;
         f = NULL;
     }
 
@@ -131,29 +132,29 @@ strsvis_cstyle(const std::string &in) {
 bool OutputContextMtree::game(GamePtr game) {
     auto dirname = strsvis_cstyle(game->name);
 
-    fprintf(f, "./%s type=dir\n", dirname.c_str());
+    fprintf(f.get(), "./%s type=dir\n", dirname.c_str());
     for (size_t i = 0; i < game->roms.size(); i++) {
         auto &rom = game->roms[i];
 
-        fprintf(f, "./%s/%s type=file size=%" PRIu64, dirname.c_str(), strsvis_cstyle(rom.name).c_str(), rom.size);
+        fprintf(f.get(), "./%s/%s type=file size=%" PRIu64, dirname.c_str(), strsvis_cstyle(rom.name).c_str(), rom.size);
         cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &rom.hashes, "");
         cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &rom.hashes, "");
         cond_print_string(f, " status=", status_name(rom.status), "");
         if (extended) {
             /* crc is not in the standard set supported on NetBSD */
             cond_print_hash(f, " crc=", Hashes::TYPE_CRC, &rom.hashes, "");
-            fprintf(f, " time=%llu", static_cast<unsigned long long>(rom.mtime));
+            fprintf(f.get(), " time=%llu", static_cast<unsigned long long>(rom.mtime));
 	}
-	fputs("\n", f);
+	fputs("\n", f.get());
     }
     for (size_t i = 0; i < game->disks.size(); i++) {
         auto d = &game->disks[i];
 
-	fprintf(f, "./%s/%s type=file" PRIu64, dirname.c_str(), strsvis_cstyle(d->name).c_str());
+	fprintf(f.get(), "./%s/%s type=file" PRIu64, dirname.c_str(), strsvis_cstyle(d->name).c_str());
         cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &d->hashes, "");
 	cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &d->hashes, "");
         cond_print_string(f, " status=", status_name(d->status), "");
-	fputs("\n", f);
+	fputs("\n", f.get());
     }
 
     return true;
@@ -161,7 +162,7 @@ bool OutputContextMtree::game(GamePtr game) {
 
 
 bool OutputContextMtree::header(DatEntry *dat) {
-    fprintf(f, ". type=dir\n");
+    fprintf(f.get(), ". type=dir\n");
 
     return true;
 }

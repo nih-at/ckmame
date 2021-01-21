@@ -37,16 +37,18 @@
 #include <filesystem>
 
 #include "error.h"
+#include "SharedFile.h"
 #include "util.h"
 
 ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(NULL) {
     if (!file_name.empty()) {
-        if ((f = fopen(file_name.c_str(), "r")) == NULL) {
+	f = make_shared_file(file_name, "r");
+	if (!f) {
             // TODO: throw XXX;
         }
     }
     else {
-        f = stdin;
+        f = std::shared_ptr<std::FILE>(stdin);
     }
 
     seterrinfo(file_name, "");
@@ -60,7 +62,7 @@ bool ParserSourceFile::close() {
     auto ok = true;
     
     if (!file_name.empty()) {
-        ok = fclose(f) >= 0;
+        ok = fflush(f.get()) == 0;
         file_name = "";
     }
     
@@ -86,5 +88,5 @@ size_t ParserSourceFile::read_xxx(void *data, size_t length) {
         return 0;
     }
     
-    return fread(data, 1, length, f);
+    return fread(data, 1, length, f.get());
 }
