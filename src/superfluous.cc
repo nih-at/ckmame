@@ -45,7 +45,7 @@
 #include "types.h"
 #include "util.h"
 
-static void list_game_directory(std::vector<std::string> &found, const char *dirname, bool dir_known);
+static void list_game_directory(std::vector<std::string> &found, const std::string &dirname, bool dir_known);
 
 std::vector<std::string>
 list_directory(const std::string &dirname, const std::string &dbname) {
@@ -77,7 +77,7 @@ list_directory(const std::string &dirname, const std::string &dbname) {
 		 }
 		 else {
 		     bool dir_known = (std::find(list.begin(), list.end(), filepath.filename()) != list.end());
-		     list_game_directory(result, filepath.c_str(), dir_known);
+		     list_game_directory(result, filepath, dir_known);
 		     known = true; /* we don't want directories in superfluous list (I think) */
 		 }
 	     }
@@ -120,7 +120,7 @@ print_superfluous(std::vector<std::string> &files) {
 
 
 static void
-list_game_directory(std::vector<std::string> &found, const char *dirname, bool dir_known) {
+list_game_directory(std::vector<std::string> &found, const std::string &dirname, bool dir_known) {
     GamePtr game;
 
     auto component = std::filesystem::path(dirname).filename();
