@@ -89,14 +89,6 @@ struct chd_map_entry {
     uint8_t flags;   /* misc flags */
 };
 
-struct chd_metadata_entry {
-    struct chd_metadata_entry *next;
-    unsigned char tag[4];
-    uint32_t length;
-    uint64_t offset;
-    uint8_t flags;
-};
-
 struct chd {
     FILE *f;
     char *name;
@@ -122,16 +114,12 @@ struct chd {
     z_stream z;                /* decompressor */
     uint32_t hno;              /* hunk currently in hbuf */
     unsigned char *hbuf;       /* hunk data buffer */
-
-    struct chd_metadata_entry *meta; /* list of meta data entries */
 };
 
 
 void chd_close(struct chd *);
-struct chd_metadata_entry *chd_get_metadata_list(struct chd *);
 struct chd *chd_open(const std::string &name, int *errp);
 int64_t chd_read_hunk(struct chd *, uint64_t, unsigned char *);
-int chd_read_metadata(struct chd *, const struct chd_metadata_entry *, unsigned char *);
 int64_t chd_read_range(struct chd *, unsigned char *, uint64_t, uint64_t);
 int chd_get_hashes(struct chd *, Hashes *);
 

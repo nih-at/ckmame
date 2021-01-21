@@ -72,19 +72,10 @@ static uint8_t  v5_map_types[] = {
 };
 #endif
 
-struct meta_hash {
-    unsigned char tag[4];
-    unsigned char sha1[Hashes::SIZE_SHA1];
-};
-
-
-static int meta_hash_cmp(const void *, const void *);
-
 
 static int read_header(struct chd *);
 static int read_header_v5(struct chd *, unsigned char *);
 static int read_map(struct chd *);
-static int read_meta_headers(struct chd *chd);
 
 
 void
@@ -95,15 +86,6 @@ chd_close(struct chd *chd) {
     free(chd->buf);
     free(chd->hbuf);
     free(chd);
-}
-
-
-struct chd_metadata_entry *
-chd_get_metadata_list(struct chd *chd) {
-    /* TODO: handle/propagate error */
-    read_meta_headers(chd);
-
-    return chd->meta;
 }
 
 
@@ -130,7 +112,6 @@ chd_open(const std::string &name, int *errp) {
     chd->buf = NULL;
     chd->hno = -1;
     chd->hbuf = NULL;
-    chd->meta = NULL;
 
     if ((chd->name = strdup(name.c_str())) == NULL) {
 	if (errp)
@@ -269,30 +250,6 @@ chd_read_hunk(struct chd *chd, uint64_t idx, unsigned char *b) {
     return n;
 }
 
-
-int
-chd_read_metadata(struct chd *chd, const struct chd_metadata_entry *e, unsigned char *b) {
-    if (e == NULL) {
-	chd->error = CHD_ERR_INVAL;
-	return -1;
-    }
-
-    if (chd->meta == NULL) {
-	if (read_meta_headers(chd) < 0)
-	    return -1;
-    }
-
-    if (fseeko(chd->f, e->offset, SEEK_SET) == -1) {
-	chd->error = CHD_ERR_SEEK;
-	return -1;
-    }
-    if (fread(b, e->length, 1, chd->f) != 1) {
-	chd->error = CHD_ERR_READ;
-	return -1;
-    }
-
-    return 0;
-}
 
 static int
 read_header(struct chd *chd) {
@@ -518,53 +475,6 @@ read_map(struct chd *chd) {
 }
 
 
-static int
-read_meta_headers(struct chd *chd) {
-    struct chd_metadata_entry *meta, *prev;
-    uint64_t offset, next;
-    unsigned char b[META_HEADERLEN], *p;
-
-    if (chd->meta != NULL)
-	return 0; /* already read in */
-
-    prev = NULL;
-    for (offset = chd->meta_offset; offset; offset = next) {
-	if (fseeko(chd->f, offset, SEEK_SET) == -1) {
-	    chd->error = CHD_ERR_SEEK;
-	    return -1;
-	}
-	if (fread(b, META_HEADERLEN, 1, chd->f) != 1) {
-	    chd->error = CHD_ERR_READ;
-	    return -1;
-	}
-
-	if ((meta = static_cast<struct chd_metadata_entry *>(malloc(sizeof(*meta)))) == NULL) {
-	    chd->error = CHD_ERR_NOMEM;
-	    return -1;
-	}
-
-	p = b;
-
-	meta->next = NULL;
-	memcpy(meta->tag, p, 4);
-	p += 4;
-	meta->length = GET_UINT32(p);
-	meta->offset = offset + META_HEADERLEN;
-	meta->flags = meta->length >> 24;
-	meta->length &= 0xffffff;
-
-	next = GET_UINT64(p);
-
-	if (prev)
-	    prev->next = meta;
-	else
-	    chd->meta = meta;
-	prev = meta;
-    }
-
-    return 0;
-}
-
 int
 chd_get_hashes(struct chd *chd, Hashes *h) {
     Hashes h_raw;
@@ -605,94 +515,16 @@ chd_get_hashes(struct chd *chd, Hashes *h) {
 	hu.update(buf, n);
 	len -= n;
     }
-
+    free(buf);
     hu.end();
 
     if ((chd->version < 4 && memcmp(h_raw.md5, chd->md5, Hashes::SIZE_MD5) != 0) || (chd->version > 2 && memcmp(h_raw.sha1, chd->raw_sha1, Hashes::SIZE_SHA1) != 0)) {
 	myerror(ERRFILE, "checksum mismatch for raw data");
-	free(buf);
 	return -1;
     }
     if (chd->version < 4) {
         *h = h_raw;
     }
-    else {
-	struct chd_metadata_entry *meta, *e;
-	struct meta_hash *meta_hash;
-	int n_meta_hash, i;
-
-	hu = Hashes::Update(h);
-        hu.update(h_raw.sha1, Hashes::SIZE_SHA1);
-
-	h_raw.types = Hashes::TYPE_SHA1;
-
-	meta = chd_get_metadata_list(chd);
-
-	n_meta_hash = 0;
-
-	for (e = meta; e; e = e->next) {
-	    if (e->flags & CHD_META_FL_CHECKSUM)
-		n_meta_hash++;
-	}
-
-	meta_hash = static_cast<struct meta_hash *>(xmalloc(n_meta_hash * sizeof(*meta_hash)));
-
-	len = chd->hunk_len; /* current size of buf */
-
-	for (i = 0, e = meta; e; e = e->next) {
-	    if ((e->flags & CHD_META_FL_CHECKSUM) == 0)
-		continue;
-
-	    if (e->length > len) {
-		free(buf);
-		len = e->length;
-		buf = static_cast<unsigned char *>(xmalloc(len));
-	    }
-
-	    if (chd_read_metadata(chd, e, buf) < 0) {
-		/* TODO: include chd->error */
-		myerror(ERRFILESTR, "error reading hunk %d", hunk);
-		free(buf);
-		free(meta_hash);
-		return -1;
-	    }
-
-	    auto hu_meta = Hashes::Update(&h_raw);
-            hu_meta.update(buf, e->length);
-            hu_meta.end();
-
-	    memcpy(meta_hash[i].tag, e->tag, 4);
-	    memcpy(meta_hash[i].sha1, h_raw.sha1, Hashes::SIZE_SHA1);
-	    i++;
-	}
-
-	qsort(meta_hash, n_meta_hash, sizeof(*meta_hash), meta_hash_cmp);
-
-	for (i = 0; i < n_meta_hash; i++) {
-            hu.update(meta_hash[i].tag, 4);
-	    hu.update(meta_hash[i].sha1, Hashes::SIZE_SHA1);
-	}
-        hu.end();
-	free(meta_hash);
-    }
-
-    free(buf);
 
     return 0;
-}
-
-
-static int
-meta_hash_cmp(const void *a_, const void *b_) {
-    const struct meta_hash *a, *b;
-    int ret;
-
-    a = static_cast<const struct meta_hash *>(a_);
-    b = static_cast<const struct meta_hash *>(b_);
-
-    ret = memcmp(a->tag, b->tag, sizeof(a->tag));
-    if (ret == 0)
-	ret = memcmp(a->sha1, b->sha1, sizeof(a->sha1));
-
-    return ret;
 }
