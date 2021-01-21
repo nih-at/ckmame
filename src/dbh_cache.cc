@@ -330,7 +330,7 @@ dbh_cache_write(DB *dbh, int id, const ArchiveContents *a) {
 	}
     }
 
-    auto name = dbh_cache_archive_name(dbh, a->name.c_str());
+    auto name = dbh_cache_archive_name(dbh, a->name);
     if (name.empty()) {
 	return -1;
     }
