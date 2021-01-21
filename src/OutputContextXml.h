@@ -50,7 +50,7 @@ public:
 private:
     xmlDocPtr doc;
     xmlNodePtr root;
-    FILE *f;
+    std::shared_ptr<std::FILE> f;
     std::string fname;
 };
 

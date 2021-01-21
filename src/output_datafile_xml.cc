@@ -46,11 +46,12 @@
 
 OutputContextXml::OutputContextXml(const std::string &fname_, int flags) : fname(fname_) {
     if (fname.empty()) {
-	f = stdout;
+	f = std::shared_ptr<std::FILE>(stdout);
 	fname = "*stdout*";
     }
     else {
-	if ((f = fopen(fname.c_str(), "w")) == NULL) {
+	f = make_shared_file(fname, "w");
+	if (!f) {
 	    myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
 	}
@@ -73,14 +74,10 @@ bool OutputContextXml::close() {
     auto ok = true;
 
     if (f != NULL) {
-        if (xmlDocFormatDump(f, doc, 1) < 0) {
+        if (xmlDocFormatDump(f.get(), doc, 1) < 0) {
             ok = false;
         }
-	if (f != stdout) {
-            if (fclose(f) < 0) {
-                ok = false;
-            }
-	}
+	ok = fflush(f.get()) == 0;
     }
     
     f = NULL;
