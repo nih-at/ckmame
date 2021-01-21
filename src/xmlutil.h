@@ -46,18 +46,18 @@ typedef bool (*xmlu_attr_cb)(void *ctx, int file_type, int hash_type, const std:
 typedef bool (*xmlu_tag_cb)(void *ctx, int file_type);
 typedef bool (*xmlu_text_cb)(void *ctx, const std::string &value);
 
-struct xmlu_attr {
+class XmluAttr {
+ public:
     xmlu_attr_cb cb_attr;
     int arg1;
     int arg2;
 };
 
-typedef struct xmlu_attr xmlu_attr_t;
-
-struct XmluEntity {
-    XmluEntity(const std::unordered_map<std::string, xmlu_attr> &attributes_, xmlu_tag_cb cb_open_ = NULL, xmlu_tag_cb cb_close_ = NULL, int arg1_ = 0) : attr(attributes_), cb_open(cb_open_), cb_close(cb_close_), cb_text(NULL), arg1(arg1_) { }
+class XmluEntity {
+ public:
+    XmluEntity(const std::unordered_map<std::string, XmluAttr> &attributes_, xmlu_tag_cb cb_open_ = NULL, xmlu_tag_cb cb_close_ = NULL, int arg1_ = 0) : attr(attributes_), cb_open(cb_open_), cb_close(cb_close_), cb_text(NULL), arg1(arg1_) { }
     XmluEntity(xmlu_text_cb cb_text_ = NULL, int arg1_ = 0) : cb_open(NULL), cb_close(NULL), cb_text(cb_text_), arg1(arg1_) { }
-    std::unordered_map<std::string, xmlu_attr_t> attr;
+    std::unordered_map<std::string, XmluAttr> attr;
     xmlu_tag_cb cb_open;
     xmlu_tag_cb cb_close;
     xmlu_text_cb cb_text;

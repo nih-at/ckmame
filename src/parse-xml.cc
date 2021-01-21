@@ -140,19 +140,19 @@ static bool parse_xml_softwarelist(void *ctx, int ft, int ht, const std::string 
 }
 
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_mame = {
+static const std::unordered_map<std::string, XmluAttr> attr_mame = {
     { "build", { parse_xml_mame_build, 0, 0} }
 };
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_mess = {
+static const std::unordered_map<std::string, XmluAttr> attr_mess = {
     { "build", { parse_xml_mame_build, 1, 0 } }
 };
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_clrmamepro = {
+static const std::unordered_map<std::string, XmluAttr> attr_clrmamepro = {
     { "header", { parse_xml_prog_header , 0, 0 } }
 };
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_disk = {
+static const std::unordered_map<std::string, XmluAttr> attr_disk = {
     { "md5", { parse_xml_file_hash, TYPE_DISK, Hashes::TYPE_MD5 } },
     { "merge", { parse_xml_file_merge, TYPE_DISK, 0 } },
     { "name", { parse_xml_file_name, TYPE_DISK, 0 } },
@@ -160,12 +160,12 @@ static const std::unordered_map<std::string, xmlu_attr_t> attr_disk = {
     { "status", { parse_xml_file_status, TYPE_DISK, 0 } }
 };
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_game = {
+static const std::unordered_map<std::string, XmluAttr> attr_game = {
     { "name", { parse_xml_game_name, 0, 0} },
     { "romof", { parse_xml_game_cloneof, TYPE_ROM, 0 } }
 };
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_rom = {
+static const std::unordered_map<std::string, XmluAttr> attr_rom = {
     { "crc", { parse_xml_file_hash, TYPE_ROM, Hashes::TYPE_CRC } },
     { "loadflag", { parse_xml_file_loadflag, TYPE_ROM, 0} },
     { "md5", { parse_xml_file_hash, TYPE_ROM, Hashes::TYPE_MD5 } },
@@ -176,7 +176,7 @@ static const std::unordered_map<std::string, xmlu_attr_t> attr_rom = {
     { "status", { parse_xml_file_status, TYPE_ROM, 0} }
 };
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_softwarelist = {
+static const std::unordered_map<std::string, XmluAttr> attr_softwarelist = {
     { "description", { parse_xml_softwarelist , 0, 0} }
 };
 

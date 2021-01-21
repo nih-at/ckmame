@@ -77,26 +77,26 @@ static bool text_author(void *, const std::string &);
 static bool text_name(void *, const std::string &);
 static bool text_version(void *, const std::string &);
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_bit = {
+static const std::unordered_map<std::string, XmluAttr> attr_bit = {
     { "offset", { test_offset, 0, 0 } },
     { "mask", { test_mask, 0, 0 } },
     { "value", { test_value, 0, 0 } },
     { "result", { test_result, 0, 0 } }
 };
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_data = {
+static const std::unordered_map<std::string, XmluAttr> attr_data = {
     { "offset", { test_offset, 0, 0 } },
     { "value", { test_value, 0, 0 } },
     { "result", { test_result, 0, 0 } }
 };
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_file = {
+static const std::unordered_map<std::string, XmluAttr> attr_file = {
     { "size", { test_size, 0, 0 } },
     { "operator", { test_operator, 0, 0 } },
     { "result", { test_result, 0, 0} }
 };
 
-static const std::unordered_map<std::string, xmlu_attr_t> attr_rule = {
+static const std::unordered_map<std::string, XmluAttr> attr_rule = {
     { "start_offset", { rule_start_offset, 0, 0 } },
     { "end_offset", { rule_end_offset, 0, 0 } },
     { "operation", { rule_operation, 0, 0 } }
