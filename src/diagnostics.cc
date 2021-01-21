@@ -57,7 +57,7 @@ static void diagnostics_files(const Game *, const Result *);
 
 void
 diagnostics(const Game *game, const ArchivePtr a, const Images *im, const Result *result) {
-    warn_set_info(WARN_TYPE_GAME, game->name.c_str());
+    warn_set_info(WARN_TYPE_GAME, game->name);
 
     diagnostics_files(game, result);
     diagnostics_archive(a, result);
