@@ -419,7 +419,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
                     printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n", a->name.c_str(), match->offset, r->size, REAL_NAME(afrom, match->index), r->name.c_str());
                 }
 
-                bool replacing_ourself = (a == afrom && match->index == afrom->file_index_by_name(r->name.c_str()));
+                bool replacing_ourself = (a == afrom && match->index == afrom->file_index_by_name(r->name));
                 if (make_space(a, r->name, &original_names, num_names) < 0) {
                     break;
                 }
