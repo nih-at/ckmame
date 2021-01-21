@@ -32,16 +32,31 @@
 */
 
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <zlib.h>
-
 #include "chd.h"
 #include "compat.h"
 #include "error.h"
-#include "xmalloc.h"
+
+#define CHD_MAP_TYPE_COMPRESSOR0 0x00
+#define CHD_MAP_TYPE_COMPRESSOR1 0x01
+#define CHD_MAP_TYPE_COMPRESSOR2 0x02
+#define CHD_MAP_TYPE_COMPRESSOR3 0x03
+#define CHD_MAP_TYPE_UNCOMPRESSED 0x04
+#define CHD_MAP_TYPE_SELF_REF 0x05
+#define CHD_MAP_TYPE_PARENT_REF 0x06
+#define CHD_MAP_TYPE_MINI 0x07
+
+#define CHD_MAP_FL_NOCRC 0x10
+
+#define MAKE_TAG(a, b, c, d) (((a) << 24) | ((b) << 16) | ((c) << 8) | (d))
+
+#define CHD_CODEC_ZLIB MAKE_TAG('z', 'l', 'i', 'b')
+#define CHD_CODEC_LZMA MAKE_TAG('l', 'z', 'm', 'a')
+#define CHD_CODEC_HUFFMAN MAKE_TAG('h', 'u', 'f', 'f')
+#define CHD_CODEC_FLAC MAKE_TAG('f', 'l', 'a', 'c')
+#define CHD_CODEC_CD_ZLIB MAKE_TAG('c', 'd', 'z', 'l')
+#define CHD_CODEC_CD_LZMA MAKE_TAG('c', 'd', 'l', 'z')
+#define CHD_CODEC_CD_FLAC MAKE_TAG('c', 'd', 'f', 'l')
+#define CHD_CODEC_AVHUFF MAKE_TAG('a', 'v', 'h', 'u')
 
 #define MAX_HEADERLEN 124 /* maximum header length */
 #define TAG "MComprHD"
@@ -441,7 +456,11 @@ Chd::get_hashes(Hashes *h) {
 
     auto hu = Hashes::Update(&h_raw);
 
-    buf = static_cast<unsigned char *>(xmalloc(hunk_len));
+    buf = static_cast<unsigned char *>(malloc(hunk_len));
+    if (buf == NULL) {
+	myerror(ERRSTR, "error allocating memory");
+	return false;
+    }
     len = total_len;
     for (hunk = 0; hunk < total_hunks; hunk++) {
 	n = hunk_len > len ? len : hunk_len;

@@ -48,7 +48,6 @@
 #include "memdb.h"
 #include "SharedFile.h"
 #include "util.h"
-#include "xmalloc.h"
 
 static bool copy_file(const std::string &old, const std::string &new_name, size_t start, ssize_t len, Hashes *hashes);
 
@@ -232,7 +231,10 @@ std::filesystem::path ArchiveDir::make_full_name(const std::filesystem::path &fi
 std::filesystem::path ArchiveDir::make_tmp_name(const std::filesystem::path &filename) {
     auto name_template = static_cast<std::string>(std::filesystem::path(name) / (static_cast<std::string>(filename) + ".XXXXX"));
 
-    char *c_string = xstrdup(name_template.c_str());
+    char *c_string = strdup(name_template.c_str());
+    if (c_string == NULL) {
+	return "";
+    }
     
     for (size_t i = name.length() + 1; i < name_template.length(); i++) {
         if (c_string[i] == '/') {

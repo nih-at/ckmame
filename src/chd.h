@@ -36,39 +36,12 @@
 #include <cinttypes>
 #include <string>
 
-#include <stdio.h>
 #include <zlib.h>
 
 #include "hashes.h"
 #include "SharedFile.h"
 
 #define CHD_FLAG_HAS_PARENT 0x01
-
-#define CHD_MAP_TYPE_COMPRESSOR0 0x00
-#define CHD_MAP_TYPE_COMPRESSOR1 0x01
-#define CHD_MAP_TYPE_COMPRESSOR2 0x02
-#define CHD_MAP_TYPE_COMPRESSOR3 0x03
-#define CHD_MAP_TYPE_UNCOMPRESSED 0x04
-#define CHD_MAP_TYPE_SELF_REF 0x05
-#define CHD_MAP_TYPE_PARENT_REF 0x06
-#define CHD_MAP_TYPE_MINI 0x07
-
-#define CHD_MAP_FL_NOCRC 0x10
-
-
-#define CHD_META_FL_CHECKSUM 0x1
-
-#define MAKE_TAG(a, b, c, d) (((a) << 24) | ((b) << 16) | ((c) << 8) | (d))
-
-#define CHD_CODEC_ZLIB MAKE_TAG('z', 'l', 'i', 'b')
-#define CHD_CODEC_LZMA MAKE_TAG('l', 'z', 'm', 'a')
-#define CHD_CODEC_HUFFMAN MAKE_TAG('h', 'u', 'f', 'f')
-#define CHD_CODEC_FLAC MAKE_TAG('f', 'l', 'a', 'c')
-#define CHD_CODEC_CD_ZLIB MAKE_TAG('c', 'd', 'z', 'l')
-#define CHD_CODEC_CD_LZMA MAKE_TAG('c', 'd', 'l', 'z')
-#define CHD_CODEC_CD_FLAC MAKE_TAG('c', 'd', 'f', 'l')
-#define CHD_CODEC_AVHUFF MAKE_TAG('a', 'v', 'h', 'u')
-
 
 class ChdMapEntry {
 public:

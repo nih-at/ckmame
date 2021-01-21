@@ -21,9 +21,6 @@
     - cm
     - rc
     - xml
-  - convert to C++:
-    - chd.h
-
 
 # Later
 

@@ -70,7 +70,6 @@ set(COMMON_SOURCES
   tree.cc
   util.cc
   warn.cc
-  xmalloc.cc
   zip_util.cc
   ${COMPATIBILITY}
   )

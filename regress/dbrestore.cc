@@ -43,7 +43,6 @@
 #include "error.h"
 #include "sq_util.h"
 #include "util.h"
-#include "xmalloc.h"
 
 static int column_type(const char *name);
 static int db_type(const char *name);
@@ -329,7 +328,11 @@ restore_table(DB *dbh, FILE *f) {
 		    value[length - 1] = '\0';
 		    value++;
 		    unsigned int len = (unsigned int)(length / 2 - 1);
-		    unsigned char *bin = static_cast<unsigned char *>(xmalloc(len));
+		    unsigned char *bin = static_cast<unsigned char *>(malloc(len));
+		    if (bin == NULL) {
+			myerror(ERRSTR, "cannot allocate memory");
+			return -1;
+		    }
 		    if (hex2bin(bin, value, len) < 0) {
 			free(bin);
 			myerror(ERRFILE, "invalid binary value: %s", value);
