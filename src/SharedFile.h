@@ -37,6 +37,10 @@
 #include <memory>
 #include <string>
 
-std::shared_ptr<std::FILE> make_shared_file(const std::string &file_name, const std::string &flags);
+typedef std::shared_ptr<std::FILE> FILEPtr;
+
+FILEPtr make_shared_file(const std::string &file_name, const std::string &flags);
+FILEPtr make_shared_stdin();
+FILEPtr make_shared_stdout();
 
 #endif /* _HAD_SHARED_FILE_H */
