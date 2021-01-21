@@ -364,7 +364,7 @@ bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
     }
     
     if (err) {
-        unlink(tmpname.c_str());
+	std::filesystem::remove(tmpname);
         return false;
     }
     
