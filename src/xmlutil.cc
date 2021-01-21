@@ -85,9 +85,14 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                 auto entity = xml_find(entities, path);
                 if (entity != NULL) {
                     if (entity->cb_open) {
-                        if (!entity->cb_open(ctx, entity->arg1)) {
-                            ok = false;
-                        }
+			try {
+			    if (!entity->cb_open(ctx, entity->arg1)) {
+				ok = false;
+			    }
+			}
+			catch (...) {
+			    ok = false;
+			}
                     }
                     
                     for (auto it : entity->attr) {
@@ -95,16 +100,21 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                         auto value = reinterpret_cast<char *>(xmlTextReaderGetAttribute(reader, reinterpret_cast<const xmlChar *>(it.first.c_str())));
 
                         if (value != NULL) {
-                            if (!attribute.cb_attr(ctx, attribute.arg1, attribute.arg2, value)) {
-                                ok = false;
-                            }
+			    try {
+				if (!attribute.cb_attr(ctx, attribute.arg1, attribute.arg2, value)) {
+				    ok = false;
+				}
+			    }
+			    catch (...) {
+				ok = false;
+			    }
                             free(value);
                         }
                     }
-                    
-                    if (entity->cb_text) {
-                        entity_text = entity;
-                    }
+
+		    if (entity->cb_text) {
+			entity_text = entity;
+		    }
                 }
                 
                 if (!xmlTextReaderIsEmptyElement(reader)) {
@@ -119,11 +129,16 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
             case XML_READER_TYPE_END_ELEMENT: {
                 auto entity = xml_find(entities, path);
                 if (entity != NULL) {
-                    if (entity->cb_close) {
-                        if (!entity->cb_close(ctx, entity->arg1)) {
-                            ok = false;
-                        }
-                    }
+		    if (entity->cb_close) {
+			try {
+			    if (!entity->cb_close(ctx, entity->arg1)) {
+				ok = false;
+			    }
+			}
+			catch (...) {
+			    ok = false;
+			}
+		    }
                 }
 
                 path.resize(path.find_last_of('/'));
@@ -134,7 +149,12 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                 
 	case XML_READER_TYPE_TEXT:
                 if (entity_text) {
-                    entity_text->cb_text(ctx, (const char *)xmlTextReaderConstValue(reader));
+		    try {
+			entity_text->cb_text(ctx, (const char *)xmlTextReaderConstValue(reader));
+		    }
+		    catch (...) {
+			ok = false;
+		    }
                 }
                 break;
 
