@@ -63,7 +63,7 @@ OutputContextPtr OutputContext::create(OutputContext::Format format, const std::
 }
 
 
-void OutputContext::cond_print_string(std::shared_ptr<std::FILE> f, const std::string &pre, const std::string &str, const std::string &post) {
+void OutputContext::cond_print_string(FILEPtr f, const std::string &pre, const std::string &str, const std::string &post) {
     if (str.empty()) {
 	return;
     }
@@ -80,6 +80,6 @@ void OutputContext::cond_print_string(std::shared_ptr<std::FILE> f, const std::s
 }
 
 
-void OutputContext::cond_print_hash(std::shared_ptr<std::FILE> f, const std::string &pre, int t, const Hashes *h, const std::string &post) {
+void OutputContext::cond_print_hash(FILEPtr f, const std::string &pre, int t, const Hashes *h, const std::string &post) {
     cond_print_string(f, pre, h->to_string(t), post);
 }

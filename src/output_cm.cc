@@ -56,7 +56,7 @@ typedef struct output_context_cm output_context_cm_t;
 
 OutputContextCm::OutputContextCm(const std::string &fname_, int flags_) {
     if (fname_.empty()) {
-        f = std::shared_ptr<std::FILE>(stdout);
+        f = make_shared_stdout();
 	fname = "*stdout*";
     }
     else {

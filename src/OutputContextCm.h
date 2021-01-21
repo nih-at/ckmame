@@ -46,7 +46,7 @@ public:
     virtual bool header(DatEntry *dat);
     
 private:
-    std::shared_ptr<std::FILE> f;
+    FILEPtr f;
     std::string fname;
     std::vector<GamePtr> games;
     

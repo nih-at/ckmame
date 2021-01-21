@@ -45,7 +45,7 @@
 
 OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : fname(fname_), extended(flags & OUTPUT_FL_EXTENDED) {
     if (fname.empty()) {
-	f = std::shared_ptr<std::FILE>(stdout);
+	f = make_shared_stdout();
 	fname = "*stdout*";
     }
     else {

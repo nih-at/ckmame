@@ -46,7 +46,7 @@
 
 OutputContextXml::OutputContextXml(const std::string &fname_, int flags) : fname(fname_) {
     if (fname.empty()) {
-	f = std::shared_ptr<std::FILE>(stdout);
+	f = make_shared_stdout();
 	fname = "*stdout*";
     }
     else {

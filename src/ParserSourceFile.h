@@ -35,22 +35,23 @@
 */
 
 #include <cstdio>
+
 #include <string>
 
 #include "parser_source.h"
+#include "SharedFile.h"
 
 class ParserSourceFile : public ParserSource {
 public:
     ParserSourceFile(const std::string &fname);
     virtual ~ParserSourceFile();
-    
     virtual bool close();
     virtual ParserSourcePtr open(const std::string &name);
     virtual size_t read_xxx(void *data, size_t length);
     
 private:
     std::string file_name;
-    std::shared_ptr<std::FILE> f;
+    FILEPtr f;
 };
 
 #endif // HAD_PARSER_SOURCE_FILE_H

@@ -48,7 +48,7 @@ ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname),
         }
     }
     else {
-        f = std::shared_ptr<std::FILE>(stdin);
+        f = make_shared_stdin();
     }
 
     seterrinfo(file_name, "");
