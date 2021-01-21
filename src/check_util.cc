@@ -200,9 +200,9 @@ enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list, const std:
 
     if (ret) {
 	/* clean up cache db: remove archives no longer in file system */
-	DB *dbh = dbh_cache_get_db_for_archive(directory_name);
+	auto dbh = dbh_cache_get_db_for_archive(directory_name);
 	if (dbh) {
-	    auto list_db = dbh_cache_list_archives(dbh);
+	    auto list_db = dbh_cache_list_archives(dbh.get());
 	    if (!list_db.empty()) {
 		std::sort(list_db.begin(), list_db.end());
 
@@ -215,7 +215,7 @@ enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list, const std:
 			}
 		    }
 		    if (std::find(list.begin(), list.end(), name) == list.end()) {
-			dbh_cache_delete_by_name(dbh, name);
+			dbh_cache_delete_by_name(dbh.get(), name);
 		    }
 		}
 	    }

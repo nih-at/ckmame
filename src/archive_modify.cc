@@ -98,8 +98,8 @@ void Archive::update_cache() {
     if (contents->cache_db != NULL) {
         if (files.empty()) {
             if (contents->cache_id > 0) {
-                if (dbh_cache_delete(contents->cache_db, contents->cache_id) < 0) {
-                    seterrdb(contents->cache_db);
+                if (dbh_cache_delete(contents->cache_db.get(), contents->cache_id) < 0) {
+                    seterrdb(contents->cache_db.get());
                     myerror(ERRDB, "%s: error deleting from " DBH_CACHE_DB_NAME, name.c_str());
                     /* TODO: handle errors */
                 }
@@ -109,9 +109,9 @@ void Archive::update_cache() {
         else {
             get_last_update();
             
-            contents->cache_id = dbh_cache_write(contents->cache_db, contents->cache_id, contents.get());
+            contents->cache_id = dbh_cache_write(contents->cache_db.get(), contents->cache_id, contents.get());
             if (contents->cache_id < 0) {
-                seterrdb(contents->cache_db);
+                seterrdb(contents->cache_db.get());
                 myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
                 contents->cache_id = 0;
             }

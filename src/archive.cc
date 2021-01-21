@@ -62,7 +62,6 @@ ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, fi
     name(name_),
     filetype(filetype_),
     where(where_),
-    cache_db(NULL),
     cache_id(0),
     flags(0),
     mtime(0),
@@ -438,7 +437,7 @@ int ArchiveContents::is_cache_up_to_date() {
     time_t mtime_cache;
     off_t size_cache;
 
-    if (!dbh_cache_get_archive_last_change(cache_db, cache_id, &mtime_cache, &size_cache)) {
+    if (!dbh_cache_get_archive_last_change(cache_db.get(), cache_id, &mtime_cache, &size_cache)) {
 	return -1;
     }
 
@@ -521,10 +520,10 @@ std::optional<size_t> Archive::file_index(const File *file) const {
 
 bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
     cache_db = dbh_cache_get_db_for_archive(name);
-    cache_id = cache_db ? dbh_cache_get_archive_id(cache_db, name) : 0;
+    cache_id = cache_db ? dbh_cache_get_archive_id(cache_db.get(), name) : 0;
 
     if (cache_id > 0) {
-        if (!dbh_cache_read(cache_db, name, files)) {
+        if (!dbh_cache_read(cache_db.get(), name, files)) {
             return false;
         }
     }

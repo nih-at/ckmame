@@ -45,10 +45,10 @@
 class CacheDirectory {
 public:
     std::string name;
-    DB *dbh;
+    std::shared_ptr<DB> dbh;
     bool initialized;
     
-    CacheDirectory(const std::string &name_): name(name_), dbh(NULL), initialized(false) { }
+    CacheDirectory(const std::string &name_): name(name_), initialized(false) { }
 };
 
 static std::vector<CacheDirectory> cache_directories;
@@ -63,10 +63,9 @@ bool dbh_cache_close_all(void) {
 
     for (auto &directory : cache_directories) {
         if (directory.dbh) {
-            bool empty = dbh_cache_is_empty(directory.dbh);
+            bool empty = dbh_cache_is_empty(directory.dbh.get());
             std::string filename = sqlite3_db_filename(directory.dbh->db, "main");
             
-            delete directory.dbh;
             directory.dbh = NULL;
 	    /* TODO: hack; cache should have detector-applied hashes
 	     * or both; currently only has useless ones without
@@ -171,7 +170,7 @@ dbh_cache_get_archive_last_change(DB *dbh, int archive_id, time_t *mtime, off_t 
 }
 
 
-DB *
+std::shared_ptr<DB>
 dbh_cache_get_db_for_archive(const std::string &name) {
     for (auto &directory : cache_directories) {
         if (name.compare(0, directory.name.length(), directory.name) == 0 && (name.length() == directory.name.length() || name[directory.name.length()] == '/')) {
@@ -190,7 +189,7 @@ dbh_cache_get_db_for_archive(const std::string &name) {
                 auto dbname = directory.name + '/' + DBH_CACHE_DB_NAME;
 
                 try {
-                    directory.dbh = new DB(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE);
+                    directory.dbh = std::shared_ptr<DB>(new DB(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE));
                 }
                 catch (std::exception &e) {
                     myerror(ERRDB, "can't open rom directory database for '%s'", directory.name.c_str());
@@ -361,7 +360,7 @@ dbh_cache_write(DB *dbh, int id, const ArchiveContents *a) {
 static std::string
 dbh_cache_archive_name(DB *dbh, const std::string &name) {
     for (auto &directory : cache_directories) {
-        if (directory.dbh == dbh) {
+        if (directory.dbh.get() == dbh) {
             if (name == directory.name) {
                 return ".";
             }

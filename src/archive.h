@@ -87,7 +87,7 @@ public:
     filetype_t filetype;
     where_t where;
 
-    DB *cache_db;
+    std::shared_ptr<DB> cache_db;
     int cache_id;
     int flags;
     time_t mtime;
