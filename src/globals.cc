@@ -41,8 +41,8 @@ int fix_options = 0;
 
 /* check input (read only) */
 
-RomDB *db = NULL;
-RomDB *old_db = NULL;
+std::unique_ptr<RomDB> db;
+std::unique_ptr<RomDB> old_db;
 
 DetectorPtr detector;
 

@@ -49,8 +49,8 @@ extern int fix_options;
 
 /* check input (read only) */
 
-extern RomDB *db;
-extern RomDB *old_db;
+extern std::unique_ptr<RomDB> db;
+extern std::unique_ptr<RomDB> old_db;
 
 extern DetectorPtr detector;
 

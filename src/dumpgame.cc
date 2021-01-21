@@ -226,7 +226,7 @@ main(int argc, char **argv) {
     }
 
     try {
-	db = new RomDB(dbname, DBH_READ);
+	db = std::unique_ptr<RomDB>(new RomDB(dbname, DBH_READ));
     }
     catch (std::exception &e) {
 	myerror(0, "can't open database '%s': %s", dbname, errno == EFTYPE ? "unsupported database version, please recreate" : strerror(errno) );
@@ -294,6 +294,8 @@ main(int argc, char **argv) {
 		myerror(ERRDEF, "no game matching '%s' found", argv[i]);
 	}
     }
+
+    db = NULL;
 
     return 0;
 }

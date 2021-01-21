@@ -111,13 +111,13 @@ find_disk_in_old(const Disk *d, MatchDisk *md) {
     if (old_db == NULL)
 	return FIND_UNKNOWN;
 
-    return find_disk_in_db(old_db, d, "", md, check_match_disk_old);
+    return find_disk_in_db(old_db.get(), d, "", md, check_match_disk_old);
 }
 
 
 find_result_t
 find_disk_in_romset(const Disk *d, const std::string &skip, MatchDisk *md) {
-    return find_disk_in_db(db, d, skip, md, check_match_disk_romset);
+    return find_disk_in_db(db.get(), d, skip, md, check_match_disk_romset);
 }
 
 
@@ -190,13 +190,13 @@ find_in_old(const File *r, Archive *a, Match *m) {
 	return FIND_MISSING;
     }
 
-    return find_in_db(old_db, r, a, "", m, check_match_old);
+    return find_in_db(old_db.get(), r, a, "", m, check_match_old);
 }
 
 
 find_result_t
 find_in_romset(const File *file, Archive *archive, const std::string &skip, Match *m) {
-    return find_in_db(db, file, archive, skip, m, check_match_romset);
+    return find_in_db(db.get(), file, archive, skip, m, check_match_romset);
 }
 
 
