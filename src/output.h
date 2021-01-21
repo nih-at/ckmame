@@ -66,8 +66,8 @@ public:
     virtual bool header(DatEntry *dat) { return true; }
     
 protected:
-    void cond_print_string(FILE *f, const char *prefix, const std::string &string, const char *postfix);
-    void cond_print_hash(FILE *f, const char *prefix, int types, const Hashes *hashes, const char *postfix);
+    void cond_print_string(FILE *f, const std::string &pre, const std::string &str, const std::string &post);
+    void cond_print_hash(FILE *f, const std::string &pre, int t, const Hashes *h, const std::string &post);
 };
 
 #endif /* output.h */

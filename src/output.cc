@@ -63,24 +63,23 @@ OutputContextPtr OutputContext::create(OutputContext::Format format, const std::
 }
 
 
-void OutputContext::cond_print_string(FILE *f, const char *pre, const std::string &str, const char *post) {
-    const char *q;
-
+void OutputContext::cond_print_string(FILE *f, const std::string &pre, const std::string &str, const std::string &post) {
     if (str.empty()) {
 	return;
     }
 
-    if (strcspn(str.c_str(), " \t") == str.length()) {
-	q = "";
+    std::string out;
+    if (str.find_first_of(" \t") == std::string::npos) {
+	out = pre + str + post;
     }
     else {
-	q = "\"";
+	out = pre + "\"" + str + "\"" + post;
     }
 
-    fprintf(f, "%s%s%s%s%s", pre, q, str.c_str(), q, post);
+    fprintf(f, "%s", out.c_str());
 }
 
 
-void OutputContext::cond_print_hash(FILE *f, const char *pre, int t, const Hashes *h, const char *post) {
+void OutputContext::cond_print_hash(FILE *f, const std::string &pre, int t, const Hashes *h, const std::string &post) {
     cond_print_string(f, pre, h->to_string(t).c_str(), post);
 }
