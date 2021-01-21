@@ -338,7 +338,7 @@ fix_disks(Game *g, Images *im, Result *result) {
 
 
 static int
-make_space(Archive *a, const char *name, std::vector<std::string> *original_names, size_t num_names) {
+make_space(Archive *a, const std::string &name, std::vector<std::string> *original_names, size_t num_names) {
     auto idx = a->file_index_by_name(name);
 
     if (!idx.has_value()) {
@@ -353,7 +353,7 @@ make_space(Archive *a, const char *name, std::vector<std::string> *original_name
 
     if (a->files[index].status == STATUS_BADDUMP) {
         if (fix_options & FIX_PRINT) {
-	    printf("%s: delete broken '%s'\n", a->name.c_str(), name);
+	    printf("%s: delete broken '%s'\n", a->name.c_str(), name.c_str());
         }
         return a->file_delete(index) ? 0 : -1;
     }
@@ -420,7 +420,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
                 }
 
                 bool replacing_ourself = (a == afrom && match->index == afrom->file_index_by_name(r->name.c_str()));
-                if (make_space(a, r->name.c_str(), &original_names, num_names) < 0) {
+                if (make_space(a, r->name, &original_names, num_names) < 0) {
                     break;
                 }
                 if (!a->file_copy_part(afrom, match->index, r->name.c_str(), match->offset, r->size, r)) {
@@ -450,7 +450,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
 		printf("%s: rename '%s' to '%s'\n", a->name.c_str(), REAL_NAME(a, match->index), r->name.c_str());
 
 	    /* TODO: handle errors (how?) */
-	    if (make_space(a, r->name.c_str(), &original_names, num_names) < 0)
+	    if (make_space(a, r->name, &original_names, num_names) < 0)
 		break;
 	    a->file_rename(match->index, r->name.c_str());
 
@@ -471,7 +471,7 @@ fix_files(Game *g, Archive *a, Result *result, Garbage *gb) {
 		printf("%s: add '%s/%s' as '%s'\n", a->name.c_str(), afrom->name.c_str(), REAL_NAME(afrom, match->index), r->name.c_str());
             }
 
-	    if (make_space(a, r->name.c_str(), &original_names, num_names) < 0) {
+	    if (make_space(a, r->name, &original_names, num_names) < 0) {
 		/* TODO: if (idx >= 0) undo deletion of broken file */
 		break;
 	    }
