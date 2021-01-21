@@ -53,7 +53,7 @@ DiskPtr Disk::from_file(const std::string &name, int flags) {
     seterrinfo(name, "");
 
     try {
-	auto chd = new Chd(name);
+	auto chd = std::unique_ptr<Chd>(new Chd(name));
 
 	if (chd->flags & CHD_FLAG_HAS_PARENT) {
 	    myerror(ERRFILE, "error opening disk: parent image required");

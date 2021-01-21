@@ -65,7 +65,7 @@ public:
 };
 
 Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
-    contexts = new HashesContexts();
+    contexts = std::unique_ptr<HashesContexts>(new HashesContexts());
 
     if (hashes->has_type(TYPE_CRC)) {
         contexts->crc = static_cast<uint32_t>(crc32(0, NULL, 0));
@@ -79,7 +79,7 @@ Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
 }
 
 Hashes::Update::~Update() {
-    delete contexts;
+    contexts = NULL;
 }
 
 void Hashes::Update::update(const void *data, size_t length) {

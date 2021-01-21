@@ -35,6 +35,7 @@
 */
 
 #include <cinttypes>
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -53,7 +54,7 @@ public:
         void end();
         
     private:
-        HashesContexts *contexts;
+	std::unique_ptr<HashesContexts> contexts;
         Hashes *hashes;
     };
     
