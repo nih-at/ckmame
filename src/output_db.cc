@@ -50,7 +50,7 @@ struct fbh_context {
 
 OutputContextDb::OutputContextDb(const std::string &dbname, int flags) {
     std::filesystem::remove(dbname);
-    db = std::unique_ptr<RomDB>(new RomDB(dbname, DBH_NEW));
+    db = std::make_unique<RomDB>(dbname, DBH_NEW);
 }
 
 

@@ -359,14 +359,14 @@ main(int argc, char **argv) {
     }
 
     try {
-        db = std::unique_ptr<RomDB>(new RomDB(dbname, DBH_READ));
+        db = std::make_unique<RomDB>(dbname, DBH_READ);
     }
     catch (std::exception &e) {
 	myerror(0, "can't open database '%s': %s", dbname, errno == EFTYPE ? "unsupported database version, please recreate" : strerror(errno) );
 	exit(1);
     }
     try {
-	old_db = std::unique_ptr<RomDB>(new RomDB(olddbname, DBH_READ));
+	old_db = std::make_unique<RomDB>(olddbname, DBH_READ);
     }
     catch (std::exception &e) {
 	/* TODO: check for errors other than ENOENT */

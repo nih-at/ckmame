@@ -75,7 +75,7 @@ memdb_ensure(void) {
     memdb_inited = 1;
 
     try {
-        memdb = std::unique_ptr<DB>(new DB(dbname, DBH_FMT_MEM | DBH_NEW));
+        memdb = std::make_unique<DB>(dbname, DBH_FMT_MEM | DBH_NEW);
     }
     catch (std::exception &e) {
         myerror(ERRSTR, "cannot create in-memory db");

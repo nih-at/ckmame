@@ -65,7 +65,7 @@ public:
 };
 
 Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
-    contexts = std::unique_ptr<HashesContexts>(new HashesContexts());
+    contexts = std::make_unique<HashesContexts>();
 
     if (hashes->has_type(TYPE_CRC)) {
         contexts->crc = static_cast<uint32_t>(crc32(0, NULL, 0));
