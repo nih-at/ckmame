@@ -290,7 +290,7 @@ static find_result_t
 check_match_romset(const Game *game, const File *r, const File *f, Match *match) {
     find_result_t status;
 
-    status = check_for_file_in_zip(game->name.c_str(), r, f, match);
+    status = check_for_file_in_zip(game->name, r, f, match);
     if (match && status == FIND_EXISTS) {
 	match->quality = QU_COPIED;
 	match->where = FILE_ROMSET;
