@@ -87,12 +87,7 @@ static uint8_t  v5_map_types[] = {
 #endif
 
 
-Chd::~Chd() {
-    free(map);
-}
-
-
-Chd::Chd(const std::string &name) : map(NULL) {
+Chd::Chd(const std::string &name) {
     f = make_shared_file(name, "rb");
     if (!f) {
 	throw;
@@ -114,7 +109,7 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
 	return -1;
     }
 
-    if (map == NULL) {
+    if (map.empty()) {
 	if (!read_map()) {
 	    /* special error code for unsupported integrity checks */
 	    return -2;
@@ -382,10 +377,6 @@ Chd::read_map(void) {
 	return false;
     }
 
-    if ((map = static_cast<ChdMapEntry *>(malloc(sizeof(*map) * total_hunks))) == NULL) {
-	return false;
-    }
-
     if (version >= 5) {
 	return false;
     }
@@ -407,25 +398,29 @@ Chd::read_map(void) {
 	if (i == 1832 && version < 3)
 	    version = 3;
 
+	auto entry = new ChdMapEntry();
+
 	if (version < 3) {
 	    v = GET_UINT64(p);
-	    map[i].offset = v & 0xFFFFFFFFFFFLL;
-	    map[i].crc = 0;
-	    map[i].length = v >> 44;
-	    map[i].flags = CHD_MAP_FL_NOCRC;
-	    if (map[i].length == hunk_len)
-		map[i].type = CHD_MAP_TYPE_UNCOMPRESSED;
+	    entry->offset = v & 0xFFFFFFFFFFFLL;
+	    entry->crc = 0;
+	    entry->length = v >> 44;
+	    entry->flags = CHD_MAP_FL_NOCRC;
+	    if (entry->length == hunk_len)
+		entry->type = CHD_MAP_TYPE_UNCOMPRESSED;
 	    else
-		map[i].type = CHD_MAP_TYPE_COMPRESSOR0;
+		entry->type = CHD_MAP_TYPE_COMPRESSOR0;
 	}
 	else {
-	    map[i].offset = GET_UINT64(p);
-	    map[i].crc = GET_UINT32(p);
-	    map[i].length = GET_UINT16(p);
-	    map[i].flags = GET_UINT16(p);
-	    map[i].type = v4_map_types[map[i].flags & 0x0f];
-	    map[i].flags &= 0xf0;
+	    entry->offset = GET_UINT64(p);
+	    entry->crc = GET_UINT32(p);
+	    entry->length = GET_UINT16(p);
+	    entry->flags = GET_UINT16(p);
+	    entry->type = v4_map_types[entry->flags & 0x0f];
+	    entry->flags &= 0xf0;
 	}
+
+	map.push_back(*entry);
     }
 
     return true;

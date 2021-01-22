@@ -35,6 +35,7 @@
 
 #include <cinttypes>
 #include <string>
+#include <vector>
 
 #include <zlib.h>
 
@@ -55,7 +56,6 @@ public:
 class Chd {
 public:
     Chd(const std::string &name_);
-    ~Chd();
 
     int64_t read_hunk(uint64_t, unsigned char *);
     int64_t read_range(unsigned char *, uint64_t, uint64_t);
@@ -80,7 +80,7 @@ private:
     uint8_t raw_sha1[20];    /* SHA1 checksum of raw data */
     uint32_t compressors[4]; /* compression algorithms used */
 
-    ChdMapEntry *map;          /* hunk map */
+    std::vector<ChdMapEntry> map;          /* hunk map */
 
     bool read_header(void);
     bool read_header_v5(unsigned char *header);
