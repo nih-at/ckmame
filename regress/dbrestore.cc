@@ -31,6 +31,8 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <optional>
+#include <unordered_map>
 
 #include <getopt.h>
 #include <stdio.h>
@@ -41,15 +43,17 @@
 #include "compat.h"
 #include "dbh.h"
 #include "error.h"
+#include "SharedFile.h"
 #include "sq_util.h"
 #include "util.h"
 
-static int column_type(const char *name);
-static int db_type(const char *name);
-static char *get_line(FILE *f);
+static int column_type(const std::string &name);
+static int db_type(const std::string &name);
+static std::optional<std::string> get_line(FILE *f);
 static int restore_db(DB *dbh, FILE *f);
 static int restore_table(DB *dbh, FILE *f);
-static void unget_line(char *line);
+static void unget_line(const std::string &line);
+static std::vector<std::string> split(const std::string &string, const std::string &separaptor, bool strip_whitespace = false);
 
 
 #define QUERY_COLS_FMT "pragma table_info(%s)"
@@ -69,14 +73,15 @@ char version_string[] = PACKAGE " " VERSION "\n"
 
 
 #define OPTIONS "ht:V"
-struct option options[] = {{"help", 0, 0, 'h'},
-			   {"version", 0, 0, 'V'},
+struct option options[] = {
+    {"help", 0, 0, 'h'},
+    {"version", 0, 0, 'V'},
+    
+    {"type", 1, 0, 't'}
+};
 
-			   {"type", 1, 0, 't'}};
 
-
-int
-main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     setprogname(argv[0]);
 
     int type = DBH_FMT_MAME;
@@ -109,84 +114,91 @@ main(int argc, char *argv[]) {
 	exit(1);
     }
 
-    const char *dump_fname = argv[optind];
-    const char *db_fname = argv[optind + 1];
+    std::string dump_fname = argv[optind];
+    std::string db_fname = argv[optind + 1];
 
     seterrinfo(dump_fname, "");
 
-    FILE *f = fopen(dump_fname, "r");
-    if (f == NULL) {
-	myerror(ERRSTR, "can't open dump '%s'", dump_fname);
+    auto f = make_shared_file(dump_fname, "r");
+    if (!f) {
+	myerror(ERRSTR, "can't open dump '%s'", dump_fname.c_str());
 	exit(1);
     }
 
-    DB *dbh;
-    
     try {
-        dbh = new DB(db_fname, type | DBH_TRUNCATE | DBH_WRITE | DBH_CREATE);
+        DB dbh(db_fname, type | DBH_TRUNCATE | DBH_WRITE | DBH_CREATE);
+
+        seterrdb(&dbh);
+
+        if (restore_db(&dbh, f.get()) < 0)
+            exit(1);
+        
+        if (type == DBH_FMT_MAME) {
+            if (sqlite3_exec(dbh.db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
+                myerror(ERRDB, "can't create indices");
+                exit(1);
+            }
+        }
     }
     catch (std::exception &e) {
-        myerror(ERRDB, "can't create database '%s'", db_fname);
-	exit(1);
-    }
-
-    seterrdb(dbh);
-
-    if (restore_db(dbh, f) < 0)
-	exit(1);
-
-    if (type == DBH_FMT_MAME) {
-	if (sqlite3_exec(dbh->db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
-	    myerror(ERRDB, "can't create indices");
-	    exit(1);
-	}
+        myerror(ERRDB, "can't create database '%s'", db_fname.c_str());
+        exit(1);
     }
 
     exit(0);
 }
 
 
-static int
-column_type(const char *name) {
-    if (strcmp(name, "integer") == 0)
-	return SQLITE_INTEGER;
-    if (strcmp(name, "text") == 0)
-	return SQLITE_TEXT;
-    if (strcmp(name, "binary") == 0 || strcmp(name, "blob") == 0)
-	return SQLITE_BLOB;
+static const std::unordered_map<std::string, int> column_types = {
+    { "binary", SQLITE_BLOB },
+    { "blob", SQLITE_BLOB },
+    { "integer", SQLITE_INTEGER },
+    { "text", SQLITE_TEXT }
+};
 
-    return -1;
+static int column_type(const std::string &name) {
+    auto it = column_types.find(name);
+    
+    if (it == column_types.end()) {
+        return -1;
+    }
+
+    return it->second;
 }
 
 
-static int
-db_type(const char *name) {
-    if (strcmp(name, "mamedb") == 0)
-	return DBH_FMT_MAME;
-    if (strcmp(name, "memdb") == 0)
-	return DBH_FMT_MEM;
-    if (strcmp(name, "ckmamedb") == 0)
-	return DBH_FMT_DIR;
+static const std::unordered_map<std::string, int> db_types = {
+    { "ckmamedb", DBH_FMT_DIR },
+    { "mamedb", DBH_FMT_MAME },
+    { "memdb", DBH_FMT_MEM }
+};
 
-    return -1;
+static int db_type(const std::string &name) {
+    auto it = db_types.find(name);
+    
+    if (it == db_types.end()) {
+        return -1;
+    }
+
+    return it->second;
 }
 
 
-static char *ungot_line;
+static std::optional<std::string> ungot_line;
 
-static char *
-get_line(FILE *f) {
+static std::optional<std::string> get_line(FILE *f) {
     static char *buffer = NULL;
     static size_t buffer_size = 0;
 
-    if (ungot_line) {
-	char *line = ungot_line;
-	ungot_line = NULL;
+    if (ungot_line.has_value()) {
+	auto line = ungot_line.value();
+        ungot_line.reset();
 	return line;
     }
 
-    if (getline(&buffer, &buffer_size, f) < 0)
-	return NULL;
+    if (getline(&buffer, &buffer_size, f) < 0) {
+        return {};
+    }
 
     if (buffer[strlen(buffer) - 1] == '\n')
 	buffer[strlen(buffer) - 1] = '\0';
@@ -195,7 +207,7 @@ get_line(FILE *f) {
 
 static int
 restore_db(DB *dbh, FILE *f) {
-    ungot_line = NULL;
+    ungot_line.reset();
 
     while (!feof(f)) {
 	if (restore_table(dbh, f) < 0)
@@ -213,136 +225,133 @@ restore_db(DB *dbh, FILE *f) {
 
 static int
 restore_table(DB *dbh, FILE *f) {
-    char query[8192];
+    auto next_line = get_line(f);
 
-    char *line = get_line(f);
-
-    if (line == NULL)
+    if (!next_line.has_value()) {
 	return 0;
+    }
+    
+    auto line = next_line.value();
 
-    if (strncmp(line, ">>> table ", 10) != 0 || line[strlen(line) - 1] != ')') {
+    if (line.compare(0, 10, ">>> table ") != 0 || line[line.length() - 1] != ')') {
 	myerror(ERRFILE, "invalid format of table header");
 	return -1;
     }
 
-    char *table_name = line + 10;
-    char *p = strchr(table_name, ' ');
-    if (p == NULL || p[1] != '(') {
+    auto index = line.find_first_of(' ', 10);
+    if (index == std::string::npos || line[index + 1] != '(') {
 	myerror(ERRFILE, "invalid format of table header");
 	return -1;
     }
-    *p = 0;
+    auto table_name = line.substr(10, index - 10);
 
-    char *columns = p + 2;
+    index += 2;
 
-    sprintf(query, QUERY_COLS_FMT, table_name);
+    std::string query = "pragma table_info(" + table_name + ")";
     sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(dbh->db, query, -1, &stmt, NULL) != SQLITE_OK) {
-	myerror(ERRDB, "can't query table %s", table_name);
+    if (sqlite3_prepare_v2(dbh->db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+	myerror(ERRDB, "can't query table %s", table_name.c_str());
 	return -1;
     }
 
+    auto columns = split(line.substr(index, line.length() - index - 1), ",", true);
     std::vector<int> column_types;
     int ret;
+    size_t i = 0;
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	if (columns == NULL) {
-	    myerror(ERRFILE, "too few columns in dump for table %s", table_name);
+        if (i >= columns.size()) {
+	    myerror(ERRFILE, "too few columns in dump for table %s", table_name.c_str());
 	    return -1;
 	}
-	char *column = columns;
-	p = column + strcspn(column, ", )");
-	if (*p == ',')
-	    columns = p + 1 + strspn(p + 1, " ");
-	else if (*p == ')')
-	    columns = NULL;
-	else {
-	    myerror(ERRFILE, "invalid format of table header");
-	    return -1;
-	}
-	*p = '\0';
-
-	if (strcmp(column, (const char *)sqlite3_column_text(stmt, 1)) != 0) {
-	    myerror(ERRFILE, "column %s in dump doesn't match column in db %s for table %s", column, sqlite3_column_text(stmt, 1), table_name);
+        if (columns[i] != reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1))) {
+            myerror(ERRFILE, "column '%s' in dump doesn't match column '%s' in db for table '%s'", columns[i].c_str(), sqlite3_column_text(stmt, 1), table_name.c_str());
 	    return -1;
 	}
 
-	int coltype = column_type((const char *)sqlite3_column_text(stmt, 2));
+	int coltype = column_type(reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2)));
 	if (coltype < 0) {
-	    myerror(ERRDB, "unsupported column type %s for column %s of table %s", sqlite3_column_text(stmt, 1), column, table_name);
+	    myerror(ERRDB, "unsupported column type %s for column %s of table %s", sqlite3_column_text(stmt, 1), columns[i].c_str(), table_name.c_str());
 	    return -1;
 	}
 	column_types.push_back(coltype);
+        i += 1;
     }
 
     sqlite3_finalize(stmt);
 
-    sprintf(query, "insert into %s values (", table_name);
-    p = query + strlen(query);
+    query = "insert into " + table_name + " values (";
     for (size_t i = 0; i < column_types.size(); i++) {
-	sprintf(p, "%s?", i == 0 ? "" : ", ");
-	p += strlen(p);
+        if (i != 0) {
+            query += ", ";
+        }
+        query += "?";
     }
-    sprintf(p, ")");
+    query += ")";
 
-    if (sqlite3_prepare_v2(dbh->db, query, -1, &stmt, NULL) != SQLITE_OK) {
-	myerror(ERRDB, "can't prepare insert statement for table %s", table_name);
+    if (sqlite3_prepare_v2(dbh->db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+	myerror(ERRDB, "can't prepare insert statement for table %s", table_name.c_str());
 	return -1;
     }
 
-    while ((line = get_line(f))) {
-	if (strncmp(line, ">>> table ", 10) == 0) {
+    while ((next_line = get_line(f)).has_value()) {
+        line = next_line.value();
+        
+        if (line.compare(0, 10, ">>> table ") == 0) {
 	    unget_line(line);
 	    break;
 	}
 
-	for (size_t i = 0; i < column_types.size(); i++) {
-	    char *value = strtok(i == 0 ? line : NULL, "|");
-
-	    if (value == NULL) {
-		myerror(ERRFILE, "too few columns in row for table %s", table_name);
-		return -1;
-	    }
-
-	    if (strcmp(value, "<null>") == 0)
-		ret = sqlite3_bind_null(stmt, i + 1);
-	    else {
+        auto values = split(line, "|");
+        
+        if (values.size() < column_types.size()) {
+            myerror(ERRFILE, "too few columns in row for table %s", table_name.c_str());
+            return -1;
+        }
+        
+        for (size_t i = 0; i < column_types.size(); i++) {
+            auto &value = values[i];
+            
+            if (value == "<null>") {
+                ret = sqlite3_bind_null(stmt, static_cast<int>(i + 1));
+            }
+            else {
 		switch (column_types[i]) {
-		case SQLITE_TEXT:
-		    ret = sq3_set_string(stmt, i + 1, value);
-		    break;
+                    case SQLITE_TEXT:
+                        ret = sq3_set_string(stmt, static_cast<int>(i + 1), values[i]);
+                        break;
+                        
+                    case SQLITE_INTEGER: {
+                        intmax_t vi = strtoimax(value.c_str(), NULL, 10);
+                        ret = sqlite3_bind_int64(stmt, static_cast<int>(i + 1), vi);
+                        break;
+                    }
 
-		case SQLITE_INTEGER: {
-		    intmax_t vi = strtoimax(value, NULL, 10);
-		    ret = sqlite3_bind_int64(stmt, i + 1, vi);
-		    break;
-		}
+                    case SQLITE_BLOB: {
+                        size_t length = value.length();
 
-		case SQLITE_BLOB: {
-		    size_t length = strlen(value);
-
-		    if (value[0] != '<' || value[length - 1] != '>' || length % 2) {
-			myerror(ERRFILE, "invalid binary value: %s", value);
-			ret = SQLITE_ERROR;
-			break;
-		    }
-		    value[length - 1] = '\0';
-		    value++;
-		    unsigned int len = (unsigned int)(length / 2 - 1);
-		    unsigned char *bin = static_cast<unsigned char *>(malloc(len));
-		    if (bin == NULL) {
-			myerror(ERRSTR, "cannot allocate memory");
-			return -1;
-		    }
-		    if (hex2bin(bin, value, len) < 0) {
-			free(bin);
-			myerror(ERRFILE, "invalid binary value: %s", value);
-			ret = SQLITE_ERROR;
-			break;
-		    }
-		    ret = sqlite3_bind_blob(stmt, i + 1, bin, len, free);
-		}
-		}
-	    }
+                        if (value[0] != '<' || value[length - 1] != '>' || length % 2) {
+                            myerror(ERRFILE, "invalid binary value: %s", value.c_str());
+                            ret = SQLITE_ERROR;
+                            break;
+                        }
+                        
+                        size_t len = length / 2 - 1;
+                        unsigned char *bin = static_cast<unsigned char *>(malloc(len));
+                        if (bin == NULL) {
+                            myerror(ERRSTR, "cannot allocate memory");
+                            return -1;
+                        }
+                        if (hex2bin(bin, value.substr(1, length - 2).c_str(), len) < 0) {
+                            free(bin);
+                            myerror(ERRFILE, "invalid binary value: %s", value.c_str());
+                            ret = SQLITE_ERROR;
+                            break;
+                        }
+                        ret = sqlite3_bind_blob(stmt, static_cast<int>(i + 1), bin, static_cast<int>(len), free);
+                        break;
+                    }
+                }
+            }
 
 	    if (ret != SQLITE_OK) {
 		myerror(ERRDB, "can't bind column");
@@ -351,7 +360,7 @@ restore_table(DB *dbh, FILE *f) {
 	}
 
 	if (sqlite3_step(stmt) != SQLITE_DONE) {
-	    myerror(ERRDB, "can't insert row into table %s", table_name);
+	    myerror(ERRDB, "can't insert row into table %s", table_name.c_str());
 	    return -1;
 	}
 	if (sqlite3_reset(stmt) != SQLITE_OK) {
@@ -363,7 +372,29 @@ restore_table(DB *dbh, FILE *f) {
     return 0;
 }
 
-static void
-unget_line(char *line) {
+static void unget_line(const std::string &line) {
     ungot_line = line;
+}
+
+
+static std::vector<std::string> split(const std::string &string, const std::string &separaptor, bool strip_whitespace) {
+    std::vector<std::string> result;
+
+    size_t length = string.length();
+    size_t separator_length = separaptor.length();
+    size_t start = 0;
+    size_t end;
+    while ((end = string.find(separaptor, start)) != std::string::npos) {
+        result.push_back(string.substr(start, end - start));
+        start = end + separator_length;
+        if (strip_whitespace) {
+            while (start < length && isspace(string[start])) {
+                start += 1;
+            }
+        }
+    }
+    
+    result.push_back(string.substr(start));
+
+    return result;
 }
