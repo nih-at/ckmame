@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <algorithm>
 
 #include "chd.h"
 #include "compat.h"
@@ -70,9 +71,9 @@
 
 #define HEADER_LEN_V5 124
 
-#define GET_UINT16(b) (b += 2, ((b)[-2] << 8) | (b)[-1])
-#define GET_UINT32(b) (b += 4, ((b)[-4] << 24) | ((b)[-3] << 16) | ((b)[-2] << 8) | (b)[-1])
-#define GET_UINT64(b) (b += 8, ((uint64_t)(b)[-8] << 56) | ((uint64_t)(b)[-7] << 48) | ((uint64_t)(b)[-6] << 40) | ((uint64_t)(b)[-5] << 32) | ((uint64_t)(b)[-4] << 24) | ((uint64_t)(b)[-3] << 16) | ((uint64_t)(b)[-2] << 8) | ((uint64_t)(b)[-1]))
+#define GET_UINT16(b) (b += 2, static_cast<uint16_t>((static_cast<uint16_t>((b)[-2]) << 8) | static_cast<uint16_t>((b)[-1])))
+#define GET_UINT32(b) (b += 4, (static_cast<uint32_t>((b)[-4]) << 24) | (static_cast<uint32_t>((b)[-3]) << 16) | (static_cast<uint32_t>((b)[-2]) << 8) | static_cast<uint32_t>((b)[-1]))
+#define GET_UINT64(b) (b += 8, (static_cast<uint64_t>((b)[-8]) << 56) | (static_cast<uint64_t>((b)[-7]) << 48) | (static_cast<uint64_t>((b)[-6]) << 40) | (static_cast<uint64_t>((b)[-5]) << 32) | (static_cast<uint64_t>((b)[-4]) << 24) | (static_cast<uint64_t>((b)[-3]) << 16) | (static_cast<uint64_t>((b)[-2]) << 8) | (static_cast<uint64_t>((b)[-1])))
 
 static uint32_t v4_compressors[] = {0, CHD_CODEC_ZLIB, CHD_CODEC_ZLIB, /* TODO: zlib plus */
 				    CHD_CODEC_AVHUFF};
@@ -92,20 +93,23 @@ Chd::Chd(const std::string &name) {
     if (!f) {
 	throw;
     }
+    
+    memset(md5, 0, sizeof(md5));
+    memset(parent_md5, 0, sizeof(parent_md5));
+    memset(sha1, 0, sizeof(sha1));
+    memset(parent_sha1, 0, sizeof(parent_sha1));
+    memset(raw_sha1, 0, sizeof(raw_sha1));
+    
     if (!read_header()) {
 	throw;
     }
 }
 
 
-int64_t
-Chd::read_hunk(uint64_t idx, unsigned char *b) {
+int64_t Chd::read_hunk(uint64_t index, void *data) {
     uint64_t n;
-    int err;
-    uint64_t i;
-    uint32_t compression_type;
 
-    if (idx > total_hunks) {
+    if (index > total_hunks) {
 	return -1;
     }
 
@@ -116,104 +120,104 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
 	}
     }
 
-    if (map[idx].length > hunk_len) {
+    if (map[index].length > hunk_len) {
 	return -1;
     }
 
-    if (map[idx].type < 4) {
-	compression_type = compressors[map[idx].type];
+    uint32_t compression_type;
+    if (map[index].type < 4) {
+	compression_type = compressors[map[index].type];
     }
     else {
-	compression_type = map[idx].type;
+	compression_type = map[index].type;
     }
 
     switch (compression_type) {
-    case CHD_CODEC_ZLIB:
-	{
-	    z_stream z;
-	    char *buf;
+        case CHD_CODEC_ZLIB: {
+            z_stream z;
+            uint8_t buf[hunk_len];
 
-	    if ((buf = static_cast<char *>(malloc(hunk_len))) == NULL) {
+	    if (fseeko(f.get(), static_cast<off_t>(map[index].offset), SEEK_SET) == -1) {
 		return -1;
 	    }
-
-	    if (fseeko(f.get(), map[idx].offset, SEEK_SET) == -1) {
-		return -1;
-	    }
-	    if ((n = fread(buf, 1, map[idx].length, f.get())) != map[idx].length) {
+	    if (fread(buf, 1, map[index].length, f.get()) != map[index].length) {
 		return -1;
 	    }
 
 	    z.zalloc = Z_NULL;
 	    z.zfree = Z_NULL;
 	    z.opaque = NULL;
-	    z.next_in = (Bytef *)buf;
-	    z.avail_in = (int)n;
-	    z.next_out = (Bytef *)b;
+	    z.next_in = static_cast<Bytef *>(buf);
+            z.avail_in = static_cast<uInt>(map[index].length);
+	    z.next_out = static_cast<Bytef *>(data);
 	    z.avail_out = hunk_len;
 	    if (inflateInit2(&z, -MAX_WBITS) != Z_OK) {
 		return -1;
 	    }
 	    /* TODO: should use Z_FINISH, but that returns Z_BUF_ERROR */
-	    if ((err = inflate(&z, 0)) != Z_OK && err != Z_STREAM_END) {
+            auto err = inflate(&z, 0);
+	    if (err != Z_OK && err != Z_STREAM_END) {
 		return -1;
 	    }
 	    /* TODO: z.avail_out should be 0 */
-	    n = hunk_len - z.avail_out;
-	    break;
+	    n =  hunk_len - z.avail_out;
+            break;
 	}
 
-    case CHD_MAP_TYPE_UNCOMPRESSED:
-	if (fseeko(f.get(), map[idx].offset, SEEK_SET) == -1) {
-	    return -1;
-	}
-	/* TODO: use hunk_len instead? */
-	if ((n = fread(b, 1, map[idx].length, f.get())) != map[idx].length) {
-	    return -1;
-	}
-	break;
+        case CHD_MAP_TYPE_UNCOMPRESSED:
+            if (fseeko(f.get(), static_cast<off_t>(map[index].offset), SEEK_SET) == -1) {
+                return -1;
+            }
+            /* TODO: use hunk_len instead? */
+            if (fread(data, 1, map[index].length, f.get()) != map[index].length) {
+                return -1;
+            }
+            n = hunk_len;
+            break;
 
-    case CHD_MAP_TYPE_MINI:
-	b[0] = (map[idx].offset >> 56) & 0xff;
-	b[1] = (map[idx].offset >> 48) & 0xff;
-	b[2] = (map[idx].offset >> 40) & 0xff;
-	b[3] = (map[idx].offset >> 32) & 0xff;
-	b[4] = (map[idx].offset >> 24) & 0xff;
-	b[5] = (map[idx].offset >> 16) & 0xff;
-	b[6] = (map[idx].offset >> 8) & 0xff;
-	b[7] = map[idx].offset & 0xff;
-	n = hunk_len;
-	for (i = 8; i < n; i++)
-	    b[i] = b[i - 8];
-	break;
-
-    case CHD_MAP_TYPE_SELF_REF:
-	/* TODO: check CRC here too? */
-	return read_hunk(map[idx].offset, b);
-
-    case CHD_MAP_TYPE_PARENT_REF:
-	return -1;
-
-    default:
-	return -1;
+        case CHD_MAP_TYPE_MINI: {
+            auto b = static_cast<uint8_t *>(data);
+            
+            b[0] = (map[index].offset >> 56) & 0xff;
+            b[1] = (map[index].offset >> 48) & 0xff;
+            b[2] = (map[index].offset >> 40) & 0xff;
+            b[3] = (map[index].offset >> 32) & 0xff;
+            b[4] = (map[index].offset >> 24) & 0xff;
+            b[5] = (map[index].offset >> 16) & 0xff;
+            b[6] = (map[index].offset >> 8) & 0xff;
+            b[7] = map[index].offset & 0xff;
+            n = hunk_len;
+            for (uint64_t i = 8; i < n; i++) {
+                b[i] = b[i - 8];
+            }
+            break;
+        }
+                
+        case CHD_MAP_TYPE_SELF_REF:
+            /* TODO: check CRC here too? */
+            return read_hunk(map[index].offset, data);
+            
+        case CHD_MAP_TYPE_PARENT_REF:
+            return -1;
+            
+        default:
+            return -1;
     }
 
-    if ((map[idx].flags & CHD_MAP_FL_NOCRC) == 0) {
-	/* TODO: Can n be > INT_MAX? If so, loop */
-	if (crc32(0, (Bytef *)b, (int)n) != map[idx].crc) {
-	    return -1;
-	}
+    if ((map[index].flags & CHD_MAP_FL_NOCRC) == 0) {
+        /* TODO: Can n be > INT_MAX? If so, loop */
+        if (crc32(0, static_cast<Bytef *>(data), static_cast<uInt>(n)) != map[index].crc) {
+            return -1;
+        }
     }
 
-    return n;
+    return static_cast<int64_t>(n);
 }
 
 
-bool
-Chd::read_header(void) {
-    uint32_t len;
+bool Chd::read_header(void) {
 
-    unsigned char b[MAX_HEADERLEN], *p;
+    unsigned char b[MAX_HEADERLEN];
 
     if (fread(b, TAG_AND_LEN, 1, f.get()) != 1) {
 	return false;
@@ -223,8 +227,8 @@ Chd::read_header(void) {
 	return false;
     }
 
-    p = b + TAG_LEN;
-    len = GET_UINT32(p);
+    auto p = b + TAG_LEN;
+    uint32_t len = GET_UINT32(p);
     if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
 	return false;
     }
@@ -257,15 +261,14 @@ Chd::read_header(void) {
 	memcpy(parent_md5, p, sizeof(parent_md5));
 	p += sizeof(parent_md5);
 
-	if (version == 1)
+        if (version == 1) {
 	    hunk_len *= 512;
-	else
+        }
+        else {
 	    hunk_len *= GET_UINT32(p);
+        }
 	total_len = hunk_len * total_hunks;
 	meta_offset = 0;
-	memset(sha1, 0, sizeof(sha1));
-	memset(parent_sha1, 0, sizeof(parent_sha1));
-	memset(raw_sha1, 0, sizeof(raw_sha1));
     }
     else {
 	total_hunks = GET_UINT32(p);
@@ -277,10 +280,6 @@ Chd::read_header(void) {
 	    p += sizeof(md5);
 	    memcpy(parent_md5, p, sizeof(parent_md5));
 	    p += sizeof(parent_md5);
-	}
-	else {
-	    memset(md5, 0, sizeof(md5));
-	    memset(parent_md5, 0, sizeof(parent_md5));
 	}
 
 	hunk_len = GET_UINT32(p);
@@ -304,8 +303,7 @@ Chd::read_header(void) {
 }
 
 
-bool
-Chd::read_header_v5(unsigned char *header) {
+bool Chd::read_header_v5(const uint8_t *header) {
     /*
     V5 header:
 
@@ -328,7 +326,7 @@ Chd::read_header_v5(unsigned char *header) {
     [124] (V5 header length)
     */
 
-    unsigned char *p = header + TAG_AND_LEN + 4;
+   auto p = header + TAG_AND_LEN + 4;
 
     if (hdr_length < HEADER_LEN_V5) {
 	return false;
@@ -369,11 +367,7 @@ Chd::read_header_v5(unsigned char *header) {
 
 bool
 Chd::read_map(void) {
-    unsigned char b[MAP_ENTRY_SIZE_V3], *p;
-    unsigned int i, len;
-    uint64_t v;
-
-    if (fseek(f.get(), map_offset, SEEK_SET) < 0) {
+    if (fseek(f.get(), static_cast<off_t>(map_offset), SEEK_SET) < 0) {
 	return false;
     }
 
@@ -381,18 +375,20 @@ Chd::read_map(void) {
 	return false;
     }
 
+    uint64_t length;
     if (version < 3) {
-	len = MAP_ENTRY_SIZE_V12;
+	length = MAP_ENTRY_SIZE_V12;
     }
     else {
-	len = MAP_ENTRY_SIZE_V3;
+	length = MAP_ENTRY_SIZE_V3;
     }
 
-    for (i = 0; i < total_hunks; i++) {
-	if (fread(b, len, 1, f.get()) != 1) {
+    uint8_t b[MAP_ENTRY_SIZE_V3];
+    for (uint64_t i = 0; i < total_hunks; i++) {
+	if (fread(b, length, 1, f.get()) != 1) {
 	    return false;
 	}
-	p = b;
+	auto p = b;
 
 	/* TODO: why? */
 	if (i == 1832 && version < 3)
@@ -401,21 +397,25 @@ Chd::read_map(void) {
 	auto entry = ChdMapEntry();
 
 	if (version < 3) {
-	    v = GET_UINT64(p);
+	    uint64_t v = GET_UINT64(p);
 	    entry.offset = v & 0xFFFFFFFFFFFLL;
 	    entry.crc = 0;
-	    entry.length = v >> 44;
+            // TODO: There are 20 bits left, but length is 16 bits.
+	    entry.length = static_cast<uint16_t>(v >> 44);
 	    entry.flags = CHD_MAP_FL_NOCRC;
-	    if (entry.length == hunk_len)
+            if (entry.length == hunk_len) {
 		entry.type = CHD_MAP_TYPE_UNCOMPRESSED;
-	    else
+            }
+            else {
 		entry.type = CHD_MAP_TYPE_COMPRESSOR0;
+            }
 	}
 	else {
 	    entry.offset = GET_UINT64(p);
 	    entry.crc = GET_UINT32(p);
 	    entry.length = GET_UINT16(p);
-	    entry.flags = GET_UINT16(p);
+            // TODO: flags is only 8 bits.
+	    entry.flags = static_cast<uint8_t>(GET_UINT16(p));
 	    entry.type = v4_map_types[entry.flags & 0x0f];
 	    entry.flags &= 0xf0;
 	}
@@ -427,51 +427,42 @@ Chd::read_map(void) {
 }
 
 
-bool
-Chd::get_hashes(Hashes *h) {
-    Hashes h_raw;
-    uint32_t hunk;
-    uint64_t n, len;
-    unsigned char *buf;
-
+bool Chd::get_hashes(Hashes *h) {
     if (version > 3) {
 	/* version 4 only defines hash for SHA1 */
 	h->types = Hashes::TYPE_SHA1;
     }
 
+    Hashes h_raw;
     h_raw.types = h->types;
 
-    if (version > 2)
+    if (version > 2) {
 	h_raw.types |= Hashes::TYPE_SHA1;
-    if (version < 4)
+    }
+    if (version < 4) {
 	h_raw.types |= Hashes::TYPE_MD5;
+    }
 
     auto hu = Hashes::Update(&h_raw);
 
-    buf = static_cast<unsigned char *>(malloc(hunk_len));
-    if (buf == NULL) {
-	myerror(ERRSTR, "error allocating memory");
-	return false;
-    }
-    len = total_len;
-    for (hunk = 0; hunk < total_hunks; hunk++) {
-	n = hunk_len > len ? len : hunk_len;
+    uint8_t buf[hunk_len];
+    uint64_t length = total_len;
+    for (uint32_t hunk = 0; hunk < total_hunks; hunk++) {
+        uint64_t n = std::min(static_cast<uint64_t>(hunk_len), length);
 	auto ret = read_hunk(hunk, buf);
-	if (ret != (int)hunk_len) {
+	if (ret != static_cast<int64_t>(hunk_len)) {
 	    if (ret == -2) {
 		myerror(ERRFILE, "warning: unsupported CHD type, integrity not checked");
 		h->types = 0;
 		return true;
 	    }
 	    myerror(ERRFILESTR, "error reading hunk %d", hunk);
-	    free(buf);
 	    return false;
 	}
 
 	hu.update(buf, n);
-	len -= n;
+	length -= n;
     }
-    free(buf);
     hu.end();
 
     if ((version < 4 && memcmp(h_raw.md5, md5, Hashes::SIZE_MD5) != 0) || (version > 2 && memcmp(h_raw.sha1, raw_sha1, Hashes::SIZE_SHA1) != 0)) {

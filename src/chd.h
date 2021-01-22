@@ -57,8 +57,7 @@ class Chd {
 public:
     Chd(const std::string &name_);
 
-    int64_t read_hunk(uint64_t, unsigned char *);
-    int64_t read_range(unsigned char *, uint64_t, uint64_t);
+    int64_t read_hunk(uint64_t index, void *data);
     bool get_hashes(Hashes *);
 
     uint32_t flags;          /* flags field */
@@ -83,7 +82,7 @@ private:
     std::vector<ChdMapEntry> map;          /* hunk map */
 
     bool read_header(void);
-    bool read_header_v5(unsigned char *header);
+    bool read_header_v5(const uint8_t *header);
     bool read_map(void);
 };
 

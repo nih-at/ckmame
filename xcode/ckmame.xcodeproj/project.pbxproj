@@ -118,7 +118,6 @@
 		4B5FAE85173594E400B67C24 /* tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE67173594C800B67C24 /* tree.cc */; };
 		4B5FAE86173594E400B67C24 /* util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE68173594C800B67C24 /* util.cc */; };
 		4B5FAE8B173594E500B67C24 /* warn.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE6D173594C800B67C24 /* warn.cc */; };
-		4B5FAE8C173594E500B67C24 /* xmalloc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE6E173594C800B67C24 /* xmalloc.cc */; };
 		4B5FAE8D173594E500B67C24 /* xmlutil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE6F173594C800B67C24 /* xmlutil.cc */; };
 		4B5FAE8E173594E500B67C24 /* zip_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE70173594C800B67C24 /* zip_util.cc */; };
 		4B5FAE901735953D00B67C24 /* ckmame.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAE8F1735953D00B67C24 /* ckmame.cc */; };
@@ -419,7 +418,6 @@
 		4B5FAE67173594C800B67C24 /* tree.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = tree.cc; sourceTree = "<group>"; };
 		4B5FAE68173594C800B67C24 /* util.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = util.cc; sourceTree = "<group>"; };
 		4B5FAE6D173594C800B67C24 /* warn.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = warn.cc; sourceTree = "<group>"; };
-		4B5FAE6E173594C800B67C24 /* xmalloc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = xmalloc.cc; sourceTree = "<group>"; };
 		4B5FAE6F173594C800B67C24 /* xmlutil.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = xmlutil.cc; sourceTree = "<group>"; };
 		4B5FAE70173594C800B67C24 /* zip_util.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = zip_util.cc; sourceTree = "<group>"; };
 		4B5FAE8F1735953D00B67C24 /* ckmame.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = ckmame.cc; sourceTree = "<group>"; tabWidth = 8; usesTabs = 1; };
@@ -652,7 +650,6 @@
 		4B9232FF1780B2FC00096AA2 /* dbh_cache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = dbh_cache.h; sourceTree = "<group>"; };
 		4B9292BC17633FFC00806C0A /* dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = dir.h; sourceTree = "<group>"; };
 		4B9292BD17633FFC00806C0A /* find.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = find.h; sourceTree = "<group>"; };
-		4B9292BE17633FFC00806C0A /* funcs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = funcs.h; sourceTree = "<group>"; };
 		4B9292BF17633FFC00806C0A /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = globals.h; sourceTree = "<group>"; };
 		4B9292C017633FFC00806C0A /* result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = result.h; sourceTree = "<group>"; };
 		4B9292C117633FFC00806C0A /* sighandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = sighandle.h; sourceTree = "<group>"; };
@@ -660,7 +657,6 @@
 		4B9292C317633FFC00806C0A /* tree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = tree.h; sourceTree = "<group>"; };
 		4B9292C417633FFC00806C0A /* util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = util.h; sourceTree = "<group>"; };
 		4B9292C517633FFC00806C0A /* warn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = warn.h; sourceTree = "<group>"; };
-		4B9292C617633FFC00806C0A /* xmalloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = xmalloc.h; sourceTree = "<group>"; };
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = xmlutil.h; sourceTree = "<group>"; };
 		4B9292C917635B5500806C0A /* ArchiveZip.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveZip.cc; sourceTree = "<group>"; };
 		4BB51D2825823D770047BE72 /* ParserSourceFile.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParserSourceFile.cc; sourceTree = "<group>"; };
@@ -901,7 +897,6 @@
 				4B3274CC25B99F76006AEF16 /* fix.h */,
 				4B5FACD91735924900B67C24 /* fixdat.cc */,
 				4B3274CA25B99F76006AEF16 /* fixdat.h */,
-				4B9292BE17633FFC00806C0A /* funcs.h */,
 				4B5FACDB1735924900B67C24 /* game.h */,
 				4B5FACDC1735924900B67C24 /* garbage.cc */,
 				4B5FACDD1735924900B67C24 /* garbage.h */,
@@ -961,8 +956,6 @@
 				4B9292C417633FFC00806C0A /* util.h */,
 				4B5FAE6D173594C800B67C24 /* warn.cc */,
 				4B9292C517633FFC00806C0A /* warn.h */,
-				4B5FAE6E173594C800B67C24 /* xmalloc.cc */,
-				4B9292C617633FFC00806C0A /* xmalloc.h */,
 				4B5FAE6F173594C800B67C24 /* xmlutil.cc */,
 				4B9292C717633FFC00806C0A /* xmlutil.h */,
 				4B5FAE70173594C800B67C24 /* zip_util.cc */,
@@ -1480,7 +1473,6 @@
 				4B5FAE85173594E400B67C24 /* tree.cc in Sources */,
 				4B5FAE86173594E400B67C24 /* util.cc in Sources */,
 				4B5FAE8B173594E500B67C24 /* warn.cc in Sources */,
-				4B5FAE8C173594E500B67C24 /* xmalloc.cc in Sources */,
 				4B5FAE8D173594E500B67C24 /* xmlutil.cc in Sources */,
 				4B5FAE8E173594E500B67C24 /* zip_util.cc in Sources */,
 				4B5FADB71735930100B67C24 /* archive.cc in Sources */,
