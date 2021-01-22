@@ -81,8 +81,6 @@ private:
     uint32_t compressors[4]; /* compression algorithms used */
 
     ChdMapEntry *map;          /* hunk map */
-    uint32_t hno;              /* hunk currently in hbuf */
-    unsigned char *hbuf;       /* hunk data buffer */
 
     bool read_header(void);
     bool read_header_v5(unsigned char *header);

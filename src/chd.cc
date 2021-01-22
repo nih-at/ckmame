@@ -89,11 +89,10 @@ static uint8_t  v5_map_types[] = {
 
 Chd::~Chd() {
     free(map);
-    free(hbuf);
 }
 
 
-Chd::Chd(const std::string &name) : map(NULL), hno(-1), hbuf(NULL) {
+Chd::Chd(const std::string &name) : map(NULL) {
     f = make_shared_file(name, "rb");
     if (!f) {
 	throw;
