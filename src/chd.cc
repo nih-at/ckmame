@@ -398,29 +398,29 @@ Chd::read_map(void) {
 	if (i == 1832 && version < 3)
 	    version = 3;
 
-	auto entry = new ChdMapEntry();
+	auto entry = ChdMapEntry();
 
 	if (version < 3) {
 	    v = GET_UINT64(p);
-	    entry->offset = v & 0xFFFFFFFFFFFLL;
-	    entry->crc = 0;
-	    entry->length = v >> 44;
-	    entry->flags = CHD_MAP_FL_NOCRC;
-	    if (entry->length == hunk_len)
-		entry->type = CHD_MAP_TYPE_UNCOMPRESSED;
+	    entry.offset = v & 0xFFFFFFFFFFFLL;
+	    entry.crc = 0;
+	    entry.length = v >> 44;
+	    entry.flags = CHD_MAP_FL_NOCRC;
+	    if (entry.length == hunk_len)
+		entry.type = CHD_MAP_TYPE_UNCOMPRESSED;
 	    else
-		entry->type = CHD_MAP_TYPE_COMPRESSOR0;
+		entry.type = CHD_MAP_TYPE_COMPRESSOR0;
 	}
 	else {
-	    entry->offset = GET_UINT64(p);
-	    entry->crc = GET_UINT32(p);
-	    entry->length = GET_UINT16(p);
-	    entry->flags = GET_UINT16(p);
-	    entry->type = v4_map_types[entry->flags & 0x0f];
-	    entry->flags &= 0xf0;
+	    entry.offset = GET_UINT64(p);
+	    entry.crc = GET_UINT32(p);
+	    entry.length = GET_UINT16(p);
+	    entry.flags = GET_UINT16(p);
+	    entry.type = v4_map_types[entry.flags & 0x0f];
+	    entry.flags &= 0xf0;
 	}
 
-	map.push_back(*entry);
+	map.push_back(entry);
     }
 
     return true;
