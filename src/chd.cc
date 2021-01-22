@@ -89,12 +89,11 @@ static uint8_t  v5_map_types[] = {
 
 Chd::~Chd() {
     free(map);
-    free(buf);
     free(hbuf);
 }
 
 
-Chd::Chd(const std::string &name) : map(NULL), buf(NULL), hno(-1), hbuf(NULL) {
+Chd::Chd(const std::string &name) : map(NULL), hno(-1), hbuf(NULL) {
     f = make_shared_file(name, "rb");
     if (!f) {
 	throw;
@@ -136,40 +135,39 @@ Chd::read_hunk(uint64_t idx, unsigned char *b) {
 
     switch (compression_type) {
     case CHD_CODEC_ZLIB:
-	if (buf == NULL) {
+	{
+	    z_stream z;
+	    char *buf;
+
 	    if ((buf = static_cast<char *>(malloc(hunk_len))) == NULL) {
 		return -1;
 	    }
-	    z.avail_in = 0;
+
+	    if (fseeko(f.get(), map[idx].offset, SEEK_SET) == -1) {
+		return -1;
+	    }
+	    if ((n = fread(buf, 1, map[idx].length, f.get())) != map[idx].length) {
+		return -1;
+	    }
+
 	    z.zalloc = Z_NULL;
 	    z.zfree = Z_NULL;
 	    z.opaque = NULL;
-	    err = inflateInit2(&z, -MAX_WBITS);
+	    z.next_in = (Bytef *)buf;
+	    z.avail_in = (int)n;
+	    z.next_out = (Bytef *)b;
+	    z.avail_out = hunk_len;
+	    if (inflateInit2(&z, -MAX_WBITS) != Z_OK) {
+		return -1;
+	    }
+	    /* TODO: should use Z_FINISH, but that returns Z_BUF_ERROR */
+	    if ((err = inflate(&z, 0)) != Z_OK && err != Z_STREAM_END) {
+		return -1;
+	    }
+	    /* TODO: z.avail_out should be 0 */
+	    n = hunk_len - z.avail_out;
+	    break;
 	}
-	else
-	    err = inflateReset(&z);
-	if (err != Z_OK) {
-	    return -1;
-	}
-
-	if (fseeko(f.get(), map[idx].offset, SEEK_SET) == -1) {
-	    return -1;
-	}
-	if ((n = fread(buf, 1, map[idx].length, f.get())) != map[idx].length) {
-	    return -1;
-	}
-
-	z.next_in = (Bytef *)buf;
-	z.avail_in = (int)n;
-	z.next_out = (Bytef *)b;
-	z.avail_out = hunk_len;
-	/* TODO: should use Z_FINISH, but that returns Z_BUF_ERROR */
-	if ((err = inflate(&z, 0)) != Z_OK && err != Z_STREAM_END) {
-	    return -1;
-	}
-	/* TODO: z.avail_out should be 0 */
-	n = hunk_len - z.avail_out;
-	break;
 
     case CHD_MAP_TYPE_UNCOMPRESSED:
 	if (fseeko(f.get(), map[idx].offset, SEEK_SET) == -1) {

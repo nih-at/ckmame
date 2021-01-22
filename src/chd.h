@@ -81,8 +81,6 @@ private:
     uint32_t compressors[4]; /* compression algorithms used */
 
     ChdMapEntry *map;          /* hunk map */
-    char *buf;                 /* decompression buffer */
-    z_stream z;                /* decompressor */
     uint32_t hno;              /* hunk currently in hbuf */
     unsigned char *hbuf;       /* hunk data buffer */
 
