@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <filesystem>
 
-Dir::Dir(std::string name, bool recursive) {
+Dir::Dir(std::string name, bool recursive) : index(0) {
     if (recursive) {
 	for (const auto &p : std::filesystem::recursive_directory_iterator(name)) {
 	    entries.push_back(p);
@@ -48,16 +48,12 @@ Dir::Dir(std::string name, bool recursive) {
     }
 
     std::sort(entries.begin(), entries.end());
-    std::reverse(entries.begin(), entries.end());
 }
 
 std::filesystem::path Dir::next() {
-    if (entries.empty()) {
+    if (index >= entries.size()) {
 	return "";
     }
 
-    auto ret = entries.back();
-    entries.pop_back();
-
-    return ret;
+    return entries[index++];
 }

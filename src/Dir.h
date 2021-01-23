@@ -46,6 +46,7 @@ class Dir {
 
  private:
     std::vector<std::filesystem::path> entries;
+    size_t index;
 };
 
 #endif /* HAD_DIR_H */

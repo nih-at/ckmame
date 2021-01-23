@@ -78,7 +78,7 @@
 		4B5FADD91735930100B67C24 /* detector_parse_ps.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACA81735919800B67C24 /* detector_parse_ps.cc */; };
 		4B5FADDA1735930100B67C24 /* detector_print.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACAA1735919800B67C24 /* detector_print.cc */; };
 		4B5FADDC1735930100B67C24 /* diagnostics.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACAE1735919800B67C24 /* diagnostics.cc */; };
-		4B5FADDD1735930100B67C24 /* dir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACAF1735919800B67C24 /* dir.cc */; };
+		4B5FADDD1735930100B67C24 /* Dir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACAF1735919800B67C24 /* Dir.cc */; };
 		4B5FADDE1735930100B67C24 /* disk.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACC61735924900B67C24 /* disk.cc */; };
 		4B5FADE01735930100B67C24 /* disk_new.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACC51735924900B67C24 /* disk_new.cc */; };
 		4B5FADE11735930100B67C24 /* error.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACC81735924900B67C24 /* error.cc */; };
@@ -364,7 +364,7 @@
 		4B5FACAC1735919800B67C24 /* detector.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = detector.cc; sourceTree = "<group>"; };
 		4B5FACAD1735919800B67C24 /* detector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = detector.h; sourceTree = "<group>"; };
 		4B5FACAE1735919800B67C24 /* diagnostics.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = diagnostics.cc; sourceTree = "<group>"; };
-		4B5FACAF1735919800B67C24 /* dir.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dir.cc; sourceTree = "<group>"; };
+		4B5FACAF1735919800B67C24 /* Dir.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Dir.cc; sourceTree = "<group>"; };
 		4B5FACC51735924900B67C24 /* disk_new.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = disk_new.cc; sourceTree = "<group>"; };
 		4B5FACC61735924900B67C24 /* disk.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = disk.cc; sourceTree = "<group>"; };
 		4B5FACC71735924900B67C24 /* disk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = disk.h; sourceTree = "<group>"; };
@@ -648,7 +648,7 @@
 		4B918BCF2508EAE0002D8F29 /* disk-unrelated.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-unrelated.test"; sourceTree = "<group>"; };
 		4B9232FE1780B2BA00096AA2 /* dbh_cache.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbh_cache.cc; sourceTree = "<group>"; };
 		4B9232FF1780B2FC00096AA2 /* dbh_cache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = dbh_cache.h; sourceTree = "<group>"; };
-		4B9292BC17633FFC00806C0A /* dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = dir.h; sourceTree = "<group>"; };
+		4B9292BC17633FFC00806C0A /* Dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dir.h; sourceTree = "<group>"; };
 		4B9292BD17633FFC00806C0A /* find.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = find.h; sourceTree = "<group>"; };
 		4B9292BF17633FFC00806C0A /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = globals.h; sourceTree = "<group>"; };
 		4B9292C017633FFC00806C0A /* result.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = result.h; sourceTree = "<group>"; };
@@ -877,8 +877,8 @@
 				4B5FACAD1735919800B67C24 /* detector.h */,
 				4B5FACAE1735919800B67C24 /* diagnostics.cc */,
 				4B3274C425B99F75006AEF16 /* diagnostics.h */,
-				4B5FACAF1735919800B67C24 /* dir.cc */,
-				4B9292BC17633FFC00806C0A /* dir.h */,
+				4B5FACAF1735919800B67C24 /* Dir.cc */,
+				4B9292BC17633FFC00806C0A /* Dir.h */,
 				4B5FACC51735924900B67C24 /* disk_new.cc */,
 				4B5FACC61735924900B67C24 /* disk.cc */,
 				4B5FACC71735924900B67C24 /* disk.h */,
@@ -1497,7 +1497,7 @@
 				4B5FADD91735930100B67C24 /* detector_parse_ps.cc in Sources */,
 				4B5FADDA1735930100B67C24 /* detector_print.cc in Sources */,
 				4B5FADDC1735930100B67C24 /* diagnostics.cc in Sources */,
-				4B5FADDD1735930100B67C24 /* dir.cc in Sources */,
+				4B5FADDD1735930100B67C24 /* Dir.cc in Sources */,
 				4B6B145424FF905900D3F3FB /* stats.cc in Sources */,
 				4B5FADDE1735930100B67C24 /* disk.cc in Sources */,
 				4B5FADE01735930100B67C24 /* disk_new.cc in Sources */,
