@@ -1,6 +1,6 @@
 description test mkmamedb database creation, ok
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.txt
-file mamedb.txt mamedb-disk-many.txt mamedb-disk-many.txt
+args -o mamedb-test.db mamedb.dat
+file mamedb.dat mamedb-disk-many.dat mamedb-disk-many.dat
 file-new mamedb-test.db mamedb-ok.dump

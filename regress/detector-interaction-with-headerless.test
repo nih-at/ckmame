@@ -2,9 +2,9 @@ description test header detector: which file is used when both versions (w, w/o 
 features LIBXML2
 return 0
 file detector.xml detector.xml detector.xml
-file mamedb-skipped.txt mamedb-skipped.txt mamedb-skipped.txt
+file mamedb-skipped.dat mamedb-skipped.dat mamedb-skipped.dat
 mkdir 755 extra
-mkdbargs --detector detector.xml mamedb-skipped.txt
+mkdbargs --detector detector.xml mamedb-skipped.dat
 args -FKLijvc -e extra
 file roms/skipped.zip 1-8-ok.zip 1-8-ok.zip
 # instead of the previous line, the next one would also be ok:

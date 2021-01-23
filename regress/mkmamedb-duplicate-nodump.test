@@ -1,7 +1,7 @@
 description test mkmamedb database creation, duplicate nodump ROM & sample
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.txt
-file mamedb.txt mamedb-duplicate-nodump.txt mamedb-duplicate-nodump.txt
+args -o mamedb-test.db mamedb.dat
+file mamedb.dat mamedb-duplicate-nodump.dat mamedb-duplicate-nodump.dat
 file-new mamedb-test.db mamedb-duplicate-nodump.dump
-stderr mamedb.txt: 7: the same rom listed multiple times (04.rom)
+stderr mamedb.dat: 7: the same rom listed multiple times (04.rom)
