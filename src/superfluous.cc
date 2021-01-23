@@ -60,6 +60,8 @@ list_directory(const std::string &dirname, const std::string &dbname) {
         }
     }
 
+    std::sort(list.begin(), list.end());
+
     try {
 	 Dir dir(dirname, false);
 	 std::filesystem::path filepath;
@@ -72,11 +74,12 @@ list_directory(const std::string &dirname, const std::string &dbname) {
 	     bool known = false;
 
 	     if (std::filesystem::is_directory(filepath)) {
+		 auto filename = filepath.filename();
 		 if (roms_unzipped) {
-		     known = (std::find(list.begin(), list.end(), filepath.filename()) != list.end());
+		     known = std::binary_search(list.begin(), list.end(), filename);;
 		 }
 		 else {
-		     bool dir_known = (std::find(list.begin(), list.end(), filepath.filename()) != list.end());
+		     bool dir_known = std::binary_search(list.begin(), list.end(), filename);
 		     list_game_directory(result, filepath, dir_known);
 		     known = true; /* we don't want directories in superfluous list (I think) */
 		 }
@@ -86,7 +89,7 @@ list_directory(const std::string &dirname, const std::string &dbname) {
 		 if (ext != "") {
 		     if (!roms_unzipped && ext == ".zip") {
 			 auto stem = filepath.stem();
-			 known = (std::find(list.begin(), list.end(), stem) != list.end());
+			 known = std::binary_search(list.begin(), list.end(), stem);
 		     }
 		 }
 	     }
