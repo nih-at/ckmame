@@ -84,8 +84,8 @@ list_directory(const std::string &dirname, const std::string &dbname) {
 	     else {
 		 auto ext = filepath.extension();
 		 if (ext != "") {
-		     auto stem = filepath.stem();
 		     if (!roms_unzipped && ext == ".zip") {
+			 auto stem = filepath.stem();
 			 known = (std::find(list.begin(), list.end(), stem) != list.end());
 		     }
 		 }
