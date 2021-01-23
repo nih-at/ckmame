@@ -42,14 +42,13 @@ enum parse_state { st_top, st_game, st_prog };
 
 class CmTokenizer {
 public:
-    CmTokenizer(const std::string &s) : string(s), position(s.c_str()), end(s.c_str() + s.length()) { }
+    CmTokenizer(const std::string &s) : string(s), position(0) { }
 
     std::string get();
 
 private:
     std::string string;
-    const char *position;
-    const char *end;
+    size_t position;
 };
 
 
@@ -332,35 +331,42 @@ bool ParserContext::parse_cm() {
 
 
 std::string CmTokenizer::get() {
-    if (position >= end) {
+    if (position == std::string::npos) {
         return "";
     }
 
-    auto s = position + strspn(position, " \t");
-    const char *e;
+    auto s = string.find_first_not_of(" \t", position);
+    if (s == std::string::npos) {
+	position = std::string::npos;
+	return "";
+    }
 
-    switch (*s) {
+    size_t e;
+
+    switch (string[s]) {
         case '\0':
         case '\n':
         case '\r':
-            position = end;
+            position = std::string::npos;
             return "";
 
         case '\"':
             s++;
-            e = s + strcspn(s, "\"");
+	    e = string.find_first_of("\"", s);
             break;
 
         default:
-            e = s + strcspn(s, " \t\n\r");
+            e = string.find_first_of(" \t\n\r", s);
             break;
     }
 
-    auto length = static_cast<size_t>(e - s);
+    if (e == std::string::npos) {
+	e = string.size();
+    }
     position = e;
-    if (*position != '\0') {
+    if (string[position] != '\0') {
         position++;
     }
 
-    return std::string(s, length);
+    return string.substr(s, e-s);
 }
