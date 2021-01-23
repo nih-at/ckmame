@@ -76,7 +76,7 @@ bool rename_or_move(const std::string &old, const std::string &new_name) {
     std::error_code ec;
     std::filesystem::rename(old, new_name, ec);
     if (ec) {
-        std::filesystem::copy_file(old, new_name, ec);
+        std::filesystem::copy_file(old, new_name, std::filesystem::copy_options::overwrite_existing, ec);
         if (ec) {
 	    seterrinfo(old, "");
 	    myerror(ERRFILESTR, "cannot rename to '%s'", new_name.c_str());
