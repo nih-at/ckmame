@@ -85,8 +85,11 @@ bool ParserContext::parse_cm() {
                 }
                 else if (cmd == "emulator" || cmd == "clrmamepro") {
                     parse_state = st_prog;
-		    /* skip value */
-		    tokenizer.get();
+                    auto brace = tokenizer.get();
+		    if (brace != "(") {
+			myerror(ERRFILE, "%zu: expected '(', got '%s'", lineno, brace.c_str());
+			break;
+		    }
                 }
 		else if (cmd == "BEGIN" || cmd == "END") {
 		    /* TODO: beginning/end of file, ignored for now */
@@ -308,6 +311,13 @@ bool ParserContext::parse_cm() {
                 else if (cmd == ")") {
                     parse_state = st_top;
                 }
+		else if (cmd == "author" || cmd == "comment" || cmd == "forcemerging" || cmd == "forcenodump" || cmd == "forcepacking") {
+		    /* skip value */
+		    tokenizer.get();
+		}
+		else {
+		    myerror(ERRFILE, "%zu: unexpected token '%s'", lineno, cmd.c_str());
+		}
                 break;
         }
 	std::string leftover = tokenizer.get();
