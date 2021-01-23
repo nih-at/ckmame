@@ -48,6 +48,7 @@ Dir::Dir(std::string name, bool recursive) {
     }
 
     std::sort(entries.begin(), entries.end());
+    std::reverse(entries.begin(), entries.end());
 }
 
 std::filesystem::path Dir::next() {
@@ -55,8 +56,8 @@ std::filesystem::path Dir::next() {
 	return "";
     }
 
-    auto ret = entries[0];
-    entries.erase(entries.begin());
+    auto ret = entries.back();
+    entries.pop_back();
 
     return ret;
 }
