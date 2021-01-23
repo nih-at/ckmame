@@ -60,8 +60,8 @@ game (
 )
 
 game (
-	game "rom data in weird order"
-	romm ( crc32 12345678 size 8 name 08.rom )
+	name "rom data in weird order"
+	rom ( crc32 12345678 size 8 name 08.rom )
 )
 
 END

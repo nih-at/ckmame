@@ -4,4 +4,18 @@ program mkmamedb
 args -o mamedb-test.db mamedb.cmpro-bad
 file mamedb.cmpro-bad mamedb.cmpro-bad mamedb.cmpro-bad
 file-new mamedb-test.db mamedb-cmpro-bad-ok.dump
-stderr mamedb.cmpro-bad: 7: TODO lots of errors about problems
+stderr mamedb.cmpro-bad: 9: game without name
+stderr mamedb.cmpro-bad: 11: in wrong state
+stderr mamedb.cmpro-bad: 32: game without name
+stderr mamedb.cmpro-bad: 34: in wrong state
+stderr mamedb.cmpro-bad: 36: game without name
+stderr mamedb.cmpro-bad: 38: in wrong state
+stderr mamedb.cmpro-bad: 40: game without name
+stderr mamedb.cmpro-bad: 42: in wrong state
+stderr mamedb.cmpro-bad: 44: game without name
+stderr mamedb.cmpro-bad: 46: in wrong state
+stderr mamedb.cmpro-bad: 48: game without name
+stderr mamedb.cmpro-bad: 50: in wrong state
+stderr mamedb.cmpro-bad: 52: game without name
+stderr mamedb.cmpro-bad: 54: in wrong state
+stderr mamedb.cmpro-bad: 64: expected token (name) not found
