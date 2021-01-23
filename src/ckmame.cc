@@ -477,11 +477,13 @@ main(int argc, char **argv) {
 	detector = db->read_detector();
     }
 
-    if (action != ACTION_CLEANUP_EXTRA_ONLY)
+    if (action != ACTION_CLEANUP_EXTRA_ONLY) {
 	superfluous = list_directory(get_directory(), dbname);
+    }
 
-    if ((fix_options & FIX_DO) && (fix_options & FIX_CLEANUP_EXTRA))
+    if ((fix_options & FIX_DO) && (fix_options & FIX_CLEANUP_EXTRA)) {
 	ensure_extra_maps((action == ACTION_CHECK_ROMSET ? DO_MAP : 0) | DO_LIST);
+    }
 
 #ifdef SIGINFO
     signal(SIGINFO, sighandle);
@@ -521,8 +523,9 @@ main(int argc, char **argv) {
 	extra_delete_list->execute();
     }
 
-    if ((action == ACTION_CHECK_ROMSET && (optind == argc && (output_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY)
+    if ((action == ACTION_CHECK_ROMSET && (optind == argc && (output_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY) {
 	print_superfluous(superfluous);
+    }
     
     if (print_stats) {
 	stats.print(stdout, false);
