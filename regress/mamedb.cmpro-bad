@@ -64,4 +64,9 @@ game (
 	rom ( crc32 12345678 size 8 name 08.rom )
 )
 
+game (
+	name "first name"
+	name "second name"
+)
+
 END

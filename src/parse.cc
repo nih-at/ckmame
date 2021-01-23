@@ -303,8 +303,12 @@ bool ParserContext::game_end() {
     CHECK_STATE(PARSE_IN_GAME);
     
     auto ok = true;
-    
-    if (!ignore_game(g->name)) {
+
+    if (g->name.empty()) {
+        myerror(ERRFILE, "%d: game without name", lineno);
+	ok = false;
+    }
+    else if (!ignore_game(g->name)) {
 	/* omit description if same as name (to save space) */
         if (g->name == g->description) {
             g->description = "";
@@ -329,6 +333,11 @@ bool ParserContext::game_end() {
 
 bool ParserContext::game_name(const std::string &attr) {
     CHECK_STATE(PARSE_IN_GAME);
+
+    if (!g->name.empty()) {
+	myerror(ERRFILE, "%d: game has two 'name' tokens", lineno);
+	return false;
+    }
 
     g->name = attr;
 

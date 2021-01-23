@@ -158,7 +158,6 @@ set(EXTRA_TESTS
   mkmamedb-merge-wrong-name.test
   mkmamedb-mess.test
   mkmamedb-multi-dats.test
-  mkmamedb-no-name.test
   mkmamedb-ok.test
   mkmamedb-parent-crcdiff-mame.test
   mkmamedb-parent-crcdiff.test
@@ -279,7 +278,6 @@ set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   disk-swapmerge.test
-  mkmamedb-cmpro-bad.test
   nogood-diskgood.test
   rom-from-extra-duplicate.test
   uncompressed-ckmamedb-known-extra.test
