@@ -41,8 +41,8 @@ set(DBS
 foreach(db ${DBS})
   get_filename_component(main ${db} NAME_WE)
   add_custom_command(OUTPUT "${db}"
-    COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/${main}.txt"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${main}.txt"
+    COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/${main}.dat"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${main}.dat"
     COMMENT "Generating ${db}"
     )
 endforeach()
@@ -56,12 +56,12 @@ add_custom_target(testinput
 add_custom_target(update-mamedb.dump
   COMMAND dbdump ${CMAKE_CURRENT_BINARY_DIR}/mame.db > ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-ok.dump
   COMMAND dbdump ${CMAKE_CURRENT_BINARY_DIR}/mamedb-lost-parent-ok.db > ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-lost-parent.dump
-  COMMAND mkmamedb -o mame.db.tmp ${CMAKE_CURRENT_SOURCE_DIR}/mame.txt ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-lost-parent-ok.txt
+  COMMAND mkmamedb -o mame.db.tmp ${CMAKE_CURRENT_SOURCE_DIR}/mame.dat ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-lost-parent-ok.dat
   COMMAND dbdump mame.db.tmp > mamedb-duplicate-game.dump
   COMMAND cmake -E remove mame.db.tmp
   COMMAND dbdump mamedb-parent-crcdiff.db > mamedb-parent-crcdiff.dump
   COMMAND dbdump mamedb-parent-no-common.db > mamedb-parent-no-common.dump
-  COMMAND mkmamedb -o tmptmp.db ${CMAKE_CURRENT_SOURCE_DIR}/mame.txt ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-2.txt
+  COMMAND mkmamedb -o tmptmp.db ${CMAKE_CURRENT_SOURCE_DIR}/mame.dat ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-2.dat
   COMMAND dbdump tmptmp.db > mamedb-multi-dats.dump
   COMMAND cmake -E remove tmptmp.db
   DEPENDS ${DBS}
@@ -166,6 +166,7 @@ set(EXTRA_TESTS
   mkmamedb-parent-no-common.test
   mkmamedb-rc-ok.test
   mkmamedb-size-hex.test
+  mkmamedb-zipped-ok.test
   multi.test
   needed-cleanup.test
   needed-error.test
