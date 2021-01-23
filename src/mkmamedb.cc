@@ -33,6 +33,7 @@
 
 #include <filesystem>
 
+#include <fnmatch.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -104,10 +105,10 @@ struct option options[] = {
     {NULL, 0, 0, 0},
 };
 
-#define DEFAULT_FILES_ONLY "*.dat"
+#define DEFAULT_FILE_PATTERNS "*.dat"
 
-static int process_file(const char *, const std::unordered_set<std::string> &, const DatEntry *, const std::unordered_set<std::string> &, const std::unordered_set<std::string> &, OutputContext *);
-static int process_stdin(const std::unordered_set<std::string> &, const DatEntry *, OutputContext *);
+static int process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out);
+static int process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
 
 static int hashtypes;
 static bool cache_directory;
@@ -119,7 +120,7 @@ main(int argc, char **argv) {
     const char *dbname, *dbname_real;
     char tmpnam_buffer[L_tmpnam];
     std::unordered_set<std::string> exclude;
-    std::unordered_set<std::string> only_files;
+    std::vector<std::string> file_patterns;
     std::unordered_set<std::string> skip_files;
     DatEntry dat;
     OutputContext::Format fmt;
@@ -201,7 +202,7 @@ main(int argc, char **argv) {
                 cache_directory = false;
                 break;
             case OPT_ONLY_FILES:
-                only_files.insert(optarg);
+                file_patterns.push_back(optarg);
                 break;
             case OPT_PROG_DESCRIPTION:
                 dat.description = optarg;
@@ -268,10 +269,11 @@ main(int argc, char **argv) {
 	process_stdin(exclude, &dat, out.get());
     }
     else {
-        only_files.insert(DEFAULT_FILES_ONLY);
+        // TODO: this isn't overridable by --only-files?
+        file_patterns.push_back(DEFAULT_FILE_PATTERNS);
 
 	for (i = optind; i < argc; i++) {
-	    if (process_file(argv[i], exclude, &dat, only_files, skip_files, out.get()) < 0) {
+	    if (process_file(argv[i], exclude, &dat, file_patterns, skip_files, out.get()) < 0) {
 		i = argc;
 		ret = -1;
 	    }
@@ -297,8 +299,7 @@ main(int argc, char **argv) {
 }
 
 
-int
-process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::unordered_set<std::string> &files_only, const std::unordered_set<std::string> &files_skip, OutputContext *out) {
+static int process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out) {
     struct zip *za;
 
     try {
@@ -318,10 +319,19 @@ process_file(const char *fname, const std::unordered_set<std::string> &exclude, 
 	for (i = 0; i < zip_get_num_files(za); i++) {
 	    name = zip_get_name(za, i, 0);
 
-            if (files_only.find(name) == files_only.end() || files_skip.find(name) != files_skip.end()) {
-		continue;
+            if (files_skip.find(name) != files_skip.end()) {
+                continue;
             }
-
+            auto skip = true;
+            for (auto &pattern : file_patterns) {
+                if (fnmatch(pattern.c_str(), name, 0) == 0) {
+                    skip = false;
+                    break;
+                }
+            }
+            if (skip) {
+                continue;
+            }
             try {
                 auto ps = std::make_shared<ParserSourceZip>(fname, za, name);
 
@@ -370,8 +380,7 @@ process_file(const char *fname, const std::unordered_set<std::string> &exclude, 
 }
 
 
-int
-process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
+static int process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
     try {
         auto ps = std::make_shared<ParserSourceFile>("");
 
