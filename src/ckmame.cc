@@ -414,6 +414,7 @@ main(int argc, char **argv) {
 	    myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	    exit(1);
 	}
+	std::sort(list.begin(), list.end());
 
 	if (game_list) {
 	    char b[8192];
@@ -434,7 +435,7 @@ main(int argc, char **argv) {
 		    continue;
 		}
 
-		if (std::find(list.begin(), list.end(), b) != list.end()) {
+		if (std::binary_search(list.begin(), list.end(), b)) {
 		    check_tree.add(b);
 		}
 		else {
@@ -450,7 +451,7 @@ main(int argc, char **argv) {
 	else {
 	    for (auto i = optind; i < argc; i++) {
 		if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-		    if (std::find(list.begin(), list.end(), argv[i]) != list.end()) {
+		    if (std::binary_search(list.begin(), list.end(), argv[i])) {
 			check_tree.add(argv[i]);
 		    }
 		    else {

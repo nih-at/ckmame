@@ -239,6 +239,7 @@ main(int argc, char **argv) {
 	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
 	exit(1);
     }
+    std::sort(list.begin(), list.end());
 
     /* find matches for ROMs */
     if (find_checksum != 0) {
@@ -266,7 +267,7 @@ main(int argc, char **argv) {
 		    putc('\n', stdout);
 		dump_special(argv[i]);
 	    }
-	    else if (std::find(list.begin(), list.end(), argv[i]) != list.end()) {
+	    else if (std::binary_search(list.begin(), list.end(), argv[i])) {
 		if (first)
 		    first = 0;
 		else

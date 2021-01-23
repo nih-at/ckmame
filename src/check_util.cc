@@ -204,7 +204,7 @@ enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list, const std:
 	if (dbh) {
 	    auto list_db = dbh_cache_list_archives(dbh.get());
 	    if (!list_db.empty()) {
-		std::sort(list_db.begin(), list_db.end());
+		std::sort(list.begin(), list.end());
 
 		for (auto entry_name : list_db) {
 		    std::string name = directory_name;
@@ -214,7 +214,7 @@ enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list, const std:
 			    name += ".zip";
 			}
 		    }
-		    if (std::find(list.begin(), list.end(), name) == list.end()) {
+		    if (!std::binary_search(list.begin(), list.end(), name)) {
 			dbh_cache_delete_by_name(dbh.get(), name);
 		    }
 		}
