@@ -144,8 +144,7 @@ set(EXTRA_TESTS
   misnamed-nofix.test
   misnamed.test
   mkmamedb-broken-sha1.test
-# causes core dump
-#  mkmamedb-cmpro-bad.test
+  mkmamedb-cmpro-bad.test
   mkmamedb-dir-in-name.test
   mkmamedb-duplicate-game.test
   mkmamedb-duplicate-nodump.test
@@ -280,6 +279,7 @@ set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   disk-swapmerge.test
+  mkmamedb-cmpro-bad.test
   nogood-diskgood.test
   rom-from-extra-duplicate.test
   uncompressed-ckmamedb-known-extra.test
