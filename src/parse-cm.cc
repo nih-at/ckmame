@@ -352,7 +352,43 @@ std::string CmTokenizer::get() {
 
         case '\"':
             s++;
-	    e = string.find_first_of("\"", s);
+	    e = string.find_first_of("\\\"", s);
+            if (e == std::string::npos) {
+                // TODO: treat missing closing quote as error?
+                break;
+            }
+            if (string[e] == '\\') {
+                std::string token = string.substr(s, e - s);
+
+                while (string[e] == '\\') {
+                    switch (string[e + 1]) {
+                        case '\0':
+                            // TODO: treat trailing \\ as error?
+                            token += '\\';
+                            position = std::string::npos;
+                            return token;
+
+                        // TODO: other C style escapes like \n?
+
+                        default:
+                            token += string[e + 1];
+                    }
+                    
+                    e += 2;
+                    
+                    auto next = string.find_first_of("\\\"", e);
+                    if (next == std::string::npos) {
+                        // TODO: treat missing closing " as error?
+                        position = next;
+                        token += string.substr(e);
+                        return token;
+                    }
+                    token += string.substr(e, next - e);
+                    e = next;
+                }
+                position = e + 1;
+                return token;
+            }
             break;
 
         default:
