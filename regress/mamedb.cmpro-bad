@@ -69,4 +69,8 @@ game (
 	name "second name"
 )
 
+game (
+	name "quoted \" and quoted \' and quoted \ "
+)
+
 END

@@ -10,5 +10,6 @@
 5|name last|<null>|one eight byte file (alternate)|0
 6|rom data in weird order|<null>|<null>|0
 7|first name|<null>|<null>|0
+8|quoted " and quoted ' and quoted  |<null>|<null>|0
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)
