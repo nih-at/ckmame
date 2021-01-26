@@ -85,6 +85,8 @@ set(EXTRA_TESTS
   disk-from-extra.test
   disk-from-superfluous-all.test
   disk-from-superfluous.test
+  # causes unhandled exception
+  #disk-invalid.test
   disk-merge.test
   disk-miss.test
   disk-nogood-copy.test
