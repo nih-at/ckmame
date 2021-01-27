@@ -20,6 +20,8 @@
     - rc
     - xml
 
+- re-add support for zipped dat + unzipped detector ("fallback from zip to file not implemented")
+
 # Later
 
 * convert runtest to use ziptool instead of unzip
