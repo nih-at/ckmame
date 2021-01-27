@@ -70,7 +70,7 @@ main(int argc, char *argv[]) {
 
     fname = argv[1];
 
-    seterrinfo(fname, "");
+    seterrinfo(fname);
 
     if (stat(fname, &st) != 0) {
 	myerror(ERRSTR, "can't stat database '%s'", fname);

@@ -253,7 +253,7 @@ main(int argc, char **argv) {
 
     if (detector_name) {
 #if defined(HAVE_LIBXML2)
-	seterrinfo(detector_name, "");
+	seterrinfo(detector_name);
 	detector = Detector::parse(detector_name);
         if (detector != NULL) {
             out->detector(detector.get());

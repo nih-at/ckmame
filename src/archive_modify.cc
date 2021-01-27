@@ -127,7 +127,7 @@ void Archive::update_cache() {
 
 bool Archive::file_add_empty(const std::string &filename) {
     if (!is_writable()) {
-	seterrinfo(name, "");
+	seterrinfo(name);
 	myerror(ERRZIP, "cannot add to read-only archive");
 	return false;
     }
@@ -165,18 +165,18 @@ bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, 
 
 bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const File *f) {
     if (!is_writable()) {
-        seterrinfo(name, "");
+        seterrinfo(name);
 	myerror(ERRZIP, "cannot add to read-only archive");
 	return false;
     }
 
     if (filetype != source_archive->filetype) {
-        seterrinfo(name, "");
+        seterrinfo(name);
 	myerror(ERRZIP, "cannot copy to archive of different type '%s'", name.c_str()); // TODO: filetype name, not archive name
 	return false;
     }
     if (file_index_by_name(filename).has_value()) {
-        seterrinfo(name, "");
+        seterrinfo(name);
 	errno = EEXIST;
 	myerror(ERRZIP, "can't copy to %s: %s", filename.c_str(), strerror(errno));
 	return false;
@@ -223,13 +223,13 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 
 bool Archive::file_delete(uint64_t index) {
     if (!is_writable()) {
-	seterrinfo(name, "");
+	seterrinfo(name);
 	myerror(ERRZIP, "cannot delete from read-only archive");
 	return false;
     }
 
     if (files[index].where != FILE_INGAME) {
-	seterrinfo(name, "");
+	seterrinfo(name);
 	myerror(ERRZIP, "cannot delete broken/added/deleted file");
 	return false;
     }
@@ -254,7 +254,7 @@ bool Archive::file_move(Archive *source_archive, uint64_t source_index, const st
 }
 
 bool Archive::file_rename(uint64_t index, const std::string &filename) {
-    seterrinfo(name, "");
+    seterrinfo(name);
 
     if (!is_writable()) {
 	myerror(ERRZIP, "cannot rename in read-only archive");
@@ -284,7 +284,7 @@ bool Archive::file_rename(uint64_t index, const std::string &filename) {
 
 bool Archive::file_rename_to_unique(uint64_t index) {
     if (!is_writable()) {
-	seterrinfo(name, "");
+	seterrinfo(name);
 	myerror(ERRZIP, "cannot rename in read-only archive");
 	return false;
     }

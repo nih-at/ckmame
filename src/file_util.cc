@@ -48,7 +48,7 @@ link_or_copy(const std::string &old, const std::string &new_name) {
     std::filesystem::create_hard_link(old, new_name, ec);
     if (ec) {
 	if (!std::filesystem::copy_file(old, new_name, ec) || ec) {
-	    seterrinfo(old, "");
+	    seterrinfo(old);
 	    myerror(ERRFILESTR, "cannot link to '%s'", new_name.c_str());
 	    return false;
 	}
@@ -63,7 +63,7 @@ my_remove(const std::string &name) {
     std::error_code ec;
     std::filesystem::remove(name, ec);
     if (ec) {
-	seterrinfo(name, "");
+	seterrinfo(name);
 	myerror(ERRFILE, "cannot remove: %s", ec.message().c_str());
 	return false;
     }
@@ -78,7 +78,7 @@ bool rename_or_move(const std::string &old, const std::string &new_name) {
     if (ec) {
         std::filesystem::copy_file(old, new_name, std::filesystem::copy_options::overwrite_existing, ec);
         if (ec) {
-	    seterrinfo(old, "");
+	    seterrinfo(old);
 	    myerror(ERRFILESTR, "cannot rename to '%s'", new_name.c_str());
 	    return false;
 	}

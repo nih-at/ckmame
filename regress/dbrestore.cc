@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
     std::string dump_fname = argv[optind];
     std::string db_fname = argv[optind + 1];
 
-    seterrinfo(dump_fname, "");
+    seterrinfo(dump_fname);
 
     auto f = make_shared_file(dump_fname, "r");
     if (!f) {

@@ -419,7 +419,7 @@ main(int argc, char **argv) {
 	if (game_list) {
 	    char b[8192];
 
-	    seterrinfo(game_list, "");
+	    seterrinfo(game_list);
 
 	    auto f = make_shared_file(game_list, "r");
 	    if (!f) {

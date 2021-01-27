@@ -51,7 +51,7 @@ ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname),
         f = make_shared_stdin();
     }
 
-    seterrinfo(file_name, "");
+    seterrinfo(file_name);
 }
 
 ParserSourceFile::~ParserSourceFile() {

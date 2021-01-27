@@ -130,7 +130,7 @@ bool ArchiveZip::file_add_empty_xxx(const std::string &filename) {
     struct zip_source *source;
 
     if (filetype != TYPE_ROM) {
-	seterrinfo(name, "");
+	seterrinfo(name);
 	myerror(ERRZIP, "cannot add files to disk");
 	return false;
     }
