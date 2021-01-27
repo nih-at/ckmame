@@ -40,22 +40,38 @@
 #include <string.h>
 
 #include "game.h"
+#include "GameArchives.h"
 #include "images.h"
 #include "match.h"
 #include "match_disk.h"
 
-class Result {
-public:
-    Result(const Game *g, const Archive *a, const Images *im);
-    
-    game_status_t game;
-
-    std::vector<Match> roms;
-    std::vector<file_status_> files;
-
-    std::vector<MatchDisk> disks;
-    std::vector<file_status_> images;
+enum GameStatus {
+    GS_MISSING, /* not a single own ROM found */
+    GS_CORRECT, /* all ROMs correct */
+    GS_FIXABLE, /* only fixable errors */
+    GS_PARTIAL, /* some ROMs missing */
+    GS_OLD      /* all ROMs in old */
 };
 
+enum FileStatus {
+    FS_MISSING,     /* file does not exist (only used for disks) */
+    FS_UNKNOWN,     /* unknown */
+    FS_BROKEN,      /* file in zip broken (invalid data / crc error) */
+    FS_PARTUSED,    /* part needed here, whole file unknown */
+    FS_SUPERFLUOUS, /* known, not needed here, and exists elsewhere */
+    FS_NEEDED,      /* known and needed elsewhere */
+    FS_USED,        /* needed here */
+    FS_DUPLICATE    /* exists in old */
+};
+
+class Result {
+public:
+    Result(const Game *g, const GameArchives &a);
+    
+    GameStatus game;
+    
+    std::vector<Match> game_files[TYPE_MAX];
+    std::vector<FileStatus> archive_files[TYPE_MAX];
+};
 
 #endif /* result.h */

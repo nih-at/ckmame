@@ -53,29 +53,6 @@ enum quality {
 
 typedef enum quality quality_t;
 
-enum file_status_ {
-    FS_MISSING,     /* file does not exist (only used for disks) */
-    FS_UNKNOWN,     /* unknown */
-    FS_BROKEN,      /* file in zip broken (invalid data / crc error) */
-    FS_PARTUSED,    /* part needed here, whole file unknown */
-    FS_SUPERFLUOUS, /* known, not needed here, and exists elsewhere */
-    FS_NEEDED,      /* known and needed elsewhere */
-    FS_USED,        /* needed here */
-    FS_DUPLICATE    /* exists in old */
-};
-
-typedef enum file_status_ file_status__t;
-
-enum game_status {
-    GS_MISSING, /* not a single own ROM found */
-    GS_CORRECT, /* all ROMs correct */
-    GS_FIXABLE, /* only fixable errors */
-    GS_PARTIAL, /* some ROMs missing */
-    GS_OLD      /* all ROMs in old */
-};
-
-typedef enum game_status game_status_t;
-
 enum where {
     FILE_NOWHERE = -1,
     FILE_INGAME,

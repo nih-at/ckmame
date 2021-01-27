@@ -37,10 +37,8 @@
 #include "archive.h"
 #include "result.h"
 
-void check_archive(ArchivePtr archive, const std::string &gamename, Result *result);
-void check_disks(Game *, ImagesPtr [], Result *);
-void check_files(Game *, ArchivePtr [], Result *);
-void check_images(Images *im, const std::string &gamename, Result *result);
-void check_old(Game *, Result *);
+void check_archive_files(filetype_t ft, const GameArchives &archives, const std::string &gamename, Result *result);
+void check_game_files(Game *, filetype_t ft, GameArchives *archives, Result *result);
+void check_old(Game *game, Result *res);
 
 #endif /* _HAD_CHECK_H */

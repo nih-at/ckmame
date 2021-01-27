@@ -45,17 +45,15 @@ check_old(Game *game, Result *result) {
 
     auto all_old = true;
     
-    for (size_t i = 0; i < game->roms.size(); i++) {
-        if (find_in_old(&game->roms[i], NULL, &result->roms[i]) != FIND_EXISTS) {
-	    all_old = false;
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        for (size_t i = 0; i < game->files[ft].size(); i++) {
+            if (find_in_old(ft, &game->files[ft][i], NULL, &result->game_files[ft][i]) != FIND_EXISTS) {
+                all_old = false;
+            }
         }
     }
 
     if (all_old) {
 	result->game = GS_OLD;
-    }
-
-    for (size_t i = 0; i < game->disks.size(); i++) {
-        find_disk_in_old(&game->disks[i], &result->disks[i]);
     }
 }

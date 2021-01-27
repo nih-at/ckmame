@@ -116,8 +116,7 @@ private:
     parser_state_t state;
     DatEntry de; /* info about dat file */
     GamePtr g;      /* current game */
-    File *r;      /* current ROM */
-    Disk *d;      /* current disk */
+    File *r[TYPE_MAX];      /* current files */
 };
 
 #endif /* parse.h */

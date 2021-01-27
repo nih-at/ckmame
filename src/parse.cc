@@ -150,12 +150,7 @@ bool ParserContext::file_status(filetype_t ft, const std::string &attr) {
 	return false;
     }
  
-    if (ft == TYPE_DISK) {
-        d->status = status;
-    }
-    else {
-        r->status = status;
-    }
+    r[ft]->status = status;
 
     return true;
 }
@@ -171,12 +166,7 @@ bool ParserContext::file_hash(filetype_t ft, int ht, const std::string &attr) {
 	return 0;
     }
 
-    if (ft == TYPE_DISK) {
-        h = &d->hashes;
-    }
-    else {
-        h = &r->hashes;
-    }
+    h = &r[ft]->hashes;
 
     if (h->set_from_string(attr) != ht) {
 	myerror(ERRFILE, "%d: invalid argument for %s", lineno, Hashes::type_name(ht).c_str());
@@ -204,12 +194,7 @@ bool ParserContext::file_ignore(filetype_t ft) {
 bool ParserContext::file_merge(filetype_t ft, const std::string &attr) {
     CHECK_STATE(PARSE_IN_FILE);
 
-    if (ft == TYPE_DISK) {
-        d->merge = attr;
-    }
-    else {
-        r->merge = attr;
-    }
+    r[ft]->merge = attr;
 
     return true;
 }
@@ -217,10 +202,8 @@ bool ParserContext::file_merge(filetype_t ft, const std::string &attr) {
 
 bool ParserContext::file_mtime(filetype_t ft, time_t mtime) {
     CHECK_STATE(PARSE_IN_FILE);
-
-    if (ft == TYPE_ROM) {
-        r->mtime = mtime;
-    }
+    
+    r[ft]->mtime = mtime;
 
     return true;
 }
@@ -229,16 +212,16 @@ bool ParserContext::file_mtime(filetype_t ft, time_t mtime) {
 bool ParserContext::file_name(filetype_t ft, const std::string &attr) {
     CHECK_STATE(PARSE_IN_FILE);
 
-    if (ft == TYPE_DISK) {
-        d->name = attr;
-    }
-    else {
+    if (ft == TYPE_ROM) {
         auto name = std::string(attr);
         
         /* TODO: warn about broken dat file? */
         std::replace(name.begin(), name.end(), '\\', '/');
         
-        r->name = name;
+        r[ft]->name = name;
+    }
+    else {
+        r[ft]->name = attr;
     }
 
     return true;
@@ -259,7 +242,7 @@ bool ParserContext::file_size(filetype_t ft, uint64_t size) {
         return false;
     }
 
-    r->size = size;
+    r[ft]->size = size;
     return true;
 }
 
@@ -267,14 +250,8 @@ bool ParserContext::file_size(filetype_t ft, uint64_t size) {
 bool ParserContext::file_start(filetype_t ft) {
     CHECK_STATE(PARSE_IN_GAME);
 
-    if (ft == TYPE_DISK) {
-        g->disks.push_back(Disk());
-        d = &g->disks[g->disks.size() - 1];
-    }
-    else {
-        g->roms.push_back(File());
-        r = &g->roms[g->roms.size() - 1];
-    }
+    g->files[ft].push_back(File());
+    r[ft] = &g->files[ft][g->files[ft].size() - 1];
 
     state = PARSE_IN_FILE;
 
@@ -437,9 +414,12 @@ ParserContext::~ParserContext() {
 }
 
 
-ParserContext::ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER), r(NULL), d(NULL) {
+ParserContext::ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER) {
     dat_default.merge(dat, NULL);
     full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
+    for (size_t i = 0; i < TYPE_MAX; i++) {
+        r[i] = NULL;
+    }
 }
 
 
@@ -456,12 +436,12 @@ bool ParserContext::header_end() {
 
 
 void ParserContext::disk_end() {
-    if (d->hashes.empty()) {
-        d->status = STATUS_NODUMP;
+    if (r[TYPE_DISK]->hashes.empty()) {
+        r[TYPE_DISK]->status = STATUS_NODUMP;
     }
 
-    if (d->name == d->merge) {
-        d->merge = "";
+    if (r[TYPE_DISK]->name == r[TYPE_DISK]->merge) {
+        r[TYPE_DISK]->merge = "";
     }
 }
 
@@ -477,25 +457,25 @@ bool ParserContext::ignore_game(const std::string &name) {
 }
 
 
-void ParserContext::rom_end(filetype_t) {
-    size_t n = g->roms.size() - 1;
+void ParserContext::rom_end(filetype_t ft) {
+    size_t n = g->files[ft].size() - 1;
 
-    if (r->size == 0) {
+    if (r[ft]->size == 0) {
         unsigned char zeroes[Hashes::MAX_SIZE];
 
         memset(zeroes, 0, sizeof(zeroes));
         
         /* some dats don't record crc for 0-byte files, so set it here */
-        if (!r->hashes.has_type(Hashes::TYPE_CRC)) {
-            r->hashes.set(Hashes::TYPE_CRC, zeroes);
+        if (!r[ft]->hashes.has_type(Hashes::TYPE_CRC)) {
+            r[ft]->hashes.set(Hashes::TYPE_CRC, zeroes);
         }
         
         /* some dats record all-zeroes md5 and sha1 for 0 byte files, fix */
-        if (r->hashes.has_type(Hashes::TYPE_MD5) && r->hashes.verify(Hashes::TYPE_MD5, zeroes)) {
-            r->hashes.set(Hashes::TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
+        if (r[ft]->hashes.has_type(Hashes::TYPE_MD5) && r[ft]->hashes.verify(Hashes::TYPE_MD5, zeroes)) {
+            r[ft]->hashes.set(Hashes::TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
         }
-        if (r->hashes.has_type(Hashes::TYPE_SHA1) && r->hashes.verify(Hashes::TYPE_SHA1, zeroes)) {
-            r->hashes.set(Hashes::TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
+        if (r[ft]->hashes.has_type(Hashes::TYPE_SHA1) && r[ft]->hashes.verify(Hashes::TYPE_SHA1, zeroes)) {
+            r[ft]->hashes.set(Hashes::TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
         }
     }
 
@@ -506,47 +486,47 @@ void ParserContext::rom_end(filetype_t) {
         deleted = true;
     }
     else if (flags & PARSE_FL_ROM_CONTINUED) {
-        auto &rom2 = g->roms[n - 1];
-        rom2.size += r->size;
+        auto &rom2 = g->files[ft][n - 1];
+        rom2.size += r[ft]->size;
 	deleted = true;
     }
-    else if (r->name.empty()) {
+    else if (r[ft]->name.empty()) {
 	myerror(ERRFILE, "%d: ROM without name", lineno);
 	deleted = true;
     }
     for (size_t j = 0; j < n && !deleted; j++) {
-        auto &rom2 = g->roms[j];
-        if (r->compare_size_crc(rom2)) {
+        auto &rom2 = g->files[ft][j];
+        if (r[ft]->compare_size_crc(rom2)) {
 	    /* TODO: merge in additional hash types? */
-            if (r->compare_name(rom2)) {
-		myerror(ERRFILE, "%d: the same rom listed multiple times (%s)", lineno, r->name.c_str());
+            if (r[ft]->compare_name(rom2)) {
+		myerror(ERRFILE, "%d: the same rom listed multiple times (%s)", lineno, r[ft]->name.c_str());
 		deleted = true;
 		break;
 	    }
-            else if (!rom2.merge.empty() && r->merge == rom2.merge) {
+            else if (!rom2.merge.empty() && r[ft]->merge == rom2.merge) {
 		/* file_add_altname(r2, file_name(r)); */
-		myerror(ERRFILE, "%d: the same rom listed multiple times (%s, merge-name %s)", lineno, r->name.c_str(), r->merge.c_str());
+                myerror(ERRFILE, "%d: the same rom listed multiple times (%s, merge-name %s)", lineno, r[ft]->name.c_str(), r[ft]->merge.c_str());
 		deleted = true;
 		break;
 	    }
 	}
-        else if (r->compare_name(rom2)) {
-	    myerror(ERRFILE, "%d: two different roms with same name (%s)", lineno, r->name.c_str());
+        else if (r[ft]->compare_name(rom2)) {
+	    myerror(ERRFILE, "%d: two different roms with same name (%s)", lineno, r[ft]->name.c_str());
 	    deleted = true;
 	    break;
 	}
     }
-    if (!r->merge.empty() && g->cloneof[0].empty()) {
-        myerror(ERRFILE, "%d: rom '%s' has merge information but game '%s' has no parent", lineno, r->name.c_str(), g->name.c_str());
+    if (!r[ft]->merge.empty() && g->cloneof[0].empty()) {
+        myerror(ERRFILE, "%d: rom '%s' has merge information but game '%s' has no parent", lineno, r[ft]->name.c_str(), g->name.c_str());
     }
     if (deleted) {
 	flags = (flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;
-        g->roms.pop_back();
+        g->files[ft].pop_back();
     }
     else {
 	flags = 0;
-        if (!r->merge.empty() && r->merge == r->name) {
-            r->merge = "";
+        if (!r[ft]->merge.empty() && r[ft]->merge == r[ft]->name) {
+            r[ft]->merge = "";
 	}
     }
 }

@@ -133,28 +133,24 @@ bool OutputContextMtree::game(GamePtr game) {
     auto dirname = strsvis_cstyle(game->name);
 
     fprintf(f.get(), "./%s type=dir\n", dirname.c_str());
-    for (size_t i = 0; i < game->roms.size(); i++) {
-        auto &rom = game->roms[i];
-
-        fprintf(f.get(), "./%s/%s type=file size=%" PRIu64, dirname.c_str(), strsvis_cstyle(rom.name).c_str(), rom.size);
-        cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &rom.hashes, "");
-        cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &rom.hashes, "");
-        cond_print_string(f, " status=", status_name(rom.status), "");
-        if (extended) {
-            /* crc is not in the standard set supported on NetBSD */
-            cond_print_hash(f, " crc=", Hashes::TYPE_CRC, &rom.hashes, "");
-            fprintf(f.get(), " time=%llu", static_cast<unsigned long long>(rom.mtime));
-	}
-	fputs("\n", f.get());
-    }
-    for (size_t i = 0; i < game->disks.size(); i++) {
-        auto d = &game->disks[i];
-
-	fprintf(f.get(), "./%s/%s type=file" PRIu64, dirname.c_str(), strsvis_cstyle(d->name).c_str());
-        cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &d->hashes, "");
-	cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &d->hashes, "");
-        cond_print_string(f, " status=", status_name(d->status), "");
-	fputs("\n", f.get());
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        for (size_t i = 0; i < game->files[ft].size(); i++) {
+            auto &rom = game->files[ft][i];
+            
+            fprintf(f.get(), "./%s/%s type=file", dirname.c_str(), strsvis_cstyle(rom.name).c_str());
+            if (ft == TYPE_ROM) {
+                fprintf(f.get(), " size=%" PRIu64, rom.size);
+            }
+            cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &rom.hashes, "");
+            cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &rom.hashes, "");
+            cond_print_string(f, " status=", status_name(rom.status), "");
+            if (extended) {
+                /* crc is not in the standard set supported on NetBSD */
+                cond_print_hash(f, " crc=", Hashes::TYPE_CRC, &rom.hashes, "");
+                fprintf(f.get(), " time=%llu", static_cast<unsigned long long>(rom.mtime));
+            }
+            fputs("\n", f.get());
+        }
     }
 
     return true;

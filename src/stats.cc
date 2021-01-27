@@ -43,7 +43,7 @@ void Stats::add_disk(const Disk *disk, quality_t status) {
 }
 
 
-void Stats::add_game(game_status_t status) {
+void Stats::add_game(GameStatus status) {
     switch (status) {
         case GS_OLD:
         case GS_CORRECT:

@@ -36,8 +36,7 @@
 
 #include "result.h"
 
-void diagnostics(const Game *, const ArchivePtr, const Images *, const Result *);
-void diagnostics_archive(const ArchivePtr, const Result *);
-void diagnostics_images(const Images *, const Result *);
+void diagnostics(const Game *game, const GameArchives &archives, const Result &res);
+void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result);
 
 #endif /* _HAD_DIAGNOSTICS_H */

@@ -125,33 +125,18 @@ print_superfluous(std::vector<std::string> &files) {
 
 static void
 list_game_directory(std::vector<std::string> &found, const std::string &dirname, bool dir_known) {
-    GamePtr game;
-
     auto component = std::filesystem::path(dirname).filename();
-    if (dir_known) {
-        game = db->read_game(component);
-    }
 
     try {
 	Dir dir(dirname, false);
 	std::filesystem::path filepath;
 
 	while ((filepath = dir.next()) != "") {
-	    bool known = false;
-	    if (game) {
-		if (filepath.extension() == ".chd") {
-		    for (size_t i = 0; i < game->disks.size(); i++) {
-			if (game->disks[i].name == filepath.stem()) {
-			    known = true;
-			    break;
-			}
-		    }
-		}
-	    }
+            if (dir_known && filepath.extension() == ".chd") {
+                continue;
+            }
 
-	    if (!known) {
-		found.push_back(filepath);
-	    }
+            found.push_back(filepath);
 	}
     }
     catch (...) {

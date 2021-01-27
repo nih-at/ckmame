@@ -139,6 +139,8 @@
 		4BB51D2B25823D770047BE72 /* ParserSourceFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB51D2925823D770047BE72 /* ParserSourceFile.h */; };
 		4BB51D46258247330047BE72 /* ParserSourceZip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BB51D44258247330047BE72 /* ParserSourceZip.cc */; };
 		4BB51D47258247330047BE72 /* ParserSourceZip.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB51D45258247330047BE72 /* ParserSourceZip.h */; };
+		4BB552BC25C01EC1001ABC31 /* Exception.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BB552BA25C01EC1001ABC31 /* Exception.cc */; };
+		4BB552BD25C01EC1001ABC31 /* Exception.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB552BB25C01EC1001ABC31 /* Exception.h */; };
 		4BD482982535B23C00D0002B /* ArchiveDir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BD482962535B23C00D0002B /* ArchiveDir.cc */; };
 		4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD482972535B23C00D0002B /* ArchiveDir.h */; };
 /* End PBXBuildFile section */
@@ -663,6 +665,9 @@
 		4BB51D2925823D770047BE72 /* ParserSourceFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserSourceFile.h; sourceTree = "<group>"; };
 		4BB51D44258247330047BE72 /* ParserSourceZip.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParserSourceZip.cc; sourceTree = "<group>"; };
 		4BB51D45258247330047BE72 /* ParserSourceZip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserSourceZip.h; sourceTree = "<group>"; };
+		4BB552BA25C01EC1001ABC31 /* Exception.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Exception.cc; sourceTree = "<group>"; };
+		4BB552BB25C01EC1001ABC31 /* Exception.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
+		4BB552D625C0550A001ABC31 /* GameArchives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameArchives.h; sourceTree = "<group>"; };
 		4BC0362818C8B01B00D6D5AF /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = types.h; sourceTree = "<group>"; };
 		4BC78D0A1A4445A400A14E29 /* NiHTest.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = NiHTest.pm; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 4; path = runtest.in; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
@@ -884,6 +889,8 @@
 				4B5FACC71735924900B67C24 /* disk.h */,
 				4B5FACC81735924900B67C24 /* error.cc */,
 				4B5FACC91735924900B67C24 /* error.h */,
+				4BB552BA25C01EC1001ABC31 /* Exception.cc */,
+				4BB552BB25C01EC1001ABC31 /* Exception.h */,
 				4B5FACD01735924900B67C24 /* file_location.h */,
 				4B5F43AD1889CFFB000C3B7C /* file_util.cc */,
 				4B3274C925B99F76006AEF16 /* file_util.h */,
@@ -898,6 +905,7 @@
 				4B5FACD91735924900B67C24 /* fixdat.cc */,
 				4B3274CA25B99F76006AEF16 /* fixdat.h */,
 				4B5FACDB1735924900B67C24 /* game.h */,
+				4BB552D625C0550A001ABC31 /* GameArchives.h */,
 				4B5FACDC1735924900B67C24 /* garbage.cc */,
 				4B5FACDD1735924900B67C24 /* garbage.h */,
 				4B5F43AB1889CE83000C3B7C /* globals.cc */,
@@ -1261,6 +1269,7 @@
 				4B5F43C21889D059000C3B7C /* romdb.h in Headers */,
 				4B3274D625B99F76006AEF16 /* fixdat.h in Headers */,
 				4B3274D825B99F76006AEF16 /* fix.h in Headers */,
+				4BB552BD25C01EC1001ABC31 /* Exception.h in Headers */,
 				4B59E59221625A06002262C8 /* dbh_statements.h in Headers */,
 				4B3274D925B99F76006AEF16 /* check.h in Headers */,
 				4B3274D725B99F76006AEF16 /* zip_util.h in Headers */,
@@ -1516,6 +1525,7 @@
 				4B5FAE051735930100B67C24 /* memdb.cc in Sources */,
 				4B5FAE071735930100B67C24 /* output.cc in Sources */,
 				4B5FAE091735930100B67C24 /* output_cm.cc in Sources */,
+				4BB552BC25C01EC1001ABC31 /* Exception.cc in Sources */,
 				4B5FAE0A1735930100B67C24 /* output_datafile_xml.cc in Sources */,
 				4B5FAE0B1735930100B67C24 /* output_db.cc in Sources */,
 				4B5FAE0C1735930100B67C24 /* output_mtree.cc in Sources */,

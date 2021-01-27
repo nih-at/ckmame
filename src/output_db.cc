@@ -65,31 +65,22 @@ void OutputContextDb::familymeeting(Game *parent, Game *child) {
         child->cloneof[1] = parent->cloneof[0];
     }
 
-    /* look for ROMs in parent */
-    for (size_t i = 0; i < child->roms.size(); i++) {
-        auto &cr = child->roms[i];
-        for (size_t j = 0; j < parent->roms.size(); j++) {
-            auto &pr = parent->roms[j];
-            if (cr.is_mergable(pr)) {
-                cr.where = static_cast<where_t>(pr.where + 1);
-		break;
-	    }
-	}
-        if (cr.where == FILE_INGAME && !cr.merge.empty()) {
-            myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but parent does not contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
-	}
-    }
-    for (size_t i = 0; i < child->disks.size(); i++) {
-        auto cd = &child->disks[i];
-        for (size_t j = 0; j < parent->disks.size(); j++) {
-            auto &pd = parent->disks[j];
-            if (cd->is_mergeable(pd)) {
-                cd->where = (where_t)(pd.where + 1);
+    /* look for files in parent */
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        for (size_t i = 0; i < child->files[ft].size(); i++) {
+            auto &cr = child->files[ft][i];
+            for (size_t j = 0; j < parent->files[ft].size(); j++) {
+                auto &pr = parent->files[ft][j];
+                if (cr.is_mergable(pr)) {
+                    cr.where = static_cast<where_t>(pr.where + 1);
+                    break;
+                }
+            }
+            if (cr.where == FILE_INGAME && !cr.merge.empty()) {
+                myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but parent does not contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
             }
         }
     }
-
-    return;
 }
 
 

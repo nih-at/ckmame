@@ -36,20 +36,13 @@
 #include "globals.h"
 
 
-Result::Result(const Game *game, const Archive *a, const Images *im) : game(GS_MISSING) {
-    if (game) {
-        roms.resize(game->roms.size());
-
-        if (!game->disks.empty()) {
-            disks.resize(game->disks.size());
+Result::Result(const Game *game, const GameArchives &a) : game(GS_MISSING) {
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        if (game) {
+            game_files[ft].resize(game->files[ft].size());
         }
-    }
-
-    if (a) {
-        files.resize(a->files.size(), FS_UNKNOWN);
-    }
-
-    if (im) {
-        images.resize(im->disks.size(), FS_UNKNOWN);
+        if (a[ft] != NULL) {
+            archive_files[ft].resize(a[ft]->files.size(), FS_UNKNOWN);
+        }
     }
 }

@@ -114,33 +114,25 @@ bool OutputContextXml::game(GamePtr game) {
     /* description is actually required */
     xmlNewTextChild(xmlGame, NULL, xml_string("description"), xml_string(!game->description.empty() ? game->description.c_str() : game->name.c_str()));
 
-    for (size_t i = 0; i < game->roms.size(); i++) {
-        auto &rom = game->roms[i];
-        xmlNodePtr xmlRom = xmlNewChild(xmlGame, NULL, xml_string("rom"), NULL);
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        for (size_t i = 0; i < game->files[ft].size(); i++) {
+            auto &rom = game->files[ft][i];
+            xmlNodePtr xmlRom = xmlNewChild(xmlGame, NULL, xml_string(ft == TYPE_ROM ? "rom" : "disk"), NULL);
         
-        set_attribute(xmlRom, "name", rom.name);
-        set_attribute_u64(xmlRom, "size", rom.size);
-        set_attribute_hash(xmlRom, "crc", Hashes::TYPE_CRC, &rom.hashes);
-        set_attribute_hash(xmlRom, "sha1", Hashes::TYPE_SHA1, &rom.hashes);
-        set_attribute_hash(xmlRom, "md5", Hashes::TYPE_MD5, &rom.hashes);
-
-        if (rom.where != FILE_INGAME) {
-            set_attribute(xmlRom, "merge", rom.merge.empty() ? rom.name : rom.merge);
+            set_attribute(xmlRom, "name", rom.name);
+            set_attribute_u64(xmlRom, "size", rom.size);
+            set_attribute_hash(xmlRom, "crc", Hashes::TYPE_CRC, &rom.hashes);
+            set_attribute_hash(xmlRom, "sha1", Hashes::TYPE_SHA1, &rom.hashes);
+            set_attribute_hash(xmlRom, "md5", Hashes::TYPE_MD5, &rom.hashes);
+            
+            if (rom.where != FILE_INGAME) {
+                set_attribute(xmlRom, "merge", rom.merge.empty() ? rom.name : rom.merge);
+            }
+            
+            set_attribute(xmlRom, "status", status_name(rom.status));
         }
-
-        set_attribute(xmlRom, "status", status_name(rom.status));
     }
 
-    for (size_t i = 0; i < game->disks.size(); i++) {
-        auto d = &game->disks[i];
-        xmlNodePtr disk = xmlNewChild(xmlGame, NULL, xml_string("disk"), NULL);
-
-        set_attribute(disk, "name", d->name);
-        set_attribute_hash(disk, "sha1", Hashes::TYPE_SHA1, &d->hashes);
-        set_attribute_hash(disk, "md5", Hashes::TYPE_MD5, &d->hashes);
-        set_attribute(disk, "status", status_name(d->status));
-    }
-    
     return true;
 }
 

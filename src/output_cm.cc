@@ -119,20 +119,21 @@ bool OutputContextCm::write_game(Game *game) {
     cond_print_string(f, "\tdescription ", game->description.empty() ? game->name : game->description, "\n");
     cond_print_string(f, "\tcloneof ", game->cloneof[0], "\n");
     cond_print_string(f, "\tromof ", game->cloneof[0], "\n");
-    for (auto &rom : game->roms) {
-	fputs("\trom ( ", f.get());
-        cond_print_string(f, "name ", rom.name, " ");
-        if (rom.where != FILE_INGAME) {
-            cond_print_string(f, "merge ", rom.merge.empty() ? rom.name : rom.merge, " ");
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        for (auto &rom : game->files[ft]) {
+            fprintf(f.get(), "\t%s ( ", ft == TYPE_ROM ? "rom" : "disk");
+            cond_print_string(f, "name ", rom.name, " ");
+            if (rom.where != FILE_INGAME) {
+                cond_print_string(f, "merge ", rom.merge.empty() ? rom.name : rom.merge, " ");
+            }
+            fprintf(f.get(), "size %" PRIu64 " ", rom.size);
+            cond_print_hash(f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
+            cond_print_hash(f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
+            cond_print_hash(f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
+            cond_print_string(f, "flags ", status_name(rom.status), " ");
+            fputs(")\n", f.get());
         }
-        fprintf(f.get(), "size %" PRIu64 " ", rom.size);
-        cond_print_hash(f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
-        cond_print_hash(f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
-        cond_print_hash(f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
-        cond_print_string(f, "flags ", status_name(rom.status), " ");
-        fputs(")\n", f.get());
     }
-    /* TODO: disks */
     fputs(")\n\n", f.get());
 
     return true;

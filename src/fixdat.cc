@@ -48,37 +48,28 @@ write_fixdat_entry(const Game *game, const Result *result) {
     auto gm = std::make_shared<Game>();
     gm->name = game->name;
 
-    for (size_t i = 0; i < game->roms.size(); i++) {
-        auto &match = result->roms[i];
-        auto &rom = game->roms[i];
-
-	/* no use requesting zero byte files */
-        if (rom.size == 0) {
-	    continue;
+    auto empty = true;
+    
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        for (size_t i = 0; i < game->files[ft].size(); i++) {
+            auto &match = result->game_files[ft][i];
+            auto &rom = game->files[ft][i];
+            
+            /* no use requesting zero byte files */
+            if (rom.size == 0) {
+                continue;
+            }
+            
+            if (match.quality != QU_MISSING || rom.status == STATUS_NODUMP || rom.where != FILE_INGAME) {
+                continue;
+            }
+            
+            gm->files[ft].push_back(rom);
+            empty = false;
         }
-
-        if (match.quality != QU_MISSING || rom.status == STATUS_NODUMP || rom.where != FILE_INGAME) {
-	    continue;
-        }
-
-        gm->roms.push_back(rom);
     }
 
-    for (size_t i = 0; i < game->disks.size(); i++) {
-        auto &match_disk = result->disks[i];
-        auto &disk = game->disks[i];
-
-        if (match_disk.quality != QU_MISSING || disk.status == STATUS_NODUMP) {
-	    continue;
-        }
-
-        gm->disks.push_back(disk);
-        auto &dm = gm->disks[gm->disks.size() - 1];
-        dm.name = disk.name;
-        dm.merge = disk.merge;
-    }
-
-    if (!gm->roms.empty() || !gm->disks.empty()) {
+    if (!empty) {
 	fixdat->game(gm);
     }
 }

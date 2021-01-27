@@ -47,7 +47,6 @@ typedef std::shared_ptr<Disk> DiskPtr;
 class Disk {
 public:
     uint64_t id;
-    int refcount;
     std::string name;
     std::string merge;
     Hashes hashes;

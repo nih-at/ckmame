@@ -66,12 +66,10 @@ public:
 private:
     int hashtypes_[TYPE_MAX];
     
-    bool read_disks(Game *game);
+    bool read_files(Game *game, filetype_t ft);
     void read_hashtypes(filetype_t type);
-    bool read_roms(Game *game);
     bool read_rules(Detector *detector);
-    bool write_disks(Game *game);
-    bool write_roms(Game *game);
+    bool write_files(Game *game, filetype_t ft);
     bool write_rules(const Detector *detector);
 };
 

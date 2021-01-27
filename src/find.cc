@@ -50,13 +50,10 @@
 #define QUERY_FILE_LOCATION 3
 
 
-static find_result_t check_for_file_in_zip(const std::string &name, const File *rom, const File *file, Match *m);
-static find_result_t check_match_disk_old(const Game *, const Disk *, MatchDisk *);
-static find_result_t check_match_disk_romset(const Game *, const Disk *, MatchDisk *);
-static find_result_t check_match_old(const Game *, const File *, const File *, Match *);
-static find_result_t check_match_romset(const Game *, const File *, const File *, Match *);
-static find_result_t find_disk_in_db(RomDB *fdb, const Disk *d, const std::string &skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *));
-static find_result_t find_in_db(RomDB *, const File *, Archive *, const std::string &, Match *, find_result_t (*)(const Game *, const File *, const File *, Match *));
+static find_result_t check_for_file_in_archive(filetype_t filetype, const std::string &game_name, const File *rom, const File *file, Match *m);
+static find_result_t check_match_old(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match);
+static find_result_t check_match_romset(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match);
+static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const File *wanted_file, Archive *archive, const std::string &skip, Match *match, find_result_t (*)(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match));
 
 
 find_result_t
@@ -103,21 +100,6 @@ find_disk(const Disk *disk, MatchDisk *match_disk) {
     }
 
     return static_cast<find_result_t>(ret);
-}
-
-
-find_result_t
-find_disk_in_old(const Disk *d, MatchDisk *md) {
-    if (old_db == NULL)
-	return FIND_UNKNOWN;
-
-    return find_disk_in_db(old_db.get(), d, "", md, check_match_disk_old);
-}
-
-
-find_result_t
-find_disk_in_romset(const Disk *d, const std::string &skip, MatchDisk *md) {
-    return find_disk_in_db(db.get(), d, skip, md, check_match_disk_romset);
 }
 
 
@@ -184,24 +166,21 @@ find_in_archives(const File *rom, Match *m, bool needed_only) {
 }
 
 
-find_result_t
-find_in_old(const File *r, Archive *a, Match *m) {
+find_result_t find_in_old(filetype_t filetype, const File *file, Archive *archive, Match *match) {
     if (old_db == NULL) {
 	return FIND_MISSING;
     }
 
-    return find_in_db(old_db.get(), r, a, "", m, check_match_old);
+    return find_in_db(old_db.get(), filetype, file, archive, "", match, check_match_old);
 }
 
 
-find_result_t
-find_in_romset(const File *file, Archive *archive, const std::string &skip, Match *m) {
-    return find_in_db(db.get(), file, archive, skip, m, check_match_romset);
+find_result_t find_in_romset(filetype_t filetype, const File *file, Archive *archive, const std::string &skip, Match *match) {
+    return find_in_db(db.get(), filetype, file, archive, skip, match, check_match_romset);
 }
 
 
-static find_result_t
-check_for_file_in_zip(const std::string &name, const File *rom, const File *file, Match *m) {
+static find_result_t check_for_file_in_archive(filetype_t filetype, const std::string &name, const File *wanted_file, const File *candidate, Match *matches) {
     ArchivePtr a;
 
     auto full_name = findfile(name, TYPE_ROM, "");
@@ -209,23 +188,23 @@ check_for_file_in_zip(const std::string &name, const File *rom, const File *file
 	return FIND_MISSING;
     }
 
-    auto idx = a->file_index_by_name(rom->name);
+    auto idx = a->file_index_by_name(wanted_file->name);
     
-    if (idx.has_value() && a->file_compare_hashes(idx.value(), &file->hashes) == Hashes::MATCH) {
+    if (idx.has_value() && a->file_compare_hashes(idx.value(), &candidate->hashes) == Hashes::MATCH) {
         auto index = idx.value();
         File *af = &a->files[index];
         
-        if (!af->hashes.has_all_types(file->hashes)) {
+        if (!af->hashes.has_all_types(candidate->hashes)) {
             if (!a->file_compute_hashes(index, Hashes::TYPE_ALL)) { /* TODO: only needed hash types */
                 return FIND_MISSING;
 	    }
-	    if (a->file_compare_hashes(index, &file->hashes) != Hashes::MATCH) {
+	    if (a->file_compare_hashes(index, &candidate->hashes) != Hashes::MATCH) {
 		return FIND_MISSING;
 	    }
 	}
-	if (m) {
-            m->archive = a;
-            m->index = index;
+	if (matches) {
+            matches->archive = a;
+            matches->index = index;
 	}
 	return FIND_EXISTS;
     }
@@ -235,21 +214,7 @@ check_for_file_in_zip(const std::string &name, const File *rom, const File *file
 
 
 /*ARGSUSED1*/
-static find_result_t
-check_match_disk_old(const Game *g, const Disk *disk, MatchDisk *match_disk) {
-    if (match_disk) {
-        match_disk->quality = QU_OLD;
-        match_disk->name = disk->name;
-        match_disk->hashes = disk->hashes;
-    }
-
-    return FIND_EXISTS;
-}
-
-
-/*ARGSUSED1*/
-static find_result_t
-check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_disk) {
+static find_result_t check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_disk) {
     auto file_name = findfile(disk->name, TYPE_DISK, game->name);
     if (file_name == "") {
 	return FIND_MISSING;
@@ -260,12 +225,13 @@ check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_dis
 	return FIND_MISSING;
     }
 
-    if (disk->hashes.compare(f->hashes) == Hashes::MATCH) {
+    if (f->status == STATUS_OK && disk->hashes.compare(f->hashes) == Hashes::MATCH) {
 	if (match_disk) {
 	    match_disk->quality = QU_COPIED;
 	    match_disk->name = file_name;
             match_disk->hashes = f->hashes;
 	}
+        printf("found disk '%s': %d\n", file_name.c_str(), f->status);
 	return FIND_EXISTS;
     }
 
@@ -273,24 +239,20 @@ check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_dis
 }
 
 
-static find_result_t
-check_match_old(const Game *g, const File *r, const File *f, Match *match) {
+static find_result_t check_match_old(filetype_t, const Game *game, const File *wanted_file, const File *, Match *match) {
     if (match) {
 	match->quality = QU_OLD;
 	match->where = FILE_OLD;
-        match->old_game = g->name;
-        match->old_file = r->name;
+        match->old_game = game->name;
+        match->old_file = wanted_file->name;
     }
 
     return FIND_EXISTS;
 }
 
 
-static find_result_t
-check_match_romset(const Game *game, const File *r, const File *f, Match *match) {
-    find_result_t status;
-
-    status = check_for_file_in_zip(game->name, r, f, match);
+static find_result_t check_match_romset(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match) {
+    auto status = check_for_file_in_archive(filetype, game->name, wanted_file, candidate, match);
     if (match && status == FIND_EXISTS) {
 	match->quality = QU_COPIED;
 	match->where = FILE_ROMSET;
@@ -300,9 +262,8 @@ check_match_romset(const Game *game, const File *r, const File *f, Match *match)
 }
 
 
-static find_result_t
-find_in_db(RomDB *fdb, const File *r, Archive *archive, const std::string &skip, Match *m, find_result_t (*check_match)(const Game *, const File *, const File *, Match *)) {
-    auto roms = fdb->read_file_by_hash(TYPE_ROM, &r->hashes);
+static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const File *file, Archive *archive, const std::string &skip, Match *match, find_result_t (*check_match)(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match)) {
+    auto roms = rdb->read_file_by_hash(filetype, &file->hashes);
 
     if (roms.empty()) {
 	return FIND_UNKNOWN;
@@ -316,20 +277,20 @@ find_in_db(RomDB *fdb, const File *r, Archive *archive, const std::string &skip,
 	    continue;
         }
 
-        GamePtr game = fdb->read_game(rom.name);
-        if (!game || game->roms.size() <= rom.index) {
+        GamePtr game = rdb->read_game(rom.name);
+        if (!game || game->files[filetype].size() <= rom.index) {
 	    /* TODO: internal error: database inconsistency */
 	    status = FIND_ERROR;
 	    break;
 	}
 
-        auto &game_rom = game->roms[rom.index];
+        auto &game_rom = game->files[filetype][rom.index];
 
-        if (r->size == game_rom.size && r->hashes.compare(game_rom.hashes) == Hashes::MATCH) {
+        if (file->size == game_rom.size && file->hashes.compare(game_rom.hashes) == Hashes::MATCH) {
 	    bool ok = true;
 
-            if (archive && !r->hashes.has_all_types(game_rom.hashes)) {
-		auto idx = archive->file_index(r);
+            if (archive && !file->hashes.has_all_types(game_rom.hashes)) {
+		auto idx = archive->file_index(file);
                 if (idx.has_value()) {
                     if (!archive->file_compute_hashes(idx.value(), game_rom.hashes.types)) {
 			/* TODO: handle error (how?) */
@@ -337,51 +298,15 @@ find_in_db(RomDB *fdb, const File *r, Archive *archive, const std::string &skip,
 		    }
 		}
 
-                if (game_rom.hashes.compare(r->hashes) != Hashes::MATCH) {
+                if (game_rom.hashes.compare(file->hashes) != Hashes::MATCH) {
 		    ok = false;
 		}
 	    }
 
 	    if (ok) {
-                status = check_match(game.get(), &game_rom, r, m);
+                status = check_match(filetype, game.get(), &game_rom, file, match);
 	    }
 	}
-    }
-
-    return status;
-}
-
-
-static find_result_t
-find_disk_in_db(RomDB *fdb, const Disk *d, const std::string &skip, MatchDisk *md, find_result_t (*check_match)(const Game *, const Disk *, MatchDisk *)) {
-    find_result_t status;
-
-    auto disks = fdb->read_file_by_hash(TYPE_DISK, &d->hashes);
-    if (disks.empty()) {
-	/* TODO: internal error: database inconsistency */
-	return FIND_ERROR;
-    }
-
-    status = FIND_UNKNOWN;
-    for (size_t i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < disks.size(); i++) {
-	auto disk = disks[i];
-
-	if (disk.name == skip) {
-	    continue;
-	}
-
-        GamePtr game = fdb->read_game(disk.name);
-        if (!game) {
-	    /* TODO: internal error: db inconsistency */
-	    status = FIND_ERROR;
-	    break;
-	}
-
-	auto gd = &game->disks[disk.index];
-
-        if (d->hashes.compare(gd->hashes) == Hashes::MATCH) {
-	    status = check_match(game.get(), gd, md);
-        }
     }
 
     return status;

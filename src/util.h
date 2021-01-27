@@ -51,5 +51,7 @@ bool ensure_dir(const std::string &name, bool strip_filename);
 const std::string get_directory(void);
 void print_human_number(FILE *f, uint64_t value);
 std::string status_name(status_t status, bool verbose = false);
+std::string string_format(const char *format, ...) __attribute__ ((format (printf, 1, 2)));
+std::string string_format_v(const char *format, va_list ap);
 
 #endif

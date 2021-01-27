@@ -35,6 +35,7 @@
 #include "chd.h"
 #include "disk.h"
 #include "error.h"
+#include "Exception.h"
 #include "globals.h"
 #include "memdb.h"
 
@@ -50,37 +51,33 @@ DiskPtr Disk::from_file(const std::string &name, int flags) {
         return disk;
     }
 
-    seterrinfo(name, "");
+    seterrinfo(name);
+
+    disk = std::make_shared<Disk>();
+    disk->name = name;
 
     try {
 	auto chd = std::make_unique<Chd>(name);
 
 	if (chd->flags & CHD_FLAG_HAS_PARENT) {
-	    myerror(ERRFILE, "error opening disk: parent image required");
-	    return NULL;
+            throw Exception("parent image required");
 	}
 
-	disk = std::make_shared<Disk>();
-	disk->name = name;
 
 	if (flags & DISK_FL_CHECK_INTEGRITY) {
 	    disk->hashes.types = db->hashtypes(TYPE_DISK);
 
-	    if (!chd->get_hashes(&disk->hashes)) {
-		return NULL;
-	    }
+            chd->get_hashes(&disk->hashes);
 
 	    if (disk->hashes.has_type(Hashes::TYPE_MD5)) {
 		if (!disk->hashes.verify(Hashes::TYPE_MD5, chd->md5)) {
-		    myerror(ERRFILE, "md5 mismatch");
-		    return NULL;
+                    throw Exception("md5 mismatch");
 		}
 	    }
 
 	    if (chd->version > 2 && disk->hashes.has_type(Hashes::TYPE_SHA1)) {
 		if (!disk->hashes.verify(Hashes::TYPE_SHA1, chd->sha1)) {
-		    myerror(ERRFILE, "sha1 mismatch");
-		    return NULL;
+                    throw ("sha1 mismatch");
 		}
 	    }
 	}
@@ -92,8 +89,9 @@ DiskPtr Disk::from_file(const std::string &name, int flags) {
 	    disk->hashes.set(Hashes::TYPE_SHA1, chd->sha1);
 	}
     }
-    catch (...) {
-	myerror(ERRFILESTR, "error opening disk");
+    catch (Exception &e) {
+	myerror(ERRFILE, "error opening disk: %s", e.what());
+        disk->status = STATUS_BADDUMP;
     }
 
     disk->id = ++next_id;

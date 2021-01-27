@@ -163,3 +163,34 @@ status_name(status_t status, bool verbose) {
             return "";
     }
 }
+
+std::string string_format(const char *format, ...) {
+    va_list ap;
+    va_start(ap, format);
+    auto string = string_format_v(format, ap);
+    va_end(ap);
+    return string;
+}
+
+std::string string_format_v(const char *format, va_list ap) {
+    auto size = strlen(format) + 50;
+    std::string str;
+    va_list ap2;
+    while (1) {
+        str.resize(size);
+        va_copy(ap2, ap);
+        int n = vsnprintf((char *)str.data(), size, format, ap2);
+        va_end(ap2);
+        if (n > -1 && static_cast<size_t>(n) < size) {
+            str.resize(static_cast<size_t>(n));
+            return str;
+        }
+        if (n > -1) {
+            size = static_cast<size_t>(n) + 1;
+        }
+        else {
+            size *= 2;
+        }
+    }
+    return str;
+}

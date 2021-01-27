@@ -35,6 +35,7 @@ set(COMMON_SOURCES
   disk.cc
   disk_new.cc
   error.cc
+  Exception.cc
   file.cc
   file_util.cc
   find.cc

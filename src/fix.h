@@ -36,6 +36,6 @@
 
 #include "result.h"
 
-int fix_game(Game *g, Archive *a, Images *im, Result *result);
+int fix_game(Game *game, const GameArchives archives, Result *result);
 
 #endif /* _HAD_FIX_H */

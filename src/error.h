@@ -52,6 +52,6 @@
 
 void myerror(int, const char *, ...);
 void seterrdb(DB *);
-void seterrinfo(const std::string &fn, const std::string &zipn);
+void seterrinfo(const std::string &fn, const std::string &zipn = "");
 
 #endif /* error.h */

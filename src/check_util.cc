@@ -99,7 +99,7 @@ ensure_extra_maps(int flags) {
 
 		case NAME_CHD: {
 		    auto disk = Disk::from_file(file, 0);
-		    if (disk) {
+		    if (disk && disk->status == STATUS_OK) {
 			enter_disk_in_map(disk.get(), FILE_SUPERFLUOUS);
 		    }
 		    break;

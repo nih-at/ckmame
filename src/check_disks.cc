@@ -62,20 +62,22 @@ check_disks(Game *game, ImagesPtr im[], Result *result) {
             match_disk.where = disk.where;
 	    match_disk.set_source(expected_image.get());
 
-            switch (disk.hashes.compare(expected_image->hashes)) {
-                case Hashes::MATCH:
-                    match_disk.quality = QU_OK;
-                    if (disk.where == FILE_INGAME) {
-                        result->images[j] = FS_USED;
-                    }
-                    break;
-                    
-                case Hashes::MISMATCH:
-                    match_disk.quality = QU_HASHERR;
-                    break;
-                
-                default:
-                    break;
+            if (expected_image->status == STATUS_OK) {
+                switch (disk.hashes.compare(expected_image->hashes)) {
+                    case Hashes::MATCH:
+                        match_disk.quality = QU_OK;
+                        if (disk.where == FILE_INGAME) {
+                            result->images[j] = FS_USED;
+                        }
+                        break;
+                        
+                    case Hashes::MISMATCH:
+                        match_disk.quality = QU_HASHERR;
+                        break;
+                        
+                    default:
+                        break;
+                }
             }
 	}
 
@@ -88,7 +90,7 @@ check_disks(Game *game, ImagesPtr im[], Result *result) {
             for (size_t k = 0; k < im[0]->disks.size(); k++) {
                 auto image = im[0]->disks[k];
                 
-                if (disk.hashes.compare(image->hashes) == Hashes::MATCH) {
+                if (image->status == STATUS_OK && disk.hashes.compare(image->hashes) == Hashes::MATCH) {
                     match_disk.where = FILE_INGAME;
                     match_disk.set_source(image.get());
                     match_disk.quality = QU_NAMEERR;

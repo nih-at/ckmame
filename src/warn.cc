@@ -45,75 +45,82 @@ static void warn_ensure_header(void);
 
 
 void
-warn_disk(const Disk *disk, const std::string &reason) {
+warn_archive_file(filetype_t ft, const File *r, const std::string &reason) {
     warn_ensure_header();
 
-    printf("disk %-12s  ", disk->name.c_str());
-
-    auto &h = disk->hashes;
-    if (h.has_type(Hashes::TYPE_SHA1)) {
-        printf("sha1 %s: ", h.to_string(Hashes::TYPE_SHA1).c_str());
+    switch (ft) {
+        case TYPE_ROM:
+            printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s\n", r->name.c_str(), r->size, r->hashes.crc, reason.c_str());
+            break;
+            
+        case TYPE_DISK:
+            printf("image %-12s: %s\n", r->name.c_str(), reason.c_str());
+            break;
+            
+        default:
+            break;
     }
-    else if (h.has_type(Hashes::TYPE_MD5)) {
-        printf("md5 %s         : ", h.to_string(Hashes::TYPE_MD5).c_str());
-    }
-    else {
-	printf("no good dump              : ");
-    }
-    printf("%s\n", reason.c_str());
 }
 
 
 void
-warn_file(const File *r, const std::string &reason) {
-    warn_ensure_header();
-
-    /* TODO */
-    printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s\n", r->name.c_str(), r->size, r->hashes.crc, reason.c_str());
-}
-
-
-void
-warn_image(const std::string &name, const std::string &reason) {
-    warn_ensure_header();
-
-    printf("image %-12s: %s\n", name.c_str(), reason.c_str());
-}
-
-
-void
-warn_rom(const File *r, const std::string &reason) {
+warn_game_file(filetype_t ft, const File *r, const std::string &reason) {
     warn_ensure_header();
 
     if (r) {
-	printf("rom  %-12s  ", r->name.c_str());
-	if (r->is_size_known()) {
-            printf("size %7" PRIu64 "  ", r->size);
+        switch (ft) {
+            case TYPE_ROM:
+                printf("rom  %-12s  ", r->name.c_str());
+                if (r->is_size_known()) {
+                    printf("size %7" PRIu64 "  ", r->size);
+                    
+                    /* TODO */
+                    if (r->hashes.has_type(Hashes::TYPE_CRC)) {
+                        switch (r->status) {
+                            case STATUS_OK:
+                                printf("crc %.8" PRIx32 ": ", r->hashes.crc);
+                                break;
+                            case STATUS_BADDUMP:
+                                printf("bad dump    : ");
+                                break;
+                            case STATUS_NODUMP:
+                                printf("no good dump: ");
+                        }
+                    }
+                    else {
+                        printf("no good dump: ");
+                    }
+                }
+                else {
+                    printf("                          : ");
+                }
+                break;
+                
+            case TYPE_DISK: {
+                printf("disk %-12s  ", r->name.c_str());
 
-	    /* TODO */
-	    if (r->hashes.has_type(Hashes::TYPE_CRC)) {
-		switch (r->status) {
-		case STATUS_OK:
-		    printf("crc %.8" PRIx32 ": ", r->hashes.crc);
-		    break;
-		case STATUS_BADDUMP:
-		    printf("bad dump    : ");
-		    break;
-		case STATUS_NODUMP:
-		    printf("no good dump: ");
-		}
-	    }
-	    else
-		printf("no good dump: ");
-	}
-	else
-	    printf("                          : ");
+                auto &h = r->hashes;
+                if (h.has_type(Hashes::TYPE_SHA1)) {
+                    printf("sha1 %s: ", h.to_string(Hashes::TYPE_SHA1).c_str());
+                }
+                else if (h.has_type(Hashes::TYPE_MD5)) {
+                    printf("md5 %s         : ", h.to_string(Hashes::TYPE_MD5).c_str());
+                }
+                else {
+                    printf("no good dump              : ");
+                }
+                break;
+            }
+                
+            default:
+                break;
+        }
     }
     else {
-	/* TODO: use warn_game */
-	printf("game %-40s: ", header_name.c_str());
+        /* TODO: use warn_game */
+        printf("game %-40s: ", header_name.c_str());
     }
-
+    
     printf("%s\n", reason.c_str());
 }
 

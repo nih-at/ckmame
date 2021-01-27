@@ -89,26 +89,26 @@ bool Tree::recheck(const std::string &game_name) {
 }
 
 
-bool Tree::recheck_games_needing(uint64_t size, const Hashes *hashes) {
-    auto roms = db->read_file_by_hash(TYPE_ROM, hashes);
-    if (roms.empty()) {
+bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashes *hashes) {
+    auto files = db->read_file_by_hash(filetype, hashes);
+    if (files.empty()) {
 	return true;
     }
 
     auto ok = true;
-    for (size_t i = 0; i < roms.size(); i++) {
-        auto &rom = roms[i];
+    for (size_t i = 0; i < files.size(); i++) {
+        auto &file = files[i];
 
-        auto game = db->read_game(rom.name);
-        if (!game || game->roms.size() <= rom.index) {
+        auto game = db->read_game(file.name);
+        if (!game || game->files[filetype].size() <= file.index) {
             /* TODO: internal error: db inconsistency */
 	    ok = false;
 	    continue;
 	}
 
-        auto gr = &game->roms[rom.index];
+        auto game_file = &game->files[filetype][file.index];
 
-        if (size == gr->size && hashes->compare(gr->hashes) == Hashes::MATCH && gr->where == FILE_INGAME) {
+        if ((filetype == TYPE_DISK || size == game_file->size) && hashes->compare(game_file->hashes) == Hashes::MATCH && game_file->where == FILE_INGAME) {
             recheck(game->name);
         }
     }
@@ -118,19 +118,15 @@ bool Tree::recheck_games_needing(uint64_t size, const Hashes *hashes) {
 
 
 void Tree::traverse(bool check_integrity) {
-    ArchivePtr archives[] = { NULL, NULL, NULL };
-    ImagesPtr images[] = { std::make_shared<Images>(), std::make_shared<Images>(), std::make_shared<Images>() };
+    GameArchives archives[] = { GameArchives(), GameArchives(), GameArchives() };
 
     for (auto it : children) {
-        it.second->traverse_internal(archives, images, check_integrity);
+        it.second->traverse_internal(archives, check_integrity);
     }
 }
 
-void Tree::traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_images, bool check_integrity) {
-    ArchivePtr archives[] = { NULL, ancestor_archives[0], ancestor_archives[1] };
-    ImagesPtr images[] = { std::make_shared<Images>(), ancestor_images[0], ancestor_images[1] };
-    
-    ImagesPtr self_images;
+void Tree::traverse_internal(GameArchives *ancestor_archives, bool check_integrity) {
+    GameArchives archives[] = { GameArchives(), ancestor_archives[0], ancestor_archives[1] };
     
     if (siginfo_caught) {
         print_info(name);
@@ -138,23 +134,23 @@ void Tree::traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_
 
     auto flags = ((check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | db->hashtypes(TYPE_ROM)) : 0));
     
-    auto full_name = findfile(name, TYPE_ROM, "");
-    if (full_name.empty() && check) {
-        full_name = make_file_name(TYPE_ROM, name, "");
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        auto full_name = findfile(name, static_cast<filetype_t>(ft), "");
+
+        if (full_name.empty() && check) {
+            full_name = make_file_name(static_cast<filetype_t>(ft), name, "");
+        }
+        if (!full_name.empty()) {
+            archives[0].archive[ft] = Archive::open(full_name, static_cast<filetype_t>(ft), FILE_ROMSET, flags);
+        }
     }
-    if (!full_name.empty()) {
-        archives[0] = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, flags);
-    }
-    
-    self_images = Images::from_directory(name, check_integrity);
-    images[0] = self_images;
-    
+
     if (check && !checked) {
-        process(archives, images);
+        process(archives);
     }
 
     for (auto it : children) {
-        it.second->traverse_internal(archives, images, check_integrity);
+        it.second->traverse_internal(archives, check_integrity);
     }
 }
 
@@ -176,7 +172,7 @@ Tree *Tree::add_node(const std::string &game_name, bool do_check) {
 }
 
 
-void Tree::process(ArchivePtr *archives, ImagesPtr *images) {
+void Tree::process(GameArchives *archives) {
     auto game = db->read_game(name);
     
     if (!game) {
@@ -184,21 +180,21 @@ void Tree::process(ArchivePtr *archives, ImagesPtr *images) {
         return;
     }
 
-    Result res(game.get(), archives[0].get(), images[0].get());
+    Result res(game.get(), archives[0]);
 
     check_old(game.get(), &res);
-    check_files(game.get(), archives, &res);
-    check_archive(archives[0], game->name, &res);
-    check_disks(game.get(), images, &res);
-    check_images(images[0].get(), game->name, &res);
-
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        check_game_files(game.get(), static_cast<filetype_t>(ft), archives, &res);
+        check_archive_files(static_cast<filetype_t>(ft), archives[0], game->name, &res);
+    }
+    
     /* write warnings/errors for me */
-    diagnostics(game.get(), archives[0], images[0].get(), &res);
+    diagnostics(game.get(), archives[0], res);
 
     int ret = 0;
 
     if (fix_options & FIX_DO) {
-	ret = fix_game(game.get(), archives[0].get(), images[0].get(), &res);
+	ret = fix_game(game.get(), archives[0], &res);
     }
 
     /* TODO: includes too much when rechecking */

@@ -37,6 +37,7 @@
 #include <map>
 
 #include "archive.h"
+#include "GameArchives.h"
 #include "hashes.h"
 #include "images.h"
 #include "types.h"
@@ -44,6 +45,7 @@
 class Tree;
 
 typedef std::shared_ptr<Tree> TreePtr;
+
 
 class Tree {
 public:
@@ -58,13 +60,13 @@ public:
     
     bool add(const std::string &game_name);
     bool recheck(const std::string &game_name);
-    bool recheck_games_needing(uint64_t size, const Hashes *hashes);
+    bool recheck_games_needing(filetype_t filetype, uint64_t size, const Hashes *hashes);
     void traverse(bool check_integrity);
     
 private:
     Tree *add_node(const std::string &game_name, bool check);
-    void traverse_internal(ArchivePtr *ancestor_archives, ImagesPtr *ancestor_images, bool check_integrity);
-    void process(ArchivePtr *archives, ImagesPtr *images);
+    void traverse_internal(GameArchives *ancestor_archives, bool check_integrity);
+    void process(GameArchives *archives);
 };
 
 extern Tree check_tree;
