@@ -45,6 +45,8 @@
 #include "ArchiveZip.h"
 #include "dbh_cache.h"
 #include "error.h"
+#include "file_util.h"
+#include "fix_util.h"
 #include "globals.h"
 #include "memdb.h"
 #include "util.h"
@@ -123,6 +125,28 @@ int Archive::close() {
 
     return close_xxx() | ret;
 }
+
+
+void Archive::ensure_valid_archive() {
+    if (check()) {
+        return;
+    }
+
+    /* opening the archive failed, rename it and create new one */
+    
+    auto new_name = ::make_unique_name(name, ".broken");
+    
+    if (fix_options & FIX_PRINT) {
+        printf("%s: rename broken archive to '%s'\n", name.c_str(), new_name.c_str());
+    }
+    if (!rename_or_move(name, new_name)) {
+        throw("can't rename file"); // TODO: rename_or_move should throw
+    }
+    if (!check()) {
+        throw("can't create archive '" + name + "'"); // TODO: details
+    }
+}
+
 
 int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
     auto &file_hashes = files[index].hashes;

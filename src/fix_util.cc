@@ -45,6 +45,7 @@
 
 #include "check_util.h"
 #include "error.h"
+#include "Exception.h"
 #include "file_util.h"
 #include "find.h"
 #include "globals.h"
@@ -86,7 +87,7 @@ make_unique_name(const std::string &prefix, const std::string &ext) {
 	return testname;
     }
 
-    return "";
+    throw Exception("can't create unique file name"); // TODO: details?
 }
 
 

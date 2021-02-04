@@ -140,6 +140,7 @@ public:
 
     int close();
     bool commit();
+    void ensure_valid_archive();
     bool file_add_empty(const std::string &filename);
     int file_compare_hashes(uint64_t idx, const Hashes *h);
     bool file_compute_hashes(uint64_t idx, int hashtypes);

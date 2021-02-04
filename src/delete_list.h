@@ -38,20 +38,30 @@
 #include "archive.h"
 #include "file_location.h"
 
+class DeleteList;
+typedef std::shared_ptr<DeleteList> DeleteListPtr;
 
 class DeleteList {
  public:
-    std::vector<FileLocation> entries;
-    size_t mark_size;
+    class Mark {
+    public:
+        Mark(DeleteListPtr list = DeleteListPtr());
+        ~Mark();
+        
+        void commit() { rollback = false; }
 
-    DeleteList() : mark_size(0) { };
+    private:
+        std::weak_ptr<DeleteList> list;
+        size_t index;
+        bool rollback;
+    };
+    
+    std::vector<FileLocation> entries;
+
+    DeleteList() { };
     int execute();
-    void mark();
-    void rollback();
 
     static void used(Archive *a, size_t idx);
 };
-
-typedef std::shared_ptr<DeleteList> DeleteListPtr;
 
 #endif /* delete_list.h */

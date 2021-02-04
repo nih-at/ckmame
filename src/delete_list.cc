@@ -42,6 +42,23 @@
 #include "globals.h"
 
 
+DeleteList::Mark::Mark(DeleteListPtr list_) : list(list_), index(0), rollback(false) {
+    if (list_) {
+        index = list_->entries.size();
+        rollback = true;
+    }
+}
+
+
+DeleteList::Mark::~Mark() {
+    auto l = list.lock();
+    
+    if (rollback && l && l->entries.size() > index) {
+        l->entries.resize(index);
+    }
+}
+
+
 int DeleteList::execute() {
     std::string name;
     ArchivePtr a = NULL;
@@ -93,18 +110,6 @@ int DeleteList::execute() {
     }
 
     return ret;
-}
-
-
-void DeleteList::mark() {
-    mark_size = entries.size();
-}
-
-
-void DeleteList::rollback() {
-    /* this function should only remove items, so dummy should not be used */
-    FileLocation dummy("", 0);
-    entries.resize(mark_size, dummy);
 }
 
 
