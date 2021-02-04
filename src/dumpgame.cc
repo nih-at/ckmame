@@ -98,7 +98,7 @@ print_checksums(const Hashes *hashes) {
 
 
 static void
-print_diskline(Disk *disk) {
+print_diskline(File *disk) {
     printf("\t\tdisk %-12s", disk->name.c_str());
     print_checksums(&disk->hashes);
     printf(" status %s in %s", status_name(disk->status, true).c_str(), where_name[disk->where]);
@@ -144,10 +144,12 @@ print_match(GamePtr game, filetype_t ft, int i) {
 	printf("In game %s:\n", name.c_str());
     }
 
-    if (ft == TYPE_DISK)
-	print_diskline(&game->disks[i]);
-    else
-	print_romline(&game->roms[i]);
+    if (ft == TYPE_DISK) {
+	print_diskline(&game->files[ft][i]);
+    }
+    else {
+	print_romline(&game->files[ft][i]);
+    }
 }
 
 
@@ -341,10 +343,11 @@ print_rs(GamePtr game, const char *co, const char *gco, const char *cs, const ch
 	return;
     }
 
-    if (game->roms.size() > 0) {
+    if (!game->files[TYPE_ROM].empty()) {
 	printf("%s:\n", fs);
-	for (i = 0; i < game->roms.size(); i++)
-	    print_romline(&game->roms[i]);
+        for (auto &file : game->files[TYPE_ROM]) {
+            print_romline(&file);
+        }
     }
 }
 
@@ -379,10 +382,10 @@ dump_game(const std::string &name, int brief_mode) {
     if (!brief_mode) {
 	print_rs(game, "Cloneof", "Grand-Cloneof", "Clones", "ROMs");
 
-	if (game->disks.size() > 0) {
+	if (!game->files[TYPE_DISK].empty()) {
 	    printf("Disks:\n");
-	    for (size_t i = 0; i < game->disks.size(); i++) {
-		print_diskline(&game->disks[i]);
+            for (auto &file : game->files[TYPE_DISK]) {
+                print_diskline(&file);
 	    }
 	}
     }

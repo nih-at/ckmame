@@ -14,10 +14,8 @@ set(COMMON_SOURCES
   archive_modify.cc
   ArchiveZip.cc
   chd.cc
-  check_archive.cc
-  check_disks.cc
-  check_files.cc
-  check_images.cc
+  check_archive_files.cc
+  check_game_files.cc
   check_old.cc
   check_util.cc
   cleanup.cc

@@ -65,8 +65,7 @@ void diagnostics(const Game *game, const GameArchives &archives, const Result &r
 }
 
 
-void
-diagnostics_archive(filetype_t ft, const Archive *a, const Result &result) {
+void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result) {
     if (a == NULL) {
         return;
     }
