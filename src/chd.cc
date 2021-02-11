@@ -65,29 +65,13 @@
 #define TAG_LEN 8      /* length of tag */
 #define TAG_AND_LEN 12 /* length of tag + header length */
 
-#define META_HEADERLEN 16
-
-#define MAP_ENTRY_SIZE_V12 8 /* size of map entry, versions 1 & 2 */
-#define MAP_ENTRY_SIZE_V3 16 /* size of map entry, version 3 */
-
 #define HEADER_LEN_V5 124
 
-#define GET_UINT16(b) (b += 2, static_cast<uint16_t>((static_cast<uint16_t>((b)[-2]) << 8) | static_cast<uint16_t>((b)[-1])))
 #define GET_UINT32(b) (b += 4, (static_cast<uint32_t>((b)[-4]) << 24) | (static_cast<uint32_t>((b)[-3]) << 16) | (static_cast<uint32_t>((b)[-2]) << 8) | static_cast<uint32_t>((b)[-1]))
 #define GET_UINT64(b) (b += 8, (static_cast<uint64_t>((b)[-8]) << 56) | (static_cast<uint64_t>((b)[-7]) << 48) | (static_cast<uint64_t>((b)[-6]) << 40) | (static_cast<uint64_t>((b)[-5]) << 32) | (static_cast<uint64_t>((b)[-4]) << 24) | (static_cast<uint64_t>((b)[-3]) << 16) | (static_cast<uint64_t>((b)[-2]) << 8) | (static_cast<uint64_t>((b)[-1])))
 
 static uint32_t v4_compressors[] = {0, CHD_CODEC_ZLIB, CHD_CODEC_ZLIB, /* TODO: zlib plus */
 				    CHD_CODEC_AVHUFF};
-
-static uint8_t v4_map_types[] = {0, CHD_MAP_TYPE_COMPRESSOR0, CHD_MAP_TYPE_UNCOMPRESSED, CHD_MAP_TYPE_MINI, CHD_MAP_TYPE_SELF_REF, CHD_MAP_TYPE_PARENT_REF};
-
-#if 0
-static uint8_t  v5_map_types[] = {
-    CHD_MAP_TYPE_UNCOMPRESSED, CHD_MAP_TYPE_SELF_REF, CHD_MAP_TYPE_PARENT_REF, CHD_MAP_TYPE_MINI,
-    CHD_MAP_TYPE_COMPRESSOR0, CHD_MAP_TYPE_COMPRESSOR1, CHD_MAP_TYPE_COMPRESSOR2, CHD_MAP_TYPE_COMPRESSOR3
-};
-#endif
-
 
 Chd::Chd(const std::string &name) {
     f = make_shared_file(name, "rb");
