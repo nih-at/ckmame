@@ -51,7 +51,6 @@
 static const std::string zname[] = {"", "cloneof", "grand-cloneof"};
 
 static void diagnostics_game(filetype_t ft, const Game *game, const Result &result);
-static void diagnostics_files(const Game *, const Result *);
 
 
 void diagnostics(const Game *game, const GameArchives &archives, const Result &result) {
@@ -81,7 +80,7 @@ void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result) 
             case FS_PARTUSED:
             case FS_USED:
             case FS_MISSING:
-                /* handled in diagnostics_files */
+                /* handled in diagnostics_game */
                 break;
                 
             case FS_BROKEN:
