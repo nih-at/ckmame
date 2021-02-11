@@ -71,36 +71,33 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
                 auto filetype = nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK;
                 ArchivePtr a = Archive::open(name, filetype, FILE_NOWHERE, 0);
 
-                if (!a) {
-                    /* TODO */
-                    continue;
-                }
+                if (a) {
+                    GameArchives archives;
+                    archives.archive[filetype] = a;
+                    
+                    Result res(NULL, archives);
 
-                GameArchives archives;
-                archives.archive[filetype] = a;
-                
-                Result res(NULL, archives);
+                    while (di < len) {
+                        auto fl = del->entries[di];
+                        cmp = name.compare(fl.name);
 
-                while (di < len) {
-                    auto fl = del->entries[di];
-                    cmp = name.compare(fl.name);
+                        if (cmp == 0) {
+                            res.archive_files[filetype][fl.index] = FS_USED;
+                        }
+                        else if (cmp < 0) {
+                            break;
+                        }
 
-                    if (cmp == 0) {
-                        res.archive_files[filetype][fl.index] = FS_USED;
+                        di++;
                     }
-                    else if (cmp < 0) {
-                        break;
-                    }
 
-                    di++;
+                    check_archive_files(filetype, archives, "", &res);
+
+                    warn_set_info(WARN_TYPE_ARCHIVE, a->name);
+                    diagnostics_archive(filetype, a.get(), res);
+                    cleanup_archive(filetype, a.get(), &res, flags);
                 }
-
-                check_archive_files(filetype, archives, "", &res);
-
-                warn_set_info(WARN_TYPE_ARCHIVE, a->name);
-                diagnostics_archive(filetype, a.get(), res);
-                cleanup_archive(filetype, a.get(), &res, flags);
-
+                    
                 break;
             }
 

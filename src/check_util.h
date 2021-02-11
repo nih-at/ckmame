@@ -51,7 +51,7 @@ extern std::vector<std::string> superfluous;
 
 void ensure_extra_maps(int flags);
 void ensure_needed_maps(void);
-std::string findfile(const std::string &name, filetype_t what, const std::string &game_name);
-std::string make_file_name(filetype_t ft, const std::string &name, const std::string &game_name);
+std::string findfile(filetype_t filetype, const std::string &name);
+std::string make_file_name(filetype_t filetype, const std::string &name);
 
 #endif /* _HAD_CHECK_UTIL_H */

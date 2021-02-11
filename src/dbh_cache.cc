@@ -365,16 +365,8 @@ dbh_cache_archive_name(DB *dbh, const std::string &name) {
                 return ".";
             }
 
-            size_t strip_end = 0;
-
-            if (!roms_unzipped) {
-                if (name.length() >= 4 && name.compare(name.length() - 4, 4, ".zip") == 0) {
-                    strip_end = 4;
-                }
-            }
-            
             auto offset = directory.name.length() + 1;
-            auto length = name.length() - offset - strip_end;
+            auto length = name.length() - offset;
 
             return name.substr(offset, length);
 	}

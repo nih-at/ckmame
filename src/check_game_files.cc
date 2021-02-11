@@ -56,7 +56,6 @@ enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 typedef enum test_result test_result_t;
 
 static test_result_t match_files(ArchivePtr, test_t, const File *, Match *);
-static void update_game_status(filetype_t filetype, const Game *, Result *);
 
 
 void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, Result *res) {
@@ -154,8 +153,6 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         }
     }
     
-    update_game_status(filetype, game, res);
-    
     stats.add_game(res->game);
     for (size_t i = 0; i < game->files[filetype].size(); i++) {
         stats.add_rom(filetype, &game->files[filetype][i], res->game_files[filetype][i].quality);
@@ -182,7 +179,7 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
 	switch (test) {
             case TEST_NAME_SIZE_CHECKSUM:
             case TEST_MERGENAME_SIZE_CHECKSUM:
-                if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file)) && rom->compare_size_crc(file)) {
+                if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file)) && rom->compare_size_hashes(file)) {
                     if (rom->compare_hashes(file) != Hashes::MATCH) {
                         if (match->quality == QU_HASHERR) {
                             break;
@@ -206,7 +203,7 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
                     break;
                 }
 
-                if (rom->compare_size_crc(file)) {
+                if (rom->compare_size_hashes(file)) {
                     if (archive->file_compare_hashes(i, &rom->hashes) != 0) {
                         if (file.status != STATUS_OK) {
                             break;
@@ -251,36 +248,39 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
 }
 
 
-static void
-update_game_status(filetype_t filetype, const Game *game, Result *result) {
+void update_game_status(const Game *game, Result *result) {
     bool all_dead, all_own_dead, all_correct, all_fixable, has_own;
 
     all_own_dead = all_dead = all_correct = all_fixable = true;
     has_own = false;
 
-    for (size_t i = 0; i < game->files[filetype].size(); i++) {
-        auto match = &result->game_files[filetype][i];
-        auto &rom = game->files[filetype][i];
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        auto filetype = static_cast<filetype_t>(ft);
 
-        if (rom.where == FILE_INGAME) {
-            has_own = true;
-        }
-        if (match->quality == QU_MISSING) {
-	    all_fixable = false;
-        }
-	else {
-	    all_dead = false;
+        for (size_t i = 0; i < game->files[filetype].size(); i++) {
+            auto match = &result->game_files[filetype][i];
+            auto &rom = game->files[filetype][i];
+
             if (rom.where == FILE_INGAME) {
-		all_own_dead = false;
+                has_own = true;
             }
-	}
-	/* TODO: using output_options here is a bit of a hack,
-	   but so is all of the result->game processing */
-        if (match->quality != QU_OK && (rom.status != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP))) {
-	    all_correct = false;
+            if (match->quality == QU_MISSING) {
+                all_fixable = false;
+            }
+            else {
+                all_dead = false;
+                if (rom.where == FILE_INGAME) {
+                    all_own_dead = false;
+                }
+            }
+            /* TODO: using output_options here is a bit of a hack,
+               but so is all of the result->game processing */
+            if (match->quality != QU_OK && (rom.status != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP))) {
+                all_correct = false;
+            }
         }
     }
-
+        
     if (all_correct) {
         result->game = GS_CORRECT;
     }

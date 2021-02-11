@@ -97,6 +97,7 @@ ArchivePtr Archive::open(ArchiveContentsPtr contents) {
                 
             case ARCHIVE_IMAGES:
                 archive = std::make_shared<ArchiveImages>(contents);
+                break;
                 
             default:
                 return NULL;
@@ -508,7 +509,7 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
         
         auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const File &file_cache){ return file.name == file_cache.name; });
         if (it != files_cache.cend()) {
-            if (file.mtime == (*it).mtime && file.compare_name_size_crc(*it)) {
+            if (file.mtime == (*it).mtime && file.compare_name_size_hashes(*it)) {
                 file.hashes = (*it).hashes;
             }
             else {

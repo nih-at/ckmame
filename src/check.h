@@ -40,5 +40,6 @@
 void check_archive_files(filetype_t ft, const GameArchives &archives, const std::string &gamename, Result *result);
 void check_game_files(Game *game, filetype_t ft, GameArchives *archives, Result *result);
 void check_old(Game *game, Result *res);
+void update_game_status(const Game *game, Result *result);
 
 #endif /* _HAD_CHECK_H */

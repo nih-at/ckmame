@@ -4,7 +4,7 @@ args -FKLivc zero
 file roms/zero.zip zero-long.zip zero-ok.zip
 file-new unknown/zero.zip zero-long.zip
 stdout In game zero:
-stdout game zero                                    : correct
+stdout game zero                                    : not a single rom found
 stdout file zero          size       4  crc 9be3e0a3: unknown
 stdout roms/zero.zip: move unknown file 'zero'
 stdout roms/zero.zip: create empty file 'zero'

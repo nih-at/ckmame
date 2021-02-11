@@ -65,15 +65,14 @@ public:
     
     bool compare_name(const File &other) const;
     bool compare_merged(const File &other) const;
-    bool compare_merged_size_crc(const File &other) const;
-    bool compare_name_size_crc(const File &other) const;
-    bool compare_size_crc(const File &other) const;
+    bool compare_name_size_hashes(const File &other) const;
+    bool compare_size_hashes(const File &other) const;
     Hashes::Compare compare_hashes(const File &other) const;
     bool is_mergable(const File &other) const;
     bool size_hashes_are_set(bool detector) const;
     
 private:
-    bool compare_size_crc_one(const File &other, bool detector) const;
+    bool compare_size_hashes_one(const File &other, bool detector) const;
 };
 
 #endif /* file.h */

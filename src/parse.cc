@@ -496,7 +496,7 @@ void ParserContext::rom_end(filetype_t ft) {
     }
     for (size_t j = 0; j < n && !deleted; j++) {
         auto &rom2 = g->files[ft][j];
-        if (r[ft]->compare_size_crc(rom2)) {
+        if (r[ft]->compare_size_hashes(rom2)) {
 	    /* TODO: merge in additional hash types? */
             if (r[ft]->compare_name(rom2)) {
 		myerror(ERRFILE, "%d: the same rom listed multiple times (%s)", lineno, r[ft]->name.c_str());

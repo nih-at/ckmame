@@ -135,13 +135,15 @@ void Tree::traverse_internal(GameArchives *ancestor_archives, bool check_integri
     auto flags = ((check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | db->hashtypes(TYPE_ROM)) : 0));
     
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        auto full_name = findfile(name, static_cast<filetype_t>(ft), "");
+        auto filetype = static_cast<filetype_t>(ft);
+        
+        auto full_name = findfile(filetype, name);
 
         if (full_name.empty() && check) {
-            full_name = make_file_name(static_cast<filetype_t>(ft), name, "");
+            full_name = make_file_name(filetype, name);
         }
         if (!full_name.empty()) {
-            archives[0].archive[ft] = Archive::open(full_name, static_cast<filetype_t>(ft), FILE_ROMSET, flags);
+            archives[0].archive[ft] = Archive::open(full_name, filetype, FILE_ROMSET, flags);
         }
     }
 
@@ -187,7 +189,8 @@ void Tree::process(GameArchives *archives) {
         check_game_files(game.get(), static_cast<filetype_t>(ft), archives, &res);
         check_archive_files(static_cast<filetype_t>(ft), archives[0], game->name, &res);
     }
-    
+    update_game_status(game.get(), &res);
+
     /* write warnings/errors for me */
     diagnostics(game.get(), archives[0], res);
 

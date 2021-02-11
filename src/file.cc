@@ -42,24 +42,19 @@ bool File::compare_merged(const File &other) const {
 }
 
 
-bool File::compare_merged_size_crc(const File &other) const {
-    return compare_merged(other) && compare_size_crc(other);
-}
-
-
 bool File::compare_name(const File &other) const {
     return name == other.name;
 }
 
-bool File::compare_name_size_crc(const File &other) const {
-    return compare_name(other) && compare_size_crc(other);
+bool File::compare_name_size_hashes(const File &other) const {
+    return compare_name(other) && compare_size_hashes(other);
 }
 
-bool File::compare_size_crc(const File &other) const {
-    return compare_size_crc_one(other, false) || compare_size_crc_one(other, true);
+bool File::compare_size_hashes(const File &other) const {
+    return compare_size_hashes_one(other, false) || compare_size_hashes_one(other, true);
 }
 
-bool File::compare_size_crc_one(const File &other, bool detector) const {
+bool File::compare_size_hashes_one(const File &other, bool detector) const {
     if (detector && !other.size_hashes_are_set(detector)) {
         return false;
     }
@@ -68,12 +63,7 @@ bool File::compare_size_crc_one(const File &other, bool detector) const {
         return false;
     }
     
-    if (hashes.empty()) {
-        return true;
-    }
-    
-    // TODO: don't hardcode CRC, doesn't work for disks
-    if (hashes.has_type(Hashes::TYPE_CRC) && other.get_hashes(detector).has_type(Hashes::TYPE_CRC) && hashes.crc == other.get_hashes(detector).crc) {
+    if (hashes.compare(other.get_hashes(detector)) == Hashes::MATCH) {
         return true;
     }
     
@@ -91,12 +81,11 @@ bool File::is_mergable(const File &other) const {
         return false;
     }
 
-    /* both can be bad dumps */
-    if (hashes.empty() && other.hashes.empty()) {
-        return true;
+    /* Both can be bad dumps or the hashes must match. */
+    if (hashes.empty() != other.hashes.empty()) {
+        return false;
     }
-    /* or the hashes must match */
-    if (!hashes.empty() && !other.hashes.empty() && compare_size_crc(other)) {
+    if (compare_size_hashes(other)) {
         return true;
     }
 

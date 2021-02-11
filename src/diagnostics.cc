@@ -112,7 +112,8 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
     switch (result.game) {
         case GS_CORRECT:
             if (ft == TYPE_ROM && (output_options & WARN_CORRECT)) {
-                warn_game_file(ft, NULL, "correct");            }
+                warn_game_file(ft, NULL, "correct");
+            }
             return;
             
         case GS_OLD:
@@ -150,7 +151,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
             break;
 
         case GS_MISSING:
-            if (output_options & WARN_MISSING) {
+            if (ft == TYPE_ROM && (output_options & WARN_MISSING)) {
                 warn_game_file(ft, NULL, "not a single rom found");
                 return;
             }

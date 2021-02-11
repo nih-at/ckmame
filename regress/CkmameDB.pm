@@ -22,8 +22,6 @@ sub new {
 
 			next unless ($cache_dir eq $dir);
 
-			$archive =~ s/\.zip$//;
-
 			if (defined($file)) {
 				$self->{no_hashes}->{$archive}->{$file} = $hashes // 1;
 			}
@@ -156,14 +154,12 @@ sub read_archives {
 			$archive = { name => $name eq "" ? "." : $name, files => [] };
 			$idx = 0;
 
+			my @stat = stat("$self->{dir}/$archive->{name}");
+			$archive->{mtime} = $stat[9] // '<null>';
 			if ($self->{unzipped}) {
-				my @stat = stat("$self->{dir}/$archive->{name}");
-				$archive->{mtime} = $stat[9] // '<null>';
 				$archive->{size} = 0;
 			}
 			else {
-				my @stat = stat("$self->{dir}/$archive->{name}.zip");
-				$archive->{mtime} = $stat[9] // '<null>';
 				$archive->{size} = $stat[7] // '<null>';
 			}
 			if ($self->{dump_archives}->{$archive->{name}}) {

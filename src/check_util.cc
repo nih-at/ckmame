@@ -129,8 +129,8 @@ ensure_needed_maps(void) {
 }
 
 
-std::string findfile(const std::string &name, filetype_t what, const std::string &game_name) {
-    if (what == TYPE_FULL_PATH) {
+std::string findfile(filetype_t filetype, const std::string &name) {
+    if (filetype == TYPE_FULL_PATH) {
 	if (std::filesystem::exists(name)) {
 	    return name;
 	}
@@ -139,36 +139,21 @@ std::string findfile(const std::string &name, filetype_t what, const std::string
 	}
     }
 
-    auto fn = make_file_name(what, name, game_name);
+    auto fn = make_file_name(filetype, name);
     if (std::filesystem::exists(fn)) {
 	return fn;
-    }
-    if (what == TYPE_DISK) {
-	/* strip off ".chd" */
-	fn = fn.substr(0, fn.size() - 4);
-	if (std::filesystem::exists(fn)) {
-	    return fn;
-	}
     }
 
     return "";
 }
 
 
-std::string make_file_name(filetype_t ft, const std::string &name, const std::string &game_name) {
+std::string make_file_name(filetype_t filetype, const std::string &name) {
     std::string result;
 
-    result = get_directory() + "/";
-    if (ft == TYPE_DISK) {
-	result += game_name + "/";
-    }
-    result += name;
-    if (ft == TYPE_DISK) {
-	result += ".chd";
-    } else {
-	if (!roms_unzipped) {
-	    result += ".zip";
-	}
+    result = get_directory() + "/" + name;
+    if (filetype == TYPE_ROM && !roms_unzipped) {
+	result += ".zip";
     }
 
     return result;

@@ -184,7 +184,7 @@ find_result_t find_in_romset(filetype_t filetype, const File *file, Archive *arc
 static find_result_t check_for_file_in_archive(filetype_t filetype, const std::string &name, const File *wanted_file, const File *candidate, Match *matches) {
     ArchivePtr a;
 
-    auto full_name = findfile(name, TYPE_ROM, "");
+    auto full_name = findfile(filetype, name);
     if (full_name == "" || !(a = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, 0))) {
 	return FIND_MISSING;
     }
@@ -213,33 +213,6 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
     return FIND_MISSING;
 }
 
-
-#if 0
-/*ARGSUSED1*/
-static find_result_t check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_disk) {
-    auto file_name = findfile(disk->name, TYPE_DISK, game->name);
-    if (file_name == "") {
-	return FIND_MISSING;
-    }
-
-    auto f = Disk::from_file(file_name, DISK_FL_QUIET);
-    if (!f) {
-	return FIND_MISSING;
-    }
-
-    if (f->status == STATUS_OK && disk->hashes.compare(f->hashes) == Hashes::MATCH) {
-	if (match_disk) {
-	    match_disk->quality = QU_COPIED;
-	    match_disk->name = file_name;
-            match_disk->hashes = f->hashes;
-	}
-        printf("found disk '%s': %d\n", file_name.c_str(), f->status);
-	return FIND_EXISTS;
-    }
-
-    return FIND_MISSING;
-}
-#endif
 
 static find_result_t check_match_old(filetype_t, const Game *game, const File *wanted_file, const File *, Match *match) {
     if (match) {
