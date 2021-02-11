@@ -38,7 +38,6 @@
 #include <string>
 #include <vector>
 
-#include "disk.h"
 #include "file.h"
 
 struct Game {

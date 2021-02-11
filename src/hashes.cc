@@ -182,12 +182,26 @@ const void *Hashes::hash_data(int type) const {
     }
 }
 
-void Hashes::set(int type, const void *data) {
+void Hashes::set(int type, const void *data, bool ignore_zero) {
     auto length = hash_size(type);
 
     if (length == 0) {
         return;
     }
+    
+    if (ignore_zero) {
+        auto all_zero = true;
+        for (size_t i = 0; i < length; i++) {
+            if (reinterpret_cast<const uint8_t *>(data)[i] != '\0') {
+                all_zero = false;
+                break;
+            }
+        }
+        if (all_zero) {
+            return;
+        }
+    }
+
     memcpy(const_cast<void *>(hash_data(type)), data, length);
     types |= type;
 }

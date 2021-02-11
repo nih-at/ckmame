@@ -100,7 +100,7 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
                     break;
                 }
 
-                case NAME_CHD:
+                case NAME_IMAGES:
                     /* TODO: include disks in dat */
                 case NAME_UNKNOWN:
 		    if (std::filesystem::is_regular_file(filepath)) {

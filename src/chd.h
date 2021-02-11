@@ -34,6 +34,7 @@
 */
 
 #include <cinttypes>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -57,12 +58,8 @@ class Chd {
 public:
     Chd(const std::string &name_);
 
-    uint64_t read_hunk(uint64_t index, void *data);
-    void get_hashes(Hashes *);
-
     uint32_t flags;          /* flags field */
-    uint8_t md5[16];         /* MD5 checksum of raw data */
-    uint8_t sha1[20];        /* SHA1 checksum of raw data */
+    Hashes hashes;
     uint32_t version;        /* drive format version */
 
 private:
@@ -74,16 +71,16 @@ private:
     uint64_t total_len;      /* logical size of the data */
     uint64_t map_offset;     /* offset of hunk map in file */
     uint64_t meta_offset;    /* offset in file of first metadata */
-    uint8_t parent_md5[16];  /* MD5 checksum of parent file */
-    uint8_t parent_sha1[20]; /* SHA1 checksum of parent file */
-    uint8_t raw_sha1[20];    /* SHA1 checksum of raw data */
+    Hashes parent_hashes;    /* hashes of parent file */
+    Hashes raw_hashes;       /* SHA1 checksum of raw data */
     uint32_t compressors[4]; /* compression algorithms used */
 
     std::vector<ChdMapEntry> map;          /* hunk map */
 
     void read_header(void);
     void read_header_v5(const uint8_t *header);
-    void read_map(void);
 };
+
+typedef std::shared_ptr<Chd> ChdPtr;
 
 #endif /* chd.h */

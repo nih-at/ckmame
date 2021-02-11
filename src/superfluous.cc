@@ -45,14 +45,13 @@
 #include "types.h"
 #include "util.h"
 
-static void list_game_directory(std::vector<std::string> &found, const std::string &dirname, bool dir_known);
+static void list_non_chds(std::vector<std::string> &found, const std::string &dirname);
 
-std::vector<std::string>
-list_directory(const std::string &dirname, const std::string &dbname) {
+std::vector<std::string> list_directory(const std::string &dirname, const std::string &dbname) {
     std::vector<std::string> result;
     std::vector<std::string> list;
 
-    if (dbname != "") {
+    if (!dbname.empty()) {
         list = db->read_list(DBH_KEY_LIST_GAME);
 	if (list.empty()) {
             myerror(ERRDEF, "list of games not found in database '%s'", dbname.c_str());
@@ -75,24 +74,26 @@ list_directory(const std::string &dirname, const std::string &dbname) {
 
 	     if (std::filesystem::is_directory(filepath)) {
 		 auto filename = filepath.filename();
-		 if (roms_unzipped) {
-		     known = std::binary_search(list.begin(), list.end(), filename);;
-		 }
-		 else {
-		     bool dir_known = std::binary_search(list.begin(), list.end(), filename);
-		     list_game_directory(result, filepath, dir_known);
-		     known = true; /* we don't want directories in superfluous list (I think) */
+                 known = std::binary_search(list.begin(), list.end(), filename);;
+
+                 if (!roms_unzipped) {
+                     list_non_chds(result, filepath);
 		 }
 	     }
 	     else {
-		 auto ext = filepath.extension();
-		 if (ext != "") {
-		     if (!roms_unzipped && ext == ".zip") {
-			 auto stem = filepath.stem();
-			 known = std::binary_search(list.begin(), list.end(), stem);
-		     }
-		 }
-	     }
+                 if (!roms_unzipped) {
+                     auto ext = filepath.extension();
+
+                     if (ext == ".zip") {
+                         auto stem = filepath.stem();
+                         known = std::binary_search(list.begin(), list.end(), stem);
+                     }
+                     else if (ext == ".chd") {
+                         known = true; // TODO: I don't think we want top level CHDs in this list.
+                     }
+                 }
+                 // TODO: Don't list top level files for unzipped in list either?
+             }
 
 	     if (!known) {
 		 result.push_back(filepath);
@@ -109,8 +110,7 @@ list_directory(const std::string &dirname, const std::string &dbname) {
 }
 
 
-void
-print_superfluous(std::vector<std::string> &files) {
+void print_superfluous(std::vector<std::string> &files) {
     if (files.empty()) {
 	return;
     }
@@ -123,20 +123,15 @@ print_superfluous(std::vector<std::string> &files) {
 }
 
 
-static void
-list_game_directory(std::vector<std::string> &found, const std::string &dirname, bool dir_known) {
-    auto component = std::filesystem::path(dirname).filename();
-
+static void list_non_chds(std::vector<std::string> &found, const std::string &dirname) {
     try {
-	Dir dir(dirname, false);
+	Dir dir(dirname, true);
 	std::filesystem::path filepath;
 
 	while ((filepath = dir.next()) != "") {
-            if (dir_known && filepath.extension() == ".chd") {
-                continue;
+            if (filepath.extension() != ".chd") {
+                found.push_back(filepath);
             }
-
-            found.push_back(filepath);
 	}
     }
     catch (...) {

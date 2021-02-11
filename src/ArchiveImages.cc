@@ -1,6 +1,6 @@
 /*
-  fixdat.cc -- write fixdat
-  Copyright (C) 2012-2014 Dieter Baron and Thomas Klausner
+  ArchiveImages.h -- archive for directory of disk images
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,44 +31,58 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "fixdat.h"
+#include "ArchiveImages.h"
 
-#include "globals.h"
-#include "match.h"
+#include "Dir.h"
+#include "error.h"
 
-OutputContextPtr fixdat;
+bool ArchiveImage::file_add_empty_xxx(const std::string &filename) {
+    // disk images can't be empty
+    return false;
+}
 
-void
-write_fixdat_entry(const Game *game, const Result *result) {
-    if (result->game != GS_MISSING && result->game != GS_PARTIAL) {
-	return;
-    }
 
-    auto gm = std::make_shared<Game>();
-    gm->name = game->name;
+Archive::ArchiveFilePtr ArchiveImage::file_open(uint64_t index) {
+    seterrinfo("", name);
+    myerror(ERRZIP, "cannot open '%s': reading from CHDs not supported", files[index].name.c_str());
+    return NULL;
+}
 
-    auto empty = true;
-    
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        for (size_t i = 0; i < game->files[ft].size(); i++) {
-            auto &match = result->game_files[ft][i];
-            auto &rom = game->files[ft][i];
+bool ArchiveImage::read_infos_xxx() {
+    try {
+        Dir dir(name, contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
+        std::filesystem::path filepath;
+        
+        while ((filepath = dir.next()) != "") {
+            if (name == filepath || filepath.filename() == DBH_CACHE_DB_NAME || !std::filesystem::is_regular_file(filepath)) {
+                continue;
+            }
+
+            struct stat sb;
             
-            /* no use requesting zero byte files */
-            if (rom.size == 0) {
+            if (stat(filepath.c_str(), &sb) != 0) {
                 continue;
             }
             
-            if (match.quality != QU_MISSING || rom.status == STATUS_NODUMP || rom.where != FILE_INGAME) {
-                continue;
+            try {
+                Chd chd(filepath);
+                
+                files.push_back(File());
+                auto &f = files[files.size() - 1];
+                
+                f.name = filepath.string().substr(name.size() + 1);
+                f.size = SIZE_UNKNOWN;
+                f.hashes = chd.hashes;
+                // auto ftime = std::filesystem::last_write_time(filepath);
+                // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
+                f.mtime = sb.st_mtime;
             }
-            
-            gm->files[ft].push_back(rom);
-            empty = false;
+            catch (...) { }
         }
     }
-
-    if (!empty) {
-	fixdat->game(gm);
+    catch (...) {
+        return false;
     }
+    
+    return true;
 }

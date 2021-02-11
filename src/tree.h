@@ -39,7 +39,6 @@
 #include "archive.h"
 #include "GameArchives.h"
 #include "hashes.h"
-#include "images.h"
 #include "types.h"
 
 class Tree;

@@ -56,6 +56,7 @@ static find_result_t check_match_romset(filetype_t filetype, const Game *game, c
 static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const File *wanted_file, Archive *archive, const std::string &skip, Match *match, find_result_t (*)(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match));
 
 
+#if 0
 find_result_t
 find_disk(const Disk *disk, MatchDisk *match_disk) {
     sqlite3_stmt *stmt;
@@ -101,7 +102,7 @@ find_disk(const Disk *disk, MatchDisk *match_disk) {
 
     return static_cast<find_result_t>(ret);
 }
-
+#endif
 
 find_result_t
 find_in_archives(const File *rom, Match *m, bool needed_only) {
@@ -213,6 +214,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
 }
 
 
+#if 0
 /*ARGSUSED1*/
 static find_result_t check_match_disk_romset(const Game *game, const Disk *disk, MatchDisk *match_disk) {
     auto file_name = findfile(disk->name, TYPE_DISK, game->name);
@@ -237,7 +239,7 @@ static find_result_t check_match_disk_romset(const Game *game, const Disk *disk,
 
     return FIND_MISSING;
 }
-
+#endif
 
 static find_result_t check_match_old(filetype_t, const Game *game, const File *wanted_file, const File *, Match *match) {
     if (match) {

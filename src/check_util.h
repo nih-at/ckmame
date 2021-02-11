@@ -37,7 +37,6 @@
 #include <string>
 #include <vector>
 
-#include "disk.h"
 #include "types.h"
 
 #define DO_MAP 0x1
@@ -52,7 +51,6 @@ extern std::vector<std::string> superfluous;
 
 void ensure_extra_maps(int flags);
 void ensure_needed_maps(void);
-bool enter_disk_in_map(const Disk *disk, where_t where);
 std::string findfile(const std::string &name, filetype_t what, const std::string &game_name);
 std::string make_file_name(filetype_t ft, const std::string &name, const std::string &game_name);
 

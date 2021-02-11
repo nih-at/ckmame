@@ -486,30 +486,25 @@ bool ArchiveDir::read_infos_xxx() {
 	 std::filesystem::path filepath;
 
 	 while ((filepath = dir.next()) != "") {
-	     if (name == filepath) {
-		 continue;
-	     }
-	     if (std::filesystem::is_regular_file(filepath)) {
-		 if (filepath.filename() == DBH_CACHE_DB_NAME) {
-		     continue;
-		 }
-		 struct stat sb;
+             if (name == filepath || filepath.filename() == DBH_CACHE_DB_NAME || !std::filesystem::is_regular_file(filepath)) {
+                 continue;
+             }
 
-		 if (stat(filepath.c_str(), &sb) != 0) {
-		     continue;
-		 }
+             struct stat sb;
 
-		 files.push_back(File());
-		 auto &f = files[files.size() - 1];
-
-		 f.name = filepath.string().substr(name.size() + 1);
-		 // f.size = static_cast<uint64_t>(sb.st_size);
-		 f.size = std::filesystem::file_size(filepath);
-		 // auto ftime = std::filesystem::last_write_time(filepath);
-		 // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
-		 f.mtime = sb.st_mtime;
-	     }
-	 }
+             if (stat(filepath.c_str(), &sb) != 0) {
+                 continue;
+             }
+             
+             files.push_back(File());
+             auto &f = files[files.size() - 1];
+             
+             f.name = filepath.string().substr(name.size() + 1);
+             f.size = std::filesystem::file_size(filepath);
+             // auto ftime = std::filesystem::last_write_time(filepath);
+             // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
+             f.mtime = sb.st_mtime;
+         }
     }
     catch (...) {
 	return false;

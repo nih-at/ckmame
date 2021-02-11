@@ -41,9 +41,7 @@
 
 #include "game.h"
 #include "GameArchives.h"
-#include "images.h"
 #include "match.h"
-#include "match_disk.h"
 
 enum GameStatus {
     GS_MISSING, /* not a single own ROM found */

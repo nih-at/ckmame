@@ -37,7 +37,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "disk.h"
 #include "file.h"
 #include "result.h"
 #include "types.h"
@@ -59,7 +58,6 @@ class Stats {
     uint64_t games_partial;
     StatsFiles files[TYPE_MAX];
 
-    void add_disk(const Disk *disk, quality_t status);
     void add_game(GameStatus status);
     void add_rom(enum filetype type, const File *rom, quality_t status);
     void print(FILE *f, bool total_only);

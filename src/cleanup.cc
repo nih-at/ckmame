@@ -67,7 +67,7 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
 	name = list[i];
 	switch ((nt = name_type(name))) {
             case NAME_ZIP:
-            case NAME_CHD: {
+            case NAME_IMAGES: {
                 auto filetype = nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK;
                 ArchivePtr a = Archive::open(name, filetype, FILE_NOWHERE, 0);
 

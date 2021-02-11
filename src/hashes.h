@@ -94,7 +94,7 @@ public:
     std::string to_string(int type) const;
     bool empty() const { return types == 0; }
 
-    void set(int type, const void *data);
+    void set(int type, const void *data, bool ignore_zero = false);
     void set_crc(uint32_t crc_) { types |= TYPE_CRC; crc = crc_; }
     int set_from_string(const std::string &s);
 

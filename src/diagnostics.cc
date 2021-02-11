@@ -45,7 +45,6 @@
 #include "globals.h"
 #include "hashes.h"
 #include "match.h"
-#include "match_disk.h"
 #include "types.h"
 #include "warn.h"
 

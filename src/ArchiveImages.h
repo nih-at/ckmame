@@ -1,9 +1,9 @@
-#ifndef _HAD_IMAGES_H
-#define _HAD_IMAGES_H
+#ifndef _HAD_ARCHIVE_IMAGES_H
+#define _HAD_ARCHIVE_IMAGES_H
 
 /*
-  images.h -- array of disk images
-  Copyright (C) 2006-2021 Dieter Baron and Thomas Klausner
+  ArchiveImages.h -- archive for directory of disk images
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,26 +34,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#endif // _HAD_ARCHIVE_IMAGES_H
 
-#include "disk.h"
-#include "game.h"
+#include "ArchiveDir.h"
+#include "chd.h"
 
-class Images;
-
-typedef std::shared_ptr<Images> ImagesPtr;
-
-class Images {
+class ArchiveImage: public ArchiveDir {
 public:
-    std::vector<DiskPtr> disks;
-    
-    static ImagesPtr from_directory(const std::string &directory, bool check_integrity);
-    static ImagesPtr from_file(const std::string &name);
-
-    int find(const std::string &name) const;
-    const std::string &name(int) const;
+    virtual bool file_add_empty_xxx(const std::string &filename);
+    virtual ArchiveFilePtr file_open(uint64_t index);
+    virtual bool read_infos_xxx();
 };
-
-int images_find(const Images *images, const std::string &name);
-std::string images_name(const Images *im, int i);
-
-#endif /* images.h */

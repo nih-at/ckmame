@@ -38,11 +38,6 @@
 #include "util.h"
 
 
-void Stats::add_disk(const Disk *disk, quality_t status) {
-    add_file(TYPE_DISK, 0, status);
-}
-
-
 void Stats::add_game(GameStatus status) {
     switch (status) {
         case GS_OLD:

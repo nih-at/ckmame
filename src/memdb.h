@@ -37,7 +37,6 @@
 
 #include "archive.h"
 #include "dbh.h"
-#include "disk.h"
 
 extern std::unique_ptr<DB> memdb;
 
@@ -46,7 +45,6 @@ int memdb_ensure(void);
 int memdb_file_delete(const ArchiveContents *, int, bool);
 int memdb_file_insert(sqlite3_stmt *, const ArchiveContents *, int);
 int memdb_file_insert_archive(const ArchiveContents *);
-int memdb_update_disk(const Disk *);
 int memdb_update_file(const ArchiveContents *, int);
 
 #endif /* memdb.h */

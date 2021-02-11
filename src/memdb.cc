@@ -172,12 +172,6 @@ memdb_file_insert_archive(const ArchiveContents *archive) {
 
 
 int
-memdb_update_disk(const Disk *disk) {
-    return _update_file(disk->id, TYPE_DISK, 0, &disk->hashes);
-}
-
-
-int
 memdb_update_file(const ArchiveContents *archive, int idx) {
     if (archive->files[idx].status != STATUS_OK)
 	return _delete_file(archive->id, archive->filetype, idx);

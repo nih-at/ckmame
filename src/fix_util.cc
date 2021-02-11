@@ -102,17 +102,6 @@ make_needed_name(const File *r) {
 }
 
 
-static std::string
-make_needed_name_disk(const Disk *d) {
-    /* <needed_dir>/<md5>-nnn.zip */
-
-    auto md5 = d->hashes.to_string(Hashes::TYPE_MD5);
-    auto prefix = std::filesystem::path(needed_dir) / md5;
-
-    return make_unique_name(prefix, ".chd");
-}
-
-
 int
 move_image_to_garbage(const std::string &fname) {
     int ret;
@@ -215,6 +204,7 @@ save_needed(Archive *sa, size_t sidx, const std::string &gamename) {
 }
 
 
+#if 0
 bool
 save_needed_disk(const std::string &fname, bool do_save) {
     DiskPtr d = Disk::from_file(fname, 0);
@@ -245,3 +235,4 @@ save_needed_disk(const std::string &fname, bool do_save) {
     enter_disk_in_map(d.get(), FILE_NEEDED);
     return ret;
 }
+#endif
