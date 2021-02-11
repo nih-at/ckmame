@@ -30,8 +30,6 @@ set(COMMON_SOURCES
   detector_print.cc
   diagnostics.cc
   Dir.cc
-  disk.cc
-  disk_new.cc
   error.cc
   Exception.cc
   file.cc
@@ -44,9 +42,7 @@ set(COMMON_SOURCES
   globals.cc
   hashes.cc
   hashes_update.cc
-  images.cc
   match.cc
-  match_disk.cc
   memdb.cc
   output.cc
   output_cm.cc
