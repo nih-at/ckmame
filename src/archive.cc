@@ -174,7 +174,7 @@ int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
 bool Archive::file_compute_hashes(uint64_t idx, int hashtypes) {
     Hashes hashes;
     auto &file = files[idx];
-
+    
     if (file.hashes.has_all_types(hashtypes)) {
 	return true;
     }
@@ -520,7 +520,7 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
             cache_changed = true;
         }
         
-        if (!file.hashes.has_type(Hashes::TYPE_CRC)) {
+        if (contents->archive_type != ARCHIVE_IMAGES &&  !file.hashes.has_type(Hashes::TYPE_CRC)) {
             if (!file_compute_hashes(i, Hashes::TYPE_ALL)) {
                 file.status = STATUS_BADDUMP;
                 if (it == files_cache.cend() || (*it).status != STATUS_BADDUMP) {

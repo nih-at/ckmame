@@ -54,7 +54,7 @@ bool ArchiveImages::read_infos_xxx() {
         std::filesystem::path filepath;
         
         while ((filepath = dir.next()) != "") {
-            if (name == filepath || filepath.filename() == DBH_CACHE_DB_NAME || !std::filesystem::is_regular_file(filepath)) {
+            if (name == filepath || filepath.filename() == DBH_CACHE_DB_NAME || filepath.extension() != ".chd" || !std::filesystem::is_regular_file(filepath)) {
                 continue;
             }
 
@@ -70,8 +70,10 @@ bool ArchiveImages::read_infos_xxx() {
                 files.push_back(File());
                 auto &f = files[files.size() - 1];
                 
-                f.name = filepath.string().substr(name.size() + 1);
-                f.size = SIZE_UNKNOWN;
+                auto filename = filepath.string();
+                auto start = name.length() + 1;
+                f.name = filename.substr(start, filename.length() - start - 4);
+                f.size = chd.size();
                 f.hashes = chd.hashes;
                 // auto ftime = std::filesystem::last_write_time(filepath);
                 // f.mtime = decltype(ftime)::clock::to_time_t(ftime);

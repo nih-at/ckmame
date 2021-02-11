@@ -62,6 +62,8 @@ public:
     Hashes hashes;
     uint32_t version;        /* drive format version */
 
+    uint64_t size() const { return total_len; }
+
 private:
     FILEPtr f;
 
