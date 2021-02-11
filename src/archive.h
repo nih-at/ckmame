@@ -74,7 +74,8 @@ void archive_global_flags(int fl, bool setp);
 
 enum ArchiveType {
     ARCHIVE_ZIP,
-    ARCHIVE_DIR
+    ARCHIVE_DIR,
+    ARCHIVE_IMAGES
 };
 
 class ArchiveContents {

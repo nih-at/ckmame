@@ -36,19 +36,19 @@
 #include "Dir.h"
 #include "error.h"
 
-bool ArchiveImage::file_add_empty_xxx(const std::string &filename) {
+bool ArchiveImages::file_add_empty_xxx(const std::string &filename) {
     // disk images can't be empty
     return false;
 }
 
 
-Archive::ArchiveFilePtr ArchiveImage::file_open(uint64_t index) {
+Archive::ArchiveFilePtr ArchiveImages::file_open(uint64_t index) {
     seterrinfo("", name);
     myerror(ERRZIP, "cannot open '%s': reading from CHDs not supported", files[index].name.c_str());
     return NULL;
 }
 
-bool ArchiveImage::read_infos_xxx() {
+bool ArchiveImages::read_infos_xxx() {
     try {
         Dir dir(name, contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
         std::filesystem::path filepath;

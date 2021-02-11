@@ -42,6 +42,7 @@
 
 #include "archive.h"
 #include "ArchiveDir.h"
+#include "ArchiveImages.h"
 #include "ArchiveZip.h"
 #include "dbh_cache.h"
 #include "error.h"
@@ -93,6 +94,12 @@ ArchivePtr Archive::open(ArchiveContentsPtr contents) {
             case ARCHIVE_DIR:
                 archive = std::make_shared<ArchiveDir>(contents);
                 break;
+                
+            case ARCHIVE_IMAGES:
+                archive = std::make_shared<ArchiveImages>(contents);
+                
+            default:
+                return NULL;
         }
 
         //printf("# reopening %s\n", archive->name.c_str());
@@ -352,10 +359,13 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
                     archive = std::make_shared<ArchiveZip>(name, filetype, where, flags);
                 }
                 break;
-                // TODO: disks
+                
+            case TYPE_DISK:
+                archive = std::make_shared<ArchiveImages>(name, filetype, where, flags);
+                break;
                 
             default:
-                break;
+                return NULL;
         }
     }
     catch (...) {

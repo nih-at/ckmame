@@ -39,8 +39,13 @@
 #include "ArchiveDir.h"
 #include "chd.h"
 
-class ArchiveImage: public ArchiveDir {
+class ArchiveImages: public ArchiveDir {
 public:
+    ArchiveImages(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveDir(name, filetype, where, flags) { contents->archive_type = ARCHIVE_IMAGES; }
+    ArchiveImages(ArchiveContentsPtr contents) : ArchiveDir(contents) { }
+    virtual ~ArchiveImages() { update_cache(); }
+    
+protected:
     virtual bool file_add_empty_xxx(const std::string &filename);
     virtual ArchiveFilePtr file_open(uint64_t index);
     virtual bool read_infos_xxx();

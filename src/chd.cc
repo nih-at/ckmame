@@ -99,6 +99,92 @@ Chd::Chd(const std::string &name) {
 }
 
 
+void Chd::read_header(void) {
+    unsigned char b[MAX_HEADERLEN];
+    
+    if (fread(b, TAG_AND_LEN, 1, f.get()) != 1) {
+        throw Exception("not a CHD file");
+    }
+    
+    if (memcmp(b, TAG, TAG_LEN) != 0) {
+        throw Exception("not a CHD file");
+    }
+    
+    auto p = b + TAG_LEN;
+    uint32_t len = GET_UINT32(p);
+    if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
+        throw Exception("not a CHD file");
+    }
+    if (fread(p, len - TAG_AND_LEN, 1, f.get()) != 1) {
+        throw Exception("unexpected EOF");
+    }
+    
+    hdr_length = len;
+    version = GET_UINT32(p);
+    
+    if (version > 5) {
+        throw Exception("unsupported CHD version " + std::to_string(version));
+    }
+    
+    if (version >= 5) {
+        return read_header_v5(b);
+    }
+    
+    flags = GET_UINT32(p);
+    compressors[0] = v4_compressors[GET_UINT32(p)];
+    
+    /* TODO: check hdr_length against expected value for version */
+    
+    if (version < 3) {
+        hunk_len = GET_UINT32(p);
+        total_hunks = GET_UINT32(p);
+        p += 12; /* skip c/h/s */
+        
+        hashes.set(Hashes::TYPE_MD5, p);
+        p += Hashes::SIZE_MD5;
+        parent_hashes.set(Hashes::TYPE_MD5, p);
+        p += Hashes::SIZE_MD5;
+        
+        if (version == 1) {
+            hunk_len *= 512;
+        }
+        else {
+            hunk_len *= GET_UINT32(p);
+        }
+        total_len = hunk_len * total_hunks;
+        meta_offset = 0;
+    }
+    else {
+        total_hunks = GET_UINT32(p);
+        total_len = GET_UINT64(p);
+        meta_offset = GET_UINT64(p);
+        
+        if (version == 3) {
+            hashes.set(Hashes::TYPE_MD5, p);
+            p += Hashes::SIZE_MD5;
+            parent_hashes.set(Hashes::TYPE_MD5, p);
+            p += Hashes::SIZE_MD5;
+        }
+        
+        hunk_len = GET_UINT32(p);
+        
+        hashes.set(Hashes::TYPE_SHA1, p);
+        p += Hashes::SIZE_SHA1;
+        parent_hashes.set(Hashes::TYPE_SHA1, p);
+        p += Hashes::SIZE_SHA1;
+        
+        if (version == 3) {
+            raw_hashes.set(Hashes::TYPE_SHA1, hashes.sha1);
+        }
+        else {
+            raw_hashes.set(Hashes::TYPE_SHA1, p);
+            /* p += Hashes::SIZE_SHA1; */
+        }
+    }
+    
+    map_offset = hdr_length;
+}
+
 
 void Chd::read_header_v5(const uint8_t *header) {
     /*

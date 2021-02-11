@@ -11,6 +11,7 @@ endif()
 set(COMMON_SOURCES
   archive.cc
   ArchiveDir.cc
+  ArchiveImages.cc
   archive_modify.cc
   ArchiveZip.cc
   chd.cc
