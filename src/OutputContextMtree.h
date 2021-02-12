@@ -47,10 +47,10 @@ public:
     
 private:
     std::string fname;
-    bool extended;
+    bool runtest;
     FILEPtr f;
     
-    bool write_game(Game *game);
+    void write_files(const std::string &dirname, const std::vector<File> &files);
 };
 
 #endif // HAD_OUTPUT_MTREE_H

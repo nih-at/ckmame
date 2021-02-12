@@ -103,15 +103,33 @@ public:
 
     static void enter_in_maps(ArchiveContentsPtr contents);
     static ArchiveContentsPtr by_id(uint64_t id);
-    static ArchiveContentsPtr by_name(const std::string &name);
+    static ArchiveContentsPtr by_name(filetype_t filetype, const std::string &name);
 
+    class TypeAndName {
+    public:
+        TypeAndName(filetype_t filetype_, const std::string &name_) : filetype(filetype_), name(name_) { }
+        
+        filetype_t filetype;
+        std::string name;
+        
+        bool operator==(const TypeAndName &other) const { return filetype == other.filetype && name == other.name; }
+    };
+    
 private:
     static uint64_t next_id;
-    static std::unordered_map<std::string, std::weak_ptr<ArchiveContents>> archive_by_name;
+    static std::unordered_map<TypeAndName, std::weak_ptr<ArchiveContents>> archive_by_name;
     static std::unordered_map<uint64_t, ArchiveContentsPtr> archive_by_id;
 
 };
 
+namespace std {
+template <>
+struct hash<ArchiveContents::TypeAndName> {
+    std::size_t operator()(const ArchiveContents::TypeAndName &k) const {
+        return std::hash<int>()(k.filetype) ^ std::hash<std::string>()(k.name);
+    }
+};
+}
 
 class Archive {
 public:
@@ -177,7 +195,8 @@ public:
     virtual void get_last_update() = 0;
     virtual bool read_infos_xxx() = 0;
     virtual bool rollback_xxx() = 0; /* never called if commit never fails */
-    
+    virtual bool want_crc() const { return true; }
+
     ArchiveContentsPtr contents;
     std::vector<File> &files;
     std::string &name;

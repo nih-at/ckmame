@@ -225,7 +225,7 @@ std::filesystem::path ArchiveDir::get_original_data(uint64_t index) {
 
 
 std::filesystem::path ArchiveDir::make_full_name(const std::filesystem::path &filename) {
-    return std::filesystem::path(name) /= filename;
+    return std::filesystem::path(name) /= (filename.string() + filename_extension);
 }
 
 std::filesystem::path ArchiveDir::make_tmp_name(const std::filesystem::path &filename) {
@@ -486,7 +486,7 @@ bool ArchiveDir::read_infos_xxx() {
 	 std::filesystem::path filepath;
 
 	 while ((filepath = dir.next()) != "") {
-             if (name == filepath || filepath.filename() == DBH_CACHE_DB_NAME || !std::filesystem::is_regular_file(filepath)) {
+             if (name == filepath || name_type(filepath) == NAME_CKMAMEDB || !std::filesystem::is_regular_file(filepath)) {
                  continue;
              }
 

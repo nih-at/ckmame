@@ -66,7 +66,7 @@ std::vector<std::string> list_directory(const std::string &dirname, const std::s
 	 std::filesystem::path filepath;
 
 	 while ((filepath = dir.next()) != "") {
-	     if (filepath.filename() == DBH_CACHE_DB_NAME) {
+	     if (name_type(filepath) == NAME_CKMAMEDB) {
 		 continue;
 	     }
 

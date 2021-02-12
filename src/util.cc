@@ -90,6 +90,10 @@ name_type_t name_type(const std::string &name) {
         }
     }
 
+    if (std::filesystem::path(name).filename() == DBH_CACHE_DB_NAME) {
+        return NAME_CKMAMEDB;
+    }
+    
     auto ext = std::filesystem::path(name).extension();
 
     if (!roms_unzipped && strcasecmp(ext.c_str(), ".zip") == 0) {

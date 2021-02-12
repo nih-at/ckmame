@@ -132,7 +132,7 @@ sub read_archives {
 
 		next if ($name eq '.');
 
-		$name =~ s,^\./$self->{dir}/?,,;
+		$name =~ s,^\./,,;
 		$name = destrsvis($name);
 		my %attributes = ();
 		for my $attr (@args) {
@@ -156,11 +156,11 @@ sub read_archives {
 
 			my @stat = stat("$self->{dir}/$archive->{name}");
 			$archive->{mtime} = $stat[9] // '<null>';
-			if ($self->{unzipped}) {
-				$archive->{size} = 0;
+			if (-f "$self->{dir}/$archive->{name}") {
+				$archive->{size} = $stat[7] // '<null>';
 			}
 			else {
-				$archive->{size} = $stat[7] // '<null>';
+				$archive->{size} = 0;
 			}
 			if ($self->{dump_archives}->{$archive->{name}}) {
 				$archive->{id} = $self->{dump_archives}->{$archive->{name}}->{id};
@@ -187,8 +187,13 @@ sub read_archives {
 				$rom->{status} = $status{$attributes{status}};
 			}
 			$rom->{mtime} = $attributes{time};
-			$rom->{crc} = hex($attributes{crc});
-
+			if (exists($attributes{crc})) {
+				$rom->{crc} = hex($attributes{crc});
+			}
+			else {
+				$rom->{crc} = "<null>";
+			}
+			
 			$self->omit_hashes($archive->{name}, $rom);
 
 			push @{$archive->{files}}, $rom;

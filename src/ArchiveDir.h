@@ -70,6 +70,8 @@ protected:
     virtual bool read_infos_xxx();
     virtual bool rollback_xxx(); /* never called if commit never fails */
 
+    std::string filename_extension;
+
 private:
     struct FileInfo {
         std::filesystem::path name;

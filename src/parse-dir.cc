@@ -46,8 +46,14 @@
 #include "util.h"
 
 
-static bool parse_archive(ParserContext *, Archive *, int hashtypes);
+static bool parse_archive(ParserContext *ctx, filetype_t filetype, Archive *archive, int hashtypes);
 
+// TODO: Make member of parser class once we have subclasses for the different parsers.
+static std::string current_game;
+
+// TODO: make methods.
+static void end_game(ParserContext *ctx);
+static void start_game(ParserContext *ctx, const std::string &name);
 
 bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
     bool have_loose_files = false;
@@ -55,7 +61,7 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
     lineno = 0;
 
     try {
-	Dir dir(dname, roms_unzipped ? false : true);
+	Dir dir(dname, false);
 	std::filesystem::path filepath;
 
 	if (roms_unzipped) {
@@ -64,7 +70,9 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
 		    /* TODO: handle errors */
 		    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
 		    if (a) {
-			parse_archive(this, a.get(), hashtypes);
+                        start_game(this, a->name);
+			parse_archive(this, TYPE_ROM, a.get(), hashtypes);
+                        end_game(this);
 		    }
 		}
 		else {
@@ -84,34 +92,77 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
 		auto a = Archive::open_toplevel(dname, TYPE_ROM, FILE_NOWHERE, 0);
 
 		if (a) {
-		    parse_archive(this, a.get(), hashtypes);
+                    start_game(this, a->name);
+		    parse_archive(this, TYPE_ROM, a.get(), hashtypes);
+                    end_game(this);
 		}
 	    }
 	}
 	else {
 	    while ((filepath = dir.next()) != "") {
-		switch (name_type(filepath)) {
-                case NAME_ZIP: {
-                    /* TODO: handle errors */
-                    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
-                    if (a) {
-                        parse_archive(this, a.get(), hashtypes);
+                if (std::filesystem::is_directory(filepath)) {
+                    auto dir_empty = true;
+                    
+                    {
+                        auto images = Archive::open(filepath, TYPE_DISK, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                    
+                        if (images && !images->is_empty()) {
+                            dir_empty = false;
+                            start_game(this, images->name);
+                            parse_archive(this, TYPE_DISK, images.get(), Hashes::TYPE_ALL);
+                        }
                     }
-                    break;
-                }
+                    {
+                        roms_unzipped = true;
+                        auto files = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                        roms_unzipped = false;
 
-                case NAME_IMAGES:
-                    /* TODO: include disks in dat */
-                case NAME_UNKNOWN:
-		    if (std::filesystem::is_regular_file(filepath)) {
-                        myerror(ERRDEF, "skipping unknown file '%s'", filepath.c_str());
+                        if (files && !files->is_empty()) {
+                            dir_empty = false;
+                            for (auto &file : files->files) {
+                                if (std::filesystem::path(file.name).extension() != ".chd") {
+                                    myerror(ERRDEF, "skipping unknown file '%s/%s'", filepath.c_str(), file.name.c_str());
+                                }
+                            }
+                        }
                     }
-                    break;
-		}
+                    
+                    if (dir_empty) {
+                        myerror(ERRDEF, "skipping empty directory '%s'", filepath.c_str());
+                    }
+                }
+                else {
+                    switch (name_type(filepath)) {
+                        case NAME_ZIP: {
+                            /* TODO: handle errors */
+                            auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                            if (a) {
+                                start_game(this, a->name.substr(0, a->name.length() - 4));
+                                parse_archive(this, TYPE_ROM, a.get(), hashtypes);
+                                end_game(this);
+                            }
+                            break;
+                        }
+                            
+                        case NAME_IMAGES:
+                            myerror(ERRDEF, "skipping top level disk image '%s'", filepath.c_str());
+                            break;
+                            
+                        case NAME_CKMAMEDB:
+                            // ignore
+                            break;
+                            
+                        case NAME_UNKNOWN:
+                            myerror(ERRDEF, "skipping unknown file '%s'", filepath.c_str());
+                            break;
+                    }
+                }
 	    }
 	}
 
-	eof();
+        end_game(this);
+
+        eof();
     }
     catch (...) {
 	return false;
@@ -122,43 +173,51 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
 
 
 static bool
-parse_archive(ParserContext *ctx, Archive *a, int hashtypes) {
+parse_archive(ParserContext *ctx, filetype_t filetype, Archive *a, int hashtypes) {
     std::string name;
-
-    ctx->game_start();
-
-    if (ctx->full_archive_name) {
-        name = a->name;
-    }
-    else {
-        name = std::filesystem::path(a->name).filename();
-    }
-    if (name.length() > 4 && name.substr(name.length() - 4) == ".zip") {
-        name.resize(name.length() - 4);
-    }
-    ctx->game_name(name);
 
     for (size_t i = 0; i < a->files.size(); i++) {
         auto &file = a->files[i];
 
-	a->file_compute_hashes(i, hashtypes);
+        if (filetype == TYPE_ROM) {
+            a->file_compute_hashes(i, hashtypes);
+        }
 
-        ctx->file_start(TYPE_ROM);
-        ctx->file_name(TYPE_ROM, file.name);
-        ctx->file_size(TYPE_ROM, file.size);
-        ctx->file_mtime(TYPE_ROM, file.mtime);
+        ctx->file_start(filetype);
+        ctx->file_name(filetype, file.name);
+        ctx->file_size(filetype, file.size);
+        ctx->file_mtime(filetype, file.mtime);
         if (file.status != STATUS_OK) {
-            ctx->file_status(TYPE_ROM, file.status == STATUS_BADDUMP ? "baddump" : "nodump");
+            ctx->file_status(filetype, file.status == STATUS_BADDUMP ? "baddump" : "nodump");
 	}
         for (int ht = 1; ht <= Hashes::TYPE_MAX; ht <<= 1) {
             if ((hashtypes & ht) && file.hashes.has_type(ht)) {
-                ctx->file_hash(TYPE_ROM, ht, file.hashes.to_string(ht));
+                ctx->file_hash(filetype, ht, file.hashes.to_string(ht));
 	    }
 	}
-        ctx->file_end(TYPE_ROM);
+        ctx->file_end(filetype);
     }
 
-    ctx->game_end();
-
     return true;
+}
+
+static void start_game(ParserContext *ctx, const std::string &name) {
+    if (current_game == name) {
+        return;
+    }
+    
+    if (!current_game.empty()) {
+        ctx->game_end();
+    }
+    
+    ctx->game_start();
+    ctx->game_name(std::filesystem::path(name).filename());
+    current_game = name;
+}
+
+static void end_game(ParserContext *ctx) {
+    if (!current_game.empty()) {
+        ctx->game_end();
+    }
+    current_game = "";
 }

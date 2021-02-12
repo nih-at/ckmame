@@ -202,7 +202,7 @@ static bool enter_dir_in_map_and_list_unzipped(int flags, std::vector<std::strin
 	 std::filesystem::path filepath;
 
 	 while (!(filepath = dir.next()).empty()) {
-	     if (filepath.filename() == DBH_CACHE_DB_NAME) {
+	     if (name_type(filepath) == NAME_CKMAMEDB) {
 		 continue;
 	     }
 	     if (std::filesystem::is_directory(filepath)) {
@@ -266,6 +266,7 @@ static bool enter_file_in_map_and_list(int flags, std::vector<std::string> &list
 	    break;
 	}
 
+	case NAME_CKMAMEDB:
 	case NAME_UNKNOWN:
 	    /* ignore unknown files */
 	    break;

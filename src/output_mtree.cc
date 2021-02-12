@@ -39,11 +39,12 @@
 #include <string.h>
 
 #include "error.h"
+#include "globals.h"
 #include "output.h"
 #include "util.h"
 
 
-OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : fname(fname_), extended(flags & OUTPUT_FL_EXTENDED) {
+OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : fname(fname_), runtest(flags & OUTPUT_FL_RUNTEST) {
     if (fname.empty()) {
 	f = make_shared_stdout();
 	fname = "*stdout*";
@@ -132,27 +133,25 @@ strsvis_cstyle(const std::string &in) {
 bool OutputContextMtree::game(GamePtr game) {
     auto dirname = strsvis_cstyle(game->name);
 
-    fprintf(f.get(), "./%s type=dir\n", dirname.c_str());
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        for (size_t i = 0; i < game->files[ft].size(); i++) {
-            auto &rom = game->files[ft][i];
-            
-            fprintf(f.get(), "./%s/%s type=file", dirname.c_str(), strsvis_cstyle(rom.name).c_str());
-            if (ft == TYPE_ROM) {
-                fprintf(f.get(), " size=%" PRIu64, rom.size);
+    if (runtest) {
+        for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+            if (game->files[ft].empty()) {
+                continue;
             }
-            cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &rom.hashes, "");
-            cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &rom.hashes, "");
-            cond_print_string(f, " status=", status_name(rom.status), "");
-            if (extended) {
-                /* crc is not in the standard set supported on NetBSD */
-                cond_print_hash(f, " crc=", Hashes::TYPE_CRC, &rom.hashes, "");
-                fprintf(f.get(), " time=%llu", static_cast<unsigned long long>(rom.mtime));
+            std::string name = dirname;
+            if (ft == TYPE_ROM && !roms_unzipped) {
+                name += ".zip";
             }
-            fputs("\n", f.get());
+            fprintf(f.get(), "./%s type=dir\n", name.c_str());
+            write_files(name, game->files[ft]);
         }
     }
-
+    else {
+        fprintf(f.get(), "./%s type=dir\n", dirname.c_str());
+        for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+            write_files(dirname, game->files[ft]);
+        }
+    }
     return true;
 }
 
@@ -161,4 +160,23 @@ bool OutputContextMtree::header(DatEntry *dat) {
     fprintf(f.get(), ". type=dir\n");
 
     return true;
+}
+
+
+void OutputContextMtree::write_files(const std::string &dirname, const std::vector<File> &files) {
+    for (auto &file : files) {
+        fprintf(f.get(), "./%s/%s type=file", dirname.c_str(), strsvis_cstyle(file.name).c_str());
+        /* For disks, this is the internal size and checksums and not information of the file on-disk. Disks are only supported in zipped mode, where the mtree file can not be taken literally anyway, so this is ok. */
+        if (file.size != SIZE_UNKNOWN) {
+            fprintf(f.get(), " size=%" PRIu64, file.size);
+        }
+        cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &file.hashes, "");
+        cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &file.hashes, "");
+        cond_print_string(f, " status=", status_name(file.status), "");
+        if (runtest) {
+            cond_print_hash(f, " crc=", Hashes::TYPE_CRC, &file.hashes, "");
+            fprintf(f.get(), " time=%llu", static_cast<unsigned long long>(file.mtime));
+        }
+        fputs("\n", f.get());
+    }
 }

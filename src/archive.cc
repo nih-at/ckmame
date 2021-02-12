@@ -57,7 +57,7 @@
 //#define DEBUG_LC
 
 uint64_t ArchiveContents::next_id;
-std::unordered_map<std::string, std::weak_ptr<ArchiveContents>> ArchiveContents::archive_by_name;
+std::unordered_map<ArchiveContents::TypeAndName, std::weak_ptr<ArchiveContents>> ArchiveContents::archive_by_name;
 std::unordered_map<uint64_t, ArchiveContentsPtr> ArchiveContents::archive_by_id;
 
 ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, filetype_t filetype_, where_t where_, int flags_) :
@@ -342,7 +342,7 @@ std::string Archive::make_unique_name(const std::string &filename) {
 }
 
 ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t where, int flags) {
-    auto contents = ArchiveContents::by_name(name);
+    auto contents = ArchiveContents::by_name(filetype, name);
 
     if (contents) {
         return open(contents);
@@ -520,7 +520,7 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
             cache_changed = true;
         }
         
-        if (contents->archive_type != ARCHIVE_IMAGES &&  !file.hashes.has_type(Hashes::TYPE_CRC)) {
+        if (want_crc() && !file.hashes.has_type(Hashes::TYPE_CRC)) {
             if (!file_compute_hashes(i, Hashes::TYPE_ALL)) {
                 file.status = STATUS_BADDUMP;
                 if (it == files_cache.cend() || (*it).status != STATUS_BADDUMP) {
@@ -576,7 +576,7 @@ void ArchiveContents::enter_in_maps(ArchiveContentsPtr contents) {
         }
     }
 
-    archive_by_name[contents->name] = contents;
+    archive_by_name[TypeAndName(contents->filetype, contents->name)] = contents;
 }
 
 ArchiveContentsPtr ArchiveContents::by_id(uint64_t id) {
@@ -589,8 +589,8 @@ ArchiveContentsPtr ArchiveContents::by_id(uint64_t id) {
     return it->second;
 }
 
-ArchiveContentsPtr ArchiveContents::by_name(const std::string &name) {
-    auto it = archive_by_name.find(name);
+ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::string &name) {
+    auto it = archive_by_name.find(TypeAndName(filetype, name));
     
     if (it == archive_by_name.end() || it->second.expired()) {
         return NULL;

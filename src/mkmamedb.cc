@@ -233,7 +233,7 @@ main(int argc, char **argv) {
     }
     if (runtest) {
 	fmt = OutputContext::FORMAT_MTREE;
-	flags |= OUTPUT_FL_EXTENDED;
+	flags |= OUTPUT_FL_RUNTEST;
 	parser_flags = PARSER_FL_FULL_ARCHIVE_NAME;
 	cache_directory = false;
     }

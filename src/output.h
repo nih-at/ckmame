@@ -45,7 +45,7 @@ class OutputContext;
 
 typedef std::shared_ptr<OutputContext> OutputContextPtr;
 
-#define OUTPUT_FL_EXTENDED 1
+#define OUTPUT_FL_RUNTEST  1
 #define OUTPUT_FL_TEMP     2
 
 class OutputContext {

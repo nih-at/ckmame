@@ -237,11 +237,6 @@ bool ParserContext::file_size(filetype_t ft, const std::string &attr) {
 bool ParserContext::file_size(filetype_t ft, uint64_t size) {
     CHECK_STATE(PARSE_IN_FILE);
 
-    if (ft == TYPE_DISK) {
-        myerror(ERRFILE, "%d: unknown attribute `size' for disk", lineno);
-        return false;
-    }
-
     r[ft]->size = size;
     return true;
 }

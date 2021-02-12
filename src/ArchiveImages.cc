@@ -35,6 +35,13 @@
 
 #include "Dir.h"
 #include "error.h"
+#include "util.h"
+
+ArchiveImages::ArchiveImages(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveDir(name, filetype, where, flags) {
+    contents->archive_type = ARCHIVE_IMAGES;
+    filename_extension = ".chd";
+}
+
 
 bool ArchiveImages::file_add_empty_xxx(const std::string &filename) {
     // disk images can't be empty
@@ -54,32 +61,35 @@ bool ArchiveImages::read_infos_xxx() {
         std::filesystem::path filepath;
         
         while ((filepath = dir.next()) != "") {
-            if (name == filepath || filepath.filename() == DBH_CACHE_DB_NAME || filepath.extension() != ".chd" || !std::filesystem::is_regular_file(filepath)) {
+            if (name == filepath || name_type(filepath) == NAME_CKMAMEDB || filepath.extension() != ".chd" || !std::filesystem::is_regular_file(filepath)) {
                 continue;
             }
 
-            struct stat sb;
-            
-            if (stat(filepath.c_str(), &sb) != 0) {
-                continue;
-            }
-            
+            files.push_back(File());
+            auto &f = files[files.size() - 1];
+            auto filename = filepath.string();
+            auto start = name.length() + 1;
+            f.name = filename.substr(start, filename.length() - start - 4);
+
             try {
-                Chd chd(filepath);
+                struct stat sb;
                 
-                files.push_back(File());
-                auto &f = files[files.size() - 1];
-                
-                auto filename = filepath.string();
-                auto start = name.length() + 1;
-                f.name = filename.substr(start, filename.length() - start - 4);
-                f.size = chd.size();
-                f.hashes = chd.hashes;
+                if (stat(filepath.c_str(), &sb) != 0) {
+                    throw std::exception();
+                }
+
                 // auto ftime = std::filesystem::last_write_time(filepath);
                 // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
                 f.mtime = sb.st_mtime;
+
+                Chd chd(filepath);
+                
+                f.size = chd.size();
+                f.hashes = chd.hashes;
             }
-            catch (...) { }
+            catch (...) {
+                f.status = STATUS_BADDUMP;
+            }
         }
     }
     catch (...) {
