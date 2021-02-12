@@ -554,6 +554,12 @@ std::optional<size_t> Archive::file_index(const File *file) const {
 // MARK: - ArchiveContents
 
 bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
+    if (roms_unzipped && filetype == TYPE_DISK) {
+        cache_db = NULL;
+        cache_id = -1;
+        return true;
+    }
+    
     cache_db = dbh_cache_get_db_for_archive(name);
     cache_id = cache_db ? dbh_cache_get_archive_id(cache_db.get(), name) : 0;
 

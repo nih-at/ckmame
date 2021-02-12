@@ -35,6 +35,7 @@
 
 #include "Dir.h"
 #include "error.h"
+#include "globals.h"
 #include "util.h"
 
 ArchiveImages::ArchiveImages(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveDir(name, filetype, where, flags) {
@@ -56,6 +57,10 @@ Archive::ArchiveFilePtr ArchiveImages::file_open(uint64_t index) {
 }
 
 bool ArchiveImages::read_infos_xxx() {
+    if (roms_unzipped) {
+        return true;
+    }
+    
     try {
         Dir dir(name, contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
         std::filesystem::path filepath;
@@ -64,6 +69,8 @@ bool ArchiveImages::read_infos_xxx() {
             if (name == filepath || name_type(filepath) == NAME_CKMAMEDB || filepath.extension() != ".chd" || !std::filesystem::is_regular_file(filepath)) {
                 continue;
             }
+            
+            printf("# adding image '%s'\n", filepath.c_str());
 
             files.push_back(File());
             auto &f = files[files.size() - 1];

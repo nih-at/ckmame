@@ -71,6 +71,8 @@ public:
     bool is_mergable(const File &other) const;
     bool size_hashes_are_set(bool detector) const;
     
+    bool operator<(const File &other) const { return name < other.name; }
+
 private:
     bool compare_size_hashes_one(const File &other, bool detector) const;
 };

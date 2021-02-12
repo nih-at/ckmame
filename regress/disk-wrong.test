@@ -4,9 +4,9 @@ return 0
 args -D ../mamedb-disk-many.db -FKLivc disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/disk/108-5.chd 12-1.chd
-file-new unknown/108-5.chd 12-1.chd
+file-new unknown/disk/108-5.chd 12-1.chd
 stdout In game disk:
-stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: wrong checksum
-stdout image roms/disk/108-5.chd: unknown
-stdout roms/disk/108-5.chd: move unknown image
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
+stdout image 108-5       : unknown
+stdout roms/disk: move unknown file '108-5.chd'

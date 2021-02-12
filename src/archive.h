@@ -197,6 +197,8 @@ public:
     virtual bool rollback_xxx() = 0; /* never called if commit never fails */
     virtual bool want_crc() const { return true; }
 
+    virtual std::string filename(uint64_t idx) { return files[idx].name; }
+
     ArchiveContentsPtr contents;
     std::vector<File> &files;
     std::string &name;

@@ -95,7 +95,7 @@ fix_game(Game *game, const GameArchives archives, Result *result) {
                     }
                     auto move = (fix_options & FIX_MOVE_UNKNOWN);
                     if (fix_options & FIX_PRINT) {
-                        printf("%s: %s unknown file '%s'\n", archive->name.c_str(), (move ? "move" : "delete"), archive->files[i].name.c_str());
+                        printf("%s: %s unknown file '%s'\n", archive->name.c_str(), (move ? "move" : "delete"), archive->filename(i).c_str());
                     }
                     
                     if (fix_options & FIX_DO) {
@@ -116,7 +116,7 @@ fix_game(Game *game, const GameArchives archives, Result *result) {
                     /* fallthrough */
                 case FS_SUPERFLUOUS:
                     if (fix_options & FIX_PRINT) {
-                        printf("%s: delete %s file '%s'\n", archive->name.c_str(), (result->archive_files[filetype][i] == FS_SUPERFLUOUS ? "unused" : "duplicate"), archive->files[i].name.c_str());
+                        printf("%s: delete %s file '%s'\n", archive->name.c_str(), (result->archive_files[filetype][i] == FS_SUPERFLUOUS ? "unused" : "duplicate"), archive->filename(i).c_str());
                     }
                     
                     /* TODO: handle error (how?) */
@@ -204,7 +204,7 @@ make_space(Archive *a, const std::string &name, std::vector<std::string> *origin
 }
 
 
-#define REAL_NAME(aa, ii) ((aa) == archive && (ii) < static_cast<int64_t>(num_names) && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].name.c_str())
+#define REAL_NAME(aa, ii) ((aa) == archive && (ii) < static_cast<int64_t>(num_names) && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->filename(ii).c_str())
 
 static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage) {
 

@@ -108,6 +108,7 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
                     
                         if (images && !images->is_empty()) {
                             dir_empty = false;
+                            std::sort(images->files.begin(), images->files.end());
                             start_game(this, images->name);
                             parse_archive(this, TYPE_DISK, images.get(), Hashes::TYPE_ALL);
                         }
