@@ -35,10 +35,12 @@
 */
 
 #include <memory>
+#include <string>
 
 #include "dat.h"
 #include "detector.h"
 #include "game.h"
+#include "hashes.h"
 #include "SharedFile.h"
 
 class OutputContext;

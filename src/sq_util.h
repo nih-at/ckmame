@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cinttypes>
 #include <vector>
 
 #include <sqlite3.h>

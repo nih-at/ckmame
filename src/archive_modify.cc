@@ -32,6 +32,7 @@
 */
 
 #include <cinttypes>
+#include <cstring>
 
 #include <errno.h>
 

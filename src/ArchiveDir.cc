@@ -31,6 +31,7 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <cstring>
 #include <filesystem>
 
 #include <errno.h>

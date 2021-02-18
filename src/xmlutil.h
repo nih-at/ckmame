@@ -34,9 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <cinttypes>
-#include <cstdio>
+#include <string>
 #include <unordered_map>
 
 #include "parser_source.h"

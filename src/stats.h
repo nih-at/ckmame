@@ -34,9 +34,6 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdint.h>
-#include <stdio.h>
-
 #include "file.h"
 #include "result.h"
 #include "types.h"

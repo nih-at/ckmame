@@ -35,8 +35,10 @@
 */
 
 #include <map>
+#include <memory>
 
-#include "archive.h"
+#include <string>
+
 #include "GameArchives.h"
 #include "hashes.h"
 #include "types.h"

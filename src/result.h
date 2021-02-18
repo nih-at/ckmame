@@ -34,10 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <vector>
 
 #include "game.h"
 #include "GameArchives.h"

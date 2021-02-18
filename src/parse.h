@@ -34,15 +34,13 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <cstdio>
 #include <unordered_set>
 
 #include "dat.h"
 #include "game.h"
 #include "output.h"
 #include "parser_source.h"
-#include "romdb.h"
+#include "types.h"
 
 enum parser_state { PARSE_IN_HEADER, PARSE_IN_GAME, PARSE_IN_FILE, PARSE_OUTSIDE };
 

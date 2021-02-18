@@ -34,10 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <string>
 
 #include "archive.h"
 #include "types.h"

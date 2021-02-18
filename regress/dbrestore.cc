@@ -31,6 +31,7 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <cinttypes>
 #include <cstring>
 #include <optional>
 #include <unordered_map>

@@ -34,6 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
+
 #include <zip.h>
 
 int my_zip_rename(struct zip *za, uint64_t idx, const char *name);

@@ -34,6 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <memory>
 
 #include "archive.h"
 #include "dbh.h"
