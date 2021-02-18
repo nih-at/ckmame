@@ -80,14 +80,12 @@ stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
 stdout roms/disk.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
 stdout In game diskchild:
 stdout game diskchild                               : correct
-stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: exists
 stdout In game disk-2:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
 stdout roms/disk-2.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
 stdout In game disk-3:
-stdout game disk-3                                  : correct
-stdout disk 512v5         sha1 cf37d50e886519c332dcfe84440f1f085b98c634: missing
+stdout game disk-3                                  : not a single file found
 stdout In game disk-nogood:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout disk 108-nogood    no good dump              : exists
@@ -97,12 +95,11 @@ stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom
 stdout disk 208-7         no good dump              : missing
 stdout roms/disk-nogood2.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
 stdout In game disk-same:
-stdout game disk-same                               : not a single file found
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/disk/108-5.chd'
-stdout copy 'roms/disk/108-5.chd' to 'roms/disk-same/108-5.chd'
+stdout rom  16.rom        size      16  crc 12345678: missing
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/disk/108-5.chd'
+stdout roms/disk-same: add 'roms/disk/108-5.chd' as '108-5.chd'
 stdout In game diskgood-romnogood:
-# TODO: next line is wrong
-stdout game diskgood-romnogood                      : not a single file found
+stdout rom  04.rom        size       4  no good dump: missing
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
 stdout In game many:
 stdout game many                                    : not a single file found
