@@ -34,10 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cinttypes>
 #include <memory>
 #include <optional>
-#include <string>
 #include <vector>
 
 class ParserSource;

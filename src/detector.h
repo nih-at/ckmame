@@ -34,8 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cinttypes>
-#include <cstdio>
 
 #include "file.h"
 #include "parser_source.h"

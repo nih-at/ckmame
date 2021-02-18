@@ -36,12 +36,9 @@
 
 #include <sqlite3.h>
 
-#include "dat.h"
 #include "dbh_statements.h"
 #include "detector.h"
-#include "game.h"
 #include "hashes.h"
-#include "types.h"
 
 
 #define DBH_FMT_MAME 0x0 /* mame.db format */
