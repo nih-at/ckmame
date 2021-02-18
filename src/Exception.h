@@ -35,8 +35,8 @@
 */
 
 #include <exception>
-#include <filesystem>
 #include <string>
+#include <system_error>
 
 class Exception : public std::exception {
 public:

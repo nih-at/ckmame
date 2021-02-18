@@ -33,12 +33,10 @@
 
 #include "ParserSourceFile.h"
 
-#include <algorithm>
+#include <cstdio>
 #include <filesystem>
 
 #include "error.h"
-#include "SharedFile.h"
-#include "util.h"
 
 ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(NULL) {
     if (!file_name.empty()) {

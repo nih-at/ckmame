@@ -34,10 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#endif // _HAD_ARCHIVE_IMAGES_H
-
 #include "ArchiveDir.h"
-#include "chd.h"
 
 class ArchiveImages: public ArchiveDir {
 public:
@@ -54,3 +51,5 @@ protected:
     
     static std::string filename_extension_chd;
 };
+
+#endif // _HAD_ARCHIVE_IMAGES_H

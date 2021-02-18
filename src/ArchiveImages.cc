@@ -33,6 +33,7 @@
 
 #include "ArchiveImages.h"
 
+#include "chd.h"
 #include "Dir.h"
 #include "error.h"
 #include "globals.h"

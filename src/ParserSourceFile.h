@@ -34,10 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cstdio>
-
-#include <string>
-
 #include "parser_source.h"
 #include "SharedFile.h"
 
