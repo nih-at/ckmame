@@ -107,7 +107,7 @@ struct option options[] = {
 
 #define DEFAULT_FILE_PATTERNS "*.dat"
 
-static int process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out);
+static int process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags);
 static int process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
 
 static int hashtypes;
@@ -273,7 +273,7 @@ main(int argc, char **argv) {
         file_patterns.push_back(DEFAULT_FILE_PATTERNS);
 
 	for (i = optind; i < argc; i++) {
-	    if (process_file(argv[i], exclude, &dat, file_patterns, skip_files, out.get()) < 0) {
+	    if (process_file(argv[i], exclude, &dat, file_patterns, skip_files, out.get(), flags) < 0) {
 		i = argc;
 		ret = -1;
 	    }
@@ -299,7 +299,7 @@ main(int argc, char **argv) {
 }
 
 
-static int process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out) {
+static int process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags) {
     struct zip *za;
 
     try {
@@ -356,7 +356,7 @@ static int process_file(const char *fname, const std::unordered_set<std::string>
             }
 
             auto ctx = ParserContext(NULL, exclude, dat, out, parser_flags);
-            return ctx.parse_dir(fname, hashtypes);
+            return ctx.parse_dir(fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
 	}
 
 	if (ec) {

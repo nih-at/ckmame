@@ -4,5 +4,5 @@ return 0
 args -D ../mamedb-disk-many.db -FKLivc disk-nogood
 file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game disk-nogood:
-stdout game disk-nogood                             : correct
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout disk 108-nogood    no good dump              : missing

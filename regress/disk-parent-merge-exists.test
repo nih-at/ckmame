@@ -7,9 +7,7 @@ file roms/disk/108-5.chd 108-5.chd 108-5.chd
 file-del roms/diskchild/108-5c.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
 stdout In game diskchild:
 stdout game diskchild                               : correct
-stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: exists
-stdout image roms/diskchild/108-5c.chd: not used
-stdout roms/diskchild/108-5c.chd: delete unused image
+stdout image 108-5c.chd  : not used
+stdout roms/diskchild: delete unused file '108-5c.chd'

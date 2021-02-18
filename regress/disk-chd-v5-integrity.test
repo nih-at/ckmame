@@ -1,9 +1,0 @@
-description test chd v5 disk integrity and fail
-variants zip
-return 0
-args -D ../mamedb-disk-many.db -FKLivc disk-3
-file roms/disk-3/512v5.chd 512v5.chd 512v5.chd
-stdout In game disk-3:
-stdout game disk-3                                  : correct
-stdout disk 512v5         sha1 cf37d50e886519c332dcfe84440f1f085b98c634: correct
-stderr roms/disk-3/512v5.chd: warning: unsupported CHD type, integrity not checked

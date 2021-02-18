@@ -90,7 +90,7 @@ public:
     ~ParserContext();
     
     bool parse_cm();
-    bool parse_dir(const std::string &dname, int hashtypes);
+    bool parse_dir(const std::string &dname, int hashtypes, bool runtest = false);
     bool parse_rc();
     bool parse_xml();
     

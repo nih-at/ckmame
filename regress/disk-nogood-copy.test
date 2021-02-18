@@ -5,9 +5,8 @@ args -D ../mamedb-disk-many.db -FKLivcj -e extras disk-nogood disk-nogood2
 file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
 file extras/108-nogood.chd 108-5.chd 108-5.chd
 stdout In game disk-nogood:
-stdout game disk-nogood                             : correct
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
 # file name alone shouldn't be enough
 stdout disk 108-nogood    no good dump              : missing
 stdout In game disk-nogood2:
-stdout game disk-nogood2                            : not a single rom found
-stdout disk 208-7         no good dump              : missing
+stdout game disk-nogood2                            : not a single file found

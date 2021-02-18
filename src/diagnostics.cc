@@ -151,10 +151,10 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
 
         case GS_MISSING:
             if (ft == TYPE_ROM && (output_options & WARN_MISSING)) {
-                warn_game_file(ft, NULL, "not a single rom found");
-                return;
+                warn_game_file(ft, NULL, "not a single file found");
             }
-            
+            return;
+
         default:
             break;
     }

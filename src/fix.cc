@@ -231,7 +231,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 if (game_file->size == 0) {
                     /* create missing empty file */
                     if (fix_options & FIX_PRINT) {
-                        printf("%s: create empty file '%s'\n", archive->name.c_str(), game_file->name.c_str());
+                        printf("%s: create empty file '%s'\n", archive->name.c_str(), game_file->filename().c_str());
                     }
                     
                     /* TODO: handle error (how?) */
@@ -254,7 +254,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 
                 if (fix_options & FIX_PRINT) {
-                    printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n", archive->name.c_str(), match->offset, game_file->size, REAL_NAME(archive_from, match->index), game_file->name.c_str());
+                    printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n", archive->name.c_str(), match->offset, game_file->size, REAL_NAME(archive_from, match->index), game_file->filename().c_str());
                 }
                 
                 bool replacing_ourselves = (archive == archive_from && match->index == archive_from->file_index_by_name(game_file->name));
@@ -266,7 +266,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 if (archive == archive_from && archive_from->files[match->index].where != FILE_DELETED) {
                     if (!replacing_ourselves && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT)) {
-                        printf("%s: delete long file '%s'\n", archive_from->name.c_str(), game_file->name.c_str());
+                        printf("%s: delete long file '%s'\n", archive_from->name.c_str(), game_file->filename().c_str());
                     }
                     archive_from->file_delete(match->index);
                 }
@@ -285,7 +285,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 
                 if (fix_options & FIX_PRINT)
-                    printf("%s: rename '%s' to '%s'\n", archive->name.c_str(), REAL_NAME(archive, match->index), game_file->name.c_str());
+                    printf("%s: rename '%s' to '%s'\n", archive->name.c_str(), REAL_NAME(archive, match->index), game_file->filename().c_str());
                 
                 /* TODO: handle errors (how?) */
                 if (make_space(archive, game_file->name, &original_names, num_names) < 0)

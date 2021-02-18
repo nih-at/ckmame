@@ -6,4 +6,3 @@ file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk-nogood/108-nogood.chd 108-5.chd 108-5.chd
 stdout In game disk-nogood:
 stdout game disk-nogood                             : correct
-stdout disk 108-nogood    no good dump              : exists

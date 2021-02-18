@@ -57,9 +57,7 @@ static std::string current_game;
 static void end_game(ParserContext *ctx);
 static void start_game(ParserContext *ctx, const std::string &name);
 
-bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
-    bool have_loose_files = false;
-
+bool ParserContext::parse_dir(const std::string &dname, int hashtypes, bool runtest) {
     lineno = 0;
 
     try {
@@ -67,6 +65,8 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
 	std::filesystem::path filepath;
 
 	if (roms_unzipped) {
+            auto have_loose_files = false;
+
 	    while ((filepath = dir.next()) != "") {
 		if (std::filesystem::is_directory(filepath)) {
 		    /* TODO: handle errors */
@@ -101,6 +101,8 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
 	    }
 	}
 	else {
+            auto have_loose_chds = false;
+            
 	    while ((filepath = dir.next()) != "") {
                 if (std::filesystem::is_directory(filepath)) {
                     auto dir_empty = true;
@@ -147,23 +149,42 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes) {
                             break;
                         }
                             
-                        case NAME_IMAGES:
-                            myerror(ERRDEF, "skipping top level disk image '%s'", filepath.c_str());
-                            break;
                             
+                        case NAME_IMAGES:
                         case NAME_CKMAMEDB:
                             // ignore
                             break;
                             
                         case NAME_UNKNOWN:
-                            myerror(ERRDEF, "skipping unknown file '%s'", filepath.c_str());
+                            if (filepath.extension() == ".chd") {
+                                if (runtest) {
+                                    have_loose_chds = true;
+                                }
+                                else {
+                                    myerror(ERRDEF, "skipping top level disk image '%s'", filepath.c_str());
+                                }
+                            }
+                            else {
+                                myerror(ERRDEF, "skipping unknown file '%s'", filepath.c_str());
+                            }
                             break;
                     }
                 }
 	    }
-	}
 
-        end_game(this);
+            end_game(this);
+
+            if (have_loose_chds) {
+                auto a = Archive::open_toplevel(dname, TYPE_DISK, FILE_NOWHERE, 0);
+
+                if (a) {
+                    start_game(this, ".");
+                    parse_archive(this, TYPE_DISK, a.get(), Hashes::TYPE_ALL);
+                    end_game(this);
+                }
+
+            }
+	}
 
         eof();
     }

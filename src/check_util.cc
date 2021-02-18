@@ -181,9 +181,6 @@ static bool enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list
 		    std::string name = directory_name;
 		    if (entry_name != ".") {
 			name += '/' + entry_name;
-			if (!roms_unzipped) {
-			    name += ".zip";
-			}
 		    }
 		    if (!std::binary_search(list.begin(), list.end(), name)) {
 			dbh_cache_delete_by_name(dbh.get(), name);
@@ -221,7 +218,6 @@ static bool enter_dir_in_map_and_list_unzipped(int flags, std::vector<std::strin
 	     if (flags & DO_LIST) {
 		 list.push_back(a->name);
 	     }
-	     a->close();
 	 }
     }
     catch (...) {
@@ -235,12 +231,19 @@ static bool enter_dir_in_map_and_list_unzipped(int flags, std::vector<std::strin
 static bool
 enter_dir_in_map_and_list_zipped(int flags, std::vector<std::string> &list, const std::string &dir_name, bool recursive, where_t where) {
     try {
-	 Dir dir(dir_name, recursive);
-	 std::filesystem::path filepath;
-
-	 while (!(filepath = dir.next()).empty()) {
-	     enter_file_in_map_and_list(flags, list, filepath, where);
-	 }
+	Dir dir(dir_name, recursive);
+	std::filesystem::path filepath;
+	
+	while (!(filepath = dir.next()).empty()) {
+	    enter_file_in_map_and_list(flags, list, filepath, where);
+	}
+	
+	auto a = Archive::open_toplevel(dir_name, TYPE_DISK, where, 0);
+	if (a) {
+	    if (flags & DO_LIST) {
+		list.push_back(a->name);
+	    }
+	}
     }
     catch (...) {
 	return false;

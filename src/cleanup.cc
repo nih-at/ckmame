@@ -201,6 +201,6 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
     a->commit();
 
     if (a->is_empty()) {
-        remove_empty_archive(a->name);
+        remove_empty_archive(a->name, (a->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY));
     }
 }

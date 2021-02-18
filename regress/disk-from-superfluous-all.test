@@ -7,6 +7,6 @@ file-del roms/disk/108-5a.chd 108-5.chd
 file-new roms/disk/108-5.chd 108-5.chd
 no-hashes roms disk.zip
 stdout In game disk:
-stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/disk/108-5a.chd'
-stdout rename 'roms/disk/108-5a.chd' to 'roms/disk/108-5.chd'
+stdout rom  08.rom        size       8  crc 3656897d: correct
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: wrong name (108-5a)
+stdout roms/disk: rename '108-5a.chd' to '108-5.chd'

@@ -6,7 +6,7 @@ file roms/disk-2.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/disk-2/108-2.chd 108-5.chd
 file roms/disk/108-5.chd 108-5.chd 108-5.chd
 stdout In game disk-2:
-stdout game disk-2                                  : correct
-stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: wrong checksum
-stdout image roms/disk-2/108-2.chd: not used
-stdout roms/disk-2/108-2.chd: delete unused image
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
+stdout image 108-2.chd   : not used
+stdout roms/disk-2: delete unused file '108-2.chd'
