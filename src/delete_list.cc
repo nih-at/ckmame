@@ -96,6 +96,7 @@ int DeleteList::execute() {
                     
                 case NAME_UNKNOWN:
                 case NAME_CKMAMEDB:
+		default:
                     // TODO: what to do with unknown file types?
                     continue;
                     
