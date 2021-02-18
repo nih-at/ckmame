@@ -38,6 +38,8 @@
 #include "globals.h"
 #include "util.h"
 
+#include <sys/stat.h>
+
 std::string ArchiveImages::filename_extension_chd = ".chd";
 
 ArchiveImages::ArchiveImages(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveDir(name, filetype, where, flags) {

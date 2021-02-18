@@ -34,6 +34,7 @@
 #include "ArchiveZip.h"
 
 #include <cerrno>
+#include <sys/stat.h>
 
 
 #include "archive.h"
