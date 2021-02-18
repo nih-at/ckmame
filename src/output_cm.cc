@@ -32,6 +32,7 @@
 */
 
 #include <algorithm>
+#include <cinttypes>
 
 #include <errno.h>
 #include <stdio.h>

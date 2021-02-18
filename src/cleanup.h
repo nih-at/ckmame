@@ -1,5 +1,5 @@
-#ifndef _HAD_DELETE_LIST_H
-#define _HAD_DELETE_LIST_H
+#ifndef _HAD_CLEANUP_H
+#define _HAD_CLEANUP_H
 
 /*
   cleanup.h -- clean up list of zip archives
@@ -41,4 +41,4 @@
 
 void cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags);
 
-#endif /* _HAD_DELETE_LIST_H */
+#endif /* _HAD_CLEANUP_H */

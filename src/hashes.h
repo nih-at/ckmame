@@ -34,12 +34,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cinttypes>
 #include <memory>
-#include <string>
 #include <unordered_map>
-
-#include <string.h>
+#include <string>
 
 class HashesContexts;
 

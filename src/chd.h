@@ -38,8 +38,6 @@
 #include <string>
 #include <vector>
 
-#include <zlib.h>
-
 #include "hashes.h"
 #include "SharedFile.h"
 

@@ -33,6 +33,8 @@
 
 #include "hashes.h"
 
+#include <cinttypes>
+
 #include <string.h>
 
 #include "util.h"

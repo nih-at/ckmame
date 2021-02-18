@@ -34,14 +34,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cinttypes>
 #include <string>
-
-#include <time.h>
 
 #include "hashes.h"
 #include "types.h"
-
 
 class File {
 public:

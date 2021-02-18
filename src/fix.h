@@ -34,6 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "GameArchives.h"
 #include "result.h"
 
 int fix_game(Game *game, const GameArchives archives, Result *result);

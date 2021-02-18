@@ -33,6 +33,8 @@
 
 #include "OutputContextXml.h"
 
+#include <cinttypes>
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>

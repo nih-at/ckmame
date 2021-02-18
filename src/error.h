@@ -36,7 +36,6 @@
 
 #include <string>
 
-
 #include "dbh.h"
 
 #define ERRDEF 0x0  /* no additional info */

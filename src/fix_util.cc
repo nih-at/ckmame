@@ -34,6 +34,7 @@
 #include "fix_util.h"
 
 #include <algorithm>
+#include <cinttypes>
 #include <filesystem>
 
 #include <errno.h>

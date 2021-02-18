@@ -32,6 +32,8 @@
 */
 
 
+#include <cinttypes>
+
 #include <stdarg.h>
 #include <stdio.h>
 

@@ -32,6 +32,7 @@
 */
 
 #include <algorithm>
+#include <cstring>
 
 #include "chd.h"
 #include "compat.h"

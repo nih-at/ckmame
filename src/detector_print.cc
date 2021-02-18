@@ -32,6 +32,8 @@
 */
 
 
+#include <cinttypes>
+
 #include <stdlib.h>
 
 #include "detector.h"

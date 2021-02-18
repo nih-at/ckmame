@@ -34,8 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <memory>
+#include <vector>
 
 #include "file.h"
+#include "hashes.h"
 #include "parser_source.h"
 
 #define DETECTOR_OFFSET_EOF 0

@@ -31,6 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
 #include <filesystem>
 
 #include <errno.h>

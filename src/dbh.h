@@ -34,10 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <string>
+
 #include <sqlite3.h>
 
 #include "dbh_statements.h"
-#include "detector.h"
 #include "hashes.h"
 
 

@@ -34,7 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "archive.h"
+#include "GameArchives.h"
 #include "result.h"
 
 void check_archive_files(filetype_t ft, const GameArchives &archives, const std::string &gamename, Result *result);

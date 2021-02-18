@@ -34,7 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -43,6 +42,7 @@
 
 #include "dbh.h"
 #include "file.h"
+#include "types.h"
 
 class Archive;
 class ArchiveFile;
