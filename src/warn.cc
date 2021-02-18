@@ -50,11 +50,11 @@ warn_archive_file(filetype_t ft, const File *r, const std::string &reason) {
 
     switch (ft) {
         case TYPE_ROM:
-            printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s\n", r->name.c_str(), r->size, r->hashes.crc, reason.c_str());
+            printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s\n", r->filename().c_str(), r->size, r->hashes.crc, reason.c_str());
             break;
             
         case TYPE_DISK:
-            printf("image %-12s: %s\n", r->name.c_str(), reason.c_str());
+            printf("image %-12s: %s\n", r->filename().c_str(), reason.c_str());
             break;
             
         default:

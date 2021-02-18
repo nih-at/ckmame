@@ -6,11 +6,10 @@ file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file-new roms/disk/108-5.chd 108-5.chd
 file-del roms/diskchild/108-5c.chd 108-5.chd
 stdout In game disk:
-stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/diskchild/108-5c.chd'
-stdout copy 'roms/diskchild/108-5c.chd' to 'roms/disk/108-5.chd'
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/diskchild/108-5c.chd'
+stdout roms/disk: add 'roms/diskchild/108-5c.chd' as '108-5.chd'
 stdout In game diskchild:
 stdout game diskchild                               : correct
-stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
-stdout image roms/diskchild/108-5c.chd: not used
-stdout roms/diskchild/108-5c.chd: delete unused image
+stdout image 108-5c.chd  : not used
+stdout roms/diskchild: delete unused file '108-5c.chd'

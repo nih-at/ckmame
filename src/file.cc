@@ -31,11 +31,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "file.h"
 
 #include <stdlib.h>
 
-#include "file.h"
-
+std::string File::no_extension;
 
 bool File::compare_merged(const File &other) const {
     return merged_name() == other.merged_name();

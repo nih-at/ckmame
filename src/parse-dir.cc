@@ -183,7 +183,7 @@ parse_archive(ParserContext *ctx, filetype_t filetype, Archive *a, int hashtypes
         auto &file = a->files[i];
 
         if (filetype == TYPE_ROM) {
-            a->file_compute_hashes(i, hashtypes);
+            a->file_ensure_hashes(i, hashtypes);
         }
 
         ctx->file_start(filetype);

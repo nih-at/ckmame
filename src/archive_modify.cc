@@ -339,6 +339,7 @@ void Archive::add_file(const std::string &filename, const File *file) {
 
     nf->name = filename;
     nf->where = FILE_ADDED;
+    nf->filename_extension = contents->filename_extension;
 
     modified = true;
 }

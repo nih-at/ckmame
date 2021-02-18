@@ -105,7 +105,7 @@ find_disk(const Disk *disk, MatchDisk *match_disk) {
 #endif
 
 find_result_t
-find_in_archives(const File *rom, Match *m, bool needed_only) {
+find_in_archives(filetype_t filetype, const File *rom, Match *m, bool needed_only) {
     sqlite3_stmt *stmt;
     int i, ret, hcol, sh;
 
@@ -125,7 +125,7 @@ find_in_archives(const File *rom, Match *m, bool needed_only) {
         }
     }
 
-    if (sqlite3_bind_int(stmt, 1, TYPE_ROM) != SQLITE_OK || sq3_set_hashes(stmt, hcol, &rom->hashes, 0) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, 1, filetype) != SQLITE_OK || sq3_set_hashes(stmt, hcol, &rom->hashes, 0) != SQLITE_OK) {
 	return FIND_ERROR;
     }
 
@@ -145,7 +145,7 @@ find_in_archives(const File *rom, Match *m, bool needed_only) {
         auto &file = a->files[i];
 
         if (sh == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
-            a->file_compute_hashes(i, rom->hashes.types | db->hashtypes(TYPE_ROM));
+            a->file_ensure_hashes(i, rom->hashes.types | db->hashtypes(filetype));
             memdb_update_file(a->contents.get(), i);
 	}
 
@@ -185,7 +185,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
     ArchivePtr a;
 
     auto full_name = findfile(filetype, name);
-    if (full_name == "" || !(a = Archive::open(full_name, TYPE_ROM, FILE_ROMSET, 0))) {
+    if (full_name == "" || !(a = Archive::open(full_name, filetype, FILE_ROMSET, 0))) {
 	return FIND_MISSING;
     }
 
@@ -196,7 +196,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
         File *af = &a->files[index];
         
         if (!af->hashes.has_all_types(candidate->hashes)) {
-            if (!a->file_compute_hashes(index, Hashes::TYPE_ALL)) { /* TODO: only needed hash types */
+            if (!a->file_ensure_hashes(index, Hashes::TYPE_ALL)) { /* TODO: only needed hash types */
                 return FIND_MISSING;
 	    }
 	    if (a->file_compare_hashes(index, &candidate->hashes) != Hashes::MATCH) {
@@ -239,7 +239,7 @@ static find_result_t check_match_romset(filetype_t filetype, const Game *game, c
 
 static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const File *file, Archive *archive, const std::string &skip, Match *match, find_result_t (*check_match)(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match)) {
     auto roms = rdb->read_file_by_hash(filetype, &file->hashes);
-
+    
     if (roms.empty()) {
 	return FIND_UNKNOWN;
     }
@@ -261,13 +261,13 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const File *fil
 
         auto &game_rom = game->files[filetype][rom.index];
 
-        if (file->size == game_rom.size && file->hashes.compare(game_rom.hashes) == Hashes::MATCH) {
+        if (file->compare_size_hashes(game_rom)) {
 	    bool ok = true;
 
             if (archive && !file->hashes.has_all_types(game_rom.hashes)) {
 		auto idx = archive->file_index(file);
                 if (idx.has_value()) {
-                    if (!archive->file_compute_hashes(idx.value(), game_rom.hashes.types)) {
+                    if (!archive->file_ensure_hashes(idx.value(), game_rom.hashes.types)) {
 			/* TODO: handle error (how?) */
 			ok = false;
 		    }

@@ -69,11 +69,7 @@ protected:
     virtual void get_last_update();
     virtual bool read_infos_xxx();
     virtual bool rollback_xxx(); /* never called if commit never fails */
-
-    virtual std::string filename(uint64_t idx) { return files[idx].name + filename_extension; }
-
-    std::string filename_extension;
-
+    
 private:
     struct FileInfo {
         std::filesystem::path name;

@@ -95,7 +95,7 @@ fix_game(Game *game, const GameArchives archives, Result *result) {
                     }
                     auto move = (fix_options & FIX_MOVE_UNKNOWN);
                     if (fix_options & FIX_PRINT) {
-                        printf("%s: %s unknown file '%s'\n", archive->name.c_str(), (move ? "move" : "delete"), archive->filename(i).c_str());
+                        printf("%s: %s unknown file '%s'\n", archive->name.c_str(), (move ? "move" : "delete"), archive->files[i].filename().c_str());
                     }
                     
                     if (fix_options & FIX_DO) {
@@ -116,7 +116,7 @@ fix_game(Game *game, const GameArchives archives, Result *result) {
                     /* fallthrough */
                 case FS_SUPERFLUOUS:
                     if (fix_options & FIX_PRINT) {
-                        printf("%s: delete %s file '%s'\n", archive->name.c_str(), (result->archive_files[filetype][i] == FS_SUPERFLUOUS ? "unused" : "duplicate"), archive->filename(i).c_str());
+                        printf("%s: delete %s file '%s'\n", archive->name.c_str(), (result->archive_files[filetype][i] == FS_SUPERFLUOUS ? "unused" : "duplicate"), archive->files[i].filename().c_str());
                     }
                     
                     /* TODO: handle error (how?) */
@@ -190,7 +190,7 @@ make_space(Archive *a, const std::string &name, std::vector<std::string> *origin
     auto index = idx.value();
 
     if (index < num_names && (*original_names)[index].empty()) {
-	(*original_names)[index] = name;
+	(*original_names)[index] = a->files[index].filename();
     }
 
     if (a->files[index].status == STATUS_BADDUMP) {
@@ -204,7 +204,7 @@ make_space(Archive *a, const std::string &name, std::vector<std::string> *origin
 }
 
 
-#define REAL_NAME(aa, ii) ((aa) == archive && (ii) < static_cast<int64_t>(num_names) && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->filename(ii).c_str())
+#define REAL_NAME(aa, ii) ((aa) == archive && (ii) < static_cast<int64_t>(num_names) && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].filename().c_str())
 
 static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage) {
 
@@ -306,7 +306,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     break;
                 }
                 if (fix_options & FIX_PRINT) {
-                    printf("%s: add '%s/%s' as '%s'\n", archive->name.c_str(), archive_from->name.c_str(), REAL_NAME(archive_from, match->index), game_file->name.c_str());
+                    printf("%s: add '%s/%s' as '%s'\n", archive->name.c_str(), archive_from->name.c_str(), REAL_NAME(archive_from, match->index), game_file->filename().c_str());
                 }
                 
                 if (make_space(archive, game_file->name, &original_names, num_names) < 0) {
@@ -314,12 +314,12 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     break;
                 }
                 
-                if (!archive->file_copy(archive_from, match->index, game_file->name)) {
-                    myerror(ERRDEF, "copying '%s' from '%s' to '%s' failed, not deleting", game_file->name.c_str(), archive_from->name.c_str(), archive->name.c_str());
-                    /* TODO: if (idx >= 0) undo deletion of broken file */
+                if (archive->file_copy(archive_from, match->index, game_file->name)) {
+                    DeleteList::used(archive_from, match->index);
                 }
                 else {
-                    DeleteList::used(archive_from, match->index);
+                    myerror(ERRDEF, "copying '%s' from '%s' to '%s' failed, not deleting", game_file->filename().c_str(), archive_from->name.c_str(), archive->name.c_str());
+                    /* TODO: if (idx >= 0) undo deletion of broken file */
                 }
                 break;
                 

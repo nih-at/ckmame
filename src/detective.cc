@@ -181,7 +181,7 @@ print_archive(const char *fname, int hashtypes) {
     ret = 0;
     for (size_t i = 0; i < archive->files.size(); i++) {
 	bool use_detector = false;
-	if (!archive->file_compute_hashes(i, hashtypes)) {
+	if (!archive->file_ensure_hashes(i, hashtypes)) {
 	    ret = -1;
 	    continue;
 	}

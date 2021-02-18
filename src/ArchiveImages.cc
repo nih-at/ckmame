@@ -38,9 +38,11 @@
 #include "globals.h"
 #include "util.h"
 
+std::string ArchiveImages::filename_extension_chd = ".chd";
+
 ArchiveImages::ArchiveImages(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveDir(name, filetype, where, flags) {
     contents->archive_type = ARCHIVE_IMAGES;
-    filename_extension = ".chd";
+    contents->filename_extension = &filename_extension_chd;
 }
 
 
@@ -70,8 +72,6 @@ bool ArchiveImages::read_infos_xxx() {
                 continue;
             }
             
-            printf("# adding image '%s'\n", filepath.c_str());
-
             files.push_back(File());
             auto &f = files[files.size() - 1];
             auto filename = filepath.string();

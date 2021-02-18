@@ -208,7 +208,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 
             case QU_COPIED:
                 if (output_options & WARN_ELSEWHERE) {
-                    warn_game_file(ft, &rom, "is in '" + match.archive->name + "/" + match.archive->files[match.index].name + "'");
+                    warn_game_file(ft, &rom, "is in '" + match.archive->name + "/" + match.archive->files[match.index].filename() + "'");
                 }
                 break;
                 

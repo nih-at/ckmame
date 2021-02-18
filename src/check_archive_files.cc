@@ -84,7 +84,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
                 else {
                     Match match;
                     ensure_needed_maps();
-                    if (find_in_archives(&file, &match, false) != FIND_EXISTS) {
+                    if (find_in_archives(filetype, &file, &match, false) != FIND_EXISTS) {
                         result->archive_files[filetype][i] = FS_NEEDED;
                     }
                     else {

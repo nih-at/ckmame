@@ -114,7 +114,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             /* search in needed, superfluous and update sets */
             ensure_needed_maps();
             ensure_extra_maps(DO_MAP);
-            if (find_in_archives(&rom, match, false) == FIND_EXISTS) {
+            if (find_in_archives(filetype, &rom, match, false) == FIND_EXISTS) {
                 continue;
             }
         }

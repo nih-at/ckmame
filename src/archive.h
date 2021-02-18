@@ -80,7 +80,7 @@ enum ArchiveType {
 
 class ArchiveContents {
 public:
-    ArchiveContents(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flags);
+    ArchiveContents(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flagsk, std::string *filename_extension = NULL);
 
     uint64_t id;
     std::string name;
@@ -96,7 +96,7 @@ public:
     
     ArchiveType archive_type;
     std::weak_ptr<Archive> open_archive;
-    
+    std::string *filename_extension;
   
     bool read_infos_from_cachedb(std::vector<File> *files);
     int is_cache_up_to_date();
@@ -162,7 +162,7 @@ public:
     void ensure_valid_archive();
     bool file_add_empty(const std::string &filename);
     int file_compare_hashes(uint64_t idx, const Hashes *h);
-    bool file_compute_hashes(uint64_t idx, int hashtypes);
+    virtual bool file_ensure_hashes(uint64_t idx, int hashtypes);
     bool file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy);
     bool file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const File *f);
@@ -197,14 +197,12 @@ public:
     virtual bool rollback_xxx() = 0; /* never called if commit never fails */
     virtual bool want_crc() const { return true; }
 
-    virtual std::string filename(uint64_t idx) { return files[idx].name; }
-
     ArchiveContentsPtr contents;
     std::vector<File> &files;
     std::string &name;
     const filetype_t filetype;
     const where_t where;
-    
+        
     bool cache_changed;
     bool modified;
     

@@ -60,7 +60,7 @@ uint64_t ArchiveContents::next_id;
 std::unordered_map<ArchiveContents::TypeAndName, std::weak_ptr<ArchiveContents>> ArchiveContents::archive_by_name;
 std::unordered_map<uint64_t, ArchiveContentsPtr> ArchiveContents::archive_by_id;
 
-ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, filetype_t filetype_, where_t where_, int flags_) :
+ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, filetype_t filetype_, where_t where_, int flags_, std::string *filename_extension_) :
     id(0),
     name(name_),
     filetype(filetype_),
@@ -69,7 +69,8 @@ ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, fi
     flags(0),
     mtime(0),
     size(0),
-    archive_type(type_) { }
+    archive_type(type_),
+    filename_extension(filename_extension_) { }
 
 Archive::Archive(ArchiveContentsPtr contents_) :
     contents(contents_),
@@ -160,7 +161,7 @@ int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
     auto &file_hashes = files[index].hashes;
 
     if (!file_hashes.has_all_types(*hashes)) {
-        file_compute_hashes(index, hashes->types | db->hashtypes(TYPE_ROM));
+        file_ensure_hashes(index, hashes->types | db->hashtypes(TYPE_ROM));
     }
 
     if (files[index].status != STATUS_OK) {
@@ -171,7 +172,7 @@ int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
 }
 
 
-bool Archive::file_compute_hashes(uint64_t idx, int hashtypes) {
+bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
     Hashes hashes;
     auto &file = files[idx];
     
@@ -507,6 +508,7 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
     for (uint64_t i = 0; i < files.size(); i++) {
         auto &file = files[i];
         
+        file.filename_extension = contents->filename_extension;
         auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const File &file_cache){ return file.name == file_cache.name; });
         if (it != files_cache.cend()) {
             if (file.mtime == (*it).mtime && file.compare_name_size_hashes(*it)) {
@@ -521,7 +523,7 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
         }
         
         if (want_crc() && !file.hashes.has_type(Hashes::TYPE_CRC)) {
-            if (!file_compute_hashes(i, Hashes::TYPE_ALL)) {
+            if (!file_ensure_hashes(i, Hashes::TYPE_ALL)) {
                 file.status = STATUS_BADDUMP;
                 if (it == files_cache.cend() || (*it).status != STATUS_BADDUMP) {
                     cache_changed = true;

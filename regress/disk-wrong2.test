@@ -9,5 +9,5 @@ file-new unknown/disk/108-5-000.chd 12-1.chd
 stdout In game disk:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
-stdout image 108-5       : unknown
+stdout image 108-5.chd   : unknown
 stdout roms/disk: move unknown file '108-5.chd'

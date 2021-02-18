@@ -281,7 +281,7 @@ bool ArchiveZip::read_infos_xxx() {
         }
 
         if (contents->flags & ARCHIVE_FL_CHECK_INTEGRITY) {
-	    file_compute_hashes(i, contents->flags & ARCHIVE_FL_HASHTYPES_MASK);
+	    file_ensure_hashes(i, contents->flags & ARCHIVE_FL_HASHTYPES_MASK);
         }
     }
     

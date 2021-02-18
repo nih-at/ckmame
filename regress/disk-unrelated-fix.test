@@ -7,8 +7,7 @@ file roms/disk/108-5.chd 108-5.chd 108-5.chd
 file-new roms/diskgood-romnogood/108-5.chd 108-5.chd
 stdout In game disk:
 stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
 stdout In game diskgood-romnogood:
-stdout game diskgood-romnogood                      : not a single rom found
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/disk/108-5.chd'
-stdout copy 'roms/disk/108-5.chd' to 'roms/diskgood-romnogood/108-5.chd'
+stdout rom  04.rom        size       4  no good dump: missing
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/disk/108-5.chd'
+stdout roms/diskgood-romnogood: add 'roms/disk/108-5.chd' as '108-5.chd'

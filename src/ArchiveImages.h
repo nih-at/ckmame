@@ -47,7 +47,10 @@ public:
     
 protected:
     virtual bool file_add_empty_xxx(const std::string &filename);
+    virtual bool file_ensure_hashes(uint64_t idx, int hashtypes) { return true; }
     virtual ArchiveFilePtr file_open(uint64_t index);
     virtual bool read_infos_xxx();
     virtual bool want_crc() const { return false; }
+    
+    static std::string filename_extension_chd;
 };

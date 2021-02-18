@@ -233,6 +233,8 @@ std::vector<FileLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes *
 }
 
 
+static std::string chd_extension = ".chd";
+
 GamePtr RomDB::read_game(const std::string &name) {
     auto stmt = db.get_statement(DBH_STMT_QUERY_GAME);
     if (stmt == NULL) {
@@ -297,6 +299,9 @@ bool RomDB::read_files(Game *game, filetype_t ft) {
         rom.where = static_cast<where_t>(sqlite3_column_int(stmt, 3));
         rom.size = sq3_get_uint64_default(stmt, 4, SIZE_UNKNOWN);
         sq3_get_hashes(&rom.hashes, stmt, 5);
+        if (ft == TYPE_DISK) {
+            rom.filename_extension = &chd_extension;
+        }
         
         game->files[ft].push_back(rom);
     }

@@ -92,13 +92,13 @@ make_unique_name(const std::string &prefix, const std::string &ext) {
 
 
 static std::string
-make_needed_name(const File *r) {
+make_needed_name(filetype_t filetype, const File *r) {
     /* <needed_dir>/<crc>-nnn.zip */
 
-    auto crc = r->hashes.to_string(Hashes::TYPE_CRC);
-    auto prefix = std::filesystem::path(needed_dir) / crc;
+    auto hash = r->hashes.to_string(filetype == TYPE_ROM ? Hashes::TYPE_CRC : Hashes::TYPE_SHA1);
+    auto prefix = std::filesystem::path(needed_dir) / hash;
 
-    return make_unique_name(prefix, roms_unzipped ? "" : ".zip");
+    return make_unique_name(prefix, (filetype == TYPE_ROM && !roms_unzipped) ? ".zip" : "");
 }
 
 
@@ -139,16 +139,16 @@ save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t st
 
     bool needed = true;
 
-    if (!sa->file_compute_hashes(sidx, db->hashtypes(TYPE_ROM))) {
+    if (!sa->file_ensure_hashes(sidx, db->hashtypes(TYPE_ROM))) {
         return false;
     }
     
-    if (find_in_romset(TYPE_ROM, f, sa, gamename, NULL) == FIND_EXISTS) {
+    if (find_in_romset(sa->filetype, f, sa, gamename, NULL) == FIND_EXISTS) {
         needed = false;
     }
     else {
         ensure_needed_maps();
-        if (find_in_archives(f, NULL, true) == FIND_EXISTS) {
+        if (find_in_archives(sa->filetype, f, NULL, true) == FIND_EXISTS) {
             needed = false;
         }
     }
@@ -156,14 +156,14 @@ save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t st
     if (needed) {
         if (fix_options & FIX_PRINT) {
             if (length == -1) {
-                printf("%s: save needed file '%s'\n", sa->name.c_str(), sa->files[sidx].name.c_str());
+                printf("%s: save needed file '%s'\n", sa->name.c_str(), sa->files[sidx].filename().c_str());
             }
             else {
-                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), (uint64_t)start, (uint64_t)length, sa->files[sidx].name.c_str());
+                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), (uint64_t)start, (uint64_t)length, sa->files[sidx].filename().c_str());
             }
         }
         
-        auto tmp = make_needed_name(f);
+        auto tmp = make_needed_name(sa->filetype, f);
         if (tmp.empty()) {
             myerror(ERRDEF, "cannot create needed file name");
             return false;
@@ -182,7 +182,7 @@ save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t st
     }
     else {
         if (length == -1 && (fix_options & FIX_PRINT)) {
-            printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), sa->files[sidx].name.c_str());
+            printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), sa->files[sidx].filename().c_str());
         }
     }
     
@@ -202,37 +202,3 @@ bool
 save_needed(Archive *sa, size_t sidx, const std::string &gamename) {
     return save_needed_part(sa, sidx, gamename, 0, -1, &sa->files[sidx]);
 }
-
-
-#if 0
-bool
-save_needed_disk(const std::string &fname, bool do_save) {
-    DiskPtr d = Disk::from_file(fname, 0);
-    if (!d) {
-        return -1;
-    }
-    
-    int ret = 0;
-    
-    if (do_save) {
-        auto tmp = make_needed_name_disk(d.get());
-        if (tmp.empty()) {
-            myerror(ERRDEF, "cannot create needed file name");
-            ret = -1;
-        }
-        else if (!ensure_dir(tmp, true)) {
-            ret = -1;
-        }
-        else if (!rename_or_move(fname, tmp)) {
-            ret = -1;
-        }
-        else {
-            d = Disk::from_file(tmp, 0);
-        }
-    }
-
-    ensure_needed_maps();
-    enter_disk_in_map(d.get(), FILE_NEEDED);
-    return ret;
-}
-#endif

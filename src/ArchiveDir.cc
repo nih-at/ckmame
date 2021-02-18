@@ -225,7 +225,7 @@ std::filesystem::path ArchiveDir::get_original_data(uint64_t index) {
 
 
 std::filesystem::path ArchiveDir::make_full_name(const std::filesystem::path &filename) {
-    return std::filesystem::path(name) /= (filename.string() + filename_extension);
+    return std::filesystem::path(name) /= (filename.string() + (contents->filename_extension ? *(contents->filename_extension) : ""));
 }
 
 std::filesystem::path ArchiveDir::make_tmp_name(const std::filesystem::path &filename) {
