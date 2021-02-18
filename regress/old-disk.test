@@ -5,7 +5,7 @@ args -D ../mamedb-disk-many.db -FKLivc -O ../mamedb-disk.db disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/disk/108-5.chd 108-5.chd
 stdout In game disk:
-stdout game disk                                    : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: old
-stdout image roms/disk/108-5.chd: duplicate
-stdout roms/disk/108-5.chd: delete duplicate image
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: old in 'disk'
+stdout image 108-5.chd   : duplicate
+stdout roms/disk: delete duplicate file '108-5.chd'

@@ -2,15 +2,14 @@ description clean up disk images from extra dirs
 variants zip
 return 0
 args -O ../mamedb-disk-many.db -v --cleanup-extra -e extra
-file roms/108-2.chd 108-2.chd 108-2.chd
-file-del extra/108-5.chd 108-5.chd
+file roms/disk-2/108-2.chd 108-2.chd 108-2.chd
+file extra/disk/108-5.chd 108-5.chd 108-5.chd
 file extra/108-5a.chd 108-5a.chd 108-5a.chd
 file-del extra/108-2.chd 108-2.chd
 stdout In image extra/108-2.chd:
 stdout image extra/108-2.chd: duplicate
 stdout extra/108-2.chd: delete duplicate image
 stdout In image extra/108-5.chd:
-stdout image extra/108-5.chd: duplicate
-stdout extra/108-5.chd: delete duplicate image
+stdout image extra/108-5.chd: needed elsewhere
 stdout In image extra/108-5a.chd:
 stdout image extra/108-5a.chd: unknown

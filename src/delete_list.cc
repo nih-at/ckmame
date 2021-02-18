@@ -71,17 +71,10 @@ int DeleteList::execute() {
 	auto entry = entries[i];
 
 	if (name == "" || entry.name != name) {
-	    if (a) {
-		if (!a->commit()) {
-		    a->rollback();
-		    ret = -1;
-		}
-
-		if (a->is_empty())
-		    remove_empty_archive(name);
-
-                a = NULL;
-	    }
+            if (!close_archive(a.get())) {
+                ret = -1;
+            }
+            a = NULL;
 
 	    name = entry.name;
             filetype_t filetype;
@@ -116,15 +109,8 @@ int DeleteList::execute() {
 	}
     }
 
-    if (a) {
-	if (!a->commit()) {
-            a->rollback();
-	    ret = -1;
-	}
-
-	if (a->is_empty()) {
-            remove_empty_archive(name);
-	}
+    if (!close_archive(a.get())) {
+        ret = -1;
     }
 
     return ret;
@@ -153,3 +139,20 @@ void DeleteList::used(Archive *a, size_t index) {
         break;
     }
 }
+
+
+bool DeleteList::close_archive(Archive *archive) {
+    if (archive) {
+        if (!archive->commit()) {
+            archive->rollback();
+            return false;
+        }
+        
+        if (archive->is_empty()) {
+            remove_empty_archive(archive->name, archive->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY);
+        }
+    }
+    
+    return true;
+}
+    

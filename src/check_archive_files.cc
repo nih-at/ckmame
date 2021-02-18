@@ -34,6 +34,7 @@
 #include "check.h"
 #include "check_util.h"
 #include "find.h"
+#include "globals.h"
 
 void check_archive_files(filetype_t filetype, const GameArchives &archives, const std::string &gamename, Result *result) {
     find_result_t found;
@@ -62,7 +63,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
             continue;
         }
 
-        found = find_in_romset(filetype, &file, archive.get(), "", NULL);
+        found = find_in_romset(filetype, &file, archive.get(), gamename, NULL);
         
         switch (found) {
             case FIND_UNKNOWN:

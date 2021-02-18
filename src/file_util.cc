@@ -49,7 +49,7 @@ link_or_copy(const std::string &old, const std::string &new_name) {
     if (ec) {
 	if (!std::filesystem::copy_file(old, new_name, ec) || ec) {
 	    seterrinfo(old);
-	    myerror(ERRFILESTR, "cannot link to '%s'", new_name.c_str());
+	    myerror(ERRFILESTR, "cannot copy to '%s'", new_name.c_str());
 	    return false;
 	}
     }

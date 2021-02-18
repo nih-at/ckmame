@@ -160,9 +160,7 @@ void Archive::ensure_valid_archive() {
 int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
     auto &file_hashes = files[index].hashes;
 
-    if (!file_hashes.has_all_types(*hashes)) {
-        file_ensure_hashes(index, hashes->types | db->hashtypes(TYPE_ROM));
-    }
+    file_ensure_hashes(index, hashes->types);
 
     if (files[index].status != STATUS_OK) {
         return Hashes::NOCOMMON;

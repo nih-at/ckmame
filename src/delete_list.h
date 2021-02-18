@@ -62,6 +62,9 @@ class DeleteList {
     int execute();
 
     static void used(Archive *a, size_t idx);
+    
+private:
+    bool close_archive(Archive *archive);
 };
 
 #endif /* delete_list.h */

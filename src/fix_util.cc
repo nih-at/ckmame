@@ -114,9 +114,8 @@ move_image_to_garbage(const std::string &fname) {
 }
 
 
-void
-remove_empty_archive(const std::string &name) {
-    if (fix_options & FIX_PRINT) {
+void remove_empty_archive(const std::string &name, bool quiet) {
+    if ((fix_options & FIX_PRINT) && !quiet) {
 	printf("%s: remove empty archive\n", name.c_str());
     }
     remove_from_superfluous(name);

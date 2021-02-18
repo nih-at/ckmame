@@ -193,21 +193,14 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
     
     if (idx.has_value() && a->file_compare_hashes(idx.value(), &candidate->hashes) == Hashes::MATCH) {
         auto index = idx.value();
-        File *af = &a->files[index];
         
-        if (!af->hashes.has_all_types(candidate->hashes)) {
-            if (!a->file_ensure_hashes(index, Hashes::TYPE_ALL)) { /* TODO: only needed hash types */
-                return FIND_MISSING;
-	    }
-	    if (a->file_compare_hashes(index, &candidate->hashes) != Hashes::MATCH) {
-		return FIND_MISSING;
-	    }
-	}
-	if (matches) {
-            matches->archive = a;
-            matches->index = index;
-	}
-	return FIND_EXISTS;
+        if (a->files[index].status == STATUS_OK) {
+            if (matches) {
+                matches->archive = a;
+                matches->index = index;
+            }
+            return FIND_EXISTS;
+        }
     }
 
     return FIND_MISSING;
