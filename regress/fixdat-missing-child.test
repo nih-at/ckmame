@@ -8,6 +8,6 @@ no-hashes roms grandparent.zip
 stdout In game grandparent:
 stdout game grandparent                             : correct
 stdout In game parent:
-stdout game parent                                  : not a single rom found
+stdout game parent                                  : not a single file found
 stdout In game child:
-stdout game child                                   : not a single rom found
+stdout game child                                   : not a single file found

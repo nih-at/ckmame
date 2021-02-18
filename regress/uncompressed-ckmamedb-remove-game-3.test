@@ -5,6 +5,6 @@ args -D ../mamedb-two-games.db -jFKLivc
 ckmamedb-before roms ckmamedb-1-4-ok.dump
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
 stdout In game 1-4:
-stdout game 1-4                                     : not a single rom found
+stdout game 1-4                                     : not a single file found
 stdout In game 1-8:
 stdout game 1-8                                     : correct

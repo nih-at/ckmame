@@ -5,4 +5,4 @@ file roms/deadbeef.zip deadbeef.zip deadbeef.zip
 stdout In game deadbeef:
 stdout game deadbeef                                : correct
 stdout In game deadfish:
-stdout game deadfish                                : not a single rom found
+stdout game deadfish                                : not a single file found

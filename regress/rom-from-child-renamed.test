@@ -5,11 +5,11 @@ file-new roms/1-4.zip 1-4-ok.zip
 file-new roms/parent-4.zip 1-4-ok.zip
 file-del roms/clone-8.zip 1-4-misnamed.zip
 stdout In game 1-4:
-stdout game 1-4                                     : not a single rom found
+stdout game 1-4                                     : not a single file found
 stdout In game parent-4:
-stdout game parent-4                                : not a single rom found
+stdout game parent-4                                : not a single file found
 stdout In game clone-8:
-stdout game clone-8                                 : not a single rom found
+stdout game clone-8                                 : not a single file found
 stdout roms/clone-8.zip: save needed file '04'
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'needed/d87f7e0c-000.zip/04'

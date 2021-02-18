@@ -8,11 +8,11 @@ no-hashes roms child.zip
 no-hashes roms parent.zip
 no-hashes roms grandparent.zip
 stdout In game grandparent:
-stdout game grandparent                             : not a single rom found
+stdout game grandparent                             : not a single file found
 stdout file 0a.rom        size      10  crc 0b4a4cde: needed elsewhere
 stdout roms/grandparent.zip: save needed file '0a.rom'
 stdout In game parent:
-stdout game parent                                  : not a single rom found
+stdout game parent                                  : not a single file found
 stdout file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 stdout roms/parent.zip: save needed file '04.rom'
 stdout In game child:

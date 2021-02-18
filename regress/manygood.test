@@ -32,12 +32,12 @@ no-hashes roms parent-4.zip
 no-hashes roms zero-4.zip
 no-hashes roms zero.zip
 stdout In game 1-8a:
-stdout game 1-8a                                    : not a single rom found
+stdout game 1-8a                                    : not a single file found
 stdout In game dir-in-rom-name:
 stdout rom  some/path/to/file.rom  size       4  crc d87f7e0c: wrong name (04.rom)
 stdout In game samptest:
-stdout game samptest                                : not a single rom found
+stdout game samptest                                : not a single file found
 stdout In game samptest-child:
-stdout game samptest-child                          : not a single rom found
+stdout game samptest-child                          : not a single file found
 stdout In game zerobadcrc:
-stdout game zerobadcrc                              : not a single rom found
+stdout game zerobadcrc                              : not a single file found

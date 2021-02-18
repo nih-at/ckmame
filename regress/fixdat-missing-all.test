@@ -4,8 +4,8 @@ return 0
 args -Fvc -D ../mamedb-merge-parent.db --fixdat fix_test.dat
 file-new fix_test.dat fixdat-missing-all.dat
 stdout In game grandparent:
-stdout game grandparent                             : not a single rom found
+stdout game grandparent                             : not a single file found
 stdout In game parent:
-stdout game parent                                  : not a single rom found
+stdout game parent                                  : not a single file found
 stdout In game child:
-stdout game child                                   : not a single rom found
+stdout game child                                   : not a single file found

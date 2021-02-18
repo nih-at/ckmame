@@ -44,9 +44,9 @@ stdout In game 1-8:
 stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8-ok.zip/08.rom'
 stdout roms/1-8.zip: add 'roms/1-8-ok.zip/08.rom' as '08.rom'
 stdout In game nogoodclone:
-stdout game nogoodclone                             : not a single rom found
+stdout game nogoodclone                             : not a single file found
 stdout In game 1-8a:
-stdout game 1-8a                                    : not a single rom found
+stdout game 1-8a                                    : not a single file found
 stdout In game 2-44:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout rom  04-2.rom      size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
@@ -66,13 +66,13 @@ stdout In game baddump:
 stdout rom  bad.rom       size       3  bad dump    : is in 'roms/baddump-ok.zip/bad.rom'
 stdout roms/baddump.zip: add 'roms/baddump-ok.zip/bad.rom' as 'bad.rom'
 stdout In game deadbeef:
-stdout game deadbeef                                : not a single rom found
+stdout game deadbeef                                : not a single file found
 stdout In game deadbeefchild:
 stdout rom  deadbeef      size       8  crc deadbeef: missing
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout roms/deadbeefchild.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
 stdout In game deadclonedbeef:
-stdout game deadclonedbeef                          : not a single rom found
+stdout game deadclonedbeef                          : not a single file found
 stdout In game dir-in-rom-name:
 stdout rom  some/path/to/file.rom  size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout roms/dir-in-rom-name.zip: add 'roms/1-4.zip/04.rom' as 'some/path/to/file.rom'
@@ -99,17 +99,17 @@ stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom
 stdout disk 208-7         no good dump              : missing
 stdout roms/disk-nogood2.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
 stdout In game disk-same:
-stdout game disk-same                               : not a single rom found
+stdout game disk-same                               : not a single file found
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is at 'roms/disk/108-5.chd'
 stdout copy 'roms/disk/108-5.chd' to 'roms/disk-same/108-5.chd'
 stdout In game diskgood-romnogood:
 # TODO: next line is wrong
-stdout game diskgood-romnogood                      : not a single rom found
+stdout game diskgood-romnogood                      : not a single file found
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
 stdout In game many:
-stdout game many                                    : not a single rom found
+stdout game many                                    : not a single file found
 stdout In game nogood:
-stdout game nogood                                  : not a single rom found
+stdout game nogood                                  : not a single file found
 stdout In game nogood-2:
 stdout rom  04.rom        size       4  no good dump: missing
 stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
@@ -124,11 +124,11 @@ stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
 stdout roms/clone-8.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
 stdout In game samptest:
-stdout game samptest                                : not a single rom found
+stdout game samptest                                : not a single file found
 stdout In game samptest-child:
-stdout game samptest-child                          : not a single rom found
+stdout game samptest-child                          : not a single file found
 stdout In game zero:
-stdout game zero                                    : not a single rom found
+stdout game zero                                    : not a single file found
 stdout roms/zero.zip: create empty file 'zero'
 stdout In game zero-4:
 stdout rom  zero          size       0  crc 00000000: missing
@@ -136,7 +136,7 @@ stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom
 stdout roms/zero-4.zip: create empty file 'zero'
 stdout roms/zero-4.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
 stdout In game zerobadcrc:
-stdout game zerobadcrc                              : not a single rom found
+stdout game zerobadcrc                              : not a single file found
 stdout roms/zerobadcrc.zip: create empty file 'zero'
 stdout roms/1-4-ok.zip: delete used file '04.rom'
 stdout roms/1-4-ok.zip: remove empty archive

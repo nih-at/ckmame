@@ -2,4 +2,4 @@ description test single-rom game with bad dump; without -d, so output expected
 return 0
 args nogood
 stdout In game nogood:
-stdout game nogood                                  : not a single rom found
+stdout game nogood                                  : not a single file found

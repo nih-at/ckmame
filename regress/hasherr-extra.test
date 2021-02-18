@@ -3,4 +3,4 @@ return 0
 args -FKLvc -e extra deadbeef
 file extra/deadbeef.zip deadfish.zip deadfish.zip
 stdout In game deadbeef:
-stdout game deadbeef                                : not a single rom found
+stdout game deadbeef                                : not a single file found

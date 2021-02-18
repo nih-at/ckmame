@@ -8,11 +8,11 @@ file-new fix_test.dat fixdat-missing-parent.dat
 no-hashes roms parent.zip
 no-hashes roms child.zip
 stdout In game grandparent:
-stdout game grandparent                             : not a single rom found
+stdout game grandparent                             : not a single file found
 stdout In game parent:
 stdout rom  04.rom        size       4  crc d87f7e0c: missing
 stdout rom  08.rom        size       8  crc 3656897d: correct
 stdout In game child:
-stdout game child                                   : not a single rom found
+stdout game child                                   : not a single file found
 stdout file 08.rom        size       8  crc 3656897d: not used
 stdout roms/child.zip: delete unused file '08.rom'

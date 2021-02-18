@@ -5,6 +5,6 @@ file-del roms/1-4.zip garbage.zip
 file unknown/1-4.zip 1-8-ok.zip garbage-1-8-ok.zip
 no-hashes unknown 1-4.zip
 stdout In game 1-4:
-stdout game 1-4                                     : not a single rom found
+stdout game 1-4                                     : not a single file found
 stdout file garbage       size       8  crc 01888242: unknown
 stdout roms/1-4.zip: move unknown file 'garbage'

@@ -4,4 +4,4 @@ return 0
 args -Fvc -D ../mamedb-xml-quoting.db --fixdat fix.dat
 file-new fix.dat fixdat-xml-quoting.dat
 stdout In game 2&4c<>;:
-stdout game 2&4c<>;                                 : not a single rom found
+stdout game 2&4c<>;                                 : not a single file found
