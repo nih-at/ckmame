@@ -37,12 +37,12 @@
 
 #include "check.h"
 #include "diagnostics.h"
-#include "file_util.h"
 #include "fix_util.h"
 #include "garbage.h"
 #include "globals.h"
 #include "util.h"
 #include "warn.h"
+
 
 static void cleanup_archive(filetype_t filetype, Archive *archive, Result *result, int flags);
 

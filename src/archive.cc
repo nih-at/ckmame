@@ -31,16 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "archive.h"
 
 #include <algorithm>
+#include <cerrno>
+#include <cstring>
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-
-#include "archive.h"
 #include "ArchiveDir.h"
 #include "ArchiveImages.h"
 #include "ArchiveZip.h"
@@ -50,7 +46,6 @@
 #include "fix_util.h"
 #include "globals.h"
 #include "memdb.h"
-#include "util.h"
 
 #define BUFSIZE 8192
 

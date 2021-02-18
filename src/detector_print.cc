@@ -31,13 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "detector.h"
 
 #include <cinttypes>
 
-#include <stdlib.h>
-
-#include "detector.h"
 #include "util.h"
+
 
 static void pr_string(FILE *fout, const char *name, const std::string &value) {
     if (value.empty()) {

@@ -34,18 +34,10 @@
 
 #include "check.h"
 
-#include "archive.h"
 #include "check_util.h"
-#include "dbh.h"
-#include "file.h"
 #include "find.h"
-#include "game.h"
 #include "globals.h"
-#include "hashes.h"
-#include "match.h"
-#include "util.h"
 #include "warn.h"
-
 
 enum test { TEST_NAME_SIZE_CHECKSUM, TEST_MERGENAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG };
 

@@ -31,12 +31,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <algorithm>
+#include "chd.h"
+
 #include <cstring>
 
-#include "chd.h"
-#include "compat.h"
-#include "error.h"
 #include "Exception.h"
 
 #define CHD_MAP_TYPE_COMPRESSOR0 0x00

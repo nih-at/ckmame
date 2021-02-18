@@ -31,13 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cinttypes>
-
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "detector.h"
+
 #include "util.h"
 #include "xmlutil.h"
 

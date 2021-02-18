@@ -32,33 +32,24 @@
 */
 
 #include <algorithm>
+#include <cstring>
 #include <filesystem>
+#include <string>
 
+#include "compat.h"
 #include "config.h"
-
-#include <errno.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/param.h>
 
 #include "check_util.h"
 #include "cleanup.h"
-#include "compat.h"
-#include "dbh.h"
 #include "dbh_cache.h"
 #include "error.h"
 #include "fixdat.h"
 #include "globals.h"
-#include "SharedFile.h"
-#include "sighandle.h"
 #include "superfluous.h"
 #include "tree.h"
-#include "types.h"
 #include "util.h"
 #include "warn.h"
+
 
 enum action { ACTION_UNSPECIFIED, ACTION_CHECK_ROMSET, ACTION_SUPERFLUOUS_ONLY, ACTION_CLEANUP_EXTRA_ONLY };
 
@@ -564,6 +555,6 @@ contains_romdir(std::string &name) {
 	return false;
     }
 
-    size_t length = MIN(normalized.length(), rom_dir_normalized.length());
+    size_t length = std::min(normalized.length(), rom_dir_normalized.length());
     return (normalized.substr(0, length) == rom_dir_normalized.substr(0, length));
 }

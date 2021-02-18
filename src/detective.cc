@@ -34,19 +34,12 @@
 #include <cinttypes>
 #include <cstring>
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "config.h"
-
-#include "archive.h"
 #include "compat.h"
-#include "detector.h"
 #include "error.h"
 #include "globals.h"
 #include "hashes.h"
-#include "romdb.h"
+
 
 const char *usage = "Usage: %s [-hV] [-C types] [-D dbfile] [--detector detector] zip-archive [...]\n";
 

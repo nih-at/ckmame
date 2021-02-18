@@ -34,19 +34,14 @@
 #include "check_util.h"
 
 #include <algorithm>
-#include <filesystem>
 
-#include <sys/param.h>
-#include <sys/stat.h>
-
+#include "archive.h"
 #include "dbh_cache.h"
-#include "delete_list.h"
 #include "Dir.h"
-#include "error.h"
 #include "globals.h"
 #include "memdb.h"
-#include "sq_util.h"
 #include "util.h"
+
 
 const std::string needed_dir = "needed";   /* TODO: proper value */
 const std::string unknown_dir = "unknown"; /* TODO: proper value */

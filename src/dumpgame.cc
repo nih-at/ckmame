@@ -33,21 +33,16 @@
 
 #include <algorithm>
 #include <cinttypes>
-
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstring>
 
 #include "compat.h"
-#include "dat.h"
+#include "config.h"
+
 #include "error.h"
 #include "globals.h"
-#include "hashes.h"
-#include "romdb.h"
 #include "sq_util.h"
-#include "types.h"
 #include "util.h"
+
 
 static int dump_game(const std::string &, int);
 static int dump_hashtypes(int);

@@ -32,9 +32,10 @@
 */
 
 #include "check.h"
+
 #include "check_util.h"
 #include "find.h"
-#include "globals.h"
+
 
 void check_archive_files(filetype_t filetype, const GameArchives &archives, const std::string &gamename, Result *result) {
     find_result_t found;

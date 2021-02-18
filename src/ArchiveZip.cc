@@ -33,11 +33,8 @@
 
 #include "ArchiveZip.h"
 
-#include <cerrno>
 #include <sys/stat.h>
 
-
-#include "archive.h"
 #include "error.h"
 #include "globals.h"
 #include "util.h"

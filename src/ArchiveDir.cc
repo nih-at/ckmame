@@ -31,24 +31,19 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstring>
-#include <filesystem>
-
-#include <errno.h>
-#include <limits.h>
-#include <sys/stat.h>
-#include <time.h>
-#include <unistd.h>
-
-
 #include "ArchiveDir.h"
+
 #include "Dir.h"
 #include "error.h"
 #include "file_util.h"
-#include "globals.h"
-#include "memdb.h"
-#include "SharedFile.h"
 #include "util.h"
+
+#include <cerrno>
+#include <cstring>
+#include <filesystem>
+
+#include <limits.h>
+#include <sys/stat.h>
 
 static bool copy_file(const std::string &old, const std::string &new_name, size_t start, ssize_t len, Hashes *hashes);
 

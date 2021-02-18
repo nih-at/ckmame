@@ -33,9 +33,9 @@
 
 #include "Exception.h"
 
-#include "util.h"
+#include <cstring>
 
-#include <string.h>
+#include "util.h"
 
 Exception::Exception(const char *format, ...) {
     va_list ap;

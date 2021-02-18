@@ -36,17 +36,9 @@
 
 #include <sstream>
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "archive.h"
-#include "game.h"
 #include "globals.h"
-#include "hashes.h"
-#include "match.h"
-#include "types.h"
 #include "warn.h"
+
 
 static const std::string zname[] = {"", "cloneof", "grand-cloneof"};
 

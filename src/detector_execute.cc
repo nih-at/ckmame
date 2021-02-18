@@ -31,11 +31,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <algorithm>
+#include "detector.h"
 
 #include <cstring>
-
-#include "detector.h"
 
 #define BUF_SIZE (static_cast<uint64_t>(16 * 1024))
 

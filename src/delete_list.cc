@@ -31,13 +31,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "delete_list.h"
+
 #include <algorithm>
 
-#include <stdlib.h>
-#include <zip.h>
-
-#include "delete_list.h"
-#include "error.h"
 #include "fix_util.h"
 #include "globals.h"
 #include "util.h"

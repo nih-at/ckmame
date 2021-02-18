@@ -33,7 +33,6 @@
 
 #include "ParserSourceFile.h"
 
-#include <cstdio>
 #include <filesystem>
 
 #include "error.h"

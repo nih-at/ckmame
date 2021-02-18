@@ -31,14 +31,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <filesystem>
-
 #include "dbh.h"
+
+#include <cstring>
+#include <filesystem>
 
 static const int format_version[] = {3, 1, 2};
 #define USER_VERSION(fmt) (format_version[fmt] + (fmt << 8) + 17000)

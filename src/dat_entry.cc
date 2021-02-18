@@ -31,8 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <string.h>
-
 #include "dat.h"
 
 #define de_copy_member(X) (X = (high && !high->X.empty() ? high->X : low && !low->X.empty() ? low->X : ""))

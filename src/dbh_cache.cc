@@ -31,16 +31,15 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "dbh_cache.h"
+
 #include <filesystem>
 
-#include <errno.h>
-#include <stddef.h>
-
-#include "dbh_cache.h"
 #include "error.h"
 #include "globals.h"
 #include "sq_util.h"
 #include "util.h"
+
 
 class CacheDirectory {
 public:

@@ -32,11 +32,8 @@
 */
 
 
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "detector.h"
+
 #include "ParserSourceFile.h"
 
 DetectorPtr Detector::parse(const std::string &filename) {

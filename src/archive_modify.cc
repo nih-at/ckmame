@@ -31,18 +31,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "archive.h"
+
 #include <cinttypes>
 #include <cstring>
 
-#include <errno.h>
-
-#include "archive.h"
 #include "dbh_cache.h"
 #include "error.h"
-#include "globals.h"
 #include "memdb.h"
-#include "util.h"
-
 
 bool Archive::commit() {
     if (modified) {

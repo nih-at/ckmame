@@ -33,13 +33,14 @@
 
 #include "ArchiveImages.h"
 
+#include <filesystem>
+#include <sys/stat.h>
+
 #include "chd.h"
 #include "Dir.h"
 #include "error.h"
 #include "globals.h"
 #include "util.h"
-
-#include <sys/stat.h>
 
 std::string ArchiveImages::filename_extension_chd = ".chd";
 

@@ -36,7 +36,6 @@
 #include "find.h"
 #include "globals.h"
 
-
 void
 check_old(Game *game, Result *result) {
     if (old_db == NULL) {
