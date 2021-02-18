@@ -45,6 +45,7 @@
 #include "error.h"
 #include "fixdat.h"
 #include "globals.h"
+#include "sighandle.h"
 #include "superfluous.h"
 #include "tree.h"
 #include "util.h"

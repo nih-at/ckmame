@@ -32,6 +32,7 @@
 */
 
 #include <algorithm>
+#include <cerrno>
 #include <cinttypes>
 #include <cstring>
 

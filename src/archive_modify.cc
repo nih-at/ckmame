@@ -33,6 +33,7 @@
 
 #include "archive.h"
 
+#include <cerrno>
 #include <cinttypes>
 #include <cstring>
 

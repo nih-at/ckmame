@@ -33,6 +33,8 @@
 
 #include "detector.h"
 
+#include <cerrno>
+
 #include "util.h"
 #include "xmlutil.h"
 
