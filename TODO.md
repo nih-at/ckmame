@@ -13,7 +13,6 @@
 - fixdat-missing-all: two copies of the same file (romof) in fixdat; depends on order of games in datfile
 
 - C++ cleanups:
-  - remove xstrdup
   - move lineno into ParserSource
   - add tests for all tokens in all parser backends:
     - cm
