@@ -7,4 +7,3 @@ file roms/diskgood-romnogood/108-5.chd 108-5.chd 108-5.chd
 file roms/nogood.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game diskgood-romnogood:
 stdout game diskgood-romnogood                      : correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
