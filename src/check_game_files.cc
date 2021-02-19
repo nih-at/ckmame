@@ -37,6 +37,7 @@
 #include "check_util.h"
 #include "find.h"
 #include "globals.h"
+#include "diagnostics.h"
 #include "warn.h"
 
 enum test { TEST_NAME_SIZE_CHECKSUM, TEST_MERGENAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG };
@@ -265,9 +266,9 @@ void update_game_status(const Game *game, Result *result) {
                     all_own_dead = false;
                 }
             }
-            /* TODO: using output_options here is a bit of a hack,
+            /* TODO: using diagnostics_options here is a bit of a hack,
                but so is all of the result->game processing */
-            if (match->quality != QU_OK && (rom.status != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP))) {
+            if (match->quality != QU_OK && (rom.status != STATUS_NODUMP || (diagnostics_options & WARN_NO_GOOD_DUMP))) {
                 all_correct = false;
             }
         }

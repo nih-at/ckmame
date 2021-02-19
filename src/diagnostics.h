@@ -41,4 +41,6 @@
 void diagnostics(const Game *game, const GameArchives &archives, const Result &res);
 void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result);
 
+extern int diagnostics_options;
+
 #endif /* _HAD_DIAGNOSTICS_H */

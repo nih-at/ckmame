@@ -45,6 +45,7 @@
 #include "error.h"
 #include "fixdat.h"
 #include "globals.h"
+#include "diagnostics.h"
 #include "sighandle.h"
 #include "superfluous.h"
 #include "tree.h"
@@ -164,7 +165,7 @@ main(int argc, char **argv) {
     bool print_stats = false;
 
     setprogname(argv[0]);
-    output_options = WARN_ALL;
+    diagnostics_options = WARN_ALL;
     action = ACTION_UNSPECIFIED;
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
@@ -193,19 +194,19 @@ main(int argc, char **argv) {
 	    exit(0);
 
 	case 'b':
-	    output_options &= ~WARN_BROKEN;
+	    diagnostics_options &= ~WARN_BROKEN;
 	    break;
 	case 'C':
 	    fix_options |= FIX_COMPLETE_ONLY;
 	    break;
 	case 'c':
-	    output_options |= WARN_CORRECT;
+	    diagnostics_options |= WARN_CORRECT;
 	    break;
 	case 'D':
 	    dbname = optarg;
 	    break;
 	case 'd':
-	    output_options &= ~WARN_NO_GOOD_DUMP;
+	    diagnostics_options &= ~WARN_NO_GOOD_DUMP;
 	    break;
 	case 'e': {
 	    std::string name = optarg;
@@ -224,7 +225,7 @@ main(int argc, char **argv) {
 	    fix_options |= FIX_DO;
 	    break;
 	case 'f':
-	    output_options &= ~WARN_FIXABLE;
+	    diagnostics_options &= ~WARN_FIXABLE;
 	    break;
 	case 'i':
 	    check_integrity = true;
@@ -251,7 +252,7 @@ main(int argc, char **argv) {
 	    rom_dir = optarg;
 	    break;
 	case 's':
-	    output_options &= ~WARN_SUPERFLUOUS;
+	    diagnostics_options &= ~WARN_SUPERFLUOUS;
 	    break;
 	case 'T':
 	    game_list = optarg;
@@ -263,7 +264,7 @@ main(int argc, char **argv) {
 	    fix_options |= FIX_PRINT;
 	    break;
 	case 'w':
-	    output_options &= WARN_BROKEN;
+	    diagnostics_options &= WARN_BROKEN;
 	    break;
 	case 'X':
 	    ignore_extra = 1;
@@ -516,7 +517,7 @@ main(int argc, char **argv) {
 	extra_delete_list->execute();
     }
 
-    if ((action == ACTION_CHECK_ROMSET && (optind == argc && (output_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY) {
+    if ((action == ACTION_CHECK_ROMSET && (optind == argc && (diagnostics_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY) {
 	print_superfluous(superfluous);
     }
     

@@ -39,6 +39,7 @@
 #include "globals.h"
 #include "warn.h"
 
+int diagnostics_options = 0;
 
 static const std::string zname[] = {"", "cloneof", "grand-cloneof"};
 
@@ -65,7 +66,7 @@ void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result) 
             
         switch (result.archive_files[ft][i]) {
             case FS_UNKNOWN:
-                if (output_options & WARN_UNKNOWN)
+                if (diagnostics_options & WARN_UNKNOWN)
                     warn_archive_file(ft, f, "unknown");
                 break;
                 
@@ -76,21 +77,21 @@ void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result) 
                 break;
                 
             case FS_BROKEN:
-                if (output_options & WARN_FILE_BROKEN)
+                if (diagnostics_options & WARN_FILE_BROKEN)
                     warn_archive_file(ft, f, "broken");
                 break;
                 
             case FS_NEEDED:
-                if (output_options & WARN_USED)
+                if (diagnostics_options & WARN_USED)
                     warn_archive_file(ft, f, "needed elsewhere");
                 break;
                 
             case FS_SUPERFLUOUS:
-                if (output_options & WARN_SUPERFLUOUS)
+                if (diagnostics_options & WARN_SUPERFLUOUS)
                     warn_archive_file(ft, f, "not used");
                 break;
             case FS_DUPLICATE:
-                if ((output_options & WARN_SUPERFLUOUS) && (fix_options & FIX_DELETE_DUPLICATE))
+                if ((diagnostics_options & WARN_SUPERFLUOUS) && (fix_options & FIX_DELETE_DUPLICATE))
                     warn_archive_file(ft, f, "duplicate");
                 break;
         }
@@ -102,13 +103,13 @@ static void
 diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
     switch (result.game) {
         case GS_CORRECT:
-            if (ft == TYPE_ROM && (output_options & WARN_CORRECT)) {
+            if (ft == TYPE_ROM && (diagnostics_options & WARN_CORRECT)) {
                 warn_game_file(ft, NULL, "correct");
             }
             return;
             
         case GS_OLD:
-            if (!(output_options & WARN_CORRECT)) {
+            if (!(diagnostics_options & WARN_CORRECT)) {
                 return;
             }
             else {
@@ -142,7 +143,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
             break;
 
         case GS_MISSING:
-            if (ft == TYPE_ROM && (output_options & WARN_MISSING)) {
+            if (ft == TYPE_ROM && (diagnostics_options & WARN_MISSING)) {
                 warn_game_file(ft, NULL, "not a single file found");
             }
             return;
@@ -151,7 +152,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
             break;
     }
     
-    if ((fix_options & FIX_COMPLETE_ONLY) && (output_options & WARN_BROKEN) == 0 && result.game != GS_FIXABLE) {
+    if ((fix_options & FIX_COMPLETE_ONLY) && (diagnostics_options & WARN_BROKEN) == 0 && result.game != GS_FIXABLE) {
         return;
     }
     
@@ -166,21 +167,21 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
         
         switch (match.quality) {
             case QU_MISSING:
-                if (output_options & WARN_MISSING) {
-                    if (rom.status != STATUS_NODUMP || (output_options & WARN_NO_GOOD_DUMP)) {
+                if (diagnostics_options & WARN_MISSING) {
+                    if (rom.status != STATUS_NODUMP || (diagnostics_options & WARN_NO_GOOD_DUMP)) {
                         warn_game_file(ft, &rom, "missing");
                     }
                 }
                 break;
                 
             case QU_NAMEERR:
-                if (output_options & WARN_WRONG_NAME) {
+                if (diagnostics_options & WARN_WRONG_NAME) {
                     warn_game_file(ft, &rom, "wrong name (" + file->name + ")" + (rom.where != match.where ? ", should be in " : "") + zname[rom.where]);
                 }
                 break;
                 
             case QU_LONG:
-                if (output_options & WARN_LONGOK) {
+                if (diagnostics_options & WARN_LONGOK) {
                     std::ostringstream out;
                     out << "too long, valid subsection at byte " << match.offset << " (" << file->size << ")" << (rom.where != match.where ? ", should be in " : "") << zname[rom.where];
                     warn_game_file(ft, &rom, out.str());
@@ -188,7 +189,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 break;
                 
             case QU_OK:
-                if (output_options & WARN_CORRECT) {
+                if (diagnostics_options & WARN_CORRECT) {
                     if (rom.status == STATUS_OK) {
                         warn_game_file(ft, &rom, "correct");
                     }
@@ -199,25 +200,25 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 break;
                 
             case QU_COPIED:
-                if (output_options & WARN_ELSEWHERE) {
+                if (diagnostics_options & WARN_ELSEWHERE) {
                     warn_game_file(ft, &rom, "is in '" + match.archive->name + "/" + match.archive->files[match.index].filename() + "'");
                 }
                 break;
                 
             case QU_INZIP:
-                if (output_options & WARN_WRONG_ZIP) {
+                if (diagnostics_options & WARN_WRONG_ZIP) {
                     warn_game_file(ft, &rom, "should be in " + zname[rom.where]);
                 }
                 break;
                 
             case QU_HASHERR:
-                if (output_options & WARN_MISSING) {
+                if (diagnostics_options & WARN_MISSING) {
                     warn_game_file(ft, &rom, "checksum mismatch" + (rom.where != match.where ? ", should be in " + zname[rom.where] : ""));
                 }
                 break;
                 
             case QU_OLD:
-                if (output_options & WARN_CORRECT) {
+                if (diagnostics_options & WARN_CORRECT) {
                     warn_game_file(ft, &rom, "old in '" + match.old_game + "'");
                 }
                 break;

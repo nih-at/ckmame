@@ -36,7 +36,6 @@
 /* option settings */
 
 int roms_unzipped = 0;   /* ROMs are files on disk, not contained in zip archives */
-int output_options = 0;
 int fix_options = 0;
 
 /* check input (read only) */
