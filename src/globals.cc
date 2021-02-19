@@ -46,9 +46,6 @@ DetectorPtr detector;
 
 /* check state */
 
-DeleteListPtr extra_delete_list;
 std::vector<std::string> extra_list;
-DeleteListPtr needed_delete_list;
-DeleteListPtr superfluous_delete_list;
 
 Stats stats;

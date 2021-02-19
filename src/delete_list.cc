@@ -41,6 +41,11 @@
 #include "util.h"
 
 
+DeleteListPtr extra_delete_list;
+DeleteListPtr needed_delete_list;
+DeleteListPtr superfluous_delete_list;
+
+
 DeleteList::Mark::Mark(DeleteListPtr list_) : list(list_), index(0), rollback(false) {
     if (list_) {
         index = list_->entries.size();

@@ -38,6 +38,7 @@
 #include <filesystem>
 
 #include "check_util.h"
+#include "delete_list.h"
 #include "error.h"
 #include "Exception.h"
 #include "file_util.h"

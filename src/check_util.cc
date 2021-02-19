@@ -37,6 +37,7 @@
 
 #include "archive.h"
 #include "dbh_cache.h"
+#include "delete_list.h"
 #include "Dir.h"
 #include "globals.h"
 #include "memdb.h"

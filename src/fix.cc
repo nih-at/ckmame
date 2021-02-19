@@ -35,10 +35,10 @@
 
 #include <cinttypes>
 
+#include "delete_list.h"
 #include "error.h"
 #include "fix_util.h"
 #include "garbage.h"
-#include "globals.h"
 #include "tree.h"
 
 int fix_options = 0;

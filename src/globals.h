@@ -35,7 +35,6 @@
 */
 
 
-#include "delete_list.h"
 #include "detector.h"
 #include "romdb.h"
 #include "stats.h"
@@ -53,10 +52,7 @@ extern DetectorPtr detector;
 
 /* check state */
 
-extern DeleteListPtr extra_delete_list;
 extern std::vector<std::string> extra_list;
-extern DeleteListPtr needed_delete_list;
-extern DeleteListPtr superfluous_delete_list;
 
 extern Stats stats;
 #endif /* globals.h */

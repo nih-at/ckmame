@@ -68,4 +68,8 @@ private:
     bool close_archive(Archive *archive);
 };
 
+extern DeleteListPtr extra_delete_list;
+extern DeleteListPtr needed_delete_list;
+extern DeleteListPtr superfluous_delete_list;
+
 #endif /* delete_list.h */
