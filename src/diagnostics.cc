@@ -36,7 +36,7 @@
 
 #include <sstream>
 
-#include "globals.h"
+#include "fix.h"
 #include "warn.h"
 
 int diagnostics_options = 0;

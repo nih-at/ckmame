@@ -43,6 +43,7 @@
 #include "dbh_cache.h"
 #include "error.h"
 #include "file_util.h"
+#include "fix.h"
 #include "fix_util.h"
 #include "globals.h"
 #include "memdb.h"

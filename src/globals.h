@@ -44,8 +44,6 @@
 
 extern int roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
 
-extern int fix_options;
-
 /* check input (read only) */
 
 extern std::unique_ptr<RomDB> db;

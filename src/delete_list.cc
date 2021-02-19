@@ -36,6 +36,7 @@
 #include <algorithm>
 
 #include "fix_util.h"
+#include "fix.h"
 #include "globals.h"
 #include "util.h"
 

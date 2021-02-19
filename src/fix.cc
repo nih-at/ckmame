@@ -41,6 +41,8 @@
 #include "globals.h"
 #include "tree.h"
 
+int fix_options = 0;
+
 // Fix archive in ROM set as best we can.
 static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage);
 

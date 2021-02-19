@@ -36,6 +36,7 @@
 #include <filesystem>
 
 #include "error.h"
+#include "fix.h"
 #include "globals.h"
 #include "sq_util.h"
 #include "util.h"

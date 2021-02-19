@@ -42,6 +42,7 @@
 #include "Exception.h"
 #include "file_util.h"
 #include "find.h"
+#include "fix.h"
 #include "globals.h"
 #include "util.h"
 
