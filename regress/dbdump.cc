@@ -34,8 +34,8 @@
 #include "compat.h"
 
 #include <cstring>
+#include <filesystem>
 #include <sqlite3.h>
-#include <sys/stat.h>
 
 #include "error.h"
 #include "util.h"
@@ -57,7 +57,6 @@ int
 main(int argc, char *argv[]) {
     sqlite3 *db;
     char *fname;
-    struct stat st;
     int ret;
 
     setprogname(argv[0]);
@@ -71,8 +70,8 @@ main(int argc, char *argv[]) {
 
     seterrinfo(fname);
 
-    if (stat(fname, &st) != 0) {
-	myerror(ERRSTR, "can't stat database '%s'", fname);
+    if (!std::filesystem::exists(fname)) {
+	myerror(ERRSTR, "database '%s' not found", fname);
 	exit(1);
     }
 
