@@ -33,14 +33,6 @@
 
 #include "globals.h"
 
-/* option settings */
-
 int roms_unzipped = 0;   /* ROMs are files on disk, not contained in zip archives */
-
-/* check input (read only) */
-
-DetectorPtr detector;
-
-/* check state */
 
 std::vector<std::string> extra_list;

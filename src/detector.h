@@ -144,4 +144,6 @@ public:
     static std::string test_type_name(TestType type);
 };
 
+extern DetectorPtr detector;
+
 #endif /* detector.h */

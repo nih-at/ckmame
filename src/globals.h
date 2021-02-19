@@ -34,18 +34,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include "detector.h"
+#include <string>
+#include <vector>
 
 /* option settings */
 
 extern int roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
-
-/* check input (read only) */
-
-extern DetectorPtr detector;
-
-/* check state */
 
 extern std::vector<std::string> extra_list;
 

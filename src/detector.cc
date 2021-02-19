@@ -31,8 +31,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #include "detector.h"
+
+
+DetectorPtr detector;
 
 std::string Detector::file_test_type_name(TestType type) {
     switch (type) {

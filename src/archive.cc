@@ -40,6 +40,7 @@
 #include "ArchiveDir.h"
 #include "ArchiveImages.h"
 #include "ArchiveZip.h"
+#include "detector.h"
 #include "dbh_cache.h"
 #include "error.h"
 #include "file_util.h"

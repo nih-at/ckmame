@@ -36,8 +36,8 @@
 #include <sys/stat.h>
 #include <cerrno>
 
+#include "detector.h"
 #include "error.h"
-#include "globals.h"
 #include "util.h"
 #include "zip_util.h"
 

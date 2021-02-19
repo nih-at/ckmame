@@ -41,7 +41,6 @@
 #include <cstring>
 
 #include "error.h"
-#include "globals.h"
 
 
 #define CHECK_STATE(s)                                        \
