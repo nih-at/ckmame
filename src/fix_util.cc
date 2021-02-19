@@ -133,7 +133,7 @@ save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t st
 
     bool needed = true;
 
-    if (!sa->file_ensure_hashes(sidx, db->hashtypes(TYPE_ROM))) {
+    if (!sa->file_ensure_hashes(sidx, db->hashtypes(sa->filetype))) {
         return false;
     }
     
