@@ -39,6 +39,7 @@
 #include "compat.h"
 #include "error.h"
 #include "globals.h"
+#include "romdb.h"
 #include "hashes.h"
 
 

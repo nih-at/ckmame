@@ -34,8 +34,8 @@
 #include "find.h"
 
 #include "check_util.h"
-#include "globals.h"
 #include "memdb.h"
+#include "romdb.h"
 #include "sq_util.h"
 
 #define QUERY_FILE "select game_id, file_idx, file_sh, location from file where file_type = ?"

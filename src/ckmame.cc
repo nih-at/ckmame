@@ -47,6 +47,7 @@
 #include "fix.h"
 #include "fixdat.h"
 #include "globals.h"
+#include "romdb.h"
 #include "sighandle.h"
 #include "superfluous.h"
 #include "tree.h"

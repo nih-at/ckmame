@@ -73,4 +73,7 @@ private:
     bool write_rules(const Detector *detector);
 };
 
+extern std::unique_ptr<RomDB> db;
+extern std::unique_ptr<RomDB> old_db;
+
 #endif /* romdb.h */

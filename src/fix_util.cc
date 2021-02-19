@@ -45,6 +45,7 @@
 #include "find.h"
 #include "fix.h"
 #include "globals.h"
+#include "romdb.h"
 #include "util.h"
 
 

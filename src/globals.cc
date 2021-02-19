@@ -39,9 +39,6 @@ int roms_unzipped = 0;   /* ROMs are files on disk, not contained in zip archive
 
 /* check input (read only) */
 
-std::unique_ptr<RomDB> db;
-std::unique_ptr<RomDB> old_db;
-
 DetectorPtr detector;
 
 /* check state */

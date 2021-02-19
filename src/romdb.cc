@@ -36,6 +36,8 @@
 #include "error.h"
 #include "sq_util.h"
 
+std::unique_ptr<RomDB> db;
+std::unique_ptr<RomDB> old_db;
 
 const dbh_stmt_t query_hash_type[] = {DBH_STMT_QUERY_HASH_TYPE_CRC, DBH_STMT_QUERY_HASH_TYPE_MD5, DBH_STMT_QUERY_HASH_TYPE_SHA1};
 

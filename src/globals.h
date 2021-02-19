@@ -36,7 +36,6 @@
 
 
 #include "detector.h"
-#include "romdb.h"
 #include "stats.h"
 
 /* option settings */
@@ -44,9 +43,6 @@
 extern int roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
 
 /* check input (read only) */
-
-extern std::unique_ptr<RomDB> db;
-extern std::unique_ptr<RomDB> old_db;
 
 extern DetectorPtr detector;
 

@@ -38,6 +38,7 @@
 #include "Dir.h"
 #include "error.h"
 #include "globals.h"
+#include "romdb.h"
 #include "util.h"
 
 
