@@ -31,12 +31,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <stdio.h>
-#include <string.h>
+#include "parse.h"
 
 #include "error.h"
-#include "parse.h"
-#include "util.h"
+
 
 enum parse_state { st_top, st_game, st_prog };
 

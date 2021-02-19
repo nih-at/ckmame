@@ -34,15 +34,11 @@
 #include "OutputContextMtree.h"
 
 #include <cinttypes>
-
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstring>
+#include <cerrno>
 
 #include "error.h"
 #include "globals.h"
-#include "output.h"
 #include "util.h"
 
 

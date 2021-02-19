@@ -36,11 +36,8 @@
 #include <algorithm>
 #include <filesystem>
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "error.h"
+
 
 struct fbh_context {
     sqlite3 *db;

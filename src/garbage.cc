@@ -31,12 +31,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <stdlib.h>
-
-#include "error.h"
-#include "fix_util.h"
 #include "garbage.h"
+
+#include "fix_util.h"
 #include "util.h"
 
 

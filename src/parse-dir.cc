@@ -31,20 +31,15 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <sys/stat.h>
+#include "parse.h"
 
 #include <algorithm>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <filesystem>
 
 #include "archive.h"
 #include "Dir.h"
 #include "error.h"
 #include "globals.h"
-#include "parse.h"
 #include "util.h"
 
 

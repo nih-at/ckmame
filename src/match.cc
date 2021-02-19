@@ -31,17 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "error.h"
-#include "hashes.h"
 #include "match.h"
-#include "types.h"
-#include "util.h"
 
 
 std::string Match::file() const {

@@ -32,11 +32,10 @@
 */
 
 
-#include <stdio.h>
-#include <string.h>
-
 #include "config.h"
+
 #include "xmlutil.h"
+
 
 #ifndef HAVE_LIBXML2
 
@@ -50,7 +49,6 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 
 #else
 
-#include "parse.h"
 #include <libxml/xmlreader.h>
 
 #define XMLU_MAX_PATH 8192

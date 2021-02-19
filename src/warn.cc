@@ -31,13 +31,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "warn.h"
 
 #include <cinttypes>
 
-#include <stdarg.h>
-#include <stdio.h>
-
-#include "warn.h"
 
 static std::string header_name;
 static int header_done;

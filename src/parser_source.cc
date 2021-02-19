@@ -31,19 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <algorithm>
-#include <cinttypes>
+#include "parser_source.h"
+
 #include <cstring>
 
-#include <errno.h>
-#include <stdlib.h>
-
-#include "error.h"
-#include "parser_source.h"
-#include "util.h"
 
 #define PSBLKSIZE 1024
-
 
 ParserSource::ParserSource() : current(NULL), available(0) { }
 

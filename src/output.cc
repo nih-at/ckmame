@@ -34,11 +34,13 @@
 #include "config.h"
 
 #include "output.h"
+
+#include <string>
+
 #include "OutputContextCm.h"
 #include "OutputContextDb.h"
 #include "OutputContextMtree.h"
 #include "OutputContextXml.h"
-#include "error.h"
 
 
 OutputContextPtr OutputContext::create(OutputContext::Format format, const std::string &fname, int flags) {

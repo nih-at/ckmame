@@ -31,18 +31,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <algorithm>
-#include <cinttypes>
-
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "OutputContextCm.h"
 
+#include <algorithm>
+#include <cerrno>
+#include <cinttypes>
+#include <cstring>
+
 #include "error.h"
-#include "SharedFile.h"
 #include "util.h"
 
 

@@ -34,10 +34,10 @@
 #include "hashes.h"
 
 #include <cinttypes>
-
-#include <string.h>
+#include <cstring>
 
 #include "util.h"
+
 
 std::unordered_map<std::string, int> Hashes::name_to_type = {
     { "crc", TYPE_CRC },

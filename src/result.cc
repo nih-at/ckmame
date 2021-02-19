@@ -31,9 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #include "result.h"
-#include "globals.h"
 
 
 Result::Result(const Game *game, const GameArchives &a) : game(GS_MISSING) {

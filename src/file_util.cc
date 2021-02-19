@@ -35,12 +35,7 @@
 
 #include <filesystem>
 
-#include <errno.h>
-#include <stdio.h>
-#include <unistd.h>
-
 #include "error.h"
-#include "hashes.h"
 
 bool
 link_or_copy(const std::string &old, const std::string &new_name) {

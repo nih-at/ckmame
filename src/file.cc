@@ -33,8 +33,6 @@
 
 #include "file.h"
 
-#include <stdlib.h>
-
 std::string File::no_extension;
 
 bool File::compare_merged(const File &other) const {

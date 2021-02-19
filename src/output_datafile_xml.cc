@@ -33,16 +33,13 @@
 
 #include "OutputContextXml.h"
 
+#include <cerrno>
 #include <cinttypes>
-
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstring>
 
 #include "error.h"
-#include "output.h"
 #include "util.h"
+
 
 #define xml_string(X) (reinterpret_cast<const xmlChar *>(X))
 

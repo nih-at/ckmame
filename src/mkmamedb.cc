@@ -31,28 +31,22 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "config.h"
+#include "compat.h"
+
 #include <cstring>
 #include <filesystem>
-
-#include <fnmatch.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
 #include <zip.h>
 
-#include "config.h"
-
-#include "compat.h"
+#include "archive.h"
 #include "dbh_cache.h"
 #include "error.h"
 #include "file_util.h"
 #include "globals.h"
-#include "output.h"
 #include "parse.h"
 #include "ParserSourceFile.h"
 #include "ParserSourceZip.h"
-#include "romdb.h"
-#include "types.h"
+
 
 const char *usage = "Usage: %s [-htuV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--no-directory-cache] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";
 

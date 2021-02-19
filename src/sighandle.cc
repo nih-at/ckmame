@@ -31,13 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <signal.h>
-#include <stdio.h>
-
 #include "sighandle.h"
 
-volatile int siginfo_caught;
+#include <signal.h>
 
+
+volatile int siginfo_caught;
 
 void
 sighandle(int signo) {

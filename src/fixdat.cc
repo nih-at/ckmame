@@ -33,9 +33,6 @@
 
 #include "fixdat.h"
 
-#include "globals.h"
-#include "match.h"
-
 OutputContextPtr fixdat;
 
 void

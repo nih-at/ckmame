@@ -31,19 +31,15 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <algorithm>
+#include "superfluous.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
+#include <algorithm>
 
 #include "Dir.h"
 #include "error.h"
 #include "globals.h"
-#include "romdb.h"
-#include "types.h"
 #include "util.h"
+
 
 static void list_non_chds(std::vector<std::string> &found, const std::string &dirname);
 

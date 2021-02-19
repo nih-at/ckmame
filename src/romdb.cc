@@ -32,11 +32,12 @@
 */
 
 #include "romdb.h"
+
 #include "error.h"
 #include "sq_util.h"
 
-const dbh_stmt_t query_hash_type[] = {DBH_STMT_QUERY_HASH_TYPE_CRC, DBH_STMT_QUERY_HASH_TYPE_MD5, DBH_STMT_QUERY_HASH_TYPE_SHA1};
 
+const dbh_stmt_t query_hash_type[] = {DBH_STMT_QUERY_HASH_TYPE_CRC, DBH_STMT_QUERY_HASH_TYPE_MD5, DBH_STMT_QUERY_HASH_TYPE_SHA1};
 
 int RomDB::has_disks() {
     sqlite3_stmt *stmt = db.get_statement(DBH_STMT_QUERY_HAS_DISKS);

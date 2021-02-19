@@ -31,16 +31,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "error.h"
 
-#include <errno.h>
+#include <cerrno>
+#include <cstring>
 #include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "compat.h"
 #include "dbh.h"
-#include "error.h"
 
 #define DEFAULT_FN "<unknown>"
 

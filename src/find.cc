@@ -34,10 +34,7 @@
 #include "find.h"
 
 #include "check_util.h"
-#include "dbh.h"
-#include "game.h"
 #include "globals.h"
-#include "hashes.h"
 #include "memdb.h"
 #include "sq_util.h"
 
@@ -55,54 +52,6 @@ static find_result_t check_match_old(filetype_t filetype, const Game *game, cons
 static find_result_t check_match_romset(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match);
 static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const File *wanted_file, Archive *archive, const std::string &skip, Match *match, find_result_t (*)(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match));
 
-
-#if 0
-find_result_t
-find_disk(const Disk *disk, MatchDisk *match_disk) {
-    sqlite3_stmt *stmt;
-    int ret;
-    
-    if (memdb == NULL) {
-        return FIND_UNKNOWN;
-    }
-
-    if ((stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_FILE, &disk->hashes, 0)) == NULL)
-	return FIND_ERROR;
-
-    if (sqlite3_bind_int(stmt, 1, TYPE_DISK) != SQLITE_OK || sq3_set_hashes(stmt, 2, &disk->hashes, 0) != SQLITE_OK) {
-	return FIND_ERROR;
-    }
-
-    switch (sqlite3_step(stmt)) {
-        case SQLITE_ROW: {
-            auto dm = Disk::by_id(sqlite3_column_int(stmt, QUERY_FILE_GAME_ID));
-            if (!dm) {
-                ret = FIND_ERROR;
-                break;
-            }
-
-            if (match_disk) {
-                match_disk->name = dm->name;
-                match_disk->hashes = dm->hashes;
-                match_disk->quality = QU_COPIED;
-                match_disk->where = static_cast<where_t>(sqlite3_column_int(stmt, QUERY_FILE_LOCATION));
-            }
-            ret = FIND_EXISTS;
-            break;
-        }
-            
-    case SQLITE_DONE:
-	ret = FIND_UNKNOWN;
-	break;
-
-    default:
-	ret = FIND_ERROR;
-	break;
-    }
-
-    return static_cast<find_result_t>(ret);
-}
-#endif
 
 find_result_t
 find_in_archives(filetype_t filetype, const File *rom, Match *m, bool needed_only) {

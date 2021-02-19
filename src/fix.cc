@@ -33,32 +33,13 @@
 
 #include "fix.h"
 
-#include <algorithm>
-#include <filesystem>
-#include <string>
+#include <cinttypes>
 
-#include <errno.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <zip.h>
-
-#include "archive.h"
-#include "check_util.h"
 #include "error.h"
-#include "file_util.h"
 #include "fix_util.h"
-#include "game.h"
 #include "garbage.h"
 #include "globals.h"
-#include "match.h"
 #include "tree.h"
-#include "types.h"
-#include "util.h"
 
 // Fix archive in ROM set as best we can.
 static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage);

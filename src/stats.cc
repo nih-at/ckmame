@@ -31,12 +31,10 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "stats.h"
+
 #include <cinttypes>
 
-#include <stdlib.h>
-
-#include "stats.h"
-#include "types.h"
 #include "util.h"
 
 

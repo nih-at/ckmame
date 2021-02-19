@@ -31,22 +31,18 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <algorithm>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-
 #include "config.h"
-
+// fnmatch
 #include "compat.h"
-#include "dat.h"
+
+#include "parse.h"
+
+#include <algorithm>
+#include <cstring>
+
 #include "error.h"
 #include "globals.h"
-#include "parse.h"
-#include "types.h"
-#include "util.h"
+
 
 #define CHECK_STATE(s)                                        \
     do {                                                           \

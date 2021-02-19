@@ -31,14 +31,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "parse.h"
 
 #include "error.h"
-#include "parse.h"
-#include "util.h"
 
 
 #define RC_SEP static_cast<char>(0xac)

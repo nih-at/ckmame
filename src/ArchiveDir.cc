@@ -33,16 +33,19 @@
 
 #include "ArchiveDir.h"
 
+// fseek
+#include "compat.h"
+
 #include "Dir.h"
 #include "error.h"
 #include "file_util.h"
 #include "util.h"
 
 #include <cerrno>
+#include <climits>
 #include <cstring>
 #include <filesystem>
 
-#include <limits.h>
 #include <sys/stat.h>
 
 static bool copy_file(const std::string &old, const std::string &new_name, size_t start, ssize_t len, Hashes *hashes);

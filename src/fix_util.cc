@@ -37,13 +37,6 @@
 #include <cinttypes>
 #include <filesystem>
 
-#include <errno.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include "check_util.h"
 #include "error.h"
 #include "Exception.h"

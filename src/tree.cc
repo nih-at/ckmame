@@ -31,23 +31,17 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "tree.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "archive.h"
 #include "check.h"
 #include "check_util.h"
 #include "diagnostics.h"
-#include "dbh.h"
 #include "error.h"
 #include "fix.h"
 #include "fixdat.h"
-#include "game.h"
 #include "globals.h"
 #include "sighandle.h"
-#include "tree.h"
+
 
 Tree check_tree;
 

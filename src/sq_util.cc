@@ -31,10 +31,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <limits.h>
-#include <stddef.h>
-
 #include "sq_util.h"
+
+#include <climits>
 
 std::vector<uint8_t>
 sq3_get_blob(sqlite3_stmt *stmt, int col) {

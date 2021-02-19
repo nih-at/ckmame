@@ -31,13 +31,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "memdb.h"
 
 #include "error.h"
-#include "memdb.h"
 #include "sq_util.h"
 
 
