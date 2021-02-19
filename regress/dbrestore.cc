@@ -31,23 +31,21 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "config.h"
+#include "compat.h"
+
 #include <cinttypes>
 #include <cstring>
 #include <optional>
-#include <unordered_map>
+#include <string>
+#include <vector>
 
-#include <getopt.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <sqlite3.h>
-
-#include "compat.h"
 #include "dbh.h"
 #include "error.h"
 #include "SharedFile.h"
 #include "sq_util.h"
 #include "util.h"
+
 
 static int column_type(const std::string &name);
 static int db_type(const std::string &name);

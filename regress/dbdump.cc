@@ -31,17 +31,15 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cstring>
+#include "compat.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstring>
+#include <sqlite3.h>
 #include <sys/stat.h>
 
-#include <sqlite3.h>
-
-#include "compat.h"
 #include "error.h"
 #include "util.h"
+
 
 #define QUERY_TABLES                                    \
     "select name from sqlite_master where type='table'" \
