@@ -34,5 +34,3 @@
 #include "globals.h"
 
 int roms_unzipped = 0;   /* ROMs are files on disk, not contained in zip archives */
-
-std::vector<std::string> extra_list;

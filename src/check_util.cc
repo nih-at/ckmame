@@ -47,8 +47,8 @@
 const std::string needed_dir = "needed";   /* TODO: proper value */
 const std::string unknown_dir = "unknown"; /* TODO: proper value */
 
+std::vector<std::string> extra_list;
 std::vector<std::string> search_dirs;
-
 std::vector<std::string> superfluous;
 
 #define EXTRA_MAPS 0x1

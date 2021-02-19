@@ -45,8 +45,8 @@
 extern const std::string needed_dir;
 extern const std::string unknown_dir;
 
+extern std::vector<std::string> extra_list;
 extern std::vector<std::string> search_dirs;
-
 extern std::vector<std::string> superfluous;
 
 void ensure_extra_maps(int flags);

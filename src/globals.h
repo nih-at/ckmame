@@ -34,13 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <string>
-#include <vector>
-
-/* option settings */
-
 extern int roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
-
-extern std::vector<std::string> extra_list;
 
 #endif /* globals.h */
