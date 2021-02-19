@@ -278,7 +278,6 @@ set(XFAIL_TESTS
   nogood-diskgood.test
   rom-from-extra-duplicate.test
   uncompressed-ckmamedb-known-extra.test
-  uncompressed-toplevel-roms.test
 )
 	      
 foreach(CASE ${EXTRA_TESTS})
