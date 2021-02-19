@@ -39,8 +39,9 @@
 #include "compat.h"
 #include "error.h"
 #include "globals.h"
-#include "romdb.h"
 #include "hashes.h"
+#include "romdb.h"
+#include "stats.h"
 
 
 const char *usage = "Usage: %s [-hV] [-C types] [-D dbfile] [--detector detector] zip-archive [...]\n";

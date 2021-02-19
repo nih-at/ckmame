@@ -36,7 +36,6 @@
 
 
 #include "detector.h"
-#include "stats.h"
 
 /* option settings */
 
@@ -50,5 +49,4 @@ extern DetectorPtr detector;
 
 extern std::vector<std::string> extra_list;
 
-extern Stats stats;
 #endif /* globals.h */

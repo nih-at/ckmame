@@ -38,6 +38,8 @@
 #include "util.h"
 
 
+Stats stats;
+
 void Stats::add_game(GameStatus status) {
     switch (status) {
         case GS_OLD:

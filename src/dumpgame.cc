@@ -43,6 +43,7 @@
 #include "globals.h"
 #include "romdb.h"
 #include "sq_util.h"
+#include "stats.h"
 #include "util.h"
 
 

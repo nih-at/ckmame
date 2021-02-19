@@ -49,6 +49,7 @@
 #include "globals.h"
 #include "romdb.h"
 #include "sighandle.h"
+#include "stats.h"
 #include "superfluous.h"
 #include "tree.h"
 #include "util.h"

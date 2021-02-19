@@ -44,5 +44,3 @@ DetectorPtr detector;
 /* check state */
 
 std::vector<std::string> extra_list;
-
-Stats stats;

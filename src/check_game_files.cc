@@ -36,8 +36,8 @@
 
 #include "check_util.h"
 #include "find.h"
-#include "globals.h"
 #include "diagnostics.h"
+#include "stats.h"
 #include "warn.h"
 
 enum test { TEST_NAME_SIZE_CHECKSUM, TEST_MERGENAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG };
