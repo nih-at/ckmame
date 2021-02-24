@@ -1414,7 +1414,11 @@ sub find_best_offsets {
 
 sub find_entry {
 	my ($entry, $array, $start, $max_offset) = @_;
-
+	
+	if (!defined($entry)) {
+		$entry = "";
+	}
+	
 	for (my $offset = 0; $offset < $max_offset; $offset++) {
 		return $offset if ($array->[$start + $offset] eq $entry);
 	}

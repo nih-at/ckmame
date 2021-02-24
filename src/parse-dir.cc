@@ -50,7 +50,7 @@ static std::string current_game;
 
 // TODO: make methods.
 static void end_game(ParserContext *ctx);
-static void start_game(ParserContext *ctx, const std::string &name);
+static void start_game(ParserContext *ctx, const std::string &name, const std::string &top_directory);
 
 bool ParserContext::parse_dir(const std::string &dname, int hashtypes, bool runtest) {
     lineno = 0;
@@ -67,7 +67,7 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes, bool runt
 		    /* TODO: handle errors */
 		    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
 		    if (a) {
-                        start_game(this, a->name);
+                        start_game(this, a->name, dname);
 			parse_archive(this, TYPE_ROM, a.get(), hashtypes);
                         end_game(this);
 		    }
@@ -89,7 +89,7 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes, bool runt
 		auto a = Archive::open_toplevel(dname, TYPE_ROM, FILE_NOWHERE, 0);
 
 		if (a) {
-                    start_game(this, a->name);
+                    start_game(this, ".", "");
 		    parse_archive(this, TYPE_ROM, a.get(), hashtypes);
                     end_game(this);
 		}
@@ -108,7 +108,7 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes, bool runt
                         if (images && !images->is_empty()) {
                             dir_empty = false;
                             std::sort(images->files.begin(), images->files.end());
-                            start_game(this, images->name);
+                            start_game(this, images->name, dname);
                             parse_archive(this, TYPE_DISK, images.get(), Hashes::TYPE_ALL);
                         }
                     }
@@ -120,7 +120,19 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes, bool runt
                         if (files && !files->is_empty()) {
                             dir_empty = false;
                             for (auto &file : files->files) {
-                                if (std::filesystem::path(file.name).extension() != ".chd") {
+                                auto extension = std::filesystem::path(file.name).extension();
+                                
+                                if (extension == ".chd") {
+                                    continue;
+                                }
+                                else if (extension == ".zip") {
+                                    auto a = Archive::open(filepath / file.name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                                    if (a) {
+                                        start_game(this, a->name.substr(0, a->name.length() - 4), dname);
+                                        parse_archive(this, TYPE_ROM, a.get(), hashtypes);
+                                        end_game(this);
+                                    }                                }
+                                else {
                                     myerror(ERRDEF, "skipping unknown file '%s/%s'", filepath.c_str(), file.name.c_str());
                                 }
                             }
@@ -137,7 +149,7 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes, bool runt
                             /* TODO: handle errors */
                             auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
                             if (a) {
-                                start_game(this, a->name.substr(0, a->name.length() - 4));
+                                start_game(this, a->name.substr(0, a->name.length() - 4), dname);
                                 parse_archive(this, TYPE_ROM, a.get(), hashtypes);
                                 end_game(this);
                             }
@@ -173,7 +185,7 @@ bool ParserContext::parse_dir(const std::string &dname, int hashtypes, bool runt
                 auto a = Archive::open_toplevel(dname, TYPE_DISK, FILE_NOWHERE, 0);
 
                 if (a) {
-                    start_game(this, ".");
+                    start_game(this, ".", "");
                     parse_archive(this, TYPE_DISK, a.get(), Hashes::TYPE_ALL);
                     end_game(this);
                 }
@@ -220,7 +232,7 @@ parse_archive(ParserContext *ctx, filetype_t filetype, Archive *a, int hashtypes
     return true;
 }
 
-static void start_game(ParserContext *ctx, const std::string &name) {
+static void start_game(ParserContext *ctx, const std::string &name, const std::string &top_directory) {
     if (current_game == name) {
         return;
     }
@@ -230,7 +242,7 @@ static void start_game(ParserContext *ctx, const std::string &name) {
     }
     
     ctx->game_start();
-    ctx->game_name(std::filesystem::path(name).filename());
+    ctx->game_name(top_directory.empty() ? name : name.substr(top_directory.length() + 1));
     current_game = name;
 }
 

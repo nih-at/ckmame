@@ -46,17 +46,17 @@ static void list_non_chds(std::vector<std::string> &found, const std::string &di
 
 std::vector<std::string> list_directory(const std::string &dirname, const std::string &dbname) {
     std::vector<std::string> result;
-    std::vector<std::string> list;
+    std::vector<std::string> known_games;
 
     if (!dbname.empty()) {
-        list = db->read_list(DBH_KEY_LIST_GAME);
-	if (list.empty()) {
+        known_games = db->read_list(DBH_KEY_LIST_GAME);
+	if (known_games.empty()) {
             myerror(ERRDEF, "list of games not found in database '%s'", dbname.c_str());
             exit(1);
         }
     }
 
-    std::sort(list.begin(), list.end());
+    std::sort(known_games.begin(), known_games.end());
 
     try {
 	 Dir dir(dirname, false);
@@ -71,7 +71,7 @@ std::vector<std::string> list_directory(const std::string &dirname, const std::s
 
 	     if (std::filesystem::is_directory(filepath)) {
 		 auto filename = filepath.filename();
-                 known = std::binary_search(list.begin(), list.end(), filename);;
+                 known = std::binary_search(known_games.begin(), known_games.end(), filename);;
 
                  if (!roms_unzipped) {
                      list_non_chds(result, filepath);
@@ -83,13 +83,16 @@ std::vector<std::string> list_directory(const std::string &dirname, const std::s
 
                      if (ext == ".zip") {
                          auto stem = filepath.stem();
-                         known = std::binary_search(list.begin(), list.end(), stem);
+                         known = std::binary_search(known_games.begin(), known_games.end(), stem);
                      }
                      else if (ext == ".chd") {
                          known = true; // TODO: I don't think we want top level CHDs in this list.
                      }
                  }
-                 // TODO: Don't list top level files for unzipped in list either?
+                 else {
+                     // TODO: Don't list top level files for unzipped in list either.
+                     known = true;
+                 }
              }
 
 	     if (!known) {

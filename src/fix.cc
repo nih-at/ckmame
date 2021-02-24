@@ -50,9 +50,8 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
 static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage);
 
 
-int
-fix_game(Game *game, const GameArchives archives, Result *result) {
-    int ret;
+int fix_game(Game *game, const GameArchives archives, Result *result) {
+    int ret = 0;
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
@@ -133,10 +132,10 @@ fix_game(Game *game, const GameArchives archives, Result *result) {
         }
         
         if ((fix_options & FIX_COMPLETE_ONLY) == 0 || result->game == GS_CORRECT || result->game == GS_FIXABLE) {
-            ret = fix_files(game, filetype, archive, result, garbage.get());
+            ret |= fix_files(game, filetype, archive, result, garbage.get());
         }
         else {
-            ret = clear_incomplete(game, filetype, archive, result, garbage.get());
+            ret |= clear_incomplete(game, filetype, archive, result, garbage.get());
         }
 
         if (fix_options & FIX_DO) {
