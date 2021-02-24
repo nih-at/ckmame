@@ -5,7 +5,7 @@ file roms/deadbeef.zip deadfish.zip deadfish.zip
 file roms/deadbeefchild.zip deadfish4.zip 1-4-ok.zip
 file-new unknown/deadbeefchild.zip deadfish.zip
 stdout In game deadbeefchild:
-stdout rom  deadbeef      size       8  crc deadbeef: checksum mismatch
+stdout rom  deadbeef      size       8  crc deadbeef: missing
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout file deadbeef      size       8  crc deadbeef: unknown
 stdout roms/deadbeefchild.zip: move unknown file 'deadbeef'

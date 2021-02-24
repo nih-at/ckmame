@@ -98,7 +98,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
         }
         
-        if (rom.where == FILE_INGAME && (match->quality == QU_MISSING || match->quality == QU_HASHERR) && rom.size > 0 && rom.status != STATUS_NODUMP) {
+        if (rom.where == FILE_INGAME && match->quality == QU_MISSING && rom.size > 0 && rom.status != STATUS_NODUMP) {
             /* search for matching file in other games (via db) */
             if (find_in_romset(filetype, &rom, NULL, game->name, match) == FIND_EXISTS) {
                 continue;
@@ -122,7 +122,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
             Match *match = &res->game_files[filetype][i];
-            if (match->where == FILE_INGAME && match->quality != QU_HASHERR) {
+            if (match->where == FILE_INGAME) {
                 size_t j = match->index;
                 if (res->archive_files[filetype][j] != FS_USED) {
                     res->archive_files[filetype][j] = match->quality == QU_LONG ? FS_PARTUSED : FS_USED;
@@ -173,18 +173,8 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
             case TEST_NAME_SIZE_CHECKSUM:
             case TEST_MERGENAME_SIZE_CHECKSUM:
                 if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file)) && rom->compare_size_hashes(file)) {
-                    if (rom->compare_hashes(file) != Hashes::MATCH) {
-                        if (match->quality == QU_HASHERR) {
-                            break;
-                        }
-                        
-                        match->quality = QU_HASHERR;
-                        result = TEST_UNUSABLE;
-                    }
-                    else {
-                        match->quality = QU_OK;
-                        result = TEST_USABLE;
-                    }
+                    match->quality = QU_OK;
+                    result = TEST_USABLE;
                     match->archive = archive;
                     match->index = i;
                 }
@@ -197,21 +187,8 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
                 }
 
                 if (rom->compare_size_hashes(file)) {
-                    if (archive->file_compare_hashes(i, &rom->hashes) != 0) {
-                        if (file.status != STATUS_OK) {
-                            break;
-                        }
-                        if (match->quality == QU_HASHERR) {
-                            break;
-                        }
-
-                        match->quality = QU_HASHERR;
-                        result = TEST_UNUSABLE;
-                    }
-                    else {
-                        match->quality = QU_NAMEERR;
-                        result = TEST_USABLE;
-                    }
+                    match->quality = QU_NAMEERR;
+                    result = TEST_USABLE;
                 }
                 match->archive = archive;
                 match->index = i;

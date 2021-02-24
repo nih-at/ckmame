@@ -42,7 +42,6 @@ typedef enum status status_t;
 enum quality {
     QU_MISSING, /* ROM is missing */
     QU_NOHASH,  /* disk and file have no common checksums */
-    QU_HASHERR, /* rom/disk and file have different checksums */
     QU_LONG,    /* long ROM with valid subsection */
     QU_NAMEERR, /* wrong name */
     QU_COPIED,  /* copied from elsewhere */

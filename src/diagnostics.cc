@@ -211,12 +211,6 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 }
                 break;
                 
-            case QU_HASHERR:
-                if (diagnostics_options & WARN_MISSING) {
-                    warn_game_file(ft, &rom, "checksum mismatch" + (rom.where != match.where ? ", should be in " + zname[rom.where] : ""));
-                }
-                break;
-                
             case QU_OLD:
                 if (diagnostics_options & WARN_CORRECT) {
                     warn_game_file(ft, &rom, "old in '" + match.old_game + "'");

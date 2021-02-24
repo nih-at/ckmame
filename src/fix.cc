@@ -221,10 +221,6 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 break;
                 
-            case QU_HASHERR:
-                /* all is lost */
-                break;
-                
             case QU_LONG: {
                 if (archive == archive_from && (fix_options & FIX_MOVE_LONG) && archive_from->files[match->index].where != FILE_DELETED) {
                     if (fix_options & FIX_PRINT) {
@@ -351,10 +347,6 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
             case QU_NOHASH:
                 /* only used for disks */
                 // TODO: handle disks
-                break;
-                
-            case QU_HASHERR:
-                /* all is lost */
                 break;
                 
             case QU_LONG:
