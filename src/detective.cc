@@ -91,7 +91,7 @@ main(int argc, char **argv) {
     if (dbname == NULL)
 	dbname = DBH_DEFAULT_DB_NAME;
     detector_name = NULL;
-    roms_unzipped = 0;
+    roms_unzipped = false;
 
     opterr = 0;
     while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -115,7 +115,7 @@ main(int argc, char **argv) {
 	    dbname = optarg;
 	    break;
 	case 'u':
-	    roms_unzipped = 1;
+	    roms_unzipped = true;
 	    break;
 	case OPT_DETECTOR:
 	    detector_name = optarg;

@@ -130,7 +130,7 @@ main(int argc, char **argv) {
 
     runtest = false;
     detector = NULL;
-    roms_unzipped = 0;
+    roms_unzipped = false;
     cache_directory = true;
     flags = 0;
     parser_flags = 0;
@@ -186,7 +186,7 @@ main(int argc, char **argv) {
                 flags |= OUTPUT_FL_TEMP;
                 break;
             case 'u':
-                roms_unzipped = 1;
+                roms_unzipped = false;
                 break;
             case 'x':
                 exclude.insert(optarg);
@@ -306,7 +306,7 @@ static int process_file(const char *fname, const std::unordered_set<std::string>
 	/* that's fine */
     }
 
-    if (roms_unzipped == 0 && (za = zip_open(fname, 0, NULL)) != NULL) {
+    if (!roms_unzipped && (za = zip_open(fname, 0, NULL)) != NULL) {
 	int i;
 	const char *name;
 	int err;

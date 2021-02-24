@@ -179,7 +179,7 @@ main(int argc, char **argv) {
     fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
     ignore_extra = 0;
     bool check_integrity = false;
-    roms_unzipped = 0;
+    roms_unzipped = false;
     game_list = NULL;
     fixdat = NULL;
     auto_fixdat = false;
@@ -261,7 +261,7 @@ main(int argc, char **argv) {
 	    game_list = optarg;
 	    break;
 	case 'u':
-	    roms_unzipped = 1;
+	    roms_unzipped = true;
 	    break;
 	case 'v':
 	    fix_options |= FIX_PRINT;
