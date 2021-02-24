@@ -114,7 +114,6 @@ fix_game(Game *game, const GameArchives archives, Result *result) {
                     break;
                     
                 case FS_BROKEN:
-                    // TODO: move broken disks aside?
                 case FS_USED:
                 case FS_MISSING:
                 case FS_PARTUSED:

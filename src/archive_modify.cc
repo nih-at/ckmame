@@ -187,7 +187,7 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 	return false;
     }
     if (source_archive->files[source_index].where != FILE_INGAME && source_archive->files[source_index].where != FILE_DELETED) {
-	myerror(ERRZIP, "cannot copy broken/added file");
+	myerror(ERRZIP, "cannot copy added/deleted file");
 	return false;
     }
     if (length.has_value()) {

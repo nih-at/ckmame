@@ -176,7 +176,8 @@ sub read_archives {
 			$name =~ s,^$prefix/,,;
 
 			my $rom = { name => $name, idx => $idx++, status => 0 };
-			for my $attr (qw(size sha1 md5)) {
+			$rom->{size} = $attributes{size} // '-1';
+			for my $attr (qw(sha1 md5)) {
 				$rom->{$attr} = $attributes{$attr} // 'null';
 			}
 			if (exists($attributes{status})) {

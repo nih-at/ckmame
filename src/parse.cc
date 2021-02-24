@@ -426,7 +426,7 @@ bool ParserContext::header_end() {
 
 
 void ParserContext::disk_end() {
-    if (r[TYPE_DISK]->hashes.empty()) {
+    if (r[TYPE_DISK]->hashes.empty() && r[TYPE_DISK]->status == STATUS_OK) {
         r[TYPE_DISK]->status = STATUS_NODUMP;
     }
 

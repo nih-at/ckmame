@@ -186,7 +186,7 @@ main(int argc, char **argv) {
                 flags |= OUTPUT_FL_TEMP;
                 break;
             case 'u':
-                roms_unzipped = false;
+                roms_unzipped = true;
                 break;
             case 'x':
                 exclude.insert(optarg);
