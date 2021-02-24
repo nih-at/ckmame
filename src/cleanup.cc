@@ -69,7 +69,14 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
             case NAME_ZIP:
             case NAME_IMAGES: {
                 auto filetype = nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK;
-                ArchivePtr a = Archive::open(name, filetype, FILE_NOWHERE, 0);
+                ArchivePtr a;
+                if (name[name.length() - 1] == '/') {
+                    auto real_name = name.substr(0, name.length() - 1);
+                    a = Archive::open_toplevel(real_name, filetype, FILE_NOWHERE, 0);
+                }
+                else {
+                    a = Archive::open(name, filetype, FILE_NOWHERE, 0);
+                }
 
                 if (a) {
                     GameArchives archives;

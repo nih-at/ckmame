@@ -35,6 +35,7 @@
 
 #include <algorithm>
 
+#include "archive.h"
 #include "Dir.h"
 #include "error.h"
 #include "globals.h"
@@ -58,47 +59,56 @@ std::vector<std::string> list_directory(const std::string &dirname, const std::s
 
     std::sort(known_games.begin(), known_games.end());
 
+    bool have_toplevel = false;
+    
     try {
-	 Dir dir(dirname, false);
-	 std::filesystem::path filepath;
-
-	 while ((filepath = dir.next()) != "") {
-	     if (name_type(filepath) == NAME_CKMAMEDB) {
-		 continue;
-	     }
-
-	     bool known = false;
-
-	     if (std::filesystem::is_directory(filepath)) {
-		 auto filename = filepath.filename();
-                 known = std::binary_search(known_games.begin(), known_games.end(), filename);;
-
-                 if (!roms_unzipped) {
-                     list_non_chds(result, filepath);
-		 }
-	     }
-	     else {
-                 if (!roms_unzipped) {
-                     auto ext = filepath.extension();
-
-                     if (ext == ".zip") {
-                         auto stem = filepath.stem();
-                         known = std::binary_search(known_games.begin(), known_games.end(), stem);
-                     }
-                     else if (ext == ".chd") {
-                         known = true; // TODO: I don't think we want top level CHDs in this list.
-                     }
-                 }
-                 else {
-                     // TODO: Don't list top level files for unzipped in list either.
-                     known = true;
-                 }
-             }
-
-	     if (!known) {
-		 result.push_back(filepath);
-	     }
-	 }
+        Dir dir(dirname, false);
+        std::filesystem::path filepath;
+        
+        while ((filepath = dir.next()) != "") {
+            if (name_type(filepath) == NAME_CKMAMEDB) {
+                continue;
+            }
+            
+            bool known = false;
+            
+            if (std::filesystem::is_directory(filepath)) {
+                auto filename = filepath.filename();
+                known = std::binary_search(known_games.begin(), known_games.end(), filename);;
+                
+                if (!roms_unzipped) {
+                    list_non_chds(result, filepath);
+                }
+            }
+            else {
+                if (!roms_unzipped) {
+                    auto ext = filepath.extension();
+                    
+                    if (ext == ".zip") {
+                        auto stem = filepath.stem();
+                        known = std::binary_search(known_games.begin(), known_games.end(), stem);
+                    }
+                    else if (ext == ".chd") {
+                        // TODO: I don't think we want top level CHDs in this list.
+                        known = true;
+                        have_toplevel = true;
+                    }
+                }
+                else {
+                    // TODO: Don't list top level files for unzipped in list either.
+                    known = true;
+                    have_toplevel = true;
+                }
+            }
+            
+            if (!known) {
+                result.push_back(filepath);
+            }
+        }
+        
+        if (have_toplevel) {
+            result.push_back(dirname + "/");
+        }
     }
     catch (...) {
 	return result;
@@ -115,10 +125,16 @@ void print_superfluous(std::vector<std::string> &files) {
 	return;
     }
 
-    printf("Extra files found:\n");
+    printf("Extra files found:\n"); // TODO: suppress if only empty xx/ 
 
     for (size_t i = 0; i < files.size(); i++) {
-	printf("%s\n", files[i].c_str());
+        if (files[i][files[i].length() - 1] == '/') {
+            auto real_name = files[i].substr(0, files[i].length() - 1);
+            auto a = Archive::open_toplevel(real_name, roms_unzipped ? TYPE_ROM : TYPE_DISK, FILE_NOWHERE, 0);
+        }
+        else {
+            printf("%s\n", files[i].c_str());
+        }
     }
 }
 

@@ -639,6 +639,7 @@
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = xmlutil.h; sourceTree = "<group>"; };
 		4B9292C917635B5500806C0A /* ArchiveZip.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveZip.cc; sourceTree = "<group>"; };
 		4BA47B0D25CC3E2300C4C842 /* check_archive_files.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = check_archive_files.cc; sourceTree = "<group>"; };
+		4BA7DA2425E67831004AF735 /* disk-toplevel-cleanup.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-toplevel-cleanup.test"; sourceTree = "<group>"; };
 		4BB158A825DECA50008892CD /* disk-fixdat.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-fixdat.test"; sourceTree = "<group>"; };
 		4BB158A925DECA50008892CD /* rom-from-extra-keep-dir-clean.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-keep-dir-clean.test"; sourceTree = "<group>"; };
 		4BB158AA25DECA51008892CD /* manygood.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = manygood.test; sourceTree = "<group>"; };
@@ -1028,6 +1029,7 @@
 				4B6B148824FF9F5C00D3F3FB /* disk-swapmerge.test */,
 				4B6B147B24FF9F5C00D3F3FB /* disk-to-needed.test */,
 				4B6B147424FF946A00D3F3FB /* disk-toplevel.test */,
+				4BA7DA2425E67831004AF735 /* disk-toplevel-cleanup.test */,
 				4B918BCE2508EAE0002D8F29 /* disk-unrelated-fix.test */,
 				4B918BCF2508EAE0002D8F29 /* disk-unrelated.test */,
 				4B6B148724FF9F5C00D3F3FB /* disk-wrong.test */,
