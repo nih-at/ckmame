@@ -187,11 +187,14 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
                 }
 
                 if (rom->compare_size_hashes(file)) {
+                    if (archive->file_compare_hashes(i, &rom->hashes) != 0) {
+                        break;
+                    }
                     match->quality = QU_NAMEERR;
                     result = TEST_USABLE;
+                    match->archive = archive;
+                    match->index = i;
                 }
-                match->archive = archive;
-                match->index = i;
                 break;
 
             case TEST_LONG:
