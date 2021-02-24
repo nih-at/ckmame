@@ -334,7 +334,7 @@ dbh_cache_write(DB *dbh, int id, const ArchiveContents *a) {
 	return -1;
     }
 
-    if ((id = dbh_cache_write_archive(dbh, id, name, a->mtime, a->size)) < 0) {
+    if ((id = dbh_cache_write_archive(dbh, id, name, a->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : a->mtime, a->size)) < 0) {
 	return -1;
     }
 

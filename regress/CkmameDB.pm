@@ -165,7 +165,7 @@ sub read_archives {
 			$idx = 0;
 
 			my @stat = stat("$self->{dir}/$archive->{name}");
-			$archive->{mtime} = $stat[9] // '<null>';
+			$archive->{mtime} = ($archive->{name} eq "." ? 0 : ($stat[9] // '<null>'));
 			if (-f "$self->{dir}/$archive->{name}") {
 				$archive->{size} = $stat[7] // '<null>';
 			}
