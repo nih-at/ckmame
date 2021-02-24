@@ -100,7 +100,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         
         if (rom.where == FILE_INGAME && match->quality == QU_MISSING && rom.size > 0 && rom.status != STATUS_NODUMP) {
             /* search for matching file in other games (via db) */
-            if (find_in_romset(filetype, &rom, NULL, game->name, match) == FIND_EXISTS) {
+            if (find_in_romset(filetype, &rom, NULL, game->name, "", match) == FIND_EXISTS) {
                 continue;
             }
             

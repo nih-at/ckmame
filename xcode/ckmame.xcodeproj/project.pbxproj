@@ -531,7 +531,6 @@
 		4B6B14CF24FFA14B00D3F3FB /* rom-from-needed.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-needed.test"; sourceTree = "<group>"; };
 		4B6B14D024FFA14B00D3F3FB /* rom-duplicate-ok.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-duplicate-ok.test"; sourceTree = "<group>"; };
 		4B6B14D124FFA14B00D3F3FB /* rom-broken.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-broken.test"; sourceTree = "<group>"; };
-		4B6B14D224FFA14B00D3F3FB /* rom-from-extra-duplicate.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-duplicate.test"; sourceTree = "<group>"; };
 		4B6B14D324FFA14B00D3F3FB /* rom-from-extra-keep-dir.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-keep-dir.test"; sourceTree = "<group>"; };
 		4B6B14D424FFA14B00D3F3FB /* rom-from-extra-commit-error.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-commit-error.test"; sourceTree = "<group>"; };
 		4B6B14D524FFA14B00D3F3FB /* rom-from-needed2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-needed2.test"; sourceTree = "<group>"; };
@@ -594,7 +593,7 @@
 		4B6B150F24FFA9D600D3F3FB /* uncompressed-ckmamedb-changed-new-mtime.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "uncompressed-ckmamedb-changed-new-mtime.test"; sourceTree = "<group>"; };
 		4B6B151024FFA9D600D3F3FB /* skip.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = skip.test; sourceTree = "<group>"; };
 		4B6B151124FFA9D600D3F3FB /* unused-in-parent.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "unused-in-parent.test"; sourceTree = "<group>"; };
-		4B6B151224FFA9D600D3F3FB /* uncompressed-ckmamedb-known-extra.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "uncompressed-ckmamedb-known-extra.test"; sourceTree = "<group>"; };
+		4B6B151224FFA9D600D3F3FB /* rom-unused-duplicate.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-unused-duplicate.test"; sourceTree = "<group>"; };
 		4B6B151324FFA9D600D3F3FB /* uncompressed-ckmamedb-no-change.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "uncompressed-ckmamedb-no-change.test"; sourceTree = "<group>"; };
 		4B6B151424FFA9D600D3F3FB /* superfluous-inconsistent.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "superfluous-inconsistent.test"; sourceTree = "<group>"; };
 		4B6B151524FFA9D600D3F3FB /* zero-good.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "zero-good.test"; sourceTree = "<group>"; };
@@ -1138,7 +1137,6 @@
 				4B6B14D424FFA14B00D3F3FB /* rom-from-extra-commit-error.test */,
 				4B6B14BC24FFA14A00D3F3FB /* rom-from-extra-dbcache-cleanup.test */,
 				4B6B14C824FFA14B00D3F3FB /* rom-from-extra-detector.test */,
-				4B6B14D224FFA14B00D3F3FB /* rom-from-extra-duplicate.test */,
 				4B6B14BE24FFA14A00D3F3FB /* rom-from-extra-inconsistent.test */,
 				4BB158A925DECA50008892CD /* rom-from-extra-keep-dir-clean.test */,
 				4B6B14D324FFA14B00D3F3FB /* rom-from-extra-keep-dir.test */,
@@ -1185,7 +1183,7 @@
 				4B6B152324FFA9D700D3F3FB /* uncompressed-ckmamedb-changed-same-mtime.test */,
 				4B6B152524FFA9D700D3F3FB /* uncompressed-ckmamedb-extra-dir.test */,
 				4B6B151724FFA9D600D3F3FB /* uncompressed-ckmamedb-extra-remove.test */,
-				4B6B151224FFA9D600D3F3FB /* uncompressed-ckmamedb-known-extra.test */,
+				4B6B151224FFA9D600D3F3FB /* rom-unused-duplicate.test */,
 				4B6B151324FFA9D600D3F3FB /* uncompressed-ckmamedb-no-change.test */,
 				4B6B151824FFA9D600D3F3FB /* uncompressed-ckmamedb-remove-game-2.test */,
 				4B6B150724FFA9D500D3F3FB /* uncompressed-ckmamedb-remove-game-3.test */,

@@ -65,13 +65,14 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
             continue;
         }
 
-        found = find_in_romset(filetype, &file, archive.get(), gamename, NULL);
+        found = find_in_romset(filetype, &file, archive.get(), gamename, file.name, NULL);
 
         switch (found) {
             case FIND_UNKNOWN:
                 break;
                 
             case FIND_EXISTS:
+
                 result->archive_files[filetype][i] = FS_SUPERFLUOUS;
                 break;
                 

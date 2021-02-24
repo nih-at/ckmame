@@ -45,6 +45,6 @@ typedef enum find_result find_result_t;
 
 find_result_t find_in_archives(filetype_t filetype, const File *r, Match *m, bool needed_only);
 find_result_t find_in_old(filetype_t filetype, const File *file, Archive *archive, Match *match);
-find_result_t find_in_romset(filetype_t ft, const File *file, Archive *archive, const std::string &skip, Match *match);
+find_result_t find_in_romset(filetype_t ft, const File *file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match);
 
 #endif /* find.h */

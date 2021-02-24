@@ -139,7 +139,7 @@ save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t st
         return false;
     }
     
-    if (find_in_romset(sa->filetype, f, sa, gamename, NULL) == FIND_EXISTS) {
+    if (find_in_romset(sa->filetype, f, sa, gamename, "", NULL) == FIND_EXISTS) {
         needed = false;
     }
     else {

@@ -1,9 +1,9 @@
 description test single-rom game with bad dump but good disk
 variants zip
 return 0
-# TODO: -c reports game as correct
 args -D ../mamedb-disk-many.db -dcFKLv diskgood-romnogood
 file roms/diskgood-romnogood/108-5.chd 108-5.chd 108-5.chd
 file roms/nogood.zip 1-4-ok.zip 1-4-ok.zip
+not-in-ckmamedb roms nogood.zip
 stdout In game diskgood-romnogood:
 stdout game diskgood-romnogood                      : correct

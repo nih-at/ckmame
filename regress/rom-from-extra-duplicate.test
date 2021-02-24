@@ -1,9 +1,0 @@
-description test single-rom game (no parent), file is in search dir, but not needed
-return 0
-args -FKLvcj -e search 1-4
-file-del search/foo.zip 1-4-ok.zip
-file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
-stdout In game 1-4:
-stdout game 1-4                                     : correct
-stdout search/foo.zip: delete unused file '04.rom'
-stdout search/foo.zip: remove empty archive

@@ -97,6 +97,7 @@ set(EXTRA_TESTS
   disk-swapmerge.test
   disk-to-needed.test
   disk-toplevel.test
+  disk-toplevel-cleanup.test
   disk-unrelated.test
   disk-unrelated-fix.test
   disk-wrong.test
@@ -204,7 +205,6 @@ set(EXTRA_TESTS
   rom-from-extra-commit-error.test
   rom-from-extra-dbcache-cleanup.test
   rom-from-extra-detector.test
-  rom-from-extra-duplicate.test
   rom-from-extra-inconsistent.test
   rom-from-extra-keep-dir-clean.test
   rom-from-extra-keep-dir.test
@@ -230,6 +230,7 @@ set(EXTRA_TESTS
   rom-need-partial-and-whole.test
   rom-two-long.test
   rom-unused.test
+  rom-unused-duplicate.test
   skip-full.test
   skip.test
   skipbad.test
@@ -250,7 +251,6 @@ set(EXTRA_TESTS
   uncompressed-ckmamedb-changed-same-mtime.test
   uncompressed-ckmamedb-extra-dir.test
   uncompressed-ckmamedb-extra-remove.test
-  uncompressed-ckmamedb-known-extra.test
   uncompressed-ckmamedb-no-change.test
   uncompressed-ckmamedb-remove-game-2.test
   uncompressed-ckmamedb-remove-game-3.test
@@ -275,9 +275,6 @@ set(EXTRA_TESTS
 set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
-  nogood-diskgood.test
-  rom-from-extra-duplicate.test
-  uncompressed-ckmamedb-known-extra.test
 )
 	      
 foreach(CASE ${EXTRA_TESTS})
