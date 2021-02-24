@@ -45,6 +45,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
     if (!archive) {
         return;
     }
+    
 
     for (size_t i = 0; i < archive->files.size(); i++) {
         auto &file = archive->files[i];
@@ -65,7 +66,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
         }
 
         found = find_in_romset(filetype, &file, archive.get(), gamename, NULL);
-        
+
         switch (found) {
             case FIND_UNKNOWN:
                 break;

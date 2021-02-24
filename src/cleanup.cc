@@ -69,14 +69,7 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
             case NAME_ZIP:
             case NAME_IMAGES: {
                 auto filetype = nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK;
-                ArchivePtr a;
-                if (name[name.length() - 1] == '/') {
-                    auto real_name = name.substr(0, name.length() - 1);
-                    a = Archive::open_toplevel(real_name, filetype, FILE_NOWHERE, 0);
-                }
-                else {
-                    a = Archive::open(name, filetype, FILE_NOWHERE, 0);
-                }
+                ArchivePtr a = Archive::open(name, filetype, FILE_NOWHERE, 0);
 
                 if (a) {
                     GameArchives archives;
@@ -86,7 +79,13 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
 
                     while (di < len) {
                         auto fl = del->entries[di];
-                        cmp = name.compare(fl.name);
+                        /* file lists should know what's toplevel without adding a / to name */
+                        if (fl.name[fl.name.length() - 1] == '/' && name[name.length() - 1] != '/') {
+                            cmp = name.compare(fl.name.substr(0, fl.name.length() - 1));
+                        }
+                        else {
+                            cmp = name.compare(fl.name);
+                        }
 
                         if (cmp == 0) {
                             res.archive_files[filetype][fl.index] = FS_USED;

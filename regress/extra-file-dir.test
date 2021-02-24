@@ -3,10 +3,12 @@ variants dir
 return 0
 args -D ../mamedb-small.db -FKLivc
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
-file roms/plain-file runtest runtest
+file-del roms/unknown-file unknown-file
+file-new unknown/roms.zip unknown-file.zip
 ckmamedb-after roms ckmamedb-1-4-ok.dump
 touch 1422359238 roms/1-4
 stdout In game 1-4:
 stdout game 1-4                                     : correct
-stdout Extra files found:
-stdout roms/plain-file
+stdout In archive roms:
+stdout file unknown-file  size      21  crc f3b26226: unknown
+stdout roms: move unknown file 'unknown-file'

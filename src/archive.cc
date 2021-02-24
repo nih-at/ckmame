@@ -338,7 +338,16 @@ std::string Archive::make_unique_name(const std::string &filename) {
 }
 
 ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t where, int flags) {
-    auto contents = ArchiveContents::by_name(filetype, name);
+    std::string archive_name;
+    
+    if (name[name.length() - 1] == '/') {
+        archive_name = name.substr(0, name.length() - 1);
+        flags |= ARCHIVE_FL_TOP_LEVEL_ONLY;
+    }
+    else {
+        archive_name = name;
+    }
+    auto contents = ArchiveContents::by_name(filetype, archive_name);
 
     if (contents) {
         return open(contents);
@@ -350,15 +359,15 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
         switch (filetype) {
             case TYPE_ROM:
                 if (roms_unzipped) {
-                    archive = std::make_shared<ArchiveDir>(name, filetype, where, flags);
+                    archive = std::make_shared<ArchiveDir>(archive_name, filetype, where, flags);
                 }
                 else {
-                    archive = std::make_shared<ArchiveZip>(name, filetype, where, flags);
+                    archive = std::make_shared<ArchiveZip>(archive_name, filetype, where, flags);
                 }
                 break;
                 
             case TYPE_DISK:
-                archive = std::make_shared<ArchiveImages>(name, filetype, where, flags);
+                archive = std::make_shared<ArchiveImages>(archive_name, filetype, where, flags);
                 break;
                 
             default:
@@ -383,7 +392,6 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
 
     ArchiveContents::enter_in_maps(archive->contents);
 
-    //printf("# opening %s\n", archive->name.c_str());
     return archive;
 }
 

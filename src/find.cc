@@ -134,7 +134,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
     ArchivePtr a;
 
     auto full_name = findfile(filetype, name);
-    if (full_name == "" || !(a = Archive::open(full_name, filetype, FILE_ROMSET, 0))) {
+    if (full_name.empty() || !(a = Archive::open(full_name, filetype, FILE_ROMSET, 0))) {
 	return FIND_MISSING;
     }
 

@@ -9,7 +9,7 @@ sub new {
 	my $class = UNIVERSAL::isa ($_[0], __PACKAGE__) ? shift : __PACKAGE__;
 	my $self = bless {}, $class;
 
-	my ($dir, $skip, $unzipped, $no_hashes, $verbose) = @_;
+	my ($dir, $skip, $unzipped, $no_hashes, $not_in_db, $verbose) = @_;
 	
 	$self->{dir} = $dir;
 	$self->{unzipped} = $unzipped;
@@ -30,7 +30,7 @@ sub new {
 			}
 		}
 	}
-
+	
 	if ($skip) {
 		$self->{skip} = { map { $_ => 1} @$skip };
 	}
@@ -38,6 +38,16 @@ sub new {
 		$self->{skip} = {};
 	}
 	
+	if (defined($not_in_db)) {
+		for my $entry (@$not_in_db) {
+			my ($cache_dir, $archive) = @$entry;
+			
+			next unless ($cache_dir eq $dir);
+			
+			$self->{skip}->{$archive} = 1;
+		}
+	}
+
 	$self->{dump_got} = [];
 	$self->{dump_archives} = {};
 	$self->{max_id} = 0;

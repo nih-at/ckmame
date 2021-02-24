@@ -37,6 +37,7 @@
 
 #include "fix_util.h"
 #include "fix.h"
+#include "globals.h"
 #include "util.h"
 
 
@@ -79,32 +80,37 @@ int DeleteList::execute() {
             a = NULL;
 
 	    name = entry.name;
-            filetype_t filetype;
-            switch (name_type(name)) {
-                case NAME_ZIP:
-                    filetype = TYPE_ROM;
-                    break;
-                    
-                case NAME_IMAGES:
-                    filetype = TYPE_DISK;
-                    break;
-                    
-                case NAME_UNKNOWN:
-                case NAME_CKMAMEDB:
-		default:
-                    // TODO: what to do with unknown file types?
-                    continue;
-                    
+            
+            if (name[name.length() - 1] == '/') {
+                a = Archive::open(name, roms_unzipped ? TYPE_ROM : TYPE_DISK, FILE_NOWHERE, 0);
             }
-	    /* TODO: don't hardcode location */
-            a = Archive::open(name, filetype, FILE_NOWHERE, 0);
-            if (!a) {
-                ret = -1;
+            else {
+                filetype_t filetype;
+                switch (name_type(name)) {
+                    case NAME_ZIP:
+                        filetype = TYPE_ROM;
+                        break;
+                        
+                    case NAME_IMAGES:
+                        filetype = TYPE_DISK;
+                        break;
+                        
+                    case NAME_UNKNOWN:
+                    case NAME_CKMAMEDB:
+                    default:
+                        // TODO: what to do with unknown file types?
+                        continue;
+                }
+
+                a = Archive::open(name, filetype, FILE_NOWHERE, 0);
+                if (!a) {
+                    ret = -1;
+                }
             }
 	}
 	if (a) {
             if (fix_options & FIX_PRINT) {
-		printf("%s: delete used file '%s'\n", name.c_str(), a->files[entry.index].filename().c_str());
+		printf("%s: delete used file '%s'\n", a->name.c_str(), a->files[entry.index].filename().c_str());
             }
 	    /* TODO: check for error */
 	    a->file_delete(entry.index);
@@ -120,8 +126,8 @@ int DeleteList::execute() {
 
 
 void DeleteList::used(Archive *a, size_t index) {
-    FileLocation fl(a->name, index);
-
+    FileLocation fl(a->name + (a->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? "/" : ""), index);
+    
     switch (a->where) {
     case FILE_NEEDED:
 	needed_delete_list->entries.push_back(fl);

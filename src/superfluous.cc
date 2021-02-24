@@ -125,15 +125,28 @@ void print_superfluous(std::vector<std::string> &files) {
 	return;
     }
 
-    printf("Extra files found:\n"); // TODO: suppress if only empty xx/ 
+    std::vector<std::string> extra_files;
 
-    for (size_t i = 0; i < files.size(); i++) {
-        if (files[i][files[i].length() - 1] == '/') {
-            auto real_name = files[i].substr(0, files[i].length() - 1);
-            auto a = Archive::open_toplevel(real_name, roms_unzipped ? TYPE_ROM : TYPE_DISK, FILE_NOWHERE, 0);
+    for (auto &file : files) {
+        if (file[file.length() - 1] == '/') {
+            auto a = Archive::open(file, roms_unzipped ? TYPE_ROM : TYPE_DISK, FILE_NOWHERE, 0);
+
+            if (a) {
+                for (auto &f : a->files) {
+                    extra_files.push_back(file + f.filename());
+                }
+            }
         }
         else {
-            printf("%s\n", files[i].c_str());
+            extra_files.push_back(file);
+        }
+    }
+
+    if (!extra_files.empty()) {
+        std::sort(extra_files.begin(), extra_files.end());
+        printf("Extra files found:\n");
+        for (auto & file : extra_files) {
+            printf("%s\n", file.c_str());
         }
     }
 }
