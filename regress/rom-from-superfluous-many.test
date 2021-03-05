@@ -118,10 +118,6 @@ stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
 stdout roms/clone-8.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
-stdout In game samptest:
-stdout game samptest                                : not a single file found
-stdout In game samptest-child:
-stdout game samptest-child                          : not a single file found
 stdout In game zero:
 stdout game zero                                    : not a single file found
 stdout roms/zero.zip: create empty file 'zero'
