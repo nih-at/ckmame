@@ -211,6 +211,7 @@ set(EXTRA_TESTS
   rom-from-extra-keep-zip.test
   rom-from-extra-partial.test
   rom-from-extra-remove.test
+  rom-from-extra-slash.test
   rom-from-needed.test
   rom-from-needed2.test
   rom-from-romset.test
@@ -275,6 +276,7 @@ set(EXTRA_TESTS
 set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
+  rom-from-extra-slash.test
 )
 	      
 foreach(CASE ${EXTRA_TESTS})
