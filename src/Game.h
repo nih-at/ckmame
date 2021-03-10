@@ -45,7 +45,7 @@ public:
     uint64_t id;
     std::string name;
     std::string description;
-    int dat_no;
+    unsigned int dat_no;
     std::string cloneof[2];
     std::vector<File> files[TYPE_MAX];
     

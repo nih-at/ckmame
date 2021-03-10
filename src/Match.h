@@ -41,19 +41,19 @@
 
 class Match {
 public:
-    Match() : quality(QU_MISSING), where(FILE_NOWHERE), index(-1), offset(-1) { }
+    Match() : quality(QU_MISSING), where(FILE_NOWHERE), index(0), offset(0) { }
     
     quality_t quality;
     where_t where;
     
     ArchivePtr archive;
-    int64_t index;
+    uint64_t index;
 
     /* for where == old */
     std::string old_game;
     std::string old_file;
 
-    int64_t offset; /* offset of correct part if QU_LONG */
+    uint64_t offset; /* offset of correct part if QU_LONG */
     
     std::string game() const;
     bool source_is_old() const { return where == FILE_OLD; }

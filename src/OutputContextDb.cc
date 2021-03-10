@@ -169,7 +169,7 @@ bool OutputContextDb::game(GamePtr game) {
 	return false;
     }
 
-    game->dat_no = dat.size() - 1;
+    game->dat_no = static_cast<unsigned int>(dat.size() - 1);
 
     if (!game->cloneof[0].empty()) {
         auto parent = db->read_game(game->cloneof[0]);

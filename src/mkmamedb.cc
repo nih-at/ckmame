@@ -307,12 +307,11 @@ static int process_file(const char *fname, const std::unordered_set<std::string>
     }
 
     if (!roms_unzipped && (za = zip_open(fname, 0, NULL)) != NULL) {
-	int i;
 	const char *name;
 	int err;
 
 	err = 0;
-	for (i = 0; i < zip_get_num_files(za); i++) {
+	for (uint64_t i = 0; i < zip_get_num_entries(za, 0); i++) {
 	    name = zip_get_name(za, i, 0);
 
             if (files_skip.find(name) != files_skip.end()) {

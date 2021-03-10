@@ -185,7 +185,7 @@ make_space(Archive *a, const std::string &name, std::vector<std::string> *origin
 }
 
 
-#define REAL_NAME(aa, ii) ((aa) == archive && (ii) < static_cast<int64_t>(num_names) && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].filename().c_str())
+#define REAL_NAME(aa, ii) ((aa) == archive && (ii) < num_names && !original_names[(ii)].empty() ? original_names[(ii)].c_str() : (aa)->files[ii].filename().c_str())
 
 static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage) {
 
@@ -231,7 +231,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 
                 if (fix_options & FIX_PRINT) {
-                    printf("%s: extract (offset %jd, size %" PRIu64 ") from '%s' to '%s'\n", archive->name.c_str(), match->offset, game_file->size, REAL_NAME(archive_from, match->index), game_file->filename().c_str());
+                    printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to '%s'\n", archive->name.c_str(), match->offset, game_file->size, REAL_NAME(archive_from, match->index), game_file->filename().c_str());
                 }
                 
                 bool replacing_ourselves = (archive == archive_from && match->index == archive_from->file_index_by_name(game_file->name));

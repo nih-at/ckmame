@@ -165,7 +165,7 @@ dump_table(sqlite3 *db, const char *tbl) {
 		printf("<null>");
 		break;
 	    case SQLITE_BLOB:
-		auto c = bin2hex(static_cast<const unsigned char *>(sqlite3_column_blob(stmt, i)), sqlite3_column_bytes(stmt, i));
+		auto c = bin2hex(static_cast<const unsigned char *>(sqlite3_column_blob(stmt, i)), static_cast<size_t>(sqlite3_column_bytes(stmt, i)));
 		printf("<%s>", c.c_str());
 		break;
 	    }

@@ -88,7 +88,7 @@ static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 
 static void
 print_checksums(const Hashes *hashes) {
-    for (size_t i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
+    for (int i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
 	if (hashes->has_type(i)) {
             printf(" %s %s", Hashes::type_name(i).c_str(), hashes->to_string(i).c_str());
         }
@@ -134,8 +134,7 @@ print_romline(File *rom) {
 }
 
 
-static void
-print_match(GamePtr game, filetype_t ft, int i) {
+static void print_match(GamePtr game, filetype_t ft, size_t i) {
     static std::string name;
 
     if (name.empty() || game->name != name) {
@@ -152,8 +151,7 @@ print_match(GamePtr game, filetype_t ft, int i) {
 }
 
 
-static void
-print_matches(filetype_t ft, Hashes *hash) {
+static void print_matches(filetype_t ft, Hashes *hash) {
     int matches_count = 0;
 
     auto matches = db->read_file_by_hash(ft, hash);

@@ -115,9 +115,9 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
     
     Archive *archive = archives[0][filetype];
     if (archive && !archive->files.empty()) {
-        int user[archive->files.size()];
+        uint64_t user[archive->files.size()];
         for (size_t i = 0; i < archive->files.size(); i++) {
-            user[i] = -1;
+            user[i] = std::numeric_limits<uint64_t>::max();
         }
         
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
@@ -129,7 +129,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
                 }
                 
                 if (match->quality != QU_LONG && match->quality != QU_INZIP) {
-                    if (user[j] == -1) {
+                    if (user[j] == std::numeric_limits<uint64_t>::max()) {
                         user[j] = i;
                     }
                     else {
@@ -158,7 +158,7 @@ static test_result_t
 match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
     test_result_t result;
 
-    match->offset = -1;
+    match->offset = 0;
 
     result = TEST_NOTFOUND;
 

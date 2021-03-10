@@ -252,7 +252,7 @@ GamePtr RomDB::read_game(const std::string &name) {
     game->id = static_cast<uint64_t>(sqlite3_column_int64(stmt, 0));
     game->name = name;
     game->description = sq3_get_string(stmt, 1);
-    game->dat_no = sqlite3_column_int(stmt, 2);
+    game->dat_no = static_cast<unsigned int>(sqlite3_column_int(stmt, 2));
     game->cloneof[0] = sq3_get_string(stmt, 3);
 
     if (!game->cloneof[0].empty()) {
@@ -513,7 +513,7 @@ bool RomDB::write_game(Game *game) {
         return false;
     }
 
-    if (sq3_set_string(stmt, 1, game->name) != SQLITE_OK || sq3_set_string(stmt, 2, game->description) != SQLITE_OK || sqlite3_bind_int(stmt, 3, game->dat_no) != SQLITE_OK || sq3_set_string(stmt, 4, game->cloneof[0]) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
+    if (sq3_set_string(stmt, 1, game->name) != SQLITE_OK || sq3_set_string(stmt, 2, game->description) != SQLITE_OK || sqlite3_bind_int(stmt, 3, static_cast<int>(game->dat_no)) != SQLITE_OK || sq3_set_string(stmt, 4, game->cloneof[0]) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
         return false;
     }
 

@@ -130,7 +130,7 @@ remove_from_superfluous(const std::string &name) {
 
 
 bool
-save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t start, off_t length, File *f) {
+save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uint64_t start, std::optional<uint64_t> length, File *f) {
     bool do_save = fix_options & FIX_DO;
 
     bool needed = true;
@@ -151,11 +151,11 @@ save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t st
     
     if (needed) {
         if (fix_options & FIX_PRINT) {
-            if (length == -1) {
+            if (!length.has_value()) {
                 printf("%s: save needed file '%s'\n", sa->name.c_str(), sa->files[sidx].filename().c_str());
             }
             else {
-                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), (uint64_t)start, (uint64_t)length, sa->files[sidx].filename().c_str());
+                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), start, length.value(), sa->files[sidx].filename().c_str());
             }
         }
         
@@ -171,18 +171,18 @@ save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t st
             return false;
         }
         
-        if (!da->file_copy_part(sa, sidx, sa->files[sidx].name, start, length == -1 ? std::optional<uint64_t>() : length, f) || !da->commit()) {
+        if (!da->file_copy_part(sa, sidx, sa->files[sidx].name, start, length, f) || !da->commit()) {
             da->rollback();
             return false;
         }
     }
     else {
-        if (length == -1 && (fix_options & FIX_PRINT)) {
+        if (!length.has_value() && (fix_options & FIX_PRINT)) {
             printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), sa->files[sidx].filename().c_str());
         }
     }
     
-    if (do_save && length == -1) {
+    if (do_save && !length.has_value()) {
         if (sa->where == FILE_ROMSET) {
             return sa->file_delete(sidx);
         }
@@ -196,5 +196,5 @@ save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t st
 
 bool
 save_needed(Archive *sa, size_t sidx, const std::string &gamename) {
-    return save_needed_part(sa, sidx, gamename, 0, -1, &sa->files[sidx]);
+    return save_needed_part(sa, sidx, gamename, 0, {}, &sa->files[sidx]);
 }
