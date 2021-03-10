@@ -1,6 +1,6 @@
 /*
-  detector.c -- alloc/free detector
-  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
+  dat_entry.c -- dat entry util functions
+  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,60 +31,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "detector.h"
+#include "DatEntry.h"
 
+#define de_copy_member(X) (X = (high && !high->X.empty() ? high->X : low && !low->X.empty() ? low->X : ""))
 
-DetectorPtr detector;
-
-std::string Detector::file_test_type_name(TestType type) {
-    switch (type) {
-        case TEST_FILE_EQ:
-            return "equal";
-        case TEST_FILE_LE:
-            return "less";
-        case TEST_FILE_GR:
-            return "greater";
-            
-        default:
-            return "unknown";
-    }
-}
-
-
-std::string Detector::operation_name(Operation operation) {
-    switch (operation) {
-        case OP_NONE:
-            return "none";
-        case OP_BITSWAP:
-            return "bitswap";
-        case OP_BYTESWAP:
-            return "byteswap";
-        case OP_WORDSWAP:
-            return "wordswap";
-            
-        default:
-            return "unknown";
-    }
-}
-
-
-std::string Detector::test_type_name(TestType type) {
-    switch (type) {
-        case TEST_DATA:
-            return "data";
-        case TEST_OR:
-            return "or";
-        case TEST_AND:
-            return "and";
-        case TEST_XOR:
-            return "xor";
-            
-        case TEST_FILE_EQ:
-        case TEST_FILE_LE:
-        case TEST_FILE_GR:
-            return "file";
-            
-        default:
-            return "unknown";
-    }
+void DatEntry::merge(const DatEntry *high, const DatEntry *low) {
+    de_copy_member(name);
+    de_copy_member(description);
+    de_copy_member(version);
 }

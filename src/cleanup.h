@@ -34,7 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "delete_list.h"
+#include "DeleteList.h"
 
 #define CLEANUP_NEEDED 0x1
 #define CLEANUP_UNKNOWN 0x2

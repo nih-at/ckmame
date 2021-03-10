@@ -38,7 +38,7 @@
 #include <filesystem>
 #include <zip.h>
 
-#include "archive.h"
+#include "Archive.h"
 #include "dbh_cache.h"
 #include "error.h"
 #include "file_util.h"
@@ -46,7 +46,7 @@
 #include "parse.h"
 #include "ParserSourceFile.h"
 #include "ParserSourceZip.h"
-#include "romdb.h"
+#include "RomDB.h"
 
 
 const char *usage = "Usage: %s [-htuV] [-C types] [-F fmt] [-o dbfile] [-x pat] [--detector xml-file] [--no-directory-cache] [--only-files pat] [--prog-description d] [--prog-name name] [--prog-version version] [--skip-files pat] [rominfo-file ...]\n";

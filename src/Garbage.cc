@@ -1,6 +1,6 @@
 /*
-  output.c -- output game info
-  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
+  garbage.c -- move files to garbage directory
+  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,57 +31,65 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "config.h"
+#include "Garbage.h"
 
-#include "output.h"
-
-#include <string>
-
-#include "OutputContextCm.h"
-#include "OutputContextDb.h"
-#include "OutputContextMtree.h"
-#include "OutputContextXml.h"
+#include "fix_util.h"
+#include "util.h"
 
 
-OutputContextPtr OutputContext::create(OutputContext::Format format, const std::string &fname, int flags) {
-    switch (format) {
-        case FORMAT_CM:
-            return std::make_shared<OutputContextCm>(fname, flags);
-            
-        case FORMAT_DB:
-            return std::make_shared<OutputContextDb>(fname, flags);
-            
-#if defined(HAVE_LIBXML2)
-        case FORMAT_DATAFILE_XML:
-            return std::make_shared<OutputContextXml>(fname, flags);
-#endif
-            
-        case FORMAT_MTREE:
-            return std::make_shared<OutputContextMtree>(fname, flags);
-            
-        default:
-            return NULL;
+bool Garbage::add(uint64_t index, bool copy) {
+    if (!open()) {
+	return false;
     }
+
+    std::string source_name = sa->files[index].name;
+    std::string destination_name = source_name;
+    
+    if (da->file_index_by_name(source_name) >= 0) {
+        destination_name = da->make_unique_name(source_name);
+    }
+
+    return da->file_copy_or_move(sa, index, destination_name, copy);
 }
 
 
-void OutputContext::cond_print_string(FILEPtr f, const std::string &pre, const std::string &str, const std::string &post) {
-    if (str.empty()) {
-	return;
+bool Garbage::close() {
+    if (!da) {
+	return true;
     }
 
-    std::string out;
-    if (str.find_first_of(" \t") == std::string::npos) {
-	out = pre + str + post;
-    }
-    else {
-	out = pre + "\"" + str + "\"" + post;
+    if (!da->is_empty()) {
+        if (!ensure_dir(da->name, true)) {
+	    return false;
+        }
     }
 
-    fprintf(f.get(), "%s", out.c_str());
+    if (!da->close()) {
+	return false;
+    }
+    
+    return true;
 }
 
 
-void OutputContext::cond_print_hash(FILEPtr f, const std::string &pre, int t, const Hashes *h, const std::string &post) {
-    cond_print_string(f, pre, h->to_string(t), post);
+bool Garbage::commit() {
+    if (!da) {
+        return true;
+    }
+
+    return da->commit();
+}
+
+
+bool Garbage::open() {
+    if (!opened) {
+        opened = true;
+	auto name = make_garbage_name(sa->name, 0);
+        da = Archive::open(name, sa->contents->filetype, FILE_NOWHERE, ARCHIVE_FL_CREATE);
+        if (!da->check()) {
+            da = NULL;
+	}
+    }
+
+    return !!da;
 }

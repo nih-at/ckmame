@@ -34,8 +34,8 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "file.h"
-#include "result.h"
+#include "File.h"
+#include "Result.h"
 #include "types.h"
 
 class StatsFiles {

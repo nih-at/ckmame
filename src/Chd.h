@@ -1,9 +1,8 @@
-#ifndef HAD_RESULT_H
-#define HAD_RESULT_H
+#ifndef HAD_CHD_H
 
 /*
-  result.h -- result of game check
-  Copyright (C) 2006-2021 Dieter Baron and Thomas Klausner
+  chd.h -- accessing chd files
+  Copyright (C) 2004-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,39 +33,54 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <cinttypes>
+#include <memory>
+#include <string>
 #include <vector>
 
-#include "game.h"
-#include "GameArchives.h"
-#include "match.h"
+#include "Hashes.h"
+#include "SharedFile.h"
 
-enum GameStatus {
-    GS_MISSING, /* not a single own ROM found */
-    GS_CORRECT, /* all ROMs correct */
-    GS_FIXABLE, /* only fixable errors */
-    GS_PARTIAL, /* some ROMs missing */
-    GS_OLD      /* all ROMs in old */
-};
+#define CHD_FLAG_HAS_PARENT 0x01
 
-enum FileStatus {
-    FS_MISSING,     /* file does not exist (only used for disks) */
-    FS_UNKNOWN,     /* unknown */
-    FS_BROKEN,      /* file in zip broken (invalid data / crc error) */
-    FS_PARTUSED,    /* part needed here, whole file unknown */
-    FS_SUPERFLUOUS, /* known, not needed here, and exists elsewhere */
-    FS_NEEDED,      /* known and needed elsewhere */
-    FS_USED,        /* needed here */
-    FS_DUPLICATE    /* exists in old */
-};
-
-class Result {
+class ChdMapEntry {
 public:
-    Result(const Game *g, const GameArchives &a);
-    
-    GameStatus game;
-    
-    std::vector<Match> game_files[TYPE_MAX];
-    std::vector<FileStatus> archive_files[TYPE_MAX];
+    uint64_t offset; /* offset within the file of the data */
+    uint32_t crc;    /* 32-bit CRC of the data */
+    uint16_t length; /* length of the data */
+    uint8_t type;    /* map entry type */
+    uint8_t flags;   /* misc flags */
 };
 
-#endif /* result.h */
+class Chd {
+public:
+    Chd(const std::string &name_);
+
+    uint32_t flags;          /* flags field */
+    Hashes hashes;
+    uint32_t version;        /* drive format version */
+
+    uint64_t size() const { return total_len; }
+
+private:
+    FILEPtr f;
+
+    uint32_t hdr_length;     /* length of header data */
+    uint32_t hunk_len;       /* number of bytes per hunk */
+    uint64_t total_hunks;    /* total # of hunks represented */
+    uint64_t total_len;      /* logical size of the data */
+    uint64_t map_offset;     /* offset of hunk map in file */
+    uint64_t meta_offset;    /* offset in file of first metadata */
+    Hashes parent_hashes;    /* hashes of parent file */
+    Hashes raw_hashes;       /* SHA1 checksum of raw data */
+    uint32_t compressors[4]; /* compression algorithms used */
+
+    std::vector<ChdMapEntry> map;          /* hunk map */
+
+    void read_header(void);
+    void read_header_v5(const uint8_t *header);
+};
+
+typedef std::shared_ptr<Chd> ChdPtr;
+
+#endif /* chd.h */

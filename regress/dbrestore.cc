@@ -40,7 +40,7 @@
 #include <string>
 #include <vector>
 
-#include "dbh.h"
+#include "DB.h"
 #include "error.h"
 #include "SharedFile.h"
 #include "sq_util.h"

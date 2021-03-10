@@ -35,9 +35,9 @@
 
 #include <algorithm>
 
-#include "archive.h"
+#include "Archive.h"
 #include "dbh_cache.h"
-#include "delete_list.h"
+#include "DeleteList.h"
 #include "Dir.h"
 #include "globals.h"
 #include "memdb.h"

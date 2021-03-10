@@ -34,8 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "output.h"
-#include "romdb.h"
+#include "OutputContext.h"
+#include "RomDB.h"
 
 
 class OutputContextDb : public OutputContext {

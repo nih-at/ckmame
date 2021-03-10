@@ -41,9 +41,9 @@
 
 #include "error.h"
 #include "globals.h"
-#include "romdb.h"
+#include "RomDB.h"
 #include "sq_util.h"
-#include "stats.h"
+#include "Stats.h"
 #include "util.h"
 
 

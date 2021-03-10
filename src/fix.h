@@ -35,7 +35,7 @@
 */
 
 #include "GameArchives.h"
-#include "result.h"
+#include "Result.h"
 
 int fix_game(Game *game, const GameArchives archives, Result *result);
 

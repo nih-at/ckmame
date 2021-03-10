@@ -39,7 +39,7 @@
 #include "diagnostics.h"
 #include "fix.h"
 #include "fix_util.h"
-#include "garbage.h"
+#include "Garbage.h"
 #include "util.h"
 #include "warn.h"
 

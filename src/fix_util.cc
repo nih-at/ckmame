@@ -38,14 +38,14 @@
 #include <filesystem>
 
 #include "check_util.h"
-#include "delete_list.h"
+#include "DeleteList.h"
 #include "error.h"
 #include "Exception.h"
 #include "file_util.h"
 #include "find.h"
 #include "fix.h"
 #include "globals.h"
-#include "romdb.h"
+#include "RomDB.h"
 #include "util.h"
 
 

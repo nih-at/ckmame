@@ -35,7 +35,7 @@
 */
 
 #include "GameArchives.h"
-#include "result.h"
+#include "Result.h"
 
 void check_archive_files(filetype_t ft, const GameArchives &archives, const std::string &gamename, Result *result);
 void check_game_files(Game *game, filetype_t ft, GameArchives *archives, Result *result);

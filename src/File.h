@@ -1,8 +1,8 @@
-#ifndef _HAD_FIX_UTIL_H
-#define _HAD_FIX_UTIL_H
+#ifndef HAD_FILE_H
+#define HAD_FILE_H
 
 /*
-  fix_util.h -- utility functions needed only by ckmame itself
+  file.h -- information about one file
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -36,15 +36,44 @@
 
 #include <string>
 
-#include "Archive.h"
+#include "Hashes.h"
+#include "types.h"
 
-std::string make_garbage_name(const std::string &name, int unique);
-std::string make_unique_name(const std::string &prefix, const std::string &ext);
-int move_image_to_garbage(const std::string &fname);
-void remove_empty_archive(const std::string &name, bool quiet = false);
-void remove_from_superfluous(const std::string &name);
-bool save_needed(Archive *sa, size_t sidx, const std::string &gamename);
-bool save_needed_disk(const std::string &fname, bool do_save);
-bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, off_t start, off_t length, File *f);
+class File {
+public:
+    std::string name;
+    std::string *filename_extension;
+    std::string merge;
+    uint64_t size;
+    Hashes hashes;
+    uint64_t size_detector;
+    Hashes hashes_detector;
+    time_t mtime;
+    status_t status;
+    where_t where;
     
-#endif /* _HAD_FIX_UTIL_H */
+    File() : filename_extension(NULL), size(SIZE_UNKNOWN), size_detector(SIZE_UNKNOWN), mtime(0), status(STATUS_OK), where(FILE_INGAME) { }
+    
+    uint64_t get_size(bool detector) const { return detector ? size_detector : size; }
+    const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
+    
+    std::string filename() const { return filename_extension ? name + *filename_extension : name; }
+    const std::string &merged_name() const { return merge.empty() ? name : merge; }
+    bool is_size_known(bool detector = false) const { return get_size(detector) != SIZE_UNKNOWN; }
+    
+    bool compare_name(const File &other) const;
+    bool compare_merged(const File &other) const;
+    bool compare_name_size_hashes(const File &other) const;
+    bool compare_size_hashes(const File &other) const;
+    Hashes::Compare compare_hashes(const File &other) const;
+    bool is_mergable(const File &other) const;
+    bool size_hashes_are_set(bool detector) const;
+    
+    bool operator<(const File &other) const { return name < other.name; }
+
+private:
+    static std::string no_extension;
+    bool compare_size_hashes_one(const File &other, bool detector) const;
+};
+
+#endif /* file.h */

@@ -36,7 +36,7 @@
 
 #include <zip.h>
 
-#include "archive.h"
+#include "Archive.h"
 
 class ArchiveZip : public Archive {
     class ArchiveFile: public Archive::ArchiveFile {

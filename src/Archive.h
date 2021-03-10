@@ -40,8 +40,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "dbh.h"
-#include "file.h"
+#include "DB.h"
+#include "File.h"
 #include "types.h"
 
 class Archive;

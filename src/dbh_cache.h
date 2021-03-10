@@ -38,9 +38,9 @@
 #include <string>
 #include <vector>
 
-#include "archive.h"
-#include "dbh.h"
-#include "file.h"
+#include "Archive.h"
+#include "DB.h"
+#include "File.h"
 
 bool dbh_cache_close_all(void);
 int dbh_cache_delete(DB *, int);

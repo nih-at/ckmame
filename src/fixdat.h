@@ -34,8 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "output.h"
-#include "result.h"
+#include "OutputContext.h"
+#include "Result.h"
 
 extern OutputContextPtr fixdat;
 

@@ -55,7 +55,7 @@ extern "C" {
 #include <zlib.h>
 }
 
-#include "hashes.h"
+#include "Hashes.h"
 
 class HashesContexts {
 public:

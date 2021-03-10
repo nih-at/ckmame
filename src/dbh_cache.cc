@@ -35,7 +35,7 @@
 
 #include <filesystem>
 
-#include "detector.h"
+#include "Detector.h"
 #include "error.h"
 #include "fix.h"
 #include "sq_util.h"

@@ -36,7 +36,7 @@
 
 #include <filesystem>
 
-#include "archive.h"
+#include "Archive.h"
 #include "SharedFile.h"
 
 class ArchiveDir : public Archive {

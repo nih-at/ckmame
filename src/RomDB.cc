@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "romdb.h"
+#include "RomDB.h"
 
 #include "error.h"
 #include "sq_util.h"

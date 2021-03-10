@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "tree.h"
+#include "Tree.h"
 
 #include "check.h"
 #include "check_util.h"
@@ -39,7 +39,7 @@
 #include "error.h"
 #include "fix.h"
 #include "fixdat.h"
-#include "romdb.h"
+#include "RomDB.h"
 #include "sighandle.h"
 
 

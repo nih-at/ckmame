@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "hashes.h"
+#include "Hashes.h"
 
 #include <cinttypes>
 #include <cstring>

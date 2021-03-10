@@ -34,7 +34,7 @@
 #include "check.h"
 
 #include "find.h"
-#include "romdb.h"
+#include "RomDB.h"
 
 void
 check_old(Game *game, Result *result) {

@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "file.h"
+#include "File.h"
 
 std::string File::no_extension;
 

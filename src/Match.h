@@ -1,6 +1,9 @@
+#ifndef HAD_MATCH_H
+#define HAD_MATCH_H
+
 /*
-  garbage.c -- move files to garbage directory
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  match.h -- matching files with ROMs
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,65 +34,30 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "garbage.h"
+#include <string>
 
-#include "fix_util.h"
-#include "util.h"
+#include "Archive.h"
+#include "types.h"
 
-
-bool Garbage::add(uint64_t index, bool copy) {
-    if (!open()) {
-	return false;
-    }
-
-    std::string source_name = sa->files[index].name;
-    std::string destination_name = source_name;
+class Match {
+public:
+    Match() : quality(QU_MISSING), where(FILE_NOWHERE), index(-1), offset(-1) { }
     
-    if (da->file_index_by_name(source_name) >= 0) {
-        destination_name = da->make_unique_name(source_name);
-    }
-
-    return da->file_copy_or_move(sa, index, destination_name, copy);
-}
-
-
-bool Garbage::close() {
-    if (!da) {
-	return true;
-    }
-
-    if (!da->is_empty()) {
-        if (!ensure_dir(da->name, true)) {
-	    return false;
-        }
-    }
-
-    if (!da->close()) {
-	return false;
-    }
+    quality_t quality;
+    where_t where;
     
-    return true;
-}
+    ArchivePtr archive;
+    int64_t index;
 
+    /* for where == old */
+    std::string old_game;
+    std::string old_file;
 
-bool Garbage::commit() {
-    if (!da) {
-        return true;
-    }
+    int64_t offset; /* offset of correct part if QU_LONG */
+    
+    std::string game() const;
+    bool source_is_old() const { return where == FILE_OLD; }
+    std::string file() const;
+};
 
-    return da->commit();
-}
-
-
-bool Garbage::open() {
-    if (!opened) {
-        opened = true;
-	auto name = make_garbage_name(sa->name, 0);
-        da = Archive::open(name, sa->contents->filetype, FILE_NOWHERE, ARCHIVE_FL_CREATE);
-        if (!da->check()) {
-            da = NULL;
-	}
-    }
-
-    return !!da;
-}
+#endif /* match.h */

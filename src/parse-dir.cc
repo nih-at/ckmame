@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <filesystem>
 
-#include "archive.h"
+#include "Archive.h"
 #include "Dir.h"
 #include "error.h"
 #include "globals.h"

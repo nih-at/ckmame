@@ -1,9 +1,9 @@
-#ifndef _HAD_ROMDB_H
-#define _HAD_ROMDB_H
+#ifndef HAD_GARBAGE_H
+#define HAD_GARBAGE_H
 
 /*
-  romdb.h -- mame.db sqlite3 data base
-  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
+  garbage.h -- move files to garbage directory
+  Copyright (C) 2006-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,46 +34,26 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <unordered_set>
+#include <memory>
 
-#include "dbh.h"
-#include "file_location.h"
-#include "output.h"
+#include "Archive.h"
 
-class RomDB {
+class Garbage {
 public:
-    RomDB(const std::string &name, int mode);
-
-    DB db;
-
-    bool delete_game(const Game *game) { return delete_game(game->name); }
-    bool delete_game(const std::string &name);
-    int has_disks();
-
-    std::vector<DatEntry> read_dat();
-    DetectorPtr read_detector();
-    std::vector<FileLocation> read_file_by_hash(filetype_t ft, const Hashes *hash);
-    GamePtr read_game(const std::string &name);
-    int hashtypes(filetype_t);
-    std::vector<std::string> read_list(enum dbh_list type);
-    bool update_file_location(Game *game);
-    bool update_game_parent(const Game *game);
-    bool write_dat(const std::vector<DatEntry> &dats);
-    bool write_detector(const Detector *detector);
-    bool write_game(Game *game);
-    bool write_hashtypes(int, int);
-    int export_db(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
-private:
-    int hashtypes_[TYPE_MAX];
+    Archive *sa;
+    ArchivePtr da;
+    bool opened;
     
-    bool read_files(Game *game, filetype_t ft);
-    void read_hashtypes(filetype_t type);
-    bool read_rules(Detector *detector);
-    bool write_files(Game *game, filetype_t ft);
-    bool write_rules(const Detector *detector);
+    Garbage(Archive *sa_) : sa(sa_), opened(false) { }
+    
+    bool add(uint64_t index, bool copy);
+    bool close();
+    bool commit();
+    
+private:
+    bool open();
 };
 
-extern std::unique_ptr<RomDB> db;
-extern std::unique_ptr<RomDB> old_db;
+typedef std::shared_ptr<Garbage> GarbagePtr;
 
-#endif /* romdb.h */
+#endif /* garbage.h */

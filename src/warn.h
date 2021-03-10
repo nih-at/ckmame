@@ -35,7 +35,7 @@
 */
 
 
-#include "file.h"
+#include "File.h"
 
 
 #define WARN_UNKNOWN 0x0001

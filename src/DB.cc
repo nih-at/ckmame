@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "dbh.h"
+#include "DB.h"
 
 #include <cstring>
 #include <filesystem>

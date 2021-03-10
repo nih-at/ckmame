@@ -1,8 +1,8 @@
-#ifndef HAD_FILE_H
-#define HAD_FILE_H
+#ifndef _HAD_DBH_H
+#define _HAD_DBH_H
 
 /*
-  file.h -- information about one file
+  dbh.h -- mame.db sqlite3 data base
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -36,44 +36,54 @@
 
 #include <string>
 
-#include "hashes.h"
-#include "types.h"
+#include <sqlite3.h>
 
-class File {
+#include "dbh_statements.h"
+#include "Hashes.h"
+
+
+#define DBH_FMT_MAME 0x0 /* mame.db format */
+#define DBH_FMT_MEM 0x1  /* in-memory db format */
+#define DBH_FMT_DIR 0x2  /* unpacked dirs db format */
+#define DBH_FMT(m) ((m)&0xf)
+
+#define DBH_READ 0x00                                   /* open readonly */
+#define DBH_WRITE 0x10                                  /* open for writing */
+#define DBH_CREATE 0x20                                 /* create database if it doesn't exist */
+#define DBH_TRUNCATE 0x40                               /* delete database if it exists */
+#define DBH_NEW (DBH_CREATE | DBH_TRUNCATE | DBH_WRITE) /* create new writable empty database */
+#define DBH_FLAGS(m) ((m)&0xf0)
+
+enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME, DBH_KEY_LIST_MAX };
+
+#define DBH_DEFAULT_DB_NAME "mame.db"
+#define DBH_DEFAULT_OLD_DB_NAME "old.db"
+#define DBH_CACHE_DB_NAME ".ckmame.db"
+
+extern const char *sql_db_init[];
+extern const char *sql_db_init_2;
+
+class DB {
 public:
-    std::string name;
-    std::string *filename_extension;
-    std::string merge;
-    uint64_t size;
-    Hashes hashes;
-    uint64_t size_detector;
-    Hashes hashes_detector;
-    time_t mtime;
-    status_t status;
-    where_t where;
+    DB(const std::string &name, int mode);
+    ~DB();
     
-    File() : filename_extension(NULL), size(SIZE_UNKNOWN), size_detector(SIZE_UNKNOWN), mtime(0), status(STATUS_OK), where(FILE_INGAME) { }
+    sqlite3 *db;
+    sqlite3_stmt *statements[DBH_STMT_MAX];
+    int format;
     
-    uint64_t get_size(bool detector) const { return detector ? size_detector : size; }
-    const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
-    
-    std::string filename() const { return filename_extension ? name + *filename_extension : name; }
-    const std::string &merged_name() const { return merge.empty() ? name : merge; }
-    bool is_size_known(bool detector = false) const { return get_size(detector) != SIZE_UNKNOWN; }
-    
-    bool compare_name(const File &other) const;
-    bool compare_merged(const File &other) const;
-    bool compare_name_size_hashes(const File &other) const;
-    bool compare_size_hashes(const File &other) const;
-    Hashes::Compare compare_hashes(const File &other) const;
-    bool is_mergable(const File &other) const;
-    bool size_hashes_are_set(bool detector) const;
-    
-    bool operator<(const File &other) const { return name < other.name; }
+    std::string error();
 
+    sqlite3_stmt *get_statement(dbh_stmt_t stmt_id);
+    sqlite3_stmt *get_statement(dbh_stmt_t stmt_id, const Hashes *hashes, bool have_size);
+    
 private:
-    static std::string no_extension;
-    bool compare_size_hashes_one(const File &other, bool detector) const;
+    bool version_ok;
+
+    bool check_version();
+    bool open(const std::string &name, int sql3_flags, bool needs_init);
+    void close();
+    bool init();
 };
 
-#endif /* file.h */
+#endif /* dbh.h */

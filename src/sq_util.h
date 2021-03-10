@@ -38,7 +38,7 @@
 
 #include <sqlite3.h>
 
-#include "hashes.h"
+#include "Hashes.h"
 
 std::vector<uint8_t> sq3_get_blob(sqlite3_stmt *stmt, int index);
 int sq3_get_int_default(sqlite3_stmt *stmt, int index, int default_value);

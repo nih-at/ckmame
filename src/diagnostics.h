@@ -34,9 +34,9 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "archive.h"
+#include "Archive.h"
 #include "GameArchives.h"
-#include "result.h"
+#include "Result.h"
 
 void diagnostics(const Game *game, const GameArchives &archives, const Result &res);
 void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result);

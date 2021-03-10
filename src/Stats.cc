@@ -31,7 +31,7 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "stats.h"
+#include "Stats.h"
 
 #include <cinttypes>
 

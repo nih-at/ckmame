@@ -36,7 +36,7 @@
 
 #include <string>
 
-#include "dbh.h"
+#include "DB.h"
 
 #define ERRDEF 0x0  /* no additional info */
 #define ERRZIP 0x1  /* prepend zipfile name */

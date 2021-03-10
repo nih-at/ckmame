@@ -9,61 +9,61 @@ if(NOT HAVE_SHA1INIT)
 endif()
 
 set(COMMON_SOURCES
-  archive.cc
+  Archive.cc
   ArchiveDir.cc
   ArchiveImages.cc
   archive_modify.cc
   ArchiveZip.cc
-  chd.cc
+  Chd.cc
   check_archive_files.cc
   check_game_files.cc
   check_old.cc
   check_util.cc
   cleanup.cc
-  dat_entry.cc
+  DatEntry.cc
   db_init.cc
-  dbh.cc
+  DB.cc
   dbh_cache.cc
   dbh_statements.cc
-  delete_list.cc
-  detector.cc
+  DeleteList.cc
+  Detector.cc
   detector_execute.cc
   detector_print.cc
   diagnostics.cc
   Dir.cc
   error.cc
   Exception.cc
-  file.cc
+  File.cc
   file_util.cc
   find.cc
   fix.cc
   fix_util.cc
   fixdat.cc
-  garbage.cc
+  Garbage.cc
   globals.cc
-  hashes.cc
+  Hashes.cc
   hashes_update.cc
-  match.cc
+  Match.cc
   memdb.cc
-  output.cc
-  output_cm.cc
-  output_db.cc
-  output_mtree.cc
+  OutputContext.cc
+  OutputContextCm.cc
+  OutputContextDb.cc
+  OutputContextMtree.cc
   parse-cm.cc
   parse-dir.cc
   parse-rc.cc
   parse.cc
-  parser_source.cc
+  ParserSource.cc
   ParserSourceFile.cc
   ParserSourceZip.cc
-  result.cc
-  romdb.cc
+  Result.cc
+  RomDB.cc
   SharedFile.cc
   sighandle.cc
   sq_util.cc
-  stats.cc
+  Stats.cc
   superfluous.cc
-  tree.cc
+  Tree.cc
   util.cc
   warn.cc
   zip_util.cc
@@ -73,7 +73,7 @@ set(COMMON_SOURCES
 set(LIBXML2_SOURCES
   detector_parse.cc
   detector_parse_ps.cc
-  output_datafile_xml.cc
+  OutputContextXml.cc
   parse-xml.cc
   xmlutil.cc
   )  

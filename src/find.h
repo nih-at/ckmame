@@ -35,8 +35,8 @@
 */
 
 
-#include "file.h"
-#include "match.h"
+#include "File.h"
+#include "Match.h"
 
 enum find_result { FIND_ERROR = -1, FIND_UNKNOWN, FIND_MISSING, FIND_EXISTS };
 

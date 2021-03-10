@@ -37,9 +37,9 @@
 #include <memory>
 #include <vector>
 
-#include "file.h"
-#include "hashes.h"
-#include "parser_source.h"
+#include "File.h"
+#include "Hashes.h"
+#include "ParserSource.h"
 
 #define DETECTOR_OFFSET_EOF 0
 #define DETECTOR_SIZE_POWER_OF_2 (-1)

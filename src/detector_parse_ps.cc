@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "detector.h"
+#include "Detector.h"
 
 #include <cerrno>
 

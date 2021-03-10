@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "delete_list.h"
+#include "DeleteList.h"
 
 #include <algorithm>
 

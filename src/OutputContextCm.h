@@ -34,7 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "output.h"
+#include "OutputContext.h"
 
 class OutputContextCm : public OutputContext {
 public:

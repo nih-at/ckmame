@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "archive.h"
+#include "Archive.h"
 
 #include <algorithm>
 #include <cerrno>
@@ -40,7 +40,7 @@
 #include "ArchiveDir.h"
 #include "ArchiveImages.h"
 #include "ArchiveZip.h"
-#include "detector.h"
+#include "Detector.h"
 #include "dbh_cache.h"
 #include "error.h"
 #include "file_util.h"

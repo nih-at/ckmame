@@ -1,9 +1,6 @@
-#ifndef HAD_DELETE_LIST_H
-#define HAD_DELETE_LIST_H
-
 /*
-  delete_list.h -- list of files to delete
-  Copyright (C) 2005-2021 Dieter Baron and Thomas Klausner
+  match.c -- information about ROM/file matches
+  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,42 +31,24 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <memory>
+#include "Match.h"
 
-#include "archive.h"
-#include "file_location.h"
 
-class DeleteList;
-typedef std::shared_ptr<DeleteList> DeleteListPtr;
+std::string Match::file() const {
+    if (source_is_old()) {
+	return old_file;
+    }
+    else {
+        return archive->files[index].name;
+    }
+}
 
-class DeleteList {
- public:
-    class Mark {
-    public:
-        Mark(DeleteListPtr list = DeleteListPtr());
-        ~Mark();
-        
-        void commit() { rollback = false; }
 
-    private:
-        std::weak_ptr<DeleteList> list;
-        size_t index;
-        bool rollback;
-    };
-    
-    std::vector<FileLocation> entries;
-
-    DeleteList() { };
-    int execute();
-
-    static void used(Archive *a, size_t idx);
-    
-private:
-    bool close_archive(Archive *archive);
-};
-
-extern DeleteListPtr extra_delete_list;
-extern DeleteListPtr needed_delete_list;
-extern DeleteListPtr superfluous_delete_list;
-
-#endif /* delete_list.h */
+std::string Match::game() const {
+    if (source_is_old()) {
+        return old_game;
+    }
+    else {
+        return archive->name;
+    }
+}

@@ -36,8 +36,8 @@
 
 #include <memory>
 
-#include "archive.h"
-#include "dbh.h"
+#include "Archive.h"
+#include "DB.h"
 
 extern std::unique_ptr<DB> memdb;
 

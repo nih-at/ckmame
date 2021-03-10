@@ -36,7 +36,7 @@
 #include <filesystem>
 #include <sys/stat.h>
 
-#include "chd.h"
+#include "Chd.h"
 #include "Dir.h"
 #include "error.h"
 #include "globals.h"

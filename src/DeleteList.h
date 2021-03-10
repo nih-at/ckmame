@@ -1,6 +1,9 @@
+#ifndef HAD_DELETE_LIST_H
+#define HAD_DELETE_LIST_H
+
 /*
-  result.c -- allocate/free result structure
-  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
+  delete_list.h -- list of files to delete
+  Copyright (C) 2005-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,16 +34,42 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "result.h"
+#include <memory>
 
+#include "Archive.h"
+#include "FileLocation.h"
 
-Result::Result(const Game *game, const GameArchives &a) : game(GS_MISSING) {
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        if (game) {
-            game_files[ft].resize(game->files[ft].size());
-        }
-        if (a[ft] != NULL) {
-            archive_files[ft].resize(a[ft]->files.size(), FS_UNKNOWN);
-        }
-    }
-}
+class DeleteList;
+typedef std::shared_ptr<DeleteList> DeleteListPtr;
+
+class DeleteList {
+ public:
+    class Mark {
+    public:
+        Mark(DeleteListPtr list = DeleteListPtr());
+        ~Mark();
+        
+        void commit() { rollback = false; }
+
+    private:
+        std::weak_ptr<DeleteList> list;
+        size_t index;
+        bool rollback;
+    };
+    
+    std::vector<FileLocation> entries;
+
+    DeleteList() { };
+    int execute();
+
+    static void used(Archive *a, size_t idx);
+    
+private:
+    bool close_archive(Archive *archive);
+};
+
+extern DeleteListPtr extra_delete_list;
+extern DeleteListPtr needed_delete_list;
+extern DeleteListPtr superfluous_delete_list;
+
+#endif /* delete_list.h */

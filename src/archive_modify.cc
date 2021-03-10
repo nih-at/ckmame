@@ -31,7 +31,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "archive.h"
+#include "Archive.h"
 
 #include <cerrno>
 #include <cinttypes>

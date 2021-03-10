@@ -34,7 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "output.h"
+#include "OutputContext.h"
 
 class OutputContextMtree : public OutputContext {
 public:

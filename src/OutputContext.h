@@ -1,9 +1,9 @@
-#ifndef HAD_MATCH_H
-#define HAD_MATCH_H
+#ifndef HAD_OUTPUT_H
+#define HAD_OUTPUT_H
 
 /*
-  match.h -- matching files with ROMs
-  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
+  output.h -- output game info
+  Copyright (C) 2006-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,30 +34,43 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <memory>
 #include <string>
 
-#include "archive.h"
-#include "types.h"
+#include "DatEntry.h"
+#include "Detector.h"
+#include "Game.h"
+#include "Hashes.h"
+#include "SharedFile.h"
 
-class Match {
+class OutputContext;
+
+typedef std::shared_ptr<OutputContext> OutputContextPtr;
+
+#define OUTPUT_FL_RUNTEST  1
+#define OUTPUT_FL_TEMP     2
+
+class OutputContext {
 public:
-    Match() : quality(QU_MISSING), where(FILE_NOWHERE), index(-1), offset(-1) { }
+    enum Format {
+        FORMAT_CM,
+        FORMAT_DATAFILE_XML,
+        FORMAT_DB,
+        FORMAT_MTREE
+    };
     
-    quality_t quality;
-    where_t where;
-    
-    ArchivePtr archive;
-    int64_t index;
+    virtual ~OutputContext() { }
 
-    /* for where == old */
-    std::string old_game;
-    std::string old_file;
+    static OutputContextPtr create(Format format, const std::string &fname, int flags);
 
-    int64_t offset; /* offset of correct part if QU_LONG */
+    virtual bool close() = 0;
+    virtual bool detector(Detector *detector) { return true; }
+    virtual bool game(GamePtr game) = 0;
+    virtual bool header(DatEntry *dat) { return true; }
     
-    std::string game() const;
-    bool source_is_old() const { return where == FILE_OLD; }
-    std::string file() const;
+protected:
+    void cond_print_string(FILEPtr f, const std::string &pre, const std::string &str, const std::string &post);
+    void cond_print_hash(FILEPtr f, const std::string &pre, int t, const Hashes *h, const std::string &post);
 };
 
-#endif /* match.h */
+#endif /* output.h */

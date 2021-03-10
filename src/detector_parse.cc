@@ -32,7 +32,7 @@
 */
 
 
-#include "detector.h"
+#include "Detector.h"
 
 #include "ParserSourceFile.h"
 

@@ -37,7 +37,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "parser_source.h"
+#include "ParserSource.h"
 
 typedef void (*xmlu_lineno_cb)(void *, int);
 typedef bool (*xmlu_attr_cb)(void *ctx, int file_type, int hash_type, const std::string &value);

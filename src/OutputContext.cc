@@ -1,9 +1,6 @@
-#ifndef HAD_GARBAGE_H
-#define HAD_GARBAGE_H
-
 /*
-  garbage.h -- move files to garbage directory
-  Copyright (C) 2006-2020 Dieter Baron and Thomas Klausner
+  output.c -- output game info
+  Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,26 +31,57 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <memory>
+#include "config.h"
 
-#include "archive.h"
+#include "OutputContext.h"
 
-class Garbage {
-public:
-    Archive *sa;
-    ArchivePtr da;
-    bool opened;
-    
-    Garbage(Archive *sa_) : sa(sa_), opened(false) { }
-    
-    bool add(uint64_t index, bool copy);
-    bool close();
-    bool commit();
-    
-private:
-    bool open();
-};
+#include <string>
 
-typedef std::shared_ptr<Garbage> GarbagePtr;
+#include "OutputContextCm.h"
+#include "OutputContextDb.h"
+#include "OutputContextMtree.h"
+#include "OutputContextXml.h"
 
-#endif /* garbage.h */
+
+OutputContextPtr OutputContext::create(OutputContext::Format format, const std::string &fname, int flags) {
+    switch (format) {
+        case FORMAT_CM:
+            return std::make_shared<OutputContextCm>(fname, flags);
+            
+        case FORMAT_DB:
+            return std::make_shared<OutputContextDb>(fname, flags);
+            
+#if defined(HAVE_LIBXML2)
+        case FORMAT_DATAFILE_XML:
+            return std::make_shared<OutputContextXml>(fname, flags);
+#endif
+            
+        case FORMAT_MTREE:
+            return std::make_shared<OutputContextMtree>(fname, flags);
+            
+        default:
+            return NULL;
+    }
+}
+
+
+void OutputContext::cond_print_string(FILEPtr f, const std::string &pre, const std::string &str, const std::string &post) {
+    if (str.empty()) {
+	return;
+    }
+
+    std::string out;
+    if (str.find_first_of(" \t") == std::string::npos) {
+	out = pre + str + post;
+    }
+    else {
+	out = pre + "\"" + str + "\"" + post;
+    }
+
+    fprintf(f.get(), "%s", out.c_str());
+}
+
+
+void OutputContext::cond_print_hash(FILEPtr f, const std::string &pre, int t, const Hashes *h, const std::string &post) {
+    cond_print_string(f, pre, h->to_string(t), post);
+}

@@ -38,7 +38,7 @@
 #include <stdarg.h>
 
 #include "compat.h"
-#include "dbh.h"
+#include "DB.h"
 
 #define DEFAULT_FN "<unknown>"
 

@@ -32,7 +32,7 @@
 */
 
 
-#include "dbh.h"
+#include "DB.h"
 
 const char *sql_db_init[] = {
     /* DBH_FMT_MAME	-- mame.db format */
