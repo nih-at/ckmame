@@ -311,7 +311,7 @@ static int process_file(const char *fname, const std::unordered_set<std::string>
 	int err;
 
 	err = 0;
-	for (uint64_t i = 0; i < zip_get_num_entries(za, 0); i++) {
+	for (uint64_t i = 0; i < static_cast<uint64_t>(zip_get_num_entries(za, 0)); i++) {
 	    name = zip_get_name(za, i, 0);
 
             if (files_skip.find(name) != files_skip.end()) {
