@@ -617,6 +617,8 @@
 		4B74FA8D2592376600745A6E /* OutputContextMtree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputContextMtree.h; sourceTree = "<group>"; };
 		4B74FA8E25923A8200745A6E /* OutputContextXml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputContextXml.h; sourceTree = "<group>"; };
 		4B7F506B1776523900B4273C /* THANKS */ = {isa = PBXFileReference; lastKnownFileType = text; name = THANKS; path = ../THANKS; sourceTree = "<group>"; };
+		4B82708B25F8D74300D5A626 /* rom-from-extra-slash.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-slash.test"; sourceTree = "<group>"; };
+		4B82708C25F8D74300D5A626 /* rom-from-extra-size-changed.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-size-changed.test"; sourceTree = "<group>"; };
 		4B86CED01B134251003EF102 /* ckmame.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = ckmame.mdoc; sourceTree = "<group>"; };
 		4B86CED11B134251003EF102 /* detective.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = detective.mdoc; sourceTree = "<group>"; };
 		4B86CED21B134251003EF102 /* dumpgame.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = dumpgame.mdoc; sourceTree = "<group>"; };
@@ -1027,8 +1029,8 @@
 				4B6B148124FF9F5C00D3F3FB /* disk-swap.test */,
 				4B6B148824FF9F5C00D3F3FB /* disk-swapmerge.test */,
 				4B6B147B24FF9F5C00D3F3FB /* disk-to-needed.test */,
-				4B6B147424FF946A00D3F3FB /* disk-toplevel.test */,
 				4BA7DA2425E67831004AF735 /* disk-toplevel-cleanup.test */,
+				4B6B147424FF946A00D3F3FB /* disk-toplevel.test */,
 				4B918BCE2508EAE0002D8F29 /* disk-unrelated-fix.test */,
 				4B918BCF2508EAE0002D8F29 /* disk-unrelated.test */,
 				4B6B148724FF9F5C00D3F3FB /* disk-wrong.test */,
@@ -1143,6 +1145,8 @@
 				4B6B14CB24FFA14B00D3F3FB /* rom-from-extra-keep-zip.test */,
 				4B6B14C324FFA14A00D3F3FB /* rom-from-extra-partial.test */,
 				4B6B14CC24FFA14B00D3F3FB /* rom-from-extra-remove.test */,
+				4B82708C25F8D74300D5A626 /* rom-from-extra-size-changed.test */,
+				4B82708B25F8D74300D5A626 /* rom-from-extra-slash.test */,
 				4B6B14CF24FFA14B00D3F3FB /* rom-from-needed.test */,
 				4B6B14D524FFA14B00D3F3FB /* rom-from-needed2.test */,
 				4B6B14C624FFA14B00D3F3FB /* rom-from-romset.test */,
@@ -1162,6 +1166,7 @@
 				4B6B14C124FFA14A00D3F3FB /* rom-many.test */,
 				4B6B14C224FFA14A00D3F3FB /* rom-need-partial-and-whole.test */,
 				4B6B14BF24FFA14A00D3F3FB /* rom-two-long.test */,
+				4B6B151224FFA9D600D3F3FB /* rom-unused-duplicate.test */,
 				4B6B14B924FFA14A00D3F3FB /* rom-unused.test */,
 				4B6B150924FFA9D500D3F3FB /* skip-full.test */,
 				4B6B151024FFA9D600D3F3FB /* skip.test */,
@@ -1183,7 +1188,6 @@
 				4B6B152324FFA9D700D3F3FB /* uncompressed-ckmamedb-changed-same-mtime.test */,
 				4B6B152524FFA9D700D3F3FB /* uncompressed-ckmamedb-extra-dir.test */,
 				4B6B151724FFA9D600D3F3FB /* uncompressed-ckmamedb-extra-remove.test */,
-				4B6B151224FFA9D600D3F3FB /* rom-unused-duplicate.test */,
 				4B6B151324FFA9D600D3F3FB /* uncompressed-ckmamedb-no-change.test */,
 				4B6B151824FFA9D600D3F3FB /* uncompressed-ckmamedb-remove-game-2.test */,
 				4B6B150724FFA9D500D3F3FB /* uncompressed-ckmamedb-remove-game-3.test */,

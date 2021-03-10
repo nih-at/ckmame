@@ -426,8 +426,12 @@ bool Archive::read_infos() {
 		break;
 
 	    case 1:
-                files = files_cache;
-		return true;
+                // For directories, mtime doesn't change for all changes of files within that directory, so we always have to rescan.
+                if (contents->size != 0) {
+                    files = files_cache;
+                    return true;
+                }
+                break;
 	    }
     }
 

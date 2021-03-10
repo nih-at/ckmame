@@ -158,6 +158,8 @@ void Hashes::merge(const Hashes &other) {
     if (new_types & TYPE_SHA1) {
         memcpy(sha1, other.sha1, sizeof(sha1));
     }
+    
+    types |= new_types;
 }
 
 bool
