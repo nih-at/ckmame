@@ -159,7 +159,6 @@ static void error_multiple_actions(void);
 int
 main(int argc, char **argv) {
     action_t action;
-    size_t k;
     const char *dbname, *olddbname;
     int c, found;
     std::string fixdat_name;
@@ -213,13 +212,12 @@ main(int argc, char **argv) {
 	    break;
 	case 'e': {
 	    std::string name = optarg;
-	    for (k = name.size() - 1; k > 0; k--) {
-		if (name[k] == '/') {
-		    name[k] = '\0';
-		}
-		else {
-		    break;
-		}
+	    auto last = name.find_last_not_of("/");
+	    if (last == std::string::npos) {
+		name = "/";
+	    }
+	    else {
+		name.resize(last + 1);
 	    }
 	    search_dirs.push_back(name);
 	    break;
