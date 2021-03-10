@@ -144,6 +144,22 @@ bool Hashes::operator==(const Hashes &other) const {
 }
 
 
+void Hashes::merge(const Hashes &other) {
+    auto new_types = other.types & ~types;
+    
+    if (new_types & TYPE_CRC) {
+        crc = other.crc;
+    }
+    
+    if (new_types & TYPE_MD5) {
+        memcpy(md5, other.md5, sizeof(md5));
+    }
+    
+    if (new_types & TYPE_SHA1) {
+        memcpy(sha1, other.sha1, sizeof(sha1));
+    }
+}
+
 bool
 Hashes::has_type(int requested_type) const {
     if ((types & requested_type) == requested_type) {

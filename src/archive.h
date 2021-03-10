@@ -204,11 +204,16 @@ public:
     bool modified;
     
 protected:
+    enum GetHashesStatus {
+        OK,
+        READ_ERROR,
+        CRC_ERROR
+    };
     Archive(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flags);
     void update_cache();
 
     void add_file(const std::string &filename, const File *file);
-    bool get_hashes(ArchiveFile *f, size_t len, Hashes *h);
+    GetHashesStatus get_hashes(ArchiveFile *f, size_t len, bool eof, Hashes *h);
     void merge_files(const std::vector<File> &files_cache);
     
 };

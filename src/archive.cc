@@ -168,13 +168,13 @@ int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
 
 
 bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
-    Hashes hashes;
     auto &file = files[idx];
     
     if (file.hashes.has_all_types(hashtypes)) {
 	return true;
     }
 
+    Hashes hashes;
     hashes.types = Hashes::TYPE_ALL;
 
     auto f = file_open(idx);
@@ -184,19 +184,21 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
 	return false;
     }
 
-    if (!get_hashes(f.get(), file.size, &hashes)) {
-	myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
-	file.status = STATUS_BADDUMP;
-	return false;
+    switch (get_hashes(f.get(), file.size, true, &hashes)) {
+        case OK:
+            break;
+
+        case READ_ERROR:
+            myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
+            file.status = STATUS_BADDUMP;
+            return false;
+
+        case CRC_ERROR:
+            myerror(ERRDEF, "%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
+            file.status = STATUS_BADDUMP;
+            return false;
     }
 
-    if (file.hashes.types & hashtypes & Hashes::TYPE_CRC) {
-	if (file.hashes.crc != hashes.crc) {
-            myerror(ERRDEF, "%s: %s: CRC error: %x != %x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
-            file.status = STATUS_BADDUMP;
-	    return false;
-	}
-    }
     file.hashes = hashes;
 
     cache_changed = true;
@@ -221,7 +223,7 @@ std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const H
     auto found = false;
     size_t offset = 0;
     while (offset + size <= file.size) {
-        if (!get_hashes(f.get(), size, &hashes_part)) {
+        if (get_hashes(f.get(), size, offset + size == file.size, &hashes_part) != OK) {
             file.status = STATUS_BADDUMP;
             return {};
 	}
@@ -484,7 +486,7 @@ int ArchiveContents::is_cache_up_to_date() {
 }
 
 
-bool Archive::get_hashes(ArchiveFile *f, size_t len, Hashes *h) {
+Archive::GetHashesStatus Archive::get_hashes(ArchiveFile *f, size_t len, bool eof, Hashes *h) {
     unsigned char buf[BUFSIZE];
     size_t n;
 
@@ -494,7 +496,7 @@ bool Archive::get_hashes(ArchiveFile *f, size_t len, Hashes *h) {
 	n = static_cast<size_t>(len) > sizeof(buf) ? sizeof(buf) : len;
 
 	if (f->read(buf, n) != static_cast<int64_t>(n)) {
-            return false;
+            return READ_ERROR;
 	}
 
 	hu.update(buf, n);
@@ -503,7 +505,14 @@ bool Archive::get_hashes(ArchiveFile *f, size_t len, Hashes *h) {
 
     hu.end();
 
-    return true;
+    if (eof) {
+        // libzip only returns CRC error if you read past EOF, so let's do that.
+        if (f->read(buf, 1) < 0) {
+            return CRC_ERROR;
+        }
+    }
+
+    return OK;
 }
 
 
@@ -514,8 +523,8 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
         file.filename_extension = contents->filename_extension;
         auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const File &file_cache){ return file.name == file_cache.name; });
         if (it != files_cache.cend()) {
-            if (file.mtime == (*it).mtime && file.compare_name_size_hashes(*it)) {
-                file.hashes = (*it).hashes;
+            if (file.mtime == (*it).mtime && file.compare_size_hashes(*it)) {
+                file.hashes.merge((*it).hashes);
             }
             else {
                 cache_changed = true;
