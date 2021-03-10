@@ -40,7 +40,7 @@
 class FileLocation {
  public:
     FileLocation(): index(0) { }
-    FileLocation(std::string name_, int index_) : name(name_), index(index_) { }
+    FileLocation(std::string name_, size_t index_) : name(name_), index(index_) { }
 
     bool operator<(FileLocation other) const { return (name == other.name) ? (index < other.index) : (name < other.name); }
     std::string name;

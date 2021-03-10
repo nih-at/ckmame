@@ -47,7 +47,7 @@
 #include "fix.h"
 #include "fix_util.h"
 #include "globals.h"
-#include "memdb.h"
+#include "MemDB.h"
 
 #define BUFSIZE 8192
 
@@ -596,7 +596,7 @@ void ArchiveContents::enter_in_maps(ArchiveContentsPtr contents) {
         archive_by_id[contents->id] = contents;
         
         if (IS_EXTERNAL(contents->where)) {
-            memdb_file_insert_archive(contents.get());
+            MemDB::insert_archive(contents.get());
         }
     }
 

@@ -45,11 +45,13 @@ int sq3_get_int_default(sqlite3_stmt *stmt, int index, int default_value);
 void sq3_get_hashes(Hashes *hashes, sqlite3_stmt *stmt, int index);
 int64_t sq3_get_int64_default(sqlite3_stmt *stmt, int index, int64_t default_value);
 std::string sq3_get_string(sqlite3_stmt *stmt, int index);
+uint64_t sq3_get_uint64(sqlite3_stmt *stmt, int col);
 uint64_t sq3_get_uint64_default(sqlite3_stmt *stmt, int col, uint64_t def);
 int sq3_set_blob(sqlite3_stmt *stmt, int index, const std::vector<uint8_t> &data);
 int sq3_set_hashes(sqlite3_stmt *stmt, int index, const Hashes *hashes, int nullp);
 int sq3_set_int_default(sqlite3_stmt *stmt, int index, int value, int default_value);
 int sq3_set_int64_default(sqlite3_stmt *stmt, int index, int64_t value, int64_t default_value);
 int sq3_set_uint64_default(sqlite3_stmt *stmt, int index, uint64_t value, uint64_t default_value);
+int sq3_set_uint64(sqlite3_stmt *stmt, int index, uint64_t value);
 int sq3_set_string(sqlite3_stmt *stmt, int index, const std::string &value);
 #endif /* sq_util.h */

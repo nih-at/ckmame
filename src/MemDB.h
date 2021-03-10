@@ -35,17 +35,40 @@
 */
 
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "Archive.h"
 #include "DB.h"
 
-extern std::unique_ptr<DB> memdb;
 
+class MemDB: public DB {
+public:
+    class FindResult {
+    public:
+        uint64_t game_id;
+        uint64_t index;
+        int sh;
+        where_t location;
+    };
+    
+    MemDB(const char *name) : DB(name, DBH_FMT_MEM | DBH_NEW) { }
 
-int memdb_ensure(void);
-int memdb_file_delete(const ArchiveContents *, int, bool);
-int memdb_file_insert(sqlite3_stmt *, const ArchiveContents *, int);
-int memdb_file_insert_archive(const ArchiveContents *);
-int memdb_update_file(const ArchiveContents *, int);
+    static bool delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx);
+    static bool insert_file(sqlite3_stmt *stmt, const ArchiveContents *a, size_t idx);
+    static bool insert_archive(const ArchiveContents *archive);
+    static bool update_file(const ArchiveContents *archive, size_t idx);
+
+    static std::optional<std::vector<FindResult>> find(filetype_t filetype, const File *file);
+
+private:
+    static std::unique_ptr<MemDB> memdb;
+    static bool inited;
+
+    static bool ensure();
+
+    bool delete_file(uint64_t id, filetype_t filetype, size_t index);
+    bool update_file(uint64_t id, filetype_t filetype, size_t index, const Hashes *hashes);
+};
 
 #endif /* memdb.h */

@@ -45,11 +45,11 @@ effort (for example the reengineering of a great many Capstone chips).
 #include "sha1_own.h"
 
 #define EXTRACT_UCHAR(p) (*(unsigned char *)(p))
-#define STRING2INT(s) ((((((EXTRACT_UCHAR(s) << 8) | EXTRACT_UCHAR(s + 1)) << 8) | EXTRACT_UCHAR(s + 2)) << 8) | EXTRACT_UCHAR(s + 3))
+#define STRING2INT(s) (static_cast<uint32_t>((((((EXTRACT_UCHAR(s) << 8) | EXTRACT_UCHAR(s + 1)) << 8) | EXTRACT_UCHAR(s + 2)) << 8) | EXTRACT_UCHAR(s + 3)))
 
 void
 sha_copy(struct sha_ctx *dest, struct sha_ctx *src) {
-    int i;
+    unsigned int i;
 
     dest->count_l = src->count_l;
     dest->count_h = src->count_h;
@@ -301,8 +301,8 @@ SHA1Update(SHA1_CTX *ctx, const unsigned char *buffer, unsigned int len) {
 void
 SHA1Final(unsigned char digest[20], SHA1_CTX *ctx) {
     uint32_t data[SHA_DATALEN];
-    int i;
-    int words;
+    unsigned int i;
+    unsigned int words;
 
     i = ctx->index;
     /* Set the first char of padding to 0x80.  This is safe since there is

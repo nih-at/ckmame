@@ -45,6 +45,7 @@
 #include <climits>
 #include <cstring>
 #include <filesystem>
+#include <limits>
 
 #include <sys/stat.h>
 
@@ -543,7 +544,11 @@ copy_file(const std::string &old, const std::string &new_name, size_t start, ssi
     }
 
     if (start > 0) {
-	if (fseeko(fin.get(), start, SEEK_SET) < 0) {
+        if (start > std::numeric_limits<off_t>::max()) {
+            errno = EINVAL;
+            return false;
+        }
+	if (fseeko(fin.get(), static_cast<off_t>(start), SEEK_SET) < 0) {
 	    return false;
 	}
     }
@@ -566,16 +571,16 @@ copy_file(const std::string &old, const std::string &new_name, size_t start, ssi
 	unsigned char b[8192];
 	size_t nr = sizeof(b);
 
-	if (len > 0 && nr > len - total) {
-	    nr = len - total;
+	if (len > 0 && nr > static_cast<size_t>(len) - total) {
+	    nr = static_cast<size_t>(len) - total;
 	}
 	if ((nr = fread(b, 1, nr, fin.get())) == 0) {
 	    break;
 	}
 	size_t nw = 0;
 	while (nw < nr) {
-	    ssize_t n;
-	    if ((n = fwrite(b + nw, 1, nr - nw, fout.get())) <= 0) {
+	    size_t n;
+	    if ((n = fwrite(b + nw, 1, nr - nw, fout.get())) == 0) {
 		int err = errno;
 		std::error_code ec;
 		std::filesystem::remove(new_name);

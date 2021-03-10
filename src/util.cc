@@ -58,16 +58,15 @@ bin2hex(const uint8_t *data, size_t length) {
 
 #define HEX2BIN(c) (((c) >= '0' && (c) <= '9') ? (c) - '0' : ((c) >= 'A' && (c) <= 'F') ? (c) - 'A' + 10 : (c) - 'a' + 10)
 
-int
-hex2bin(unsigned char *t, const char *s, size_t tlen) {
-    unsigned int i;
-
-    if (strspn(s, "0123456789AaBbCcDdEeFf") != tlen * 2 || s[tlen * 2] != '\0')
+int hex2bin(unsigned char *t, const char *s, size_t tlen) {
+    if (strspn(s, "0123456789AaBbCcDdEeFf") != tlen * 2 || s[tlen * 2] != '\0') {
 	return -1;
+    }
 
-    for (i = 0; i < tlen; i++)
-	t[i] = HEX2BIN(s[i * 2]) << 4 | HEX2BIN(s[i * 2 + 1]);
-
+    for (size_t i = 0; i < tlen; i++) {
+	t[i] = static_cast<unsigned char>(HEX2BIN(s[i * 2]) << 4 | HEX2BIN(s[i * 2 + 1]));
+    }
+    
     return 0;
 }
 

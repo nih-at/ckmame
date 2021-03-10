@@ -40,7 +40,7 @@
 #include "DeleteList.h"
 #include "Dir.h"
 #include "globals.h"
-#include "memdb.h"
+//#include "MemDB.h"
 #include "util.h"
 
 
@@ -81,7 +81,7 @@ void ensure_extra_maps(int flags) {
 
     /* Opening the archives will register them in the map. */
     if (flags & DO_MAP) {
-	memdb_ensure();
+	// memdb_ensure(); // TODO: Why was this here?
 	for (size_t i = 0; i < superfluous.size(); i++) {
 	    auto file = superfluous[i];
 	    switch ((nt = name_type(file))) {

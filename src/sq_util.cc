@@ -35,8 +35,7 @@
 
 #include <climits>
 
-std::vector<uint8_t>
-sq3_get_blob(sqlite3_stmt *stmt, int col) {
+std::vector<uint8_t> sq3_get_blob(sqlite3_stmt *stmt, int col) {
     if (sqlite3_column_type(stmt, col) == SQLITE_NULL) {
         return {};
     }
@@ -48,8 +47,7 @@ sq3_get_blob(sqlite3_stmt *stmt, int col) {
 }
 
 
-void
-sq3_get_hashes(Hashes *hashes, sqlite3_stmt *stmt, int col) {
+void sq3_get_hashes(Hashes *hashes, sqlite3_stmt *stmt, int col) {
     if (sqlite3_column_type(stmt, col) != SQLITE_NULL) {
 	hashes->crc = sqlite3_column_int64(stmt, col) & 0xffffffff;
 	hashes->types |= Hashes::TYPE_CRC;
@@ -63,32 +61,32 @@ sq3_get_hashes(Hashes *hashes, sqlite3_stmt *stmt, int col) {
 }
 
 
-int
-sq3_get_int_default(sqlite3_stmt *stmt, int col, int def) {
+int sq3_get_int_default(sqlite3_stmt *stmt, int col, int def) {
     if (sqlite3_column_type(stmt, col) == SQLITE_NULL)
 	return def;
     return sqlite3_column_int(stmt, col);
 }
 
 
-int64_t
-sq3_get_int64_default(sqlite3_stmt *stmt, int col, int64_t def) {
+int64_t sq3_get_int64_default(sqlite3_stmt *stmt, int col, int64_t def) {
     if (sqlite3_column_type(stmt, col) == SQLITE_NULL) {
 	return def;
     }
     return sqlite3_column_int64(stmt, col);
 }
 
-uint64_t
-sq3_get_uint64_default(sqlite3_stmt *stmt, int col, uint64_t def) {
+uint64_t sq3_get_uint64(sqlite3_stmt *stmt, int col) {
+    return static_cast<uint64_t>(sqlite3_column_int64(stmt, col));
+}
+
+uint64_t sq3_get_uint64_default(sqlite3_stmt *stmt, int col, uint64_t def) {
     if (sqlite3_column_type(stmt, col) == SQLITE_NULL) {
         return def;
     }
     return static_cast<uint64_t>(sqlite3_column_int64(stmt, col));
 }
 
-std::string
-sq3_get_string(sqlite3_stmt *stmt, int i) {
+std::string sq3_get_string(sqlite3_stmt *stmt, int i) {
     if (sqlite3_column_type(stmt, i) == SQLITE_NULL)
 	return "";
 
@@ -96,8 +94,7 @@ sq3_get_string(sqlite3_stmt *stmt, int i) {
 }
 
 
-int
-sq3_set_blob(sqlite3_stmt *stmt, int col, const std::vector<uint8_t> &value) {
+int sq3_set_blob(sqlite3_stmt *stmt, int col, const std::vector<uint8_t> &value) {
     if (value.empty()) {
         return sqlite3_bind_null(stmt, col);
     }
@@ -108,8 +105,7 @@ sq3_set_blob(sqlite3_stmt *stmt, int col, const std::vector<uint8_t> &value) {
 }
 
 
-int
-sq3_set_hashes(sqlite3_stmt *stmt, int col, const Hashes *hashes, int nullp) {
+int sq3_set_hashes(sqlite3_stmt *stmt, int col, const Hashes *hashes, int nullp) {
     int ret;
 
     ret = SQLITE_OK;
@@ -145,24 +141,21 @@ sq3_set_hashes(sqlite3_stmt *stmt, int col, const Hashes *hashes, int nullp) {
 }
 
 
-int
-sq3_set_int_default(sqlite3_stmt *stmt, int col, int val, int def) {
+int sq3_set_int_default(sqlite3_stmt *stmt, int col, int val, int def) {
     if (val == def)
 	return sqlite3_bind_null(stmt, col);
     return sqlite3_bind_int(stmt, col, val);
 }
 
 
-int
-sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def) {
+int sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def) {
     if (val == def)
 	return sqlite3_bind_null(stmt, col);
     return sqlite3_bind_int64(stmt, col, val);
 }
 
 
-int
-sq3_set_string(sqlite3_stmt *stmt, int i, const std::string &s) {
+int sq3_set_string(sqlite3_stmt *stmt, int i, const std::string &s) {
     if (!s.empty()) {
 	return sqlite3_bind_text(stmt, i, s.c_str(), -1, SQLITE_STATIC);
     }
@@ -172,11 +165,13 @@ sq3_set_string(sqlite3_stmt *stmt, int i, const std::string &s) {
 }
 
 
-int
-sq3_set_uint64_default(sqlite3_stmt *stmt, int col, uint64_t val, uint64_t def) {
+int sq3_set_uint64(sqlite3_stmt *stmt, int col, uint64_t val) {
+    return sqlite3_bind_int64(stmt, col, static_cast<int64_t>(val));
+}
+
+int sq3_set_uint64_default(sqlite3_stmt *stmt, int col, uint64_t val, uint64_t def) {
     if (val == def) {
         return sqlite3_bind_null(stmt, col);
     }
-    return sqlite3_bind_int64(stmt, static_cast<int64_t>(col), val);
+    return sqlite3_bind_int64(stmt, col, static_cast<int64_t>(val));
 }
-

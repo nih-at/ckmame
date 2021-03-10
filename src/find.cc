@@ -34,18 +34,9 @@
 #include "find.h"
 
 #include "check_util.h"
-#include "memdb.h"
+#include "MemDB.h"
 #include "RomDB.h"
 #include "sq_util.h"
-
-#define QUERY_FILE "select game_id, file_idx, file_sh, location from file where file_type = ?"
-#define QUERY_FILE_HASH_FMT " and (%s = ? or %s is null)"
-#define QUERY_FILE_TAIL " order by location"
-#define QUERY_FILE_GAME_ID 0
-#define QUERY_FILE_FILE_IDX 1
-#define QUERY_FILE_FILE_SH 2
-#define QUERY_FILE_LOCATION 3
-
 
 static find_result_t check_for_file_in_archive(filetype_t filetype, const std::string &game_name, const File *rom, const File *file, Match *m);
 static find_result_t check_match_old(filetype_t filetype, const Game *game, const File *wanted_file, const File *candidate, Match *match);
@@ -55,64 +46,43 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const File *wan
 
 find_result_t
 find_in_archives(filetype_t filetype, const File *rom, Match *m, bool needed_only) {
-    sqlite3_stmt *stmt;
-    int i, ret, hcol, sh;
-
-    if (memdb_ensure() < 0) {
+    auto results = MemDB::find(filetype, rom);
+    
+    if (!results.has_value()) {
         return FIND_ERROR;
     }
     
-    if ((stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_FILE, &rom->hashes, rom->size != SIZE_UNKNOWN)) == NULL) {
-	return FIND_ERROR;
-    }
-
-    hcol = 2;
-    if (rom->size != SIZE_UNKNOWN) {
-	hcol++;
-        if (sqlite3_bind_int64(stmt, 2, rom->size) != SQLITE_OK) {
-	    return FIND_ERROR;
-        }
-    }
-
-    if (sqlite3_bind_int(stmt, 1, filetype) != SQLITE_OK || sq3_set_hashes(stmt, hcol, &rom->hashes, 0) != SQLITE_OK) {
-	return FIND_ERROR;
-    }
-
-
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        auto a = Archive::by_id(sqlite3_column_int(stmt, QUERY_FILE_GAME_ID));
+    for (auto result : results.value()) {
+        auto a = Archive::by_id(result.game_id);
         if (!a) {
-	    ret = SQLITE_ERROR;
-	    break;
+            return FIND_ERROR;
         }
 	if (needed_only && a->where != FILE_NEEDED) {
 	    continue;
 	}
 
-	i = sqlite3_column_int(stmt, QUERY_FILE_FILE_IDX);
-	sh = sqlite3_column_int(stmt, QUERY_FILE_FILE_SH);
-        auto &file = a->files[i];
+        auto &file = a->files[result.index];
 
-        if (sh == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
-            a->file_ensure_hashes(i, rom->hashes.types | db->hashtypes(filetype));
-            memdb_update_file(a->contents.get(), i);
+        if (result.sh == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
+            a->file_ensure_hashes(result.index, rom->hashes.types | db->hashtypes(filetype));
+            MemDB::update_file(a->contents.get(), result.index);
 	}
 
-	if (file.status != STATUS_OK || file.get_hashes(sh != 0).compare(rom->hashes) != Hashes::MATCH) {
+	if (file.status != STATUS_OK || file.get_hashes(result.sh != 0).compare(rom->hashes) != Hashes::MATCH) {
 	    continue;
 	}
 
 	if (m) {
             m->archive = a;
-            m->index = i;
-            m->where = static_cast<where_t>(sqlite3_column_int(stmt, QUERY_FILE_LOCATION));
+            m->index = result.index;
+            m->where = result.location;
 	    m->quality = QU_COPIED;
 	}
 
 	return FIND_EXISTS;
     }
 
-    return ret == SQLITE_DONE ? FIND_UNKNOWN : FIND_ERROR;
+    return FIND_UNKNOWN;
 }
 
 

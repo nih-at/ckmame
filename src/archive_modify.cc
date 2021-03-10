@@ -39,7 +39,7 @@
 
 #include "dbh_cache.h"
 #include "error.h"
-#include "memdb.h"
+#include "MemDB.h"
 
 bool Archive::commit() {
     if (modified) {
@@ -56,7 +56,7 @@ bool Archive::commit() {
                 case FILE_DELETED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
-                        memdb_file_delete(contents.get(), i, is_writable());
+                        MemDB::delete_file(contents.get(), i, is_writable());
                     }
 
                     if (is_writable()) {
@@ -68,7 +68,7 @@ bool Archive::commit() {
                 case FILE_ADDED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
-                        memdb_file_insert(NULL, contents.get(), i);
+                        MemDB::insert_file(NULL, contents.get(), i);
                     }
                     files[i].where = FILE_INGAME;
                     break;

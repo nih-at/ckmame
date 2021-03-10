@@ -86,7 +86,7 @@
 		4B5FADF81735930100B67C24 /* Hashes.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACE31735924900B67C24 /* Hashes.cc */; };
 		4B5FADFB1735930100B67C24 /* hashes_update.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACE11735924900B67C24 /* hashes_update.cc */; };
 		4B5FAE011735930100B67C24 /* Match.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACEB1735924900B67C24 /* Match.cc */; };
-		4B5FAE051735930100B67C24 /* memdb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACED1735924900B67C24 /* memdb.cc */; };
+		4B5FAE051735930100B67C24 /* MemDB.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACED1735924900B67C24 /* MemDB.cc */; };
 		4B5FAE071735930100B67C24 /* OutputContext.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF31735924900B67C24 /* OutputContext.cc */; };
 		4B5FAE091735930100B67C24 /* OutputContextCm.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACEF1735924900B67C24 /* OutputContextCm.cc */; };
 		4B5FAE0A1735930100B67C24 /* OutputContextXml.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF01735924900B67C24 /* OutputContextXml.cc */; };
@@ -377,8 +377,8 @@
 		4B5FACE41735924900B67C24 /* Hashes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hashes.h; sourceTree = "<group>"; };
 		4B5FACEB1735924900B67C24 /* Match.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Match.cc; sourceTree = "<group>"; };
 		4B5FACEC1735924900B67C24 /* Match.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Match.h; sourceTree = "<group>"; };
-		4B5FACED1735924900B67C24 /* memdb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = memdb.cc; sourceTree = "<group>"; tabWidth = 8; };
-		4B5FACEE1735924900B67C24 /* memdb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = memdb.h; sourceTree = "<group>"; };
+		4B5FACED1735924900B67C24 /* MemDB.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MemDB.cc; sourceTree = "<group>"; tabWidth = 8; };
+		4B5FACEE1735924900B67C24 /* MemDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemDB.h; sourceTree = "<group>"; };
 		4B5FACEF1735924900B67C24 /* OutputContextCm.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputContextCm.cc; sourceTree = "<group>"; };
 		4B5FACF01735924900B67C24 /* OutputContextXml.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputContextXml.cc; sourceTree = "<group>"; };
 		4B5FACF11735924900B67C24 /* OutputContextDb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputContextDb.cc; sourceTree = "<group>"; };
@@ -902,8 +902,8 @@
 				4B5FACE41735924900B67C24 /* Hashes.h */,
 				4B5FACEB1735924900B67C24 /* Match.cc */,
 				4B5FACEC1735924900B67C24 /* Match.h */,
-				4B5FACED1735924900B67C24 /* memdb.cc */,
-				4B5FACEE1735924900B67C24 /* memdb.h */,
+				4B5FACED1735924900B67C24 /* MemDB.cc */,
+				4B5FACEE1735924900B67C24 /* MemDB.h */,
 				4B5FACEF1735924900B67C24 /* OutputContextCm.cc */,
 				4B5FACF01735924900B67C24 /* OutputContextXml.cc */,
 				4B5FACF11735924900B67C24 /* OutputContextDb.cc */,
@@ -1502,7 +1502,7 @@
 				4B5FADF81735930100B67C24 /* Hashes.cc in Sources */,
 				4B5FADFB1735930100B67C24 /* hashes_update.cc in Sources */,
 				4B5FAE011735930100B67C24 /* Match.cc in Sources */,
-				4B5FAE051735930100B67C24 /* memdb.cc in Sources */,
+				4B5FAE051735930100B67C24 /* MemDB.cc in Sources */,
 				4B5FAE071735930100B67C24 /* OutputContext.cc in Sources */,
 				4B5FAE091735930100B67C24 /* OutputContextCm.cc in Sources */,
 				4BB552BC25C01EC1001ABC31 /* Exception.cc in Sources */,

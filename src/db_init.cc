@@ -92,14 +92,6 @@ create table test (\n\
 
     /* DBH_FMT_MEM -- in-memory db format */
     "\
-create table ptr_cache (\n\
-	game_id integer primary key,\n\
-	name text not null,\n\
-	file_type integer not null,\n\
-	pointer blob\n\
-);\n\
-create index ptr_cache_name_file_type on ptr_cache (name, file_type);\n\
-\n\
 create table file (\n\
 	game_id integer,\n\
 	file_type integer,\n\

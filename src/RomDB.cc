@@ -225,7 +225,7 @@ std::vector<FileLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes *
 
     int ret;
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        result.push_back(FileLocation(sq3_get_string(stmt, 0), sqlite3_column_int(stmt, 1)));
+        result.push_back(FileLocation(sq3_get_string(stmt, 0), static_cast<size_t>(sqlite3_column_int(stmt, 1))));
     }
 
     if (ret != SQLITE_DONE) {
@@ -473,7 +473,7 @@ bool RomDB::update_file_location(Game *game) {
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         for (size_t i = 0; i < game->files[ft].size(); i++) {
-            if (sqlite3_bind_int64(stmt, 2, static_cast<int64_t>(game->id)) != SQLITE_OK || sqlite3_bind_int(stmt, 3, ft) != SQLITE_OK) {
+            if (sqlite3_bind_int64(stmt, 2, static_cast<int64_t>(game->id)) != SQLITE_OK || sqlite3_bind_int(stmt, 3, static_cast<int>(ft)) != SQLITE_OK) {
                 return false;
             }
 
