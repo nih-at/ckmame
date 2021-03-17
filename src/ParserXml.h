@@ -39,7 +39,7 @@
 class ParserXml : public Parser {
 public:
     ParserXml(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags) { }
-    ~ParserXml();
+    virtual ~ParserXml() { }
      
     virtual bool parse();
 

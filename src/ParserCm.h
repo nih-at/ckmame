@@ -41,7 +41,7 @@ public:
     virtual bool parse();
 
     ParserCm(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags) { }
-    ~ParserCm();
+    virtual ~ParserCm() { }
         
 private:
     enum State { TOP, GAME, PROG };

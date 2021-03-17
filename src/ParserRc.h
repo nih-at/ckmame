@@ -39,7 +39,7 @@
 class ParserRc : public Parser {
 public:
     ParserRc(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags) { }
-    ~ParserRc();
+    virtual ~ParserRc() { }
         
     virtual bool parse();
 

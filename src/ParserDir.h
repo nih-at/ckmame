@@ -40,7 +40,7 @@
 class ParserDir : public Parser {
 public:
     ParserDir(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags, const std::string &dname, int hashtypes_, bool runtest_ = false) : Parser(source, exclude, dat, output, flags), directory_name(dname), hashtypes(hashtypes_), runtest(runtest_) { }
-    ~ParserDir() { }
+    virtual ~ParserDir() { }
     
     virtual bool parse();
         
