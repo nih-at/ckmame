@@ -37,6 +37,9 @@
 		4B07BFC91FEC1BB60068A600 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
 		4B07BFCA1FEC1BBB0068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
 		4B07BFCB1FEC1BD00068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
+		4B20D2CD260254A300D77FA8 /* ParserXml.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B20D2CC260254A300D77FA8 /* ParserXml.h */; };
+		4B20D2D7260254A900D77FA8 /* ParserRc.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B20D2D6260254A900D77FA8 /* ParserRc.h */; };
+		4B20D2E1260254AF00D77FA8 /* ParserDir.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B20D2E0260254AF00D77FA8 /* ParserDir.h */; };
 		4B3274CF25B99F76006AEF16 /* fix_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3274C325B99F75006AEF16 /* fix_util.h */; };
 		4B3274D025B99F76006AEF16 /* diagnostics.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3274C425B99F75006AEF16 /* diagnostics.h */; };
 		4B3274D125B99F76006AEF16 /* SharedFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3274C525B99F75006AEF16 /* SharedFile.h */; };
@@ -92,11 +95,11 @@
 		4B5FAE0A1735930100B67C24 /* OutputContextXml.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF01735924900B67C24 /* OutputContextXml.cc */; };
 		4B5FAE0B1735930100B67C24 /* OutputContextDb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF11735924900B67C24 /* OutputContextDb.cc */; };
 		4B5FAE0C1735930100B67C24 /* OutputContextMtree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACF21735924900B67C24 /* OutputContextMtree.cc */; };
-		4B5FAE171735930100B67C24 /* parse-cm.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACFF1735924900B67C24 /* parse-cm.cc */; };
-		4B5FAE181735930100B67C24 /* parse-dir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD001735924900B67C24 /* parse-dir.cc */; };
-		4B5FAE191735930100B67C24 /* parse-rc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD011735924900B67C24 /* parse-rc.cc */; };
-		4B5FAE1A1735930100B67C24 /* parse-xml.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD021735924900B67C24 /* parse-xml.cc */; };
-		4B5FAE1B1735930100B67C24 /* parse.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD031735924900B67C24 /* parse.cc */; };
+		4B5FAE171735930100B67C24 /* ParserCm.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FACFF1735924900B67C24 /* ParserCm.cc */; };
+		4B5FAE181735930100B67C24 /* ParserDir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD001735924900B67C24 /* ParserDir.cc */; };
+		4B5FAE191735930100B67C24 /* ParserRc.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD011735924900B67C24 /* ParserRc.cc */; };
+		4B5FAE1A1735930100B67C24 /* ParserXml.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD021735924900B67C24 /* ParserXml.cc */; };
+		4B5FAE1B1735930100B67C24 /* Parser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD031735924900B67C24 /* Parser.cc */; };
 		4B5FAE1D1735930100B67C24 /* ParserSource.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD051735924900B67C24 /* ParserSource.cc */; };
 		4B5FAE231735930100B67C24 /* sighandle.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5FAD401735929E00B67C24 /* sighandle.cc */; };
 		4B5FAE261735932200B67C24 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
@@ -310,6 +313,10 @@
 		4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		4B07BFC11FEC1B5B0068A600 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4B07BFC41FEC1B700068A600 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
+		4B20D2C326024ED000D77FA8 /* ParserCm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserCm.h; sourceTree = "<group>"; };
+		4B20D2CC260254A300D77FA8 /* ParserXml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserXml.h; sourceTree = "<group>"; };
+		4B20D2D6260254A900D77FA8 /* ParserRc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserRc.h; sourceTree = "<group>"; };
+		4B20D2E0260254AF00D77FA8 /* ParserDir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserDir.h; sourceTree = "<group>"; };
 		4B3274C325B99F75006AEF16 /* fix_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fix_util.h; sourceTree = "<group>"; };
 		4B3274C425B99F75006AEF16 /* diagnostics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = diagnostics.h; sourceTree = "<group>"; };
 		4B3274C525B99F75006AEF16 /* SharedFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFile.h; sourceTree = "<group>"; };
@@ -385,12 +392,12 @@
 		4B5FACF21735924900B67C24 /* OutputContextMtree.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputContextMtree.cc; sourceTree = "<group>"; };
 		4B5FACF31735924900B67C24 /* OutputContext.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputContext.cc; sourceTree = "<group>"; };
 		4B5FACF41735924900B67C24 /* OutputContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputContext.h; sourceTree = "<group>"; };
-		4B5FACFF1735924900B67C24 /* parse-cm.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = "parse-cm.cc"; sourceTree = "<group>"; };
-		4B5FAD001735924900B67C24 /* parse-dir.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = "parse-dir.cc"; sourceTree = "<group>"; };
-		4B5FAD011735924900B67C24 /* parse-rc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = "parse-rc.cc"; sourceTree = "<group>"; };
-		4B5FAD021735924900B67C24 /* parse-xml.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = "parse-xml.cc"; sourceTree = "<group>"; };
-		4B5FAD031735924900B67C24 /* parse.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = parse.cc; sourceTree = "<group>"; };
-		4B5FAD041735924900B67C24 /* parse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = parse.h; sourceTree = "<group>"; };
+		4B5FACFF1735924900B67C24 /* ParserCm.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserCm.cc; sourceTree = "<group>"; };
+		4B5FAD001735924900B67C24 /* ParserDir.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserDir.cc; sourceTree = "<group>"; };
+		4B5FAD011735924900B67C24 /* ParserRc.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserRc.cc; sourceTree = "<group>"; };
+		4B5FAD021735924900B67C24 /* ParserXml.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserXml.cc; sourceTree = "<group>"; };
+		4B5FAD031735924900B67C24 /* Parser.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cc; sourceTree = "<group>"; };
+		4B5FAD041735924900B67C24 /* Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Parser.h; sourceTree = "<group>"; };
 		4B5FAD051735924900B67C24 /* ParserSource.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParserSource.cc; sourceTree = "<group>"; };
 		4B5FAD061735924900B67C24 /* ParserSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserSource.h; sourceTree = "<group>"; };
 		4B5FAD401735929E00B67C24 /* sighandle.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = sighandle.cc; sourceTree = "<group>"; };
@@ -855,13 +862,13 @@
 				4B5FACA11735919800B67C24 /* DatEntry.cc */,
 				4B5FACA31735919800B67C24 /* DatEntry.h */,
 				4B5FAE591735941D00B67C24 /* db_init.cc */,
+				4B5FAE5A1735941D00B67C24 /* DB.cc */,
+				4B513F51175BCC440096EF42 /* DB.h */,
 				4B9232FE1780B2BA00096AA2 /* dbh_cache.cc */,
 				4B9232FF1780B2FC00096AA2 /* dbh_cache.h */,
 				4B59E58F21625A05002262C8 /* dbh_statements.cc */,
 				4B59E59021625A05002262C8 /* dbh_statements.h */,
 				4B513F49175B52700096EF42 /* dbh_statements.in */,
-				4B5FAE5A1735941D00B67C24 /* DB.cc */,
-				4B513F51175BCC440096EF42 /* DB.h */,
 				4B5FACA41735919800B67C24 /* DeleteList.cc */,
 				4B5FACA51735919800B67C24 /* DeleteList.h */,
 				4B5FACA61735919800B67C24 /* detector_execute.cc */,
@@ -878,11 +885,11 @@
 				4B5FACC91735924900B67C24 /* error.h */,
 				4BB552BA25C01EC1001ABC31 /* Exception.cc */,
 				4BB552BB25C01EC1001ABC31 /* Exception.h */,
-				4B5FACD01735924900B67C24 /* FileLocation.h */,
 				4B5F43AD1889CFFB000C3B7C /* file_util.cc */,
 				4B3274C925B99F76006AEF16 /* file_util.h */,
 				4B5FACD31735924900B67C24 /* File.cc */,
 				4B5FACD41735924900B67C24 /* File.h */,
+				4B5FACD01735924900B67C24 /* FileLocation.h */,
 				4B5FACD61735924900B67C24 /* find.cc */,
 				4B9292BD17633FFC00806C0A /* find.h */,
 				4B5FACD71735924900B67C24 /* fix_util.cc */,
@@ -904,28 +911,32 @@
 				4B5FACEC1735924900B67C24 /* Match.h */,
 				4B5FACED1735924900B67C24 /* MemDB.cc */,
 				4B5FACEE1735924900B67C24 /* MemDB.h */,
-				4B5FACEF1735924900B67C24 /* OutputContextCm.cc */,
-				4B5FACF01735924900B67C24 /* OutputContextXml.cc */,
-				4B5FACF11735924900B67C24 /* OutputContextDb.cc */,
-				4B5FACF21735924900B67C24 /* OutputContextMtree.cc */,
 				4B5FACF31735924900B67C24 /* OutputContext.cc */,
 				4B5FACF41735924900B67C24 /* OutputContext.h */,
+				4B5FACEF1735924900B67C24 /* OutputContextCm.cc */,
 				4B74FA8B25922E9E00745A6E /* OutputContextCm.h */,
+				4B5FACF11735924900B67C24 /* OutputContextDb.cc */,
 				4B74FA8C2592327D00745A6E /* OutputContextDb.h */,
+				4B5FACF21735924900B67C24 /* OutputContextMtree.cc */,
 				4B74FA8D2592376600745A6E /* OutputContextMtree.h */,
+				4B5FACF01735924900B67C24 /* OutputContextXml.cc */,
 				4B74FA8E25923A8200745A6E /* OutputContextXml.h */,
-				4B5FACFF1735924900B67C24 /* parse-cm.cc */,
-				4B5FAD001735924900B67C24 /* parse-dir.cc */,
-				4B5FAD011735924900B67C24 /* parse-rc.cc */,
-				4B5FAD021735924900B67C24 /* parse-xml.cc */,
-				4B5FAD031735924900B67C24 /* parse.cc */,
-				4B5FAD041735924900B67C24 /* parse.h */,
+				4B5FAD031735924900B67C24 /* Parser.cc */,
+				4B5FAD041735924900B67C24 /* Parser.h */,
+				4B5FACFF1735924900B67C24 /* ParserCm.cc */,
+				4B20D2C326024ED000D77FA8 /* ParserCm.h */,
+				4B5FAD001735924900B67C24 /* ParserDir.cc */,
+				4B20D2E0260254AF00D77FA8 /* ParserDir.h */,
+				4B5FAD011735924900B67C24 /* ParserRc.cc */,
+				4B20D2D6260254A900D77FA8 /* ParserRc.h */,
 				4B5FAD051735924900B67C24 /* ParserSource.cc */,
 				4B5FAD061735924900B67C24 /* ParserSource.h */,
 				4BB51D2825823D770047BE72 /* ParserSourceFile.cc */,
 				4BB51D2925823D770047BE72 /* ParserSourceFile.h */,
 				4BB51D44258247330047BE72 /* ParserSourceZip.cc */,
 				4BB51D45258247330047BE72 /* ParserSourceZip.h */,
+				4B5FAD021735924900B67C24 /* ParserXml.cc */,
+				4B20D2CC260254A300D77FA8 /* ParserXml.h */,
 				4B5FAE611735949900B67C24 /* Result.cc */,
 				4B9292C017633FFC00806C0A /* Result.h */,
 				4B5F43B71889D059000C3B7C /* RomDB.cc */,
@@ -1243,10 +1254,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B20D2D7260254A900D77FA8 /* ParserRc.h in Headers */,
 				4B3274D125B99F76006AEF16 /* SharedFile.h in Headers */,
 				4BB51D47258247330047BE72 /* ParserSourceZip.h in Headers */,
 				4B6B145324FF905900D3F3FB /* Stats.h in Headers */,
 				4B3274D225B99F76006AEF16 /* cleanup.h in Headers */,
+				4B20D2E1260254AF00D77FA8 /* ParserDir.h in Headers */,
 				4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */,
 				4B3274D025B99F76006AEF16 /* diagnostics.h in Headers */,
 				4B3274D525B99F76006AEF16 /* file_util.h in Headers */,
@@ -1262,6 +1275,7 @@
 				4B3274D325B99F76006AEF16 /* superfluous.h in Headers */,
 				4BF6FA2B25D5371B00B93A98 /* ArchiveImages.h in Headers */,
 				4BB51D2B25823D770047BE72 /* ParserSourceFile.h in Headers */,
+				4B20D2CD260254A300D77FA8 /* ParserXml.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1510,12 +1524,12 @@
 				4B5FAE0B1735930100B67C24 /* OutputContextDb.cc in Sources */,
 				4B5FAE0C1735930100B67C24 /* OutputContextMtree.cc in Sources */,
 				4BB51D2A25823D770047BE72 /* ParserSourceFile.cc in Sources */,
-				4B5FAE171735930100B67C24 /* parse-cm.cc in Sources */,
-				4B5FAE181735930100B67C24 /* parse-dir.cc in Sources */,
-				4B5FAE191735930100B67C24 /* parse-rc.cc in Sources */,
-				4B5FAE1A1735930100B67C24 /* parse-xml.cc in Sources */,
+				4B5FAE171735930100B67C24 /* ParserCm.cc in Sources */,
+				4B5FAE181735930100B67C24 /* ParserDir.cc in Sources */,
+				4B5FAE191735930100B67C24 /* ParserRc.cc in Sources */,
+				4B5FAE1A1735930100B67C24 /* ParserXml.cc in Sources */,
 				4B3274D425B99F76006AEF16 /* SharedFile.cc in Sources */,
-				4B5FAE1B1735930100B67C24 /* parse.cc in Sources */,
+				4B5FAE1B1735930100B67C24 /* Parser.cc in Sources */,
 				4B5FAE1D1735930100B67C24 /* ParserSource.cc in Sources */,
 				4B5FAE231735930100B67C24 /* sighandle.cc in Sources */,
 				4B5FAE9D173599B700B67C24 /* md5.cc in Sources */,

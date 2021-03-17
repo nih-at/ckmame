@@ -31,16 +31,13 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "parse.h"
+#include "ParserRc.h"
 
 #include "error.h"
 
+const char ParserRc::separator = static_cast<char>(0xac);
 
-#define RC_SEP static_cast<char>(0xac)
-
-enum section { RC_UNKNOWN = -1, RC_CREDITS, RC_DAT, RC_EMULATOR, RC_GAMES };
-
-std::unordered_map<std::string, enum section> sections = {
+std::unordered_map<std::string, ParserRc::Section> ParserRc::sections = {
     { "[CREDITS]", RC_CREDITS },
     { "[DAT]", RC_DAT },
     { "[EMULATOR]", RC_EMULATOR },
@@ -48,53 +45,17 @@ std::unordered_map<std::string, enum section> sections = {
     { "[RESOURCES]", RC_GAMES }
 };
 
-static bool parse_prog_description(ParserContext *ctx, const std::string &attr);
-static bool parse_prog_name(ParserContext *ctx, const std::string &attr);
-static bool parse_prog_version(ParserContext *ctx, const std::string &attr);
-static bool rc_plugin(ParserContext *ctx, const std::string &attr);
-
-struct {
-    enum section section;
-    std::string name;
-    bool (*cb)(ParserContext *, const std::string &);
-} fields[] = {
-    { RC_CREDITS, "version", parse_prog_version },
-    { RC_DAT, "plugin", rc_plugin },
-    { RC_EMULATOR, "refname", parse_prog_name},
-    { RC_EMULATOR, "version", parse_prog_description}
-};
-
-size_t nfields = sizeof(fields) / sizeof(fields[0]);
-
-class RcTokenizer {
-public:
-    RcTokenizer(const std::string &s) : string(s), position(0) { }
-    
-    std::string get();
-    
-private:
-    std::string string;
-    size_t position;
-};
-
-class ROMLine {
-public:
-    ROMLine(ParserContext *ctx_) : ctx(ctx_) { }
-    
-    bool process(const std::string &line);
-    void flush();
-
-private:
-    ParserContext *ctx;
-    std::string gamename;
+std::vector<ParserRc::Field> ParserRc::fields = {
+    Field(RC_CREDITS, "version", parse_prog_version),
+    Field(RC_DAT, "plugin", rc_plugin),
+    Field(RC_EMULATOR, "refname", parse_prog_name),
+    Field(RC_EMULATOR, "version", parse_prog_description)
 };
 
 
-bool ParserContext::parse_rc() {
+bool ParserRc::parse() {
     lineno = 0;
-    enum section sect = RC_UNKNOWN;
-
-    auto romline = ROMLine(this);
+    auto sect = RC_UNKNOWN;
 
     std::optional<std::string> l;
     while ((l = ps->getline()).has_value()) {
@@ -113,7 +74,7 @@ bool ParserContext::parse_rc() {
 	}
 
 	if (sect == RC_GAMES) {
-            if (!romline.process(line)) {
+            if (!process_romline(line)) {
                 myerror(ERRFILE, "%zu: cannot parse ROM line, skipping", lineno);
             }
         }
@@ -126,9 +87,9 @@ bool ParserContext::parse_rc() {
             auto key = line.substr(0, position);
             auto value = line.substr(position + 1);
 
-            for (size_t i = 0; i < nfields; i++) {
-                if (fields[i].section == sect && key == fields[i].name) {
-                    fields[i].cb(this, value);
+            for (auto &field : fields) {
+                if (field.section == sect && key == field.name) {
+                    field.cb(this, value);
 		    break;
 		}
 	    }
@@ -138,12 +99,12 @@ bool ParserContext::parse_rc() {
     return 0;
 }
 
-std::string RcTokenizer::get() {
+std::string ParserRc::Tokenizer::get() {
     if (position == std::string::npos) {
         return "";
     }
     
-    auto sep = string.find(RC_SEP, position);
+    auto sep = string.find(separator, position);
     
     std::string field;
     
@@ -160,35 +121,34 @@ std::string RcTokenizer::get() {
 }
 
 
-static bool parse_prog_description(ParserContext *ctx, const std::string &attr) {
+bool ParserRc::parse_prog_description(ParserRc *ctx, const std::string &attr) {
     return ctx->prog_description(attr);
 }
 
-static bool parse_prog_name(ParserContext *ctx, const std::string &attr) {
+bool ParserRc::parse_prog_name(ParserRc *ctx, const std::string &attr) {
     return ctx->prog_name(attr);
 }
 
-static bool parse_prog_version(ParserContext *ctx, const std::string &attr) {
+bool ParserRc::parse_prog_version(ParserRc *ctx, const std::string &attr) {
     return ctx->prog_version(attr);
 }
 
-static bool
-rc_plugin(ParserContext *ctx, const std::string &attr) {
+bool ParserRc::rc_plugin(ParserRc *ctx, const std::string &attr) {
     myerror(ERRFILE, "%zu: warning: RomCenter plugins not supported,", ctx->lineno);
     myerror(ERRFILE, "%zu: warning: DAT won't work as expected.", ctx->lineno);
     return false;
 }
 
 
-void ROMLine::flush() {
+void ParserRc::flush_romline() {
     if (!gamename.empty()) {
-        ctx->game_end();
+        game_end();
     }
     gamename = "";
 }
 
-bool ROMLine::process(const std::string &line) {
-    auto tokenizer = RcTokenizer(line);
+bool ParserRc::process_romline(const std::string &line) {
+    auto tokenizer = Tokenizer(line);
 
     if (!tokenizer.get().empty()) {
         return false;
@@ -204,16 +164,16 @@ bool ROMLine::process(const std::string &line) {
     }
 
     if (gamename != name) {
-        flush();
+        flush_romline();
 
         gamename = name;
-        ctx->game_start();
-        ctx->game_name(name);
+        game_start();
+        game_name(name);
         if (!desc.empty()) {
-            ctx->game_description(desc);
+            game_description(desc);
         }
         if (!parent.empty() && parent != name) {
-            ctx->game_cloneof(TYPE_ROM, parent);
+            game_cloneof(TYPE_ROM, parent);
         }
     }
 
@@ -222,22 +182,22 @@ bool ROMLine::process(const std::string &line) {
         return false;
     }
 
-    ctx->file_start(TYPE_ROM);
-    ctx->file_name(TYPE_ROM, token);
+    file_start(TYPE_ROM);
+    file_name(TYPE_ROM, token);
     token = tokenizer.get();
     if (!token.empty()) {
-        ctx->file_hash(TYPE_ROM, Hashes::TYPE_CRC, token);
+        file_hash(TYPE_ROM, Hashes::TYPE_CRC, token);
     }
     token = tokenizer.get();
     if (!token.empty()) {
-        ctx->file_size(TYPE_ROM, token);
+        file_size(TYPE_ROM, token);
     }
     (void)tokenizer.get();
     token = tokenizer.get();
     if (!token.empty()) {
-        ctx->file_merge(TYPE_ROM, token);
+        file_merge(TYPE_ROM, token);
     }
-    ctx->file_end(TYPE_ROM);
+    file_end(TYPE_ROM);
 
     return true;
 }

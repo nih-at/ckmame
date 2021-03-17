@@ -31,36 +31,22 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "parse.h"
+#include "ParserCm.h"
 
 #include "error.h"
 
 
-enum parse_state { st_top, st_game, st_prog };
-
-class CmTokenizer {
-public:
-    CmTokenizer(const std::string &s) : string(s), position(0) { }
-
-    std::string get();
-
-private:
-    std::string string;
-    size_t position;
-};
-
-
-bool ParserContext::parse_cm() {
+bool ParserCm::parse() {
 
     lineno = 0;
-    auto parse_state = st_top;
+    auto parse_state = TOP;
 
     std::optional<std::string> line;
 
     while ((line = ps->getline()).has_value()) {
         lineno++;
 
-        auto tokenizer = CmTokenizer(line.value());
+        auto tokenizer = Tokenizer(line.value());
 
         auto cmd = tokenizer.get();
 
@@ -69,11 +55,11 @@ bool ParserContext::parse_cm() {
         }
 
 	switch (parse_state) {
-            case st_top:
+            case TOP:
                 /* game/resource for MAME/Raine, machine for MESS */
                 if (cmd == "game" || cmd == "machine" || cmd == "resource") {
                     game_start();
-                    parse_state = st_game;
+                    parse_state = GAME;
                     auto brace = tokenizer.get();
 		    if (brace != "(") {
 			myerror(ERRFILE, "%zu: expected '(', got '%s'", lineno, brace.c_str());
@@ -81,7 +67,7 @@ bool ParserContext::parse_cm() {
 		    }
                 }
                 else if (cmd == "emulator" || cmd == "clrmamepro") {
-                    parse_state = st_prog;
+                    parse_state = PROG;
                     auto brace = tokenizer.get();
 		    if (brace != "(") {
 			myerror(ERRFILE, "%zu: expected '(', got '%s'", lineno, brace.c_str());
@@ -96,7 +82,7 @@ bool ParserContext::parse_cm() {
 		}
                 break;
 
-            case st_game:
+            case GAME:
                 if (cmd == "name") {
                     game_name(tokenizer.get());
                 }
@@ -281,7 +267,7 @@ bool ParserContext::parse_cm() {
 		}
                 else if (cmd == ")") {
                     game_end();
-                    parse_state = st_top;
+                    parse_state = TOP;
                 }
 		else if (cmd == "manufacturer" || cmd == "year") {
 		    /* skip value */
@@ -292,7 +278,7 @@ bool ParserContext::parse_cm() {
 		}
                 break;
 
-            case st_prog:
+            case PROG:
                 if (cmd == "name") {
                     prog_name(tokenizer.get());
                 }
@@ -306,7 +292,7 @@ bool ParserContext::parse_cm() {
                     prog_header(tokenizer.get());
                 }
                 else if (cmd == ")") {
-                    parse_state = st_top;
+                    parse_state = TOP;
                 }
 		else if (cmd == "author" || cmd == "comment" || cmd == "forcemerging" || cmd == "forcenodump" || cmd == "forcepacking") {
 		    /* skip value */
@@ -328,7 +314,7 @@ bool ParserContext::parse_cm() {
 }
 
 
-std::string CmTokenizer::get() {
+std::string ParserCm::Tokenizer::get() {
     if (position == std::string::npos) {
         return "";
     }

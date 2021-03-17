@@ -35,11 +35,14 @@
 // fnmatch
 #include "compat.h"
 
-#include "parse.h"
+#include "Parser.h"
 
 #include <algorithm>
 #include <cstring>
 
+#include "ParserCm.h"
+#include "ParserRc.h"
+#include "ParserXml.h"
 #include "error.h"
 
 
@@ -52,25 +55,25 @@
     } while (0)
 
 
-bool ParserContext::parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {
-    ParserContext ctx(source, exclude, dat, out, flags);
+bool Parser::parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {
+    std::unique_ptr<Parser> parser;
 
-    bool ok;
     auto c = source->peek();
 
     switch (c) {
         case '<':
-            ok = ctx.parse_xml();
+            parser = std::unique_ptr<Parser>(new ParserXml(source, exclude, dat, out, flags));
             break;
         case '[':
-            ok = ctx.parse_rc();
+            parser = std::unique_ptr<Parser>(new ParserRc(source, exclude, dat, out, flags));
             break;
         default:
-            ok = ctx.parse_cm();
+            parser = std::unique_ptr<Parser>(new ParserCm(source, exclude, dat, out, flags));
     }
 
+    auto ok = parser->parse();
     if (ok) {
-        if (!ctx.eof()) {
+        if (!parser->eof()) {
             ok = false;
 	}
     }
@@ -79,7 +82,7 @@ bool ParserContext::parse(ParserSourcePtr source, const std::unordered_set<std::
 }
 
 
-bool ParserContext::eof() {
+bool Parser::eof() {
     if (state == PARSE_IN_HEADER) {
         return header_end();
     }
@@ -88,7 +91,7 @@ bool ParserContext::eof() {
 }
 
 
-bool ParserContext::file_continue(filetype_t ft) {
+bool Parser::file_continue(filetype_t ft) {
     CHECK_STATE(PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
@@ -107,7 +110,7 @@ bool ParserContext::file_continue(filetype_t ft) {
 }
 
 
-bool ParserContext::file_end(filetype_t ft) {
+bool Parser::file_end(filetype_t ft) {
     CHECK_STATE(PARSE_IN_FILE);
 
     if (ft == TYPE_DISK) {
@@ -123,7 +126,7 @@ bool ParserContext::file_end(filetype_t ft) {
 }
 
 
-bool ParserContext::file_status(filetype_t ft, const std::string &attr) {
+bool Parser::file_status(filetype_t ft, const std::string &attr) {
     status_t status;
 
     CHECK_STATE(PARSE_IN_FILE);
@@ -151,7 +154,7 @@ bool ParserContext::file_status(filetype_t ft, const std::string &attr) {
 }
 
 
-bool ParserContext::file_hash(filetype_t ft, int ht, const std::string &attr) {
+bool Parser::file_hash(filetype_t ft, int ht, const std::string &attr) {
     Hashes *h;
 
     CHECK_STATE(PARSE_IN_FILE);
@@ -172,7 +175,7 @@ bool ParserContext::file_hash(filetype_t ft, int ht, const std::string &attr) {
 }
 
 
-bool ParserContext::file_ignore(filetype_t ft) {
+bool Parser::file_ignore(filetype_t ft) {
     CHECK_STATE(PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
@@ -186,7 +189,7 @@ bool ParserContext::file_ignore(filetype_t ft) {
 }
 
 
-bool ParserContext::file_merge(filetype_t ft, const std::string &attr) {
+bool Parser::file_merge(filetype_t ft, const std::string &attr) {
     CHECK_STATE(PARSE_IN_FILE);
 
     r[ft]->merge = attr;
@@ -195,7 +198,7 @@ bool ParserContext::file_merge(filetype_t ft, const std::string &attr) {
 }
 
 
-bool ParserContext::file_mtime(filetype_t ft, time_t mtime) {
+bool Parser::file_mtime(filetype_t ft, time_t mtime) {
     CHECK_STATE(PARSE_IN_FILE);
     
     r[ft]->mtime = mtime;
@@ -204,7 +207,7 @@ bool ParserContext::file_mtime(filetype_t ft, time_t mtime) {
 }
 
 
-bool ParserContext::file_name(filetype_t ft, const std::string &attr) {
+bool Parser::file_name(filetype_t ft, const std::string &attr) {
     CHECK_STATE(PARSE_IN_FILE);
 
     if (ft == TYPE_ROM) {
@@ -223,13 +226,13 @@ bool ParserContext::file_name(filetype_t ft, const std::string &attr) {
 }
 
 
-bool ParserContext::file_size(filetype_t ft, const std::string &attr) {
+bool Parser::file_size(filetype_t ft, const std::string &attr) {
     /* TODO: check for strol errors */
     return file_size(ft, std::stoull(attr, NULL, 0));
 }
 
 
-bool ParserContext::file_size(filetype_t ft, uint64_t size) {
+bool Parser::file_size(filetype_t ft, uint64_t size) {
     CHECK_STATE(PARSE_IN_FILE);
 
     r[ft]->size = size;
@@ -237,7 +240,7 @@ bool ParserContext::file_size(filetype_t ft, uint64_t size) {
 }
 
 
-bool ParserContext::file_start(filetype_t ft) {
+bool Parser::file_start(filetype_t ft) {
     CHECK_STATE(PARSE_IN_GAME);
 
     g->files[ft].push_back(File());
@@ -249,7 +252,7 @@ bool ParserContext::file_start(filetype_t ft) {
 }
 
 
-bool ParserContext::game_cloneof(filetype_t ft, const std::string &attr) {
+bool Parser::game_cloneof(filetype_t ft, const std::string &attr) {
     CHECK_STATE(PARSE_IN_GAME);
 
     g->cloneof[0] = attr;
@@ -258,7 +261,7 @@ bool ParserContext::game_cloneof(filetype_t ft, const std::string &attr) {
 }
 
 
-bool ParserContext::game_description(const std::string &attr) {
+bool Parser::game_description(const std::string &attr) {
     CHECK_STATE(PARSE_IN_GAME);
 
     g->description = attr;
@@ -266,7 +269,7 @@ bool ParserContext::game_description(const std::string &attr) {
     return true;
 }
 
-bool ParserContext::game_end() {
+bool Parser::game_end() {
     CHECK_STATE(PARSE_IN_GAME);
     
     auto ok = true;
@@ -298,7 +301,7 @@ bool ParserContext::game_end() {
 }
 
 
-bool ParserContext::game_name(const std::string &attr) {
+bool Parser::game_name(const std::string &attr) {
     CHECK_STATE(PARSE_IN_GAME);
 
     if (!g->name.empty()) {
@@ -318,7 +321,7 @@ bool ParserContext::game_name(const std::string &attr) {
 }
 
 
-bool ParserContext::game_start() {
+bool Parser::game_start() {
     if (state == PARSE_IN_HEADER) {
         if (!header_end()) {
             return false;
@@ -340,7 +343,7 @@ bool ParserContext::game_start() {
 }
 
 
-bool ParserContext::prog_description(const std::string &attr) {
+bool Parser::prog_description(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     de.description = attr;
@@ -349,7 +352,7 @@ bool ParserContext::prog_description(const std::string &attr) {
 }
 
 
-bool ParserContext::prog_header(const std::string attr) {
+bool Parser::prog_header(const std::string attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     if (detector) {
@@ -382,7 +385,7 @@ bool ParserContext::prog_header(const std::string attr) {
 }
 
 
-bool ParserContext::prog_name(const std::string &attr) {
+bool Parser::prog_name(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     de.name = attr;
@@ -391,7 +394,7 @@ bool ParserContext::prog_name(const std::string &attr) {
 }
 
 
-bool ParserContext::prog_version(const std::string &attr) {
+bool Parser::prog_version(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     de.version = attr;
@@ -400,11 +403,11 @@ bool ParserContext::prog_version(const std::string &attr) {
 }
 
 
-ParserContext::~ParserContext() {
+Parser::~Parser() {
 }
 
 
-ParserContext::ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER) {
+Parser::Parser(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER) {
     dat_default.merge(dat, NULL);
     full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
     for (size_t i = 0; i < TYPE_MAX; i++) {
@@ -413,7 +416,7 @@ ParserContext::ParserContext(ParserSourcePtr source, const std::unordered_set<st
 }
 
 
-bool ParserContext::header_end() {
+bool Parser::header_end() {
     CHECK_STATE(PARSE_IN_HEADER);
 
     de.merge(&dat_default, &de);
@@ -425,7 +428,7 @@ bool ParserContext::header_end() {
 }
 
 
-void ParserContext::disk_end() {
+void Parser::disk_end() {
     if (r[TYPE_DISK]->hashes.empty() && r[TYPE_DISK]->status == STATUS_OK) {
         r[TYPE_DISK]->status = STATUS_NODUMP;
     }
@@ -436,7 +439,7 @@ void ParserContext::disk_end() {
 }
 
 
-bool ParserContext::ignore_game(const std::string &name) {
+bool Parser::ignore_game(const std::string &name) {
     for (auto &pattern : ignore) {
         if (fnmatch(pattern.c_str(), name.c_str(), 0) == 0) {
 	    return true;
@@ -447,7 +450,7 @@ bool ParserContext::ignore_game(const std::string &name) {
 }
 
 
-void ParserContext::rom_end(filetype_t ft) {
+void Parser::rom_end(filetype_t ft) {
     size_t n = g->files[ft].size() - 1;
 
     if (r[ft]->size == 0) {

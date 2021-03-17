@@ -31,78 +31,78 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "parse.h"
+#include "ParserXml.h"
 
 #include "xmlutil.h"
 
 
 static void parse_xml_lineno_cb(void *ctx, int lineno) {
-    static_cast<ParserContext *>(ctx)->lineno = static_cast<size_t>(lineno);
+    static_cast<ParserXml *>(ctx)->lineno = static_cast<size_t>(lineno);
 }
 
 
 static bool parse_xml_file_end(void *ctx, int file_type) {
-    return static_cast<ParserContext *>(ctx)->file_end(static_cast<filetype_t>(file_type));
+    return static_cast<ParserXml *>(ctx)->file_end(static_cast<filetype_t>(file_type));
 }
 
 static bool parse_xml_file_hash(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->file_hash(static_cast<filetype_t>(file_type), hash_type, value);
+    return static_cast<ParserXml *>(ctx)->file_hash(static_cast<filetype_t>(file_type), hash_type, value);
 }
 
 static bool parse_xml_file_loadflag(void *ctx, int file_type, int hash_type, const std::string &value) {
     if (value == "continue" || value == "ignore") {
-        return static_cast<ParserContext *>(ctx)->file_continue(static_cast<filetype_t>(file_type));
+        return static_cast<ParserXml *>(ctx)->file_continue(static_cast<filetype_t>(file_type));
     }
     else if (value == "reload" || value == "reload_plain" || value == "fill") {
-        return static_cast<ParserContext *>(ctx)->file_ignore(static_cast<filetype_t>(file_type));
+        return static_cast<ParserXml *>(ctx)->file_ignore(static_cast<filetype_t>(file_type));
     }
     return true;
 }
 
 static bool parse_xml_file_merge(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->file_merge(static_cast<filetype_t>(file_type), value);
+    return static_cast<ParserXml *>(ctx)->file_merge(static_cast<filetype_t>(file_type), value);
 }
 
 static bool parse_xml_file_name(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->file_name(static_cast<filetype_t>(file_type), value);
+    return static_cast<ParserXml *>(ctx)->file_name(static_cast<filetype_t>(file_type), value);
 }
 
 static bool parse_xml_file_start(void *ctx, int file_type) {
-    return static_cast<ParserContext *>(ctx)->file_start(static_cast<filetype_t>(file_type));
+    return static_cast<ParserXml *>(ctx)->file_start(static_cast<filetype_t>(file_type));
 }
 
 static bool parse_xml_file_status(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->file_status(static_cast<filetype_t>(file_type), value);
+    return static_cast<ParserXml *>(ctx)->file_status(static_cast<filetype_t>(file_type), value);
 }
 
 static bool parse_xml_file_size(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->file_size(static_cast<filetype_t>(file_type), value);
+    return static_cast<ParserXml *>(ctx)->file_size(static_cast<filetype_t>(file_type), value);
 }
 
 
 static bool parse_xml_game_cloneof(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->game_cloneof(static_cast<filetype_t>(file_type), value);
+    return static_cast<ParserXml *>(ctx)->game_cloneof(static_cast<filetype_t>(file_type), value);
 }
 
 static bool parse_xml_game_description(void *ctx, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->game_description(value);
+    return static_cast<ParserXml *>(ctx)->game_description(value);
 }
 
 static bool parse_xml_game_end(void *ctx, int file_type) {
-    return static_cast<ParserContext *>(ctx)->game_end();
+    return static_cast<ParserXml *>(ctx)->game_end();
 }
 
 static bool parse_xml_game_name(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->game_name(value);
+    return static_cast<ParserXml *>(ctx)->game_name(value);
 }
 
 static bool parse_xml_game_start(void *ctx, int file_type) {
-    return static_cast<ParserContext *>(ctx)->game_start();
+    return static_cast<ParserXml *>(ctx)->game_start();
 }
 
 
 static bool parse_xml_mame_build(void *ctx, int ft, int ht, const std::string &value) {
-    auto parser_context = static_cast<ParserContext *>(ctx);
+    auto parser_context = static_cast<ParserXml *>(ctx);
 
     if (!parser_context->prog_name(ft == 0 ? "M.A.M.E." : "M.E.S.S.")) {
         return false;
@@ -113,25 +113,25 @@ static bool parse_xml_mame_build(void *ctx, int ft, int ht, const std::string &v
 
 
 static bool parse_xml_prog_description(void *ctx, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->prog_description(value);
+    return static_cast<ParserXml *>(ctx)->prog_description(value);
 }
 
 static bool parse_xml_prog_header(void *ctx, int ft, int ht, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->prog_header(value);
+    return static_cast<ParserXml *>(ctx)->prog_header(value);
 }
 
 static bool parse_xml_prog_name(void *ctx, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->prog_name(value);
+    return static_cast<ParserXml *>(ctx)->prog_name(value);
 }
 
 static bool parse_xml_prog_version(void *ctx, const std::string &value) {
-    return static_cast<ParserContext *>(ctx)->prog_version(value);
+    return static_cast<ParserXml *>(ctx)->prog_version(value);
 }
 
 
 static bool parse_xml_softwarelist(void *ctx, int ft, int ht, const std::string &value) {
     /* sadly, no version information */
-    return static_cast<ParserContext *>(ctx)->prog_name(value);
+    return static_cast<ParserXml *>(ctx)->prog_name(value);
 }
 
 
@@ -194,10 +194,6 @@ static const std::unordered_map<std::string, XmluEntity> entities = {
 };
 
 
-bool ParserContext::parse_xml() {
+bool ParserXml::parse() {
     return xmlu_parse(ps.get(), this, parse_xml_lineno_cb, entities);
 }
-
-
-
-

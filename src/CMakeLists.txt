@@ -49,10 +49,10 @@ set(COMMON_SOURCES
   OutputContextCm.cc
   OutputContextDb.cc
   OutputContextMtree.cc
-  parse-cm.cc
-  parse-dir.cc
-  parse-rc.cc
-  parse.cc
+  ParserCm.cc
+  ParserDir.cc
+  ParserRc.cc
+  Parser.cc
   ParserSource.cc
   ParserSourceFile.cc
   ParserSourceZip.cc
@@ -74,7 +74,7 @@ set(LIBXML2_SOURCES
   detector_parse.cc
   detector_parse_ps.cc
   OutputContextXml.cc
-  parse-xml.cc
+  ParserXml.cc
   xmlutil.cc
   )  
 

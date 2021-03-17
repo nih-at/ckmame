@@ -1,8 +1,8 @@
-#ifndef HAD_PARSE_H
-#define HAD_PARSE_H
+#ifndef HAD_PARSER_H
+#define HAD_PARSER_H
 
 /*
-  parse.h -- parser interface
+  Parser.h -- parser interface
   Copyright (C) 1999-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -52,7 +52,7 @@ typedef enum parser_state parser_state_t;
 
 #define PARSER_FL_FULL_ARCHIVE_NAME 1
 
-class ParserContext {
+class Parser {
 public:
     static bool parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags);
 
@@ -60,6 +60,8 @@ public:
     size_t lineno; /* current line number in input file */
 
     bool full_archive_name;
+    
+    virtual bool parse() { return false; }
 
     // callbacks
     bool eof();
@@ -84,15 +86,10 @@ public:
     bool prog_name(const std::string &attr);
     bool prog_version(const std::string &attr);
 
-    ParserContext(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags);
-    ~ParserContext();
-    
-    bool parse_cm();
-    bool parse_dir(const std::string &dname, int hashtypes, bool runtest = false);
-    bool parse_rc();
-    bool parse_xml();
-    
-private:
+    Parser(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags);
+    virtual ~Parser();
+
+protected:
 
     bool header_end();
     void disk_end();
@@ -117,4 +114,4 @@ private:
     File *r[TYPE_MAX];      /* current files */
 };
 
-#endif /* parse.h */
+#endif /* Parser.h */

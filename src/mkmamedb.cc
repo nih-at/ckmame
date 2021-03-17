@@ -43,7 +43,8 @@
 #include "error.h"
 #include "file_util.h"
 #include "globals.h"
-#include "parse.h"
+#include "Parser.h"
+#include "ParserDir.h"
 #include "ParserSourceFile.h"
 #include "ParserSourceZip.h"
 #include "RomDB.h"
@@ -330,7 +331,7 @@ static int process_file(const char *fname, const std::unordered_set<std::string>
             try {
                 auto ps = std::make_shared<ParserSourceZip>(fname, za, name);
 
-                if (!ParserContext::parse(ps, exclude, dat, out, parser_flags)) {
+                if (!Parser::parse(ps, exclude, dat, out, parser_flags)) {
                     err = -1;
                 }
            }
@@ -350,8 +351,8 @@ static int process_file(const char *fname, const std::unordered_set<std::string>
 		Archive::register_cache_directory(fname);
             }
 
-            auto ctx = ParserContext(NULL, exclude, dat, out, parser_flags);
-            return ctx.parse_dir(fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
+            auto ctx = ParserDir(NULL, exclude, dat, out, parser_flags, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
+            return ctx.parse();
 	}
 
 	if (ec) {
@@ -366,7 +367,7 @@ static int process_file(const char *fname, const std::unordered_set<std::string>
 
         try {
             auto ps = std::make_shared<ParserSourceFile>(fname);
-            return ParserContext::parse(ps, exclude, dat, out, parser_flags);
+            return Parser::parse(ps, exclude, dat, out, parser_flags);
         }
         catch (std::exception &e) {
 	    return -1;
@@ -379,7 +380,7 @@ static int process_stdin(const std::unordered_set<std::string> &exclude, const D
     try {
         auto ps = std::make_shared<ParserSourceFile>("");
 
-        return ParserContext::parse(ps, exclude, dat, out, parser_flags);
+        return Parser::parse(ps, exclude, dat, out, parser_flags);
     }
     catch (std::exception &e) {
         return -1;
