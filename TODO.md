@@ -176,3 +176,12 @@ other features:
 - [cleanup] make `ARCHIVE_IFL_MODIFIED` a bool member
 - [test] fix preload on OS X
 - [feature] if `.ckmame.db` can't be opened, move aside and create new
+
+### Improve Detector support
+
+- define unique id for each detector (e. g. checksum over all fields)
+- in mame.db, store which dat uses which detector
+- split ckmamedb file table in (archive_id, file_number, name) and (archive_id, file_number, detector_uuid, size, hashes)
+- when entering archives in map, compute hashes for all needed detectors
+- when searching in ckmamedb, pass in which detector to use (or none)
+
