@@ -13,7 +13,7 @@ foreach(MAN_PAGE ${MAN_PAGES})
     string(REGEX REPLACE ".*(.)$" "man\\1" SUBDIR ${MAN_PAGE})
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${MAN_PAGE} DESTINATION man/${SUBDIR})
   endif()
-  # CONFIGURE_FILE does not find out about updates to the sources, and it does not provide a target
+  # configure_file does not find out about updates to the sources, and it does not provide a target
   #configure_file(${SOURCE_FILE} ${MAN_PAGE} COPYONLY)
   add_custom_command(OUTPUT ${MAN_PAGE}
     DEPENDS ${SOURCE_FILE}
@@ -26,18 +26,20 @@ foreach(MAN_PAGE ${MAN_PAGES})
   string(REGEX REPLACE "[1-9]$" "mdoc" MDOC_FILE ${MAN_PAGE})
 
   # html re-generation
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${HTML_FILE}
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${HTML_FILE}
     DEPENDS ${MDOC_FILE}
-    COMMAND ${CMAKE_COMMAND} -DIN=${MDOC_FILE} -DOUT=${HTML_FILE} -DDIR=${CMAKE_CURRENT_SOURCE_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/update-html.cmake
+    COMMAND ${CMAKE_COMMAND} -DIN=${CMAKE_CURRENT_SOURCE_DIR}/${MDOC_FILE} -DOUT=${CMAKE_CURRENT_BINARY_DIR}/${HTML_FILE} -P ${CMAKE_CURRENT_SOURCE_DIR}/update-html.cmake
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/${HTML_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/${HTML_FILE}
     )
-  list(APPEND UPDATEHTML ${CMAKE_CURRENT_SOURCE_DIR}/${HTML_FILE})
+  list(APPEND UPDATEHTML ${CMAKE_CURRENT_BINARY_DIR}/${HTML_FILE})
 
   # man re-generation
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${MAN_FILE}
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${MAN_FILE}
     DEPENDS ${MDOC_FILE}
-    COMMAND ${CMAKE_COMMAND} -DIN=${MDOC_FILE} -DOUT=${MAN_FILE} -DDIR=${CMAKE_CURRENT_SOURCE_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/update-man.cmake
+     COMMAND ${CMAKE_COMMAND} -DIN=${CMAKE_CURRENT_SOURCE_DIR}/${MDOC_FILE} -DOUT=${CMAKE_CURRENT_BINARY_DIR}/${MAN_FILE} -P ${CMAKE_CURRENT_SOURCE_DIR}/update-man.cmake
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/${MAN_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/${MAN_FILE}
     )
-  list(APPEND UPDATEMAN ${CMAKE_CURRENT_SOURCE_DIR}/${MAN_FILE})
+  list(APPEND UPDATEMAN ${CMAKE_CURRENT_BINARY_DIR}/${MAN_FILE})
 endforeach()
 add_custom_target(man ALL DEPENDS ${MAN_PAGES})
 add_custom_target(update-man DEPENDS ${UPDATEMAN})
