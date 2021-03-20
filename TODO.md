@@ -8,8 +8,6 @@
 
 - bug: when creating a fixdat and re-checks happen, games end up in the fixdat multiple times
 
-- clean up database statements with hardcoded filetype, like sqlite3_bind_int(x, y, TYPE_ROM)
-
 - fixdat-missing-all: two copies of the same file (romof) in fixdat; depends on order of games in datfile
 
 - C++ cleanups:
@@ -47,7 +45,6 @@
 ** [bug] existing no good rom is not accepted in uncompressed mode (`nogood-diskgood.test`)
 
 * bugs with test cases
-! [bug] diagnostics: `-c` for correct game outputs game correct + disk correct (`nogood-diskgood.test`)
 ! [bug] `mkmamedb`: three generation merge grandchild to child does not work (`mamedb-merge-parent.dump`)
 + [bug] improve ``zero-miss.test` diagnostics when creating zero size file
 + [bug] `mkmamedb`: warn if rom from parent has different crc (`mkmamedb-parent-crcdiff-mame.test`)
@@ -68,14 +65,12 @@
   In image new/file.chd:
   image new/file.chd: not used
   ```
-+ [cleanup] get rid of global variables (mostly `globals.c`)
 + [feature] `mkmamedb`: parser for mtree files
 + [feature] server mode: tell location/mamedb of ROM sets, serves files needed by remote `ckmame` client
 + [cleanup] `ckmame`: create fixdat only when necessary
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
 + [feature] get needed files directly from parent (`inparent.test`)
 + [feature] inconsistent zip in ROM set: copy files to new zip
-+ [cleanup] merge `disk_t` into `file_t`
 + [feature] config file (provides defaults overridable on command line)
 + [feature] needed cleanup (automatically?)
 + [feature] `mkmamedb`: mark ROMs without checksums as `nogooddump`
@@ -90,7 +85,6 @@
   ```
     Suggested solution: using `iconv` and `LC_CTYPE`, try transcribing invalid UTF-8 files to UTF-8
     if it fails or no `iconv` or `LC_CTYPE` available, replace invalid characters with `'?'`
-- [feature] chd v5 support: maps, lzma, huffman, flac, a/v decompression
 - [cleanup] access db directly in `find_*`
 - [cleanup] specify globally which parts of memdb/lists to fill/maintain
 - [cleanup] rom: use flag to specify whether we know the size
@@ -117,7 +111,6 @@ other features:
 - fixdat: if only checking child, ROM missing in parent is not in fixdat
 - parse: add state checking to `parse-cm.c`
 - parse: check for duplicate attributes
-- add option to check integrity for roms only (not for disks, they take forever)
 - `mkmamedb`: handle rom without crc
 - `mkmamedb`: handle `size 0 crc -`
 - `mkmamedb`: no error message for missing newline in last line
@@ -126,7 +119,6 @@ other features:
 - option to check if no good dumps are needed elsewhere
 
 * code cleanups:
-  - remove unneeded includes
   - make `parse_cm` table driven
   - split `util*`, `funcs.h`
   - fix all TODOs
