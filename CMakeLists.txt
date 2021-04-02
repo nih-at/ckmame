@@ -81,6 +81,14 @@ else()
   message(WARNING "-- libxml2 library not found; XML support disabled")
 endif()
 
+find_package(LibArchive)
+
+if (LibArchive_FOUND)
+  set(HAVE_LIBARCHIVE 1)
+else()
+  message(WARNING "-- libarchive not found; 7z read support disabled")
+endif()
+
 # install with rpath
 if(NOT CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)

@@ -1,0 +1,12 @@
+description test single-rom game (no parent), file is in search dir in 7z
+variants zip
+return 0
+args -FKLvc -e extradir 2-48
+file extradir/2-48.7z 2-48-ok.7z 2-48-ok.7z
+file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
+no-hashes roms 2-48.zip 04.rom
+no-hashes extradir 2-48.zip 04.rom
+stdout In game 2-48:
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout rom  08.rom        size       8  crc 3656897d: is in 'extradir/2-48.7z/08.rom'
+stdout roms/2-48.zip: add 'extradir/2-48.7z/08.rom' as '08.rom'

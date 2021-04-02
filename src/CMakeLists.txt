@@ -82,11 +82,18 @@ if(LIBXML2_FOUND)
   list(APPEND COMMON_SOURCES ${LIBXML2_SOURCES})
 endif()
 
+if (HAVE_LIBARCHIVE)
+  list(APPEND COMMON_SOURCES ArchiveLibarchive.cc)
+endif()
 
 add_library(libckmame ${COMMON_SOURCES})
 target_link_libraries(libckmame PRIVATE ZLIB::ZLIB libzip::zip)
 # for config.h
 target_include_directories(libckmame PRIVATE ${PROJECT_BINARY_DIR})
+
+if (HAVE_LIBARCHIVE)
+  target_link_libraries(libckmame PRIVATE LibArchive::LibArchive)
+endif()
 
 foreach(PROGRAM ckmame detective dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.cc)

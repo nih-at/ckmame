@@ -91,7 +91,7 @@ name_type_t name_type(const std::string &name) {
     
     auto ext = std::filesystem::path(name).extension();
 
-    if (!roms_unzipped && strcasecmp(ext.c_str(), ".zip") == 0) {
+    if (!roms_unzipped && (strcasecmp(ext.c_str(), ".zip") == 0 /* || strcasecmp(ext.c_str(), ".7z") == 0 */)) {
 	return NAME_ZIP;
     }
 

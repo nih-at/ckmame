@@ -39,6 +39,7 @@
 
 #include "ArchiveDir.h"
 #include "ArchiveImages.h"
+#include "ArchiveLibarchive.h"
 #include "ArchiveZip.h"
 #include "Detector.h"
 #include "dbh_cache.h"
@@ -85,6 +86,10 @@ ArchivePtr Archive::open(ArchiveContentsPtr contents) {
     
     if (contents->open_archive.expired()) {
         switch (contents->archive_type) {
+            case ARCHIVE_LIBARCHIVE:
+                archive = std::make_shared<ArchiveLibarchive>(contents);
+                break;
+                
             case ARCHIVE_ZIP:
                 archive = std::make_shared<ArchiveZip>(contents);
                 break;
@@ -364,7 +369,13 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
                     archive = std::make_shared<ArchiveDir>(archive_name, filetype, where, flags);
                 }
                 else {
-                    archive = std::make_shared<ArchiveZip>(archive_name, filetype, where, flags);
+                    auto extension = std::filesystem::path(archive_name).extension();
+                    if (strcasecmp(extension.c_str(), ".zip") == 0) {
+                        archive = std::make_shared<ArchiveZip>(archive_name, filetype, where, flags);
+                    }
+                    else if (strcasecmp(extension.c_str(), ".7z") == 0) {
+                        archive = std::make_shared<ArchiveLibarchive>(archive_name, filetype, where, flags);
+                    }
                 }
                 break;
                 

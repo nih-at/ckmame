@@ -1,8 +1,8 @@
-#ifndef _HAD_ARCHIVE_ZIP_H
-#define _HAD_ARCHIVE_ZIP_H
+#ifndef _HAD_ARCHIVE_LIBARCHIVE_H
+#define _HAD_ARCHIVE_LIBARCHIVE_H
 
 /*
-  ArchiveZip.h -- archive for zip files
+  ArchiveZip.h -- archive via libarchive
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -34,14 +34,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <zip.h>
+#include "ArchiveZip.h"
 
-#include "Archive.h"
+#include <archive.h>
 
-class ArchiveZip : public Archive {
+class ArchiveLibarchive : public ArchiveZip {
     class ArchiveFile: public Archive::ArchiveFile {
     public:
-        ArchiveFile(zip_file_t *zf_) : zf(zf_) { }
+        ArchiveFile(ArchiveLibarchive *archive_, struct archive *la_) : archive(archive_), la(la_) { }
         virtual ~ArchiveFile() { close(); }
         
         virtual void close();
@@ -49,35 +49,53 @@ class ArchiveZip : public Archive {
         virtual const char *strerror();
         
     private:
-        
-        zip_file_t *zf;
+        ArchiveLibarchive *archive;
+        struct archive *la;
     };
     
 public:
-    ArchiveZip(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_ZIP, name, filetype, where, flags), za(NULL) { }
-    ArchiveZip(ArchiveContentsPtr contents) : Archive(contents), za(NULL) { }
+    ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveZip(name, filetype, where, flags | ARCHIVE_FL_RDONLY), la(NULL), current_index(0), have_open_file(false) { contents->archive_type = ARCHIVE_LIBARCHIVE; }
+    ArchiveLibarchive(ArchiveContentsPtr contents) : ArchiveZip(contents), la(NULL), current_index(0), have_open_file(false) { }
 
-    virtual ~ArchiveZip() { close(); }
+    virtual ~ArchiveLibarchive() { close(); }
 
     virtual bool check();
     virtual bool close_xxx();
     virtual bool commit_xxx();
     virtual void commit_cleanup();
-    virtual bool file_add_empty_xxx(const std::string &filename);
-    virtual bool file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length);
-    virtual bool file_delete_xxx(uint64_t index);
     virtual ArchiveFilePtr file_open(uint64_t index);
-    virtual bool file_rename_xxx(uint64_t index, const std::string &filename);
-    virtual void get_last_update();
     virtual bool read_infos_xxx();
     virtual bool rollback_xxx(); /* never called if commit never fails */
 
 protected:
-    zip_t *za;
-    
     virtual zip_source_t *get_source(zip_t *destination_archive, uint64_t index, uint64_t start, std::optional<uint64_t> length);
-    bool ensure_zip();
+
+private:
+    class Source {
+    public:
+        Source(ArchiveLibarchive *archive_, uint64_t index_, uint64_t start_, uint64_t length_): archive(archive_), index(index_), start(start_), length(length_) { zip_error_init(&error); }
+        
+        static zip_int64_t callback_c(void *userdata, void *data, zip_uint64_t len, zip_source_cmd_t cmd);
+        zip_int64_t callback(void *data, zip_uint64_t len, zip_source_cmd_t cmd);
+
+        zip_source_t *get_source(zip_t *za);
+        
+        ArchiveLibarchive *archive;
+        uint64_t index;
+        uint64_t start;
+        uint64_t length;
+
+        ArchiveFilePtr file;
+        zip_error_t error;
+    };
+    
+    struct archive *la;
+    uint64_t current_index;
+    bool have_open_file;
+    
+    bool ensure_la();
     
 };
 
-#endif // _HAD_ARCHIVE_ZIP_H
+
+#endif // _HAD_ARCHIVE_LIBARCHIVE_H

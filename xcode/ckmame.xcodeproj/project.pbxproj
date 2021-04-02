@@ -52,6 +52,11 @@
 		4B3274D825B99F76006AEF16 /* fix.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3274CC25B99F76006AEF16 /* fix.h */; };
 		4B3274D925B99F76006AEF16 /* check.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3274CD25B99F76006AEF16 /* check.h */; };
 		4B3274DA25B99F76006AEF16 /* check_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3274CE25B99F76006AEF16 /* check_util.h */; };
+		4B3666EE261719DC00A67A6C /* ArchiveLibarchive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B3666EC261719DC00A67A6C /* ArchiveLibarchive.cc */; };
+		4B3666EF261719DC00A67A6C /* ArchiveLibarchive.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3666ED261719DC00A67A6C /* ArchiveLibarchive.h */; };
+		4B36673426173FF800A67A6C /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
+		4B36673526173FF800A67A6C /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
+		4B3667462617401C00A67A6C /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
 		4B41077518CC8F25002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
 		4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
 		4B41078E18CC8FEE002C3052 /* dbdump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B41078D18CC8FEE002C3052 /* dbdump.cc */; };
@@ -333,6 +338,9 @@
 		4B33F988252C6CCD007EC283 /* cmake-config.h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = "cmake-config.h.in"; sourceTree = "<group>"; };
 		4B33F989252C6D1D007EC283 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		4B33F98B252C7889007EC283 /* ArchiveZip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveZip.h; sourceTree = "<group>"; };
+		4B3666EC261719DC00A67A6C /* ArchiveLibarchive.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveLibarchive.cc; sourceTree = "<group>"; };
+		4B3666ED261719DC00A67A6C /* ArchiveLibarchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveLibarchive.h; sourceTree = "<group>"; };
+		4B36673326173FF800A67A6C /* libarchive.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.dylib; path = ../../../../../../usr/local/Cellar/libarchive/3.5.1_1/lib/libarchive.dylib; sourceTree = "<group>"; };
 		4B41077B18CC8F25002C3052 /* dbdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078D18CC8FEE002C3052 /* dbdump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbdump.cc; sourceTree = "<group>"; };
@@ -702,6 +710,7 @@
 				4B07BFC91FEC1BB60068A600 /* libz.tbd in Frameworks */,
 				4B6B145624FF918700D3F3FB /* libzip.dylib in Frameworks */,
 				4B5FAE261735932200B67C24 /* liblibckmame.a in Frameworks */,
+				4B36673426173FF800A67A6C /* libarchive.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -720,6 +729,7 @@
 				4B07BFC31FEC1B600068A600 /* libsqlite3.tbd in Frameworks */,
 				4B07BFC21FEC1B5C0068A600 /* libz.tbd in Frameworks */,
 				4B5FAE341735936100B67C24 /* liblibckmame.a in Frameworks */,
+				4B3667462617401C00A67A6C /* libarchive.dylib in Frameworks */,
 				4B6B145724FF919300D3F3FB /* libzip.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -743,6 +753,7 @@
 				4B07BFC61FEC1B880068A600 /* libsqlite3.tbd in Frameworks */,
 				4B5FAE4B1735939000B67C24 /* liblibckmame.a in Frameworks */,
 				4B6B145924FF91A800D3F3FB /* libzip.dylib in Frameworks */,
+				4B36673526173FF800A67A6C /* libarchive.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -752,6 +763,7 @@
 		4B07BFBD1FEC1B190068A600 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4B36673326173FF800A67A6C /* libarchive.dylib */,
 				4B6B145524FF918700D3F3FB /* libzip.dylib */,
 				4B07BFC41FEC1B700068A600 /* libxml2.tbd */,
 				4B07BFC11FEC1B5B0068A600 /* libz.tbd */,
@@ -847,6 +859,8 @@
 				4BD482972535B23C00D0002B /* ArchiveDir.h */,
 				4BF6FA2825D5371B00B93A98 /* ArchiveImages.cc */,
 				4BF6FA2925D5371B00B93A98 /* ArchiveImages.h */,
+				4B3666EC261719DC00A67A6C /* ArchiveLibarchive.cc */,
+				4B3666ED261719DC00A67A6C /* ArchiveLibarchive.h */,
 				4B9292C917635B5500806C0A /* ArchiveZip.cc */,
 				4B33F98B252C7889007EC283 /* ArchiveZip.h */,
 				4B5FAC971735919800B67C24 /* Chd.cc */,
@@ -1264,6 +1278,7 @@
 				4B3274D025B99F76006AEF16 /* diagnostics.h in Headers */,
 				4B3274D525B99F76006AEF16 /* file_util.h in Headers */,
 				4B5F43C21889D059000C3B7C /* RomDB.h in Headers */,
+				4B3666EF261719DC00A67A6C /* ArchiveLibarchive.h in Headers */,
 				4B3274D625B99F76006AEF16 /* fixdat.h in Headers */,
 				4B3274D825B99F76006AEF16 /* fix.h in Headers */,
 				4BB552BD25C01EC1001ABC31 /* Exception.h in Headers */,
@@ -1502,6 +1517,7 @@
 				4BB51D46258247330047BE72 /* ParserSourceZip.cc in Sources */,
 				4B5FADD91735930100B67C24 /* detector_parse_ps.cc in Sources */,
 				4BA47B0E25CC3E2300C4C842 /* check_archive_files.cc in Sources */,
+				4B3666EE261719DC00A67A6C /* ArchiveLibarchive.cc in Sources */,
 				4B5FADDA1735930100B67C24 /* detector_print.cc in Sources */,
 				4B5FADDC1735930100B67C24 /* diagnostics.cc in Sources */,
 				4B5FADDD1735930100B67C24 /* Dir.cc in Sources */,
@@ -1739,6 +1755,7 @@
 					/usr/local/include,
 					/usr/local/lib/libzip/include,
 					/usr/include/libxml2,
+					/usr/local/opt/libarchive/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1794,6 +1811,7 @@
 					/usr/local/include,
 					/usr/local/lib/libzip/include,
 					/usr/include/libxml2,
+					/usr/local/opt/libarchive/include,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				SDKROOT = macosx;
@@ -1809,6 +1827,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
+					/usr/local/Cellar/libarchive/3.5.1_1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1822,6 +1841,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
+					/usr/local/Cellar/libarchive/3.5.1_1/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1855,6 +1875,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
+					/usr/local/Cellar/libarchive/3.5.1_1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1869,6 +1890,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
+					/usr/local/Cellar/libarchive/3.5.1_1/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1927,6 +1949,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
+					/usr/local/Cellar/libarchive/3.5.1_1/lib,
 				);
 				PRODUCT_NAME = mkmamedb;
 			};
@@ -1940,6 +1963,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
+					/usr/local/Cellar/libarchive/3.5.1_1/lib,
 				);
 				PRODUCT_NAME = mkmamedb;
 			};

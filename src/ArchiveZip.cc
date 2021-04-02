@@ -161,7 +161,7 @@ int64_t ArchiveZip::ArchiveFile::read(void *data, uint64_t length) {
 }
 
 
-bool ArchiveZip::file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive_, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length_) {
+bool ArchiveZip::file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive_, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length) {
     struct zip_source *source;
 
     auto source_archive = static_cast<ArchiveZip *>(source_archive_);
@@ -170,10 +170,7 @@ bool ArchiveZip::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
         return false;
     }
     
-    // TODO: overflow check
-    int64_t length = length_.has_value() ? static_cast<int64_t>(length_.value()) : -1;
-
-    if ((source = zip_source_zip(za, source_archive->za, source_index, ZIP_FL_UNCHANGED, start, length)) == NULL || (index.has_value() ? zip_replace(za, index.value(), source) : zip_add(za, filename.c_str(), source)) < 0) {
+    if ((source = source_archive->get_source(za, source_index, start, length)) == NULL || (index.has_value() ? zip_replace(za, index.value(), source) : zip_add(za, filename.c_str(), source)) < 0) {
 	zip_source_free(source);
 	seterrinfo(name, filename);
 	myerror(ERRZIPFILE, "error adding '%s' from `%s': %s", source_archive->files[source_index].name.c_str(), source_archive->name.c_str(), zip_strerror(za));
@@ -313,4 +310,12 @@ bool ArchiveZip::rollback_xxx() {
     }
 
     return true;
+}
+
+
+zip_source_t *ArchiveZip::get_source(zip_t *destination_archive, uint64_t index, uint64_t start, std::optional<uint64_t> length_) {
+    // TODO: overflow check
+    int64_t length = length_.has_value() ? static_cast<int64_t>(length_.value()) : -1;
+
+    return zip_source_zip(destination_archive, za, index, ZIP_FL_UNCHANGED, start, length);
 }
