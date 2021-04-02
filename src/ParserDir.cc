@@ -115,13 +115,19 @@ bool ParserDir::parse() {
                                 if (extension == ".chd") {
                                     continue;
                                 }
-                                else if (extension == ".zip") {
+                                else if (is_ziplike(file.name)) {
                                     auto a = Archive::open(filepath / file.name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
                                     if (a) {
-                                        start_game(a->name.substr(0, a->name.length() - 4), directory_name);
+                                        auto name = a->name;
+                                        if (!runtest) {
+                                            auto extension = std::filesystem::path(name).extension();
+                                            name = name.substr(0, name.length() - extension.string().length());
+                                        }
+                                        start_game(name, directory_name);
                                         parse_archive(TYPE_ROM, a.get());
                                         end_game();
-                                    }                                }
+                                    }
+                                }
                                 else {
                                     myerror(ERRDEF, "skipping unknown file '%s/%s'", filepath.c_str(), file.name.c_str());
                                 }
@@ -139,7 +145,12 @@ bool ParserDir::parse() {
                             /* TODO: handle errors */
                             auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
                             if (a) {
-                                start_game(a->name.substr(0, a->name.length() - 4), directory_name);
+                                auto name = a->name;
+                                if (!runtest) {
+                                    auto extension = std::filesystem::path(name).extension();
+                                    name = name.substr(0, name.length() - extension.string().length());
+                                }
+                                start_game(name, directory_name);
                                 parse_archive(TYPE_ROM, a.get());
                                 end_game();
                             }

@@ -137,9 +137,6 @@ bool OutputContextMtree::game(GamePtr game) {
                 continue;
             }
             std::string name = dirname;
-            if (ft == TYPE_ROM && !roms_unzipped) {
-                name += ".zip";
-            }
             fprintf(f.get(), "./%s type=dir\n", name.c_str());
             write_files(name, game->files[ft]);
         }

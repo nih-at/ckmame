@@ -58,6 +58,7 @@ bool ArchiveLibarchive::ensure_la() {
     }
     
     current_index = 0;
+    header_read = false;
     have_open_file = false;
 
     return true;
@@ -122,10 +123,12 @@ Archive::ArchiveFilePtr ArchiveLibarchive::file_open(uint64_t index) {
     if (!ensure_la()) {
         return NULL;
     }
+    
 
     if (current_index > index) {
         // rewind
         archive_read_free(la);
+        la = NULL;
         if (!ensure_la()) {
             return NULL;
         }
@@ -133,12 +136,29 @@ Archive::ArchiveFilePtr ArchiveLibarchive::file_open(uint64_t index) {
     
     struct archive_entry *entry;
     while (current_index < index) {
+        if (!header_read) {
+            if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
+                seterrinfo("", name);
+                myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
+                return NULL;
+            }
+        }
+        if (archive_read_data_skip(la) != ARCHIVE_OK) {
+            seterrinfo("", name);
+            myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
+            return NULL;
+        }
+        header_read = false;
+        current_index += 1;
+    }
+    
+    if (!header_read) {
         if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
             seterrinfo("", name);
             myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
             return NULL;
         }
-        current_index += 1;
+        header_read = true;
     }
         
     return Archive::ArchiveFilePtr(new ArchiveFile(this, la));
@@ -151,6 +171,8 @@ const char *ArchiveLibarchive::ArchiveFile::strerror() {
 
 
 bool ArchiveLibarchive::read_infos_xxx() {
+    contents->flags |= ARCHIVE_FL_RDONLY;
+    
     if (!ensure_la()) {
         return false;
     }
@@ -159,7 +181,8 @@ bool ArchiveLibarchive::read_infos_xxx() {
     
     current_index = 0;
     struct archive_entry *entry;
-    while (archive_read_next_header(la, &entry) == ARCHIVE_OK) {
+    int ret;
+    while ((ret = archive_read_next_header(la, &entry)) == ARCHIVE_OK) {
 
         File r;
         r.mtime = archive_entry_mtime(entry);
@@ -168,8 +191,8 @@ bool ArchiveLibarchive::read_infos_xxx() {
         r.status = STATUS_OK;
         files.push_back(r);
 
-        file_ensure_hashes(current_index, contents->flags & ARCHIVE_FL_HASHTYPES_MASK);
-        
+        header_read = true;
+        file_ensure_hashes(current_index, Hashes::TYPE_ALL);
         // current_index is increased by reading and closing the file.
         
 #if 0
@@ -178,6 +201,10 @@ bool ArchiveLibarchive::read_infos_xxx() {
             file_match_detector(i);
         }
 #endif
+    }
+    if (ret != ARCHIVE_EOF) {
+        myerror(ERRZIP, "can't list contents: %s", archive_error_string(la));
+        return false;
     }
     
     return true;

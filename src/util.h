@@ -47,6 +47,7 @@ int hex2bin(unsigned char *, const char *, size_t);
 name_type_t name_type(const std::string &name);
 bool ensure_dir(const std::string &name, bool strip_filename);
 const std::string get_directory(void);
+bool is_ziplike(const std::string &fname);
 void print_human_number(FILE *f, uint64_t value);
 std::string status_name(status_t status, bool verbose = false);
 std::string string_format(const char *format, ...) __attribute__ ((format (printf, 1, 2)));

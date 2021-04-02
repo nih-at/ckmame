@@ -37,9 +37,12 @@
 #include <cerrno>
 #include <cstring>
 
+#include "config.h"
 #include "ArchiveDir.h"
 #include "ArchiveImages.h"
+#ifdef HAVE_LIBARCHIVE
 #include "ArchiveLibarchive.h"
+#endif
 #include "ArchiveZip.h"
 #include "Detector.h"
 #include "dbh_cache.h"
@@ -64,7 +67,7 @@ ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, fi
     filetype(filetype_),
     where(where_),
     cache_id(0),
-    flags(0),
+    flags(flags_),
     mtime(0),
     size(0),
     archive_type(type_),
@@ -87,7 +90,11 @@ ArchivePtr Archive::open(ArchiveContentsPtr contents) {
     if (contents->open_archive.expired()) {
         switch (contents->archive_type) {
             case ARCHIVE_LIBARCHIVE:
+#ifdef HAVE_LIBARCHIVE
                 archive = std::make_shared<ArchiveLibarchive>(contents);
+#else
+                return NULL;
+#endif
                 break;
                 
             case ARCHIVE_ZIP:
@@ -373,9 +380,11 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
                     if (strcasecmp(extension.c_str(), ".zip") == 0) {
                         archive = std::make_shared<ArchiveZip>(archive_name, filetype, where, flags);
                     }
+#ifdef HAVE_LIBARCHIVE
                     else if (strcasecmp(extension.c_str(), ".7z") == 0) {
                         archive = std::make_shared<ArchiveLibarchive>(archive_name, filetype, where, flags);
                     }
+#endif
                 }
                 break;
                 

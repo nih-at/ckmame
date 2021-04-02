@@ -108,7 +108,7 @@ int DeleteList::execute() {
                 }
             }
 	}
-	if (a) {
+	if (a && a->is_writable()) {
             if (fix_options & FIX_PRINT) {
 		printf("%s: delete used file '%s'\n", a->name.c_str(), a->files[entry.index].filename().c_str());
             }

@@ -322,6 +322,7 @@
 		4B20D2CC260254A300D77FA8 /* ParserXml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserXml.h; sourceTree = "<group>"; };
 		4B20D2D6260254A900D77FA8 /* ParserRc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserRc.h; sourceTree = "<group>"; };
 		4B20D2E0260254AF00D77FA8 /* ParserDir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserDir.h; sourceTree = "<group>"; };
+		4B213018261777770048B9CD /* rom-from-extra-partial-7z.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-partial-7z.test"; sourceTree = "<group>"; };
 		4B3274C325B99F75006AEF16 /* fix_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fix_util.h; sourceTree = "<group>"; };
 		4B3274C425B99F75006AEF16 /* diagnostics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = diagnostics.h; sourceTree = "<group>"; };
 		4B3274C525B99F75006AEF16 /* SharedFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharedFile.h; sourceTree = "<group>"; };
@@ -1026,6 +1027,7 @@
 		4B6B145B24FF943B00D3F3FB /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				4B213018261777770048B9CD /* rom-from-extra-partial-7z.test */,
 				4B6B146424FF946A00D3F3FB /* archive-broken.test */,
 				4B6B147224FF946A00D3F3FB /* archive-broken2.test */,
 				4B6B145E24FF946900D3F3FB /* baddump.test */,

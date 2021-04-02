@@ -128,6 +128,10 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
     GarbagePtr gb;
     int move;
 
+    if (!a->is_writable()) {
+        return;
+    }
+    
     if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
         gb = std::make_shared<Garbage>(a);
     }

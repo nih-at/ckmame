@@ -104,7 +104,7 @@ struct option options[] = {
 
 #define DEFAULT_FILE_PATTERNS "*.dat"
 
-static int process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags);
+static int process_file(const std::string &fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags);
 static int process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
 
 static int hashtypes;
@@ -137,9 +137,7 @@ main(int argc, char **argv) {
     parser_flags = 0;
 
     dbname_real = NULL;
-    dbname = getenv("MAMEDB");
-    if (dbname == NULL)
-	dbname = DBH_DEFAULT_DB_NAME;
+    dbname = NULL;
     fmt = OutputContext::FORMAT_DB;
     hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
     detector_name = NULL;
@@ -233,8 +231,19 @@ main(int argc, char **argv) {
 	flags |= OUTPUT_FL_RUNTEST;
 	parser_flags = PARSER_FL_FULL_ARCHIVE_NAME;
 	cache_directory = false;
+        if (dbname == NULL) {
+            // TODO: make this work on Windows
+            dbname = "/dev/stdout";
+        }
     }
 
+    if (dbname == NULL) {
+        dbname = getenv("MAMEDB");
+        if (dbname == NULL) {
+            dbname = DBH_DEFAULT_DB_NAME;
+        }
+    }
+    
     if (flags & OUTPUT_FL_TEMP) {
 	dbname_real = dbname;
 	dbname = tmpnam(tmpnam_buffer);
@@ -270,7 +279,17 @@ main(int argc, char **argv) {
         file_patterns.push_back(DEFAULT_FILE_PATTERNS);
 
 	for (i = optind; i < argc; i++) {
-	    if (process_file(argv[i], exclude, &dat, file_patterns, skip_files, out.get(), flags) < 0) {
+            auto name = std::string(argv[i]);
+            
+            auto last = name.find_last_not_of("/");
+            if (last == std::string::npos) {
+                name = "/";
+            }
+            else {
+                name.resize(last + 1);
+            }
+
+	    if (process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags) < 0) {
 		i = argc;
 		ret = -1;
 	    }
@@ -296,7 +315,7 @@ main(int argc, char **argv) {
 }
 
 
-static int process_file(const char *fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags) {
+static int process_file(const std::string &fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags) {
     struct zip *za;
 
     try {
@@ -307,7 +326,7 @@ static int process_file(const char *fname, const std::unordered_set<std::string>
 	/* that's fine */
     }
 
-    if (!roms_unzipped && (za = zip_open(fname, 0, NULL)) != NULL) {
+    if (!roms_unzipped && (za = zip_open(fname.c_str(), 0, NULL)) != NULL) {
 	const char *name;
 	int err;
 
@@ -356,12 +375,12 @@ static int process_file(const char *fname, const std::unordered_set<std::string>
 	}
 
 	if (ec) {
-	    myerror(ERRDEF, "cannot stat() file '%s': %s", fname, ec.message().c_str());
+	    myerror(ERRDEF, "cannot stat() file '%s': %s", fname.c_str(), ec.message().c_str());
 	    return -1;
 	}
 
 	if (roms_unzipped) {
-	    myerror(ERRDEF, "argument '%s' is not a directory", fname);
+	    myerror(ERRDEF, "argument '%s' is not a directory", fname.c_str());
 	    return -1;
 	}
 

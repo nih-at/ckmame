@@ -54,8 +54,8 @@ class ArchiveLibarchive : public ArchiveZip {
     };
     
 public:
-    ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveZip(name, filetype, where, flags | ARCHIVE_FL_RDONLY), la(NULL), current_index(0), have_open_file(false) { contents->archive_type = ARCHIVE_LIBARCHIVE; }
-    ArchiveLibarchive(ArchiveContentsPtr contents) : ArchiveZip(contents), la(NULL), current_index(0), have_open_file(false) { }
+    ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveZip(name, filetype, where, flags), la(NULL), current_index(0), header_read(false), have_open_file(false) { contents->archive_type = ARCHIVE_LIBARCHIVE; }
+    ArchiveLibarchive(ArchiveContentsPtr contents) : ArchiveZip(contents), la(NULL), current_index(0), header_read(false), have_open_file(false) { }
 
     virtual ~ArchiveLibarchive() { close(); }
 
@@ -91,6 +91,7 @@ private:
     
     struct archive *la;
     uint64_t current_index;
+    bool header_read;
     bool have_open_file;
     
     bool ensure_la();

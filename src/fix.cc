@@ -97,12 +97,14 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
                     }
                     /* fallthrough */
                 case FS_SUPERFLUOUS:
-                    if (fix_options & FIX_PRINT) {
-                        printf("%s: delete %s file '%s'\n", archive->name.c_str(), (result->archive_files[filetype][i] == FS_SUPERFLUOUS ? "unused" : "duplicate"), archive->files[i].filename().c_str());
+                    if (archive->is_writable()) {
+                        if (fix_options & FIX_PRINT) {
+                            printf("%s: delete %s file '%s'\n", archive->name.c_str(), (result->archive_files[filetype][i] == FS_SUPERFLUOUS ? "unused" : "duplicate"), archive->files[i].filename().c_str());
+                        }
+                        
+                        /* TODO: handle error (how?) */
+                        archive->file_delete(i);
                     }
-                    
-                    /* TODO: handle error (how?) */
-                    archive->file_delete(i);
                     break;
                     
                 case FS_NEEDED:

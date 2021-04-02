@@ -210,6 +210,7 @@ set(EXTRA_TESTS
   rom-from-extra-keep-dir.test
   rom-from-extra-keep-zip.test
   rom-from-extra-partial.test
+  rom-from-extra-partial-7z.test
   rom-from-extra-remove.test
   rom-from-extra-size-changed.test
   rom-from-extra-slash.test

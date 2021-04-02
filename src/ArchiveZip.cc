@@ -166,7 +166,7 @@ bool ArchiveZip::file_copy_xxx(std::optional<uint64_t> index, Archive *source_ar
 
     auto source_archive = static_cast<ArchiveZip *>(source_archive_);
     
-    if (!ensure_zip() || !source_archive->ensure_zip()) {
+    if (!ensure_zip()) {
         return false;
     }
     
@@ -314,6 +314,10 @@ bool ArchiveZip::rollback_xxx() {
 
 
 zip_source_t *ArchiveZip::get_source(zip_t *destination_archive, uint64_t index, uint64_t start, std::optional<uint64_t> length_) {
+    if (!ensure_zip()) {
+        return NULL;
+    }
+    
     // TODO: overflow check
     int64_t length = length_.has_value() ? static_cast<int64_t>(length_.value()) : -1;
 

@@ -37,6 +37,7 @@
 #include <cstring>
 #include <filesystem>
 
+#include "config.h"
 #include "error.h"
 #include "globals.h"
 
@@ -89,9 +90,7 @@ name_type_t name_type(const std::string &name) {
         return NAME_CKMAMEDB;
     }
     
-    auto ext = std::filesystem::path(name).extension();
-
-    if (!roms_unzipped && (strcasecmp(ext.c_str(), ".zip") == 0 /* || strcasecmp(ext.c_str(), ".7z") == 0 */)) {
+    if (!roms_unzipped && is_ziplike(name)) {
 	return NAME_ZIP;
     }
 
@@ -126,6 +125,22 @@ const std::string get_directory(void) {
 	return rom_dir;
     }
     return "roms";
+}
+
+bool is_ziplike(const std::string &fname) {
+    auto extension = std::filesystem::path(fname).extension();
+    
+    if (strcasecmp(extension.c_str(), ".zip") == 0) {
+        return true;
+    }
+    
+#ifdef HAVE_LIBARCHIVE
+    if (strcasecmp(extension.c_str(), ".7z") == 0) {
+        return true;
+    }
+#endif
+    
+    return false;
 }
 
 
