@@ -1,5 +1,6 @@
-1.1 (2020-xx-xx)
+1.1 (2021-xx-xx)
 =================
+* Read-only 7z support.
 * Bump mamedb version. All mame.db files need to be regenerated.
 * Follow MAME in expecting disk images in subdirectories.
 * Remove broken support for checking samples.
