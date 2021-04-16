@@ -1,0 +1,15 @@
+description test single-rom game (no parent) as 7zip
+variants zip
+features LIBARCHIVE
+return 0
+args -FKLvcj 2-48
+file-del roms/2-48.7z 2-48-ok.7z
+file-new roms/2-48.zip 2-48-ok.zip
+stdout In game 2-48:
+stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/2-48.7z/04.rom'
+stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/2-48.7z/08.rom'
+stdout roms/2-48.zip: add 'roms/2-48.7z/04.rom' as '04.rom'
+stdout roms/2-48.zip: add 'roms/2-48.7z/08.rom' as '08.rom'
+stdout roms/2-48.7z: delete used file '04.rom'
+stdout roms/2-48.7z: delete used file '08.rom'
+stdout roms/2-48.7z: remove empty archive

@@ -191,6 +191,7 @@ set(EXTRA_TESTS
   old-keep.test
   old-partial.test
   replace-broken-rom.test
+  rom-7z.test
   rom-add-from-crc-different.test
   rom-add-from-crc-only.test
   rom-broken-replace.test
@@ -284,6 +285,7 @@ set(EXTRA_TESTS
 set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
+  rom-7z.test
 )
 	      
 foreach(CASE ${EXTRA_TESTS})
