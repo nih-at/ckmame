@@ -35,6 +35,7 @@
 */
 
 #include <cinttypes>
+#include <memory>
 #include <string>
 
 #include <zip.h>
