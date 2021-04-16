@@ -34,6 +34,7 @@
 #include "ArchiveLibarchive.h"
 
 #include <archive_entry.h>
+#include <cstring>
 #include <errno.h>
 
 #include "error.h"
