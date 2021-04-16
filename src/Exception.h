@@ -40,6 +40,7 @@
 
 class Exception : public std::exception {
 public:
+    Exception() { }
     Exception(const std::string &message_) : message(message_) { }
     Exception(const char *format, ...) __attribute__ ((format (printf, 2, 3)));
 

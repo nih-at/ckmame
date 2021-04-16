@@ -77,15 +77,15 @@ bool ArchiveDir::commit_xxx() {
             
             if (!change.file.empty()) {
                 if (!ensure_dir(added_directory, false)) {
-                    throw Exception("");
+                    throw Exception();
                 }
                 if (!link_or_copy(change.file, added_directory / file.name)) {
-                    throw Exception("");
+                    throw Exception();
                 }
             }
             else if (change.source) {
                 if (!ensure_dir(added_directory, false)) {
-                    throw Exception("");
+                    throw Exception();
                 }
                 copy_source(change.source.get(), added_directory / file.name);
             }
@@ -144,7 +144,7 @@ void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &des
     auto fout = make_shared_file(destination, "w");
     if (!fout) {
         myerror(ERRZIP, "cannot open '%s': %s", destination.c_str(), strerror(errno));
-        throw Exception("");
+        throw Exception();
     }
 
     uint8_t buffer[BUFSIZ];
@@ -156,7 +156,7 @@ void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &des
         if (fwrite(buffer, 1, n, fout.get()) != n) {
             myerror(ERRZIP, "can't write '%s': %s", destination.c_str(), strerror(errno));
             source->close();
-            throw Exception("");
+            throw Exception();
         }
     }
 

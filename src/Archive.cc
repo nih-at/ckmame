@@ -541,7 +541,7 @@ Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length,
         while (length > 0) {
             uint64_t n = std::min(length, static_cast<uint64_t>(sizeof(buf)));
             if (source->read(buf, n) != n) {
-                throw Exception("");
+                throw Exception();
             }
 
             hu.update(buf, n);
