@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				4B8AD4DC2629C3A900E084EC /* PBXTargetDependency */,
 				4B41079318CC9E04002C3052 /* PBXTargetDependency */,
 				4B41079518CC9E04002C3052 /* PBXTargetDependency */,
 				4B5FAE52173593E300B67C24 /* PBXTargetDependency */,
@@ -134,6 +135,8 @@
 		4B6B145824FF919E00D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4B6B145924FF91A800D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4B6B145A24FF91B400D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
+		4B8AD4B42629C0AE00E084EC /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
+		4B8AD4B62629C0FE00E084EC /* compare-archives.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B8AD4B52629C0FE00E084EC /* compare-archives.cc */; };
 		4B9233001780B30400096AA2 /* dbh_cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9232FE1780B2BA00096AA2 /* dbh_cache.cc */; };
 		4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* ArchiveZip.cc */; };
 		4BA47B0E25CC3E2300C4C842 /* check_archive_files.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BA47B0D25CC3E2300C4C842 /* check_archive_files.cc */; };
@@ -251,6 +254,13 @@
 			remoteGlobalIDString = 4B5FAE461735939000B67C24;
 			remoteInfo = mkmamedb;
 		};
+		4B8AD4DB2629C3A900E084EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4B5FAC5817358FF000B67C24 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4B8AD48B2629C05E00E084EC;
+			remoteInfo = "compare-archives";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -300,6 +310,15 @@
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 		4B5FAE4C1735939000B67C24 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		4B8AD4942629C05E00E084EC /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -639,6 +658,8 @@
 		4B86CED11B134251003EF102 /* detective.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = detective.mdoc; sourceTree = "<group>"; };
 		4B86CED21B134251003EF102 /* dumpgame.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = dumpgame.mdoc; sourceTree = "<group>"; };
 		4B86CED31B134251003EF102 /* mkmamedb.mdoc */ = {isa = PBXFileReference; lastKnownFileType = text; path = mkmamedb.mdoc; sourceTree = "<group>"; };
+		4B8AD4982629C05E00E084EC /* compare-archives */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "compare-archives"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4B8AD4B52629C0FE00E084EC /* compare-archives.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "compare-archives.cc"; sourceTree = "<group>"; };
 		4B918BCC2508EAE0002D8F29 /* disk-parent-merge.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-parent-merge.test"; sourceTree = "<group>"; };
 		4B918BCE2508EAE0002D8F29 /* disk-unrelated-fix.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-unrelated-fix.test"; sourceTree = "<group>"; };
 		4B918BCF2508EAE0002D8F29 /* disk-unrelated.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-unrelated.test"; sourceTree = "<group>"; };
@@ -758,6 +779,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4B8AD4902629C05E00E084EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B8AD4B42629C0AE00E084EC /* libarchive.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -829,6 +858,7 @@
 				4B5FAE501735939000B67C24 /* mkmamedb */,
 				4B41077B18CC8F25002C3052 /* dbdump */,
 				4B41078A18CC8F66002C3052 /* dbrestore */,
+				4B8AD4982629C05E00E084EC /* compare-archives */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1027,7 +1057,6 @@
 		4B6B145B24FF943B00D3F3FB /* tests */ = {
 			isa = PBXGroup;
 			children = (
-				4B213018261777770048B9CD /* rom-from-extra-partial-7z.test */,
 				4B6B146424FF946A00D3F3FB /* archive-broken.test */,
 				4B6B147224FF946A00D3F3FB /* archive-broken2.test */,
 				4B6B145E24FF946900D3F3FB /* baddump.test */,
@@ -1170,6 +1199,7 @@
 				4BB158A925DECA50008892CD /* rom-from-extra-keep-dir-clean.test */,
 				4B6B14D324FFA14B00D3F3FB /* rom-from-extra-keep-dir.test */,
 				4B6B14CB24FFA14B00D3F3FB /* rom-from-extra-keep-zip.test */,
+				4B213018261777770048B9CD /* rom-from-extra-partial-7z.test */,
 				4B6B14C324FFA14A00D3F3FB /* rom-from-extra-partial.test */,
 				4B6B14CC24FFA14B00D3F3FB /* rom-from-extra-remove.test */,
 				4B82708C25F8D74300D5A626 /* rom-from-extra-size-changed.test */,
@@ -1256,6 +1286,7 @@
 				4B6D02EF21441D71007D2F93 /* CMakeLists.txt */,
 				4BC78D0A1A4445A400A14E29 /* NiHTest.pm */,
 				4BD1BAA61A404BF300A70734 /* CkmameDB.pm */,
+				4B8AD4B52629C0FE00E084EC /* compare-archives.cc */,
 				4BD1BAA51A404BCB00A70734 /* runtest.in */,
 				4B6B145B24FF943B00D3F3FB /* tests */,
 			);
@@ -1425,6 +1456,23 @@
 			productReference = 4B5FAE501735939000B67C24 /* mkmamedb */;
 			productType = "com.apple.product-type.tool";
 		};
+		4B8AD48B2629C05E00E084EC /* compare-archives */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4B8AD4952629C05E00E084EC /* Build configuration list for PBXNativeTarget "compare-archives" */;
+			buildPhases = (
+				4B8AD48E2629C05E00E084EC /* Sources */,
+				4B8AD4902629C05E00E084EC /* Frameworks */,
+				4B8AD4942629C05E00E084EC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "compare-archives";
+			productName = detective;
+			productReference = 4B8AD4982629C05E00E084EC /* compare-archives */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1455,6 +1503,7 @@
 				4B5FAE461735939000B67C24 /* mkmamedb */,
 				4B41076D18CC8F25002C3052 /* dbdump */,
 				4B41077C18CC8F66002C3052 /* dbrestore */,
+				4B8AD48B2629C05E00E084EC /* compare-archives */,
 			);
 		};
 /* End PBXProject section */
@@ -1581,6 +1630,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4B8AD48E2629C05E00E084EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B8AD4B62629C0FE00E084EC /* compare-archives.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1643,6 +1700,11 @@
 			isa = PBXTargetDependency;
 			target = 4B5FAE461735939000B67C24 /* mkmamedb */;
 			targetProxy = 4B5FAE57173593E300B67C24 /* PBXContainerItemProxy */;
+		};
+		4B8AD4DC2629C3A900E084EC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4B8AD48B2629C05E00E084EC /* compare-archives */;
+			targetProxy = 4B8AD4DB2629C3A900E084EC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1971,6 +2033,36 @@
 			};
 			name = Release;
 		};
+		4B8AD4962629C05E00E084EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/lib,
+					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = ". ../src";
+			};
+			name = Debug;
+		};
+		4B8AD4972629C05E00E084EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "-";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/lib,
+					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = ". ../src";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2051,6 +2143,15 @@
 			buildConfigurations = (
 				4B5FAE4E1735939000B67C24 /* Debug */,
 				4B5FAE4F1735939000B67C24 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4B8AD4952629C05E00E084EC /* Build configuration list for PBXNativeTarget "compare-archives" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4B8AD4962629C05E00E084EC /* Debug */,
+				4B8AD4972629C05E00E084EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

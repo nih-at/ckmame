@@ -157,6 +157,18 @@ sub comparator_db {
 	return $ret == 0;
 }
 
+sub comparator_libarchive {
+	my ($test, $got, $expected) = @_;
+
+	my @args = ("../compare-archives");
+	push @args, "-v" if ($test->{verbose});
+	push @args, ($expected, $got);
+
+	my $ret = system(@args);
+
+	return $ret == 0;
+}
+
 sub dir_comparator_zip {
 	my ($test, $got, $expected) = @_;
 
@@ -277,6 +289,8 @@ $test->add_directive('not-in-ckmamedb' => {
 $test->add_comparator('db/dump', \&comparator_db);
 $test->add_comparator('dir/zip/zip', \&dir_comparator_zip);
 $test->add_comparator('zip/zip', \&NiHTest::comparator_zip);
+$test->add_comparator("7z/zip", \&comparator_libarchive);
+$test->add_comparator("7z/7z", \&comparator_libarchive);
 $test->add_copier('dir/zip/zip', \&dir_copier_zip);
 
 $test->add_hook('checks', \&checks);

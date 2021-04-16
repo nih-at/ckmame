@@ -14,6 +14,12 @@ foreach(PROGRAM ${SUPPORT_PROGRAMS})
   target_link_libraries(${PROGRAM} libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
 endforeach()
 
+
+add_executable(compare-archives compare-archives.cc)
+target_include_directories(compare-archives PRIVATE ${PROJECT_BINARY_DIR})
+target_link_libraries(compare-archives ZLIB::ZLIB LibArchive::LibArchive)
+
+
 add_library(fwrite MODULE fwrite.c)
 target_link_libraries(fwrite ${CMAKE_DL_LIBS})
 

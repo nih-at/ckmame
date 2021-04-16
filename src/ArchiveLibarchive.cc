@@ -37,6 +37,8 @@
 #include <errno.h>
 
 #include "error.h"
+#include "Exception.h"
+#include "file_util.h"
 
 
 bool ArchiveLibarchive::ensure_la() {
@@ -89,16 +91,148 @@ bool ArchiveLibarchive::close_xxx() {
 
 
 bool ArchiveLibarchive::commit_xxx() {
-    // TODO: handle modifications
+    auto tmpfile = make_unique_path(name);
+    
+    seterrinfo("", name);
+    
+    auto writer = archive_write_new();
+    struct archive_entry *entry = NULL;
+
+    if (writer == NULL) {
+        myerror(ERRZIP, "can't create archive: %s", strerror(ENOMEM));
+        return false;
+    }
+    
+    try {
+        if (archive_write_set_format_7zip(writer) < 0) {
+            throw Exception("can't create archive: %s", strerror(ENOMEM));
+        }
+        if (archive_write_open_filename(writer, tmpfile.c_str()) < 0) {
+            throw Exception("can't create archive: %s", strerror(errno));
+        }
+
+        mtimes.clear();
+        time_t now = time(NULL);
+        
+        for (uint64_t index = 0; index < files.size(); index++) {
+            auto &file = files[index];
+            auto &change = contents->changes[index];
+            
+            seterrinfo(file.name, name);
+
+            if (file.where == FILE_DELETED) {
+                continue;
+            }
+            
+            time_t mtime;
+            ZipSourcePtr source;
+            
+            if (change.source) {
+                mtime = now;
+                source = change.source;
+            }
+            else {
+                mtime = file.mtime;
+                source = get_source(index, 0, {});
+            }
+            
+            mtimes.push_back(mtime);
+            
+            entry = archive_entry_new();
+            if (entry == NULL) {
+                throw Exception("can't write file header: %s", strerror(ENOMEM));
+            }
+            archive_entry_set_pathname(entry, file.name.c_str());
+            archive_entry_set_size(entry, static_cast<int64_t>(file.size));
+            archive_entry_set_filetype(entry, AE_IFREG);
+            archive_entry_set_perm(entry, 0644);
+            archive_entry_set_mtime(entry, mtime, 0);
+
+            if (archive_write_header(writer, entry) < 0) {
+                throw Exception("can't write file header: %s", strerror(errno));
+            }
+            archive_entry_free(entry);
+            entry = NULL;
+            
+            write_file(writer, source);
+        }
+
+        seterrinfo("", name);
+        
+        if (archive_write_close(writer) < 0) {
+            throw Exception("can't write archive: %s", strerror(errno));
+        }
+        archive_write_free(writer);
+        writer = NULL;
+
+        if (tmpfile != name) {
+            std::error_code error;
+            std::filesystem::rename(tmpfile, name, error);
+            if (error) {
+                throw Exception("renaming temporary file failed: %s", error.message().c_str());
+            }
+        }
+    }
+    catch (Exception &e) {
+        if (entry != NULL) {
+            archive_entry_free(entry);
+        }
+        if (writer != NULL) {
+            archive_write_free(writer);
+        }
+        if (std::filesystem::exists(tmpfile)) {
+            std::error_code ec;
+            std::filesystem::remove(tmpfile, ec);
+        }
+        mtimes.clear();
+        myerror(ERRZIPFILE, "%s", e.what());
+        return false;
+    }
 
     return close_xxx();
 }
 
 
-void ArchiveLibarchive::commit_cleanup() {
-    // TODO: implement for modify
+void ArchiveLibarchive::write_file(struct archive *writer, ZipSourcePtr source) {
+    try {
+        source->open();
+    }
+    catch (Exception &e) {
+        throw Exception("can't open file: %s", e.what());
+    }
+    
+    uint8_t buffer[BUFSIZ];
+        
+    while (true) {
+        uint64_t n;
+        try {
+            n = source->read(buffer, sizeof(buffer));
+        }
+        catch (Exception &e) {
+            source->close();
+            throw Exception("can't read file: %s", e.what());
+        }
+
+        if (n == 0) {
+            break;
+        }
+        
+        auto ret = archive_write_data(writer, buffer, n);
+        if (ret < 0) {
+            source->close();
+            throw Exception("can't write file: %s", strerror(errno));
+        }
+    }
+        
+    source->close();
 }
 
+
+void ArchiveLibarchive::commit_cleanup() {
+    for (size_t index = 0; index < files.size(); index++) {
+        files[index].mtime = mtimes[index];
+    }
+}
 
 
 bool ArchiveLibarchive::Source::open() {
@@ -156,8 +290,6 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
 
 
 bool ArchiveLibarchive::read_infos_xxx() {
-    contents->flags |= ARCHIVE_FL_RDONLY;
-    
     if (!ensure_la()) {
         return false;
     }

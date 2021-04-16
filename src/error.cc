@@ -53,12 +53,15 @@ myerror(int errtype, const char *fmt, ...) {
 
     fprintf(stderr, "%s: ", getprogname());
 
-    if ((errtype & ERRZIPFILE) == ERRZIPFILE)
+    if ((errtype & ERRZIPFILE) == ERRZIPFILE && !myerrorfn.empty() && !myerrorzipn.empty()) {
 	fprintf(stderr, "%s (%s): ", myerrorfn.c_str(), myerrorzipn.c_str());
-    else if (errtype & ERRZIP)
+    }
+    else if ((errtype & ERRZIP) && !myerrorzipn.empty()) {
 	fprintf(stderr, "%s: ", myerrorzipn.c_str());
-    else if (errtype & ERRFILE)
+    }
+    else if ((errtype & ERRFILE) && !myerrorfn.empty()) {
 	fprintf(stderr, "%s: ", myerrorfn.c_str());
+    }
 
     va_start(va, fmt);
     vfprintf(stderr, fmt, va);

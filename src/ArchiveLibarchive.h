@@ -57,6 +57,7 @@ protected:
 
 private:
     bool seek_to_entry(uint64_t index);
+    void write_file(struct archive *writer, ZipSourcePtr source);
     
     class Source {
     public:
@@ -81,6 +82,8 @@ private:
     uint64_t current_index;
     bool header_read;
     bool have_open_file;
+    
+    std::vector<time_t> mtimes;
     
     bool ensure_la();
     

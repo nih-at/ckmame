@@ -5,6 +5,7 @@
 #define VERSION "0.12a"
 
 #define HAVE_LIBXML2
+#define HAVE_LIBARCHIVE
 
 #define HAVE_FNMATCH
 #define HAVE_FSEEKO
