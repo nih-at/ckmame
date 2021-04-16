@@ -202,7 +202,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
     try {
         f->open();
     }
-    catch (Exception e) {
+    catch (Exception &e) {
         myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
         file.status = STATUS_BADDUMP;
         return false;
@@ -263,7 +263,7 @@ std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const
             return offset;
         }
     }
-    catch (Exception e) {
+    catch (Exception &e) {
         file.status = STATUS_BADDUMP;
     }
 
@@ -318,7 +318,7 @@ void Archive::file_match_detector(uint64_t index) {
         source->open();
         detector->execute(&file, Archive::file_read_c, source.get());
     }
-    catch (Exception e) {
+    catch (Exception &e) {
         myerror(ERRZIP, "%s: can't open: %s", file.name.c_str(), e.what());
         file.status = STATUS_BADDUMP;
     }
@@ -550,7 +550,7 @@ Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length,
 
         hu.end();
     }
-    catch (Exception e) {
+    catch (Exception &e) {
         return READ_ERROR;
     }
 
@@ -558,7 +558,7 @@ Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length,
         try {
             source->read(buf, 1);
         }
-        catch (Exception e) {
+        catch (Exception &e) {
             return CRC_ERROR;
         }
     }

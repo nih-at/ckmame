@@ -224,7 +224,7 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
         try {
             contents->changes[files.size() - 1].source = source_archive->get_source(source_index, start, length);
         }
-        catch (Exception ex) {
+        catch (Exception &ex) {
             files.pop_back();
             contents->changes.pop_back();
             return false;
