@@ -610,9 +610,9 @@ sub list_files {
 	while (scalar(@dirs) > 0) {
 		my $dir = shift @dirs;
 
-		opendir($ls, $dir);
-		unless ($ls) {
+		unless (opendir($ls, $dir)) {
 			# TODO: handle error
+			next;
 		}
 		# add empty directories to file list
 		$count = 0;
@@ -1264,6 +1264,8 @@ sub sandbox_leave {
 sub sandbox_remove {
 	my ($self) = @_;
 
+	# TODO: make portable (Windows)
+	system("chmod", "-R", "u+rwx", $self->{sandbox_dir});
 	remove_tree($self->{sandbox_dir});
 
 	return 1;

@@ -33,8 +33,6 @@
 
 #include "File.h"
 
-std::string File::no_extension;
-
 bool File::compare_merged(const File &other) const {
     return merged_name() == other.merged_name();
 }

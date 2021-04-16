@@ -42,11 +42,9 @@
 #include "globals.h"
 #include "util.h"
 
-std::string ArchiveImages::filename_extension_chd = ".chd";
-
 ArchiveImages::ArchiveImages(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveDir(name, filetype, where, flags) {
     contents->archive_type = ARCHIVE_IMAGES;
-    contents->filename_extension = &filename_extension_chd;
+    contents->filename_extension = ".chd";
 }
 
 
@@ -56,11 +54,12 @@ bool ArchiveImages::file_add_empty_xxx(const std::string &filename) {
 }
 
 
-Archive::ArchiveFilePtr ArchiveImages::file_open(uint64_t index) {
+ZipSourcePtr ArchiveImages::Archive::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) {
     seterrinfo("", name);
     myerror(ERRZIP, "cannot open '%s': reading from CHDs not supported", files[index].name.c_str());
-    return NULL;
+    return {};
 }
+
 
 bool ArchiveImages::read_infos_xxx() {
     if (roms_unzipped) {

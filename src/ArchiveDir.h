@@ -35,24 +35,12 @@
 */
 
 #include <filesystem>
+#include <unordered_set>
 
 #include "Archive.h"
 #include "SharedFile.h"
 
 class ArchiveDir : public Archive {
-    class ArchiveFile: public Archive::ArchiveFile {
-    public:
-        ArchiveFile(FILEPtr f_) : f(f_) { }
-        virtual ~ArchiveFile() { close(); }
-        
-        virtual void close();
-        virtual int64_t read(void *, uint64_t);
-        virtual const char *strerror();
-        
-    private:
-        FILEPtr f;
-    };
-
 public:
     ArchiveDir(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_DIR, name, filetype, where, flags) { }
     ArchiveDir(ArchiveContentsPtr contents) : Archive(contents) { }
@@ -61,63 +49,59 @@ public:
 protected:
     virtual bool commit_xxx();
     virtual void commit_cleanup();
-    virtual bool file_add_empty_xxx(const std::string &filename);
-    virtual bool file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length);
-    virtual bool file_delete_xxx(uint64_t index);
-    virtual ArchiveFilePtr file_open(uint64_t index);
-    virtual bool file_rename_xxx(uint64_t index, const std::string &filename);
     virtual void get_last_update();
     virtual bool read_infos_xxx();
-    virtual bool rollback_xxx(); /* never called if commit never fails */
-    
-private:
-    struct FileInfo {
-        std::filesystem::path name;
-        std::filesystem::path data_file_name;
-        
-        bool apply() const;
-        bool discard(ArchiveDir *archive) const;
-        
-        void clear();
-    };
-    
-    class Change {
-    public:
-        Change() : mtime(0) { }
+    virtual ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length);
+    virtual bool have_direct_file_access() const { return true; }
+    virtual std::string get_full_filename(uint64_t index);
+    virtual std::string get_original_filename(uint64_t index);
 
-        // original.name is set if the file has been renamed
-        FileInfo original;
-        FileInfo destination;
-        time_t mtime;
+private:
+    class Commit {
+    public:
+        Commit(ArchiveDir *archive);
         
-        bool is_unchanged() const {
-            return original.name.empty() && destination.name.empty();
-        }
-        bool is_added() const {
-            return original.name.empty() && !destination.name.empty();
-        }
-        bool is_deleted() const {
-            return !original.name.empty() && destination.name.empty();
-        }
-        bool is_renamed() const;
-        bool has_new_data() const;
+        void delete_file(const std::filesystem::path &file);
+        void rename_file(const std::filesystem::path &source, const std::filesystem::path &destination);
+
+        void undo();
+        void done();
+
+    private:
+        class Operation {
+        public:
+            enum Type {
+                DELETE,
+                RENAME
+            };
+
+            Operation(const std::filesystem::path &old_name_, const std::filesystem::path &new_name_) : type(RENAME), old_name(old_name_), new_name(new_name_) { }
+            Operation(const std::filesystem::path &name) : type(DELETE), new_name(name) { }
+            Type type;
+            std::filesystem::path old_name;
+            std::filesystem::path new_name;
+            
+            void execute();
+        };
+
+        ArchiveDir *archive;
         
-        bool apply(ArchiveDir *archive, uint64_t index);
-        void rollback(ArchiveDir *archive);
-        
-        void clear();
+        std::filesystem::path deleted_directory;
+        std::vector<Operation> undos;
+        std::unordered_set<std::string> cleanup_directories;
+        std::unordered_map<std::string, std::filesystem::path> renamed_files;
+
+        std::filesystem::path get_filename(const std::filesystem::path &filename);
+        void ensure_file_doesnt_exist(const std::filesystem::path &file);
+        void ensure_parent_directory(const std::filesystem::path &file);
+        void rename(const std::filesystem::path &source, const std::filesystem::path &destination);
     };
     
-    std::vector<Change> changes;
-    
-    Change *get_change(uint64_t index, bool create = false);
     bool ensure_archive_dir();
-    bool file_will_exist_after_commit(std::filesystem::path filename);
-    int move_original_file_out_of_the_way(uint64_t index);
-    std::filesystem::path get_full_name(uint64_t index);
-    std::filesystem::path get_original_data(uint64_t index);
-    std::filesystem::path make_full_name(const std::filesystem::path &filename);
-    std::filesystem::path make_tmp_name(const std::filesystem::path &filename);
+
+    void copy_source(ZipSource *source, const std::filesystem::path &destination);
+
+    time_t get_mtime(const std::string &file);
 };
 
 #endif // HAD_ARCHIVE_DIR_H

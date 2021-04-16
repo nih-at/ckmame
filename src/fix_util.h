@@ -40,7 +40,6 @@
 #include "Archive.h"
 
 std::string make_garbage_name(const std::string &name, int unique);
-std::string make_unique_name(const std::string &prefix, const std::string &ext);
 int move_image_to_garbage(const std::string &fname);
 void remove_empty_archive(const std::string &name, bool quiet = false);
 void remove_from_superfluous(const std::string &name);

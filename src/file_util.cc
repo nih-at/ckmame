@@ -36,6 +36,7 @@
 #include <filesystem>
 
 #include "error.h"
+#include "Exception.h"
 
 bool
 link_or_copy(const std::string &old, const std::string &new_name) {
@@ -44,12 +45,12 @@ link_or_copy(const std::string &old, const std::string &new_name) {
     if (ec) {
 	if (!std::filesystem::copy_file(old, new_name, ec) || ec) {
 	    seterrinfo(old);
-	    myerror(ERRFILESTR, "cannot copy to '%s'", new_name.c_str());
+	    myerror(ERRFILE, "cannot copy to '%s': %s", new_name.c_str(), ec.message().c_str());
 	    return false;
 	}
     }
 
-    return true;;
+    return true;
 }
 
 
@@ -81,4 +82,54 @@ bool rename_or_move(const std::string &old, const std::string &new_name) {
     }
 
     return true;
+}
+
+
+void remove_directories_up_to(const std::filesystem::path &directory, const std::filesystem::path &top) {
+    std::error_code ec;
+
+    auto dir = directory;
+    while (true) {
+        std::filesystem::remove(dir, ec);
+        if (ec) {
+            return;
+        }
+
+        if (dir == top) {
+            break;
+        }
+        dir = dir.parent_path();
+    }
+}
+
+
+std::string make_unique_name(const std::string &prefix, const std::string &ext) {
+    char buf[5];
+
+    for (int i = 0; i < 1000; i++) {
+    std::error_code ec;
+    sprintf(buf, "-%03d", i);
+    auto testname = prefix + buf + ext;
+    if (std::filesystem::exists(testname, ec)) {
+        continue;
+    }
+    if (ec) {
+        continue;
+    }
+    return testname;
+    }
+
+    throw Exception("can't create unique file name"); // TODO: details?
+}
+
+
+std::filesystem::path make_unique_path(const std::filesystem::path &path) {
+    if (!std::filesystem::exists(path)) {
+        return path;
+    }
+    
+    auto extension = path.extension();
+    auto prefix = path.parent_path() / path.stem();
+    
+    return make_unique_name(prefix, extension);
 }

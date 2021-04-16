@@ -34,11 +34,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
 #include <string>
 
 bool link_or_copy(const std::string &old, const std::string &new_name);
 bool my_remove(const std::string &name);
 bool rename_or_move(const std::string &old, const std::string &new_name);
-
+void remove_directories_up_to(const std::filesystem::path &directory, const std::filesystem::path &top);
+std::string make_unique_name(const std::string &prefix, const std::string &ext);
+std::filesystem::path make_unique_path(const std::filesystem::path &path);
 
 #endif /* _HAD_FILE_UTIL_H */

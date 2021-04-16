@@ -35,9 +35,28 @@
 */
 
 #include <cinttypes>
+#include <string>
 
 #include <zip.h>
 
-int my_zip_rename(struct zip *za, uint64_t idx, const char *name);
+class ZipSource {
+public:
+    ZipSource(zip_source_t *source_) : source(source_) { }
+    ~ZipSource();
+    
+    void open();
+    void close();
+    uint64_t read(void *data, uint64_t length);
+    
+    std::string error();
+    
+    zip_source_t *source;
+};
+
+
+typedef std::shared_ptr<ZipSource> ZipSourcePtr;
+
+
+int my_zip_rename(zip_t *za, uint64_t idx, const char *name);
 
 #endif /* _HAD_ZIP_UTIL_H */

@@ -34,28 +34,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "ArchiveZip.h"
+#include "Archive.h"
 
 #include <archive.h>
 
-class ArchiveLibarchive : public ArchiveZip {
-    class ArchiveFile: public Archive::ArchiveFile {
-    public:
-        ArchiveFile(ArchiveLibarchive *archive_, struct archive *la_) : archive(archive_), la(la_) { }
-        virtual ~ArchiveFile() { close(); }
-        
-        virtual void close();
-        virtual int64_t read(void *, uint64_t);
-        virtual const char *strerror();
-        
-    private:
-        ArchiveLibarchive *archive;
-        struct archive *la;
-    };
-    
+class ArchiveLibarchive : public Archive {
 public:
-    ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : ArchiveZip(name, filetype, where, flags), la(NULL), current_index(0), header_read(false), have_open_file(false) { contents->archive_type = ARCHIVE_LIBARCHIVE; }
-    ArchiveLibarchive(ArchiveContentsPtr contents) : ArchiveZip(contents), la(NULL), current_index(0), header_read(false), have_open_file(false) { }
+    ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_LIBARCHIVE, name, filetype, where, flags), la(NULL), current_index(0), header_read(false), have_open_file(false) {  }
+    ArchiveLibarchive(ArchiveContentsPtr contents) : Archive(contents), la(NULL), current_index(0), header_read(false), have_open_file(false) { }
 
     virtual ~ArchiveLibarchive() { close(); }
 
@@ -63,14 +49,15 @@ public:
     virtual bool close_xxx();
     virtual bool commit_xxx();
     virtual void commit_cleanup();
-    virtual ArchiveFilePtr file_open(uint64_t index);
+    virtual void get_last_update();
     virtual bool read_infos_xxx();
-    virtual bool rollback_xxx(); /* never called if commit never fails */
 
 protected:
-    virtual zip_source_t *get_source(zip_t *destination_archive, uint64_t index, uint64_t start, std::optional<uint64_t> length);
+    virtual ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length);
 
 private:
+    bool seek_to_entry(uint64_t index);
+    
     class Source {
     public:
         Source(ArchiveLibarchive *archive_, uint64_t index_, uint64_t start_, uint64_t length_): archive(archive_), index(index_), start(start_), length(length_) { zip_error_init(&error); }
@@ -78,14 +65,15 @@ private:
         static zip_int64_t callback_c(void *userdata, void *data, zip_uint64_t len, zip_source_cmd_t cmd);
         zip_int64_t callback(void *data, zip_uint64_t len, zip_source_cmd_t cmd);
 
-        zip_source_t *get_source(zip_t *za);
+        zip_source_t *get_source();
+        
+        bool open();
         
         ArchiveLibarchive *archive;
         uint64_t index;
         uint64_t start;
         uint64_t length;
 
-        ArchiveFilePtr file;
         zip_error_t error;
     };
     

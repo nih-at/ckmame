@@ -40,9 +40,12 @@
 #include <unordered_map>
 #include <vector>
 
+#include <zip.h>
+
 #include "DB.h"
 #include "File.h"
 #include "types.h"
+#include "zip_util.h"
 
 class Archive;
 class ArchiveFile;
@@ -78,13 +81,23 @@ enum ArchiveType {
 
 class ArchiveContents {
 public:
-    ArchiveContents(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flagsk, std::string *filename_extension = NULL);
+    class Changes {
+    public:
+        std::string original_name;
+        std::string source_name;
+        ZipSourcePtr source;
+        std::string file;
+    };
+    
+    ArchiveContents(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flagsk, const std::string &filename_extension =
+"");
 
     uint64_t id;
     std::string name;
     std::vector<File> files;
     filetype_t filetype;
     where_t where;
+    std::vector<Changes> changes;
 
     std::shared_ptr<DB> cache_db;
     int cache_id;
@@ -94,7 +107,7 @@ public:
     
     ArchiveType archive_type;
     std::weak_ptr<Archive> open_archive;
-    std::string *filename_extension;
+    std::string filename_extension;
   
     bool read_infos_from_cachedb(std::vector<File> *files);
     int is_cache_up_to_date();
@@ -131,16 +144,6 @@ struct hash<ArchiveContents::TypeAndName> {
 
 class Archive {
 public:
-    class ArchiveFile {
-    public:
-        virtual ~ArchiveFile() { }
-        
-        virtual void close() = 0;
-        virtual int64_t read(void *, uint64_t) = 0;
-        virtual const char *strerror() = 0;
-    };
-    typedef std::shared_ptr<ArchiveFile> ArchiveFilePtr;
-
     static ArchivePtr by_id(uint64_t id);
     
     static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
@@ -173,27 +176,25 @@ public:
     bool file_move(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_rename(uint64_t index, const std::string &filename);
     bool file_rename_to_unique(uint64_t index);
-    std::string make_unique_name(const std::string &filename);
+    std::string make_unique_name_in_archive(const std::string &filename);
     bool read_infos();
     void refresh();
     bool rollback();
     bool is_empty() const;
     bool is_writable() const { return (contents->flags & ARCHIVE_FL_RDONLY) == 0; }
-    bool is_indexed() const { return (contents->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where);
-}
+    bool is_indexed() const { return (contents->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where); }
     virtual bool check() { return true; } // This is done as part of the constructor, remove?
     virtual bool close_xxx() { return true; }
     virtual bool commit_xxx() = 0;
     virtual void commit_cleanup() = 0;
-    virtual bool file_add_empty_xxx(const std::string &filename) = 0;
-    virtual bool file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length) = 0;
-    virtual bool file_delete_xxx(uint64_t index) = 0;
-    virtual ArchiveFilePtr file_open(uint64_t index) = 0;
-    virtual bool file_rename_xxx(uint64_t index, const std::string &filename) = 0;
     virtual void get_last_update() = 0;
     virtual bool read_infos_xxx() = 0;
-    virtual bool rollback_xxx() = 0; /* never called if commit never fails */
     virtual bool want_crc() const { return true; }
+    virtual bool have_direct_file_access() const { return false; }
+    ZipSourcePtr get_source(uint64_t index) { return get_source(index, 0, {}); }
+    virtual ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) = 0;
+    virtual std::string get_full_filename(uint64_t index) { return ""; }
+    virtual std::string get_original_filename(uint64_t index) { return ""; }
 
     ArchiveContentsPtr contents;
     std::vector<File> &files;
@@ -214,7 +215,7 @@ protected:
     void update_cache();
 
     void add_file(const std::string &filename, const File *file);
-    GetHashesStatus get_hashes(ArchiveFile *f, size_t len, bool eof, Hashes *h);
+    GetHashesStatus get_hashes(ZipSource *source, uint64_t length, bool eof, Hashes *hashes);
     void merge_files(const std::vector<File> &files_cache);
     
 };

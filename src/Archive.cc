@@ -47,6 +47,7 @@
 #include "Detector.h"
 #include "dbh_cache.h"
 #include "error.h"
+#include "Exception.h"
 #include "file_util.h"
 #include "fix.h"
 #include "fix_util.h"
@@ -61,7 +62,7 @@ uint64_t ArchiveContents::next_id;
 std::unordered_map<ArchiveContents::TypeAndName, std::weak_ptr<ArchiveContents>> ArchiveContents::archive_by_name;
 std::unordered_map<uint64_t, ArchiveContentsPtr> ArchiveContents::archive_by_id;
 
-ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, filetype_t filetype_, where_t where_, int flags_, std::string *filename_extension_) :
+ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, filetype_t filetype_, where_t where_, int flags_, const std::string &filename_extension_) :
     id(0),
     name(name_),
     filetype(filetype_),
@@ -189,11 +190,22 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
     Hashes hashes;
     hashes.types = Hashes::TYPE_ALL;
 
-    auto f = file_open(idx);
+    auto f = get_source(idx);
+    
     if (!f) {
+        // TODO: move error message to get_source()
 	myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), strerror(errno));
 	file.status = STATUS_BADDUMP;
 	return false;
+    }
+    
+    try {
+        f->open();
+    }
+    catch (Exception e) {
+        myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
+        file.status = STATUS_BADDUMP;
+        return false;
     }
 
     switch (get_hashes(f.get(), file.size, true, &hashes)) {
@@ -219,37 +231,40 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
 }
 
 
-std::optional<size_t> Archive::file_find_offset(size_t idx, size_t size, const Hashes *hashes) {
+std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const Hashes *hashes) {
     Hashes hashes_part;
 
     hashes_part.types = hashes->types;
 
-    auto &file = files[idx];
+    auto &file = files[index];
 
-    auto f = file_open(idx);
-    if (!f) {
+    try {
+        auto source = get_source(index);
+
+        source->open();
+        
+        auto found = false;
+        size_t offset = 0;
+        while (offset + size <= file.size) {
+            if (get_hashes(source.get(), size, offset + size == file.size, &hashes_part) != OK) {
+                file.status = STATUS_BADDUMP;
+                return {};
+            }
+
+            if (hashes->compare(hashes_part) == Hashes::MATCH) {
+                found = true;
+                break;
+            }
+
+            offset += size;
+        }
+
+        if (found) {
+            return offset;
+        }
+    }
+    catch (Exception e) {
         file.status = STATUS_BADDUMP;
-        return {};
-    }
-
-    auto found = false;
-    size_t offset = 0;
-    while (offset + size <= file.size) {
-        if (get_hashes(f.get(), size, offset + size == file.size, &hashes_part) != OK) {
-            file.status = STATUS_BADDUMP;
-            return {};
-	}
-
-	if (hashes->compare(hashes_part) == Hashes::MATCH) {
-            found = true;
-            break;
-	}
-
-	offset += size;
-    }
-
-    if (found) {
-	return offset;
     }
 
     return {};
@@ -295,20 +310,25 @@ std::optional<size_t> Archive::file_index_by_name(const std::string &filename) c
 void Archive::file_match_detector(uint64_t index) {
     auto &file = files[index];
 
-    auto fp = file_open(index);
-    if (!fp) {
-        myerror(ERRZIP, "%s: can't open: %s", file.name.c_str(), strerror(errno));
+    try {
+        auto source = get_source(index);
+        if (!source) {
+            throw Exception("%s", strerror(errno));
+        }
+        source->open();
+        detector->execute(&file, Archive::file_read_c, source.get());
+    }
+    catch (Exception e) {
+        myerror(ERRZIP, "%s: can't open: %s", file.name.c_str(), e.what());
         file.status = STATUS_BADDUMP;
     }
-    
-    detector->execute(&file, Archive::file_read_c, fp.get());
 }
 
 
 int64_t Archive::file_read_c(void *fp, void *data, uint64_t length) {
-    auto file = static_cast<Archive::ArchiveFile *>(fp);
+    auto source = static_cast<ZipSource *>(fp);
     
-    return file->read(data, length);
+    return static_cast<int64_t>(source->read(data, length));
 }
 
 int _archive_global_flags;
@@ -322,7 +342,7 @@ archive_global_flags(int fl, bool setp) {
 }
 
 
-std::string Archive::make_unique_name(const std::string &filename) {
+std::string Archive::make_unique_name_in_archive(const std::string &filename) {
     if (!file_index_by_name(filename).has_value()) {
         return filename;
     }
@@ -462,6 +482,8 @@ bool Archive::read_infos() {
 
     merge_files(files_cache);
 
+    contents->changes.resize(files.size());
+
     return true;
 }
 
@@ -510,28 +532,33 @@ int ArchiveContents::is_cache_up_to_date() {
 }
 
 
-Archive::GetHashesStatus Archive::get_hashes(ArchiveFile *f, size_t len, bool eof, Hashes *h) {
+Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length, bool eof, Hashes *hashes) {
     unsigned char buf[BUFSIZE];
-    size_t n;
 
-    auto hu = Hashes::Update(h);
+    try {
+        auto hu = Hashes::Update(hashes);
 
-    while (len > 0) {
-	n = static_cast<size_t>(len) > sizeof(buf) ? sizeof(buf) : len;
+        while (length > 0) {
+            uint64_t n = std::min(length, static_cast<uint64_t>(sizeof(buf)));
+            if (source->read(buf, n) != n) {
+                throw Exception("");
+            }
 
-	if (f->read(buf, n) != static_cast<int64_t>(n)) {
-            return READ_ERROR;
-	}
+            hu.update(buf, n);
+            length -= n;
+        }
 
-	hu.update(buf, n);
-	len -= n;
+        hu.end();
+    }
+    catch (Exception e) {
+        return READ_ERROR;
     }
 
-    hu.end();
-
     if (eof) {
-        // libzip only returns CRC error if you read past EOF, so let's do that.
-        if (f->read(buf, 1) < 0) {
+        try {
+            source->read(buf, 1);
+        }
+        catch (Exception e) {
             return CRC_ERROR;
         }
     }

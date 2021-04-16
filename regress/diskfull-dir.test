@@ -13,5 +13,4 @@ stdout roms/clone-8.zip: add 'extra/wrongname.zip/08.rom' as '08.rom'
 stdout In archive extra/wrongname.zip:
 stdout file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
-stderr copying '04.rom' from 'extra/wrongname' to 'roms/clone-8' failed, not deleting
-stderr copying '08.rom' from 'extra/wrongname' to 'roms/clone-8' failed, not deleting
+stderr roms/clone-8: can't create temporary directory: Permission denied

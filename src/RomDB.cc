@@ -303,7 +303,7 @@ bool RomDB::read_files(Game *game, filetype_t ft) {
         rom.size = sq3_get_uint64_default(stmt, 4, SIZE_UNKNOWN);
         sq3_get_hashes(&rom.hashes, stmt, 5);
         if (ft == TYPE_DISK) {
-            rom.filename_extension = &chd_extension;
+            rom.filename_extension = chd_extension;
         }
         
         game->files[ft].push_back(rom);

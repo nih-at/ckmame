@@ -67,27 +67,6 @@ make_garbage_name(const std::string &name, int unique) {
 }
 
 
-std::string
-make_unique_name(const std::string &prefix, const std::string &ext) {
-    char buf[5];
-
-    for (int i = 0; i < 1000; i++) {
-	std::error_code ec;
-	sprintf(buf, "-%03d", i);
-	auto testname = prefix + buf + ext;
-	if (std::filesystem::exists(testname, ec)) {
-	    continue;
-	}
-	if (ec) {
-	    continue;
-	}
-	return testname;
-    }
-
-    throw Exception("can't create unique file name"); // TODO: details?
-}
-
-
 static std::string
 make_needed_name(filetype_t filetype, const File *r) {
     /* <needed_dir>/<crc>-nnn.zip */

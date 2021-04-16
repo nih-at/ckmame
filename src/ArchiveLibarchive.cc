@@ -74,8 +74,6 @@ bool ArchiveLibarchive::close_xxx() {
         return true;
     }
 
-    // TODO: for modify also close zip archive
-
     auto error = archive_read_free(la);
 
     if (error < ARCHIVE_WARN) {
@@ -102,35 +100,27 @@ void ArchiveLibarchive::commit_cleanup() {
 }
 
 
-void ArchiveLibarchive::ArchiveFile::close() {
-    archive->current_index += 1;
-    archive->have_open_file = false;
-    return;
-}
 
-
-int64_t ArchiveLibarchive::ArchiveFile::read(void *data, uint64_t length) {
-    return archive_read_data(la, data, length);
-}
-
-
-Archive::ArchiveFilePtr ArchiveLibarchive::file_open(uint64_t index) {
-    if (have_open_file) {
-        myerror(ERRZIP, "cannot open '%s': archive busy", files[index].name.c_str());
-        return NULL;
+bool ArchiveLibarchive::Source::open() {
+    if (archive->have_open_file) {
+        myerror(ERRZIP, "cannot open '%s': archive busy", archive->files[index].name.c_str());
+        return false;
     }
     
+    return archive->seek_to_entry(index);
+}
+
+bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
     if (!ensure_la()) {
-        return NULL;
+        return false;
     }
     
-
     if (current_index > index) {
         // rewind
         archive_read_free(la);
         la = NULL;
         if (!ensure_la()) {
-            return NULL;
+            return false;
         }
     }
     
@@ -140,13 +130,13 @@ Archive::ArchiveFilePtr ArchiveLibarchive::file_open(uint64_t index) {
             if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
                 seterrinfo("", name);
                 myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
-                return NULL;
+                return false;
             }
         }
         if (archive_read_data_skip(la) != ARCHIVE_OK) {
             seterrinfo("", name);
             myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
-            return NULL;
+            return false;
         }
         header_read = false;
         current_index += 1;
@@ -156,17 +146,12 @@ Archive::ArchiveFilePtr ArchiveLibarchive::file_open(uint64_t index) {
         if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
             seterrinfo("", name);
             myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
-            return NULL;
+            return false;
         }
         header_read = true;
     }
         
-    return Archive::ArchiveFilePtr(new ArchiveFile(this, la));
-}
-
-
-const char *ArchiveLibarchive::ArchiveFile::strerror() {
-    return archive_error_string(la);
+    return true;
 }
 
 
@@ -211,23 +196,17 @@ bool ArchiveLibarchive::read_infos_xxx() {
 }
 
 
-bool ArchiveLibarchive::rollback_xxx() {
-    // TODO: implement for modify
-
-    return true;
-}
-
-
-zip_source_t *ArchiveLibarchive::get_source(zip_t *destination_archive, uint64_t index, uint64_t start, std::optional<uint64_t> length) {
+ZipSourcePtr ArchiveLibarchive::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) {
     uint64_t actual_length = length.has_value() ? length.value() : files[index].size - start;
     
     auto source = new Source(this, index, start, actual_length);
     
-    return source->get_source(destination_archive);
+    return std::make_shared<ZipSource>(source->get_source());
 }
+                                       
 
-zip_source_t *ArchiveLibarchive::Source::get_source(zip_t *za) {
-    return zip_source_function(za, callback_c, this);
+zip_source_t *ArchiveLibarchive::Source::get_source() {
+    return zip_source_function_create(callback_c, this, NULL);
 }
 
 zip_int64_t ArchiveLibarchive::Source::callback_c(void *userdata, void *data, zip_uint64_t len, zip_source_cmd_t cmd) {
@@ -237,16 +216,14 @@ zip_int64_t ArchiveLibarchive::Source::callback_c(void *userdata, void *data, zi
 zip_int64_t ArchiveLibarchive::Source::callback(void *data, zip_uint64_t len, zip_source_cmd_t cmd) {
     switch (cmd) {
         case ZIP_SOURCE_OPEN:
-            file = archive->file_open(index);
-            
-            if (file == NULL) {
+            if (!open()) {
                 zip_error_set(&error, ZIP_ER_OPEN, errno);
                 return -1;
             }
             return 0;
             
         case ZIP_SOURCE_READ: {
-            auto ret = file->read(data, len);
+            auto ret = archive_read_data(archive->la, data, length);
             if (ret < 0) {
                 zip_error_set(&error, ZIP_ER_READ, errno);
                 return -1;
@@ -255,8 +232,8 @@ zip_int64_t ArchiveLibarchive::Source::callback(void *data, zip_uint64_t len, zi
         }
             
         case ZIP_SOURCE_CLOSE:
-            file->close();
-            file = nullptr;
+            archive->current_index += 1;
+            archive->have_open_file = false;
             return 0;
             
         case ZIP_SOURCE_STAT: {
@@ -286,3 +263,15 @@ zip_int64_t ArchiveLibarchive::Source::callback(void *data, zip_uint64_t len, zi
     }
 }
 
+
+void ArchiveLibarchive::get_last_update() {
+    struct stat st;
+    if (stat(name.c_str(), &st) < 0) {
+        contents->size = 0;
+        contents->mtime = 0;
+        return;
+    }
+
+    contents->mtime = st.st_mtime;
+    contents->size = static_cast<uint64_t>(st.st_size);
+}

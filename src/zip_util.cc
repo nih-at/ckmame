@@ -35,6 +35,42 @@
 
 #include <filesystem>
 
+#include "Exception.h"
+
+ZipSource::~ZipSource() {
+    zip_source_free(source);
+}
+
+
+void ZipSource::open() {
+    if (zip_source_open(source) < 0) {
+        throw Exception(error());
+    }
+}
+
+
+void ZipSource::close() {
+    if (zip_source_close(source) < 0) {
+        throw Exception(error());
+    }
+}
+
+
+uint64_t ZipSource::read(void *data, uint64_t length) {
+    auto n = zip_source_read(source, data, length);
+
+    if (n < 0) {
+        throw Exception(error());
+    }
+    
+    return static_cast<uint64_t>(n);
+}
+
+
+std::string ZipSource::error() {
+    return zip_error_strerror(zip_source_error(source));
+}
+
 
 static bool my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx);
 

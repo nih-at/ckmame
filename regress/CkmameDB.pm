@@ -266,7 +266,6 @@ sub omit_hashes {
 
 	my $omit;
 
-	return if ($self->{unzipped});
 	return unless (exists($self->{no_hashes}->{$archive}));
 	if (ref($self->{no_hashes}->{$archive}) eq 'HASH') {
 		$omit = $self->{no_hashes}->{$archive}->{$file->{name}};

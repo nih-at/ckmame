@@ -38,6 +38,7 @@
 
 #include "Detector.h"
 #include "error.h"
+#include "Exception.h"
 #include "util.h"
 #include "zip_util.h"
 
@@ -94,12 +95,81 @@ bool ArchiveZip::close_xxx() {
 
 
 bool ArchiveZip::commit_xxx() {
-    if (modified && ((contents->flags & ARCHIVE_FL_RDONLY) == 0) && za != NULL && !files.empty()) {
+    if (((contents->flags & ARCHIVE_FL_RDONLY) == 0) && za != NULL && !files.empty()) {
         if (!ensure_dir(name, true)) {
-	    return false;
+            return false;
+        }
+    }
+    
+    if (!ensure_zip()) {
+        return false;
+    }
+    
+    auto ok = true;
+    
+    for (size_t index = 0; index < files.size(); index++) {
+        auto &file = files[index];
+        auto &change = contents->changes[index];
+        
+        if (file.where == FILE_DELETED) {
+            if (zip_delete(za, index) < 0) {
+                myerror(ERRZIP, "cannot delete '%s': %s", file.name.c_str(), zip_strerror(za));
+                ok = false;
+                break;
+            }
+        }
+        else if (file.where == FILE_ADDED) {
+            if (!ensure_file_doesnt_exist(file.name)) {
+                ok = false;
+                break;
+            }
+            zip_source_keep(change.source->source);
+            if (zip_file_add(za, file.name.c_str(), change.source->source, 0) < 0) {
+                zip_source_free(change.source->source);
+                if (change.source_name.empty()) {
+                    myerror(ERRZIPFILE, "error adding empty file: %s", zip_strerror(za));
+                }
+                else {
+                    myerror(ERRZIPFILE, "error adding '%s': %s", change.source_name.c_str(), zip_strerror(za));
+                }
+                ok = false;
+                break;
+            }
+        }
+        else {
+            if (!change.original_name.empty()) {
+                if (!ensure_file_doesnt_exist(file.name)) {
+                    ok = false;
+                    break;
+                }
+                if (zip_rename(za, index, file.name.c_str()) < 0) {
+                    myerror(ERRZIP, "cannot rename '%s' to `%s': %s", change.original_name.c_str(), file.name.c_str(), zip_strerror(za));
+                    ok = false;
+                    break;
+                }
+            }
+            if (change.source) {
+                zip_source_keep(change.source->source);
+                if (zip_file_replace(za, index, change.source->source, 0) < 0) {
+                    zip_source_free(change.source->source);
+                    if (change.source_name.empty()) {
+                        myerror(ERRZIPFILE, "error adding empty file: %s", zip_strerror(za));
+                    }
+                    else {
+                        myerror(ERRZIPFILE, "error adding '%s': %s", change.source_name.c_str(), zip_strerror(za));
+                    }
+                    ok = false;
+                    break;
+                }
+            }
         }
     }
 
+    if (!ok) {
+        zip_unchange_all(za);
+        return false;
+    }
+    
     return close_xxx();
 }
 
@@ -122,114 +192,6 @@ void ArchiveZip::commit_cleanup() {
 
         files[i].mtime = st.mtime;
     }
-}
-
-
-bool ArchiveZip::file_add_empty_xxx(const std::string &filename) {
-    struct zip_source *source;
-
-    if (filetype != TYPE_ROM) {
-	seterrinfo(name);
-	myerror(ERRZIP, "cannot add files to disk");
-	return false;
-    }
-
-    if (is_writable()) {
-        if (!ensure_zip()) {
-            return false;
-        }
-
-	if ((source = zip_source_buffer(za, NULL, 0, 0)) == NULL || zip_add(za, filename.c_str(), source) < 0) {
-	    zip_source_free(source);
-	    seterrinfo(name, filename);
-	    myerror(ERRZIPFILE, "error creating empty file: %s", zip_strerror(za));
-            return false;
-	}
-    }
-
-    return true;
-}
-
-
-void ArchiveZip::ArchiveFile::close() {
-    zip_fclose(zf);
-}
-
-
-int64_t ArchiveZip::ArchiveFile::read(void *data, uint64_t length) {
-    return zip_fread(zf, data, length);
-}
-
-
-bool ArchiveZip::file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive_, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length) {
-    struct zip_source *source;
-
-    auto source_archive = static_cast<ArchiveZip *>(source_archive_);
-    
-    if (!ensure_zip()) {
-        return false;
-    }
-    
-    if ((source = source_archive->get_source(za, source_index, start, length)) == NULL || (index.has_value() ? zip_replace(za, index.value(), source) : zip_add(za, filename.c_str(), source)) < 0) {
-	zip_source_free(source);
-	seterrinfo(name, filename);
-	myerror(ERRZIPFILE, "error adding '%s' from `%s': %s", source_archive->files[source_index].name.c_str(), source_archive->name.c_str(), zip_strerror(za));
-	return false;
-    }
-
-    return true;
-}
-
-
-bool ArchiveZip::file_delete_xxx(uint64_t index) {
-    if (!ensure_zip()) {
-	return false;
-    }
-
-    if (zip_delete(za, index) < 0) {
-	seterrinfo("", name);
-	myerror(ERRZIP, "cannot delete '%s': %s", zip_get_name(za, index, 0), zip_strerror(za));
-	return false;
-    }
-
-    return true;
-}
-
-
-Archive::ArchiveFilePtr ArchiveZip::file_open(uint64_t index) {
-    if (!ensure_zip()) {
-	return NULL;
-    }
-
-    struct zip_file *zf;
-
-    if ((zf = zip_fopen_index(za, index, 0)) == NULL) {
-	seterrinfo("", name);
-	myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), zip_strerror(za));
-	return NULL;
-    }
-
-    return Archive::ArchiveFilePtr(new ArchiveFile(zf));
-}
-
-
-bool ArchiveZip::file_rename_xxx(uint64_t index, const std::string &filename) {
-    if (!ensure_zip()) {
-        return false;
-    }
-
-    if (my_zip_rename(za, index, filename.c_str()) < 0) {
-	seterrinfo("", name);
-	myerror(ERRZIP, "cannot rename '%s' to `%s': %s", zip_get_name(za, index, 0), filename.c_str(), zip_strerror(za));
-	return false;
-    }
-
-    return true;
-}
-
-
-const char *ArchiveZip::ArchiveFile::strerror() {
-    return zip_file_strerror(zf);
 }
 
 
@@ -283,43 +245,38 @@ bool ArchiveZip::read_infos_xxx() {
     
     return true;
 }
+                                        
 
-
-bool ArchiveZip::rollback_xxx() {
-    if (za == NULL) {
-        return true;
-    }
-
-    if (zip_unchange_all(za) < 0) {
-	return false;
-    }
-    
-    for (uint64_t i = 0; i < files.size(); i++) {
-	if (files[i].where == FILE_ADDED) {
-            files.resize(i);
-	    break;
-	}
-
-        if (files[i].where == FILE_DELETED) {
-	    files[i].where = FILE_INGAME;
-        }
-
-        if (files[i].name != zip_get_name(za, i, 0)) {
-            files[i].name = zip_get_name(za, i, 0);
-	}
-    }
-
-    return true;
-}
-
-
-zip_source_t *ArchiveZip::get_source(zip_t *destination_archive, uint64_t index, uint64_t start, std::optional<uint64_t> length_) {
+ZipSourcePtr ArchiveZip::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length_) {
     if (!ensure_zip()) {
         return NULL;
     }
     
     // TODO: overflow check
-    int64_t length = length_.has_value() ? static_cast<int64_t>(length_.value()) : -1;
+    int64_t length = static_cast<int64_t>(length_.has_value() ? length_.value() : files[index].size - start);
+    
+    auto source = zip_source_zip_create(za, index, ZIP_FL_UNCHANGED, start, length, NULL);
+    
+    if (source == NULL) {
+        // TODO: error message
+        return {};
+    }
 
-    return zip_source_zip(destination_archive, za, index, ZIP_FL_UNCHANGED, start, length);
+    return std::make_shared<ZipSource>(source);
+}
+
+
+bool ArchiveZip::ensure_file_doesnt_exist(const std::string &filename) {
+    auto index = zip_name_locate(za, filename.c_str(), 0);
+
+    if (index >= 0) {
+        auto new_name = make_unique_name_in_archive(filename);
+        if (zip_rename(za, static_cast<uint64_t>(index), new_name.c_str()) < 0) {
+            seterrinfo(filename, name);
+            myerror(ERRFILE, "can't move out of the way: %s", zip_error_strerror(zip_get_error(za)));
+            return false;
+        }
+    }
+    
+    return true;
 }

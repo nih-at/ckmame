@@ -37,8 +37,10 @@
 #include "compat.h"
 
 #include "Dir.h"
+#include "Exception.h"
 #include "error.h"
 #include "file_util.h"
+#include "fix_util.h"
 #include "util.h"
 
 #include <cerrno>
@@ -49,434 +51,198 @@
 
 #include <sys/stat.h>
 
-static bool copy_file(const std::string &old, const std::string &new_name, size_t start, ssize_t len, Hashes *hashes);
-
-bool ArchiveDir::Change::is_renamed() const {
-    if (original.data_file_name.empty() || destination.data_file_name.empty()) {
-        return false;
-    }
-    return original.data_file_name == destination.data_file_name;
-}
-
-bool ArchiveDir::Change::has_new_data() const {
-    if (destination.name.empty()) {
-        return false;
-    }
-
-    return (original.name.empty() || original.data_file_name != destination.data_file_name);
-}
-
-bool ArchiveDir::FileInfo::apply() const {
-    if (name.empty() || name == data_file_name) {
-        return true;
-    }
-
-    std::error_code ec;
-    std::filesystem::rename(data_file_name, name, ec);
-    if (ec) {
-        myerror(ERRZIP, "apply: cannot rename '%s' to '%s': %s", data_file_name.c_str(), name.c_str(), ec.message().c_str());
-        return false;
-    }
-    return true;
-}
-
-bool ArchiveDir::FileInfo::discard(ArchiveDir *archive) const {
-    std::error_code ec;
-
-    if (name.empty() || name == data_file_name) {
-        return true;
-    }
-
-    std::filesystem::remove(data_file_name, ec);
-    if (ec) {
-        myerror(ERRZIP, "cannot delete '%s': %s", data_file_name.c_str(), ec.message().c_str());
-	return false;
-    }
-    auto path = std::filesystem::path(name).parent_path();
-    /* TODO: stop before removing archive_name itself, e.g. extra_dir */
-    while (!path.empty()) {
-	std::filesystem::remove(path, ec);
-	if (ec) {
-	    break;
-	}
-	path = path.parent_path();
-    }
-
-    return true;
-}
-
-
-/* returns: -1 on error, 1 if file was moved, 0 if nothing needed to be done */
-int ArchiveDir::move_original_file_out_of_the_way(uint64_t index) {
-    auto change = get_change(index, true);
-    auto filename = files[index].name;
-
-    if (change->is_added() || !change->original.name.empty()) {
-        return 0;
-    }
-
-    auto full_name = get_full_name(index);
-    auto tmp = make_tmp_name(filename);
-
-    std::error_code ec;
-    std::filesystem::rename(full_name, tmp, ec);
-    if (ec) {
-        myerror(ERRZIP, "move: cannot rename '%s' to '%s': %s", filename.c_str(), tmp.c_str(), strerror(errno));
-        return -1;
-    }
-
-    change->original.name = full_name;
-    change->original.data_file_name = tmp;
-
-    return 1;
-}
-
-
-bool ArchiveDir::Change::apply(ArchiveDir *archive, uint64_t index) {
-    if (!destination.name.empty()) {
-        if (!ensure_dir(destination.name, true)) {
-            myerror(ERRZIP, "destination directory cannot be created: %s", strerror(errno));
-            return false;
-        }
-
-        if (!destination.apply()) {
-            return false;
-        }
-
-        struct stat st;
-        if (stat(destination.name.c_str(), &st) < 0) {
-            myerror(ERRZIP, "can't stat created file '%s': %s", destination.name.c_str(), strerror(errno));
-            return false;
-        }
-        archive->files[index].mtime = st.st_mtime;
-    }
-
-    if (!is_renamed()) {
-        if (!original.discard(archive)) {
-            return false;
-        }
-    }
-
-    clear();
-
-    return true;
-}
-
-void ArchiveDir::Change::rollback(ArchiveDir *archive) {
-    original.apply();
-
-    if (!is_renamed()) {
-        destination.discard(archive);
-    }
-
-    clear();
-}
-
-void ArchiveDir::Change::clear() {
-    original.clear();
-    destination.clear();
-    mtime = 0;
-}
-
-
-void ArchiveDir::FileInfo::clear() {
-    name.clear();
-    data_file_name.clear();
-}
-
 
 bool ArchiveDir::ensure_archive_dir() {
     return ensure_dir(name, false);
 }
 
 
-ArchiveDir::Change *ArchiveDir::get_change(uint64_t index, bool create) {
-    if (changes.size() <= index) {
-        if (!create) {
-            return NULL;
-        }
-        else {
-            changes.resize(index + 1);
-        }
-    }
-    
-    return &changes[index];
-}
-
-std::filesystem::path ArchiveDir::get_full_name(uint64_t index) {
-    auto change = get_change(index);
-    
-    if (change != NULL && !change->destination.data_file_name.empty()) {
-        return change->destination.data_file_name;
-    }
-
-    return make_full_name(files[index].name);
-}
-
-std::filesystem::path ArchiveDir::get_original_data(uint64_t index) {
-    auto change = get_change(index);
-    
-    if (change != NULL && !change->original.data_file_name.empty()) {
-        return change->original.data_file_name;
-    }
-
-    return make_full_name(files[index].name);
-}
-
-
-std::filesystem::path ArchiveDir::make_full_name(const std::filesystem::path &filename) {
-    return std::filesystem::path(name) /= (filename.string() + (contents->filename_extension ? *(contents->filename_extension) : ""));
-}
-
-std::filesystem::path ArchiveDir::make_tmp_name(const std::filesystem::path &filename) {
-    auto name_template = static_cast<std::string>(std::filesystem::path(name) / (static_cast<std::string>(filename) + ".XXXXX"));
-
-    char *c_string = strdup(name_template.c_str());
-    if (c_string == NULL) {
-	return "";
-    }
-    
-    for (size_t i = name.length() + 1; i < name_template.length(); i++) {
-        if (c_string[i] == '/') {
-            c_string[i] = '_';
-        }
-    }
-    
-    if (mktemp(c_string) == NULL) {
-        free(c_string);
-        return "";
-    }
-
-    auto tmp_name = std::filesystem::path(c_string);
-    free(c_string);
-    return tmp_name;
-}
-
-
 bool ArchiveDir::commit_xxx() {
-    if (!modified) {
-        return true;
-    }
-
-    bool is_empty = true;
-
-    for (auto &file : files) {
-        if (file.where != FILE_DELETED) {
-            is_empty = false;
-            break;
-        }
-    }
-
-    auto ok = true;
+    seterrinfo("", name);
     
-    for (size_t index = 0; index < changes.size(); index++) {
-        if (!changes[index].apply(this, index)) {
-            ok = false;
-        }
+    std::filesystem::path added_directory;
+    
+    try {
+        added_directory = make_unique_path(std::filesystem::path(name) / ".added");
+    }
+    catch (...) {
+        myerror(ERRZIP, "can't create temporary directory: %s", strerror(errno));
+        return false;
     }
     
-    if (is_empty && is_writable() && !(contents->flags & (ARCHIVE_FL_KEEP_EMPTY | ARCHIVE_FL_TOP_LEVEL_ONLY))) {
-	std::error_code ec;
-	std::filesystem::remove(name, ec);
-	if (ec) {
-            myerror(ERRZIP, "cannot remove empty archive '%s': %s", name.c_str(), ec.message().c_str());
-            ok = false;
+    try {
+        for (size_t index = 0; index < files.size(); index++) {
+            auto &file = files[index];
+            auto &change = contents->changes[index];
+            
+            if (!change.file.empty()) {
+                if (!ensure_dir(added_directory, false)) {
+                    throw Exception("");
+                }
+                if (!link_or_copy(change.file, added_directory / file.name)) {
+                    throw Exception("");
+                }
+            }
+            else if (change.source) {
+                if (!ensure_dir(added_directory, false)) {
+                    throw Exception("");
+                }
+                copy_source(change.source.get(), added_directory / file.name);
+            }
         }
     }
+    catch (...) {
+        std::filesystem::remove_all(added_directory);
+        return false;
+    }
 
-#if 0
-    if (archive_is_modified(a))
-    ud->dbh_changed = true;
-#endif
+    Commit commit(this);
+        
+    try {
+        for (size_t index = 0; index < files.size(); index++) {
+            auto &file = files[index];
+            auto &change = contents->changes[index];
+            
+            if (file.where == FILE_DELETED) {
+                commit.delete_file(get_original_filename(index));
+            }
+            else if (!change.file.empty() || change.source) {
+                commit.rename_file(added_directory / file.name, get_full_filename(index));
+            }
+            else if (!change.original_name.empty()){
+                commit.rename_file(get_original_filename(index), get_full_filename(index));
+            }
+        }
+    }
+    catch (...) {
+        commit.undo();
+        std::filesystem::remove_all(added_directory);
+        return false;
+    }
 
-    return ok;
+    commit.done();
+    std::filesystem::remove_all(added_directory);
+
+    if (is_empty()) {
+        std::error_code ec;
+        std::filesystem::remove(name, ec);
+    }
+    
+    return true;
 }
-
 
 void ArchiveDir::commit_cleanup() {
-    changes.resize(files.size());
+    auto path = std::filesystem::path(name);
+    
+    for (auto &file : files) {
+        file.mtime = get_mtime(path / file.filename());
+    }
 }
 
 
-bool ArchiveDir::file_add_empty_xxx(const std::string &filename) {
-    return file_copy_xxx({}, NULL, 0, filename, 0, 0);
-}
-
-
-bool ArchiveDir::file_copy_xxx(std::optional<uint64_t> index, Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length) {
-    if (!ensure_archive_dir()) {
-        return false;
+void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &destination) {
+    auto fout = make_shared_file(destination, "w");
+    if (!fout) {
+        myerror(ERRZIP, "cannot open '%s': %s", destination.c_str(), strerror(errno));
+        throw Exception("");
     }
-    auto tmpname = make_tmp_name(filename);
-    if (tmpname.empty()) {
-        return false;
-    }
-    
-    /* archive layer already grew archive files if didx < 0 */
-    auto real_index = index.has_value() ? index.value() : files.size() - 1;
-    
-    File *f = &files[real_index];
 
-    if (source_archive != NULL) {
-        auto sa = static_cast<ArchiveDir *>(source_archive);
-        auto source_name = sa->get_original_data(source_index);
-        if (source_name.empty()) {
-            return false;
-        }
+    uint8_t buffer[BUFSIZ];
+            
+    source->open();
 
-        if (start == 0 && (!length.has_value() || length == sa->files[source_index].size)) {
-            if (!link_or_copy(source_name, tmpname)) {
-                return false;
-            }
-        }
-        else {
-            if (!copy_file(source_name, tmpname, start, static_cast<ssize_t>(length.value()), &f->hashes)) {
-                myerror(ERRZIP, "cannot copy '%s' to '%s': %s", source_name.c_str(), tmpname.c_str(), strerror(errno));
-                return false;
-            }
-        }
-    }
-    else {
-	auto fout = make_shared_file(tmpname, "w");
-	if (!fout) {
-            myerror(ERRZIP, "cannot open '%s': %s", tmpname.c_str(), strerror(errno));
-            return false;
+    uint64_t n;
+    while ((n = source->read(buffer, sizeof(buffer))) > 0) {
+        if (fwrite(buffer, 1, n, fout.get()) != n) {
+            myerror(ERRZIP, "can't write '%s': %s", destination.c_str(), strerror(errno));
+            source->close();
+            throw Exception("");
         }
     }
 
-    auto err = false;
+    source->close();
+}
+
+
+void ArchiveDir::Commit::delete_file(const std::filesystem::path &file) {
+    auto destination = make_unique_path(deleted_directory / file.filename());
     
-    Change *change = get_change(real_index, true);
+    ensure_dir(deleted_directory, false);
+    rename(get_filename(file), destination);
+}
+
+
+void ArchiveDir::Commit::rename_file(const std::filesystem::path &source, const std::filesystem::path &destination) {
+    ensure_parent_directory(destination);
+    ensure_file_doesnt_exist(destination);
+
+    rename(get_filename(source), destination);
+}
+
+
+void ArchiveDir::Commit::rename(const std::filesystem::path &source, const std::filesystem::path &destination) {
+    std::filesystem::rename(source, destination);
+    undos.push_back(Operation(destination, source));
+    cleanup_directories.insert(source.parent_path());
+}
+
+
+void ArchiveDir::Commit::undo() {
+    std::error_code ec;
     
-    if (index.has_value()) {
-        if (!change->is_added()) {
-            if (filename != files[real_index].name) {
-                if (move_original_file_out_of_the_way(real_index) < 0) {
-                    err = true;
-                }
-            }
-            else {
-                if (change->is_unchanged()) {
-                    change->original.name = make_full_name(filename);
-                    change->original.data_file_name = change->original.name;
-                }
-            }
+    for (auto it = undos.rbegin(); it != undos.rend(); it++) {
+        auto &operation = *it;
+        
+        switch (operation.type) {
+            case Operation::DELETE:
+                std::filesystem::remove(operation.new_name, ec);
+                break;
+            case Operation::RENAME:
+                std::filesystem::rename(operation.old_name, operation.new_name, ec);
+                break;
         }
     }
     
-    if (err) {
-	std::filesystem::remove(tmpname);
-        return false;
+    std::filesystem::remove(deleted_directory, ec);
+}
+
+
+void ArchiveDir::Commit::done() {
+    std::error_code ec;
+
+    std::filesystem::remove_all(deleted_directory, ec);
+    for (auto directory : cleanup_directories) {
+        remove_directories_up_to(directory, archive->name);
+    }
+}
+
+std::filesystem::path ArchiveDir::Commit::get_filename(const std::filesystem::path &filename) {
+    auto it = renamed_files.find(filename);
+    
+    if (it != renamed_files.end()) {
+        return it->second;
     }
     
-    auto full_name = make_full_name(filename);
-    
-    if (change->has_new_data()) {
-        change->destination.discard(this);
-    }
-    change->destination.name = full_name;
-    change->destination.data_file_name = tmpname;
-    
-    return true;
+    return filename;
 }
 
 
-bool ArchiveDir::file_delete_xxx(uint64_t index) {
-    auto change = get_change(index, true);
-
-    if (move_original_file_out_of_the_way(index) == -1) {
-        return false;
+void ArchiveDir::Commit::ensure_file_doesnt_exist(const std::filesystem::path &file) {
+    if (std::filesystem::exists(file)) {
+        auto new_name = make_unique_path(file);
+        std::filesystem::rename(file, new_name);
+        undos.push_back(Operation(new_name, file));
+        renamed_files[file] = new_name;
     }
-
-    auto ok = true;
-
-    if (change->has_new_data()) {
-        if (!change->destination.discard(this)) {
-            ok = false;
-        }
-    }
-    change->destination.clear();
-
-    return ok;
 }
 
 
-Archive::ArchiveFilePtr ArchiveDir::file_open(uint64_t index) {
-    auto f = make_shared_file(get_full_name(index), "rb");
-    if (!f) {
-	seterrinfo("", name);
-        myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), strerror(errno));
-        return NULL;
+void ArchiveDir::Commit::ensure_parent_directory(const std::filesystem::path &file) {
+    auto directory = file.parent_path();
+    if (!std::filesystem::exists(directory)) {
+        std::filesystem::create_directory(directory);
+        undos.push_back(Operation(directory));
     }
-
-    return Archive::ArchiveFilePtr(new ArchiveFile(f));
-}
-
-void ArchiveDir::ArchiveFile::close() {
-    f = NULL;
-}
-
-
-int64_t ArchiveDir::ArchiveFile::read(void *data, uint64_t length) {
-    if (length > SIZE_T_MAX) {
-        errno = EINVAL;
-        return -1;
-    }
-    return static_cast<int64_t>(fread(data, 1, length, f.get()));
-}
-
-
-bool ArchiveDir::file_will_exist_after_commit(std::filesystem::path filename) {
-    for (auto &change : changes) {
-        if (change.destination.name == filename) {
-            return true;
-        }
-    }
-
-    if (std::filesystem::exists(filename)) {
-        return true;
-    }
-
-    return false;
-}
-
-
-bool ArchiveDir::file_rename_xxx(uint64_t index, const std::string &filename) {
-    auto change = get_change(index, true);
-
-    if (change->is_deleted()) {
-        myerror(ERRZIP, "cannot rename deleted file '%s'", files[index].name.c_str());
-        return false;
-    }
-
-    auto final_name = make_full_name(filename);
-
-    if (file_will_exist_after_commit(final_name)) {
-        errno = EEXIST;
-        myerror(ERRZIP, "cannot rename '%s' to '%s': %s", files[index].name.c_str(), filename.c_str(), strerror(errno));
-        return false;
-    }
-
-    switch (move_original_file_out_of_the_way(index)) {
-        case -1:
-            return false;
-
-        case 1:
-            change->destination.data_file_name = change->original.data_file_name;
-            break;
-
-        default:
-            break;
-    }
-
-    change->destination.name = final_name;
-
-    return true;
-}
-
-
-const char *ArchiveDir::ArchiveFile::strerror() {
-    return ::strerror(errno);
 }
 
 
@@ -490,12 +256,6 @@ bool ArchiveDir::read_infos_xxx() {
                  continue;
              }
 
-             struct stat sb;
-
-             if (stat(filepath.c_str(), &sb) != 0) {
-                 continue;
-             }
-             
              files.push_back(File());
              auto &f = files[files.size() - 1];
              
@@ -503,20 +263,11 @@ bool ArchiveDir::read_infos_xxx() {
              f.size = std::filesystem::file_size(filepath);
              // auto ftime = std::filesystem::last_write_time(filepath);
              // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
-             f.mtime = sb.st_mtime;
+             f.mtime = get_mtime(filepath);
          }
     }
     catch (...) {
 	return false;
-    }
-
-    return true;
-}
-
-
-bool ArchiveDir::rollback_xxx() {
-    for (auto &change : changes) {
-        change.rollback(this);
     }
 
     return true;
@@ -535,88 +286,48 @@ void ArchiveDir::get_last_update() {
     contents->mtime = st.st_mtime;
 }
 
-static bool
-copy_file(const std::string &old, const std::string &new_name, size_t start, ssize_t len, Hashes *hashes) {
-    auto fin = make_shared_file(old, "rb");
 
-    if (!fin) {
-	return false;
+std::string ArchiveDir::get_full_filename(uint64_t index) {
+    return std::filesystem::path(name) / (files[index].name + contents->filename_extension);
+}
+
+
+std::string ArchiveDir::get_original_filename(uint64_t index) {
+    std::string base_name;
+    if (contents->changes.size() > index) {
+        base_name = contents->changes[index].original_name;
     }
-
-    if (start > 0) {
-        if (start > std::numeric_limits<off_t>::max()) {
-            errno = EINVAL;
-            return false;
-        }
-	if (fseeko(fin.get(), static_cast<off_t>(start), SEEK_SET) < 0) {
-	    return false;
-	}
+    if (base_name.empty()) {
+        base_name = files[index].name;
     }
+    return std::filesystem::path(name) / (base_name + contents->filename_extension);
+}
 
-    auto fout = make_shared_file(new_name, "wb");
-    if (!fout) {
-	return false;
+
+ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) {
+    auto filename = get_original_filename(index);
+    zip_error_t error;
+    zip_error_init(&error);
+    zip_source_t *source = zip_source_file_create(filename.c_str(), start, length.has_value() ? static_cast<int64_t>(length.value()) : -1, &error);
+    
+    if (source == NULL) {
+        throw Exception("can't open '%s': %s", filename.c_str(), zip_error_strerror(&error));
     }
+    return std::make_shared<ZipSource>(source);
+}
 
-    std::unique_ptr<Hashes::Update> hu;
-    Hashes h;
 
-    if (hashes) {
-	h.types = Hashes::TYPE_ALL;
-        hu = std::make_unique<Hashes::Update>(&h);
+time_t ArchiveDir::get_mtime(const std::string &file) {
+    struct stat st;
+    
+    if (stat(file.c_str(), &st) < 0) {
+        return 0;
     }
+    
+    return st.st_mtime;
+}
 
-    size_t total = 0;
-    while ((len >= 0 && total < (size_t)len) || !feof(fin.get())) {
-	unsigned char b[8192];
-	size_t nr = sizeof(b);
 
-	if (len > 0 && nr > static_cast<size_t>(len) - total) {
-	    nr = static_cast<size_t>(len) - total;
-	}
-	if ((nr = fread(b, 1, nr, fin.get())) == 0) {
-	    break;
-	}
-	size_t nw = 0;
-	while (nw < nr) {
-	    size_t n;
-	    if ((n = fwrite(b + nw, 1, nr - nw, fout.get())) == 0) {
-		int err = errno;
-		std::error_code ec;
-		std::filesystem::remove(new_name);
-		if (ec) {
-		    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new_name.c_str());
-		}
-		errno = err;
-		return false;
-	    }
-
-            if (hashes) {
-                hu->update(b + nw, nr - nw);
-            }
-	    nw += n;
-	}
-	total += nw;
-    }
-
-    if (hashes) {
-        hu->end();
-    }
-
-    if (fflush(fout.get()) != 0 || ferror(fin.get())) {
-	int err = errno;
-	std::error_code ec;
-	std::filesystem::remove(new_name);
-	if (ec) {
-	    myerror(ERRSTR, "cannot clean up temporary file '%s' during copy error", new_name.c_str());
-	}
-	errno = err;
-	return false;
-    }
-
-    if (hashes) {
-        *hashes = h;
-    }
-
-    return true;
+ArchiveDir::Commit::Commit(ArchiveDir *archive_) : archive(archive_) {
+    deleted_directory = std::filesystem::path(make_unique_name(std::filesystem::path(archive->name) / ".deleted", ""));
 }

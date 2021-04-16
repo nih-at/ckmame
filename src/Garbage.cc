@@ -46,7 +46,7 @@ bool Garbage::add(uint64_t index, bool copy) {
     std::string destination_name = source_name;
     
     if (da->file_index_by_name(source_name) >= 0) {
-        destination_name = da->make_unique_name(source_name);
+        destination_name = da->make_unique_name_in_archive(source_name);
     }
 
     return da->file_copy_or_move(sa, index, destination_name, copy);
