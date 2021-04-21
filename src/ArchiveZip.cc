@@ -186,7 +186,7 @@ void ArchiveZip::commit_cleanup() {
 
 	if (zip_stat_index(za, i, 0, &st) < 0) {
 	    seterrinfo("", name);
-	    myerror(ERRZIP, "cannot stat file %d: %s", i, zip_strerror(za));
+	    myerror(ERRZIP, "cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
 	    continue;
 	}
 
@@ -221,7 +221,7 @@ bool ArchiveZip::read_infos_xxx() {
     
     for (zip_uint64_t i = 0; i < n; i++) {
 	if (zip_stat_index(za, i, 0, &zsb) == -1) {
-	    myerror(ERRZIP, "error stat()ing index %d: %s", i, zip_strerror(za));
+	    myerror(ERRZIP, "error stat()ing index %" PRIu64 ": %s", i, zip_strerror(za));
 	    continue;
 	}
 
