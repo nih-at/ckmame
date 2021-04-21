@@ -133,6 +133,9 @@ set(EXTRA_TESTS
   hasherr.test
   hasherr2.test
   identical-once.test
+  ignore-macos-dir-in-game.test
+  ignore-macos-extra.test
+  ignore-macos-roms.test
   ignore-unknown.test
   inchild.test
   incomplete-basic-b.test

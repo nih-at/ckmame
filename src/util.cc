@@ -86,8 +86,9 @@ name_type_t name_type(const std::string &name) {
         }
     }
 
-    if (std::filesystem::path(name).filename() == DBH_CACHE_DB_NAME) {
-        return NAME_CKMAMEDB;
+    auto filename = std::filesystem::path(name).filename();
+    if (filename == DBH_CACHE_DB_NAME || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
+        return NAME_IGNORE;
     }
     
     if (!roms_unzipped && is_ziplike(name)) {

@@ -700,6 +700,10 @@
 		4BD482962535B23C00D0002B /* ArchiveDir.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveDir.cc; sourceTree = "<group>"; };
 		4BD482972535B23C00D0002B /* ArchiveDir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveDir.h; sourceTree = "<group>"; };
 		4BE373C3263038A000BE68A3 /* zero-superfluous-2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "zero-superfluous-2.test"; sourceTree = "<group>"; };
+		4BE373CD26303E2B00BE68A3 /* rom-7z.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-7z.test"; sourceTree = "<group>"; };
+		4BE373CE26303E2B00BE68A3 /* ignore-macos-roms.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ignore-macos-roms.test"; sourceTree = "<group>"; };
+		4BE373CF26303E8900BE68A3 /* ignore-macos-extra.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ignore-macos-extra.test"; sourceTree = "<group>"; };
+		4BE373D026303EE900BE68A3 /* ignore-macos-dir-in-game.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ignore-macos-dir-in-game.test"; sourceTree = "<group>"; };
 		4BF6FA2825D5371B00B93A98 /* ArchiveImages.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveImages.cc; sourceTree = "<group>"; };
 		4BF6FA2925D5371B00B93A98 /* ArchiveImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveImages.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1117,6 +1121,9 @@
 				4B6B14E424FFA98000D3F3FB /* hasherr.test */,
 				4B6B14E924FFA98100D3F3FB /* hasherr2.test */,
 				4B6B14E824FFA98100D3F3FB /* identical-once.test */,
+				4BE373D026303EE900BE68A3 /* ignore-macos-dir-in-game.test */,
+				4BE373CF26303E8900BE68A3 /* ignore-macos-extra.test */,
+				4BE373CE26303E2B00BE68A3 /* ignore-macos-roms.test */,
 				4B6B14E224FFA98000D3F3FB /* ignore-unknown.test */,
 				4B6B14EF24FFA98100D3F3FB /* inchild.test */,
 				4B6B14F124FFA98100D3F3FB /* incomplete-basic-b.test */,
@@ -1176,6 +1183,7 @@
 				4B6B149824FFA12B00D3F3FB /* old-keep.test */,
 				4B6B149F24FFA12B00D3F3FB /* old-partial.test */,
 				4B6B14C924FFA14B00D3F3FB /* replace-broken-rom.test */,
+				4BE373CD26303E2B00BE68A3 /* rom-7z.test */,
 				4B6B14DA24FFA14B00D3F3FB /* rom-add-from-crc-different.test */,
 				4B6B14C424FFA14A00D3F3FB /* rom-add-from-crc-only.test */,
 				4B6B14CA24FFA14B00D3F3FB /* rom-broken-replace.test */,

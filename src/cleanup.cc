@@ -107,7 +107,7 @@ cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
                 break;
             }
 
-            case NAME_CKMAMEDB:
+            case NAME_IGNORE:
             case NAME_UNKNOWN:
                 /* unknown files shouldn't be in list */
                 break;

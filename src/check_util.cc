@@ -195,7 +195,7 @@ static bool enter_dir_in_map_and_list_unzipped(int flags, std::vector<std::strin
 	 std::filesystem::path filepath;
 
 	 while (!(filepath = dir.next()).empty()) {
-	     if (name_type(filepath) == NAME_CKMAMEDB) {
+	     if (name_type(filepath) == NAME_IGNORE) {
 		 continue;
 	     }
 	     if (std::filesystem::is_directory(filepath)) {
@@ -265,7 +265,7 @@ static bool enter_file_in_map_and_list(int flags, std::vector<std::string> &list
 	    break;
 	}
 
-	case NAME_CKMAMEDB:
+	case NAME_IGNORE:
 	case NAME_UNKNOWN:
 	    /* ignore unknown files */
 	    break;

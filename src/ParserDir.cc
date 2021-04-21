@@ -159,7 +159,7 @@ bool ParserDir::parse() {
                             
                             
                         case NAME_IMAGES:
-                        case NAME_CKMAMEDB:
+                        case NAME_IGNORE:
                             // ignore
                             break;
                             

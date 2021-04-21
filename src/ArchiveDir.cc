@@ -252,7 +252,7 @@ bool ArchiveDir::read_infos_xxx() {
 	 std::filesystem::path filepath;
 
 	 while ((filepath = dir.next()) != "") {
-             if (name == filepath || name_type(filepath) == NAME_CKMAMEDB || !std::filesystem::is_regular_file(filepath)) {
+             if (name == filepath || name_type(filepath) == NAME_IGNORE || !std::filesystem::is_regular_file(filepath)) {
                  continue;
              }
 

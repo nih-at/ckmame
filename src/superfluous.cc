@@ -66,7 +66,7 @@ std::vector<std::string> list_directory(const std::string &dirname, const std::s
         std::filesystem::path filepath;
         
         while ((filepath = dir.next()) != "") {
-            if (name_type(filepath) == NAME_CKMAMEDB) {
+            if (name_type(filepath) == NAME_IGNORE) {
                 continue;
             }
             
