@@ -34,8 +34,10 @@
 #include "ParserSourceZip.h"
 
 #include <cerrno>
+#include <filesystem>
 
 #include "error.h"
+#include "ParserSourceFile.h"
 
 ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *za_, const std::string &fname, bool relaxed) : archive_name(archive_name_), za(za_), zf(NULL) {
     zip_flags_t flags = relaxed ? ZIP_FL_NOCASE | ZIP_FL_NODIR : 0;
@@ -85,9 +87,7 @@ ParserSourcePtr ParserSourceZip::open(const std::string &name) {
         return static_cast<ParserSourcePtr>(std::make_shared<ParserSourceZip>(archive_name, za, name, true));
     } catch (std::exception &e) {
         if (errno == ENOENT) {
-            // TODO: I don't understand this
-            // old code did: ps = _ps_new_zip(ud->fname, ud->za, fname, true);
-            fprintf(stderr, "fallback from zip to file not implemented\n");
+            return static_cast<ParserSourcePtr>(std::make_shared<ParserSourceFile>(std::filesystem::path(archive_name).parent_path() / name));
         }
         throw e;
     }
