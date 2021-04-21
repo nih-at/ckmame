@@ -279,6 +279,7 @@ set(EXTRA_TESTS
   zero-long.test
   zero-miss.test
   zero-superfluous.test
+  zero-superfluous-2.test
   zero.test
 )
 

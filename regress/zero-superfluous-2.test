@@ -6,5 +6,5 @@ stdout In game 2-4c:
 stdout game 2-4c                                    : not a single file found
 stdout In archive roms/1-4.zip:
 stdout file zero          size       0  crc 00000000: unknown
-stdout roms/1-4.zip: move unknown file 'zero'
+stdout roms/1-4.zip: delete empty file 'zero'
 stdout roms/1-4.zip: remove empty archive
