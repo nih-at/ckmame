@@ -96,6 +96,22 @@ bool ArchiveLibarchive::commit_xxx() {
     
     seterrinfo("", name);
     
+    mtimes.clear();
+    
+    if (is_empty()) {
+        if (!close_xxx()) {
+            return false;
+        }
+        
+        std::error_code error;
+        std::filesystem::remove(name, error);
+        if (error) {
+            myerror(ERRZIPFILE, "can't remove: %s", error.message().c_str());
+            return false;
+        }
+        return true;
+    }
+    
     auto writer = archive_write_new();
     struct archive_entry *entry = NULL;
 
@@ -112,7 +128,6 @@ bool ArchiveLibarchive::commit_xxx() {
             throw Exception("can't create archive: %s", strerror(errno));
         }
 
-        mtimes.clear();
         time_t now = time(NULL);
         
         for (uint64_t index = 0; index < files.size(); index++) {
@@ -260,14 +275,20 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
     }
     
     struct archive_entry *entry;
-    while (current_index < index) {
+    while (current_index <= index) {
         if (!header_read) {
             if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
                 seterrinfo("", name);
                 myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
                 return false;
             }
+            header_read = true;
         }
+        
+        if (current_index == index) {
+            break;
+        }
+        
         if (archive_read_data_skip(la) != ARCHIVE_OK) {
             seterrinfo("", name);
             myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
@@ -275,15 +296,6 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
         }
         header_read = false;
         current_index += 1;
-    }
-    
-    if (!header_read) {
-        if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
-            seterrinfo("", name);
-            myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
-            return false;
-        }
-        header_read = true;
     }
         
     return true;
@@ -365,8 +377,13 @@ zip_int64_t ArchiveLibarchive::Source::callback(void *data, zip_uint64_t len, zi
         }
             
         case ZIP_SOURCE_CLOSE:
+            if (archive_read_data_skip(archive->la) != ARCHIVE_OK) {
+                zip_error_set(&error, ZIP_ER_READ, errno);
+                return -1;
+            }
             archive->current_index += 1;
             archive->have_open_file = false;
+            archive->header_read = false;
             return 0;
             
         case ZIP_SOURCE_STAT: {
