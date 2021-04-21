@@ -116,9 +116,10 @@ void Chd::read_header(void) {
     flags = GET_UINT32(p);
     auto compressor = GET_UINT32(p);
     if (compressor >= sizeof(compressors) / sizeof(compressors[0])) {
-        throw Exception("invalid compressor %u", compressor);
+        // We don't use this field, so no need to reject files because of it.
+        compressor = 0;
     }
-    compressors[0] = v4_compressors[GET_UINT32(p)];
+    compressors[0] = v4_compressors[compressor];
     
     /* TODO: check hdr_length against expected value for version */
     

@@ -39,6 +39,7 @@
 #include "Chd.h"
 #include "Dir.h"
 #include "error.h"
+#include "Exception.h"
 #include "globals.h"
 #include "util.h"
 
@@ -85,7 +86,7 @@ bool ArchiveImages::read_infos_xxx() {
                 struct stat sb;
                 
                 if (stat(filepath.c_str(), &sb) != 0) {
-                    throw std::exception();
+                    throw Exception("%s", strerror(errno));
                 }
 
                 // auto ftime = std::filesystem::last_write_time(filepath);
@@ -97,7 +98,8 @@ bool ArchiveImages::read_infos_xxx() {
                 f.size = chd.size();
                 f.hashes = chd.hashes;
             }
-            catch (...) {
+            catch (Exception &e) {
+                myerror(ERRDEF, "%s: can't open: %s", filename.c_str(), e.what());
                 f.status = STATUS_BADDUMP;
             }
         }
