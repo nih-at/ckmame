@@ -1,0 +1,10 @@
+description test archive with 0 byte rom, unknown
+return 0
+args -D ../mamedb-one-game-two-roms.db -FKLivc
+file-del roms/1-4.zip zero-ok.zip
+stdout In game 2-4c:
+stdout game 2-4c                                    : not a single file found
+stdout In archive roms/1-4.zip:
+stdout file zero          size       0  crc 00000000: unknown
+stdout roms/1-4.zip: move unknown file 'zero'
+stdout roms/1-4.zip: remove empty archive
