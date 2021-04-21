@@ -114,6 +114,10 @@ void Chd::read_header(void) {
     }
     
     flags = GET_UINT32(p);
+    auto compressor = GET_UINT32(p);
+    if (compressor >= sizeof(compressors) / sizeof(compressors[0])) {
+        throw Exception("invalid compressor %u", compressor);
+    }
     compressors[0] = v4_compressors[GET_UINT32(p)];
     
     /* TODO: check hdr_length against expected value for version */
@@ -208,7 +212,13 @@ void Chd::read_header_v5(const uint8_t *header) {
     meta_offset = GET_UINT64(p);
 
     hunk_len = GET_UINT32(p);
-    total_hunks = (total_len + hunk_len - 1) / hunk_len;
+    if (hunk_len == 0) {
+        throw Exception("hunk length is 0");
+    }
+    total_hunks = total_len / hunk_len;
+    if (total_len % hunk_len != 0) {
+        total_hunks += 1;
+    }
 
     p += 4; /* unit bytes */
 
