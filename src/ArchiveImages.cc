@@ -34,6 +34,7 @@
 #include "ArchiveImages.h"
 
 #include <filesystem>
+#include <cstring>
 #include <sys/stat.h>
 
 #include "Chd.h"
