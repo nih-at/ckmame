@@ -43,37 +43,21 @@
 
 #define CHD_FLAG_HAS_PARENT 0x01
 
-class ChdMapEntry {
-public:
-    uint64_t offset; /* offset within the file of the data */
-    uint32_t crc;    /* 32-bit CRC of the data */
-    uint16_t length; /* length of the data */
-    uint8_t type;    /* map entry type */
-    uint8_t flags;   /* misc flags */
-};
-
 class Chd {
 public:
     Chd(const std::string &name_);
 
-    uint32_t flags;          /* flags field */
     Hashes hashes;
-    uint32_t version;        /* drive format version */
 
     uint64_t size() const { return total_len; }
 
 private:
     FILEPtr f;
 
-    uint32_t hdr_length;     /* length of header data */
     uint64_t total_len;      /* logical size of the data */
-    Hashes parent_hashes;    /* hashes of parent file */
-    Hashes raw_hashes;       /* SHA1 checksum of raw data */
-
-    std::vector<ChdMapEntry> map;          /* hunk map */
 
     void read_header(void);
-    void read_header_v5(const uint8_t *header);
+    void read_header_v5(const uint8_t *header, uint32_t header_len);
 };
 
 typedef std::shared_ptr<Chd> ChdPtr;

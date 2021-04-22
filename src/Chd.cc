@@ -77,22 +77,22 @@ void Chd::read_header(void) {
         throw Exception("unexpected EOF");
     }
 
-    hdr_length = len;
-    version = GET_UINT32(p);
+    auto version = GET_UINT32(p);
 
     if (version > 5) {
         throw Exception("unsupported CHD version " + std::to_string(version));
     }
 
     if (version >= 5) {
-        return read_header_v5(b);
+        return read_header_v5(b, len);
     }
 
-    flags = GET_UINT32(p);
+    /* skip flags */
+    p +=  4;
     /* skip compressor */
     p += 4;
 
-    /* TODO: check hdr_length against expected value for version */
+    /* TODO: check len against expected value for version */
 
     if (version < 3) {
         auto hunk_len = GET_UINT32(p);
@@ -101,7 +101,7 @@ void Chd::read_header(void) {
 
         hashes.set(Hashes::TYPE_MD5, p);
         p += Hashes::SIZE_MD5;
-        parent_hashes.set(Hashes::TYPE_MD5, p);
+	/* skip parent hashes */
         p += Hashes::SIZE_MD5;
 
         if (version == 1) {
@@ -122,7 +122,7 @@ void Chd::read_header(void) {
         if (version == 3) {
             hashes.set(Hashes::TYPE_MD5, p);
             p += Hashes::SIZE_MD5;
-            parent_hashes.set(Hashes::TYPE_MD5, p);
+            /* skip parent hashes */
             p += Hashes::SIZE_MD5;
         }
 
@@ -131,21 +131,13 @@ void Chd::read_header(void) {
 
         hashes.set(Hashes::TYPE_SHA1, p);
         p += Hashes::SIZE_SHA1;
-        parent_hashes.set(Hashes::TYPE_SHA1, p);
+	/* skip parent hashes */
         p += Hashes::SIZE_SHA1;
-
-        if (version == 3) {
-            raw_hashes.set(Hashes::TYPE_SHA1, hashes.sha1);
-        }
-        else {
-            raw_hashes.set(Hashes::TYPE_SHA1, p);
-            /* p += Hashes::SIZE_SHA1; */
-        }
     }
 }
 
 
-void Chd::read_header_v5(const uint8_t *header) {
+void Chd::read_header_v5(const uint8_t *header, uint32_t header_len) {
     /*
     V5 header:
 
@@ -168,9 +160,9 @@ void Chd::read_header_v5(const uint8_t *header) {
     [124] (V5 header length)
     */
 
-   auto p = header + TAG_AND_LEN + 4;
+    auto p = header + TAG_AND_LEN + 4;
 
-    if (hdr_length < HEADER_LEN_V5) {
+    if (header_len < HEADER_LEN_V5) {
         throw Exception("unexpected EOF");
     }
 
@@ -190,12 +182,10 @@ void Chd::read_header_v5(const uint8_t *header) {
     /* skip unit bytes */
     p += 4;
 
-    raw_hashes.set(Hashes::TYPE_SHA1, p);
+    /* skip raw hashes */
     p += Hashes::SIZE_SHA1;
     hashes.set(Hashes::TYPE_SHA1, p);
     p += Hashes::SIZE_SHA1;
-    parent_hashes.set(Hashes::TYPE_SHA1, p, true);
-    // p += Hashes::SIZE_SHA1;
-
-    flags = parent_hashes.has_type(Hashes::TYPE_SHA1) ? CHD_FLAG_HAS_PARENT : 0;
+    /* skip parent hashes */
+    p += Hashes::SIZE_SHA1;
 }
