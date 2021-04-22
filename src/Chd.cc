@@ -36,6 +36,7 @@
 #include <cstring>
 
 #include "Exception.h"
+#include "SharedFile.h"
 
 #define MAX_HEADERLEN 124 /* maximum header length */
 #define TAG "MComprHD"
@@ -51,13 +52,13 @@
 Chd::Chd(const std::string &name) {
     unsigned char b[MAX_HEADERLEN];
 
-    auto fp = std::fopen(name.c_str(), "rb");
+    auto fp = make_shared_file(name, "rb");
 
-    if (fp == NULL) {
+    if (!fp) {
 	throw Exception("can't open file " + name).append_system_error();
     }
 
-    if (fread(b, TAG_AND_LEN, 1, fp) != 1) {
+    if (fread(b, TAG_AND_LEN, 1, fp.get()) != 1) {
         throw Exception("not a CHD file");
     }
 
@@ -70,10 +71,9 @@ Chd::Chd(const std::string &name) {
     if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
         throw Exception("not a CHD file");
     }
-    if (fread(p, len - TAG_AND_LEN, 1, fp) != 1) {
+    if (fread(p, len - TAG_AND_LEN, 1, fp.get()) != 1) {
         throw Exception("unexpected EOF");
     }
-    std::fclose(fp);
 
     auto version = GET_UINT32(p);
 

@@ -39,7 +39,6 @@
 #include <vector>
 
 #include "Hashes.h"
-#include "SharedFile.h"
 
 #define CHD_FLAG_HAS_PARENT 0x01
 
