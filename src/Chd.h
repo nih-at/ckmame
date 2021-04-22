@@ -66,8 +66,6 @@ private:
     FILEPtr f;
 
     uint32_t hdr_length;     /* length of header data */
-    uint32_t hunk_len;       /* number of bytes per hunk */
-    uint64_t total_hunks;    /* total # of hunks represented */
     uint64_t total_len;      /* logical size of the data */
     Hashes parent_hashes;    /* hashes of parent file */
     Hashes raw_hashes;       /* SHA1 checksum of raw data */

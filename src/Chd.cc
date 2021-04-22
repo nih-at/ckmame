@@ -52,22 +52,22 @@ Chd::Chd(const std::string &name) {
     if (!f) {
 	throw Exception("can't open '" + name + "'").append_system_error();
     }
-    
+
     read_header();
 }
 
 
 void Chd::read_header(void) {
     unsigned char b[MAX_HEADERLEN];
-    
+
     if (fread(b, TAG_AND_LEN, 1, f.get()) != 1) {
         throw Exception("not a CHD file");
     }
-    
+
     if (memcmp(b, TAG, TAG_LEN) != 0) {
         throw Exception("not a CHD file");
     }
-    
+
     auto p = b + TAG_LEN;
     uint32_t len = GET_UINT32(p);
     if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
@@ -76,34 +76,34 @@ void Chd::read_header(void) {
     if (fread(p, len - TAG_AND_LEN, 1, f.get()) != 1) {
         throw Exception("unexpected EOF");
     }
-    
+
     hdr_length = len;
     version = GET_UINT32(p);
-    
+
     if (version > 5) {
         throw Exception("unsupported CHD version " + std::to_string(version));
     }
-    
+
     if (version >= 5) {
         return read_header_v5(b);
     }
-    
+
     flags = GET_UINT32(p);
     /* skip compressor */
-    (void)GET_UINT32(p);
-    
+    p += 4;
+
     /* TODO: check hdr_length against expected value for version */
-    
+
     if (version < 3) {
-        hunk_len = GET_UINT32(p);
-        total_hunks = GET_UINT32(p);
+        auto hunk_len = GET_UINT32(p);
+        auto total_hunks = GET_UINT32(p);
         p += 12; /* skip c/h/s */
-        
+
         hashes.set(Hashes::TYPE_MD5, p);
         p += Hashes::SIZE_MD5;
         parent_hashes.set(Hashes::TYPE_MD5, p);
         p += Hashes::SIZE_MD5;
-        
+
         if (version == 1) {
             hunk_len *= 512;
         }
@@ -113,25 +113,27 @@ void Chd::read_header(void) {
         total_len = hunk_len * total_hunks;
     }
     else {
-        total_hunks = GET_UINT32(p);
+	/* skip total number of hunks */
+	p += 4;
         total_len = GET_UINT64(p);
 	/* skip meta offset */
-        (void)GET_UINT64(p);
-        
+	p += 8;
+
         if (version == 3) {
             hashes.set(Hashes::TYPE_MD5, p);
             p += Hashes::SIZE_MD5;
             parent_hashes.set(Hashes::TYPE_MD5, p);
             p += Hashes::SIZE_MD5;
         }
-        
-        hunk_len = GET_UINT32(p);
-        
+
+	/* skip hunk length */
+	p += 4;
+
         hashes.set(Hashes::TYPE_SHA1, p);
         p += Hashes::SIZE_SHA1;
         parent_hashes.set(Hashes::TYPE_SHA1, p);
         p += Hashes::SIZE_SHA1;
-        
+
         if (version == 3) {
             raw_hashes.set(Hashes::TYPE_SHA1, hashes.sha1);
         }
@@ -174,26 +176,19 @@ void Chd::read_header_v5(const uint8_t *header) {
 
     for (int i = 0; i < 4; i++) {
 	/* skip compressors */
-	(void)GET_UINT32(p);
+	p += 4;
     }
 
     total_len = GET_UINT64(p);
 
     /* skip map offset */
-    (void)GET_UINT64(p);
+    p += 8;
     /* skip meta offset */
-    (void)GET_UINT64(p);
-
-    hunk_len = GET_UINT32(p);
-    if (hunk_len == 0) {
-        throw Exception("hunk length is 0");
-    }
-    total_hunks = total_len / hunk_len;
-    if (total_len % hunk_len != 0) {
-        total_hunks += 1;
-    }
-
-    p += 4; /* unit bytes */
+    p += 8;
+    /* skip hunk length */
+    p += 4;
+    /* skip unit bytes */
+    p += 4;
 
     raw_hashes.set(Hashes::TYPE_SHA1, p);
     p += Hashes::SIZE_SHA1;
