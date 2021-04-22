@@ -47,20 +47,17 @@
 #define GET_UINT32(b) (b += 4, (static_cast<uint32_t>((b)[-4]) << 24) | (static_cast<uint32_t>((b)[-3]) << 16) | (static_cast<uint32_t>((b)[-2]) << 8) | static_cast<uint32_t>((b)[-1]))
 #define GET_UINT64(b) (b += 8, (static_cast<uint64_t>((b)[-8]) << 56) | (static_cast<uint64_t>((b)[-7]) << 48) | (static_cast<uint64_t>((b)[-6]) << 40) | (static_cast<uint64_t>((b)[-5]) << 32) | (static_cast<uint64_t>((b)[-4]) << 24) | (static_cast<uint64_t>((b)[-3]) << 16) | (static_cast<uint64_t>((b)[-2]) << 8) | (static_cast<uint64_t>((b)[-1])))
 
+
 Chd::Chd(const std::string &name) {
-    f = make_shared_file(name, "rb");
-    if (!f) {
-	throw Exception("can't open '" + name + "'").append_system_error();
-    }
-
-    read_header();
-}
-
-
-void Chd::read_header(void) {
     unsigned char b[MAX_HEADERLEN];
 
-    if (fread(b, TAG_AND_LEN, 1, f.get()) != 1) {
+    auto fp = std::fopen(name.c_str(), "rb");
+
+    if (fp == NULL) {
+	throw Exception("can't open file " + name).append_system_error();
+    }
+
+    if (fread(b, TAG_AND_LEN, 1, fp) != 1) {
         throw Exception("not a CHD file");
     }
 
@@ -73,9 +70,10 @@ void Chd::read_header(void) {
     if (len < TAG_AND_LEN || len > MAX_HEADERLEN) {
         throw Exception("not a CHD file");
     }
-    if (fread(p, len - TAG_AND_LEN, 1, f.get()) != 1) {
+    if (fread(p, len - TAG_AND_LEN, 1, fp) != 1) {
         throw Exception("unexpected EOF");
     }
+    std::fclose(fp);
 
     auto version = GET_UINT32(p);
 
@@ -84,11 +82,12 @@ void Chd::read_header(void) {
     }
 
     if (version >= 5) {
-        return read_header_v5(b, len);
+        read_header_v5(b, len);
+	return;
     }
 
     /* skip flags */
-    p +=  4;
+    p += 4;
     /* skip compressor */
     p += 4;
 

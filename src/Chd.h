@@ -45,18 +45,15 @@
 
 class Chd {
 public:
-    Chd(const std::string &name_);
+    Chd(const std::string &name);
 
     Hashes hashes;
 
     uint64_t size() const { return total_len; }
 
 private:
-    FILEPtr f;
-
     uint64_t total_len;      /* logical size of the data */
 
-    void read_header(void);
     void read_header_v5(const uint8_t *header, uint32_t header_len);
 };
 
