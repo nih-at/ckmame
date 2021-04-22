@@ -69,11 +69,8 @@ private:
     uint32_t hunk_len;       /* number of bytes per hunk */
     uint64_t total_hunks;    /* total # of hunks represented */
     uint64_t total_len;      /* logical size of the data */
-    uint64_t map_offset;     /* offset of hunk map in file */
-    uint64_t meta_offset;    /* offset in file of first metadata */
     Hashes parent_hashes;    /* hashes of parent file */
     Hashes raw_hashes;       /* SHA1 checksum of raw data */
-    uint32_t compressors[4]; /* compression algorithms used */
 
     std::vector<ChdMapEntry> map;          /* hunk map */
 

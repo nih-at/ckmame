@@ -37,28 +37,6 @@
 
 #include "Exception.h"
 
-#define CHD_MAP_TYPE_COMPRESSOR0 0x00
-#define CHD_MAP_TYPE_COMPRESSOR1 0x01
-#define CHD_MAP_TYPE_COMPRESSOR2 0x02
-#define CHD_MAP_TYPE_COMPRESSOR3 0x03
-#define CHD_MAP_TYPE_UNCOMPRESSED 0x04
-#define CHD_MAP_TYPE_SELF_REF 0x05
-#define CHD_MAP_TYPE_PARENT_REF 0x06
-#define CHD_MAP_TYPE_MINI 0x07
-
-#define CHD_MAP_FL_NOCRC 0x10
-
-#define MAKE_TAG(a, b, c, d) (((a) << 24) | ((b) << 16) | ((c) << 8) | (d))
-
-#define CHD_CODEC_ZLIB MAKE_TAG('z', 'l', 'i', 'b')
-#define CHD_CODEC_LZMA MAKE_TAG('l', 'z', 'm', 'a')
-#define CHD_CODEC_HUFFMAN MAKE_TAG('h', 'u', 'f', 'f')
-#define CHD_CODEC_FLAC MAKE_TAG('f', 'l', 'a', 'c')
-#define CHD_CODEC_CD_ZLIB MAKE_TAG('c', 'd', 'z', 'l')
-#define CHD_CODEC_CD_LZMA MAKE_TAG('c', 'd', 'l', 'z')
-#define CHD_CODEC_CD_FLAC MAKE_TAG('c', 'd', 'f', 'l')
-#define CHD_CODEC_AVHUFF MAKE_TAG('a', 'v', 'h', 'u')
-
 #define MAX_HEADERLEN 124 /* maximum header length */
 #define TAG "MComprHD"
 #define TAG_LEN 8      /* length of tag */
@@ -68,9 +46,6 @@
 
 #define GET_UINT32(b) (b += 4, (static_cast<uint32_t>((b)[-4]) << 24) | (static_cast<uint32_t>((b)[-3]) << 16) | (static_cast<uint32_t>((b)[-2]) << 8) | static_cast<uint32_t>((b)[-1]))
 #define GET_UINT64(b) (b += 8, (static_cast<uint64_t>((b)[-8]) << 56) | (static_cast<uint64_t>((b)[-7]) << 48) | (static_cast<uint64_t>((b)[-6]) << 40) | (static_cast<uint64_t>((b)[-5]) << 32) | (static_cast<uint64_t>((b)[-4]) << 24) | (static_cast<uint64_t>((b)[-3]) << 16) | (static_cast<uint64_t>((b)[-2]) << 8) | (static_cast<uint64_t>((b)[-1])))
-
-static uint32_t v4_compressors[] = {0, CHD_CODEC_ZLIB, CHD_CODEC_ZLIB, /* TODO: zlib plus */
-				    CHD_CODEC_AVHUFF};
 
 Chd::Chd(const std::string &name) {
     f = make_shared_file(name, "rb");
@@ -114,12 +89,8 @@ void Chd::read_header(void) {
     }
     
     flags = GET_UINT32(p);
-    auto compressor = GET_UINT32(p);
-    if (compressor >= sizeof(compressors) / sizeof(compressors[0])) {
-        // We don't use this field, so no need to reject files because of it.
-        compressor = 0;
-    }
-    compressors[0] = v4_compressors[compressor];
+    /* skip compressor */
+    (void)GET_UINT32(p);
     
     /* TODO: check hdr_length against expected value for version */
     
@@ -140,12 +111,12 @@ void Chd::read_header(void) {
             hunk_len *= GET_UINT32(p);
         }
         total_len = hunk_len * total_hunks;
-        meta_offset = 0;
     }
     else {
         total_hunks = GET_UINT32(p);
         total_len = GET_UINT64(p);
-        meta_offset = GET_UINT64(p);
+	/* skip meta offset */
+        (void)GET_UINT64(p);
         
         if (version == 3) {
             hashes.set(Hashes::TYPE_MD5, p);
@@ -169,8 +140,6 @@ void Chd::read_header(void) {
             /* p += Hashes::SIZE_SHA1; */
         }
     }
-    
-    map_offset = hdr_length;
 }
 
 
@@ -204,13 +173,16 @@ void Chd::read_header_v5(const uint8_t *header) {
     }
 
     for (int i = 0; i < 4; i++) {
-	compressors[i] = GET_UINT32(p);
+	/* skip compressors */
+	(void)GET_UINT32(p);
     }
 
     total_len = GET_UINT64(p);
 
-    map_offset = GET_UINT64(p);
-    meta_offset = GET_UINT64(p);
+    /* skip map offset */
+    (void)GET_UINT64(p);
+    /* skip meta offset */
+    (void)GET_UINT64(p);
 
     hunk_len = GET_UINT32(p);
     if (hunk_len == 0) {
