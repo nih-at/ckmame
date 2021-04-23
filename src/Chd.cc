@@ -109,7 +109,7 @@ Chd::Chd(const std::string &name) {
         else {
             hunk_len *= GET_UINT32(p);
         }
-        total_len = hunk_len * total_hunks;
+        total_len = static_cast<uint64_t>(hunk_len) * total_hunks;
     }
     else {
 	/* skip total number of hunks */
