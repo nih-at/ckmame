@@ -147,7 +147,7 @@ bool compare(const std::map<std::string, File> &a, const std::map<std::string, F
             }
             it_a++;
         }
-        else {
+	if (print_b) {
             if (verbose) {
                 printf("+ file '%s', size %" PRIu64 ", crc %08x\n", it_b->first.c_str(), it_b->second.size, it_b->second.crc);
             }
