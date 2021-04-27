@@ -368,7 +368,7 @@ zip_int64_t ArchiveLibarchive::Source::callback(void *data, zip_uint64_t len, zi
             return 0;
             
         case ZIP_SOURCE_READ: {
-            auto ret = archive_read_data(archive->la, data, length);
+            auto ret = archive_read_data(archive->la, data, len);
             if (ret < 0) {
                 zip_error_set(&error, ZIP_ER_READ, errno);
                 return -1;
