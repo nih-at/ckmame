@@ -77,13 +77,51 @@ public:
     sqlite3_stmt *get_statement(dbh_stmt_t stmt_id);
     sqlite3_stmt *get_statement(dbh_stmt_t stmt_id, const Hashes *hashes, bool have_size);
     
+    // This is used by dbrestore to create databases with arbitrary schema and version.
+    static void upgrade(sqlite3 *db, int format, int version, const std::string &statement);
+    
+    // This needs to be public to make it hashable.
+    class MigrationXXX {
+    public:
+        MigrationXXX(int format_, int old_version_, int new_version_) : format(format_), old_version(old_version_), new_version(new_version_) { }
+        int format;
+        int old_version;
+        int new_version;
+        
+        bool operator==(const MigrationXXX &other) const {
+            return format == other.format && old_version == other.old_version && new_version == other.new_version;
+        }
+    };
+
 private:
+    class MigrationStep {
+    public:
+        MigrationStep(const std::string &statement_, int version_) : statement(statement_), version(version_) { }
+        std::string statement;
+        int version;
+    };
+    
     bool version_ok;
 
-    bool check_version();
-    bool open(const std::string &name, int sql3_flags, bool needs_init);
+    int get_version();
+    void check_version();
+    void open(const std::string &name, int sql3_flags, bool needs_init);
     void close();
-    bool init();
+    void init();
+    void migrate(int from_version, int to_version);
+    void upgrade(const std::string &statement, int version);
+
+    static std::unordered_map<MigrationXXX, std::string> migrations;
 };
+
+// #pragma hide_this_forever begin
+namespace std {
+    template<> struct hash<DB::MigrationXXX> {
+        size_t operator()(const DB::MigrationXXX &a) const {
+            return hash<int>()(a.format) ^ hash<int>()(a.old_version) ^ hash<int>()(a.new_version);
+        }
+    };
+}
+// #pragma hide_this_forever end
 
 #endif /* dbh.h */

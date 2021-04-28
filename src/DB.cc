@@ -35,30 +35,113 @@
 
 #include <cstring>
 #include <filesystem>
+#include <vector>
 
-static const int format_version[] = {3, 1, 2};
-#define USER_VERSION(fmt) (format_version[fmt] + (fmt << 8) + 17000)
+#include "Exception.h"
+
+static const int format_version[] = {3, 1, 3};
+static const char *format_name[] = {
+    "mamedb",
+    "in-memory",
+    "ckmamedb"
+};
+
+#define USER_VERSION_MAGIC 17000
+#define USER_VERSION(format, version)  ((version) + ((format) << 8) + USER_VERSION_MAGIC)
+#define USER_VERSION_VALID(user_version) ((user_version) >= USER_VERSION_MAGIC)
+#define USER_VERSION_FORMAT(user_version) (((user_version) - USER_VERSION_MAGIC) >> 8)
+#define USER_VERSION_VERSION(user_version) (((user_version) - USER_VERSION_MAGIC) & 0xff)
 
 #define SET_VERSION_FMT "pragma user_version = %d"
 
 #define PRAGMAS "PRAGMA synchronous = OFF; "
 
+std::unordered_map<DB::MigrationXXX, std::string> DB::migrations = {
+    { MigrationXXX(DBH_FMT_DIR, 2, 3), "\
+create table detector (\n\
+    detector_id integer primary key autoincrement,\n\
+    name text not null,\n\
+    version text not null\n\
+);\n\
+create index detector_name_version on detector (name, version);\n\
+alter table file add column detector_id integer not null default 0;\n\
+create index file_size on file (size);\n\
+create index file_crc on file (crc);\n\
+create index file_md5 on file (md5);\n\
+create index file_sha1 on file (sha1);\n\
+    " }
+};
 
-bool DB::check_version() {
+int DB::get_version() {
     sqlite3_stmt *stmt;
-
+    
     if ((stmt = get_statement(DBH_STMT_QUERY_VERSION)) == NULL) {
-	/* TODO */
-	return false;
+        throw Exception("can't get version: unkown statement");
     }
     if (sqlite3_step(stmt) != SQLITE_ROW) {
-	/* TODO */
-	return false;
+        throw Exception("can't get version: %s", sqlite3_errmsg(db));
+    }
+    
+    auto db_user_version = sqlite3_column_int(stmt, 0);
+
+    if (!USER_VERSION_VALID(db_user_version)) {
+        throw Exception("not a ckmame db");
     }
 
-    version_ok = (sqlite3_column_int(stmt, 0) == USER_VERSION(format));
+    auto db_format = USER_VERSION_FORMAT(db_user_version);
+    auto db_version = USER_VERSION_VERSION(db_user_version);
+    
+    if (db_format != format) {
+        if (db_format >= 0 && static_cast<size_t>(db_format) < sizeof(format_name) / sizeof(format_name[0])) {
+            throw Exception("invalid db format '%s', expected '%s'", format_name[db_format], format_name[format]);
+        }
+        else {
+            throw Exception("invalid db format %d, expected '%s'", db_format, format_name[format]);
+        }
+    }
+    
+    return db_version;
+}
 
-    return version_ok;
+
+void DB::check_version() {
+    auto db_version = get_version();
+        
+    if (db_version == format_version[format]) {
+        return;
+    }
+    
+    if (db_version > format_version[format]) {
+        throw Exception("database version too new: %d, expected %d", db_version, format_version[format]);
+    }
+    
+    migrate(db_version, format_version[format]);
+}
+
+void DB::migrate(int from_version, int to_version) {
+    std::vector<MigrationStep> migration_steps;
+    
+    while (from_version < to_version) {
+        bool made_progress = false;
+        for (auto next_version = to_version; next_version > from_version; next_version -= 1) {
+            auto it = migrations.find(MigrationXXX(format, from_version, next_version));
+            
+            if (it != migrations.end()) {
+                from_version = next_version;
+                migration_steps.push_back(MigrationStep(it->second, next_version));
+                made_progress = true;
+                break;
+            }
+        }
+        
+        if (!made_progress) {
+            throw Exception("can't migrate from version %d to %d", from_version, to_version);
+        }
+    }
+    
+    for (auto &step : migration_steps) {
+        upgrade(step.statement, step.version);
+    }
 }
 
 
@@ -95,23 +178,27 @@ std::string DB::error() {
 
 
 DB::DB(const std::string &name, int mode) : db(NULL) {
-    if (DBH_FMT(mode) > sizeof(format_version) / sizeof(format_version[0])) {
-	errno = EINVAL;
-        throw std::exception();
+    format = DBH_FMT(mode);
+
+    if (format < 0 || static_cast<size_t>(format) > sizeof(format_version) / sizeof(format_version[0])) {
+        throw Exception("invalid DB format %d", format);
     }
 
     for (size_t i = 0; i < DBH_STMT_MAX; i++) {
         statements[i] = NULL;
     }
 
-    format = DBH_FMT(mode);
 
     auto needs_init = false;
     
     if (DBH_FLAGS(mode) & DBH_TRUNCATE) {
 	/* do not delete special cases (like memdb) */
 	if (name[0] != ':') {
-            std::filesystem::remove(name);
+            std::error_code error;
+            std::filesystem::remove(name, error);
+            if (error) {
+                throw Exception("can't truncate: %s", error.message().c_str());
+            }
 	}
 	needs_init = true;
     }
@@ -132,48 +219,63 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
 	}
     }
     
-    if (!open(name, sql3_flags, needs_init)) {
-        auto save = errno;
+    try {
+        open(name, sql3_flags, needs_init);
+    }
+    catch (Exception &e) {
         close();
-        errno = save;
-        throw std::exception();
+        throw e;
     }
 }
 
 
-bool DB::open(const std::string &name, int sql3_flags, bool needs_init) {
+void DB::open(const std::string &name, int sql3_flags, bool needs_init) {
     if (sqlite3_open_v2(name.c_str(), &db, sql3_flags, NULL) != SQLITE_OK) {
-        return false;
+        throw Exception("%s", sqlite3_errmsg(db));
     }
 
     if (sqlite3_exec(db, PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
-        return false;
+        throw Exception("can't set options: %s", sqlite3_errmsg(db));
     }
         
     if (needs_init) {
-        if (!init()) {
-            return false;
-        }
+        init();
     }
-    else if (!check_version()) {
-        return false;
+    else {
+        check_version();
     }
+}
 
-    return true;
+void DB::init() {
+    upgrade(sql_db_init[format], format_version[format]);
 }
 
 
-bool DB::init() {
+void DB::upgrade(const std::string &statement, int version) {
+    upgrade(db, format, version, statement);
+}
+
+
+void DB::upgrade(sqlite3 *db, int format, int version, const std::string &statement) {
+    if (sqlite3_exec(db, "begin exclusive transaction", NULL, NULL, NULL) != SQLITE_OK) {
+        throw Exception("can't begin transaction");
+    }
+    if (sqlite3_exec(db, statement.c_str(), NULL, NULL, NULL) != SQLITE_OK) {
+        sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
+        throw Exception("can't set schema: %s", sqlite3_errmsg(db));
+    }
+    
     char b[256];
-
-    sprintf(b, SET_VERSION_FMT, USER_VERSION(format));
-    if (sqlite3_exec(db, b, NULL, NULL, NULL) != SQLITE_OK)
-        return false;
-
-    if (sqlite3_exec(db, sql_db_init[format], NULL, NULL, NULL) != SQLITE_OK)
-        return false;
-
-    return true;
+    sprintf(b, SET_VERSION_FMT, USER_VERSION(format, version));
+    if (sqlite3_exec(db, b, NULL, NULL, NULL) != SQLITE_OK) {
+        sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
+        throw Exception("can't set version: %s", sqlite3_errmsg(db));
+    }
+    
+    if (sqlite3_exec(db, "commit transaction", NULL, NULL, NULL) != SQLITE_OK) {
+        sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
+        throw Exception("can't commit schema: %s", sqlite3_errmsg(db));
+    }
 }
 
 

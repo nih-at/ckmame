@@ -78,6 +78,7 @@ set(EXTRA_TESTS
   archive-broken2.test
   baddump.test
   ckmame.test
+  ckmamedb-migrate-v2.test
   cleanup-disk.test
   cleanup-implicit.test
   cleanup.test

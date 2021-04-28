@@ -105,7 +105,7 @@ create table file (\n\
 );\n\
 create index file_id on file (game_id, file_type, file_idx);\n\
 create index file_location on file (location);\n\
-create index file_size_ on file (size);\n\
+create index file_size on file (size);\n\
 create index file_crc on file (crc);\n\
 create index file_md5 on file (md5);\n\
 create index file_sha1 on file (sha1);\n\
@@ -119,6 +119,12 @@ create index file_sha1 on file (sha1);\n\
 	size integer not null\n\
 );\n\
 create index archive_name on archive (name);\n\
+create table detector (\n\
+    detector_id integer primary key autoincrement,\n\
+    name text not null,\n\
+    version text not null\n\
+);\n\
+create index detector_name_version on detector (name, version);\n\
 create table file (\n\
 	archive_id integer not null,\n\
 	file_idx integer,\n\
@@ -128,15 +134,20 @@ create table file (\n\
 	size integer not null,\n\
 	crc integer,\n\
 	md5 binary,\n\
-	sha1 binary\n\
+	sha1 binary,\n\
+        detector_id integer not null default 0\n\
 );\n\
 create index file_archive_id on file (archive_id);\n\
-create index file_idx on file (file_idx);\n"};
+create index file_idx on file (file_idx);\n\
+create index file_size on file (size);\n\
+create index file_crc on file (crc);\n\
+create index file_md5 on file (md5);\n\
+create index file_sha1 on file (sha1);\n"};
 
 
 const char *sql_db_init_2 = "\
 create index file_name on file (name);\n\
-create index file_size_ on file (size);\n\
+create index file_size on file (size);\n\
 create index file_crc on file (crc);\n\
 create index file_md5 on file (md5);\n\
 create index file_sha1 on file (sha1);\n\

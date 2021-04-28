@@ -65,6 +65,7 @@
 		4B59E59121625A06002262C8 /* dbh_statements.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B59E58F21625A05002262C8 /* dbh_statements.cc */; };
 		4B59E59221625A06002262C8 /* dbh_statements.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B59E59021625A05002262C8 /* dbh_statements.h */; };
 		4B59E59321625ABD002262C8 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC41FEC1B700068A600 /* libxml2.tbd */; };
+		4B5A1FEC26396FE40029B680 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
 		4B5F43AC1889CEE7000C3B7C /* globals.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F43AB1889CE83000C3B7C /* globals.cc */; };
 		4B5F43AE1889D005000C3B7C /* file_util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F43AD1889CFFB000C3B7C /* file_util.cc */; };
 		4B5F43C11889D059000C3B7C /* RomDB.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F43B71889D059000C3B7C /* RomDB.cc */; };
@@ -369,6 +370,7 @@
 		4B513F51175BCC440096EF42 /* DB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DB.h; sourceTree = "<group>"; };
 		4B59E58F21625A05002262C8 /* dbh_statements.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbh_statements.cc; sourceTree = "<group>"; };
 		4B59E59021625A05002262C8 /* dbh_statements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = dbh_statements.h; sourceTree = "<group>"; };
+		4B5A201A263974790029B680 /* ckmamedb-migrate-v2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-migrate-v2.test"; sourceTree = "<group>"; };
 		4B5F43AB1889CE83000C3B7C /* globals.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = globals.cc; sourceTree = "<group>"; };
 		4B5F43AD1889CFFB000C3B7C /* file_util.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = file_util.cc; sourceTree = "<group>"; };
 		4B5F43B71889D059000C3B7C /* RomDB.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RomDB.cc; sourceTree = "<group>"; };
@@ -788,6 +790,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B5A1FEC26396FE40029B680 /* libz.tbd in Frameworks */,
 				4B8AD4B42629C0AE00E084EC /* libarchive.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1066,6 +1069,7 @@
 				4B6B147224FF946A00D3F3FB /* archive-broken2.test */,
 				4B6B145E24FF946900D3F3FB /* baddump.test */,
 				4B6B145C24FF946900D3F3FB /* ckmame.test */,
+				4B5A201A263974790029B680 /* ckmamedb-migrate-v2.test */,
 				4B6B147324FF946A00D3F3FB /* cleanup-disk.test */,
 				4B6B146B24FF946A00D3F3FB /* cleanup-implicit.test */,
 				4B6B146024FF946900D3F3FB /* cleanup.test */,
@@ -1831,7 +1835,7 @@
 					/usr/include/libxml2,
 					/usr/local/opt/libarchive/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = .;
@@ -1887,7 +1891,7 @@
 					/usr/include/libxml2,
 					/usr/local/opt/libarchive/include,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = .;
 			};
@@ -1951,7 +1955,6 @@
 					/usr/local/lib,
 					/usr/local/Cellar/libarchive/3.5.1_1/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -1966,7 +1969,6 @@
 					/usr/local/lib,
 					/usr/local/Cellar/libarchive/3.5.1_1/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -254,14 +254,23 @@ sub post_copy_file {
 
 	if (defined($test->{test}->{'ckmamedb-before'})) {
 		for my $args (@{$test->{test}->{'ckmamedb-before'}}) {
-			my ($dir, $dump) = @$args;
+			my ($dir, $dump, $version, $schema) = @$args;
 			my $dump_file = $test->find_file($dump);
 			return undef unless (defined($dump));
 
-		        if (! -d $dir) {
-			        mkdir($dir);
-		        }
-			unless (system('../dbrestore', '-t', 'ckmamedb', "$dump_file", "$dir/.ckmame.db") == 0) {
+			if (! -d $dir) {
+				mkdir($dir);
+			}
+			my @command = ('../dbrestore', '-t', 'ckmamedb');
+			if (defined($version)) {
+				push @command, ('--db-version', $version);
+			}
+			if (defined($schema)) {
+				push @command, ('--sql', $test->find_file($schema));
+			}
+			push @command, ($dump_file, "$dir/.ckmame.db");
+			
+			unless (system(@command) == 0) {
 				print STDERR "can't restore ckmamedb dump $dump: $!";
 				return undef;
 			}
@@ -273,7 +282,10 @@ sub post_copy_file {
 
 
 $test->add_directive(mkdbargs => { type => 'string...', once => 1 });
-$test->add_directive('ckmamedb-before' => { type => 'string string' });
+$test->add_directive('ckmamedb-before' => {
+	type => 'string string string? string?',
+	usage => 'directory dump [version] [sql-schema]'
+});
 $test->add_directive('ckmamedb-after' => { type => 'string string' });
 $test->add_directive('no-hashes' => {
 	type => 'string string string? string?',

@@ -192,7 +192,7 @@ dbh_cache_get_db_for_archive(const std::string &name) {
                     directory.dbh = std::make_shared<DB>(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE);
                 }
                 catch (std::exception &e) {
-                    myerror(ERRDB, "can't open rom directory database for '%s'", directory.name.c_str());
+                    myerror(ERRDB, "can't open rom directory database for '%s': %s", directory.name.c_str(), e.what());
 		    return NULL;
 		}
 	    }

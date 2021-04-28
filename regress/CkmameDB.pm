@@ -60,7 +60,11 @@ sub read_db {
 	my ($self) = @_;
 	
 	if (! -f "$self->{dir}/.ckmame.db") {
-		$self->{dump_got} = [ '>>> table archive (archive_id, name, mtime, size)', '>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1)' ];
+		$self->{dump_got} = [
+			'>>> table archive (archive_id, name, mtime, size)',
+			'>>> table detector (detector_id, name, version)',
+			'>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)'
+		];
 		return 1;
 	}
 	
@@ -185,7 +189,7 @@ sub read_archives {
 
 			$name =~ s,^$prefix/,,;
 
-			my $rom = { name => $name, idx => $idx++, status => 0 };
+			my $rom = { name => $name, idx => $idx++, status => 0, detector_id => 0 };
 			$rom->{size} = $attributes{size} // '-1';
 			for my $attr (qw(sha1 md5)) {
 				$rom->{$attr} = $attributes{$attr} // 'null';
@@ -227,7 +231,9 @@ sub make_dump {
 		my $archive = $self->{archives_got}->{$id};
 		push @dump, "$id|$archive->{name}|$archive->{mtime}|$archive->{size}";
 	}
-	push @dump, '>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1)';
+	
+	push @dump, '>>> table detector (detector_id, name, version)';
+	push @dump, '>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)';
 
 	for my $id (sort { $a <=> $b} keys %{$self->{archives_got}}) {
 		my $archive = $self->{archives_got}->{$id};
@@ -251,7 +257,7 @@ sub make_dump {
 			$archive->{files} = [ sort { $a->{idx} <=> $b->{idx} } @{$archive->{files}} ];
 		}
 		for my $file (@{$archive->{files}}) {
-			push @dump, join '|', $id, $file->{idx}, $file->{name}, $file->{mtime}, $file->{status}, $file->{size}, $file->{crc}, "<$file->{md5}>", "<$file->{sha1}>";
+			push @dump, join '|', $id, $file->{idx}, $file->{name}, $file->{mtime}, $file->{status}, $file->{size}, $file->{crc}, "<$file->{md5}>", "<$file->{sha1}>", $file->{detector_id};
 		}
 	}
 	

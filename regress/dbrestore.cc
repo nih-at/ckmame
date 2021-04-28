@@ -36,12 +36,15 @@
 
 #include <cinttypes>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "DB.h"
 #include "error.h"
+#include "Exception.h"
 #include "SharedFile.h"
 #include "sq_util.h"
 #include "util.h"
@@ -50,34 +53,44 @@
 static int column_type(const std::string &name);
 static int db_type(const std::string &name);
 static std::optional<std::string> get_line(FILE *f);
-static int restore_db(DB *dbh, FILE *f);
-static int restore_table(DB *dbh, FILE *f);
+static int restore_db(sqlite3 *db, FILE *f);
+static int restore_table(sqlite3 *db, FILE *f);
+std::string slurp(const std::string filename);
 static void unget_line(const std::string &line);
 static std::vector<std::string> split(const std::string &string, const std::string &separaptor, bool strip_whitespace = false);
 
 
 #define QUERY_COLS_FMT "pragma table_info(%s)"
 
-const char *usage = "usage: %s [-t db-type] dump-file db-file\n";
+const char *usage = "usage: %s [-hV] [--db-version VERSION] [--sql SQL_INIT_FILE] [-t db-type] dump-file db-file\n";
 
 char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
 char help[] = "\n"
+              "  --db-version VERSION    specify version of database schema\n"
 	      "  -h, --help              display this help message\n"
-	      "  -t, --type TYPE         restore database of type TYPE (ckmamedb, mamedb, memdb)"
+              "  --sql SQL_INIT_FILE     use table definitions from this SQL init file\n"
+	      "  -t, --type TYPE         restore database of type TYPE (ckmamedb, mamedb, memdb)\n"
 	      "  -V, --version           display version number\n"
 	      "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 char version_string[] = PACKAGE " " VERSION "\n"
-				"Copyright (C) 2014 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+				"Copyright (C) 2014-2021 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 
 #define OPTIONS "ht:V"
+
+enum {
+    OPT_DB_VERSION = 256,
+    OPT_SQL
+};
+
 struct option options[] = {
+    {"db-version", 1, 0, OPT_DB_VERSION },
     {"help", 0, 0, 'h'},
-    {"version", 0, 0, 'V'},
-    
-    {"type", 1, 0, 't'}
+    {"sql", 1, 0, OPT_SQL },
+    {"type", 1, 0, 't'},
+    {"version", 0, 0, 'V'}
 };
 
 
@@ -85,6 +98,8 @@ int main(int argc, char *argv[]) {
     setprogname(argv[0]);
 
     int type = DBH_FMT_MAME;
+    std::string sql_file;
+    int db_version = -1;
 
     opterr = 0;
     int c;
@@ -101,11 +116,28 @@ int main(int argc, char *argv[]) {
 
 	case 't':
 	    if ((type = db_type(optarg)) < 0) {
-		fprintf(stderr, "%s: unknown db type %s\n", getprogname(), optarg);
-		fprintf(stderr, usage, getprogname());
+		fprintf(stderr, "%s: unknown db type '%s'\n", getprogname(), optarg);
 		exit(1);
 	    }
 	    break;
+            
+        case OPT_DB_VERSION:
+            try {
+                size_t idx;
+                db_version = std::stoi(optarg, &idx);
+                if (optarg[idx] != '\0') {
+                    throw std::invalid_argument("");
+                }
+            }
+            catch (...) {
+                fprintf(stderr, "%s: invalid DB schema version '%s'\n", getprogname(), optarg);
+                exit(1);
+            }
+            break;
+            
+        case OPT_SQL:
+            sql_file = optarg;
+            break;
 	}
     }
 
@@ -126,25 +158,49 @@ int main(int argc, char *argv[]) {
     }
 
     try {
-        DB dbh(db_fname, type | DBH_TRUNCATE | DBH_WRITE | DBH_CREATE);
+        if (!sql_file.empty()) {
+            std::string sql_statement = slurp(sql_file);
+            sqlite3 *db;
+            
+            if (sqlite3_open_v2(db_fname.c_str(), &db, SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE, NULL) != SQLITE_OK) {
+                throw std::invalid_argument("");
+            }
 
-        seterrdb(&dbh);
-
-        if (restore_db(&dbh, f.get()) < 0)
-            exit(1);
-        
-        if (type == DBH_FMT_MAME) {
-            if (sqlite3_exec(dbh.db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
-                myerror(ERRDB, "can't create indices");
+            try {
+                DB::upgrade(db, type, db_version, sql_statement);
+            }
+            catch (Exception &e) {
+                sqlite3_close(db);
+                std::filesystem::remove(db_fname);
+                throw e;
+            }
+            
+            if (restore_db(db, f.get()) < 0) {
                 exit(1);
+            }
+        }
+        else {
+            DB dbh(db_fname, type | DBH_TRUNCATE | DBH_WRITE | DBH_CREATE);
+            
+            seterrdb(&dbh);
+            
+            if (restore_db(dbh.db, f.get()) < 0) {
+                exit(1);
+            }
+            
+            if (type == DBH_FMT_MAME) {
+                if (sqlite3_exec(dbh.db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
+                    myerror(ERRDB, "can't create indices");
+                    exit(1);
+                }
             }
         }
     }
     catch (std::exception &e) {
-        myerror(ERRDB, "can't create database '%s'", db_fname.c_str());
+        myerror(ERRDB, "can't create database '%s': %s", db_fname.c_str(), e.what());
         exit(1);
     }
-
+    
     exit(0);
 }
 
@@ -206,11 +262,11 @@ static std::optional<std::string> get_line(FILE *f) {
 }
 
 static int
-restore_db(DB *dbh, FILE *f) {
+restore_db(sqlite3 *db, FILE *f) {
     ungot_line.reset();
 
     while (!feof(f)) {
-	if (restore_table(dbh, f) < 0)
+	if (restore_table(db, f) < 0)
 	    return -1;
 
 	if (ferror(f)) {
@@ -224,7 +280,7 @@ restore_db(DB *dbh, FILE *f) {
 
 
 static int
-restore_table(DB *dbh, FILE *f) {
+restore_table(sqlite3 *db, FILE *f) {
     auto next_line = get_line(f);
 
     if (!next_line.has_value()) {
@@ -249,7 +305,7 @@ restore_table(DB *dbh, FILE *f) {
 
     std::string query = "pragma table_info(" + table_name + ")";
     sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(dbh->db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
 	myerror(ERRDB, "can't query table %s", table_name.c_str());
 	return -1;
     }
@@ -288,7 +344,7 @@ restore_table(DB *dbh, FILE *f) {
     }
     query += ")";
 
-    if (sqlite3_prepare_v2(dbh->db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
 	myerror(ERRDB, "can't prepare insert statement for table %s", table_name.c_str());
 	return -1;
     }
@@ -397,4 +453,16 @@ static std::vector<std::string> split(const std::string &string, const std::stri
     result.push_back(string.substr(start));
 
     return result;
+}
+
+std::string slurp(const std::string filename) {
+    auto f = std::ifstream(filename, std::ios::in | std::ios::binary);
+        
+    const auto size = std::filesystem::file_size(filename);
+        
+    std::string text(size, '\0');
+        
+    f.read(text.data(), static_cast<std::streamsize>(size));
+        
+    return text;
 }

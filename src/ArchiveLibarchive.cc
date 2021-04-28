@@ -344,14 +344,28 @@ bool ArchiveLibarchive::read_infos_xxx() {
 ZipSourcePtr ArchiveLibarchive::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) {
     uint64_t actual_length = length.has_value() ? length.value() : files[index].size - start;
     
-    auto source = new Source(this, index, start, actual_length);
+    auto source = new Source(this, index, start, actual_length, files[index].size);
     
     return std::make_shared<ZipSource>(source->get_source());
 }
                                        
+ArchiveLibarchive::Source::Source(ArchiveLibarchive *archive_, uint64_t index_, uint64_t start_, uint64_t length_, uint64_t file_length) : archive(archive_), index(index_), start(start_), length(length_) {
+    zip_error_init(&error);
+    complete_file = (start == 0 && length == file_length);
+}
 
 zip_source_t *ArchiveLibarchive::Source::get_source() {
-    return zip_source_function_create(callback_c, this, NULL);
+    auto source = zip_source_function_create(callback_c, this, NULL);
+    if (!complete_file) {
+        auto window_source = zip_source_window_create(source, start, (zip_int64_t)length, NULL);
+        if (window_source == NULL) {
+            zip_source_free(source);
+            return NULL;
+        }
+        return window_source;
+    }
+    
+    return source;
 }
 
 zip_int64_t ArchiveLibarchive::Source::callback_c(void *userdata, void *data, zip_uint64_t len, zip_source_cmd_t cmd) {

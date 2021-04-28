@@ -61,7 +61,7 @@ private:
     
     class Source {
     public:
-        Source(ArchiveLibarchive *archive_, uint64_t index_, uint64_t start_, uint64_t length_): archive(archive_), index(index_), start(start_), length(length_) { zip_error_init(&error); }
+        Source(ArchiveLibarchive *archive_, uint64_t index_, uint64_t start_, uint64_t length_, uint64_t file_length);
         
         static zip_int64_t callback_c(void *userdata, void *data, zip_uint64_t len, zip_source_cmd_t cmd);
         zip_int64_t callback(void *data, zip_uint64_t len, zip_source_cmd_t cmd);
@@ -72,6 +72,7 @@ private:
         
         ArchiveLibarchive *archive;
         uint64_t index;
+        bool complete_file;
         uint64_t start;
         uint64_t length;
 
