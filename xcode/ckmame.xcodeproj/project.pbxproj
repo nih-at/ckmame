@@ -571,7 +571,6 @@
 		4B6B14D324FFA14B00D3F3FB /* rom-from-extra-keep-dir.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-keep-dir.test"; sourceTree = "<group>"; };
 		4B6B14D424FFA14B00D3F3FB /* rom-from-extra-commit-error.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-commit-error.test"; sourceTree = "<group>"; };
 		4B6B14D524FFA14B00D3F3FB /* rom-from-needed2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-needed2.test"; sourceTree = "<group>"; };
-		4B6B14D624FFA14B00D3F3FB /* rom-broken-without-i.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-broken-without-i.test"; sourceTree = "<group>"; };
 		4B6B14D724FFA14B00D3F3FB /* rom-duplicate-2nd.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-duplicate-2nd.test"; sourceTree = "<group>"; };
 		4B6B14D824FFA14B00D3F3FB /* rom-from-romset2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-romset2.test"; sourceTree = "<group>"; };
 		4B6B14D924FFA14B00D3F3FB /* rom-from-superfluous-cleanup.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-superfluous-cleanup.test"; sourceTree = "<group>"; };
@@ -1187,7 +1186,6 @@
 				4B6B14DA24FFA14B00D3F3FB /* rom-add-from-crc-different.test */,
 				4B6B14C424FFA14A00D3F3FB /* rom-add-from-crc-only.test */,
 				4B6B14CA24FFA14B00D3F3FB /* rom-broken-replace.test */,
-				4B6B14D624FFA14B00D3F3FB /* rom-broken-without-i.test */,
 				4B6B14D124FFA14B00D3F3FB /* rom-broken.test */,
 				4B6B14BA24FFA14A00D3F3FB /* rom-dir-in-extra-dirs-subdir-dir.test */,
 				4B6B14BD24FFA14A00D3F3FB /* rom-dir-in-extra-dirs-subdir-zip.test */,
