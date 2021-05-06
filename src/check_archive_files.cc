@@ -77,7 +77,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
                 break;
                 
             case FIND_MISSING:
-                if (file.size == 0) {
+                if (file.hashes.size == 0) {
                     result->archive_files[filetype][i] = FS_SUPERFLUOUS;
                 }
                 else if (archive->where == FILE_NEEDED) {

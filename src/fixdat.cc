@@ -52,7 +52,7 @@ write_fixdat_entry(const Game *game, const Result *result) {
             auto &rom = game->files[ft][i];
             
             /* no use requesting zero byte files */
-            if (rom.size == 0) {
+            if (rom.hashes.size == 0) {
                 continue;
             }
             

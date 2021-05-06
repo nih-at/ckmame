@@ -182,7 +182,7 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
 		move = fix_options & FIX_MOVE_UNKNOWN;
-                if (a->files[i].size == 0) {
+                if (a->files[i].hashes.size == 0) {
                     if (fix_options & FIX_PRINT) {
                         printf("%s: delete empty file '%s'\n", a->name.c_str(), a->files[i].name.c_str());
                     }

@@ -139,7 +139,7 @@ bool Archive::file_add_empty(const std::string &filename) {
     }
 
     File file;
-    file.size = 0;
+    file.hashes.size = 0;
     file.hashes.types = Hashes::TYPE_ALL;
     Hashes::Update hu(&file.hashes);
     hu.end();
@@ -196,19 +196,19 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 	return false;
     }
     if (length.has_value()) {
-        if (start + length.value() > source_archive->files[source_index].size) {
+        if (start + length.value() > source_archive->files[source_index].hashes.size) {
             myerror(ERRZIP, "invalid range (%" PRIu64 ", %" PRIu64 ")", start, length.value());
             return false;
         }
     }
     else {
-        if (start > source_archive->files[source_index].size) {
+        if (start > source_archive->files[source_index].hashes.size) {
             myerror(ERRZIP, "invalid start offset %" PRIu64, start);
             return false;
         }
     }
 
-    bool full_file = start == 0 && (!length.has_value() || length.value() == source_archive->files[source_index].size);
+    bool full_file = start == 0 && (!length.has_value() || length.value() == source_archive->files[source_index].hashes.size);
     
     if (full_file) {
         add_file(filename, &source_archive->files[source_index]);

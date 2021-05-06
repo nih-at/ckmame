@@ -39,6 +39,8 @@
 #include "util.h"
 
 
+uint64_t Hashes::SIZE_UNKNOWN = UINT64_MAX;
+
 std::unordered_map<std::string, int> Hashes::name_to_type = {
     { "crc", TYPE_CRC },
     { "md5", TYPE_MD5},
@@ -224,6 +226,14 @@ void Hashes::set(int type, const void *data, bool ignore_zero) {
 
     memcpy(const_cast<void *>(hash_data(type)), data, length);
     types |= type;
+}
+
+
+void Hashes::set_hashes(const Hashes &other) {
+    types = other.types;
+    crc = other.crc;
+    memcpy(md5, other.md5, sizeof(md5));
+    memcpy(sha1, other.sha1, sizeof(sha1));
 }
 
 

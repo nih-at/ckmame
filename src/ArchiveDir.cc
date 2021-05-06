@@ -260,7 +260,7 @@ bool ArchiveDir::read_infos_xxx() {
              auto &f = files[files.size() - 1];
              
              f.name = filepath.string().substr(name.size() + 1);
-             f.size = std::filesystem::file_size(filepath);
+             f.hashes.size = std::filesystem::file_size(filepath);
              // auto ftime = std::filesystem::last_write_time(filepath);
              // f.mtime = decltype(ftime)::clock::to_time_t(ftime);
              f.mtime = get_mtime(filepath);

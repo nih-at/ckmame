@@ -96,8 +96,8 @@ bool ArchiveImages::read_infos_xxx() {
 
                 Chd chd(filepath);
                 
-                f.size = chd.size();
-                f.hashes = chd.hashes;
+                f.hashes.size = chd.size();
+                f.hashes.set_hashes(chd.hashes);
             }
             catch (Exception &e) {
                 myerror(ERRDEF, "%s: can't open: %s", filename.c_str(), e.what());

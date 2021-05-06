@@ -110,7 +110,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
                 case FS_NEEDED:
                     /* TODO: handle error (how?) */
                     if (save_needed(archive, i, game->name)) {
-                        check_tree.recheck_games_needing(filetype, archive->files[i].size, &archive->files[i].hashes);
+                        check_tree.recheck_games_needing(filetype, archive->files[i].hashes.size, &archive->files[i].hashes);
                     }
                     break;
                     
@@ -210,7 +210,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
 
 	switch (match->quality) {
             case QU_MISSING:
-                if (game_file->size == 0) {
+                if (game_file->hashes.size == 0) {
                     /* create missing empty file */
                     if (fix_options & FIX_PRINT) {
                         printf("%s: create empty file '%s'\n", archive->name.c_str(), game_file->filename().c_str());
@@ -232,14 +232,14 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 
                 if (fix_options & FIX_PRINT) {
-                    printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to '%s'\n", archive->name.c_str(), match->offset, game_file->size, REAL_NAME(archive_from, match->index), game_file->filename().c_str());
+                    printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to '%s'\n", archive->name.c_str(), match->offset, game_file->hashes.size, REAL_NAME(archive_from, match->index), game_file->filename().c_str());
                 }
                 
                 bool replacing_ourselves = (archive == archive_from && match->index == archive_from->file_index_by_name(game_file->name));
                 if (make_space(archive, game_file->name, &original_names, num_names) < 0) {
                     break;
                 }
-                if (!archive->file_copy_part(archive_from, match->index, game_file->name, match->offset, game_file->size, game_file)) {
+                if (!archive->file_copy_part(archive_from, match->index, game_file->name, match->offset, game_file->hashes.size, game_file)) {
                     break;
                 }
                 if (archive == archive_from && archive_from->files[match->index].where != FILE_DELETED) {
@@ -256,7 +256,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     if (check_tree.recheck(game->cloneof[game_file->where - 1])) {
                         /* fall-through to rename in case save_needed fails */
                         if (save_needed(archive, match->index, game->name)) {
-                            check_tree.recheck_games_needing(filetype, game_file->size, &game_file->hashes);
+                            check_tree.recheck_games_needing(filetype, game_file->hashes.size, &game_file->hashes);
                             break;
                         }
                     }
@@ -350,7 +350,7 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
                 break;
                 
             case QU_LONG:
-                save_needed_part(archive_from, match->index, game->name, match->offset, game_file->size, game_file); /* TODO: handle error */
+                save_needed_part(archive_from, match->index, game->name, match->offset, game_file->hashes.size, game_file); /* TODO: handle error */
                 break;
                 
             case QU_COPIED:

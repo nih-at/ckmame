@@ -120,7 +120,7 @@ bool OutputContextXml::game(GamePtr game) {
         
             set_attribute(xmlRom, "name", rom.name);
             if (ft == TYPE_ROM) {
-                set_attribute_u64(xmlRom, "size", rom.size);
+                set_attribute_u64(xmlRom, "size", rom.hashes.size);
             }
             set_attribute_hash(xmlRom, "crc", Hashes::TYPE_CRC, &rom.hashes);
             set_attribute_hash(xmlRom, "sha1", Hashes::TYPE_SHA1, &rom.hashes);

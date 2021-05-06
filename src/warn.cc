@@ -49,7 +49,7 @@ warn_archive_file(filetype_t ft, const File *r, const std::string &reason) {
 
     switch (ft) {
         case TYPE_ROM:
-            printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s\n", r->filename().c_str(), r->size, r->hashes.crc, reason.c_str());
+            printf("file %-12s  size %7" PRIu64 "  crc %.8" PRIx32 ": %s\n", r->filename().c_str(), r->hashes.size, r->hashes.crc, reason.c_str());
             break;
             
         case TYPE_DISK:
@@ -71,7 +71,7 @@ warn_game_file(filetype_t ft, const File *r, const std::string &reason) {
             case TYPE_ROM:
                 printf("rom  %-12s  ", r->name.c_str());
                 if (r->is_size_known()) {
-                    printf("size %7" PRIu64 "  ", r->size);
+                    printf("size %7" PRIu64 "  ", r->hashes.size);
                     
                     /* TODO */
                     if (r->hashes.has_type(Hashes::TYPE_CRC)) {

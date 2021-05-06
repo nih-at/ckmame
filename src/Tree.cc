@@ -102,7 +102,7 @@ bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashe
 
         auto game_file = &game->files[filetype][file.index];
 
-        if ((filetype == TYPE_DISK || size == game_file->size) && hashes->compare(game_file->hashes) == Hashes::MATCH && game_file->where == FILE_INGAME) {
+        if ((filetype == TYPE_DISK || size == game_file->hashes.size) && hashes->compare(game_file->hashes) == Hashes::MATCH && game_file->where == FILE_INGAME) {
             recheck(game->name);
         }
     }

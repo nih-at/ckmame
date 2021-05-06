@@ -73,8 +73,8 @@ typedef enum where where_t;
 #define IS_ELSEWHERE(w) ((w) >= FILE_ROMSET)
 #define IS_EXTERNAL(w) ((w) > FILE_ROMSET && (w) < FILE_OLD)
 
-#define SIZE_UNKNOWN UINT64_MAX
-#define SIZE_IS_KNOWN(s) ((s) != SIZE_UNKNOWN)
+#define SIZE_UNKNOWN_OLD UINT64_MAX
+#define SIZE_IS_KNOWN(s) ((s) != SIZE_UNKNOWN_OLD)
 
 /* bump database version on change */
 enum filetype {

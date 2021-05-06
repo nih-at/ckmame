@@ -55,7 +55,7 @@ bool File::compare_size_hashes_one(const File &other, bool detector) const {
         return false;
     }
     
-    if (is_size_known() && other.is_size_known(detector) && size != other.get_size(detector)) {
+    if (is_size_known() && other.is_size_known(detector) && hashes.size != other.get_size(detector)) {
         return false;
     }
     

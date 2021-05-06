@@ -208,7 +208,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
         return false;
     }
 
-    switch (get_hashes(f.get(), file.size, true, &hashes)) {
+    switch (get_hashes(f.get(), file.hashes.size, true, &hashes)) {
         case OK:
             break;
 
@@ -223,7 +223,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
             return false;
     }
 
-    file.hashes = hashes;
+    file.hashes.set_hashes(hashes);
 
     cache_changed = true;
 
@@ -245,8 +245,8 @@ std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const
         
         auto found = false;
         size_t offset = 0;
-        while (offset + size <= file.size) {
-            if (get_hashes(source.get(), size, offset + size == file.size, &hashes_part) != OK) {
+        while (offset + size <= file.hashes.size) {
+            if (get_hashes(source.get(), size, offset + size == file.hashes.size, &hashes_part) != OK) {
                 file.status = STATUS_BADDUMP;
                 return {};
             }

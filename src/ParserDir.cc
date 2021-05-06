@@ -218,7 +218,7 @@ bool ParserDir::parse_archive(filetype_t filetype, Archive *a) {
 
         file_start(filetype);
         file_name(filetype, file.name);
-        file_size(filetype, file.size);
+        file_size(filetype, file.hashes.size);
         file_mtime(filetype, file.mtime);
         if (file.status != STATUS_OK) {
             file_status(filetype, file.status == STATUS_BADDUMP ? "baddump" : "nodump");

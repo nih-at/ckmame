@@ -55,6 +55,8 @@ public:
         Hashes *hashes;
     };
     
+    static uint64_t SIZE_UNKNOWN;
+    
     enum {
         TYPE_CRC = 1,
         TYPE_MD5 = 2,
@@ -74,14 +76,16 @@ public:
         MISMATCH
     };
     
+    uint64_t size;
     int types;
     uint32_t crc;
     uint8_t md5[SIZE_MD5];
     uint8_t sha1[SIZE_SHA1];
     
-    Hashes() : types(0), crc(0) { }
+    Hashes() : size(SIZE_UNKNOWN), types(0), crc(0) { }
     
     bool are_crc_complement(const Hashes &other) const;
+    bool has_size() const { return size != SIZE_UNKNOWN; }
     bool has_type(int type) const;
     bool has_all_types(const Hashes &other) const { return has_all_types(other.types); }
     bool has_all_types(int requested_types) const { return (types & requested_types) == requested_types; }
@@ -93,6 +97,7 @@ public:
 
     void merge(const Hashes &other);
     void set(int type, const void *data, bool ignore_zero = false);
+    void set_hashes(const Hashes &other);
     void set_crc(uint32_t crc_) { types |= TYPE_CRC; crc = crc_; }
     int set_from_string(const std::string &s);
 

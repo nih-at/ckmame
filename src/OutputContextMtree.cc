@@ -162,8 +162,8 @@ void OutputContextMtree::write_files(const std::string &dirname, const std::vect
     for (auto &file : files) {
         fprintf(f.get(), "./%s/%s type=file", dirname.c_str(), strsvis_cstyle(file.name).c_str());
         /* For disks, this is the internal size and checksums and not information of the file on-disk. Disks are only supported in zipped mode, where the mtree file can not be taken literally anyway, so this is ok. */
-        if (file.size != SIZE_UNKNOWN) {
-            fprintf(f.get(), " size=%" PRIu64, file.size);
+        if (file.is_size_known()) {
+            fprintf(f.get(), " size=%" PRIu64, file.hashes.size);
         }
         cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &file.hashes, "");
         cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &file.hashes, "");

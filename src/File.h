@@ -44,7 +44,6 @@ public:
     std::string name;
     std::string filename_extension;
     std::string merge;
-    uint64_t size;
     Hashes hashes;
     uint64_t size_detector;
     Hashes hashes_detector;
@@ -52,14 +51,14 @@ public:
     status_t status;
     where_t where;
     
-    File() : size(SIZE_UNKNOWN), size_detector(SIZE_UNKNOWN), mtime(0), status(STATUS_OK), where(FILE_INGAME) { }
+    File() : size_detector(SIZE_UNKNOWN_OLD), mtime(0), status(STATUS_OK), where(FILE_INGAME) { }
 
-    uint64_t get_size(bool detector) const { return detector ? size_detector : size; }
+    uint64_t get_size(bool detector) const { return detector ? size_detector : hashes.size; }
     const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
     
     std::string filename() const { return name + filename_extension; }
     const std::string &merged_name() const { return merge.empty() ? name : merge; }
-    bool is_size_known(bool detector = false) const { return get_size(detector) != SIZE_UNKNOWN; }
+    bool is_size_known(bool detector = false) const { return get_size(detector) != SIZE_UNKNOWN_OLD; }
     
     bool compare_name(const File &other) const;
     bool compare_merged(const File &other) const;

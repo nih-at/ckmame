@@ -99,7 +99,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
         }
         
-        if (rom.where == FILE_INGAME && match->quality == QU_MISSING && rom.size > 0 && rom.status != STATUS_NODUMP) {
+        if (rom.where == FILE_INGAME && match->quality == QU_MISSING && rom.hashes.size > 0 && rom.status != STATUS_NODUMP) {
             /* search for matching file in other games (via db) */
             if (find_in_romset(filetype, &rom, NULL, game->name, "", match) == FIND_EXISTS) {
                 continue;
@@ -204,12 +204,12 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
 
             case TEST_LONG:
                 /* roms without hashes are only matched with correct name */
-                if (rom->hashes.empty() || rom->size == 0) {
+                if (rom->hashes.empty() || rom->hashes.size == 0) {
                     break;
                 }
 
-                if (rom->compare_name(file) && file.size > rom->size) {
-                    auto offset = archive->file_find_offset(i, rom->size, &rom->hashes);
+                if (rom->compare_name(file) && file.hashes.size > rom->hashes.size) {
+                    auto offset = archive->file_find_offset(i, rom->hashes.size, &rom->hashes);
                     if (offset.has_value()) {
                         match->offset = offset.value();
                         match->archive = archive;

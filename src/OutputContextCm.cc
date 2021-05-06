@@ -123,7 +123,7 @@ bool OutputContextCm::write_game(Game *game) {
             if (rom.where != FILE_INGAME) {
                 cond_print_string(f, "merge ", rom.merge.empty() ? rom.name : rom.merge, " ");
             }
-            fprintf(f.get(), "size %" PRIu64 " ", rom.size);
+            fprintf(f.get(), "size %" PRIu64 " ", rom.hashes.size);
             cond_print_hash(f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
             cond_print_hash(f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
             cond_print_hash(f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");

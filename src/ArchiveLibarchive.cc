@@ -159,7 +159,7 @@ bool ArchiveLibarchive::commit_xxx() {
                 throw Exception("can't write file header: %s", strerror(ENOMEM));
             }
             archive_entry_set_pathname(entry, file.name.c_str());
-            archive_entry_set_size(entry, static_cast<int64_t>(file.size));
+            archive_entry_set_size(entry, static_cast<int64_t>(file.hashes.size));
             archive_entry_set_filetype(entry, AE_IFREG);
             archive_entry_set_perm(entry, 0644);
             archive_entry_set_mtime(entry, mtime, 0);
@@ -316,7 +316,7 @@ bool ArchiveLibarchive::read_infos_xxx() {
 
         File r;
         r.mtime = archive_entry_mtime(entry);
-        r.size = static_cast<uint64_t>(archive_entry_size(entry));
+        r.hashes.size = static_cast<uint64_t>(archive_entry_size(entry));
         r.name = archive_entry_pathname_utf8(entry);
         r.status = STATUS_OK;
         files.push_back(r);
@@ -342,9 +342,9 @@ bool ArchiveLibarchive::read_infos_xxx() {
 
 
 ZipSourcePtr ArchiveLibarchive::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) {
-    uint64_t actual_length = length.has_value() ? length.value() : files[index].size - start;
+    uint64_t actual_length = length.has_value() ? length.value() : files[index].hashes.size - start;
     
-    auto source = new Source(this, index, start, actual_length, files[index].size);
+    auto source = new Source(this, index, start, actual_length, files[index].hashes.size);
     
     return std::make_shared<ZipSource>(source->get_source());
 }

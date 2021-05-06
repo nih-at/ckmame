@@ -171,17 +171,17 @@ void Detector::Context::update(Hashes::Update *hu, Operation operation, uint64_t
 Detector::Result Detector::Rule::execute(File *file, Context *ctx) const {
     auto start = start_offset;
     if (start < 0) {
-        start += file->size;
+        start += file->hashes.size;
     }
     auto end = end_offset;
     if (end == DETECTOR_OFFSET_EOF) {
-        end = static_cast<int64_t>(file->size);
+        end = static_cast<int64_t>(file->hashes.size);
     }
     else if (end < 0) {
-        end += file->size;
+        end += file->hashes.size;
     }
     
-    if (start < 0 || static_cast<uint64_t>(start) > file->size || end < 0 || static_cast<uint64_t>(end) > file->size || start > end) {
+    if (start < 0 || static_cast<uint64_t>(start) > file->hashes.size || end < 0 || static_cast<uint64_t>(end) > file->hashes.size || start > end) {
 	return MISMATCH;
     }
 
@@ -211,10 +211,10 @@ Detector::Result Detector::Test::execute(File *file, Context *ctx) const {
             auto off = offset;
             
             if (off < 0) {
-                off += file->size;
+                off += file->hashes.size;
             }
             
-            if (off < 0 || static_cast<uint64_t>(off) + length > file->size) {
+            if (off < 0 || static_cast<uint64_t>(off) + length > file->hashes.size) {
                 return MISMATCH;
             }
             
@@ -239,14 +239,14 @@ Detector::Result Detector::Test::execute(File *file, Context *ctx) const {
             if (offset == DETECTOR_SIZE_POWER_OF_2) {
                 match = false;
                 for (auto i = 0; i < 64; i++) {
-                    if (file->size == (static_cast<uint64_t>(1) << i)) {
+                    if (file->hashes.size == (static_cast<uint64_t>(1) << i)) {
                         match = true;
                         break;
                     }
                 }
             }
             else {
-                int64_t cmp = offset - static_cast<int64_t>(file->size);
+                int64_t cmp = offset - static_cast<int64_t>(file->hashes.size);
                 
                 switch (type) {
                     case TEST_FILE_EQ:

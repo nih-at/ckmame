@@ -134,7 +134,7 @@ bool MemDB::insert_file(sqlite3_stmt *stmt, const ArchiveContents *a, size_t idx
             continue;
         }
         
-        if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_SH, static_cast<int>(i)) != SQLITE_OK || sq3_set_uint64_default(stmt, INSERT_FILE_SIZE, r->get_size(detector), SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, INSERT_FILE_HASHES, &r->get_hashes(detector), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+        if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_SH, static_cast<int>(i)) != SQLITE_OK || sq3_set_uint64_default(stmt, INSERT_FILE_SIZE, r->get_size(detector), SIZE_UNKNOWN_OLD) != SQLITE_OK || sq3_set_hashes(stmt, INSERT_FILE_HASHES, &r->get_hashes(detector), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
             ok = false;
             continue;
         }
@@ -207,15 +207,15 @@ std::optional<std::vector<MemDB::FindResult>> MemDB::find(filetype_t filetype, c
         return {};
     }
     
-    auto stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_FILE, &file->hashes, file->size != SIZE_UNKNOWN);
+    auto stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_FILE, &file->hashes, file->is_size_known());
     if (stmt == NULL) {
         return {};
     }
     
     int hcol = 2;
-    if (file->size != SIZE_UNKNOWN) {
+    if (file->is_size_known()) {
         hcol++;
-        if (sq3_set_uint64(stmt, 2, file->size) != SQLITE_OK) {
+        if (sq3_set_uint64(stmt, 2, file->hashes.size) != SQLITE_OK) {
             return {};
         }
     }

@@ -235,7 +235,7 @@ bool Parser::file_size(filetype_t ft, const std::string &attr) {
 bool Parser::file_size(filetype_t ft, uint64_t size) {
     CHECK_STATE(PARSE_IN_FILE);
 
-    r[ft]->size = size;
+    r[ft]->hashes.size = size;
     return true;
 }
 
@@ -453,7 +453,7 @@ bool Parser::ignore_game(const std::string &name) {
 void Parser::rom_end(filetype_t ft) {
     size_t n = g->files[ft].size() - 1;
 
-    if (r[ft]->size == 0) {
+    if (r[ft]->hashes.size == 0) {
         unsigned char zeroes[Hashes::MAX_SIZE];
 
         memset(zeroes, 0, sizeof(zeroes));
@@ -480,7 +480,7 @@ void Parser::rom_end(filetype_t ft) {
     }
     else if (flags & PARSE_FL_ROM_CONTINUED) {
         auto &rom2 = g->files[ft][n - 1];
-        rom2.size += r[ft]->size;
+        rom2.hashes.size += r[ft]->hashes.size;
 	deleted = true;
     }
     else if (r[ft]->name.empty()) {

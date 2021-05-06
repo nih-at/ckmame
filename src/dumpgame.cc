@@ -120,7 +120,7 @@ static void
 print_romline(File *rom) {
     printf("\t\tfile %-12s  size ", rom->name.c_str());
     if (rom->is_size_known()) {
-	printf("%7" PRIu64, rom->size);
+	printf("%7" PRIu64, rom->hashes.size);
     }
     else {
 	printf("unknown");

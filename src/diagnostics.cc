@@ -183,7 +183,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
             case QU_LONG:
                 if (diagnostics_options & WARN_LONGOK) {
                     std::ostringstream out;
-                    out << "too long, valid subsection at byte " << match.offset << " (" << file->size << ")" << (rom.where != match.where ? ", should be in " : "") << zname[rom.where];
+                    out << "too long, valid subsection at byte " << match.offset << " (" << file->hashes.size << ")" << (rom.where != match.where ? ", should be in " : "") << zname[rom.where];
                     warn_game_file(ft, &rom, out.str());
                 }
                 break;

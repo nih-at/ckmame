@@ -225,7 +225,7 @@ bool ArchiveZip::read_infos_xxx() {
 
         File r;
         r.mtime = zsb.mtime;
-	r.size = zsb.size;
+	r.hashes.size = zsb.size;
 	r.name = zsb.name;
         r.status = STATUS_OK;
         r.hashes.set_crc(zsb.crc);
@@ -247,7 +247,7 @@ ZipSourcePtr ArchiveZip::get_source(uint64_t index, uint64_t start, std::optiona
     }
     
     // TODO: overflow check
-    int64_t length = static_cast<int64_t>(length_.has_value() ? length_.value() : files[index].size - start);
+    int64_t length = static_cast<int64_t>(length_.has_value() ? length_.value() : files[index].hashes.size - start);
     
     auto source = zip_source_zip_create(za, index, ZIP_FL_UNCHANGED, start, length, NULL);
     
