@@ -77,7 +77,7 @@ bool ArchiveImages::read_infos_xxx() {
                 continue;
             }
             
-            files.push_back(FileData());
+            files.push_back(File());
             auto &f = files[files.size() - 1];
             auto filename = filepath.string();
             auto start = name.length() + 1;

@@ -38,7 +38,7 @@
 #include <string>
 #include <vector>
 
-#include "FileData.h"
+#include "Rom.h"
 
 struct Game {
 public:
@@ -47,7 +47,7 @@ public:
     std::string description;
     unsigned int dat_no;
     std::string cloneof[2];
-    std::vector<FileData> files[TYPE_MAX];
+    std::vector<Rom> files[TYPE_MAX];
     
     Game() : id(UINT64_MAX), dat_no(0) { }
 };

@@ -223,7 +223,7 @@ bool ArchiveZip::read_infos_xxx() {
 	    continue;
 	}
 
-        FileData r;
+        File r;
         r.mtime = zsb.mtime;
 	r.hashes.size = zsb.size;
 	r.name = zsb.name;

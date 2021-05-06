@@ -50,7 +50,7 @@ bool dbh_cache_get_archive_last_change(DB *, int, time_t *, off_t *);
 std::shared_ptr<DB> dbh_cache_get_db_for_archive(const std::string &name);
 bool dbh_cache_is_empty(DB *);
 std::vector<std::string> dbh_cache_list_archives(DB *);
-int dbh_cache_read(DB *, const std::string &, std::vector<FileData> *);
+int dbh_cache_read(DB *, const std::string &, std::vector<File> *);
 int dbh_cache_register_cache_directory(const std::string &directory);
 int dbh_cache_write(DB *, int, const ArchiveContents *a);
 

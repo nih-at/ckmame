@@ -38,6 +38,10 @@
 		4B07BFC91FEC1BB60068A600 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
 		4B07BFCA1FEC1BBB0068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
 		4B07BFCB1FEC1BD00068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
+		4B0D79A526442EE60009B2C6 /* File.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B0D79A326442EE60009B2C6 /* File.cc */; };
+		4B0D79A626442EE60009B2C6 /* File.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0D79A426442EE60009B2C6 /* File.h */; };
+		4B0D79A826442F9C0009B2C6 /* Rom.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B0D79A726442F9C0009B2C6 /* Rom.h */; };
+		4B0D79AA26442FC50009B2C6 /* Rom.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B0D79A926442FC50009B2C6 /* Rom.cc */; };
 		4B20D2CD260254A300D77FA8 /* ParserXml.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B20D2CC260254A300D77FA8 /* ParserXml.h */; };
 		4B20D2D7260254A900D77FA8 /* ParserRc.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B20D2D6260254A900D77FA8 /* ParserRc.h */; };
 		4B20D2E1260254AF00D77FA8 /* ParserDir.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B20D2E0260254AF00D77FA8 /* ParserDir.h */; };
@@ -338,6 +342,10 @@
 		4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		4B07BFC11FEC1B5B0068A600 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		4B07BFC41FEC1B700068A600 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
+		4B0D79A326442EE60009B2C6 /* File.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = File.cc; sourceTree = "<group>"; };
+		4B0D79A426442EE60009B2C6 /* File.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
+		4B0D79A726442F9C0009B2C6 /* Rom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rom.h; sourceTree = "<group>"; };
+		4B0D79A926442FC50009B2C6 /* Rom.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rom.cc; sourceTree = "<group>"; };
 		4B20D2C326024ED000D77FA8 /* ParserCm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserCm.h; sourceTree = "<group>"; };
 		4B20D2CC260254A300D77FA8 /* ParserXml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserXml.h; sourceTree = "<group>"; };
 		4B20D2D6260254A900D77FA8 /* ParserRc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserRc.h; sourceTree = "<group>"; };
@@ -937,6 +945,8 @@
 				4BB552BB25C01EC1001ABC31 /* Exception.h */,
 				4B5F43AD1889CFFB000C3B7C /* file_util.cc */,
 				4B3274C925B99F76006AEF16 /* file_util.h */,
+				4B0D79A326442EE60009B2C6 /* File.cc */,
+				4B0D79A426442EE60009B2C6 /* File.h */,
 				4B5FACD31735924900B67C24 /* FileData.cc */,
 				4B5FACD41735924900B67C24 /* FileData.h */,
 				4B5FACD01735924900B67C24 /* FileLocation.h */,
@@ -989,6 +999,8 @@
 				4B20D2CC260254A300D77FA8 /* ParserXml.h */,
 				4B5FAE611735949900B67C24 /* Result.cc */,
 				4B9292C017633FFC00806C0A /* Result.h */,
+				4B0D79A926442FC50009B2C6 /* Rom.cc */,
+				4B0D79A726442F9C0009B2C6 /* Rom.h */,
 				4B5F43B71889D059000C3B7C /* RomDB.cc */,
 				4B5F43B81889D059000C3B7C /* RomDB.h */,
 				4B3274C825B99F75006AEF16 /* SharedFile.cc */,
@@ -1331,7 +1343,9 @@
 				4B3274D325B99F76006AEF16 /* superfluous.h in Headers */,
 				4BF6FA2B25D5371B00B93A98 /* ArchiveImages.h in Headers */,
 				4BB51D2B25823D770047BE72 /* ParserSourceFile.h in Headers */,
+				4B0D79A626442EE60009B2C6 /* File.h in Headers */,
 				4B20D2CD260254A300D77FA8 /* ParserXml.h in Headers */,
+				4B0D79A826442F9C0009B2C6 /* Rom.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1609,7 +1623,9 @@
 				4B5FAE231735930100B67C24 /* sighandle.cc in Sources */,
 				4B5FAE9D173599B700B67C24 /* md5.cc in Sources */,
 				4B5FAE9E173599C100B67C24 /* sha1.cc in Sources */,
+				4B0D79AA26442FC50009B2C6 /* Rom.cc in Sources */,
 				4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */,
+				4B0D79A526442EE60009B2C6 /* File.cc in Sources */,
 				4B9233001780B30400096AA2 /* dbh_cache.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

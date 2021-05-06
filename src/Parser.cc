@@ -243,7 +243,7 @@ bool Parser::file_size(filetype_t ft, uint64_t size) {
 bool Parser::file_start(filetype_t ft) {
     CHECK_STATE(PARSE_IN_GAME);
 
-    g->files[ft].push_back(FileData());
+    g->files[ft].push_back(Rom());
     r[ft] = &g->files[ft][g->files[ft].size() - 1];
 
     state = PARSE_IN_FILE;

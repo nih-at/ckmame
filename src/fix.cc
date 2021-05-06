@@ -239,7 +239,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 if (make_space(archive, game_file->name, &original_names, num_names) < 0) {
                     break;
                 }
-                if (!archive->file_copy_part(archive_from, match->index, game_file->name, match->offset, game_file->hashes.size, game_file)) {
+                if (!archive->file_copy_part(archive_from, match->index, game_file->name, match->offset, game_file->hashes.size, &game_file->hashes)) {
                     break;
                 }
                 if (archive == archive_from && archive_from->files[match->index].where != FILE_DELETED) {

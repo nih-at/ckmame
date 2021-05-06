@@ -294,7 +294,7 @@ bool RomDB::read_files(Game *game, filetype_t ft) {
 
     int ret;
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        FileData rom;
+        Rom rom;
 
         rom.name = sq3_get_string(stmt, 0);
         rom.merge = sq3_get_string(stmt, 1);

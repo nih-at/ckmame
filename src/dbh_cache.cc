@@ -240,7 +240,7 @@ std::vector<std::string> dbh_cache_list_archives(DB *dbh) {
 
 
 int
-dbh_cache_read(DB *dbh, const std::string &name, std::vector<FileData> *files) {
+dbh_cache_read(DB *dbh, const std::string &name, std::vector<File> *files) {
     sqlite3_stmt *stmt;
     int ret;
     int archive_id;
@@ -259,7 +259,7 @@ dbh_cache_read(DB *dbh, const std::string &name, std::vector<FileData> *files) {
     files->clear();
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        FileData file;
+        File file;
 
         file.name = sq3_get_string(stmt, 0);
         file.mtime = sqlite3_column_int(stmt, 1);

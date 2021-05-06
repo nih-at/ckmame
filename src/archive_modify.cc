@@ -138,13 +138,13 @@ bool Archive::file_add_empty(const std::string &filename) {
 	return false;
     }
 
-    FileData file;
-    file.hashes.size = 0;
-    file.hashes.types = Hashes::TYPE_ALL;
-    Hashes::Update hu(&file.hashes);
+    Hashes hashes;
+    hashes.size = 0;
+    hashes.types = Hashes::TYPE_ALL;
+    Hashes::Update hu(&hashes);
     hu.end();
 
-    add_file(filename, &file);
+    add_file(filename, &hashes);
     contents->changes[files.size() - 1].source = std::make_shared<ZipSource>(zip_source_buffer_create(NULL, 0, 0, NULL));
 
     return true;
@@ -152,7 +152,7 @@ bool Archive::file_add_empty(const std::string &filename) {
 
 
 bool Archive::file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename) {
-    return file_copy_part(source_archive, source_index, filename, 0, {}, &source_archive->files[source_index]);
+    return file_copy_part(source_archive, source_index, filename, 0, {}, &source_archive->files[source_index].hashes);
 }
 
 bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy) {
@@ -165,7 +165,7 @@ bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, 
 }
 
 
-bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const FileData *f) {
+bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const Hashes *hashes) {
     if (!is_writable()) {
         seterrinfo(name);
 	myerror(ERRZIP, "cannot add to read-only archive");
@@ -211,10 +211,10 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
     bool full_file = start == 0 && (!length.has_value() || length.value() == source_archive->files[source_index].hashes.size);
     
     if (full_file) {
-        add_file(filename, &source_archive->files[source_index]);
+        add_file(filename, &source_archive->files[source_index].hashes);
     }
     else {
-        add_file(filename, f);
+        add_file(filename, hashes);
     }
 
     if (have_direct_file_access() && source_archive->have_direct_file_access() && full_file) {
@@ -344,17 +344,16 @@ bool Archive::rollback() {
 }
 
 
-void Archive::add_file(const std::string &filename, const FileData *file) {
-    FileData *nf;
+void Archive::add_file(const std::string &filename, const Hashes *hashes) {
+    File file;
 
-    files.push_back(*file);
+    file.hashes = *hashes;
+    file.name = filename;
+    file.where = FILE_ADDED;
+    file.filename_extension = contents->filename_extension;
+
+    contents->files.push_back(file);
     contents->changes.push_back(ArchiveContents::Changes());
-    
-    nf = &files[files.size() - 1];
-
-    nf->name = filename;
-    nf->where = FILE_ADDED;
-    nf->filename_extension = contents->filename_extension;
 
     modified = true;
 }

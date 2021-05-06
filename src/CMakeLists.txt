@@ -33,6 +33,7 @@ set(COMMON_SOURCES
   Dir.cc
   error.cc
   Exception.cc
+  File.cc
   FileData.cc
   file_util.cc
   find.cc
@@ -57,6 +58,7 @@ set(COMMON_SOURCES
   ParserSourceFile.cc
   ParserSourceZip.cc
   Result.cc
+  Rom.cc
   RomDB.cc
   SharedFile.cc
   sighandle.cc
