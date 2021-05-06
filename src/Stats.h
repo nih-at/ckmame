@@ -34,7 +34,7 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "File.h"
+#include "FileData.h"
 #include "Result.h"
 #include "types.h"
 
@@ -56,7 +56,7 @@ class Stats {
     StatsFiles files[TYPE_MAX];
 
     void add_game(GameStatus status);
-    void add_rom(enum filetype type, const File *rom, quality_t status);
+    void add_rom(enum filetype type, const FileData *rom, quality_t status);
     void print(FILE *f, bool total_only);
 
  private:

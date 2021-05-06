@@ -50,7 +50,7 @@ private:
     bool runtest;
     FILEPtr f;
     
-    void write_files(const std::string &dirname, const std::vector<File> &files);
+    void write_files(const std::string &dirname, const std::vector<FileData> &files);
 };
 
 #endif // HAD_OUTPUT_MTREE_H

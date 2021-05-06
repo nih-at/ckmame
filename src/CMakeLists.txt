@@ -33,7 +33,7 @@ set(COMMON_SOURCES
   Dir.cc
   error.cc
   Exception.cc
-  File.cc
+  FileData.cc
   file_util.cc
   find.cc
   fix.cc

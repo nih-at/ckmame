@@ -159,7 +159,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
     for (size_t i = 0; i < game->files[ft].size(); i++) {
         auto &match = result.game_files[ft][i];
         auto &rom = game->files[ft][i];
-        File *file = NULL;
+        FileData *file = NULL;
         
         if (!match.source_is_old() && match.archive) {
             file = &match.archive->files[match.index];

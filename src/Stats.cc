@@ -60,7 +60,7 @@ void Stats::add_game(GameStatus status) {
 }
 
 
-void Stats::add_rom(enum filetype type, const File *rom, quality_t status) {
+void Stats::add_rom(enum filetype type, const FileData *rom, quality_t status) {
     // TODO: only own ROMs? (what does dumpgame /stats count?)
     
     add_file(type, rom->hashes.size, status);

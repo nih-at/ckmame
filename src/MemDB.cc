@@ -202,7 +202,7 @@ bool MemDB::update_file(uint64_t id, filetype_t ft, size_t idx, const Hashes *h)
 }
 
 
-std::optional<std::vector<MemDB::FindResult>> MemDB::find(filetype_t filetype, const File *file) {
+std::optional<std::vector<MemDB::FindResult>> MemDB::find(filetype_t filetype, const FileData *file) {
     if (!ensure()) {
         return {};
     }

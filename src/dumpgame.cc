@@ -97,7 +97,7 @@ print_checksums(const Hashes *hashes) {
 
 
 static void
-print_diskline(File *disk) {
+print_diskline(FileData *disk) {
     printf("\t\tdisk %-12s", disk->name.c_str());
     print_checksums(&disk->hashes);
     printf(" status %s in %s", status_name(disk->status, true).c_str(), where_name[disk->where]);
@@ -117,7 +117,7 @@ print_footer(int matches, Hashes *hash) {
 
 
 static void
-print_romline(File *rom) {
+print_romline(FileData *rom) {
     printf("\t\tfile %-12s  size ", rom->name.c_str());
     if (rom->is_size_known()) {
 	printf("%7" PRIu64, rom->hashes.size);

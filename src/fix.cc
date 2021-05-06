@@ -205,7 +205,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
         if (!match->source_is_old()) {
 	    archive_from = match->archive.get();
         }
-        File *game_file = &game->files[filetype][i];
+        FileData *game_file = &game->files[filetype][i];
 	seterrinfo(game_file->name, archive->name);
 
 	switch (match->quality) {

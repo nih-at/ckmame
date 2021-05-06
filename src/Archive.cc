@@ -450,7 +450,7 @@ ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, 
 
 
 bool Archive::read_infos() {
-    std::vector<File> files_cache;
+    std::vector<FileData> files_cache;
 
     cache_changed = false;
     
@@ -567,12 +567,12 @@ Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length,
 }
 
 
-void Archive::merge_files(const std::vector<File> &files_cache) {
+void Archive::merge_files(const std::vector<FileData> &files_cache) {
     for (uint64_t i = 0; i < files.size(); i++) {
         auto &file = files[i];
         
         file.filename_extension = contents->filename_extension;
-        auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const File &file_cache){ return file.name == file_cache.name; });
+        auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const FileData &file_cache){ return file.name == file_cache.name; });
         if (it != files_cache.cend()) {
             if (file.mtime == (*it).mtime && file.compare_size_hashes(*it)) {
                 file.hashes.merge((*it).hashes);
@@ -605,7 +605,7 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
     }
 }
 
-std::optional<size_t> Archive::file_index(const File *file) const {
+std::optional<size_t> Archive::file_index(const FileData *file) const {
     for (size_t index = 0; index < files.size(); index++) {
         if (&files[index] == file) {
             return index;
@@ -618,7 +618,7 @@ std::optional<size_t> Archive::file_index(const File *file) const {
 
 // MARK: - ArchiveContents
 
-bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
+bool ArchiveContents::read_infos_from_cachedb(std::vector<FileData> *files) {
     if (roms_unzipped && filetype == TYPE_DISK) {
         cache_db = NULL;
         cache_id = -1;

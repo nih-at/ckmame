@@ -256,7 +256,7 @@ bool ArchiveDir::read_infos_xxx() {
                  continue;
              }
 
-             files.push_back(File());
+             files.push_back(FileData());
              auto &f = files[files.size() - 1];
              
              f.name = filepath.string().substr(name.size() + 1);

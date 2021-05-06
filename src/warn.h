@@ -35,7 +35,7 @@
 */
 
 
-#include "File.h"
+#include "FileData.h"
 
 
 #define WARN_UNKNOWN 0x0001
@@ -70,8 +70,8 @@ enum warn_type { WARN_TYPE_ARCHIVE, WARN_TYPE_GAME, WARN_TYPE_IMAGE };
 typedef enum warn_type warn_type_t;
 
 
-void warn_archive_file(filetype_t ft, const File *r, const std::string &reason);
-void warn_game_file(filetype_t ft, const File *r, const std::string &reason);
+void warn_archive_file(filetype_t ft, const FileData *r, const std::string &reason);
+void warn_game_file(filetype_t ft, const FileData *r, const std::string &reason);
 void warn_set_info(warn_type_t type, const std::string &name);
 
 #endif /* _HAD_WARN_H */

@@ -39,7 +39,7 @@
 #include "Hashes.h"
 #include "types.h"
 
-class File {
+class FileData {
 public:
     std::string name;
     std::string filename_extension;
@@ -51,7 +51,7 @@ public:
     status_t status;
     where_t where;
     
-    File() : size_detector(SIZE_UNKNOWN_OLD), mtime(0), status(STATUS_OK), where(FILE_INGAME) { }
+    FileData() : size_detector(SIZE_UNKNOWN_OLD), mtime(0), status(STATUS_OK), where(FILE_INGAME) { }
 
     uint64_t get_size(bool detector) const { return detector ? size_detector : hashes.size; }
     const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
@@ -60,18 +60,18 @@ public:
     const std::string &merged_name() const { return merge.empty() ? name : merge; }
     bool is_size_known(bool detector = false) const { return get_size(detector) != SIZE_UNKNOWN_OLD; }
     
-    bool compare_name(const File &other) const;
-    bool compare_merged(const File &other) const;
-    bool compare_name_size_hashes(const File &other) const;
-    bool compare_size_hashes(const File &other) const;
-    Hashes::Compare compare_hashes(const File &other) const;
-    bool is_mergable(const File &other) const;
+    bool compare_name(const FileData &other) const;
+    bool compare_merged(const FileData &other) const;
+    bool compare_name_size_hashes(const FileData &other) const;
+    bool compare_size_hashes(const FileData &other) const;
+    Hashes::Compare compare_hashes(const FileData &other) const;
+    bool is_mergable(const FileData &other) const;
     bool size_hashes_are_set(bool detector) const;
     
-    bool operator<(const File &other) const { return name < other.name; }
+    bool operator<(const FileData &other) const { return name < other.name; }
 
 private:
-    bool compare_size_hashes_one(const File &other, bool detector) const;
+    bool compare_size_hashes_one(const FileData &other, bool detector) const;
 };
 
 #endif /* file.h */

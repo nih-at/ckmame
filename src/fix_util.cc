@@ -68,7 +68,7 @@ make_garbage_name(const std::string &name, int unique) {
 
 
 static std::string
-make_needed_name(filetype_t filetype, const File *r) {
+make_needed_name(filetype_t filetype, const FileData *r) {
     /* <needed_dir>/<crc>-nnn.zip */
 
     auto hash = r->hashes.to_string(filetype == TYPE_ROM ? Hashes::TYPE_CRC : Hashes::TYPE_SHA1);
@@ -109,7 +109,7 @@ remove_from_superfluous(const std::string &name) {
 
 
 bool
-save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uint64_t start, std::optional<uint64_t> length, File *f) {
+save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uint64_t start, std::optional<uint64_t> length, FileData *f) {
     bool do_save = fix_options & FIX_DO;
 
     bool needed = true;

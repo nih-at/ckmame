@@ -59,7 +59,7 @@ public:
     static bool insert_archive(const ArchiveContents *archive);
     static bool update_file(const ArchiveContents *archive, size_t idx);
 
-    static std::optional<std::vector<FindResult>> find(filetype_t filetype, const File *file);
+    static std::optional<std::vector<FindResult>> find(filetype_t filetype, const FileData *file);
 
 private:
     static std::unique_ptr<MemDB> memdb;

@@ -45,6 +45,6 @@ void remove_empty_archive(const std::string &name, bool quiet = false);
 void remove_from_superfluous(const std::string &name);
 bool save_needed(Archive *sa, size_t sidx, const std::string &gamename);
 bool save_needed_disk(const std::string &fname, bool do_save);
-bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uint64_t start, std::optional<uint64_t> length, File *f);
+bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uint64_t start, std::optional<uint64_t> length, FileData *f);
     
 #endif /* _HAD_FIX_UTIL_H */

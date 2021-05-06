@@ -43,7 +43,7 @@
 #include <zip.h>
 
 #include "DB.h"
-#include "File.h"
+#include "FileData.h"
 #include "types.h"
 #include "zip_util.h"
 
@@ -93,7 +93,7 @@ public:
 
     uint64_t id;
     std::string name;
-    std::vector<File> files;
+    std::vector<FileData> files;
     filetype_t filetype;
     where_t where;
     std::vector<Changes> changes;
@@ -108,7 +108,7 @@ public:
     std::weak_ptr<Archive> open_archive;
     std::string filename_extension;
   
-    bool read_infos_from_cachedb(std::vector<File> *files);
+    bool read_infos_from_cachedb(std::vector<FileData> *files);
     int is_cache_up_to_date();
 
     static void enter_in_maps(ArchiveContentsPtr contents);
@@ -165,12 +165,12 @@ public:
     virtual bool file_ensure_hashes(uint64_t idx, int hashtypes);
     bool file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy);
-    bool file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const File *f);
+    bool file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const FileData *f);
     bool file_delete(uint64_t index);
     std::optional<size_t> file_find_offset(size_t idx, size_t size, const Hashes *h);
     std::optional<size_t> file_index_by_hashes(const Hashes *h) const;
     std::optional<size_t> file_index_by_name(const std::string &name) const;
-    std::optional<size_t> file_index(const File *file) const;
+    std::optional<size_t> file_index(const FileData *file) const;
     void file_match_detector(uint64_t idx);
     bool file_move(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_rename(uint64_t index, const std::string &filename);
@@ -196,7 +196,7 @@ public:
     virtual std::string get_original_filename(uint64_t index) { return ""; }
 
     ArchiveContentsPtr contents;
-    std::vector<File> &files;
+    std::vector<FileData> &files;
     std::string &name;
     const filetype_t filetype;
     const where_t where;
@@ -213,9 +213,9 @@ protected:
     Archive(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flags);
     void update_cache();
 
-    void add_file(const std::string &filename, const File *file);
+    void add_file(const std::string &filename, const FileData *file);
     GetHashesStatus get_hashes(ZipSource *source, uint64_t length, bool eof, Hashes *hashes);
-    void merge_files(const std::vector<File> &files_cache);
+    void merge_files(const std::vector<FileData> &files_cache);
     
 };
 

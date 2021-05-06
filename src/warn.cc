@@ -44,7 +44,7 @@ static void warn_ensure_header(void);
 
 
 void
-warn_archive_file(filetype_t ft, const File *r, const std::string &reason) {
+warn_archive_file(filetype_t ft, const FileData *r, const std::string &reason) {
     warn_ensure_header();
 
     switch (ft) {
@@ -63,7 +63,7 @@ warn_archive_file(filetype_t ft, const File *r, const std::string &reason) {
 
 
 void
-warn_game_file(filetype_t ft, const File *r, const std::string &reason) {
+warn_game_file(filetype_t ft, const FileData *r, const std::string &reason) {
     warn_ensure_header();
 
     if (r) {

@@ -314,7 +314,7 @@ bool ArchiveLibarchive::read_infos_xxx() {
     int ret;
     while ((ret = archive_read_next_header(la, &entry)) == ARCHIVE_OK) {
 
-        File r;
+        FileData r;
         r.mtime = archive_entry_mtime(entry);
         r.hashes.size = static_cast<uint64_t>(archive_entry_size(entry));
         r.name = archive_entry_pathname_utf8(entry);

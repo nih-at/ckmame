@@ -31,26 +31,26 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "File.h"
+#include "FileData.h"
 
-bool File::compare_merged(const File &other) const {
+bool FileData::compare_merged(const FileData &other) const {
     return merged_name() == other.merged_name();
 }
 
 
-bool File::compare_name(const File &other) const {
+bool FileData::compare_name(const FileData &other) const {
     return name == other.name;
 }
 
-bool File::compare_name_size_hashes(const File &other) const {
+bool FileData::compare_name_size_hashes(const FileData &other) const {
     return compare_name(other) && compare_size_hashes(other);
 }
 
-bool File::compare_size_hashes(const File &other) const {
+bool FileData::compare_size_hashes(const FileData &other) const {
     return compare_size_hashes_one(other, false) || compare_size_hashes_one(other, true);
 }
 
-bool File::compare_size_hashes_one(const File &other, bool detector) const {
+bool FileData::compare_size_hashes_one(const FileData &other, bool detector) const {
     if (detector && !other.size_hashes_are_set(detector)) {
         return false;
     }
@@ -67,11 +67,11 @@ bool File::compare_size_hashes_one(const File &other, bool detector) const {
 }
 
 
-bool File::size_hashes_are_set(bool detector) const {
+bool FileData::size_hashes_are_set(bool detector) const {
     return is_size_known(detector) && !get_hashes(detector).empty();
 }
 
-bool File::is_mergable(const File &other) const {
+bool FileData::is_mergable(const FileData &other) const {
     /* name must be the (merged) name */
     if (merged_name() != other.name) {
         return false;
@@ -89,7 +89,7 @@ bool File::is_mergable(const File &other) const {
 }
 
 
-Hashes::Compare File::compare_hashes(const File &other) const {
+Hashes::Compare FileData::compare_hashes(const FileData &other) const {
     auto result = hashes.compare(other.hashes);
     
     if (result == Hashes::MATCH) {

@@ -138,7 +138,7 @@ bool Archive::file_add_empty(const std::string &filename) {
 	return false;
     }
 
-    File file;
+    FileData file;
     file.hashes.size = 0;
     file.hashes.types = Hashes::TYPE_ALL;
     Hashes::Update hu(&file.hashes);
@@ -165,7 +165,7 @@ bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, 
 }
 
 
-bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const File *f) {
+bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const FileData *f) {
     if (!is_writable()) {
         seterrinfo(name);
 	myerror(ERRZIP, "cannot add to read-only archive");
@@ -344,8 +344,8 @@ bool Archive::rollback() {
 }
 
 
-void Archive::add_file(const std::string &filename, const File *file) {
-    File *nf;
+void Archive::add_file(const std::string &filename, const FileData *file) {
+    FileData *nf;
 
     files.push_back(*file);
     contents->changes.push_back(ArchiveContents::Changes());

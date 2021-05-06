@@ -55,14 +55,14 @@ int main(int argc, char *argv[]) {
 
 const char *prg;
 
-class File {
+class FileData {
 public:
     uint64_t size;
     uint32_t crc;
 };
 
-std::map<std::string, File> list_archive(const std::string &name) {
-    std::map<std::string, File> files;
+std::map<std::string, FileData> list_archive(const std::string &name) {
+    std::map<std::string, FileData> files;
     
     auto archive = archive_read_new();
     if (archive == NULL) {
@@ -83,7 +83,7 @@ std::map<std::string, File> list_archive(const std::string &name) {
     struct archive_entry *entry;
 
     while ((ret = archive_read_next_header(archive, &entry)) == ARCHIVE_OK) {
-        File file;
+        FileData file;
         
         std::string name = archive_entry_pathname_utf8(entry);
         file.size = static_cast<uint64_t>(archive_entry_size(entry));
@@ -103,7 +103,7 @@ std::map<std::string, File> list_archive(const std::string &name) {
     return files;
 }
 
-bool compare(const std::map<std::string, File> &a, const std::map<std::string, File> &b, const std::string &a_name, const std::string &b_name, bool verbose) {
+bool compare(const std::map<std::string, FileData> &a, const std::map<std::string, FileData> &b, const std::string &a_name, const std::string &b_name, bool verbose) {
     auto changed = false;
     
     auto it_a = a.begin();
