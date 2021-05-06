@@ -37,6 +37,7 @@
 #include "check_util.h"
 #include "find.h"
 #include "diagnostics.h"
+#include "RomDB.h"
 #include "Stats.h"
 #include "warn.h"
 
@@ -173,6 +174,10 @@ match_files(ArchivePtr archive, test_t test, const File *rom, Match *match) {
             case TEST_NAME_SIZE_CHECKSUM:
             case TEST_MERGENAME_SIZE_CHECKSUM:
                 if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file)) && rom->compare_size_hashes(file)) {
+                    // If we have a detector, don't compute and check all hashes. Revisit this when fixing detector support.
+                    if (!file.size_hashes_are_set(true) && archive->file_compare_hashes(i, &rom->hashes) != 0) {
+                        break;
+                    }
                     match->quality = QU_OK;
                     result = TEST_USABLE;
                     match->archive = archive;

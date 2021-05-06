@@ -1,6 +1,6 @@
 description check, zip contains file needed elsewhere, fix, different needed already exists
 return 0
-args -FKLivc 1-4
+args -FKLvc 1-4
 file-del roms/1-4.zip deadbeef.zip
 file needed/deadbeef-000.zip deadpork.zip deadpork.zip
 file-new needed/deadbeef-001.zip deadbeef.zip

@@ -1,7 +1,7 @@
 description test single-rom game (no parent), correct partial ckmame db exists, other game removed
 variants dir
 return 0
-args -jFKLivc 1-8
+args -jFKLvc 1-8
 ckmamedb-before roms ckmamedb-1-4-ok.dump
 ckmamedb-after roms ckmamedb-1-4-ok-1-8-ok.dump
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip

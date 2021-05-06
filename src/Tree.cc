@@ -111,22 +111,22 @@ bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashe
 }
 
 
-void Tree::traverse(bool check_integrity) {
+void Tree::traverse(void) {
     GameArchives archives[] = { GameArchives(), GameArchives(), GameArchives() };
 
     for (auto it : children) {
-        it.second->traverse_internal(archives, check_integrity);
+        it.second->traverse_internal(archives);
     }
 }
 
-void Tree::traverse_internal(GameArchives *ancestor_archives, bool check_integrity) {
+void Tree::traverse_internal(GameArchives *ancestor_archives) {
     GameArchives archives[] = { GameArchives(), ancestor_archives[0], ancestor_archives[1] };
     
     if (siginfo_caught) {
         print_info(name);
     }
 
-    auto flags = ((check ? ARCHIVE_FL_CREATE : 0) | (check_integrity ? (ARCHIVE_FL_CHECK_INTEGRITY | db->hashtypes(TYPE_ROM)) : 0));
+    auto flags = check ? ARCHIVE_FL_CREATE : 0;
     
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
@@ -146,7 +146,7 @@ void Tree::traverse_internal(GameArchives *ancestor_archives, bool check_integri
     }
 
     for (auto it : children) {
-        it.second->traverse_internal(archives, check_integrity);
+        it.second->traverse_internal(archives);
     }
 }
 

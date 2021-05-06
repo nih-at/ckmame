@@ -2,7 +2,7 @@ description test single-rom game (no parent), incorrect ckmame db exists, but ar
 variants zip
 return 0
 touch 1419260288 roms/1-4.zip
-args -D ../mamedb-small.db -jFKLivc
+args -D ../mamedb-small.db -jFKLvc
 ckmamedb-before roms ckmamedb-1-4-ok-with-mtime.dump
 ckmamedb-after roms ckmamedb-1-4-ok-with-mtime.dump
 file roms/1-4.zip 1-4-crcerror.zip 1-4-crcerror.zip

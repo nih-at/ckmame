@@ -1,7 +1,7 @@
 description test game (no parent), zip is partially broken, replace
 variants zip
 return 0
-args -FKLivc 2-48
+args -FKLvc 2-48
 file roms/2-48.zip 2-48-broken.zip 2-48-ok.zip
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
 stdout In game 2-48:

@@ -1,10 +1,11 @@
 description check all (game with disk), disk wrong name
 variants zip
 return 0
-args -FKLivc -D ../mamedb-disk.db
+args -FKLvc -D ../mamedb-disk.db
 file roms/disk.zip 1-8-ok.zip 1-8-ok.zip
 file-del roms/disk/108-5a.chd 108-5.chd
 file-new roms/disk/108-5.chd 108-5.chd
+no-hashes roms disk.zip 04.rom
 no-hashes roms disk.zip
 stdout In game disk:
 stdout rom  08.rom        size       8  crc 3656897d: correct

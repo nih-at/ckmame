@@ -3,7 +3,7 @@ variants zip
 return 0
 setenv FWRITE_MAX_WRITE 5
 preload fwrite.so
-args -Fjivc -D ../mamedb-lost-parent-ok.db -e extra
+args -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
 ckmamedb-after extra ckmamedb-wrongname-nohash.dump
 file extra/wrongname.zip 2-48-ok.zip 2-48-ok.zip
 touch 1422359238 extra/wrongname.zip

@@ -81,7 +81,6 @@ const char help[] = "\n"
 	      "  -f, --nofixable         don't report fixable errors\n"
 	      "  -h, --help              display this help message\n"
 	      "  -I, --ignore-unknown    do not touch unknown files when fixing\n"
-	      "  -i, --integrity         check integrity of rom files and disk images\n"
 	      "      --keep-found        keep files copied from search directory (default)\n"
 	      "  -j, --delete-found      delete files copied from search directories\n"
 	      "      --keep-duplicate    keep files present in old rom db\n"
@@ -106,7 +105,7 @@ const char help[] = "\n"
 const char version_string[] = PACKAGE " " VERSION "\n"
 				"Copyright (C) 1999-2018 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "bCcD:de:FfhijKkLlO:R:SsT:uVvwX"
+#define OPTIONS "bCcD:de:FfhjKkLlO:R:SsT:uVvwX"
 
 enum { OPT_CLEANUP_EXTRA = 256, OPT_DELETE_DUPLICATE, OPT_AUTOFIXDAT, OPT_FIXDAT, OPT_IGNORE_UNKNOWN, OPT_KEEP_DUPLICATE, OPT_KEEP_FOUND, OPT_SUPERFLUOUS, OPT_STATS };
 
@@ -128,7 +127,6 @@ struct option options[] = {
     {"games-from", 1, 0, 'T'},
     {"ignore-extra", 0, 0, 'X'},
     {"ignore-unknown", 0, 0, OPT_IGNORE_UNKNOWN},
-    {"integrity", 0, 0, 'i'},
     {"keep-duplicate", 0, 0, OPT_KEEP_DUPLICATE}, /* -DELETE_DUPLICATE */
     {"keep-found", 0, 0, OPT_KEEP_FOUND},
     {"move-long", 0, 0, 'L'},
@@ -177,7 +175,6 @@ main(int argc, char **argv) {
 	olddbname = DBH_DEFAULT_OLD_DB_NAME;
     fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
     ignore_extra = 0;
-    bool check_integrity = false;
     roms_unzipped = false;
     game_list = NULL;
     fixdat = NULL;
@@ -227,9 +224,6 @@ main(int argc, char **argv) {
 	    break;
 	case 'f':
 	    diagnostics_options &= ~WARN_FIXABLE;
-	    break;
-	case 'i':
-	    check_integrity = true;
 	    break;
 	case 'j':
 	    fix_options |= FIX_DELETE_EXTRA;
@@ -485,8 +479,8 @@ main(int argc, char **argv) {
 #endif
 
     if (action == ACTION_CHECK_ROMSET) {
-	check_tree.traverse(check_integrity);
-	check_tree.traverse(check_integrity); /* handle rechecks */
+	check_tree.traverse();
+	check_tree.traverse(); /* handle rechecks */
 
 	if (fix_options & FIX_DO) {
 	    if (fix_options & FIX_SUPERFLUOUS) {

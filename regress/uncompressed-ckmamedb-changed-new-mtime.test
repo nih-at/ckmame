@@ -1,7 +1,7 @@
 description test single-rom game (no parent), incorrect ckmame db exists, file has newer mtime
 variants dir
 return 0
-args -D ../mamedb-small.db -jFKLivc
+args -D ../mamedb-small.db -jFKLvc
 ckmamedb-before roms ckmamedb-1-4-ok.dump
 file-del roms/1-4.zip 1-4-wrong.zip
 file-new unknown/1-4.zip 1-4-wrong.zip

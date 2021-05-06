@@ -597,9 +597,7 @@
 		4B6B14ED24FFA98100D3F3FB /* incomplete-merge.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "incomplete-merge.test"; sourceTree = "<group>"; };
 		4B6B14EE24FFA98100D3F3FB /* garbage2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = garbage2.test; sourceTree = "<group>"; };
 		4B6B14EF24FFA98100D3F3FB /* inchild.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = inchild.test; sourceTree = "<group>"; };
-		4B6B14F024FFA98100D3F3FB /* inconsistent-with-i.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "inconsistent-with-i.test"; sourceTree = "<group>"; };
 		4B6B14F124FFA98100D3F3FB /* incomplete-basic-b.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "incomplete-basic-b.test"; sourceTree = "<group>"; };
-		4B6B14F224FFA98100D3F3FB /* hasherr-no-i.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "hasherr-no-i.test"; sourceTree = "<group>"; };
 		4B6B14F324FFA98100D3F3FB /* garbage-archive-exists.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "garbage-archive-exists.test"; sourceTree = "<group>"; };
 		4B6B14F424FFA98100D3F3FB /* hasherr-extra.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "hasherr-extra.test"; sourceTree = "<group>"; };
 		4B6B14F524FFA98100D3F3FB /* garbage.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = garbage.test; sourceTree = "<group>"; };
@@ -1077,8 +1075,8 @@
 				4B6B147624FF946A00D3F3FB /* detector-interaction-with-headerless.test */,
 				4B6B146724FF946A00D3F3FB /* detector-prefer-file-with-header.test */,
 				4BB158A825DECA50008892CD /* disk-fixdat.test */,
-				4B6B145D24FF946900D3F3FB /* disk-from-extra-remove.test */,
 				4B6B146524FF946A00D3F3FB /* disk-from-extra-using-copy-remove.test */,
+				4B6B145D24FF946900D3F3FB /* disk-from-extra-remove.test */,
 				4B6B146D24FF946A00D3F3FB /* disk-from-extra.test */,
 				4B6B146924FF946A00D3F3FB /* disk-from-superfluous-all.test */,
 				4B6B146F24FF946A00D3F3FB /* disk-from-superfluous.test */,
@@ -1119,7 +1117,6 @@
 				4B6B14EE24FFA98100D3F3FB /* garbage2.test */,
 				4B6B14EC24FFA98100D3F3FB /* hasherr-c.test */,
 				4B6B14F424FFA98100D3F3FB /* hasherr-extra.test */,
-				4B6B14F224FFA98100D3F3FB /* hasherr-no-i.test */,
 				4B6B14E724FFA98100D3F3FB /* hasherr-p.test */,
 				4B6B14E324FFA98000D3F3FB /* hasherr-pc.test */,
 				4B6B14E424FFA98000D3F3FB /* hasherr.test */,
@@ -1138,7 +1135,6 @@
 				4B6B14EB24FFA98100D3F3FB /* incomplete-from-extra.test */,
 				4B6B14E524FFA98000D3F3FB /* incomplete-merge-b.test */,
 				4B6B14ED24FFA98100D3F3FB /* incomplete-merge.test */,
-				4B6B14F024FFA98100D3F3FB /* inconsistent-with-i.test */,
 				4B6B14FA24FFA98200D3F3FB /* inconsistent-without-i.test */,
 				4B6B14F924FFA98200D3F3FB /* inparent.test */,
 				4BB158AA25DECA51008892CD /* manygood.test */,

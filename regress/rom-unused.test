@@ -3,7 +3,7 @@ return 0
 args -FKLvc clone-8
 file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip
 file roms/clone-8.zip 2-48-ok.zip 1-8-ok.zip
-no-hashes roms clone-8.zip
+no-hashes roms clone-8.zip 08.rom
 stdout In game clone-8:
 stdout game clone-8                                 : correct
 stdout file 04.rom        size       4  crc d87f7e0c: not used

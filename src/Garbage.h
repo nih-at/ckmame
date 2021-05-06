@@ -49,6 +49,7 @@ public:
     bool add(uint64_t index, bool copy);
     bool close();
     bool commit();
+    void rollback() { da->rollback(); }
     
 private:
     bool open();

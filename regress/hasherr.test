@@ -1,6 +1,6 @@
 description integrity test single-rom game (no parent), zip is wrong
 return 0
-args -FKLivc deadbeef
+args -FKLvc deadbeef
 file-del roms/deadbeef.zip deadpork.zip
 file-new unknown/deadbeef.zip deadpork.zip
 stdout In game deadbeef:

@@ -50,9 +50,7 @@ bool ArchiveZip::ensure_zip() {
         return true;
     }
 
-    int zip_flags = (contents->flags & ARCHIVE_FL_CHECK_INTEGRITY) ? ZIP_CHECKCONS : 0;
-    if (contents->flags & ARCHIVE_FL_CREATE)
-	zip_flags |= ZIP_CREATE;
+    int zip_flags = (contents->flags & ARCHIVE_FL_CREATE) ? ZIP_CREATE : 0;
 
     int err;
     if ((za = zip_open(name.c_str(), zip_flags, &err)) == NULL) {
@@ -236,10 +234,6 @@ bool ArchiveZip::read_infos_xxx() {
 
         if (detector) {
 	    file_match_detector(i);
-        }
-
-        if (contents->flags & ARCHIVE_FL_CHECK_INTEGRITY) {
-	    file_ensure_hashes(i, contents->flags & ARCHIVE_FL_HASHTYPES_MASK);
         }
     }
     

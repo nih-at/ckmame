@@ -3,7 +3,6 @@ return 0
 args -FKLvc 1-4
 file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
 file-new unknown/1-4.zip garbage.zip
-no-hashes roms 1-4.zip 04.rom
 no-hashes unknown 1-4.zip garbage
 stdout In game 1-4:
 stdout game 1-4                                     : correct

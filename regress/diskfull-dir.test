@@ -1,7 +1,7 @@
 description test copying file from extra, failing (directory permissions) and (not) cleaning up extra
 variants dir
 return 0
-args -Fjivc -D ../mamedb-lost-parent-ok.db -e extra
+args -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
 file extra/wrongname.zip 2-48-ok.zip 2-48-ok.zip
 mkdir 0777 roms
 mkdir 0 roms/clone-8

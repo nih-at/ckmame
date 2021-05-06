@@ -55,7 +55,6 @@ typedef std::shared_ptr<Archive> ArchivePtr;
 typedef std::shared_ptr<ArchiveContents> ArchiveContentsPtr;
 
 #define ARCHIVE_FL_CREATE 0x00100
-#define ARCHIVE_FL_CHECK_INTEGRITY 0x00200
 #define ARCHIVE_FL_QUIET 0x00400
 #define ARCHIVE_FL_NOCACHE 0x00800
 #define ARCHIVE_FL_RDONLY 0x01000

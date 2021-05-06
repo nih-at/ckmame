@@ -128,7 +128,6 @@ set(EXTRA_TESTS
   garbage2.test
   hasherr-c.test
   hasherr-extra.test
-  hasherr-no-i.test
   hasherr-p.test
   hasherr-pc.test
   hasherr.test
@@ -147,7 +146,6 @@ set(EXTRA_TESTS
   incomplete-from-extra.test
   incomplete-merge-b.test
   incomplete-merge.test
-  inconsistent-with-i.test
   inconsistent-without-i.test
   inparent.test
   misnamed-nofix.test
@@ -199,7 +197,6 @@ set(EXTRA_TESTS
   rom-add-from-crc-different.test
   rom-add-from-crc-only.test
   rom-broken-replace.test
-  rom-broken-without-i.test
   rom-broken.test
   rom-dir-in-extra-dirs-subdir-dir.test
   rom-dir-in-extra-dirs-subdir-zip.test

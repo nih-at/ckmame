@@ -1,7 +1,7 @@
 description test 32-rom game (no parent), zip has wrong name
 return 0
 # ulimit n 16
-args -FKLivc many
+args -FKLvc many
 file-del roms/wrongname.zip many.zip
 file-new roms/many.zip many.zip
 no-hashes roms many.zip

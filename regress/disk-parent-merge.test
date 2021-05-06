@@ -1,9 +1,10 @@
 description two games that use the same disk but under different names
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -KLivc disk diskchild
+args -D ../mamedb-disk-many.db -KLvc disk diskchild
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-5.chd 108-5.chd
+no-hashes roms disk.zip 04.rom
 stdout In game disk:
 stdout game disk                                    : correct
 stdout In game diskchild:

@@ -1,8 +1,9 @@
 description test game with 0 byte rom, too big file exists
 return 0
-args -FKLivc zero
+args -FKLvc zero
 file roms/zero.zip zero-long.zip zero-ok.zip
 file-new unknown/zero.zip zero-long.zip
+no-hashes unknown zero.zip
 stdout In game zero:
 stdout game zero                                    : not a single file found
 stdout file zero          size       4  crc 9be3e0a3: unknown

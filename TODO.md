@@ -2,8 +2,6 @@
 
 - rar read support
 
-- 7z read support
-
 - add option to keep ROMs with detector applied
 
 - bug: when creating a fixdat and re-checks happen, games end up in the fixdat multiple times
@@ -17,7 +15,7 @@
     - rc
     - xml
 
-- re-add support for zipped dat + unzipped detector ("fallback from zip to file not implemented")
+- when committing to garbage failes because source archive is broken, move source archive out of the way.
 
 # Later
 

@@ -1,8 +1,0 @@
-description check single-rom game (no parent), zip is wrong, no integrity check
-variants zip
-return 0
-args -FKLvc deadbeef
-file roms/deadbeef.zip deadfish.zip deadfish.zip
-no-hashes roms deadbeef.zip
-stdout In game deadbeef:
-stdout game deadbeef                                : correct

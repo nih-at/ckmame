@@ -1,6 +1,6 @@
 description test single-rom game (no parent), zip is correct, using rom-dir
 return 0
-args -FKLivc -R moreroms 1-4
+args -FKLvc -R moreroms 1-4
 file moreroms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct

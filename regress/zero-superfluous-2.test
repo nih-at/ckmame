@@ -1,6 +1,6 @@
 description test archive with 0 byte rom, unknown
 return 0
-args -D ../mamedb-one-game-two-roms.db -FKLivc
+args -D ../mamedb-one-game-two-roms.db -FKLvc
 file-del roms/1-4.zip zero-ok.zip
 stdout In game 2-4c:
 stdout game 2-4c                                    : not a single file found

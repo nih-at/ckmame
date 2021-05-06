@@ -3,7 +3,6 @@ return 0
 args -FKLvc 1-4
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file needed/3656897d-000.zip 1-8-ok.zip 1-8-ok.zip
-no-hashes roms 1-4.zip
 ckmamedb-after needed ckmamedb-empty.dump
 stdout In game 1-4:
 stdout game 1-4                                     : correct

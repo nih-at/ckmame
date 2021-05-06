@@ -1,6 +1,6 @@
 description test 2 rom game, zip is correct, one rom is in old
 return 0
-args -O ../mamedb-lost-parent-ok.db -FKLivc 2-4a
+args -O ../mamedb-lost-parent-ok.db -FKLvc 2-4a
 file roms/2-4a.zip 2-4a-ok.zip 1-a-ok.zip
 stdout In game 2-4a:
 stdout rom  04.rom        size       4  crc d87f7e0c: old in 'clone-8'

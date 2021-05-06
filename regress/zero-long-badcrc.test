@@ -1,8 +1,9 @@
 description test game with 0 byte rom and weird CRC, too big file exists
 return 0
-args -FKLivc zerobadcrc
+args -FKLvc zerobadcrc
 file roms/zerobadcrc.zip zero-long.zip zero-ok.zip
 file-new unknown/zerobadcrc.zip zero-long.zip
+no-hashes unknown zerobadcrc.zip
 stdout In game zerobadcrc:
 stdout game zerobadcrc                              : not a single file found
 stdout file zero          size       4  crc 9be3e0a3: unknown

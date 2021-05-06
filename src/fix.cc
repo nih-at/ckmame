@@ -125,8 +125,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
         
         if (fix_options & FIX_DO) {
             if (!garbage->commit()) {
-                /* TODO: error message? (or is message from archive_close enough?) */
-                /* TODO: handle error (how?) */
+                garbage->rollback();
                 archive->rollback();
                 myerror(ERRZIP, "committing garbage failed");
                 return -1;

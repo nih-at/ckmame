@@ -12,8 +12,7 @@ no-hashes roms 1-8
 no-hashes roms 2-48 04.rom md5
 no-hashes roms 2-48 08.rom md5
 no-hashes unknown 1-8.zip
-no-hashes unknown 2-48.zip 04.rom
-no-hashes unknown 2-48.zip 08.rom
+no-hashes unknown 2-48.zip
 stdout In game 1-8:
 stdout rom  08.rom        size       8  crc 3656897d: too long, valid subsection at byte 0 (16)
 stdout roms/1-8.zip: move long file '08.rom'

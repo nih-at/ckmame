@@ -1,7 +1,7 @@
 description test double-rom game (no parent), check order of entries
 variants zip
 return 0
-args -D ../mamedb-one-game-two-roms.db -jFKLivc 2-4c
+args -D ../mamedb-one-game-two-roms.db -jFKLvc 2-4c
 ckmamedb-after roms ckmamedb-2-4c-reverse.dump
 file roms/2-4c.zip 2-4c-reverse.zip 2-4c-reverse.zip
 touch 1419271683 roms/2-4c.zip
