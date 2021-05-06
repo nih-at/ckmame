@@ -167,13 +167,7 @@ std::string DB::error() {
     if (db == NULL) {
 	return strerror(ENOMEM);
     }
-
-    if (!version_ok) {
-        return "Database format version mismatch";
-    }
-    else {
-        return sqlite3_errmsg(db);
-    }
+    return sqlite3_errmsg(db);
 }
 
 
@@ -187,7 +181,6 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
     for (size_t i = 0; i < DBH_STMT_MAX; i++) {
         statements[i] = NULL;
     }
-
 
     auto needs_init = false;
     

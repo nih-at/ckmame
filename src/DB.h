@@ -101,8 +101,6 @@ private:
         int version;
     };
     
-    bool version_ok;
-
     int get_version();
     void check_version();
     void open(const std::string &name, int sql3_flags, bool needs_init);
