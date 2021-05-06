@@ -180,7 +180,7 @@ std::string DB::error() {
 DB::DB(const std::string &name, int mode) : db(NULL) {
     format = DBH_FMT(mode);
 
-    if (format < 0 || static_cast<size_t>(format) > sizeof(format_version) / sizeof(format_version[0])) {
+    if (format < 0 || static_cast<size_t>(format) >= sizeof(format_version) / sizeof(format_version[0])) {
         throw Exception("invalid DB format %d", format);
     }
 
