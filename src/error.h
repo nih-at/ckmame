@@ -49,7 +49,7 @@
 #define ERRFILESTR (ERRFILE | ERRSTR)
 #define ERRZIPFILESTR (ERRZIPFILE | ERRSTR)
 
-void myerror(int, const char *, ...);
+void myerror(int, const char *, ...) __attribute__((__format__(__printf__, 2, 3)));
 void seterrdb(DB *);
 void seterrinfo(const std::string &fn, const std::string &zipn = "");
 
