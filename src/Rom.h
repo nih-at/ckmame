@@ -38,7 +38,14 @@
 #include "FileData.h"
 
 class Rom : public FileData {
-    
+public:
+    std::string merge;
+
+    const std::string &merged_name() const { return merge.empty() ? name : merge; }
+    bool compare_merged(const FileData &other) const;
+    bool compare_merged(const Rom &other) const;
+    bool is_mergable(const Rom &other) const;
+
 };
 
 #endif // HAD_ROM_H

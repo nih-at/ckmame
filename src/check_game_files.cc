@@ -49,7 +49,7 @@ enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 
 typedef enum test_result test_result_t;
 
-static test_result_t match_files(ArchivePtr, test_t, const FileData *, Match *);
+static test_result_t match_files(ArchivePtr, test_t, const Rom *, Match *);
 
 
 void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, Result *res) {
@@ -156,7 +156,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
 
 
 static test_result_t
-match_files(ArchivePtr archive, test_t test, const FileData *rom, Match *match) {
+match_files(ArchivePtr archive, test_t test, const Rom *rom, Match *match) {
     test_result_t result;
 
     match->offset = 0;

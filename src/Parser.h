@@ -111,7 +111,7 @@ protected:
     parser_state_t state;
     DatEntry de; /* info about dat file */
     GamePtr g;      /* current game */
-    FileData *r[TYPE_MAX];      /* current files */
+    Rom *r[TYPE_MAX];      /* current files */
 };
 
 #endif /* Parser.h */

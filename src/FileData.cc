@@ -33,10 +33,6 @@
 
 #include "FileData.h"
 
-bool FileData::compare_merged(const FileData &other) const {
-    return merged_name() == other.merged_name();
-}
-
 
 bool FileData::compare_name(const FileData &other) const {
     return name == other.name;
@@ -71,34 +67,4 @@ bool FileData::size_hashes_are_set(bool detector) const {
     return is_size_known(detector) && !get_hashes(detector).empty();
 }
 
-bool FileData::is_mergable(const FileData &other) const {
-    /* name must be the (merged) name */
-    if (merged_name() != other.name) {
-        return false;
-    }
 
-    /* Both can be bad dumps or the hashes must match. */
-    if (hashes.empty() != other.hashes.empty()) {
-        return false;
-    }
-    if (compare_size_hashes(other)) {
-        return true;
-    }
-
-    return false;
-}
-
-
-Hashes::Compare FileData::compare_hashes(const FileData &other) const {
-    auto result = hashes.compare(other.hashes);
-    
-    if (result == Hashes::MATCH) {
-        return result;
-    }
-    
-    if (!hashes.empty() && !other.hashes_detector.empty() && hashes.compare(other.hashes_detector) == Hashes::MATCH) {
-        return Hashes::MATCH;
-    }
-    
-    return result;
-}

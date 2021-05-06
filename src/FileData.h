@@ -43,7 +43,6 @@ class FileData {
 public:
     std::string name;
     std::string filename_extension;
-    std::string merge;
     Hashes hashes;
     uint64_t size_detector;
     Hashes hashes_detector;
@@ -57,15 +56,12 @@ public:
     const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
     
     std::string filename() const { return name + filename_extension; }
-    const std::string &merged_name() const { return merge.empty() ? name : merge; }
     bool is_size_known(bool detector = false) const { return get_size(detector) != SIZE_UNKNOWN_OLD; }
     
     bool compare_name(const FileData &other) const;
-    bool compare_merged(const FileData &other) const;
     bool compare_name_size_hashes(const FileData &other) const;
     bool compare_size_hashes(const FileData &other) const;
     Hashes::Compare compare_hashes(const FileData &other) const;
-    bool is_mergable(const FileData &other) const;
     bool size_hashes_are_set(bool detector) const;
     
     bool operator<(const FileData &other) const { return name < other.name; }
