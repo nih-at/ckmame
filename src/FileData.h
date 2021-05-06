@@ -42,7 +42,6 @@
 class FileData {
 public:
     std::string name;
-    std::string filename_extension;
     Hashes hashes;
     uint64_t size_detector;
     Hashes hashes_detector;
@@ -55,7 +54,6 @@ public:
     uint64_t get_size(bool detector) const { return detector ? size_detector : hashes.size; }
     const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
     
-    std::string filename() const { return name + filename_extension; }
     bool is_size_known(bool detector = false) const { return get_size(detector) != SIZE_UNKNOWN_OLD; }
     
     bool compare_name(const FileData &other) const;

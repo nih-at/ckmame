@@ -38,7 +38,10 @@
 #include "FileData.h"
 
 class File : public FileData {
-    
+public:
+    std::string filename_extension;
+
+    std::string filename() const { return name + filename_extension; }
 };
 
 #endif // HAD_FILE_H

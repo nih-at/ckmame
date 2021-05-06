@@ -44,6 +44,16 @@ bool Rom::compare_merged(const Rom &other) const {
 }
 
 
+std::string Rom::filename(filetype_t filetype) const {
+    if (filetype == TYPE_DISK) {
+        return name + ".chd";
+    }
+    else {
+        return name;
+    }
+}
+
+
 bool Rom::is_mergable(const Rom &other) const {
     /* name must be the (merged) name */
     if (merged_name() != other.name) {

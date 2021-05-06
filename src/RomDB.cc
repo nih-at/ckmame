@@ -302,9 +302,6 @@ bool RomDB::read_files(Game *game, filetype_t ft) {
         rom.where = static_cast<where_t>(sqlite3_column_int(stmt, 3));
         rom.hashes.size = sq3_get_uint64_default(stmt, 4, SIZE_UNKNOWN_OLD);
         sq3_get_hashes(&rom.hashes, stmt, 5);
-        if (ft == TYPE_DISK) {
-            rom.filename_extension = chd_extension;
-        }
         
         game->files[ft].push_back(rom);
     }
