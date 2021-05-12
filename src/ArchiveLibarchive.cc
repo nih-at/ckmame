@@ -132,11 +132,11 @@ bool ArchiveLibarchive::commit_xxx() {
         
         for (uint64_t index = 0; index < files.size(); index++) {
             auto &file = files[index];
-            auto &change = contents->changes[index];
+            auto &change = changes[index];
             
             seterrinfo(file.name, name);
 
-            if (file.where == FILE_DELETED) {
+            if (change.status == Change::DELETED) {
                 continue;
             }
             

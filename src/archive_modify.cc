@@ -53,10 +53,10 @@ bool Archive::commit() {
 	}
 
         for (size_t index = 0; index < files.size(); index++) {
-            auto &file = files[index];
+            auto &change = changes[index];
 
-            switch (file.where) {
-                case FILE_DELETED:
+            switch (change.status) {
+                case Change::DELETED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
                         MemDB::delete_file(contents.get(), index, is_writable());
@@ -64,16 +64,17 @@ bool Archive::commit() {
 
                     if (is_writable()) {
                         files.erase(files.begin() + static_cast<ssize_t>(index));
+                        changes.erase(changes.begin() + static_cast<ssize_t>(index));
                         index--;
                     }
 		break;
 
-                case FILE_ADDED:
+                case Change::ADDED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
                         MemDB::insert_file(NULL, contents.get(), index);
                     }
-                    file.where = FILE_INGAME;
+                    change.status = Change::EXISTS;
                     break;
 
                 default:
@@ -81,8 +82,8 @@ bool Archive::commit() {
 	    }
 	}
         
-        contents->changes.clear();
-        contents->changes.resize(files.size());
+        changes.clear();
+        changes.resize(files.size());
 
         commit_cleanup();
 
@@ -145,7 +146,7 @@ bool Archive::file_add_empty(const std::string &filename) {
     hu.end();
 
     add_file(filename, &hashes);
-    contents->changes[files.size() - 1].source = std::make_shared<ZipSource>(zip_source_buffer_create(NULL, 0, 0, NULL));
+    changes[files.size() - 1].source = std::make_shared<ZipSource>(zip_source_buffer_create(NULL, 0, 0, NULL));
 
     return true;
 }
@@ -191,8 +192,8 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 	myerror(ERRZIPFILE, "not copying broken file");
 	return false;
     }
-    if (source_archive->files[source_index].where != FILE_INGAME && source_archive->files[source_index].where != FILE_DELETED) {
-	myerror(ERRZIP, "cannot copy added/deleted file");
+    if (source_archive->changes[source_index].status == Change::ADDED) {
+	myerror(ERRZIP, "cannot copy added file");
 	return false;
     }
     if (length.has_value()) {
@@ -218,15 +219,15 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
     }
 
     if (have_direct_file_access() && source_archive->have_direct_file_access() && full_file) {
-        contents->changes[files.size() - 1].file = source_archive->get_original_filename(source_index);
+        changes[files.size() - 1].file = source_archive->get_original_filename(source_index);
     }
     else {
         try {
-            contents->changes[files.size() - 1].source = source_archive->get_source(source_index, start, length);
+            changes[files.size() - 1].source = source_archive->get_source(source_index, start, length);
         }
         catch (Exception &ex) {
             files.pop_back();
-            contents->changes.pop_back();
+            changes.pop_back();
             return false;
         }
     }
@@ -242,13 +243,13 @@ bool Archive::file_delete(uint64_t index) {
 	return false;
     }
 
-    if (files[index].where != FILE_INGAME) {
+    if (changes[index].status != Change::EXISTS) {
 	seterrinfo(name);
 	myerror(ERRZIP, "cannot delete broken/added/deleted file");
 	return false;
     }
 
-    files[index].where = FILE_DELETED;
+    changes[index].status = Change::DELETED;
     modified = true;
 
     return true;
@@ -270,7 +271,7 @@ bool Archive::file_rename(uint64_t index, const std::string &filename) {
 	myerror(ERRZIP, "cannot rename in read-only archive");
 	return false;
     }
-    if (files[index].where != FILE_INGAME) {
+    if (changes[index].status != Change::EXISTS) {
 	myerror(ERRZIP, "cannot copy broken/added/deleted file");
 	return false;
     }
@@ -281,8 +282,8 @@ bool Archive::file_rename(uint64_t index, const std::string &filename) {
 	return false;
     }
 
-    if (contents->changes[index].original_name.empty()) {
-        contents->changes[index].original_name = files[index].name;
+    if (changes[index].original_name.empty()) {
+        changes[index].original_name = files[index].name;
     }
     files[index].name = filename;
     modified = true;
@@ -316,7 +317,7 @@ bool Archive::rollback() {
     
     for (size_t i = 0; i < files.size(); i++) {
         auto &file = files[i];
-        auto &change = contents->changes[i];
+        auto &change = changes[i];
         
         if (!change.original_name.empty()) {
             file.name = change.original_name;
@@ -324,14 +325,14 @@ bool Archive::rollback() {
         change.file = "";
         change.source = nullptr;
         
-        switch (file.where) {
-            case FILE_DELETED:
-                file.where = FILE_INGAME;
+        switch (change.status) {
+            case Change::DELETED:
+                change.status = Change::EXISTS;
                 break;
                 
-            case FILE_ADDED:
+            case Change::ADDED:
                 files.erase(files.begin() + static_cast<ssize_t>(i));
-                contents->changes.erase(contents->changes.begin() + static_cast<ssize_t>(i));
+                changes.erase(changes.begin() + static_cast<ssize_t>(i));
                 i--;
                 break;
 
@@ -346,14 +347,15 @@ bool Archive::rollback() {
 
 void Archive::add_file(const std::string &filename, const Hashes *hashes) {
     File file;
+    Change change;
 
     file.hashes = *hashes;
     file.name = filename;
-    file.where = FILE_ADDED;
     file.filename_extension = contents->filename_extension;
+    change.status = Change::ADDED;
 
-    contents->files.push_back(file);
-    contents->changes.push_back(ArchiveContents::Changes());
-
+    files.push_back(file);
+    changes.push_back(change);
+    
     modified = true;
 }

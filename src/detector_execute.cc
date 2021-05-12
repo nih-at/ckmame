@@ -42,7 +42,7 @@ static const uint8_t bitswap[] = {
 };
 
 
-Detector::Result Detector::execute(FileData *file, detector_read_cb cb_read, void *ud) const {
+Detector::Result Detector::execute(File *file, detector_read_cb cb_read, void *ud) const {
     auto ctx = Context(cb_read, ud);
 
     for (auto &rule : rules) {
@@ -88,7 +88,7 @@ bool Detector::Test::bit_cmp(const uint8_t *b) const {
 }
 
 
-bool Detector::Context::compute_values(FileData *file, Operation operation, uint64_t start, uint64_t end) {
+bool Detector::Context::compute_values(File *file, Operation operation, uint64_t start, uint64_t end) {
     auto size = end - start;
     Hashes hashes;
     
@@ -168,7 +168,7 @@ void Detector::Context::update(Hashes::Update *hu, Operation operation, uint64_t
 }
 
 
-Detector::Result Detector::Rule::execute(FileData *file, Context *ctx) const {
+Detector::Result Detector::Rule::execute(File *file, Context *ctx) const {
     auto start = start_offset;
     if (start < 0) {
         start += file->hashes.size;
@@ -200,7 +200,7 @@ Detector::Result Detector::Rule::execute(FileData *file, Context *ctx) const {
 }
 
 
-Detector::Result Detector::Test::execute(FileData *file, Context *ctx) const {
+Detector::Result Detector::Test::execute(File *file, Context *ctx) const {
     auto match = false;
     
     switch (type) {

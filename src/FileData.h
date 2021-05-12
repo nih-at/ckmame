@@ -43,24 +43,17 @@ class FileData {
 public:
     std::string name;
     Hashes hashes;
-    uint64_t size_detector;
-    Hashes hashes_detector;
-    time_t mtime;
+    time_t mtime;   // needed by mkmamedb --runtest
     status_t status;
-    where_t where;
     
-    FileData() : size_detector(SIZE_UNKNOWN_OLD), mtime(0), status(STATUS_OK), where(FILE_INGAME) { }
+    FileData() : mtime(0), status(STATUS_OK) { }
 
-    uint64_t get_size(bool detector) const { return detector ? size_detector : hashes.size; }
-    const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
-    
-    bool is_size_known(bool detector = false) const { return get_size(detector) != SIZE_UNKNOWN_OLD; }
-    
+    bool is_size_known() const { return hashes.size != SIZE_UNKNOWN_OLD; }
+  
     bool compare_name(const FileData &other) const;
     bool compare_name_size_hashes(const FileData &other) const;
     bool compare_size_hashes(const FileData &other) const;
     Hashes::Compare compare_hashes(const FileData &other) const;
-    bool size_hashes_are_set(bool detector) const;
     
     bool operator<(const FileData &other) const { return name < other.name; }
 

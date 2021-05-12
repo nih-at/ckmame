@@ -79,9 +79,12 @@ Hashes::Compare FileData::compare_hashes(const FileData &other) const {
         return result;
     }
     
+#if 0
+    // move to version with detector id we're interested in
     if (!hashes.empty() && !other.hashes_detector.empty() && hashes.compare(other.hashes_detector) == Hashes::MATCH) {
         return Hashes::MATCH;
     }
+#endif
     
     return result;
 }

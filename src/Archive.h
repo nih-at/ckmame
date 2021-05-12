@@ -80,14 +80,6 @@ enum ArchiveType {
 
 class ArchiveContents {
 public:
-    class Changes {
-    public:
-        std::string original_name;
-        std::string source_name;
-        ZipSourcePtr source;
-        std::string file;
-    };
-    
     ArchiveContents(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flagsk, const std::string &filename_extension =
 "");
 
@@ -96,7 +88,6 @@ public:
     std::vector<File> files;
     filetype_t filetype;
     where_t where;
-    std::vector<Changes> changes;
 
     std::shared_ptr<DB> cache_db;
     int cache_id;
@@ -143,6 +134,23 @@ struct hash<ArchiveContents::TypeAndName> {
 
 class Archive {
 public:
+    class Change {
+    public:
+        enum Status {
+            ADDED,
+            DELETED,
+            EXISTS
+        };
+        
+        Change(): status(EXISTS) { }
+        
+        Status status;
+        std::string original_name;
+        std::string source_name;
+        ZipSourcePtr source;
+        std::string file;
+    };
+    
     static ArchivePtr by_id(uint64_t id);
     
     static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
@@ -180,6 +188,7 @@ public:
     void refresh();
     bool rollback();
     bool is_empty() const;
+    bool is_file_deleted(uint64_t index) const { return changes[index].status == Change::DELETED; }
     bool is_writable() const { return (contents->flags & ARCHIVE_FL_RDONLY) == 0; }
     bool is_indexed() const { return (contents->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where); }
     virtual bool check() { return true; } // This is done as part of the constructor, remove?
@@ -200,7 +209,8 @@ public:
     std::string &name;
     const filetype_t filetype;
     const where_t where;
-        
+    std::vector<Change> changes;
+
     bool cache_changed;
     bool modified;
     

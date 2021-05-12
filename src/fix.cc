@@ -222,7 +222,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 break;
                 
             case QU_LONG: {
-                if (archive == archive_from && (fix_options & FIX_MOVE_LONG) && archive_from->files[match->index].where != FILE_DELETED) {
+                if (archive == archive_from && (fix_options & FIX_MOVE_LONG) && !archive_from->is_file_deleted(match->index)) {
                     if (fix_options & FIX_PRINT) {
                         printf("%s: move long file '%s'\n", archive_from->name.c_str(), REAL_NAME(archive_from, match->index));
                     }
@@ -242,7 +242,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 if (!archive->file_copy_part(archive_from, match->index, game_file.name, match->offset, game_file.hashes.size, &game_file.hashes)) {
                     break;
                 }
-                if (archive == archive_from && archive_from->files[match->index].where != FILE_DELETED) {
+                if (archive == archive_from && !archive_from->is_file_deleted(match->index)) {
                     if (!replacing_ourselves && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT)) {
                         printf("%s: delete long file '%s'\n", archive_from->name.c_str(), game_file.filename(filetype).c_str());
                     }
@@ -252,7 +252,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
             }
                 
             case QU_NAMEERR:
-                if (game_file.where == FILE_INCO || game_file.where == FILE_INGCO) {
+                if (game_file.where == FILE_IN_CLONEOF || game_file.where == FILE_IN_GRAND_CLONEOF) {
                     if (check_tree.recheck(game->cloneof[game_file.where - 1])) {
                         /* fall-through to rename in case save_needed fails */
                         if (save_needed(archive, match->index, game->name)) {
@@ -363,14 +363,12 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
                         archive_from->commit();
                         break;
                         
-                    case FILE_INCO:
-                    case FILE_INGCO:
+                    case FILE_IN_CLONEOF:
+                    case FILE_IN_GRAND_CLONEOF:
                     case FILE_ROMSET:
                     case FILE_NEEDED:
                     case FILE_OLD:
                     case FILE_NOWHERE:
-                    case FILE_ADDED:
-                    case FILE_DELETED:
                         /* file is already where we will find it later */
                         break;
                 }

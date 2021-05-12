@@ -33,3 +33,8 @@
 */
 
 #include "File.h"
+
+bool File::size_hashes_are_set(bool detector) const {
+    return is_size_known(detector) && !get_hashes(detector).empty();
+}
+

@@ -55,17 +55,13 @@ typedef enum quality quality_t;
 enum where {
     FILE_NOWHERE = -1,
     FILE_INGAME,
-    FILE_INCO,
-    FILE_INGCO,
+    FILE_IN_CLONEOF,
+    FILE_IN_GRAND_CLONEOF,
     FILE_ROMSET,
     FILE_NEEDED,
     FILE_SUPERFLUOUS,
     FILE_EXTRA,
     FILE_OLD,
-
-    /* uncommitted changes to archive */
-    FILE_DELETED,
-    FILE_ADDED
 };
 
 typedef enum where where_t;

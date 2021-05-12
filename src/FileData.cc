@@ -43,28 +43,16 @@ bool FileData::compare_name_size_hashes(const FileData &other) const {
 }
 
 bool FileData::compare_size_hashes(const FileData &other) const {
-    return compare_size_hashes_one(other, false) || compare_size_hashes_one(other, true);
-}
-
-bool FileData::compare_size_hashes_one(const FileData &other, bool detector) const {
-    if (detector && !other.size_hashes_are_set(detector)) {
+    if (is_size_known() && other.is_size_known() && hashes.size != other.hashes.size) {
         return false;
     }
     
-    if (is_size_known() && other.is_size_known(detector) && hashes.size != other.get_size(detector)) {
-        return false;
-    }
-    
-    if (hashes.compare(other.get_hashes(detector)) == Hashes::MATCH) {
+    if (hashes.compare(other.hashes) == Hashes::MATCH) {
         return true;
     }
     
     return false;
 }
 
-
-bool FileData::size_hashes_are_set(bool detector) const {
-    return is_size_known(detector) && !get_hashes(detector).empty();
-}
 
 

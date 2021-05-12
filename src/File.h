@@ -39,7 +39,19 @@
 
 class File : public FileData {
 public:
+    File(): FileData(), size_detector(SIZE_UNKNOWN_OLD) { }
+
+    uint64_t get_size(bool detector) const { return detector ? size_detector : hashes.size; }
+    const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
+
+    bool is_size_known(bool detector) const { return get_size(detector) != SIZE_UNKNOWN_OLD; }
+    bool size_hashes_are_set(bool detector) const;
+
     std::string filename_extension;
+    uint64_t size_detector;
+    Hashes hashes_detector;
+    
+    std::unordered_map<int, Hashes> detector_hashes;
 
     std::string filename() const { return name + filename_extension; }
 };

@@ -73,7 +73,7 @@ bool ArchiveDir::commit_xxx() {
     try {
         for (size_t index = 0; index < files.size(); index++) {
             auto &file = files[index];
-            auto &change = contents->changes[index];
+            auto &change = changes[index];
             
             if (!change.file.empty()) {
                 if (!ensure_dir(added_directory, false)) {
@@ -101,9 +101,9 @@ bool ArchiveDir::commit_xxx() {
     try {
         for (size_t index = 0; index < files.size(); index++) {
             auto &file = files[index];
-            auto &change = contents->changes[index];
+            auto &change = changes[index];
             
-            if (file.where == FILE_DELETED) {
+            if (change.status == Change::DELETED) {
                 commit.delete_file(get_original_filename(index));
             }
             else if (!change.file.empty() || change.source) {
@@ -294,8 +294,8 @@ std::string ArchiveDir::get_full_filename(uint64_t index) {
 
 std::string ArchiveDir::get_original_filename(uint64_t index) {
     std::string base_name;
-    if (contents->changes.size() > index) {
-        base_name = contents->changes[index].original_name;
+    if (changes.size() > index) {
+        base_name = changes[index].original_name;
     }
     if (base_name.empty()) {
         base_name = files[index].name;

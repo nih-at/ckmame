@@ -37,7 +37,7 @@
 #include <memory>
 #include <vector>
 
-#include "FileData.h"
+#include "File.h"
 #include "Hashes.h"
 #include "ParserSource.h"
 
@@ -87,7 +87,7 @@ public:
 
         std::vector<uint8_t> buf;
         
-        bool compute_values(FileData *file, Operation operation, uint64_t start, uint64_t end);
+        bool compute_values(File *file, Operation operation, uint64_t start, uint64_t end);
         bool fill_buffer(uint64_t length);
         
     private:
@@ -106,7 +106,7 @@ public:
         std::vector<uint8_t> value;
         bool result;
 
-        Result execute(FileData *file, Context *ctx) const;
+        Result execute(File *file, Context *ctx) const;
         void print(FILE *fout) const;
         
     private:
@@ -122,7 +122,7 @@ public:
         Operation operation;
         std::vector<Test> tests;
         
-        Result execute(FileData *file, Context *ctx) const;
+        Result execute(File *file, Context *ctx) const;
         void print(FILE *fout) const;
     };
     
@@ -136,7 +136,7 @@ public:
     static DetectorPtr parse(const std::string &filename);
     static DetectorPtr parse(ParserSource *source);
 
-    Result execute(FileData *file, detector_read_cb read_cb, void *ud) const;
+    Result execute(File *file, detector_read_cb read_cb, void *ud) const;
     bool print(FILE *) const;
 
     static std::string file_test_type_name(TestType type);

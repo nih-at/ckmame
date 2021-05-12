@@ -81,7 +81,9 @@ Archive::Archive(ArchiveContentsPtr contents_) :
     filetype(contents->filetype),
     where(contents->where),
     cache_changed(false),
-    modified(false) { }
+    modified(false) {
+        changes.resize(files.size());
+    }
 
 Archive::Archive(ArchiveType type, const std::string &name_, filetype_t ft, where_t where_, int flags_) : Archive(std::make_shared<ArchiveContents>(type, name_, ft, where_, flags_)) { }
 
@@ -278,9 +280,10 @@ std::optional<size_t> Archive::file_index_by_hashes(const Hashes *hashes) const 
 
     for (size_t i = 0; i < files.size(); i++) {
         auto &file = files[i];
+        auto &change = changes[i];
 
 	if (hashes->compare(file.hashes) == Hashes::MATCH) {
-	    if (file.where == FILE_DELETED) {
+	    if (change.status == Change::DELETED) {
                 return {};
 	    }
 	    return i;
@@ -294,9 +297,10 @@ std::optional<size_t> Archive::file_index_by_hashes(const Hashes *hashes) const 
 std::optional<size_t> Archive::file_index_by_name(const std::string &filename) const {
     for (size_t i = 0; i < files.size(); i++) {
         auto &file = files[i];
+        auto &change = changes[i];
 
         if (filename == file.name) {
-            if (file.where == FILE_DELETED) {
+            if (change.status == Change::DELETED) {
                 return {};
             }
 	    return i;
@@ -426,12 +430,7 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
     if (!archive->read_infos() && (flags & ARCHIVE_FL_CREATE) == 0) {
         return ArchivePtr();
     }
-        
-    for (auto &file : archive->files) {
-	/* TODO: file.state = FILE_UNKNOWN; */
-	file.where = FILE_INGAME;
-    }
-
+    
     ArchiveContents::enter_in_maps(archive->contents);
 
     return archive;
@@ -482,7 +481,7 @@ bool Archive::read_infos() {
 
     merge_files(files_cache);
 
-    contents->changes.resize(files.size());
+    changes.resize(files.size());
 
     return true;
 }
@@ -500,8 +499,8 @@ int Archive::register_cache_directory(const std::string &name) {
 }
 
 bool Archive::is_empty() const {
-    for (auto &file : files) {
-        if (file.where != FILE_DELETED) {
+    for (auto &change : changes) {
+        if (change.status != Change::DELETED) {
             return false;
         }
     }

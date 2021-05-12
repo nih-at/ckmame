@@ -474,7 +474,7 @@ bool RomDB::update_file_location(Game *game) {
                 return false;
             }
 
-            FileData &rom = game->files[ft][i];
+            auto &rom = game->files[ft][i];
             if (rom.where == FILE_INGAME) {
                 continue;
             }

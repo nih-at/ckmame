@@ -107,16 +107,16 @@ bool ArchiveZip::commit_xxx() {
     
     for (size_t index = 0; index < files.size(); index++) {
         auto &file = files[index];
-        auto &change = contents->changes[index];
+        auto &change = changes[index];
         
-        if (file.where == FILE_DELETED) {
+        if (change.status == Change::DELETED) {
             if (zip_delete(za, index) < 0) {
                 myerror(ERRZIP, "cannot delete '%s': %s", file.name.c_str(), zip_strerror(za));
                 ok = false;
                 break;
             }
         }
-        else if (file.where == FILE_ADDED) {
+        else if (change.status == Change::ADDED) {
             if (!ensure_file_doesnt_exist(file.name)) {
                 ok = false;
                 break;

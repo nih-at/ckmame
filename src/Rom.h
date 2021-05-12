@@ -39,14 +39,16 @@
 
 class Rom : public FileData {
 public:
+    Rom() : FileData(), where(FILE_INGAME) { }
+    
     std::string merge;
+    where_t where;
 
     const std::string &merged_name() const { return merge.empty() ? name : merge; }
     bool compare_merged(const FileData &other) const;
     bool compare_merged(const Rom &other) const;
     std::string filename(filetype_t filetype) const;
     bool is_mergable(const Rom &other) const;
-
 };
 
 #endif // HAD_ROM_H
