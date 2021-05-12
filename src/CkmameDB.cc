@@ -78,7 +78,7 @@ void CkmameDB::delete_archive(int id) {
 
     if ((stmt = db.get_statement(DBH_STMT_DIR_DELETE_ARCHIVE)) == NULL
         || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-        throw Exception("");
+        throw Exception();
     }
 }
 
@@ -87,7 +87,7 @@ void CkmameDB::delete_archive(const std::string &name) {
     auto id = get_archive_id(name);
 
     if (id < 0) {
-        throw Exception("");
+        throw Exception();
     }
 
     delete_archive(id);
@@ -99,7 +99,7 @@ void CkmameDB::delete_files(int id) {
 
     if ((stmt = db.get_statement(DBH_STMT_DIR_DELETE_FILE)) == NULL
         || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-        throw Exception("");
+        throw Exception();
     }
 }
 
