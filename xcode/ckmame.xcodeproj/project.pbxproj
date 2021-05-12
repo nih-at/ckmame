@@ -346,6 +346,8 @@
 		4B0D79A426442EE60009B2C6 /* File.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
 		4B0D79A726442F9C0009B2C6 /* Rom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Rom.h; sourceTree = "<group>"; };
 		4B0D79A926442FC50009B2C6 /* Rom.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rom.cc; sourceTree = "<group>"; };
+		4B0D79AB264BFA720009B2C6 /* manygood-stats.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "manygood-stats.test"; sourceTree = "<group>"; };
+		4B0D79AC264C02670009B2C6 /* disk-stats.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-stats.test"; sourceTree = "<group>"; };
 		4B20D2C326024ED000D77FA8 /* ParserCm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserCm.h; sourceTree = "<group>"; };
 		4B20D2CC260254A300D77FA8 /* ParserXml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserXml.h; sourceTree = "<group>"; };
 		4B20D2D6260254A900D77FA8 /* ParserRc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserRc.h; sourceTree = "<group>"; };
@@ -1086,8 +1088,8 @@
 				4B6B147624FF946A00D3F3FB /* detector-interaction-with-headerless.test */,
 				4B6B146724FF946A00D3F3FB /* detector-prefer-file-with-header.test */,
 				4BB158A825DECA50008892CD /* disk-fixdat.test */,
-				4B6B146524FF946A00D3F3FB /* disk-from-extra-using-copy-remove.test */,
 				4B6B145D24FF946900D3F3FB /* disk-from-extra-remove.test */,
+				4B6B146524FF946A00D3F3FB /* disk-from-extra-using-copy-remove.test */,
 				4B6B146D24FF946A00D3F3FB /* disk-from-extra.test */,
 				4B6B146924FF946A00D3F3FB /* disk-from-superfluous-all.test */,
 				4B6B146F24FF946A00D3F3FB /* disk-from-superfluous.test */,
@@ -1099,6 +1101,7 @@
 				4B6B147924FF9F5B00D3F3FB /* disk-ok.test */,
 				4BB158AE25DECA51008892CD /* disk-parent-merge-exists.test */,
 				4B918BCC2508EAE0002D8F29 /* disk-parent-merge.test */,
+				4B0D79AC264C02670009B2C6 /* disk-stats.test */,
 				4B6B148324FF9F5C00D3F3FB /* disk-superfluous.test */,
 				4B6B148124FF9F5C00D3F3FB /* disk-swap.test */,
 				4B6B148824FF9F5C00D3F3FB /* disk-swapmerge.test */,
@@ -1148,6 +1151,7 @@
 				4B6B14ED24FFA98100D3F3FB /* incomplete-merge.test */,
 				4B6B14FA24FFA98200D3F3FB /* inconsistent-without-i.test */,
 				4B6B14F924FFA98200D3F3FB /* inparent.test */,
+				4B0D79AB264BFA720009B2C6 /* manygood-stats.test */,
 				4BB158AA25DECA51008892CD /* manygood.test */,
 				4B6B14A324FFA12B00D3F3FB /* misnamed-nofix.test */,
 				4B6B149224FFA12A00D3F3FB /* misnamed.test */,

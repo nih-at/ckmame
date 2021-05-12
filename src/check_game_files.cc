@@ -38,7 +38,6 @@
 #include "find.h"
 #include "diagnostics.h"
 #include "RomDB.h"
-#include "Stats.h"
 #include "warn.h"
 
 enum test { TEST_NAME_SIZE_CHECKSUM, TEST_MERGENAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG };
@@ -146,12 +145,6 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
         }
     }
-    
-    stats.add_game(res->game);
-    for (size_t i = 0; i < game->files[filetype].size(); i++) {
-        stats.add_rom(filetype, &game->files[filetype][i], res->game_files[filetype][i].quality);
-    }
-
 }
 
 

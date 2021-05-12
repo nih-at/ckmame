@@ -2,6 +2,6 @@ description test dumpgame statistics output
 return 0
 program dumpgame
 args -D ../mamedb-disk-many.db /stats
-stdout Games:  	29
-stdout ROMs:   	66 (245 bytes)
-stdout Disks:  	8
+stdout Games: 29
+stdout ROMs:  66 (245 bytes)
+stdout Disks: 8

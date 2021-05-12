@@ -1,6 +1,6 @@
 description test many games
 return 0
-args -KLvd
+args -KLvdc
 # ulimit -n 12
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
@@ -17,23 +17,52 @@ file roms/nogood-2.zip 1-8-ok.zip 1-8-ok.zip
 file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip
 file roms/zero-4.zip zero-4-ok.zip zero-4-ok.zip
 file roms/zero.zip zero-ok.zip zero-ok.zip
-no-hashes roms 1-4.zip
 no-hashes roms 1-8.zip
-no-hashes roms 2-44.zip
-no-hashes roms 2-48.zip
-no-hashes roms 2-4a.zip
 no-hashes roms baddump.zip
 no-hashes roms clone-8.zip
-no-hashes roms deadbeef.zip
-no-hashes roms deadbeefchild.zip
 no-hashes roms many.zip
 no-hashes roms nogood-2.zip
 no-hashes roms parent-4.zip
 no-hashes roms zero-4.zip
-no-hashes roms zero.zip
+stdout In game 1-4:
+stdout game 1-4                                     : correct
+stdout In game 1-8:
+stdout game 1-8                                     : correct
+stdout In game nogoodclone:
+stdout game nogoodclone                             : correct
 stdout In game 1-8a:
 stdout game 1-8a                                    : not a single file found
+stdout In game 2-44:
+stdout game 2-44                                    : correct
+stdout In game 2-48:
+stdout game 2-48                                    : correct
+stdout In game 2-4a:
+stdout game 2-4a                                    : correct
+stdout In game baddump:
+stdout game baddump                                 : correct
+stdout In game deadbeef:
+stdout game deadbeef                                : correct
+stdout In game deadbeefchild:
+stdout game deadbeefchild                           : correct
+stdout In game deadclonedbeef:
+stdout game deadclonedbeef                          : correct
 stdout In game dir-in-rom-name:
 stdout rom  some/path/to/file.rom  size       4  crc d87f7e0c: wrong name (04.rom)
+stdout In game many:
+stdout game many                                    : correct
+stdout In game nogood:
+stdout game nogood                                  : correct
+stdout In game nogood-2:
+stdout game nogood-2                                : correct
+stdout In game norom:
+stdout game norom                                   : correct
+stdout In game parent-4:
+stdout game parent-4                                : correct
+stdout In game clone-8:
+stdout game clone-8                                 : correct
+stdout In game zero:
+stdout game zero                                    : correct
+stdout In game zero-4:
+stdout game zero-4                                  : correct
 stdout In game zerobadcrc:
 stdout game zerobadcrc                              : not a single file found

@@ -37,6 +37,7 @@
 #include <sstream>
 
 #include "fix.h"
+#include "Stats.h"
 #include "warn.h"
 
 int diagnostics_options = 0;
@@ -49,9 +50,16 @@ static void diagnostics_game(filetype_t ft, const Game *game, const Result &resu
 void diagnostics(const Game *game, const GameArchives &archives, const Result &result) {
     warn_set_info(WARN_TYPE_GAME, game->name);
 
+    stats.add_game(result.game);
+
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        diagnostics_game(static_cast<filetype_t>(ft), game, result);
-        diagnostics_archive(static_cast<filetype_t>(ft), archives[ft], result);
+        auto filetype = static_cast<filetype_t>(ft);
+        
+        for (size_t i = 0; i < game->files[filetype].size(); i++) {
+            stats.add_rom(filetype, &game->files[filetype][i], result.game_files[filetype][i].quality);
+        }
+        diagnostics_game(static_cast<filetype_t>(filetype), game, result);
+        diagnostics_archive(static_cast<filetype_t>(filetype), archives[filetype], result);
     }
 }
 

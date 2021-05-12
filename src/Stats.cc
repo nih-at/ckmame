@@ -68,10 +68,10 @@ void Stats::add_rom(enum filetype type, const FileData *rom, Match::Quality stat
 
 
 void Stats::print(FILE *f, bool total_only) {
-    static const char *ft_name[] = {"ROMs:", "Disks:"};
+    static const char *ft_name[] = {"ROMs: ", "Disks:"};
 
     if (games_total > 0) {
-        fprintf(f, "Games:  \t");
+        fprintf(f, "Games: ");
         if (!total_only) {
             if (games_good > 0 || games_partial == 0) {
                 fprintf(f, "%" PRIu64, games_good);
@@ -89,7 +89,7 @@ void Stats::print(FILE *f, bool total_only) {
     
     for (int type = 0; type < TYPE_MAX; type++) {
         if (files[type].files_total > 0) {
-            fprintf(f, "%-8s\t", ft_name[type]);
+            fprintf(f, "%s ", ft_name[type]);
             if (!total_only) {
                 fprintf(f, "%" PRIu64 " / ", files[type].files_good);
             }
@@ -112,10 +112,14 @@ void Stats::print(FILE *f, bool total_only) {
 
 void Stats::add_file(enum filetype type, uint64_t size, Match::Quality status) {
     if (status != Match::MISSING) {
-        files[type].bytes_good += size;
+        if (size != Hashes::SIZE_UNKNOWN) {
+            files[type].bytes_good += size;
+        }
         files[type].files_good++;
     }
     
-    files[type].bytes_total += size;
+    if (size != Hashes::SIZE_UNKNOWN) {
+        files[type].bytes_total += size;
+    }
     files[type].files_total++;
 }
