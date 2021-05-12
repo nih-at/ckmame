@@ -217,7 +217,7 @@ std::vector<FileLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes *
         return {};
     }
 
-    if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 2, STATUS_NODUMP) != SQLITE_OK || sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK) {
+    if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 2, Rom::NO_DUMP) != SQLITE_OK || sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK) {
         return {};
     }
 
@@ -298,7 +298,7 @@ bool RomDB::read_files(Game *game, filetype_t ft) {
 
         rom.name = sq3_get_string(stmt, 0);
         rom.merge = sq3_get_string(stmt, 1);
-        rom.status = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+        rom.status = static_cast<Rom::Status>(sqlite3_column_int(stmt, 2));
         rom.where = static_cast<where_t>(sqlite3_column_int(stmt, 3));
         rom.hashes.size = sq3_get_uint64_default(stmt, 4, Hashes::SIZE_UNKNOWN);
         sq3_get_hashes(&rom.hashes, stmt, 5);

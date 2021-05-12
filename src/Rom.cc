@@ -88,3 +88,25 @@ Hashes::Compare FileData::compare_hashes(const FileData &other) const {
     
     return result;
 }
+
+
+std::string Rom::status_name(Status status, bool verbose) {
+    switch (status) {
+        case Rom::OK:
+            if (verbose) {
+                return "ok";
+            }
+            else {
+                return "";
+            }
+
+        case Rom::BAD_DUMP:
+            return "baddump";
+
+        case Rom::NO_DUMP:
+            return "nodump";
+
+        default:
+            return "";
+    }
+}

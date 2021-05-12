@@ -100,7 +100,7 @@ static void
 print_diskline(Rom *disk) {
     printf("\t\tdisk %-12s", disk->name.c_str());
     print_checksums(&disk->hashes);
-    printf(" status %s in %s", status_name(disk->status, true).c_str(), where_name[disk->where]);
+    printf(" status %s in %s", disk->status_name(true).c_str(), where_name[disk->where]);
     if (!disk->merge.empty() && disk->name != disk->merge) {
         printf(" (%s)", disk->merge.c_str());
     }
@@ -126,7 +126,7 @@ print_romline(Rom *rom) {
 	printf("unknown");
     }
     print_checksums(&rom->hashes);
-    printf(" status %s in %s", status_name(rom->status, true).c_str(), where_name[rom->where]);
+    printf(" status %s in %s", rom->status_name(true).c_str(), where_name[rom->where]);
     if (!rom->merge.empty() && rom->name != rom->merge) {
 	printf(" (%s)", rom->merge.c_str());
     }

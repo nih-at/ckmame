@@ -99,7 +99,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
         }
         
-        if (rom.where == FILE_INGAME && match->quality == QU_MISSING && rom.hashes.size > 0 && rom.status != STATUS_NODUMP) {
+        if (rom.where == FILE_INGAME && match->quality == QU_MISSING && rom.hashes.size > 0 && rom.status != Rom::NO_DUMP) {
             /* search for matching file in other games (via db) */
             if (find_in_romset(filetype, &rom, NULL, game->name, "", match) == FIND_EXISTS) {
                 continue;
@@ -253,7 +253,7 @@ void update_game_status(const Game *game, Result *result) {
             }
             /* TODO: using diagnostics_options here is a bit of a hack,
                but so is all of the result->game processing */
-            if (match->quality != QU_OK && (rom.status != STATUS_NODUMP || (diagnostics_options & WARN_NO_GOOD_DUMP))) {
+            if (match->quality != QU_OK && (rom.status != Rom::NO_DUMP || (diagnostics_options & WARN_NO_GOOD_DUMP))) {
                 all_correct = false;
             }
         }

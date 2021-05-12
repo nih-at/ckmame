@@ -130,7 +130,7 @@ bool OutputContextXml::game(GamePtr game) {
                 set_attribute(xmlRom, "merge", rom.merge.empty() ? rom.name : rom.merge);
             }
             
-            set_attribute(xmlRom, "status", status_name(rom.status));
+            set_attribute(xmlRom, "status", rom.status_name());
         }
     }
 

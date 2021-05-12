@@ -55,9 +55,6 @@ public:
     Hashes::Compare compare_hashes(const FileData &other) const;
     
     bool operator<(const FileData &other) const { return name < other.name; }
-
-private:
-    bool compare_size_hashes_one(const FileData &other, bool detector) const;
 };
 
 #endif // HAD_FILEDATA_H

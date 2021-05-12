@@ -127,7 +127,7 @@ bool OutputContextCm::write_game(Game *game) {
             cond_print_hash(f, "crc ", Hashes::TYPE_CRC, &rom.hashes, " ");
             cond_print_hash(f, "sha1 ", Hashes::TYPE_SHA1, &rom.hashes, " ");
             cond_print_hash(f, "md5 ", Hashes::TYPE_MD5, &rom.hashes, " ");
-            cond_print_string(f, "flags ", status_name(rom.status), " ");
+            cond_print_string(f, "flags ", rom.status_name(), " ");
             fputs(")\n", f.get());
         }
     }

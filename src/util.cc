@@ -158,28 +158,6 @@ print_human_number(FILE *f, uint64_t value) {
 }
 
 
-std::string
-status_name(status_t status, bool verbose) {
-    switch (status) {
-        case STATUS_OK:
-            if (verbose) {
-                return "ok";
-            }
-            else {
-                return "";
-            }
-
-        case STATUS_BADDUMP:
-            return "baddump";
-
-        case STATUS_NODUMP:
-            return "nodump";
-
-        default:
-            return "";
-    }
-}
-
 std::string string_format(const char *format, ...) {
     va_list ap;
     va_start(ap, format);

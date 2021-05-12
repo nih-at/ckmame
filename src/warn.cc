@@ -76,13 +76,13 @@ warn_game_file(filetype_t ft, const Rom *r, const std::string &reason) {
                     /* TODO */
                     if (r->hashes.has_type(Hashes::TYPE_CRC)) {
                         switch (r->status) {
-                            case STATUS_OK:
+                            case Rom::OK:
                                 printf("crc %.8" PRIx32 ": ", r->hashes.crc);
                                 break;
-                            case STATUS_BADDUMP:
+                            case Rom::BAD_DUMP:
                                 printf("bad dump    : ");
                                 break;
-                            case STATUS_NODUMP:
+                            case Rom::NO_DUMP:
                                 printf("no good dump: ");
                         }
                     }

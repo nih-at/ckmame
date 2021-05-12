@@ -34,11 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
-enum status { STATUS_OK, STATUS_BADDUMP, STATUS_NODUMP };
-
-typedef enum status status_t;
-
 enum quality {
     QU_MISSING, /* ROM is missing */
     QU_NOHASH,  /* disk and file have no common checksums */

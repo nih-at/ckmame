@@ -168,7 +168,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
         switch (match.quality) {
             case QU_MISSING:
                 if (diagnostics_options & WARN_MISSING) {
-                    if (rom.status != STATUS_NODUMP || (diagnostics_options & WARN_NO_GOOD_DUMP)) {
+                    if (rom.status != Rom::NO_DUMP || (diagnostics_options & WARN_NO_GOOD_DUMP)) {
                         warn_game_file(ft, &rom, "missing");
                     }
                 }
@@ -190,11 +190,11 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 
             case QU_OK:
                 if (diagnostics_options & WARN_CORRECT) {
-                    if (rom.status == STATUS_OK) {
+                    if (rom.status == Rom::OK) {
                         warn_game_file(ft, &rom, "correct");
                     }
                     else {
-                        warn_game_file(ft, &rom, rom.status == STATUS_BADDUMP ? "best bad dump" : "exists");
+                        warn_game_file(ft, &rom, rom.status == Rom::BAD_DUMP ? "best bad dump" : "exists");
                     }
                 }
                 break;

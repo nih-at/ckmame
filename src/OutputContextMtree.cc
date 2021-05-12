@@ -167,7 +167,7 @@ void OutputContextMtree::write_files(const std::string &dirname, const std::vect
         }
         cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &file.hashes, "");
         cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &file.hashes, "");
-        cond_print_string(f, " status=", status_name(file.status), "");
+        cond_print_string(f, " status=", file.status_name(), "");
         if (runtest) {
             cond_print_hash(f, " crc=", Hashes::TYPE_CRC, &file.hashes, "");
             fprintf(f.get(), " time=%llu", static_cast<unsigned long long>(file.mtime));

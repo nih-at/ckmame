@@ -39,10 +39,16 @@
 
 class Rom : public FileData {
 public:
-    Rom() : FileData(), status(STATUS_OK), where(FILE_INGAME) { }
+    enum Status {
+        OK,
+        BAD_DUMP,
+        NO_DUMP
+    };
+    
+    Rom() : FileData(), status(OK), where(FILE_INGAME) { }
     
     std::string merge;
-    status_t status;
+    Status status;
     where_t where;
 
     const std::string &merged_name() const { return merge.empty() ? name : merge; }
@@ -50,6 +56,9 @@ public:
     bool compare_merged(const Rom &other) const;
     std::string filename(filetype_t filetype) const;
     bool is_mergable(const Rom &other) const;
+    
+    std::string status_name(bool verbose = false) const { return status_name(status); }
+    static std::string status_name(Status status, bool verbose = false);
 };
 
 #endif // HAD_ROM_H

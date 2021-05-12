@@ -127,21 +127,21 @@ bool Parser::file_end(filetype_t ft) {
 
 
 bool Parser::file_status(filetype_t ft, const std::string &attr) {
-    status_t status;
+    Rom::Status status;
 
     CHECK_STATE(PARSE_IN_FILE);
 
     if (attr == "good") {
-	status = STATUS_OK;
+	status = Rom::OK;
     }
     else if (attr == "verified") {
-        status = STATUS_OK;
+        status = Rom::OK;
     }
     else if (attr == "baddump") {
-        status = STATUS_BADDUMP;
+        status = Rom::BAD_DUMP;
     }
     else if (attr == "nodump") {
-        status = STATUS_NODUMP;
+        status = Rom::NO_DUMP;
     }
     else {
         myerror(ERRFILE, "%zu: illegal status '%s'", lineno, attr.c_str());
@@ -429,8 +429,8 @@ bool Parser::header_end() {
 
 
 void Parser::disk_end() {
-    if (r[TYPE_DISK]->hashes.empty() && r[TYPE_DISK]->status == STATUS_OK) {
-        r[TYPE_DISK]->status = STATUS_NODUMP;
+    if (r[TYPE_DISK]->hashes.empty() && r[TYPE_DISK]->status == Rom::OK) {
+        r[TYPE_DISK]->status = Rom::NO_DUMP;
     }
 
     if (r[TYPE_DISK]->name == r[TYPE_DISK]->merge) {
