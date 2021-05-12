@@ -166,7 +166,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
         }
         
         switch (match.quality) {
-            case QU_MISSING:
+            case Match::MISSING:
                 if (diagnostics_options & WARN_MISSING) {
                     if (rom.status != Rom::NO_DUMP || (diagnostics_options & WARN_NO_GOOD_DUMP)) {
                         warn_game_file(ft, &rom, "missing");
@@ -174,13 +174,13 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 }
                 break;
                 
-            case QU_NAMEERR:
+            case Match::NAME_ERROR:
                 if (diagnostics_options & WARN_WRONG_NAME) {
                     warn_game_file(ft, &rom, "wrong name (" + file->name + ")" + (rom.where != match.where ? ", should be in " : "") + zname[rom.where]);
                 }
                 break;
                 
-            case QU_LONG:
+            case Match::LONG:
                 if (diagnostics_options & WARN_LONGOK) {
                     std::ostringstream out;
                     out << "too long, valid subsection at byte " << match.offset << " (" << file->hashes.size << ")" << (rom.where != match.where ? ", should be in " : "") << zname[rom.where];
@@ -188,7 +188,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 }
                 break;
                 
-            case QU_OK:
+            case Match::OK:
                 if (diagnostics_options & WARN_CORRECT) {
                     if (rom.status == Rom::OK) {
                         warn_game_file(ft, &rom, "correct");
@@ -199,25 +199,25 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 }
                 break;
                 
-            case QU_COPIED:
+            case Match::COPIED:
                 if (diagnostics_options & WARN_ELSEWHERE) {
                     warn_game_file(ft, &rom, "is in '" + match.archive->name + "/" + match.archive->files[match.index].filename() + "'");
                 }
                 break;
                 
-            case QU_INZIP:
+            case Match::IN_ZIP:
                 if (diagnostics_options & WARN_WRONG_ZIP) {
                     warn_game_file(ft, &rom, "should be in " + zname[rom.where]);
                 }
                 break;
                 
-            case QU_OLD:
+            case Match::OLD:
                 if (diagnostics_options & WARN_CORRECT) {
                     warn_game_file(ft, &rom, "old in '" + match.old_game + "'");
                 }
                 break;
                 
-            case QU_NOHASH:
+            case Match::NO_HASH:
                 /* only used for disks */
                 break;
         }

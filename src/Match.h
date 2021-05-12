@@ -41,9 +41,20 @@
 
 class Match {
 public:
-    Match() : quality(QU_MISSING), where(FILE_NOWHERE), index(0), offset(0) { }
+    enum Quality {
+        MISSING, /* ROM is missing */
+        NO_HASH,  /* disk and file have no common checksums */
+        LONG,    /* long ROM with valid subsection */
+        NAME_ERROR, /* wrong name */
+        COPIED,  /* copied from elsewhere */
+        IN_ZIP,   /* is in zip, should be in ancestor */
+        OK,      /* name/size/crc match */
+        OLD      /* exists in old */
+    };
     
-    quality_t quality;
+    Match() : quality(MISSING), where(FILE_NOWHERE), index(0), offset(0) { }
+    
+    Quality quality;
     where_t where;
     
     ArchivePtr archive;
@@ -53,7 +64,7 @@ public:
     std::string old_game;
     std::string old_file;
 
-    uint64_t offset; /* offset of correct part if QU_LONG */
+    uint64_t offset; /* offset of correct part if quality == LONG */
     
     std::string game() const;
     bool source_is_old() const { return where == FILE_OLD; }

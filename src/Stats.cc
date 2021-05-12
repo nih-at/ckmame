@@ -60,7 +60,7 @@ void Stats::add_game(GameStatus status) {
 }
 
 
-void Stats::add_rom(enum filetype type, const FileData *rom, quality_t status) {
+void Stats::add_rom(enum filetype type, const FileData *rom, Match::Quality status) {
     // TODO: only own ROMs? (what does dumpgame /stats count?)
     
     add_file(type, rom->hashes.size, status);
@@ -110,8 +110,8 @@ void Stats::print(FILE *f, bool total_only) {
 }
 
 
-void Stats::add_file(enum filetype type, uint64_t size, quality_t status) {
-    if (status != QU_MISSING) {
+void Stats::add_file(enum filetype type, uint64_t size, Match::Quality status) {
+    if (status != Match::MISSING) {
         files[type].bytes_good += size;
         files[type].files_good++;
     }

@@ -35,6 +35,7 @@
  */
 
 #include "FileData.h"
+#include "Match.h"
 #include "Result.h"
 #include "types.h"
 
@@ -56,11 +57,11 @@ class Stats {
     StatsFiles files[TYPE_MAX];
 
     void add_game(GameStatus status);
-    void add_rom(enum filetype type, const FileData *rom, quality_t status);
+    void add_rom(enum filetype type, const FileData *rom, Match::Quality status);
     void print(FILE *f, bool total_only);
 
  private:
-    void add_file(enum filetype type, uint64_t size, quality_t status);
+    void add_file(enum filetype type, uint64_t size, Match::Quality status);
 };
 
 extern Stats stats;

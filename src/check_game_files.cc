@@ -70,11 +70,11 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         Match *match = &res->game_files[filetype][i];
         auto expected_archive = archives[rom.where].archive[filetype];
         
-        if (match->quality == QU_OLD) {
+        if (match->quality == Match::OLD) {
             continue;
         }
         
-        match->quality = QU_MISSING;
+        match->quality = Match::MISSING;
         
         /* check if it's in ancestor */
         if (rom.where != FILE_INGAME && expected_archive && (result = match_files(expected_archive, TEST_MERGENAME_SIZE_CHECKSUM, &rom, match)) != TEST_NOTFOUND) {
@@ -89,8 +89,8 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             for (size_t j = 0; j < tests.size(); j++) {
                 if ((result = match_files(archives[0].archive[filetype], tests[j], &rom, match)) != TEST_NOTFOUND) {
                     match->where = FILE_INGAME;
-                    if (rom.where != FILE_INGAME && match->quality == QU_OK) {
-                        match->quality = QU_INZIP;
+                    if (rom.where != FILE_INGAME && match->quality == Match::OK) {
+                        match->quality = Match::IN_ZIP;
                     }
                     if (result == TEST_USABLE) {
                         break;
@@ -99,7 +99,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
         }
         
-        if (rom.where == FILE_INGAME && match->quality == QU_MISSING && rom.hashes.size > 0 && rom.status != Rom::NO_DUMP) {
+        if (rom.where == FILE_INGAME && match->quality == Match::MISSING && rom.hashes.size > 0 && rom.status != Rom::NO_DUMP) {
             /* search for matching file in other games (via db) */
             if (find_in_romset(filetype, &rom, NULL, game->name, "", match) == FIND_EXISTS) {
                 continue;
@@ -126,20 +126,20 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             if (match->where == FILE_INGAME) {
                 size_t j = match->index;
                 if (res->archive_files[filetype][j] != FS_USED) {
-                    res->archive_files[filetype][j] = match->quality == QU_LONG ? FS_PARTUSED : FS_USED;
+                    res->archive_files[filetype][j] = match->quality == Match::LONG ? FS_PARTUSED : FS_USED;
                 }
                 
-                if (match->quality != QU_LONG && match->quality != QU_INZIP) {
+                if (match->quality != Match::LONG && match->quality != Match::IN_ZIP) {
                     if (user[j] == std::numeric_limits<uint64_t>::max()) {
                         user[j] = i;
                     }
                     else {
-                        if (match->quality == QU_OK) {
-                            res->game_files[filetype][user[j]].quality = QU_COPIED;
+                        if (match->quality == Match::OK) {
+                            res->game_files[filetype][user[j]].quality = Match::COPIED;
                             user[j] = i;
                         }
                         else {
-                            match->quality = QU_COPIED;
+                            match->quality = Match::COPIED;
                         }
                     }
                 }
@@ -178,7 +178,7 @@ match_files(ArchivePtr archive, test_t test, const Rom *rom, Match *match) {
                     if (!file.size_hashes_are_set(true) && archive->file_compare_hashes(i, &rom->hashes) != 0) {
                         break;
                     }
-                    match->quality = QU_OK;
+                    match->quality = Match::OK;
                     result = TEST_USABLE;
                     match->archive = archive;
                     match->index = i;
@@ -195,7 +195,7 @@ match_files(ArchivePtr archive, test_t test, const Rom *rom, Match *match) {
                     if (archive->file_compare_hashes(i, &rom->hashes) != 0) {
                         break;
                     }
-                    match->quality = QU_NAMEERR;
+                    match->quality = Match::NAME_ERROR;
                     result = TEST_USABLE;
                     match->archive = archive;
                     match->index = i;
@@ -214,7 +214,7 @@ match_files(ArchivePtr archive, test_t test, const Rom *rom, Match *match) {
                         match->offset = offset.value();
                         match->archive = archive;
                         match->index = i;
-                        match->quality = QU_LONG;
+                        match->quality = Match::LONG;
                         return TEST_USABLE;
                     }
                 }
@@ -242,7 +242,7 @@ void update_game_status(const Game *game, Result *result) {
             if (rom.where == FILE_INGAME) {
                 has_own = true;
             }
-            if (match->quality == QU_MISSING) {
+            if (match->quality == Match::MISSING) {
                 all_fixable = false;
             }
             else {
@@ -253,7 +253,7 @@ void update_game_status(const Game *game, Result *result) {
             }
             /* TODO: using diagnostics_options here is a bit of a hack,
                but so is all of the result->game processing */
-            if (match->quality != QU_OK && (rom.status != Rom::NO_DUMP || (diagnostics_options & WARN_NO_GOOD_DUMP))) {
+            if (match->quality != Match::OK && (rom.status != Rom::NO_DUMP || (diagnostics_options & WARN_NO_GOOD_DUMP))) {
                 all_correct = false;
             }
         }

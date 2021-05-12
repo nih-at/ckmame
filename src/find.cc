@@ -76,7 +76,7 @@ find_in_archives(filetype_t filetype, const FileData *rom, Match *m, bool needed
             m->archive = a;
             m->index = result.index;
             m->where = result.location;
-	    m->quality = QU_COPIED;
+	    m->quality = Match::COPIED;
 	}
 
 	return FIND_EXISTS;
@@ -128,7 +128,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
 
 static find_result_t check_match_old(filetype_t, const Game *game, const FileData *wanted_file, const FileData *, Match *match) {
     if (match) {
-	match->quality = QU_OLD;
+	match->quality = Match::OLD;
 	match->where = FILE_OLD;
         match->old_game = game->name;
         match->old_file = wanted_file->name;
@@ -141,7 +141,7 @@ static find_result_t check_match_old(filetype_t, const Game *game, const FileDat
 static find_result_t check_match_romset(filetype_t filetype, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match) {
     auto status = check_for_file_in_archive(filetype, game->name, wanted_file, candidate, match);
     if (match && status == FIND_EXISTS) {
-	match->quality = QU_COPIED;
+	match->quality = Match::COPIED;
 	match->where = FILE_ROMSET;
     }
 

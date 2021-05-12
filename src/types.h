@@ -34,19 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-enum quality {
-    QU_MISSING, /* ROM is missing */
-    QU_NOHASH,  /* disk and file have no common checksums */
-    QU_LONG,    /* long ROM with valid subsection */
-    QU_NAMEERR, /* wrong name */
-    QU_COPIED,  /* copied from elsewhere */
-    QU_INZIP,   /* is in zip, should be in ancestor */
-    QU_OK,      /* name/size/crc match */
-    QU_OLD      /* exists in old */
-};
-
-typedef enum quality quality_t;
-
 enum where {
     FILE_NOWHERE = -1,
     FILE_INGAME,

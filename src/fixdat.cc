@@ -56,7 +56,7 @@ write_fixdat_entry(const Game *game, const Result *result) {
                 continue;
             }
             
-            if (match.quality != QU_MISSING || rom.status == Rom::NO_DUMP || rom.where != FILE_INGAME) {
+            if (match.quality != Match::MISSING || rom.status == Rom::NO_DUMP || rom.where != FILE_INGAME) {
                 continue;
             }
             

@@ -209,7 +209,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
 	seterrinfo(game_file.name, archive->name);
 
 	switch (match->quality) {
-            case QU_MISSING:
+            case Match::MISSING:
                 if (game_file.hashes.size == 0) {
                     /* create missing empty file */
                     if (fix_options & FIX_PRINT) {
@@ -221,7 +221,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 break;
                 
-            case QU_LONG: {
+            case Match::LONG: {
                 if (archive == archive_from && (fix_options & FIX_MOVE_LONG) && !archive_from->is_file_deleted(match->index)) {
                     if (fix_options & FIX_PRINT) {
                         printf("%s: move long file '%s'\n", archive_from->name.c_str(), REAL_NAME(archive_from, match->index));
@@ -251,7 +251,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 break;
             }
                 
-            case QU_NAMEERR:
+            case Match::NAME_ERROR:
                 if (game_file.where == FILE_IN_CLONEOF || game_file.where == FILE_IN_GRAND_CLONEOF) {
                     if (check_tree.recheck(game->cloneof[game_file.where - 1])) {
                         /* fall-through to rename in case save_needed fails */
@@ -272,7 +272,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 
                 break;
                 
-            case QU_COPIED:
+            case Match::COPIED:
                 if (garbage && archive_from == garbage->da.get()) {
                     /* we can't copy from our own garbage archive, since we're copying to it, and libzip doesn't support cross copying */
                     
@@ -301,19 +301,19 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 break;
                 
-            case QU_INZIP:
+            case Match::IN_ZIP:
                 /* TODO: save to needed */
                 break;
                 
-            case QU_OK:
+            case Match::OK:
                 /* all is well */
                 break;
                 
-            case QU_NOHASH:
+            case Match::NO_HASH:
                 /* only used for disks */
                 break;
                 
-            case QU_OLD:
+            case Match::OLD:
                 /* nothing to be done */
                 break;
         }
@@ -339,21 +339,21 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
         seterrinfo(game_file->name, archive->name);
 
         switch (match->quality) {
-            case QU_MISSING:
-            case QU_OLD:
+            case Match::MISSING:
+            case Match::OLD:
                 /* nothing to do */
                 break;
                 
-            case QU_NOHASH:
+            case Match::NO_HASH:
                 /* only used for disks */
                 // TODO: handle disks
                 break;
                 
-            case QU_LONG:
+            case Match::LONG:
                 save_needed_part(archive_from, match->index, game->name, match->offset, game_file->hashes.size, game_file); /* TODO: handle error */
                 break;
                 
-            case QU_COPIED:
+            case Match::COPIED:
                 switch(match->where) {
                     case FILE_INGAME:
                     case FILE_SUPERFLUOUS:
@@ -374,9 +374,9 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
                 }
                 break;
                 
-            case QU_NAMEERR:
-            case QU_OK:
-            case QU_INZIP:
+            case Match::NAME_ERROR:
+            case Match::OK:
+            case Match::IN_ZIP:
                 save_needed(archive, i, game->name); /* TODO: handle error */
                 break;
         }
