@@ -142,7 +142,7 @@
 		4B6B145A24FF91B400D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4B8AD4B42629C0AE00E084EC /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
 		4B8AD4B62629C0FE00E084EC /* compare-archives.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B8AD4B52629C0FE00E084EC /* compare-archives.cc */; };
-		4B9233001780B30400096AA2 /* dbh_cache.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9232FE1780B2BA00096AA2 /* dbh_cache.cc */; };
+		4B9233001780B30400096AA2 /* CkmameDB.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9232FE1780B2BA00096AA2 /* CkmameDB.cc */; };
 		4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* ArchiveZip.cc */; };
 		4BA47B0E25CC3E2300C4C842 /* check_archive_files.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BA47B0D25CC3E2300C4C842 /* check_archive_files.cc */; };
 		4BB51D2A25823D770047BE72 /* ParserSourceFile.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BB51D2825823D770047BE72 /* ParserSourceFile.cc */; };
@@ -672,8 +672,8 @@
 		4B918BCC2508EAE0002D8F29 /* disk-parent-merge.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-parent-merge.test"; sourceTree = "<group>"; };
 		4B918BCE2508EAE0002D8F29 /* disk-unrelated-fix.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-unrelated-fix.test"; sourceTree = "<group>"; };
 		4B918BCF2508EAE0002D8F29 /* disk-unrelated.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-unrelated.test"; sourceTree = "<group>"; };
-		4B9232FE1780B2BA00096AA2 /* dbh_cache.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbh_cache.cc; sourceTree = "<group>"; };
-		4B9232FF1780B2FC00096AA2 /* dbh_cache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = dbh_cache.h; sourceTree = "<group>"; };
+		4B9232FE1780B2BA00096AA2 /* CkmameDB.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CkmameDB.cc; sourceTree = "<group>"; };
+		4B9232FF1780B2FC00096AA2 /* CkmameDB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CkmameDB.h; sourceTree = "<group>"; };
 		4B9292BC17633FFC00806C0A /* Dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dir.h; sourceTree = "<group>"; };
 		4B9292BD17633FFC00806C0A /* find.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = find.h; sourceTree = "<group>"; };
 		4B9292BF17633FFC00806C0A /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = globals.h; sourceTree = "<group>"; };
@@ -917,6 +917,8 @@
 				4B5FAC9E1735919800B67C24 /* check_util.cc */,
 				4B3274CE25B99F76006AEF16 /* check_util.h */,
 				4B3274CD25B99F76006AEF16 /* check.h */,
+				4B9232FE1780B2BA00096AA2 /* CkmameDB.cc */,
+				4B9232FF1780B2FC00096AA2 /* CkmameDB.h */,
 				4B5FAC9F1735919800B67C24 /* cleanup.cc */,
 				4B3274C625B99F75006AEF16 /* cleanup.h */,
 				4B5FACA11735919800B67C24 /* DatEntry.cc */,
@@ -924,8 +926,6 @@
 				4B5FAE591735941D00B67C24 /* db_init.cc */,
 				4B5FAE5A1735941D00B67C24 /* DB.cc */,
 				4B513F51175BCC440096EF42 /* DB.h */,
-				4B9232FE1780B2BA00096AA2 /* dbh_cache.cc */,
-				4B9232FF1780B2FC00096AA2 /* dbh_cache.h */,
 				4B59E58F21625A05002262C8 /* dbh_statements.cc */,
 				4B59E59021625A05002262C8 /* dbh_statements.h */,
 				4B513F49175B52700096EF42 /* dbh_statements.in */,
@@ -1630,7 +1630,7 @@
 				4B0D79AA26442FC50009B2C6 /* Rom.cc in Sources */,
 				4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */,
 				4B0D79A526442EE60009B2C6 /* File.cc in Sources */,
-				4B9233001780B30400096AA2 /* dbh_cache.cc in Sources */,
+				4B9233001780B30400096AA2 /* CkmameDB.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -45,7 +45,7 @@
 #endif
 #include "ArchiveZip.h"
 #include "Detector.h"
-#include "dbh_cache.h"
+#include "CkmameDB.h"
 #include "error.h"
 #include "Exception.h"
 #include "file_util.h"
@@ -494,10 +494,6 @@ void Archive::refresh() {
 }
 
 
-int Archive::register_cache_directory(const std::string &name) {
-    return dbh_cache_register_cache_directory(name);
-}
-
 bool Archive::is_empty() const {
     for (auto &change : changes) {
         if (change.status != Change::DELETED) {
@@ -523,7 +519,10 @@ int ArchiveContents::is_cache_up_to_date() {
     time_t mtime_cache;
     off_t size_cache;
 
-    if (!dbh_cache_get_archive_last_change(cache_db.get(), cache_id, &mtime_cache, &size_cache)) {
+    try {
+        cache_db->get_last_change(cache_id, &mtime_cache, &size_cache);
+    }
+    catch (Exception &exception) {
 	return -1;
     }
 
@@ -626,11 +625,14 @@ bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
         return true;
     }
     
-    cache_db = dbh_cache_get_db_for_archive(name);
-    cache_id = cache_db ? dbh_cache_get_archive_id(cache_db.get(), name) : 0;
+    cache_db = CkmameDB::get_db_for_archvie(name);
+    cache_id = cache_db ? cache_db->get_archive_id(name) : 0;
 
     if (cache_id > 0) {
-        if (!dbh_cache_read(cache_db.get(), name, files)) {
+        try {
+            cache_db->read_files(cache_id, files);
+        }
+        catch (Exception &exception) {
             return false;
         }
     }

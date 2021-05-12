@@ -38,20 +38,50 @@
 #include <string>
 #include <vector>
 
-#include "Archive.h"
 #include "DB.h"
-#include "FileData.h"
+#include "File.h"
 
-bool dbh_cache_close_all(void);
-int dbh_cache_delete(DB *, int);
-int dbh_cache_delete_by_name(DB *dbh, const std::string &name);
-int dbh_cache_get_archive_id(DB *dbh, const std::string &name);
-bool dbh_cache_get_archive_last_change(DB *, int, time_t *, off_t *);
-std::shared_ptr<DB> dbh_cache_get_db_for_archive(const std::string &name);
-bool dbh_cache_is_empty(DB *);
-std::vector<std::string> dbh_cache_list_archives(DB *);
-int dbh_cache_read(DB *, const std::string &, std::vector<File> *);
-int dbh_cache_register_cache_directory(const std::string &directory);
-int dbh_cache_write(DB *, int, const ArchiveContents *a);
+class ArchiveContents;
+class CkmameDB;
+
+typedef std::shared_ptr<CkmameDB> CkmameDBPtr;
+
+class CkmameDB {
+public:
+    CkmameDB(const std::string &dbname, const std::string &directory_) : db(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE), directory(directory_) { }
+    static bool close_all();
+    static CkmameDBPtr get_db_for_archvie(const std::string &name);
+    static void register_directory(const std::string &directory);
+    
+    void delete_archive(const std::string &name);
+    void delete_archive(int id);
+    int get_archive_id(const std::string &name);
+    void get_last_change(int id, time_t *mtime, off_t *size);
+    bool is_empty();
+    std::vector<std::string> list_archives();
+    int read_files(int archive_id, std::vector<File> *files);
+    void write_archive(ArchiveContents *archive);
+    
+    void seterr();
+    
+private:
+    class CacheDirectory {
+    public:
+        std::string name;
+        std::shared_ptr<CkmameDB> db;
+        bool initialized;
+        
+        CacheDirectory(const std::string &name_): name(name_), initialized(false) { }
+    };
+
+    static std::vector<CacheDirectory> cache_directories;
+
+    DB db;
+    std::string directory;
+    
+    std::string name_in_db(const std::string &name);
+    void delete_files(int id);
+    int write_archive_header(int id, const std::string &name, time_t mtime, uint64_t size);
+};
 
 #endif /* dbh_cache.h */

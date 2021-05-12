@@ -37,7 +37,7 @@
 #include <cinttypes>
 #include <cstring>
 
-#include "dbh_cache.h"
+#include "CkmameDB.h"
 #include "error.h"
 #include "Exception.h"
 #include "MemDB.h"
@@ -100,13 +100,16 @@ void Archive::update_cache() {
     }
     
     if (contents->cache_db == NULL) {
-        contents->cache_db = dbh_cache_get_db_for_archive(name);
+        contents->cache_db = CkmameDB::get_db_for_archvie(name);
     }
     if (contents->cache_db != NULL) {
         if (files.empty()) {
             if (contents->cache_id > 0) {
-                if (dbh_cache_delete(contents->cache_db.get(), contents->cache_id) < 0) {
-                    seterrdb(contents->cache_db.get());
+                try {
+                    contents->cache_db->delete_archive(contents->cache_id);
+                }
+                catch (Exception &exception) {
+                    contents->cache_db->seterr();
                     myerror(ERRDB, "%s: error deleting from " DBH_CACHE_DB_NAME, name.c_str());
                     /* TODO: handle errors */
                 }
@@ -116,9 +119,11 @@ void Archive::update_cache() {
         else {
             get_last_update();
             
-            contents->cache_id = dbh_cache_write(contents->cache_db.get(), contents->cache_id, contents.get());
-            if (contents->cache_id < 0) {
-                seterrdb(contents->cache_db.get());
+            try {
+                contents->cache_db->write_archive(contents.get());
+            }
+            catch (Exception &exception) {
+                contents->cache_db->seterr();
                 myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
                 contents->cache_id = 0;
             }

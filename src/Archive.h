@@ -42,7 +42,7 @@
 
 #include <zip.h>
 
-#include "DB.h"
+#include "CkmameDB.h"
 #include "Detector.h"
 #include "File.h"
 #include "types.h"
@@ -90,7 +90,7 @@ public:
     filetype_t filetype;
     where_t where;
 
-    std::shared_ptr<DB> cache_db;
+    CkmameDBPtr cache_db;
     int cache_id;
     int flags;
     time_t mtime;
@@ -160,8 +160,6 @@ public:
     static ArchivePtr open(ArchiveContentsPtr contents);
         
     static int64_t file_read_c(void *fp, void *data, uint64_t length);
-
-    static int register_cache_directory(const std::string &name);
     
     Archive(ArchiveContentsPtr contents_);
     virtual ~Archive() { /*printf("# destroying %s\n", name.c_str());*/ }

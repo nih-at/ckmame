@@ -41,9 +41,10 @@
 
 #include "check_util.h"
 #include "cleanup.h"
-#include "dbh_cache.h"
+#include "CkmameDB.h"
 #include "diagnostics.h"
 #include "error.h"
+#include "Exception.h"
 #include "fix.h"
 #include "fixdat.h"
 #include "globals.h"
@@ -331,19 +332,22 @@ main(int argc, char **argv) {
 	exit(1);
     }
 
-    Archive::register_cache_directory(get_directory());
-    Archive::register_cache_directory(needed_dir);
-    Archive::register_cache_directory(unknown_dir);
-    for (size_t m = 0; m < search_dirs.size(); m++) {
-	auto name = search_dirs[m];
-	if (contains_romdir(name)) {
-	    /* TODO: improve error message: also if extra is in ROM directory. */
-	    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory().c_str(), name.c_str());
-	    exit(1);
+    try {
+	CkmameDB::register_directory(get_directory());
+	CkmameDB::register_directory(needed_dir);
+	CkmameDB::register_directory(unknown_dir);
+	for (size_t m = 0; m < search_dirs.size(); m++) {
+	    auto name = search_dirs[m];
+	    if (contains_romdir(name)) {
+		/* TODO: improve error message: also if extra is in ROM directory. */
+		myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory().c_str(), name.c_str());
+		exit(1);
+	    }
+	    CkmameDB::register_directory(name);
 	}
-	if (Archive::register_cache_directory(name) < 0) {
-	    exit(1);
-	}
+    }
+    catch (Exception &exception) {
+	exit(1);
     }
 
     try {
@@ -515,7 +519,7 @@ main(int argc, char **argv) {
 	stats.print(stdout, false);
     }
 
-    dbh_cache_close_all();
+    CkmameDB::close_all();
     
     if ((fix_options & FIX_DO) != 0) {
 	std::error_code ec;

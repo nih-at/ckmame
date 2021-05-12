@@ -19,11 +19,11 @@ set(COMMON_SOURCES
   check_game_files.cc
   check_old.cc
   check_util.cc
+  CkmameDB.cc
   cleanup.cc
   DatEntry.cc
   db_init.cc
   DB.cc
-  dbh_cache.cc
   dbh_statements.cc
   DeleteList.cc
   Detector.cc

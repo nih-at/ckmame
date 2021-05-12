@@ -39,7 +39,7 @@
 #include <zip.h>
 
 #include "Archive.h"
-#include "dbh_cache.h"
+#include "CkmameDB.h"
 #include "error.h"
 #include "file_util.h"
 #include "globals.h"
@@ -300,7 +300,7 @@ main(int argc, char **argv) {
     }
 
     if (roms_unzipped) {
-	dbh_cache_close_all();
+	CkmameDB::close_all();
     }
 
     if (flags & OUTPUT_FL_TEMP) {
@@ -366,7 +366,7 @@ static int process_file(const std::string &fname, const std::unordered_set<std::
 	std::error_code ec;
 	if (std::filesystem::is_directory(fname, ec)) {
             if (cache_directory) {
-		Archive::register_cache_directory(fname);
+                CkmameDB::register_directory(fname);
             }
 
             auto ctx = ParserDir(NULL, exclude, dat, out, parser_flags, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);

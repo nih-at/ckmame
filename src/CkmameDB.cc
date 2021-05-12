@@ -31,121 +31,91 @@
  IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "dbh_cache.h"
+#include "CkmameDB.h"
 
 #include <filesystem>
 
 #include "Detector.h"
 #include "error.h"
+#include "Exception.h"
 #include "fix.h"
 #include "sq_util.h"
 #include "util.h"
 
 
-class CacheDirectory {
-public:
-    std::string name;
-    std::shared_ptr<DB> dbh;
-    bool initialized;
-    
-    CacheDirectory(const std::string &name_): name(name_), initialized(false) { }
-};
-
-static std::vector<CacheDirectory> cache_directories;
-
-static std::string dbh_cache_archive_name(DB *dbh, const std::string &name);
-static int dbh_cache_delete_files(DB *, int);
-static int dbh_cache_write_archive(DB *dbh, int id, const std::string &name, time_t mtime, size_t size);
+std::vector<CkmameDB::CacheDirectory> CkmameDB::cache_directories;
 
 
-bool dbh_cache_close_all(void) {
+bool CkmameDB::close_all() {
     auto ok = true;
 
     for (auto &directory : cache_directories) {
-        if (directory.dbh) {
-            bool empty = dbh_cache_is_empty(directory.dbh.get());
-            std::string filename = sqlite3_db_filename(directory.dbh->db, "main");
+        if (directory.db) {
+            bool empty = directory.db->is_empty();
+            std::string filename = sqlite3_db_filename(directory.db->db.db, "main");
             
-            directory.dbh = NULL;
-	    /* TODO: hack; cache should have detector-applied hashes
-	     * or both; currently only has useless ones without
-	     * detector applied, which breaks consecutive runs */
-#if 0 // FIX_WITH_DETECTOR
-	    if (empty || detector) {
-		std::error_code ec;
-		std::filesystem::remove(filename);
-		if (ec) {
-		    myerror(ERRDEF, "can't remove empty database '%s': %s", filename.c_str(), ec.message().c_str());
+            directory.db = NULL;
+            if (empty) {
+                std::error_code ec;
+                std::filesystem::remove(filename);
+                if (ec) {
+                    myerror(ERRDEF, "can't remove empty database '%s': %s", filename.c_str(), ec.message().c_str());
                     ok = false;
-		}
-	    }
-#endif
-	}
+                }
+            }
+        }
         directory.initialized = false;
     }
-
+    
     return ok;
 }
 
 
-int
-dbh_cache_delete(DB *dbh, int id) {
+void CkmameDB::delete_archive(int id) {
     sqlite3_stmt *stmt;
     
-    if (dbh_cache_delete_files(dbh, id) < 0)
-	return -1;
+    delete_files(id);
 
-    if ((stmt = dbh->get_statement(DBH_STMT_DIR_DELETE_ARCHIVE)) == NULL)
-	return -1;
-    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
-	return -1;
-
-    return 0;
+    if ((stmt = db.get_statement(DBH_STMT_DIR_DELETE_ARCHIVE)) == NULL
+        || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
+        throw Exception("");
+    }
 }
 
 
-int
-dbh_cache_delete_by_name(DB *dbh, const std::string &name) {
-    int id = dbh_cache_get_archive_id(dbh, name);
+void CkmameDB::delete_archive(const std::string &name) {
+    auto id = get_archive_id(name);
 
     if (id < 0) {
-	return -1;
+        throw Exception("");
     }
 
-    return dbh_cache_delete(dbh, id);
+    delete_archive(id);
 }
 
 
-int
-dbh_cache_delete_files(DB *dbh, int id) {
+void CkmameDB::delete_files(int id) {
     sqlite3_stmt *stmt;
 
-    if ((stmt = dbh->get_statement(DBH_STMT_DIR_DELETE_FILE)) == NULL)
-	return -1;
-    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE)
-	return -1;
-
-    return 0;
+    if ((stmt = db.get_statement(DBH_STMT_DIR_DELETE_FILE)) == NULL
+        || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
+        throw Exception("");
+    }
 }
 
 
-int
-dbh_cache_get_archive_id(DB *dbh, const std::string &name) {
+int CkmameDB::get_archive_id(const std::string &name) {
     sqlite3_stmt *stmt;
-    if ((stmt = dbh->get_statement(DBH_STMT_DIR_QUERY_ARCHIVE_ID)) == NULL) {
+    if ((stmt = db.get_statement(DBH_STMT_DIR_QUERY_ARCHIVE_ID)) == NULL) {
 	return 0;
     }
 
-    auto archive_name = dbh_cache_archive_name(dbh, name);
+    auto archive_name = name_in_db(name);
     if (archive_name.empty()) {
 	return 0;
     }
 
-    if (sqlite3_bind_text(stmt, 1, archive_name.c_str(), -1, SQLITE_STATIC) != SQLITE_OK) {
-	return 0;
-    }
-
-    if (sqlite3_step(stmt) != SQLITE_ROW) {
+    if (sqlite3_bind_text(stmt, 1, archive_name.c_str(), -1, SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_ROW) {
 	return 0;
     }
 
@@ -153,27 +123,21 @@ dbh_cache_get_archive_id(DB *dbh, const std::string &name) {
 }
 
 
-bool
-dbh_cache_get_archive_last_change(DB *dbh, int archive_id, time_t *mtime, off_t *size) {
+void CkmameDB::get_last_change(int id, time_t *mtime, off_t *size) {
     sqlite3_stmt *stmt;
 
-    if ((stmt = dbh->get_statement(DBH_STMT_DIR_QUERY_ARCHIVE_LAST_CHANGE)) == NULL || sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK) {
-	return false;
-    }
-
-    if (sqlite3_step(stmt) != SQLITE_ROW) {
-	return false;
+    if ((stmt = db.get_statement(DBH_STMT_DIR_QUERY_ARCHIVE_LAST_CHANGE)) == NULL
+        || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK
+        || sqlite3_step(stmt) != SQLITE_ROW) {
+        throw Exception();
     }
 
     *mtime = sqlite3_column_int64(stmt, 0);
     *size = sqlite3_column_int64(stmt, 1);
-
-    return true;
 }
 
 
-std::shared_ptr<DB>
-dbh_cache_get_db_for_archive(const std::string &name) {
+CkmameDBPtr CkmameDB::get_db_for_archvie(const std::string &name) {
     for (auto &directory : cache_directories) {
         if (name.compare(0, directory.name.length(), directory.name) == 0 && (name.length() == directory.name.length() || name[directory.name.length()] == '/')) {
             if (!directory.initialized) {
@@ -191,14 +155,14 @@ dbh_cache_get_db_for_archive(const std::string &name) {
                 auto dbname = directory.name + '/' + DBH_CACHE_DB_NAME;
 
                 try {
-                    directory.dbh = std::make_shared<DB>(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE);
+                    directory.db = std::make_shared<CkmameDB>(dbname, directory.name);
                 }
                 catch (std::exception &e) {
                     myerror(ERRDB, "can't open rom directory database for '%s': %s", directory.name.c_str(), e.what());
 		    return NULL;
 		}
 	    }
-            return directory.dbh;
+            return directory.db;
 	}
     }
 
@@ -206,26 +170,24 @@ dbh_cache_get_db_for_archive(const std::string &name) {
 }
 
 
-bool
-dbh_cache_is_empty(DB *dbh) {
+bool CkmameDB::is_empty() {
     sqlite3_stmt *stmt;
 
-    if ((stmt = dbh->get_statement(DBH_STMT_DIR_COUNT_ARCHIVES)) == NULL)
+    if ((stmt = db.get_statement(DBH_STMT_DIR_COUNT_ARCHIVES)) == NULL
+        || sqlite3_step(stmt) != SQLITE_ROW) {
 	return false;
-
-    if (sqlite3_step(stmt) != SQLITE_ROW)
-	return false;
+    }
 
     return sqlite3_column_int(stmt, 0) == 0;
 }
 
 
-std::vector<std::string> dbh_cache_list_archives(DB *dbh) {
+std::vector<std::string> CkmameDB::list_archives() {
     sqlite3_stmt *stmt;
     std::vector<std::string> archives;
     int ret;
 
-    if ((stmt = dbh->get_statement(DBH_STMT_DIR_LIST_ARCHIVES)) == NULL) {
+    if ((stmt = db.get_statement(DBH_STMT_DIR_LIST_ARCHIVES)) == NULL) {
 	return archives;
     }
 
@@ -241,25 +203,20 @@ std::vector<std::string> dbh_cache_list_archives(DB *dbh) {
 }
 
 
-int
-dbh_cache_read(DB *dbh, const std::string &name, std::vector<File> *files) {
-    sqlite3_stmt *stmt;
-    int ret;
-    int archive_id;
-
-    if ((archive_id = dbh_cache_get_archive_id(dbh, name)) == 0) {
+int CkmameDB::read_files(int archive_id, std::vector<File> *files) {
+    if (archive_id == 0) {
 	return 0;
     }
 
-    if ((stmt = dbh->get_statement(DBH_STMT_DIR_QUERY_FILE)) == NULL) {
-	return -1;
-    }
-    if (sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK) {
-	return -1;
+    sqlite3_stmt *stmt;
+    if ((stmt = db.get_statement(DBH_STMT_DIR_QUERY_FILE)) == NULL
+        || sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK) {
+        throw Exception();
     }
 
     files->clear();
 
+    int ret;
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
         File file;
 
@@ -275,21 +232,20 @@ dbh_cache_read(DB *dbh, const std::string &name, std::vector<File> *files) {
 
     if (ret != SQLITE_DONE) {
         files->clear();
-	return -1;
+        throw  Exception();
     }
 
     return archive_id;
 }
 
 
-int
-dbh_cache_register_cache_directory(const std::string &directory_name) {
+void CkmameDB::register_directory(const std::string &directory_name) {
     std::string name;
     
     if (directory_name.empty()) {
         errno = EINVAL;
         myerror(ERRDEF, "directory_name can't be empty");
-        return -1;
+        throw Exception();
     }
     
     if (directory_name[directory_name.length() - 1] == '/') {
@@ -305,99 +261,91 @@ dbh_cache_register_cache_directory(const std::string &directory_name) {
         if (name.compare(0, length, directory.name) == 0 && (name.length() == length || name[length] == '/') && (directory.name.length() == length || directory.name[length] == '/')) {
             if (directory.name.length() != name.length()) {
 		myerror(ERRDEF, "can't cache in directory '%s' and its parent '%s'", (directory.name.length() < name.length() ? name.c_str() : directory.name.c_str()), (directory.name.length() < name.length() ? directory.name.c_str() : name.c_str()));
-		return -1;
+                throw Exception();
 	    }
-	    return 0;
+	    return;
 	}
     }
 
     cache_directories.push_back(CacheDirectory(name));
 
-    return 0;
+    return;
 }
 
 
-int
-dbh_cache_write(DB *dbh, int id, const ArchiveContents *a) {
+void CkmameDB::seterr() {
+    seterrdb(&db);
+}
+
+
+void CkmameDB::write_archive(ArchiveContents *archive) {
     sqlite3_stmt *stmt;
 
+    auto id = archive->cache_id;
+    
     if (id == 0) {
-        id = dbh_cache_get_archive_id(dbh, a->name);
+        id = get_archive_id(archive->name);
     }
 
     if (id != 0) {
-	if (dbh_cache_delete(dbh, id) < 0) {
-	    return -1;
-	}
+        delete_archive(id);
     }
 
-    auto name = dbh_cache_archive_name(dbh, a->name);
+    auto name = name_in_db(archive->name);
     if (name.empty()) {
-	return -1;
+        throw Exception();
     }
 
-    if ((id = dbh_cache_write_archive(dbh, id, name, a->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : a->mtime, a->size)) < 0) {
-	return -1;
+    id = write_archive_header(id, name, archive->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : archive->mtime, archive->size);
+
+    if ((stmt = db.get_statement(DBH_STMT_DIR_INSERT_FILE)) == NULL
+        || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
+        throw Exception();
     }
 
-    if ((stmt = dbh->get_statement(DBH_STMT_DIR_INSERT_FILE)) == NULL) {
-	return -1;
-    }
-
-    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
-	return -1;
-    }
-
-    for (size_t i = 0; i < a->files.size(); i++) {
-	const auto *f = &a->files[i];
+    for (size_t i = 0; i < archive->files.size(); i++) {
+	const auto *f = &archive->files[i];
 	if (sqlite3_bind_int(stmt, 2, static_cast<int>(i)) != SQLITE_OK || sq3_set_string(stmt, 3, f->name.c_str()) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, f->mtime) != SQLITE_OK || sqlite3_bind_int(stmt, 5, f->broken ? 1 : 0) != SQLITE_OK || sq3_set_uint64(stmt, 6, f->hashes.size) != SQLITE_OK || sq3_set_hashes(stmt, 7, &f->hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
-	    return -1;
+            throw Exception();
 	}
     }
 
-    return id;
+    archive->cache_id = id;
 }
 
 
-static std::string
-dbh_cache_archive_name(DB *dbh, const std::string &name) {
-    for (auto &directory : cache_directories) {
-        if (directory.dbh.get() == dbh) {
-            if (name == directory.name) {
-                return ".";
-            }
-
-            auto offset = directory.name.length() + 1;
-            auto length = name.length() - offset;
-
-            return name.substr(offset, length);
-	}
+std::string CkmameDB::name_in_db(const std::string &name) {
+    if (name == directory) {
+        return ".";
     }
 
-    return "";
+    auto offset = directory.length() + 1;
+    auto length = name.length() - offset;
+
+    return name.substr(offset, length);
 }
 
 
-static int
-dbh_cache_write_archive(DB *dbh, int id, const std::string &name, time_t mtime, size_t size) {
-    sqlite3_stmt *stmt;
-
-    stmt = dbh->get_statement(DBH_STMT_DIR_INSERT_ARCHIVE_ID);
+int CkmameDB::write_archive_header(int id, const std::string &name, time_t mtime, uint64_t size) {
+    auto stmt = db.get_statement(DBH_STMT_DIR_INSERT_ARCHIVE_ID);
 
     if (stmt == NULL || sq3_set_string(stmt, 1, name) != SQLITE_OK || sqlite3_bind_int64(stmt, 3, mtime) != SQLITE_OK || sq3_set_uint64(stmt, 4, size) != SQLITE_OK) {
-	return -1;
+        throw Exception();
     }
 
     if (id > 0) {
-	if (sqlite3_bind_int(stmt, 2, id) != SQLITE_OK)
-	    return -1;
+        if (sqlite3_bind_int(stmt, 2, id) != SQLITE_OK) {
+            throw Exception();
+        }
     }
 
-    if (sqlite3_step(stmt) != SQLITE_DONE)
-	return -1;
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        throw Exception();
+    }
 
-    if (id <= 0)
-	id = (int)sqlite3_last_insert_rowid(dbh->db); /* TODO: use int64_t as id */
+    if (id <= 0) {
+	id = (int)sqlite3_last_insert_rowid(db.db); /* TODO: use int64_t as id */
+    }
 
     return id;
 }

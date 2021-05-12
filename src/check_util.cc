@@ -36,7 +36,7 @@
 #include <algorithm>
 
 #include "Archive.h"
-#include "dbh_cache.h"
+#include "CkmameDB.h"
 #include "DeleteList.h"
 #include "Dir.h"
 #include "globals.h"
@@ -167,9 +167,9 @@ static bool enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list
 
     if (ret) {
 	/* clean up cache db: remove archives no longer in file system */
-	auto dbh = dbh_cache_get_db_for_archive(directory_name);
+	auto dbh = CkmameDB::get_db_for_archvie(directory_name);
 	if (dbh) {
-	    auto list_db = dbh_cache_list_archives(dbh.get());
+	    auto list_db = dbh->list_archives();
 	    if (!list_db.empty()) {
 		std::sort(list.begin(), list.end());
 
@@ -179,7 +179,7 @@ static bool enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list
 			name += '/' + entry_name;
 		    }
 		    if (!std::binary_search(list.begin(), list.end(), name)) {
-			dbh_cache_delete_by_name(dbh.get(), name);
+			dbh->delete_archive(name);
 		    }
 		}
 	    }
