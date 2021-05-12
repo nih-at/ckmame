@@ -62,10 +62,6 @@ enum filetype {
 
 typedef enum filetype filetype_t;
 
-enum name_type { NAME_ZIP, NAME_IMAGES, NAME_IGNORE, NAME_UNKNOWN };
-
-typedef enum name_type name_type_t;
-
 #define FIX_DO 0x001    /* really make fixes */
 #define FIX_PRINT 0x002 /* print fixes made */
 #define FIX_MOVE_LONG 0x004 /* move partially used files to garbage */

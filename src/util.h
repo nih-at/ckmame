@@ -38,7 +38,9 @@
 
 #include <stdarg.h>
 
-#include "types.h"
+enum name_type { NAME_ZIP, NAME_IMAGES, NAME_IGNORE, NAME_UNKNOWN };
+
+typedef enum name_type name_type_t;
 
 extern std::string rom_dir;
 
