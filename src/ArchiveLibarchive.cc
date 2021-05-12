@@ -318,7 +318,7 @@ bool ArchiveLibarchive::read_infos_xxx() {
         r.mtime = archive_entry_mtime(entry);
         r.hashes.size = static_cast<uint64_t>(archive_entry_size(entry));
         r.name = archive_entry_pathname_utf8(entry);
-        r.status = STATUS_OK;
+        r.broken = false;
         files.push_back(r);
 
         header_read = true;

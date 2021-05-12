@@ -166,7 +166,7 @@ match_files(ArchivePtr archive, test_t test, const Rom *rom, Match *match) {
     for (size_t i = 0; result != TEST_USABLE && i < archive->files.size(); i++) {
         auto &file = archive->files[i];
 
-	if (file.status != STATUS_OK) {
+	if (file.broken) {
 	    continue;
 	}
 

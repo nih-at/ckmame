@@ -39,7 +39,7 @@
 
 class File : public FileData {
 public:
-    File(): FileData(), size_detector(SIZE_UNKNOWN_OLD) { }
+    File(): FileData(), size_detector(SIZE_UNKNOWN_OLD), broken(false) { }
 
     uint64_t get_size(bool detector) const { return detector ? size_detector : hashes.size; }
     const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
@@ -50,6 +50,7 @@ public:
     std::string filename_extension;
     uint64_t size_detector;
     Hashes hashes_detector;
+    bool broken;
     
     std::unordered_map<int, Hashes> detector_hashes;
 

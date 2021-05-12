@@ -263,7 +263,7 @@ dbh_cache_read(DB *dbh, const std::string &name, std::vector<File> *files) {
 
         file.name = sq3_get_string(stmt, 0);
         file.mtime = sqlite3_column_int(stmt, 1);
-	file.status = static_cast<status_t>(sqlite3_column_int(stmt, 2));
+	file.broken = sqlite3_column_int(stmt, 2) != 0;
 	file.hashes.size = sq3_get_uint64_default(stmt, 3, SIZE_UNKNOWN_OLD);
 	sq3_get_hashes(&file.hashes, stmt, 4);
 
@@ -348,7 +348,7 @@ dbh_cache_write(DB *dbh, int id, const ArchiveContents *a) {
 
     for (size_t i = 0; i < a->files.size(); i++) {
 	const auto *f = &a->files[i];
-	if (sqlite3_bind_int(stmt, 2, static_cast<int>(i)) != SQLITE_OK || sq3_set_string(stmt, 3, f->name.c_str()) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, f->mtime) != SQLITE_OK || sqlite3_bind_int(stmt, 5, f->status) != SQLITE_OK || sq3_set_uint64(stmt, 6, f->hashes.size) != SQLITE_OK || sq3_set_hashes(stmt, 7, &f->hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+	if (sqlite3_bind_int(stmt, 2, static_cast<int>(i)) != SQLITE_OK || sq3_set_string(stmt, 3, f->name.c_str()) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, f->mtime) != SQLITE_OK || sqlite3_bind_int(stmt, 5, f->broken ? 1 : 0) != SQLITE_OK || sq3_set_uint64(stmt, 6, f->hashes.size) != SQLITE_OK || sq3_set_hashes(stmt, 7, &f->hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
 	    return -1;
 	}
     }

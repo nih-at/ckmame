@@ -44,9 +44,8 @@ public:
     std::string name;
     Hashes hashes;
     time_t mtime;   // needed by mkmamedb --runtest
-    status_t status;
     
-    FileData() : mtime(0), status(STATUS_OK) { }
+    FileData() : mtime(0) { }
 
     bool is_size_known() const { return hashes.size != SIZE_UNKNOWN_OLD; }
   

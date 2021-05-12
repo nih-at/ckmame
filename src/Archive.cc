@@ -174,7 +174,7 @@ int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
 
     file_ensure_hashes(index, hashes->types);
 
-    if (files[index].status != STATUS_OK) {
+    if (files[index].broken) {
         return Hashes::NOCOMMON;
     }
 
@@ -197,7 +197,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
     if (!f) {
         // TODO: move error message to get_source()
 	myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), strerror(errno));
-	file.status = STATUS_BADDUMP;
+	file.broken = true;
 	return false;
     }
     
@@ -206,7 +206,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
     }
     catch (Exception &e) {
         myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
-        file.status = STATUS_BADDUMP;
+        file.broken = true;
         return false;
     }
 
@@ -216,12 +216,12 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
 
         case READ_ERROR:
             myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
-            file.status = STATUS_BADDUMP;
+            file.broken = true;
             return false;
 
         case CRC_ERROR:
             myerror(ERRDEF, "%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
-            file.status = STATUS_BADDUMP;
+            file.broken = true;
             return false;
     }
 
@@ -249,7 +249,7 @@ std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const
         size_t offset = 0;
         while (offset + size <= file.hashes.size) {
             if (get_hashes(source.get(), size, offset + size == file.hashes.size, &hashes_part) != OK) {
-                file.status = STATUS_BADDUMP;
+                file.broken = true;
                 return {};
             }
 
@@ -266,7 +266,7 @@ std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const
         }
     }
     catch (Exception &e) {
-        file.status = STATUS_BADDUMP;
+        file.broken = true;
     }
 
     return {};
@@ -324,7 +324,7 @@ void Archive::file_match_detector(uint64_t index) {
     }
     catch (Exception &e) {
         myerror(ERRZIP, "%s: can't open: %s", file.name.c_str(), e.what());
-        file.status = STATUS_BADDUMP;
+        file.broken = true;
     }
 }
 
@@ -586,8 +586,8 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
         
         if (want_crc() && !file.hashes.has_type(Hashes::TYPE_CRC)) {
             if (!file_ensure_hashes(i, Hashes::TYPE_ALL)) {
-                file.status = STATUS_BADDUMP;
-                if (it == files_cache.cend() || (*it).status != STATUS_BADDUMP) {
+                file.broken = true;
+                if (it == files_cache.cend() || !(*it).broken) {
                     cache_changed = true;
                 }
                 continue;

@@ -188,7 +188,7 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 	return false;
     }
     seterrinfo(name, source_archive->files[source_index].name);
-    if (source_archive->files[source_index].status == STATUS_BADDUMP) {
+    if (source_archive->files[source_index].broken) {
 	myerror(ERRZIPFILE, "not copying broken file");
 	return false;
     }

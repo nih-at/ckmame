@@ -101,7 +101,7 @@ bool ArchiveImages::read_infos_xxx() {
             }
             catch (Exception &e) {
                 myerror(ERRDEF, "%s: can't open: %s", filename.c_str(), e.what());
-                f.status = STATUS_BADDUMP;
+                f.broken = true;
             }
         }
     }

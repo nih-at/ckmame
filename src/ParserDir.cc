@@ -220,8 +220,8 @@ bool ParserDir::parse_archive(filetype_t filetype, Archive *a) {
         file_name(filetype, file.name);
         file_size(filetype, file.hashes.size);
         file_mtime(filetype, file.mtime);
-        if (file.status != STATUS_OK) {
-            file_status(filetype, file.status == STATUS_BADDUMP ? "baddump" : "nodump");
+        if (file.broken) {
+            file_status(filetype, "baddump");
 	}
         for (int ht = 1; ht <= Hashes::TYPE_MAX; ht <<= 1) {
             if ((wanted_hashtypes & ht) && file.hashes.has_type(ht)) {

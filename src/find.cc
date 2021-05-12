@@ -68,7 +68,7 @@ find_in_archives(filetype_t filetype, const FileData *rom, Match *m, bool needed
             MemDB::update_file(a->contents.get(), result.index);
 	}
 
-	if (file.status != STATUS_OK || file.get_hashes(result.sh != 0).compare(rom->hashes) != Hashes::MATCH) {
+	if (file.broken || file.get_hashes(result.sh != 0).compare(rom->hashes) != Hashes::MATCH) {
 	    continue;
 	}
 
@@ -113,7 +113,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
     if (idx.has_value() && a->file_compare_hashes(idx.value(), &candidate->hashes) == Hashes::MATCH) {
         auto index = idx.value();
         
-        if (a->files[index].status == STATUS_OK) {
+        if (!a->files[index].broken) {
             if (matches) {
                 matches->archive = a;
                 matches->index = index;

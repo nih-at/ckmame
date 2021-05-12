@@ -227,7 +227,7 @@ bool ArchiveZip::read_infos_xxx() {
         r.mtime = zsb.mtime;
 	r.hashes.size = zsb.size;
 	r.name = zsb.name;
-        r.status = STATUS_OK;
+        r.broken = false;
         r.hashes.set_crc(zsb.crc);
         
         files.push_back(r);

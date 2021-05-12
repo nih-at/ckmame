@@ -50,7 +50,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
     for (size_t i = 0; i < archive->files.size(); i++) {
         auto &file = archive->files[i];
         
-        if (file.status != STATUS_OK) {
+        if (file.broken) {
             result->archive_files[filetype][i] = FS_BROKEN;
             continue;
         }

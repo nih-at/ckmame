@@ -175,7 +175,7 @@ make_space(Archive *a, const std::string &name, std::vector<std::string> *origin
 	(*original_names)[index] = a->files[index].filename();
     }
 
-    if (a->files[index].status == STATUS_BADDUMP) {
+    if (a->files[index].broken) {
         if (fix_options & FIX_PRINT) {
 	    printf("%s: delete broken '%s'\n", a->name.c_str(), name.c_str());
         }

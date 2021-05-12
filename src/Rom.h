@@ -39,9 +39,10 @@
 
 class Rom : public FileData {
 public:
-    Rom() : FileData(), where(FILE_INGAME) { }
+    Rom() : FileData(), status(STATUS_OK), where(FILE_INGAME) { }
     
     std::string merge;
+    status_t status;
     where_t where;
 
     const std::string &merged_name() const { return merge.empty() ? name : merge; }

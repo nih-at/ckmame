@@ -161,7 +161,7 @@ bool MemDB::insert_archive(const ArchiveContents *archive) {
     auto ok = true;
     
     for (size_t i = 0; i < archive->files.size(); i++) {
-        if (archive->files[i].status != STATUS_OK) {
+        if (archive->files[i].broken) {
 	    continue;
         }
         if (!insert_file(stmt, archive, i)) {
@@ -178,7 +178,7 @@ bool MemDB::update_file(const ArchiveContents *archive, size_t idx) {
         return false;
     }
     
-    if (archive->files[idx].status != STATUS_OK) {
+    if (archive->files[idx].broken) {
 	return memdb->delete_file(archive->id, archive->filetype, idx);
     }
 
