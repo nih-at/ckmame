@@ -48,7 +48,6 @@ enum where {
 
 typedef enum where where_t;
 
-#define IS_ELSEWHERE(w) ((w) >= FILE_ROMSET)
 #define IS_EXTERNAL(w) ((w) > FILE_ROMSET && (w) < FILE_OLD)
 
 /* bump database version on change */
