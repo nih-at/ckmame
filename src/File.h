@@ -1,7 +1,6 @@
 #ifndef HAD_FILE_H
 #define HAD_FILE_H
 
-
 /*
   file.h -- information about one file
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
@@ -39,12 +38,12 @@
 
 class File : public FileData {
 public:
-    File(): FileData(), size_detector(SIZE_UNKNOWN_OLD), broken(false) { }
+    File(): FileData(), size_detector(Hashes::SIZE_UNKNOWN), broken(false) { }
 
     uint64_t get_size(bool detector) const { return detector ? size_detector : hashes.size; }
     const Hashes &get_hashes(bool detector) const { return detector ? hashes_detector : hashes; }
 
-    bool is_size_known(bool detector) const { return get_size(detector) != SIZE_UNKNOWN_OLD; }
+    bool is_size_known(bool detector) const { return get_size(detector) != Hashes::SIZE_UNKNOWN; }
     bool size_hashes_are_set(bool detector) const;
 
     std::string filename_extension;

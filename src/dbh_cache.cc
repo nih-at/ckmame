@@ -264,7 +264,7 @@ dbh_cache_read(DB *dbh, const std::string &name, std::vector<File> *files) {
         file.name = sq3_get_string(stmt, 0);
         file.mtime = sqlite3_column_int(stmt, 1);
 	file.broken = sqlite3_column_int(stmt, 2) != 0;
-	file.hashes.size = sq3_get_uint64_default(stmt, 3, SIZE_UNKNOWN_OLD);
+	file.hashes.size = sq3_get_uint64_default(stmt, 3, Hashes::SIZE_UNKNOWN);
 	sq3_get_hashes(&file.hashes, stmt, 4);
 
         files->push_back(file);

@@ -300,7 +300,7 @@ bool RomDB::read_files(Game *game, filetype_t ft) {
         rom.merge = sq3_get_string(stmt, 1);
         rom.status = static_cast<status_t>(sqlite3_column_int(stmt, 2));
         rom.where = static_cast<where_t>(sqlite3_column_int(stmt, 3));
-        rom.hashes.size = sq3_get_uint64_default(stmt, 4, SIZE_UNKNOWN_OLD);
+        rom.hashes.size = sq3_get_uint64_default(stmt, 4, Hashes::SIZE_UNKNOWN);
         sq3_get_hashes(&rom.hashes, stmt, 5);
         
         game->files[ft].push_back(rom);
@@ -535,7 +535,7 @@ bool RomDB::write_files(Game *game, filetype_t ft) {
     for (size_t i = 0; i < game->files[ft].size(); i++) {
         auto &rom = game->files[ft][i];
 
-        if (sqlite3_bind_int64(stmt, 1, static_cast<int64_t>(game->id)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 3, static_cast<int>(i)) != SQLITE_OK || sq3_set_string(stmt, 4, rom.name) != SQLITE_OK || sq3_set_string(stmt, 5, rom.merge) != SQLITE_OK || sqlite3_bind_int(stmt, 6, rom.status) != SQLITE_OK || sqlite3_bind_int(stmt, 7, rom.where) != SQLITE_OK || sq3_set_uint64_default(stmt, 8, rom.hashes.size, SIZE_UNKNOWN_OLD) != SQLITE_OK || sq3_set_hashes(stmt, 9, &rom.hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK || sqlite3_reset(stmt)) {
+        if (sqlite3_bind_int64(stmt, 1, static_cast<int64_t>(game->id)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 3, static_cast<int>(i)) != SQLITE_OK || sq3_set_string(stmt, 4, rom.name) != SQLITE_OK || sq3_set_string(stmt, 5, rom.merge) != SQLITE_OK || sqlite3_bind_int(stmt, 6, rom.status) != SQLITE_OK || sqlite3_bind_int(stmt, 7, rom.where) != SQLITE_OK || sq3_set_uint64_default(stmt, 8, rom.hashes.size, Hashes::SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 9, &rom.hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK || sqlite3_reset(stmt)) {
             return false;
         }
     }

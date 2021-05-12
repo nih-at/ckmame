@@ -47,7 +47,7 @@ public:
     
     FileData() : mtime(0) { }
 
-    bool is_size_known() const { return hashes.size != SIZE_UNKNOWN_OLD; }
+    bool is_size_known() const { return hashes.size != Hashes::SIZE_UNKNOWN; }
   
     bool compare_name(const FileData &other) const;
     bool compare_name_size_hashes(const FileData &other) const;
