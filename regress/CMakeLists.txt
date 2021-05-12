@@ -77,6 +77,7 @@ add_custom_target(update-mamedb.dump
 set(XFAIL_TESTS
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
+  skip.test
 )
 	      
 file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
