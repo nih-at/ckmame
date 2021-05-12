@@ -121,7 +121,10 @@ Detector::parse(ParserSource *ps) {
 	return NULL;
     }
 
-    return ctx.detector;
+    auto detector = ctx.detector;
+    
+    detector->id = get_id(DetectorDescriptor(detector.get()));
+    return detector;
 }
 
 

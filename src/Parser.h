@@ -112,6 +112,7 @@ protected:
     DatEntry de; /* info about dat file */
     GamePtr g;      /* current game */
     Rom *r[TYPE_MAX];      /* current files */
+    DetectorPtr detector;
 };
 
 #endif /* Parser.h */

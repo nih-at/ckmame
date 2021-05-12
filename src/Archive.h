@@ -43,6 +43,7 @@
 #include <zip.h>
 
 #include "DB.h"
+#include "Detector.h"
 #include "File.h"
 #include "types.h"
 #include "zip_util.h"
@@ -179,7 +180,7 @@ public:
     std::optional<size_t> file_index_by_hashes(const Hashes *h) const;
     std::optional<size_t> file_index_by_name(const std::string &name) const;
     std::optional<size_t> file_index(const FileData *file) const;
-    void file_match_detector(uint64_t idx);
+    void file_match_detector(uint64_t idx, Detector *detector);
     bool file_move(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_rename(uint64_t index, const std::string &filename);
     bool file_rename_to_unique(uint64_t index);

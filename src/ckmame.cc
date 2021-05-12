@@ -461,11 +461,6 @@ main(int argc, char **argv) {
 	}
     }
 
-    if (action != ACTION_SUPERFLUOUS_ONLY) {
-	/* TODO: merge in olddb */
-	detector = db->read_detector();
-    }
-
     if (action != ACTION_CLEANUP_EXTRA_ONLY) {
 	superfluous = list_directory(get_directory(), dbname);
     }

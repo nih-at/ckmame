@@ -232,9 +232,11 @@ bool ArchiveZip::read_infos_xxx() {
         
         files.push_back(r);
 
+#if 0 // FIX_WITH_DETECTOR
         if (detector) {
 	    file_match_detector(i);
         }
+#endif
     }
     
     return true;

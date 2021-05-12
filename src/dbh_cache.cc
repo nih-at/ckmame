@@ -70,6 +70,7 @@ bool dbh_cache_close_all(void) {
 	    /* TODO: hack; cache should have detector-applied hashes
 	     * or both; currently only has useless ones without
 	     * detector applied, which breaks consecutive runs */
+#if 0 // FIX_WITH_DETECTOR
 	    if (empty || detector) {
 		std::error_code ec;
 		std::filesystem::remove(filename);
@@ -78,6 +79,7 @@ bool dbh_cache_close_all(void) {
                     ok = false;
 		}
 	    }
+#endif
 	}
         directory.initialized = false;
     }

@@ -36,6 +36,10 @@
 
 DetectorPtr detector;
 
+DetectorDescriptor::DetectorDescriptor(const Detector *detector) : DetectorDescriptor(detector->name, detector->version) { }
+
+std::unordered_map<DetectorDescriptor, size_t> Detector::detector_ids;
+
 std::string Detector::file_test_type_name(TestType type) {
     switch (type) {
         case TEST_FILE_EQ:
@@ -87,4 +91,17 @@ std::string Detector::test_type_name(TestType type) {
         default:
             return "unknown";
     }
+}
+
+
+size_t Detector::get_id(const DetectorDescriptor &descriptor) {
+    auto it = detector_ids.find(descriptor);
+    
+    if (it != detector_ids.end()) {
+        return it->second;
+    }
+    
+    auto id = detector_ids.size() + 1;
+    detector_ids[descriptor] = id;
+    return id;
 }

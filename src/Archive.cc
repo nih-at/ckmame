@@ -311,7 +311,7 @@ std::optional<size_t> Archive::file_index_by_name(const std::string &filename) c
 }
 
 
-void Archive::file_match_detector(uint64_t index) {
+void Archive::file_match_detector(uint64_t index, Detector *detector) {
     auto &file = files[index];
 
     try {
@@ -592,9 +592,11 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
                 }
                 continue;
             }
+#if 0
             if (detector) {
                 file_match_detector(i);
             }
+#endif
             cache_changed = true;
         }
     }

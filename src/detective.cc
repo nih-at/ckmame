@@ -84,7 +84,7 @@ main(int argc, char **argv) {
 
     setprogname(argv[0]);
 
-    detector = NULL;
+    DetectorPtr detector;
     hashtypes = -1;
 
     dbname = getenv("MAMEDB");
