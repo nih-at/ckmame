@@ -62,18 +62,4 @@ enum filetype {
 
 typedef enum filetype filetype_t;
 
-#define FIX_DO 0x001    /* really make fixes */
-#define FIX_PRINT 0x002 /* print fixes made */
-#define FIX_MOVE_LONG 0x004 /* move partially used files to garbage */
-#define FIX_MOVE_UNKNOWN 0x008     /* move unknown files to garbage */
-#define FIX_DELETE_EXTRA 0x010     /* delete used from extra dirs */
-#define FIX_CLEANUP_EXTRA 0x020    /* delete superfluous from extra dirs */
-#define FIX_SUPERFLUOUS 0x040      /* move/delete superfluous */
-#define FIX_IGNORE_UNKNOWN 0x080   /* ignore unknown files during fixing */
-#define FIX_DELETE_DUPLICATE 0x100 /* delete files present in old.db */
-#define FIX_COMPLETE_ONLY 0x200    /* only keep complete sets in rom-dir */
-#if 0                              /* not supported (yet?) */
-#define FIX_COMPLETE_GAMES 0x400   /* complete in old or complete in roms */
-#endif
-
 #endif /* types.h */
