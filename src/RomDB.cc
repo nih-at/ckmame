@@ -34,6 +34,7 @@
 #include "RomDB.h"
 
 #include "error.h"
+#include "Exception.h"
 #include "sq_util.h"
 
 std::unique_ptr<RomDB> db;
@@ -72,6 +73,21 @@ int RomDB::hashtypes(filetype_t type) {
 RomDB::RomDB(const std::string &name, int mode) : db(name, mode) {
     for (size_t i = 0; i < TYPE_MAX; i++) {
 	hashtypes_[i] = -1;
+    }
+    
+    auto stmt = db.get_statement(DBH_STMT_QUERY_DAT_DETECTOR);
+    if (stmt == NULL) {
+        throw Exception();
+    }
+    
+    int ret;
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
+        auto detector_id = Detector::get_id(DetectorDescriptor(sq3_get_string(stmt, 0), sq3_get_string(stmt, 1)));
+        detectors[detector_id] = read_detector();
+    }
+    
+    if (ret != SQLITE_DONE) {
+        throw Exception();
     }
 }
 
@@ -124,6 +140,15 @@ std::vector<DatEntry> RomDB::read_dat() {
     return dat;
 }
 
+
+DetectorPtr RomDB::get_detector(size_t id) {
+    auto it = detectors.find(id);
+    
+    if (it == detectors.end()) {
+        return NULL;
+    }
+    return it->second;
+}
 
 DetectorPtr RomDB::read_detector() {
     auto stmt = db.get_statement(DBH_STMT_QUERY_DAT_DETECTOR);

@@ -145,7 +145,7 @@ main(int argc, char **argv) {
     try {
 	auto ddb = std::make_unique<RomDB>(dbname, DBH_READ);
 	if (detector == NULL) {
-	    detector = ddb->read_detector();
+            detector = ddb->detectors.begin()->second;
 	}
 	if (hashtypes == -1) {
 	    hashtypes = ddb->hashtypes(TYPE_ROM);

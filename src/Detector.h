@@ -41,6 +41,7 @@
 #include "File.h"
 #include "Hashes.h"
 #include "ParserSource.h"
+#include "zip_util.h"
 
 #define DETECTOR_OFFSET_EOF 0
 #define DETECTOR_SIZE_POWER_OF_2 (-1)
@@ -149,6 +150,23 @@ public:
     
 private:
     static DetectorCollection detector_ids;
+};
+
+class DetectorContext {
+public:
+    DetectorContext(ZipSourcePtr source, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors) { } // TODO: implement
+    
+    bool execute() { return false; } // TODO: implement
+
+private:
+#if 0
+    ZipSourcePtr source;
+    std::unordered_map<size_t, DetectorPtr> detectors;
+    File *file;
+    
+    std::unordered_map<size_t, Hashes> hashes;
+    std::unordered_map<size_t, Hashes::Update> hashes_updates;
+#endif
 };
 
 //extern DetectorPtr detector;

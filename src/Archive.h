@@ -164,6 +164,7 @@ public:
 
     int close();
     bool commit();
+    bool compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors);
     void ensure_valid_archive();
     bool file_add_empty(const std::string &filename);
     int file_compare_hashes(uint64_t idx, const Hashes *h);
@@ -176,7 +177,6 @@ public:
     std::optional<size_t> file_index_by_hashes(const Hashes *h) const;
     std::optional<size_t> file_index_by_name(const std::string &name) const;
     std::optional<size_t> file_index(const FileData *file) const;
-    void file_match_detector(uint64_t idx, Detector *detector);
     bool file_move(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_rename(uint64_t index, const std::string &filename);
     bool file_rename_to_unique(uint64_t index);
@@ -224,6 +224,8 @@ protected:
     GetHashesStatus get_hashes(ZipSource *source, uint64_t length, bool eof, Hashes *hashes);
     void merge_files(const std::vector<File> &files_cache);
     
+private:
+    bool compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr> &detectors);
 };
 
 #endif /* archive.h */

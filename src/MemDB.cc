@@ -194,7 +194,7 @@ std::optional<std::vector<MemDB::FindResult>> MemDB::find(filetype_t filetype, c
         
         result.game_id = sq3_get_uint64(stmt, 0);
         result.index = sq3_get_uint64(stmt, 1);
-        result.sh = sqlite3_column_int(stmt, 2);
+        result.detector_id = sqlite3_column_int(stmt, 2);
         result.location = static_cast<where_t>(sqlite3_column_int(stmt, 3));
         
         results.push_back(result);

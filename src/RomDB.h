@@ -45,13 +45,15 @@ public:
     RomDB(const std::string &name, int mode);
 
     DB db;
+    std::unordered_map<size_t, DetectorPtr> detectors;
 
     bool delete_game(const Game *game) { return delete_game(game->name); }
     bool delete_game(const std::string &name);
     int has_disks();
 
+    DetectorPtr get_detector(size_t id);
+    
     std::vector<DatEntry> read_dat();
-    DetectorPtr read_detector();
     std::vector<FileLocation> read_file_by_hash(filetype_t ft, const Hashes *hash);
     GamePtr read_game(const std::string &name);
     int hashtypes(filetype_t);
@@ -66,6 +68,7 @@ public:
 private:
     int hashtypes_[TYPE_MAX];
     
+    DetectorPtr read_detector();
     bool read_files(Game *game, filetype_t ft);
     void read_hashtypes(filetype_t type);
     bool read_rules(Detector *detector);

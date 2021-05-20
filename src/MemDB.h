@@ -48,7 +48,7 @@ public:
     public:
         uint64_t game_id;
         uint64_t index;
-        int sh;
+        size_t detector_id;
         where_t location;
     };
     

@@ -311,24 +311,6 @@ std::optional<size_t> Archive::file_index_by_name(const std::string &filename) c
 }
 
 
-void Archive::file_match_detector(uint64_t index, Detector *detector) {
-    auto &file = files[index];
-
-    try {
-        auto source = get_source(index);
-        if (!source) {
-            throw Exception("%s", strerror(errno));
-        }
-        source->open();
-        detector->execute(&file, Archive::file_read_c, source.get());
-    }
-    catch (Exception &e) {
-        myerror(ERRZIP, "%s: can't open: %s", file.name.c_str(), e.what());
-        file.broken = true;
-    }
-}
-
-
 int64_t Archive::file_read_c(void *fp, void *data, uint64_t length) {
     auto source = static_cast<ZipSource *>(fp);
     
@@ -667,4 +649,52 @@ ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::stri
     }
     
     return it->second.lock();
+}
+
+
+bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors) {
+    auto got_new_hashes = false;
+    
+    for (size_t index = 0; index < files.size(); index++) {
+        auto &file = files[index];
+        std::unordered_map<size_t, DetectorPtr> missing_detectors;
+        
+        for (auto pair : detectors) {
+            if (file.detector_hashes.find(pair.first) == file.detector_hashes.end()) {
+                missing_detectors[pair.first] = pair.second;
+            }
+        }
+        
+        if (missing_detectors.empty()) {
+            continue;
+        }
+        
+        if (compute_detector_hashes(index, missing_detectors)) {
+            got_new_hashes = true;
+        }
+        MemDB::update_file(contents.get(), index);
+    }
+    
+    return got_new_hashes;
+}
+
+
+bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr> &detectors) {
+    auto &file = files[index];
+
+    try {
+        auto source = get_source(index);
+        if (!source) {
+            throw Exception("%s", strerror(errno));
+        }
+        auto context = DetectorContext(source, &file, detectors);
+        
+        return context.execute();
+    }
+    catch (Exception &e) {
+        myerror(ERRZIP, "%s: can't open: %s", file.name.c_str(), e.what());
+        file.broken = true;
+        
+        return false;
+    }
 }

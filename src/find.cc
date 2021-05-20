@@ -43,9 +43,27 @@ static find_result_t check_match_old(filetype_t filetype, const Game *game, cons
 static find_result_t check_match_romset(filetype_t filetype, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match);
 static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const FileData *wanted_file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match, find_result_t (*)(filetype_t filetype, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match));
 
+static find_result_t find_in_archives_xxx(filetype_t filetype, const FileData *r, Match *m, bool needed_only);
 
-find_result_t
-find_in_archives(filetype_t filetype, const FileData *rom, Match *m, bool needed_only) {
+bool compute_all_detector_hashes(bool needed_only) { // returns true if new hashes were computed
+    // TODO: move elsewhere and implement
+    return false;
+}
+
+
+find_result_t find_in_archives(filetype_t filetype, const FileData *rom, Match *m, bool needed_only) {
+    auto result = find_in_archives_xxx(filetype, rom, m, needed_only);
+    if (result == FIND_UNKNOWN) {
+        if (compute_all_detector_hashes(needed_only)) {
+            result = find_in_archives_xxx(filetype, rom, m, needed_only);
+        }
+    }
+    
+    return result;
+}
+
+
+static find_result_t find_in_archives_xxx(filetype_t filetype, const FileData *rom, Match *m, bool needed_only) {
     auto results = MemDB::find(filetype, rom);
     
     if (!results.has_value()) {
@@ -53,6 +71,8 @@ find_in_archives(filetype_t filetype, const FileData *rom, Match *m, bool needed
     }
     
     for (auto result : results.value()) {
+        // check that result.detector_id is 0 or matches detector from RomDB
+
         auto a = Archive::by_id(result.game_id);
         if (!a) {
             return FIND_ERROR;
@@ -63,12 +83,12 @@ find_in_archives(filetype_t filetype, const FileData *rom, Match *m, bool needed
 
         auto &file = a->files[result.index];
 
-        if (result.sh == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
+        if (result.detector_id == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
             a->file_ensure_hashes(result.index, rom->hashes.types | db->hashtypes(filetype));
             MemDB::update_file(a->contents.get(), result.index);
 	}
 
-	if (file.broken || file.get_hashes(result.sh != 0).compare(rom->hashes) != Hashes::MATCH) {
+	if (file.broken || file.get_hashes(result.detector_id).compare(rom->hashes) != Hashes::MATCH) {
 	    continue;
 	}
 

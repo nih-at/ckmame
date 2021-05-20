@@ -448,7 +448,8 @@ static int
 dump_detector(int dummy) {
     DetectorPtr detector;
 
-    if ((detector = db->read_detector())) {
+    if (!db->detectors.empty()) {
+        detector = db->detectors.begin()->second;
         printf("%s", detector->name.c_str());
         if (!detector->version.empty()) {
             printf(" (%s)", detector->version.c_str());
