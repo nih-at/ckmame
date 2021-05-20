@@ -15,7 +15,9 @@
     - rc
     - xml
 
-- when committing to garbage failes because source archive is broken, move source archive out of the way.
+- when committing to garbage fails because source archive is broken, move source archive out of the way.
+
+- mkstatements.pl: rewrite in cmake and run it automatically each build
 
 # Later
 
