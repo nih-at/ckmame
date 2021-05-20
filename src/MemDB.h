@@ -55,8 +55,8 @@ public:
     MemDB(const char *name) : DB(name, DBH_FMT_MEM | DBH_NEW) { }
 
     static bool delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx);
-    static bool insert_file(sqlite3_stmt *stmt, const ArchiveContents *a, size_t idx);
     static bool insert_archive(const ArchiveContents *archive);
+    static bool insert_file(const ArchiveContents *archive, size_t index);
     static bool update_file(const ArchiveContents *archive, size_t idx);
 
     static std::optional<std::vector<FindResult>> find(filetype_t filetype, const FileData *file);
@@ -69,6 +69,9 @@ private:
 
     bool delete_file(uint64_t id, filetype_t filetype, size_t index);
     bool update_file(uint64_t id, filetype_t filetype, size_t index, const Hashes *hashes);
+    sqlite3_stmt *get_insert_file_statement(const ArchiveContents *archive);
+    bool insert_file(sqlite3_stmt *stmt, size_t index, const File &file);
+    bool insert_file(sqlite3_stmt *stmt, size_t index, size_t detector_id, const Hashes &hashes);
 };
 
 #endif /* memdb.h */

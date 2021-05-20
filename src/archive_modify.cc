@@ -72,7 +72,7 @@ bool Archive::commit() {
                 case Change::ADDED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
-                        MemDB::insert_file(NULL, contents.get(), index);
+                        MemDB::insert_file(contents.get(), index);
                     }
                     change.status = Change::EXISTS;
                     break;

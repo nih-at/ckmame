@@ -105,38 +105,18 @@ bool MemDB::delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx) {
 }
 
 
-bool MemDB::insert_file(sqlite3_stmt *stmt, const ArchiveContents *a, size_t idx) {
-    if (!ensure()) {
-	return false;
-    }
-
-    auto r = &a->files[idx];
-
+bool MemDB::insert_archive(const ArchiveContents *archive) {
+    auto stmt = memdb->get_insert_file_statement(archive);
+    
     if (stmt == NULL) {
-        if ((stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_FILE)) == NULL) {
-	    return false;
-        }
-
-        if (sq3_set_uint64(stmt, INSERT_FILE_ARCHIVE_ID, a->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, a->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, a->where) != SQLITE_OK) {
-	    return false;
-        }
+        return false;
     }
 
     auto ok = true;
-
-    if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_IDX, static_cast<int>(idx)) != SQLITE_OK) {
-        return false;
-    }
     
-    for (size_t i = 0; i < 2; i++) {
-        bool detector = (i == 1);
-        if (detector && !r->size_hashes_are_set(detector)) {
-            continue;
-        }
-        
-        if (sqlite3_bind_int(stmt, INSERT_FILE_DETECTOR_ID, static_cast<int>(i)) != SQLITE_OK || sq3_set_uint64_default(stmt, INSERT_FILE_SIZE, r->get_size(detector), Hashes::SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, INSERT_FILE_HASHES, &r->get_hashes(detector), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+    for (size_t i = 0; i < archive->files.size(); i++) {
+        if (!memdb->insert_file(stmt, i, archive->files[i])) {
             ok = false;
-            continue;
         }
     }
 
@@ -144,32 +124,14 @@ bool MemDB::insert_file(sqlite3_stmt *stmt, const ArchiveContents *a, size_t idx
 }
 
 
-bool MemDB::insert_archive(const ArchiveContents *archive) {
-    if (!ensure()) {
-        return false;
-    }
-
-    auto stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_FILE);
+bool MemDB::insert_file(const ArchiveContents *archive, size_t index) {
+    auto stmt = memdb->get_insert_file_statement(archive);
+    
     if (stmt == NULL) {
         return false;
     }
 
-    if (sq3_set_uint64(stmt, INSERT_FILE_ARCHIVE_ID, archive->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive->where) != SQLITE_OK) {
-        return false;
-    }
-
-    auto ok = true;
-    
-    for (size_t i = 0; i < archive->files.size(); i++) {
-        if (archive->files[i].broken) {
-	    continue;
-        }
-        if (!insert_file(stmt, archive, i)) {
-            ok = false;
-        }
-    }
-
-    return ok;
+    return memdb->insert_file(stmt, index, archive->files[index]);
 }
 
 
@@ -257,4 +219,55 @@ bool MemDB::delete_file(uint64_t id, filetype_t filetype, size_t index) {
     }
 
     return true;
+}
+
+
+bool MemDB::insert_file(sqlite3_stmt *stmt, size_t index, const File &file) {
+    if (file.broken) {
+        return true;
+    }
+
+    auto ok = true;
+    
+    if (!insert_file(stmt, index, 0, file.hashes)) {
+        ok = false;
+    }
+
+    for (auto pair : file.detector_hashes) {
+        if (!insert_file(stmt, index, pair.first, pair.second)) {
+            ok = false;
+        }
+    }
+    
+    return ok;
+}
+
+bool MemDB::insert_file(sqlite3_stmt *stmt, size_t index, size_t detector_id, const Hashes &hashes) {
+    if (sq3_set_uint64(stmt, INSERT_FILE_FILE_IDX, index) != SQLITE_OK
+        || sq3_set_uint64(stmt, INSERT_FILE_DETECTOR_ID, detector_id) != SQLITE_OK
+        || sq3_set_uint64_default(stmt, INSERT_FILE_SIZE, hashes.size, Hashes::SIZE_UNKNOWN) != SQLITE_OK
+        || sq3_set_hashes(stmt, INSERT_FILE_HASHES, &hashes, 1) != SQLITE_OK
+        || sqlite3_step(stmt) != SQLITE_DONE
+        || sqlite3_reset(stmt) != SQLITE_OK) {
+        return false;
+    }
+    
+    return true;
+}
+
+sqlite3_stmt *MemDB::get_insert_file_statement(const ArchiveContents *archive) {
+    if (!ensure()) {
+        return NULL;
+    }
+
+    auto stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_FILE);
+
+    if (stmt == NULL
+        || sq3_set_uint64(stmt, INSERT_FILE_ARCHIVE_ID, archive->id) != SQLITE_OK
+        || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive->filetype) != SQLITE_OK
+        || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive->where) != SQLITE_OK) {
+        return NULL;
+    }
+    
+    return stmt;
 }
