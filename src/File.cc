@@ -42,6 +42,9 @@ bool File::size_hashes_are_set(size_t detector) const {
 
 
 const Hashes &File::get_hashes(size_t detector) const {
+    if (detector == 0) {
+        return hashes;
+    }
     auto it = detector_hashes.find(detector);
     
     if (it == detector_hashes.end()) {

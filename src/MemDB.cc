@@ -41,10 +41,10 @@ std::unique_ptr<MemDB> MemDB::memdb;
 
 bool MemDB::inited = false;
 
-#define INSERT_FILE_GAME_ID 1
+#define INSERT_FILE_ARCHIVE_ID 1
 #define INSERT_FILE_FILE_TYPE 2
 #define INSERT_FILE_FILE_IDX 3
-#define INSERT_FILE_FILE_SH 4
+#define INSERT_FILE_DETECTOR_ID 4
 #define INSERT_FILE_LOCATION 5
 #define INSERT_FILE_SIZE 6
 #define INSERT_FILE_HASHES 7
@@ -117,7 +117,7 @@ bool MemDB::insert_file(sqlite3_stmt *stmt, const ArchiveContents *a, size_t idx
 	    return false;
         }
 
-        if (sq3_set_uint64(stmt, INSERT_FILE_GAME_ID, a->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, a->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, a->where) != SQLITE_OK) {
+        if (sq3_set_uint64(stmt, INSERT_FILE_ARCHIVE_ID, a->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, a->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, a->where) != SQLITE_OK) {
 	    return false;
         }
     }
@@ -134,7 +134,7 @@ bool MemDB::insert_file(sqlite3_stmt *stmt, const ArchiveContents *a, size_t idx
             continue;
         }
         
-        if (sqlite3_bind_int(stmt, INSERT_FILE_FILE_SH, static_cast<int>(i)) != SQLITE_OK || sq3_set_uint64_default(stmt, INSERT_FILE_SIZE, r->get_size(detector), Hashes::SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, INSERT_FILE_HASHES, &r->get_hashes(detector), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+        if (sqlite3_bind_int(stmt, INSERT_FILE_DETECTOR_ID, static_cast<int>(i)) != SQLITE_OK || sq3_set_uint64_default(stmt, INSERT_FILE_SIZE, r->get_size(detector), Hashes::SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, INSERT_FILE_HASHES, &r->get_hashes(detector), 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
             ok = false;
             continue;
         }
@@ -154,7 +154,7 @@ bool MemDB::insert_archive(const ArchiveContents *archive) {
         return false;
     }
 
-    if (sq3_set_uint64(stmt, INSERT_FILE_GAME_ID, archive->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive->where) != SQLITE_OK) {
+    if (sq3_set_uint64(stmt, INSERT_FILE_ARCHIVE_ID, archive->id) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_FILE_TYPE, archive->filetype) != SQLITE_OK || sqlite3_bind_int(stmt, INSERT_FILE_LOCATION, archive->where) != SQLITE_OK) {
         return false;
     }
 

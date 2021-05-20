@@ -49,6 +49,16 @@ void DetectorCollection::add(const DetectorDescriptor &descriptor, size_t id) {
     }
 }
 
+const DetectorDescriptor *DetectorCollection::get_descriptor(size_t id) const {
+    auto it = ids.find(id);
+
+    if (it != ids.end()) {
+        return &it->second;
+    }
+
+    return NULL;
+}
+
 size_t DetectorCollection::get_id(const DetectorDescriptor &descriptor) {
     auto it = detectors.find(descriptor);
     

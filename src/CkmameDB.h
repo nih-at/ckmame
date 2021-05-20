@@ -49,7 +49,7 @@ typedef std::shared_ptr<CkmameDB> CkmameDBPtr;
 
 class CkmameDB {
 public:
-    CkmameDB(const std::string &dbname, const std::string &directory_) : db(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE), directory(directory_) { }
+    CkmameDB(const std::string &dbname, const std::string &directory);
     static bool close_all();
     static CkmameDBPtr get_db_for_archvie(const std::string &name);
     static void register_directory(const std::string &directory);
@@ -84,6 +84,9 @@ private:
     std::string name_in_db(const std::string &name);
     void delete_files(int id);
     int write_archive_header(int id, const std::string &name, time_t mtime, uint64_t size);
+    
+    size_t get_detector_id(size_t global_id);
+    size_t get_global_detector_id(size_t id);
 };
 
 #endif /* dbh_cache.h */

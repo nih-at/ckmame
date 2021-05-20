@@ -574,6 +574,7 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
         if (it != files_cache.cend()) {
             if (file.mtime == (*it).mtime && file.compare_size_hashes(*it)) {
                 file.hashes.merge((*it).hashes);
+                file.detector_hashes = it->detector_hashes;
             }
             else {
                 cache_changed = true;
@@ -591,11 +592,6 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
                 }
                 continue;
             }
-#if 0
-            if (detector) {
-                file_match_detector(i);
-            }
-#endif
             cache_changed = true;
         }
     }

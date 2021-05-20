@@ -93,17 +93,17 @@ create table test (\n\
     /* DBH_FMT_MEM -- in-memory db format */
     "\
 create table file (\n\
-	game_id integer,\n\
+	archive_id integer,\n\
 	file_type integer,\n\
 	file_idx integer,\n\
-	file_sh integer,\n\
+	detector_id integer,\n\
 	location integer not null,\n\
 	size integer,\n\
 	crc integer,\n\
 	md5 binary,\n\
 	sha1 binary\n\
 );\n\
-create index file_id on file (game_id, file_type, file_idx);\n\
+create index file_id on file (archive_id, file_type, file_idx);\n\
 create index file_location on file (location);\n\
 create index file_size on file (size);\n\
 create index file_crc on file (crc);\n\

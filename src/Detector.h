@@ -145,6 +145,7 @@ public:
     static std::string test_type_name(TestType type);
 
     static size_t get_id(const DetectorDescriptor &descriptor) { return detector_ids.get_id(descriptor); }
+    static const DetectorDescriptor *get_descriptor(size_t id) { return detector_ids.get_descriptor(id); }
     
 private:
     static DetectorCollection detector_ids;

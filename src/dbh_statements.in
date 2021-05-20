@@ -2,12 +2,12 @@
 
 /* memdb */
 
-#define MEM_INSERT_FILE     "insert into file (game_id, file_type, file_idx, file_sh, location, size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-#define MEM_QUERY_FILE      "select game_id, file_idx, file_sh, location from file f where file_type = ? @SIZE@ @HASH@ order by location"
+#define MEM_INSERT_FILE     "insert into file (archive_id, file_type, file_idx, detector_id, location, size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+#define MEM_QUERY_FILE      "select archive_id, file_idx, detector_id, location from file f where file_type = ? @SIZE@ @HASH@ order by location"
 
-#define MEM_UPDATE_FILE     "update file set crc = ?, md5 = ?, sha1 = ? where game_id = ? and file_type = ? and file_idx = ? and file_sh = ?"
-#define MEM_DELETE_FILE     "delete from file where game_id = ? and file_type = ? and file_idx = ?"
-#define MEM_DEC_FILE_IDX    "update file set file_idx=file_idx-1 where game_id = ? and file_type = ? and file_idx > ?"
+#define MEM_UPDATE_FILE     "update file set crc = ?, md5 = ?, sha1 = ? where archive_id = ? and file_type = ? and file_idx = ? and detector_id = ?"
+#define MEM_DELETE_FILE     "delete from file where archive_id = ? and file_type = ? and file_idx = ?"
+#define MEM_DEC_FILE_IDX    "update file set file_idx=file_idx-1 where archive_id = ? and file_type = ? and file_idx > ?"
 
 
 /* romdb */
@@ -54,6 +54,9 @@
 #define DIR_DELETE_ARCHIVE  "delete from archive where archive_id = ?"
 #define DIR_COUNT_ARCHIVES  "select count(archive_id) from archive"
 
-#define DIR_INSERT_FILE     "insert into file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-#define DIR_QUERY_FILE      "select name, mtime, status, size, crc, md5, sha1 from file where archive_id = ? order by file_idx"
+#define DIR_INSERT_FILE     "insert into file (archive_id, file_idx, detector_id, name, mtime, status, size, crc, md5, sha1) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+#define DIR_QUERY_FILE      "select file_idx, detector_id, name, mtime, status, size, crc, md5, sha1 from file where archive_id = ? order by file_idx, detector_id"
 #define DIR_DELETE_FILE     "delete from file where archive_id = ?"
+
+#define DIR_LIST_DETECTORS  "select detector_id, name, version from detector"
+#define DIR_INSERT_DETECTOR "insert into detector (detector_id, name, version) values (?, ?, ?)"

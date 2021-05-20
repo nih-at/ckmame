@@ -65,6 +65,7 @@ class DetectorCollection {
 public:
     DetectorCollection() : next_id(1) { }
     
+    const DetectorDescriptor *get_descriptor(size_t id) const;
     size_t get_id(const DetectorDescriptor &descriptor);
     void add(const DetectorDescriptor &descriptor, size_t id);
     bool known(const DetectorDescriptor &descriptor) const;

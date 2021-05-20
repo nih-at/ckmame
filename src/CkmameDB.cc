@@ -46,6 +46,23 @@
 std::vector<CkmameDB::CacheDirectory> CkmameDB::cache_directories;
 
 
+CkmameDB::CkmameDB(const std::string &dbname, const std::string &directory_) : db(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE), directory(directory_) {
+    sqlite3_stmt *stmt;
+    if ((stmt = db.get_statement(DBH_STMT_DIR_LIST_DETECTORS)) == NULL) {
+        throw Exception();
+    }
+
+    int ret;
+    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
+        detector_ids.add(DetectorDescriptor(sq3_get_string(stmt, 1), sq3_get_string(stmt, 2)), sq3_get_uint64(stmt, 0));
+    }
+
+    if (ret != SQLITE_DONE) {
+        throw Exception();
+    }
+}
+
+
 bool CkmameDB::close_all() {
     auto ok = true;
 
@@ -218,16 +235,30 @@ int CkmameDB::read_files(int archive_id, std::vector<File> *files) {
 
     int ret;
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        File file;
-
-        file.name = sq3_get_string(stmt, 0);
-        file.mtime = sqlite3_column_int(stmt, 1);
-	file.broken = sqlite3_column_int(stmt, 2) != 0;
-	file.hashes.size = sq3_get_uint64_default(stmt, 3, Hashes::SIZE_UNKNOWN);
-	sq3_get_hashes(&file.hashes, stmt, 4);
-
-        files->push_back(file);
-
+        auto detector_id = sq3_get_uint64(stmt, 1);
+        
+        if (detector_id == 0) {
+            // There is exactly one entry per file_idx with detector_id 0, which is retrieved in order.
+            File file;
+            
+            file.name = sq3_get_string(stmt, 2);
+            file.mtime = sqlite3_column_int(stmt, 3);
+            file.broken = sqlite3_column_int(stmt, 4) != 0;
+            file.hashes.size = sq3_get_uint64_default(stmt, 5, Hashes::SIZE_UNKNOWN);
+            sq3_get_hashes(&file.hashes, stmt, 6);
+            
+            files->push_back(file);
+        }
+        else {
+            auto file_id = sq3_get_uint64(stmt, 0);
+            auto global_detector_id = get_global_detector_id(detector_id);
+            
+            Hashes hashes;
+            hashes.size = sq3_get_uint64_default(stmt, 5, Hashes::SIZE_UNKNOWN);
+            sq3_get_hashes(&hashes, stmt, 6);
+            
+            (*files)[file_id].detector_hashes[global_detector_id] = hashes;
+        }
     }
 
     if (ret != SQLITE_DONE) {
@@ -305,9 +336,32 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
 
     for (size_t i = 0; i < archive->files.size(); i++) {
 	const auto *f = &archive->files[i];
-	if (sqlite3_bind_int(stmt, 2, static_cast<int>(i)) != SQLITE_OK || sq3_set_string(stmt, 3, f->name.c_str()) != SQLITE_OK || sqlite3_bind_int64(stmt, 4, f->mtime) != SQLITE_OK || sqlite3_bind_int(stmt, 5, f->broken ? 1 : 0) != SQLITE_OK || sq3_set_uint64(stmt, 6, f->hashes.size) != SQLITE_OK || sq3_set_hashes(stmt, 7, &f->hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK) {
+	if (sqlite3_bind_int(stmt, 2, static_cast<int>(i)) != SQLITE_OK
+            || sq3_set_uint64(stmt, 3, 0) != SQLITE_OK
+            || sq3_set_string(stmt, 4, f->name.c_str()) != SQLITE_OK
+            || sqlite3_bind_int64(stmt, 5, f->mtime) != SQLITE_OK
+            || sqlite3_bind_int(stmt, 6, f->broken ? 1 : 0) != SQLITE_OK
+            || sq3_set_uint64(stmt, 7, f->hashes.size) != SQLITE_OK
+            || sq3_set_hashes(stmt, 8, &f->hashes, 1) != SQLITE_OK
+            || sqlite3_step(stmt) != SQLITE_DONE
+            || sqlite3_reset(stmt) != SQLITE_OK) {
             throw Exception();
 	}
+        
+        for (auto &pair : f->detector_hashes) {
+            auto id = get_detector_id(pair.first);
+            if (sqlite3_bind_int(stmt, 2, static_cast<int>(i)) != SQLITE_OK
+                || sq3_set_uint64(stmt, 3, id) != SQLITE_OK
+                || sq3_set_string(stmt, 4, "") != SQLITE_OK
+                || sqlite3_bind_int64(stmt, 5, 0) != SQLITE_OK
+                || sqlite3_bind_int(stmt, 6, 0) != SQLITE_OK
+                || sq3_set_uint64(stmt, 7, pair.second.size) != SQLITE_OK
+                || sq3_set_hashes(stmt, 8, &pair.second, 1) != SQLITE_OK
+                || sqlite3_step(stmt) != SQLITE_DONE
+                || sqlite3_reset(stmt) != SQLITE_OK) {
+                    throw Exception();
+            }
+        }
     }
 
     archive->cache_id = id;
@@ -348,4 +402,39 @@ int CkmameDB::write_archive_header(int id, const std::string &name, time_t mtime
     }
 
     return id;
+}
+
+
+size_t CkmameDB::get_detector_id(size_t global_id) {
+    auto detector = Detector::get_descriptor(global_id);
+    
+    if (detector == NULL) {
+        throw Exception();
+    }
+    
+    auto known = detector_ids.known(*detector);
+    auto id = detector_ids.get_id(*detector);
+    
+    if (!known) {
+        auto stmt = db.get_statement(DBH_STMT_DIR_INSERT_DETECTOR);
+        
+        if (stmt == NULL
+            || sq3_set_uint64(stmt, 0, id) != SQLITE_OK
+            || sq3_set_string(stmt, 1, detector->name) != SQLITE_OK
+            || sq3_set_string(stmt, 2, detector->version) != SQLITE_OK
+            || sqlite3_step(stmt) != SQLITE_DONE) {
+            throw Exception();
+        }
+    }
+    
+    return id;
+}
+
+
+size_t CkmameDB::get_global_detector_id(size_t id) {
+    auto detector = detector_ids.get_descriptor(id);
+    if (detector == NULL) {
+        throw Exception();
+    }
+    return Detector::get_id(*detector);
 }
