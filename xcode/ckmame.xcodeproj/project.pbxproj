@@ -153,6 +153,8 @@
 		4BB552BD25C01EC1001ABC31 /* Exception.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB552BB25C01EC1001ABC31 /* Exception.h */; };
 		4BD482982535B23C00D0002B /* ArchiveDir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BD482962535B23C00D0002B /* ArchiveDir.cc */; };
 		4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD482972535B23C00D0002B /* ArchiveDir.h */; };
+		4BEDBE0526565D5F00DBF486 /* DetectorCollection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BEDBE0326565D5F00DBF486 /* DetectorCollection.cc */; };
+		4BEDBE0626565D5F00DBF486 /* DetectorCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BEDBE0426565D5F00DBF486 /* DetectorCollection.h */; };
 		4BF6FA2A25D5371B00B93A98 /* ArchiveImages.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BF6FA2825D5371B00B93A98 /* ArchiveImages.cc */; };
 		4BF6FA2B25D5371B00B93A98 /* ArchiveImages.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF6FA2925D5371B00B93A98 /* ArchiveImages.h */; };
 /* End PBXBuildFile section */
@@ -713,6 +715,8 @@
 		4BE373CE26303E2B00BE68A3 /* ignore-macos-roms.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ignore-macos-roms.test"; sourceTree = "<group>"; };
 		4BE373CF26303E8900BE68A3 /* ignore-macos-extra.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ignore-macos-extra.test"; sourceTree = "<group>"; };
 		4BE373D026303EE900BE68A3 /* ignore-macos-dir-in-game.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ignore-macos-dir-in-game.test"; sourceTree = "<group>"; };
+		4BEDBE0326565D5F00DBF486 /* DetectorCollection.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DetectorCollection.cc; sourceTree = "<group>"; };
+		4BEDBE0426565D5F00DBF486 /* DetectorCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetectorCollection.h; sourceTree = "<group>"; };
 		4BF6FA2825D5371B00B93A98 /* ArchiveImages.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveImages.cc; sourceTree = "<group>"; };
 		4BF6FA2925D5371B00B93A98 /* ArchiveImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveImages.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -937,6 +941,8 @@
 				4B5FACAA1735919800B67C24 /* detector_print.cc */,
 				4B5FACAC1735919800B67C24 /* Detector.cc */,
 				4B5FACAD1735919800B67C24 /* Detector.h */,
+				4BEDBE0326565D5F00DBF486 /* DetectorCollection.cc */,
+				4BEDBE0426565D5F00DBF486 /* DetectorCollection.h */,
 				4B5FACAE1735919800B67C24 /* diagnostics.cc */,
 				4B3274C425B99F75006AEF16 /* diagnostics.h */,
 				4B5FACAF1735919800B67C24 /* Dir.cc */,
@@ -1333,6 +1339,7 @@
 				4B20D2E1260254AF00D77FA8 /* ParserDir.h in Headers */,
 				4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */,
 				4B3274D025B99F76006AEF16 /* diagnostics.h in Headers */,
+				4BEDBE0626565D5F00DBF486 /* DetectorCollection.h in Headers */,
 				4B3274D525B99F76006AEF16 /* file_util.h in Headers */,
 				4B5F43C21889D059000C3B7C /* RomDB.h in Headers */,
 				4B3666EF261719DC00A67A6C /* ArchiveLibarchive.h in Headers */,
@@ -1618,6 +1625,7 @@
 				4B5FAE0C1735930100B67C24 /* OutputContextMtree.cc in Sources */,
 				4BB51D2A25823D770047BE72 /* ParserSourceFile.cc in Sources */,
 				4B5FAE171735930100B67C24 /* ParserCm.cc in Sources */,
+				4BEDBE0526565D5F00DBF486 /* DetectorCollection.cc in Sources */,
 				4B5FAE181735930100B67C24 /* ParserDir.cc in Sources */,
 				4B5FAE191735930100B67C24 /* ParserRc.cc in Sources */,
 				4B5FAE1A1735930100B67C24 /* ParserXml.cc in Sources */,

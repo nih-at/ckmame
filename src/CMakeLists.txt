@@ -27,6 +27,7 @@ set(COMMON_SOURCES
   dbh_statements.cc
   DeleteList.cc
   Detector.cc
+  DetectorCollection.cc
   detector_execute.cc
   detector_print.cc
   diagnostics.cc

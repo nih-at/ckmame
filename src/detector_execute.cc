@@ -130,8 +130,9 @@ bool Detector::Context::compute_values(File *file, Operation operation, uint64_t
     
     hu.end();
 
-    file->size_detector = size;
-    file->hashes_detector = hashes;
+    // TODO: [detector] record info
+    //file->size_detector = size;
+    //file->hashes_detector = hashes;
 
     return true;
 }

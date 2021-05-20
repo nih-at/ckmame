@@ -1,9 +1,9 @@
-#ifndef HAD_FILE_H
-#define HAD_FILE_H
+#ifndef HAD_DETECTOR_COLLECTION_H
+#define HAD_DETECTOR_COLLECTION_H
 
 /*
-  file.h -- information about one file
-  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
+  detector.h -- clrmamepro XML header skip detector
+  Copyright (C) 2007-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,27 +34,45 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "FileData.h"
+#include <string>
+#include <unordered_map>
 
-class File : public FileData {
+class Detector;
+
+class DetectorDescriptor {
 public:
-    File(): FileData(), broken(false) { }
-
-    uint64_t get_size(size_t detector) const { return get_hashes(detector).size; }
-    const Hashes &get_hashes(size_t detector) const;
-
-    bool is_size_known(size_t detector) const { return get_size(detector) != Hashes::SIZE_UNKNOWN; }
-    bool size_hashes_are_set(size_t detector) const;
-
-    std::string filename_extension;
-    bool broken;
+    DetectorDescriptor() { }
+    DetectorDescriptor(const std::string &name_, const std::string &version_) : name(name_), version(version_) { }
+    DetectorDescriptor(const Detector *detector);
     
-    std::unordered_map<size_t, Hashes> detector_hashes;
-
-    std::string filename() const { return name + filename_extension; }
+    std::string name;
+    std::string version;
     
-private:
-    static Hashes empty_hashes;
+    bool operator==(const DetectorDescriptor &other) const { return name == other.name && version == other.version; }
 };
 
-#endif // HAD_FILE_H
+namespace std {
+template <>
+struct hash<DetectorDescriptor> {
+    std::size_t operator()(const DetectorDescriptor &k) const {
+        return std::hash<std::string>()(k.name) ^ std::hash<std::string>()(k.version);
+    }
+};
+}
+
+
+class DetectorCollection {
+public:
+    DetectorCollection() : next_id(1) { }
+    
+    size_t get_id(const DetectorDescriptor &descriptor);
+    void add(const DetectorDescriptor &descriptor, size_t id);
+    bool known(const DetectorDescriptor &descriptor) const;
+    
+private:
+    size_t next_id;
+    std::unordered_map<DetectorDescriptor, size_t> detectors;
+    std::unordered_map<size_t, DetectorDescriptor> ids;
+};
+
+#endif // HAD_DETECTOR_COLLECTION_H

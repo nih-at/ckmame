@@ -37,6 +37,7 @@
 #include <memory>
 #include <vector>
 
+#include "DetectorCollection.h"
 #include "File.h"
 #include "Hashes.h"
 #include "ParserSource.h"
@@ -50,25 +51,6 @@ typedef std::shared_ptr<Detector> DetectorPtr;
 
 typedef int64_t (*detector_read_cb)(void *, void *, uint64_t);
 
-class DetectorDescriptor {
-public:
-    DetectorDescriptor(const std::string &name_, const std::string &version_) : name(name_), version(version_) { }
-    DetectorDescriptor(const Detector *detector);
-    
-    std::string name;
-    std::string version;
-    
-    bool operator==(const DetectorDescriptor &other) const { return name == other.name && version == other.version; }
-};
-
-namespace std {
-template <>
-struct hash<DetectorDescriptor> {
-    std::size_t operator()(const DetectorDescriptor &k) const {
-        return std::hash<std::string>()(k.name) ^ std::hash<std::string>()(k.version);
-    }
-};
-}
 
 class Detector {
 public:
@@ -162,10 +144,10 @@ public:
     static std::string operation_name(Operation operation);
     static std::string test_type_name(TestType type);
 
-    static size_t get_id(const DetectorDescriptor &descriptor);
+    static size_t get_id(const DetectorDescriptor &descriptor) { return detector_ids.get_id(descriptor); }
     
 private:
-    static std::unordered_map<DetectorDescriptor, size_t> detector_ids;
+    static DetectorCollection detector_ids;
 };
 
 //extern DetectorPtr detector;

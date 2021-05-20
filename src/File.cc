@@ -34,7 +34,19 @@
 
 #include "File.h"
 
-bool File::size_hashes_are_set(bool detector) const {
+Hashes File::empty_hashes;
+
+bool File::size_hashes_are_set(size_t detector) const {
     return is_size_known(detector) && !get_hashes(detector).empty();
 }
 
+
+const Hashes &File::get_hashes(size_t detector) const {
+    auto it = detector_hashes.find(detector);
+    
+    if (it == detector_hashes.end()) {
+        return empty_hashes;
+    }
+    
+    return it->second;
+}

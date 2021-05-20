@@ -39,6 +39,7 @@
 #include <vector>
 
 #include "DB.h"
+#include "DetectorCollection.h"
 #include "File.h"
 
 class ArchiveContents;
@@ -78,6 +79,7 @@ private:
 
     DB db;
     std::string directory;
+    DetectorCollection detector_ids;
     
     std::string name_in_db(const std::string &name);
     void delete_files(int id);

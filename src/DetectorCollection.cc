@@ -1,9 +1,6 @@
-#ifndef HAD_FILE_H
-#define HAD_FILE_H
-
 /*
-  file.h -- information about one file
-  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
+  DetectorCollection.cc -- map detectors to ids.
+  Copyright (C) 2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,27 +31,39 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "FileData.h"
+#include "DetectorCollection.h"
 
-class File : public FileData {
-public:
-    File(): FileData(), broken(false) { }
+#include "Detector.h"
+#include "Exception.h"
 
-    uint64_t get_size(size_t detector) const { return get_hashes(detector).size; }
-    const Hashes &get_hashes(size_t detector) const;
-
-    bool is_size_known(size_t detector) const { return get_size(detector) != Hashes::SIZE_UNKNOWN; }
-    bool size_hashes_are_set(size_t detector) const;
-
-    std::string filename_extension;
-    bool broken;
+void DetectorCollection::add(const DetectorDescriptor &descriptor, size_t id) {
+    if (ids.find(id) != ids.end()) {
+        throw Exception("duplicate detector id");
+    }
     
-    std::unordered_map<size_t, Hashes> detector_hashes;
-
-    std::string filename() const { return name + filename_extension; }
+    detectors[descriptor] = id;
+    ids[id] = descriptor;
     
-private:
-    static Hashes empty_hashes;
-};
+    if (id <= next_id) {
+        next_id = id + 1;
+    }
+}
 
-#endif // HAD_FILE_H
+size_t DetectorCollection::get_id(const DetectorDescriptor &descriptor) {
+    auto it = detectors.find(descriptor);
+    
+    if (it != detectors.end()) {
+        return it->second;
+    }
+    
+    auto id = next_id;
+    next_id += 1;
+    detectors[descriptor] = id;
+    ids[id] = descriptor;
+    return id;
+}
+
+
+bool DetectorCollection::known(const DetectorDescriptor &descriptor) const {
+    return detectors.find(descriptor) != detectors.end();
+}
