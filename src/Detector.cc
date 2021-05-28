@@ -96,12 +96,11 @@ std::string Detector::test_type_name(TestType type) {
 
 uint64_t Detector::operation_unit_size(Operation operation) {
     switch (operation) {
-    case OP_NONE:
-    case OP_BITSWAP:
-        return 1;
     case OP_BYTESWAP:
         return 2;
     case OP_WORDSWAP:
         return 4;
+    default:
+        return 1;
     }
 }
