@@ -1,5 +1,7 @@
 # Soon
 
+- keep needed_list up to date (when moving stuff to needed)
+
 - rar read support
 
 - add option to keep ROMs with detector applied

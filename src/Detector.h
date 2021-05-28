@@ -55,12 +55,6 @@ typedef int64_t (*detector_read_cb)(void *, void *, uint64_t);
 
 class Detector {
 public:
-    enum Result {
-        MATCH,
-        MISMATCH,
-        ERROR
-    };
-    
     enum Operation {
         OP_NONE,
         OP_BITSWAP,
@@ -77,24 +71,6 @@ public:
         TEST_FILE_LE,
         TEST_FILE_GR
     };
-
-    class Context {
-    public:
-        Context(detector_read_cb cb_read_, void *ud_) : bytes_read(0), cb_read(cb_read_), ud(ud_) { }
-        
-        uint64_t bytes_read;
-        detector_read_cb cb_read;
-        void *ud;
-
-        std::vector<uint8_t> buf;
-        
-        bool compute_values(File *file, Operation operation, uint64_t start, uint64_t end);
-        bool fill_buffer(uint64_t length);
-        
-    private:
-        bool skip(uint64_t length);
-        void update(Hashes::Update *hu, Operation operation, uint64_t offset, uint64_t length);
-    };
     
     class Test {
     public:
@@ -107,7 +83,7 @@ public:
         std::vector<uint8_t> value;
         bool result;
 
-        Result execute(File *file, Context *ctx) const;
+        bool execute(const std::vector<uint8_t> &data) const;
         void print(FILE *fout) const;
         
     private:
@@ -123,8 +99,11 @@ public:
         Operation operation;
         std::vector<Test> tests;
         
-        Result execute(File *file, Context *ctx) const;
+        Hashes execute(const std::vector<uint8_t> &data) const;
         void print(FILE *fout) const;
+        
+    private:
+        Hashes compute_values(Operation operation, const std::vector<uint8_t> &data, uint64_t start, uint64_t length) const;
     };
     
 
@@ -134,11 +113,13 @@ public:
     size_t id;
     
     std::vector<Rule> rules;
+    
+    static const uint64_t MAX_DETECTOR_FILE_SIZE;
 
     static DetectorPtr parse(const std::string &filename);
     static DetectorPtr parse(ParserSource *source);
 
-    Result execute(File *file, detector_read_cb read_cb, void *ud) const;
+    Hashes execute(const std::vector<uint8_t> &data) const;
     bool print(FILE *) const;
 
     static std::string file_test_type_name(TestType type);
@@ -148,27 +129,12 @@ public:
     static size_t get_id(const DetectorDescriptor &descriptor) { return detector_ids.get_id(descriptor); }
     static const DetectorDescriptor *get_descriptor(size_t id) { return detector_ids.get_descriptor(id); }
     
+    // Returns true if new hashes were computed.
+    static bool compute_hashes(ZipSourcePtr source, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors);
+
 private:
+    static uint64_t operation_unit_size(Operation operation);
     static DetectorCollection detector_ids;
 };
 
-class DetectorContext {
-public:
-    DetectorContext(ZipSourcePtr source, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors) { } // TODO: implement
-    
-    bool execute() { return false; } // TODO: implement
-
-private:
-#if 0
-    ZipSourcePtr source;
-    std::unordered_map<size_t, DetectorPtr> detectors;
-    File *file;
-    
-    std::unordered_map<size_t, Hashes> hashes;
-    std::unordered_map<size_t, Hashes::Update> hashes_updates;
-#endif
-};
-
-//extern DetectorPtr detector;
-
-#endif /* detector.h */
+#endif // HAD_DETECTOR_H

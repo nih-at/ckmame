@@ -35,6 +35,8 @@
 
 #include <cstring>
 
+const uint64_t Detector::MAX_DETECTOR_FILE_SIZE = 128 * 1024 * 1024;
+
 #define BUF_SIZE (static_cast<uint64_t>(16 * 1024))
 
 static const uint8_t bitswap[] = {
@@ -42,17 +44,15 @@ static const uint8_t bitswap[] = {
 };
 
 
-Detector::Result Detector::execute(File *file, detector_read_cb cb_read, void *ud) const {
-    auto ctx = Context(cb_read, ud);
-
+Hashes Detector::execute(const std::vector<uint8_t> &data) const {
     for (auto &rule : rules) {
-        auto result = rule.execute(file, &ctx);
-        if (result != MATCH) {
-            return result;
+        auto hashes = rule.execute(data);
+        if (hashes.has_size()) {
+            return hashes;
         }
     }
 
-    return MATCH;
+    return Hashes();
 }
 
 
@@ -88,120 +88,84 @@ bool Detector::Test::bit_cmp(const uint8_t *b) const {
 }
 
 
-bool Detector::Context::compute_values(File *file, Operation operation, uint64_t start, uint64_t end) {
-    auto size = end - start;
+Hashes Detector::Rule::compute_values(Operation operation, const std::vector<uint8_t> &data, uint64_t start, uint64_t length) const {
     Hashes hashes;
     
     hashes.types = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
     Hashes::Update hu(&hashes);
-
-    if (start > buf.size()) {
-        // skip to start of data we're interested in
-        if (!skip(start - buf.size())) {
-            return false;
-        }
+    
+    if (operation == OP_NONE) {
+        hu.update(data.data() + start, length);
     }
-    else if (start < buf.size()) {
-        auto length = std::min(end - start, buf.size() - start);
-        // make sure we process multiple of 4 bytes
-        if (length % 4 != 0) {
-            length += 4 - (length % 4);
-            if (!fill_buffer(start + length)) {
-                return false;
+    else {
+        auto processed_data = std::vector<uint8_t>(length);
+
+        switch (operation) {
+        case OP_NONE:
+            // can't happen
+            break;
+        
+        case OP_BITSWAP:
+            for (size_t i = 0; i < length; i++) {
+                processed_data[i] = bitswap[data[start + i]];
+            }
+            break;
+                
+        case OP_BYTESWAP:
+            for (size_t i = 0; i < length; i += 2) {
+                processed_data[i] = data[start + i + 1];
+                processed_data[i + 1] = data[start + i];
+            }
+            break;
+
+        case OP_WORDSWAP:
+            for (size_t i = 0; i < length; i += 4) {
+                processed_data[i] = data[start + i + 3];
+                processed_data[i + 1] = data[start + i + 2];
+                processed_data[i + 2] = data[start + i + 1];
+                processed_data[i + 3] = data[start + i];
             }
         }
-        // we already have relevant data, use it
-        update(&hu, operation, start, length);
-        start = buf.size();
-    }
-    
-    buf.resize(BUF_SIZE);
-    
-    while (start < end) {
-        auto length = std::min(BUF_SIZE, end - start);
         
-        if (!cb_read(ud, buf.data(), length)) {
-            return false;
-        }
-        
-        update(&hu, operation, 0, length);
-        start += length;
+        hu.update(processed_data.data(), length);
     }
     
     hu.end();
-
-    // TODO: [detector] record info
-    //file->size_detector = size;
-    //file->hashes_detector = hashes;
-
-    return true;
-}
-
-void Detector::Context::update(Hashes::Update *hu, Operation operation, uint64_t offset, uint64_t length) {
-    switch (operation) {
-        case OP_BITSWAP: {
-            for (size_t i = offset; i < offset + length; i++) {
-                buf[i] = bitswap[buf[i]];
-            }
-            break;
-        }
-            
-        case OP_BYTESWAP: {
-            auto data = reinterpret_cast<uint16_t *>(buf.data() + offset);
-            for (size_t i = 0; i < length / 2; i++) {
-                data[i] = static_cast<uint16_t>(data[i] >> 8) | static_cast<uint16_t>(data[i] << 8);
-            }
-            break;
-        }
-
-        case OP_WORDSWAP: {
-            auto data = reinterpret_cast<uint32_t *>(buf.data() + offset);
-            for (size_t i = 0; i < length / 4; i++) {
-                data[i] = (data[i] >> 24) | ((data[i] >> 8) & 0xff00) | ((data[i] << 8) & 0xff0000) | (data[i] << 24);
-            }
-        }
-            
-        default:
-            break;
-    }
     
-    hu->update(buf.data() + offset, length);
+    hashes.size = length;
+    return hashes;
 }
 
 
-Detector::Result Detector::Rule::execute(File *file, Context *ctx) const {
+
+Hashes Detector::Rule::execute(const std::vector<uint8_t> &data) const {
     auto start = start_offset;
     if (start < 0) {
-        start += file->hashes.size;
+        start += static_cast<int64_t>(data.size());
     }
     auto end = end_offset;
     if (end == DETECTOR_OFFSET_EOF) {
-        end = static_cast<int64_t>(file->hashes.size);
+        end = static_cast<int64_t>(data.size());
     }
     else if (end < 0) {
-        end += file->hashes.size;
+        end += static_cast<int64_t>(data.size());
     }
     
-    if (start < 0 || static_cast<uint64_t>(start) > file->hashes.size || end < 0 || static_cast<uint64_t>(end) > file->hashes.size || start > end) {
-	return MISMATCH;
+    if (start < 0 || static_cast<uint64_t>(start) > data.size() || end < 0 || static_cast<uint64_t>(end) > data.size() || start > end || static_cast<uint64_t>(end - start) % operation_unit_size(operation) != 0) {
+        return Hashes();
     }
 
     for (auto &test : tests) {
-        auto ret = test.execute(file, ctx);
-        if (ret != MATCH) {
-            return ret;
+        if (!test.execute(data)) {
+            return Hashes();
         }
     }
 
-    if (!ctx->compute_values(file, operation, static_cast<uint64_t>(start), static_cast<uint64_t>(end))) {
-	return ERROR;
-    }
-    
-    return MATCH;
+    return compute_values(operation, data, static_cast<uint64_t>(start), static_cast<uint64_t>(end - start));
 }
 
 
-Detector::Result Detector::Test::execute(File *file, Context *ctx) const {
+bool Detector::Test::execute(const std::vector<uint8_t> &data) const {
     auto match = false;
     
     switch (type) {
@@ -212,24 +176,18 @@ Detector::Result Detector::Test::execute(File *file, Context *ctx) const {
             auto off = offset;
             
             if (off < 0) {
-                off += file->hashes.size;
+                off += data.size();
             }
             
-            if (off < 0 || static_cast<uint64_t>(off) + length > file->hashes.size) {
-                return MISMATCH;
-            }
-            
-            if (static_cast<uint64_t>(off) + length > ctx->bytes_read) {
-                if (!ctx->fill_buffer(static_cast<uint64_t>(off) + length)) {
-                    return ERROR;
-                }
+            if (off < 0 || static_cast<uint64_t>(off) + length < static_cast<uint64_t>(off) || static_cast<uint64_t>(off) + length > data.size()) {
+                return false;
             }
             
             if (mask.empty()) {
-                match = (memcmp(ctx->buf.data() + off, value.data(), length) == 0);
+                match = (memcmp(data.data() + off, value.data(), length) == 0);
             }
             else {
-                match = bit_cmp(ctx->buf.data() + off);
+                match = bit_cmp(data.data() + off);
             }
             break;
         }
@@ -240,14 +198,14 @@ Detector::Result Detector::Test::execute(File *file, Context *ctx) const {
             if (offset == DETECTOR_SIZE_POWER_OF_2) {
                 match = false;
                 for (auto i = 0; i < 64; i++) {
-                    if (file->hashes.size == (static_cast<uint64_t>(1) << i)) {
+                    if (data.size() == (static_cast<uint64_t>(1) << i)) {
                         match = true;
                         break;
                     }
                 }
             }
             else {
-                int64_t cmp = offset - static_cast<int64_t>(file->hashes.size);
+                int64_t cmp = offset - static_cast<int64_t>(data.size());
                 
                 switch (type) {
                     case TEST_FILE_EQ:
@@ -267,33 +225,37 @@ Detector::Result Detector::Test::execute(File *file, Context *ctx) const {
         }
 
     if (match) {
-        return result ? MATCH : MISMATCH;
+        return result ? true : false;
     }
     else {
-        return result ? MISMATCH : MATCH;
+        return result ? false : true;
     }
 }
 
-bool Detector::Context::fill_buffer(uint64_t length) {
-    auto bytes_read = buf.size();
 
-    if (bytes_read < length) {
-        buf.resize(length, 0);
-        if (cb_read(ud, buf.data() + bytes_read, length - bytes_read) < 0) {
-	    return false;
+bool Detector::compute_hashes(ZipSourcePtr source, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors) {
+    std::unordered_map<size_t, DetectorPtr> needs_update;
+    
+    if (file->get_size(0) > MAX_DETECTOR_FILE_SIZE) {
+        return false;
+    }
+    
+    for (auto pair : detectors) {
+        if (file->detector_hashes.find(pair.first) == file->detector_hashes.end()) {
+            needs_update[pair.first] = pair.second;
         }
     }
-    return true;
-}
-
-bool Detector::Context::skip(uint64_t length) {
-    while (length > 0) {
-        auto n = std::min(length, static_cast<uint64_t>(buf.size()));
-        if (cb_read(ud, buf.data(), n) < 0) {
-            return false;
-        }
-        length -= n;
+    
+    if (needs_update.empty()) {
+        return false;
     }
-
+    
+    auto data = std::vector<uint8_t>(file->get_size(0));
+    source->read(data.data(), file->get_size(0));
+    
+    for (auto pair : needs_update) {
+        file->detector_hashes[pair.first] = pair.second->execute(data);
+    }
+    
     return true;
 }

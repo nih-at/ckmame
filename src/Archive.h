@@ -98,6 +98,8 @@ public:
     std::weak_ptr<Archive> open_archive;
     std::string filename_extension;
   
+    bool has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors);
+    
     bool read_infos_from_cachedb(std::vector<File> *files);
     int is_cache_up_to_date();
 

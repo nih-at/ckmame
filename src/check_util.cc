@@ -48,6 +48,7 @@ const std::string needed_dir = "needed";   /* TODO: proper value */
 const std::string unknown_dir = "unknown"; /* TODO: proper value */
 
 std::vector<std::string> extra_list;
+std::vector<std::string> needed_list;
 std::vector<std::string> search_dirs;
 std::vector<std::string> superfluous;
 
@@ -114,14 +115,13 @@ void ensure_extra_maps(int flags) {
 
 void
 ensure_needed_maps(void) {
-    std::vector<std::string> dummy;
     if (maps_done & NEEDED_MAPS)
 	return;
 
     maps_done |= NEEDED_MAPS;
     needed_delete_list = std::make_shared<DeleteList>();
 
-    enter_dir_in_map_and_list(DO_MAP, dummy, needed_dir, true, FILE_NEEDED);
+    enter_dir_in_map_and_list(DO_MAP, needed_list, needed_dir, true, FILE_NEEDED);
 }
 
 

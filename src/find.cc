@@ -45,9 +45,44 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const FileData 
 
 static find_result_t find_in_archives_xxx(filetype_t filetype, const FileData *r, Match *m, bool needed_only);
 
+static bool compute_all_detector_hashes(const std::vector<std::string> &files);
+
 bool compute_all_detector_hashes(bool needed_only) { // returns true if new hashes were computed
-    // TODO: move elsewhere and implement
-    return false;
+    if (db->detectors.empty()) {
+        return false;
+    }
+    
+    auto got_new_hashes = false;
+    
+    if (compute_all_detector_hashes(needed_list)) {
+        got_new_hashes = true;
+    }
+
+    if (!needed_only) {
+        if (compute_all_detector_hashes(superfluous)) {
+            got_new_hashes = true;
+        }
+        if (compute_all_detector_hashes(extra_list)) {
+            got_new_hashes = true;
+        }
+    }
+    
+    return got_new_hashes;
+}
+
+static bool compute_all_detector_hashes(const std::vector<std::string> &files) {
+    auto got_new_hashes = false;
+    for (auto name : files) {
+        auto contents = ArchiveContents::by_name(TYPE_ROM, name);
+        if (contents == NULL || contents->has_all_detector_hashes(db->detectors)) {
+            continue;
+        }
+        auto archive = Archive::open(contents);
+        if (archive->compute_detector_hashes(db->detectors)) {
+            got_new_hashes = true;
+        }
+    }
+    return got_new_hashes;
 }
 
 

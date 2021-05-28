@@ -1,0 +1,8 @@
+description test header detector
+features LIBXML2
+return 0
+file mame.db mamedb-detector.db mamedb-detector.db
+file roms/1-8.zip 1-8-header.zip 1-8-header.zip
+args -FKLvc 1-8
+stdout In game 1-8:
+stdout game 1-8                                 : correct

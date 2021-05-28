@@ -687,9 +687,8 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
         if (!source) {
             throw Exception("%s", strerror(errno));
         }
-        auto context = DetectorContext(source, &file, detectors);
-        
-        return context.execute();
+        Detector::compute_hashes(source, &file, detectors);
+        return true;
     }
     catch (Exception &e) {
         myerror(ERRZIP, "%s: can't open: %s", file.name.c_str(), e.what());
@@ -697,4 +696,17 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
         
         return false;
     }
+}
+
+
+bool ArchiveContents::has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors) {
+    for (auto pair : detectors) {
+        for (auto &file: files) {
+            if (file.detector_hashes.find(pair.first) == file.detector_hashes.end()) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
 }

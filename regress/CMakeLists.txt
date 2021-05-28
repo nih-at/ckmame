@@ -44,6 +44,10 @@ set(DBS
   mamedb-xml-quoting.db
   )
 
+set(XML_DBS
+  mamedb-detector.db
+)
+
 foreach(db ${DBS})
   get_filename_component(main ${db} NAME_WE)
   add_custom_command(OUTPUT "${db}"
@@ -53,10 +57,19 @@ foreach(db ${DBS})
     )
 endforeach()
 
+foreach(db ${XML_DBS})
+  get_filename_component(main ${db} NAME_WE)
+  add_custom_command(OUTPUT "${db}"
+    COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/${main}.xml"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${main}.xml"
+    COMMENT "Generating ${db}"
+    )
+endforeach()
+
 add_custom_target(testinput
   ALL
   VERBATIM
-  DEPENDS ${DBS}
+  DEPENDS ${DBS} ${XML_DBS}
   )
 
 add_custom_target(update-mamedb.dump
@@ -75,6 +88,8 @@ add_custom_target(update-mamedb.dump
 
 
 set(XFAIL_TESTS
+  detector-ok.test
+  detector-from-extra.test
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   rom-from-extra-detector.test

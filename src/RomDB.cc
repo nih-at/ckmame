@@ -158,7 +158,7 @@ DetectorPtr RomDB::read_detector() {
     }
 
     if (sqlite3_step(stmt) != SQLITE_ROW) {
-    return NULL;
+        return NULL;
     }
 
     auto detector = std::make_shared<Detector>();
@@ -168,7 +168,7 @@ DetectorPtr RomDB::read_detector() {
     detector->version = sq3_get_string(stmt, 2);
 
     if (!read_rules(detector.get())) {
-    return NULL;
+        return NULL;
     }
 
     return detector;
