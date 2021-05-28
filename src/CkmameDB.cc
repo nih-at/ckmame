@@ -352,7 +352,8 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
             auto id = get_detector_id(pair.first);
             if (sqlite3_bind_int(stmt, 2, static_cast<int>(i)) != SQLITE_OK
                 || sq3_set_uint64(stmt, 3, id) != SQLITE_OK
-                || sq3_set_string(stmt, 4, "") != SQLITE_OK
+                // file.name can't be NULL, so set it to empty string
+                || sqlite3_bind_text(stmt, 4, "", -1, SQLITE_STATIC) != SQLITE_OK
                 || sqlite3_bind_int64(stmt, 5, 0) != SQLITE_OK
                 || sqlite3_bind_int(stmt, 6, 0) != SQLITE_OK
                 || sq3_set_uint64(stmt, 7, pair.second.size) != SQLITE_OK
@@ -419,9 +420,9 @@ size_t CkmameDB::get_detector_id(size_t global_id) {
         auto stmt = db.get_statement(DBH_STMT_DIR_INSERT_DETECTOR);
         
         if (stmt == NULL
-            || sq3_set_uint64(stmt, 0, id) != SQLITE_OK
-            || sq3_set_string(stmt, 1, detector->name) != SQLITE_OK
-            || sq3_set_string(stmt, 2, detector->version) != SQLITE_OK
+            || sq3_set_uint64(stmt, 1, id) != SQLITE_OK
+            || sq3_set_string(stmt, 2, detector->name) != SQLITE_OK
+            || sq3_set_string(stmt, 3, detector->version) != SQLITE_OK
             || sqlite3_step(stmt) != SQLITE_DONE) {
             throw Exception();
         }

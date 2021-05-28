@@ -1,6 +1,12 @@
-# Soon
+# Detector
 
+- recoginze rom with correct name and match via detector (detector-ok.test)
+- search in romset
 - keep needed_list up to date (when moving stuff to needed)
+- when copying file with detector, also copy detector hashes (so they end up in .ckmame.db)
+- add detector in .ckmame.db support to runtest
+
+# Soon
 
 - rar read support
 

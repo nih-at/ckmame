@@ -130,7 +130,7 @@ public:
     static const DetectorDescriptor *get_descriptor(size_t id) { return detector_ids.get_descriptor(id); }
     
     // Returns true if new hashes were computed.
-    static bool compute_hashes(ZipSourcePtr source, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors);
+    static bool compute_hashes(const std::vector<uint8_t> &data, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors);
 
 private:
     static uint64_t operation_unit_size(Operation operation);

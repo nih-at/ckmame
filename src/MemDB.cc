@@ -140,11 +140,11 @@ bool MemDB::update_file(const ArchiveContents *archive, size_t idx) {
         return false;
     }
     
-    if (archive->files[idx].broken) {
-	return memdb->delete_file(archive->id, archive->filetype, idx);
+    if (!memdb->delete_file(archive->id, archive->filetype, idx)) {
+        return false;
     }
-
-    return memdb->update_file(archive->id, archive->filetype, idx, &archive->files[idx].hashes);
+    
+    return memdb->insert_file(archive, idx);
 }
 
 
@@ -194,7 +194,7 @@ std::optional<std::vector<MemDB::FindResult>> MemDB::find(filetype_t filetype, c
         
         result.game_id = sq3_get_uint64(stmt, 0);
         result.index = sq3_get_uint64(stmt, 1);
-        result.detector_id = sqlite3_column_int(stmt, 2);
+        result.detector_id = sq3_get_uint64(stmt, 2);
         result.location = static_cast<where_t>(sqlite3_column_int(stmt, 3));
         
         results.push_back(result);

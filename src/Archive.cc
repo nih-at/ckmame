@@ -675,27 +675,34 @@ bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorP
         MemDB::update_file(contents.get(), index);
     }
     
+    if (got_new_hashes) {
+        cache_changed = true;
+    }
     return got_new_hashes;
 }
 
 
 bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr> &detectors) {
     auto &file = files[index];
+    
+    auto data = std::vector<uint8_t>(file.get_size(0));
 
     try {
         auto source = get_source(index);
         if (!source) {
-            throw Exception("%s", strerror(errno));
+            throw Exception("can't open: %s", strerror(errno));
         }
-        Detector::compute_hashes(source, &file, detectors);
-        return true;
+        source->open();
+        source->read(data.data(), data.size());
     }
-    catch (Exception &e) {
-        myerror(ERRZIP, "%s: can't open: %s", file.name.c_str(), e.what());
+    catch (std::exception &e) {
+        myerror(ERRZIP, "%s: can't compute hashes: %s", file.name.c_str(), e.what());
         file.broken = true;
-        
+            
         return false;
     }
+
+    return Detector::compute_hashes(data, &file, detectors);
 }
 
 

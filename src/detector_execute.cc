@@ -233,27 +233,12 @@ bool Detector::Test::execute(const std::vector<uint8_t> &data) const {
 }
 
 
-bool Detector::compute_hashes(ZipSourcePtr source, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors) {
-    std::unordered_map<size_t, DetectorPtr> needs_update;
-    
+bool Detector::compute_hashes(const std::vector<uint8_t> &data, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors) {
     if (file->get_size(0) > MAX_DETECTOR_FILE_SIZE) {
         return false;
     }
     
     for (auto pair : detectors) {
-        if (file->detector_hashes.find(pair.first) == file->detector_hashes.end()) {
-            needs_update[pair.first] = pair.second;
-        }
-    }
-    
-    if (needs_update.empty()) {
-        return false;
-    }
-    
-    auto data = std::vector<uint8_t>(file->get_size(0));
-    source->read(data.data(), file->get_size(0));
-    
-    for (auto pair : needs_update) {
         file->detector_hashes[pair.first] = pair.second->execute(data);
     }
     
