@@ -687,6 +687,9 @@
 		4B9292C517633FFC00806C0A /* warn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = warn.h; sourceTree = "<group>"; };
 		4B9292C717633FFC00806C0A /* xmlutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = xmlutil.h; sourceTree = "<group>"; };
 		4B9292C917635B5500806C0A /* ArchiveZip.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveZip.cc; sourceTree = "<group>"; };
+		4B9E89AC2664E4F000CC3407 /* detector-ok.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "detector-ok.test"; sourceTree = "<group>"; };
+		4B9E89AD2664E4F000CC3407 /* detector-from-extra.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "detector-from-extra.test"; sourceTree = "<group>"; };
+		4B9E89AE2664EF0800CC3407 /* detector.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = detector.xml; sourceTree = "<group>"; };
 		4BA47B0D25CC3E2300C4C842 /* check_archive_files.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = check_archive_files.cc; sourceTree = "<group>"; };
 		4BA7DA2425E67831004AF735 /* disk-toplevel-cleanup.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-toplevel-cleanup.test"; sourceTree = "<group>"; };
 		4BB158A825DECA50008892CD /* disk-fixdat.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-fixdat.test"; sourceTree = "<group>"; };
@@ -1091,7 +1094,9 @@
 				4B6B146B24FF946A00D3F3FB /* cleanup-implicit.test */,
 				4B6B146024FF946900D3F3FB /* cleanup.test */,
 				4B6B147124FF946A00D3F3FB /* delete-used-superfluous.test */,
+				4B9E89AD2664E4F000CC3407 /* detector-from-extra.test */,
 				4B6B147624FF946A00D3F3FB /* detector-interaction-with-headerless.test */,
+				4B9E89AC2664E4F000CC3407 /* detector-ok.test */,
 				4B6B146724FF946A00D3F3FB /* detector-prefer-file-with-header.test */,
 				4BB158A825DECA50008892CD /* disk-fixdat.test */,
 				4B6B145D24FF946900D3F3FB /* disk-from-extra-remove.test */,
@@ -1313,10 +1318,11 @@
 		4BD1BAA41A404BA800A70734 /* regress */ = {
 			isa = PBXGroup;
 			children = (
-				4B6D02EF21441D71007D2F93 /* CMakeLists.txt */,
-				4BC78D0A1A4445A400A14E29 /* NiHTest.pm */,
 				4BD1BAA61A404BF300A70734 /* CkmameDB.pm */,
+				4B6D02EF21441D71007D2F93 /* CMakeLists.txt */,
 				4B8AD4B52629C0FE00E084EC /* compare-archives.cc */,
+				4B9E89AE2664EF0800CC3407 /* detector.xml */,
+				4BC78D0A1A4445A400A14E29 /* NiHTest.pm */,
 				4BD1BAA51A404BCB00A70734 /* runtest.in */,
 				4B6B145B24FF943B00D3F3FB /* tests */,
 			);

@@ -150,7 +150,7 @@ bool Archive::file_add_empty(const std::string &filename) {
     Hashes::Update hu(&hashes);
     hu.end();
 
-    add_file(filename, &hashes);
+    add_file(filename, &hashes, NULL);
     changes[files.size() - 1].source = std::make_shared<ZipSource>(zip_source_buffer_create(NULL, 0, 0, NULL));
 
     return true;
@@ -217,10 +217,10 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
     bool full_file = start == 0 && (!length.has_value() || length.value() == source_archive->files[source_index].hashes.size);
     
     if (full_file) {
-        add_file(filename, &source_archive->files[source_index].hashes);
+        add_file(filename, &source_archive->files[source_index].hashes, &source_archive->files[source_index].detector_hashes);
     }
     else {
-        add_file(filename, hashes);
+        add_file(filename, hashes, NULL);
     }
 
     if (have_direct_file_access() && source_archive->have_direct_file_access() && full_file) {
@@ -350,11 +350,14 @@ bool Archive::rollback() {
 }
 
 
-void Archive::add_file(const std::string &filename, const Hashes *hashes) {
+void Archive::add_file(const std::string &filename, const Hashes *hashes, const std::unordered_map<size_t, Hashes> *detector_hashes) {
     File file;
     Change change;
 
     file.hashes = *hashes;
+    if (detector_hashes != NULL) {
+        file.detector_hashes = *detector_hashes;
+    }
     file.name = filename;
     file.filename_extension = contents->filename_extension;
     change.status = Change::ADDED;

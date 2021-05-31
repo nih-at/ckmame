@@ -71,7 +71,7 @@ sub check_ckmame_db {
 		}
 	}
 	
-	my $db = new CkmameDB($dir, undef, $variant eq 'dir', $test->{test}->{'no-hashes'}, $test->{test}->{'not-in-ckmamedb'}, $test->{verbose});
+	my $db = new CkmameDB($dir, undef, $variant eq 'dir', $test->{test}->{'no-hashes'}, $test->{test}->{'detector-hashes'}, $test->{test}->{'not-in-ckmamedb'}, $test->{verbose});
 	
 	if (!$db) {
 		print "opening $dir/.ckmame.db failed\n" if ($test->{verbose});
@@ -287,6 +287,11 @@ $test->add_directive('ckmamedb-before' => {
 	usage => 'directory dump [version] [sql-schema]'
 });
 $test->add_directive('ckmamedb-after' => { type => 'string string' });
+$test->add_directive('detector-hashes' => {
+	type => "string string string string string?",
+	usage => "detector-name detector-version directory archive [file]",
+	description => 'Specify that certain hashes computed for detectors are in cachedb. If FILE is omitted, it applies to all files from ARCHIVE.'
+});
 $test->add_directive('no-hashes' => {
 	type => 'string string string? string?',
 	usage => 'directory archive [file] [hash-types]',

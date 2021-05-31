@@ -82,7 +82,7 @@ RomDB::RomDB(const std::string &name, int mode) : db(name, mode) {
     
     int ret;
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        auto detector_id = Detector::get_id(DetectorDescriptor(sq3_get_string(stmt, 0), sq3_get_string(stmt, 1)));
+        auto detector_id = Detector::get_id(DetectorDescriptor(sq3_get_string(stmt, 0), sq3_get_string(stmt, 2)));
         detectors[detector_id] = read_detector();
     }
     

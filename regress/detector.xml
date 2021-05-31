@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <detector>
-  <name>skip some bytes</name>
+  <name>skip-some-bytes</name>
   <author>no1</author>
   <version>20070429</version>
 

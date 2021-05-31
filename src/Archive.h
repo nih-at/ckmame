@@ -222,7 +222,7 @@ protected:
     Archive(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flags);
     void update_cache();
 
-    void add_file(const std::string &filename, const Hashes *hashes);
+    void add_file(const std::string &filename, const Hashes *hashes, const std::unordered_map<size_t, Hashes> *detector_hashes);
     GetHashesStatus get_hashes(ZipSource *source, uint64_t length, bool eof, Hashes *hashes);
     void merge_files(const std::vector<File> &files_cache);
     

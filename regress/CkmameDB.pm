@@ -9,11 +9,13 @@ sub new {
 	my $class = UNIVERSAL::isa ($_[0], __PACKAGE__) ? shift : __PACKAGE__;
 	my $self = bless {}, $class;
 
-	my ($dir, $skip, $unzipped, $no_hashes, $not_in_db, $verbose) = @_;
+	my ($dir, $skip, $unzipped, $no_hashes, $detector_hashes, $not_in_db, $verbose) = @_;
 	
 	$self->{dir} = $dir;
 	$self->{unzipped} = $unzipped;
 	$self->{no_hashes} = {};
+	$self->{detector_hashes} = {};
+	$self->{detectors} = {};
 	$self->{verbose} = $verbose;
 
 	if (defined($no_hashes)) {
@@ -28,6 +30,21 @@ sub new {
 			else {
 				$self->{no_hashes}->{$archive} = 1;
 			}
+		}
+	}
+	
+	if (defined($detector_hashes)) {
+		for my $detector_hash (@{$detector_hashes}) {
+			my ($name, $version, $cache_dir, $archive, $file) = @$detector_hash;
+			
+			next unless ($cache_dir eq $dir);
+			
+			my $detector_key = "$name|$version";
+			
+			$self->{detectors}->{$detector_key} = 1;
+
+			$file //= "";
+			$self->{detector_hashes}->{$archive}->{$file}->{$detector_key} = 1;
 		}
 	}
 	
@@ -74,6 +91,7 @@ sub read_db {
 		return undef;
 	}
 
+	$self->{dump_detectors} = {};
 	my %archive_names;
 	my @files = ();
 
@@ -82,12 +100,22 @@ sub read_db {
 		chomp $line;
 		
 		if ($table eq 'file') {
-			my ($id, $idx, $name) = split '\|', $line;
-			push @files, [ $id, $idx, $line ];
+			my ($id, $idx, $name, $mtime, $status, $size, $crc, $md5, $sha1, $detector_id) = split '\|', $line;
+			push @files, [ $id, $idx, $detector_id, $line ];
 			if (exists($archive_names{$id})) {
 				my $dump_archive = $self->{dump_archives}->{$archive_names{$id}};
 
-				$dump_archive->{files}->{$name} = $idx;
+				if ($name ne "") {
+					$dump_archive->{files}->{$name} = $idx;
+				}
+				if ($detector_id > 0) {
+					$dump_archive->{detector_hashes}->{$idx}->{$detector_id} = {
+						size => $size,
+						crc => $crc,
+						md5 => $md5,
+						sha1 => $sha1
+					};
+				}
 				if ($idx > $dump_archive->{max_idx}) {
 					$dump_archive->{max_idx} = $idx;
 				}
@@ -107,11 +135,27 @@ sub read_db {
 				$self->{max_id} = $id;
 			}
 		}
+		elsif ($table eq 'detector') {
+			my ($id, $name, $version) = split '\|', $line;
+			$self->{dump_detectors}->{"$name|$version"} = $id;
+		}
 	}
 	close($dump);
 
-	for my $file (sort { return $a->[1] <=> $b->[1] if ($a->[0] == $b->[0]) ; return $a->[0] <=> $b->[0]; } @files) {
-		push @{$self->{dump_got}}, $file->[2];
+	for my $file (sort {
+		if ($a->[0] == $b->[0]) {
+			if ($a->[1] == $b->[1]) {
+				return $a->[2] <=> $b->[2];
+			}
+			else {
+				return $a->[1] <=> $b->[1];
+			}
+		}
+		else {
+			return $a->[0] <=> $b->[0];
+		}
+	} @files) {
+		push @{$self->{dump_got}}, $file->[3];
 	}
 	
 	return 1;
@@ -189,7 +233,7 @@ sub read_archives {
 
 			$name =~ s,^$prefix/,,;
 
-			my $rom = { name => $name, idx => $idx++, status => 0, detector_id => 0 };
+			my $rom = { name => $name, idx => $idx++, status => 0 };
 			$rom->{size} = $attributes{size} // '-1';
 			for my $attr (qw(sha1 md5)) {
 				$rom->{$attr} = $attributes{$attr} // 'null';
@@ -233,16 +277,43 @@ sub make_dump {
 	}
 	
 	push @dump, '>>> table detector (detector_id, name, version)';
+	
+	my $next_id = 1;
+	
+	for my $id (values %{$self->{dump_detectors}}) {
+		if ($id >= $next_id) {
+			$next_id = $id + 1;
+		}
+	}
+	
+	my %detectors;
+	my %detector_ids;
+	
+	for my $detector (keys %{$self->{detectors}}) {
+		if (exists($self->{dump_detectors}->{$detector})) {
+			$detectors{$self->{dump_detectors}->{$detector}} = $detector;
+			$detector_ids{$detector} = $self->{dump_detectors}->{$detector};
+		}
+		else {
+			$detectors{$next_id} = $detector;
+			$detector_ids{$detector} = $next_id;
+ 			$next_id += 1;
+		}
+	}
+	
+	for my $id (sort keys %detectors) {
+		push @dump, "$id|$detectors{$id}";
+	}
+	
 	push @dump, '>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)';
 
 	for my $id (sort { $a <=> $b} keys %{$self->{archives_got}}) {
 		my $archive = $self->{archives_got}->{$id};
+		my $dump_archive = $self->{dump_archives}->{$archive->{name}};
 
 		if ($self->{unzipped}) {
-			my $dump_archive;
 			my $next_idx = 0;
-			if (exists($self->{dump_archives}->{$archive->{name}})) {
-				$dump_archive = $self->{dump_archives}->{$archive->{name}};
+			if (defined($dump_archive)) {
 				$next_idx = $dump_archive->{max_idx} + 1;
 			}
 			for my $file (@{$archive->{files}}) {
@@ -257,7 +328,25 @@ sub make_dump {
 			$archive->{files} = [ sort { $a->{idx} <=> $b->{idx} } @{$archive->{files}} ];
 		}
 		for my $file (@{$archive->{files}}) {
-			push @dump, join '|', $id, $file->{idx}, $file->{name}, $file->{mtime}, $file->{status}, $file->{size}, $file->{crc}, "<$file->{md5}>", "<$file->{sha1}>", $file->{detector_id};
+			push @dump, join '|', $id, $file->{idx}, $file->{name}, $file->{mtime}, $file->{status}, $file->{size}, $file->{crc}, "<$file->{md5}>", "<$file->{sha1}>", 0;
+			
+			my $detector_hashes = $self->{detector_hashes}->{$archive->{name}};
+			if ($detector_hashes) {
+				my $detector_names = $detector_hashes->{$file->{name}} // $detector_hashes->{""};
+				my @ids = sort map { $detector_ids{$_}; } keys %$detector_names;
+				for my $id (@ids) {
+					my $dump_file;
+					if (defined($dump_archive)) {
+						$dump_file = $dump_archive->{detector_hashes}->{$file->{idx}}->{$id};
+					}
+					if (defined($dump_file)) {
+						push @dump, join '|', $id, $file->{idx}, "", 0, 0, $dump_file->{size}, $dump_file->{crc}, "$dump_file->{md5}", "$dump_file->{sha1}", $id;
+					}
+					else {
+						push @dump, join '|', $id, $file->{idx}, "", 0, 0, "?", "?", "<?>", "<?>", $id;
+					}
+				}
+			}
 		}
 	}
 	
