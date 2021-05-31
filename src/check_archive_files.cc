@@ -65,7 +65,8 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
             continue;
         }
 
-        found = find_in_romset(filetype, &file, archive.get(), gamename, file.name, NULL);
+        // TODO: also search for each detector hash
+        found = find_in_romset(filetype, 0, &file, archive.get(), gamename, file.name, NULL);
 
         switch (found) {
             case FIND_UNKNOWN:
@@ -88,7 +89,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
                 else {
                     Match match;
                     ensure_needed_maps();
-                    if (find_in_archives(filetype, &file, &match, false) != FIND_EXISTS) {
+                    if (find_in_archives(filetype, 0, &file, &match, false) != FIND_EXISTS) {
                         result->archive_files[filetype][i] = FS_NEEDED;
                     }
                     else {

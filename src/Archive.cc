@@ -53,6 +53,7 @@
 #include "fix_util.h"
 #include "globals.h"
 #include "MemDB.h"
+#include "RomDB.h"
 
 #define BUFSIZE 8192
 
@@ -716,4 +717,27 @@ bool ArchiveContents::has_all_detector_hashes(const std::unordered_map<size_t, D
     }
     
     return true;
+}
+
+
+bool Archive::compare_size_hashes(size_t index, size_t detector_id, const FileData *rom) {
+    auto &file = files[index];
+    
+    auto ok = false;
+    
+    if (rom->compare_size_hashes(file)) {
+        if (file.size_hashes_are_set(true) || file_compare_hashes(index, &rom->hashes) == 0) {
+            ok = true;
+        }
+    }
+    if (!ok) {
+        if (detector_id > 0) {
+            compute_detector_hashes(db->detectors);
+            if (rom->hashes.compare(file.get_hashes(detector_id)) == Hashes::MATCH) {
+                ok = true;
+            }
+        }
+    }
+    
+    return ok;
 }

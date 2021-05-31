@@ -4,6 +4,7 @@
 - search in romset
 - keep needed_list up to date (when moving stuff to needed)
 - when deciding if file is needed, consider detector hashes
+- use CkmameDB as old db, specify all detectors you'll ever need when creating.
 - tests:
     - get from other archive in romset
     - move to needed, get from there
@@ -11,6 +12,7 @@
 
 # Soon
 
+- fewer tests with only crc in RomDB.
 - rar read support
 
 - add option to keep ROMs with detector applied

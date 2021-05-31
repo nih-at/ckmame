@@ -38,12 +38,12 @@
 #include "RomDB.h"
 #include "sq_util.h"
 
-static find_result_t check_for_file_in_archive(filetype_t filetype, const std::string &game_name, const FileData *rom, const FileData *file, Match *m);
-static find_result_t check_match_old(filetype_t filetype, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match);
-static find_result_t check_match_romset(filetype_t filetype, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match);
-static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const FileData *wanted_file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match, find_result_t (*)(filetype_t filetype, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match));
+static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *rom, const FileData *file, Match *m);
+static find_result_t check_match_old(filetype_t filetype, size_t detector_id, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match);
+static find_result_t check_match_romset(filetype_t filetype, size_t detector_id, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match);
+static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector_id, const FileData *wanted_file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match, find_result_t (*)(filetype_t filetype, size_t detector_id, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match));
 
-static find_result_t find_in_archives_xxx(filetype_t filetype, const FileData *r, Match *m, bool needed_only);
+static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_id, const FileData *r, Match *m, bool needed_only);
 
 static bool compute_all_detector_hashes(const std::vector<std::string> &files);
 
@@ -86,11 +86,11 @@ static bool compute_all_detector_hashes(const std::vector<std::string> &files) {
 }
 
 
-find_result_t find_in_archives(filetype_t filetype, const FileData *rom, Match *m, bool needed_only) {
-    auto result = find_in_archives_xxx(filetype, rom, m, needed_only);
+find_result_t find_in_archives(filetype_t filetype, size_t detector_id, const FileData *rom, Match *m, bool needed_only) {
+    auto result = find_in_archives_xxx(filetype, detector_id, rom, m, needed_only);
     if (result == FIND_UNKNOWN) {
         if (compute_all_detector_hashes(needed_only)) {
-            result = find_in_archives_xxx(filetype, rom, m, needed_only);
+            result = find_in_archives_xxx(filetype, detector_id, rom, m, needed_only);
         }
     }
     
@@ -98,7 +98,7 @@ find_result_t find_in_archives(filetype_t filetype, const FileData *rom, Match *
 }
 
 
-static find_result_t find_in_archives_xxx(filetype_t filetype, const FileData *rom, Match *m, bool needed_only) {
+static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_id, const FileData *rom, Match *m, bool needed_only) {
     auto results = MemDB::find(filetype, rom);
     
     if (!results.has_value()) {
@@ -106,7 +106,9 @@ static find_result_t find_in_archives_xxx(filetype_t filetype, const FileData *r
     }
     
     for (auto result : results.value()) {
-        // check that result.detector_id is 0 or matches detector from RomDB
+        if (result.detector_id != 0 && result.detector_id != detector_id) {
+            continue;
+        }
 
         auto a = Archive::by_id(result.game_id);
         if (!a) {
@@ -146,16 +148,16 @@ find_result_t find_in_old(filetype_t filetype, const FileData *file, Archive *ar
 	return FIND_MISSING;
     }
 
-    return find_in_db(old_db.get(), filetype, file, archive, "", "", match, check_match_old);
+    return find_in_db(old_db.get(), filetype, 0, file, archive, "", "", match, check_match_old);
 }
 
 
-find_result_t find_in_romset(filetype_t filetype, const FileData *file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match) {
-    return find_in_db(db.get(), filetype, file, archive, skip_game, skip_file, match, check_match_romset);
+find_result_t find_in_romset(filetype_t filetype, size_t detector_id, const FileData *file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match) {
+    return find_in_db(db.get(), filetype, detector_id, file, archive, skip_game, skip_file, match, check_match_romset);
 }
 
 
-static find_result_t check_for_file_in_archive(filetype_t filetype, const std::string &name, const FileData *wanted_file, const FileData *candidate, Match *matches) {
+static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string &name, const FileData *wanted_file, const FileData *candidate, Match *matches) {
     ArchivePtr a;
 
     auto full_name = findfile(filetype, name);
@@ -164,16 +166,18 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
     }
 
     auto idx = a->file_index_by_name(wanted_file->name);
-    
-    if (idx.has_value() && a->file_compare_hashes(idx.value(), &candidate->hashes) == Hashes::MATCH) {
-        auto index = idx.value();
-        
-        if (!a->files[index].broken) {
-            if (matches) {
-                matches->archive = a;
-                matches->index = index;
+    if (idx.has_value()) {
+        a->file_ensure_hashes(idx.value(), wanted_file->hashes.types);
+        if (a->compare_size_hashes(idx.value(), detector_id, wanted_file)) {
+            auto index = idx.value();
+            
+            if (!a->files[index].broken) {
+                if (matches) {
+                    matches->archive = a;
+                    matches->index = index;
+                }
+                return FIND_EXISTS;
             }
-            return FIND_EXISTS;
         }
     }
 
@@ -181,7 +185,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, const std::s
 }
 
 
-static find_result_t check_match_old(filetype_t, const Game *game, const FileData *wanted_file, const FileData *, Match *match) {
+static find_result_t check_match_old(filetype_t, size_t detector_id, const Game *game, const FileData *wanted_file, const FileData *, Match *match) {
     if (match) {
 	match->quality = Match::OLD;
 	match->where = FILE_OLD;
@@ -193,8 +197,8 @@ static find_result_t check_match_old(filetype_t, const Game *game, const FileDat
 }
 
 
-static find_result_t check_match_romset(filetype_t filetype, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match) {
-    auto status = check_for_file_in_archive(filetype, game->name, wanted_file, candidate, match);
+static find_result_t check_match_romset(filetype_t filetype, size_t detector_id, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match) {
+    auto status = check_for_file_in_archive(filetype, detector_id, game->name, wanted_file, candidate, match);
     if (match && status == FIND_EXISTS) {
 	match->quality = Match::COPIED;
 	match->where = FILE_ROMSET;
@@ -204,7 +208,7 @@ static find_result_t check_match_romset(filetype_t filetype, const Game *game, c
 }
 
 
-static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const FileData *file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match, find_result_t (*check_match)(filetype_t filetype, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match)) {
+static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector_id, const FileData *file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match, find_result_t (*check_match)(filetype_t filetype, size_t detector_id, const Game *game, const FileData *wanted_file, const FileData *candidate, Match *match)) {
     auto roms = rdb->read_file_by_hash(filetype, &file->hashes);
     
     if (roms.empty()) {
@@ -213,7 +217,7 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const FileData 
 
     find_result_t status = FIND_UNKNOWN;
     for (size_t i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < roms.size(); i++) {
-	auto rom = roms[i];
+	auto &rom = roms[i];
 
         if (rom.name == skip_game && skip_file.empty()) {
 	    continue;
@@ -250,7 +254,7 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, const FileData 
 	    }
 
 	    if (ok) {
-                status = check_match(filetype, game.get(), &game_rom, file, match);
+                status = check_match(filetype, detector_id, game.get(), &game_rom, file, match);
 	    }
 	}
     }

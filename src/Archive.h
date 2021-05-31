@@ -166,6 +166,7 @@ public:
 
     int close();
     bool commit();
+    bool compare_size_hashes(size_t index, size_t detector_id, const FileData *rom);
     bool compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors);
     void ensure_valid_archive();
     bool file_add_empty(const std::string &filename);
