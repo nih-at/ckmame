@@ -603,3 +603,13 @@ int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEn
 
     return 0;
 }
+
+
+size_t RomDB::get_detector_id_for_dat(size_t dat_no) const {
+    if (!has_detector()) {
+        return 0;
+    }
+    
+    // TODO: Fix once we support multiple detectors in one DB.
+    return detectors.begin()->first;
+}

@@ -51,7 +51,9 @@ public:
     bool delete_game(const std::string &name);
     int has_disks();
 
+    bool has_detector() const { return detectors.size() != 0; }
     DetectorPtr get_detector(size_t id);
+    size_t get_detector_id_for_dat(size_t dat_no) const;
     
     std::vector<DatEntry> read_dat();
     std::vector<FileLocation> read_file_by_hash(filetype_t ft, const Hashes *hash);

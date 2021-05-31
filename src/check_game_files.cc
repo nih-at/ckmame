@@ -48,7 +48,8 @@ enum test_result { TEST_NOTFOUND, TEST_UNUSABLE, TEST_USABLE };
 
 typedef enum test_result test_result_t;
 
-static test_result_t match_files(ArchivePtr, test_t, const Rom *, Match *);
+static test_result_t match_files(ArchivePtr, test_t, const Game *game, const Rom *, Match *);
+static bool compare_size_hashes(const Game *game, const Rom *rom, ArchivePtr archive, size_t index);
 
 
 void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, Result *res) {
@@ -76,7 +77,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         match->quality = Match::MISSING;
         
         /* check if it's in ancestor */
-        if (rom.where != FILE_INGAME && expected_archive && (result = match_files(expected_archive, TEST_MERGENAME_SIZE_CHECKSUM, &rom, match)) != TEST_NOTFOUND) {
+        if (rom.where != FILE_INGAME && expected_archive && (result = match_files(expected_archive, TEST_MERGENAME_SIZE_CHECKSUM, game, &rom, match)) != TEST_NOTFOUND) {
             match->where = rom.where;
             if (result == TEST_USABLE) {
                 continue;
@@ -86,7 +87,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         /* search for matching file in game's zip */
         if (archives[0].archive[filetype]) {
             for (size_t j = 0; j < tests.size(); j++) {
-                if ((result = match_files(archives[0].archive[filetype], tests[j], &rom, match)) != TEST_NOTFOUND) {
+                if ((result = match_files(archives[0].archive[filetype], tests[j], game, &rom, match)) != TEST_NOTFOUND) {
                     match->where = FILE_INGAME;
                     if (rom.where != FILE_INGAME && match->quality == Match::OK) {
                         match->quality = Match::IN_ZIP;
@@ -148,8 +149,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
 }
 
 
-static test_result_t
-match_files(ArchivePtr archive, test_t test, const Rom *rom, Match *match) {
+static test_result_t match_files(ArchivePtr archive, test_t test, const Game *game, const Rom *rom, Match *match) {
     test_result_t result;
 
     match->offset = 0;
@@ -164,54 +164,50 @@ match_files(ArchivePtr archive, test_t test, const Rom *rom, Match *match) {
 	}
 
 	switch (test) {
-            case TEST_NAME_SIZE_CHECKSUM:
-            case TEST_MERGENAME_SIZE_CHECKSUM:
-                if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file)) && rom->compare_size_hashes(file)) {
-                    // If we have a detector, don't compute and check all hashes. Revisit this when fixing detector support.
-                    if (!file.size_hashes_are_set(true) && archive->file_compare_hashes(i, &rom->hashes) != 0) {
-                        break;
-                    }
+        case TEST_NAME_SIZE_CHECKSUM:
+        case TEST_MERGENAME_SIZE_CHECKSUM: {
+            if ((test == TEST_NAME_SIZE_CHECKSUM ? rom->compare_name(file) : rom->compare_merged(file))) {
+                if (compare_size_hashes(game, rom, archive, i)) {
                     match->quality = Match::OK;
                     result = TEST_USABLE;
                     match->archive = archive;
                     match->index = i;
                 }
+            }
+            break;
+        }
+
+        case TEST_SIZE_CHECKSUM:
+            /* roms without hashes are only matched with correct name */
+            if (rom->hashes.empty()) {
                 break;
-
-            case TEST_SIZE_CHECKSUM:
-                /* roms without hashes are only matched with correct name */
-                if (rom->hashes.empty()) {
-                    break;
-                }
-
-                if (rom->compare_size_hashes(file)) {
-                    if (archive->file_compare_hashes(i, &rom->hashes) != 0) {
-                        break;
-                    }
-                    match->quality = Match::NAME_ERROR;
-                    result = TEST_USABLE;
+            }
+            
+            if (compare_size_hashes(game, rom, archive, i)) {
+                match->quality = Match::NAME_ERROR;
+                result = TEST_USABLE;
+                match->archive = archive;
+                match->index = i;
+            }
+            break;
+            
+        case TEST_LONG:
+            /* roms without hashes are only matched with correct name */
+            if (rom->hashes.empty() || rom->hashes.size == 0) {
+                break;
+            }
+            
+            if (rom->compare_name(file) && file.hashes.size > rom->hashes.size) {
+                auto offset = archive->file_find_offset(i, rom->hashes.size, &rom->hashes);
+                if (offset.has_value()) {
+                    match->offset = offset.value();
                     match->archive = archive;
                     match->index = i;
+                    match->quality = Match::LONG;
+                    return TEST_USABLE;
                 }
-                break;
-
-            case TEST_LONG:
-                /* roms without hashes are only matched with correct name */
-                if (rom->hashes.empty() || rom->hashes.size == 0) {
-                    break;
-                }
-
-                if (rom->compare_name(file) && file.hashes.size > rom->hashes.size) {
-                    auto offset = archive->file_find_offset(i, rom->hashes.size, &rom->hashes);
-                    if (offset.has_value()) {
-                        match->offset = offset.value();
-                        match->archive = archive;
-                        match->index = i;
-                        match->quality = Match::LONG;
-                        return TEST_USABLE;
-                    }
-                }
-                break;
+            }
+            break;
         }
     }
 
@@ -264,4 +260,28 @@ void update_game_status(const Game *game, Result *result) {
     else {
 	result->game = GS_PARTIAL;
     }
+}
+
+
+static bool compare_size_hashes(const Game *game, const Rom *rom, ArchivePtr archive, size_t index) {
+    auto &file = archive->files[index];
+    
+    auto ok = false;
+    
+    if (rom->compare_size_hashes(file)) {
+        if (file.size_hashes_are_set(true) || archive->file_compare_hashes(index, &rom->hashes) == 0) {
+            ok = true;
+        }
+    }
+    if (!ok) {
+        size_t detector_id = db->get_detector_id_for_dat(game->dat_no);
+        if (detector_id > 0) {
+            archive->compute_detector_hashes(db->detectors);
+            if (rom->hashes.compare(file.get_hashes(detector_id)) == Hashes::MATCH) {
+                ok = true;
+            }
+        }
+    }
+    
+    return ok;
 }

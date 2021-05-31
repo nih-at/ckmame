@@ -88,7 +88,6 @@ add_custom_target(update-mamedb.dump
 
 
 set(XFAIL_TESTS
-  detector-ok.test
   detector-interaction-with-headerless.test
   detector-prefer-file-with-header.test
   rom-from-extra-detector.test

@@ -45,7 +45,7 @@ public:
     uint64_t id;
     std::string name;
     std::string description;
-    unsigned int dat_no;
+    size_t dat_no;
     std::string cloneof[2];
     std::vector<Rom> files[TYPE_MAX];
     
