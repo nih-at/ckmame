@@ -334,16 +334,16 @@ sub make_dump {
 			if ($detector_hashes) {
 				my $detector_names = $detector_hashes->{$file->{name}} // $detector_hashes->{""};
 				my @ids = sort map { $detector_ids{$_}; } keys %$detector_names;
-				for my $id (@ids) {
+				for my $detector_id (@ids) {
 					my $dump_file;
 					if (defined($dump_archive)) {
-						$dump_file = $dump_archive->{detector_hashes}->{$file->{idx}}->{$id};
+						$dump_file = $dump_archive->{detector_hashes}->{$file->{idx}}->{$detector_id};
 					}
 					if (defined($dump_file)) {
-						push @dump, join '|', $id, $file->{idx}, "", 0, 0, $dump_file->{size}, $dump_file->{crc}, "$dump_file->{md5}", "$dump_file->{sha1}", $id;
+						push @dump, join '|', $id, $file->{idx}, "", 0, 0, $dump_file->{size}, $dump_file->{crc}, "$dump_file->{md5}", "$dump_file->{sha1}", $detector_id;
 					}
 					else {
-						push @dump, join '|', $id, $file->{idx}, "", 0, 0, "?", "?", "<?>", "<?>", $id;
+						push @dump, join '|', $id, $file->{idx}, "", 0, 0, "?", "?", "<?>", "<?>", $detector_id;
 					}
 				}
 			}

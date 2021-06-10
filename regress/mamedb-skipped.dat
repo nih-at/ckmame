@@ -12,5 +12,5 @@ game (
 game (
 	name unskipped
 	description unskipped
-	rom ( name 08.rom size 8 crc32 3656897d )
+	rom ( name 08.rom size 8 crc 3656897d md5 095ca6fcc1279865662b553147eb8f6d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
 )
