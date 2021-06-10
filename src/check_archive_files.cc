@@ -35,6 +35,7 @@
 
 #include "check_util.h"
 #include "find.h"
+#include "RomDB.h"
 
 
 void check_archive_files(filetype_t filetype, const GameArchives &archives, const std::string &gamename, Result *result) {
@@ -59,21 +60,38 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
             continue;
         }
 
+        size_t detector_id = 0;
         found = find_in_old(filetype, &file, archive.get(), NULL);
         if (found == FIND_EXISTS) {
             result->archive_files[filetype][i] = FS_DUPLICATE;
             continue;
         }
 
-        // TODO: also search for each detector hash
         found = find_in_romset(filetype, 0, &file, archive.get(), gamename, file.name, NULL);
+        if (found == FIND_UNKNOWN) {
+            archive->compute_detector_hashes(db->detectors);
+            for (auto pair : db->detectors) {
+                auto id = pair.first;
+                if (!file.is_size_known(id)) {
+                    continue;
+                }
+                FileData file_data;
+                file_data.name = file.name;
+                file_data.hashes = file.get_hashes(id);
+                auto detector_result = find_in_romset(filetype, id, &file_data, archive.get(), gamename, file.name, NULL);
+                if (detector_result != FIND_UNKNOWN) {
+                    detector_id = id;
+                    found = detector_result;
+                    break;
+                }
+            }
+        }
 
         switch (found) {
             case FIND_UNKNOWN:
                 break;
                 
             case FIND_EXISTS:
-
                 result->archive_files[filetype][i] = FS_SUPERFLUOUS;
                 break;
                 
@@ -89,7 +107,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
                 else {
                     Match match;
                     ensure_needed_maps();
-                    if (find_in_archives(filetype, 0, &file, &match, false) != FIND_EXISTS) {
+                    if (find_in_archives(filetype, detector_id, &file, &match, false) != FIND_EXISTS) {
                         result->archive_files[filetype][i] = FS_NEEDED;
                     }
                     else {
