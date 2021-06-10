@@ -691,6 +691,71 @@
 		4B9E89AD2664E4F000CC3407 /* detector-from-extra.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "detector-from-extra.test"; sourceTree = "<group>"; };
 		4B9E89AE2664EF0800CC3407 /* detector.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = detector.xml; sourceTree = "<group>"; };
 		4B9E89AF2665080600CC3407 /* detector-name-error.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "detector-name-error.test"; sourceTree = "<group>"; };
+		4B9E89CF2672061200CC3407 /* mamedb-mame.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "mamedb-mame.xml"; sourceTree = "<group>"; };
+		4B9E89D02672061200CC3407 /* mamedb-detector.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "mamedb-detector.xml"; sourceTree = "<group>"; };
+		4B9E89D12672061200CC3407 /* mamedb-parent-crcdiff-mame.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "mamedb-parent-crcdiff-mame.xml"; sourceTree = "<group>"; };
+		4B9E89D22672061200CC3407 /* mamedb-merge-wrong-name.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "mamedb-merge-wrong-name.xml"; sourceTree = "<group>"; };
+		4B9E89D32672061200CC3407 /* mamedb-mess.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "mamedb-mess.xml"; sourceTree = "<group>"; };
+		4B9E89D42672061300CC3407 /* mamedb-merge-no-parent.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "mamedb-merge-no-parent.xml"; sourceTree = "<group>"; };
+		4B9E89D52672068100CC3407 /* mamedb-ok.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-ok.dump"; sourceTree = "<group>"; };
+		4B9E89D62672068100CC3407 /* mamedb-cmpro-bad-ok.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-cmpro-bad-ok.dump"; sourceTree = "<group>"; };
+		4B9E89D72672068100CC3407 /* mamedb-no-name.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-no-name.dump"; sourceTree = "<group>"; };
+		4B9E89D82672068100CC3407 /* mamedb-parent-crcdiff.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-parent-crcdiff.dump"; sourceTree = "<group>"; };
+		4B9E89D92672068100CC3407 /* fixdat-xml-quoting.dat */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "fixdat-xml-quoting.dat"; sourceTree = "<group>"; };
+		4B9E89DA2672068100CC3407 /* mamedb-duplicate-nodump.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-duplicate-nodump.dump"; sourceTree = "<group>"; };
+		4B9E89DB2672068100CC3407 /* fixdat-missing-child.dat */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "fixdat-missing-child.dat"; sourceTree = "<group>"; };
+		4B9E89DC2672068100CC3407 /* mamedb-disk.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-disk.dat"; sourceTree = "<group>"; };
+		4B9E89DD2672068100CC3407 /* fixdat-missing-parent.dat */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "fixdat-missing-parent.dat"; sourceTree = "<group>"; };
+		4B9E89DE2672068100CC3407 /* mamedb-disk-many.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-disk-many.dat"; sourceTree = "<group>"; };
+		4B9E89DF2672068100CC3407 /* ckmamedb-wrongname-nohash.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-wrongname-nohash.dump"; sourceTree = "<group>"; };
+		4B9E89E02672068100CC3407 /* disk-fixdat.dat */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "disk-fixdat.dat"; sourceTree = "<group>"; };
+		4B9E89E12672068100CC3407 /* mamedb-parent-crcdiff.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-parent-crcdiff.dat"; sourceTree = "<group>"; };
+		4B9E89E22672068100CC3407 /* mamedb-deadbeefish.dat */ = {isa = PBXFileReference; explicitFileType = text; path = "mamedb-deadbeefish.dat"; sourceTree = "<group>"; };
+		4B9E89E32672068200CC3407 /* ckmamedb-1-4-ok-with-mtime.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-1-4-ok-with-mtime.dump"; sourceTree = "<group>"; };
+		4B9E89E42672068200CC3407 /* mamedb-merge-parent.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-merge-parent.dump"; sourceTree = "<group>"; };
+		4B9E89E52672068200CC3407 /* mamedb-duplicate-game.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-duplicate-game.dump"; sourceTree = "<group>"; };
+		4B9E89E62672068200CC3407 /* mamedb-dir-in-name.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-dir-in-name.dat"; sourceTree = "<group>"; };
+		4B9E89E72672068200CC3407 /* mamedb-rc-ok.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-rc-ok.dump"; sourceTree = "<group>"; };
+		4B9E89E82672068200CC3407 /* mamedb-mame.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-mame.dump"; sourceTree = "<group>"; };
+		4B9E89E92672068200CC3407 /* mamedb-parent-crcdiff-mame.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-parent-crcdiff-mame.dump"; sourceTree = "<group>"; };
+		4B9E89EA2672068200CC3407 /* mamedb-duplicate-rom-name.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-duplicate-rom-name.dump"; sourceTree = "<group>"; };
+		4B9E89EB2672068200CC3407 /* mamedb-size-hex.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-size-hex.dat"; sourceTree = "<group>"; };
+		4B9E89EC2672068200CC3407 /* mamedb-baddump.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-baddump.dat"; sourceTree = "<group>"; };
+		4B9E89ED2672068200CC3407 /* mamedb-duplicate-rom-name.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-duplicate-rom-name.dat"; sourceTree = "<group>"; };
+		4B9E89EE2672068200CC3407 /* mamedb-broken-sha1.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-broken-sha1.dat"; sourceTree = "<group>"; };
+		4B9E89EF2672068200CC3407 /* mamedb-merge-no-parent.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-merge-no-parent.dump"; sourceTree = "<group>"; };
+		4B9E89F02672068200CC3407 /* mamedb-1-8-is-4.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-1-8-is-4.dat"; sourceTree = "<group>"; };
+		4B9E89F12672068200CC3407 /* ckmamedb-2-4c-ok.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-2-4c-ok.dump"; sourceTree = "<group>"; };
+		4B9E89F22672068200CC3407 /* mamedb-size-hex.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-size-hex.dump"; sourceTree = "<group>"; };
+		4B9E89F32672068200CC3407 /* mamedb-small.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-small.dat"; sourceTree = "<group>"; };
+		4B9E89F42672068200CC3407 /* ckmamedb-1-8-ok-v2.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-1-8-ok-v2.dump"; sourceTree = "<group>"; };
+		4B9E89F52672068200CC3407 /* mamedb-duplicate-nodump.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-duplicate-nodump.dat"; sourceTree = "<group>"; };
+		4B9E89F62672068200CC3407 /* mamedb-merge-wrong-name.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-merge-wrong-name.dump"; sourceTree = "<group>"; };
+		4B9E89F72672068200CC3407 /* mamedb-two-games.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-two-games.dat"; sourceTree = "<group>"; };
+		4B9E89F82672068300CC3407 /* mamedb-lost-parent-ok.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-lost-parent-ok.dat"; sourceTree = "<group>"; };
+		4B9E89F92672068300CC3407 /* mamedb-lost-parent.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-lost-parent.dat"; sourceTree = "<group>"; };
+		4B9E89FA2672068300CC3407 /* ckmamedb-empty.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-empty.dump"; sourceTree = "<group>"; };
+		4B9E89FB2672068300CC3407 /* mamedb-dir-in-name.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-dir-in-name.dump"; sourceTree = "<group>"; };
+		4B9E89FC2672068300CC3407 /* rom-from-extra-size-changed.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-size-changed.dump"; sourceTree = "<group>"; };
+		4B9E89FD2672068300CC3407 /* ckmamedb-1-4-ok-1-8-ok.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-1-4-ok-1-8-ok.dump"; sourceTree = "<group>"; };
+		4B9E89FE2672068300CC3407 /* mamedb-merge-parent.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-merge-parent.dat"; sourceTree = "<group>"; };
+		4B9E89FF2672068300CC3407 /* ckmamedb-1-4-ok.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-1-4-ok.dump"; sourceTree = "<group>"; };
+		4B9E8A002672068300CC3407 /* mamedb-2.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-2.dat"; sourceTree = "<group>"; };
+		4B9E8A012672068300CC3407 /* mamedb-multi-dats.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-multi-dats.dump"; sourceTree = "<group>"; };
+		4B9E8A022672068300CC3407 /* mamedb-one-game-two-roms.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-one-game-two-roms.dat"; sourceTree = "<group>"; };
+		4B9E8A032672068300CC3407 /* mamedb-broken-sha1.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-broken-sha1.dump"; sourceTree = "<group>"; };
+		4B9E8A042672068300CC3407 /* mamedb-parent-no-common.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-parent-no-common.dump"; sourceTree = "<group>"; };
+		4B9E8A052672068300CC3407 /* ckmamedb-2-4c-reverse.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-2-4c-reverse.dump"; sourceTree = "<group>"; };
+		4B9E8A062672068300CC3407 /* mamedb-xml-quoting.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-xml-quoting.dat"; sourceTree = "<group>"; };
+		4B9E8A072672068300CC3407 /* mamedb-parent-no-common.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-parent-no-common.dat"; sourceTree = "<group>"; };
+		4B9E8A082672068300CC3407 /* mamedb-mess.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-mess.dump"; sourceTree = "<group>"; };
+		4B9E8A092672068300CC3407 /* mamedb-skipped.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-skipped.dat"; sourceTree = "<group>"; };
+		4B9E8A0A2672068300CC3407 /* mame.dat */ = {isa = PBXFileReference; explicitFileType = text; path = mame.dat; sourceTree = "<group>"; };
+		4B9E8A0B2672068300CC3407 /* ckmamedb-1-8-ok.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-1-8-ok.dump"; sourceTree = "<group>"; };
+		4B9E8A0C2672068300CC3407 /* mamedb-small.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-small.dump"; sourceTree = "<group>"; };
+		4B9E8A0D2672068300CC3407 /* fixdat-missing-all.dat */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "fixdat-missing-all.dat"; sourceTree = "<group>"; };
+		4B9E8A0E2672068300CC3407 /* fixdat-missing-part.dat */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "fixdat-missing-part.dat"; sourceTree = "<group>"; };
+		4B9E8A0F2672068300CC3407 /* mamedb-lost-parent.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-lost-parent.dump"; sourceTree = "<group>"; };
 		4BA47B0D25CC3E2300C4C842 /* check_archive_files.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = check_archive_files.cc; sourceTree = "<group>"; };
 		4BA7DA2425E67831004AF735 /* disk-toplevel-cleanup.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-toplevel-cleanup.test"; sourceTree = "<group>"; };
 		4BB158A825DECA50008892CD /* disk-fixdat.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-fixdat.test"; sourceTree = "<group>"; };
@@ -1320,11 +1385,76 @@
 		4BD1BAA41A404BA800A70734 /* regress */ = {
 			isa = PBXGroup;
 			children = (
+				4B9E89FD2672068300CC3407 /* ckmamedb-1-4-ok-1-8-ok.dump */,
+				4B9E89E32672068200CC3407 /* ckmamedb-1-4-ok-with-mtime.dump */,
+				4B9E89FF2672068300CC3407 /* ckmamedb-1-4-ok.dump */,
+				4B9E89F42672068200CC3407 /* ckmamedb-1-8-ok-v2.dump */,
+				4B9E8A0B2672068300CC3407 /* ckmamedb-1-8-ok.dump */,
+				4B9E89F12672068200CC3407 /* ckmamedb-2-4c-ok.dump */,
+				4B9E8A052672068300CC3407 /* ckmamedb-2-4c-reverse.dump */,
+				4B9E89FA2672068300CC3407 /* ckmamedb-empty.dump */,
+				4B9E89DF2672068100CC3407 /* ckmamedb-wrongname-nohash.dump */,
 				4BD1BAA61A404BF300A70734 /* CkmameDB.pm */,
 				4B6D02EF21441D71007D2F93 /* CMakeLists.txt */,
 				4B8AD4B52629C0FE00E084EC /* compare-archives.cc */,
 				4B9E89AE2664EF0800CC3407 /* detector.xml */,
+				4B9E89E02672068100CC3407 /* disk-fixdat.dat */,
+				4B9E8A0D2672068300CC3407 /* fixdat-missing-all.dat */,
+				4B9E89DB2672068100CC3407 /* fixdat-missing-child.dat */,
+				4B9E89DD2672068100CC3407 /* fixdat-missing-parent.dat */,
+				4B9E8A0E2672068300CC3407 /* fixdat-missing-part.dat */,
+				4B9E89D92672068100CC3407 /* fixdat-xml-quoting.dat */,
+				4B9E8A0A2672068300CC3407 /* mame.dat */,
+				4B9E89F02672068200CC3407 /* mamedb-1-8-is-4.dat */,
+				4B9E8A002672068300CC3407 /* mamedb-2.dat */,
+				4B9E89EC2672068200CC3407 /* mamedb-baddump.dat */,
+				4B9E89EE2672068200CC3407 /* mamedb-broken-sha1.dat */,
+				4B9E8A032672068300CC3407 /* mamedb-broken-sha1.dump */,
+				4B9E89D62672068100CC3407 /* mamedb-cmpro-bad-ok.dump */,
+				4B9E89E22672068100CC3407 /* mamedb-deadbeefish.dat */,
+				4B9E89D02672061200CC3407 /* mamedb-detector.xml */,
+				4B9E89E62672068200CC3407 /* mamedb-dir-in-name.dat */,
+				4B9E89FB2672068300CC3407 /* mamedb-dir-in-name.dump */,
+				4B9E89DE2672068100CC3407 /* mamedb-disk-many.dat */,
+				4B9E89DC2672068100CC3407 /* mamedb-disk.dat */,
+				4B9E89E52672068200CC3407 /* mamedb-duplicate-game.dump */,
+				4B9E89F52672068200CC3407 /* mamedb-duplicate-nodump.dat */,
+				4B9E89DA2672068100CC3407 /* mamedb-duplicate-nodump.dump */,
+				4B9E89ED2672068200CC3407 /* mamedb-duplicate-rom-name.dat */,
+				4B9E89EA2672068200CC3407 /* mamedb-duplicate-rom-name.dump */,
+				4B9E89F82672068300CC3407 /* mamedb-lost-parent-ok.dat */,
+				4B9E89F92672068300CC3407 /* mamedb-lost-parent.dat */,
+				4B9E8A0F2672068300CC3407 /* mamedb-lost-parent.dump */,
+				4B9E89E82672068200CC3407 /* mamedb-mame.dump */,
+				4B9E89CF2672061200CC3407 /* mamedb-mame.xml */,
+				4B9E89EF2672068200CC3407 /* mamedb-merge-no-parent.dump */,
+				4B9E89D42672061300CC3407 /* mamedb-merge-no-parent.xml */,
+				4B9E89FE2672068300CC3407 /* mamedb-merge-parent.dat */,
+				4B9E89E42672068200CC3407 /* mamedb-merge-parent.dump */,
+				4B9E89F62672068200CC3407 /* mamedb-merge-wrong-name.dump */,
+				4B9E89D22672061200CC3407 /* mamedb-merge-wrong-name.xml */,
+				4B9E8A082672068300CC3407 /* mamedb-mess.dump */,
+				4B9E89D32672061200CC3407 /* mamedb-mess.xml */,
+				4B9E8A012672068300CC3407 /* mamedb-multi-dats.dump */,
+				4B9E89D72672068100CC3407 /* mamedb-no-name.dump */,
+				4B9E89D52672068100CC3407 /* mamedb-ok.dump */,
+				4B9E8A022672068300CC3407 /* mamedb-one-game-two-roms.dat */,
+				4B9E89E92672068200CC3407 /* mamedb-parent-crcdiff-mame.dump */,
+				4B9E89D12672061200CC3407 /* mamedb-parent-crcdiff-mame.xml */,
+				4B9E89E12672068100CC3407 /* mamedb-parent-crcdiff.dat */,
+				4B9E89D82672068100CC3407 /* mamedb-parent-crcdiff.dump */,
+				4B9E8A072672068300CC3407 /* mamedb-parent-no-common.dat */,
+				4B9E8A042672068300CC3407 /* mamedb-parent-no-common.dump */,
+				4B9E89E72672068200CC3407 /* mamedb-rc-ok.dump */,
+				4B9E89EB2672068200CC3407 /* mamedb-size-hex.dat */,
+				4B9E89F22672068200CC3407 /* mamedb-size-hex.dump */,
+				4B9E8A092672068300CC3407 /* mamedb-skipped.dat */,
+				4B9E89F32672068200CC3407 /* mamedb-small.dat */,
+				4B9E8A0C2672068300CC3407 /* mamedb-small.dump */,
+				4B9E89F72672068200CC3407 /* mamedb-two-games.dat */,
+				4B9E8A062672068300CC3407 /* mamedb-xml-quoting.dat */,
 				4BC78D0A1A4445A400A14E29 /* NiHTest.pm */,
+				4B9E89FC2672068300CC3407 /* rom-from-extra-size-changed.dump */,
 				4BD1BAA51A404BCB00A70734 /* runtest.in */,
 				4B6B145B24FF943B00D3F3FB /* tests */,
 			);

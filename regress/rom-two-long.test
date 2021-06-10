@@ -5,10 +5,10 @@ file roms/1-8.zip 1-8-long.zip 1-8-ok.zip
 file roms/2-48.zip 2-48-long.zip 2-48-ok.zip
 file-new unknown/2-48.zip 2-48-long.zip
 file-new unknown/1-8.zip 1-8-long.zip
-no-hashes roms 1-8.zip
+no-hashes roms 1-8.zip 08.rom md5
 no-hashes roms 2-48.zip 04.rom md5
 no-hashes roms 2-48.zip 08.rom md5
-no-hashes roms 1-8
+no-hashes roms 1-8 08.rom md5
 no-hashes roms 2-48 04.rom md5
 no-hashes roms 2-48 08.rom md5
 no-hashes unknown 1-8.zip

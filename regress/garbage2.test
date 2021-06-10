@@ -5,7 +5,6 @@ file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
 file roms/1-8.zip 2-8c-ok.zip 1-8-ok.zip
 file unknown/1-4.zip garbage.zip garbage2.zip
 file unknown/1-8.zip 1-c-ok.zip 2-cc-ok.zip
-no-hashes roms 1-8.zip 08.rom
 no-hashes unknown 1-4.zip
 no-hashes unknown 1-8.zip
 stdout In game 1-4:

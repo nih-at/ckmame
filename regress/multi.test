@@ -3,8 +3,6 @@ return 0
 args -FKLvc 1-4 1-8
 file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
 file roms/1-8.zip 2-48-ok.zip 1-8-ok.zip
-# 1-8 only has CRC, so no further checks are done on 1-4.zip/08.rom
-no-hashes roms 1-8.zip
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout file 08.rom        size       8  crc 3656897d: not used

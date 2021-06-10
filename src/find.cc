@@ -165,7 +165,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detec
 	return FIND_MISSING;
     }
 
-    auto idx = a->file_index_by_name(wanted_file->name);
+    auto idx = a->file_index_by_name(candidate->name);
     if (idx.has_value()) {
         a->file_ensure_hashes(idx.value(), wanted_file->hashes.types);
         if (a->compare_size_hashes(idx.value(), detector_id, wanted_file)) {
@@ -254,7 +254,7 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector
 	    }
 
 	    if (ok) {
-                status = check_match(filetype, detector_id, game.get(), &game_rom, file, match);
+                status = check_match(filetype, detector_id, game.get(), file, &game_rom, match);
 	    }
 	}
     }

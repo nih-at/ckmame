@@ -17,13 +17,9 @@ file roms/nogood-2.zip 1-8-ok.zip 1-8-ok.zip
 file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip
 file roms/zero-4.zip zero-4-ok.zip zero-4-ok.zip
 file roms/zero.zip zero-ok.zip zero-ok.zip
-no-hashes roms 1-8.zip
 no-hashes roms baddump.zip
-no-hashes roms clone-8.zip
 no-hashes roms many.zip
-no-hashes roms nogood-2.zip
-no-hashes roms parent-4.zip
-no-hashes roms zero-4.zip
+no-hashes roms zero-4.zip zero
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout In game 1-8:

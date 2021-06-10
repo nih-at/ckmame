@@ -12,7 +12,7 @@
 
 # Soon
 
-- fewer tests with only crc in RomDB.
+- When checking single game, search for its ROMs everywhere and report any matches.
 - rar read support
 
 - add option to keep ROMs with detector applied

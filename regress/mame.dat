@@ -18,7 +18,7 @@ game (
 	description "one eight byte file"
 	manufacturer "synth"
 	year 1991
-	rom ( name 08.rom size 8 crc32 3656897d )
+	rom ( name 08.rom size 8 crc32 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
 )
 
 game (
@@ -26,7 +26,7 @@ game (
 	description "one eight byte file (alternate)"
 	manufacturer "synth"
 	year 2004
-	rom ( name 08.rom size 8 crc32 12345678 )
+	rom ( name 08.rom size 8 crc32 12345678 sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
 )
 
 game (
@@ -71,8 +71,8 @@ game (
 	manufacturer "synth"
 	year 1992
 	romof parent-4
-	rom ( name 04.rom merge 04.rom size 4 crc32 d87f7e0c )
-	rom ( name 08.rom size 8 crc32 3656897d )
+	rom ( name 04.rom merge 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+	rom ( name 08.rom size 8 crc32 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
 )
 
 game (
@@ -124,7 +124,7 @@ game (
 	manufacturer "synth"
 	year 1994
 	rom ( name 04.rom size 4 flags nodump )
-	rom ( name 08.rom size 8 crc32 3656897d )
+	rom ( name 08.rom size 8 crc32 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
 )
 
 game (
@@ -149,7 +149,7 @@ game (
 	description "one four byte file, has clone"
 	manufacturer "synth"
 	year 1991
-	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
 )
 
 game (
@@ -166,7 +166,7 @@ game (
 	manufacturer "synth"
 	year 2006
 	rom ( name zero size 0 crc32 00000000 )
-	rom ( name 04.rom size 4 crc32 d87f7e0c )
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
 )
 
 game (
