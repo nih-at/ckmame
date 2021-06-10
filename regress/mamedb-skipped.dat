@@ -14,3 +14,10 @@ game (
 	description unskipped
 	rom ( name 08.rom size 8 crc 3656897d md5 095ca6fcc1279865662b553147eb8f6d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
 )
+
+game (
+        name skipped-2
+        description "second game with skipped"
+	rom ( name 08.rom size 4 crc 02404c40 sha1 bfac6a4b8fac8cc5337c3e58459324c560cfea67 md5 926abae84a4bd33c834bc6b981b8cf30 )
+        rom ( name 0c.rom size 12 crc 0623c932 md5 b60c52bf4849067f0b57c8bd30985466 sha1 2f2d205d5451d3256cf1c693982b40101e9989bf )
+)
