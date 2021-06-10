@@ -1,12 +1,9 @@
 # Detector
 
-- recognize rom with correct name and match via detector (detector-ok.test)
-- search in romset
 - keep needed_list up to date (when moving stuff to needed)
 - when deciding if file is needed, consider detector hashes
 - use CkmameDB as old db, specify all detectors you'll ever need when creating.
 - tests:
-    - get from other archive in romset
     - move to needed, get from there
     - cloneof: detector rom in child/parent, one with one without detector
 
