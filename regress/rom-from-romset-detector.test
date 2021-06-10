@@ -1,10 +1,8 @@
 description test single-rom game (no parent), file is in ROM set w/detector
 features LIBXML2
 return 0
-file detector.xml detector.xml detector.xml
-file mamedb-skipped.dat mamedb-skipped.dat mamedb-skipped.dat
-mkdbargs --detector detector.xml mamedb-skipped.dat
-args -FKLvc skipped
+file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
+args -D mamedb-skipped.db -FKLvc skipped
 file roms/skipped-2.zip 2-8c-ok.zip 2-8c-ok.zip
 file-new roms/skipped.zip 1-8-ok.zip
 no-hashes roms skipped-2.zip 0c.rom

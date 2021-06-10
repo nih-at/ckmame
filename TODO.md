@@ -1,16 +1,5 @@
-# Detector
-
-- when deciding if file is needed, consider detector hashes
-- tests:
-    - create DB via cmake, use for all tests
-    - don't have same ROM in DB with and without detector
-    - move to needed, get from there
-    - cloneof: detector rom in child/parent, one with one without detector
-- use CkmameDB as old db, specify all detectors you'll ever need when creating.
-
-# Soon
-
 - When checking single game, search for its ROMs everywhere and report any matches.
+
 - rar read support
 
 - add option to keep ROMs with detector applied
@@ -31,6 +20,8 @@
 - mkstatements.pl: rewrite in cmake and run it automatically each build
 
 # Later
+
+* use CkmameDB as old db, specify all detectors you'll ever need when creating.
 
 * convert runtest to use ziptool instead of unzip
 

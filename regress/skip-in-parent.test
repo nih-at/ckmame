@@ -1,0 +1,12 @@
+description test header detector in parent
+features LIBXML2
+return 0
+file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
+args -D mamedb-skipped.db -FKLvc skipped-child
+file roms/skipped.zip 1-8-ok.zip 1-8-ok.zip
+file roms/skipped-child.zip 1-c-ok.zip 1-c-ok.zip
+no-hashes roms skipped.zip
+detector-hashes skip-some-bytes 20070429 roms skipped.zip
+detector-hashes skip-some-bytes 20070429 roms skipped
+stdout In game skipped-child:
+stdout game skipped-child                           : correct
