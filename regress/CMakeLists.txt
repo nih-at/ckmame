@@ -48,6 +48,10 @@ set(XML_DBS
   mamedb-detector.db
 )
 
+set(CUSTOM_DBS
+    mamedb-skipped.db
+)
+
 foreach(db ${DBS})
   get_filename_component(main ${db} NAME_WE)
   add_custom_command(OUTPUT "${db}"
@@ -66,10 +70,16 @@ foreach(db ${XML_DBS})
     )
 endforeach()
 
+add_custom_command(OUTPUT mamedb-skipped.db
+    COMMAND mkmamedb -o mamedb-skipped.db --detector "${CMAKE_CURRENT_SOURCE_DIR}/detector.xml" "${CMAKE_CURRENT_SOURCE_DIR}/mamedb-skipped.dat"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/mamedb-skipped.dat" "${CMAKE_CURRENT_SOURCE_DIR}/detector.xml"
+    COMMENT "Generating mamedb-skipped.db"
+)
+
 add_custom_target(testinput
   ALL
   VERBATIM
-  DEPENDS ${DBS} ${XML_DBS}
+  DEPENDS ${DBS} ${XML_DBS} ${CUSTOM_DBS}
   )
 
 add_custom_target(update-mamedb.dump

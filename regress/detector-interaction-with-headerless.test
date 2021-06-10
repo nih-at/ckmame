@@ -1,23 +1,15 @@
 description test header detector: which file is used when both versions (w, w/o header) are available
 features LIBXML2
 return 0
-file detector.xml detector.xml detector.xml
-file mamedb-skipped.dat mamedb-skipped.dat mamedb-skipped.dat
+file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
 mkdir 755 extra
-mkdbargs --detector detector.xml mamedb-skipped.dat
-args -FKLjvc -e extra
-file roms/unskipped.zip 1-8-ok.zip 1-8-ok.zip
+args -D mamedb-skipped.db -FKLjvc -e extra skipped
 file-new roms/skipped.zip 1-8-skip-ok.zip
-file-new roms/skipped-2.zip 1-8-skip-ok.zip
 file-del extra/short.zip 1-8-skip-ok.zip
+file extra/long.zip 1-8-ok.zip 1-8-ok.zip
+no-hashes extra long.zip
 stdout In game skipped:
 stdout rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'
 stdout roms/skipped.zip: add 'extra/short.zip/08.rom' as '08.rom'
-stdout In game skipped-2:
-stdout rom  08.rom        size       4  crc 02404c40: is in 'roms/skipped.zip/08.rom'
-stdout rom  0c.rom        size      12  crc 0623c932: missing
-stdout roms/skipped-2.zip: add 'roms/skipped.zip/08.rom' as '08.rom'
-stdout In game unskipped:
-stdout game unskipped                               : correct
 stdout extra/short.zip: delete used file '08.rom'
 stdout extra/short.zip: remove empty archive

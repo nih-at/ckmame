@@ -1,11 +1,12 @@
 # Detector
 
-- keep needed_list up to date (when moving stuff to needed)
 - when deciding if file is needed, consider detector hashes
-- use CkmameDB as old db, specify all detectors you'll ever need when creating.
 - tests:
+    - create DB via cmake, use for all tests
+    - don't have same ROM in DB with and without detector
     - move to needed, get from there
     - cloneof: detector rom in child/parent, one with one without detector
+- use CkmameDB as old db, specify all detectors you'll ever need when creating.
 
 # Soon
 

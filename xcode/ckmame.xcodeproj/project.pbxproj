@@ -756,7 +756,6 @@
 		4B9E8A0E2672068300CC3407 /* fixdat-missing-part.dat */ = {isa = PBXFileReference; explicitFileType = text; path = "fixdat-missing-part.dat"; sourceTree = "<group>"; };
 		4B9E8A0F2672068300CC3407 /* mamedb-lost-parent.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "mamedb-lost-parent.dump"; sourceTree = "<group>"; };
 		4B9E8A1226721DDA00CC3407 /* rom-from-romset-detector.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-romset-detector.test"; sourceTree = "<group>"; };
-		4B9E8A142672262D00CC3407 /* detector-cleanup-extra.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "detector-cleanup-extra.test"; sourceTree = "<group>"; };
 		4BA47B0D25CC3E2300C4C842 /* check_archive_files.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = check_archive_files.cc; sourceTree = "<group>"; };
 		4BA7DA2425E67831004AF735 /* disk-toplevel-cleanup.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-toplevel-cleanup.test"; sourceTree = "<group>"; };
 		4BB158A825DECA50008892CD /* disk-fixdat.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-fixdat.test"; sourceTree = "<group>"; };
@@ -1347,7 +1346,6 @@
 				4B6B152324FFA9D700D3F3FB /* uncompressed-ckmamedb-changed-same-mtime.test */,
 				4B6B152524FFA9D700D3F3FB /* uncompressed-ckmamedb-extra-dir.test */,
 				4B6B151724FFA9D600D3F3FB /* uncompressed-ckmamedb-extra-remove.test */,
-				4B9E8A142672262D00CC3407 /* detector-cleanup-extra.test */,
 				4B6B151324FFA9D600D3F3FB /* uncompressed-ckmamedb-no-change.test */,
 				4B6B151824FFA9D600D3F3FB /* uncompressed-ckmamedb-remove-game-2.test */,
 				4B6B150724FFA9D500D3F3FB /* uncompressed-ckmamedb-remove-game-3.test */,

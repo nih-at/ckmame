@@ -1,10 +1,8 @@
 description test header detector
 features LIBXML2
 return 0
-file detector.xml detector.xml detector.xml
-file mamedb-skipped.dat mamedb-skipped.dat mamedb-skipped.dat
-mkdbargs --detector detector.xml mamedb-skipped.dat
-args -FKLvc skipped
+file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
+args -D mamedb-skipped.db -FKLvc skipped
 file roms/skipped.zip 1-8-ok.zip 1-8-ok.zip
 no-hashes roms skipped.zip
 detector-hashes skip-some-bytes 20070429 roms skipped.zip

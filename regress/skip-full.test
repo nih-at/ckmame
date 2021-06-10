@@ -1,10 +1,8 @@
-description test usage of full file matching header detector
+description test header detector - accept file without header
 features LIBXML2
 return 0
-file detector.xml detector.xml detector.xml
-file mamedb-skipped.dat mamedb-skipped.dat mamedb-skipped.dat
-mkdbargs --detector detector.xml mamedb-skipped.dat
-args -FKLvc unskipped
-file roms/unskipped.zip 1-8-ok.zip 1-8-ok.zip
-stdout In game unskipped:
-stdout game unskipped                               : correct
+file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
+args -D mamedb-skipped.db -FKLvc skipped
+file roms/skipped.zip 1-8-skip-ok.zip 1-8-skip-ok.zip
+stdout In game skipped:
+stdout game skipped                                 : correct
