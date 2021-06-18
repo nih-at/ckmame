@@ -92,7 +92,7 @@ endif()
 add_library(libckmame ${COMMON_SOURCES})
 target_link_libraries(libckmame PRIVATE ZLIB::ZLIB libzip::zip)
 # for config.h
-target_include_directories(libckmame PRIVATE ${PROJECT_BINARY_DIR})
+target_include_directories(libckmame PRIVATE ${PROJECT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (HAVE_LIBARCHIVE)
   target_link_libraries(libckmame PRIVATE LibArchive::LibArchive)
@@ -102,7 +102,7 @@ foreach(PROGRAM ckmame detective dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.cc)
   target_link_libraries(${PROGRAM} PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
   # for config.h
-  target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
+  target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
   install(TARGETS ${PROGRAM} RUNTIME DESTINATION bin)
 endforeach()
