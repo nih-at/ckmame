@@ -357,6 +357,7 @@
 		4B1D2F81267CF54500C31483 /* getopt_long.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = getopt_long.cc; sourceTree = "<group>"; };
 		4B1D2F82267CF54500C31483 /* getopt_long.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = getopt_long.h; sourceTree = "<group>"; };
 		4B1D2F83267CF54500C31483 /* getprogname.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = getprogname.cc; sourceTree = "<group>"; };
+		4B1D2F84267CF94E00C31483 /* fwrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = fwrite.c; sourceTree = "<group>"; };
 		4B20D2C326024ED000D77FA8 /* ParserCm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserCm.h; sourceTree = "<group>"; };
 		4B20D2CC260254A300D77FA8 /* ParserXml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserXml.h; sourceTree = "<group>"; };
 		4B20D2D6260254A900D77FA8 /* ParserRc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserRc.h; sourceTree = "<group>"; };
@@ -1492,6 +1493,7 @@
 				4B9E8A11267215E600CC3407 /* dat files */,
 				4B9E89AE2664EF0800CC3407 /* detector.xml */,
 				4B9E8A10267215DE00CC3407 /* dumps */,
+				4B1D2F84267CF94E00C31483 /* fwrite.c */,
 				4BC78D0A1A4445A400A14E29 /* NiHTest.pm */,
 				4BD1BAA51A404BCB00A70734 /* runtest.in */,
 				4B6B145B24FF943B00D3F3FB /* tests */,

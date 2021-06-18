@@ -21,8 +21,10 @@ if (LibArchive_FOUND)
   target_link_libraries(compare-archives ZLIB::ZLIB LibArchive::LibArchive)
 endif()
 
+if (NOT WIN32)
 add_library(fwrite MODULE fwrite.c)
 target_link_libraries(fwrite ${CMAKE_DL_LIBS})
+endif()
 
 add_custom_target(cleanup
   COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/cleanup.cmake
