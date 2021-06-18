@@ -334,7 +334,7 @@ std::string Archive::make_unique_name_in_archive(const std::string &filename) {
         return filename;
     }
 
-    std::string ext = std::filesystem::path(filename).extension();
+    std::string ext = std::filesystem::path(filename).extension().string();
 
     for (int i = 0; i < 1000; i++) {
 	char n[5];
