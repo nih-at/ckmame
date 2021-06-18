@@ -40,7 +40,7 @@
 #ifdef HAVE_FNMATCH
 #include <fnmatch.h>
 #else
-#include <compat_fnmatch.h>
+#include "compat_fnmatch.h"
 #endif
 
 #ifndef HAVE_FSEEKO
@@ -50,7 +50,7 @@
 #ifdef HAVE_GETOPT_LONG
 #include <getopt.h>
 #else
-#include <getopt_long.h>
+#include "getopt_long.h"
 #endif
 
 #ifndef HAVE_GETPROGNAME
