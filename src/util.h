@@ -38,6 +38,12 @@
 
 #include <stdarg.h>
 
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define PRINTF_LIKE(n, m) __attribute__((__format__(__printf__, n, m)))
+#else
+#define PRINTF_LIKE(n, m)
+#endif
+
 enum name_type { NAME_ZIP, NAME_IMAGES, NAME_IGNORE, NAME_UNKNOWN };
 
 typedef enum name_type name_type_t;
@@ -51,7 +57,7 @@ bool ensure_dir(const std::string &name, bool strip_filename);
 const std::string get_directory(void);
 bool is_ziplike(const std::string &fname);
 void print_human_number(FILE *f, uint64_t value);
-std::string string_format(const char *format, ...) __attribute__ ((format (printf, 1, 2)));
+std::string string_format(const char *format, ...) PRINTF_LIKE(1, 2);
 std::string string_format_v(const char *format, va_list ap);
 
 #endif

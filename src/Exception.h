@@ -38,11 +38,17 @@
 #include <string>
 #include <system_error>
 
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define PRINTF_LIKE(n, m) __attribute__((__format__(__printf__, n, m)))
+#else
+#define PRINTF_LIKE(n, m)
+#endif
+
 class Exception : public std::exception {
 public:
     Exception() { }
     Exception(const std::string &message_) : message(message_) { }
-    Exception(const char *format, ...) __attribute__ ((format (printf, 2, 3)));
+    Exception(const char *format, ...) PRINTF_LIKE(2, 3);
 
     Exception append_detail(const std::string &str);
     Exception append_system_error(int code = -1); // default: use current errno

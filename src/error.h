@@ -49,7 +49,13 @@
 #define ERRFILESTR (ERRFILE | ERRSTR)
 #define ERRZIPFILESTR (ERRZIPFILE | ERRSTR)
 
-void myerror(int, const char *, ...) __attribute__((__format__(__printf__, 2, 3)));
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define PRINTF_LIKE(n, m) __attribute__((__format__(__printf__, n, m)))
+#else
+#define PRINTF_LIKE(n, m)
+#endif
+
+void myerror(int, const char *, ...) PRINTF_LIKE(2, 3);
 void seterrdb(DB *);
 void seterrinfo(const std::string &fn, const std::string &zipn = "");
 
