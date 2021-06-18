@@ -15,10 +15,11 @@ foreach(PROGRAM ${SUPPORT_PROGRAMS})
 endforeach()
 
 
-add_executable(compare-archives compare-archives.cc)
-target_include_directories(compare-archives PRIVATE ${PROJECT_BINARY_DIR})
-target_link_libraries(compare-archives ZLIB::ZLIB LibArchive::LibArchive)
-
+if (LibArchive_FOUND)
+  add_executable(compare-archives compare-archives.cc)
+  target_include_directories(compare-archives PRIVATE ${PROJECT_BINARY_DIR})
+  target_link_libraries(compare-archives ZLIB::ZLIB LibArchive::LibArchive)
+endif()
 
 add_library(fwrite MODULE fwrite.c)
 target_link_libraries(fwrite ${CMAKE_DL_LIBS})
