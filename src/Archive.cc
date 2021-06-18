@@ -451,6 +451,7 @@ bool Archive::read_infos() {
                 // For directories, mtime doesn't change for all changes of files within that directory, so we always have to rescan.
                 if (contents->size != 0) {
                     files = files_cache;
+                    changes.resize(files.size());
                     return true;
                 }
                 break;
@@ -463,7 +464,6 @@ bool Archive::read_infos() {
     }
 
     merge_files(files_cache);
-
     changes.resize(files.size());
 
     return true;

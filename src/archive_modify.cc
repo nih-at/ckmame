@@ -178,14 +178,6 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 	return false;
     }
 
-#if 0
-    if (filetype != source_archive->filetype) {
-        seterrinfo(name);
-	myerror(ERRZIP, "cannot copy to archive of different type '%s'", name.c_str()); // TODO: filetype name, not archive name
-	return false;
-    }
-#endif
-    
     if (file_index_by_name(filename).has_value()) {
         seterrinfo(name);
 	errno = EEXIST;

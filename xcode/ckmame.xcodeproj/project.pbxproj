@@ -790,6 +790,8 @@
 		4BEDBE0426565D5F00DBF486 /* DetectorCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetectorCollection.h; sourceTree = "<group>"; };
 		4BF6FA2825D5371B00B93A98 /* ArchiveImages.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveImages.cc; sourceTree = "<group>"; };
 		4BF6FA2925D5371B00B93A98 /* ArchiveImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveImages.h; sourceTree = "<group>"; };
+		4BFBC77B267C96B100862EC4 /* rom-from-extra-ckmamedb.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-ckmamedb.test"; sourceTree = "<group>"; };
+		4BFBC77C267C976800862EC4 /* ckmamedb-1-4-as-2-48.dump */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-1-4-as-2-48.dump"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1294,6 +1296,7 @@
 				4B6B14B424FFA14A00D3F3FB /* rom-from-extra-broken-unwanted.test */,
 				4B6B14C524FFA14A00D3F3FB /* rom-from-extra-broken.test */,
 				4B6B14DF24FFA14C00D3F3FB /* rom-from-extra-child.test */,
+				4BFBC77B267C96B100862EC4 /* rom-from-extra-ckmamedb.test */,
 				4B6B14D424FFA14B00D3F3FB /* rom-from-extra-commit-error.test */,
 				4B6B14BC24FFA14A00D3F3FB /* rom-from-extra-dbcache-cleanup.test */,
 				4B6B14C824FFA14B00D3F3FB /* rom-from-extra-detector.test */,
@@ -1329,9 +1332,9 @@
 				4B6B151224FFA9D600D3F3FB /* rom-unused-duplicate.test */,
 				4B6B14B924FFA14A00D3F3FB /* rom-unused.test */,
 				4B6B150924FFA9D500D3F3FB /* skip-full.test */,
+				4B9E8A1626724CA400CC3407 /* skip-in-parent.test */,
 				4B9E8A15267247C600CC3407 /* skip-to-needed.test */,
 				4B6B151024FFA9D600D3F3FB /* skip.test */,
-				4B9E8A1626724CA400CC3407 /* skip-in-parent.test */,
 				4B6B151D24FFA9D700D3F3FB /* skipbad.test */,
 				4B6B150C24FFA9D600D3F3FB /* superfluous-broken.test */,
 				4B6B150A24FFA9D500D3F3FB /* superfluous-cleanup-disk.test */,
@@ -1389,6 +1392,7 @@
 		4B9E8A10267215DE00CC3407 /* dumps */ = {
 			isa = PBXGroup;
 			children = (
+				4BFBC77C267C976800862EC4 /* ckmamedb-1-4-as-2-48.dump */,
 				4B9E89FD2672068300CC3407 /* ckmamedb-1-4-ok-1-8-ok.dump */,
 				4B9E89E32672068200CC3407 /* ckmamedb-1-4-ok-with-mtime.dump */,
 				4B9E89FF2672068300CC3407 /* ckmamedb-1-4-ok.dump */,

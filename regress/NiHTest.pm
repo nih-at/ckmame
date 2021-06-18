@@ -294,8 +294,14 @@ sub runtest {
 			%variants = map { $_ => 1; } @{$self->{test}->{variants}};
 		}
 
+		my $first = 1;
 		for my $variant (@{$self->{variants}}) {
 			next if (defined($self->{test}->{variants}) && !exists($variants{$variant->{name}}));
+
+			if (!$first) {
+				print "\n\n" if ($self->{verbose});
+			}
+			$first = 0;
 
 			$self->{variant_hooks} = $variant->{hooks};
 			$self->{test} = dclone($self->{original_test});

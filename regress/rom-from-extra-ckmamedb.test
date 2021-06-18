@@ -1,0 +1,14 @@
+description test modifying archive that hasn't changed from ckmamedb
+variants zip
+return 0
+args -FKLvcj -e extradir 2-48
+file extradir/2-48.zip 2-48-ok.zip 1-4-ok.zip
+file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
+ckmamedb-before roms ckmamedb-1-4-as-2-48.dump
+touch 1422359238 roms/2-48.zip
+no-hashes extradir 2-48.zip 04.rom
+stdout In game 2-48:
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout rom  08.rom        size       8  crc 3656897d: is in 'extradir/2-48.zip/08.rom'
+stdout roms/2-48.zip: add 'extradir/2-48.zip/08.rom' as '08.rom'
+stdout extradir/2-48.zip: delete used file '08.rom'
