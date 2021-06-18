@@ -350,6 +350,13 @@
 		4B0D79A926442FC50009B2C6 /* Rom.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rom.cc; sourceTree = "<group>"; };
 		4B0D79AB264BFA720009B2C6 /* manygood-stats.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "manygood-stats.test"; sourceTree = "<group>"; };
 		4B0D79AC264C02670009B2C6 /* disk-stats.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-stats.test"; sourceTree = "<group>"; };
+		4B1D2F7D267CF2EF00C31483 /* printf_like.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = printf_like.h; sourceTree = "<group>"; };
+		4B1D2F7E267CF54500C31483 /* compat_fnmatch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = compat_fnmatch.h; sourceTree = "<group>"; };
+		4B1D2F7F267CF54500C31483 /* compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = compat.h; sourceTree = "<group>"; };
+		4B1D2F80267CF54500C31483 /* fnmatch.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fnmatch.cc; sourceTree = "<group>"; };
+		4B1D2F81267CF54500C31483 /* getopt_long.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = getopt_long.cc; sourceTree = "<group>"; };
+		4B1D2F82267CF54500C31483 /* getopt_long.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = getopt_long.h; sourceTree = "<group>"; };
+		4B1D2F83267CF54500C31483 /* getprogname.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = getprogname.cc; sourceTree = "<group>"; };
 		4B20D2C326024ED000D77FA8 /* ParserCm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserCm.h; sourceTree = "<group>"; };
 		4B20D2CC260254A300D77FA8 /* ParserXml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserXml.h; sourceTree = "<group>"; };
 		4B20D2D6260254A900D77FA8 /* ParserRc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParserRc.h; sourceTree = "<group>"; };
@@ -1078,6 +1085,7 @@
 				4BB51D45258247330047BE72 /* ParserSourceZip.h */,
 				4B5FAD021735924900B67C24 /* ParserXml.cc */,
 				4B20D2CC260254A300D77FA8 /* ParserXml.h */,
+				4B1D2F7D267CF2EF00C31483 /* printf_like.h */,
 				4B5FAE611735949900B67C24 /* Result.cc */,
 				4B9292C017633FFC00806C0A /* Result.h */,
 				4B0D79A926442FC50009B2C6 /* Rom.cc */,
@@ -1144,10 +1152,16 @@
 		4B5FAEA3173599EC00B67C24 /* compat */ = {
 			isa = PBXGroup;
 			children = (
-				4B5FAE981735998E00B67C24 /* md5.cc */,
+				4B1D2F7E267CF54500C31483 /* compat_fnmatch.h */,
+				4B1D2F7F267CF54500C31483 /* compat.h */,
+				4B1D2F80267CF54500C31483 /* fnmatch.cc */,
+				4B1D2F81267CF54500C31483 /* getopt_long.cc */,
+				4B1D2F82267CF54500C31483 /* getopt_long.h */,
+				4B1D2F83267CF54500C31483 /* getprogname.cc */,
 				4B5FAE971735998D00B67C24 /* md5_own.h */,
-				4B5FAE9A1735998E00B67C24 /* sha1.cc */,
+				4B5FAE981735998E00B67C24 /* md5.cc */,
 				4B5FAE991735998E00B67C24 /* sha1_own.h */,
+				4B5FAE9A1735998E00B67C24 /* sha1.cc */,
 			);
 			name = compat;
 			sourceTree = "<group>";

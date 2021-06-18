@@ -1,9 +1,9 @@
-#ifndef _HAD_ERROR_H
-#define _HAD_ERROR_H
+#ifndef HAD_PRINTF_LIKE_H
+#define HAD_PRINTF_LIKE_H
 
 /*
-  error.h -- error printing
-  Copyright (C) 1999-2020 Dieter Baron and Thomas Klausner
+  check.h -- archive/disk/file checkers
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,24 +34,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <string>
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define PRINTF_LIKE(n, m) __attribute__((__format__(__printf__, n, m)))
+#else
+#define PRINTF_LIKE(n, m)
+#endif
 
-#include "DB.h"
-#include "printf_like.h"
-
-#define ERRDEF 0x0  /* no additional info */
-#define ERRZIP 0x1  /* prepend zipfile name */
-#define ERRFILE 0x2 /* prepend file name */
-#define ERRSTR 0x4  /* append strerror(errno) */
-#define ERRDB 0x8   /* append dbh_error() */
-
-#define ERRZIPFILE (ERRZIP | ERRFILE)
-#define ERRZIPSTR (ERRZIP | ERRSTR)
-#define ERRFILESTR (ERRFILE | ERRSTR)
-#define ERRZIPFILESTR (ERRZIPFILE | ERRSTR)
-
-void myerror(int, const char *, ...) PRINTF_LIKE(2, 3);
-void seterrdb(DB *);
-void seterrinfo(const std::string &fn, const std::string &zipn = "");
-
-#endif /* error.h */
+#endif // HAD_PRINTF_LIKE_H

@@ -38,11 +38,7 @@
 
 #include <stdarg.h>
 
-#if defined(__GNUC__) && __GNUC__ >= 4
-#define PRINTF_LIKE(n, m) __attribute__((__format__(__printf__, n, m)))
-#else
-#define PRINTF_LIKE(n, m)
-#endif
+#include "printf_like.h"
 
 enum name_type { NAME_ZIP, NAME_IMAGES, NAME_IGNORE, NAME_UNKNOWN };
 

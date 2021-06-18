@@ -38,11 +38,7 @@
 #include <string>
 #include <system_error>
 
-#if defined(__GNUC__) && __GNUC__ >= 4
-#define PRINTF_LIKE(n, m) __attribute__((__format__(__printf__, n, m)))
-#else
-#define PRINTF_LIKE(n, m)
-#endif
+#include "printf_like.h"
 
 class Exception : public std::exception {
 public:
