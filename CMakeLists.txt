@@ -94,6 +94,12 @@ if(NOT CMAKE_SYSTEM_NAME MATCHES Linux)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
+# disable warnings about strerror and other 'unsafe' functions
+if(MSVC)
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+  add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
+endif(MSVC)
+
 # Testing
 enable_testing()
 
@@ -107,12 +113,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake-config.h.in ${CMAKE_CURRENT_BIN
 
 # for code completion frameworks
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# disable warnings about strerror and other 'unsafe' functions
-if(MSVC)
-  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-  add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
-endif(MSVC)
 
 # for tests
 
