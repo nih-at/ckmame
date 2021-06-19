@@ -108,7 +108,7 @@ foreach(PROGRAM ckmame detective dumpgame mkmamedb)
 endforeach()
 
 if(LibXml2_FOUND)
-  foreach(TARGET ckmame detective mkmamedb libckmame)
+  foreach(TARGET ckmame detective dumpgame mkmamedb libckmame)
     target_link_libraries(${TARGET} PRIVATE LibXml2::LibXml2)
   endforeach()
 endif()
