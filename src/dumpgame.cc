@@ -228,7 +228,8 @@ main(int argc, char **argv) {
 	db = std::make_unique<RomDB>(dbname, DBH_READ);
     }
     catch (std::exception &e) {
-	myerror(0, "can't open database '%s': %s", dbname, errno == EFTYPE ? "unsupported database version, please recreate" : strerror(errno) );
+	// TODO: catch exception for unsupported database version and report differently
+	myerror(0, "can't open database '%s': %s", dbname, strerror(errno));
 	exit(1);
     }
     seterrdb(&db->db);
