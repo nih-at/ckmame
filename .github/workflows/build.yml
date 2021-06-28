@@ -1,0 +1,32 @@
+name: build
+on: [push]
+
+jobs:
+  all:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest] #, ubuntu-latest, windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: install dependencies (macos)
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          brew install libxml2 libzip
+      - name: prepare build directory
+        run: |
+          cmake -E make_directory ${{runner.workspace}}/build
+      - name: configure (Unix)
+        if: ${{ runner.os != 'Windows' }}
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          cmake ${{github.workspace}}
+      - name: build
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          cmake --build . --config Release
+      - name: test
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          ctest -v -C Release
