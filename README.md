@@ -18,5 +18,5 @@ The latest version can always be found there.
 
 Mail suggestions and bug reports to <ckmame@nih.at>.
 
-[![Travis Build Status](https://travis-ci.com/nih-at/ckmame.svg?branch=master)](https://travis-ci.com/nih-at/ckmame)
+[![Github Actions Build Status](https://github.com/nih-at/ckmame/workflows/build/badge.svg)](https://github.com/nih-at/ckmame/actions?query=workflow%3Abuild)
 [![Coverity Status](https://scan.coverity.com/projects/14647/badge.svg)](https://scan.coverity.com/projects/nih-at-ckmame)
