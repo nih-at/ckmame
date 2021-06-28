@@ -784,6 +784,7 @@
 		4BB552BB25C01EC1001ABC31 /* Exception.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
 		4BB552D625C0550A001ABC31 /* GameArchives.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameArchives.h; sourceTree = "<group>"; };
 		4BC0362818C8B01B00D6D5AF /* types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cc.h; path = types.h; sourceTree = "<group>"; };
+		4BC3165B2689EAD60012AEB8 /* INSTALL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = INSTALL.md; path = ../INSTALL.md; sourceTree = "<group>"; };
 		4BC78D0A1A4445A400A14E29 /* NiHTest.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = NiHTest.pm; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 4; path = runtest.in; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		4BD1BAA61A404BF300A70734 /* CkmameDB.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = CkmameDB.pm; sourceTree = "<group>"; usesTabs = 1; };
@@ -937,6 +938,7 @@
 				4B86CECF1B134233003EF102 /* man */,
 				4B7F506B1776523900B4273C /* THANKS */,
 				4B07BFB71FE810930068A600 /* TODO.md */,
+				4BC3165B2689EAD60012AEB8 /* INSTALL.md */,
 				4B07BFB91FE811C40068A600 /* LICENSE */,
 				4B07BFBA1FE811C40068A600 /* NEWS.md */,
 				4B07BFB81FE811C40068A600 /* README.md */,

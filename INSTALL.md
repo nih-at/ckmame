@@ -1,4 +1,4 @@
-ckmame uses [cmake](https://cmake.org) to build.
+ckmame is written in C++17 and uses [cmake](https://cmake.org) to build.
 
 For running the tests, you need to have [perl](https://www.perl.org).
 

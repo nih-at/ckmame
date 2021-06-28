@@ -1,10 +1,11 @@
-1.1 (2021-xx-xx)
+1.1 (2021-06-28)
 =================
 * Read-only 7z support.
 * Improve detector support.
 * Bump mamedb version. All mame.db files need to be regenerated.
 * Follow MAME in expecting disk images in subdirectories.
 * Remove broken support for checking samples.
+* Convert to C++17.
 
 1.0 (2018-12-18)
 =================
