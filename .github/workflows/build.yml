@@ -13,7 +13,8 @@ jobs:
       - name: install dependencies (macos)
         if: ${{ runner.os == 'macOS' }}
         run: |
-          brew install libxml2 libzip
+          brew update
+          brew reinstall libzip
       - name: prepare build directory
         run: |
           cmake -E make_directory ${{runner.workspace}}/build
