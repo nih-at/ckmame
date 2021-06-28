@@ -7,6 +7,7 @@ To use ckmame, you need
 - [libzip](https://libzip.org/) (at least version 1.0)
 - [SQLite3](https://www.sqlite.org/)
 - optionally [libxml2](http://xmlsoft.org/) (for M.A.M.E. -listxml and detectors)
+- optionally [libarchive](https://www.libarchive.org/) (for reading from 7z archives)
 
 For running the test suite, you also need to install [perl](https://www.perl.org/).
 
