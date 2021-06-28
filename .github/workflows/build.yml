@@ -10,11 +10,21 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: install dependencies (macos)
+      - name: install dependencies (macOS)
         if: ${{ runner.os == 'macOS' }}
         run: |
           brew update
           brew reinstall libzip
+      - name: install dependencies (Linux)
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          sudo apt-get -qq update;
+          sudo apt-get install -y libxml2-dev libsqlite3-0 wget;
+          for pkg in libzip4_1.1.2-1.1_amd64.deb libzip-dev_1.1.2-1.1_amd64.deb zipcmp_1.1.2-1.1_amd64.deb;
+          do
+          wget http://ubuntu.mirrors.tds.net/ubuntu/pool/universe/libz/libzip/$pkg;
+          sudo dpkg -i $pkg;
+          done
       - name: prepare build directory
         run: |
           cmake -E make_directory ${{runner.workspace}}/build
