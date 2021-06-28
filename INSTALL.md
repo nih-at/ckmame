@@ -4,7 +4,7 @@ For running the tests, you need to have [perl](https://www.perl.org).
 
 To use ckmame, you need
 - [zlib](http://www.zlib.net/) (at least version 1.1.2)
-- [libzip](https://libzip.org/) (at least version 1.0)
+- [libzip](https://libzip.org/) (at least version 1.8.0)
 - [SQLite3](https://www.sqlite.org/)
 - optionally [libxml2](http://xmlsoft.org/) (for M.A.M.E. -listxml and detectors)
 - optionally [libarchive](https://www.libarchive.org/) (for reading from 7z archives)
