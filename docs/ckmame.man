@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "CKMAME" "1" "September 2, 2020" "NiH" "General Commands Manual"
+.TH "CKMAME" "1" "May 6, 2021" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -56,7 +56,6 @@
 [\fB\-\fR\fB\-help\fR]
 [\fB\-\fR\fB\-ignore-extra\fR]
 [\fB\-\fR\fB\-ignore-unknown\fR]
-[\fB\-\fR\fB\-integrity\fR]
 [\fB\-\fR\fB\-keep-duplicate\fR]
 [\fB\-\fR\fB\-keep-found\fR]
 [\fB\-\fR\fB\-move-long\fR]
@@ -201,11 +200,6 @@ Display a short help message.
 \fB\-\fR\fB\-ignore-unknown\fR
 Ignore unknown files when fixing.
 They will still be reported.
-.TP 24n
-\fB\-i\fR, \fB\-\fR\fB\-integrity\fR
-Check integrity of zip archives and disk images
-by computing checksums and comparing them with the
-internally saved ones.
 .TP 24n
 \fB\-j\fR, \fB\-\fR\fB\-delete-found\fR
 When using
