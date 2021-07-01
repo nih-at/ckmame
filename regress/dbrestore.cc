@@ -433,14 +433,14 @@ static void unget_line(const std::string &line) {
 }
 
 
-static std::vector<std::string> split(const std::string &string, const std::string &separaptor, bool strip_whitespace) {
+static std::vector<std::string> split(const std::string &string, const std::string &separator, bool strip_whitespace) {
     std::vector<std::string> result;
 
     size_t length = string.length();
-    size_t separator_length = separaptor.length();
+    size_t separator_length = separator.length();
     size_t start = 0;
     size_t end;
-    while ((end = string.find(separaptor, start)) != std::string::npos) {
+    while ((end = string.find(separator, start)) != std::string::npos) {
         result.push_back(string.substr(start, end - start));
         start = end + separator_length;
         if (strip_whitespace) {
