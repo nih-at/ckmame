@@ -236,7 +236,7 @@ bool RomDB::read_rules(Detector *detector) {
 }
 
 
-std::vector<FileLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes *hash) {
+std::vector<RomLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes *hash) {
     auto stmt = db.get_statement(DBH_STMT_QUERY_FILE_FBH, hash, 0);
     if (stmt == NULL) {
         return {};
@@ -246,11 +246,11 @@ std::vector<FileLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes *
         return {};
     }
 
-    std::vector<FileLocation> result;
+    std::vector<RomLocation> result;
 
     int ret;
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        result.push_back(FileLocation(sq3_get_string(stmt, 0), static_cast<size_t>(sqlite3_column_int(stmt, 1))));
+        result.push_back(RomLocation(sq3_get_string(stmt, 0), static_cast<size_t>(sqlite3_column_int(stmt, 1))));
     }
 
     if (ret != SQLITE_DONE) {

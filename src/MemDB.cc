@@ -192,7 +192,7 @@ std::optional<std::vector<MemDB::FindResult>> MemDB::find(filetype_t filetype, c
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
         FindResult result;
         
-        result.game_id = sq3_get_uint64(stmt, 0);
+        result.archive_id = sq3_get_uint64(stmt, 0);
         result.index = sq3_get_uint64(stmt, 1);
         result.detector_id = sq3_get_uint64(stmt, 2);
         result.location = static_cast<where_t>(sqlite3_column_int(stmt, 3));

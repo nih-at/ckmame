@@ -110,7 +110,7 @@ static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_i
             continue;
         }
 
-        auto a = Archive::by_id(result.game_id);
+        auto a = Archive::by_id(result.archive_id);
         if (!a) {
             return FIND_ERROR;
         }

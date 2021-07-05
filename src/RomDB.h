@@ -37,7 +37,7 @@
 #include <unordered_set>
 
 #include "DB.h"
-#include "FileLocation.h"
+#include "RomLocation.h"
 #include "OutputContext.h"
 
 class RomDB {
@@ -56,7 +56,7 @@ public:
     size_t get_detector_id_for_dat(size_t dat_no) const;
     
     std::vector<DatEntry> read_dat();
-    std::vector<FileLocation> read_file_by_hash(filetype_t ft, const Hashes *hash);
+    std::vector<RomLocation> read_file_by_hash(filetype_t ft, const Hashes *hash);
     GamePtr read_game(const std::string &name);
     int hashtypes(filetype_t);
     std::vector<std::string> read_list(enum dbh_list type);

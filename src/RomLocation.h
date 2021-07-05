@@ -1,9 +1,9 @@
-#ifndef _HAD_MEMDB_H
-#define _HAD_MEMDB_H
+#ifndef HAD_ROM_LOCATION_H
+#define HAD_ROM_LOCATION_H
 
 /*
-  memdb.h -- in-memory sqlite3 db
-  Copyright (C) 2007-2020 Dieter Baron and Thomas Klausner
+  RomLocation.h -- location of a ROM
+  Copyright (C) 2005-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,44 +34,17 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <memory>
-#include <optional>
-#include <vector>
 
-#include "Archive.h"
-#include "DB.h"
+#include <string>
 
+class RomLocation {
+ public:
+    RomLocation(): index(0) { }
+    RomLocation(std::string name_, size_t index_) : name(name_), index(index_) { }
 
-class MemDB: public DB {
-public:
-    class FindResult {
-    public:
-        uint64_t archive_id;
-        uint64_t index;
-        size_t detector_id;
-        where_t location;
-    };
-    
-    MemDB(const char *name) : DB(name, DBH_FMT_MEM | DBH_NEW) { }
-
-    static bool delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx);
-    static bool insert_archive(const ArchiveContents *archive);
-    static bool insert_file(const ArchiveContents *archive, size_t index);
-    static bool update_file(const ArchiveContents *archive, size_t idx);
-
-    static std::optional<std::vector<FindResult>> find(filetype_t filetype, const FileData *file);
-
-private:
-    static std::unique_ptr<MemDB> memdb;
-    static bool inited;
-
-    static bool ensure();
-
-    bool delete_file(uint64_t id, filetype_t filetype, size_t index);
-    bool update_file(uint64_t id, filetype_t filetype, size_t index, const Hashes *hashes);
-    sqlite3_stmt *get_insert_file_statement(const ArchiveContents *archive);
-    bool insert_file(sqlite3_stmt *stmt, size_t index, const File &file);
-    bool insert_file(sqlite3_stmt *stmt, size_t index, size_t detector_id, const Hashes &hashes);
+    bool operator<(RomLocation other) const { return (name == other.name) ? (index < other.index) : (name < other.name); }
+    std::string name;
+    size_t index;
 };
 
-#endif /* memdb.h */
+#endif /* RomLocation.h */

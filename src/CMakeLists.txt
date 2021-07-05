@@ -36,6 +36,7 @@ set(COMMON_SOURCES
   Exception.cc
   File.cc
   FileData.cc
+  FileLocation.cc
   file_util.cc
   find.cc
   fix.cc

@@ -82,7 +82,7 @@ int DeleteList::execute() {
 	    name = entry.name;
             
             if (name[name.length() - 1] == '/') {
-                a = Archive::open(name, roms_unzipped ? TYPE_ROM : TYPE_DISK, FILE_NOWHERE, 0);
+                a = Archive::open(name, entries[i].filetype, FILE_NOWHERE, 0);
             }
             else {
                 filetype_t filetype;
@@ -126,7 +126,7 @@ int DeleteList::execute() {
 
 
 void DeleteList::used(Archive *a, size_t index) {
-    FileLocation fl(a->name + (a->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? "/" : ""), index);
+    FileLocation fl(a->name + (a->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? "/" : ""), a->filetype, index);
     
     switch (a->where) {
     case FILE_NEEDED:
