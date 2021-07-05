@@ -116,7 +116,8 @@ create index file_sha1 on file (sha1);\n\
 	archive_id integer primary key autoincrement,\n\
 	name text not null,\n\
         mtime integer not null,\n\
-	size integer not null\n\
+	size integer not null,\n\
+        file_type integer not null\n\
 );\n\
 create index archive_name on archive (name);\n\
 create table detector (\n\

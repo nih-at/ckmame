@@ -46,11 +46,11 @@
 #define UPDATE_PARENT	    "update game set parent = ? where game_id = ?"
 
 /* cachedb */
-#define DIR_INSERT_ARCHIVE  "insert into archive (name, mtime, size) values (?, ?, ?)"
-#define DIR_INSERT_ARCHIVE_ID	    "insert into archive (name, archive_id, mtime, size) values (?, ?, ?, ?)"
+#define DIR_INSERT_ARCHIVE  "insert into archive (name, file_type, mtime, size) values (?, ?, ?, ?)"
+#define DIR_INSERT_ARCHIVE_ID	    "insert into archive (name, archive_id, file_type, mtime, size) values (?, ?, ?, ?, ?)"
 #define DIR_LIST_ARCHIVES    "select name from archive"
 #define DIR_QUERY_ARCHIVE_LAST_CHANGE   "select mtime, size from archive where archive_id = ?"
-#define DIR_QUERY_ARCHIVE_ID   "select archive_id from archive where name = ?"
+#define DIR_QUERY_ARCHIVE_ID   "select archive_id from archive where name = ? and file_type = ?"
 #define DIR_DELETE_ARCHIVE  "delete from archive where archive_id = ?"
 #define DIR_COUNT_ARCHIVES  "select count(archive_id) from archive"
 

@@ -605,7 +605,7 @@ bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
     }
     
     cache_db = CkmameDB::get_db_for_archvie(name);
-    cache_id = cache_db ? cache_db->get_archive_id(name) : 0;
+    cache_id = cache_db ? cache_db->get_archive_id(name, filetype) : 0;
 
     if (cache_id > 0) {
         try {

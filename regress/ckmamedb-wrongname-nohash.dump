@@ -1,5 +1,5 @@
->>> table archive (archive_id, name, mtime, size)
-1|wrongname.zip|1422359238|210
+>>> table archive (archive_id, name, mtime, size, file_type)
+1|wrongname.zip|1422359238|210|0
 >>> table detector (detector_id, name, version)
 >>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)
 1|0|04.rom|1047617702|0|4|3632233996|<null>|<null>|0

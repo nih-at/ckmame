@@ -54,4 +54,6 @@ int sq3_set_int64_default(sqlite3_stmt *stmt, int index, int64_t value, int64_t 
 int sq3_set_uint64_default(sqlite3_stmt *stmt, int index, uint64_t value, uint64_t default_value);
 int sq3_set_uint64(sqlite3_stmt *stmt, int index, uint64_t value);
 int sq3_set_string(sqlite3_stmt *stmt, int index, const std::string &value);
+void sq3_set_string(sqlite3_stmt *stmt, const std::string &name, const std::string &value);
+
 #endif /* sq_util.h */

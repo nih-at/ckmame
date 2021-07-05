@@ -1,5 +1,5 @@
->>> table archive (archive_id, name, mtime, size)
-1|1-4|1615371790|0
+>>> table archive (archive_id, name, mtime, size, file_type)
+1|1-4|1615371790|0|0
 >>> table detector (detector_id, name, version)
 >>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)
 1|0|04.rom|1615371712|0|0|0|<d41d8cd98f00b204e9800998ecf8427e>|<da39a3ee5e6b4b0d3255bfef95601890afd80709>|0

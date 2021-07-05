@@ -78,7 +78,7 @@ sub read_db {
 	
 	if (! -f "$self->{dir}/.ckmame.db") {
 		$self->{dump_got} = [
-			'>>> table archive (archive_id, name, mtime, size)',
+			'>>> table archive (archive_id, name, mtime, size, file_type)',
 			'>>> table detector (detector_id, name, version)',
 			'>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)'
 		];
@@ -209,7 +209,7 @@ sub read_archives {
 			}
 
 			$prefix = $name;
-			$archive = { name => $name eq "" ? "." : $name, files => [] };
+			$archive = { name => $name eq "" ? "." : $name, files => [], file_type => 0 };
 			$idx = 0;
 
 			my @stat = stat("$self->{dir}/$archive->{name}");
@@ -251,6 +251,7 @@ sub read_archives {
 			}
 			else {
 				$rom->{crc} = "<null>";
+				$archive->{file_type} = 1;
 			}
 			
 			$self->omit_hashes($archive->{name}, $rom);
@@ -269,11 +270,11 @@ sub make_dump {
 	
 	my @dump = ();
 	
-	push @dump, '>>> table archive (archive_id, name, mtime, size)';
+	push @dump, '>>> table archive (archive_id, name, mtime, size, file_type)';
 	
 	for my $id (sort { $a <=> $b } keys %{$self->{archives_got}}) {
 		my $archive = $self->{archives_got}->{$id};
-		push @dump, "$id|$archive->{name}|$archive->{mtime}|$archive->{size}";
+		push @dump, "$id|$archive->{name}|$archive->{mtime}|$archive->{size}|$archive->{file_type}";
 	}
 	
 	push @dump, '>>> table detector (detector_id, name, version)';

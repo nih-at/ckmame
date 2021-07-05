@@ -54,9 +54,9 @@ public:
     static CkmameDBPtr get_db_for_archvie(const std::string &name);
     static void register_directory(const std::string &directory);
     
-    void delete_archive(const std::string &name);
+    void delete_archive(const std::string &name, filetype_t filetype);
     void delete_archive(int id);
-    int get_archive_id(const std::string &name);
+    int get_archive_id(const std::string &name, filetype_t filetype);
     void get_last_change(int id, time_t *mtime, off_t *size);
     bool is_empty();
     std::vector<std::string> list_archives();
@@ -83,7 +83,7 @@ private:
     
     std::string name_in_db(const std::string &name);
     void delete_files(int id);
-    int write_archive_header(int id, const std::string &name, time_t mtime, uint64_t size);
+    int write_archive_header(int id, const std::string &name, filetype_t filetype, time_t mtime, uint64_t size);
     
     size_t get_detector_id(size_t global_id);
     size_t get_global_detector_id(size_t id);

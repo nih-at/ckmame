@@ -100,8 +100,8 @@ void CkmameDB::delete_archive(int id) {
 }
 
 
-void CkmameDB::delete_archive(const std::string &name) {
-    auto id = get_archive_id(name);
+void CkmameDB::delete_archive(const std::string &name, filetype_t filetype) {
+    auto id = get_archive_id(name, filetype);
 
     if (id < 0) {
         throw Exception();
@@ -121,7 +121,7 @@ void CkmameDB::delete_files(int id) {
 }
 
 
-int CkmameDB::get_archive_id(const std::string &name) {
+int CkmameDB::get_archive_id(const std::string &name, filetype_t filetype) {
     sqlite3_stmt *stmt;
     if ((stmt = db.get_statement(DBH_STMT_DIR_QUERY_ARCHIVE_ID)) == NULL) {
 	return 0;
@@ -132,7 +132,9 @@ int CkmameDB::get_archive_id(const std::string &name) {
 	return 0;
     }
 
-    if (sqlite3_bind_text(stmt, 1, archive_name.c_str(), -1, SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_ROW) {
+    if (sqlite3_bind_text(stmt, 1, archive_name.c_str(), -1, SQLITE_STATIC) != SQLITE_OK
+        || sqlite3_bind_int(stmt, 2, filetype) != SQLITE_OK
+        || sqlite3_step(stmt) != SQLITE_ROW) {
 	return 0;
     }
 
@@ -315,7 +317,7 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
     auto id = archive->cache_id;
     
     if (id == 0) {
-        id = get_archive_id(archive->name);
+        id = get_archive_id(archive->name, archive->filetype);
     }
 
     if (id != 0) {
@@ -327,7 +329,7 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
         throw Exception();
     }
 
-    id = write_archive_header(id, name, archive->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : archive->mtime, archive->size);
+    id = write_archive_header(id, name, archive->filetype, archive->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : archive->mtime, archive->size);
 
     if ((stmt = db.get_statement(DBH_STMT_DIR_INSERT_FILE)) == NULL
         || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
@@ -381,10 +383,14 @@ std::string CkmameDB::name_in_db(const std::string &name) {
 }
 
 
-int CkmameDB::write_archive_header(int id, const std::string &name, time_t mtime, uint64_t size) {
+int CkmameDB::write_archive_header(int id, const std::string &name, filetype_t filetype, time_t mtime, uint64_t size) {
     auto stmt = db.get_statement(DBH_STMT_DIR_INSERT_ARCHIVE_ID);
 
-    if (stmt == NULL || sq3_set_string(stmt, 1, name) != SQLITE_OK || sqlite3_bind_int64(stmt, 3, mtime) != SQLITE_OK || sq3_set_uint64(stmt, 4, size) != SQLITE_OK) {
+    if (stmt == NULL
+        || sq3_set_string(stmt, 1, name) != SQLITE_OK
+        || sqlite3_bind_int(stmt, 3, filetype) != SQLITE_OK
+        || sqlite3_bind_int64(stmt, 4, mtime) != SQLITE_OK
+        || sq3_set_uint64(stmt, 5, size) != SQLITE_OK) {
         throw Exception();
     }
 

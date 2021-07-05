@@ -179,7 +179,8 @@ static bool enter_dir_in_map_and_list(int flags,  std::vector<std::string> &list
 			name += '/' + entry_name;
 		    }
 		    if (!std::binary_search(list.begin(), list.end(), name)) {
-			dbh->delete_archive(name);
+			dbh->delete_archive(name, TYPE_ROM);
+			dbh->delete_archive(name, TYPE_DISK);
 		    }
 		}
 	    }

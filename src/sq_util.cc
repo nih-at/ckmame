@@ -35,6 +35,8 @@
 
 #include <climits>
 
+#include "Exception.h"
+
 std::vector<uint8_t> sq3_get_blob(sqlite3_stmt *stmt, int col) {
     if (sqlite3_column_type(stmt, col) == SQLITE_NULL) {
         return {};
@@ -174,4 +176,17 @@ int sq3_set_uint64_default(sqlite3_stmt *stmt, int col, uint64_t val, uint64_t d
         return sqlite3_bind_null(stmt, col);
     }
     return sqlite3_bind_int64(stmt, col, static_cast<int64_t>(val));
+}
+
+
+void sq3_set_string(sqlite3_stmt *stmt, const std::string &name, const std::string &value) {
+    auto index = sqlite3_bind_parameter_index(stmt, name.c_str());
+    
+    if (index == 0) {
+        throw Exception("invalid parameter '" + name + "'");
+    }
+    
+    if (sq3_set_string(stmt, index, value) != SQLITE_OK) {
+        throw Exception("can't bind parameter '" + name + "'");
+    }
 }

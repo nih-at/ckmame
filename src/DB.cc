@@ -38,8 +38,9 @@
 #include <vector>
 
 #include "Exception.h"
+#include "types.h"
 
-static const int format_version[] = {3, 1, 3};
+static const int format_version[] = {3, 1, 4};
 static const char *format_name[] = {
     "mamedb",
     "in-memory",
@@ -69,6 +70,10 @@ create index file_size on file (size);\n\
 create index file_crc on file (crc);\n\
 create index file_md5 on file (md5);\n\
 create index file_sha1 on file (sha1);\n\
+    " },
+    { MigrationXXX(DBH_FMT_DIR, 3, 4), "\
+alter table archive add column file_type integer not null default " + std::to_string(TYPE_ROM) + ";\n\
+update archive set file_type=" + std::to_string(TYPE_DISK) + " where exists(select * from file f where f.archive_id = archive.archive_id and f.crc is null);\
     " }
 };
 
@@ -254,8 +259,9 @@ void DB::upgrade(sqlite3 *db, int format, int version, const std::string &statem
         throw Exception("can't begin transaction");
     }
     if (sqlite3_exec(db, statement.c_str(), NULL, NULL, NULL) != SQLITE_OK) {
+        auto error = sqlite3_errmsg(db);
         sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
-        throw Exception("can't set schema: %s", sqlite3_errmsg(db));
+        throw Exception("can't set schema: %s", error);
     }
     
     char b[256];
