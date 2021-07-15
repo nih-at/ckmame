@@ -201,9 +201,9 @@ bool CkmameDB::is_empty() {
 }
 
 
-std::vector<std::string> CkmameDB::list_archives() {
+std::vector<ArchiveLocation> CkmameDB::list_archives() {
     sqlite3_stmt *stmt;
-    std::vector<std::string> archives;
+    std::vector<ArchiveLocation> archives;
     int ret;
 
     if ((stmt = db.get_statement(DBH_STMT_DIR_LIST_ARCHIVES)) == NULL) {
@@ -211,7 +211,7 @@ std::vector<std::string> CkmameDB::list_archives() {
     }
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        archives.push_back(sq3_get_string(stmt, 0));
+        archives.push_back(ArchiveLocation(sq3_get_string(stmt, 0), static_cast<filetype_t>(sqlite3_column_int(stmt, 1))));
     }
 
     if (ret != SQLITE_DONE) {

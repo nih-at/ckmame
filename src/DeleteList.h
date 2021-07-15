@@ -37,6 +37,7 @@
 #include <memory>
 
 #include "Archive.h"
+#include "ArchiveLocation.h"
 #include "FileLocation.h"
 
 class DeleteList;
@@ -57,15 +58,23 @@ class DeleteList {
         bool rollback;
     };
     
+    std::vector<ArchiveLocation> archives;
     std::vector<FileLocation> entries;
 
     DeleteList() { };
+    
+    void add(const Archive *a) { archives.push_back(ArchiveLocation(a)); }
+    void add_directory(const std::string &directory, bool omit_known);
     int execute();
+    void remove_archive(Archive *archive);
+    void sort_archives();
+    void sort_entries();
 
     static void used(Archive *a, size_t idx);
     
 private:
     bool close_archive(Archive *archive);
+    void list_non_chds(const std::string &directory);
 };
 
 extern DeleteListPtr extra_delete_list;

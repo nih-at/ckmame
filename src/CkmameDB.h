@@ -38,6 +38,7 @@
 #include <string>
 #include <vector>
 
+#include "ArchiveLocation.h"
 #include "DB.h"
 #include "DetectorCollection.h"
 #include "File.h"
@@ -59,7 +60,7 @@ public:
     int get_archive_id(const std::string &name, filetype_t filetype);
     void get_last_change(int id, time_t *mtime, off_t *size);
     bool is_empty();
-    std::vector<std::string> list_archives();
+    std::vector<ArchiveLocation> list_archives();
     int read_files(int archive_id, std::vector<File> *files);
     void write_archive(ArchiveContents *archive);
     

@@ -34,10 +34,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <string>
-#include <vector>
+#include "DeleteList.h"
 
-std::vector<std::string> list_directory(const std::string &dirname, const std::string &dbname);
-void print_superfluous(std::vector<std::string> &files);
+void print_superfluous(DeleteListPtr list);
     
 #endif /* _HAD_SUPERFLUOUS_H */

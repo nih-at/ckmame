@@ -12,6 +12,7 @@ set(COMMON_SOURCES
   Archive.cc
   ArchiveDir.cc
   ArchiveImages.cc
+  ArchiveLocation.cc
   archive_modify.cc
   ArchiveZip.cc
   Chd.cc

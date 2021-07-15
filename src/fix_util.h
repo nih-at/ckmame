@@ -41,7 +41,7 @@
 
 std::string make_garbage_name(const std::string &name, int unique);
 int move_image_to_garbage(const std::string &fname);
-void remove_empty_archive(const std::string &name, bool quiet = false);
+void remove_empty_archive(Archive *archive);
 void remove_from_superfluous(const std::string &name);
 bool save_needed(Archive *sa, size_t sidx, const std::string &gamename);
 bool save_needed_disk(const std::string &fname, bool do_save);

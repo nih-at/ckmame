@@ -34,6 +34,7 @@
 #include "find.h"
 
 #include "check_util.h"
+#include "DeleteList.h"
 #include "MemDB.h"
 #include "RomDB.h"
 #include "sq_util.h"
@@ -45,7 +46,7 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector
 
 static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_id, const FileData *r, Match *m, bool needed_only);
 
-static bool compute_all_detector_hashes(const std::vector<std::string> &files);
+static bool compute_all_detector_hashes(DeleteListPtr list);
 
 bool compute_all_detector_hashes(bool needed_only) { // returns true if new hashes were computed
     if (db->detectors.empty()) {
@@ -54,15 +55,15 @@ bool compute_all_detector_hashes(bool needed_only) { // returns true if new hash
     
     auto got_new_hashes = false;
     
-    if (compute_all_detector_hashes(needed_list)) {
+    if (compute_all_detector_hashes(needed_delete_list)) {
         got_new_hashes = true;
     }
 
     if (!needed_only) {
-        if (compute_all_detector_hashes(superfluous)) {
+        if (compute_all_detector_hashes(superfluous_delete_list)) {
             got_new_hashes = true;
         }
-        if (compute_all_detector_hashes(extra_list)) {
+        if (compute_all_detector_hashes(extra_delete_list)) {
             got_new_hashes = true;
         }
     }
@@ -70,10 +71,10 @@ bool compute_all_detector_hashes(bool needed_only) { // returns true if new hash
     return got_new_hashes;
 }
 
-static bool compute_all_detector_hashes(const std::vector<std::string> &files) {
+static bool compute_all_detector_hashes(DeleteListPtr list) {
     auto got_new_hashes = false;
-    for (auto name : files) {
-        auto contents = ArchiveContents::by_name(TYPE_ROM, name);
+    for (auto entry : list->archives) {
+        auto contents = ArchiveContents::by_name(entry.filetype, entry.name);
         if (contents == NULL || contents->has_all_detector_hashes(db->detectors)) {
             continue;
         }

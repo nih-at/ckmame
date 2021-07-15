@@ -153,6 +153,8 @@
 		4BB552BD25C01EC1001ABC31 /* Exception.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BB552BB25C01EC1001ABC31 /* Exception.h */; };
 		4BC3165F269324AA0012AEB8 /* RomLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC3165E269324AA0012AEB8 /* RomLocation.h */; };
 		4BC316612693259B0012AEB8 /* FileLocation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC316602693259B0012AEB8 /* FileLocation.cc */; };
+		4BC31664269336090012AEB8 /* ArchiveLocation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC31662269336090012AEB8 /* ArchiveLocation.cc */; };
+		4BC31665269336090012AEB8 /* ArchiveLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC31663269336090012AEB8 /* ArchiveLocation.h */; };
 		4BD482982535B23C00D0002B /* ArchiveDir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BD482962535B23C00D0002B /* ArchiveDir.cc */; };
 		4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD482972535B23C00D0002B /* ArchiveDir.h */; };
 		4BEDBE0526565D5F00DBF486 /* DetectorCollection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BEDBE0326565D5F00DBF486 /* DetectorCollection.cc */; };
@@ -791,6 +793,8 @@
 		4BC3165D269307610012AEB8 /* rom-from-extra-loose-directory.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-loose-directory.test"; sourceTree = "<group>"; };
 		4BC3165E269324AA0012AEB8 /* RomLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RomLocation.h; sourceTree = "<group>"; };
 		4BC316602693259B0012AEB8 /* FileLocation.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileLocation.cc; sourceTree = "<group>"; };
+		4BC31662269336090012AEB8 /* ArchiveLocation.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveLocation.cc; sourceTree = "<group>"; };
+		4BC31663269336090012AEB8 /* ArchiveLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveLocation.h; sourceTree = "<group>"; };
 		4BC78D0A1A4445A400A14E29 /* NiHTest.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = NiHTest.pm; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 4; path = runtest.in; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		4BD1BAA61A404BF300A70734 /* CkmameDB.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = CkmameDB.pm; sourceTree = "<group>"; usesTabs = 1; };
@@ -1000,6 +1004,8 @@
 				4BF6FA2925D5371B00B93A98 /* ArchiveImages.h */,
 				4B3666EC261719DC00A67A6C /* ArchiveLibarchive.cc */,
 				4B3666ED261719DC00A67A6C /* ArchiveLibarchive.h */,
+				4BC31662269336090012AEB8 /* ArchiveLocation.cc */,
+				4BC31663269336090012AEB8 /* ArchiveLocation.h */,
 				4B9292C917635B5500806C0A /* ArchiveZip.cc */,
 				4B33F98B252C7889007EC283 /* ArchiveZip.h */,
 				4B5FAC971735919800B67C24 /* Chd.cc */,
@@ -1046,8 +1052,8 @@
 				4B0D79A426442EE60009B2C6 /* File.h */,
 				4B5FACD31735924900B67C24 /* FileData.cc */,
 				4B5FACD41735924900B67C24 /* FileData.h */,
-				4B5FACD01735924900B67C24 /* FileLocation.h */,
 				4BC316602693259B0012AEB8 /* FileLocation.cc */,
+				4B5FACD01735924900B67C24 /* FileLocation.h */,
 				4B5FACD61735924900B67C24 /* find.cc */,
 				4B9292BD17633FFC00806C0A /* find.h */,
 				4B5FACD71735924900B67C24 /* fix_util.cc */,
@@ -1533,6 +1539,7 @@
 				4B3274D525B99F76006AEF16 /* file_util.h in Headers */,
 				4B5F43C21889D059000C3B7C /* RomDB.h in Headers */,
 				4B3666EF261719DC00A67A6C /* ArchiveLibarchive.h in Headers */,
+				4BC31665269336090012AEB8 /* ArchiveLocation.h in Headers */,
 				4B3274D625B99F76006AEF16 /* fixdat.h in Headers */,
 				4B3274D825B99F76006AEF16 /* fix.h in Headers */,
 				4BB552BD25C01EC1001ABC31 /* Exception.h in Headers */,
@@ -1819,6 +1826,7 @@
 				4BEDBE0526565D5F00DBF486 /* DetectorCollection.cc in Sources */,
 				4B5FAE181735930100B67C24 /* ParserDir.cc in Sources */,
 				4B5FAE191735930100B67C24 /* ParserRc.cc in Sources */,
+				4BC31664269336090012AEB8 /* ArchiveLocation.cc in Sources */,
 				4BC316612693259B0012AEB8 /* FileLocation.cc in Sources */,
 				4B5FAE1A1735930100B67C24 /* ParserXml.cc in Sources */,
 				4B3274D425B99F76006AEF16 /* SharedFile.cc in Sources */,

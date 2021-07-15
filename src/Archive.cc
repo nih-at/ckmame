@@ -392,6 +392,9 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
                         archive = std::make_shared<ArchiveLibarchive>(archive_name, filetype, where, flags);
                     }
 #endif
+                    else {
+                        return NULL;
+                    }
                 }
                 break;
                 

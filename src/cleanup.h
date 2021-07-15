@@ -39,6 +39,6 @@
 #define CLEANUP_NEEDED 0x1
 #define CLEANUP_UNKNOWN 0x2
 
-void cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags);
+void cleanup_list(DeleteListPtr list, int flags);
 
 #endif /* _HAD_CLEANUP_H */

@@ -90,26 +90,19 @@ move_image_to_garbage(const std::string &fname) {
 }
 
 
-void remove_empty_archive(const std::string &name, bool quiet) {
+void remove_empty_archive(Archive *archive) {
+    bool quiet = archive->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY;
+    
     if ((fix_options & FIX_PRINT) && !quiet) {
-	printf("%s: remove empty archive\n", name.c_str());
+	printf("%s: remove empty archive\n", archive->name.c_str());
     }
-    remove_from_superfluous(name);
-}
-
-
-void
-remove_from_superfluous(const std::string &name) {
-    auto entry = std::find(superfluous.begin(), superfluous.end(), name);
-    if (entry != superfluous.end()) {
-	/* "needed" zip archives are not in list */
-	superfluous.erase(entry);
+    if (superfluous_delete_list) {
+        superfluous_delete_list->remove_archive(archive);
     }
 }
 
 
-bool
-save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uint64_t start, std::optional<uint64_t> length, FileData *f) {
+bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uint64_t start, std::optional<uint64_t> length, FileData *f) {
     bool do_save = fix_options & FIX_DO;
 
     bool needed = true;

@@ -34,10 +34,14 @@
 #include "DeleteList.h"
 
 #include <algorithm>
+#include <unordered_set>
 
+#include "Dir.h"
+#include "error.h"
 #include "fix_util.h"
 #include "fix.h"
 #include "globals.h"
+#include "RomDB.h"
 #include "util.h"
 
 
@@ -59,6 +63,86 @@ DeleteList::Mark::~Mark() {
     
     if (rollback && l && l->entries.size() > index) {
         l->entries.resize(index);
+    }
+}
+
+
+void DeleteList::add_directory(const std::string &directory, bool omit_known) {
+    std::unordered_set<std::string> known_games;
+    
+    if (omit_known) {
+        auto list = db->read_list(DBH_KEY_LIST_GAME);
+        if (list.empty()) {
+            myerror(ERRDEF, "list of games not found in ROM database");
+            exit(1);
+        }
+        known_games.insert(list.begin(), list.end());
+    }
+        
+    bool have_toplevel_roms = false;
+    bool have_toplevel_disks = false;
+
+    try {
+        Dir dir(directory, false);
+        std::filesystem::path filepath;
+        
+        while ((filepath = dir.next()) != "") {
+            if (name_type(filepath) == NAME_IGNORE) {
+                continue;
+            }
+            
+            bool known = false;
+            
+            if (std::filesystem::is_directory(filepath)) {
+                auto filename = filepath.filename();
+                known = known_games.find(filename) != known_games.end();
+                                
+                if (roms_unzipped) {
+                    if (!known) {
+                        archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
+                    }
+                }
+                else {
+                    if (!known) {
+                        archives.push_back(ArchiveLocation(filepath, TYPE_DISK));
+                    }
+                    list_non_chds(filepath);
+                }
+            }
+            else {
+                if (!roms_unzipped) {
+                    auto ext = filepath.extension();
+                    
+                    if (ext == ".zip") {
+                        auto stem = filepath.stem();
+                        known = known_games.find(stem) != known_games.end();
+                    }
+                    else if (ext == ".chd") {
+                        // TODO: I don't think we want top level CHDs in this list.
+                        known = true;
+                        have_toplevel_disks = true;
+                    }
+                }
+                else {
+                    // TODO: Don't list top level files for unzipped in list either.
+                    known = true;
+                    have_toplevel_roms = true;
+                }
+
+                if (!known) {
+                    archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
+                }
+            }
+        }
+        
+        if (have_toplevel_roms) {
+            archives.push_back(ArchiveLocation(directory + "/", TYPE_ROM));
+        }
+        if (have_toplevel_disks) {
+            archives.push_back(ArchiveLocation(directory + "/", TYPE_DISK));
+        }
+    }
+    catch (...) {
     }
 }
 
@@ -157,10 +241,44 @@ bool DeleteList::close_archive(Archive *archive) {
         }
         
         if (archive->is_empty()) {
-            remove_empty_archive(archive->name, archive->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY);
+            remove_empty_archive(archive);
         }
     }
     
     return true;
 }
+
+
+void DeleteList::remove_archive(Archive *archive) {
+    auto entry = std::find(archives.begin(), archives.end(), ArchiveLocation(archive));
+    if (entry != archives.end()) {
+        /* "needed" zip archives are not in list */
+        archives.erase(entry);
+    }
+}
     
+void DeleteList::sort_archives() {
+    std::sort(archives.begin(), archives.end());
+}
+
+
+void DeleteList::sort_entries() {
+    std::sort(entries.begin(), entries.end());
+}
+
+
+void DeleteList::list_non_chds(const std::string &directory) {
+    try {
+        Dir dir(directory, true);
+        std::filesystem::path filepath;
+        
+        while ((filepath = dir.next()) != "") {
+            if (filepath.extension() != ".chd") {
+                archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
+            }
+        }
+    }
+    catch (...) {
+        return;
+    }
+}

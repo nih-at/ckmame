@@ -466,7 +466,10 @@ main(int argc, char **argv) {
     }
 
     if (action != ACTION_CLEANUP_EXTRA_ONLY) {
-	superfluous = list_directory(get_directory(), dbname);
+	if (!superfluous_delete_list) {
+	    superfluous_delete_list = std::make_shared<DeleteList>();
+	}
+	superfluous_delete_list->add_directory(get_directory(), true);
     }
 
     if ((fix_options & FIX_DO) && (fix_options & FIX_CLEANUP_EXTRA)) {
@@ -483,11 +486,14 @@ main(int argc, char **argv) {
 
 	if (fix_options & FIX_DO) {
 	    if (fix_options & FIX_SUPERFLUOUS) {
-		std::vector<std::string> needed_list;
-
-		cleanup_list(superfluous, superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN);
-		needed_list = list_directory(needed_dir, "");
-		cleanup_list(needed_list, needed_delete_list, CLEANUP_UNKNOWN);
+		if (!needed_delete_list) {
+		    needed_delete_list = std::make_shared<DeleteList>();
+		}
+		if (needed_delete_list->archives.empty()) {
+		    needed_delete_list->add_directory(needed_dir, false);
+		}
+		cleanup_list(superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN);
+		cleanup_list(needed_delete_list, CLEANUP_UNKNOWN);
 	    }
 	    else {
 		if (needed_delete_list) {
@@ -505,14 +511,14 @@ main(int argc, char **argv) {
     }
 
     if ((fix_options & FIX_DO) && (fix_options & FIX_CLEANUP_EXTRA)) {
-	cleanup_list(extra_list, extra_delete_list, 0);
+	cleanup_list(extra_delete_list, 0);
     }
     else if (extra_delete_list) {
 	extra_delete_list->execute();
     }
 
     if ((action == ACTION_CHECK_ROMSET && (optind == argc && (diagnostics_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY) {
-	print_superfluous(superfluous);
+	print_superfluous(superfluous_delete_list);
     }
     
     if (print_stats) {

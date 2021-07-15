@@ -47,74 +47,57 @@
 static void cleanup_archive(filetype_t filetype, Archive *archive, Result *result, int flags);
 
 
-void
-cleanup_list(std::vector<std::string> &list, DeleteListPtr del, int flags) {
+void cleanup_list(DeleteListPtr list, int flags) {
     ArchivePtr a;
-    std::string name;
     int cmp;
-    name_type_t nt;
-    size_t di, len;
 
-    di = len = 0;
-    if (del) {
-	std::sort(del->entries.begin(), del->entries.end());
-	len = del->entries.size();
-    }
+    list->sort_archives();
+    list->sort_entries();
+    size_t di = 0;
+    auto len = list->entries.size();
 
-    auto n = list.size();
+    auto n = list->archives.size();
     size_t i = 0;
     while (i < n) {
-	name = list[i];
-	switch ((nt = name_type(name))) {
-            case NAME_ZIP:
-            case NAME_IMAGES: {
-                auto filetype = nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK;
-                ArchivePtr a = Archive::open(name, filetype, FILE_NOWHERE, 0);
+        auto entry = list->archives[i];
 
-                if (a) {
-                    GameArchives archives;
-                    archives.archive[filetype] = a;
+        ArchivePtr a = Archive::open(entry.name, entry.filetype, FILE_NOWHERE, 0);
+
+        if (a) {
+            GameArchives archives;
+            archives.archive[entry.filetype] = a;
                     
-                    Result res(NULL, archives);
+            Result res(NULL, archives);
 
-                    while (di < len) {
-                        auto fl = del->entries[di];
-                        /* file lists should know what's toplevel without adding a / to name */
-                        if (fl.name[fl.name.length() - 1] == '/' && name[name.length() - 1] != '/') {
-                            cmp = name.compare(fl.name.substr(0, fl.name.length() - 1));
-                        }
-                        else {
-                            cmp = name.compare(fl.name);
-                        }
-
-                        if (cmp == 0) {
-                            res.archive_files[filetype][fl.index] = FS_USED;
-                        }
-                        else if (cmp < 0) {
-                            break;
-                        }
-
-                        di++;
-                    }
-
-                    check_archive_files(filetype, archives, "", &res);
-
-                    warn_set_info(WARN_TYPE_ARCHIVE, a->name);
-                    diagnostics_archive(filetype, a.get(), res);
-                    cleanup_archive(filetype, a.get(), &res, flags);
+            while (di < len) {
+                auto fl = list->entries[di];
+                /* file lists should know what's toplevel without adding a / to name */
+                if (fl.name[fl.name.length() - 1] == '/' && entry.name[entry.name.length() - 1] != '/') {
+                    cmp = entry.name.compare(fl.name.substr(0, fl.name.length() - 1));
                 }
-                    
-                break;
+                else {
+                    cmp = entry.name.compare(fl.name);
+                }
+                
+                if (cmp == 0) {
+                    res.archive_files[entry.filetype][fl.index] = FS_USED;
+                }
+                else if (cmp < 0) {
+                    break;
+                }
+                
+                di++;
             }
-
-            case NAME_IGNORE:
-            case NAME_UNKNOWN:
-                /* unknown files shouldn't be in list */
-                break;
+            
+            check_archive_files(entry.filetype, archives, "", &res);
+            
+            warn_set_info(WARN_TYPE_ARCHIVE, a->name);
+            diagnostics_archive(entry.filetype, a.get(), res);
+            cleanup_archive(entry.filetype, a.get(), &res, flags);
         }
 
-        if (n != list.size()) {
-	    n = list.size();
+        if (n != list->archives.size()) {
+	    n = list->archives.size();
 	}
 	else {
 	    i++;
@@ -219,6 +202,6 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
     a->commit();
 
     if (a->is_empty()) {
-        remove_empty_archive(a->name, (a->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY));
+        remove_empty_archive(a);
     }
 }
