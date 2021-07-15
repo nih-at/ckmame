@@ -1,3 +1,10 @@
+- exceptions and error messages:
+    - who creates which part of the error messages
+    - catch exceptions in main and print errors.
+    - clean up Exceptions without text
+    
+- objectify sqlite3 statements, handle multiple writers
+
 - When checking single game, search for its ROMs everywhere and report any matches.
 
 - rar read support
