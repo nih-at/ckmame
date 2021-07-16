@@ -65,7 +65,6 @@ set(COMMON_SOURCES
   RomDB.cc
   SharedFile.cc
   sighandle.cc
-  sq_util.cc
   Stats.cc
   superfluous.cc
   Tree.cc

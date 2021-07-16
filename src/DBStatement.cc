@@ -58,6 +58,220 @@ DBStatement::~DBStatement() {
 }
 
 
+void DBStatement::reset() {
+    if (sqlite3_reset(stmt) != SQLITE_OK || sqlite3_clear_bindings(stmt) != SQLITE_OK) {
+        throw Exception("can't reset SQL statement"); // TODO: include sqlite error
+    }
+}
+
+
+bool DBStatement::step() {
+    switch (sqlite3_step(stmt)) {
+        case SQLITE_DONE:
+            return false;
+            
+        case SQLITE_ROW:
+            return true;
+            
+        default:
+            throw Exception("error executing statement"); // TODO: detail
+    }
+}
+
+
+// MARK: - Getting Values
+
+
+std::vector<uint8_t> DBStatement::get_blob(const std::string &name) {
+    auto index = get_column_index(name);
+
+    if (sqlite3_column_type(stmt, index) == SQLITE_NULL) {
+        return {};
+    }
+    
+    auto size = sqlite3_column_bytes(stmt, index);
+    auto bytes = reinterpret_cast<const uint8_t *>(sqlite3_column_blob(stmt, index));
+    
+    return std::vector<uint8_t>(bytes, bytes + size);
+}
+
+
+Hashes DBStatement::get_hashes() {
+    Hashes hashes;
+    
+    for (int type = 0; type < Hashes::TYPE_MAX; type++) {
+        auto index = get_column_index(Hashes::type_name(type));
+        
+        if (sqlite3_column_type(stmt, index) == SQLITE_NULL) {
+            continue;
+        }
+        
+        if (type == Hashes::TYPE_CRC) {
+            hashes.set_crc(sqlite3_column_int64(stmt, index) & 0xffffffff);
+        }
+        else {
+            hashes.set(type, sqlite3_column_blob(stmt, index));
+        }
+    }
+                       
+    return hashes;
+}
+
+
+int DBStatement::get_int(const std::string &name) {
+    auto index = get_column_index(name);
+    
+    return sqlite3_column_int(stmt, index);
+}
+
+
+int DBStatement::get_int(const std::string &name, int default_value) {
+    auto index = get_column_index(name);
+
+    if (sqlite3_column_type(stmt, index) == SQLITE_NULL) {
+        return default_value;
+    }
+    
+    return sqlite3_column_int(stmt, index);
+}
+
+
+int64_t DBStatement::get_int64(const std::string &name) {
+    auto index = get_column_index(name);
+    
+    return sqlite3_column_int64(stmt, index);
+}
+
+
+int64_t DBStatement::get_int64(const std::string &name, int64_t default_value) {
+    auto index = get_column_index(name);
+    
+    if (sqlite3_column_type(stmt, index) == SQLITE_NULL) {
+        return default_value;
+    }
+    return sqlite3_column_int64(stmt, index);
+}
+
+
+std::string DBStatement::get_string(const std::string &name) {
+    auto index = get_column_index(name);
+    
+    if (sqlite3_column_type(stmt, index) == SQLITE_NULL)
+        return "";
+    
+    return reinterpret_cast<const char *>(sqlite3_column_text(stmt, index));
+}
+
+
+// MARK: - Setting Values
+
+
+void DBStatement::set_blob(const std::string &name, const std::vector<uint8_t> &value) {
+    auto index = get_parameter_index(name);
+
+    int ret;
+    
+    if (value.empty()) {
+        ret = sqlite3_bind_null(stmt, index);
+    }
+    else if (value.size() > INT_MAX) {
+        ret = SQLITE_TOOBIG;
+    }
+    else {
+        ret = sqlite3_bind_blob(stmt, index, value.data(), static_cast<int>(value.size()), SQLITE_STATIC);
+    }
+    
+    if (ret != SQLITE_OK) {
+        throw Exception("can't bind parameter '" + name + "'");
+    }
+}
+
+
+int sq3_set_hashes(sqlite3_stmt *stmt, int col, const Hashes *hashes, int nullp) {
+    int ret;
+    
+    ret = SQLITE_OK;
+    
+    if (hashes->has_type(Hashes::TYPE_CRC)) {
+        ret = sqlite3_bind_int64(stmt, col++, hashes->crc);
+    }
+    else if (nullp) {
+        ret = sqlite3_bind_null(stmt, col++);
+    }
+    if (ret != SQLITE_OK) {
+        return ret;
+    }
+    
+    if (hashes->has_type(Hashes::TYPE_MD5)) {
+        ret = sqlite3_bind_blob(stmt, col++, hashes->md5, Hashes::SIZE_MD5, SQLITE_STATIC);
+    }
+    else if (nullp) {
+        ret = sqlite3_bind_null(stmt, col++);
+    }
+    if (ret != SQLITE_OK) {
+        return ret;
+    }
+    
+    if (hashes->has_type(Hashes::TYPE_SHA1)) {
+        ret = sqlite3_bind_blob(stmt, col++, hashes->sha1, Hashes::SIZE_SHA1, SQLITE_STATIC);
+    }
+    else if (nullp) {
+        ret = sqlite3_bind_null(stmt, col++);
+    }
+    
+    return ret;
+}
+
+
+int sq3_set_int_default(sqlite3_stmt *stmt, int col, int val, int def) {
+    if (val == def)
+        return sqlite3_bind_null(stmt, col);
+    return sqlite3_bind_int(stmt, col, val);
+}
+
+
+int sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def) {
+    if (val == def)
+        return sqlite3_bind_null(stmt, col);
+    return sqlite3_bind_int64(stmt, col, val);
+}
+
+
+int sq3_set_string(sqlite3_stmt *stmt, int i, const std::string &s) {
+    if (!s.empty()) {
+        return sqlite3_bind_text(stmt, i, s.c_str(), -1, SQLITE_STATIC);
+    }
+    else {
+        return sqlite3_bind_null(stmt, i);
+    }
+}
+
+
+int sq3_set_uint64(sqlite3_stmt *stmt, int col, uint64_t val) {
+    return sqlite3_bind_int64(stmt, col, static_cast<int64_t>(val));
+}
+
+int sq3_set_uint64_default(sqlite3_stmt *stmt, int col, uint64_t val, uint64_t def) {
+    if (val == def) {
+        return sqlite3_bind_null(stmt, col);
+    }
+    return sqlite3_bind_int64(stmt, col, static_cast<int64_t>(val));
+}
+
+
+void sq3_set_string(sqlite3_stmt *stmt, const std::string &name, const std::string &value) {
+    auto index = sqlite3_bind_parameter_index(stmt, name.c_str());
+    
+    if (index == 0) {
+        throw Exception("invalid parameter '" + name + "'");
+    }
+    
+    if (sq3_set_string(stmt, index, value) != SQLITE_OK) {
+        throw Exception("can't bind parameter '" + name + "'");
+    }
+}
+
+
 void DBStatement::set_string(const std::string &name, const std::string &value) {
     auto index = get_parameter_index(name);
     
@@ -76,26 +290,7 @@ void DBStatement::set_string(const std::string &name, const std::string &value) 
 }
 
 
-void DBStatement::reset() {
-    if (sqlite3_reset(stmt) != SQLITE_OK || sqlite3_clear_bindings(stmt) != SQLITE_OK) {
-        throw Exception("can't reset SQL statement"); // TODO: include sqlite error
-    }
-}
-
-
-bool DBStatement::step() {
-    switch (sqlite3_step(stmt)) {
-        case SQLITE_DONE:
-            return false;
-
-        case SQLITE_ROW:
-            return true;
-            
-        default:
-            throw Exception("error executing statement"); // TODO: detail
-    }
-}
-
+// MARK: - Helper Functions
 
 int DBStatement::get_column_index(const std::string &name) {
     auto it = column_names.find(name);
