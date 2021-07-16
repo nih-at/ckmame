@@ -1,6 +1,6 @@
 /*
-  dbh.c -- mame.db sqlite3 data base
-  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
+  DB.cc -- object layer around SQLite3
+  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -40,6 +40,9 @@
 #include "Exception.h"
 #include "types.h"
 
+const int StatementID::have_size = 0x10000;
+const int StatementID::parameterized = 0x20000;
+
 static const int format_version[] = {3, 1, 4};
 static const char *format_name[] = {
     "mamedb",
@@ -78,16 +81,13 @@ update archive set file_type=" + std::to_string(TYPE_DISK) + " where exists(sele
 };
 
 int DB::get_version() {
-    sqlite3_stmt *stmt;
+    auto stmt = DBStatement(this, "pragma user_version");
     
-    if ((stmt = get_statement(DBH_STMT_QUERY_VERSION)) == NULL) {
-        throw Exception("can't get version: unkown statement");
-    }
-    if (sqlite3_step(stmt) != SQLITE_ROW) {
+    if (!stmt.step()) {
         throw Exception("can't get version: %s", sqlite3_errmsg(db));
     }
     
-    auto db_user_version = sqlite3_column_int(stmt, 0);
+    auto db_user_version = stmt.get_int("user_version");
 
     if (!USER_VERSION_VALID(db_user_version)) {
         throw Exception("not a ckmame db");
@@ -155,12 +155,7 @@ DB::~DB() {
 }
 
 void DB::close() {
-    for (size_t i = 0; i < DBH_STMT_MAX; i++) {
-        if (statements[i] != NULL) {
-            sqlite3_finalize(statements[i]);
-            statements[i] = NULL;
-        }
-    }
+    statements.clear();
 
     if (db) {
         sqlite3_close(db);
@@ -181,10 +176,6 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
 
     if (format < 0 || static_cast<size_t>(format) >= sizeof(format_version) / sizeof(format_version[0])) {
         throw Exception("invalid DB format %d", format);
-    }
-
-    for (size_t i = 0; i < DBH_STMT_MAX; i++) {
-        statements[i] = NULL;
     }
 
     auto needs_init = false;
@@ -278,38 +269,33 @@ void DB::upgrade(sqlite3 *db, int format, int version, const std::string &statem
 }
 
 
-sqlite3_stmt *DB::get_statement(dbh_stmt_t stmt_id, const Hashes *hashes, bool have_size) {
-    for (int i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
-        if (hashes->has_type(i)) {
-            stmt_id = static_cast<dbh_stmt_t>(stmt_id + i);
-        }
-    }
-    if (have_size) {
-        stmt_id = static_cast<dbh_stmt_t>(stmt_id + (Hashes::TYPE_MAX << 1));
-    }
-
-    return get_statement(stmt_id);
+DBStatement *DB::get_statement_internal(int name) {
+    return get_statement_internal(StatementID(name));
 }
 
-
-sqlite3_stmt *DB::get_statement(dbh_stmt_t stmt_id) {
-    if (stmt_id >= DBH_STMT_MAX) {
-	return NULL;
-    }
-
-    if (statements[stmt_id] == NULL) {
-        if (sqlite3_prepare_v2(db, dbh_stmt_sql[stmt_id], -1, &(statements[stmt_id]), NULL) != SQLITE_OK) {
-            statements[stmt_id] = NULL;
-	    return NULL;
-	}
-    }
-    else {
-        if (sqlite3_reset(statements[stmt_id]) != SQLITE_OK || sqlite3_clear_bindings(statements[stmt_id]) != SQLITE_OK) {
-            sqlite3_finalize(statements[stmt_id]);
-            statements[stmt_id] = NULL;
-            return NULL;
-	}
+DBStatement *DB::get_statement_internal(int name, const Hashes &hashes, bool have_size) {
+    return get_statement_internal(StatementID(name, hashes, have_size));
+}
+ 
+DBStatement *DB::get_statement_internal(StatementID statement_id) {
+    auto it = statements.find(statement_id);
+    
+    if (it != statements.end()) {
+        it->second.reset();
+        return &it->second;
     }
     
-    return statements[stmt_id];
+    auto sql_query = get_sql_query(statement_id.name, statement_id.is_parameterized());
+    
+    if (sql_query.empty()) {
+        throw Exception("invalid statement id " + std::to_string(statement_id.name));
+    }
+    
+    if (statement_id.is_parameterized()) {
+        // TODO: parameterize query
+    }
+
+    statements[statement_id] = DBStatement(this, sql_query);
+
+    return &statements[statement_id];
 }

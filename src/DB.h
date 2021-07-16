@@ -1,8 +1,8 @@
-#ifndef _HAD_DBH_H
-#define _HAD_DBH_H
+#ifndef HAD_DB_H
+#define HAD_DB_H
 
 /*
-  dbh.h -- mame.db sqlite3 data base
+  DB.h -- object layer around SQLite3
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -39,6 +39,7 @@
 #include <sqlite3.h>
 
 #include "dbh_statements.h"
+#include "DBStatement.h"
 #include "Hashes.h"
 
 
@@ -63,19 +64,38 @@ enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME, DBH_KEY_LIST_MAX };
 extern const char *sql_db_init[];
 extern const char *sql_db_init_2;
 
+// This should be a private nested class of DB, but C++ hash support is utterly stupid and doesn't support that.
+class StatementID {
+public:
+    StatementID(int name_) : name(name_), flags(0) { }
+    StatementID(int name_, const Hashes &hashes, bool have_size_) : name(name_), flags(hashes.types | have_size | parameterized) { }
+    
+    bool is_parameterized() const { return flags & parameterized; }
+    int name;
+    int flags;
+    
+private:
+    static const int parameterized;
+    static const int have_size;
+};
+
+namespace std {
+template<> struct hash<StatementID> {
+    size_t operator()(const StatementID &a) const {
+        return hash<int>()(a.name) ^ hash<int>()(a.flags);
+    }
+};
+}
+
 class DB {
 public:
     DB(const std::string &name, int mode);
     ~DB();
     
     sqlite3 *db;
-    sqlite3_stmt *statements[DBH_STMT_MAX];
     int format;
     
     std::string error();
-
-    sqlite3_stmt *get_statement(dbh_stmt_t stmt_id);
-    sqlite3_stmt *get_statement(dbh_stmt_t stmt_id, const Hashes *hashes, bool have_size);
     
     // This is used by dbrestore to create databases with arbitrary schema and version.
     static void upgrade(sqlite3 *db, int format, int version, const std::string &statement);
@@ -92,6 +112,12 @@ public:
             return format == other.format && old_version == other.old_version && new_version == other.new_version;
         }
     };
+    
+protected:
+    DBStatement *get_statement_internal(int name);
+    DBStatement *get_statement_internal(int name, const Hashes &hashes, bool have_size);
+    
+    virtual std::string get_sql_query(int name, bool parameterized) const;
 
 private:
     class MigrationStep {
@@ -100,6 +126,8 @@ private:
         std::string statement;
         int version;
     };
+    
+    DBStatement *get_statement_internal(StatementID statement_id);
     
     int get_version();
     void check_version();
@@ -110,6 +138,8 @@ private:
     void upgrade(const std::string &statement, int version);
 
     static std::unordered_map<MigrationXXX, std::string> migrations;
+    
+    std::unordered_map<StatementID, DBStatement> statements;
 };
 
 // #pragma hide_this_forever begin
@@ -122,4 +152,4 @@ namespace std {
 }
 // #pragma hide_this_forever end
 
-#endif /* dbh.h */
+#endif // HAD_DB_H

@@ -91,7 +91,7 @@ bool MemDB::delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx) {
 	return true;
     }
 
-    sqlite3_stmt *stmt = memdb->get_statement(DBH_STMT_MEM_DEC_FILE_IDX);
+    sqlite3_stmt *stmt = memdb->get_statement(MEM_DEC_FILE_IDX);
 
     if (stmt == NULL) {
 	return false;
@@ -151,7 +151,7 @@ bool MemDB::update_file(const ArchiveContents *archive, size_t idx) {
 bool MemDB::update_file(uint64_t id, filetype_t ft, size_t idx, const Hashes *h) {
     /* FILE_SH_DETECTOR hashes are always completely filled in */
 
-    sqlite3_stmt *stmt = get_statement(DBH_STMT_MEM_UPDATE_FILE);
+    sqlite3_stmt *stmt = get_statement(MEM_UPDATE_FILE);
     if (stmt == NULL) {
 	return false;
     }
@@ -169,7 +169,7 @@ std::optional<std::vector<MemDB::FindResult>> MemDB::find(filetype_t filetype, c
         return {};
     }
     
-    auto stmt = memdb->get_statement(DBH_STMT_MEM_QUERY_FILE, &file->hashes, file->is_size_known());
+    auto stmt = memdb->get_statement(MEM_QUERY_FILE, &file->hashes, file->is_size_known());
     if (stmt == NULL) {
         return {};
     }
@@ -209,7 +209,7 @@ std::optional<std::vector<MemDB::FindResult>> MemDB::find(filetype_t filetype, c
 
 
 bool MemDB::delete_file(uint64_t id, filetype_t filetype, size_t index) {
-    sqlite3_stmt *stmt = get_statement(DBH_STMT_MEM_DELETE_FILE);
+    sqlite3_stmt *stmt = get_statement(MEM_DELETE_FILE);
     if (stmt == NULL) {
 	return false;
     }
@@ -260,7 +260,7 @@ sqlite3_stmt *MemDB::get_insert_file_statement(const ArchiveContents *archive) {
         return NULL;
     }
 
-    auto stmt = memdb->get_statement(DBH_STMT_MEM_INSERT_FILE);
+    auto stmt = memdb->get_statement(MEM_INSERT_FILE);
 
     if (stmt == NULL
         || sq3_set_uint64(stmt, INSERT_FILE_ARCHIVE_ID, archive->id) != SQLITE_OK

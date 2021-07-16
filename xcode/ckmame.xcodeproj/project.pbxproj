@@ -155,6 +155,8 @@
 		4BC316612693259B0012AEB8 /* FileLocation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC316602693259B0012AEB8 /* FileLocation.cc */; };
 		4BC31664269336090012AEB8 /* ArchiveLocation.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC31662269336090012AEB8 /* ArchiveLocation.cc */; };
 		4BC31665269336090012AEB8 /* ArchiveLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC31663269336090012AEB8 /* ArchiveLocation.h */; };
+		4BC316E526A04F0E0012AEB8 /* DBStatement.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BC316E326A04F0E0012AEB8 /* DBStatement.cc */; };
+		4BC316E626A04F0E0012AEB8 /* DBStatement.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC316E426A04F0E0012AEB8 /* DBStatement.h */; };
 		4BD482982535B23C00D0002B /* ArchiveDir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BD482962535B23C00D0002B /* ArchiveDir.cc */; };
 		4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD482972535B23C00D0002B /* ArchiveDir.h */; };
 		4BEDBE0526565D5F00DBF486 /* DetectorCollection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BEDBE0326565D5F00DBF486 /* DetectorCollection.cc */; };
@@ -795,6 +797,8 @@
 		4BC316602693259B0012AEB8 /* FileLocation.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileLocation.cc; sourceTree = "<group>"; };
 		4BC31662269336090012AEB8 /* ArchiveLocation.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveLocation.cc; sourceTree = "<group>"; };
 		4BC31663269336090012AEB8 /* ArchiveLocation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveLocation.h; sourceTree = "<group>"; };
+		4BC316E326A04F0E0012AEB8 /* DBStatement.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DBStatement.cc; sourceTree = "<group>"; };
+		4BC316E426A04F0E0012AEB8 /* DBStatement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DBStatement.h; sourceTree = "<group>"; };
 		4BC78D0A1A4445A400A14E29 /* NiHTest.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = NiHTest.pm; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 4; path = runtest.in; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		4BD1BAA61A404BF300A70734 /* CkmameDB.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = CkmameDB.pm; sourceTree = "<group>"; usesTabs = 1; };
@@ -1028,6 +1032,8 @@
 				4B59E58F21625A05002262C8 /* dbh_statements.cc */,
 				4B59E59021625A05002262C8 /* dbh_statements.h */,
 				4B513F49175B52700096EF42 /* dbh_statements.in */,
+				4BC316E326A04F0E0012AEB8 /* DBStatement.cc */,
+				4BC316E426A04F0E0012AEB8 /* DBStatement.h */,
 				4B5FACA41735919800B67C24 /* DeleteList.cc */,
 				4B5FACA51735919800B67C24 /* DeleteList.h */,
 				4B5FACA61735919800B67C24 /* detector_execute.cc */,
@@ -1539,6 +1545,7 @@
 				4B3274D525B99F76006AEF16 /* file_util.h in Headers */,
 				4B5F43C21889D059000C3B7C /* RomDB.h in Headers */,
 				4B3666EF261719DC00A67A6C /* ArchiveLibarchive.h in Headers */,
+				4BC316E626A04F0E0012AEB8 /* DBStatement.h in Headers */,
 				4BC31665269336090012AEB8 /* ArchiveLocation.h in Headers */,
 				4B3274D625B99F76006AEF16 /* fixdat.h in Headers */,
 				4B3274D825B99F76006AEF16 /* fix.h in Headers */,
@@ -1771,6 +1778,7 @@
 				4B5FAE7D173594E400B67C24 /* db_init.cc in Sources */,
 				4B5FAE7E173594E400B67C24 /* DB.cc in Sources */,
 				4B5FAE82173594E400B67C24 /* Result.cc in Sources */,
+				4BC316E526A04F0E0012AEB8 /* DBStatement.cc in Sources */,
 				4B5FAE83173594E400B67C24 /* sq_util.cc in Sources */,
 				4B5F43C11889D059000C3B7C /* RomDB.cc in Sources */,
 				4B5F43AC1889CEE7000C3B7C /* globals.cc in Sources */,

@@ -40,42 +40,88 @@
 #include "RomLocation.h"
 #include "OutputContext.h"
 
-class RomDB {
+class RomDB : public DB {
 public:
+    enum Statement {
+        DELETE_FILE,
+        DELETE_GAME,
+        INSERT_DAT_DETECTOR,
+        INSERT_DAT,
+        INSERT_FILE,
+        INSERT_GAME,
+        INSERT_RULE,
+        INSERT_TEST,
+        QUERY_CLONES,
+        QUERY_DAT_DETECTOR,
+        QUERY_DAT,
+        QUERY_FILE_FBN,
+        QUERY_FILE,
+        QUERY_GAME_ID,
+        QUERY_GAME,
+        QUERY_HAS_DISKS,
+        QUERY_HASH_TYPE_CRC,
+        QUERY_HASH_TYPE_MD5,
+        QUERY_HASH_TYPE_SHA1,
+        QUERY_LIST_DISK,
+        QUERY_LIST_GAME,
+        QUERY_PARENT_BY_NAME,
+        QUERY_PARENT,
+        QUERY_RULE,
+        QUERY_STATS_FILES,
+        QUERY_STATS_GAMES,
+        QUERY_TEST,
+        UPDATE_FILE,
+        UPDATE_PARENT
+    };
+    
+    enum ParameterizeedStatement {
+        QUERY_FILE_FBH
+    };
+    
     RomDB(const std::string &name, int mode);
-
-    DB db;
+    
+    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
+    DBStatement *get_statement(ParameterizeedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
+    
     std::unordered_map<size_t, DetectorPtr> detectors;
 
-    bool delete_game(const Game *game) { return delete_game(game->name); }
-    bool delete_game(const std::string &name);
-    int has_disks();
+    void delete_game(const Game *game) { delete_game(game->name); }
+    void delete_game(const std::string &name);
+    bool has_disks();
 
     bool has_detector() const { return detectors.size() != 0; }
     DetectorPtr get_detector(size_t id);
     size_t get_detector_id_for_dat(size_t dat_no) const;
     
     std::vector<DatEntry> read_dat();
-    std::vector<RomLocation> read_file_by_hash(filetype_t ft, const Hashes *hash);
+    std::vector<RomLocation> read_file_by_hash(filetype_t ft, const Hashes &hashes);
     GamePtr read_game(const std::string &name);
     int hashtypes(filetype_t);
     std::vector<std::string> read_list(enum dbh_list type);
-    bool update_file_location(Game *game);
-    bool update_game_parent(const Game *game);
-    bool write_dat(const std::vector<DatEntry> &dats);
-    bool write_detector(const Detector *detector);
-    bool write_game(Game *game);
-    bool write_hashtypes(int, int);
+    void update_file_location(Game *game);
+    void update_game_parent(const Game *game);
+    void write_dat(const std::vector<DatEntry> &dats);
+    void write_detector(const Detector &detector);
+    void write_game(Game *game);
+    void write_hashtypes(int, int);
     int export_db(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
+    
+protected:
+    virtual std::string get_query(int name, bool parameterized) const;
+
 private:
     int hashtypes_[TYPE_MAX];
     
+    static const Statement query_hash_type[];
+    static std::unordered_map<int, std::string> queries;
+    static std::unordered_map<int, std::string> parameterized_queries;
+    
     DetectorPtr read_detector();
-    bool read_files(Game *game, filetype_t ft);
+    void read_files(Game *game, filetype_t ft);
     void read_hashtypes(filetype_t type);
     bool read_rules(Detector *detector);
-    bool write_files(Game *game, filetype_t ft);
-    bool write_rules(const Detector *detector);
+    void write_files(Game *game, filetype_t ft);
+    void write_rules(const Detector &detector);
 };
 
 extern std::unique_ptr<RomDB> db;

@@ -40,24 +40,49 @@
 std::unique_ptr<RomDB> db;
 std::unique_ptr<RomDB> old_db;
 
-const dbh_stmt_t query_hash_type[] = {DBH_STMT_QUERY_HASH_TYPE_CRC, DBH_STMT_QUERY_HASH_TYPE_MD5, DBH_STMT_QUERY_HASH_TYPE_SHA1};
+std::unordered_map<int, std::string> RomDB::queries = {
+    {  DELETE_FILE, "delete from file where game_id = :game_id" },
+    {  DELETE_GAME, "delete from game where game_id = :game_id" },
+    {  INSERT_DAT_DETECTOR, "insert into dat (dat_idx, name, author, version) values (-1, :name, :author, :version)" },
+    {  INSERT_DAT, "insert into dat (dat_idx, name, description, version) values (:dat_idx, :name, :description, :version)" },
+    {  INSERT_FILE, "insert into file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1) values (:game_id, :file_type, :file_idx, :name, :merge, :status, :location, :size, :crc, :md5, :sha1)" },
+    {  INSERT_GAME, "insert into game (name, description, dat_idx, parent) values (:name, :description, :dat_idx, :parent)" },
+    {  INSERT_RULE, "insert into rule (rule_idx, start_offset, end_offset, operation) values (:rule_idx, :start_offset, :end_offset, :operation)" },
+    {  INSERT_TEST, "insert into test (rule_idx, test_idx, type, offset, size, mask, value, result) values (:rule_idx, :test_idx, :type, :offset, :size, :mask, :value, :result)" },
+    {  QUERY_CLONES, "select name from game where parent = :parent" },
+    {  QUERY_DAT_DETECTOR, "select name, author, version from dat where dat_idx = -1" },
+    {  QUERY_DAT, "select name, description, version from dat where dat_idx >= 0 order by dat_idx" },
+    {  QUERY_FILE_FBN, "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.name = :name" },
+    {  QUERY_FILE, "select name, merge, status, location, size, crc, md5, sha1 from file where game_id = :game_id and file_type = :file_type order by file_idx" },
+    {  QUERY_GAME_ID, "select game_id from game where name = :name" },
+    {  QUERY_GAME, "select game_id, description, dat_idx, parent from game where name = :name" },
+    {  QUERY_HAS_DISKS, "select file_idx from file where file_type = 1 limit 1" },
+    {  QUERY_HASH_TYPE_CRC, "select name from file where file_type = :file_type and crc not null limit 1" },
+    {  QUERY_HASH_TYPE_MD5, "select name from file where file_type = :file_type and md5 not null limit 1" },
+    {  QUERY_HASH_TYPE_SHA1, "select name from file where file_type = :file_type and sha1 not null limit 1" },
+    {  QUERY_LIST_DISK, "select distinct name from file where file_type = 1 order by name" },
+    {  QUERY_LIST_GAME, "select name from game order by name" },
+    {  QUERY_PARENT_BY_NAME, "select parent from game where name = :name" },
+    {  QUERY_PARENT, "select parent from game where game_id = :game_id" },
+    {  QUERY_RULE, "select rule_idx, start_offset, end_offset, operation from rule order by rule_idx" },
+    {  QUERY_STATS_FILES, "select file_type, count(name), sum(size) from file group by file_type order by file_type" },
+    {  QUERY_STATS_GAMES, "select count(name) from game" },
+    {  QUERY_TEST, "select type, offset, size, mask, value, result from test where rule_idx = :rule_idx order by test_idx" },
+    {  UPDATE_FILE, "update file set location = :location where game_id = :game_id and file_type = :file_type and file_idx = :file_idx" },
+    {  UPDATE_PARENT, "update game set parent = :parent where game_id = :game_id" }
+};
 
-int RomDB::has_disks() {
-    sqlite3_stmt *stmt = db.get_statement(DBH_STMT_QUERY_HAS_DISKS);
-    if (stmt == NULL) {
-	return -1;
-    }
+std::unordered_map<int, std::string> RomDB::parameterized_queries = {
+   {  QUERY_FILE_FBH, "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.status <> :status @HASH@" },
 
-    switch (sqlite3_step(stmt)) {
-    case SQLITE_ROW:
-	return 1;
+};
 
-    case SQLITE_DONE:
-	return 0;
+const RomDB::Statement RomDB::query_hash_type[] = { QUERY_HASH_TYPE_CRC, QUERY_HASH_TYPE_MD5, QUERY_HASH_TYPE_SHA1 };
 
-    default:
-	return -1;
-    }
+bool RomDB::has_disks() {
+    auto stmt = get_statement(QUERY_HAS_DISKS);
+
+    return stmt->step();
 }
 
 
@@ -70,42 +95,30 @@ int RomDB::hashtypes(filetype_t type) {
 }
 
 
-RomDB::RomDB(const std::string &name, int mode) : db(name, mode) {
+RomDB::RomDB(const std::string &name, int mode) : DB(name, mode) {
     for (size_t i = 0; i < TYPE_MAX; i++) {
 	hashtypes_[i] = -1;
     }
     
-    auto stmt = db.get_statement(DBH_STMT_QUERY_DAT_DETECTOR);
-    if (stmt == NULL) {
-        throw Exception();
-    }
-    
-    int ret;
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        auto detector_id = Detector::get_id(DetectorDescriptor(sq3_get_string(stmt, 0), sq3_get_string(stmt, 2)));
+    auto stmt = get_statement(QUERY_DAT_DETECTOR);
+
+    while (stmt->step()) {
+        auto detector_id = Detector::get_id(DetectorDescriptor(stmt->get_string("name"), stmt->get_string("version")));
         detectors[detector_id] = read_detector();
-    }
-    
-    if (ret != SQLITE_DONE) {
-        throw Exception();
     }
 }
 
 
 void RomDB::read_hashtypes(filetype_t ft) {
     int type;
-    sqlite3_stmt *stmt;
 
     hashtypes_[ft] = 0;
 
     for (type = 0; (1 << type) <= Hashes::TYPE_MAX; type++) {
-        if ((stmt = db.get_statement(query_hash_type[type])) == NULL) {
-            continue;
-        }
-        if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK) {
-	    continue;
-        }
-        if (sqlite3_step(stmt) == SQLITE_ROW) {
+        auto stmt = get_statement(query_hash_type[type]);
+
+        stmt->set_int("file_type", ft);
+        if (stmt->step()) {
 	    hashtypes_[ft] |= (1 << type);
         }
     }
@@ -113,28 +126,18 @@ void RomDB::read_hashtypes(filetype_t ft) {
 
 
 std::vector<DatEntry> RomDB::read_dat() {
-    auto stmt = db.get_statement(DBH_STMT_QUERY_DAT);
-    if (stmt == NULL) {
-    /* TODO */
-    return {};
-    }
+    auto stmt = get_statement(QUERY_DAT);
 
     std::vector<DatEntry> dat;
 
-    int ret;
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
+    while (stmt->step()) {
         DatEntry de;
 
-        de.name = sq3_get_string(stmt, 0);
-        de.description = sq3_get_string(stmt, 1);
-        de.version = sq3_get_string(stmt, 2);
+        de.name = stmt->get_string("name");
+        de.description = stmt->get_string("description");
+        de.version = stmt->get_string("version");
         
         dat.push_back(de);
-    }
-
-    if (ret != SQLITE_DONE) {
-    /* TODO */
-        return {};
     }
 
     return dat;
@@ -151,21 +154,17 @@ DetectorPtr RomDB::get_detector(size_t id) {
 }
 
 DetectorPtr RomDB::read_detector() {
-    auto stmt = db.get_statement(DBH_STMT_QUERY_DAT_DETECTOR);
+    auto stmt = get_statement(QUERY_DAT_DETECTOR);
 
-    if (stmt == NULL) {
-        return NULL;
-    }
-
-    if (sqlite3_step(stmt) != SQLITE_ROW) {
+    if (!stmt->step()) {
         return NULL;
     }
 
     auto detector = std::make_shared<Detector>();
 
-    detector->name = sq3_get_string(stmt, 0);
-    detector->author = sq3_get_string(stmt, 1);
-    detector->version = sq3_get_string(stmt, 2);
+    detector->name = stmt->get_string("name");
+    detector->author = stmt->get_string("author");
+    detector->version = stmt->get_string("version");
 
     if (!read_rules(detector.get())) {
         return NULL;
@@ -176,40 +175,34 @@ DetectorPtr RomDB::read_detector() {
 
 
 bool RomDB::read_rules(Detector *detector) {
-    auto stmt_rule = db.get_statement(DBH_STMT_QUERY_RULE);
-    auto stmt_test = db.get_statement(DBH_STMT_QUERY_TEST);
+    auto stmt_rule = get_statement(QUERY_RULE);
+    auto stmt_test = get_statement(QUERY_TEST);
 
-    if (stmt_rule == NULL || stmt_test == NULL) {
-        return false;
-    }
-
-    int ret;
-    while ((ret = sqlite3_step(stmt_rule)) == SQLITE_ROW) {
+    while (stmt_rule->step()) {
         Detector::Rule rule;
+        
+        auto idx = stmt_rule->get_int("rule_idx");
+        rule.start_offset = stmt_rule->get_int64("start_offset", 0);
+        rule.end_offset = stmt_rule->get_int64("end_offset", DETECTOR_OFFSET_EOF);
+        rule.operation = static_cast<Detector::Operation>(stmt_rule->get_int("operation", Detector::OP_NONE));
 
-        auto idx = sqlite3_column_int(stmt_rule, 0);
-        rule.start_offset = sq3_get_int64_default(stmt_rule, 1, 0);
-    rule.end_offset = sq3_get_int64_default(stmt_rule, 2, DETECTOR_OFFSET_EOF);
-        rule.operation = static_cast<Detector::Operation>(sq3_get_int_default(stmt_rule, 3, Detector::OP_NONE));
+        stmt_test->set_int("rule_idx", idx);
 
-        if (sqlite3_bind_int(stmt_test, 1, idx) != SQLITE_OK) {
-        return false;
-        }
-
-    while ((ret = sqlite3_step(stmt_test)) == SQLITE_ROW) {
+        while (stmt_test->step()) {
             Detector::Test test;
 
-            test.type = static_cast<Detector::TestType>(sqlite3_column_int(stmt_test, 0));
-        test.offset = sqlite3_column_int64(stmt_test, 1);
-        test.result = sqlite3_column_int64(stmt_test, 5);
-
-        switch (test.type) {
+            // type, offset, size, mask, value, result
+            test.type = static_cast<Detector::TestType>(stmt_test->get_int("type"));
+            test.offset = stmt_test->get_int64("offset");
+            test.result =stmt_test->get_int64("result");
+            
+            switch (test.type) {
                 case Detector::TEST_DATA:
                 case Detector::TEST_OR:
                 case Detector::TEST_AND:
                 case Detector::TEST_XOR:
-                    test.mask = sq3_get_blob(stmt_test, 3);
-                    test.value = sq3_get_blob(stmt_test, 4);
+                    test.mask = stmt_test->get_blob("mask");
+                    test.value = stmt_test->get_blob("value");
                     if (!test.mask.empty() && test.mask.size() != test.value.size()) {
                         return false;
                     }
@@ -219,15 +212,13 @@ bool RomDB::read_rules(Detector *detector) {
                 case Detector::TEST_FILE_EQ:
                 case Detector::TEST_FILE_LE:
                 case Detector::TEST_FILE_GR:
-                    test.length = static_cast<uint64_t>(sqlite3_column_int64(stmt_test, 2));
+                    test.length = static_cast<uint64_t>(stmt_test->get_int64("size"));
                     break;
             }
             
             rule.tests.push_back(test);
-    }
-        if (ret != SQLITE_DONE || sqlite3_reset(stmt_test) != SQLITE_OK) {
-        return false;
         }
+        stmt_test->reset();
         
         detector->rules.push_back(rule);
     }
@@ -236,25 +227,17 @@ bool RomDB::read_rules(Detector *detector) {
 }
 
 
-std::vector<RomLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes *hash) {
-    auto stmt = db.get_statement(DBH_STMT_QUERY_FILE_FBH, hash, 0);
-    if (stmt == NULL) {
-        return {};
-    }
-
-    if (sqlite3_bind_int(stmt, 1, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 2, Rom::NO_DUMP) != SQLITE_OK || sq3_set_hashes(stmt, 3, hash, 0) != SQLITE_OK) {
-        return {};
-    }
+std::vector<RomLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes &hashes) {
+    auto stmt = get_statement(QUERY_FILE_FBH, hashes, false);
+    
+    stmt->set_int("file_type", ft);
+    stmt->set_int("status", Rom::NO_DUMP);
+    stmt->set_hashes(hashes, 0);
 
     std::vector<RomLocation> result;
 
-    int ret;
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        result.push_back(RomLocation(sq3_get_string(stmt, 0), static_cast<size_t>(sqlite3_column_int(stmt, 1))));
-    }
-
-    if (ret != SQLITE_DONE) {
-        return {};
+    while (stmt->step()) {
+        result.push_back(RomLocation(stmt->get_string("name"), static_cast<size_t>(stmt->get_int("file_idx"))));
     }
 
     return result;
@@ -264,81 +247,63 @@ std::vector<RomLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes *h
 static std::string chd_extension = ".chd";
 
 GamePtr RomDB::read_game(const std::string &name) {
-    auto stmt = db.get_statement(DBH_STMT_QUERY_GAME);
-    if (stmt == NULL) {
+    auto stmt = get_statement(QUERY_GAME);
+
+    stmt->set_string("name", name);
+
+    if (!stmt->step()) {
         return NULL;
     }
-
-    if (sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_ROW) {
-        return NULL;
-    }
-
+    
     auto game = std::make_shared<Game>();
-    game->id = static_cast<uint64_t>(sqlite3_column_int64(stmt, 0));
+    game->id = stmt->get_uint64("game_id");
     game->name = name;
-    game->description = sq3_get_string(stmt, 1);
-    game->dat_no = static_cast<unsigned int>(sqlite3_column_int(stmt, 2));
-    game->cloneof[0] = sq3_get_string(stmt, 3);
+    game->description = stmt->get_string("description");
+    game->dat_no = static_cast<unsigned int>(stmt->get_int("dat_idx"));
+    game->cloneof[0] = stmt->get_string("parent");
 
     if (!game->cloneof[0].empty()) {
-        if ((stmt = db.get_statement(DBH_STMT_QUERY_PARENT_BY_NAME)) == NULL || sq3_set_string(stmt, 1, game->cloneof[0]) != SQLITE_OK) {
-            return NULL;
-        }
-        
-        int ret;
-        if ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-            game->cloneof[1] = sq3_get_string(stmt, 0);
-        }
-        
-        if (ret != SQLITE_ROW && ret != SQLITE_DONE) {
-            return NULL;
+        stmt = get_statement(QUERY_PARENT_BY_NAME);
+        stmt->set_string("name", game->cloneof[0]);
+
+        if (stmt->step()) {
+            game->cloneof[1] = stmt->get_string("parent");
         }
     }
     
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        if (!read_files(game.get(), static_cast<filetype_t>(ft))) {
-            // TODO: use error reporting function
-            printf("can't read files for %s\n", name.c_str());
-            return NULL;
-        }
+        read_files(game.get(), static_cast<filetype_t>(ft));
     }
 
     return game;
 }
 
 
-bool RomDB::read_files(Game *game, filetype_t ft) {
-    auto stmt = db.get_statement(DBH_STMT_QUERY_FILE);
-    if (stmt == NULL) {
-        return false;
-    }
+void RomDB::read_files(Game *game, filetype_t ft) {
+    auto stmt = get_statement(QUERY_FILE);
 
-    if (sqlite3_bind_int64(stmt, 1, static_cast<int64_t>(game->id)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK) {
-        return false;
-    }
+    stmt->set_uint64("game_id", game->id);
+    stmt->set_int("file_type", ft);
 
-    int ret;
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
+    while (stmt->step()) {
         Rom rom;
 
-        rom.name = sq3_get_string(stmt, 0);
-        rom.merge = sq3_get_string(stmt, 1);
-        rom.status = static_cast<Rom::Status>(sqlite3_column_int(stmt, 2));
-        rom.where = static_cast<where_t>(sqlite3_column_int(stmt, 3));
-        rom.hashes.size = sq3_get_uint64_default(stmt, 4, Hashes::SIZE_UNKNOWN);
-        sq3_get_hashes(&rom.hashes, stmt, 5);
+        rom.name = stmt->get_string("name");
+        rom.merge = stmt->get_string("merge");
+        rom.status = static_cast<Rom::Status>(stmt->get_int("status"));
+        rom.where = static_cast<where_t>(stmt->get_int("location"));
+        rom.hashes.size = stmt->get_uint64("size", Hashes::SIZE_UNKNOWN);
+        rom.hashes = stmt->get_hashes();
         
         game->files[ft].push_back(rom);
     }
-    
-    return ret == SQLITE_DONE;
 }
 
 
 std::vector<std::string> RomDB::read_list(enum dbh_list type) {
-    static const std::unordered_map<enum dbh_list, dbh_stmt_t> query_list = {
-        { DBH_KEY_LIST_DISK, DBH_STMT_QUERY_LIST_DISK },
-        { DBH_KEY_LIST_GAME, DBH_STMT_QUERY_LIST_GAME }
+    static const std::unordered_map<enum dbh_list, Statement> query_list = {
+        { DBH_KEY_LIST_DISK, QUERY_LIST_DISK },
+        { DBH_KEY_LIST_GAME, QUERY_LIST_GAME }
     };
     
     auto it = query_list.find(type);
@@ -346,226 +311,209 @@ std::vector<std::string> RomDB::read_list(enum dbh_list type) {
         return {};
     }
     
-    auto stmt = db.get_statement(it->second);
-    if (stmt == NULL) {
-        return {};
-    }
+    auto stmt = get_statement(it->second);
 
     std::vector<std::string> result;
 
-    int ret;
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        result.push_back(sq3_get_string(stmt, 0));
-    }
-
-    if (ret != SQLITE_DONE) {
-    return {};
+    while (stmt->step()) {
+        result.push_back(stmt->get_string("name"));
     }
 
     return result;
 }
 
 
-bool RomDB::write_dat(const std::vector<DatEntry> &dats) {
-    auto stmt = db.get_statement(DBH_STMT_INSERT_DAT);
-    if (stmt == NULL) {
-        return false;
-    }
+void RomDB::write_dat(const std::vector<DatEntry> &dats) {
+    auto stmt = get_statement(INSERT_DAT);
 
     for (size_t i = 0; i < dats.size(); i++) {
-        if (sqlite3_bind_int(stmt, 1, static_cast<int>(i)) != SQLITE_OK || sq3_set_string(stmt, 2, dats[i].name) != SQLITE_OK || sq3_set_string(stmt, 3, dats[i].description) != SQLITE_OK || sq3_set_string(stmt, 4, dats[i].version) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK)
-        return false;
-    }
+        auto &dat = dats[i];
 
-    return true;
+        stmt->set_int("dat_idx", static_cast<int>(i));
+        stmt->set_string("name", dat.name);
+        stmt->set_string("description", dat.description);
+        stmt->set_string("version", dat.version);
+        stmt->execute();
+        stmt->reset();
+    }
 }
 
 
-bool RomDB::write_detector(const Detector *detector) {
-    auto stmt = db.get_statement(DBH_STMT_INSERT_DAT_DETECTOR);
-    if (stmt == NULL) {
-        return false;
-    }
+void RomDB::write_detector(const Detector &detector) {
+    auto stmt = get_statement(INSERT_DAT_DETECTOR);
 
-    if (sq3_set_string(stmt, 1, detector->name) != SQLITE_OK || sq3_set_string(stmt, 2, detector->author) != SQLITE_OK || sq3_set_string(stmt, 3, detector->version) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-        return false;
-    }
+    stmt->set_string("name", detector.name);
+    stmt->set_string("author", detector.author);
+    stmt->set_string("version", detector.version);
+    stmt->execute();
 
-    return write_rules(detector);
+    write_rules(detector);
 }
 
 
-bool RomDB::write_rules(const Detector *detector) {
-    auto stmt_rule = db.get_statement(DBH_STMT_INSERT_RULE);
-    auto stmt_test = db.get_statement(DBH_STMT_INSERT_TEST);
-    if (stmt_rule == NULL || stmt_test == NULL) {
-        return false;
-    }
+void RomDB::write_rules(const Detector &detector) {
+    auto stmt_rule = get_statement(INSERT_RULE);
+    auto stmt_test = get_statement(INSERT_TEST);
 
-    for (size_t i = 0; i < detector->rules.size(); i++) {
-        auto &rule = detector->rules[i];
+    for (size_t i = 0; i < detector.rules.size(); i++) {
+        auto &rule = detector.rules[i];
 
-        if (sqlite3_bind_int(stmt_rule, 1, static_cast<int>(i)) != SQLITE_OK || sqlite3_bind_int(stmt_test, 1, static_cast<int>(i)) != SQLITE_OK || sq3_set_int64_default(stmt_rule, 2, rule.start_offset, 0) != SQLITE_OK || sq3_set_int64_default(stmt_rule, 3, rule.end_offset, DETECTOR_OFFSET_EOF) != SQLITE_OK || sq3_set_int_default(stmt_rule, 4, rule.operation, Detector::OP_NONE) != SQLITE_OK || sqlite3_step(stmt_rule) != SQLITE_DONE || sqlite3_reset(stmt_rule) != SQLITE_OK) {
-            return false;
-        }
+        stmt_rule->set_int("rule_idx", static_cast<int>(i));
+        stmt_rule->set_int64("start_offset", rule.start_offset, 0);
+        stmt_rule->set_int64("end_offset", rule.end_offset, DETECTOR_OFFSET_EOF);
+        stmt_rule->set_int("operation", rule.operation, Detector::OP_NONE);
+        
+        stmt_rule->execute();
+        stmt_rule->reset();
+
+        stmt_test->set_int("rule_idx", static_cast<int>(i));
         
         for (size_t j = 0; j < rule.tests.size(); j++) {
             auto &test = rule.tests[j];
 
-            if (sqlite3_bind_int(stmt_test, 2, static_cast<int>(j)) != SQLITE_OK || (sqlite3_bind_int(stmt_test, 3, test.type) != SQLITE_OK) || sqlite3_bind_int64(stmt_test, 4, test.offset) != SQLITE_OK || (sqlite3_bind_int(stmt_test, 8, test.result) != SQLITE_OK)) {
-                return false;
-            }
+            //        {  INSERT_TEST, "insert into test (rule_idx, test_idx, type, offset, size, mask, value, result) values (:rule_idx, :test_idx, :type, :offset, :size, :mask, :value, :result)" },
 
+            stmt_test->set_int("test_idx", static_cast<int>(j));
+            stmt_test->set_int("type", test.type);
+            stmt_test->set_int64("offset", test.offset);
+            stmt_test->set_int("result", test.result);
+            
             switch (test.type) {
                 case Detector::TEST_DATA:
                 case Detector::TEST_OR:
                 case Detector::TEST_AND:
                 case Detector::TEST_XOR:
-                    if (sqlite3_bind_null(stmt_test, 5) != SQLITE_OK || sq3_set_blob(stmt_test, 6, test.mask) != SQLITE_OK || sq3_set_blob(stmt_test, 7, test.value) != SQLITE_OK) {
-                        return false;
-                    }
+                    stmt_test->set_null("size");
+                    stmt_test->set_blob("mask", test.mask);
+                    stmt_test->set_blob("value", test.value);
                     break;
 
                 case Detector::TEST_FILE_EQ:
                 case Detector::TEST_FILE_LE:
                 case Detector::TEST_FILE_GR:
-                    if ((sqlite3_bind_int64(stmt_test, 5, static_cast<int64_t>(test.length)) != SQLITE_OK) || sqlite3_bind_null(stmt_test, 6) != SQLITE_OK || sqlite3_bind_null(stmt_test, 7) != SQLITE_OK) {
-                        return false;
-                    }
+                    stmt_test->set_int64("size", static_cast<int64_t>(test.length));
+                    stmt_test->set_null("mask");
+                    stmt_test->set_null("value");
                     break;
             }
-            
-            if (sqlite3_step(stmt_test) != SQLITE_DONE || sqlite3_reset(stmt_test) != SQLITE_OK) {
-                return false;
-            }
+
+            stmt_test->execute();
+            stmt_test->reset();
         }
     }
-    
-    return true;
 }
 
 
-bool RomDB::delete_game(const std::string &name) {
-    auto stmt = db.get_statement(DBH_STMT_QUERY_GAME_ID);
-    if (stmt == NULL) {
-        return false;
+void RomDB::delete_game(const std::string &name) {
+    auto stmt = get_statement(QUERY_GAME_ID);
+
+    stmt->set_string("name", name);
+
+    if (!stmt->step()) {
+        return;
     }
 
-    if (sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC) != SQLITE_OK) {
-        return false;
+    auto id = stmt->get_int("game_id");
+
+    std::string error;
+
+    try {
+        stmt = get_statement(DELETE_GAME);
+        stmt->set_int("game_id", id);
+        stmt->execute();
+    }
+    catch (Exception &e) {
+        error = e.what();
     }
 
-    int ret;
-    int id;
-    if ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        id = sqlite3_column_int(stmt, 0);
-    }
-    if (ret == SQLITE_DONE) {
-        return true;
-    }
-    else if (ret != SQLITE_ROW) {
-        return false;
-    }
+    stmt = get_statement(DELETE_FILE);
+    stmt->set_int("game_id", id);
+    stmt->execute();
 
-    bool ok = true;
-
-    if ((stmt = db.get_statement(DBH_STMT_DELETE_GAME)) == NULL) {
-        return false;
+    if (!error.empty()) {
+        throw Exception(error);
     }
-    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-        ok = false;
-    }
-
-    if ((stmt = db.get_statement(DBH_STMT_DELETE_FILE)) == NULL) {
-        return false;
-    }
-    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-        ok = false;
-    }
-
-    return ok;
 }
 
 
-bool RomDB::update_file_location(Game *game) {
-    auto stmt = db.get_statement(DBH_STMT_UPDATE_FILE);
-    if (stmt == NULL) {
-        return false;
-    }
+void RomDB::update_file_location(Game *game) {
+    auto stmt = get_statement(UPDATE_FILE);
 
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+    //     {  UPDATE_FILE, "update file set location = :location where game_id = :game_id and file_type = :file_type and file_idx = :file_idx" },
+
+    for (int ft = 0; ft < TYPE_MAX; ft++) {
         for (size_t i = 0; i < game->files[ft].size(); i++) {
-            if (sqlite3_bind_int64(stmt, 2, static_cast<int64_t>(game->id)) != SQLITE_OK || sqlite3_bind_int(stmt, 3, static_cast<int>(ft)) != SQLITE_OK) {
-                return false;
-            }
+            stmt->set_uint64("game_id", game->id);
+            stmt->set_int("file_type", ft);
 
             auto &rom = game->files[ft][i];
             if (rom.where == FILE_INGAME) {
                 continue;
             }
 
-            if (sqlite3_bind_int(stmt, 1, rom.where) != SQLITE_OK || sqlite3_bind_int(stmt, 4, static_cast<int>(i)) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE ||
-                sqlite3_reset(stmt) != SQLITE_OK) {
-                return false;
-            }
+            stmt->set_int("location", rom.where);
+            stmt->set_int("file_idx", static_cast<int>(i));
+            stmt->execute();
+            stmt->reset();
         }
     }
-
-    return true;
 }
 
 
-bool RomDB::update_game_parent(const Game *game) {
-    auto stmt = db.get_statement(DBH_STMT_UPDATE_PARENT);
+void RomDB::update_game_parent(const Game *game) {
+    auto stmt = get_statement(UPDATE_PARENT);
 
-    if (stmt  == NULL || sq3_set_string(stmt, 1, game->cloneof[0]) != SQLITE_OK || sqlite3_bind_int64(stmt, 2, static_cast<int64_t>(game->id)) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-        return false;
-    }
-
-    return true;
+    stmt->set_string("parent", game->cloneof[0]);
+    stmt->set_uint64("game_id", game->id);
+    stmt->execute();
 }
 
 
-bool RomDB::write_game(Game *game) {
+void RomDB::write_game(Game *game) {
     delete_game(game);
 
-    auto stmt = db.get_statement(DBH_STMT_INSERT_GAME);
-    if (stmt == NULL) {
-        return false;
-    }
+    auto stmt = get_statement(INSERT_GAME);
 
-    if (sq3_set_string(stmt, 1, game->name) != SQLITE_OK || sq3_set_string(stmt, 2, game->description) != SQLITE_OK || sqlite3_bind_int(stmt, 3, static_cast<int>(game->dat_no)) != SQLITE_OK || sq3_set_string(stmt, 4, game->cloneof[0]) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-        return false;
-    }
+    stmt->set_string("name", game->name);
+    stmt->set_string("description", game->description);
+    stmt->set_int("dat_no", static_cast<int>(game->dat_no));
+    stmt->set_string("parent", game->cloneof[0]);
+    
+    stmt->execute();
 
-    game->id = static_cast<uint64_t>(sqlite3_last_insert_rowid(db.db));
+    game->id = static_cast<uint64_t>(stmt->get_rowid());
 
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        if (!write_files(game, static_cast<filetype_t>(ft))) {
-            delete_game(game);
-            return false;
+    try {
+        for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+            write_files(game, static_cast<filetype_t>(ft));
         }
     }
-    
-    return true;
+    catch (Exception &e) {
+        delete_game(game);
+        throw e;
+    }
 }
 
 
-bool RomDB::write_files(Game *game, filetype_t ft) {
-    auto stmt = db.get_statement(DBH_STMT_INSERT_FILE);
-    if (stmt == NULL) {
-        return false;
-    }
+void RomDB::write_files(Game *game, filetype_t ft) {
+    auto stmt = get_statement(INSERT_FILE);
 
     for (size_t i = 0; i < game->files[ft].size(); i++) {
         auto &rom = game->files[ft][i];
 
-        if (sqlite3_bind_int64(stmt, 1, static_cast<int64_t>(game->id)) != SQLITE_OK || sqlite3_bind_int(stmt, 2, ft) != SQLITE_OK || sqlite3_bind_int(stmt, 3, static_cast<int>(i)) != SQLITE_OK || sq3_set_string(stmt, 4, rom.name) != SQLITE_OK || sq3_set_string(stmt, 5, rom.merge) != SQLITE_OK || sqlite3_bind_int(stmt, 6, rom.status) != SQLITE_OK || sqlite3_bind_int(stmt, 7, rom.where) != SQLITE_OK || sq3_set_uint64_default(stmt, 8, rom.hashes.size, Hashes::SIZE_UNKNOWN) != SQLITE_OK || sq3_set_hashes(stmt, 9, &rom.hashes, 1) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE || sqlite3_reset(stmt) != SQLITE_OK || sqlite3_reset(stmt)) {
-            return false;
-        }
+        stmt->set_uint64("game_id", game->id);
+        stmt->set_int("file_type", ft);
+        stmt->set_int("file_idx", static_cast<int>(i));
+        stmt->set_string("name", rom.name);
+        stmt->set_string("merge", rom.merge);
+        stmt->set_int("status", rom.status);
+        stmt->set_int("location", rom.where);
+        stmt->set_uint64("size", rom.hashes.size, Hashes::SIZE_UNKNOWN);
+        stmt->set_hashes(rom.hashes, true);
+        
+        stmt->execute();
+        stmt->reset();
     }
-
-    return true;
 }
 
 int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {

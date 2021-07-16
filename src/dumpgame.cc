@@ -315,7 +315,7 @@ print_rs(GamePtr game, const char *co, const char *gco, const char *cs, const ch
 	printf("%s:\t%s\n", gco, game->cloneof[1].c_str());
     }
 
-    if ((stmt = db->db.get_statement(DBH_STMT_QUERY_CLONES)) == NULL) {
+    if ((stmt = db->db.get_statement(QUERY_CLONES)) == NULL) {
 	myerror(ERRDB, "cannot get clones for '%s'", game->name.c_str());
 	return;
     }
@@ -487,7 +487,7 @@ dump_stats(int dummy) {
     sqlite3_stmt *stmt;
     int i, ft;
 
-    if ((stmt = db->db.get_statement(DBH_STMT_QUERY_STATS_GAMES)) == NULL) {
+    if ((stmt = db->db.get_statement(QUERY_STATS_GAMES)) == NULL) {
 	myerror(ERRDB, "can't get number of games");
 	return -1;
     }
@@ -498,7 +498,7 @@ dump_stats(int dummy) {
 
     stats.games_total = (uint64_t)sqlite3_column_int(stmt, 0);
 
-    if ((stmt = db->db.get_statement(DBH_STMT_QUERY_STATS_FILES)) == NULL) {
+    if ((stmt = db->db.get_statement(QUERY_STATS_FILES)) == NULL) {
 	myerror(ERRDB, "can't get file stats");
 	return -1;
     }

@@ -48,7 +48,7 @@ std::vector<CkmameDB::CacheDirectory> CkmameDB::cache_directories;
 
 CkmameDB::CkmameDB(const std::string &dbname, const std::string &directory_) : db(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE), directory(directory_) {
     sqlite3_stmt *stmt;
-    if ((stmt = db.get_statement(DBH_STMT_DIR_LIST_DETECTORS)) == NULL) {
+    if ((stmt = db.get_statement(DIR_LIST_DETECTORS)) == NULL) {
         throw Exception();
     }
 
@@ -93,7 +93,7 @@ void CkmameDB::delete_archive(int id) {
     
     delete_files(id);
 
-    if ((stmt = db.get_statement(DBH_STMT_DIR_DELETE_ARCHIVE)) == NULL
+    if ((stmt = db.get_statement(DIR_DELETE_ARCHIVE)) == NULL
         || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
         throw Exception();
     }
@@ -114,7 +114,7 @@ void CkmameDB::delete_archive(const std::string &name, filetype_t filetype) {
 void CkmameDB::delete_files(int id) {
     sqlite3_stmt *stmt;
 
-    if ((stmt = db.get_statement(DBH_STMT_DIR_DELETE_FILE)) == NULL
+    if ((stmt = db.get_statement(DIR_DELETE_FILE)) == NULL
         || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
         throw Exception();
     }
@@ -123,7 +123,7 @@ void CkmameDB::delete_files(int id) {
 
 int CkmameDB::get_archive_id(const std::string &name, filetype_t filetype) {
     sqlite3_stmt *stmt;
-    if ((stmt = db.get_statement(DBH_STMT_DIR_QUERY_ARCHIVE_ID)) == NULL) {
+    if ((stmt = db.get_statement(DIR_QUERY_ARCHIVE_ID)) == NULL) {
 	return 0;
     }
 
@@ -145,7 +145,7 @@ int CkmameDB::get_archive_id(const std::string &name, filetype_t filetype) {
 void CkmameDB::get_last_change(int id, time_t *mtime, off_t *size) {
     sqlite3_stmt *stmt;
 
-    if ((stmt = db.get_statement(DBH_STMT_DIR_QUERY_ARCHIVE_LAST_CHANGE)) == NULL
+    if ((stmt = db.get_statement(DIR_QUERY_ARCHIVE_LAST_CHANGE)) == NULL
         || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK
         || sqlite3_step(stmt) != SQLITE_ROW) {
         throw Exception();
@@ -192,7 +192,7 @@ CkmameDBPtr CkmameDB::get_db_for_archvie(const std::string &name) {
 bool CkmameDB::is_empty() {
     sqlite3_stmt *stmt;
 
-    if ((stmt = db.get_statement(DBH_STMT_DIR_COUNT_ARCHIVES)) == NULL
+    if ((stmt = db.get_statement(DIR_COUNT_ARCHIVES)) == NULL
         || sqlite3_step(stmt) != SQLITE_ROW) {
 	return false;
     }
@@ -206,7 +206,7 @@ std::vector<ArchiveLocation> CkmameDB::list_archives() {
     std::vector<ArchiveLocation> archives;
     int ret;
 
-    if ((stmt = db.get_statement(DBH_STMT_DIR_LIST_ARCHIVES)) == NULL) {
+    if ((stmt = db.get_statement(DIR_LIST_ARCHIVES)) == NULL) {
 	return archives;
     }
 
@@ -228,7 +228,7 @@ int CkmameDB::read_files(int archive_id, std::vector<File> *files) {
     }
 
     sqlite3_stmt *stmt;
-    if ((stmt = db.get_statement(DBH_STMT_DIR_QUERY_FILE)) == NULL
+    if ((stmt = db.get_statement(DIR_QUERY_FILE)) == NULL
         || sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK) {
         throw Exception();
     }
@@ -331,7 +331,7 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
 
     id = write_archive_header(id, name, archive->filetype, archive->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : archive->mtime, archive->size);
 
-    if ((stmt = db.get_statement(DBH_STMT_DIR_INSERT_FILE)) == NULL
+    if ((stmt = db.get_statement(DIR_INSERT_FILE)) == NULL
         || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
         throw Exception();
     }
@@ -384,7 +384,7 @@ std::string CkmameDB::name_in_db(const std::string &name) {
 
 
 int CkmameDB::write_archive_header(int id, const std::string &name, filetype_t filetype, time_t mtime, uint64_t size) {
-    auto stmt = db.get_statement(DBH_STMT_DIR_INSERT_ARCHIVE_ID);
+    auto stmt = db.get_statement(DIR_INSERT_ARCHIVE_ID);
 
     if (stmt == NULL
         || sq3_set_string(stmt, 1, name) != SQLITE_OK
@@ -423,7 +423,7 @@ size_t CkmameDB::get_detector_id(size_t global_id) {
     auto id = detector_ids.get_id(*detector);
     
     if (!known) {
-        auto stmt = db.get_statement(DBH_STMT_DIR_INSERT_DETECTOR);
+        auto stmt = db.get_statement(DIR_INSERT_DETECTOR);
         
         if (stmt == NULL
             || sq3_set_uint64(stmt, 1, id) != SQLITE_OK
