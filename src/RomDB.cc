@@ -64,8 +64,8 @@ std::unordered_map<int, std::string> RomDB::queries = {
     {  QUERY_PARENT_BY_NAME, "select parent from game where name = :name" },
     {  QUERY_PARENT, "select parent from game where game_id = :game_id" },
     {  QUERY_RULE, "select rule_idx, start_offset, end_offset, operation from rule order by rule_idx" },
-    {  QUERY_STATS_FILES, "select file_type, count(name), sum(size) from file group by file_type order by file_type" },
-    {  QUERY_STATS_GAMES, "select count(name) from game" },
+    {  QUERY_STATS_FILES, "select file_type, count(name) amount, sum(size) total_size from file group by file_type order by file_type" },
+    {  QUERY_STATS_GAMES, "select count(name) as amount from game" },
     {  QUERY_TEST, "select type, offset, size, mask, value, result from test where rule_idx = :rule_idx order by test_idx" },
     {  UPDATE_FILE, "update file set location = :location where game_id = :game_id and file_type = :file_type and file_idx = :file_idx" },
     {  UPDATE_PARENT, "update game set parent = :parent where game_id = :game_id" }

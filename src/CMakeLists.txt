@@ -25,7 +25,7 @@ set(COMMON_SOURCES
   DatEntry.cc
   db_init.cc
   DB.cc
-  dbh_statements.cc
+  DBStatement.cc
   DeleteList.cc
   Detector.cc
   DetectorCollection.cc
@@ -113,8 +113,3 @@ if(LibXml2_FOUND)
     target_link_libraries(${TARGET} PRIVATE LibXml2::LibXml2)
   endforeach()
 endif()
-
-add_custom_target(update_dbh_statements
-  COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/mkstatements.pl ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.in ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.cc ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.h
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/dbh_statements.in ${CMAKE_CURRENT_SOURCE_DIR}/mkstatements.pl
-)

@@ -48,7 +48,8 @@ public:
     DBStatement(DB *db, const std::string &sql_query);
     ~DBStatement();
     
-    DBStatement(DBStatement &&) = default;
+    DBStatement() : stmt(NULL) { }
+    //DBStatement(DBStatement &&other);
     
     void execute();
     bool step();
@@ -80,6 +81,7 @@ private:
     int get_column_index(const std::string &name);
     int get_parameter_index(const std::string &name);
     
+    DB *db;
     sqlite3_stmt *stmt;
     std::unordered_map<std::string, int> column_names;
     std::unordered_map<std::string, int> parameter_names;

@@ -153,7 +153,7 @@ static void print_match(GamePtr game, filetype_t ft, size_t i) {
 static void print_matches(filetype_t ft, Hashes *hash) {
     int matches_count = 0;
 
-    auto matches = db->read_file_by_hash(ft, hash);
+    auto matches = db->read_file_by_hash(ft, *hash);
     if (matches.empty()) {
 	print_footer(0, hash);
 	return;
@@ -231,7 +231,7 @@ main(int argc, char **argv) {
 	myerror(0, "can't open database '%s': %s", dbname, strerror(errno));
 	exit(1);
     }
-    seterrdb(&db->db);
+    seterrdb(db.get());
 
     auto list = db->read_list(DBH_KEY_LIST_GAME);
     if (list.empty()) {
@@ -303,9 +303,6 @@ main(int argc, char **argv) {
 
 static void
 print_rs(GamePtr game, const char *co, const char *gco, const char *cs, const char *fs) {
-    int ret;
-    sqlite3_stmt *stmt;
-    size_t i;
 
     if (!game->cloneof[0].empty()) {
 	printf("%s:\t%s\n", co, game->cloneof[0].c_str());
@@ -314,30 +311,25 @@ print_rs(GamePtr game, const char *co, const char *gco, const char *cs, const ch
 	printf("%s:\t%s\n", gco, game->cloneof[1].c_str());
     }
 
-    if ((stmt = db->db.get_statement(QUERY_CLONES)) == NULL) {
-	myerror(ERRDB, "cannot get clones for '%s'", game->name.c_str());
-	return;
-    }
-    if (sq3_set_string(stmt, 1, game->name.c_str()) != SQLITE_OK) {
-	myerror(ERRDB, "cannot get clones for '%s'", game->name.c_str());
-	return;
-    }
+    auto stmt = db->get_statement(RomDB::QUERY_CLONES);
 
-    for (i = 0; (ret = sqlite3_step(stmt)) == SQLITE_ROW; i++) {
-	if (i == 0)
-	    printf("%s", cs);
-	if (i % 6 == 0)
+    stmt->set_string("parent", game->name);
+
+    size_t i;
+    for (i = 0; stmt->step(); i++) {
+        if (i == 0) {
+            printf("%s", cs);
+        }
+        if (i % 6 == 0) {
 	    printf("\t\t");
-	printf("%-8s ", sqlite3_column_text(stmt, 0));
-	if (i % 6 == 5)
+        }
+	printf("%-8s ", stmt->get_string("name").c_str());
+        if (i % 6 == 5) {
 	    printf("\n");
+        }
     }
-    if (i % 6 != 0)
+    if (i % 6 != 0) {
 	printf("\n");
-
-    if (ret != SQLITE_DONE) {
-	myerror(ERRDB, "cannot get clones for '%s'", game->name.c_str());
-	return;
     }
 
     if (!game->files[TYPE_ROM].empty()) {
@@ -483,38 +475,24 @@ dump_special(const char *name) {
 /*ARGSUSED1*/
 static int
 dump_stats(int dummy) {
-    sqlite3_stmt *stmt;
     int i, ft;
 
-    if ((stmt = db->db.get_statement(QUERY_STATS_GAMES)) == NULL) {
-	myerror(ERRDB, "can't get number of games");
-	return -1;
-    }
-    if (sqlite3_step(stmt) != SQLITE_ROW) {
-	myerror(ERRDB, "can't get number of games");
-	return -1;
-    }
+    auto stmt = db->get_statement(RomDB::QUERY_STATS_GAMES);
 
-    stats.games_total = (uint64_t)sqlite3_column_int(stmt, 0);
+    stmt->step();
 
-    if ((stmt = db->db.get_statement(QUERY_STATS_FILES)) == NULL) {
-	myerror(ERRDB, "can't get file stats");
-	return -1;
-    }
+    stats.games_total = stmt->get_uint64("amount");
+
+    stmt = db->get_statement(RomDB::QUERY_STATS_FILES);
 
     ft = -1;
     for (i = 0; i < TYPE_MAX; i++) {
 	if (ft < i) {
-	    switch (sqlite3_step(stmt)) {
-	    case SQLITE_ROW:
-		ft = sqlite3_column_int(stmt, 0);
-		break;
-	    case SQLITE_DONE:
+            if (stmt->step()) {
+                ft = stmt->get_int("file_type");
+            }
+            else {
 		ft = TYPE_MAX;
-		break;
-	    default:
-		myerror(ERRDB, "can't get file stats");
-		return -1;
 	    }
 	}
 
@@ -522,8 +500,8 @@ dump_stats(int dummy) {
 	    continue;
         }
         
-        stats.files[i].files_total = (uint64_t)sqlite3_column_int(stmt, 1);
-        stats.files[i].bytes_total = (uint64_t)sqlite3_column_int64(stmt, 2);
+        stats.files[i].files_total = stmt->get_uint64("amount");
+        stats.files[i].bytes_total = stmt->get_uint64("total_size");
     }
     
     stats.print(stdout, true);

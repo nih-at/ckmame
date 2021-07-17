@@ -139,7 +139,7 @@ bool OutputContextDb::close() {
             ok = false;
         }
 
-        if (sqlite3_exec(db->db.db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
+        if (sqlite3_exec(db->db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
             ok = false;
         }
 
@@ -151,11 +151,7 @@ bool OutputContextDb::close() {
 
 
 bool OutputContextDb::detector(Detector *detector) {
-    if (!db->write_detector(detector)) {
-        seterrdb(&db->db);
-        myerror(ERRDB, "can't write detector to db");
-        return false;
-    }
+    db->write_detector(*detector);
 
     return true;
 }
@@ -182,10 +178,7 @@ bool OutputContextDb::game(GamePtr game) {
         }
     }
 
-    if (!db->write_game(game.get())) {
-	myerror(ERRDB, "can't write game '%s' to db", game->name.c_str());
-	return false;
-    }
+    db->write_game(game.get());
 
     return true;
 }

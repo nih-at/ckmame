@@ -66,8 +66,6 @@
 		4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
 		4B41078E18CC8FEE002C3052 /* dbdump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B41078D18CC8FEE002C3052 /* dbdump.cc */; };
 		4B41079118CC9017002C3052 /* dbrestore.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B41079018CC9017002C3052 /* dbrestore.cc */; };
-		4B59E59121625A06002262C8 /* dbh_statements.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B59E58F21625A05002262C8 /* dbh_statements.cc */; };
-		4B59E59221625A06002262C8 /* dbh_statements.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B59E59021625A05002262C8 /* dbh_statements.h */; };
 		4B59E59321625ABD002262C8 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC41FEC1B700068A600 /* libxml2.tbd */; };
 		4B5A1FEC26396FE40029B680 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
 		4B5F43AC1889CEE7000C3B7C /* globals.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B5F43AB1889CE83000C3B7C /* globals.cc */; };
@@ -391,10 +389,7 @@
 		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078D18CC8FEE002C3052 /* dbdump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbdump.cc; sourceTree = "<group>"; };
 		4B41079018CC9017002C3052 /* dbrestore.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbrestore.cc; sourceTree = "<group>"; };
-		4B513F49175B52700096EF42 /* dbh_statements.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dbh_statements.in; sourceTree = "<group>"; };
 		4B513F51175BCC440096EF42 /* DB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DB.h; sourceTree = "<group>"; };
-		4B59E58F21625A05002262C8 /* dbh_statements.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbh_statements.cc; sourceTree = "<group>"; };
-		4B59E59021625A05002262C8 /* dbh_statements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.h; path = dbh_statements.h; sourceTree = "<group>"; };
 		4B5A201A263974790029B680 /* ckmamedb-migrate-v2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ckmamedb-migrate-v2.test"; sourceTree = "<group>"; };
 		4B5F43AB1889CE83000C3B7C /* globals.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = globals.cc; sourceTree = "<group>"; };
 		4B5F43AD1889CFFB000C3B7C /* file_util.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = file_util.cc; sourceTree = "<group>"; };
@@ -1026,9 +1021,6 @@
 				4B5FAE591735941D00B67C24 /* db_init.cc */,
 				4B5FAE5A1735941D00B67C24 /* DB.cc */,
 				4B513F51175BCC440096EF42 /* DB.h */,
-				4B59E58F21625A05002262C8 /* dbh_statements.cc */,
-				4B59E59021625A05002262C8 /* dbh_statements.h */,
-				4B513F49175B52700096EF42 /* dbh_statements.in */,
 				4BC316E326A04F0E0012AEB8 /* DBStatement.cc */,
 				4BC316E426A04F0E0012AEB8 /* DBStatement.h */,
 				4B5FACA41735919800B67C24 /* DeleteList.cc */,
@@ -1545,7 +1537,6 @@
 				4B3274D625B99F76006AEF16 /* fixdat.h in Headers */,
 				4B3274D825B99F76006AEF16 /* fix.h in Headers */,
 				4BB552BD25C01EC1001ABC31 /* Exception.h in Headers */,
-				4B59E59221625A06002262C8 /* dbh_statements.h in Headers */,
 				4B3274D925B99F76006AEF16 /* check.h in Headers */,
 				4BC3165F269324AA0012AEB8 /* RomLocation.h in Headers */,
 				4B3274D725B99F76006AEF16 /* zip_util.h in Headers */,
@@ -1793,7 +1784,6 @@
 				4B5FADCC1735930100B67C24 /* check_util.cc in Sources */,
 				4B5FADCD1735930100B67C24 /* cleanup.cc in Sources */,
 				4B5FADCF1735930100B67C24 /* DatEntry.cc in Sources */,
-				4B59E59121625A06002262C8 /* dbh_statements.cc in Sources */,
 				4B5FADD21735930100B67C24 /* DeleteList.cc in Sources */,
 				4B5FADD41735930100B67C24 /* Detector.cc in Sources */,
 				4B5FADD61735930100B67C24 /* detector_execute.cc in Sources */,

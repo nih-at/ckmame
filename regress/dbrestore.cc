@@ -372,7 +372,7 @@ restore_table(sqlite3 *db, FILE *f) {
             else {
 		switch (column_types[i]) {
                     case SQLITE_TEXT:
-                        ret = sq3_set_string(stmt, static_cast<int>(i + 1), values[i]);
+                        ret = sqlite3_bind_text(stmt, static_cast<int>(i + 1), values[i].c_str(), -1, SQLITE_STATIC);
                         break;
                         
                     case SQLITE_INTEGER: {

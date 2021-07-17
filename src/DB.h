@@ -38,7 +38,6 @@
 
 #include <sqlite3.h>
 
-#include "dbh_statements.h"
 #include "DBStatement.h"
 #include "Hashes.h"
 
@@ -69,6 +68,8 @@ class StatementID {
 public:
     StatementID(int name_) : name(name_), flags(0) { }
     StatementID(int name_, const Hashes &hashes, bool have_size_) : name(name_), flags(hashes.types | have_size | parameterized) { }
+    
+    bool operator==(const StatementID &other) const { return name == other.name && flags == other.flags; }
     
     bool is_parameterized() const { return flags & parameterized; }
     int name;
@@ -117,7 +118,7 @@ protected:
     DBStatement *get_statement_internal(int name);
     DBStatement *get_statement_internal(int name, const Hashes &hashes, bool have_size);
     
-    virtual std::string get_query(int name, bool parameterized) const = 0;
+    virtual std::string get_query(int name, bool parameterized) const { return ""; }
 
 private:
     class MigrationStep {

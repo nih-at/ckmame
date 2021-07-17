@@ -44,20 +44,40 @@
 
 std::vector<CkmameDB::CacheDirectory> CkmameDB::cache_directories;
 
+std::unordered_map<CkmameDB::Statement, std::string> CkmameDB::queries = {
+    { DELETE_ARCHIVE, "delete from archive where archive_id = :archive_id" },
+    { DELETE_FILE, "delete from file where archive_id = :archive_id" },
+    { INSERT_ARCHIVE, "insert into archive (name, file_type, mtime, size) values (:name, :file_type, :mtime, :size)" },
+    { INSERT_ARCHIVE_ID, "insert into archive (name, archive_id, file_type, mtime, size) values (:name, :archive_id, :file_type, :mtime, :size)" },
+    { INSERT_DETECTOR, "insert into detector (detector_id, name, version) values (:detector_id, :name, :version)" },
+    { INSERT_FILE, "insert into file (archive_id, file_idx, detector_id, name, mtime, status, size, crc, md5, sha1) values (:archive_id, :file_idx, :detector_id, :name, :mtime, :status, :size, :crc, :md5, :sha1)" },
+    { LIST_ARCHIVES, "select name, file_type from archive" },
+    { LIST_DETECTORS, "select detector_id, name, version from detector" },
+    { QUERY_ARCHIVE_ID, "select archive_id from archive where name = :name and file_type = :file_type" },
+    { QUERY_ARCHIVE_LAST_CHANGE, "select mtime, size from archive where archive_id = :archive_id" },
+    { QUERY_FILE, "select file_idx, detector_id, name, mtime, status, size, crc, md5, sha1 from file where archive_id = :archive_id order by file_idx, detector_id" },
+    { QUERY_HAS_ARCHIVES, "select archive_id from archive limit 1" }
+};
 
-CkmameDB::CkmameDB(const std::string &dbname, const std::string &directory_) : db(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE), directory(directory_) {
-    sqlite3_stmt *stmt;
-    if ((stmt = db.get_statement(DIR_LIST_DETECTORS)) == NULL) {
-        throw Exception();
+CkmameDB::CkmameDB(const std::string &dbname, const std::string &directory_) : DB(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE), directory(directory_) {
+    auto stmt = get_statement(LIST_DETECTORS);
+
+    while (stmt->step()) {
+        detector_ids.add(DetectorDescriptor(stmt->get_string("name"), stmt->get_string("version")), stmt->get_uint64("detector_id"));
     }
+}
 
-    int ret;
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        detector_ids.add(DetectorDescriptor(sq3_get_string(stmt, 1), sq3_get_string(stmt, 2)), sq3_get_uint64(stmt, 0));
+
+std::string CkmameDB::get_query(int name, bool parameterized) const {
+    if (parameterized) {
+        return "";
     }
-
-    if (ret != SQLITE_DONE) {
-        throw Exception();
+    else {
+        auto it = queries.find(static_cast<Statement>(name));
+        if (it == queries.end()) {
+            return "";
+        }
+        return it->second;
     }
 }
 
@@ -68,7 +88,7 @@ bool CkmameDB::close_all() {
     for (auto &directory : cache_directories) {
         if (directory.db) {
             bool empty = directory.db->is_empty();
-            std::string filename = sqlite3_db_filename(directory.db->db.db, "main");
+            std::string filename = sqlite3_db_filename(directory.db->db, "main");
             
             directory.db = NULL;
             if (empty) {
@@ -88,70 +108,60 @@ bool CkmameDB::close_all() {
 
 
 void CkmameDB::delete_archive(int id) {
-    sqlite3_stmt *stmt;
-    
     delete_files(id);
 
-    if ((stmt = db.get_statement(DIR_DELETE_ARCHIVE)) == NULL
-        || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-        throw Exception();
-    }
+    auto stmt = get_statement(DELETE_ARCHIVE);
+    
+    stmt->set_int("archive_id", id);
+    stmt->execute();
 }
 
 
 void CkmameDB::delete_archive(const std::string &name, filetype_t filetype) {
     auto id = get_archive_id(name, filetype);
 
-    if (id < 0) {
-        throw Exception();
-    }
-
     delete_archive(id);
 }
 
 
 void CkmameDB::delete_files(int id) {
-    sqlite3_stmt *stmt;
-
-    if ((stmt = db.get_statement(DIR_DELETE_FILE)) == NULL
-        || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK || sqlite3_step(stmt) != SQLITE_DONE) {
-        throw Exception();
-    }
+    auto stmt = get_statement(DELETE_FILE);
+    
+    stmt->set_int("archive_id", id);
+    stmt->execute();
 }
 
 
 int CkmameDB::get_archive_id(const std::string &name, filetype_t filetype) {
-    sqlite3_stmt *stmt;
-    if ((stmt = db.get_statement(DIR_QUERY_ARCHIVE_ID)) == NULL) {
-	return 0;
-    }
-
     auto archive_name = name_in_db(name);
     if (archive_name.empty()) {
-	return 0;
+    return 0;
     }
 
-    if (sqlite3_bind_text(stmt, 1, archive_name.c_str(), -1, SQLITE_STATIC) != SQLITE_OK
-        || sqlite3_bind_int(stmt, 2, filetype) != SQLITE_OK
-        || sqlite3_step(stmt) != SQLITE_ROW) {
-	return 0;
+    auto stmt = get_statement(QUERY_ARCHIVE_ID);
+
+    stmt->set_string("name", archive_name);
+    stmt->set_int("file_type", filetype);
+
+    if (!stmt->step()) {
+        return 0;
     }
 
-    return sqlite3_column_int(stmt, 0);
+    return stmt->get_int("archive_id");
 }
 
 
 void CkmameDB::get_last_change(int id, time_t *mtime, off_t *size) {
-    sqlite3_stmt *stmt;
+    auto stmt = get_statement(QUERY_ARCHIVE_LAST_CHANGE);
+    
+    stmt->set_int("archive_id", id);
 
-    if ((stmt = db.get_statement(DIR_QUERY_ARCHIVE_LAST_CHANGE)) == NULL
-        || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK
-        || sqlite3_step(stmt) != SQLITE_ROW) {
-        throw Exception();
+    if (!stmt->step()) {
+        throw Exception("archive not found in ckmamedb");
     }
 
-    *mtime = sqlite3_column_int64(stmt, 0);
-    *size = sqlite3_column_int64(stmt, 1);
+    *mtime = stmt->get_int64("mtime");
+    *size = stmt->get_int64("size");
 }
 
 
@@ -189,32 +199,21 @@ CkmameDBPtr CkmameDB::get_db_for_archvie(const std::string &name) {
 
 
 bool CkmameDB::is_empty() {
-    sqlite3_stmt *stmt;
+    auto stmt = get_statement(QUERY_HAS_ARCHIVES);
 
-    if ((stmt = db.get_statement(DIR_COUNT_ARCHIVES)) == NULL
-        || sqlite3_step(stmt) != SQLITE_ROW) {
-	return false;
+    if (stmt->step()) {
+        return false;
     }
-
-    return sqlite3_column_int(stmt, 0) == 0;
+    return true;
 }
 
 
 std::vector<ArchiveLocation> CkmameDB::list_archives() {
-    sqlite3_stmt *stmt;
+    auto stmt = get_statement(LIST_ARCHIVES);
     std::vector<ArchiveLocation> archives;
-    int ret;
 
-    if ((stmt = db.get_statement(DIR_LIST_ARCHIVES)) == NULL) {
-	return archives;
-    }
-
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        archives.push_back(ArchiveLocation(sq3_get_string(stmt, 0), static_cast<filetype_t>(sqlite3_column_int(stmt, 1))));
-    }
-
-    if (ret != SQLITE_DONE) {
-        archives.clear();
+    while (stmt->step()) {
+        archives.push_back(ArchiveLocation(stmt->get_string("name"), static_cast<filetype_t>(stmt->get_int("file_type"))));
     }
 
     return archives;
@@ -226,45 +225,36 @@ int CkmameDB::read_files(int archive_id, std::vector<File> *files) {
 	return 0;
     }
 
-    sqlite3_stmt *stmt;
-    if ((stmt = db.get_statement(DIR_QUERY_FILE)) == NULL
-        || sqlite3_bind_int(stmt, 1, archive_id) != SQLITE_OK) {
-        throw Exception();
-    }
+    auto stmt = get_statement(QUERY_FILE);
+    
+    stmt->set_int("archive_id", archive_id);
 
     files->clear();
 
-    int ret;
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        auto detector_id = sq3_get_uint64(stmt, 1);
+    while (stmt->step()) {
+        auto detector_id = stmt->get_uint64("detector_id");
         
         if (detector_id == 0) {
             // There is exactly one entry per file_idx with detector_id 0, which is retrieved in order.
             File file;
             
-            file.name = sq3_get_string(stmt, 2);
-            file.mtime = sqlite3_column_int(stmt, 3);
-            file.broken = sqlite3_column_int(stmt, 4) != 0;
-            file.hashes.size = sq3_get_uint64_default(stmt, 5, Hashes::SIZE_UNKNOWN);
-            sq3_get_hashes(&file.hashes, stmt, 6);
-            
+            file.name = stmt->get_string("name");
+            file.mtime = stmt->get_int64("mtime");
+            file.broken = stmt->get_int("status");
+            file.hashes = stmt->get_hashes();
+            file.hashes.size = stmt->get_uint64("size", Hashes::SIZE_UNKNOWN);
+
             files->push_back(file);
         }
         else {
-            auto file_id = sq3_get_uint64(stmt, 0);
+            auto file_id = stmt->get_uint64("file_idx");
             auto global_detector_id = get_global_detector_id(detector_id);
             
-            Hashes hashes;
-            hashes.size = sq3_get_uint64_default(stmt, 5, Hashes::SIZE_UNKNOWN);
-            sq3_get_hashes(&hashes, stmt, 6);
+            Hashes hashes = stmt->get_hashes();
+            hashes.size = stmt->get_uint64("size", Hashes::SIZE_UNKNOWN);
             
             (*files)[file_id].detector_hashes[global_detector_id] = hashes;
         }
-    }
-
-    if (ret != SQLITE_DONE) {
-        files->clear();
-        throw  Exception();
     }
 
     return archive_id;
@@ -306,13 +296,11 @@ void CkmameDB::register_directory(const std::string &directory_name) {
 
 
 void CkmameDB::seterr() {
-    seterrdb(&db);
+    seterrdb(this);
 }
 
 
 void CkmameDB::write_archive(ArchiveContents *archive) {
-    sqlite3_stmt *stmt;
-
     auto id = archive->cache_id;
     
     if (id == 0) {
@@ -330,39 +318,36 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
 
     id = write_archive_header(id, name, archive->filetype, archive->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : archive->mtime, archive->size);
 
-    if ((stmt = db.get_statement(DIR_INSERT_FILE)) == NULL
-        || sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
-        throw Exception();
-    }
+    auto stmt = get_statement(INSERT_FILE);
+    stmt->set_int("archive_id", id);
 
     for (size_t i = 0; i < archive->files.size(); i++) {
-	const auto *f = &archive->files[i];
-	if (sqlite3_bind_int(stmt, 2, static_cast<int>(i)) != SQLITE_OK
-            || sq3_set_uint64(stmt, 3, 0) != SQLITE_OK
-            || sq3_set_string(stmt, 4, f->name.c_str()) != SQLITE_OK
-            || sqlite3_bind_int64(stmt, 5, f->mtime) != SQLITE_OK
-            || sqlite3_bind_int(stmt, 6, f->broken ? 1 : 0) != SQLITE_OK
-            || sq3_set_uint64(stmt, 7, f->hashes.size) != SQLITE_OK
-            || sq3_set_hashes(stmt, 8, &f->hashes, 1) != SQLITE_OK
-            || sqlite3_step(stmt) != SQLITE_DONE
-            || sqlite3_reset(stmt) != SQLITE_OK) {
-            throw Exception();
-	}
+        const auto &file = archive->files[i];
+           
+        stmt->set_int("file_idx", static_cast<int>(i));
+        stmt->set_uint64("detector_id", 0);
+        stmt->set_string("name", file.name);
+        stmt->set_int64("mtime", file.mtime);
+        stmt->set_int("status", file.broken ? 1 : 0);
+        stmt->set_uint64("size", file.hashes.size);
+        stmt->set_hashes(file.hashes, true);
         
-        for (auto &pair : f->detector_hashes) {
+        stmt->execute();
+        stmt->reset();
+        
+        for (auto &pair : file.detector_hashes) {
             auto id = get_detector_id(pair.first);
-            if (sqlite3_bind_int(stmt, 2, static_cast<int>(i)) != SQLITE_OK
-                || sq3_set_uint64(stmt, 3, id) != SQLITE_OK
-                // file.name can't be NULL, so set it to empty string
-                || sqlite3_bind_text(stmt, 4, "", -1, SQLITE_STATIC) != SQLITE_OK
-                || sqlite3_bind_int64(stmt, 5, 0) != SQLITE_OK
-                || sqlite3_bind_int(stmt, 6, 0) != SQLITE_OK
-                || sq3_set_uint64(stmt, 7, pair.second.size) != SQLITE_OK
-                || sq3_set_hashes(stmt, 8, &pair.second, 1) != SQLITE_OK
-                || sqlite3_step(stmt) != SQLITE_DONE
-                || sqlite3_reset(stmt) != SQLITE_OK) {
-                    throw Exception();
-            }
+
+            stmt->set_int("file_idx", static_cast<int>(i));
+            stmt->set_uint64("detector_id", id);
+            stmt->set_string("name", "");
+            stmt->set_int64("mtime", 0);
+            stmt->set_int("status", 0);
+            stmt->set_uint64("size", pair.second.size);
+            stmt->set_hashes(pair.second, true);
+            
+            stmt->execute();
+            stmt->reset();
         }
     }
 
@@ -383,28 +368,21 @@ std::string CkmameDB::name_in_db(const std::string &name) {
 
 
 int CkmameDB::write_archive_header(int id, const std::string &name, filetype_t filetype, time_t mtime, uint64_t size) {
-    auto stmt = db.get_statement(DIR_INSERT_ARCHIVE_ID);
-
-    if (stmt == NULL
-        || sq3_set_string(stmt, 1, name) != SQLITE_OK
-        || sqlite3_bind_int(stmt, 3, filetype) != SQLITE_OK
-        || sqlite3_bind_int64(stmt, 4, mtime) != SQLITE_OK
-        || sq3_set_uint64(stmt, 5, size) != SQLITE_OK) {
-        throw Exception();
-    }
-
+    auto stmt = get_statement(INSERT_ARCHIVE_ID);
+    
+    stmt->set_string("name", name);
+    stmt->set_int("file_type", filetype);
+    stmt->set_int64("mtime", mtime);
+    stmt->set_uint64("size", size);
+    
     if (id > 0) {
-        if (sqlite3_bind_int(stmt, 2, id) != SQLITE_OK) {
-            throw Exception();
-        }
+        stmt->set_int("archive_id", id);
     }
 
-    if (sqlite3_step(stmt) != SQLITE_DONE) {
-        throw Exception();
-    }
+    stmt->execute();
 
     if (id <= 0) {
-	id = (int)sqlite3_last_insert_rowid(db.db); /* TODO: use int64_t as id */
+        id = static_cast<int>(stmt->get_rowid());
     }
 
     return id;
@@ -422,15 +400,13 @@ size_t CkmameDB::get_detector_id(size_t global_id) {
     auto id = detector_ids.get_id(*detector);
     
     if (!known) {
-        auto stmt = db.get_statement(DIR_INSERT_DETECTOR);
+        auto stmt = get_statement(INSERT_DETECTOR);
         
-        if (stmt == NULL
-            || sq3_set_uint64(stmt, 1, id) != SQLITE_OK
-            || sq3_set_string(stmt, 2, detector->name) != SQLITE_OK
-            || sq3_set_string(stmt, 3, detector->version) != SQLITE_OK
-            || sqlite3_step(stmt) != SQLITE_DONE) {
-            throw Exception();
-        }
+        stmt->set_uint64("detector_id", id);
+        stmt->set_string("name", detector->name);
+        stmt->set_string("version", detector->version);
+        
+        stmt->execute();
     }
     
     return id;

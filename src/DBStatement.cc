@@ -37,7 +37,7 @@
 #include "DB.h"
 #include "Exception.h"
 
-DBStatement::DBStatement(DB *db, const std::string &sql_query) {
+DBStatement::DBStatement(DB *db_, const std::string &sql_query) : db(db_) {
     if (sqlite3_prepare_v2(db->db, sql_query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
         throw Exception("can't create SQL statement '" + sql_query + "'"); // TODO: include sqlite error
     }
@@ -52,6 +52,12 @@ DBStatement::DBStatement(DB *db, const std::string &sql_query) {
         parameter_names[sqlite3_bind_parameter_name(stmt, i)] = i;
     }
 }
+
+
+/*DBStatement::DBStatement(DBStatement &&other) : stmt(other.stmt), column_names(other.column_names), parameter_names(other.parameter_names) {
+    other.stmt = NULL;
+}*/
+
 
 DBStatement::~DBStatement() {
     sqlite3_finalize(stmt);
@@ -159,6 +165,10 @@ int64_t DBStatement::get_int64(const std::string &name, int64_t default_value) {
     return sqlite3_column_int64(stmt, index);
 }
 
+
+int64_t DBStatement::get_rowid() {
+    return sqlite3_last_insert_rowid(db->db);
+}
 
 std::string DBStatement::get_string(const std::string &name) {
     auto index = get_column_index(name);

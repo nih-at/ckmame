@@ -1,6 +1,5 @@
 #ifndef _HAD_DBH_CACHE_H
 #define _HAD_DBH_CACHE_H
-
 /*
  dbh_cache.h -- files in dirs sqlite3 data base
  Copyright (C) 2014-2021 Dieter Baron and Thomas Klausner
@@ -50,7 +49,24 @@ typedef std::shared_ptr<CkmameDB> CkmameDBPtr;
 
 class CkmameDB : public DB {
 public:
+    enum Statement {
+        DELETE_ARCHIVE,
+        DELETE_FILE,
+        INSERT_ARCHIVE,
+        INSERT_ARCHIVE_ID,
+        INSERT_DETECTOR,
+        INSERT_FILE,
+        LIST_ARCHIVES,
+        LIST_DETECTORS,
+        QUERY_ARCHIVE_ID,
+        QUERY_ARCHIVE_LAST_CHANGE,
+        QUERY_FILE,
+        QUERY_HAS_ARCHIVES
+    };
+    
     CkmameDB(const std::string &dbname, const std::string &directory);
+    virtual ~CkmameDB() { }
+
     static bool close_all();
     static CkmameDBPtr get_db_for_archvie(const std::string &name);
     static void register_directory(const std::string &directory);
@@ -66,6 +82,8 @@ public:
     
     void seterr();
     
+    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
+    
 protected:
     virtual std::string get_query(int name, bool parameterized) const;
 
@@ -80,6 +98,8 @@ private:
     };
 
     static std::vector<CacheDirectory> cache_directories;
+    
+    static std::unordered_map<Statement, std::string> queries;
 
     std::string directory;
     DetectorCollection detector_ids;

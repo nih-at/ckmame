@@ -285,7 +285,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
         return &it->second;
     }
     
-    auto sql_query = get_sql_query(statement_id.name, statement_id.is_parameterized());
+    auto sql_query = get_query(statement_id.name, statement_id.is_parameterized());
     
     if (sql_query.empty()) {
         throw Exception("invalid statement id " + std::to_string(statement_id.name));
@@ -295,6 +295,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
         // TODO: parameterize query
     }
 
+    statements.inser
     statements[statement_id] = DBStatement(this, sql_query);
 
     return &statements[statement_id];
