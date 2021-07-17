@@ -94,6 +94,7 @@ public:
     bool verify(int type, const void *data) const;
     std::string to_string(int type) const;
     bool empty() const { return types == 0; }
+    const void *hash_data(int type) const;
 
     void merge(const Hashes &other);
     void set(int type, const void *data, bool ignore_zero = false);
@@ -108,8 +109,6 @@ public:
 private:
     static std::unordered_map<std::string, int> name_to_type;
     static std::unordered_map<int, std::string> type_to_name;
-    
-    const void *hash_data(int type) const;
 };
 
 #endif /* hashes.h */

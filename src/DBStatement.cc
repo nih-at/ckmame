@@ -58,6 +58,13 @@ DBStatement::~DBStatement() {
 }
 
 
+void DBStatement::execute() {
+    if (sqlite3_step(stmt) != SQLITE_OK) {
+        throw Exception("error executing statement"); // TODO: detail
+    }
+}
+
+
 void DBStatement::reset() {
     if (sqlite3_reset(stmt) != SQLITE_OK || sqlite3_clear_bindings(stmt) != SQLITE_OK) {
         throw Exception("can't reset SQL statement"); // TODO: include sqlite error
@@ -187,86 +194,89 @@ void DBStatement::set_blob(const std::string &name, const std::vector<uint8_t> &
 }
 
 
-int sq3_set_hashes(sqlite3_stmt *stmt, int col, const Hashes *hashes, int nullp) {
+void DBStatement::set_hashes(const Hashes &hashes, bool set_null) {
+    for (int type = 0; type < Hashes::TYPE_MAX; type++) {
+        auto index = get_column_index(Hashes::type_name(type));
+
+        int ret = SQLITE_OK;
+        
+        if (hashes.has_type(type)) {
+            if (type == Hashes::TYPE_CRC) {
+                ret = sqlite3_bind_int64(stmt, index, hashes.crc);
+            }
+            else {
+                ret = sqlite3_bind_blob(stmt, index, hashes.hash_data(type), static_cast<int>(hashes.hash_size(type)), SQLITE_STATIC);
+            }
+        }
+        else if (set_null) {
+            ret = sqlite3_bind_null(stmt, index);
+        }
+        
+        if (ret != SQLITE_OK) {
+            throw Exception("can't bind parameter '" + Hashes::type_name(type) + "'");
+        }
+    }
+}
+
+
+void DBStatement::set_int(const std::string &name, int value) {
+    auto index = get_column_index(name);
+
+    if (sqlite3_bind_int(stmt, index, value) != SQLITE_OK) {
+        throw Exception("can't bind parameter '" + name + "'");
+    }
+}
+
+
+void DBStatement::set_int(const std::string &name, int value, int default_value) {
+    auto index = get_column_index(name);
+
     int ret;
     
-    ret = SQLITE_OK;
-    
-    if (hashes->has_type(Hashes::TYPE_CRC)) {
-        ret = sqlite3_bind_int64(stmt, col++, hashes->crc);
-    }
-    else if (nullp) {
-        ret = sqlite3_bind_null(stmt, col++);
-    }
-    if (ret != SQLITE_OK) {
-        return ret;
-    }
-    
-    if (hashes->has_type(Hashes::TYPE_MD5)) {
-        ret = sqlite3_bind_blob(stmt, col++, hashes->md5, Hashes::SIZE_MD5, SQLITE_STATIC);
-    }
-    else if (nullp) {
-        ret = sqlite3_bind_null(stmt, col++);
-    }
-    if (ret != SQLITE_OK) {
-        return ret;
-    }
-    
-    if (hashes->has_type(Hashes::TYPE_SHA1)) {
-        ret = sqlite3_bind_blob(stmt, col++, hashes->sha1, Hashes::SIZE_SHA1, SQLITE_STATIC);
-    }
-    else if (nullp) {
-        ret = sqlite3_bind_null(stmt, col++);
-    }
-    
-    return ret;
-}
-
-
-int sq3_set_int_default(sqlite3_stmt *stmt, int col, int val, int def) {
-    if (val == def)
-        return sqlite3_bind_null(stmt, col);
-    return sqlite3_bind_int(stmt, col, val);
-}
-
-
-int sq3_set_int64_default(sqlite3_stmt *stmt, int col, int64_t val, int64_t def) {
-    if (val == def)
-        return sqlite3_bind_null(stmt, col);
-    return sqlite3_bind_int64(stmt, col, val);
-}
-
-
-int sq3_set_string(sqlite3_stmt *stmt, int i, const std::string &s) {
-    if (!s.empty()) {
-        return sqlite3_bind_text(stmt, i, s.c_str(), -1, SQLITE_STATIC);
+    if (value == default_value) {
+        ret = sqlite3_bind_null(stmt, index);
     }
     else {
-        return sqlite3_bind_null(stmt, i);
-    }
-}
-
-
-int sq3_set_uint64(sqlite3_stmt *stmt, int col, uint64_t val) {
-    return sqlite3_bind_int64(stmt, col, static_cast<int64_t>(val));
-}
-
-int sq3_set_uint64_default(sqlite3_stmt *stmt, int col, uint64_t val, uint64_t def) {
-    if (val == def) {
-        return sqlite3_bind_null(stmt, col);
-    }
-    return sqlite3_bind_int64(stmt, col, static_cast<int64_t>(val));
-}
-
-
-void sq3_set_string(sqlite3_stmt *stmt, const std::string &name, const std::string &value) {
-    auto index = sqlite3_bind_parameter_index(stmt, name.c_str());
-    
-    if (index == 0) {
-        throw Exception("invalid parameter '" + name + "'");
+        ret = sqlite3_bind_int(stmt, index, value);
     }
     
-    if (sq3_set_string(stmt, index, value) != SQLITE_OK) {
+    if (ret != SQLITE_OK) {
+        throw Exception("can't bind parameter '" + name + "'");
+    }
+}
+
+
+void DBStatement::set_int64(const std::string &name, int64_t value) {
+    auto index = get_column_index(name);
+
+    if (sqlite3_bind_int64(stmt, index, value) != SQLITE_OK) {
+        throw Exception("can't bind parameter '" + name + "'");
+    }
+}
+
+
+void DBStatement::set_int64(const std::string &name, int64_t value, int64_t default_value) {
+    auto index = get_column_index(name);
+
+    int ret;
+    
+    if (value == default_value) {
+        ret = sqlite3_bind_null(stmt, index);
+    }
+    else {
+        ret = sqlite3_bind_int64(stmt, index, value);
+    }
+    
+    if (ret != SQLITE_OK) {
+        throw Exception("can't bind parameter '" + name + "'");
+    }
+}
+
+
+void DBStatement::set_null(const std::string &name) {
+    auto index = get_column_index(name);
+
+    if (sqlite3_bind_null(stmt, index) != SQLITE_OK) {
         throw Exception("can't bind parameter '" + name + "'");
     }
 }

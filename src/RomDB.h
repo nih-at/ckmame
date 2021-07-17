@@ -74,14 +74,15 @@ public:
         UPDATE_PARENT
     };
     
-    enum ParameterizeedStatement {
+    enum ParameterizedStatement {
         QUERY_FILE_FBH
     };
     
     RomDB(const std::string &name, int mode);
+    virtual ~RomDB() { }
     
     DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
-    DBStatement *get_statement(ParameterizeedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
+    DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
     
     std::unordered_map<size_t, DetectorPtr> detectors;
 

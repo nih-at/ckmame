@@ -117,7 +117,7 @@ protected:
     DBStatement *get_statement_internal(int name);
     DBStatement *get_statement_internal(int name, const Hashes &hashes, bool have_size);
     
-    virtual std::string get_sql_query(int name, bool parameterized) const;
+    virtual std::string get_query(int name, bool parameterized) const = 0;
 
 private:
     class MigrationStep {

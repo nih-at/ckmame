@@ -55,11 +55,11 @@ public:
     void reset();
 
     std::vector<uint8_t> get_blob(const std::string &name);
+    Hashes get_hashes();
     int get_int(const std::string &name);
     int get_int(const std::string &name, int default_value);
     int64_t get_int64(const std::string &name);
     int64_t get_int64(const std::string &name, int64_t default_value);
-    Hashes get_hashes();
     int64_t get_rowid();
     std::string get_string(const std::string &name);
     uint64_t get_uint64(const std::string &name) { return static_cast<uint64_t>(get_int64(name)); }
@@ -73,8 +73,8 @@ public:
     void set_int64(const std::string &name, int64_t value, int64_t default_value);
     void set_null(const std::string &name);
     void set_string(const std::string &name, const std::string &value);
-    void set_uint64(const std::string &name, uint64_t value);
-    void set_uint64(const std::string &name, uint64_t value, uint64_t default_value);
+    void set_uint64(const std::string &name, uint64_t value) { set_int64(name, static_cast<int64_t>(value)); }
+    void set_uint64(const std::string &name, uint64_t value, uint64_t default_value) { set_int64(name, static_cast<int64_t>(value), static_cast<int64_t>(default_value)); }
     
 private:
     int get_column_index(const std::string &name);

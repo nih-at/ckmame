@@ -39,7 +39,6 @@
 #include "error.h"
 #include "Exception.h"
 #include "fix.h"
-#include "sq_util.h"
 #include "util.h"
 
 

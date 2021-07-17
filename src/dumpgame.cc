@@ -42,7 +42,6 @@
 #include "error.h"
 #include "globals.h"
 #include "RomDB.h"
-#include "sq_util.h"
 #include "Stats.h"
 #include "util.h"
 

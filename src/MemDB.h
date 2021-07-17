@@ -44,6 +44,16 @@
 
 class MemDB: public DB {
 public:
+    enum Statement {
+        DEC_FILE_IDX,
+        DELETE_FILE,
+        INSERT_FILE,
+        UPDATE_FILE
+    };
+    enum ParameterizedStatement {
+        QUERY_FILE
+    };
+
     class FindResult {
     public:
         uint64_t archive_id;
@@ -53,25 +63,35 @@ public:
     };
     
     MemDB(const char *name) : DB(name, DBH_FMT_MEM | DBH_NEW) { }
+    virtual ~MemDB() { }
 
-    static bool delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx);
-    static bool insert_archive(const ArchiveContents *archive);
-    static bool insert_file(const ArchiveContents *archive, size_t index);
-    static bool update_file(const ArchiveContents *archive, size_t idx);
+    static void delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx);
+    static void insert_archive(const ArchiveContents *archive);
+    static void insert_file(const ArchiveContents *archive, size_t index);
+    static void update_file(const ArchiveContents *archive, size_t idx);
 
-    static std::optional<std::vector<FindResult>> find(filetype_t filetype, const FileData *file);
+    static std::vector<FindResult> find(filetype_t filetype, const FileData *file);
+    
+    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
+    DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
+
+protected:
+    virtual std::string get_query(int name, bool parameterized) const;
 
 private:
+    static std::unordered_map<Statement, std::string> queries;
+    static std::unordered_map<ParameterizedStatement, std::string> parameterized_queries;
+
     static std::unique_ptr<MemDB> memdb;
     static bool inited;
 
-    static bool ensure();
+    static void ensure();
 
-    bool delete_file(uint64_t id, filetype_t filetype, size_t index);
-    bool update_file(uint64_t id, filetype_t filetype, size_t index, const Hashes *hashes);
-    sqlite3_stmt *get_insert_file_statement(const ArchiveContents *archive);
-    bool insert_file(sqlite3_stmt *stmt, size_t index, const File &file);
-    bool insert_file(sqlite3_stmt *stmt, size_t index, size_t detector_id, const Hashes &hashes);
+    void delete_file(uint64_t id, filetype_t filetype, size_t index);
+    void update_file(uint64_t id, filetype_t filetype, size_t index, const Hashes &hashes);
+    DBStatement *get_insert_file_statement(const ArchiveContents *archive);
+    void insert_file(DBStatement *stmt, size_t index, const File &file);
+    void insert_file(DBStatement *stmt, size_t index, size_t detector_id, const Hashes &hashes);
 };
 
 #endif /* memdb.h */

@@ -35,7 +35,6 @@
 
 #include "error.h"
 #include "Exception.h"
-#include "sq_util.h"
 
 std::unique_ptr<RomDB> db;
 std::unique_ptr<RomDB> old_db;
@@ -121,6 +120,24 @@ void RomDB::read_hashtypes(filetype_t ft) {
         if (stmt->step()) {
 	    hashtypes_[ft] |= (1 << type);
         }
+    }
+}
+
+
+std::string RomDB::get_query(int name, bool parameterized) const {
+    if (parameterized) {
+        auto it = parameterized_queries.find(static_cast<ParameterizedStatement>(name));
+        if (it == parameterized_queries.end()) {
+            return "";
+        }
+        return it->second;
+    }
+    else {
+        auto it = queries.find(static_cast<Statement>(name));
+        if (it == queries.end()) {
+            return "";
+        }
+        return it->second;
     }
 }
 

@@ -48,7 +48,7 @@ class CkmameDB;
 
 typedef std::shared_ptr<CkmameDB> CkmameDBPtr;
 
-class CkmameDB {
+class CkmameDB : public DB {
 public:
     CkmameDB(const std::string &dbname, const std::string &directory);
     static bool close_all();
@@ -66,6 +66,9 @@ public:
     
     void seterr();
     
+protected:
+    virtual std::string get_query(int name, bool parameterized) const;
+
 private:
     class CacheDirectory {
     public:
@@ -78,7 +81,6 @@ private:
 
     static std::vector<CacheDirectory> cache_directories;
 
-    DB db;
     std::string directory;
     DetectorCollection detector_ids;
     

@@ -84,7 +84,7 @@ bool Tree::recheck(const std::string &game_name) {
 
 
 bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashes *hashes) {
-    auto files = db->read_file_by_hash(filetype, hashes);
+    auto files = db->read_file_by_hash(filetype, *hashes);
     if (files.empty()) {
 	return true;
     }
