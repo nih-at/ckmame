@@ -33,6 +33,7 @@
 
 #include "DBStatement.h"
 
+#include <climits>
 
 #include "DB.h"
 #include "Exception.h"
