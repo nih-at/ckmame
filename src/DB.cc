@@ -295,7 +295,6 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
         // TODO: parameterize query
     }
 
-    statements.inser
     statements[statement_id] = DBStatement(this, sql_query);
 
     return &statements[statement_id];
