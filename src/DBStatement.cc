@@ -108,7 +108,7 @@ std::vector<uint8_t> DBStatement::get_blob(const std::string &name) {
 Hashes DBStatement::get_hashes() {
     Hashes hashes;
     
-    for (int type = 1; type < Hashes::TYPE_MAX; type <<= 1) {
+    for (int type = 1; type <= Hashes::TYPE_MAX; type <<= 1) {
         auto index = get_column_index(Hashes::type_name(type));
         
         if (sqlite3_column_type(stmt, index) == SQLITE_NULL) {
@@ -201,7 +201,7 @@ void DBStatement::set_blob(const std::string &name, const std::vector<uint8_t> &
 
 
 void DBStatement::set_hashes(const Hashes &hashes, bool set_null) {
-    for (int type = 1; type < Hashes::TYPE_MAX; type <<= 1) {
+    for (int type = 1; type <= Hashes::TYPE_MAX; type <<= 1) {
         auto index = get_parameter_index(Hashes::type_name(type));
 
         int ret = SQLITE_OK;
