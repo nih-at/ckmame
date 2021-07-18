@@ -72,6 +72,9 @@ public:
     bool operator==(const StatementID &other) const { return name == other.name && flags == other.flags; }
     
     bool is_parameterized() const { return flags & parameterized; }
+    bool has_size() const { return flags & have_size; }
+    bool hash_types() const { return flags & 0xffff; }
+    bool has_hash(int type) const { return flags & type; }
     int name;
     int flags;
     

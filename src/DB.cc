@@ -292,7 +292,22 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
     }
     
     if (statement_id.is_parameterized()) {
-        // TODO: parameterize query
+        auto start = sql_query.find("@SIZE@");
+        if (start != std::string::npos) {
+            sql_query.replace(start, 6, statement_id.has_size() ? "and size = :size" : "");
+        }
+        start = sql_query.find("@HASH@");
+        if (start != std::string::npos) {
+            std::string expanded = "";
+            for (auto i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
+                if (statement_id.has_hash(i)) {
+                    auto name = Hashes::type_name(i);
+                    expanded += " and (f." + name + " is :" + name + " or f." + name + " is null)";
+                }
+            }
+            
+            sql_query.replace(start, 6, expanded);
+        }
     }
 
     auto stmt = std::make_shared<DBStatement>(this, sql_query);

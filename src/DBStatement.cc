@@ -202,11 +202,11 @@ void DBStatement::set_blob(const std::string &name, const std::vector<uint8_t> &
 
 void DBStatement::set_hashes(const Hashes &hashes, bool set_null) {
     for (int type = 1; type <= Hashes::TYPE_MAX; type <<= 1) {
-        auto index = get_parameter_index(Hashes::type_name(type));
 
         int ret = SQLITE_OK;
         
         if (hashes.has_type(type)) {
+            auto index = get_parameter_index(Hashes::type_name(type));
             if (type == Hashes::TYPE_CRC) {
                 ret = sqlite3_bind_int64(stmt, index, hashes.crc);
             }
@@ -215,6 +215,7 @@ void DBStatement::set_hashes(const Hashes &hashes, bool set_null) {
             }
         }
         else if (set_null) {
+            auto index = get_parameter_index(Hashes::type_name(type));
             ret = sqlite3_bind_null(stmt, index);
         }
         
