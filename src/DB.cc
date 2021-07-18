@@ -281,7 +281,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
     auto it = statements.find(statement_id);
     
     if (it != statements.end()) {
-        it->second.reset();
+        it->second->reset();
         return it->second.get();
     }
     
@@ -295,7 +295,8 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
         // TODO: parameterize query
     }
 
-    statements[statement_id] = std::make_unique<DBStatement>(this, sql_query);
+    auto stmt = std::make_shared<DBStatement>(this, sql_query);
+    statements[statement_id] = stmt;
 
-    return statements[statement_id].get();
+    return stmt.get();
 }

@@ -50,7 +50,7 @@ DBStatement::DBStatement(DB *db_, const std::string &sql_query) : db(db_) {
     
     auto num_paramters = sqlite3_bind_parameter_count(stmt);
     for (int i = 1; i <= num_paramters; i++) {
-        parameter_names[sqlite3_bind_parameter_name(stmt, i)] = i;
+        parameter_names[sqlite3_bind_parameter_name(stmt, i) + 1] = i; // skip leading :
     }
 }
 
@@ -108,7 +108,7 @@ std::vector<uint8_t> DBStatement::get_blob(const std::string &name) {
 Hashes DBStatement::get_hashes() {
     Hashes hashes;
     
-    for (int type = 0; type < Hashes::TYPE_MAX; type++) {
+    for (int type = 1; type < Hashes::TYPE_MAX; type <<= 1) {
         auto index = get_column_index(Hashes::type_name(type));
         
         if (sqlite3_column_type(stmt, index) == SQLITE_NULL) {
@@ -201,8 +201,8 @@ void DBStatement::set_blob(const std::string &name, const std::vector<uint8_t> &
 
 
 void DBStatement::set_hashes(const Hashes &hashes, bool set_null) {
-    for (int type = 0; type < Hashes::TYPE_MAX; type++) {
-        auto index = get_column_index(Hashes::type_name(type));
+    for (int type = 1; type < Hashes::TYPE_MAX; type <<= 1) {
+        auto index = get_parameter_index(Hashes::type_name(type));
 
         int ret = SQLITE_OK;
         
@@ -226,7 +226,7 @@ void DBStatement::set_hashes(const Hashes &hashes, bool set_null) {
 
 
 void DBStatement::set_int(const std::string &name, int value) {
-    auto index = get_column_index(name);
+    auto index = get_parameter_index(name);
 
     if (sqlite3_bind_int(stmt, index, value) != SQLITE_OK) {
         throw Exception("can't bind parameter '" + name + "'");
@@ -235,7 +235,7 @@ void DBStatement::set_int(const std::string &name, int value) {
 
 
 void DBStatement::set_int(const std::string &name, int value, int default_value) {
-    auto index = get_column_index(name);
+    auto index = get_parameter_index(name);
 
     int ret;
     
@@ -253,7 +253,7 @@ void DBStatement::set_int(const std::string &name, int value, int default_value)
 
 
 void DBStatement::set_int64(const std::string &name, int64_t value) {
-    auto index = get_column_index(name);
+    auto index = get_parameter_index(name);
 
     if (sqlite3_bind_int64(stmt, index, value) != SQLITE_OK) {
         throw Exception("can't bind parameter '" + name + "'");
@@ -262,7 +262,7 @@ void DBStatement::set_int64(const std::string &name, int64_t value) {
 
 
 void DBStatement::set_int64(const std::string &name, int64_t value, int64_t default_value) {
-    auto index = get_column_index(name);
+    auto index = get_parameter_index(name);
 
     int ret;
     
@@ -280,7 +280,7 @@ void DBStatement::set_int64(const std::string &name, int64_t value, int64_t defa
 
 
 void DBStatement::set_null(const std::string &name) {
-    auto index = get_column_index(name);
+    auto index = get_parameter_index(name);
 
     if (sqlite3_bind_null(stmt, index) != SQLITE_OK) {
         throw Exception("can't bind parameter '" + name + "'");
