@@ -282,7 +282,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
     
     if (it != statements.end()) {
         it->second.reset();
-        return &it->second;
+        return it->second.get();
     }
     
     auto sql_query = get_query(statement_id.name, statement_id.is_parameterized());
@@ -295,7 +295,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
         // TODO: parameterize query
     }
 
-    statements[statement_id] = DBStatement(this, sql_query);
+    statements[statement_id] = std::make_unique<DBStatement>(this, sql_query);
 
-    return &statements[statement_id];
+    return statements[statement_id].get();
 }

@@ -140,7 +140,7 @@ private:
 
     static std::unordered_map<MigrationXXX, std::string> migrations;
     
-    std::unordered_map<StatementID, DBStatement> statements;
+    std::unordered_map<StatementID, std::unique_ptr<DBStatement>> statements;
 };
 
 // #pragma hide_this_forever begin

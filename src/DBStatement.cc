@@ -42,7 +42,7 @@ DBStatement::DBStatement(DB *db_, const std::string &sql_query) : db(db_) {
     if (sqlite3_prepare_v2(db->db, sql_query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
         throw Exception("can't create SQL statement '" + sql_query + "'"); // TODO: include sqlite error
     }
-    
+
     auto num_columns = sqlite3_column_count(stmt);
     for (int i = 0; i < num_columns; i++) {
         column_names[sqlite3_column_name(stmt, i)] = i;
@@ -53,11 +53,6 @@ DBStatement::DBStatement(DB *db_, const std::string &sql_query) : db(db_) {
         parameter_names[sqlite3_bind_parameter_name(stmt, i)] = i;
     }
 }
-
-
-/*DBStatement::DBStatement(DBStatement &&other) : stmt(other.stmt), column_names(other.column_names), parameter_names(other.parameter_names) {
-    other.stmt = NULL;
-}*/
 
 
 DBStatement::~DBStatement() {

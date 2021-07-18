@@ -47,10 +47,7 @@ class DBStatement {
 public:
     DBStatement(DB *db, const std::string &sql_query);
     ~DBStatement();
-    
-    DBStatement() : stmt(NULL) { }
-    //DBStatement(DBStatement &&other);
-    
+        
     void execute();
     bool step();
     void reset();
