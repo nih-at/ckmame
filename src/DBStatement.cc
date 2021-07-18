@@ -61,7 +61,7 @@ DBStatement::~DBStatement() {
 
 
 void DBStatement::execute() {
-    if (sqlite3_step(stmt) != SQLITE_OK) {
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
         throw Exception("error executing statement"); // TODO: detail
     }
 }
