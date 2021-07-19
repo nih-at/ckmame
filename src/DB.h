@@ -75,6 +75,7 @@ public:
     bool has_size() const { return flags & have_size; }
     bool hash_types() const { return flags & 0xffff; }
     bool has_hash(int type) const { return flags & type; }
+    
     int name;
     int flags;
     
