@@ -1,9 +1,9 @@
 - exceptions and error messages:
     - who creates which part of the error messages
-    - catch exceptions in main and print errors.
+    - catch exceptions in main and print errors (done in ckmame and mkmamedb).
     - clean up Exceptions without text
     
-- objectify sqlite3 statements, handle multiple writers
+- handle multiple writers to ckmamedb
 
 - When checking single game, search for its ROMs everywhere and report any matches.
 
