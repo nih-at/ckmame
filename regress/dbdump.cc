@@ -38,26 +38,19 @@
 #include <sqlite3.h>
 
 #include "error.h"
+#include "Exception.h"
 #include "util.h"
 
 
-#define QUERY_TABLES                                    \
-    "select name from sqlite_master where type='table'" \
-    " and name not like 'sqlite_%' order by name"
-
-#define QUERY_COLS_FMT "pragma table_info(%s)"
-
 const char *usage = "usage: %s db-file\n";
 
-static int dump_db(sqlite3 *);
-static int dump_table(sqlite3 *, const char *);
+static void dump_db(sqlite3 *);
+static void dump_table(sqlite3 *, const std::string &table_name);
 
 
 int
 main(int argc, char *argv[]) {
-    sqlite3 *db;
     char *fname;
-    int ret;
 
     setprogname(argv[0]);
 
@@ -75,6 +68,7 @@ main(int argc, char *argv[]) {
 	exit(1);
     }
 
+    sqlite3 *db;
     if (sqlite3_open(fname, &db) != SQLITE_OK) {
 	/* seterrdb(db); */
 	myerror(ERRDB, "can't open database '%s'", fname);
@@ -84,71 +78,58 @@ main(int argc, char *argv[]) {
 
     /* seterrdb(db); */
 
-    if ((ret = dump_db(db)) < 0)
-	myerror(ERRDB, "can't dump database '%s'", fname);
+    try {
+        dump_db(db);
+    }
+    catch (std::exception &exception) {
+        myerror(ERRDB, "can't dump database '%s': %s", fname, exception.what());
+        exit(1);
+    }
 
     sqlite3_close(db);
 
-    return ret < 0 ? 1 : 0;
+    exit(0);
 }
 
 
-static int
-dump_db(sqlite3 *db) {
-    sqlite3_stmt *stmt;
-    int ret;
+static void dump_db(sqlite3 *db) {
+    auto stmt = DBStatement(db, "select name from sqlite_master where type='table' and name not like 'sqlite_%' order by name");
 
-    if (sqlite3_prepare_v2(db, QUERY_TABLES, -1, &stmt, NULL) != SQLITE_OK)
-	return -1;
-
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	if (dump_table(db, (const char *)sqlite3_column_text(stmt, 0)) < 0)
-	    break;
+    while (stmt.step()) {
+        dump_table(db, stmt.get_string("name"));
     }
-
-    sqlite3_finalize(stmt);
-
-    if (ret != SQLITE_DONE)
-	return -1;
-
-    return 0;
 }
 
 
-static int
-dump_table(sqlite3 *db, const char *tbl) {
-    sqlite3_stmt *stmt;
-    char b[8192];
-    int first_col, first_key;
+static void dump_table(sqlite3 *db, const std::string &table_name) {
     int i, ret;
 
-    sprintf(b, QUERY_COLS_FMT, tbl);
+    std::string query = "select * from " + table_name;
+    printf(">>> table %s (", table_name.c_str());
+    
+    {
+        auto stmt = DBStatement(db, "pragma table_info(" + table_name + ")");
+        
+        auto first_col = true;
+        auto first_key = true;
 
-    if (sqlite3_prepare_v2(db, b, -1, &stmt, NULL) != SQLITE_OK)
-	return -1;
-
-    printf(">>> table %s (", tbl);
-    sprintf(b, "select * from %s", tbl);
-    first_col = first_key = 1;
-
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-	printf("%s%s", first_col ? "" : ", ", sqlite3_column_text(stmt, 1));
-	first_col = 0;
-
-	if (sqlite3_column_int(stmt, 5)) {
-	    sprintf(b + strlen(b), "%s%s", first_key ? " order by " : ", ", sqlite3_column_text(stmt, 1));
-	    first_key = 0;
-	}
+        while (stmt.step()) {
+            printf("%s%s", first_col ? "" : ", ", stmt.get_string("name").c_str());
+            first_col = false;
+            
+            if (stmt.get_int("pk") != 0) {
+                query += (first_key ? " order by " : ", ") + stmt.get_string("name");
+                first_key = false;
+            }
+        }
     }
 
     printf(")\n");
-    sqlite3_finalize(stmt);
 
-    if (ret != SQLITE_DONE)
-	return -1;
-
-    if (sqlite3_prepare_v2(db, b, -1, &stmt, NULL) != SQLITE_OK)
-	return -1;
+    sqlite3_stmt *stmt;
+    if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+        throw Exception("can't select rows for table '" + table_name + "': " + sqlite3_errmsg(db));
+    }
 
     while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
 	for (i = 0; i < sqlite3_column_count(stmt); i++) {
@@ -175,8 +156,7 @@ dump_table(sqlite3 *db, const char *tbl) {
 
     sqlite3_finalize(stmt);
 
-    if (ret != SQLITE_DONE)
-	return -1;
-
-    return 0;
+    if (ret != SQLITE_DONE) {
+        throw Exception("can't select rows for table '" + table_name + "': " + sqlite3_errmsg(db));
+    }
 }
