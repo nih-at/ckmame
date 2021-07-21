@@ -41,7 +41,6 @@
 #include "Archive.h"
 #include "DB.h"
 
-
 class MemDB: public DB {
 public:
     enum Statement {
@@ -64,34 +63,30 @@ public:
     
     MemDB(const char *name) : DB(name, DBH_FMT_MEM | DBH_NEW) { }
     virtual ~MemDB() { }
-
-    static void delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx);
-    static void insert_archive(const ArchiveContents *archive);
-    static void insert_file(const ArchiveContents *archive, size_t index);
-    static void update_file(const ArchiveContents *archive, size_t idx);
-
-    static std::vector<FindResult> find(filetype_t filetype, const FileData *file);
     
-    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
-    DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
+    static void ensure();
+
+    void delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx);
+    void insert_archive(const ArchiveContents *archive);
+    void insert_file(const ArchiveContents *archive, size_t index);
+    void update_file(const ArchiveContents *archive, size_t idx);
+
+    std::vector<FindResult> find(filetype_t filetype, const FileData *file);
 
 protected:
     virtual std::string get_query(int name, bool parameterized) const;
 
 private:
+    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
+    DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
+
     static std::unordered_map<Statement, std::string> queries;
     static std::unordered_map<ParameterizedStatement, std::string> parameterized_queries;
 
-    static std::unique_ptr<MemDB> memdb;
     static bool inited;
-
-    static void ensure();
-
-    void delete_file(uint64_t id, filetype_t filetype, size_t index);
-    void update_file(uint64_t id, filetype_t filetype, size_t index, const Hashes &hashes);
-    DBStatement *get_insert_file_statement(const ArchiveContents *archive);
-    void insert_file(DBStatement *stmt, size_t index, const File &file);
-    void insert_file(DBStatement *stmt, size_t index, size_t detector_id, const Hashes &hashes);
 };
 
+extern std::unique_ptr<MemDB> memdb;
+
 #endif /* memdb.h */
+

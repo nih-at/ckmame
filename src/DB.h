@@ -67,7 +67,7 @@ extern const char *sql_db_init_2;
 class StatementID {
 public:
     StatementID(int name_) : name(name_), flags(0) { }
-    StatementID(int name_, const Hashes &hashes, bool have_size_) : name(name_), flags(hashes.types | have_size | parameterized) { }
+    StatementID(int name_, const Hashes &hashes, bool have_size_) : name(name_), flags(hashes.types | (have_size_ ? have_size : 0) | parameterized) { }
     
     bool operator==(const StatementID &other) const { return name == other.name && flags == other.flags; }
     

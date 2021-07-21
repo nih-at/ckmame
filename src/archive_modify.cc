@@ -59,7 +59,7 @@ bool Archive::commit() {
                 case Change::DELETED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
-                        MemDB::delete_file(contents.get(), index, is_writable());
+                        memdb->delete_file(contents.get(), index, is_writable());
                     }
 
                     if (is_writable()) {
@@ -72,7 +72,7 @@ bool Archive::commit() {
                 case Change::ADDED:
                     if (is_indexed()) {
                         /* TODO: handle error (how?) */
-                        MemDB::insert_file(contents.get(), index);
+                        memdb->insert_file(contents.get(), index);
                     }
                     change.status = Change::EXISTS;
                     break;

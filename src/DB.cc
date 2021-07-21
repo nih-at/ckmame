@@ -292,6 +292,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
     }
     
     if (statement_id.is_parameterized()) {
+        // printf("#DEBUG exanding %x '%s' to ", statement_id.flags, sql_query.c_str());
         auto start = sql_query.find("@SIZE@");
         if (start != std::string::npos) {
             sql_query.replace(start, 6, statement_id.has_size() ? "and size = :size" : "");
@@ -308,6 +309,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
             
             sql_query.replace(start, 6, expanded);
         }
+        // printf(" '%s'\n", sql_query.c_str());
     }
 
     auto stmt = std::make_shared<DBStatement>(this, sql_query);

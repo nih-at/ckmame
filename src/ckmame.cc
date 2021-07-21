@@ -48,6 +48,7 @@
 #include "fix.h"
 #include "fixdat.h"
 #include "globals.h"
+#include "MemDB.h"
 #include "RomDB.h"
 #include "sighandle.h"
 #include "Stats.h"
@@ -467,6 +468,8 @@ main(int argc, char **argv) {
 	    }
 	}
 
+	MemDB::ensure();
+	
 	if (action != ACTION_CLEANUP_EXTRA_ONLY) {
 	    if (!superfluous_delete_list) {
 		superfluous_delete_list = std::make_shared<DeleteList>();

@@ -36,7 +36,7 @@
 #include "error.h"
 #include "Exception.h"
 
-std::unique_ptr<MemDB> MemDB::memdb;
+std::unique_ptr<MemDB> memdb;
 
 bool MemDB::inited = false;
 
@@ -51,8 +51,7 @@ bool MemDB::inited = false;
 std::unordered_map<MemDB::Statement, std::string> MemDB::queries = {
     { DEC_FILE_IDX, "update file set file_idx=file_idx-1 where archive_id = :archive_id and file_type = :file_type and file_idx > :file_idx" },
     { DELETE_FILE, "delete from file where archive_id = :archive_id and file_type = :file_type and file_idx = :file_idx" },
-    { UPDATE_FILE, "update file set crc = :crc, md5 = :md5, sha1 = :sha1 where archive_id = :archive_id and file_type = :file_type and file_idx = :file_idx and detector_id = :detector_id" },
-   { INSERT_FILE, "insert into file (archive_id, file_type, file_idx, detector_id, location, size, crc, md5, sha1) values (:archive_id, :file_type, :file_idx, :detector_id, :location, :size, :crc, :md5, :sha1)" }
+    { INSERT_FILE, "insert into file (archive_id, file_type, file_idx, detector_id, location, size, crc, md5, sha1) values (:archive_id, :file_type, :file_idx, :detector_id, :location, :size, :crc, :md5, :sha1)" }
 };
 
 std::unordered_map<MemDB::ParameterizedStatement, std::string> MemDB::parameterized_queries = {
@@ -101,68 +100,81 @@ void MemDB::ensure(void) {
 }
 
 
-void MemDB::delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx) {
-    ensure();
-
-    memdb->delete_file(a->id, a->filetype, idx);
+void MemDB::delete_file(const ArchiveContents *archive, size_t index, bool adjust_idx) {
+    auto stmt = get_statement(DELETE_FILE);
+    
+    stmt->set_uint64("archive_id", archive->id);
+    stmt->set_int("file_type", archive->filetype);
+    stmt->set_uint64("file_idx", index);
+    
+    stmt->execute();
 
     if (!adjust_idx) {
         return;
     }
 
-    auto stmt = memdb->get_statement(DEC_FILE_IDX);
+    stmt = get_statement(DEC_FILE_IDX);
 
-    stmt->set_uint64("archive_id", a->id);
-    stmt->set_int("file_type", a->filetype);
-    stmt->set_int("file_idx", static_cast<int>(idx));
+    stmt->set_uint64("archive_id", archive->id);
+    stmt->set_int("file_type", archive->filetype);
+    stmt->set_int("file_idx", static_cast<int>(index));
 
     stmt->execute();
 }
 
 
 void MemDB::insert_archive(const ArchiveContents *archive) {
-    auto stmt = memdb->get_insert_file_statement(archive);
-    
     for (size_t i = 0; i < archive->files.size(); i++) {
-        memdb->insert_file(stmt, i, archive->files[i]);
+        insert_file(archive, i);
     }
 }
 
 
 void MemDB::insert_file(const ArchiveContents *archive, size_t index) {
-    auto stmt = memdb->get_insert_file_statement(archive);
+    auto &file = archive->files[index];
+
+    if (file.broken) {
+        return;
+    }
+
+    auto stmt = get_statement(INSERT_FILE);
     
-    memdb->insert_file(stmt, index, archive->files[index]);
-}
-
-
-void MemDB::update_file(const ArchiveContents *archive, size_t idx) {
-    ensure();
-
-    memdb->delete_file(archive->id, archive->filetype, idx);
-    memdb->insert_file(archive, idx);
-}
-
-
-void MemDB::update_file(uint64_t id, filetype_t ft, size_t idx, const Hashes &hashes) {
-    /* FILE_SH_DETECTOR hashes are always completely filled in */
-
-    auto stmt = get_statement(UPDATE_FILE);
-
-    stmt->set_hashes(hashes, true);
-    stmt->set_uint64("archive_id", id);
-    stmt->set_int("File_type", ft);
-    stmt->set_uint64("file_idx", idx);
-    stmt->set_uint64("detector_idx", 0);
-
+    stmt->reset();
+    
+    stmt->set_uint64("archive_id", archive->id);
+    stmt->set_int("file_type", archive->filetype);
+    stmt->set_int("location", archive->where);
+    stmt->set_uint64("file_idx", index);
+    stmt->set_uint64("detector_id", 0);
+    stmt->set_uint64("size", file.hashes.size, Hashes::SIZE_UNKNOWN);
+    stmt->set_hashes(file.hashes, true);
+    
     stmt->execute();
+
+    for (auto pair : file.detector_hashes) {
+        stmt->reset();
+        
+        stmt->set_uint64("archive_id", archive->id);
+        stmt->set_int("file_type", archive->filetype);
+        stmt->set_int("location", archive->where);
+        stmt->set_uint64("file_idx", index);
+        stmt->set_uint64("detector_id", pair.first);
+        stmt->set_uint64("size", pair.second.size, Hashes::SIZE_UNKNOWN);
+        stmt->set_hashes(pair.second, true);
+        
+        stmt->execute();
+    }
+}
+
+
+void MemDB::update_file(const ArchiveContents *archive, size_t index) {
+    delete_file(archive, index, false);
+    insert_file(archive, index);
 }
 
 
 std::vector<MemDB::FindResult> MemDB::find(filetype_t filetype, const FileData *file) {
-    ensure();
-
-    auto stmt = memdb->get_statement(QUERY_FILE, file->hashes, file->is_size_known());
+    auto stmt = get_statement(QUERY_FILE, file->hashes, file->is_size_known());
     
     if (file->is_size_known()) {
         stmt->set_uint64("size", file->hashes.size);
@@ -179,58 +191,10 @@ std::vector<MemDB::FindResult> MemDB::find(filetype_t filetype, const FileData *
         result.archive_id = stmt->get_uint64("archive_id");
         result.index = stmt->get_uint64("file_idx");
         result.detector_id = stmt->get_uint64("detector_id");
-        result.location = static_cast<where_t>(stmt->get_int("locatoin"));
+        result.location = static_cast<where_t>(stmt->get_int("location"));
         
         results.push_back(result);
     }
     
     return results;
-}
-
-
-void MemDB::delete_file(uint64_t id, filetype_t filetype, size_t index) {
-    auto stmt = get_statement(DELETE_FILE);
-
-    stmt->set_uint64("archive_id", id);
-    stmt->set_int("file_type", filetype);
-    stmt->set_uint64("file_idx", index);
-
-    stmt->execute();
-}
-
-
-void MemDB::insert_file(DBStatement *stmt, size_t index, const File &file) {
-    if (file.broken) {
-        return;
-    }
-
-    insert_file(stmt, index, 0, file.hashes);
-
-    for (auto pair : file.detector_hashes) {
-        insert_file(stmt, index, pair.first, pair.second);
-    }
-}
-
-
-void MemDB::insert_file(DBStatement *stmt, size_t index, size_t detector_id, const Hashes &hashes) {
-    
-    stmt->set_uint64("file_idx", index);
-    stmt->set_uint64("detector_id", detector_id);
-    stmt->set_uint64("size", hashes.size, Hashes::SIZE_UNKNOWN);
-    stmt->set_hashes(hashes, true);
-    
-    stmt->execute();
-    stmt->reset();
-}
-
-DBStatement *MemDB::get_insert_file_statement(const ArchiveContents *archive) {
-    ensure();
-
-    auto stmt = memdb->get_statement(INSERT_FILE);
-    
-    stmt->set_uint64("archive_id", archive->id);
-    stmt->set_int("file_type", archive->filetype);
-    stmt->set_int("location", archive->where);
-    
-    return stmt;
 }

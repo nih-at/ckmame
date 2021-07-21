@@ -70,7 +70,7 @@ public:
     void set_int64(const std::string &name, int64_t value);
     void set_int64(const std::string &name, int64_t value, int64_t default_value);
     void set_null(const std::string &name);
-    void set_string(const std::string &name, const std::string &value);
+    void set_string(const std::string &name, const std::string &value, bool store_empty_string = false);
     void set_uint64(const std::string &name, uint64_t value) { set_int64(name, static_cast<int64_t>(value)); }
     void set_uint64(const std::string &name, uint64_t value, uint64_t default_value) { set_int64(name, static_cast<int64_t>(value), static_cast<int64_t>(default_value)); }
     

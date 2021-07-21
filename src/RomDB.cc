@@ -309,9 +309,9 @@ void RomDB::read_files(Game *game, filetype_t ft) {
         rom.merge = stmt->get_string("merge");
         rom.status = static_cast<Rom::Status>(stmt->get_int("status"));
         rom.where = static_cast<where_t>(stmt->get_int("location"));
-        rom.hashes.size = stmt->get_uint64("size", Hashes::SIZE_UNKNOWN);
         rom.hashes = stmt->get_hashes();
-        
+        rom.hashes.size = stmt->get_uint64("size", Hashes::SIZE_UNKNOWN);
+
         game->files[ft].push_back(rom);
     }
 }
@@ -493,7 +493,7 @@ void RomDB::write_game(Game *game) {
 
     stmt->set_string("name", game->name);
     stmt->set_string("description", game->description);
-    stmt->set_int("dat_no", static_cast<int>(game->dat_no));
+    stmt->set_int("dat_idx", static_cast<int>(game->dat_no));
     stmt->set_string("parent", game->cloneof[0]);
     
     stmt->execute();

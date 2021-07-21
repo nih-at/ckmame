@@ -99,7 +99,7 @@ find_result_t find_in_archives(filetype_t filetype, size_t detector_id, const Fi
 
 
 static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_id, const FileData *rom, Match *m, bool needed_only) {
-    auto results = MemDB::find(filetype, rom); // TODO: catch error, return FIND_ERROR
+    auto results = memdb->find(filetype, rom); // TODO: catch error, return FIND_ERROR
     
     for (auto result : results) {
         if (result.detector_id != 0 && result.detector_id != detector_id) {
@@ -118,7 +118,7 @@ static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_i
 
         if (result.detector_id == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
             a->file_ensure_hashes(result.index, rom->hashes.types | db->hashtypes(filetype));
-            MemDB::update_file(a->contents.get(), result.index);
+            memdb->update_file(a->contents.get(), result.index);
 	}
 
 	if (file.broken || file.get_hashes(result.detector_id).compare(rom->hashes) != Hashes::MATCH) {

@@ -319,11 +319,11 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
     id = write_archive_header(id, name, archive->filetype, archive->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? 0 : archive->mtime, archive->size);
 
     auto stmt = get_statement(INSERT_FILE);
-    stmt->set_int("archive_id", id);
 
     for (size_t i = 0; i < archive->files.size(); i++) {
         const auto &file = archive->files[i];
            
+        stmt->set_int("archive_id", id);
         stmt->set_int("file_idx", static_cast<int>(i));
         stmt->set_uint64("detector_id", 0);
         stmt->set_string("name", file.name);
@@ -336,11 +336,12 @@ void CkmameDB::write_archive(ArchiveContents *archive) {
         stmt->reset();
         
         for (auto &pair : file.detector_hashes) {
-            auto id = get_detector_id(pair.first);
+            auto detector_id = get_detector_id(pair.first);
 
+            stmt->set_int("archive_id", id);
             stmt->set_int("file_idx", static_cast<int>(i));
-            stmt->set_uint64("detector_id", id);
-            stmt->set_string("name", "");
+            stmt->set_uint64("detector_id", detector_id);
+            stmt->set_string("name", "", true);
             stmt->set_int64("mtime", 0);
             stmt->set_int("status", 0);
             stmt->set_uint64("size", pair.second.size);

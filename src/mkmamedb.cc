@@ -252,65 +252,70 @@ main(int argc, char **argv) {
 	}
     }
 
-    if ((out = OutputContext::create(fmt, dbname, flags)) == NULL) {
-	exit(1);
-    }
-
-    if (detector_name) {
-#if defined(HAVE_LIBXML2)
-	seterrinfo(detector_name);
-	auto detector = Detector::parse(detector_name);
-        if (detector != NULL) {
-            out->detector(detector.get());
+    try {
+        if ((out = OutputContext::create(fmt, dbname, flags)) == NULL) {
+            exit(1);
         }
-#else
-	myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
-#endif
+
+        if (detector_name) {
+    #if defined(HAVE_LIBXML2)
+            seterrinfo(detector_name);
+            auto detector = Detector::parse(detector_name);
+            if (detector != NULL) {
+                out->detector(detector.get());
+            }
+    #else
+            myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
+    #endif
+        }
+
+
+        /* TODO: handle errors */
+        if (optind == argc) {
+            process_stdin(exclude, &dat, out.get());
+        }
+        else {
+            // TODO: this isn't overridable by --only-files?
+            file_patterns.push_back(DEFAULT_FILE_PATTERNS);
+
+            for (i = optind; i < argc; i++) {
+                auto name = std::string(argv[i]);
+                
+                auto last = name.find_last_not_of("/");
+                if (last == std::string::npos) {
+                    name = "/";
+                }
+                else {
+                    name.resize(last + 1);
+                }
+
+                if (process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags) < 0) {
+                    i = argc;
+                    ret = 1;
+                }
+            }
+        }
+
+        if (ret == 0) {
+            out->close();
+        }
+
+        if (roms_unzipped) {
+            CkmameDB::close_all();
+        }
+
+        if (flags & OUTPUT_FL_TEMP) {
+            if (!rename_or_move(dbname, dbname_real)) {
+                myerror(ERRDEF, "could not copy temporary output '%s' to '%s'", dbname, dbname_real);
+                return 1;
+            }
+        }
     }
-
-
-    /* TODO: handle errors */
-    if (optind == argc) {
-	process_stdin(exclude, &dat, out.get());
+    catch (const std::exception &exception) {
+        fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), exception.what());
     }
-    else {
-        // TODO: this isn't overridable by --only-files?
-        file_patterns.push_back(DEFAULT_FILE_PATTERNS);
-
-	for (i = optind; i < argc; i++) {
-            auto name = std::string(argv[i]);
             
-            auto last = name.find_last_not_of("/");
-            if (last == std::string::npos) {
-                name = "/";
-            }
-            else {
-                name.resize(last + 1);
-            }
-
-	    if (process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags) < 0) {
-		i = argc;
-		ret = -1;
-	    }
-	}
-    }
-
-    if (ret == 0) {
-	out->close();
-    }
-
-    if (roms_unzipped) {
-	CkmameDB::close_all();
-    }
-
-    if (flags & OUTPUT_FL_TEMP) {
-	if (!rename_or_move(dbname, dbname_real)) {
-	    myerror(ERRDEF, "could not copy temporary output '%s' to '%s'", dbname, dbname_real);
-	    return 1;
-	}
-    }
-    
-    return 0;
+    return ret;
 }
 
 
@@ -387,7 +392,8 @@ static int process_file(const std::string &fname, const std::unordered_set<std::
             auto ps = std::make_shared<ParserSourceFile>(fname);
             return Parser::parse(ps, exclude, dat, out, parser_flags);
         }
-        catch (std::exception &e) {
+        catch (std::exception &exception) {
+            fprintf(stderr, "%s: can't process %s: %s\n", getprogname(), fname.c_str(), exception.what());
 	    return -1;
         }
     }
@@ -400,7 +406,8 @@ static int process_stdin(const std::unordered_set<std::string> &exclude, const D
 
         return Parser::parse(ps, exclude, dat, out, parser_flags);
     }
-    catch (std::exception &e) {
+    catch (std::exception &exception) {
+        fprintf(stderr, "%s: can't process stdin: %s\n", getprogname(), exception.what());
         return -1;
     }
 }

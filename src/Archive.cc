@@ -628,7 +628,7 @@ void ArchiveContents::enter_in_maps(ArchiveContentsPtr contents) {
         archive_by_id[contents->id] = contents;
         
         if (IS_EXTERNAL(contents->where)) {
-            MemDB::insert_archive(contents.get());
+            memdb->insert_archive(contents.get());
         }
     }
 
@@ -675,8 +675,8 @@ bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorP
         
         if (compute_detector_hashes(index, missing_detectors)) {
             got_new_hashes = true;
+            memdb->update_file(contents.get(), index);
         }
-        MemDB::update_file(contents.get(), index);
     }
     
     if (got_new_hashes) {

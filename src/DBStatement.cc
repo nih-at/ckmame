@@ -62,7 +62,7 @@ DBStatement::~DBStatement() {
 
 void DBStatement::execute() {
     if (sqlite3_step(stmt) != SQLITE_DONE) {
-        throw Exception("error executing statement"); // TODO: detail
+        throw Exception(std::string("error executing statement: ") + sqlite3_errmsg(db->db));
     }
 }
 
@@ -289,12 +289,12 @@ void DBStatement::set_null(const std::string &name) {
 }
 
 
-void DBStatement::set_string(const std::string &name, const std::string &value) {
+void DBStatement::set_string(const std::string &name, const std::string &value, bool store_empty_string) {
     auto index = get_parameter_index(name);
     
     int ret;
     
-    if (!value.empty()) {
+    if (!value.empty() || store_empty_string) {
         ret = sqlite3_bind_text(stmt, index, value.c_str(), -1, SQLITE_STATIC);
     }
     else {
