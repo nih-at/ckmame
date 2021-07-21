@@ -302,51 +302,48 @@ restore_table(sqlite3 *db, FILE *f) {
 
     index += 2;
 
-    std::string query = "pragma table_info(" + table_name + ")";
-    sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
-	myerror(ERRDB, "can't query table %s", table_name.c_str());
-	return -1;
-    }
 
     auto columns = split(line.substr(index, line.length() - index - 1), ",", true);
     std::vector<int> column_types;
-    int ret;
-    size_t i = 0;
-    while ((ret = sqlite3_step(stmt)) == SQLITE_ROW) {
-        if (i >= columns.size()) {
-	    myerror(ERRFILE, "too few columns in dump for table %s", table_name.c_str());
-	    return -1;
-	}
-        if (columns[i] != reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1))) {
-            myerror(ERRFILE, "column '%s' in dump doesn't match column '%s' in db for table '%s'", columns[i].c_str(), sqlite3_column_text(stmt, 1), table_name.c_str());
-	    return -1;
-	}
 
-	int coltype = column_type(reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2)));
-	if (coltype < 0) {
-	    myerror(ERRDB, "unsupported column type %s for column %s of table %s", sqlite3_column_text(stmt, 1), columns[i].c_str(), table_name.c_str());
-	    return -1;
-	}
-	column_types.push_back(coltype);
-        i += 1;
+    {
+        auto stmt = DBStatement(db, "pragma table_info(" + table_name + ")");
+
+        size_t i = 0;
+        while (stmt.step()) {
+            if (i >= columns.size()) {
+                myerror(ERRFILE, "too few columns in dump for table %s", table_name.c_str());
+                return -1;
+            }
+            if (columns[i] != stmt.get_string("name")) {
+                myerror(ERRFILE, "column '%s' in dump doesn't match column '%s' in db for table '%s'", columns[i].c_str(), stmt.get_string("name").c_str(), table_name.c_str());
+                return -1;
+            }
+            
+            int coltype = column_type(stmt.get_string("type"));
+            if (coltype < 0) {
+                myerror(ERRDB, "unsupported column type %s for column %s of table %s", stmt.get_string("type").c_str(), columns[i].c_str(), table_name.c_str());
+                return -1;
+            }
+            column_types.push_back(coltype);
+            i += 1;
+        }
+        if (i != columns.size()) {
+            myerror(ERRFILE, "too many columns in dump for table %s", table_name.c_str());
+            return -1;
+        }
     }
 
-    sqlite3_finalize(stmt);
-
-    query = "insert into " + table_name + " values (";
+    std::string query = "insert into " + table_name + " values (";
     for (size_t i = 0; i < column_types.size(); i++) {
         if (i != 0) {
             query += ", ";
         }
-        query += "?";
+        query += ":" + columns[i];
     }
     query += ")";
 
-    if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
-	myerror(ERRDB, "can't prepare insert statement for table %s", table_name.c_str());
-	return -1;
-    }
+    auto stmt = DBStatement(db, query);
 
     while ((next_line = get_line(f)).has_value()) {
         line = next_line.value();
@@ -363,21 +360,23 @@ restore_table(sqlite3 *db, FILE *f) {
             return -1;
         }
         
+        std::vector<std::vector<uint8_t>> blobs;
+        
         for (size_t i = 0; i < column_types.size(); i++) {
             auto &value = values[i];
             
             if (value == "<null>") {
-                ret = sqlite3_bind_null(stmt, static_cast<int>(i + 1));
+                stmt.set_null(columns[i]);
             }
             else {
 		switch (column_types[i]) {
                     case SQLITE_TEXT:
-                        ret = sqlite3_bind_text(stmt, static_cast<int>(i + 1), values[i].c_str(), -1, SQLITE_STATIC);
+                        stmt.set_string(columns[i], values[i], true);
                         break;
                         
                     case SQLITE_INTEGER: {
                         intmax_t vi = strtoimax(value.c_str(), NULL, 10);
-                        ret = sqlite3_bind_int64(stmt, static_cast<int>(i + 1), vi);
+                        stmt.set_int64(columns[i], vi);
                         break;
                     }
 
@@ -385,43 +384,20 @@ restore_table(sqlite3 *db, FILE *f) {
                         size_t length = value.length();
 
                         if (value[0] != '<' || value[length - 1] != '>' || length % 2) {
-                            myerror(ERRFILE, "invalid binary value: %s", value.c_str());
-                            ret = SQLITE_ERROR;
-                            break;
+                            throw Exception("invalid binary value: %s", value.c_str());
                         }
                         
-                        size_t len = length / 2 - 1;
-                        unsigned char *bin = static_cast<unsigned char *>(malloc(len));
-                        if (bin == NULL) {
-                            myerror(ERRSTR, "cannot allocate memory");
-                            return -1;
-                        }
-                        if (hex2bin(bin, value.substr(1, length - 2).c_str(), len) < 0) {
-                            free(bin);
-                            myerror(ERRFILE, "invalid binary value: %s", value.c_str());
-                            ret = SQLITE_ERROR;
-                            break;
-                        }
-                        ret = sqlite3_bind_blob(stmt, static_cast<int>(i + 1), bin, static_cast<int>(len), free);
+                        blobs.push_back(hex2bin(value.substr(1, length - 2)));
+                        stmt.set_blob(columns[i], blobs[blobs.size() - 1]);
                         break;
                     }
                 }
             }
-
-	    if (ret != SQLITE_OK) {
-		myerror(ERRDB, "can't bind column");
-		return -1;
-	    }
 	}
 
-	if (sqlite3_step(stmt) != SQLITE_DONE) {
-	    myerror(ERRDB, "can't insert row into table %s", table_name.c_str());
-	    return -1;
-	}
-	if (sqlite3_reset(stmt) != SQLITE_OK) {
-	    myerror(ERRDB, "can't reset statement");
-	    return -1;
-	}
+        stmt.execute();
+        stmt.reset();
+        blobs.clear();
     }
 
     return 0;

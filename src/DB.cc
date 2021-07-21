@@ -81,7 +81,7 @@ update archive set file_type=" + std::to_string(TYPE_DISK) + " where exists(sele
 };
 
 int DB::get_version() {
-    auto stmt = DBStatement(this, "pragma user_version");
+    auto stmt = DBStatement(db, "pragma user_version");
     
     if (!stmt.step()) {
         throw Exception("can't get version: %s", sqlite3_errmsg(db));
@@ -312,7 +312,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
         // printf(" '%s'\n", sql_query.c_str());
     }
 
-    auto stmt = std::make_shared<DBStatement>(this, sql_query);
+    auto stmt = std::make_shared<DBStatement>(db, sql_query);
     statements[statement_id] = stmt;
 
     return stmt.get();

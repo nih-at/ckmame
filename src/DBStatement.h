@@ -41,11 +41,9 @@
 
 #include "Hashes.h"
 
-class DB;
-
 class DBStatement {
 public:
-    DBStatement(DB *db, const std::string &sql_query);
+    DBStatement(sqlite3 *db, const std::string &sql_query);
     ~DBStatement();
         
     void execute();
@@ -78,7 +76,7 @@ private:
     int get_column_index(const std::string &name);
     int get_parameter_index(const std::string &name);
     
-    DB *db;
+    sqlite3 *db;
     sqlite3_stmt *stmt;
     std::unordered_map<std::string, int> column_names;
     std::unordered_map<std::string, int> parameter_names;

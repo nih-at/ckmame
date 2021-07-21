@@ -36,9 +36,11 @@
 #include <cinttypes>
 #include <cstring>
 #include <filesystem>
+#include <vector>
 
 #include "config.h"
 #include "error.h"
+#include "Exception.h"
 #include "globals.h"
 
 
@@ -71,6 +73,18 @@ int hex2bin(unsigned char *t, const char *s, size_t tlen) {
     return 0;
 }
 
+
+std::vector<uint8_t> hex2bin(const std::string &hex) {
+    if (hex.size() % 2 != 0) {
+        throw Exception("hex string with odd number of digits");
+    }
+    auto bin = std::vector<uint8_t>(hex.size() / 2);
+    if (hex2bin(bin.data(), hex.c_str(), hex.size() / 2) != 0) {
+        throw Exception("invalid hex string '" + hex + "'");
+    }
+    
+    return bin;
+}
 
 name_type_t name_type(const std::string &name) {
     if (!std::filesystem::exists(name)) {

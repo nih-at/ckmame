@@ -38,8 +38,8 @@
 #include "DB.h"
 #include "Exception.h"
 
-DBStatement::DBStatement(DB *db_, const std::string &sql_query) : db(db_) {
-    if (sqlite3_prepare_v2(db->db, sql_query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+DBStatement::DBStatement(sqlite3 *db_, const std::string &sql_query) : db(db_) {
+    if (sqlite3_prepare_v2(db, sql_query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
         throw Exception("can't create SQL statement '" + sql_query + "'"); // TODO: include sqlite error
     }
 
@@ -62,7 +62,7 @@ DBStatement::~DBStatement() {
 
 void DBStatement::execute() {
     if (sqlite3_step(stmt) != SQLITE_DONE) {
-        throw Exception(std::string("error executing statement: ") + sqlite3_errmsg(db->db));
+        throw Exception(std::string("error executing statement: ") + sqlite3_errmsg(db));
     }
 }
 
@@ -83,7 +83,7 @@ bool DBStatement::step() {
             return true;
             
         default:
-            throw Exception("error executing statement"); // TODO: detail
+            throw Exception(std::string("error executing statement: ") + sqlite3_errmsg(db));
     }
 }
 
@@ -163,7 +163,7 @@ int64_t DBStatement::get_int64(const std::string &name, int64_t default_value) {
 
 
 int64_t DBStatement::get_rowid() {
-    return sqlite3_last_insert_rowid(db->db);
+    return sqlite3_last_insert_rowid(db);
 }
 
 std::string DBStatement::get_string(const std::string &name) {
