@@ -35,6 +35,7 @@
 */
 
 #include <string>
+#include <vector>
 
 #include <stdarg.h>
 
