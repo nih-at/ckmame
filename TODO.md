@@ -1,10 +1,14 @@
+- make DB format agnostic
+- retire C-style version of hex2bin
+
+- handle multiple writers to ckmamedb
+- search loose files in zipped mode.
+
 - exceptions and error messages:
     - who creates which part of the error messages
     - catch exceptions in main and print errors (done in ckmame and mkmamedb).
     - clean up Exceptions without text
     
-- handle multiple writers to ckmamedb
-
 - When checking single game, search for its ROMs everywhere and report any matches.
 
 - rar read support
@@ -23,8 +27,6 @@
     - xml
 
 - when committing to garbage fails because source archive is broken, move source archive out of the way.
-
-- mkstatements.pl: rewrite in cmake and run it automatically each build
 
 # Later
 
