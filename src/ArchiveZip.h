@@ -43,7 +43,7 @@ public:
     ArchiveZip(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_ZIP, name, filetype, where, flags), za(NULL) { }
     ArchiveZip(ArchiveContentsPtr contents) : Archive(contents), za(NULL) { }
 
-    virtual ~ArchiveZip() { close(); }
+    virtual ~ArchiveZip();
 
     virtual bool check();
     virtual bool close_xxx();

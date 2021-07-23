@@ -45,6 +45,14 @@
 
 #define BUFSIZE 8192
 
+ArchiveZip::~ArchiveZip() {
+    try {
+        close();
+    }
+    catch (...) { }
+}
+
+
 bool ArchiveZip::ensure_zip() {
     if (za != NULL) {
         return true;
