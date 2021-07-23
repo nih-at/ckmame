@@ -224,80 +224,86 @@ main(int argc, char **argv) {
     }
 
     try {
-	db = std::make_unique<RomDB>(dbname, DBH_READ);
+        try {
+            db = std::make_unique<RomDB>(dbname, DBH_READ);
+        }
+        catch (std::exception &e) {
+            // TODO: catch exception for unsupported database version and report differently
+            myerror(0, "can't open database '%s': %s", dbname, strerror(errno));
+            exit(1);
+        }
+        seterrdb(db.get());
+
+        auto list = db->read_list(DBH_KEY_LIST_GAME);
+        if (list.empty()) {
+            myerror(ERRDEF, "list of games not found in database '%s'", dbname);
+            exit(1);
+        }
+        std::sort(list.begin(), list.end());
+
+        /* find matches for ROMs */
+        if (find_checksum != 0) {
+            Hashes match;
+
+            for (auto i = optind; i < argc; i++) {
+                /* checksum */
+                if ((match.set_from_string(argv[i])) == -1) {
+                    myerror(ERRDEF, "error parsing checksum '%s'", argv[i]);
+                    exit(2);
+                }
+
+                print_matches(filetype, &match);
+            }
+            exit(0);
+        }
+
+        first = 1;
+        for (auto i = optind; i < argc; i++) {
+            if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
+                if (argv[i][0] == '/') {
+                    if (first)
+                        first = 0;
+                    else
+                        putc('\n', stdout);
+                    dump_special(argv[i]);
+                }
+                else if (std::binary_search(list.begin(), list.end(), argv[i])) {
+                    if (first)
+                        first = 0;
+                    else
+                        putc('\n', stdout);
+                    dump_game(argv[i], brief_mode);
+                }
+                else
+                    myerror(ERRDEF, "game '%s' unknown", argv[i]);
+            }
+            else {
+                found = 0;
+                for (size_t j = 0; j < list.size(); j++) {
+                    if (fnmatch(argv[i], list[j].c_str(), 0) == 0) {
+                        if (first) {
+                            first = 0;
+                        }
+                        else {
+                            putc('\n', stdout);
+                        }
+                        dump_game(list[j], brief_mode);
+                        found = 1;
+                    }
+                }
+                if (!found)
+                    myerror(ERRDEF, "no game matching '%s' found", argv[i]);
+            }
+        }
+
+        db = NULL;
+
+        return 0;
     }
-    catch (std::exception &e) {
-	// TODO: catch exception for unsupported database version and report differently
-	myerror(0, "can't open database '%s': %s", dbname, strerror(errno));
-	exit(1);
+    catch (const std::exception &exception) {
+        fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), exception.what());
+        exit(1);
     }
-    seterrdb(db.get());
-
-    auto list = db->read_list(DBH_KEY_LIST_GAME);
-    if (list.empty()) {
-	myerror(ERRDEF, "list of games not found in database '%s'", dbname);
-	exit(1);
-    }
-    std::sort(list.begin(), list.end());
-
-    /* find matches for ROMs */
-    if (find_checksum != 0) {
-	Hashes match;
-
-	for (auto i = optind; i < argc; i++) {
-	    /* checksum */
-	    if ((match.set_from_string(argv[i])) == -1) {
-		myerror(ERRDEF, "error parsing checksum '%s'", argv[i]);
-		exit(2);
-	    }
-
-	    print_matches(filetype, &match);
-	}
-	exit(0);
-    }
-
-    first = 1;
-    for (auto i = optind; i < argc; i++) {
-	if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-	    if (argv[i][0] == '/') {
-		if (first)
-		    first = 0;
-		else
-		    putc('\n', stdout);
-		dump_special(argv[i]);
-	    }
-	    else if (std::binary_search(list.begin(), list.end(), argv[i])) {
-		if (first)
-		    first = 0;
-		else
-		    putc('\n', stdout);
-		dump_game(argv[i], brief_mode);
-	    }
-	    else
-		myerror(ERRDEF, "game '%s' unknown", argv[i]);
-	}
-	else {
-	    found = 0;
-	    for (size_t j = 0; j < list.size(); j++) {
-		if (fnmatch(argv[i], list[j].c_str(), 0) == 0) {
-		    if (first) {
-			first = 0;
-		    }
-		    else {
-			putc('\n', stdout);
-		    }
-		    dump_game(list[j], brief_mode);
-		    found = 1;
-		}
-	    }
-	    if (!found)
-		myerror(ERRDEF, "no game matching '%s' found", argv[i]);
-	}
-    }
-
-    db = NULL;
-
-    return 0;
 }
 
 

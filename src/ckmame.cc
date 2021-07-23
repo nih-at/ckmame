@@ -544,6 +544,7 @@ main(int argc, char **argv) {
     }
     catch (const std::exception &e) {
 	fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), e.what());
+	exit(1);
     }
 }
 

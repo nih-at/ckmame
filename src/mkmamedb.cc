@@ -313,6 +313,7 @@ main(int argc, char **argv) {
     }
     catch (const std::exception &exception) {
         fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), exception.what());
+        exit(1);
     }
             
     return ret;

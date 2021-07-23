@@ -131,39 +131,45 @@ main(int argc, char **argv) {
 	exit(1);
     }
 
-    if (detector_name) {
-#if defined(HAVE_LIBXML2)
-        if ((detector = Detector::parse(detector_name)) == NULL) {
-	    myerror(ERRSTR, "cannot parse detector '%s'", detector_name);
-	    exit(1);
-	}
-#else
-	myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
-#endif
-    }
-
     try {
-	auto ddb = std::make_unique<RomDB>(dbname, DBH_READ);
-	if (detector == NULL) {
-            detector = ddb->detectors.begin()->second;
-	}
-	if (hashtypes == -1) {
-	    hashtypes = ddb->hashtypes(TYPE_ROM);
-	}
-    }
-    catch (std::exception &e) {
-	if (detector == 0) {
-	    // TODO: catch exception for unsupported database version and report differently
-	    myerror(0, "can't open database '%s': %s", dbname, strerror(errno));
-	    exit(1);
-	}
-    }
+        if (detector_name) {
+#if defined(HAVE_LIBXML2)
+            if ((detector = Detector::parse(detector_name)) == NULL) {
+                myerror(ERRSTR, "cannot parse detector '%s'", detector_name);
+                exit(1);
+            }
+#else
+            myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
+#endif
+        }
 
-    ret = 0;
-    for (i = optind; i < argc; i++)
-	ret |= print_archive(argv[i], hashtypes);
+        try {
+            auto ddb = std::make_unique<RomDB>(dbname, DBH_READ);
+            if (detector == NULL) {
+                detector = ddb->detectors.begin()->second;
+            }
+            if (hashtypes == -1) {
+                hashtypes = ddb->hashtypes(TYPE_ROM);
+            }
+        }
+        catch (std::exception &e) {
+            if (detector == 0) {
+                // TODO: catch exception for unsupported database version and report differently
+                myerror(0, "can't open database '%s': %s", dbname, strerror(errno));
+                exit(1);
+            }
+        }
 
-    return ret ? 1 : 0;
+        ret = 0;
+        for (i = optind; i < argc; i++)
+            ret |= print_archive(argv[i], hashtypes);
+
+        return ret ? 1 : 0;
+    }
+    catch (const std::exception &exception) {
+        fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), exception.what());
+        exit(1);
+    }
 }
 
 
