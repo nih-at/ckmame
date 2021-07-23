@@ -52,7 +52,10 @@ OutputContextDb::OutputContextDb(const std::string &dbname, int flags) {
 
 
 OutputContextDb::~OutputContextDb() {
-    close();
+    try {
+        close();
+    }
+    catch (...) { }
 }
 
 
