@@ -42,6 +42,14 @@
 #include "file_util.h"
 
 
+ArchiveLibarchive::~ArchiveLibarchive() {
+    try {
+        close();
+    }
+    catch (...) { }
+}
+
+
 bool ArchiveLibarchive::ensure_la() {
     if (la != NULL) {
         return true;

@@ -43,7 +43,7 @@ public:
     ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_LIBARCHIVE, name, filetype, where, flags), la(NULL), current_index(0), header_read(false), have_open_file(false) {  }
     ArchiveLibarchive(ArchiveContentsPtr contents) : Archive(contents), la(NULL), current_index(0), header_read(false), have_open_file(false) { }
 
-    virtual ~ArchiveLibarchive() { close(); }
+    virtual ~ArchiveLibarchive();
 
     virtual bool check();
     virtual bool close_xxx();
