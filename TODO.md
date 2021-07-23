@@ -1,4 +1,6 @@
 - make DB format agnostic
+- make get_statement() private
+    - move getting RomDB stats from dumpgame to RomDB.
 - retire C-style version of hex2bin
 
 - handle multiple writers to ckmamedb
