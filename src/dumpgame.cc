@@ -485,7 +485,8 @@ dump_stats(int dummy) {
 
     auto stmt = db->get_statement(RomDB::QUERY_STATS_GAMES);
 
-    stmt->step();
+    // This statement always returns one row.
+    (void)stmt->step();
 
     stats.games_total = stmt->get_uint64("amount");
 
