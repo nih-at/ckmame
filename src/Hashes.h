@@ -35,8 +35,9 @@
 */
 
 #include <memory>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 class HashesContexts;
 
@@ -77,29 +78,32 @@ public:
     };
     
     uint64_t size;
-    int types;
     uint32_t crc;
-    uint8_t md5[SIZE_MD5];
-    uint8_t sha1[SIZE_SHA1];
+    std::vector<uint8_t> md5;
+    std::vector<uint8_t> sha1;
     
-    Hashes() : size(SIZE_UNKNOWN), types(0), crc(0) { }
+    Hashes() : size(SIZE_UNKNOWN), crc(0), types(0) { }
     
+    void add_types(int types);
     bool are_crc_complement(const Hashes &other) const;
+    int get_types() const { return types; }
     bool has_size() const { return size != SIZE_UNKNOWN; }
     bool has_type(int type) const;
     bool has_all_types(const Hashes &other) const { return has_all_types(other.types); }
     bool has_all_types(int requested_types) const { return (types & requested_types) == requested_types; }
     Compare compare(const Hashes &other) const;
     bool operator==(const Hashes &other) const;
-    bool verify(int type, const void *data) const;
+    bool is_zero(int type) const;
     std::string to_string(int type) const;
     bool empty() const { return types == 0; }
-    const void *hash_data(int type) const;
 
     void merge(const Hashes &other);
-    void set(int type, const void *data, bool ignore_zero = false);
     void set_hashes(const Hashes &other);
-    void set_crc(uint32_t crc_) { types |= TYPE_CRC; crc = crc_; }
+    void set_crc(uint32_t data, bool ignore_zero = false);
+    void set_md5(const std::vector<uint8_t> &data, bool ignore_zero = false);
+    void set_md5(const uint8_t *data, bool ignore_zero = false);
+    void set_sha1(const std::vector<uint8_t> &data, bool ignore_zero = false);
+    void set_sha1(const uint8_t *data, bool ignore_zero = false);
     int set_from_string(const std::string &s);
 
     static int types_from_string(const std::string &s);
@@ -109,6 +113,10 @@ public:
 private:
     static std::unordered_map<std::string, int> name_to_type;
     static std::unordered_map<int, std::string> type_to_name;
+    
+    int types;
+
+    void set(int type, std::vector<uint8_t> & hash, const std::vector<uint8_t> &data, bool ignore_zero);
 };
 
 #endif /* hashes.h */

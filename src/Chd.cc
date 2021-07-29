@@ -98,7 +98,7 @@ Chd::Chd(const std::string &name) {
         auto total_hunks = GET_UINT32(p);
         p += 12; /* skip c/h/s */
 
-        hashes.set(Hashes::TYPE_MD5, p);
+        hashes.set_md5(p);
         p += Hashes::SIZE_MD5;
 	/* skip parent hashes */
         p += Hashes::SIZE_MD5;
@@ -119,7 +119,7 @@ Chd::Chd(const std::string &name) {
 	p += 8;
 
         if (version == 3) {
-            hashes.set(Hashes::TYPE_MD5, p);
+            hashes.set_md5(p);
             p += Hashes::SIZE_MD5;
             /* skip parent hashes */
             p += Hashes::SIZE_MD5;
@@ -128,7 +128,7 @@ Chd::Chd(const std::string &name) {
 	/* skip hunk length */
 	p += 4;
 
-        hashes.set(Hashes::TYPE_SHA1, p);
+        hashes.set_sha1(p);
         p += Hashes::SIZE_SHA1;
 	/* skip parent hashes */
         p += Hashes::SIZE_SHA1;
@@ -183,7 +183,7 @@ void Chd::read_header_v5(const uint8_t *header, uint32_t header_len) {
 
     /* skip raw hashes */
     p += Hashes::SIZE_SHA1;
-    hashes.set(Hashes::TYPE_SHA1, p);
+    hashes.set_sha1(p);
     p += Hashes::SIZE_SHA1;
     /* skip parent hashes */
     p += Hashes::SIZE_SHA1;

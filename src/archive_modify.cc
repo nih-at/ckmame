@@ -146,7 +146,7 @@ bool Archive::file_add_empty(const std::string &filename) {
 
     Hashes hashes;
     hashes.size = 0;
-    hashes.types = Hashes::TYPE_ALL;
+    hashes.add_types(Hashes::TYPE_ALL);
     Hashes::Update hu(&hashes);
     hu.end();
 

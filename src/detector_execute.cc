@@ -91,7 +91,7 @@ bool Detector::Test::bit_cmp(const uint8_t *b) const {
 Hashes Detector::Rule::compute_values(Operation operation, const std::vector<uint8_t> &data, uint64_t start, uint64_t length) const {
     Hashes hashes;
     
-    hashes.types = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
+    hashes.add_types(Hashes::TYPE_ALL);
     Hashes::Update hu(&hashes);
     
     if (operation == OP_NONE) {

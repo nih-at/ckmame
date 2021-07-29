@@ -152,11 +152,7 @@ static bool parse_hex(Detector::Test *test, std::vector<uint8_t> *result, const 
 	return false;
     }
 
-    result->resize(length);
-    if (hex2bin(result->data(), value.c_str(), length) < 0) {
-	errno = EINVAL;
-	return false;
-    }
+    *result = hex2bin(value);
 
     test->length = length;
     return true;

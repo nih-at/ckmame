@@ -101,9 +101,9 @@ void Detector::Test::print(FILE *fout) const {
                 fprintf(fout, " offset=\"%" PRId64 "\"", offset);
             }
             if (!mask.empty()) {
-                fprintf(fout, " mask=\"%s\"", bin2hex(mask.data(), mask.size()).c_str());
+                fprintf(fout, " mask=\"%s\"", bin2hex(mask).c_str());
             }
-            fprintf(fout, " value=\"%s\"", bin2hex(value.data(), value.size()).c_str());
+            fprintf(fout, " value=\"%s\"", bin2hex(value).c_str());
             break;
 
         case TEST_FILE_EQ:

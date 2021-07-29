@@ -46,41 +46,37 @@
 
 std::string rom_dir;
 
-std::string
-bin2hex(const uint8_t *data, size_t length) {
-    char b[length * 2 + 1];
+#define BIN2HEX(n) ((n) >= 10 ? (n) + 'a' - 10 : (n) + '0')
 
-    for (size_t i = 0; i < length; i++) {
-        sprintf(b + 2 * i, "%02x", data[i]);
+
+std::string bin2hex(const std::vector<uint8_t> &bin) {
+    auto hex = std::string(bin.size() * 2, '\0');
+    
+    for (size_t i = 0; i < bin.size(); i++) {
+        hex[i * 2] = BIN2HEX(bin[i] >> 4);
+        hex[i * 2 + 1] = BIN2HEX(bin[i] & 0xf);
     }
-    b[2 * length] = '\0';
-
-    return b;
+    
+    return hex;
 }
 
 
 #define HEX2BIN(c) (((c) >= '0' && (c) <= '9') ? (c) - '0' : ((c) >= 'A' && (c) <= 'F') ? (c) - 'A' + 10 : (c) - 'a' + 10)
-
-int hex2bin(unsigned char *t, const char *s, size_t tlen) {
-    if (strspn(s, "0123456789AaBbCcDdEeFf") != tlen * 2 || s[tlen * 2] != '\0') {
-	return -1;
-    }
-
-    for (size_t i = 0; i < tlen; i++) {
-	t[i] = static_cast<unsigned char>(HEX2BIN(s[i * 2]) << 4 | HEX2BIN(s[i * 2 + 1]));
-    }
-    
-    return 0;
-}
 
 
 std::vector<uint8_t> hex2bin(const std::string &hex) {
     if (hex.size() % 2 != 0) {
         throw Exception("hex string with odd number of digits");
     }
+    
+    if (hex.find_first_not_of("0123456789AaBbCcDdEeFf") != std::string::npos) {
+        throw Exception("hex string with invalid digit");
+    }
+    
     auto bin = std::vector<uint8_t>(hex.size() / 2);
-    if (hex2bin(bin.data(), hex.c_str(), hex.size() / 2) != 0) {
-        throw Exception("invalid hex string '" + hex + "'");
+    
+    for (size_t i = 0; i < bin.size(); i++) {
+        bin[i] = static_cast<uint8_t>(HEX2BIN(hex[i * 2]) << 4 | HEX2BIN(hex[i * 2 + 1]));
     }
     
     return bin;

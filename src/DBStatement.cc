@@ -115,11 +115,18 @@ Hashes DBStatement::get_hashes() {
             continue;
         }
         
-        if (type == Hashes::TYPE_CRC) {
-            hashes.set_crc(sqlite3_column_int64(stmt, index) & 0xffffffff);
-        }
-        else {
-            hashes.set(type, sqlite3_column_blob(stmt, index));
+        switch (type) {
+            case Hashes::TYPE_CRC:
+                hashes.set_crc(sqlite3_column_int64(stmt, index) & 0xffffffff);
+                break;
+                
+            case Hashes::TYPE_MD5:
+                hashes.set_md5(static_cast<const uint8_t *>(sqlite3_column_blob(stmt, index)));
+                break;
+
+            case Hashes::TYPE_SHA1:
+                hashes.set_sha1(static_cast<const uint8_t *>(sqlite3_column_blob(stmt, index)));
+                break;
         }
     }
                        
@@ -207,11 +214,18 @@ void DBStatement::set_hashes(const Hashes &hashes, bool set_null) {
         
         if (hashes.has_type(type)) {
             auto index = get_parameter_index(Hashes::type_name(type));
-            if (type == Hashes::TYPE_CRC) {
-                ret = sqlite3_bind_int64(stmt, index, hashes.crc);
-            }
-            else {
-                ret = sqlite3_bind_blob(stmt, index, hashes.hash_data(type), static_cast<int>(hashes.hash_size(type)), SQLITE_STATIC);
+            switch (type) {
+                case Hashes::TYPE_CRC:
+                    ret = sqlite3_bind_int64(stmt, index, hashes.crc);
+                    break;
+                    
+                case Hashes::TYPE_MD5:
+                    ret = sqlite3_bind_blob(stmt, index, hashes.md5.data(), static_cast<int>(Hashes::SIZE_MD5), SQLITE_STATIC);
+                    break;
+                    
+                case Hashes::TYPE_SHA1:
+                    ret = sqlite3_bind_blob(stmt, index, hashes.sha1.data(), static_cast<int>(Hashes::SIZE_SHA1), SQLITE_STATIC);
+                    break;
             }
         }
         else if (set_null) {

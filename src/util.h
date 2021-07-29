@@ -47,9 +47,8 @@ typedef enum name_type name_type_t;
 
 extern std::string rom_dir;
 
-std::string bin2hex(const uint8_t *data, size_t length);
-int hex2bin(unsigned char *, const char *, size_t);
 std::vector<uint8_t> hex2bin(const std::string &hex);
+std::string bin2hex(const std::vector<uint8_t> &bin);
 name_type_t name_type(const std::string &name);
 bool ensure_dir(const std::string &name, bool strip_filename);
 const std::string get_directory(void);

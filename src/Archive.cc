@@ -173,7 +173,7 @@ void Archive::ensure_valid_archive() {
 int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
     auto &file_hashes = files[index].hashes;
 
-    file_ensure_hashes(index, hashes->types);
+    file_ensure_hashes(index, hashes->get_types());
 
     if (files[index].broken) {
         return Hashes::NOCOMMON;
@@ -191,7 +191,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
     }
 
     Hashes hashes;
-    hashes.types = Hashes::TYPE_ALL;
+    hashes.add_types(Hashes::TYPE_ALL);
 
     auto f = get_source(idx);
     
@@ -237,7 +237,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
 std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const Hashes *hashes) {
     Hashes hashes_part;
 
-    hashes_part.types = hashes->types;
+    hashes_part.add_types(hashes->get_types());
 
     auto &file = files[index];
 

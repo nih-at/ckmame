@@ -36,6 +36,7 @@
 #include <cinttypes>
 #include <cstring>
 
+#include "Exception.h"
 #include "util.h"
 
 
@@ -79,6 +80,29 @@ int Hashes::types_from_string(const std::string &s) {
     return types;
 }
 
+
+void Hashes::add_types(int new_types) {
+    for (auto type = 1; type <= TYPE_ALL; type <<= 1) {
+        if ((new_types & type) && (types & type) == 0) {
+            switch (type) {
+                case TYPE_CRC:
+                    break;
+                    
+                case TYPE_MD5:
+                    md5.resize(SIZE_MD5);
+                    break;
+                    
+                case TYPE_SHA1:
+                    sha1.resize(SIZE_SHA1);
+                    break;
+            }
+        }
+    }
+    
+    types |= new_types;
+}
+
+
 bool Hashes::are_crc_complement(const Hashes &other) const {
     if (!has_type(TYPE_CRC) || !other.has_type(TYPE_CRC)) {
         return false;
@@ -104,13 +128,13 @@ Hashes::Compare Hashes::compare(const Hashes &other) const {
     }
 
     if ((common_types & TYPE_MD5) != 0) {
-        if (memcmp(md5, other.md5, SIZE_MD5) != 0) {
+        if (md5 != other.md5) {
             return MISMATCH;
         }
     }
 
     if ((common_types & TYPE_SHA1) != 0) {
-        if (memcmp(sha1, other.sha1, SIZE_SHA1) != 0) {
+        if (sha1 != other.sha1) {
 	    return MISMATCH;
         }
     }
@@ -131,13 +155,13 @@ bool Hashes::operator==(const Hashes &other) const {
     }
 
     if (types & TYPE_MD5) {
-	if (memcmp(md5, other.md5, SIZE_MD5) != 0) {
+        if (md5 != other.md5) {
 	    return false;
 	}
     }
 
     if (types & TYPE_SHA1) {
-	if (memcmp(sha1, other.sha1, SIZE_SHA1) != 0) {
+        if (sha1 != other.sha1) {
 	    return false;
 	}
     }
@@ -154,11 +178,11 @@ void Hashes::merge(const Hashes &other) {
     }
     
     if (new_types & TYPE_MD5) {
-        memcpy(md5, other.md5, sizeof(md5));
+        md5 = other.md5;
     }
     
     if (new_types & TYPE_SHA1) {
-        memcpy(sha1, other.sha1, sizeof(sha1));
+        sha1 = other.sha1;
     }
     
     types |= new_types;
@@ -188,33 +212,47 @@ size_t Hashes::hash_size(int type) {
     }
 }
 
-const void *Hashes::hash_data(int type) const {
-    switch (type) {
-        case TYPE_CRC:
-            return &crc;
 
-        case TYPE_MD5:
-            return md5;
-
-        case TYPE_SHA1:
-            return sha1;
-
-        default:
-            return NULL;
+void Hashes::set_crc(uint32_t data, bool ignore_zero) {
+    if (data == 0 && ignore_zero) {
+        return;
     }
+    
+    crc = data;
+    types |= TYPE_CRC;
 }
 
-void Hashes::set(int type, const void *data, bool ignore_zero) {
-    auto length = hash_size(type);
 
-    if (length == 0) {
-        return;
+void Hashes::set_md5(const std::vector<uint8_t> &data, bool ignore_zero) {
+    set(TYPE_MD5, md5, data, ignore_zero);
+}
+
+
+void Hashes::set_md5(const uint8_t *data, bool ignore_zero) {
+    set(TYPE_MD5, md5, std::vector<uint8_t>(data, data + SIZE_MD5), ignore_zero);
+}
+
+
+void Hashes::set_sha1(const std::vector<uint8_t> &data, bool ignore_zero) {
+    set(TYPE_MD5, sha1, data, ignore_zero);
+
+}
+
+
+void Hashes::set_sha1(const uint8_t *data, bool ignore_zero) {
+    set(TYPE_SHA1, sha1, std::vector<uint8_t>(data, data + SIZE_SHA1), ignore_zero);
+}
+
+
+void Hashes::set(int type, std::vector<uint8_t> &hash, const std::vector<uint8_t> &data, bool ignore_zero) {
+    if (data.size() != hash_size(type)) {
+        throw Exception("invalid length for hash");
     }
     
     if (ignore_zero) {
         auto all_zero = true;
-        for (size_t i = 0; i < length; i++) {
-            if (reinterpret_cast<const uint8_t *>(data)[i] != '\0') {
+        for (auto b : data) {
+            if (b != 0) {
                 all_zero = false;
                 break;
             }
@@ -224,27 +262,59 @@ void Hashes::set(int type, const void *data, bool ignore_zero) {
         }
     }
 
-    memcpy(const_cast<void *>(hash_data(type)), data, length);
+    switch (type) {
+        case TYPE_MD5:
+            md5 = data;
+            break;
+            
+        case TYPE_SHA1:
+            sha1 = data;
+            break;
+            
+        default:
+            throw Exception("invalid hash type");
+    }
     types |= type;
 }
 
 
+bool Hashes::is_zero(int type) const {
+    if ((types & type) == 0) {
+        return true;
+    }
+    
+    const std::vector<uint8_t> *data;
+
+    switch (type) {
+        case TYPE_CRC:
+            return crc == 0;
+            
+        case TYPE_MD5:
+            data = &md5;
+            break;
+            
+        case TYPE_SHA1:
+            data = &sha1;
+            break;
+            
+        default:
+            throw Exception("invalid hash type");
+    }
+    
+    for (auto x : *data) {
+        if (x != 0) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
 void Hashes::set_hashes(const Hashes &other) {
     types = other.types;
     crc = other.crc;
-    memcpy(md5, other.md5, sizeof(md5));
-    memcpy(sha1, other.sha1, sizeof(sha1));
-}
-
-
-bool Hashes::verify(int type, const void *data) const {
-    auto length = hash_size(type);
-
-    if (length == 0) {
-        return false;
-    }
-
-    return memcmp(data, hash_data(type), length) == 0;
+    md5 = other.md5;
+    sha1 = other.sha1;
 }
 
 
@@ -261,11 +331,11 @@ std::string Hashes::to_string(int type) const {
         }
 
         case Hashes::TYPE_MD5:
-            return bin2hex(md5, SIZE_MD5);
+            return bin2hex(md5);
             break;
 
         case Hashes::TYPE_SHA1:
-            return bin2hex(sha1, SIZE_SHA1);
+            return bin2hex(sha1);
             break;
 
         default:
@@ -298,12 +368,14 @@ int Hashes::set_from_string(const std::string &s) {
 
         case Hashes::SIZE_MD5:
             type = Hashes::TYPE_MD5;
-            hex2bin(md5, str.c_str(), Hashes::SIZE_MD5);
+            // TODO: check length
+            md5 = hex2bin(str);
             break;
 
         case Hashes::SIZE_SHA1:
             type = Hashes::TYPE_SHA1;
-            hex2bin(sha1, str.c_str(), Hashes::SIZE_SHA1);
+            // TODO: check length
+            sha1 = hex2bin(str);
             break;
 
         default:

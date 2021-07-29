@@ -137,18 +137,20 @@ static void dump_table(sqlite3 *db, const std::string &table_name) {
 		printf("|");
 
 	    switch (sqlite3_column_type(stmt, i)) {
-	    case SQLITE_INTEGER:
-	    case SQLITE_FLOAT:
-	    case SQLITE_TEXT:
-		printf("%s", sqlite3_column_text(stmt, i));
-		break;
-	    case SQLITE_NULL:
-		printf("<null>");
-		break;
-	    case SQLITE_BLOB:
-		auto c = bin2hex(static_cast<const unsigned char *>(sqlite3_column_blob(stmt, i)), static_cast<size_t>(sqlite3_column_bytes(stmt, i)));
-		printf("<%s>", c.c_str());
-		break;
+                case SQLITE_INTEGER:
+                case SQLITE_FLOAT:
+                case SQLITE_TEXT:
+                    printf("%s", sqlite3_column_text(stmt, i));
+                    break;
+                case SQLITE_NULL:
+                    printf("<null>");
+                    break;
+                case SQLITE_BLOB: {
+                    auto ptr = static_cast<const uint8_t *>(sqlite3_column_blob(stmt, i));
+                    auto bin = std::vector<uint8_t>(ptr, ptr + static_cast<size_t>(sqlite3_column_bytes(stmt, i)));
+                    printf("<%s>", bin2hex(bin).c_str());
+                    break;
+                }
 	    }
 	}
 	printf("\n");

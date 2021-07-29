@@ -116,8 +116,8 @@ static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_i
 
         auto &file = a->files[result.index];
 
-        if (result.detector_id == 0 && (rom->hashes.types & file.hashes.types) != rom->hashes.types) {
-            a->file_ensure_hashes(result.index, rom->hashes.types | db->hashtypes(filetype));
+        if (result.detector_id == 0 && !file.hashes.has_all_types(rom->hashes)) {
+            a->file_ensure_hashes(result.index, rom->hashes.get_types() | db->hashtypes(filetype));
             memdb->update_file(a->contents.get(), result.index);
 	}
 
@@ -163,7 +163,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detec
 
     auto idx = a->file_index_by_name(candidate->name);
     if (idx.has_value()) {
-        a->file_ensure_hashes(idx.value(), wanted_file->hashes.types);
+        a->file_ensure_hashes(idx.value(), wanted_file->hashes.get_types());
         if (a->compare_size_hashes(idx.value(), detector_id, wanted_file)) {
             auto index = idx.value();
             
@@ -238,7 +238,7 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector
             if (archive && !file->hashes.has_all_types(game_rom.hashes)) {
 		auto idx = archive->file_index(file);
                 if (idx.has_value()) {
-                    if (!archive->file_ensure_hashes(idx.value(), game_rom.hashes.types)) {
+                    if (!archive->file_ensure_hashes(idx.value(), game_rom.hashes.get_types())) {
 			/* TODO: handle error (how?) */
 			ok = false;
 		    }

@@ -454,21 +454,17 @@ void Parser::rom_end(filetype_t ft) {
     size_t n = g->files[ft].size() - 1;
 
     if (r[ft]->hashes.size == 0) {
-        unsigned char zeroes[Hashes::MAX_SIZE];
-
-        memset(zeroes, 0, sizeof(zeroes));
-        
         /* some dats don't record crc for 0-byte files, so set it here */
         if (!r[ft]->hashes.has_type(Hashes::TYPE_CRC)) {
-            r[ft]->hashes.set(Hashes::TYPE_CRC, zeroes);
+            r[ft]->hashes.set_crc(0);
         }
         
         /* some dats record all-zeroes md5 and sha1 for 0 byte files, fix */
-        if (r[ft]->hashes.has_type(Hashes::TYPE_MD5) && r[ft]->hashes.verify(Hashes::TYPE_MD5, zeroes)) {
-            r[ft]->hashes.set(Hashes::TYPE_MD5, (const unsigned char *)"\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e");
+        if (r[ft]->hashes.has_type(Hashes::TYPE_MD5) && r[ft]->hashes.is_zero(Hashes::TYPE_MD5)) {
+            r[ft]->hashes.set_md5(reinterpret_cast<const unsigned char *>("\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e"));
         }
-        if (r[ft]->hashes.has_type(Hashes::TYPE_SHA1) && r[ft]->hashes.verify(Hashes::TYPE_SHA1, zeroes)) {
-            r[ft]->hashes.set(Hashes::TYPE_SHA1, (const unsigned char *)"\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09");
+        if (r[ft]->hashes.has_type(Hashes::TYPE_SHA1) && r[ft]->hashes.is_zero(Hashes::TYPE_SHA1)) {
+            r[ft]->hashes.set_sha1(reinterpret_cast<const unsigned char *>("\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09"));
         }
     }
 

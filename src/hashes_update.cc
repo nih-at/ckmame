@@ -108,9 +108,9 @@ void Hashes::Update::end() {
         hashes->crc = contexts->crc;
     }
     if (hashes->has_type(TYPE_MD5)) {
-        MD5Final(hashes->md5, &contexts->md5);
+        MD5Final(hashes->md5.data(), &contexts->md5);
     }
     if (hashes->has_type(TYPE_SHA1)) {
-        SHA1Final(hashes->sha1, &contexts->sha1);
+        SHA1Final(hashes->sha1.data(), &contexts->sha1);
     }
 }
