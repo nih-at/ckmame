@@ -39,6 +39,7 @@
 #include "DB.h"
 #include "RomLocation.h"
 #include "OutputContext.h"
+#include "Stats.h"
 
 class RomDB : public DB {
 public:
@@ -81,11 +82,11 @@ public:
     RomDB(const std::string &name, int mode);
     virtual ~RomDB() { }
     
-    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
-    DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
     
     std::unordered_map<size_t, DetectorPtr> detectors;
 
+    Stats get_stats();
+    std::vector<std::string> get_clones(const std::string &game_name);
     void delete_game(const Game *game) { delete_game(game->name); }
     void delete_game(const std::string &name);
     bool has_disks();
@@ -116,7 +117,10 @@ private:
     static const Statement query_hash_type[];
     static std::unordered_map<int, std::string> queries;
     static std::unordered_map<int, std::string> parameterized_queries;
-    
+
+    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
+    DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
+
     DetectorPtr read_detector();
     void read_files(Game *game, filetype_t ft);
     void read_hashtypes(filetype_t type);

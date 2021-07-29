@@ -78,6 +78,55 @@ std::unordered_map<int, std::string> RomDB::parameterized_queries = {
 
 const RomDB::Statement RomDB::query_hash_type[] = { QUERY_HASH_TYPE_CRC, QUERY_HASH_TYPE_MD5, QUERY_HASH_TYPE_SHA1 };
 
+std::vector<std::string> RomDB::get_clones(const std::string &game_name) {
+    auto stmt = get_statement(RomDB::QUERY_CLONES);
+    
+    stmt->set_string("parent", game_name);
+    
+    auto clones = std::vector<std::string>();
+    
+    while (stmt->step()) {
+        clones.push_back(stmt->get_string("name"));
+    }
+    
+    return clones;
+}
+
+Stats RomDB::get_stats() {
+    Stats stats;
+
+    auto stmt = get_statement(RomDB::QUERY_STATS_GAMES);
+    
+    // This statement always returns one row.
+    (void)stmt->step();
+    
+    stats.games_total = stmt->get_uint64("amount");
+    
+    stmt = get_statement(RomDB::QUERY_STATS_FILES);
+    
+    int ft = -1;
+    for (int i = 0; i < TYPE_MAX; i++) {
+        if (ft < i) {
+            if (stmt->step()) {
+                ft = stmt->get_int("file_type");
+            }
+            else {
+                ft = TYPE_MAX;
+            }
+        }
+        
+        if (ft != i) {
+            continue;
+        }
+        
+        stats.files[i].files_total = stmt->get_uint64("amount");
+        stats.files[i].bytes_total = stmt->get_uint64("total_size");
+    }
+    
+    return stats;
+}
+
+
 bool RomDB::has_disks() {
     auto stmt = get_statement(QUERY_HAS_DISKS);
 

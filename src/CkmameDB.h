@@ -82,8 +82,6 @@ public:
     
     void seterr();
     
-    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
-    
 protected:
     virtual std::string get_query(int name, bool parameterized) const;
 
@@ -104,6 +102,8 @@ private:
     std::string directory;
     DetectorCollection detector_ids;
     
+    DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
+
     std::string name_in_db(const std::string &name);
     void delete_files(int id);
     int write_archive_header(int id, const std::string &name, filetype_t filetype, time_t mtime, uint64_t size);

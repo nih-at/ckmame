@@ -52,9 +52,9 @@ static int dump_list(int);
 static int dump_dat(int);
 static int dump_special(const char *);
 static int dump_stats(int);
+static void print_clones(GamePtr game);
 static void print_dat(const DatEntry &de);
 static void print_hashtypes(int);
-static void print_rs(GamePtr, const char *, const char *, const char *, const char *);
 
 const char *usage = "Usage: %s [-h|-V]\n\
        %s [-b] [-D dbfile] [game ...]\n\
@@ -307,42 +307,28 @@ main(int argc, char **argv) {
 }
 
 
-static void
-print_rs(GamePtr game, const char *co, const char *gco, const char *cs, const char *fs) {
-
-    if (!game->cloneof[0].empty()) {
-	printf("%s:\t%s\n", co, game->cloneof[0].c_str());
+static void print_clones(GamePtr game) {
+    auto clones = db->get_clones(game->name);
+    
+    if (clones.empty()) {
+        return;
     }
-    if (!game->cloneof[1].empty()) {
-	printf("%s:\t%s\n", gco, game->cloneof[1].c_str());
-    }
-
-    auto stmt = db->get_statement(RomDB::QUERY_CLONES);
-
-    stmt->set_string("parent", game->name);
-
+    
     size_t i;
-    for (i = 0; stmt->step(); i++) {
+    for (i = 0; i < clones.size(); i++) {
         if (i == 0) {
-            printf("%s", cs);
+            printf("Clones:");
         }
         if (i % 6 == 0) {
 	    printf("\t\t");
         }
-	printf("%-8s ", stmt->get_string("name").c_str());
+	printf("%-8s ", clones[i].c_str());
         if (i % 6 == 5) {
 	    printf("\n");
         }
     }
     if (i % 6 != 0) {
 	printf("\n");
-    }
-
-    if (!game->files[TYPE_ROM].empty()) {
-	printf("%s:\n", fs);
-        for (auto &file : game->files[TYPE_ROM]) {
-            print_romline(&file);
-        }
     }
 }
 
@@ -375,14 +361,29 @@ dump_game(const std::string &name, int brief_mode) {
     }
 
     if (!brief_mode) {
-	print_rs(game, "Cloneof", "Grand-Cloneof", "Clones", "ROMs");
+        if (!game->cloneof[0].empty()) {
+            printf("Cloneof:\t%s\n", game->cloneof[0].c_str());
+        }
+        if (!game->cloneof[1].empty()) {
+            printf("Grand-Cloneof:\t%s\n", game->cloneof[1].c_str());
+        }
+        
+        print_clones(game);
 
-	if (!game->files[TYPE_DISK].empty()) {
-	    printf("Disks:\n");
+        if (!game->files[TYPE_ROM].empty()) {
+            printf("ROMs:\n");
+            for (auto &file : game->files[TYPE_ROM]) {
+                print_romline(&file);
+            }
+        }
+
+        if (!game->files[TYPE_DISK].empty()) {
+            printf("Disks:\n");
             for (auto &file : game->files[TYPE_DISK]) {
                 print_diskline(&file);
-	    }
-	}
+            }
+        }
+
     }
 
     return 0;
@@ -481,35 +482,7 @@ dump_special(const char *name) {
 /*ARGSUSED1*/
 static int
 dump_stats(int dummy) {
-    int i, ft;
-
-    auto stmt = db->get_statement(RomDB::QUERY_STATS_GAMES);
-
-    // This statement always returns one row.
-    (void)stmt->step();
-
-    stats.games_total = stmt->get_uint64("amount");
-
-    stmt = db->get_statement(RomDB::QUERY_STATS_FILES);
-
-    ft = -1;
-    for (i = 0; i < TYPE_MAX; i++) {
-	if (ft < i) {
-            if (stmt->step()) {
-                ft = stmt->get_int("file_type");
-            }
-            else {
-		ft = TYPE_MAX;
-	    }
-	}
-
-        if (ft != i) {
-	    continue;
-        }
-        
-        stats.files[i].files_total = stmt->get_uint64("amount");
-        stats.files[i].bytes_total = stmt->get_uint64("total_size");
-    }
+    stats = db->get_stats();
     
     stats.print(stdout, true);
 
