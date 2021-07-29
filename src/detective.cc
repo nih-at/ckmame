@@ -89,7 +89,7 @@ main(int argc, char **argv) {
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
-	dbname = DBH_DEFAULT_DB_NAME;
+	dbname = RomDB::default_name.c_str();
     detector_name = NULL;
     roms_unzipped = false;
 

@@ -58,6 +58,30 @@ std::unordered_map<MemDB::ParameterizedStatement, std::string> MemDB::parameteri
     { QUERY_FILE, "select archive_id, file_idx, detector_id, location from file f where file_type = :file_type @SIZE@ @HASH@ order by location" }
 };
 
+const DB::DBFormat MemDB::format = {
+    0x1,
+    1,
+    "\
+create table file (\n\
+    archive_id integer,\n\
+    file_type integer,\n\
+    file_idx integer,\n\
+    detector_id integer,\n\
+    location integer not null,\n\
+    size integer,\n\
+    crc integer,\n\
+    md5 binary,\n\
+    sha1 binary\n\
+);\n\
+create index file_id on file (archive_id, file_type, file_idx);\n\
+create index file_location on file (location);\n\
+create index file_size on file (size);\n\
+create index file_crc on file (crc);\n\
+create index file_md5 on file (md5);\n\
+create index file_sha1 on file (sha1);\n",
+    {}
+};
+
 
 std::string MemDB::get_query(int name, bool parameterized) const {
     if (parameterized) {

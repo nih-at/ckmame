@@ -110,7 +110,7 @@ void Archive::update_cache() {
                 }
                 catch (Exception &exception) {
                     contents->cache_db->seterr();
-                    myerror(ERRDB, "%s: error deleting from " DBH_CACHE_DB_NAME, name.c_str());
+                    myerror(ERRDB, "%s: error deleting from %s", name.c_str(), CkmameDB::db_name.c_str());
                     /* TODO: handle errors */
                 }
             }
@@ -124,7 +124,7 @@ void Archive::update_cache() {
             }
             catch (Exception &exception) {
                 contents->cache_db->seterr();
-                myerror(ERRDB, "%s: error writing to " DBH_CACHE_DB_NAME, name.c_str());
+                myerror(ERRDB, "%s: error writing to %s", name.c_str(), CkmameDB::db_name.c_str());
                 contents->cache_id = 0;
             }
         }

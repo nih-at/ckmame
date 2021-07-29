@@ -23,7 +23,6 @@ set(COMMON_SOURCES
   CkmameDB.cc
   cleanup.cc
   DatEntry.cc
-  db_init.cc
   DB.cc
   DBStatement.cc
   DeleteList.cc

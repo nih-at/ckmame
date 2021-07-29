@@ -41,6 +41,64 @@
 #include "fix.h"
 #include "util.h"
 
+const std::string CkmameDB::db_name = ".ckmame.db";
+
+const DB::DBFormat CkmameDB::format = {
+    0x02,
+    4,
+    "create table archive (\n\
+    archive_id integer primary key autoincrement,\n\
+    name text not null,\n\
+    mtime integer not null,\n\
+    size integer not null,\n\
+    file_type integer not null\n\
+);\n\
+create index archive_name on archive (name);\n\
+create table detector (\n\
+    detector_id integer primary key autoincrement,\n\
+    name text not null,\n\
+    version text not null\n\
+);\n\
+create index detector_name_version on detector (name, version);\n\
+create table file (\n\
+    archive_id integer not null,\n\
+    file_idx integer,\n\
+    name text not null,\n\
+    mtime integer not null,\n\
+    status integer not null,\n\
+    size integer not null,\n\
+    crc integer,\n\
+    md5 binary,\n\
+    sha1 binary,\n\
+    detector_id integer not null default 0\n\
+);\n\
+create index file_archive_id on file (archive_id);\n\
+create index file_idx on file (file_idx);\n\
+create index file_size on file (size);\n\
+create index file_crc on file (crc);\n\
+create index file_md5 on file (md5);\n\
+create index file_sha1 on file (sha1);\n",
+    {
+        { MigrationVersions(2, 3), "\
+    create table detector (\n\
+    detector_id integer primary key autoincrement,\n\
+    name text not null,\n\
+    version text not null\n\
+    );\n\
+    create index detector_name_version on detector (name, version);\n\
+    alter table file add column detector_id integer not null default 0;\n\
+    create index file_size on file (size);\n\
+    create index file_crc on file (crc);\n\
+    create index file_md5 on file (md5);\n\
+    create index file_sha1 on file (sha1);\n\
+    " },
+        { MigrationVersions(3, 4), "\
+alter table archive add column file_type integer not null default " + std::to_string(TYPE_ROM) + ";\n\
+update archive set file_type=" + std::to_string(TYPE_DISK) + " where exists(select * from file f where f.archive_id = archive.archive_id and f.crc is null);\
+    " }
+    }
+};
+
 
 std::vector<CkmameDB::CacheDirectory> CkmameDB::cache_directories;
 
@@ -59,7 +117,7 @@ std::unordered_map<CkmameDB::Statement, std::string> CkmameDB::queries = {
     { QUERY_HAS_ARCHIVES, "select archive_id from archive limit 1" }
 };
 
-CkmameDB::CkmameDB(const std::string &dbname, const std::string &directory_) : DB(dbname, DBH_FMT_DIR | DBH_CREATE | DBH_WRITE), directory(directory_) {
+CkmameDB::CkmameDB(const std::string &dbname, const std::string &directory_) : DB(format, dbname, DBH_CREATE | DBH_WRITE), directory(directory_) {
     auto stmt = get_statement(LIST_DETECTORS);
 
     while (stmt->step()) {
@@ -180,7 +238,7 @@ CkmameDBPtr CkmameDB::get_db_for_archvie(const std::string &name) {
 		    return NULL;
                 }
 
-                auto dbname = directory.name + '/' + DBH_CACHE_DB_NAME;
+                auto dbname = directory.name + '/' + db_name;
 
                 try {
                     directory.db = std::make_shared<CkmameDB>(dbname, directory.name);

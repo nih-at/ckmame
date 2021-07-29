@@ -239,7 +239,7 @@ main(int argc, char **argv) {
     if (dbname == NULL) {
         dbname = getenv("MAMEDB");
         if (dbname == NULL) {
-            dbname = DBH_DEFAULT_DB_NAME;
+            dbname = CkmameDB::db_name.c_str();
         }
     }
     

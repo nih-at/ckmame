@@ -142,9 +142,7 @@ bool OutputContextDb::close() {
             ok = false;
         }
 
-        if (sqlite3_exec(db->db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
-            ok = false;
-        }
+        db->init2();
 
         db = NULL;
     }

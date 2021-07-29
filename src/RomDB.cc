@@ -39,6 +39,75 @@
 std::unique_ptr<RomDB> db;
 std::unique_ptr<RomDB> old_db;
 
+const std::string RomDB::default_name = "mame.db";
+const std::string RomDB::default_old_name = "old.db";
+
+const DB::DBFormat RomDB::format = {
+    0x0,
+    3,
+    "\
+create table dat (\n\
+    dat_idx integer primary key,\n\
+    name text,\n\
+    description text,\n\
+    author text,\n\
+    version text\n\
+);\n\
+\n\
+create table game (\n\
+    game_id integer primary key autoincrement,\n\
+    name text not null,\n\
+        parent text,\n\
+    description text,\n\
+    dat_idx integer not null\n\
+);\n\
+create index game_name on game (name);\n\
+\n\
+create table file (\n\
+    game_id integer,\n\
+    file_type integer,\n\
+    file_idx integer,\n\
+    name text not null,\n\
+    merge text,\n\
+    status integer not null,\n\
+    location integer not null,\n\
+    size integer,\n\
+    crc integer,\n\
+    md5 binary,\n\
+    sha1 binary,\n\
+    primary key (game_id, file_type, file_idx)\n\
+);\n\
+create index file_game_type on file (game_id, file_type);\n\
+\n\
+create table rule (\n\
+    rule_idx integer primary key,\n\
+    start_offset integer,\n\
+    end_offset integer,    \n\
+    operation integer\n\
+);\n\
+\n\
+create table test (\n\
+    rule_idx integer,\n\
+    test_idx integer,\n\
+    type integer not null,\n\
+    offset integer,\n\
+    size integer,\n\
+    mask binary,\n\
+    value binary,\n\
+    result integer not null,\n\
+    primary key (rule_idx, test_idx)\n\
+);\n",
+    {}
+};
+
+const std::string RomDB::init2_sql = "\
+create index file_name on file (name);\n\
+create index file_size on file (size);\n\
+create index file_crc on file (crc);\n\
+create index file_md5 on file (md5);\n\
+create index file_sha1 on file (sha1);\n";
+
+
 std::unordered_map<int, std::string> RomDB::queries = {
     {  DELETE_FILE, "delete from file where game_id = :game_id" },
     {  DELETE_GAME, "delete from game where game_id = :game_id" },
@@ -78,6 +147,14 @@ std::unordered_map<int, std::string> RomDB::parameterized_queries = {
 
 const RomDB::Statement RomDB::query_hash_type[] = { QUERY_HASH_TYPE_CRC, QUERY_HASH_TYPE_MD5, QUERY_HASH_TYPE_SHA1 };
 
+
+void RomDB::init2() {
+    if (sqlite3_exec(db, init2_sql.c_str(), NULL, NULL, NULL) != SQLITE_OK) {
+        throw Exception("can't initialize DB");
+    }
+}
+
+
 std::vector<std::string> RomDB::get_clones(const std::string &game_name) {
     auto stmt = get_statement(RomDB::QUERY_CLONES);
     
@@ -91,6 +168,7 @@ std::vector<std::string> RomDB::get_clones(const std::string &game_name) {
     
     return clones;
 }
+
 
 Stats RomDB::get_stats() {
     Stats stats;
@@ -143,7 +221,7 @@ int RomDB::hashtypes(filetype_t type) {
 }
 
 
-RomDB::RomDB(const std::string &name, int mode) : DB(name, mode) {
+RomDB::RomDB(const std::string &name, int mode) : DB(format, name, mode) {
     for (size_t i = 0; i < TYPE_MAX; i++) {
 	hashtypes_[i] = -1;
     }

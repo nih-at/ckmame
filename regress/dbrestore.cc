@@ -42,15 +42,25 @@
 #include <string>
 #include <vector>
 
+#include "CkmameDB.h"
 #include "DB.h"
 #include "error.h"
 #include "Exception.h"
+#include "MemDB.h"
+#include "RomDB.h"
 #include "SharedFile.h"
 #include "util.h"
 
+enum DBType {
+    DBTYPE_INVALID = -1,
+    DBTYPE_CKMAMEDB,
+    DBTYPE_MEMDB,
+    DBTYPE_ROMDB
+};
 
 static int column_type(const std::string &name);
-static int db_type(const std::string &name);
+static int db_format(DBType type);
+static DBType db_type(const std::string &name);
 static std::optional<std::string> get_line(FILE *f);
 static int restore_db(sqlite3 *db, FILE *f);
 static int restore_table(sqlite3 *db, FILE *f);
@@ -96,7 +106,7 @@ struct option options[] = {
 int main(int argc, char *argv[]) {
     setprogname(argv[0]);
 
-    int type = DBH_FMT_MAME;
+    DBType type = DBTYPE_ROMDB;
     std::string sql_file;
     int db_version = -1;
 
@@ -114,7 +124,7 @@ int main(int argc, char *argv[]) {
 	    exit(0);
 
 	case 't':
-	    if ((type = db_type(optarg)) < 0) {
+	    if ((type = db_type(optarg)) == DBTYPE_INVALID) {
 		fprintf(stderr, "%s: unknown db type '%s'\n", getprogname(), optarg);
 		exit(1);
 	    }
@@ -166,7 +176,7 @@ int main(int argc, char *argv[]) {
             }
 
             try {
-                DB::upgrade(db, type, db_version, sql_statement);
+                DB::upgrade(db, db_format(type), db_version, sql_statement);
             }
             catch (Exception &e) {
                 sqlite3_close(db);
@@ -179,19 +189,33 @@ int main(int argc, char *argv[]) {
             }
         }
         else {
-            DB dbh(db_fname, type | DBH_TRUNCATE | DBH_WRITE | DBH_CREATE);
+            std::unique_ptr<DB> db;
             
-            seterrdb(&dbh);
+            switch (type) {
+                case DBTYPE_CKMAMEDB:
+                    db = std::make_unique<CkmameDB>(db_fname, ".");
+                    break;
+
+                case DBTYPE_MEMDB:
+                    db = std::make_unique<MemDB>(db_fname);
+                    break;
+
+                case DBTYPE_ROMDB:
+                    db = std::make_unique<RomDB>(db_fname, DBH_TRUNCATE | DBH_WRITE | DBH_CREATE);
+                    break;
+                    
+                default:
+                    throw Exception("can't happen");
+            }
             
-            if (restore_db(dbh.db, f.get()) < 0) {
+            seterrdb(db.get());
+            
+            if (restore_db(db->db, f.get()) < 0) {
                 exit(1);
             }
             
-            if (type == DBH_FMT_MAME) {
-                if (sqlite3_exec(dbh.db, sql_db_init_2, NULL, NULL, NULL) != SQLITE_OK) {
-                    myerror(ERRDB, "can't create indices");
-                    exit(1);
-                }
+            if (type == DBTYPE_ROMDB) {
+                static_cast<RomDB *>(db.get())->init2();
             }
         }
     }
@@ -222,20 +246,36 @@ static int column_type(const std::string &name) {
 }
 
 
-static const std::unordered_map<std::string, int> db_types = {
-    { "ckmamedb", DBH_FMT_DIR },
-    { "mamedb", DBH_FMT_MAME },
-    { "memdb", DBH_FMT_MEM }
+static const std::unordered_map<std::string, DBType> db_types = {
+    { "ckmamedb", DBTYPE_CKMAMEDB },
+    { "mamedb", DBTYPE_ROMDB },
+    { "memdb", DBTYPE_MEMDB }
 };
 
-static int db_type(const std::string &name) {
+static DBType db_type(const std::string &name) {
     auto it = db_types.find(name);
     
     if (it == db_types.end()) {
-        return -1;
+        return DBTYPE_INVALID;
     }
 
     return it->second;
+}
+
+static int db_format(DBType type) {
+    switch (type) {
+        case DBTYPE_CKMAMEDB:
+            return CkmameDB::format.id;
+
+        case DBTYPE_MEMDB:
+            return MemDB::format.id;
+
+        case DBTYPE_ROMDB:
+            return RomDB::format.id;
+            
+        default:
+            return -1;
+    }
 }
 
 

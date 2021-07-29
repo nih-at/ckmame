@@ -38,6 +38,7 @@
 #include <filesystem>
 #include <vector>
 
+#include "CkmameDB.h"
 #include "config.h"
 #include "error.h"
 #include "Exception.h"
@@ -97,7 +98,7 @@ name_type_t name_type(const std::string &name) {
     }
 
     auto filename = std::filesystem::path(name).filename();
-    if (filename == DBH_CACHE_DB_NAME || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
+    if (filename == CkmameDB::db_name || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
         return NAME_IGNORE;
     }
     

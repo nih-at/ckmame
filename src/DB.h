@@ -42,26 +42,36 @@
 #include "Hashes.h"
 
 
-#define DBH_FMT_MAME 0x0 /* mame.db format */
-#define DBH_FMT_MEM 0x1  /* in-memory db format */
-#define DBH_FMT_DIR 0x2  /* unpacked dirs db format */
-#define DBH_FMT(m) ((m)&0xf)
-
 #define DBH_READ 0x00                                   /* open readonly */
 #define DBH_WRITE 0x10                                  /* open for writing */
 #define DBH_CREATE 0x20                                 /* create database if it doesn't exist */
 #define DBH_TRUNCATE 0x40                               /* delete database if it exists */
 #define DBH_NEW (DBH_CREATE | DBH_TRUNCATE | DBH_WRITE) /* create new writable empty database */
-#define DBH_FLAGS(m) ((m)&0xf0)
 
 enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME, DBH_KEY_LIST_MAX };
 
-#define DBH_DEFAULT_DB_NAME "mame.db"
-#define DBH_DEFAULT_OLD_DB_NAME "old.db"
-#define DBH_CACHE_DB_NAME ".ckmame.db"
+// This should be a private nested class of DB, but C++ hash support is utterly stupid and doesn't support that.
+class MigrationVersions {
+public:
+    MigrationVersions(int old_version_, int new_version_) : old_version(old_version_), new_version(new_version_) { }
+    int old_version;
+    int new_version;
+    
+    bool operator==(const MigrationVersions &other) const {
+        return old_version == other.old_version && new_version == other.new_version;
+    }
+};
 
-extern const char *sql_db_init[];
-extern const char *sql_db_init_2;
+// #pragma hide_this_forever begin
+namespace std {
+template<> struct hash<MigrationVersions> {
+    size_t operator()(const MigrationVersions &a) const {
+        return hash<int>()(a.old_version) ^ hash<int>()(a.new_version);
+    }
+};
+}
+// #pragma hide_this_forever end
+
 
 // This should be a private nested class of DB, but C++ hash support is utterly stupid and doesn't support that.
 class StatementID {
@@ -94,11 +104,18 @@ template<> struct hash<StatementID> {
 
 class DB {
 public:
-    DB(const std::string &name, int mode);
-    ~DB();
+    class DBFormat {
+    public:
+        int id;
+        int version;
+        std::string init_sql;
+        std::unordered_map<MigrationVersions, std::string> migrations;
+    };
+
+    DB(const DBFormat &format, const std::string &name, int mode);
+    virtual ~DB();
     
     sqlite3 *db;
-    int format;
     
     std::string error();
     
@@ -106,24 +123,14 @@ public:
     static void upgrade(sqlite3 *db, int format, int version, const std::string &statement);
     
     // This needs to be public to make it hashable.
-    class MigrationXXX {
-    public:
-        MigrationXXX(int format_, int old_version_, int new_version_) : format(format_), old_version(old_version_), new_version(new_version_) { }
-        int format;
-        int old_version;
-        int new_version;
-        
-        bool operator==(const MigrationXXX &other) const {
-            return format == other.format && old_version == other.old_version && new_version == other.new_version;
-        }
-    };
     
 protected:
     DBStatement *get_statement_internal(int name);
     DBStatement *get_statement_internal(int name, const Hashes &hashes, bool have_size);
     
     virtual std::string get_query(int name, bool parameterized) const { return ""; }
-
+    virtual const std::unordered_map<MigrationVersions, std::string> &get_migrations() const { return no_migrations; }
+    
 private:
     class MigrationStep {
     public:
@@ -132,29 +139,18 @@ private:
         int version;
     };
     
+    static const std::unordered_map<MigrationVersions, std::string> no_migrations;
+    
     DBStatement *get_statement_internal(StatementID statement_id);
     
-    int get_version();
-    void check_version();
-    void open(const std::string &name, int sql3_flags, bool needs_init);
+    int get_version(const DBFormat &format);
+    void check_version(const DBFormat &format);
+    void open(const DBFormat &format, const std::string &name, int sql3_flags, bool needs_init);
     void close();
-    void init();
-    void migrate(int from_version, int to_version);
-    void upgrade(const std::string &statement, int version);
+    void migrate(const DBFormat &format, int from_version, int to_version);
+    void upgrade(int format, int version, const std::string &statement);
 
-    static std::unordered_map<MigrationXXX, std::string> migrations;
-    
     std::unordered_map<StatementID, std::shared_ptr<DBStatement>> statements;
 };
-
-// #pragma hide_this_forever begin
-namespace std {
-    template<> struct hash<DB::MigrationXXX> {
-        size_t operator()(const DB::MigrationXXX &a) const {
-            return hash<int>()(a.format) ^ hash<int>()(a.old_version) ^ hash<int>()(a.new_version);
-        }
-    };
-}
-// #pragma hide_this_forever end
 
 #endif // HAD_DB_H

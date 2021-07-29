@@ -81,7 +81,11 @@ public:
     
     RomDB(const std::string &name, int mode);
     virtual ~RomDB() { }
+    void init2();
     
+    static const DBFormat format;
+    static const std::string default_name;
+    static const std::string default_old_name;
     
     std::unordered_map<size_t, DetectorPtr> detectors;
 
@@ -110,10 +114,11 @@ public:
     
 protected:
     virtual std::string get_query(int name, bool parameterized) const;
-
+    
 private:
     int hashtypes_[TYPE_MAX];
     
+    static const std::string init2_sql;
     static const Statement query_hash_type[];
     static std::unordered_map<int, std::string> queries;
     static std::unordered_map<int, std::string> parameterized_queries;

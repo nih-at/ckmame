@@ -61,9 +61,11 @@ public:
         where_t location;
     };
     
-    MemDB(const char *name) : DB(name, DBH_FMT_MEM | DBH_NEW) { }
+    MemDB(const std::string &name) : DB(format, name, DBH_NEW) { }
     virtual ~MemDB() { }
     
+    static const DBFormat format;
+
     static void ensure();
 
     void delete_file(const ArchiveContents *a, size_t idx, bool adjust_idx);
@@ -79,7 +81,7 @@ protected:
 private:
     DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
     DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
-
+    
     static std::unordered_map<Statement, std::string> queries;
     static std::unordered_map<ParameterizedStatement, std::string> parameterized_queries;
 

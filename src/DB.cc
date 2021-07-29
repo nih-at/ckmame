@@ -43,11 +43,10 @@
 const int StatementID::have_size = 0x10000;
 const int StatementID::parameterized = 0x20000;
 
-static const int format_version[] = {3, 1, 4};
 static const char *format_name[] = {
-    "mamedb",
+    "mame.db",
     "in-memory",
-    "ckmamedb"
+    ".ckmame.db"
 };
 
 #define USER_VERSION_MAGIC 17000
@@ -60,27 +59,9 @@ static const char *format_name[] = {
 
 #define PRAGMAS "PRAGMA synchronous = OFF; "
 
-std::unordered_map<DB::MigrationXXX, std::string> DB::migrations = {
-    { MigrationXXX(DBH_FMT_DIR, 2, 3), "\
-create table detector (\n\
-    detector_id integer primary key autoincrement,\n\
-    name text not null,\n\
-    version text not null\n\
-);\n\
-create index detector_name_version on detector (name, version);\n\
-alter table file add column detector_id integer not null default 0;\n\
-create index file_size on file (size);\n\
-create index file_crc on file (crc);\n\
-create index file_md5 on file (md5);\n\
-create index file_sha1 on file (sha1);\n\
-    " },
-    { MigrationXXX(DBH_FMT_DIR, 3, 4), "\
-alter table archive add column file_type integer not null default " + std::to_string(TYPE_ROM) + ";\n\
-update archive set file_type=" + std::to_string(TYPE_DISK) + " where exists(select * from file f where f.archive_id = archive.archive_id and f.crc is null);\
-    " }
-};
+const std::unordered_map<MigrationVersions, std::string> DB::no_migrations = { };
 
-int DB::get_version() {
+int DB::get_version(const DBFormat &format) {
     auto stmt = DBStatement(db, "pragma user_version");
     
     if (!stmt.step()) {
@@ -96,12 +77,12 @@ int DB::get_version() {
     auto db_format = USER_VERSION_FORMAT(db_user_version);
     auto db_version = USER_VERSION_VERSION(db_user_version);
     
-    if (db_format != format) {
+    if (db_format != format.id) {
         if (db_format >= 0 && static_cast<size_t>(db_format) < sizeof(format_name) / sizeof(format_name[0])) {
-            throw Exception("invalid db format '%s', expected '%s'", format_name[db_format], format_name[format]);
+            throw Exception("invalid db format '%s', expected '%s'", format_name[db_format], format_name[format.id]);
         }
         else {
-            throw Exception("invalid db format %d, expected '%s'", db_format, format_name[format]);
+            throw Exception("invalid db format %d, expected '%s'", db_format, format_name[format.id]);
         }
     }
     
@@ -109,29 +90,29 @@ int DB::get_version() {
 }
 
 
-void DB::check_version() {
-    auto db_version = get_version();
+void DB::check_version(const DBFormat &format) {
+    auto db_version = get_version(format);
         
-    if (db_version == format_version[format]) {
+    if (db_version == format.version) {
         return;
     }
     
-    if (db_version > format_version[format]) {
-        throw Exception("database version too new: %d, expected %d", db_version, format_version[format]);
+    if (db_version > format.version) {
+        throw Exception("database version too new: %d, expected %d", db_version, format.version);
     }
     
-    migrate(db_version, format_version[format]);
+    migrate(format, db_version, format.version);
 }
 
-void DB::migrate(int from_version, int to_version) {
+void DB::migrate(const DBFormat &format, int from_version, int to_version) {
     std::vector<MigrationStep> migration_steps;
     
     while (from_version < to_version) {
         bool made_progress = false;
         for (auto next_version = to_version; next_version > from_version; next_version -= 1) {
-            auto it = migrations.find(MigrationXXX(format, from_version, next_version));
+            auto it = format.migrations.find(MigrationVersions(from_version, next_version));
             
-            if (it != migrations.end()) {
+            if (it != format.migrations.end()) {
                 from_version = next_version;
                 migration_steps.push_back(MigrationStep(it->second, next_version));
                 made_progress = true;
@@ -145,7 +126,7 @@ void DB::migrate(int from_version, int to_version) {
     }
     
     for (auto &step : migration_steps) {
-        upgrade(step.statement, step.version);
+        upgrade(format.id, step.version, step.statement);
     }
 }
 
@@ -171,16 +152,10 @@ std::string DB::error() {
 }
 
 
-DB::DB(const std::string &name, int mode) : db(NULL) {
-    format = DBH_FMT(mode);
-
-    if (format < 0 || static_cast<size_t>(format) >= sizeof(format_version) / sizeof(format_version[0])) {
-        throw Exception("invalid DB format %d", format);
-    }
-
+DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(NULL) {
     auto needs_init = false;
     
-    if (DBH_FLAGS(mode) & DBH_TRUNCATE) {
+    if (mode & DBH_TRUNCATE) {
 	/* do not delete special cases (like memdb) */
 	if (name[0] != ':') {
             std::error_code error;
@@ -194,14 +169,14 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
 
     int sql3_flags;
     
-    if (DBH_FLAGS(mode) & DBH_WRITE) {
+    if (mode & DBH_WRITE) {
 	sql3_flags = SQLITE_OPEN_READWRITE;
     }
     else {
 	sql3_flags = SQLITE_OPEN_READONLY;
     }
 
-    if (DBH_FLAGS(mode) & DBH_CREATE) {
+    if (mode & DBH_CREATE) {
 	sql3_flags |= SQLITE_OPEN_CREATE;
         if (name[0] == ':' || !std::filesystem::exists(name)) {
 	    needs_init = true;
@@ -209,7 +184,7 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
     }
     
     try {
-        open(name, sql3_flags, needs_init);
+        open(format, name, sql3_flags, needs_init);
     }
     catch (Exception &e) {
         close();
@@ -218,7 +193,7 @@ DB::DB(const std::string &name, int mode) : db(NULL) {
 }
 
 
-void DB::open(const std::string &name, int sql3_flags, bool needs_init) {
+void DB::open(const DBFormat &format, const std::string &name, int sql3_flags, bool needs_init) {
     if (sqlite3_open_v2(name.c_str(), &db, sql3_flags, NULL) != SQLITE_OK) {
         throw Exception("%s", sqlite3_errmsg(db));
     }
@@ -228,19 +203,15 @@ void DB::open(const std::string &name, int sql3_flags, bool needs_init) {
     }
         
     if (needs_init) {
-        init();
+        upgrade(format.id, format.version, format.init_sql);
     }
     else {
-        check_version();
+        check_version(format);
     }
 }
 
-void DB::init() {
-    upgrade(sql_db_init[format], format_version[format]);
-}
 
-
-void DB::upgrade(const std::string &statement, int version) {
+void DB::upgrade(int format, int version, const std::string &statement) {
     upgrade(db, format, version, statement);
 }
 

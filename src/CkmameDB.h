@@ -67,6 +67,9 @@ public:
     CkmameDB(const std::string &dbname, const std::string &directory);
     virtual ~CkmameDB() { }
 
+    static const DBFormat format;
+    static const std::string db_name;
+
     static bool close_all();
     static CkmameDBPtr get_db_for_archvie(const std::string &name);
     static void register_directory(const std::string &directory);
@@ -84,7 +87,7 @@ public:
     
 protected:
     virtual std::string get_query(int name, bool parameterized) const;
-
+    
 private:
     class CacheDirectory {
     public:
@@ -94,7 +97,7 @@ private:
         
         CacheDirectory(const std::string &name_): name(name_), initialized(false) { }
     };
-
+    
     static std::vector<CacheDirectory> cache_directories;
     
     static std::unordered_map<Statement, std::string> queries;

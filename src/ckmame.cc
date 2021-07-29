@@ -173,10 +173,10 @@ main(int argc, char **argv) {
 	action = ACTION_UNSPECIFIED;
 	dbname = getenv("MAMEDB");
 	if (dbname == NULL)
-	    dbname = DBH_DEFAULT_DB_NAME;
+	    dbname = RomDB::default_name.c_str();
 	olddbname = getenv("MAMEDB_OLD");
 	if (olddbname == NULL)
-	    olddbname = DBH_DEFAULT_OLD_DB_NAME;
+	    olddbname = RomDB::default_old_name.c_str();
 	fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
 	ignore_extra = 0;
 	roms_unzipped = false;
