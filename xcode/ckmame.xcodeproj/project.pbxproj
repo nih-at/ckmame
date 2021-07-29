@@ -794,6 +794,7 @@
 		4BC78D0A1A4445A400A14E29 /* NiHTest.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = NiHTest.pm; sourceTree = "<group>"; usesTabs = 1; };
 		4BD1BAA51A404BCB00A70734 /* runtest.in */ = {isa = PBXFileReference; explicitFileType = text.script.perl; indentWidth = 4; path = runtest.in; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		4BD1BAA61A404BF300A70734 /* CkmameDB.pm */ = {isa = PBXFileReference; indentWidth = 8; lastKnownFileType = text.script.perl; path = CkmameDB.pm; sourceTree = "<group>"; usesTabs = 1; };
+		4BD2A51E26B2C0A200B20D90 /* dumpgame-game.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "dumpgame-game.test"; sourceTree = "<group>"; };
 		4BD482962535B23C00D0002B /* ArchiveDir.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveDir.cc; sourceTree = "<group>"; };
 		4BD482972535B23C00D0002B /* ArchiveDir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveDir.h; sourceTree = "<group>"; };
 		4BE373C3263038A000BE68A3 /* zero-superfluous-2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "zero-superfluous-2.test"; sourceTree = "<group>"; };
@@ -1220,6 +1221,7 @@
 				4B6B147824FF9F5B00D3F3FB /* diskfull-dir.test */,
 				4B6B147D24FF9F5C00D3F3FB /* diskfull-zip.test */,
 				4B6B147A24FF9F5B00D3F3FB /* doublezip.test */,
+				4BD2A51E26B2C0A200B20D90 /* dumpgame-game.test */,
 				4B6B148024FF9F5C00D3F3FB /* dumpgame-stats.test */,
 				4B6B147C24FF9F5C00D3F3FB /* dumpgame-unknown.test */,
 				4B6B147F24FF9F5C00D3F3FB /* extra-file-dir.test */,
@@ -1328,8 +1330,8 @@
 				4BB158A925DECA50008892CD /* rom-from-extra-keep-dir-clean.test */,
 				4B6B14D324FFA14B00D3F3FB /* rom-from-extra-keep-dir.test */,
 				4B6B14CB24FFA14B00D3F3FB /* rom-from-extra-keep-zip.test */,
-				4BC3165C269306620012AEB8 /* rom-from-extra-loose-toplevel.test */,
 				4BC3165D269307610012AEB8 /* rom-from-extra-loose-directory.test */,
+				4BC3165C269306620012AEB8 /* rom-from-extra-loose-toplevel.test */,
 				4B213018261777770048B9CD /* rom-from-extra-partial-7z.test */,
 				4B6B14C324FFA14A00D3F3FB /* rom-from-extra-partial.test */,
 				4B6B14CC24FFA14B00D3F3FB /* rom-from-extra-remove.test */,
