@@ -217,6 +217,8 @@ int main(int argc, char *argv[]) {
             if (type == DBTYPE_ROMDB) {
                 static_cast<RomDB *>(db.get())->init2();
             }
+            
+            seterrdb(NULL);
         }
     }
     catch (std::exception &e) {
