@@ -189,6 +189,10 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
     if (file.hashes.has_all_types(hashtypes)) {
 	return true;
     }
+    
+    if (file.broken) {
+        return false;
+    }
 
     Hashes hashes;
     hashes.add_types(Hashes::TYPE_ALL);
@@ -689,6 +693,10 @@ bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorP
 bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr> &detectors) {
     auto &file = files[index];
     
+    if (file.broken) {
+        return false;
+    }
+    
     auto data = std::vector<uint8_t>(file.get_size(0));
 
     try {
@@ -700,7 +708,7 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
         source->read(data.data(), data.size());
     }
     catch (std::exception &e) {
-        myerror(ERRZIP, "%s: can't compute hashes: %s", file.name.c_str(), e.what());
+        myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), e.what());
         file.broken = true;
             
         return false;
