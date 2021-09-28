@@ -229,7 +229,10 @@ sub post_parse {
 		}
 	}
 
-	if ($test->{test}->{mkdbargs}) {
+	if ($test->{test}->{program} =~ m,/mkmamedb$,) {
+		# no special handling of mame.db
+	}
+	elsif ($test->{test}->{mkdbargs}) {
 		$test->add_file({ destination => 'mame.db', ignore => 1});
 	}
 	else {
