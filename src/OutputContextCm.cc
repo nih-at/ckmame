@@ -57,9 +57,9 @@ OutputContextCm::OutputContextCm(const std::string &fname_, int flags_) {
 	fname = "*stdout*";
     }
     else {
-	f = make_shared_file(fname, "W");
+	f = make_shared_file(fname_, "w");
 	if (!f) {
-            myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
+            myerror(ERRDEF, "cannot create '%s': %s", fname_.c_str(), strerror(errno));
             throw std::exception();
 	}
     }
