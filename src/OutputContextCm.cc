@@ -51,15 +51,15 @@ static struct {
 typedef struct output_context_cm output_context_cm_t;
 
 
-OutputContextCm::OutputContextCm(const std::string &fname_, int flags_) {
-    if (fname_.empty()) {
+OutputContextCm::OutputContextCm(const std::string &fname_, int flags_) : fname(fname_) {
+    if (fname.empty()) {
         f = make_shared_stdout();
 	fname = "*stdout*";
     }
     else {
-	f = make_shared_file(fname_, "w");
+	f = make_shared_file(fname, "w");
 	if (!f) {
-            myerror(ERRDEF, "cannot create '%s': %s", fname_.c_str(), strerror(errno));
+            myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
 	}
     }

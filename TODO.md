@@ -1,5 +1,7 @@
 - make DB format agnostic
 
+- Add test for `mkmamedb -F cm`.
+
 - handle multiple writers to ckmamedb
 - search loose files in zipped mode.
 
