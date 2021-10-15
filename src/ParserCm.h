@@ -36,6 +36,8 @@
 
 #include "Parser.h"
 
+#include <unordered_set>
+
 class ParserCm : public Parser {
 public:
     virtual bool parse();
@@ -56,6 +58,10 @@ private:
         std::string string;
         size_t position;
     };
+    
+    std::unordered_set<std::string> warned_keywords;
+    bool ignoring_line;
+    void warn_unknown_keyword(const std::string &keyword);
 };
 
 #endif /* ParserCm.h */

@@ -53,6 +53,8 @@ bool ParserCm::parse() {
         if (cmd.empty()) {
 	    continue;
         }
+        
+        ignoring_line = false;
 
 	switch (parse_state) {
             case TOP:
@@ -78,7 +80,8 @@ bool ParserCm::parse() {
 		    /* TODO: beginning/end of file, ignored for now */
 		}
 		else {
-		    myerror(ERRFILE, "%zu: unexpected token '%s'", lineno, cmd.c_str());
+                    warn_unknown_keyword(cmd);
+                    ignoring_line = true;
 		}
                 break;
 
@@ -253,7 +256,7 @@ bool ParserCm::parse() {
 			    break;
 			}
 			else {
-			    myerror(ERRFILE, "%zu: unexpected token '%s'", lineno, token.c_str());
+                            warn_unknown_keyword(token);
 			}
                     }
                     file_end(TYPE_DISK);
@@ -274,8 +277,8 @@ bool ParserCm::parse() {
 		    tokenizer.get();
 		}
 		else {
-		    myerror(ERRFILE, "%zu: unexpected token '%s'", lineno, cmd.c_str());
-		}
+                    warn_unknown_keyword(cmd);
+                }
                 break;
 
             case PROG:
@@ -299,15 +302,17 @@ bool ParserCm::parse() {
 		    tokenizer.get();
 		}
 		else {
-		    myerror(ERRFILE, "%zu: unexpected token '%s'", lineno, cmd.c_str());
+                    warn_unknown_keyword(cmd);
 		}
                 break;
         }
-	std::string leftover = tokenizer.get();
-	while (!leftover.empty()) {
-	    myerror(ERRFILE, "%zu: ignoring unknown token '%s'", lineno, leftover.c_str());
-	    leftover = tokenizer.get();
-	}
+        if (!ignoring_line) {
+            std::string leftover = tokenizer.get();
+            while (!leftover.empty()) {
+                myerror(ERRFILE, "%zu: ignoring unknown token '%s'", lineno, leftover.c_str());
+                leftover = tokenizer.get();
+            }
+        }
     }
 
     return true;
@@ -389,4 +394,12 @@ std::string ParserCm::Tokenizer::get() {
     }
 
     return string.substr(s, e-s);
+}
+
+void ParserCm::warn_unknown_keyword(const std::string &keyword) {
+    if (warned_keywords.find(keyword) == warned_keywords.end()) {
+        myerror(ERRFILE, "%zu: unexpected token '%s'", lineno, keyword.c_str());
+        warned_keywords.insert(keyword);
+    }
+    ignoring_line = true;
 }
