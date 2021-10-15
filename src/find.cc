@@ -219,6 +219,12 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector
 	    continue;
         }
 
+        // This is an optimization for ROM sets with many games that share many files, like ScummVM.
+        if (check_match == check_match_romset && archive == NULL && findfile(filetype, rom.name).empty()) {
+            status = FIND_MISSING;
+            continue;
+        }
+        
         GamePtr game = rdb->read_game(rom.name);
         if (!game || game->files[filetype].size() <= rom.index) {
 	    /* TODO: internal error: database inconsistency */
