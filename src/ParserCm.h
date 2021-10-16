@@ -42,7 +42,7 @@ class ParserCm : public Parser {
 public:
     virtual bool parse();
 
-    ParserCm(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags) { }
+    ParserCm(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags), ignoring_line(false) { }
     virtual ~ParserCm() { }
         
 private:
