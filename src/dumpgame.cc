@@ -169,6 +169,9 @@ static void print_matches(filetype_t ft, Hashes *hash) {
 	    continue;
 	}
 
+        if ((game->files[ft][match.index].hashes.get_types() & hash->get_types()) != hash->get_types()) {
+            continue;;
+        }
 	print_match(game, ft, match.index);
 	matches_count++;
     }
