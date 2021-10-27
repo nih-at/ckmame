@@ -164,8 +164,7 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
     xmlFreeTextReader(reader);
 
     if (ret != 0) {
-	/* TODO: parse error */
-	printf("parse error\n");
+	myerror(ERRFILE, "XML parse error");
 	return false;
     }
 

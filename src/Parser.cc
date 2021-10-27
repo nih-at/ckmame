@@ -371,7 +371,7 @@ bool Parser::prog_header(const std::string attr) {
 #if defined(HAVE_LIBXML2)
     detector = Detector::parse(dps.get());
     if (!detector) {
-        myerror(ERRFILESTR, "%zu: cannot parse detector '%s'", lineno, attr.c_str());
+        myerror(ERRFILE, "%zu: cannot parse detector '%s'", lineno, attr.c_str());
         ok = false;
     }
     else

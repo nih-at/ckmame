@@ -105,8 +105,8 @@ struct option options[] = {
 
 #define DEFAULT_FILE_PATTERNS "*.dat"
 
-static int process_file(const std::string &fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags);
-static int process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
+static bool process_file(const std::string &fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags);
+static bool process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
 
 static int hashtypes;
 static bool cache_directory;
@@ -273,7 +273,9 @@ main(int argc, char **argv) {
 
         /* TODO: handle errors */
         if (optind == argc) {
-            process_stdin(exclude, &dat, out.get());
+            if (!process_stdin(exclude, &dat, out.get())) {
+                ret = 1;
+            }
         }
         else {
             // TODO: this isn't overridable by --only-files?
@@ -290,7 +292,7 @@ main(int argc, char **argv) {
                     name.resize(last + 1);
                 }
 
-                if (process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags) < 0) {
+                if (!process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags)) {
                     i = argc;
                     ret = 1;
                 }
@@ -321,7 +323,7 @@ main(int argc, char **argv) {
 }
 
 
-static int process_file(const std::string &fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags) {
+static bool process_file(const std::string &fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags) {
     struct zip *za;
 
     try {
@@ -334,9 +336,8 @@ static int process_file(const std::string &fname, const std::unordered_set<std::
 
     if (!roms_unzipped && (za = zip_open(fname.c_str(), 0, NULL)) != NULL) {
 	const char *name;
-	int err;
+        auto ok = true;
 
-	err = 0;
 	for (uint64_t i = 0; i < static_cast<uint64_t>(zip_get_num_entries(za, 0)); i++) {
 	    name = zip_get_name(za, i, 0);
 
@@ -357,18 +358,18 @@ static int process_file(const std::string &fname, const std::unordered_set<std::
                 auto ps = std::make_shared<ParserSourceZip>(fname, za, name);
                 
                 if (!Parser::parse(ps, exclude, dat, out, parser_flags)) {
-                    err = -1;
+                    ok = false;
                 }
             }
             catch (Exception &e) {
                 myerror(ERRFILE, "can't parse: %s", e.what());
-		err = -1;
+                ok = false;
 		continue;
 	    }
  	}
 	zip_close(za);
 
-	return err;
+	return ok;
     }
     else {
 	std::error_code ec;
@@ -383,12 +384,12 @@ static int process_file(const std::string &fname, const std::unordered_set<std::
 
 	if (ec) {
 	    myerror(ERRDEF, "cannot stat() file '%s': %s", fname.c_str(), ec.message().c_str());
-	    return -1;
+	    return false;
 	}
 
 	if (roms_unzipped) {
 	    myerror(ERRDEF, "argument '%s' is not a directory", fname.c_str());
-	    return -1;
+	    return false;
 	}
 
         try {
@@ -397,13 +398,15 @@ static int process_file(const std::string &fname, const std::unordered_set<std::
         }
         catch (std::exception &exception) {
             fprintf(stderr, "%s: can't process %s: %s\n", getprogname(), fname.c_str(), exception.what());
-	    return -1;
+	    return false;
         }
+        
+        return true;
     }
 }
 
 
-static int process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
+static bool process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
     try {
         auto ps = std::make_shared<ParserSourceFile>("");
 
@@ -411,6 +414,6 @@ static int process_stdin(const std::unordered_set<std::string> &exclude, const D
     }
     catch (std::exception &exception) {
         fprintf(stderr, "%s: can't process stdin: %s\n", getprogname(), exception.what());
-        return -1;
+        return false;
     }
 }

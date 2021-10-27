@@ -117,7 +117,7 @@ Detector::parse(ParserSource *ps) {
     DetectorParserContext ctx;
 
     /* TODO: lineno callback */
-    if (xmlu_parse(ps, &ctx, NULL, entities) < 0) {
+    if (!xmlu_parse(ps, &ctx, NULL, entities)) {
 	return NULL;
     }
 

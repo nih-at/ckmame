@@ -96,7 +96,7 @@ bool ParserRc::parse() {
 	}
     }
 
-    return 0;
+    return true;
 }
 
 std::string ParserRc::Tokenizer::get() {
