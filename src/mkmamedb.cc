@@ -41,6 +41,7 @@
 #include "Archive.h"
 #include "CkmameDB.h"
 #include "error.h"
+#include "Exception.h"
 #include "file_util.h"
 #include "globals.h"
 #include "Parser.h"
@@ -354,12 +355,13 @@ static int process_file(const std::string &fname, const std::unordered_set<std::
             }
             try {
                 auto ps = std::make_shared<ParserSourceZip>(fname, za, name);
-
+                
                 if (!Parser::parse(ps, exclude, dat, out, parser_flags)) {
                     err = -1;
                 }
-           }
-            catch (std::exception &e) {
+            }
+            catch (Exception &e) {
+                myerror(ERRFILE, "can't parse: %s", e.what());
 		err = -1;
 		continue;
 	    }

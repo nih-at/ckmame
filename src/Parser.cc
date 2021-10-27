@@ -74,6 +74,7 @@ bool Parser::parse(ParserSourcePtr source, const std::unordered_set<std::string>
     auto ok = parser->parse();
     if (ok) {
         if (!parser->eof()) {
+            myerror(ERRFILE, "trailing garbage");
             ok = false;
 	}
     }
@@ -122,7 +123,7 @@ bool Parser::file_end(filetype_t ft) {
 
     state = PARSE_IN_GAME;
 
-    return 0;
+    return true;
 }
 
 
@@ -161,7 +162,7 @@ bool Parser::file_hash(filetype_t ft, int ht, const std::string &attr) {
 
     if (attr == "-") {
 	/* some dat files record crc - for 0-byte files, so skip it */
-	return 0;
+	return true;
     }
 
     h = &r[ft]->hashes;

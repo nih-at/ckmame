@@ -34,12 +34,10 @@
 
 #include "config.h"
 
+#include "error.h"
 #include "xmlutil.h"
 
-
 #ifndef HAVE_LIBXML2
-
-#include "error.h"
 
 /*ARGSUSED1*/
 int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
@@ -61,8 +59,7 @@ static int xml_read(void *source, char *buffer, int length);
 int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
     auto reader = xmlReaderForIO(xml_read, xml_close, ps, NULL, NULL, 0);
     if (reader == NULL) {
-	/* TODO */
-	printf("opening error\n");
+	myerror(ERRFILE, "can't open\n");
 	return -1;
     }
 
@@ -88,7 +85,8 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 				ok = false;
 			    }
 			}
-			catch (...) {
+			catch (std::exception &e) {
+                            myerror(ERRFILE, "parse error: %s", e.what());
 			    ok = false;
 			}
                     }
@@ -103,7 +101,8 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 				    ok = false;
 				}
 			    }
-			    catch (...) {
+			    catch (std::exception &e) {
+                                myerror(ERRFILE, "parse error: %s", e.what());
 				ok = false;
 			    }
                             free(value);
@@ -133,7 +132,8 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 				ok = false;
 			    }
 			}
-			catch (...) {
+                        catch (std::exception &e) {
+                            myerror(ERRFILE, "parse error: %s", e.what());
 			    ok = false;
 			}
 		    }
@@ -150,7 +150,8 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 		    try {
 			entity_text->cb_text(ctx, (const char *)xmlTextReaderConstValue(reader));
 		    }
-		    catch (...) {
+                    catch (std::exception &e) {
+                        myerror(ERRFILE, "parse error: %s", e.what());
 			ok = false;
 		    }
                 }
