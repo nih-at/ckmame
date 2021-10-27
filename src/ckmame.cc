@@ -404,9 +404,13 @@ main(int argc, char **argv) {
 
 	if (action == ACTION_CHECK_ROMSET) {
 	    /* build tree of games to check */
-	    auto list = db->read_list(DBH_KEY_LIST_GAME);
-	    if (list.empty()) {
-		myerror(ERRDEF, "list of games not found in database '%s'", dbname);
+	    std::vector<std::string> list;
+	    
+	    try {
+		list = db->read_list(DBH_KEY_LIST_GAME);
+	    }
+	    catch (Exception &e) {
+		myerror(ERRDEF, "list of games not found in database '%s': %s", dbname, e.what());
 		exit(1);
 	    }
 	    std::sort(list.begin(), list.end());

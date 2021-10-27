@@ -452,7 +452,7 @@ std::vector<std::string> RomDB::read_list(enum dbh_list type) {
     
     auto it = query_list.find(type);
     if (it == query_list.end()) {
-        return {};
+        throw Exception("unknown type %d", type);
     }
     
     auto stmt = get_statement(it->second);
@@ -675,9 +675,13 @@ int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEn
     de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : NULL));
     out->header(&de);
 
-    auto list = read_list(DBH_KEY_LIST_GAME);
-    if (list.empty()) {
-	myerror(ERRDEF, "db error reading game list");
+    std::vector<std::string> list;
+    
+    try {
+        list = read_list(DBH_KEY_LIST_GAME);
+    }
+    catch (Exception &e) {
+        myerror(ERRDEF, "db error reading game list: %s", e.what());
 	return -1;
     }
 

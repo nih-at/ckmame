@@ -40,6 +40,7 @@
 #include "config.h"
 
 #include "error.h"
+#include "Exception.h"
 #include "globals.h"
 #include "RomDB.h"
 #include "Stats.h"
@@ -234,9 +235,13 @@ main(int argc, char **argv) {
         }
         seterrdb(db.get());
 
-        auto list = db->read_list(DBH_KEY_LIST_GAME);
-        if (list.empty()) {
-            myerror(ERRDEF, "list of games not found in database '%s'", dbname);
+        std::vector<std::string> list;
+        
+        try {
+            list = db->read_list(DBH_KEY_LIST_GAME);
+        }
+        catch (Exception &e) {
+            myerror(ERRDEF, "list of games not found in database '%s': %s", dbname, e.what());
             exit(1);
         }
         std::sort(list.begin(), list.end());
@@ -405,15 +410,16 @@ dump_hashtypes(int dummy) {
 
 static int
 dump_list(int type) {
+    try {
+        auto list = db->read_list(static_cast<enum dbh_list>(type));
 
-    auto list = db->read_list(static_cast<enum dbh_list>(type));
-    if (list.empty()) {
-	myerror(ERRDB, "db error reading list");
-	return -1;
+        for (size_t i = 0; i < list.size(); i++) {
+            printf("%s\n", list[i].c_str());
+        }
     }
-
-    for (size_t i = 0; i < list.size(); i++) {
-	printf("%s\n", list[i].c_str());
+    catch (Exception &e) {
+        myerror(ERRDB, "db error reading list: %s", e.what());
+        return -1;
     }
 
     return 0;

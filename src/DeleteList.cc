@@ -38,6 +38,7 @@
 
 #include "Dir.h"
 #include "error.h"
+#include "Exception.h"
 #include "fix_util.h"
 #include "fix.h"
 #include "globals.h"
@@ -71,12 +72,14 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
     std::unordered_set<std::string> known_games;
     
     if (omit_known) {
-        auto list = db->read_list(DBH_KEY_LIST_GAME);
-        if (list.empty()) {
-            myerror(ERRDEF, "list of games not found in ROM database");
+        try {
+            auto list = db->read_list(DBH_KEY_LIST_GAME);
+            known_games.insert(list.begin(), list.end());
+        }
+        catch (Exception &e) {
+            myerror(ERRDEF, "list of games not found in ROM database: %s", e.what());
             exit(1);
         }
-        known_games.insert(list.begin(), list.end());
     }
         
     bool have_toplevel_roms = false;
