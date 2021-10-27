@@ -376,7 +376,7 @@ main(int argc, char **argv) {
 		    exit(1);
 		}
 
-		auto d = db->read_dat();;
+		auto d = db->read_dat();
 
 		if (d.empty()) {
 		    myerror(ERRDEF, "database error reading /dat");

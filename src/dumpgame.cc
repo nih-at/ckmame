@@ -170,7 +170,7 @@ static void print_matches(filetype_t ft, Hashes *hash) {
 	}
 
         if ((game->files[ft][match.index].hashes.get_types() & hash->get_types()) != hash->get_types()) {
-            continue;;
+            continue;
         }
 	print_match(game, ft, match.index);
 	matches_count++;
