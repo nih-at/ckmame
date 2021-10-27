@@ -36,12 +36,13 @@
 #include <filesystem>
 
 #include "error.h"
+#include "Exception.h"
 
 ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(NULL) {
     if (!file_name.empty()) {
 	f = make_shared_file(file_name, "r");
 	if (!f) {
-            // TODO: throw XXX;
+            throw Exception("can't open '%s': %s", fname.c_str(), strerror(errno));
         }
     }
     else {
