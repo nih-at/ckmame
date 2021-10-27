@@ -70,22 +70,20 @@ void Stats::add_rom(enum filetype type, const FileData *rom, Match::Quality stat
 void Stats::print(FILE *f, bool total_only) {
     static const char *ft_name[] = {"ROMs: ", "Disks:"};
 
-    if (games_total > 0) {
-        fprintf(f, "Games: ");
-        if (!total_only) {
-            if (games_good > 0 || games_partial == 0) {
-                fprintf(f, "%" PRIu64, games_good);
-            }
-            if (games_partial > 0) {
-                if (games_good > 0) {
-                    fprintf(f, " complete, ");
-                }
-                fprintf(f, "%" PRIu64 " partial", games_partial);
-            }
-            fprintf(f, " / ");
+    fprintf(f, "Games: ");
+    if (!total_only) {
+        if (games_good > 0 || games_partial == 0) {
+            fprintf(f, "%" PRIu64, games_good);
         }
-        fprintf(f, "%" PRIu64 "\n", games_total);
+        if (games_partial > 0) {
+            if (games_good > 0) {
+                fprintf(f, " complete, ");
+            }
+            fprintf(f, "%" PRIu64 " partial", games_partial);
+        }
+        fprintf(f, " / ");
     }
+    fprintf(f, "%" PRIu64 "\n", games_total);
     
     for (int type = 0; type < TYPE_MAX; type++) {
         if (files[type].files_total > 0) {
