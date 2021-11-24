@@ -162,16 +162,17 @@ static void print_matches(filetype_t ft, Hashes *hash) {
 
     for (size_t i = 0; i < matches.size(); i++) {
 	auto match = matches[i];
-	auto game = db->read_game(match.name);
+        
+        if ((match.rom.hashes.get_types() & hash->get_types()) != hash->get_types()) {
+            continue;
+        }
+	auto game = db->read_game(match.game_name);
 	if (!game) {
-	    myerror(ERRDEF, "db error: %s not found, though in hash index", match.name.c_str());
+	    myerror(ERRDEF, "db error: %s not found, though in hash index", match.game_name.c_str());
 	    /* TODO: remember error */
 	    continue;
 	}
 
-        if ((game->files[ft][match.index].hashes.get_types() & hash->get_types()) != hash->get_types()) {
-            continue;
-        }
 	print_match(game, ft, match.index);
 	matches_count++;
     }

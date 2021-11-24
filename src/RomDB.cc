@@ -141,7 +141,7 @@ std::unordered_map<int, std::string> RomDB::queries = {
 };
 
 std::unordered_map<int, std::string> RomDB::parameterized_queries = {
-   {  QUERY_FILE_FBH, "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.status <> :status @HASH@" },
+   {  QUERY_FILE_FBH, "select g.name as game_name, f.file_idx, f.name, f.size, f.crc, f.md5, f.sha1 from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.status <> :status @HASH@" },
 
 };
 
@@ -381,7 +381,12 @@ std::vector<RomLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes &h
     std::vector<RomLocation> result;
 
     while (stmt->step()) {
-        result.push_back(RomLocation(stmt->get_string("name"), static_cast<size_t>(stmt->get_int("file_idx"))));
+        auto rom = Rom();
+        rom.name = stmt->get_string("name");
+        rom.hashes = stmt->get_hashes();
+        rom.hashes.size = stmt->get_uint64("size", Hashes::SIZE_UNKNOWN);
+
+        result.push_back(RomLocation(stmt->get_string("game_name"), static_cast<size_t>(stmt->get_int("file_idx")), rom));
     }
 
     return result;

@@ -37,14 +37,17 @@
 
 #include <string>
 
+#include "Rom.h"
+
 class RomLocation {
  public:
     RomLocation(): index(0) { }
-    RomLocation(std::string name_, size_t index_) : name(name_), index(index_) { }
+    RomLocation(std::string game_name_, size_t index_, const Rom &rom_) : game_name(game_name_), index(index_), rom(rom_) { }
 
-    bool operator<(RomLocation other) const { return (name == other.name) ? (index < other.index) : (name < other.name); }
-    std::string name;
+    bool operator<(RomLocation other) const { return (game_name == other.game_name) ? (index < other.index) : (game_name < other.game_name); }
+    std::string game_name;
     size_t index;
+    Rom rom;
 };
 
 #endif /* RomLocation.h */

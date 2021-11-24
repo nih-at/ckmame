@@ -84,26 +84,17 @@ bool Tree::recheck(const std::string &game_name) {
 
 
 bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashes *hashes) {
-    auto files = db->read_file_by_hash(filetype, *hashes);
-    if (files.empty()) {
+    auto locations = db->read_file_by_hash(filetype, *hashes);
+    if (locations.empty()) {
 	return true;
     }
 
     auto ok = true;
-    for (size_t i = 0; i < files.size(); i++) {
-        auto &file = files[i];
-
-        auto game = db->read_game(file.name);
-        if (!game || game->files[filetype].size() <= file.index) {
-            /* TODO: internal error: db inconsistency */
-	    ok = false;
-	    continue;
-	}
-
-        auto game_file = &game->files[filetype][file.index];
+    for (auto const &location : locations) {
+        auto game_file = &location.rom;
 
         if ((filetype == TYPE_DISK || size == game_file->hashes.size) && hashes->compare(game_file->hashes) == Hashes::MATCH && game_file->where == FILE_INGAME) {
-            recheck(game->name);
+            recheck(location.game_name);
         }
     }
 
