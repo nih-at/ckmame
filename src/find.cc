@@ -155,6 +155,10 @@ find_result_t find_in_romset(filetype_t filetype, size_t detector_id, const File
 
 static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string &name, const FileData *wanted_file, const FileData *candidate, Match *matches) {
     ArchivePtr a;
+    
+    /* TODO: performance improvment for files needed by multiple games:
+        get ArchiveContents by full_name, fileytpe and check if all hashes are computed. Only if that fails, actually open archive.
+     */
 
     auto full_name = findfile(filetype, name);
     if (full_name.empty() || !(a = Archive::open(full_name, filetype, FILE_ROMSET, 0))) {
