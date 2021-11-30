@@ -59,7 +59,7 @@ OutputContextDb::~OutputContextDb() {
 }
 
 
-void OutputContextDb::familymeeting(Game *parent, Game *child) {
+void OutputContextDb::familymeeting(Game *grand_parent, Game *parent, Game *child) {
     if (!parent->cloneof[0].empty()) {
 	/* tell child of his grandfather */
         child->cloneof[1] = parent->cloneof[0];
@@ -67,17 +67,24 @@ void OutputContextDb::familymeeting(Game *parent, Game *child) {
 
     /* look for files in parent */
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        for (size_t i = 0; i < child->files[ft].size(); i++) {
-            auto &cr = child->files[ft][i];
-            for (size_t j = 0; j < parent->files[ft].size(); j++) {
-                auto &pr = parent->files[ft][j];
+        for (auto &cr : child->files[ft]) {
+            for (auto const &pr : parent->files[ft]) {
                 if (cr.is_mergable(pr)) {
                     cr.where = static_cast<where_t>(pr.where + 1);
                     break;
                 }
             }
+            if (grand_parent != NULL && cr.where == FILE_INGAME) {
+                for (auto const &pr : grand_parent->files[ft]) {
+                    if (cr.is_mergable(pr)) {
+                        cr.where = FILE_IN_GRAND_CLONEOF;
+                        break;
+                    }
+                }
+            }
+             
             if (cr.where == FILE_INGAME && !cr.merge.empty()) {
-                myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but parent does not contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
+                myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but ancestors don't contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
             }
         }
     }
@@ -108,7 +115,8 @@ bool OutputContextDb::handle_lost() {
             }
             else if (!lost(parent.get())) {
                 /* parent found */
-                familymeeting(parent.get(), child.get());
+                auto grand_parent = child->cloneof[1].empty() ? NULL : db->read_game(child->cloneof[1]);
+                familymeeting(grand_parent.get(), parent.get(), child.get());
                 is_lost = false;
             }
             
@@ -174,7 +182,9 @@ bool OutputContextDb::game(GamePtr game) {
             lost_children.push_back(game->name);
         }
         else {
-            familymeeting(parent.get(), game.get());
+            auto grand_parent = game->cloneof[1].empty() ? NULL : db->read_game(game->cloneof[1]);
+
+            familymeeting(grand_parent.get(), parent.get(), game.get());
             /* TODO: check error */
         }
     }
