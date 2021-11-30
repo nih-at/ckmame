@@ -486,24 +486,17 @@ void Parser::rom_end(filetype_t ft) {
     }
     for (size_t j = 0; j < n && !deleted; j++) {
         auto &rom2 = g->files[ft][j];
-        if (r[ft]->compare_size_hashes(rom2)) {
-	    /* TODO: merge in additional hash types? */
-            if (r[ft]->compare_name(rom2)) {
-		myerror(ERRFILE, "%zu: the same rom listed multiple times (%s)", lineno, r[ft]->name.c_str());
-		deleted = true;
-		break;
+        if (r[ft]->compare_name(rom2)) {
+            if (r[ft]->compare_size_hashes(rom2)) {
+                /* TODO: merge in additional hash types? */
+                deleted = true;
+                break;
 	    }
-            else if (!rom2.merge.empty() && r[ft]->merge == rom2.merge) {
-		/* file_add_altname(r2, file_name(r)); */
-                myerror(ERRFILE, "%zu: the same rom listed multiple times (%s, merge-name %s)", lineno, r[ft]->name.c_str(), r[ft]->merge.c_str());
-		deleted = true;
-		break;
-	    }
-	}
-        else if (r[ft]->compare_name(rom2)) {
-	    myerror(ERRFILE, "%zu: two different roms with same name (%s)", lineno, r[ft]->name.c_str());
-	    deleted = true;
-	    break;
+            else {
+                myerror(ERRFILE, "%zu: two different roms with same name (%s)", lineno, r[ft]->name.c_str());
+                deleted = true;
+                break;
+            }
 	}
     }
     if (!r[ft]->merge.empty() && g->cloneof[0].empty()) {
