@@ -44,6 +44,8 @@ public:
     const Hashes &get_hashes(size_t detector) const;
 
     bool is_size_known(size_t detector) const { return get_size(detector) != Hashes::SIZE_UNKNOWN; }
+    bool has_all_hashes(size_t detector, int requested_types) const;
+    bool has_all_hashes(size_t detector, const Hashes &other) const { return has_all_hashes(detector, other.get_types()); }
     bool size_hashes_are_set(size_t detector) const;
 
     std::string filename_extension;

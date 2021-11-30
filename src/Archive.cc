@@ -300,19 +300,13 @@ std::optional<size_t> Archive::file_index_by_hashes(const Hashes *hashes) const 
 
 
 std::optional<size_t> Archive::file_index_by_name(const std::string &filename) const {
-    for (size_t i = 0; i < files.size(); i++) {
-        auto &file = files[i];
-        auto &change = changes[i];
-
-        if (filename == file.name) {
-            if (change.status == Change::DELETED) {
-                return {};
-            }
-	    return i;
-	}
+    auto index = contents->file_index_by_name(filename);
+    
+    if (index.has_value() && changes[index.value()].status == Change::DELETED) {
+        return {};
     }
 
-    return {};
+    return index;
 }
 
 
@@ -659,6 +653,18 @@ ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::stri
     return it->second.lock();
 }
 
+
+std::optional<size_t> ArchiveContents::file_index_by_name(const std::string &filename) const {
+    for (size_t i = 0; i < files.size(); i++) {
+        auto &file = files[i];
+        
+        if (filename == file.name) {
+            return i;
+        }
+    }
+
+    return {};
+}
 
 bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors) {
     auto got_new_hashes = false;

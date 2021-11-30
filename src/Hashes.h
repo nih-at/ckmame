@@ -92,6 +92,7 @@ public:
     bool has_all_types(const Hashes &other) const { return has_all_types(other.types); }
     bool has_all_types(int requested_types) const { return (types & requested_types) == requested_types; }
     Compare compare(const Hashes &other) const;
+    Compare compare_with_size(const Hashes &other) const;
     bool operator==(const Hashes &other) const;
     bool is_zero(int type) const;
     std::string to_string(int type) const;

@@ -154,34 +154,69 @@ find_result_t find_in_romset(filetype_t filetype, size_t detector_id, const File
 
 
 static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string &name, const FileData *wanted_file, const FileData *candidate, Match *matches) {
-    ArchivePtr a;
     
-    /* TODO: performance improvment for files needed by multiple games:
-        get ArchiveContents by full_name, fileytpe and check if all hashes are computed. Only if that fails, actually open archive.
-     */
+    /* TODO: use detector_id */
 
     auto full_name = findfile(filetype, name);
-    if (full_name.empty() || !(a = Archive::open(full_name, filetype, FILE_ROMSET, 0))) {
-	return FIND_MISSING;
+    if (full_name.empty()) {
+        return FIND_MISSING;
     }
+    
+    ArchivePtr a;
+    auto contents = ArchiveContents::by_name(filetype, full_name);
+    std::optional<size_t> index;
 
-    auto idx = a->file_index_by_name(candidate->name);
-    if (idx.has_value()) {
-        a->file_ensure_hashes(idx.value(), wanted_file->hashes.get_types());
-        if (a->compare_size_hashes(idx.value(), detector_id, wanted_file)) {
-            auto index = idx.value();
-            
-            if (!a->files[index].broken) {
-                if (matches) {
-                    matches->archive = a;
-                    matches->index = index;
-                }
-                return FIND_EXISTS;
-            }
+    if (contents) {
+        index = contents->file_index_by_name(candidate->name);
+        
+        if (!index.has_value() || contents->files[index.value()].broken) {
+            return FIND_MISSING;
         }
     }
+    if (!(contents && index.has_value() && contents->files[index.value()].hashes.has_all_types(wanted_file->hashes))) {
+        a = Archive::open(full_name, filetype, FILE_ROMSET, 0);
+        if (!a) {
+            return FIND_MISSING;
+        }
+        contents = a->contents;
+        index = a->file_index_by_name(candidate->name);
 
-    return FIND_MISSING;
+        if (!index.has_value() || a->files[index.value()].broken) {
+            return FIND_MISSING;
+        }
+
+        a->file_ensure_hashes(index.value(), wanted_file->hashes.get_types());
+    }
+    
+    if (!contents->files[index.value()].compare_size_hashes(*wanted_file)) {
+        if (detector_id > 0) {
+            const auto &hashes = contents->files[index.value()].get_hashes(detector_id);
+            if (hashes.has_all_types(wanted_file->hashes)) {
+                if (!hashes.compare_with_size(wanted_file->hashes)) {
+                    return FIND_MISSING;
+                }
+            }
+            else {
+                if (!a) {
+                    a = Archive::open(contents);
+                }
+                if (!a->compare_size_hashes(index.value(), detector_id, wanted_file)) {
+                    return FIND_MISSING;
+                }
+            }
+        }
+        
+        return FIND_MISSING;
+    }
+
+    if (matches != NULL) {
+        if (!a) {
+            a = Archive::open(contents);
+        }
+        matches->archive = a;
+        matches->index = index.value();
+    }
+    return FIND_EXISTS;
 }
 
 

@@ -110,6 +110,14 @@ bool Hashes::are_crc_complement(const Hashes &other) const {
     return ((crc ^ other.crc) & 0xffffffff) == 0xffffffff;
 }
 
+Hashes::Compare Hashes::compare_with_size(const Hashes &other) const {
+    if (has_size() && other.has_size() && size != other.size) {
+        return MISMATCH;
+    }
+    return compare(other);
+}
+
+
 Hashes::Compare Hashes::compare(const Hashes &other) const {
     if (types == 0 || other.types == 0) {
         return MATCH;

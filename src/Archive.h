@@ -79,8 +79,7 @@ enum ArchiveType {
 
 class ArchiveContents {
 public:
-    ArchiveContents(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flagsk, const std::string &filename_extension =
-"");
+    ArchiveContents(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flagsk, const std::string &filename_extension = "");
 
     uint64_t id;
     std::string name;
@@ -98,6 +97,7 @@ public:
     std::weak_ptr<Archive> open_archive;
     std::string filename_extension;
   
+    std::optional<size_t> file_index_by_name(const std::string &name) const;
     bool has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors);
     
     bool read_infos_from_cachedb(std::vector<File> *files);
