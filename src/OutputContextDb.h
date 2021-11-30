@@ -55,7 +55,7 @@ private:
 
     std::vector<std::string> lost_children;
     
-    void familymeeting(Game *grand_parent, Game *parent, Game *child);
+    void familymeeting(Game *parent, Game *child);
     bool handle_lost();
     bool lost(Game *);
 };

@@ -59,11 +59,13 @@ OutputContextDb::~OutputContextDb() {
 }
 
 
-void OutputContextDb::familymeeting(Game *grand_parent, Game *parent, Game *child) {
+void OutputContextDb::familymeeting(Game *parent, Game *child) {
     if (!parent->cloneof[0].empty()) {
 	/* tell child of his grandfather */
         child->cloneof[1] = parent->cloneof[0];
     }
+    
+    auto grand_parent = child->cloneof[1].empty() ? NULL : db->read_game(child->cloneof[1]);
 
     /* look for files in parent */
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
@@ -115,8 +117,7 @@ bool OutputContextDb::handle_lost() {
             }
             else if (!lost(parent.get())) {
                 /* parent found */
-                auto grand_parent = child->cloneof[1].empty() ? NULL : db->read_game(child->cloneof[1]);
-                familymeeting(grand_parent.get(), parent.get(), child.get());
+                familymeeting(parent.get(), child.get());
                 is_lost = false;
             }
             
@@ -182,9 +183,7 @@ bool OutputContextDb::game(GamePtr game) {
             lost_children.push_back(game->name);
         }
         else {
-            auto grand_parent = game->cloneof[1].empty() ? NULL : db->read_game(game->cloneof[1]);
-
-            familymeeting(grand_parent.get(), parent.get(), game.get());
+            familymeeting(parent.get(), game.get());
             /* TODO: check error */
         }
     }
