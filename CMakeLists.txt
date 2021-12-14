@@ -75,6 +75,11 @@ if(NOT SQLite3_FOUND)
   message(ERROR "-- sqlite3 library not found (required)")
 endif()
 
+find_package(tomlplusplus)
+if (tomlplusplus_FOUND)
+  set(HAVE_TOMLPLUSPLUS 1)
+endif()
+
 if(LibXml2_FOUND)
   set(HAVE_LIBXML2 1)
 else()

@@ -93,6 +93,9 @@ endif()
 
 add_library(libckmame ${COMMON_SOURCES})
 target_link_libraries(libckmame PRIVATE ZLIB::ZLIB libzip::zip)
+if (HAVE_TOMLPLUSPLUS)
+  target_link_libraries(libckmame PRIVATE tomlplusplus::tomlplusplus)
+endif()
 # for config.h
 target_include_directories(libckmame PRIVATE ${PROJECT_BINARY_DIR})
 
