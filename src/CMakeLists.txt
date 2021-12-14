@@ -22,6 +22,8 @@ set(COMMON_SOURCES
   check_util.cc
   CkmameDB.cc
   cleanup.cc
+  Commandline.cc
+  Configuration.cc
   DatEntry.cc
   DB.cc
   DBStatement.cc

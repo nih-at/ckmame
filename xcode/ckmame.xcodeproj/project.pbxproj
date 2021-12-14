@@ -27,6 +27,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		4B074D452768A806008A9824 /* Configuration.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B074D432768A806008A9824 /* Configuration.cc */; };
+		4B074D462768A806008A9824 /* Configuration.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B074D442768A806008A9824 /* Configuration.h */; };
+		4B074D492768AAF3008A9824 /* Commandline.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B074D472768AAF3008A9824 /* Commandline.cc */; };
+		4B074D4A2768AAF3008A9824 /* Commandline.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B074D482768AAF3008A9824 /* Commandline.h */; };
 		4B07BFBF1FEC1B190068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
 		4B07BFC01FEC1B370068A600 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFBE1FEC1B190068A600 /* libsqlite3.tbd */; };
 		4B07BFC21FEC1B5C0068A600 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
@@ -346,6 +350,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4B074D422768A7AE008A9824 /* toml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = toml.hpp; sourceTree = "<group>"; };
+		4B074D432768A806008A9824 /* Configuration.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Configuration.cc; sourceTree = "<group>"; };
+		4B074D442768A806008A9824 /* Configuration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Configuration.h; sourceTree = "<group>"; };
+		4B074D472768AAF3008A9824 /* Commandline.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Commandline.cc; sourceTree = "<group>"; };
+		4B074D482768AAF3008A9824 /* Commandline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Commandline.h; sourceTree = "<group>"; };
 		4B07BFB71FE810930068A600 /* TODO.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = TODO.md; path = ../TODO.md; sourceTree = "<group>"; };
 		4B07BFB81FE811C40068A600 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		4B07BFB91FE811C40068A600 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -1029,6 +1038,10 @@
 				4B9232FF1780B2FC00096AA2 /* CkmameDB.h */,
 				4B5FAC9F1735919800B67C24 /* cleanup.cc */,
 				4B3274C625B99F75006AEF16 /* cleanup.h */,
+				4B074D472768AAF3008A9824 /* Commandline.cc */,
+				4B074D482768AAF3008A9824 /* Commandline.h */,
+				4B074D432768A806008A9824 /* Configuration.cc */,
+				4B074D442768A806008A9824 /* Configuration.h */,
 				4B5FACA11735919800B67C24 /* DatEntry.cc */,
 				4B5FACA31735919800B67C24 /* DatEntry.h */,
 				4B5FAE5A1735941D00B67C24 /* DB.cc */,
@@ -1174,6 +1187,7 @@
 		4B5FAEA3173599EC00B67C24 /* compat */ = {
 			isa = PBXGroup;
 			children = (
+				4B074D422768A7AE008A9824 /* toml.hpp */,
 				4B1D2F7E267CF54500C31483 /* compat_fnmatch.h */,
 				4B1D2F7F267CF54500C31483 /* compat.h */,
 				4B1D2F80267CF54500C31483 /* fnmatch.cc */,
@@ -1543,10 +1557,12 @@
 				4B3274D025B99F76006AEF16 /* diagnostics.h in Headers */,
 				4BEDBE0626565D5F00DBF486 /* DetectorCollection.h in Headers */,
 				4B3274D525B99F76006AEF16 /* file_util.h in Headers */,
+				4B074D4A2768AAF3008A9824 /* Commandline.h in Headers */,
 				4B5F43C21889D059000C3B7C /* RomDB.h in Headers */,
 				4B3666EF261719DC00A67A6C /* ArchiveLibarchive.h in Headers */,
 				4BC316E626A04F0E0012AEB8 /* DBStatement.h in Headers */,
 				4BC31665269336090012AEB8 /* ArchiveLocation.h in Headers */,
+				4B074D462768A806008A9824 /* Configuration.h in Headers */,
 				4B3274D625B99F76006AEF16 /* fixdat.h in Headers */,
 				4B3274D825B99F76006AEF16 /* fix.h in Headers */,
 				4BB552BD25C01EC1001ABC31 /* Exception.h in Headers */,
@@ -1776,6 +1792,7 @@
 			files = (
 				4B5FAE7E173594E400B67C24 /* DB.cc in Sources */,
 				4B5FAE82173594E400B67C24 /* Result.cc in Sources */,
+				4B074D452768A806008A9824 /* Configuration.cc in Sources */,
 				4BC316E526A04F0E0012AEB8 /* DBStatement.cc in Sources */,
 				4B5F43C11889D059000C3B7C /* RomDB.cc in Sources */,
 				4B5F43AC1889CEE7000C3B7C /* globals.cc in Sources */,
@@ -1824,6 +1841,7 @@
 				4BB552BC25C01EC1001ABC31 /* Exception.cc in Sources */,
 				4B5FAE0A1735930100B67C24 /* OutputContextXml.cc in Sources */,
 				4B5FAE0B1735930100B67C24 /* OutputContextDb.cc in Sources */,
+				4B074D492768AAF3008A9824 /* Commandline.cc in Sources */,
 				4B5FAE0C1735930100B67C24 /* OutputContextMtree.cc in Sources */,
 				4BB51D2A25823D770047BE72 /* ParserSourceFile.cc in Sources */,
 				4B5FAE171735930100B67C24 /* ParserCm.cc in Sources */,

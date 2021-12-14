@@ -42,6 +42,7 @@
 #include "check_util.h"
 #include "cleanup.h"
 #include "CkmameDB.h"
+#include "Commandline.h"
 #include "diagnostics.h"
 #include "error.h"
 #include "Exception.h"
@@ -107,46 +108,41 @@ const char help[] = "\n"
 const char version_string[] = PACKAGE " " VERSION "\n"
 				"Copyright (C) 1999-2018 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "bCcD:de:FfhjKkLlO:R:SsT:uVvwX"
 
-enum { OPT_CLEANUP_EXTRA = 256, OPT_DELETE_DUPLICATE, OPT_AUTOFIXDAT, OPT_FIXDAT, OPT_IGNORE_UNKNOWN, OPT_KEEP_DUPLICATE, OPT_KEEP_FOUND, OPT_SUPERFLUOUS, OPT_STATS };
+std::vector<Commandline::Option> options = {
+    Commandline::Option("help", 'h'),
+    Commandline::Option("version", 'V'),
 
-struct option options[] = {
-    {"help", 0, 0, 'h'},
-    {"version", 0, 0, 'V'},
-
-    {"autofixdat", 0, 0, OPT_AUTOFIXDAT},
-    {"cleanup-extra", 0, 0, OPT_CLEANUP_EXTRA},
-    {"complete-only", 0, 0, 'C'},
-    {"correct", 0, 0, 'c'}, /* +CORRECT */
-    {"db", 1, 0, 'D'},
-    {"delete-duplicate", 0, 0, OPT_DELETE_DUPLICATE}, /*+DELETE_DUPLICATE */
-    {"delete-found", 0, 0, 'j'},
-    {"delete-long", 0, 0, 'l'},
-    {"delete-unknown", 0, 0, 'k'},
-    {"fix", 0, 0, 'F'},
-    {"fixdat", 1, 0, OPT_FIXDAT},
-    {"games-from", 1, 0, 'T'},
-    {"ignore-extra", 0, 0, 'X'},
-    {"ignore-unknown", 0, 0, OPT_IGNORE_UNKNOWN},
-    {"keep-duplicate", 0, 0, OPT_KEEP_DUPLICATE}, /* -DELETE_DUPLICATE */
-    {"keep-found", 0, 0, OPT_KEEP_FOUND},
-    {"move-long", 0, 0, 'L'},
-    {"move-unknown", 0, 0, 'K'},
-    {"nobroken", 0, 0, 'b'},      /* -BROKEN */
-    {"nofixable", 0, 0, 'f'},     /* -FIX */
-    {"nonogooddumps", 0, 0, 'd'}, /* -NO_GOOD_DUMPS */
-    {"nosuperfluous", 0, 0, 's'}, /* -SUP */
-    {"nowarnings", 0, 0, 'w'},    /* -SUP, -FIX */
-    {"old-db", 1, 0, 'O'},
-    {"rom-dir", 1, 0, 'R'},
-    {"roms-unzipped", 0, 0, 'u'},
-    {"search", 1, 0, 'e'},
-    {"stats", 0, 0, OPT_STATS},
-    {"superfluous", 0, 0, OPT_SUPERFLUOUS},
-    {"verbose", 0, 0, 'v'},
-
-    {NULL, 0, 0, 0},
+    Commandline::Option("autofixdat"),
+    Commandline::Option("cleanup-extra"),
+    Commandline::Option("complete-only", 'C'),
+    Commandline::Option("correct", 'c'), /* +CORRECT */
+    Commandline::Option("db", 'D', true),
+    Commandline::Option("delete-duplicate"), /*+DELETE_DUPLICATE */
+    Commandline::Option("delete-found", 'j'),
+    Commandline::Option("delete-long", 'l'),
+    Commandline::Option("delete-unknown", 'k'),
+    Commandline::Option("fix", 'F'),
+    Commandline::Option("fixdat", {}, true),
+    Commandline::Option("games-from", 'T', true),
+    Commandline::Option("ignore-extra", 'X'),
+    Commandline::Option("ignore-unknown"),
+    Commandline::Option("keep-duplicate"), /* -DELETE_DUPLICATE */
+    Commandline::Option("keep-found"),
+    Commandline::Option("move-long", 'L'),
+    Commandline::Option("move-unknown", 'K'),
+    Commandline::Option("nobroken", 'b'),      /* -BROKEN */
+    Commandline::Option("nofixable", 'f'),     /* -FIX */
+    Commandline::Option("nonogooddumps", 'd'), /* -NO_GOOD_DUMPS */
+    Commandline::Option("nosuperfluous", 's'), /* -SUP */
+    Commandline::Option("nowarnings", 'w'),    /* -SUP, -FIX */
+    Commandline::Option("old-db", 'O', true),
+    Commandline::Option("rom-dir", 'R', true),
+    Commandline::Option("roms-unzipped", 'u'),
+    Commandline::Option("search", 'e', true),
+    Commandline::Option("stats"),
+    Commandline::Option("superfluous"),
+    Commandline::Option("verbose", 'v')
 };
 
 static int ignore_extra;
@@ -162,168 +158,186 @@ main(int argc, char **argv) {
 
     try {
 	action_t action;
-	const char *dbname, *olddbname;
-	int c, found;
+	int found;
 	std::string fixdat_name;
-	char *game_list;
+	std::string game_list;
 	bool auto_fixdat;
 	bool print_stats = false;
 
 	diagnostics_options = WARN_ALL;
 	action = ACTION_UNSPECIFIED;
-	dbname = getenv("MAMEDB");
-	if (dbname == NULL)
-	    dbname = RomDB::default_name.c_str();
-	olddbname = getenv("MAMEDB_OLD");
-	if (olddbname == NULL)
-	    olddbname = RomDB::default_old_name.c_str();
+	
+	auto dbname = RomDB::default_name;
+	auto olddbname = RomDB::default_old_name;
+	
+	auto value = getenv("MAMEDB");
+	if (value != NULL) {
+	    dbname = value;
+	}
+	value = getenv("MAMEDB_OLD");
+	if (value != NULL) {
+	    olddbname = value;
+	}
 	fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
 	ignore_extra = 0;
 	roms_unzipped = false;
-	game_list = NULL;
 	fixdat = NULL;
 	auto_fixdat = false;
+	
+	std::vector<std::string> arguments;
 
-	opterr = 0;
-	while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
-	    switch (c) {
-	    case 'h':
+	try {
+	    auto commandline = Commandline(options, argc, argv);
+	
+	    if (commandline.find_first("help").has_value()) {
 		fputs(help_head, stdout);
 		printf(usage, getprogname());
 		fputs(help, stdout);
 		exit(0);
-	    case 'V':
+	    }
+	    if (commandline.find_first("version").has_value()) {
 		fputs(version_string, stdout);
 		exit(0);
-
-	    case 'b':
-		diagnostics_options &= ~WARN_BROKEN;
-		break;
-	    case 'C':
-		fix_options |= FIX_COMPLETE_ONLY;
-		break;
-	    case 'c':
-		diagnostics_options |= WARN_CORRECT;
-		break;
-	    case 'D':
-		dbname = optarg;
-		break;
-	    case 'd':
-		diagnostics_options &= ~WARN_NO_GOOD_DUMP;
-		break;
-	    case 'e': {
-		std::string name = optarg;
-		auto last = name.find_last_not_of("/");
-		if (last == std::string::npos) {
-		    name = "/";
-		}
-		else {
-		    name.resize(last + 1);
-		}
-		search_dirs.push_back(name);
-		break;
 	    }
-	    case 'F':
-		fix_options |= FIX_DO;
-		break;
-	    case 'f':
-		diagnostics_options &= ~WARN_FIXABLE;
-		break;
-	    case 'j':
-		fix_options |= FIX_DELETE_EXTRA;
-		break;
-	    case 'K':
-		fix_options |= FIX_MOVE_UNKNOWN;
-		break;
-	    case 'k':
-		fix_options &= ~FIX_MOVE_UNKNOWN;
-		break;
-	    case 'L':
-		fix_options |= FIX_MOVE_LONG;
-		break;
-	    case 'l':
-		fix_options &= ~FIX_MOVE_LONG;
-		break;
-	    case 'O':
-		olddbname = optarg;
-		break;
-	    case 'R':
-		rom_dir = optarg;
-		break;
-	    case 's':
-		diagnostics_options &= ~WARN_SUPERFLUOUS;
-		break;
-	    case 'T':
-		game_list = optarg;
-		break;
-	    case 'u':
-		roms_unzipped = true;
-		break;
-	    case 'v':
-		fix_options |= FIX_PRINT;
-		break;
-	    case 'w':
-		diagnostics_options &= WARN_BROKEN;
-		break;
-	    case 'X':
-		ignore_extra = 1;
-		break;
-	    case OPT_CLEANUP_EXTRA:
-		if (action != ACTION_UNSPECIFIED)
-		    error_multiple_actions();
-		action = ACTION_CLEANUP_EXTRA_ONLY;
-		fix_options |= FIX_DO | FIX_CLEANUP_EXTRA;
-		break;
-	    case OPT_DELETE_DUPLICATE:
-		fix_options |= FIX_DELETE_DUPLICATE;
-		break;
-	    case OPT_AUTOFIXDAT:
-		auto_fixdat = true;
-		break;
-	    case OPT_FIXDAT:
-		fixdat_name = optarg;
-		break;
-	    case OPT_IGNORE_UNKNOWN:
-		fix_options |= FIX_IGNORE_UNKNOWN;
-		break;
-	    case OPT_KEEP_DUPLICATE:
-		fix_options &= ~FIX_DELETE_DUPLICATE;
-		break;
-	    case OPT_KEEP_FOUND:
-		fix_options &= ~FIX_DELETE_EXTRA;
-		break;
-	    case OPT_STATS:
-		print_stats = true;
-		break;
-	    case OPT_SUPERFLUOUS:
-		if (action != ACTION_UNSPECIFIED)
-		    error_multiple_actions();
-		action = ACTION_SUPERFLUOUS_ONLY;
-		break;
-	    default:
-		fprintf(stderr, usage, getprogname());
-		exit(1);
+	    
+	    // TODO: read config files: system wide, current directory, specified on command line
+	    
+	    for (auto const &option : commandline.options) {
+		if (option.name == "nobroken") {
+		    diagnostics_options &= ~WARN_BROKEN;
+		}
+		else if (option.name == "complete-only") {
+		    fix_options |= FIX_COMPLETE_ONLY;
+		}
+		else if (option.name == "correct") {
+		    diagnostics_options |= WARN_CORRECT;
+		}
+		else if (option.name == "db") {
+		    dbname = option.argument;
+		}
+		else if (option.name == "nonogooddumps") {
+		    diagnostics_options &= ~WARN_NO_GOOD_DUMP;
+		}
+		else if (option.name == "search") {
+		    std::string name = option.argument;
+		    auto last = name.find_last_not_of("/");
+		    if (last == std::string::npos) {
+			name = "/";
+		    }
+		    else {
+			name.resize(last + 1);
+		    }
+		    search_dirs.push_back(name);
+		}
+		else if (option.name == "fix") {
+		    fix_options |= FIX_DO;
+		}
+		else if (option.name == "nofixable") {
+		    diagnostics_options &= ~WARN_FIXABLE;
+		}
+		else if (option.name == "delete-found") {
+		    fix_options |= FIX_DELETE_EXTRA;
+		}
+		else if (option.name == "move-unknown") {
+		    fix_options |= FIX_MOVE_UNKNOWN;
+		}
+		else if (option.name == "delete-unknown") {
+		    fix_options &= ~FIX_MOVE_UNKNOWN;
+		}
+		else if (option.name == "move-long") {
+		    fix_options |= FIX_MOVE_LONG;
+		}
+		else if (option.name == "delete-long") {
+		    fix_options &= ~FIX_MOVE_LONG;
+		}
+		else if (option.name == "old-db") {
+		    olddbname = option.argument;
+		}
+		else if (option.name == "rom-dir") {
+		    rom_dir = option.argument;
+		}
+		else if (option.name == "nosuperfluous") {
+		    diagnostics_options &= ~WARN_SUPERFLUOUS;
+		}
+		else if (option.name == "games-from") {
+		    game_list = option.argument;
+		}
+		else if (option.name == "roms-unzipped") {
+		    roms_unzipped = true;
+		}
+		else if (option.name == "verbose") {
+		    fix_options |= FIX_PRINT;
+		}
+		else if (option.name == "nowarnings") {
+		    diagnostics_options &= WARN_BROKEN;
+		}
+		else if (option.name == "ignore-extra") {
+		    ignore_extra = 1;
+		}
+		else if (option.name == "cleanup-extra") {
+		    if (action != ACTION_UNSPECIFIED) {
+			error_multiple_actions();
+		    }
+		    action = ACTION_CLEANUP_EXTRA_ONLY;
+		    fix_options |= FIX_DO | FIX_CLEANUP_EXTRA;
+		}
+		else if (option.name == "delete-duplicate") {
+		    fix_options |= FIX_DELETE_DUPLICATE;
+		}
+		else if (option.name == "autofixdat") {
+		    auto_fixdat = true;
+		}
+		else if (option.name == "fixdat") {
+		    fixdat_name = option.argument;
+		}
+		else if (option.name == "ignore-unknown") {
+		    fix_options |= FIX_IGNORE_UNKNOWN;
+		}
+		else if (option.name == "keep-duplicate") {
+		    fix_options &= ~FIX_DELETE_DUPLICATE;
+		}
+		else if (option.name == "keep-found") {
+		    fix_options &= ~FIX_DELETE_EXTRA;
+		}
+		else if (option.name == "stats") {
+		    print_stats = true;
+		}
+		else if (option.name == "superfluous") {
+		    if (action != ACTION_UNSPECIFIED) {
+			error_multiple_actions();
+		    }
+		    action = ACTION_SUPERFLUOUS_ONLY;
+		}
 	    }
+	    
+	    arguments = commandline.arguments;
+	}
+	catch (Exception &ex) {
+	    fprintf(stderr, usage, getprogname(), getprogname(), getprogname());
+	    exit(1);
 	}
 
 	if ((fix_options & FIX_DO) == 0)
 	    archive_global_flags(ARCHIVE_FL_RDONLY, true);
 
-	if (optind != argc) {
-	    if (action != ACTION_UNSPECIFIED)
+	if (!arguments.empty()) {
+	    if (action != ACTION_UNSPECIFIED) {
 		error_multiple_actions();
+	    }
 	    action = ACTION_CHECK_ROMSET;
 	}
-	else if (game_list) {
-	    if (action != ACTION_UNSPECIFIED)
+	else if (!game_list.empty()) {
+	    if (action != ACTION_UNSPECIFIED) {
 		error_multiple_actions();
+	    }
 	    action = ACTION_CHECK_ROMSET;
 	}
 	else if (action == ACTION_UNSPECIFIED) {
 	    action = ACTION_CHECK_ROMSET;
 	    fix_options |= FIX_SUPERFLUOUS;
-	    if (fix_options & FIX_DELETE_EXTRA)
+	    if (fix_options & FIX_DELETE_EXTRA) {
 		fix_options |= FIX_CLEANUP_EXTRA;
+	    }
 	}
 
 	ensure_dir(get_directory(), false);
@@ -357,7 +371,7 @@ main(int argc, char **argv) {
 	    db = std::make_unique<RomDB>(dbname, DBH_READ);
 	}
 	catch (std::exception &e) {
-	    myerror(0, "can't open database '%s': %s", dbname, e.what());
+	    myerror(0, "can't open database '%s': %s", dbname.c_str(), e.what());
 	    exit(1);
 	}
 	try {
@@ -410,12 +424,12 @@ main(int argc, char **argv) {
 		list = db->read_list(DBH_KEY_LIST_GAME);
 	    }
 	    catch (Exception &e) {
-		myerror(ERRDEF, "list of games not found in database '%s': %s", dbname, e.what());
+		myerror(ERRDEF, "list of games not found in database '%s': %s", dbname.c_str(), e.what());
 		exit(1);
 	    }
 	    std::sort(list.begin(), list.end());
 
-	    if (game_list) {
+	    if (!game_list.empty()) {
 		char b[8192];
 
 		seterrinfo(game_list);
@@ -442,31 +456,31 @@ main(int argc, char **argv) {
 		    }
 		}
 	    }
-	    else if (optind == argc) {
+	    else if (arguments.empty()) {
 		for (size_t i = 0; i < list.size(); i++) {
 		    check_tree.add(list[i]);
 		}
 	    }
 	    else {
-		for (auto i = optind; i < argc; i++) {
-		    if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-			if (std::binary_search(list.begin(), list.end(), argv[i])) {
-			    check_tree.add(argv[i]);
+		for (auto const &argument : arguments) {
+		    if (strcspn(argument.c_str(), "*?[]{}") == argument.size()) {
+			if (std::binary_search(list.begin(), list.end(), argument)) {
+			    check_tree.add(argument);
 			}
 			else {
-			    myerror(ERRDEF, "game '%s' unknown", argv[i]);
+			    myerror(ERRDEF, "game '%s' unknown", argument.c_str());
 			}
 		    }
 		    else {
 			found = 0;
 			for (size_t j = 0; j < list.size(); j++) {
-			    if (fnmatch(argv[i], list[j].c_str(), 0) == 0) {
+			    if (fnmatch(argument.c_str(), list[j].c_str(), 0) == 0) {
 				check_tree.add(list[j]);
 				found = 1;
 			    }
 			}
 			if (!found)
-			    myerror(ERRDEF, "no game matching '%s' found", argv[i]);
+			    myerror(ERRDEF, "no game matching '%s' found", argument.c_str());
 		    }
 		}
 	    }
@@ -526,7 +540,7 @@ main(int argc, char **argv) {
 	    extra_delete_list->execute();
 	}
 
-	if ((action == ACTION_CHECK_ROMSET && (optind == argc && (diagnostics_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY) {
+	if ((action == ACTION_CHECK_ROMSET && (arguments.empty() && (diagnostics_options & WARN_SUPERFLUOUS))) || action == ACTION_SUPERFLUOUS_ONLY) {
 	    print_superfluous(superfluous_delete_list);
 	}
 	
