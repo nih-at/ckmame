@@ -43,6 +43,7 @@
 #include "cleanup.h"
 #include "CkmameDB.h"
 #include "Commandline.h"
+#include "Configuration.h"
 #include "diagnostics.h"
 #include "error.h"
 #include "Exception.h"
@@ -106,7 +107,7 @@ const char help[] = "\n"
 	      "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 const char version_string[] = PACKAGE " " VERSION "\n"
-				"Copyright (C) 1999-2018 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+				"Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 
 std::vector<Commandline::Option> options = {
@@ -114,38 +115,29 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("version", 'V'),
 
     Commandline::Option("autofixdat"),
-    Commandline::Option("cleanup-extra"),
-    Commandline::Option("complete-only", 'C'),
-    Commandline::Option("correct", 'c'), /* +CORRECT */
+    Commandline::Option("complete-games-only", 'C'),
+    Commandline::Option("copy-from-extra"),
     Commandline::Option("db", 'D', true),
-    Commandline::Option("delete-duplicate"), /*+DELETE_DUPLICATE */
-    Commandline::Option("delete-found", 'j'),
-    Commandline::Option("delete-long", 'l'),
-    Commandline::Option("delete-unknown", 'k'),
+    Commandline::Option("extra-directory", 'e', true),
     Commandline::Option("fix", 'F'),
     Commandline::Option("fixdat", {}, true),
-    Commandline::Option("games-from", 'T', true),
-    Commandline::Option("ignore-extra", 'X'),
-    Commandline::Option("ignore-unknown"),
-    Commandline::Option("keep-duplicate"), /* -DELETE_DUPLICATE */
-    Commandline::Option("keep-found"),
-    Commandline::Option("move-long", 'L'),
-    Commandline::Option("move-unknown", 'K'),
-    Commandline::Option("nobroken", 'b'),      /* -BROKEN */
-    Commandline::Option("nofixable", 'f'),     /* -FIX */
-    Commandline::Option("nonogooddumps", 'd'), /* -NO_GOOD_DUMPS */
-    Commandline::Option("nosuperfluous", 's'), /* -SUP */
-    Commandline::Option("nowarnings", 'w'),    /* -SUP, -FIX */
+    Commandline::Option("game-list", 'T', true),
+    Commandline::Option("move-from-extra", 'j'),
     Commandline::Option("old-db", 'O', true),
+    Commandline::Option("no-complete-games-only"),
+    Commandline::Option("no-report-detailed"),
+    Commandline::Option("no-report-fixable"),
+    Commandline::Option("no-report-missing"),
+    Commandline::Option("no-report-summary"),
+    Commandline::Option("report-detailed"),
+    Commandline::Option("report-fixable"),
+    Commandline::Option("report-missing"),
+    Commandline::Option("report-summary"),
     Commandline::Option("rom-dir", 'R', true),
     Commandline::Option("roms-unzipped", 'u'),
-    Commandline::Option("search", 'e', true),
-    Commandline::Option("stats"),
-    Commandline::Option("superfluous"),
     Commandline::Option("verbose", 'v')
 };
 
-static int ignore_extra;
 
 
 static bool contains_romdir(std::string &ame);
@@ -179,12 +171,13 @@ main(int argc, char **argv) {
 	    olddbname = value;
 	}
 	fix_options = FIX_MOVE_LONG | FIX_MOVE_UNKNOWN | FIX_DELETE_DUPLICATE;
-	ignore_extra = 0;
-	roms_unzipped = false;
+ 	roms_unzipped = false;
 	fixdat = NULL;
 	auto_fixdat = false;
 	
 	std::vector<std::string> arguments;
+	
+	Configuration configuration;
 
 	try {
 	    auto commandline = Commandline(options, argc, argv);
@@ -202,23 +195,26 @@ main(int argc, char **argv) {
 	    
 	    // TODO: read config files: system wide, current directory, specified on command line
 	    
+	    auto extra_directory_specified = false;
+	    
 	    for (auto const &option : commandline.options) {
-		if (option.name == "nobroken") {
-		    diagnostics_options &= ~WARN_BROKEN;
+		if (option.name == "autofixdat") {
+		    // TODO: implement
 		}
-		else if (option.name == "complete-only") {
-		    fix_options |= FIX_COMPLETE_ONLY;
+		else if (option.name == "complete-games-only") {
+		    configuration.complete_games_only = true;
 		}
-		else if (option.name == "correct") {
-		    diagnostics_options |= WARN_CORRECT;
+		else if (option.name == "copy-from-extra") {
+		    configuration.move_from_extra = false;
 		}
 		else if (option.name == "db") {
-		    dbname = option.argument;
+		    configuration.romdb_name = option.argument;
 		}
-		else if (option.name == "nonogooddumps") {
-		    diagnostics_options &= ~WARN_NO_GOOD_DUMP;
-		}
-		else if (option.name == "search") {
+		else if (option.name == "extra-directory") {
+		    if (!extra_directory_specified) {
+			configuration.extra_directories.clear();
+			extra_directory_specified = true;
+		    }
 		    std::string name = option.argument;
 		    auto last = name.find_last_not_of("/");
 		    if (last == std::string::npos) {
@@ -227,86 +223,61 @@ main(int argc, char **argv) {
 		    else {
 			name.resize(last + 1);
 		    }
-		    search_dirs.push_back(name);
+		    configuration.extra_directories.push_back(name);
 		}
 		else if (option.name == "fix") {
 		    fix_options |= FIX_DO;
 		}
-		else if (option.name == "nofixable") {
-		    diagnostics_options &= ~WARN_FIXABLE;
+		else if (option.name == "fixdat") {
+		    configuration.fixdat = option.argument;
 		}
-		else if (option.name == "delete-found") {
-		    fix_options |= FIX_DELETE_EXTRA;
-		}
-		else if (option.name == "move-unknown") {
-		    fix_options |= FIX_MOVE_UNKNOWN;
-		}
-		else if (option.name == "delete-unknown") {
-		    fix_options &= ~FIX_MOVE_UNKNOWN;
-		}
-		else if (option.name == "move-long") {
-		    fix_options |= FIX_MOVE_LONG;
-		}
-		else if (option.name == "delete-long") {
-		    fix_options &= ~FIX_MOVE_LONG;
-		}
-		else if (option.name == "old-db") {
-		    olddbname = option.argument;
-		}
-		else if (option.name == "rom-dir") {
-		    rom_dir = option.argument;
-		}
-		else if (option.name == "nosuperfluous") {
-		    diagnostics_options &= ~WARN_SUPERFLUOUS;
-		}
-		else if (option.name == "games-from") {
+		else if (option.name == "game-list") {
 		    game_list = option.argument;
 		}
+		else if (option.name == "move-from-extra") {
+		    configuration.move_from_extra = true;
+		}
+		else if (option.name == "old-db") {
+		    configuration.olddb_name = option.argument;
+		}
+		else if (option.name == "no-complete-games-only") {
+		    configuration.complete_games_only = false;
+		}
+		else if (option.name == "no-report-detailed") {
+		    configuration.report_detailed = false;
+		}
+		else if (option.name == "no-report-fixable") {
+		    configuration.report_fixable = false;
+		}
+		else if (option.name == "no-report-missing") {
+		    configuration.report_missing = false;
+		}
+		else if (option.name == "no-report-summary") {
+		    configuration.report_summary = false;
+		}
+		else if (option.name == "report-detailed") {
+		    configuration.report_detailed = true;
+		}
+		else if (option.name == "report-fixable") {
+		    configuration.report_fixable = true;
+		}
+		else if (option.name == "report-missing") {
+		    configuration.report_missing = true;
+		}
+		else if (option.name == "report-summary") {
+		    configuration.report_summary = true;
+		}
+		else if (option.name == "rom-dir") {
+		    configuration.rom_directory = option.argument;
+		}
 		else if (option.name == "roms-unzipped") {
-		    roms_unzipped = true;
+		    configuration.roms_zipped = false;
 		}
 		else if (option.name == "verbose") {
-		    fix_options |= FIX_PRINT;
+		    configuration.verbose = true;
 		}
-		else if (option.name == "nowarnings") {
-		    diagnostics_options &= WARN_BROKEN;
-		}
-		else if (option.name == "ignore-extra") {
-		    ignore_extra = 1;
-		}
-		else if (option.name == "cleanup-extra") {
-		    if (action != ACTION_UNSPECIFIED) {
-			error_multiple_actions();
-		    }
-		    action = ACTION_CLEANUP_EXTRA_ONLY;
-		    fix_options |= FIX_DO | FIX_CLEANUP_EXTRA;
-		}
-		else if (option.name == "delete-duplicate") {
-		    fix_options |= FIX_DELETE_DUPLICATE;
-		}
-		else if (option.name == "autofixdat") {
-		    auto_fixdat = true;
-		}
-		else if (option.name == "fixdat") {
-		    fixdat_name = option.argument;
-		}
-		else if (option.name == "ignore-unknown") {
-		    fix_options |= FIX_IGNORE_UNKNOWN;
-		}
-		else if (option.name == "keep-duplicate") {
-		    fix_options &= ~FIX_DELETE_DUPLICATE;
-		}
-		else if (option.name == "keep-found") {
-		    fix_options &= ~FIX_DELETE_EXTRA;
-		}
-		else if (option.name == "stats") {
-		    print_stats = true;
-		}
-		else if (option.name == "superfluous") {
-		    if (action != ACTION_UNSPECIFIED) {
-			error_multiple_actions();
-		    }
-		    action = ACTION_SUPERFLUOUS_ONLY;
+		else {
+		    // TODO: report unhandled option
 		}
 	    }
 	    

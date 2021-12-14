@@ -34,7 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <string>
+#include <vector>
+
 class Configuration {
+public:
     /*
      fixdat none/auto/filename
      Complete-only yes/no
@@ -53,6 +57,69 @@ class Configuration {
      Extra-unused keep/delete
 
      */
+    
+    std::string romdb_name;
+    std::string olddb_name;
+    
+    std::string rom_directory;
+    std::vector<std::string> extra_directories;
+    
+    std::string fixdat;
+    
+    bool roms_zipped;
+
+    // actions
+    // not in config, per invocation
+    // bool fix_romset; // actually fix, otherwise no archive is changed
+    // bool fix_cleanup_extra; // check all files in extra directories and delete known files that are in ROM set
+
+    // output
+    bool verbose; // print all actions taken to fix ROM set
+
+    // options
+    bool complete_games_only; // only add ROMs to games if they are complete afterwards.
+    bool move_from_extra; // remove files taken from extra directories, otherwise copy them and don't change extra directory.
+
+//    bool fix_move_long; - always on
+//    bool fix_move_unknown; - always on
+//    bool fix_superfluous; - always on
+//    bool fix_ignore_unknown; - always off
+//    bool fix_delete_duplicate; - always on
+    
+    /*
+     in ROM set:
+        everything, including no good dump
+        everything, excluding no good dump
+        (everything that can be fixed with existing files)
+     
+        ROM states:
+            missing - per option, default on (warn_missing)
+                no good dump exists - per option, default off (warn_no_good_dump)
+            fixable - per option, default on
+            correct - per option, default off (warn_correct)
+
+        file states:
+            broken - always
+            fixable (name, long, used elsewhere, unused) - per option
+            unknown - per option (warn_unknown)
+            correct - never
+
+    in extra dir:
+        (unused file)
+        (unknown file)
+     
+     */
+    
+    bool report_missing; /* one line per game if no own ROM found */
+    bool report_fixable;
+    bool report_detailed; /* one line per ROM */
+    bool report_summary;
+
+    /* file_correct */
+    bool warn_file_known;
+    bool warn_file_unknown;
+    
+/*    bool warn_extra_used; */
 };
 
 #endif // HAD_CONFIGURATION_H
