@@ -71,6 +71,7 @@ const char *usage = "Usage: %s [-bCcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-
 
 const char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
 
+#if 0
 const char help[] = "\n"
 	      "      --autofixdat        write fixdat to `fix_$NAME_OF_SET.dat'\n"
 	      "  -b, --nobroken          don't report unfixable errors\n"
@@ -103,39 +104,41 @@ const char help[] = "\n"
 	      "  -V, --version           display version number\n"
 	      "  -v, --verbose           print fixes made\n"
 	      "  -w, --nowarnings        print only unfixable errors\n"
-	      "  -X, --ignore-extra      ignore extra files in rom dirs\n"
-	      "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
+	      "  -X, --ignore-extra      ignore extra files in rom dirs\n";
+#endif
+
+const char help_footer[] = "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
 
 const char version_string[] = PACKAGE " " VERSION "\n"
 				"Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 
 std::vector<Commandline::Option> options = {
-    Commandline::Option("help", 'h'),
-    Commandline::Option("version", 'V'),
+    Commandline::Option("help", 'h', "display this help message"),
+    Commandline::Option("version", 'V', "display version number"),
 
-    Commandline::Option("autofixdat"),
-    Commandline::Option("complete-games-only", 'C'),
-    Commandline::Option("copy-from-extra"),
-    Commandline::Option("db", 'D', true),
-    Commandline::Option("extra-directory", 'e', true),
-    Commandline::Option("fix", 'F'),
-    Commandline::Option("fixdat", {}, true),
-    Commandline::Option("game-list", 'T', true),
-    Commandline::Option("move-from-extra", 'j'),
-    Commandline::Option("old-db", 'O', true),
-    Commandline::Option("no-complete-games-only"),
-    Commandline::Option("no-report-detailed"),
-    Commandline::Option("no-report-fixable"),
-    Commandline::Option("no-report-missing"),
-    Commandline::Option("no-report-summary"),
-    Commandline::Option("report-detailed"),
-    Commandline::Option("report-fixable"),
-    Commandline::Option("report-missing"),
-    Commandline::Option("report-summary"),
-    Commandline::Option("rom-dir", 'R', true),
-    Commandline::Option("roms-unzipped", 'u'),
-    Commandline::Option("verbose", 'v')
+    Commandline::Option("autofixdat", "write fixdat to 'fix_$NAME_OF_SET.dat'"),
+    Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
+    Commandline::Option("copy-from-extra", "keep used files in extra directories (default)"),
+    Commandline::Option("db", 'D', "dbfile", "use mame-db dbfile"),
+    Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option"),
+    Commandline::Option("fix", 'F', "fix ROM set"),
+    Commandline::Option("fixdat", "datfile", "write fixdat to 'datfile'"),
+    Commandline::Option("game-list", 'T', "file", "read games to check from file"),
+    Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
+    Commandline::Option("old-db", 'O', "dbfile", "use mame-db dbfile for old ROMs"),
+    Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
+    Commandline::Option("no-report-detailed", "don't report status of every ROM (defeault)"),
+    Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
+    Commandline::Option("no-report-missing", "don't report status of ROMs that are missing"),
+    Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
+    Commandline::Option("report-detailed", 'c', "report status of every ROM"),
+    Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)"),
+    Commandline::Option("report-missing", "report status of ROMs that are missing (default)"),
+    Commandline::Option("report-summary", "print summary of ROM set status"),
+    Commandline::Option("rom-dir", 'R', "dir", "ROM set is in directory dir (default: 'roms')"),
+    Commandline::Option("roms-unzipped", 'u', "ROMs are files on disk, not contained in zip archives"),
+    Commandline::Option("verbose", 'v', "print fixes made")
 };
 
 
@@ -184,8 +187,8 @@ main(int argc, char **argv) {
 	
 	    if (commandline.find_first("help").has_value()) {
 		fputs(help_head, stdout);
-		printf(usage, getprogname());
-		fputs(help, stdout);
+		Commandline::usage(options, "[game ...]", true);
+		fputs(help_footer, stdout);
 		exit(0);
 	    }
 	    if (commandline.find_first("version").has_value()) {
@@ -284,7 +287,7 @@ main(int argc, char **argv) {
 	    arguments = commandline.arguments;
 	}
 	catch (Exception &ex) {
-	    fprintf(stderr, usage, getprogname(), getprogname(), getprogname());
+	    Commandline::usage(options, "[game ...]", false, stderr);
 	    exit(1);
 	}
 

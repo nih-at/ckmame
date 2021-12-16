@@ -44,11 +44,18 @@ public:
     
     class Option {
     public:
-        Option(const std::string &name_, std::optional<char> short_name_ = {}, bool has_argument_ = false) : name(name_), short_name(short_name_), has_argument(has_argument_) { }
+        Option(const std::string &name_, char short_name_, const std::string &argument_name_, const std::string &description_) : name(name_), short_name(short_name_), argument_name(argument_name_), description(description_) { }
+        Option(const std::string &name_, const std::string &argument_name_, const std::string &description_) : name(name_), argument_name(argument_name_), description(description_) { }
+        Option(const std::string &name_, char short_name_, const std::string &description_) : name(name_), short_name(short_name_), description(description_) { }
+        Option(const std::string &name_, const std::string &description_) : name(name_), description(description_) { }
 
+        
         std::string name;
         std::optional<char> short_name;
-        bool has_argument;
+        std::string argument_name;
+        std::string description;
+
+        bool has_argument() const { return !argument_name.empty(); }
     };
     
     class OptionValue {
@@ -66,6 +73,8 @@ public:
     
     std::optional<std::string> find_first(const std::string &name) const;
     std::optional<std::string> find_last(const std::string &name) const;
+    
+    static void usage(const std::vector<Option> &options, const std::string &arguments, bool full = false, FILE *fout = stdout);
 };
 
 #endif // HAD_COMMANDLINE_H

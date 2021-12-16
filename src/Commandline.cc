@@ -33,6 +33,7 @@
 
 #include "Commandline.h"
 
+#include <sstream>
 #include <unordered_map>
 
 #include "compat.h"
@@ -48,11 +49,22 @@ Commandline::Commandline(const std::vector<Option> &defined_options, int argc, c
     int next_index = 256;
     
     for (auto const &option : defined_options) {
+//#define DEBUG_OPTIONS
+#ifdef DEBUG_OPTIONS
+        printf("option '%s'", option.name.c_str());
+        if (option.short_name.has_value()) {
+            printf("/'%c'", option.short_name.value());
+        }
+        if (option.has_argument()) {
+            printf(", argument '%s'", option.argument_name.c_str());
+        }
+        printf(", description '%s'\n", option.description.c_str());
+#endif
         int index;
         if (option.short_name.has_value()) {
             index = option.short_name.value();
             short_options += option.short_name.value();
-            if (option.has_argument) {
+            if (option.has_argument()) {
                 short_options += ":";
             }
         }
@@ -62,11 +74,14 @@ Commandline::Commandline(const std::vector<Option> &defined_options, int argc, c
         
         option_indices[index] = long_options.size();
         struct option long_option = {
-            option.name.c_str(), option.has_argument ? 1 : 0, 0, index
+            option.name.c_str(), option.has_argument() ? 1 : 0, 0, index
         };
         long_options.push_back(long_option);
     }
     
+#ifdef DEBUG_OPTIONS
+    printf("short options: '%s'\n", short_options.c_str());
+#endif
     struct option terminator = { NULL, 0, 0, 0 };
     long_options.push_back(terminator);
         
@@ -115,4 +130,67 @@ std::optional<std::string> Commandline::find_last(const std::string &name) const
     }
     
     return {};
+}
+
+
+void Commandline::usage(const std::vector<Option> &options, const std::string &arguments, bool full, FILE *fout) {
+    std::stringstream short_options_without_argument;
+    std::stringstream short_options_with_argument;
+
+    for (auto const &option : options) {
+        if (option.short_name.has_value()) {
+            if (option.has_argument()) {
+                short_options_with_argument << " [-" << option.short_name.value() << " " << option.argument_name << "]";
+            }
+            else {
+                short_options_without_argument << option.short_name.value();
+            }
+        }
+    }
+    
+    fprintf(fout, "Usage: %s", getprogname());
+    if (!short_options_without_argument.str().empty()) {
+        fprintf(fout, " [-%s]", short_options_without_argument.str().c_str());
+    }
+    if (!short_options_with_argument.str().empty()) {
+        fprintf(fout, "%s", short_options_with_argument.str().c_str());
+    }
+    if (!arguments.empty()) {
+        fprintf(fout, " %s", arguments.c_str());
+    }
+    fprintf(fout, "\n");
+
+    if (full) {
+        fprintf(fout, "\n");
+
+        size_t max_length = 0;
+        for (auto const &option : options) {
+            size_t length = 8 + option.name.length();
+            if (option.has_argument()) {
+                length += option.argument_name.length() + 1;
+            }
+            if (length > max_length) {
+                max_length = length;
+            }
+        }
+        for (auto const &option : options) {
+            if (option.short_name.has_value()) {
+                printf("  -%c, ", option.short_name.value());
+            }
+            else {
+                printf("      ");
+            }
+            size_t length = 8 + option.name.length();
+            printf("--%s", option.name.c_str());
+            if (option.has_argument()) {
+                printf(" %s", option.argument_name.c_str());
+                length += option.argument_name.length() + 1;
+            }
+            while (length < max_length) {
+                length += 1;
+                fputc(' ', fout);
+            }
+            fprintf(fout, "  %s\n", option.description.c_str());
+        }
+    }
 }
