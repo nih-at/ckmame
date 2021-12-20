@@ -212,18 +212,30 @@ void Commandline::usage(bool full, FILE *fout) {
     }
 }
 
+static int compare_char(char a, char b) {
+    auto cmp = std::tolower(a) - std::tolower(b);
+    
+    if (cmp != 0) {
+        return cmp;
+    }
+    else {
+        return a - b;
+    }
+}
+
+
 bool Commandline::Option::operator<(const Option &other) const {
     if (short_name.has_value()) {
         if (other.short_name.has_value()) {
-            return std::tolower(short_name.value()) < std::tolower(other.short_name.value());
+            return compare_char(short_name.value(), other.short_name.value()) < 0;
         }
         else {
-            return std::tolower(short_name.value()) < std::tolower(other.name[0]);
+            return compare_char(short_name.value(), other.name[0]) <= 0;
         }
     }
     else {
         if (other.short_name.has_value()) {
-            return std::tolower(name[0]) < std::tolower(other.short_name.value());
+            return compare_char(name[0], other.short_name.value());
         }
         else {
             return strcasecmp(name.c_str(), other.name.c_str()) < 0;
