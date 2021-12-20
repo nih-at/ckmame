@@ -33,8 +33,10 @@
 
 #include "Commandline.h"
 
+#include <algorithm>
 #include <cctype>
 #include <sstream>
+#include <strings.h>
 #include <unordered_map>
 
 #include "compat.h"
