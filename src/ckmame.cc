@@ -117,7 +117,7 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
     Commandline::Option("copy-from-extra", "keep used files in extra directories (default)"),
     Commandline::Option("db", 'D', "dbfile", "use mame-db dbfile"),
-    Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option"),
+    Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option)"),
     Commandline::Option("fix", 'F', "fix ROM set"),
     Commandline::Option("fixdat", "datfile", "write fixdat to 'datfile'"),
     Commandline::Option("game-list", 'T', "file", "read games to check from file"),
