@@ -67,11 +67,13 @@ typedef enum action action_t;
 /* to identify roms directory uniquely */
 std::string rom_dir_normalized;
 
-const char *usage = "Usage: %s [-bCcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
-
-const char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
+const char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner";
+const char help_footer[] = "Report bugs to " PACKAGE_BUGREPORT ".";
+const char version_string[] = PACKAGE " " VERSION "\n"
+				"Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 #if 0
+const char *usage = "Usage: %s [-bCcdFfhjKkLlSsuVvwX] [-D dbfile] [-O dbfile] [-e dir] [-R dir] [-T file] [game...]\n";
 const char help[] = "\n"
 	      "      --autofixdat        write fixdat to `fix_$NAME_OF_SET.dat'\n"
 	      "  -b, --nobroken          don't report unfixable errors\n"
@@ -106,12 +108,6 @@ const char help[] = "\n"
 	      "  -w, --nowarnings        print only unfixable errors\n"
 	      "  -X, --ignore-extra      ignore extra files in rom dirs\n";
 #endif
-
-const char help_footer[] = "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
-
-const char version_string[] = PACKAGE " " VERSION "\n"
-				"Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
-
 
 std::vector<Commandline::Option> options = {
     Commandline::Option("help", 'h', "display this help message"),
@@ -181,17 +177,17 @@ main(int argc, char **argv) {
 	std::vector<std::string> arguments;
 	
 	Configuration configuration;
+	
+	auto commandline = Commandline(options, "[game ...]", help_head, help_footer);
 
 	try {
-	    auto commandline = Commandline(options, argc, argv);
+	    auto args = commandline.parse(argc, argv);
 	
-	    if (commandline.find_first("help").has_value()) {
-		fputs(help_head, stdout);
-		Commandline::usage(options, "[game ...]", true);
-		fputs(help_footer, stdout);
+	    if (args.find_first("help").has_value()) {
+		commandline.usage(true);
 		exit(0);
 	    }
-	    if (commandline.find_first("version").has_value()) {
+	    if (args.find_first("version").has_value()) {
 		fputs(version_string, stdout);
 		exit(0);
 	    }
@@ -200,7 +196,7 @@ main(int argc, char **argv) {
 	    
 	    auto extra_directory_specified = false;
 	    
-	    for (auto const &option : commandline.options) {
+	    for (auto const &option : args.options) {
 		if (option.name == "autofixdat") {
 		    // TODO: implement
 		}
@@ -284,10 +280,10 @@ main(int argc, char **argv) {
 		}
 	    }
 	    
-	    arguments = commandline.arguments;
+	    arguments = args.arguments;
 	}
 	catch (Exception &ex) {
-	    Commandline::usage(options, "[game ...]", false, stderr);
+	    commandline.usage(false, stderr);
 	    exit(1);
 	}
 

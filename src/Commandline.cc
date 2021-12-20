@@ -33,6 +33,7 @@
 
 #include "Commandline.h"
 
+#include <cctype>
 #include <sstream>
 #include <unordered_map>
 
@@ -42,13 +43,18 @@
 
 extern int optind;
 
-Commandline::Commandline(const std::vector<Option> &defined_options, int argc, char * const argv[]) {
+Commandline::Commandline(const std::vector<Option> &options_, const std::string &arguments_, const std::string &header_, const std::string &footer_) : options(options_), arguments(arguments_), header(header_), footer(footer_) {
+    std::sort(options.begin(), options.end());
+}
+
+
+ParsedCommandline Commandline::parse(int argc, char *const *argv) {
     std::string short_options;
     std::vector<struct option> long_options;
     std::unordered_map<int, size_t> option_indices;
     int next_index = 256;
     
-    for (auto const &option : defined_options) {
+    for (auto const &option : options) {
 //#define DEBUG_OPTIONS
 #ifdef DEBUG_OPTIONS
         printf("option '%s'", option.name.c_str());
@@ -85,6 +91,7 @@ Commandline::Commandline(const std::vector<Option> &defined_options, int argc, c
     struct option terminator = { NULL, 0, 0, 0 };
     long_options.push_back(terminator);
         
+    auto parsed_commandline = ParsedCommandline();
     opterr = 0;
     int c;
     while ((c = getopt_long(argc, argv, short_options.c_str(), long_options.data(), NULL)) != EOF) {
@@ -101,16 +108,18 @@ Commandline::Commandline(const std::vector<Option> &defined_options, int argc, c
         }
         auto const &option = long_options[it->second];
         
-        options.push_back(OptionValue(option.name, option.has_arg ? optarg : ""));
+        parsed_commandline.options.push_back(ParsedCommandline::OptionValue(option.name, option.has_arg ? optarg : ""));
     }
     
     for (auto i = optind; i < argc; i++) {
-        arguments.push_back(argv[i]);
+        parsed_commandline.arguments.push_back(argv[i]);
     }
+    
+    return parsed_commandline;
 }
 
 
-std::optional<std::string> Commandline::find_first(const std::string &name) const {
+std::optional<std::string> ParsedCommandline::find_first(const std::string &name) const {
     for (auto const &option : options) {
         if (option.name == name) {
             return option.argument;
@@ -120,7 +129,7 @@ std::optional<std::string> Commandline::find_first(const std::string &name) cons
     return {};
 }
 
-std::optional<std::string> Commandline::find_last(const std::string &name) const {
+std::optional<std::string> ParsedCommandline::find_last(const std::string &name) const {
     for (auto it = options.rbegin(); it != options.rend(); it++) {
         auto const &option = *it;
         
@@ -133,7 +142,7 @@ std::optional<std::string> Commandline::find_last(const std::string &name) const
 }
 
 
-void Commandline::usage(const std::vector<Option> &options, const std::string &arguments, bool full, FILE *fout) {
+void Commandline::usage(bool full, FILE *fout) {
     std::stringstream short_options_without_argument;
     std::stringstream short_options_with_argument;
 
@@ -148,6 +157,10 @@ void Commandline::usage(const std::vector<Option> &options, const std::string &a
         }
     }
     
+    if (full) {
+        fprintf(fout, "%s\n\n", header.c_str());
+    }
+
     fprintf(fout, "Usage: %s", getprogname());
     if (!short_options_without_argument.str().empty()) {
         fprintf(fout, " [-%s]", short_options_without_argument.str().c_str());
@@ -191,6 +204,27 @@ void Commandline::usage(const std::vector<Option> &options, const std::string &a
                 fputc(' ', fout);
             }
             fprintf(fout, "  %s\n", option.description.c_str());
+        }
+        
+        fprintf(fout, "\n%s\n", footer.c_str());
+    }
+}
+
+bool Commandline::Option::operator<(const Option &other) const {
+    if (short_name.has_value()) {
+        if (other.short_name.has_value()) {
+            return std::tolower(short_name.value()) < std::tolower(other.short_name.value());
+        }
+        else {
+            return std::tolower(short_name.value()) < std::tolower(other.name[0]);
+        }
+    }
+    else {
+        if (other.short_name.has_value()) {
+            return std::tolower(name[0]) < std::tolower(other.short_name.value());
+        }
+        else {
+            return strcasecmp(name.c_str(), other.name.c_str()) < 0;
         }
     }
 }

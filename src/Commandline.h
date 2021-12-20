@@ -39,9 +39,25 @@
 #include <string>
 #include <vector>
 
+class ParsedCommandline {
+public:
+    class OptionValue {
+    public:
+        OptionValue(const std::string &name_, const std::string &argument_) : name(name_), argument(argument_) { }
+        
+        std::string name;
+        std::string argument; // empty string for options without argument
+    };
+    
+    std::optional<std::string> find_first(const std::string &name) const;
+    std::optional<std::string> find_last(const std::string &name) const;
+
+    std::vector<OptionValue> options;
+    std::vector<std::string> arguments;
+};
+
 class Commandline {
 public:
-    
     class Option {
     public:
         Option(const std::string &name_, char short_name_, const std::string &argument_name_, const std::string &description_) : name(name_), short_name(short_name_), argument_name(argument_name_), description(description_) { }
@@ -56,25 +72,20 @@ public:
         std::string description;
 
         bool has_argument() const { return !argument_name.empty(); }
-    };
-    
-    class OptionValue {
-    public:
-        OptionValue(const std::string &name_, const std::string &argument_) : name(name_), argument(argument_) { }
         
-        std::string name;
-        std::string argument; // empty string for options without argument
+        bool operator <(const Option &other) const;
     };
-
-    std::vector<OptionValue> options;
-    std::vector<std::string> arguments;
-
-    Commandline(const std::vector<Option> &options, int argc, char * const argv[]);
     
-    std::optional<std::string> find_first(const std::string &name) const;
-    std::optional<std::string> find_last(const std::string &name) const;
+    Commandline(const std::vector<Option> &options, const std::string &arguments, const std::string &header, const std::string &footer);
     
-    static void usage(const std::vector<Option> &options, const std::string &arguments, bool full = false, FILE *fout = stdout);
+    std::vector<Option> options;
+    std::string arguments;
+    std::string header;
+    std::string footer;
+
+    ParsedCommandline parse(int argc, char * const argv[]);
+    
+    void usage(bool full = false, FILE *fout = stdout);
 };
 
 #endif // HAD_COMMANDLINE_H
