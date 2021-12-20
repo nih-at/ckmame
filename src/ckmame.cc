@@ -124,7 +124,7 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
     Commandline::Option("old-db", 'O', "dbfile", "use mame-db dbfile for old ROMs"),
     Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
-    Commandline::Option("no-report-detailed", "don't report status of every ROM (defeault)"),
+    Commandline::Option("no-report-detailed", "don't report status of every ROM (default)"),
     Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
     Commandline::Option("no-report-missing", "don't report status of ROMs that are missing"),
     Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
