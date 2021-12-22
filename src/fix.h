@@ -53,6 +53,4 @@
 
 int fix_game(Game *game, const GameArchives archives, Result *result);
 
-extern int fix_options;
-
 #endif /* _HAD_FIX_H */

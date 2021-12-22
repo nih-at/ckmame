@@ -33,6 +33,7 @@
 
 
 #include "diagnostics.h"
+#include "globals.h"
 
 #include <sstream>
 
@@ -99,7 +100,7 @@ void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result) 
                     warn_archive_file(ft, f, "not used");
                 break;
             case FS_DUPLICATE:
-                if ((diagnostics_options & WARN_SUPERFLUOUS) && (fix_options & FIX_DELETE_DUPLICATE))
+                if (diagnostics_options & WARN_SUPERFLUOUS)
                     warn_archive_file(ft, f, "duplicate");
                 break;
         }
@@ -160,7 +161,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
             break;
     }
     
-    if ((fix_options & FIX_COMPLETE_ONLY) && (diagnostics_options & WARN_BROKEN) == 0 && result.game != GS_FIXABLE) {
+    if (configuration.complete_games_only && (diagnostics_options & WARN_BROKEN) == 0 && result.game != GS_FIXABLE) {
         return;
     }
     

@@ -63,9 +63,6 @@
 		4B3274DA25B99F76006AEF16 /* check_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3274CE25B99F76006AEF16 /* check_util.h */; };
 		4B3666EE261719DC00A67A6C /* ArchiveLibarchive.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B3666EC261719DC00A67A6C /* ArchiveLibarchive.cc */; };
 		4B3666EF261719DC00A67A6C /* ArchiveLibarchive.h in Headers */ = {isa = PBXBuildFile; fileRef = 4B3666ED261719DC00A67A6C /* ArchiveLibarchive.h */; };
-		4B36673426173FF800A67A6C /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
-		4B36673526173FF800A67A6C /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
-		4B3667462617401C00A67A6C /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
 		4B41077518CC8F25002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
 		4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B5FAD46173592D700B67C24 /* liblibckmame.a */; };
 		4B41078E18CC8FEE002C3052 /* dbdump.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B41078D18CC8FEE002C3052 /* dbdump.cc */; };
@@ -140,7 +137,6 @@
 		4B6B145824FF919E00D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4B6B145924FF91A800D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4B6B145A24FF91B400D3F3FB /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
-		4B8AD4B42629C0AE00E084EC /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
 		4B8AD4B62629C0FE00E084EC /* compare-archives.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B8AD4B52629C0FE00E084EC /* compare-archives.cc */; };
 		4B9233001780B30400096AA2 /* CkmameDB.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9232FE1780B2BA00096AA2 /* CkmameDB.cc */; };
 		4B9292CA17635B5500806C0A /* ArchiveZip.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4B9292C917635B5500806C0A /* ArchiveZip.cc */; };
@@ -159,35 +155,22 @@
 		4BC316E626A04F0E0012AEB8 /* DBStatement.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BC316E426A04F0E0012AEB8 /* DBStatement.h */; };
 		4BD482982535B23C00D0002B /* ArchiveDir.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BD482962535B23C00D0002B /* ArchiveDir.cc */; };
 		4BD482992535B23C00D0002B /* ArchiveDir.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BD482972535B23C00D0002B /* ArchiveDir.h */; };
+		4BE30D24277342C0003A5711 /* libarchive.13.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.13.dylib */; };
+		4BE30D25277342CB003A5711 /* libarchive.13.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.13.dylib */; };
+		4BE30D26277342DA003A5711 /* libarchive.13.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.13.dylib */; };
+		4BE30D27277342E0003A5711 /* libarchive.13.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.13.dylib */; };
+		4BE30D28277342E8003A5711 /* libarchive.13.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.13.dylib */; };
+		4BE30D29277342F0003A5711 /* libarchive.13.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.13.dylib */; };
+		4BE30D2A277342F7003A5711 /* libarchive.13.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.13.dylib */; };
 		4BEDBE0526565D5F00DBF486 /* DetectorCollection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BEDBE0326565D5F00DBF486 /* DetectorCollection.cc */; };
 		4BEDBE0626565D5F00DBF486 /* DetectorCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BEDBE0426565D5F00DBF486 /* DetectorCollection.h */; };
-		4BF3D4E626B2C7E60009F88C /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
 		4BF3D4E726B2C7E60009F88C /* libzip.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B6B145524FF918700D3F3FB /* libzip.dylib */; };
 		4BF3D4E826B2C7E60009F88C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
-		4BF3D4E926B2C7F50009F88C /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
 		4BF3D4EA26B2C7F50009F88C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
-		4BF3D4EB26B2C80A0009F88C /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B36673326173FF800A67A6C /* libarchive.dylib */; };
 		4BF3D4EC26B2C81D0009F88C /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B07BFC11FEC1B5B0068A600 /* libz.tbd */; };
 		4BF6FA2A25D5371B00B93A98 /* ArchiveImages.cc in Sources */ = {isa = PBXBuildFile; fileRef = 4BF6FA2825D5371B00B93A98 /* ArchiveImages.cc */; };
 		4BF6FA2B25D5371B00B93A98 /* ArchiveImages.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF6FA2925D5371B00B93A98 /* ArchiveImages.h */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXBuildRule section */
-		4B513F50175BC96B0096EF42 /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.ccompilers.proxy.script;
-			filePatterns = "*.in";
-			fileType = pattern.proxy;
-			inputFiles = (
-			);
-			isEditable = 1;
-			outputFiles = (
-				"$(INPUT_FILE_BASE).cc",
-				"$(INPUT_FILE_BASE).h",
-			);
-			script = "if [ ! -d $BUILT_PRODUCTS_DIR/include ]\nthen\n    mkdir -p $BUILT_PRODUCTS_DIR/include\nfi\n\nperl $SOURCE_ROOT/../src/mkstatements.pl $INPUT_FILE_DIR/$INPUT_FILE_NAME $DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.cc $BUILT_PRODUCTS_DIR/include/$INPUT_FILE_BASE.h\n";
-		};
-/* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
 		4B41076F18CC8F25002C3052 /* PBXContainerItemProxy */ = {
@@ -399,7 +382,7 @@
 		4B33F98B252C7889007EC283 /* ArchiveZip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveZip.h; sourceTree = "<group>"; };
 		4B3666EC261719DC00A67A6C /* ArchiveLibarchive.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveLibarchive.cc; sourceTree = "<group>"; };
 		4B3666ED261719DC00A67A6C /* ArchiveLibarchive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveLibarchive.h; sourceTree = "<group>"; };
-		4B36673326173FF800A67A6C /* libarchive.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.dylib; path = ../../../../../../usr/local/Cellar/libarchive/3.5.1_1/lib/libarchive.dylib; sourceTree = "<group>"; };
+		4B36673326173FF800A67A6C /* libarchive.13.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.13.dylib; path = ../../../../../../usr/local/Cellar/libarchive/3.5.2/lib/libarchive.13.dylib; sourceTree = "<group>"; };
 		4B41077B18CC8F25002C3052 /* dbdump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbdump; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078A18CC8F66002C3052 /* dbrestore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dbrestore; sourceTree = BUILT_PRODUCTS_DIR; };
 		4B41078D18CC8FEE002C3052 /* dbdump.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cc.cc; path = dbdump.cc; sourceTree = "<group>"; };
@@ -831,9 +814,9 @@
 			files = (
 				4B41077518CC8F25002C3052 /* liblibckmame.a in Frameworks */,
 				4B07BFBF1FEC1B190068A600 /* libsqlite3.tbd in Frameworks */,
-				4BF3D4E626B2C7E60009F88C /* libarchive.dylib in Frameworks */,
 				4BF3D4E726B2C7E60009F88C /* libzip.dylib in Frameworks */,
 				4BF3D4E826B2C7E60009F88C /* libz.tbd in Frameworks */,
+				4BE30D28277342E8003A5711 /* libarchive.13.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -843,9 +826,9 @@
 			files = (
 				4B07BFC01FEC1B370068A600 /* libsqlite3.tbd in Frameworks */,
 				4B41078418CC8F66002C3052 /* liblibckmame.a in Frameworks */,
-				4BF3D4EB26B2C80A0009F88C /* libarchive.dylib in Frameworks */,
 				4BF3D4EC26B2C81D0009F88C /* libz.tbd in Frameworks */,
 				4B6B145A24FF91B400D3F3FB /* libzip.dylib in Frameworks */,
+				4BE30D29277342F0003A5711 /* libarchive.13.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -858,7 +841,7 @@
 				4B07BFC91FEC1BB60068A600 /* libz.tbd in Frameworks */,
 				4B6B145624FF918700D3F3FB /* libzip.dylib in Frameworks */,
 				4B5FAE261735932200B67C24 /* liblibckmame.a in Frameworks */,
-				4B36673426173FF800A67A6C /* libarchive.dylib in Frameworks */,
+				4BE30D24277342C0003A5711 /* libarchive.13.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -877,7 +860,7 @@
 				4B07BFC31FEC1B600068A600 /* libsqlite3.tbd in Frameworks */,
 				4B07BFC21FEC1B5C0068A600 /* libz.tbd in Frameworks */,
 				4B5FAE341735936100B67C24 /* liblibckmame.a in Frameworks */,
-				4B3667462617401C00A67A6C /* libarchive.dylib in Frameworks */,
+				4BE30D25277342CB003A5711 /* libarchive.13.dylib in Frameworks */,
 				4B6B145724FF919300D3F3FB /* libzip.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -888,8 +871,8 @@
 			files = (
 				4B07BFCB1FEC1BD00068A600 /* libsqlite3.tbd in Frameworks */,
 				4B5FAE3C1735937100B67C24 /* liblibckmame.a in Frameworks */,
-				4BF3D4E926B2C7F50009F88C /* libarchive.dylib in Frameworks */,
 				4B6B145824FF919E00D3F3FB /* libzip.dylib in Frameworks */,
+				4BE30D26277342DA003A5711 /* libarchive.13.dylib in Frameworks */,
 				4BF3D4EA26B2C7F50009F88C /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -903,7 +886,7 @@
 				4B07BFC61FEC1B880068A600 /* libsqlite3.tbd in Frameworks */,
 				4B5FAE4B1735939000B67C24 /* liblibckmame.a in Frameworks */,
 				4B6B145924FF91A800D3F3FB /* libzip.dylib in Frameworks */,
-				4B36673526173FF800A67A6C /* libarchive.dylib in Frameworks */,
+				4BE30D27277342E0003A5711 /* libarchive.13.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -912,7 +895,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B5A1FEC26396FE40029B680 /* libz.tbd in Frameworks */,
-				4B8AD4B42629C0AE00E084EC /* libarchive.dylib in Frameworks */,
+				4BE30D2A277342F7003A5711 /* libarchive.13.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -922,7 +905,7 @@
 		4B07BFBD1FEC1B190068A600 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4B36673326173FF800A67A6C /* libarchive.dylib */,
+				4B36673326173FF800A67A6C /* libarchive.13.dylib */,
 				4B6B145524FF918700D3F3FB /* libzip.dylib */,
 				4B07BFC41FEC1B700068A600 /* libxml2.tbd */,
 				4B07BFC11FEC1B5B0068A600 /* libz.tbd */,
@@ -1646,7 +1629,6 @@
 				4B5FAD44173592D700B67C24 /* Headers */,
 			);
 			buildRules = (
-				4B513F50175BC96B0096EF42 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -1975,7 +1957,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = dbdump;
 				USER_HEADER_SEARCH_PATHS = "../src ../xcode";
@@ -1990,7 +1973,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = dbdump;
 				USER_HEADER_SEARCH_PATHS = "../src ../xcode";
@@ -2005,7 +1989,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = dbrestore;
 				USER_HEADER_SEARCH_PATHS = ". ../src";
@@ -2020,7 +2005,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = dbrestore;
 				USER_HEADER_SEARCH_PATHS = ". ../src";
@@ -2153,7 +2139,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -2167,7 +2154,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -2201,7 +2189,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -2215,7 +2204,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -2229,7 +2219,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = dumpgame;
 			};
@@ -2243,7 +2234,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = dumpgame;
 			};
@@ -2275,7 +2267,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = mkmamedb;
 			};
@@ -2289,7 +2282,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = mkmamedb;
 			};
@@ -2303,7 +2297,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = ". ../src";
@@ -2318,7 +2313,8 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/usr/local/lib,
-					/usr/local/Cellar/libarchive/3.5.1_1/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
+					/usr/local/Cellar/libarchive/3.5.2/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = ". ../src";

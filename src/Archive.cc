@@ -158,7 +158,7 @@ void Archive::ensure_valid_archive() {
     
     auto new_name = ::make_unique_name(name, ".broken");
     
-    if (fix_options & FIX_PRINT) {
+    if (configuration.verbose) {
         printf("%s: rename broken archive to '%s'\n", name.c_str(), new_name.c_str());
     }
     if (!rename_or_move(name, new_name)) {

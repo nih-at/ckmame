@@ -32,6 +32,7 @@
 */
 
 #include "cleanup.h"
+#include "globals.h"
 
 #include <algorithm>
 
@@ -109,13 +110,12 @@ void cleanup_list(DeleteListPtr list, int flags) {
 static void
 cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
     GarbagePtr gb;
-    int move;
 
     if (!a->is_writable()) {
         return;
     }
     
-    if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
+    if ((flags & CLEANUP_UNKNOWN) && configuration.fix_romset) {
         gb = std::make_shared<Garbage>(a);
     }
 
@@ -140,7 +140,7 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
 		break;
 	    }
 
-            if (fix_options & FIX_PRINT) {
+            if (configuration.verbose) {
 		printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, a->files[i].name.c_str());
             }
 	    a->file_delete(i);
@@ -164,29 +164,23 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
 
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
-		move = fix_options & FIX_MOVE_UNKNOWN;
                 if (a->files[i].hashes.size == 0) {
-                    if (fix_options & FIX_PRINT) {
+                    if (configuration.verbose) {
                         printf("%s: delete empty file '%s'\n", a->name.c_str(), a->files[i].name.c_str());
                     }
                     a->file_delete(i);
                 }
                 else {
-                    if (fix_options & FIX_PRINT) {
-                        printf("%s: %s unknown file '%s'\n", a->name.c_str(), (move ? "move" : "delete"), a->files[i].name.c_str());
+                    if (configuration.verbose) {
+                        printf("%s: move unknown file '%s'\n", a->name.c_str(), a->files[i].name.c_str());
                     }
                     
                     /* TODO: handle error (how?) */
-                    if (move) {
-                        if (fix_options & FIX_DO) {
-                            gb->add(i, false);
-                        }
-                        else {
-                            /* when FIX_DO is not set, this only updates in-memory representation of a */
-                            a->file_delete(i);
-                        }
+                    if (configuration.fix_romset) {
+                        gb->add(i, false);
                     }
                     else {
+                        /* when FIX_DO is not set, this only updates in-memory representation of a */
                         a->file_delete(i);
                     }
                 }

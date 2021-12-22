@@ -93,7 +93,7 @@ move_image_to_garbage(const std::string &fname) {
 void remove_empty_archive(Archive *archive) {
     bool quiet = archive->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY;
     
-    if ((fix_options & FIX_PRINT) && !quiet) {
+    if (configuration.verbose && !quiet) {
 	printf("%s: remove empty archive\n", archive->name.c_str());
     }
     if (superfluous_delete_list) {
@@ -103,8 +103,6 @@ void remove_empty_archive(Archive *archive) {
 
 
 bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uint64_t start, std::optional<uint64_t> length, FileData *f) {
-    bool do_save = fix_options & FIX_DO;
-
     bool needed = true;
 
     if (!sa->file_ensure_hashes(sidx, db->hashtypes(sa->filetype))) {
@@ -122,7 +120,7 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
     }
     
     if (needed) {
-        if (fix_options & FIX_PRINT) {
+        if (configuration.verbose) {
             if (!length.has_value()) {
                 printf("%s: save needed file '%s'\n", sa->name.c_str(), sa->files[sidx].filename().c_str());
             }
@@ -137,7 +135,7 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
             return false;
         }
         
-        ArchivePtr da  = Archive::open(tmp, sa->filetype, FILE_NEEDED, ARCHIVE_FL_CREATE | (do_save ? 0 : ARCHIVE_FL_RDONLY));
+        ArchivePtr da  = Archive::open(tmp, sa->filetype, FILE_NEEDED, ARCHIVE_FL_CREATE | (configuration.fix_romset ? 0 : ARCHIVE_FL_RDONLY));
         
         if (!da) {
             return false;
@@ -149,12 +147,12 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
         }
     }
     else {
-        if (!length.has_value() && (fix_options & FIX_PRINT)) {
+        if (!length.has_value() && configuration.verbose) {
             printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), sa->files[sidx].filename().c_str());
         }
     }
     
-    if (do_save && !length.has_value()) {
+    if (configuration.fix_romset && !length.has_value()) {
         if (sa->where == FILE_ROMSET) {
             return sa->file_delete(sidx);
         }

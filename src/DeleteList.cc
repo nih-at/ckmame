@@ -196,7 +196,7 @@ int DeleteList::execute() {
             }
 	}
 	if (a && a->is_writable()) {
-            if (fix_options & FIX_PRINT) {
+            if (configuration.verbose) {
 		printf("%s: delete used file '%s'\n", a->name.c_str(), a->files[entry.index].filename().c_str());
             }
 	    /* TODO: check for error */
@@ -225,7 +225,7 @@ void DeleteList::used(Archive *a, size_t index) {
 	break;
 
     case FILE_EXTRA:
-	if (fix_options & FIX_DELETE_EXTRA) {
+	if (configuration.move_from_extra) {
 	    extra_delete_list->entries.push_back(fl);
 	}
 	break;

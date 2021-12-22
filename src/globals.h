@@ -34,6 +34,10 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "Configuration.h"
+
 extern bool roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
+
+extern Configuration configuration;
 
 #endif /* globals.h */

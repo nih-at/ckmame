@@ -39,6 +39,7 @@
 #include "error.h"
 #include "fix.h"
 #include "fixdat.h"
+#include "globals.h"
 #include "RomDB.h"
 #include "sighandle.h"
 
@@ -181,7 +182,7 @@ void Tree::process(GameArchives *archives) {
 
     int ret = 0;
 
-    if (fix_options & FIX_DO) {
+    if (configuration.fix_romset) {
 	ret = fix_game(game.get(), archives[0], &res);
     }
 

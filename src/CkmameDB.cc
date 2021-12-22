@@ -32,6 +32,7 @@
  */
 
 #include "CkmameDB.h"
+#include "globals.h"
 
 #include <filesystem>
 
@@ -228,7 +229,7 @@ CkmameDBPtr CkmameDB::get_db_for_archvie(const std::string &name) {
         if (name.compare(0, directory.name.length(), directory.name) == 0 && (name.length() == directory.name.length() || name[directory.name.length()] == '/')) {
             if (!directory.initialized) {
 		directory.initialized = true;
-		if ((fix_options & FIX_DO) == 0) {
+		if (!configuration.fix_romset) {
 		    std::error_code ec;
 		    if (!std::filesystem::exists(directory.name, ec)) {
 			return NULL; /* we won't write any files, so DB would remain empty */

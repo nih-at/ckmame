@@ -68,10 +68,8 @@ public:
     
     bool roms_zipped;
 
-    // actions
-    // not in config, per invocation
-    // bool fix_romset; // actually fix, otherwise no archive is changed
-    // bool fix_cleanup_extra; // check all files in extra directories and delete known files that are in ROM set
+    // not in config files, per invocation
+    bool fix_romset; // actually fix, otherwise no archive is changed
 
     // output
     bool verbose; // print all actions taken to fix ROM set

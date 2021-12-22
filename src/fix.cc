@@ -32,6 +32,7 @@
 */
 
 #include "fix.h"
+#include "globals.h"
 
 #include <cinttypes>
 
@@ -40,8 +41,6 @@
 #include "fix_util.h"
 #include "Garbage.h"
 #include "Tree.h"
-
-int fix_options = 0;
 
 // Fix archive in ROM set as best we can.
 static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage);
@@ -59,7 +58,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
         GarbagePtr garbage;
         DeleteList::Mark extra_mark, needed_mark, superfluous_mark;
 
-        if (fix_options & FIX_DO) {
+        if (configuration.fix_romset) {
             garbage = std::make_shared<Garbage>(archive);
 
             archive->ensure_valid_archive();
@@ -72,33 +71,20 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
         for (uint64_t i = 0; i < archive->files.size(); i++) {
             switch (result->archive_files[filetype][i]) {
                 case FS_UNKNOWN: {
-                    if (fix_options & FIX_IGNORE_UNKNOWN) {
-                        break;
-                    }
-                    auto move = (fix_options & FIX_MOVE_UNKNOWN);
-                    if (fix_options & FIX_PRINT) {
-                        printf("%s: %s unknown file '%s'\n", archive->name.c_str(), (move ? "move" : "delete"), archive->files[i].filename().c_str());
+                    if (configuration.verbose) {
+                        printf("%s: move unknown file '%s'\n", archive->name.c_str(), archive->files[i].filename().c_str());
                     }
                     
-                    if (fix_options & FIX_DO) {
-                        if (move) {
-                            garbage->add(i, false); /* TODO: check return value */
-                        }
-                        else {
-                            archive->file_delete(i); /* TODO: check return value */
-                        }
+                    if (configuration.fix_romset) {
+                        garbage->add(i, false); /* TODO: check return value */
                     }
                     break;
                 }
                     
                 case FS_DUPLICATE:
-                    if (!(fix_options & FIX_DELETE_DUPLICATE)) {
-                        break;
-                    }
-                    /* fallthrough */
                 case FS_SUPERFLUOUS:
                     if (archive->is_writable()) {
-                        if (fix_options & FIX_PRINT) {
+                        if (configuration.verbose) {
                             printf("%s: delete %s file '%s'\n", archive->name.c_str(), (result->archive_files[filetype][i] == FS_SUPERFLUOUS ? "unused" : "duplicate"), archive->files[i].filename().c_str());
                         }
                         
@@ -123,7 +109,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
             }
         }
         
-        if (fix_options & FIX_DO) {
+        if (configuration.fix_romset) {
             if (!garbage->commit()) {
                 garbage->rollback();
                 archive->rollback();
@@ -132,14 +118,14 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
             }
         }
         
-        if ((fix_options & FIX_COMPLETE_ONLY) == 0 || result->game == GS_CORRECT || result->game == GS_FIXABLE) {
+        if (!configuration.complete_games_only || result->game == GS_CORRECT || result->game == GS_FIXABLE) {
             ret |= fix_files(game, filetype, archive, result, garbage.get());
         }
         else {
             ret |= clear_incomplete(game, filetype, archive, result, garbage.get());
         }
 
-        if (fix_options & FIX_DO) {
+        if (configuration.fix_romset) {
             if (!garbage->close()) {
                 archive->rollback();
                 myerror(ERRZIP, "closing garbage failed");
@@ -176,7 +162,7 @@ make_space(Archive *a, const std::string &name, std::vector<std::string> *origin
     }
 
     if (a->files[index].broken) {
-        if (fix_options & FIX_PRINT) {
+        if (configuration.verbose) {
 	    printf("%s: delete broken '%s'\n", a->name.c_str(), name.c_str());
         }
         return a->file_delete(index) ? 0 : -1;
@@ -212,7 +198,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
             case Match::MISSING:
                 if (game_file.hashes.size == 0) {
                     /* create missing empty file */
-                    if (fix_options & FIX_PRINT) {
+                    if (configuration.verbose) {
                         printf("%s: create empty file '%s'\n", archive->name.c_str(), game_file.filename(filetype).c_str());
                     }
                     
@@ -222,8 +208,8 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 break;
                 
             case Match::LONG: {
-                if (archive == archive_from && (fix_options & FIX_MOVE_LONG) && !archive_from->is_file_deleted(match->index)) {
-                    if (fix_options & FIX_PRINT) {
+                if (archive == archive_from && !archive_from->is_file_deleted(match->index)) {
+                    if (configuration.verbose) {
                         printf("%s: move long file '%s'\n", archive_from->name.c_str(), REAL_NAME(archive_from, match->index));
                     }
                     if (!garbage->add(match->index, true)) {
@@ -231,22 +217,19 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     }
                 }
                 
-                if (fix_options & FIX_PRINT) {
+                if (configuration.verbose) {
                     printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to '%s'\n", archive->name.c_str(), match->offset, game_file.hashes.size, REAL_NAME(archive_from, match->index), game_file.filename(filetype).c_str());
                 }
                 
-                bool replacing_ourselves = (archive == archive_from && match->index == archive_from->file_index_by_name(game_file.name));
                 if (make_space(archive, game_file.name, &original_names, num_names) < 0) {
                     break;
                 }
                 if (!archive->file_copy_part(archive_from, match->index, game_file.name, match->offset, game_file.hashes.size, &game_file.hashes)) {
                     break;
                 }
+                // TODO: is this still necessary since we always move long files?
                 if (archive == archive_from && !archive_from->is_file_deleted(match->index)) {
-                    if (!replacing_ourselves && !(fix_options & FIX_MOVE_LONG) && (fix_options & FIX_PRINT)) {
-                        printf("%s: delete long file '%s'\n", archive_from->name.c_str(), game_file.filename(filetype).c_str());
-                    }
-                    archive_from->file_delete(match->index);
+                     archive_from->file_delete(match->index);
                 }
                 break;
             }
@@ -262,7 +245,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     }
                 }
                 
-                if (fix_options & FIX_PRINT)
+                if (configuration.verbose)
                     printf("%s: rename '%s' to '%s'\n", archive->name.c_str(), REAL_NAME(archive, match->index), game_file.filename(filetype).c_str());
                 
                 /* TODO: handle errors (how?) */
@@ -283,7 +266,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     
                     break;
                 }
-                if (fix_options & FIX_PRINT) {
+                if (configuration.verbose) {
                     printf("%s: add '%s/%s' as '%s'\n", archive->name.c_str(), archive_from->name.c_str(), REAL_NAME(archive_from, match->index), game_file.filename(filetype).c_str());
                 }
                 
