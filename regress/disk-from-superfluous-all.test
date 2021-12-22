@@ -1,7 +1,7 @@
 description check all (game with disk), disk wrong name
 variants zip
 return 0
-args -FKLvc -D ../mamedb-disk.db
+args -Fvc -D ../mamedb-disk.db
 file roms/disk.zip 1-8-ok.zip 1-8-ok.zip
 file-del roms/disk/108-5a.chd 108-5.chd
 file-new roms/disk/108-5.chd 108-5.chd

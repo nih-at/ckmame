@@ -1,7 +1,7 @@
 description test two games with swapped disks
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -FKLvc disk disk-2
+args -D ../mamedb-disk-many.db -Fvc disk disk-2
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-2.chd 108-5.chd
 file roms/disk-2.zip 1-4-ok.zip 1-4-ok.zip

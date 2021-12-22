@@ -35,8 +35,9 @@
 #include "check.h"
 
 #include "check_util.h"
-#include "find.h"
 #include "diagnostics.h"
+#include "find.h"
+#include "globals.h"
 #include "RomDB.h"
 #include "warn.h"
 
@@ -246,9 +247,10 @@ void update_game_status(const Game *game, Result *result) {
                     all_own_dead = false;
                 }
             }
-            /* TODO: using diagnostics_options here is a bit of a hack,
+            /* TODO: using configuration.report_detailed here is a bit of a hack,
                but so is all of the result->game processing */
-            if (match->quality != Match::OK && (rom.status != Rom::NO_DUMP || (diagnostics_options & WARN_NO_GOOD_DUMP))) {
+            /* TODO: with report_detailed, we don't want a summary anyway. */
+            if (match->quality != Match::OK && (rom.status != Rom::NO_DUMP || (configuration.report_detailed))) {
                 all_correct = false;
             }
         }

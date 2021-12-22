@@ -39,6 +39,8 @@
 
 class Configuration {
 public:
+    Configuration();
+
     /*
      fixdat none/auto/filename
      Complete-only yes/no
@@ -108,14 +110,14 @@ public:
      
      */
     
-    bool report_missing; /* one line per game if no own ROM found */
-    bool report_fixable;
-    bool report_detailed; /* one line per ROM */
-    bool report_summary;
+    bool report_missing; /* report missing ROMs with good dumps, one line per game if no own ROM found */
+    bool report_fixable; /* report ROMs that are not correct but can be fixed */
+    bool report_detailed; /* one line for each ROM */
+    bool report_summary; /* print statistics about ROM set at end of run */
 
     /* file_correct */
-    bool warn_file_known;
-    bool warn_file_unknown;
+    bool warn_file_known;   // files that are known but don't belong in this archive
+    bool warn_file_unknown; // files that are not in ROM set
     
 /*    bool warn_extra_used; */
 };

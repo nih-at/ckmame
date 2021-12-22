@@ -1,6 +1,6 @@
 description unused file in parent
 return 0
-args -FKLvc parent-4
+args -Fvc parent-4
 file roms/parent-4.zip 2-48-ok.zip 1-4-ok.zip
 file roms/clone-8.zip 1-8-ok.zip 1-8-ok.zip
 stdout In game parent-4:

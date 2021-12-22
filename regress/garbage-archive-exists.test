@@ -1,6 +1,6 @@
 description game contains garbage, garbage location already exists but no conflicts
 return 0
-args -FKLvc 1-4
+args -Fvc 1-4
 file-del roms/1-4.zip garbage.zip
 file unknown/1-4.zip 1-8-ok.zip garbage-1-8-ok.zip
 no-hashes unknown 1-4.zip

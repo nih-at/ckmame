@@ -100,20 +100,20 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
                 auto filename = filepath.filename();
                 known = known_games.find(filename) != known_games.end();
                                 
-                if (roms_unzipped) {
-                    if (!known) {
-                        archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
-                    }
-                }
-                else {
+                if (configuration.roms_zipped) {
                     if (!known) {
                         archives.push_back(ArchiveLocation(filepath, TYPE_DISK));
                     }
                     list_non_chds(filepath);
                 }
+                else {
+                    if (!known) {
+                        archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
+                    }
+                }
             }
             else {
-                if (!roms_unzipped) {
+                if (configuration.roms_zipped) {
                     auto ext = filepath.extension();
                     
                     if (ext == ".zip") {

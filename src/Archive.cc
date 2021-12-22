@@ -377,10 +377,7 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
     try {
         switch (filetype) {
             case TYPE_ROM:
-                if (roms_unzipped) {
-                    archive = std::make_shared<ArchiveDir>(archive_name, filetype, where, flags);
-                }
-                else {
+                if (configuration.roms_zipped) {
                     auto extension = std::filesystem::path(archive_name).extension();
                     if (strcasecmp(extension.c_str(), ".zip") == 0) {
                         archive = std::make_shared<ArchiveZip>(archive_name, filetype, where, flags);
@@ -393,6 +390,9 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
                     else {
                         return NULL;
                     }
+                }
+                else {
+                    archive = std::make_shared<ArchiveDir>(archive_name, filetype, where, flags);
                 }
                 break;
                 
@@ -599,7 +599,7 @@ std::optional<size_t> Archive::file_index(const FileData *file) const {
 // MARK: - ArchiveContents
 
 bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
-    if (roms_unzipped && filetype == TYPE_DISK) {
+    if (!configuration.roms_zipped && filetype == TYPE_DISK) {
         cache_db = NULL;
         cache_id = -1;
         return true;

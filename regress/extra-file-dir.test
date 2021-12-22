@@ -1,7 +1,7 @@
 description test single-rom game (no parent), zip is correct, extra file exists (dir)
 variants dir
 return 0
-args -D ../mamedb-small.db -FKLvc
+args -D ../mamedb-small.db -Fvc
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/unknown-file unknown-file
 file-new unknown/roms.zip unknown-file.zip

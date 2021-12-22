@@ -1,6 +1,6 @@
 description integrity test, file is wrong, correct and wrong roms in needed
 return 0
-args -FKLvc deadbeef
+args -Fvc deadbeef
 file roms/deadbeef.zip deadpork.zip deadbeef.zip
 file needed/deadbeef-000.zip deadfish.zip deadfish.zip
 file-del needed/deadbeef-001.zip deadbeef.zip

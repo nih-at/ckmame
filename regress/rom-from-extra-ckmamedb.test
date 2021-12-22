@@ -1,7 +1,7 @@
 description test modifying archive that hasn't changed from ckmamedb
 variants zip
 return 0
-args -FKLvcj -e extradir 2-48
+args -Fvcj -e extradir 2-48
 file extradir/2-48.zip 2-48-ok.zip 1-4-ok.zip
 file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
 ckmamedb-before roms ckmamedb-1-4-as-2-48.dump

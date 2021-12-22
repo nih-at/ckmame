@@ -1,6 +1,6 @@
 description test that file added to parent is found in child
 return 0
-args -FKLvc -e extra parent-4 clone-8
+args -Fvc -e extra parent-4 clone-8
 file-new roms/parent-4.zip 1-4-ok.zip
 file extra/forparent.zip 1-4-ok.zip 1-4-ok.zip
 file roms/clone-8.zip 1-8-ok.zip 1-8-ok.zip

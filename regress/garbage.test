@@ -1,6 +1,6 @@
 description test single-rom game (no parent), zip contains garbage, fix
 return 0
-args -FKLvc 1-4
+args -Fvc 1-4
 file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
 file-new unknown/1-4.zip garbage.zip
 no-hashes unknown 1-4.zip garbage

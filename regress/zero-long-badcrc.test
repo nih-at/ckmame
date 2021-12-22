@@ -1,6 +1,6 @@
 description test game with 0 byte rom and weird CRC, too big file exists
 return 0
-args -FKLvc zerobadcrc
+args -Fvc zerobadcrc
 file roms/zerobadcrc.zip zero-long.zip zero-ok.zip
 file-new unknown/zerobadcrc.zip zero-long.zip
 no-hashes unknown zerobadcrc.zip

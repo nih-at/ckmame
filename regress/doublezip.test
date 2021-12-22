@@ -1,6 +1,6 @@
 description test double zipped rom not being opened by either zip nor dir modes
 return 0
-args -FKLvc 1-4
+args -Fvc 1-4
 file-del roms/1-4.zip 1-4-ok-doublezip.zip
 file-new unknown/1-4.zip 1-4-ok-doublezip.zip
 no-hashes unknown 1-4.zip 1-4-ok.zip

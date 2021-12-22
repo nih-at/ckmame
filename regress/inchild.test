@@ -1,6 +1,6 @@
 description test 2-rom game (1 in parent), both roms in child
 return 0
-args -FKLvc clone-8
+args -Fvc clone-8
 file roms/clone-8.zip 2-48-ok.zip 2-48-ok.zip
 stdout In game clone-8:
 stdout rom  04.rom        size       4  crc d87f7e0c: should be in cloneof

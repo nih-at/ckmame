@@ -1,6 +1,6 @@
 description test 1-rom game, only wrong roms in zip
 return 0
-args -FKLvc 1-8a
+args -Fvc 1-8a
 file-del roms/1-8a.zip 1-8-ok.zip
 file-new needed/3656897d-000.zip 1-8-ok.zip
 stdout In game 1-8a:

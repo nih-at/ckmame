@@ -1,6 +1,6 @@
 description test game, file is in superfluous, fix, remove superfluous
 return 0
-args -FKLvc -D ../mamedb-lost-parent-ok.db
+args -Fvc -D ../mamedb-lost-parent-ok.db
 file-del roms/superfluous.zip 1-4-ok.zip
 file roms/clone-8.zip 1-8-ok.zip 2-48-ok.zip
 no-hashes roms clone-8.zip

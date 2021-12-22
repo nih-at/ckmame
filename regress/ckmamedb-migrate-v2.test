@@ -1,7 +1,7 @@
 description test ckmamedb migration from version 2
 return 0
 variants zip
-args -FKLvc -je extra 1-4
+args -Fvc -je extra 1-4
 file extra/1-8.zip 1-8-ok.zip 1-8-ok.zip
 ckmamedb-before extra ckmamedb-1-8-ok-v2.dump 2 ckmamedb-v2.sql
 no-hashes extra 1-8.zip

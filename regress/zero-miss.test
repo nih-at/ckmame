@@ -1,6 +1,6 @@
 description test game with 0 byte rom, rom is missing
 return 0
-args -FKLvc zero
+args -Fvc zero
 file-new roms/zero.zip zero-ok.zip
 stdout In game zero:
 stdout game zero                                    : not a single file found

@@ -1,6 +1,6 @@
 description test incomplete game, moves files from extra to needed
 return 0
-args -FKLvbCje extra 2-48
+args -FvbCje extra 2-48
 file-del extra/2-48.zip 1-8-ok.zip
 file-del needed/d87f7e0c-000.zip 1-4-ok.zip
 file-new roms/2-48.zip 2-48-ok.zip

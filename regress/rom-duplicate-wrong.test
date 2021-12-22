@@ -1,6 +1,6 @@
 description test game w/ duplicate rom, zip has one copy w/ wrong name
 return 0
-args -FKLvc 2-44
+args -Fvc 2-44
 file roms/2-44.zip 1-4-misnamed.zip 2-44-ok.zip
 stdout In game 2-44:
 stdout rom  04.rom        size       4  crc d87f7e0c: wrong name (04)

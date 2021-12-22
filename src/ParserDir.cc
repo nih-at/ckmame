@@ -49,46 +49,10 @@ bool ParserDir::parse() {
 	Dir dir(directory_name, false);
 	std::filesystem::path filepath;
 
-	if (roms_unzipped) {
-            auto have_loose_files = false;
-
-	    while ((filepath = dir.next()) != "") {
-		if (std::filesystem::is_directory(filepath)) {
-		    /* TODO: handle errors */
-		    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
-		    if (a) {
-                        start_game(a->name, directory_name);
-			parse_archive(TYPE_ROM, a.get());
-                        end_game();
-		    }
-		}
-		else {
-		    if (std::filesystem::is_regular_file(filepath)) {
-			/* TODO: always include loose files, separate flag? */
-			if (full_archive_name) {
-			    have_loose_files = true;
-			}
-			else {
-			    myerror(ERRDEF, "found file '%s' outside of game subdirectory", filepath.c_str());
-			}
-		    }
-		}
-	    }
-
-	    if (have_loose_files) {
-		auto a = Archive::open_toplevel(directory_name, TYPE_ROM, FILE_NOWHERE, 0);
-
-		if (a) {
-                    start_game(".", "");
-		    parse_archive(TYPE_ROM, a.get());
-                    end_game();
-		}
-	    }
-	}
-	else {
+	if (configuration.roms_zipped) {
             auto have_loose_chds = false;
             
-	    while ((filepath = dir.next()) != "") {
+            while ((filepath = dir.next()) != "") {
                 if (std::filesystem::is_directory(filepath)) {
                     auto dir_empty = true;
                     
@@ -103,9 +67,10 @@ bool ParserDir::parse() {
                         }
                     }
                     {
-                        roms_unzipped = true;
+                        // TODO: Remove this ugly hack.
+                        configuration.roms_zipped = false;
                         auto files = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
-                        roms_unzipped = false;
+                        configuration.roms_zipped = true;
 
                         if (files && !files->is_empty()) {
                             dir_empty = false;
@@ -178,7 +143,7 @@ bool ParserDir::parse() {
                             break;
                     }
                 }
-	    }
+        }
 
             end_game();
 
@@ -193,7 +158,43 @@ bool ParserDir::parse() {
 
             }
 	}
+	else {
+            auto have_loose_files = false;
 
+            while ((filepath = dir.next()) != "") {
+                if (std::filesystem::is_directory(filepath)) {
+                    /* TODO: handle errors */
+                    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                    if (a) {
+                        start_game(a->name, directory_name);
+                        parse_archive(TYPE_ROM, a.get());
+                        end_game();
+                    }
+                }
+                else {
+                    if (std::filesystem::is_regular_file(filepath)) {
+                        /* TODO: always include loose files, separate flag? */
+                        if (full_archive_name) {
+                            have_loose_files = true;
+                        }
+                        else {
+                            myerror(ERRDEF, "found file '%s' outside of game subdirectory", filepath.c_str());
+                        }
+                    }
+                }
+            }
+            
+            if (have_loose_files) {
+                auto a = Archive::open_toplevel(directory_name, TYPE_ROM, FILE_NOWHERE, 0);
+                
+                if (a) {
+                    start_game(".", "");
+                    parse_archive(TYPE_ROM, a.get());
+                    end_game();
+                }
+            }
+        }
+        
         eof();
     }
     catch (...) {

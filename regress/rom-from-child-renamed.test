@@ -1,6 +1,6 @@
 description file in child needs to be renamed and moved to parent
 return 0
-args -FKLvc 1-4 parent-4 clone-8
+args -Fvc 1-4 parent-4 clone-8
 file-new roms/1-4.zip 1-4-ok.zip
 file-new roms/parent-4.zip 1-4-ok.zip
 file-del roms/clone-8.zip 1-4-misnamed.zip

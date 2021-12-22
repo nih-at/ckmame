@@ -1,6 +1,6 @@
 description test 2 rom game, zip is correct, one rom is in old, keep
 return 0
-args -O ../mamedb-lost-parent-ok.db -FKLvc --keep-duplicate 2-4a
+args -O ../mamedb-lost-parent-ok.db -Fvc --keep-duplicate 2-4a
 file roms/2-4a.zip 2-4a-ok.zip 2-4a-ok.zip
 no-hashes roms 2-4a.zip 04.rom
 stdout In game 2-4a:

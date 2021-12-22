@@ -1,7 +1,7 @@
 description test single-rom game (no parent), incorrect ckmame db exists, but file has same mtime
 variants dir
 return 0
-args -D ../mamedb-small.db -jKLc
+args -D ../mamedb-small.db -jc
 ckmamedb-before roms ckmamedb-1-4-ok.dump
 ckmamedb-after roms ckmamedb-1-4-ok.dump
 file roms/1-4.zip 1-4-wrong.zip 1-4-wrong.zip

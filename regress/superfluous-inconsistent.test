@@ -1,7 +1,7 @@
 description test single-rom game (no parent), superfluous zip is inconsistent
 variants zip
 return 0
-args -FKLvc 1-4
+args -Fvc 1-4
 file-del roms/1-4-super.zip 1-4-inconsistent.zip
 file-new roms/1-4.zip 1-4-ok.zip
 stdout In game 1-4:

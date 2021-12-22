@@ -89,9 +89,8 @@ main(int argc, char **argv) {
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
-	dbname = RomDB::default_name.c_str();
+	dbname = RomDB::default_name().c_str();
     detector_name = NULL;
-    roms_unzipped = false;
 
     opterr = 0;
     while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -115,7 +114,7 @@ main(int argc, char **argv) {
 	    dbname = optarg;
 	    break;
 	case 'u':
-	    roms_unzipped = true;
+	    configuration.roms_zipped = false;
 	    break;
 	case OPT_DETECTOR:
 	    detector_name = optarg;

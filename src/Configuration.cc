@@ -33,7 +33,10 @@
 
 #include "Configuration.h"
 
+#include <cstdlib>
+
 #include "config.h"
+#include "RomDB.h"
 
 #ifdef HAVE_TOMLPLUSPLUS
 #include <toml++/toml.h>
@@ -41,3 +44,27 @@
 #include "toml.hpp"
 #endif
 
+Configuration::Configuration() :
+    romdb_name(RomDB::default_name()),
+    olddb_name(RomDB::default_old_name()),
+    rom_directory("roms"),
+    roms_zipped(true),
+    fix_romset(false),
+    verbose(false),
+    complete_games_only(false),
+    move_from_extra(false),
+    report_missing(true),
+    report_fixable(true), // ???
+    report_detailed(false),
+    report_summary(false),
+    warn_file_known(true), // ???
+    warn_file_unknown(true) {
+    auto value = getenv("MAMEDB");
+    if (value != NULL) {
+        romdb_name = value;
+    }
+    value = getenv("MAMEDB_OLD");
+    if (value != NULL) {
+        olddb_name = value;
+    }
+}

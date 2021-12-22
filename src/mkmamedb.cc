@@ -131,7 +131,6 @@ main(int argc, char **argv) {
     setprogname(argv[0]);
 
     runtest = false;
-    roms_unzipped = false;
     cache_directory = true;
     flags = 0;
     parser_flags = 0;
@@ -185,7 +184,7 @@ main(int argc, char **argv) {
                 flags |= OUTPUT_FL_TEMP;
                 break;
             case 'u':
-                roms_unzipped = true;
+                configuration.roms_zipped = false;
                 break;
             case 'x':
                 exclude.insert(optarg);
@@ -240,7 +239,7 @@ main(int argc, char **argv) {
     if (dbname == NULL) {
         dbname = getenv("MAMEDB");
         if (dbname == NULL) {
-            dbname = RomDB::default_name.c_str();
+            dbname = RomDB::default_name().c_str();
         }
     }
     
@@ -303,7 +302,7 @@ main(int argc, char **argv) {
             out->close();
         }
 
-        if (roms_unzipped) {
+        if (!configuration.roms_zipped) {
             CkmameDB::close_all();
         }
 
@@ -334,7 +333,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	/* that's fine */
     }
 
-    if (!roms_unzipped && (za = zip_open(fname.c_str(), 0, NULL)) != NULL) {
+    if (configuration.roms_zipped && (za = zip_open(fname.c_str(), 0, NULL)) != NULL) {
 	const char *name;
         auto ok = true;
 
@@ -387,7 +386,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	    return false;
 	}
 
-	if (roms_unzipped) {
+	if (!configuration.roms_zipped) {
 	    myerror(ERRDEF, "argument '%s' is not a directory", fname.c_str());
 	    return false;
 	}

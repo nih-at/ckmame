@@ -1,7 +1,7 @@
 description test game with disk, move wrong but needed disk to needed
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -FKLvc disk
+args -D ../mamedb-disk-many.db -Fvc disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/disk/108-5.chd 108-2.chd
 file-new needed/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000/108-5.chd 108-2.chd

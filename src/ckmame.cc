@@ -114,21 +114,7 @@ main(int argc, char **argv) {
 	std::string game_list;
 	bool auto_fixdat;
 	bool print_stats = false;
-
-	diagnostics_options = WARN_ALL;
 	
-	auto dbname = RomDB::default_name;
-	auto olddbname = RomDB::default_old_name;
-	
-	auto value = getenv("MAMEDB");
-	if (value != NULL) {
-	    dbname = value;
-	}
-	value = getenv("MAMEDB_OLD");
-	if (value != NULL) {
-	    olddbname = value;
-	}
- 	roms_unzipped = false;
 	fixdat = NULL;
 	auto_fixdat = false;
 	
@@ -262,7 +248,7 @@ main(int argc, char **argv) {
 	    CkmameDB::register_directory(get_directory());
 	    CkmameDB::register_directory(needed_dir);
 	    CkmameDB::register_directory(unknown_dir);
-	    for (auto const &name : search_dirs) {
+	    for (auto const &name : configuration.extra_directories) {
 		if (contains_romdir(name)) {
 		    /* TODO: improve error message: also if extra is in ROM directory. */
 		    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory().c_str(), name.c_str());
@@ -276,14 +262,14 @@ main(int argc, char **argv) {
 	}
 
 	try {
-	    db = std::make_unique<RomDB>(dbname, DBH_READ);
+	    db = std::make_unique<RomDB>(configuration.romdb_name, DBH_READ);
 	}
 	catch (std::exception &e) {
-	    myerror(0, "can't open database '%s': %s", dbname.c_str(), e.what());
+	    myerror(0, "can't open database '%s': %s", configuration.romdb_name.c_str(), e.what());
 	    exit(1);
 	}
 	try {
-	    old_db = std::make_unique<RomDB>(olddbname, DBH_READ);
+	    old_db = std::make_unique<RomDB>(configuration.olddb_name, DBH_READ);
 	}
 	catch (std::exception &e) {
 	    /* TODO: check for errors other than ENOENT */
@@ -319,7 +305,7 @@ main(int argc, char **argv) {
 	    fixdat->header(&de);
 	}
 
-	if (roms_unzipped && db->has_disks() == 1) {
+	if (!configuration.roms_zipped && db->has_disks() == 1) {
 	    fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", getprogname());
 	    exit(1);
 	}
@@ -331,7 +317,7 @@ main(int argc, char **argv) {
 	    list = db->read_list(DBH_KEY_LIST_GAME);
 	}
 	catch (Exception &e) {
-	    myerror(ERRDEF, "list of games not found in database '%s': %s", dbname.c_str(), e.what());
+	    myerror(ERRDEF, "list of games not found in database '%s': %s", configuration.romdb_name.c_str(), e.what());
 	    exit(1);
 	}
 	std::sort(list.begin(), list.end());
@@ -432,7 +418,7 @@ main(int argc, char **argv) {
 	    extra_delete_list->execute();
 	}
 
-	if ((arguments.empty() && (diagnostics_options & WARN_SUPERFLUOUS))) {
+	if (arguments.empty()) {
 	    print_superfluous(superfluous_delete_list);
 	}
 	

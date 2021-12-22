@@ -1,7 +1,7 @@
 description test single-rom game with disk, file in place of disk is not a disk
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -FKLvc disk
+args -D ../mamedb-disk-many.db -Fvc disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk/108-5.chd CMakeLists.txt CMakeLists.txt
 no-hashes roms disk.zip 04.rom

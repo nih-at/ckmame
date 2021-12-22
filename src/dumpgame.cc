@@ -193,7 +193,7 @@ main(int argc, char **argv) {
 
     dbname = getenv("MAMEDB");
     if (dbname == NULL)
-	dbname = RomDB::default_name.c_str();
+	dbname = RomDB::default_name().c_str();
 
     find_checksum = brief_mode = 0;
 

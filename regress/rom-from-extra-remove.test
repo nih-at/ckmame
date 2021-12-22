@@ -1,6 +1,6 @@
 description test single-rom game (no parent), file is in search dir, remove
 return 0
-args -FKLvcj -e search 1-4
+args -Fvcj -e search 1-4
 file-del search/foo.zip 1-4-ok.zip
 file search/ignore.zip 1-8-ok.zip 1-8-ok.zip
 file search/ignore2 runtest runtest

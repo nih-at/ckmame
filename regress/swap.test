@@ -1,6 +1,6 @@
 description test single-rom game (no parent), rom has wrong name
 return 0
-args -FKLvc 2-48
+args -Fvc 2-48
 file roms/2-48.zip 2-84.zip 2-48-ok.zip
 stdout In game 2-48:
 stdout rom  04.rom        size       4  crc d87f7e0c: wrong name (08.rom)

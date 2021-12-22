@@ -1,6 +1,6 @@
 description test game: rom part is needed here, whole rom is needed somewhere else
 return 0
-args -FKLvc 1-4 1-8
+args -Fvc 1-4 1-8
 file roms/1-4.zip 1-8-called-04.zip 1-4-ok.zip
 file-new roms/1-8.zip 1-8-ok.zip
 no-hashes roms 1-4.zip 04.rom md5

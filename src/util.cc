@@ -89,11 +89,11 @@ name_type_t name_type(const std::string &name) {
     }
 
     if (std::filesystem::is_directory(name)) {
-        if (roms_unzipped) {
-            return NAME_ZIP;
+        if (configuration.roms_zipped) {
+            return NAME_IMAGES;
         }
         else {
-            return NAME_IMAGES;
+            return NAME_ZIP;
         }
     }
 
@@ -102,7 +102,7 @@ name_type_t name_type(const std::string &name) {
         return NAME_IGNORE;
     }
     
-    if (!roms_unzipped && is_ziplike(name)) {
+    if (configuration.roms_zipped && is_ziplike(name)) {
 	return NAME_ZIP;
     }
 

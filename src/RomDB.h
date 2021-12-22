@@ -84,8 +84,9 @@ public:
     void init2();
     
     static const DBFormat format;
-    static const std::string default_name;
-    static const std::string default_old_name;
+    // These can't be static members, since they are initialized after the global Configuration. Thanks a lot, C++.
+    static const std::string default_name() { return "mame.db"; }
+    static const std::string default_old_name() { return "old.db"; }
     
     std::unordered_map<size_t, DetectorPtr> detectors;
 

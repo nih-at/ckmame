@@ -64,7 +64,7 @@ ZipSourcePtr ArchiveImages::Archive::get_source(uint64_t index, uint64_t start, 
 
 
 bool ArchiveImages::read_infos_xxx() {
-    if (roms_unzipped) {
+    if (!configuration.roms_zipped) {
         return true;
     }
     

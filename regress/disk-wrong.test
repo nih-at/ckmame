@@ -1,7 +1,7 @@
 description test single-rom game with disk, disk is wrong
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -FKLvc disk
+args -D ../mamedb-disk-many.db -Fvc disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/disk/108-5.chd 12-1.chd
 file-new unknown/disk/108-5.chd 12-1.chd

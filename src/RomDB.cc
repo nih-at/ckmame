@@ -39,9 +39,6 @@
 std::unique_ptr<RomDB> db;
 std::unique_ptr<RomDB> old_db;
 
-const std::string RomDB::default_name = "mame.db";
-const std::string RomDB::default_old_name = "old.db";
-
 const DB::DBFormat RomDB::format = {
     0x0,
     3,

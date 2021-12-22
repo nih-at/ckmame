@@ -1,7 +1,7 @@
 description test single-rom game with disk, disk missing
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -FKLvc disk
+args -D ../mamedb-disk-many.db -Fvc disk
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 no-hashes roms disk.zip 04.rom
 stdout In game disk:

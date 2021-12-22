@@ -34,5 +34,3 @@
 #include "globals.h"
 
 Configuration configuration;
-
-bool roms_unzipped = false;   /* ROMs are files on disk, not contained in zip archives */

@@ -46,8 +46,6 @@
 const std::string needed_dir = "needed";   /* TODO: proper value */
 const std::string unknown_dir = "unknown"; /* TODO: proper value */
 
-std::vector<std::string> search_dirs;
-
 #define EXTRA_MAPS 0x1
 #define NEEDED_MAPS 0x2
 
@@ -97,12 +95,12 @@ void ensure_extra_maps(int flags) {
 	    }
 	}
 	
-	auto filetype = roms_unzipped ? TYPE_ROM : TYPE_DISK;
+	auto filetype = configuration.roms_zipped ? TYPE_DISK : TYPE_ROM;
 	auto a = Archive::open_toplevel(get_directory(), filetype, FILE_SUPERFLUOUS, 0);
     }
 
-    for (size_t i = 0; i < search_dirs.size(); i++) {
-	enter_dir_in_map_and_list(flags, extra_delete_list, search_dirs[i], true, FILE_EXTRA);
+    for (auto const &directory : configuration.extra_directories) {
+	enter_dir_in_map_and_list(flags, extra_delete_list, directory, true, FILE_EXTRA);
     }
 
     if (flags & DO_LIST) {
@@ -145,7 +143,7 @@ std::string make_file_name(filetype_t filetype, const std::string &name) {
     std::string result;
 
     result = get_directory() + "/" + name;
-    if (filetype == TYPE_ROM && !roms_unzipped) {
+    if (filetype == TYPE_ROM && configuration.roms_zipped) {
 	result += ".zip";
     }
 
@@ -155,11 +153,11 @@ std::string make_file_name(filetype_t filetype, const std::string &name) {
 
 static bool enter_dir_in_map_and_list(int flags, DeleteListPtr list, const std::string &directory_name, bool recursive, where_t where) {
     bool ret;
-    if (roms_unzipped) {
-	ret = enter_dir_in_map_and_list_unzipped(flags | DO_LIST, list, directory_name, recursive, where);
+    if (configuration.roms_zipped) {
+	ret = enter_dir_in_map_and_list_zipped(flags | DO_LIST, list, directory_name, recursive, where);
     }
     else {
-	ret = enter_dir_in_map_and_list_zipped(flags | DO_LIST, list, directory_name, recursive, where);
+	ret = enter_dir_in_map_and_list_unzipped(flags | DO_LIST, list, directory_name, recursive, where);
     }
 
     if (ret) {

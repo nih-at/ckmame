@@ -623,7 +623,6 @@
 		4B6B14FB24FFA9D400D3F3FB /* tochild.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = tochild.test; sourceTree = "<group>"; };
 		4B6B14FD24FFA9D500D3F3FB /* zero-long.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "zero-long.test"; sourceTree = "<group>"; };
 		4B6B14FE24FFA9D500D3F3FB /* zero.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = zero.test; sourceTree = "<group>"; };
-		4B6B14FF24FFA9D500D3F3FB /* superfluous.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = superfluous.test; sourceTree = "<group>"; };
 		4B6B150024FFA9D500D3F3FB /* uncompressed-ckmamedb-changed-same-mtime-zip.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "uncompressed-ckmamedb-changed-same-mtime-zip.test"; sourceTree = "<group>"; };
 		4B6B150124FFA9D500D3F3FB /* unknown-in-parent.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "unknown-in-parent.test"; sourceTree = "<group>"; };
 		4B6B150224FFA9D500D3F3FB /* wrong.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = wrong.test; sourceTree = "<group>"; };
@@ -1376,7 +1375,6 @@
 				4B6B150A24FFA9D500D3F3FB /* superfluous-cleanup-disk.test */,
 				4B6B152224FFA9D700D3F3FB /* superfluous-cleanup.test */,
 				4B6B151424FFA9D600D3F3FB /* superfluous-inconsistent.test */,
-				4B6B14FF24FFA9D500D3F3FB /* superfluous.test */,
 				4B6B152624FFA9D700D3F3FB /* swap-roms-2.test */,
 				4B6B150B24FFA9D600D3F3FB /* swap-roms.test */,
 				4B6B150D24FFA9D600D3F3FB /* swap.test */,

@@ -1,7 +1,7 @@
 description test game with disk, get disk from extra, but don't remove it
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -FKLvc -e extra disk
+args -D ../mamedb-disk-many.db -Fvc -e extra disk
 mkdir 755 extra
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file extra/new.chd 108-5.chd 108-5.chd

@@ -1,6 +1,6 @@
 description integrity test parent, file is wrong, correct rom in romset
 return 0
-args -FKLvc deadbeef
+args -Fvc deadbeef
 file roms/deadbeef.zip deadpork.zip deadbeef.zip
 file roms/deadclonedbeef.zip deadclonedbeef.zip deadclonedbeef.zip
 file-new unknown/deadbeef.zip deadpork.zip

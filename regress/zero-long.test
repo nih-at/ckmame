@@ -1,6 +1,6 @@
 description test game with 0 byte rom, too big file exists
 return 0
-args -FKLvc zero
+args -Fvc zero
 file roms/zero.zip zero-long.zip zero-ok.zip
 file-new unknown/zero.zip zero-long.zip
 no-hashes unknown zero.zip

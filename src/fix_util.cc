@@ -74,7 +74,7 @@ make_needed_name(filetype_t filetype, const FileData *r) {
     auto hash = r->hashes.to_string(filetype == TYPE_ROM ? Hashes::TYPE_CRC : Hashes::TYPE_SHA1);
     auto prefix = std::filesystem::path(needed_dir) / hash;
 
-    return make_unique_name(prefix, (filetype == TYPE_ROM && !roms_unzipped) ? ".zip" : "");
+    return make_unique_name(prefix, (filetype == TYPE_ROM && configuration.roms_zipped) ? ".zip" : "");
 }
 
 

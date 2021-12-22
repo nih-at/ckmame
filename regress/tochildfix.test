@@ -1,6 +1,6 @@
 description move file from parent to clone (via needed)
 return 0
-args -FKLcv parent-4 clone-8
+args -Fvc parent-4 clone-8
 file roms/parent-4.zip 2-48-ok.zip 1-4-ok.zip
 file-new roms/clone-8.zip 1-8-ok.zip
 stdout In game parent-4:

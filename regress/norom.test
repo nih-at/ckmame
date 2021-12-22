@@ -1,5 +1,5 @@
 description test no-rom game
 return 0
-args -FKLvc norom
+args -Fvc norom
 stdout In game norom:
 stdout game norom                                   : correct

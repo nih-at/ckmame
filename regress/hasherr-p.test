@@ -1,6 +1,6 @@
 description integrity test child, file in parent is wrong
 return 0
-args -FKLvc deadbeefchild
+args -Fvc deadbeefchild
 file roms/deadbeef.zip deadfish.zip deadfish.zip
 file roms/deadbeefchild.zip 1-4-ok.zip 1-4-ok.zip
 stdout In game deadbeefchild:

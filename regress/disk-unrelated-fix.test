@@ -1,7 +1,7 @@
 description two games that use the same disk under the same name
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -FKLvc disk diskgood-romnogood
+args -D ../mamedb-disk-many.db -Fvc disk diskgood-romnogood
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-5.chd 108-5.chd
 file-new roms/diskgood-romnogood/108-5.chd 108-5.chd

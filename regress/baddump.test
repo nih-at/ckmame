@@ -1,6 +1,6 @@
 description test single-rom game with bad dump
 return 0
-args -D ../mamedb-baddump.db -FKLvc -je extra
+args -D ../mamedb-baddump.db -Fvc -je extra
 file roms/baddump.zip baddump.zip baddump.zip
 file-del extra/baddump.zip baddump.zip
 no-hashes roms baddump.zip bad.rom
