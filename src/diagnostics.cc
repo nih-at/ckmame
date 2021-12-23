@@ -207,6 +207,12 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 }
                 break;
                 
+            case Match::OK_AND_OLD:
+                if (configuration.report_detailed) {
+                    warn_game_file(ft, &rom, "duplicate (also in old '" + match.old_game + "')");
+                }
+                break;
+                
             case Match::COPIED:
                 if (configuration.report_fixable) {
                     warn_game_file(ft, &rom, "is in '" + match.archive->name + "/" + match.archive->files[match.index].filename() + "'");
@@ -221,7 +227,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 
             case Match::OLD:
                 if (configuration.report_detailed) {
-                    warn_game_file(ft, &rom, "old in '" + match.old_game + "'");
+                    warn_game_file(ft, &rom, "is in old '" + match.old_game + "'");
                 }
                 break;
                 

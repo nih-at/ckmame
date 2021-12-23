@@ -292,6 +292,10 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 /* all is well */
                 break;
                 
+            case Match::OK_AND_OLD:
+                // TODO: delete unless keep-duplicates
+                break;
+                
             case Match::NO_HASH:
                 /* only used for disks */
                 break;
@@ -356,6 +360,9 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
                         break;
                 }
                 break;
+                
+            case Match::OK_AND_OLD:
+                // TODO: delete
                 
             case Match::NAME_ERROR:
             case Match::OK:

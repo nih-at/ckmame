@@ -3,7 +3,7 @@ features LIBXML2
 return 0
 file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
 mkdir 755 extra
-args -D mamedb-skipped.db -FKLjvc -e extra skipped
+args -D mamedb-skipped.db -Fjvc -e extra skipped
 file-new roms/skipped.zip 1-8-skip-ok.zip
 file-del extra/short.zip 1-8-skip-ok.zip
 file extra/long.zip 1-8-ok.zip 1-8-ok.zip

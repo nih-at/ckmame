@@ -1,6 +1,6 @@
 description test 2-rom game (1 in parent), both roms in parent - BROKEN
 return 0
-args -cFKLv clone-8
+args -cFv clone-8
 file roms/parent-4.zip 2-48-ok.zip 2-48-ok.zip
 no-hashes roms parent-4.zip 08.rom
 stdout In game clone-8:

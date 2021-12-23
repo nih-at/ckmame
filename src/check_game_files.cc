@@ -61,10 +61,6 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
     
     test_result_t result;
     
-    if (res->game == GS_OLD) {
-        return;
-    }
-    
     size_t detector_id = filetype == TYPE_ROM ?  db->get_detector_id_for_dat(game->dat_no) : 0;
     
     for (size_t i = 0; i < game->files[filetype].size(); i++) {
@@ -73,6 +69,13 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         auto expected_archive = archives[rom.where].archive[filetype];
         
         if (match->quality == Match::OLD) {
+            Match ingame_match;
+            if (rom.where == FILE_INGAME && match_files(archives[0].archive[filetype], TEST_NAME_SIZE_CHECKSUM, game, &rom, &ingame_match) == TEST_USABLE) {
+                if (ingame_match.quality == Match::OK) {
+                    match->quality = Match::OK_AND_OLD;
+                    res->game = GameStatus::GS_FIXABLE;
+                }
+            }
             continue;
         }
         

@@ -1,7 +1,7 @@
 description broken rom prevents replacing it with a proper copy
 variants zip
 return 0
-args -FjKLvc -e extra 1-4
+args -Fjvc -e extra 1-4
 file roms/1-4.zip 1-4-crcerror.zip 1-4-crcerror.zip
 file extra/1-4.zip 1-4-ok.zip 1-4-ok.zip
 no-hashes roms 1-4.zip 04.rom

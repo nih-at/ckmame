@@ -411,11 +411,8 @@ main(int argc, char **argv) {
 	    fixdat->close();
 	}
 
-	if (configuration.fix_romset) {
+	if (configuration.fix_romset && configuration.move_from_extra) {
 	    cleanup_list(extra_delete_list, 0);
-	}
-	else if (extra_delete_list) {
-	    extra_delete_list->execute();
 	}
 
 	if (arguments.empty()) {

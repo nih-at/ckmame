@@ -475,7 +475,6 @@
 		4B6B145C24FF946900D3F3FB /* ckmame.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = ckmame.test; sourceTree = "<group>"; };
 		4B6B145D24FF946900D3F3FB /* disk-from-extra-remove.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-from-extra-remove.test"; sourceTree = "<group>"; };
 		4B6B145E24FF946900D3F3FB /* baddump.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = baddump.test; sourceTree = "<group>"; };
-		4B6B146024FF946900D3F3FB /* cleanup.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = cleanup.test; sourceTree = "<group>"; };
 		4B6B146124FF946A00D3F3FB /* fixdat-missing-parent.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "fixdat-missing-parent.test"; sourceTree = "<group>"; };
 		4B6B146224FF946A00D3F3FB /* fixdat-xml-quoting.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "fixdat-xml-quoting.test"; sourceTree = "<group>"; };
 		4B6B146324FF946A00D3F3FB /* rom-from-superfluous-many-fixdat.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-superfluous-many-fixdat.test"; sourceTree = "<group>"; };
@@ -492,7 +491,6 @@
 		4B6B147024FF946A00D3F3FB /* disk-nogood-copy.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-nogood-copy.test"; sourceTree = "<group>"; };
 		4B6B147124FF946A00D3F3FB /* delete-used-superfluous.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "delete-used-superfluous.test"; sourceTree = "<group>"; };
 		4B6B147224FF946A00D3F3FB /* archive-broken2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "archive-broken2.test"; sourceTree = "<group>"; };
-		4B6B147324FF946A00D3F3FB /* cleanup-disk.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "cleanup-disk.test"; sourceTree = "<group>"; };
 		4B6B147424FF946A00D3F3FB /* disk-toplevel.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "disk-toplevel.test"; sourceTree = "<group>"; };
 		4B6B147524FF946A00D3F3FB /* fixdat-missing-part.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "fixdat-missing-part.test"; sourceTree = "<group>"; };
 		4B6B147624FF946A00D3F3FB /* detector-interaction-with-headerless.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "detector-interaction-with-headerless.test"; sourceTree = "<group>"; };
@@ -1192,9 +1190,7 @@
 				4B6B145E24FF946900D3F3FB /* baddump.test */,
 				4B6B145C24FF946900D3F3FB /* ckmame.test */,
 				4B5A201A263974790029B680 /* ckmamedb-migrate-v2.test */,
-				4B6B147324FF946A00D3F3FB /* cleanup-disk.test */,
 				4B6B146B24FF946A00D3F3FB /* cleanup-implicit.test */,
-				4B6B146024FF946900D3F3FB /* cleanup.test */,
 				4B6B147124FF946A00D3F3FB /* delete-used-superfluous.test */,
 				4B9E89AD2664E4F000CC3407 /* detector-from-extra.test */,
 				4B6B147624FF946A00D3F3FB /* detector-interaction-with-headerless.test */,

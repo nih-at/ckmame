@@ -1,7 +1,7 @@
 description test single-rom game (no parent), extra zip contains broken
 variants zip
 return 0
-args -FjKLvc -e extra 2-48
+args -Fjvc -e extra 2-48
 file extra/2-48-part-broken.zip 2-48-broken.zip 1-8-broken.zip
 file-new roms/2-48.zip 1-4-ok.zip
 stdout In game 2-48:

@@ -1,7 +1,7 @@
 description test single-rom game with bad dump but good disk
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -dcKLv --stats 2-48 1-8 disk disk-2
+args -D ../mamedb-disk-many.db -dcv --stats 2-48 1-8 disk disk-2
 file roms/2-48.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-5.chd 108-5.chd
