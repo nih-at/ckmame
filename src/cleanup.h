@@ -39,6 +39,6 @@
 #define CLEANUP_NEEDED 0x1
 #define CLEANUP_UNKNOWN 0x2
 
-void cleanup_list(DeleteListPtr list, int flags);
+void cleanup_list(DeleteListPtr list, int flags, bool is_needed = false);
 
 #endif /* _HAD_CLEANUP_H */

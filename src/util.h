@@ -51,7 +51,6 @@ std::vector<uint8_t> hex2bin(const std::string &hex);
 std::string bin2hex(const std::vector<uint8_t> &bin);
 name_type_t name_type(const std::string &name);
 bool ensure_dir(const std::string &name, bool strip_filename);
-const std::string get_directory(void);
 bool is_ziplike(const std::string &fname);
 void print_human_number(FILE *f, uint64_t value);
 std::string string_format(const char *format, ...) PRINTF_LIKE(1, 2);

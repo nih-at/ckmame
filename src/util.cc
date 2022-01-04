@@ -132,13 +132,6 @@ ensure_dir(const std::string &name, bool strip_filename) {
 }
 
 
-const std::string get_directory(void) {
-    if (!rom_dir.empty()) {
-	return rom_dir;
-    }
-    return "roms";
-}
-
 bool is_ziplike(const std::string &fname) {
     auto extension = std::filesystem::path(fname).extension();
     

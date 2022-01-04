@@ -1,8 +1,0 @@
-description ignore any unknown files in archives
-return 0
-args -D ../mamedb-lost-parent-ok.db -vF --ignore-unknown
-file roms/clone-8.zip 2-8c-ok.zip 2-8c-ok.zip
-no-hashes roms clone-8.zip
-stdout In game clone-8:
-stdout rom  04.rom        size       4  crc d87f7e0c: missing
-stdout file 0c.rom        size      12  crc 0623c932: unknown

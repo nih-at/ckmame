@@ -595,7 +595,6 @@
 		4B6B14DF24FFA14C00D3F3FB /* rom-from-extra-child.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-child.test"; sourceTree = "<group>"; };
 		4B6B14E024FFA14C00D3F3FB /* rom-dir.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-dir.test"; sourceTree = "<group>"; };
 		4B6B14E124FFA14C00D3F3FB /* rom-from-unknown.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-unknown.test"; sourceTree = "<group>"; };
-		4B6B14E224FFA98000D3F3FB /* ignore-unknown.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ignore-unknown.test"; sourceTree = "<group>"; };
 		4B6B14E324FFA98000D3F3FB /* hasherr-pc.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "hasherr-pc.test"; sourceTree = "<group>"; };
 		4B6B14E424FFA98000D3F3FB /* hasherr.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = hasherr.test; sourceTree = "<group>"; };
 		4B6B14E524FFA98000D3F3FB /* incomplete-merge-b.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "incomplete-merge-b.test"; sourceTree = "<group>"; };
@@ -1249,7 +1248,6 @@
 				4BE373D026303EE900BE68A3 /* ignore-macos-dir-in-game.test */,
 				4BE373CF26303E8900BE68A3 /* ignore-macos-extra.test */,
 				4BE373CE26303E2B00BE68A3 /* ignore-macos-roms.test */,
-				4B6B14E224FFA98000D3F3FB /* ignore-unknown.test */,
 				4B6B14EF24FFA98100D3F3FB /* inchild.test */,
 				4B6B14F124FFA98100D3F3FB /* incomplete-basic-b.test */,
 				4B6B14F824FFA98200D3F3FB /* incomplete-basic.test */,
@@ -1347,7 +1345,6 @@
 				4B6B14D824FFA14B00D3F3FB /* rom-from-romset2.test */,
 				4B6B14D924FFA14B00D3F3FB /* rom-from-superfluous-cleanup.test */,
 				4B6B14BB24FFA14A00D3F3FB /* rom-from-superfluous-detector.test */,
-				4B6B14DB24FFA14C00D3F3FB /* rom-from-superfluous-many-fixdat.dat */,
 				4B6B146324FF946A00D3F3FB /* rom-from-superfluous-many-fixdat.test */,
 				4B6B14B624FFA14A00D3F3FB /* rom-from-superfluous-many.test */,
 				4B6B14DC24FFA14C00D3F3FB /* rom-from-superfluous-nofix.test */,
@@ -1495,6 +1492,7 @@
 				4B9E89F32672068200CC3407 /* mamedb-small.dat */,
 				4B9E89F72672068200CC3407 /* mamedb-two-games.dat */,
 				4B9E8A062672068300CC3407 /* mamedb-xml-quoting.dat */,
+				4B6B14DB24FFA14C00D3F3FB /* rom-from-superfluous-many-fixdat.dat */,
 			);
 			name = "dat files";
 			sourceTree = "<group>";

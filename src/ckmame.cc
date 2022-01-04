@@ -70,7 +70,7 @@ std::string rom_dir_normalized;
 const char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner";
 const char help_footer[] = "Report bugs to " PACKAGE_BUGREPORT ".";
 const char version_string[] = PACKAGE " " VERSION "\n"
-				"Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
+				"Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 std::vector<Commandline::Option> options = {
     Commandline::Option("help", 'h', "display this help message"),
@@ -84,14 +84,17 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("fix", 'F', "fix ROM set"),
     Commandline::Option("fixdat", "datfile", "write fixdat to 'datfile'"),
     Commandline::Option("game-list", 'T', "file", "read games to check from file"),
+    Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
     Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
     Commandline::Option("old-db", 'O', "dbfile", "use mame-db dbfile for old ROMs"),
     Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
+    Commandline::Option("no-report-correct", "don't report status of ROMs that are correct (default)"),
     Commandline::Option("no-report-detailed", "don't report status of every ROM (default)"),
     Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
     Commandline::Option("no-report-missing", "don't report status of ROMs that are missing"),
     Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
-    Commandline::Option("report-detailed", 'c', "report status of every ROM"),
+    Commandline::Option("report-correct", 'c', "report status of ROMs that are correct"),
+    Commandline::Option("report-detailed", "report status of every ROM"),
     Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)"),
     Commandline::Option("report-missing", "report status of ROMs that are missing (default)"),
     Commandline::Option("report-summary", "print summary of ROM set status"),
@@ -110,14 +113,8 @@ main(int argc, char **argv) {
 
     try {
 	int found;
-	std::string fixdat_name;
 	std::string game_list;
-	bool auto_fixdat;
-	bool print_stats = false;
-	
-	fixdat = NULL;
-	auto_fixdat = false;
-	
+	auto auto_fixdat = false;
 	std::vector<std::string> arguments;
 		
 	auto commandline = Commandline(options, "[game ...]", help_head, help_footer);
@@ -142,7 +139,7 @@ main(int argc, char **argv) {
 	    
 	    for (auto const &option : args.options) {
 		if (option.name == "autofixdat") {
-		    // TODO: implement
+		    auto_fixdat = true;
 		}
 		else if (option.name == "complete-games-only") {
 		    configuration.complete_games_only = true;
@@ -177,6 +174,9 @@ main(int argc, char **argv) {
 		else if (option.name == "game-list") {
 		    game_list = option.argument;
 		}
+		else if (option.name == "keep-old-duplicate") {
+		    configuration.keep_old_duplicate = true;
+		}
 		else if (option.name == "move-from-extra") {
 		    configuration.move_from_extra = true;
 		}
@@ -185,6 +185,9 @@ main(int argc, char **argv) {
 		}
 		else if (option.name == "no-complete-games-only") {
 		    configuration.complete_games_only = false;
+		}
+		else if (option.name == "no-report-correct") {
+		    configuration.report_correct = false;
 		}
 		else if (option.name == "no-report-detailed") {
 		    configuration.report_detailed = false;
@@ -197,6 +200,9 @@ main(int argc, char **argv) {
 		}
 		else if (option.name == "no-report-summary") {
 		    configuration.report_summary = false;
+		}
+		else if (option.name == "report-correct") {
+		    configuration.report_correct = true;
 		}
 		else if (option.name == "report-detailed") {
 		    configuration.report_detailed = true;
@@ -235,23 +241,23 @@ main(int argc, char **argv) {
 	    archive_global_flags(ARCHIVE_FL_RDONLY, true);
 	}
 
-	ensure_dir(get_directory(), false);
+	ensure_dir(configuration.rom_directory, false);
 	std::error_code ec;
-	rom_dir_normalized = std::filesystem::relative(get_directory(), "/", ec);
+	rom_dir_normalized = std::filesystem::relative(configuration.rom_directory, "/", ec);
 	if (ec || rom_dir_normalized.empty()) {
 	    /* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
-	    myerror(ERRSTR, "can't normalize directory '%s'", get_directory().c_str());
+	    myerror(ERRSTR, "can't normalize directory '%s'", configuration.rom_directory.c_str());
 	    exit(1);
 	}
 
 	try {
-	    CkmameDB::register_directory(get_directory());
+	    CkmameDB::register_directory(configuration.rom_directory);
 	    CkmameDB::register_directory(needed_dir);
 	    CkmameDB::register_directory(unknown_dir);
 	    for (auto const &name : configuration.extra_directories) {
 		if (contains_romdir(name)) {
 		    /* TODO: improve error message: also if extra is in ROM directory. */
-		    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", get_directory().c_str(), name.c_str());
+		    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", configuration.rom_directory.c_str(), name.c_str());
 		    exit(1);
 		}
 		CkmameDB::register_directory(name);
@@ -275,11 +281,11 @@ main(int argc, char **argv) {
 	    /* TODO: check for errors other than ENOENT */
 	}
 
-	if (auto_fixdat || !fixdat_name.empty()) {
+	if (auto_fixdat || !configuration.fixdat.empty()) {
 	    DatEntry de;
 
 	    if (auto_fixdat) {
-		if (!fixdat_name.empty()) {
+		if (!configuration.fixdat.empty()) {
 		    myerror(ERRDEF, "do not use --autofixdat and --fixdat together");
 		    exit(1);
 		}
@@ -291,14 +297,14 @@ main(int argc, char **argv) {
 		    exit(1);
 		}
 
-		fixdat_name = "fix_" + d[0].name + " (" + d[0].version + ").dat";
+		configuration.fixdat = "fix_" + d[0].name + " (" + d[0].version + ").dat";
 	    }
 
 	    de.name = "Fixdat";
 	    de.description = "Fixdat by ckmame";
 	    de.version = "1";
 
-	    if ((fixdat = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, fixdat_name, 0)) == NULL) {
+	    if ((fixdat = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, configuration.fixdat, 0)) == NULL) {
 		exit(1);
 	    }
 
@@ -383,7 +389,7 @@ main(int argc, char **argv) {
 	if (!superfluous_delete_list) {
 	    superfluous_delete_list = std::make_shared<DeleteList>();
 	}
-	superfluous_delete_list->add_directory(get_directory(), true);
+	superfluous_delete_list->add_directory(configuration.rom_directory, true);
 
 	if (configuration.fix_romset) {
 	    ensure_extra_maps(DO_MAP | DO_LIST);
@@ -404,7 +410,7 @@ main(int argc, char **argv) {
 		needed_delete_list->add_directory(needed_dir, false);
 	    }
 	    cleanup_list(superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN);
-	    cleanup_list(needed_delete_list, CLEANUP_UNKNOWN);
+	    cleanup_list(needed_delete_list, CLEANUP_UNKNOWN, true);
 	}
 
 	if (fixdat) {
@@ -419,7 +425,7 @@ main(int argc, char **argv) {
 	    print_superfluous(superfluous_delete_list);
 	}
 	
-	if (print_stats) {
+	if (configuration.report_summary) {
 	    stats.print(stdout, false);
 	}
 

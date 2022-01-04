@@ -8,4 +8,4 @@ stdout In game disk:
 stdout rom  08.rom        size       8  crc 3656897d: missing
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'extradir/1234.chd'
 stdout roms/disk: add 'extradir/1234.chd' as '108-5.chd'
-stdout extradir: delete used file '1234'
+stdout extradir: delete used file '1234.chd'

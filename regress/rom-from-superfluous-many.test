@@ -1,7 +1,7 @@
 description test all games, some files in superfluous, fix
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -Fvc
+args -D ../mamedb-disk-many.db -Fv --report-detailed
 file-del roms/1-4-ok.zip 1-4-ok.zip
 file-del roms/1-8-ok.zip 1-8-ok.zip
 file-del roms/1-a-ok.zip 1-a-ok.zip
@@ -42,9 +42,10 @@ stdout In game 1-8:
 stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8-ok.zip/08.rom'
 stdout roms/1-8.zip: add 'roms/1-8-ok.zip/08.rom' as '08.rom'
 stdout In game nogoodclone:
-stdout game nogoodclone                             : not a single file found
+stdout rom  04.rom        size       4  no good dump: missing
+stdout rom  08.rom        size       8  crc 3656897d: correct
 stdout In game 1-8a:
-stdout game 1-8a                                    : not a single file found
+stdout rom  08.rom        size       8  crc 12345678: missing
 stdout In game 2-44:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout rom  04-2.rom      size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
@@ -64,13 +65,13 @@ stdout In game baddump:
 stdout rom  bad.rom       size       3  bad dump    : is in 'roms/baddump-ok.zip/bad.rom'
 stdout roms/baddump.zip: add 'roms/baddump-ok.zip/bad.rom' as 'bad.rom'
 stdout In game deadbeef:
-stdout game deadbeef                                : not a single file found
+stdout rom  deadbeef      size       8  crc deadbeef: missing
 stdout In game deadbeefchild:
 stdout rom  deadbeef      size       8  crc deadbeef: missing
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout roms/deadbeefchild.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
 stdout In game deadclonedbeef:
-stdout game deadclonedbeef                          : not a single file found
+stdout rom  deadclonedbeef  size       8  crc deadbeef: missing
 stdout In game dir-in-rom-name:
 stdout rom  some/path/to/file.rom  size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout roms/dir-in-rom-name.zip: add 'roms/1-4.zip/04.rom' as 'some/path/to/file.rom'
@@ -79,13 +80,14 @@ stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
 stdout roms/disk.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
 stdout In game diskchild:
-stdout game diskchild                               : correct
+stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: best bad dump
 stdout In game disk-2:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
 stdout roms/disk-2.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
 stdout In game disk-3:
-stdout game disk-3                                  : not a single file found
+stdout disk 512v5         sha1 cf37d50e886519c332dcfe84440f1f085b98c634: missing
 stdout In game disk-nogood:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout disk 108-nogood    no good dump              : exists
@@ -102,15 +104,44 @@ stdout In game diskgood-romnogood:
 stdout rom  04.rom        size       4  no good dump: missing
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
 stdout In game many:
-stdout game many                                    : not a single file found
+stdout rom  00            size       2  crc b84614a0: missing
+stdout rom  01            size       2  crc cf412436: missing
+stdout rom  02            size       2  crc 5648758c: missing
+stdout rom  03            size       2  crc 214f451a: missing
+stdout rom  04            size       2  crc bf2bd0b9: missing
+stdout rom  05            size       2  crc c82ce02f: missing
+stdout rom  06            size       2  crc 5125b195: missing
+stdout rom  07            size       2  crc 26228103: missing
+stdout rom  08            size       2  crc b69d9c92: missing
+stdout rom  09            size       2  crc c19aac04: missing
+stdout rom  0A            size       2  crc 9f44550a: missing
+stdout rom  0B            size       2  crc 064d04b0: missing
+stdout rom  0C            size       2  crc 714a3426: missing
+stdout rom  0D            size       2  crc ef2ea185: missing
+stdout rom  0E            size       2  crc 98299113: missing
+stdout rom  0F            size       2  crc 0120c0a9: missing
+stdout rom  10            size       2  crc a15d25e1: missing
+stdout rom  11            size       2  crc d65a1577: missing
+stdout rom  12            size       2  crc 4f5344cd: missing
+stdout rom  13            size       2  crc 3854745b: missing
+stdout rom  14            size       2  crc a630e1f8: missing
+stdout rom  15            size       2  crc d137d16e: missing
+stdout rom  16            size       2  crc 483e80d4: missing
+stdout rom  17            size       2  crc 3f39b042: missing
+stdout rom  18            size       2  crc af86add3: missing
+stdout rom  19            size       2  crc d8819d45: missing
+stdout rom  1A            size       2  crc 865f644b: missing
+stdout rom  1B            size       2  crc 1f5635f1: missing
+stdout rom  1C            size       2  crc 68510567: missing
+stdout rom  1D            size       2  crc f63590c4: missing
+stdout rom  1E            size       2  crc 8132a052: missing
+stdout rom  1F            size       2  crc 183bf1e8: missing
 stdout In game nogood:
-stdout game nogood                                  : not a single file found
+stdout rom  04.rom        size       4  no good dump: missing
 stdout In game nogood-2:
 stdout rom  04.rom        size       4  no good dump: missing
 stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
 stdout roms/nogood-2.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
-stdout In game norom:
-stdout game norom                                   : correct
 stdout In game parent-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 stdout roms/parent-4.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
@@ -119,7 +150,7 @@ stdout rom  04.rom        size       4  crc d87f7e0c: correct
 stdout rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
 stdout roms/clone-8.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
 stdout In game zero:
-stdout game zero                                    : not a single file found
+stdout rom  zero          size       0  crc 00000000: missing
 stdout roms/zero.zip: create empty file 'zero'
 stdout In game zero-4:
 stdout rom  zero          size       0  crc 00000000: missing
@@ -127,7 +158,7 @@ stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom
 stdout roms/zero-4.zip: create empty file 'zero'
 stdout roms/zero-4.zip: add 'roms/1-4.zip/04.rom' as '04.rom'
 stdout In game zerobadcrc:
-stdout game zerobadcrc                              : not a single file found
+stdout rom  zero          size       0  crc 12345678: missing
 stdout roms/zerobadcrc.zip: create empty file 'zero'
 stdout roms/1-4-ok.zip: delete used file '04.rom'
 stdout roms/1-4-ok.zip: remove empty archive

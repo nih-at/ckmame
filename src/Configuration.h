@@ -72,6 +72,7 @@ public:
 
     // not in config files, per invocation
     bool fix_romset; // actually fix, otherwise no archive is changed
+    bool keep_old_duplicate;
 
     // output
     bool verbose; // print all actions taken to fix ROM set
@@ -109,10 +110,11 @@ public:
         (unknown file)
      
      */
-    
-    bool report_missing; /* report missing ROMs with good dumps, one line per game if no own ROM found */
-    bool report_fixable; /* report ROMs that are not correct but can be fixed */
+
+    bool report_correct; /* report ROMs that are correct */
     bool report_detailed; /* one line for each ROM */
+    bool report_fixable; /* report ROMs that are not correct but can be fixed */
+    bool report_missing; /* report missing ROMs with good dumps, one line per game if no own ROM found */
     bool report_summary; /* print statistics about ROM set at end of run */
 
     /* file_correct */

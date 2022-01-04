@@ -9,5 +9,8 @@ stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4.zip/04.rom'
 stdout file 04.rom        size       4  crc d87e7e0c: unknown
 stdout roms/1-4.zip: move unknown file '04.rom'
+stdout In archive extra/1-4.zip:
+stdout file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 stderr unknown/1-4.zip: error closing zip: CRC error
 stderr unknown/1-4.zip: committing garbage failed
+stderr roms/1-4.zip: 04.rom: CRC error: d87f7e0c != d87e7e0c

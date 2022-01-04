@@ -35,6 +35,7 @@
 
 #include "check_util.h"
 #include "find.h"
+#include "globals.h"
 #include "RomDB.h"
 
 
@@ -119,6 +120,77 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
                         }
                     }
                 }
+                break;
+                
+            case FIND_ERROR:
+                /* TODO: how to handle? */
+                break;
+        }
+    }
+}
+
+
+void check_needed_files(filetype_t filetype, ArchivePtr archive, Result *result) {
+    find_result_t found;
+    
+    if (!archive) {
+        return;
+    }
+    
+
+    for (size_t i = 0; i < archive->files.size(); i++) {
+        auto &file = archive->files[i];
+        
+        if (file.broken) {
+            result->archive_files[filetype][i] = FS_BROKEN;
+            continue;
+        }
+        
+        if (result->archive_files[filetype][i] == FS_USED) {
+            continue;
+        }
+
+        found = find_in_old(filetype, &file, archive.get(), NULL);
+        if (found == FIND_EXISTS) {
+            // TODO: check that it also exists in ROM DB
+            if (configuration.keep_old_duplicate) {
+                result->archive_files[filetype][i] = FS_NEEDED;
+            }
+            else {
+                result->archive_files[filetype][i] = FS_DUPLICATE;
+            }
+            continue;
+        }
+
+        found = find_in_romset(filetype, 0, &file, archive.get(), "", file.name, NULL);
+        if (found == FIND_UNKNOWN) {
+            archive->compute_detector_hashes(db->detectors);
+            for (auto pair : db->detectors) {
+                auto id = pair.first;
+                if (!file.is_size_known(id)) {
+                    continue;
+                }
+                FileData file_data;
+                file_data.name = file.name;
+                file_data.hashes = file.get_hashes(id);
+                auto detector_result = find_in_romset(filetype, id, &file_data, archive.get(), "", file.name, NULL);
+                if (detector_result != FIND_UNKNOWN) {
+                    found = detector_result;
+                    break;
+                }
+            }
+        }
+
+        switch (found) {
+            case FIND_UNKNOWN:
+                break;
+                
+            case FIND_EXISTS:
+                result->archive_files[filetype][i] = FS_SUPERFLUOUS;
+                break;
+                
+            case FIND_MISSING:
+                result->archive_files[filetype][i] = FS_NEEDED;
                 break;
                 
             case FIND_ERROR:

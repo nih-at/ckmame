@@ -96,7 +96,7 @@ void ensure_extra_maps(int flags) {
 	}
 	
 	auto filetype = configuration.roms_zipped ? TYPE_DISK : TYPE_ROM;
-	auto a = Archive::open_toplevel(get_directory(), filetype, FILE_SUPERFLUOUS, 0);
+	auto a = Archive::open_toplevel(configuration.rom_directory, filetype, FILE_SUPERFLUOUS, 0);
     }
 
     for (auto const &directory : configuration.extra_directories) {
@@ -142,7 +142,7 @@ std::string findfile(filetype_t filetype, const std::string &name) {
 std::string make_file_name(filetype_t filetype, const std::string &name) {
     std::string result;
 
-    result = get_directory() + "/" + name;
+    result = configuration.rom_directory + "/" + name;
     if (filetype == TYPE_ROM && configuration.roms_zipped) {
 	result += ".zip";
     }

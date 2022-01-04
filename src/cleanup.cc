@@ -48,7 +48,7 @@
 static void cleanup_archive(filetype_t filetype, Archive *archive, Result *result, int flags);
 
 
-void cleanup_list(DeleteListPtr list, int flags) {
+void cleanup_list(DeleteListPtr list, int flags, bool is_needed) {
     ArchivePtr a;
     int cmp;
 
@@ -90,10 +90,15 @@ void cleanup_list(DeleteListPtr list, int flags) {
                 di++;
             }
             
-            check_archive_files(entry.filetype, archives, "", &res);
+            if (is_needed) {
+                check_needed_files(entry.filetype, a, &res);
+            }
+            else {
+                check_archive_files(entry.filetype, archives, "", &res);
+            }
             
             warn_set_info(WARN_TYPE_ARCHIVE, a->name);
-            diagnostics_archive(entry.filetype, a.get(), res);
+            diagnostics_archive(entry.filetype, a.get(), res, is_needed);
             cleanup_archive(entry.filetype, a.get(), &res, flags);
         }
 
@@ -141,7 +146,7 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
 	    }
 
             if (configuration.verbose) {
-		printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, a->files[i].name.c_str());
+		printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, a->files[i].filename().c_str());
             }
 	    a->file_delete(i);
 	    break;
@@ -166,13 +171,13 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
 	    if (flags & CLEANUP_UNKNOWN) {
                 if (a->files[i].hashes.size == 0) {
                     if (configuration.verbose) {
-                        printf("%s: delete empty file '%s'\n", a->name.c_str(), a->files[i].name.c_str());
+                        printf("%s: delete empty file '%s'\n", a->name.c_str(), a->files[i].filename().c_str());
                     }
                     a->file_delete(i);
                 }
                 else {
                     if (configuration.verbose) {
-                        printf("%s: move unknown file '%s'\n", a->name.c_str(), a->files[i].name.c_str());
+                        printf("%s: move unknown file '%s'\n", a->name.c_str(), a->files[i].filename().c_str());
                     }
                     
                     /* TODO: handle error (how?) */

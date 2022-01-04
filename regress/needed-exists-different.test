@@ -2,9 +2,14 @@ description check, zip contains file needed elsewhere, fix, different needed alr
 return 0
 args -Fvc 1-4
 file-del roms/1-4.zip deadbeef.zip
-file needed/deadbeef-000.zip deadpork.zip deadpork.zip
+file-del needed/deadbeef-000.zip deadpork.zip
 file-new needed/deadbeef-001.zip deadbeef.zip
+file-new unknown/deadbeef-000.zip deadpork.zip
 stdout In game 1-4:
 stdout game 1-4                                     : not a single file found
 stdout file deadbeef      size       8  crc deadbeef: needed elsewhere
 stdout roms/1-4.zip: save needed file 'deadbeef'
+stdout In archive needed/deadbeef-000.zip:
+stdout file deadpork      size       8  crc deadbeef: unknown
+stdout needed/deadbeef-000.zip: move unknown file 'deadpork'
+stdout needed/deadbeef-000.zip: remove empty archive

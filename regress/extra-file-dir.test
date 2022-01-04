@@ -5,8 +5,6 @@ args -D ../mamedb-small.db -Fvc
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file-del roms/unknown-file unknown-file
 file-new unknown/roms.zip unknown-file.zip
-ckmamedb-after roms ckmamedb-1-4-ok.dump
-touch 1422359238 roms/1-4
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout In archive roms:

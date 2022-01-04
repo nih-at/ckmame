@@ -1,5 +1,5 @@
-description test single-rom game with bad dump; without -d, so output expected
+description test single-rom game with bad dump; with --report-detail, so output expected
 return 0
-args nogood
+args --report-detailed nogood
 stdout In game nogood:
-stdout game nogood                                  : not a single file found
+stdout rom  04.rom        size       4  no good dump: missing

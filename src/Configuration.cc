@@ -50,12 +50,14 @@ Configuration::Configuration() :
     rom_directory("roms"),
     roms_zipped(true),
     fix_romset(false),
+    keep_old_duplicate(false),
     verbose(false),
     complete_games_only(false),
     move_from_extra(false),
-    report_missing(true),
-    report_fixable(true), // ???
+    report_correct(false),
     report_detailed(false),
+    report_fixable(true),
+    report_missing(true),
     report_summary(false),
     warn_file_known(true), // ???
     warn_file_unknown(true) {

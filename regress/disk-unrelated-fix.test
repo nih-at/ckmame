@@ -9,6 +9,5 @@ no-hashes roms disk.zip 04.rom
 stdout In game disk:
 stdout game disk                                    : correct
 stdout In game diskgood-romnogood:
-stdout rom  04.rom        size       4  no good dump: missing
 stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/disk/108-5.chd'
 stdout roms/diskgood-romnogood: add 'roms/disk/108-5.chd' as '108-5.chd'

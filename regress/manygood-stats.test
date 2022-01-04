@@ -1,6 +1,6 @@
 description test many games, report status
 return 0
-args -vdc --stats
+args -vc --report-summary
 # ulimit -n 12
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip

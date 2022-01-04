@@ -7,6 +7,6 @@ file-del roms/disk/108-5.chd 108-5.chd
 no-hashes roms disk.zip 04.rom
 stdout In game disk:
 stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: old in 'disk'
+stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: duplicate (also in old 'disk')
 stdout image 108-5.chd   : duplicate
 stdout roms/disk: delete duplicate file '108-5.chd'

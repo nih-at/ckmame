@@ -3,8 +3,8 @@ return 0
 args -O ../mamedb-lost-parent-ok.db -Fvc 2-48
 file-del roms/2-48.zip 2-48-ok.zip
 stdout In game 2-48:
-stdout rom  04.rom        size       4  crc d87f7e0c: old in 'clone-8'
-stdout rom  08.rom        size       8  crc 3656897d: old in 'clone-8'
+stdout rom  04.rom        size       4  crc d87f7e0c: duplicate (also in old 'clone-8')
+stdout rom  08.rom        size       8  crc 3656897d: duplicate (also in old 'clone-8')
 stdout file 04.rom        size       4  crc d87f7e0c: duplicate
 stdout file 08.rom        size       8  crc 3656897d: duplicate
 stdout roms/2-48.zip: delete duplicate file '04.rom'

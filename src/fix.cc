@@ -82,10 +82,20 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
                 }
                     
                 case FS_DUPLICATE:
+                    if (!configuration.keep_old_duplicate && archive->is_writable()) {
+                        if (configuration.verbose) {
+                            printf("%s: delete duplicate file '%s'\n", archive->name.c_str(), archive->files[i].filename().c_str());
+                        }
+                        
+                        /* TODO: handle error (how?) */
+                        archive->file_delete(i);
+                    }
+                    break;
+
                 case FS_SUPERFLUOUS:
                     if (archive->is_writable()) {
                         if (configuration.verbose) {
-                            printf("%s: delete %s file '%s'\n", archive->name.c_str(), (result->archive_files[filetype][i] == FS_SUPERFLUOUS ? "unused" : "duplicate"), archive->files[i].filename().c_str());
+                            printf("%s: delete unused file '%s'\n", archive->name.c_str(), archive->files[i].filename().c_str());
                         }
                         
                         /* TODO: handle error (how?) */
@@ -293,7 +303,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 break;
                 
             case Match::OK_AND_OLD:
-                // TODO: delete unless keep-duplicates
+                /* already deleted by fix_game() */
                 break;
                 
             case Match::NO_HASH:
@@ -362,8 +372,10 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
                 break;
                 
             case Match::OK_AND_OLD:
-                // TODO: delete
-                
+                if (configuration.keep_old_duplicate) {
+                    save_needed(archive, i, game->name); /* TODO: handle error */
+                }
+
             case Match::NAME_ERROR:
             case Match::OK:
             case Match::IN_ZIP:
