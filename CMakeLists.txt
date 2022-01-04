@@ -77,7 +77,10 @@ endif()
 
 find_package(tomlplusplus QUIET)
 if (tomlplusplus_FOUND)
+  message(STATUS "Using system TOML++")
   set(HAVE_TOMLPLUSPLUS 1)
+else()
+  message(STATUS "Using included TOML++")
 endif()
 
 if(LibXml2_FOUND)
