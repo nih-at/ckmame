@@ -428,6 +428,8 @@ sub runtest_one {
 
 sub setup {
 	my ($self, @argv) = @_;
+	
+	$self->{verbose} = 1;
 
 	my @save_argv = @ARGV;
 	@ARGV = @argv;
@@ -438,6 +440,7 @@ sub setup {
 		'no-cleanup' => \$self->{no_cleanup},
 		# 'run-gdb' => \$self->{run_gdb},
 		'setup-only' => \$self->{setup_only},
+		'quiet|q' => \$self->{quiet},
 		'verbose|v' => \$self->{verbose}
 	);
 	@argv = @ARGV;
@@ -446,6 +449,10 @@ sub setup {
 	if (!$ok || scalar(@argv) != 1 || $help) {
 		print STDERR "Usage: $0 [-hv] [--bin-sub-directory DIR] [--keep-broken] [--no-cleanup] [--setup-only] testcase\n";
 		exit(1);
+	}
+	
+	if ($self->{quiet}) {
+		$self->{verbose} = 0;
 	}
 
 	my $testcase = shift @argv;
