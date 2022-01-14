@@ -557,10 +557,8 @@
 		4B6B14B724FFA14A00D3F3FB /* rom-long-end.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-long-end.test"; sourceTree = "<group>"; };
 		4B6B14B824FFA14A00D3F3FB /* rom-long-mid.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-long-mid.test"; sourceTree = "<group>"; };
 		4B6B14B924FFA14A00D3F3FB /* rom-unused.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-unused.test"; sourceTree = "<group>"; };
-		4B6B14BA24FFA14A00D3F3FB /* rom-dir-in-extra-dirs-subdir-dir.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-dir-in-extra-dirs-subdir-dir.test"; sourceTree = "<group>"; };
 		4B6B14BB24FFA14A00D3F3FB /* rom-from-superfluous-detector.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-superfluous-detector.test"; sourceTree = "<group>"; };
 		4B6B14BC24FFA14A00D3F3FB /* rom-from-extra-dbcache-cleanup.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-dbcache-cleanup.test"; sourceTree = "<group>"; };
-		4B6B14BD24FFA14A00D3F3FB /* rom-dir-in-extra-dirs-subdir-zip.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-dir-in-extra-dirs-subdir-zip.test"; sourceTree = "<group>"; };
 		4B6B14BE24FFA14A00D3F3FB /* rom-from-extra-inconsistent.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-extra-inconsistent.test"; sourceTree = "<group>"; };
 		4B6B14BF24FFA14A00D3F3FB /* rom-two-long.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-two-long.test"; sourceTree = "<group>"; };
 		4B6B14C024FFA14A00D3F3FB /* rom-from-superfluous-some.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-from-superfluous-some.test"; sourceTree = "<group>"; };
@@ -790,6 +788,7 @@
 		4BD2A51E26B2C0A200B20D90 /* dumpgame-game.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "dumpgame-game.test"; sourceTree = "<group>"; };
 		4BD482962535B23C00D0002B /* ArchiveDir.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ArchiveDir.cc; sourceTree = "<group>"; };
 		4BD482972535B23C00D0002B /* ArchiveDir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArchiveDir.h; sourceTree = "<group>"; };
+		4BDF8A842791BB1B0085D20B /* config-verbose.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "config-verbose.test"; sourceTree = "<group>"; };
 		4BE373C3263038A000BE68A3 /* zero-superfluous-2.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "zero-superfluous-2.test"; sourceTree = "<group>"; };
 		4BE373CD26303E2B00BE68A3 /* rom-7z.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "rom-7z.test"; sourceTree = "<group>"; };
 		4BE373CE26303E2B00BE68A3 /* ignore-macos-roms.test */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ignore-macos-roms.test"; sourceTree = "<group>"; };
@@ -1311,8 +1310,6 @@
 				4B6B14C424FFA14A00D3F3FB /* rom-add-from-crc-only.test */,
 				4B6B14CA24FFA14B00D3F3FB /* rom-broken-replace.test */,
 				4B6B14D124FFA14B00D3F3FB /* rom-broken.test */,
-				4B6B14BA24FFA14A00D3F3FB /* rom-dir-in-extra-dirs-subdir-dir.test */,
-				4B6B14BD24FFA14A00D3F3FB /* rom-dir-in-extra-dirs-subdir-zip.test */,
 				4B6B14C724FFA14B00D3F3FB /* rom-dir-in-extra-dirs.test */,
 				4B6B14E024FFA14C00D3F3FB /* rom-dir.test */,
 				4B6B14CD24FFA14B00D3F3FB /* rom-duplicate-1st.test */,
@@ -1400,6 +1397,7 @@
 				4BE373C3263038A000BE68A3 /* zero-superfluous-2.test */,
 				4B6B152024FFA9D700D3F3FB /* zero-superfluous.test */,
 				4B6B14FE24FFA9D500D3F3FB /* zero.test */,
+				4BDF8A842791BB1B0085D20B /* config-verbose.test */,
 			);
 			name = tests;
 			sourceTree = "<group>";

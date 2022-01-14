@@ -52,7 +52,7 @@ use UNIVERSAL;
 #   TESTNAME.test: test scenario
 #
 # test scenario:
-#    Lines beginning with # are comments.
+#    Lines beginning with # are comments. Empty lines are ignored.
 #
 #    The following commands are recognized; return and args must
 #    appear exactly once, the others are optional.
@@ -66,8 +66,11 @@ use UNIVERSAL;
 #	features FEATURE ...
 #	    only run test if all FEATUREs are present, otherwise skip it.
 #
-#	file TEST IN OUT
-#	    copy file IN as TEST, compare against OUT after program run.
+#	file TEST IN [OUT]
+#	    copy file IN as TEST, compare against OUT (or IN if OUT is ommitted) after program run.
+#
+#	file-data TEST [MARKER]
+#	    copy following lines until MARKER (default: end-of-data) to TEST, check that it is unchanged after program run.
 #
 #	file-del TEST IN
 #	    copy file IN as TEST, check that it is removed by program.
@@ -79,7 +82,7 @@ use UNIVERSAL;
 #	mkdir MODE NAME
 #	    create directory NAME with permissions MODE.
 #
-#   precheck COMMAND ARGS ...
+#	precheck COMMAND ARGS ...
 #		if COMMAND exits with non-zero status, skip test.
 #
 #	preload LIBRARY
@@ -99,6 +102,9 @@ use UNIVERSAL;
 #	    multiple stderr commands are used, the messages are
 #	    expected in the order given.
 #
+#	stderr-data [MARKER]
+#	   use the following lines until MARKER (default: end-of-data) as expected error output.
+#
 #       stderr-replace REGEX REPLACEMENT
 #           run regex replacement over expected and got stderr output.
 #
@@ -112,6 +118,10 @@ use UNIVERSAL;
 #	    program is expected to print TEXT to stdout.  If multiple
 #	    stdout commands are used, the messages are expected in
 #	    the order given.
+#
+#
+#	stdout-data [MARKER]
+#	   use the following lines until MARKER (default: end-of-data) as expected output.
 #
 #	touch MTIME FILE
 #	    set last modified timestamp of FILE to MTIME (seconds since epoch).
@@ -150,13 +160,18 @@ sub new {
 	$self->{zipcmp} = $opts->{zipcmp} // 'zipcmp';
 	$self->{zipcmp_flags} = $opts->{zipcmp_flags} // '-p';
 
-	$self->{directives} = {
+	$self->{directives} = {};
+	
+	my %directives = (
 		args => { type => 'string...', once => 1, required => 1 },
 		description => { type => 'string', once => 1 },
 		features => { type => 'string...', once => 1 },
-		file => { type => 'string string string' },
-		'file-del' => { type => 'string string' },
-		'file-new' => { type => 'string string' },
+		file => { type => 'string string string?' },
+		'file-data' => { type => 'string string?', data_lines => 1 },
+		# file-delete-data
+		# file-create-data
+		'file-del' => { type => 'string string' }, # file-delete
+		'file-new' => { type => 'string string' }, # file-create
 		mkdir => { type => 'string string' },
 		precheck => { type => 'string...' },
 		preload => { type => 'string', once => 1 },
@@ -164,12 +179,19 @@ sub new {
 		'return' => { type => 'int', once => 1, required => 1 },
 		setenv => { type => 'string string' },
 		stderr => { type => 'string' },
+		'stderr-data' => { type => 'string?', data_lines => 1 },
 		'stderr-replace' => { type => 'string string' },
 		stdin => { type => 'string' },
+		# stdin-data
 		'stdin-file' => { type => 'string', once => 1 },
 		stdout => { type => 'string' },
+		'stdout-data' => { type => 'string?', data_lines => 1 },
 		touch => { type => 'int string' },
-	};
+	);
+	
+	for my $name (keys %directives) {
+		$self->add_directive($name, $directives{$name});
+	}
 
 	$self->{compare_by_type} = {};
 	$self->{copy_by_type} = {};
@@ -211,7 +233,7 @@ sub add_directive {
 	}
 
 	# TODO: validate $def
-
+	$self->parse_arg_types($name, $def);
 	$self->{directives}->{$name} = $def;
 
 	return 1;
@@ -542,7 +564,7 @@ sub comparator_zip {
 
 
 sub compare_arrays() {
-	my ($self, $a, $b, $tag) = @_;
+	my ($self, $a, $b, $tag_a, $tag_b) = @_;
 
 	my $ok = 1;
 
@@ -559,8 +581,13 @@ sub compare_arrays() {
 	}
 
 	if (!$ok && $self->{verbose}) {
-		print "Unexpected $tag:\n";
-		print "--- expected\n+++ got\n";
+		if (defined($tag_b)) {
+			print "--- $tag_a\n+++ $tag_b\n";
+		}
+		else {
+			print "Unexpected $tag_a:\n";
+			print "--- expected\n+++ got\n";
+		}
 
 		diff_arrays($a, $b);
 	}
@@ -587,28 +614,48 @@ sub file_cmp($$) {
 	return $result;
 }
 
-sub compare_file($$$) {
+sub compare_file {
 	my ($self, $got, $expected) = @_;
 
-	my $real_expected = $self->find_file($expected);
-	unless ($real_expected) {
-		$self->warn("cannot find expected result file $expected");
-		return 0;
-	}
+	my $ok;
+	
+	if (ref($expected) eq 'ARRAY') {
+		my @data;
 
-	my $ok = $self->run_comparator($got, $real_expected);
-
-	if (!defined($ok)) {
-		my $ret;
-		if ($self->{verbose}) {
-			$ret = system('diff', '-u', $real_expected, $got);
+		my $fd;
+		unless (open($fd, '<', $got)) {
+			$self->warn("cannot open '$got': $!");
+			return 0;
 		}
-		else {
-			$ret = file_cmp($real_expected, $got);
+		while (my $line = <$fd>) {
+			$line =~ s/(\n|\r)//g;
+			push @data, $line;
 		}
-		$ok = ($ret == 0);
+		close $fd;
+		
+		$ok = $self->compare_arrays($expected, \@data, "<$got>", $got);
 	}
+	else {
+		my $real_expected = $self->find_file($expected);
+		unless ($real_expected) {
+			$self->warn("cannot find expected result file $expected");
+			return 0;
+		}
 
+		$ok = $self->run_comparator($got, $real_expected);
+
+		if (!defined($ok)) {
+			my $ret;
+			if ($self->{verbose}) {
+				$ret = system('diff', '-u', $real_expected, $got);
+			}
+			else {
+				$ret = file_cmp($real_expected, $got);
+			}
+			$ok = ($ret == 0);
+		}
+	}
+		
 	return $ok;
 }
 
@@ -694,12 +741,19 @@ sub copy_files {
 	for my $filename (sort keys %{$self->{files}}) {
 		my $file = $self->{files}->{$filename};
 		next unless ($file->{source});
+		
+		my ($data, $src);
 
-		my $src = $self->find_file($file->{source});
-		unless ($src) {
-			$self->warn("cannot find input file $file->{source}");
-			$ok = 0;
-			next;
+		if (ref($file->{source}) eq 'ARRAY') {
+			$data = $file->{source};
+		}
+		else {
+			$src = $self->find_file($file->{source});
+			unless ($src) {
+				$self->warn("cannot find input file $file->{source}");
+				$ok = 0;
+				next;
+			}
 		}
 
 		if ($file->{destination} =~ m,/,) {
@@ -710,14 +764,28 @@ sub copy_files {
 			}
 		}
 
-		my $this_ok = $self->run_copier($src, $file->{destination});
-		if (defined($this_ok)) {
-			$ok &= $this_ok;
+		if (defined($data)) {
+			my $fh;
+			unless (open($fh, '>', $file->{destination})) {
+				$self->warn("cannot create $file->{destination}: $!");
+				$ok = 0;
+				next;
+			}
+			for my $line (@$data) {
+				print $fh "$line\n";
+			}
+			close($fh);
 		}
 		else {
-			unless (copy($src, $file->{destination})) {
-				$self->warn("cannot copy $src to $file->{destination}: $!");
-				$ok = 0;
+			my $this_ok = $self->run_copier($src, $file->{destination});
+			if (defined($this_ok)) {
+				$ok &= $this_ok;
+			}
+			else {
+				unless (copy($src, $file->{destination})) {
+					$self->warn("cannot copy $src to $file->{destination}: $!");
+					$ok = 0;
+				}
 			}
 		}
 	}
@@ -828,10 +896,50 @@ sub mangle_test_for_variant {
 	return 1;
 }
 
-sub parse_args {
-	my ($self, $type, $str) = @_;
 
-	if ($type eq 'string...') {
+sub parse_arg_types {
+	my ($self, $name, $def) = @_;
+	
+	my $type = $def->{type};
+	
+	if ($type =~ m/(.*)\.\.\.$/) {
+		$type = $1;
+		$def->{ellipsis} = 1;
+	}
+	else {
+		$def->{ellipsis} = 0;
+	}
+	my @types = split /\s+/, $type;
+	
+	$def->{optional} = 0;
+	for (my $i = scalar(@types) - 1; $i >= 0; $i--) {
+		last unless ($types[$i] =~ m/(.*)\?$/);
+		
+		$types[$i] = $1;
+		$def->{optional}++;
+	}
+
+	if ($def->{ellipsis} && $def->{optional} > 0) {
+		$self->die("directive '$name': can't use ellipsis together with optional arguments");
+	}
+	
+	for my $type (@types) {
+		if ($type =~ /\?$/) {
+			$self->die("directive '$name': non-optional argument follows optional argument");
+		}
+		if ($type !~ m/^(string|int|char)$/) {
+			$self->die("directive '$name': unknown argument type '$type'");
+		}
+	}
+	
+	$def->{argument_types} = [ @types ];
+}
+
+
+sub parse_args {
+	my ($self, $def, $str) = @_;
+
+	if ($def->{type} eq 'string...') {
 		my $args = [];
 
 		while ($str ne '') {
@@ -852,68 +960,60 @@ sub parse_args {
 
 		return $args;
 	}
-	elsif ($type =~ m/(\s|\.\.\.$)/) {
-		my $ellipsis = 0;
-		if ($type =~ m/(.*)\.\.\.$/) {
-			$ellipsis = 1;
-			$type = $1;
-		}
-		my @types = split /\s+/, $type;
-		my @strs = split /\s+/, $str;
-		my $optional = 0;
-		for (my $i = scalar(@types) - 1; $i >= 0; $i--) {
-			last unless ($types[$i] =~ m/(.*)\?$/);
-			$types[$i] = $1;
-			$optional++;
-		}
+	
+	my $expected = scalar(@{$def->{argument_types}});
 
-		if ($ellipsis && $optional > 0) {
-			# TODO: check this when registering a directive
-			$self->warn_file_line("can't use ellipsis together with optional arguments");
-			return undef;
-		}
-		if (!$ellipsis && (scalar(@strs) < scalar(@types) - $optional || scalar(@strs) > scalar(@types))) {
-			my $expected = scalar(@types);
-			if ($optional > 0) {
-				$expected = ($expected - $optional) . "-$expected";
+	if ($expected == 1 && $def->{optional} == 0 && $def->{ellipsis} == 0) {
+		return $self->parse_arg($def->{argument_types}->[0], $str);
+	}
+	else {
+		my @strs = split /\s+/, $str;
+		
+		my $got = scalar(@strs);
+		
+		if (!$def->{ellipsis} && ($got < $expected - $def->{optional} || $got > $expected)) {
+			if ($def->{optional} > 0) {
+				$expected = ($expected - $def->{optional}) . "-$expected";
 			}
-			$self->warn_file_line("expected $expected arguments, got " . (scalar(@strs)));
+			$self->warn_file_line("expected $expected arguments, got $got");
 			return undef;
 		}
 
 		my $args = [];
 
-		my $n = scalar(@types);
 		for (my $i=0; $i<scalar(@strs); $i++) {
-			my $val = $self->parse_args(($i >= $n ? $types[$n-1] : $types[$i]), $strs[$i]);
+			my $val = $self->parse_arg(($i >= $expected ? $def->{argument_types}->[$expected-1] : $def->{argument_types}->[$i]), $strs[$i]);
 			return undef unless (defined($val));
 			push @$args, $val;
 		}
 
 		return $args;
 	}
-	else {
-		if ($type eq 'string') {
-			return $str;
-		}
-		elsif ($type eq 'int') {
-			if ($str !~ m/^\d+$/) {
-				$self->warn_file_line("illegal int [$str]");
-				return undef;
-			}
-			return $str+0;
-		}
-		elsif ($type eq 'char') {
-			if ($str !~ m/^.$/) {
-				$self->warn_file_line("illegal char [$str]");
-				return undef;
-			}
-			return $str;
-		}
-		else {
-			$self->warn_file_line("unknown type $type");
+}
+
+sub parse_arg {
+	my ($self, $type, $str) = @_;
+
+	if ($type eq 'string') {
+		return $str;
+	}
+	elsif ($type eq 'int') {
+		if ($str !~ m/^\d+$/) {
+			$self->warn_file_line("illegal int [$str]");
 			return undef;
 		}
+		return $str+0;
+	}
+	elsif ($type eq 'char') {
+		if ($str !~ m/^.$/) {
+			$self->warn_file_line("illegal char [$str]");
+			return undef;
+		}
+		return $str;
+	}
+	else {
+		$self->warn_file_line("unknown type $type");
+		return undef;
 	}
 }
 
@@ -932,7 +1032,7 @@ sub parse_case() {
 	while (my $line = <TST>) {
 		$line =~ s/(\n|\r)//g;
 
-		next if ($line =~ m/^\#/);
+		next if ($line =~ m/^(\#|$)/);
 
 		unless ($line =~ m/(\S*)(?:\s(.*))?/) {
 			$self->warn_file_line("cannot parse line $line");
@@ -949,10 +1049,52 @@ sub parse_case() {
 			next;
 		}
 
-		my $args = $self->parse_args($def->{type}, $argstring);
+		my $args = $self->parse_args($def, $argstring);
 
 		unless (defined($args)) {
 			$ok = 0;
+			next;
+		}
+		
+		if ($def->{data_lines}) {
+			my $marker = 'end-of-data';
+			if (scalar(@$args) > scalar(@{$def->{argument_types}}) - $def->{optional}) {
+				$marker = pop @$args;
+			}
+			
+			my @data = ();
+			
+			while (1) {
+				$line = <TST>;
+				
+				unless (defined($line)) {
+					$self->warn_file_line("end of data marker '$marker' not found");
+					$ok = 0;
+					last;
+				}
+				
+				$line =~ s/(\n|\r)//g;
+
+				last if ($line eq $marker);
+				
+				push @data, $line;
+			}
+			
+			if ($cmd eq "stdout-data") {
+				$test{stdout} = [] unless (defined($test{stdout}));
+				push @{$test{stdout}}, @data;
+			}
+			elsif ($cmd eq "stderr-data") {
+				$test{stderr} = [] unless (defined($test{stderr}));
+				push @{$test{stderr}}, @data;
+			}
+			else {
+				push @$args, \@data;
+				$test{$cmd} = [] unless (defined($test{$cmd}));
+				push @{$test{$cmd}}, $args;
+
+			}
+			
 			next;
 		}
 
@@ -1032,7 +1174,7 @@ sub parse_postprocess_files {
 	my $ok = 1;
 
 	for my $file (@{$self->{test}->{file}}) {
-		$ok = 0 unless ($self->add_file({ source => $file->[1], destination => $file->[0], result => $file->[2] }));
+		$ok = 0 unless ($self->add_file({ source => $file->[1], destination => $file->[0], result => scalar(@$file) < 3 ? $file->[1] : $file->[2] }));
 	}
 
 	for my $file (@{$self->{test}->{'file-del'}}) {
@@ -1041,6 +1183,10 @@ sub parse_postprocess_files {
 
 	for my $file (@{$self->{test}->{'file-new'}}) {
 		$ok = 0 unless ($self->add_file({ source => undef, destination => $file->[0], result => $file->[1] }));
+	}
+	
+	for my $file (@{$self->{test}->{'file-data'}}) {
+		$ok = 0 unless ($self->add_file({ source => $file->[1], destination => $file->[0], result => $file->[1]}));
 	}
 
 	return $ok;
