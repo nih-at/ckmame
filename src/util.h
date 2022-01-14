@@ -49,6 +49,7 @@ extern std::string rom_dir;
 
 std::vector<uint8_t> hex2bin(const std::string &hex);
 std::string bin2hex(const std::vector<uint8_t> &bin);
+std::string string_lower(const std::string &s);
 name_type_t name_type(const std::string &name);
 bool ensure_dir(const std::string &name, bool strip_filename);
 bool is_ziplike(const std::string &fname);

@@ -362,7 +362,7 @@ restore_table(sqlite3 *db, FILE *f) {
                 return -1;
             }
             
-            int coltype = column_type(stmt.get_string("type"));
+            int coltype = column_type(string_lower(stmt.get_string("type")));
             if (coltype < 0) {
                 myerror(ERRDB, "unsupported column type %s for column %s of table %s", stmt.get_string("type").c_str(), columns[i].c_str(), table_name.c_str());
                 return -1;

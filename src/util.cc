@@ -33,6 +33,7 @@
 
 #include "util.h"
 
+#include <cctype>
 #include <cinttypes>
 #include <cstring>
 #include <filesystem>
@@ -191,4 +192,15 @@ std::string string_format_v(const char *format, va_list ap) {
         }
     }
     return str;
+}
+
+
+std::string string_lower(const std::string &s) {
+    auto l = std::string(s.size(), ' ');
+    
+    for (size_t i = 0; i < s.size(); i++) {
+        l[i] = static_cast<char>(tolower(s[i]));
+    }
+    
+    return l;
 }
