@@ -3,14 +3,14 @@ return 0
 args -Fvcj -e search/ 1-4
 file-del search/foo.zip 1-4-ok.zip
 file search/ignore.zip 1-u-ok.zip 1-u-ok.zip
-file search/ignore2 runtest runtest
+file search/ignore2 dummy dummy
 file-new roms/1-4.zip 1-4-ok.zip
 no-hashes search ignore.zip
 stdout In game 1-4:
 stdout rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo.zip/04.rom'
 stdout roms/1-4.zip: add 'search/foo.zip/04.rom' as '04.rom'
 stdout <dir> In archive search:
-stdout <dir> file ignore2       size    9316  crc 36e59a6b: unknown
+stdout <dir> file ignore2       size       6  crc 84fedf5c: unknown
 stdout search/foo.zip: delete used file '04.rom'
 stdout search/foo.zip: remove empty archive
 stdout In archive search/ignore.zip:

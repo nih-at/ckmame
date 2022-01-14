@@ -3,7 +3,7 @@ variants zip
 return 0
 args -D ../mamedb-small.db -Fvc
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
-file roms/plain-file runtest runtest
+file roms/plain-file dummy dummy
 stdout In game 1-4:
 stdout game 1-4                                     : correct
 stdout Extra files found:

@@ -4,7 +4,7 @@ return 0
 args -Fvc -e search 1-4
 file search/foo/14.zip 1-4-ok.zip 1-4-ok.zip
 file search/bar/ignore.zip 1-8-ok.zip 1-8-ok.zip
-file search/foo/bar/ignore runtest runtest
+file search/foo/bar/ignore dummy dummy
 file-new roms/1-4.zip 1-4-ok.zip
 no-hashes search bar/ignore.zip
 stdout In game 1-4:

@@ -274,7 +274,7 @@ sub post_copy_file {
 			push @command, ($dump_file, "$dir/.ckmame.db");
 			
 			unless (system(@command) == 0) {
-				print STDERR "can't restore ckmamedb dump $dump: $!";
+				print STDERR "can't restore ckmamedb dump $dump from $dump_file using " . (join " ", @command) . ": $!\n";
 				return undef;
 			}
 		}
