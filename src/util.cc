@@ -37,6 +37,7 @@
 #include <cinttypes>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <vector>
 
 #include "CkmameDB.h"
@@ -203,4 +204,18 @@ std::string string_lower(const std::string &s) {
     }
     
     return l;
+}
+
+
+
+std::string slurp(const std::string &filename) {
+    auto f = std::ifstream(filename, std::ios::in | std::ios::binary);
+        
+    const auto size = std::filesystem::file_size(filename);
+        
+    std::string text(size, '\0');
+        
+    f.read(text.data(), static_cast<std::streamsize>(size));
+        
+    return text;
 }

@@ -37,7 +37,6 @@
 #include <cinttypes>
 #include <cstring>
 #include <filesystem>
-#include <fstream>
 #include <optional>
 #include <string>
 #include <vector>
@@ -64,7 +63,6 @@ static DBType db_type(const std::string &name);
 static std::optional<std::string> get_line(FILE *f);
 static int restore_db(sqlite3 *db, FILE *f);
 static int restore_table(sqlite3 *db, FILE *f);
-std::string slurp(const std::string filename);
 static void unget_line(const std::string &line);
 static std::vector<std::string> split(const std::string &string, const std::string &separaptor, bool strip_whitespace = false);
 
@@ -470,16 +468,4 @@ static std::vector<std::string> split(const std::string &string, const std::stri
     result.push_back(string.substr(start));
 
     return result;
-}
-
-std::string slurp(const std::string filename) {
-    auto f = std::ifstream(filename, std::ios::in | std::ios::binary);
-        
-    const auto size = std::filesystem::file_size(filename);
-        
-    std::string text(size, '\0');
-        
-    f.read(text.data(), static_cast<std::streamsize>(size));
-        
-    return text;
 }

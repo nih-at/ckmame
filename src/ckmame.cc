@@ -78,6 +78,7 @@ std::vector<Commandline::Option> options = {
 
     Commandline::Option("autofixdat", "write fixdat to 'fix_$NAME_OF_SET.dat'"),
     Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
+    Commandline::Option("config", "file", "read configuration from file"),
     Commandline::Option("copy-from-extra", "keep used files in extra directories (default)"),
     Commandline::Option("db", 'D', "dbfile", "use mame-db dbfile"),
     Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option)"),
@@ -86,13 +87,13 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("game-list", 'T', "file", "read games to check from file"),
     Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
     Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
-    Commandline::Option("old-db", 'O', "dbfile", "use mame-db dbfile for old ROMs"),
     Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
     Commandline::Option("no-report-correct", "don't report status of ROMs that are correct (default)"),
     Commandline::Option("no-report-detailed", "don't report status of every ROM (default)"),
     Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
     Commandline::Option("no-report-missing", "don't report status of ROMs that are missing"),
     Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
+    Commandline::Option("old-db", 'O', "dbfile", "use mame-db dbfile for old ROMs"),
     Commandline::Option("report-correct", 'c', "report status of ROMs that are correct"),
     Commandline::Option("report-detailed", "report status of every ROM"),
     Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)"),
@@ -100,6 +101,7 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("report-summary", "print summary of ROM set status"),
     Commandline::Option("rom-dir", 'R', "dir", "ROM set is in directory dir (default: 'roms')"),
     Commandline::Option("roms-unzipped", 'u', "ROMs are files on disk, not contained in zip archives"),
+    Commandline::Option("set", "name", "check ROM set name"),
     Commandline::Option("verbose", 'v', "print fixes made")
 };
 
@@ -130,11 +132,37 @@ main(int argc, char **argv) {
 		fputs(version_string, stdout);
 		exit(0);
 	    }
+
+	    std::string set;
+	    auto set_exists = true;
 	    
-	    // TODO: read config files: system wide, current directory, specified on command line
-	    // TODO: check set exists
-	    // TODO: update configuration from config files global and set settings
+	    for (auto const &option : args.options) {
+		if (option.name == "set") {
+		    set = option.argument;
+		    set_exists = false;
+		}
+	    }
+
+	    if (configuration.merge_config_file(Configuration::user_config_file(), set, true)) {
+		set_exists = true;
+	    }
+	    if (configuration.merge_config_file(Configuration::local_config_file(), set, true)) {
+		set_exists = true;
+	    }
 	    
+	    for (auto const &option : args.options) {
+		if (option.name == "config") {
+		    if (configuration.merge_config_file(option.argument, set, false)) {
+			set_exists = true;
+		    }
+		}
+	    }
+	    
+	    if (!set_exists) {
+		myerror(ERRDEF, "unknown set '%s'", set.c_str());
+		exit(1);
+	    }
+
 	    auto extra_directory_specified = false;
 	    
 	    for (auto const &option : args.options) {

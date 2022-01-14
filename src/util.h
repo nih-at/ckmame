@@ -56,5 +56,6 @@ bool is_ziplike(const std::string &fname);
 void print_human_number(FILE *f, uint64_t value);
 std::string string_format(const char *format, ...) PRINTF_LIKE(1, 2);
 std::string string_format_v(const char *format, va_list ap);
+std::string slurp(const std::string &fname);
 
 #endif

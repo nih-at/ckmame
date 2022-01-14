@@ -60,6 +60,11 @@ public:
 
      */
     
+    static std::string user_config_file();
+    static std::string local_config_file();
+    
+    bool merge_config_file(const std::string &fname, const std::string &set, bool optional);
+    
     std::string romdb_name;
     std::string olddb_name;
     
@@ -69,10 +74,10 @@ public:
     std::string fixdat;
     
     bool roms_zipped;
+    bool keep_old_duplicate;
 
     // not in config files, per invocation
     bool fix_romset; // actually fix, otherwise no archive is changed
-    bool keep_old_duplicate;
 
     // output
     bool verbose; // print all actions taken to fix ROM set
@@ -117,11 +122,15 @@ public:
     bool report_missing; /* report missing ROMs with good dumps, one line per game if no own ROM found */
     bool report_summary; /* print statistics about ROM set at end of run */
 
+    // TODO: Are these needed? They have no command line options.
     /* file_correct */
     bool warn_file_known;   // files that are known but don't belong in this archive
     bool warn_file_unknown; // files that are not in ROM set
     
 /*    bool warn_extra_used; */
+    
+private:
+    void merge_config_table(void *); // use void * to avoid exposing TOML header
 };
 
 #endif // HAD_CONFIGURATION_H
