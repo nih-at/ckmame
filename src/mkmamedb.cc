@@ -98,7 +98,6 @@ main(int argc, char **argv) {
     DatEntry dat;
     OutputContext::Format fmt;
     std::string detector_name;
-    int i;
     int flags;
     bool runtest;
     int ret = 0;
@@ -278,7 +277,6 @@ main(int argc, char **argv) {
                 }
 
                 if (!process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags)) {
-                    i = argc;
                     ret = 1;
                 }
             }
