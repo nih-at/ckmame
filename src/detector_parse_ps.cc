@@ -41,7 +41,7 @@
 
 class DetectorParserContext {
 public:
-    DetectorParserContext() : detector(std::make_shared<Detector>()), rule(NULL), test(NULL) { }
+    DetectorParserContext() : detector(std::make_shared<Detector>()), rule(nullptr), test(nullptr) { }
     
     DetectorPtr detector;
     Detector::Rule *rule;
@@ -117,8 +117,8 @@ Detector::parse(ParserSource *ps) {
     DetectorParserContext ctx;
 
     /* TODO: lineno callback */
-    if (!xmlu_parse(ps, &ctx, NULL, entities)) {
-	return NULL;
+    if (!xmlu_parse(ps, &ctx, nullptr, entities)) {
+	return nullptr;
     }
 
     auto detector = ctx.detector;
@@ -210,7 +210,7 @@ static bool parse_size(int64_t *offsetp, const std::string &value) {
 static bool rule_close(void *ctx, int arg1) {
     auto context = static_cast<DetectorParserContext *>(ctx);
 
-    context->rule = NULL;
+    context->rule = nullptr;
 
     return true;
 }
@@ -263,7 +263,7 @@ static bool rule_start_offset(void *ctx, int arg1, int arg2, const std::string &
 static bool test_close(void *ctx, int arg1) {
     auto context = static_cast<DetectorParserContext *>(ctx);
 
-    context->test = NULL;
+    context->test = nullptr;
 
     return true;
 }

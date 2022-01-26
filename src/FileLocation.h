@@ -44,7 +44,7 @@ class FileLocation {
     FileLocation(): filetype(TYPE_ROM), index(0) { }
     FileLocation(std::string name_, filetype_t filetype_, size_t index_) : name(name_), filetype(filetype_), index(index_) { }
 
-    bool operator<(FileLocation other) const;
+    bool operator<(const FileLocation &other) const;
     
     std::string name;
     filetype_t filetype;

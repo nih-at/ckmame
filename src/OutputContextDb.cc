@@ -65,19 +65,19 @@ void OutputContextDb::familymeeting(Game *parent, Game *child) {
         child->cloneof[1] = parent->cloneof[0];
     }
     
-    auto grand_parent = child->cloneof[1].empty() ? NULL : db->read_game(child->cloneof[1]);
+    auto grand_parent = child->cloneof[1].empty() ? nullptr : db->read_game(child->cloneof[1]);
 
     /* look for files in parent */
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         for (auto &cr : child->files[ft]) {
-            for (auto const &pr : parent->files[ft]) {
+            for (const auto &pr : parent->files[ft]) {
                 if (cr.is_mergable(pr)) {
                     cr.where = static_cast<where_t>(pr.where + 1);
                     break;
                 }
             }
-            if (grand_parent != NULL && cr.where == FILE_INGAME) {
-                for (auto const &pr : grand_parent->files[ft]) {
+            if (grand_parent != nullptr && cr.where == FILE_INGAME) {
+                for (const auto &pr : grand_parent->files[ft]) {
                     if (cr.is_mergable(pr)) {
                         cr.where = FILE_IN_GRAND_CLONEOF;
                         break;
@@ -153,7 +153,7 @@ bool OutputContextDb::close() {
 
         db->init2();
 
-        db = NULL;
+        db = nullptr;
     }
 
     return ok;

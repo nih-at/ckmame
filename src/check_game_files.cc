@@ -91,8 +91,8 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         
         /* search for matching file in game's zip */
         if (archives[0].archive[filetype]) {
-            for (size_t j = 0; j < tests.size(); j++) {
-                if ((result = match_files(archives[0].archive[filetype], tests[j], game, &rom, match)) != TEST_NOTFOUND) {
+            for (const auto &test : tests) {
+                if ((result = match_files(archives[0].archive[filetype], test, game, &rom, match)) != TEST_NOTFOUND) {
                     match->where = FILE_INGAME;
                     if (rom.where != FILE_INGAME && match->quality == Match::OK) {
                         match->quality = Match::IN_ZIP;
@@ -106,7 +106,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         
         if (rom.where == FILE_INGAME && match->quality == Match::MISSING && rom.hashes.size > 0 && rom.status != Rom::NO_DUMP) {
             /* search for matching file in other games (via db) */
-            if (find_in_romset(filetype, detector_id, &rom, NULL, game->name, "", match) == FIND_EXISTS) {
+            if (find_in_romset(filetype, detector_id, &rom, nullptr, game->name, "", match) == FIND_EXISTS) {
                 continue;
             }
             

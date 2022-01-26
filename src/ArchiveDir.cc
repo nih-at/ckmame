@@ -211,7 +211,7 @@ void ArchiveDir::Commit::done() {
     std::error_code ec;
 
     std::filesystem::remove_all(deleted_directory, ec);
-    for (auto directory : cleanup_directories) {
+    for (const auto &directory : cleanup_directories) {
         remove_directories_up_to(directory, archive->name);
     }
 }
@@ -310,7 +310,7 @@ ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optiona
     zip_error_init(&error);
     zip_source_t *source = zip_source_file_create(filename.c_str(), start, length.has_value() ? static_cast<int64_t>(length.value()) : -1, &error);
     
-    if (source == NULL) {
+    if (source == nullptr) {
         throw Exception("can't open '%s': %s", filename.c_str(), zip_error_strerror(&error));
     }
     return std::make_shared<ZipSource>(source);

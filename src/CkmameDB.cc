@@ -149,7 +149,7 @@ bool CkmameDB::close_all() {
             bool empty = directory.db->is_empty();
             std::string filename = sqlite3_db_filename(directory.db->db, "main");
             
-            directory.db = NULL;
+            directory.db = nullptr;
             if (empty) {
                 std::error_code ec;
                 std::filesystem::remove(filename);
@@ -232,11 +232,11 @@ CkmameDBPtr CkmameDB::get_db_for_archvie(const std::string &name) {
 		if (!configuration.fix_romset) {
 		    std::error_code ec;
 		    if (!std::filesystem::exists(directory.name, ec)) {
-			return NULL; /* we won't write any files, so DB would remain empty */
+			return nullptr; /* we won't write any files, so DB would remain empty */
 		    }
 		}
                 if (!ensure_dir(directory.name, false)) {
-		    return NULL;
+		    return nullptr;
                 }
 
                 auto dbname = directory.name + '/' + db_name;
@@ -246,14 +246,14 @@ CkmameDBPtr CkmameDB::get_db_for_archvie(const std::string &name) {
                 }
                 catch (std::exception &e) {
                     myerror(ERRDB, "can't open rom directory database for '%s': %s", directory.name.c_str(), e.what());
-		    return NULL;
+		    return nullptr;
 		}
 	    }
             return directory.db;
 	}
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -349,8 +349,6 @@ void CkmameDB::register_directory(const std::string &directory_name) {
     }
 
     cache_directories.push_back(CacheDirectory(name));
-
-    return;
 }
 
 
@@ -452,7 +450,7 @@ int CkmameDB::write_archive_header(int id, const std::string &name, filetype_t f
 size_t CkmameDB::get_detector_id(size_t global_id) {
     auto detector = Detector::get_descriptor(global_id);
     
-    if (detector == NULL) {
+    if (detector == nullptr) {
         throw Exception();
     }
     
@@ -475,7 +473,7 @@ size_t CkmameDB::get_detector_id(size_t global_id) {
 
 size_t CkmameDB::get_global_detector_id(size_t id) {
     auto detector = detector_ids.get_descriptor(id);
-    if (detector == NULL) {
+    if (detector == nullptr) {
         throw Exception();
     }
     return Detector::get_id(*detector);

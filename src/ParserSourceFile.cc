@@ -39,7 +39,7 @@
 #include "error.h"
 #include "Exception.h"
 
-ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(NULL) {
+ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(nullptr) {
     if (!file_name.empty()) {
 	f = make_shared_file(file_name, "r");
 	if (!f) {
@@ -65,7 +65,7 @@ bool ParserSourceFile::close() {
         file_name = "";
     }
     
-    f = NULL;
+    f = nullptr;
 
     return ok;
 }
@@ -83,7 +83,7 @@ ParserSourcePtr ParserSourceFile::open(const std::string &name) {
 
 
 size_t ParserSourceFile::read_xxx(void *data, size_t length) {
-    if (f == NULL) {
+    if (f == nullptr) {
         return 0;
     }
     

@@ -40,7 +40,7 @@
 
 class Dir {
  public:
-    Dir(std::string path, bool recursive);
+    Dir(const std::string& path, bool recursive);
 
     std::filesystem::path next();
 

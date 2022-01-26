@@ -72,9 +72,9 @@ bool compute_all_detector_hashes(bool needed_only) { // returns true if new hash
 
 static bool compute_all_detector_hashes(DeleteListPtr list) {
     auto got_new_hashes = false;
-    for (auto entry : list->archives) {
+    for (const auto &entry : list->archives) {
         auto contents = ArchiveContents::by_name(entry.filetype, entry.name);
-        if (contents == NULL || contents->has_all_detector_hashes(db->detectors)) {
+        if (contents == nullptr || contents->has_all_detector_hashes(db->detectors)) {
             continue;
         }
         auto archive = Archive::open(contents);
@@ -140,7 +140,7 @@ static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_i
 
 
 find_result_t find_in_old(filetype_t filetype, const FileData *file, Archive *archive, Match *match) {
-    if (old_db == NULL) {
+    if (old_db == nullptr) {
 	return FIND_MISSING;
     }
 
@@ -209,7 +209,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detec
         return FIND_MISSING;
     }
 
-    if (matches != NULL) {
+    if (matches != nullptr) {
         if (!a) {
             a = Archive::open(contents);
         }
@@ -259,7 +259,7 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector
         }
 
         // This is an optimization for ROM sets with many games that share many files, like ScummVM.
-        if (check_match == check_match_romset && archive == NULL && findfile(filetype, location.game_name).empty()) {
+        if (check_match == check_match_romset && archive == nullptr && findfile(filetype, location.game_name).empty()) {
             status = FIND_MISSING;
             continue;
         }

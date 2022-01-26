@@ -64,9 +64,9 @@ OutputContextMtree::~OutputContextMtree() {
 bool OutputContextMtree::close() {
     auto ok = true;
     
-    if (f != NULL) {
+    if (f != nullptr) {
         ok = fflush(f.get()) == 0;
-        f = NULL;
+        f = nullptr;
     }
 
     return ok;

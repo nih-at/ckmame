@@ -195,7 +195,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
     original_names.resize(num_names);
 
     for (size_t i = 0; i < game->files[filetype].size(); i++) {
-        Archive *archive_from = NULL;
+        Archive *archive_from = nullptr;
         Match *match = &result->game_files[filetype][i];
 
         if (!match->source_is_old()) {
@@ -325,7 +325,7 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
     seterrinfo("", archive->name);
 
     for (size_t i = 0; i < game->files[filetype].size(); i++) {
-        Archive *archive_from = NULL;
+        Archive *archive_from = nullptr;
         auto match = &result->game_files[filetype][i];
         auto game_file = &game->files[filetype][i];
 

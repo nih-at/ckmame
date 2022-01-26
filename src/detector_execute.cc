@@ -52,7 +52,7 @@ Hashes Detector::execute(const std::vector<uint8_t> &data) const {
         }
     }
 
-    return Hashes();
+    return {};
 }
 
 
@@ -152,12 +152,12 @@ Hashes Detector::Rule::execute(const std::vector<uint8_t> &data) const {
     }
     
     if (start < 0 || static_cast<uint64_t>(start) > data.size() || end < 0 || static_cast<uint64_t>(end) > data.size() || start > end || static_cast<uint64_t>(end - start) % operation_unit_size(operation) != 0) {
-        return Hashes();
+        return {};
     }
 
     for (auto &test : tests) {
         if (!test.execute(data)) {
-            return Hashes();
+            return {};
         }
     }
 
@@ -225,10 +225,10 @@ bool Detector::Test::execute(const std::vector<uint8_t> &data) const {
         }
 
     if (match) {
-        return result ? true : false;
+        return result;
     }
     else {
-        return result ? false : true;
+        return !result;
     }
 }
 
@@ -238,7 +238,7 @@ bool Detector::compute_hashes(const std::vector<uint8_t> &data, File *file, cons
         return false;
     }
     
-    for (auto pair : detectors) {
+    for (const auto &pair : detectors) {
         file->detector_hashes[pair.first] = pair.second->execute(data);
     }
     

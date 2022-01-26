@@ -68,7 +68,7 @@ Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
     contexts = std::make_unique<HashesContexts>();
 
     if (hashes->has_type(TYPE_CRC)) {
-        contexts->crc = static_cast<uint32_t>(crc32(0, NULL, 0));
+        contexts->crc = static_cast<uint32_t>(crc32(0, nullptr, 0));
     }
     if (hashes->has_type(TYPE_MD5)) {
         MD5Init(&contexts->md5);
@@ -79,7 +79,7 @@ Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
 }
 
 Hashes::Update::~Update() {
-    contexts = NULL;
+    contexts = nullptr;
 }
 
 void Hashes::Update::update(const void *data, size_t length) {

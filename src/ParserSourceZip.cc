@@ -39,10 +39,10 @@
 #include "error.h"
 #include "ParserSourceFile.h"
 
-ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *za_, const std::string &fname, bool relaxed) : archive_name(archive_name_), za(za_), zf(NULL) {
+ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *za_, const std::string &fname, bool relaxed) : archive_name(archive_name_), za(za_), zf(nullptr) {
     zip_flags_t flags = relaxed ? ZIP_FL_NOCASE | ZIP_FL_NODIR : 0;
 
-    if ((zf = zip_fopen(za, fname.c_str(), flags)) == NULL) {
+    if ((zf = zip_fopen(za, fname.c_str(), flags)) == nullptr) {
         int zer, ser;
 
         zip_error_get(za, &zer, &ser);
@@ -70,13 +70,13 @@ ParserSourceZip::~ParserSourceZip() {
 }
 
 bool ParserSourceZip::close() {
-    if (zf == NULL) {
+    if (zf == nullptr) {
         return true;
     }
     
     auto ok = zip_fclose(zf) == 0;
 
-    zf = NULL;
+    zf = nullptr;
     
     return ok;
 }
@@ -95,7 +95,7 @@ ParserSourcePtr ParserSourceZip::open(const std::string &name) {
 
 
 size_t ParserSourceZip::read_xxx(void *data, size_t length) {
-    if (zf == NULL) {
+    if (zf == nullptr) {
         return 0;
     }
     

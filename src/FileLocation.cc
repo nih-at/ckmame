@@ -33,7 +33,7 @@
 
 #include "FileLocation.h"
 
-bool FileLocation::operator<(FileLocation other) const {
+bool FileLocation::operator<(const FileLocation &other) const {
     if (name != other.name) {
         return name < other.name;
     }

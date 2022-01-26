@@ -65,7 +65,7 @@ std::map<std::string, FileData> list_archive(const std::string &name) {
     std::map<std::string, FileData> files;
     
     auto archive = archive_read_new();
-    if (archive == NULL) {
+    if (archive == nullptr) {
         fprintf(stderr, "%s: out of memory\n", prg);
         exit(2);
     }
@@ -90,7 +90,7 @@ std::map<std::string, FileData> list_archive(const std::string &name) {
 
         uint8_t buffer[BUFSIZ];
         
-        file.crc = static_cast<uint32_t>(crc32(0L, NULL, 0));
+        file.crc = static_cast<uint32_t>(crc32(0L, nullptr, 0));
         while (auto n = archive_read_data(archive, buffer, sizeof(buffer)) > 0) {
             file.crc = static_cast<uint32_t>(crc32(file.crc, buffer, n));
         }

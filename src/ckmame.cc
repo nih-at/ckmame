@@ -60,10 +60,6 @@
 #include "warn.h"
 
 
-enum action { ACTION_UNSPECIFIED, ACTION_CHECK_ROMSET, ACTION_SUPERFLUOUS_ONLY, ACTION_CLEANUP_EXTRA_ONLY };
-
-typedef enum action action_t;
-
 /* to identify roms directory uniquely */
 std::string rom_dir_normalized;
 
@@ -136,7 +132,7 @@ main(int argc, char **argv) {
 	    std::string set;
 	    auto set_exists = true;
 	    
-	    for (auto const &option : args.options) {
+	    for (const auto &option : args.options) {
 		if (option.name == "set") {
 		    set = option.argument;
 		    set_exists = false;
@@ -150,7 +146,7 @@ main(int argc, char **argv) {
 		set_exists = true;
 	    }
 	    
-	    for (auto const &option : args.options) {
+	    for (const auto &option : args.options) {
 		if (option.name == "config") {
 		    if (configuration.merge_config_file(option.argument, set, false)) {
 			set_exists = true;
@@ -165,7 +161,7 @@ main(int argc, char **argv) {
 
 	    auto extra_directory_specified = false;
 	    
-	    for (auto const &option : args.options) {
+	    for (const auto &option : args.options) {
 		if (option.name == "autofixdat") {
 		    auto_fixdat = true;
 		}
@@ -184,7 +180,7 @@ main(int argc, char **argv) {
 			extra_directory_specified = true;
 		    }
 		    std::string name = option.argument;
-		    auto last = name.find_last_not_of("/");
+		    auto last = name.find_last_not_of('/');
 		    if (last == std::string::npos) {
 			name = "/";
 		    }
@@ -282,7 +278,7 @@ main(int argc, char **argv) {
 	    CkmameDB::register_directory(configuration.rom_directory);
 	    CkmameDB::register_directory(needed_dir);
 	    CkmameDB::register_directory(unknown_dir);
-	    for (auto const &name : configuration.extra_directories) {
+	    for (const auto &name : configuration.extra_directories) {
 		if (contains_romdir(name)) {
 		    /* TODO: improve error message: also if extra is in ROM directory. */
 		    myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", configuration.rom_directory.c_str(), name.c_str());
@@ -332,7 +328,7 @@ main(int argc, char **argv) {
 	    de.description = "Fixdat by ckmame";
 	    de.version = "1";
 
-	    if ((fixdat = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, configuration.fixdat, 0)) == NULL) {
+	    if ((fixdat = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, configuration.fixdat, 0)) == nullptr) {
 		exit(1);
 	    }
 
@@ -384,12 +380,12 @@ main(int argc, char **argv) {
 	    }
 	}
 	else if (arguments.empty()) {
-	    for (size_t i = 0; i < list.size(); i++) {
-		check_tree.add(list[i]);
+	    for (const auto &name : list) {
+		check_tree.add(name);
 	    }
 	}
 	else {
-	    for (auto const &argument : arguments) {
+	    for (const auto &argument : arguments) {
 		if (strcspn(argument.c_str(), "*?[]{}") == argument.size()) {
 		    if (std::binary_search(list.begin(), list.end(), argument)) {
 			check_tree.add(argument);
@@ -400,9 +396,9 @@ main(int argc, char **argv) {
 		}
 		else {
 		    found = 0;
-		    for (size_t j = 0; j < list.size(); j++) {
-			if (fnmatch(argument.c_str(), list[j].c_str(), 0) == 0) {
-			    check_tree.add(list[j]);
+		    for (const auto & j : list) {
+			if (fnmatch(argument.c_str(), j.c_str(), 0) == 0) {
+			    check_tree.add(j);
 			    found = 1;
 			}
 		    }
@@ -464,8 +460,8 @@ main(int argc, char **argv) {
 	    std::filesystem::remove(needed_dir, ec);
 	}
 
-	db = NULL;
-	old_db = NULL;
+	db = nullptr;
+	old_db = nullptr;
 
 	return 0;
     }

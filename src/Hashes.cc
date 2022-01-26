@@ -371,7 +371,7 @@ int Hashes::set_from_string(const std::string &s) {
     switch (length / 2) {
         case Hashes::SIZE_CRC:
             type = Hashes::TYPE_CRC;
-            crc = static_cast<uint32_t>(std::stoul(str, NULL, 16));
+            crc = static_cast<uint32_t>(std::stoul(str, nullptr, 16));
             break;
 
         case Hashes::SIZE_MD5:

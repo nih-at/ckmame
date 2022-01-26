@@ -38,7 +38,7 @@
 
 #define PSBLKSIZE 1024
 
-ParserSource::ParserSource() : current(NULL), available(0) { }
+ParserSource::ParserSource() : current(nullptr), available(0) { }
 
 ParserSource::~ParserSource() {
     close();
@@ -48,7 +48,7 @@ ParserSource::~ParserSource() {
 std::optional<std::string> ParserSource::getline() {
     for (;;) {
         char *p;
-        if (available > 0 && (p = reinterpret_cast<char *>(memchr(current, '\n', available))) != NULL) {
+        if (available > 0 && (p = reinterpret_cast<char *>(memchr(current, '\n', available))) != nullptr) {
             auto line = reinterpret_cast<char *>(current);
             size_t line_length = static_cast<size_t>(p - line);
             if (line_length > 0 && line[line_length - 1] == '\r') {

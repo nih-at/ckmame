@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
             std::string sql_statement = slurp(sql_file);
             sqlite3 *db;
             
-            if (sqlite3_open_v2(db_fname.c_str(), &db, SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE, NULL) != SQLITE_OK) {
+            if (sqlite3_open_v2(db_fname.c_str(), &db, SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE, nullptr) != SQLITE_OK) {
                 throw std::invalid_argument("");
             }
 
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]) {
                 static_cast<RomDB *>(db.get())->init2();
             }
             
-            seterrdb(NULL);
+            seterrdb(nullptr);
         }
     }
     catch (std::exception &e) {
@@ -282,7 +282,7 @@ static int db_format(DBType type) {
 static std::optional<std::string> ungot_line;
 
 static std::optional<std::string> get_line(FILE *f) {
-    static char *buffer = NULL;
+    static char *buffer = nullptr;
     static size_t buffer_size = 0;
 
     if (ungot_line.has_value()) {
@@ -415,7 +415,7 @@ restore_table(sqlite3 *db, FILE *f) {
                         break;
                         
                     case SQLITE_INTEGER: {
-                        intmax_t vi = strtoimax(value.c_str(), NULL, 10);
+                        intmax_t vi = strtoimax(value.c_str(), nullptr, 10);
                         stmt.set_int64(columns[i], vi);
                         break;
                     }

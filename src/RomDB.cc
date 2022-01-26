@@ -146,7 +146,7 @@ const RomDB::Statement RomDB::query_hash_type[] = { QUERY_HASH_TYPE_CRC, QUERY_H
 
 
 void RomDB::init2() {
-    if (sqlite3_exec(db, init2_sql.c_str(), NULL, NULL, NULL) != SQLITE_OK) {
+    if (sqlite3_exec(db, init2_sql.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
         throw Exception("can't initialize DB");
     }
 }
@@ -289,7 +289,7 @@ DetectorPtr RomDB::get_detector(size_t id) {
     auto it = detectors.find(id);
     
     if (it == detectors.end()) {
-        return NULL;
+        return nullptr;
     }
     return it->second;
 }
@@ -298,7 +298,7 @@ DetectorPtr RomDB::read_detector() {
     auto stmt = get_statement(QUERY_DAT_DETECTOR);
 
     if (!stmt->step()) {
-        return NULL;
+        return nullptr;
     }
 
     auto detector = std::make_shared<Detector>();
@@ -308,7 +308,7 @@ DetectorPtr RomDB::read_detector() {
     detector->version = stmt->get_string("version");
 
     if (!read_rules(detector.get())) {
-        return NULL;
+        return nullptr;
     }
 
     return detector;
@@ -398,7 +398,7 @@ GamePtr RomDB::read_game(const std::string &name) {
     stmt->set_string("name", name);
 
     if (!stmt->step()) {
-        return NULL;
+        return nullptr;
     }
     
     auto game = std::make_shared<Game>();
@@ -665,7 +665,7 @@ void RomDB::write_files(Game *game, filetype_t ft) {
 int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
     DatEntry de;
 
-    if (out == NULL) {
+    if (out == nullptr) {
 	/* TODO: split into original dat files */
 	return 0;
     }
@@ -674,7 +674,7 @@ int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEn
 
     /* TODO: export detector */
 
-    de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : NULL));
+    de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : nullptr));
     out->header(&de);
 
     std::vector<std::string> list;

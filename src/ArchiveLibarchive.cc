@@ -35,7 +35,7 @@
 
 #include <archive_entry.h>
 #include <cstring>
-#include <errno.h>
+#include <cerrno>
 
 #include "error.h"
 #include "Exception.h"
@@ -51,7 +51,7 @@ ArchiveLibarchive::~ArchiveLibarchive() {
 
 
 bool ArchiveLibarchive::ensure_la() {
-    if (la != NULL) {
+    if (la != nullptr) {
         return true;
     }
     
@@ -64,7 +64,7 @@ bool ArchiveLibarchive::ensure_la() {
     if (error < ARCHIVE_WARN) {
         myerror(ERRDEF, "error %s archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), archive_error_string(la));
         archive_read_free(la);
-        la = NULL;
+        la = nullptr;
         return false;
     }
     
@@ -81,7 +81,7 @@ bool ArchiveLibarchive::check() {
 }
 
 bool ArchiveLibarchive::close_xxx() {
-    if (la == NULL) {
+    if (la == nullptr) {
         return true;
     }
 
@@ -93,7 +93,7 @@ bool ArchiveLibarchive::close_xxx() {
         return false;
     }
 
-    la = NULL;
+    la = nullptr;
 
     return true;
 }
@@ -121,9 +121,9 @@ bool ArchiveLibarchive::commit_xxx() {
     }
     
     auto writer = archive_write_new();
-    struct archive_entry *entry = NULL;
+    struct archive_entry *entry = nullptr;
 
-    if (writer == NULL) {
+    if (writer == nullptr) {
         myerror(ERRZIP, "can't create archive: %s", strerror(ENOMEM));
         return false;
     }
@@ -136,7 +136,7 @@ bool ArchiveLibarchive::commit_xxx() {
             throw Exception("can't create archive: %s", strerror(errno));
         }
 
-        time_t now = time(NULL);
+        time_t now = time(nullptr);
         
         for (uint64_t index = 0; index < files.size(); index++) {
             auto &file = files[index];
@@ -163,7 +163,7 @@ bool ArchiveLibarchive::commit_xxx() {
             mtimes.push_back(mtime);
             
             entry = archive_entry_new();
-            if (entry == NULL) {
+            if (entry == nullptr) {
                 throw Exception("can't write file header: %s", strerror(ENOMEM));
             }
             archive_entry_set_pathname(entry, file.name.c_str());
@@ -176,7 +176,7 @@ bool ArchiveLibarchive::commit_xxx() {
                 throw Exception("can't write file header: %s", strerror(errno));
             }
             archive_entry_free(entry);
-            entry = NULL;
+            entry = nullptr;
             
             write_file(writer, source);
         }
@@ -187,7 +187,7 @@ bool ArchiveLibarchive::commit_xxx() {
             throw Exception("can't write archive: %s", strerror(errno));
         }
         archive_write_free(writer);
-        writer = NULL;
+        writer = nullptr;
 
         if (tmpfile != name) {
             std::error_code error;
@@ -198,10 +198,10 @@ bool ArchiveLibarchive::commit_xxx() {
         }
     }
     catch (Exception &e) {
-        if (entry != NULL) {
+        if (entry != nullptr) {
             archive_entry_free(entry);
         }
-        if (writer != NULL) {
+        if (writer != nullptr) {
             archive_write_free(writer);
         }
         if (std::filesystem::exists(tmpfile)) {
@@ -276,7 +276,7 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
     if (current_index > index) {
         // rewind
         archive_read_free(la);
-        la = NULL;
+        la = nullptr;
         if (!ensure_la()) {
             return false;
         }
@@ -363,12 +363,12 @@ ArchiveLibarchive::Source::Source(ArchiveLibarchive *archive_, uint64_t index_, 
 }
 
 zip_source_t *ArchiveLibarchive::Source::get_source() {
-    auto source = zip_source_function_create(callback_c, this, NULL);
+    auto source = zip_source_function_create(callback_c, this, nullptr);
     if (!complete_file) {
-        auto window_source = zip_source_window_create(source, start, (zip_int64_t)length, NULL);
-        if (window_source == NULL) {
+        auto window_source = zip_source_window_create(source, start, (zip_int64_t)length, nullptr);
+        if (window_source == nullptr) {
             zip_source_free(source);
-            return NULL;
+            return nullptr;
         }
         return window_source;
     }
@@ -409,7 +409,7 @@ zip_int64_t ArchiveLibarchive::Source::callback(void *data, zip_uint64_t len, zi
             return 0;
             
         case ZIP_SOURCE_STAT: {
-            zip_stat_t *st = static_cast<zip_stat_t *>(data);
+            auto st = static_cast<zip_stat_t *>(data);
             
             st->valid = ZIP_STAT_SIZE | ZIP_STAT_COMP_SIZE | ZIP_STAT_COMP_METHOD;
             st->comp_method = ZIP_CM_STORE;

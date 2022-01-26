@@ -83,7 +83,7 @@ my_zip_rename(struct zip *za, uint64_t idx, const char *name) {
 	return 0;
     }
 
-    zip_error_get(za, &zerr, NULL);
+    zip_error_get(za, &zerr, nullptr);
 
     if (zerr != ZIP_ER_EXISTS) {
 	return -1;
@@ -120,7 +120,7 @@ my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx) {
 	auto unique = name + n + ext;
 
 	int ret = zip_rename(za, idx, unique.c_str());
-	zip_error_get(za, &zerr, NULL);
+	zip_error_get(za, &zerr, nullptr);
 	if (ret == 0 || zerr != ZIP_ER_EXISTS) {
 	    return ret == 0;
 	}

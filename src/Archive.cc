@@ -97,7 +97,7 @@ ArchivePtr Archive::open(ArchiveContentsPtr contents) {
 #ifdef HAVE_LIBARCHIVE
                 archive = std::make_shared<ArchiveLibarchive>(contents);
 #else
-                return NULL;
+                return nullptr;
 #endif
                 break;
                 
@@ -114,7 +114,7 @@ ArchivePtr Archive::open(ArchiveContentsPtr contents) {
                 break;
                 
             default:
-                return NULL;
+                return nullptr;
         }
 
         //printf("# reopening %s\n", archive->name.c_str());
@@ -132,7 +132,7 @@ ArchivePtr Archive::by_id(uint64_t id) {
     auto contents = ArchiveContents::by_id(id);
     
     if (!contents) {
-        return NULL;
+        return nullptr;
     }
     
     return open(contents);
@@ -388,7 +388,7 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
                     }
 #endif
                     else {
-                        return NULL;
+                        return nullptr;
                     }
                 }
                 else {
@@ -401,18 +401,18 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
                 break;
                 
             default:
-                return NULL;
+                return nullptr;
         }
     }
     catch (...) {
-        return ArchivePtr();
+        return {};
     }
     
     archive->contents->open_archive = archive;
     archive->contents->flags = ((flags | _archive_global_flags) & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK));
     
     if (!archive->read_infos() && (flags & ARCHIVE_FL_CREATE) == 0) {
-        return ArchivePtr();
+        return {};
     }
     
     ArchiveContents::enter_in_maps(archive->contents);
@@ -425,7 +425,7 @@ ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, 
     ArchivePtr a = open(name, filetype, where, flags | ARCHIVE_FL_TOP_LEVEL_ONLY);
 
     if (a && a->files.empty()) {
-        return NULL;
+        return nullptr;
     }
 
     return a;
@@ -489,7 +489,7 @@ bool Archive::is_empty() const {
 }
 
 
-int ArchiveContents::is_cache_up_to_date() {
+int ArchiveContents::is_cache_up_to_date() const {
     if (open_archive.expired()) {
         return 0;
     }
@@ -600,7 +600,7 @@ std::optional<size_t> Archive::file_index(const FileData *file) const {
 
 bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
     if (!configuration.roms_zipped && filetype == TYPE_DISK) {
-        cache_db = NULL;
+        cache_db = nullptr;
         cache_id = -1;
         return true;
     }
@@ -637,7 +637,7 @@ ArchiveContentsPtr ArchiveContents::by_id(uint64_t id) {
     auto it = archive_by_id.find(id);
     
     if (it == archive_by_id.end()) {
-        return NULL;
+        return nullptr;
     }
     
     return it->second;
@@ -647,7 +647,7 @@ ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::stri
     auto it = archive_by_name.find(TypeAndName(filetype, name));
     
     if (it == archive_by_name.end() || it->second.expired()) {
-        return NULL;
+        return nullptr;
     }
     
     return it->second.lock();

@@ -87,7 +87,7 @@ bool Garbage::open() {
 	auto name = make_garbage_name(sa->name, 0);
         da = Archive::open(name, sa->contents->filetype, FILE_NOWHERE, ARCHIVE_FL_CREATE);
         if (!da->check()) {
-            da = NULL;
+            da = nullptr;
 	}
     }
 

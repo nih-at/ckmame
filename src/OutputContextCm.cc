@@ -70,7 +70,7 @@ OutputContextCm::~OutputContextCm() {
 }
 
 bool OutputContextCm::close() {
-    if (f == NULL) {
+    if (f == nullptr) {
         return false;
     }
     
@@ -86,7 +86,7 @@ bool OutputContextCm::close() {
         ok = fflush(f.get()) == 0;
     }
     
-    f = NULL;
+    f = nullptr;
 
     return ok;
 }

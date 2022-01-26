@@ -64,7 +64,7 @@ void diagnostics(const Game *game, const GameArchives &archives, const Result &r
 
 
 void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, bool is_in_needed) {
-    if (a == NULL) {
+    if (a == nullptr) {
         return;
     }
     
@@ -115,7 +115,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
         switch (result.game) {
             case GS_CORRECT:
                 if (ft == TYPE_ROM && configuration.report_correct) {
-                    warn_game_file(ft, NULL, "correct");
+                    warn_game_file(ft, nullptr, "correct");
                 }
                 return;
             
@@ -128,9 +128,9 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 // TODO: move this to check and keep in result
                 auto all_same = true;
                 std::string old_name;
-                for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-                    if (!result.game_files[ft].empty()) {
-                        old_name = result.game_files[ft][0].old_game;
+                for (const auto &game_file : result.game_files) {
+                    if (!game_file.empty()) {
+                        old_name = game_file[0].old_game;
                         break;
                     }
                 }
@@ -147,7 +147,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 }
                 if (all_same) {
                     if (ft == TYPE_ROM) {
-                        warn_game_file(ft, NULL, "old in '" + old_name + "'");
+                        warn_game_file(ft, nullptr, "old in '" + old_name + "'");
                     }
                     return;
                 }
@@ -156,7 +156,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
 
             case GS_MISSING:
                 if (ft == TYPE_ROM && configuration.report_missing) {
-                    warn_game_file(ft, NULL, "not a single file found");
+                    warn_game_file(ft, nullptr, "not a single file found");
                 }
                 return;
                 
@@ -172,7 +172,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
     for (size_t i = 0; i < game->files[ft].size(); i++) {
         auto &match = result.game_files[ft][i];
         auto &rom = game->files[ft][i];
-        FileData *file = NULL;
+        FileData *file = nullptr;
         
         if (!match.source_is_old() && match.archive) {
             file = &match.archive->files[match.index];

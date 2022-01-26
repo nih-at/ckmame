@@ -91,7 +91,7 @@ bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashe
     }
 
     auto ok = true;
-    for (auto const &location : locations) {
+    for (const auto &location : locations) {
         auto game_file = &location.rom;
 
         if ((filetype == TYPE_DISK || size == game_file->hashes.size) && hashes->compare(game_file->hashes) == Hashes::MATCH && game_file->where == FILE_INGAME) {

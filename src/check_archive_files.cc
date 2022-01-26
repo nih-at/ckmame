@@ -62,16 +62,16 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
         }
 
         size_t detector_id = 0;
-        found = find_in_old(filetype, &file, archive.get(), NULL);
+        found = find_in_old(filetype, &file, archive.get(), nullptr);
         if (found == FIND_EXISTS) {
             result->archive_files[filetype][i] = FS_DUPLICATE;
             continue;
         }
 
-        found = find_in_romset(filetype, 0, &file, archive.get(), gamename, file.name, NULL);
+        found = find_in_romset(filetype, 0, &file, archive.get(), gamename, file.name, nullptr);
         if (found == FIND_UNKNOWN) {
             archive->compute_detector_hashes(db->detectors);
-            for (auto pair : db->detectors) {
+            for (const auto &pair : db->detectors) {
                 auto id = pair.first;
                 if (!file.is_size_known(id)) {
                     continue;
@@ -79,7 +79,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
                 FileData file_data;
                 file_data.name = file.name;
                 file_data.hashes = file.get_hashes(id);
-                auto detector_result = find_in_romset(filetype, id, &file_data, archive.get(), gamename, file.name, NULL);
+                auto detector_result = find_in_romset(filetype, id, &file_data, archive.get(), gamename, file.name, nullptr);
                 if (detector_result != FIND_UNKNOWN) {
                     detector_id = id;
                     found = detector_result;
@@ -150,7 +150,7 @@ void check_needed_files(filetype_t filetype, ArchivePtr archive, Result *result)
             continue;
         }
 
-        found = find_in_old(filetype, &file, archive.get(), NULL);
+        found = find_in_old(filetype, &file, archive.get(), nullptr);
         if (found == FIND_EXISTS) {
             // TODO: check that it also exists in ROM DB
             if (configuration.keep_old_duplicate) {
@@ -162,10 +162,10 @@ void check_needed_files(filetype_t filetype, ArchivePtr archive, Result *result)
             continue;
         }
 
-        found = find_in_romset(filetype, 0, &file, archive.get(), "", file.name, NULL);
+        found = find_in_romset(filetype, 0, &file, archive.get(), "", file.name, nullptr);
         if (found == FIND_UNKNOWN) {
             archive->compute_detector_hashes(db->detectors);
-            for (auto pair : db->detectors) {
+            for (const auto &pair : db->detectors) {
                 auto id = pair.first;
                 if (!file.is_size_known(id)) {
                     continue;
@@ -173,7 +173,7 @@ void check_needed_files(filetype_t filetype, ArchivePtr archive, Result *result)
                 FileData file_data;
                 file_data.name = file.name;
                 file_data.hashes = file.get_hashes(id);
-                auto detector_result = find_in_romset(filetype, id, &file_data, archive.get(), "", file.name, NULL);
+                auto detector_result = find_in_romset(filetype, id, &file_data, archive.get(), "", file.name, nullptr);
                 if (detector_result != FIND_UNKNOWN) {
                     found = detector_result;
                     break;

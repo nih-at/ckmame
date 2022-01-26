@@ -127,7 +127,7 @@ static void dump_table(sqlite3 *db, const std::string &table_name) {
     printf(")\n");
 
     sqlite3_stmt *stmt;
-    if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
         throw Exception("can't select rows for table '" + table_name + "': " + sqlite3_errmsg(db));
     }
 

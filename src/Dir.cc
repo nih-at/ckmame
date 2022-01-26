@@ -36,7 +36,7 @@
 #include <algorithm>
 #include <filesystem>
 
-Dir::Dir(std::string name, bool recursive) : index(0) {
+Dir::Dir(const std::string &name, bool recursive) : index(0) {
     if (recursive) {
 	for (const auto &p : std::filesystem::recursive_directory_iterator(name)) {
 	    entries.push_back(p);

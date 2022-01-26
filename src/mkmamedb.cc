@@ -127,7 +127,7 @@ main(int argc, char **argv) {
             exit(0);
         }
 
-        for (auto const &option : args.options) {
+        for (const auto &option : args.options) {
             if (option.name == "detector") {
                 detector_name = option.argument;
             }
@@ -221,7 +221,7 @@ main(int argc, char **argv) {
 
     if (dbname.empty()) {
         auto var = getenv("MAMEDB");
-        if (var != NULL) {
+        if (var != nullptr) {
             dbname = var;
         }
         else {
@@ -232,7 +232,7 @@ main(int argc, char **argv) {
     if (flags & OUTPUT_FL_TEMP) {
 	dbname_real = dbname;
 	auto var = tmpnam(tmpnam_buffer);
-	if (var == NULL) {
+	if (var == nullptr) {
 	    myerror(ERRSTR, "tmpnam() failed");
 	    exit(1);
 	}
@@ -240,7 +240,7 @@ main(int argc, char **argv) {
     }
 
     try {
-        if ((out = OutputContext::create(fmt, dbname, flags)) == NULL) {
+        if ((out = OutputContext::create(fmt, dbname, flags)) == nullptr) {
             exit(1);
         }
 
@@ -248,7 +248,7 @@ main(int argc, char **argv) {
     #if defined(HAVE_LIBXML2)
             seterrinfo(detector_name);
             auto detector = Detector::parse(detector_name);
-            if (detector != NULL) {
+            if (detector != nullptr) {
                 out->detector(detector.get());
             }
     #else
@@ -317,7 +317,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	/* that's fine */
     }
 
-    if (configuration.roms_zipped && (za = zip_open(fname.c_str(), 0, NULL)) != NULL) {
+    if (configuration.roms_zipped && (za = zip_open(fname.c_str(), 0, nullptr)) != nullptr) {
 	const char *name;
         auto ok = true;
 
@@ -361,7 +361,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
                 CkmameDB::register_directory(fname);
             }
 
-            auto ctx = ParserDir(NULL, exclude, dat, out, parser_flags, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
+            auto ctx = ParserDir(nullptr, exclude, dat, out, parser_flags, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
             return ctx.parse();
 	}
 

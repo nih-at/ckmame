@@ -152,24 +152,22 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
 
 int DeleteList::execute() {
     std::string name;
-    ArchivePtr a = NULL;
+    ArchivePtr a = nullptr;
 
     std::sort(entries.begin(), entries.end());
 
     int ret = 0;
-    for (size_t i = 0; i < entries.size(); i++) {
-	auto entry = entries[i];
-
-	if (name == "" || entry.name != name) {
+    for (const auto &entry : entries) {
+	if (name.empty() || entry.name != name) {
             if (!close_archive(a.get())) {
                 ret = -1;
             }
-            a = NULL;
+            a = nullptr;
 
 	    name = entry.name;
             
             if (name[name.length() - 1] == '/') {
-                a = Archive::open(name, entries[i].filetype, FILE_NOWHERE, 0);
+                a = Archive::open(name, entry.filetype, FILE_NOWHERE, 0);
             }
             else {
                 filetype_t filetype;

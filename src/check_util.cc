@@ -58,7 +58,6 @@ static bool enter_file_in_map_and_list(int flags, DeleteListPtr list, const std:
 
 
 void ensure_extra_maps(int flags) {
-    name_type_t nt;
     int todo = flags & (DO_MAP | DO_LIST);
 
     if (maps_done & EXTRA_MAPS) {
@@ -81,7 +80,7 @@ void ensure_extra_maps(int flags) {
 
 	for (auto &entry : superfluous_delete_list->archives) {
 	    auto file = entry.name;
-	    switch ((nt = name_type(file))) {
+	    switch ((name_type(file))) {
 		case NAME_IMAGES:
 		case NAME_ZIP: {
 		    auto a = Archive::open(file, entry.filetype, FILE_SUPERFLUOUS, 0);
@@ -99,7 +98,7 @@ void ensure_extra_maps(int flags) {
 	auto a = Archive::open_toplevel(configuration.rom_directory, filetype, FILE_SUPERFLUOUS, 0);
     }
 
-    for (auto const &directory : configuration.extra_directories) {
+    for (const auto &directory : configuration.extra_directories) {
 	enter_dir_in_map_and_list(flags, extra_delete_list, directory, true, FILE_EXTRA);
     }
 
@@ -109,7 +108,7 @@ void ensure_extra_maps(int flags) {
 }
 
 
-void ensure_needed_maps(void) {
+void ensure_needed_maps() {
     if (maps_done & NEEDED_MAPS)
 	return;
 
@@ -168,7 +167,7 @@ static bool enter_dir_in_map_and_list(int flags, DeleteListPtr list, const std::
 	    if (!list_db.empty()) {
 		list->sort_archives();
 
-		for (auto entry : list_db) {
+		for (const auto &entry : list_db) {
 		    std::string name = directory_name;
 		    if (entry.name != ".") {
 			name += '/' + entry.name;

@@ -40,8 +40,8 @@
 
 class ArchiveZip : public Archive {
 public:
-    ArchiveZip(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_ZIP, name, filetype, where, flags), za(NULL) { }
-    ArchiveZip(ArchiveContentsPtr contents) : Archive(contents), za(NULL) { }
+    ArchiveZip(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_ZIP, name, filetype, where, flags), za(nullptr) { }
+    ArchiveZip(ArchiveContentsPtr contents) : Archive(contents), za(nullptr) { }
 
     virtual ~ArchiveZip();
 

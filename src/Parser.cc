@@ -229,7 +229,7 @@ bool Parser::file_name(filetype_t ft, const std::string &attr) {
 
 bool Parser::file_size(filetype_t ft, const std::string &attr) {
     /* TODO: check for strol errors */
-    return file_size(ft, std::stoull(attr, NULL, 0));
+    return file_size(ft, std::stoull(attr, nullptr, 0));
 }
 
 
@@ -294,7 +294,7 @@ bool Parser::game_end() {
         ok = output->game(g);
     }
 
-    g = NULL;
+    g = nullptr;
 
     state = PARSE_OUTSIDE;
 
@@ -409,10 +409,10 @@ Parser::~Parser() {
 
 
 Parser::Parser(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER) {
-    dat_default.merge(dat, NULL);
+    dat_default.merge(dat, nullptr);
     full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
     for (size_t i = 0; i < TYPE_MAX; i++) {
-        r[i] = NULL;
+        r[i] = nullptr;
     }
 }
 

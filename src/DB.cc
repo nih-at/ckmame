@@ -145,14 +145,14 @@ void DB::close() {
 
 
 std::string DB::error() {
-    if (db == NULL) {
+    if (db == nullptr) {
 	return strerror(ENOMEM);
     }
     return sqlite3_errmsg(db);
 }
 
 
-DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(NULL) {
+DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(nullptr) {
     auto needs_init = false;
     
     if (mode & DBH_TRUNCATE) {
@@ -194,11 +194,11 @@ DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(NULL)
 
 
 void DB::open(const DBFormat &format, const std::string &name, int sql3_flags, bool needs_init) {
-    if (sqlite3_open_v2(name.c_str(), &db, sql3_flags, NULL) != SQLITE_OK) {
+    if (sqlite3_open_v2(name.c_str(), &db, sql3_flags, nullptr) != SQLITE_OK) {
         throw Exception("%s", sqlite3_errmsg(db));
     }
 
-    if (sqlite3_exec(db, PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
+    if (sqlite3_exec(db, PRAGMAS, nullptr, nullptr, nullptr) != SQLITE_OK) {
         throw Exception("can't set options: %s", sqlite3_errmsg(db));
     }
         
@@ -217,24 +217,24 @@ void DB::upgrade(int format, int version, const std::string &statement) {
 
 
 void DB::upgrade(sqlite3 *db, int format, int version, const std::string &statement) {
-    if (sqlite3_exec(db, "begin exclusive transaction", NULL, NULL, NULL) != SQLITE_OK) {
+    if (sqlite3_exec(db, "begin exclusive transaction", nullptr, nullptr, nullptr) != SQLITE_OK) {
         throw Exception("can't begin transaction");
     }
-    if (sqlite3_exec(db, statement.c_str(), NULL, NULL, NULL) != SQLITE_OK) {
+    if (sqlite3_exec(db, statement.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
         auto error = sqlite3_errmsg(db);
-        sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
+        sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
         throw Exception("can't set schema: %s", error);
     }
     
     char b[256];
     sprintf(b, SET_VERSION_FMT, USER_VERSION(format, version));
-    if (sqlite3_exec(db, b, NULL, NULL, NULL) != SQLITE_OK) {
-        sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
+    if (sqlite3_exec(db, b, nullptr, nullptr, nullptr) != SQLITE_OK) {
+        sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
         throw Exception("can't set version: %s", sqlite3_errmsg(db));
     }
     
-    if (sqlite3_exec(db, "commit transaction", NULL, NULL, NULL) != SQLITE_OK) {
-        sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
+    if (sqlite3_exec(db, "commit transaction", nullptr, nullptr, nullptr) != SQLITE_OK) {
+        sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
         throw Exception("can't commit schema: %s", sqlite3_errmsg(db));
     }
 }
@@ -270,7 +270,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
         }
         start = sql_query.find("@HASH@");
         if (start != std::string::npos) {
-            std::string expanded = "";
+            std::string expanded;
             for (auto i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
                 if (statement_id.has_hash(i)) {
                     auto name = Hashes::type_name(i);

@@ -101,7 +101,7 @@ public:
     bool has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors);
     
     bool read_infos_from_cachedb(std::vector<File> *files);
-    int is_cache_up_to_date();
+    int is_cache_up_to_date() const;
 
     static void enter_in_maps(ArchiveContentsPtr contents);
     static ArchiveContentsPtr by_id(uint64_t id);
@@ -231,4 +231,4 @@ private:
     bool compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr> &detectors);
 };
 
-#endif /* archive.h */
+#endif //* HAD_ARCHIVE_H

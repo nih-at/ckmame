@@ -54,14 +54,14 @@ ArchiveZip::~ArchiveZip() {
 
 
 bool ArchiveZip::ensure_zip() {
-    if (za != NULL) {
+    if (za != nullptr) {
         return true;
     }
 
     int zip_flags = (contents->flags & ARCHIVE_FL_CREATE) ? ZIP_CREATE : 0;
 
     int err;
-    if ((za = zip_open(name.c_str(), zip_flags, &err)) == NULL) {
+    if ((za = zip_open(name.c_str(), zip_flags, &err)) == nullptr) {
         char errbuf[80];
 
         zip_error_to_str(errbuf, sizeof(errbuf), err, errno);
@@ -79,7 +79,7 @@ bool ArchiveZip::check() {
 
 
 bool ArchiveZip::close_xxx() {
-    if (za == NULL) {
+    if (za == nullptr) {
         return true;
     }
 
@@ -90,18 +90,18 @@ bool ArchiveZip::close_xxx() {
 	/* TODO: really do this here? */
 	/* discard all changes and close zipfile */
 	zip_discard(za);
-        za = NULL;
+        za = nullptr;
         return false;
     }
 
-    za = NULL;
+    za = nullptr;
 
     return true;
 }
 
 
 bool ArchiveZip::commit_xxx() {
-    if (((contents->flags & ARCHIVE_FL_RDONLY) == 0) && za != NULL && !files.empty()) {
+    if (((contents->flags & ARCHIVE_FL_RDONLY) == 0) && za != nullptr && !files.empty()) {
         if (!ensure_dir(name, true)) {
             return false;
         }
@@ -223,7 +223,7 @@ bool ArchiveZip::read_infos_xxx() {
     
     seterrinfo("", name);
 
-    zip_uint64_t n = static_cast<zip_uint64_t>(zip_get_num_entries(za, 0));
+    auto n = static_cast<zip_uint64_t>(zip_get_num_entries(za, 0));
     
     for (zip_uint64_t i = 0; i < n; i++) {
 	if (zip_stat_index(za, i, 0, &zsb) == -1) {
@@ -253,15 +253,15 @@ bool ArchiveZip::read_infos_xxx() {
 
 ZipSourcePtr ArchiveZip::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length_) {
     if (!ensure_zip()) {
-        return NULL;
+        return nullptr;
     }
     
     // TODO: overflow check
-    int64_t length = static_cast<int64_t>(length_.has_value() ? length_.value() : files[index].hashes.size - start);
+    auto length = static_cast<int64_t>(length_.has_value() ? length_.value() : files[index].hashes.size - start);
     
-    auto source = zip_source_zip_create(za, index, ZIP_FL_UNCHANGED, start, length, NULL);
+    auto source = zip_source_zip_create(za, index, ZIP_FL_UNCHANGED, start, length, nullptr);
     
-    if (source == NULL) {
+    if (source == nullptr) {
         // TODO: error message
         return {};
     }

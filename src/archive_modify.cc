@@ -99,10 +99,10 @@ void Archive::update_cache() {
         return;
     }
     
-    if (contents->cache_db == NULL) {
+    if (contents->cache_db == nullptr) {
         contents->cache_db = CkmameDB::get_db_for_archvie(name);
     }
-    if (contents->cache_db != NULL) {
+    if (contents->cache_db != nullptr) {
         if (files.empty()) {
             if (contents->cache_id > 0) {
                 try {
@@ -150,8 +150,8 @@ bool Archive::file_add_empty(const std::string &filename) {
     Hashes::Update hu(&hashes);
     hu.end();
 
-    add_file(filename, &hashes, NULL);
-    changes[files.size() - 1].source = std::make_shared<ZipSource>(zip_source_buffer_create(NULL, 0, 0, NULL));
+    add_file(filename, &hashes, nullptr);
+    changes[files.size() - 1].source = std::make_shared<ZipSource>(zip_source_buffer_create(nullptr, 0, 0, nullptr));
 
     return true;
 }
@@ -212,7 +212,7 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
         add_file(filename, &source_archive->files[source_index].hashes, &source_archive->files[source_index].detector_hashes);
     }
     else {
-        add_file(filename, hashes, NULL);
+        add_file(filename, hashes, nullptr);
     }
 
     if (have_direct_file_access() && source_archive->have_direct_file_access() && full_file) {
@@ -347,7 +347,7 @@ void Archive::add_file(const std::string &filename, const Hashes *hashes, const 
     Change change;
 
     file.hashes = *hashes;
-    if (detector_hashes != NULL) {
+    if (detector_hashes != nullptr) {
         file.detector_hashes = *detector_hashes;
     }
     file.name = filename;

@@ -105,7 +105,7 @@ void MemDB::ensure(void) {
     const char *dbname;
 
     if (inited) {
-        if (memdb == NULL) {
+        if (memdb == nullptr) {
             throw Exception("can't initialize memdb");
         }
     }
@@ -119,7 +119,7 @@ void MemDB::ensure(void) {
 
     inited = true;
 
-    memdb = NULL;
+    memdb = nullptr;
     memdb = std::make_unique<MemDB>(dbname);
 }
 

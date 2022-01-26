@@ -56,7 +56,7 @@ ParsedCommandline Commandline::parse(int argc, char *const *argv) {
     std::unordered_map<int, size_t> option_indices;
     int next_index = 256;
     
-    for (auto const &option : options) {
+    for (const auto &option : options) {
 //#define DEBUG_OPTIONS
 #ifdef DEBUG_OPTIONS
         printf("option '%s'", option.name.c_str());
@@ -90,13 +90,13 @@ ParsedCommandline Commandline::parse(int argc, char *const *argv) {
 #ifdef DEBUG_OPTIONS
     printf("short options: '%s'\n", short_options.c_str());
 #endif
-    struct option terminator = { NULL, 0, 0, 0 };
+    struct option terminator = { nullptr, 0, 0, 0 };
     long_options.push_back(terminator);
         
     auto parsed_commandline = ParsedCommandline();
     opterr = 0;
     int c;
-    while ((c = getopt_long(argc, argv, short_options.c_str(), long_options.data(), NULL)) != EOF) {
+    while ((c = getopt_long(argc, argv, short_options.c_str(), long_options.data(), nullptr)) != EOF) {
         if (c == '?') {
             throw Exception("invalid option");
         }
@@ -108,7 +108,7 @@ ParsedCommandline Commandline::parse(int argc, char *const *argv) {
         if (it == option_indices.end()) {
             throw Exception("invalid option");
         }
-        auto const &option = long_options[it->second];
+        const auto &option = long_options[it->second];
         
         parsed_commandline.options.push_back(ParsedCommandline::OptionValue(option.name, option.has_arg ? optarg : ""));
     }
@@ -122,7 +122,7 @@ ParsedCommandline Commandline::parse(int argc, char *const *argv) {
 
 
 std::optional<std::string> ParsedCommandline::find_first(const std::string &name) const {
-    for (auto const &option : options) {
+    for (const auto &option : options) {
         if (option.name == name) {
             return option.argument;
         }
@@ -133,7 +133,7 @@ std::optional<std::string> ParsedCommandline::find_first(const std::string &name
 
 std::optional<std::string> ParsedCommandline::find_last(const std::string &name) const {
     for (auto it = options.rbegin(); it != options.rend(); it++) {
-        auto const &option = *it;
+        const auto &option = *it;
         
         if (option.name == name) {
             return option.argument;
@@ -148,7 +148,7 @@ void Commandline::usage(bool full, FILE *fout) {
     std::stringstream short_options_without_argument;
     std::stringstream short_options_with_argument;
 
-    for (auto const &option : options) {
+    for (const auto &option : options) {
         if (option.short_name.has_value()) {
             if (option.has_argument()) {
                 short_options_with_argument << " [-" << option.short_name.value() << " " << option.argument_name << "]";
@@ -179,7 +179,7 @@ void Commandline::usage(bool full, FILE *fout) {
         fprintf(fout, "\n");
 
         size_t max_length = 0;
-        for (auto const &option : options) {
+        for (const auto &option : options) {
             size_t length = 8 + option.name.length();
             if (option.has_argument()) {
                 length += option.argument_name.length() + 1;
@@ -188,7 +188,7 @@ void Commandline::usage(bool full, FILE *fout) {
                 max_length = length;
             }
         }
-        for (auto const &option : options) {
+        for (const auto &option : options) {
             if (option.short_name.has_value()) {
                 printf("  -%c, ", option.short_name.value());
             }

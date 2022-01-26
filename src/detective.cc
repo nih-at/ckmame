@@ -67,7 +67,7 @@ const char version_string[] = "detective (" PACKAGE " " VERSION ")\n"
 enum { OPT_DETECTOR = 256 };
 
 struct option options[] = {
-    {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {"db", 1, 0, 'D'}, {"detector", 1, 0, OPT_DETECTOR}, {"hash-types", 1, 0, 'C'}, {"roms-unzipped", 0, 0, 'u'}, {NULL, 0, 0, 0},
+    {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {"db", 1, 0, 'D'}, {"detector", 1, 0, OPT_DETECTOR}, {"hash-types", 1, 0, 'C'}, {"roms-unzipped", 0, 0, 'u'}, {nullptr, 0, 0, 0},
 };
 
 
@@ -88,9 +88,9 @@ main(int argc, char **argv) {
     hashtypes = -1;
 
     dbname = getenv("MAMEDB");
-    if (dbname == NULL)
+    if (dbname == nullptr)
 	dbname = RomDB::default_name().c_str();
-    detector_name = NULL;
+    detector_name = nullptr;
 
     opterr = 0;
     while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
@@ -133,7 +133,7 @@ main(int argc, char **argv) {
     try {
         if (detector_name) {
 #if defined(HAVE_LIBXML2)
-            if ((detector = Detector::parse(detector_name)) == NULL) {
+            if ((detector = Detector::parse(detector_name)) == nullptr) {
                 myerror(ERRSTR, "cannot parse detector '%s'", detector_name);
                 exit(1);
             }
@@ -144,7 +144,7 @@ main(int argc, char **argv) {
 
         try {
             auto ddb = std::make_unique<RomDB>(dbname, DBH_READ);
-            if (detector == NULL) {
+            if (detector == nullptr) {
                 detector = ddb->detectors.begin()->second;
             }
             if (hashtypes == -1) {

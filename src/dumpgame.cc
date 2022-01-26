@@ -81,7 +81,7 @@ Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner\n\
 #define OPTIONS "hbcD:dV"
 
 struct option options[] = {
-    {"brief", 0, 0, 'b'}, {"checksum", 0, 0, 'c'}, {"db", 1, 0, 'D'}, {"disk", 0, 0, 'd'}, {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {NULL, 0, 0, 0},
+    {"brief", 0, 0, 'b'}, {"checksum", 0, 0, 'c'}, {"db", 1, 0, 'D'}, {"disk", 0, 0, 'd'}, {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {nullptr, 0, 0, 0},
 };
 
 static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
@@ -160,10 +160,8 @@ static void print_matches(filetype_t ft, Hashes *hash) {
 	return;
     }
 
-    for (size_t i = 0; i < matches.size(); i++) {
-	auto match = matches[i];
-        
-        if ((match.rom.hashes.get_types() & hash->get_types()) != hash->get_types()) {
+    for (const auto &match : matches) {
+	if ((match.rom.hashes.get_types() & hash->get_types()) != hash->get_types()) {
             continue;
         }
 	auto game = db->read_game(match.game_name);
@@ -192,7 +190,7 @@ main(int argc, char **argv) {
     setprogname(argv[0]);
 
     dbname = getenv("MAMEDB");
-    if (dbname == NULL)
+    if (dbname == nullptr)
 	dbname = RomDB::default_name().c_str();
 
     find_checksum = brief_mode = 0;
@@ -288,15 +286,15 @@ main(int argc, char **argv) {
             }
             else {
                 found = 0;
-                for (size_t j = 0; j < list.size(); j++) {
-                    if (fnmatch(argv[i], list[j].c_str(), 0) == 0) {
+                for (const auto &name : list) {
+                    if (fnmatch(argv[i], name.c_str(), 0) == 0) {
                         if (first) {
                             first = 0;
                         }
                         else {
                             putc('\n', stdout);
                         }
-                        dump_game(list[j], brief_mode);
+                        dump_game(name, brief_mode);
                         found = 1;
                     }
                 }
@@ -305,7 +303,7 @@ main(int argc, char **argv) {
             }
         }
 
-        db = NULL;
+        db = nullptr;
 
         return 0;
     }
@@ -353,7 +351,7 @@ dump_game(const std::string &name, int brief_mode) {
 	return -1;
     }
 
-    if ((game = db->read_game(name)) == NULL) {
+    if ((game = db->read_game(name)) == nullptr) {
 	myerror(ERRDEF, "game unknown (or database error): '%s'", name.c_str());
 	return -1;
     }

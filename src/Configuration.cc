@@ -53,7 +53,7 @@ std::string Configuration::local_config_file() {
 std::string Configuration::user_config_file() {
     auto home = getenv("HOME");
     
-    if (home == NULL) {
+    if (home == nullptr) {
         return "";
     }
     
@@ -79,11 +79,11 @@ Configuration::Configuration() :
     warn_file_known(true), // ???
     warn_file_unknown(true) {
     auto value = getenv("MAMEDB");
-    if (value != NULL) {
+    if (value != nullptr) {
         romdb_name = value;
     }
     value = getenv("MAMEDB_OLD");
-    if (value != NULL) {
+    if (value != nullptr) {
         olddb_name = value;
     }
 }
@@ -117,7 +117,7 @@ bool Configuration::merge_config_file(const std::string &fname, const std::strin
         if (!set.empty()) {
             auto known_sets = (*global_table)["sets"].as_array();
             if (known_sets != nullptr) {
-                for (auto const &value : *known_sets) {
+                for (const auto &value : *known_sets) {
                     auto name = value.value<std::string>();
                     if (name.has_value() && set == name.value()) {
                         set_known = true;
@@ -145,7 +145,7 @@ bool Configuration::merge_config_file(const std::string &fname, const std::strin
 
 
 void Configuration::merge_config_table(void *p) {
-    auto const &table = *reinterpret_cast<toml::table *>(p);
+    const auto &table = *reinterpret_cast<toml::table *>(p);
 
     // TODO: autofixdat
     set_bool(table, "complete-games-only", complete_games_only);
@@ -193,7 +193,7 @@ static void set_string_vector(const toml::table &table, const std::string &name,
         if (!append) {
             variable.clear();
         }
-        for (auto const &element : *array) {
+        for (const auto &element : *array) {
             auto value = element.value<std::string>();
             if (value.has_value()) {
                 variable.push_back(value.value());

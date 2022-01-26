@@ -57,14 +57,14 @@ static int xml_read(void *source, char *buffer, int length);
 
 
 int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
-    auto reader = xmlReaderForIO(xml_read, xml_close, ps, NULL, NULL, 0);
-    if (reader == NULL) {
+    auto reader = xmlReaderForIO(xml_read, xml_close, ps, nullptr, nullptr, 0);
+    if (reader == nullptr) {
 	myerror(ERRFILE, "can't open\n");
 	return -1;
     }
 
     auto ok = true;
-    const XmluEntity *entity_text = NULL;
+    const XmluEntity *entity_text = nullptr;
     std::string path;
 
     int ret;
@@ -78,7 +78,7 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                 path = path + '/' + name;
                 
                 auto entity = xml_find(entities, path);
-                if (entity != NULL) {
+                if (entity != nullptr) {
                     if (entity->cb_open) {
 			try {
 			    if (!entity->cb_open(ctx, entity->arg1)) {
@@ -95,7 +95,7 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                         auto &attribute = it.second;
                         auto value = reinterpret_cast<char *>(xmlTextReaderGetAttribute(reader, reinterpret_cast<const xmlChar *>(it.first.c_str())));
 
-                        if (value != NULL) {
+                        if (value != nullptr) {
 			    try {
 				if (!attribute.cb_attr(ctx, attribute.arg1, attribute.arg2, value)) {
 				    ok = false;
@@ -125,7 +125,7 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 
             case XML_READER_TYPE_END_ELEMENT: {
                 auto entity = xml_find(entities, path);
-                if (entity != NULL) {
+                if (entity != nullptr) {
 		    if (entity->cb_close) {
 			try {
 			    if (!entity->cb_close(ctx, entity->arg1)) {
@@ -140,7 +140,7 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                 }
 
                 path.resize(path.find_last_of('/'));
-                entity_text = NULL;
+                entity_text = nullptr;
 
                 break;
             }
@@ -190,7 +190,7 @@ static const XmluEntity *xml_find(const std::unordered_map<std::string, XmluEnti
        }
     }
     
-    return NULL;
+    return nullptr;
 }
 
 

@@ -68,7 +68,7 @@ void cleanup_list(DeleteListPtr list, int flags, bool is_needed) {
             GameArchives archives;
             archives.archive[entry.filetype] = a;
                     
-            Result res(NULL, archives);
+            Result res(nullptr, archives);
 
             while (di < len) {
                 auto fl = list->entries[di];
@@ -102,7 +102,7 @@ void cleanup_list(DeleteListPtr list, int flags, bool is_needed) {
             cleanup_archive(entry.filetype, a.get(), &res, flags);
         }
 
-        if (n != list->archives.size()) {
+	if (n != list->archives.size()) {
 	    n = list->archives.size();
 	}
 	else {

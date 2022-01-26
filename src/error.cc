@@ -35,7 +35,7 @@
 
 #include <cerrno>
 #include <cstring>
-#include <stdarg.h>
+#include <cstdarg>
 
 #include "compat.h"
 #include "DB.h"
@@ -44,7 +44,7 @@
 
 static std::string myerrorfn = DEFAULT_FN;
 static std::string myerrorzipn = DEFAULT_FN;
-static DB *myerrdb = NULL;
+static DB *myerrdb = nullptr;
 
 
 void
@@ -70,15 +70,13 @@ myerror(int errtype, const char *fmt, ...) {
     if ((errno != 0) && (errtype & ERRSTR))
 	fprintf(stderr, ": %s", strerror(errno));
     if (errtype & ERRDB) {
-	if (myerrdb == NULL)
+	if (myerrdb == nullptr)
 	    fprintf(stderr, ": no database");
 	else
             fprintf(stderr, ": %s", myerrdb->error().c_str());
     }
 
     putc('\n', stderr);
-
-    return;
 }
 
 
