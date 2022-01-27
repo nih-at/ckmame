@@ -42,7 +42,7 @@
 
 class ZipSource {
 public:
-    ZipSource(zip_source_t *source_) : source(source_) { }
+    explicit ZipSource(zip_source_t *source_) : source(source_) { }
     ~ZipSource();
     
     void open();

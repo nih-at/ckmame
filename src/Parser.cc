@@ -132,10 +132,7 @@ bool Parser::file_status(filetype_t ft, const std::string &attr) {
 
     CHECK_STATE(PARSE_IN_FILE);
 
-    if (attr == "good") {
-	status = Rom::OK;
-    }
-    else if (attr == "verified") {
+    if (attr == "good" || attr == "verified") {
         status = Rom::OK;
     }
     else if (attr == "baddump") {
@@ -353,7 +350,7 @@ bool Parser::prog_description(const std::string &attr) {
 }
 
 
-bool Parser::prog_header(const std::string attr) {
+bool Parser::prog_header(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     if (detector) {
@@ -404,15 +401,11 @@ bool Parser::prog_version(const std::string &attr) {
 }
 
 
-Parser::~Parser() {
-}
-
-
 Parser::Parser(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER) {
     dat_default.merge(dat, nullptr);
     full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
-    for (size_t i = 0; i < TYPE_MAX; i++) {
-        r[i] = nullptr;
+    for (auto & i : r) {
+        i = nullptr;
     }
 }
 

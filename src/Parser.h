@@ -82,12 +82,12 @@ public:
     bool game_name(const std::string &attr);
     bool game_start();
     bool prog_description(const std::string &attr);
-    bool prog_header(const std::string attr);
+    bool prog_header(const std::string& attr);
     bool prog_name(const std::string &attr);
     bool prog_version(const std::string &attr);
 
     Parser(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags);
-    virtual ~Parser();
+    virtual ~Parser() = default;
 
 protected:
 
@@ -115,4 +115,4 @@ protected:
     DetectorPtr detector;
 };
 
-#endif /* Parser.h */
+#endif // HAD_PARSER_H

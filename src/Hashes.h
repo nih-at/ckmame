@@ -45,7 +45,7 @@ class Hashes {
 public:
     class Update {
     public:
-        Update(Hashes *hashes);
+        explicit Update(Hashes *hashes);
         ~Update();
         
         void update(const void *data, size_t length);
@@ -120,4 +120,4 @@ private:
     void set(int type, std::vector<uint8_t> & hash, const std::vector<uint8_t> &data, bool ignore_zero);
 };
 
-#endif /* hashes.h */
+#endif // HAD_HASHES_H

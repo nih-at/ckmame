@@ -35,7 +35,6 @@
 
 #include <climits>
 
-#include "DB.h"
 #include "Exception.h"
 
 DBStatement::DBStatement(sqlite3 *db_, const std::string &sql_query) : db(db_) {

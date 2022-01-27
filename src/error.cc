@@ -37,7 +37,6 @@
 #include <cstring>
 #include <cstdarg>
 
-#include "compat.h"
 #include "DB.h"
 
 #define DEFAULT_FN "<unknown>"

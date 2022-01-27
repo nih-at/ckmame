@@ -1,5 +1,5 @@
-#ifndef _HAD_ERROR_H
-#define _HAD_ERROR_H
+#ifndef HAD_ERROR_H
+#define HAD_ERROR_H
 
 /*
   error.h -- error printing
@@ -54,4 +54,4 @@ void myerror(int, const char *, ...) PRINTF_LIKE(2, 3);
 void seterrdb(DB *);
 void seterrinfo(const std::string &fn, const std::string &zipn = "");
 
-#endif /* error.h */
+#endif // HAD_ERROR_H

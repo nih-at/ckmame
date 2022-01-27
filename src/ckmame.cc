@@ -44,10 +44,8 @@
 #include "CkmameDB.h"
 #include "Commandline.h"
 #include "Configuration.h"
-#include "diagnostics.h"
 #include "error.h"
 #include "Exception.h"
-#include "fix.h"
 #include "fixdat.h"
 #include "globals.h"
 #include "MemDB.h"
@@ -57,7 +55,6 @@
 #include "superfluous.h"
 #include "Tree.h"
 #include "util.h"
-#include "warn.h"
 
 
 /* to identify roms directory uniquely */

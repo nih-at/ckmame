@@ -101,7 +101,7 @@ std::string MemDB::get_query(int name, bool parameterized) const {
 }
 
 
-void MemDB::ensure(void) {
+void MemDB::ensure() {
     const char *dbname;
 
     if (inited) {
@@ -175,7 +175,7 @@ void MemDB::insert_file(const ArchiveContents *archive, size_t index) {
     
     stmt->execute();
 
-    for (auto pair : file.detector_hashes) {
+    for (const auto &pair : file.detector_hashes) {
         stmt->reset();
         
         stmt->set_uint64("archive_id", archive->id);

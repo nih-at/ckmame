@@ -91,7 +91,7 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 			}
                     }
                     
-                    for (auto it : entity->attr) {
+                    for (const auto &it : entity->attr) {
                         auto &attribute = it.second;
                         auto value = reinterpret_cast<char *>(xmlTextReaderGetAttribute(reader, reinterpret_cast<const xmlChar *>(it.first.c_str())));
 

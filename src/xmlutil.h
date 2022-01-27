@@ -53,8 +53,8 @@ class XmluAttr {
 
 class XmluEntity {
  public:
-    XmluEntity(const std::unordered_map<std::string, XmluAttr> &attributes_, xmlu_tag_cb cb_open_ = nullptr, xmlu_tag_cb cb_close_ = nullptr, int arg1_ = 0) : attr(attributes_), cb_open(cb_open_), cb_close(cb_close_), cb_text(nullptr), arg1(arg1_) { }
-    XmluEntity(xmlu_text_cb cb_text_ = nullptr, int arg1_ = 0) : cb_open(nullptr), cb_close(nullptr), cb_text(cb_text_), arg1(arg1_) { }
+    explicit XmluEntity(const std::unordered_map<std::string, XmluAttr> &attributes_, xmlu_tag_cb cb_open_ = nullptr, xmlu_tag_cb cb_close_ = nullptr, int arg1_ = 0) : attr(attributes_), cb_open(cb_open_), cb_close(cb_close_), cb_text(nullptr), arg1(arg1_) { }
+    explicit XmluEntity(xmlu_text_cb cb_text_ = nullptr, int arg1_ = 0) : cb_open(nullptr), cb_close(nullptr), cb_text(cb_text_), arg1(arg1_) { }
     std::unordered_map<std::string, XmluAttr> attr;
     xmlu_tag_cb cb_open;
     xmlu_tag_cb cb_close;
@@ -64,4 +64,4 @@ class XmluEntity {
 
 int xmlu_parse(ParserSource *, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities);
 
-#endif /* xmlutil.h */
+#endif // HAD_XMLUTIL_H

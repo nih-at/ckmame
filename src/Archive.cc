@@ -49,8 +49,6 @@
 #include "error.h"
 #include "Exception.h"
 #include "file_util.h"
-#include "fix.h"
-#include "fix_util.h"
 #include "globals.h"
 #include "MemDB.h"
 #include "RomDB.h"
@@ -605,7 +603,7 @@ bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
         return true;
     }
     
-    cache_db = CkmameDB::get_db_for_archvie(name);
+    cache_db = CkmameDB::get_db_for_archive(name);
     cache_id = cache_db ? cache_db->get_archive_id(name, filetype) : 0;
 
     if (cache_id > 0) {
@@ -673,7 +671,7 @@ bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorP
         auto &file = files[index];
         std::unordered_map<size_t, DetectorPtr> missing_detectors;
         
-        for (auto pair : detectors) {
+        for (const auto &pair : detectors) {
             if (file.detector_hashes.find(pair.first) == file.detector_hashes.end()) {
                 missing_detectors[pair.first] = pair.second;
             }

@@ -44,7 +44,7 @@ public:
     ArchivePtr da;
     bool opened;
     
-    Garbage(Archive *sa_) : sa(sa_), opened(false) { }
+    explicit Garbage(Archive *sa_) : sa(sa_), opened(false) { }
     
     bool add(uint64_t index, bool copy);
     bool close();
@@ -57,4 +57,4 @@ private:
 
 typedef std::shared_ptr<Garbage> GarbagePtr;
 
-#endif /* garbage.h */
+#endif // HAD_GARBAGE_H

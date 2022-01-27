@@ -47,9 +47,9 @@ class DeleteList {
  public:
     class Mark {
     public:
-        Mark(DeleteListPtr list = DeleteListPtr());
+        explicit Mark(DeleteListPtr list = DeleteListPtr());
         ~Mark();
-        
+
         void commit() { rollback = false; }
 
     private:
@@ -81,4 +81,4 @@ extern DeleteListPtr extra_delete_list;
 extern DeleteListPtr needed_delete_list;
 extern DeleteListPtr superfluous_delete_list;
 
-#endif /* delete_list.h */
+#endif // HAD_DELETE_LIST_H

@@ -415,8 +415,8 @@ dump_list(int type) {
     try {
         auto list = db->read_list(static_cast<enum dbh_list>(type));
 
-        for (size_t i = 0; i < list.size(); i++) {
-            printf("%s\n", list[i].c_str());
+        for (const auto &name : list) {
+            printf("%s\n", name.c_str());
         }
     }
     catch (Exception &e) {
@@ -477,9 +477,9 @@ dump_special(const char *name) {
     } keys[] = {{"/dat", dump_dat, 0}, {"/detector", dump_detector, 0}, {"/hashtypes", dump_hashtypes, 0}, {"/list", dump_list, DBH_KEY_LIST_GAME}, {"/list/disk", dump_list, DBH_KEY_LIST_DISK}, {"/list/game", dump_list, DBH_KEY_LIST_GAME}, {"/stats", dump_stats, 0}};
     static const size_t nkeys = sizeof(keys) / sizeof(keys[0]);
 
-    for (size_t i = 0; i < nkeys; i++) {
-	if (strcasecmp(name, keys[i].key) == 0)
-	    return keys[i].f(keys[i].arg);
+    for (const auto &key : keys) {
+	if (strcasecmp(name, key.key) == 0)
+	    return key.f(key.arg);
     }
 
     myerror(ERRDEF, "unknown special: '%s'", name);

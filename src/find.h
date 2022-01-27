@@ -48,4 +48,4 @@ find_result_t find_in_old(filetype_t filetype, const FileData *file, Archive *ar
 find_result_t find_in_romset(filetype_t ft, size_t detector_id, const FileData *file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match);
 
 
-#endif /* find.h */
+#endif // HAD_FIND_H

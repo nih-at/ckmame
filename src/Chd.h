@@ -44,7 +44,7 @@
 
 class Chd {
 public:
-    Chd(const std::string &name);
+    explicit Chd(const std::string &name);
 
     Hashes hashes;
 
@@ -58,4 +58,4 @@ private:
 
 typedef std::shared_ptr<Chd> ChdPtr;
 
-#endif /* chd.h */
+#endif // HAD_CHD_H

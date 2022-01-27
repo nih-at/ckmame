@@ -72,4 +72,4 @@ public:
     std::string file() const;
 };
 
-#endif /* match.h */
+#endif // HAD_MATCH_H

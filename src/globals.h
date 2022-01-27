@@ -38,4 +38,4 @@
 
 extern Configuration configuration;
 
-#endif /* globals.h */
+#endif // HAD_GLOBALS_H

@@ -224,7 +224,7 @@ void CkmameDB::get_last_change(int id, time_t *mtime, off_t *size) {
 }
 
 
-CkmameDBPtr CkmameDB::get_db_for_archvie(const std::string &name) {
+CkmameDBPtr CkmameDB::get_db_for_archive(const std::string &name) {
     for (auto &directory : cache_directories) {
         if (name.compare(0, directory.name.length(), directory.name) == 0 && (name.length() == directory.name.length() || name[directory.name.length()] == '/')) {
             if (!directory.initialized) {

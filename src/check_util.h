@@ -46,7 +46,7 @@ extern const std::string needed_dir;
 extern const std::string unknown_dir;
 
 void ensure_extra_maps(int flags);
-void ensure_needed_maps(void);
+void ensure_needed_maps();
 std::string findfile(filetype_t filetype, const std::string &name);
 std::string make_file_name(filetype_t filetype, const std::string &name);
 

@@ -36,12 +36,7 @@
 #include <algorithm>
 
 #include "Archive.h"
-#include "Dir.h"
-#include "error.h"
 #include "globals.h"
-#include "RomDB.h"
-#include "util.h"
-
 
 void print_superfluous(DeleteListPtr list) {
     if (list->archives.empty()) {

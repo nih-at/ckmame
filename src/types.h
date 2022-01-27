@@ -61,4 +61,4 @@ enum filetype {
 
 typedef enum filetype filetype_t;
 
-#endif /* types.h */
+#endif // _HAD_TYPES_H

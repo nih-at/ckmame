@@ -32,7 +32,6 @@
 */
 
 
-#include "config.h"
 
 #ifdef HAVE_MD5INIT
 extern "C" {
@@ -49,9 +48,9 @@ extern "C" {
 #include "sha1_own.h"
 #endif
 
+#include <climits>
+#include <cstdlib>
 extern "C" {
-#include <limits.h>
-#include <stdlib.h>
 #include <zlib.h>
 }
 

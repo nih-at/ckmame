@@ -39,7 +39,6 @@
 
 #include "error.h"
 #include "globals.h"
-#include "util.h"
 
 
 OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : fname(fname_), runtest(flags & OUTPUT_FL_RUNTEST) {
@@ -79,8 +78,8 @@ strsvis_cstyle(const std::string &in) {
     auto out = std::string(2 * in.length(), 0);
 
     size_t outpos = 0;
-    for (size_t inpos = 0; inpos < in.length(); inpos++) {
-	switch (in[inpos]) {
+    for (auto c : in) {
+	switch (c) {
 	case '\007':
 	    out[outpos++] = '\\';
 	    out[outpos++] = 'a';
@@ -118,7 +117,7 @@ strsvis_cstyle(const std::string &in) {
 	    out[outpos++] = '#';
 	    break;
 	default:
-	    out[outpos++] = in[inpos];
+	    out[outpos++] = c;
 	    break;
 	}
     }
@@ -136,9 +135,8 @@ bool OutputContextMtree::game(GamePtr game) {
             if (game->files[ft].empty()) {
                 continue;
             }
-            std::string name = dirname;
-            fprintf(f.get(), "./%s type=dir\n", name.c_str());
-            write_files(name, game->files[ft]);
+            fprintf(f.get(), "./%s type=dir\n", dirname.c_str());
+            write_files(dirname, game->files[ft]);
         }
     }
     else {

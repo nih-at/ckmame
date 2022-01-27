@@ -40,17 +40,17 @@
 
 class ParserCm : public Parser {
 public:
-    virtual bool parse();
+    bool parse() override;
 
     ParserCm(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags), ignoring_line(false) { }
-    virtual ~ParserCm() { }
+    ~ParserCm() override = default;
         
 private:
     enum State { TOP, GAME, PROG };
 
     class Tokenizer {
     public:
-        Tokenizer(const std::string &s) : string(s), position(0) { }
+        explicit Tokenizer(const std::string &s) : string(s), position(0) { }
 
         std::string get();
 
@@ -64,4 +64,4 @@ private:
     void warn_unknown_keyword(const std::string &keyword);
 };
 
-#endif /* ParserCm.h */
+#endif // HAD_PARSER_CM_H

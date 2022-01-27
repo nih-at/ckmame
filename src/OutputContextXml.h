@@ -41,11 +41,11 @@
 class OutputContextXml : public OutputContext {
 public:
     OutputContextXml(const std::string &fname, int flags);
-    virtual ~OutputContextXml();
+    ~OutputContextXml() override;
     
-    virtual bool close();
-    virtual bool game(GamePtr game);
-    virtual bool header(DatEntry *dat);
+    bool close() override;
+    bool game(GamePtr game) override;
+    bool header(DatEntry *dat) override;
     
 private:
     xmlDocPtr doc;

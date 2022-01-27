@@ -161,7 +161,7 @@ static bool enter_dir_in_map_and_list(int flags, DeleteListPtr list, const std::
 
     if (ret) {
 	/* clean up cache db: remove archives no longer in file system */
-	auto dbh = CkmameDB::get_db_for_archvie(directory_name);
+	auto dbh = CkmameDB::get_db_for_archive(directory_name);
 	if (dbh) {
 	    auto list_db = dbh->list_archives();
 	    if (!list_db.empty()) {

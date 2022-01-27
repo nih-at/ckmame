@@ -44,17 +44,17 @@ class ArchiveDir : public Archive {
 public:
     ArchiveDir(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_DIR, name, filetype, where, flags) { }
     ArchiveDir(ArchiveContentsPtr contents) : Archive(contents) { }
-    virtual ~ArchiveDir() { update_cache(); }
+    ~ArchiveDir() override { update_cache(); }
 
 protected:
-    virtual bool commit_xxx();
-    virtual void commit_cleanup();
-    virtual void get_last_update();
-    virtual bool read_infos_xxx();
-    virtual ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length);
-    virtual bool have_direct_file_access() const { return true; }
-    virtual std::string get_full_filename(uint64_t index);
-    virtual std::string get_original_filename(uint64_t index);
+    bool commit_xxx() override;
+    void commit_cleanup() override;
+    void get_last_update() override;
+    bool read_infos_xxx() override;
+    ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) override;
+    bool have_direct_file_access() const override { return true; }
+    std::string get_full_filename(uint64_t index) override;
+    std::string get_original_filename(uint64_t index) override;
 
 private:
     class Commit {

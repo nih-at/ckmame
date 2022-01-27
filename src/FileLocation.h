@@ -51,4 +51,4 @@ class FileLocation {
     size_t index;
 };
 
-#endif /* file_location.h */
+#endif // HAD_FILE_LOCATION_H

@@ -39,11 +39,11 @@
 
 class ParserSourceFile : public ParserSource {
 public:
-    ParserSourceFile(const std::string &fname);
-    virtual ~ParserSourceFile();
-    virtual bool close();
-    virtual ParserSourcePtr open(const std::string &name);
-    virtual size_t read_xxx(void *data, size_t length);
+    explicit ParserSourceFile(const std::string &fname);
+    ~ParserSourceFile() override;
+    bool close() override;
+    ParserSourcePtr open(const std::string &name) override;
+    size_t read_xxx(void *data, size_t length) override;
     
 private:
     std::string file_name;

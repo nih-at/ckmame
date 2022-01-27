@@ -82,7 +82,7 @@ ParsedCommandline Commandline::parse(int argc, char *const *argv) {
         
         option_indices[index] = long_options.size();
         struct option long_option = {
-            option.name.c_str(), option.has_argument() ? 1 : 0, 0, index
+            option.name.c_str(), option.has_argument() ? 1 : 0, nullptr, index
         };
         long_options.push_back(long_option);
     }
@@ -90,7 +90,7 @@ ParsedCommandline Commandline::parse(int argc, char *const *argv) {
 #ifdef DEBUG_OPTIONS
     printf("short options: '%s'\n", short_options.c_str());
 #endif
-    struct option terminator = { nullptr, 0, 0, 0 };
+    struct option terminator = { nullptr, 0, nullptr, 0 };
     long_options.push_back(terminator);
         
     auto parsed_commandline = ParsedCommandline();

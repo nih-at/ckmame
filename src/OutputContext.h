@@ -59,7 +59,7 @@ public:
         FORMAT_MTREE
     };
     
-    virtual ~OutputContext() { }
+    virtual ~OutputContext() = default;
 
     static OutputContextPtr create(Format format, const std::string &fname, int flags);
 
@@ -73,4 +73,4 @@ protected:
     void cond_print_hash(FILEPtr f, const std::string &pre, int t, const Hashes *h, const std::string &post);
 };
 
-#endif /* output.h */
+#endif // HAD_OUTPUT_H

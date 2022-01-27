@@ -50,12 +50,6 @@ ArchiveImages::ArchiveImages(const std::string &name, filetype_t filetype, where
 }
 
 
-bool ArchiveImages::file_add_empty_xxx(const std::string &filename) {
-    // disk images can't be empty
-    return false;
-}
-
-
 ZipSourcePtr ArchiveImages::Archive::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) {
     seterrinfo("", name);
     myerror(ERRZIP, "cannot open '%s': reading from CHDs not supported", files[index].name.c_str());
@@ -69,7 +63,7 @@ bool ArchiveImages::read_infos_xxx() {
     }
     
     try {
-        Dir dir(name, contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
+        Dir dir(name, (contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY) == 0);
         std::filesystem::path filepath;
         
         while ((filepath = dir.next()) != "") {

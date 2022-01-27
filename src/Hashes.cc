@@ -34,7 +34,6 @@
 #include "Hashes.h"
 
 #include <cinttypes>
-#include <cstring>
 
 #include "Exception.h"
 #include "util.h"

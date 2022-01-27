@@ -76,7 +76,7 @@ template<> struct hash<MigrationVersions> {
 // This should be a private nested class of DB, but C++ hash support is utterly stupid and doesn't support that.
 class StatementID {
 public:
-    StatementID(int name_) : name(name_), flags(0) { }
+    explicit StatementID(int name_) : name(name_), flags(0) { }
     StatementID(int name_, const Hashes &hashes, bool have_size_) : name(name_), flags(hashes.get_types() | (have_size_ ? have_size : 0) | parameterized) { }
     
     bool operator==(const StatementID &other) const { return name == other.name && flags == other.flags; }

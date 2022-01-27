@@ -34,7 +34,6 @@
 #include "config.h"
 #include "compat.h"
 
-#include <cstring>
 #include <filesystem>
 #include <zip.h>
 
@@ -225,7 +224,7 @@ main(int argc, char **argv) {
             dbname = var;
         }
         else {
-            dbname = RomDB::default_name().c_str();
+            dbname = RomDB::default_name();
         }
     }
     
@@ -268,7 +267,7 @@ main(int argc, char **argv) {
             file_patterns.push_back(DEFAULT_FILE_PATTERNS);
 
             for (auto name : arguments) {
-                auto last = name.find_last_not_of("/");
+                auto last = name.find_last_not_of('/');
                 if (last == std::string::npos) {
                     name = "/";
                 }
@@ -383,8 +382,6 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
             fprintf(stderr, "%s: can't process %s: %s\n", getprogname(), fname.c_str(), exception.what());
 	    return false;
         }
-        
-        return true;
     }
 }
 

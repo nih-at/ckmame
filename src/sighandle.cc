@@ -33,7 +33,7 @@
 
 #include "sighandle.h"
 
-#include <signal.h>
+#include <csignal>
 
 
 volatile int siginfo_caught;
@@ -50,13 +50,11 @@ sighandle(int signo) {
 	break;
     }
 
-    return;
-}
+    }
 
 
 void
 print_info(const std::string &gamename) {
     printf("ckmame: currently checking %s\n", gamename.c_str());
     siginfo_caught = 0;
-    return;
 }

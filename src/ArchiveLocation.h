@@ -35,6 +35,7 @@
  */
 
 #include <string>
+#include <utility>
 
 #include "types.h"
 
@@ -42,8 +43,8 @@ class Archive;
 
 class ArchiveLocation { // TODO: better name
 public:
-    ArchiveLocation(const Archive *a);
-    ArchiveLocation(std::string name_, filetype_t filetype_) : name(name_), filetype(filetype_) { }
+    explicit ArchiveLocation(const Archive *a);
+    ArchiveLocation(std::string name_, filetype_t filetype_) : name(std::move(name_)), filetype(filetype_) { }
 
     std::string name;
     filetype_t filetype;

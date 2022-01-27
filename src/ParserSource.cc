@@ -50,7 +50,7 @@ std::optional<std::string> ParserSource::getline() {
         char *p;
         if (available > 0 && (p = reinterpret_cast<char *>(memchr(current, '\n', available))) != nullptr) {
             auto line = reinterpret_cast<char *>(current);
-            size_t line_length = static_cast<size_t>(p - line);
+            auto line_length = static_cast<size_t>(p - line);
             if (line_length > 0 && line[line_length - 1] == '\r') {
 		line[line_length - 1] = '\0';
             }
@@ -90,7 +90,7 @@ int ParserSource::peek() {
 
 
 size_t ParserSource::read(void *data, size_t length) {
-    uint8_t *buffer = reinterpret_cast<uint8_t *>(data);
+    auto buffer = reinterpret_cast<uint8_t *>(data);
 
     size_t done = 0;
     

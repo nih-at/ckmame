@@ -62,7 +62,7 @@ public:
     bool add(const std::string &game_name);
     bool recheck(const std::string &game_name);
     bool recheck_games_needing(filetype_t filetype, uint64_t size, const Hashes *hashes);
-    void traverse(void);
+    void traverse();
     
 private:
     Tree *add_node(const std::string &game_name, bool check);
@@ -72,4 +72,4 @@ private:
 
 extern Tree check_tree;
 
-#endif /* tree.h */
+#endif // HAD_TREE_H

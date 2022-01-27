@@ -40,7 +40,6 @@ static void file_deleter_close(FILE *f) {
 }
 
 static void file_deleter_noop(FILE *f) {
-    return;
 }
 
 FILEPtr make_shared_file(const std::string &file_name, const std::string &flags) {

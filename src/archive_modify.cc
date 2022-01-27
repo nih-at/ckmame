@@ -100,7 +100,7 @@ void Archive::update_cache() {
     }
     
     if (contents->cache_db == nullptr) {
-        contents->cache_db = CkmameDB::get_db_for_archvie(name);
+        contents->cache_db = CkmameDB::get_db_for_archive(name);
     }
     if (contents->cache_db != nullptr) {
         if (files.empty()) {

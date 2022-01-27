@@ -34,7 +34,7 @@
 #include "ParserSourceFile.h"
 
 #include <filesystem>
-#include <string.h>
+#include <cstring>
 
 #include "error.h"
 #include "Exception.h"

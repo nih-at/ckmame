@@ -35,7 +35,6 @@
 #include "check.h"
 
 #include "check_util.h"
-#include "diagnostics.h"
 #include "find.h"
 #include "globals.h"
 #include "RomDB.h"

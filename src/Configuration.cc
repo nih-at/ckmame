@@ -35,7 +35,6 @@
 
 #include <cstdlib>
 
-#include "config.h"
 #include "RomDB.h"
 #include "util.h"
 

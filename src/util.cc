@@ -47,8 +47,6 @@
 #include "globals.h"
 
 
-std::string rom_dir;
-
 #define BIN2HEX(n) ((n) >= 10 ? (n) + 'a' - 10 : (n) + '0')
 
 
@@ -118,7 +116,9 @@ ensure_dir(const std::string &name, bool strip_filename) {
 
     if (strip_filename) {
 	dir = std::filesystem::path(name).parent_path();
-	if (dir == "") {
+	if (!(dir.empty())) {
+	}
+	else {
 	    return true;
 	}
     }
@@ -176,7 +176,7 @@ std::string string_format_v(const char *format, va_list ap) {
     auto size = strlen(format) + 50;
     std::string str;
     va_list ap2;
-    while (1) {
+    while (true) {
         str.resize(size);
         va_copy(ap2, ap);
         int n = vsnprintf((char *)str.data(), size, format, ap2);
@@ -192,7 +192,6 @@ std::string string_format_v(const char *format, va_list ap) {
             size *= 2;
         }
     }
-    return str;
 }
 
 

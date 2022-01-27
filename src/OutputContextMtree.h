@@ -39,11 +39,11 @@
 class OutputContextMtree : public OutputContext {
 public:
     OutputContextMtree(const std::string &fname, int flags);
-    virtual ~OutputContextMtree();
+    ~OutputContextMtree() override;
     
-    virtual bool close();
-    virtual bool game(GamePtr game);
-    virtual bool header(DatEntry *dat);
+    bool close() override;
+    bool game(GamePtr game) override;
+    bool header(DatEntry *dat) override;
     
 private:
     std::string fname;

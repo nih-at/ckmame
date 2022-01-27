@@ -40,7 +40,7 @@ static std::string header_name;
 static int header_done;
 static warn_type_t header_type;
 
-static void warn_ensure_header(void);
+static void warn_ensure_header();
 
 
 void
@@ -133,7 +133,7 @@ warn_set_info(warn_type_t type, const std::string &name) {
 
 
 static void
-warn_ensure_header(void) {
+warn_ensure_header() {
     /* keep in sync with warn_type_t in warn.h */
     static const char *tname[] = {"archive", "game", "image"};
 

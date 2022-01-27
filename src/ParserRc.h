@@ -39,9 +39,9 @@
 class ParserRc : public Parser {
 public:
     ParserRc(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags) { }
-    virtual ~ParserRc() { }
+    ~ParserRc() override = default;
         
-    virtual bool parse();
+    bool parse() override;
 
 private:
     static const char separator;
@@ -67,7 +67,7 @@ private:
     
     class Tokenizer {
     public:
-        Tokenizer(const std::string &s) : string(s), position(0) { }
+        explicit Tokenizer(const std::string &s) : string(s), position(0) { }
         
         std::string get();
         
@@ -82,4 +82,4 @@ private:
     std::string gamename;
 };
 
-#endif /* ParserRc.h */
+#endif // HAD_PARSER_RC_H

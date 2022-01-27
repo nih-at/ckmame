@@ -74,7 +74,7 @@ bool Tree::recheck(const std::string &game_name) {
         return check;
     }
 
-    for (auto it : children) {
+    for (const auto &it : children) {
         if (it.second->recheck(game_name)) {
             return true;
 	}
@@ -95,7 +95,9 @@ bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashe
         auto game_file = &location.rom;
 
         if ((filetype == TYPE_DISK || size == game_file->hashes.size) && hashes->compare(game_file->hashes) == Hashes::MATCH && game_file->where == FILE_INGAME) {
-            recheck(location.game_name);
+            if (!recheck(location.game_name)) {
+		ok = false;
+	    }
         }
     }
 
@@ -103,10 +105,10 @@ bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashe
 }
 
 
-void Tree::traverse(void) {
+void Tree::traverse() {
     GameArchives archives[] = { GameArchives(), GameArchives(), GameArchives() };
 
-    for (auto it : children) {
+    for (const auto &it : children) {
         it.second->traverse_internal(archives);
     }
 }
@@ -137,7 +139,7 @@ void Tree::traverse_internal(GameArchives *ancestor_archives) {
         process(archives);
     }
 
-    for (auto it : children) {
+    for (const auto &it : children) {
         it.second->traverse_internal(archives);
     }
 }

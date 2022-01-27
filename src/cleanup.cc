@@ -38,10 +38,8 @@
 
 #include "check.h"
 #include "diagnostics.h"
-#include "fix.h"
 #include "fix_util.h"
 #include "Garbage.h"
-#include "util.h"
 #include "warn.h"
 
 

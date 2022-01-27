@@ -69,4 +69,4 @@ public:
     std::vector<FileStatus> archive_files[TYPE_MAX];
 };
 
-#endif /* result.h */
+#endif // HAD_RESULT_H

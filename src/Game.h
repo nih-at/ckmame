@@ -1,5 +1,5 @@
-#ifndef _HAD_GAME_H
-#define _HAD_GAME_H
+#ifndef HAD_GAME_H
+#define HAD_GAME_H
 
 /*
   game.h -- information about one game
@@ -54,4 +54,4 @@ public:
 
 typedef std::shared_ptr<Game> GamePtr;
 
-#endif /* game.h */
+#endif // HAD_GAME_H

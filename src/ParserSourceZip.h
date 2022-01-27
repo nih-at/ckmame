@@ -41,11 +41,11 @@
 class ParserSourceZip : public ParserSource {
 public:
     ParserSourceZip(const std::string &archive_name, struct zip *za, const std::string &file_name, bool relaxed = false);
-    virtual ~ParserSourceZip();
+    ~ParserSourceZip() override;
     
-    virtual bool close();
-    virtual ParserSourcePtr open(const std::string &name);
-    virtual size_t read_xxx(void *data, size_t length);
+    bool close() override;
+    ParserSourcePtr open(const std::string &name) override;
+    size_t read_xxx(void *data, size_t length) override;
     
 private:
     std::string archive_name;

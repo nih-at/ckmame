@@ -41,9 +41,9 @@ class Detector;
 
 class DetectorDescriptor {
 public:
-    DetectorDescriptor() { }
+    DetectorDescriptor() = default;
     DetectorDescriptor(const std::string &name_, const std::string &version_) : name(name_), version(version_) { }
-    DetectorDescriptor(const Detector *detector);
+    explicit DetectorDescriptor(const Detector *detector);
     
     std::string name;
     std::string version;

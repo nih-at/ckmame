@@ -37,15 +37,13 @@
 #include <string>
 #include <vector>
 
-#include <stdarg.h>
+#include <cstdarg>
 
 #include "printf_like.h"
 
 enum name_type { NAME_ZIP, NAME_IMAGES, NAME_IGNORE, NAME_UNKNOWN };
 
 typedef enum name_type name_type_t;
-
-extern std::string rom_dir;
 
 std::vector<uint8_t> hex2bin(const std::string &hex);
 std::string bin2hex(const std::vector<uint8_t> &bin);

@@ -42,15 +42,15 @@
 
 class Exception : public std::exception {
 public:
-    Exception() { }
-    Exception(const std::string &message_) : message(message_) { }
+    Exception() = default;
+    explicit Exception(const std::string &message_) : message(message_) { }
     Exception(const char *format, ...) PRINTF_LIKE(2, 3);
 
     Exception append_detail(const std::string &str);
     Exception append_system_error(int code = -1); // default: use current errno
     Exception append_filesystem_error(const std::error_code &code);
 
-    virtual const char* what() const throw();
+    const char* what() const noexcept override;
 
 private:
     std::string message;

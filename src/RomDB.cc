@@ -373,7 +373,7 @@ std::vector<RomLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes &h
     
     stmt->set_int("file_type", ft);
     stmt->set_int("status", Rom::NO_DUMP);
-    stmt->set_hashes(hashes, 0);
+    stmt->set_hashes(hashes, false);
 
     std::vector<RomLocation> result;
 
@@ -687,8 +687,8 @@ int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEn
 	return -1;
     }
 
-    for (size_t i = 0; i < list.size(); i++) {
-        GamePtr game = read_game(list[i]);
+    for (const auto &name : list) {
+        GamePtr game = read_game(name);
         if (!game) {
 	    /* TODO: error */
 	    continue;

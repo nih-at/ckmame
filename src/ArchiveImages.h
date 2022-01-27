@@ -43,10 +43,9 @@ public:
     virtual ~ArchiveImages() { update_cache(); }
     
 protected:
-    virtual bool file_add_empty_xxx(const std::string &filename);
-    virtual bool file_ensure_hashes(uint64_t idx, int hashtypes) { return true; }
-    virtual bool read_infos_xxx();
-    virtual bool want_crc() const { return false; }
+    bool file_ensure_hashes(uint64_t idx, int hashtypes) override { return true; }
+    bool read_infos_xxx() override;
+    bool want_crc() const override { return false; }
 };
 
 #endif // _HAD_ARCHIVE_IMAGES_H

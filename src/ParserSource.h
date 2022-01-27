@@ -66,4 +66,4 @@ private:
     void buffer_allocate(size_t n); // ensure space for n bytes of valid data (from current)
 };
 
-#endif /* parser_source.h */
+#endif // HAD_PARSER_SOURCE_H

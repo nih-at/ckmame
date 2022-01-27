@@ -39,11 +39,11 @@
 class ParserXml : public Parser {
 public:
     ParserXml(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags) { }
-    virtual ~ParserXml() { }
+    ~ParserXml() override = default;
      
-    virtual bool parse();
+    bool parse() override;
 
 private:
 };
 
-#endif /* ParserXml.h */
+#endif // HAD_PARSER_XML_H
