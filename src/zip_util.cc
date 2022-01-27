@@ -74,32 +74,6 @@ std::string ZipSource::error() {
 
 static bool my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx);
 
-int
-my_zip_rename(struct zip *za, uint64_t idx, const char *name) {
-    int zerr;
-    zip_int64_t idx2;
-
-    if (zip_rename(za, idx, name) == 0) {
-	return 0;
-    }
-
-    zip_error_get(za, &zerr, nullptr);
-
-    if (zerr != ZIP_ER_EXISTS) {
-	return -1;
-    }
-
-    idx2 = zip_name_locate(za, name, 0);
-    if (idx2 == -1) {
-	return -1;
-    }
-    if (!my_zip_rename_to_unique(za, (zip_uint64_t)idx2)) {
-	return -1;
-    }
-
-    return zip_rename(za, idx, name);
-}
-
 
 static bool
 my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx) {

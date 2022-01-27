@@ -58,6 +58,4 @@ public:
 typedef std::shared_ptr<ZipSource> ZipSourcePtr;
 
 
-int my_zip_rename(zip_t *za, uint64_t idx, const char *name);
-
 #endif /* _HAD_ZIP_UTIL_H */
