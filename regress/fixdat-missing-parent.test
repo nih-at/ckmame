@@ -1,10 +1,10 @@
 description test all games, some files found, create fixdat
 features LIBXML2
 return 0
-args -Fvc -D ../mamedb-merge-parent.db --fixdat fix_test.dat
+args -Fvc -D ../mamedb-merge-parent.db --create-fixdat
 file roms/parent.zip 1-8-ok.zip 1-8-ok.zip
 file-del roms/child.zip 1-8-ok.zip
-file-new fix_test.dat fixdat-missing-parent.dat
+file-new "fixdat_ckmame test db (1).dat" fixdat-missing-parent.fixdat
 no-hashes roms parent.zip
 no-hashes roms child.zip
 stdout In game grandparent:

@@ -182,7 +182,7 @@ void ArchiveDir::Commit::rename_file(const std::filesystem::path &source, const 
 
 void ArchiveDir::Commit::rename(const std::filesystem::path &source, const std::filesystem::path &destination) {
     std::filesystem::rename(source, destination);
-    undos.push_back(Operation(destination, source));
+    undos.emplace_back(destination, source);
     cleanup_directories.insert(source.parent_path());
 }
 
@@ -248,7 +248,7 @@ void ArchiveDir::Commit::ensure_parent_directory(const std::filesystem::path &fi
 
 bool ArchiveDir::read_infos_xxx() {
     try {
-	 Dir dir(name, contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
+	 Dir dir(name, !(contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY));
 	 std::filesystem::path filepath;
 
 	 while ((filepath = dir.next()) != "") {

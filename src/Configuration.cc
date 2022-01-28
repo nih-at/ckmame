@@ -64,6 +64,7 @@ Configuration::Configuration() :
     romdb_name(RomDB::default_name()),
     olddb_name(RomDB::default_old_name()),
     rom_directory("roms"),
+    create_fixdat(false),
     roms_zipped(true),
     keep_old_duplicate(false),
     fix_romset(false),
@@ -88,8 +89,8 @@ Configuration::Configuration() :
 }
 
 static void set_bool(const toml::table &table, const std::string &name, bool &variable);
-static void set_string(const toml::table &table, const std::string &name, std::string &variable);
-static void set_string_vector(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);
+static void set_string(const toml::table &table, const std::string &set, const std::string &name, std::string &variable);
+static void set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append);
 
 
 bool Configuration::merge_config_file(const std::string &fname, const std::string &set, bool optional) {
@@ -111,7 +112,7 @@ bool Configuration::merge_config_file(const std::string &fname, const std::strin
     
     auto global_table = table["global"].as_table();
     if (global_table != nullptr) {
-        merge_config_table(global_table);
+        merge_config_table(global_table, set);
         
         if (!set.empty()) {
             auto known_sets = (*global_table)["sets"].as_array();
@@ -131,7 +132,7 @@ bool Configuration::merge_config_file(const std::string &fname, const std::strin
         auto set_table = table[set].as_table();
         
         if (set_table != nullptr) {
-            merge_config_table(set_table);
+            merge_config_table(set_table, set);
             set_known = true;
         }
     }
@@ -143,24 +144,25 @@ bool Configuration::merge_config_file(const std::string &fname, const std::strin
 }
 
 
-void Configuration::merge_config_table(void *p) {
+void Configuration::merge_config_table(void *p, const std::string &set) {
     const auto &table = *reinterpret_cast<toml::table *>(p);
 
     // TODO: autofixdat
     set_bool(table, "complete-games-only", complete_games_only);
-    set_string(table, "db", romdb_name);
-    set_string_vector(table, "extra-directory", extra_directories, false);
-    set_string_vector(table, "extra-directory-append", extra_directories, true);
-    set_string(table, "fixdat", fixdat);
+    set_bool(table, "create-fixdat", create_fixdat);
+    set_string(table, set, "db", romdb_name);
+    set_string_vector(table, set, "extra-directory", extra_directories, false);
+    set_string_vector(table, set, "extra-directory-append", extra_directories, true);
+    set_string(table, "fixdat_directory", set, fixdat_directory);
     set_bool(table, "keep-old-duplicate", keep_old_duplicate);
     set_bool(table, "move-from-extra", move_from_extra);
-    set_string(table, "old-db", olddb_name);
+    set_string(table, set, "old-db", olddb_name);
     set_bool(table, "report-correct", report_correct);
     set_bool(table, "report-detailed", report_detailed);
     set_bool(table, "report-fixable", report_fixable);
     set_bool(table, "report-missing", report_missing);
     set_bool(table, "report-summary", report_summary);
-    set_string(table, "rom-dir", rom_directory);
+    set_string(table, set, "rom-dir", rom_directory);
     set_bool(table, "roms-unzipped", roms_zipped);
     set_bool(table, "verbose", verbose);
     // set_bool(table, "warn-file-known", warn_file_known);
@@ -178,15 +180,19 @@ static void set_bool(const toml::table &table, const std::string &name, bool &va
 }
 
 
-static void set_string(const toml::table &table, const std::string &name, std::string &variable) {
+static void set_string(const toml::table &table, const std::string &set, const std::string &name, std::string &variable) {
     auto value = table[name].value<std::string>();
     if (value.has_value()) {
-        variable = value.value();
+	variable = std::string(value.value());
+	auto start = variable.find("$set");
+	if (start != std::string::npos) {
+	    variable.replace(start, 4, set);
+	}
     }
 }
 
 
-static void set_string_vector(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append) {
+static void set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append) {
     auto array = table[name].as_array();
     if (array != nullptr) {
         if (!append) {

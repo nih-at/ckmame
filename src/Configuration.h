@@ -71,8 +71,9 @@ public:
     std::string rom_directory;
     std::vector<std::string> extra_directories;
     
-    std::string fixdat;
-    
+    bool create_fixdat;
+    std::string fixdat_directory;
+
     bool roms_zipped;
     bool keep_old_duplicate;
 
@@ -130,8 +131,7 @@ public:
 /*    bool warn_extra_used; */
     
 private:
-    void merge_config_table(void *); // use void * to avoid exposing TOML header
+    void merge_config_table(void *, const std::string &set); // use void * to avoid exposing TOML header
 };
 
 #endif // HAD_CONFIGURATION_H
-

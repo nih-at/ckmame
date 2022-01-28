@@ -179,6 +179,24 @@ sub dir_comparator_zip {
 }
 
 
+sub comparator_fixdat {
+	my ($test, $got, $expected) = @_;
+
+	my @args = ("diff", "-I", "<version>[-:0-9 ]*</version>");
+	if ($test->{verbose}) {
+		push @args, "-u";
+	}
+	else {
+		push @args, "-q";
+	}
+	push @args, ($expected, $got);
+
+	my $ret = system(@args);
+
+	return $ret == 0;
+}
+
+
 sub dir_copier_zip {
 	my ($test, $src, $dest) = @_;
 
@@ -309,6 +327,7 @@ $test->add_directive('not-in-ckmamedb' => {
 });
 
 $test->add_comparator('db/dump', \&comparator_db);
+$test->add_comparator("dat/fixdat", \&comparator_fixdat);
 $test->add_comparator('dir/zip/zip', \&dir_comparator_zip);
 $test->add_comparator('zip/zip', \&NiHTest::comparator_zip);
 $test->add_comparator("7z/zip", \&comparator_libarchive);

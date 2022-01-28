@@ -939,36 +939,34 @@ sub parse_arg_types {
 sub parse_args {
 	my ($self, $def, $str) = @_;
 
-	if ($def->{type} eq 'string...') {
-		my $args = [];
-
-		while ($str ne '') {
-			if ($str =~ m/^\"/) {
-				unless ($str =~ m/^\"([^\"]*)\"\s*(.*)/) {
-					$self->warn_file_line("unclosed quote in [$str]");
-					return undef;
-				}
-				push @$args, $1;
-				$str = $2;
-			}
-			else {
-				$str =~ m/^(\S+)\s*(.*)/;
-				push @$args, $1;
-				$str = $2;
-			}
-		}
-
-		return $args;
-	}
-	
 	my $expected = scalar(@{$def->{argument_types}});
 
 	if ($expected == 1 && $def->{optional} == 0 && $def->{ellipsis} == 0) {
 		return $self->parse_arg($def->{argument_types}->[0], $str);
 	}
+
+	my @strs = ();
+
+	while ($str ne '') {
+		if ($str =~ m/^\"/) {
+			unless ($str =~ m/^\"([^\"]*)\"\s*(.*)/) {
+				$self->warn_file_line("unclosed quote in [$str]");
+				return undef;
+			}
+			push @strs, $1;
+			$str = $2;
+		}
+		else {
+			$str =~ m/^(\S+)\s*(.*)/;
+			push @strs, $1;
+			$str = $2;
+		}
+	}
+
+	if ($def->{type} eq 'string...') {
+		return \@strs;
+	}
 	else {
-		my @strs = split /\s+/, $str;
-		
 		my $got = scalar(@strs);
 		
 		if (!$def->{ellipsis} && ($got < $expected - $def->{optional} || $got > $expected)) {

@@ -64,7 +64,7 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("directory-cache", "create cache of scanned input directory (default)"),
     Commandline::Option("exclude", 'x', "pattern", "exclude games matching shell glob pattern"),
     Commandline::Option("format", 'F', "format", "specify output format (default: db)"),
-    Commandline::Option("hash-types", 'C', "types", "specify hash types to compute (default: all"),
+    Commandline::Option("hash-types", 'C', "types", "specify hash types to compute (default: all)"),
     Commandline::Option("no-directory-cache", "don't create cache of scanned input directory"),
     Commandline::Option("only-files", "pattern", "only use zip members matching shell glob pattern"),
     Commandline::Option("output", 'o', "dbfile", "write to database dbfile (default: mame.db)"),

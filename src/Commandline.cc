@@ -235,7 +235,7 @@ bool Commandline::Option::operator<(const Option &other) const {
     }
     else {
         if (other.short_name.has_value()) {
-            return compare_char(name[0], other.short_name.value());
+            return compare_char(name[0], other.short_name.value()) < 0;
         }
         else {
             return strcasecmp(name.c_str(), other.name.c_str()) < 0;

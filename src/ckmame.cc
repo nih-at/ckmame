@@ -36,6 +36,8 @@
 #include <filesystem>
 #include <string>
 
+#include <ctime>
+
 #include "compat.h"
 #include "config.h"
 
@@ -69,18 +71,19 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("help", 'h', "display this help message"),
     Commandline::Option("version", 'V', "display version number"),
 
-    Commandline::Option("autofixdat", "write fixdat to 'fix_$NAME_OF_SET.dat'"),
     Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
     Commandline::Option("config", "file", "read configuration from file"),
     Commandline::Option("copy-from-extra", "keep used files in extra directories (default)"),
+    Commandline::Option("create-fixdat", "write fixdat to 'fix_$NAME_OF_SET.dat'"),
     Commandline::Option("db", 'D', "dbfile", "use mame-db dbfile"),
     Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option)"),
     Commandline::Option("fix", 'F', "fix ROM set"),
-    Commandline::Option("fixdat", "datfile", "write fixdat to 'datfile'"),
+    Commandline::Option("fixdat-directory", "directory", "create fixdats in directory"),
     Commandline::Option("game-list", 'T', "file", "read games to check from file"),
     Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
     Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
     Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
+    Commandline::Option("no-create-fixdat", "don't create fixdat (default)"),
     Commandline::Option("no-report-correct", "don't report status of ROMs that are correct (default)"),
     Commandline::Option("no-report-detailed", "don't report status of every ROM (default)"),
     Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
@@ -109,7 +112,6 @@ main(int argc, char **argv) {
     try {
 	int found;
 	std::string game_list;
-	auto auto_fixdat = false;
 	std::vector<std::string> arguments;
 		
 	auto commandline = Commandline(options, "[game ...]", help_head, help_footer);
@@ -159,14 +161,14 @@ main(int argc, char **argv) {
 	    auto extra_directory_specified = false;
 	    
 	    for (const auto &option : args.options) {
-		if (option.name == "autofixdat") {
-		    auto_fixdat = true;
-		}
-		else if (option.name == "complete-games-only") {
+		if (option.name == "complete-games-only") {
 		    configuration.complete_games_only = true;
 		}
 		else if (option.name == "copy-from-extra") {
 		    configuration.move_from_extra = false;
+		}
+		else if (option.name == "create-fixdat") {
+		    configuration.create_fixdat = true;
 		}
 		else if (option.name == "db") {
 		    configuration.romdb_name = option.argument;
@@ -189,8 +191,8 @@ main(int argc, char **argv) {
 		else if (option.name == "fix") {
 		    configuration.fix_romset = true;
 		}
-		else if (option.name == "fixdat") {
-		    configuration.fixdat = option.argument;
+		else if (option.name == "fixdat-directory") {
+		    configuration.fixdat_directory = option.argument;
 		}
 		else if (option.name == "game-list") {
 		    game_list = option.argument;
@@ -206,6 +208,9 @@ main(int argc, char **argv) {
 		}
 		else if (option.name == "no-complete-games-only") {
 		    configuration.complete_games_only = false;
+		}
+		else if (option.name == "no-create-fixdat") {
+		    configuration.create_fixdat = false;
 		}
 		else if (option.name == "no-report-correct") {
 		    configuration.report_correct = false;
@@ -302,30 +307,26 @@ main(int argc, char **argv) {
 	    /* TODO: check for errors other than ENOENT */
 	}
 
-	if (auto_fixdat || !configuration.fixdat.empty()) {
+	if (configuration.create_fixdat) {
 	    DatEntry de;
 
-	    if (auto_fixdat) {
-		if (!configuration.fixdat.empty()) {
-		    myerror(ERRDEF, "do not use --autofixdat and --fixdat together");
-		    exit(1);
-		}
+	    auto d = db->read_dat();
 
-		auto d = db->read_dat();
-
-		if (d.empty()) {
-		    myerror(ERRDEF, "database error reading /dat");
-		    exit(1);
-		}
-
-		configuration.fixdat = "fix_" + d[0].name + " (" + d[0].version + ").dat";
+	    if (d.empty()) {
+		myerror(ERRDEF, "database error reading /dat");
+		exit(1);
 	    }
 
-	    de.name = "Fixdat";
-	    de.description = "Fixdat by ckmame";
-	    de.version = "1";
+	    auto fixdat_fname = "fixdat_" + d[0].name + " (" + d[0].version + ").dat";
+	    if (!configuration.fixdat_directory.empty()) {
+		fixdat_fname = configuration.fixdat_directory + "/" + fixdat_fname;
+	    }
 
-	    if ((fixdat = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, configuration.fixdat, 0)) == nullptr) {
+	    de.name = "Fixdat for " + d[0].name + " (" + d[0].version + ")";
+	    de.description = "Fixdat by ckmame";
+	    de.version = format_time("%Y-%m-%d %H:%M:%S", time(nullptr));
+
+	    if ((fixdat = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, fixdat_fname, 0)) == nullptr) {
 		exit(1);
 	    }
 

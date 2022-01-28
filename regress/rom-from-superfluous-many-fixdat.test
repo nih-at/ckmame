@@ -2,7 +2,7 @@ description test all games, some files in superfluous, fix
 features LIBXML2
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -Fvc --report-detailed --fixdat fix_test.dat
+args -D ../mamedb-disk-many.db -Fvc --report-detailed --create-fixdat
 file-del roms/1-4-ok.zip 1-4-ok.zip
 file-del roms/1-8-ok.zip 1-8-ok.zip
 file-del roms/1-a-ok.zip 1-a-ok.zip
@@ -31,7 +31,7 @@ file-new roms/parent-4.zip 1-4-ok.zip
 file-new roms/zero-4.zip zero-4-ok.zip
 file-new roms/zero.zip zero-ok.zip
 file-new roms/zerobadcrc.zip zero-ok.zip
-file-new fix_test.dat rom-from-superfluous-many-fixdat.dat
+file-new "fixdat_ckmame test db (1).dat" rom-from-superfluous-many-fixdat.fixdat
 file roms/disk/108-5.chd 108-5.chd 108-5.chd
 file roms/disk-nogood/108-nogood.chd 108-5.chd 108-5.chd
 file roms/diskgood-romnogood/108-5.chd 108-5.chd 108-5.chd

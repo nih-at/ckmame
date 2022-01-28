@@ -2,9 +2,9 @@
 <!DOCTYPE datafile PUBLIC "-//Logiqx//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">
 <datafile>
   <header>
-    <name>Fixdat</name>
+    <name>Fixdat for game-with-disk (1)</name>
     <description>Fixdat by ckmame</description>
-    <version>1</version>
+    <version>0000-00-00 00:00:00</version>
     <author>automatically generated</author>
   </header>
   <game name="disk">

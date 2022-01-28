@@ -38,6 +38,7 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <strstream>
 #include <vector>
 
 #include "CkmameDB.h"
@@ -217,4 +218,11 @@ std::string slurp(const std::string &filename) {
     f.read(text.data(), static_cast<std::streamsize>(size));
         
     return text;
+}
+
+
+std::string format_time(const std::string &format, time_t timestamp) {
+    std::strstream str;
+    str << std::put_time(localtime(&timestamp), format.c_str());
+    return str.str();
 }

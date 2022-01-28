@@ -2,13 +2,17 @@
 <!DOCTYPE datafile PUBLIC "-//Logiqx//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">
 <datafile>
   <header>
-    <name>Fixdat</name>
+    <name>Fixdat for ckmame test db (1)</name>
     <description>Fixdat by ckmame</description>
-    <version>1</version>
+    <version>0000-00-00 00:00:00</version>
     <author>automatically generated</author>
   </header>
   <game name="grandparent">
     <description>grandparent</description>
     <rom name="04.rom" size="4" crc="d87f7e0c"/>
+  </game>
+  <game name="parent">
+    <description>parent</description>
+    <rom name="08.rom" size="8" crc="3656897d"/>
   </game>
 </datafile>

@@ -52,6 +52,7 @@ name_type_t name_type(const std::string &name);
 bool ensure_dir(const std::string &name, bool strip_filename);
 bool is_ziplike(const std::string &fname);
 void print_human_number(FILE *f, uint64_t value);
+std::string format_time(const std::string &format, time_t timestamp);
 std::string string_format(const char *format, ...) PRINTF_LIKE(1, 2);
 std::string string_format_v(const char *format, va_list ap);
 std::string slurp(const std::string &fname);
