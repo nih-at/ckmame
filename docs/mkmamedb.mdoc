@@ -1,4 +1,4 @@
-.\" Copyright (c) 2005-2020 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005-2022 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd October 3, 2020
+.Dd January 28, 2022
 .Dt MKMAMEDB 1
 .Os
 .Sh NAME
@@ -34,13 +34,15 @@
 .Nd create database for use by ckmame
 .Sh SYNOPSIS
 .Nm
-.Op Fl hutV
-.Op Fl C Ar hashtypes
-.Op Fl F Ar outputformat
+.Op Fl htuV
+.Op Fl C Ar types
+.Op Fl F Ar format
 .Op Fl o Ar dbfile
-.Op Fl x Ar pat
-.Op Fl Fl detector Ar file
-.Op Fl Fl exclude Ar pat
+.Op Fl x Ar pattern
+.Op Fl Fl detector Ar xml\-file
+.Op Fl Fl directory\-cache
+.Op Fl Fl exclude Ar pattern
+.Op Fl Fl format Ar format
 .Op Fl Fl hash\-types Ar types
 .Op Fl Fl help
 .Op Fl Fl no\-directory\-cache
@@ -51,6 +53,7 @@
 .Op Fl Fl prog\-version Ar version
 .Op Fl Fl roms\-unzipped
 .Op Fl Fl skip\-files Ar pattern
+.Op Fl Fl use\-temp\-directory
 .Op Fl Fl version
 .Op Ar rominfo\-file ...
 .Sh DESCRIPTION
@@ -114,7 +117,26 @@ A comma separated list of hash types to compute when creating a ROM
 set description from a directory of zip archives.
 Supported hash types are: crc, md5, sha1.
 Default are all.
-.It Fl F Ar outputformat , Fl Fl format Ar outputformat
+.It Fl Fl detector Ar xml\-file
+Use CMPro XML header skip detector description from
+.Ar file .
+This overrides any detectors given in the file itself.
+.Nm
+looks for the detector in the input file (if it is a zip file) or
+the directory of the input file.
+.It Fl Fl directory\-cache
+When
+.Nm
+is used to create a database from an input directory, it will by
+default write a
+.Pa .ckmame.db
+database file to it, caching the directory contents' hashes in it so
+that consecutive re-runs are faster.
+When
+.Nm
+finds such a database, it only computes the hashes for the files that
+have changed since the last run.
+.It Fl F Ar format , Fl Fl format Ar format
 Specify output format.
 Supported formats are 
 .Cm cm 
@@ -128,32 +150,16 @@ database), and
 .Xr ( mtree 8
 file).
 The default is cm.
-.It Fl Fl detector Ar file
-Use CMPro XML header skip detector description from
-.Ar file .
-This overrides any detectors given in the file itself.
-.Nm
-looks for the detector in the input file (if it is a zip file) or
-the directory of the input file.
 .It Fl h , Fl Fl help
 Display a short help message.
+.It Fl Fl no\-directory\-cache
+Turn off
+.Fl Fl directory\-cache .
 .It Fl o Ar dbfile , Fl Fl output Ar dbfile
 Write to database
 .Ar dbfile
 instead of the default
 .Dq Pa mame.db .
-.It Fl Fl no\-directory\-cache
-When
-.Nm
-is used to create a database from an input directory, it will by
-default write a
-.Pa .ckmame.db
-database file to it, caching the directory contents' hashes in it so
-that consecutive re-runs are faster.
-When
-.Nm
-finds such a database, it only computes the hashes for the files that
-have changed since the last run.
 .It Fl Fl only\-files Ar pattern
 When reading files from the file system as input,
 only accept files matching the shell glob
