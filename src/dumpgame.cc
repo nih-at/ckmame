@@ -68,8 +68,7 @@ Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n\
 
 std::vector<Commandline::Option> options = {
     Commandline::Option("brief", 'b', "brief listing (omit ROM details)"),
-    Commandline::Option("checksum", 'c', "find games containing ROMs with given checksums"),
-    Commandline::Option("disk", 'd', "find games containing disks with given checksums")
+    Commandline::Option("checksum", 'c', "find games containing ROMs or disks with given checksums"),
 };
 
 
@@ -80,8 +79,7 @@ std::unordered_set<std::string> used_variables = {
 
 static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 
-static void
-print_checksums(const Hashes *hashes) {
+static void print_checksums(const Hashes *hashes) {
     for (int i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
 	if (hashes->has_type(i)) {
             printf(" %s %s", Hashes::type_name(i).c_str(), hashes->to_string(i).c_str());
@@ -90,8 +88,7 @@ print_checksums(const Hashes *hashes) {
 }
 
 
-static void
-print_diskline(Rom *disk) {
+static void print_diskline(Rom *disk) {
     printf("\t\tdisk %-12s", disk->name.c_str());
     print_checksums(&disk->hashes);
     printf(" status %s in %s", disk->status_name(true).c_str(), where_name[disk->where]);
@@ -102,16 +99,14 @@ print_diskline(Rom *disk) {
 }
 
 
-static void
-print_footer(int matches, Hashes *hash) {
+static void print_footer(int matches, Hashes *hash) {
     printf("%d matches found for checksum", matches);
     print_checksums(hash);
     putc('\n', stdout);
 }
 
 
-static void
-print_romline(Rom *rom) {
+static void print_romline(Rom *rom) {
     printf("\t\tfile %-12s  size ", rom->name.c_str());
     if (rom->is_size_known()) {
 	printf("%7" PRIu64, rom->hashes.size);
@@ -145,28 +140,27 @@ static void print_match(GamePtr game, filetype_t ft, size_t i) {
 }
 
 
-static void print_matches(filetype_t ft, Hashes *hash) {
+static void print_matches(Hashes *hash) {
     int matches_count = 0;
 
-    auto matches = db->read_file_by_hash(ft, *hash);
-    if (matches.empty()) {
-	print_footer(0, hash);
-	return;
-    }
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+	auto filetype = static_cast<filetype_t>(ft);
+	auto matches = db->read_file_by_hash(filetype, *hash);
 
-    for (const auto &match : matches) {
-	if ((match.rom.hashes.get_types() & hash->get_types()) != hash->get_types()) {
-            continue;
-        }
-	auto game = db->read_game(match.game_name);
-	if (!game) {
-	    myerror(ERRDEF, "db error: %s not found, though in hash index", match.game_name.c_str());
-	    /* TODO: remember error */
-	    continue;
+	for (const auto &match : matches) {
+	    if ((match.rom.hashes.get_types() & hash->get_types()) != hash->get_types()) {
+		continue;
+	    }
+	    auto game = db->read_game(match.game_name);
+	    if (!game) {
+		myerror(ERRDEF, "db error: %s not found, though in hash index", match.game_name.c_str());
+		/* TODO: remember error */
+		continue;
+	    }
+
+	    print_match(game, filetype, match.index);
+	    matches_count++;
 	}
-
-	print_match(game, ft, match.index);
-	matches_count++;
     }
 
     print_footer(matches_count, hash);
@@ -176,7 +170,6 @@ static void print_matches(filetype_t ft, Hashes *hash) {
 int main(int argc, char **argv) {
     auto find_checksum = false;
     auto brief_mode = false;
-    auto filetype = TYPE_ROM;
 
     setprogname(argv[0]);
 
@@ -198,11 +191,6 @@ int main(int argc, char **argv) {
 		}
 		else if (option.name == "checksum") {
 		    find_checksum = true;
-		    filetype = TYPE_ROM;
-		}
-		else if (option.name == "disk") {
-		    find_checksum = true;
-		    filetype = TYPE_DISK;
 		}
 	    }
 
@@ -235,7 +223,7 @@ int main(int argc, char **argv) {
         std::sort(list.begin(), list.end());
 
         /* find matches for ROMs */
-        if (find_checksum != 0) {
+        if (find_checksum) {
             Hashes match;
 
             for (auto i = optind; i < argc; i++) {
@@ -245,7 +233,7 @@ int main(int argc, char **argv) {
                     exit(2);
                 }
 
-                print_matches(filetype, &match);
+                print_matches(&match);
             }
             exit(0);
         }
