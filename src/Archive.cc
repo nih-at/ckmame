@@ -36,6 +36,7 @@
 #include <algorithm>
 #include <cerrno>
 #include <cstring>
+#include <utility>
 
 #include "config.h"
 #include "ArchiveDir.h"
@@ -57,13 +58,15 @@
 
 //#define DEBUG_LC
 
+bool Archive::read_only_mode = false;
+
 uint64_t ArchiveContents::next_id;
 std::unordered_map<ArchiveContents::TypeAndName, std::weak_ptr<ArchiveContents>> ArchiveContents::archive_by_name;
 std::unordered_map<uint64_t, ArchiveContentsPtr> ArchiveContents::archive_by_id;
 
-ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, filetype_t filetype_, where_t where_, int flags_, const std::string &filename_extension_) :
+ArchiveContents::ArchiveContents(ArchiveType type_, std::string name_, filetype_t filetype_, where_t where_, int flags_, std::string filename_extension_) :
     id(0),
-    name(name_),
+    name(std::move(name_)),
     filetype(filetype_),
     where(where_),
     cache_id(0),
@@ -71,10 +74,10 @@ ArchiveContents::ArchiveContents(ArchiveType type_, const std::string &name_, fi
     mtime(0),
     size(0),
     archive_type(type_),
-    filename_extension(filename_extension_) { }
+    filename_extension(std::move(filename_extension_)) { }
 
 Archive::Archive(ArchiveContentsPtr contents_) :
-    contents(contents_),
+    contents(std::move(contents_)),
     files(contents->files),
     name(contents->name),
     filetype(contents->filetype),
@@ -86,7 +89,7 @@ Archive::Archive(ArchiveContentsPtr contents_) :
 
 Archive::Archive(ArchiveType type, const std::string &name_, filetype_t ft, where_t where_, int flags_) : Archive(std::make_shared<ArchiveContents>(type, name_, ft, where_, flags_)) { }
 
-ArchivePtr Archive::open(ArchiveContentsPtr contents) {
+ArchivePtr Archive::open(const ArchiveContentsPtr& contents) {
     ArchivePtr archive;
     
     if (contents->open_archive.expired()) {
@@ -160,10 +163,10 @@ void Archive::ensure_valid_archive() {
         printf("%s: rename broken archive to '%s'\n", name.c_str(), new_name.c_str());
     }
     if (!rename_or_move(name, new_name)) {
-        throw("can't rename file"); // TODO: rename_or_move should throw
+        throw(Exception("can't rename file")); // TODO: rename_or_move should throw
     }
     if (!check()) {
-        throw("can't create archive '" + name + "'"); // TODO: details
+        throw(Exception("can't create archive '" + name + "'")); // TODO: details
     }
 }
 
@@ -276,27 +279,6 @@ std::optional<size_t> Archive::file_find_offset(size_t index, size_t size, const
 }
 
 
-std::optional<size_t> Archive::file_index_by_hashes(const Hashes *hashes) const {
-    if (hashes->empty()) {
-        return {};
-    }
-
-    for (size_t i = 0; i < files.size(); i++) {
-        auto &file = files[i];
-        auto &change = changes[i];
-
-	if (hashes->compare(file.hashes) == Hashes::MATCH) {
-	    if (change.status == Change::DELETED) {
-                return {};
-	    }
-	    return i;
-	}
-    }
-
-    return {};
-}
-
-
 std::optional<size_t> Archive::file_index_by_name(const std::string &filename) const {
     auto index = contents->file_index_by_name(filename);
     
@@ -305,23 +287,6 @@ std::optional<size_t> Archive::file_index_by_name(const std::string &filename) c
     }
 
     return index;
-}
-
-
-int64_t Archive::file_read_c(void *fp, void *data, uint64_t length) {
-    auto source = static_cast<ZipSource *>(fp);
-    
-    return static_cast<int64_t>(source->read(data, length));
-}
-
-int _archive_global_flags;
-
-void
-archive_global_flags(int fl, bool setp) {
-    if (setp)
-	_archive_global_flags |= fl;
-    else
-	_archive_global_flags &= ~fl;
 }
 
 
@@ -407,7 +372,7 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
     }
     
     archive->contents->open_archive = archive;
-    archive->contents->flags = ((flags | _archive_global_flags) & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK));
+    archive->contents->flags = ((flags  & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK)) | (read_only_mode ? ARCHIVE_FL_RDONLY : 0));
     
     if (!archive->read_infos() && (flags & ARCHIVE_FL_CREATE) == 0) {
         return {};
@@ -469,21 +434,10 @@ bool Archive::read_infos() {
 }
 
 
-void Archive::refresh() {
-    close();
-    files.clear();
-    read_infos();
-}
-
-
 bool Archive::is_empty() const {
-    for (auto &change : changes) {
-        if (change.status != Change::DELETED) {
-            return false;
-        }
-    }
-
-    return true;
+    return std::all_of(changes.begin(), changes.end(), [](const Change &change) {
+	return change.status == Change::DELETED;
+    });
 }
 
 
@@ -596,7 +550,7 @@ std::optional<size_t> Archive::file_index(const FileData *file) const {
 
 // MARK: - ArchiveContents
 
-bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
+bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *cached_files) {
     if (!configuration.roms_zipped && filetype == TYPE_DISK) {
         cache_db = nullptr;
         cache_id = -1;
@@ -608,7 +562,7 @@ bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
 
     if (cache_id > 0) {
         try {
-            cache_db->read_files(cache_id, files);
+            cache_db->read_files(cache_id, cached_files);
         }
         catch (Exception &exception) {
             return false;
@@ -618,7 +572,7 @@ bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *files) {
     return true;
 }
 
-void ArchiveContents::enter_in_maps(ArchiveContentsPtr contents) {
+void ArchiveContents::enter_in_maps(const ArchiveContentsPtr &contents) {
     if (!(contents->flags & ARCHIVE_FL_NOCACHE)) {
         contents->id = ++next_id;
         archive_by_id[contents->id] = contents;
@@ -723,8 +677,8 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
 
 
 bool ArchiveContents::has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors) {
-    for (auto pair : detectors) {
-        for (auto &file: files) {
+    for (const auto &pair : detectors) {
+        for (const auto &file: files) {
             if (file.detector_hashes.find(pair.first) == file.detector_hashes.end()) {
                 return false;
             }

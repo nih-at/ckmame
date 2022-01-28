@@ -259,7 +259,7 @@ main(int argc, char **argv) {
 	}
 
 	if (!configuration.fix_romset) {
-	    archive_global_flags(ARCHIVE_FL_RDONLY, true);
+	    Archive::read_only_mode = true;
 	}
 
 	ensure_dir(configuration.rom_directory, false);
