@@ -38,7 +38,7 @@
 .Op Brq Fl D Ar dbfile | Fl Fl rom-db Ar dbfile
 .Op Ar game
 .Nm
-.Fl c | Fl d | Fl Fl checksum | Fl Fl disk
+.Fl c | Fl Fl checksum
 .Op Brq Fl D Ar dbfile | Fl -db Ar dbfile
 .Ar checksum
 .Op Ar ...
@@ -56,20 +56,17 @@ can also find roms matching a particular checksum.
 .Pp
 .Nm
 supports the following options:
-.Bl -tag -width XtXtypeXXXXtypeXtypeXX
+.Bl -tag -width 27n
 .It Fl b , Fl Fl brief
 Use brief mode: don't output ROM and disk information.
 .It Fl c , Fl Fl checksum
-Look for a ROM by checksum (instead of the default
+Look for a ROM or disk by checksum (instead of the default
 behaviour to look for a game by name).
 .It Fl D Ar dbfile , Fl Fl rom-db Ar dbfile
 Use database
 .Ar dbfile
 instead of the default
 .Dq Pa mame.db .
-.It Fl d , Fl Fl disk
-Look for a disk by checksum (instead of the default
-behaviour to look for a game by name).
 .It Fl h , Fl Fl help
 Display a short help message.
 .It Fl V , Fl Fl version
