@@ -100,7 +100,7 @@ static void print_diskline(Rom *disk) {
 
 
 static void print_footer(int matches, Hashes *hash) {
-    printf("%d matches found for checksum", matches);
+    printf("%d match%s found for checksum", matches, matches == 1 ? "" : "es");
     print_checksums(hash);
     putc('\n', stdout);
 }
