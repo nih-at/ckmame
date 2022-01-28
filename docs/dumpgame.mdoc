@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd June 2, 2013
+.Dd January 28, 2022
 .Dt DUMPGAME 1
 .Os
 .Sh NAME
@@ -34,18 +34,18 @@
 .Nd extract rom set information from ckmame database
 .Sh SYNOPSIS
 .Nm
-.Brq Fl b | Fl -brief
-.Op Brq Fl D Ar dbfile | Fl -db Ar dbfile
+.Brq Fl b | Fl Fl brief
+.Op Brq Fl D Ar dbfile | Fl Fl rom-db Ar dbfile
 .Op Ar game
 .Nm
-.Fl c | Fl d | Fl -checksum | Fl -disk
+.Fl c | Fl d | Fl Fl checksum | Fl Fl disk
 .Op Brq Fl D Ar dbfile | Fl -db Ar dbfile
 .Ar checksum
 .Op Ar ...
 .Nm
 .Op Fl hV
-.Op Fl -help
-.Op Fl -version
+.Op Fl Fl help
+.Op Fl Fl version
 .Sh DESCRIPTION
 .Nm
 extracts rom set information from a
@@ -57,22 +57,22 @@ can also find roms matching a particular checksum.
 .Nm
 supports the following options:
 .Bl -tag -width XtXtypeXXXXtypeXtypeXX
-.It Fl b , -brief
+.It Fl b , Fl Fl brief
 Use brief mode: don't output ROM and disk information.
-.It Fl c , -checksum
+.It Fl c , Fl Fl checksum
 Look for a ROM by checksum (instead of the default
 behaviour to look for a game by name).
-.It Fl D Ar dbfile , Fl -db Ar dbfile
+.It Fl D Ar dbfile , Fl Fl rom-db Ar dbfile
 Use database
 .Ar dbfile
 instead of the default
 .Dq Pa mame.db .
-.It Fl d , -disk
+.It Fl d , Fl Fl disk
 Look for a disk by checksum (instead of the default
 behaviour to look for a game by name).
-.It Fl h , -help
+.It Fl h , Fl Fl help
 Display a short help message.
-.It Fl V , -version
+.It Fl V , Fl Fl version
 Display program name and version number.
 .El
 .Pp
