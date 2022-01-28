@@ -475,7 +475,6 @@ dump_special(const char *name) {
 	int (*f)(int);
 	int arg;
     } keys[] = {{"/dat", dump_dat, 0}, {"/detector", dump_detector, 0}, {"/hashtypes", dump_hashtypes, 0}, {"/list", dump_list, DBH_KEY_LIST_GAME}, {"/list/disk", dump_list, DBH_KEY_LIST_DISK}, {"/list/game", dump_list, DBH_KEY_LIST_GAME}, {"/stats", dump_stats, 0}};
-    static const size_t nkeys = sizeof(keys) / sizeof(keys[0]);
 
     for (const auto &key : keys) {
 	if (strcasecmp(name, key.key) == 0)
