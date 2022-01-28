@@ -40,36 +40,36 @@
 .Op Fl O Ar dbfile
 .Op Fl R Ar dir
 .Op Fl T Ar file
+.Op Fl Fl complete-games-only
 .Op Fl Fl config Ar file
 .Op Fl Fl copy-from-extra
 .Op Fl Fl create-fixdat
-.Op Fl Fl fixdat-directory Ar dir
-.Op Fl Fl keep-old-duplicate
-.Op Fl Fl no-complete-games-only
-.Op Fl Fl complete-games-only
-.Op Fl Fl report-correct
-.Op Fl Fl db Ar dbfile
 .Op Fl Fl extra-directory Ar dir
 .Op Fl Fl fix
+.Op Fl Fl fixdat-directory Ar dir
+.Op Fl Fl game-list Ar file
 .Op Fl Fl help
+.Op Fl Fl keep-old-duplicate
 .Op Fl Fl move-from-extra
+.Op Fl Fl no-complete-games-only
 .Op Fl Fl no-create-fixdat
 .Op Fl Fl no-report-correct
 .Op Fl Fl no-report-detailed
 .Op Fl Fl no-report-fixable
 .Op Fl Fl no-report-missing
 .Op Fl Fl no-report-summary
+.Op Fl Fl old-db Ar dbfile
+.Op Fl Fl report-correct
 .Op Fl Fl report-detailed
 .Op Fl Fl report-fixable
 .Op Fl Fl report-missing
 .Op Fl Fl report-summary
-.Op Fl Fl set Ar name
-.Op Fl Fl old-db Ar dbfile
-.Op Fl Fl rom-dir Ar dir
-.Op Fl Fl game-list Ar file
+.Op Fl Fl rom-db Ar dbfile
+.Op Fl Fl rom-directory Ar dir
 .Op Fl Fl roms-unzipped
-.Op Fl Fl version
+.Op Fl Fl set Ar name
 .Op Fl Fl verbose
+.Op Fl Fl version
 .Op Ar game ...
 .Sh DESCRIPTION
 .Nm
@@ -147,7 +147,7 @@ Create a clrmamepro-style
 .Dq fixdat
 file, i.e. an XML file containing only the files missing in the ROM
 set compared to the database used.
-.It Fl D , Fl Fl db Ar dbfile
+.It Fl D , Fl Fl rom-db Ar dbfile
 Use
 .Ar dbfile
 instead of the default
@@ -192,7 +192,7 @@ Assume that the files in the database
 .Ar dbfile
 exist in some other location (e.g., on an offline disk or backup
 medium).
-.It Fl R , Fl Fl rom-dir Ar dir
+.It Fl R , Fl Fl rom-directory Ar dir
 Look for the ROM set in the directory
 .Ar dir
 instead of the default
