@@ -33,6 +33,7 @@
 
 #include "Configuration.h"
 
+#include <algorithm>
 #include <cstdlib>
 
 #include "Exception.h"
