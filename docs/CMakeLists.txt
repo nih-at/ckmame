@@ -1,6 +1,5 @@
 set(MAN_PAGES
   ckmame.1
-  detective.1
   dumpgame.1
   mkmamedb.1
 )

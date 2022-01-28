@@ -103,7 +103,7 @@ if (HAVE_LIBARCHIVE)
   target_link_libraries(libckmame PRIVATE LibArchive::LibArchive)
 endif()
 
-foreach(PROGRAM ckmame detective dumpgame mkmamedb)
+foreach(PROGRAM ckmame dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.cc)
   target_link_libraries(${PROGRAM} PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
   # for config.h
@@ -113,7 +113,7 @@ foreach(PROGRAM ckmame detective dumpgame mkmamedb)
 endforeach()
 
 if(LibXml2_FOUND)
-  foreach(TARGET ckmame detective dumpgame mkmamedb libckmame)
+  foreach(TARGET ckmame dumpgame mkmamedb libckmame)
     target_link_libraries(${TARGET} PRIVATE LibXml2::LibXml2)
   endforeach()
 endif()

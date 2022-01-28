@@ -68,40 +68,28 @@ const char version_string[] = PACKAGE " " VERSION "\n"
 				"Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 std::vector<Commandline::Option> options = {
-    Commandline::Option("help", 'h', "display this help message"),
-    Commandline::Option("version", 'V', "display version number"),
-
-    Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
-    Commandline::Option("config", "file", "read configuration from file"),
-    Commandline::Option("copy-from-extra", "keep used files in extra directories (default)"),
-    Commandline::Option("create-fixdat", "write fixdat to 'fix_$NAME_OF_SET.dat'"),
-    Commandline::Option("db", 'D', "dbfile", "use mame-db dbfile"),
-    Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option)"),
     Commandline::Option("fix", 'F', "fix ROM set"),
-    Commandline::Option("fixdat-directory", "directory", "create fixdats in directory"),
     Commandline::Option("game-list", 'T', "file", "read games to check from file"),
-    Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
-    Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
-    Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
-    Commandline::Option("no-create-fixdat", "don't create fixdat (default)"),
-    Commandline::Option("no-report-correct", "don't report status of ROMs that are correct (default)"),
-    Commandline::Option("no-report-detailed", "don't report status of every ROM (default)"),
-    Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
-    Commandline::Option("no-report-missing", "don't report status of ROMs that are missing"),
-    Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
-    Commandline::Option("old-db", 'O', "dbfile", "use mame-db dbfile for old ROMs"),
-    Commandline::Option("report-correct", 'c', "report status of ROMs that are correct"),
-    Commandline::Option("report-detailed", "report status of every ROM"),
-    Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)"),
-    Commandline::Option("report-missing", "report status of ROMs that are missing (default)"),
-    Commandline::Option("report-summary", "print summary of ROM set status"),
-    Commandline::Option("rom-dir", 'R', "dir", "ROM set is in directory dir (default: 'roms')"),
-    Commandline::Option("roms-unzipped", 'u', "ROMs are files on disk, not contained in zip archives"),
-    Commandline::Option("set", "name", "check ROM set name"),
-    Commandline::Option("verbose", 'v', "print fixes made")
 };
 
-
+std::unordered_set<std::string> used_variables = {
+    "complete_games_only",
+    "create_fixdat",
+    "extra_directories",
+    "fixdat_directory",
+    "keep_old_duplicate",
+    "move_from_extra",
+    "old_db",
+    "report_correct",
+    "report_detailed",
+    "report_fixable",
+    "report_missing",
+    "report_summary",
+    "rom_db",
+    "rom_directory",
+    "roms_zipped",
+    "verbose"
+};
 
 static bool contains_romdir(const std::string &ame);
 
@@ -114,142 +102,21 @@ main(int argc, char **argv) {
 	std::string game_list;
 	std::vector<std::string> arguments;
 		
-	auto commandline = Commandline(options, "[game ...]", help_head, help_footer);
+	auto commandline = Commandline(options, "[game ...]", help_head, help_footer, version_string);
+
+	Configuration::add_options(commandline, used_variables);
 
 	try {
 	    auto args = commandline.parse(argc, argv);
-	
-	    if (args.find_first("help").has_value()) {
-		commandline.usage(true);
-		exit(0);
-	    }
-	    if (args.find_first("version").has_value()) {
-		fputs(version_string, stdout);
-		exit(0);
-	    }
 
-	    std::string set;
-	    auto set_exists = true;
-	    
-	    for (const auto &option : args.options) {
-		if (option.name == "set") {
-		    set = option.argument;
-		    set_exists = false;
-		}
-	    }
+	    configuration.handle_commandline(args);
 
-	    if (configuration.merge_config_file(Configuration::user_config_file(), set, true)) {
-		set_exists = true;
-	    }
-	    if (configuration.merge_config_file(Configuration::local_config_file(), set, true)) {
-		set_exists = true;
-	    }
-	    
 	    for (const auto &option : args.options) {
-		if (option.name == "config") {
-		    if (configuration.merge_config_file(option.argument, set, false)) {
-			set_exists = true;
-		    }
-		}
-	    }
-	    
-	    if (!set_exists) {
-		myerror(ERRDEF, "unknown set '%s'", set.c_str());
-		exit(1);
-	    }
-
-	    auto extra_directory_specified = false;
-	    
-	    for (const auto &option : args.options) {
-		if (option.name == "complete-games-only") {
-		    configuration.complete_games_only = true;
-		}
-		else if (option.name == "copy-from-extra") {
-		    configuration.move_from_extra = false;
-		}
-		else if (option.name == "create-fixdat") {
-		    configuration.create_fixdat = true;
-		}
-		else if (option.name == "db") {
-		    configuration.romdb_name = option.argument;
-		}
-		else if (option.name == "extra-directory") {
-		    if (!extra_directory_specified) {
-			configuration.extra_directories.clear();
-			extra_directory_specified = true;
-		    }
-		    std::string name = option.argument;
-		    auto last = name.find_last_not_of('/');
-		    if (last == std::string::npos) {
-			name = "/";
-		    }
-		    else {
-			name.resize(last + 1);
-		    }
-		    configuration.extra_directories.push_back(name);
-		}
-		else if (option.name == "fix") {
+		if (option.name == "fix") {
 		    configuration.fix_romset = true;
-		}
-		else if (option.name == "fixdat-directory") {
-		    configuration.fixdat_directory = option.argument;
 		}
 		else if (option.name == "game-list") {
 		    game_list = option.argument;
-		}
-		else if (option.name == "keep-old-duplicate") {
-		    configuration.keep_old_duplicate = true;
-		}
-		else if (option.name == "move-from-extra") {
-		    configuration.move_from_extra = true;
-		}
-		else if (option.name == "old-db") {
-		    configuration.olddb_name = option.argument;
-		}
-		else if (option.name == "no-complete-games-only") {
-		    configuration.complete_games_only = false;
-		}
-		else if (option.name == "no-create-fixdat") {
-		    configuration.create_fixdat = false;
-		}
-		else if (option.name == "no-report-correct") {
-		    configuration.report_correct = false;
-		}
-		else if (option.name == "no-report-detailed") {
-		    configuration.report_detailed = false;
-		}
-		else if (option.name == "no-report-fixable") {
-		    configuration.report_fixable = false;
-		}
-		else if (option.name == "no-report-missing") {
-		    configuration.report_missing = false;
-		}
-		else if (option.name == "no-report-summary") {
-		    configuration.report_summary = false;
-		}
-		else if (option.name == "report-correct") {
-		    configuration.report_correct = true;
-		}
-		else if (option.name == "report-detailed") {
-		    configuration.report_detailed = true;
-		}
-		else if (option.name == "report-fixable") {
-		    configuration.report_fixable = true;
-		}
-		else if (option.name == "report-missing") {
-		    configuration.report_missing = true;
-		}
-		else if (option.name == "report-summary") {
-		    configuration.report_summary = true;
-		}
-		else if (option.name == "rom-dir") {
-		    configuration.rom_directory = option.argument;
-		}
-		else if (option.name == "roms-unzipped") {
-		    configuration.roms_zipped = false;
-		}
-		else if (option.name == "verbose") {
-		    configuration.verbose = true;
 		}
 		else {
 		    // TODO: report unhandled option
@@ -294,14 +161,14 @@ main(int argc, char **argv) {
 	}
 
 	try {
-	    db = std::make_unique<RomDB>(configuration.romdb_name, DBH_READ);
+	    db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
 	}
 	catch (std::exception &e) {
-	    myerror(0, "can't open database '%s': %s", configuration.romdb_name.c_str(), e.what());
+	    myerror(0, "can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
 	    exit(1);
 	}
 	try {
-	    old_db = std::make_unique<RomDB>(configuration.olddb_name, DBH_READ);
+	    old_db = std::make_unique<RomDB>(configuration.old_db, DBH_READ);
 	}
 	catch (std::exception &e) {
 	    /* TODO: check for errors other than ENOENT */
@@ -345,7 +212,7 @@ main(int argc, char **argv) {
 	    list = db->read_list(DBH_KEY_LIST_GAME);
 	}
 	catch (Exception &e) {
-	    myerror(ERRDEF, "list of games not found in database '%s': %s", configuration.romdb_name.c_str(), e.what());
+	    myerror(ERRDEF, "list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
 	    exit(1);
 	}
 	std::sort(list.begin(), list.end());

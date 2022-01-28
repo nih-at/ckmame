@@ -48,7 +48,7 @@ public:
         std::string name;
         std::string argument; // empty string for options without argument
     };
-    
+
     std::optional<std::string> find_first(const std::string &name) const;
     std::optional<std::string> find_last(const std::string &name) const;
 
@@ -76,16 +76,24 @@ public:
         bool operator <(const Option &other) const;
     };
     
-    Commandline(const std::vector<Option> &options, const std::string &arguments, const std::string &header, const std::string &footer);
-    
+    Commandline(const std::vector<Option> &options, const std::string &arguments, const std::string &header, const std::string &footer, const std::string &version);
+
+    void add_option(Option option);
+
     std::vector<Option> options;
     std::string arguments;
     std::string header;
     std::string footer;
+    std::string version;
 
     ParsedCommandline parse(int argc, char * const argv[]);
     
     void usage(bool full = false, FILE *fout = stdout);
+
+private:
+    bool options_sorted;
+
+    void sort_options();
 };
 
 #endif // HAD_COMMANDLINE_H

@@ -45,8 +45,9 @@
 
 extern int optind;
 
-Commandline::Commandline(const std::vector<Option> &options_, const std::string &arguments_, const std::string &header_, const std::string &footer_) : options(options_), arguments(arguments_), header(header_), footer(footer_) {
-    std::sort(options.begin(), options.end());
+Commandline::Commandline(const std::vector<Option> &options_, const std::string &arguments_, const std::string &header_, const std::string &footer_, const std::string &version_) : options(options_), arguments(arguments_), header(header_), footer(footer_), version(version_), options_sorted(false) {
+    add_option(Option("help", 'h', "display this help message"));
+    add_option(Option("version", 'V', "display version number"));
 }
 
 
@@ -110,13 +111,22 @@ ParsedCommandline Commandline::parse(int argc, char *const *argv) {
         }
         const auto &option = long_options[it->second];
         
-        parsed_commandline.options.push_back(ParsedCommandline::OptionValue(option.name, option.has_arg ? optarg : ""));
+        parsed_commandline.options.emplace_back(option.name, option.has_arg ? optarg : "");
     }
     
     for (auto i = optind; i < argc; i++) {
-        parsed_commandline.arguments.push_back(argv[i]);
+        parsed_commandline.arguments.emplace_back(argv[i]);
     }
-    
+
+    if (parsed_commandline.find_first("help").has_value()) {
+	usage(true);
+	exit(0);
+    }
+    if (parsed_commandline.find_first("version").has_value()) {
+	fputs(version.c_str(), stdout);
+	exit(0);
+    }
+
     return parsed_commandline;
 }
 
@@ -147,6 +157,8 @@ std::optional<std::string> ParsedCommandline::find_last(const std::string &name)
 void Commandline::usage(bool full, FILE *fout) {
     std::stringstream short_options_without_argument;
     std::stringstream short_options_with_argument;
+
+    sort_options();
 
     for (const auto &option : options) {
         if (option.short_name.has_value()) {
@@ -211,6 +223,20 @@ void Commandline::usage(bool full, FILE *fout) {
         fprintf(fout, "\n%s\n", footer.c_str());
     }
 }
+
+
+void Commandline::add_option(Commandline::Option option) {
+    options.push_back(std::move(option));
+}
+
+
+void Commandline::sort_options() {
+    if (!options_sorted) {
+	std::sort(options.begin(), options.end());
+	options_sorted = true;
+    }
+}
+
 
 static int compare_char(char a, char b) {
     auto cmp = std::tolower(a) - std::tolower(b);

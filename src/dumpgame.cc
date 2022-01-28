@@ -39,6 +39,7 @@
 #include "compat.h"
 #include "config.h"
 
+#include "Commandline.h"
 #include "error.h"
 #include "Exception.h"
 #include "globals.h"
@@ -57,32 +58,25 @@ static void print_clones(GamePtr game);
 static void print_dat(const DatEntry &de);
 static void print_hashtypes(int);
 
-const char *usage = "Usage: %s [-h|-V]\n\
-       %s [-b] [-D dbfile] [game ...]\n\
-       %s [-b] [-D dbfile] [-c | -d] [checksum ...]\n";
+const char *usage = "[game|checksum ...]";
 
-const char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and"
-		   " Thomas Klausner\n\n";
-
-const char help[] = "\n\
-  -b, --brief          brief listing (omit ROM details)\n\
-  -c, --checksum       find games containing ROMs with given checksums\n\
-  -D, --db dbfile      use database dbfile\n\
-  -d, --disk           find games containing disks with given checksums\n\
-  -h, --help           display this help message\n\
-  -V, --version        display version number\n\
-\n\
-Report bugs to " PACKAGE_BUGREPORT ".\n";
-
+const char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and Thomas Klausner";
+const char help_footer[] = "Report bugs to " PACKAGE_BUGREPORT ".";
 const char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner\n\
+Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n\
 " PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-#define OPTIONS "hbcD:dV"
-
-struct option options[] = {
-    {"brief", 0, 0, 'b'}, {"checksum", 0, 0, 'c'}, {"db", 1, 0, 'D'}, {"disk", 0, 0, 'd'}, {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {nullptr, 0, 0, 0},
+std::vector<Commandline::Option> options = {
+    Commandline::Option("brief", 'b', "brief listing (omit ROM details)"),
+    Commandline::Option("checksum", 'c', "find games containing ROMs with given checksums"),
+    Commandline::Option("disk", 'd', "find games containing disks with given checksums")
 };
+
+
+std::unordered_set<std::string> used_variables = {
+    "rom_db"
+};
+
 
 static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 
@@ -179,60 +173,52 @@ static void print_matches(filetype_t ft, Hashes *hash) {
 }
 
 
-int
-main(int argc, char **argv) {
-    int found, first;
-    const char *dbname;
-    int c;
-    int find_checksum, brief_mode;
-    filetype_t filetype = TYPE_ROM;
+int main(int argc, char **argv) {
+    auto find_checksum = false;
+    auto brief_mode = false;
+    auto filetype = TYPE_ROM;
 
     setprogname(argv[0]);
 
-    dbname = getenv("MAMEDB");
-    if (dbname == nullptr)
-	dbname = RomDB::default_name().c_str();
+    try {
+	std::vector<std::string> arguments;
 
-    find_checksum = brief_mode = 0;
+	auto commandline = Commandline(options, usage, help_head, help_footer, version_string);
 
-    opterr = 0;
-    while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
-	switch (c) {
-	case 'b':
-	    brief_mode = 1;
-	    break;
-	case 'c':
-	    find_checksum = 1;
-	    filetype = TYPE_ROM;
-	    break;
-	case 'D':
-	    dbname = optarg;
-	    break;
-	case 'd':
-	    find_checksum = 1;
-	    filetype = TYPE_DISK;
-	    break;
-	case 'h':
-	    fputs(help_head, stdout);
-	    printf(usage, getprogname(), getprogname(), getprogname());
-	    fputs(help, stdout);
-	    exit(0);
-	case 'V':
-	    fputs(version_string, stdout);
-	    exit(0);
-	default:
-	    fprintf(stderr, usage, getprogname(), getprogname(), getprogname());
+	Configuration::add_options(commandline, used_variables);
+
+	try {
+	    auto args = commandline.parse(argc, argv);
+
+	    configuration.handle_commandline(args);
+
+	    for (const auto &option : args.options) {
+		if (option.name == "brief") {
+		    brief_mode = true;
+		}
+		else if (option.name == "checksum") {
+		    find_checksum = true;
+		    filetype = TYPE_ROM;
+		}
+		else if (option.name == "disk") {
+		    find_checksum = true;
+		    filetype = TYPE_DISK;
+		}
+	    }
+
+	    arguments = args.arguments;
+	}
+	catch (Exception &ex) {
+	    commandline.usage(false, stderr);
 	    exit(1);
 	}
-    }
 
-    try {
         try {
-            db = std::make_unique<RomDB>(dbname, DBH_READ);
+            db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
         }
         catch (std::exception &e) {
             // TODO: catch exception for unsupported database version and report differently
-            myerror(0, "can't open database '%s': %s", dbname, strerror(errno));
+            myerror(0, "can't open database '%s': %s", configuration.rom_db.c_str(), strerror(errno));
             exit(1);
         }
         seterrdb(db.get());
@@ -243,7 +229,7 @@ main(int argc, char **argv) {
             list = db->read_list(DBH_KEY_LIST_GAME);
         }
         catch (Exception &e) {
-            myerror(ERRDEF, "list of games not found in database '%s': %s", dbname, e.what());
+            myerror(ERRDEF, "list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
             exit(1);
         }
         std::sort(list.begin(), list.end());
@@ -264,19 +250,21 @@ main(int argc, char **argv) {
             exit(0);
         }
 
-        first = 1;
+        auto first = true;
+	auto found = false;
+
         for (auto i = optind; i < argc; i++) {
             if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
                 if (argv[i][0] == '/') {
                     if (first)
-                        first = 0;
+                        first = false;
                     else
                         putc('\n', stdout);
                     dump_special(argv[i]);
                 }
                 else if (std::binary_search(list.begin(), list.end(), argv[i])) {
                     if (first)
-                        first = 0;
+                        first = false;
                     else
                         putc('\n', stdout);
                     dump_game(argv[i], brief_mode);
@@ -289,13 +277,13 @@ main(int argc, char **argv) {
                 for (const auto &name : list) {
                     if (fnmatch(argv[i], name.c_str(), 0) == 0) {
                         if (first) {
-                            first = 0;
+                            first = false;
                         }
                         else {
                             putc('\n', stdout);
                         }
                         dump_game(name, brief_mode);
-                        found = 1;
+                        found = true;
                     }
                 }
                 if (!found)

@@ -57,9 +57,6 @@ char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n"
 			"Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
 std::vector<Commandline::Option> options = {
-    Commandline::Option("help", 'h', "display this help message"),
-    Commandline::Option("version", 'V', "display version number"),
-    
     Commandline::Option("detector", "xml-file", "use header detector"),
     Commandline::Option("directory-cache", "create cache of scanned input directory (default)"),
     Commandline::Option("exclude", 'x', "pattern", "exclude games matching shell glob pattern"),
@@ -71,10 +68,13 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("prog-description", "description", "set description of rominfo"),
     Commandline::Option("prog-name", "name", "set name of rominfo"),
     Commandline::Option("prog-version", "version", "set version of rominfo"),
-    Commandline::Option("roms-unzipped", 'u', "ROMs are files on disk, not contained in zip archives"),
     Commandline::Option("runtest", "output special format for use in ckmame test suite"),
     Commandline::Option("skip-files", "pattern", "don't use zip members matching shell glob pattern"),
     Commandline::Option("use-temp-directory", 't', "create output in temporary directory, move when done")
+};
+
+std::unordered_set<std::string> used_variables = {
+    "roms_zipped"
 };
 
 #define DEFAULT_FILE_PATTERNS "*.dat"
@@ -112,19 +112,14 @@ main(int argc, char **argv) {
     hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
 
     std::vector<std::string> arguments;
-    auto commandline = Commandline(options, "[rominfo-file ...]", help_head, help_footer);
+    auto commandline = Commandline(options, "[rominfo-file ...]", help_head, help_footer, version_string);
+
+    Configuration::add_options(commandline, used_variables);
 
     try {
-        auto args = commandline.parse(argc, argv);
-        
-        if (args.find_first("help").has_value()) {
-            commandline.usage(true);
-            exit(0);
-        }
-        if (args.find_first("version").has_value()) {
-            fputs(version_string, stdout);
-            exit(0);
-        }
+	auto args = commandline.parse(argc, argv);
+
+	configuration.handle_commandline(args);
 
         for (const auto &option : args.options) {
             if (option.name == "detector") {
@@ -179,9 +174,6 @@ main(int argc, char **argv) {
             else if (option.name == "prog-version") {
                 dat.version = option.argument;
             }
-            else if (option.name == "roms-unzipped") {
-                configuration.roms_zipped = false;
-            }
             else if (option.name == "runtest") {
                 runtest = true;
             }
@@ -219,13 +211,7 @@ main(int argc, char **argv) {
     }
 
     if (dbname.empty()) {
-        auto var = getenv("MAMEDB");
-        if (var != nullptr) {
-            dbname = var;
-        }
-        else {
-            dbname = RomDB::default_name();
-        }
+        dbname = configuration.rom_db;
     }
     
     if (flags & OUTPUT_FL_TEMP) {

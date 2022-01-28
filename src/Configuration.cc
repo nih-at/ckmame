@@ -35,6 +35,7 @@
 
 #include <cstdlib>
 
+#include "Exception.h"
 #include "RomDB.h"
 #include "util.h"
 
@@ -43,6 +44,51 @@
 #else
 #include "toml.hpp"
 #endif
+
+
+std::vector<Commandline::Option> Configuration::commandline_options = {
+    Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
+    Commandline::Option("config", "file", "read configuration from file"),
+    Commandline::Option("copy-from-extra", "keep used files in extra directories (default)"),
+    Commandline::Option("create-fixdat", "write fixdat to 'fix_$NAME_OF_SET.dat'"),
+    Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option)"),
+    Commandline::Option("fixdat-directory", "directory", "create fixdats in directory"),
+    Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
+    Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
+    Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
+    Commandline::Option("no-create-fixdat", "don't create fixdat (default)"),
+    Commandline::Option("no-report-correct", "don't report status of ROMs that are correct (default)"),
+    Commandline::Option("no-report-detailed", "don't report status of every ROM (default)"),
+    Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
+    Commandline::Option("no-report-missing", "don't report status of ROMs that are missing"),
+    Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
+    Commandline::Option("old-db", 'O', "dbfile", "use database dbfile for old ROMs"),
+    Commandline::Option("report-correct", 'c', "report status of ROMs that are correct"),
+    Commandline::Option("report-detailed", "report status of every ROM"),
+    Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)"),
+    Commandline::Option("report-missing", "report status of ROMs that are missing (default)"),
+    Commandline::Option("report-summary", "print summary of ROM set status"),
+    Commandline::Option("rom-db", 'D', "dbfile", "use ROM database dbfile"),
+    Commandline::Option("rom-directory", 'R', "dir", "ROM set is in directory dir (default: 'roms')"),
+    Commandline::Option("roms-unzipped", 'u', "ROMs are files on disk, not contained in zip archives"),
+    Commandline::Option("set", "name", "check ROM set name"),
+    Commandline::Option("verbose", 'v', "print fixes made")
+};
+
+
+std::unordered_map<std::string, std::string> Configuration::option_to_variable = {
+    { "copy-from-extra", "move_from_extra" },
+    { "extra-directory", "extra_directories" },
+    { "no-complete-games-only", "complete_games_only" },
+    { "no-create-fixdat", "create_fixdat" },
+    { "no-report-correct", "report_correct" },
+    { "no-report-detailed", "report_detailed" },
+    { "no-report-fixable", "report_fixable" },
+    { "no-report-missing", "report_missing" },
+    { "no-report-summary", "report_summary" },
+    { "roms-unzipped", "roms_zipped" }
+};
+
 
 std::string Configuration::local_config_file() {
     return ".ckmamerc";
@@ -60,9 +106,28 @@ std::string Configuration::user_config_file() {
 }
 
 
-Configuration::Configuration() :
-    romdb_name(RomDB::default_name()),
-    olddb_name(RomDB::default_old_name()),
+bool Configuration::option_used(const std::string &option_name, const std::unordered_set<std::string> &used_variables) {
+    if (option_name == "config" || option_name == "set") {
+	return true;
+    }
+
+    auto variable_name = option_name;
+    std::replace(variable_name.begin(), variable_name.end(), '-', '_');
+
+    if (used_variables.find(variable_name) != used_variables.end()) {
+	return true;
+    }
+
+    auto it = option_to_variable.find(option_name);
+    if (it != option_to_variable.end() && used_variables.find(it->second) != used_variables.end()) {
+	return true;
+    }
+
+    return false;
+}
+
+
+Configuration::Configuration() : rom_db(RomDB::default_name()), old_db(RomDB::default_old_name()),
     rom_directory("roms"),
     create_fixdat(false),
     roms_zipped(true),
@@ -80,11 +145,11 @@ Configuration::Configuration() :
     warn_file_unknown(true) {
     auto value = getenv("MAMEDB");
     if (value != nullptr) {
-        romdb_name = value;
+	rom_db = value;
     }
     value = getenv("MAMEDB_OLD");
     if (value != nullptr) {
-        olddb_name = value;
+	old_db = value;
     }
 }
 
@@ -144,19 +209,140 @@ bool Configuration::merge_config_file(const std::string &fname, const std::strin
 }
 
 
+void Configuration::handle_commandline(const ParsedCommandline &args) {
+    std::string set;
+    auto set_exists = true;
+
+    for (const auto &option : args.options) {
+	if (option.name == "set") {
+	    set = option.argument;
+	    set_exists = false;
+	}
+    }
+
+    if (merge_config_file(user_config_file(), set, true)) {
+	set_exists = true;
+    }
+    if (merge_config_file(local_config_file(), set, true)) {
+	set_exists = true;
+    }
+
+    for (const auto &option : args.options) {
+	if (option.name == "config") {
+	    if (merge_config_file(option.argument, set, false)) {
+		set_exists = true;
+	    }
+	}
+    }
+
+    if (!set_exists) {
+	throw Exception("unknown set '" + set + "'");
+    }
+
+    auto extra_directory_specified = false;
+
+    for (const auto &option : args.options) {
+	if (option.name == "complete-games-only") {
+	    complete_games_only = true;
+	}
+	else if (option.name == "copy-from-extra") {
+	    move_from_extra = false;
+	}
+	else if (option.name == "create-fixdat") {
+	    create_fixdat = true;
+	}
+	else if (option.name == "extra-directory") {
+	    if (!extra_directory_specified) {
+		extra_directories.clear();
+		extra_directory_specified = true;
+	    }
+	    std::string name = option.argument;
+	    auto last = name.find_last_not_of('/');
+	    if (last == std::string::npos) {
+		name = "/";
+	    }
+	    else {
+		name.resize(last + 1);
+	    }
+	    extra_directories.push_back(name);
+	}
+	else if (option.name == "fixdat-directory") {
+	    fixdat_directory = option.argument;
+	}
+	else if (option.name == "keep-old-duplicate") {
+	    keep_old_duplicate = true;
+	}
+	else if (option.name == "move-from-extra") {
+	    move_from_extra = true;
+	}
+	else if (option.name == "old-db") {
+	    old_db = option.argument;
+	}
+	else if (option.name == "no-complete-games-only") {
+	    complete_games_only = false;
+	}
+	else if (option.name == "no-create-fixdat") {
+	    create_fixdat = false;
+	}
+	else if (option.name == "no-report-correct") {
+	    report_correct = false;
+	}
+	else if (option.name == "no-report-detailed") {
+	    report_detailed = false;
+	}
+	else if (option.name == "no-report-fixable") {
+	    report_fixable = false;
+	}
+	else if (option.name == "no-report-missing") {
+	    report_missing = false;
+	}
+	else if (option.name == "no-report-summary") {
+	    report_summary = false;
+	}
+	else if (option.name == "report-correct") {
+	    report_correct = true;
+	}
+	else if (option.name == "report-detailed") {
+	    report_detailed = true;
+	}
+	else if (option.name == "report-fixable") {
+	    report_fixable = true;
+	}
+	else if (option.name == "report-missing") {
+	    report_missing = true;
+	}
+	else if (option.name == "report-summary") {
+	    report_summary = true;
+	}
+	else if (option.name == "rom-db") {
+	    rom_db = option.argument;
+	}
+	else if (option.name == "rom-directory") {
+	    rom_directory = option.argument;
+	}
+	else if (option.name == "roms-unzipped") {
+	    roms_zipped = false;
+	}
+	else if (option.name == "verbose") {
+	    verbose = true;
+	}
+    }
+}
+
+
 void Configuration::merge_config_table(void *p, const std::string &set) {
     const auto &table = *reinterpret_cast<toml::table *>(p);
 
     // TODO: autofixdat
     set_bool(table, "complete-games-only", complete_games_only);
     set_bool(table, "create-fixdat", create_fixdat);
-    set_string(table, set, "db", romdb_name);
+    set_string(table, set, "db", rom_db);
     set_string_vector(table, set, "extra-directory", extra_directories, false);
     set_string_vector(table, set, "extra-directory-append", extra_directories, true);
     set_string(table, "fixdat_directory", set, fixdat_directory);
     set_bool(table, "keep-old-duplicate", keep_old_duplicate);
     set_bool(table, "move-from-extra", move_from_extra);
-    set_string(table, set, "old-db", olddb_name);
+    set_string(table, set, "old-db", old_db);
     set_bool(table, "report-correct", report_correct);
     set_bool(table, "report-detailed", report_detailed);
     set_bool(table, "report-fixable", report_fixable);
@@ -167,6 +353,15 @@ void Configuration::merge_config_table(void *p, const std::string &set) {
     set_bool(table, "verbose", verbose);
     // set_bool(table, "warn-file-known", warn_file_known);
     // set_bool(table, "warn-file-unknown", warn_file_unknown);
+}
+
+
+void Configuration::add_options(Commandline &commandline, const std::unordered_set<std::string> &used_variables) {
+    for (const auto &option : commandline_options) {
+	if (option_used(option.name, used_variables)) {
+	    commandline.add_option(option);
+	}
+    }
 }
 
 
