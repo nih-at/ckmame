@@ -149,7 +149,6 @@ other features:
 - case differences (game name / archive / rom / file in archive)
 - extra cleanup done when all games checked
 - is superfluous file that needs detector cleaned up correctly?
-- `detective`
 - detector
   - header field
   - write to db
