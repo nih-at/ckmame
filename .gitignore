@@ -1,4 +1,6 @@
 /.clangd
+/.cache
+/.vscode
 *~
 /build/
 /ckmame-*.tar.*
