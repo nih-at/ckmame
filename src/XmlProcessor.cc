@@ -66,7 +66,7 @@ static int xml_close([[maybe_unused]] void *);
 static int xml_read(void *source, char *buffer, int length);
 
 
-int XmlProcessor::parse(ParserSource *parser_source) {
+bool XmlProcessor::parse(ParserSource *parser_source) {
     auto reader = xmlReaderForIO(xml_read, xml_close, parser_source, nullptr, nullptr, 0);
     if (reader == nullptr) {
 	myerror(ERRFILE, "can't open\n");
@@ -76,11 +76,21 @@ int XmlProcessor::parse(ParserSource *parser_source) {
     ok = true;
     stop_parsing = false;
 
+    process_tree(reader);
+
+    xmlFreeTextReader(reader);
+
+    return ok;
+}
+
+void XmlProcessor::process_tree(void *reader_) {
+    auto reader = reinterpret_cast<xmlTextReader *>(reader_);
+
     const Entity *entity_text = nullptr;
     std::string path;
 
     int ret;
-    while (!stop_parsing && (ret = xmlTextReaderRead(reader)) == 1) {
+    while ((ret = xmlTextReaderRead(reader)) == 1) {
 	if (line_number_callback) {
 	    line_number_callback(context, static_cast<size_t>(xmlTextReaderGetParserLineNumber(reader)));
 	}
@@ -100,6 +110,10 @@ int XmlProcessor::parse(ParserSource *parser_source) {
                             myerror(ERRFILE, "parse error: %s", e.what());
 			    ok = false;
 			}
+
+			if (stop_parsing) {
+			    return;
+			}
                     }
                     
                     for (const auto &it : entity->attr) {
@@ -115,6 +129,10 @@ int XmlProcessor::parse(ParserSource *parser_source) {
 				ok = false;
 			    }
                             free(value);
+
+			    if (stop_parsing) {
+				return;
+			    }
                         }
                     }
 
@@ -143,6 +161,10 @@ int XmlProcessor::parse(ParserSource *parser_source) {
                             myerror(ERRFILE, "parse error: %s", e.what());
 			    ok = false;
 			}
+
+			if (stop_parsing) {
+			    return;
+			}
 		    }
                 }
 
@@ -161,6 +183,10 @@ int XmlProcessor::parse(ParserSource *parser_source) {
                         myerror(ERRFILE, "parse error: %s", e.what());
 			ok = false;
 		    }
+
+		    if (stop_parsing) {
+			return;
+		    }
                 }
                 break;
 
@@ -168,14 +194,11 @@ int XmlProcessor::parse(ParserSource *parser_source) {
                 break;
         }
     }
-    xmlFreeTextReader(reader);
 
     if (ret != 0) {
 	myerror(ERRFILE, "XML parse error");
-	return false;
+	ok = false;
     }
-
-    return ok;
 }
 
 

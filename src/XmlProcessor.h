@@ -74,7 +74,7 @@ class XmlProcessor {
 
     XmlProcessor(LineNumberCallback line_number_callback, const std::unordered_map<std::string, Entity> &entities, void *context);
 
-    int parse(ParserSource *parser_source); // TODO: return bool?
+    bool parse(ParserSource *parser_source);
 
   private:
     LineNumberCallback line_number_callback;
@@ -86,6 +86,7 @@ class XmlProcessor {
 
     [[nodiscard]] const Entity *find(const std::string &path) const;
     void handle_callback_status(CallbackStatus status);
+    void process_tree(void *reader); // to avoid leaking libxml header
 };
 
 
