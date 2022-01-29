@@ -12,4 +12,6 @@ file 08.rom        size       8  crc 3656897d: broken
 roms/2-48.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
 roms/2-48.zip: delete broken '08.rom'
 end-of-data
-stderr roms/2-48.zip: 08.rom: CRC error: bf933f81 != 3656897d
+stderr-data
+roms/2-48.zip: 08.rom: CRC error: bf933f81 != 3656897d
+end-of-data

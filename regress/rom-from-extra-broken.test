@@ -13,4 +13,6 @@ In archive extra/2-48-part-broken.zip:
 file 08.rom        size       8  crc 3656897d: broken
 extra/2-48-part-broken.zip: delete used file '04.rom'
 end-of-data
-stderr extra/2-48-part-broken.zip: 08.rom: CRC error: bf933f81 != 3656897d
+stderr-data
+extra/2-48-part-broken.zip: 08.rom: CRC error: bf933f81 != 3656897d
+end-of-data

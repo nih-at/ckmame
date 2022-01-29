@@ -15,4 +15,6 @@ In archive extra/wrongname.zip:
 file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 file 08.rom        size       8  crc 3656897d: needed elsewhere
 end-of-data
-stderr roms/clone-8: can't create temporary directory: Permission denied
+stderr-data
+roms/clone-8: can't create temporary directory: Permission denied
+end-of-data

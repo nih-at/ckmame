@@ -13,6 +13,8 @@ roms/1-4.zip: move unknown file '04.rom'
 In archive extra/1-4.zip:
 file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 end-of-data
-stderr unknown/1-4.zip: error closing zip: CRC error
-stderr unknown/1-4.zip: committing garbage failed
-stderr roms/1-4.zip: 04.rom: CRC error: d87f7e0c != d87e7e0c
+stderr-data
+unknown/1-4.zip: error closing zip: CRC error
+unknown/1-4.zip: committing garbage failed
+roms/1-4.zip: 04.rom: CRC error: d87f7e0c != d87e7e0c
+end-of-data

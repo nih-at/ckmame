@@ -15,4 +15,6 @@ file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 roms/1-4-wrong-name.zip: save needed file '04.rom'
 roms/1-4-wrong-name.zip: remove empty archive
 end-of-data
-stderr roms/1-4.zip: error closing zip: Renaming temporary file failed: Operation not permitted
+stderr-data
+roms/1-4.zip: error closing zip: Renaming temporary file failed: Operation not permitted
+end-of-data

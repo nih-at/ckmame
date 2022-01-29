@@ -11,6 +11,8 @@ file 08.rom        size       8  crc 3656897d: needed elsewhere
 roms/1-4.zip: save needed file '08.rom'
 roms/1-4.zip: add 'roms/2-48.zip/04.rom' as '04.rom'
 end-of-data
-stderr can't open rom directory database for 'needed': unable to open database file: no database
-stderr <zip> needed/3656897d-000.zip: error closing zip: Failure to create temporary file: Permission denied
-stderr <dir> cannot create 'needed/3656897d-000/.added': Permission denied
+stderr-data
+can't open rom directory database for 'needed': unable to open database file: no database
+<zip> needed/3656897d-000.zip: error closing zip: Failure to create temporary file: Permission denied
+<dir> cannot create 'needed/3656897d-000/.added': Permission denied
+end-of-data

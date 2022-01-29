@@ -17,4 +17,6 @@ In archive extra/wrongname.zip:
 file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 file 08.rom        size       8  crc 3656897d: needed elsewhere
 end-of-data
-stderr roms/clone-8.zip: error closing zip: Write error: No space left on device
+stderr-data
+roms/clone-8.zip: error closing zip: Write error: No space left on device
+end-of-data

@@ -5,4 +5,6 @@ args -o mamedb-test.db mamedb.dat mamedb-lost-parent-ok.dat
 file mamedb.dat mamedb-disk-many.dat mamedb-disk-many.dat
 file mamedb-lost-parent-ok.dat mamedb-lost-parent-ok.dat mamedb-lost-parent-ok.dat
 file-new mamedb-test.db mamedb-duplicate-game.dump
-stderr duplicate game 'clone-8' skipped
+stderr-data
+duplicate game 'clone-8' skipped
+end-of-data

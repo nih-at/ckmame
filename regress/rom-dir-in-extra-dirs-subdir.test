@@ -3,4 +3,6 @@ return 1
 args -R extra/foo -e extra
 ckmamedb-after extra ckmamedb-empty.dump
 file extra/foo.zip 1-4-foo.zip 1-4-foo.zip
-stderr current ROM directory 'extra/foo' is in extra directory 'extra'
+stderr-data
+current ROM directory 'extra/foo' is in extra directory 'extra'
+end-of-data

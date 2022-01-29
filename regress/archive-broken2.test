@@ -7,4 +7,6 @@ stdout-data
 In game 1-4:
 game 1-4                                     : not a single file found
 end-of-data
-stderr error opening zip archive 'roms/2-48.zip': Not a zip archive
+stderr-data
+error opening zip archive 'roms/2-48.zip': Not a zip archive
+end-of-data

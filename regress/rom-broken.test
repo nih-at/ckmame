@@ -9,4 +9,6 @@ rom  04.rom        size       4  crc d87f7e0c: correct
 rom  08.rom        size       8  crc 3656897d: missing
 file 08.rom        size       8  crc 3656897d: broken
 end-of-data
-stderr roms/2-48.zip: 08.rom: CRC error: bf933f81 != 3656897d
+stderr-data
+roms/2-48.zip: 08.rom: CRC error: bf933f81 != 3656897d
+end-of-data
