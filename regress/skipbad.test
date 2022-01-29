@@ -4,6 +4,8 @@ args -Fvc deadclonedbeef
 file roms/deadbeef.zip deadpork.zip deadpork.zip
 file roms/deadclonedbeef.zip deadbeef.zip deadclonedbeef.zip
 no-hashes roms deadbeef.zip
-stdout In game deadclonedbeef:
-stdout rom  deadclonedbeef  size       8  crc deadbeef: wrong name (deadbeef), should be in cloneof
-stdout roms/deadclonedbeef.zip: rename 'deadbeef' to 'deadclonedbeef'
+stdout-data
+In game deadclonedbeef:
+rom  deadclonedbeef  size       8  crc deadbeef: wrong name (deadbeef), should be in cloneof
+roms/deadclonedbeef.zip: rename 'deadbeef' to 'deadclonedbeef'
+end-of-data

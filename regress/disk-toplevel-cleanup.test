@@ -7,10 +7,12 @@ file roms/disk/108-5.chd 108-5.chd 108-5.chd
 file-del roms/unknown-game/unknown.chd 108-5.chd
 file-del roms/toplevel.chd 108-5.chd
 no-hashes roms disk.zip
-stdout In archive roms:
-stdout image toplevel.chd: not used
-stdout roms: delete unused file 'toplevel.chd'
-stdout In archive roms/unknown-game:
-stdout image unknown.chd : not used
-stdout roms/unknown-game: delete unused file 'unknown.chd'
-stdout roms/unknown-game: remove empty archive
+stdout-data
+In archive roms:
+image toplevel.chd: not used
+roms: delete unused file 'toplevel.chd'
+In archive roms/unknown-game:
+image unknown.chd : not used
+roms/unknown-game: delete unused file 'unknown.chd'
+roms/unknown-game: remove empty archive
+end-of-data

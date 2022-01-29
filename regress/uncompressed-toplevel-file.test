@@ -6,6 +6,8 @@ file search/loose 04.rom 04.rom
 file search/1-8.zip 1-8-ok.zip 1-8-ok.zip
 file-new roms/1-4.zip 1-4-ok.zip
 ckmamedb-before search ckmamedb-1-8-ok.dump
-stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'search/loose'
-stdout roms/1-4.zip: add 'search/loose' as '04.rom'
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'search/loose'
+roms/1-4.zip: add 'search/loose' as '04.rom'
+end-of-data

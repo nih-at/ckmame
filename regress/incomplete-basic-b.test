@@ -3,4 +3,6 @@ return 0
 args -FvC --no-report-missing 2-48
 file-del roms/2-48.zip 1-4-ok.zip
 file-new needed/d87f7e0c-000.zip 1-4-ok.zip
-stdout roms/2-48.zip: save needed file '04.rom'
+stdout-data
+roms/2-48.zip: save needed file '04.rom'
+end-of-data

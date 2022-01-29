@@ -4,7 +4,9 @@ args -FvcT gamelist
 file gamelist gamelist-from-file.in gamelist-from-file.in
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file roms/2-48.zip 2-48-ok.zip 2-48-ok.zip
-stdout In game 1-4:
-stdout game 1-4                                     : correct
-stdout In game 2-48:
-stdout game 2-48                                    : correct
+stdout-data
+In game 1-4:
+game 1-4                                     : correct
+In game 2-48:
+game 2-48                                    : correct
+end-of-data

@@ -3,7 +3,9 @@ return 0
 args -Fvc parent-4
 file roms/parent-4.zip 2-48-ok.zip 1-4-ok.zip
 file roms/clone-8.zip 1-8-ok.zip 1-8-ok.zip
-stdout In game parent-4:
-stdout game parent-4                                : correct
-stdout file 08.rom        size       8  crc 3656897d: not used
-stdout roms/parent-4.zip: delete unused file '08.rom'
+stdout-data
+In game parent-4:
+game parent-4                                : correct
+file 08.rom        size       8  crc 3656897d: not used
+roms/parent-4.zip: delete unused file '08.rom'
+end-of-data

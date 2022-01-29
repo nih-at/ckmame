@@ -2,7 +2,9 @@ description test game with 0 byte rom and bigger rom, zero rom is missing
 return 0
 args -Fvc zero-4
 file roms/zero-4.zip 1-4-ok.zip zero-4-ok.zip
-stdout In game zero-4:
-stdout rom  zero          size       0  crc 00000000: missing
-stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout roms/zero-4.zip: create empty file 'zero'
+stdout-data
+In game zero-4:
+rom  zero          size       0  crc 00000000: missing
+rom  04.rom        size       4  crc d87f7e0c: correct
+roms/zero-4.zip: create empty file 'zero'
+end-of-data

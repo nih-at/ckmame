@@ -4,7 +4,9 @@ args -Fvc 1-4
 file-del roms/1-4.zip 1-4-ok-doublezip.zip
 file-new unknown/1-4.zip 1-4-ok-doublezip.zip
 no-hashes unknown 1-4.zip 1-4-ok.zip
-stdout In game 1-4:
-stdout game 1-4                                     : not a single file found
-stdout file 1-4-ok.zip    size     148  crc ea01b28e: unknown
-stdout roms/1-4.zip: move unknown file '1-4-ok.zip'
+stdout-data
+In game 1-4:
+game 1-4                                     : not a single file found
+file 1-4-ok.zip    size     148  crc ea01b28e: unknown
+roms/1-4.zip: move unknown file '1-4-ok.zip'
+end-of-data

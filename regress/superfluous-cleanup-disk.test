@@ -11,18 +11,20 @@ file-new unknown/parent.zip 1-c-ok.zip
 file-new unknown/roms/108-2.chd 108-2.chd
 no-hashes roms clone-8.zip
 no-hashes unknown parent.zip 0c.rom
-stdout In archive roms:
-stdout image 108-2.chd   : unknown
-stdout image 108-5.chd   : duplicate
-stdout roms: move unknown file '108-2.chd'
-stdout roms: delete duplicate file '108-5.chd'
-stdout In archive roms/1-8.zip:
-stdout file 08.rom        size       8  crc 3656897d: duplicate
-stdout roms/1-8.zip: delete duplicate file '08.rom'
-stdout roms/1-8.zip: remove empty archive
-stdout In archive roms/parent.zip:
-stdout file 04.rom        size       4  crc d87f7e0c: not used
-stdout file 0c.rom        size      12  crc 0623c932: unknown
-stdout roms/parent.zip: delete unused file '04.rom'
-stdout roms/parent.zip: move unknown file '0c.rom'
-stdout roms/parent.zip: remove empty archive
+stdout-data
+In archive roms:
+image 108-2.chd   : unknown
+image 108-5.chd   : duplicate
+roms: move unknown file '108-2.chd'
+roms: delete duplicate file '108-5.chd'
+In archive roms/1-8.zip:
+file 08.rom        size       8  crc 3656897d: duplicate
+roms/1-8.zip: delete duplicate file '08.rom'
+roms/1-8.zip: remove empty archive
+In archive roms/parent.zip:
+file 04.rom        size       4  crc d87f7e0c: not used
+file 0c.rom        size      12  crc 0623c932: unknown
+roms/parent.zip: delete unused file '04.rom'
+roms/parent.zip: move unknown file '0c.rom'
+roms/parent.zip: remove empty archive
+end-of-data

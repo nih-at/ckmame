@@ -6,5 +6,7 @@ ckmamedb-before roms ckmamedb-1-4-ok.dump
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
 touch 1422359238 roms/1-4.zip
-stdout In game 1-8:
-stdout game 1-8                                     : correct
+stdout-data
+In game 1-8:
+game 1-8                                     : correct
+end-of-data

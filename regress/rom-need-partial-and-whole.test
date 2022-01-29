@@ -5,13 +5,15 @@ file roms/1-4.zip 1-8-called-04.zip 1-4-ok.zip
 file-new roms/1-8.zip 1-8-ok.zip
 no-hashes roms 1-4.zip 04.rom md5
 no-hashes roms 1-4 04.rom md5
-stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 0 (8)
-stdout file 04.rom        size       8  crc 3656897d: needed elsewhere
-stdout roms/1-4.zip: save needed file '04.rom'
-stdout roms/1-4.zip: extract (offset 0, size 4) from '04.rom' to '04.rom'
-stdout In game 1-8:
-stdout rom  08.rom        size       8  crc 3656897d: is in 'needed/3656897d-000.zip/04.rom'
-stdout roms/1-8.zip: add 'needed/3656897d-000.zip/04.rom' as '08.rom'
-stdout needed/3656897d-000.zip: delete used file '04.rom'
-stdout needed/3656897d-000.zip: remove empty archive
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 0 (8)
+file 04.rom        size       8  crc 3656897d: needed elsewhere
+roms/1-4.zip: save needed file '04.rom'
+roms/1-4.zip: extract (offset 0, size 4) from '04.rom' to '04.rom'
+In game 1-8:
+rom  08.rom        size       8  crc 3656897d: is in 'needed/3656897d-000.zip/04.rom'
+roms/1-8.zip: add 'needed/3656897d-000.zip/04.rom' as '08.rom'
+needed/3656897d-000.zip: delete used file '04.rom'
+needed/3656897d-000.zip: remove empty archive
+end-of-data

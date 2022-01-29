@@ -4,7 +4,9 @@ variants zip
 args -Fvc -je extra 1-4
 file extra/1-8.zip 1-8-ok.zip 1-8-ok.zip
 ckmamedb-before extra ckmamedb-1-8-ok-v2.dump 2 ckmamedb-v2.sql
-stdout In game 1-4:
-stdout game 1-4                                     : not a single file found
-stdout In archive extra/1-8.zip:
-stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
+stdout-data
+In game 1-4:
+game 1-4                                     : not a single file found
+In archive extra/1-8.zip:
+file 08.rom        size       8  crc 3656897d: needed elsewhere
+end-of-data

@@ -3,5 +3,7 @@ features LIBXML2
 return 0
 args -Fvc -D ../mamedb-xml-quoting.db --create-fixdat
 file-new "fixdat_ckmame test db <&> (1).dat" fixdat-xml-quoting.fixdat
-stdout In game 2&4c<>;:
-stdout game 2&4c<>;                                 : not a single file found
+stdout-data
+In game 2&4c<>;:
+game 2&4c<>;                                 : not a single file found
+end-of-data

@@ -6,14 +6,16 @@ file-del needed/deadbeef-000.zip deadfish.zip
 file-del needed/deadbeef-001.zip deadbeef.zip
 file-new unknown/deadbeef.zip deadpork.zip
 file-new unknown/deadbeef-000.zip deadfish.zip
-stdout In game deadbeef:
-stdout rom  deadbeef      size       8  crc deadbeef: is in 'needed/deadbeef-001.zip/deadbeef'
-stdout file deadpork      size       8  crc deadbeef: unknown
-stdout roms/deadbeef.zip: move unknown file 'deadpork'
-stdout roms/deadbeef.zip: add 'needed/deadbeef-001.zip/deadbeef' as 'deadbeef'
-stdout In archive needed/deadbeef-000.zip:
-stdout file deadbeef      size       8  crc deadbeef: unknown
-stdout needed/deadbeef-000.zip: move unknown file 'deadbeef'
-stdout needed/deadbeef-000.zip: remove empty archive
-stdout needed/deadbeef-001.zip: delete used file 'deadbeef'
-stdout needed/deadbeef-001.zip: remove empty archive
+stdout-data
+In game deadbeef:
+rom  deadbeef      size       8  crc deadbeef: is in 'needed/deadbeef-001.zip/deadbeef'
+file deadpork      size       8  crc deadbeef: unknown
+roms/deadbeef.zip: move unknown file 'deadpork'
+roms/deadbeef.zip: add 'needed/deadbeef-001.zip/deadbeef' as 'deadbeef'
+In archive needed/deadbeef-000.zip:
+file deadbeef      size       8  crc deadbeef: unknown
+needed/deadbeef-000.zip: move unknown file 'deadbeef'
+needed/deadbeef-000.zip: remove empty archive
+needed/deadbeef-001.zip: delete used file 'deadbeef'
+needed/deadbeef-001.zip: remove empty archive
+end-of-data

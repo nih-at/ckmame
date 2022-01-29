@@ -7,7 +7,9 @@ file-del roms/skipped.zip 1-c-header.zip
 file-new needed/07e0c072-000.zip 1-c-header.zip
 detector-hashes skip-some-bytes 20070429 needed 07e0c072-000.zip
 detector-hashes skip-some-bytes 20070429 needed 07e0c072-000
-stdout In game skipped:
-stdout game skipped                                 : not a single file found
-stdout file 0c.rom        size      16  crc 07e0c072: needed elsewhere
-stdout roms/skipped.zip: save needed file '0c.rom'
+stdout-data
+In game skipped:
+game skipped                                 : not a single file found
+file 0c.rom        size      16  crc 07e0c072: needed elsewhere
+roms/skipped.zip: save needed file '0c.rom'
+end-of-data
