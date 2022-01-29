@@ -4,4 +4,6 @@ program mkmamedb
 args -o mamedb-test.db mamedb.dat
 file mamedb.dat mamedb-broken-sha1.dat mamedb-broken-sha1.dat
 file-new mamedb-test.db mamedb-broken-sha1.dump
-stderr mamedb.dat: 6: invalid argument for sha1
+stderr-data
+mamedb.dat: 6: invalid argument for sha1
+end-of-data

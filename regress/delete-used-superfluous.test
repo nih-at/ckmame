@@ -4,9 +4,11 @@ args -Fvc -D ../mamedb-lost-parent-ok.db
 file-del roms/superfluous.zip 1-4-ok.zip
 file roms/clone-8.zip 1-8-ok.zip 2-48-ok.zip
 no-hashes roms clone-8.zip
-stdout In game clone-8:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/superfluous.zip/04.rom'
-stdout rom  08.rom        size       8  crc 3656897d: correct
-stdout roms/clone-8.zip: add 'roms/superfluous.zip/04.rom' as '04.rom'
-stdout roms/superfluous.zip: delete used file '04.rom'
-stdout roms/superfluous.zip: remove empty archive
+stdout-data
+In game clone-8:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/superfluous.zip/04.rom'
+rom  08.rom        size       8  crc 3656897d: correct
+roms/clone-8.zip: add 'roms/superfluous.zip/04.rom' as '04.rom'
+roms/superfluous.zip: delete used file '04.rom'
+roms/superfluous.zip: remove empty archive
+end-of-data

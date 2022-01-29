@@ -3,7 +3,9 @@ return 0
 args -Fvc 1-8a
 file-del roms/1-8a.zip 1-8-ok.zip
 file-new needed/3656897d-000.zip 1-8-ok.zip
-stdout In game 1-8a:
-stdout game 1-8a                                    : not a single file found
-stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
-stdout roms/1-8a.zip: save needed file '08.rom'
+stdout-data
+In game 1-8a:
+game 1-8a                                    : not a single file found
+file 08.rom        size       8  crc 3656897d: needed elsewhere
+roms/1-8a.zip: save needed file '08.rom'
+end-of-data

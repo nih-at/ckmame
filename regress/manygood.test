@@ -20,45 +20,47 @@ file roms/zero.zip zero-ok.zip zero-ok.zip
 no-hashes roms baddump.zip
 no-hashes roms many.zip
 no-hashes roms zero-4.zip zero
-stdout In game 1-4:
-stdout game 1-4                                     : correct
-stdout In game 1-8:
-stdout game 1-8                                     : correct
-stdout In game nogoodclone:
-stdout game nogoodclone                             : correct
-stdout In game 1-8a:
-stdout game 1-8a                                    : not a single file found
-stdout In game 2-44:
-stdout game 2-44                                    : correct
-stdout In game 2-48:
-stdout game 2-48                                    : correct
-stdout In game 2-4a:
-stdout game 2-4a                                    : correct
-stdout In game baddump:
-stdout game baddump                                 : correct
-stdout In game deadbeef:
-stdout game deadbeef                                : correct
-stdout In game deadbeefchild:
-stdout game deadbeefchild                           : correct
-stdout In game deadclonedbeef:
-stdout game deadclonedbeef                          : correct
-stdout In game dir-in-rom-name:
-stdout rom  some/path/to/file.rom  size       4  crc d87f7e0c: wrong name (04.rom)
-stdout In game many:
-stdout game many                                    : correct
-stdout In game nogood:
-stdout game nogood                                  : correct
-stdout In game nogood-2:
-stdout game nogood-2                                : correct
-stdout In game norom:
-stdout game norom                                   : correct
-stdout In game parent-4:
-stdout game parent-4                                : correct
-stdout In game clone-8:
-stdout game clone-8                                 : correct
-stdout In game zero:
-stdout game zero                                    : correct
-stdout In game zero-4:
-stdout game zero-4                                  : correct
-stdout In game zerobadcrc:
-stdout game zerobadcrc                              : not a single file found
+stdout-data
+In game 1-4:
+game 1-4                                     : correct
+In game 1-8:
+game 1-8                                     : correct
+In game nogoodclone:
+game nogoodclone                             : correct
+In game 1-8a:
+game 1-8a                                    : not a single file found
+In game 2-44:
+game 2-44                                    : correct
+In game 2-48:
+game 2-48                                    : correct
+In game 2-4a:
+game 2-4a                                    : correct
+In game baddump:
+game baddump                                 : correct
+In game deadbeef:
+game deadbeef                                : correct
+In game deadbeefchild:
+game deadbeefchild                           : correct
+In game deadclonedbeef:
+game deadclonedbeef                          : correct
+In game dir-in-rom-name:
+rom  some/path/to/file.rom  size       4  crc d87f7e0c: wrong name (04.rom)
+In game many:
+game many                                    : correct
+In game nogood:
+game nogood                                  : correct
+In game nogood-2:
+game nogood-2                                : correct
+In game norom:
+game norom                                   : correct
+In game parent-4:
+game parent-4                                : correct
+In game clone-8:
+game clone-8                                 : correct
+In game zero:
+game zero                                    : correct
+In game zero-4:
+game zero-4                                  : correct
+In game zerobadcrc:
+game zerobadcrc                              : not a single file found
+end-of-data

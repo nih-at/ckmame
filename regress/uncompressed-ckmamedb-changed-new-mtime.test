@@ -6,7 +6,9 @@ ckmamedb-before roms ckmamedb-1-4-ok.dump
 file-del roms/1-4.zip 1-4-wrong.zip
 file-new unknown/1-4.zip 1-4-wrong.zip
 touch 1047614103 roms/1-4/04.rom
-stdout In game 1-4:
-stdout game 1-4                                     : not a single file found
-stdout file 04.rom        size       4  crc e027b67c: unknown
-stdout roms/1-4: move unknown file '04.rom'
+stdout-data
+In game 1-4:
+game 1-4                                     : not a single file found
+file 04.rom        size       4  crc e027b67c: unknown
+roms/1-4: move unknown file '04.rom'
+end-of-data

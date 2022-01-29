@@ -8,5 +8,7 @@ file roms/skipped-child.zip 1-c-ok.zip 1-c-ok.zip
 no-hashes roms skipped.zip
 detector-hashes skip-some-bytes 20070429 roms skipped.zip
 detector-hashes skip-some-bytes 20070429 roms skipped
-stdout In game skipped-child:
-stdout game skipped-child                           : correct
+stdout-data
+In game skipped-child:
+game skipped-child                           : correct
+end-of-data

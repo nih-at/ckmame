@@ -7,7 +7,9 @@ file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file extra/new.chd 108-5.chd 108-5.chd
 file-new roms/disk/108-5.chd 108-5.chd
 no-hashes roms disk.zip 04.rom
-stdout In game disk:
-stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'extra/new.chd'
-stdout roms/disk: add 'extra/new.chd' as '108-5.chd'
+stdout-data
+In game disk:
+rom  04.rom        size       4  crc d87f7e0c: correct
+disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'extra/new.chd'
+roms/disk: add 'extra/new.chd' as '108-5.chd'
+end-of-data

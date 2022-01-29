@@ -4,9 +4,11 @@ args -D ../mamedb-lost-parent-ok.db -Fv
 file roms/clone-8.zip 1-4-ok.zip 1-4-ok.zip
 file-del needed/d87f7e0c-000.zip 1-4-ok.zip
 no-hashes roms clone-8.zip
-stdout In game clone-8:
-stdout rom  08.rom        size       8  crc 3656897d: missing
-stdout In archive needed/d87f7e0c-000.zip:
-stdout file 04.rom        size       4  crc d87f7e0c: not used
-stdout needed/d87f7e0c-000.zip: delete unused file '04.rom'
-stdout needed/d87f7e0c-000.zip: remove empty archive
+stdout-data
+In game clone-8:
+rom  08.rom        size       8  crc 3656897d: missing
+In archive needed/d87f7e0c-000.zip:
+file 04.rom        size       4  crc d87f7e0c: not used
+needed/d87f7e0c-000.zip: delete unused file '04.rom'
+needed/d87f7e0c-000.zip: remove empty archive
+end-of-data

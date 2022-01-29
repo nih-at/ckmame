@@ -5,5 +5,7 @@ args -D ../mamedb-disk-many.db -Fvc disk-nogood
 file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk-nogood/108-nogood.chd 108-5.chd 108-5.chd
 no-hashes roms disk-nogood.zip 04.rom
-stdout In game disk-nogood:
-stdout game disk-nogood                             : correct
+stdout-data
+In game disk-nogood:
+game disk-nogood                             : correct
+end-of-data

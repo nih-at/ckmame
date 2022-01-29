@@ -5,12 +5,16 @@ args -D ../mamedb-disk-many.db -Fvj -e extras --report-detailed disk-nogood disk
 file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
 file extras/108-nogood.chd 12-1.chd 12-1.chd
 no-hashes roms disk-nogood.zip 04.rom
-stdout In game disk-nogood:
-stdout rom  04.rom        size       4  crc d87f7e0c: correct
+stdout-data
+In game disk-nogood:
+rom  04.rom        size       4  crc d87f7e0c: correct
+end-of-data
 # file name alone shouldn't be enough
-stdout disk 108-nogood    no good dump              : missing
-stdout In game disk-nogood2:
-stdout rom  08.rom        size       8  crc 3656897d: missing
-stdout disk 208-7         no good dump              : missing
-stdout In archive extras:
-stdout image 108-nogood.chd: unknown
+stdout-data
+disk 108-nogood    no good dump              : missing
+In game disk-nogood2:
+rom  08.rom        size       8  crc 3656897d: missing
+disk 208-7         no good dump              : missing
+In archive extras:
+image 108-nogood.chd: unknown
+end-of-data

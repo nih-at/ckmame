@@ -2,7 +2,9 @@ description test 2 rom game, zip is correct, one rom is in old, keep
 return 0
 args -O ../mamedb-lost-parent-ok.db -Fvc --keep-old-duplicate 2-4a
 file roms/2-4a.zip 2-4a-ok.zip 2-4a-ok.zip
-stdout In game 2-4a:
-stdout rom  04.rom        size       4  crc d87f7e0c: duplicate (also in old 'clone-8')
-stdout rom  0a.rom        size      10  crc 0b4a4cde: correct
-stdout file 04.rom        size       4  crc d87f7e0c: duplicate
+stdout-data
+In game 2-4a:
+rom  04.rom        size       4  crc d87f7e0c: duplicate (also in old 'clone-8')
+rom  0a.rom        size      10  crc 0b4a4cde: correct
+file 04.rom        size       4  crc d87f7e0c: duplicate
+end-of-data

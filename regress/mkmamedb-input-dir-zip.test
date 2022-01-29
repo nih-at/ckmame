@@ -6,4 +6,6 @@ args -o mamedb-test.db --prog-name "ckmame test db" --prog-version "1" extra
 file extra/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file extra/plain-file dummy dummy
 file-new mamedb-test.db mamedb-small.dump
-stderr skipping unknown file 'extra/plain-file'
+stderr-data
+skipping unknown file 'extra/plain-file'
+end-of-data

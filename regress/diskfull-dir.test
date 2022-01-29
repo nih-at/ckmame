@@ -5,12 +5,16 @@ args -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
 file extra/wrongname.zip 2-48-ok.zip 2-48-ok.zip
 mkdir 0777 roms
 mkdir 0 roms/clone-8
-stdout In game clone-8:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/wrongname.zip/04.rom'
-stdout rom  08.rom        size       8  crc 3656897d: is in 'extra/wrongname.zip/08.rom'
-stdout roms/clone-8.zip: add 'extra/wrongname.zip/04.rom' as '04.rom'
-stdout roms/clone-8.zip: add 'extra/wrongname.zip/08.rom' as '08.rom'
-stdout In archive extra/wrongname.zip:
-stdout file 04.rom        size       4  crc d87f7e0c: needed elsewhere
-stdout file 08.rom        size       8  crc 3656897d: needed elsewhere
-stderr roms/clone-8: can't create temporary directory: Permission denied
+stdout-data
+In game clone-8:
+rom  04.rom        size       4  crc d87f7e0c: is in 'extra/wrongname.zip/04.rom'
+rom  08.rom        size       8  crc 3656897d: is in 'extra/wrongname.zip/08.rom'
+roms/clone-8.zip: add 'extra/wrongname.zip/04.rom' as '04.rom'
+roms/clone-8.zip: add 'extra/wrongname.zip/08.rom' as '08.rom'
+In archive extra/wrongname.zip:
+file 04.rom        size       4  crc d87f7e0c: needed elsewhere
+file 08.rom        size       8  crc 3656897d: needed elsewhere
+end-of-data
+stderr-data
+roms/clone-8: can't create temporary directory: Permission denied
+end-of-data

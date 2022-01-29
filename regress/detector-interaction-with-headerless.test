@@ -8,12 +8,14 @@ file-new roms/skipped.zip 1-8-skip-ok.zip
 file-del extra/short.zip 1-8-skip-ok.zip
 file-del extra/long.zip 1-8-ok.zip
 no-hashes extra long.zip
-stdout In game skipped:
-stdout rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'
-stdout roms/skipped.zip: add 'extra/short.zip/08.rom' as '08.rom'
-stdout In archive extra/long.zip:
-stdout file 08.rom        size       8  crc 3656897d: not used
-stdout extra/long.zip: delete unused file '08.rom'
-stdout extra/long.zip: remove empty archive
-stdout extra/short.zip: delete used file '08.rom'
-stdout extra/short.zip: remove empty archive
+stdout-data
+In game skipped:
+rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'
+roms/skipped.zip: add 'extra/short.zip/08.rom' as '08.rom'
+In archive extra/long.zip:
+file 08.rom        size       8  crc 3656897d: not used
+extra/long.zip: delete unused file '08.rom'
+extra/long.zip: remove empty archive
+extra/short.zip: delete used file '08.rom'
+extra/short.zip: remove empty archive
+end-of-data

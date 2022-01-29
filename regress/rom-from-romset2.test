@@ -4,8 +4,10 @@ args -Fvc deadbeef
 file roms/deadbeef.zip deadpork.zip deadbeef.zip
 file roms/deadclonedbeef.zip deadclonedbeef.zip deadclonedbeef.zip
 file-new unknown/deadbeef.zip deadpork.zip
-stdout In game deadbeef:
-stdout rom  deadbeef      size       8  crc deadbeef: is in 'roms/deadclonedbeef.zip/deadclonedbeef'
-stdout file deadpork      size       8  crc deadbeef: unknown
-stdout roms/deadbeef.zip: move unknown file 'deadpork'
-stdout roms/deadbeef.zip: add 'roms/deadclonedbeef.zip/deadclonedbeef' as 'deadbeef'
+stdout-data
+In game deadbeef:
+rom  deadbeef      size       8  crc deadbeef: is in 'roms/deadclonedbeef.zip/deadclonedbeef'
+file deadpork      size       8  crc deadbeef: unknown
+roms/deadbeef.zip: move unknown file 'deadpork'
+roms/deadbeef.zip: add 'roms/deadclonedbeef.zip/deadclonedbeef' as 'deadbeef'
+end-of-data

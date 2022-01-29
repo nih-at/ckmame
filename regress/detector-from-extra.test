@@ -8,8 +8,10 @@ no-hashes roms 1-8.zip
 detector-hashes skip-some-bytes 20070429 roms 1-8.zip
 detector-hashes skip-some-bytes 20070429 roms 1-8
 args -D mame-detector.db -Fvc -je extra 1-8
-stdout In game 1-8:
-stdout rom  08.rom        size       8  crc 3656897d: is in 'extra/1-8-header.zip/08.rom'
-stdout roms/1-8.zip: add 'extra/1-8-header.zip/08.rom' as '08.rom'
-stdout extra/1-8-header.zip: delete used file '08.rom'
-stdout extra/1-8-header.zip: remove empty archive
+stdout-data
+In game 1-8:
+rom  08.rom        size       8  crc 3656897d: is in 'extra/1-8-header.zip/08.rom'
+roms/1-8.zip: add 'extra/1-8-header.zip/08.rom' as '08.rom'
+extra/1-8-header.zip: delete used file '08.rom'
+extra/1-8-header.zip: remove empty archive
+end-of-data
