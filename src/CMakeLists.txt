@@ -24,6 +24,7 @@ set(COMMON_SOURCES
   cleanup.cc
   Commandline.cc
   Configuration.cc
+  DatDb.cc
   DatEntry.cc
   DB.cc
   DBStatement.cc

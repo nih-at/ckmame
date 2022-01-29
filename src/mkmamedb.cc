@@ -250,7 +250,7 @@ main(int argc, char **argv) {
         }
         else {
             // TODO: this isn't overridable by --only-files?
-            file_patterns.push_back(DEFAULT_FILE_PATTERNS);
+            file_patterns.emplace_back(DEFAULT_FILE_PATTERNS);
 
             for (auto name : arguments) {
                 auto last = name.find_last_not_of('/');

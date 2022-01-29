@@ -35,6 +35,7 @@
 #include "globals.h"
 
 #include <filesystem>
+#include <utility>
 
 #include "Detector.h"
 #include "error.h"
@@ -118,7 +119,7 @@ std::unordered_map<CkmameDB::Statement, std::string> CkmameDB::queries = {
     { QUERY_HAS_ARCHIVES, "select archive_id from archive limit 1" }
 };
 
-CkmameDB::CkmameDB(const std::string &dbname, const std::string &directory_) : DB(format, dbname, DBH_CREATE | DBH_WRITE), directory(directory_) {
+CkmameDB::CkmameDB(const std::string &dbname, std::string directory_) : DB(format, dbname, DBH_CREATE | DBH_WRITE), directory(std::move(directory_)) {
     auto stmt = get_statement(LIST_DETECTORS);
 
     while (stmt->step()) {
@@ -272,7 +273,7 @@ std::vector<ArchiveLocation> CkmameDB::list_archives() {
     std::vector<ArchiveLocation> archives;
 
     while (stmt->step()) {
-        archives.push_back(ArchiveLocation(stmt->get_string("name"), static_cast<filetype_t>(stmt->get_int("file_type"))));
+        archives.emplace_back(stmt->get_string("name"), static_cast<filetype_t>(stmt->get_int("file_type")));
     }
 
     return archives;
@@ -348,7 +349,7 @@ void CkmameDB::register_directory(const std::string &directory_name) {
 	}
     }
 
-    cache_directories.push_back(CacheDirectory(name));
+    cache_directories.emplace_back(name);
 }
 
 

@@ -64,7 +64,7 @@ public:
         QUERY_HAS_ARCHIVES
     };
     
-    CkmameDB(const std::string &dbname, const std::string &directory);
+    CkmameDB(const std::string &dbname, std::string directory);
     ~CkmameDB() override = default;
 
     static const DBFormat format;
