@@ -5,9 +5,9 @@ args --set "Test" -F 1-4 1-8
 file roms-set/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file-data .ckmamerc
 [global]
-rom-dir = "roms-local"
+rom-directory = "roms-local"
 ["Test"]
-rom-dir = "roms-set"
+rom-directory = "roms-set"
 end-of-data
 stdout-data
 In game 1-8:

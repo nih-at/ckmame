@@ -5,11 +5,11 @@ args -F 1-4 1-8
 file roms-local/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file-data home/.config/ckmame/ckmamerc
 [global]
-rom-dir = "roms-home"
+rom-directory = "roms-home"
 end-of-data
 file-data .ckmamerc
 [global]
-rom-dir = "roms-local"
+rom-directory = "roms-local"
 end-of-data
 stdout-data
 In game 1-8:

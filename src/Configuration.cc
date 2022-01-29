@@ -348,7 +348,7 @@ void Configuration::merge_config_table(void *p, const std::string &set) {
     set_bool(table, "report-fixable", report_fixable);
     set_bool(table, "report-missing", report_missing);
     set_bool(table, "report-summary", report_summary);
-    set_string(table, set, "rom-dir", rom_directory);
+    set_string(table, set, "rom-directory", rom_directory);
     set_bool(table, "roms-unzipped", roms_zipped);
     set_bool(table, "verbose", verbose);
     // set_bool(table, "warn-file-known", warn_file_known);
