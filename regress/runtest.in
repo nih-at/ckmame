@@ -109,6 +109,7 @@ sub checks {
 
 	while (my $name = readdir $dir) {
 	    next if ($name eq '.' || $name eq '..');
+	    next if ($name eq 'home'); # standard setting for $HOME in tests
 	    next unless (-d $name);
 
 	    my $ret = check_ckmame_db($test, $name, $variant);

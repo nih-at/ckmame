@@ -1,0 +1,17 @@
+description test config in local directory overrides the one in HOME directory
+return 0
+setenv HOME ./home
+args -F 1-4 1-8
+file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
+file-data home/.config/ckmame/ckmamerc
+[global]
+report-correct = true
+end-of-data
+file-data .ckmamerc
+[global]
+report-correct = false
+end-of-data
+stdout-data
+In game 1-8:
+game 1-8                                     : not a single file found
+end-of-data

@@ -1,0 +1,16 @@
+description test config in HOME directory is used
+return 0
+setenv HOME ./home
+args -F 1-4 1-8
+file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
+file-data home/.config/ckmame/ckmamerc
+[global]
+report-correct = true
+verbose = true
+end-of-data
+stdout-data
+In game 1-4:
+game 1-4                                     : correct
+In game 1-8:
+game 1-8                                     : not a single file found
+end-of-data
