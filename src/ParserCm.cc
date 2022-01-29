@@ -93,7 +93,7 @@ bool ParserCm::parse() {
                     game_description(tokenizer.get());
                 }
                 else if (cmd == "romof") {
-                    game_cloneof(TYPE_ROM, tokenizer.get());
+		    game_cloneof(tokenizer.get());
                 }
                 else if (cmd == "sampleof" || cmd == "sourcefile") {
 		    /* skip value */
@@ -295,6 +295,9 @@ bool ParserCm::parse() {
                     prog_header(tokenizer.get());
                 }
                 else if (cmd == ")") {
+		    if (header_only) {
+			return true;
+		    }
                     parse_state = TOP;
                 }
 		else if (cmd == "author" || cmd == "category" || cmd == "comment" || cmd == "date" || cmd == "forcemerging" || cmd == "forcenodump" || cmd == "forcepacking") {

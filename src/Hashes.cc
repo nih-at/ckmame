@@ -398,7 +398,7 @@ std::string Hashes::type_name(int type) {
     auto it = type_to_name.find(type);
 
     if (it == type_to_name.end()) {
-        return "";
+        return "unknown type " + std::to_string(type);
     }
 
     return it->second;

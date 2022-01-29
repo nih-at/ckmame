@@ -54,14 +54,16 @@ typedef enum parser_state parser_state_t;
 
 class Parser {
 public:
-    static bool parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags);
+    static bool parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags);
 
     /* TODO: move out of context */
     size_t lineno; /* current line number in input file */
 
     bool full_archive_name;
-    
+    bool header_only;
+
     virtual bool parse() { return false; }
+    bool parse_header() { header_only = true; return parse(); }
 
     // callbacks
     bool eof();
@@ -76,7 +78,7 @@ public:
     bool file_size(filetype_t ft, const std::string &attr);
     bool file_size(filetype_t ft, uint64_t size);
     bool file_start(filetype_t ft);
-    bool game_cloneof(filetype_t ft, const std::string &attr);
+    bool game_cloneof(const std::string &attr);
     bool game_description(const std::string &attr);
     bool game_end();
     bool game_name(const std::string &attr);
@@ -86,7 +88,7 @@ public:
     bool prog_name(const std::string &attr);
     bool prog_version(const std::string &attr);
 
-    Parser(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags);
+    Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_, int flags);
     virtual ~Parser() = default;
 
 protected:
@@ -111,7 +113,7 @@ protected:
     parser_state_t state;
     DatEntry de; /* info about dat file */
     GamePtr g;      /* current game */
-    Rom *r[TYPE_MAX];      /* current files */
+    Rom *r[TYPE_MAX]{};      /* current files */
     DetectorPtr detector;
 };
 

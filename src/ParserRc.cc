@@ -74,6 +74,9 @@ bool ParserRc::parse() {
 	}
 
 	if (sect == RC_GAMES) {
+	    if (header_only) {
+		return true;
+	    }
             if (!process_romline(line)) {
                 myerror(ERRFILE, "%zu: cannot parse ROM line, skipping", lineno);
             }
@@ -173,7 +176,7 @@ bool ParserRc::process_romline(const std::string &line) {
             game_description(desc);
         }
         if (!parent.empty() && parent != name) {
-            game_cloneof(TYPE_ROM, parent);
+	    game_cloneof(parent);
         }
     }
 

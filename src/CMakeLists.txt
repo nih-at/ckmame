@@ -80,7 +80,7 @@ set(LIBXML2_SOURCES
   detector_parse_ps.cc
   OutputContextXml.cc
   ParserXml.cc
-  xmlutil.cc
+  XmlProcessor.cc
   )  
 
 if(LIBXML2_FOUND)

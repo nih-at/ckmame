@@ -45,6 +45,12 @@
 bool ParserDir::parse() {
     lineno = 0;
 
+    // TODO: set name from directory name?
+
+    if (header_only) {
+	return true;
+    }
+
     try {
 	Dir dir(directory_name, false);
 	std::filesystem::path filepath;

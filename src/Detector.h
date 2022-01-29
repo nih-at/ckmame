@@ -117,7 +117,7 @@ public:
     static const uint64_t MAX_DETECTOR_FILE_SIZE;
 
     static DetectorPtr parse(const std::string &filename);
-    static DetectorPtr parse(ParserSource *source);
+    static DetectorPtr parse(ParserSource *parser_source);
 
     Hashes execute(const std::vector<uint8_t> &data) const;
     bool print(FILE *) const;

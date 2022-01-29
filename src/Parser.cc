@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <utility>
 
 #include "ParserCm.h"
 #include "ParserRc.h"
@@ -55,7 +56,7 @@
     } while (0)
 
 
-bool Parser::parse(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {
+bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {
     std::unique_ptr<Parser> parser;
 
     auto c = source->peek();
@@ -241,7 +242,7 @@ bool Parser::file_size(filetype_t ft, uint64_t size) {
 bool Parser::file_start(filetype_t ft) {
     CHECK_STATE(PARSE_IN_GAME);
 
-    g->files[ft].push_back(Rom());
+    g->files[ft].emplace_back();
     r[ft] = &g->files[ft][g->files[ft].size() - 1];
 
     state = PARSE_IN_FILE;
@@ -250,7 +251,8 @@ bool Parser::file_start(filetype_t ft) {
 }
 
 
-bool Parser::game_cloneof(filetype_t ft, const std::string &attr) {
+bool
+Parser::game_cloneof(const std::string &attr) {
     CHECK_STATE(PARSE_IN_GAME);
 
     g->cloneof[0] = attr;
@@ -401,7 +403,7 @@ bool Parser::prog_version(const std::string &attr) {
 }
 
 
-Parser::Parser(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), ignore(exclude), output(output_), ps(source), flags(0), state(PARSE_IN_HEADER) {
+Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), header_only(false), ignore(std::move(exclude)), output(output_), ps(std::move(source)), flags(0), state(PARSE_IN_HEADER) {
     dat_default.merge(dat, nullptr);
     full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
     for (auto & i : r) {
@@ -434,13 +436,9 @@ void Parser::disk_end() {
 
 
 bool Parser::ignore_game(const std::string &name) {
-    for (auto &pattern : ignore) {
-        if (fnmatch(pattern.c_str(), name.c_str(), 0) == 0) {
-	    return true;
-        }
-    }
-
-    return false;
+    return std::any_of(ignore.begin(), ignore.end(), [&name](const std::string &pattern) {
+	return fnmatch(pattern.c_str(), name.c_str(), 0) == 0;
+    });
 }
 
 

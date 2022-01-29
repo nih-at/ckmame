@@ -1,5 +1,5 @@
 /*
-  xmlutil.c -- parse XML file via callbacks
+  XmlProcessor.c -- parse XML file via callbacks
   Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -35,12 +35,19 @@
 #include "config.h"
 
 #include "error.h"
-#include "xmlutil.h"
+#include "XmlProcessor.h"
+
+XmlProcessor::XmlProcessor(LineNumberCallback line_number_callback_, const std::unordered_map<std::string, Entity> &entities_, void *context_) :
+    line_number_callback(line_number_callback_),
+    entities(entities_),
+    context(context_),
+    ok(true),
+    stop_parsing(false) { }
+
 
 #ifndef HAVE_LIBXML2
 
-/*ARGSUSED1*/
-int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
+int XmlProcessor::parse(ParserSource *parser_source) {
     myerror(ERRFILE, "support for XML parsing not compiled in.");
     return -1;
 }
@@ -49,41 +56,45 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 
 #include <libxml/xmlreader.h>
 
-#define XMLU_MAX_PATH 8192
+#include <utility>
 
-static int xml_close(void *);
-static const XmluEntity *xml_find(const std::unordered_map<std::string, XmluEntity> &entities, const std::string &path);
+XmlProcessor::Attribute::Attribute(XmlProcessor::AttributeCallback callback_, const void *arguments_):
+    cb_attr(callback_), arguments(arguments_) { }
+
+
+static int xml_close([[maybe_unused]] void *);
 static int xml_read(void *source, char *buffer, int length);
 
 
-int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std::unordered_map<std::string, XmluEntity> &entities) {
-    auto reader = xmlReaderForIO(xml_read, xml_close, ps, nullptr, nullptr, 0);
+int XmlProcessor::parse(ParserSource *parser_source) {
+    auto reader = xmlReaderForIO(xml_read, xml_close, parser_source, nullptr, nullptr, 0);
     if (reader == nullptr) {
 	myerror(ERRFILE, "can't open\n");
 	return -1;
     }
 
-    auto ok = true;
-    const XmluEntity *entity_text = nullptr;
+    ok = true;
+    stop_parsing = false;
+
+    const Entity *entity_text = nullptr;
     std::string path;
 
     int ret;
-    while ((ret = xmlTextReaderRead(reader)) == 1) {
-	if (lineno_cb)
-	    lineno_cb(ctx, xmlTextReaderGetParserLineNumber(reader));
+    while (!stop_parsing && (ret = xmlTextReaderRead(reader)) == 1) {
+	if (line_number_callback) {
+	    line_number_callback(context, static_cast<size_t>(xmlTextReaderGetParserLineNumber(reader)));
+	}
 
 	switch (xmlTextReaderNodeType(reader)) {
             case XML_READER_TYPE_ELEMENT: {
                 auto name = std::string(reinterpret_cast<const char *>(xmlTextReaderConstName(reader)));
-                path = path + '/' + name;
+                path += '/' + name;
                 
-                auto entity = xml_find(entities, path);
+                auto entity = find(path);
                 if (entity != nullptr) {
                     if (entity->cb_open) {
 			try {
-			    if (!entity->cb_open(ctx, entity->arg1)) {
-				ok = false;
-			    }
+			    handle_callback_status(entity->cb_open(context, entity->arguments));
 			}
 			catch (std::exception &e) {
                             myerror(ERRFILE, "parse error: %s", e.what());
@@ -97,9 +108,7 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 
                         if (value != nullptr) {
 			    try {
-				if (!attribute.cb_attr(ctx, attribute.arg1, attribute.arg2, value)) {
-				    ok = false;
-				}
+				handle_callback_status(attribute.cb_attr(context, attribute.arguments, value));
 			    }
 			    catch (std::exception &e) {
                                 myerror(ERRFILE, "parse error: %s", e.what());
@@ -124,13 +133,11 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
                  */
 
             case XML_READER_TYPE_END_ELEMENT: {
-                auto entity = xml_find(entities, path);
+                auto entity = find(path);
                 if (entity != nullptr) {
 		    if (entity->cb_close) {
 			try {
-			    if (!entity->cb_close(ctx, entity->arg1)) {
-				ok = false;
-			    }
+			    handle_callback_status(entity->cb_close(context, entity->arguments));
 			}
                         catch (std::exception &e) {
                             myerror(ERRFILE, "parse error: %s", e.what());
@@ -148,7 +155,7 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 	case XML_READER_TYPE_TEXT:
                 if (entity_text) {
 		    try {
-			entity_text->cb_text(ctx, (const char *)xmlTextReaderConstValue(reader));
+			handle_callback_status(entity_text->cb_text(context, entity_text->arguments, (const char *)xmlTextReaderConstValue(reader)));
 		    }
                     catch (std::exception &e) {
                         myerror(ERRFILE, "parse error: %s", e.what());
@@ -172,25 +179,41 @@ int xmlu_parse(ParserSource *ps, void *ctx, xmlu_lineno_cb lineno_cb, const std:
 }
 
 
-static int
-xml_close(void *ctx) {
-    return 0;
+const XmlProcessor::Entity *XmlProcessor::find(const std::string &path) const {
+    for (auto &pair : entities) {
+	auto &name = pair.first;
+	if (name == path) {
+	    return &pair.second;
+	}
+
+	if (name.length() < path.length() && path[path.length() - name.length() - 1] == '/' && path.compare(path.length() - name.length(), name.length(), name) == 0) {
+	    return &pair.second;
+	}
+    }
+
+    return nullptr;
 }
 
 
-static const XmluEntity *xml_find(const std::unordered_map<std::string, XmluEntity> &entities, const std::string &path) {
-    for (auto &pair : entities) {
-        auto &name = pair.first;
-        if (name == path) {
-            return &pair.second;
-        }
+void XmlProcessor::handle_callback_status(CallbackStatus status) {
+    switch (status) {
+    case OK:
+	break;
 
-        if (name.length() < path.length() && path[path.length() - name.length() - 1] == '/' && path.compare(path.length() - name.length(), name.length(), name) == 0) {
-            return &pair.second;
-       }
+    case ERROR:
+	ok = false;
+	break;
+
+    case END:
+	stop_parsing = true;
+	break;
     }
-    
-    return nullptr;
+}
+
+
+static int
+xml_close([[maybe_unused]] void *ctx) {
+    return 0;
 }
 
 
