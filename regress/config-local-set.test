@@ -1,0 +1,15 @@
+description test config in local directory is used, set overrides
+return 0
+setenv HOME ./home
+args --set "Test" -F 1-4 1-8
+file roms-set/1-4.zip 1-4-ok.zip 1-4-ok.zip
+file-data .ckmamerc
+[global]
+rom-dir = "roms-local"
+["Test"]
+rom-dir = "roms-set"
+end-of-data
+stdout-data
+In game 1-8:
+game 1-8                                     : not a single file found
+end-of-data
