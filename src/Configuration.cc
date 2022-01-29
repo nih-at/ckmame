@@ -334,7 +334,6 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 void Configuration::merge_config_table(void *p, const std::string &set) {
     const auto &table = *reinterpret_cast<toml::table *>(p);
 
-    // TODO: autofixdat
     set_bool(table, "complete-games-only", complete_games_only);
     set_bool(table, "create-fixdat", create_fixdat);
     set_string(table, set, "db", rom_db);
