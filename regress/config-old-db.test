@@ -4,9 +4,9 @@ args -F 2-4a
 file roms/2-4a.zip 2-4a-ok.zip 1-a-ok.zip
 file-data .ckmamerc
 [global]
-old-db = "../makedb-lost-parent-ok.db"
+old-db = "../mamedb-lost-parent-ok.db"
 end-of-data
 stdout-data
 In game 2-4a:
-game 2-4a                                    : correct
+file 04.rom        size       4  crc d87f7e0c: duplicate
 end-of-data
