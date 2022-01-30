@@ -1,0 +1,12 @@
+description test incomplete game based on config
+return 0
+args -F 2-48
+file roms/2-48.zip 1-4-ok.zip
+file-data .ckmamerc
+[global]
+complete-games-only = false
+end-of-data
+stdout-data
+In game 2-48:
+rom  08.rom        size       8  crc 3656897d: missing
+end-of-data
