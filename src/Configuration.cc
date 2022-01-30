@@ -339,7 +339,7 @@ void Configuration::merge_config_table(void *p, const std::string &set) {
     set_string(table, set, "rom-db", rom_db);
     set_string_vector(table, set, "extra-directory", extra_directories, false);
     set_string_vector(table, set, "extra-directory-append", extra_directories, true);
-    set_string(table, "fixdat_directory", set, fixdat_directory);
+    set_string(table, set, "fixdat-directory", fixdat_directory);
     set_bool(table, "keep-old-duplicate", keep_old_duplicate);
     set_bool(table, "move-from-extra", move_from_extra);
     set_string(table, set, "old-db", old_db);
