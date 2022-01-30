@@ -1,0 +1,12 @@
+description test 2 rom game, zip is correct, one rom is in old, keep it
+return 0
+args -F 2-4a
+file roms/2-4a.zip 2-4a-ok.zip 1-4a-ok.zip
+file-data .ckmamerc
+[global]
+old-db = "../makedb-lost-parent-ok.db"
+end-of-data
+stdout-data
+In game 2-4a:
+game 2-4a                                    : correct
+end-of-data
