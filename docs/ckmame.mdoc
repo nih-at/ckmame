@@ -331,24 +331,27 @@ The following options can not be set from the config file:
 .El
 .Pp
 The
-.Cm extra-directory
+.Cm extra-directories
 config parameter overrides the search directories, and there is
-.Cm extra-directory-append
+.Cm extra-directories-append
 if you want add to the search path instead.
 .Pp
 For example:
 .Bd -literal
 [global]
 verbose = true
+extra-directories = [ "incoming" ]
 
 ["Big Set"]
 verbose = false
 rom-directory = "Big Set ROMs"
+extra-directories-append = [ "another-location" ]
 rom-db = "Big Set.db"
 
 ["Unzipped Set"]
 roms-unzipped = true
 rom-directory = "Unzipped Set ROMs"
+extra-directories-append = [ "unzipped-incoming" ]
 rom-db = "Unzipped Set.db"
 .Ed
 .Pp

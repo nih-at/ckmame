@@ -337,8 +337,8 @@ void Configuration::merge_config_table(void *p, const std::string &set) {
     set_bool(table, "complete-games-only", complete_games_only);
     set_bool(table, "create-fixdat", create_fixdat);
     set_string(table, set, "rom-db", rom_db);
-    set_string_vector(table, set, "extra-directory", extra_directories, false);
-    set_string_vector(table, set, "extra-directory-append", extra_directories, true);
+    set_string_vector(table, set, "extra-directories", extra_directories, false);
+    set_string_vector(table, set, "extra-directories-append", extra_directories, true);
     set_string(table, set, "fixdat-directory", fixdat_directory);
     set_bool(table, "keep-old-duplicate", keep_old_duplicate);
     set_bool(table, "move-from-extra", move_from_extra);
