@@ -1,4 +1,4 @@
-description test config in local directory is used
+description test config in local directory is used, do not report correct roms
 return 0
 args -F 1-4 1-8
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
