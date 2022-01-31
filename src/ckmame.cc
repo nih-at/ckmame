@@ -126,7 +126,7 @@ main(int argc, char **argv) {
 	    arguments = args.arguments;
 	}
 	catch (Exception &ex) {
-	    commandline.usage(false, stderr);
+	    myerror(ERRDEF, "%s", ex.what());
 	    exit(1);
 	}
 

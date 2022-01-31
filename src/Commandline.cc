@@ -100,15 +100,21 @@ ParsedCommandline Commandline::parse(int argc, char *const *argv) {
     int c;
     while ((c = getopt_long(argc, argv, short_options.c_str(), long_options.data(), nullptr)) != EOF) {
         if (c == '?') {
-            throw Exception("invalid option");
+	    usage(false, stderr);
+	    fprintf(stderr, "unknown option\n"); // TODO: include unknown option, how to get that information?
+	    exit(1);
         }
         if (c == ':') {
-            throw Exception("option missing argument");
+	    usage(false, stderr);
+	    fprintf(stderr, "option missing argument\n"); // TODO: include unknown option, how to get that information?
+	    exit(1);
         }
         
         auto it = option_indices.find(c);
         if (it == option_indices.end()) {
-            throw Exception("invalid option");
+	    usage(false, stderr);
+	    fprintf(stderr, "unknown option '%c'\n", c);
+	    exit(1);
         }
         const auto &option = long_options[it->second];
         

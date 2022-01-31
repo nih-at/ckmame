@@ -161,7 +161,7 @@ static void set_string_vector(const toml::table &table, const std::string &set, 
 
 bool Configuration::merge_config_file(const std::string &fname, const std::string &set, bool optional) {
     std::string string;
-    
+
     auto set_known = false;
     
     try {
