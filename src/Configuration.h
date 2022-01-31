@@ -39,6 +39,12 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#ifdef HAVE_TOMLPLUSPLUS
+#include <toml++/toml.h>
+#else
+#include "toml.hpp"
+#endif
+
 #include "Commandline.h"
 
 class Configuration {
@@ -70,9 +76,7 @@ public:
     static void add_options(Commandline &commandline, const std::unordered_set<std::string> &used_variables);
 
     void handle_commandline(const ParsedCommandline &commandline);
-    
-    bool merge_config_file(const std::string &fname, const std::string &set, bool optional);
-    
+
     std::string rom_db;
     std::string old_db;
     
@@ -143,7 +147,8 @@ private:
     static std::unordered_map<std::string, std::string> option_to_variable;
 
     static bool option_used(const std::string &option_name, const std::unordered_set<std::string> &used_variables);
-    void merge_config_table(void *, const std::string &set); // use void * to avoid exposing TOML header
+    bool merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files, const std::string &set);
+    void merge_config_table(const toml::table *table, const std::vector<toml::table> &config_files, const std::string &set);
 };
 
 #endif // HAD_CONFIGURATION_H

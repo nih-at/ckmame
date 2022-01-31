@@ -40,12 +40,18 @@
 #include "RomDB.h"
 #include "util.h"
 
-#ifdef HAVE_TOMLPLUSPLUS
-#include <toml++/toml.h>
-#else
-#include "toml.hpp"
-#endif
-
+void read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional) {
+    try {
+	auto string = slurp(file_name);
+	config_tables.push_back(toml::parse(string));
+    }
+    catch (const std::exception &ex) {
+	if (optional) { // TODO: only if file doesn't exist
+	    return;
+	}
+	throw ex; // TODO: convert to Exception
+    }
+}
 
 std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
@@ -159,26 +165,15 @@ static void set_string(const toml::table &table, const std::string &set, const s
 static void set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append);
 
 
-bool Configuration::merge_config_file(const std::string &fname, const std::string &set, bool optional) {
+bool
+Configuration::merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files, const std::string &set) {
     std::string string;
 
     auto set_known = false;
-    
-    try {
-        string = slurp(fname);
-    }
-    catch (const std::exception &ex) {
-        if (optional) { // TODO: only if file doesn't exist
-            return false;
-        }
-        throw ex; // TODO: convert to Exception
-    }
 
-    auto table = toml::parse(string);
-    
-    auto global_table = table["global"].as_table();
+    auto global_table = file["global"].as_table();
     if (global_table != nullptr) {
-        merge_config_table(global_table, set);
+        merge_config_table(global_table, config_files, set);
         
         if (!set.empty()) {
             auto known_sets = (*global_table)["sets"].as_array();
@@ -195,10 +190,10 @@ bool Configuration::merge_config_file(const std::string &fname, const std::strin
     }
     
     if (!set.empty()) {
-        auto set_table = table[set].as_table();
+        auto set_table = file[set].as_table();
         
         if (set_table != nullptr) {
-            merge_config_table(set_table, set);
+            merge_config_table(set_table, config_files, set);
             set_known = true;
         }
     }
@@ -214,6 +209,17 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
     std::string set;
     auto set_exists = true;
 
+    std::vector<toml::table> config_files;
+
+    read_config_file(config_files, user_config_file(), true);
+    read_config_file(config_files, local_config_file(), true);
+
+    for (const auto &option : args.options) {
+	if (option.name == "config") {
+	    read_config_file(config_files, option.argument, false);
+	}
+    }
+
     for (const auto &option : args.options) {
 	if (option.name == "set") {
 	    set = option.argument;
@@ -221,18 +227,9 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	}
     }
 
-    if (merge_config_file(user_config_file(), set, true)) {
-	set_exists = true;
-    }
-    if (merge_config_file(local_config_file(), set, true)) {
-	set_exists = true;
-    }
-
-    for (const auto &option : args.options) {
-	if (option.name == "config") {
-	    if (merge_config_file(option.argument, set, false)) {
-		set_exists = true;
-	    }
+    for (const auto& file : config_files) {
+	if (merge_config_file(file, config_files, set)) {
+	    set_exists = true;
 	}
     }
 
@@ -331,8 +328,31 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 }
 
 
-void Configuration::merge_config_table(void *p, const std::string &set) {
-    const auto &table = *reinterpret_cast<toml::table *>(p);
+void Configuration::merge_config_table(const toml::table *table_pionter, const std::vector<toml::table> &config_files, const std::string &set) {
+    const auto& table = *table_pionter;
+
+    const auto profiles = table["profiles"].as_array();
+    if (profiles != nullptr) {
+	for (const auto &value : *profiles) {
+	    auto profile_value = value.value<std::string>();
+	    if (!profile_value.has_value()) {
+		continue;
+	    }
+	    const auto& profile = profile_value.value();
+
+	    for (const auto &file : config_files) {
+		auto profile_tables = file["profile"].as_table();
+		if (profile_tables == nullptr) {
+		    continue;
+		}
+		const auto profile_table = (*profile_tables)[profile].as_table();
+		if (profile_table == nullptr) {
+		    continue;
+		}
+		merge_config_table(profile_table, config_files, set);
+	    }
+	}
+    }
 
     set_bool(table, "complete-games-only", complete_games_only);
     set_bool(table, "create-fixdat", create_fixdat);
