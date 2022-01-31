@@ -40,7 +40,7 @@
 #include "RomDB.h"
 #include "util.h"
 
-void read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional) {
+void Configuration::read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional) {
     try {
 	auto string = slurp(file_name);
 	config_tables.push_back(toml::parse(string));
@@ -159,10 +159,6 @@ Configuration::Configuration() : rom_db(RomDB::default_name()), old_db(RomDB::de
 	old_db = value;
     }
 }
-
-static void set_bool(const toml::table &table, const std::string &name, bool &variable);
-static void set_string(const toml::table &table, const std::string &set, const std::string &name, std::string &variable);
-static void set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append);
 
 
 bool
@@ -387,7 +383,7 @@ void Configuration::add_options(Commandline &commandline, const std::unordered_s
 
 // TODO: exceptions for type mismatch
 
-static void set_bool(const toml::table &table, const std::string &name, bool &variable) {
+void Configuration::set_bool(const toml::table &table, const std::string &name, bool &variable) {
     auto value = table[name].value<bool>();
     if (value.has_value()) {
         variable = value.value();
@@ -395,7 +391,7 @@ static void set_bool(const toml::table &table, const std::string &name, bool &va
 }
 
 
-static void set_string(const toml::table &table, const std::string &set, const std::string &name, std::string &variable) {
+void Configuration::set_string(const toml::table &table, const std::string &set, const std::string &name, std::string &variable) {
     auto value = table[name].value<std::string>();
     if (value.has_value()) {
 	variable = std::string(value.value());
@@ -407,7 +403,7 @@ static void set_string(const toml::table &table, const std::string &set, const s
 }
 
 
-static void set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append) {
+void Configuration::set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append) {
     auto array = table[name].as_array();
     if (array != nullptr) {
         if (!append) {

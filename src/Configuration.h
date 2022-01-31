@@ -147,6 +147,11 @@ private:
     static std::unordered_map<std::string, std::string> option_to_variable;
 
     static bool option_used(const std::string &option_name, const std::unordered_set<std::string> &used_variables);
+    static void read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional);
+    static void set_bool(const toml::table &table, const std::string &name, bool &variable);
+    static void set_string(const toml::table &table, const std::string &set, const std::string &name, std::string &variable);
+    static void set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append);
+
     bool merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files, const std::string &set);
     void merge_config_table(const toml::table *table, const std::vector<toml::table> &config_files, const std::string &set);
 };
