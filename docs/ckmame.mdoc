@@ -347,6 +347,13 @@ array in the
 .Dq [global]
 section.
 .Pp
+You can also define a set of definitions that you would
+like to reference later as a
+.Dq profile. Ns Aq something
+and later pull in all these settings by referring to it with the
+.Cm profiles
+array keyword.
+.Pp
 For example:
 .Bd -literal
 [global]
@@ -354,11 +361,16 @@ verbose = true
 extra-directories = [ "incoming" ]
 sets = [ "Set using standard settings only" ]
 
+[profiles.incomplete]
+complete-only = true
+report-missing = true
+
 ["Big Set"]
 verbose = false
 rom-directory = "Big Set ROMs"
 extra-directories-append = [ "another-location" ]
 rom-db = "Big Set.db"
+profiles = [ "incomplete" ]
 
 ["Unzipped Set"]
 roms-unzipped = true
