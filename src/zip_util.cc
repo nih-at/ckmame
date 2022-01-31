@@ -70,35 +70,3 @@ uint64_t ZipSource::read(void *data, uint64_t length) {
 std::string ZipSource::error() {
     return zip_error_strerror(zip_source_error(source));
 }
-
-
-static bool my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx);
-
-
-static bool
-my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx) {
-
-    std::string name = zip_get_name(za, idx, 0);
-    if (name.empty()) {
-	return false;
-    }
-
-    std::string ext = std::filesystem::path(name).extension();
-    name.resize(name.length() - ext.length());
-
-    for (int i = 0; i < 1000; i++) {
-	char n[5];
-	int zerr;
-
-	sprintf(n, "-%03d", i);
-	auto unique = name + n + ext;
-
-	int ret = zip_rename(za, idx, unique.c_str());
-	zip_error_get(za, &zerr, nullptr);
-	if (ret == 0 || zerr != ZIP_ER_EXISTS) {
-	    return ret == 0;
-	}
-    }
-
-    return false;
-}
