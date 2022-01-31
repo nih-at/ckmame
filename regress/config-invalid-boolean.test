@@ -1,0 +1,9 @@
+description check config parser for invalid booleans
+return 1
+file-data .ckmamerc
+[global]
+report-missing = "something"
+end-of-data
+stderr-data
+invalid type for 'report-missing'
+end-of-data
