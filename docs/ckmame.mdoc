@@ -341,11 +341,18 @@ config parameter overrides the search directories, and there is
 .Cm extra-directories-append
 if you want add to the search path instead.
 .Pp
+You can list additional existing sets using the
+.Cm sets
+array in the
+.Dq [global]
+section.
+.Pp
 For example:
 .Bd -literal
 [global]
 verbose = true
 extra-directories = [ "incoming" ]
+sets = [ "Set using standard settings only" ]
 
 ["Big Set"]
 verbose = false
