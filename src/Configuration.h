@@ -135,6 +135,9 @@ public:
     bool report_missing; /* report missing ROMs with good dumps, one line per game if no own ROM found */
     bool report_summary; /* print statistics about ROM set at end of run */
 
+    std::vector<std::string> dat_directories;
+    std::vector<std::string> dats;
+
     // TODO: Are these needed? They have no command line options.
     /* file_correct */
     bool warn_file_known;   // files that are known but don't belong in this archive

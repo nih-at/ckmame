@@ -352,6 +352,9 @@ void Configuration::merge_config_table(const toml::table *table_pointer, const s
 
     set_bool(table, "complete-games-only", complete_games_only);
     set_bool(table, "create-fixdat", create_fixdat);
+    set_string_vector(table, set, "dat-directories", dat_directories, false);
+    set_string_vector(table, set, "dat-directories-append", dat_directories, true);
+    set_string_vector(table, set, "dats", dats, false);
     set_string(table, set, "rom-db", rom_db);
     set_string_vector(table, set, "extra-directories", extra_directories, false);
     set_string_vector(table, set, "extra-directories-append", extra_directories, true);

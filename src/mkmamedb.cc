@@ -1,6 +1,6 @@
 /*
   mkmamedb.c -- create mamedb
-  Copyright (C) 1999-2020 Dieter Baron and Thomas Klausner
+  Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -40,6 +40,7 @@
 #include "Archive.h"
 #include "CkmameDB.h"
 #include "Commandline.h"
+#include "DatRepository.h"
 #include "error.h"
 #include "Exception.h"
 #include "file_util.h"
@@ -222,6 +223,12 @@ main(int argc, char **argv) {
 	    exit(1);
 	}
         dbname = var;
+    }
+
+    // TODO: not if dbname, format, or what else is specified on command line?
+    if (!configuration.dat_directories.empty()) {
+	auto repository = DatRepository(configuration.dat_directories);
+	// TODO: check if all dats are up to date
     }
 
     try {

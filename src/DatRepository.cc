@@ -33,9 +33,14 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DatRepository.h"
 
+#include <sys/stat.h>
+
 #include <unordered_set>
 
 #include "Dir.h"
+#include "OutputContextHeader.h"
+#include "Parser.h"
+#include "ParserSourceFile.h"
 #include "util.h"
 
 DatRepository::DatRepository(const std::vector<std::string> &directories) {
@@ -90,9 +95,38 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 
 	auto file = filepath.string().substr(directory.size() + 1);
 
+	struct stat st;
+
+	if (stat(filepath.c_str(), &st) < 0) {
+	    continue;
+	}
+
 	files.insert(file);
 
-	// TODO: parse file, enter results in db
+	time_t db_mtime;
+	size_t db_size;
+
+	if(db->get_last_change(file, &db_mtime, &db_size)) {
+	    if (db_mtime == st.st_mtime && db_size == st.st_size) {
+		continue;
+	    }
+	    db->delete_file(file);
+	}
+
+	std::vector<DatDB::DatEntry> entries;
+
+	// TODO: process zip archives
+
+	auto output = OutputContextHeader();
+	auto source = std::make_shared<ParserSourceFile>(file);
+	auto parser = Parser(source, {}, nullptr, &output, 0);
+
+	if (parser.parse_header()) {
+	    auto header = output.get_header();
+	    entries.emplace_back("", header.name, header.version);
+	}
+
+	db->insert_file(file, st.st_mtime, st.st_size, entries);
     }
 
     auto db_files = db->list_files();
