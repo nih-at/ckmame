@@ -36,12 +36,14 @@
 
 #include <zip.h>
 
+#include <utility>
+
 #include "Archive.h"
 
 class ArchiveZip : public Archive {
 public:
     ArchiveZip(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_ZIP, name, filetype, where, flags), za(nullptr) { }
-    explicit ArchiveZip(ArchiveContentsPtr contents) : Archive(contents), za(nullptr) { }
+    explicit ArchiveZip(ArchiveContentsPtr contents) : Archive(std::move(contents)), za(nullptr) { }
 
     ~ArchiveZip() override;
 

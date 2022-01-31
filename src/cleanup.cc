@@ -46,10 +46,7 @@
 static void cleanup_archive(filetype_t filetype, Archive *archive, Result *result, int flags);
 
 
-void cleanup_list(DeleteListPtr list, int flags, bool is_needed) {
-    ArchivePtr a;
-    int cmp;
-
+void cleanup_list(const DeleteListPtr& list, int flags, bool is_needed) {
     list->sort_archives();
     list->sort_entries();
     size_t di = 0;
@@ -71,6 +68,7 @@ void cleanup_list(DeleteListPtr list, int flags, bool is_needed) {
             while (di < len) {
                 auto fl = list->entries[di];
                 /* file lists should know what's toplevel without adding a / to name */
+		int cmp;
                 if (fl.name[fl.name.length() - 1] == '/' && entry.name[entry.name.length() - 1] != '/') {
                     cmp = entry.name.compare(fl.name.substr(0, fl.name.length() - 1));
                 }

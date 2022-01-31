@@ -35,6 +35,7 @@
 */
 
 #include <string>
+#include <utility>
 
 #include <sqlite3.h>
 
@@ -48,7 +49,7 @@
 #define DBH_TRUNCATE 0x40                               /* delete database if it exists */
 #define DBH_NEW (DBH_CREATE | DBH_TRUNCATE | DBH_WRITE) /* create new writable empty database */
 
-enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME, DBH_KEY_LIST_MAX };
+enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME };
 
 // This should be a private nested class of DB, but C++ hash support is utterly stupid and doesn't support that.
 class MigrationVersions {
@@ -81,10 +82,10 @@ public:
     
     bool operator==(const StatementID &other) const { return name == other.name && flags == other.flags; }
     
-    bool is_parameterized() const { return flags & parameterized; }
-    bool has_size() const { return flags & have_size; }
-    bool hash_types() const { return flags & 0xffff; }
-    bool has_hash(int type) const { return flags & type; }
+    [[nodiscard]] bool is_parameterized() const { return flags & parameterized; }
+    [[nodiscard]] bool has_size() const { return flags & have_size; }
+    [[nodiscard]] bool hash_types() const { return flags & 0xffff; }
+    [[nodiscard]] bool has_hash(int type) const { return flags & type; }
     
     int name;
     int flags;
@@ -117,7 +118,7 @@ public:
     
     sqlite3 *db;
     
-    std::string error();
+    [[nodiscard]] std::string error() const;
     
     // This is used by dbrestore to create databases with arbitrary schema and version.
     static void upgrade(sqlite3 *db, int format, int version, const std::string &statement);
@@ -128,13 +129,13 @@ protected:
     DBStatement *get_statement_internal(int name);
     DBStatement *get_statement_internal(int name, const Hashes &hashes, bool have_size);
     
-    virtual std::string get_query(int name, bool parameterized) const { return ""; }
-    virtual const std::unordered_map<MigrationVersions, std::string> &get_migrations() const { return no_migrations; }
+    [[nodiscard]] virtual std::string get_query(int name, bool parameterized) const { return ""; }
+    [[nodiscard]] virtual const std::unordered_map<MigrationVersions, std::string> &get_migrations() const { return no_migrations; }
     
 private:
     class MigrationStep {
     public:
-        MigrationStep(const std::string &statement_, int version_) : statement(statement_), version(version_) { }
+        MigrationStep(std::string statement_, int version_) : statement(std::move(statement_)), version(version_) { }
         std::string statement;
         int version;
     };
@@ -143,12 +144,12 @@ private:
     
     DBStatement *get_statement_internal(StatementID statement_id);
     
-    int get_version(const DBFormat &format);
+    [[nodiscard]] int get_version(const DBFormat &format) const;
     void check_version(const DBFormat &format);
     void open(const DBFormat &format, const std::string &name, int sql3_flags, bool needs_init);
     void close();
     void migrate(const DBFormat &format, int from_version, int to_version);
-    void upgrade(int format, int version, const std::string &statement);
+    void upgrade(int format, int version, const std::string &statement) const;
 
     std::unordered_map<StatementID, std::shared_ptr<DBStatement>> statements;
 };

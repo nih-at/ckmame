@@ -217,7 +217,7 @@ bool ArchiveLibarchive::commit_xxx() {
 }
 
 
-void ArchiveLibarchive::write_file(struct archive *writer, ZipSourcePtr source) {
+void ArchiveLibarchive::write_file(struct archive *writer, const ZipSourcePtr& source) {
     try {
         source->open();
     }

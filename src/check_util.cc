@@ -51,10 +51,10 @@ const std::string unknown_dir = "unknown"; /* TODO: proper value */
 
 static int maps_done = 0;
 
-static bool enter_dir_in_map_and_list(int flags, DeleteListPtr list, const std::string &directory_name, bool recursive, where_t where);
-static bool enter_dir_in_map_and_list_unzipped(int flags, DeleteListPtr list, const std::string &directory_name, bool recursive, where_t where);
-static bool enter_dir_in_map_and_list_zipped(int flags, DeleteListPtr list, const std::string &directory_name, bool recursive, where_t where);
-static bool enter_file_in_map_and_list(int flags, DeleteListPtr list, const std::string &name, where_t where);
+static bool enter_dir_in_map_and_list(int flags, const DeleteListPtr& list, const std::string &directory_name, bool recursive, where_t where);
+static bool enter_dir_in_map_and_list_unzipped(int flags, const DeleteListPtr& list, const std::string &directory_name, bool recursive, where_t where);
+static bool enter_dir_in_map_and_list_zipped(int flags, const DeleteListPtr& list, const std::string &dir_name, bool recursive, where_t where);
+static bool enter_file_in_map_and_list(int flags, const DeleteListPtr& list, const std::string &name, where_t where);
 
 
 void ensure_extra_maps(int flags) {
@@ -150,7 +150,7 @@ std::string make_file_name(filetype_t filetype, const std::string &name) {
 }
 
 
-static bool enter_dir_in_map_and_list(int flags, DeleteListPtr list, const std::string &directory_name, bool recursive, where_t where) {
+static bool enter_dir_in_map_and_list(int flags, const DeleteListPtr& list, const std::string &directory_name, bool recursive, where_t where) {
     bool ret;
     if (configuration.roms_zipped) {
 	ret = enter_dir_in_map_and_list_zipped(flags | DO_LIST, list, directory_name, recursive, where);
@@ -184,7 +184,7 @@ static bool enter_dir_in_map_and_list(int flags, DeleteListPtr list, const std::
 }
 
 
-static bool enter_dir_in_map_and_list_unzipped(int flags, DeleteListPtr list, const std::string &directory_name, bool recursive, where_t where) {
+static bool enter_dir_in_map_and_list_unzipped(int flags, const DeleteListPtr& list, const std::string &directory_name, bool recursive, where_t where) {
     try {
 	 Dir dir(directory_name, false);
 	 std::filesystem::path filepath;
@@ -219,7 +219,7 @@ static bool enter_dir_in_map_and_list_unzipped(int flags, DeleteListPtr list, co
 }
 
 
-static bool enter_dir_in_map_and_list_zipped(int flags, DeleteListPtr list, const std::string &dir_name, bool recursive, where_t where) {
+static bool enter_dir_in_map_and_list_zipped(int flags, const DeleteListPtr& list, const std::string &dir_name, bool recursive, where_t where) {
     try {
 	Dir dir(dir_name, recursive);
 	std::filesystem::path filepath;
@@ -243,7 +243,7 @@ static bool enter_dir_in_map_and_list_zipped(int flags, DeleteListPtr list, cons
 }
 
 
-static bool enter_file_in_map_and_list(int flags, DeleteListPtr list, const std::string &name, where_t where) {
+static bool enter_file_in_map_and_list(int flags, const DeleteListPtr& list, const std::string &name, where_t where) {
     name_type_t nt;
 
     switch ((nt = name_type(name))) {

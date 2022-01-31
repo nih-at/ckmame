@@ -40,7 +40,6 @@
 #include "error.h"
 #include "Exception.h"
 #include "fix_util.h"
-#include "fix.h"
 #include "globals.h"
 #include "RomDB.h"
 #include "util.h"
@@ -51,7 +50,7 @@ DeleteListPtr needed_delete_list;
 DeleteListPtr superfluous_delete_list;
 
 
-DeleteList::Mark::Mark(DeleteListPtr list_) : list(list_), index(0), rollback(false) {
+DeleteList::Mark::Mark(const DeleteListPtr& list_) : list(list_), index(0), rollback(false) {
     if (list_) {
         index = list_->entries.size();
         rollback = true;
@@ -102,13 +101,13 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
                                 
                 if (configuration.roms_zipped) {
                     if (!known) {
-                        archives.push_back(ArchiveLocation(filepath, TYPE_DISK));
+                        archives.emplace_back(filepath, TYPE_DISK);
                     }
                     list_non_chds(filepath);
                 }
                 else {
                     if (!known) {
-                        archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
+                        archives.emplace_back(filepath, TYPE_ROM);
                     }
                 }
             }
@@ -133,16 +132,16 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
                 }
 
                 if (!known) {
-                    archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
+                    archives.emplace_back(filepath, TYPE_ROM);
                 }
             }
         }
         
         if (have_toplevel_roms) {
-            archives.push_back(ArchiveLocation(directory + "/", TYPE_ROM));
+            archives.emplace_back(directory + "/", TYPE_ROM);
         }
         if (have_toplevel_disks) {
-            archives.push_back(ArchiveLocation(directory + "/", TYPE_DISK));
+            archives.emplace_back(directory + "/", TYPE_DISK);
         }
     }
     catch (...) {
@@ -275,7 +274,7 @@ void DeleteList::list_non_chds(const std::string &directory) {
         
         while ((filepath = dir.next()) != "") {
             if (filepath.extension() != ".chd") {
-                archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
+                archives.emplace_back(filepath, TYPE_ROM);
             }
         }
     }

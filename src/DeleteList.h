@@ -47,7 +47,7 @@ class DeleteList {
  public:
     class Mark {
     public:
-        explicit Mark(DeleteListPtr list = DeleteListPtr());
+        explicit Mark(const DeleteListPtr& list = DeleteListPtr());
         ~Mark();
 
         void commit() { rollback = false; }
@@ -61,9 +61,9 @@ class DeleteList {
     std::vector<ArchiveLocation> archives;
     std::vector<FileLocation> entries;
 
-    DeleteList() { };
+    DeleteList() = default;;
     
-    void add(const Archive *a) { archives.push_back(ArchiveLocation(a)); }
+    void add(const Archive *a) { archives.emplace_back(a); }
     void add_directory(const std::string &directory, bool omit_known);
     int execute();
     void remove_archive(Archive *archive);
@@ -73,7 +73,7 @@ class DeleteList {
     static void used(Archive *a, size_t idx);
     
 private:
-    bool close_archive(Archive *archive);
+    static bool close_archive(Archive *archive);
     void list_non_chds(const std::string &directory);
 };
 

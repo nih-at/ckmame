@@ -38,7 +38,6 @@
 #include <vector>
 
 #include "Exception.h"
-#include "types.h"
 
 const int StatementID::have_size = 0x10000;
 const int StatementID::parameterized = 0x20000;
@@ -61,7 +60,7 @@ static const char *format_name[] = {
 
 const std::unordered_map<MigrationVersions, std::string> DB::no_migrations = { };
 
-int DB::get_version(const DBFormat &format) {
+int DB::get_version(const DBFormat &format) const {
     auto stmt = DBStatement(db, "pragma user_version");
     
     if (!stmt.step()) {
@@ -114,7 +113,7 @@ void DB::migrate(const DBFormat &format, int from_version, int to_version) {
             
             if (it != format.migrations.end()) {
                 from_version = next_version;
-                migration_steps.push_back(MigrationStep(it->second, next_version));
+                migration_steps.emplace_back(it->second, next_version);
                 made_progress = true;
                 break;
             }
@@ -144,7 +143,7 @@ void DB::close() {
 }
 
 
-std::string DB::error() {
+std::string DB::error() const {
     if (db == nullptr) {
 	return strerror(ENOMEM);
     }
@@ -211,7 +210,7 @@ void DB::open(const DBFormat &format, const std::string &name, int sql3_flags, b
 }
 
 
-void DB::upgrade(int format, int version, const std::string &statement) {
+void DB::upgrade(int format, int version, const std::string &statement) const {
     upgrade(db, format, version, statement);
 }
 

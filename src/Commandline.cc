@@ -38,6 +38,7 @@
 #include <sstream>
 #include <strings.h>
 #include <unordered_map>
+#include <utility>
 
 #include "compat.h"
 
@@ -45,7 +46,7 @@
 
 extern int optind;
 
-Commandline::Commandline(const std::vector<Option> &options_, const std::string &arguments_, const std::string &header_, const std::string &footer_, const std::string &version_) : options(options_), arguments(arguments_), header(header_), footer(footer_), version(version_), options_sorted(false) {
+Commandline::Commandline(std::vector<Option> options_, std::string arguments_, std::string header_, std::string footer_, std::string version_) : options(std::move(options_)), arguments(std::move(arguments_)), header(std::move(header_)), footer(std::move(footer_)), version(std::move(version_)), options_sorted(false) {
     add_option(Option("help", 'h', "display this help message"));
     add_option(Option("version", 'V', "display version number"));
 }
@@ -141,7 +142,7 @@ std::optional<std::string> ParsedCommandline::find_first(const std::string &name
     return {};
 }
 
-std::optional<std::string> ParsedCommandline::find_last(const std::string &name) const {
+[[maybe_unused]] std::optional<std::string> ParsedCommandline::find_last(const std::string &name) const {
     for (auto it = options.rbegin(); it != options.rend(); it++) {
         const auto &option = *it;
         

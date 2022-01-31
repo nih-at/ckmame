@@ -35,6 +35,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ArchiveLocation.h"
@@ -86,7 +87,7 @@ public:
     void seterr();
     
 protected:
-    std::string get_query(int name, bool parameterized) const override;
+    [[nodiscard]] std::string get_query(int name, bool parameterized) const override;
     
 private:
     class CacheDirectory {
@@ -95,7 +96,7 @@ private:
         std::shared_ptr<CkmameDB> db;
         bool initialized;
         
-        explicit CacheDirectory(const std::string &name_): name(name_), initialized(false) { }
+        explicit CacheDirectory(std::string name_): name(std::move(name_)), initialized(false) { }
     };
     
     static std::vector<CacheDirectory> cache_directories;

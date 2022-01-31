@@ -38,10 +38,12 @@
 
 #include <archive.h>
 
+#include <utility>
+
 class ArchiveLibarchive : public Archive {
 public:
     ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_LIBARCHIVE, name, filetype, where, flags), la(nullptr), current_index(0), header_read(false), have_open_file(false) {  }
-    ArchiveLibarchive(ArchiveContentsPtr contents) : Archive(contents), la(nullptr), current_index(0), header_read(false), have_open_file(false) { }
+    explicit ArchiveLibarchive(ArchiveContentsPtr contents) : Archive(std::move(contents)), la(nullptr), current_index(0), header_read(false), have_open_file(false) { }
 
     ~ArchiveLibarchive() override;
 
@@ -57,7 +59,7 @@ protected:
 
 private:
     bool seek_to_entry(uint64_t index);
-    void write_file(struct archive *writer, ZipSourcePtr source);
+    void write_file(struct archive *writer, const ZipSourcePtr& source);
     
     class Source {
     public:

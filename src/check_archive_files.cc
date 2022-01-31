@@ -130,7 +130,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
 }
 
 
-void check_needed_files(filetype_t filetype, ArchivePtr archive, Result *result) {
+void check_needed_files(filetype_t filetype, const ArchivePtr& archive, Result *result) {
     find_result_t found;
     
     if (!archive) {

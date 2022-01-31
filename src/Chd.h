@@ -48,7 +48,7 @@ public:
 
     Hashes hashes;
 
-    uint64_t size() const { return total_len; }
+    [[nodiscard]] uint64_t size() const { return total_len; }
 
 private:
     uint64_t total_len;      /* logical size of the data */
