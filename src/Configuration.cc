@@ -384,35 +384,50 @@ void Configuration::add_options(Commandline &commandline, const std::unordered_s
 // TODO: exceptions for type mismatch
 
 void Configuration::set_bool(const toml::table &table, const std::string &name, bool &variable) {
-    auto value = table[name].value<bool>();
-    if (value.has_value()) {
-        variable = value.value();
+    if (!table.contains(name)) {
+	return;
     }
+    auto value = table[name];
+    if (!value.is_boolean()) {
+	throw Exception("invalid type for '" + name + "'");
+    }
+    variable = table[name].value<bool>().value();
 }
 
 
 void Configuration::set_string(const toml::table &table, const std::string &set, const std::string &name, std::string &variable) {
-    auto value = table[name].value<std::string>();
-    if (value.has_value()) {
-	variable = std::string(value.value());
-	auto start = variable.find("$set");
-	if (start != std::string::npos) {
-	    variable.replace(start, 4, set);
-	}
+    if (!table.contains(name)) {
+	return;
+    }
+    auto value = table[name];
+    if (!value.is_string()) {
+	throw Exception("invalid type for '" + name + "'");
+    }
+    variable = value.value<std::string>().value();
+    auto start = variable.find("$set");
+    if (start != std::string::npos) {
+	variable.replace(start, 4, set);
     }
 }
 
 
 void Configuration::set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append) {
-    auto array = table[name].as_array();
+    if (!table.contains(name)) {
+	return;
+    }
+    auto value = table[name];
+    if (!value.is_array() || !value.is_homogeneous(toml::node_type::string)) {
+	throw Exception("invalid type for '" + name + "'");
+    }
+    auto array = value.as_array();
     if (array != nullptr) {
         if (!append) {
             variable.clear();
         }
         for (const auto &element : *array) {
-            auto value = element.value<std::string>();
-            if (value.has_value()) {
-                variable.push_back(value.value());
+            auto element_value = element.value<std::string>();
+            if (element_value.has_value()) {
+                variable.push_back(element_value.value());
             }
         }
     }
