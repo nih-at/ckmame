@@ -43,6 +43,7 @@
 
 #include "CkmameDB.h"
 #include "config.h"
+#include "DatDb.h"
 #include "error.h"
 #include "Exception.h"
 #include "globals.h"
@@ -99,7 +100,7 @@ name_type_t name_type(const std::string &name) {
     }
 
     auto filename = std::filesystem::path(name).filename();
-    if (filename == CkmameDB::db_name || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
+    if (filename == CkmameDB::db_name || filename == DatDB::db_name || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
         return NAME_IGNORE;
     }
     

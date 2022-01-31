@@ -26,6 +26,7 @@ set(COMMON_SOURCES
   Configuration.cc
   DatDb.cc
   DatEntry.cc
+  DatRepository.cc
   DB.cc
   DBStatement.cc
   DeleteList.cc

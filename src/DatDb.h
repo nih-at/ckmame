@@ -63,6 +63,9 @@ class DatDB : public DB {
 
     class DatInfo {
       public:
+	DatInfo() = default;
+	DatInfo &operator=(const DatInfo &other);
+
 	DatInfo(std::string file_name, std::string entry_name, std::string version) : file_name(std::move(file_name)), entry_name(std::move(entry_name)), version(std::move(version)) { }
 
 	const std::string file_name;

@@ -33,6 +33,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "DatDb.h"
 
+const std::string DatDB::db_name = ".mkmamedb.db";
+
 const DB::DBFormat DatDB::format = {
     0x02,
     4,
