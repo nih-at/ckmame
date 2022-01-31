@@ -324,8 +324,8 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 }
 
 
-void Configuration::merge_config_table(const toml::table *table_pionter, const std::vector<toml::table> &config_files, const std::string &set) {
-    const auto& table = *table_pionter;
+void Configuration::merge_config_table(const toml::table *table_pointer, const std::vector<toml::table> &config_files, const std::string &set) {
+    const auto& table = *table_pointer;
 
     const auto profiles = table["profiles"].as_array();
     if (profiles != nullptr) {
