@@ -1,3 +1,7 @@
+- warn about unknown keywords in config
+
+- warn about incorrectly typed arguments in config
+
 - make DB format agnostic
 
 - Add test for `mkmamedb -F cm`.
