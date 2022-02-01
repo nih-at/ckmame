@@ -122,75 +122,74 @@ main(int argc, char **argv) {
 
 	configuration.handle_commandline(args);
 
-        for (const auto &option : args.options) {
-            if (option.name == "detector") {
-                detector_name = option.argument;
-            }
-            else if (option.name == "directory-cache") {
-                cache_directory = true;
-            }
-            else if (option.name == "exclude") {
-                exclude.insert(option.argument);
-            }
-            else if (option.name == "format") {
-                if (option.argument == "cm") {
-                    fmt = OutputContext::FORMAT_CM;
-                }
-                else if (option.argument == "dat") {
-                    fmt = OutputContext::FORMAT_DATAFILE_XML;
-                }
-                else if (option.argument == "db") {
-                    fmt = OutputContext::FORMAT_DB;
-                }
-                else if (option.argument == "mtree") {
-                    fmt = OutputContext::FORMAT_MTREE;
-                }
-                else {
-                    fprintf(stderr, "%s: unknown output format '%s'\n", getprogname(), option.argument.c_str());
-                    exit(1);
-                }
-            }
-            else if (option.name == "hash-types") {
-                hashtypes = Hashes::types_from_string(option.argument);
-                if (hashtypes == 0) {
-                    fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), option.argument.c_str());
-                    exit(1);
-                }
-            }
-            else if (option.name == "no-directory-cache") {
-                cache_directory = false;
-            }
-            else if (option.name == "only-files") {
-                file_patterns.push_back(option.argument);
-            }
-            else if (option.name == "output") {
-                dbname = option.argument;
-            }
-            else if (option.name == "prog-description") {
-                dat.description = option.argument;
-            }
-            else if (option.name == "prog-name") {
-                dat.name = option.argument;
-            }
-            else if (option.name == "prog-version") {
-                dat.version = option.argument;
-            }
-            else if (option.name == "runtest") {
-                runtest = true;
-            }
-            else if (option.name == "skip-files") {
-                skip_files.insert(option.argument);
-            }
-            else if (option.name == "use-temp-directory") {
-                flags |= OUTPUT_FL_TEMP;
-            }
-        }
-        
-        arguments = args.arguments;
-    }
-    catch (Exception &ex) {
+	for (const auto &option : args.options) {
+	    if (option.name == "detector") {
+		detector_name = option.argument;
+	    }
+	    else if (option.name == "directory-cache") {
+		cache_directory = true;
+	    }
+	    else if (option.name == "exclude") {
+		exclude.insert(option.argument);
+	    }
+	    else if (option.name == "format") {
+		if (option.argument == "cm") {
+		    fmt = OutputContext::FORMAT_CM;
+		}
+		else if (option.argument == "dat") {
+		    fmt = OutputContext::FORMAT_DATAFILE_XML;
+		}
+		else if (option.argument == "db") {
+		    fmt = OutputContext::FORMAT_DB;
+		}
+		else if (option.argument == "mtree") {
+		    fmt = OutputContext::FORMAT_MTREE;
+		}
+		else {
+		    fprintf(stderr, "%s: unknown output format '%s'\n", getprogname(), option.argument.c_str());
+		    exit(1);
+		}
+	    }
+	    else if (option.name == "hash-types") {
+		hashtypes = Hashes::types_from_string(option.argument);
+		if (hashtypes == 0) {
+		    fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), option.argument.c_str());
+		    exit(1);
+		}
+	    }
+	    else if (option.name == "no-directory-cache") {
+		cache_directory = false;
+	    }
+	    else if (option.name == "only-files") {
+		file_patterns.push_back(option.argument);
+	    }
+	    else if (option.name == "output") {
+		dbname = option.argument;
+	    }
+	    else if (option.name == "prog-description") {
+		dat.description = option.argument;
+	    }
+	    else if (option.name == "prog-name") {
+		dat.name = option.argument;
+	    }
+	    else if (option.name == "prog-version") {
+		dat.version = option.argument;
+	    }
+	    else if (option.name == "runtest") {
+		runtest = true;
+	    }
+	    else if (option.name == "skip-files") {
+		skip_files.insert(option.argument);
+	    }
+	    else if (option.name == "use-temp-directory") {
+		flags |= OUTPUT_FL_TEMP;
+	    }
+	}
+
+	arguments = args.arguments;
+    } catch (Exception &ex) {
 	myerror(ERRDEF, "%s", ex.what());
-        exit(1);
+	exit(1);
     }
 
     if (arguments.size() > 1 && !dat.name.empty()) {
@@ -199,22 +198,24 @@ main(int argc, char **argv) {
 		"--prog-name and --prog-version are ignored",
 		getprogname());
     }
-    
+
     if (runtest) {
 	fmt = OutputContext::FORMAT_MTREE;
 	flags |= OUTPUT_FL_RUNTEST;
 	parser_flags = PARSER_FL_FULL_ARCHIVE_NAME;
 	cache_directory = false;
-        if (dbname.empty()) {
-            // TODO: make this work on Windows
-            dbname = "/dev/stdout";
-        }
+	if (dbname.empty()) {
+	    // TODO: make this work on Windows
+	    dbname = "/dev/stdout";
+	}
     }
 
     if (dbname.empty()) {
-        dbname = configuration.rom_db;
+	dbname = configuration.rom_db;
     }
-    
+
+    auto regenerate = dbname.empty() && fmt == OutputContext::FORMAT_DB && arguments.empty() && !configuration.dats.empty() && !configuration.dat_directories.empty();
+
     if (flags & OUTPUT_FL_TEMP) {
 	dbname_real = dbname;
 	auto var = tmpnam(tmpnam_buffer);
@@ -222,13 +223,56 @@ main(int argc, char **argv) {
 	    myerror(ERRSTR, "tmpnam() failed");
 	    exit(1);
 	}
-        dbname = var;
+	dbname = var;
     }
 
-    // TODO: not if dbname, format, or what else is specified on command line?
-    if (!configuration.dat_directories.empty()) {
+    if (regenerate) {
 	auto repository = DatRepository(configuration.dat_directories);
-	// TODO: check if all dats are up to date
+
+	std::vector<DatDB::DatInfo> dats_to_use;
+
+	try {
+	    auto up_to_date = true;
+
+	    auto existing_db = RomDB(dbname, DBH_READ);
+
+	    auto existing_dats = existing_db.read_dat();
+
+	    std::unordered_map<std::string, std::string> existing_versions;
+
+	    for (const auto &existing_dat : existing_dats) {
+		existing_versions[existing_dat.name] = existing_dat.version;
+	    }
+
+	    // TODO: remove duplicates from dats
+	    for (const auto &dat_name : configuration.dats) {
+		auto it = existing_versions.find(dat_name);
+		if (it == existing_versions.end()) {
+		    // NOT UP TO DATE: dat not in db
+		    up_to_date = false;
+		}
+		auto new_version = repository.find_dat(dat_name);
+		if (!new_version.has_value()) {
+		    // ERROR: dat not found
+		    exit(1);
+		}
+		if (DatRepository::is_newer(new_version.value().version, it->second)) {
+		    // NOT UP TO DATE: dat in filesystem newer than in db
+		    up_to_date = false;
+		}
+		dats_to_use.push_back(new_version.value());
+	    }
+
+	    // TODO: check that no additional dats are in db
+
+	    if (up_to_date) {
+		printf("mamedb up to date");
+		exit(0);
+	    }
+
+	    // TODO: update db
+	}
+	catch (...) { }
     }
 
     try {

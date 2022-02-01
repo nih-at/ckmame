@@ -44,13 +44,14 @@ class DatRepository {
     explicit DatRepository(const std::vector<std::string> &directories);
     ~DatRepository();
 
+    static bool is_newer(const std::string& a, const std::string& b);
+
     std::optional<DatDB::DatInfo> find_dat(const std::string &name);
 
   private:
     std::unordered_map<std::string, DatDBPtr> dbs;
 
     static void update_directory(const std::string &directory, const DatDBPtr& db);
-    static bool is_newer(const std::string& a, const std::string& b);
 };
 
 
