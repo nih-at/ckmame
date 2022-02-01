@@ -41,6 +41,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "OutputContextHeader.h"
 #include "Parser.h"
 #include "ParserSourceFile.h"
+#include "ParserSourceZip.h"
 #include "util.h"
 #include "Exception.h"
 #include "error.h"
@@ -108,14 +109,9 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 		continue;
 	    }
 
-	    if (filepath.extension() == ".zip") {
-		// TODO: zips are not supported yet, so don't enter them into database.
-		continue;
-	    }
-
 	    auto file = filepath.string().substr(directory.size() + 1);
 
-	    struct stat st;
+	    struct stat st{};
 
 	    if (stat(filepath.c_str(), &st) < 0) {
 		continue;
@@ -135,18 +131,40 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 
 	    std::vector<DatDB::DatEntry> entries;
 
-	    // TODO: process zip archives
-
 	    try {
-		auto output = OutputContextHeader();
-		auto source = std::make_shared<ParserSourceFile>(filepath);
-		auto parser = Parser::create(source, {}, nullptr, &output, 0);
+		auto zip_archive = zip_open(filepath.c_str(), 0, nullptr);
+		if (zip_archive != nullptr) {
+		    for (size_t index = 0; index < zip_get_num_entries(zip_archive, 0); index++) {
+			try {
+			    auto entry_name = zip_get_name(zip_archive, index, 0);
+			    auto output = OutputContextHeader();
 
-		if (parser->parse_header()) {
-		    auto header = output.get_header();
-		    entries.emplace_back("", header.name, header.version);
+			    auto source = std::make_shared<ParserSourceZip>(filepath, zip_archive, entry_name);
+			    auto parser = Parser::create(source, {}, nullptr, &output, 0);
+
+			    if (parser->parse_header()) {
+				auto header = output.get_header();
+				entries.emplace_back(entry_name, header.name, header.version);
+			    }
+			}
+			catch (Exception &ex) {
+
+			}
+		    }
 		}
-	    } catch (Exception &ex) {
+		else {
+		    auto output = OutputContextHeader();
+
+		    auto source = std::make_shared<ParserSourceFile>(filepath);
+		    auto parser = Parser::create(source, {}, nullptr, &output, 0);
+
+		    if (parser->parse_header()) {
+			auto header = output.get_header();
+			entries.emplace_back("", header.name, header.version);
+		    }
+		}
+	    }
+	    catch (Exception &ex) {
 		// TODO: warn or ignore?
 	    }
 	    db->insert_file(file, st.st_mtime, st.st_size, entries);
