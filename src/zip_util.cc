@@ -42,21 +42,21 @@ ZipSource::~ZipSource() {
 }
 
 
-void ZipSource::open() {
+void ZipSource::open() const {
     if (zip_source_open(source) < 0) {
         throw Exception(error());
     }
 }
 
 
-void ZipSource::close() {
+void ZipSource::close() const {
     if (zip_source_close(source) < 0) {
         throw Exception(error());
     }
 }
 
 
-uint64_t ZipSource::read(void *data, uint64_t length) {
+uint64_t ZipSource::read(void *data, uint64_t length) const {
     auto n = zip_source_read(source, data, length);
 
     if (n < 0) {
@@ -67,6 +67,6 @@ uint64_t ZipSource::read(void *data, uint64_t length) {
 }
 
 
-std::string ZipSource::error() {
+std::string ZipSource::error() const {
     return zip_error_strerror(zip_source_error(source));
 }

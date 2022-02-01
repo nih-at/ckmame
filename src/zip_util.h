@@ -45,11 +45,11 @@ public:
     explicit ZipSource(zip_source_t *source_) : source(source_) { }
     ~ZipSource();
     
-    void open();
-    void close();
-    uint64_t read(void *data, uint64_t length);
+    void open() const;
+    void close() const;
+    uint64_t read(void *data, uint64_t length) const;
     
-    std::string error();
+    std::string error() const;
     
     zip_source_t *source;
 };
