@@ -56,21 +56,27 @@
     } while (0)
 
 
-bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {
-    std::unique_ptr<Parser> parser;
+ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) {
+    ParserPtr parser;
 
     auto c = source->peek();
 
     switch (c) {
-        case '<':
-            parser = std::unique_ptr<Parser>(new ParserXml(source, exclude, dat, out, flags));
-            break;
-        case '[':
-            parser = std::unique_ptr<Parser>(new ParserRc(source, exclude, dat, out, flags));
-            break;
-        default:
-            parser = std::unique_ptr<Parser>(new ParserCm(source, exclude, dat, out, flags));
+    case '<':
+	parser = std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output, flags));
+	break;
+    case '[':
+	parser = std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output, flags));
+	break;
+    default:
+	parser = std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output, flags));
     }
+
+    return parser;
+}
+
+bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {
+    auto parser = create(source, exclude, dat, out, flags);
 
     auto ok = parser->parse();
     if (ok) {

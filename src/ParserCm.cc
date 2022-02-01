@@ -295,10 +295,12 @@ bool ParserCm::parse() {
                     prog_header(tokenizer.get());
                 }
                 else if (cmd == ")") {
+		    // TODO: this shouldn't be necessary
+		    header_end();
+		    parse_state = TOP;
 		    if (header_only) {
 			return true;
 		    }
-                    parse_state = TOP;
                 }
 		else if (cmd == "author" || cmd == "category" || cmd == "comment" || cmd == "date" || cmd == "forcemerging" || cmd == "forcenodump" || cmd == "forcepacking") {
 		    /* skip value */

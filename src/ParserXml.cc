@@ -149,6 +149,8 @@ XmlProcessor::CallbackStatus ParserXml::parse_game_start(void *ctx, [[maybe_unus
     auto parser = static_cast<ParserXml *>(ctx);
 
     if (parser->header_only) {
+	// TODO: this shouldn't be necessary
+	parser->header_end();
 	return XmlProcessor::END;
     }
     

@@ -42,9 +42,9 @@ const DB::DBFormat DatDB::format = {
 file_id integer primary key autoincrement,\n\
 file_name text not null,\n\
 mtime integer not null,\n\
-size integer not null,\n\
+size integer not null\n\
 );\n\
-create index archive_name on archive (name);\n\
+create index file_name on file (file_name);\n\
 create table dat (\n\
 file_id integer not null,\n\
 entry_name text,\n\
@@ -63,6 +63,7 @@ std::unordered_map<DatDB::Statement, std::string> DatDB::queries = {
     { INSERT_FILE, "insert into file (file_name, mtime, size) values (:file_name, :mtime, :size)" },
     { LIST_FILES, "select file_name from file" },
     { QUERY_DAT, "select file_name, entry_name, version from file f, dat d where f.file_id = d.file_id and name = :name1"},
+    { QUERY_FILE_ID, "select file_id from file where file_name = :file_name" },
     { QUERY_FILE_LAST_CHANGE, "select file_id, size, mtime from file where file_name = :file_name" },
     { QUERY_HAS_FILES, "select file_id from file limit 1" }
 };
@@ -100,6 +101,20 @@ std::vector<std::string> DatDB::list_files() {
 }
 
 
+std::optional<int64_t> DatDB::get_file_id(const std::string &file_name) {
+    auto stmt = get_statement(QUERY_FILE_ID);
+
+    stmt->set_string("file_name", file_name);
+
+    if (!stmt->step()) {
+	return {};
+    }
+
+    return stmt->get_int64("file_id");
+}
+
+
+
 bool DatDB::get_last_change(const std::string &file_name, time_t *mtime, size_t *size) {
     auto stmt = get_statement(QUERY_FILE_LAST_CHANGE);
 
@@ -117,13 +132,16 @@ bool DatDB::get_last_change(const std::string &file_name, time_t *mtime, size_t 
 
 
 void DatDB::delete_file(const std::string &file_name) {
-    auto stmt = get_statement(DELETE_DATS);
-    stmt->set_string("file_name", file_name);
-    stmt->execute();
+    auto id = get_file_id(file_name);
+    if (id.has_value()) {
+	auto stmt = get_statement(DELETE_FILE);
+    	stmt->set_int64("file_id", id.value());
+    	stmt->execute();
 
-    stmt = get_statement(DELETE_FILE);
-    stmt->set_string("file_name", file_name);
-    stmt->execute();
+	stmt = get_statement(DELETE_DATS);
+	stmt->set_int64("file_id", id.value());
+	stmt->execute();
+    }
 }
 
 

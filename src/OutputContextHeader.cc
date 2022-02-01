@@ -17,4 +17,6 @@ bool OutputContextHeader::header(DatEntry *dat) {
     }
     header_set = true;
     header_data = *dat;
+
+    return true;
 }

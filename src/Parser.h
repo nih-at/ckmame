@@ -52,8 +52,14 @@ typedef enum parser_state parser_state_t;
 
 #define PARSER_FL_FULL_ARCHIVE_NAME 1
 
+class Parser;
+
+typedef std::shared_ptr<Parser> ParserPtr;
+
 class Parser {
 public:
+    static ParserPtr create(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags);
+
     static bool parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags);
 
     /* TODO: move out of context */

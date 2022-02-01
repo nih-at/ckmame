@@ -48,6 +48,7 @@ class DatDB : public DB {
 	INSERT_FILE,
 	LIST_FILES,
 	QUERY_DAT,
+	QUERY_FILE_ID,
 	QUERY_FILE_LAST_CHANGE,
 	QUERY_HAS_FILES
     };
@@ -80,6 +81,7 @@ class DatDB : public DB {
     std::vector<std::string> list_files();
 
     bool get_last_change(const std::string &file_name, time_t *mtime, size_t *size);
+    std::optional<int64_t> get_file_id(const std::string &file_name);
     void delete_file(const std::string &file_name);
     void insert_file(const std::string &file_name, time_t mtime, size_t size, const std::vector<DatEntry> &dats);
 
