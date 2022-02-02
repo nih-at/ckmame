@@ -461,7 +461,12 @@ void Configuration::set_string_vector(const toml::table &table, const std::strin
         for (const auto &element : *array) {
             auto element_value = element.value<std::string>();
             if (element_value.has_value()) {
-                variable.push_back(element_value.value());
+		auto element_variable = element_value.value();
+		auto start = element_variable.find("$set");
+		if (start != std::string::npos) {
+		    element_variable.replace(start, 4, set);
+		}
+                variable.push_back(element_variable);
             }
         }
     }
