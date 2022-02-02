@@ -35,6 +35,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <set>
 
 #include "Exception.h"
 #include "RomDB.h"
@@ -61,6 +62,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option)"),
     Commandline::Option("fixdat-directory", "directory", "create fixdats in directory"),
     Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
+    Commandline::Option("list-sets", "list all known sets"),
     Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
     Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
     Commandline::Option("no-create-fixdat", "don't create fixdat (default)"),
@@ -114,7 +116,7 @@ std::string Configuration::user_config_file() {
 
 
 bool Configuration::option_used(const std::string &option_name, const std::unordered_set<std::string> &used_variables) {
-    if (option_name == "config" || option_name == "set") {
+    if (option_name == "config" || option_name == "set" || option_name == "list-sets") {
 	return true;
     }
 
@@ -214,6 +216,35 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	if (option.name == "config") {
 	    read_config_file(config_files, option.argument, false);
 	}
+    }
+
+    if (args.find_first("list-sets").has_value()) {
+	std::set<std::string> sets;
+
+	for (const auto& file : config_files) {
+	    auto known_sets = file["global"]["sets"].as_array();
+	    if (known_sets != nullptr) {
+		for (const auto &value : *known_sets) {
+		    auto name = value.value<std::string>();
+		    if (name.has_value()) {
+			sets.insert(name.value());
+		    }
+		}
+	    }
+
+	    for (const auto& entry : file) {
+		if (entry.first == "global" || entry.first == "profile") {
+		    continue;
+		}
+		sets.insert(entry.first);
+	    }
+	}
+
+	for (const auto& set : sets) {
+	    printf("%s\n", set.c_str());
+	}
+
+	exit(0);
     }
 
     for (const auto &option : args.options) {
