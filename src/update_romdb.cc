@@ -33,6 +33,8 @@
 
 #include "update_romdb.h"
 
+#include <filesystem>
+
 #include "DatRepository.h"
 #include "Exception.h"
 #include "globals.h"
