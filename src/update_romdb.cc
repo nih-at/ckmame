@@ -65,18 +65,22 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
 
     for (const auto &dat_name : configuration.dats) {
 	auto it = db_versions.find(dat_name);
-	if (it == db_versions.end()) {
-	    if (configuration.verbose) { // TODO: different config setting
-		printf("%s (not in database)\n", dat_name.c_str());
-	    }
-	    up_to_date = false;
-	}
-	const auto& db_version = it->second;
 	auto fs_dat_maybe = repository.find_dat(dat_name);
 	if (!fs_dat_maybe.has_value()) {
 	    throw Exception("can't find dat '" + dat_name + "'");
 	}
 	const auto& fs_dat = fs_dat_maybe.value();
+
+	dats_to_use.push_back(fs_dat_maybe.value());
+
+	if (it == db_versions.end()) {
+	    if (configuration.verbose) { // TODO: different config setting
+		printf("%s (not in database)\n", dat_name.c_str());
+	    }
+	    up_to_date = false;
+	    continue;
+	}
+	const auto& db_version = it->second;
 
 	if (DatRepository::is_newer(fs_dat.version, db_version)) {
 	    if (configuration.verbose) { // TODO: different config setting
@@ -84,7 +88,6 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
 	    }
 	    up_to_date = false;
 	}
-	dats_to_use.push_back(fs_dat_maybe.value());
     }
 
     // TODO: check that no additional dats are in db
@@ -137,6 +140,8 @@ void update_romdb() {
 		throw Exception(message);
 	    }
 	}
+
+	output->close();
 
 	std::filesystem::rename(temp_name, configuration.rom_db);
     }

@@ -85,7 +85,7 @@ std::optional<DatDB::DatInfo> DatRepository::find_dat(const std::string &name) {
 	auto matches = pair.second->get_dats(name);
 
 	for (const auto &match : matches) {
-	    if (is_newer(dat.version, match.version)) {
+	    if (is_newer(match.version, dat.version)) {
 		dat = match;
 	    }
 	}
@@ -183,5 +183,8 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
     }
 }
 bool DatRepository::is_newer(const std::string& a, const std::string& b) {
+    if (b.empty()) {
+	return true;
+    }
     return a > b;
 }

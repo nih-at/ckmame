@@ -211,17 +211,19 @@ main(int argc, char **argv) {
 	}
     }
 
-    if (dbname.empty()) {
-	dbname = configuration.rom_db;
-    }
-
     if (dbname.empty() && fmt == OutputContext::FORMAT_DB && arguments.empty() && !configuration.dats.empty() && !configuration.dat_directories.empty()) {
 	try {
 	    update_romdb();
 	}
 	catch (Exception &ex) {
 	    myerror(ERRDEF, "can't update ROM database: %s", ex.what());
+	    exit(1);
 	}
+	exit(0);
+    }
+
+    if (dbname.empty()) {
+	dbname = configuration.rom_db;
     }
 
     if (flags & OUTPUT_FL_TEMP) {

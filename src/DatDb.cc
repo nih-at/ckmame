@@ -62,7 +62,7 @@ std::unordered_map<DatDB::Statement, std::string> DatDB::queries = {
     { INSERT_DAT, "insert into dat (file_id, entry_name, name, version) values (:file_id, :entry_name, :name, :version)" },
     { INSERT_FILE, "insert into file (file_name, mtime, size) values (:file_name, :mtime, :size)" },
     { LIST_FILES, "select file_name from file" },
-    { QUERY_DAT, "select file_name, entry_name, version from file f, dat d where f.file_id = d.file_id and name = :name1"},
+    { QUERY_DAT, "select file_name, entry_name, version from file f, dat d where f.file_id = d.file_id and name = :name"},
     { QUERY_FILE_ID, "select file_id from file where file_name = :file_name" },
     { QUERY_FILE_LAST_CHANGE, "select file_id, size, mtime from file where file_name = :file_name" },
     { QUERY_HAS_FILES, "select file_id from file limit 1" }
