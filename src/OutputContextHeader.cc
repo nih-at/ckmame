@@ -1,5 +1,5 @@
 /*
-  OutputContextHeader.cc -- ?
+  OutputContextHeader.cc -- collect header information from dat file
   Copyright (C) 2022 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

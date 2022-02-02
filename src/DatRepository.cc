@@ -87,6 +87,7 @@ std::optional<DatDB::DatInfo> DatRepository::find_dat(const std::string &name) {
 	for (const auto &match : matches) {
 	    if (is_newer(match.version, dat.version)) {
 		dat = match;
+		dat.file_name = pair.first + "/" + match.file_name; // TODO: use std::filesystem
 	    }
 	}
     }
