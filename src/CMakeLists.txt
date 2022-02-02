@@ -72,6 +72,7 @@ set(COMMON_SOURCES
   Stats.cc
   superfluous.cc
   Tree.cc
+  update_romdb.cc
   util.cc
   warn.cc
   zip_util.cc

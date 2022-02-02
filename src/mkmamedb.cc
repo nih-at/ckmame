@@ -50,6 +50,7 @@
 #include "ParserSourceFile.h"
 #include "ParserSourceZip.h"
 #include "RomDB.h"
+#include "update_romdb.h"
 
 const char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and Thomas Klausner";
 const char help_footer[] = "Report bugs to " PACKAGE_BUGREPORT ".";
@@ -214,7 +215,14 @@ main(int argc, char **argv) {
 	dbname = configuration.rom_db;
     }
 
-    auto regenerate = dbname.empty() && fmt == OutputContext::FORMAT_DB && arguments.empty() && !configuration.dats.empty() && !configuration.dat_directories.empty();
+    if (dbname.empty() && fmt == OutputContext::FORMAT_DB && arguments.empty() && !configuration.dats.empty() && !configuration.dat_directories.empty()) {
+	try {
+	    update_romdb();
+	}
+	catch (Exception &ex) {
+	    myerror(ERRDEF, "can't update ROM database: %s", ex.what());
+	}
+    }
 
     if (flags & OUTPUT_FL_TEMP) {
 	dbname_real = dbname;
@@ -224,55 +232,6 @@ main(int argc, char **argv) {
 	    exit(1);
 	}
 	dbname = var;
-    }
-
-    if (regenerate) {
-	auto repository = DatRepository(configuration.dat_directories);
-
-	std::vector<DatDB::DatInfo> dats_to_use;
-
-	try {
-	    auto up_to_date = true;
-
-	    auto existing_db = RomDB(dbname, DBH_READ);
-
-	    auto existing_dats = existing_db.read_dat();
-
-	    std::unordered_map<std::string, std::string> existing_versions;
-
-	    for (const auto &existing_dat : existing_dats) {
-		existing_versions[existing_dat.name] = existing_dat.version;
-	    }
-
-	    // TODO: remove duplicates from dats
-	    for (const auto &dat_name : configuration.dats) {
-		auto it = existing_versions.find(dat_name);
-		if (it == existing_versions.end()) {
-		    // NOT UP TO DATE: dat not in db
-		    up_to_date = false;
-		}
-		auto new_version = repository.find_dat(dat_name);
-		if (!new_version.has_value()) {
-		    // ERROR: dat not found
-		    exit(1);
-		}
-		if (DatRepository::is_newer(new_version.value().version, it->second)) {
-		    // NOT UP TO DATE: dat in filesystem newer than in db
-		    up_to_date = false;
-		}
-		dats_to_use.push_back(new_version.value());
-	    }
-
-	    // TODO: check that no additional dats are in db
-
-	    if (up_to_date) {
-		printf("mamedb up to date");
-		exit(0);
-	    }
-
-	    // TODO: update db
-	}
-	catch (...) { }
     }
 
     try {
