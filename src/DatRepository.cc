@@ -124,7 +124,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 	    size_t db_size;
 
 	    if (db->get_last_change(file, &db_mtime, &db_size)) {
-		if (db_mtime == st.st_mtime && db_size == st.st_size) {
+		if (db_mtime == static_cast<size_t>(st.st_mtime) && db_size == st.st_size) {
 		    continue;
 		}
 		db->delete_file(file);
@@ -135,7 +135,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 	    try {
 		auto zip_archive = zip_open(filepath.c_str(), 0, nullptr);
 		if (zip_archive != nullptr) {
-		    for (size_t index = 0; index < zip_get_num_entries(zip_archive, 0); index++) {
+		    for (size_t index = 0; static_cast<int64_t>(index) < zip_get_num_entries(zip_archive, 0); index++) {
 			try {
 			    auto entry_name = zip_get_name(zip_archive, index, 0);
 			    auto output = OutputContextHeader();
