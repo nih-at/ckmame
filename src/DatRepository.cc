@@ -124,7 +124,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 	    size_t db_size;
 
 	    if (db->get_last_change(file, &db_mtime, &db_size)) {
-		if (db_mtime == static_cast<size_t>(st.st_mtime) && db_size == st.st_size) {
+		if (db_mtime == st.st_mtime && db_size == static_cast<size_t>(st.st_size)) {
 		    continue;
 		}
 		db->delete_file(file);
