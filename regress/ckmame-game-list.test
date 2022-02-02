@@ -1,0 +1,10 @@
+description only check games from file
+return 0
+args --game-list gamelist
+file-data gamelist
+1-4
+end-of-data
+stdout-data
+In game 1-4:
+game 1-4                                     : not a single file found
+end-of-data
