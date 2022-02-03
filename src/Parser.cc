@@ -47,6 +47,18 @@
 #include "error.h"
 
 
+
+std::unordered_map<std::string, Parser::Format> Parser::format_start = {
+    { "<?xml ", XML },
+    { "BEGIN", CLRMAMEPRO },
+    { "[CREDITS]", ROMCENTER },
+    { "[DAT]", ROMCENTER },
+    { "[EMULATOR]", ROMCENTER },
+    { "clrmamepro ", CLRMAMEPRO },
+    { "emulator ", CLRMAMEPRO }
+};
+
+
 #define CHECK_STATE(s)                                        \
     do {                                                           \
 	if (state != (s)) {                                 \
@@ -57,26 +69,41 @@
 
 
 ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) {
-    ParserPtr parser;
 
-    auto c = source->peek();
-
-    switch (c) {
-    case '<':
-	parser = std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output, flags));
-	break;
-    case '[':
-	parser = std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output, flags));
-	break;
-    default:
-	parser = std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output, flags));
+    size_t length = 0;
+    for (const auto& pair : format_start) {
+	length = std::max(pair.first.length(), length);
     }
 
-    return parser;
+    auto start = source->peek(length);
+    auto format = NONE;
+
+    for (const auto& pair : format_start) {
+	if (start.rfind(pair.first, 0) != std::string::npos) {
+	    format = pair.second;
+	}
+    }
+
+    switch (format) {
+    case NONE:
+	return {};
+
+    case CLRMAMEPRO:
+	return std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output, flags));
+    case ROMCENTER:
+	return std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output, flags));
+    case XML:
+	return std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output, flags));
+    }
 }
 
 bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {
     auto parser = create(source, exclude, dat, out, flags);
+
+    if (!parser) {
+	myerror(ERRFILE, "unknown dat format");
+	return false;
+    }
 
     auto ok = parser->parse();
     if (ok) {
@@ -366,6 +393,10 @@ bool Parser::prog_header(const std::string &attr) {
 	return true;
     }
 
+    if (header_only) {
+	return true;
+    }
+
     auto ok = true;
     
     ParserSourcePtr dps = ps->open(attr);
@@ -422,6 +453,9 @@ bool Parser::header_end() {
     CHECK_STATE(PARSE_IN_HEADER);
 
     de.merge(&dat_default, &de);
+    if (de.version[0] == '#') {
+	de.name += " (Numbered)";
+    }
     output->header(&de);
 
     state = PARSE_OUTSIDE;

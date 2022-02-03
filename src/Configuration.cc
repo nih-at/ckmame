@@ -40,19 +40,59 @@
 #include "Exception.h"
 #include "RomDB.h"
 #include "util.h"
+#include "error.h"
 
-void Configuration::read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional) {
+bool Configuration::read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional) {
+    auto ok = true;
+
+    if (!std::filesystem::exists(file_name)) {
+	if (optional) {
+	    return true;
+	}
+	else {
+	    throw Exception("config file '%s' does not exist", file_name.c_str());
+	}
+    }
+
     try {
 	auto string = slurp(file_name);
-	config_tables.push_back(toml::parse(string));
+	auto table = toml::parse(string);
+	ok = validate_file(table, file_name);
+	config_tables.push_back(table);
     }
     catch (const std::exception &ex) {
-	if (optional) { // TODO: only if file doesn't exist
-	    return;
-	}
-	throw ex; // TODO: convert to Exception
+	throw Exception("can't parse '%s': %s", file_name.c_str(), ex.what());
     }
+
+    return ok;
 }
+
+
+std::unordered_map<std::string, Configuration::VariableType> Configuration::variable_types = {
+    { "complete-games-only", BOOL },
+    { "create-fixdat", BOOL },
+    { "dat-directories", ARRAY_OF_STRINGS },
+    { "dat-directories-append", ARRAY_OF_STRINGS },
+    { "dats", ARRAY_OF_STRINGS },
+    { "extra-directories", ARRAY_OF_STRINGS },
+    { "extra-directories-append", ARRAY_OF_STRINGS },
+    { "fixdat-directory", STRING },
+    { "keep-old-duplicate", BOOL },
+    { "move-from-extra", BOOL },
+    { "old-db", STRING },
+    { "profiles", ARRAY_OF_STRINGS },
+    { "report-correct", BOOL },
+    { "report-detailed", BOOL },
+    { "report-fixable", BOOL },
+    { "report-missing", BOOL },
+    { "report-summary", BOOL },
+    { "rom-directory", STRING },
+    { "rom-db", STRING },
+    { "roms-zipped", BOOL },
+    { "sets", ARRAY_OF_STRINGS },
+    { "sets-file", STRING },
+    { "verbose", BOOL }
+};
 
 std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
@@ -163,85 +203,70 @@ Configuration::Configuration() : rom_db(RomDB::default_name()), old_db(RomDB::de
 }
 
 
-bool
-Configuration::merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files, const std::string &set) {
+void Configuration::merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files) {
     std::string string;
-
-    auto set_known = false;
 
     auto global_table = file["global"].as_table();
     if (global_table != nullptr) {
-        merge_config_table(global_table, config_files, set);
-        
-        if (!set.empty()) {
-            auto known_sets = (*global_table)["sets"].as_array();
-            if (known_sets != nullptr) {
-                for (const auto &value : *known_sets) {
-                    auto name = value.value<std::string>();
-                    if (name.has_value() && set == name.value()) {
-                        set_known = true;
-                        break;
-                    }
-                }
-            }
-        }
+        merge_config_table(global_table, config_files);
     }
     
     if (!set.empty()) {
         auto set_table = file[set].as_table();
         
         if (set_table != nullptr) {
-            merge_config_table(set_table, config_files, set);
-            set_known = true;
+            merge_config_table(set_table, config_files);
         }
     }
-    else {
-        set_known = true;
-    }
-    
-    return set_known;
 }
 
 
 void Configuration::handle_commandline(const ParsedCommandline &args) {
-    std::string set;
-    auto set_exists = true;
-
     std::vector<toml::table> config_files;
 
-    read_config_file(config_files, user_config_file(), true);
-    read_config_file(config_files, local_config_file(), true);
+    auto ok = true;
+
+    ok = read_config_file(config_files, user_config_file(), true) && ok;
+    ok = read_config_file(config_files, local_config_file(), true) && ok;
+
 
     for (const auto &option : args.options) {
 	if (option.name == "config") {
-	    read_config_file(config_files, option.argument, false);
+	    ok = read_config_file(config_files, option.argument, false) && ok;
+	}
+    }
+
+    if (!ok) {
+	exit(1);
+    }
+
+    for (const auto& file : config_files) {
+	auto known_sets = file["global"]["sets"].as_array();
+	if (known_sets != nullptr) {
+	    for (const auto &value : *known_sets) {
+		auto name = value.value<std::string>();
+		if (name.has_value()) {
+		    sets.insert(name.value());
+		}
+	    }
+	}
+	auto sets_file = file["global"]["sets-file"].value<std::string>();
+	if (sets_file.has_value()) {
+	    auto lines = slurp_lines(sets_file.value());
+	    sets.insert(lines.begin(), lines.end());
+	}
+
+	for (const auto &entry : file) {
+	    if (entry.first == "global" || entry.first == "profile") {
+		continue;
+	    }
+	    sets.insert(entry.first);
 	}
     }
 
     if (args.find_first("list-sets").has_value()) {
-	std::set<std::string> sets;
-
-	for (const auto& file : config_files) {
-	    auto known_sets = file["global"]["sets"].as_array();
-	    if (known_sets != nullptr) {
-		for (const auto &value : *known_sets) {
-		    auto name = value.value<std::string>();
-		    if (name.has_value()) {
-			sets.insert(name.value());
-		    }
-		}
-	    }
-
-	    for (const auto& entry : file) {
-		if (entry.first == "global" || entry.first == "profile") {
-		    continue;
-		}
-		sets.insert(entry.first);
-	    }
-	}
-
-	for (const auto& set : sets) {
-	    printf("%s\n", set.c_str());
+	for (const auto &set_name : sets) {
+	    printf("%s\n", set_name.c_str());
 	}
 
 	exit(0);
@@ -250,18 +275,14 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
     for (const auto &option : args.options) {
 	if (option.name == "set") {
 	    set = option.argument;
-	    set_exists = false;
+	    if (sets.find(set) == sets.end()) {
+		throw Exception("unknown set '" + set + "'");
+	    }
 	}
     }
 
     for (const auto& file : config_files) {
-	if (merge_config_file(file, config_files, set)) {
-	    set_exists = true;
-	}
-    }
-
-    if (!set_exists) {
-	throw Exception("unknown set '" + set + "'");
+	merge_config_file(file, config_files);
     }
 
     auto extra_directory_specified = false;
@@ -355,7 +376,7 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 }
 
 
-void Configuration::merge_config_table(const toml::table *table_pointer, const std::vector<toml::table> &config_files, const std::string &set) {
+void Configuration::merge_config_table(const toml::table *table_pointer, const std::vector<toml::table> &config_files) {
     const auto& table = *table_pointer;
 
     const auto profiles = table["profiles"].as_array();
@@ -367,38 +388,41 @@ void Configuration::merge_config_table(const toml::table *table_pointer, const s
 	    }
 	    const auto& profile = profile_value.value();
 
+	    auto found = false;
+
 	    for (const auto &file : config_files) {
-		auto profile_tables = file["profile"].as_table();
-		if (profile_tables == nullptr) {
-		    continue;
-		}
-		const auto profile_table = (*profile_tables)[profile].as_table();
+		auto profile_table = file["profile"][profile].as_table();
 		if (profile_table == nullptr) {
 		    continue;
 		}
-		merge_config_table(profile_table, config_files, set);
+		merge_config_table(profile_table, config_files);
+		found = true;
+	    }
+
+	    if (!found) {
+		throw("unknown profile '%s'", profile.c_str());
 	    }
 	}
     }
 
     set_bool(table, "complete-games-only", complete_games_only);
     set_bool(table, "create-fixdat", create_fixdat);
-    set_string_vector(table, set, "dat-directories", dat_directories, false);
-    set_string_vector(table, set, "dat-directories-append", dat_directories, true);
-    set_string_vector(table, set, "dats", dats, false);
-    set_string(table, set, "rom-db", rom_db);
-    set_string_vector(table, set, "extra-directories", extra_directories, false);
-    set_string_vector(table, set, "extra-directories-append", extra_directories, true);
-    set_string(table, set, "fixdat-directory", fixdat_directory);
+    set_string_vector(table, "dat-directories", dat_directories, false);
+    set_string_vector(table, "dat-directories-append", dat_directories, true);
+    set_string_vector(table, "dats", dats, false);
+    set_string(table, "rom-db", rom_db);
+    set_string_vector(table, "extra-directories", extra_directories, false);
+    set_string_vector(table, "extra-directories-append", extra_directories, true);
+    set_string(table, "fixdat-directory", fixdat_directory);
     set_bool(table, "keep-old-duplicate", keep_old_duplicate);
     set_bool(table, "move-from-extra", move_from_extra);
-    set_string(table, set, "old-db", old_db);
+    set_string(table, "old-db", old_db);
     set_bool(table, "report-correct", report_correct);
     set_bool(table, "report-detailed", report_detailed);
     set_bool(table, "report-fixable", report_fixable);
     set_bool(table, "report-missing", report_missing);
     set_bool(table, "report-summary", report_summary);
-    set_string(table, set, "rom-directory", rom_directory);
+    set_string(table, "rom-directory", rom_directory);
     set_bool(table, "roms-zipped", roms_zipped);
     set_bool(table, "verbose", verbose);
     // set_bool(table, "warn-file-known", warn_file_known);
@@ -418,42 +442,23 @@ void Configuration::add_options(Commandline &commandline, const std::unordered_s
 // TODO: exceptions for type mismatch
 
 void Configuration::set_bool(const toml::table &table, const std::string &name, bool &variable) {
-    if (!table.contains(name)) {
-	return;
-    }
-    auto value = table[name];
-    if (!value.is_boolean()) {
-	throw Exception("invalid type for '" + name + "'");
-    }
-    variable = table[name].value<bool>().value();
-}
-
-
-void Configuration::set_string(const toml::table &table, const std::string &set, const std::string &name, std::string &variable) {
-    if (!table.contains(name)) {
-	return;
-    }
-    auto value = table[name];
-    if (!value.is_string()) {
-	throw Exception("invalid type for '" + name + "'");
-    }
-    variable = value.value<std::string>().value();
-    auto start = variable.find("$set");
-    if (start != std::string::npos) {
-	variable.replace(start, 4, set);
+    auto value = table[name].value<bool>();
+    if (value.has_value()) {
+	variable = value.value();
     }
 }
 
 
-void Configuration::set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append) {
-    if (!table.contains(name)) {
-	return;
+void Configuration::set_string(const toml::table &table, const std::string &name, std::string &variable) {
+    auto value = table[name].value<std::string>();
+    if (value.has_value()) {
+	variable = replace_variables(value.value());
     }
-    auto value = table[name];
-    if (!value.is_array() || !value.is_homogeneous(toml::node_type::string)) {
-	throw Exception("invalid type for '" + name + "'");
-    }
-    auto array = value.as_array();
+}
+
+
+void Configuration::set_string_vector(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append) {
+    auto array = table[name].as_array();
     if (array != nullptr) {
         if (!append) {
             variable.clear();
@@ -461,13 +466,112 @@ void Configuration::set_string_vector(const toml::table &table, const std::strin
         for (const auto &element : *array) {
             auto element_value = element.value<std::string>();
             if (element_value.has_value()) {
-		auto element_variable = element_value.value();
-		auto start = element_variable.find("$set");
-		if (start != std::string::npos) {
-		    element_variable.replace(start, 4, set);
-		}
-                variable.push_back(element_variable);
+		variable.push_back(replace_variables(element_value.value()));
             }
         }
     }
+}
+
+
+[[maybe_unused]] void Configuration::set_string_vector_from_file(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append) {
+    auto file_name = table[name].value<std::string>();
+    auto lines = slurp_lines(file_name.value());
+
+    if (!append) {
+	variable.clear();
+    }
+
+    variable.insert(variable.end(), lines.begin(), lines.end());
+}
+
+
+std::string Configuration::replace_variables(std::string string) const {
+    auto start = string.find("$set");
+    if (start != std::string::npos) {
+	string.replace(start, 4, set);
+    }
+    return string;
+}
+
+
+bool Configuration::validate_tables(const toml::table& table, const std::string &prefix) {
+    auto ok = true;
+
+    for (const auto& pair : table) {
+	const auto& name = pair.first;
+	auto section_table = pair.second.as_table();
+
+	auto sub_prefix = prefix + name;
+
+	if (section_table == nullptr) {
+	    myerror(ERRDEF, "%s: expected table", sub_prefix.c_str());
+	    ok = false;
+	    continue;
+	}
+	if (name == "profile") {
+	    ok = validate_tables(*section_table, sub_prefix + ".") && ok;
+	}
+	else {
+	    ok = validate_table(section_table, sub_prefix) && ok;
+	}
+    }
+
+    return ok;
+}
+
+
+bool Configuration::validate_table(const toml::table *table, const std::string &prefix) {
+    auto ok = true;
+
+    for (const auto& pair : *table) {
+	const auto& name = pair.first;
+	const auto& value = pair.second;
+
+	auto it = variable_types.find(name);
+
+	if (it == variable_types.end()) {
+	    myerror(ERRDEF, "%s.%s: unknown variable", prefix.c_str(), name.c_str());
+	    ok = false;
+	    continue;
+	}
+
+	switch (it->second) {
+	case ARRAY_OF_STRINGS:
+	    if (!(value.is_array() && value.is_homogeneous(toml::node_type::string))) {
+		myerror(ERRDEF, "%s.%s: expected array of strings", prefix.c_str(), name.c_str());
+		ok = false;
+	    }
+	    break;
+
+	case BOOL:
+	    if (!value.is_boolean()) {
+		myerror(ERRDEF, "%s.%s: expected boolean", prefix.c_str(), name.c_str());
+		ok = false;
+	    }
+	    break;
+
+	case INTEGER:
+	    if (!value.is_integer()) {
+		myerror(ERRDEF, "%s.%s: expected integer", prefix.c_str(), name.c_str());
+		ok = false;
+	    }
+	    break;
+
+	case NUMBER:
+	    if (!value.is_number()) {
+		myerror(ERRDEF, "%s.%s: expected number", prefix.c_str(), name.c_str());
+		ok = false;
+	    }
+	    break;
+
+	case STRING:
+	    if (!value.is_string()) {
+		myerror(ERRDEF, "%s.%s: expected string", prefix.c_str(), name.c_str());
+		ok = false;
+	    }
+	    break;
+	}
+    }
+
+    return ok;
 }

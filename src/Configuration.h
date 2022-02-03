@@ -34,6 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <set>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -76,6 +77,9 @@ public:
     static void add_options(Commandline &commandline, const std::unordered_set<std::string> &used_variables);
 
     void handle_commandline(const ParsedCommandline &commandline);
+
+    std::set<std::string> sets;
+    std::string set;
 
     std::string rom_db;
     std::string old_db;
@@ -146,17 +150,34 @@ public:
 /*    bool warn_extra_used; */
     
 private:
+    enum VariableType {
+        ARRAY_OF_STRINGS,
+        BOOL,
+        INTEGER,
+        NUMBER,
+        STRING
+    };
+
+    static std::unordered_map<std::string, VariableType> variable_types;
+
     static std::vector<Commandline::Option> commandline_options;
     static std::unordered_map<std::string, std::string> option_to_variable;
 
     static bool option_used(const std::string &option_name, const std::unordered_set<std::string> &used_variables);
-    static void read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional);
+    static bool read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional);
     static void set_bool(const toml::table &table, const std::string &name, bool &variable);
-    static void set_string(const toml::table &table, const std::string &set, const std::string &name, std::string &variable);
-    static void set_string_vector(const toml::table &table, const std::string &set, const std::string &name, std::vector<std::string> &variable, bool append);
+    void set_string(const toml::table &table, const std::string &name, std::string &variable);
+    void set_string_vector(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);
+    [[maybe_unused]] static void set_string_vector_from_file(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);
 
-    bool merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files, const std::string &set);
-    void merge_config_table(const toml::table *table, const std::vector<toml::table> &config_files, const std::string &set);
+    void merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files);
+    void merge_config_table(const toml::table *table, const std::vector<toml::table> &config_files);
+
+    static bool validate_file(const toml::table& table, const std::string& file_name) { return validate_tables(table, file_name + ":"); }
+    static bool validate_tables(const toml::table& table, const std::string& prefix);
+    static bool validate_table(const toml::table *table, const std::string &prefix);
+
+    [[nodiscard]] std::string replace_variables(std::string string) const;
 };
 
 #endif // HAD_CONFIGURATION_H

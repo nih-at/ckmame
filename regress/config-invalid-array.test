@@ -5,5 +5,5 @@ file-data .ckmamerc
 extra-directories = "something"
 end-of-data
 stderr-data
-invalid type for 'extra-directories'
+.ckmamerc:global.extra-directories: expected array of strings
 end-of-data

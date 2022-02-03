@@ -48,6 +48,11 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 DatRepository::DatRepository(const std::vector<std::string> &directories) {
     for (auto const &directory : directories) {
+	if (!std::filesystem::is_directory(directory)) {
+	    myerror(ERRDEF, "Warning: dat directory '%s' doesn't exist", directory.c_str());
+	    continue;
+	}
+
 	DatDBPtr db;
 	try {
 	    db = std::make_shared<DatDB>(directory);
@@ -142,10 +147,11 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 
 			    auto source = std::make_shared<ParserSourceZip>(filepath, zip_archive, entry_name);
 			    auto parser = Parser::create(source, {}, nullptr, &output, 0);
-
-			    if (parser->parse_header()) {
-				auto header = output.get_header();
-				entries.emplace_back(entry_name, header.name, header.version);
+			    if (parser) {
+				if (parser->parse_header()) {
+				    auto header = output.get_header();
+				    entries.emplace_back(entry_name, header.name, header.version);
+				}
 			    }
 			}
 			catch (Exception &ex) {

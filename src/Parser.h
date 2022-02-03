@@ -121,6 +121,16 @@ protected:
     GamePtr g;      /* current game */
     Rom *r[TYPE_MAX]{};      /* current files */
     DetectorPtr detector;
+
+  private:
+    enum Format {
+	NONE,
+	CLRMAMEPRO,
+	ROMCENTER,
+	XML
+    };
+
+    static std::unordered_map<std::string, Format> format_start;
 };
 
 #endif // HAD_PARSER_H

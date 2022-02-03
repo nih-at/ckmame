@@ -56,5 +56,6 @@ std::string format_time(const std::string &format, time_t timestamp);
 std::string string_format(const char *format, ...) PRINTF_LIKE(1, 2);
 std::string string_format_v(const char *format, va_list ap);
 std::string slurp(const std::string &fname);
+std::vector<std::string> slurp_lines(const std::string &file_name);
 
 #endif

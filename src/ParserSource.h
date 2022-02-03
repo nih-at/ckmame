@@ -54,6 +54,7 @@ public:
 
     std::optional<std::string> getline();
     int peek();
+    std::string peek(size_t n);
     size_t read(void *data, size_t length);
     
 private:

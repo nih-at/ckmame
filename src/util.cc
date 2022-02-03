@@ -227,3 +227,17 @@ std::string format_time(const std::string &format, time_t timestamp) {
     str << std::put_time(localtime(&timestamp), format.c_str());
     return str.str();
 }
+
+
+std::vector<std::string> slurp_lines(const std::string &file_name) {
+    auto file = std::ifstream(file_name, std::ios::in);
+
+    auto lines = std::vector<std::string>();
+    auto line = std::string();
+
+    while (getline(file, line)) {
+	lines.push_back(line);
+    }
+
+    return lines;
+}

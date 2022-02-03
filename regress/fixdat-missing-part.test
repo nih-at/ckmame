@@ -3,7 +3,7 @@ features LIBXML2
 return 0
 args -Fvc -D ../mamedb-lost-parent-ok.db --create-fixdat
 file roms/clone-8.zip 1-4-ok.zip 1-4-ok.zip
-file-new "fixdat_ ().dat" fixdat-missing-part.fixdat
+file-new "fixdat_ckmame test db (1).dat" fixdat-missing-part.fixdat
 no-hashes roms clone-8.zip
 stdout-data
 In game clone-8:

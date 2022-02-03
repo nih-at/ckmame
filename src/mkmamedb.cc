@@ -211,15 +211,24 @@ main(int argc, char **argv) {
 	}
     }
 
-    if (dbname.empty() && fmt == OutputContext::FORMAT_DB && arguments.empty() && !configuration.dats.empty() && !configuration.dat_directories.empty()) {
-	try {
-	    update_romdb();
-	}
-	catch (Exception &ex) {
-	    myerror(ERRDEF, "can't update ROM database: %s", ex.what());
+    if (arguments.empty()) {
+	if (!dbname.empty() || fmt != OutputContext::FORMAT_DB) {
+	    commandline.usage(false, stderr);
 	    exit(1);
 	}
-	exit(0);
+	else if (configuration.dats.empty() || configuration.dat_directories.empty()) {
+	    myerror(ERRDEF, "no dats or dat-directories configured");
+	    exit(1);
+	}
+	else {
+	    try {
+		update_romdb();
+	    } catch (Exception &ex) {
+		myerror(ERRDEF, "can't update ROM database: %s", ex.what());
+		exit(1);
+	    }
+	    exit(0);
+	}
     }
 
     if (dbname.empty()) {
@@ -237,62 +246,60 @@ main(int argc, char **argv) {
     }
 
     try {
-        if ((out = OutputContext::create(fmt, dbname, flags)) == nullptr) {
-            exit(1);
-        }
+	if ((out = OutputContext::create(fmt, dbname, flags)) == nullptr) {
+	    exit(1);
+	}
 
-        if (!detector_name.empty()) {
-    #if defined(HAVE_LIBXML2)
-            seterrinfo(detector_name);
-            auto detector = Detector::parse(detector_name);
-            if (detector != nullptr) {
-                out->detector(detector.get());
-            }
-    #else
-            myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
-    #endif
-        }
+	if (!detector_name.empty()) {
+#if defined(HAVE_LIBXML2)
+	    seterrinfo(detector_name);
+	    auto detector = Detector::parse(detector_name);
+	    if (detector != nullptr) {
+		out->detector(detector.get());
+	    }
+#else
+	    myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
+#endif
+	}
 
+	// TODO: this isn't overridable by --only-files?
+	file_patterns.emplace_back(DEFAULT_FILE_PATTERNS);
 
-        /* TODO: handle errors */
-        if (arguments.empty()) {
-            if (!process_stdin(exclude, &dat, out.get())) {
-                ret = 1;
-            }
-        }
-        else {
-            // TODO: this isn't overridable by --only-files?
-            file_patterns.emplace_back(DEFAULT_FILE_PATTERNS);
+	for (auto name : arguments) {
+	    if (name == "-") {
+		if (!process_stdin(exclude, &dat, out.get())) {
+		    ret = 1;
+		}
+	    }
+	    else {
+		auto last = name.find_last_not_of('/');
+		if (last == std::string::npos) {
+		    name = "/";
+		}
+		else {
+		    name.resize(last + 1);
+		}
 
-            for (auto name : arguments) {
-                auto last = name.find_last_not_of('/');
-                if (last == std::string::npos) {
-                    name = "/";
-                }
-                else {
-                    name.resize(last + 1);
-                }
+		if (!process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags)) {
+		    ret = 1;
+		}
+	    }
+	}
 
-                if (!process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags)) {
-                    ret = 1;
-                }
-            }
-        }
+	if (ret == 0) {
+	    out->close();
+	}
 
-        if (ret == 0) {
-            out->close();
-        }
+	if (!configuration.roms_zipped) {
+	    CkmameDB::close_all();
+	}
 
-        if (!configuration.roms_zipped) {
-            CkmameDB::close_all();
-        }
-
-        if (flags & OUTPUT_FL_TEMP) {
-            if (!rename_or_move(dbname, dbname_real)) {
-                myerror(ERRDEF, "could not copy temporary output '%s' to '%s'", dbname.c_str(), dbname_real.c_str());
-                return 1;
-            }
-        }
+	if (flags & OUTPUT_FL_TEMP) {
+	    if (!rename_or_move(dbname, dbname_real)) {
+		myerror(ERRDEF, "could not copy temporary output '%s' to '%s'", dbname.c_str(), dbname_real.c_str());
+		return 1;
+	    }
+	}
     }
     catch (const std::exception &exception) {
         fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), exception.what());

@@ -5,5 +5,5 @@ file-data .ckmamerc
 report-missing = "something"
 end-of-data
 stderr-data
-invalid type for 'report-missing'
+.ckmamerc:global.report-missing: expected boolean
 end-of-data

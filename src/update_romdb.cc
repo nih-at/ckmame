@@ -73,7 +73,7 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
 	}
 	const auto& fs_dat = fs_dat_maybe.value();
 
-	dats_to_use.push_back(fs_dat_maybe.value());
+	dats_to_use.push_back(fs_dat);
 
 	if (it == db_versions.end()) {
 	    if (configuration.verbose) { // TODO: different config setting

@@ -5,7 +5,7 @@ file search/14.zip 1-4-ok.zip 1-4-ok.zip
 file-new roms/1-4.zip 1-4-ok.zip
 file-data .ckmamerc
 [global]
-copy-from-extra = true
+move-from-extra = false
 end-of-data
 stdout-data
 In game 1-4:

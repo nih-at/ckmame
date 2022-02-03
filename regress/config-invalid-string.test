@@ -5,5 +5,5 @@ file-data .ckmamerc
 rom-directory = [ "an", "array" ]
 end-of-data
 stderr-data
-invalid type for 'rom-directory'
+.ckmamerc:global.rom-directory: expected string
 end-of-data
