@@ -42,9 +42,6 @@
 #define DO_MAP 0x1
 #define DO_LIST 0x2
 
-extern const std::string needed_dir;
-extern const std::string unknown_dir;
-
 void ensure_extra_maps(int flags);
 void ensure_needed_maps();
 std::string findfile(filetype_t filetype, const std::string &name);

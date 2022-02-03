@@ -40,11 +40,7 @@
 #include "DeleteList.h"
 #include "Dir.h"
 #include "globals.h"
-//#include "MemDB.h"
 #include "util.h"
-
-const std::string needed_dir = "needed";   /* TODO: proper value */
-const std::string unknown_dir = "unknown"; /* TODO: proper value */
 
 #define EXTRA_MAPS 0x1
 #define NEEDED_MAPS 0x2
@@ -115,7 +111,7 @@ void ensure_needed_maps() {
     maps_done |= NEEDED_MAPS;
     needed_delete_list = std::make_shared<DeleteList>();
 
-    enter_dir_in_map_and_list(DO_MAP, needed_delete_list, needed_dir, true, FILE_NEEDED);
+    enter_dir_in_map_and_list(DO_MAP, needed_delete_list, configuration.saved_directory, true, FILE_NEEDED);
 }
 
 

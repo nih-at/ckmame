@@ -5,7 +5,7 @@ preload fwrite.so
 setenv RENAME_FAILS roms/1-4.zip
 args -Fvje extra -D ../mamedb-small.db
 file-del roms/1-4-wrong-name.zip 1-4-ok.zip
-file-new needed/d87f7e0c-000.zip 1-4-ok.zip
+file-new saved/d87f7e0c-000.zip 1-4-ok.zip
 stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-wrong-name.zip/04.rom'

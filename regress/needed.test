@@ -2,7 +2,7 @@ description test single-rom game (no parent), zip contains file needed elsewhere
 return 0
 args -Fvc 1-4
 file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
-file-new needed/3656897d-000.zip 1-8-ok.zip
+file-new saved/3656897d-000.zip 1-8-ok.zip
 stdout-data
 In game 1-4:
 game 1-4                                     : correct

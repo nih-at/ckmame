@@ -2,16 +2,16 @@ description test incomplete game, moves files from extra to needed
 return 0
 args -FvCje extra --no-report-missing 2-48
 file-del extra/2-48.zip 1-8-ok.zip
-file-del needed/d87f7e0c-000.zip 1-4-ok.zip
+file-del saved/d87f7e0c-000.zip 1-4-ok.zip
 file-new roms/2-48.zip 2-48-ok.zip
 stdout-data
 In game 2-48:
-rom  04.rom        size       4  crc d87f7e0c: is in 'needed/d87f7e0c-000.zip/04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'saved/d87f7e0c-000.zip/04.rom'
 rom  08.rom        size       8  crc 3656897d: is in 'extra/2-48.zip/08.rom'
-roms/2-48.zip: add 'needed/d87f7e0c-000.zip/04.rom' as '04.rom'
+roms/2-48.zip: add 'saved/d87f7e0c-000.zip/04.rom' as '04.rom'
 roms/2-48.zip: add 'extra/2-48.zip/08.rom' as '08.rom'
-needed/d87f7e0c-000.zip: delete used file '04.rom'
-needed/d87f7e0c-000.zip: remove empty archive
+saved/d87f7e0c-000.zip: delete used file '04.rom'
+saved/d87f7e0c-000.zip: remove empty archive
 extra/2-48.zip: delete used file '08.rom'
 extra/2-48.zip: remove empty archive
 end-of-data

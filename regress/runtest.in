@@ -43,7 +43,7 @@ use NiHTest;
 
 $ENV{HOME} = "@top_builddir@";
 
-my $ROMDIRS = "extra|extradir|needed|roms|roms-commandline|roms-home|roms-local|roms-set|search|unknown";
+my $ROMDIRS = "extra|extradir|saved|roms|roms-commandline|roms-home|roms-local|roms-set|search|unknown";
 
 my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@', top_builddir => '@top_builddir@', zipcmp_flags => '' });
 

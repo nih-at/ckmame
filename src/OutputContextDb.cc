@@ -153,6 +153,7 @@ bool OutputContextDb::lost(Game *game) {
 
 bool OutputContextDb::close() {
     if (db) {
+	// TODO: don't write stuff if !ok
         db->write_dat(dat);
 
         if (!handle_lost()) {
@@ -165,6 +166,9 @@ bool OutputContextDb::close() {
 
 	if (ok) { // TODO: and no previous errors
 	    rename_or_move(temp_file_name, file_name);
+	}
+	else {
+	    std::filesystem::remove(temp_file_name);
 	}
     }
 

@@ -88,6 +88,8 @@ std::unordered_set<std::string> used_variables = {
     "rom_db",
     "rom_directory",
     "roms_zipped",
+    "saved_directory",
+    "unknown_directory",
     "verbose"
 };
 
@@ -145,8 +147,8 @@ main(int argc, char **argv) {
 
 	try {
 	    CkmameDB::register_directory(configuration.rom_directory);
-	    CkmameDB::register_directory(needed_dir);
-	    CkmameDB::register_directory(unknown_dir);
+	    CkmameDB::register_directory(configuration.saved_directory);
+	    CkmameDB::register_directory(configuration.unknown_directory);
 	    for (const auto &name : configuration.extra_directories) {
 		if (contains_romdir(name)) {
 		    /* TODO: improve error message: also if extra is in ROM directory. */
@@ -296,7 +298,7 @@ main(int argc, char **argv) {
 		needed_delete_list = std::make_shared<DeleteList>();
 	    }
 	    if (needed_delete_list->archives.empty()) {
-		needed_delete_list->add_directory(needed_dir, false);
+		needed_delete_list->add_directory(configuration.saved_directory, false);
 	    }
 	    cleanup_list(superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN);
 	    cleanup_list(needed_delete_list, CLEANUP_UNKNOWN, true);
@@ -322,7 +324,7 @@ main(int argc, char **argv) {
 	
 	if (configuration.fix_romset) {
 	    std::error_code ec;
-	    std::filesystem::remove(needed_dir, ec);
+	    std::filesystem::remove(configuration.saved_directory, ec);
 	}
 
 	db = nullptr;

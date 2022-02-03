@@ -51,7 +51,7 @@ std::string
 make_garbage_name(const std::string &name, int unique) {
     auto s = std::filesystem::path(name).filename();
 
-    auto t = std::filesystem::path(unknown_dir) / s;
+    auto t = std::filesystem::path(configuration.unknown_directory) / s;
     
     if (unique && std::filesystem::exists(t)) {
 	/* skip '.' */
@@ -67,10 +67,10 @@ make_garbage_name(const std::string &name, int unique) {
 
 static std::string
 make_needed_name(filetype_t filetype, const FileData *r) {
-    /* <needed_dir>/<crc>-nnn.zip */
+    /* <configuration.saved_directory>/<crc>-nnn.zip */
 
     auto hash = r->hashes.to_string(filetype == TYPE_ROM ? Hashes::TYPE_CRC : Hashes::TYPE_SHA1);
-    auto prefix = std::filesystem::path(needed_dir) / hash;
+    auto prefix = std::filesystem::path(configuration.saved_directory) / hash;
 
     return make_unique_name(prefix, (filetype == TYPE_ROM && configuration.roms_zipped) ? ".zip" : "");
 }
