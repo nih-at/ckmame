@@ -1,0 +1,11 @@
+description dumpgame: test --checksum CRC for file
+return 0
+args --checksum 12345678
+program dumpgame
+stdout-data
+In game 1-8a:
+		file 08.rom        size       8 crc 12345678 sha1 111bb8b7549e3386a996845405b02164f17c7b37 status  in game
+In game zerobadcrc:
+		file zero          size       0 crc 12345678 status  in game
+2 matches found for checksum crc 12345678
+end-of-data

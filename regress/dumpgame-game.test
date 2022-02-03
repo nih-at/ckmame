@@ -1,4 +1,4 @@
-description dumpgame: test /stats output
+description dumpgame: test single game
 return 0
 args parent-4
 program dumpgame
