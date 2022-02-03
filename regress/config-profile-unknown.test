@@ -1,0 +1,15 @@
+description test romdir on command line overrides the one in local directory
+return 1
+setenv HOME ./home
+args --set Test 1-4
+file-data .ckmamerc
+[global]
+verbose = false
+[profile.verbose]
+verbose = true
+["Test"]
+profiles = [ "extra-verbose" ]
+end-of-data
+stderr-data
+unknown profile 'extra-verbose'
+end-of-data
