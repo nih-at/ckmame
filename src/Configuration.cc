@@ -35,6 +35,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <filesystem>
 #include <set>
 
 #include "Exception.h"
