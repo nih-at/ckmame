@@ -93,7 +93,7 @@ std::unordered_map<std::string, Configuration::VariableType> Configuration::vari
     { "saved-directory", STRING },
     { "sets", ARRAY_OF_STRINGS },
     { "sets-file", STRING },
-    { "unnkown-directory", STRING },
+    { "unknown-directory", STRING },
     { "use-temp-directory", BOOL },
     { "verbose", BOOL }
 };
