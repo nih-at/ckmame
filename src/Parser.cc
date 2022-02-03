@@ -95,6 +95,8 @@ ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set
     case XML:
 	return std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output, flags));
     }
+
+    return {};
 }
 
 bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {

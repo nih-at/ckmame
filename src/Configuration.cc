@@ -400,7 +400,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer, const s
 	    }
 
 	    if (!found) {
-		throw("unknown profile '%s'", profile.c_str());
+		throw Exception("unknown profile '%s'", profile.c_str());
 	    }
 	}
     }
