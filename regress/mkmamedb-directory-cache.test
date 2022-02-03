@@ -1,0 +1,6 @@
+description test mkmamedb --directory-cache
+return 0
+program mkmamedb
+args -F cm -o output.dat roms
+file output.dat mamedb-small.dat
+file roms/1-4.zip 1-4-ok.zip

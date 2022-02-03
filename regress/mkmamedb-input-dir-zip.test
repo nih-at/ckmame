@@ -2,7 +2,7 @@ description test mkmamedb database creation from input directory (zip)
 variants zip
 return 0
 program mkmamedb
-args -o mamedb-test.db --prog-name "ckmame test db" --prog-version "1" extra
+args -o mamedb-test.db extra
 file extra/1-4.zip 1-4-ok.zip 1-4-ok.zip
 file extra/plain-file dummy dummy
 file-new mamedb-test.db mamedb-small.dump
