@@ -179,7 +179,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 		    auto parser = Parser::create(source, {}, nullptr, &output, 0);
 
 		    if (parser) {
-			if (parser->parse_header()) {
+			if (parser->parse_header() && output.close()) {
 			    auto header = output.get_header();
 			    entries.emplace_back("", header.name, header.version);
 			}

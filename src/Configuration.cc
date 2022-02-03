@@ -238,14 +238,19 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 
     auto ok = true;
 
-    ok = read_config_file(config_files, user_config_file(), true) && ok;
-    ok = read_config_file(config_files, local_config_file(), true) && ok;
+    try {
+	ok = read_config_file(config_files, user_config_file(), true) && ok;
+	ok = read_config_file(config_files, local_config_file(), true) && ok;
 
 
-    for (const auto &option : args.options) {
-	if (option.name == "config") {
-	    ok = read_config_file(config_files, option.argument, false) && ok;
+	for (const auto &option : args.options) {
+	    if (option.name == "config") {
+		ok = read_config_file(config_files, option.argument, false) && ok;
+	    }
 	}
+    }
+    catch (std::exception &ex) {
+	throw Exception(std::string(ex.what()));
     }
 
     if (!ok) {
