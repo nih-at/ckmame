@@ -1,4 +1,4 @@
-description test romdir on command line overrides the one in local directory
+description report error for unknown profile in config file
 return 1
 setenv HOME ./home
 args --set Test 1-4
