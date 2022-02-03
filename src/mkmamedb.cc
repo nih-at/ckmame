@@ -64,6 +64,7 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("exclude", 'x', "pattern", "exclude games matching shell glob pattern"),
     Commandline::Option("format", 'F', "format", "specify output format (default: db)"),
     Commandline::Option("hash-types", 'C', "types", "specify hash types to compute (default: all)"),
+    Commandline::Option("list-available-dats", "list all dats found in dat-directories"),
     Commandline::Option("no-directory-cache", "don't create cache of scanned input directory"),
     Commandline::Option("only-files", "pattern", "only use zip members matching shell glob pattern"),
     Commandline::Option("output", 'o', "dbfile", "write to database dbfile (default: mame.db)"),
@@ -155,6 +156,14 @@ main(int argc, char **argv) {
 		    fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), option.argument.c_str());
 		    exit(1);
 		}
+	    }
+	    else if (option.name == "list-available-dats") {
+		auto repository = DatRepository(configuration.dat_directories);
+
+		for (const auto& dat : repository.list_dats()) {
+		    printf("%s\n", dat.c_str());
+		}
+		exit(0);
 	    }
 	    else if (option.name == "no-directory-cache") {
 		cache_directory = false;

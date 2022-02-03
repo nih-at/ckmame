@@ -35,6 +35,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <sys/stat.h>
 
+#include <set>
 #include <unordered_set>
 
 #include "Dir.h"
@@ -103,6 +104,18 @@ std::optional<DatDB::DatInfo> DatRepository::find_dat(const std::string &name) {
     return dat;
 }
 
+
+std::vector<std::string> DatRepository::list_dats() {
+    std::set<std::string> dats;
+
+    for (const auto& pair : dbs) {
+	for (const auto& dat : pair.second->list_dats()) {
+	    dats.insert(dat);
+	}
+    }
+
+    return {dats.begin(), dats.end()};
+}
 
 void DatRepository::update_directory(const std::string &directory, const DatDBPtr &db) {
     auto dir = Dir(directory, true);
@@ -189,6 +202,8 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 	}
     }
 }
+
+
 bool DatRepository::is_newer(const std::string& a, const std::string& b) {
     if (b.empty()) {
 	return true;

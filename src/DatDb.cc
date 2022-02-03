@@ -61,6 +61,7 @@ std::unordered_map<DatDB::Statement, std::string> DatDB::queries = {
     { DELETE_FILE, "delete from file where file_id = :file_id"},
     { INSERT_DAT, "insert into dat (file_id, entry_name, name, version) values (:file_id, :entry_name, :name, :version)" },
     { INSERT_FILE, "insert into file (file_name, mtime, size) values (:file_name, :mtime, :size)" },
+    { LIST_DATS, "select distinct name from dat"},
     { LIST_FILES, "select file_name from file" },
     { QUERY_DAT, "select file_name, entry_name, version from file f, dat d where f.file_id = d.file_id and name = :name"},
     { QUERY_FILE_ID, "select file_id from file where file_name = :file_name" },
@@ -85,6 +86,19 @@ std::string DatDB::get_query(int name, bool parameterized) const {
 	}
 	return it->second;
     }
+}
+
+
+std::vector<std::string> DatDB::list_dats() {
+    auto stmt = get_statement(LIST_DATS);
+
+    std::vector<std::string> dats;
+
+    while (stmt->step()) {
+	dats.emplace_back(stmt->get_string("name"));
+    }
+
+    return dats;
 }
 
 
