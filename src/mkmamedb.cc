@@ -91,7 +91,6 @@ int
 main(int argc, char **argv) {
     OutputContextPtr out;
     std::string dbname, dbname_real;
-    char tmpnam_buffer[L_tmpnam];
     std::unordered_set<std::string> exclude;
     std::vector<std::string> file_patterns;
     std::unordered_set<std::string> skip_files;
