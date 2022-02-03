@@ -81,74 +81,37 @@ public:
     std::set<std::string> sets;
     std::string set;
 
-    std::string rom_db;
-    std::string old_db;
-    
-    std::string rom_directory;
-    std::vector<std::string> extra_directories;
-    
-    bool create_fixdat;
-    std::string fixdat_directory;
-
-    bool roms_zipped;
-    bool keep_old_duplicate;
-
-    // not in config files, per invocation
-    bool fix_romset; // actually fix, otherwise no archive is changed
-
-    // output
-    bool verbose; // print all actions taken to fix ROM set
-
-    // options
+    // config variables
     bool complete_games_only; // only add ROMs to games if they are complete afterwards.
+    bool create_fixdat;
+    std::vector<std::string> dat_directories;
+    std::vector<std::string> dats;
+    std::vector<std::string> extra_directories;
+    std::string fixdat_directory;
+    bool keep_old_duplicate;
     bool move_from_extra; // remove files taken from extra directories, otherwise copy them and don't change extra directory.
-
-//    bool fix_move_long; - always on
-//    bool fix_move_unknown; - always on
-//    bool fix_superfluous; - always on
-//    bool fix_ignore_unknown; - always off
-//    bool fix_delete_duplicate; - always on
-    
-    /*
-     in ROM set:
-        everything, including no good dump
-        everything, excluding no good dump
-        (everything that can be fixed with existing files)
-     
-        ROM states:
-            missing - per option, default on (warn_missing)
-                no good dump exists - per option, default off (warn_no_good_dump)
-            fixable - per option, default on
-            correct - per option, default off (warn_correct)
-
-        file states:
-            broken - always
-            fixable (name, long, used elsewhere, unused) - per option
-            unknown - per option (warn_unknown)
-            correct - never
-
-    in extra dir:
-        (unused file)
-        (unknown file)
-     
-     */
-
+    std::string old_db;
     bool report_correct; /* report ROMs that are correct */
     bool report_detailed; /* one line for each ROM */
     bool report_fixable; /* report ROMs that are not correct but can be fixed */
     bool report_missing; /* report missing ROMs with good dumps, one line per game if no own ROM found */
     bool report_summary; /* print statistics about ROM set at end of run */
-
-    std::vector<std::string> dat_directories;
-    std::vector<std::string> dats;
+    std::string rom_db;
+    std::string rom_directory;
+    bool roms_zipped;
+    std::string saved_directory;
+    std::string unknown_directory;
+    bool use_temp_directory; // create RomDB in temporary directory, then move into place
+    bool verbose; // print all actions taken to fix ROM set
 
     // TODO: Are these needed? They have no command line options.
     /* file_correct */
     bool warn_file_known;   // files that are known but don't belong in this archive
     bool warn_file_unknown; // files that are not in ROM set
-    
-/*    bool warn_extra_used; */
-    
+
+    // not in config files, per invocation
+    bool fix_romset; // actually fix, otherwise no archive is changed
+
 private:
     enum VariableType {
         ARRAY_OF_STRINGS,

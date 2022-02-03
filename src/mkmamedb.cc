@@ -71,12 +71,11 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("prog-name", "name", "set name of rominfo"),
     Commandline::Option("prog-version", "version", "set version of rominfo"),
     Commandline::Option("runtest", "output special format for use in ckmame test suite"),
-    Commandline::Option("skip-files", "pattern", "don't use zip members matching shell glob pattern"),
-    Commandline::Option("use-temp-directory", 't', "create output in temporary directory, move when done")
+    Commandline::Option("skip-files", "pattern", "don't use zip members matching shell glob pattern")
 };
 
 std::unordered_set<std::string> used_variables = {
-    "roms_zipped"
+    "dats", "dat_directories", "roms_zipped", "use_temp_directory"
 };
 
 #define DEFAULT_FILE_PATTERNS "*.dat"
@@ -182,9 +181,6 @@ main(int argc, char **argv) {
 	    else if (option.name == "skip-files") {
 		skip_files.insert(option.argument);
 	    }
-	    else if (option.name == "use-temp-directory") {
-		flags |= OUTPUT_FL_TEMP;
-	    }
 	}
 
 	arguments = args.arguments;
@@ -235,16 +231,6 @@ main(int argc, char **argv) {
 	dbname = configuration.rom_db;
     }
 
-    if (flags & OUTPUT_FL_TEMP) {
-	dbname_real = dbname;
-	auto var = tmpnam(tmpnam_buffer);
-	if (var == nullptr) {
-	    myerror(ERRSTR, "tmpnam() failed");
-	    exit(1);
-	}
-	dbname = var;
-    }
-
     try {
 	if ((out = OutputContext::create(fmt, dbname, flags)) == nullptr) {
 	    exit(1);
@@ -268,6 +254,7 @@ main(int argc, char **argv) {
 	for (auto name : arguments) {
 	    if (name == "-") {
 		if (!process_stdin(exclude, &dat, out.get())) {
+		    out->error_occurred();
 		    ret = 1;
 		}
 	    }
@@ -281,6 +268,7 @@ main(int argc, char **argv) {
 		}
 
 		if (!process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags)) {
+		    out->error_occurred();
 		    ret = 1;
 		}
 	    }
@@ -292,13 +280,6 @@ main(int argc, char **argv) {
 
 	if (!configuration.roms_zipped) {
 	    CkmameDB::close_all();
-	}
-
-	if (flags & OUTPUT_FL_TEMP) {
-	    if (!rename_or_move(dbname, dbname_real)) {
-		myerror(ERRDEF, "could not copy temporary output '%s' to '%s'", dbname.c_str(), dbname_real.c_str());
-		return 1;
-	    }
 	}
     }
     catch (const std::exception &exception) {

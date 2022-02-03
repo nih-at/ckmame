@@ -109,12 +109,10 @@ void update_romdb() {
 	return;
     }
 
-    // TODO: implement use_temp_name
-    // TODO: use proper temp name
-    auto temp_name = configuration.rom_db + ".xxx";
+    OutputContextPtr output;
 
     try {
-	auto output = OutputContext::create(OutputContext::FORMAT_DB, temp_name, 0);
+	output = OutputContext::create(OutputContext::FORMAT_DB, configuration.rom_db, 0);
 
 	for (const auto &dat : dats_to_use) {
 	    ParserSourcePtr source;
@@ -143,12 +141,17 @@ void update_romdb() {
 	    }
 	}
 
-	output->close();
-
-	std::filesystem::rename(temp_name, configuration.rom_db);
+	auto ok = output->close();
+	output.reset();
+	if (!ok) {
+	    throw Exception("can't write database");
+	}
     }
     catch (std::exception &ex) {
-	std::filesystem::remove(temp_name);
+	if (output) {
+	    output->error_occurred();
+	    output->close();
+	}
 	throw ex;
     }
 }

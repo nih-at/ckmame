@@ -90,8 +90,11 @@ std::unordered_map<std::string, Configuration::VariableType> Configuration::vari
     { "rom-directory", STRING },
     { "rom-db", STRING },
     { "roms-zipped", BOOL },
+    { "saved-directory", STRING },
     { "sets", ARRAY_OF_STRINGS },
     { "sets-file", STRING },
+    { "unnkown-directory", STRING },
+    { "use-temp-directory", BOOL },
     { "verbose", BOOL }
 };
 
@@ -121,7 +124,10 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("rom-db", 'D', "dbfile", "use ROM database dbfile"),
     Commandline::Option("rom-directory", 'R', "dir", "ROM set is in directory dir (default: 'roms')"),
     Commandline::Option("roms-unzipped", 'u', "ROMs are files on disk, not contained in zip archives"),
+    Commandline::Option("saved-directory", "directory", "save needed ROMs in directory (default: 'saved')"),
     Commandline::Option("set", "name", "check ROM set name"),
+    Commandline::Option("unknown-directory", "directory", "save unknown files in directory (default: 'unknown')"),
+    Commandline::Option("use-temp-directory", 't', "create output in temporary directory, move when done"),
     Commandline::Option("verbose", 'v', "print fixes made")
 };
 
@@ -177,22 +183,27 @@ bool Configuration::option_used(const std::string &option_name, const std::unord
 }
 
 
-Configuration::Configuration() : rom_db(RomDB::default_name()), old_db(RomDB::default_old_name()),
-    rom_directory("roms"),
-    create_fixdat(false),
-    roms_zipped(true),
-    keep_old_duplicate(false),
-    fix_romset(false),
-    verbose(false),
-    complete_games_only(false),
-    move_from_extra(false),
-    report_correct(false),
-    report_detailed(false),
-    report_fixable(true),
-    report_missing(true),
-    report_summary(false),
-    warn_file_known(true), // ???
-    warn_file_unknown(true) {
+Configuration::Configuration() : 
+    	complete_games_only(false),
+	create_fixdat(false),
+    	keep_old_duplicate(false),
+    	move_from_extra(false),
+	old_db(RomDB::default_old_name()),
+    	report_correct(false),
+    	report_detailed(false),
+    	report_fixable(true),
+    	report_missing(true),
+    	report_summary(false),
+    	rom_db(RomDB::default_name()),
+    	rom_directory("roms"),
+    	roms_zipped(true),
+	saved_directory("saved"),
+	unknown_directory("unknown"),
+	use_temp_directory(false),
+    	verbose(false),
+	warn_file_known(true),
+	warn_file_unknown(true),
+	fix_romset(false) {
     auto value = getenv("MAMEDB");
     if (value != nullptr) {
 	rom_db = value;
@@ -322,9 +333,6 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	else if (option.name == "move-from-extra") {
 	    move_from_extra = true;
 	}
-	else if (option.name == "old-db") {
-	    old_db = option.argument;
-	}
 	else if (option.name == "no-complete-games-only") {
 	    complete_games_only = false;
 	}
@@ -345,6 +353,9 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	}
 	else if (option.name == "no-report-summary") {
 	    report_summary = false;
+	}
+	else if (option.name == "old-db") {
+	    old_db = option.argument;
 	}
 	else if (option.name == "report-correct") {
 	    report_correct = true;
@@ -369,6 +380,15 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	}
 	else if (option.name == "roms-unzipped") {
 	    roms_zipped = false;
+	}
+	else if (option.name == "saved-directory") {
+	    saved_directory = option.argument;
+	}
+	else if (option.name == "unknown-directory") {
+	    unknown_directory = option.argument;
+	}
+	else if (option.name == "use-temp-directory") {
+	    use_temp_directory = true;
 	}
 	else if (option.name == "verbose") {
 	    verbose = true;
@@ -425,9 +445,10 @@ void Configuration::merge_config_table(const toml::table *table_pointer, const s
     set_bool(table, "report-summary", report_summary);
     set_string(table, "rom-directory", rom_directory);
     set_bool(table, "roms-zipped", roms_zipped);
+    set_string(table, "saved-directory", saved_directory);
+    set_string(table, "unknown-directory", unknown_directory);
+    set_bool(table, "use-temp-directory", use_temp_directory);
     set_bool(table, "verbose", verbose);
-    // set_bool(table, "warn-file-known", warn_file_known);
-    // set_bool(table, "warn-file-unknown", warn_file_unknown);
 }
 
 

@@ -48,7 +48,6 @@ class OutputContext;
 typedef std::shared_ptr<OutputContext> OutputContextPtr;
 
 #define OUTPUT_FL_RUNTEST  1
-#define OUTPUT_FL_TEMP     2
 
 class OutputContext {
 public:
@@ -67,7 +66,8 @@ public:
     virtual bool detector(Detector *detector) { return true; }
     virtual bool game(GamePtr game) = 0;
     virtual bool header(DatEntry *dat) { return true; }
-    
+    virtual void error_occurred() { }
+
 protected:
     void cond_print_string(FILEPtr f, const std::string &pre, const std::string &str, const std::string &post);
     void cond_print_hash(FILEPtr f, const std::string &pre, int t, const Hashes *h, const std::string &post);

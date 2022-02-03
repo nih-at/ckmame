@@ -37,6 +37,8 @@
 #include <filesystem>
 
 #include "error.h"
+#include "file_util.h"
+#include "globals.h"
 
 
 struct fbh_context {
@@ -45,9 +47,17 @@ struct fbh_context {
 };
 
 
-OutputContextDb::OutputContextDb(const std::string &dbname, int flags) {
-    std::filesystem::remove(dbname);
-    db = std::make_unique<RomDB>(dbname, DBH_NEW);
+OutputContextDb::OutputContextDb(const std::string &dbname, int flags) :
+									 file_name(dbname),
+									 ok(true) {
+    temp_file_name = file_name + "-mkmammedb";
+    if (configuration.use_temp_directory) {
+	auto tmpdir = getenv("TMPDIR");
+	temp_file_name = std::string(tmpdir ? tmpdir : "/tmp") + "/" + temp_file_name;
+    }
+    temp_file_name = make_unique_name(temp_file_name, "");
+
+    db = std::make_unique<RomDB>(temp_file_name, DBH_NEW);
 }
 
 
@@ -142,8 +152,6 @@ bool OutputContextDb::lost(Game *game) {
 
 
 bool OutputContextDb::close() {
-    auto ok = true;
-
     if (db) {
         db->write_dat(dat);
 
@@ -154,6 +162,10 @@ bool OutputContextDb::close() {
         db->init2();
 
         db = nullptr;
+
+	if (ok) { // TODO: and no previous errors
+	    rename_or_move(temp_file_name, file_name);
+	}
     }
 
     return ok;

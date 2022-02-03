@@ -47,13 +47,19 @@ public:
     bool detector(Detector *detector) override;
     bool game(GamePtr game) override;
     bool header(DatEntry *dat) override;
-    
+    void error_occurred() override { ok = false; }
+
 private:
+    std::string file_name;
+    std::string temp_file_name;
+
     std::unique_ptr<RomDB> db;
 
     std::vector<DatEntry> dat;
 
     std::vector<std::string> lost_children;
+
+    bool ok;
     
     void familymeeting(Game *parent, Game *child);
     bool handle_lost();
