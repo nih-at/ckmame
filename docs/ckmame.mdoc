@@ -68,7 +68,9 @@
 .Op Fl Fl rom-db Ar dbfile
 .Op Fl Fl rom-directory Ar dir
 .Op Fl Fl roms-unzipped
+.Op Fl Fl save-directory Ar dir
 .Op Fl Fl set Ar name
+.Op Fl Fl unknown-directory Ar dir
 .Op Fl Fl verbose
 .Op Fl Fl version
 .Op Ar game ...
@@ -208,6 +210,13 @@ Report status of ROMs that can be fixed (default).
 Report status of ROMs that are missing (default).
 .It Fl Fl report-summary
 Print summary of ROM set status at the end of the output.
+.It Fl Fl save-directory Ar dir
+When a ROM file is encountered that does not belong to the set that is
+currently checked, but is needed by a different set, move it this
+directory.
+It will be found there automatically later
+(efault:
+.Dq Pa saved ).
 .It Fl Fl set Ar name
 Check ROM set name.
 This uses the configuration from the corresponding section in the
@@ -226,6 +235,12 @@ Instead of looking for ROMs in the ZIP archive
 look for them in the directory
 .Pa roms/games/
 in the file system.
+.It Fl Fl unknown-directory Ar dir
+When a file is encountered that does not belong to the set that is
+currently checked and is not known by the database, move it this
+directory
+(efault:
+.Dq Pa unknown ).
 .It Fl V , Fl Fl version
 Display version number.
 .It Fl v , Fl Fl verbose
