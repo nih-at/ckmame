@@ -219,7 +219,7 @@ XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t *result
 XmlProcessor::CallbackStatus DetectorParserContext::parse_offset(int64_t *result, const std::string &value) {
     if (value == "EOF") {
 	*result = DETECTOR_OFFSET_EOF;
-	return XmlProcessor::ERROR;
+	return XmlProcessor::OK;
     }
 
     return parse_number(result, value);

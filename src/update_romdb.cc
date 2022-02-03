@@ -152,6 +152,6 @@ void update_romdb() {
 	    output->error_occurred();
 	    output->close();
 	}
-	throw ex;
+	throw Exception(std::string(ex.what()));
     }
 }

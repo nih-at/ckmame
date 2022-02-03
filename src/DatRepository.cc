@@ -178,9 +178,11 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 		    auto source = std::make_shared<ParserSourceFile>(filepath);
 		    auto parser = Parser::create(source, {}, nullptr, &output, 0);
 
-		    if (parser->parse_header()) {
-			auto header = output.get_header();
-			entries.emplace_back("", header.name, header.version);
+		    if (parser) {
+			if (parser->parse_header()) {
+			    auto header = output.get_header();
+			    entries.emplace_back("", header.name, header.version);
+			}
 		    }
 		}
 	    }
