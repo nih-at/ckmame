@@ -65,6 +65,7 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("format", 'F', "format", "specify output format (default: db)"),
     Commandline::Option("hash-types", 'C', "types", "specify hash types to compute (default: all)"),
     Commandline::Option("list-available-dats", "list all dats found in dat-directories"),
+    Commandline::Option("list-dats", "list dats used by current set"),
     Commandline::Option("no-directory-cache", "don't create cache of scanned input directory"),
     Commandline::Option("only-files", "pattern", "only use zip members matching shell glob pattern"),
     Commandline::Option("output", 'o', "dbfile", "write to database dbfile (default: mame.db)"),
@@ -161,6 +162,12 @@ main(int argc, char **argv) {
 		auto repository = DatRepository(configuration.dat_directories);
 
 		for (const auto& dat : repository.list_dats()) {
+		    printf("%s\n", dat.c_str());
+		}
+		exit(0);
+	    }
+	    else if (option.name == "list-dats") {
+		for (const auto& dat : configuration.dats) {
 		    printf("%s\n", dat.c_str());
 		}
 		exit(0);
