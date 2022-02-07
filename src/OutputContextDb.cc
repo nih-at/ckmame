@@ -50,10 +50,12 @@ struct fbh_context {
 OutputContextDb::OutputContextDb(const std::string &dbname, int flags) :
 									 file_name(dbname),
 									 ok(true) {
-    temp_file_name = file_name + "-mkmammedb";
+    temp_file_name = file_name + "-mkmamedb";
     if (configuration.use_temp_directory) {
 	auto tmpdir = getenv("TMPDIR");
-	temp_file_name = std::string(tmpdir ? tmpdir : "/tmp") + "/" + temp_file_name;
+	std::filesystem::path basename = temp_file_name;
+	basename = basename.filename();
+	temp_file_name = std::string(tmpdir ? tmpdir : "/tmp") + "/" + basename.string();
     }
     temp_file_name = make_unique_name(temp_file_name, "");
 
