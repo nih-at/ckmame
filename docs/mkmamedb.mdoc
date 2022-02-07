@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd February 3, 2022
+.Dd February 7, 2022
 .Dt MKMAMEDB 1
 .Os
 .Sh NAME
@@ -34,7 +34,7 @@
 .Nd create database for use by ckmame
 .Sh SYNOPSIS
 .Nm
-.Op Fl htuV
+.Op Fl fhtuV
 .Op Fl C Ar types
 .Op Fl F Ar format
 .Op Fl o Ar dbfile
@@ -42,6 +42,7 @@
 .Op Fl Fl detector Ar xml\-file
 .Op Fl Fl directory\-cache
 .Op Fl Fl exclude Ar pattern
+.op Fl Fl force
 .Op Fl Fl format Ar format
 .Op Fl Fl hash\-types Ar types
 .Op Fl Fl help
@@ -153,6 +154,8 @@ database), and
 .Xr ( mtree 8
 file).
 The default is cm.
+.It Fl f , Fl Fl force
+Create database even if it is not out-of-date.
 .It Fl h , Fl Fl help
 Display a short help message.
 .It Fl Fl no\-directory\-cache
