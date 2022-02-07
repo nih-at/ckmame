@@ -252,7 +252,7 @@ void update_game_status(const Game *game, Result *result) {
             /* TODO: using configuration.report_detailed here is a bit of a hack,
                but so is all of the result->game processing */
             /* TODO: with report_detailed, we don't want a summary anyway. */
-            if (match->quality != Match::OK && (rom.status != Rom::NO_DUMP || (configuration.report_detailed))) {
+            if (match->quality != Match::OK && (rom.status != Rom::NO_DUMP || configuration.report_no_good_dump || (configuration.report_detailed))) {
                 all_correct = false;
             }
         }

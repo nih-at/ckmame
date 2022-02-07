@@ -95,6 +95,7 @@ public:
     bool report_detailed; /* one line for each ROM */
     bool report_fixable; /* report ROMs that are not correct but can be fixed */
     bool report_missing; /* report missing ROMs with good dumps, one line per game if no own ROM found */
+    bool report_no_good_dump; /* report ROMs that are not correct and can not be fixed */
     bool report_summary; /* print statistics about ROM set at end of run */
     std::string rom_db;
     std::string rom_directory;

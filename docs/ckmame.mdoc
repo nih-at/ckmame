@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd February 3, 2022
+.Dd February 7, 2022
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -58,12 +58,14 @@
 .Op Fl Fl no-report-detailed
 .Op Fl Fl no-report-fixable
 .Op Fl Fl no-report-missing
+.Op Fl Fl no-report-no-good-dump
 .Op Fl Fl no-report-summary
 .Op Fl Fl old-db Ar dbfile
 .Op Fl Fl report-correct
 .Op Fl Fl report-detailed
 .Op Fl Fl report-fixable
 .Op Fl Fl report-missing
+.Op Fl Fl report-no-good-dump
 .Op Fl Fl report-summary
 .Op Fl Fl rom-db Ar dbfile
 .Op Fl Fl rom-directory Ar dir
@@ -190,6 +192,8 @@ Don't report status of every ROM (default).
 Don't report status of ROMs that can be fixed.
 .It Fl Fl no-report-missing
 Don't report status of ROMs that are missing.
+.It Fl Fl no-report-no-good-dump
+Don't report status of ROMs for which no good dump exists (default).
 .It Fl Fl no-report-summary
 Don't print summary of ROM set status (default).
 .It Fl O , Fl Fl old-db Ar dbfile
@@ -208,6 +212,8 @@ Report status of every ROM that is checked.
 Report status of ROMs that can be fixed (default).
 .It Fl Fl report-missing
 Report status of ROMs that are missing (default).
+.It Fl Fl report-no-good-dump
+Report status of ROMs for which no good dump exists.
 .It Fl Fl report-summary
 Print summary of ROM set status at the end of the output.
 .It Fl Fl save-directory Ar dir

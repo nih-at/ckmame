@@ -84,6 +84,7 @@ std::unordered_set<std::string> used_variables = {
     "report_detailed",
     "report_fixable",
     "report_missing",
+    "report_no_good_dump",
     "report_summary",
     "rom_db",
     "rom_directory",

@@ -86,6 +86,7 @@ std::unordered_map<std::string, Configuration::VariableType> Configuration::vari
     { "report-detailed", BOOL },
     { "report-fixable", BOOL },
     { "report-missing", BOOL },
+    { "report-no-good-dump", BOOL },
     { "report-summary", BOOL },
     { "rom-directory", STRING },
     { "rom-db", STRING },
@@ -114,12 +115,14 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("no-report-detailed", "don't report status of every ROM (default)"),
     Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
     Commandline::Option("no-report-missing", "don't report status of ROMs that are missing"),
+    Commandline::Option("no-report-no-good-dump", "don't report status of ROMs for which no good dump exists (default)"),
     Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
     Commandline::Option("old-db", 'O', "dbfile", "use database dbfile for old ROMs"),
     Commandline::Option("report-correct", 'c', "report status of ROMs that are correct"),
     Commandline::Option("report-detailed", "report status of every ROM"),
     Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)"),
     Commandline::Option("report-missing", "report status of ROMs that are missing (default)"),
+    Commandline::Option("report-no-good-dump", "report status of ROMs for which no good dump exists"),
     Commandline::Option("report-summary", "print summary of ROM set status"),
     Commandline::Option("rom-db", 'D', "dbfile", "use ROM database dbfile"),
     Commandline::Option("rom-directory", 'R', "dir", "ROM set is in directory dir (default: 'roms')"),
@@ -142,6 +145,7 @@ std::unordered_map<std::string, std::string> Configuration::option_to_variable =
     { "no-report-fixable", "report_fixable" },
     { "no-report-missing", "report_missing" },
     { "no-report-summary", "report_summary" },
+    { "no-report-no-good-dump", "report_no_good_dump" },
     { "roms-unzipped", "roms_zipped" }
 };
 
@@ -193,6 +197,7 @@ Configuration::Configuration() :
     	report_detailed(false),
     	report_fixable(true),
     	report_missing(true),
+	report_no_good_dump(false),
     	report_summary(false),
     	rom_db(RomDB::default_name()),
     	rom_directory("roms"),
@@ -359,6 +364,9 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	else if (option.name == "no-report-summary") {
 	    report_summary = false;
 	}
+	else if (option.name == "no-report-no-good-dump") {
+	    report_no_good_dump = false;
+	}
 	else if (option.name == "old-db") {
 	    old_db = option.argument;
 	}
@@ -376,6 +384,9 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	}
 	else if (option.name == "report-summary") {
 	    report_summary = true;
+	}
+	else if (option.name == "report-no-good-dump") {
+	    report_no_good_dump = true;
 	}
 	else if (option.name == "rom-db") {
 	    rom_db = option.argument;
@@ -448,6 +459,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer, const s
     set_bool(table, "report-fixable", report_fixable);
     set_bool(table, "report-missing", report_missing);
     set_bool(table, "report-summary", report_summary);
+    set_bool(table, "report-no-good-dump", report_no_good_dump);
     set_string(table, "rom-directory", rom_directory);
     set_bool(table, "roms-zipped", roms_zipped);
     set_string(table, "saved-directory", saved_directory);
