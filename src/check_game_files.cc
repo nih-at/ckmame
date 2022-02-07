@@ -225,10 +225,10 @@ static test_result_t match_files(const ArchivePtr& archive, test_t test, const G
 
 
 void update_game_status(const Game *game, Result *result) {
-    bool all_dead, all_own_dead, all_correct, all_fixable, has_own;
+    bool all_dead, all_own_dead, all_correct, all_fixable;
 
     all_own_dead = all_dead = all_correct = all_fixable = true;
-    has_own = false;
+    auto has_own = false;
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
@@ -249,10 +249,7 @@ void update_game_status(const Game *game, Result *result) {
                     all_own_dead = false;
                 }
             }
-            /* TODO: using configuration.report_detailed here is a bit of a hack,
-               but so is all of the result->game processing */
-            /* TODO: with report_detailed, we don't want a summary anyway. */
-            if (match->quality != Match::OK && (rom.status != Rom::NO_DUMP || configuration.report_no_good_dump || (configuration.report_detailed))) {
+	    if (match->quality != Match::OK && (rom.status == Rom::OK || configuration.report_no_good_dump)) {
                 all_correct = false;
             }
         }
