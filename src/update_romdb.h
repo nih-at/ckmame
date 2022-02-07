@@ -34,6 +34,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-void update_romdb();
+void update_romdb(bool force = false);
 
 #endif // CKMAME_UPDATE_ROMDB_H

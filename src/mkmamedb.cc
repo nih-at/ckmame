@@ -62,6 +62,7 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("detector", "xml-file", "use header detector"),
     Commandline::Option("directory-cache", "create cache of scanned input directory (default)"),
     Commandline::Option("exclude", 'x', "pattern", "exclude games matching shell glob pattern"),
+    Commandline::Option("force", 'f', "recreate ROM database even if it is not out of date"),
     Commandline::Option("format", 'F', "format", "specify output format (default: db)"),
     Commandline::Option("hash-types", 'C', "types", "specify hash types to compute (default: all)"),
     Commandline::Option("list-available-dats", "list all dats found in dat-directories"),
@@ -109,6 +110,7 @@ main(int argc, char **argv) {
     cache_directory = true;
     flags = 0;
     parser_flags = 0;
+    auto force = false;
 
     fmt = OutputContext::FORMAT_DB;
     hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
@@ -132,6 +134,9 @@ main(int argc, char **argv) {
 	    }
 	    else if (option.name == "exclude") {
 		exclude.insert(option.argument);
+	    }
+	    else if (option.name == "force") {
+		force = true;
 	    }
 	    else if (option.name == "format") {
 		if (option.argument == "cm") {
@@ -233,7 +238,7 @@ main(int argc, char **argv) {
 	}
 	else {
 	    try {
-		update_romdb();
+		update_romdb(force);
 	    } catch (Exception &ex) {
 		myerror(ERRDEF, "can't update ROM database: %s", ex.what());
 		exit(1);

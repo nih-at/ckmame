@@ -98,14 +98,14 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
 }
 
 
-void update_romdb() {
+void update_romdb(bool force) {
     if (configuration.dats.empty() || configuration.dat_directories.empty()) {
 	return;
     }
 
     std::vector<DatDB::DatInfo> dats_to_use;
 
-    if (is_romdb_up_to_date(dats_to_use)) {
+    if (is_romdb_up_to_date(dats_to_use) && !force) {
 	return;
     }
 
