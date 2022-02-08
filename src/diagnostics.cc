@@ -206,7 +206,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                     }
                 }
                 else {
-                    if (configuration.report_no_good_dump || configuration.report_detailed) {
+                    if ((configuration.report_correct && configuration.report_no_good_dump) || configuration.report_detailed) {
                         warn_game_file(ft, &rom, rom.status == Rom::BAD_DUMP ? "best bad dump" : "exists");
                     }
                 }
