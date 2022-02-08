@@ -193,7 +193,7 @@ Don't report status of ROMs that can be fixed.
 .It Fl Fl no-report-missing
 Don't report status of ROMs that are missing.
 .It Fl Fl no-report-no-good-dump
-Don't report status of missing ROMs for which no good dump exists (default).
+Don't report status of ROMs for which no good dump exists (default).
 .It Fl Fl no-report-summary
 Don't print summary of ROM set status (default).
 .It Fl O , Fl Fl old-db Ar dbfile
@@ -213,7 +213,11 @@ Report status of ROMs that can be fixed (default).
 .It Fl Fl report-missing
 Report status of ROMs that are missing (default).
 .It Fl Fl report-no-good-dump
-Report status of missing ROMs for which no good dump exists.
+Report status of ROMs for which no good dump exists.
+This only has an effect with
+.Fl Fl report-correct
+or
+.Fl Fl report-missing .
 .It Fl Fl report-summary
 Print summary of ROM set status at the end of the output.
 .It Fl Fl save-directory Ar dir
