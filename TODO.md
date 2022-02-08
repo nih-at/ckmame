@@ -16,7 +16,6 @@
 - Don’t copy files from some extra directories to saved.
 - Add `ckmame` option to update ROM database and check only if changed.
 - Add `ckmame` option create file with list of complete/incomplete games.
-- Parser: add ` (N)` to games with duplicate names, still issue warning.
 - `dumpgame` use command line options instead of `/` special keys.
 - Don’t create empty fixdat files.
 - Add option to run command once for each set.

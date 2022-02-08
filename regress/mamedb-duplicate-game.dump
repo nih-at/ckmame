@@ -76,6 +76,8 @@
 28|0|31|1F|<null>|0|0|2|406581736|<null>|<null>
 29|0|0|16.rom|<null>|0|0|16|305419896|<null>|<null>
 29|1|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
+30|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
+30|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
 >>> table game (game_id, name, parent, description, dat_idx)
 1|1-4|<null>|one four byte file|0
 2|1-8|<null>|one eight byte file|0
@@ -106,5 +108,6 @@
 27|zerobadcrc|<null>|game with 0 byte rom, impossible CRC|0
 28|many|<null>|game with many (32) roms|0
 29|disk-same|<null>|some non-existent 16 byte rom with disk|0
+30|clone-8 (1)|<null>|two roms, one in parent|1
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

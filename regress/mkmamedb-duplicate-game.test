@@ -6,5 +6,5 @@ file mamedb.dat mamedb-disk-many.dat mamedb-disk-many.dat
 file mamedb-lost-parent-ok.dat mamedb-lost-parent-ok.dat mamedb-lost-parent-ok.dat
 file-new mamedb-test.db mamedb-duplicate-game.dump
 stderr-data
-duplicate game 'clone-8' skipped
+warning: duplicate game 'clone-8', renamed to 'clone-8 (1)'
 end-of-data

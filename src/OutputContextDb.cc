@@ -187,10 +187,19 @@ bool OutputContextDb::detector(Detector *detector) {
 
 bool OutputContextDb::game(GamePtr game) {
     auto g2 = db->read_game(game->name);
-    
+
     if (g2) {
-        myerror(ERRDEF, "duplicate game '%s' skipped", game->name.c_str());
-	return false;
+	std::string name;
+	size_t n = 1;
+	while (true) {
+	    name = game->name + " (" + std::to_string(n) + ")";
+	    if (db->read_game(name) == nullptr) {
+		break;
+	    }
+	    n += 1;
+	}
+	myerror(ERRDEF, "warning: duplicate game '%s', renamed to '%s'", game->name.c_str(), name.c_str());
+	game->name = name;
     }
 
     game->dat_no = static_cast<unsigned int>(dat.size() - 1);
