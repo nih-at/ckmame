@@ -1,10 +1,47 @@
-- warn about unknown keywords in config
+## config
 
-- warn about incorrectly typed arguments in config
+### Implement
 
-- make DB format agnostic
+- `mkmamedb`: Update ROM database even if warnings are encountered.
+- Parser: header is not set if dat contains no games.
+- Add error messages for detector parse errors.
+- Add option to have `ckmame` update ROM database before checking ROMs
+- Create fixdat-directory if it doesn’t exist.
+- Option to add suffix to game names in dat (so multiple dats with duplicate names can be joined).
+- Add option to use description as game name (for more meaningful file names in M.E.S.S. sets).
+- Auto-fix cue sheet when renaming track 1.
+- Variables in config file (e.g. for collection root directory).
+- Allow options for single dat, extra-directory: `{ “name”: { options…}, “name2”: {} }` (still allow array-of-strings syntax if no per-entry options are needed).
+- Make move-from-extra per-directory
+- Don’t copy files from some extra directories to saved.
+- Add `ckmame` option to update ROM database and check only if changed.
+- Add `ckmame` option create file with list of complete/incomplete games.
+- Parser: add ` (N)` to games with duplicate names, still issue warning.
+- `dumpgame` use command line options instead of `/` special keys.
+- Don’t create empty fixdat files.
+- Add option to run command once for each set.
+- Make `SIGINFO` handler print set name.
+
+### Write Tests
+
+- `mkmamedb --force`
+- configuration option `report-no-good-dump`
+- configuration option `needed-directory`
+- configuration option `saved-directory`
+- `mkmamedb —list-available-dats`
+- `DatRepository`: warn if directory doesn’t exist.
+- Don’t Check/read detector when parsing header_only.
+- Add ` (numbered)` to dat name if dat version begins with `#`.
+- `mkmamedb -` for reading from stdin.
+- `mkmamedb` with out arguments: exit with error if no dats configured.
+- Better check for determining input file type.
+
+
+## other
 
 - Add test for `mkmamedb -F cm`.
+
+- Make `SIGINFO` handler more responsive.
 
 - handle multiple writers to ckmamedb
 - search loose files in zipped mode.
@@ -191,4 +228,3 @@ other features:
 - split ckmamedb file table in (archive_id, file_number, name) and (archive_id, file_number, detector_uuid, size, hashes)
 - when entering archives in map, compute hashes for all needed detectors
 - when searching in ckmamedb, pass in which detector to use (or none)
-
