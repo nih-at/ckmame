@@ -2,6 +2,7 @@
 
 ### Implement
 
+- `ckmame`: do not create `roms/` if no database found
 - `mkmamedb`: Update ROM database even if warnings are encountered.
 - Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
