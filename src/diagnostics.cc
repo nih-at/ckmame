@@ -180,7 +180,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
         
         switch (match.quality) {
             case Match::MISSING:
-                if ((configuration.report_missing && rom.status != Rom::NO_DUMP) || configuration.report_no_good_dump || configuration.report_detailed) {
+                if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) || configuration.report_detailed) {
                     warn_game_file(ft, &rom, "missing");
                 }
                 break;
