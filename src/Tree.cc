@@ -38,7 +38,7 @@
 #include "diagnostics.h"
 #include "error.h"
 #include "fix.h"
-#include "fixdat.h"
+#include "Fixdat.h"
 #include "globals.h"
 #include "RomDB.h"
 #include "sighandle.h"
@@ -189,8 +189,8 @@ void Tree::process(GameArchives *archives) {
     }
 
     /* TODO: includes too much when rechecking */
-    if (fixdat) {
-	write_fixdat_entry(game.get(), &res);
+    if (configuration.create_fixdat) {
+	Fixdat::write_entry(game.get(), &res);
     }
 
     if (ret != 1) {

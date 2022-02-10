@@ -18,7 +18,6 @@
 - Add `ckmame` option to update ROM database and check only if changed.
 - Add `ckmame` option create file with list of complete/incomplete games.
 - `dumpgame` use command line options instead of `/` special keys.
-- Don’t create empty fixdat files.
 - Add option to run command once for each set.
 - Make `SIGINFO` handler print set name.
 
@@ -120,7 +119,6 @@
   ```
 + [feature] `mkmamedb`: parser for mtree files
 + [feature] server mode: tell location/mamedb of ROM sets, serves files needed by remote `ckmame` client
-+ [cleanup] `ckmame`: create fixdat only when necessary
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
 + [feature] get needed files directly from parent (`inparent.test`)
 + [feature] inconsistent zip in ROM set: copy files to new zip

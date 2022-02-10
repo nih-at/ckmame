@@ -45,7 +45,7 @@ set(COMMON_SOURCES
   find.cc
   fix.cc
   fix_util.cc
-  fixdat.cc
+  Fixdat.cc
   Garbage.cc
   globals.cc
   Hashes.cc

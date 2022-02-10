@@ -1,5 +1,5 @@
 /*
-  fixdat.cc -- write fixdat
+  Fixdat.cc -- write fixdat
   Copyright (C) 2012-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -31,12 +31,34 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "fixdat.h"
+#include "Fixdat.h"
 
-OutputContextPtr fixdat;
+#include "globals.h"
+#include "RomDB.h"
+#include "util.h"
 
-void
-write_fixdat_entry(const Game *game, const Result *result) {
+std::vector<Fixdat> Fixdat::fixdats;
+
+void Fixdat::begin() {
+    auto dats = db->read_dat();
+
+    for (const auto& dat : dats) {
+	fixdats.emplace_back(dat);
+    }
+}
+
+void Fixdat::end() {
+    fixdats.clear();
+}
+
+void Fixdat::write_entry(const Game *game, const Result *result) {
+    fixdats[game->dat_no].write(game, result);
+}
+
+void Fixdat::write(const Game *game, const Result *result) {
+    if (failed) {
+	return;
+    }
     if (result->game != GS_MISSING && result->game != GS_PARTIAL) {
 	return;
     }
@@ -66,6 +88,42 @@ write_fixdat_entry(const Game *game, const Result *result) {
     }
 
     if (!empty) {
-	fixdat->game(gm);
+	if (ensure_output()) {
+	    output->game(gm);
+	}
     }
+}
+
+bool Fixdat::ensure_output() {
+    if (output) {
+	return true;
+    }
+
+    if (failed) {
+	return false;
+    }
+
+    auto fixdat_fname = "fixdat_" + dat.name + " (" + dat.version + ").dat";
+    if (!configuration.fixdat_directory.empty()) {
+	fixdat_fname = configuration.fixdat_directory + "/" + fixdat_fname;
+    }
+
+    DatEntry de;
+
+    de.name = "Fixdat for " + dat.name + " (" + dat.version + ")";
+    de.description = "Fixdat by ckmame";
+    de.version = format_time("%Y-%m-%d %H:%M:%S", time(nullptr));
+
+    if ((output = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, fixdat_fname, 0)) == nullptr) {
+	failed = true;
+	return false;
+    }
+
+    if (!output->header(&de)) {
+	output = nullptr;
+	failed = true;
+	return false;
+    }
+
+    return true;
 }

@@ -2,8 +2,8 @@
 #define _HAD_FIXDAT_H
 
 /*
-  fixdat.h -- write fixdat
-  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
+  Fixdat.h -- write Fixdat
+  Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to fixdat rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -37,8 +37,25 @@
 #include "OutputContext.h"
 #include "Result.h"
 
-extern OutputContextPtr fixdat;
+class Fixdat {
+  public:
+    static void begin();
+    static void end();
+    static void write_entry(const Game *game, const Result *result);
 
-void write_fixdat_entry(const Game *game, const Result *result);
+    explicit Fixdat(DatEntry dat) : dat(std::move(dat)), failed(false) { }
+
+  private:
+    static std::vector<Fixdat> fixdats;
+
+    void write(const Game *game, const Result *result);
+
+    bool ensure_output();
+
+    DatEntry dat;
+    OutputContextPtr output;
+    bool failed;
+};
+
 
 #endif /* _HAD_FIXDAT_H */

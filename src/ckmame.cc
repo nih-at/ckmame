@@ -36,8 +36,6 @@
 #include <filesystem>
 #include <string>
 
-#include <ctime>
-
 #include "compat.h"
 #include "config.h"
 
@@ -48,7 +46,7 @@
 #include "Configuration.h"
 #include "error.h"
 #include "Exception.h"
-#include "fixdat.h"
+#include "Fixdat.h"
 #include "globals.h"
 #include "MemDB.h"
 #include "RomDB.h"
@@ -104,7 +102,7 @@ main(int argc, char **argv) {
 	int found;
 	std::string game_list;
 	std::vector<std::string> arguments;
-		
+
 	auto commandline = Commandline(options, "[game ...]", help_head, help_footer, version_string);
 
 	Configuration::add_options(commandline, used_variables);
@@ -125,10 +123,9 @@ main(int argc, char **argv) {
 		    // TODO: report unhandled option
 		}
 	    }
-	    
+
 	    arguments = args.arguments;
-	}
-	catch (Exception &ex) {
+	} catch (Exception &ex) {
 	    myerror(ERRDEF, "%s", ex.what());
 	    exit(1);
 	}
@@ -158,49 +155,24 @@ main(int argc, char **argv) {
 		}
 		CkmameDB::register_directory(name);
 	    }
-	}
-	catch (Exception &exception) {
+	} catch (Exception &exception) {
 	    exit(1);
 	}
 
 	try {
 	    db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
-	}
-	catch (std::exception &e) {
+	} catch (std::exception &e) {
 	    myerror(0, "can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
 	    exit(1);
 	}
 	try {
 	    old_db = std::make_unique<RomDB>(configuration.old_db, DBH_READ);
-	}
-	catch (std::exception &e) {
+	} catch (std::exception &e) {
 	    /* TODO: check for errors other than ENOENT */
 	}
 
 	if (configuration.create_fixdat) {
-	    DatEntry de;
-
-	    auto d = db->read_dat();
-
-	    if (d.empty()) {
-		myerror(ERRDEF, "database error reading /dat");
-		exit(1);
-	    }
-
-	    auto fixdat_fname = "fixdat_" + d[0].name + " (" + d[0].version + ").dat";
-	    if (!configuration.fixdat_directory.empty()) {
-		fixdat_fname = configuration.fixdat_directory + "/" + fixdat_fname;
-	    }
-
-	    de.name = "Fixdat for " + d[0].name + " (" + d[0].version + ")";
-	    de.description = "Fixdat by ckmame";
-	    de.version = format_time("%Y-%m-%d %H:%M:%S", time(nullptr));
-
-	    if ((fixdat = OutputContext::create(OutputContext::FORMAT_DATAFILE_XML, fixdat_fname, 0)) == nullptr) {
-		exit(1);
-	    }
-
-	    fixdat->header(&de);
+	    Fixdat::begin();
 	}
 
 	if (!configuration.roms_zipped && db->has_disks() == 1) {
@@ -210,11 +182,10 @@ main(int argc, char **argv) {
 
 	/* build tree of games to check */
 	std::vector<std::string> list;
-	
+
 	try {
 	    list = db->read_list(DBH_KEY_LIST_GAME);
-	}
-	catch (Exception &e) {
+	} catch (Exception &e) {
 	    myerror(ERRDEF, "list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
 	    exit(1);
 	}
@@ -264,7 +235,7 @@ main(int argc, char **argv) {
 		}
 		else {
 		    found = 0;
-		    for (const auto & j : list) {
+		    for (const auto &j : list) {
 			if (fnmatch(argument.c_str(), j.c_str(), 0) == 0) {
 			    check_tree.add(j);
 			    found = 1;
@@ -277,7 +248,7 @@ main(int argc, char **argv) {
 	}
 
 	MemDB::ensure();
-	
+
 	if (!superfluous_delete_list) {
 	    superfluous_delete_list = std::make_shared<DeleteList>();
 	}
@@ -287,9 +258,9 @@ main(int argc, char **argv) {
 	    ensure_extra_maps(DO_MAP | DO_LIST);
 	}
 
-    #ifdef SIGINFO
+#ifdef SIGINFO
 	signal(SIGINFO, sighandle);
-    #endif
+#endif
 
 	check_tree.traverse();
 	check_tree.traverse(); /* handle rechecks */
@@ -305,8 +276,8 @@ main(int argc, char **argv) {
 	    cleanup_list(needed_delete_list, CLEANUP_UNKNOWN, true);
 	}
 
-	if (fixdat) {
-	    fixdat->close();
+	if (configuration.create_fixdat) {
+	    Fixdat::end();
 	}
 
 	if (configuration.fix_romset && configuration.move_from_extra) {
@@ -316,13 +287,13 @@ main(int argc, char **argv) {
 	if (arguments.empty()) {
 	    print_superfluous(superfluous_delete_list);
 	}
-	
+
 	if (configuration.report_summary) {
 	    stats.print(stdout, false);
 	}
 
 	CkmameDB::close_all();
-	
+
 	if (configuration.fix_romset) {
 	    std::error_code ec;
 	    std::filesystem::remove(configuration.saved_directory, ec);
