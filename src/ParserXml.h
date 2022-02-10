@@ -88,6 +88,7 @@ public:
     static XmlProcessor::CallbackStatus parse_game_end(void *ctx, [[maybe_unused]] const void *args);
     static XmlProcessor::CallbackStatus parse_game_name(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
     static XmlProcessor::CallbackStatus parse_game_start(void *ctx, [[maybe_unused]] const void *args);
+    static XmlProcessor::CallbackStatus parse_header_end(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args);
     static XmlProcessor::CallbackStatus parse_mame_build(void *context, const void *arguments, const std::string &value);
     static XmlProcessor::CallbackStatus parse_prog_description(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
     static XmlProcessor::CallbackStatus parse_prog_header(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);

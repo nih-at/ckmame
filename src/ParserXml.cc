@@ -149,12 +149,21 @@ XmlProcessor::CallbackStatus ParserXml::parse_game_start(void *ctx, [[maybe_unus
     auto parser = static_cast<ParserXml *>(ctx);
 
     if (parser->header_only) {
-	// TODO: this shouldn't be necessary
-	parser->header_end();
 	return XmlProcessor::END;
     }
     
     return status(parser->game_start());
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_header_end(void *ctx, [[maybe_unused]] const void *args) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    auto ok = parser->header_end();
+    if (ok && parser->header_only) {
+	return XmlProcessor::END;
+    }
+    return status(ok);
 }
 
 
@@ -248,6 +257,7 @@ const std::unordered_map<std::string, XmlProcessor::Entity> ParserXml::entities 
     { "disk", XmlProcessor::Entity(attributes_disk, parse_file_start, parse_file_end, &arguments_disk) },
     { "game", XmlProcessor::Entity(attributes_game, parse_game_start, parse_game_end) },
     { "game/description", XmlProcessor::Entity(parse_game_description) },
+    { "header", XmlProcessor::Entity({}, nullptr, parse_header_end) },
     { "header/description", XmlProcessor::Entity(parse_prog_description) },
     { "header/name", XmlProcessor::Entity(parse_prog_name) },
     { "header/version", XmlProcessor::Entity(parse_prog_version) },
