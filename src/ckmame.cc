@@ -134,6 +134,23 @@ main(int argc, char **argv) {
 	    Archive::read_only_mode = true;
 	}
 
+	try {
+	    db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
+	} catch (std::exception &e) {
+	    myerror(0, "can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
+	    exit(1);
+	}
+	try {
+	    old_db = std::make_unique<RomDB>(configuration.old_db, DBH_READ);
+	} catch (std::exception &e) {
+	    /* TODO: check for errors other than ENOENT */
+	}
+
+	if (!configuration.roms_zipped && db->has_disks() == 1) {
+	    fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", getprogname());
+	    exit(1);
+	}
+
 	ensure_dir(configuration.rom_directory, false);
 	std::error_code ec;
 	rom_dir_normalized = std::filesystem::relative(configuration.rom_directory, "/", ec);
@@ -159,25 +176,8 @@ main(int argc, char **argv) {
 	    exit(1);
 	}
 
-	try {
-	    db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
-	} catch (std::exception &e) {
-	    myerror(0, "can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
-	    exit(1);
-	}
-	try {
-	    old_db = std::make_unique<RomDB>(configuration.old_db, DBH_READ);
-	} catch (std::exception &e) {
-	    /* TODO: check for errors other than ENOENT */
-	}
-
 	if (configuration.create_fixdat) {
 	    Fixdat::begin();
-	}
-
-	if (!configuration.roms_zipped && db->has_disks() == 1) {
-	    fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", getprogname());
-	    exit(1);
 	}
 
 	/* build tree of games to check */

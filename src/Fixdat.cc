@@ -105,6 +105,7 @@ bool Fixdat::ensure_output() {
 
     auto fixdat_fname = "fixdat_" + dat.name + " (" + dat.version + ").dat";
     if (!configuration.fixdat_directory.empty()) {
+	ensure_dir(configuration.fixdat_directory, false);
 	fixdat_fname = configuration.fixdat_directory + "/" + fixdat_fname;
     }
 

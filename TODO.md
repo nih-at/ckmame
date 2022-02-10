@@ -2,12 +2,10 @@
 
 ### Implement
 
-- `ckmame`: do not create `roms/` if no database found
 - `mkmamedb`: Update ROM database even if warnings are encountered.
 - Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
 - Add option to have `ckmame` update ROM database before checking ROMs
-- Create fixdat-directory if it doesn’t exist.
 - Option to add suffix to game names in dat (so multiple dats with duplicate names can be joined).
 - Add option to use description as game name (for more meaningful file names in M.E.S.S. sets).
 - Auto-fix cue sheet when renaming track 1.
@@ -23,6 +21,8 @@
 
 ### Write Tests
 
+- Create fixdat-directory if it doesn’t exist.
+- `ckmame`: do not create `roms/` if no database found
 - `mkmamedb --force`
 - configuration option `report-no-good-dump`
 - configuration option `needed-directory`
