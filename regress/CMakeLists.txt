@@ -103,6 +103,7 @@ add_custom_target(update-mamedb.dump
 set(XFAIL_TESTS
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
+  mkmamedb-list-available-dats-3.test
 )
 	      
 file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
