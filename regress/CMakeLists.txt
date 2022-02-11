@@ -104,6 +104,7 @@ set(XFAIL_TESTS
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
   mkmamedb-list-available-dats-3.test
+  mkmamedb-list-available-dats-4.test
 )
 	      
 file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
