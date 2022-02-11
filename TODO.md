@@ -3,6 +3,7 @@
 ### Implement
 
 - `mkmamedb`: Update ROM database even if warnings are encountered.
+- Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
 - Add option to have `ckmame` update ROM database before checking ROMs
 - Option to add suffix to game names in dat (so multiple dats with duplicate names can be joined).
