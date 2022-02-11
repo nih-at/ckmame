@@ -2,7 +2,7 @@
 
 ### Implement
 
-- `mkmamedb`: Update ROM database even if warnings are encountered.
+- Check parsers what should be considered a warning and what an error (causing database creation to fail).
 - Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
 - Add option to have `ckmame` update ROM database before checking ROMs
