@@ -18,6 +18,8 @@
 - `dumpgame` use command line options instead of `/` special keys.
 - Add option to run command once for each set.
 - Make `SIGINFO` handler print set name.
+- For read-only dat or extra directories, put cache database in central location.
+- Add (per entry) option for directories to put cache database in central location. 
 
 ### Write Tests
 
