@@ -71,6 +71,7 @@ set(COMMON_SOURCES
   sighandle.cc
   Stats.cc
   superfluous.cc
+  TomlSchema.cc
   Tree.cc
   update_romdb.cc
   util.cc

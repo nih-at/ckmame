@@ -47,6 +47,7 @@
 #endif
 
 #include "Commandline.h"
+#include "TomlSchema.h"
 
 class Configuration {
 public:
@@ -122,7 +123,8 @@ private:
         STRING
     };
 
-    static std::unordered_map<std::string, VariableType> variable_types;
+    static TomlSchema::TypePtr section_schema;
+    static TomlSchema::TypePtr file_schema;
 
     static std::vector<Commandline::Option> commandline_options;
     static std::unordered_map<std::string, std::string> option_to_variable;
@@ -137,9 +139,7 @@ private:
     void merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files);
     void merge_config_table(const toml::table *table, const std::vector<toml::table> &config_files);
 
-    static bool validate_file(const toml::table& table, const std::string& file_name) { return validate_tables(table, file_name + ":"); }
-    static bool validate_tables(const toml::table& table, const std::string& prefix);
-    static bool validate_table(const toml::table *table, const std::string &prefix);
+    static bool validate_file(const toml::table& table, const std::string& file_name);
 
     [[nodiscard]] std::string replace_variables(std::string string) const;
 };

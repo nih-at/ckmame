@@ -69,35 +69,41 @@ bool Configuration::read_config_file(std::vector<toml::table> &config_tables, co
 }
 
 
-std::unordered_map<std::string, Configuration::VariableType> Configuration::variable_types = {
-    { "complete-games-only", BOOL },
-    { "create-fixdat", BOOL },
-    { "dat-directories", ARRAY_OF_STRINGS },
-    { "dat-directories-append", ARRAY_OF_STRINGS },
-    { "dats", ARRAY_OF_STRINGS },
-    { "extra-directories", ARRAY_OF_STRINGS },
-    { "extra-directories-append", ARRAY_OF_STRINGS },
-    { "fixdat-directory", STRING },
-    { "keep-old-duplicate", BOOL },
-    { "move-from-extra", BOOL },
-    { "old-db", STRING },
-    { "profiles", ARRAY_OF_STRINGS },
-    { "report-correct", BOOL },
-    { "report-detailed", BOOL },
-    { "report-fixable", BOOL },
-    { "report-missing", BOOL },
-    { "report-no-good-dump", BOOL },
-    { "report-summary", BOOL },
-    { "rom-directory", STRING },
-    { "rom-db", STRING },
-    { "roms-zipped", BOOL },
-    { "saved-directory", STRING },
-    { "sets", ARRAY_OF_STRINGS },
-    { "sets-file", STRING },
-    { "unknown-directory", STRING },
-    { "use-temp-directory", BOOL },
-    { "verbose", BOOL }
-};
+TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table({
+    { "complete-games-only", TomlSchema::boolean() },
+    { "create-fixdat",  TomlSchema::boolean() },
+    { "dat-directories", TomlSchema::array(TomlSchema::string()) },
+    { "dat-directories-append", TomlSchema::array(TomlSchema::string()) },
+    { "dats", TomlSchema::array(TomlSchema::string()) },
+    { "extra-directories", TomlSchema::array(TomlSchema::string()) },
+    { "extra-directories-append", TomlSchema::array(TomlSchema::string()) },
+    { "fixdat-directory",  TomlSchema::string() },
+    { "keep-old-duplicate",  TomlSchema::boolean() },
+    { "move-from-extra",  TomlSchema::boolean() },
+    { "old-db", TomlSchema::string() },
+    { "profiles", TomlSchema::array(TomlSchema::string()) },
+    { "report-correct",  TomlSchema::boolean() },
+    { "report-detailed",  TomlSchema::boolean() },
+    { "report-fixable",  TomlSchema::boolean() },
+    { "report-missing",  TomlSchema::boolean() },
+    { "report-no-good-dump",  TomlSchema::boolean() },
+    { "report-summary",  TomlSchema::boolean() },
+    { "rom-directory", TomlSchema::string() },
+    { "rom-db", TomlSchema::string() },
+    { "roms-zipped",  TomlSchema::boolean() },
+    { "saved-directory", TomlSchema::string() },
+    { "sets", TomlSchema::array(TomlSchema::string()) },
+    { "sets-file", TomlSchema::string() },
+    { "unknown-directory", TomlSchema::string() },
+    { "use-temp-directory",  TomlSchema::boolean() },
+    { "verbose",  TomlSchema::boolean() }
+}, {}));
+
+
+TomlSchema::TypePtr Configuration::file_schema = std::move(TomlSchema::table({
+    { "profile", TomlSchema::table({}, section_schema) }
+}, section_schema));
+
 
 std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
@@ -533,84 +539,8 @@ std::string Configuration::replace_variables(std::string string) const {
 }
 
 
-bool Configuration::validate_tables(const toml::table& table, const std::string &prefix) {
-    auto ok = true;
+bool Configuration::validate_file(const toml::table& table, const std::string& file_name) {
+    auto validator = TomlSchema(file_schema);
 
-    for (const auto& pair : table) {
-	const auto& name = pair.first;
-	auto section_table = pair.second.as_table();
-
-	auto sub_prefix = prefix + name;
-
-	if (section_table == nullptr) {
-	    myerror(ERRDEF, "%s: expected table", sub_prefix.c_str());
-	    ok = false;
-	    continue;
-	}
-	if (name == "profile") {
-	    ok = validate_tables(*section_table, sub_prefix + ".") && ok;
-	}
-	else {
-	    ok = validate_table(section_table, sub_prefix) && ok;
-	}
-    }
-
-    return ok;
-}
-
-
-bool Configuration::validate_table(const toml::table *table, const std::string &prefix) {
-    auto ok = true;
-
-    for (const auto& pair : *table) {
-	const auto& name = pair.first;
-	const auto& value = pair.second;
-
-	auto it = variable_types.find(name);
-
-	if (it == variable_types.end()) {
-	    myerror(ERRDEF, "%s.%s: unknown variable", prefix.c_str(), name.c_str());
-	    ok = false;
-	    continue;
-	}
-
-	switch (it->second) {
-	case ARRAY_OF_STRINGS:
-	    if (!(value.is_array() && value.is_homogeneous(toml::node_type::string))) {
-		myerror(ERRDEF, "%s.%s: expected array of strings", prefix.c_str(), name.c_str());
-		ok = false;
-	    }
-	    break;
-
-	case BOOL:
-	    if (!value.is_boolean()) {
-		myerror(ERRDEF, "%s.%s: expected boolean", prefix.c_str(), name.c_str());
-		ok = false;
-	    }
-	    break;
-
-	case INTEGER:
-	    if (!value.is_integer()) {
-		myerror(ERRDEF, "%s.%s: expected integer", prefix.c_str(), name.c_str());
-		ok = false;
-	    }
-	    break;
-
-	case NUMBER:
-	    if (!value.is_number()) {
-		myerror(ERRDEF, "%s.%s: expected number", prefix.c_str(), name.c_str());
-		ok = false;
-	    }
-	    break;
-
-	case STRING:
-	    if (!value.is_string()) {
-		myerror(ERRDEF, "%s.%s: expected string", prefix.c_str(), name.c_str());
-		ok = false;
-	    }
-	    break;
-	}
-    }
-
-    return ok;
+    return validator.validate(table, file_name);
 }
