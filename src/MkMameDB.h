@@ -51,10 +51,10 @@ class MkMameDB : public Command {
     std::vector<std::string> file_patterns;
     std::unordered_set<std::string> skip_files;
     DatEntry dat;
+    int flags;
     OutputContext::Format fmt;
     std::string detector_name;
     bool force;
-    int flags;
     bool runtest;
 
     bool list_available_dats;
