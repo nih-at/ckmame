@@ -78,7 +78,7 @@ set(COMMON_SOURCES
   warn.cc
   zip_util.cc
   ${COMPATIBILITY}
-  )
+        Command.cc Command.h MkMameDB.h CkMame.h)
 
 set(LIBXML2_SOURCES
   detector_parse.cc

@@ -209,29 +209,37 @@ bool Configuration::option_used(const std::string &option_name, const std::unord
 }
 
 
-Configuration::Configuration() : 
-    	complete_games_only(false),
-	create_fixdat(false),
-    	keep_old_duplicate(false),
-    	move_from_extra(false),
-	old_db(RomDB::default_old_name()),
-    	report_correct(false),
-    	report_detailed(false),
-    	report_fixable(true),
-    	report_missing(true),
-	report_no_good_dump(false),
-    	report_summary(false),
-    	rom_db(RomDB::default_name()),
-    	rom_directory("roms"),
-    	roms_zipped(true),
-	saved_directory("saved"),
-	unknown_directory("unknown"),
-	use_description_as_name(false),
-	use_temp_directory(false),
-    	verbose(false),
-	warn_file_known(true),
-	warn_file_unknown(true),
-	fix_romset(false) {
+Configuration::Configuration() : fix_romset(false) {
+    reset();
+}
+
+void Configuration::reset() {
+    complete_games_only = false;
+    create_fixdat = false;
+    keep_old_duplicate = false;
+    move_from_extra = false;
+    old_db = RomDB::default_old_name();
+    report_correct = false;
+    report_detailed = false;
+    report_fixable = true;
+    report_missing = true;
+    report_no_good_dump = false;
+    report_summary = false;
+    rom_db = RomDB::default_name();
+    rom_directory = "roms";
+    roms_zipped = true;
+    saved_directory = "saved";
+    unknown_directory = "unknown";
+    use_description_as_name = false;
+    use_temp_directory = false;
+    verbose = false;
+    warn_file_known = true;
+    warn_file_unknown = true;
+    dat_directories.clear();
+    dats.clear();
+    extra_directories.clear();
+    fixdat_directory = "";
+
     auto value = getenv("MAMEDB");
     if (value != nullptr) {
 	rom_db = value;
@@ -243,27 +251,25 @@ Configuration::Configuration() :
 }
 
 
-void Configuration::merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files) {
+void Configuration::merge_config_file(const toml::table &file) {
     std::string string;
 
     auto global_table = file["global"].as_table();
     if (global_table != nullptr) {
-        merge_config_table(global_table, config_files);
+        merge_config_table(global_table);
     }
     
     if (!set.empty()) {
         auto set_table = file[set].as_table();
         
         if (set_table != nullptr) {
-            merge_config_table(set_table, config_files);
+            merge_config_table(set_table);
         }
     }
 }
 
 
 void Configuration::handle_commandline(const ParsedCommandline &args) {
-    std::vector<toml::table> config_files;
-
     auto ok = true;
 
     try {
@@ -276,8 +282,7 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 		ok = read_config_file(config_files, option.argument, false) && ok;
 	    }
 	}
-    }
-    catch (std::exception &ex) {
+    } catch (std::exception &ex) {
 	throw Exception(std::string(ex.what()));
     }
 
@@ -285,7 +290,7 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	exit(1);
     }
 
-    for (const auto& file : config_files) {
+    for (const auto &file : config_files) {
 	auto known_sets = file["global"]["sets"].as_array();
 	if (known_sets != nullptr) {
 	    for (const auto &value : *known_sets) {
@@ -316,23 +321,22 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 
 	exit(0);
     }
+}
 
-    for (const auto &option : args.options) {
-	if (option.name == "set") {
-	    set = option.argument;
-	    if (sets.find(set) == sets.end()) {
-		throw Exception("unknown set '" + set + "'");
-	    }
-	}
-    }
+
+
+void Configuration::prepare(const std::string &current_set, const ParsedCommandline &commandline) {
+    reset();
+
+    set = current_set;
 
     for (const auto& file : config_files) {
-	merge_config_file(file, config_files);
+	merge_config_file(file);
     }
 
     auto extra_directory_specified = false;
 
-    for (const auto &option : args.options) {
+    for (const auto &option : commandline.options) {
 	if (option.name == "complete-games-only") {
 	    complete_games_only = true;
 	}
@@ -439,7 +443,7 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 }
 
 
-void Configuration::merge_config_table(const toml::table *table_pointer, const std::vector<toml::table> &config_files) {
+void Configuration::merge_config_table(const toml::table *table_pointer) {
     const auto& table = *table_pointer;
 
     const auto profiles = table["profiles"].as_array();
@@ -458,7 +462,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer, const s
 		if (profile_table == nullptr) {
 		    continue;
 		}
-		merge_config_table(profile_table, config_files);
+		merge_config_table(profile_table);
 		found = true;
 	    }
 

@@ -78,6 +78,7 @@ public:
     static void add_options(Commandline &commandline, const std::unordered_set<std::string> &used_variables);
 
     void handle_commandline(const ParsedCommandline &commandline);
+    void prepare(const std::string& set, const ParsedCommandline& commandline);
 
     std::string dat_game_name_suffix(const std::string& dat);
     bool dat_use_description_as_name(const std::string& dat);
@@ -141,6 +142,7 @@ private:
 
     static bool option_used(const std::string &option_name, const std::unordered_set<std::string> &used_variables);
     static bool read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional);
+    void reset();
     static void set_bool(const toml::table &table, const std::string &name, bool &variable);
     static void set_bool_optional(const toml::table &table, const std::string &name, std::optional<bool>& variable);
     void set_string(const toml::table &table, const std::string &name, std::string &variable);
@@ -148,8 +150,8 @@ private:
     void set_string_vector(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);
     [[maybe_unused]] static void set_string_vector_from_file(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);
 
-    void merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files);
-    void merge_config_table(const toml::table *table, const std::vector<toml::table> &config_files);
+    void merge_config_file(const toml::table &file);
+    void merge_config_table(const toml::table *table);
 
     void merge_dats(const toml::table& table);
     void merge_extra_directories(const toml::table& table, const std::string& name, bool append);
@@ -157,6 +159,8 @@ private:
     static bool validate_file(const toml::table& table, const std::string& file_name);
 
     [[nodiscard]] std::string replace_variables(std::string string) const;
+
+    std::vector<toml::table> config_files;
 
     std::unordered_map<std::string, DatOptions> dat_options;
     std::unordered_map<std::string, ExtraDirectoryOptions> extra_directory_options;

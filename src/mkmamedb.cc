@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "MkMameDB.h"
+
 #include "config.h"
 #include "compat.h"
 
@@ -52,13 +54,7 @@
 #include "RomDB.h"
 #include "update_romdb.h"
 
-const char help_head[] = "mkmamedb (" PACKAGE ") by Dieter Baron and Thomas Klausner";
-const char help_footer[] = "Report bugs to " PACKAGE_BUGREPORT ".";
-
-char version_string[] = "mkmamedb (" PACKAGE " " VERSION ")\n"
-			"Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
-
-std::vector<Commandline::Option> options = {
+std::vector<Commandline::Option> mkmamedb_options = {
     Commandline::Option("detector", "xml-file", "use header detector"),
     Commandline::Option("directory-cache", "create cache of scanned input directory (default)"),
     Commandline::Option("exclude", 'x', "pattern", "exclude games matching shell glob pattern"),
@@ -77,7 +73,7 @@ std::vector<Commandline::Option> options = {
     Commandline::Option("skip-files", "pattern", "don't use zip members matching shell glob pattern")
 };
 
-std::unordered_set<std::string> used_variables = {
+std::unordered_set<std::string> mkmamedb_used_variables = {
     "dats", "dat_directories", "roms_zipped", "use_description_as_name", "use_temp_directory"
 };
 
@@ -90,123 +86,92 @@ static int hashtypes;
 static bool cache_directory;
 static Parser::Options parser_options;
 
-int
-main(int argc, char **argv) {
-    OutputContextPtr out;
-    std::string dbname, dbname_real;
-    std::unordered_set<std::string> exclude;
-    std::vector<std::string> file_patterns;
-    std::unordered_set<std::string> skip_files;
-    DatEntry dat;
-    OutputContext::Format fmt;
-    std::string detector_name;
-    int flags;
-    bool runtest;
-    int ret = 0;
+int main(int argc, char **argv) {
+    auto command = MkMameDB();
 
-    setprogname(argv[0]);
+    return command.run(argc, argv);
+}
 
-    runtest = false;
+
+MkMameDB::MkMameDB() : Command("mkmamedb", "[rominfo-file ...]", mkmamedb_options, mkmamedb_used_variables), flags(0), fmt(OutputContext::FORMAT_DB), force(false), runtest(false), list_available_dats(false), list_dats(false) {
+}
+
+
+void MkMameDB::setup(const ParsedCommandline &commandline) {
     cache_directory = true;
-    flags = 0;
-    auto force = false;
 
-    fmt = OutputContext::FORMAT_DB;
     hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
 
-    std::vector<std::string> arguments;
-    auto commandline = Commandline(options, "[rominfo-file ...]", help_head, help_footer, version_string);
-
-    Configuration::add_options(commandline, used_variables);
-
-    try {
-	auto args = commandline.parse(argc, argv);
-
-	configuration.handle_commandline(args);
-
-	for (const auto &option : args.options) {
-	    if (option.name == "detector") {
-		detector_name = option.argument;
+    for (const auto &option : commandline.options) {
+	if (option.name == "detector") {
+	    detector_name = option.argument;
+	}
+	else if (option.name == "directory-cache") {
+	    cache_directory = true;
+	}
+	else if (option.name == "exclude") {
+	    exclude.insert(option.argument);
+	}
+	else if (option.name == "force") {
+	    force = true;
+	}
+	else if (option.name == "format") {
+	    if (option.argument == "cm") {
+		fmt = OutputContext::FORMAT_CM;
 	    }
-	    else if (option.name == "directory-cache") {
-		cache_directory = true;
+	    else if (option.argument == "dat") {
+		fmt = OutputContext::FORMAT_DATAFILE_XML;
 	    }
-	    else if (option.name == "exclude") {
-		exclude.insert(option.argument);
+	    else if (option.argument == "db") {
+		fmt = OutputContext::FORMAT_DB;
 	    }
-	    else if (option.name == "force") {
-		force = true;
+	    else if (option.argument == "mtree") {
+		fmt = OutputContext::FORMAT_MTREE;
 	    }
-	    else if (option.name == "format") {
-		if (option.argument == "cm") {
-		    fmt = OutputContext::FORMAT_CM;
-		}
-		else if (option.argument == "dat") {
-		    fmt = OutputContext::FORMAT_DATAFILE_XML;
-		}
-		else if (option.argument == "db") {
-		    fmt = OutputContext::FORMAT_DB;
-		}
-		else if (option.argument == "mtree") {
-		    fmt = OutputContext::FORMAT_MTREE;
-		}
-		else {
-		    fprintf(stderr, "%s: unknown output format '%s'\n", getprogname(), option.argument.c_str());
-		    exit(1);
-		}
-	    }
-	    else if (option.name == "hash-types") {
-		hashtypes = Hashes::types_from_string(option.argument);
-		if (hashtypes == 0) {
-		    fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), option.argument.c_str());
-		    exit(1);
-		}
-	    }
-	    else if (option.name == "list-available-dats") {
-		auto repository = DatRepository(configuration.dat_directories);
-
-		for (const auto& dat : repository.list_dats()) {
-		    printf("%s\n", dat.c_str());
-		}
-		exit(0);
-	    }
-	    else if (option.name == "list-dats") {
-		for (const auto& dat : configuration.dats) {
-		    printf("%s\n", dat.c_str());
-		}
-		exit(0);
-	    }
-	    else if (option.name == "no-directory-cache") {
-		cache_directory = false;
-	    }
-	    else if (option.name == "only-files") {
-		file_patterns.push_back(option.argument);
-	    }
-	    else if (option.name == "output") {
-		dbname = option.argument;
-	    }
-	    else if (option.name == "prog-description") {
-		dat.description = option.argument;
-	    }
-	    else if (option.name == "prog-name") {
-		dat.name = option.argument;
-	    }
-	    else if (option.name == "prog-version") {
-		dat.version = option.argument;
-	    }
-	    else if (option.name == "runtest") {
-		runtest = true;
-	    }
-	    else if (option.name == "skip-files") {
-		skip_files.insert(option.argument);
+	    else {
+		fprintf(stderr, "%s: unknown output format '%s'\n", getprogname(), option.argument.c_str());
+		exit(1);
 	    }
 	}
-
-	arguments = args.arguments;
-    } catch (Exception &ex) {
-	myerror(ERRDEF, "%s", ex.what());
-	exit(1);
+	else if (option.name == "hash-types") {
+	    hashtypes = Hashes::types_from_string(option.argument);
+	    if (hashtypes == 0) {
+		fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), option.argument.c_str());
+		exit(1);
+	    }
+	}
+	else if (option.name == "list-available-dats") {
+	    list_available_dats = true;
+	}
+	else if (option.name == "list-dats") {
+	    list_dats = true;
+	}
+	else if (option.name == "no-directory-cache") {
+	    cache_directory = false;
+	}
+	else if (option.name == "only-files") {
+	    file_patterns.push_back(option.argument);
+	}
+	else if (option.name == "output") {
+	    dbname = option.argument;
+	}
+	else if (option.name == "prog-description") {
+	    dat.description = option.argument;
+	}
+	else if (option.name == "prog-name") {
+	    dat.name = option.argument;
+	}
+	else if (option.name == "prog-version") {
+	    dat.version = option.argument;
+	}
+	else if (option.name == "runtest") {
+	    runtest = true;
+	}
+	else if (option.name == "skip-files") {
+	    skip_files.insert(option.argument);
+	}
     }
+
 
     if (arguments.size() > 1 && !dat.name.empty()) {
 	fprintf(stderr,
@@ -214,8 +179,26 @@ main(int argc, char **argv) {
 		"--prog-name and --prog-version are ignored",
 		getprogname());
     }
+}
 
+bool MkMameDB::execute(const std::vector<std::string> &arguments) {
     parser_options.use_description_as_name = configuration.use_description_as_name;
+
+    if (list_available_dats) {
+	// TODO: store in set, output in cleanup() so every dat ist listed only once
+	auto repository = DatRepository(configuration.dat_directories);
+
+	for (const auto &dat : repository.list_dats()) {
+	    printf("%s\n", dat.c_str());
+	}
+	return true;
+    }
+    if (list_dats) {
+	for (const auto &dat : configuration.dats) {
+	    printf("%s\n", dat.c_str());
+	}
+	return true;
+    }
 
     if (runtest) {
 	fmt = OutputContext::FORMAT_MTREE;
@@ -230,7 +213,7 @@ main(int argc, char **argv) {
 
     if (arguments.empty()) {
 	if (!dbname.empty() || fmt != OutputContext::FORMAT_DB) {
-	    commandline.usage(false, stderr);
+	    //commandline.usage(false, stderr); TOOD
 	    exit(1);
 	}
 	else if (configuration.dats.empty() || configuration.dat_directories.empty()) {
@@ -252,7 +235,10 @@ main(int argc, char **argv) {
 	dbname = configuration.rom_db;
     }
 
+    auto ok = true;
+
     try {
+	OutputContextPtr out;
 	if ((out = OutputContext::create(fmt, dbname, flags)) == nullptr) {
 	    exit(1);
 	}
@@ -276,7 +262,7 @@ main(int argc, char **argv) {
 	    if (name == "-") {
 		if (!process_stdin(exclude, &dat, out.get())) {
 		    out->error_occurred();
-		    ret = 1;
+		    ok = false;
 		}
 	    }
 	    else {
@@ -290,25 +276,31 @@ main(int argc, char **argv) {
 
 		if (!process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags)) {
 		    out->error_occurred();
-		    ret = 1;
+		    ok = false;
 		}
 	    }
 	}
 
-	if (ret == 0) {
+	if (ok) {
 	    out->close();
 	}
 
-	if (!configuration.roms_zipped) {
-	    CkmameDB::close_all();
-	}
     }
     catch (const std::exception &exception) {
         fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), exception.what());
         exit(1);
     }
             
-    return ret;
+    return ok;
+}
+
+
+bool MkMameDB::cleanup() {
+    if (!configuration.roms_zipped) {
+	CkmameDB::close_all();
+    }
+
+    return true;
 }
 
 

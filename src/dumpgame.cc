@@ -31,6 +31,8 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "Dumpgame.h"
+
 #include <algorithm>
 #include <cerrno>
 #include <cinttypes>
@@ -58,24 +60,18 @@ static void print_clones(GamePtr game);
 static void print_dat(const DatEntry &de);
 static void print_hashtypes(int);
 
-const char *usage = "[game|checksum ...]";
-
-const char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and Thomas Klausner";
-const char help_footer[] = "Report bugs to " PACKAGE_BUGREPORT ".";
-const char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n\
-" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
-
-std::vector<Commandline::Option> options = {
+std::vector<Commandline::Option> dumpgame_options = {
     Commandline::Option("brief", 'b', "brief listing (omit ROM details)"),
     Commandline::Option("checksum", 'c', "find games containing ROMs or disks with given checksums"),
 };
 
-
-std::unordered_set<std::string> used_variables = {
+std::unordered_set<std::string> dumpgame_used_variables = {
     "rom_db"
 };
 
+Dumpgame::Dumpgame() : Command("dumpgame", "[game|checksum ...]", dumpgame_options, dumpgame_used_variables), first(true), found(false) {
+
+}
 
 static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 
@@ -168,125 +164,130 @@ static void print_matches(Hashes *hash) {
 
 
 int main(int argc, char **argv) {
-    auto find_checksum = false;
-    auto brief_mode = false;
+    auto command = Dumpgame();
 
-    setprogname(argv[0]);
+    return command.run(argc, argv);
+}
+
+
+void Dumpgame::setup(const ParsedCommandline &commandline) {
+    for (const auto &option : commandline.options) {
+	if (option.name == "brief") {
+	    brief_mode = true;
+	}
+	else if (option.name == "checksum") {
+	    find_checksum = true;
+	}
+    }
+
+    arguments = commandline.arguments;
+    found.resize(arguments.size(), false);
+}
+
+
+bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
+    try {
+	db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
+    } catch (std::exception &e) {
+	// TODO: catch exception for unsupported database version and report differently
+	myerror(0, "can't open database '%s': %s", configuration.rom_db.c_str(), strerror(errno));
+	return false;
+    }
+    seterrdb(db.get());
+
+    std::vector<std::string> list;
 
     try {
-	std::vector<std::string> arguments;
+	list = db->read_list(DBH_KEY_LIST_GAME);
+    } catch (Exception &e) {
+	myerror(ERRDEF, "list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
+	return false;
+    }
+    std::sort(list.begin(), list.end());
 
-	auto commandline = Commandline(options, usage, help_head, help_footer, version_string);
+    /* find matches for ROMs */
+    if (find_checksum) {
+	Hashes match;
 
-	Configuration::add_options(commandline, used_variables);
-
-	try {
-	    auto args = commandline.parse(argc, argv);
-
-	    configuration.handle_commandline(args);
-
-	    for (const auto &option : args.options) {
-		if (option.name == "brief") {
-		    brief_mode = true;
-		}
-		else if (option.name == "checksum") {
-		    find_checksum = true;
-		}
+	size_t index = 0;
+	for (const auto &argument : arguments) {
+	    if (match.set_from_string(argument) == -1) {
+		myerror(ERRDEF, "error parsing checksum '%s'", argument.c_str());
+		return false;
 	    }
 
-	    arguments = args.arguments;
+	    print_matches(&match);
+	    found[index] = true;
+	    index += 1;
 	}
-	catch (Exception &ex) {
-	    myerror(ERRDEF, "%s", ex.what());
-	    exit(1);
+	return true;
+    }
+
+    size_t index = 0;
+    for (const auto &argument : arguments) {
+	if (!is_pattern(argument)) {
+	    if (argument[0] == '/') {
+		if (first) {
+		    first = false;
+		}
+		else {
+		    putc('\n', stdout);
+		}
+		dump_special(argument.c_str());
+		found[index] = true;
+	    }
+	    else if (std::binary_search(list.begin(), list.end(), argument)) {
+		if (first) {
+		    first = false;
+		}
+		else {
+		    putc('\n', stdout);
+		}
+		found[index] = true;
+		dump_game(argument, brief_mode);
+	    }
 	}
-
-        try {
-            db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
-        }
-        catch (std::exception &e) {
-            // TODO: catch exception for unsupported database version and report differently
-            myerror(0, "can't open database '%s': %s", configuration.rom_db.c_str(), strerror(errno));
-            exit(1);
-        }
-        seterrdb(db.get());
-
-        std::vector<std::string> list;
-        
-        try {
-            list = db->read_list(DBH_KEY_LIST_GAME);
-        }
-        catch (Exception &e) {
-            myerror(ERRDEF, "list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
-            exit(1);
-        }
-        std::sort(list.begin(), list.end());
-
-        /* find matches for ROMs */
-        if (find_checksum) {
-            Hashes match;
-
-            for (auto i = optind; i < argc; i++) {
-                /* checksum */
-                if ((match.set_from_string(argv[i])) == -1) {
-                    myerror(ERRDEF, "error parsing checksum '%s'", argv[i]);
-                    exit(2);
-                }
-
-                print_matches(&match);
-            }
-            exit(0);
-        }
-
-        auto first = true;
-	auto found = false;
-
-        for (auto i = optind; i < argc; i++) {
-            if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-                if (argv[i][0] == '/') {
-                    if (first)
-                        first = false;
-                    else
-                        putc('\n', stdout);
-                    dump_special(argv[i]);
-                }
-                else if (std::binary_search(list.begin(), list.end(), argv[i])) {
-                    if (first)
-                        first = false;
-                    else
-                        putc('\n', stdout);
-                    dump_game(argv[i], brief_mode);
-                }
-                else
-                    myerror(ERRDEF, "game '%s' unknown", argv[i]);
-            }
-            else {
-                found = 0;
-                for (const auto &name : list) {
-                    if (fnmatch(argv[i], name.c_str(), 0) == 0) {
-                        if (first) {
-                            first = false;
-                        }
-                        else {
-                            putc('\n', stdout);
-                        }
-                        dump_game(name, brief_mode);
-                        found = true;
-                    }
-                }
-                if (!found)
-                    myerror(ERRDEF, "no game matching '%s' found", argv[i]);
-            }
-        }
-
-        db = nullptr;
-
-        return 0;
+	else {
+	    for (const auto &name : list) {
+		if (fnmatch(argument.c_str(), name.c_str(), 0) == 0) {
+		    if (first) {
+			first = false;
+		    }
+		    else {
+			putc('\n', stdout);
+		    }
+		    dump_game(name, brief_mode);
+		    found[index] = true;
+		}
+	    }
+	}
+	index += 1;
     }
-    catch (const std::exception &exception) {
-        fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), exception.what());
-        exit(1);
+
+    db = nullptr;
+
+    return true;
+}
+
+
+bool Dumpgame::cleanup() {
+    auto ok = true;
+
+    size_t index = 0;
+    for (const std::string& argument : arguments) {
+	if (!found[index]) {
+	    if (is_pattern(arguments[index])) {
+		myerror(ERRDEF, "no game matching '%s' found", argument.c_str());
+	    }
+	    else {
+		myerror(ERRDEF, "game '%s' not found", argument.c_str());
+	    }
+	    ok = false;
+	}
+	index += 1;
     }
+
+    return ok;
 }
 
 
@@ -490,4 +491,9 @@ print_hashtypes(int ht) {
     DO(ht, Hashes::TYPE_CRC, "crc");
     DO(ht, Hashes::TYPE_MD5, "md5");
     DO(ht, Hashes::TYPE_SHA1, "sha1");
+}
+
+
+bool Dumpgame::is_pattern(const std::string &string) {
+    return strcspn(string.c_str(), "*?[]{}") != string.length();
 }
