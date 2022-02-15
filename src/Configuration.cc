@@ -128,7 +128,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("report-detailed", "report status of every ROM"),
     Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)"),
     Commandline::Option("report-missing", "report status of ROMs that are missing (default)"),
-    Commandline::Option("report-no-good-dump", "report status of ROMs for which no good dump exists"),
+    Commandline::Option("report-no-good-dump", "don't suppress reporting status of ROMs for which no good dump exists"),
     Commandline::Option("report-summary", "print summary of ROM set status"),
     Commandline::Option("rom-db", 'D', "dbfile", "use ROM database dbfile"),
     Commandline::Option("rom-directory", 'R', "dir", "ROM set is in directory dir (default: 'roms')"),
