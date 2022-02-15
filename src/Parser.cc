@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <filesystem>
 #include <utility>
 
 #include "ParserCm.h"
@@ -526,8 +527,20 @@ void Parser::rom_end(filetype_t ft) {
                 break;
 	    }
             else {
-                myerror(ERRFILE, "%zu: two different roms with same name (%s)", lineno, r[ft]->name.c_str());
-                deleted = true;
+		std::string name;
+		size_t n = 1;
+		while (true) {
+		    auto path = std::filesystem::path(r[ft]->name);
+		    name = path.stem().string() + " (" + std::to_string(n) + ")" + path.extension().string();
+		    if (std::none_of(g->files[ft].begin(), g->files[ft].end(), [&name](const Rom& rom) {
+			return name == rom.name;
+		    })) {
+			break;
+		    }
+		    n += 1;
+		}
+                myerror(ERRFILE, "%zu: two different roms with same name '%s', renamed to '%s'", lineno, r[ft]->name.c_str(), name.c_str());
+		r[ft]->name = name;
                 break;
             }
 	}
