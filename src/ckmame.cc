@@ -159,6 +159,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 	}
     } catch (Exception &exception) {
 	// TODO: handle error
+	fprintf(stderr, "%s: %s\n", getprogname(), exception.what());
 	return false;
     }
 
