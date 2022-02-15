@@ -107,8 +107,8 @@ public:
     bool roms_zipped;
     std::string saved_directory;
     std::string unknown_directory;
-    bool use_temp_directory; // create RomDB in temporary directory, then move into place
     bool use_description_as_name; // in ROM database
+    bool use_temp_directory; // create RomDB in temporary directory, then move into place
     bool verbose; // print all actions taken to fix ROM set
 
     // TODO: Are these needed? They have no command line options.
