@@ -138,7 +138,7 @@ The following options are supported only by
 Boolean.
 .It create-fixdat
 Boolean.
-.It extra-directory
+.It extra-directories
 Either an array of strings, or a table where the keys are directories
 and the values are a table of options.
 For the second case, the following options are supported:
@@ -150,6 +150,10 @@ Boolean.
 String.
 .It keep-old-duplicates
 Boolean.
+.It extra-directories-append
+Same as
+.Dq extra-directories
+but does not override the previous value, but appends to it instead.
 .It move-from-extra
 Boolean.
 Setting this to
@@ -173,7 +177,7 @@ Boolean.
 Boolean.
 .It rom-directory
 String.
-.It save-directory
+.It saved-directory
 String.
 .It unknown-directory
 String.
