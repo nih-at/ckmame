@@ -184,10 +184,10 @@ int Archive::file_compare_hashes(uint64_t index, const Hashes *hashes) {
 }
 
 
-bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
+bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes) {
     auto &file = files[idx];
     
-    if (file.hashes.has_all_types(hashtypes)) {
+    if (file.has_all_hashes(detector_id, hashtypes)) {
 	return true;
     }
     
@@ -195,44 +195,49 @@ bool Archive::file_ensure_hashes(uint64_t idx, int hashtypes) {
         return false;
     }
 
-    Hashes hashes;
-    hashes.add_types(Hashes::TYPE_ALL);
+    if (detector_id == 0) {
+	Hashes hashes;
+	hashes.add_types(Hashes::TYPE_ALL);
 
-    auto f = get_source(idx);
-    
-    if (!f) {
-        // TODO: move error message to get_source()
-	myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), strerror(errno));
-	file.broken = true;
-	return false;
+	auto f = get_source(idx);
+
+	if (!f) {
+	    // TODO: move error message to get_source()
+	    myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), strerror(errno));
+	    file.broken = true;
+	    return false;
+	}
+
+	try {
+	    f->open();
+	} catch (Exception &e) {
+	    myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
+	    file.broken = true;
+	    return false;
+	}
+
+	switch (get_hashes(f.get(), file.hashes.size, true, &hashes)) {
+	case OK:
+	    break;
+
+	case READ_ERROR:
+	    myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
+	    file.broken = true;
+	    return false;
+
+	case CRC_ERROR:
+	    myerror(ERRDEF, "%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
+	    file.broken = true;
+	    return false;
+	}
+
+	file.hashes.set_hashes(hashes);
     }
-    
-    try {
-        f->open();
+    else {
+	if (!compute_detector_hashes(idx, db->detectors)) {
+	    return false;
+	}
     }
-    catch (Exception &e) {
-        myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
-        file.broken = true;
-        return false;
-    }
-
-    switch (get_hashes(f.get(), file.hashes.size, true, &hashes)) {
-        case OK:
-            break;
-
-        case READ_ERROR:
-            myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
-            file.broken = true;
-            return false;
-
-        case CRC_ERROR:
-            myerror(ERRDEF, "%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
-            file.broken = true;
-            return false;
-    }
-
-    file.hashes.set_hashes(hashes);
-
     cache_changed = true;
 
     return true;
@@ -637,7 +642,6 @@ bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorP
         
         if (compute_detector_hashes(index, missing_detectors)) {
             got_new_hashes = true;
-            memdb->update_file(contents.get(), index);
         }
     }
     
@@ -672,7 +676,11 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
         return false;
     }
 
-    return Detector::compute_hashes(data, &file, detectors);
+    auto ok = Detector::compute_hashes(data, &file, detectors);
+    if (ok) {
+	memdb->update_file(contents.get(), index);
+    }
+    return ok;
 }
 
 

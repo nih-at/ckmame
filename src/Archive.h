@@ -165,7 +165,8 @@ public:
     void ensure_valid_archive();
     bool file_add_empty(const std::string &filename);
     int file_compare_hashes(uint64_t idx, const Hashes *h);
-    virtual bool file_ensure_hashes(uint64_t idx, int hashtypes);
+    virtual bool file_ensure_hashes(uint64_t idx, int hashtypes) { return file_ensure_hashes(idx, 0, hashtypes); }
+    bool file_ensure_hashes(uint64_t index, size_t detector_id, int hashtypes);
     bool file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy);
     bool file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const Hashes *hashes);

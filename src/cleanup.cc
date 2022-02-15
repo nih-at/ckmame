@@ -108,8 +108,7 @@ void cleanup_list(const DeleteListPtr& list, int flags, bool is_needed) {
 }
 
 
-static void
-cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
+static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
     GarbagePtr gb;
 
     if (!a->is_writable()) {

@@ -173,7 +173,7 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detec
             return FIND_MISSING;
         }
     }
-    if (!(contents && index.has_value() && contents->files[index.value()].hashes.has_all_types(wanted_file->hashes))) {
+    if (!(contents && index.has_value() && contents->files[index.value()].has_all_hashes(detector_id, wanted_file->hashes))) {
         a = Archive::open(full_name, filetype, FILE_ROMSET, 0);
         if (!a) {
             return FIND_MISSING;
@@ -185,27 +185,10 @@ static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detec
             return FIND_MISSING;
         }
 
-        a->file_ensure_hashes(index.value(), wanted_file->hashes.get_types());
+        a->file_ensure_hashes(index.value(), detector_id, wanted_file->hashes.get_types());
     }
     
-    if (!contents->files[index.value()].compare_size_hashes(*wanted_file)) {
-        if (detector_id > 0) {
-            const auto &hashes = contents->files[index.value()].get_hashes(detector_id);
-            if (hashes.has_all_types(wanted_file->hashes)) {
-                if (!hashes.compare_with_size(wanted_file->hashes)) {
-                    return FIND_MISSING;
-                }
-            }
-            else {
-                if (!a) {
-                    a = Archive::open(contents);
-                }
-                if (!a->compare_size_hashes(index.value(), detector_id, wanted_file)) {
-                    return FIND_MISSING;
-                }
-            }
-        }
-        
+    if (contents->files[index.value()].get_hashes(detector_id).compare_with_size(wanted_file->hashes) != Hashes::MATCH) {
         return FIND_MISSING;
     }
 
