@@ -1,0 +1,246 @@
+.\" Copyright (c) 2003-2022 Dieter Baron and Thomas Klausner.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above
+.\"    copyright notice, this list of conditions and the following
+.\"    disclaimer in the documentation and/or other materials provided
+.\"    with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+.\" CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+.\" USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+.\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+.\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.Dd February 15, 2022
+.Dt CKMAMERC 5
+.Os
+.Sh NAME
+.Nm ckmamerc
+.Nd config file for ckmame, dumpgame, and mkmamedb
+.Sh DESCRIPTION
+The
+.Nm
+config file sets global or local configuration for running
+.Xr ckmame 1 ,
+.Xr dumpgame 1 ,
+and
+.Xr mkmamedb 1 .
+.Pp
+By default, the configuration is read from
+.Pa ~/.config/ckmame/ckmamerc
+and
+.Pa .ckmamerc
+(in the current directory) if they exist, in this order.
+.Pp
+Later settings override earlier ones.
+.Ss SECTIONS
+The config file is in TOML format and consists of three types of sections.
+A section header consists of the name of the section enclosed in square brackets
+on its own line.
+.Bl -tag -width 20n
+.It [global]
+The
+.Dq global
+section contains settings that apply in general.
+.It ["set name"]
+.Dq set name
+sections contain settings for a particular set (see the
+.Fl Fl set
+command line option).
+.It ["profile.name"]
+Settings can be shared and referenced from multiple sets by defining
+them in a profile and referencing this.
+Use sections whose name starts with
+.Dq profile.
+for this.
+They can be referenced from other sections by using the
+.Dq profiles
+keyword with
+.Dq name
+(without the leading
+.Dq profile. ) .
+.El
+.Ss CONFIGURATION VARIABLES
+Most command line options can be used as configuration variables in
+the config file.
+Take the name of the long option and use it without the leading
+dashes.
+For boolean settings and those with a value, use the
+.Dl variable = value
+syntax.
+For example,
+.Xr ckmame 1 Ap s
+.Fl Fl complete-games-only
+will be written in the config file as
+.Dl "complete-games-only = true"
+.Pp
+Options that exist as
+.Fl Fl foo
+and
+.Fl Fl no-foo
+are mapped to a single configuration value with values
+.Dq true
+and
+.Dq false .
+.Pp
+Options can use the string
+.Dq $set
+which will be replaced by the set name when used.
+.Pp
+The following options are supported by all tools:
+.Bl -tag -width 20n -offset 4n
+.It rom-db
+String.
+.It profiles
+Array of strings.
+List of profile names (without the leading
+.Dq profile. )
+whose configuration variables should be merged into
+the current section.
+.It sets
+Array of strings.
+Each string is the name of a set.
+.It sets-file
+String.
+Points to a file that lists sets, one line per set.
+.It verbose
+Boolean.
+.El
+.Pp
+The following options are supported only by
+.Xr ckmame 1
+and
+.Xr mkmamedb 1 :
+.Bl -tag -width 20n -offset 4n
+.It roms-zipped
+Boolean.
+.El
+.Pp
+The following options are supported only by
+.Xr ckmame 1 :
+.Bl -tag -width 20n -offset 4n
+.It complete-games-only
+Boolean.
+.It create-fixdat
+Boolean.
+.It extra-directory
+Either an array of strings, or a table where the keys are directories
+and the values are a table of options.
+For the second case, the following options are supported:
+.Bl -tag -width 10n -offset 4n
+.It move-from-extra
+Boolean.
+.El
+.It fixdat-directory
+String.
+.It keep-old-duplicates
+Boolean.
+.It move-from-extra
+Boolean.
+Setting this to
+.Dq false
+is the same as using
+.Fl Fl copy-from-extra
+on the command line.
+.It old-db
+String.
+.It report-correct
+Boolean.
+.It report-detailed
+Boolean.
+.It report-fixable
+Boolean.
+.It report-missing
+Boolean.
+.It report-no-good-dump
+Boolean.
+.It report-summary
+Boolean.
+.It rom-directory
+String.
+.It save-directory
+String.
+.It unknown-directory
+String.
+.El
+.Pp
+The following variables are only supported by
+.Xr mkmamedb 1 :
+.Bl -tag -width 20n -offset 4n
+.It dats
+Array of strings, or table where the keys are strings and the values
+are tables with options.
+Each string is the (internal) name of a dat.
+The supported options in the second case are:
+.Bl -tag -width 25n -offset 4n
+.It game-name-suffix
+String.
+Suffix all game names in the dat with the given string argument.
+.It use-description-as-name
+Boolean.
+.El
+.It dat-directories
+Array of strings.
+Each string is a directory containing dats.
+.It use-temp-directory
+Boolean.
+.El
+.Sh EXAMPLES
+.Bd -literal -offset 4n
+[global]
+verbose = true
+extra-directories = [ "incoming" ]
+sets = [ "Set using standard settings only" ]
+
+[profile.incomplete]
+complete-only = true
+report-missing = true
+
+["Big Set"]
+verbose = false
+rom-directory = "Big Set ROMs"
+extra-directories-append = [ "another-location" ]
+rom-db = "Big Set.db"
+profiles = [ "incomplete" ]
+
+["Unzipped Set"]
+roms-unzipped = true
+rom-directory = "Unzipped Set ROMs"
+extra-directories = [ "unzipped-incoming" ]
+rom-db = "Unzipped Set.db"
+.Ed
+.Pp
+This configuration would by default report verbosely,
+but override this for the "Big Set" set.
+It would also set the rom directories and database files
+for both the "Big Set" and the "Unzipped Set" and not use
+ZIP archives for the latter.
+.Pp
+Example run:
+.Dl ckmame --set "Big Set"
+.Sh SEE ALSO
+.Xr ckmame 1 ,
+.Xr dumpgame 1 ,
+.Xr mkmamedb 1
+.Sh AUTHORS
+.An -nosplit
+.Nm ckmame
+was written by
+.An Dieter Baron Aq Mt dillo@nih.at
+and
+.An Thomas Klausner Aq Mt tk@giga.or.at .
