@@ -68,15 +68,29 @@ bool Configuration::read_config_file(std::vector<toml::table> &config_tables, co
     return ok;
 }
 
+TomlSchema::TypePtr Configuration::extra_directories_schema = std::move(
+    TomlSchema::alternatives({
+	TomlSchema::array(TomlSchema::string()),
+	TomlSchema::table({}, TomlSchema::table({
+	    { "move-from-extra", TomlSchema::boolean() } }, {}))
+    }, "array or table"));
+
+TomlSchema::TypePtr Configuration::dats_schema = std::move(
+    TomlSchema::alternatives({
+	TomlSchema::array(TomlSchema::string()),
+	TomlSchema::table({}, TomlSchema::table({
+	    { "game-name-suffix", TomlSchema::string() },
+	    { "use-description-as-name", TomlSchema::boolean() } }, {}))
+    }, "array or table"));
 
 TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table({
     { "complete-games-only", TomlSchema::boolean() },
     { "create-fixdat",  TomlSchema::boolean() },
     { "dat-directories", TomlSchema::array(TomlSchema::string()) },
     { "dat-directories-append", TomlSchema::array(TomlSchema::string()) },
-    { "dats", TomlSchema::array(TomlSchema::string()) },
-    { "extra-directories", TomlSchema::array(TomlSchema::string()) },
-    { "extra-directories-append", TomlSchema::array(TomlSchema::string()) },
+    { "dats", dats_schema },
+    { "extra-directories", extra_directories_schema},
+    { "extra-directories-append", extra_directories_schema},
     { "fixdat-directory",  TomlSchema::string() },
     { "keep-old-duplicate",  TomlSchema::boolean() },
     { "move-from-extra",  TomlSchema::boolean() },
@@ -95,6 +109,7 @@ TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table(
     { "sets", TomlSchema::array(TomlSchema::string()) },
     { "sets-file", TomlSchema::string() },
     { "unknown-directory", TomlSchema::string() },
+    { "use-description-as-name",  TomlSchema::boolean() },
     { "use-temp-directory",  TomlSchema::boolean() },
     { "verbose",  TomlSchema::boolean() }
 }, {}));
@@ -136,6 +151,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("saved-directory", "directory", "save needed ROMs in directory (default: 'saved')"),
     Commandline::Option("set", "name", "check ROM set name"),
     Commandline::Option("unknown-directory", "directory", "save unknown files in directory (default: 'unknown')"),
+    Commandline::Option("use-description-as-name", "use description as name of games in ROM database"),
     Commandline::Option("use-temp-directory", 't', "create output in temporary directory, move when done"),
     Commandline::Option("verbose", 'v', "print fixes made")
 };
@@ -210,6 +226,7 @@ Configuration::Configuration() :
     	roms_zipped(true),
 	saved_directory("saved"),
 	unknown_directory("unknown"),
+	use_description_as_name(false),
 	use_temp_directory(false),
     	verbose(false),
 	warn_file_known(true),
@@ -409,6 +426,9 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	else if (option.name == "unknown-directory") {
 	    unknown_directory = option.argument;
 	}
+	else if (option.name == "use-description-as-name") {
+	    use_description_as_name = true;
+	}
 	else if (option.name == "use-temp-directory") {
 	    use_temp_directory = true;
 	}
@@ -452,10 +472,10 @@ void Configuration::merge_config_table(const toml::table *table_pointer, const s
     set_bool(table, "create-fixdat", create_fixdat);
     set_string_vector(table, "dat-directories", dat_directories, false);
     set_string_vector(table, "dat-directories-append", dat_directories, true);
-    set_string_vector(table, "dats", dats, false);
+    merge_dats(table);
     set_string(table, "rom-db", rom_db);
-    set_string_vector(table, "extra-directories", extra_directories, false);
-    set_string_vector(table, "extra-directories-append", extra_directories, true);
+    merge_extra_directories(table, "extra-directories", false);
+    merge_extra_directories(table, "extra-directories-append", true);
     set_string(table, "fixdat-directory", fixdat_directory);
     set_bool(table, "keep-old-duplicate", keep_old_duplicate);
     set_bool(table, "move-from-extra", move_from_extra);
@@ -470,6 +490,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer, const s
     set_bool(table, "roms-zipped", roms_zipped);
     set_string(table, "saved-directory", saved_directory);
     set_string(table, "unknown-directory", unknown_directory);
+    set_bool(table, "use-description-as-name", use_description_as_name);
     set_bool(table, "use-temp-directory", use_temp_directory);
     set_bool(table, "verbose", verbose);
 }
@@ -494,7 +515,23 @@ void Configuration::set_bool(const toml::table &table, const std::string &name, 
 }
 
 
+void Configuration::set_bool_optional(const toml::table &table, const std::string &name, std::optional<bool> &variable){
+    auto value = table[name].value<bool>();
+    if (value.has_value()) {
+	variable = value.value();
+    }
+}
+
+
 void Configuration::set_string(const toml::table &table, const std::string &name, std::string &variable) {
+    auto value = table[name].value<std::string>();
+    if (value.has_value()) {
+	variable = replace_variables(value.value());
+    }
+}
+
+
+void Configuration::set_string_optional(const toml::table &table, const std::string &name, std::optional<std::string> &variable){
     auto value = table[name].value<std::string>();
     if (value.has_value()) {
 	variable = replace_variables(value.value());
@@ -543,4 +580,78 @@ bool Configuration::validate_file(const toml::table& table, const std::string& f
     auto validator = TomlSchema(file_schema);
 
     return validator.validate(table, file_name);
+}
+
+
+std::string Configuration::dat_game_name_suffix(const std::string &dat) {
+    auto it = dat_options.find(dat);
+    if (it == dat_options.end() || !it->second.game_name_suffix.has_value()) {
+	return "";
+    }
+    return it->second.game_name_suffix.value();
+}
+
+
+bool Configuration::dat_use_description_as_name(const std::string &dat){
+    auto it = dat_options.find(dat);
+    if (it == dat_options.end() || !it->second.use_description_as_name.has_value()) {
+	return use_description_as_name;
+    }
+    return it->second.use_description_as_name.value();
+}
+
+
+bool Configuration::extra_directory_move_from_extra(const std::string &directory){
+    auto it = extra_directory_options.find(directory);
+    if (it == extra_directory_options.end() || !it->second.move_from_extra.has_value()) {
+	return move_from_extra;
+    }
+    return it->second.move_from_extra.value();
+}
+
+
+void Configuration::merge_dats(const toml::table& table) {
+    auto node = table["dats"];
+
+    if (node.is_array()) {
+	set_string_vector(table, "dats", dats, false);
+    }
+    else if (node.is_table()) {
+	dats.clear();
+	for (const auto &pair : (*node.as_table())) {
+	    dats.push_back(pair.first);
+	    auto options_table = pair.second.as_table();
+	    if (options_table != nullptr && !options_table->empty()) {
+		auto parsed_options = DatOptions();
+
+		set_string_optional(*options_table, "game-name-suffix", parsed_options.game_name_suffix);
+		set_bool_optional(*options_table, "use-description-as-name", parsed_options.use_description_as_name);
+		dat_options[pair.first] = parsed_options;
+	    }
+	}
+    }
+}
+
+
+void Configuration::merge_extra_directories(const toml::table &table, const std::string &name, bool append){
+    auto node = table[name];
+
+    if (node.is_array()) {
+	set_string_vector(table, name, extra_directories, append);
+    }
+    else if (node.is_table()) {
+	if (!append) {
+	    extra_directories.clear();
+	}
+	for (const auto &pair : (*node.as_table())) {
+	    extra_directories.push_back(pair.first);
+	    auto options_table = pair.second.as_table();
+	    if (options_table != nullptr && !options_table->empty()) {
+		auto parsed_options = ExtraDirectoryOptions();
+
+		set_bool_optional(*options_table, "move-from-extra", parsed_options.move_from_extra);
+		extra_directory_options[pair.first] = parsed_options;
+	    }
+	}
+    }
 }

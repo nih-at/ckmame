@@ -58,14 +58,24 @@ typedef std::shared_ptr<Parser> ParserPtr;
 
 class Parser {
 public:
-    static ParserPtr create(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags);
+    class Options {
+      public:
+	Options() : full_archive_names(false), use_description_as_name(false) { }
 
-    static bool parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags);
+	bool full_archive_names;
+	std::string game_name_suffix;
+	bool use_description_as_name;
+    };
+
+    static ParserPtr create(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options);
+
+    static bool parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options);
+
+    Options options;
 
     /* TODO: move out of context */
     size_t lineno; /* current line number in input file */
 
-    bool full_archive_name;
     bool header_only;
 
     virtual bool parse() { return false; }
@@ -94,7 +104,7 @@ public:
     bool prog_name(const std::string &attr);
     bool prog_version(const std::string &attr);
 
-    Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_, int flags);
+    Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_, Options options);
     virtual ~Parser() = default;
 
 protected:
@@ -131,6 +141,8 @@ protected:
     };
 
     static std::unordered_map<std::string, Format> format_start;
+
+    void set_game_name(std::string name);
 };
 
 #endif // HAD_PARSER_H

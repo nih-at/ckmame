@@ -42,7 +42,7 @@ class ParserCm : public Parser {
 public:
     bool parse() override;
 
-    ParserCm(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags), ignoring_line(false) { }
+    ParserCm(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options) : Parser(source, exclude, dat, output, std::move(options)), ignoring_line(false) { }
     ~ParserCm() override = default;
         
 private:

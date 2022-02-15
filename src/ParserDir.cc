@@ -180,7 +180,7 @@ bool ParserDir::parse() {
                 else {
                     if (std::filesystem::is_regular_file(filepath)) {
                         /* TODO: always include loose files, separate flag? */
-                        if (full_archive_name) {
+                        if (options.full_archive_names) {
                             have_loose_files = true;
                         }
                         else {

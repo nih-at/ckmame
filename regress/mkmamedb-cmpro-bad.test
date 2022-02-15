@@ -27,5 +27,4 @@ mamedb.cmpro-bad: 64: ignoring unknown token '8'
 mamedb.cmpro-bad: 64: ignoring unknown token 'name'
 mamedb.cmpro-bad: 64: ignoring unknown token '08.rom'
 mamedb.cmpro-bad: 64: ignoring unknown token ')'
-mamedb.cmpro-bad: 69: game has two 'name' tokens
 end-of-data

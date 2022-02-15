@@ -33,8 +33,6 @@
 
 #include "update_romdb.h"
 
-#include <filesystem>
-
 #include "DatRepository.h"
 #include "Exception.h"
 #include "globals.h"
@@ -132,7 +130,11 @@ void update_romdb(bool force) {
 		}
 		source = std::make_shared<ParserSourceZip>(dat.file_name, zip_archive, dat.entry_name);
 	    }
-	    if (!Parser::parse(source, {}, nullptr, output.get(), 0)) {
+
+	    auto options = Parser::Options();
+	    options.game_name_suffix = configuration.dat_game_name_suffix(dat.name);
+	    options.use_description_as_name = configuration.dat_use_description_as_name(dat.name);
+	    if (!Parser::parse(source, {}, nullptr, output.get(), options)) {
 		auto message = "can't parse '" + dat.file_name + "'";
 		if (!dat.entry_name.empty()) {
 		    message += "/" + dat.entry_name;

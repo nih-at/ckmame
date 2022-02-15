@@ -38,6 +38,7 @@
 #include <vector>
 
 #include <cstdarg>
+#include <ctime>
 
 #include "printf_like.h"
 

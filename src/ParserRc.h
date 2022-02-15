@@ -34,11 +34,13 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <utility>
+
 #include "Parser.h"
 
 class ParserRc : public Parser {
 public:
-    ParserRc(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags) { }
+    ParserRc(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options) : Parser(std::move(source), exclude, dat, output, std::move(options)) { }
     ~ParserRc() override = default;
         
     bool parse() override;

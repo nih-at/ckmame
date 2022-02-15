@@ -41,7 +41,7 @@
 
 class ParserXml : public Parser {
 public:
-    ParserXml(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(std::move(source), exclude, dat, output, flags) { }
+    ParserXml(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options) : Parser(std::move(source), exclude, dat, output, std::move(options)) { }
     ~ParserXml() override = default;
      
     bool parse() override;

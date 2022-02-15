@@ -67,10 +67,11 @@ class DatDB : public DB {
       public:
 	DatInfo() = default;
 
-	DatInfo(std::string file_name, std::string entry_name, std::string version) : file_name(std::move(file_name)), entry_name(std::move(entry_name)), version(std::move(version)) { }
+	DatInfo(std::string file_name, std::string entry_name, std::string name, std::string version) : file_name(std::move(file_name)), entry_name(std::move(entry_name)), name(std::move(name)), version(std::move(version)) { }
 
 	std::string file_name;
 	std::string entry_name;
+	std::string name;
 	std::string version;
     };
 

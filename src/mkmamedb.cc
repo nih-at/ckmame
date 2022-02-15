@@ -78,7 +78,7 @@ std::vector<Commandline::Option> options = {
 };
 
 std::unordered_set<std::string> used_variables = {
-    "dats", "dat_directories", "roms_zipped", "use_temp_directory"
+    "dats", "dat_directories", "roms_zipped", "use_description_as_name", "use_temp_directory"
 };
 
 #define DEFAULT_FILE_PATTERNS "*.dat"
@@ -88,7 +88,7 @@ static bool process_stdin(const std::unordered_set<std::string> &exclude, const 
 
 static int hashtypes;
 static bool cache_directory;
-static int parser_flags;
+static Parser::Options parser_options;
 
 int
 main(int argc, char **argv) {
@@ -109,7 +109,6 @@ main(int argc, char **argv) {
     runtest = false;
     cache_directory = true;
     flags = 0;
-    parser_flags = 0;
     auto force = false;
 
     fmt = OutputContext::FORMAT_DB;
@@ -216,10 +215,12 @@ main(int argc, char **argv) {
 		getprogname());
     }
 
+    parser_options.use_description_as_name = configuration.use_description_as_name;
+
     if (runtest) {
 	fmt = OutputContext::FORMAT_MTREE;
 	flags |= OUTPUT_FL_RUNTEST;
-	parser_flags = PARSER_FL_FULL_ARCHIVE_NAME;
+	parser_options.full_archive_names = true;
 	cache_directory = false;
 	if (dbname.empty()) {
 	    // TODO: make this work on Windows
@@ -345,7 +346,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
             try {
                 auto ps = std::make_shared<ParserSourceZip>(fname, za, name);
                 
-                if (!Parser::parse(ps, exclude, dat, out, parser_flags)) {
+                if (!Parser::parse(ps, exclude, dat, out, parser_options)) {
                     ok = false;
                 }
             }
@@ -366,7 +367,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
                 CkmameDB::register_directory(fname);
             }
 
-            auto ctx = ParserDir(nullptr, exclude, dat, out, parser_flags, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
+            auto ctx = ParserDir(nullptr, exclude, dat, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
             return ctx.parse();
 	}
 
@@ -382,7 +383,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 
         try {
             auto ps = std::make_shared<ParserSourceFile>(fname);
-            return Parser::parse(ps, exclude, dat, out, parser_flags);
+            return Parser::parse(ps, exclude, dat, out, parser_options);
         }
         catch (std::exception &exception) {
             fprintf(stderr, "%s: can't process %s: %s\n", getprogname(), fname.c_str(), exception.what());
@@ -396,7 +397,7 @@ static bool process_stdin(const std::unordered_set<std::string> &exclude, const 
     try {
         auto ps = std::make_shared<ParserSourceFile>("");
 
-        return Parser::parse(ps, exclude, dat, out, parser_flags);
+        return Parser::parse(ps, exclude, dat, out, parser_options);
     }
     catch (std::exception &exception) {
         fprintf(stderr, "%s: can't process stdin: %s\n", getprogname(), exception.what());

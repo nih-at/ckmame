@@ -69,7 +69,7 @@ std::unordered_map<std::string, Parser::Format> Parser::format_start = {
     } while (0)
 
 
-ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) {
+ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options) {
 
     size_t length = 0;
     for (const auto& pair : format_start) {
@@ -90,18 +90,18 @@ ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set
 	return {};
 
     case CLRMAMEPRO:
-	return std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output, flags));
+	return std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output, std::move(options)));
     case ROMCENTER:
-	return std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output, flags));
+	return std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output, std::move(options)));
     case XML:
-	return std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output, flags));
+	return std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output, std::move(options)));
     }
 
     return {};
 }
 
-bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, int flags) {
-    auto parser = create(source, exclude, dat, out, flags);
+bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out, Options options) {
+    auto parser = create(source, exclude, dat, out, std::move(options));
 
     if (!parser) {
 	myerror(ERRFILE, "unknown dat format");
@@ -302,6 +302,10 @@ bool Parser::game_description(const std::string &attr) {
 
     g->description = attr;
 
+    if (options.use_description_as_name) {
+	set_game_name(attr);
+    }
+
     return true;
 }
 
@@ -340,20 +344,25 @@ bool Parser::game_end() {
 bool Parser::game_name(const std::string &attr) {
     CHECK_STATE(PARSE_IN_GAME);
 
-    if (!g->name.empty()) {
-	myerror(ERRFILE, "%zu: game has two 'name' tokens", lineno);
-	return false;
+    if (!options.use_description_as_name) {
+	set_game_name(attr);
     }
 
-    g->name = attr;
+    return true;
+}
 
-    if (!full_archive_name) {
+void Parser::set_game_name(std::string name) {
+    g->name = std::move(name);
+
+    if (!options.full_archive_names) {
 	/* slashes are directory separators on some systems, and at least
 	 * one redump dat contained a slash in a rom name */
         std::replace(g->name.begin(), g->name.end(), '/', '-');
     }
 
-    return true;
+    if (!options.game_name_suffix.empty()) {
+	g->name += options.game_name_suffix;
+    }
 }
 
 
@@ -443,9 +452,8 @@ bool Parser::prog_version(const std::string &attr) {
 }
 
 
-Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_, int flags) : lineno(0), header_only(false), ignore(std::move(exclude)), output(output_), ps(std::move(source)), flags(0), state(PARSE_IN_HEADER) {
+Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_, Options options) : options(std::move(options)), lineno(0), header_only(false), ignore(std::move(exclude)), output(output_), ps(std::move(source)), flags(0), state(PARSE_IN_HEADER) {
     dat_default.merge(dat, nullptr);
-    full_archive_name = flags & PARSER_FL_FULL_ARCHIVE_NAME;
     for (auto & i : r) {
         i = nullptr;
     }

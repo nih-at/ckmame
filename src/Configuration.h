@@ -79,6 +79,10 @@ public:
 
     void handle_commandline(const ParsedCommandline &commandline);
 
+    std::string dat_game_name_suffix(const std::string& dat);
+    bool dat_use_description_as_name(const std::string& dat);
+    bool extra_directory_move_from_extra(const std::string& directory);
+
     std::set<std::string> sets;
     std::string set;
 
@@ -104,6 +108,7 @@ public:
     std::string saved_directory;
     std::string unknown_directory;
     bool use_temp_directory; // create RomDB in temporary directory, then move into place
+    bool use_description_as_name; // in ROM database
     bool verbose; // print all actions taken to fix ROM set
 
     // TODO: Are these needed? They have no command line options.
@@ -115,14 +120,19 @@ public:
     bool fix_romset; // actually fix, otherwise no archive is changed
 
 private:
-    enum VariableType {
-        ARRAY_OF_STRINGS,
-        BOOL,
-        INTEGER,
-        NUMBER,
-        STRING
+    class DatOptions {
+      public:
+        std::optional<std::string> game_name_suffix;
+	std::optional<bool> use_description_as_name;
     };
 
+    class ExtraDirectoryOptions {
+      public:
+	std::optional<bool> move_from_extra;
+    };
+
+    static TomlSchema::TypePtr extra_directories_schema;
+    static TomlSchema::TypePtr dats_schema;
     static TomlSchema::TypePtr section_schema;
     static TomlSchema::TypePtr file_schema;
 
@@ -132,16 +142,24 @@ private:
     static bool option_used(const std::string &option_name, const std::unordered_set<std::string> &used_variables);
     static bool read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional);
     static void set_bool(const toml::table &table, const std::string &name, bool &variable);
+    static void set_bool_optional(const toml::table &table, const std::string &name, std::optional<bool>& variable);
     void set_string(const toml::table &table, const std::string &name, std::string &variable);
+    void set_string_optional(const toml::table &table, const std::string &name, std::optional<std::string>& variable);
     void set_string_vector(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);
     [[maybe_unused]] static void set_string_vector_from_file(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);
 
     void merge_config_file(const toml::table &file, const std::vector<toml::table> &config_files);
     void merge_config_table(const toml::table *table, const std::vector<toml::table> &config_files);
 
+    void merge_dats(const toml::table& table);
+    void merge_extra_directories(const toml::table& table, const std::string& name, bool append);
+
     static bool validate_file(const toml::table& table, const std::string& file_name);
 
     [[nodiscard]] std::string replace_variables(std::string string) const;
+
+    std::unordered_map<std::string, DatOptions> dat_options;
+    std::unordered_map<std::string, ExtraDirectoryOptions> extra_directory_options;
 };
 
 #endif // HAD_CONFIGURATION_H

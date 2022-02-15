@@ -2,8 +2,8 @@ description check config parser for invalid booleans
 return 1
 file-data .ckmamerc
 [global]
-extra-directories = "something"
+dat-directories = "something"
 end-of-data
 stderr-data
-.ckmamerc:global.extra-directories: expected array
+.ckmamerc:global.dat-directories: expected array
 end-of-data

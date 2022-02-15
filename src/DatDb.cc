@@ -191,7 +191,7 @@ std::vector<DatDB::DatInfo> DatDB::get_dats(const std::string &name) {
     std::vector<DatInfo> dats;
 
     while (stmt->step()) {
-	dats.emplace_back(stmt->get_string("file_name"), stmt->get_string("entry_name"), stmt->get_string("version"));
+	dats.emplace_back(stmt->get_string("file_name"), stmt->get_string("entry_name"), name, stmt->get_string("version"));
     }
 
     return dats;

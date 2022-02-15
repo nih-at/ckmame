@@ -159,7 +159,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 			    auto output = OutputContextHeader();
 
 			    auto source = std::make_shared<ParserSourceZip>(filepath, zip_archive, entry_name);
-			    auto parser = Parser::create(source, {}, nullptr, &output, 0);
+			    auto parser = Parser::create(source, {}, nullptr, &output, {});
 			    if (parser) {
 				if (parser->parse_header()) {
 				    auto header = output.get_header();
@@ -176,7 +176,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 		    auto output = OutputContextHeader();
 
 		    auto source = std::make_shared<ParserSourceFile>(filepath);
-		    auto parser = Parser::create(source, {}, nullptr, &output, 0);
+		    auto parser = Parser::create(source, {}, nullptr, &output, {});
 
 		    if (parser) {
 			if (parser->parse_header() && output.close()) {
