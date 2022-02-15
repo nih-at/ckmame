@@ -103,6 +103,7 @@ add_custom_target(update-mamedb.dump
 set(XFAIL_TESTS
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
+  ckmame-all-sets-1.test
   detector-from-extra-cleanup-2.test
   mkmamedb-list-available-dats-3.test
   mkmamedb-list-available-dats-4.test
