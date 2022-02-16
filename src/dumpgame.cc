@@ -69,7 +69,7 @@ std::unordered_set<std::string> dumpgame_used_variables = {
     "rom_db"
 };
 
-Dumpgame::Dumpgame() : Command("dumpgame", "[game|checksum ...]", dumpgame_options, dumpgame_used_variables), first(true), found(false) {
+Dumpgame::Dumpgame() : Command("dumpgame", "[game|checksum ...]", dumpgame_options, dumpgame_used_variables), brief_mode(false), find_checksum(false), first(true) {
 
 }
 
@@ -213,12 +213,10 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
 	for (const auto &argument : arguments) {
 	    if (match.set_from_string(argument) == -1) {
 		myerror(ERRDEF, "error parsing checksum '%s'", argument.c_str());
-		return false;
+		continue;
 	    }
 
 	    print_matches(&match);
-	    found[index] = true;
-	    index += 1;
 	}
 	return true;
     }
@@ -273,18 +271,20 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
 bool Dumpgame::cleanup() {
     auto ok = true;
 
-    size_t index = 0;
-    for (const std::string& argument : arguments) {
-	if (!found[index]) {
-	    if (is_pattern(arguments[index])) {
-		myerror(ERRDEF, "no game matching '%s' found", argument.c_str());
+    if (!find_checksum) {
+	size_t index = 0;
+	for (const std::string &argument : arguments) {
+	    if (!found[index]) {
+		if (is_pattern(arguments[index])) {
+		    myerror(ERRDEF, "no game matching '%s' found", argument.c_str());
+		}
+		else {
+		    myerror(ERRDEF, "game '%s' not found", argument.c_str());
+		}
+		ok = false;
 	    }
-	    else {
-		myerror(ERRDEF, "game '%s' not found", argument.c_str());
-	    }
-	    ok = false;
+	    index += 1;
 	}
-	index += 1;
     }
 
     return ok;
