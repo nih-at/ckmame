@@ -105,6 +105,7 @@ set(XFAIL_TESTS
   rom-from-extra-loose-toplevel.test
   ckmame-all-sets-1.test
   detector-from-extra-cleanup-2.test
+  mkmamedb-header-only-3.test
   mkmamedb-list-available-dats-3.test
   mkmamedb-list-available-dats-4.test
 )
