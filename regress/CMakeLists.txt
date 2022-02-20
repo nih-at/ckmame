@@ -109,6 +109,7 @@ set(XFAIL_TESTS
   mkmamedb-list-available-dats-3.test
   mkmamedb-list-available-dats-4.test
   mkmamedb-missing-size.test
+  rom-dir-in-extra-dirs-subdir-2.test
 )
 	      
 file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
