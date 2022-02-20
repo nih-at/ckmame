@@ -6,23 +6,23 @@
 - Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
 - Add option to have `ckmame` update ROM database before checking ROMs
-- Option to add suffix to game names in dat (so multiple dats with duplicate names can be joined).
-- Add option to use description as game name (for more meaningful file names in M.E.S.S. sets).
 - Auto-fix cue sheet when renaming track 1.
 - Variables in config file (e.g. for collection root directory).
-- Allow options for single dat, extra-directory: `{ “name”: { options…}, “name2”: {} }` (still allow array-of-strings syntax if no per-entry options are needed).
-- Make move-from-extra per-directory
-- Don’t copy files from some extra directories to saved.
+- Don’t copy files from extra directories to saved.
 - Add `ckmame` option to update ROM database and check only if changed.
 - Add `ckmame` option create file with list of complete/incomplete games.
 - `dumpgame` use command line options instead of `/` special keys.
 - Add option to run command once for each set.
 - Make `SIGINFO` handler print set name.
 - For read-only dat or extra directories, put cache database in central location.
-- Add (per entry) option for directories to put cache database in central location. 
+- Add (per entry) option for directories to put cache database in central location.
+- Handle Unicode byte order markers at beginning of dat files.
 
 ### Write Tests
 
+- configuration option `use-description-as-name`
+- per dat configuration option `game-name-suffix`
+- per dat and extra-directory configuration options
 - Create fixdat-directory if it doesn’t exist.
 - `ckmame`: do not create `roms/` if no database found
 - `mkmamedb --force`
