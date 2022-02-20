@@ -1,0 +1,9 @@
+description test mkmamedb database creation, size missing
+return 0
+program mkmamedb
+args -o mamedb-test.db mamedb.dat
+file mamedb.dat mamedb-missing-size.dat
+file-new mamedb-test.db mamedb-broken-sha1.dump
+stderr-data
+mamedb.dat: 11: missing argument for size
+end-of-data

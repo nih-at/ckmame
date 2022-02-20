@@ -108,6 +108,7 @@ set(XFAIL_TESTS
   mkmamedb-header-only-3.test
   mkmamedb-list-available-dats-3.test
   mkmamedb-list-available-dats-4.test
+  mkmamedb-missing-size.test
 )
 	      
 file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
