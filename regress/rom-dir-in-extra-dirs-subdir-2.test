@@ -1,5 +1,10 @@
-description when cleaning up extras and given roms/, check for wrong positive
-return 1
-args -R extra-something -e extra
-ckmamedb-after extra ckmamedb-empty.dump
+description extra dir is substring of ROM dir, but not parent directory
+return 0
+args -R extradir -e extra 1-4
 file extra/foo.zip 1-4-foo.zip 1-4-foo.zip
+file extradir/1-8.zip 1-8-ok.zip
+ckmamedb-after extradir ckmamedb-empty.dump
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'extra/foo.zip/foo/1-4/04.rom'
+end-of-data

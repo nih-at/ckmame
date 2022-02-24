@@ -60,7 +60,7 @@
 
 
 /* to identify roms directory uniquely */
-std::string rom_dir_normalized;
+std::filesystem::path rom_dir_normalized;
 
 
 std::vector<Commandline::Option> ckmame_options = {
@@ -301,11 +301,21 @@ bool CkMame::cleanup() {
 static bool
 contains_romdir(const std::string &name) {
     std::error_code ec;
-    std::string normalized = std::filesystem::relative(name, "/", ec);
+    auto normalized = std::filesystem::relative(name, "/", ec);
     if (ec || normalized.empty()) {
 	return false;
     }
 
-    size_t length = std::min(normalized.length(), rom_dir_normalized.length());
-    return (normalized.substr(0, length) == rom_dir_normalized.substr(0, length));
+    auto it_extra = normalized.begin();
+    auto it_romdir = rom_dir_normalized.begin();
+
+    while (it_romdir != rom_dir_normalized.end() && it_extra != normalized.end()) {
+	if (*it_extra != *it_romdir) {
+	    return false;
+	}
+	it_extra++;
+	it_romdir++;
+    }
+
+    return it_extra == normalized.end();
 }
