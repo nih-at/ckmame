@@ -1,0 +1,12 @@
+clrmamepro (
+	name "ckmame test db"
+	version 1
+)
+
+game (
+	name missing-size
+	description "missing size argument"
+	manufacturer "synth"
+	year 2008
+	rom ( name 04.rom size crc32 d87f7e0c )
+)
