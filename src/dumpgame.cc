@@ -209,7 +209,6 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
     if (find_checksum) {
 	Hashes match;
 
-	size_t index = 0;
 	for (const auto &argument : arguments) {
 	    if (match.set_from_string(argument) == -1) {
 		myerror(ERRDEF, "error parsing checksum '%s'", argument.c_str());
