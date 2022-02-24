@@ -46,8 +46,9 @@
 #include "ParserRc.h"
 #include "ParserXml.h"
 #include "error.h"
+#include "util.h"
 
-
+static const std::string unicode_bom = "\xEF\xBB\xBF";
 
 std::unordered_map<std::string, Parser::Format> Parser::format_start = {
     { "<?xml ", XML },
@@ -76,11 +77,17 @@ ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set
 	length = std::max(pair.first.length(), length);
     }
 
-    auto start = source->peek(length);
+    auto start = source->peek(length + unicode_bom.length());
     auto format = NONE;
 
+    if (string_starts_with(start, unicode_bom)) {
+	start = start.substr(unicode_bom.length());
+	char buffer[unicode_bom.length()];
+	source->read(buffer, unicode_bom.length());
+    }
+
     for (const auto& pair : format_start) {
-	if (start.rfind(pair.first, 0) != std::string::npos) {
+	if (string_starts_with(start, pair.first)) {
 	    format = pair.second;
 	}
     }
@@ -263,7 +270,13 @@ bool Parser::file_name(filetype_t ft, const std::string &attr) {
 
 bool Parser::file_size(filetype_t ft, const std::string &attr) {
     /* TODO: check for strol errors */
-    return file_size(ft, std::stoull(attr, nullptr, 0));
+    try {
+	return file_size(ft, std::stoull(attr, nullptr, 0));
+    }
+    catch (...) {
+	myerror(ERRFILE, "%zu: invalid size '%s'", lineno, attr.c_str());
+	return false;
+    }
 }
 
 

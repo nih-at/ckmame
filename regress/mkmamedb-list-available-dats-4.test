@@ -1,4 +1,4 @@
-description test mkmamedb rc database creation, header only dat
+description test mkmamedb xml database creation, header only dat
 return 0
 program mkmamedb
 args --list-available-dats

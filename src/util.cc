@@ -243,3 +243,8 @@ std::vector<std::string> slurp_lines(const std::string &file_name) {
 
     return lines;
 }
+
+
+bool string_starts_with(const std::string &large, const std::string &small) {
+    return large.rfind(small, 0) != std::string::npos;
+}

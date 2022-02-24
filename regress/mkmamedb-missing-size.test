@@ -3,7 +3,8 @@ return 0
 program mkmamedb
 args -o mamedb-test.db mamedb.dat
 file mamedb.dat mamedb-missing-size.dat
-file-new mamedb-test.db mamedb-broken-sha1.dump
+file-new mamedb-test.db mamedb-missing-size.dump
 stderr-data
-mamedb.dat: 11: missing argument for size
+mamedb.dat: 11: invalid size 'crc32'
+mamedb.dat: 11: ignoring unknown token 'd87f7e0c'
 end-of-data
