@@ -33,6 +33,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CkmameCache.h"
 
+#include <algorithm>
 #include <filesystem>
 
 #include "error.h"
