@@ -39,11 +39,6 @@
 
 #include "types.h"
 
-#define DO_MAP 0x1
-#define DO_LIST 0x2
-
-void ensure_extra_maps(int flags);
-void ensure_needed_maps();
 std::string findfile(filetype_t filetype, const std::string &name);
 std::string make_file_name(filetype_t filetype, const std::string &name);
 

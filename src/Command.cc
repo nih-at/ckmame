@@ -72,8 +72,15 @@ int Command::run(int argc, char* const* argv) {
 	setup(arguments);
 
 	if (arguments.find_first("all-sets")) {
+	    bool first = true;
 	    for (const auto& set : configuration.sets) {
-		if (!do_for(set, arguments)) {
+		if (first) {
+		    first = false;
+		}
+		else {
+		    printf("\n");
+		}
+		if (!do_for(set, arguments, true)) {
 		    exit_code = 1;
 		}
 	    }
@@ -117,9 +124,12 @@ int Command::run(int argc, char* const* argv) {
 }
 
 
-bool Command::do_for(const std::string& set, const ParsedCommandline& arguments) {
+bool Command::do_for(const std::string& set, const ParsedCommandline& arguments, bool multi_set_invocation) {
     try {
 	configuration.prepare(set, arguments);
+	if (multi_set_invocation) {
+	    printf("Set %s:\n", configuration.set.c_str());
+	}
 	return execute(arguments.arguments);
     }
     catch (std::exception &ex) {

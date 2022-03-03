@@ -53,6 +53,7 @@
 #include "globals.h"
 #include "MemDB.h"
 #include "RomDB.h"
+#include "CkmameCache.h"
 
 #define BUFSIZE 8192
 
@@ -60,7 +61,7 @@
 
 bool Archive::read_only_mode = false;
 
-uint64_t ArchiveContents::next_id;
+uint64_t ArchiveContents::next_id = 0;
 std::unordered_map<ArchiveContents::TypeAndName, std::weak_ptr<ArchiveContents>> ArchiveContents::archive_by_name;
 std::unordered_map<uint64_t, ArchiveContentsPtr> ArchiveContents::archive_by_id;
 
@@ -562,7 +563,7 @@ bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *cached_files) {
         return true;
     }
     
-    cache_db = CkmameDB::get_db_for_archive(name);
+    cache_db = ckmame_cache->get_db_for_archive(name);
     cache_id = cache_db ? cache_db->get_archive_id(name, filetype) : 0;
 
     if (cache_id > 0) {
@@ -608,6 +609,13 @@ ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::stri
     }
     
     return it->second.lock();
+}
+
+
+void ArchiveContents::clear_cache() {
+    archive_by_name.clear();
+    archive_by_id.clear();
+    next_id = 0;
 }
 
 

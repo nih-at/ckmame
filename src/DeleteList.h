@@ -70,15 +70,10 @@ class DeleteList {
     void sort_archives();
     void sort_entries();
 
-    static void used(Archive *a, size_t idx);
-    
 private:
     static bool close_archive(Archive *archive);
     void list_non_chds(const std::string &directory);
 };
 
-extern DeleteListPtr extra_delete_list;
-extern DeleteListPtr needed_delete_list;
-extern DeleteListPtr superfluous_delete_list;
 
 #endif // HAD_DELETE_LIST_H

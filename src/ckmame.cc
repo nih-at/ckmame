@@ -43,6 +43,7 @@
 
 #include "check_util.h"
 #include "cleanup.h"
+#include "CkmameCache.h"
 #include "CkmameDB.h"
 #include "Commandline.h"
 #include "Configuration.h"
@@ -145,17 +146,19 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 	return false;
     }
 
+    ckmame_cache = std::make_shared<CkmameCache>();
+
     try {
-	CkmameDB::register_directory(configuration.rom_directory);
-	CkmameDB::register_directory(configuration.saved_directory);
-	CkmameDB::register_directory(configuration.unknown_directory);
+	ckmame_cache->register_directory(configuration.rom_directory);
+	ckmame_cache->register_directory(configuration.saved_directory);
+	ckmame_cache->register_directory(configuration.unknown_directory);
 	for (const auto &name : configuration.extra_directories) {
 	    if (contains_romdir(name)) {
 		/* TODO: improve error message: also if extra is in ROM directory. */
 		myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", configuration.rom_directory.c_str(), name.c_str());
 		return false;
 	    }
-	    CkmameDB::register_directory(name);
+	    ckmame_cache->register_directory(name);
 	}
     } catch (Exception &exception) {
 	// TODO: handle error
@@ -236,13 +239,13 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 
     MemDB::ensure();
 
-    if (!superfluous_delete_list) {
-	superfluous_delete_list = std::make_shared<DeleteList>();
+    if (!ckmame_cache->superfluous_delete_list) {
+	ckmame_cache->superfluous_delete_list = std::make_shared<DeleteList>();
     }
-    superfluous_delete_list->add_directory(configuration.rom_directory, true);
+    ckmame_cache->superfluous_delete_list->add_directory(configuration.rom_directory, true);
 
     if (configuration.fix_romset) {
-	ensure_extra_maps(DO_MAP | DO_LIST);
+	ckmame_cache->ensure_extra_maps(true, true);
     }
 
 #ifdef SIGINFO
@@ -253,14 +256,14 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     check_tree.traverse(); /* handle rechecks */
 
     if (configuration.fix_romset) {
-	if (!needed_delete_list) {
-	    needed_delete_list = std::make_shared<DeleteList>();
+	if (!ckmame_cache->needed_delete_list) {
+	    ckmame_cache->needed_delete_list = std::make_shared<DeleteList>();
 	}
-	if (needed_delete_list->archives.empty()) {
-	    needed_delete_list->add_directory(configuration.saved_directory, false);
+	if (ckmame_cache->needed_delete_list->archives.empty()) {
+	    ckmame_cache->needed_delete_list->add_directory(configuration.saved_directory, false);
 	}
-	cleanup_list(superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN);
-	cleanup_list(needed_delete_list, CLEANUP_UNKNOWN, true);
+	cleanup_list(ckmame_cache->superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN);
+	cleanup_list(ckmame_cache->needed_delete_list, CLEANUP_UNKNOWN, true);
     }
 
     if (configuration.create_fixdat) {
@@ -268,11 +271,11 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     }
 
     if (configuration.fix_romset && configuration.move_from_extra) {
-	cleanup_list(extra_delete_list, 0);
+	cleanup_list(ckmame_cache->extra_delete_list, 0);
     }
 
     if (arguments.empty()) {
-	print_superfluous(superfluous_delete_list);
+	print_superfluous(ckmame_cache->superfluous_delete_list);
     }
 
     if (configuration.report_summary) {
@@ -286,14 +289,15 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 
     db = nullptr;
     old_db = nullptr;
+    check_tree.clear();
+    ckmame_cache = nullptr;
+    ArchiveContents::clear_cache();
 
     return true;
 }
 
 
 bool CkMame::cleanup() {
-    CkmameDB::close_all();
-
     return true;
 }
 

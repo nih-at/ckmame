@@ -45,6 +45,7 @@
 #include "globals.h"
 #include "RomDB.h"
 #include "util.h"
+#include "CkmameCache.h"
 
 
 std::string
@@ -94,8 +95,8 @@ void remove_empty_archive(Archive *archive) {
     if (configuration.verbose && !quiet) {
 	printf("%s: remove empty archive\n", archive->name.c_str());
     }
-    if (superfluous_delete_list) {
-        superfluous_delete_list->remove_archive(archive);
+    if (ckmame_cache->superfluous_delete_list) {
+	ckmame_cache->superfluous_delete_list->remove_archive(archive);
     }
 }
 
@@ -111,7 +112,7 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
         needed = false;
     }
     else {
-        ensure_needed_maps();
+	ckmame_cache->ensure_needed_maps();
         if (find_in_archives(sa->filetype, 0, f, nullptr, true) == FIND_EXISTS) {
             needed = false;
         }
@@ -155,7 +156,7 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
             return sa->file_delete(sidx);
         }
         else {
-            DeleteList::used(sa, sidx);
+            ckmame_cache->used(sa, sidx);
         }
     }
     

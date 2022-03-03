@@ -37,6 +37,7 @@
 #include "find.h"
 #include "globals.h"
 #include "RomDB.h"
+#include "CkmameCache.h"
 
 
 void check_archive_files(filetype_t filetype, const GameArchives &archives, const std::string &gamename, Result *result) {
@@ -107,7 +108,7 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
                 }
                 else {
                     Match match;
-                    ensure_needed_maps();
+		    ckmame_cache->ensure_needed_maps();
                     if (find_in_archives(filetype, detector_id, &file, &match, false) != FIND_EXISTS) {
                         result->archive_files[filetype][i] = FS_NEEDED;
                     }

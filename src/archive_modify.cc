@@ -41,6 +41,7 @@
 #include "error.h"
 #include "Exception.h"
 #include "MemDB.h"
+#include "CkmameCache.h"
 
 bool Archive::commit() {
     if (modified) {
@@ -99,8 +100,8 @@ void Archive::update_cache() {
         return;
     }
     
-    if (contents->cache_db == nullptr) {
-        contents->cache_db = CkmameDB::get_db_for_archive(name);
+    if (contents->cache_db == nullptr && ckmame_cache) {
+        contents->cache_db = ckmame_cache->get_db_for_archive(name);
     }
     if (contents->cache_db != nullptr) {
         if (files.empty()) {
@@ -132,7 +133,7 @@ void Archive::update_cache() {
     else {
         contents->cache_id = 0;
     }
-    
+
     cache_changed = false;
 }
 

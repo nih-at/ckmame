@@ -43,7 +43,7 @@ use NiHTest;
 
 $ENV{HOME} = "@top_builddir@";
 
-my $ROMDIRS = "extra|extradir|saved|roms|roms-commandline|roms-home|roms-local|roms-set|search|unknown";
+my $ROMDIRS = "(?:extra[^/]*|saved|roms[^/]*|search|unknown)";
 
 my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@', top_builddir => '@top_builddir@', zipcmp_flags => '' });
 
@@ -224,7 +224,7 @@ sub post_list_files {
 	#print(Dumper(\$test));
 	for my $file (@{$test->{files_got}}) {
 		next if ($file =~ m,/.ckmame.db$,);
-		next if ($file =~ m,($ROMDIRS)/$,o);
+		next if ($file =~ m,$ROMDIRS/$,o);
 		next if ($file =~ m,extra/foo/$,); # TODO: add empty dir directive to NiHTest, move to test case.
 		if ($variant eq 'dir') {
 			if ($file =~ m,^($ROMDIRS)/([^/]*)/,o) {
@@ -344,9 +344,9 @@ $test->add_hook('post_copy_files', \&post_copy_file);
 sub dir_mangle_test {
     my ($test, $variant) = @_;
 
-    map { s,((?:$ROMDIRS)/[^ :]*)\.zip,$1,go; } @{$test->{test}->{stdout}};
+    map { s,($ROMDIRS/[^ :]*)\.zip,$1,go; } @{$test->{test}->{stdout}};
     for my $args (@{$test->{test}->{touch}}) {
-	    $args->[1] =~ s,((?:$ROMDIRS)/[^ :]*)\.zip,$1,go;
+	    $args->[1] =~ s,($ROMDIRS/[^ :]*)\.zip,$1,go;
 	}
 
     if ($test->{test}->{program} =~ m/(ckmame|mamedb)$/) {

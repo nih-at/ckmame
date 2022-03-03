@@ -39,6 +39,7 @@
 #include "globals.h"
 #include "RomDB.h"
 #include "warn.h"
+#include "CkmameCache.h"
 
 enum test { TEST_NAME_SIZE_CHECKSUM, TEST_MERGENAME_SIZE_CHECKSUM, TEST_SIZE_CHECKSUM, TEST_LONG };
 
@@ -110,8 +111,8 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
             
             /* search in needed, superfluous and update sets */
-            ensure_needed_maps();
-            ensure_extra_maps(DO_MAP);
+            ckmame_cache->ensure_needed_maps();
+            ckmame_cache->ensure_extra_maps(true, false);
             if (find_in_archives(filetype, detector_id, &rom, match, false) == FIND_EXISTS) {
                 continue;
             }

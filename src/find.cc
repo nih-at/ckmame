@@ -37,6 +37,7 @@
 #include "DeleteList.h"
 #include "MemDB.h"
 #include "RomDB.h"
+#include "CkmameCache.h"
 
 static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *rom, const FileData *file, Match *m);
 static find_result_t check_match_old(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *wanted_file, const FileData *candidate, Match *match);
@@ -54,15 +55,15 @@ bool compute_all_detector_hashes(bool needed_only) { // returns true if new hash
     
     auto got_new_hashes = false;
     
-    if (compute_all_detector_hashes(needed_delete_list)) {
+    if (compute_all_detector_hashes(ckmame_cache->needed_delete_list)) {
         got_new_hashes = true;
     }
 
     if (!needed_only) {
-        if (compute_all_detector_hashes(superfluous_delete_list)) {
+        if (compute_all_detector_hashes(ckmame_cache->superfluous_delete_list)) {
             got_new_hashes = true;
         }
-        if (compute_all_detector_hashes(extra_delete_list)) {
+        if (compute_all_detector_hashes(ckmame_cache->extra_delete_list)) {
             got_new_hashes = true;
         }
     }

@@ -56,7 +56,7 @@ class Command {
     std::unordered_set<std::string> used_variables;
 
   private:
-    bool do_for(const std::string& set, const ParsedCommandline& arguments);
+    bool do_for(const std::string& set, const ParsedCommandline& arguments, bool multi_set_invocation = false);
 };
 
 

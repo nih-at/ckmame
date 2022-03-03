@@ -71,10 +71,6 @@ public:
     static const DBFormat format;
     static const std::string db_name;
 
-    static bool close_all();
-    static CkmameDBPtr get_db_for_archive(const std::string &name);
-    static void register_directory(const std::string &directory);
-    
     void delete_archive(const std::string &name, filetype_t filetype);
     void delete_archive(int id);
     int get_archive_id(const std::string &name, filetype_t filetype);
@@ -90,17 +86,6 @@ protected:
     [[nodiscard]] std::string get_query(int name, bool parameterized) const override;
     
 private:
-    class CacheDirectory {
-    public:
-        std::string name;
-        std::shared_ptr<CkmameDB> db;
-        bool initialized;
-        
-        explicit CacheDirectory(std::string name_): name(std::move(name_)), initialized(false) { }
-    };
-    
-    static std::vector<CacheDirectory> cache_directories;
-    
     static std::unordered_map<Statement, std::string> queries;
 
     std::string directory;

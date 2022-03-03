@@ -53,6 +53,7 @@
 #include "ParserSourceZip.h"
 #include "RomDB.h"
 #include "update_romdb.h"
+#include "CkmameCache.h"
 
 std::vector<Commandline::Option> mkmamedb_options = {
     Commandline::Option("detector", "xml-file", "use header detector"),
@@ -296,10 +297,6 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 
 
 bool MkMameDB::cleanup() {
-    if (!configuration.roms_zipped) {
-	CkmameDB::close_all();
-    }
-
     return true;
 }
 
@@ -353,10 +350,12 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	return ok;
     }
     else {
+	ckmame_cache = std::make_shared<CkmameCache>();
+
 	std::error_code ec;
 	if (std::filesystem::is_directory(fname, ec)) {
             if (cache_directory) {
-                CkmameDB::register_directory(fname);
+		ckmame_cache->register_directory(fname);
             }
 
             auto ctx = ParserDir(nullptr, exclude, dat, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
@@ -373,14 +372,20 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	    return false;
 	}
 
-        try {
+	auto ok = true;
+
+	try {
             auto ps = std::make_shared<ParserSourceFile>(fname);
-            return Parser::parse(ps, exclude, dat, out, parser_options);
+            ok = Parser::parse(ps, exclude, dat, out, parser_options);
         }
         catch (std::exception &exception) {
             fprintf(stderr, "%s: can't process %s: %s\n", getprogname(), fname.c_str(), exception.what());
-	    return false;
+	    ok = false;
         }
+
+	ckmame_cache = nullptr;
+
+	return ok;
     }
 }
 

@@ -43,11 +43,7 @@
 #include "globals.h"
 #include "RomDB.h"
 #include "util.h"
-
-
-DeleteListPtr extra_delete_list;
-DeleteListPtr needed_delete_list;
-DeleteListPtr superfluous_delete_list;
+#include "CkmameCache.h"
 
 
 DeleteList::Mark::Mark(const DeleteListPtr& list_) : list(list_), index(0), rollback(false) {
@@ -206,30 +202,6 @@ int DeleteList::execute() {
     }
 
     return ret;
-}
-
-
-void DeleteList::used(Archive *a, size_t index) {
-    FileLocation fl(a->name + (a->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? "/" : ""), a->filetype, index);
-    
-    switch (a->where) {
-    case FILE_NEEDED:
-	needed_delete_list->entries.push_back(fl);
-	break;
-	
-    case FILE_SUPERFLUOUS:
-	superfluous_delete_list->entries.push_back(fl);
-	break;
-
-    case FILE_EXTRA:
-	if (configuration.move_from_extra) {
-	    extra_delete_list->entries.push_back(fl);
-	}
-	break;
-            
-    default:
-        break;
-    }
 }
 
 

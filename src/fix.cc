@@ -41,6 +41,7 @@
 #include "fix_util.h"
 #include "Garbage.h"
 #include "Tree.h"
+#include "CkmameCache.h"
 
 // Fix archive in ROM set as best we can.
 static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage);
@@ -63,9 +64,9 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
 
             archive->ensure_valid_archive();
 
-            extra_mark = DeleteList::Mark(extra_delete_list);
-            needed_mark = DeleteList::Mark(needed_delete_list);
-            superfluous_mark = DeleteList::Mark(superfluous_delete_list);
+            extra_mark = DeleteList::Mark(ckmame_cache->extra_delete_list);
+            needed_mark = DeleteList::Mark(ckmame_cache->needed_delete_list);
+            superfluous_mark = DeleteList::Mark(ckmame_cache->superfluous_delete_list);
         }
 
         for (uint64_t i = 0; i < archive->files.size(); i++) {
@@ -286,7 +287,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 
                 if (archive->file_copy(archive_from, match->index, game_file.name)) {
-                    DeleteList::used(archive_from, match->index);
+                    ckmame_cache->used(archive_from, match->index);
                 }
                 else {
                     myerror(ERRDEF, "copying '%s' from '%s' to '%s' failed, not deleting", game_file.filename(filetype).c_str(), archive_from->name.c_str(), archive->name.c_str());

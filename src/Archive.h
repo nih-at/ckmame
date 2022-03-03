@@ -100,6 +100,7 @@ public:
     static void enter_in_maps(const ArchiveContentsPtr& contents);
     static ArchiveContentsPtr by_id(uint64_t id);
     static ArchiveContentsPtr by_name(filetype_t filetype, const std::string &name);
+    static void clear_cache();
 
     class TypeAndName {
     public:

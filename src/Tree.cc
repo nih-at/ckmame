@@ -197,3 +197,8 @@ void Tree::process(GameArchives *archives) {
 	checked = true;
     }
 }
+
+
+void Tree::clear() {
+    children.clear();
+}

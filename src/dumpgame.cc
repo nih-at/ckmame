@@ -63,6 +63,12 @@ static void print_hashtypes(int);
 std::vector<Commandline::Option> dumpgame_options = {
     Commandline::Option("brief", 'b', "brief listing (omit ROM details)"),
     Commandline::Option("checksum", 'c', "find games containing ROMs or disks with given checksums"),
+    Commandline::Option("dats", "list dats"),
+    Commandline::Option("detector", "print detector"),
+    Commandline::Option("disks", "list disks"),
+    Commandline::Option("games", "list games"),
+    Commandline::Option("hashtypes", "show which hash types are used"),
+    Commandline::Option("summary", "print summary of ROM set")
 };
 
 std::unordered_set<std::string> dumpgame_used_variables = {
