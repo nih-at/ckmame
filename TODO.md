@@ -2,24 +2,24 @@
 
 ### Implement
 
-- Check parsers what should be considered a warning and what an error (causing database creation to fail).
+- Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
-- Add option to have `ckmame` update ROM database before checking ROMs
 - Auto-fix cue sheet when renaming track 1.
 - Variables in config file (e.g. for collection root directory).
 - Don’t copy files from extra directories to saved.
 - Add `ckmame` option to update ROM database and check only if changed.
+- Allow `--set` to be specified multiple times, run command for each one.
+- Allow glob pattern as argument to `--set` option.
 - Add `ckmame` option create file with list of complete/incomplete games.
 - `dumpgame` use command line options instead of `/` special keys.
-- Add option to run command once for each set.
 - Make `SIGINFO` handler print set name.
 - For read-only dat or extra directories, put cache database in central location.
 - Add (per entry) option for directories to put cache database in central location.
-- Handle Unicode byte order markers at beginning of dat files.
 
 ### Write Tests
 
+- Add option to run command once for each set.
 - configuration option `use-description-as-name`
 - per dat configuration option `game-name-suffix`
 - per dat and extra-directory configuration options
