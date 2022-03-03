@@ -48,7 +48,7 @@ class CkmameCache {
     CkmameDBPtr get_db_for_archive(const std::string &name);
     void register_directory(const std::string &directory);
 
-    void used(Archive *a, size_t idx);
+    void used(Archive *a, size_t idx) const;
 
     DeleteListPtr extra_delete_list;
     DeleteListPtr needed_delete_list;
@@ -72,10 +72,10 @@ class CkmameCache {
     bool extra_list_done;
     bool needed_map_done;
 
-    bool enter_dir_in_map_and_list(bool do_map, bool do_list, const DeleteListPtr& list, const std::string &directory_name, bool recursive, where_t where);
-    bool enter_dir_in_map_and_list_unzipped(bool do_map, bool do_list, const DeleteListPtr& list, const std::string &directory_name, bool recursive, where_t where);
-    bool enter_dir_in_map_and_list_zipped(bool do_map, bool do_list, const DeleteListPtr& list, const std::string &dir_name, bool recursive, where_t where);
-    bool enter_file_in_map_and_list(bool do_map, bool do_list, const DeleteListPtr& list, const std::string &name, where_t where);
+    bool enter_dir_in_map_and_list(bool do_list, const DeleteListPtr &list, const std::string &directory_name, where_t where);
+    bool enter_dir_in_map_and_list_unzipped(bool do_list, const DeleteListPtr &list, const std::string &directory_name, where_t where);
+    bool enter_dir_in_map_and_list_zipped(bool do_list, const DeleteListPtr &list, const std::string &dir_name, where_t where);
+    bool enter_file_in_map_and_list(bool do_list, const DeleteListPtr &list, const std::string &name, where_t where);
 
 };
 

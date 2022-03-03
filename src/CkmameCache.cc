@@ -179,7 +179,7 @@ void CkmameCache::ensure_extra_maps(bool do_map, bool do_list) {
     }
 
     for (const auto &directory : configuration.extra_directories) {
-	enter_dir_in_map_and_list(do_map, do_list, extra_delete_list, directory, true, FILE_EXTRA);
+	enter_dir_in_map_and_list(do_list, extra_delete_list, directory, FILE_EXTRA);
     }
 
     if (do_list) {
@@ -196,17 +196,18 @@ void CkmameCache::ensure_needed_maps() {
     needed_map_done = true;
     needed_delete_list = std::make_shared<DeleteList>();
 
-    enter_dir_in_map_and_list(true, false, needed_delete_list, configuration.saved_directory, true, FILE_NEEDED);
+    enter_dir_in_map_and_list(false, needed_delete_list, configuration.saved_directory, FILE_NEEDED);
 }
 
 
-bool CkmameCache::enter_dir_in_map_and_list(bool do_map, bool do_list, const DeleteListPtr &list, const std::string &directory_name, bool recursive, where_t where) {
+bool
+CkmameCache::enter_dir_in_map_and_list(bool do_list, const DeleteListPtr &list, const std::string &directory_name, where_t where) {
     bool ret;
     if (configuration.roms_zipped) {
-	ret = enter_dir_in_map_and_list_zipped(do_map, do_list, list, directory_name, recursive, where);
+	ret = enter_dir_in_map_and_list_zipped(do_list, list, directory_name, where);
     }
     else {
-	ret = enter_dir_in_map_and_list_unzipped(do_map, do_list, list, directory_name, recursive, where);
+	ret = enter_dir_in_map_and_list_unzipped(do_list, list, directory_name, where);
     }
 
     if (ret && do_list) {
@@ -234,7 +235,7 @@ bool CkmameCache::enter_dir_in_map_and_list(bool do_map, bool do_list, const Del
 }
 
 
-bool CkmameCache::enter_dir_in_map_and_list_unzipped(bool do_map, bool do_list, const DeleteListPtr &list, const std::string &directory_name, bool recursive, where_t where) {
+bool CkmameCache::enter_dir_in_map_and_list_unzipped(bool do_list, const DeleteListPtr &list, const std::string &directory_name, where_t where) {
     try {
 	Dir dir(directory_name, false);
 	std::filesystem::path filepath;
@@ -269,13 +270,13 @@ bool CkmameCache::enter_dir_in_map_and_list_unzipped(bool do_map, bool do_list, 
 }
 
 
-bool CkmameCache::enter_dir_in_map_and_list_zipped(bool do_map, bool do_list, const DeleteListPtr &list, const std::string &dir_name, bool recursive, where_t where) {
+bool CkmameCache::enter_dir_in_map_and_list_zipped(bool do_list, const DeleteListPtr &list, const std::string &dir_name, where_t where) {
     try {
-	Dir dir(dir_name, recursive);
+	Dir dir(dir_name, true);
 	std::filesystem::path filepath;
 
 	while (!(filepath = dir.next()).empty()) {
-	    enter_file_in_map_and_list(do_map, do_list, list, filepath, where);
+	    enter_file_in_map_and_list(do_list, list, filepath, where);
 	}
 
 	auto a = Archive::open_toplevel(dir_name, TYPE_DISK, where, 0);
@@ -293,7 +294,7 @@ bool CkmameCache::enter_dir_in_map_and_list_zipped(bool do_map, bool do_list, co
 }
 
 
-bool CkmameCache::enter_file_in_map_and_list(bool do_map, bool do_list, const DeleteListPtr &list, const std::string &name, where_t where) {
+bool CkmameCache::enter_file_in_map_and_list(bool do_list, const DeleteListPtr &list, const std::string &name, where_t where) {
     name_type_t nt;
 
     switch ((nt = name_type(name))) {
@@ -319,7 +320,7 @@ bool CkmameCache::enter_file_in_map_and_list(bool do_map, bool do_list, const De
 }
 
 
-void CkmameCache::used(Archive *a, size_t index) {
+void CkmameCache::used(Archive *a, size_t index) const {
     FileLocation fl(a->name + (a->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? "/" : ""), a->filetype, index);
 
     switch (a->where) {
