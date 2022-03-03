@@ -352,6 +352,8 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
     else {
 	ckmame_cache = std::make_shared<CkmameCache>();
 
+	auto ok = true;
+
 	std::error_code ec;
 	if (std::filesystem::is_directory(fname, ec)) {
             if (cache_directory) {
@@ -359,29 +361,31 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
             }
 
             auto ctx = ParserDir(nullptr, exclude, dat, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
-            return ctx.parse();
+            ok = ctx.parse();
 	}
+	else {
+	    do {
+		if (ec) {
+		    myerror(ERRDEF, "cannot stat() file '%s': %s", fname.c_str(), ec.message().c_str());
+		    ok = false;
+		    break;
+		}
 
-	if (ec) {
-	    myerror(ERRDEF, "cannot stat() file '%s': %s", fname.c_str(), ec.message().c_str());
-	    return false;
+		if (!configuration.roms_zipped) {
+		    myerror(ERRDEF, "argument '%s' is not a directory", fname.c_str());
+		    ok = false;
+		    break;
+		}
+
+		try {
+		    auto ps = std::make_shared<ParserSourceFile>(fname);
+		    ok = Parser::parse(ps, exclude, dat, out, parser_options);
+		} catch (std::exception &exception) {
+		    fprintf(stderr, "%s: can't process %s: %s\n", getprogname(), fname.c_str(), exception.what());
+		    ok = false;
+		}
+	    } while (false);
 	}
-
-	if (!configuration.roms_zipped) {
-	    myerror(ERRDEF, "argument '%s' is not a directory", fname.c_str());
-	    return false;
-	}
-
-	auto ok = true;
-
-	try {
-            auto ps = std::make_shared<ParserSourceFile>(fname);
-            ok = Parser::parse(ps, exclude, dat, out, parser_options);
-        }
-        catch (std::exception &exception) {
-            fprintf(stderr, "%s: can't process %s: %s\n", getprogname(), fname.c_str(), exception.what());
-	    ok = false;
-        }
 
 	ckmame_cache = nullptr;
 
