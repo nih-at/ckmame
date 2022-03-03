@@ -245,7 +245,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     ckmame_cache->superfluous_delete_list->add_directory(configuration.rom_directory, true);
 
     if (configuration.fix_romset) {
-	ckmame_cache->ensure_extra_maps(true, true);
+	ckmame_cache->ensure_extra_maps();
     }
 
 #ifdef SIGINFO

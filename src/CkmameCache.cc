@@ -47,7 +47,6 @@ CkmameCache::CkmameCache() :
     extra_delete_list(std::make_shared<DeleteList>()),
     needed_delete_list(std::make_shared<DeleteList>()),
     superfluous_delete_list(std::make_shared<DeleteList>()),
-    extra_list_done(false),
     extra_map_done(false),
     needed_map_done(false) {
 }
@@ -142,49 +141,39 @@ void CkmameCache::register_directory(const std::string &directory_name) {
 }
 
 
-void CkmameCache::ensure_extra_maps(bool do_map, bool do_list) {
+void CkmameCache::ensure_extra_maps() {
     if (extra_map_done) {
-	do_map = false;
-    }
-    if (extra_list_done) {
-	do_list = false;
-    }
-
-    if (!do_map && !do_list) {
 	return;
     }
 
     /* Opening the archives will register them in the map. */
-    if (do_map) {
-	extra_map_done = true;
+    extra_map_done = true;
 
-	for (auto &entry : superfluous_delete_list->archives) {
-	    auto file = entry.name;
-	    switch ((name_type(file))) {
-	    case NAME_IMAGES:
-	    case NAME_ZIP: {
-		auto a = Archive::open(file, entry.filetype, FILE_SUPERFLUOUS, 0);
-		// TODO: loose: add loose files in directory
-		break;
-	    }
-
-	    default:
-		// TODO: loose: add loose top level file
-		break;
-	    }
+    for (auto &entry : superfluous_delete_list->archives) {
+	auto file = entry.name;
+	switch ((name_type(file))) {
+	case NAME_IMAGES:
+	case NAME_ZIP: {
+	    auto a = Archive::open(file, entry.filetype, FILE_SUPERFLUOUS, 0);
+	    // TODO: loose: add loose files in directory
+	    break;
 	}
 
-	auto filetype = configuration.roms_zipped ? TYPE_DISK : TYPE_ROM;
-	auto a = Archive::open_toplevel(configuration.rom_directory, filetype, FILE_SUPERFLUOUS, 0);
+	default:
+	    // TODO: loose: add loose top level file
+	    break;
+	}
     }
+
+    auto filetype = configuration.roms_zipped ? TYPE_DISK : TYPE_ROM;
+    auto a = Archive::open_toplevel(configuration.rom_directory, filetype, FILE_SUPERFLUOUS, 0);
+
 
     for (const auto &directory : configuration.extra_directories) {
-	enter_dir_in_map_and_list(do_list, extra_delete_list, directory, FILE_EXTRA);
+	enter_dir_in_map_and_list(extra_delete_list, directory, FILE_EXTRA);
     }
 
-    if (do_list) {
-	extra_delete_list->sort_archives();
-    }
+    extra_delete_list->sort_archives();
 }
 
 
@@ -196,21 +185,20 @@ void CkmameCache::ensure_needed_maps() {
     needed_map_done = true;
     needed_delete_list = std::make_shared<DeleteList>();
 
-    enter_dir_in_map_and_list(false, needed_delete_list, configuration.saved_directory, FILE_NEEDED);
+    enter_dir_in_map_and_list(needed_delete_list, configuration.saved_directory, FILE_NEEDED);
 }
 
 
-bool
-CkmameCache::enter_dir_in_map_and_list(bool do_list, const DeleteListPtr &list, const std::string &directory_name, where_t where) {
+bool CkmameCache::enter_dir_in_map_and_list(const DeleteListPtr &list, const std::string &directory_name, where_t where) {
     bool ret;
     if (configuration.roms_zipped) {
-	ret = enter_dir_in_map_and_list_zipped(do_list, list, directory_name, where);
+	ret = enter_dir_in_map_and_list_zipped(list, directory_name, where);
     }
     else {
-	ret = enter_dir_in_map_and_list_unzipped(do_list, list, directory_name, where);
+	ret = enter_dir_in_map_and_list_unzipped(list, directory_name, where);
     }
 
-    if (ret && do_list) {
+    if (ret) {
 	/* clean up cache db: remove archives no longer in file system */
 	auto dbh = get_db_for_archive(directory_name);
 	if (dbh) {
@@ -235,7 +223,7 @@ CkmameCache::enter_dir_in_map_and_list(bool do_list, const DeleteListPtr &list, 
 }
 
 
-bool CkmameCache::enter_dir_in_map_and_list_unzipped(bool do_list, const DeleteListPtr &list, const std::string &directory_name, where_t where) {
+bool CkmameCache::enter_dir_in_map_and_list_unzipped(const DeleteListPtr &list, const std::string &directory_name, where_t where) {
     try {
 	Dir dir(directory_name, false);
 	std::filesystem::path filepath;
@@ -247,9 +235,7 @@ bool CkmameCache::enter_dir_in_map_and_list_unzipped(bool do_list, const DeleteL
 	    if (std::filesystem::is_directory(filepath)) {
 		auto a = Archive::open(filepath, TYPE_ROM, where, 0);
 		if (a) {
-		    if (do_list) {
-			list->add(a.get());
-		    }
+		    list->add(a.get());
 		    a->close();
 		}
 	    }
@@ -257,9 +243,7 @@ bool CkmameCache::enter_dir_in_map_and_list_unzipped(bool do_list, const DeleteL
 
 	auto a = Archive::open_toplevel(directory_name, TYPE_ROM, where, 0);
 	if (a) {
-	    if (do_list) {
-		list->add(a.get());
-	    }
+	    list->add(a.get());
 	}
     }
     catch (...) {
@@ -270,20 +254,18 @@ bool CkmameCache::enter_dir_in_map_and_list_unzipped(bool do_list, const DeleteL
 }
 
 
-bool CkmameCache::enter_dir_in_map_and_list_zipped(bool do_list, const DeleteListPtr &list, const std::string &dir_name, where_t where) {
+bool CkmameCache::enter_dir_in_map_and_list_zipped(const DeleteListPtr &list, const std::string &dir_name, where_t where) {
     try {
 	Dir dir(dir_name, true);
 	std::filesystem::path filepath;
 
 	while (!(filepath = dir.next()).empty()) {
-	    enter_file_in_map_and_list(do_list, list, filepath, where);
+	    enter_file_in_map_and_list(list, filepath, where);
 	}
 
 	auto a = Archive::open_toplevel(dir_name, TYPE_DISK, where, 0);
 	if (a) {
-	    if (do_list) {
-		list->add(a.get());
-	    }
+	    list->add(a.get());
 	}
     }
     catch (...) {
@@ -294,7 +276,7 @@ bool CkmameCache::enter_dir_in_map_and_list_zipped(bool do_list, const DeleteLis
 }
 
 
-bool CkmameCache::enter_file_in_map_and_list(bool do_list, const DeleteListPtr &list, const std::string &name, where_t where) {
+bool CkmameCache::enter_file_in_map_and_list(const DeleteListPtr &list, const std::string &name, where_t where) {
     name_type_t nt;
 
     switch ((nt = name_type(name))) {
@@ -302,9 +284,7 @@ bool CkmameCache::enter_file_in_map_and_list(bool do_list, const DeleteListPtr &
     case NAME_ZIP: {
 	auto a = Archive::open(name, nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
 	if (a) {
-	    if (do_list) {
-		list->add(a.get());
-	    }
+	    list->add(a.get());
 	    a->close();
 	}
 	break;

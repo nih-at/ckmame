@@ -112,7 +112,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             
             /* search in needed, superfluous and update sets */
             ckmame_cache->ensure_needed_maps();
-            ckmame_cache->ensure_extra_maps(true, false);
+	    ckmame_cache->ensure_extra_maps();
             if (find_in_archives(filetype, detector_id, &rom, match, false) == FIND_EXISTS) {
                 continue;
             }
