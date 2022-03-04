@@ -215,20 +215,20 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
     if (arguments.empty()) {
 	if (!dbname.empty() || fmt != OutputContext::FORMAT_DB) {
 	    //commandline.usage(false, stderr); TOOD
-	    exit(1);
+	   return false;
 	}
 	else if (configuration.dats.empty() || configuration.dat_directories.empty()) {
 	    myerror(ERRDEF, "no dats or dat-directories configured");
-	    exit(1);
+	    return false;
 	}
 	else {
 	    try {
 		update_romdb(force);
 	    } catch (Exception &ex) {
 		myerror(ERRDEF, "can't update ROM database: %s", ex.what());
-		exit(1);
+		return false;
 	    }
-	    exit(0);
+	    return true;
 	}
     }
 

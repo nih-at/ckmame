@@ -9,8 +9,6 @@
 - Variables in config file (e.g. for collection root directory).
 - Don’t copy files from extra directories to saved.
 - Add `ckmame` option to update ROM database and check only if changed.
-- Allow `--set` to be specified multiple times, run command for each one.
-- Allow glob pattern as argument to `--set` option.
 - Add `ckmame` option create file with list of complete/incomplete games.
 - `dumpgame` use command line options instead of `/` special keys.
 - Make `SIGINFO` handler print set name.
@@ -19,6 +17,9 @@
 
 ### Write Tests
 
+- multi-set invocation for mkmamedb
+- Allow `--set` to be specified multiple times, run command for each one.
+- Allow glob pattern as argument to `--set` option.
 - Add option to run command once for each set.
 - configuration option `use-description-as-name`
 - per dat configuration option `game-name-suffix`

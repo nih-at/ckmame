@@ -33,6 +33,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Command.h"
 
+#include <fnmatch.h>
+
 #include "config.h"
 
 #include "Exception.h"
@@ -71,35 +73,54 @@ int Command::run(int argc, char* const* argv) {
 
 	setup(arguments);
 
+	std::set<std::string> selected_sets;
+
 	if (arguments.find_first("all-sets")) {
-	    bool first = true;
-	    for (const auto& set : configuration.sets) {
+	    selected_sets = configuration.sets;
+	}
+	else {
+	    for (const auto &option : arguments.options) {
+		if (option.name == "set") {
+		    if (option.argument.find_first_of("?*[")) {
+			auto matched = false;
+			for (const auto& set : configuration.sets) {
+			    if (fnmatch(option.argument.c_str(), set.c_str(), 0) == 0) {
+				selected_sets.insert(set);
+				matched = true;
+			    }
+			}
+			if (!matched) {
+			    throw Exception("no set matches '" + option.argument + "'");
+			}
+		    }
+		    else {
+			if (configuration.sets.find(option.argument) == configuration.sets.end()) {
+			    throw Exception("unknown set '" + option.argument + "'");
+			}
+			selected_sets.insert(option.argument);
+		    }
+		}
+	    }
+	}
+
+	if (selected_sets.empty()) {
+	    if (!do_for("", arguments, false)) {
+		exit_code = 1;
+	    }
+	}
+	else {
+	    auto first = true;
+	    auto multi_set = selected_sets.size() > 1;
+	    for (const auto& set : selected_sets) {
 		if (first) {
 		    first = false;
 		}
 		else {
 		    printf("\n");
 		}
-		if (!do_for(set, arguments, true)) {
+		if (!do_for(set, arguments, multi_set)) {
 		    exit_code = 1;
 		}
-	    }
-	}
-	else {
-	    auto set = std::string();
-
-	    for (const auto &option : arguments.options) {
-		if (option.name == "set") {
-		    set = option.argument;
-		    if (configuration.sets.find(set) == configuration.sets.end()) {
-			throw Exception("unknown set '" + set + "'");
-		    }
-		    set = option.argument;
-		}
-	    }
-
-	    if (!do_for(set, arguments)) {
-		exit_code = 1;
 	    }
 	}
     }
