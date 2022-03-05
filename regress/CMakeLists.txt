@@ -106,6 +106,7 @@ set(XFAIL_TESTS
   detector-from-extra-cleanup-2.test
   mkmamedb-list-available-dats-3.test
   mkmamedb-list-available-dats-4.test
+  ckmame-all-sets-3.test
 )
 	      
 file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
