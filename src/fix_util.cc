@@ -92,8 +92,8 @@ move_image_to_garbage(const std::string &fname) {
 void remove_empty_archive(Archive *archive) {
     bool quiet = archive->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY;
     
-    if (configuration.verbose && !quiet) {
-	printf("%s: remove empty archive\n", archive->name.c_str());
+    if (!quiet) {
+	output.message_verbose("remove empty archive");
     }
     if (ckmame_cache->superfluous_delete_list) {
 	ckmame_cache->superfluous_delete_list->remove_archive(archive);
@@ -119,15 +119,13 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
     }
     
     if (needed) {
-        if (configuration.verbose) {
-            if (!length.has_value()) {
-                printf("%s: save needed file '%s'\n", sa->name.c_str(), sa->files[sidx].filename().c_str());
-            }
-            else {
-                printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed\n", sa->name.c_str(), start, length.value(), sa->files[sidx].filename().c_str());
-            }
-        }
-        
+	if (!length.has_value()) {
+	    output.message_verbose("save needed file '%s'", sa->files[sidx].filename().c_str());
+	}
+	else {
+	    output.message_verbose("extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to needed", start, length.value(), sa->files[sidx].filename().c_str());
+	}
+
         auto tmp = make_needed_name(sa->filetype, f);
         if (tmp.empty()) {
             myerror(ERRDEF, "cannot create needed file name");
@@ -146,8 +144,8 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
         }
     }
     else {
-        if (!length.has_value() && configuration.verbose) {
-            printf("%s: delete unneeded file '%s'\n", sa->name.c_str(), sa->files[sidx].filename().c_str());
+        if (!length.has_value()) {
+	    output.message_verbose("delete unneeded file '%s'", sa->files[sidx].filename().c_str());
         }
     }
     

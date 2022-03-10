@@ -7,5 +7,5 @@ stdout-data
 In game 1-4:
 game 1-4                                     : correct
 file 08.rom        size       8  crc 3656897d: needed elsewhere
-roms/1-4.zip: save needed file '08.rom'
+save needed file '08.rom'
 end-of-data

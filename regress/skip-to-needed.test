@@ -11,5 +11,5 @@ stdout-data
 In game skipped:
 game skipped                                 : not a single file found
 file 0c.rom        size      16  crc 07e0c072: needed elsewhere
-roms/skipped.zip: save needed file '0c.rom'
+save needed file '0c.rom'
 end-of-data

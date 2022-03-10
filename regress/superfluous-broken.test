@@ -8,10 +8,10 @@ stdout-data
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/2-48-part-broken.zip/04.rom'
 rom  08.rom        size       8  crc 3656897d: missing
-roms/2-48.zip: add 'roms/2-48-part-broken.zip/04.rom' as '04.rom'
+add 'roms/2-48-part-broken.zip/04.rom' as '04.rom'
 In archive roms/2-48-part-broken.zip:
 file 08.rom        size       8  crc 3656897d: broken
-roms/2-48-part-broken.zip: delete used file '04.rom'
+delete used file '04.rom'
 end-of-data
 stderr-data
 roms/2-48-part-broken.zip: 08.rom: CRC error: bf933f81 != 3656897d

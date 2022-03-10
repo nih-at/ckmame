@@ -190,13 +190,13 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 	auto repository = DatRepository(configuration.dat_directories);
 
 	for (const auto &dat : repository.list_dats()) {
-	    printf("%s\n", dat.c_str());
+	    output.message(dat);
 	}
 	return true;
     }
     if (list_dats) {
 	for (const auto &dat : configuration.dats) {
-	    printf("%s\n", dat.c_str());
+	    output.message(dat);
 	}
 	return true;
     }

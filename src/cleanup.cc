@@ -57,6 +57,7 @@ void cleanup_list(const DeleteListPtr& list, int flags, bool is_needed) {
     while (i < n) {
         auto entry = list->archives[i];
 
+	warn_set_info(WARN_TYPE_ARCHIVE, entry.name);
         ArchivePtr a = Archive::open(entry.name, entry.filetype, FILE_NOWHERE, 0);
 
         if (a) {
@@ -93,10 +94,10 @@ void cleanup_list(const DeleteListPtr& list, int flags, bool is_needed) {
                 check_archive_files(entry.filetype, archives, "", &res);
             }
             
-            warn_set_info(WARN_TYPE_ARCHIVE, a->name);
-            diagnostics_archive(entry.filetype, a.get(), res, is_needed);
+	    diagnostics_archive(entry.filetype, a.get(), res, is_needed);
             cleanup_archive(entry.filetype, a.get(), &res, flags);
-        }
+	    warn_unset_info();
+	}
 
 	if (n != list->archives.size()) {
 	    n = list->archives.size();
@@ -140,9 +141,7 @@ static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int
 		break;
 	    }
 
-            if (configuration.verbose) {
-		printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, a->files[i].filename().c_str());
-            }
+	    output.message_verbose("delete %s file '%s'", reason, a->files[i].filename().c_str());
 	    a->file_delete(i);
 	    break;
 
@@ -165,16 +164,12 @@ static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
                 if (a->files[i].hashes.size == 0) {
-                    if (configuration.verbose) {
-                        printf("%s: delete empty file '%s'\n", a->name.c_str(), a->files[i].filename().c_str());
-                    }
+                    output.message_verbose("delete empty file '%s'", a->files[i].filename().c_str());
                     a->file_delete(i);
                 }
                 else {
-                    if (configuration.verbose) {
-                        printf("%s: move unknown file '%s'\n", a->name.c_str(), a->files[i].filename().c_str());
-                    }
-                    
+                    output.message_verbose("move unknown file '%s'", a->files[i].filename().c_str());
+
                     /* TODO: handle error (how?) */
                     if (configuration.fix_romset) {
                         gb->add(i, false);

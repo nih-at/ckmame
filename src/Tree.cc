@@ -42,6 +42,7 @@
 #include "globals.h"
 #include "RomDB.h"
 #include "sighandle.h"
+#include "warn.h"
 
 
 Tree check_tree;
@@ -170,33 +171,49 @@ void Tree::process(GameArchives *archives) {
         return;
     }
 
-    Result res(game.get(), archives[0]);
+    try {
+	warn_set_info(WARN_TYPE_GAME, game->name);
 
-    check_old(game.get(), &res);
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        check_game_files(game.get(), static_cast<filetype_t>(ft), archives, &res);
-        check_archive_files(static_cast<filetype_t>(ft), archives[0], game->name, &res);
+	Result res(game.get(), archives[0]);
+
+	check_old(game.get(), &res);
+	for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+	    check_game_files(game.get(), static_cast<filetype_t>(ft), archives, &res);
+	    check_archive_files(static_cast<filetype_t>(ft), archives[0], game->name, &res);
+	}
+	update_game_status(game.get(), &res);
+
+	/* write warnings/errors for me */
+	diagnostics(game.get(), archives[0], res);
+
+	int ret = 0;
+
+	if (configuration.fix_romset) {
+	    ret = fix_game(game.get(), archives[0], &res);
+	}
+
+	/* TODO: includes too much when rechecking */
+	if (configuration.create_fixdat) {
+	    Fixdat::write_entry(game.get(), &res);
+	}
+
+	if (configuration.fix_romset) {
+	    ret |= fix_save_needed_from_unknown(game.get(), archives[0], &res);
+	}
+
+	if (ret != 1) {
+	    checked = true;
+	}
+	warn_unset_info();
+
+
     }
-    update_game_status(game.get(), &res);
-
-    /* write warnings/errors for me */
-    diagnostics(game.get(), archives[0], res);
-
-    int ret = 0;
-
-    if (configuration.fix_romset) {
-	ret = fix_game(game.get(), archives[0], &res);
-    }
-
-    /* TODO: includes too much when rechecking */
-    if (configuration.create_fixdat) {
-	Fixdat::write_entry(game.get(), &res);
-    }
-
-    if (ret != 1) {
-	checked = true;
+    catch (std::exception &ex) {
+	warn_unset_info();
+	throw ex;
     }
 }
+
 
 
 void Tree::clear() {

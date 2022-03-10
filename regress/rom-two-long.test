@@ -16,13 +16,13 @@ no-hashes unknown 2-48.zip
 stdout-data
 In game 1-8:
 rom  08.rom        size       8  crc 3656897d: too long, valid subsection at byte 0 (16)
-roms/1-8.zip: move long file '08.rom'
-roms/1-8.zip: extract (offset 0, size 8) from '08.rom' to '08.rom'
+move long file '08.rom'
+extract (offset 0, size 8) from '08.rom' to '08.rom'
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 0 (8)
 rom  08.rom        size       8  crc 3656897d: too long, valid subsection at byte 8 (16)
-roms/2-48.zip: move long file '04.rom'
-roms/2-48.zip: extract (offset 0, size 4) from '04.rom' to '04.rom'
-roms/2-48.zip: move long file '08.rom'
-roms/2-48.zip: extract (offset 8, size 8) from '08.rom' to '08.rom'
+move long file '04.rom'
+extract (offset 0, size 4) from '04.rom' to '04.rom'
+move long file '08.rom'
+extract (offset 8, size 8) from '08.rom' to '08.rom'
 end-of-data

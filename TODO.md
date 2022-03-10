@@ -2,6 +2,7 @@
 
 ### Implement
 
+- Use output.error*() instead of myerror().
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.

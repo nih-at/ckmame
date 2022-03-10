@@ -42,6 +42,7 @@
 #include "Garbage.h"
 #include "Tree.h"
 #include "CkmameCache.h"
+#include "warn.h"
 
 // Fix archive in ROM set as best we can.
 static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage);
@@ -72,10 +73,8 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
         for (uint64_t i = 0; i < archive->files.size(); i++) {
             switch (result->archive_files[filetype][i]) {
                 case FS_UNKNOWN: {
-                    if (configuration.verbose) {
-                        printf("%s: move unknown file '%s'\n", archive->name.c_str(), archive->files[i].filename().c_str());
-                    }
-                    
+		    output.message_verbose("move unknown file '%s'", archive->files[i].filename().c_str());
+
                     if (configuration.fix_romset) {
                         garbage->add(i, false); /* TODO: check return value */
                     }
@@ -84,10 +83,8 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
                     
                 case FS_DUPLICATE:
                     if (!configuration.keep_old_duplicate && archive->is_writable()) {
-                        if (configuration.verbose) {
-                            printf("%s: delete duplicate file '%s'\n", archive->name.c_str(), archive->files[i].filename().c_str());
-                        }
-                        
+			output.message_verbose("delete duplicate file '%s'", archive->files[i].filename().c_str());
+
                         /* TODO: handle error (how?) */
                         archive->file_delete(i);
                     }
@@ -95,10 +92,8 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
 
                 case FS_SUPERFLUOUS:
                     if (archive->is_writable()) {
-                        if (configuration.verbose) {
-                            printf("%s: delete unused file '%s'\n", archive->name.c_str(), archive->files[i].filename().c_str());
-                        }
-                        
+			output.message_verbose("delete unused file '%s'", archive->files[i].filename().c_str());
+
                         /* TODO: handle error (how?) */
                         archive->file_delete(i);
                     }
@@ -157,6 +152,37 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
     return ret;
 }
 
+int fix_save_needed_from_unknown(Game *game, const GameArchives archives, Result *result) {
+    auto needs_recheck = false;
+
+    if (configuration.fix_romset) {
+	for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+	    auto filetype = static_cast<filetype_t>(ft);
+	    auto garbage_name = make_garbage_name(archives[filetype]->name, 0);
+
+	    warn_set_info(WARN_TYPE_ARCHIVE, garbage_name);
+	    for (size_t i = 0; i < game->files[filetype].size(); i++) {
+		Match *match = &result->game_files[filetype][i];
+		if (match->quality != Match::COPIED || match->source_is_old() || match->archive->name != garbage_name) {
+		    continue;
+		}
+
+		/* we can't copy from our own garbage archive, since we're copying to it, and libzip doesn't support cross copying */
+
+		/* TODO: handle error (how?) */
+		if (save_needed(match->archive.get(), match->index, game->name)) {
+		    needs_recheck = true;
+		}
+
+		break;
+	    }
+	    warn_unset_info();
+	}
+    }
+
+    return needs_recheck ? 1 : 0;
+}
+
 
 static int
 make_space(Archive *a, const std::string &name, std::vector<std::string> *original_names, size_t num_names) {
@@ -173,9 +199,7 @@ make_space(Archive *a, const std::string &name, std::vector<std::string> *origin
     }
 
     if (a->files[index].broken) {
-        if (configuration.verbose) {
-	    printf("%s: delete broken '%s'\n", a->name.c_str(), name.c_str());
-        }
+	output.message_verbose("delete broken '%s'", name.c_str());
         return a->file_delete(index) ? 0 : -1;
     }
 
@@ -209,10 +233,8 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
             case Match::MISSING:
                 if (game_file.hashes.size == 0) {
                     /* create missing empty file */
-                    if (configuration.verbose) {
-                        printf("%s: create empty file '%s'\n", archive->name.c_str(), game_file.filename(filetype).c_str());
-                    }
-                    
+		    output.message_verbose("create empty file '%s'", game_file.filename(filetype).c_str());
+
                     /* TODO: handle error (how?) */
                     archive->file_add_empty(game_file.name);
                 }
@@ -220,18 +242,14 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 
             case Match::LONG: {
                 if (archive == archive_from && !archive_from->is_file_deleted(match->index)) {
-                    if (configuration.verbose) {
-                        printf("%s: move long file '%s'\n", archive_from->name.c_str(), REAL_NAME(archive_from, match->index));
-                    }
+		    output.message_verbose("move long file '%s'", REAL_NAME(archive_from, match->index));
                     if (!garbage->add(match->index, true)) {
                         break;
                     }
                 }
                 
-                if (configuration.verbose) {
-                    printf("%s: extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to '%s'\n", archive->name.c_str(), match->offset, game_file.hashes.size, REAL_NAME(archive_from, match->index), game_file.filename(filetype).c_str());
-                }
-                
+		output.message_verbose("extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to '%s'", match->offset, game_file.hashes.size, REAL_NAME(archive_from, match->index), game_file.filename(filetype).c_str());
+
                 if (make_space(archive, game_file.name, &original_names, num_names) < 0) {
                     break;
                 }
@@ -256,8 +274,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     }
                 }
                 
-                if (configuration.verbose)
-                    printf("%s: rename '%s' to '%s'\n", archive->name.c_str(), REAL_NAME(archive, match->index), game_file.filename(filetype).c_str());
+		output.message_verbose("rename '%s' to '%s'", REAL_NAME(archive, match->index), game_file.filename(filetype).c_str());
                 
                 /* TODO: handle errors (how?) */
                 if (make_space(archive, game_file.name, &original_names, num_names) < 0)
@@ -269,18 +286,10 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
             case Match::COPIED:
                 if (garbage && archive_from == garbage->da.get()) {
                     /* we can't copy from our own garbage archive, since we're copying to it, and libzip doesn't support cross copying */
-                    
-                    /* TODO: handle error (how?) */
-                    if (save_needed(archive_from, match->index, game->name)) {
-                        needs_recheck = true;
-                    }
-                    
                     break;
                 }
-                if (configuration.verbose) {
-                    printf("%s: add '%s/%s' as '%s'\n", archive->name.c_str(), archive_from->name.c_str(), REAL_NAME(archive_from, match->index), game_file.filename(filetype).c_str());
-                }
-                
+		output.message_verbose("add '%s/%s' as '%s'", archive_from->name.c_str(), REAL_NAME(archive_from, match->index), game_file.filename(filetype).c_str());
+
                 if (make_space(archive, game_file.name, &original_names, num_names) < 0) {
                     /* TODO: if (idx >= 0) undo deletion of broken file */
                     break;

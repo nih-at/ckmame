@@ -8,5 +8,5 @@ stdout-data
 In game parent-4:
 game parent-4                                : correct
 file 0c.rom        size      12  crc 0623c932: unknown
-roms/parent-4.zip: move unknown file '0c.rom'
+move unknown file '0c.rom'
 end-of-data

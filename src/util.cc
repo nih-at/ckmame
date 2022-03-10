@@ -152,16 +152,22 @@ bool is_ziplike(const std::string &fname) {
 }
 
 
-void
-print_human_number(FILE *f, uint64_t value) {
-    if (value > 1024ul * 1024 * 1024 * 1024)
-        printf("%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024), (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
-    else if (value > 1024 * 1024 * 1024)
-        printf("%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024), (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
-    else if (value > 1024 * 1024)
-        printf("%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024), (((value / 1024) * 10 + 512) / 1024) % 100);
-    else
-        printf("%" PRIi64 " bytes", value);
+std::string human_number(uint64_t value) {
+    char s[128];
+    if (value > 1024ul * 1024 * 1024 * 1024) {
+	sprintf(s, "%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024), (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
+    }
+    else if (value > 1024 * 1024 * 1024) {
+	sprintf(s, "%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024), (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
+    }
+    else if (value > 1024 * 1024) {
+	sprintf(s, "%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024), (((value / 1024) * 10 + 512) / 1024) % 100);
+    }
+    else {
+	sprintf(s, "%" PRIi64 " bytes", value);
+    }
+
+    return s;
 }
 
 
@@ -247,4 +253,23 @@ std::vector<std::string> slurp_lines(const std::string &file_name) {
 
 bool string_starts_with(const std::string &large, const std::string &small) {
     return large.rfind(small, 0) != std::string::npos;
+}
+
+
+std::string pad_string(const std::string &string, size_t width, char c) {
+    size_t length = string.length();
+
+    if (length >= width) {
+	return string;
+    }
+    return string + std::string(width - length, c);
+}
+
+std::string pad_string_left(const std::string &string, size_t width, char c) {
+    size_t length = string.length();
+
+    if (length >= width) {
+	return string;
+    }
+    return std::string(width - length, c) + string;
 }

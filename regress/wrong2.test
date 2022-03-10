@@ -7,5 +7,5 @@ stdout-data
 In game 1-8a:
 game 1-8a                                    : not a single file found
 file 08.rom        size       8  crc 3656897d: needed elsewhere
-roms/1-8a.zip: save needed file '08.rom'
+save needed file '08.rom'
 end-of-data

@@ -7,6 +7,6 @@ In game 2-4c:
 game 2-4c                                    : not a single file found
 In archive roms/1-4.zip:
 file zero          size       0  crc 00000000: unknown
-roms/1-4.zip: delete empty file 'zero'
-roms/1-4.zip: remove empty archive
+delete empty file 'zero'
+remove empty archive
 end-of-data

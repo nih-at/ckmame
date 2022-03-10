@@ -10,5 +10,5 @@ args -D mame-detector.db -Fvc 1-8
 stdout-data
 In game 1-8:
 rom  08.rom        size       8  crc 3656897d: wrong name (04.rom)
-roms/1-8.zip: rename '04.rom' to '08.rom'
+rename '04.rom' to '08.rom'
 end-of-data

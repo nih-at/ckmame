@@ -8,6 +8,6 @@ stdout-data
 In game deadbeef:
 rom  deadbeef      size       8  crc deadbeef: is in 'roms/deadclonedbeef.zip/deadclonedbeef'
 file deadpork      size       8  crc deadbeef: unknown
-roms/deadbeef.zip: move unknown file 'deadpork'
-roms/deadbeef.zip: add 'roms/deadclonedbeef.zip/deadclonedbeef' as 'deadbeef'
+move unknown file 'deadpork'
+add 'roms/deadclonedbeef.zip/deadclonedbeef' as 'deadbeef'
 end-of-data

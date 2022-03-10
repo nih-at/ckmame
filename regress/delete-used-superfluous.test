@@ -8,7 +8,8 @@ stdout-data
 In game clone-8:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/superfluous.zip/04.rom'
 rom  08.rom        size       8  crc 3656897d: correct
-roms/clone-8.zip: add 'roms/superfluous.zip/04.rom' as '04.rom'
-roms/superfluous.zip: delete used file '04.rom'
-roms/superfluous.zip: remove empty archive
+add 'roms/superfluous.zip/04.rom' as '04.rom'
+In archive roms/superfluous.zip:
+delete used file '04.rom'
+remove empty archive
 end-of-data

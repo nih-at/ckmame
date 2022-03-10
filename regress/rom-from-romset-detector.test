@@ -15,5 +15,5 @@ no-hashes roms skipped-2.zip 08.rom
 stdout-data
 In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'roms/skipped-2.zip/08.rom'
-roms/skipped.zip: add 'roms/skipped-2.zip/08.rom' as '08.rom'
+add 'roms/skipped-2.zip/08.rom' as '08.rom'
 end-of-data

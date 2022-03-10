@@ -8,6 +8,6 @@ stdout-data
 In game zero:
 game zero                                    : not a single file found
 file zero          size       4  crc 9be3e0a3: unknown
-roms/zero.zip: move unknown file 'zero'
-roms/zero.zip: create empty file 'zero'
+move unknown file 'zero'
+create empty file 'zero'
 end-of-data

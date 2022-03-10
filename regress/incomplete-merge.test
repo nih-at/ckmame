@@ -8,10 +8,12 @@ stdout-data
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: is in 'saved/d87f7e0c-000.zip/04.rom'
 rom  08.rom        size       8  crc 3656897d: is in 'extra/2-48.zip/08.rom'
-roms/2-48.zip: add 'saved/d87f7e0c-000.zip/04.rom' as '04.rom'
-roms/2-48.zip: add 'extra/2-48.zip/08.rom' as '08.rom'
-saved/d87f7e0c-000.zip: delete used file '04.rom'
-saved/d87f7e0c-000.zip: remove empty archive
-extra/2-48.zip: delete used file '08.rom'
-extra/2-48.zip: remove empty archive
+add 'saved/d87f7e0c-000.zip/04.rom' as '04.rom'
+add 'extra/2-48.zip/08.rom' as '08.rom'
+In archive saved/d87f7e0c-000.zip:
+delete used file '04.rom'
+remove empty archive
+In archive extra/2-48.zip:
+delete used file '08.rom'
+remove empty archive
 end-of-data

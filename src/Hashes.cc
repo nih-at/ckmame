@@ -339,11 +339,9 @@ std::string Hashes::to_string(int type) const {
 
         case Hashes::TYPE_MD5:
             return bin2hex(md5);
-            break;
 
         case Hashes::TYPE_SHA1:
             return bin2hex(sha1);
-            break;
 
         default:
             return "";

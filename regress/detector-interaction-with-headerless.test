@@ -13,11 +13,12 @@ detector-hashes skip-some-bytes 20070429 roms skipped.zip
 stdout-data
 In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'
-roms/skipped.zip: add 'extra/short.zip/08.rom' as '08.rom'
+add 'extra/short.zip/08.rom' as '08.rom'
 In archive extra/long.zip:
 file 08.rom        size       8  crc 3656897d: not used
-extra/long.zip: delete unused file '08.rom'
-extra/long.zip: remove empty archive
-extra/short.zip: delete used file '08.rom'
-extra/short.zip: remove empty archive
+delete unused file '08.rom'
+remove empty archive
+In archive extra/short.zip:
+delete used file '08.rom'
+remove empty archive
 end-of-data

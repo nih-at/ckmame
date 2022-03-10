@@ -74,18 +74,14 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
 	dats_to_use.push_back(fs_dat);
 
 	if (it == db_versions.end()) {
-	    if (configuration.verbose) { // TODO: different config setting
-		printf("%s (not in database)\n", dat_name.c_str());
-	    }
+	    output.message("%s (-> %s)", dat_name.c_str(), fs_dat.version.c_str());
 	    up_to_date = false;
 	    continue;
 	}
 	const auto& db_version = it->second;
 
 	if (DatRepository::is_newer(fs_dat.version, db_version)) {
-	    if (configuration.verbose) { // TODO: different config setting
-		printf("%s (%s -> %s)\n", dat_name.c_str(), db_version.c_str(), fs_dat.version.c_str());
-	    }
+	    output.message("%s (%s -> %s)", dat_name.c_str(), db_version.c_str(), fs_dat.version.c_str());
 	    up_to_date = false;
 	}
     }

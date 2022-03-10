@@ -7,5 +7,5 @@ no-hashes roms deadbeef.zip
 stdout-data
 In game deadclonedbeef:
 rom  deadclonedbeef  size       8  crc deadbeef: wrong name (deadbeef), should be in cloneof
-roms/deadclonedbeef.zip: rename 'deadbeef' to 'deadclonedbeef'
+rename 'deadbeef' to 'deadclonedbeef'
 end-of-data

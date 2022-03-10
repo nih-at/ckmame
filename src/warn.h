@@ -36,6 +36,7 @@
 
 
 #include "File.h"
+#include "Game.h"
 #include "Rom.h"
 
 /* keep in sync with tname in warn.c:warn_ensure_header() */
@@ -45,7 +46,9 @@ typedef enum warn_type warn_type_t;
 
 
 void warn_archive_file(filetype_t ft, const File *r, const std::string &reason);
+void warn_game(filetype_t ft, const Game* game, const std::string& reason);
 void warn_game_file(filetype_t ft, const Rom *r, const std::string &reason);
 void warn_set_info(warn_type_t type, const std::string &name);
+void warn_unset_info();
 
 #endif /* _HAD_WARN_H */

@@ -7,7 +7,8 @@ file-new roms/1-4.zip 1-4-ok.zip
 stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-super.zip/04.rom'
-roms/1-4.zip: add 'roms/1-4-super.zip/04.rom' as '04.rom'
-roms/1-4-super.zip: delete used file '04.rom'
-roms/1-4-super.zip: remove empty archive
+add 'roms/1-4-super.zip/04.rom' as '04.rom'
+In archive roms/1-4-super.zip:
+delete used file '04.rom'
+remove empty archive
 end-of-data

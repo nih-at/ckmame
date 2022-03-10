@@ -9,6 +9,6 @@ no-hashes unknown 1-4.zip 04.rom
 stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 0 (8)
-roms/1-4.zip: move long file '04.rom'
-roms/1-4.zip: extract (offset 0, size 4) from '04.rom' to '04.rom'
+move long file '04.rom'
+extract (offset 0, size 4) from '04.rom' to '04.rom'
 end-of-data

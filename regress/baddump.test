@@ -9,6 +9,6 @@ In game baddump:
 game baddump                                 : correct
 In archive extra/baddump.zip:
 file bad.rom       size       3  crc 148c7b71: not used
-extra/baddump.zip: delete unused file 'bad.rom'
-extra/baddump.zip: remove empty archive
+delete unused file 'bad.rom'
+remove empty archive
 end-of-data

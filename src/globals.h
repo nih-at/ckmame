@@ -35,7 +35,10 @@
 */
 
 #include "Configuration.h"
+#include "Output.h"
 
 extern Configuration configuration;
+
+extern Output output;
 
 #endif // HAD_GLOBALS_H

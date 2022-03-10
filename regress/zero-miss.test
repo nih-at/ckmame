@@ -5,5 +5,5 @@ file-new roms/zero.zip zero-ok.zip
 stdout-data
 In game zero:
 game zero                                    : not a single file found
-roms/zero.zip: create empty file 'zero'
+create empty file 'zero'
 end-of-data

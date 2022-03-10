@@ -8,5 +8,5 @@ In game deadbeefchild:
 rom  deadbeef      size       8  crc deadbeef: missing
 rom  04.rom        size       4  crc d87f7e0c: correct
 file deadbeef      size       8  crc deadbeef: unknown
-roms/deadbeefchild.zip: move unknown file 'deadbeef'
+move unknown file 'deadbeef'
 end-of-data

@@ -9,7 +9,7 @@ stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4.zip/04.rom'
 file 04.rom        size       4  crc d87e7e0c: unknown
-roms/1-4.zip: move unknown file '04.rom'
+move unknown file '04.rom'
 In archive extra/1-4.zip:
 file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 end-of-data

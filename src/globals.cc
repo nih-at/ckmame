@@ -34,3 +34,5 @@
 #include "globals.h"
 
 Configuration configuration;
+
+Output output;

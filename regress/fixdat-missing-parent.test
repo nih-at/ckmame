@@ -16,5 +16,5 @@ rom  08.rom        size       8  crc 3656897d: correct
 In game child:
 game child                                   : correct
 file 08.rom        size       8  crc 3656897d: not used
-roms/child.zip: delete unused file '08.rom'
+delete unused file '08.rom'
 end-of-data

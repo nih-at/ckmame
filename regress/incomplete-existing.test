@@ -7,5 +7,5 @@ stdout-data
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: correct
 rom  08.rom        size       8  crc 3656897d: missing
-roms/2-48.zip: delete unneeded file '04.rom'
+delete unneeded file '04.rom'
 end-of-data

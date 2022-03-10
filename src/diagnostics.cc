@@ -47,8 +47,6 @@ static void diagnostics_game(filetype_t ft, const Game *game, const Result &resu
 
 
 void diagnostics(const Game *game, const GameArchives &archives, const Result &result) {
-    warn_set_info(WARN_TYPE_GAME, game->name);
-
     stats.add_game(result.game);
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
@@ -115,7 +113,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
         switch (result.game) {
             case GS_CORRECT:
                 if (ft == TYPE_ROM && configuration.report_correct) {
-                    warn_game_file(ft, nullptr, "correct");
+                    warn_game(ft, game, "correct");
                 }
                 return;
             
@@ -147,7 +145,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 }
                 if (all_same) {
                     if (ft == TYPE_ROM) {
-                        warn_game_file(ft, nullptr, "old in '" + old_name + "'");
+                        warn_game(ft, game, "old in '" + old_name + "'");
                     }
                     return;
                 }
@@ -156,7 +154,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
 
             case GS_MISSING:
                 if (ft == TYPE_ROM && configuration.report_missing) {
-                    warn_game_file(ft, nullptr, "not a single file found");
+                    warn_game(ft, game, "not a single file found");
                 }
                 return;
                 

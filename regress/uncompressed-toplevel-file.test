@@ -9,5 +9,5 @@ ckmamedb-before search ckmamedb-1-8-ok.dump
 stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'search/loose'
-roms/1-4.zip: add 'search/loose' as '04.rom'
+add 'search/loose' as '04.rom'
 end-of-data

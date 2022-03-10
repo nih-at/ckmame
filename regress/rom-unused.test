@@ -7,5 +7,5 @@ stdout-data
 In game clone-8:
 game clone-8                                 : correct
 file 04.rom        size       4  crc d87f7e0c: not used
-roms/clone-8.zip: delete unused file '04.rom'
+delete unused file '04.rom'
 end-of-data

@@ -9,11 +9,12 @@ no-hashes search ignore.zip
 stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo.zip/04.rom'
-roms/1-4.zip: add 'search/foo.zip/04.rom' as '04.rom'
+add 'search/foo.zip/04.rom' as '04.rom'
 <dir> In archive search:
 <dir> file ignore2       size       6  crc 84fedf5c: unknown
-search/foo.zip: delete used file '04.rom'
-search/foo.zip: remove empty archive
+In archive search/foo.zip:
+delete used file '04.rom'
+remove empty archive
 In archive search/ignore.zip:
 file unknown.rom   size       4  crc 9f45e9d1: unknown
 end-of-data

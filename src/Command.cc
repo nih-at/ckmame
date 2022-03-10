@@ -109,15 +109,8 @@ int Command::run(int argc, char* const* argv) {
 	    }
 	}
 	else {
-	    auto first = true;
 	    auto multi_set = selected_sets.size() > 1;
 	    for (const auto& set : selected_sets) {
-		if (first) {
-		    first = false;
-		}
-		else {
-		    printf("\n");
-		}
 		if (!do_for(set, arguments, multi_set)) {
 		    exit_code = 1;
 		}
@@ -147,10 +140,10 @@ int Command::run(int argc, char* const* argv) {
 
 bool Command::do_for(const std::string& set, const ParsedCommandline& arguments, bool multi_set_invocation) {
     try {
-	configuration.prepare(set, arguments);
 	if (multi_set_invocation) {
-	    printf("Set %s:\n", configuration.set.c_str());
+	    output.set_header("Set " + set);
 	}
+	configuration.prepare(set, arguments);
 	return execute(arguments.arguments);
     }
     catch (std::exception &ex) {

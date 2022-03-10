@@ -12,18 +12,19 @@ stdout-data
 In game clone-8:
 rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
 file 04.rom        size       4  crc d87f7e0c: duplicate
-roms/clone-8.zip: delete duplicate file '04.rom'
-roms/clone-8.zip: add 'roms/1-8.zip/08.rom' as '08.rom'
-roms/1-8.zip: delete used file '08.rom'
-roms/1-8.zip: remove empty archive
+delete duplicate file '04.rom'
+add 'roms/1-8.zip/08.rom' as '08.rom'
+In archive roms/1-8.zip:
+delete used file '08.rom'
+remove empty archive
 In archive roms/anothercopy.zip:
 file 04.rom        size       4  crc d87f7e0c: duplicate
-roms/anothercopy.zip: delete duplicate file '04.rom'
-roms/anothercopy.zip: remove empty archive
+delete duplicate file '04.rom'
+remove empty archive
 In archive roms/parent.zip:
 file 04.rom        size       4  crc d87f7e0c: duplicate
 file 0a.rom        size      10  crc 0b4a4cde: unknown
-roms/parent.zip: delete duplicate file '04.rom'
-roms/parent.zip: move unknown file '0a.rom'
-roms/parent.zip: remove empty archive
+delete duplicate file '04.rom'
+move unknown file '0a.rom'
+remove empty archive
 end-of-data

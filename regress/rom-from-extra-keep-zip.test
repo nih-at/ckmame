@@ -10,5 +10,5 @@ no-hashes search bar/ignore.zip
 stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo/14.zip/04.rom'
-roms/1-4.zip: add 'search/foo/14.zip/04.rom' as '04.rom'
+add 'search/foo/14.zip/04.rom' as '04.rom'
 end-of-data

@@ -189,9 +189,7 @@ int DeleteList::execute() {
             }
 	}
 	if (a && a->is_writable()) {
-            if (configuration.verbose) {
-		printf("%s: delete used file '%s'\n", a->name.c_str(), a->files[entry.index].filename().c_str());
-            }
+	    output.message_verbose("delete used file '%s'", a->files[entry.index].filename().c_str());
 	    /* TODO: check for error */
 	    a->file_delete(entry.index);
 	}

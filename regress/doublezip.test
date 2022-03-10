@@ -8,5 +8,5 @@ stdout-data
 In game 1-4:
 game 1-4                                     : not a single file found
 file 1-4-ok.zip    size     148  crc ea01b28e: unknown
-roms/1-4.zip: move unknown file '1-4-ok.zip'
+move unknown file '1-4-ok.zip'
 end-of-data

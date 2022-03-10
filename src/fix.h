@@ -38,5 +38,6 @@
 #include "Result.h"
 
 int fix_game(Game *game, const GameArchives archives, Result *result);
+int fix_save_needed_from_unknown(Game *game, const GameArchives archives, Result *result);
 
 #endif /* _HAD_FIX_H */

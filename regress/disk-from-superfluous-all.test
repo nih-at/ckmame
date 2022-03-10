@@ -11,5 +11,5 @@ stdout-data
 In game disk:
 rom  08.rom        size       8  crc 3656897d: correct
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: wrong name (108-5a)
-roms/disk: rename '108-5a.chd' to '108-5.chd'
+rename '108-5a.chd' to '108-5.chd'
 end-of-data

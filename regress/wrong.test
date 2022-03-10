@@ -8,5 +8,5 @@ stdout-data
 In game 1-4:
 game 1-4                                     : not a single file found
 file garbage       size       8  crc 01888242: unknown
-roms/1-4.zip: move unknown file 'garbage'
+move unknown file 'garbage'
 end-of-data

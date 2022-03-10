@@ -11,10 +11,10 @@ stdout-data
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: correct
 rom  08.rom        size       8  crc 3656897d: is in 'extradir/2-48.zip/08.rom'
-roms/2-48.zip: add 'extradir/2-48.zip/08.rom' as '08.rom'
+add 'extradir/2-48.zip/08.rom' as '08.rom'
 In archive extradir/2-48.zip:
 file 04.rom        size       4  crc d87f7e0c: not used
-extradir/2-48.zip: delete unused file '04.rom'
-extradir/2-48.zip: delete used file '08.rom'
-extradir/2-48.zip: remove empty archive
+delete unused file '04.rom'
+delete used file '08.rom'
+remove empty archive
 end-of-data

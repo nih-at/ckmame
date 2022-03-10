@@ -12,5 +12,5 @@ game disk                                    : correct
 In game diskchild:
 game diskchild                               : correct
 image 108-5c.chd  : not used
-roms/diskchild: delete unused file '108-5c.chd'
+delete unused file '108-5c.chd'
 end-of-data

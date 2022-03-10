@@ -10,7 +10,8 @@ stdout-data
 In game disk:
 rom  04.rom        size       4  crc d87f7e0c: correct
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/diska/108-5a.chd'
-roms/disk: add 'roms/diska/108-5a.chd' as '108-5.chd'
-roms/diska: delete used file '108-5a.chd'
-roms/diska: remove empty archive
+add 'roms/diska/108-5a.chd' as '108-5.chd'
+In archive roms/diska:
+delete used file '108-5a.chd'
+remove empty archive
 end-of-data

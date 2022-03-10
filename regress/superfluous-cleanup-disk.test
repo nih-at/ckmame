@@ -15,16 +15,16 @@ stdout-data
 In archive roms:
 image 108-2.chd   : unknown
 image 108-5.chd   : duplicate
-roms: move unknown file '108-2.chd'
-roms: delete duplicate file '108-5.chd'
+move unknown file '108-2.chd'
+delete duplicate file '108-5.chd'
 In archive roms/1-8.zip:
 file 08.rom        size       8  crc 3656897d: duplicate
-roms/1-8.zip: delete duplicate file '08.rom'
-roms/1-8.zip: remove empty archive
+delete duplicate file '08.rom'
+remove empty archive
 In archive roms/parent.zip:
 file 04.rom        size       4  crc d87f7e0c: not used
 file 0c.rom        size      12  crc 0623c932: unknown
-roms/parent.zip: delete unused file '04.rom'
-roms/parent.zip: move unknown file '0c.rom'
-roms/parent.zip: remove empty archive
+delete unused file '04.rom'
+move unknown file '0c.rom'
+remove empty archive
 end-of-data

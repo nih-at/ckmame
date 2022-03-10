@@ -6,5 +6,5 @@ file roms/parent-4.zip 1-4-ok.zip 1-4-ok.zip
 stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/parent-4.zip/04.rom'
-roms/1-4.zip: add 'roms/parent-4.zip/04.rom' as '04.rom'
+add 'roms/parent-4.zip/04.rom' as '04.rom'
 end-of-data

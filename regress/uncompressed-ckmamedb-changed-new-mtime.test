@@ -10,5 +10,5 @@ stdout-data
 In game 1-4:
 game 1-4                                     : not a single file found
 file 04.rom        size       4  crc e027b67c: unknown
-roms/1-4: move unknown file '04.rom'
+move unknown file '04.rom'
 end-of-data

@@ -10,9 +10,9 @@ stdout-data
 In game disk:
 rom  04.rom        size       4  crc d87f7e0c: correct
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/diskchild/108-5c.chd'
-roms/disk: add 'roms/diskchild/108-5c.chd' as '108-5.chd'
+add 'roms/diskchild/108-5c.chd' as '108-5.chd'
 In game diskchild:
 game diskchild                               : correct
 image 108-5c.chd  : not used
-roms/diskchild: delete unused file '108-5c.chd'
+delete unused file '108-5c.chd'
 end-of-data

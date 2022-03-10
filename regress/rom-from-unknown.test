@@ -8,14 +8,16 @@ stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'unknown/1-4.zip/04.rom'
 file 04.rom        size       4  crc e027b67c: unknown
-roms/1-4.zip: move unknown file '04.rom'
-unknown/1-4.zip: save needed file '04.rom'
+move unknown file '04.rom'
+In archive unknown/1-4.zip:
+save needed file '04.rom'
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'saved/d87f7e0c-000.zip/04.rom'
-roms/1-4.zip: add 'saved/d87f7e0c-000.zip/04.rom' as '04.rom'
-saved/d87f7e0c-000.zip: delete used file '04.rom'
-saved/d87f7e0c-000.zip: remove empty archive
+add 'saved/d87f7e0c-000.zip/04.rom' as '04.rom'
+In archive saved/d87f7e0c-000.zip:
+delete used file '04.rom'
+remove empty archive
 In archive unknown/1-4.zip:
 file 04-000.rom    size       4  crc e027b67c: unknown
-unknown/1-4.zip: delete used file '04.rom'
+delete used file '04.rom'
 end-of-data

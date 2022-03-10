@@ -6,5 +6,5 @@ stdout-data
 In game 1-4:
 game 1-4                                     : correct
 file 04-2.rom      size       4  crc d87f7e0c: not used
-roms/1-4.zip: delete unused file '04-2.rom'
+delete unused file '04-2.rom'
 end-of-data

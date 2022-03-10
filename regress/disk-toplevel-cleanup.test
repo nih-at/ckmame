@@ -10,9 +10,9 @@ no-hashes roms disk.zip
 stdout-data
 In archive roms:
 image toplevel.chd: not used
-roms: delete unused file 'toplevel.chd'
+delete unused file 'toplevel.chd'
 In archive roms/unknown-game:
 image unknown.chd : not used
-roms/unknown-game: delete unused file 'unknown.chd'
-roms/unknown-game: remove empty archive
+delete unused file 'unknown.chd'
+remove empty archive
 end-of-data

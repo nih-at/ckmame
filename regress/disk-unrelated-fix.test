@@ -11,5 +11,5 @@ In game disk:
 game disk                                    : correct
 In game diskgood-romnogood:
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/disk/108-5.chd'
-roms/diskgood-romnogood: add 'roms/disk/108-5.chd' as '108-5.chd'
+add 'roms/disk/108-5.chd' as '108-5.chd'
 end-of-data
