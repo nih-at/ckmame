@@ -130,7 +130,7 @@ bool TomlSchema::Table::validate(const toml::node& node, TomlSchema& schema, con
     auto ok = true;
 
     for (auto pair : table) {
-	auto it = members.find(pair.first);
+	auto it = members.find(std::string(pair.first));
 	Type *type;
 
 	if (it != members.end()) {
@@ -141,11 +141,11 @@ bool TomlSchema::Table::validate(const toml::node& node, TomlSchema& schema, con
 	}
 
 	if (type == nullptr) {
-	    schema.print(path_append(path, pair.first), "unknown variable", false);
+	    schema.print(path_append(path, std::string(pair.first)), "unknown variable", false);
 	    ok = false;
 	}
 	else {
-	    ok = type->validate(pair.second, schema, path_append(path, pair.first), false) && ok;
+	    ok = type->validate(pair.second, schema, path_append(path, std::string(pair.first)), false) && ok;
 	}
     }
 

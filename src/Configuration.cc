@@ -310,7 +310,7 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 	    if (entry.first == "global" || entry.first == "profile") {
 		continue;
 	    }
-	    sets.insert(entry.first);
+	    sets.insert(std::string(entry.first));
 	}
     }
 
@@ -623,14 +623,14 @@ void Configuration::merge_dats(const toml::table& table) {
     else if (node.is_table()) {
 	dats.clear();
 	for (const auto &pair : (*node.as_table())) {
-	    dats.push_back(pair.first);
+	    dats.push_back(std::string(pair.first));
 	    auto options_table = pair.second.as_table();
 	    if (options_table != nullptr && !options_table->empty()) {
 		auto parsed_options = DatOptions();
 
 		set_string_optional(*options_table, "game-name-suffix", parsed_options.game_name_suffix);
 		set_bool_optional(*options_table, "use-description-as-name", parsed_options.use_description_as_name);
-		dat_options[pair.first] = parsed_options;
+		dat_options[std::string(pair.first)] = parsed_options;
 	    }
 	}
     }
@@ -648,13 +648,13 @@ void Configuration::merge_extra_directories(const toml::table &table, const std:
 	    extra_directories.clear();
 	}
 	for (const auto &pair : (*node.as_table())) {
-	    extra_directories.push_back(pair.first);
+	    extra_directories.push_back(std::string(pair.first));
 	    auto options_table = pair.second.as_table();
 	    if (options_table != nullptr && !options_table->empty()) {
 		auto parsed_options = ExtraDirectoryOptions();
 
 		set_bool_optional(*options_table, "move-from-extra", parsed_options.move_from_extra);
-		extra_directory_options[pair.first] = parsed_options;
+		extra_directory_options[std::string(pair.first)] = parsed_options;
 	    }
 	}
     }
