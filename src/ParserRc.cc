@@ -33,7 +33,7 @@
 
 #include "ParserRc.h"
 
-#include "error.h"
+#include "globals.h"
 
 const char ParserRc::separator = static_cast<char>(0xac);
 
@@ -78,13 +78,13 @@ bool ParserRc::parse() {
 		return true;
 	    }
             if (!process_romline(line)) {
-                myerror(ERRFILE, "%zu: cannot parse ROM line, skipping", lineno);
+                output.file_error("%zu: cannot parse ROM line, skipping", lineno);
             }
         }
         else {
             auto position = line.find('=');
             if (position == std::string::npos) {
-                myerror(ERRFILE, "%zu: no `=' found", lineno);
+                output.file_error("%zu: no `=' found", lineno);
                 continue;
             }
             auto key = line.substr(0, position);
@@ -137,8 +137,8 @@ bool ParserRc::parse_prog_version(ParserRc *ctx, const std::string &attr) {
 }
 
 bool ParserRc::rc_plugin(ParserRc *ctx, const std::string &attr) {
-    myerror(ERRFILE, "%zu: warning: RomCenter plugins not supported,", ctx->lineno);
-    myerror(ERRFILE, "%zu: warning: DAT won't work as expected.", ctx->lineno);
+    output.file_error("%zu: warning: RomCenter plugins not supported,", ctx->lineno);
+    output.file_error("%zu: warning: DAT won't work as expected.", ctx->lineno);
     return false;
 }
 

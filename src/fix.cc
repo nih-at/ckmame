@@ -37,7 +37,6 @@
 #include <cinttypes>
 
 #include "DeleteList.h"
-#include "error.h"
 #include "fix_util.h"
 #include "Garbage.h"
 #include "Tree.h"
@@ -119,7 +118,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
             if (!garbage->commit()) {
                 garbage->rollback();
                 archive->rollback();
-                myerror(ERRZIP, "committing garbage failed");
+                output.archive_error("committing garbage failed");
                 return -1;
             }
         }
@@ -134,7 +133,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
         if (configuration.fix_romset) {
             if (!garbage->close()) {
                 archive->rollback();
-                myerror(ERRZIP, "closing garbage failed");
+                output.archive_error("closing garbage failed");
                 return -1;
             }
         }
@@ -213,7 +212,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
 
     bool needs_recheck = false;
 
-    seterrinfo("", archive->name);
+    output.set_error_archive(archive->name);
 
     size_t num_names = archive->files.size();
     std::vector<std::string> original_names;
@@ -227,7 +226,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
 	    archive_from = match->archive.get();
         }
         auto &game_file = game->files[filetype][i];
-	seterrinfo(game_file.name, archive->name);
+	output.set_error_archive(archive->name, game_file.name);
 
 	switch (match->quality) {
             case Match::MISSING:
@@ -299,7 +298,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     ckmame_cache->used(archive_from, match->index);
                 }
                 else {
-                    myerror(ERRDEF, "copying '%s' from '%s' to '%s' failed, not deleting", game_file.filename(filetype).c_str(), archive_from->name.c_str(), archive->name.c_str());
+                    output.error("copying '%s' from '%s' to '%s' failed, not deleting", game_file.filename(filetype).c_str(), archive_from->name.c_str(), archive->name.c_str());
                     /* TODO: if (idx >= 0) undo deletion of broken file */
                 }
                 break;
@@ -332,7 +331,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
 
 static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, Result *result, Garbage *garbage) {
 
-    seterrinfo("", archive->name);
+    output.set_error_archive(archive->name);
 
     for (size_t i = 0; i < game->files[filetype].size(); i++) {
         Archive *archive_from = nullptr;
@@ -343,7 +342,7 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
 	    archive_from = match->archive.get();
         }
         
-        seterrinfo(game_file->name, archive->name);
+        output.set_error_archive(archive->name, game_file->name);
 
         switch (match->quality) {
             case Match::MISSING:

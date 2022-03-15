@@ -33,7 +33,6 @@
 
 #include "MemDB.h"
 
-#include "error.h"
 #include "Exception.h"
 
 std::unique_ptr<MemDB> memdb;

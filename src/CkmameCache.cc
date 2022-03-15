@@ -36,7 +36,6 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 #include <filesystem>
 
-#include "error.h"
 #include "globals.h"
 #include "util.h"
 #include "Exception.h"
@@ -65,7 +64,7 @@ bool CkmameCache::close_all() {
 		std::error_code ec;
 		std::filesystem::remove(filename);
 		if (ec) {
-		    myerror(ERRDEF, "can't remove empty database '%s': %s", filename.c_str(), ec.message().c_str());
+		    output.error("can't remove empty database '%s': %s", filename.c_str(), ec.message().c_str());
 		    ok = false;
 		}
 	    }
@@ -98,7 +97,7 @@ CkmameDBPtr CkmameCache::get_db_for_archive(const std::string &name) {
 		    directory.db = std::make_shared<CkmameDB>(dbname, directory.name);
 		}
 		catch (std::exception &e) {
-		    myerror(ERRDB, "can't open rom directory database for '%s': %s", directory.name.c_str(), e.what());
+		    output.error_database("can't open rom directory database for '%s': %s", directory.name.c_str(), e.what());
 		    return nullptr;
 		}
 	    }
@@ -115,7 +114,7 @@ void CkmameCache::register_directory(const std::string &directory_name) {
 
     if (directory_name.empty()) {
 	errno = EINVAL;
-	myerror(ERRDEF, "directory_name can't be empty");
+	output.error("directory_name can't be empty");
 	throw Exception();
     }
 
@@ -131,7 +130,7 @@ void CkmameCache::register_directory(const std::string &directory_name) {
 
 	if (name.compare(0, length, directory.name) == 0 && (name.length() == length || name[length] == '/') && (directory.name.length() == length || directory.name[length] == '/')) {
 	    if (directory.name.length() != name.length()) {
-		myerror(ERRDEF, "can't cache in directory '%s' and its parent '%s'", (directory.name.length() < name.length() ? name.c_str() : directory.name.c_str()), (directory.name.length() < name.length() ? directory.name.c_str() : name.c_str()));
+		output.error("can't cache in directory '%s' and its parent '%s'", (directory.name.length() < name.length() ? name.c_str() : directory.name.c_str()), (directory.name.length() < name.length() ? directory.name.c_str() : name.c_str()));
 		throw Exception();
 	    }
 	    return;

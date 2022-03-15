@@ -41,7 +41,6 @@
 #include "Exception.h"
 #include "RomDB.h"
 #include "util.h"
-#include "error.h"
 
 bool Configuration::read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional) {
     auto ok = true;

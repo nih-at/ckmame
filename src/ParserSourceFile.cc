@@ -36,8 +36,8 @@
 #include <filesystem>
 #include <cstring>
 
-#include "error.h"
 #include "Exception.h"
+#include "globals.h"
 
 ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(nullptr) {
     if (!file_name.empty()) {
@@ -50,7 +50,7 @@ ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname),
         f = make_shared_stdin();
     }
 
-    seterrinfo(file_name);
+    output.set_error_file(file_name);
 }
 
 ParserSourceFile::~ParserSourceFile() {

@@ -36,8 +36,8 @@
 #include <cerrno>
 #include <filesystem>
 
-#include "error.h"
 #include "ParserSourceFile.h"
+#include "globals.h"
 
 ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *za_, const std::string &fname, bool relaxed) : archive_name(archive_name_), za(za_), zf(nullptr) {
     zip_flags_t flags = relaxed ? ZIP_FL_NOCASE | ZIP_FL_NODIR : 0;
@@ -62,7 +62,7 @@ ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *z
         throw std::exception();
     }
     
-    seterrinfo(fname, archive_name);
+    output.set_error_archive(archive_name, fname);
 }
 
 ParserSourceZip::~ParserSourceZip() {

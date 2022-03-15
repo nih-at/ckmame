@@ -38,10 +38,10 @@
 
 #include "Dir.h"
 #include "Exception.h"
-#include "error.h"
 #include "file_util.h"
 #include "fix_util.h"
 #include "util.h"
+#include "globals.h"
 
 #include <cerrno>
 #include <climits>
@@ -58,7 +58,7 @@ bool ArchiveDir::ensure_archive_dir() {
 
 
 bool ArchiveDir::commit_xxx() {
-    seterrinfo("", name);
+    output.set_error_archive(name);
     
     std::filesystem::path added_directory;
     
@@ -66,7 +66,7 @@ bool ArchiveDir::commit_xxx() {
         added_directory = make_unique_path(std::filesystem::path(name) / ".added");
     }
     catch (...) {
-        myerror(ERRZIP, "can't create temporary directory: %s", strerror(errno));
+        output.archive_error_system("can't create temporary directory");
         return false;
     }
     
@@ -143,7 +143,7 @@ void ArchiveDir::commit_cleanup() {
 void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &destination) {
     auto fout = make_shared_file(destination, "w");
     if (!fout) {
-        myerror(ERRZIP, "cannot open '%s': %s", destination.c_str(), strerror(errno));
+        output.archive_error("cannot open '%s': %s", destination.c_str(), strerror(errno));
         throw Exception();
     }
 
@@ -154,7 +154,7 @@ void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &des
     uint64_t n;
     while ((n = source->read(buffer, sizeof(buffer))) > 0) {
         if (fwrite(buffer, 1, n, fout.get()) != n) {
-            myerror(ERRZIP, "can't write '%s': %s", destination.c_str(), strerror(errno));
+            output.archive_error("can't write '%s': %s", destination.c_str(), strerror(errno));
             source->close();
             throw Exception();
         }

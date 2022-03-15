@@ -36,7 +36,6 @@
 #include <algorithm>
 #include <filesystem>
 
-#include "error.h"
 #include "file_util.h"
 #include "globals.h"
 
@@ -98,7 +97,7 @@ void OutputContextDb::familymeeting(Game *parent, Game *child) {
             }
              
             if (cr.where == FILE_INGAME && !cr.merge.empty()) {
-                myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but ancestors don't contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
+                output.file_error("In game '%s': '%s': merged from '%s', but ancestors don't contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
             }
         }
     }
@@ -112,7 +111,7 @@ bool OutputContextDb::handle_lost() {
              look if parent is still lost, if not, do child */
             auto child = db->read_game(lost_children[i]);
             if (!child) {
-                myerror(ERRDEF, "internal database error: child %s not in database", lost_children[i].c_str());
+                output.error("internal database error: child %s not in database", lost_children[i].c_str());
                 return false;
             }
             
@@ -120,7 +119,7 @@ bool OutputContextDb::handle_lost() {
             
             auto parent = db->read_game(child->cloneof[0]);
             if (!parent) {
-                myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", child->name.c_str(), child->cloneof[0].c_str());
+                output.error("inconsistency: %s has non-existent parent %s", child->name.c_str(), child->cloneof[0].c_str());
                 
                 /* remove non-existent cloneof */
                 child->cloneof[0] = "";
@@ -198,7 +197,7 @@ bool OutputContextDb::game(GamePtr game) {
 	    }
 	    n += 1;
 	}
-	myerror(ERRDEF, "warning: duplicate game '%s', renamed to '%s'", game->name.c_str(), name.c_str());
+	output.error("warning: duplicate game '%s', renamed to '%s'", game->name.c_str(), name.c_str());
 	game->name = name;
     }
 

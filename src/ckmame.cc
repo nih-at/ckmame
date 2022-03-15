@@ -47,7 +47,6 @@
 #include "CkmameDB.h"
 #include "Commandline.h"
 #include "Configuration.h"
-#include "error.h"
 #include "Exception.h"
 #include "Fixdat.h"
 #include "globals.h"
@@ -123,7 +122,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     try {
 	db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
     } catch (std::exception &e) {
-	myerror(0, "can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
+	output.error("can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
 	return false;
     }
     try {
@@ -142,7 +141,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     rom_dir_normalized = std::filesystem::relative(configuration.rom_directory, "/", ec);
     if (ec || rom_dir_normalized.empty()) {
 	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
-	myerror(ERRSTR, "can't normalize directory '%s'", configuration.rom_directory.c_str());
+	output.error_system("can't normalize directory '%s'", configuration.rom_directory.c_str());
 	return false;
     }
 
@@ -155,7 +154,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 	for (const auto &name : configuration.extra_directories) {
 	    if (contains_romdir(name)) {
 		/* TODO: improve error message: also if extra is in ROM directory. */
-		myerror(ERRDEF, "current ROM directory '%s' is in extra directory '%s'", configuration.rom_directory.c_str(), name.c_str());
+		output.error("current ROM directory '%s' is in extra directory '%s'", configuration.rom_directory.c_str(), name.c_str());
 		return false;
 	    }
 	    ckmame_cache->register_directory(name);
@@ -176,7 +175,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     try {
 	list = db->read_list(DBH_KEY_LIST_GAME);
     } catch (Exception &e) {
-	myerror(ERRDEF, "list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
+	output.error("list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
 	return false;
     }
     std::sort(list.begin(), list.end());
@@ -184,11 +183,11 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     if (!game_list.empty()) {
 	char b[8192];
 
-	seterrinfo(game_list);
+	output.set_error_file(game_list);
 
 	auto f = make_shared_file(game_list, "r");
 	if (!f) {
-	    myerror(ERRZIPSTR, "cannot open game list");
+	    output.archive_error_system("cannot open game list");
 	    exit(1);
 	}
 
@@ -196,7 +195,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 	    if (b[strlen(b) - 1] == '\n')
 		b[strlen(b) - 1] = '\0';
 	    else {
-		myerror(ERRZIP, "overly long line ignored");
+		output.archive_error("overly long line ignored");
 		continue;
 	    }
 
@@ -204,7 +203,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 		check_tree.add(b);
 	    }
 	    else {
-		myerror(ERRDEF, "game '%s' unknown", b);
+		output.error("game '%s' unknown", b);
 	    }
 	}
     }
@@ -220,7 +219,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 		    check_tree.add(argument);
 		}
 		else {
-		    myerror(ERRDEF, "game '%s' unknown", argument.c_str());
+		    output.error("game '%s' unknown", argument.c_str());
 		}
 	    }
 	    else {
@@ -232,7 +231,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 		    }
 		}
 		if (!found)
-		    myerror(ERRDEF, "no game matching '%s' found", argument.c_str());
+		    output.error("no game matching '%s' found", argument.c_str());
 	    }
 	}
     }

@@ -37,7 +37,6 @@
 #include <unordered_set>
 
 #include "Dir.h"
-#include "error.h"
 #include "Exception.h"
 #include "fix_util.h"
 #include "globals.h"
@@ -72,7 +71,7 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
             known_games.insert(list.begin(), list.end());
         }
         catch (Exception &e) {
-            myerror(ERRDEF, "list of games not found in ROM database: %s", e.what());
+            output.error("list of games not found in ROM database: %s", e.what());
             exit(1);
         }
     }

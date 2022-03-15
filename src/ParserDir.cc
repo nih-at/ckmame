@@ -38,7 +38,6 @@
 
 #include "Archive.h"
 #include "Dir.h"
-#include "error.h"
 #include "globals.h"
 #include "util.h"
 
@@ -100,14 +99,14 @@ bool ParserDir::parse() {
                                     }
                                 }
                                 else {
-                                    myerror(ERRDEF, "skipping unknown file '%s/%s'", filepath.c_str(), file.name.c_str());
+                                    output.error("skipping unknown file '%s/%s'", filepath.c_str(), file.name.c_str());
                                 }
                             }
                         }
                     }
                     
                     if (dir_empty) {
-                        myerror(ERRDEF, "skipping empty directory '%s'", filepath.c_str());
+                        output.error("skipping empty directory '%s'", filepath.c_str());
                     }
                 }
                 else {
@@ -140,11 +139,11 @@ bool ParserDir::parse() {
                                     have_loose_chds = true;
                                 }
                                 else {
-                                    myerror(ERRDEF, "skipping top level disk image '%s'", filepath.c_str());
+                                    output.error("skipping top level disk image '%s'", filepath.c_str());
                                 }
                             }
                             else {
-                                myerror(ERRDEF, "skipping unknown file '%s'", filepath.c_str());
+                                output.error("skipping unknown file '%s'", filepath.c_str());
                             }
                             break;
                     }
@@ -184,7 +183,7 @@ bool ParserDir::parse() {
                             have_loose_files = true;
                         }
                         else {
-                            myerror(ERRDEF, "found file '%s' outside of game subdirectory", filepath.c_str());
+                            output.error("found file '%s' outside of game subdirectory", filepath.c_str());
                         }
                     }
                 }

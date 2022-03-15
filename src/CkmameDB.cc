@@ -38,8 +38,7 @@
     #include <utility>
 
     #include "Detector.h"
-    #include "error.h"
-    #include "Exception.h"
+        #include "Exception.h"
     #include "fix.h"
     #include "util.h"
 
@@ -262,7 +261,7 @@
 
 
     void CkmameDB::seterr() {
-	seterrdb(this);
+	output.set_error_database(this);
     }
 
 

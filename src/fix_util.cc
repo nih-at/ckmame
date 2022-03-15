@@ -39,7 +39,6 @@
 
 #include "check_util.h"
 #include "DeleteList.h"
-#include "error.h"
 #include "file_util.h"
 #include "find.h"
 #include "globals.h"
@@ -128,7 +127,7 @@ bool save_needed_part(Archive *sa, size_t sidx, const std::string &gamename, uin
 
         auto tmp = make_needed_name(sa->filetype, f);
         if (tmp.empty()) {
-            myerror(ERRDEF, "cannot create needed file name");
+            output.error("cannot create needed file name");
             return false;
         }
         

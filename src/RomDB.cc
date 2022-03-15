@@ -33,8 +33,8 @@
 
 #include "RomDB.h"
 
-#include "error.h"
 #include "Exception.h"
+#include "globals.h"
 
 std::unique_ptr<RomDB> db;
 std::unique_ptr<RomDB> old_db;
@@ -683,7 +683,7 @@ int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEn
         list = read_list(DBH_KEY_LIST_GAME);
     }
     catch (Exception &e) {
-        myerror(ERRDEF, "db error reading game list: %s", e.what());
+        output.error("db error reading game list: %s", e.what());
 	return -1;
     }
 

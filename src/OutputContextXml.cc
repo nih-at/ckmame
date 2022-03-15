@@ -37,8 +37,8 @@
 #include <cinttypes>
 #include <cstring>
 
-#include "error.h"
 #include "util.h"
+#include "globals.h"
 
 
 #define xml_string(X) (reinterpret_cast<const xmlChar *>(X))
@@ -51,7 +51,7 @@ OutputContextXml::OutputContextXml(const std::string &fname_, int flags) : fname
     else {
 	f = make_shared_file(fname, "w");
 	if (!f) {
-	    myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
+	    output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
 	}
     }

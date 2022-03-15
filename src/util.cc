@@ -43,7 +43,6 @@
 #include "CkmameDB.h"
 #include "config.h"
 #include "DatDb.h"
-#include "error.h"
 #include "Exception.h"
 #include "globals.h"
 
@@ -127,7 +126,7 @@ ensure_dir(const std::string &name, bool strip_filename) {
     std::filesystem::create_directories(dir, ec);
 
     if (ec) {
-	myerror(ERRDEF, "cannot create '%s': %s", dir.c_str(), ec.message().c_str());
+	output.error("cannot create '%s': %s", dir.c_str(), ec.message().c_str());
 	return false;
     }
 

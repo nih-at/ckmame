@@ -90,16 +90,14 @@ void Output::error(const char *fmt, ...) {
     va_start(va, fmt);
     print_error_v(fmt, va);
     va_end(va);
-
 }
 
 
 void Output::error_database(const char *fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, "", db->error());
+    print_error_v(fmt, va, "", postfix_database());
     va_end(va);
-
 }
 
 void Output::error_system(const char *fmt, ...) {
@@ -107,8 +105,16 @@ void Output::error_system(const char *fmt, ...) {
     va_start(va, fmt);
     print_error_v(fmt, va, "", postfix_system());
     va_end(va);
-
 }
+
+
+void Output::error_error_code(const std::error_code &ec, const char *fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, "", ec.message());
+    va_end(va);
+}
+
 
 void Output::archive_error(const char *fmt, ...) {
     va_list va;
@@ -121,7 +127,7 @@ void Output::archive_error(const char *fmt, ...) {
 void Output::archive_error_database(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, archive_name, db->error());
+    print_error_v(fmt, va, archive_name, postfix_database());
     va_end(va);
 }
 
@@ -130,6 +136,14 @@ void Output::archive_error_system(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
     print_error_v(fmt, va, archive_name, postfix_system());
+    va_end(va);
+}
+
+
+void Output::archive_error_error_code(const std::error_code &ec, const char *fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, archive_name, ec.message());
     va_end(va);
 }
 
@@ -145,7 +159,15 @@ void Output::archive_file_error(const char *fmt, ...) {
 void Output::archive_file_error_database(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, prefix_archive_file(), db->error());
+    print_error_v(fmt, va, prefix_archive_file(), postfix_database());
+    va_end(va);
+}
+
+
+void Output::archive_file_error_error_code(const std::error_code &ec, const char *fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, prefix_archive_file(), ec.message());
     va_end(va);
 }
 
@@ -161,7 +183,7 @@ void Output::file_error(const char *fmt, ...) {
 void Output::file_error_database(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, file_name, db->error());
+    print_error_v(fmt, va, file_name, postfix_database());
     va_end(va);
 }
 
@@ -177,9 +199,18 @@ void Output::file_error_system(const char *fmt, ...){
 void Output::archive_file_error_system(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, prefix_archive_file(), postfix_system());
+    print_error_v(fmt, va, file_name, postfix_system());
     va_end(va);
 }
+
+
+void Output::file_error_error_code(const std::error_code &ec, const char *fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, file_name, ec.message());
+    va_end(va);
+}
+
 
 std::string Output::prefix_archive_file() {
     if (!archive_name.empty() && !file_name.empty()) {
@@ -191,11 +222,22 @@ std::string Output::prefix_archive_file() {
 }
 
 
+std::string Output::postfix_database() {
+    if (db == nullptr) {
+        return "no database";
+    }
+    else {
+        return db->error();
+    }
+}
+
 std::string Output::postfix_system() {
     if (errno == 0) {
 	return "";
     }
-    return strerror(errno);
+    else {
+        return strerror(errno);
+    }
 }
 
 void Output::print_error_v(const char *fmt, va_list va, const std::string &prefix, const std::string &postfix) {
@@ -205,7 +247,7 @@ void Output::print_error_v(const char *fmt, va_list va, const std::string &prefi
     if (!prefix.empty()) {
 	fprintf(stderr, "%s: ", prefix.c_str());
     }
-    vprintf(fmt, va);
+    vfprintf(stderr, fmt, va);
     if (!postfix.empty()) {
 	fprintf(stderr, ": %s", postfix.c_str());
     }

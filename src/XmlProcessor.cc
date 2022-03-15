@@ -34,8 +34,8 @@
 
 #include "config.h"
 
-#include "error.h"
 #include "XmlProcessor.h"
+#include "globals.h"
 
 XmlProcessor::XmlProcessor(LineNumberCallback line_number_callback_, const std::unordered_map<std::string, Entity> &entities_, void *context_) :
     line_number_callback(line_number_callback_),
@@ -48,7 +48,7 @@ XmlProcessor::XmlProcessor(LineNumberCallback line_number_callback_, const std::
 #ifndef HAVE_LIBXML2
 
 int XmlProcessor::parse(ParserSource *parser_source) {
-    myerror(ERRFILE, "support for XML parsing not compiled in.");
+    output.file_error("support for XML parsing not compiled in.");
     return -1;
 }
 
@@ -69,7 +69,7 @@ static int xml_read(void *source, char *buffer, int length);
 bool XmlProcessor::parse(ParserSource *parser_source) {
     auto reader = xmlReaderForIO(xml_read, xml_close, parser_source, nullptr, nullptr, 0);
     if (reader == nullptr) {
-	myerror(ERRFILE, "can't open\n");
+	output.file_error("can't open\n");
 	return -1;
     }
 
@@ -107,7 +107,7 @@ void XmlProcessor::process_tree(void *reader_) {
 			    handle_callback_status(entity->cb_open(context, entity->arguments));
 			}
 			catch (std::exception &e) {
-                            myerror(ERRFILE, "parse error: %s", e.what());
+                            output.file_error("parse error: %s", e.what());
 			    ok = false;
 			}
 
@@ -125,7 +125,7 @@ void XmlProcessor::process_tree(void *reader_) {
 				handle_callback_status(attribute.cb_attr(context, attribute.arguments, value));
 			    }
 			    catch (std::exception &e) {
-                                myerror(ERRFILE, "parse error: %s", e.what());
+                                output.file_error("parse error: %s", e.what());
 				ok = false;
 			    }
                             free(value);
@@ -158,7 +158,7 @@ void XmlProcessor::process_tree(void *reader_) {
 			    handle_callback_status(entity->cb_close(context, entity->arguments));
 			}
                         catch (std::exception &e) {
-                            myerror(ERRFILE, "parse error: %s", e.what());
+                            output.file_error("parse error: %s", e.what());
 			    ok = false;
 			}
 
@@ -180,7 +180,7 @@ void XmlProcessor::process_tree(void *reader_) {
 			handle_callback_status(entity_text->cb_text(context, entity_text->arguments, (const char *)xmlTextReaderConstValue(reader)));
 		    }
                     catch (std::exception &e) {
-                        myerror(ERRFILE, "parse error: %s", e.what());
+                        output.file_error("parse error: %s", e.what());
 			ok = false;
 		    }
 
@@ -196,7 +196,7 @@ void XmlProcessor::process_tree(void *reader_) {
     }
 
     if (ret != 0) {
-	myerror(ERRFILE, "XML parse error");
+	output.file_error("XML parse error");
 	ok = false;
     }
 }

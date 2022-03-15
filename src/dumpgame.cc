@@ -42,7 +42,6 @@
 #include "config.h"
 
 #include "Commandline.h"
-#include "error.h"
 #include "Exception.h"
 #include "globals.h"
 #include "RomDB.h"
@@ -155,7 +154,7 @@ static void print_matches(Hashes *hash) {
 	    }
 	    auto game = db->read_game(match.game_name);
 	    if (!game) {
-		myerror(ERRDEF, "db error: %s not found, though in hash index", match.game_name.c_str());
+		output.error("db error: %s not found, though in hash index", match.game_name.c_str());
 		/* TODO: remember error */
 		continue;
 	    }
@@ -196,17 +195,17 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
 	db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
     } catch (std::exception &e) {
 	// TODO: catch exception for unsupported database version and report differently
-	myerror(0, "can't open database '%s': %s", configuration.rom_db.c_str(), strerror(errno));
+	output.error("can't open database '%s': %s", configuration.rom_db.c_str(), strerror(errno));
 	return false;
     }
-    seterrdb(db.get());
+    output.set_error_database(db.get());
 
     std::vector<std::string> list;
 
     try {
 	list = db->read_list(DBH_KEY_LIST_GAME);
     } catch (Exception &e) {
-	myerror(ERRDEF, "list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
+	output.error("list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
 	return false;
     }
     std::sort(list.begin(), list.end());
@@ -217,7 +216,7 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
 
 	for (const auto &argument : arguments) {
 	    if (match.set_from_string(argument) == -1) {
-		myerror(ERRDEF, "error parsing checksum '%s'", argument.c_str());
+		output.error("error parsing checksum '%s'", argument.c_str());
 		continue;
 	    }
 
@@ -281,10 +280,10 @@ bool Dumpgame::cleanup() {
 	for (const std::string &argument : arguments) {
 	    if (!found[index]) {
 		if (is_pattern(arguments[index])) {
-		    myerror(ERRDEF, "no game matching '%s' found", argument.c_str());
+		    output.error("no game matching '%s' found", argument.c_str());
 		}
 		else {
-		    myerror(ERRDEF, "game '%s' not found", argument.c_str());
+		    output.error("game '%s' not found", argument.c_str());
 		}
 		ok = false;
 	    }
@@ -329,12 +328,12 @@ dump_game(const std::string &name, int brief_mode) {
     auto dat = db->read_dat();
 
     if (dat.empty()) {
-	myerror(ERRDEF, "cannot read dat info");
+	output.error("cannot read dat info");
 	return -1;
     }
 
     if ((game = db->read_game(name)) == nullptr) {
-	myerror(ERRDEF, "game unknown (or database error): '%s'", name.c_str());
+	output.error("game unknown (or database error): '%s'", name.c_str());
 	return -1;
     }
 
@@ -402,7 +401,7 @@ dump_list(int type) {
         }
     }
     catch (Exception &e) {
-        myerror(ERRDB, "db error reading list: %s", e.what());
+        output.error_database("db error reading list: %s", e.what());
         return -1;
     }
 
@@ -416,7 +415,7 @@ dump_dat(int dummy) {
     auto dat = db->read_dat();
     
     if (dat.empty()) {
-	myerror(ERRDEF, "db error reading /dat");
+	output.error("db error reading /dat");
 	return -1;
     }
 
@@ -463,7 +462,7 @@ dump_special(const char *name) {
 	    return key.f(key.arg);
     }
 
-    myerror(ERRDEF, "unknown special: '%s'", name);
+    output.error("unknown special: '%s'", name);
     return -1;
 }
 

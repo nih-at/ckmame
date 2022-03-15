@@ -37,7 +37,6 @@
 #include <cstring>
 #include <cerrno>
 
-#include "error.h"
 #include "globals.h"
 
 
@@ -49,7 +48,7 @@ OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : f
     else {
 	f = make_shared_file(fname, "w");
 	if (!f) {
-	    myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
+	    output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
 	}
     }

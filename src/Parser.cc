@@ -45,8 +45,8 @@
 #include "ParserCm.h"
 #include "ParserRc.h"
 #include "ParserXml.h"
-#include "error.h"
 #include "util.h"
+#include "globals.h"
 
 static const std::string unicode_bom = "\xEF\xBB\xBF";
 
@@ -64,13 +64,13 @@ std::unordered_map<std::string, Parser::Format> Parser::format_start = {
 #define CHECK_STATE(s)                                        \
     do {                                                           \
 	if (state != (s)) {                                 \
-	    myerror(ERRFILE, "%zu: in wrong state", lineno); \
+	    output.file_error("%zu: in wrong state", lineno); \
 	    return false;                                             \
 	}                                                          \
     } while (0)
 
 
-ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options) {
+ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output_context, Options options) {
 
     size_t length = 0;
     for (const auto& pair : format_start) {
@@ -97,11 +97,11 @@ ParserPtr Parser::create(const ParserSourcePtr &source, const std::unordered_set
 	return {};
 
     case CLRMAMEPRO:
-	return std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output, std::move(options)));
+	return std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output_context, std::move(options)));
     case ROMCENTER:
-	return std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output, std::move(options)));
+	return std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output_context, std::move(options)));
     case XML:
-	return std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output, std::move(options)));
+	return std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output_context, std::move(options)));
     }
 
     return {};
@@ -111,14 +111,14 @@ bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::
     auto parser = create(source, exclude, dat, out, std::move(options));
 
     if (!parser) {
-	myerror(ERRFILE, "unknown dat format");
+	output.file_error("unknown dat format");
 	return false;
     }
 
     auto ok = parser->parse();
     if (ok) {
         if (!parser->eof()) {
-            myerror(ERRFILE, "trailing garbage");
+            output.file_error("trailing garbage");
             ok = false;
 	}
     }
@@ -140,12 +140,12 @@ bool Parser::file_continue(filetype_t ft) {
     CHECK_STATE(PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
-	myerror(ERRFILE, "%zu: file continuation only supported for ROMs", lineno);
+	output.file_error("%zu: file continuation only supported for ROMs", lineno);
 	return false;
     }
 
     if (flags & PARSE_FL_ROM_DELETED) {
-        myerror(ERRFILE, "%zu: internal error: trying to continue deleted file", lineno);
+        output.file_error("%zu: internal error: trying to continue deleted file", lineno);
 	return false;
     }
 
@@ -186,7 +186,7 @@ bool Parser::file_status(filetype_t ft, const std::string &attr) {
         status = Rom::NO_DUMP;
     }
     else {
-        myerror(ERRFILE, "%zu: illegal status '%s'", lineno, attr.c_str());
+        output.file_error("%zu: illegal status '%s'", lineno, attr.c_str());
 	return false;
     }
  
@@ -209,7 +209,7 @@ bool Parser::file_hash(filetype_t ft, int ht, const std::string &attr) {
     h = &r[ft]->hashes;
 
     if (h->set_from_string(attr) != ht) {
-	myerror(ERRFILE, "%zu: invalid argument for %s", lineno, Hashes::type_name(ht).c_str());
+	output.file_error("%zu: invalid argument for %s", lineno, Hashes::type_name(ht).c_str());
 	return false;
     }
 
@@ -221,7 +221,7 @@ bool Parser::file_ignore(filetype_t ft) {
     CHECK_STATE(PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
-        myerror(ERRFILE, "%zu: file ignoring only supported for ROMs", lineno);
+        output.file_error("%zu: file ignoring only supported for ROMs", lineno);
 	return false;
     }
 
@@ -274,7 +274,7 @@ bool Parser::file_size(filetype_t ft, const std::string &attr) {
 	return file_size(ft, std::stoull(attr, nullptr, 0));
     }
     catch (...) {
-	myerror(ERRFILE, "%zu: invalid size '%s'", lineno, attr.c_str());
+	output.file_error("%zu: invalid size '%s'", lineno, attr.c_str());
 	return false;
     }
 }
@@ -328,7 +328,7 @@ bool Parser::game_end() {
     auto ok = true;
 
     if (g->name.empty()) {
-        myerror(ERRFILE, "%zu: game without name", lineno);
+        output.file_error("%zu: game without name", lineno);
 	ok = false;
     }
     else if (!ignore_game(g->name)) {
@@ -343,7 +343,7 @@ bool Parser::game_end() {
 	    }
 	}
 
-        ok = output->game(g);
+        ok = output_context->game(g);
     }
 
     g = nullptr;
@@ -389,7 +389,7 @@ bool Parser::game_start() {
     CHECK_STATE(PARSE_OUTSIDE);
 
     if (g) {
-	myerror(ERRFILE, "%zu: game inside game", lineno);
+	output.file_error("%zu: game inside game", lineno);
 	return false;
     }
 
@@ -414,7 +414,7 @@ bool Parser::prog_header(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     if (detector) {
-	myerror(ERRFILE, "%zu: warning: detector already defined, header '%s' ignored", lineno, attr.c_str());
+	output.file_error("%zu: warning: detector already defined, header '%s' ignored", lineno, attr.c_str());
 	return true;
     }
 
@@ -426,19 +426,19 @@ bool Parser::prog_header(const std::string &attr) {
     
     ParserSourcePtr dps = ps->open(attr);
     if (!dps) {
-        myerror(ERRFILESTR, "%zu: cannot open detector '%s'", lineno, attr.c_str());
+        output.file_error_system("%zu: cannot open detector '%s'", lineno, attr.c_str());
 	return false;
     }
 #if defined(HAVE_LIBXML2)
     detector = Detector::parse(dps.get());
     if (!detector) {
-        myerror(ERRFILE, "%zu: cannot parse detector '%s'", lineno, attr.c_str());
+        output.file_error("%zu: cannot parse detector '%s'", lineno, attr.c_str());
         ok = false;
     }
     else
 #endif
     {
-        if (!output->detector(detector.get())) {
+        if (!output_context->detector(detector.get())) {
             ok = false;
         }
     }
@@ -465,7 +465,7 @@ bool Parser::prog_version(const std::string &attr) {
 }
 
 
-Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_, Options options) : options(std::move(options)), lineno(0), header_only(false), ignore(std::move(exclude)), output(output_), ps(std::move(source)), flags(0), state(PARSE_IN_HEADER) {
+Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_context_, Options options) : options(std::move(options)), lineno(0), header_only(false), ignore(std::move(exclude)), output_context(output_context_), ps(std::move(source)), flags(0), state(PARSE_IN_HEADER) {
     dat_default.merge(dat, nullptr);
     for (auto & i : r) {
         i = nullptr;
@@ -480,7 +480,7 @@ bool Parser::header_end() {
     if (de.version[0] == '#') {
 	de.name += " (Numbered)";
     }
-    output->header(&de);
+    output_context->header(&de);
 
     state = PARSE_OUTSIDE;
 
@@ -536,7 +536,7 @@ void Parser::rom_end(filetype_t ft) {
 	deleted = true;
     }
     else if (r[ft]->name.empty()) {
-	myerror(ERRFILE, "%zu: ROM without name", lineno);
+	output.file_error("%zu: ROM without name", lineno);
 	deleted = true;
     }
     for (size_t j = 0; j < n && !deleted; j++) {
@@ -560,14 +560,14 @@ void Parser::rom_end(filetype_t ft) {
 		    }
 		    n += 1;
 		}
-                myerror(ERRFILE, "%zu: two different roms with same name '%s', renamed to '%s'", lineno, r[ft]->name.c_str(), name.c_str());
+                output.file_error("%zu: two different roms with same name '%s', renamed to '%s'", lineno, r[ft]->name.c_str(), name.c_str());
 		r[ft]->name = name;
                 break;
             }
 	}
     }
     if (!r[ft]->merge.empty() && g->cloneof[0].empty()) {
-        myerror(ERRFILE, "%zu: rom '%s' has merge information but game '%s' has no parent", lineno, r[ft]->name.c_str(), g->name.c_str());
+        output.file_error("%zu: rom '%s' has merge information but game '%s' has no parent", lineno, r[ft]->name.c_str(), g->name.c_str());
     }
     if (deleted) {
 	flags = (flags & PARSE_FL_ROM_CONTINUED) ? 0 : PARSE_FL_ROM_DELETED;

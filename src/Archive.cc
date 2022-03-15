@@ -47,7 +47,6 @@
 #include "ArchiveZip.h"
 #include "Detector.h"
 #include "CkmameDB.h"
-#include "error.h"
 #include "Exception.h"
 #include "file_util.h"
 #include "globals.h"
@@ -143,7 +142,7 @@ ArchivePtr Archive::by_id(uint64_t id) {
 
 int Archive::close() {
     int ret;
-    seterrinfo("", name);
+    output.set_error_archive(name);
 
     ret = commit();
 
@@ -202,7 +201,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
 
 	if (!f) {
 	    // TODO: move error message to get_source()
-	    myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), strerror(errno));
+	    output.error("%s: %s: can't open: %s", name.c_str(), file.name.c_str(), strerror(errno));
 	    file.broken = true;
 	    return false;
 	}
@@ -210,7 +209,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
 	try {
 	    f->open();
 	} catch (Exception &e) {
-	    myerror(ERRDEF, "%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
+	    output.error("%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
 	    file.broken = true;
 	    return false;
 	}
@@ -220,12 +219,12 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
 	    break;
 
 	case READ_ERROR:
-	    myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
+	    output.error("%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
 	    file.broken = true;
 	    return false;
 
 	case CRC_ERROR:
-	    myerror(ERRDEF, "%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
+	    output.error("%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
 	    file.broken = true;
 	    return false;
 	}
@@ -676,7 +675,7 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
         source->read(data.data(), data.size());
     }
     catch (std::exception &e) {
-        myerror(ERRDEF, "%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), e.what());
+        output.error("%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), e.what());
         file.broken = true;
             
         return false;

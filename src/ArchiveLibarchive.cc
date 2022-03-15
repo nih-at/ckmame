@@ -37,9 +37,9 @@
 #include <cstring>
 #include <cerrno>
 
-#include "error.h"
 #include "Exception.h"
 #include "file_util.h"
+#include "globals.h"
 
 
 ArchiveLibarchive::~ArchiveLibarchive() {
@@ -62,7 +62,7 @@ bool ArchiveLibarchive::ensure_la() {
     
     auto error = archive_read_open_filename(la, name.c_str(), 10240);
     if (error < ARCHIVE_WARN) {
-        myerror(ERRDEF, "error %s archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), archive_error_string(la));
+        output.error("error %s archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), archive_error_string(la));
         archive_read_free(la);
         la = nullptr;
         return false;
@@ -89,7 +89,7 @@ bool ArchiveLibarchive::close_xxx() {
 
     if (error < ARCHIVE_WARN) {
         /* error closing, is la still valid? */
-        myerror(ERRZIP, "error closing zip: %s", archive_error_string(la));
+        output.archive_error("error closing zip: %s", archive_error_string(la));
         return false;
     }
 
@@ -102,7 +102,7 @@ bool ArchiveLibarchive::close_xxx() {
 bool ArchiveLibarchive::commit_xxx() {
     auto tmpfile = make_unique_path(name);
     
-    seterrinfo("", name);
+    output.set_error_archive(name, "");
     
     mtimes.clear();
     
@@ -114,7 +114,7 @@ bool ArchiveLibarchive::commit_xxx() {
         std::error_code error;
         std::filesystem::remove(name, error);
         if (error) {
-            myerror(ERRZIPFILE, "can't remove: %s", error.message().c_str());
+            output.archive_error_error_code(error, "can't remove");
             return false;
         }
         return true;
@@ -124,7 +124,7 @@ bool ArchiveLibarchive::commit_xxx() {
     struct archive_entry *entry = nullptr;
 
     if (writer == nullptr) {
-        myerror(ERRZIP, "can't create archive: %s", strerror(ENOMEM));
+	output.archive_error("can't create archive: %s", strerror(ENOMEM));
         return false;
     }
     
@@ -141,8 +141,8 @@ bool ArchiveLibarchive::commit_xxx() {
         for (uint64_t index = 0; index < files.size(); index++) {
             auto &file = files[index];
             auto &change = changes[index];
-            
-            seterrinfo(file.name, name);
+
+	    output.set_error_archive(name, file.name);
 
             if (change.status == Change::DELETED) {
                 continue;
@@ -181,7 +181,7 @@ bool ArchiveLibarchive::commit_xxx() {
             write_file(writer, source);
         }
 
-        seterrinfo("", name);
+        output.set_error_archive(name, "");
         
         if (archive_write_close(writer) < 0) {
             throw Exception("can't write archive: %s", strerror(errno));
@@ -209,7 +209,7 @@ bool ArchiveLibarchive::commit_xxx() {
             std::filesystem::remove(tmpfile, ec);
         }
         mtimes.clear();
-        myerror(ERRZIPFILE, "%s", e.what());
+        output.archive_file_error("%s", e.what());
         return false;
     }
 
@@ -261,7 +261,7 @@ void ArchiveLibarchive::commit_cleanup() {
 
 bool ArchiveLibarchive::Source::open() {
     if (archive->have_open_file) {
-        myerror(ERRZIP, "cannot open '%s': archive busy", archive->files[index].name.c_str());
+        output.archive_error("cannot open '%s': archive busy", archive->files[index].name.c_str());
         return false;
     }
     
@@ -286,8 +286,8 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
     while (current_index <= index) {
         if (!header_read) {
             if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
-                seterrinfo("", name);
-                myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
+                output.set_error_archive(name);
+                output.archive_error("cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
                 return false;
             }
             header_read = true;
@@ -298,8 +298,8 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
         }
         
         if (archive_read_data_skip(la) != ARCHIVE_OK) {
-            seterrinfo("", name);
-            myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
+            output.set_error_archive(name);
+            output.archive_error("cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
             return false;
         }
         header_read = false;
@@ -315,7 +315,7 @@ bool ArchiveLibarchive::read_infos_xxx() {
         return false;
     }
     
-    seterrinfo("", name);
+    output.set_error_archive(name);
     
     current_index = 0;
     struct archive_entry *entry;
@@ -341,7 +341,7 @@ bool ArchiveLibarchive::read_infos_xxx() {
 #endif
     }
     if (ret != ARCHIVE_EOF) {
-        myerror(ERRZIP, "can't list contents: %s", archive_error_string(la));
+        output.archive_error("can't list contents: %s", archive_error_string(la));
         return false;
     }
     

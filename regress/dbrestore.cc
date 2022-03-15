@@ -43,12 +43,12 @@
 
 #include "CkmameDB.h"
 #include "DB.h"
-#include "error.h"
 #include "Exception.h"
 #include "MemDB.h"
 #include "RomDB.h"
 #include "SharedFile.h"
 #include "util.h"
+#include "globals.h"
 
 enum DBType {
     DBTYPE_INVALID = -1,
@@ -156,11 +156,11 @@ int main(int argc, char *argv[]) {
     std::string dump_fname = argv[optind];
     std::string db_fname = argv[optind + 1];
 
-    seterrinfo(dump_fname);
+    output.set_error_file(dump_fname);
 
     auto f = make_shared_file(dump_fname, "r");
     if (!f) {
-	myerror(ERRSTR, "can't open dump '%s'", dump_fname.c_str());
+	output.error_system("can't open dump '%s'", dump_fname.c_str());
 	exit(1);
     }
 
@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
                     throw Exception("can't happen");
             }
             
-            seterrdb(db.get());
+            output.set_error_database(db.get());
             
             if (restore_db(db->db, f.get()) < 0) {
                 exit(1);
@@ -216,11 +216,11 @@ int main(int argc, char *argv[]) {
                 static_cast<RomDB *>(db.get())->init2();
             }
             
-            seterrdb(nullptr);
+            output.set_error_database(nullptr);
         }
     }
     catch (std::exception &e) {
-        myerror(ERRDB, "can't create database '%s': %s", db_fname.c_str(), e.what());
+        output.error_database("can't create database '%s': %s", db_fname.c_str(), e.what());
         exit(1);
     }
     
@@ -309,7 +309,7 @@ restore_db(sqlite3 *db, FILE *f) {
 	    return -1;
 
 	if (ferror(f)) {
-	    myerror(ERRFILESTR, "read error");
+	    output.file_error_system("read error");
 	    return -1;
 	}
     }
@@ -329,13 +329,13 @@ restore_table(sqlite3 *db, FILE *f) {
     auto line = next_line.value();
 
     if (line.compare(0, 10, ">>> table ") != 0 || line[line.length() - 1] != ')') {
-	myerror(ERRFILE, "invalid format of table header");
+	output.file_error("invalid format of table header");
 	return -1;
     }
 
     auto index = line.find_first_of(' ', 10);
     if (index == std::string::npos || line[index + 1] != '(') {
-	myerror(ERRFILE, "invalid format of table header");
+	output.file_error("invalid format of table header");
 	return -1;
     }
     auto table_name = line.substr(10, index - 10);
@@ -352,24 +352,24 @@ restore_table(sqlite3 *db, FILE *f) {
         size_t i = 0;
         while (stmt.step()) {
             if (i >= columns.size()) {
-                myerror(ERRFILE, "too few columns in dump for table %s", table_name.c_str());
+                output.file_error("too few columns in dump for table %s", table_name.c_str());
                 return -1;
             }
             if (columns[i] != stmt.get_string("name")) {
-                myerror(ERRFILE, "column '%s' in dump doesn't match column '%s' in db for table '%s'", columns[i].c_str(), stmt.get_string("name").c_str(), table_name.c_str());
+                output.file_error("column '%s' in dump doesn't match column '%s' in db for table '%s'", columns[i].c_str(), stmt.get_string("name").c_str(), table_name.c_str());
                 return -1;
             }
             
             int coltype = column_type(string_lower(stmt.get_string("type")));
             if (coltype < 0) {
-                myerror(ERRDB, "unsupported column type %s for column %s of table %s", stmt.get_string("type").c_str(), columns[i].c_str(), table_name.c_str());
+                output.error_database("unsupported column type %s for column %s of table %s", stmt.get_string("type").c_str(), columns[i].c_str(), table_name.c_str());
                 return -1;
             }
             column_types.push_back(coltype);
             i += 1;
         }
         if (i != columns.size()) {
-            myerror(ERRFILE, "too many columns in dump for table %s", table_name.c_str());
+            output.file_error("too many columns in dump for table %s", table_name.c_str());
             return -1;
         }
     }
@@ -396,7 +396,7 @@ restore_table(sqlite3 *db, FILE *f) {
         auto values = split(line, "|");
         
         if (values.size() < column_types.size()) {
-            myerror(ERRFILE, "too few columns in row for table %s", table_name.c_str());
+            output.file_error("too few columns in row for table %s", table_name.c_str());
             return -1;
         }
         

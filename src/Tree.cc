@@ -36,7 +36,6 @@
 #include "check.h"
 #include "check_util.h"
 #include "diagnostics.h"
-#include "error.h"
 #include "fix.h"
 #include "Fixdat.h"
 #include "globals.h"
@@ -167,7 +166,7 @@ void Tree::process(GameArchives *archives) {
     auto game = db->read_game(name);
     
     if (!game) {
-	myerror(ERRDEF, "db error: %s not found", name.c_str());
+	output.error("db error: %s not found", name.c_str());
         return;
     }
 

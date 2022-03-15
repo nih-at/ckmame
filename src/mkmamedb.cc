@@ -43,7 +43,6 @@
 #include "CkmameDB.h"
 #include "Commandline.h"
 #include "DatRepository.h"
-#include "error.h"
 #include "Exception.h"
 #include "file_util.h"
 #include "globals.h"
@@ -218,14 +217,14 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 	   return false;
 	}
 	else if (configuration.dats.empty() || configuration.dat_directories.empty()) {
-	    myerror(ERRDEF, "no dats or dat-directories configured");
+	    output.error("no dats or dat-directories configured");
 	    return false;
 	}
 	else {
 	    try {
 		update_romdb(force);
 	    } catch (Exception &ex) {
-		myerror(ERRDEF, "can't update ROM database: %s", ex.what());
+		output.error("can't update ROM database: %s", ex.what());
 		return false;
 	    }
 	    return true;
@@ -246,13 +245,13 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 
 	if (!detector_name.empty()) {
 #if defined(HAVE_LIBXML2)
-	    seterrinfo(detector_name);
+	    output.set_error_file(detector_name);
 	    auto detector = Detector::parse(detector_name);
 	    if (detector != nullptr) {
 		out->detector(detector.get());
 	    }
 #else
-	    myerror(ERRDEF, "mkmamedb was built without XML support, detectors not available");
+	    output.error("mkmamedb was built without XML support, detectors not available");
 #endif
 	}
 
@@ -340,7 +339,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
                 }
             }
             catch (Exception &e) {
-                myerror(ERRFILE, "can't parse: %s", e.what());
+                output.file_error("can't parse: %s", e.what());
                 ok = false;
 		continue;
 	    }
@@ -366,13 +365,13 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	else {
 	    do {
 		if (ec) {
-		    myerror(ERRDEF, "cannot stat() file '%s': %s", fname.c_str(), ec.message().c_str());
+		    output.error("cannot stat() file '%s': %s", fname.c_str(), ec.message().c_str());
 		    ok = false;
 		    break;
 		}
 
 		if (!configuration.roms_zipped) {
-		    myerror(ERRDEF, "argument '%s' is not a directory", fname.c_str());
+		    output.error("argument '%s' is not a directory", fname.c_str());
 		    ok = false;
 		    break;
 		}

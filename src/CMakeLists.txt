@@ -36,7 +36,6 @@ set(COMMON_SOURCES
   detector_print.cc
   diagnostics.cc
   Dir.cc
-  error.cc
   Exception.cc
   File.cc
   FileData.cc
@@ -78,7 +77,7 @@ set(COMMON_SOURCES
   warn.cc
   zip_util.cc
   ${COMPATIBILITY}
-        Command.cc Command.h MkMameDB.h CkMame.h CkmameCache.cc CkmameCache.h Output.cc Output.h)
+        Command.cc CkmameCache.cc Output.cc)
 
 set(LIBXML2_SOURCES
   detector_parse.cc

@@ -33,7 +33,7 @@
 
 #include "ParserCm.h"
 
-#include "error.h"
+#include "globals.h"
 
 
 bool ParserCm::parse() {
@@ -64,7 +64,7 @@ bool ParserCm::parse() {
                     parse_state = GAME;
                     auto brace = tokenizer.get();
 		    if (brace != "(") {
-			myerror(ERRFILE, "%zu: expected '(', got '%s'", lineno, brace.c_str());
+			output.file_error("%zu: expected '(', got '%s'", lineno, brace.c_str());
 			break;
 		    }
                 }
@@ -72,7 +72,7 @@ bool ParserCm::parse() {
                     parse_state = PROG;
                     auto brace = tokenizer.get();
 		    if (brace != "(") {
-			myerror(ERRFILE, "%zu: expected '(', got '%s'", lineno, brace.c_str());
+			output.file_error("%zu: expected '(', got '%s'", lineno, brace.c_str());
 			break;
 		    }
                 }
@@ -102,13 +102,13 @@ bool ParserCm::parse() {
                 else if (cmd == "rom") {
                     auto brace = tokenizer.get();
 		    if (brace != "(") {
-			myerror(ERRFILE, "%zu: expected '(', got '%s'", lineno, brace.c_str());
+			output.file_error("%zu: expected '(', got '%s'", lineno, brace.c_str());
 			break;
 		    }
                     auto name = tokenizer.get();
                     if (name != "name") {
                         /* TODO: error */
-                        myerror(ERRFILE, "%zu: expected 'name', got '%s'", lineno, name.c_str());
+                        output.file_error("%zu: expected 'name', got '%s'", lineno, name.c_str());
                         break;
                     }
                     file_start(TYPE_ROM);
@@ -125,7 +125,7 @@ bool ParserCm::parse() {
                         else if (token == "crc" || token == "crc32") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token crc missing argument", lineno);
+                                output.file_error("%zu: token crc missing argument", lineno);
                                 continue;
                             }
                             if (!file_hash(TYPE_ROM, Hashes::TYPE_CRC, token)) {
@@ -135,7 +135,7 @@ bool ParserCm::parse() {
                         else if (token == "flags") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token flags missing argument", lineno);
+                                output.file_error("%zu: token flags missing argument", lineno);
                                 continue;
                             }
                             if (!file_status(TYPE_ROM, token)) {
@@ -145,7 +145,7 @@ bool ParserCm::parse() {
                         else if (token == "merge") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token merge missing argument", lineno);
+                                output.file_error("%zu: token merge missing argument", lineno);
                                 continue;
                             }
                             if (!file_merge(TYPE_ROM, token)) {
@@ -155,7 +155,7 @@ bool ParserCm::parse() {
                         else if (token == "md5") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token md5 missing argument", lineno);
+                                output.file_error("%zu: token md5 missing argument", lineno);
                                 continue;
                             }
                             if (!file_hash(TYPE_ROM, Hashes::TYPE_MD5, token)) {
@@ -165,7 +165,7 @@ bool ParserCm::parse() {
                         else if (token == "sha1") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token sha1 missing argument", lineno);
+                                output.file_error("%zu: token sha1 missing argument", lineno);
                                 continue;
                             }
                             if (!file_hash(TYPE_ROM, Hashes::TYPE_SHA1, token)) {
@@ -175,7 +175,7 @@ bool ParserCm::parse() {
                         else if (token == "size") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token size missing argument", lineno);
+                                output.file_error("%zu: token size missing argument", lineno);
                                 continue;
                             }
                             if (!file_size(TYPE_ROM, token)) {
@@ -186,7 +186,7 @@ bool ParserCm::parse() {
 			    break;
 			}
 			else {
-			    myerror(ERRFILE, "%zu: ignoring unknown token '%s'", lineno, token.c_str());
+			    output.file_error("%zu: ignoring unknown token '%s'", lineno, token.c_str());
 			}
                     }
 
@@ -195,14 +195,14 @@ bool ParserCm::parse() {
                 else if (cmd == "disk") {
                     auto brace = tokenizer.get();
 		    if (brace != "(") {
-			myerror(ERRFILE, "%zu: expected '(', got '%s'", lineno, brace.c_str());
+			output.file_error("%zu: expected '(', got '%s'", lineno, brace.c_str());
 			break;
 		    }
                     auto name = tokenizer.get();
 //                    if (tokenizer.get() != "name") {
                     if (name != "name") {
                         /* TODO: error */
-                        myerror(ERRFILE, "%zu: expected token 'name' not found ('%s', '%s')", lineno, brace.c_str(), name.c_str());
+                        output.file_error("%zu: expected token 'name' not found ('%s', '%s')", lineno, brace.c_str(), name.c_str());
                         break;
                     }
 
@@ -215,7 +215,7 @@ bool ParserCm::parse() {
                         if (token == "sha1") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token sha1 missing argument", lineno);
+                                output.file_error("%zu: token sha1 missing argument", lineno);
                                 continue;
                             }
                             if (!file_hash(TYPE_DISK, Hashes::TYPE_SHA1, token)) {
@@ -225,7 +225,7 @@ bool ParserCm::parse() {
                         else if (token == "md5") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token md5 missing argument", lineno);
+                                output.file_error("%zu: token md5 missing argument", lineno);
                                 continue;
                             }
                             if (!file_hash(TYPE_DISK, Hashes::TYPE_MD5, token)) {
@@ -235,7 +235,7 @@ bool ParserCm::parse() {
                         else if (token == "merge") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token merge missing argument", lineno);
+                                output.file_error("%zu: token merge missing argument", lineno);
                                 continue;
                             }
                             if (!file_merge(TYPE_DISK, token)) {
@@ -245,7 +245,7 @@ bool ParserCm::parse() {
                         else if (token == "flags") {
                             if ((token = tokenizer.get()).empty()) {
                                 /* TODO: error */
-                                myerror(ERRFILE, "%zu: token flags missing argument", lineno);
+                                output.file_error("%zu: token flags missing argument", lineno);
                                 continue;
                             }
                             if (!file_status(TYPE_DISK, token)) {
@@ -314,7 +314,7 @@ bool ParserCm::parse() {
         if (!ignoring_line) {
             std::string leftover = tokenizer.get();
             while (!leftover.empty()) {
-                myerror(ERRFILE, "%zu: ignoring unknown token '%s'", lineno, leftover.c_str());
+                output.file_error("%zu: ignoring unknown token '%s'", lineno, leftover.c_str());
                 leftover = tokenizer.get();
             }
         }
@@ -403,7 +403,7 @@ std::string ParserCm::Tokenizer::get() {
 
 void ParserCm::warn_unknown_keyword(const std::string &keyword) {
     if (warned_keywords.find(keyword) == warned_keywords.end()) {
-        myerror(ERRFILE, "%zu: unexpected token '%s'", lineno, keyword.c_str());
+        output.file_error("%zu: unexpected token '%s'", lineno, keyword.c_str());
         warned_keywords.insert(keyword);
     }
     ignoring_line = true;

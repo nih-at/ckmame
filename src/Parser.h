@@ -119,7 +119,7 @@ protected:
     DatEntry dat_default;
 
     /* output */
-    OutputContext *output;
+    OutputContext *output_context;
 
     /* current source */
     ParserSourcePtr ps;

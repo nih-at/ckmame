@@ -45,12 +45,12 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ParserSourceZip.h"
 #include "util.h"
 #include "Exception.h"
-#include "error.h"
+#include "globals.h"
 
 DatRepository::DatRepository(const std::vector<std::string> &directories) {
     for (auto const &directory : directories) {
 	if (!std::filesystem::is_directory(directory)) {
-	    myerror(ERRDEF, "Warning: dat directory '%s' doesn't exist", directory.c_str());
+	    output.error("Warning: dat directory '%s' doesn't exist", directory.c_str());
 	    continue;
 	}
 
@@ -192,7 +192,7 @@ void DatRepository::update_directory(const std::string &directory, const DatDBPt
 	    db->insert_file(file, st.st_mtime, st.st_size, entries);
 	}
 	catch (Exception &ex) {
-	    myerror(ERRDEF, "can't process '%s': %s", filepath.c_str(), ex.what());
+	    output.error("can't process '%s': %s", filepath.c_str(), ex.what());
 	}
     }
 

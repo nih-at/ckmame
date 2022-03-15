@@ -37,9 +37,9 @@
 #include <filesystem>
 #include <sqlite3.h>
 
-#include "error.h"
 #include "Exception.h"
 #include "util.h"
+#include "globals.h"
 
 
 const char *usage = "usage: %s db-file\n";
@@ -61,17 +61,17 @@ main(int argc, char *argv[]) {
 
     fname = argv[1];
 
-    seterrinfo(fname);
+    output.set_error_file(fname);
 
     if (!std::filesystem::exists(fname)) {
-	myerror(ERRSTR, "database '%s' not found", fname);
+	output.error_system("database '%s' not found", fname);
 	exit(1);
     }
 
     sqlite3 *db;
     if (sqlite3_open(fname, &db) != SQLITE_OK) {
 	/* seterrdb(db); */
-	myerror(ERRDB, "can't open database '%s'", fname);
+	output.error_database("can't open database '%s'", fname);
 	sqlite3_close(db);
 	exit(1);
     }
@@ -82,7 +82,7 @@ main(int argc, char *argv[]) {
         dump_db(db);
     }
     catch (std::exception &exception) {
-        myerror(ERRDB, "can't dump database '%s': %s", fname, exception.what());
+        output.error_database("can't dump database '%s': %s", fname, exception.what());
         exit(1);
     }
 
