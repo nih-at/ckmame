@@ -46,11 +46,13 @@
 static void cleanup_archive(filetype_t filetype, Archive *archive, Result *result, int flags);
 
 
-void cleanup_list(const DeleteListPtr& list, int flags, bool is_needed) {
+void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
     list->sort_archives();
     list->sort_entries();
     size_t di = 0;
     auto len = list->entries.size();
+
+    auto warn_needed = !(where == FILE_NEEDED || (where == FILE_EXTRA && configuration.complete_games_only));
 
     auto n = list->archives.size();
     size_t i = 0;
@@ -87,14 +89,14 @@ void cleanup_list(const DeleteListPtr& list, int flags, bool is_needed) {
                 di++;
             }
             
-            if (is_needed) {
+            if (where == FILE_NEEDED) {
                 check_needed_files(entry.filetype, a, &res);
             }
             else {
                 check_archive_files(entry.filetype, archives, "", &res);
             }
             
-	    diagnostics_archive(entry.filetype, a.get(), res, is_needed);
+	    diagnostics_archive(entry.filetype, a.get(), res, warn_needed);
             cleanup_archive(entry.filetype, a.get(), &res, flags);
 	    warn_unset_info();
 	}

@@ -363,12 +363,12 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
                 switch(match->where) {
                     case FILE_INGAME:
                     case FILE_SUPERFLUOUS:
-                    case FILE_EXTRA:
                         /* TODO: handle error (how?) */
                         save_needed(archive_from, match->index, game->name);
                         archive_from->commit();
                         break;
                         
+                    case FILE_EXTRA:
                     case FILE_IN_CLONEOF:
                     case FILE_IN_GRAND_CLONEOF:
                     case FILE_ROMSET:

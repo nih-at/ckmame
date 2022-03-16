@@ -261,8 +261,8 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 	if (ckmame_cache->needed_delete_list->archives.empty()) {
 	    ckmame_cache->needed_delete_list->add_directory(configuration.saved_directory, false);
 	}
-	cleanup_list(ckmame_cache->superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN);
-	cleanup_list(ckmame_cache->needed_delete_list, CLEANUP_UNKNOWN, true);
+	cleanup_list(ckmame_cache->superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN, FILE_SUPERFLUOUS);
+	cleanup_list(ckmame_cache->needed_delete_list, CLEANUP_UNKNOWN, FILE_NEEDED);
     }
 
     if (configuration.create_fixdat) {
@@ -270,7 +270,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     }
 
     if (configuration.fix_romset && configuration.move_from_extra) {
-	cleanup_list(ckmame_cache->extra_delete_list, 0);
+	cleanup_list(ckmame_cache->extra_delete_list, 0, FILE_EXTRA);
     }
 
     if (arguments.empty()) {

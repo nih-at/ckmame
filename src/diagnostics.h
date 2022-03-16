@@ -39,6 +39,6 @@
 #include "Result.h"
 
 void diagnostics(const Game *game, const GameArchives &archives, const Result &res);
-void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, bool is_in_needed = false);
+void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, bool warn_needed = true);
 
 #endif /* _HAD_DIAGNOSTICS_H */

@@ -61,7 +61,7 @@ void diagnostics(const Game *game, const GameArchives &archives, const Result &r
 }
 
 
-void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, bool is_in_needed) {
+void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, bool warn_needed) {
     if (a == nullptr) {
         return;
     }
@@ -87,7 +87,7 @@ void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, 
                 break;
                 
             case FS_NEEDED:
-                if (!is_in_needed && configuration.warn_file_known) {
+                if (warn_needed && configuration.warn_file_known) {
                     warn_archive_file(ft, f, "needed elsewhere");
                 }
                 break;

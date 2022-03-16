@@ -4,7 +4,6 @@
 
 - Add `ckmame` option create file with list of complete/incomplete games.
 - Add `ckmame` option to update ROM database and check only if changed.
-- Don’t copy files from extra directories to saved.
 - `dumpgame`: use `output` instead of `printf`.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Parser: header is not set if dat contains no games.
