@@ -2,14 +2,14 @@
 
 ### Implement
 
+- Add `ckmame` option create file with list of complete/incomplete games.
+- Add `ckmame` option to update ROM database and check only if changed.
+- Don’t copy files from extra directories to saved.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
 - Auto-fix cue sheet when renaming track 1.
 - Variables in config file (e.g. for collection root directory).
-- Don’t copy files from extra directories to saved.
-- Add `ckmame` option to update ROM database and check only if changed.
-- Add `ckmame` option create file with list of complete/incomplete games.
 - `dumpgame` use command line options instead of `/` special keys.
 - Make `SIGINFO` handler print set name.
 - For read-only dat or extra directories, put cache database in central location.
