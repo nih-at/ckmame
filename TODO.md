@@ -4,7 +4,6 @@
 
 - Add `ckmame` option create file with list of complete/incomplete games.
 - Add `ckmame` option to update ROM database and check only if changed.
-- `dumpgame`: use `output` instead of `printf`.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
@@ -17,6 +16,7 @@
 
 ### Write Tests
 
+- `dumpgame`: use `output` instead of `printf`.
 - multi-set invocation for mkmamedb
 - Allow `--set` to be specified multiple times, run command for each one.
 - Allow glob pattern as argument to `--set` option.
