@@ -129,8 +129,6 @@ static void print_match(GamePtr game, filetype_t ft, size_t i) {
 
 
 static void print_matches(Hashes *hash) {
-    int matches_count = 0;
-
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
         auto matches = db->read_file_by_hash(filetype, *hash);
@@ -147,12 +145,8 @@ static void print_matches(Hashes *hash) {
             }
 
             print_match(game, filetype, match.index);
-            matches_count++;
         }
     }
-
-    // TODO: do not print if matches_count == 0 && --all-sets
-    output.message(std::to_string(matches_count) + " match" + (matches_count == 1 ? "" : "es") + " found for checksum" + format_checksums(hash));
 }
 
 
