@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd February 2, 2022
+.Dd March 21, 2022
 .Dt DUMPGAME 1
 .Os
 .Sh NAME
@@ -44,8 +44,15 @@
 .Op Ar ...
 .Nm
 .Op Fl hV
+.Op Fl Fl all-sets
+.Op Fl Fl dats
+.Op Fl Fl detector
+.Op Fl Fl disks
+.Op Fl Fl games
+.Op Fl Fl hash-types
 .Op Fl Fl help
 .Op Fl Fl list-sets
+.Op Fl Fl summary
 .Op Fl Fl version
 .Sh DESCRIPTION
 .Nm
@@ -68,35 +75,26 @@ Use database
 .Ar dbfile
 instead of the default
 .Dq Pa mame.db .
+.It Fl Fl dats
+Names of the datfiles used for creating the database, and their
+descriptions.
+.It Fl Fl detector
+Name and version of the CMPro XML header skip detector used (if any).
+.It Fl Fl disks
+List names of all disks in the database.
+.It Fl Fl games
+List names of all games in the database.
+.It Fl Fl hash-types
+Types of checksums used (crc, md5, sha1).
+One line each for roms and disks.
 .It Fl h , Fl Fl help
 Display a short help message.
 .It Fl Fl list-sets
 List all configured sets.
+.It Fl Fl summary
+List some statistics about the contents of the database.
 .It Fl V , Fl Fl version
 Display program name and version number.
-.El
-.Pp
-The
-.Ar game
-argument can also be one of the following special keywords:
-.Bl -tag -width 15n
-.It Ar /dat
-Names of the datfiles used for creating the database, and their
-descriptions.
-.It Ar /detector
-Name and version of the CMPro XML header skip detector used (if any).
-.It Ar /hashtypes
-Types of checksums used (crc, md5, sha1).
-One line each for roms and disks.
-.It Ar /list
-Same as
-.Ar /list/game .
-.It Ar /list/disk
-List names of all disks in the database.
-.It Ar /list/game
-List names of all games in the database.
-.It Ar /stats
-List some statistics about the contents of the database.
 .El
 .Sh ENVIRONMENT
 .Bl -tag -width 10n
