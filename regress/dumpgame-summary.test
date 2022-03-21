@@ -1,4 +1,4 @@
-description test dumpgame statistics output
+description test dumpgame --summary
 return 0
 program dumpgame
 args -D ../mamedb-disk-many.db --summary
