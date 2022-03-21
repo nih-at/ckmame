@@ -13,7 +13,6 @@
 
 ### Write Tests
 
-- `ckmame` options `--complete-list` and `--missing-list`
 - `ckmame` options `--update-database` and `--only-if-updated`
 - multi-set invocation for mkmamedb
 - Allow `--set` to be specified multiple times, run command for each one.

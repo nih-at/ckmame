@@ -1,0 +1,8 @@
+description write list of complete games to file
+return 0
+args --complete-list complete-list --no-report-missing
+file-data complete-list
+baddump
+nogood
+norom
+end-of-data
