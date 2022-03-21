@@ -150,7 +150,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("rom-directory", 'R', "dir", "ROM set is in directory dir (default: 'roms')"),
     Commandline::Option("roms-unzipped", "ROMs are files on disk, not contained in zip archives"),
     Commandline::Option("saved-directory", "directory", "save needed ROMs in directory (default: 'saved')"),
-    Commandline::Option("set", "name", "check ROM set name"),
+    Commandline::Option("set", "pattern", "check ROM sets matching pattern"),
     Commandline::Option("unknown-directory", "directory", "save unknown files in directory (default: 'unknown')"),
     Commandline::Option("update-database", "update ROM database if dat files changed"),
     Commandline::Option("use-description-as-name", "use description as name of games in ROM database"),

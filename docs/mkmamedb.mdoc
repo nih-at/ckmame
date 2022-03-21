@@ -57,6 +57,7 @@
 .Op Fl Fl prog\-name Ar name
 .Op Fl Fl prog\-version Ar version
 .Op Fl Fl roms\-unzipped
+.Op Fl Fl set Ar pattern
 .Op Fl Fl skip\-files Ar pattern
 .Op Fl Fl use\-description\-as\-name
 .Op Fl Fl use\-temp\-directory
@@ -186,6 +187,11 @@ Set description for the program the ROM info is from.
 Set name of the program the ROM info is from.
 .It Fl Fl prog\-version Ar version
 Set version of the program the ROM info is from.
+.It Fl Fl set Ar pattern
+Run
+.Nm
+for all sets matching
+.Ar pattern .
 .It Fl Fl skip\-files Ar pattern
 When reading files from the file system as input,
 skip files matching the shell glob

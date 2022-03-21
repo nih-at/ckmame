@@ -52,6 +52,7 @@
 .Op Fl Fl hash-types
 .Op Fl Fl help
 .Op Fl Fl list-sets
+.Op Fl Fl set Ar pattern
 .Op Fl Fl summary
 .Op Fl Fl version
 .Sh DESCRIPTION
@@ -93,6 +94,11 @@ One line each for roms and disks.
 Display a short help message.
 .It Fl Fl list-sets
 List all configured sets.
+.It Fl Fl set Ar pattern
+Run
+.Nm
+for all sets matching
+.Ar pattern .
 .It Fl Fl summary
 List some statistics about the contents of the database.
 .It Fl V , Fl Fl version

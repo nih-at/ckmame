@@ -34,7 +34,7 @@
 .Nd verify MAME ROM sets
 .Sh SYNOPSIS
 .Nm
-.Op Fl CcFhjuVv
+.Op Fl CcFhjoVv
 .Op Fl D Ar dbfile
 .Op Fl e Ar dir
 .Op Fl O Ar dbfile
@@ -62,6 +62,7 @@
 .Op Fl Fl no-report-no-good-dump
 .Op Fl Fl no-report-summary
 .Op Fl Fl old-db Ar dbfile
+.Op Fl Fl only-if-database-updated
 .Op Fl Fl report-correct
 .Op Fl Fl report-detailed
 .Op Fl Fl report-fixable
@@ -72,8 +73,9 @@
 .Op Fl Fl rom-directory Ar dir
 .Op Fl Fl roms-unzipped
 .Op Fl Fl save-directory Ar dir
-.Op Fl Fl set Ar name
+.Op Fl Fl set Ar pattern
 .Op Fl Fl unknown-directory Ar dir
+.Op Fl Fl update-database
 .Op Fl Fl verbose
 .Op Fl Fl version
 .Op Ar game ...
@@ -204,6 +206,11 @@ Assume that the files in the database
 .Ar dbfile
 exist in some other location (e.g., on an offline disk or backup
 medium).
+.It Fl o , Fl Fl only-if-database-updated
+Only run
+.Nm
+if the database was updated (implies
+.Fl Fl update-database ) .
 .It Fl R , Fl Fl rom-directory Ar dir
 Look for the ROM set in the directory
 .Ar dir
@@ -230,8 +237,9 @@ directory.
 It will be found there automatically later
 (efault:
 .Dq Pa saved ).
-.It Fl Fl set Ar name
-Check ROM set name.
+.It Fl Fl set Ar pattern
+Check all ROM sets matching
+.Ar pattern .
 This uses the configuration from the corresponding section in the
 Config files.
 See
@@ -242,7 +250,7 @@ Read the list of games to check from
 .Ar file .
 .Ar file
 should contain one line per game.
-.It Fl u , Fl Fl roms-unzipped
+.It Fl Fl roms-unzipped
 Instead of looking for ROMs in the ZIP archive
 .Pa roms/games.zip ,
 look for them in the directory
@@ -254,6 +262,8 @@ currently checked and is not known by the database, move it this
 directory
 (efault:
 .Dq Pa unknown ).
+.It Fl Fl update-database
+Update the database before checking the ROMs.
 .It Fl V , Fl Fl version
 Display version number.
 .It Fl v , Fl Fl verbose
@@ -311,11 +321,10 @@ Print a report about the current state of your ROM sets in the
 subdirectory of the current dir:
 .Dl Ic ckmame
 .Pp
-Fix all sets and only report unfixable errors, omitting those
-ROMs where no good dump exists:
+Fix all ROMs:
 .Dl Ic ckmame -Fd
 .Pp
-Fix all sets using the files found in
+Fix all ROMs using the files found in
 .Ar updatedir ,
 removing files from there that are copied to the ROM set:
 .Dl Ic ckmame -Fj -e updatedir
