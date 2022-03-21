@@ -3,7 +3,7 @@ package NiHTest;
 use strict;
 use warnings;
 
-use Cwd 'abs_path';
+use Cwd qw(abs_path cwd);
 use File::Copy;
 use File::Path qw(mkpath remove_tree);
 use Getopt::Long qw(:config posix_default bundling no_ignore_case);
