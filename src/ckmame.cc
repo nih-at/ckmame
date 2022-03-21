@@ -309,24 +309,32 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     if (!configuration.complete_list.empty() || !configuration.missing_list.empty()) {
         FILEPtr complete_file, missing_file;
 
-        if (!configuration.complete_list.empty()) {
-            complete_file = make_shared_file(configuration.complete_list, "w");
-        }
-        if (!configuration.missing_list.empty()) {
-            missing_file = make_shared_file(configuration.missing_list, "w");
-        }
-
         for (const auto& name : list) {
             if (ckmame_cache->complete_games.find(name) != ckmame_cache->complete_games.end()) {
-                if (complete_file) {
+                if (!configuration.complete_list.empty()) {
+                    if (!complete_file) {
+                        complete_file = make_shared_file(configuration.complete_list, "w");
+                    }
                     fprintf(complete_file.get(), "%s\n", name.c_str());
                 }
             }
             else {
-                if (missing_file) {
+                if (!configuration.missing_list.empty()) {
+                    if (!missing_file) {
+                        missing_file = make_shared_file(configuration.missing_list, "w");
+                    }
                     fprintf(missing_file.get(), "%s\n", name.c_str());
                 }
             }
+        }
+
+        if (!complete_file && !configuration.complete_list.empty()) {
+            std::filesystem::remove(configuration.complete_list, ec);
+            // TODO: throw all errors except ENOENT, if anyone can figure out how that's done in C++
+        }
+        if (!missing_file && !configuration.missing_list.empty()) {
+            std::filesystem::remove(configuration.missing_list, ec);
+            // TODO: throw all errors except ENOENT, if anyone can figure out how that's done in C++
         }
     }
 
