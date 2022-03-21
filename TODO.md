@@ -23,17 +23,11 @@
 - configuration option `use-description-as-name`
 - per dat configuration option `game-name-suffix`
 - per dat and extra-directory configuration options
-- Create fixdat-directory if it doesn’t exist.
-- `ckmame`: do not create `roms/` if no database found
 - `mkmamedb --force`
 - configuration option `report-no-good-dump`
 - configuration option `needed-directory`
 - configuration option `saved-directory`
-- `mkmamedb —list-available-dats`
-- Don’t Check/read detector when parsing header_only.
-- Add ` (numbered)` to dat name if dat version begins with `#`.
 - `mkmamedb -` for reading from stdin.
-- `mkmamedb` with out arguments: exit with error if no dats configured.
 - Better check for determining input file type.
 
 
