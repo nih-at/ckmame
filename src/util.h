@@ -34,6 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -51,8 +52,10 @@ std::string bin2hex(const std::vector<uint8_t> &bin);
 std::string string_lower(const std::string &s);
 bool string_starts_with(const std::string &large, const std::string &small);
 name_type_t name_type(const std::string &name);
-bool ensure_dir(const std::string &name, bool strip_filename);
+bool ensure_dir(const std::filesystem::path& name, bool strip_filename); // TODO: replace with ensure_directory
+void ensure_directory(const std::filesystem::path& name, bool strip_filename = false);
 bool is_ziplike(const std::string &fname);
+std::filesystem::path home_directory();
 std::string human_number(uint64_t value);
 std::string format_time(const std::string &format, time_t timestamp);
 std::string string_format(const char *format, ...) PRINTF_LIKE(1, 2);

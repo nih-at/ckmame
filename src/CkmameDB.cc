@@ -34,13 +34,11 @@
     #include "CkmameDB.h"
     #include "globals.h"
 
-    #include <filesystem>
     #include <utility>
 
     #include "Detector.h"
-        #include "Exception.h"
+    #include "Exception.h"
     #include "fix.h"
-    #include "util.h"
 
     const std::string CkmameDB::db_name = ".ckmame.db";
 
@@ -115,6 +113,9 @@
 	{ QUERY_FILE, "select file_idx, detector_id, name, mtime, status, size, crc, md5, sha1 from file where archive_id = :archive_id order by file_idx, detector_id" },
 	{ QUERY_HAS_ARCHIVES, "select archive_id from archive limit 1" }
     };
+
+    CkmameDB::CkmameDB(const std::string& directory) : CkmameDB(make_db_file_name(directory, db_name, configuration.extra_directory_use_central_cache_directory(directory)), directory) {
+    }
 
     CkmameDB::CkmameDB(const std::string &dbname, std::string directory_) : DB(format, dbname, DBH_CREATE | DBH_WRITE), directory(std::move(directory_)) {
 	auto stmt = get_statement(LIST_DETECTORS);

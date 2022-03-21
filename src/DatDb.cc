@@ -32,6 +32,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "DatDb.h"
+#include "globals.h"
 
 const std::string DatDB::db_name = ".mkmamedb.db";
 
@@ -70,8 +71,7 @@ std::unordered_map<DatDB::Statement, std::string> DatDB::queries = {
 };
 
 
-DatDB::DatDB(const std::string& directory) : DB(format, directory + "/" + db_name, DBH_CREATE | DBH_WRITE) {
-
+DatDB::DatDB(const std::string& directory) : DB(format, make_db_file_name(directory, db_name, configuration.dat_directory_use_central_cache_directory(directory)), DBH_CREATE | DBH_WRITE) {
 }
 
 

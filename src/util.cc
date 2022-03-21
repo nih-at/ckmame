@@ -109,28 +109,43 @@ name_type_t name_type(const std::string &name) {
     return NAME_UNKNOWN;
 }
 
-bool
-ensure_dir(const std::string &name, bool strip_filename) {
-    std::error_code ec;
-    std::string dir = name;
 
-    if (strip_filename) {
-	dir = std::filesystem::path(name).parent_path();
-	if (!(dir.empty())) {
-	}
-	else {
-	    return true;
-	}
+bool ensure_dir(const std::filesystem::path& name, bool strip_filename) {
+    try {
+        ensure_directory(name, strip_filename);
+    }
+    catch (Exception &ex) {
+        output.error("%s", ex.what());
+        return false;
+    }
+
+    return true;
+}
+
+
+void ensure_directory(const std::filesystem::path& name, bool strip_filename) {
+    std::error_code ec;
+    auto dir = strip_filename ? name.parent_path() : name;
+
+    if (dir.empty()) {
+        return;
     }
 
     std::filesystem::create_directories(dir, ec);
 
     if (ec) {
-	output.error("cannot create '%s': %s", dir.c_str(), ec.message().c_str());
-	return false;
+        throw Exception("cannot create '%s': %s", dir.c_str(), ec.message().c_str());
+    }
+}
+
+
+std::filesystem::path home_directory() {
+    auto home = getenv("HOME");
+    if (home == nullptr) {
+        return "";
     }
 
-    return true;
+    return home;
 }
 
 

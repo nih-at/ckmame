@@ -65,7 +65,8 @@ public:
         QUERY_HAS_ARCHIVES
     };
     
-    CkmameDB(const std::string &dbname, std::string directory);
+    explicit CkmameDB(const std::string& directory);
+    CkmameDB(const std::string& dbname, std::string directory); // used in dbrestore
     ~CkmameDB() override = default;
 
     static const DBFormat format;

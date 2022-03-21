@@ -38,6 +38,7 @@
 #include <vector>
 
 #include "Exception.h"
+#include "util.h"
 
 const int StatementID::have_size = 0x10000;
 const int StatementID::parameterized = 0x20000;
@@ -207,6 +208,18 @@ void DB::open(const DBFormat &format, const std::string &name, int sql3_flags, b
     else {
         check_version(format);
     }
+}
+
+
+std::filesystem::path DB::make_db_file_name(const std::filesystem::path &directory, const std::string &name, bool use_central_cache) {
+    if (!use_central_cache) {
+        return directory / name;
+    }
+
+    // Adding an absolute path with / deletes everything before it, adding it as a string does what we want.
+    auto directory_name = home_directory() / ".cache" / ("ckmame" + absolute(directory).string());
+    ensure_directory(directory_name);
+    return directory_name / name;
 }
 
 

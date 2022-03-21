@@ -81,8 +81,10 @@ public:
     void prepare(const std::string& set, const ParsedCommandline& commandline);
 
     std::string dat_game_name_suffix(const std::string& dat);
+    bool dat_directory_use_central_cache_directory(const std::string& directory);
     bool dat_use_description_as_name(const std::string& dat);
     bool extra_directory_move_from_extra(const std::string& directory);
+    bool extra_directory_use_central_cache_directory(const std::string& directory);
 
     std::set<std::string> sets;
     std::string set;
@@ -111,6 +113,7 @@ public:
     std::string saved_directory;
     std::string unknown_directory;
     bool update_database;
+    bool use_central_cache_directory; // create CkmameDB and DatDB in $HOME/.cache/ckmame
     bool use_description_as_name; // in ROM database
     bool use_temp_directory; // create RomDB in temporary directory, then move into place
     bool verbose; // print all actions taken to fix ROM set
@@ -124,6 +127,11 @@ public:
     bool fix_romset; // actually fix, otherwise no archive is changed
 
 private:
+    class DatDirectoryOptions {
+      public:
+        std::optional<bool> use_central_cache_directory;
+    };
+
     class DatOptions {
       public:
         std::optional<std::string> game_name_suffix;
@@ -133,10 +141,12 @@ private:
     class ExtraDirectoryOptions {
       public:
 	std::optional<bool> move_from_extra;
+        std::optional<bool> use_central_cache_directory;
     };
 
-    static TomlSchema::TypePtr extra_directories_schema;
+    static TomlSchema::TypePtr dat_directories_schema;
     static TomlSchema::TypePtr dats_schema;
+    static TomlSchema::TypePtr extra_directories_schema;
     static TomlSchema::TypePtr section_schema;
     static TomlSchema::TypePtr file_schema;
 
@@ -156,6 +166,7 @@ private:
     void merge_config_file(const toml::table &file);
     void merge_config_table(const toml::table *table);
 
+    void merge_dat_directories(const toml::table& table, const std::string& name, bool append);
     void merge_dats(const toml::table& table);
     void merge_extra_directories(const toml::table& table, const std::string& name, bool append);
 
@@ -165,6 +176,7 @@ private:
 
     std::vector<toml::table> config_files;
 
+    std::unordered_map<std::string, DatDirectoryOptions> dat_directory_options;
     std::unordered_map<std::string, DatOptions> dat_options;
     std::unordered_map<std::string, ExtraDirectoryOptions> extra_directory_options;
 };

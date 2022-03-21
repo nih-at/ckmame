@@ -91,10 +91,8 @@ CkmameDBPtr CkmameCache::get_db_for_archive(const std::string &name) {
 		    return nullptr;
 		}
 
-		auto dbname = directory.name + '/' + CkmameDB::db_name;
-
 		try {
-		    directory.db = std::make_shared<CkmameDB>(dbname, directory.name);
+		    directory.db = std::make_shared<CkmameDB>(directory.name);
 		}
 		catch (std::exception &e) {
 		    output.error_database("can't open rom directory database for '%s': %s", directory.name.c_str(), e.what());

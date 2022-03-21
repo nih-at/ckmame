@@ -34,6 +34,7 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
 #include <string>
 #include <utility>
 
@@ -126,6 +127,7 @@ public:
     // This needs to be public to make it hashable.
     
 protected:
+    static std::filesystem::path make_db_file_name(const std::filesystem::path& directory, const std::string& name, bool use_central_cache);
     DBStatement *get_statement_internal(int name);
     DBStatement *get_statement_internal(int name, const Hashes &hashes, bool have_size);
     

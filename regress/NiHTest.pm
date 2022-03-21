@@ -3,7 +3,7 @@ package NiHTest;
 use strict;
 use warnings;
 
-use Cwd;
+use Cwd 'abs_path';
 use File::Copy;
 use File::Path qw(mkpath remove_tree);
 use Getopt::Long qw(:config posix_default bundling no_ignore_case);
@@ -347,6 +347,12 @@ sub runtest_one {
 	$ENV{LC_CTYPE} = "C";
 	$ENV{POSIXLY_CORRECT} = 1;
 	$self->sandbox_create($tag);
+
+	my $abs_sandbox = abs_path($self->{sandbox_dir});
+	for my $filename (sort keys %{$self->{files}}) {
+		$self->{files}->{$filename}->{destination} =~ s,/\@SANDBOX\@/,$abs_sandbox/,;
+	}
+
 	$self->sandbox_enter();
 
 	my $ok = 1;
@@ -709,9 +715,12 @@ sub compare_files() {
 	my @files_got = sort(list_files("."));
 	my @files_should = ();
 
-        for my $file (sort keys %{$self->{files}}) {
-		push @files_should, $file if ($self->{files}->{$file}->{result} || $self->{files}->{$file}->{ignore});
+	for my $filename (keys %{$self->{files}}) {
+		my $file = $self->{files}->{$filename};
+		push @files_should, $file->{destination} if ($file->{result} || $file->{ignore});
 	}
+
+	@files_should = sort @files_should;
 
 	$self->{files_got} = \@files_got;
 	$self->{files_should} = \@files_should;

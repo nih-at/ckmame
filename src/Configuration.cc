@@ -67,11 +67,11 @@ bool Configuration::read_config_file(std::vector<toml::table> &config_tables, co
     return ok;
 }
 
-TomlSchema::TypePtr Configuration::extra_directories_schema = std::move(
+TomlSchema::TypePtr Configuration::dat_directories_schema = std::move(
     TomlSchema::alternatives({
 	TomlSchema::array(TomlSchema::string()),
 	TomlSchema::table({}, TomlSchema::table({
-	    { "move-from-extra", TomlSchema::boolean() } }, {}))
+            { "use-central-cache-directory", TomlSchema::boolean() } }, {}))
     }, "array or table"));
 
 TomlSchema::TypePtr Configuration::dats_schema = std::move(
@@ -81,6 +81,14 @@ TomlSchema::TypePtr Configuration::dats_schema = std::move(
 	    { "game-name-suffix", TomlSchema::string() },
 	    { "use-description-as-name", TomlSchema::boolean() } }, {}))
     }, "array or table"));
+
+TomlSchema::TypePtr Configuration::extra_directories_schema = std::move(
+    TomlSchema::alternatives({
+        TomlSchema::array(TomlSchema::string()),
+        TomlSchema::table({}, TomlSchema::table({
+            { "use-central-cache-directory", TomlSchema::boolean() },
+            { "move-from-extra", TomlSchema::boolean() } }, {}))
+        }, "array or table"));
 
 TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table({
     { "complete-games-only", TomlSchema::boolean() },
@@ -111,6 +119,7 @@ TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table(
     { "sets-file", TomlSchema::string() },
     { "unknown-directory", TomlSchema::string() },
     { "update-database",  TomlSchema::boolean() },
+    { "use-central-cache-directory", TomlSchema::boolean() },
     { "use-description-as-name",  TomlSchema::boolean() },
     { "use-temp-directory",  TomlSchema::boolean() },
     { "verbose",  TomlSchema::boolean() }
@@ -240,6 +249,7 @@ void Configuration::reset() {
     saved_directory = "saved";
     unknown_directory = "unknown";
     update_database = false;
+    use_central_cache_directory = false;
     use_description_as_name = false;
     use_temp_directory = false;
     verbose = false;
@@ -347,120 +357,120 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
     auto extra_directory_specified = false;
 
     for (const auto &option : commandline.options) {
-	if (option.name == "complete-games-only") {
-	    complete_games_only = true;
-	}
+        if (option.name == "complete-games-only") {
+            complete_games_only = true;
+        }
         else if (option.name == "complete-list") {
             complete_list = option.argument;
         }
-	else if (option.name == "copy-from-extra") {
-	    move_from_extra = false;
-	}
-	else if (option.name == "create-fixdat") {
-	    create_fixdat = true;
-	}
-	else if (option.name == "extra-directory") {
-	    if (!extra_directory_specified) {
-		extra_directories.clear();
-		extra_directory_specified = true;
-	    }
-	    std::string name = option.argument;
-	    auto last = name.find_last_not_of('/');
-	    if (last == std::string::npos) {
-		name = "/";
-	    }
-	    else {
-		name.resize(last + 1);
-	    }
-	    extra_directories.push_back(name);
-	}
-	else if (option.name == "fixdat-directory") {
-	    fixdat_directory = option.argument;
-	}
-	else if (option.name == "keep-old-duplicate") {
-	    keep_old_duplicate = true;
-	}
+        else if (option.name == "copy-from-extra") {
+            move_from_extra = false;
+        }
+        else if (option.name == "create-fixdat") {
+            create_fixdat = true;
+        }
+        else if (option.name == "extra-directory") {
+            if (!extra_directory_specified) {
+                extra_directories.clear();
+                extra_directory_specified = true;
+            }
+            std::string name = option.argument;
+            auto last = name.find_last_not_of('/');
+            if (last == std::string::npos) {
+                name = "/";
+            }
+            else {
+                name.resize(last + 1);
+            }
+            extra_directories.push_back(name);
+        }
+        else if (option.name == "fixdat-directory") {
+            fixdat_directory = option.argument;
+        }
+        else if (option.name == "keep-old-duplicate") {
+            keep_old_duplicate = true;
+        }
         else if (option.name == "missing-list") {
             missing_list = option.argument;
         }
-	else if (option.name == "move-from-extra") {
-	    move_from_extra = true;
-	}
-	else if (option.name == "no-complete-games-only") {
-	    complete_games_only = false;
-	}
-	else if (option.name == "no-create-fixdat") {
-	    create_fixdat = false;
-	}
-	else if (option.name == "no-report-correct") {
-	    report_correct = false;
-	}
-	else if (option.name == "no-report-detailed") {
-	    report_detailed = false;
-	}
-	else if (option.name == "no-report-fixable") {
-	    report_fixable = false;
-	}
-	else if (option.name == "no-report-missing") {
-	    report_missing = false;
-	}
-	else if (option.name == "no-report-summary") {
-	    report_summary = false;
-	}
-	else if (option.name == "no-report-no-good-dump") {
-	    report_no_good_dump = false;
-	}
+        else if (option.name == "move-from-extra") {
+            move_from_extra = true;
+        }
+        else if (option.name == "no-complete-games-only") {
+            complete_games_only = false;
+        }
+        else if (option.name == "no-create-fixdat") {
+            create_fixdat = false;
+        }
+        else if (option.name == "no-report-correct") {
+            report_correct = false;
+        }
+        else if (option.name == "no-report-detailed") {
+            report_detailed = false;
+        }
+        else if (option.name == "no-report-fixable") {
+            report_fixable = false;
+        }
+        else if (option.name == "no-report-missing") {
+            report_missing = false;
+        }
+        else if (option.name == "no-report-summary") {
+            report_summary = false;
+        }
+        else if (option.name == "no-report-no-good-dump") {
+            report_no_good_dump = false;
+        }
         else if (option.name == "no-update-database") {
             update_database = false;
         }
-	else if (option.name == "old-db") {
-	    old_db = option.argument;
-	}
-	else if (option.name == "report-correct") {
-	    report_correct = true;
-	}
-	else if (option.name == "report-detailed") {
-	    report_detailed = true;
-	}
-	else if (option.name == "report-fixable") {
-	    report_fixable = true;
-	}
-	else if (option.name == "report-missing") {
-	    report_missing = true;
-	}
-	else if (option.name == "report-summary") {
-	    report_summary = true;
-	}
-	else if (option.name == "report-no-good-dump") {
-	    report_no_good_dump = true;
-	}
-	else if (option.name == "rom-db") {
-	    rom_db = option.argument;
-	}
-	else if (option.name == "rom-directory") {
-	    rom_directory = option.argument;
-	}
-	else if (option.name == "roms-unzipped") {
-	    roms_zipped = false;
-	}
-	else if (option.name == "saved-directory") {
-	    saved_directory = option.argument;
-	}
-	else if (option.name == "unknown-directory") {
-	    unknown_directory = option.argument;
-	}
+        else if (option.name == "old-db") {
+            old_db = option.argument;
+        }
+        else if (option.name == "report-correct") {
+            report_correct = true;
+        }
+        else if (option.name == "report-detailed") {
+            report_detailed = true;
+        }
+        else if (option.name == "report-fixable") {
+            report_fixable = true;
+        }
+        else if (option.name == "report-missing") {
+            report_missing = true;
+        }
+        else if (option.name == "report-summary") {
+            report_summary = true;
+        }
+        else if (option.name == "report-no-good-dump") {
+            report_no_good_dump = true;
+        }
+        else if (option.name == "rom-db") {
+            rom_db = option.argument;
+        }
+        else if (option.name == "rom-directory") {
+            rom_directory = option.argument;
+        }
+        else if (option.name == "roms-unzipped") {
+            roms_zipped = false;
+        }
+        else if (option.name == "saved-directory") {
+            saved_directory = option.argument;
+        }
+        else if (option.name == "unknown-directory") {
+            unknown_directory = option.argument;
+        }
         else if (option.name == "update-database") {
             update_database = true;
         }
-	else if (option.name == "use-description-as-name") {
-	    use_description_as_name = true;
-	}
-	else if (option.name == "use-temp-directory") {
-	    use_temp_directory = true;
-	}
-	else if (option.name == "verbose") {
-	    verbose = true;
-	}
+        else if (option.name == "use-description-as-name") {
+            use_description_as_name = true;
+        }
+        else if (option.name == "use-temp-directory") {
+            use_temp_directory = true;
+        }
+        else if (option.name == "verbose") {
+            verbose = true;
+        }
     }
 }
 
@@ -497,8 +507,8 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_bool(table, "complete-games-only", complete_games_only);
     set_string(table, "complete-list", complete_list);
     set_bool(table, "create-fixdat", create_fixdat);
-    set_string_vector(table, "dat-directories", dat_directories, false);
-    set_string_vector(table, "dat-directories-append", dat_directories, true);
+    merge_dat_directories(table, "dat-directories", false);
+    merge_dat_directories(table, "dat-directories-append", true);
     merge_dats(table);
     set_string(table, "rom-db", rom_db);
     merge_extra_directories(table, "extra-directories", false);
@@ -519,6 +529,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_string(table, "saved-directory", saved_directory);
     set_string(table, "unknown-directory", unknown_directory);
     set_bool(table, "update-database", update_database);
+    set_bool(table, "use-central-cache-directory", use_central_cache_directory);
     set_bool(table, "use-description-as-name", use_description_as_name);
     set_bool(table, "use-temp-directory", use_temp_directory);
     set_bool(table, "verbose", verbose);
@@ -621,6 +632,15 @@ std::string Configuration::dat_game_name_suffix(const std::string &dat) {
 }
 
 
+bool Configuration::dat_directory_use_central_cache_directory(const std::string &directory){
+    auto it = dat_directory_options.find(directory);
+    if (it == dat_directory_options.end() || !it->second.use_central_cache_directory.has_value()) {
+        return use_central_cache_directory;
+    }
+    return it->second.use_central_cache_directory.value();
+}
+
+
 bool Configuration::dat_use_description_as_name(const std::string &dat){
     auto it = dat_options.find(dat);
     if (it == dat_options.end() || !it->second.use_description_as_name.has_value()) {
@@ -638,6 +658,38 @@ bool Configuration::extra_directory_move_from_extra(const std::string &directory
     return it->second.move_from_extra.value();
 }
 
+
+bool Configuration::extra_directory_use_central_cache_directory(const std::string &directory){
+    auto it = extra_directory_options.find(directory);
+    if (it == extra_directory_options.end() || !it->second.use_central_cache_directory.has_value()) {
+        return use_central_cache_directory;
+    }
+    return it->second.use_central_cache_directory.value();
+}
+
+
+void Configuration::merge_dat_directories(const toml::table &table, const std::string &name, bool append){
+    auto node = table[name];
+
+    if (node.is_array()) {
+        set_string_vector(table, name, dat_directories, append);
+    }
+    else if (node.is_table()) {
+        if (!append) {
+            dat_directories.clear();
+        }
+        for (const auto &pair : (*node.as_table())) {
+            dat_directories.push_back(std::string(pair.first));
+            auto options_table = pair.second.as_table();
+            if (options_table != nullptr && !options_table->empty()) {
+                auto parsed_options = DatDirectoryOptions();
+
+                set_bool_optional(*options_table, "use-central-cache-directory", parsed_options.use_central_cache_directory);
+                dat_directory_options[std::string(pair.first)] = parsed_options;
+            }
+        }
+    }
+}
 
 void Configuration::merge_dats(const toml::table& table) {
     auto node = table["dats"];
@@ -679,6 +731,7 @@ void Configuration::merge_extra_directories(const toml::table &table, const std:
 		auto parsed_options = ExtraDirectoryOptions();
 
 		set_bool_optional(*options_table, "move-from-extra", parsed_options.move_from_extra);
+                set_bool_optional(*options_table, "use-central-cache-directory", parsed_options.use_central_cache_directory);
 		extra_directory_options[std::string(pair.first)] = parsed_options;
 	    }
 	}
