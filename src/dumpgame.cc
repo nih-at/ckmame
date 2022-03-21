@@ -250,7 +250,7 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
                 first = false;
             }
             else {
-                output.message("");
+                output.message(static_cast<std::string>(""));
             }
             if (std::binary_search(list.begin(), list.end(), argument)) {
                 found[index] = true;
@@ -264,7 +264,7 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
                         first = false;
                     }
                     else {
-                        output.message("");
+                        output.message(static_cast<std::string>(""));
                     }
                     dump_game(name);
                     found[index] = true;
