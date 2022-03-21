@@ -15,7 +15,6 @@
 ### Write Tests
 
 - `ckmame` options `--update-database` and `--only-if-updated`
-- `dumpgame` use command line options instead of `/` special keys.
 - multi-set invocation for mkmamedb
 - Allow `--set` to be specified multiple times, run command for each one.
 - Allow glob pattern as argument to `--set` option.
