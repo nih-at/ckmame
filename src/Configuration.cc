@@ -108,6 +108,7 @@ TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table(
     { "sets", TomlSchema::array(TomlSchema::string()) },
     { "sets-file", TomlSchema::string() },
     { "unknown-directory", TomlSchema::string() },
+    { "update-database",  TomlSchema::boolean() },
     { "use-description-as-name",  TomlSchema::boolean() },
     { "use-temp-directory",  TomlSchema::boolean() },
     { "verbose",  TomlSchema::boolean() }
@@ -137,6 +138,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("no-report-missing", "don't report status of ROMs that are missing"),
     Commandline::Option("no-report-no-good-dump", "don't report status of ROMs for which no good dump exists (default)"),
     Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
+    Commandline::Option("no-update-database", "don't update ROM database (default)"),
     Commandline::Option("old-db", 'O', "dbfile", "use database dbfile for old ROMs"),
     Commandline::Option("report-correct", 'c', "report status of ROMs that are correct"),
     Commandline::Option("report-detailed", "report status of every ROM"),
@@ -146,10 +148,11 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("report-summary", "print summary of ROM set status"),
     Commandline::Option("rom-db", 'D', "dbfile", "use ROM database dbfile"),
     Commandline::Option("rom-directory", 'R', "dir", "ROM set is in directory dir (default: 'roms')"),
-    Commandline::Option("roms-unzipped", 'u', "ROMs are files on disk, not contained in zip archives"),
+    Commandline::Option("roms-unzipped", "ROMs are files on disk, not contained in zip archives"),
     Commandline::Option("saved-directory", "directory", "save needed ROMs in directory (default: 'saved')"),
     Commandline::Option("set", "name", "check ROM set name"),
     Commandline::Option("unknown-directory", "directory", "save unknown files in directory (default: 'unknown')"),
+    Commandline::Option("update-database", "update ROM database if dat files changed"),
     Commandline::Option("use-description-as-name", "use description as name of games in ROM database"),
     Commandline::Option("use-temp-directory", 't', "create output in temporary directory, move when done"),
     Commandline::Option("verbose", 'v', "print fixes made")
@@ -167,6 +170,7 @@ std::unordered_map<std::string, std::string> Configuration::option_to_variable =
     { "no-report-missing", "report_missing" },
     { "no-report-summary", "report_summary" },
     { "no-report-no-good-dump", "report_no_good_dump" },
+    { "no-update-database", "update_database" },
     { "roms-unzipped", "roms_zipped" }
 };
 
@@ -229,6 +233,7 @@ void Configuration::reset() {
     roms_zipped = true;
     saved_directory = "saved";
     unknown_directory = "unknown";
+    update_database = false;
     use_description_as_name = false;
     use_temp_directory = false;
     verbose = false;
@@ -393,6 +398,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
 	else if (option.name == "no-report-no-good-dump") {
 	    report_no_good_dump = false;
 	}
+        else if (option.name == "no-update-database") {
+            update_database = false;
+        }
 	else if (option.name == "old-db") {
 	    old_db = option.argument;
 	}
@@ -429,6 +437,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
 	else if (option.name == "unknown-directory") {
 	    unknown_directory = option.argument;
 	}
+        else if (option.name == "update-database") {
+            update_database = true;
+        }
 	else if (option.name == "use-description-as-name") {
 	    use_description_as_name = true;
 	}
@@ -493,6 +504,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_bool(table, "roms-zipped", roms_zipped);
     set_string(table, "saved-directory", saved_directory);
     set_string(table, "unknown-directory", unknown_directory);
+    set_bool(table, "update-database", update_database);
     set_bool(table, "use-description-as-name", use_description_as_name);
     set_bool(table, "use-temp-directory", use_temp_directory);
     set_bool(table, "verbose", verbose);

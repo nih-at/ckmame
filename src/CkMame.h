@@ -46,6 +46,8 @@ class CkMame : public Command {
 
   private:
     std::string game_list;
+
+    bool only_if_updated;
 };
 
 #endif // CKMAME_H

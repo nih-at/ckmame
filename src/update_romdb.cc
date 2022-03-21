@@ -92,15 +92,15 @@ static bool is_romdb_up_to_date(std::vector<DatDB::DatInfo> &dats_to_use) {
 }
 
 
-void update_romdb(bool force) {
+bool update_romdb(bool force) {
     if (configuration.dats.empty() || configuration.dat_directories.empty()) {
-	return;
+	return false;
     }
 
     std::vector<DatDB::DatInfo> dats_to_use;
 
     if (is_romdb_up_to_date(dats_to_use) && !force) {
-	return;
+	return false;
     }
 
     OutputContextPtr output;
@@ -152,4 +152,6 @@ void update_romdb(bool force) {
 	}
 	throw Exception(std::string(ex.what()));
     }
+
+    return true;
 }

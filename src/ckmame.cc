@@ -57,6 +57,7 @@
 #include "superfluous.h"
 #include "Tree.h"
 #include "util.h"
+#include "update_romdb.h"
 
 
 /* to identify roms directory uniquely */
@@ -66,6 +67,7 @@ std::filesystem::path rom_dir_normalized;
 std::vector<Commandline::Option> ckmame_options = {
     Commandline::Option("fix", 'F', "fix ROM set"),
     Commandline::Option("game-list", 'T', "file", "read games to check from file"),
+    Commandline::Option("only-if-database-updated", 'U', "if dats didn't change, exit; otherwise update database and run")
 };
 
 std::unordered_set<std::string> ckmame_used_variables = {
@@ -87,6 +89,7 @@ std::unordered_set<std::string> ckmame_used_variables = {
     "roms_zipped",
     "saved_directory",
     "unknown_directory",
+    "update_database",
     "verbose"
 };
 
@@ -98,153 +101,173 @@ int main(int argc, char **argv) {
     return command.run(argc, argv);
 }
 
-CkMame::CkMame() : Command("ckmame", "[game ...]", ckmame_options, ckmame_used_variables) {
+CkMame::CkMame() : Command("ckmame", "[game ...]", ckmame_options, ckmame_used_variables), only_if_updated(false) {
 }
 
 void CkMame::setup(const ParsedCommandline &commandline) {
     for (const auto &option : commandline.options) {
-	if (option.name == "fix") {
-	    configuration.fix_romset = true;
-	}
-	else if (option.name == "game-list") {
-	    game_list = option.argument;
-	}
+        if (option.name == "fix") {
+            configuration.fix_romset = true;
+        }
+        else if (option.name == "game-list") {
+            game_list = option.argument;
+        }
+        else if (option.name == "only-if-database-updated") {
+            only_if_updated = true;
+        }
     }
 
     if (!configuration.fix_romset) {
-	Archive::read_only_mode = true;
+        Archive::read_only_mode = true;
     }
 }
 
 bool CkMame::execute(const std::vector<std::string> &arguments) {
     int found;
 
+    if (only_if_updated) {
+        configuration.update_database = true;
+    }
+
+    if (configuration.update_database) {
+        try {
+            auto updated = update_romdb();
+            if (!updated && only_if_updated) {
+                return true;
+            }
+        }
+        catch (std::exception &e) {
+            output.error("can't update database '%s': %s", configuration.rom_db.c_str(), e.what());
+            return false;
+        }
+    }
+
     try {
-	db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
+        db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
     } catch (std::exception &e) {
-	output.error("can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
-	return false;
+        output.error("can't open database '%s': %s", configuration.rom_db.c_str(), e.what());
+        return false;
     }
     try {
-	old_db = std::make_unique<RomDB>(configuration.old_db, DBH_READ);
+        old_db = std::make_unique<RomDB>(configuration.old_db, DBH_READ);
     } catch (std::exception &e) {
-	/* TODO: check for errors other than ENOENT */
+        /* TODO: check for errors other than ENOENT */
     }
 
     if (!configuration.roms_zipped && db->has_disks() == 1) {
-	fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", getprogname());
-	return false;
+        fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", getprogname());
+        return false;
     }
 
     ensure_dir(configuration.rom_directory, false);
     std::error_code ec;
     rom_dir_normalized = std::filesystem::relative(configuration.rom_directory, "/", ec);
     if (ec || rom_dir_normalized.empty()) {
-	/* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
-	output.error_system("can't normalize directory '%s'", configuration.rom_directory.c_str());
-	return false;
+        /* TODO: treat as warning only? (this exits if any ancestor directory is unreadable) */
+        output.error_system("can't normalize directory '%s'", configuration.rom_directory.c_str());
+        return false;
     }
 
     ckmame_cache = std::make_shared<CkmameCache>();
 
     try {
-	ckmame_cache->register_directory(configuration.rom_directory);
-	ckmame_cache->register_directory(configuration.saved_directory);
-	ckmame_cache->register_directory(configuration.unknown_directory);
-	for (const auto &name : configuration.extra_directories) {
-	    if (contains_romdir(name)) {
-		/* TODO: improve error message: also if extra is in ROM directory. */
-		output.error("current ROM directory '%s' is in extra directory '%s'", configuration.rom_directory.c_str(), name.c_str());
-		return false;
-	    }
-	    ckmame_cache->register_directory(name);
-	}
+        ckmame_cache->register_directory(configuration.rom_directory);
+        ckmame_cache->register_directory(configuration.saved_directory);
+        ckmame_cache->register_directory(configuration.unknown_directory);
+        for (const auto &name : configuration.extra_directories) {
+            if (contains_romdir(name)) {
+                /* TODO: improve error message: also if extra is in ROM directory. */
+                output.error("current ROM directory '%s' is in extra directory '%s'", configuration.rom_directory.c_str(), name.c_str());
+                return false;
+            }
+            ckmame_cache->register_directory(name);
+        }
     } catch (Exception &exception) {
-	// TODO: handle error
-	fprintf(stderr, "%s: %s\n", getprogname(), exception.what());
-	return false;
+        // TODO: handle error
+        fprintf(stderr, "%s: %s\n", getprogname(), exception.what());
+        return false;
     }
 
     if (configuration.create_fixdat) {
-	Fixdat::begin();
+        Fixdat::begin();
     }
 
     /* build tree of games to check */
     std::vector<std::string> list;
 
     try {
-	list = db->read_list(DBH_KEY_LIST_GAME);
+        list = db->read_list(DBH_KEY_LIST_GAME);
     } catch (Exception &e) {
-	output.error("list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
-	return false;
+        output.error("list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
+        return false;
     }
     std::sort(list.begin(), list.end());
 
     if (!game_list.empty()) {
-	char b[8192];
+        char b[8192];
 
-	output.set_error_file(game_list);
+        output.set_error_file(game_list);
 
-	auto f = make_shared_file(game_list, "r");
-	if (!f) {
-	    output.archive_error_system("cannot open game list");
-	    exit(1);
-	}
+        auto f = make_shared_file(game_list, "r");
+        if (!f) {
+            output.archive_error_system("cannot open game list");
+            exit(1);
+        }
 
-	while (fgets(b, sizeof(b), f.get())) {
-	    if (b[strlen(b) - 1] == '\n')
-		b[strlen(b) - 1] = '\0';
-	    else {
-		output.archive_error("overly long line ignored");
-		continue;
-	    }
+        while (fgets(b, sizeof(b), f.get())) {
+            if (b[strlen(b) - 1] == '\n')
+                b[strlen(b) - 1] = '\0';
+            else {
+                output.archive_error("overly long line ignored");
+                continue;
+            }
 
-	    if (std::binary_search(list.begin(), list.end(), b)) {
-		check_tree.add(b);
-	    }
-	    else {
-		output.error("game '%s' unknown", b);
-	    }
-	}
+            if (std::binary_search(list.begin(), list.end(), b)) {
+                check_tree.add(b);
+            }
+            else {
+                output.error("game '%s' unknown", b);
+            }
+        }
     }
     else if (arguments.empty()) {
-	for (const auto &name : list) {
-	    check_tree.add(name);
-	}
+        for (const auto &name : list) {
+            check_tree.add(name);
+        }
     }
     else {
-	for (const auto &argument : arguments) {
-	    if (strcspn(argument.c_str(), "*?[]{}") == argument.size()) {
-		if (std::binary_search(list.begin(), list.end(), argument)) {
-		    check_tree.add(argument);
-		}
-		else {
-		    output.error("game '%s' unknown", argument.c_str());
-		}
-	    }
-	    else {
-		found = 0;
-		for (const auto &j : list) {
-		    if (fnmatch(argument.c_str(), j.c_str(), 0) == 0) {
-			check_tree.add(j);
-			found = 1;
-		    }
-		}
-		if (!found)
-		    output.error("no game matching '%s' found", argument.c_str());
-	    }
-	}
+        for (const auto &argument : arguments) {
+            if (strcspn(argument.c_str(), "*?[]{}") == argument.size()) {
+                if (std::binary_search(list.begin(), list.end(), argument)) {
+                    check_tree.add(argument);
+                }
+                else {
+                    output.error("game '%s' unknown", argument.c_str());
+                }
+            }
+            else {
+                found = 0;
+                for (const auto &j : list) {
+                    if (fnmatch(argument.c_str(), j.c_str(), 0) == 0) {
+                        check_tree.add(j);
+                        found = 1;
+                    }
+                }
+                if (!found)
+                    output.error("no game matching '%s' found", argument.c_str());
+            }
+        }
     }
 
     MemDB::ensure();
 
     if (!ckmame_cache->superfluous_delete_list) {
-	ckmame_cache->superfluous_delete_list = std::make_shared<DeleteList>();
+        ckmame_cache->superfluous_delete_list = std::make_shared<DeleteList>();
     }
     ckmame_cache->superfluous_delete_list->add_directory(configuration.rom_directory, true);
 
     if (configuration.fix_romset) {
-	ckmame_cache->ensure_extra_maps();
+        ckmame_cache->ensure_extra_maps();
     }
 
 #ifdef SIGINFO
@@ -255,35 +278,35 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     check_tree.traverse(); /* handle rechecks */
 
     if (configuration.fix_romset) {
-	if (!ckmame_cache->needed_delete_list) {
-	    ckmame_cache->needed_delete_list = std::make_shared<DeleteList>();
-	}
-	if (ckmame_cache->needed_delete_list->archives.empty()) {
-	    ckmame_cache->needed_delete_list->add_directory(configuration.saved_directory, false);
-	}
-	cleanup_list(ckmame_cache->superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN, FILE_SUPERFLUOUS);
-	cleanup_list(ckmame_cache->needed_delete_list, CLEANUP_UNKNOWN, FILE_NEEDED);
+        if (!ckmame_cache->needed_delete_list) {
+            ckmame_cache->needed_delete_list = std::make_shared<DeleteList>();
+        }
+        if (ckmame_cache->needed_delete_list->archives.empty()) {
+            ckmame_cache->needed_delete_list->add_directory(configuration.saved_directory, false);
+        }
+        cleanup_list(ckmame_cache->superfluous_delete_list, CLEANUP_NEEDED | CLEANUP_UNKNOWN, FILE_SUPERFLUOUS);
+        cleanup_list(ckmame_cache->needed_delete_list, CLEANUP_UNKNOWN, FILE_NEEDED);
     }
 
     if (configuration.create_fixdat) {
-	Fixdat::end();
+        Fixdat::end();
     }
 
     if (configuration.fix_romset && configuration.move_from_extra) {
-	cleanup_list(ckmame_cache->extra_delete_list, 0, FILE_EXTRA);
+        cleanup_list(ckmame_cache->extra_delete_list, 0, FILE_EXTRA);
     }
 
     if (arguments.empty()) {
-	print_superfluous(ckmame_cache->superfluous_delete_list);
+        print_superfluous(ckmame_cache->superfluous_delete_list);
     }
 
     if (configuration.report_summary) {
-	stats.print(stdout, false);
+        stats.print(stdout, false);
     }
 
     if (configuration.fix_romset) {
-	std::error_code ec;
-	std::filesystem::remove(configuration.saved_directory, ec);
+        std::error_code ec;
+        std::filesystem::remove(configuration.saved_directory, ec);
     }
 
     db = nullptr;

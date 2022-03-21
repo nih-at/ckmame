@@ -3,20 +3,19 @@
 ### Implement
 
 - Add `ckmame` option create file with list of complete/incomplete games.
-- Add `ckmame` option to update ROM database and check only if changed.
+- For read-only dat or extra directories, put cache database in central location.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
-- Auto-fix cue sheet when renaming track 1.
 - Variables in config file (e.g. for collection root directory).
-- `dumpgame` use command line options instead of `/` special keys.
 - Make `SIGINFO` handler print set name.
-- For read-only dat or extra directories, put cache database in central location.
 - Add (per entry) option for directories to put cache database in central location.
+- Auto-fix cue sheet when renaming track 1.
 
 ### Write Tests
 
-- `dumpgame`: use `output` instead of `printf`.
+- `ckmame` options `--update-database` and `--only-if-updated`
+- `dumpgame` use command line options instead of `/` special keys.
 - multi-set invocation for mkmamedb
 - Allow `--set` to be specified multiple times, run command for each one.
 - Allow glob pattern as argument to `--set` option.

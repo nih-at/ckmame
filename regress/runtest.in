@@ -350,7 +350,7 @@ sub dir_mangle_test {
 	}
 
     if ($test->{test}->{program} =~ m/(ckmame|mamedb)$/) {
-	unshift @{$test->{test}->{args}}, '-u';
+		unshift @{$test->{test}->{args}}, '--roms-unzipped';
     }
 
     return 1;
