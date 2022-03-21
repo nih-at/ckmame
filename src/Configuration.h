@@ -89,12 +89,14 @@ public:
 
     // config variables
     bool complete_games_only; // only add ROMs to games if they are complete afterwards.
+    std::string complete_list;
     bool create_fixdat;
     std::vector<std::string> dat_directories;
     std::vector<std::string> dats;
     std::vector<std::string> extra_directories;
     std::string fixdat_directory;
     bool keep_old_duplicate;
+    std::string missing_list;
     bool move_from_extra; // remove files taken from extra directories, otherwise copy them and don't change extra directory.
     std::string old_db;
     bool report_correct; /* report ROMs that are correct */

@@ -34,6 +34,8 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <unordered_set>
+
 #include "CkmameDB.h"
 #include "DeleteList.h"
 
@@ -53,6 +55,8 @@ class CkmameCache {
     DeleteListPtr extra_delete_list;
     DeleteListPtr needed_delete_list;
     DeleteListPtr superfluous_delete_list;
+
+    std::unordered_set<std::string> complete_games;
 
   private:
     class CacheDirectory {

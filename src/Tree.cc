@@ -42,6 +42,7 @@
 #include "RomDB.h"
 #include "sighandle.h"
 #include "warn.h"
+#include "CkmameCache.h"
 
 
 Tree check_tree;
@@ -190,6 +191,10 @@ void Tree::process(GameArchives *archives) {
 	if (configuration.fix_romset) {
 	    ret = fix_game(game.get(), archives[0], &res);
 	}
+
+        if (ret == 0 && res.game == GS_CORRECT) {
+            ckmame_cache->complete_games.insert(game->name);
+        }
 
 	/* TODO: includes too much when rechecking */
 	if (configuration.create_fixdat) {

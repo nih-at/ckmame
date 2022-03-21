@@ -84,6 +84,7 @@ TomlSchema::TypePtr Configuration::dats_schema = std::move(
 
 TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table({
     { "complete-games-only", TomlSchema::boolean() },
+    { "complete-list", TomlSchema::string() },
     { "create-fixdat",  TomlSchema::boolean() },
     { "dat-directories", TomlSchema::array(TomlSchema::string()) },
     { "dat-directories-append", TomlSchema::array(TomlSchema::string()) },
@@ -92,6 +93,7 @@ TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table(
     { "extra-directories-append", extra_directories_schema},
     { "fixdat-directory",  TomlSchema::string() },
     { "keep-old-duplicate",  TomlSchema::boolean() },
+    { "missing-list", TomlSchema::string() },
     { "move-from-extra",  TomlSchema::boolean() },
     { "old-db", TomlSchema::string() },
     { "profiles", TomlSchema::array(TomlSchema::string()) },
@@ -122,6 +124,7 @@ TomlSchema::TypePtr Configuration::file_schema = std::move(TomlSchema::table({
 
 std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("complete-games-only", 'C', "only keep complete games in ROM set"),
+    Commandline::Option("complete-list", "file", "write list of complete games to file"),
     Commandline::Option("config", "file", "read configuration from file"),
     Commandline::Option("copy-from-extra", "keep used files in extra directories (default)"),
     Commandline::Option("create-fixdat", "write fixdat to 'fix_$NAME_OF_SET.dat'"),
@@ -129,6 +132,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("fixdat-directory", "directory", "create fixdats in directory"),
     Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
     Commandline::Option("list-sets", "list all known sets"),
+    Commandline::Option("missing-list", "file", "write list of missing games to file"),
     Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
     Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
     Commandline::Option("no-create-fixdat", "don't create fixdat (default)"),
@@ -218,8 +222,10 @@ Configuration::Configuration() : fix_romset(false) {
 
 void Configuration::reset() {
     complete_games_only = false;
+    complete_list = "";
     create_fixdat = false;
     keep_old_duplicate = false;
+    missing_list = "";
     move_from_extra = false;
     old_db = RomDB::default_old_name();
     report_correct = false;
@@ -344,6 +350,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
 	if (option.name == "complete-games-only") {
 	    complete_games_only = true;
 	}
+        else if (option.name == "complete-list") {
+            complete_list = option.argument;
+        }
 	else if (option.name == "copy-from-extra") {
 	    move_from_extra = false;
 	}
@@ -371,6 +380,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
 	else if (option.name == "keep-old-duplicate") {
 	    keep_old_duplicate = true;
 	}
+        else if (option.name == "missing-list") {
+            missing_list = option.argument;
+        }
 	else if (option.name == "move-from-extra") {
 	    move_from_extra = true;
 	}
@@ -483,6 +495,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     }
 
     set_bool(table, "complete-games-only", complete_games_only);
+    set_string(table, "complete-list", complete_list);
     set_bool(table, "create-fixdat", create_fixdat);
     set_string_vector(table, "dat-directories", dat_directories, false);
     set_string_vector(table, "dat-directories-append", dat_directories, true);
@@ -492,6 +505,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     merge_extra_directories(table, "extra-directories-append", true);
     set_string(table, "fixdat-directory", fixdat_directory);
     set_bool(table, "keep-old-duplicate", keep_old_duplicate);
+    set_string(table, "missing-list", missing_list);
     set_bool(table, "move-from-extra", move_from_extra);
     set_string(table, "old-db", old_db);
     set_bool(table, "report-correct", report_correct);

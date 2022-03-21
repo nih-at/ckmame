@@ -72,10 +72,12 @@ std::vector<Commandline::Option> ckmame_options = {
 
 std::unordered_set<std::string> ckmame_used_variables = {
     "complete_games_only",
+    "complete_list",
     "create_fixdat",
     "extra_directories",
     "fixdat_directory",
     "keep_old_duplicate",
+    "missing_list",
     "move_from_extra",
     "old_db",
     "report_correct",
@@ -302,6 +304,30 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 
     if (configuration.report_summary) {
         stats.print(stdout, false);
+    }
+
+    if (!configuration.complete_list.empty() || !configuration.missing_list.empty()) {
+        FILEPtr complete_file, missing_file;
+
+        if (!configuration.complete_list.empty()) {
+            complete_file = make_shared_file(configuration.complete_list, "w");
+        }
+        if (!configuration.missing_list.empty()) {
+            missing_file = make_shared_file(configuration.missing_list, "w");
+        }
+
+        for (const auto& name : list) {
+            if (ckmame_cache->complete_games.find(name) != ckmame_cache->complete_games.end()) {
+                if (complete_file) {
+                    fprintf(complete_file.get(), "%s\n", name.c_str());
+                }
+            }
+            else {
+                if (missing_file) {
+                    fprintf(missing_file.get(), "%s\n", name.c_str());
+                }
+            }
+        }
     }
 
     if (configuration.fix_romset) {

@@ -2,7 +2,6 @@
 
 ### Implement
 
-- Add `ckmame` option create file with list of complete/incomplete games.
 - For read-only dat or extra directories, put cache database in central location.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Parser: header is not set if dat contains no games.
@@ -14,6 +13,7 @@
 
 ### Write Tests
 
+- `ckmame` options `--complete-list` and `--missing-list`
 - `ckmame` options `--update-database` and `--only-if-updated`
 - multi-set invocation for mkmamedb
 - Allow `--set` to be specified multiple times, run command for each one.
