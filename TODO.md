@@ -30,7 +30,6 @@
 - configuration option `needed-directory`
 - configuration option `saved-directory`
 - `mkmamedb —list-available-dats`
-- `DatRepository`: warn if directory doesn’t exist.
 - Don’t Check/read detector when parsing header_only.
 - Add ` (numbered)` to dat name if dat version begins with `#`.
 - `mkmamedb -` for reading from stdin.
