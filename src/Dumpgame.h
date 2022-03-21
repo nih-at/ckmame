@@ -34,7 +34,11 @@
 #ifndef DUMPGAME_H
 #define DUMPGAME_H
 
+#include <set>
+
 #include "Command.h"
+#include "Game.h"
+#include "DatEntry.h"
 
 class Dumpgame : public Command {
   public:
@@ -45,14 +49,37 @@ class Dumpgame : public Command {
     bool cleanup() override;
 
   private:
+    enum Special {
+        DATS,
+        DETECTOR,
+        DISKS,
+        GAMES,
+        HASH_TYPES,
+        SUMMARY
+    };
     bool brief_mode;
     bool find_checksum;
     bool first;
 
     std::vector<std::string> arguments;
+    std::set<Special> specials;
     std::vector<bool> found;
 
+    static bool dump_dats();
+    static void dump_detector();
+    bool dump_game(const std::string& name) const;
+    static void dump_hash_types();
+    static bool dump_list(int key);
+    static void dump_stats();
+    static std::string format_checksums(const Hashes *hashes);
+    static std::string format_dat(const DatEntry &de);
+    static std::string format_hash_types(int ht);
     static bool is_pattern(const std::string& string);
+    static void print_clones(const GamePtr& game);
+    static void print_diskline(Rom *disk);
+    static void print_match(const GamePtr& game, filetype_t ft, size_t i);
+    static void print_matches(Hashes *hash);
+    static void print_romline(Rom *rom);
 };
 
 #endif // DUMPGAME_H

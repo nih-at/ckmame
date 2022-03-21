@@ -35,11 +35,9 @@
 
 #include <algorithm>
 #include <cerrno>
-#include <cinttypes>
 #include <cstring>
 
 #include "compat.h"
-#include "config.h"
 
 #include "Commandline.h"
 #include "Exception.h"
@@ -49,16 +47,6 @@
 #include "util.h"
 
 
-static int dump_game(const std::string &, int);
-static int dump_hashtypes(int);
-static int dump_list(int);
-static int dump_dat(int);
-static int dump_special(const char *);
-static int dump_stats(int);
-static std::string format_dat(const DatEntry &de);
-static std::string format_hashtypes(int ht);
-static void print_clones(GamePtr game);
-
 std::vector<Commandline::Option> dumpgame_options = {
     Commandline::Option("brief", 'b', "brief listing (omit ROM details)"),
     Commandline::Option("checksum", 'c', "find games containing ROMs or disks with given checksums"),
@@ -66,7 +54,7 @@ std::vector<Commandline::Option> dumpgame_options = {
     Commandline::Option("detector", "print detector"),
     Commandline::Option("disks", "list disks"),
     Commandline::Option("games", "list games"),
-    Commandline::Option("hashtypes", "show which hash types are used"),
+    Commandline::Option("hash-types", "show which hash types are used"),
     Commandline::Option("summary", "print summary of ROM set")};
 
 std::unordered_set<std::string> dumpgame_used_variables = {"rom_db"};
@@ -75,8 +63,9 @@ Dumpgame::Dumpgame() : Command("dumpgame", "[game|checksum ...]", dumpgame_optio
 
 static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 
-static std::string format_checksums(const Hashes *hashes) {
-    std::string result = "";
+
+std::string Dumpgame::format_checksums(const Hashes *hashes) {
+    std::string result;
     for (int i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
         if (hashes->has_type(i)) {
             result += " " + Hashes::type_name(i) + " " + hashes->to_string(i);
@@ -86,7 +75,7 @@ static std::string format_checksums(const Hashes *hashes) {
 }
 
 
-static void print_diskline(Rom *disk) {
+void Dumpgame::print_diskline(Rom *disk) {
     auto message = "\t\tdisk " + pad_string(disk->name, 12) + format_checksums(&disk->hashes) + " status " + disk->status_name(true) + " in " + where_name[disk->where];
     if (!disk->merge.empty() && disk->name != disk->merge) {
         message += " (" + disk->merge + ")";
@@ -95,7 +84,7 @@ static void print_diskline(Rom *disk) {
 }
 
 
-static void print_romline(Rom *rom) {
+void Dumpgame::print_romline(Rom *rom) {
     auto message = "\t\tfile " + pad_string(rom->name, 12) + "  size ";
     if (rom->is_size_known()) {
         message += pad_string_left(std::to_string(rom->hashes.size), 7);
@@ -112,7 +101,7 @@ static void print_romline(Rom *rom) {
 }
 
 
-static void print_match(GamePtr game, filetype_t ft, size_t i) {
+void Dumpgame::print_match(const GamePtr& game, filetype_t ft, size_t i) {
     static std::string name;
 
     if (name.empty() || game->name != name) {
@@ -128,7 +117,7 @@ static void print_match(GamePtr game, filetype_t ft, size_t i) {
 }
 
 
-static void print_matches(Hashes *hash) {
+void Dumpgame::print_matches(Hashes *hash) {
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
         auto matches = db->read_file_by_hash(filetype, *hash);
@@ -165,6 +154,24 @@ void Dumpgame::setup(const ParsedCommandline &commandline) {
         else if (option.name == "checksum") {
             find_checksum = true;
         }
+        else if (option.name == "dats") {
+            specials.insert(DATS);
+        }
+        else if (option.name == "detector") {
+            specials.insert(DETECTOR);
+        }
+        else if (option.name == "disks") {
+            specials.insert(DISKS);
+        }
+        else if (option.name == "hash-types") {
+            specials.insert(HASH_TYPES);
+        }
+        else if (option.name == "games") {
+            specials.insert(GAMES);
+        }
+        else if (option.name == "summary") {
+            specials.insert(SUMMARY);
+        }
     }
 
     arguments = commandline.arguments;
@@ -192,6 +199,35 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
     }
     std::sort(list.begin(), list.end());
 
+    for (auto key : specials) {
+        switch (key) {
+            case DATS:
+                dump_dats();
+                break;
+
+            case DETECTOR:
+                dump_detector();
+                break;
+
+            case DISKS:
+                dump_list(DBH_KEY_LIST_DISK);
+                break;
+
+            case GAMES:
+                dump_list(DBH_KEY_LIST_GAME);
+                break;
+
+            case HASH_TYPES:
+                dump_hash_types();
+                break;
+
+            case SUMMARY:
+                dump_stats();
+                break;
+        }
+    }
+
+
     /* find matches for ROMs */
     if (find_checksum) {
         Hashes match;
@@ -216,13 +252,9 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
             else {
                 output.message("");
             }
-            if (argument[0] == '/') {
-                dump_special(argument.c_str());
+            if (std::binary_search(list.begin(), list.end(), argument)) {
                 found[index] = true;
-            }
-            else if (std::binary_search(list.begin(), list.end(), argument)) {
-                found[index] = true;
-                dump_game(argument, brief_mode);
+                dump_game(argument);
             }
         }
         else {
@@ -234,7 +266,7 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
                     else {
                         output.message("");
                     }
-                    dump_game(name, brief_mode);
+                    dump_game(name);
                     found[index] = true;
                 }
             }
@@ -271,7 +303,7 @@ bool Dumpgame::cleanup() {
 }
 
 
-static void print_clones(GamePtr game) {
+void Dumpgame::print_clones(const GamePtr& game) {
     auto clones = db->get_clones(game->name);
 
     if (clones.empty()) {
@@ -279,7 +311,7 @@ static void print_clones(GamePtr game) {
     }
 
     size_t i;
-    std::string message = "";
+    std::string message;
     for (i = 0; i < clones.size(); i++) {
         if (i == 0) {
             message = "Clones:";
@@ -299,19 +331,19 @@ static void print_clones(GamePtr game) {
 }
 
 
-static int dump_game(const std::string &name, int brief_mode) {
+bool Dumpgame::dump_game(const std::string &name) const {
     GamePtr game;
 
     auto dat = db->read_dat();
 
     if (dat.empty()) {
         output.error("cannot read dat info");
-        return -1;
+        return false;
     }
 
     if ((game = db->read_game(name)) == nullptr) {
         output.error("game unknown (or database error): '%s'", name.c_str());
-        return -1;
+        return false;
     }
 
     output.message("Name:\t\t" + game->name);
@@ -347,20 +379,17 @@ static int dump_game(const std::string &name, int brief_mode) {
         }
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED1*/
-static int dump_hashtypes(int dummy) {
-    output.message("roms: " + format_hashtypes(db->hashtypes(TYPE_ROM)));
-    output.message("disks: " + format_hashtypes(db->hashtypes(TYPE_DISK)));
-
-    return 0;
+void Dumpgame::dump_hash_types() {
+    output.message("roms: " + format_hash_types(db->hashtypes(TYPE_ROM)));
+    output.message("disks: " + format_hash_types(db->hashtypes(TYPE_DISK)));
 }
 
 
-static int dump_list(int type) {
+bool Dumpgame::dump_list(int type) {
     try {
         auto list = db->read_list(static_cast<enum dbh_list>(type));
 
@@ -369,24 +398,23 @@ static int dump_list(int type) {
         }
     } catch (Exception &e) {
         output.error_database("db error reading list: %s", e.what());
-        return -1;
+        return false;
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED1*/
-static int dump_dat(int dummy) {
+bool Dumpgame::dump_dats() {
     auto dat = db->read_dat();
 
     if (dat.empty()) {
-        output.error("db error reading /dat");
-        return -1;
+        output.error("db error reading dats");
+        return false;
     }
 
     for (size_t i = 0; i < dat.size(); i++) {
-        std::string message = "";
+        std::string message;
         if (dat.size() > 1) {
             message += pad_string_left(std::to_string(i), 2) + ": ";
         }
@@ -394,62 +422,39 @@ static int dump_dat(int dummy) {
         output.message(message);
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED1*/
-static int dump_detector(int dummy) {
+void Dumpgame::dump_detector() {
     DetectorPtr detector;
 
     if (!db->detectors.empty()) {
         detector = db->detectors.begin()->second;
-        std::string message = "";
+        std::string message;
         message += detector->name;
         if (!detector->version.empty()) {
             message += " (" + detector->version + ")";
         }
         output.message(message);
     }
-
-    return 0;
 }
 
 
-static int dump_special(const char *name) {
-    static const struct {
-        const char *key;
-        int (*f)(int);
-        int arg;
-    } keys[] = {{"/dat", dump_dat, 0}, {"/detector", dump_detector, 0}, {"/hashtypes", dump_hashtypes, 0}, {"/list", dump_list, DBH_KEY_LIST_GAME}, {"/list/disk", dump_list, DBH_KEY_LIST_DISK}, {"/list/game", dump_list, DBH_KEY_LIST_GAME}, {"/stats", dump_stats, 0}};
-
-    for (const auto &key : keys) {
-        if (strcasecmp(name, key.key) == 0)
-            return key.f(key.arg);
-    }
-
-    output.error("unknown special: '%s'", name);
-    return -1;
-}
-
-
-/*ARGSUSED1*/
-static int dump_stats(int dummy) {
+void Dumpgame::dump_stats() {
     stats = db->get_stats();
 
     stats.print(stdout, true);
-
-    return 0;
 }
 
 
-static std::string format_dat(const DatEntry &de) {
+std::string Dumpgame::format_dat(const DatEntry &de) {
     return ((de.name.empty() ? "unknown" : de.name) + " (" + (de.version.empty() ? "unknown" : de.version) + ")");
 }
 
 
-static std::string format_hashtypes(int ht) {
-    std::string message = "";
+std::string Dumpgame::format_hash_types(int ht) {
+    std::string message;
     if (ht & Hashes::TYPE_CRC) {
         message = "crc";
     }
