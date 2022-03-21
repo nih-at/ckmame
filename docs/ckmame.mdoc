@@ -41,6 +41,7 @@
 .Op Fl R Ar dir
 .Op Fl T Ar file
 .Op Fl Fl all-sets
+.Op Fl Fl complete-list Ar file
 .Op Fl Fl complete-games-only
 .Op Fl Fl config Ar file
 .Op Fl Fl copy-from-extra
@@ -52,6 +53,7 @@
 .Op Fl Fl help
 .Op Fl Fl keep-old-duplicate
 .Op Fl Fl list-sets
+.Op Fl Fl missing-list Ar file
 .Op Fl Fl move-from-extra
 .Op Fl Fl no-complete-games-only
 .Op Fl Fl no-create-fixdat
@@ -150,6 +152,10 @@ read configuration from
 See the
 .Sx CONFIG FILE
 section for more details.
+.It Fl Fl complete-list Ar file
+Write all complete games into
+.Ar file ,
+one line per game, and sorted alphabetically.
 .It Fl Fl copy-from-extra
 Keep used files in extra directories (default).
 .It Fl Fl create-fixdat
@@ -185,6 +191,10 @@ Opposite of
 Keep files in ROM set that are also in old ROM database.
 .It Fl Fl list-sets
 List all configured sets.
+.It Fl Fl missing-list Ar file
+Write all complete games into
+.Ar file ,
+one line per game, and sorted alphabetically.
 .It Fl Fl no-complete-games-only
 Keep partial games in ROM set (default).
 .It Fl Fl no-create-fixdat
