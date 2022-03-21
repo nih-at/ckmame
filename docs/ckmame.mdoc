@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd February 7, 2022
+.Dd March 21, 2022
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -40,6 +40,7 @@
 .Op Fl O Ar dbfile
 .Op Fl R Ar dir
 .Op Fl T Ar file
+.Op Fl Fl all-sets
 .Op Fl Fl complete-games-only
 .Op Fl Fl config Ar file
 .Op Fl Fl copy-from-extra
@@ -131,6 +132,8 @@ You can use command line options to select which type of errors to report.
 .Ss OPTIONS
 Supported options:
 .Bl -tag -width 22n
+.It Fl Fl all-sets
+Do the action for all configured sets.
 .It Fl C , Fl Fl complete-games-only
 Only create complete games.
 ROMs for incomplete games are moved to the
