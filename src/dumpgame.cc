@@ -210,23 +210,17 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
     size_t index = 0;
     for (const auto &argument : arguments) {
         if (!is_pattern(argument)) {
+            if (first) {
+                first = false;
+            }
+            else {
+                output.message("");
+            }
             if (argument[0] == '/') {
-                if (first) {
-                    first = false;
-                }
-                else {
-                    putc('\n', stdout);
-                }
                 dump_special(argument.c_str());
                 found[index] = true;
             }
             else if (std::binary_search(list.begin(), list.end(), argument)) {
-                if (first) {
-                    first = false;
-                }
-                else {
-                    putc('\n', stdout);
-                }
                 found[index] = true;
                 dump_game(argument, brief_mode);
             }
@@ -238,7 +232,7 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
                         first = false;
                     }
                     else {
-                        putc('\n', stdout);
+                        output.message("");
                     }
                     dump_game(name, brief_mode);
                     found[index] = true;
