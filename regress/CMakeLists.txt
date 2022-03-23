@@ -32,6 +32,7 @@ add_custom_target(cleanup
 
 set(DBS
   mame.db
+  mame-v2.db
   mamedb-1-8-is-4.db
   mamedb-baddump.db
   mamedb-deadbeefish.db
