@@ -23,7 +23,6 @@
 - configuration option `use-description-as-name`
 - per dat configuration option `game-name-suffix`
 - per dat and extra-directory configuration options
-- `mkmamedb --force`
 - configuration option `report-no-good-dump`
 - configuration option `needed-directory`
 - configuration option `saved-directory`
