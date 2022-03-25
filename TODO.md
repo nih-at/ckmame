@@ -23,7 +23,6 @@
 - per dat configuration option `game-name-suffix`
 - per dat and extra-directory configuration options
 - configuration option `report-no-good-dump`
-- configuration option `needed-directory`
 - Better check for determining input file type.
 
 
