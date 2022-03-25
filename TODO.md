@@ -16,8 +16,6 @@
 
 - `use-central-cache-directory` for dat-directories and extra-directories
 - multi-set invocation for mkmamedb
-- Allow `--set` to be specified multiple times, run command for each one.
-- Allow glob pattern as argument to `--set` option.
 - Add option to run command once for each set.
 - configuration option `use-description-as-name`
 - per dat configuration option `game-name-suffix`
