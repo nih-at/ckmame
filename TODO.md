@@ -14,7 +14,6 @@
 
 ### Write Tests
 
-- `ckmame` options `--update-database` and `--only-if-updated`
 - `use-central-cache-directory` for dat-directories and extra-directories
 - multi-set invocation for mkmamedb
 - Allow `--set` to be specified multiple times, run command for each one.
