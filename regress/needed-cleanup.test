@@ -1,4 +1,4 @@
-description test cleanup of needed files that are not needed
+description test cleanup of saved files that are not needed
 return 0
 args -D ../mamedb-lost-parent-ok.db -Fv
 file roms/clone-8.zip 1-4-ok.zip 1-4-ok.zip

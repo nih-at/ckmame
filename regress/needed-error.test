@@ -1,4 +1,4 @@
-description zip contains file needed elsewhere, creating needed archive fails
+description zip contains file needed elsewhere, creating saved archive fails
 return 0
 args -Fvc 1-4
 file roms/1-4.zip 1-8-ok.zip 2-48-ok.zip

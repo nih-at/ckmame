@@ -1,4 +1,4 @@
-description needed contains file from other game, is not removed
+description saved contains file from other game, is not removed
 return 0
 args -Fvc 1-4
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip

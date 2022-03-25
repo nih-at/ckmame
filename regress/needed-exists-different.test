@@ -1,4 +1,4 @@
-description check, zip contains file needed elsewhere, fix, different needed already exists
+description check, zip contains file needed elsewhere, fix, different saved already exists
 return 0
 args -Fvc 1-4
 file-del roms/1-4.zip deadbeef.zip
