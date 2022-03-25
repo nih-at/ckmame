@@ -102,6 +102,7 @@ add_custom_target(update-mamedb.dump
 
 
 set(XFAIL_TESTS
+  extra-file-zip.test
   old-gamelist-1.test
   old-gamelist-2.test
   rom-from-extra-loose-directory.test
