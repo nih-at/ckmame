@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd March 21, 2022
+.Dd March 25, 2022
 .Dt MKMAMEDB 1
 .Os
 .Sh NAME
@@ -62,13 +62,29 @@
 .Op Fl Fl use\-description\-as\-name
 .Op Fl Fl use\-temp\-directory
 .Op Fl Fl version
-.Op Ar rominfo\-file ...
+.Op Ar [ rominfo\-file | directory | - ] ...
 .Sh DESCRIPTION
 .Nm
 converts ROM set descriptions from one format to another.
 .Pp
-The ROM set description is read from the specified files (or
-directories) or the standard input if no files are specified.
+If no argument is given,
+.Nm
+reads the
+.Xr ckmamerc 5
+config file and checks if it needs to update the default database.
+.Pp
+When a
+.Ar rominfo\-file
+is specified, it is used as input file; if the argument is
+.Ar - ,
+.Nm
+expects the database on standard input (stdin).
+.Pp
+When a
+.Ar directory
+is specified, the files in that directory are checksummed and written
+to the database.
+.Pp
 The default output file is
 .Pa mame.db .
 You can override it with the

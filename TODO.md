@@ -25,7 +25,6 @@
 - configuration option `report-no-good-dump`
 - configuration option `needed-directory`
 - configuration option `saved-directory`
-- `mkmamedb -` for reading from stdin.
 - Better check for determining input file type.
 
 
