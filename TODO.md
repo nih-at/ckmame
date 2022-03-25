@@ -16,7 +16,6 @@
 
 - `use-central-cache-directory` for dat-directories and extra-directories
 - multi-set invocation for mkmamedb
-- Add option to run command once for each set.
 - configuration option `use-description-as-name`
 - per dat configuration option `game-name-suffix`
 - per dat and extra-directory configuration options
