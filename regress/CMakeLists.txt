@@ -102,6 +102,8 @@ add_custom_target(update-mamedb.dump
 
 
 set(XFAIL_TESTS
+  old-gamelist-1.test
+  old-gamelist-2.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
   detector-from-extra-cleanup-2.test
