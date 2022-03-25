@@ -1,0 +1,13 @@
+description test single-rom game (no parent), configure saved-directory
+return 0
+args -F 1-4
+file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
+file-new extra-later/3656897d-000.zip 1-8-ok.zip
+file-data .ckmamerc
+[global]
+saved-directory = "extra-later"
+end-of-data
+stdout-data
+In game 1-4:
+file 08.rom        size       8  crc 3656897d: needed elsewhere
+end-of-data

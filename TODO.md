@@ -24,7 +24,6 @@
 - per dat and extra-directory configuration options
 - configuration option `report-no-good-dump`
 - configuration option `needed-directory`
-- configuration option `saved-directory`
 - Better check for determining input file type.
 
 
