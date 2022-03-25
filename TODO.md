@@ -22,7 +22,6 @@
 - configuration option `use-description-as-name`
 - per dat configuration option `game-name-suffix`
 - per dat and extra-directory configuration options
-- configuration option `report-no-good-dump`
 - Better check for determining input file type.
 
 
