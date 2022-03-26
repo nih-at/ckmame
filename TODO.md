@@ -16,7 +16,6 @@
 
 - `use-central-cache-directory` for extra-directories
 - multi-set invocation for mkmamedb
-- configuration option `use-description-as-name`
 - per dat configuration option `game-name-suffix`
 - per dat and extra-directory configuration options
 - Better check for determining input file type.

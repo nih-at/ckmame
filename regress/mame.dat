@@ -129,7 +129,7 @@ game (
 
 game (
 	name nogoodclone
-	description "clone-8 with no good dump"
+	description "clone-8 with merge and no good dump"
 	manufacturer "synth"
 	year 1994
 	romof 1-8
