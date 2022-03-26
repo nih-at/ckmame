@@ -228,8 +228,13 @@ Suffix all game names in the dat with the given string argument.
 Boolean.
 .El
 .It dat-directories
-Array of strings.
+Either an array of strings, or a table where the keys are directories
+and the values are a table of options.
 Each string is a directory containing dats.
+.Bl -tag -width 10n -offset 4n
+.It use-central-cache-directory
+Boolean.
+.El
 .It use-temp-directory
 Boolean.
 .El
