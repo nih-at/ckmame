@@ -102,6 +102,7 @@ add_custom_target(update-mamedb.dump
 
 
 set(XFAIL_TESTS
+  ckmame-use-central-cache-directory.test
   extra-file-zip.test
   mkmamedb-use-description-as-name.test
   old-gamelist-1.test

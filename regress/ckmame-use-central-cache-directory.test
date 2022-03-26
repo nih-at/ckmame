@@ -1,0 +1,17 @@
+description test single-rom game (no parent), file is in search dir from config, keep, use central cache
+return 0
+setenv HOME ./home
+args -F 1-4
+file search/1-4.zip 1-4-ok.zip
+file-new roms/1-4.zip 1-4-ok.zip
+file-new home/.cache/ckmame/@SANDBOX@/search/.ckmame.db mkmamedb-datdb-1.dump
+ckmamedb-after search ckmamedb-empty.dump
+file-data .ckmamerc
+[global]
+[global.extra-directories]
+"search" = { "use-central-cache-directory" = true }
+end-of-data
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'search/1-4.zip/04.rom'
+end-of-data
