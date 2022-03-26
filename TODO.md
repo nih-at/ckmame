@@ -16,7 +16,7 @@
 
 - multi-set invocation for mkmamedb
 - per dat configuration option `game-name-suffix`
-- per dat and extra-directory configuration options
+- per dat configuration option `use-description-as-name`
 - Better check for determining input file type.
 
 
