@@ -14,7 +14,7 @@
 
 ### Write Tests
 
-- `use-central-cache-directory` for dat-directories and extra-directories
+- `use-central-cache-directory` for extra-directories
 - multi-set invocation for mkmamedb
 - configuration option `use-description-as-name`
 - per dat configuration option `game-name-suffix`
