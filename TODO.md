@@ -27,6 +27,7 @@
 - Make `SIGINFO` handler more responsive.
 
 - handle multiple writers to ckmamedb
+
 - search loose files in zipped mode.
 
 - exceptions and error messages:
@@ -55,7 +56,7 @@
 
 # Later
 
-* use CkmameDB as old db, specify all detectors you'll ever need when creating.
+* use CkmameDB as old db
 
 * convert runtest to use ziptool instead of unzip
 
@@ -68,25 +69,6 @@
 * instead of looking in cloneof for roms, move all extra roms to `needed`
 
 * clean up archives in `.ckmame.db` for manually removed dirs/zips
-
-* fix `.ckmame.db` support for roms with headers: store hashes with
-  detector applied in `.ckmame.db` and adapt:
-  - `regress/rom-from-extra-detector.test`
-  - `regress/rom-from-superfluous-detector.test`
-  - `regress/skip-full.test`
-  - `regress/skip.test`
-  - `src/dbh_cache.c`
-
-* uncompressed support
-** [bug] existing no good rom is not accepted in uncompressed mode (`nogood-diskgood.test`)
-
-* bugs with test cases
-! [bug] `mkmamedb`: three generation merge grandchild to child does not work (`mamedb-merge-parent.dump`)
-+ [bug] improve ``zero-miss.test` diagnostics when creating zero size file
-+ [bug] `mkmamedb`: warn if rom from parent has different crc (`mkmamedb-parent-crcdiff-mame.test`)
-+ [bug] `mkmamedb`: merge does not match name in parent: warning and fixup (`mkmamedb-merge-wrong-name.test`)
-+ [bug] `mkmamedb`: does not warn about duplicate roms of type nodump or duplicate samples (`mkmamedb-duplicate-nodump.test`)
-- [bug] detector bugs (`detector-interaction-with-headerless.test`, `detector-prefer-file-with-header.test`)
 
 * unsorted
 + support `^T` inside a game, not only between games (e.g. while searching extra dirs)
@@ -131,7 +113,6 @@
 - [feature] add hash-types option to `dumpgame`
 - [feature] `mkmamedb`: split to original CM dat files + detector XML on export
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
-- [feature] `mkmamedb`: add XML output format
 - [feature] database consistency checks during `mkmamedb`
   - are all roms of one set included in one other set
   - are two sets the same, just different name
@@ -155,7 +136,6 @@ other features:
 
 * code cleanups:
   - make `parse_cm` table driven
-  - split `util*`, `funcs.h`
   - fix all TODOs
 
 * tests:
@@ -199,7 +179,6 @@ other features:
 ** later
 - [feature] save detector hashes to cachedb
 - fix Xcode warnings
-- [cleanup] make `ARCHIVE_IFL_MODIFIED` a bool member
 - [test] fix preload on OS X
 - [feature] if `.ckmame.db` can't be opened, move aside and create new
 
