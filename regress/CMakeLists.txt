@@ -102,20 +102,21 @@ add_custom_target(update-mamedb.dump
 
 
 set(XFAIL_TESTS
-  config-use-central-cache-directory.test
+  ckmame-all-sets-3.test
   config-move-from-extra-2.test
+  config-use-central-cache-directory.test
+  detector-from-extra-cleanup-2.test
   extra-file-zip.test
   mkmamedb-all-sets.test
+  mkmamedb-config-use-description-as-name.test
+  mkmamedb-list-available-dats-3.test
+  mkmamedb-list-available-dats-4.test
   mkmamedb-list-available-dats-6.test
   mkmamedb-use-description-as-name.test
   old-gamelist-1.test
   old-gamelist-2.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
-  detector-from-extra-cleanup-2.test
-  mkmamedb-list-available-dats-3.test
-  mkmamedb-list-available-dats-4.test
-  ckmame-all-sets-3.test
 )
 	      
 file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
