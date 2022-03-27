@@ -14,7 +14,6 @@
 
 ### Write Tests
 
-- multi-set invocation for mkmamedb
 - per dat configuration option `game-name-suffix`
 - per dat configuration option `use-description-as-name`
 - Better check for determining input file type.
