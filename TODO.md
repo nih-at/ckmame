@@ -14,7 +14,6 @@
 
 ### Write Tests
 
-- per dat configuration option `game-name-suffix`
 - Better check for determining input file type.
 
 

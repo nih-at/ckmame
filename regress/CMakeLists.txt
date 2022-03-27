@@ -108,6 +108,7 @@ set(XFAIL_TESTS
   detector-from-extra-cleanup-2.test
   extra-file-zip.test
   mkmamedb-all-sets.test
+  mkmamedb-config-game-name-suffix.test
   mkmamedb-config-use-description-as-name.test
   mkmamedb-list-available-dats-3.test
   mkmamedb-list-available-dats-4.test
