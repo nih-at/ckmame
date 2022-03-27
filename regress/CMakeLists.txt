@@ -105,6 +105,7 @@ set(XFAIL_TESTS
   config-use-central-cache-directory.test
   config-move-from-extra-2.test
   extra-file-zip.test
+  mkmamedb-list-available-dats-6.test
   mkmamedb-use-description-as-name.test
   old-gamelist-1.test
   old-gamelist-2.test

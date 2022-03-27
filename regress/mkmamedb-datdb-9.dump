@@ -1,0 +1,8 @@
+>>> table dat (file_id, entry_name, name, version)
+1|<null>|game-with-disk|1
+2|<null>|ckmame test database|1
+3|<null>|aes|1
+>>> table file (file_id, file_name, mtime, size)
+1|mamedb-disk.dat|1643902216|290
+2|mamedb.rc|1643902216|550
+3|mamedb.xml|1643902216|7923
