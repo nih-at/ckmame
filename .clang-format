@@ -1,12 +1,19 @@
+# base settings
 BasedOnStyle: LLVM
 IndentWidth: 4
-ColumnLimit: 2000
+ColumnLimit: 100
+# details
+AlignArrayOfStructures: Left
+AlignEscapedNewlines: Left
+AllowAllConstructorInitializersOnNextLine: true
 AlwaysBreakAfterReturnType: None
-KeepEmptyLinesAtTheStartOfBlocks: false
-MaxEmptyLinesToKeep: 2
+BinPackArguments: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
 BreakBeforeBraces: Custom
 BraceWrapping:
   BeforeElse: true
-AlignEscapedNewlines: Left
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 2
+# clang 14+:
+#PackConstructorInitializers: NextLine
 UseTab: Never
-#PPDirectiveIndentStyle: AfterHash
