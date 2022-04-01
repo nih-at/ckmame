@@ -35,6 +35,7 @@
 
 #include <filesystem>
 #include <cstring>
+#include <sys/stat.h>
 
 #include "Exception.h"
 #include "globals.h"
@@ -88,4 +89,14 @@ size_t ParserSourceFile::read_xxx(void *data, size_t length) {
     }
     
     return fread(data, 1, length, f.get());
+}
+
+
+time_t ParserSourceFile::get_mtime() {
+    struct stat st;
+
+    if (fstat(fileno(f.get()), &st) < 0) {
+        return 0;
+    }
+    return st.st_mtime;
 }

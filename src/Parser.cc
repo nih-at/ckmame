@@ -115,24 +115,22 @@ bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::
 	return false;
     }
 
-    auto ok = parser->parse();
-    if (ok) {
-        if (!parser->eof()) {
-            output.file_error("trailing garbage");
-            ok = false;
-	}
-    }
-
-    return ok;
+    return parser->do_parse();
 }
 
 
-bool Parser::eof() {
-    if (state == PARSE_IN_HEADER) {
-        return header_end();
+bool Parser::do_parse() {
+    auto ok = parse();
+    if (ok) {
+        eof();
     }
+    return ok;
+}
 
-    return true;
+void Parser::eof() {
+    if (state == PARSE_IN_HEADER && header_set) {
+        header_end();
+    }
 }
 
 
@@ -405,6 +403,7 @@ bool Parser::prog_description(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     de.description = attr;
+    header_set = true;
 
     return true;
 }
@@ -451,6 +450,7 @@ bool Parser::prog_name(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     de.name = attr;
+    header_set = true;
 
     return true;
 }
@@ -460,12 +460,13 @@ bool Parser::prog_version(const std::string &attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     de.version = attr;
+    header_set = true;
 
     return true;
 }
 
 
-Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_context_, Options options) : options(std::move(options)), lineno(0), header_only(false), ignore(std::move(exclude)), output_context(output_context_), ps(std::move(source)), flags(0), state(PARSE_IN_HEADER) {
+Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry *dat, OutputContext *output_context_, Options options) : options(std::move(options)), lineno(0), header_only(false), ignore(std::move(exclude)), output_context(output_context_), ps(std::move(source)), flags(0), header_set(false), state(PARSE_IN_HEADER) {
     dat_default.merge(dat, nullptr);
     for (auto & i : r) {
         i = nullptr;

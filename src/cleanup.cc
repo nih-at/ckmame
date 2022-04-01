@@ -41,6 +41,7 @@
 #include "fix_util.h"
 #include "Garbage.h"
 #include "warn.h"
+#include "CkmameCache.h"
 
 
 static void cleanup_archive(filetype_t filetype, Archive *archive, Result *result, int flags);
@@ -58,6 +59,10 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
     size_t i = 0;
     while (i < n) {
         auto entry = list->archives[i];
+        if (where == FILE_EXTRA && !configuration.extra_directory_move_from_extra(ckmame_cache->get_directory_name_for_archive(entry.name))) {
+            i++;
+            continue;
+        }
 
 	warn_set_info(WARN_TYPE_ARCHIVE, entry.name);
         ArchivePtr a = Archive::open(entry.name, entry.filetype, FILE_NOWHERE, 0);

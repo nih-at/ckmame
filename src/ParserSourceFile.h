@@ -44,6 +44,7 @@ public:
     bool close() override;
     ParserSourcePtr open(const std::string &name) override;
     size_t read_xxx(void *data, size_t length) override;
+    time_t get_mtime() override;
     
 private:
     std::string file_name;

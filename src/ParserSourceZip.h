@@ -46,11 +46,13 @@ public:
     bool close() override;
     ParserSourcePtr open(const std::string &name) override;
     size_t read_xxx(void *data, size_t length) override;
-    
-private:
+    time_t get_mtime() override { return mtime; }
+
+  private:
     std::string archive_name;
     struct zip *za;
     struct zip_file *zf;
+    time_t mtime;
 };
 
 #endif // HAD_PARSER_SOURCE_ZIP_H

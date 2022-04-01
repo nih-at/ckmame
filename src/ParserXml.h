@@ -94,7 +94,7 @@ public:
     static XmlProcessor::CallbackStatus parse_prog_header(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
     static XmlProcessor::CallbackStatus parse_prog_name(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
     static XmlProcessor::CallbackStatus parse_prog_version(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_softwarelist(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_softwarelist_name(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
 
     static XmlProcessor::CallbackStatus status(bool ok) { return ok ? XmlProcessor::OK : XmlProcessor::ERROR; }
 };

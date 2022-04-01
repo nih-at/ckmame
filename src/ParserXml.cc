@@ -204,11 +204,18 @@ XmlProcessor::CallbackStatus ParserXml::parse_prog_version(void *ctx, [[maybe_un
 }
 
 
-XmlProcessor::CallbackStatus ParserXml::parse_softwarelist(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+XmlProcessor::CallbackStatus ParserXml::parse_softwarelist_name(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
     auto parser = static_cast<ParserXml *>(ctx);
 
-    /* sadly, no version information */
-    return status(parser->prog_name(value));
+    auto ok = parser->prog_name(value);
+
+    /* sadly, no version information, so use mtime of dat file */
+    auto mtime = parser->ps->get_mtime();
+    if (mtime != 0) {
+        ok = parser->prog_version(std::to_string(mtime));
+    }
+
+    return status(ok);
 }
 
 
@@ -249,7 +256,8 @@ const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attrib
 };
 
 const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attributes_softwarelist = {
-    { "description", XmlProcessor::Attribute(parse_softwarelist, nullptr) }
+    { "description", XmlProcessor::Attribute(parse_prog_description, nullptr) },
+    { "name", XmlProcessor::Attribute(parse_softwarelist_name, nullptr) }
 };
 
 const std::unordered_map<std::string, XmlProcessor::Entity> ParserXml::entities = {

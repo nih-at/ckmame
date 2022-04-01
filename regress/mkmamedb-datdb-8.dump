@@ -1,6 +1,6 @@
 >>> table dat (file_id, entry_name, name, version)
 1|<null>|ckmame test db|1
-2|<null>|aes|1
+2|<null>|aes|1648812916
 >>> table file (file_id, file_name, mtime, size)
 1|mame.dat|1644506227|5569
-2|mamedb.xml|1644506227|7923
+2|mamedb.xml|1648812916|7923

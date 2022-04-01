@@ -294,7 +294,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
         Fixdat::end();
     }
 
-    if (configuration.fix_romset && configuration.move_from_extra) {
+    if (configuration.fix_romset) {
         cleanup_list(ckmame_cache->extra_delete_list, 0, FILE_EXTRA);
     }
 

@@ -77,6 +77,24 @@ bool CkmameCache::close_all() {
 
 
 CkmameDBPtr CkmameCache::get_db_for_archive(const std::string &name) {
+    auto directory = get_directory_for_archive(name);
+
+    if (directory) {
+        return directory->db;
+    }
+    return nullptr;
+}
+
+std::string CkmameCache::get_directory_name_for_archive(const std::string &name) {
+    auto directory = get_directory_for_archive(name);
+
+    if (directory) {
+        return directory->name;
+    }
+    return "";
+}
+
+const CkmameCache::CacheDirectory* CkmameCache::get_directory_for_archive(const std::string &name) {
     for (auto &directory : cache_directories) {
 	if (name.compare(0, directory.name.length(), directory.name) == 0 && (name.length() == directory.name.length() || name[directory.name.length()] == '/')) {
 	    if (!directory.initialized) {
@@ -99,7 +117,7 @@ CkmameDBPtr CkmameCache::get_db_for_archive(const std::string &name) {
 		    return nullptr;
 		}
 	    }
-	    return directory.db;
+	    return &directory;
 	}
     }
 
@@ -298,7 +316,7 @@ bool CkmameCache::enter_file_in_map_and_list(const DeleteListPtr &list, const st
 }
 
 
-void CkmameCache::used(Archive *a, size_t index) const {
+void CkmameCache::used(Archive *a, size_t index) {
     FileLocation fl(a->name + (a->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? "/" : ""), a->filetype, index);
 
     switch (a->where) {
@@ -310,11 +328,14 @@ void CkmameCache::used(Archive *a, size_t index) const {
 	superfluous_delete_list->entries.push_back(fl);
 	break;
 
-    case FILE_EXTRA:
-	if (configuration.move_from_extra) {
-	    extra_delete_list->entries.push_back(fl);
-	}
-	break;
+    case FILE_EXTRA: {
+        auto directory = get_directory_name_for_archive(a->name);
+
+        if (configuration.extra_directory_move_from_extra(directory)) {
+            extra_delete_list->entries.push_back(fl);
+        }
+        break;
+    }
 
     default:
 	break;

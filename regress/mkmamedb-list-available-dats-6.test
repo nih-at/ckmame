@@ -14,8 +14,8 @@ file-data .ckmamerc
 dat-directories = [ "dats" ]
 end-of-data
 stdout-data
+Test
 aes
-ckmame test database
 game-with-disk
 end-of-data
 stderr-data

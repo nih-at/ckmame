@@ -5,7 +5,7 @@ args --all-sets
 file dats/mame.dat mame.dat
 touch 1644506227 dats/mame.dat
 file dats/mamedb.xml mamedb-mess.xml
-touch 1644506227 dats/mamedb.xml
+touch 1648812916 dats/mamedb.xml
 file output.db mame.db
 file output2.db mamedb-mess.dump
 file-new dats/.mkmamedb.db mkmamedb-datdb-8.dump
@@ -18,4 +18,8 @@ rom-db = "output.db"
 ["non-standard set 2"]
 dats = [ "aes" ]
 rom-db = "output2.db"
+end-of-data
+stdout-data
+Set non-standard set 2:
+aes (-> 1648812916)
 end-of-data

@@ -79,10 +79,10 @@ public:
     bool header_only;
 
     virtual bool parse() { return false; }
-    bool parse_header() { header_only = true; return parse(); }
+    bool parse_header() { header_only = true; return do_parse(); }
 
     // callbacks
-    bool eof();
+    void eof();
     bool file_continue(filetype_t ft);
     bool file_end(filetype_t ft);
     bool file_status(filetype_t ft, const std::string &attr);
@@ -126,6 +126,7 @@ protected:
 
     /* state */
     int flags;
+    bool header_set;
     parser_state_t state;
     DatEntry de; /* info about dat file */
     GamePtr g;      /* current game */
@@ -142,6 +143,7 @@ protected:
 
     static std::unordered_map<std::string, Format> format_start;
 
+    bool do_parse();
     void set_game_name(std::string name);
 };
 

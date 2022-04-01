@@ -51,6 +51,7 @@ public:
     virtual bool close() { return true; }
     virtual size_t read_xxx(void *data, size_t length) = 0;
     virtual ParserSourcePtr open(const std::string &name) = 0;
+    virtual time_t get_mtime() = 0;
 
     std::optional<std::string> getline();
     int peek();

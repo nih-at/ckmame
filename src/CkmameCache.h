@@ -48,9 +48,10 @@ class CkmameCache {
     void ensure_needed_maps();
 
     CkmameDBPtr get_db_for_archive(const std::string &name);
+    std::string get_directory_name_for_archive(const std::string &name);
     void register_directory(const std::string &directory);
 
-    void used(Archive *a, size_t idx) const;
+    void used(Archive *a, size_t idx);
 
     DeleteListPtr extra_delete_list;
     DeleteListPtr needed_delete_list;
@@ -80,6 +81,7 @@ class CkmameCache {
     static bool enter_dir_in_map_and_list_zipped(const DeleteListPtr &list, const std::string &dir_name, where_t where);
     static bool enter_file_in_map_and_list(const DeleteListPtr &list, const std::string &name, where_t where);
 
+    const CacheDirectory* get_directory_for_archive(const std::string &name);
 };
 
 typedef std::shared_ptr<CkmameCache> CkmameCachePtr;

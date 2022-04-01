@@ -42,7 +42,8 @@
 ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *za_, const std::string &fname, bool relaxed) : archive_name(archive_name_), za(za_), zf(nullptr) {
     zip_flags_t flags = relaxed ? ZIP_FL_NOCASE | ZIP_FL_NODIR : 0;
 
-    if ((zf = zip_fopen(za, fname.c_str(), flags)) == nullptr) {
+    zip_stat_t st;
+    if (zip_stat(za, fname.c_str(), flags, &st) < 0 || (zf = zip_fopen(za, fname.c_str(), flags)) == nullptr) {
         int zer, ser;
 
         zip_error_get(za, &zer, &ser);
@@ -61,7 +62,8 @@ ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *z
         
         throw std::exception();
     }
-    
+
+    mtime = st.mtime;
     output.set_error_archive(archive_name, fname);
 }
 

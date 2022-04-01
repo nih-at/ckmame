@@ -1,4 +1,4 @@
 >>> table dat (file_id, entry_name, name, version)
-1|<null>|demo|1
+1|<null>|demo|1644506227
 >>> table file (file_id, file_name, mtime, size)
 1|mamedb.xml|1644506227|170
