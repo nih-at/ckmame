@@ -45,7 +45,7 @@ public:
     
     bool close() override;
     bool detector(Detector *detector) override;
-    bool game(GamePtr game) override;
+    bool game(GamePtr game, const std::string &original_name) override;
     bool header(DatEntry *dat) override;
     void error_occurred() override { ok = false; }
 
@@ -62,8 +62,11 @@ private:
     bool ok;
     
     void familymeeting(Game *parent, Game *child);
+    std::string get_game_name(const std::string& original_name);
     bool handle_lost();
     bool lost(Game *);
+
+    std::unordered_map<std::string, std::string> renamed_games;
 };
 
 #endif // HAD_OUTPUT_DB_H

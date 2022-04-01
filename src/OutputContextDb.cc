@@ -116,10 +116,11 @@ bool OutputContextDb::handle_lost() {
             }
             
             bool is_lost = true;
-            
-            auto parent = db->read_game(child->cloneof[0]);
+
+            auto parent_name = get_game_name(child->cloneof[0]);
+            auto parent = db->read_game(parent_name);
             if (!parent) {
-                output.error("inconsistency: %s has non-existent parent %s", child->name.c_str(), child->cloneof[0].c_str());
+                output.error("inconsistency: %s has non-existent parent %s", child->name.c_str(), parent_name.c_str());
                 
                 /* remove non-existent cloneof */
                 child->cloneof[0] = "";
@@ -128,6 +129,10 @@ bool OutputContextDb::handle_lost() {
             }
             else if (!lost(parent.get())) {
                 /* parent found */
+                if (child->cloneof[0] != parent_name) {
+                    child->cloneof[0] = parent_name;
+                    db->update_game_parent(child.get());
+                }
                 familymeeting(parent.get(), child.get());
                 is_lost = false;
             }
@@ -138,6 +143,8 @@ bool OutputContextDb::handle_lost() {
             }
         }
     }
+
+    renamed_games.clear();
         
     return true;
 }
@@ -184,7 +191,10 @@ bool OutputContextDb::detector(Detector *detector) {
 }
 
 
-bool OutputContextDb::game(GamePtr game) {
+bool OutputContextDb::game(GamePtr game, const std::string &original_name) {
+    if (!original_name.empty()) {
+        renamed_games[original_name] = game->name;
+    }
     auto g2 = db->read_game(game->name);
 
     if (g2) {
@@ -204,11 +214,13 @@ bool OutputContextDb::game(GamePtr game) {
     game->dat_no = static_cast<unsigned int>(dat.size() - 1);
 
     if (!game->cloneof[0].empty()) {
-        auto parent = db->read_game(game->cloneof[0]);
+        auto parent_name = get_game_name(game->cloneof[0]);
+        auto parent = db->read_game(parent_name);
         if (!parent || lost(parent.get())) {
             lost_children.push_back(game->name);
         }
         else {
+            game->cloneof[0] = parent_name;
             familymeeting(parent.get(), game.get());
             /* TODO: check error */
         }
@@ -221,7 +233,20 @@ bool OutputContextDb::game(GamePtr game) {
 
 
 bool OutputContextDb::header(DatEntry *entry) {
+    handle_lost(); // from previous dat
+
     dat.push_back(*entry);
  
     return true;
+}
+
+
+std::string OutputContextDb::get_game_name(const std::string &original_name) {
+    auto it = renamed_games.find(original_name);
+    if (it == renamed_games.end()) {
+        return original_name;
+    }
+    else {
+        return it->second;
+    }
 }

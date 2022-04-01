@@ -92,7 +92,7 @@ bool OutputContextCm::close() {
 }
 
 
-bool OutputContextCm::game(GamePtr game) {
+bool OutputContextCm::game(GamePtr game, const std::string &original_name) {
     games.push_back(game);
 
     return true;

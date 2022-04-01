@@ -44,7 +44,7 @@ public:
     ~OutputContextXml() override;
     
     bool close() override;
-    bool game(GamePtr game) override;
+    bool game(GamePtr game, const std::string &original_name) override;
     bool header(DatEntry *dat) override;
     
 private:

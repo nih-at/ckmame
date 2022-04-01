@@ -2,8 +2,8 @@
 0|ckmame test db|<null>|<null>|1
 >>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1)
 1|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
-2|0|0|08.rom|<null>|0|0|8|911640957|<null>|<null>
-3|0|0|08.rom|<null>|0|0|8|305419896|<null>|<null>
+2|0|0|08.rom|<null>|0|0|8|911640957|<null>|<111bb8b7549e3386a996845405b02164f17c7b37>
+3|0|0|08.rom|<null>|0|0|8|305419896|<null>|<111bb8b7549e3386a996845405b02164f17c7b37>
 4|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 4|0|1|04-2.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 5|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
@@ -11,70 +11,55 @@
 6|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 6|0|1|0a.rom|<null>|0|0|10|189418718|<null>|<7ee80d6e0af4beff1da2df46e23901b77f2d238a>
 7|0|0|bad.rom|<null>|1|0|3|344750961|<null>|<null>
-8|0|0|04.rom|<null>|0|1|4|3632233996|<null>|<null>
-8|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
+8|0|0|04.rom|<null>|0|1|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
+8|0|1|08.rom|<null>|0|0|8|911640957|<null>|<111bb8b7549e3386a996845405b02164f17c7b37>
 9|0|0|deadbeef|<null>|0|0|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
 10|0|0|deadbeef|<null>|0|1|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
 10|0|1|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 11|0|0|deadclonedbeef|deadbeef|0|1|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
 12|0|0|some/path/to/file.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
-13|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-13|1|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
-14|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-14|1|0|108-2|<null>|0|0|<null>|<null>|<d9cedd2875a8b4e11de39b0fe935e323>|<9fffa910f0ca90f61e1ab3fab0d1da225be992ae>
-15|1|0|512v5|<null>|0|0|<null>|<null>|<null>|<cf37d50e886519c332dcfe84440f1f085b98c634>
-16|0|0|04.rom|<null>|0|1|4|3632233996|<null>|<null>
-16|1|0|108-5c|108-5|1|1|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
-17|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-17|1|0|108-nogood|<null>|2|0|<null>|<null>|<null>|<null>
-18|0|0|08.rom|<null>|0|0|8|911640957|<null>|<null>
-18|1|0|208-7|<null>|2|0|<null>|<null>|<null>|<null>
-19|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
-19|1|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
-20|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
-21|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
-21|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
-22|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
-22|0|1|08.rom|<null>|0|1|8|911640957|<null>|<null>
-24|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-25|0|0|zero|<null>|0|0|0|0|<null>|<null>
-26|0|0|zero|<null>|0|0|0|0|<null>|<null>
-26|0|1|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-27|0|0|zero|<null>|0|0|0|305419896|<null>|<null>
-28|0|0|00|<null>|0|0|2|3091600544|<null>|<null>
-28|0|1|01|<null>|0|0|2|3477152822|<null>|<null>
-28|0|2|02|<null>|0|0|2|1447589260|<null>|<null>
-28|0|3|03|<null>|0|0|2|558843162|<null>|<null>
-28|0|4|04|<null>|0|0|2|3207319737|<null>|<null>
-28|0|5|05|<null>|0|0|2|3358384175|<null>|<null>
-28|0|6|06|<null>|0|0|2|1361424789|<null>|<null>
-28|0|7|07|<null>|0|0|2|639795459|<null>|<null>
-28|0|8|08|<null>|0|0|2|3063782546|<null>|<null>
-28|0|9|09|<null>|0|0|2|3248139268|<null>|<null>
-28|0|10|0A|<null>|0|0|2|2672055562|<null>|<null>
-28|0|11|0B|<null>|0|0|2|105710768|<null>|<null>
-28|0|12|0C|<null>|0|0|2|1900688422|<null>|<null>
-28|0|13|0D|<null>|0|0|2|4012810629|<null>|<null>
-28|0|14|0E|<null>|0|0|2|2552860947|<null>|<null>
-28|0|15|0F|<null>|0|0|2|18923689|<null>|<null>
-28|0|16|10|<null>|0|0|2|2707236321|<null>|<null>
-28|0|17|11|<null>|0|0|2|3596227959|<null>|<null>
-28|0|18|12|<null>|0|0|2|1330857165|<null>|<null>
-28|0|19|13|<null>|0|0|2|945058907|<null>|<null>
-28|0|20|14|<null>|0|0|2|2788221432|<null>|<null>
-28|0|21|15|<null>|0|0|2|3510096238|<null>|<null>
-28|0|22|16|<null>|0|0|2|1212055764|<null>|<null>
-28|0|23|17|<null>|0|0|2|1060745282|<null>|<null>
-28|0|24|18|<null>|0|0|2|2944839123|<null>|<null>
-28|0|25|19|<null>|0|0|2|3632373061|<null>|<null>
-28|0|26|1A|<null>|0|0|2|2254398539|<null>|<null>
-28|0|27|1B|<null>|0|0|2|525743601|<null>|<null>
-28|0|28|1C|<null>|0|0|2|1750140263|<null>|<null>
-28|0|29|1D|<null>|0|0|2|4130705604|<null>|<null>
-28|0|30|1E|<null>|0|0|2|2167578706|<null>|<null>
-28|0|31|1F|<null>|0|0|2|406581736|<null>|<null>
-29|0|0|16.rom|<null>|0|0|16|305419896|<null>|<null>
-29|1|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
+13|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
+14|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
+14|0|1|08.rom|<null>|0|0|8|911640957|<null>|<111bb8b7549e3386a996845405b02164f17c7b37>
+15|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
+15|0|1|08.rom|<null>|0|1|8|911640957|<null>|<null>
+17|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
+18|0|0|zero|<null>|0|0|0|0|<d41d8cd98f00b204e9800998ecf8427e>|<da39a3ee5e6b4b0d3255bfef95601890afd80709>
+19|0|0|zero|<null>|0|0|0|0|<null>|<null>
+19|0|1|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
+20|0|0|zero|<null>|0|0|0|305419896|<null>|<null>
+21|0|0|00|<null>|0|0|2|3091600544|<null>|<null>
+21|0|1|01|<null>|0|0|2|3477152822|<null>|<null>
+21|0|2|02|<null>|0|0|2|1447589260|<null>|<null>
+21|0|3|03|<null>|0|0|2|558843162|<null>|<null>
+21|0|4|04|<null>|0|0|2|3207319737|<null>|<null>
+21|0|5|05|<null>|0|0|2|3358384175|<null>|<null>
+21|0|6|06|<null>|0|0|2|1361424789|<null>|<null>
+21|0|7|07|<null>|0|0|2|639795459|<null>|<null>
+21|0|8|08|<null>|0|0|2|3063782546|<null>|<null>
+21|0|9|09|<null>|0|0|2|3248139268|<null>|<null>
+21|0|10|0A|<null>|0|0|2|2672055562|<null>|<null>
+21|0|11|0B|<null>|0|0|2|105710768|<null>|<null>
+21|0|12|0C|<null>|0|0|2|1900688422|<null>|<null>
+21|0|13|0D|<null>|0|0|2|4012810629|<null>|<null>
+21|0|14|0E|<null>|0|0|2|2552860947|<null>|<null>
+21|0|15|0F|<null>|0|0|2|18923689|<null>|<null>
+21|0|16|10|<null>|0|0|2|2707236321|<null>|<null>
+21|0|17|11|<null>|0|0|2|3596227959|<null>|<null>
+21|0|18|12|<null>|0|0|2|1330857165|<null>|<null>
+21|0|19|13|<null>|0|0|2|945058907|<null>|<null>
+21|0|20|14|<null>|0|0|2|2788221432|<null>|<null>
+21|0|21|15|<null>|0|0|2|3510096238|<null>|<null>
+21|0|22|16|<null>|0|0|2|1212055764|<null>|<null>
+21|0|23|17|<null>|0|0|2|1060745282|<null>|<null>
+21|0|24|18|<null>|0|0|2|2944839123|<null>|<null>
+21|0|25|19|<null>|0|0|2|3632373061|<null>|<null>
+21|0|26|1A|<null>|0|0|2|2254398539|<null>|<null>
+21|0|27|1B|<null>|0|0|2|525743601|<null>|<null>
+21|0|28|1C|<null>|0|0|2|1750140263|<null>|<null>
+21|0|29|1D|<null>|0|0|2|4130705604|<null>|<null>
+21|0|30|1E|<null>|0|0|2|2167578706|<null>|<null>
+21|0|31|1F|<null>|0|0|2|406581736|<null>|<null>
 >>> table game (game_id, name, parent, description, dat_idx)
 1|1-4 (test)|<null>|one four byte file|0
 2|1-8 (test)|<null>|one eight byte file|0
@@ -83,27 +68,19 @@
 5|2-48 (test)|<null>|two files|0
 6|2-4a (test)|<null>|two files, one other|0
 7|baddump (test)|<null>|bad dump|0
-8|clone-8|parent-4|two roms, one in parent|0
+8|clone-8 (test)|parent-4 (test)|two roms, one in parent|0
 9|deadbeef (test)|<null>|Dead Beef|0
-10|deadbeefchild|deadbeef|Dead Beef Child|0
-11|deadclonedbeef|deadbeef|Dead Cloned Beef|0
+10|deadbeefchild (test)|deadbeef (test)|Dead Beef Child|0
+11|deadclonedbeef (test)|deadbeef (test)|Dead Cloned Beef|0
 12|dir-in-rom-name (test)|<null>|directory in rom name|0
-13|disk (test)|<null>|1-4 with disk|0
-14|disk-2 (test)|<null>|1-4 with alternate disk|0
-15|disk-3 (test)|<null>|512 byte size disk|0
-16|diskchild|disk|1-4 with disk (child)|0
-17|disk-nogood (test)|<null>|1-4 with no good dump disk|0
-18|disk-nogood2 (test)|<null>|1-8 with no good dump disk|0
-19|diskgood-romnogood (test)|<null>|no good rom with good disk|0
-20|nogood (test)|<null>|1-4 with no good dump|0
-21|nogood-2 (test)|<null>|clone-8 with no good dump|0
-22|nogoodclone|1-8|clone-8 with no good dump|0
-23|norom (test)|<null>|no rom|0
-24|parent-4 (test)|<null>|one four byte file, has clone|0
-25|zero (test)|<null>|game with 0 byte rom|0
-26|zero-4 (test)|<null>|game with 0 byte rom and a bigger one|0
-27|zerobadcrc (test)|<null>|game with 0 byte rom, impossible CRC|0
-28|many (test)|<null>|game with many (32) roms|0
-29|disk-same (test)|<null>|some non-existent 16 byte rom with disk|0
+13|nogood (test)|<null>|1-4 with no good dump|0
+14|nogood-2 (test)|<null>|clone-8 with no good dump|0
+15|nogoodclone (test)|1-8 (test)|clone-8 with merge and no good dump|0
+16|norom (test)|<null>|no rom|0
+17|parent-4 (test)|<null>|one four byte file, has clone|0
+18|zero (test)|<null>|game with 0 byte rom|0
+19|zero-4 (test)|<null>|game with 0 byte rom and a bigger one|0
+20|zerobadcrc (test)|<null>|game with 0 byte rom, impossible CRC|0
+21|many (test)|<null>|game with many (32) roms|0
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

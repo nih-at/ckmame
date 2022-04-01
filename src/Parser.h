@@ -130,6 +130,7 @@ protected:
     parser_state_t state;
     DatEntry de; /* info about dat file */
     GamePtr g;      /* current game */
+    std::string original_game_name;
     Rom *r[TYPE_MAX]{};      /* current files */
     DetectorPtr detector;
 

@@ -126,7 +126,7 @@ strsvis_cstyle(const std::string &in) {
 }
 
 
-bool OutputContextMtree::game(GamePtr game) {
+bool OutputContextMtree::game(GamePtr game, const std::string &original_name) {
     auto dirname = strsvis_cstyle(game->name);
 
     if (runtest) {

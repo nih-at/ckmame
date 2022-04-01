@@ -105,7 +105,7 @@ set_attribute_hash(xmlNodePtr node, const char *name, int type, Hashes *hashes) 
 }
 
 
-bool OutputContextXml::game(GamePtr game) {
+bool OutputContextXml::game(GamePtr game, const std::string &original_name) {
     xmlNodePtr xmlGame = xmlNewChild(root, nullptr, xml_string("game"), nullptr);
     
     set_attribute(xmlGame, "name", game->name);

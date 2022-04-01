@@ -105,9 +105,6 @@ set(XFAIL_TESTS
   config-use-central-cache-directory.test
   detector-from-extra-cleanup-2.test
   extra-file-zip.test
-  mkmamedb-config-game-name-suffix.test
-  mkmamedb-config-use-description-as-name.test
-  mkmamedb-use-description-as-name.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
 )

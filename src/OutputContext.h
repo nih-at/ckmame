@@ -64,7 +64,7 @@ public:
 
     virtual bool close() = 0;
     virtual bool detector(Detector *detector) { return true; }
-    virtual bool game(GamePtr game) = 0;
+    virtual bool game(GamePtr game, const std::string &original_name = "") = 0;
     virtual bool header(DatEntry *dat) { return true; }
     virtual void error_occurred() { }
 

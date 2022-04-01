@@ -335,13 +335,11 @@ bool Parser::game_end() {
             g->description = "";
 	}
 
-        if (!g->cloneof[0].empty()) {
-	    if (g->cloneof[0] == g->name) {
-                g->cloneof[0] = "";
-	    }
-	}
+        if (g->cloneof[0] == g->name) {
+            g->cloneof[0] = "";
+        }
 
-        ok = output_context->game(g);
+        ok = output_context->game(g, g->name == original_game_name ? "" : original_game_name);
     }
 
     g = nullptr;
@@ -358,6 +356,7 @@ bool Parser::game_name(const std::string &attr) {
     if (!options.use_description_as_name) {
 	set_game_name(attr);
     }
+    original_game_name = attr;
 
     return true;
 }

@@ -11,18 +11,18 @@
 6|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 6|0|1|0a.rom|<null>|0|0|10|189418718|<null>|<7ee80d6e0af4beff1da2df46e23901b77f2d238a>
 7|0|0|bad.rom|<null>|1|0|3|344750961|<null>|<null>
-8|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
+8|0|0|04.rom|<null>|0|1|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 8|0|1|08.rom|<null>|0|0|8|911640957|<null>|<111bb8b7549e3386a996845405b02164f17c7b37>
 9|0|0|deadbeef|<null>|0|0|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
-10|0|0|deadbeef|<null>|0|0|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
+10|0|0|deadbeef|<null>|0|1|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
 10|0|1|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
-11|0|0|deadclonedbeef|deadbeef|0|0|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
+11|0|0|deadclonedbeef|deadbeef|0|1|8|3735928559|<null>|<0b0dcdf77237b4e5d920990b92d4b59ad264910f>
 12|0|0|some/path/to/file.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 13|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
 14|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
 14|0|1|08.rom|<null>|0|0|8|911640957|<null>|<111bb8b7549e3386a996845405b02164f17c7b37>
 15|0|0|04.rom|<null>|2|0|4|<null>|<null>|<null>
-15|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
+15|0|1|08.rom|<null>|0|1|8|911640957|<null>|<null>
 17|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 18|0|0|zero|<null>|0|0|0|0|<d41d8cd98f00b204e9800998ecf8427e>|<da39a3ee5e6b4b0d3255bfef95601890afd80709>
 19|0|0|zero|<null>|0|0|0|0|<null>|<null>
@@ -68,14 +68,14 @@
 5|two files|<null>|<null>|0
 6|two files, one other|<null>|<null>|0
 7|bad dump|<null>|<null>|0
-8|two roms, one in parent|<null>|<null>|0
+8|two roms, one in parent|one four byte file, has clone|<null>|0
 9|Dead Beef|<null>|<null>|0
-10|Dead Beef Child|<null>|<null>|0
-11|Dead Cloned Beef|<null>|<null>|0
+10|Dead Beef Child|Dead Beef|<null>|0
+11|Dead Cloned Beef|Dead Beef|<null>|0
 12|directory in rom name|<null>|<null>|0
 13|1-4 with no good dump|<null>|<null>|0
 14|clone-8 with no good dump|<null>|<null>|0
-15|clone-8 with merge and no good dump|<null>|<null>|0
+15|clone-8 with merge and no good dump|one eight byte file|<null>|0
 16|no rom|<null>|<null>|0
 17|one four byte file, has clone|<null>|<null>|0
 18|game with 0 byte rom|<null>|<null>|0
