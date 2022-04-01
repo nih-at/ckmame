@@ -7,7 +7,7 @@ file-del extra/1-8.zip 1-8-ok.zip
 no-hashes roms 1-8.zip
 detector-hashes skip-some-bytes 20070429 roms 1-8.zip
 detector-hashes skip-some-bytes 20070429 roms 1-8
-args -D mame-detector.db -Fvc -je extra 1-8
+args -D mame-detector.db -Fvc -je extra
 stdout-data
 In game 1-8:
 game 1-8                                     : correct

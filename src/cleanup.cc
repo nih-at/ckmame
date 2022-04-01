@@ -98,6 +98,7 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
                 check_needed_files(entry.filetype, a, &res);
             }
             else {
+                // TODO: check_archive_files calls find_in_romset with detector 0, which doesn't find files in ROM set that have a header. I don't understand the other calls to find_in_romset, so I don't know how to fix it.
                 check_archive_files(entry.filetype, archives, "", &res);
             }
             
