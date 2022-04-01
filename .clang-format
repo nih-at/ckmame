@@ -6,14 +6,27 @@ ColumnLimit: 100
 AlignArrayOfStructures: Left
 AlignEscapedNewlines: Left
 AllowAllConstructorInitializersOnNextLine: true
+AllowShortBlocksOnASingleLine: Never
 AlwaysBreakAfterReturnType: None
 BinPackArguments: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 BreakBeforeBraces: Custom
 BraceWrapping:
   BeforeElse: true
+  BeforeCatch: true
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 2
 # clang 14+:
 #PackConstructorInitializers: NextLine
+PointerAlignment: Left
 UseTab: Never
+#IncludeIsMainRegex: "$"
+IncludeCategories:
+  - Regex: '^"config.h"'
+    Priority: 1
+  - Regex: '^"compat.h"'
+    Priority: 2
+  - Regex: '^<'
+    Priority: 3
+  - Regex: '.*'
+    Priority: 4
