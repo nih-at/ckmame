@@ -8,7 +8,7 @@ AlignEscapedNewlines: Left
 AllowAllConstructorInitializersOnNextLine: true
 AllowShortBlocksOnASingleLine: Never
 AlwaysBreakAfterReturnType: None
-BinPackArguments: false
+#BinPackArguments: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 BreakBeforeBraces: Custom
 BraceWrapping:
