@@ -163,13 +163,13 @@ sub new {
 	$self->{directives} = {};
 	
 	my %directives = (
-		args => { type => 'string...', once => 1, required => 1 },
-		description => { type => 'string', once => 1 },
-		features => { type => 'string...', once => 1 },
-		file => { type => 'string string string?' },
-		'file-data' => { type => 'string string?', data_lines => 1 },
-		# file-delete-data
-		# file-create-data
+		args            => { type => 'string...', once => 1, required => 1 },
+		description     => { type => 'string', once => 1 },
+		features        => { type => 'string...', once => 1 },
+		file            => { type => 'string string string?' },
+		'file-data'     => { type => 'string string?', data_lines => 1 },
+		'file-data-del' => { type => 'string string?', data_lines => 1 },
+		'file-data-new' => { type => 'string string?', data_lines => 1 },
 		'file-del' => { type => 'string string' }, # file-delete
 		'file-new' => { type => 'string string' }, # file-create
 		mkdir => { type => 'string string' },
@@ -1194,6 +1194,12 @@ sub parse_postprocess_files {
 	
 	for my $file (@{$self->{test}->{'file-data'}}) {
 		$ok = 0 unless ($self->add_file({ source => $file->[1], destination => $file->[0], result => $file->[1]}));
+	}
+	for my $file (@{$self->{test}->{'file-data-del'}}) {
+		$ok = 0 unless ($self->add_file({ source => $file->[1], destination => $file->[0], result => undef}));
+	}
+	for my $file (@{$self->{test}->{'file-data-new'}}) {
+		$ok = 0 unless ($self->add_file({ source => undef, destination => $file->[0], result => $file->[1]}));
 	}
 
 	return $ok;
