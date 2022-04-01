@@ -72,8 +72,18 @@ sub check_ckmame_db {
 			}
 		}
 	}
-	
-	my $db = new CkmameDB($dir, undef, $variant eq 'dir', $test->{test}->{'no-hashes'}, $test->{test}->{'detector-hashes'}, $test->{test}->{'not-in-ckmamedb'}, $test->{verbose});
+
+	my $type = $variant;
+	if (defined($test->{test}->{'ckmamedb-type'})) {
+		for my $line (@{$test->{test}->{'ckmamedb-type'}}) {
+			if ($line->[0] eq $dir) {
+				$type = $line->[1];
+				last;
+			}
+		}
+	}
+
+	my $db = new CkmameDB($dir, undef, $type eq 'dir', $test->{test}->{'no-hashes'}, $test->{test}->{'detector-hashes'}, $test->{test}->{'not-in-ckmamedb'}, $test->{verbose});
 	
 	if (!$db) {
 		print "opening $dir/.ckmame.db failed\n" if ($test->{verbose});
@@ -311,6 +321,10 @@ $test->add_directive('ckmamedb-before' => {
 	usage => 'directory dump [version] [sql-schema]'
 });
 $test->add_directive('ckmamedb-after' => { type => 'string string' });
+$test->add_directive('ckmamedb-type' => {
+    type => 'string string',
+    usage => "directory type",
+    description => "Synthesize .ckmamedb in directory for zipped (zip) or unzipped (dir) mode."});
 $test->add_directive('detector-hashes' => {
 	type => "string string string string string?",
 	usage => "detector-name detector-version directory archive [file]",
