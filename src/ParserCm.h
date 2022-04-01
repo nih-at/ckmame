@@ -39,29 +39,31 @@
 #include <unordered_set>
 
 class ParserCm : public Parser {
-public:
+  public:
     bool parse() override;
 
-    ParserCm(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options) : Parser(source, exclude, dat, output, std::move(options)), ignoring_line(false) { }
+    ParserCm(ParserSourcePtr source, const std::unordered_set<std::string>& exclude, const DatEntry* dat,
+             OutputContext* output, Options options)
+        : Parser(source, exclude, dat, output, std::move(options)), ignoring_line(false) {}
     ~ParserCm() override = default;
-        
-private:
+
+  private:
     enum State { TOP, GAME, PROG };
 
     class Tokenizer {
-    public:
-        explicit Tokenizer(const std::string &s) : string(s), position(0) { }
+      public:
+        explicit Tokenizer(const std::string& s) : string(s), position(0) {}
 
         std::string get();
 
-    private:
+      private:
         std::string string;
         size_t position;
     };
-    
+
     std::unordered_set<std::string> warned_keywords;
     bool ignoring_line;
-    void warn_unknown_keyword(const std::string &keyword);
+    void warn_unknown_keyword(const std::string& keyword);
 };
 
 #endif // HAD_PARSER_CM_H
