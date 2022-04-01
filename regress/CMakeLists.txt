@@ -109,8 +109,6 @@ set(XFAIL_TESTS
   mkmamedb-config-use-description-as-name.test
   mkmamedb-list-available-dats-3.test
   mkmamedb-use-description-as-name.test
-  old-gamelist-1.test
-  old-gamelist-2.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
 )

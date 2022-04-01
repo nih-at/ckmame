@@ -126,6 +126,7 @@ void CkMame::setup(const ParsedCommandline &commandline) {
 
 bool CkMame::execute(const std::vector<std::string> &arguments) {
     int found;
+    auto checking_all_games = false;
 
     if (only_if_updated) {
         configuration.update_database = true;
@@ -233,6 +234,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
         }
     }
     else if (arguments.empty()) {
+        checking_all_games = true;
         for (const auto &name : list) {
             check_tree.add(name);
         }
@@ -306,7 +308,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
         stats.print(stdout, false);
     }
 
-    if (!configuration.complete_list.empty() || !configuration.missing_list.empty()) {
+    if (checking_all_games && (!configuration.complete_list.empty() || !configuration.missing_list.empty())) {
         FILEPtr complete_file, missing_file;
 
         for (const auto& name : list) {
