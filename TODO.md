@@ -5,7 +5,6 @@
 - Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)  
 - Fix failing tests.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
-- Parser: header is not set if dat contains no games.
 - Add error messages for detector parse errors.
 - Variables in config file (e.g. for collection root directory).
 - Make `SIGINFO` handler print set name.
