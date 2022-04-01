@@ -10,5 +10,5 @@ file-data .ckmamerc
 dat-directories = [ "dats" ]
 end-of-data
 stdout-data
-ckmame test database
+Test
 end-of-data

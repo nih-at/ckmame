@@ -2,3 +2,10 @@
 author=Dieter Baron & Thomas Klausner
 version=20201210
 comment=ckmame test database
+[DAT]
+version=2.50
+split=1
+merge=1
+[EMULATOR]
+refname=Test
+version=Test v2.56

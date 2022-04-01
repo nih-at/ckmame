@@ -107,7 +107,6 @@ set(XFAIL_TESTS
   extra-file-zip.test
   mkmamedb-config-game-name-suffix.test
   mkmamedb-config-use-description-as-name.test
-  mkmamedb-list-available-dats-3.test
   mkmamedb-use-description-as-name.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
