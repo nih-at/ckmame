@@ -139,6 +139,8 @@ class Parser {
     Rom* r[TYPE_MAX]{}; /* current files */
     DetectorPtr detector;
 
+    static std::string state_name(parser_state_t state);
+
   private:
     enum Format { NONE, CLRMAMEPRO, ROMCENTER, XML };
 

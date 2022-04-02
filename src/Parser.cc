@@ -64,11 +64,24 @@ std::unordered_map<std::string, Parser::Format> Parser::format_start = {
 #define CHECK_STATE(s)                                        \
     do {                                                      \
         if (state != (s)) {                                   \
-            output.file_error("%zu: in wrong state", lineno); \
+            output.file_error("%zu: state is %s, expected %s", lineno, state_name(state).c_str(), state_name(s).c_str()); \
             return false;                                     \
         }                                                     \
     } while (0)
 
+
+std::string Parser::state_name(parser_state_t state) {
+    switch (state) {
+    case PARSE_IN_HEADER:
+        return "in header";
+    case PARSE_IN_GAME:
+        return "in game";
+    case PARSE_IN_FILE:
+        return "in file";
+    case PARSE_OUTSIDE:
+        return "outside";
+    }
+}
 
 ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
                          const DatEntry* dat, OutputContext* output_context, Options options) {
