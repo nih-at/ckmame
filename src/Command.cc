@@ -55,10 +55,10 @@ int Command::run(int argc, char* const* argv) {
     auto version = std::string(PACKAGE " " VERSION);
     if (name != PACKAGE) {
 	command_name += std::string("(") + PACKAGE + ")";
-	version = name + "(" + version + ")";
+	version = name + " (" + version + ")";
     }
 
-    auto commandline = Commandline(options, arguments, name + " by Dieter Baron and Thomas Klausner", "Report bugs to " PACKAGE_BUGREPORT ".", version + "\nCopyright (C) 1999-2022 Dieter Baron and Thomas Klausner\\n\" PACKAGE \" comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\\n\"");
+    auto commandline = Commandline(options, arguments, name + " by Dieter Baron and Thomas Klausner", "Report bugs to " PACKAGE_BUGREPORT ".", version + "\nCopyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n");
 
     Configuration::add_options(commandline, used_variables);
 
