@@ -40,12 +40,12 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Exception.h"
 #include "globals.h"
 
-Command::Command(std::string name, std::string arguments, std::vector<Commandline::Option> options, std::unordered_set<std::string> used_variables) :
-    name(std::move(name)),
-    arguments(std::move(arguments)),
-    options(std::move(options)),
-    used_variables(std::move(used_variables)) {
-}
+Command::Command(std::string name, std::string arguments, std::vector<Commandline::Option> options,
+                 std::unordered_set<std::string> used_variables)
+    : name(std::move(name)),
+      arguments(std::move(arguments)),
+      options(std::move(options)),
+      used_variables(std::move(used_variables)) {}
 
 
 int Command::run(int argc, char* const* argv) {
@@ -54,11 +54,14 @@ int Command::run(int argc, char* const* argv) {
     auto command_name = name;
     auto version = std::string(PACKAGE " " VERSION);
     if (name != PACKAGE) {
-	command_name += std::string("(") + PACKAGE + ")";
-	version = name + " (" + version + ")";
+        command_name += std::string("(") + PACKAGE + ")";
+        version = name + " (" + version + ")";
     }
 
-    auto commandline = Commandline(options, arguments, name + " by Dieter Baron and Thomas Klausner", "Report bugs to " PACKAGE_BUGREPORT ".", version + "\nCopyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n");
+    auto commandline = Commandline(options, arguments, name + " by Dieter Baron and Thomas Klausner",
+                                   "Report bugs to " PACKAGE_BUGREPORT ".",
+                                   version + "\nCopyright (C) 1999-2022 Dieter Baron and Thomas Klausner\n" PACKAGE
+                                             " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n");
 
     Configuration::add_options(commandline, used_variables);
 
@@ -67,71 +70,71 @@ int Command::run(int argc, char* const* argv) {
     int exit_code = 0;
 
     try {
-	auto arguments = commandline.parse(argc, argv);
+        auto arguments = commandline.parse(argc, argv);
 
-	configuration.handle_commandline(arguments); // global, not merging config, not setting set
+        configuration.handle_commandline(arguments); // global, not merging config, not setting set
 
-	setup(arguments);
+        setup(arguments);
 
-	std::set<std::string> selected_sets;
+        std::set<std::string> selected_sets;
 
-	if (arguments.find_first("all-sets")) {
-	    selected_sets = configuration.sets;
-	}
-	else {
-	    for (const auto &option : arguments.options) {
-		if (option.name == "set") {
-		    if (option.argument.find_first_of("?*[")) {
-			auto matched = false;
-			for (const auto& set : configuration.sets) {
-			    if (fnmatch(option.argument.c_str(), set.c_str(), 0) == 0) {
-				selected_sets.insert(set);
-				matched = true;
-			    }
-			}
-			if (!matched) {
-			    throw Exception("no set matches '" + option.argument + "'");
-			}
-		    }
-		    else {
-			if (configuration.sets.find(option.argument) == configuration.sets.end()) {
-			    throw Exception("unknown set '" + option.argument + "'");
-			}
-			selected_sets.insert(option.argument);
-		    }
-		}
-	    }
-	}
+        if (arguments.find_first("all-sets")) {
+            selected_sets = configuration.sets;
+        }
+        else {
+            for (const auto& option : arguments.options) {
+                if (option.name == "set") {
+                    if (option.argument.find_first_of("?*[")) {
+                        auto matched = false;
+                        for (const auto& set : configuration.sets) {
+                            if (fnmatch(option.argument.c_str(), set.c_str(), 0) == 0) {
+                                selected_sets.insert(set);
+                                matched = true;
+                            }
+                        }
+                        if (!matched) {
+                            throw Exception("no set matches '" + option.argument + "'");
+                        }
+                    }
+                    else {
+                        if (configuration.sets.find(option.argument) == configuration.sets.end()) {
+                            throw Exception("unknown set '" + option.argument + "'");
+                        }
+                        selected_sets.insert(option.argument);
+                    }
+                }
+            }
+        }
 
-	if (selected_sets.empty()) {
-	    if (!do_for("", arguments, false)) {
-		exit_code = 1;
-	    }
-	}
-	else {
-	    auto multi_set = selected_sets.size() > 1;
-	    for (const auto& set : selected_sets) {
-		if (!do_for(set, arguments, multi_set)) {
-		    exit_code = 1;
-		}
-	    }
-	}
+        if (selected_sets.empty()) {
+            if (!do_for("", arguments, false)) {
+                exit_code = 1;
+            }
+        }
+        else {
+            auto multi_set = selected_sets.size() > 1;
+            for (const auto& set : selected_sets) {
+                if (!do_for(set, arguments, multi_set)) {
+                    exit_code = 1;
+                }
+            }
+        }
     }
-    catch (std::exception &ex) {
-	fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
-	// TODO: handle error
-	exit_code = 1;
+    catch (std::exception& ex) {
+        fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
+        // TODO: handle error
+        exit_code = 1;
     }
 
     try {
-	if (!cleanup()) {
-	    exit_code = 1;
-	}
+        if (!cleanup()) {
+            exit_code = 1;
+        }
     }
-    catch (std::exception &ex) {
-	fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
-	// TODO: handle error
-	exit_code = 1;
+    catch (std::exception& ex) {
+        fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
+        // TODO: handle error
+        exit_code = 1;
     }
 
     return exit_code;
@@ -140,15 +143,15 @@ int Command::run(int argc, char* const* argv) {
 
 bool Command::do_for(const std::string& set, const ParsedCommandline& arguments, bool multi_set_invocation) {
     try {
-	if (multi_set_invocation) {
-	    output.set_header("Set " + set);
-	}
-	configuration.prepare(set, arguments);
-	return execute(arguments.arguments);
+        if (multi_set_invocation) {
+            output.set_header("Set " + set);
+        }
+        configuration.prepare(set, arguments);
+        return execute(arguments.arguments);
     }
-    catch (std::exception &ex) {
-	fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
-	// TODO: handle error
-	return false;
+    catch (std::exception& ex) {
+        fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
+        // TODO: handle error
+        return false;
     }
 }
