@@ -2,8 +2,7 @@
 
 ### Implement
 
-- fix bug in mame dat handling
-- Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)  
+- Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)
 - Fix failing tests.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Add error messages for detector parse errors.
@@ -31,7 +30,7 @@
     - who creates which part of the error messages
     - catch exceptions in main and print errors (done in ckmame and mkmamedb).
     - clean up Exceptions without text
-    
+
 - When checking single game, search for its ROMs everywhere and report any matches.
 
 - rar read support
