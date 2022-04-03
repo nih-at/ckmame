@@ -276,7 +276,7 @@ const std::unordered_map<std::string, XmlProcessor::Entity> ParserXml::entities 
     { "rom", XmlProcessor::Entity(attributes_rom, parse_file_start, parse_file_end, &arguments_rom) },
     { "software", XmlProcessor::Entity(attributes_game, parse_game_start, parse_game_end) },
     { "software/description", XmlProcessor::Entity(parse_game_description) },
-    { "softwarelist", XmlProcessor::Entity(attributes_softwarelist) }
+    { "/softwarelist", XmlProcessor::Entity(attributes_softwarelist) }
 };
 
 
