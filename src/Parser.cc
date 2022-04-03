@@ -81,6 +81,7 @@ std::string Parser::state_name(parser_state_t state) {
     case PARSE_OUTSIDE:
         return "outside";
     }
+    return "invalid";
 }
 
 ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
