@@ -37,25 +37,27 @@
 #include "FileData.h"
 
 class File : public FileData {
-public:
-    File(): FileData(), broken(false) { }
+  public:
+    File() : FileData(), broken(false) {}
 
     uint64_t get_size(size_t detector) const { return get_hashes(detector).size; }
-    const Hashes &get_hashes(size_t detector) const;
+    const Hashes& get_hashes(size_t detector) const;
 
     bool is_size_known(size_t detector) const { return get_size(detector) != Hashes::SIZE_UNKNOWN; }
     bool has_all_hashes(size_t detector, int requested_types) const;
-    bool has_all_hashes(size_t detector, const Hashes &other) const { return has_all_hashes(detector, other.get_types()); }
+    bool has_all_hashes(size_t detector, const Hashes& other) const {
+        return has_all_hashes(detector, other.get_types());
+    }
     bool size_hashes_are_set(size_t detector) const;
 
     std::string filename_extension;
     bool broken;
-    
+
     std::unordered_map<size_t, Hashes> detector_hashes;
 
     std::string filename() const { return name + filename_extension; }
-    
-private:
+
+  private:
     static Hashes empty_hashes;
 };
 
