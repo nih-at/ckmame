@@ -38,7 +38,7 @@
 
 extern volatile int siginfo_caught;
 
-void print_info(const std::string &meessage);
+void print_info(const std::string& message);
 void sighandle(int);
 
 #endif // HAD_SIGHANDLE_H

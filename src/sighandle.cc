@@ -42,17 +42,16 @@ void sighandle(int signo) {
     switch (signo) {
 #ifdef SIGINFO
     case SIGINFO:
-	siginfo_caught = 1;
-	break;
+        siginfo_caught = 1;
+        break;
 #endif
     default:
-	break;
+        break;
     }
+}
 
-    }
 
-
-void print_info(const std::string &message) {
+void print_info(const std::string& message) {
     printf("ckmame: %s\n", message.c_str());
     siginfo_caught = 0;
 }
