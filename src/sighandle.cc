@@ -38,8 +38,7 @@
 
 volatile int siginfo_caught;
 
-void
-sighandle(int signo) {
+void sighandle(int signo) {
     switch (signo) {
 #ifdef SIGINFO
     case SIGINFO:
@@ -53,8 +52,7 @@ sighandle(int signo) {
     }
 
 
-void
-print_info(const std::string &gamename) {
-    printf("ckmame: currently checking %s\n", gamename.c_str());
+void print_info(const std::string &message) {
+    printf("ckmame: %s\n", message.c_str());
     siginfo_caught = 0;
 }
