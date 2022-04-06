@@ -182,7 +182,7 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
     parser_options.use_description_as_name = configuration.use_description_as_name;
 
     if (list_available_dats) {
-	// TODO: store in set, output in cleanup() so every dat ist listed only once
+	// TODO: store in set, output in cleanup() so every dat is listed only once
 	auto repository = DatRepository(configuration.dat_directories);
 
 	for (const auto &dat : repository.list_dats()) {
@@ -210,7 +210,7 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 
     if (arguments.empty()) {
 	if (!dbname.empty() || fmt != OutputContext::FORMAT_DB) {
-	    //commandline.usage(false, stderr); TOOD
+	    //commandline.usage(false, stderr); TODO
 	   return false;
 	}
 	else if (configuration.dats.empty() || configuration.dat_directories.empty()) {

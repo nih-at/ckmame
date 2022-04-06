@@ -44,11 +44,11 @@ ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *z
 
     zip_stat_t st;
     if (zip_stat(za, fname.c_str(), flags, &st) < 0 || (zf = zip_fopen(za, fname.c_str(), flags)) == nullptr) {
-        int zer, ser;
+        int zip_error, system_error;
 
-        zip_error_get(za, &zer, &ser);
+        zip_error_get(za, &zip_error, &system_error);
         
-        switch (zer) {
+        switch (zip_error) {
             case ZIP_ER_NOENT:
                 errno = ENOENT;
                 break;

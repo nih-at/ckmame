@@ -67,7 +67,7 @@ use UNIVERSAL;
 #	    only run test if all FEATUREs are present, otherwise skip it.
 #
 #	file TEST IN [OUT]
-#	    copy file IN as TEST, compare against OUT (or IN if OUT is ommitted) after program run.
+#	    copy file IN as TEST, compare against OUT (or IN if OUT is omitted) after program run.
 #
 #	file-data TEST [MARKER]
 #	    copy following lines until MARKER (default: end-of-data) to TEST, check that it is unchanged after program run.
