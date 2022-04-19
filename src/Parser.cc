@@ -535,12 +535,7 @@ void Parser::rom_end(filetype_t ft) {
     if (r[ft]->hashes.size == 0) {
         auto& hashes = r[ft]->hashes;
 
-        switch (hashes.compare(Hashes::zero)) {
-        case Hashes::NOCOMMON:
-            hashes.set_crc(Hashes::zero.crc);
-            break;
-
-        case Hashes::MISMATCH:
+        if (hashes.compare(Hashes::zero) == Hashes::MISMATCH) {
             output.file_error("%zu: zero-size ROM '%s' with wrong checksums, corrected", lineno, r[ft]->name.c_str());
             hashes.set_crc(Hashes::zero.crc);
             if (hashes.has_type(Hashes::TYPE_MD5)) {
@@ -549,11 +544,9 @@ void Parser::rom_end(filetype_t ft) {
             if (hashes.has_type(Hashes::TYPE_SHA1)) {
                 hashes.set_sha1(Hashes::zero.sha1);
             }
-            break;
-
-        case Hashes::MATCH:
-            break;
         }
+
+        hashes.set_crc(Hashes::zero.crc);
     }
 
     /* omit duplicates */

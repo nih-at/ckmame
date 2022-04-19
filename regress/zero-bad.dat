@@ -29,4 +29,12 @@ game (
 	rom ( name zero size 0 sha1 0000000000000000000000000000000000000000 )
 )
 
+game (
+    name zeronohashes
+	description "game with 0 byte rom, no hashes"
+	manufacturer "synth"
+	year 2022
+	rom ( name zero size 0 )
+)
+
 END
