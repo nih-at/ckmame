@@ -54,27 +54,32 @@ class TomlSchema {
 
     class Boolean : public Type {
       public:
+        virtual ~Boolean() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
     };
     
     class Integer : public Type {
       public:
+        virtual ~Integer() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
     };
 
     class Number : public Type {
       public:
+        virtual ~Number() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
     };
 
     class String : public Type {
       public:
+        virtual ~String() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
     };
     
     class Array : public Type {
       public:
 	explicit Array(TypePtr elements) : elements(std::move(elements)) { }
+        virtual ~Array() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
 	
       private:
@@ -84,6 +89,7 @@ class TomlSchema {
     class Table : public Type {
       public:
 	explicit Table(std::map<std::string, TypePtr> members, TypePtr other_members) : members(std::move(members)), other_members(std::move(other_members)) { }
+        virtual ~Table() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
 
       private:
@@ -94,6 +100,7 @@ class TomlSchema {
     class Alternatives : public Type {
       public:
 	Alternatives(std::vector<TypePtr> alternatives, std::string name) : alternatives(std::move(alternatives)), name(std::move(name)) { }
+        virtual ~Alternatives() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
 
       private:

@@ -67,30 +67,27 @@ bool Configuration::read_config_file(std::vector<toml::table> &config_tables, co
     return ok;
 }
 
-TomlSchema::TypePtr Configuration::dat_directories_schema = std::move(
-    TomlSchema::alternatives({
+TomlSchema::TypePtr Configuration::dat_directories_schema = TomlSchema::alternatives({
 	TomlSchema::array(TomlSchema::string()),
 	TomlSchema::table({}, TomlSchema::table({
             { "use-central-cache-directory", TomlSchema::boolean() } }, {}))
-    }, "array or table"));
+    }, "array or table");
 
-TomlSchema::TypePtr Configuration::dats_schema = std::move(
-    TomlSchema::alternatives({
+TomlSchema::TypePtr Configuration::dats_schema = TomlSchema::alternatives({
 	TomlSchema::array(TomlSchema::string()),
 	TomlSchema::table({}, TomlSchema::table({
 	    { "game-name-suffix", TomlSchema::string() },
 	    { "use-description-as-name", TomlSchema::boolean() } }, {}))
-    }, "array or table"));
+    }, "array or table");
 
-TomlSchema::TypePtr Configuration::extra_directories_schema = std::move(
-    TomlSchema::alternatives({
+TomlSchema::TypePtr Configuration::extra_directories_schema = TomlSchema::alternatives({
         TomlSchema::array(TomlSchema::string()),
         TomlSchema::table({}, TomlSchema::table({
             { "use-central-cache-directory", TomlSchema::boolean() },
             { "move-from-extra", TomlSchema::boolean() } }, {}))
-        }, "array or table"));
+        }, "array or table");
 
-TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table({
+TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
     { "complete-games-only", TomlSchema::boolean() },
     { "complete-list", TomlSchema::string() },
     { "create-fixdat",  TomlSchema::boolean() },
@@ -123,12 +120,12 @@ TomlSchema::TypePtr Configuration::section_schema = std::move(TomlSchema::table(
     { "use-description-as-name",  TomlSchema::boolean() },
     { "use-temp-directory",  TomlSchema::boolean() },
     { "verbose",  TomlSchema::boolean() }
-}, {}));
+}, {});
 
 
-TomlSchema::TypePtr Configuration::file_schema = std::move(TomlSchema::table({
+TomlSchema::TypePtr Configuration::file_schema = TomlSchema::table({
     { "profile", TomlSchema::table({}, section_schema) }
-}, section_schema));
+}, section_schema);
 
 
 std::vector<Commandline::Option> Configuration::commandline_options = {
@@ -679,7 +676,7 @@ void Configuration::merge_dat_directories(const toml::table &table, const std::s
             dat_directories.clear();
         }
         for (const auto &pair : (*node.as_table())) {
-            dat_directories.push_back(std::string(pair.first));
+            dat_directories.emplace_back(pair.first);
             auto options_table = pair.second.as_table();
             if (options_table != nullptr && !options_table->empty()) {
                 auto parsed_options = DatDirectoryOptions();
@@ -700,7 +697,7 @@ void Configuration::merge_dats(const toml::table& table) {
     else if (node.is_table()) {
 	dats.clear();
 	for (const auto &pair : (*node.as_table())) {
-	    dats.push_back(std::string(pair.first));
+	    dats.emplace_back(pair.first);
 	    auto options_table = pair.second.as_table();
 	    if (options_table != nullptr && !options_table->empty()) {
 		auto parsed_options = DatOptions();
@@ -725,7 +722,7 @@ void Configuration::merge_extra_directories(const toml::table &table, const std:
 	    extra_directories.clear();
 	}
 	for (const auto &pair : (*node.as_table())) {
-	    extra_directories.push_back(std::string(pair.first));
+	    extra_directories.emplace_back(pair.first);
 	    auto options_table = pair.second.as_table();
 	    if (options_table != nullptr && !options_table->empty()) {
 		auto parsed_options = ExtraDirectoryOptions();

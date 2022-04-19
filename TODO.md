@@ -2,6 +2,7 @@
 
 ### Implement
 
+- stats not reset between sets (move `stats` into `CkmameCache`)
 - Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)
 - Fix failing tests.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
