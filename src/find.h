@@ -47,5 +47,6 @@ find_result_t find_in_archives(filetype_t filetype, size_t detector_id, const Fi
 find_result_t find_in_old(filetype_t filetype, const FileData *file, Archive *archive, Match *match);
 find_result_t find_in_romset(filetype_t ft, size_t detector_id, const FileData *file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match);
 
+find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string &name, const FileData *wanted_file, const FileData *candidate, Match *matches);
 
 #endif // HAD_FIND_H

@@ -1,4 +1,4 @@
-description test header detector, remove duplicate
+description test header detector, remove duplicate (with header in extra and ROM set)
 features LIBXML2
 return 0
 file mame-detector.db mamedb-detector.db mamedb-detector.db

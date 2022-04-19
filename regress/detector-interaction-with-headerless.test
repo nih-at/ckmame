@@ -8,8 +8,6 @@ file-new roms/skipped.zip 1-8-skip-ok.zip
 file-del extra/short.zip 1-8-skip-ok.zip
 file-del extra/long.zip 1-8-ok.zip
 no-hashes extra long.zip
-detector-hashes skip-some-bytes 20070429 roms skipped
-detector-hashes skip-some-bytes 20070429 roms skipped.zip
 stdout-data
 In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'

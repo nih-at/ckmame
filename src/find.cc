@@ -39,7 +39,6 @@
 #include "RomDB.h"
 #include "CkmameCache.h"
 
-static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *rom, const FileData *file, Match *m);
 static find_result_t check_match_old(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *wanted_file, const FileData *candidate, Match *match);
 static find_result_t check_match_romset(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *wanted_file, const FileData *candidate, Match *match);
 static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector_id, const FileData *wanted_file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match, find_result_t (*)(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *wanted_file, const FileData *candidate, Match *match));
@@ -154,54 +153,7 @@ find_result_t find_in_romset(filetype_t filetype, size_t detector_id, const File
 }
 
 
-static find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id, const std::string &name, const FileData *wanted_file, const FileData *candidate, Match *matches) {
-    
-    /* TODO: use detector_id */
 
-    auto full_name = findfile(filetype, name);
-    if (full_name.empty()) {
-        return FIND_MISSING;
-    }
-    
-    ArchivePtr a;
-    auto contents = ArchiveContents::by_name(filetype, full_name);
-    std::optional<size_t> index;
-
-    if (contents) {
-        index = contents->file_index_by_name(candidate->name);
-        
-        if (!index.has_value() || contents->files[index.value()].broken) {
-            return FIND_MISSING;
-        }
-    }
-    if (!(contents && index.has_value() && contents->files[index.value()].has_all_hashes(detector_id, wanted_file->hashes))) {
-        a = Archive::open(full_name, filetype, FILE_ROMSET, 0);
-        if (!a) {
-            return FIND_MISSING;
-        }
-        contents = a->contents;
-        index = a->file_index_by_name(candidate->name);
-
-        if (!index.has_value() || a->files[index.value()].broken) {
-            return FIND_MISSING;
-        }
-
-        a->file_ensure_hashes(index.value(), detector_id, wanted_file->hashes.get_types());
-    }
-    
-    if (contents->files[index.value()].get_hashes(detector_id).compare_with_size(wanted_file->hashes) != Hashes::MATCH) {
-        return FIND_MISSING;
-    }
-
-    if (matches != nullptr) {
-        if (!a) {
-            a = Archive::open(contents);
-        }
-        matches->archive = a;
-        matches->index = index.value();
-    }
-    return FIND_EXISTS;
-}
 
 
 static find_result_t check_match_old(filetype_t, size_t detector_id, const std::string &game_name, const FileData *wanted_file, const FileData *, Match *match) {
@@ -254,6 +206,10 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector
             continue;
         }
 
+        if (detector_id != 0 && detector_id != location.detector_id) {
+            continue;
+        }
+
         if (file->compare_size_hashes(game_rom)) {
 	    bool ok = true;
 
@@ -272,7 +228,7 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector
 	    }
 
 	    if (ok) {
-                status = check_match(filetype, detector_id, location.game_name, file, &game_rom, match);
+                status = check_match(filetype, detector_id == 0 ? location.detector_id : detector_id, location.game_name, file, &game_rom, match);
 	    }
 	}
     }

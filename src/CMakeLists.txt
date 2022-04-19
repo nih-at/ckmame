@@ -77,7 +77,7 @@ set(COMMON_SOURCES
   warn.cc
   zip_util.cc
   ${COMPATIBILITY}
-        Command.cc CkmameCache.cc Output.cc)
+        Command.cc CkmameCache.cc Output.cc check_for_file_in_archive.cc)
 
 set(LIBXML2_SOURCES
   detector_parse.cc
