@@ -35,6 +35,7 @@
 
 #include <csignal>
 
+#include "globals.h"
 
 volatile int siginfo_caught;
 
@@ -51,7 +52,11 @@ void sighandle(int signo) {
 }
 
 
-void print_info(const std::string& message) {
-    printf("ckmame: %s\n", message.c_str());
+void print_info(const std::string &message) {
+    printf("ckmame: %s", message.c_str());
+    if (!configuration.set.empty()) {
+        printf(" in set %s", configuration.set.c_str());
+    }
+    printf("\n");
     siginfo_caught = 0;
 }
