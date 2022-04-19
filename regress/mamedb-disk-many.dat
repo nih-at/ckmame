@@ -231,14 +231,6 @@ game (
 )
 
 game (
-	name zerobadcrc
-	description "game with 0 byte rom, impossible CRC"
-	manufacturer "synth"
-	year 2011
-	rom ( name zero size 0 crc32 12345678 )
-)
-
-game (
 	name many
 	description "game with many (32) roms"
 	manufacturer "synth"

@@ -1,4 +1,4 @@
 >>> table dat (file_id, entry_name, name, version)
 1|<null>|ckmame test db|2
 >>> table file (file_id, file_name, mtime, size)
-1|mame.dat|1644506227|5559
+1|mame.dat|1644506227|5323

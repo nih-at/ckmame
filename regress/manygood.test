@@ -61,6 +61,4 @@ In game zero:
 game zero                                    : correct
 In game zero-4:
 game zero-4                                  : correct
-In game zerobadcrc:
-game zerobadcrc                              : not a single file found
 end-of-data

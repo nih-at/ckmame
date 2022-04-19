@@ -61,8 +61,6 @@ In game zero:
 game zero                                    : correct
 In game zero-4:
 game zero-4                                  : correct
-In game zerobadcrc:
-game zerobadcrc                              : not a single file found
-Games: 19 / 21
-ROMs:  54 / 59 (181 bytes / 201 bytes)
+Games: 19 / 20
+ROMs:  54 / 58 (181 bytes / 201 bytes)
 end-of-data

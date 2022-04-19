@@ -41,42 +41,41 @@
 25|0|0|zero|<null>|0|0|0|0|<null>|<null>
 26|0|0|zero|<null>|0|0|0|0|<null>|<null>
 26|0|1|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-27|0|0|zero|<null>|0|0|0|305419896|<null>|<null>
-28|0|0|00|<null>|0|0|2|3091600544|<null>|<null>
-28|0|1|01|<null>|0|0|2|3477152822|<null>|<null>
-28|0|2|02|<null>|0|0|2|1447589260|<null>|<null>
-28|0|3|03|<null>|0|0|2|558843162|<null>|<null>
-28|0|4|04|<null>|0|0|2|3207319737|<null>|<null>
-28|0|5|05|<null>|0|0|2|3358384175|<null>|<null>
-28|0|6|06|<null>|0|0|2|1361424789|<null>|<null>
-28|0|7|07|<null>|0|0|2|639795459|<null>|<null>
-28|0|8|08|<null>|0|0|2|3063782546|<null>|<null>
-28|0|9|09|<null>|0|0|2|3248139268|<null>|<null>
-28|0|10|0A|<null>|0|0|2|2672055562|<null>|<null>
-28|0|11|0B|<null>|0|0|2|105710768|<null>|<null>
-28|0|12|0C|<null>|0|0|2|1900688422|<null>|<null>
-28|0|13|0D|<null>|0|0|2|4012810629|<null>|<null>
-28|0|14|0E|<null>|0|0|2|2552860947|<null>|<null>
-28|0|15|0F|<null>|0|0|2|18923689|<null>|<null>
-28|0|16|10|<null>|0|0|2|2707236321|<null>|<null>
-28|0|17|11|<null>|0|0|2|3596227959|<null>|<null>
-28|0|18|12|<null>|0|0|2|1330857165|<null>|<null>
-28|0|19|13|<null>|0|0|2|945058907|<null>|<null>
-28|0|20|14|<null>|0|0|2|2788221432|<null>|<null>
-28|0|21|15|<null>|0|0|2|3510096238|<null>|<null>
-28|0|22|16|<null>|0|0|2|1212055764|<null>|<null>
-28|0|23|17|<null>|0|0|2|1060745282|<null>|<null>
-28|0|24|18|<null>|0|0|2|2944839123|<null>|<null>
-28|0|25|19|<null>|0|0|2|3632373061|<null>|<null>
-28|0|26|1A|<null>|0|0|2|2254398539|<null>|<null>
-28|0|27|1B|<null>|0|0|2|525743601|<null>|<null>
-28|0|28|1C|<null>|0|0|2|1750140263|<null>|<null>
-28|0|29|1D|<null>|0|0|2|4130705604|<null>|<null>
-28|0|30|1E|<null>|0|0|2|2167578706|<null>|<null>
-28|0|31|1F|<null>|0|0|2|406581736|<null>|<null>
-29|0|0|16.rom|<null>|0|0|16|305419896|<null>|<null>
-29|1|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
-30|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
+27|0|0|00|<null>|0|0|2|3091600544|<null>|<null>
+27|0|1|01|<null>|0|0|2|3477152822|<null>|<null>
+27|0|2|02|<null>|0|0|2|1447589260|<null>|<null>
+27|0|3|03|<null>|0|0|2|558843162|<null>|<null>
+27|0|4|04|<null>|0|0|2|3207319737|<null>|<null>
+27|0|5|05|<null>|0|0|2|3358384175|<null>|<null>
+27|0|6|06|<null>|0|0|2|1361424789|<null>|<null>
+27|0|7|07|<null>|0|0|2|639795459|<null>|<null>
+27|0|8|08|<null>|0|0|2|3063782546|<null>|<null>
+27|0|9|09|<null>|0|0|2|3248139268|<null>|<null>
+27|0|10|0A|<null>|0|0|2|2672055562|<null>|<null>
+27|0|11|0B|<null>|0|0|2|105710768|<null>|<null>
+27|0|12|0C|<null>|0|0|2|1900688422|<null>|<null>
+27|0|13|0D|<null>|0|0|2|4012810629|<null>|<null>
+27|0|14|0E|<null>|0|0|2|2552860947|<null>|<null>
+27|0|15|0F|<null>|0|0|2|18923689|<null>|<null>
+27|0|16|10|<null>|0|0|2|2707236321|<null>|<null>
+27|0|17|11|<null>|0|0|2|3596227959|<null>|<null>
+27|0|18|12|<null>|0|0|2|1330857165|<null>|<null>
+27|0|19|13|<null>|0|0|2|945058907|<null>|<null>
+27|0|20|14|<null>|0|0|2|2788221432|<null>|<null>
+27|0|21|15|<null>|0|0|2|3510096238|<null>|<null>
+27|0|22|16|<null>|0|0|2|1212055764|<null>|<null>
+27|0|23|17|<null>|0|0|2|1060745282|<null>|<null>
+27|0|24|18|<null>|0|0|2|2944839123|<null>|<null>
+27|0|25|19|<null>|0|0|2|3632373061|<null>|<null>
+27|0|26|1A|<null>|0|0|2|2254398539|<null>|<null>
+27|0|27|1B|<null>|0|0|2|525743601|<null>|<null>
+27|0|28|1C|<null>|0|0|2|1750140263|<null>|<null>
+27|0|29|1D|<null>|0|0|2|4130705604|<null>|<null>
+27|0|30|1E|<null>|0|0|2|2167578706|<null>|<null>
+27|0|31|1F|<null>|0|0|2|406581736|<null>|<null>
+28|0|0|16.rom|<null>|0|0|16|305419896|<null>|<null>
+28|1|0|108-5|<null>|0|0|<null>|<null>|<bf5c9c39eb49bcf5a55a06dbb4deccb3>|<7570a907e20a51cbf6193ec6779b82d1967bb609>
+29|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>
 >>> table game (game_id, name, parent, description, dat_idx)
 1|1-4|<null>|one four byte file|0
 2|1-8|<null>|one eight byte file|0
@@ -104,9 +103,8 @@
 24|parent-4|<null>|one four byte file, has clone|0
 25|zero|<null>|game with 0 byte rom|0
 26|zero-4|<null>|game with 0 byte rom and a bigger one|0
-27|zerobadcrc|<null>|game with 0 byte rom, impossible CRC|0
-28|many|<null>|game with many (32) roms|0
-29|disk-same|<null>|some non-existent 16 byte rom with disk|0
-30|in-second-file|<null>|one four byte file|1
+27|many|<null>|game with many (32) roms|0
+28|disk-same|<null>|some non-existent 16 byte rom with disk|0
+29|in-second-file|<null>|one four byte file|1
 >>> table rule (rule_idx, start_offset, end_offset, operation)
 >>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

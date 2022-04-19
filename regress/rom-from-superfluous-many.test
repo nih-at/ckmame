@@ -29,7 +29,6 @@ file-new roms/nogood-2.zip 1-8-ok.zip
 file-new roms/parent-4.zip 1-4-ok.zip
 file-new roms/zero-4.zip zero-4-ok.zip
 file-new roms/zero.zip zero-ok.zip
-file-new roms/zerobadcrc.zip zero-ok.zip
 file roms/disk/108-5.chd 108-5.chd 108-5.chd
 file roms/disk-nogood/108-nogood.chd 108-5.chd 108-5.chd
 file roms/diskgood-romnogood/108-5.chd 108-5.chd 108-5.chd
@@ -158,9 +157,6 @@ rom  zero          size       0  crc 00000000: missing
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 create empty file 'zero'
 add 'roms/1-4.zip/04.rom' as '04.rom'
-In game zerobadcrc:
-rom  zero          size       0  crc 12345678: missing
-create empty file 'zero'
 In archive roms/1-4-ok.zip:
 delete used file '04.rom'
 remove empty archive

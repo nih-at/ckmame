@@ -533,19 +533,26 @@ void Parser::rom_end(filetype_t ft) {
     size_t n = g->files[ft].size() - 1;
 
     if (r[ft]->hashes.size == 0) {
-        /* some dats don't record crc for 0-byte files, so set it here */
-        if (!r[ft]->hashes.has_type(Hashes::TYPE_CRC)) {
-            r[ft]->hashes.set_crc(0);
-        }
+        auto& hashes = r[ft]->hashes;
 
-        /* some dats record all-zeroes md5 and sha1 for 0 byte files, fix */
-        if (r[ft]->hashes.has_type(Hashes::TYPE_MD5) && r[ft]->hashes.is_zero(Hashes::TYPE_MD5)) {
-            r[ft]->hashes.set_md5(reinterpret_cast<const unsigned char*>(
-                "\xd4\x1d\x8c\xd9\x8f\x00\xb2\x04\xe9\x80\x09\x98\xec\xf8\x42\x7e"));
-        }
-        if (r[ft]->hashes.has_type(Hashes::TYPE_SHA1) && r[ft]->hashes.is_zero(Hashes::TYPE_SHA1)) {
-            r[ft]->hashes.set_sha1(reinterpret_cast<const unsigned char*>(
-                "\xda\x39\xa3\xee\x5e\x6b\x4b\x0d\x32\x55\xbf\xef\x95\x60\x18\x90\xaf\xd8\x07\x09"));
+        switch (hashes.compare(Hashes::zero)) {
+        case Hashes::NOCOMMON:
+            hashes.set_crc(Hashes::zero.crc);
+            break;
+
+        case Hashes::MISMATCH:
+            output.file_error("%zu: zero-size ROM '%s' with wrong checksums, corrected", lineno, r[ft]->name.c_str());
+            hashes.set_crc(Hashes::zero.crc);
+            if (hashes.has_type(Hashes::TYPE_MD5)) {
+                hashes.set_md5(Hashes::zero.md5);
+            }
+            if (hashes.has_type(Hashes::TYPE_SHA1)) {
+                hashes.set_sha1(Hashes::zero.sha1);
+            }
+            break;
+
+        case Hashes::MATCH:
+            break;
         }
     }
 
@@ -584,7 +591,7 @@ void Parser::rom_end(filetype_t ft) {
                     }
                     n += 1;
                 }
-                output.file_error("%zu: two different roms with same name '%s', renamed to '%s'", lineno,
+                output.file_error("%zu: two different ROMs with same name '%s', renamed to '%s'", lineno,
                                   r[ft]->name.c_str(), name.c_str());
                 r[ft]->name = name;
                 break;
@@ -592,7 +599,7 @@ void Parser::rom_end(filetype_t ft) {
         }
     }
     if (!r[ft]->merge.empty() && g->cloneof[0].empty()) {
-        output.file_error("%zu: rom '%s' has merge information but game '%s' has no parent", lineno,
+        output.file_error("%zu: ROM '%s' has merge information but game '%s' has no parent", lineno,
                           r[ft]->name.c_str(), g->name.c_str());
     }
     if (deleted) {
