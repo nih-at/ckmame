@@ -45,14 +45,16 @@ By default, the configuration is read from
 .Pa ~/.config/ckmame/ckmamerc
 and
 .Pa .ckmamerc
-(in the current directory) if they exist, in this order.
+in the current directory if they exist, in this order.
+.Pp
+Many settings can also be specified on the command line.
 .Pp
 Later settings override earlier ones.
 .Ss SECTIONS
 The config file is in TOML format and consists of three types of sections.
 A section header consists of the name of the section enclosed in square brackets
 on its own line.
-.Bl -tag -width 20n
+.Bl -tag -width 27n
 .It [global]
 The
 .Dq global
@@ -62,7 +64,7 @@ section contains settings that apply in general.
 sections contain settings for a particular set (see the
 .Fl Fl set
 command line option).
-.It ["profile-name"]
+.It [profile."profile name"]
 Settings can be shared and referenced from multiple sets by defining
 them in a profile and referencing this.
 Use sections whose name starts with
@@ -71,7 +73,7 @@ for this.
 They can be referenced from other sections by using the
 .Dq profiles
 keyword with
-.Dq name
+.Dq profile name
 (without the leading
 .Dq profile. ) .
 .El
@@ -97,6 +99,9 @@ are mapped to a single configuration value with values
 .Dq true
 and
 .Dq false .
+.Pp
+For full documentation of config file options with corresponding command line options,
+see the manual page of the command.
 .Pp
 Options can use the string
 .Dq $set
@@ -158,9 +163,9 @@ The following options are supported only by
 .Xr ckmame 1 :
 .Bl -tag -width 20n -offset 4n
 .It complete-games-only
-Boolean
+Boolean.
 .It complete-list
-String..
+String.
 .It create-fixdat
 Boolean.
 .It extra-directories
@@ -173,14 +178,14 @@ Boolean.
 .It use-central-cache-directory
 Boolean.
 .El
-.It fixdat-directory
-String.
-.It keep-old-duplicates
-Boolean.
 .It extra-directories-append
 Same as
 .Dq extra-directories
 but does not override the previous value, but appends to it instead.
+.It fixdat-directory
+String.
+.It keep-old-duplicates
+Boolean.
 .It missing-list
 String.
 .It move-from-extra
@@ -238,6 +243,43 @@ Boolean.
 .It use-temp-directory
 Boolean.
 .El
+.Sh TOML PITFALLS
+While TOML is a relatively simple and readable format, it has some unexpected details:
+.Pp
+Any key that contains characters other than letters, digits,
+.Dq - ,
+and
+.Dq _
+must be quoted using double quotes.
+.Pp
+Nested tables can be written in two forms:
+.Pp
+Inline using
+.Dq {
+and
+.Dq } .
+However, the complete inline table must be on one line (unlike inline arrays, which can span multiple lines). See
+.Dq extra-directories-append
+in
+.Dq Big Set
+in EXAMPLES below.
+.Pp
+As sections with a
+.Dq \&.
+separating the outer and inner names:
+.Dl ["outer table name"."inner table name"]
+Note that the
+.Dq \&.
+must be outside any quotation marks.
+All settings in this section apply to the inner table.
+When using this for options that allow tables as values (like
+.Dq dats ) ,
+the keys in this table are not configuration
+variables and need to be quoted if they contain special characters. See
+.Dq extra-directories
+in
+.Dq Unzipped Set
+in EXAMPLES below.
 .Sh EXAMPLES
 .Bd -literal -offset 4n
 [global]
@@ -247,20 +289,21 @@ sets = [ "Set using standard settings only" ]
 
 [profile.incomplete]
 complete-only = true
-report-missing = true
+report-missing = false
 
 ["Big Set"]
 verbose = false
 rom-directory = "Big Set ROMs"
-extra-directories-append = [ "another-location" ]
+extra-directories-append = { "another-location" = { move-from-extra = true } }
 rom-db = "Big Set.db"
 profiles = [ "incomplete" ]
 
 ["Unzipped Set"]
 roms-unzipped = true
 rom-directory = "Unzipped Set ROMs"
-extra-directories = [ "unzipped-incoming" ]
 rom-db = "Unzipped Set.db"
+["Unzipped Set".extra-directories]
+"unzipped-incoming" = { use-central-cache-directory = true }
 .Ed
 .Pp
 This configuration would by default report verbosely,
