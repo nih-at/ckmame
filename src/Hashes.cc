@@ -60,8 +60,7 @@ const Hashes Hashes::zero(0, TYPE_CRC | TYPE_MD5 | TYPE_SHA1,
                           { 0xda, 0x39, 0xa3, 0xee, 0x5e, 0x6b, 0x4b, 0x0d, 0x32, 0x55, 0xbf, 0xef, 0x95, 0x60, 0x18, 0x90, 0xaf, 0xd8, 0x07, 0x09 });
 
 Hashes::Hashes(size_t size, int types, uint32_t crc, std::vector<uint8_t> md5, std::vector<uint8_t> sha1)
-    : size(size),
-types(types), crc(crc), md5(std::move(md5)), sha1(std::move(sha1)) {
+    : size(size), crc(crc), md5(std::move(md5)), sha1(std::move(sha1)), types(types) {
 
 }
 
