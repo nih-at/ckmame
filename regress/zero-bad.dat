@@ -1,0 +1,32 @@
+BEGIN
+
+clrmamepro (
+	name "ckmame test db"
+	version 1
+)
+
+game (
+	name zerobadcrc
+	description "game with 0 byte rom, impossible CRC"
+	manufacturer "synth"
+	year 2011
+	rom ( name zero size 0 crc32 12345678 )
+)
+
+game (
+	name zerobadmd5
+	description "game with 0 byte rom, invalid md5"
+	manufacturer "synth"
+	year 2022
+	rom ( name zero size 0 md5 00000000000000000000000000000000 )
+)
+
+game (
+	name zerobadsha1
+	description "game with 0 byte rom, invalid SHA1"
+	manufacturer "synth"
+	year 2022
+	rom ( name zero size 0 sha1 0000000000000000000000000000000000000000 )
+)
+
+END
