@@ -2,6 +2,7 @@
 
 ### Implement
 
+- `saved` directory shared by default between sets - change this, or ignore during cleanup when run for multiple sets
 - stats not reset between sets (move `stats` into `CkmameCache`)
 - Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)
 - Fix failing tests.
