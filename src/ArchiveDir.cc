@@ -43,18 +43,13 @@
 #include "util.h"
 #include "globals.h"
 
+#include <algorithm>
 #include <cerrno>
-#include <climits>
 #include <cstring>
 #include <filesystem>
 #include <limits>
 
 #include <sys/stat.h>
-
-
-bool ArchiveDir::ensure_archive_dir() {
-    return ensure_dir(name, false);
-}
 
 
 bool ArchiveDir::commit_xxx() {
@@ -69,6 +64,8 @@ bool ArchiveDir::commit_xxx() {
         output.archive_error_system("can't create temporary directory");
         return false;
     }
+
+    std::unordered_map<std::string, std::string> added_names;
     
     try {
         for (size_t index = 0; index < files.size(); index++) {
@@ -79,7 +76,10 @@ bool ArchiveDir::commit_xxx() {
                 if (!ensure_dir(added_directory, false)) {
                     throw Exception();
                 }
-                if (!link_or_copy(change.file, added_directory / file.name)) {
+
+                added_names[file.name] = make_added_name(added_directory, file.name);
+
+                if (!link_or_copy(change.file, added_names[file.name])) {
                     throw Exception();
                 }
             }
@@ -87,7 +87,8 @@ bool ArchiveDir::commit_xxx() {
                 if (!ensure_dir(added_directory, false)) {
                     throw Exception();
                 }
-                copy_source(change.source.get(), added_directory / file.name);
+                added_names[file.name] = make_added_name(added_directory, file.name);
+                copy_source(change.source.get(), added_names[file.name]);
             }
         }
     }
@@ -107,7 +108,7 @@ bool ArchiveDir::commit_xxx() {
                 commit.delete_file(get_original_filename(index));
             }
             else if (!change.file.empty() || change.source) {
-                commit.rename_file(added_directory / file.name, get_full_filename(index));
+                commit.rename_file(added_names[file.name], get_full_filename(index));
             }
             else if (!change.original_name.empty()){
                 commit.rename_file(get_original_filename(index), get_full_filename(index));
@@ -231,7 +232,7 @@ void ArchiveDir::Commit::ensure_file_doesnt_exist(const std::filesystem::path &f
     if (std::filesystem::exists(file)) {
         auto new_name = make_unique_path(file);
         std::filesystem::rename(file, new_name);
-        undos.push_back(Operation(new_name, file));
+        undos.emplace_back(new_name, file);
         renamed_files[file] = new_name;
     }
 }
@@ -241,7 +242,7 @@ void ArchiveDir::Commit::ensure_parent_directory(const std::filesystem::path &fi
     auto directory = file.parent_path();
     if (!std::filesystem::exists(directory)) {
         std::filesystem::create_directory(directory);
-        undos.push_back(Operation(directory));
+        undos.emplace_back(directory);
     }
 }
 
@@ -256,7 +257,7 @@ bool ArchiveDir::read_infos_xxx() {
                  continue;
              }
 
-             files.push_back(File());
+             files.emplace_back();
              auto &f = files[files.size() - 1];
              
              f.name = filepath.string().substr(name.size() + 1);
@@ -275,7 +276,7 @@ bool ArchiveDir::read_infos_xxx() {
 
 
 void ArchiveDir::get_last_update() {
-    struct stat st;
+    struct stat st{};
 
     contents->size = 0;
     if (stat(name.c_str(), &st) < 0) {
@@ -318,13 +319,20 @@ ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optiona
 
 
 time_t ArchiveDir::get_mtime(const std::string &file) {
-    struct stat st;
+    struct stat st{};
     
     if (stat(file.c_str(), &st) < 0) {
         return 0;
     }
     
     return st.st_mtime;
+}
+
+
+std::filesystem::path ArchiveDir::make_added_name(const std::filesystem::path& directory, const std::string& name) {
+    std::string temp = name;
+    std::replace(temp.begin(), temp.end(), '/', '_');
+    return make_unique_path(directory / temp);
 }
 
 

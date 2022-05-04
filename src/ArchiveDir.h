@@ -95,12 +95,11 @@ private:
         void ensure_parent_directory(const std::filesystem::path &file);
         void rename(const std::filesystem::path &source, const std::filesystem::path &destination);
     };
-    
-    bool ensure_archive_dir();
 
-    void copy_source(ZipSource *source, const std::filesystem::path &destination);
+    static void copy_source(ZipSource *source, const std::filesystem::path &destination);
+    static std::filesystem::path make_added_name(const std::filesystem::path& directory, const std::string& name);
 
-    time_t get_mtime(const std::string &file);
+    static time_t get_mtime(const std::string &file);
 };
 
 #endif // HAD_ARCHIVE_DIR_H
