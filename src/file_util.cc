@@ -35,8 +35,8 @@
 
 #include <filesystem>
 
-#include "error.h"
 #include "Exception.h"
+#include "globals.h"
 
 bool
 link_or_copy(const std::string &old, const std::string &new_name) {
@@ -44,8 +44,7 @@ link_or_copy(const std::string &old, const std::string &new_name) {
     std::filesystem::create_hard_link(old, new_name, ec);
     if (ec) {
 	if (!std::filesystem::copy_file(old, new_name, ec) || ec) {
-	    seterrinfo(old);
-	    myerror(ERRFILE, "cannot copy to '%s': %s", new_name.c_str(), ec.message().c_str());
+	    output.error_error_code(ec, "cannot copy '%s' to '%s'", old.c_str(), new_name.c_str());
 	    return false;
 	}
     }
@@ -59,8 +58,7 @@ my_remove(const std::string &name) {
     std::error_code ec;
     std::filesystem::remove(name, ec);
     if (ec) {
-	seterrinfo(name);
-	myerror(ERRFILE, "cannot remove: %s", ec.message().c_str());
+	output.error_error_code(ec, "cannot remove '%s'", name.c_str());
 	return false;
     }
 
@@ -74,8 +72,7 @@ bool rename_or_move(const std::string &old, const std::string &new_name) {
     if (ec) {
         std::filesystem::copy_file(old, new_name, std::filesystem::copy_options::overwrite_existing, ec);
         if (ec) {
-	    seterrinfo(old);
-	    myerror(ERRFILESTR, "cannot rename to '%s'", new_name.c_str());
+	    output.error_error_code(ec, "cannot rename '%s' to '%s'", old.c_str(), new_name.c_str());
 	    return false;
 	}
 	std::filesystem::remove(old);

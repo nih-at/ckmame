@@ -39,7 +39,7 @@ Result::Result(const Game *game, const GameArchives &a) : game(GS_MISSING) {
         if (game) {
             game_files[ft].resize(game->files[ft].size());
         }
-        if (a[ft] != NULL) {
+        if (a[ft] != nullptr) {
             archive_files[ft].resize(a[ft]->files.size(), FS_UNKNOWN);
         }
     }

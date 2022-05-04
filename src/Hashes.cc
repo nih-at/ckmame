@@ -34,7 +34,7 @@
 #include "Hashes.h"
 
 #include <cinttypes>
-#include <cstring>
+#include <utility>
 
 #include "Exception.h"
 #include "util.h"
@@ -53,6 +53,16 @@ std::unordered_map<int, std::string> Hashes::type_to_name = {
     { TYPE_MD5, "md5" },
     { TYPE_SHA1, "sha1" }
 };
+
+const Hashes Hashes::zero(0, TYPE_CRC | TYPE_MD5 | TYPE_SHA1,
+                          0,
+                          { 0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04, 0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e },
+                          { 0xda, 0x39, 0xa3, 0xee, 0x5e, 0x6b, 0x4b, 0x0d, 0x32, 0x55, 0xbf, 0xef, 0x95, 0x60, 0x18, 0x90, 0xaf, 0xd8, 0x07, 0x09 });
+
+Hashes::Hashes(size_t size, int types, uint32_t crc, std::vector<uint8_t> md5, std::vector<uint8_t> sha1)
+    : size(size), crc(crc), md5(std::move(md5)), sha1(std::move(sha1)), types(types) {
+
+}
 
 int Hashes::types_from_string(const std::string &s) {
     int types = 0;
@@ -242,7 +252,7 @@ void Hashes::set_md5(const uint8_t *data, bool ignore_zero) {
 
 
 void Hashes::set_sha1(const std::vector<uint8_t> &data, bool ignore_zero) {
-    set(TYPE_MD5, sha1, data, ignore_zero);
+    set(TYPE_SHA1, sha1, data, ignore_zero);
 
 }
 
@@ -340,11 +350,9 @@ std::string Hashes::to_string(int type) const {
 
         case Hashes::TYPE_MD5:
             return bin2hex(md5);
-            break;
 
         case Hashes::TYPE_SHA1:
             return bin2hex(sha1);
-            break;
 
         default:
             return "";
@@ -371,7 +379,7 @@ int Hashes::set_from_string(const std::string &s) {
     switch (length / 2) {
         case Hashes::SIZE_CRC:
             type = Hashes::TYPE_CRC;
-            crc = static_cast<uint32_t>(std::stoul(str, NULL, 16));
+            crc = static_cast<uint32_t>(std::stoul(str, nullptr, 16));
             break;
 
         case Hashes::SIZE_MD5:
@@ -399,7 +407,7 @@ std::string Hashes::type_name(int type) {
     auto it = type_to_name.find(type);
 
     if (it == type_to_name.end()) {
-        return "";
+        return "unknown type " + std::to_string(type);
     }
 
     return it->second;

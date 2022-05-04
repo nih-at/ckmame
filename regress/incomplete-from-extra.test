@@ -1,11 +1,9 @@
-description test incomplete game, moves files from extra to needed
+description test incomplete game, doesn't move files from extra to saved
 return 0
-args -FKLvcCje extra 2-48
-file-del extra/2-48.zip 1-4-ok.zip
-file-new needed/d87f7e0c-000.zip 1-4-ok.zip
-stdout In game 2-48:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'extra/2-48.zip/04.rom'
-stdout rom  08.rom        size       8  crc 3656897d: missing
-stdout extra/2-48.zip: save needed file '04.rom'
-stdout extra/2-48.zip: delete used file '04.rom'
-stdout extra/2-48.zip: remove empty archive
+args -FvcCje extra 2-48
+file extra/2-48.zip 1-4-ok.zip
+stdout-data
+In game 2-48:
+rom  04.rom        size       4  crc d87f7e0c: is in 'extra/2-48.zip/04.rom'
+rom  08.rom        size       8  crc 3656897d: missing
+end-of-data

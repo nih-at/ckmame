@@ -1,6 +1,8 @@
 description when cleaning up extras and given roms/, don't.
 return 1
-args -e roms --cleanup-extra
+args -e roms
 ckmamedb-after roms ckmamedb-empty.dump
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
-stderr current ROM directory 'roms' is in extra directory 'roms'
+stderr-data
+current ROM directory 'roms' is in extra directory 'roms'
+end-of-data

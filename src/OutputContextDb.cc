@@ -36,7 +36,8 @@
 #include <algorithm>
 #include <filesystem>
 
-#include "error.h"
+#include "file_util.h"
+#include "globals.h"
 
 
 struct fbh_context {
@@ -45,9 +46,19 @@ struct fbh_context {
 };
 
 
-OutputContextDb::OutputContextDb(const std::string &dbname, int flags) {
-    std::filesystem::remove(dbname);
-    db = std::make_unique<RomDB>(dbname, DBH_NEW);
+OutputContextDb::OutputContextDb(const std::string &dbname, int flags) :
+									 file_name(dbname),
+									 ok(true) {
+    temp_file_name = file_name + "-mkmamedb";
+    if (configuration.use_temp_directory) {
+	auto tmpdir = getenv("TMPDIR");
+	std::filesystem::path basename = temp_file_name;
+	basename = basename.filename();
+	temp_file_name = std::string(tmpdir ? tmpdir : "/tmp") + "/" + basename.string();
+    }
+    temp_file_name = make_unique_name(temp_file_name, "");
+
+    db = std::make_unique<RomDB>(temp_file_name, DBH_NEW);
 }
 
 
@@ -65,19 +76,19 @@ void OutputContextDb::familymeeting(Game *parent, Game *child) {
         child->cloneof[1] = parent->cloneof[0];
     }
     
-    auto grand_parent = child->cloneof[1].empty() ? NULL : db->read_game(child->cloneof[1]);
+    auto grand_parent = child->cloneof[1].empty() ? nullptr : db->read_game(child->cloneof[1]);
 
     /* look for files in parent */
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         for (auto &cr : child->files[ft]) {
-            for (auto const &pr : parent->files[ft]) {
+            for (const auto &pr : parent->files[ft]) {
                 if (cr.is_mergable(pr)) {
                     cr.where = static_cast<where_t>(pr.where + 1);
                     break;
                 }
             }
-            if (grand_parent != NULL && cr.where == FILE_INGAME) {
-                for (auto const &pr : grand_parent->files[ft]) {
+            if (grand_parent != nullptr && cr.where == FILE_INGAME) {
+                for (const auto &pr : grand_parent->files[ft]) {
                     if (cr.is_mergable(pr)) {
                         cr.where = FILE_IN_GRAND_CLONEOF;
                         break;
@@ -86,7 +97,7 @@ void OutputContextDb::familymeeting(Game *parent, Game *child) {
             }
              
             if (cr.where == FILE_INGAME && !cr.merge.empty()) {
-                myerror(ERRFILE, "In game '%s': '%s': merged from '%s', but ancestors don't contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
+                output.file_error("In game '%s': '%s': merged from '%s', but ancestors don't contain matching file", child->name.c_str(), cr.name.c_str(), cr.merge.c_str());
             }
         }
     }
@@ -100,15 +111,16 @@ bool OutputContextDb::handle_lost() {
              look if parent is still lost, if not, do child */
             auto child = db->read_game(lost_children[i]);
             if (!child) {
-                myerror(ERRDEF, "internal database error: child %s not in database", lost_children[i].c_str());
+                output.error("internal database error: child %s not in database", lost_children[i].c_str());
                 return false;
             }
             
             bool is_lost = true;
-            
-            auto parent = db->read_game(child->cloneof[0]);
+
+            auto parent_name = get_game_name(child->cloneof[0]);
+            auto parent = db->read_game(parent_name);
             if (!parent) {
-                myerror(ERRDEF, "inconsistency: %s has non-existent parent %s", child->name.c_str(), child->cloneof[0].c_str());
+                output.error("inconsistency: %s has non-existent parent %s", child->name.c_str(), parent_name.c_str());
                 
                 /* remove non-existent cloneof */
                 child->cloneof[0] = "";
@@ -117,6 +129,10 @@ bool OutputContextDb::handle_lost() {
             }
             else if (!lost(parent.get())) {
                 /* parent found */
+                if (child->cloneof[0] != parent_name) {
+                    child->cloneof[0] = parent_name;
+                    db->update_game_parent(child.get());
+                }
                 familymeeting(parent.get(), child.get());
                 is_lost = false;
             }
@@ -127,6 +143,8 @@ bool OutputContextDb::handle_lost() {
             }
         }
     }
+
+    renamed_games.clear();
         
     return true;
 }
@@ -142,9 +160,8 @@ bool OutputContextDb::lost(Game *game) {
 
 
 bool OutputContextDb::close() {
-    auto ok = true;
-
     if (db) {
+	// TODO: don't write stuff if !ok
         db->write_dat(dat);
 
         if (!handle_lost()) {
@@ -153,7 +170,14 @@ bool OutputContextDb::close() {
 
         db->init2();
 
-        db = NULL;
+        db = nullptr;
+
+	if (ok) { // TODO: and no previous errors
+	    rename_or_move(temp_file_name, file_name);
+	}
+	else {
+	    std::filesystem::remove(temp_file_name);
+	}
     }
 
     return ok;
@@ -167,22 +191,36 @@ bool OutputContextDb::detector(Detector *detector) {
 }
 
 
-bool OutputContextDb::game(GamePtr game) {
+bool OutputContextDb::game(GamePtr game, const std::string &original_name) {
+    if (!original_name.empty()) {
+        renamed_games[original_name] = game->name;
+    }
     auto g2 = db->read_game(game->name);
-    
+
     if (g2) {
-        myerror(ERRDEF, "duplicate game '%s' skipped", game->name.c_str());
-	return false;
+	std::string name;
+	size_t n = 1;
+	while (true) {
+	    name = game->name + " (" + std::to_string(n) + ")";
+	    if (db->read_game(name) == nullptr) {
+		break;
+	    }
+	    n += 1;
+	}
+	output.error("warning: duplicate game '%s', renamed to '%s'", game->name.c_str(), name.c_str());
+	game->name = name;
     }
 
     game->dat_no = static_cast<unsigned int>(dat.size() - 1);
 
     if (!game->cloneof[0].empty()) {
-        auto parent = db->read_game(game->cloneof[0]);
+        auto parent_name = get_game_name(game->cloneof[0]);
+        auto parent = db->read_game(parent_name);
         if (!parent || lost(parent.get())) {
             lost_children.push_back(game->name);
         }
         else {
+            game->cloneof[0] = parent_name;
             familymeeting(parent.get(), game.get());
             /* TODO: check error */
         }
@@ -195,7 +233,20 @@ bool OutputContextDb::game(GamePtr game) {
 
 
 bool OutputContextDb::header(DatEntry *entry) {
+    handle_lost(); // from previous dat
+
     dat.push_back(*entry);
  
     return true;
+}
+
+
+std::string OutputContextDb::get_game_name(const std::string &original_name) {
+    auto it = renamed_games.find(original_name);
+    if (it == renamed_games.end()) {
+        return original_name;
+    }
+    else {
+        return it->second;
+    }
 }

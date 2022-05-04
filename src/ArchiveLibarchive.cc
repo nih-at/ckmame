@@ -35,11 +35,11 @@
 
 #include <archive_entry.h>
 #include <cstring>
-#include <errno.h>
+#include <cerrno>
 
-#include "error.h"
 #include "Exception.h"
 #include "file_util.h"
+#include "globals.h"
 
 
 ArchiveLibarchive::~ArchiveLibarchive() {
@@ -51,7 +51,7 @@ ArchiveLibarchive::~ArchiveLibarchive() {
 
 
 bool ArchiveLibarchive::ensure_la() {
-    if (la != NULL) {
+    if (la != nullptr) {
         return true;
     }
     
@@ -62,9 +62,9 @@ bool ArchiveLibarchive::ensure_la() {
     
     auto error = archive_read_open_filename(la, name.c_str(), 10240);
     if (error < ARCHIVE_WARN) {
-        myerror(ERRDEF, "error %s archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), archive_error_string(la));
+        output.error("error %s archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), archive_error_string(la));
         archive_read_free(la);
-        la = NULL;
+        la = nullptr;
         return false;
     }
     
@@ -81,7 +81,7 @@ bool ArchiveLibarchive::check() {
 }
 
 bool ArchiveLibarchive::close_xxx() {
-    if (la == NULL) {
+    if (la == nullptr) {
         return true;
     }
 
@@ -89,11 +89,11 @@ bool ArchiveLibarchive::close_xxx() {
 
     if (error < ARCHIVE_WARN) {
         /* error closing, is la still valid? */
-        myerror(ERRZIP, "error closing zip: %s", archive_error_string(la));
+        output.archive_error("error closing zip: %s", archive_error_string(la));
         return false;
     }
 
-    la = NULL;
+    la = nullptr;
 
     return true;
 }
@@ -102,7 +102,7 @@ bool ArchiveLibarchive::close_xxx() {
 bool ArchiveLibarchive::commit_xxx() {
     auto tmpfile = make_unique_path(name);
     
-    seterrinfo("", name);
+    output.set_error_archive(name, "");
     
     mtimes.clear();
     
@@ -114,17 +114,17 @@ bool ArchiveLibarchive::commit_xxx() {
         std::error_code error;
         std::filesystem::remove(name, error);
         if (error) {
-            myerror(ERRZIPFILE, "can't remove: %s", error.message().c_str());
+            output.archive_error_error_code(error, "can't remove");
             return false;
         }
         return true;
     }
     
     auto writer = archive_write_new();
-    struct archive_entry *entry = NULL;
+    struct archive_entry *entry = nullptr;
 
-    if (writer == NULL) {
-        myerror(ERRZIP, "can't create archive: %s", strerror(ENOMEM));
+    if (writer == nullptr) {
+	output.archive_error("can't create archive: %s", strerror(ENOMEM));
         return false;
     }
     
@@ -136,13 +136,13 @@ bool ArchiveLibarchive::commit_xxx() {
             throw Exception("can't create archive: %s", strerror(errno));
         }
 
-        time_t now = time(NULL);
+        time_t now = time(nullptr);
         
         for (uint64_t index = 0; index < files.size(); index++) {
             auto &file = files[index];
             auto &change = changes[index];
-            
-            seterrinfo(file.name, name);
+
+	    output.set_error_archive(name, file.name);
 
             if (change.status == Change::DELETED) {
                 continue;
@@ -163,7 +163,7 @@ bool ArchiveLibarchive::commit_xxx() {
             mtimes.push_back(mtime);
             
             entry = archive_entry_new();
-            if (entry == NULL) {
+            if (entry == nullptr) {
                 throw Exception("can't write file header: %s", strerror(ENOMEM));
             }
             archive_entry_set_pathname(entry, file.name.c_str());
@@ -176,18 +176,18 @@ bool ArchiveLibarchive::commit_xxx() {
                 throw Exception("can't write file header: %s", strerror(errno));
             }
             archive_entry_free(entry);
-            entry = NULL;
+            entry = nullptr;
             
             write_file(writer, source);
         }
 
-        seterrinfo("", name);
+        output.set_error_archive(name, "");
         
         if (archive_write_close(writer) < 0) {
             throw Exception("can't write archive: %s", strerror(errno));
         }
         archive_write_free(writer);
-        writer = NULL;
+        writer = nullptr;
 
         if (tmpfile != name) {
             std::error_code error;
@@ -198,10 +198,10 @@ bool ArchiveLibarchive::commit_xxx() {
         }
     }
     catch (Exception &e) {
-        if (entry != NULL) {
+        if (entry != nullptr) {
             archive_entry_free(entry);
         }
-        if (writer != NULL) {
+        if (writer != nullptr) {
             archive_write_free(writer);
         }
         if (std::filesystem::exists(tmpfile)) {
@@ -209,7 +209,7 @@ bool ArchiveLibarchive::commit_xxx() {
             std::filesystem::remove(tmpfile, ec);
         }
         mtimes.clear();
-        myerror(ERRZIPFILE, "%s", e.what());
+        output.archive_file_error("%s", e.what());
         return false;
     }
 
@@ -217,7 +217,7 @@ bool ArchiveLibarchive::commit_xxx() {
 }
 
 
-void ArchiveLibarchive::write_file(struct archive *writer, ZipSourcePtr source) {
+void ArchiveLibarchive::write_file(struct archive *writer, const ZipSourcePtr& source) {
     try {
         source->open();
     }
@@ -261,7 +261,7 @@ void ArchiveLibarchive::commit_cleanup() {
 
 bool ArchiveLibarchive::Source::open() {
     if (archive->have_open_file) {
-        myerror(ERRZIP, "cannot open '%s': archive busy", archive->files[index].name.c_str());
+        output.archive_error("cannot open '%s': archive busy", archive->files[index].name.c_str());
         return false;
     }
     
@@ -276,7 +276,7 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
     if (current_index > index) {
         // rewind
         archive_read_free(la);
-        la = NULL;
+        la = nullptr;
         if (!ensure_la()) {
             return false;
         }
@@ -286,8 +286,8 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
     while (current_index <= index) {
         if (!header_read) {
             if (archive_read_next_header(la, &entry) != ARCHIVE_OK) {
-                seterrinfo("", name);
-                myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
+                output.set_error_archive(name);
+                output.archive_error("cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
                 return false;
             }
             header_read = true;
@@ -298,8 +298,8 @@ bool ArchiveLibarchive::seek_to_entry(uint64_t index) {
         }
         
         if (archive_read_data_skip(la) != ARCHIVE_OK) {
-            seterrinfo("", name);
-            myerror(ERRZIP, "cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
+            output.set_error_archive(name);
+            output.archive_error("cannot open '%s': %s", files[index].name.c_str(), archive_error_string(la));
             return false;
         }
         header_read = false;
@@ -315,7 +315,7 @@ bool ArchiveLibarchive::read_infos_xxx() {
         return false;
     }
     
-    seterrinfo("", name);
+    output.set_error_archive(name);
     
     current_index = 0;
     struct archive_entry *entry;
@@ -341,7 +341,7 @@ bool ArchiveLibarchive::read_infos_xxx() {
 #endif
     }
     if (ret != ARCHIVE_EOF) {
-        myerror(ERRZIP, "can't list contents: %s", archive_error_string(la));
+        output.archive_error("can't list contents: %s", archive_error_string(la));
         return false;
     }
     
@@ -363,12 +363,12 @@ ArchiveLibarchive::Source::Source(ArchiveLibarchive *archive_, uint64_t index_, 
 }
 
 zip_source_t *ArchiveLibarchive::Source::get_source() {
-    auto source = zip_source_function_create(callback_c, this, NULL);
+    auto source = zip_source_function_create(callback_c, this, nullptr);
     if (!complete_file) {
-        auto window_source = zip_source_window_create(source, start, (zip_int64_t)length, NULL);
-        if (window_source == NULL) {
+        auto window_source = zip_source_window_create(source, start, (zip_int64_t)length, nullptr);
+        if (window_source == nullptr) {
             zip_source_free(source);
-            return NULL;
+            return nullptr;
         }
         return window_source;
     }
@@ -409,7 +409,7 @@ zip_int64_t ArchiveLibarchive::Source::callback(void *data, zip_uint64_t len, zi
             return 0;
             
         case ZIP_SOURCE_STAT: {
-            zip_stat_t *st = static_cast<zip_stat_t *>(data);
+            auto st = static_cast<zip_stat_t *>(data);
             
             st->valid = ZIP_STAT_SIZE | ZIP_STAT_COMP_SIZE | ZIP_STAT_COMP_METHOD;
             st->comp_method = ZIP_CM_STORE;

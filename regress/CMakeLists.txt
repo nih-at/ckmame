@@ -32,6 +32,7 @@ add_custom_target(cleanup
 
 set(DBS
   mame.db
+  mame-v2.db
   mamedb-1-8-is-4.db
   mamedb-baddump.db
   mamedb-deadbeefish.db
@@ -42,6 +43,7 @@ set(DBS
   mamedb-one-game-two-roms.db
   mamedb-parent-crcdiff.db
   mamedb-parent-no-common.db
+  mamedb-size-empty.db
   mamedb-small.db
   mamedb-two-games.db
   mamedb-xml-quoting.db
@@ -101,6 +103,7 @@ add_custom_target(update-mamedb.dump
 
 
 set(XFAIL_TESTS
+  extra-file-zip.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
 )
@@ -108,7 +111,7 @@ set(XFAIL_TESTS
 file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
 foreach(FULL_CASE IN LISTS EXTRA_TESTS)
   get_filename_component(CASE ${FULL_CASE} NAME)
-  add_test(NAME ${CASE} COMMAND ${PERL_EXECUTABLE} ${PROJECT_BINARY_DIR}/regress/runtest -v --bin-sub-directory $<CONFIG> ${PROJECT_SOURCE_DIR}/regress/${CASE})
+  add_test(NAME ${CASE} COMMAND ${PERL_EXECUTABLE} ${PROJECT_BINARY_DIR}/regress/runtest --bin-sub-directory $<CONFIG> ${PROJECT_SOURCE_DIR}/regress/${CASE})
   set_tests_properties(${CASE} PROPERTIES SKIP_RETURN_CODE 77)
 #  set_tests_properties(${CASE} PROPERTIES ENVIRONMENT "PATH=${path}")
 endforeach()

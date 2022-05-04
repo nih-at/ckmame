@@ -38,6 +38,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <zip.h>
@@ -49,26 +50,19 @@
 #include "zip_util.h"
 
 class Archive;
-class ArchiveFile;
 class ArchiveContents;
 
 typedef std::shared_ptr<Archive> ArchivePtr;
 typedef std::shared_ptr<ArchiveContents> ArchiveContentsPtr;
 
 #define ARCHIVE_FL_CREATE 0x00100
-#define ARCHIVE_FL_QUIET 0x00400
 #define ARCHIVE_FL_NOCACHE 0x00800
 #define ARCHIVE_FL_RDONLY 0x01000
 #define ARCHIVE_FL_TOP_LEVEL_ONLY 0x02000
-#define ARCHIVE_FL_KEEP_EMPTY 0x04000
 
 #define ARCHIVE_FL_HASHTYPES_MASK 0x000ff
 #define ARCHIVE_FL_MASK 0x0ff00
 
-/* internal */
-extern int _archive_global_flags;
-
-void archive_global_flags(int fl, bool setp);
 
 enum ArchiveType {
     ARCHIVE_ZIP,
@@ -79,7 +73,7 @@ enum ArchiveType {
 
 class ArchiveContents {
 public:
-    ArchiveContents(ArchiveType type, const std::string &name, filetype_t filetype, where_t where, int flagsk, const std::string &filename_extension = "");
+    ArchiveContents(ArchiveType type, std::string name, filetype_t filetype, where_t where, int flagsk, std::string filename_extension = "");
 
     uint64_t id;
     std::string name;
@@ -97,19 +91,20 @@ public:
     std::weak_ptr<Archive> open_archive;
     std::string filename_extension;
   
-    std::optional<size_t> file_index_by_name(const std::string &name) const;
+    [[nodiscard]] std::optional<size_t> file_index_by_name(const std::string &name) const;
     bool has_all_detector_hashes(const std::unordered_map<size_t, DetectorPtr> &detectors);
     
-    bool read_infos_from_cachedb(std::vector<File> *files);
-    int is_cache_up_to_date();
+    bool read_infos_from_cachedb(std::vector<File> *cached_files);
+    [[nodiscard]] int is_cache_up_to_date() const;
 
-    static void enter_in_maps(ArchiveContentsPtr contents);
+    static void enter_in_maps(const ArchiveContentsPtr& contents);
     static ArchiveContentsPtr by_id(uint64_t id);
     static ArchiveContentsPtr by_name(filetype_t filetype, const std::string &name);
+    static void clear_cache();
 
     class TypeAndName {
     public:
-        TypeAndName(filetype_t filetype_, const std::string &name_) : filetype(filetype_), name(name_) { }
+        TypeAndName(filetype_t filetype_, std::string name_) : filetype(filetype_), name(std::move(name_)) { }
         
         filetype_t filetype;
         std::string name;
@@ -157,12 +152,12 @@ public:
     static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
     static ArchivePtr open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags);
     
-    static ArchivePtr open(ArchiveContentsPtr contents);
-        
-    static int64_t file_read_c(void *fp, void *data, uint64_t length);
-    
-    Archive(ArchiveContentsPtr contents_);
-    virtual ~Archive() { /*printf("# destroying %s\n", name.c_str());*/ }
+    static ArchivePtr open(const ArchiveContentsPtr& contents);
+
+    static bool read_only_mode;
+
+    explicit Archive(ArchiveContentsPtr contents_);
+    virtual ~Archive() = default;
 
     int close();
     bool commit();
@@ -171,34 +166,33 @@ public:
     void ensure_valid_archive();
     bool file_add_empty(const std::string &filename);
     int file_compare_hashes(uint64_t idx, const Hashes *h);
-    virtual bool file_ensure_hashes(uint64_t idx, int hashtypes);
+    virtual bool file_ensure_hashes(uint64_t idx, int hashtypes) { return file_ensure_hashes(idx, 0, hashtypes); }
+    bool file_ensure_hashes(uint64_t index, size_t detector_id, int hashtypes);
     bool file_copy(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_copy_or_move(Archive *source_archive, uint64_t source_index, const std::string &filename, bool copy);
     bool file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const Hashes *hashes);
     bool file_delete(uint64_t index);
     std::optional<size_t> file_find_offset(size_t idx, size_t size, const Hashes *h);
-    std::optional<size_t> file_index_by_hashes(const Hashes *h) const;
-    std::optional<size_t> file_index_by_name(const std::string &name) const;
+    [[nodiscard]] std::optional<size_t> file_index_by_name(const std::string &name) const;
     std::optional<size_t> file_index(const FileData *file) const;
     bool file_move(Archive *source_archive, uint64_t source_index, const std::string &filename);
     bool file_rename(uint64_t index, const std::string &filename);
     bool file_rename_to_unique(uint64_t index);
     std::string make_unique_name_in_archive(const std::string &filename);
     bool read_infos();
-    void refresh();
     bool rollback();
-    bool is_empty() const;
-    bool is_file_deleted(uint64_t index) const { return changes[index].status == Change::DELETED; }
-    bool is_writable() const { return (contents->flags & ARCHIVE_FL_RDONLY) == 0; }
-    bool is_indexed() const { return (contents->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where); }
+    [[nodiscard]] bool is_empty() const;
+    [[nodiscard]] bool is_file_deleted(uint64_t index) const { return changes[index].status == Change::DELETED; }
+    [[nodiscard]] bool is_writable() const { return (contents->flags & ARCHIVE_FL_RDONLY) == 0; }
+    [[nodiscard]] bool is_indexed() const { return (contents->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where); }
     virtual bool check() { return true; } // This is done as part of the constructor, remove?
     virtual bool close_xxx() { return true; }
     virtual bool commit_xxx() = 0;
     virtual void commit_cleanup() = 0;
     virtual void get_last_update() = 0;
     virtual bool read_infos_xxx() = 0;
-    virtual bool want_crc() const { return true; }
-    virtual bool have_direct_file_access() const { return false; }
+    [[nodiscard]] virtual bool want_crc() const { return true; }
+    [[nodiscard]] virtual bool have_direct_file_access() const { return false; }
     ZipSourcePtr get_source(uint64_t index) { return get_source(index, 0, {}); }
     virtual ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) = 0;
     virtual std::string get_full_filename(uint64_t index) { return ""; }
@@ -231,4 +225,4 @@ private:
     bool compute_detector_hashes(size_t index, const std::unordered_map<size_t, DetectorPtr> &detectors);
 };
 
-#endif /* archive.h */
+#endif //* HAD_ARCHIVE_H

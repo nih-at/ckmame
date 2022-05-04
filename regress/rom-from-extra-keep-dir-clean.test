@@ -1,11 +1,17 @@
-description test single-rom game (no parent), file is in search dir, keep
+description test single-rom game (no parent), file is in search dir
 variants dir
 return 0
-args -FKLvcj -e search 1-4
+args -Fvcj -e search 1-4
 file search/foo.zip pathtest1.zip pathtest1a.zip
 file search/bar.zip pathtest2.zip pathtest2.zip
 file-new roms/1-4.zip 1-4-ok.zip
-stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo.zip/1-4/04.rom'
-stdout roms/1-4.zip: add 'search/foo.zip/1-4/04.rom' as '04.rom'
-stdout search/foo: delete used file '1-4/04.rom'
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo.zip/1-4/04.rom'
+add 'search/foo.zip/1-4/04.rom' as '04.rom'
+In archive search/bar:
+file ignore/08.rom  size       8  crc 3656897d: needed elsewhere
+In archive search/foo:
+file bar/ignore    size       7  crc 7cde0d11: unknown
+delete used file '1-4/04.rom'
+end-of-data

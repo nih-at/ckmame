@@ -41,13 +41,14 @@
 
 class RomLocation {
  public:
-    RomLocation(): index(0) { }
-    RomLocation(std::string game_name_, size_t index_, const Rom &rom_) : game_name(game_name_), index(index_), rom(rom_) { }
+    RomLocation(): detector_id(0), index(0) { }
+    RomLocation(const std::string &game_name_, size_t detector_id, size_t index_, const Rom &rom_) : game_name(game_name_), detector_id(detector_id), index(index_), rom(rom_) { }
 
-    bool operator<(RomLocation other) const { return (game_name == other.game_name) ? (index < other.index) : (game_name < other.game_name); }
+    bool operator<(const RomLocation &other) const { return (game_name == other.game_name) ? (index < other.index) : (game_name < other.game_name); }
     std::string game_name;
+    size_t detector_id;
     size_t index;
     Rom rom;
 };
 
-#endif /* RomLocation.h */
+#endif // HAD_ROM_LOCATION_H

@@ -45,4 +45,4 @@ public:
     void merge(const DatEntry *high, const DatEntry *low);
 };
 
-#endif /* dat.h */
+#endif // HAD_DAT_H

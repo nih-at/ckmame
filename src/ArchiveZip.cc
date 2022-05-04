@@ -37,10 +37,10 @@
 #include <cerrno>
 
 #include "Detector.h"
-#include "error.h"
 #include "Exception.h"
 #include "util.h"
 #include "zip_util.h"
+#include "globals.h"
 
 
 #define BUFSIZE 8192
@@ -54,18 +54,18 @@ ArchiveZip::~ArchiveZip() {
 
 
 bool ArchiveZip::ensure_zip() {
-    if (za != NULL) {
+    if (za != nullptr) {
         return true;
     }
 
     int zip_flags = (contents->flags & ARCHIVE_FL_CREATE) ? ZIP_CREATE : 0;
 
     int err;
-    if ((za = zip_open(name.c_str(), zip_flags, &err)) == NULL) {
+    if ((za = zip_open(name.c_str(), zip_flags, &err)) == nullptr) {
         char errbuf[80];
 
         zip_error_to_str(errbuf, sizeof(errbuf), err, errno);
-        myerror(ERRDEF, "error %s zip archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), errbuf);
+        output.error("error %s zip archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), errbuf);
 	return false;
     }
     
@@ -79,29 +79,29 @@ bool ArchiveZip::check() {
 
 
 bool ArchiveZip::close_xxx() {
-    if (za == NULL) {
+    if (za == nullptr) {
         return true;
     }
 
     if (zip_close(za) < 0) {
 	/* error closing, so zip is still valid */
-	myerror(ERRZIP, "error closing zip: %s", zip_strerror(za));
+	output.archive_error("error closing zip: %s", zip_strerror(za));
 
 	/* TODO: really do this here? */
 	/* discard all changes and close zipfile */
 	zip_discard(za);
-        za = NULL;
+        za = nullptr;
         return false;
     }
 
-    za = NULL;
+    za = nullptr;
 
     return true;
 }
 
 
 bool ArchiveZip::commit_xxx() {
-    if (((contents->flags & ARCHIVE_FL_RDONLY) == 0) && za != NULL && !files.empty()) {
+    if (((contents->flags & ARCHIVE_FL_RDONLY) == 0) && za != nullptr && !files.empty()) {
         if (!ensure_dir(name, true)) {
             return false;
         }
@@ -119,7 +119,7 @@ bool ArchiveZip::commit_xxx() {
         
         if (change.status == Change::DELETED) {
             if (zip_delete(za, index) < 0) {
-                myerror(ERRZIP, "cannot delete '%s': %s", file.name.c_str(), zip_strerror(za));
+                output.archive_error("cannot delete '%s': %s", file.name.c_str(), zip_strerror(za));
                 ok = false;
                 break;
             }
@@ -133,10 +133,10 @@ bool ArchiveZip::commit_xxx() {
             if (zip_file_add(za, file.name.c_str(), change.source->source, 0) < 0) {
                 zip_source_free(change.source->source);
                 if (change.source_name.empty()) {
-                    myerror(ERRZIPFILE, "error adding empty file: %s", zip_strerror(za));
+                    output.archive_file_error("error adding empty file: %s", zip_strerror(za));
                 }
                 else {
-                    myerror(ERRZIPFILE, "error adding '%s': %s", change.source_name.c_str(), zip_strerror(za));
+                    output.archive_file_error("error adding '%s': %s", change.source_name.c_str(), zip_strerror(za));
                 }
                 ok = false;
                 break;
@@ -149,7 +149,7 @@ bool ArchiveZip::commit_xxx() {
                     break;
                 }
                 if (zip_rename(za, index, file.name.c_str()) < 0) {
-                    myerror(ERRZIP, "cannot rename '%s' to `%s': %s", change.original_name.c_str(), file.name.c_str(), zip_strerror(za));
+                    output.archive_error("cannot rename '%s' to `%s': %s", change.original_name.c_str(), file.name.c_str(), zip_strerror(za));
                     ok = false;
                     break;
                 }
@@ -159,10 +159,10 @@ bool ArchiveZip::commit_xxx() {
                 if (zip_file_replace(za, index, change.source->source, 0) < 0) {
                     zip_source_free(change.source->source);
                     if (change.source_name.empty()) {
-                        myerror(ERRZIPFILE, "error adding empty file: %s", zip_strerror(za));
+                        output.archive_file_error("error adding empty file: %s", zip_strerror(za));
                     }
                     else {
-                        myerror(ERRZIPFILE, "error adding '%s': %s", change.source_name.c_str(), zip_strerror(za));
+                        output.archive_file_error("error adding '%s': %s", change.source_name.c_str(), zip_strerror(za));
                     }
                     ok = false;
                     break;
@@ -191,8 +191,8 @@ void ArchiveZip::commit_cleanup() {
 	struct zip_stat st;
 
 	if (zip_stat_index(za, i, 0, &st) < 0) {
-	    seterrinfo("", name);
-	    myerror(ERRZIP, "cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
+	    output.set_error_archive(name);
+	    output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
 	    continue;
 	}
 
@@ -221,13 +221,13 @@ bool ArchiveZip::read_infos_xxx() {
         return false;
     }
     
-    seterrinfo("", name);
+    output.set_error_archive(name);
 
-    zip_uint64_t n = static_cast<zip_uint64_t>(zip_get_num_entries(za, 0));
+    auto n = static_cast<zip_uint64_t>(zip_get_num_entries(za, 0));
     
     for (zip_uint64_t i = 0; i < n; i++) {
 	if (zip_stat_index(za, i, 0, &zsb) == -1) {
-	    myerror(ERRZIP, "error stat()ing index %" PRIu64 ": %s", i, zip_strerror(za));
+	    output.archive_error("error stat()ing index %" PRIu64 ": %s", i, zip_strerror(za));
 	    continue;
 	}
 
@@ -253,15 +253,15 @@ bool ArchiveZip::read_infos_xxx() {
 
 ZipSourcePtr ArchiveZip::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length_) {
     if (!ensure_zip()) {
-        return NULL;
+        return nullptr;
     }
     
     // TODO: overflow check
-    int64_t length = static_cast<int64_t>(length_.has_value() ? length_.value() : files[index].hashes.size - start);
+    auto length = static_cast<int64_t>(length_.has_value() ? length_.value() : files[index].hashes.size - start);
     
-    auto source = zip_source_zip_create(za, index, ZIP_FL_UNCHANGED, start, length, NULL);
+    auto source = zip_source_zip_create(za, index, ZIP_FL_UNCHANGED, start, length, nullptr);
     
-    if (source == NULL) {
+    if (source == nullptr) {
         // TODO: error message
         return {};
     }
@@ -276,8 +276,8 @@ bool ArchiveZip::ensure_file_doesnt_exist(const std::string &filename) {
     if (index >= 0) {
         auto new_name = make_unique_name_in_archive(filename);
         if (zip_rename(za, static_cast<uint64_t>(index), new_name.c_str()) < 0) {
-            seterrinfo(filename, name);
-            myerror(ERRFILE, "can't move out of the way: %s", zip_error_strerror(zip_get_error(za)));
+            output.set_error_archive(name, filename);
+            output.file_error("can't move out of the way: %s", zip_error_strerror(zip_get_error(za)));
             return false;
         }
     }

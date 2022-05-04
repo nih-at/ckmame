@@ -39,10 +39,10 @@
 
 class ParserDir : public Parser {
 public:
-    ParserDir(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags, const std::string &dname, int hashtypes_, bool runtest_ = false) : Parser(source, exclude, dat, output, flags), directory_name(dname), hashtypes(hashtypes_), runtest(runtest_) { }
-    virtual ~ParserDir() { }
+    ParserDir(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options, const std::string &dname, int hashtypes_, bool runtest_ = false) : Parser(source, exclude, dat, output, std::move(options)), directory_name(dname), hashtypes(hashtypes_), runtest(runtest_) { }
+    ~ParserDir() override = default;
     
-    virtual bool parse();
+    bool parse() override;
         
 private:
     bool parse_archive(filetype_t filetype, Archive *a);
@@ -56,4 +56,4 @@ private:
     std::string current_game;
 };
 
-#endif /* ParserDir.h */
+#endif // HAD_PARSER_DIR_H

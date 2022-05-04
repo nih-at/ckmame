@@ -37,21 +37,15 @@
 #include <unordered_set>
 
 #include "Dir.h"
-#include "error.h"
 #include "Exception.h"
 #include "fix_util.h"
-#include "fix.h"
 #include "globals.h"
 #include "RomDB.h"
 #include "util.h"
+#include "CkmameCache.h"
 
 
-DeleteListPtr extra_delete_list;
-DeleteListPtr needed_delete_list;
-DeleteListPtr superfluous_delete_list;
-
-
-DeleteList::Mark::Mark(DeleteListPtr list_) : list(list_), index(0), rollback(false) {
+DeleteList::Mark::Mark(const DeleteListPtr& list_) : list(list_), index(0), rollback(false) {
     if (list_) {
         index = list_->entries.size();
         rollback = true;
@@ -77,7 +71,7 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
             known_games.insert(list.begin(), list.end());
         }
         catch (Exception &e) {
-            myerror(ERRDEF, "list of games not found in ROM database: %s", e.what());
+            output.error("list of games not found in ROM database: %s", e.what());
             exit(1);
         }
     }
@@ -100,20 +94,20 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
                 auto filename = filepath.filename();
                 known = known_games.find(filename) != known_games.end();
                                 
-                if (roms_unzipped) {
+                if (configuration.roms_zipped) {
                     if (!known) {
-                        archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
-                    }
-                }
-                else {
-                    if (!known) {
-                        archives.push_back(ArchiveLocation(filepath, TYPE_DISK));
+                        archives.emplace_back(filepath, TYPE_DISK);
                     }
                     list_non_chds(filepath);
                 }
+                else {
+                    if (!known) {
+                        archives.emplace_back(filepath, TYPE_ROM);
+                    }
+                }
             }
             else {
-                if (!roms_unzipped) {
+                if (configuration.roms_zipped) {
                     auto ext = filepath.extension();
                     
                     if (ext == ".zip") {
@@ -133,16 +127,16 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
                 }
 
                 if (!known) {
-                    archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
+                    archives.emplace_back(filepath, TYPE_ROM);
                 }
             }
         }
         
         if (have_toplevel_roms) {
-            archives.push_back(ArchiveLocation(directory + "/", TYPE_ROM));
+            archives.emplace_back(directory + "/", TYPE_ROM);
         }
         if (have_toplevel_disks) {
-            archives.push_back(ArchiveLocation(directory + "/", TYPE_DISK));
+            archives.emplace_back(directory + "/", TYPE_DISK);
         }
     }
     catch (...) {
@@ -152,24 +146,22 @@ void DeleteList::add_directory(const std::string &directory, bool omit_known) {
 
 int DeleteList::execute() {
     std::string name;
-    ArchivePtr a = NULL;
+    ArchivePtr a = nullptr;
 
     std::sort(entries.begin(), entries.end());
 
     int ret = 0;
-    for (size_t i = 0; i < entries.size(); i++) {
-	auto entry = entries[i];
-
-	if (name == "" || entry.name != name) {
+    for (const auto &entry : entries) {
+	if (name.empty() || entry.name != name) {
             if (!close_archive(a.get())) {
                 ret = -1;
             }
-            a = NULL;
+            a = nullptr;
 
 	    name = entry.name;
             
             if (name[name.length() - 1] == '/') {
-                a = Archive::open(name, entries[i].filetype, FILE_NOWHERE, 0);
+                a = Archive::open(name, entry.filetype, FILE_NOWHERE, 0);
             }
             else {
                 filetype_t filetype;
@@ -196,9 +188,7 @@ int DeleteList::execute() {
             }
 	}
 	if (a && a->is_writable()) {
-            if (fix_options & FIX_PRINT) {
-		printf("%s: delete used file '%s'\n", a->name.c_str(), a->files[entry.index].filename().c_str());
-            }
+	    output.message_verbose("delete used file '%s'", a->files[entry.index].filename().c_str());
 	    /* TODO: check for error */
 	    a->file_delete(entry.index);
 	}
@@ -209,30 +199,6 @@ int DeleteList::execute() {
     }
 
     return ret;
-}
-
-
-void DeleteList::used(Archive *a, size_t index) {
-    FileLocation fl(a->name + (a->contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? "/" : ""), a->filetype, index);
-    
-    switch (a->where) {
-    case FILE_NEEDED:
-	needed_delete_list->entries.push_back(fl);
-	break;
-	
-    case FILE_SUPERFLUOUS:
-	superfluous_delete_list->entries.push_back(fl);
-	break;
-
-    case FILE_EXTRA:
-	if (fix_options & FIX_DELETE_EXTRA) {
-	    extra_delete_list->entries.push_back(fl);
-	}
-	break;
-            
-    default:
-        break;
-    }
 }
 
 
@@ -277,7 +243,7 @@ void DeleteList::list_non_chds(const std::string &directory) {
         
         while ((filepath = dir.next()) != "") {
             if (filepath.extension() != ".chd") {
-                archives.push_back(ArchiveLocation(filepath, TYPE_ROM));
+                archives.emplace_back(filepath, TYPE_ROM);
             }
         }
     }

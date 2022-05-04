@@ -1,7 +1,7 @@
 BEGIN
 
 clrmamepro (
-	name "ckmame test db: game with disk"
+	name "game-with-disk"
 	version 1
 )
 game (

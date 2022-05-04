@@ -38,8 +38,8 @@
 #include <cinttypes>
 #include <cstring>
 
-#include "error.h"
 #include "util.h"
+#include "globals.h"
 
 
 static struct {
@@ -59,7 +59,7 @@ OutputContextCm::OutputContextCm(const std::string &fname_, int flags_) : fname(
     else {
 	f = make_shared_file(fname, "w");
 	if (!f) {
-            myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
+            output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
 	}
     }
@@ -70,7 +70,7 @@ OutputContextCm::~OutputContextCm() {
 }
 
 bool OutputContextCm::close() {
-    if (f == NULL) {
+    if (f == nullptr) {
         return false;
     }
     
@@ -86,13 +86,13 @@ bool OutputContextCm::close() {
         ok = fflush(f.get()) == 0;
     }
     
-    f = NULL;
+    f = nullptr;
 
     return ok;
 }
 
 
-bool OutputContextCm::game(GamePtr game) {
+bool OutputContextCm::game(GamePtr game, const std::string &original_name) {
     games.push_back(game);
 
     return true;

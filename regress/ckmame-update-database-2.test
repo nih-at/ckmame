@@ -1,0 +1,18 @@
+description updata database - no change
+return 0
+args --update-database 1-4
+file dats/mame.dat mamedb-baddump.dat
+touch 1644506227 dats/mame.dat
+file output.db mame.db
+file-new dats/.mkmamedb.db mkmamedb-datdb-7.dump
+ckmamedb-after dats ckmamedb-empty.dump
+file-data .ckmamerc
+[global]
+dat-directories = [ "dats" ]
+dats = [ "ckmame test db" ]
+rom-db = "output.db"
+end-of-data
+stdout-data
+In game 1-4:
+game 1-4                                     : not a single file found
+end-of-data

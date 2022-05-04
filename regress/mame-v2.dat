@@ -1,0 +1,211 @@
+BEGIN
+
+clrmamepro (
+	name "ckmame test db"
+	version 2
+)
+
+game (
+	name 1-4
+	description "one four byte file"
+	manufacturer "synth"
+	year 1991
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+)
+
+game (
+	name 1-8
+	description "one eight byte file"
+	manufacturer "synth"
+	year 1991
+	rom ( name 08.rom size 8 crc32 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
+)
+
+game (
+	name 1-8a
+	description "one eight byte file (alternate)"
+	manufacturer "synth"
+	year 2004
+	rom ( name 08.rom size 8 crc32 12345678 sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
+)
+
+game (
+	name 2-44
+	description "two identical files"
+	manufacturer "synth"
+	year 2005
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+	rom ( name 04-2.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+)
+
+game (
+	name 2-48
+	description "two files"
+	manufacturer "synth"
+	year 2005
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+	rom ( name 08.rom size 8 crc32 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
+)
+
+
+game (
+	name 2-4a
+	description "two files, one other"
+	manufacturer "synth"
+	year 2006
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+	rom ( name 0a.rom size 10 crc32 0b4a4cde sha1 7ee80d6e0af4beff1da2df46e23901b77f2d238a )
+)
+
+game (
+	name baddump
+	description "bad dump"
+	manufacturer "synth"
+	year 1994
+	rom ( name bad.rom size 3 crc32 148c7b71 flags baddump )
+)
+
+game (
+	name clone-8
+	description "two roms, one in parent"
+	manufacturer "synth"
+	year 1992
+	romof parent-4
+	rom ( name 04.rom merge 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+	rom ( name 08.rom size 8 crc32 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
+)
+
+game (
+	name deadbeef
+	description "Dead Beef"
+	manufacturer "dillo+wiz"
+	year 2005
+	rom ( name deadbeef size 8 crc32 deadbeef sha1 0b0dcdf77237b4e5d920990b92d4b59ad264910f )
+)
+
+game (
+	name deadbeefchild
+	description "Dead Beef Child"
+	manufacturer "dillo+wiz"
+	year 2005
+	romof deadbeef
+	rom ( name deadbeef merge deadbeef size 8 crc32 deadbeef sha1 0x0b0dcdf77237b4e5d920990b92d4b59ad264910f )
+	rom ( name 04.rom size 4 crc32 0xd87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+)
+
+game (
+	name deadclonedbeef
+	description "Dead Cloned Beef"
+	manufacturer "dillo+wiz"
+	year 2005
+	romof deadbeef
+	rom ( name deadclonedbeef merge deadbeef size 8 crc32 deadbeef sha1 0b0dcdf77237b4e5d920990b92d4b59ad264910f )
+)
+
+game (
+	name dir-in-rom-name
+	description "directory in rom name"
+	manufacturer "synth"
+	year 2011
+	rom ( name "some/path/to/file.rom" size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+)
+
+game (
+	name nogood
+	description "1-4 with no good dump"
+	manufacturer "synth"
+	year 1994
+	rom ( name 04.rom size 4 flags nodump )
+)
+
+game (
+	name nogood-2
+	description "clone-8 with no good dump"
+	manufacturer "synth"
+	year 1994
+	rom ( name 04.rom size 4 flags nodump )
+	rom ( name 08.rom size 8 crc32 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
+)
+
+game (
+	name nogoodclone
+	description "clone-8 with no good dump"
+	manufacturer "synth"
+	year 1994
+	romof 1-8
+	rom ( name 04.rom size 4 flags nodump )
+	rom ( name 08.rom merge 08.rom size 8 crc32 3656897d )
+)
+
+game (
+	name norom
+	description "no rom"
+	manufacturer "synth"
+	year 2004
+)
+
+game (
+	name parent-4
+	description "one four byte file, has clone"
+	manufacturer "synth"
+	year 1991
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+)
+
+game (
+	name zero
+	description "game with 0 byte rom"
+	manufacturer "synth"
+	year 2006
+	rom ( name zero size 0 crc32 00000000 )
+)
+
+game (
+	name zero-4
+	description "game with 0 byte rom and a bigger one"
+	manufacturer "synth"
+	year 2006
+	rom ( name zero size 0 crc32 00000000 )
+	rom ( name 04.rom size 4 crc32 d87f7e0c sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
+)
+
+game (
+	name many
+	description "game with many (32) roms"
+	manufacturer "synth"
+	year 2006
+	rom ( name 00 size 2 crc32 b84614a0 )
+	rom ( name 01 size 2 crc32 cf412436 )
+	rom ( name 02 size 2 crc32 5648758c )
+	rom ( name 03 size 2 crc32 214f451a )
+	rom ( name 04 size 2 crc32 bf2bd0b9 )
+	rom ( name 05 size 2 crc32 c82ce02f )
+	rom ( name 06 size 2 crc32 5125b195 )
+	rom ( name 07 size 2 crc32 26228103 )
+	rom ( name 08 size 2 crc32 b69d9c92 )
+	rom ( name 09 size 2 crc32 c19aac04 )
+	rom ( name 0A size 2 crc32 9f44550a )
+	rom ( name 0B size 2 crc32 064d04b0 )
+	rom ( name 0C size 2 crc32 714a3426 )
+	rom ( name 0D size 2 crc32 ef2ea185 )
+	rom ( name 0E size 2 crc32 98299113 )
+	rom ( name 0F size 2 crc32 0120c0a9 )
+	rom ( name 10 size 2 crc32 a15d25e1 )
+	rom ( name 11 size 2 crc32 d65a1577 )
+	rom ( name 12 size 2 crc32 4f5344cd )
+	rom ( name 13 size 2 crc32 3854745b )
+	rom ( name 14 size 2 crc32 a630e1f8 )
+	rom ( name 15 size 2 crc32 d137d16e )
+	rom ( name 16 size 2 crc32 483e80d4 )
+	rom ( name 17 size 2 crc32 3f39b042 )
+	rom ( name 18 size 2 crc32 af86add3 )
+	rom ( name 19 size 2 crc32 d8819d45 )
+	rom ( name 1A size 2 crc32 865f644b )
+	rom ( name 1B size 2 crc32 1f5635f1 )
+	rom ( name 1C size 2 crc32 68510567 )
+	rom ( name 1D size 2 crc32 f63590c4 )
+	rom ( name 1E size 2 crc32 8132a052 )
+	rom ( name 1F size 2 crc32 183bf1e8 )
+)
+
+END

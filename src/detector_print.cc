@@ -123,7 +123,7 @@ void Detector::Test::print(FILE *fout) const {
             break;
     }
     
-    if (result != true) {
+    if (!result) {
         fprintf(fout, " result=\"false\"");
     }
 

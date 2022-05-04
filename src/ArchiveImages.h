@@ -34,19 +34,20 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <utility>
+
 #include "ArchiveDir.h"
 
 class ArchiveImages: public ArchiveDir {
 public:
     ArchiveImages(const std::string &name, filetype_t filetype, where_t where, int flags);
-    ArchiveImages(ArchiveContentsPtr contents) : ArchiveDir(contents) { }
-    virtual ~ArchiveImages() { update_cache(); }
+    explicit ArchiveImages(ArchiveContentsPtr contents) : ArchiveDir(std::move(contents)) { }
+    ~ArchiveImages() override { update_cache(); }
     
 protected:
-    virtual bool file_add_empty_xxx(const std::string &filename);
-    virtual bool file_ensure_hashes(uint64_t idx, int hashtypes) { return true; }
-    virtual bool read_infos_xxx();
-    virtual bool want_crc() const { return false; }
+    bool file_ensure_hashes(uint64_t idx, int hashtypes) override { return true; }
+    bool read_infos_xxx() override;
+    [[nodiscard]] bool want_crc() const override { return false; }
 };
 
 #endif // _HAD_ARCHIVE_IMAGES_H

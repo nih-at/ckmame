@@ -37,35 +37,64 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
-class Commandline {
+class ParsedCommandline {
 public:
-    
-    class Option {
-    public:
-        Option(const std::string &name_, std::optional<char> short_name_ = {}, bool has_argument_ = false) : name(name_), short_name(short_name_), has_argument(has_argument_) { }
-
-        std::string name;
-        std::optional<char> short_name;
-        bool has_argument;
-    };
-    
     class OptionValue {
     public:
-        OptionValue(const std::string &name_, const std::string &argument_) : name(name_), argument(argument_) { }
+        OptionValue(std::string name_, std::string argument_) : name(std::move(name_)), argument(std::move(argument_)) { }
         
         std::string name;
         std::string argument; // empty string for options without argument
     };
 
+    [[nodiscard]] std::optional<std::string> find_first(const std::string &name) const;
+    [[maybe_unused]] [[nodiscard]] std::optional<std::string> find_last(const std::string &name) const;
+
     std::vector<OptionValue> options;
     std::vector<std::string> arguments;
+};
 
-    Commandline(const std::vector<Option> &options, int argc, char * const argv[]);
+class Commandline {
+public:
+    class Option {
+    public:
+        Option(std::string name_, char short_name_, std::string argument_name_, std::string description_) : name(std::move(name_)), short_name(short_name_), argument_name(std::move(argument_name_)), description(std::move(description_)) { }
+        Option(std::string name_, std::string argument_name_, std::string description_) : name(std::move(name_)), argument_name(std::move(argument_name_)), description(std::move(description_)) { }
+        Option(std::string name_, char short_name_, std::string description_) : name(std::move(name_)), short_name(short_name_), description(std::move(description_)) { }
+        Option(std::string name_, std::string description_) : name(std::move(name_)), description(std::move(description_)) { }
+
+        
+        std::string name;
+        std::optional<char> short_name;
+        std::string argument_name;
+        std::string description;
+
+        [[nodiscard]] bool has_argument() const { return !argument_name.empty(); }
+        
+        bool operator <(const Option &other) const;
+    };
     
-    std::optional<std::string> find_first(const std::string &name) const;
-    std::optional<std::string> find_last(const std::string &name) const;
+    Commandline(std::vector<Option> options, std::string arguments, std::string header, std::string footer, std::string version);
+
+    void add_option(Option option);
+
+    std::vector<Option> options;
+    std::string arguments;
+    std::string header;
+    std::string footer;
+    std::string version;
+
+    ParsedCommandline parse(int argc, char * const argv[]);
+    
+    void usage(bool full = false, FILE *fout = stdout);
+
+private:
+    bool options_sorted;
+
+    void sort_options();
 };
 
 #endif // HAD_COMMANDLINE_H

@@ -1,0 +1,9 @@
+clrmamepro (
+)
+
+game (
+	name 1-4
+	description 1-4
+	rom ( name 04.rom size 4 crc d87f7e0c )
+)
+

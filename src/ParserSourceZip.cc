@@ -36,18 +36,19 @@
 #include <cerrno>
 #include <filesystem>
 
-#include "error.h"
 #include "ParserSourceFile.h"
+#include "globals.h"
 
-ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *za_, const std::string &fname, bool relaxed) : archive_name(archive_name_), za(za_), zf(NULL) {
+ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *za_, const std::string &fname, bool relaxed) : archive_name(archive_name_), za(za_), zf(nullptr) {
     zip_flags_t flags = relaxed ? ZIP_FL_NOCASE | ZIP_FL_NODIR : 0;
 
-    if ((zf = zip_fopen(za, fname.c_str(), flags)) == NULL) {
-        int zer, ser;
+    zip_stat_t st;
+    if (zip_stat(za, fname.c_str(), flags, &st) < 0 || (zf = zip_fopen(za, fname.c_str(), flags)) == nullptr) {
+        int zip_error, system_error;
 
-        zip_error_get(za, &zer, &ser);
+        zip_error_get(za, &zip_error, &system_error);
         
-        switch (zer) {
+        switch (zip_error) {
             case ZIP_ER_NOENT:
                 errno = ENOENT;
                 break;
@@ -61,8 +62,9 @@ ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *z
         
         throw std::exception();
     }
-    
-    seterrinfo(fname, archive_name);
+
+    mtime = st.mtime;
+    output.set_error_archive(archive_name, fname);
 }
 
 ParserSourceZip::~ParserSourceZip() {
@@ -70,13 +72,13 @@ ParserSourceZip::~ParserSourceZip() {
 }
 
 bool ParserSourceZip::close() {
-    if (zf == NULL) {
+    if (zf == nullptr) {
         return true;
     }
     
     auto ok = zip_fclose(zf) == 0;
 
-    zf = NULL;
+    zf = nullptr;
     
     return ok;
 }
@@ -95,7 +97,7 @@ ParserSourcePtr ParserSourceZip::open(const std::string &name) {
 
 
 size_t ParserSourceZip::read_xxx(void *data, size_t length) {
-    if (zf == NULL) {
+    if (zf == nullptr) {
         return 0;
     }
     

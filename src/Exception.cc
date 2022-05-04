@@ -59,6 +59,6 @@ Exception Exception::append_system_error(int code) {
 }
 
 
-const char *Exception::what() const throw() {
+const char *Exception::what() const noexcept {
     return message.c_str();
 }

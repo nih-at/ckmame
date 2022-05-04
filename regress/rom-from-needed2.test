@@ -1,14 +1,22 @@
 description integrity test, file is wrong, correct and wrong roms in needed
 return 0
-args -FKLvc deadbeef
+args -Fvc deadbeef
 file roms/deadbeef.zip deadpork.zip deadbeef.zip
-file needed/deadbeef-000.zip deadfish.zip deadfish.zip
-file-del needed/deadbeef-001.zip deadbeef.zip
+file-del saved/deadbeef-000.zip deadfish.zip
+file-del saved/deadbeef-001.zip deadbeef.zip
 file-new unknown/deadbeef.zip deadpork.zip
-stdout In game deadbeef:
-stdout rom  deadbeef      size       8  crc deadbeef: is in 'needed/deadbeef-001.zip/deadbeef'
-stdout file deadpork      size       8  crc deadbeef: unknown
-stdout roms/deadbeef.zip: move unknown file 'deadpork'
-stdout roms/deadbeef.zip: add 'needed/deadbeef-001.zip/deadbeef' as 'deadbeef'
-stdout needed/deadbeef-001.zip: delete used file 'deadbeef'
-stdout needed/deadbeef-001.zip: remove empty archive
+file-new unknown/deadbeef-000.zip deadfish.zip
+stdout-data
+In game deadbeef:
+rom  deadbeef      size       8  crc deadbeef: is in 'saved/deadbeef-001.zip/deadbeef'
+file deadpork      size       8  crc deadbeef: unknown
+move unknown file 'deadpork'
+add 'saved/deadbeef-001.zip/deadbeef' as 'deadbeef'
+In archive saved/deadbeef-000.zip:
+file deadbeef      size       8  crc deadbeef: unknown
+move unknown file 'deadbeef'
+remove empty archive
+In archive saved/deadbeef-001.zip:
+delete used file 'deadbeef'
+remove empty archive
+end-of-data

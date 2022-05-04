@@ -45,7 +45,7 @@ class Hashes {
 public:
     class Update {
     public:
-        Update(Hashes *hashes);
+        explicit Update(Hashes *hashes);
         ~Update();
         
         void update(const void *data, size_t length);
@@ -83,6 +83,8 @@ public:
     std::vector<uint8_t> sha1;
     
     Hashes() : size(SIZE_UNKNOWN), crc(0), types(0) { }
+
+    static const Hashes zero;
     
     void add_types(int types);
     bool are_crc_complement(const Hashes &other) const;
@@ -112,6 +114,7 @@ public:
     static size_t hash_size(int type);
 
 private:
+    Hashes(size_t size, int types, uint32_t crc, std::vector<uint8_t> md5, std::vector<uint8_t> sha1);
     static std::unordered_map<std::string, int> name_to_type;
     static std::unordered_map<int, std::string> type_to_name;
     
@@ -120,4 +123,4 @@ private:
     void set(int type, std::vector<uint8_t> & hash, const std::vector<uint8_t> &data, bool ignore_zero);
 };
 
-#endif /* hashes.h */
+#endif // HAD_HASHES_H

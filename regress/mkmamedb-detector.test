@@ -1,0 +1,7 @@
+description test mkmamedb database creation with detector
+return 0
+program mkmamedb
+args --detector detector.xml mamedb-skipped.dat
+file detector.xml detector.xml
+file mamedb-skipped.dat mamedb-skipped.dat
+file-new mame.db mamedb-skipped.dump

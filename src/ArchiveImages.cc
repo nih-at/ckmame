@@ -39,7 +39,6 @@
 
 #include "Chd.h"
 #include "Dir.h"
-#include "error.h"
 #include "Exception.h"
 #include "globals.h"
 #include "util.h"
@@ -50,26 +49,20 @@ ArchiveImages::ArchiveImages(const std::string &name, filetype_t filetype, where
 }
 
 
-bool ArchiveImages::file_add_empty_xxx(const std::string &filename) {
-    // disk images can't be empty
-    return false;
-}
-
-
 ZipSourcePtr ArchiveImages::Archive::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) {
-    seterrinfo("", name);
-    myerror(ERRZIP, "cannot open '%s': reading from CHDs not supported", files[index].name.c_str());
+    output.set_error_archive(name);
+    output.archive_error("cannot open '%s': reading from CHDs not supported", files[index].name.c_str());
     return {};
 }
 
 
 bool ArchiveImages::read_infos_xxx() {
-    if (roms_unzipped) {
+    if (!configuration.roms_zipped) {
         return true;
     }
     
     try {
-        Dir dir(name, contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
+        Dir dir(name, (contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY) == 0);
         std::filesystem::path filepath;
         
         while ((filepath = dir.next()) != "") {
@@ -77,7 +70,7 @@ bool ArchiveImages::read_infos_xxx() {
                 continue;
             }
             
-            files.push_back(File());
+            files.emplace_back();
             auto &f = files[files.size() - 1];
             auto filename = filepath.string();
             auto start = name.length() + 1;
@@ -100,7 +93,7 @@ bool ArchiveImages::read_infos_xxx() {
                 f.hashes.set_hashes(chd.hashes);
             }
             catch (Exception &e) {
-                myerror(ERRDEF, "%s: can't open: %s", filename.c_str(), e.what());
+                output.error("%s: can't open: %s", filename.c_str(), e.what());
                 f.broken = true;
             }
         }

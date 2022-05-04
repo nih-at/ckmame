@@ -33,30 +33,30 @@
 
 #include "sighandle.h"
 
-#include <signal.h>
+#include <csignal>
 
+#include "globals.h"
 
 volatile int siginfo_caught;
 
-void
-sighandle(int signo) {
+void sighandle(int signo) {
     switch (signo) {
 #ifdef SIGINFO
     case SIGINFO:
-	siginfo_caught = 1;
-	break;
+        siginfo_caught = 1;
+        break;
 #endif
     default:
-	break;
+        break;
     }
-
-    return;
 }
 
 
-void
-print_info(const std::string &gamename) {
-    printf("ckmame: currently checking %s\n", gamename.c_str());
+void print_info(const std::string &message) {
+    printf("ckmame: %s", message.c_str());
+    if (!configuration.set.empty()) {
+        printf(" in set %s", configuration.set.c_str());
+    }
+    printf("\n");
     siginfo_caught = 0;
-    return;
 }

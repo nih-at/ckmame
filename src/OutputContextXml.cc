@@ -37,8 +37,8 @@
 #include <cinttypes>
 #include <cstring>
 
-#include "error.h"
 #include "util.h"
+#include "globals.h"
 
 
 #define xml_string(X) (reinterpret_cast<const xmlChar *>(X))
@@ -51,7 +51,7 @@ OutputContextXml::OutputContextXml(const std::string &fname_, int flags) : fname
     else {
 	f = make_shared_file(fname, "w");
 	if (!f) {
-	    myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
+	    output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
 	}
     }
@@ -59,7 +59,7 @@ OutputContextXml::OutputContextXml(const std::string &fname_, int flags) : fname
     doc = xmlNewDoc(xml_string("1.0"));
     doc->encoding = xml_string(strdup("UTF-8"));
     xmlCreateIntSubset(doc, xml_string("datafile"), xml_string("-//Logiqx//DTD ROM Management Datafile//EN"), xml_string("http://www.logiqx.com/Dats/datafile.dtd"));
-    root = xmlNewNode(NULL, xml_string("datafile"));
+    root = xmlNewNode(nullptr, xml_string("datafile"));
     xmlDocSetRootElement(doc, root);
 }
 
@@ -72,14 +72,14 @@ OutputContextXml::~OutputContextXml() {
 bool OutputContextXml::close() {
     auto ok = true;
 
-    if (f != NULL) {
+    if (f != nullptr) {
         if (xmlDocFormatDump(f.get(), doc, 1) < 0) {
             ok = false;
         }
 	ok = fflush(f.get()) == 0;
     }
     
-    f = NULL;
+    f = nullptr;
 
     return ok;
 }
@@ -105,18 +105,18 @@ set_attribute_hash(xmlNodePtr node, const char *name, int type, Hashes *hashes) 
 }
 
 
-bool OutputContextXml::game(GamePtr game) {
-    xmlNodePtr xmlGame = xmlNewChild(root, NULL, xml_string("game"), NULL);
+bool OutputContextXml::game(GamePtr game, const std::string &original_name) {
+    xmlNodePtr xmlGame = xmlNewChild(root, nullptr, xml_string("game"), nullptr);
     
     set_attribute(xmlGame, "name", game->name);
     set_attribute(xmlGame, "cloneof", game->cloneof[0]);
     /* description is actually required */
-    xmlNewTextChild(xmlGame, NULL, xml_string("description"), xml_string(!game->description.empty() ? game->description.c_str() : game->name.c_str()));
+    xmlNewTextChild(xmlGame, nullptr, xml_string("description"), xml_string(!game->description.empty() ? game->description.c_str() : game->name.c_str()));
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         for (size_t i = 0; i < game->files[ft].size(); i++) {
             auto &rom = game->files[ft][i];
-            xmlNodePtr xmlRom = xmlNewChild(xmlGame, NULL, xml_string(ft == TYPE_ROM ? "rom" : "disk"), NULL);
+            xmlNodePtr xmlRom = xmlNewChild(xmlGame, nullptr, xml_string(ft == TYPE_ROM ? "rom" : "disk"), nullptr);
         
             set_attribute(xmlRom, "name", rom.name);
             if (ft == TYPE_ROM) {
@@ -139,12 +139,12 @@ bool OutputContextXml::game(GamePtr game) {
 
 
 bool OutputContextXml::header(DatEntry *dat) {
-    xmlNodePtr header = xmlNewChild(root, NULL, xml_string("header"), NULL);
+    xmlNodePtr header = xmlNewChild(root, nullptr, xml_string("header"), nullptr);
     
-    xmlNewTextChild(header, NULL, xml_string("name"), xml_string(dat->name.c_str()));
-    xmlNewTextChild(header, NULL, xml_string("description"), xml_string(dat->description.empty() ? dat->name.c_str() : dat->description.c_str()));
-    xmlNewTextChild(header, NULL, xml_string("version"), xml_string(dat->version.c_str()));
-    xmlNewTextChild(header, NULL, xml_string("author"), xml_string("automatically generated"));
+    xmlNewTextChild(header, nullptr, xml_string("name"), xml_string(dat->name.c_str()));
+    xmlNewTextChild(header, nullptr, xml_string("description"), xml_string(dat->description.empty() ? dat->name.c_str() : dat->description.c_str()));
+    xmlNewTextChild(header, nullptr, xml_string("version"), xml_string(dat->version.c_str()));
+    xmlNewTextChild(header, nullptr, xml_string("author"), xml_string("automatically generated"));
 
     return true;
 }

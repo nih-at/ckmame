@@ -80,12 +80,13 @@ public:
     };
     
     RomDB(const std::string &name, int mode);
-    virtual ~RomDB() { }
+    ~RomDB() override = default;
     void init2();
     
     static const DBFormat format;
-    static const std::string default_name;
-    static const std::string default_old_name;
+    // These can't be static members, since they are initialized after the global Configuration. Thanks a lot, C++.
+    static std::string default_name() { return "mame.db"; }
+    static std::string default_old_name() { return "old.db"; }
     
     std::unordered_map<size_t, DetectorPtr> detectors;
 
@@ -95,7 +96,7 @@ public:
     void delete_game(const std::string &name);
     bool has_disks();
 
-    bool has_detector() const { return detectors.size() != 0; }
+    bool has_detector() const { return !detectors.empty(); }
     DetectorPtr get_detector(size_t id);
     size_t get_detector_id_for_dat(size_t dat_no) const;
     
@@ -113,7 +114,7 @@ public:
     int export_db(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
     
 protected:
-    virtual std::string get_query(int name, bool parameterized) const;
+    std::string get_query(int name, bool parameterized) const override;
     
 private:
     int hashtypes_[TYPE_MAX];
@@ -137,4 +138,4 @@ private:
 extern std::unique_ptr<RomDB> db;
 extern std::unique_ptr<RomDB> old_db;
 
-#endif /* romdb.h */
+#endif // _HAD_ROMDB_H

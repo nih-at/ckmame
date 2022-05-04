@@ -1,3 +1,8 @@
+clrmamepro (
+	name "ckmame test db"
+	version 1
+)
+
 game (
         name nogood
         description "1-4 with no good dump, duplicated"

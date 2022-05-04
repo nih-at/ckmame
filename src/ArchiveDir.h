@@ -36,6 +36,7 @@
 
 #include <filesystem>
 #include <unordered_set>
+#include <utility>
 
 #include "Archive.h"
 #include "SharedFile.h"
@@ -43,23 +44,23 @@
 class ArchiveDir : public Archive {
 public:
     ArchiveDir(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_DIR, name, filetype, where, flags) { }
-    ArchiveDir(ArchiveContentsPtr contents) : Archive(contents) { }
-    virtual ~ArchiveDir() { update_cache(); }
+    explicit ArchiveDir(ArchiveContentsPtr contents) : Archive(std::move(contents)) { }
+    ~ArchiveDir() override { update_cache(); }
 
 protected:
-    virtual bool commit_xxx();
-    virtual void commit_cleanup();
-    virtual void get_last_update();
-    virtual bool read_infos_xxx();
-    virtual ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length);
-    virtual bool have_direct_file_access() const { return true; }
-    virtual std::string get_full_filename(uint64_t index);
-    virtual std::string get_original_filename(uint64_t index);
+    bool commit_xxx() override;
+    void commit_cleanup() override;
+    void get_last_update() override;
+    bool read_infos_xxx() override;
+    ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) override;
+    [[nodiscard]] bool have_direct_file_access() const override { return true; }
+    std::string get_full_filename(uint64_t index) override;
+    std::string get_original_filename(uint64_t index) override;
 
 private:
     class Commit {
     public:
-        Commit(ArchiveDir *archive);
+        explicit Commit(ArchiveDir *archive);
         
         void delete_file(const std::filesystem::path &file);
         void rename_file(const std::filesystem::path &source, const std::filesystem::path &destination);
@@ -75,13 +76,11 @@ private:
                 RENAME
             };
 
-            Operation(const std::filesystem::path &old_name_, const std::filesystem::path &new_name_) : type(RENAME), old_name(old_name_), new_name(new_name_) { }
-            Operation(const std::filesystem::path &name) : type(DELETE), new_name(name) { }
+            Operation(std::filesystem::path old_name_, std::filesystem::path new_name_) : type(RENAME), old_name(std::move(old_name_)), new_name(std::move(new_name_)) { }
+            explicit Operation(std::filesystem::path name) : type(DELETE), new_name(std::move(name)) { }
             Type type;
             std::filesystem::path old_name;
             std::filesystem::path new_name;
-            
-            void execute();
         };
 
         ArchiveDir *archive;
@@ -96,12 +95,11 @@ private:
         void ensure_parent_directory(const std::filesystem::path &file);
         void rename(const std::filesystem::path &source, const std::filesystem::path &destination);
     };
-    
-    bool ensure_archive_dir();
 
-    void copy_source(ZipSource *source, const std::filesystem::path &destination);
+    static void copy_source(ZipSource *source, const std::filesystem::path &destination);
+    static std::filesystem::path make_added_name(const std::filesystem::path& directory, const std::string& name);
 
-    time_t get_mtime(const std::string &file);
+    static time_t get_mtime(const std::string &file);
 };
 
 #endif // HAD_ARCHIVE_DIR_H

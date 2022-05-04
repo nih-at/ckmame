@@ -34,6 +34,11 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-extern bool roms_unzipped;   /* ROMs are files on disk, not contained in zip archives */
+#include "Configuration.h"
+#include "Output.h"
 
-#endif /* globals.h */
+extern Configuration configuration;
+
+extern Output output;
+
+#endif // HAD_GLOBALS_H

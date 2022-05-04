@@ -33,14 +33,11 @@
 
 #include "RomDB.h"
 
-#include "error.h"
 #include "Exception.h"
+#include "globals.h"
 
 std::unique_ptr<RomDB> db;
 std::unique_ptr<RomDB> old_db;
-
-const std::string RomDB::default_name = "mame.db";
-const std::string RomDB::default_old_name = "old.db";
 
 const DB::DBFormat RomDB::format = {
     0x0,
@@ -141,7 +138,7 @@ std::unordered_map<int, std::string> RomDB::queries = {
 };
 
 std::unordered_map<int, std::string> RomDB::parameterized_queries = {
-   {  QUERY_FILE_FBH, "select g.name as game_name, f.file_idx, f.name, f.size, f.crc, f.md5, f.sha1 from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.status <> :status @HASH@" },
+   {  QUERY_FILE_FBH, "select g.name as game_name, g.dat_idx, f.file_idx, f.name, f.size, f.crc, f.md5, f.sha1 from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.status <> :status @HASH@" },
 
 };
 
@@ -149,7 +146,7 @@ const RomDB::Statement RomDB::query_hash_type[] = { QUERY_HASH_TYPE_CRC, QUERY_H
 
 
 void RomDB::init2() {
-    if (sqlite3_exec(db, init2_sql.c_str(), NULL, NULL, NULL) != SQLITE_OK) {
+    if (sqlite3_exec(db, init2_sql.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
         throw Exception("can't initialize DB");
     }
 }
@@ -292,7 +289,7 @@ DetectorPtr RomDB::get_detector(size_t id) {
     auto it = detectors.find(id);
     
     if (it == detectors.end()) {
-        return NULL;
+        return nullptr;
     }
     return it->second;
 }
@@ -301,7 +298,7 @@ DetectorPtr RomDB::read_detector() {
     auto stmt = get_statement(QUERY_DAT_DETECTOR);
 
     if (!stmt->step()) {
-        return NULL;
+        return nullptr;
     }
 
     auto detector = std::make_shared<Detector>();
@@ -311,7 +308,7 @@ DetectorPtr RomDB::read_detector() {
     detector->version = stmt->get_string("version");
 
     if (!read_rules(detector.get())) {
-        return NULL;
+        return nullptr;
     }
 
     return detector;
@@ -376,7 +373,7 @@ std::vector<RomLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes &h
     
     stmt->set_int("file_type", ft);
     stmt->set_int("status", Rom::NO_DUMP);
-    stmt->set_hashes(hashes, 0);
+    stmt->set_hashes(hashes, false);
 
     std::vector<RomLocation> result;
 
@@ -386,7 +383,7 @@ std::vector<RomLocation> RomDB::read_file_by_hash(filetype_t ft, const Hashes &h
         rom.hashes = stmt->get_hashes();
         rom.hashes.size = stmt->get_uint64("size", Hashes::SIZE_UNKNOWN);
 
-        result.push_back(RomLocation(stmt->get_string("game_name"), static_cast<size_t>(stmt->get_int("file_idx")), rom));
+        result.emplace_back(stmt->get_string("game_name"), get_detector_id_for_dat(stmt->get_uint64("dat_idx")), static_cast<size_t>(stmt->get_int("file_idx")), rom);
     }
 
     return result;
@@ -401,7 +398,7 @@ GamePtr RomDB::read_game(const std::string &name) {
     stmt->set_string("name", name);
 
     if (!stmt->step()) {
-        return NULL;
+        return nullptr;
     }
     
     auto game = std::make_shared<Game>();
@@ -668,7 +665,7 @@ void RomDB::write_files(Game *game, filetype_t ft) {
 int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
     DatEntry de;
 
-    if (out == NULL) {
+    if (out == nullptr) {
 	/* TODO: split into original dat files */
 	return 0;
     }
@@ -677,7 +674,7 @@ int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEn
 
     /* TODO: export detector */
 
-    de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : NULL));
+    de.merge(dat, (db_dat.size() == 1 ? &db_dat[0] : nullptr));
     out->header(&de);
 
     std::vector<std::string> list;
@@ -686,12 +683,12 @@ int RomDB::export_db(const std::unordered_set<std::string> &exclude, const DatEn
         list = read_list(DBH_KEY_LIST_GAME);
     }
     catch (Exception &e) {
-        myerror(ERRDEF, "db error reading game list: %s", e.what());
+        output.error("db error reading game list: %s", e.what());
 	return -1;
     }
 
-    for (size_t i = 0; i < list.size(); i++) {
-        GamePtr game = read_game(list[i]);
+    for (const auto &name : list) {
+        GamePtr game = read_game(name);
         if (!game) {
 	    /* TODO: error */
 	    continue;

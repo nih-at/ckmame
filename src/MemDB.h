@@ -1,5 +1,5 @@
-#ifndef _HAD_MEMDB_H
-#define _HAD_MEMDB_H
+#ifndef HAD_MEMDB_H
+#define HAD_MEMDB_H
 
 /*
   memdb.h -- in-memory sqlite3 db
@@ -61,8 +61,8 @@ public:
         where_t location;
     };
     
-    MemDB(const std::string &name) : DB(format, name, DBH_NEW) { }
-    virtual ~MemDB() { }
+    explicit MemDB(const std::string &name) : DB(format, name, DBH_NEW) { }
+    ~MemDB() override = default;
     
     static const DBFormat format;
 
@@ -76,7 +76,7 @@ public:
     std::vector<FindResult> find(filetype_t filetype, const FileData *file);
 
 protected:
-    virtual std::string get_query(int name, bool parameterized) const;
+    std::string get_query(int name, bool parameterized) const override;
 
 private:
     DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
@@ -90,5 +90,4 @@ private:
 
 extern std::unique_ptr<MemDB> memdb;
 
-#endif /* memdb.h */
-
+#endif // HAD_MEMDB_H

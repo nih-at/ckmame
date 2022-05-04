@@ -33,19 +33,19 @@
 
 #include "util.h"
 
+#include <cctype>
 #include <cinttypes>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <vector>
 
 #include "CkmameDB.h"
 #include "config.h"
-#include "error.h"
+#include "DatDb.h"
 #include "Exception.h"
 #include "globals.h"
 
-
-std::string rom_dir;
 
 #define BIN2HEX(n) ((n) >= 10 ? (n) + 'a' - 10 : (n) + '0')
 
@@ -89,55 +89,65 @@ name_type_t name_type(const std::string &name) {
     }
 
     if (std::filesystem::is_directory(name)) {
-        if (roms_unzipped) {
-            return NAME_ZIP;
+        if (configuration.roms_zipped) {
+            return NAME_IMAGES;
         }
         else {
-            return NAME_IMAGES;
+            return NAME_ZIP;
         }
     }
 
     auto filename = std::filesystem::path(name).filename();
-    if (filename == CkmameDB::db_name || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
+    if (filename == CkmameDB::db_name || filename == DatDB::db_name || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
         return NAME_IGNORE;
     }
     
-    if (!roms_unzipped && is_ziplike(name)) {
+    if (configuration.roms_zipped && is_ziplike(name)) {
 	return NAME_ZIP;
     }
 
     return NAME_UNKNOWN;
 }
 
-bool
-ensure_dir(const std::string &name, bool strip_filename) {
-    std::error_code ec;
-    std::string dir = name;
 
-    if (strip_filename) {
-	dir = std::filesystem::path(name).parent_path();
-	if (dir == "") {
-	    return true;
-	}
+bool ensure_dir(const std::filesystem::path& name, bool strip_filename) {
+    try {
+        ensure_directory(name, strip_filename);
     }
-
-    std::filesystem::create_directories(dir, ec);
-
-    if (ec) {
-	myerror(ERRDEF, "cannot create '%s': %s", dir.c_str(), ec.message().c_str());
-	return false;
+    catch (Exception &ex) {
+        output.error("%s", ex.what());
+        return false;
     }
 
     return true;
 }
 
 
-const std::string get_directory(void) {
-    if (!rom_dir.empty()) {
-	return rom_dir;
+void ensure_directory(const std::filesystem::path& name, bool strip_filename) {
+    std::error_code ec;
+    auto dir = strip_filename ? name.parent_path() : name;
+
+    if (dir.empty()) {
+        return;
     }
-    return "roms";
+
+    std::filesystem::create_directories(dir, ec);
+
+    if (ec) {
+        throw Exception("cannot create '%s': %s", dir.c_str(), ec.message().c_str());
+    }
 }
+
+
+std::filesystem::path home_directory() {
+    auto home = getenv("HOME");
+    if (home == nullptr) {
+        return "";
+    }
+
+    return home;
+}
+
 
 bool is_ziplike(const std::string &fname) {
     auto extension = std::filesystem::path(fname).extension();
@@ -156,16 +166,22 @@ bool is_ziplike(const std::string &fname) {
 }
 
 
-void
-print_human_number(FILE *f, uint64_t value) {
-    if (value > 1024ul * 1024 * 1024 * 1024)
-        printf("%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024), (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
-    else if (value > 1024 * 1024 * 1024)
-        printf("%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024), (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
-    else if (value > 1024 * 1024)
-        printf("%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024), (((value / 1024) * 10 + 512) / 1024) % 100);
-    else
-        printf("%" PRIi64 " bytes", value);
+std::string human_number(uint64_t value) {
+    char s[128];
+    if (value > 1024ul * 1024 * 1024 * 1024) {
+	sprintf(s, "%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024), (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
+    }
+    else if (value > 1024 * 1024 * 1024) {
+	sprintf(s, "%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024), (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
+    }
+    else if (value > 1024 * 1024) {
+	sprintf(s, "%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024), (((value / 1024) * 10 + 512) / 1024) % 100);
+    }
+    else {
+	sprintf(s, "%" PRIi64 " bytes", value);
+    }
+
+    return s;
 }
 
 
@@ -181,7 +197,7 @@ std::string string_format_v(const char *format, va_list ap) {
     auto size = strlen(format) + 50;
     std::string str;
     va_list ap2;
-    while (1) {
+    while (true) {
         str.resize(size);
         va_copy(ap2, ap);
         int n = vsnprintf((char *)str.data(), size, format, ap2);
@@ -197,5 +213,77 @@ std::string string_format_v(const char *format, va_list ap) {
             size *= 2;
         }
     }
-    return str;
+}
+
+
+std::string string_lower(const std::string &s) {
+    auto l = std::string(s.size(), ' ');
+    
+    for (size_t i = 0; i < s.size(); i++) {
+        l[i] = static_cast<char>(tolower(s[i]));
+    }
+    
+    return l;
+}
+
+
+
+std::string slurp(const std::string &filename) {
+    auto f = std::ifstream(filename, std::ios::in | std::ios::binary);
+        
+    const auto size = std::filesystem::file_size(filename);
+        
+    std::string text(size, '\0');
+        
+    f.read(text.data(), static_cast<std::streamsize>(size));
+        
+    return text;
+}
+
+
+std::string format_time(const std::string &format, time_t timestamp) {
+    char string[100];
+    auto tm = localtime(&timestamp);
+
+    strftime(string, sizeof(string), format.c_str(), tm);
+
+    return string;
+}
+
+
+std::vector<std::string> slurp_lines(const std::string &file_name) {
+    auto file = std::ifstream(file_name, std::ios::in);
+
+    auto lines = std::vector<std::string>();
+    auto line = std::string();
+
+    while (getline(file, line)) {
+	lines.push_back(line);
+    }
+
+    return lines;
+}
+
+
+bool string_starts_with(const std::string &large, const std::string &small) {
+    return large.rfind(small, 0) != std::string::npos;
+}
+
+
+std::string pad_string(const std::string &string, size_t width, char c) {
+    size_t length = string.length();
+
+    if (length >= width) {
+	return string;
+    }
+    return string + std::string(width - length, c);
+}
+
+std::string pad_string_left(const std::string &string, size_t width, char c) {
+    size_t length = string.length();
+
+    if (length >= width) {
+	return string;
+    }
+    return std::string(width - length, c) + string;
 }

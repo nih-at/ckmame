@@ -166,7 +166,7 @@ sub read_archives {
 	my ($self) = @_;
 	
 	my $dat;
-	my $opt = ($self->{unzipped} ? '-u' : '');
+	my $opt = ($self->{unzipped} ? '--roms-unzipped' : '');
 	unless (open $dat, "../../src/mkmamedb --runtest $opt -o /dev/stdout $self->{dir} 2>/dev/null | ") {
 		print "mkmamedb using $self->{dir} failed: $!\n" if ($self->{verbose});
 		return undef;

@@ -38,7 +38,7 @@
 
 void
 check_old(Game *game, Result *result) {
-    if (old_db == NULL) {
+    if (old_db == nullptr) {
 	return;
     }
 
@@ -48,7 +48,7 @@ check_old(Game *game, Result *result) {
         auto filetype = static_cast<filetype_t>(ft);
         
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
-            if (find_in_old(filetype, &game->files[filetype][i], NULL, &result->game_files[filetype][i]) != FIND_EXISTS) {
+            if (find_in_old(filetype, &game->files[filetype][i], nullptr, &result->game_files[filetype][i]) != FIND_EXISTS) {
                 all_old = false;
             }
         }

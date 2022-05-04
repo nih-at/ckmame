@@ -38,26 +38,28 @@
 
 #include <archive.h>
 
+#include <utility>
+
 class ArchiveLibarchive : public Archive {
 public:
-    ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_LIBARCHIVE, name, filetype, where, flags), la(NULL), current_index(0), header_read(false), have_open_file(false) {  }
-    ArchiveLibarchive(ArchiveContentsPtr contents) : Archive(contents), la(NULL), current_index(0), header_read(false), have_open_file(false) { }
+    ArchiveLibarchive(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_LIBARCHIVE, name, filetype, where, flags), la(nullptr), current_index(0), header_read(false), have_open_file(false) {  }
+    explicit ArchiveLibarchive(ArchiveContentsPtr contents) : Archive(std::move(contents)), la(nullptr), current_index(0), header_read(false), have_open_file(false) { }
 
-    virtual ~ArchiveLibarchive();
+    ~ArchiveLibarchive() override;
 
-    virtual bool check();
-    virtual bool close_xxx();
-    virtual bool commit_xxx();
-    virtual void commit_cleanup();
-    virtual void get_last_update();
-    virtual bool read_infos_xxx();
+    bool check() override;
+    bool close_xxx() override;
+    bool commit_xxx() override;
+    void commit_cleanup() override;
+    void get_last_update() override;
+    bool read_infos_xxx() override;
 
 protected:
-    virtual ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length);
+    ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) override;
 
 private:
     bool seek_to_entry(uint64_t index);
-    void write_file(struct archive *writer, ZipSourcePtr source);
+    void write_file(struct archive *writer, const ZipSourcePtr& source);
     
     class Source {
     public:

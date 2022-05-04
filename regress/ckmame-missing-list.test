@@ -1,0 +1,22 @@
+description write list of missing games to file
+return 0
+args --missing-list missing-list --no-report-missing
+file-data missing-list
+1-4
+1-8
+1-8a
+2-44
+2-48
+2-4a
+clone-8
+deadbeef
+deadbeefchild
+deadclonedbeef
+dir-in-rom-name
+many
+nogood-2
+nogoodclone
+parent-4
+zero
+zero-4
+end-of-data

@@ -24,7 +24,9 @@ set(COMMON_SOURCES
   cleanup.cc
   Commandline.cc
   Configuration.cc
+  DatDb.cc
   DatEntry.cc
+  DatRepository.cc
   DB.cc
   DBStatement.cc
   DeleteList.cc
@@ -34,7 +36,6 @@ set(COMMON_SOURCES
   detector_print.cc
   diagnostics.cc
   Dir.cc
-  error.cc
   Exception.cc
   File.cc
   FileData.cc
@@ -43,7 +44,7 @@ set(COMMON_SOURCES
   find.cc
   fix.cc
   fix_util.cc
-  fixdat.cc
+  Fixdat.cc
   Garbage.cc
   globals.cc
   Hashes.cc
@@ -53,6 +54,7 @@ set(COMMON_SOURCES
   OutputContext.cc
   OutputContextCm.cc
   OutputContextDb.cc
+  OutputContextHeader.cc
   OutputContextMtree.cc
   ParserCm.cc
   ParserDir.cc
@@ -68,19 +70,21 @@ set(COMMON_SOURCES
   sighandle.cc
   Stats.cc
   superfluous.cc
+  TomlSchema.cc
   Tree.cc
+  update_romdb.cc
   util.cc
   warn.cc
   zip_util.cc
   ${COMPATIBILITY}
-  )
+        Command.cc CkmameCache.cc Output.cc check_for_file_in_archive.cc)
 
 set(LIBXML2_SOURCES
   detector_parse.cc
   detector_parse_ps.cc
   OutputContextXml.cc
   ParserXml.cc
-  xmlutil.cc
+  XmlProcessor.cc
   )  
 
 if(LIBXML2_FOUND)
@@ -103,7 +107,7 @@ if (HAVE_LIBARCHIVE)
   target_link_libraries(libckmame PRIVATE LibArchive::LibArchive)
 endif()
 
-foreach(PROGRAM ckmame detective dumpgame mkmamedb)
+foreach(PROGRAM ckmame dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.cc)
   target_link_libraries(${PROGRAM} PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
   # for config.h
@@ -113,7 +117,7 @@ foreach(PROGRAM ckmame detective dumpgame mkmamedb)
 endforeach()
 
 if(LibXml2_FOUND)
-  foreach(TARGET ckmame detective dumpgame mkmamedb libckmame)
+  foreach(TARGET ckmame dumpgame mkmamedb libckmame)
     target_link_libraries(${TARGET} PRIVATE LibXml2::LibXml2)
   endforeach()
 endif()

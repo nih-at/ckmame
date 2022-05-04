@@ -1,9 +1,11 @@
 description test double-rom game (no parent), check order of entries (forward)
 variants zip
 return 0
-args -D ../mamedb-one-game-two-roms.db -jFKLvc 2-4c
+args -D ../mamedb-one-game-two-roms.db -jFvc 2-4c
 ckmamedb-after roms ckmamedb-2-4c-ok.dump
 file roms/2-4c.zip 2-4c-ok.zip 2-4c-ok.zip
 touch 1419271671 roms/2-4c.zip
-stdout In game 2-4c:
-stdout game 2-4c                                    : correct
+stdout-data
+In game 2-4c:
+game 2-4c                                    : correct
+end-of-data

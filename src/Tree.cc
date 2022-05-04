@@ -36,11 +36,13 @@
 #include "check.h"
 #include "check_util.h"
 #include "diagnostics.h"
-#include "error.h"
 #include "fix.h"
-#include "fixdat.h"
+#include "Fixdat.h"
+#include "globals.h"
 #include "RomDB.h"
 #include "sighandle.h"
+#include "warn.h"
+#include "CkmameCache.h"
 
 
 Tree check_tree;
@@ -73,7 +75,7 @@ bool Tree::recheck(const std::string &game_name) {
         return check;
     }
 
-    for (auto it : children) {
+    for (const auto &it : children) {
         if (it.second->recheck(game_name)) {
             return true;
 	}
@@ -90,11 +92,13 @@ bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashe
     }
 
     auto ok = true;
-    for (auto const &location : locations) {
+    for (const auto &location : locations) {
         auto game_file = &location.rom;
 
         if ((filetype == TYPE_DISK || size == game_file->hashes.size) && hashes->compare(game_file->hashes) == Hashes::MATCH && game_file->where == FILE_INGAME) {
-            recheck(location.game_name);
+            if (!recheck(location.game_name)) {
+		ok = false;
+	    }
         }
     }
 
@@ -102,10 +106,10 @@ bool Tree::recheck_games_needing(filetype_t filetype, uint64_t size, const Hashe
 }
 
 
-void Tree::traverse(void) {
+void Tree::traverse() {
     GameArchives archives[] = { GameArchives(), GameArchives(), GameArchives() };
 
-    for (auto it : children) {
+    for (const auto &it : children) {
         it.second->traverse_internal(archives);
     }
 }
@@ -114,7 +118,7 @@ void Tree::traverse_internal(GameArchives *ancestor_archives) {
     GameArchives archives[] = { GameArchives(), ancestor_archives[0], ancestor_archives[1] };
     
     if (siginfo_caught) {
-        print_info(name);
+        print_info("currently checking " + name);
     }
 
     auto flags = check ? ARCHIVE_FL_CREATE : 0;
@@ -136,7 +140,7 @@ void Tree::traverse_internal(GameArchives *ancestor_archives) {
         process(archives);
     }
 
-    for (auto it : children) {
+    for (const auto &it : children) {
         it.second->traverse_internal(archives);
     }
 }
@@ -163,34 +167,59 @@ void Tree::process(GameArchives *archives) {
     auto game = db->read_game(name);
     
     if (!game) {
-	myerror(ERRDEF, "db error: %s not found", name.c_str());
+	output.error("db error: %s not found", name.c_str());
         return;
     }
 
-    Result res(game.get(), archives[0]);
+    try {
+	warn_set_info(WARN_TYPE_GAME, game->name);
 
-    check_old(game.get(), &res);
-    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
-        check_game_files(game.get(), static_cast<filetype_t>(ft), archives, &res);
-        check_archive_files(static_cast<filetype_t>(ft), archives[0], game->name, &res);
+	Result res(game.get(), archives[0]);
+
+	check_old(game.get(), &res);
+	for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+	    check_game_files(game.get(), static_cast<filetype_t>(ft), archives, &res);
+	    check_archive_files(static_cast<filetype_t>(ft), archives[0], game->name, &res);
+	}
+	update_game_status(game.get(), &res);
+
+	/* write warnings/errors for me */
+	diagnostics(game.get(), archives[0], res);
+
+	int ret = 0;
+
+	if (configuration.fix_romset) {
+	    ret = fix_game(game.get(), archives[0], &res);
+	}
+
+        if (ret == 0 && (res.game == GS_CORRECT || res.game == GS_OLD || res.game == GS_FIXABLE)) {
+            ckmame_cache->complete_games.insert(game->name);
+        }
+
+	/* TODO: includes too much when rechecking */
+	if (configuration.create_fixdat) {
+	    Fixdat::write_entry(game.get(), &res);
+	}
+
+	if (configuration.fix_romset) {
+	    ret |= fix_save_needed_from_unknown(game.get(), archives[0], &res);
+	}
+
+	if (ret != 1) {
+	    checked = true;
+	}
+	warn_unset_info();
+
+
     }
-    update_game_status(game.get(), &res);
-
-    /* write warnings/errors for me */
-    diagnostics(game.get(), archives[0], res);
-
-    int ret = 0;
-
-    if (fix_options & FIX_DO) {
-	ret = fix_game(game.get(), archives[0], &res);
+    catch (std::exception &ex) {
+	warn_unset_info();
+	throw ex;
     }
+}
 
-    /* TODO: includes too much when rechecking */
-    if (fixdat) {
-	write_fixdat_entry(game.get(), &res);
-    }
 
-    if (ret != 1) {
-	checked = true;
-    }
+
+void Tree::clear() {
+    children.clear();
 }

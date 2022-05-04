@@ -32,46 +32,51 @@
 */
 
 #include "cleanup.h"
+#include "globals.h"
 
 #include <algorithm>
 
 #include "check.h"
 #include "diagnostics.h"
-#include "fix.h"
 #include "fix_util.h"
 #include "Garbage.h"
-#include "util.h"
 #include "warn.h"
+#include "CkmameCache.h"
 
 
 static void cleanup_archive(filetype_t filetype, Archive *archive, Result *result, int flags);
 
 
-void cleanup_list(DeleteListPtr list, int flags) {
-    ArchivePtr a;
-    int cmp;
-
+void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
     list->sort_archives();
     list->sort_entries();
     size_t di = 0;
     auto len = list->entries.size();
 
+    auto warn_needed = !(where == FILE_NEEDED || (where == FILE_EXTRA && configuration.complete_games_only));
+
     auto n = list->archives.size();
     size_t i = 0;
     while (i < n) {
         auto entry = list->archives[i];
+        if (where == FILE_EXTRA && !configuration.extra_directory_move_from_extra(ckmame_cache->get_directory_name_for_archive(entry.name))) {
+            i++;
+            continue;
+        }
 
+	warn_set_info(WARN_TYPE_ARCHIVE, entry.name);
         ArchivePtr a = Archive::open(entry.name, entry.filetype, FILE_NOWHERE, 0);
 
         if (a) {
             GameArchives archives;
             archives.archive[entry.filetype] = a;
                     
-            Result res(NULL, archives);
+            Result res(nullptr, archives);
 
             while (di < len) {
                 auto fl = list->entries[di];
                 /* file lists should know what's toplevel without adding a / to name */
+		int cmp;
                 if (fl.name[fl.name.length() - 1] == '/' && entry.name[entry.name.length() - 1] != '/') {
                     cmp = entry.name.compare(fl.name.substr(0, fl.name.length() - 1));
                 }
@@ -89,14 +94,20 @@ void cleanup_list(DeleteListPtr list, int flags) {
                 di++;
             }
             
-            check_archive_files(entry.filetype, archives, "", &res);
+            if (where == FILE_NEEDED) {
+                check_needed_files(entry.filetype, a, &res);
+            }
+            else {
+                // TODO: check_archive_files calls find_in_romset with detector 0, which doesn't find files in ROM set that have a header. I don't understand the other calls to find_in_romset, so I don't know how to fix it.
+                check_archive_files(entry.filetype, archives, "", &res);
+            }
             
-            warn_set_info(WARN_TYPE_ARCHIVE, a->name);
-            diagnostics_archive(entry.filetype, a.get(), res);
+	    diagnostics_archive(entry.filetype, a.get(), res, warn_needed);
             cleanup_archive(entry.filetype, a.get(), &res, flags);
-        }
+	    warn_unset_info();
+	}
 
-        if (n != list->archives.size()) {
+	if (n != list->archives.size()) {
 	    n = list->archives.size();
 	}
 	else {
@@ -106,16 +117,14 @@ void cleanup_list(DeleteListPtr list, int flags) {
 }
 
 
-static void
-cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
+static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
     GarbagePtr gb;
-    int move;
 
     if (!a->is_writable()) {
         return;
     }
     
-    if ((flags & CLEANUP_UNKNOWN) && (fix_options & FIX_DO)) {
+    if ((flags & CLEANUP_UNKNOWN) && configuration.fix_romset) {
         gb = std::make_shared<Garbage>(a);
     }
 
@@ -140,9 +149,7 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
 		break;
 	    }
 
-            if (fix_options & FIX_PRINT) {
-		printf("%s: delete %s file '%s'\n", a->name.c_str(), reason, a->files[i].name.c_str());
-            }
+	    output.message_verbose("delete %s file '%s'", reason, a->files[i].filename().c_str());
 	    a->file_delete(i);
 	    break;
 
@@ -164,29 +171,19 @@ cleanup_archive(filetype_t filetype, Archive *a, Result *result, int flags) {
 
 	case FS_UNKNOWN:
 	    if (flags & CLEANUP_UNKNOWN) {
-		move = fix_options & FIX_MOVE_UNKNOWN;
                 if (a->files[i].hashes.size == 0) {
-                    if (fix_options & FIX_PRINT) {
-                        printf("%s: delete empty file '%s'\n", a->name.c_str(), a->files[i].name.c_str());
-                    }
+                    output.message_verbose("delete empty file '%s'", a->files[i].filename().c_str());
                     a->file_delete(i);
                 }
                 else {
-                    if (fix_options & FIX_PRINT) {
-                        printf("%s: %s unknown file '%s'\n", a->name.c_str(), (move ? "move" : "delete"), a->files[i].name.c_str());
-                    }
-                    
+                    output.message_verbose("move unknown file '%s'", a->files[i].filename().c_str());
+
                     /* TODO: handle error (how?) */
-                    if (move) {
-                        if (fix_options & FIX_DO) {
-                            gb->add(i, false);
-                        }
-                        else {
-                            /* when FIX_DO is not set, this only updates in-memory representation of a */
-                            a->file_delete(i);
-                        }
+                    if (configuration.fix_romset) {
+                        gb->add(i, false);
                     }
                     else {
+                        /* when FIX_DO is not set, this only updates in-memory representation of a */
                         a->file_delete(i);
                     }
                 }

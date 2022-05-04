@@ -36,16 +36,11 @@
 #include <algorithm>
 
 #include "Archive.h"
-#include "Dir.h"
-#include "error.h"
 #include "globals.h"
-#include "RomDB.h"
-#include "util.h"
-
 
 void print_superfluous(DeleteListPtr list) {
     if (list->archives.empty()) {
-	return;
+        return;
     }
 
     std::vector<std::string> extra_files;
@@ -68,9 +63,10 @@ void print_superfluous(DeleteListPtr list) {
 
     if (!extra_files.empty()) {
         std::sort(extra_files.begin(), extra_files.end());
-        printf("Extra files found:\n");
-        for (auto & file : extra_files) {
-            printf("%s\n", file.c_str());
+        output.set_subheader("");
+        output.message("Extra files found:");
+        for (auto &file : extra_files) {
+            output.message(file);
         }
     }
 }

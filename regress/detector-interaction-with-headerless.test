@@ -3,13 +3,20 @@ features LIBXML2
 return 0
 file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
 mkdir 755 extra
-args -D mamedb-skipped.db -FKLjvc -e extra skipped
+args -D mamedb-skipped.db -Fjvc -e extra skipped
 file-new roms/skipped.zip 1-8-skip-ok.zip
 file-del extra/short.zip 1-8-skip-ok.zip
-file extra/long.zip 1-8-ok.zip 1-8-ok.zip
+file-del extra/long.zip 1-8-ok.zip
 no-hashes extra long.zip
-stdout In game skipped:
-stdout rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'
-stdout roms/skipped.zip: add 'extra/short.zip/08.rom' as '08.rom'
-stdout extra/short.zip: delete used file '08.rom'
-stdout extra/short.zip: remove empty archive
+stdout-data
+In game skipped:
+rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'
+add 'extra/short.zip/08.rom' as '08.rom'
+In archive extra/long.zip:
+file 08.rom        size       8  crc 3656897d: not used
+delete unused file '08.rom'
+remove empty archive
+In archive extra/short.zip:
+delete used file '08.rom'
+remove empty archive
+end-of-data

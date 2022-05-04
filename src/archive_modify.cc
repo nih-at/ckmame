@@ -38,13 +38,14 @@
 #include <cstring>
 
 #include "CkmameDB.h"
-#include "error.h"
 #include "Exception.h"
 #include "MemDB.h"
+#include "CkmameCache.h"
+#include "globals.h"
 
 bool Archive::commit() {
     if (modified) {
-        seterrinfo("", name);
+        output.set_error_archive(name);
 
         cache_changed = true;
 
@@ -99,10 +100,10 @@ void Archive::update_cache() {
         return;
     }
     
-    if (contents->cache_db == NULL) {
-        contents->cache_db = CkmameDB::get_db_for_archvie(name);
+    if (contents->cache_db == nullptr && ckmame_cache) {
+        contents->cache_db = ckmame_cache->get_db_for_archive(name);
     }
-    if (contents->cache_db != NULL) {
+    if (contents->cache_db != nullptr) {
         if (files.empty()) {
             if (contents->cache_id > 0) {
                 try {
@@ -110,7 +111,7 @@ void Archive::update_cache() {
                 }
                 catch (Exception &exception) {
                     contents->cache_db->seterr();
-                    myerror(ERRDB, "%s: error deleting from %s", name.c_str(), CkmameDB::db_name.c_str());
+                    output.error_database("%s: error deleting from %s", name.c_str(), CkmameDB::db_name.c_str());
                     /* TODO: handle errors */
                 }
             }
@@ -124,7 +125,7 @@ void Archive::update_cache() {
             }
             catch (Exception &exception) {
                 contents->cache_db->seterr();
-                myerror(ERRDB, "%s: error writing to %s", name.c_str(), CkmameDB::db_name.c_str());
+                output.error_database("%s: error writing to %s", name.c_str(), CkmameDB::db_name.c_str());
                 contents->cache_id = 0;
             }
         }
@@ -132,15 +133,15 @@ void Archive::update_cache() {
     else {
         contents->cache_id = 0;
     }
-    
+
     cache_changed = false;
 }
 
 
 bool Archive::file_add_empty(const std::string &filename) {
     if (!is_writable()) {
-	seterrinfo(name);
-	myerror(ERRZIP, "cannot add to read-only archive");
+	output.set_error_file(name);
+	output.archive_error("cannot add to read-only archive");
 	return false;
     }
 
@@ -150,8 +151,8 @@ bool Archive::file_add_empty(const std::string &filename) {
     Hashes::Update hu(&hashes);
     hu.end();
 
-    add_file(filename, &hashes, NULL);
-    changes[files.size() - 1].source = std::make_shared<ZipSource>(zip_source_buffer_create(NULL, 0, 0, NULL));
+    add_file(filename, &hashes, nullptr);
+    changes[files.size() - 1].source = std::make_shared<ZipSource>(zip_source_buffer_create(nullptr, 0, 0, nullptr));
 
     return true;
 }
@@ -173,35 +174,35 @@ bool Archive::file_copy_or_move(Archive *source_archive, uint64_t source_index, 
 
 bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, const std::string &filename, uint64_t start, std::optional<uint64_t> length, const Hashes *hashes) {
     if (!is_writable()) {
-        seterrinfo(name);
-	myerror(ERRZIP, "cannot add to read-only archive");
+        output.set_error_file(name);
+	output.archive_error("cannot add to read-only archive");
 	return false;
     }
 
     if (file_index_by_name(filename).has_value()) {
-        seterrinfo(name);
+        output.set_error_file(name);
 	errno = EEXIST;
-	myerror(ERRZIP, "can't copy to %s: %s", filename.c_str(), strerror(errno));
+	output.archive_error("can't copy to %s: %s", filename.c_str(), strerror(errno));
 	return false;
     }
-    seterrinfo(name, source_archive->files[source_index].name);
+    output.set_error_archive(source_archive->files[source_index].name, name);
     if (source_archive->files[source_index].broken) {
-	myerror(ERRZIPFILE, "not copying broken file");
+	output.archive_file_error("not copying broken file");
 	return false;
     }
     if (source_archive->changes[source_index].status == Change::ADDED) {
-	myerror(ERRZIP, "cannot copy added file");
+	output.archive_error("cannot copy added file");
 	return false;
     }
     if (length.has_value()) {
         if (start + length.value() > source_archive->files[source_index].hashes.size) {
-            myerror(ERRZIP, "invalid range (%" PRIu64 ", %" PRIu64 ")", start, length.value());
+            output.archive_error("invalid range (%" PRIu64 ", %" PRIu64 ")", start, length.value());
             return false;
         }
     }
     else {
         if (start > source_archive->files[source_index].hashes.size) {
-            myerror(ERRZIP, "invalid start offset %" PRIu64, start);
+            output.archive_error("invalid start offset %" PRIu64, start);
             return false;
         }
     }
@@ -212,7 +213,7 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
         add_file(filename, &source_archive->files[source_index].hashes, &source_archive->files[source_index].detector_hashes);
     }
     else {
-        add_file(filename, hashes, NULL);
+        add_file(filename, hashes, nullptr);
     }
 
     if (have_direct_file_access() && source_archive->have_direct_file_access() && full_file) {
@@ -235,14 +236,14 @@ bool Archive::file_copy_part(Archive *source_archive, uint64_t source_index, con
 
 bool Archive::file_delete(uint64_t index) {
     if (!is_writable()) {
-	seterrinfo(name);
-	myerror(ERRZIP, "cannot delete from read-only archive");
+	output.set_error_file(name);
+	output.archive_error("cannot delete from read-only archive");
 	return false;
     }
 
     if (changes[index].status != Change::EXISTS) {
-	seterrinfo(name);
-	myerror(ERRZIP, "cannot delete broken/added/deleted file");
+	output.set_error_file(name);
+	output.archive_error("cannot delete broken/added/deleted file");
 	return false;
     }
 
@@ -262,20 +263,20 @@ bool Archive::file_move(Archive *source_archive, uint64_t source_index, const st
 }
 
 bool Archive::file_rename(uint64_t index, const std::string &filename) {
-    seterrinfo(name);
+    output.set_error_file(name);
 
     if (!is_writable()) {
-	myerror(ERRZIP, "cannot rename in read-only archive");
+	output.archive_error("cannot rename in read-only archive");
 	return false;
     }
     if (changes[index].status != Change::EXISTS) {
-	myerror(ERRZIP, "cannot copy broken/added/deleted file");
+	output.archive_error("cannot copy broken/added/deleted file");
 	return false;
     }
 
     if (file_index_by_name(filename).has_value()) {
 	errno = EEXIST;
-	myerror(ERRZIP, "can't rename %s to %s: %s", files[index].name.c_str(), filename.c_str(), strerror(errno));
+	output.archive_error("can't rename %s to %s: %s", files[index].name.c_str(), filename.c_str(), strerror(errno));
 	return false;
     }
 
@@ -291,8 +292,8 @@ bool Archive::file_rename(uint64_t index, const std::string &filename) {
 
 bool Archive::file_rename_to_unique(uint64_t index) {
     if (!is_writable()) {
-	seterrinfo(name);
-	myerror(ERRZIP, "cannot rename in read-only archive");
+	output.set_error_file(name);
+	output.archive_error("cannot rename in read-only archive");
 	return false;
     }
 
@@ -347,7 +348,7 @@ void Archive::add_file(const std::string &filename, const Hashes *hashes, const 
     Change change;
 
     file.hashes = *hashes;
-    if (detector_hashes != NULL) {
+    if (detector_hashes != nullptr) {
         file.detector_hashes = *detector_hashes;
     }
     file.name = filename;

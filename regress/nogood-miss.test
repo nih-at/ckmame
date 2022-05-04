@@ -1,7 +1,9 @@
 description test single-rom game with bad dump
 return 0
-# TODO: -c reports game as correct
-args -FKLv nogood-2
+args -Fv --report-detailed nogood-2
 file roms/nogood-2.zip 1-8-ok.zip 1-8-ok.zip
-stdout In game nogood-2:
-stdout rom  04.rom        size       4  no good dump: missing
+stdout-data
+In game nogood-2:
+rom  04.rom        size       4  no good dump: missing
+rom  08.rom        size       8  crc 3656897d: correct
+end-of-data

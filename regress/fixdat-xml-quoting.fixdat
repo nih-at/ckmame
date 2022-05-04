@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE datafile PUBLIC "-//Logiqx//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">
+<datafile>
+  <header>
+    <name>Fixdat for ckmame test db &lt;&amp;&gt; (1)</name>
+    <description>Fixdat by ckmame</description>
+    <version>0000-00-00 00:00:00</version>
+    <author>automatically generated</author>
+  </header>
+  <game name="2&amp;4c&lt;&gt;;">
+    <description>2&amp;4c&lt;&gt;;</description>
+    <rom name="4&gt;;.rom" size="4" crc="d87f7e0c" sha1="a94a8fe5ccb19ba61c4c0873d391e987982fbbd3" md5="098f6bcd4621d373cade4e832627b4f6"/>
+    <rom name="c&amp;&lt;.rom" size="12" crc="0623c932" sha1="2f2d205d5451d3256cf1c693982b40101e9989bf" md5="b60c52bf4849067f0b57c8bd30985466"/>
+  </game>
+</datafile>

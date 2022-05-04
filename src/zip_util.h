@@ -42,14 +42,14 @@
 
 class ZipSource {
 public:
-    ZipSource(zip_source_t *source_) : source(source_) { }
+    explicit ZipSource(zip_source_t *source_) : source(source_) { }
     ~ZipSource();
     
-    void open();
-    void close();
-    uint64_t read(void *data, uint64_t length);
+    void open() const;
+    void close() const;
+    uint64_t read(void *data, uint64_t length) const;
     
-    std::string error();
+    std::string error() const;
     
     zip_source_t *source;
 };
@@ -57,7 +57,5 @@ public:
 
 typedef std::shared_ptr<ZipSource> ZipSourcePtr;
 
-
-int my_zip_rename(zip_t *za, uint64_t idx, const char *name);
 
 #endif /* _HAD_ZIP_UTIL_H */

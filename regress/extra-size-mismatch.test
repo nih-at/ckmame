@@ -3,7 +3,9 @@ return 0
 args -D ../mamedb-1-8-is-4.db -Fje extra
 file extra/1-4.zip 1-4-ok.zip 1-4-ok.zip
 no-hashes extra 1-4.zip
-stdout In game 1-8-is-4:
-stdout game 1-8-is-4                                : not a single file found
-stdout In archive extra/1-4.zip:
-stdout file 04.rom        size       4  crc d87f7e0c: unknown
+stdout-data
+In game 1-8-is-4:
+game 1-8-is-4                                : not a single file found
+In archive extra/1-4.zip:
+file 04.rom        size       4  crc d87f7e0c: unknown
+end-of-data

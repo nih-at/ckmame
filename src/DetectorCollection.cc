@@ -56,7 +56,7 @@ const DetectorDescriptor *DetectorCollection::get_descriptor(size_t id) const {
         return &it->second;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 size_t DetectorCollection::get_id(const DetectorDescriptor &descriptor) {

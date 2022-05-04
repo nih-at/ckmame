@@ -1,5 +1,5 @@
-description test game with bad dump ROM and good ROM in parent, with -d
+description test game with bad dump ROM and good ROM in parent
 return 0
-args -dFKLv nogoodclone
+args -Fv nogoodclone
 file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
 no-hashes roms 1-8.zip

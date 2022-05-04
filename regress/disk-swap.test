@@ -1,29 +1,33 @@
 description test two games with swapped disks
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -FKLvc disk disk-2
+args -D ../mamedb-disk-many.db -Fvc disk disk-2
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-2.chd 108-5.chd
 file roms/disk-2.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk-2/108-2.chd 108-5.chd 108-2.chd
 no-hashes roms disk.zip 04.rom
 no-hashes roms disk-2.zip 04.rom
-stdout In game disk:
-stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
-stdout image 108-5.chd   : needed elsewhere
-stdout roms/disk: save needed file '108-5.chd'
-stdout In game disk-2:
-stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: is in 'needed/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000/108-5.chd'
-stdout image 108-2.chd   : needed elsewhere
-stdout roms/disk-2: save needed file '108-2.chd'
-stdout roms/disk-2: add 'needed/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000/108-5.chd' as '108-2.chd'
-stdout In game disk:
-stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'needed/7570a907e20a51cbf6193ec6779b82d1967bb609-000/108-2.chd'
-stdout roms/disk: add 'needed/7570a907e20a51cbf6193ec6779b82d1967bb609-000/108-2.chd' as '108-5.chd'
-stdout needed/7570a907e20a51cbf6193ec6779b82d1967bb609-000: delete used file '108-2.chd'
-stdout needed/7570a907e20a51cbf6193ec6779b82d1967bb609-000: remove empty archive
-stdout needed/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000: delete used file '108-5.chd'
-stdout needed/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000: remove empty archive
+stdout-data
+In game disk:
+rom  04.rom        size       4  crc d87f7e0c: correct
+disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
+image 108-5.chd   : needed elsewhere
+save needed file '108-5.chd'
+In game disk-2:
+rom  04.rom        size       4  crc d87f7e0c: correct
+disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: is in 'saved/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000/108-5.chd'
+image 108-2.chd   : needed elsewhere
+save needed file '108-2.chd'
+add 'saved/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000/108-5.chd' as '108-2.chd'
+In game disk:
+rom  04.rom        size       4  crc d87f7e0c: correct
+disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'saved/7570a907e20a51cbf6193ec6779b82d1967bb609-000/108-2.chd'
+add 'saved/7570a907e20a51cbf6193ec6779b82d1967bb609-000/108-2.chd' as '108-5.chd'
+In archive saved/7570a907e20a51cbf6193ec6779b82d1967bb609-000:
+delete used file '108-2.chd'
+remove empty archive
+In archive saved/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000:
+delete used file '108-5.chd'
+remove empty archive
+end-of-data

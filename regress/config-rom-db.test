@@ -1,0 +1,15 @@
+description test all games, no files found, use rom-db from config
+return 0
+args -F
+file-data .ckmamerc
+[global]
+rom-db = "../mamedb-merge-parent.db"
+end-of-data
+stdout-data
+In game grandparent:
+game grandparent                             : not a single file found
+In game parent:
+game parent                                  : not a single file found
+In game child:
+game child                                   : not a single file found
+end-of-data

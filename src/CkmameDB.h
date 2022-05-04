@@ -1,7 +1,7 @@
-#ifndef _HAD_DBH_CACHE_H
-#define _HAD_DBH_CACHE_H
+#ifndef HAD_DBH_CACHE_H
+#define HAD_DBH_CACHE_H
 /*
- dbh_cache.h -- files in dirs sqlite3 data base
+ dbh_cache.h -- files in dirs sqlite3 database
  Copyright (C) 2014-2021 Dieter Baron and Thomas Klausner
 
  This file is part of ckmame, a program to check rom sets for MAME.
@@ -35,6 +35,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ArchiveLocation.h"
@@ -64,16 +65,13 @@ public:
         QUERY_HAS_ARCHIVES
     };
     
-    CkmameDB(const std::string &dbname, const std::string &directory);
-    virtual ~CkmameDB() { }
+    explicit CkmameDB(const std::string& directory);
+    CkmameDB(const std::string& dbname, std::string directory); // used in dbrestore
+    ~CkmameDB() override = default;
 
     static const DBFormat format;
     static const std::string db_name;
 
-    static bool close_all();
-    static CkmameDBPtr get_db_for_archvie(const std::string &name);
-    static void register_directory(const std::string &directory);
-    
     void delete_archive(const std::string &name, filetype_t filetype);
     void delete_archive(int id);
     int get_archive_id(const std::string &name, filetype_t filetype);
@@ -86,20 +84,9 @@ public:
     void seterr();
     
 protected:
-    virtual std::string get_query(int name, bool parameterized) const;
+    [[nodiscard]] std::string get_query(int name, bool parameterized) const override;
     
 private:
-    class CacheDirectory {
-    public:
-        std::string name;
-        std::shared_ptr<CkmameDB> db;
-        bool initialized;
-        
-        CacheDirectory(const std::string &name_): name(name_), initialized(false) { }
-    };
-    
-    static std::vector<CacheDirectory> cache_directories;
-    
     static std::unordered_map<Statement, std::string> queries;
 
     std::string directory;
@@ -115,4 +102,4 @@ private:
     size_t get_global_detector_id(size_t id);
 };
 
-#endif /* dbh_cache.h */
+#endif // HAD_DBH_CACHE_H

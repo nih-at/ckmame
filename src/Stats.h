@@ -64,6 +64,4 @@ class Stats {
     void add_file(enum filetype type, uint64_t size, Match::Quality status);
 };
 
-extern Stats stats;
-
 #endif /* _HAD_STATS_H */

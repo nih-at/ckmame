@@ -33,7 +33,6 @@
 
 #include "MemDB.h"
 
-#include "error.h"
 #include "Exception.h"
 
 std::unique_ptr<MemDB> memdb;
@@ -101,11 +100,11 @@ std::string MemDB::get_query(int name, bool parameterized) const {
 }
 
 
-void MemDB::ensure(void) {
+void MemDB::ensure() {
     const char *dbname;
 
     if (inited) {
-        if (memdb == NULL) {
+        if (memdb == nullptr) {
             throw Exception("can't initialize memdb");
         }
     }
@@ -119,7 +118,7 @@ void MemDB::ensure(void) {
 
     inited = true;
 
-    memdb = NULL;
+    memdb = nullptr;
     memdb = std::make_unique<MemDB>(dbname);
 }
 
@@ -175,7 +174,7 @@ void MemDB::insert_file(const ArchiveContents *archive, size_t index) {
     
     stmt->execute();
 
-    for (auto pair : file.detector_hashes) {
+    for (const auto &pair : file.detector_hashes) {
         stmt->reset();
         
         stmt->set_uint64("archive_id", archive->id);

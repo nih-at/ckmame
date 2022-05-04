@@ -60,7 +60,7 @@ OutputContextPtr OutputContext::create(OutputContext::Format format, const std::
             return std::make_shared<OutputContextMtree>(fname, flags);
             
         default:
-            return NULL;
+            return nullptr;
     }
 }
 

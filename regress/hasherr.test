@@ -1,9 +1,11 @@
 description integrity test single-rom game (no parent), zip is wrong
 return 0
-args -FKLvc deadbeef
+args -Fvc deadbeef
 file-del roms/deadbeef.zip deadpork.zip
 file-new unknown/deadbeef.zip deadpork.zip
-stdout In game deadbeef:
-stdout game deadbeef                                : not a single file found
-stdout file deadpork      size       8  crc deadbeef: unknown
-stdout roms/deadbeef.zip: move unknown file 'deadpork'
+stdout-data
+In game deadbeef:
+game deadbeef                                : not a single file found
+file deadpork      size       8  crc deadbeef: unknown
+move unknown file 'deadpork'
+end-of-data

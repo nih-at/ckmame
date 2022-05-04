@@ -1,4 +1,4 @@
-.\" Copyright (c) 2003-2018 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2003-2022 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd December 14, 2021
+.Dd May 4, 2022
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -34,41 +34,50 @@
 .Nd verify MAME ROM sets
 .Sh SYNOPSIS
 .Nm
-.Op Fl bCcdFfhjKkLlsuVvwX
+.Op Fl CcFhjoVv
 .Op Fl D Ar dbfile
 .Op Fl e Ar dir
 .Op Fl O Ar dbfile
 .Op Fl R Ar dir
 .Op Fl T Ar file
-.Op Fl Fl autofixdat
-.Op Fl Fl cleanup-extra
-.Op Fl Fl correct
-.Op Fl Fl db Ar dbfile
-.Op Fl Fl delete-duplicate
-.Op Fl Fl delete-found
-.Op Fl Fl delete-long
-.Op Fl Fl delete-unknown
+.Op Fl Fl all-sets
+.Op Fl Fl complete-list Ar file
+.Op Fl Fl complete-games-only
+.Op Fl Fl config Ar file
+.Op Fl Fl copy-from-extra
+.Op Fl Fl create-fixdat
+.Op Fl Fl extra-directory Ar dir
 .Op Fl Fl fix
-.Op Fl Fl fixdat Ar file
-.Op Fl Fl games-from Ar file
+.Op Fl Fl fixdat-directory Ar dir
+.Op Fl Fl game-list Ar file
 .Op Fl Fl help
-.Op Fl Fl ignore-extra
-.Op Fl Fl ignore-unknown
-.Op Fl Fl keep-duplicate
-.Op Fl Fl keep-found
-.Op Fl Fl move-long
-.Op Fl Fl move-unknown
-.Op Fl Fl nobroken
-.Op Fl Fl nofixable
-.Op Fl Fl nonogooddumps
-.Op Fl Fl nosuperfluous
-.Op Fl Fl nowarnings
+.Op Fl Fl keep-old-duplicate
+.Op Fl Fl list-sets
+.Op Fl Fl missing-list Ar file
+.Op Fl Fl move-from-extra
+.Op Fl Fl no-complete-games-only
+.Op Fl Fl no-create-fixdat
+.Op Fl Fl no-report-correct
+.Op Fl Fl no-report-detailed
+.Op Fl Fl no-report-fixable
+.Op Fl Fl no-report-missing
+.Op Fl Fl no-report-no-good-dump
+.Op Fl Fl no-report-summary
 .Op Fl Fl old-db Ar dbfile
-.Op Fl Fl rom-dir Ar dir
+.Op Fl Fl only-if-database-updated
+.Op Fl Fl report-correct
+.Op Fl Fl report-detailed
+.Op Fl Fl report-fixable
+.Op Fl Fl report-missing
+.Op Fl Fl report-no-good-dump
+.Op Fl Fl report-summary
+.Op Fl Fl rom-db Ar dbfile
+.Op Fl Fl rom-directory Ar dir
 .Op Fl Fl roms-unzipped
-.Op Fl Fl search Ar dir
-.Op Fl Fl stats
-.Op Fl Fl superfluous
+.Op Fl Fl save-directory Ar dir
+.Op Fl Fl set Ar pattern
+.Op Fl Fl unknown-directory Ar dir
+.Op Fl Fl update-database
 .Op Fl Fl verbose
 .Op Fl Fl version
 .Op Ar game ...
@@ -76,9 +85,9 @@
 .Nm
 is a program to check ROM sets for MAME, the Multiple Arcade
 Machine Emulator (see
-.Pa http://www.mame.net/ ) ,
+.Pa https://www.mamedev.org/ ) ,
 or other emulators that provide ROM set information in a compatible
-way (e.g., Raine, Impact, or other emulators).
+way.
 This is the same format as clrmamepro dat files.
 .Nm
 tells you which ROM files are missing or have a wrong checksum,
@@ -97,7 +106,8 @@ called clones.
 To save space, ROMs can be archived in zip files and
 dynamically unzipped by MAME when you play a game.
 .Nm
-does only support ROM sets stored as zip files.
+does only support ROM sets stored as zip files or unpacked,
+collected in directories per game.
 .Pp
 .Nm
 tries to create a
@@ -125,168 +135,190 @@ Shell wildcards are allowed.
 You can use command line options to select which type of errors to report.
 .Ss OPTIONS
 Supported options:
-.Bl -tag -width 22n
-.It Fl Fl autofixdat
-Like
-.Fl Fl fixdat ,
-but automatically generates the output file name from the datfile's
-name and version number:
-.Dq Pa fix_$SYSTEM ($VERSION).dat .
-.It Fl b, Fl Fl nobroken
-Don't report unfixable errors.
-See also
-.Fl f
-and
-.Fl w .
-.It Fl Fl cleanup-extra
-Remove files already in ROM set from extra directories.
-.It Fl C , Fl Fl complete-only
-Only create complete sets.
-ROMs for incomplete sets are moved to the
-.Pa needed
+.Bl -tag -width 30n
+.It Fl Fl all-sets
+Do the action for all configured sets.
+.It Fl C , Fl Fl complete-games-only
+Only create complete games.
+ROMs for incomplete games are moved to the
+.Pa saved
 directory.
-.It Fl c , Fl Fl correct
-Report correct sets.
-Normally they are not mentioned.
-.It Fl D Ar dbfile , Fl Fl db Ar dbfile
-Use
-.Ar dbfile
-as database file.
-.It Fl d , Fl Fl nonogooddumps
-Don't report ROMs with no known good dumps.
-.It Fl Fl delete-duplicate
-Delete files present in old ROM database (default).
-See also
-.Fl Fl keep-duplicate .
-.It Fl e Ar dir , Fl Fl search Ar dir
-Look for missing files in directory
-.Ar dir
-and its subdirectories.
-Recommended for use with update sets.
-See also
-.Fl j .
-.It Fl F , Fl Fl fix
-Fix ROM sets; do as much as possible, such as renaming and moving
-files.
-.It Fl f , Fl Fl nofixable
-Don't report fixable errors.
-See also
-.Fl b
-and
-.Fl w .
-.It Fl Fl fixdat Ar name
+When run for a set, the default is
+.Pa saved/$set
+instead, where
+.Dq $set
+is the name of the set.
+.It Fl c , Fl Fl report-correct
+Report status of ROMs that are correct.
+By default they are not mentioned.
+.It Fl Fl config Ar file
+read configuration from
+.Ar file .
+See the
+.Sx CONFIG FILE
+section for more details.
+.It Fl Fl complete-list Ar file
+Write all complete games into
+.Ar file ,
+one line per game, and sorted alphabetically.
+.It Fl Fl copy-from-extra
+Keep used files in extra directories (default).
+.It Fl Fl create-fixdat
 Create a clrmamepro-style
 .Dq fixdat
 file, i.e. an XML file containing only the files missing in the ROM
 set compared to the database used.
-.It Fl h , Fl Fl help
-Display a short help message.
-.It Fl Fl ignore-unknown
-Ignore unknown files when fixing.
-They will still be reported.
-.It Fl j , Fl Fl delete-found
-When using
-.Fl e ,
-delete files that are copied to the ROM set.
-See also
-.Fl Fl keep-found .
-.It Fl Fl keep-duplicate
-Keep files present in old ROM database.
-See also
-.Fl Fl delete-duplicate .
-.It Fl Fl keep-found
-When using
-.Fl e ,
-do not remove files that are copied to the ROM set (default).
-See also
-.Fl j .
-.It Fl K , Fl Fl move-unknown
-Move unknown files when fixing (default).
-They are moved into a zip file with the same name under
-.Pa roms/garbage .
-See also
-.Fl k .
-.It Fl k , Fl Fl delete-unknown
-Delete unknown files when fixing.
-See also
-.Fl K .
-.It Fl L , Fl Fl move-long
-Move too long files when fixing (default).
-See also
-.Fl K
-and
-.Fl l .
-.It Fl l , Fl Fl delete-long
-Delete long files when fixing.
-See also
-.Fl L .
-.It Fl O Ar dbfile , Fl Fl old-db Ar dbfile
-Assume that files listed in
+.It Fl D , Fl Fl rom-db Ar dbfile
+Use
 .Ar dbfile
-exist elsewhere.
-.It Fl R Ar dir , Fl Fl rom-dir Ar dir
-Look for roms in
-.Ar dir .
-Default is
-.Dq roms .
-.It Fl Fl stats
-Display completeness statistics of ROM set at end of run.
-.It Fl Fl superfluous
-Only check for superfluous files in ROM sets.
-.It Fl s , Fl Fl nosuperfluous
-Don't report superfluous (unneeded) files.
-.It Fl T Ar file , Fl Fl games-from Ar file
-Read list of games to check from
+instead of the default
+.Pa mame.db
+as the database.
+.It Fl e , Fl Fl extra-directory Ar dir
+Search for missing files in directory dir (multiple directories can be
+specified by repeating this option).
+.It Fl F , Fl Fl fix
+Fix the ROM set.
+By default, only the status is reported.
+.It Fl Fl fixdat-directory Ar dir
+Create the fixdat (see
+.Fl Fl create-fixdat )
+in
+.Ar dir
+instead of the current directory.
+.It Fl h , Fl Fl help
+Display a short usage.
+.It Fl j , Fl Fl move-from-extra
+Remove used files from extra directories.
+Opposite of
+.Fl Fl copy-from-extra .
+.It Fl Fl keep-old-duplicate
+Keep files in ROM set that are also in old ROM database.
+.It Fl Fl list-sets
+List all configured sets.
+.It Fl Fl missing-list Ar file
+Write all complete games into
+.Ar file ,
+one line per game, and sorted alphabetically.
+.It Fl Fl no-complete-games-only
+Keep partial games in ROM set (default).
+.It Fl Fl no-create-fixdat
+Do not create a fixdat for the missing ROM sets (default).
+.It Fl Fl no-report-correct
+Don't report status of ROMs that are correct (default).
+.It Fl Fl no-report-detailed
+Don't report status of every ROM (default).
+.It Fl Fl no-report-fixable
+Don't report status of ROMs that can be fixed.
+.It Fl Fl no-report-missing
+Don't report status of ROMs that are missing.
+.It Fl Fl no-report-no-good-dump
+Don't report status of ROMs for which no good dump exists (default).
+.It Fl Fl no-report-summary
+Don't print summary of ROM set status (default).
+.It Fl O , Fl Fl old-db Ar dbfile
+Assume that the files in the database
+.Ar dbfile
+exist in some other location (e.g., on an offline disk or backup
+medium).
+.It Fl o , Fl Fl only-if-database-updated
+Only run
+.Nm
+if the database was updated (implies
+.Fl Fl update-database ) .
+.It Fl R , Fl Fl rom-directory Ar dir
+Look for the ROM set in the directory
+.Ar dir
+instead of the default
+.Pa roms .
+.It Fl Fl report-detailed
+Report status of every ROM that is checked.
+.It Fl Fl report-fixable
+Report status of ROMs that can be fixed (default).
+.It Fl Fl report-missing
+Report status of ROMs that are missing (default).
+.It Fl Fl report-no-good-dump
+Don't suppress reporting status of ROMs for which no good dump exists.
+Status of such ROMs is reported according to
+.Fl Fl report-correct
+or
+.Fl Fl report-missing .
+.It Fl Fl report-summary
+Print summary of ROM set status at the end of the output.
+.It Fl Fl save-directory Ar dir
+When a ROM file is encountered that does not belong to the set that is
+currently checked, but is needed by a different set, move it this
+directory.
+It will be found there automatically later
+(efault:
+.Dq Pa saved ).
+.It Fl Fl set Ar pattern
+Check all ROM sets matching
+.Ar pattern .
+This uses the configuration from the corresponding section in the
+Config files.
+See
+.Sx CONFIG FILES
+for details
+.It Fl T , Fl Fl game-list Ar file
+Read the list of games to check from
 .Ar file .
-.It Fl u , Fl Fl roms-unzipped
-ROMs are files on the disk.
-Each game is represented by a directory instead of a ZIP archive.
+.Ar file
+should contain one line per game.
+.It Fl Fl roms-unzipped
+Instead of looking for ROMs in the ZIP archive
+.Pa roms/games.zip ,
+look for them in the directory
+.Pa roms/games/
+in the file system.
+.It Fl Fl unknown-directory Ar dir
+When a file is encountered that does not belong to the set that is
+currently checked and is not known by the database, move it this
+directory
+(efault:
+.Dq Pa unknown ).
+.It Fl Fl update-database
+Update the database before checking the ROMs.
 .It Fl V , Fl Fl version
-Display program name and version number.
+Display version number.
 .It Fl v , Fl Fl verbose
 Print fixes made.
-Only useful with
-.Fl F .
-.It Fl w , Fl Fl nowarnings
-Print only unfixable error, like missing or completely incorrect ROMs.
-See also
-.Fl b
-and
-.Fl f .
-.It Fl X , Fl Fl ignore-extra
-Do not mention extra files that are in the ROM dirs.
-Most of the time these are ROM sets whose names have changed.
-Additionally,
-.Nm
-creates a
-.Pa roms/garbage
-directory (see also
-.Fl K ) ,
-which you will also be warned about.
 .El
 .Sh ENVIRONMENT
 .Bl -tag -width 10n
 .It Ev MAMEDB
 Location for the database file.
 Can be overridden with the
-.Fl D
+.Fl Fl dbfile
 option.
 Defaults to
 .Dq Pa mame.db .
 .It Ev MAMEDB_OLD
 Location for the database file of files that exist elsewhere.
 Can be overridden with the
-.Fl O
+.Fl Fl old-db
 option.
 Defaults to
 .Dq Pa old.db .
 .El
 .Sh FILES
+By default, the configuration is read from
+.Pa ~/.config/ckmame/ckmamerc
+and
+.Pa .ckmamerc
+if they exist, in this order.
+.Pp
+The database file to read from defaults to
+.Pa mame.db
+and the roms are expected in the
+.Pa roms
+directory.
+.Pp
 Unknown files are moved to the sub-directory
 .Pa unknown .
 Files that will be needed by other games in the ROM set are moved
 to the
-.Pa needed
+.Pa saved
 directory.
 .Pp
 .Nm
@@ -301,14 +333,13 @@ since the last run (i.e. same size and modification time).
 .Sh EXAMPLES
 Print a report about the current state of your ROM sets in the
 .Pa roms
-subdir of the current dir:
+subdirectory of the current dir:
 .Dl Ic ckmame
 .Pp
-Fix all sets and only report unfixable errors, omitting those
-ROMs where no good dump exists:
-.Dl Ic ckmame -Fwd
+Fix all ROMs:
+.Dl Ic ckmame -Fd
 .Pp
-Fix all sets using the files found in
+Fix all ROMs using the files found in
 .Ar updatedir ,
 removing files from there that are copied to the ROM set:
 .Dl Ic ckmame -Fj -e updatedir
@@ -334,8 +365,6 @@ The primary checksum for ROMs is CRC32, for disks MD5.
 .An -nosplit
 .Nm
 was written by
-.An Dieter Baron
-.Aq dillo@nih.at
+.An Dieter Baron Aq Mt dillo@nih.at
 and
-.An Thomas Klausner
-.Aq tk@giga.or.at .
+.An Thomas Klausner Aq Mt tk@giga.or.at .

@@ -1,8 +1,9 @@
-description test single-rom game (no parent), zip contains file needed elsewhere, do not fix
+description saved contains file from other game, is not removed
 return 0
-args -FKLvc 1-4
+args -Fvc 1-4
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
-file needed/3656897d-000.zip 1-8-ok.zip 1-8-ok.zip
-ckmamedb-after needed ckmamedb-empty.dump
-stdout In game 1-4:
-stdout game 1-4                                     : correct
+file saved/3656897d-000.zip 1-8-ok.zip 1-8-ok.zip
+stdout-data
+In game 1-4:
+game 1-4                                     : correct
+end-of-data

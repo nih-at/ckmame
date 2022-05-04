@@ -36,9 +36,7 @@
 #include <cinttypes>
 
 #include "util.h"
-
-
-Stats stats;
+#include "globals.h"
 
 void Stats::add_game(GameStatus status) {
     switch (status) {
@@ -70,39 +68,40 @@ void Stats::add_rom(enum filetype type, const FileData *rom, Match::Quality stat
 void Stats::print(FILE *f, bool total_only) {
     static const char *ft_name[] = {"ROMs: ", "Disks:"};
 
-    fprintf(f, "Games: ");
+    std::string message = "Games: ";
     if (!total_only) {
         if (games_good > 0 || games_partial == 0) {
-            fprintf(f, "%" PRIu64, games_good);
+	    message += std::to_string(games_good);
         }
         if (games_partial > 0) {
             if (games_good > 0) {
-                fprintf(f, " complete, ");
+                message += " complete, ";
             }
-            fprintf(f, "%" PRIu64 " partial", games_partial);
+            message += std::to_string(games_partial) + " partial";
         }
-        fprintf(f, " / ");
+	message += " / ";
     }
-    fprintf(f, "%" PRIu64 "\n", games_total);
-    
+    message += std::to_string(games_total);
+
+    output.message(message);
+
     for (int type = 0; type < TYPE_MAX; type++) {
         if (files[type].files_total > 0) {
-            fprintf(f, "%s ", ft_name[type]);
+	    message = ft_name[type];
+	    message += " ";
             if (!total_only) {
-                fprintf(f, "%" PRIu64 " / ", files[type].files_good);
+		message += std::to_string(files[type].files_good) + " / ";
             }
-            fprintf(f, "%" PRIu64, files[type].files_total);
-            
+	    message += std::to_string(files[type].files_total);
+
             if (files[type].bytes_total > 0) {
-                printf(" (");
+                message += " (";
                 if (!total_only) {
-                    print_human_number(f, files[type].bytes_good);
-                    fprintf(f, " / ");
+		    message += human_number(files[type].bytes_good) + " / ";
                 }
-                print_human_number(f, files[type].bytes_total);
-                fprintf(f, ")");
+		message += human_number(files[type].bytes_total) + ")";
             }
-            fprintf(f, "\n");
+	    output.message(message);
         }
     }
 }

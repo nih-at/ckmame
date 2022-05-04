@@ -1,0 +1,16 @@
+description test mkmamedb dat database creation, header only dat, use cache in HOME
+return 0
+program mkmamedb
+setenv HOME ./home
+args --list-available-dats
+file dats/mamedb.dat mamedb-header-only.dat
+touch 1644506227 dats/mamedb.dat
+file-new home/.cache/ckmame/@SANDBOX@/dats/.mkmamedb.db mkmamedb-datdb-1.dump
+file-data .ckmamerc
+[global]
+dat-directories = [ "dats" ]
+use-central-cache-directory = true
+end-of-data
+stdout-data
+ckmame test db
+end-of-data

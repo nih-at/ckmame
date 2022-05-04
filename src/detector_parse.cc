@@ -43,6 +43,6 @@ DetectorPtr Detector::parse(const std::string &filename) {
         return Detector::parse(&ps);
     } catch (std::exception &e) {
         // TODO: report error
-        return NULL;
+        return nullptr;
     }
 }

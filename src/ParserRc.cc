@@ -33,24 +33,23 @@
 
 #include "ParserRc.h"
 
-#include "error.h"
+#include "globals.h"
 
 const char ParserRc::separator = static_cast<char>(0xac);
 
 std::unordered_map<std::string, ParserRc::Section> ParserRc::sections = {
-    { "[CREDITS]", RC_CREDITS },
-    { "[DAT]", RC_DAT },
-    { "[EMULATOR]", RC_EMULATOR },
-    { "[GAMES]", RC_GAMES },
-    { "[RESOURCES]", RC_GAMES }
+    {"[CREDITS]",   RC_CREDITS },
+    {"[DAT]",       RC_DAT     },
+    {"[EMULATOR]",  RC_EMULATOR},
+    {"[GAMES]",     RC_GAMES   },
+    {"[RESOURCES]", RC_GAMES   }
 };
 
 std::vector<ParserRc::Field> ParserRc::fields = {
     Field(RC_CREDITS, "version", parse_prog_version),
     Field(RC_DAT, "plugin", rc_plugin),
     Field(RC_EMULATOR, "refname", parse_prog_name),
-    Field(RC_EMULATOR, "version", parse_prog_description)
-};
+    Field(RC_EMULATOR, "version", parse_prog_description)};
 
 
 bool ParserRc::parse() {
@@ -70,18 +69,21 @@ bool ParserRc::parse() {
             else {
                 sect = RC_UNKNOWN;
             }
-	    continue;
-	}
+            continue;
+        }
 
-	if (sect == RC_GAMES) {
+        if (sect == RC_GAMES) {
+            if (header_only) {
+                return true;
+            }
             if (!process_romline(line)) {
-                myerror(ERRFILE, "%zu: cannot parse ROM line, skipping", lineno);
+                output.file_error("%zu: cannot parse ROM line, skipping", lineno);
             }
         }
         else {
             auto position = line.find('=');
             if (position == std::string::npos) {
-                myerror(ERRFILE, "%zu: no `=' found", lineno);
+                output.file_error("%zu: no `=' found", lineno);
                 continue;
             }
             auto key = line.substr(0, position);
@@ -90,10 +92,10 @@ bool ParserRc::parse() {
             for (auto &field : fields) {
                 if (field.section == sect && key == field.name) {
                     field.cb(this, value);
-		    break;
-		}
-	    }
-	}
+                    break;
+                }
+            }
+        }
     }
 
     return true;
@@ -103,11 +105,11 @@ std::string ParserRc::Tokenizer::get() {
     if (position == std::string::npos) {
         return "";
     }
-    
+
     auto sep = string.find(separator, position);
-    
+
     std::string field;
-    
+
     if (sep == std::string::npos) {
         field = string.substr(position);
         position = std::string::npos;
@@ -116,7 +118,7 @@ std::string ParserRc::Tokenizer::get() {
         field = string.substr(position, sep - position);
         position = sep + 1;
     }
-    
+
     return field;
 }
 
@@ -134,8 +136,8 @@ bool ParserRc::parse_prog_version(ParserRc *ctx, const std::string &attr) {
 }
 
 bool ParserRc::rc_plugin(ParserRc *ctx, const std::string &attr) {
-    myerror(ERRFILE, "%zu: warning: RomCenter plugins not supported,", ctx->lineno);
-    myerror(ERRFILE, "%zu: warning: DAT won't work as expected.", ctx->lineno);
+    output.file_error("%zu: warning: RomCenter plugins not supported,", ctx->lineno);
+    output.file_error("%zu: warning: DAT won't work as expected.", ctx->lineno);
     return false;
 }
 
@@ -173,7 +175,7 @@ bool ParserRc::process_romline(const std::string &line) {
             game_description(desc);
         }
         if (!parent.empty() && parent != name) {
-            game_cloneof(TYPE_ROM, parent);
+            game_cloneof(parent);
         }
     }
 

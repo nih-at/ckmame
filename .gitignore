@@ -1,4 +1,7 @@
 /.clangd
+/.cache
+/.idea
+/.vscode
 *~
 /build/
 /ckmame-*.tar.*
@@ -8,3 +11,4 @@ xcode/ckmame.xcodeproj/project.xcworkspace/xcshareddata
 xcode/ckmame.xcodeproj/project.xcworkspace/xcuserdata
 xcode/ckmame.xcodeproj/xcuserdata
 .DS_Store
+/cmake-build-debug

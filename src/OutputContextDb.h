@@ -41,23 +41,32 @@
 class OutputContextDb : public OutputContext {
 public:
     OutputContextDb(const std::string &fname, int flags);
-    virtual ~OutputContextDb();
+    ~OutputContextDb() override;
     
-    virtual bool close();
-    virtual bool detector(Detector *detector);
-    virtual bool game(GamePtr game);
-    virtual bool header(DatEntry *dat);
-    
+    bool close() override;
+    bool detector(Detector *detector) override;
+    bool game(GamePtr game, const std::string &original_name) override;
+    bool header(DatEntry *dat) override;
+    void error_occurred() override { ok = false; }
+
 private:
+    std::string file_name;
+    std::string temp_file_name;
+
     std::unique_ptr<RomDB> db;
 
     std::vector<DatEntry> dat;
 
     std::vector<std::string> lost_children;
+
+    bool ok;
     
     void familymeeting(Game *parent, Game *child);
+    std::string get_game_name(const std::string& original_name);
     bool handle_lost();
     bool lost(Game *);
+
+    std::unordered_map<std::string, std::string> renamed_games;
 };
 
 #endif // HAD_OUTPUT_DB_H

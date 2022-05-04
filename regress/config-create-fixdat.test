@@ -1,0 +1,17 @@
+description test all games, no files found, create fixdat based on config setting
+features LIBXML2
+return 0
+args -F -D ../mamedb-merge-parent.db
+file-new "fixdat_ckmame test db (1).dat" fixdat-missing-all.fixdat
+file-data .ckmamerc
+[global]
+create-fixdat = true
+end-of-data
+stdout-data
+In game grandparent:
+game grandparent                             : not a single file found
+In game parent:
+game parent                                  : not a single file found
+In game child:
+game child                                   : not a single file found
+end-of-data

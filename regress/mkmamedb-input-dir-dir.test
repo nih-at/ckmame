@@ -2,10 +2,12 @@ description test mkmamedb database creation from input directory (dir)
 variants dir
 return 0
 program mkmamedb
-args -o mamedb-test.db --prog-name "ckmame test db" --prog-version "1" extra
+args -o mamedb-test.db extra
 file extra/1-4.zip 1-4-ok.zip 1-4-ok.zip
-file extra/plain-file runtest runtest
+file extra/plain-file dummy dummy
 file-new mamedb-test.db mamedb-small.dump
 touch 1422359238 extra/1-4.zip
 ckmamedb-after extra ckmamedb-1-4-ok.dump
-stderr found file 'extra/plain-file' outside of game subdirectory
+stderr-data
+found file 'extra/plain-file' outside of game subdirectory
+end-of-data

@@ -38,13 +38,13 @@
 
 #include "Dir.h"
 #include "Exception.h"
-#include "error.h"
 #include "file_util.h"
 #include "fix_util.h"
 #include "util.h"
+#include "globals.h"
 
+#include <algorithm>
 #include <cerrno>
-#include <climits>
 #include <cstring>
 #include <filesystem>
 #include <limits>
@@ -52,13 +52,8 @@
 #include <sys/stat.h>
 
 
-bool ArchiveDir::ensure_archive_dir() {
-    return ensure_dir(name, false);
-}
-
-
 bool ArchiveDir::commit_xxx() {
-    seterrinfo("", name);
+    output.set_error_archive(name);
     
     std::filesystem::path added_directory;
     
@@ -66,9 +61,11 @@ bool ArchiveDir::commit_xxx() {
         added_directory = make_unique_path(std::filesystem::path(name) / ".added");
     }
     catch (...) {
-        myerror(ERRZIP, "can't create temporary directory: %s", strerror(errno));
+        output.archive_error_system("can't create temporary directory");
         return false;
     }
+
+    std::unordered_map<std::string, std::string> added_names;
     
     try {
         for (size_t index = 0; index < files.size(); index++) {
@@ -79,7 +76,10 @@ bool ArchiveDir::commit_xxx() {
                 if (!ensure_dir(added_directory, false)) {
                     throw Exception();
                 }
-                if (!link_or_copy(change.file, added_directory / file.name)) {
+
+                added_names[file.name] = make_added_name(added_directory, file.name);
+
+                if (!link_or_copy(change.file, added_names[file.name])) {
                     throw Exception();
                 }
             }
@@ -87,7 +87,8 @@ bool ArchiveDir::commit_xxx() {
                 if (!ensure_dir(added_directory, false)) {
                     throw Exception();
                 }
-                copy_source(change.source.get(), added_directory / file.name);
+                added_names[file.name] = make_added_name(added_directory, file.name);
+                copy_source(change.source.get(), added_names[file.name]);
             }
         }
     }
@@ -107,7 +108,7 @@ bool ArchiveDir::commit_xxx() {
                 commit.delete_file(get_original_filename(index));
             }
             else if (!change.file.empty() || change.source) {
-                commit.rename_file(added_directory / file.name, get_full_filename(index));
+                commit.rename_file(added_names[file.name], get_full_filename(index));
             }
             else if (!change.original_name.empty()){
                 commit.rename_file(get_original_filename(index), get_full_filename(index));
@@ -143,7 +144,7 @@ void ArchiveDir::commit_cleanup() {
 void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &destination) {
     auto fout = make_shared_file(destination, "w");
     if (!fout) {
-        myerror(ERRZIP, "cannot open '%s': %s", destination.c_str(), strerror(errno));
+        output.archive_error("cannot open '%s': %s", destination.c_str(), strerror(errno));
         throw Exception();
     }
 
@@ -154,7 +155,7 @@ void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &des
     uint64_t n;
     while ((n = source->read(buffer, sizeof(buffer))) > 0) {
         if (fwrite(buffer, 1, n, fout.get()) != n) {
-            myerror(ERRZIP, "can't write '%s': %s", destination.c_str(), strerror(errno));
+            output.archive_error("can't write '%s': %s", destination.c_str(), strerror(errno));
             source->close();
             throw Exception();
         }
@@ -182,7 +183,7 @@ void ArchiveDir::Commit::rename_file(const std::filesystem::path &source, const 
 
 void ArchiveDir::Commit::rename(const std::filesystem::path &source, const std::filesystem::path &destination) {
     std::filesystem::rename(source, destination);
-    undos.push_back(Operation(destination, source));
+    undos.emplace_back(destination, source);
     cleanup_directories.insert(source.parent_path());
 }
 
@@ -211,7 +212,7 @@ void ArchiveDir::Commit::done() {
     std::error_code ec;
 
     std::filesystem::remove_all(deleted_directory, ec);
-    for (auto directory : cleanup_directories) {
+    for (const auto &directory : cleanup_directories) {
         remove_directories_up_to(directory, archive->name);
     }
 }
@@ -231,7 +232,7 @@ void ArchiveDir::Commit::ensure_file_doesnt_exist(const std::filesystem::path &f
     if (std::filesystem::exists(file)) {
         auto new_name = make_unique_path(file);
         std::filesystem::rename(file, new_name);
-        undos.push_back(Operation(new_name, file));
+        undos.emplace_back(new_name, file);
         renamed_files[file] = new_name;
     }
 }
@@ -241,14 +242,14 @@ void ArchiveDir::Commit::ensure_parent_directory(const std::filesystem::path &fi
     auto directory = file.parent_path();
     if (!std::filesystem::exists(directory)) {
         std::filesystem::create_directory(directory);
-        undos.push_back(Operation(directory));
+        undos.emplace_back(directory);
     }
 }
 
 
 bool ArchiveDir::read_infos_xxx() {
     try {
-	 Dir dir(name, contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY ? false : true);
+	 Dir dir(name, !(contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY));
 	 std::filesystem::path filepath;
 
 	 while ((filepath = dir.next()) != "") {
@@ -256,7 +257,7 @@ bool ArchiveDir::read_infos_xxx() {
                  continue;
              }
 
-             files.push_back(File());
+             files.emplace_back();
              auto &f = files[files.size() - 1];
              
              f.name = filepath.string().substr(name.size() + 1);
@@ -275,7 +276,7 @@ bool ArchiveDir::read_infos_xxx() {
 
 
 void ArchiveDir::get_last_update() {
-    struct stat st;
+    struct stat st{};
 
     contents->size = 0;
     if (stat(name.c_str(), &st) < 0) {
@@ -310,7 +311,7 @@ ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optiona
     zip_error_init(&error);
     zip_source_t *source = zip_source_file_create(filename.c_str(), start, length.has_value() ? static_cast<int64_t>(length.value()) : -1, &error);
     
-    if (source == NULL) {
+    if (source == nullptr) {
         throw Exception("can't open '%s': %s", filename.c_str(), zip_error_strerror(&error));
     }
     return std::make_shared<ZipSource>(source);
@@ -318,13 +319,20 @@ ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optiona
 
 
 time_t ArchiveDir::get_mtime(const std::string &file) {
-    struct stat st;
+    struct stat st{};
     
     if (stat(file.c_str(), &st) < 0) {
         return 0;
     }
     
     return st.st_mtime;
+}
+
+
+std::filesystem::path ArchiveDir::make_added_name(const std::filesystem::path& directory, const std::string& name) {
+    std::string temp = name;
+    std::replace(temp.begin(), temp.end(), '/', '_');
+    return make_unique_path(directory / temp);
 }
 
 

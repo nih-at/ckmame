@@ -31,490 +31,448 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "Dumpgame.h"
+
 #include <algorithm>
 #include <cerrno>
-#include <cinttypes>
 #include <cstring>
 
 #include "compat.h"
-#include "config.h"
 
-#include "error.h"
+#include "Commandline.h"
 #include "Exception.h"
-#include "globals.h"
 #include "RomDB.h"
 #include "Stats.h"
+#include "globals.h"
 #include "util.h"
 
+std::vector<Commandline::Option> dumpgame_options = {
+    Commandline::Option("brief", 'b', "brief listing (omit ROM details)"),
+    Commandline::Option("checksum", 'c', "find games containing ROMs or disks with given checksums"),
+    Commandline::Option("dats", "list dats"),
+    Commandline::Option("detector", "print detector"),
+    Commandline::Option("disks", "list disks"),
+    Commandline::Option("games", "list games"),
+    Commandline::Option("hash-types", "show which hash types are used"),
+    Commandline::Option("summary", "print summary of ROM set")};
 
-static int dump_game(const std::string &, int);
-static int dump_hashtypes(int);
-static int dump_list(int);
-static int dump_dat(int);
-static int dump_special(const char *);
-static int dump_stats(int);
-static void print_clones(GamePtr game);
-static void print_dat(const DatEntry &de);
-static void print_hashtypes(int);
+std::unordered_set<std::string> dumpgame_used_variables = {"rom_db"};
 
-const char *usage = "Usage: %s [-h|-V]\n\
-       %s [-b] [-D dbfile] [game ...]\n\
-       %s [-b] [-D dbfile] [-c | -d] [checksum ...]\n";
-
-const char help_head[] = "dumpgame (" PACKAGE ") by Dieter Baron and"
-		   " Thomas Klausner\n\n";
-
-const char help[] = "\n\
-  -b, --brief          brief listing (omit ROM details)\n\
-  -c, --checksum       find games containing ROMs with given checksums\n\
-  -D, --db dbfile      use database dbfile\n\
-  -d, --disk           find games containing disks with given checksums\n\
-  -h, --help           display this help message\n\
-  -V, --version        display version number\n\
-\n\
-Report bugs to " PACKAGE_BUGREPORT ".\n";
-
-const char version_string[] = "dumpgame (" PACKAGE " " VERSION ")\n\
-Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner\n\
-" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
-
-#define OPTIONS "hbcD:dV"
-
-struct option options[] = {
-    {"brief", 0, 0, 'b'}, {"checksum", 0, 0, 'c'}, {"db", 1, 0, 'D'}, {"disk", 0, 0, 'd'}, {"help", 0, 0, 'h'}, {"version", 0, 0, 'V'}, {NULL, 0, 0, 0},
-};
+Dumpgame::Dumpgame() : Command("dumpgame", "[game|checksum ...]", dumpgame_options, dumpgame_used_variables), brief_mode(false), find_checksum(false), first(true) {}
 
 static const char *where_name[] = {"game", "cloneof", "grand-cloneof"};
 
-static void
-print_checksums(const Hashes *hashes) {
+
+std::string Dumpgame::format_checksums(const Hashes *hashes) {
+    std::string result;
     for (int i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
-	if (hashes->has_type(i)) {
-            printf(" %s %s", Hashes::type_name(i).c_str(), hashes->to_string(i).c_str());
+        if (hashes->has_type(i)) {
+            result += " " + Hashes::type_name(i) + " " + hashes->to_string(i);
         }
     }
+    return result;
 }
 
 
-static void
-print_diskline(Rom *disk) {
-    printf("\t\tdisk %-12s", disk->name.c_str());
-    print_checksums(&disk->hashes);
-    printf(" status %s in %s", disk->status_name(true).c_str(), where_name[disk->where]);
+void Dumpgame::print_diskline(Rom *disk) {
+    auto message = "\t\tdisk " + pad_string(disk->name, 12) + format_checksums(&disk->hashes) + " status " + disk->status_name(true) + " in " + where_name[disk->where];
     if (!disk->merge.empty() && disk->name != disk->merge) {
-        printf(" (%s)", disk->merge.c_str());
+        message += " (" + disk->merge + ")";
     }
-    putc('\n', stdout);
+    output.message(message);
 }
 
 
-static void
-print_footer(int matches, Hashes *hash) {
-    printf("%d matches found for checksum", matches);
-    print_checksums(hash);
-    putc('\n', stdout);
-}
-
-
-static void
-print_romline(Rom *rom) {
-    printf("\t\tfile %-12s  size ", rom->name.c_str());
+void Dumpgame::print_romline(Rom *rom) {
+    auto message = "\t\tfile " + pad_string(rom->name, 12) + "  size ";
     if (rom->is_size_known()) {
-	printf("%7" PRIu64, rom->hashes.size);
+        message += pad_string_left(std::to_string(rom->hashes.size), 7);
     }
     else {
-	printf("unknown");
+        message += "unknown";
     }
-    print_checksums(&rom->hashes);
-    printf(" status %s in %s", rom->status_name(true).c_str(), where_name[rom->where]);
+    message += format_checksums(&rom->hashes);
+    message += " status " + rom->status_name(true) + " in " + where_name[rom->where];
     if (!rom->merge.empty() && rom->name != rom->merge) {
-	printf(" (%s)", rom->merge.c_str());
+        message += " (" + rom->merge + ")";
     }
-    putc('\n', stdout);
+    output.message(message);
 }
 
 
-static void print_match(GamePtr game, filetype_t ft, size_t i) {
+void Dumpgame::print_match(const GamePtr& game, filetype_t ft, size_t i) {
     static std::string name;
 
     if (name.empty() || game->name != name) {
-	name = game->name;
-	printf("In game %s:\n", name.c_str());
+        output.message("In game " + game->name + ":");
     }
 
     if (ft == TYPE_DISK) {
-	print_diskline(&game->files[ft][i]);
+        print_diskline(&game->files[ft][i]);
     }
     else {
-	print_romline(&game->files[ft][i]);
+        print_romline(&game->files[ft][i]);
     }
 }
 
 
-static void print_matches(filetype_t ft, Hashes *hash) {
-    int matches_count = 0;
+void Dumpgame::print_matches(Hashes *hash) {
+    for (size_t ft = 0; ft < TYPE_MAX; ft++) {
+        auto filetype = static_cast<filetype_t>(ft);
+        auto matches = db->read_file_by_hash(filetype, *hash);
 
-    auto matches = db->read_file_by_hash(ft, *hash);
-    if (matches.empty()) {
-	print_footer(0, hash);
-	return;
-    }
+        for (const auto &match : matches) {
+            if ((match.rom.hashes.get_types() & hash->get_types()) != hash->get_types()) {
+                continue;
+            }
+            auto game = db->read_game(match.game_name);
+            if (!game) {
+                output.error("db error: %s not found, though in hash index", match.game_name.c_str());
+                /* TODO: remember error */
+                continue;
+            }
 
-    for (size_t i = 0; i < matches.size(); i++) {
-	auto match = matches[i];
-        
-        if ((match.rom.hashes.get_types() & hash->get_types()) != hash->get_types()) {
-            continue;
+            print_match(game, filetype, match.index);
         }
-	auto game = db->read_game(match.game_name);
-	if (!game) {
-	    myerror(ERRDEF, "db error: %s not found, though in hash index", match.game_name.c_str());
-	    /* TODO: remember error */
-	    continue;
-	}
-
-	print_match(game, ft, match.index);
-	matches_count++;
     }
-
-    print_footer(matches_count, hash);
 }
 
 
-int
-main(int argc, char **argv) {
-    int found, first;
-    const char *dbname;
-    int c;
-    int find_checksum, brief_mode;
-    filetype_t filetype = TYPE_ROM;
+int main(int argc, char **argv) {
+    auto command = Dumpgame();
 
-    setprogname(argv[0]);
+    return command.run(argc, argv);
+}
 
-    dbname = getenv("MAMEDB");
-    if (dbname == NULL)
-	dbname = RomDB::default_name.c_str();
 
-    find_checksum = brief_mode = 0;
-
-    opterr = 0;
-    while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
-	switch (c) {
-	case 'b':
-	    brief_mode = 1;
-	    break;
-	case 'c':
-	    find_checksum = 1;
-	    filetype = TYPE_ROM;
-	    break;
-	case 'D':
-	    dbname = optarg;
-	    break;
-	case 'd':
-	    find_checksum = 1;
-	    filetype = TYPE_DISK;
-	    break;
-	case 'h':
-	    fputs(help_head, stdout);
-	    printf(usage, getprogname(), getprogname(), getprogname());
-	    fputs(help, stdout);
-	    exit(0);
-	case 'V':
-	    fputs(version_string, stdout);
-	    exit(0);
-	default:
-	    fprintf(stderr, usage, getprogname(), getprogname(), getprogname());
-	    exit(1);
-	}
+void Dumpgame::global_setup(const ParsedCommandline &commandline) {
+    for (const auto &option : commandline.options) {
+        if (option.name == "brief") {
+            brief_mode = true;
+        }
+        else if (option.name == "checksum") {
+            find_checksum = true;
+        }
+        else if (option.name == "dats") {
+            specials.insert(DATS);
+        }
+        else if (option.name == "detector") {
+            specials.insert(DETECTOR);
+        }
+        else if (option.name == "disks") {
+            specials.insert(DISKS);
+        }
+        else if (option.name == "hash-types") {
+            specials.insert(HASH_TYPES);
+        }
+        else if (option.name == "games") {
+            specials.insert(GAMES);
+        }
+        else if (option.name == "summary") {
+            specials.insert(SUMMARY);
+        }
     }
+
+    arguments = commandline.arguments;
+    found.resize(arguments.size(), false);
+}
+
+
+bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
+    try {
+        db = std::make_unique<RomDB>(configuration.rom_db, DBH_READ);
+    } catch (std::exception &e) {
+        // TODO: catch exception for unsupported database version and report differently
+        output.error("can't open database '%s': %s", configuration.rom_db.c_str(), strerror(errno));
+        return false;
+    }
+    output.set_error_database(db.get());
+
+    std::vector<std::string> list;
 
     try {
-        try {
-            db = std::make_unique<RomDB>(dbname, DBH_READ);
-        }
-        catch (std::exception &e) {
-            // TODO: catch exception for unsupported database version and report differently
-            myerror(0, "can't open database '%s': %s", dbname, strerror(errno));
-            exit(1);
-        }
-        seterrdb(db.get());
+        list = db->read_list(DBH_KEY_LIST_GAME);
+    } catch (Exception &e) {
+        output.error("list of games not found in database '%s': %s", configuration.rom_db.c_str(), e.what());
+        return false;
+    }
+    std::sort(list.begin(), list.end());
 
-        std::vector<std::string> list;
-        
-        try {
-            list = db->read_list(DBH_KEY_LIST_GAME);
+    for (auto key : specials) {
+        switch (key) {
+            case DATS:
+                dump_dats();
+                break;
+
+            case DETECTOR:
+                dump_detector();
+                break;
+
+            case DISKS:
+                dump_list(DBH_KEY_LIST_DISK);
+                break;
+
+            case GAMES:
+                dump_list(DBH_KEY_LIST_GAME);
+                break;
+
+            case HASH_TYPES:
+                dump_hash_types();
+                break;
+
+            case SUMMARY:
+                dump_stats();
+                break;
         }
-        catch (Exception &e) {
-            myerror(ERRDEF, "list of games not found in database '%s': %s", dbname, e.what());
-            exit(1);
-        }
-        std::sort(list.begin(), list.end());
+    }
 
-        /* find matches for ROMs */
-        if (find_checksum != 0) {
-            Hashes match;
 
-            for (auto i = optind; i < argc; i++) {
-                /* checksum */
-                if ((match.set_from_string(argv[i])) == -1) {
-                    myerror(ERRDEF, "error parsing checksum '%s'", argv[i]);
-                    exit(2);
-                }
+    /* find matches for ROMs */
+    if (find_checksum) {
+        Hashes match;
 
-                print_matches(filetype, &match);
+        for (const auto &argument : arguments) {
+            if (match.set_from_string(argument) == -1) {
+                output.error("error parsing checksum '%s'", argument.c_str());
+                continue;
             }
-            exit(0);
-        }
 
-        first = 1;
-        for (auto i = optind; i < argc; i++) {
-            if (strcspn(argv[i], "*?[]{}") == strlen(argv[i])) {
-                if (argv[i][0] == '/') {
-                    if (first)
-                        first = 0;
-                    else
-                        putc('\n', stdout);
-                    dump_special(argv[i]);
-                }
-                else if (std::binary_search(list.begin(), list.end(), argv[i])) {
-                    if (first)
-                        first = 0;
-                    else
-                        putc('\n', stdout);
-                    dump_game(argv[i], brief_mode);
-                }
-                else
-                    myerror(ERRDEF, "game '%s' unknown", argv[i]);
+            print_matches(&match);
+        }
+        return true;
+    }
+
+    size_t index = 0;
+    for (const auto &argument : arguments) {
+        if (!is_pattern(argument)) {
+            if (first) {
+                first = false;
             }
             else {
-                found = 0;
-                for (size_t j = 0; j < list.size(); j++) {
-                    if (fnmatch(argv[i], list[j].c_str(), 0) == 0) {
-                        if (first) {
-                            first = 0;
-                        }
-                        else {
-                            putc('\n', stdout);
-                        }
-                        dump_game(list[j], brief_mode);
-                        found = 1;
-                    }
-                }
-                if (!found)
-                    myerror(ERRDEF, "no game matching '%s' found", argv[i]);
+                output.message(static_cast<std::string>(""));
+            }
+            if (std::binary_search(list.begin(), list.end(), argument)) {
+                found[index] = true;
+                dump_game(argument);
             }
         }
-
-        db = NULL;
-
-        return 0;
+        else {
+            for (const auto &name : list) {
+                if (fnmatch(argument.c_str(), name.c_str(), 0) == 0) {
+                    if (first) {
+                        first = false;
+                    }
+                    else {
+                        output.message(static_cast<std::string>(""));
+                    }
+                    dump_game(name);
+                    found[index] = true;
+                }
+            }
+        }
+        index += 1;
     }
-    catch (const std::exception &exception) {
-        fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), exception.what());
-        exit(1);
-    }
+
+    db = nullptr;
+
+    return true;
 }
 
 
-static void print_clones(GamePtr game) {
+bool Dumpgame::global_cleanup() {
+    auto ok = true;
+
+    if (!find_checksum) {
+        size_t index = 0;
+        for (const std::string &argument : arguments) {
+            if (!found[index]) {
+                if (is_pattern(arguments[index])) {
+                    output.error("no game matching '%s' found", argument.c_str());
+                }
+                else {
+                    output.error("game '%s' not found", argument.c_str());
+                }
+                ok = false;
+            }
+            index += 1;
+        }
+    }
+
+    return ok;
+}
+
+
+void Dumpgame::print_clones(const GamePtr& game) {
     auto clones = db->get_clones(game->name);
-    
+
     if (clones.empty()) {
         return;
     }
-    
+
     size_t i;
+    std::string message;
     for (i = 0; i < clones.size(); i++) {
         if (i == 0) {
-            printf("Clones:");
+            message = "Clones:";
         }
         if (i % 6 == 0) {
-	    printf("\t\t");
+            message += "\t\t";
         }
-	printf("%-8s ", clones[i].c_str());
+        message += pad_string(clones[i], 8) + " ";
         if (i % 6 == 5) {
-	    printf("\n");
+            output.message(message);
+            message = "";
         }
     }
-    if (i % 6 != 0) {
-	printf("\n");
+    if (!message.empty()) {
+        output.message(message);
     }
 }
 
 
-static int
-dump_game(const std::string &name, int brief_mode) {
+bool Dumpgame::dump_game(const std::string &name) const {
     GamePtr game;
 
     auto dat = db->read_dat();
 
     if (dat.empty()) {
-	myerror(ERRDEF, "cannot read dat info");
-	return -1;
+        output.error("cannot read dat info");
+        return false;
     }
 
-    if ((game = db->read_game(name)) == NULL) {
-	myerror(ERRDEF, "game unknown (or database error): '%s'", name.c_str());
-	return -1;
+    if ((game = db->read_game(name)) == nullptr) {
+        output.error("game unknown (or database error): '%s'", name.c_str());
+        return false;
     }
 
-    /* TODO: use print_* functions */
-    printf("Name:\t\t%s\n", game->name.c_str());
+    output.message("Name:\t\t" + game->name);
     if (dat.size() > 1) {
-	printf("Source:\t\t");
-        print_dat(dat[game->dat_no]);
-	putc('\n', stdout);
+        output.message("Source:\t\t" + format_dat(dat[game->dat_no]));
     }
     if (!game->description.empty()) {
-	printf("Description:\t%s\n", game->description.c_str());
+        output.message("Description:\t" + game->description);
     }
 
     if (!brief_mode) {
         if (!game->cloneof[0].empty()) {
-            printf("Cloneof:\t%s\n", game->cloneof[0].c_str());
+            output.message("Cloneof:\t" + game->cloneof[0]);
         }
         if (!game->cloneof[1].empty()) {
-            printf("Grand-Cloneof:\t%s\n", game->cloneof[1].c_str());
+            output.message("Grand-Cloneof:\t" + game->cloneof[1]);
         }
-        
+
         print_clones(game);
 
         if (!game->files[TYPE_ROM].empty()) {
-            printf("ROMs:\n");
+            output.message("ROMs:");
             for (auto &file : game->files[TYPE_ROM]) {
                 print_romline(&file);
             }
         }
 
         if (!game->files[TYPE_DISK].empty()) {
-            printf("Disks:\n");
+            output.message("Disks:");
             for (auto &file : game->files[TYPE_DISK]) {
                 print_diskline(&file);
             }
         }
-
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED1*/
-static int
-dump_hashtypes(int dummy) {
-    printf("roms: ");
-    print_hashtypes(db->hashtypes(TYPE_ROM));
-    printf("\ndisks: ");
-    print_hashtypes(db->hashtypes(TYPE_DISK));
-    putc('\n', stdout);
-
-    return 0;
+void Dumpgame::dump_hash_types() {
+    output.message("roms: " + format_hash_types(db->hashtypes(TYPE_ROM)));
+    output.message("disks: " + format_hash_types(db->hashtypes(TYPE_DISK)));
 }
 
 
-static int
-dump_list(int type) {
+bool Dumpgame::dump_list(int type) {
     try {
         auto list = db->read_list(static_cast<enum dbh_list>(type));
 
-        for (size_t i = 0; i < list.size(); i++) {
-            printf("%s\n", list[i].c_str());
+        for (const auto &name : list) {
+            output.message(name);
         }
-    }
-    catch (Exception &e) {
-        myerror(ERRDB, "db error reading list: %s", e.what());
-        return -1;
+    } catch (Exception &e) {
+        output.error_database("db error reading list: %s", e.what());
+        return false;
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED1*/
-static int
-dump_dat(int dummy) {
+bool Dumpgame::dump_dats() {
     auto dat = db->read_dat();
-    
+
     if (dat.empty()) {
-	myerror(ERRDEF, "db error reading /dat");
-	return -1;
+        output.error("db error reading dats");
+        return false;
     }
 
     for (size_t i = 0; i < dat.size(); i++) {
+        std::string message;
         if (dat.size() > 1) {
-            printf("%2zu: ", i);
+            message += pad_string_left(std::to_string(i), 2) + ": ";
         }
-        print_dat(dat[i]);
-	putc('\n', stdout);
+        message += format_dat(dat[i]);
+        output.message(message);
     }
 
-    return 0;
+    return true;
 }
 
 
-/*ARGSUSED1*/
-static int
-dump_detector(int dummy) {
+void Dumpgame::dump_detector() {
     DetectorPtr detector;
 
     if (!db->detectors.empty()) {
         detector = db->detectors.begin()->second;
-        printf("%s", detector->name.c_str());
+        std::string message;
+        message += detector->name;
         if (!detector->version.empty()) {
-            printf(" (%s)", detector->version.c_str());
+            message += " (" + detector->version + ")";
         }
-	printf("\n");
+        output.message(message);
     }
-
-    return 0;
 }
 
 
-static int
-dump_special(const char *name) {
-    static const struct {
-	const char *key;
-	int (*f)(int);
-	int arg;
-    } keys[] = {{"/dat", dump_dat, 0}, {"/detector", dump_detector, 0}, {"/hashtypes", dump_hashtypes, 0}, {"/list", dump_list, DBH_KEY_LIST_GAME}, {"/list/disk", dump_list, DBH_KEY_LIST_DISK}, {"/list/game", dump_list, DBH_KEY_LIST_GAME}, {"/stats", dump_stats, 0}};
-    static const size_t nkeys = sizeof(keys) / sizeof(keys[0]);
+void Dumpgame::dump_stats() {
+    auto stats = db->get_stats();
 
-    for (size_t i = 0; i < nkeys; i++) {
-	if (strcasecmp(name, keys[i].key) == 0)
-	    return keys[i].f(keys[i].arg);
-    }
-
-    myerror(ERRDEF, "unknown special: '%s'", name);
-    return -1;
-}
-
-
-/*ARGSUSED1*/
-static int
-dump_stats(int dummy) {
-    stats = db->get_stats();
-    
     stats.print(stdout, true);
-
-    return 0;
 }
 
 
-static void print_dat(const DatEntry &de) {
-    printf("%s (%s)", de.name.empty() ? "unknown" : de.name.c_str(), de.version.empty() ? "unknown" : de.version.c_str());
+std::string Dumpgame::format_dat(const DatEntry &de) {
+    return ((de.name.empty() ? "unknown" : de.name) + " (" + (de.version.empty() ? "unknown" : de.version) + ")");
 }
 
 
-#define DO(ht, x, s) (((ht) & (x)) ? printf("%s%s", (first ? first = 0, "" : ", "), (s)) : 0)
+std::string Dumpgame::format_hash_types(int ht) {
+    std::string message;
+    if (ht & Hashes::TYPE_CRC) {
+        message = "crc";
+    }
+    if (ht & Hashes::TYPE_MD5) {
+        if (message.length() > 0) {
+            message += ", ";
+        }
+        message += "md5";
+    }
+    if (ht & Hashes::TYPE_SHA1) {
+        if (message.length() > 0) {
+            message += ", ";
+        }
+        message += "sha1";
+    }
+    return message;
+}
 
 
-static void
-print_hashtypes(int ht) {
-    int first;
-
-    first = 1;
-
-    DO(ht, Hashes::TYPE_CRC, "crc");
-    DO(ht, Hashes::TYPE_MD5, "md5");
-    DO(ht, Hashes::TYPE_SHA1, "sha1");
+bool Dumpgame::is_pattern(const std::string &string) {
+    return strcspn(string.c_str(), "*?[]{}") != string.length();
 }

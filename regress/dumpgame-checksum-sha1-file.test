@@ -1,0 +1,16 @@
+description dumpgame: test --checksum SHA1 for file
+return 0
+args --checksum 111bb8b7549e3386a996845405b02164f17c7b37
+program dumpgame
+stdout-data
+In game 1-8:
+		file 08.rom        size       8 crc 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 status  in game
+In game 1-8a:
+		file 08.rom        size       8 crc 12345678 sha1 111bb8b7549e3386a996845405b02164f17c7b37 status  in game
+In game 2-48:
+		file 08.rom        size       8 crc 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 status  in game
+In game clone-8:
+		file 08.rom        size       8 crc 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 status  in game
+In game nogood-2:
+		file 08.rom        size       8 crc 3656897d sha1 111bb8b7549e3386a996845405b02164f17c7b37 status  in game
+end-of-data

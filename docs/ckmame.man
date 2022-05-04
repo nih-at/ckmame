@@ -1,5 +1,5 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
-.\" Copyright (c) 2003-2018 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2003-2022 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "CKMAME" "1" "May 6, 2021" "NiH" "General Commands Manual"
+.TH "CKMAME" "1" "January 14, 2022" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -36,51 +36,49 @@
 .SH "SYNOPSIS"
 .HP 7n
 \fBckmame\fR
-[\fB\-bCcdFfhjKkLlSsuVvwX\fR]
+[\fB\-CcFhjuVv\fR]
 [\fB\-D\fR\ \fIdbfile\fR]
 [\fB\-e\fR\ \fIdir\fR]
 [\fB\-O\fR\ \fIdbfile\fR]
 [\fB\-R\fR\ \fIdir\fR]
 [\fB\-T\fR\ \fIfile\fR]
 [\fB\-\fR\fB\-autofixdat\fR]
-[\fB\-\fR\fB\-cleanup-extra\fR]
-[\fB\-\fR\fB\-correct\fR]
+[\fB\-\fR\fB\-config\fR\ \fIfile\fR]
+[\fB\-\fR\fB\-copy-from-extra\fR]
+[\fB\-\fR\fB\-fixdat\fR\ \fIdatfile\fR]
+[\fB\-\fR\fB\-keep-old-duplicate\fR]
+[\fB\-\fR\fB\-no-complete-games-only\fR]
+[\fB\-\fR\fB\-complete-games-only\fR]
+[\fB\-\fR\fB\-report-correct\fR]
 [\fB\-\fR\fB\-db\fR\ \fIdbfile\fR]
-[\fB\-\fR\fB\-delete-duplicate\fR]
-[\fB\-\fR\fB\-delete-found\fR]
-[\fB\-\fR\fB\-delete-long\fR]
-[\fB\-\fR\fB\-delete-unknown\fR]
+[\fB\-\fR\fB\-extra-directory\fR\ \fIdir\fR]
 [\fB\-\fR\fB\-fix\fR]
-[\fB\-\fR\fB\-fixdat\fR\ \fIfile\fR]
-[\fB\-\fR\fB\-games-from\fR\ \fIfile\fR]
 [\fB\-\fR\fB\-help\fR]
-[\fB\-\fR\fB\-ignore-extra\fR]
-[\fB\-\fR\fB\-ignore-unknown\fR]
-[\fB\-\fR\fB\-keep-duplicate\fR]
-[\fB\-\fR\fB\-keep-found\fR]
-[\fB\-\fR\fB\-move-long\fR]
-[\fB\-\fR\fB\-move-unknown\fR]
-[\fB\-\fR\fB\-nobroken\fR]
-[\fB\-\fR\fB\-nofixable\fR]
-[\fB\-\fR\fB\-nonogooddumps\fR]
-[\fB\-\fR\fB\-nosuperfluous\fR]
-[\fB\-\fR\fB\-nowarnings\fR]
+[\fB\-\fR\fB\-move-from-extra\fR]
+[\fB\-\fR\fB\-no-report-correct\fR]
+[\fB\-\fR\fB\-no-report-detailed\fR]
+[\fB\-\fR\fB\-no-report-fixable\fR]
+[\fB\-\fR\fB\-no-report-missing\fR]
+[\fB\-\fR\fB\-no-report-summary\fR]
+[\fB\-\fR\fB\-report-detailed\fR]
+[\fB\-\fR\fB\-report-fixable\fR]
+[\fB\-\fR\fB\-report-missing\fR]
+[\fB\-\fR\fB\-report-summary\fR]
+[\fB\-\fR\fB\-set\fR\ \fIname\fR]
 [\fB\-\fR\fB\-old-db\fR\ \fIdbfile\fR]
 [\fB\-\fR\fB\-rom-dir\fR\ \fIdir\fR]
+[\fB\-\fR\fB\-game-list\fR\ \fIfile\fR]
 [\fB\-\fR\fB\-roms-unzipped\fR]
-[\fB\-\fR\fB\-search\fR\ \fIdir\fR]
-[\fB\-\fR\fB\-stats\fR]
-[\fB\-\fR\fB\-superfluous\fR]
-[\fB\-\fR\fB\-verbose\fR]
 [\fB\-\fR\fB\-version\fR]
+[\fB\-\fR\fB\-verbose\fR]
 [\fIgame\ ...\fR]
 .SH "DESCRIPTION"
 \fBckmame\fR
 is a program to check ROM sets for MAME, the Multiple Arcade
 Machine Emulator (see
-\fIhttp://www.mame.net/\fR),
+\fIhttps://www.mamedev.org/\fR),
 or other emulators that provide ROM set information in a compatible
-way (e.g., Raine, Impact, or other emulators).
+way.
 This is the same format as clrmamepro dat files.
 \fBckmame\fR
 tells you which ROM files are missing or have a wrong checksum,
@@ -99,7 +97,8 @@ called clones.
 To save space, ROMs can be archived in zip files and
 dynamically unzipped by MAME when you play a game.
 \fBckmame\fR
-does only support ROM sets stored as zip files.
+does only support ROM sets stored as zip files or unpacked,
+collected in directories per game.
 .PP
 \fBckmame\fR
 tries to create a
@@ -135,175 +134,134 @@ but automatically generates the output file name from the datfile's
 name and version number:
 \(lq\fIfix_$SYSTEM ($VERSION).dat\fR\(rq.
 .TP 24n
-\fB\-b,\fR \fB\-\fR\fB\-nobroken\fR
-Don't report unfixable errors.
-See also
-\fB\-f\fR
-and
-\fB\-w\fR.
+\fB\-\fR\fB\-config\fR \fIfile\fR
+read configuration from
+\fIfile\fR.
+See the
+\fICONFIG FILE\fR
+section for more details.
 .TP 24n
-\fB\-\fR\fB\-cleanup-extra\fR
-Remove files already in ROM set from extra directories.
+\fB\-\fR\fB\-copy-from-extra\fR
+Keep used files in extra directories (default).
 .TP 24n
-\fB\-C\fR, \fB\-\fR\fB\-complete-only\fR
-Only create complete sets.
-ROMs for incomplete sets are moved to the
-\fIneeded\fR
-directory.
-.TP 24n
-\fB\-c\fR, \fB\-\fR\fB\-correct\fR
-Report correct sets.
-Normally they are not mentioned.
-.TP 24n
-\fB\-D\fR \fIdbfile\fR, \fB\-\fR\fB\-db\fR \fIdbfile\fR
-Use
-\fIdbfile\fR
-as database file.
-.TP 24n
-\fB\-d\fR, \fB\-\fR\fB\-nonogooddumps\fR
-Don't report ROMs with no known good dumps.
-.TP 24n
-\fB\-\fR\fB\-delete-duplicate\fR
-Delete files present in old ROM database (default).
-See also
-\fB\-\fR\fB\-keep-duplicate\fR.
-.TP 24n
-\fB\-e\fR \fIdir\fR, \fB\-\fR\fB\-search\fR \fIdir\fR
-.br
-Look for missing files in directory
-\fIdir\fR
-and its subdirectories.
-Recommended for use with update sets.
-See also
-\fB\-j\fR.
-.TP 24n
-\fB\-F\fR, \fB\-\fR\fB\-fix\fR
-Fix ROM sets; do as much as possible, such as renaming and moving
-files.
-.TP 24n
-\fB\-f\fR, \fB\-\fR\fB\-nofixable\fR
-Don't report fixable errors.
-See also
-\fB\-b\fR
-and
-\fB\-w\fR.
-.TP 24n
-\fB\-\fR\fB\-fixdat\fR \fIname\fR
+\fB\-\fR\fB\-fixdat\fR \fIdatfile\fR
 Create a clrmamepro-style
 \(lqfixdat\(rq
 file, i.e. an XML file containing only the files missing in the ROM
 set compared to the database used.
 .TP 24n
-\fB\-h\fR, \fB\-\fR\fB\-help\fR
-Display a short help message.
+\fB\-\fR\fB\-keep-old-duplicate\fR
+Keep files in ROM set that are also in old ROM database.
 .TP 24n
-\fB\-\fR\fB\-ignore-unknown\fR
-Ignore unknown files when fixing.
-They will still be reported.
+\fB\-\fR\fB\-no-complete-games-only\fR
+Keep partial games in ROM set (default).
 .TP 24n
-\fB\-j\fR, \fB\-\fR\fB\-delete-found\fR
-When using
-\fB\-e\fR,
-delete files that are copied to the ROM set.
-See also
-\fB\-\fR\fB\-keep-found\fR.
+\fB\-C\fR, \fB\-\fR\fB\-complete-games-only\fR
+Only create complete games.
+ROMs for incomplete games are moved to the
+\fIneeded\fR
+directory.
 .TP 24n
-\fB\-\fR\fB\-keep-duplicate\fR
-Keep files present in old ROM database.
-See also
-\fB\-\fR\fB\-delete-duplicate\fR.
-.TP 24n
-\fB\-\fR\fB\-keep-found\fR
-When using
-\fB\-e\fR,
-do not remove files that are copied to the ROM set (default).
-See also
-\fB\-j\fR.
-.TP 24n
-\fB\-K\fR, \fB\-\fR\fB\-move-unknown\fR
-Move unknown files when fixing (default).
-They are moved into a zip file with the same name under
-\fIroms/garbage\fR.
-See also
-\fB\-k\fR.
-.TP 24n
-\fB\-k\fR, \fB\-\fR\fB\-delete-unknown\fR
+\fB\-c\fR, \fB\-\fR\fB\-report-correct\fR
 .br
-Delete unknown files when fixing.
-See also
-\fB\-K\fR.
+Report status of ROMs that are correct.
+By default they are not mentioned.
 .TP 24n
-\fB\-L\fR, \fB\-\fR\fB\-move-long\fR
-Move too long files when fixing (default).
-See also
-\fB\-K\fR
-and
-\fB\-l\fR.
-.TP 24n
-\fB\-l\fR, \fB\-\fR\fB\-delete-long\fR
-Delete long files when fixing.
-See also
-\fB\-L\fR.
-.TP 24n
-\fB\-O\fR \fIdbfile\fR, \fB\-\fR\fB\-old-db\fR \fIdbfile\fR
-Assume that files listed in
+\fB\-D\fR, \fB\-\fR\fB\-db\fR \fIdbfile\fR
+Use
 \fIdbfile\fR
-exist elsewhere.
+instead of the default
+\fImame.db\fR
+as the database.
 .TP 24n
-\fB\-R\fR \fIdir\fR, \fB\-\fR\fB\-rom-dir\fR \fIdir\fR
-Look for roms in
-\fIdir\fR.
-Default is
-\(lqroms\(rq.
+\fB\-e\fR, \fB\-\fR\fB\-extra-directory\fR \fIdir\fR
+Search for missing files in directory dir (multiple directories can be
+specified by repeating this option).
 .TP 24n
-\fB\-\fR\fB\-stats\fR
-Display completeness statistics of ROM set at end of run.
+\fB\-F\fR, \fB\-\fR\fB\-fix\fR
+Fix the ROM set.
+By default, only the status is reported.
 .TP 24n
-\fB\-\fR\fB\-superfluous\fR
-Only check for superfluous files in ROM sets.
+\fB\-h\fR, \fB\-\fR\fB\-help\fR
+Display a short usage.
 .TP 24n
-\fB\-s\fR, \fB\-\fR\fB\-nosuperfluous\fR
-Don't report superfluous (unneeded) files.
+\fB\-j\fR, \fB\-\fR\fB\-move-from-extra\fR
+Remove used files from extra directories.
+Opposite of
+\fB\-\fR\fB\-copy-from-extra\fR.
 .TP 24n
-\fB\-T\fR \fIfile\fR, \fB\-\fR\fB\-games-from\fR \fIfile\fR
-Read list of games to check from
+\fB\-\fR\fB\-no-report-correct\fR
+Don't report status of ROMs that are correct (default).
+.TP 24n
+\fB\-\fR\fB\-no-report-detailed\fR
+Don't report status of every ROM (default).
+.TP 24n
+\fB\-\fR\fB\-no-report-fixable\fR
+Don't report status of ROMs that can be fixed.
+.TP 24n
+\fB\-\fR\fB\-no-report-missing\fR
+Don't report status of ROMs that are missing.
+.TP 24n
+\fB\-\fR\fB\-no-report-summary\fR
+Don't print summary of ROM set status (default).
+.TP 24n
+\fB\-\fR\fB\-report-detailed\fR
+Report status of every ROM that is checked.
+.TP 24n
+\fB\-\fR\fB\-report-fixable\fR
+Report status of ROMs that can be fixed (default).
+.TP 24n
+\fB\-\fR\fB\-report-missing\fR
+Report status of ROMs that are missing (default).
+.TP 24n
+\fB\-\fR\fB\-report-summary\fR
+Print summary of ROM set status at the end of the output.
+.TP 24n
+\fB\-\fR\fB\-set\fR \fIname\fR
+Check ROM set name.
+This uses the configuration from the corresponding section in the
+Config files.
+See
+\fICONFIG FILES\fR
+for details
+.TP 24n
+\fB\-O\fR, \fB\-\fR\fB\-old-db\fR \fIdbfile\fR
+Assume that the files in the database
+\fIdbfile\fR
+exist in some other location (e.g., on an offline disk or backup
+medium).
+.TP 24n
+\fB\-R\fR, \fB\-\fR\fB\-rom-dir\fR \fIdir\fR
+Look for the ROM set in the directory
+\fIdir\fR
+instead of the default
+\fIroms\fR.
+.TP 24n
+\fB\-T\fR, \fB\-\fR\fB\-game-list\fR \fIfile\fR
+.br
+Read the list of games to check from
 \fIfile\fR.
+\fIfile\fR
+should contain one line per game.
 .TP 24n
 \fB\-u\fR, \fB\-\fR\fB\-roms-unzipped\fR
-ROMs are files on the disk.
-Each game is represented by a directory instead of a ZIP archive.
+Instead of looking for ROMs in the ZIP archive
+\fIroms/games.zip\fR,
+look for them in the directory
+\fIroms/games/\fR
+in the file system.
 .TP 24n
 \fB\-V\fR, \fB\-\fR\fB\-version\fR
-Display program name and version number.
+Display version number.
 .TP 24n
 \fB\-v\fR, \fB\-\fR\fB\-verbose\fR
 Print fixes made.
-Only useful with
-\fB\-F\fR.
-.TP 24n
-\fB\-w\fR, \fB\-\fR\fB\-nowarnings\fR
-Print only unfixable error, like missing or completely incorrect ROMs.
-See also
-\fB\-b\fR
-and
-\fB\-f\fR.
-.TP 24n
-\fB\-X\fR, \fB\-\fR\fB\-ignore-extra\fR
-Do not mention extra files that are in the ROM dirs.
-Most of the time these are ROM sets whose names have changed.
-Additionally,
-\fBckmame\fR
-creates a
-\fIroms/garbage\fR
-directory (see also
-\fB\-K\fR),
-which you will also be warned about.
 .SH "ENVIRONMENT"
 .TP 12n
 \fRMAMEDB\fR
 Location for the database file.
 Can be overridden with the
-\fB\-D\fR
+\fB\-\fR\fB\-dbfile\fR
 option.
 Defaults to
 \(lq\fImame.db\fR\(rq.
@@ -311,11 +269,23 @@ Defaults to
 \fRMAMEDB_OLD\fR
 Location for the database file of files that exist elsewhere.
 Can be overridden with the
-\fB\-O\fR
+\fB\-\fR\fB\-old-db\fR
 option.
 Defaults to
 \(lq\fIold.db\fR\(rq.
 .SH "FILES"
+By default, the configuration is read from
+\fI~/.config/ckmame/ckmamerc\fR
+and
+\fI.ckmamerc\fR
+if they exist, in this order.
+.PP
+The database file to read from defaults to
+\fImame.db\fR
+and the roms are expected in the
+\fIroms\fR
+directory.
+.PP
 Unknown files are moved to the sub-directory
 \fIunknown\fR.
 Files that will be needed by other games in the ROM set are moved
@@ -323,8 +293,6 @@ to the
 \fIneeded\fR
 directory.
 .PP
-In unzipped mode
-(\fB\-u\fR),
 \fBckmame\fR
 creates
 \fI.ckmame.db\fR
@@ -337,7 +305,7 @@ since the last run (i.e. same size and modification time).
 .SH "EXAMPLES"
 Print a report about the current state of your ROM sets in the
 \fIroms\fR
-subdir of the current dir:
+subdirectory of the current dir:
 .RS 6n
 \fBckmame\fR
 .RE
@@ -345,7 +313,7 @@ subdir of the current dir:
 Fix all sets and only report unfixable errors, omitting those
 ROMs where no good dump exists:
 .RS 6n
-\fBckmame -Fwd\fR
+\fBckmame -Fd\fR
 .RE
 .PP
 Fix all sets using the files found in
@@ -353,6 +321,91 @@ Fix all sets using the files found in
 removing files from there that are copied to the ROM set:
 .RS 6n
 \fBckmame -Fj -e updatedir\fR
+.RE
+.SS "CONFIG FILE"
+By default,
+\fBckmame\fR
+reads the config files
+\fI~/.config/ckmame/ckmamerc\fR
+and
+\fI.ckmamerc\fR
+and the one given by the
+\fB\-\fR\fB\-config\fR
+option, in this order.
+The files are in TOML format.
+The
+\(lq[global]\(rq
+section contains defaults for all sets, while the
+\(lq["SET NAME"]\(rq
+option adds overrides for the
+.RS 6n
+\(lqSET NAME\(rq
+.RE
+set (as provided by the
+\fB\-\fR\fB\-set\fR
+option).
+The options are set using the long name options from above.
+Most options are boolean options, so the "no-" options are set by
+setting the corresponding option to false, i.e.
+\fB\-\fR\fB\-no-report-missing\fR
+is written as
+.RS 6n
+report-missing = false
+.RE
+in the config file.
+\fB\-\fR\fB\-copy-from-extra\fR
+is set by
+.RS 6n
+move-from-extra = false
+.RE
+The following options can not be set from the config file:
+.RS 6n
+.PD 0
+.PP
+\fB\-\fR\fB\-config\fR
+.PP
+\fB\-\fR\fB\-fix\fR
+.PP
+\fB\-\fR\fB\-help\fR
+.PP
+\fB\-\fR\fB\-version\fR
+.RE
+.PD
+.PP
+The
+\fBextra-directory\fR
+config parameter overrides the search directories, and there is
+\fBextra-directory-append\fR
+if you want add to the search path instead.
+.PP
+For example:
+.nf
+.sp
+.RS 0n
+[global]
+verbose = true
+
+["Big Set"]
+verbose = false
+rom-dir = "Big Set ROMs"
+dbfile = "Big Set.db"
+
+["Unzipped Set"]
+roms-unzipped = true
+rom-dir = "Unzipped Set ROMs"
+dbfile = "Unzipped Set.db"
+.RE
+.fi
+.PP
+This configuration would by default report verbosely,
+but override this for the "Big Set" set.
+It would also set the rom directories and database files
+for both the "Big Set" and the "Unzipped Set" and not use
+ZIP archives for the latter.
+.PP
+Example run:
+.RS 6n
+ckmame --set Big Set
 .RE
 .SH "DIAGNOSTICS"
 Most messages should be straightforward.

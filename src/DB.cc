@@ -38,7 +38,7 @@
 #include <vector>
 
 #include "Exception.h"
-#include "types.h"
+#include "util.h"
 
 const int StatementID::have_size = 0x10000;
 const int StatementID::parameterized = 0x20000;
@@ -61,7 +61,7 @@ static const char *format_name[] = {
 
 const std::unordered_map<MigrationVersions, std::string> DB::no_migrations = { };
 
-int DB::get_version(const DBFormat &format) {
+int DB::get_version(const DBFormat &format) const {
     auto stmt = DBStatement(db, "pragma user_version");
     
     if (!stmt.step()) {
@@ -114,7 +114,7 @@ void DB::migrate(const DBFormat &format, int from_version, int to_version) {
             
             if (it != format.migrations.end()) {
                 from_version = next_version;
-                migration_steps.push_back(MigrationStep(it->second, next_version));
+                migration_steps.emplace_back(it->second, next_version);
                 made_progress = true;
                 break;
             }
@@ -144,15 +144,15 @@ void DB::close() {
 }
 
 
-std::string DB::error() {
-    if (db == NULL) {
+std::string DB::error() const {
+    if (db == nullptr) {
 	return strerror(ENOMEM);
     }
     return sqlite3_errmsg(db);
 }
 
 
-DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(NULL) {
+DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(nullptr) {
     auto needs_init = false;
     
     if (mode & DBH_TRUNCATE) {
@@ -194,11 +194,11 @@ DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(NULL)
 
 
 void DB::open(const DBFormat &format, const std::string &name, int sql3_flags, bool needs_init) {
-    if (sqlite3_open_v2(name.c_str(), &db, sql3_flags, NULL) != SQLITE_OK) {
+    if (sqlite3_open_v2(name.c_str(), &db, sql3_flags, nullptr) != SQLITE_OK) {
         throw Exception("%s", sqlite3_errmsg(db));
     }
 
-    if (sqlite3_exec(db, PRAGMAS, NULL, NULL, NULL) != SQLITE_OK) {
+    if (sqlite3_exec(db, PRAGMAS, nullptr, nullptr, nullptr) != SQLITE_OK) {
         throw Exception("can't set options: %s", sqlite3_errmsg(db));
     }
         
@@ -211,30 +211,42 @@ void DB::open(const DBFormat &format, const std::string &name, int sql3_flags, b
 }
 
 
-void DB::upgrade(int format, int version, const std::string &statement) {
+std::filesystem::path DB::make_db_file_name(const std::filesystem::path &directory, const std::string &name, bool use_central_cache) {
+    if (!use_central_cache) {
+        return directory / name;
+    }
+
+    // Adding an absolute path with / deletes everything before it, adding it as a string does what we want.
+    auto directory_name = home_directory() / ".cache" / ("ckmame" + absolute(directory).string());
+    ensure_directory(directory_name);
+    return directory_name / name;
+}
+
+
+void DB::upgrade(int format, int version, const std::string &statement) const {
     upgrade(db, format, version, statement);
 }
 
 
 void DB::upgrade(sqlite3 *db, int format, int version, const std::string &statement) {
-    if (sqlite3_exec(db, "begin exclusive transaction", NULL, NULL, NULL) != SQLITE_OK) {
+    if (sqlite3_exec(db, "begin exclusive transaction", nullptr, nullptr, nullptr) != SQLITE_OK) {
         throw Exception("can't begin transaction");
     }
-    if (sqlite3_exec(db, statement.c_str(), NULL, NULL, NULL) != SQLITE_OK) {
+    if (sqlite3_exec(db, statement.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK) {
         auto error = sqlite3_errmsg(db);
-        sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
+        sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
         throw Exception("can't set schema: %s", error);
     }
     
     char b[256];
     sprintf(b, SET_VERSION_FMT, USER_VERSION(format, version));
-    if (sqlite3_exec(db, b, NULL, NULL, NULL) != SQLITE_OK) {
-        sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
+    if (sqlite3_exec(db, b, nullptr, nullptr, nullptr) != SQLITE_OK) {
+        sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
         throw Exception("can't set version: %s", sqlite3_errmsg(db));
     }
     
-    if (sqlite3_exec(db, "commit transaction", NULL, NULL, NULL) != SQLITE_OK) {
-        sqlite3_exec(db, "rollback transaction", NULL, NULL, NULL);
+    if (sqlite3_exec(db, "commit transaction", nullptr, nullptr, nullptr) != SQLITE_OK) {
+        sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
         throw Exception("can't commit schema: %s", sqlite3_errmsg(db));
     }
 }
@@ -270,7 +282,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
         }
         start = sql_query.find("@HASH@");
         if (start != std::string::npos) {
-            std::string expanded = "";
+            std::string expanded;
             for (auto i = 1; i <= Hashes::TYPE_MAX; i <<= 1) {
                 if (statement_id.has_hash(i)) {
                     auto name = Hashes::type_name(i);

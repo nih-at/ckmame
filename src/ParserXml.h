@@ -34,16 +34,69 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <utility>
+
 #include "Parser.h"
+#include "XmlProcessor.h"
 
 class ParserXml : public Parser {
 public:
-    ParserXml(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags) { }
-    virtual ~ParserXml() { }
+    ParserXml(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options) : Parser(std::move(source), exclude, dat, output, std::move(options)) { }
+    ~ParserXml() override = default;
      
-    virtual bool parse();
+    bool parse() override;
 
-private:
+
+  private:
+    static void line_number_callback(void *context, size_t line_number);
+
+    class Arguments {
+      public:
+	explicit Arguments(filetype_t file_type, int hash_type = 0) : file_type(file_type), hash_type(hash_type) { }
+
+	filetype_t file_type;
+	int hash_type;
+    };
+
+    static const Arguments arguments_rom;
+    static const Arguments arguments_rom_crc;
+    static const Arguments arguments_rom_md5;
+    static const Arguments arguments_rom_sha1;
+    static const Arguments arguments_disk;
+    static const Arguments arguments_disk_md5;
+    static const Arguments arguments_disk_sha1;
+
+    static const std::unordered_map<std::string, XmlProcessor::Entity> entities;
+    static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_clrmamepro;
+    static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_disk;
+    static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_game;
+    static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_mame;
+    static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_mess;
+    static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_rom;
+    static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_softwarelist;
+
+    static XmlProcessor::CallbackStatus parse_file_end(void *ctx, const void *args);
+    static XmlProcessor::CallbackStatus parse_file_hash(void *ctx, const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_file_loadflag(void *ctx, const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_file_merge(void *ctx, const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_file_name(void *ctx, const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_file_start(void *ctx, const void *args);
+    static XmlProcessor::CallbackStatus parse_file_status(void *ctx, const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_file_size(void *ctx, const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_game_cloneof(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_game_description(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_game_end(void *ctx, [[maybe_unused]] const void *args);
+    static XmlProcessor::CallbackStatus parse_game_name(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_game_start(void *ctx, [[maybe_unused]] const void *args);
+    static XmlProcessor::CallbackStatus parse_header_end(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args);
+    static XmlProcessor::CallbackStatus parse_mame_build(void *context, const void *arguments, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_prog_description(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_prog_header(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_prog_name(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_prog_version(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_softwarelist_name(void *ctx, [[maybe_unused]] [[maybe_unused]] const void *args, const std::string &value);
+
+    static XmlProcessor::CallbackStatus status(bool ok) { return ok ? XmlProcessor::OK : XmlProcessor::ERROR; }
 };
 
-#endif /* ParserXml.h */
+#endif // HAD_PARSER_XML_H

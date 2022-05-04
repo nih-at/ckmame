@@ -1,18 +1,20 @@
 description test all games, some files found, create fixdat
 features LIBXML2
 return 0
-args -Fvc -D ../mamedb-merge-parent.db --fixdat fix_test.dat
+args -Fvc -D ../mamedb-merge-parent.db --create-fixdat
 file roms/parent.zip 1-8-ok.zip 1-8-ok.zip
 file-del roms/child.zip 1-8-ok.zip
-file-new fix_test.dat fixdat-missing-parent.dat
+file-new "fixdat_ckmame test db (1).dat" fixdat-missing-parent.fixdat
 no-hashes roms parent.zip
 no-hashes roms child.zip
-stdout In game grandparent:
-stdout game grandparent                             : not a single file found
-stdout In game parent:
-stdout rom  04.rom        size       4  crc d87f7e0c: missing
-stdout rom  08.rom        size       8  crc 3656897d: correct
-stdout In game child:
-stdout game child                                   : not a single file found
-stdout file 08.rom        size       8  crc 3656897d: not used
-stdout roms/child.zip: delete unused file '08.rom'
+stdout-data
+In game grandparent:
+game grandparent                             : not a single file found
+In game parent:
+rom  04.rom        size       4  crc d87f7e0c: missing
+rom  08.rom        size       8  crc 3656897d: correct
+In game child:
+game child                                   : correct
+file 08.rom        size       8  crc 3656897d: not used
+delete unused file '08.rom'
+end-of-data

@@ -5,12 +5,16 @@ preload fwrite.so
 setenv RENAME_FAILS roms/1-4.zip
 args -Fvje extra -D ../mamedb-small.db
 file-del roms/1-4-wrong-name.zip 1-4-ok.zip
-file-new needed/d87f7e0c-000.zip 1-4-ok.zip
-stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-wrong-name.zip/04.rom'
-stdout roms/1-4.zip: add 'roms/1-4-wrong-name.zip/04.rom' as '04.rom'
-stdout In archive roms/1-4-wrong-name.zip:
-stdout file 04.rom        size       4  crc d87f7e0c: needed elsewhere
-stdout roms/1-4-wrong-name.zip: save needed file '04.rom'
-stdout roms/1-4-wrong-name.zip: remove empty archive
-stderr roms/1-4.zip: error closing zip: Renaming temporary file failed: Operation not permitted
+file-new saved/d87f7e0c-000.zip 1-4-ok.zip
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-wrong-name.zip/04.rom'
+add 'roms/1-4-wrong-name.zip/04.rom' as '04.rom'
+In archive roms/1-4-wrong-name.zip:
+file 04.rom        size       4  crc d87f7e0c: needed elsewhere
+save needed file '04.rom'
+remove empty archive
+end-of-data
+stderr-data
+roms/1-4.zip: error closing zip: Renaming temporary file failed: Operation not permitted
+end-of-data

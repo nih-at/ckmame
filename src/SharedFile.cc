@@ -34,20 +34,19 @@
 #include "SharedFile.h"
 
 static void file_deleter_close(FILE *f) {
-    if (f != NULL) {
+    if (f != nullptr) {
         fclose(f);
     }
 }
 
 static void file_deleter_noop(FILE *f) {
-    return;
 }
 
 FILEPtr make_shared_file(const std::string &file_name, const std::string &flags) {
     auto fp = std::fopen(file_name.c_str(), flags.c_str());
 
-    if (fp == NULL) {
-	return NULL;
+    if (fp == nullptr) {
+	return nullptr;
     }
     return std::shared_ptr<std::FILE>(fp, file_deleter_close);
 }

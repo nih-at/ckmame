@@ -41,7 +41,9 @@ BEGIN { push @INC, '@abs_srcdir@'; }
 use CkmameDB;
 use NiHTest;
 
-my $ROMDIRS = "extra|extradir|moreroms|needed|roms|search|unknown";
+$ENV{HOME} = "@top_builddir@";
+
+my $ROMDIRS = "(?:extra[^/]*|saved|roms[^/]*|search|unknown)";
 
 my $test = NiHTest::new({ default_program => 'ckmame', srcdir => '@srcdir@', top_builddir => '@top_builddir@', zipcmp_flags => '' });
 
@@ -70,8 +72,18 @@ sub check_ckmame_db {
 			}
 		}
 	}
-	
-	my $db = new CkmameDB($dir, undef, $variant eq 'dir', $test->{test}->{'no-hashes'}, $test->{test}->{'detector-hashes'}, $test->{test}->{'not-in-ckmamedb'}, $test->{verbose});
+
+	my $type = $variant;
+	if (defined($test->{test}->{'ckmamedb-type'})) {
+		for my $line (@{$test->{test}->{'ckmamedb-type'}}) {
+			if ($line->[0] eq $dir) {
+				$type = $line->[1];
+				last;
+			}
+		}
+	}
+
+	my $db = new CkmameDB($dir, undef, $type eq 'dir', $test->{test}->{'no-hashes'}, $test->{test}->{'detector-hashes'}, $test->{test}->{'not-in-ckmamedb'}, $test->{verbose});
 	
 	if (!$db) {
 		print "opening $dir/.ckmame.db failed\n" if ($test->{verbose});
@@ -107,6 +119,7 @@ sub checks {
 
 	while (my $name = readdir $dir) {
 	    next if ($name eq '.' || $name eq '..');
+	    next if ($name eq 'home'); # standard setting for $HOME in tests
 	    next unless (-d $name);
 
 	    my $ret = check_ckmame_db($test, $name, $variant);
@@ -177,6 +190,24 @@ sub dir_comparator_zip {
 }
 
 
+sub comparator_fixdat {
+	my ($test, $got, $expected) = @_;
+
+	my @args = ("diff", "-I", "<version>[-:0-9 ]*</version>");
+	if ($test->{verbose}) {
+		push @args, "-u";
+	}
+	else {
+		push @args, "-q";
+	}
+	push @args, ($expected, $got);
+
+	my $ret = system(@args);
+
+	return $ret == 0;
+}
+
+
 sub dir_copier_zip {
 	my ($test, $src, $dest) = @_;
 
@@ -203,7 +234,7 @@ sub post_list_files {
 	#print(Dumper(\$test));
 	for my $file (@{$test->{files_got}}) {
 		next if ($file =~ m,/.ckmame.db$,);
-		next if ($file =~ m,($ROMDIRS)/$,o);
+		next if ($file =~ m,$ROMDIRS/$,o);
 		next if ($file =~ m,extra/foo/$,); # TODO: add empty dir directive to NiHTest, move to test case.
 		if ($variant eq 'dir') {
 			if ($file =~ m,^($ROMDIRS)/([^/]*)/,o) {
@@ -246,6 +277,10 @@ sub post_parse {
 sub post_copy_file {
 	my ($test, $hook) = @_;
 	
+    for my $directive (@{$test->{test}->{"ckmamedb-after"}}) {
+		$directive->[0] =~ s,/\@SANDBOX\@/,$test->{abs_sandbox}/,;
+    }
+
 	if ($test->{test}->{mkdbargs}) {
 		my $ret = system('../../src/mkmamedb', @{$test->{test}->{mkdbargs}});
 		# TODO: capture stdout/stderr
@@ -274,7 +309,7 @@ sub post_copy_file {
 			push @command, ($dump_file, "$dir/.ckmame.db");
 			
 			unless (system(@command) == 0) {
-				print STDERR "can't restore ckmamedb dump $dump: $!";
+				print STDERR "can't restore ckmamedb dump $dump from $dump_file using " . (join " ", @command) . ": $!\n";
 				return undef;
 			}
 		}
@@ -290,6 +325,10 @@ $test->add_directive('ckmamedb-before' => {
 	usage => 'directory dump [version] [sql-schema]'
 });
 $test->add_directive('ckmamedb-after' => { type => 'string string' });
+$test->add_directive('ckmamedb-type' => {
+    type => 'string string',
+    usage => "directory type",
+    description => "Synthesize .ckmamedb in directory for zipped (zip) or unzipped (dir) mode."});
 $test->add_directive('detector-hashes' => {
 	type => "string string string string string?",
 	usage => "detector-name detector-version directory archive [file]",
@@ -307,6 +346,7 @@ $test->add_directive('not-in-ckmamedb' => {
 });
 
 $test->add_comparator('db/dump', \&comparator_db);
+$test->add_comparator("dat/fixdat", \&comparator_fixdat);
 $test->add_comparator('dir/zip/zip', \&dir_comparator_zip);
 $test->add_comparator('zip/zip', \&NiHTest::comparator_zip);
 $test->add_comparator("7z/zip", \&comparator_libarchive);
@@ -322,13 +362,13 @@ $test->add_hook('post_copy_files', \&post_copy_file);
 sub dir_mangle_test {
     my ($test, $variant) = @_;
 
-    map { s,((?:$ROMDIRS)/[^ :]*)\.zip,$1,go; } @{$test->{test}->{stdout}};
+    map { s,($ROMDIRS/[^ :]*)\.zip,$1,go; } @{$test->{test}->{stdout}};
     for my $args (@{$test->{test}->{touch}}) {
-	    $args->[1] =~ s,((?:$ROMDIRS)/[^ :]*)\.zip,$1,go;
+	    $args->[1] =~ s,($ROMDIRS/[^ :]*)\.zip,$1,go;
 	}
 
     if ($test->{test}->{program} =~ m/(ckmame|mamedb)$/) {
-	unshift @{$test->{test}->{args}}, '-u';
+		unshift @{$test->{test}->{args}}, '--roms-unzipped';
     }
 
     return 1;

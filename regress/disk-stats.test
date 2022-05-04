@@ -1,21 +1,23 @@
 description test single-rom game with bad dump but good disk
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -dcKLv --stats 2-48 1-8 disk disk-2
+args -D ../mamedb-disk-many.db -cv --report-summary 2-48 1-8 disk disk-2
 file roms/2-48.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-5.chd 108-5.chd
 no-hashes roms disk.zip
-stdout In game 1-8:
-stdout game 1-8                                     : not a single file found
-stdout In game 2-48:
-stdout rom  04.rom        size       4  crc d87f7e0c: correct
-stdout rom  08.rom        size       8  crc 3656897d: missing
-stdout In game disk:
-stdout game disk                                    : correct
-stdout In game disk-2:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'roms/2-48.zip/04.rom'
-stdout disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
-stdout Games: 1 complete, 2 partial / 4
-stdout ROMs:  3 / 5 (12 bytes / 28 bytes)
-stdout Disks: 1 / 2
+stdout-data
+In game 1-8:
+game 1-8                                     : not a single file found
+In game 2-48:
+rom  04.rom        size       4  crc d87f7e0c: correct
+rom  08.rom        size       8  crc 3656897d: missing
+In game disk:
+game disk                                    : correct
+In game disk-2:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/2-48.zip/04.rom'
+disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
+Games: 1 complete, 2 partial / 4
+ROMs:  3 / 5 (12 bytes / 28 bytes)
+Disks: 1 / 2
+end-of-data

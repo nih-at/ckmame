@@ -36,26 +36,28 @@
 
 #include <zip.h>
 
+#include <utility>
+
 #include "Archive.h"
 
 class ArchiveZip : public Archive {
 public:
-    ArchiveZip(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_ZIP, name, filetype, where, flags), za(NULL) { }
-    ArchiveZip(ArchiveContentsPtr contents) : Archive(contents), za(NULL) { }
+    ArchiveZip(const std::string &name, filetype_t filetype, where_t where, int flags) : Archive(ARCHIVE_ZIP, name, filetype, where, flags), za(nullptr) { }
+    explicit ArchiveZip(ArchiveContentsPtr contents) : Archive(std::move(contents)), za(nullptr) { }
 
-    virtual ~ArchiveZip();
+    ~ArchiveZip() override;
 
-    virtual bool check();
-    virtual bool close_xxx();
-    virtual bool commit_xxx();
-    virtual void commit_cleanup();
-    virtual void get_last_update();
-    virtual bool read_infos_xxx();
+    bool check() override;
+    bool close_xxx() override;
+    bool commit_xxx() override;
+    void commit_cleanup() override;
+    void get_last_update() override;
+    bool read_infos_xxx() override;
 
 protected:
     zip_t *za;
     
-    virtual ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length);
+    ZipSourcePtr get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) override;
     bool ensure_zip();
     
     bool ensure_file_doesnt_exist(const std::string &name);

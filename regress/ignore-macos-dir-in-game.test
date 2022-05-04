@@ -4,8 +4,10 @@ return 0
 args -D ../mamedb-lost-parent-ok.db -vFc
 file roms/clone-8.zip 2-8c-macos.zip 1-8-macos.zip
 file-new unknown/clone-8.zip 1-c-ok.zip
-stdout In game clone-8:
-stdout rom  04.rom        size       4  crc d87f7e0c: missing
-stdout rom  08.rom        size       8  crc 3656897d: correct
-stdout file 0c.rom        size      12  crc 0623c932: unknown
-stdout roms/clone-8: move unknown file '0c.rom'
+stdout-data
+In game clone-8:
+rom  04.rom        size       4  crc d87f7e0c: missing
+rom  08.rom        size       8  crc 3656897d: correct
+file 0c.rom        size      12  crc 0623c932: unknown
+move unknown file '0c.rom'
+end-of-data

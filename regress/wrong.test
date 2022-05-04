@@ -1,10 +1,12 @@
 description test 1-rom game, only wrong roms in zip
 return 0
-args -FKLvc 1-4
+args -Fvc 1-4
 file-del roms/1-4.zip garbage.zip
 file-new unknown/1-4.zip garbage.zip
 no-hashes unknown 1-4.zip garbage
-stdout In game 1-4:
-stdout game 1-4                                     : not a single file found
-stdout file garbage       size       8  crc 01888242: unknown
-stdout roms/1-4.zip: move unknown file 'garbage'
+stdout-data
+In game 1-4:
+game 1-4                                     : not a single file found
+file garbage       size       8  crc 01888242: unknown
+move unknown file 'garbage'
+end-of-data

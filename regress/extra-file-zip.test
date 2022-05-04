@@ -1,10 +1,13 @@
 description test single-rom game (no parent), zip is correct, extra file exists (zip)
 variants zip
 return 0
-args -D ../mamedb-small.db -FKLvc
+args -D ../mamedb-small.db -Fvc
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
-file roms/plain-file runtest runtest
-stdout In game 1-4:
-stdout game 1-4                                     : correct
-stdout Extra files found:
-stdout roms/plain-file
+file-del roms/plain-file dummy
+file-new unknown/plain-file dummy
+stdout-data
+In game 1-4:
+game 1-4                                     : correct
+Extra files found:
+roms/plain-file
+end-of-data

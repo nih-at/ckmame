@@ -1,17 +1,23 @@
 description test single-rom game (no parent), file is in unknown, swap
 return 0
-args -FKLvcje unknown 1-4
+args -Fvcje unknown 1-4
 file unknown/1-4.zip 1-4-ok.zip 1-4-wrong-renamed.zip
 file roms/1-4.zip 1-4-wrong.zip 1-4-ok.zip
 no-hashes unknown 1-4.zip 04-000.rom
-stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'unknown/1-4.zip/04.rom'
-stdout file 04.rom        size       4  crc e027b67c: unknown
-stdout roms/1-4.zip: move unknown file '04.rom'
-stdout unknown/1-4.zip: save needed file '04.rom'
-stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: is in 'needed/d87f7e0c-000.zip/04.rom'
-stdout roms/1-4.zip: add 'needed/d87f7e0c-000.zip/04.rom' as '04.rom'
-stdout needed/d87f7e0c-000.zip: delete used file '04.rom'
-stdout needed/d87f7e0c-000.zip: remove empty archive
-stdout unknown/1-4.zip: delete used file '04.rom'
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'unknown/1-4.zip/04.rom'
+file 04.rom        size       4  crc e027b67c: unknown
+move unknown file '04.rom'
+In archive unknown/1-4.zip:
+save needed file '04.rom'
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'saved/d87f7e0c-000.zip/04.rom'
+add 'saved/d87f7e0c-000.zip/04.rom' as '04.rom'
+In archive saved/d87f7e0c-000.zip:
+delete used file '04.rom'
+remove empty archive
+In archive unknown/1-4.zip:
+file 04-000.rom    size       4  crc e027b67c: unknown
+delete used file '04.rom'
+end-of-data

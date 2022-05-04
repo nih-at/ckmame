@@ -33,167 +33,260 @@
 
 #include "ParserXml.h"
 
-#include "xmlutil.h"
+#include "XmlProcessor.h"
 
+const ParserXml::Arguments ParserXml::arguments_rom(TYPE_ROM);
+const ParserXml::Arguments ParserXml::arguments_rom_crc(TYPE_ROM, Hashes::TYPE_CRC);
+const ParserXml::Arguments ParserXml::arguments_rom_md5(TYPE_ROM, Hashes::TYPE_MD5);
+const ParserXml::Arguments ParserXml::arguments_rom_sha1(TYPE_ROM, Hashes::TYPE_SHA1);
+const ParserXml::Arguments ParserXml::arguments_disk(TYPE_DISK);
+const ParserXml::Arguments ParserXml::arguments_disk_md5(TYPE_DISK, Hashes::TYPE_MD5);
+const ParserXml::Arguments ParserXml::arguments_disk_sha1(TYPE_DISK, Hashes::TYPE_SHA1);
 
-static void parse_xml_lineno_cb(void *ctx, int lineno) {
-    static_cast<ParserXml *>(ctx)->lineno = static_cast<size_t>(lineno);
+void ParserXml::line_number_callback(void *context, size_t line_number){
+    static_cast<ParserXml *>(context)->lineno = line_number;
 }
 
 
-static bool parse_xml_file_end(void *ctx, int file_type) {
-    return static_cast<ParserXml *>(ctx)->file_end(static_cast<filetype_t>(file_type));
+XmlProcessor::CallbackStatus ParserXml::parse_file_end(void *ctx, const void *args) {
+    auto parser = static_cast<ParserXml *>(ctx);
+    auto arguments = static_cast<const Arguments *>(args);
+
+    return status(parser->file_end(arguments->file_type));
 }
 
-static bool parse_xml_file_hash(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->file_hash(static_cast<filetype_t>(file_type), hash_type, value);
+
+XmlProcessor::CallbackStatus ParserXml::parse_file_hash(void *ctx, const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+    auto arguments = static_cast<const Arguments *>(args);
+
+    return status(parser->file_hash(arguments->file_type, arguments->hash_type, value));
 }
 
-static bool parse_xml_file_loadflag(void *ctx, int file_type, int hash_type, const std::string &value) {
+
+XmlProcessor::CallbackStatus ParserXml::parse_file_loadflag(void *ctx, const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+    auto arguments = static_cast<const Arguments *>(args);
+
     if (value == "continue" || value == "ignore") {
-        return static_cast<ParserXml *>(ctx)->file_continue(static_cast<filetype_t>(file_type));
+        return status(parser->file_continue(arguments->file_type));
     }
     else if (value == "reload" || value == "reload_plain" || value == "fill") {
-        return static_cast<ParserXml *>(ctx)->file_ignore(static_cast<filetype_t>(file_type));
+        return status(parser->file_ignore(arguments->file_type));
     }
-    return true;
-}
-
-static bool parse_xml_file_merge(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->file_merge(static_cast<filetype_t>(file_type), value);
-}
-
-static bool parse_xml_file_name(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->file_name(static_cast<filetype_t>(file_type), value);
-}
-
-static bool parse_xml_file_start(void *ctx, int file_type) {
-    return static_cast<ParserXml *>(ctx)->file_start(static_cast<filetype_t>(file_type));
-}
-
-static bool parse_xml_file_status(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->file_status(static_cast<filetype_t>(file_type), value);
-}
-
-static bool parse_xml_file_size(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->file_size(static_cast<filetype_t>(file_type), value);
+    return status(true);
 }
 
 
-static bool parse_xml_game_cloneof(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->game_cloneof(static_cast<filetype_t>(file_type), value);
-}
+XmlProcessor::CallbackStatus ParserXml::parse_file_merge(void *ctx, const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+    auto arguments = static_cast<const Arguments *>(args);
 
-static bool parse_xml_game_description(void *ctx, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->game_description(value);
-}
-
-static bool parse_xml_game_end(void *ctx, int file_type) {
-    return static_cast<ParserXml *>(ctx)->game_end();
-}
-
-static bool parse_xml_game_name(void *ctx, int file_type, int hash_type, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->game_name(value);
-}
-
-static bool parse_xml_game_start(void *ctx, int file_type) {
-    return static_cast<ParserXml *>(ctx)->game_start();
+    return status(parser->file_merge(arguments->file_type, value));
 }
 
 
-static bool parse_xml_mame_build(void *ctx, int ft, int ht, const std::string &value) {
-    auto parser_context = static_cast<ParserXml *>(ctx);
+XmlProcessor::CallbackStatus ParserXml::parse_file_name(void *ctx, const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+    auto arguments = static_cast<const Arguments *>(args);
 
-    if (!parser_context->prog_name(ft == 0 ? "M.A.M.E." : "M.E.S.S.")) {
-        return false;
+    return status(parser->file_name(arguments->file_type, value));
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_file_start(void *ctx, const void *args) {
+    auto parser = static_cast<ParserXml *>(ctx);
+    auto arguments = static_cast<const Arguments *>(args);
+
+    return status(parser->file_start(arguments->file_type));
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_file_status(void *ctx, const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+    auto arguments = static_cast<const Arguments *>(args);
+
+    return status(parser->file_status(arguments->file_type, value));
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_file_size(void *ctx, const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+    auto arguments = static_cast<const Arguments *>(args);
+
+    if (value.empty()) {
+        return XmlProcessor::OK;
+    }
+    else {
+        return status(parser->file_size(arguments->file_type, value));
+    }
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_game_cloneof(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    return status(parser->game_cloneof(value));
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_game_description(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    return status(parser->game_description(value));
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_game_end(void *ctx, [[maybe_unused]] const void *args) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    return status(parser->game_end());
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_game_name(void *ctx, [[maybe_unused]] const void *arguments, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    return status(parser->game_name(value));
+}
+
+XmlProcessor::CallbackStatus ParserXml::parse_game_start(void *ctx, [[maybe_unused]] const void *arguments) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    if (parser->header_only) {
+	return XmlProcessor::END;
+    }
+    
+    return status(parser->game_start());
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_header_end(void *ctx, [[maybe_unused]] const void *args) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    auto ok = parser->header_end();
+    if (ok && parser->header_only) {
+	return XmlProcessor::END;
+    }
+    return status(ok);
+}
+
+
+XmlProcessor::CallbackStatus ParserXml::parse_mame_build(void *ctx, const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+    auto arguments = static_cast<const Arguments *>(args);
+
+    if (!parser->prog_name(arguments->file_type == TYPE_ROM ? "M.A.M.E." : "M.E.S.S.")) {
+        return status(false);
     }
 
-    return parser_context->prog_version(value.substr(0, value.find(' ')));
+    return status(parser->prog_version(value.substr(0, value.find(' '))));
 }
 
 
-static bool parse_xml_prog_description(void *ctx, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->prog_description(value);
+XmlProcessor::CallbackStatus ParserXml::parse_prog_description(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    return status(parser->prog_description(value));
 }
 
-static bool parse_xml_prog_header(void *ctx, int ft, int ht, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->prog_header(value);
+XmlProcessor::CallbackStatus ParserXml::parse_prog_header(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    return status(parser->prog_header(value));
 }
 
-static bool parse_xml_prog_name(void *ctx, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->prog_name(value);
+XmlProcessor::CallbackStatus ParserXml::parse_prog_name(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    return status(parser->prog_name(value));
 }
 
-static bool parse_xml_prog_version(void *ctx, const std::string &value) {
-    return static_cast<ParserXml *>(ctx)->prog_version(value);
+XmlProcessor::CallbackStatus ParserXml::parse_prog_version(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    return status(parser->prog_version(value));
 }
 
 
-static bool parse_xml_softwarelist(void *ctx, int ft, int ht, const std::string &value) {
-    /* sadly, no version information */
-    return static_cast<ParserXml *>(ctx)->prog_name(value);
+XmlProcessor::CallbackStatus ParserXml::parse_softwarelist_name(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml *>(ctx);
+
+    auto ok = parser->prog_name(value);
+
+    /* sadly, no version information, so use mtime of dat file */
+    auto mtime = parser->ps->get_mtime();
+    if (mtime != 0) {
+        ok = parser->prog_version(std::to_string(mtime));
+    }
+
+    return status(ok);
 }
 
 
-static const std::unordered_map<std::string, XmluAttr> attr_mame = {
-    { "build", { parse_xml_mame_build, 0, 0} }
+const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attributes_clrmamepro = {
+    { "header", XmlProcessor::Attribute(parse_prog_header, nullptr) }
 };
 
-static const std::unordered_map<std::string, XmluAttr> attr_mess = {
-    { "build", { parse_xml_mame_build, 1, 0 } }
+const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attributes_mame = {
+    { "build", XmlProcessor::Attribute(parse_mame_build, &arguments_rom) }
 };
 
-static const std::unordered_map<std::string, XmluAttr> attr_clrmamepro = {
-    { "header", { parse_xml_prog_header , 0, 0 } }
+const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attributes_mess = {
+    { "build", XmlProcessor::Attribute(parse_mame_build, &arguments_disk) }
 };
 
-static const std::unordered_map<std::string, XmluAttr> attr_disk = {
-    { "md5", { parse_xml_file_hash, TYPE_DISK, Hashes::TYPE_MD5 } },
-    { "merge", { parse_xml_file_merge, TYPE_DISK, 0 } },
-    { "name", { parse_xml_file_name, TYPE_DISK, 0 } },
-    { "sha1", { parse_xml_file_hash, TYPE_DISK, Hashes::TYPE_SHA1 } },
-    { "status", { parse_xml_file_status, TYPE_DISK, 0 } }
+const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attributes_disk = {
+    { "md5", XmlProcessor::Attribute(parse_file_hash, &arguments_disk_md5) },
+    { "merge", XmlProcessor::Attribute(parse_file_merge, &arguments_disk) },
+    { "name", XmlProcessor::Attribute(parse_file_name, &arguments_disk) },
+    { "sha1", XmlProcessor::Attribute(parse_file_hash, &arguments_disk_sha1)},
+    { "status", XmlProcessor::Attribute(parse_file_status, &arguments_disk) }
 };
 
-static const std::unordered_map<std::string, XmluAttr> attr_game = {
-    { "name", { parse_xml_game_name, 0, 0} },
-    { "romof", { parse_xml_game_cloneof, TYPE_ROM, 0 } }
+const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attributes_game = {
+    { "name", XmlProcessor::Attribute(parse_game_name, nullptr) },
+    { "romof", XmlProcessor::Attribute(parse_game_cloneof, nullptr) }
 };
 
-static const std::unordered_map<std::string, XmluAttr> attr_rom = {
-    { "crc", { parse_xml_file_hash, TYPE_ROM, Hashes::TYPE_CRC } },
-    { "loadflag", { parse_xml_file_loadflag, TYPE_ROM, 0} },
-    { "md5", { parse_xml_file_hash, TYPE_ROM, Hashes::TYPE_MD5 } },
-    { "merge", { parse_xml_file_merge, TYPE_ROM, 0 } },
-    { "name", { parse_xml_file_name, TYPE_ROM, 0 } },
-    { "sha1", { parse_xml_file_hash, TYPE_ROM, Hashes::TYPE_SHA1 } },
-    { "size", { parse_xml_file_size, TYPE_ROM, 0} },
-    { "status", { parse_xml_file_status, TYPE_ROM, 0} }
+const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attributes_rom = {
+    { "crc", XmlProcessor::Attribute(parse_file_hash, &arguments_rom_crc) },
+    { "loadflag", XmlProcessor::Attribute(parse_file_loadflag, &arguments_rom) },
+    { "md5", XmlProcessor::Attribute(parse_file_hash, &arguments_rom_md5) },
+    { "merge", XmlProcessor::Attribute(parse_file_merge, &arguments_rom) },
+    { "name", XmlProcessor::Attribute(parse_file_name, &arguments_rom) },
+    { "sha1", XmlProcessor::Attribute(parse_file_hash, &arguments_rom_sha1) },
+    { "size", XmlProcessor::Attribute(parse_file_size, &arguments_rom) },
+    { "status", XmlProcessor::Attribute(parse_file_status, &arguments_rom) }
 };
 
-static const std::unordered_map<std::string, XmluAttr> attr_softwarelist = {
-    { "description", { parse_xml_softwarelist , 0, 0} }
+const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attributes_softwarelist = {
+    { "description", XmlProcessor::Attribute(parse_prog_description, nullptr) },
+    { "name", XmlProcessor::Attribute(parse_softwarelist_name, nullptr) }
 };
 
-static const std::unordered_map<std::string, XmluEntity> entities = {
-    { "clrmamepro", XmluEntity(attr_clrmamepro) },
-    { "disk", XmluEntity(attr_disk, parse_xml_file_start, parse_xml_file_end, TYPE_DISK) },
-    { "game", XmluEntity(attr_game, parse_xml_game_start, parse_xml_game_end) },
-    { "game/description", XmluEntity(parse_xml_game_description) },
-    { "header/description", XmluEntity(parse_xml_prog_description) },
-    { "header/name", XmluEntity(parse_xml_prog_name) },
-    { "header/version", XmluEntity(parse_xml_prog_version) },
-    { "machine", XmluEntity(attr_game, parse_xml_game_start, parse_xml_game_end) },
-    { "machine/description", XmluEntity(parse_xml_game_description) },
-    { "mame", XmluEntity(attr_mame) },
-    { "mess", XmluEntity(attr_mess) },
-    { "rom", XmluEntity(attr_rom, parse_xml_file_start, parse_xml_file_end, TYPE_ROM) },
-    { "software", XmluEntity(attr_game, parse_xml_game_start, parse_xml_game_end) },
-    { "software/description", XmluEntity(parse_xml_game_description) },
-    { "softwarelist", XmluEntity(attr_softwarelist) }
+const std::unordered_map<std::string, XmlProcessor::Entity> ParserXml::entities = {
+    { "clrmamepro", XmlProcessor::Entity(attributes_clrmamepro) },
+    { "disk", XmlProcessor::Entity(attributes_disk, parse_file_start, parse_file_end, &arguments_disk) },
+    { "game", XmlProcessor::Entity(attributes_game, parse_game_start, parse_game_end) },
+    { "game/description", XmlProcessor::Entity(parse_game_description) },
+    { "header", XmlProcessor::Entity({}, nullptr, parse_header_end) },
+    { "header/description", XmlProcessor::Entity(parse_prog_description) },
+    { "header/name", XmlProcessor::Entity(parse_prog_name) },
+    { "header/version", XmlProcessor::Entity(parse_prog_version) },
+    { "machine", XmlProcessor::Entity(attributes_game, parse_game_start, parse_game_end) },
+    { "machine/description", XmlProcessor::Entity(parse_game_description) },
+    { "mame", XmlProcessor::Entity(attributes_mame) },
+    { "mess", XmlProcessor::Entity(attributes_mess) },
+    { "rom", XmlProcessor::Entity(attributes_rom, parse_file_start, parse_file_end, &arguments_rom) },
+    { "software", XmlProcessor::Entity(attributes_game, parse_game_start, parse_game_end) },
+    { "software/description", XmlProcessor::Entity(parse_game_description) },
+    { "/softwarelist", XmlProcessor::Entity(attributes_softwarelist) }
 };
 
 
 bool ParserXml::parse() {
-    return xmlu_parse(ps.get(), this, parse_xml_lineno_cb, entities);
+    auto processor = XmlProcessor(line_number_callback, entities, this);
+
+    return processor.parse(ps.get());
 }

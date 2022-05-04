@@ -1,12 +1,14 @@
 description test single-rom game (no parent), rom is at end of long file
 return 0
-args -FKLvc 1-4
+args -Fvc 1-4
 file roms/1-4.zip 1-4-end.zip 1-4-ok.zip
 file-new unknown/1-4.zip 1-4-end.zip
 no-hashes roms 1-4.zip 04.rom md5
 no-hashes roms 1-4 04.rom md5
 no-hashes unknown 1-4.zip 04.rom
-stdout In game 1-4:
-stdout rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 4 (8)
-stdout roms/1-4.zip: move long file '04.rom'
-stdout roms/1-4.zip: extract (offset 4, size 4) from '04.rom' to '04.rom'
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 4 (8)
+move long file '04.rom'
+extract (offset 4, size 4) from '04.rom' to '04.rom'
+end-of-data

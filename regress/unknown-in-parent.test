@@ -1,10 +1,12 @@
 description unknown file in parent
 return 0
-args -FKLvc parent-4
+args -Fvc parent-4
 file roms/parent-4.zip 2-4c-ok.zip 1-4-ok.zip
 file-new unknown/parent-4.zip 1-c-ok.zip
 no-hashes unknown parent-4.zip 0c.rom
-stdout In game parent-4:
-stdout game parent-4                                : correct
-stdout file 0c.rom        size      12  crc 0623c932: unknown
-stdout roms/parent-4.zip: move unknown file '0c.rom'
+stdout-data
+In game parent-4:
+game parent-4                                : correct
+file 0c.rom        size      12  crc 0623c932: unknown
+move unknown file '0c.rom'
+end-of-data

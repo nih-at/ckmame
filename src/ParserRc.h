@@ -34,24 +34,26 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <utility>
+
 #include "Parser.h"
 
 class ParserRc : public Parser {
-public:
-    ParserRc(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, int flags) : Parser(source, exclude, dat, output, flags) { }
-    virtual ~ParserRc() { }
-        
-    virtual bool parse();
+  public:
+    ParserRc(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options) : Parser(std::move(source), exclude, dat, output, std::move(options)) {}
+    ~ParserRc() override = default;
 
-private:
+    bool parse() override;
+
+  private:
     static const char separator;
 
     enum Section { RC_UNKNOWN = -1, RC_CREDITS, RC_DAT, RC_EMULATOR, RC_GAMES };
 
     class Field {
-    public:
-        Field(Section section_, const std::string &name_, bool (*cb_)(ParserRc *, const std::string &)) : section(section_), name(name_), cb(cb_) { }
-        
+      public:
+        Field(Section section_, const std::string &name_, bool (*cb_)(ParserRc *, const std::string &)) : section(section_), name(name_), cb(cb_) {}
+
         Section section;
         std::string name;
         bool (*cb)(ParserRc *, const std::string &);
@@ -64,22 +66,22 @@ private:
     static bool parse_prog_name(ParserRc *ctx, const std::string &attr);
     static bool parse_prog_version(ParserRc *ctx, const std::string &attr);
     static bool rc_plugin(ParserRc *ctx, const std::string &attr);
-    
+
     class Tokenizer {
-    public:
-        Tokenizer(const std::string &s) : string(s), position(0) { }
-        
+      public:
+        explicit Tokenizer(const std::string &s) : string(s), position(0) {}
+
         std::string get();
-        
-    private:
+
+      private:
         std::string string;
         size_t position;
     };
-    
+
     bool process_romline(const std::string &line);
     void flush_romline();
-        
+
     std::string gamename;
 };
 
-#endif /* ParserRc.h */
+#endif // HAD_PARSER_RC_H

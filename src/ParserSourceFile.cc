@@ -34,12 +34,13 @@
 #include "ParserSourceFile.h"
 
 #include <filesystem>
-#include <string.h>
+#include <cstring>
+#include <sys/stat.h>
 
-#include "error.h"
 #include "Exception.h"
+#include "globals.h"
 
-ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(NULL) {
+ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname), f(nullptr) {
     if (!file_name.empty()) {
 	f = make_shared_file(file_name, "r");
 	if (!f) {
@@ -50,7 +51,7 @@ ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname),
         f = make_shared_stdin();
     }
 
-    seterrinfo(file_name);
+    output.set_error_file(file_name);
 }
 
 ParserSourceFile::~ParserSourceFile() {
@@ -65,7 +66,7 @@ bool ParserSourceFile::close() {
         file_name = "";
     }
     
-    f = NULL;
+    f = nullptr;
 
     return ok;
 }
@@ -83,9 +84,19 @@ ParserSourcePtr ParserSourceFile::open(const std::string &name) {
 
 
 size_t ParserSourceFile::read_xxx(void *data, size_t length) {
-    if (f == NULL) {
+    if (f == nullptr) {
         return 0;
     }
     
     return fread(data, 1, length, f.get());
+}
+
+
+time_t ParserSourceFile::get_mtime() {
+    struct stat st;
+
+    if (fstat(fileno(f.get()), &st) < 0) {
+        return 0;
+    }
+    return st.st_mtime;
 }

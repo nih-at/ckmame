@@ -50,8 +50,6 @@ class Detector;
 
 typedef std::shared_ptr<Detector> DetectorPtr;
 
-typedef int64_t (*detector_read_cb)(void *, void *, uint64_t);
-
 
 class Detector {
 public:
@@ -83,7 +81,7 @@ public:
         std::vector<uint8_t> value;
         bool result;
 
-        bool execute(const std::vector<uint8_t> &data) const;
+        [[nodiscard]] bool execute(const std::vector<uint8_t> &data) const;
         void print(FILE *fout) const;
         
     private:
@@ -99,11 +97,11 @@ public:
         Operation operation;
         std::vector<Test> tests;
         
-        Hashes execute(const std::vector<uint8_t> &data) const;
+        [[nodiscard]] Hashes execute(const std::vector<uint8_t> &data) const;
         void print(FILE *fout) const;
         
     private:
-        Hashes compute_values(Operation operation, const std::vector<uint8_t> &data, uint64_t start, uint64_t length) const;
+        [[nodiscard]] Hashes compute_values(Operation operation, const std::vector<uint8_t> &data, uint64_t start, uint64_t length) const;
     };
     
 
@@ -117,9 +115,9 @@ public:
     static const uint64_t MAX_DETECTOR_FILE_SIZE;
 
     static DetectorPtr parse(const std::string &filename);
-    static DetectorPtr parse(ParserSource *source);
+    static DetectorPtr parse(ParserSource *parser_source);
 
-    Hashes execute(const std::vector<uint8_t> &data) const;
+    [[nodiscard]] Hashes execute(const std::vector<uint8_t> &data) const;
     bool print(FILE *) const;
 
     static std::string file_test_type_name(TestType type);

@@ -42,21 +42,21 @@ ZipSource::~ZipSource() {
 }
 
 
-void ZipSource::open() {
+void ZipSource::open() const {
     if (zip_source_open(source) < 0) {
         throw Exception(error());
     }
 }
 
 
-void ZipSource::close() {
+void ZipSource::close() const {
     if (zip_source_close(source) < 0) {
         throw Exception(error());
     }
 }
 
 
-uint64_t ZipSource::read(void *data, uint64_t length) {
+uint64_t ZipSource::read(void *data, uint64_t length) const {
     auto n = zip_source_read(source, data, length);
 
     if (n < 0) {
@@ -67,64 +67,6 @@ uint64_t ZipSource::read(void *data, uint64_t length) {
 }
 
 
-std::string ZipSource::error() {
+std::string ZipSource::error() const {
     return zip_error_strerror(zip_source_error(source));
-}
-
-
-static bool my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx);
-
-int
-my_zip_rename(struct zip *za, uint64_t idx, const char *name) {
-    int zerr;
-    zip_int64_t idx2;
-
-    if (zip_rename(za, idx, name) == 0) {
-	return 0;
-    }
-
-    zip_error_get(za, &zerr, NULL);
-
-    if (zerr != ZIP_ER_EXISTS) {
-	return -1;
-    }
-
-    idx2 = zip_name_locate(za, name, 0);
-    if (idx2 == -1) {
-	return -1;
-    }
-    if (!my_zip_rename_to_unique(za, (zip_uint64_t)idx2)) {
-	return -1;
-    }
-
-    return zip_rename(za, idx, name);
-}
-
-
-static bool
-my_zip_rename_to_unique(struct zip *za, zip_uint64_t idx) {
-
-    std::string name = zip_get_name(za, idx, 0);
-    if (name.empty()) {
-	return false;
-    }
-
-    std::string ext = std::filesystem::path(name).extension();
-    name.resize(name.length() - ext.length());
-
-    for (int i = 0; i < 1000; i++) {
-	char n[5];
-	int zerr;
-
-	sprintf(n, "-%03d", i);
-	auto unique = name + n + ext;
-
-	int ret = zip_rename(za, idx, unique.c_str());
-	zip_error_get(za, &zerr, NULL);
-	if (ret == 0 || zerr != ZIP_ER_EXISTS) {
-	    return ret == 0;
-	}
-    }
-
-    return false;
 }

@@ -37,9 +37,7 @@
 #include <cstring>
 #include <cerrno>
 
-#include "error.h"
 #include "globals.h"
-#include "util.h"
 
 
 OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : fname(fname_), runtest(flags & OUTPUT_FL_RUNTEST) {
@@ -50,7 +48,7 @@ OutputContextMtree::OutputContextMtree(const std::string &fname_, int flags) : f
     else {
 	f = make_shared_file(fname, "w");
 	if (!f) {
-	    myerror(ERRDEF, "cannot create '%s': %s", fname.c_str(), strerror(errno));
+	    output.error("cannot create '%s': %s", fname.c_str(), strerror(errno));
             throw std::exception();
 	}
     }
@@ -64,9 +62,9 @@ OutputContextMtree::~OutputContextMtree() {
 bool OutputContextMtree::close() {
     auto ok = true;
     
-    if (f != NULL) {
+    if (f != nullptr) {
         ok = fflush(f.get()) == 0;
-        f = NULL;
+        f = nullptr;
     }
 
     return ok;
@@ -79,8 +77,8 @@ strsvis_cstyle(const std::string &in) {
     auto out = std::string(2 * in.length(), 0);
 
     size_t outpos = 0;
-    for (size_t inpos = 0; inpos < in.length(); inpos++) {
-	switch (in[inpos]) {
+    for (auto c : in) {
+	switch (c) {
 	case '\007':
 	    out[outpos++] = '\\';
 	    out[outpos++] = 'a';
@@ -118,7 +116,7 @@ strsvis_cstyle(const std::string &in) {
 	    out[outpos++] = '#';
 	    break;
 	default:
-	    out[outpos++] = in[inpos];
+	    out[outpos++] = c;
 	    break;
 	}
     }
@@ -128,7 +126,7 @@ strsvis_cstyle(const std::string &in) {
 }
 
 
-bool OutputContextMtree::game(GamePtr game) {
+bool OutputContextMtree::game(GamePtr game, const std::string &original_name) {
     auto dirname = strsvis_cstyle(game->name);
 
     if (runtest) {
@@ -136,9 +134,8 @@ bool OutputContextMtree::game(GamePtr game) {
             if (game->files[ft].empty()) {
                 continue;
             }
-            std::string name = dirname;
-            fprintf(f.get(), "./%s type=dir\n", name.c_str());
-            write_files(name, game->files[ft]);
+            fprintf(f.get(), "./%s type=dir\n", dirname.c_str());
+            write_files(dirname, game->files[ft]);
         }
     }
     else {

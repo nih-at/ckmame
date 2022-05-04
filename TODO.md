@@ -1,15 +1,36 @@
-- make DB format agnostic
+## config
+
+### Release
+
+- Check parsers: what should be considered a warning and what an error (causing database creation to fail).
+- Add error messages for detector parse errors.
+
+### Implement
+
+- Fix failing tests.
+- Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)
+- Variables in config file (e.g. for collection root directory).
+
+### Write Tests
+
+- stats not reset between sets (move `stats` into `CkmameCache`)
+
+
+## other
 
 - Add test for `mkmamedb -F cm`.
 
+- Make `SIGINFO` handler more responsive.
+
 - handle multiple writers to ckmamedb
+
 - search loose files in zipped mode.
 
 - exceptions and error messages:
     - who creates which part of the error messages
     - catch exceptions in main and print errors (done in ckmame and mkmamedb).
     - clean up Exceptions without text
-    
+
 - When checking single game, search for its ROMs everywhere and report any matches.
 
 - rar read support
@@ -31,7 +52,7 @@
 
 # Later
 
-* use CkmameDB as old db, specify all detectors you'll ever need when creating.
+* use CkmameDB as old db
 
 * convert runtest to use ziptool instead of unzip
 
@@ -44,25 +65,6 @@
 * instead of looking in cloneof for roms, move all extra roms to `needed`
 
 * clean up archives in `.ckmame.db` for manually removed dirs/zips
-
-* fix `.ckmame.db` support for roms with headers: store hashes with
-  detector applied in `.ckmame.db` and adapt:
-  - `regress/rom-from-extra-detector.test`
-  - `regress/rom-from-superfluous-detector.test`
-  - `regress/skip-full.test`
-  - `regress/skip.test`
-  - `src/dbh_cache.c`
-
-* uncompressed support
-** [bug] existing no good rom is not accepted in uncompressed mode (`nogood-diskgood.test`)
-
-* bugs with test cases
-! [bug] `mkmamedb`: three generation merge grandchild to child does not work (`mamedb-merge-parent.dump`)
-+ [bug] improve ``zero-miss.test` diagnostics when creating zero size file
-+ [bug] `mkmamedb`: warn if rom from parent has different crc (`mkmamedb-parent-crcdiff-mame.test`)
-+ [bug] `mkmamedb`: merge does not match name in parent: warning and fixup (`mkmamedb-merge-wrong-name.test`)
-+ [bug] `mkmamedb`: does not warn about duplicate roms of type nodump or duplicate samples (`mkmamedb-duplicate-nodump.test`)
-- [bug] detector bugs (`detector-interaction-with-headerless.test`, `detector-prefer-file-with-header.test`)
 
 * unsorted
 + support `^T` inside a game, not only between games (e.g. while searching extra dirs)
@@ -79,7 +81,6 @@
   ```
 + [feature] `mkmamedb`: parser for mtree files
 + [feature] server mode: tell location/mamedb of ROM sets, serves files needed by remote `ckmame` client
-+ [cleanup] `ckmame`: create fixdat only when necessary
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
 + [feature] get needed files directly from parent (`inparent.test`)
 + [feature] inconsistent zip in ROM set: copy files to new zip
@@ -108,7 +109,6 @@
 - [feature] add hash-types option to `dumpgame`
 - [feature] `mkmamedb`: split to original CM dat files + detector XML on export
 - [feature] when file for nogooddump rom exists, check if needed elsewhere
-- [feature] `mkmamedb`: add XML output format
 - [feature] database consistency checks during `mkmamedb`
   - are all roms of one set included in one other set
   - are two sets the same, just different name
@@ -132,7 +132,6 @@ other features:
 
 * code cleanups:
   - make `parse_cm` table driven
-  - split `util*`, `funcs.h`
   - fix all TODOs
 
 * tests:
@@ -149,7 +148,6 @@ other features:
 - case differences (game name / archive / rom / file in archive)
 - extra cleanup done when all games checked
 - is superfluous file that needs detector cleaned up correctly?
-- `detective`
 - detector
   - header field
   - write to db
@@ -177,7 +175,6 @@ other features:
 ** later
 - [feature] save detector hashes to cachedb
 - fix Xcode warnings
-- [cleanup] make `ARCHIVE_IFL_MODIFIED` a bool member
 - [test] fix preload on OS X
 - [feature] if `.ckmame.db` can't be opened, move aside and create new
 
@@ -188,4 +185,3 @@ other features:
 - split ckmamedb file table in (archive_id, file_number, name) and (archive_id, file_number, detector_uuid, size, hashes)
 - when entering archives in map, compute hashes for all needed detectors
 - when searching in ckmamedb, pass in which detector to use (or none)
-

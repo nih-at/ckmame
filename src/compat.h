@@ -58,4 +58,4 @@ const char *getprogname(void);
 void setprogname(const char *);
 #endif
 
-#endif /* compat.h */
+#endif // HAD_COMPAT_H

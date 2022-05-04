@@ -1,0 +1,8 @@
+description dumpgame: test --checksum SHA1 for disk
+return 0
+args -D ../mamedb-disk.db --checksum 7570a907e20a51cbf6193ec6779b82d1967bb609
+program dumpgame
+stdout-data
+In game disk:
+		disk 108-5        md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 status  in game
+end-of-data

@@ -51,9 +51,11 @@ public:
     virtual bool close() { return true; }
     virtual size_t read_xxx(void *data, size_t length) = 0;
     virtual ParserSourcePtr open(const std::string &name) = 0;
+    virtual time_t get_mtime() = 0;
 
     std::optional<std::string> getline();
     int peek();
+    std::string peek(size_t n);
     size_t read(void *data, size_t length);
     
 private:
@@ -66,4 +68,4 @@ private:
     void buffer_allocate(size_t n); // ensure space for n bytes of valid data (from current)
 };
 
-#endif /* parser_source.h */
+#endif // HAD_PARSER_SOURCE_H

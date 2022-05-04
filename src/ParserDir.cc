@@ -38,57 +38,26 @@
 
 #include "Archive.h"
 #include "Dir.h"
-#include "error.h"
 #include "globals.h"
 #include "util.h"
 
 bool ParserDir::parse() {
     lineno = 0;
 
+    // TODO: set name from directory name?
+
+    if (header_only) {
+	return true;
+    }
+
     try {
 	Dir dir(directory_name, false);
 	std::filesystem::path filepath;
 
-	if (roms_unzipped) {
-            auto have_loose_files = false;
-
-	    while ((filepath = dir.next()) != "") {
-		if (std::filesystem::is_directory(filepath)) {
-		    /* TODO: handle errors */
-		    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
-		    if (a) {
-                        start_game(a->name, directory_name);
-			parse_archive(TYPE_ROM, a.get());
-                        end_game();
-		    }
-		}
-		else {
-		    if (std::filesystem::is_regular_file(filepath)) {
-			/* TODO: always include loose files, separate flag? */
-			if (full_archive_name) {
-			    have_loose_files = true;
-			}
-			else {
-			    myerror(ERRDEF, "found file '%s' outside of game subdirectory", filepath.c_str());
-			}
-		    }
-		}
-	    }
-
-	    if (have_loose_files) {
-		auto a = Archive::open_toplevel(directory_name, TYPE_ROM, FILE_NOWHERE, 0);
-
-		if (a) {
-                    start_game(".", "");
-		    parse_archive(TYPE_ROM, a.get());
-                    end_game();
-		}
-	    }
-	}
-	else {
+	if (configuration.roms_zipped) {
             auto have_loose_chds = false;
             
-	    while ((filepath = dir.next()) != "") {
+            while ((filepath = dir.next()) != "") {
                 if (std::filesystem::is_directory(filepath)) {
                     auto dir_empty = true;
                     
@@ -103,9 +72,10 @@ bool ParserDir::parse() {
                         }
                     }
                     {
-                        roms_unzipped = true;
+                        // TODO: Remove this ugly hack.
+                        configuration.roms_zipped = false;
                         auto files = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
-                        roms_unzipped = false;
+                        configuration.roms_zipped = true;
 
                         if (files && !files->is_empty()) {
                             dir_empty = false;
@@ -129,14 +99,14 @@ bool ParserDir::parse() {
                                     }
                                 }
                                 else {
-                                    myerror(ERRDEF, "skipping unknown file '%s/%s'", filepath.c_str(), file.name.c_str());
+                                    output.error("skipping unknown file '%s/%s'", filepath.c_str(), file.name.c_str());
                                 }
                             }
                         }
                     }
                     
                     if (dir_empty) {
-                        myerror(ERRDEF, "skipping empty directory '%s'", filepath.c_str());
+                        output.error("skipping empty directory '%s'", filepath.c_str());
                     }
                 }
                 else {
@@ -169,16 +139,16 @@ bool ParserDir::parse() {
                                     have_loose_chds = true;
                                 }
                                 else {
-                                    myerror(ERRDEF, "skipping top level disk image '%s'", filepath.c_str());
+                                    output.error("skipping top level disk image '%s'", filepath.c_str());
                                 }
                             }
                             else {
-                                myerror(ERRDEF, "skipping unknown file '%s'", filepath.c_str());
+                                output.error("skipping unknown file '%s'", filepath.c_str());
                             }
                             break;
                     }
                 }
-	    }
+        }
 
             end_game();
 
@@ -193,7 +163,43 @@ bool ParserDir::parse() {
 
             }
 	}
+	else {
+            auto have_loose_files = false;
 
+            while ((filepath = dir.next()) != "") {
+                if (std::filesystem::is_directory(filepath)) {
+                    /* TODO: handle errors */
+                    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                    if (a) {
+                        start_game(a->name, directory_name);
+                        parse_archive(TYPE_ROM, a.get());
+                        end_game();
+                    }
+                }
+                else {
+                    if (std::filesystem::is_regular_file(filepath)) {
+                        /* TODO: always include loose files, separate flag? */
+                        if (options.full_archive_names) {
+                            have_loose_files = true;
+                        }
+                        else {
+                            output.error("found file '%s' outside of game subdirectory", filepath.c_str());
+                        }
+                    }
+                }
+            }
+            
+            if (have_loose_files) {
+                auto a = Archive::open_toplevel(directory_name, TYPE_ROM, FILE_NOWHERE, 0);
+                
+                if (a) {
+                    start_game(".", "");
+                    parse_archive(TYPE_ROM, a.get());
+                    end_game();
+                }
+            }
+        }
+        
         eof();
     }
     catch (...) {

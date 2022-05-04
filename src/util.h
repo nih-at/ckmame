@@ -34,10 +34,12 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
-#include <stdarg.h>
+#include <cstdarg>
+#include <ctime>
 
 #include "printf_like.h"
 
@@ -45,16 +47,22 @@ enum name_type { NAME_ZIP, NAME_IMAGES, NAME_IGNORE, NAME_UNKNOWN };
 
 typedef enum name_type name_type_t;
 
-extern std::string rom_dir;
-
 std::vector<uint8_t> hex2bin(const std::string &hex);
 std::string bin2hex(const std::vector<uint8_t> &bin);
+std::string string_lower(const std::string &s);
+bool string_starts_with(const std::string &large, const std::string &small);
 name_type_t name_type(const std::string &name);
-bool ensure_dir(const std::string &name, bool strip_filename);
-const std::string get_directory(void);
+bool ensure_dir(const std::filesystem::path& name, bool strip_filename); // TODO: replace with ensure_directory
+void ensure_directory(const std::filesystem::path& name, bool strip_filename = false);
 bool is_ziplike(const std::string &fname);
-void print_human_number(FILE *f, uint64_t value);
+std::filesystem::path home_directory();
+std::string human_number(uint64_t value);
+std::string format_time(const std::string &format, time_t timestamp);
 std::string string_format(const char *format, ...) PRINTF_LIKE(1, 2);
 std::string string_format_v(const char *format, va_list ap);
+std::string slurp(const std::string &fname);
+std::string pad_string(const std::string& string, size_t width, char c = ' ');
+std::string pad_string_left(const std::string& string, size_t width, char c = ' ');
+std::vector<std::string> slurp_lines(const std::string &file_name);
 
 #endif

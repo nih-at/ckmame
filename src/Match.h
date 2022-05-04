@@ -49,7 +49,8 @@ public:
         COPIED,  /* copied from elsewhere */
         IN_ZIP,   /* is in zip, should be in ancestor */
         OK,      /* name/size/crc match */
-        OLD      /* exists in old */
+        OK_AND_OLD, /* exists in ROM set and old */
+        OLD,      /* exists in old */
     };
     
     Match() : quality(MISSING), where(FILE_NOWHERE), index(0), offset(0) { }
@@ -71,4 +72,4 @@ public:
     std::string file() const;
 };
 
-#endif /* match.h */
+#endif // HAD_MATCH_H
