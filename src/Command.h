@@ -46,9 +46,11 @@ class Command {
     int run(int argc, char *const *argv);
 
   protected:
-    virtual void setup(const ParsedCommandline& commandline) { }
+    virtual void global_setup(const ParsedCommandline& commandline) { }
+    virtual bool setup() { return true; }
     virtual bool execute(const std::vector<std::string>& arguments) = 0;
     virtual bool cleanup() { return true; }
+    virtual bool global_cleanup() { return true; }
 
     std::string name;
     std::string arguments;

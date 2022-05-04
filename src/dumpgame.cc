@@ -46,8 +46,6 @@
 #include "globals.h"
 #include "util.h"
 
-Stats stats;
-
 std::vector<Commandline::Option> dumpgame_options = {
     Commandline::Option("brief", 'b', "brief listing (omit ROM details)"),
     Commandline::Option("checksum", 'c', "find games containing ROMs or disks with given checksums"),
@@ -147,7 +145,7 @@ int main(int argc, char **argv) {
 }
 
 
-void Dumpgame::setup(const ParsedCommandline &commandline) {
+void Dumpgame::global_setup(const ParsedCommandline &commandline) {
     for (const auto &option : commandline.options) {
         if (option.name == "brief") {
             brief_mode = true;
@@ -281,7 +279,7 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
 }
 
 
-bool Dumpgame::cleanup() {
+bool Dumpgame::global_cleanup() {
     auto ok = true;
 
     if (!find_checksum) {
@@ -443,7 +441,7 @@ void Dumpgame::dump_detector() {
 
 
 void Dumpgame::dump_stats() {
-    stats = db->get_stats();
+    auto stats = db->get_stats();
 
     stats.print(stdout, true);
 }

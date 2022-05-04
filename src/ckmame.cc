@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
 CkMame::CkMame() : Command("ckmame", "[game ...]", ckmame_options, ckmame_used_variables), only_if_updated(false) {
 }
 
-void CkMame::setup(const ParsedCommandline &commandline) {
+void CkMame::global_setup(const ParsedCommandline &commandline) {
     for (const auto &option : commandline.options) {
         if (option.name == "fix") {
             configuration.fix_romset = true;
@@ -345,17 +345,19 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
         std::filesystem::remove(configuration.saved_directory, ec);
     }
 
+    return true;
+}
+
+
+
+
+bool CkMame::cleanup() {
     db = nullptr;
     old_db = nullptr;
     check_tree.clear();
     ckmame_cache = nullptr;
     ArchiveContents::clear_cache();
 
-    return true;
-}
-
-
-bool CkMame::cleanup() {
     return true;
 }
 

@@ -40,7 +40,7 @@ class CkMame : public Command {
   public:
     CkMame();
     
-    void setup(const ParsedCommandline &commandline) override;
+    void global_setup(const ParsedCommandline &commandline) override;
     bool execute(const std::vector<std::string> &arguments) override;
     bool cleanup() override;
 

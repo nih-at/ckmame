@@ -94,7 +94,7 @@ MkMameDB::MkMameDB() : Command("mkmamedb", "[rominfo-file ...]", mkmamedb_option
 }
 
 
-void MkMameDB::setup(const ParsedCommandline &commandline) {
+void MkMameDB::global_setup(const ParsedCommandline &commandline) {
     cache_directory = true;
 
     hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
@@ -292,7 +292,7 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 }
 
 
-bool MkMameDB::cleanup() {
+bool MkMameDB::global_cleanup() {
     return true;
 }
 

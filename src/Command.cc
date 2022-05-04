@@ -74,7 +74,7 @@ int Command::run(int argc, char* const* argv) {
 
         configuration.handle_commandline(arguments); // global, not merging config, not setting set
 
-        setup(arguments);
+        global_setup(arguments);
 
         std::set<std::string> selected_sets;
 
@@ -126,8 +126,10 @@ int Command::run(int argc, char* const* argv) {
         exit_code = 1;
     }
 
+    configuration.set = "";
+
     try {
-        if (!cleanup()) {
+        if (!global_cleanup()) {
             exit_code = 1;
         }
     }
@@ -147,11 +149,15 @@ bool Command::do_for(const std::string& set, const ParsedCommandline& arguments,
             output.set_header("Set " + set);
         }
         configuration.prepare(set, arguments);
-        return execute(arguments.arguments);
+        if (!setup()) {
+            return false;
+        }
+        auto ok = execute(arguments.arguments);
+        return cleanup() && ok;
     }
     catch (std::exception& ex) {
+        cleanup();
         fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
-        // TODO: handle error
         return false;
     }
 }

@@ -41,9 +41,9 @@ class MkMameDB : public Command {
   public:
     MkMameDB();
 
-    void setup(const ParsedCommandline& commandline) override;
+    void global_setup(const ParsedCommandline& commandline) override;
     bool execute(const std::vector<std::string>& arguments) override;
-    bool cleanup() override;
+    bool global_cleanup() override;
 
   private:
     std::string dbname, dbname_real;
