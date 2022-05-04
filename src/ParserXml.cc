@@ -114,7 +114,12 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_size(void *ctx, const void *a
     auto parser = static_cast<ParserXml *>(ctx);
     auto arguments = static_cast<const Arguments *>(args);
 
-    return status(parser->file_size(arguments->file_type, value));
+    if (value.empty()) {
+        return XmlProcessor::OK;
+    }
+    else {
+        return status(parser->file_size(arguments->file_type, value));
+    }
 }
 
 

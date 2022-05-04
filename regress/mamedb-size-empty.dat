@@ -8,5 +8,5 @@ game (
         description "no size"
         manufacturer "synth"
         year 2011
-	rom ( name 04.rom crc32 b89563da )
+	rom ( name 04.rom crc32 d87f7e0c )
 )
