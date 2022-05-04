@@ -277,6 +277,10 @@ sub post_parse {
 sub post_copy_file {
 	my ($test, $hook) = @_;
 	
+    for my $directive (@{$test->{test}->{"ckmamedb-after"}}) {
+		$directive->[0] =~ s,/\@SANDBOX\@/,$test->{abs_sandbox}/,;
+    }
+
 	if ($test->{test}->{mkdbargs}) {
 		my $ret = system('../../src/mkmamedb', @{$test->{test}->{mkdbargs}});
 		# TODO: capture stdout/stderr

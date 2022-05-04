@@ -348,9 +348,8 @@ sub runtest_one {
 	$ENV{POSIXLY_CORRECT} = 1;
 	$self->sandbox_create($tag);
 
-	my $abs_sandbox = abs_path($self->{sandbox_dir});
 	for my $filename (sort keys %{$self->{files}}) {
-		$self->{files}->{$filename}->{destination} =~ s,/\@SANDBOX\@/,$abs_sandbox/,;
+		$self->{files}->{$filename}->{destination} =~ s,/\@SANDBOX\@/,$self->{abs_sandbox}/,;
 	}
 
 	$self->sandbox_enter();
@@ -1404,6 +1403,8 @@ sub sandbox_create {
 	$self->die("sandbox $self->{sandbox_dir} already exists") if (-e $self->{sandbox_dir});
 
 	mkdir($self->{sandbox_dir}) or $self->die("cannot create sandbox $self->{sandbox_dir}: $!");
+
+    $self->{abs_sandbox} = abs_path($self->{sandbox_dir});
 
 	return 1;
 }

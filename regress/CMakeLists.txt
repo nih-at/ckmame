@@ -103,7 +103,6 @@ add_custom_target(update-mamedb.dump
 
 
 set(XFAIL_TESTS
-  config-use-central-cache-directory.test
   extra-file-zip.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test

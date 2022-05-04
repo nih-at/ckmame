@@ -1,10 +1,12 @@
 description test single-rom game (no parent), file is in search dir from config, keep, use central cache
+variants zip
 return 0
 setenv HOME ./home
 args -F 1-4
 file search/1-4.zip 1-4-ok.zip
 file-new roms/1-4.zip 1-4-ok.zip
-file-new home/.cache/ckmame/@SANDBOX@/search/.ckmame.db mkmamedb-datdb-1.dump
+touch 1419260288 search/1-4.zip
+ckmamedb-after home/.cache/ckmame/@SANDBOX@/search ckmamedb-1-4-ok-with-mtime.dump
 ckmamedb-after search ckmamedb-empty.dump
 file-data .ckmamerc
 [global]
