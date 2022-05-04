@@ -43,6 +43,7 @@ set(DBS
   mamedb-one-game-two-roms.db
   mamedb-parent-crcdiff.db
   mamedb-parent-no-common.db
+  mamedb-size-empty.db
   mamedb-small.db
   mamedb-two-games.db
   mamedb-xml-quoting.db
@@ -104,6 +105,8 @@ add_custom_target(update-mamedb.dump
 set(XFAIL_TESTS
   config-use-central-cache-directory.test
   extra-file-zip.test
+  mkmamedb-size-empty.test
+  nogood-no-size.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
 )
