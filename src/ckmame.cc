@@ -343,6 +343,8 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     if (configuration.fix_romset) {
         std::error_code ec;
         std::filesystem::remove(configuration.saved_directory, ec);
+        // Since we create saved/$set by default, remove saved. This is not entirely clean, since we also do this in the non-default case.
+        std::filesystem::remove(std::filesystem::path(configuration.saved_directory).parent_path(), ec);
     }
 
     return true;

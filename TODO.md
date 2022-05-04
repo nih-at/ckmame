@@ -2,7 +2,6 @@
 
 ### Release
 
-- `saved` directory shared by default between sets - change this, or ignore during cleanup when run for multiple sets
 - Fix failing tests.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Add error messages for detector parse errors.

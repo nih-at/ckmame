@@ -244,6 +244,9 @@ void Configuration::reset() {
     rom_directory = "roms";
     roms_zipped = true;
     saved_directory = "saved";
+    if (!set.empty()) {
+        saved_directory += "/" + set;
+    }
     unknown_directory = "unknown";
     update_database = false;
     use_central_cache_directory = false;
@@ -343,9 +346,9 @@ void Configuration::handle_commandline(const ParsedCommandline &args) {
 
 
 void Configuration::prepare(const std::string &current_set, const ParsedCommandline &commandline) {
-    reset();
-
     set = current_set;
+
+    reset();
 
     for (const auto& file : config_files) {
 	merge_config_file(file);
