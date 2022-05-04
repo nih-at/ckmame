@@ -1,3 +1,9 @@
+2.0 (2022-XX-XX)
+=================
+* Support for configuration file and multiple sets.
+* Automatically update ROM DB.
+* XXX: many more.
+
 1.1 (2021-06-28)
 =================
 * Read-only 7z support.
