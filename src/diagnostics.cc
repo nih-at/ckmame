@@ -37,8 +37,9 @@
 
 #include <sstream>
 
-#include "fix.h"
+#include "CkmameCache.h"
 #include "Stats.h"
+#include "fix.h"
 #include "warn.h"
 
 static const std::string zname[] = {"", "cloneof", "grand-cloneof"};
@@ -47,13 +48,13 @@ static void diagnostics_game(filetype_t ft, const Game *game, const Result &resu
 
 
 void diagnostics(const Game *game, const GameArchives &archives, const Result &result) {
-    stats.add_game(result.game);
+    ckmame_cache->stats.add_game(result.game);
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
         
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
-            stats.add_rom(filetype, &game->files[filetype][i], result.game_files[filetype][i].quality);
+            ckmame_cache->stats.add_rom(filetype, &game->files[filetype][i], result.game_files[filetype][i].quality);
         }
         diagnostics_game(static_cast<filetype_t>(filetype), game, result);
         diagnostics_archive(static_cast<filetype_t>(filetype), archives[filetype], result);

@@ -46,6 +46,7 @@
 #include "globals.h"
 #include "util.h"
 
+Stats stats;
 
 std::vector<Commandline::Option> dumpgame_options = {
     Commandline::Option("brief", 'b', "brief listing (omit ROM details)"),

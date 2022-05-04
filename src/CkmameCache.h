@@ -38,6 +38,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "CkmameDB.h"
 #include "DeleteList.h"
+#include "Stats.h"
 
 class CkmameCache {
   public:
@@ -58,6 +59,8 @@ class CkmameCache {
     DeleteListPtr superfluous_delete_list;
 
     std::unordered_set<std::string> complete_games;
+
+    Stats stats;
 
   private:
     class CacheDirectory {

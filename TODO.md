@@ -1,21 +1,20 @@
 ## config
 
-### Implement
+### Release
 
 - `saved` directory shared by default between sets - change this, or ignore during cleanup when run for multiple sets
-- stats not reset between sets (move `stats` into `CkmameCache`)
-- Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)
 - Fix failing tests.
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Add error messages for detector parse errors.
+
+### Implement
+
+- Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)
 - Variables in config file (e.g. for collection root directory).
-- Make `SIGINFO` handler print set name.
-- Add (per entry) option for directories to put cache database in central location.
-- Auto-fix cue sheet when renaming track 1.
 
 ### Write Tests
 
-- Better check for determining input file type.
+- stats not reset between sets (move `stats` into `CkmameCache`)
 
 
 ## other
