@@ -1,0 +1,12 @@
+clrmamepro (
+	name "ckmame test db"
+	version 1
+)
+
+game (
+        name nosize
+        description "no size"
+        manufacturer "synth"
+        year 2011
+	rom ( name 04.rom crc32 b89563da )
+)
