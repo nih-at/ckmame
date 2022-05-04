@@ -127,6 +127,7 @@ int Command::run(int argc, char* const* argv) {
     }
 
     configuration.set = "";
+    output.set_header("");
 
     try {
         if (!global_cleanup()) {
