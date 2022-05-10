@@ -4,6 +4,7 @@
 
 - Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Add error messages for detector parse errors.
+- Fix linenumber bug in XML dats
 
 ### Implement
 
@@ -11,6 +12,7 @@
 - Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)
 - Variables in config file (e.g. for collection root directory).
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
+- SHA256 support
 
 ### Write Tests
 
