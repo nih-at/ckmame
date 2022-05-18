@@ -2,9 +2,7 @@
 
 ### Release
 
-- Check parsers: what should be considered a warning and what an error (causing database creation to fail).
 - Add error messages for detector parse errors.
-- Fix linenumber bug in XML dats
 
 ### Implement
 

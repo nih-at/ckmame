@@ -5,6 +5,6 @@ args -o mamedb-test.db mamedb.rc
 file mamedb.rc mamedb.rc mamedb.rc
 file-new mamedb-test.db mamedb-rc-ok.dump
 stderr-data
-mamedb.rc: 7: warning: RomCenter plugins not supported,
-mamedb.rc: 7: warning: DAT won't work as expected.
+mamedb.rc:7: warning: RomCenter plugins not supported,
+mamedb.rc:7: warning: DAT won't work as expected.
 end-of-data

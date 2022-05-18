@@ -132,6 +132,7 @@ class Parser {
     /* state */
     int flags;
     bool header_set;
+    bool error;
     parser_state_t state;
     DatEntry de; /* info about dat file */
     GamePtr g;   /* current game */

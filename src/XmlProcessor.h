@@ -77,12 +77,29 @@ class XmlProcessor {
     bool parse(ParserSource *parser_source);
 
   private:
+    class ReaderSource {
+      public:
+        explicit ReaderSource(ParserSource *source) : source(source), buffer_length(0), position(0), eof(false) { }
+
+        int read(char *b, int len);
+
+      private:
+        ParserSource *source;
+        char buffer[8192];
+        int buffer_length;
+        int position;
+        bool eof;
+    };
+
     LineNumberCallback line_number_callback;
     const std::unordered_map<std::string, Entity> &entities;
     void *context;
 
     bool ok;
     bool stop_parsing;
+
+    static int read(void *source, char *b, int len);
+    static int close([[maybe_unused]] void *source);
 
     [[nodiscard]] const Entity *find(const std::string &path) const;
     void handle_callback_status(CallbackStatus status);

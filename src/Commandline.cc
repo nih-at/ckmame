@@ -209,15 +209,15 @@ void Commandline::usage(bool full, FILE *fout) {
         }
         for (const auto &option : options) {
             if (option.short_name.has_value()) {
-                printf("  -%c, ", option.short_name.value());
+                fprintf(fout, "  -%c, ", option.short_name.value());
             }
             else {
-                printf("      ");
+                fprintf(fout, "      ");
             }
             size_t length = 8 + option.name.length();
-            printf("--%s", option.name.c_str());
+            fprintf(fout, "--%s", option.name.c_str());
             if (option.has_argument()) {
-                printf(" %s", option.argument_name.c_str());
+                fprintf(fout, " %s", option.argument_name.c_str());
                 length += option.argument_name.length() + 1;
             }
             while (length < max_length) {

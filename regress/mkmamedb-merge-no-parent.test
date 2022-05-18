@@ -5,6 +5,6 @@ args -o mamedb-test.db mamedb.xml
 file mamedb.xml mamedb-merge-no-parent.xml mamedb-merge-no-parent.xml
 file-new mamedb-test.db mamedb-merge-no-parent.dump
 stderr-data
-mamedb.xml: 9: ROM 'parent-1' has merge information but game 'parent' has no parent
-mamedb.xml: 9: ROM 'parent-2' has merge information but game 'parent' has no parent
+mamedb.xml:7: warning: ROM 'parent-1' has merge information but game 'parent' has no parent
+mamedb.xml:8: warning: ROM 'parent-2' has merge information but game 'parent' has no parent
 end-of-data

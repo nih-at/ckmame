@@ -62,12 +62,9 @@ XmlProcessor::Attribute::Attribute(XmlProcessor::AttributeCallback callback_, co
     cb_attr(callback_), arguments(arguments_) { }
 
 
-static int xml_close([[maybe_unused]] void *);
-static int xml_read(void *source, char *buffer, int length);
-
-
 bool XmlProcessor::parse(ParserSource *parser_source) {
-    auto reader = xmlReaderForIO(xml_read, xml_close, parser_source, nullptr, nullptr, 0);
+    auto reader_source = ReaderSource(parser_source);
+    auto reader = xmlReaderForIO(read, close, &reader_source, nullptr, nullptr, 0);
     if (reader == nullptr) {
 	output.file_error("can't open\n");
 	return -1;
@@ -234,15 +231,42 @@ void XmlProcessor::handle_callback_status(CallbackStatus status) {
 }
 
 
-static int
-xml_close([[maybe_unused]] void *ctx) {
+int XmlProcessor::close([[maybe_unused]] void *source) {
     return 0;
 }
 
 
-static int
-xml_read(void *source, char *b, int len) {
-    return static_cast<int>(static_cast<ParserSource *>(source)->read(b, static_cast<size_t>(len)));
+int XmlProcessor::read(void *source, char *b, int len) {
+    return static_cast<XmlProcessor::ReaderSource*>(source)->read(b, len);
+}
+
+int XmlProcessor::ReaderSource::read(char* b, int len) {
+    if (position >= buffer_length) {
+        if (eof) {
+            return 0;
+        }
+
+        buffer_length = static_cast<int>(source->read(buffer, sizeof(buffer)));
+        position = 0;
+        if (buffer_length == 0) {
+            eof = true;
+            return 0;
+        }
+    }
+
+    int new_position;
+    auto newline = static_cast<char*>(memchr(buffer + position, '\n', buffer_length - position));
+    if (newline != nullptr) {
+        new_position = static_cast<int>(newline - buffer + 1);
+    }
+    else {
+        new_position = buffer_length;
+    }
+
+    auto read_length = std::min(new_position - position, len);
+    memcpy(b, buffer + position, read_length);
+    position += read_length;
+    return read_length;
 }
 
 #endif /* HAVE_LIBXML2 */

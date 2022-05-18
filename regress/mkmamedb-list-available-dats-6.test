@@ -19,6 +19,6 @@ aes
 game-with-disk
 end-of-data
 stderr-data
-dats/mamedb.rc: 7: warning: RomCenter plugins not supported,
-dats/mamedb.rc: 7: warning: DAT won't work as expected.
+dats/mamedb.rc:7: warning: RomCenter plugins not supported,
+dats/mamedb.rc:7: warning: DAT won't work as expected.
 end-of-data

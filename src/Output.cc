@@ -212,6 +212,39 @@ void Output::file_error_error_code(const std::error_code &ec, const char *fmt, .
 }
 
 
+void Output::line_error(size_t line_number, const char *fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, prefix_line(line_number));
+    va_end(va);
+}
+
+
+void Output::line_error_database(size_t line_number, const char *fmt, ...){
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, prefix_line(line_number), postfix_database());
+    va_end(va);
+}
+
+
+void Output::line_error_system(size_t line_number, const char *fmt, ...){
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, prefix_line(line_number), postfix_system());
+    va_end(va);
+}
+
+
+void Output::line_error_error_code(size_t line_number, const std::error_code &ec, const char *fmt, ...) {
+    va_list va;
+    va_start(va, fmt);
+    print_error_v(fmt, va, prefix_line(line_number), ec.message());
+    va_end(va);
+}
+
+
+
 std::string Output::prefix_archive_file() {
     if (!archive_name.empty() && !file_name.empty()) {
 	return archive_name + "(" + file_name + ")";
@@ -229,6 +262,11 @@ std::string Output::postfix_database() {
     else {
         return db->error();
     }
+}
+
+
+std::string  Output::prefix_line(size_t line_number) {
+    return file_name + ":" + std::to_string(line_number);
 }
 
 std::string Output::postfix_system() {

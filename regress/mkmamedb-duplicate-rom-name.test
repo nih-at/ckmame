@@ -5,5 +5,5 @@ args -o mamedb-test.db mamedb.dat
 file mamedb.dat mamedb-duplicate-rom-name.dat mamedb-duplicate-rom-name.dat
 file-new mamedb-test.db mamedb-duplicate-rom-name.dump
 stderr-data
-mamedb.dat: 12: two different ROMs with same name '04.rom', renamed to '04 (1).rom'
+mamedb.dat:12: warning: two different ROMs with same name '04.rom', renamed to '04 (1).rom'
 end-of-data

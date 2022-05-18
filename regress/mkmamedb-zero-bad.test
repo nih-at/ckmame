@@ -5,7 +5,7 @@ args -o mamedb-test.db zero-bad.dat
 file zero-bad.dat zero-bad.dat
 file-new mamedb-test.db mamedb-zero-bad.dump
 stderr-data
-zero-bad.dat: 13: zero-size ROM 'zero' with wrong checksums, corrected
-zero-bad.dat: 21: zero-size ROM 'zero' with wrong checksums, corrected
-zero-bad.dat: 29: zero-size ROM 'zero' with wrong checksums, corrected
+zero-bad.dat:13: warning: zero-size ROM 'zero' with wrong checksums, corrected
+zero-bad.dat:21: warning: zero-size ROM 'zero' with wrong checksums, corrected
+zero-bad.dat:29: warning: zero-size ROM 'zero' with wrong checksums, corrected
 end-of-data

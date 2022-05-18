@@ -64,7 +64,8 @@ std::unordered_map<std::string, Parser::Format> Parser::format_start = {
 #define CHECK_STATE(s)                                        \
     do {                                                      \
         if (state != (s)) {                                   \
-            output.file_error("%zu: state is %s, expected %s", lineno, state_name(state).c_str(), state_name(s).c_str()); \
+            output.line_error(lineno, "state is %s, expected %s", state_name(state).c_str(), state_name(s).c_str()); \
+            error = true;                                     \
             return false;                                     \
         }                                                     \
     } while (0)
@@ -130,7 +131,9 @@ bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::
         return false;
     }
 
-    return parser->do_parse();
+    parser->error = false;
+
+    return parser->do_parse() && !parser->error;
 }
 
 
@@ -153,12 +156,14 @@ bool Parser::file_continue(filetype_t ft) {
     CHECK_STATE(PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
-        output.file_error("%zu: file continuation only supported for ROMs", lineno);
+        output.line_error(lineno, "file continuation only supported for ROMs");
+        error = true;
         return false;
     }
 
     if (flags & PARSE_FL_ROM_DELETED) {
-        output.file_error("%zu: internal error: trying to continue deleted file", lineno);
+        output.line_error(lineno, "internal error: trying to continue deleted file");
+        error = true;
         return false;
     }
 
@@ -199,7 +204,8 @@ bool Parser::file_status(filetype_t ft, const std::string& attr) {
         status = Rom::NO_DUMP;
     }
     else {
-        output.file_error("%zu: illegal status '%s'", lineno, attr.c_str());
+        output.line_error(lineno, "illegal status '%s'", attr.c_str());
+        error = true;
         return false;
     }
 
@@ -222,7 +228,8 @@ bool Parser::file_hash(filetype_t ft, int ht, const std::string& attr) {
     h = &r[ft]->hashes;
 
     if (h->set_from_string(attr) != ht) {
-        output.file_error("%zu: invalid argument for %s", lineno, Hashes::type_name(ht).c_str());
+        output.line_error(lineno, "invalid argument for %s", Hashes::type_name(ht).c_str());
+        error = true;
         return false;
     }
 
@@ -234,7 +241,8 @@ bool Parser::file_ignore(filetype_t ft) {
     CHECK_STATE(PARSE_IN_FILE);
 
     if (ft != TYPE_ROM) {
-        output.file_error("%zu: file ignoring only supported for ROMs", lineno);
+        output.line_error(lineno, "file ignoring only supported for ROMs");
+        error = true;
         return false;
     }
 
@@ -287,7 +295,8 @@ bool Parser::file_size(filetype_t ft, const std::string& attr) {
         return file_size(ft, std::stoull(attr, nullptr, 0));
     }
     catch (...) {
-        output.file_error("%zu: invalid size '%s'", lineno, attr.c_str());
+        output.line_error(lineno, "invalid size '%s'", attr.c_str());
+        error = true;
         return false;
     }
 }
@@ -340,7 +349,7 @@ bool Parser::game_end() {
     auto ok = true;
 
     if (g->name.empty()) {
-        output.file_error("%zu: game without name", lineno);
+        output.line_error(lineno, "game without name");
         ok = false;
     }
     else if (!ignore_game(g->name)) {
@@ -393,6 +402,7 @@ void Parser::set_game_name(std::string name) {
 bool Parser::game_start() {
     if (state == PARSE_IN_HEADER) {
         if (!header_end()) {
+            error = true;
             return false;
         }
     }
@@ -400,7 +410,8 @@ bool Parser::game_start() {
     CHECK_STATE(PARSE_OUTSIDE);
 
     if (g) {
-        output.file_error("%zu: game inside game", lineno);
+        output.line_error(lineno, "game inside game");
+        error = true;
         return false;
     }
 
@@ -426,7 +437,7 @@ bool Parser::prog_header(const std::string& attr) {
     CHECK_STATE(PARSE_IN_HEADER);
 
     if (detector) {
-        output.file_error("%zu: warning: detector already defined, header '%s' ignored", lineno, attr.c_str());
+        output.line_error(lineno, "warning: detector already defined, header '%s' ignored", attr.c_str());
         return true;
     }
 
@@ -438,13 +449,14 @@ bool Parser::prog_header(const std::string& attr) {
 
     ParserSourcePtr dps = ps->open(attr);
     if (!dps) {
-        output.file_error_system("%zu: cannot open detector '%s'", lineno, attr.c_str());
+        output.line_error_system(lineno, "cannot open detector '%s'", attr.c_str());
+        error = true;
         return false;
     }
 #if defined(HAVE_LIBXML2)
     detector = Detector::parse(dps.get());
     if (!detector) {
-        output.file_error("%zu: cannot parse detector '%s'", lineno, attr.c_str());
+        output.line_error(lineno, "cannot parse detector '%s'", attr.c_str());
         ok = false;
     }
     else
@@ -536,7 +548,7 @@ void Parser::rom_end(filetype_t ft) {
         auto& hashes = r[ft]->hashes;
 
         if (hashes.compare(Hashes::zero) == Hashes::MISMATCH) {
-            output.file_error("%zu: zero-size ROM '%s' with wrong checksums, corrected", lineno, r[ft]->name.c_str());
+            output.line_error(lineno, "warning: zero-size ROM '%s' with wrong checksums, corrected", r[ft]->name.c_str());
             hashes.set_crc(Hashes::zero.crc);
             if (hashes.has_type(Hashes::TYPE_MD5)) {
                 hashes.set_md5(Hashes::zero.md5);
@@ -561,7 +573,7 @@ void Parser::rom_end(filetype_t ft) {
         deleted = true;
     }
     else if (r[ft]->name.empty()) {
-        output.file_error("%zu: ROM without name", lineno);
+        output.line_error(lineno, "ROM without name");
         deleted = true;
     }
     for (size_t j = 0; j < n && !deleted; j++) {
@@ -584,7 +596,7 @@ void Parser::rom_end(filetype_t ft) {
                     }
                     n += 1;
                 }
-                output.file_error("%zu: two different ROMs with same name '%s', renamed to '%s'", lineno,
+                output.line_error(lineno, "warning: two different ROMs with same name '%s', renamed to '%s'",
                                   r[ft]->name.c_str(), name.c_str());
                 r[ft]->name = name;
                 break;
@@ -592,7 +604,7 @@ void Parser::rom_end(filetype_t ft) {
         }
     }
     if (!r[ft]->merge.empty() && g->cloneof[0].empty()) {
-        output.file_error("%zu: ROM '%s' has merge information but game '%s' has no parent", lineno,
+        output.line_error(lineno, "warning: ROM '%s' has merge information but game '%s' has no parent",
                           r[ft]->name.c_str(), g->name.c_str());
     }
     if (deleted) {

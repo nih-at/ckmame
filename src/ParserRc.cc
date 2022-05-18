@@ -53,6 +53,7 @@ std::vector<ParserRc::Field> ParserRc::fields = {
 
 
 bool ParserRc::parse() {
+    auto ok = true;
     lineno = 0;
     auto sect = RC_UNKNOWN;
 
@@ -77,13 +78,15 @@ bool ParserRc::parse() {
                 return true;
             }
             if (!process_romline(line)) {
-                output.file_error("%zu: cannot parse ROM line, skipping", lineno);
+                output.line_error(lineno, "cannot parse ROM line, skipping");
+                ok = false;
             }
         }
         else {
             auto position = line.find('=');
             if (position == std::string::npos) {
-                output.file_error("%zu: no `=' found", lineno);
+                output.line_error(lineno, "no `=' found");
+                ok = false;
                 continue;
             }
             auto key = line.substr(0, position);
@@ -98,7 +101,7 @@ bool ParserRc::parse() {
         }
     }
 
-    return true;
+    return ok;
 }
 
 std::string ParserRc::Tokenizer::get() {
@@ -136,8 +139,8 @@ bool ParserRc::parse_prog_version(ParserRc *ctx, const std::string &attr) {
 }
 
 bool ParserRc::rc_plugin(ParserRc *ctx, const std::string &attr) {
-    output.file_error("%zu: warning: RomCenter plugins not supported,", ctx->lineno);
-    output.file_error("%zu: warning: DAT won't work as expected.", ctx->lineno);
+    output.line_error(ctx->lineno, "warning: RomCenter plugins not supported,");
+    output.line_error(ctx->lineno, "warning: DAT won't work as expected.");
     return false;
 }
 

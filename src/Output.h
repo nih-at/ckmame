@@ -46,6 +46,11 @@ class Output {
     void file_error_system(const char* fmt, ...) PRINTF_LIKE(2, 3);
     void file_error_error_code(const std::error_code& ec, const char* fmt, ...) PRINTF_LIKE(3, 4);
 
+    void line_error(size_t line_number, const char* fmt, ...) PRINTF_LIKE(3, 4);
+    void line_error_database(size_t line_number, const char* fmt, ...) PRINTF_LIKE(3, 4);
+    void line_error_system(size_t line_number, const char* fmt, ...) PRINTF_LIKE(3, 4);
+    void line_error_error_code(size_t line_number, const std::error_code& ec, const char* fmt, ...) PRINTF_LIKE(4, 5);
+
   private:
     std::string header;
     std::string subheader;
@@ -61,6 +66,7 @@ class Output {
 
     void print_message_v(const char* fmt, va_list va);
     void print_error_v(const char* fmt, va_list va, const std::string& prefix = "", const std::string& postfix ="");
+    std::string prefix_line(size_t line_number);
     std::string prefix_archive_file();
     std::string postfix_database();
     static std::string postfix_system();
