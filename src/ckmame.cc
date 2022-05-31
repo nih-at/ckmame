@@ -34,6 +34,7 @@
 #include "CkMame.h"
 
 #include <algorithm>
+#include <csignal>
 #include <cstring>
 #include <filesystem>
 #include <string>
