@@ -35,19 +35,22 @@
 
 #include <cerrno>
 
-#include "util.h"
 #include "XmlProcessor.h"
+#include "globals.h"
+#include "util.h"
 
 
 class DetectorParserContext {
 public:
-    DetectorParserContext() : detector(std::make_shared<Detector>()), rule(nullptr), test(nullptr) { }
+    DetectorParserContext() : detector(std::make_shared<Detector>()), lineno(0), rule(nullptr), test(nullptr) { }
 
     bool parse(ParserSource *source);
     
     DetectorPtr detector;
 
   private:
+    size_t lineno;
+
     Detector::Rule *rule;
     Detector::Test *test;
     
@@ -61,12 +64,14 @@ public:
     static Arguments arguments_data;
     static Arguments arguments_or;
     static Arguments arguments_xor;
-    
-    static std::optional<int> parse_enum(const std::string &value, const std::unordered_map<std::string, int> &enums);
-    XmlProcessor::CallbackStatus parse_hex(std::vector<uint8_t> *result, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_number(int64_t *result, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_offset(int64_t *result, const std::string &value);
-    static XmlProcessor::CallbackStatus parse_size(int64_t *result, const std::string &value);
+
+    static void line_number_callback(void *context, size_t line_number);
+
+    [[nodiscard]] std::optional<int> parse_enum(const std::string &value, const std::unordered_map<std::string, int> &enums, const std::string &field_name) const;
+    XmlProcessor::CallbackStatus parse_hex(std::vector<uint8_t> *result, const std::string &value, const std::string &field_name);
+    XmlProcessor::CallbackStatus parse_number(int64_t *result, const std::string &value, const std::string &field_name) const;
+    XmlProcessor::CallbackStatus parse_offset(int64_t *result, const std::string &value, const std::string &field_name);
+    XmlProcessor::CallbackStatus parse_size(int64_t *result, const std::string &value, const std::string &field_name);
 
     static XmlProcessor::CallbackStatus rule_close(void *ctx, [[maybe_unused]] const void *args);
     static XmlProcessor::CallbackStatus rule_end_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value);
@@ -137,7 +142,7 @@ const std::unordered_map<std::string, XmlProcessor::Entity> DetectorParserContex
 };
 
 bool DetectorParserContext::parse(ParserSource *source) {
-    XmlProcessor processor(nullptr, entities, this);
+    XmlProcessor processor(line_number_callback, entities, this);
 
     return processor.parse(source);
 }
@@ -157,10 +162,11 @@ DetectorPtr Detector::parse(ParserSource *parser_source) {
 }
 
 
-std::optional<int> DetectorParserContext::parse_enum(const std::string &value, const std::unordered_map<std::string, int> &enums) {
+std::optional<int> DetectorParserContext::parse_enum(const std::string &value, const std::unordered_map<std::string, int> &enums, const std::string &field_name) const {
     auto it = enums.find(value);
     
     if (it == enums.end()) {
+        output.line_error(lineno, "invalid %s: '%s'", field_name.c_str(), value.c_str());
         errno = EINVAL;
         return {};
     }
@@ -169,15 +175,15 @@ std::optional<int> DetectorParserContext::parse_enum(const std::string &value, c
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::parse_hex(std::vector<uint8_t> *result, const std::string &value) {
+XmlProcessor::CallbackStatus DetectorParserContext::parse_hex(std::vector<uint8_t> *result, const std::string &value, const std::string &field_name) {
     if (value.size() % 2 != 0) {
-        errno = EINVAL;
+        output.line_error(lineno, "invalid %s: odd number of hex digits", field_name.c_str());
 	return XmlProcessor::ERROR;
     }
     auto length = value.size() / 2;
 
     if (test->length != 0 && test->length != length) {
-	errno = EINVAL;
+        output.line_error(lineno, "invalid %s: length mismatch", field_name.c_str());
 	return XmlProcessor::ERROR;
     }
 
@@ -188,11 +194,11 @@ XmlProcessor::CallbackStatus DetectorParserContext::parse_hex(std::vector<uint8_
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t *result, const std::string &value) {
+XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t *result, const std::string &value, const std::string &field_name) const {
     int64_t i;
 
     if (value.empty()) {
-	errno = EINVAL;
+        output.line_error(lineno, "invalid %s: '%s'", field_name.c_str(), value.c_str());
 	return XmlProcessor::ERROR;
     }
 
@@ -202,7 +208,7 @@ XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t *result
 	i = std::stoll(value, &end, 16);
 
 	if (end != value.length()) {
-	    errno = EINVAL;
+            output.line_error(lineno, "invalid %s: '%s'", field_name.c_str(), value.c_str());
 	    return XmlProcessor::ERROR;
 	}
     }
@@ -216,23 +222,23 @@ XmlProcessor::CallbackStatus DetectorParserContext::parse_number(int64_t *result
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::parse_offset(int64_t *result, const std::string &value) {
+XmlProcessor::CallbackStatus DetectorParserContext::parse_offset(int64_t *result, const std::string &value, const std::string &field_name) {
     if (value == "EOF") {
 	*result = DETECTOR_OFFSET_EOF;
 	return XmlProcessor::OK;
     }
 
-    return parse_number(result, value);
+    return parse_number(result, value, field_name);
 }
 
 
-XmlProcessor::CallbackStatus DetectorParserContext::parse_size(int64_t *result, const std::string &value) {
+XmlProcessor::CallbackStatus DetectorParserContext::parse_size(int64_t *result, const std::string &value, const std::string &field_name) {
     if (value == "PO2") {
 	*result = DETECTOR_SIZE_POWER_OF_2;
 	return XmlProcessor::OK;
     }
 
-    return parse_number(result, value);
+    return parse_number(result, value, field_name);
 }
 
 
@@ -248,7 +254,7 @@ XmlProcessor::CallbackStatus DetectorParserContext::rule_close(void *ctx, [[mayb
 XmlProcessor::CallbackStatus DetectorParserContext::rule_end_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
     auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return parse_offset(&context->rule->end_offset, value);
+    return context->parse_offset(&context->rule->end_offset, value, "end_offset");
 }
 
 
@@ -271,7 +277,7 @@ XmlProcessor::CallbackStatus DetectorParserContext::rule_operation(void *ctx, [[
     };
 
     auto context = static_cast<DetectorParserContext *>(ctx);
-    auto i = parse_enum(value, op);
+    auto i = context->parse_enum(value, op, "operation");
     
     if (!i.has_value()) {
 	return XmlProcessor::ERROR;
@@ -285,7 +291,7 @@ XmlProcessor::CallbackStatus DetectorParserContext::rule_operation(void *ctx, [[
 XmlProcessor::CallbackStatus DetectorParserContext::rule_start_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
     auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return parse_offset(&context->rule->start_offset, value);
+    return context->parse_offset(&context->rule->start_offset, value, "start_offset");
 }
 
 
@@ -301,14 +307,14 @@ XmlProcessor::CallbackStatus DetectorParserContext::rule_start_offset(void *ctx,
 XmlProcessor::CallbackStatus DetectorParserContext::test_mask(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
     auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return context->parse_hex(&context->test->mask, value);
+    return context->parse_hex(&context->test->mask, value, "mask");
 }
 
 
 XmlProcessor::CallbackStatus DetectorParserContext::test_offset(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
     auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return parse_offset(&context->test->offset, value);
+    return context->parse_offset(&context->test->offset, value, "offset");
 }
 
 
@@ -330,7 +336,7 @@ XmlProcessor::CallbackStatus DetectorParserContext::test_operator(void *ctx, [[m
     };
 
     auto context = static_cast<DetectorParserContext *>(ctx);
-    auto i = parse_enum(value, enums);
+    auto i = context->parse_enum(value, enums, "operator");
     
     if (!i.has_value()) {
     return XmlProcessor::ERROR;
@@ -348,7 +354,7 @@ XmlProcessor::CallbackStatus DetectorParserContext::test_result(void *ctx, [[may
     };
 
     auto context = static_cast<DetectorParserContext *>(ctx);
-    auto i = parse_enum(value, enums);
+    auto i = context->parse_enum(value, enums, "result");
     
     if (!i.has_value()) {
         return XmlProcessor::ERROR;
@@ -362,14 +368,14 @@ XmlProcessor::CallbackStatus DetectorParserContext::test_result(void *ctx, [[may
 XmlProcessor::CallbackStatus DetectorParserContext::test_size(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
     auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return parse_size(&context->test->offset, value);
+    return context->parse_size(&context->test->offset, value, "size");
 }
 
 
 XmlProcessor::CallbackStatus DetectorParserContext::test_value(void *ctx, [[maybe_unused]] const void *args, const std::string &value) {
     auto context = static_cast<DetectorParserContext *>(ctx);
 
-    return context->parse_hex(&context->test->value, value);
+    return context->parse_hex(&context->test->value, value, "value");
 }
 
 
@@ -397,4 +403,9 @@ XmlProcessor::CallbackStatus DetectorParserContext::text_version(void *ctx, [[ma
     context->detector->version = value;
 
     return XmlProcessor::OK;
+}
+
+
+void DetectorParserContext::line_number_callback(void *context, size_t line_number) {
+    static_cast<DetectorParserContext*>(context)->lineno = line_number;
 }

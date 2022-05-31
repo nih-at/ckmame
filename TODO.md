@@ -1,9 +1,5 @@
 ## config
 
-### Release
-
-- Add error messages for detector parse errors.
-
 ### Implement
 
 - Fix failing tests.

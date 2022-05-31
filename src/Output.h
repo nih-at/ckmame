@@ -21,7 +21,11 @@ class Output {
     void message(const char* fmt, ...) PRINTF_LIKE(2, 3);
     void message_verbose(const std::string& string) { message_verbose("%s", string.c_str()); }
     void message_verbose(const char* fmt, ...) PRINTF_LIKE(2, 3);
-    
+
+    void push_error_archive(std::string archive_name, std::string file_name = "");
+    void push_error_file(std::string file_name);
+    void pop_error_file_info();
+
     void set_error_archive(std::string archive_name, std::string file_name = "");
     void set_error_database(DB* db);
     void set_error_file(std::string file_name);
@@ -52,14 +56,21 @@ class Output {
     void line_error_error_code(size_t line_number, const std::error_code& ec, const char* fmt, ...) PRINTF_LIKE(4, 5);
 
   private:
+    class FileInfo {
+      public:
+        FileInfo(std::string archive_name, std::string file_name) : archive_name(std::move(archive_name)), file_name(std::move(file_name)) { }
+
+        std::string archive_name;
+        std::string file_name;
+    };
+
     std::string header;
     std::string subheader;
     bool first_header;
     bool header_done;
     bool subheader_done;
-    
-    std::string archive_name;
-    std::string file_name;
+
+    std::vector<FileInfo> file_infos;
     DB* db;
 
     void print_header();

@@ -7,6 +7,7 @@
 #include "globals.h"
 
 Output::Output() :
+    file_infos({FileInfo("", "")}),
     first_header(true),
     header_done(false),
     subheader_done(false),
@@ -27,13 +28,13 @@ void Output::set_subheader(std::string new_subheader) {
 
 
 void Output::set_error_archive(std::string new_archive_name, std::string new_file_name) {
-    archive_name = std::move(new_archive_name);
+    file_infos.back().archive_name = std::move(new_archive_name);
     set_error_file(std::move(new_file_name));
 }
 
 
 void Output::set_error_file(std::string new_file_name) {
-    file_name = std::move(new_file_name);
+    file_infos.back().file_name = std::move(new_file_name);
 }
 
 
@@ -119,7 +120,7 @@ void Output::error_error_code(const std::error_code &ec, const char *fmt, ...) {
 void Output::archive_error(const char *fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, archive_name);
+    print_error_v(fmt, va, file_infos.back().archive_name);
     va_end(va);
 }
 
@@ -127,7 +128,7 @@ void Output::archive_error(const char *fmt, ...) {
 void Output::archive_error_database(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, archive_name, postfix_database());
+    print_error_v(fmt, va, file_infos.back().archive_name, postfix_database());
     va_end(va);
 }
 
@@ -135,7 +136,7 @@ void Output::archive_error_database(const char *fmt, ...){
 void Output::archive_error_system(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, archive_name, postfix_system());
+    print_error_v(fmt, va, file_infos.back().archive_name, postfix_system());
     va_end(va);
 }
 
@@ -143,7 +144,7 @@ void Output::archive_error_system(const char *fmt, ...){
 void Output::archive_error_error_code(const std::error_code &ec, const char *fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, archive_name, ec.message());
+    print_error_v(fmt, va, file_infos.back().archive_name, ec.message());
     va_end(va);
 }
 
@@ -175,7 +176,7 @@ void Output::archive_file_error_error_code(const std::error_code &ec, const char
 void Output::file_error(const char *fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, file_name);
+    print_error_v(fmt, va, file_infos.back().file_name);
     va_end(va);
 }
 
@@ -183,7 +184,7 @@ void Output::file_error(const char *fmt, ...) {
 void Output::file_error_database(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, file_name, postfix_database());
+    print_error_v(fmt, va, file_infos.back().file_name, postfix_database());
     va_end(va);
 }
 
@@ -191,7 +192,7 @@ void Output::file_error_database(const char *fmt, ...){
 void Output::file_error_system(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, file_name, postfix_system());
+    print_error_v(fmt, va, file_infos.back().file_name, postfix_system());
     va_end(va);
 }
 
@@ -199,7 +200,7 @@ void Output::file_error_system(const char *fmt, ...){
 void Output::archive_file_error_system(const char *fmt, ...){
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, file_name, postfix_system());
+    print_error_v(fmt, va, file_infos.back().file_name, postfix_system());
     va_end(va);
 }
 
@@ -207,7 +208,7 @@ void Output::archive_file_error_system(const char *fmt, ...){
 void Output::file_error_error_code(const std::error_code &ec, const char *fmt, ...) {
     va_list va;
     va_start(va, fmt);
-    print_error_v(fmt, va, file_name, ec.message());
+    print_error_v(fmt, va, file_infos.back().file_name, ec.message());
     va_end(va);
 }
 
@@ -246,8 +247,8 @@ void Output::line_error_error_code(size_t line_number, const std::error_code &ec
 
 
 std::string Output::prefix_archive_file() {
-    if (!archive_name.empty() && !file_name.empty()) {
-	return archive_name + "(" + file_name + ")";
+    if (!file_infos.back().archive_name.empty() && !file_infos.back().file_name.empty()) {
+	return file_infos.back().archive_name + "(" + file_infos.back().file_name + ")";
     }
     else {
 	return "";
@@ -266,7 +267,8 @@ std::string Output::postfix_database() {
 
 
 std::string  Output::prefix_line(size_t line_number) {
-    return file_name + ":" + std::to_string(line_number);
+    // TODO: also use archive_name
+    return file_infos.back().file_name + ":" + std::to_string(line_number);
 }
 
 std::string Output::postfix_system() {
@@ -290,4 +292,19 @@ void Output::print_error_v(const char *fmt, va_list va, const std::string &prefi
 	fprintf(stderr, ": %s", postfix.c_str());
     }
     fprintf(stderr, "\n");
+}
+void Output::push_error_archive(std::string archive_name, std::string file_name) {
+    file_infos.emplace_back(FileInfo(std::move(archive_name), std::move(file_name)));
+}
+
+
+void Output::push_error_file(std::string file_name) {
+    file_infos.emplace_back(FileInfo("", std::move(file_name)));
+}
+
+
+void Output::pop_error_file_info() {
+    if (file_infos.size() > 1) {
+        file_infos.pop_back();
+    }
 }

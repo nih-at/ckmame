@@ -51,10 +51,11 @@ ParserSourceFile::ParserSourceFile(const std::string &fname) : file_name(fname),
         f = make_shared_stdin();
     }
 
-    output.set_error_file(file_name);
+    output.push_error_archive("", file_name);
 }
 
 ParserSourceFile::~ParserSourceFile() {
+    output.pop_error_file_info();
     close();
 }
 

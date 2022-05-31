@@ -3,7 +3,7 @@ BasedOnStyle: LLVM
 IndentWidth: 4
 ColumnLimit: 120
 # details
-AlignArrayOfStructures: Left
+# AlignArrayOfStructures: Left # Disable for now, crashes current clang-format.
 AlignEscapedNewlines: Left
 AllowAllConstructorInitializersOnNextLine: true
 AllowShortBlocksOnASingleLine: Never

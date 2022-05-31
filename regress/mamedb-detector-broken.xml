@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE datafile PUBLIC "-//Logiqx//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">
+<datafile>
+        <header>
+                <name>Detector Tests</name>
+                <description>Test Detector Support in ckmame</description>
+                <version>20220531</version>
+                <author>NiH</author>
+                <homepage>nih.at</homepage>
+                <clrmamepro header="detector-broken.xml"/>
+        </header>
+        <game name="1-8">
+                <description>1-8 (possibly with header), duplicate ROM name</description>
+                <rom name="08.rom" size="8" crc="3656897d" md5="095ca6fcc1279865662b553147eb8f6d" sha1="111bb8b7549e3386a996845405b02164f17c7b37"/>
+				<rom name="08.rom" size="8" crc="3656897e" md5="095ca6fcc1279865662b553147eb8f6e" sha1="111bb8b7549e3386a996845405b02164f17c7b38"/>
+        </game>
+</datafile>
