@@ -1,8 +1,11 @@
-2.0 (2022-XX-XX)
+2.0 (2022-05-31)
 =================
 * Support for configuration file and multiple sets.
+* Overhaul command line options.
 * Automatically update ROM DB.
-* XXX: many more.
+* Speed up ROM sets with many files shared among many games.
+* Improve parse error reporting, don't create mamedb for dats with errors, fix inconsistencies in dat.
+* Improve detector support.
 
 1.1 (2021-06-28)
 =================
