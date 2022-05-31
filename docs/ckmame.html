@@ -54,49 +54,64 @@
 <table class="Nm">
   <tr>
     <td><code class="Nm">ckmame</code></td>
-    <td>[<code class="Fl">-CcFhjuVv</code>] [<code class="Fl">-D</code>
+    <td>[<code class="Fl">-CcFhjoVv</code>] [<code class="Fl">-D</code>
       <var class="Ar">dbfile</var>] [<code class="Fl">-e</code>
       <var class="Ar">dir</var>] [<code class="Fl">-O</code>
       <var class="Ar">dbfile</var>] [<code class="Fl">-R</code>
       <var class="Ar">dir</var>] [<code class="Fl">-T</code>
       <var class="Ar">file</var>]
-      [<code class="Fl">-</code><code class="Fl">-autofixdat</code>]
+      [<code class="Fl">-</code><code class="Fl">-all-sets</code>]
+      [<code class="Fl">-</code><code class="Fl">-complete-list</code>
+      <var class="Ar">file</var>]
+      [<code class="Fl">-</code><code class="Fl">-complete-games-only</code>]
       [<code class="Fl">-</code><code class="Fl">-config</code>
       <var class="Ar">file</var>]
       [<code class="Fl">-</code><code class="Fl">-copy-from-extra</code>]
-      [<code class="Fl">-</code><code class="Fl">-fixdat</code>
-      <var class="Ar">datfile</var>]
-      [<code class="Fl">-</code><code class="Fl">-keep-old-duplicate</code>]
-      [<code class="Fl">-</code><code class="Fl">-no-complete-games-only</code>]
-      [<code class="Fl">-</code><code class="Fl">-complete-games-only</code>]
-      [<code class="Fl">-</code><code class="Fl">-report-correct</code>]
-      [<code class="Fl">-</code><code class="Fl">-db</code>
-      <var class="Ar">dbfile</var>]
+      [<code class="Fl">-</code><code class="Fl">-create-fixdat</code>]
       [<code class="Fl">-</code><code class="Fl">-extra-directory</code>
       <var class="Ar">dir</var>]
       [<code class="Fl">-</code><code class="Fl">-fix</code>]
+      [<code class="Fl">-</code><code class="Fl">-fixdat-directory</code>
+      <var class="Ar">dir</var>]
+      [<code class="Fl">-</code><code class="Fl">-game-list</code>
+      <var class="Ar">file</var>]
       [<code class="Fl">-</code><code class="Fl">-help</code>]
+      [<code class="Fl">-</code><code class="Fl">-keep-old-duplicate</code>]
+      [<code class="Fl">-</code><code class="Fl">-list-sets</code>]
+      [<code class="Fl">-</code><code class="Fl">-missing-list</code>
+      <var class="Ar">file</var>]
       [<code class="Fl">-</code><code class="Fl">-move-from-extra</code>]
+      [<code class="Fl">-</code><code class="Fl">-no-complete-games-only</code>]
+      [<code class="Fl">-</code><code class="Fl">-no-create-fixdat</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-correct</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-detailed</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-fixable</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-missing</code>]
+      [<code class="Fl">-</code><code class="Fl">-no-report-no-good-dump</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-summary</code>]
+      [<code class="Fl">-</code><code class="Fl">-old-db</code>
+      <var class="Ar">dbfile</var>]
+      [<code class="Fl">-</code><code class="Fl">-only-if-database-updated</code>]
+      [<code class="Fl">-</code><code class="Fl">-report-correct</code>]
       [<code class="Fl">-</code><code class="Fl">-report-detailed</code>]
       [<code class="Fl">-</code><code class="Fl">-report-fixable</code>]
       [<code class="Fl">-</code><code class="Fl">-report-missing</code>]
+      [<code class="Fl">-</code><code class="Fl">-report-no-good-dump</code>]
       [<code class="Fl">-</code><code class="Fl">-report-summary</code>]
-      [<code class="Fl">-</code><code class="Fl">-set</code>
-      <var class="Ar">name</var>]
-      [<code class="Fl">-</code><code class="Fl">-old-db</code>
+      [<code class="Fl">-</code><code class="Fl">-rom-db</code>
       <var class="Ar">dbfile</var>]
-      [<code class="Fl">-</code><code class="Fl">-rom-dir</code>
+      [<code class="Fl">-</code><code class="Fl">-rom-directory</code>
       <var class="Ar">dir</var>]
-      [<code class="Fl">-</code><code class="Fl">-game-list</code>
-      <var class="Ar">file</var>]
       [<code class="Fl">-</code><code class="Fl">-roms-unzipped</code>]
-      [<code class="Fl">-</code><code class="Fl">-version</code>]
+      [<code class="Fl">-</code><code class="Fl">-save-directory</code>
+      <var class="Ar">dir</var>]
+      [<code class="Fl">-</code><code class="Fl">-set</code>
+      <var class="Ar">pattern</var>]
+      [<code class="Fl">-</code><code class="Fl">-unknown-directory</code>
+      <var class="Ar">dir</var>]
+      [<code class="Fl">-</code><code class="Fl">-update-database</code>]
       [<code class="Fl">-</code><code class="Fl">-verbose</code>]
+      [<code class="Fl">-</code><code class="Fl">-version</code>]
       [<var class="Ar">game ...</var>]</td>
   </tr>
 </table>
@@ -138,37 +153,35 @@
 <h2 class="Ss" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h2>
 Supported options:
 <dl class="Bl-tag">
-  <dt><code class="Fl">-</code><code class="Fl">-autofixdat</code></dt>
-  <dd>Like <code class="Fl">-</code><code class="Fl">-fixdat</code>, but
-      automatically generates the output file name from the datfile's name and
-      version number: &#x201C;<span class="Pa">fix_$SYSTEM
-      ($VERSION).dat</span>&#x201D;.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-all-sets</code></dt>
+  <dd>Do the action for all configured sets.</dd>
+  <dt><a class="permalink" href="#C"><code class="Fl" id="C">-C</code></a>,
+    <code class="Fl">-</code><code class="Fl">-complete-games-only</code></dt>
+  <dd>Only create complete games. ROMs for incomplete games are moved to the
+      <span class="Pa">saved</span> directory. When run for a set, the default
+      is <span class="Pa">saved/$set</span> instead, where &#x201C;$set&#x201D;
+      is the name of the set.</dd>
+  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>,
+    <code class="Fl">-</code><code class="Fl">-report-correct</code></dt>
+  <dd>Report status of ROMs that are correct. By default they are not
+    mentioned.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-config</code>
     <var class="Ar">file</var></dt>
   <dd>read configuration from <var class="Ar">file</var>. See the
       <a class="Sx" href="#CONFIG_FILE">CONFIG FILE</a> section for more
       details.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-complete-list</code>
+    <var class="Ar">file</var></dt>
+  <dd>Write all complete games into <var class="Ar">file</var>, one line per
+      game, and sorted alphabetically.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-copy-from-extra</code></dt>
   <dd>Keep used files in extra directories (default).</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-fixdat</code>
-    <var class="Ar">datfile</var></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-create-fixdat</code></dt>
   <dd>Create a clrmamepro-style &#x201C;fixdat&#x201D; file, i.e. an XML file
       containing only the files missing in the ROM set compared to the database
       used.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-keep-old-duplicate</code></dt>
-  <dd>Keep files in ROM set that are also in old ROM database.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-no-complete-games-only</code></dt>
-  <dd>Keep partial games in ROM set (default).</dd>
-  <dt><a class="permalink" href="#C"><code class="Fl" id="C">-C</code></a>,
-    <code class="Fl">-</code><code class="Fl">-complete-games-only</code></dt>
-  <dd>Only create complete games. ROMs for incomplete games are moved to the
-      <span class="Pa">needed</span> directory.</dd>
-  <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>,
-    <code class="Fl">-</code><code class="Fl">-report-correct</code></dt>
-  <dd>Report status of ROMs that are correct. By default they are not
-    mentioned.</dd>
   <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a>,
-    <code class="Fl">-</code><code class="Fl">-db</code>
+    <code class="Fl">-</code><code class="Fl">-rom-db</code>
     <var class="Ar">dbfile</var></dt>
   <dd>Use <var class="Ar">dbfile</var> instead of the default
       <span class="Pa">mame.db</span> as the database.</dd>
@@ -180,6 +193,11 @@ Supported options:
   <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a>,
     <code class="Fl">-</code><code class="Fl">-fix</code></dt>
   <dd>Fix the ROM set. By default, only the status is reported.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-fixdat-directory</code>
+    <var class="Ar">dir</var></dt>
+  <dd>Create the fixdat (see
+      <code class="Fl">-</code><code class="Fl">-create-fixdat</code>) in
+      <var class="Ar">dir</var> instead of the current directory.</dd>
   <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
     <code class="Fl">-</code><code class="Fl">-help</code></dt>
   <dd>Display a short usage.</dd>
@@ -187,6 +205,18 @@ Supported options:
     <code class="Fl">-</code><code class="Fl">-move-from-extra</code></dt>
   <dd>Remove used files from extra directories. Opposite of
       <code class="Fl">-</code> <code class="Fl">-copy-from-extra</code>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-keep-old-duplicate</code></dt>
+  <dd>Keep files in ROM set that are also in old ROM database.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-list-sets</code></dt>
+  <dd>List all configured sets.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-missing-list</code>
+    <var class="Ar">file</var></dt>
+  <dd>Write all complete games into <var class="Ar">file</var>, one line per
+      game, and sorted alphabetically.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-no-complete-games-only</code></dt>
+  <dd>Keep partial games in ROM set (default).</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-no-create-fixdat</code></dt>
+  <dd>Do not create a fixdat for the missing ROM sets (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-correct</code></dt>
   <dd>Don't report status of ROMs that are correct (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-detailed</code></dt>
@@ -195,41 +225,65 @@ Supported options:
   <dd>Don't report status of ROMs that can be fixed.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-missing</code></dt>
   <dd>Don't report status of ROMs that are missing.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-no-report-no-good-dump</code></dt>
+  <dd>Don't report status of ROMs for which no good dump exists (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-summary</code></dt>
   <dd>Don't print summary of ROM set status (default).</dd>
+  <dt><a class="permalink" href="#O"><code class="Fl" id="O">-O</code></a>,
+    <code class="Fl">-</code><code class="Fl">-old-db</code>
+    <var class="Ar">dbfile</var></dt>
+  <dd>Assume that the files in the database <var class="Ar">dbfile</var> exist
+      in some other location (e.g., on an offline disk or backup medium).</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>,
+    <code class="Fl">-</code><code class="Fl">-only-if-database-updated</code></dt>
+  <dd>Only run <code class="Nm">ckmame</code> if the database was updated
+      (implies
+      <code class="Fl">-</code><code class="Fl">-update-database</code>).</dd>
+  <dt><a class="permalink" href="#R"><code class="Fl" id="R">-R</code></a>,
+    <code class="Fl">-</code><code class="Fl">-rom-directory</code>
+    <var class="Ar">dir</var></dt>
+  <dd>Look for the ROM set in the directory <var class="Ar">dir</var> instead of
+      the default <span class="Pa">roms</span>.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-detailed</code></dt>
   <dd>Report status of every ROM that is checked.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-fixable</code></dt>
   <dd>Report status of ROMs that can be fixed (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-missing</code></dt>
   <dd>Report status of ROMs that are missing (default).</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-report-no-good-dump</code></dt>
+  <dd>Don't suppress reporting status of ROMs for which no good dump exists.
+      Status of such ROMs is reported according to
+      <code class="Fl">-</code><code class="Fl">-report-correct</code> or
+      <code class="Fl">-</code><code class="Fl">-report-missing</code>.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-summary</code></dt>
   <dd>Print summary of ROM set status at the end of the output.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-set</code>
-    <var class="Ar">name</var></dt>
-  <dd>Check ROM set name. This uses the configuration from the corresponding
-      section in the Config files. See <a class="Sx" href="#CONFIG_FILES">CONFIG
-      FILES</a> for details</dd>
-  <dt><a class="permalink" href="#O"><code class="Fl" id="O">-O</code></a>,
-    <code class="Fl">-</code><code class="Fl">-old-db</code>
-    <var class="Ar">dbfile</var></dt>
-  <dd>Assume that the files in the database <var class="Ar">dbfile</var> exist
-      in some other location (e.g., on an offline disk or backup medium).</dd>
-  <dt><a class="permalink" href="#R"><code class="Fl" id="R">-R</code></a>,
-    <code class="Fl">-</code><code class="Fl">-rom-dir</code>
+  <dt><code class="Fl">-</code><code class="Fl">-save-directory</code>
     <var class="Ar">dir</var></dt>
-  <dd>Look for the ROM set in the directory <var class="Ar">dir</var> instead of
-      the default <span class="Pa">roms</span>.</dd>
+  <dd>When a ROM file is encountered that does not belong to the set that is
+      currently checked, but is needed by a different set, move it this
+      directory. It will be found there automatically later (efault:
+      &#x201C;<span class="Pa">saved ).</span>&#x201D;</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-set</code>
+    <var class="Ar">pattern</var></dt>
+  <dd>Check all ROM sets matching <var class="Ar">pattern</var>. This uses the
+      configuration from the corresponding section in the Config files. See
+      <a class="Sx" href="#CONFIG_FILES">CONFIG FILES</a> for details</dd>
   <dt><a class="permalink" href="#T"><code class="Fl" id="T">-T</code></a>,
     <code class="Fl">-</code><code class="Fl">-game-list</code>
     <var class="Ar">file</var></dt>
   <dd>Read the list of games to check from <var class="Ar">file</var>.
       <var class="Ar">file</var> should contain one line per game.</dd>
-  <dt><a class="permalink" href="#u"><code class="Fl" id="u">-u</code></a>,
-    <code class="Fl">-</code><code class="Fl">-roms-unzipped</code></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-roms-unzipped</code></dt>
   <dd>Instead of looking for ROMs in the ZIP archive
       <span class="Pa">roms/games.zip</span>, look for them in the directory
       <span class="Pa">roms/games/</span> in the file system.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-unknown-directory</code>
+    <var class="Ar">dir</var></dt>
+  <dd>When a file is encountered that does not belong to the set that is
+      currently checked and is not known by the database, move it this directory
+      (efault: &#x201C;<span class="Pa">unknown ).</span>&#x201D;</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-update-database</code></dt>
+  <dd>Update the database before checking the ROMs.</dd>
   <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
     <code class="Fl">-</code><code class="Fl">-version</code></dt>
   <dd>Display version number.</dd>
@@ -263,7 +317,7 @@ By default, the configuration is read from
     <span class="Pa">roms</span> directory.</p>
 <p class="Pp">Unknown files are moved to the sub-directory
     <span class="Pa">unknown</span>. Files that will be needed by other games in
-    the ROM set are moved to the <span class="Pa">needed</span> directory.</p>
+    the ROM set are moved to the <span class="Pa">saved</span> directory.</p>
 <p class="Pp"><code class="Nm">ckmame</code> creates
     <span class="Pa">.ckmame.db</span> files in the rom directory as well as the
     directories given with <code class="Fl">-e</code>. These files are databases
@@ -277,71 +331,14 @@ Print a report about the current state of your ROM sets in the
   <span class="Pa">roms</span> subdirectory of the current dir:
 <div class="Bd
   Bd-indent"><code class="Li"><code class="Ic">ckmame</code></code></div>
-<p class="Pp">Fix all sets and only report unfixable errors, omitting those ROMs
-    where no good dump exists:</p>
+<p class="Pp">Fix all ROMs:</p>
 <div class="Bd Bd-indent"><code class="Li"><code class="Ic">ckmame
   -Fd</code></code></div>
-<p class="Pp">Fix all sets using the files found in
+<p class="Pp">Fix all ROMs using the files found in
     <var class="Ar">updatedir</var>, removing files from there that are copied
     to the ROM set:</p>
 <div class="Bd Bd-indent"><code class="Li"><code class="Ic">ckmame -Fj -e
   updatedir</code></code></div>
-<section class="Ss">
-<h2 class="Ss" id="CONFIG_FILE"><a class="permalink" href="#CONFIG_FILE">CONFIG
-  FILE</a></h2>
-By default, <code class="Nm">ckmame</code> reads the config files
-  <span class="Pa">~/.config/ckmame/ckmamerc</span> and
-  <span class="Pa">.ckmamerc</span> and the one given by the
-  <code class="Fl">-</code> <code class="Fl">-config</code> option, in this
-  order. The files are in TOML format. The &#x201C;[global]&#x201D; section
-  contains defaults for all sets, while the &#x201C;[&quot;SET
-  NAME&quot;]&#x201D; option adds overrides for the
-<div class="Bd Bd-indent"><code class="Li">&#x201C;SET NAME&#x201D;</code></div>
-set (as provided by the <code class="Fl">-</code><code class="Fl">-set</code>
-  option). The options are set using the long name options from above. Most
-  options are boolean options, so the &quot;no-&quot; options are set by setting
-  the corresponding option to false, i.e.
-  <code class="Fl">-</code><code class="Fl">-no-report-missing</code> is written
-  as
-<div class="Bd Bd-indent"><code class="Li">report-missing = false</code></div>
-in the config file.
-  <code class="Fl">-</code><code class="Fl">-copy-from-extra</code> is set by
-<div class="Bd Bd-indent"><code class="Li">move-from-extra = false</code></div>
-The following options can not be set from the config file:
-<ul class="Bl-item Bd-indent Bl-compact">
-  <li><code class="Fl">-</code><code class="Fl">-config</code></li>
-  <li><code class="Fl">-</code><code class="Fl">-fix</code></li>
-  <li><code class="Fl">-</code><code class="Fl">-help</code></li>
-  <li><code class="Fl">-</code><code class="Fl">-version</code></li>
-</ul>
-<p class="Pp">The <code class="Cm">extra-directory</code> config parameter
-    overrides the search directories, and there is
-    <code class="Cm">extra-directory-append</code> if you want add to the search
-    path instead.</p>
-<p class="Pp">For example:</p>
-<div class="Bd Pp">
-<pre>
-[global]
-verbose = true
-
-[&quot;Big Set&quot;]
-verbose = false
-rom-dir = &quot;Big Set ROMs&quot;
-dbfile = &quot;Big Set.db&quot;
-
-[&quot;Unzipped Set&quot;]
-roms-unzipped = true
-rom-dir = &quot;Unzipped Set ROMs&quot;
-dbfile = &quot;Unzipped Set.db&quot;
-</pre>
-</div>
-<p class="Pp">This configuration would by default report verbosely, but override
-    this for the &quot;Big Set&quot; set. It would also set the rom directories
-    and database files for both the &quot;Big Set&quot; and the &quot;Unzipped
-    Set&quot; and not use ZIP archives for the latter.</p>
-<p class="Pp">Example run:</p>
-<div class="Bd Bd-indent"><code class="Li">ckmame --set Big Set</code></div>
-</section>
 </section>
 <section class="Sh">
 <h1 class="Sh" id="DIAGNOSTICS"><a class="permalink" href="#DIAGNOSTICS">DIAGNOSTICS</a></h1>
@@ -362,13 +359,14 @@ Most messages should be straightforward. Two need special explanations:
 <section class="Sh">
 <h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
 <code class="Nm">ckmame</code> was written by <span class="An">Dieter
-  Baron</span> &#x27E8;dillo@nih.at&#x27E9; and <span class="An">Thomas
-  Klausner</span> &#x27E8;tk@giga.or.at&#x27E9;.
+  Baron</span> &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt;
+  and <span class="An">Thomas Klausner</span>
+  &lt;<a class="Mt" href="mailto:tk@giga.or.at">tk@giga.or.at</a>&gt;.
 </section>
 </div>
 <table class="foot">
   <tr>
-    <td class="foot-date">January 14, 2022</td>
+    <td class="foot-date">May 4, 2022</td>
     <td class="foot-os">NiH</td>
   </tr>
 </table>

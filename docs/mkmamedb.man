@@ -1,5 +1,5 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
-.\" Copyright (c) 2005-2020 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2005-2022 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "MKMAMEDB" "1" "October 3, 2020" "NiH" "General Commands Manual"
+.TH "MKMAMEDB" "1" "March 25, 2022" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -36,15 +36,21 @@
 .SH "SYNOPSIS"
 .HP 9n
 \fBmkmamedb\fR
-[\fB\-hutV\fR]
-[\fB\-C\fR\ \fIhashtypes\fR]
-[\fB\-F\fR\ \fIoutputformat\fR]
+[\fB\-fhtuV\fR]
+[\fB\-C\fR\ \fItypes\fR]
+[\fB\-F\fR\ \fIformat\fR]
 [\fB\-o\fR\ \fIdbfile\fR]
-[\fB\-x\fR\ \fIpat\fR]
-[\fB\-\fR\fB\-detector\fR\ \fIfile\fR]
-[\fB\-\fR\fB\-exclude\fR\ \fIpat\fR]
+[\fB\-x\fR\ \fIpattern\fR]
+[\fB\-\fR\fB\-all-sets\fR]
+[\fB\-\fR\fB\-detector\fR\ \fIxml\-file\fR]
+[\fB\-\fR\fB\-directory\-cache\fR]
+[\fB\-\fR\fB\-exclude\fR\ \fIpattern\fR]
+[\fB\-\fR\fB\-format\fR\ \fIformat\fR]
 [\fB\-\fR\fB\-hash\-types\fR\ \fItypes\fR]
 [\fB\-\fR\fB\-help\fR]
+[\fB\-\fR\fB\-list\-available\-dats\fR]
+[\fB\-\fR\fB\-list\-dats\fR]
+[\fB\-\fR\fB\-list\-sets\fR]
 [\fB\-\fR\fB\-no\-directory\-cache\fR]
 [\fB\-\fR\fB\-only\-files\fR\ \fIpattern\fR]
 [\fB\-\fR\fB\-output\fR\ \fIdbfile\fR]
@@ -52,15 +58,34 @@
 [\fB\-\fR\fB\-prog\-name\fR\ \fIname\fR]
 [\fB\-\fR\fB\-prog\-version\fR\ \fIversion\fR]
 [\fB\-\fR\fB\-roms\-unzipped\fR]
+[\fB\-\fR\fB\-set\fR\ \fIpattern\fR]
 [\fB\-\fR\fB\-skip\-files\fR\ \fIpattern\fR]
+[\fB\-\fR\fB\-use\-description\-as\-name\fR]
+[\fB\-\fR\fB\-use\-temp\-directory\fR]
 [\fB\-\fR\fB\-version\fR]
-[\fIrominfo\-file\ ...\fR]
+[[\fIrominfo\-file\fR\ |\ \fIdirectory\fR\ |\ \fI-\fR]\ \fI...\fR]
 .SH "DESCRIPTION"
 \fBmkmamedb\fR
 converts ROM set descriptions from one format to another.
 .PP
-The ROM set description is read from the specified files (or
-directories) or the standard input if no files are specified.
+If no argument is given,
+\fBmkmamedb\fR
+reads the
+ckmamerc(5)
+config file and checks if it needs to update the default database.
+.PP
+When a
+\fIrominfo\-file\fR
+is specified, it is used as input file; if the argument is
+\fI-\fR,
+\fBmkmamedb\fR
+expects the database on standard input (stdin).
+.PP
+When a
+\fIdirectory\fR
+is specified, the files in that directory are checksummed and written
+to the database.
+.PP
 The default output file is
 \fImame.db\fR.
 You can override it with the
@@ -123,14 +148,38 @@ the DTD for MAME xml can be found in
 .SS "OPTIONS"
 \fBmkmamedb\fR
 supports the following options:
-.TP 31n
+.TP 32n
+\fB\-\fR\fB\-all-sets\fR
+Do the action for all configured sets.
+.TP 32n
 \fB\-C\fR \fItypes\fR, \fB\-\fR\fB\-hash\-types\fR \fItypes\fR
 A comma separated list of hash types to compute when creating a ROM
 set description from a directory of zip archives.
 Supported hash types are: crc, md5, sha1.
 Default are all.
-.TP 31n
-\fB\-F\fR \fIoutputformat\fR, \fB\-\fR\fB\-format\fR \fIoutputformat\fR
+.TP 32n
+\fB\-\fR\fB\-detector\fR \fIxml\-file\fR
+Use CMPro XML header skip detector description from
+\fIfile\fR.
+This overrides any detectors given in the file itself.
+\fBmkmamedb\fR
+looks for the detector in the input file (if it is a zip file) or
+the directory of the input file.
+.TP 32n
+\fB\-\fR\fB\-directory\-cache\fR
+When
+\fBmkmamedb\fR
+is used to create a database from an input directory, it will by
+default write a
+\fI.ckmame.db\fR
+database file to it, caching the directory contents' hashes in it so
+that consecutive re-runs are faster.
+When
+\fBmkmamedb\fR
+finds such a database, it only computes the hashes for the files that
+have changed since the last run.
+.TP 32n
+\fB\-F\fR \fIformat\fR, \fB\-\fR\fB\-format\fR \fIformat\fR
 Specify output format.
 Supported formats are
 \fBcm\fR
@@ -144,70 +193,78 @@ database), and
 (mtree(8)
 file).
 The default is cm.
-.TP 31n
-\fB\-\fR\fB\-detector\fR \fIfile\fR
-Use CMPro XML header skip detector description from
-\fIfile\fR.
-This overrides any detectors given in the file itself.
-\fBmkmamedb\fR
-looks for the detector in the input file (if it is a zip file) or
-the directory of the input file.
-.TP 31n
+.TP 32n
+\fB\-f\fR, \fB\-\fR\fB\-force\fR
+Create database even if it is not out-of-date.
+.TP 32n
 \fB\-h\fR, \fB\-\fR\fB\-help\fR
 Display a short help message.
-.TP 31n
+.TP 32n
+\fB\-\fR\fB\-no\-directory\-cache\fR
+Turn off
+\fB\-\fR\fB\-directory\-cache\fR.
+.TP 32n
 \fB\-o\fR \fIdbfile\fR, \fB\-\fR\fB\-output\fR \fIdbfile\fR
 Write to database
 \fIdbfile\fR
 instead of the default
 \(lq\fImame.db\fR\(rq.
-.TP 31n
-\fB\-\fR\fB\-no\-directory\-cache\fR
-When
-\fBmkmamedb\fR
-is used to create a database from an input directory, it will by
-default write a
-\fI.ckmame.db\fR
-database file to it, caching the directory contents' hashes in it so
-that consecutive re-runs are faster.
-When
-\fBmkmamedb\fR
-finds such a database, it only computes the hashes for the files that
-have changed since the last run.
-.TP 31n
+.TP 32n
+\fB\-\fR\fB\-list\-available\-dats\fR
+List the names of all dats found in the configured dat directories.
+.TP 32n
+\fB\-\fR\fB\-list\-dats\fR
+List dats configured for the selected set.
+.TP 32n
+\fB\-\fR\fB\-list\-sets\fR
+List all configured sets.
+.TP 32n
 \fB\-\fR\fB\-only\-files\fR \fIpattern\fR
 When reading files from the file system as input,
 only accept files matching the shell glob
 \fIpattern\fR.
-.TP 31n
+.TP 32n
 \fB\-\fR\fB\-prog\-description\fR \fIdescription\fR
 Set description for the program the ROM info is from.
-.TP 31n
+.TP 32n
 \fB\-\fR\fB\-prog\-name\fR \fIname\fR
 Set name of the program the ROM info is from.
-.TP 31n
+.TP 32n
 \fB\-\fR\fB\-prog\-version\fR \fIversion\fR
 Set version of the program the ROM info is from.
-.TP 31n
+.TP 32n
+\fB\-\fR\fB\-set\fR \fIpattern\fR
+Run
+\fBmkmamedb\fR
+for all sets matching
+\fIpattern\fR.
+.TP 32n
 \fB\-\fR\fB\-skip\-files\fR \fIpattern\fR
 When reading files from the file system as input,
 skip files matching the shell glob
-.TP 31n
+.TP 32n
 \fB\-t\fR, \fB\-\fR\fB\-use\-temp\-directory\fR
 Create the output in a temporary directory and move it to the real
 output when finished.
 This might speed up the creation e.g. of
 \fImame.db\fR
 when your current working directory is on a slow file system.
-.TP 31n
+.TP 32n
 \fB\-u\fR, \fB\-\fR\fB\-roms\-unzipped\fR
 ROMs are files on the disk.
 Each game is represented by a directory instead of a ZIP archive.
 Only relevant when creating a database based on file system contents.
-.TP 31n
+.TP 32n
+\fB\-\fR\fB\-use\-description\-as\-name\fR
+Use the value of the
+\(lqdescription\(rq
+field instead of the
+\(lqname\(rq
+field as game name.
+.TP 32n
 \fB\-V\fR, \fB\-\fR\fB\-version\fR
 Display program name and version number.
-.TP 31n
+.TP 32n
 \fB\-x\fR \fIpat\fR, \fB\-\fR\fB\-exclude\fR \fIpat\fR
 Exclude games with names matching
 \fIpat\fR
@@ -221,6 +278,11 @@ Can be overridden with the
 option.
 Defaults to
 \(lq\fImame.db\fR\(rq.
+.SH "FILES"
+.TP 17n
+.mkmamedb.db
+Directory cache file for
+\fB\-\fR\fB\-directory-cache\fR
 .SH "EXAMPLES"
 Get an input file for
 mkmamedb(1)
@@ -228,7 +290,7 @@ from MAME and convert it to the internal database format:
 .nf
 .sp
 .RS 0n
-# mame \-listxml | mkmamedb
+# mame \-listxml | mkmamedb -
 .RE
 .fi
 .SH "SEE ALSO"
@@ -237,6 +299,6 @@ dumpgame(1)
 .SH "AUTHORS"
 \fBmkmamedb\fR
 was written by
-Dieter Baron \(ladillo@nih.at\(ra
+Dieter Baron <\fIdillo@nih.at\fR>
 and
 Thomas Klausner <\fItk@giga.or.at\fR>.

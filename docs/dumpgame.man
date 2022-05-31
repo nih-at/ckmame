@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "DUMPGAME" "1" "June 2, 2013" "NiH" "General Commands Manual"
+.TH "DUMPGAME" "1" "March 21, 2022" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -36,14 +36,14 @@
 .SH "SYNOPSIS"
 .HP 9n
 \fBdumpgame\fR
-{\fB\-b\fR\ |\ \fB\--brief\fR}
-[{\fB\-D\fR\ \fIdbfile\fR\ |\ \fB\--db\fR\ \fIdbfile\fR}]
+{\fB\-b\fR\ |\ \fB\-\fR\fB\-brief\fR}
+[{\fB\-D\fR\ \fIdbfile\fR\ |\ \fB\-\fR\fB\-rom-db\fR\ \fIdbfile\fR}]
 [\fIgame\fR]
 .br
 .PD 0
 .HP 9n
 \fBdumpgame\fR
-\fB\-c\fR\ |\ \fB\-d\fR\ |\ \fB\--checksum\fR\ |\ \fB\--disk\fR
+\fB\-c\fR\ |\ \fB\-\fR\fB\-checksum\fR
 [{\fB\-D\fR\ \fIdbfile\fR\ |\ \fB\--db\fR\ \fIdbfile\fR}]
 \fIchecksum\fR
 [\fI...\fR]
@@ -51,8 +51,17 @@
 .HP 9n
 \fBdumpgame\fR
 [\fB\-hV\fR]
-[\fB\--help\fR]
-[\fB\--version\fR]
+[\fB\-\fR\fB\-all-sets\fR]
+[\fB\-\fR\fB\-dats\fR]
+[\fB\-\fR\fB\-detector\fR]
+[\fB\-\fR\fB\-disks\fR]
+[\fB\-\fR\fB\-games\fR]
+[\fB\-\fR\fB\-hash-types\fR]
+[\fB\-\fR\fB\-help\fR]
+[\fB\-\fR\fB\-list-sets\fR]
+[\fB\-\fR\fB\-set\fR\ \fIpattern\fR]
+[\fB\-\fR\fB\-summary\fR]
+[\fB\-\fR\fB\-version\fR]
 .PD
 .SH "DESCRIPTION"
 \fBdumpgame\fR
@@ -64,57 +73,57 @@ can also find roms matching a particular checksum.
 .PP
 \fBdumpgame\fR
 supports the following options:
-.TP 24n
-\fB\-b\fR, \fB\--brief\fR
+.TP 29n
+\fB\-\fR\fB\-all-sets\fR
+Do the action for all configured sets.
+.TP 29n
+\fB\-b\fR, \fB\-\fR\fB\-brief\fR
 Use brief mode: don't output ROM and disk information.
-.TP 24n
-\fB\-c\fR, \fB\--checksum\fR
-Look for a ROM by checksum (instead of the default
+.TP 29n
+\fB\-c\fR, \fB\-\fR\fB\-checksum\fR
+Look for a ROM or disk by checksum (instead of the default
 behaviour to look for a game by name).
-.TP 24n
-\fB\-D\fR \fIdbfile\fR, \fB\--db\fR \fIdbfile\fR
+.TP 29n
+\fB\-D\fR \fIdbfile\fR, \fB\-\fR\fB\-rom-db\fR \fIdbfile\fR
 Use database
 \fIdbfile\fR
 instead of the default
 \(lq\fImame.db\fR\(rq.
-.TP 24n
-\fB\-d\fR, \fB\--disk\fR
-Look for a disk by checksum (instead of the default
-behaviour to look for a game by name).
-.TP 24n
-\fB\-h\fR, \fB\--help\fR
-Display a short help message.
-.TP 24n
-\fB\-V\fR, \fB\--version\fR
-Display program name and version number.
-.PP
-The
-\fIgame\fR
-argument can also be one of the following special keywords:
-.TP 17n
-\fI/dat\fR
+.TP 29n
+\fB\-\fR\fB\-dats\fR
 Names of the datfiles used for creating the database, and their
 descriptions.
-.TP 17n
-\fI/detector\fR
+.TP 29n
+\fB\-\fR\fB\-detector\fR
 Name and version of the CMPro XML header skip detector used (if any).
-.TP 17n
-\fI/hashtypes\fR
+.TP 29n
+\fB\-\fR\fB\-disks\fR
+List names of all disks in the database.
+.TP 29n
+\fB\-\fR\fB\-games\fR
+List names of all games in the database.
+.TP 29n
+\fB\-\fR\fB\-hash-types\fR
 Types of checksums used (crc, md5, sha1).
 One line each for roms and disks.
-.TP 17n
-\fI/list\fR
-Same as
-\fI/list/game\fR.
-.TP 17n
-\fI/list/disk\fR
-List names of all disks in the database.
-.TP 17n
-\fI/list/game\fR
-List names of all games in the database.
-.TP 17n
-\fI/stats\fR
+.TP 29n
+\fB\-h\fR, \fB\-\fR\fB\-help\fR
+Display a short help message.
+.TP 29n
+\fB\-\fR\fB\-list-sets\fR
+List all configured sets.
+.TP 29n
+\fB\-\fR\fB\-set\fR \fIpattern\fR
+Run
+\fBdumpgame\fR
+for all sets matching
+\fIpattern\fR.
+.TP 29n
+\fB\-\fR\fB\-summary\fR
 List some statistics about the contents of the database.
+.TP 29n
+\fB\-V\fR, \fB\-\fR\fB\-version\fR
+Display program name and version number.
 .SH "ENVIRONMENT"
 .TP 12n
 \fRMAMEDB\fR
@@ -141,6 +150,6 @@ mkmamedb(1)
 .SH "AUTHORS"
 \fBdumpgame\fR
 was written by
-Dieter Baron \(ladillo@nih.at\(ra
+Dieter Baron <\fIdillo@nih.at\fR>
 and
 Thomas Klausner <\fItk@giga.or.at\fR>.

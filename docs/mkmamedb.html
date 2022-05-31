@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!-- This is an automatically generated file.  Do not edit.
-   Copyright (c) 2005-2020 Dieter Baron and Thomas Klausner.
+   Copyright (c) 2005-2022 Dieter Baron and Thomas Klausner.
    All rights reserved.
   
    Redistribution and use in source and binary forms, with or without
@@ -54,18 +54,25 @@
 <table class="Nm">
   <tr>
     <td><code class="Nm">mkmamedb</code></td>
-    <td>[<code class="Fl">-hutV</code>] [<code class="Fl">-C</code>
-      <var class="Ar">hashtypes</var>] [<code class="Fl">-F</code>
-      <var class="Ar">outputformat</var>] [<code class="Fl">-o</code>
+    <td>[<code class="Fl">-fhtuV</code>] [<code class="Fl">-C</code>
+      <var class="Ar">types</var>] [<code class="Fl">-F</code>
+      <var class="Ar">format</var>] [<code class="Fl">-o</code>
       <var class="Ar">dbfile</var>] [<code class="Fl">-x</code>
-      <var class="Ar">pat</var>]
+      <var class="Ar">pattern</var>]
+      [<code class="Fl">-</code><code class="Fl">-all-sets</code>]
       [<code class="Fl">-</code><code class="Fl">-detector</code>
-      <var class="Ar">file</var>]
+      <var class="Ar">xml-file</var>]
+      [<code class="Fl">-</code><code class="Fl">-directory-cache</code>]
       [<code class="Fl">-</code><code class="Fl">-exclude</code>
-      <var class="Ar">pat</var>]
+      <var class="Ar">pattern</var>]
+      [<code class="Fl">-</code><code class="Fl">-format</code>
+      <var class="Ar">format</var>]
       [<code class="Fl">-</code><code class="Fl">-hash-types</code>
       <var class="Ar">types</var>]
       [<code class="Fl">-</code><code class="Fl">-help</code>]
+      [<code class="Fl">-</code><code class="Fl">-list-available-dats</code>]
+      [<code class="Fl">-</code><code class="Fl">-list-dats</code>]
+      [<code class="Fl">-</code><code class="Fl">-list-sets</code>]
       [<code class="Fl">-</code><code class="Fl">-no-directory-cache</code>]
       [<code class="Fl">-</code><code class="Fl">-only-files</code>
       <var class="Ar">pattern</var>]
@@ -78,10 +85,15 @@
       [<code class="Fl">-</code><code class="Fl">-prog-version</code>
       <var class="Ar">version</var>]
       [<code class="Fl">-</code><code class="Fl">-roms-unzipped</code>]
+      [<code class="Fl">-</code><code class="Fl">-set</code>
+      <var class="Ar">pattern</var>]
       [<code class="Fl">-</code><code class="Fl">-skip-files</code>
       <var class="Ar">pattern</var>]
+      [<code class="Fl">-</code><code class="Fl">-use-description-as-name</code>]
+      [<code class="Fl">-</code><code class="Fl">-use-temp-directory</code>]
       [<code class="Fl">-</code><code class="Fl">-version</code>]
-      [<var class="Ar">rominfo-file ...</var>]</td>
+      [[<var class="Ar">rominfo-file</var> | <var class="Ar">directory</var> |
+      <var class="Ar">-</var>] <var class="Ar">...</var>]</td>
   </tr>
 </table>
 </section>
@@ -89,11 +101,18 @@
 <h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
 <code class="Nm">mkmamedb</code> converts ROM set descriptions from one format
   to another.
-<p class="Pp">The ROM set description is read from the specified files (or
-    directories) or the standard input if no files are specified. The default
-    output file is <span class="Pa">mame.db</span>. You can override it with the
-    <code class="Fl">-o</code> option or the <code class="Ev">MAMEDB</code>
-    environment variable.</p>
+<p class="Pp">If no argument is given, <code class="Nm">mkmamedb</code> reads
+    the <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmamerc.html">ckmamerc(5)</a> config file and
+    checks if it needs to update the default database.</p>
+<p class="Pp">When a <var class="Ar">rominfo-file</var> is specified, it is used
+    as input file; if the argument is <var class="Ar">-</var>,
+    <code class="Nm">mkmamedb</code> expects the database on standard input
+    (stdin).</p>
+<p class="Pp">When a <var class="Ar">directory</var> is specified, the files in
+    that directory are checksummed and written to the database.</p>
+<p class="Pp">The default output file is <span class="Pa">mame.db</span>. You
+    can override it with the <code class="Fl">-o</code> option or the
+    <code class="Ev">MAMEDB</code> environment variable.</p>
 <p class="Pp">Supported input formats are:</p>
 <ul class="Bl-bullet Bd-indent Bl-compact">
   <li>CMPro dat file</li>
@@ -120,6 +139,8 @@ Supported output formats are:
 <h2 class="Ss" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h2>
 <code class="Nm">mkmamedb</code> supports the following options:
 <dl class="Bl-tag">
+  <dt><code class="Fl">-</code><code class="Fl">-all-sets</code></dt>
+  <dd>Do the action for all configured sets.</dd>
   <dt><a class="permalink" href="#C"><code class="Fl" id="C">-C</code></a>
     <var class="Ar">types</var>,
     <code class="Fl">-</code><code class="Fl">-hash-types</code>
@@ -127,32 +148,13 @@ Supported output formats are:
   <dd>A comma separated list of hash types to compute when creating a ROM set
       description from a directory of zip archives. Supported hash types are:
       crc, md5, sha1. Default are all.</dd>
-  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a>
-    <var class="Ar">outputformat</var>,
-    <code class="Fl">-</code><code class="Fl">-format</code>
-    <var class="Ar">outputformat</var></dt>
-  <dd>Specify output format. Supported formats are <code class="Cm">cm</code>
-      (clrmamepro dat file), <code class="Cm">dat</code> (XML datfile),
-      <code class="Cm">db</code> (<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>
-      database), and <code class="Cm">mtree</code>
-      (<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mtree.html">mtree(8)</a> file). The default is
-    cm.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-detector</code>
-    <var class="Ar">file</var></dt>
+    <var class="Ar">xml-file</var></dt>
   <dd>Use CMPro XML header skip detector description from
       <var class="Ar">file</var>. This overrides any detectors given in the file
       itself. <code class="Nm">mkmamedb</code> looks for the detector in the
       input file (if it is a zip file) or the directory of the input file.</dd>
-  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
-    <code class="Fl">-</code><code class="Fl">-help</code></dt>
-  <dd>Display a short help message.</dd>
-  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
-    <var class="Ar">dbfile</var>,
-    <code class="Fl">-</code><code class="Fl">-output</code>
-    <var class="Ar">dbfile</var></dt>
-  <dd>Write to database <var class="Ar">dbfile</var> instead of the default
-      &#x201C;<span class="Pa">mame.db</span>&#x201D;.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-no-directory-cache</code></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-directory-cache</code></dt>
   <dd>When <code class="Nm">mkmamedb</code> is used to create a database from an
       input directory, it will by default write a
       <span class="Pa">.ckmame.db</span> database file to it, caching the
@@ -160,6 +162,37 @@ Supported output formats are:
       When <code class="Nm">mkmamedb</code> finds such a database, it only
       computes the hashes for the files that have changed since the last
     run.</dd>
+  <dt><a class="permalink" href="#F"><code class="Fl" id="F">-F</code></a>
+    <var class="Ar">format</var>,
+    <code class="Fl">-</code><code class="Fl">-format</code>
+    <var class="Ar">format</var></dt>
+  <dd>Specify output format. Supported formats are <code class="Cm">cm</code>
+      (clrmamepro dat file), <code class="Cm">dat</code> (XML datfile),
+      <code class="Cm">db</code> (<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>
+      database), and <code class="Cm">mtree</code>
+      (<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mtree.html">mtree(8)</a> file). The default is
+    cm.</dd>
+  <dt><a class="permalink" href="#f"><code class="Fl" id="f">-f</code></a>,
+    <code class="Fl">-</code><code class="Fl">-force</code></dt>
+  <dd>Create database even if it is not out-of-date.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
+    <code class="Fl">-</code><code class="Fl">-help</code></dt>
+  <dd>Display a short help message.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-no-directory-cache</code></dt>
+  <dd>Turn off
+      <code class="Fl">-</code><code class="Fl">-directory-cache</code>.</dd>
+  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>
+    <var class="Ar">dbfile</var>,
+    <code class="Fl">-</code><code class="Fl">-output</code>
+    <var class="Ar">dbfile</var></dt>
+  <dd>Write to database <var class="Ar">dbfile</var> instead of the default
+      &#x201C;<span class="Pa">mame.db</span>&#x201D;.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-list-available-dats</code></dt>
+  <dd>List the names of all dats found in the configured dat directories.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-list-dats</code></dt>
+  <dd>List dats configured for the selected set.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-list-sets</code></dt>
+  <dd>List all configured sets.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-only-files</code>
     <var class="Ar">pattern</var></dt>
   <dd>When reading files from the file system as input, only accept files
@@ -173,6 +206,10 @@ Supported output formats are:
   <dt><code class="Fl">-</code><code class="Fl">-prog-version</code>
     <var class="Ar">version</var></dt>
   <dd>Set version of the program the ROM info is from.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-set</code>
+    <var class="Ar">pattern</var></dt>
+  <dd>Run <code class="Nm">mkmamedb</code> for all sets matching
+      <var class="Ar">pattern</var>.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-skip-files</code>
     <var class="Ar">pattern</var></dt>
   <dd>When reading files from the file system as input, skip files matching the
@@ -188,6 +225,9 @@ Supported output formats are:
   <dd>ROMs are files on the disk. Each game is represented by a directory
       instead of a ZIP archive. Only relevant when creating a database based on
       file system contents.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-use-description-as-name</code></dt>
+  <dd>Use the value of the &#x201C;description&#x201D; field instead of the
+      &#x201C;name&#x201D; field as game name.</dd>
   <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
     <code class="Fl">-</code><code class="Fl">-version</code></dt>
   <dd>Display program name and version number.</dd>
@@ -210,12 +250,20 @@ Supported output formats are:
 </dl>
 </section>
 <section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<dl class="Bl-tag">
+  <dt>.mkmamedb.db</dt>
+  <dd>Directory cache file for
+      <code class="Fl">-</code><code class="Fl">-directory-cache</code></dd>
+</dl>
+</section>
+<section class="Sh">
 <h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
 Get an input file for <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a> from
   MAME and convert it to the internal database format:
 <div class="Bd Pp">
 <pre>
-# mame -listxml | mkmamedb
+# mame -listxml | mkmamedb -
 </pre>
 </div>
 </section>
@@ -228,14 +276,14 @@ Get an input file for <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9
 <section class="Sh">
 <h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
 <code class="Nm">mkmamedb</code> was written by <span class="An">Dieter
-  Baron</span> &#x27E8;dillo@nih.at&#x27E9; and <span class="An">Thomas
-  Klausner</span>
+  Baron</span> &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt;
+  and <span class="An">Thomas Klausner</span>
   &lt;<a class="Mt" href="mailto:tk@giga.or.at">tk@giga.or.at</a>&gt;.
 </section>
 </div>
 <table class="foot">
   <tr>
-    <td class="foot-date">October 3, 2020</td>
+    <td class="foot-date">March 25, 2022</td>
     <td class="foot-os">NiH</td>
   </tr>
 </table>

@@ -54,18 +54,19 @@
 <table class="Nm">
   <tr>
     <td><code class="Nm">dumpgame</code></td>
-    <td>{<code class="Fl">-b</code> | <code class="Fl">--brief</code>}
+    <td>{<code class="Fl">-b</code> |
+      <code class="Fl">-</code><code class="Fl">-brief</code>}
       [{<code class="Fl">-D</code> <var class="Ar">dbfile</var> |
-      <code class="Fl">--db</code> <var class="Ar">dbfile</var>}]
-      [<var class="Ar">game</var>]</td>
+      <code class="Fl">-</code><code class="Fl">-rom-db</code>
+      <var class="Ar">dbfile</var>}] [<var class="Ar">game</var>]</td>
   </tr>
 </table>
 <br/>
 <table class="Nm">
   <tr>
     <td><code class="Nm">dumpgame</code></td>
-    <td><code class="Fl">-c</code> | <code class="Fl">-d</code> |
-      <code class="Fl">--checksum</code> | <code class="Fl">--disk</code>
+    <td><code class="Fl">-c</code> |
+      <code class="Fl">-</code><code class="Fl">-checksum</code>
       [{<code class="Fl">-D</code> <var class="Ar">dbfile</var> |
       <code class="Fl">--db</code> <var class="Ar">dbfile</var>}]
       <var class="Ar">checksum</var> [<var class="Ar">...</var>]</td>
@@ -75,8 +76,19 @@
 <table class="Nm">
   <tr>
     <td><code class="Nm">dumpgame</code></td>
-    <td>[<code class="Fl">-hV</code>] [<code class="Fl">--help</code>]
-      [<code class="Fl">--version</code>]</td>
+    <td>[<code class="Fl">-hV</code>]
+      [<code class="Fl">-</code><code class="Fl">-all-sets</code>]
+      [<code class="Fl">-</code><code class="Fl">-dats</code>]
+      [<code class="Fl">-</code><code class="Fl">-detector</code>]
+      [<code class="Fl">-</code><code class="Fl">-disks</code>]
+      [<code class="Fl">-</code><code class="Fl">-games</code>]
+      [<code class="Fl">-</code><code class="Fl">-hash-types</code>]
+      [<code class="Fl">-</code><code class="Fl">-help</code>]
+      [<code class="Fl">-</code><code class="Fl">-list-sets</code>]
+      [<code class="Fl">-</code><code class="Fl">-set</code>
+      <var class="Ar">pattern</var>]
+      [<code class="Fl">-</code><code class="Fl">-summary</code>]
+      [<code class="Fl">-</code><code class="Fl">-version</code>]</td>
   </tr>
 </table>
 </section>
@@ -89,48 +101,47 @@
 <p class="Pp"><code class="Nm">dumpgame</code> supports the following
   options:</p>
 <dl class="Bl-tag">
+  <dt><code class="Fl">-</code><code class="Fl">-all-sets</code></dt>
+  <dd>Do the action for all configured sets.</dd>
   <dt><a class="permalink" href="#b"><code class="Fl" id="b">-b</code></a>,
-    <code class="Fl">--brief</code></dt>
+    <code class="Fl">-</code><code class="Fl">-brief</code></dt>
   <dd>Use brief mode: don't output ROM and disk information.</dd>
   <dt><a class="permalink" href="#c"><code class="Fl" id="c">-c</code></a>,
-    <code class="Fl">--checksum</code></dt>
-  <dd>Look for a ROM by checksum (instead of the default behaviour to look for a
-      game by name).</dd>
+    <code class="Fl">-</code><code class="Fl">-checksum</code></dt>
+  <dd>Look for a ROM or disk by checksum (instead of the default behaviour to
+      look for a game by name).</dd>
   <dt><a class="permalink" href="#D"><code class="Fl" id="D">-D</code></a>
-    <var class="Ar">dbfile</var>, <code class="Fl">--db</code>
+    <var class="Ar">dbfile</var>,
+    <code class="Fl">-</code><code class="Fl">-rom-db</code>
     <var class="Ar">dbfile</var></dt>
   <dd>Use database <var class="Ar">dbfile</var> instead of the default
       &#x201C;<span class="Pa">mame.db</span>&#x201D;.</dd>
-  <dt><a class="permalink" href="#d"><code class="Fl" id="d">-d</code></a>,
-    <code class="Fl">--disk</code></dt>
-  <dd>Look for a disk by checksum (instead of the default behaviour to look for
-      a game by name).</dd>
-  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
-    <code class="Fl">--help</code></dt>
-  <dd>Display a short help message.</dd>
-  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
-    <code class="Fl">--version</code></dt>
-  <dd>Display program name and version number.</dd>
-</dl>
-<p class="Pp">The <var class="Ar">game</var> argument can also be one of the
-    following special keywords:</p>
-<dl class="Bl-tag">
-  <dt><var class="Ar">/dat</var></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-dats</code></dt>
   <dd>Names of the datfiles used for creating the database, and their
       descriptions.</dd>
-  <dt><var class="Ar">/detector</var></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-detector</code></dt>
   <dd>Name and version of the CMPro XML header skip detector used (if any).</dd>
-  <dt><var class="Ar">/hashtypes</var></dt>
+  <dt><code class="Fl">-</code><code class="Fl">-disks</code></dt>
+  <dd>List names of all disks in the database.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-games</code></dt>
+  <dd>List names of all games in the database.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-hash-types</code></dt>
   <dd>Types of checksums used (crc, md5, sha1). One line each for roms and
       disks.</dd>
-  <dt><var class="Ar">/list</var></dt>
-  <dd>Same as <var class="Ar">/list/game</var>.</dd>
-  <dt><var class="Ar">/list/disk</var></dt>
-  <dd>List names of all disks in the database.</dd>
-  <dt><var class="Ar">/list/game</var></dt>
-  <dd>List names of all games in the database.</dd>
-  <dt><var class="Ar">/stats</var></dt>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
+    <code class="Fl">-</code><code class="Fl">-help</code></dt>
+  <dd>Display a short help message.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-list-sets</code></dt>
+  <dd>List all configured sets.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-set</code>
+    <var class="Ar">pattern</var></dt>
+  <dd>Run <code class="Nm">dumpgame</code> for all sets matching
+      <var class="Ar">pattern</var>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-summary</code></dt>
   <dd>List some statistics about the contents of the database.</dd>
+  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
+    <code class="Fl">-</code><code class="Fl">-version</code></dt>
+  <dd>Display program name and version number.</dd>
 </dl>
 </section>
 <section class="Sh">
@@ -160,14 +171,14 @@ Display all roms matching the checksum &#x201C;c1e6ab10&#x201D;:
 <section class="Sh">
 <h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
 <code class="Nm">dumpgame</code> was written by <span class="An">Dieter
-  Baron</span> &#x27E8;dillo@nih.at&#x27E9; and <span class="An">Thomas
-  Klausner</span>
+  Baron</span> &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt;
+  and <span class="An">Thomas Klausner</span>
   &lt;<a class="Mt" href="mailto:tk@giga.or.at">tk@giga.or.at</a>&gt;.
 </section>
 </div>
 <table class="foot">
   <tr>
-    <td class="foot-date">June 2, 2013</td>
+    <td class="foot-date">March 21, 2022</td>
     <td class="foot-os">NiH</td>
   </tr>
 </table>
