@@ -7,10 +7,10 @@
 #include "globals.h"
 
 Output::Output() :
-    file_infos({FileInfo("", "")}),
     first_header(true),
     header_done(false),
     subheader_done(false),
+    file_infos({FileInfo("", "")}),
     db(nullptr) {
 }
 
