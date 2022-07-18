@@ -685,13 +685,17 @@ void Configuration::merge_dat_directories(const toml::table &table, const std::s
             dat_directories.clear();
         }
         for (const auto &pair : (*node.as_table())) {
-            dat_directories.emplace_back(pair.first);
+            if (set.empty() && pair.first.str().find("$set") != std::string::npos) {
+                continue;
+            }
+            auto directory = replace_variables(std::string(pair.first));
+            dat_directories.emplace_back(directory);
             auto options_table = pair.second.as_table();
             if (options_table != nullptr && !options_table->empty()) {
                 auto parsed_options = DatDirectoryOptions();
 
                 set_bool_optional(*options_table, "use-central-cache-directory", parsed_options.use_central_cache_directory);
-                dat_directory_options[std::string(pair.first)] = parsed_options;
+                dat_directory_options[directory] = parsed_options;
             }
         }
     }
@@ -706,14 +710,18 @@ void Configuration::merge_dats(const toml::table& table) {
     else if (node.is_table()) {
 	dats.clear();
 	for (const auto &pair : (*node.as_table())) {
-	    dats.emplace_back(pair.first);
+            if (set.empty() && pair.first.str().find("$set") != std::string::npos) {
+                continue;
+            }
+            auto dat = replace_variables(std::string(pair.first));
+	    dats.emplace_back(dat);
 	    auto options_table = pair.second.as_table();
 	    if (options_table != nullptr && !options_table->empty()) {
 		auto parsed_options = DatOptions();
 
 		set_string_optional(*options_table, "game-name-suffix", parsed_options.game_name_suffix);
 		set_bool_optional(*options_table, "use-description-as-name", parsed_options.use_description_as_name);
-		dat_options[std::string(pair.first)] = parsed_options;
+		dat_options[dat] = parsed_options;
 	    }
 	}
     }
@@ -731,14 +739,18 @@ void Configuration::merge_extra_directories(const toml::table &table, const std:
 	    extra_directories.clear();
 	}
 	for (const auto &pair : (*node.as_table())) {
-	    extra_directories.emplace_back(pair.first);
+            if (set.empty() && pair.first.str().find("$set") != std::string::npos) {
+                continue;
+            }
+            auto directory = replace_variables(std::string(pair.first));
+	    extra_directories.emplace_back(directory);
 	    auto options_table = pair.second.as_table();
 	    if (options_table != nullptr && !options_table->empty()) {
 		auto parsed_options = ExtraDirectoryOptions();
 
 		set_bool_optional(*options_table, "move-from-extra", parsed_options.move_from_extra);
                 set_bool_optional(*options_table, "use-central-cache-directory", parsed_options.use_central_cache_directory);
-		extra_directory_options[std::string(pair.first)] = parsed_options;
+		extra_directory_options[directory] = parsed_options;
 	    }
 	}
     }
