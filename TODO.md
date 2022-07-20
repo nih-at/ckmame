@@ -11,6 +11,7 @@
 ### Write Tests
 
 - stats not reset between sets (move `stats` into `CkmameCache`)
+- test if "$set" works for keys in 'dats', 'dat-directories', and 'extra-directories'
 
 
 ## other
