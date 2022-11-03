@@ -253,7 +253,7 @@ bool ArchiveZip::read_infos_xxx() {
 
 ZipSourcePtr ArchiveZip::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length_) {
     if (!ensure_zip()) {
-        return nullptr;
+        throw Exception();
     }
     
     // TODO: overflow check
@@ -262,8 +262,7 @@ ZipSourcePtr ArchiveZip::get_source(uint64_t index, uint64_t start, std::optiona
     auto source = zip_source_zip_create(za, index, ZIP_FL_UNCHANGED, start, length, nullptr);
     
     if (source == nullptr) {
-        // TODO: error message
-        return {};
+        throw Exception("%s", zip_strerror(za));
     }
 
     return std::make_shared<ZipSource>(source);

@@ -197,16 +197,11 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
 	Hashes hashes;
 	hashes.add_types(Hashes::TYPE_ALL);
 
-	auto f = get_source(idx);
 
-	if (!f) {
-	    // TODO: move error message to get_source()
-	    output.error("%s: %s: can't open: %s", name.c_str(), file.name.c_str(), strerror(errno));
-	    file.broken = true;
-	    return false;
-	}
+        ZipSourcePtr f;
 
 	try {
+            f = get_source(idx);
 	    f->open();
 	} catch (Exception &e) {
 	    output.error("%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());

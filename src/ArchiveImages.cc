@@ -51,8 +51,7 @@ ArchiveImages::ArchiveImages(const std::string &name, filetype_t filetype, where
 
 ZipSourcePtr ArchiveImages::Archive::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length) {
     output.set_error_archive(name);
-    output.archive_error("cannot open '%s': reading from CHDs not supported", files[index].name.c_str());
-    return {};
+    throw Exception("cannot open '%s': reading from CHDs not supported", files[index].name.c_str());
 }
 
 
