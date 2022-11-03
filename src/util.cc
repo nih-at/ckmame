@@ -169,16 +169,16 @@ bool is_ziplike(const std::string &fname) {
 std::string human_number(uint64_t value) {
     char s[128];
     if (value > 1024ul * 1024 * 1024 * 1024) {
-	sprintf(s, "%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024), (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
+	snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "TiB", value / (1024ul * 1024 * 1024 * 1024), (((value / (1024ul * 1024 * 1024)) * 10 + 512) / 1024) % 100);
     }
     else if (value > 1024 * 1024 * 1024) {
-	sprintf(s, "%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024), (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
+	snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "GiB", value / (1024 * 1024 * 1024), (((value / (1024 * 1024)) * 10 + 512) / 1024) % 100);
     }
     else if (value > 1024 * 1024) {
-	sprintf(s, "%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024), (((value / 1024) * 10 + 512) / 1024) % 100);
+	snprintf(s, sizeof(s), "%" PRIi64 ".%02" PRIi64 "MiB", value / (1024 * 1024), (((value / 1024) * 10 + 512) / 1024) % 100);
     }
     else {
-	sprintf(s, "%" PRIi64 " bytes", value);
+	snprintf(s, sizeof(s), "%" PRIi64 " bytes", value);
     }
 
     return s;

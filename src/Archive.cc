@@ -302,7 +302,7 @@ std::string Archive::make_unique_name_in_archive(const std::string &filename) {
 
     for (int i = 0; i < 1000; i++) {
 	char n[5];
-	sprintf(n, "-%03d", i);
+	snprintf(n, sizeof(n), "-%03d", i);
 	auto unique = filename.substr(0, filename.length() - ext.length()) + n + ext;
 
 	auto exists = false;

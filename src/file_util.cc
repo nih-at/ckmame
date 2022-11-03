@@ -105,7 +105,7 @@ std::string make_unique_name(const std::string &prefix, const std::string &ext) 
 
     for (int i = 0; i < 1000; i++) {
     std::error_code ec;
-    sprintf(buf, "-%03d", i);
+    snprintf(buf, sizeof(buf), "-%03d", i);
     auto testname = prefix + buf + ext;
     if (std::filesystem::exists(testname, ec)) {
         continue;

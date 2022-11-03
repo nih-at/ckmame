@@ -239,7 +239,7 @@ void DB::upgrade(sqlite3 *db, int format, int version, const std::string &statem
     }
     
     char b[256];
-    sprintf(b, SET_VERSION_FMT, USER_VERSION(format, version));
+    snprintf(b, sizeof(b), SET_VERSION_FMT, USER_VERSION(format, version));
     if (sqlite3_exec(db, b, nullptr, nullptr, nullptr) != SQLITE_OK) {
         sqlite3_exec(db, "rollback transaction", nullptr, nullptr, nullptr);
         throw Exception("can't set version: %s", sqlite3_errmsg(db));
