@@ -2,6 +2,7 @@
 
 ### Implement
 
+- Do not assume CRC32 always exists.
 - Fix failing tests.
 - Remember ROM set state between runs, option to display changes (something like -3 +2 missing games)
 - Variables in config file (e.g. for collection root directory).
