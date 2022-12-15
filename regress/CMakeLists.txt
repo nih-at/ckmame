@@ -38,6 +38,7 @@ set(DBS
   mamedb-deadbeefish.db
   mamedb-disk.db
   mamedb-disk-many.db
+  mamedb-file-no-crc.db
   mamedb-lost-parent-ok.db
   mamedb-merge-parent.db
   mamedb-one-game-two-roms.db
@@ -104,6 +105,7 @@ add_custom_target(update-mamedb.dump
 
 set(XFAIL_TESTS
   extra-file-zip.test
+  file-no-crc-wrong-name.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
 )
