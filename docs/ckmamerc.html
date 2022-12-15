@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   Copyright (c) 2003-2022 Dieter Baron and Thomas Klausner.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+   3. The name of the author may not be used to endorse or promote
+      products derived from this software without specific prior
+      written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+   EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+   USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../nih-man.css" type="text/css" media="all"/>
+  <title>CKMAMERC(5)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">CKMAMERC(5)</td>
+    <td class="head-vol">File Formats Manual</td>
+    <td class="head-rtitle">CKMAMERC(5)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">ckmamerc</code> &#x2014;
+<div class="Nd">config file for ckmame, dumpgame, and mkmamedb</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+The <code class="Nm">ckmamerc</code> config file sets global or local
+  configuration for running <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>,
+  <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/dumpgame.html">dumpgame(1)</a>, and
+  <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a>.
+<p class="Pp">By default, the configuration is read from
+    <span class="Pa">~/.config/ckmame/ckmamerc</span> and
+    <span class="Pa">.ckmamerc</span> in the current directory if they exist, in
+    this order.</p>
+<p class="Pp">Many settings can also be specified on the command line.</p>
+<p class="Pp">Later settings override earlier ones.</p>
+<section class="Ss">
+<h2 class="Ss" id="SECTIONS"><a class="permalink" href="#SECTIONS">SECTIONS</a></h2>
+The config file is in TOML format and consists of three types of sections. A
+  section header consists of the name of the section enclosed in square brackets
+  on its own line.
+<dl class="Bl-tag">
+  <dt>[global]</dt>
+  <dd>The &#x201C;global&#x201D; section contains settings that apply in
+      general.</dd>
+  <dt>[&quot;set name&quot;]</dt>
+  <dd>&#x201C;set name&#x201D; sections contain settings for a particular set
+      (see the <code class="Fl">-</code><code class="Fl">-set</code> command
+      line option).</dd>
+  <dt>[profile.&quot;profile name&quot;]</dt>
+  <dd>Settings can be shared and referenced from multiple sets by defining them
+      in a profile and referencing this. Use sections whose name starts with
+      &#x201C;profile.&#x201D; for this. They can be referenced from other
+      sections by using the &#x201C;profiles&#x201D; keyword with
+      &#x201C;profile name&#x201D; (without the leading
+      &#x201C;profile.&#x201D;).</dd>
+</dl>
+</section>
+<section class="Ss">
+<h2 class="Ss" id="CONFIGURATION_VARIABLES"><a class="permalink" href="#CONFIGURATION_VARIABLES">CONFIGURATION
+  VARIABLES</a></h2>
+Most command line options can be used as configuration variables in the config
+  file. Take the name of the long option and use it without the leading dashes.
+  For boolean settings and those with a value, use the
+<div class="Bd Bd-indent"><code class="Li">variable = value</code></div>
+syntax. For example, <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>'s
+  <code class="Fl">-</code><code class="Fl">-complete-games-only</code> will be
+  written in the config file as
+<div class="Bd Bd-indent"><code class="Li">complete-games-only =
+  true</code></div>
+<p class="Pp">Options that exist as
+    <code class="Fl">-</code><code class="Fl">-foo</code> and
+    <code class="Fl">-</code> <code class="Fl">-no-foo</code> are mapped to a
+    single configuration value with values &#x201C;true&#x201D; and
+    &#x201C;false&#x201D;.</p>
+<p class="Pp">For full documentation of config file options with corresponding
+    command line options, see the manual page of the command.</p>
+<p class="Pp">Options can use the string &#x201C;$set&#x201D; which will be
+    replaced by the set name when used.</p>
+<p class="Pp">The following options are supported by all tools:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt>rom-db</dt>
+  <dd>String.</dd>
+  <dt>profiles</dt>
+  <dd>Array of strings. List of profile names (without the leading
+      &#x201C;profile.&#x201D;) whose configuration variables should be merged
+      into the current section.</dd>
+  <dt>sets</dt>
+  <dd>Array of strings. Each string is the name of a set.</dd>
+  <dt>sets-file</dt>
+  <dd>String. Points to a file that lists sets, one line per set.</dd>
+  <dt>update-database</dt>
+  <dd>Boolean.</dd>
+  <dt>verbose</dt>
+  <dd>Boolean.</dd>
+</dl>
+</div>
+<p class="Pp">The following options are supported only by
+    <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a> and
+    <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a>:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt>roms-zipped</dt>
+  <dd>Boolean.</dd>
+  <dt>use-central-cache-directory</dt>
+  <dd>Boolean. Put the cache databases generated by
+      <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a> and
+      <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a> below
+      <span class="Pa">$HOME/.cache/ckmame/</span>. This affects the location of
+      <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a>'s
+      <span class="Pa">.mkmamedb.db</span>
+      (<code class="Fl">-</code><code class="Fl">-directory-cache</code>) and
+      <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>'s
+      <span class="Pa">.ckmame.db</span> files for extra-directories (but not
+      for the <span class="Pa">roms</span>, <span class="Pa">saved</span>, and
+      <span class="Pa">unknown</span> directories).</dd>
+</dl>
+</div>
+<p class="Pp">The following options are supported only by
+    <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt>complete-games-only</dt>
+  <dd>Boolean.</dd>
+  <dt>complete-list</dt>
+  <dd>String.</dd>
+  <dt>create-fixdat</dt>
+  <dd>Boolean.</dd>
+  <dt>extra-directories</dt>
+  <dd>Either an array of strings, or a table where the keys are directories and
+      the values are a table of options. For the second case, the following
+      options are supported:
+    <div class="Bd-indent">
+    <dl class="Bl-tag">
+      <dt>move-from-extra</dt>
+      <dd>Boolean.</dd>
+      <dt>use-central-cache-directory</dt>
+      <dd>Boolean.</dd>
+    </dl>
+    </div>
+  </dd>
+  <dt>extra-directories-append</dt>
+  <dd>Same as &#x201C;extra-directories&#x201D; but does not override the
+      previous value, but appends to it instead.</dd>
+  <dt>fixdat-directory</dt>
+  <dd>String.</dd>
+  <dt>keep-old-duplicates</dt>
+  <dd>Boolean.</dd>
+  <dt>missing-list</dt>
+  <dd>String.</dd>
+  <dt>move-from-extra</dt>
+  <dd>Boolean. Setting this to &#x201C;false&#x201D; is the same as using
+      <code class="Fl">-</code><code class="Fl">-copy-from-extra</code> on the
+      command line.</dd>
+  <dt>old-db</dt>
+  <dd>String.</dd>
+  <dt>report-correct</dt>
+  <dd>Boolean.</dd>
+  <dt>report-detailed</dt>
+  <dd>Boolean.</dd>
+  <dt>report-fixable</dt>
+  <dd>Boolean.</dd>
+  <dt>report-missing</dt>
+  <dd>Boolean.</dd>
+  <dt>report-no-good-dump</dt>
+  <dd>Boolean.</dd>
+  <dt>report-summary</dt>
+  <dd>Boolean.</dd>
+  <dt>rom-directory</dt>
+  <dd>String.</dd>
+  <dt>saved-directory</dt>
+  <dd>String.</dd>
+  <dt>unknown-directory</dt>
+  <dd>String.</dd>
+</dl>
+</div>
+<p class="Pp">The following variables are only supported by
+    <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a>:</p>
+<div class="Bd-indent">
+<dl class="Bl-tag">
+  <dt>dats</dt>
+  <dd>Array of strings, or table where the keys are strings and the values are
+      tables with options. Each string is the (internal) name of a dat. The
+      supported options in the second case are:
+    <div class="Bd-indent">
+    <dl class="Bl-tag">
+      <dt>game-name-suffix</dt>
+      <dd>String. Suffix all game names in the dat with the given string
+          argument.</dd>
+      <dt>use-description-as-name</dt>
+      <dd>Boolean.</dd>
+    </dl>
+    </div>
+  </dd>
+  <dt>dat-directories</dt>
+  <dd>Either an array of strings, or a table where the keys are directories and
+      the values are a table of options. Each string is a directory containing
+      dats.
+    <div class="Bd-indent">
+    <dl class="Bl-tag">
+      <dt>use-central-cache-directory</dt>
+      <dd>Boolean.</dd>
+    </dl>
+    </div>
+  </dd>
+  <dt>use-temp-directory</dt>
+  <dd>Boolean.</dd>
+</dl>
+</div>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="TOML_PITFALLS"><a class="permalink" href="#TOML_PITFALLS">TOML
+  PITFALLS</a></h1>
+While TOML is a relatively simple and readable format, it has some unexpected
+  details:
+<p class="Pp">Any key that contains characters other than letters, digits,
+    &#x201C;-&#x201D;, and &#x201C;_&#x201D; must be quoted using double
+  quotes.</p>
+<p class="Pp">Nested tables can be written in two forms:</p>
+<p class="Pp">Inline using &#x201C;{&#x201D; and &#x201C;}&#x201D;. However, the
+    complete inline table must be on one line (unlike inline arrays, which can
+    span multiple lines). See &#x201C;extra-directories-append&#x201D; in
+    &#x201C;Big Set&#x201D; in EXAMPLES below.</p>
+<p class="Pp">As sections with a &#x201C;.&#x201D; separating the outer and
+    inner names:</p>
+<div class="Bd Bd-indent"><code class="Li">[&quot;outer table
+  name&quot;.&quot;inner table name&quot;]</code></div>
+Note that the &#x201C;.&#x201D; must be outside any quotation marks. All
+  settings in this section apply to the inner table. When using this for options
+  that allow tables as values (like &#x201C;dats&#x201D;), the keys in this
+  table are not configuration variables and need to be quoted if they contain
+  special characters. See &#x201C;extra-directories&#x201D; in &#x201C;Unzipped
+  Set&#x201D; in EXAMPLES below.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="EXAMPLES"><a class="permalink" href="#EXAMPLES">EXAMPLES</a></h1>
+<div class="Bd Bd-indent">
+<pre>
+[global]
+verbose = true
+extra-directories = [ &quot;incoming&quot; ]
+sets = [ &quot;Set using standard settings only&quot; ]
+
+[profile.incomplete]
+complete-only = true
+report-missing = false
+
+[&quot;Big Set&quot;]
+verbose = false
+rom-directory = &quot;Big Set ROMs&quot;
+extra-directories-append = { &quot;another-location&quot; = { move-from-extra = true } }
+rom-db = &quot;Big Set.db&quot;
+profiles = [ &quot;incomplete&quot; ]
+
+[&quot;Unzipped Set&quot;]
+roms-unzipped = true
+rom-directory = &quot;Unzipped Set ROMs&quot;
+rom-db = &quot;Unzipped Set.db&quot;
+[&quot;Unzipped Set&quot;.extra-directories]
+&quot;unzipped-incoming&quot; = { use-central-cache-directory = true }
+</pre>
+</div>
+<p class="Pp">This configuration would by default report verbosely, but override
+    this for the &quot;Big Set&quot; set. It would also set the rom directories
+    and database files for both the &quot;Big Set&quot; and the &quot;Unzipped
+    Set&quot; and not use ZIP archives for the latter.</p>
+<p class="Pp">Example run:</p>
+<div class="Bd Bd-indent"><code class="Li">ckmame --set Big Set</code></div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>,
+  <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/dumpgame.html">dumpgame(1)</a>,
+  <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/mkmamedb.html">mkmamedb(1)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<code class="Nm">ckmame</code> was written by <span class="An">Dieter
+  Baron</span> &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt;
+  and <span class="An">Thomas Klausner</span>
+  &lt;<a class="Mt" href="mailto:tk@giga.or.at">tk@giga.or.at</a>&gt;.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">April 19, 2022</td>
+    <td class="foot-os">NiH</td>
+  </tr>
+</table>
+</body>
+</html>
