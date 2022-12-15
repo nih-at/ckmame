@@ -66,24 +66,20 @@ void warn_game_file(filetype_t ft, const Rom *r, const std::string &reason) {
     case TYPE_ROM:
 	message += "rom  " + pad_string(r->name, 12) + "  ";
 	if (r->is_size_known()) {
-	    message += "size " + pad_string_left(std::to_string(r->hashes.size), 7) + "  ";
+	    message += "size " + pad_string_left(std::to_string(r->hashes.size), 7);
 
-	    /* TODO */
-	    if (r->hashes.has_type(Hashes::TYPE_CRC)) {
-		switch (r->status) {
-		case Rom::OK:
-		    message += "crc " + r->hashes.to_string(Hashes::TYPE_CRC);
-		    break;
-		case Rom::BAD_DUMP:
-		    message += "bad dump";
-		    break;
-		case Rom::NO_DUMP:
-		    message += "no good dump";
-		}
-	    }
-	    else {
-		message += "no good dump";
-	    }
+            switch (r->status) {
+            case Rom::OK:
+                if (r->hashes.has_type(Hashes::TYPE_CRC)) {
+                    message += "  crc " + r->hashes.to_string(Hashes::TYPE_CRC);
+                }
+                break;
+            case Rom::BAD_DUMP:
+                message += "  bad dump";
+                break;
+            case Rom::NO_DUMP:
+                message += "  no good dump";
+            }
 	}
 	break;
 
