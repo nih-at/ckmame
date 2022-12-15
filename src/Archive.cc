@@ -701,10 +701,13 @@ bool Archive::compare_size_hashes(size_t index, size_t detector_id, const FileDa
     auto &file = files[index];
     
     auto ok = false;
-    
-    if (rom->compare_size_hashes(file)) {
-        if (file.size_hashes_are_set(true) || file_compare_hashes(index, &rom->hashes) == 0) {
-            ok = true;
+
+    if (rom->compare_size(file)) {
+        file_ensure_hashes(index, 0, rom->hashes.get_types());
+        if (rom->compare_size_hashes(file)) {
+            if (file.size_hashes_are_set(true) || file_compare_hashes(index, &rom->hashes) == 0) {
+                ok = true;
+            }
         }
     }
     if (!ok) {

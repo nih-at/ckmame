@@ -51,6 +51,7 @@ public:
   
     bool compare_name(const FileData &other) const;
     bool compare_name_size_hashes(const FileData &other) const;
+    bool compare_size(const FileData &other) const;
     bool compare_size_hashes(const FileData &other) const;
     Hashes::Compare compare_hashes(const FileData &other) const;
     

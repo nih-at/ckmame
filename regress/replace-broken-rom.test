@@ -1,20 +1,19 @@
-description broken rom prevents replacing it with a proper copy
+description broken rom replaced with a proper copy
 variants zip
 return 0
 args -Fjvc -e extra 1-4
-file roms/1-4.zip 1-4-crcerror.zip 1-4-crcerror.zip
-file extra/1-4.zip 1-4-ok.zip 1-4-ok.zip
-no-hashes roms 1-4.zip 04.rom
+file roms/1-4.zip 1-4-crcerror.zip 1-4-ok.zip
+file-del extra/1-4.zip 1-4-ok.zip
 stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4.zip/04.rom'
-file 04.rom        size       4  crc d87e7e0c: unknown
-move unknown file '04.rom'
+file 04.rom        size       4  crc d87e7e0c: broken
+add 'extra/1-4.zip/04.rom' as '04.rom'
+delete broken '04.rom'
 In archive extra/1-4.zip:
-file 04.rom        size       4  crc d87f7e0c: needed elsewhere
+delete used file '04.rom'
+remove empty archive
 end-of-data
 stderr-data
-unknown/1-4.zip: error closing zip: CRC error
-unknown/1-4.zip: committing garbage failed
 roms/1-4.zip: 04.rom: CRC error: d87f7e0c != d87e7e0c
 end-of-data

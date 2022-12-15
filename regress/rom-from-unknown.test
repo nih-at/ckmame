@@ -3,7 +3,6 @@ return 0
 args -Fvcje unknown 1-4
 file unknown/1-4.zip 1-4-ok.zip 1-4-wrong-renamed.zip
 file roms/1-4.zip 1-4-wrong.zip 1-4-ok.zip
-no-hashes unknown 1-4.zip 04-000.rom
 stdout-data
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'unknown/1-4.zip/04.rom'
