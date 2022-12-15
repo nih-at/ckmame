@@ -12,3 +12,12 @@ game (
 	year 1991
 	rom ( name 04.rom size 4 sha1 a94a8fe5ccb19ba61c4c0873d391e987982fbbd3 )
 )
+
+game (
+	name 1-8
+	description "one eight byte file"
+	manufacturer "synth"
+	year 1991
+	rom ( name 08.rom size 8 sha1 111bb8b7549e3386a996845405b02164f17c7b37 )
+)
+
