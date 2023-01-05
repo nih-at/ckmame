@@ -1,4 +1,3 @@
-## config
 
 ### Implement
 
@@ -8,7 +7,7 @@
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
 - SHA256 support
 
-### Write Tests
+### Write Tests for Config
 
 - stats not reset between sets (move `stats` into `CkmameCache`)
 - test if "$set" works for keys in 'dats', 'dat-directories', and 'extra-directories'
@@ -56,8 +55,6 @@
 
 * `mkmamedb`: analyze speed, make it faster
 
-* `mkmamedb`: use/update `.ckmame.db` files
-
 * some runs use roms from `extra`, but then mark them as "not used", find out why
 
 * instead of looking in cloneof for roms, move all extra roms to `needed`
@@ -65,7 +62,7 @@
 * clean up archives in `.ckmame.db` for manually removed dirs/zips
 
 * unsorted
-+ support `^T` inside a game, not only between games (e.g. while searching extra dirs)
+
 - `mkmamedb` doesn't handle chds (ignores for zipped, includes in games as rom for unzipped)
 ! [feature] reorder cleanup step when renaming files to remove the copies
   earlier; otherwise big renames on big sets don't work.
