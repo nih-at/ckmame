@@ -281,8 +281,8 @@ std::string Output::postfix_system() {
 }
 
 void Output::print_error_v(const char *fmt, va_list va, const std::string &prefix, const std::string &postfix) {
-    print_header();
-
+    // Don't print header to stdout for error messages printed to stderr.
+    
     fprintf(stderr, "%s: ", getprogname());
     if (!prefix.empty()) {
 	fprintf(stderr, "%s: ", prefix.c_str());
