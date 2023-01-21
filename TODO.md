@@ -15,6 +15,8 @@
 
 ## other
 
+- status update: SIGINFO support in Archive::commit, via libzip progress callback
+
 - speedup idea: when opening archives (in extra dirs) only compute hashes if we need them
 
 - `mkmamedb`: When a game is in two dat files (identical name and ROMs), skip it from second (with warning).
