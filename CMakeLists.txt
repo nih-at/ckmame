@@ -69,7 +69,7 @@ if(NOT ZLIB_FOUND)
   message(ERROR "-- zlib library not found (required)")
 endif()
 
-find_package(libzip 1.8.0 REQUIRED)
+find_package(libzip 1.9.99 REQUIRED)
 
 if(NOT SQLite3_FOUND)
   message(ERROR "-- sqlite3 library not found (required)")

@@ -44,11 +44,9 @@ ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *z
 
     zip_stat_t st;
     if (zip_stat(za, fname.c_str(), flags, &st) < 0 || (zf = zip_fopen(za, fname.c_str(), flags)) == nullptr) {
-        int zip_error, system_error;
+	zip_error_t *error = zip_get_error(za);
 
-        zip_error_get(za, &zip_error, &system_error);
-        
-        switch (zip_error) {
+        switch (zip_error_code_zip(error)) {
             case ZIP_ER_NOENT:
                 errno = ENOENT;
                 break;
@@ -59,7 +57,7 @@ ParserSourceZip::ParserSourceZip(const std::string &archive_name_, struct zip *z
                 errno = EIO;
                 break;
         }
-        
+
         throw std::exception();
     }
 
@@ -76,11 +74,11 @@ bool ParserSourceZip::close() {
     if (zf == nullptr) {
         return true;
     }
-    
+
     auto ok = zip_fclose(zf) == 0;
 
     zf = nullptr;
-    
+
     return ok;
 }
 
@@ -101,8 +99,8 @@ size_t ParserSourceZip::read_xxx(void *data, size_t length) {
     if (zf == nullptr) {
         return 0;
     }
-    
+
     auto done = zip_fread(zf, data, length);
-    
+
     return done < 0 ? 0 : static_cast<size_t>(done);
 }

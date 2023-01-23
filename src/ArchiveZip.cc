@@ -62,13 +62,13 @@ bool ArchiveZip::ensure_zip() {
 
     int err;
     if ((za = zip_open(name.c_str(), zip_flags, &err)) == nullptr) {
-        char errbuf[80];
-
-        zip_error_to_str(errbuf, sizeof(errbuf), err, errno);
-        output.error("error %s zip archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), errbuf);
+	zip_error_t error;
+	zip_error_init_with_code(&error, err);
+        output.error("error %s zip archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), zip_error_strerror(&error));
+	zip_error_fini(&error);
 	return false;
     }
-    
+
     return true;
 }
 
@@ -106,17 +106,17 @@ bool ArchiveZip::commit_xxx() {
             return false;
         }
     }
-    
+
     if (!ensure_zip()) {
         return false;
     }
-    
+
     auto ok = true;
-    
+
     for (size_t index = 0; index < files.size(); index++) {
         auto &file = files[index];
         auto &change = changes[index];
-        
+
         if (change.status == Change::DELETED) {
             if (zip_delete(za, index) < 0) {
                 output.archive_error("cannot delete '%s': %s", file.name.c_str(), zip_strerror(za));
@@ -148,7 +148,7 @@ bool ArchiveZip::commit_xxx() {
                     ok = false;
                     break;
                 }
-                if (zip_rename(za, index, file.name.c_str()) < 0) {
+                if (zip_file_rename(za, index, file.name.c_str(), 0) < 0) {
                     output.archive_error("cannot rename '%s' to `%s': %s", change.original_name.c_str(), file.name.c_str(), zip_strerror(za));
                     ok = false;
                     break;
@@ -175,7 +175,7 @@ bool ArchiveZip::commit_xxx() {
         zip_unchange_all(za);
         return false;
     }
-    
+
     return close_xxx();
 }
 
@@ -220,11 +220,11 @@ bool ArchiveZip::read_infos_xxx() {
     if (!ensure_zip()) {
         return false;
     }
-    
+
     output.set_error_archive(name);
 
     auto n = static_cast<zip_uint64_t>(zip_get_num_entries(za, 0));
-    
+
     for (zip_uint64_t i = 0; i < n; i++) {
 	if (zip_stat_index(za, i, 0, &zsb) == -1) {
 	    output.archive_error("error stat()ing index %" PRIu64 ": %s", i, zip_strerror(za));
@@ -237,7 +237,7 @@ bool ArchiveZip::read_infos_xxx() {
 	r.name = zsb.name;
         r.broken = false;
         r.hashes.set_crc(zsb.crc);
-        
+
         files.push_back(r);
 
 #if 0 // FIX_WITH_DETECTOR
@@ -246,21 +246,21 @@ bool ArchiveZip::read_infos_xxx() {
         }
 #endif
     }
-    
+
     return true;
 }
-                                        
+
 
 ZipSourcePtr ArchiveZip::get_source(uint64_t index, uint64_t start, std::optional<uint64_t> length_) {
     if (!ensure_zip()) {
         throw Exception();
     }
-    
+
     // TODO: overflow check
     auto length = static_cast<int64_t>(length_.has_value() ? length_.value() : files[index].hashes.size - start);
-    
-    auto source = zip_source_zip_create(za, index, ZIP_FL_UNCHANGED, start, length, nullptr);
-    
+
+    auto source = zip_source_zip_file_create(za, index, ZIP_FL_UNCHANGED, start, length, nullptr, nullptr);
+
     if (source == nullptr) {
         throw Exception("%s", zip_strerror(za));
     }
@@ -274,12 +274,12 @@ bool ArchiveZip::ensure_file_doesnt_exist(const std::string &filename) {
 
     if (index >= 0) {
         auto new_name = make_unique_name_in_archive(filename);
-        if (zip_rename(za, static_cast<uint64_t>(index), new_name.c_str()) < 0) {
+        if (zip_file_rename(za, static_cast<uint64_t>(index), new_name.c_str(), 0) < 0) {
             output.set_error_archive(name, filename);
             output.file_error("can't move out of the way: %s", zip_error_strerror(zip_get_error(za)));
             return false;
         }
     }
-    
+
     return true;
 }
