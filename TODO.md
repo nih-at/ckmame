@@ -6,6 +6,7 @@
 - Variables in config file (e.g. for collection root directory).
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
 - SHA256 support
+- mia="yes" support
 
 ### Write Tests for Config
 
