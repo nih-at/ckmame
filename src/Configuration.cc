@@ -119,6 +119,7 @@ TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
     { "use-central-cache-directory", TomlSchema::boolean() },
     { "use-description-as-name",  TomlSchema::boolean() },
     { "use-temp-directory",  TomlSchema::boolean() },
+    { "use-torrentzip",  TomlSchema::boolean() },
     { "verbose",  TomlSchema::boolean() }
 }, {});
 
@@ -165,6 +166,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("update-database", "update ROM database if dat files changed"),
     Commandline::Option("use-description-as-name", "use description as name of games in ROM database"),
     Commandline::Option("use-temp-directory", 't', "create output in temporary directory, move when done"),
+    Commandline::Option("use-torrentzip", "use TORRENTZIP format for zip archives in ROM set"),
     Commandline::Option("verbose", 'v', "print fixes made")
 };
 

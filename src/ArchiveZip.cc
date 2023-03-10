@@ -69,6 +69,14 @@ bool ArchiveZip::ensure_zip() {
 	return false;
     }
 
+    if (where == FILE_ROMSET && configuration.use_torrentzip) {
+        if (zip_set_archive_flag(za, ZIP_AFL_WANT_TORRENTZIP, 1) < 0) {
+            output.error("can't torrentzip '%s'", name.c_str());
+            zip_discard(za);
+            return false;
+        }
+    }
+
     return true;
 }
 

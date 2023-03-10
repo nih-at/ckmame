@@ -116,6 +116,7 @@ public:
     bool use_central_cache_directory; // create CkmameDB and DatDB in $HOME/.cache/ckmame
     bool use_description_as_name; // in ROM database
     bool use_temp_directory; // create RomDB in temporary directory, then move into place
+    bool use_torrentzip; // use TORRENTZIP format for zip archives in ROM set.
     bool verbose; // print all actions taken to fix ROM set
 
     // TODO: Are these needed? They have no command line options.

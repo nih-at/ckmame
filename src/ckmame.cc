@@ -93,6 +93,7 @@ std::unordered_set<std::string> ckmame_used_variables = {
     "saved_directory",
     "unknown_directory",
     "update_database",
+    "use_torrentzip",
     "verbose"
 };
 
