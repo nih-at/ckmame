@@ -254,6 +254,7 @@ void Configuration::reset() {
     use_central_cache_directory = false;
     use_description_as_name = false;
     use_temp_directory = false;
+    use_torrentzip = false;
     verbose = false;
     warn_file_known = true;
     warn_file_unknown = true;
