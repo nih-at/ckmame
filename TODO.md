@@ -1,3 +1,6 @@
+### Show Stopper
+
+- When torrentzipping, stat zip archive after zip_close and use that value in .ckmamedb.
 
 ### Implement
 

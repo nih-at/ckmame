@@ -471,6 +471,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         else if (option.name == "use-temp-directory") {
             use_temp_directory = true;
         }
+        else if (option.name == "use-torrentzip") {
+            use_torrentzip = true;
+        }
         else if (option.name == "verbose") {
             verbose = true;
         }
@@ -535,6 +538,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_bool(table, "use-central-cache-directory", use_central_cache_directory);
     set_bool(table, "use-description-as-name", use_description_as_name);
     set_bool(table, "use-temp-directory", use_temp_directory);
+    set_bool(table, "use-torrentzip", use_torrentzip);
     set_bool(table, "verbose", verbose);
 }
 
