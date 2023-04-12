@@ -225,6 +225,11 @@ bool Parser::file_hash(filetype_t ft, int ht, const std::string& attr) {
         return true;
     }
 
+    if (attr == "") {
+        /* some dat files have empty strings for hashes, skip them */
+        return true;
+    }
+
     h = &r[ft]->hashes;
 
     if (h->set_from_string(attr) != ht) {
