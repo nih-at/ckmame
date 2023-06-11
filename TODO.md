@@ -10,6 +10,7 @@
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
 - SHA256 support
 - mia="yes" support
+- add 'delete_unknown_pattern' to automatically delete some kinds of unknown files (e.g. cue files)
 
 ### Write Tests for Config
 
