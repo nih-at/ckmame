@@ -19,6 +19,7 @@
 
 ## other
 
+- Move `delete_unknown_pattern` to `DatOptions`.
 - status update: SIGINFO support in Archive::commit, via libzip progress callback
 
 - speedup idea: when opening archives (in extra dirs) only compute hashes if we need them
