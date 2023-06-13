@@ -97,14 +97,14 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
                         archive->file_delete(i);
                     }
                     break;
-                    
+
                 case FS_NEEDED:
                     /* TODO: handle error (how?) */
                     if (save_needed(archive, i, game->name)) {
                         check_tree.recheck_games_needing(filetype, archive->files[i].hashes.size, &archive->files[i].hashes);
                     }
                     break;
-                    
+
                 case FS_BROKEN:
                 case FS_USED:
                 case FS_MISSING:
@@ -113,7 +113,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
                     break;
             }
         }
-        
+
         if (configuration.fix_romset) {
             if (!garbage->commit()) {
                 garbage->rollback();
@@ -122,7 +122,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
                 return -1;
             }
         }
-        
+
         if (!configuration.complete_games_only || result->game == GS_CORRECT || result->game == GS_FIXABLE) {
             ret |= fix_files(game, filetype, archive, result, garbage.get());
         }
@@ -137,7 +137,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
                 return -1;
             }
         }
-        
+
         if (archive->commit()) {
             extra_mark.commit();
             needed_mark.commit();
@@ -238,7 +238,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     archive->file_add_empty(game_file.name);
                 }
                 break;
-                
+
             case Match::LONG: {
                 if (archive == archive_from && !archive_from->is_file_deleted(match->index)) {
 		    output.message_verbose("move long file '%s'", REAL_NAME(archive_from, match->index));
@@ -246,7 +246,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                         break;
                     }
                 }
-                
+
 		output.message_verbose("extract (offset %" PRIu64 ", size %" PRIu64 ") from '%s' to '%s'", match->offset, game_file.hashes.size, REAL_NAME(archive_from, match->index), game_file.filename(filetype).c_str());
 
                 if (make_space(archive, game_file.name, &original_names, num_names) < 0) {
@@ -261,7 +261,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                 }
                 break;
             }
-                
+
             case Match::NAME_ERROR:
                 if (game_file.where == FILE_IN_CLONEOF || game_file.where == FILE_IN_GRAND_CLONEOF) {
                     if (check_tree.recheck(game->cloneof[game_file.where - 1])) {
@@ -272,16 +272,16 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                         }
                     }
                 }
-                
+
 		output.message_verbose("rename '%s' to '%s'", REAL_NAME(archive, match->index), game_file.filename(filetype).c_str());
-                
+
                 /* TODO: handle errors (how?) */
                 if (make_space(archive, game_file.name, &original_names, num_names) < 0)
                     break;
                 archive->file_rename(match->index, game_file.name);
-                
+
                 break;
-                
+
             case Match::COPIED:
                 if (garbage && archive_from == garbage->da.get()) {
                     /* we can't copy from our own garbage archive, since we're copying to it, and libzip doesn't support cross copying */
@@ -293,7 +293,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     /* TODO: if (idx >= 0) undo deletion of broken file */
                     break;
                 }
-                
+
                 if (archive->file_copy(archive_from, match->index, game_file.name)) {
                     ckmame_cache->used(archive_from, match->index);
                 }
@@ -302,29 +302,29 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
                     /* TODO: if (idx >= 0) undo deletion of broken file */
                 }
                 break;
-                
+
             case Match::IN_ZIP:
                 /* TODO: save to needed */
                 break;
-                
+
             case Match::OK:
                 /* all is well */
                 break;
-                
+
             case Match::OK_AND_OLD:
                 /* already deleted by fix_game() */
                 break;
-                
+
             case Match::NO_HASH:
                 /* only used for disks */
                 break;
-                
+
             case Match::OLD:
                 /* nothing to be done */
                 break;
         }
     }
-    
+
     return needs_recheck ? 1 : 0;
 }
 
@@ -341,7 +341,7 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
         if (!match->source_is_old()) {
 	    archive_from = match->archive.get();
         }
-        
+
         output.set_error_archive(archive->name, game_file->name);
 
         switch (match->quality) {
@@ -349,16 +349,16 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
             case Match::OLD:
                 /* nothing to do */
                 break;
-                
+
             case Match::NO_HASH:
                 /* only used for disks */
                 // TODO: handle disks
                 break;
-                
+
             case Match::LONG:
                 save_needed_part(archive_from, match->index, game->name, match->offset, game_file->hashes.size, game_file); /* TODO: handle error */
                 break;
-                
+
             case Match::COPIED:
                 switch(match->where) {
                     case FILE_INGAME:
@@ -367,7 +367,7 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
                         save_needed(archive_from, match->index, game->name);
                         archive_from->commit();
                         break;
-                        
+
                     case FILE_EXTRA:
                     case FILE_IN_CLONEOF:
                     case FILE_IN_GRAND_CLONEOF:
@@ -379,7 +379,7 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
                         break;
                 }
                 break;
-                
+
             case Match::OK_AND_OLD:
                 if (configuration.keep_old_duplicate) {
                     save_needed(archive, i, game->name); /* TODO: handle error */

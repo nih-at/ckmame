@@ -71,7 +71,7 @@ public:
      Extra-unused keep/delete
 
      */
-    
+
     static std::string user_config_file();
     static std::string local_config_file();
 

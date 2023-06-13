@@ -194,11 +194,11 @@ std::string Configuration::local_config_file() {
 
 std::string Configuration::user_config_file() {
     auto home = getenv("HOME");
-    
+
     if (home == nullptr) {
         return "";
     }
-    
+
     return std::string(home) + "/.config/ckmame/ckmamerc";
 }
 
@@ -281,10 +281,10 @@ void Configuration::merge_config_file(const toml::table &file) {
     if (global_table != nullptr) {
         merge_config_table(global_table);
     }
-    
+
     if (!set.empty()) {
         auto set_table = file[set].as_table();
-        
+
         if (set_table != nullptr) {
             merge_config_table(set_table);
         }
