@@ -1,3 +1,8 @@
+X.X (XXXX-XX-XX)
+================
+
+* Add `--delete-unknown-pattern` to remove unknown files matching a pattern.
+
 2.0 (2022-05-31)
 =================
 * Support for configuration file and multiple sets.

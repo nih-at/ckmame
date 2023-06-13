@@ -1,0 +1,17 @@
+description test single-rom game (no parent), zip contains garbage, fix, delete one
+return 0
+args -Fvc --delete-unknown-pattern *arb* 1-4 1-8
+file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
+file roms/1-8.zip 2-8c-ok.zip 1-8-ok.zip
+file unknown/1-8.zip 1-c-ok.zip 2-cc-ok.zip
+no-hashes unknown 1-8.zip
+stdout-data
+In game 1-4:
+game 1-4                                     : correct
+file garbage       size       8  crc 01888242: unknown
+delete unknown file 'garbage' (matching delete-unknown-pattern)
+In game 1-8:
+game 1-8                                     : correct
+file 0c.rom        size      12  crc 0623c932: unknown
+move unknown file '0c.rom'
+end-of-data

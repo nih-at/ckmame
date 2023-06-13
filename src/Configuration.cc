@@ -94,6 +94,7 @@ TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
     { "dat-directories", dat_directories_schema },
     { "dat-directories-append", dat_directories_schema },
     { "dats", dats_schema },
+    { "delete-unknown-pattern", TomlSchema::string() },
     { "extra-directories", extra_directories_schema},
     { "extra-directories-append", extra_directories_schema},
     { "fixdat-directory",  TomlSchema::string() },
@@ -135,6 +136,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("config", "file", "read configuration from file"),
     Commandline::Option("copy-from-extra", "keep used files in extra directories (default)"),
     Commandline::Option("create-fixdat", "write fixdat to 'fix_$NAME_OF_SET.dat'"),
+    Commandline::Option("delete-unknown-pattern", "pattern", "delete unknown files matching 'pattern'"),
     Commandline::Option("extra-directory", 'e', "dir", "search for missing files in directory dir (multiple directories can be specified by repeating this option)"),
     Commandline::Option("fixdat-directory", "directory", "create fixdats in directory"),
     Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
@@ -232,6 +234,7 @@ void Configuration::reset() {
     complete_games_only = false;
     complete_list = "";
     create_fixdat = false;
+    delete_unknown_pattern = "";
     keep_old_duplicate = false;
     missing_list = "";
     move_from_extra = false;
@@ -371,6 +374,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         }
         else if (option.name == "create-fixdat") {
             create_fixdat = true;
+        }
+        else if (option.name == "delete-unknown-pattern") {
+            delete_unknown_pattern = option.argument;
         }
         else if (option.name == "extra-directory") {
             if (!extra_directory_specified) {
@@ -516,6 +522,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     merge_dat_directories(table, "dat-directories", false);
     merge_dat_directories(table, "dat-directories-append", true);
     merge_dats(table);
+    set_string(table, "delete-unknown-pattern", delete_unknown_pattern);
     set_string(table, "rom-db", rom_db);
     merge_extra_directories(table, "extra-directories", false);
     merge_extra_directories(table, "extra-directories-append", true);

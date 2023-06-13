@@ -95,6 +95,7 @@ public:
     bool create_fixdat;
     std::vector<std::string> dat_directories;
     std::vector<std::string> dats;
+    std::string delete_unknown_pattern;
     std::vector<std::string> extra_directories;
     std::string fixdat_directory;
     bool keep_old_duplicate;

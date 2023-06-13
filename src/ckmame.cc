@@ -75,6 +75,7 @@ std::unordered_set<std::string> ckmame_used_variables = {
     "complete_games_only",
     "complete_list",
     "create_fixdat",
+    "delete_unknown_pattern",
     "extra_directories",
     "fixdat_directory",
     "keep_old_duplicate",
