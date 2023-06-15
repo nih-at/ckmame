@@ -70,6 +70,9 @@ bool ArchiveZip::ensure_zip() {
     }
 
     if (where == FILE_ROMSET && configuration.use_torrentzip) {
+        if (zip_get_archive_flag(za, ZIP_AFL_IS_TORRENTZIP, ZIP_FL_UNCHANGED) == 0) {
+            cache_changed = true;
+        }
         if (zip_set_archive_flag(za, ZIP_AFL_WANT_TORRENTZIP, 1) < 0) {
             output.error("can't torrentzip '%s'", name.c_str());
             zip_discard(za);
@@ -210,6 +213,9 @@ void ArchiveZip::commit_cleanup() {
 
 
 void ArchiveZip::get_last_update() {
+    if (cache_changed) {
+        close_xxx();
+    }
     struct stat st;
     if (stat(name.c_str(), &st) < 0) {
         contents->size = 0;
