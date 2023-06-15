@@ -82,6 +82,7 @@ std::unordered_set<std::string> ckmame_used_variables = {
     "missing_list",
     "move_from_extra",
     "old_db",
+    "report_changes",
     "report_correct",
     "report_detailed",
     "report_fixable",
@@ -99,6 +100,7 @@ std::unordered_set<std::string> ckmame_used_variables = {
 };
 
 static bool contains_romdir(const std::string &ame);
+static void print_diff_stat(const char* title, size_t added, size_t removed);
 
 int main(int argc, char **argv) {
     auto command = CkMame();
@@ -312,34 +314,78 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     }
 
     if (checking_all_games && (!configuration.complete_list.empty() || !configuration.missing_list.empty())) {
-        FILEPtr complete_file, missing_file;
+        std::vector<std::string> new_complete;
+        std::vector<std::string> new_missing;
+        std::vector<std::string> previous_complete;
+        std::vector<std::string> previous_missing;
+
+        if (!configuration.complete_list.empty() && std::filesystem::exists(configuration.complete_list)) {
+            previous_complete = slurp_lines(configuration.complete_list);
+            std::sort(previous_complete.begin(), previous_complete.end());
+        }
+        if (!configuration.missing_list.empty() && std::filesystem::exists(configuration.missing_list)) {
+            previous_missing = slurp_lines(configuration.missing_list);
+            std::sort(previous_missing.begin(), previous_missing.end());
+        }
 
         for (const auto& name : list) {
             if (ckmame_cache->complete_games.find(name) != ckmame_cache->complete_games.end()) {
                 if (!configuration.complete_list.empty()) {
-                    if (!complete_file) {
-                        complete_file = make_shared_file(configuration.complete_list, "w");
-                    }
-                    fprintf(complete_file.get(), "%s\n", name.c_str());
+                    new_complete.emplace_back(name);
                 }
             }
             else {
                 if (!configuration.missing_list.empty()) {
-                    if (!missing_file) {
-                        missing_file = make_shared_file(configuration.missing_list, "w");
-                    }
-                    fprintf(missing_file.get(), "%s\n", name.c_str());
+                    new_missing.emplace_back(name);
                 }
             }
         }
 
-        if (!complete_file && !configuration.complete_list.empty()) {
-            std::filesystem::remove(configuration.complete_list, ec);
-            // TODO: throw all errors except ENOENT, if anyone can figure out how that's done in C++
+        if (!configuration.complete_list.empty()) {
+            if (new_complete.empty()) {
+                std::filesystem::remove(configuration.complete_list, ec);
+                // TODO: throw all errors except ENOENT, if anyone can figure out how that's done in C++
+            }
+            else {
+                write_lines(configuration.complete_list, new_complete);
+            }
         }
-        if (!missing_file && !configuration.missing_list.empty()) {
-            std::filesystem::remove(configuration.missing_list, ec);
-            // TODO: throw all errors except ENOENT, if anyone can figure out how that's done in C++
+        if (!configuration.missing_list.empty()) {
+            if (new_missing.empty()) {
+                std::filesystem::remove(configuration.missing_list, ec);
+                // TODO: throw all errors except ENOENT, if anyone can figure out how that's done in C++
+            }
+            else {
+                write_lines(configuration.missing_list, new_missing);
+            }
+        }
+        if (configuration.report_changes) {
+            size_t complete_added = 0;
+            size_t complete_removed = 0;
+            size_t missing_added = 0;
+            size_t missing_removed = 0;
+
+            if (!configuration.complete_list.empty()) {
+                diff_lines(previous_complete, new_complete, complete_added, complete_removed);
+            }
+            if (!configuration.missing_list.empty()) {
+                diff_lines(previous_missing, new_missing, missing_added, missing_removed);
+            }
+            auto first = true;
+            if (complete_added > 0 || complete_removed > 0) {
+                print_diff_stat("complete", complete_added, complete_removed);
+                first = false;
+            }
+            if (missing_added > 0 || missing_removed > 0) {
+                if (!first) {
+                    printf(", ");
+                }
+                print_diff_stat("missing", missing_added, missing_removed);
+                first = false;
+            }
+            if (!first) {
+                printf("\n");
+            }
         }
     }
 
@@ -387,4 +433,14 @@ contains_romdir(const std::string &name) {
     }
 
     return it_extra == normalized.end();
+}
+
+static void print_diff_stat(const char* title, size_t added, size_t removed) {
+    if (added > 0) {
+        printf("+%zu", added);
+    }
+    if (removed > 0) {
+        printf("-%zu", removed);
+    }
+    printf(" %s", title);
 }

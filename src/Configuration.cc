@@ -145,6 +145,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
     Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
     Commandline::Option("no-create-fixdat", "don't create fixdat (default)"),
+    Commandline::Option("no-report-changes", "don't report changes to correct and missing lists (default)"),
     Commandline::Option("no-report-correct", "don't report status of ROMs that are correct (default)"),
     Commandline::Option("no-report-detailed", "don't report status of every ROM (default)"),
     Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
@@ -153,6 +154,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
     Commandline::Option("no-update-database", "don't update ROM database (default)"),
     Commandline::Option("old-db", 'O', "dbfile", "use database dbfile for old ROMs"),
+    Commandline::Option("report-changes", "report changes to correct and missing lists"),
     Commandline::Option("report-correct", 'c', "report status of ROMs that are correct"),
     Commandline::Option("report-detailed", "report status of every ROM"),
     Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)"),
@@ -178,6 +180,7 @@ std::unordered_map<std::string, std::string> Configuration::option_to_variable =
     { "extra-directory", "extra_directories" },
     { "no-complete-games-only", "complete_games_only" },
     { "no-create-fixdat", "create_fixdat" },
+    { "no-report-changes", "report_changes" },
     { "no-report-correct", "report_correct" },
     { "no-report-detailed", "report_detailed" },
     { "no-report-fixable", "report_fixable" },
@@ -240,6 +243,7 @@ void Configuration::reset() {
     move_from_extra = false;
     old_db = RomDB::default_old_name();
     report_correct = false;
+    report_changes = false;
     report_detailed = false;
     report_fixable = true;
     report_missing = true;
@@ -411,6 +415,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         else if (option.name == "no-create-fixdat") {
             create_fixdat = false;
         }
+        else if (option.name == "no-report-changes") {
+            report_changes = false;
+        }
         else if (option.name == "no-report-correct") {
             report_correct = false;
         }
@@ -434,6 +441,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         }
         else if (option.name == "old-db") {
             old_db = option.argument;
+        }
+        else if (option.name == "report-changes") {
+            report_changes = true;
         }
         else if (option.name == "report-correct") {
             report_correct = true;
@@ -531,6 +541,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_string(table, "missing-list", missing_list);
     set_bool(table, "move-from-extra", move_from_extra);
     set_string(table, "old-db", old_db);
+    set_bool(table, "report-changes", report_changes);
     set_bool(table, "report-correct", report_correct);
     set_bool(table, "report-detailed", report_detailed);
     set_bool(table, "report-fixable", report_fixable);

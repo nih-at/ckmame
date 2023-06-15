@@ -102,6 +102,7 @@ public:
     std::string missing_list;
     bool move_from_extra; // remove files taken from extra directories, otherwise copy them and don't change extra directory.
     std::string old_db;
+    bool report_changes; /* report changes to complete or missing lists */
     bool report_correct; /* report ROMs that are correct */
     bool report_detailed; /* one line for each ROM */
     bool report_fixable; /* report ROMs that are not correct but can be fixed */

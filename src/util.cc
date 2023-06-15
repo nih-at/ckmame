@@ -35,6 +35,7 @@
 
 #include <cctype>
 #include <cinttypes>
+#include <cstdio>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -45,6 +46,7 @@
 #include "DatDb.h"
 #include "Exception.h"
 #include "globals.h"
+#include "SharedFile.h"
 
 
 #define BIN2HEX(n) ((n) >= 10 ? (n) + 'a' - 10 : (n) + '0')
@@ -286,4 +288,44 @@ std::string pad_string_left(const std::string &string, size_t width, char c) {
 	return string;
     }
     return std::string(width - length, c) + string;
+}
+
+void write_lines(const std::string& file_name, const std::vector<std::string>& lines) {
+    FILEPtr f = make_shared_file(file_name, "w");
+    for (const auto& line: lines) {
+        fprintf(f.get(), "%s\n", line.c_str());
+    }
+}
+
+void diff_lines(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines, size_t& added, size_t& removed) {
+    auto old_it = old_lines.begin();
+    auto new_it = new_lines.begin();
+    added = 0;
+    removed = 0;
+
+    while (old_it != old_lines.end() || new_it != new_lines.end()) {
+        if (old_it == old_lines.end()) {
+            added++;
+            new_it++;
+        }
+        else if (new_it == new_lines.end()) {
+            removed++;
+            old_it++;
+        }
+        else {
+            if (*old_it == *new_it) {
+                old_it++;
+                new_it++;
+                continue;
+            }
+            else if (*old_it < *new_it) {
+                removed++;
+                old_it++;
+            }
+            else {
+                added++;
+                new_it++;
+            }
+        }
+    }
 }
