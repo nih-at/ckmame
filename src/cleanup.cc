@@ -71,7 +71,7 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
         if (a) {
             GameArchives archives;
             archives.archive[entry.filetype] = a;
-                    
+
             Result res(nullptr, archives);
 
             while (di < len) {
@@ -84,17 +84,17 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
                 else {
                     cmp = entry.name.compare(fl.name);
                 }
-                
+
                 if (cmp == 0) {
                     res.archive_files[entry.filetype][fl.index] = FS_USED;
                 }
                 else if (cmp < 0) {
                     break;
                 }
-                
+
                 di++;
             }
-            
+
             if (where == FILE_NEEDED) {
                 check_needed_files(entry.filetype, a, &res);
             }
@@ -102,7 +102,7 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
                 // TODO: check_archive_files calls find_in_romset with detector 0, which doesn't find files in ROM set that have a header. I don't understand the other calls to find_in_romset, so I don't know how to fix it.
                 check_archive_files(entry.filetype, archives, "", &res);
             }
-            
+
 	    diagnostics_archive(entry.filetype, a.get(), res, warn_needed);
             cleanup_archive(entry.filetype, a.get(), &res, flags);
 	    warn_unset_info();
@@ -124,7 +124,7 @@ static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int
     if (!a->is_writable()) {
         return;
     }
-    
+
     if ((flags & CLEANUP_UNKNOWN) && configuration.fix_romset) {
         gb = std::make_shared<Garbage>(a);
     }
