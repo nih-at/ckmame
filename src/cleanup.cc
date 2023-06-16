@@ -103,7 +103,7 @@ void cleanup_list(const DeleteListPtr& list, int flags, where_t where) {
                 check_archive_files(entry.filetype, archives, "", &res);
             }
 
-	    diagnostics_archive(entry.filetype, a.get(), res, warn_needed);
+	    diagnostics_archive(entry.filetype, a.get(), res, warn_needed, where != FILE_EXTRA);
             cleanup_archive(entry.filetype, a.get(), &res, flags);
 	    warn_unset_info();
 	}

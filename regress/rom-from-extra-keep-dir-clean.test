@@ -12,6 +12,5 @@ add 'search/foo.zip/1-4/04.rom' as '04.rom'
 In archive search/bar:
 file ignore/08.rom  size       8  crc 3656897d: needed elsewhere
 In archive search/foo:
-file bar/ignore    size       7  crc 7cde0d11: unknown
 delete used file '1-4/04.rom'
 end-of-data

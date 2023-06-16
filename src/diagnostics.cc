@@ -57,12 +57,12 @@ void diagnostics(const Game *game, const GameArchives &archives, const Result &r
             ckmame_cache->stats.add_rom(filetype, &game->files[filetype][i], result.game_files[filetype][i].quality);
         }
         diagnostics_game(static_cast<filetype_t>(filetype), game, result);
-        diagnostics_archive(static_cast<filetype_t>(filetype), archives[filetype], result);
+        diagnostics_archive(static_cast<filetype_t>(filetype), archives[filetype], result, true);
     }
 }
 
 
-void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, bool warn_needed) {
+void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, bool warn_needed, bool warn_unknown) {
     if (a == nullptr) {
         return;
     }
@@ -72,7 +72,7 @@ void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, 
 
         switch (result.archive_files[ft][i]) {
             case FS_UNKNOWN:
-                if (configuration.warn_file_unknown) {
+                if (warn_unknown && configuration.warn_file_unknown) {
                     warn_archive_file(ft, f, "unknown");
                 }
                 break;

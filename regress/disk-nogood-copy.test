@@ -15,6 +15,4 @@ disk 108-nogood    no good dump              : missing
 In game disk-nogood2:
 rom  08.rom        size       8  crc 3656897d: missing
 disk 208-7         no good dump              : missing
-In archive extras:
-image 108-nogood.chd: unknown
 end-of-data

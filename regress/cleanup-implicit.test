@@ -17,6 +17,5 @@ delete unused file '08.rom'
 remove empty archive
 In archive extra/2-4c.zip:
 file 04.rom        size       4  crc d87f7e0c: not used
-file 0c.rom        size      12  crc 0623c932: unknown
 delete unused file '04.rom'
 end-of-data
