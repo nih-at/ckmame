@@ -52,7 +52,7 @@ void diagnostics(const Game *game, const GameArchives &archives, const Result &r
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
-        
+
         for (size_t i = 0; i < game->files[filetype].size(); i++) {
             ckmame_cache->stats.add_rom(filetype, &game->files[filetype][i], result.game_files[filetype][i].quality);
         }
@@ -66,33 +66,33 @@ void diagnostics_archive(filetype_t ft, const Archive *a, const Result &result, 
     if (a == nullptr) {
         return;
     }
-    
+
     for (size_t i = 0; i < a->files.size(); i++) {
         auto f = &a->files[i];
-            
+
         switch (result.archive_files[ft][i]) {
             case FS_UNKNOWN:
                 if (configuration.warn_file_unknown) {
                     warn_archive_file(ft, f, "unknown");
                 }
                 break;
-                
+
             case FS_PARTUSED:
             case FS_USED:
             case FS_MISSING:
                 /* handled in diagnostics_game */
                 break;
-                
+
             case FS_BROKEN:
                 warn_archive_file(ft, f, "broken");
                 break;
-                
+
             case FS_NEEDED:
                 if (warn_needed && configuration.warn_file_known) {
                     warn_archive_file(ft, f, "needed elsewhere");
                 }
                 break;
-                
+
             case FS_SUPERFLUOUS:
                 if (configuration.warn_file_known) {
                     warn_archive_file(ft, f, "not used");
@@ -117,13 +117,13 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                     warn_game(ft, game, "correct");
                 }
                 return;
-            
+
             case GS_OLD: {
                 // TODO: does not work if whole game is duplicate from old.
                 if (!configuration.report_correct) {
                     return;
                 }
-                
+
                 // TODO: move this to check and keep in result
                 auto all_same = true;
                 std::string old_name;
@@ -133,7 +133,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                         break;
                     }
                 }
-                
+
                 if (!old_name.empty()) {
                     for (size_t ft = 0; ft < TYPE_MAX && all_same; ft++) {
                         for (size_t i = 1; i < game->files[ft].size(); i++) {
@@ -158,38 +158,38 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                     warn_game(ft, game, "not a single file found");
                 }
                 return;
-                
+
             default:
                 break;
         }
     }
-    
+
     if (configuration.complete_games_only && !(configuration.report_missing || configuration.report_fixable) && result.game != GS_FIXABLE) {
         return;
     }
-    
+
     for (size_t i = 0; i < game->files[ft].size(); i++) {
         auto &match = result.game_files[ft][i];
         auto &rom = game->files[ft][i];
         FileData *file = nullptr;
-        
+
         if (!match.source_is_old() && match.archive) {
             file = &match.archive->files[match.index];
         }
-        
+
         switch (match.quality) {
             case Match::MISSING:
                 if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) || configuration.report_detailed) {
                     warn_game_file(ft, &rom, "missing");
                 }
                 break;
-                
+
             case Match::NAME_ERROR:
                 if (configuration.report_fixable) {
                     warn_game_file(ft, &rom, "wrong name (" + file->name + ")" + (rom.where != match.where ? ", should be in " : "") + zname[rom.where]);
                 }
                 break;
-                
+
             case Match::LONG:
                 if (configuration.report_fixable) {
                     std::ostringstream out;
@@ -197,7 +197,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                     warn_game_file(ft, &rom, out.str());
                 }
                 break;
-                
+
             case Match::OK:
                 if (rom.status == Rom::OK) {
                     if (configuration.report_correct || configuration.report_detailed) {
@@ -210,31 +210,31 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                     }
                 }
                 break;
-                
+
             case Match::OK_AND_OLD:
                 if (configuration.report_correct || configuration.report_detailed) {
                     warn_game_file(ft, &rom, "duplicate (also in old '" + match.old_game + "')");
                 }
                 break;
-                
+
             case Match::COPIED:
                 if (configuration.report_fixable) {
                     warn_game_file(ft, &rom, "is in '" + match.archive->name + "/" + match.archive->files[match.index].filename() + "'");
                 }
                 break;
-                
+
             case Match::IN_ZIP:
                 if (configuration.report_fixable) {
                     warn_game_file(ft, &rom, "should be in " + zname[rom.where]);
                 }
                 break;
-                
+
             case Match::OLD:
                 if (configuration.report_correct || configuration.report_detailed) {
                     warn_game_file(ft, &rom, "is in old '" + match.old_game + "'");
                 }
                 break;
-                
+
             case Match::NO_HASH:
                 /* only used for disks */
                 break;
