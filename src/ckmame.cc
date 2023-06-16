@@ -100,7 +100,7 @@ std::unordered_set<std::string> ckmame_used_variables = {
 };
 
 static bool contains_romdir(const std::string &ame);
-static void print_diff_stat(const char* title, size_t added, size_t removed);
+static std::string diff_stat(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines);
 
 int main(int argc, char **argv) {
     auto command = CkMame();
@@ -360,31 +360,21 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
             }
         }
         if (configuration.report_changes) {
-            size_t complete_added = 0;
-            size_t complete_removed = 0;
-            size_t missing_added = 0;
-            size_t missing_removed = 0;
+            auto stats_complete = diff_stat(previous_complete, new_complete);
+            auto stats_missing = diff_stat(previous_missing, new_missing);
+            auto stats = std::string();
 
-            if (!configuration.complete_list.empty()) {
-                diff_lines(previous_complete, new_complete, complete_added, complete_removed);
+            if (!stats_complete.empty()) {
+                stats = "complete: " + stats_complete;
             }
-            if (!configuration.missing_list.empty()) {
-                diff_lines(previous_missing, new_missing, missing_added, missing_removed);
-            }
-            auto first = true;
-            if (complete_added > 0 || complete_removed > 0) {
-                print_diff_stat("complete", complete_added, complete_removed);
-                first = false;
-            }
-            if (missing_added > 0 || missing_removed > 0) {
-                if (!first) {
-                    printf(", ");
+            if (!stats_missing.empty()) {
+                if (!stats.empty()) {
+                    stats += ", ";
                 }
-                print_diff_stat("missing", missing_added, missing_removed);
-                first = false;
+                stats += "missing: " + stats_missing;
             }
-            if (!first) {
-                printf("\n");
+            if (!stats.empty()) {
+                output.message(stats);
             }
         }
     }
@@ -435,12 +425,24 @@ contains_romdir(const std::string &name) {
     return it_extra == normalized.end();
 }
 
-static void print_diff_stat(const char* title, size_t added, size_t removed) {
+static std::string diff_stat(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines) {
+    size_t added, removed;
+    diff_lines(old_lines, new_lines, added, removed);
+
+    if (added == 0 && removed == 0) {
+        return "";
+    }
+    auto s = std::to_string(old_lines.size()) + " -> " + std::to_string(new_lines.size()) + " (";
     if (added > 0) {
-        printf("+%zu", added);
+        s += "+" + std::to_string(added);
+        if (removed > 0) {
+            s += "/";
+        }
     }
     if (removed > 0) {
-        printf("-%zu", removed);
+        s += "-" + std::to_string(removed);
     }
-    printf(" %s", title);
+    s += ")";
+
+    return s;
 }
