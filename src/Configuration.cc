@@ -103,6 +103,7 @@ TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
     { "move-from-extra",  TomlSchema::boolean() },
     { "old-db", TomlSchema::string() },
     { "profiles", TomlSchema::array(TomlSchema::string()) },
+    { "report-changes",  TomlSchema::boolean() },
     { "report-correct",  TomlSchema::boolean() },
     { "report-detailed",  TomlSchema::boolean() },
     { "report-fixable",  TomlSchema::boolean() },
