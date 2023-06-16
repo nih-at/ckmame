@@ -74,18 +74,18 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
             switch (result->archive_files[filetype][i]) {
                 case FS_UNKNOWN: {
                     if (configuration.delete_unknown_pattern.length() > 0 &&
-                          fnmatch(configuration.delete_unknown_pattern.c_str(), archive->files[i].filename().c_str(), 0) == 0) {
-		          output.message_verbose("delete unknown file '%s' (matching delete-unknown-pattern)", archive->files[i].filename().c_str());
+                        fnmatch(configuration.delete_unknown_pattern.c_str(), archive->files[i].filename().c_str(), 0) == 0) {
+                        output.message_verbose("delete unknown file '%s' (matching delete-unknown-pattern)", archive->files[i].filename().c_str());
 
-                          /* TODO: handle error (how?) */
-                          archive->file_delete(i);
-                      } else {
-		          output.message_verbose("move unknown file '%s'", archive->files[i].filename().c_str());
+                        /* TODO: handle error (how?) */
+                        archive->file_delete(i);
+                    } else {
+                        output.message_verbose("move unknown file '%s'", archive->files[i].filename().c_str());
 
-                          if (configuration.fix_romset) {
+                        if (configuration.fix_romset) {
                             garbage->add(i, false); /* TODO: check return value */
-                          }
-                      }
+                        }
+                    }
                     break;
                 }
 
