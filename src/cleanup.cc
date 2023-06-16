@@ -35,6 +35,7 @@
 #include "globals.h"
 
 #include <algorithm>
+#include <fnmatch.h>
 
 #include "check.h"
 #include "diagnostics.h"
@@ -176,11 +177,25 @@ static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int
                     a->file_delete(i);
                 }
                 else {
-                    output.message_verbose("move unknown file '%s'", a->files[i].filename().c_str());
+		    bool delete_file = false;
+		    if (configuration.delete_unknown_pattern.length() > 0 &&
+			fnmatch(configuration.delete_unknown_pattern.c_str(), a->files[i].filename().c_str(), 0) == 0) {
+			delete_file = true;
+		    }
+
+		    if (delete_file) {
+			output.message_verbose("delete unknown file '%s' (matching delete-unknown-pattern)", a->files[i].filename().c_str());
+		    } else {
+			output.message_verbose("move unknown file '%s'", a->files[i].filename().c_str());
+		    }
 
                     /* TODO: handle error (how?) */
                     if (configuration.fix_romset) {
-                        gb->add(i, false);
+			if (delete_file) {
+			    a->file_delete(i);
+			} else {
+			    gb->add(i, false);
+			}
                     }
                     else {
                         /* when FIX_DO is not set, this only updates in-memory representation of a */
