@@ -26,7 +26,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.Dd June 13, 2023
+.Dd June 16, 2023
 .Dt CKMAME 1
 .Os
 .Sh NAME
@@ -58,6 +58,7 @@
 .Op Fl Fl move-from-extra
 .Op Fl Fl no-complete-games-only
 .Op Fl Fl no-create-fixdat
+.Op Fl Fl no-report-changes
 .Op Fl Fl no-report-correct
 .Op Fl Fl no-report-detailed
 .Op Fl Fl no-report-fixable
@@ -66,6 +67,7 @@
 .Op Fl Fl no-report-summary
 .Op Fl Fl old-db Ar dbfile
 .Op Fl Fl only-if-database-updated
+.Op Fl Fl report-changes
 .Op Fl Fl report-correct
 .Op Fl Fl report-detailed
 .Op Fl Fl report-fixable
@@ -212,6 +214,8 @@ one line per game, and sorted alphabetically.
 Keep partial games in ROM set (default).
 .It Fl Fl no-create-fixdat
 Do not create a fixdat for the missing ROM sets (default).
+.It Fl Fl no-report-changes
+Don't report a summary of changes while fixing a ROM set (default).
 .It Fl Fl no-report-correct
 Don't report status of ROMs that are correct (default).
 .It Fl Fl no-report-detailed
@@ -239,6 +243,8 @@ Look for the ROM set in the directory
 .Ar dir
 instead of the default
 .Pa roms .
+.It Fl Fl report-changes
+Report a summary of changes while fixing a ROM set.
 .It Fl Fl report-detailed
 Report status of every ROM that is checked.
 .It Fl Fl report-fixable
