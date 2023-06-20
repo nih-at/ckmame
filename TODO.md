@@ -163,6 +163,7 @@ other features:
   - `/prog` from command line
   - `/prog` from file
   - broken input
+- test using roms from two different 'old' roms
 
 * cachedb
 
