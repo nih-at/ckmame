@@ -108,8 +108,9 @@ set(XFAIL_TESTS
   file-no-crc-wrong-name-other-set.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
+  unknown-rename-failed.test
 )
-	      
+
 file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
 foreach(FULL_CASE IN LISTS EXTRA_TESTS)
   get_filename_component(CASE ${FULL_CASE} NAME)

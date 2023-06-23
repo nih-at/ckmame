@@ -1,0 +1,19 @@
+description test copying file to garbage, failing (disk full) and not removing from set
+variants zip
+return 0
+setenv RENAME_ALWAYS_FAILS 1
+preload fwrite.so
+args -Fvcj -D ../mamedb-small.db
+file roms/unknown-file.zip unknown-file.zip
+stdout-data
+In game 1-4:
+game 1-4                                     : not a single file found
+In archive roms/unknown-file.zip:
+file unknown-file  size      21  crc f3b26226: unknown
+move unknown file 'unknown-file'
+remove empty archive
+end-of-data
+stderr-data
+unknown/unknown-file.zip: error closing zip: Renaming temporary file failed: Operation not permitted
+unknown/unknown-file.zip: error closing zip: Containing zip archive was closed
+end-of-data
