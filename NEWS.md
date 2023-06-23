@@ -1,6 +1,7 @@
 X.X (XXXX-XX-XX)
 ================
 
+* Add '--report-changes' to show changes between last and current run.
 * Add `--delete-unknown-pattern` to remove unknown files matching a pattern.
 
 2.0 (2022-05-31)
