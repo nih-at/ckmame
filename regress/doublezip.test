@@ -1,12 +1,12 @@
 description test double zipped rom not being opened by either zip nor dir modes
 return 0
-args -Fvc 1-4
-file-del roms/1-4.zip 1-4-ok-doublezip.zip
-file-new unknown/1-4.zip 1-4-ok-doublezip.zip
+arguments -Fvc 1-4
+file roms/1-4.zip 1-4-ok-doublezip.zip {}
+file unknown/1-4.zip {} 1-4-ok-doublezip.zip
 no-hashes unknown 1-4.zip 1-4-ok.zip
-stdout-data
+stdout
 In game 1-4:
 game 1-4                                     : not a single file found
-file 1-4-ok.zip    size     148  crc ea01b28e: unknown
+file 1-4-ok.zip 
 move unknown file '1-4-ok.zip'
-end-of-data
+end-of-inline-data

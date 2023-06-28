@@ -1,10 +1,10 @@
 description test game w/ duplicate rom, zip has one copy w/ name of first
 return 0
-args -Fvc 2-44
+arguments -Fvc 2-44
 file roms/2-44.zip 1-4-ok.zip 2-44-ok.zip
-stdout-data
+stdout
 In game 2-44:
 rom  04.rom        size       4  crc d87f7e0c: correct
 rom  04-2.rom      size       4  crc d87f7e0c: is in 'roms/2-44.zip/04.rom'
 add 'roms/2-44.zip/04.rom' as '04-2.rom'
-end-of-data
+end-of-inline-data

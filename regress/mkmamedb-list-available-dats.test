@@ -1,14 +1,14 @@
 description test mkmamedb --list-available-dats
 return 0
 program mkmamedb
-args --list-available-dats
+arguments --list-available-dats
 file dats/mamedb-disk.dat mamedb-disk.dat
 touch 1643902216 dats/mamedb-disk.dat
-file-new dats/.mkmamedb.db mkmamedb-db.dump
+file dats/.mkmamedb.db {} mkmamedb-db.dump
 file-data .ckmamerc
 [global]
 dat-directories = [ "dats" ]
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 game-with-disk
-end-of-data
+end-of-inline-data

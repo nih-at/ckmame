@@ -1,8 +1,8 @@
 description dumpgame: test --checksum MD5 for file
 return 0
-args --checksum d41d8cd98f00b204e9800998ecf8427e
+arguments --checksum d41d8cd98f00b204e9800998ecf8427e
 program dumpgame
-stdout-data
+stdout
 In game zero:
 		file zero          size       0 crc 00000000 md5 d41d8cd98f00b204e9800998ecf8427e sha1 da39a3ee5e6b4b0d3255bfef95601890afd80709 status  in game
-end-of-data
+end-of-inline-data

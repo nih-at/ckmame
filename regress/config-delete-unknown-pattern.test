@@ -1,6 +1,6 @@
 description test config file delete-unknown-pattern setting
 return 0
-args -F 1-4 1-8
+arguments -F 1-4 1-8
 file roms/1-8.zip 2-8u-ok.zip 1-8-ok.zip
 file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
 file unknown/1-4.zip garbage.zip garbage2.zip
@@ -8,10 +8,10 @@ no-hashes unknown 1-4.zip
 file-data .ckmamerc
 [global]
 delete-unknown-pattern = "*.rom"
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 In game 1-4:
-file garbage       size       8  crc 01888242: unknown
+file garbage 
 In game 1-8:
-file unknown.rom   size       4  crc 9f45e9d1: unknown
-end-of-data
+file unknown.rom 
+end-of-inline-data

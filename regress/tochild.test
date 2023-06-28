@@ -1,11 +1,11 @@
 description test parent, file used by child, not fixing
 return 0
-args -v parent-4
-file roms/parent-4.zip 2-48-ok.zip 2-48-ok.zip
-stdout-data
+arguments -v parent-4
+file roms/parent-4.zip 2-48-ok.zip
+stdout
 In game parent-4:
-end-of-data
+end-of-inline-data
 #stdout game parent-4                                : correct
-stdout-data
-file 08.rom        size       8  crc 3656897d: needed elsewhere
-end-of-data
+stdout
+file 08.rom 
+end-of-inline-data

@@ -1,13 +1,13 @@
 description test all games, some files found, create fixdat
 features LIBXML2
 return 0
-args -Fvc -D ../mamedb-merge-parent.db --create-fixdat
-file roms/parent.zip 1-8-ok.zip 1-8-ok.zip
-file-del roms/child.zip 1-8-ok.zip
-file-new "fixdat_ckmame test db (1).dat" fixdat-missing-parent.fixdat
+arguments -Fvc -D ../mamedb-merge-parent.db --create-fixdat
+file roms/parent.zip 1-8-ok.zip
+file roms/child.zip 1-8-ok.zip {}
+file "fixdat_ckmame {} test
 no-hashes roms parent.zip
 no-hashes roms child.zip
-stdout-data
+stdout
 In game grandparent:
 game grandparent                             : not a single file found
 In game parent:
@@ -15,6 +15,6 @@ rom  04.rom        size       4  crc d87f7e0c: missing
 rom  08.rom        size       8  crc 3656897d: correct
 In game child:
 game child                                   : correct
-file 08.rom        size       8  crc 3656897d: not used
+file 08.rom 
 delete unused file '08.rom'
-end-of-data
+end-of-inline-data

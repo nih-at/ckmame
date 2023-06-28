@@ -1,0 +1,26 @@
+[settings]
+features-files = @PROJECT_BINARY_DIR@/config.h
+test-input-directories = @CMAKE_CURRENT_SOURCE_DIR@
+program-directories = @PROJECT_BINARY_DIR@/regress
+    @PROJECT_BINARY_DIR@/src
+    @CMAKE_CURRENT_SOURCE_DIR@
+    /usr/local/bin
+default-program = ckmame
+default-stderr-replace = "^[^ :]*: " ""
+
+[comparators]
+zip.zip = zipcmp -pv
+.zip = zipcmp -v
+db.ckmamedb = compare-ckmamedb
+db.ckmamedb-unzipped = compare-ckmamedb -u
+
+[copiers]
+.zip = our-unzip
+# our-unzip ../1-4-ok.zip roms/1-4
+
+[comparator-preprocessors]
+db.dump = dbdump
+
+[variants]
+zip =
+dir = VariantDir

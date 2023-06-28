@@ -1,0 +1,4 @@
+description write list of missing games to file
+return 0
+args --missing-list missing-list --no-report-missing
+file missing-list missing-list.txt

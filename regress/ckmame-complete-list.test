@@ -1,8 +1,9 @@
 description write list of complete games to file
 return 0
-args --complete-list complete-list --no-report-missing
-file-data complete-list
+arguments --complete-list complete-list --no-report-missing
+file mame.db mame.db
+file complete-list <inline>
 baddump
 nogood
 norom
-end-of-data
+end-of-inline-data

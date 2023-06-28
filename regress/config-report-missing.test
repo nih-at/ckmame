@@ -1,15 +1,15 @@
 description test config in local directory is used, report missing ROMs
 return 0
-args 2-48 1-8
+arguments 2-48 1-8
 file roms/2-48.zip 1-4-ok.zip
 file-data .ckmamerc
 [global]
 report-missing = true
 verbose = true
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 In game 1-8:
 game 1-8                                     : not a single file found
 In game 2-48:
 rom  08.rom        size       8  crc 3656897d: missing
-end-of-data
+end-of-inline-data

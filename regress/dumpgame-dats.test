@@ -1,7 +1,7 @@
 description test dumpgame --dats
 return 0
 program dumpgame
-args -D ../mamedb-disk-many.db --dats
-stdout-data
+arguments -D ../mamedb-disk-many.db --dats
+stdout
 ckmame test db (1)
-end-of-data
+end-of-inline-data

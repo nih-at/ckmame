@@ -1,18 +1,18 @@
 description test header detector, remove duplicate (with header in extra and ROM set)
 features LIBXML2
 return 0
-file mame-detector.db mamedb-detector.db mamedb-detector.db
+file mame-detector.db mamedb-detector.db
 file roms/1-8.zip 1-8-header.zip
-file-del extra/1-8-header.zip 1-8-header.zip
+file extra/1-8-header.zip 1-8-header.zip {}
 no-hashes roms 1-8.zip
 detector-hashes skip-some-bytes 20070429 roms 1-8.zip
 detector-hashes skip-some-bytes 20070429 roms 1-8
-args -D mame-detector.db -Fvc -je extra 1-8
-stdout-data
+arguments -D mame-detector.db -Fvc -je extra 1-8
+stdout
 In game 1-8:
 game 1-8                                     : correct
 In archive extra/1-8-header.zip:
-file 08.rom        size      12  crc 35c97ad8: not used
+file 08.rom 
 delete unused file '08.rom'
 remove empty archive
-end-of-data
+end-of-inline-data

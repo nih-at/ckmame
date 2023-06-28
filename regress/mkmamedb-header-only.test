@@ -1,6 +1,6 @@
 description test mkmamedb database creation, header only (no games), ok
 return 0
 program mkmamedb
-args mamedb.dat
+arguments mamedb.dat
 file mamedb.dat mamedb-header-only.dat
-file-new mame.db mamedb-empty.dump
+file mame.db {} mamedb-empty.dump

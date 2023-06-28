@@ -1,16 +1,16 @@
 description test game with disk, disk is wrong and exists in garbage
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -Fvc disk
-file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file-del roms/disk/108-5.chd 12-1.chd
-file unknown/disk/108-5.chd 108-5.chd 108-5.chd
-file-new unknown/disk/108-5-000.chd 12-1.chd
+arguments -D ../mamedb-disk-many.db -Fvc disk
+file roms/disk.zip 1-4-ok.zip
+file roms/disk/108-5.chd 12-1.chd {}
+file unknown/disk/108-5.chd 108-5.chd
+file unknown/disk/108-5-000.chd {} 12-1.chd
 no-hashes roms disk.zip 04.rom
-stdout-data
+stdout
 In game disk:
 rom  04.rom        size       4  crc d87f7e0c: correct
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
 image 108-5.chd   : unknown
 move unknown file '108-5.chd'
-end-of-data
+end-of-inline-data

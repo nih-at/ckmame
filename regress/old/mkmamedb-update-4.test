@@ -1,0 +1,14 @@
+description only updated if the database changed - force
+return 0
+program mkmamedb
+args -f
+file dats/mame.dat mamedb-baddump.dat
+touch 1644506227 dats/mame.dat
+file output.db mame.db mamedb-baddump.dump
+file-new dats/.mkmamedb.db mkmamedb-datdb-7.dump
+file-data .ckmamerc
+[global]
+dat-directories = [ "dats" ]
+dats = [ "ckmame test db" ]
+rom-db = "output.db"
+end-of-data

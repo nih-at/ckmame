@@ -1,4 +1,4 @@
 description test incomplete game, doesn't move files from extra to saved
 return 0
-args -FvCje extra --no-report-fixable --no-report-missing 2-48
+arguments -FvCje extra --no-report-fixable --no-report-missing 2-48
 file extra/2-48.zip 1-4-ok.zip

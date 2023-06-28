@@ -1,14 +1,14 @@
 description test mkmamedb xml database creation, header only dat
 return 0
 program mkmamedb
-args --list-available-dats
+arguments --list-available-dats
 file dats/mamedb.xml mamedb-header-only-2.xml
 touch 1644506227 dats/mamedb.xml
-file-new dats/.mkmamedb.db mkmamedb-datdb-4.dump
+file dats/.mkmamedb.db {} mkmamedb-datdb-4.dump
 file-data .ckmamerc
 [global]
 dat-directories = [ "dats" ]
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 demo
-end-of-data
+end-of-inline-data

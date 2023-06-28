@@ -1,0 +1,9 @@
+description ignore macOS resource fork files
+return 0
+args -D ../mamedb-lost-parent-ok.db -vF
+file roms/._clone-8.zip CMakeLists.txt CMakeLists.txt
+file roms/.DS_Store CMakeLists.txt CMakeLists.txt
+stdout-data
+In game clone-8:
+game clone-8                                 : not a single file found
+end-of-data

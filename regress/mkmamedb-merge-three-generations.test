@@ -1,6 +1,6 @@
 description parent has ROMs with same CRC, grandparent also present
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.dat
-file mamedb.dat mamedb-merge-parent.dat mamedb-merge-parent.dat
-file-new mamedb-test.db mamedb-merge-parent.dump
+arguments -o mamedb-test.db mamedb.dat
+file mamedb.dat mamedb-merge-parent.dat
+file mamedb-test.db {} mamedb-merge-parent.dump

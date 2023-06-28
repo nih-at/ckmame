@@ -1,12 +1,12 @@
 description test single-rom game with bad dump but good disk
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -cv --report-summary 2-48 1-8 disk disk-2
-file roms/2-48.zip 1-4-ok.zip 1-4-ok.zip
-file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file roms/disk/108-5.chd 108-5.chd 108-5.chd
+arguments -D ../mamedb-disk-many.db -cv --report-summary 2-48 1-8 disk disk-2
+file roms/2-48.zip 1-4-ok.zip
+file roms/disk.zip 1-4-ok.zip
+file roms/disk/108-5.chd 108-5.chd
 no-hashes roms disk.zip
-stdout-data
+stdout
 In game 1-8:
 game 1-8                                     : not a single file found
 In game 2-48:
@@ -20,4 +20,4 @@ disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
 Games: 1 complete, 2 partial / 4
 ROMs:  3 / 5 (12 bytes / 28 bytes)
 Disks: 1 / 2
-end-of-data
+end-of-inline-data

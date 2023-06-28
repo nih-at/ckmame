@@ -1,0 +1,7 @@
+description test mkmamedb database creation from multiple input files
+return 0
+program mkmamedb
+args -o mamedb-test.db mamedb.dat mamedb-2.dat
+file mamedb.dat mamedb-disk-many.dat mamedb-disk-many.dat
+file mamedb-2.dat mamedb-2.dat mamedb-2.dat
+file-new mamedb-test.db mamedb-multi-dats.dump

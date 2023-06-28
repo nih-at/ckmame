@@ -1,14 +1,14 @@
 description test single-rom game (no parent), superfluous zip is inconsistent
 variants zip
 return 0
-args -Fvc 1-4
-file-del roms/1-4-super.zip 1-4-inconsistent.zip
-file-new roms/1-4.zip 1-4-ok.zip
-stdout-data
+arguments -Fvc 1-4
+file roms/1-4-super.zip 1-4-inconsistent.zip {}
+file roms/1-4.zip {} 1-4-ok.zip
+stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-super.zip/04.rom'
 add 'roms/1-4-super.zip/04.rom' as '04.rom'
 In archive roms/1-4-super.zip:
 delete used file '04.rom'
 remove empty archive
-end-of-data
+end-of-inline-data

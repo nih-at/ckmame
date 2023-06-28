@@ -1,19 +1,19 @@
 description only run if the database changed - changed
 return 0
-args --only-if-database-updated 1-4
+arguments --only-if-database-updated 1-4
 file dats/mame.dat mame-v2.dat
 touch 1644506227 dats/mame.dat
 file output.db mame.db mame-v2.dump
-file-new dats/.mkmamedb.db mkmamedb-datdb-6.dump
+file dats/.mkmamedb.db {} mkmamedb-datdb-6.dump
 ckmamedb-after dats ckmamedb-empty.dump
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]
 dats = [ "ckmame test db" ]
 rom-db = "output.db"
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 ckmame test db (1 -> 2)
 In game 1-4:
 game 1-4                                     : not a single file found
-end-of-data
+end-of-inline-data

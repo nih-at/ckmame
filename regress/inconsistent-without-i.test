@@ -1,9 +1,9 @@
 description test single-rom game (no parent), zip is inconsistent, without -i
 variants zip
 return 0
-args -Fvc 1-4
-file roms/1-4.zip 1-4-inconsistent.zip 1-4-inconsistent.zip
-stdout-data
+arguments -Fvc 1-4
+file roms/1-4.zip 1-4-inconsistent.zip
+stdout
 In game 1-4:
 game 1-4                                     : correct
-end-of-data
+end-of-inline-data

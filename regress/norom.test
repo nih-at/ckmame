@@ -1,7 +1,7 @@
 description test no-rom game
 return 0
-args -Fvc norom
-stdout-data
+arguments -Fvc norom
+stdout
 In game norom:
 game norom                                   : correct
-end-of-data
+end-of-inline-data

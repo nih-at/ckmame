@@ -1,0 +1,30 @@
+description test mkmamedb database creation from CMPro file with errors
+return 0
+program mkmamedb
+args -o mamedb-test.db mamedb.cmpro-bad
+return 1
+file mamedb.cmpro-bad mamedb.cmpro-bad mamedb.cmpro-bad
+stderr-data
+mamedb.cmpro-bad:9: game without name
+mamedb.cmpro-bad:11: ignoring unknown token '('
+mamedb.cmpro-bad:18: unexpected token ')'
+mamedb.cmpro-bad:21: ignoring unknown token 'is'
+mamedb.cmpro-bad:21: ignoring unknown token 'missing'
+mamedb.cmpro-bad:21: ignoring unknown token 'quotes'
+mamedb.cmpro-bad:24: expected '(', got ''
+mamedb.cmpro-bad:25: unexpected token '('
+mamedb.cmpro-bad:31: unexpected token 'with newline'
+mamedb.cmpro-bad:32: game without name
+mamedb.cmpro-bad:36: game without name
+mamedb.cmpro-bad:40: game without name
+mamedb.cmpro-bad:44: game without name
+mamedb.cmpro-bad:48: game without name
+mamedb.cmpro-bad:52: game without name
+mamedb.cmpro-bad:64: expected 'name', got 'crc32'
+mamedb.cmpro-bad:64: ignoring unknown token '12345678'
+mamedb.cmpro-bad:64: ignoring unknown token 'size'
+mamedb.cmpro-bad:64: ignoring unknown token '8'
+mamedb.cmpro-bad:64: ignoring unknown token 'name'
+mamedb.cmpro-bad:64: ignoring unknown token '08.rom'
+mamedb.cmpro-bad:64: ignoring unknown token ')'
+end-of-data

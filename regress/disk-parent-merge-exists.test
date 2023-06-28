@@ -1,16 +1,16 @@
 description two games that use the same disk but under different names, both copies exist
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -Fvc disk diskchild
-file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file roms/disk/108-5.chd 108-5.chd 108-5.chd
-file-del roms/diskchild/108-5c.chd 108-5.chd
+arguments -D ../mamedb-disk-many.db -Fvc disk diskchild
+file roms/disk.zip 1-4-ok.zip
+file roms/disk/108-5.chd 108-5.chd
+file roms/diskchild/108-5c.chd 108-5.chd {}
 no-hashes roms disk.zip 04.rom
-stdout-data
+stdout
 In game disk:
 game disk                                    : correct
 In game diskchild:
 game diskchild                               : correct
 image 108-5c.chd  : not used
 delete unused file '108-5c.chd'
-end-of-data
+end-of-inline-data

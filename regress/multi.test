@@ -1,15 +1,15 @@
 description test two single-rom games (no parent), both with unused files
 return 0
-args -Fvc 1-4 1-8
+arguments -Fvc 1-4 1-8
 file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
 file roms/1-8.zip 2-48-ok.zip 1-8-ok.zip
-stdout-data
+stdout
 In game 1-4:
 game 1-4                                     : correct
-file 08.rom        size       8  crc 3656897d: not used
+file 08.rom 
 delete unused file '08.rom'
 In game 1-8:
 game 1-8                                     : correct
-file 04.rom        size       4  crc d87f7e0c: not used
+file 04.rom 
 delete unused file '04.rom'
-end-of-data
+end-of-inline-data

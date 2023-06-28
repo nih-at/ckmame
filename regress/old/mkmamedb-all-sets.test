@@ -1,0 +1,25 @@
+description run mkmamedb for multiple sets
+return 0
+program mkmamedb
+args --all-sets
+file dats/mame.dat mame.dat
+touch 1644506227 dats/mame.dat
+file dats/mamedb.xml mamedb-mess.xml
+touch 1648812916 dats/mamedb.xml
+file output.db mame.db
+file output2.db mamedb-mess.dump
+file-new dats/.mkmamedb.db mkmamedb-datdb-8.dump
+file-data .ckmamerc
+[global]
+dat-directories = [ "dats" ]
+["non-standard set 1"]
+dats = [ "ckmame test db" ]
+rom-db = "output.db"
+["non-standard set 2"]
+dats = [ "aes" ]
+rom-db = "output2.db"
+end-of-data
+stdout-data
+Set non-standard set 2:
+aes (-> 1648812916)
+end-of-data

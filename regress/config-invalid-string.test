@@ -3,7 +3,7 @@ return 1
 file-data .ckmamerc
 [global]
 rom-directory = [ "an", "array" ]
-end-of-data
-stderr-data
+end-of-inline-data
+stderr
 .ckmamerc:global.rom-directory: expected string
-end-of-data
+end-of-inline-data

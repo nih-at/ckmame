@@ -1,9 +1,9 @@
 description test game with 0 byte rom, zip is ok
 return 0
-args -Fvc zero
+arguments -Fvc zero
 file roms/zero.zip zero-ok.zip
 
-stdout-data
+stdout
 In game zero:
 game zero                                    : correct
-end-of-data
+end-of-inline-data

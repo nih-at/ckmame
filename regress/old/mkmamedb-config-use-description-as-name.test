@@ -1,0 +1,17 @@
+description use description as name (via config)
+return 0
+program mkmamedb
+file dats/mame.dat mame.dat
+touch 1644506227 dats/mame.dat
+file-new output.db mame-use-name-as-description.dump
+file-new dats/.mkmamedb.db mkmamedb-datdb-5.dump
+file-data .ckmamerc
+[global]
+dat-directories = [ "dats" ]
+rom-db = "output.db"
+[global.dats]
+"ckmame test db" = { "use-description-as-name" = true }
+end-of-data
+stdout-data
+ckmame test db (-> 1)
+end-of-data

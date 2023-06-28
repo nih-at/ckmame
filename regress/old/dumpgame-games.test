@@ -1,0 +1,34 @@
+description test dumpgame --games
+return 0
+program dumpgame
+args -D ../mamedb-disk-many.db --games
+stdout-data
+1-4
+1-8
+1-8a
+2-44
+2-48
+2-4a
+baddump
+clone-8
+deadbeef
+deadbeefchild
+deadclonedbeef
+dir-in-rom-name
+disk
+disk-2
+disk-3
+disk-nogood
+disk-nogood2
+disk-same
+diskchild
+diskgood-romnogood
+many
+nogood
+nogood-2
+nogoodclone
+norom
+parent-4
+zero
+zero-4
+end-of-data

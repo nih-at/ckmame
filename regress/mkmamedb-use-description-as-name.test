@@ -1,19 +1,19 @@
 description use description as name
 return 0
 program mkmamedb
-args --use-description-as-name
+arguments --use-description-as-name
 file dats/mame.dat mame.dat
 touch 1644506227 dats/mame.dat
-file-new output.db mame-use-name-as-description.dump
-file-new dats/.mkmamedb.db mkmamedb-datdb-5.dump
+file output.db {} mame-use-name-as-description.dump
+file dats/.mkmamedb.db {} mkmamedb-datdb-5.dump
 file-data .ckmamerc
 [global]
 dat-directories = [ "dats" ]
 dats = [ "ckmame test db" ]
 rom-db = "output.db"
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 ckmame test db (-> 1)
-end-of-data
-stderr-data
-end-of-data
+end-of-inline-data
+stderr
+end-of-inline-data

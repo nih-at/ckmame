@@ -1,7 +1,7 @@
 description read sets list from file
 variants zip
 return 0
-args --list-sets
+arguments --list-sets
 file-data .ckmamerc
 [global]
 sets = [ "standard set 1", "standard set 2" ]
@@ -10,16 +10,16 @@ sets-file = "sets-list"
 verbose = true
 ["non-standard set 2"]
 report-missing = false
-end-of-data
+end-of-inline-data
 file-data sets-list
 sets-list-set 1
 sets-list-set 2
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 non-standard set 1
 non-standard set 2
 sets-list-set 1
 sets-list-set 2
 standard set 1
 standard set 2
-end-of-data
+end-of-inline-data

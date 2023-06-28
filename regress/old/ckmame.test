@@ -1,0 +1,3 @@
+description test nothing to do, just check if ckmame runs
+return 0
+args --no-report-missing

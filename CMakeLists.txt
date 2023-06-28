@@ -8,6 +8,8 @@ project(ckmame
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
+option(BUILD_REGRESS "Build regression tests" ON)
+
 include(CheckFunctionExists)
 include(CheckIncludeFiles)
 #include(CheckSymbolExists)
@@ -108,13 +110,23 @@ if(MSVC)
   add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 endif(MSVC)
 
+find_program(NIHTEST nihtest)
+
+if(BUILD_REGRESS AND NOT NIHTEST)
+  message(WARNING "-- nihtest not found, regression testing disabled")
+  set(BUILD_REGRESS OFF)
+endif()
+
+if(BUILD_REGRESS)
+  add_subdirectory(regress)
+endif()
+
 # Testing
 enable_testing()
 
 # Targets
 add_subdirectory(docs)
 add_subdirectory(src)
-add_subdirectory(regress)
 
 # write out config file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake-config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)

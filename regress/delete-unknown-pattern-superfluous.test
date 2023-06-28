@@ -1,12 +1,12 @@
 description test single-rom game (no parent), superfluous file matches delete-unknown-pattern, remove it
 return 0
-args -Fvc --delete-unknown-pattern garb* -D ../mamedb-lost-parent-ok.db
-file-del roms/unknown.zip garbage.zip
-stdout-data
+arguments -Fvc --delete-unknown-pattern garb* -D ../mamedb-lost-parent-ok.db
+file roms/unknown.zip garbage.zip {}
+stdout
 In game clone-8:
 game clone-8                                 : not a single file found
 In archive roms/unknown.zip:
-file garbage       size       8  crc 01888242: unknown
+file garbage 
 delete unknown file 'garbage' (matching delete-unknown-pattern)
 remove empty archive
-end-of-data
+end-of-inline-data

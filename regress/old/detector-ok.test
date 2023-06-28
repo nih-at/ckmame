@@ -1,0 +1,13 @@
+description test header detector
+features LIBXML2
+return 0
+file mame-detector.db mamedb-detector.db mamedb-detector.db
+file roms/1-8.zip 1-8-header.zip 1-8-header.zip
+no-hashes roms 1-8.zip
+detector-hashes skip-some-bytes 20070429 roms 1-8.zip
+detector-hashes skip-some-bytes 20070429 roms 1-8
+args -D mame-detector.db -Fvc 1-8
+stdout-data
+In game 1-8:
+game 1-8                                     : correct
+end-of-data

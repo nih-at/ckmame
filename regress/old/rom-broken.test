@@ -1,0 +1,14 @@
+description test game (no parent), zip is partially broken
+variants zip
+return 0
+args -Fvc 2-48
+file roms/2-48.zip 2-48-broken.zip 2-48-broken.zip
+stdout-data
+In game 2-48:
+rom  04.rom        size       4  crc d87f7e0c: correct
+rom  08.rom        size       8  crc 3656897d: missing
+file 08.rom        size       8  crc 3656897d: broken
+end-of-data
+stderr-data
+roms/2-48.zip: 08.rom: CRC error: bf933f81 != 3656897d
+end-of-data

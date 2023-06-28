@@ -1,6 +1,6 @@
 description dat file has no size
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.dat
+arguments -o mamedb-test.db mamedb.dat
 file mamedb.dat mamedb-size-empty.dat
-file-new mamedb-test.db mamedb-size-empty.dump
+file mamedb-test.db {} mamedb-size-empty.dump

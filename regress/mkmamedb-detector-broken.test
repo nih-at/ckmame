@@ -1,10 +1,10 @@
 description test mkmamedb database creation fails with error parsing detector
 return 1
 program mkmamedb
-args mamedb-detector-broken.xml
+arguments mamedb-detector-broken.xml
 file detector-broken.xml detector-broken.xml
 file mamedb-detector-broken.xml mamedb-detector-broken.xml
-stderr-data
+stderr
 detector-broken.xml:8: invalid value: odd number of hex digits
 mamedb-detector-broken.xml:15: warning: two different ROMs with same name '08.rom', renamed to '08 (1).rom'
-end-of-data
+end-of-inline-data

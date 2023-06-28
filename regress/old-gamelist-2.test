@@ -1,10 +1,10 @@
 description test 2 rom game (no parent), zip is correct, game is in old, create missing list
 return 0
-args -O ../mamedb-small.db -D ../mamedb-two-games.db -Fvc --missing-list missing-list
-file-new missing-list gamelist-1-8
-stdout-data
+arguments -O ../mamedb-small.db -D ../mamedb-two-games.db -Fvc --missing-list missing-list
+file missing-list {} gamelist-1-8
+stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in old '1-4'
 In game 1-8:
 game 1-8                                     : not a single file found
-end-of-data
+end-of-inline-data

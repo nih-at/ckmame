@@ -1,11 +1,11 @@
 description test 32-rom game (no parent), zip has wrong name
 return 0
 # ulimit n 16
-args -Fvc many
-file-del roms/wrongname.zip many.zip
-file-new roms/many.zip many.zip
+arguments -Fvc many
+file roms/wrongname.zip many.zip {}
+file roms/many.zip {} many.zip
 no-hashes roms many.zip
-stdout-data
+stdout
 In game many:
 rom  00            size       2  crc b84614a0: is in 'roms/wrongname.zip/00'
 rom  01            size       2  crc cf412436: is in 'roms/wrongname.zip/01'
@@ -105,4 +105,4 @@ delete used file '1D'
 delete used file '1E'
 delete used file '1F'
 remove empty archive
-end-of-data
+end-of-inline-data

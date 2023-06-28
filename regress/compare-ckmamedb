@@ -1,0 +1,315 @@
+#!/opt/homebrew/bin/python3
+import argparse
+import enum
+import os
+import re
+import shlex
+import stat
+import sys
+import nihtest.Command
+import nihtest.CompareArrays
+
+table_archive = ">>> table archive (archive_id, name, mtime, size, file_type)"
+table_detector = ">>> table detector (detector_id, name, version)"
+table_file = ">>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)"
+
+
+class Table(enum.Enum):
+    ARCHIVE = enum.auto()
+    DETECTOR = enum.auto()
+    FILE = enum.auto()
+
+
+def is_variant(variant):
+    if "NIHTEST_VARIANT" in os.environ:
+        return os.environ["NIHTEST_VARIANT"] == variant
+    else:
+        return False
+
+
+re_atrribute = re.compile("^([^=]+)=(.*)")
+
+status_names = {
+    "baddump": 1,
+    "nodump": 2
+}
+
+
+class File:
+    def __init__(self, name, index=0, mtime="null", status=0, size="-1", crc="<null>", md5="null", sha1="null", detector_id=0):
+        self.name = name
+        self.index = index
+        self.status = status
+        self.size = size
+        self.crc = crc
+        self.md5 = md5
+        self.sha1 = sha1
+        self.mtime = mtime
+        self.detector_id = detector_id
+
+    def row(self, archive_id):
+        return f"{archive_id}|{self.index}|{self.name}|{self.mtime}|{self.status}|{self.size}|{self.crc}|<{self.md5}>|<{self.sha1}>|{self.detector_id}"
+
+
+class Archive:
+    def __init__(self, id, name, mtime="<null>", size=0, file_type=0):
+        self.id = int(id)
+        self.name = name
+        self.mtime = mtime
+        self.size = size
+        self.files = []
+        self.file_type = file_type
+
+    def add_file(self, file):
+        file.index = len(self.files)
+        self.files.append(file)
+
+    def archive_row(self):
+        return f"{self.id}|{self.name}|{self.mtime}|{self.size}|{self.file_type}"
+
+    def file_rows(self):
+        return map(lambda f: f.row(self.id), self.files)
+
+
+class CkmameDB:
+    def __init__(self):
+        self.archives = {}
+        self.archive_names = {}
+        self.next_archive_id = 0
+
+    def add_archive(self, archive):
+        self.archives[archive.name] = archive
+        self.archive_names[archive.id] = archive.name
+        if archive.id >= self.next_archive_id:
+            self.next_archive_id = archive.id + 1
+
+    def get_archive_by_id(self, id):
+        if id in self.archive_names:
+            return self.archives[self.archive_names[id]]
+        else:
+            return None
+
+    def get_archive_id(self, name):
+        if name in self.archives:
+            return self.archives[name].id
+        else:
+            id = self.next_archive_id
+            self.next_archive_id += 1
+            return id
+
+    def dump(self):
+        lines = []
+        archives = sorted(self.archives.values(), key=lambda a: a.id)
+
+        lines.append(table_archive)
+        for archive in archives:
+            lines.append(archive.archive_row())
+
+        lines.append(table_detector)
+        # TODO: add detectors
+
+        lines.append(table_file)
+        for archive in archives:
+            lines += archive.file_rows()
+
+        return lines
+
+
+class CkmameDBComparator:
+    def __init__(self, filename):
+        self.directory = os.path.dirname(filename)
+        self.got_db = None
+        self.got_dump = []
+        self.expected_db = None
+        self.hash_exceptions = {}
+        self.process_stdin()
+        self.read_ckmamedb(filename)
+        self.read_directory()
+        compare = nihtest.CompareArrays.CompareArrays(self.got_dump, self.expected_db.dump())
+        diffs = compare.get_diff()
+        if len(diffs) > 0:
+            print(os.linesep.join(diffs))
+            sys.exit(1)
+        else:
+            sys.exit(0)
+
+    def process_stdin(self):
+        for line in sys.stdin.readlines():
+            words = shlex.split(line)
+            # TODO: backslash escapes
+            if words[0] == "hashes":
+                self.add_hash_exception(words[1:])
+            else:
+                # TODO: error
+                sys.exit(2)
+
+    def add_hash_exception(self, arguments):
+        archive = arguments[0]
+        # TODO: strip .zip for variant unzipped
+        file = arguments[1]
+        hashes = {"crc", "md5", "sha1"}
+        for spec in arguments[2].split(","):
+            if spec == "archive":
+                hashes = {"crc"} # TODO: {} for unzipped
+            elif spec == "none":
+                hashes = {}
+            elif spec == "all":
+                hashes = {"crc", "md5", "sha1"}
+            elif spec == "crc" or spec == "md5" or spec == "sha1":
+                hashes.add(spec)
+            elif spec == "-crc" or spec == "-md5" or spec == "-sha1":
+                hashes.remove(spec[1:])
+        self.hash_exceptions[f"{archive}/{file}"] = hashes
+
+    def read_ckmamedb(self, filename):
+        command = nihtest.Command.Command("dbdump", [filename])
+        command.run()
+        if command.exit_code != 0:
+            print("dbdump failed:")
+            print(os.linesep.join(command.stderr))
+            # TODO: error if command.exit_code != 0
+
+        table = None
+        db = CkmameDB()
+
+        for line in command.stdout:
+            if line.startswith(">>> "):
+                if line == table_archive:
+                    table = Table.ARCHIVE
+                elif line == table_detector:
+                    table = Table.DETECTOR
+                elif line == table_file:
+                    table = Table.FILE
+                else:
+                    table = None
+                    # TODO: error: unknown table
+            else:
+                fields = line.split("|")
+                if table is None:
+                    continue
+                    # TODO: error: line outside table
+                elif table == Table.ARCHIVE:
+                    self.process_archive(db, fields)
+                elif table == Table.DETECTOR:
+                    self.process_detector(db, fields)
+                elif table == Table.FILE:
+                    self.process_file(db, fields)
+
+        self.got_db = db
+        self.got_dump = command.stdout
+
+    def process_archive(self, db, fields):
+        db.add_archive(Archive(fields[0], fields[1], fields[2], fields[3], fields[4]))
+
+    def process_detector(self, db, fields):
+        0 == 0
+        # TODO
+
+    def process_file(self, db, fields):
+        archive = db.get_archive_by_id(int(fields[0]))
+        if archive is None:
+            # TODO error
+            0 == 0
+        else:
+            archive.files.append(File(fields[2], fields[1], fields[3], fields[4], fields[5], fields[6], fields[7], fields[8], fields[9]))
+
+    def read_directory(self):
+        arguments = ["-o", "/dev/stdout", "--runtest"]
+        if is_variant("dir"):
+            arguments.append("--roms-unzipped")
+        arguments.append(self.directory)
+        command = nihtest.Command.Command("mkmamedb", arguments)
+        command.run()
+        if command.exit_code != 0:
+            print("mkmamedb failed:")
+            print(os.linesep.join(command.stderr))
+            # TODO: error if command.exit_code != 0
+
+        db = CkmameDB()
+        archive = None
+        prefix = ""
+
+        for line in command.stdout:
+            if line[0] == '#':
+                continue
+            words = line.split(" ")
+            if len(words) < 2:
+                # TODO: invalid line
+                continue
+
+            name = words[0]
+            if name[0:2] == "./":
+                name = name[2:]
+            name = destrsvis(name)
+            if name == ".":
+                continue
+
+            attributes = {}
+            for attribute in words[1:]:
+                match = re.match(re_atrribute, attribute)
+                # TODO: error if not matched
+                attributes[match.group(1)] = match.group(2)
+
+            if attributes["type"] == "dir":
+                prefix = name + "/"
+                archive_name = name if name != "" else "."
+
+                info = os.stat(os.path.join(self.directory, name))
+
+                archive = Archive(self.got_db.get_archive_id(archive_name), archive_name,
+                                  int(info.st_mtime) if name != "" else "<null>",
+                                  info.st_size if stat.S_ISREG(info.st_mode) else 0)
+                db.add_archive(archive)
+            elif attributes["type"] == "file":
+                if archive is None:
+                    continue
+
+                if name[0:len(prefix)] == prefix:
+                    name = name[len(prefix):]
+
+                hashes = self.hashes(archive_name, name)
+
+                file = File(name)
+                if "size" in attributes:
+                    file.size = attributes["size"]
+                if "md5" in attributes and "md5" in hashes:
+                    file.md5 = attributes["md5"]
+                if "sha1" in attributes and "sha1" in hashes:
+                    file.sha1 = attributes["sha1"]
+                if "status" in attributes:
+                    if attributes["status"] in status_names:
+                        file.status = status_names[attributes["status"]]
+                    # TODO: else: error
+                file.mtime = attributes["time"]
+                if "crc" in attributes and "crc" in hashes:
+                    file.crc = int(attributes["crc"], 16)
+                archive.add_file(file)
+
+        self.expected_db = db
+
+    def hashes(self, archive_name, file_name):
+        key = f"{archive_name}/{file_name}"
+        if key in self.hash_exceptions:
+            return self.hash_exceptions[key]
+        else:
+            return {"crc", "md5", "sha1"}
+
+def destrsvis(str):
+    # TODO
+    return str
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog='compare-ckmamedb',
+        description="compare .ckmamedb files")
+    parser.add_argument('ckmamedb', help='.ckmamedb file')
+
+    args = parser.parse_args()
+
+    comparator = CkmameDBComparator(args.ckmamedb)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

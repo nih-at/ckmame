@@ -1,0 +1,10 @@
+description test mkmamedb database creation, unknown input
+return 1
+program mkmamedb
+args unknown.txt
+file-data unknown.txt
+this is just a text file that is nothing like a dat
+end-of-data
+stderr-data
+unknown.txt: unknown dat format
+end-of-data

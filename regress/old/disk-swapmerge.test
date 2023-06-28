@@ -1,0 +1,18 @@
+description test two games where child has parents merged disk under its name
+variants zip
+return 0
+args -D ../mamedb-disk-many.db -Fvc disk diskchild
+file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
+file-new roms/disk/108-5.chd 108-5.chd
+file-del roms/diskchild/108-5c.chd 108-5.chd
+no-hashes roms disk.zip 04.rom
+stdout-data
+In game disk:
+rom  04.rom        size       4  crc d87f7e0c: correct
+disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/diskchild/108-5c.chd'
+add 'roms/diskchild/108-5c.chd' as '108-5.chd'
+In game diskchild:
+game diskchild                               : correct
+image 108-5c.chd  : not used
+delete unused file '108-5c.chd'
+end-of-data

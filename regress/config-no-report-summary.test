@@ -1,6 +1,6 @@
 description test all games, no files found, do not report summary
 return 0
-args -D ../mamedb-merge-parent.db
+arguments -D ../mamedb-merge-parent.db
 file roms/grandparent.zip 1-4-ok.zip
 file roms/parent.zip 1-8-ok.zip
 no-hashes roms grandparent.zip
@@ -8,4 +8,4 @@ no-hashes roms parent.zip
 file-data .ckmamerc
 [global]
 report-summary = false
-end-of-data
+end-of-inline-data

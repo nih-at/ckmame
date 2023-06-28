@@ -1,7 +1,7 @@
 description test mkmamedb --no-directory-cache
 return 0
 program mkmamedb
-args --no-directory-cache -F cm -o output.dat roms
+arguments --no-directory-cache -F cm -o output.dat roms
 ckmamedb-after roms ckmamedb-empty.dump
 file output.dat mamedb-small.dat
 file roms/1-4.zip 1-4-ok.zip

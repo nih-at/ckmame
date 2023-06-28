@@ -1,15 +1,15 @@
 description two games that use the same disk under the same name
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -Fvc disk diskgood-romnogood
-file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
-file roms/disk/108-5.chd 108-5.chd 108-5.chd
-file-new roms/diskgood-romnogood/108-5.chd 108-5.chd
+arguments -D ../mamedb-disk-many.db -Fvc disk diskgood-romnogood
+file roms/disk.zip 1-4-ok.zip
+file roms/disk/108-5.chd 108-5.chd
+file roms/diskgood-romnogood/108-5.chd {} 108-5.chd
 no-hashes roms disk.zip 04.rom
-stdout-data
+stdout
 In game disk:
 game disk                                    : correct
 In game diskgood-romnogood:
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/disk/108-5.chd'
 add 'roms/disk/108-5.chd' as '108-5.chd'
-end-of-data
+end-of-inline-data

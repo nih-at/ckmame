@@ -1,6 +1,6 @@
 description test mkmamedb database creation, duplicate nodump ROM & sample
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.dat
-file mamedb.dat mamedb-duplicate-nodump.dat mamedb-duplicate-nodump.dat
-file-new mamedb-test.db mamedb-duplicate-nodump.dump
+arguments -o mamedb-test.db mamedb.dat
+file mamedb.dat mamedb-duplicate-nodump.dat
+file mamedb-test.db {} mamedb-duplicate-nodump.dump

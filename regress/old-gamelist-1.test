@@ -1,7 +1,7 @@
 description test 2 rom game (no parent), zip is correct, one game is in old, do not create missing list since not checking fullset
 return 0
-args -O ../mamedb-lost-parent-ok.db -Fvc --missing-list missing-list 1-4
-stdout-data
+arguments -O ../mamedb-lost-parent-ok.db -Fvc --missing-list missing-list 1-4
+stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in old 'clone-8'
-end-of-data
+end-of-inline-data

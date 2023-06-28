@@ -1,8 +1,8 @@
 description test dumpgame --games
 return 0
 program dumpgame
-args -D ../mamedb-disk-many.db --games
-stdout-data
+arguments -D ../mamedb-disk-many.db --games
+stdout
 1-4
 1-8
 1-8a
@@ -31,4 +31,4 @@ norom
 parent-4
 zero
 zero-4
-end-of-data
+end-of-inline-data

@@ -3,14 +3,14 @@ variants zip
 return 0
 preload fwrite.so
 setenv RENAME_FAILS roms/108-5.chd
-args -Fvj -D ../mamedb-disk.db -e extradir
-file-del extradir/1234.chd 108-5.chd
-file-new roms/disk/108-5.chd 108-5.chd
-stdout-data
+arguments -Fvj -D ../mamedb-disk.db -e extradir
+file extradir/1234.chd 108-5.chd {}
+file roms/disk/108-5.chd {} 108-5.chd
+stdout
 In game disk:
 rom  08.rom        size       8  crc 3656897d: missing
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'extradir/1234.chd'
 add 'extradir/1234.chd' as '108-5.chd'
 In archive extradir:
 delete used file '1234.chd'
-end-of-data
+end-of-inline-data

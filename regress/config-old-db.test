@@ -1,12 +1,12 @@
 description test 2 rom game, zip is correct, one rom is in old, remove it
 return 0
-args -F 2-4a
+arguments -F 2-4a
 file roms/2-4a.zip 2-4a-ok.zip 1-a-ok.zip
 file-data .ckmamerc
 [global]
 old-db = "../mamedb-lost-parent-ok.db"
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 In game 2-4a:
-file 04.rom        size       4  crc d87f7e0c: duplicate
-end-of-data
+file 04.rom 
+end-of-inline-data

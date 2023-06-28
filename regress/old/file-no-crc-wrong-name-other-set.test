@@ -1,0 +1,10 @@
+description test 1-rom game, file in archive has wrong name in other archive
+return 0
+args -Fvc 1-4
+file-del roms/1-8.zip 1-4-misnamed.zip
+file-new roms/1-4.zip 1-4-ok.zip
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: wrong name (04)
+rename '04' to '04.rom'
+end-of-data

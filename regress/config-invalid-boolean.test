@@ -3,7 +3,7 @@ return 1
 file-data .ckmamerc
 [global]
 report-missing = "something"
-end-of-data
-stderr-data
+end-of-inline-data
+stderr
 .ckmamerc:global.report-missing: expected boolean
-end-of-data
+end-of-inline-data

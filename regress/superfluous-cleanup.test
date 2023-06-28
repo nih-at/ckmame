@@ -1,30 +1,30 @@
 description test cleanup of superfluous files
 return 0
-args -O ../mamedb-one-game-two-roms.db -D ../mamedb-lost-parent-ok.db -Fv
+arguments -O ../mamedb-one-game-two-roms.db -D ../mamedb-lost-parent-ok.db -Fv
 file roms/clone-8.zip 1-4-ok.zip 1-8-ok.zip
-file-del roms/parent.zip 2-4a-ok.zip
-file-del roms/1-8.zip 1-8-ok.zip
-file-del roms/anothercopy.zip 1-4-ok.zip
-file-new unknown/parent.zip 1-a-ok.zip
+file roms/parent.zip 2-4a-ok.zip {}
+file roms/1-8.zip 1-8-ok.zip {}
+file roms/anothercopy.zip 1-4-ok.zip {}
+file unknown/parent.zip {} 1-a-ok.zip
 no-hashes roms clone-8.zip
 no-hashes unknown parent.zip 0a.rom
-stdout-data
+stdout
 In game clone-8:
 rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
-file 04.rom        size       4  crc d87f7e0c: duplicate
+file 04.rom 
 delete duplicate file '04.rom'
 add 'roms/1-8.zip/08.rom' as '08.rom'
 In archive roms/1-8.zip:
 delete used file '08.rom'
 remove empty archive
 In archive roms/anothercopy.zip:
-file 04.rom        size       4  crc d87f7e0c: duplicate
+file 04.rom 
 delete duplicate file '04.rom'
 remove empty archive
 In archive roms/parent.zip:
-file 04.rom        size       4  crc d87f7e0c: duplicate
-file 0a.rom        size      10  crc 0b4a4cde: unknown
+file 04.rom 
+file 0a.rom 
 delete duplicate file '04.rom'
 move unknown file '0a.rom'
 remove empty archive
-end-of-data
+end-of-inline-data

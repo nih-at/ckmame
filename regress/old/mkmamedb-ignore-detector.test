@@ -1,0 +1,16 @@
+description test mkmamedb --list-available-dats, ignore detector XML file
+return 0
+program mkmamedb
+args --list-available-dats
+file dats/mamedb-disk.dat mamedb-disk.dat
+file dats/somedetector.xml detector.xml
+touch 1643902216 dats/mamedb-disk.dat
+touch 1643903114 dats/somedetector.xml
+file-new dats/.mkmamedb.db mkmamedb-db-ignore-detector.dump
+file-data .ckmamerc
+[global]
+dat-directories = [ "dats" ]
+end-of-data
+stdout-data
+game-with-disk
+end-of-data

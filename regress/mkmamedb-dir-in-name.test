@@ -1,6 +1,6 @@
 description test mkmamedb database creation, path in file name
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.dat
-file mamedb.dat mamedb-dir-in-name.dat mamedb-dir-in-name.dat
-file-new mamedb-test.db mamedb-dir-in-name.dump
+arguments -o mamedb-test.db mamedb.dat
+file mamedb.dat mamedb-dir-in-name.dat
+file mamedb-test.db {} mamedb-dir-in-name.dump

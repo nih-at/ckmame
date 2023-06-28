@@ -1,0 +1,18 @@
+description unused chd in top level
+variants zip
+return 0
+args -D ../mamedb-disk.db -Fv
+file roms/disk.zip 1-8-ok.zip 1-8-ok.zip
+file roms/disk/108-5.chd 108-5.chd 108-5.chd
+file-del roms/unknown-game/unknown.chd 108-5.chd
+file-del roms/toplevel.chd 108-5.chd
+no-hashes roms disk.zip
+stdout-data
+In archive roms:
+image toplevel.chd: not used
+delete unused file 'toplevel.chd'
+In archive roms/unknown-game:
+image unknown.chd : not used
+delete unused file 'unknown.chd'
+remove empty archive
+end-of-data

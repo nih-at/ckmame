@@ -1,0 +1,11 @@
+description test single-rom game (no parent), correct ckmame db exists
+variants dir
+return 0
+args -D ../mamedb-small.db -jFvc
+ckmamedb-before roms ckmamedb-1-4-ok.dump
+file roms/1-4.zip 1-4-ok.zip 1-4-ok.zip
+touch 1047614102 roms/1-4/04.rom
+stdout-data
+In game 1-4:
+game 1-4                                     : correct
+end-of-data

@@ -1,9 +1,9 @@
 description parent has ROM with same name, different CRC (XML format)
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.xml
-file mamedb.xml mamedb-parent-crcdiff-mame.xml mamedb-parent-crcdiff-mame.xml
-file-new mamedb-test.db mamedb-parent-crcdiff-mame.dump
-stderr-data
+arguments -o mamedb-test.db mamedb.xml
+file mamedb.xml mamedb-parent-crcdiff-mame.xml
+file mamedb-test.db {} mamedb-parent-crcdiff-mame.dump
+stderr
 mamedb.xml: In game 'clone': 'child-1': merged from 'parent-1', but ancestors don't contain matching file
-end-of-data
+end-of-inline-data

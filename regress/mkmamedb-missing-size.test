@@ -1,9 +1,9 @@
 description test mkmamedb database creation, size missing
 return 1
 program mkmamedb
-args -o mamedb-test.db mamedb.dat
+arguments -o mamedb-test.db mamedb.dat
 file mamedb.dat mamedb-missing-size.dat
-stderr-data
+stderr
 mamedb.dat:11: invalid size 'crc32'
 mamedb.dat:11: warning: ignoring unknown token 'd87f7e0c'
-end-of-data
+end-of-inline-data

@@ -1,12 +1,12 @@
 description test single-rom game (no parent), correct partial ckmame db exists, other game removed
 variants dir
 return 0
-args -jFvc 1-8
+arguments -jFvc 1-8
 ckmamedb-before roms ckmamedb-1-4-ok.dump
 ckmamedb-after roms ckmamedb-1-4-ok-1-8-ok.dump
-file roms/1-8.zip 1-8-ok.zip 1-8-ok.zip
+file roms/1-8.zip 1-8-ok.zip
 touch 1422359888 roms/1-8.zip
-stdout-data
+stdout
 In game 1-8:
 game 1-8                                     : correct
-end-of-data
+end-of-inline-data

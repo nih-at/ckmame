@@ -1,13 +1,13 @@
 description test single-rom game (no parent), file is in search dir from config, keep
 return 0
-args -F 1-4
-file search/14.zip 1-4-ok.zip 1-4-ok.zip
-file-new roms/1-4.zip 1-4-ok.zip
+arguments -F 1-4
+file search/14.zip 1-4-ok.zip
+file roms/1-4.zip {} 1-4-ok.zip
 file-data .ckmamerc
 [global]
 extra-directories = [ "search" ]
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'search/14.zip/04.rom'
-end-of-data
+end-of-inline-data

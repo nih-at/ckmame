@@ -1,0 +1,11 @@
+description test single-rom game with no good dump disk, disk missing
+variants zip
+return 0
+args -D ../mamedb-disk-many.db -Fv --report-detailed disk-nogood
+file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
+no-hashes roms disk-nogood.zip 04.rom
+stdout-data
+In game disk-nogood:
+rom  04.rom        size       4  crc d87f7e0c: correct
+disk 108-nogood    no good dump              : missing
+end-of-data

@@ -1,11 +1,16 @@
 description list all configured sets, remove files from extra
 return 0
-args --all-sets  -Fj -v 1-4 1-8
-file-new roms1/1-4.zip 1-4-ok.zip
-file-new roms2/1-8.zip 1-8-ok.zip
-file-del extra/1-4.zip 1-4-ok.zip
-file-del extra2/1-8.zip 1-8-ok.zip
-file-data .ckmamerc
+arguments --all-sets  -Fj -v 1-4 1-8
+file mame.db mame.db
+file roms1/1-4.zip {} 1-4-ok.zip
+file roms2/1-8.zip {} 1-8-ok.zip
+file extra/1-4.zip 1-4-ok.zip {}
+file extra2/1-8.zip 1-8-ok.zip {}
+file extra/.ckmame.db {} <empty.ckmamedb>
+file extra2/.ckmame.db {} <empty.ckmamedb>
+file roms1/.ckmame.db {} <empty.ckmamedb>
+file roms2/.ckmame.db {} <empty.ckmamedb>
+file .ckmamerc <inline>
 [global]
 report-correct = true
 ["non-standard set 1"]
@@ -14,8 +19,8 @@ extra-directories = [ "extra" ]
 ["non-standard set 2"]
 rom-directory = "roms2"
 extra-directories = [ "extra", "extra2" ]
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 Set non-standard set 1:
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4.zip/04.rom'
@@ -35,4 +40,4 @@ add 'extra2/1-8.zip/08.rom' as '08.rom'
 In archive extra2/1-8.zip:
 delete used file '08.rom'
 remove empty archive
-end-of-data
+end-of-inline-data

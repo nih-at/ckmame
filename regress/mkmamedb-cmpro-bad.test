@@ -1,10 +1,10 @@
 description test mkmamedb database creation from CMPro file with errors
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.cmpro-bad
+arguments -o mamedb-test.db mamedb.cmpro-bad
 return 1
-file mamedb.cmpro-bad mamedb.cmpro-bad mamedb.cmpro-bad
-stderr-data
+file mamedb.cmpro-bad mamedb.cmpro-bad
+stderr
 mamedb.cmpro-bad:9: game without name
 mamedb.cmpro-bad:11: ignoring unknown token '('
 mamedb.cmpro-bad:18: unexpected token ')'
@@ -27,4 +27,4 @@ mamedb.cmpro-bad:64: ignoring unknown token '8'
 mamedb.cmpro-bad:64: ignoring unknown token 'name'
 mamedb.cmpro-bad:64: ignoring unknown token '08.rom'
 mamedb.cmpro-bad:64: ignoring unknown token ')'
-end-of-data
+end-of-inline-data

@@ -1,9 +1,9 @@
 description test mkmamedb database creation, duplicate rom name
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.dat
-file mamedb.dat mamedb-duplicate-rom-name.dat mamedb-duplicate-rom-name.dat
-file-new mamedb-test.db mamedb-duplicate-rom-name.dump
-stderr-data
+arguments -o mamedb-test.db mamedb.dat
+file mamedb.dat mamedb-duplicate-rom-name.dat
+file mamedb-test.db {} mamedb-duplicate-rom-name.dump
+stderr
 mamedb.dat:12: warning: two different ROMs with same name '04.rom', renamed to '04 (1).rom'
-end-of-data
+end-of-inline-data

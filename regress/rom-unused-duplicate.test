@@ -1,10 +1,10 @@
 description test single-rom game (no parent), game exists, extra file known
 return 0
-args -D ../mamedb-small.db -jFcv
+arguments -D ../mamedb-small.db -jFcv
 file roms/1-4.zip 2-44-ok.zip 1-4-ok.zip
-stdout-data
+stdout
 In game 1-4:
 game 1-4                                     : correct
-file 04-2.rom      size       4  crc d87f7e0c: not used
+file 04-2.rom 
 delete unused file '04-2.rom'
-end-of-data
+end-of-inline-data

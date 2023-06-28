@@ -1,10 +1,10 @@
 description parent has ROMs with same CRC, but the merge arguments are wrong
 return 0
 program mkmamedb
-args -o mamedb-test.db mamedb.xml
-file mamedb.xml mamedb-merge-wrong-name.xml mamedb-merge-wrong-name.xml
-file-new mamedb-test.db mamedb-merge-wrong-name.dump
-stderr-data
+arguments -o mamedb-test.db mamedb.xml
+file mamedb.xml mamedb-merge-wrong-name.xml
+file mamedb-test.db {} mamedb-merge-wrong-name.dump
+stderr
 mamedb.xml: In game 'clone': 'child-1': merged from 'wrongname', but ancestors don't contain matching file
 mamedb.xml: In game 'clone': 'parent-2': merged from 'parent-1', but ancestors don't contain matching file
-end-of-data
+end-of-inline-data

@@ -1,0 +1,15 @@
+description test game, file is in superfluous, fix, remove superfluous
+return 0
+args -Fvc -D ../mamedb-lost-parent-ok.db
+file-del roms/superfluous.zip 1-4-ok.zip
+file roms/clone-8.zip 1-8-ok.zip 2-48-ok.zip
+no-hashes roms clone-8.zip
+stdout-data
+In game clone-8:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/superfluous.zip/04.rom'
+rom  08.rom        size       8  crc 3656897d: correct
+add 'roms/superfluous.zip/04.rom' as '04.rom'
+In archive roms/superfluous.zip:
+delete used file '04.rom'
+remove empty archive
+end-of-data

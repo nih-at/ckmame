@@ -1,17 +1,17 @@
 description do not update database even if it changed
 return 0
-args 1-4
+arguments 1-4
 file dats/mame.dat mame-v2.dat
 touch 1644506227 dats/mame.dat
 file output.db mame.db
 ckmamedb-after dats ckmamedb-empty.dump
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]
 dats = [ "ckmame test db" ]
 rom-db = "output.db"
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 In game 1-4:
 game 1-4                                     : not a single file found
-end-of-data
+end-of-inline-data

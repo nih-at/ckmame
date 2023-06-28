@@ -1,10 +1,10 @@
 description test single-rom game with bad dump, unknown size
 return 0
 # TODO: -c reports game as correct
-args -cFv -D ../mamedb-size-empty.db nosize
-file roms/nosize.zip 1-4-ok.zip 1-4-ok.zip
+arguments -cFv -D ../mamedb-size-empty.db nosize
+file roms/nosize.zip 1-4-ok.zip
 no-hashes roms nosize.zip
-stdout-data
+stdout
 In game nosize:
 game nosize                                  : correct
-end-of-data
+end-of-inline-data

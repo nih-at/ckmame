@@ -1,0 +1,204 @@
+description test all games, some files in superfluous, fix
+variants zip
+return 0
+args -D ../mamedb-disk-many.db -Fv --report-detailed
+file-del roms/1-4-ok.zip 1-4-ok.zip
+file-del roms/1-8-ok.zip 1-8-ok.zip
+file-del roms/1-a-ok.zip 1-a-ok.zip
+file-del roms/2-44-ok.zip 2-44-ok.zip
+file-del roms/2-48-ok.zip 2-48-ok.zip
+file-del roms/2-4a-ok.zip 2-4a-ok.zip
+file-del roms/zero-4-ok.zip zero-4-ok.zip
+file-del roms/zero-ok.zip zero-ok.zip
+file-del roms/baddump-ok.zip baddump.zip
+file-del roms/baddump-separate.zip baddump.zip
+file-new roms/1-4.zip 1-4-ok.zip
+file-new roms/1-8.zip 1-8-ok.zip
+file-new roms/2-44.zip 2-44-ok.zip
+file-new roms/2-48.zip 2-48-ok.zip
+file-new roms/2-4a.zip 2-4a-ok.zip
+file-new roms/baddump.zip baddump.zip
+file-new roms/clone-8.zip 1-8-ok.zip
+file-new roms/deadbeefchild.zip 1-4-ok.zip
+file-new roms/dir-in-rom-name.zip 1-4-path.zip
+file-new roms/disk-2.zip 1-4-ok.zip
+file-new roms/disk-nogood.zip 1-4-ok.zip
+file-new roms/disk-nogood2.zip 1-8-ok.zip
+file-new roms/disk.zip 1-4-ok.zip
+file-new roms/nogood-2.zip 1-8-ok.zip
+file-new roms/parent-4.zip 1-4-ok.zip
+file-new roms/zero-4.zip zero-4-ok.zip
+file-new roms/zero.zip zero-ok.zip
+file roms/disk/108-5.chd 108-5.chd 108-5.chd
+file roms/disk-nogood/108-nogood.chd 108-5.chd 108-5.chd
+file roms/diskgood-romnogood/108-5.chd 108-5.chd 108-5.chd
+file-new roms/disk-same/108-5.chd 108-5.chd
+no-hashes roms baddump.zip bad.rom
+stdout-data
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
+In game 1-8:
+rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8-ok.zip/08.rom'
+add 'roms/1-8-ok.zip/08.rom' as '08.rom'
+In game nogoodclone:
+rom  04.rom        size       4  no good dump: missing
+rom  08.rom        size       8  crc 3656897d: correct
+In game 1-8a:
+rom  08.rom        size       8  crc 12345678: missing
+In game 2-44:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+rom  04-2.rom      size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+add 'roms/1-4.zip/04.rom' as '04.rom'
+add 'roms/1-4.zip/04.rom' as '04-2.rom'
+In game 2-48:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
+add 'roms/1-4.zip/04.rom' as '04.rom'
+add 'roms/1-8.zip/08.rom' as '08.rom'
+In game 2-4a:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+rom  0a.rom        size      10  crc 0b4a4cde: is in 'roms/1-a-ok.zip/0a.rom'
+add 'roms/1-4.zip/04.rom' as '04.rom'
+add 'roms/1-a-ok.zip/0a.rom' as '0a.rom'
+In game baddump:
+rom  bad.rom       size       3  bad dump    : is in 'roms/baddump-ok.zip/bad.rom'
+add 'roms/baddump-ok.zip/bad.rom' as 'bad.rom'
+In game deadbeef:
+rom  deadbeef      size       8  crc deadbeef: missing
+In game deadbeefchild:
+rom  deadbeef      size       8  crc deadbeef: missing
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+add 'roms/1-4.zip/04.rom' as '04.rom'
+In game deadclonedbeef:
+rom  deadclonedbeef  size       8  crc deadbeef: missing
+In game dir-in-rom-name:
+rom  some/path/to/file.rom  size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+add 'roms/1-4.zip/04.rom' as 'some/path/to/file.rom'
+In game disk:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
+add 'roms/1-4.zip/04.rom' as '04.rom'
+In game diskchild:
+rom  04.rom        size       4  crc d87f7e0c: correct
+disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: best bad dump
+In game disk-2:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
+add 'roms/1-4.zip/04.rom' as '04.rom'
+In game disk-3:
+disk 512v5         sha1 cf37d50e886519c332dcfe84440f1f085b98c634: missing
+In game disk-nogood:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+disk 108-nogood    no good dump              : exists
+add 'roms/1-4.zip/04.rom' as '04.rom'
+In game disk-nogood2:
+rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
+disk 208-7         no good dump              : missing
+add 'roms/1-8.zip/08.rom' as '08.rom'
+In game disk-same:
+rom  16.rom        size      16  crc 12345678: missing
+disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/disk/108-5.chd'
+add 'roms/disk/108-5.chd' as '108-5.chd'
+In game diskgood-romnogood:
+rom  04.rom        size       4  no good dump: missing
+disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
+In game many:
+rom  00            size       2  crc b84614a0: missing
+rom  01            size       2  crc cf412436: missing
+rom  02            size       2  crc 5648758c: missing
+rom  03            size       2  crc 214f451a: missing
+rom  04            size       2  crc bf2bd0b9: missing
+rom  05            size       2  crc c82ce02f: missing
+rom  06            size       2  crc 5125b195: missing
+rom  07            size       2  crc 26228103: missing
+rom  08            size       2  crc b69d9c92: missing
+rom  09            size       2  crc c19aac04: missing
+rom  0A            size       2  crc 9f44550a: missing
+rom  0B            size       2  crc 064d04b0: missing
+rom  0C            size       2  crc 714a3426: missing
+rom  0D            size       2  crc ef2ea185: missing
+rom  0E            size       2  crc 98299113: missing
+rom  0F            size       2  crc 0120c0a9: missing
+rom  10            size       2  crc a15d25e1: missing
+rom  11            size       2  crc d65a1577: missing
+rom  12            size       2  crc 4f5344cd: missing
+rom  13            size       2  crc 3854745b: missing
+rom  14            size       2  crc a630e1f8: missing
+rom  15            size       2  crc d137d16e: missing
+rom  16            size       2  crc 483e80d4: missing
+rom  17            size       2  crc 3f39b042: missing
+rom  18            size       2  crc af86add3: missing
+rom  19            size       2  crc d8819d45: missing
+rom  1A            size       2  crc 865f644b: missing
+rom  1B            size       2  crc 1f5635f1: missing
+rom  1C            size       2  crc 68510567: missing
+rom  1D            size       2  crc f63590c4: missing
+rom  1E            size       2  crc 8132a052: missing
+rom  1F            size       2  crc 183bf1e8: missing
+In game nogood:
+rom  04.rom        size       4  no good dump: missing
+In game nogood-2:
+rom  04.rom        size       4  no good dump: missing
+rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
+add 'roms/1-8.zip/08.rom' as '08.rom'
+In game parent-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+add 'roms/1-4.zip/04.rom' as '04.rom'
+In game clone-8:
+rom  04.rom        size       4  crc d87f7e0c: correct
+rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
+add 'roms/1-8.zip/08.rom' as '08.rom'
+In game zero:
+rom  zero          size       0  crc 00000000: missing
+create empty file 'zero'
+In game zero-4:
+rom  zero          size       0  crc 00000000: missing
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+create empty file 'zero'
+add 'roms/1-4.zip/04.rom' as '04.rom'
+In archive roms/1-4-ok.zip:
+delete used file '04.rom'
+remove empty archive
+In archive roms/1-8-ok.zip:
+delete used file '08.rom'
+remove empty archive
+In archive roms/1-a-ok.zip:
+delete used file '0a.rom'
+remove empty archive
+In archive roms/2-44-ok.zip:
+file 04-2.rom      size       4  crc d87f7e0c: not used
+file 04.rom        size       4  crc d87f7e0c: not used
+delete unused file '04-2.rom'
+delete unused file '04.rom'
+remove empty archive
+In archive roms/2-48-ok.zip:
+file 04.rom        size       4  crc d87f7e0c: not used
+file 08.rom        size       8  crc 3656897d: not used
+delete unused file '04.rom'
+delete unused file '08.rom'
+remove empty archive
+In archive roms/2-4a-ok.zip:
+file 04.rom        size       4  crc d87f7e0c: not used
+file 0a.rom        size      10  crc 0b4a4cde: not used
+delete unused file '04.rom'
+delete unused file '0a.rom'
+remove empty archive
+In archive roms/baddump-ok.zip:
+delete used file 'bad.rom'
+remove empty archive
+In archive roms/baddump-separate.zip:
+file bad.rom       size       3  crc 148c7b71: not used
+delete unused file 'bad.rom'
+remove empty archive
+In archive roms/zero-4-ok.zip:
+file 04.rom        size       4  crc d87f7e0c: not used
+file zero          size       0  crc 00000000: not used
+delete unused file '04.rom'
+delete unused file 'zero'
+remove empty archive
+In archive roms/zero-ok.zip:
+file zero          size       0  crc 00000000: not used
+delete unused file 'zero'
+remove empty archive
+end-of-data

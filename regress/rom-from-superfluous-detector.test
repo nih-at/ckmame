@@ -1,18 +1,18 @@
 description test single-rom game (no parent), file is in superfluous w/detector
 features LIBXML2
 return 0
-file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
-args -D mamedb-skipped.db -Fvc skipped
-file-del roms/18.zip 1-8-ok.zip
-file-new roms/skipped.zip 1-8-ok.zip
+file mamedb-skipped.db mamedb-skipped.db
+arguments -D mamedb-skipped.db -Fvc skipped
+file roms/18.zip 1-8-ok.zip {}
+file roms/skipped.zip {} 1-8-ok.zip
 no-hashes roms skipped.zip
 detector-hashes skip-some-bytes 20070429 roms skipped.zip
 detector-hashes skip-some-bytes 20070429 roms skipped
-stdout-data
+stdout
 In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'roms/18.zip/08.rom'
 add 'roms/18.zip/08.rom' as '08.rom'
 In archive roms/18.zip:
 delete used file '08.rom'
 remove empty archive
-end-of-data
+end-of-inline-data

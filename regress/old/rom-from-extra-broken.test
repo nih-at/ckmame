@@ -1,0 +1,18 @@
+description test single-rom game (no parent), extra zip contains broken
+variants zip
+return 0
+args -Fjvc -e extra 2-48
+file extra/2-48-part-broken.zip 2-48-broken.zip 1-8-broken.zip
+file-new roms/2-48.zip 1-4-ok.zip
+stdout-data
+In game 2-48:
+rom  04.rom        size       4  crc d87f7e0c: is in 'extra/2-48-part-broken.zip/04.rom'
+rom  08.rom        size       8  crc 3656897d: missing
+add 'extra/2-48-part-broken.zip/04.rom' as '04.rom'
+In archive extra/2-48-part-broken.zip:
+file 08.rom        size       8  crc 3656897d: broken
+delete used file '04.rom'
+end-of-data
+stderr-data
+extra/2-48-part-broken.zip: 08.rom: CRC error: bf933f81 != 3656897d
+end-of-data

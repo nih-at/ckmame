@@ -1,12 +1,12 @@
 description test single-rom game (no parent), zip contains garbage, fix
 return 0
-args -Fvc 1-4
+arguments -Fvc 1-4
 file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
-file-new unknown/1-4.zip garbage.zip
+file unknown/1-4.zip {} garbage.zip
 no-hashes unknown 1-4.zip garbage
-stdout-data
+stdout
 In game 1-4:
 game 1-4                                     : correct
-file garbage       size       8  crc 01888242: unknown
+file garbage 
 move unknown file 'garbage'
-end-of-data
+end-of-inline-data

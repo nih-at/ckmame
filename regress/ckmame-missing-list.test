@@ -1,4 +1,5 @@
 description write list of missing games to file
 return 0
-args --missing-list missing-list --no-report-missing
+arguments --missing-list missing-list --no-report-missing
+file mame.db mame.db
 file missing-list missing-list.txt

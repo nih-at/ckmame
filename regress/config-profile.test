@@ -1,8 +1,8 @@
 description test profiles and their selection work
 return 0
 setenv HOME ./home
-args --set Test -F 1-4 1-8
-file roms-local/1-4.zip 1-4-ok.zip 1-4-ok.zip
+arguments --set Test -F 1-4 1-8
+file roms-local/1-4.zip 1-4-ok.zip
 file-data .ckmamerc
 [global]
 report-correct = true
@@ -15,8 +15,8 @@ verbose = false
 rom-directory = "roms-local"
 ["Test"]
 profiles = [ "quiet", "local" ]
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 In game 1-4:
 game 1-4                                     : correct
-end-of-data
+end-of-inline-data

@@ -1,0 +1,10 @@
+description take ROM from correct game that has fewer hash types, mismatch on new hash types
+return 0
+args -D ../mamedb-deadbeefish.db -Fvc
+file roms/deadbeef.zip deadbeef.zip deadbeef.zip
+stdout-data
+In game deadbeef:
+game deadbeef                                : correct
+In game deadfish:
+game deadfish                                : not a single file found
+end-of-data

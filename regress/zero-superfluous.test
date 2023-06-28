@@ -1,10 +1,10 @@
 description test archive with 0 byte rom
 return 0
-args -Fvc 1-4
-file-del roms/1-4.zip zero-ok.zip
-stdout-data
+arguments -Fvc 1-4
+file roms/1-4.zip zero-ok.zip {}
+stdout
 In game 1-4:
 game 1-4                                     : not a single file found
-file zero          size       0  crc 00000000: not used
+file zero 
 delete unused file 'zero'
-end-of-data
+end-of-inline-data

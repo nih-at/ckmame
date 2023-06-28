@@ -1,17 +1,18 @@
 description list all configured sets, mix zipped/unzipped
 variants zip
 return 0
-args --all-sets -v -F 1-4 1-8
-file-new roms1/1-4.zip 1-4-ok.zip
-file-new roms3/1-8.zip 1-8-ok.zip
-file-new roms4/1-4/04.rom 04.rom
+arguments --all-sets -v -F 1-4 1-8
+file mame.db mame.db
+file roms1/1-4.zip {} 1-4-ok.zip
+file roms3/1-8.zip {} 1-8-ok.zip
+file roms4/1-4/04.rom {} 04.rom
 file extra/1-4.zip 1-4-ok.zip
 file extra2/1-8.zip 1-8-ok.zip
 file extra3/04.rom 04.rom
 ckmamedb-type extra dir
 ckmamedb-type extra3 dir
 ckmamedb-type roms4 dir
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 report-correct = true
 ["non-standard set 1"]
@@ -28,8 +29,8 @@ extra-directories = [ "extra2", "extra3" ]
 rom-directory = "roms4"
 extra-directories = [ "extra3" ]
 roms-zipped = false
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 Set non-standard set 1:
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4.zip/04.rom'
@@ -56,4 +57,4 @@ rom  04.rom        size       4  crc d87f7e0c: is in 'extra3/04.rom'
 add 'extra3/04.rom' as '04.rom'
 In game 1-8:
 game 1-8                                     : not a single file found
-end-of-data
+end-of-inline-data

@@ -1,0 +1,31 @@
+description swap files between games
+return 0
+args -D ../mamedb-parent-crcdiff.db -Fv
+file roms/parent.zip 12345678.zip 2-48-ok.zip
+file roms/child.zip 2-48-ok.zip 12345678.zip
+no-hashes roms parent.zip
+no-hashes roms child.zip
+stdout-data
+In game parent:
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/child.zip/04.rom'
+rom  08.rom        size       8  crc 3656897d: missing
+file 08.rom        size       8  crc 12345678: needed elsewhere
+save needed file '08.rom'
+add 'roms/child.zip/04.rom' as '04.rom'
+In game child:
+rom  08.rom        size       8  crc 12345678: is in 'saved/12345678-000.zip/08.rom'
+file 04.rom        size       4  crc d87f7e0c: not used
+file 08.rom        size       8  crc 3656897d: needed elsewhere
+delete unused file '04.rom'
+save needed file '08.rom'
+add 'saved/12345678-000.zip/08.rom' as '08.rom'
+In game parent:
+rom  08.rom        size       8  crc 3656897d: is in 'saved/3656897d-000.zip/08.rom'
+add 'saved/3656897d-000.zip/08.rom' as '08.rom'
+In archive saved/12345678-000.zip:
+delete used file '08.rom'
+remove empty archive
+In archive saved/3656897d-000.zip:
+delete used file '08.rom'
+remove empty archive
+end-of-data

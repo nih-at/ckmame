@@ -1,9 +1,9 @@
 description test 2-rom game (1 in parent), both roms in parent - BROKEN
 return 0
-args -cFv clone-8
-file roms/parent-4.zip 2-48-ok.zip 2-48-ok.zip
+arguments -cFv clone-8
+file roms/parent-4.zip 2-48-ok.zip
 no-hashes roms parent-4.zip 08.rom
-stdout-data
+stdout
 In game clone-8:
 game clone-8                                 : not a single file found
-end-of-data
+end-of-inline-data

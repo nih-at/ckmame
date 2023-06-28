@@ -1,0 +1,9 @@
+description test 2-rom game (1 in parent), both roms in child
+return 0
+args -Fvc clone-8
+file roms/clone-8.zip 2-48-ok.zip 2-48-ok.zip
+stdout-data
+In game clone-8:
+rom  04.rom        size       4  crc d87f7e0c: should be in cloneof
+rom  08.rom        size       8  crc 3656897d: correct
+end-of-data

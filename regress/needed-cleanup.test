@@ -1,14 +1,14 @@
 description test cleanup of saved files that are not needed
 return 0
-args -D ../mamedb-lost-parent-ok.db -Fv
-file roms/clone-8.zip 1-4-ok.zip 1-4-ok.zip
-file-del saved/d87f7e0c-000.zip 1-4-ok.zip
+arguments -D ../mamedb-lost-parent-ok.db -Fv
+file roms/clone-8.zip 1-4-ok.zip
+file saved/d87f7e0c-000.zip 1-4-ok.zip {}
 no-hashes roms clone-8.zip
-stdout-data
+stdout
 In game clone-8:
 rom  08.rom        size       8  crc 3656897d: missing
 In archive saved/d87f7e0c-000.zip:
-file 04.rom        size       4  crc d87f7e0c: not used
+file 04.rom 
 delete unused file '04.rom'
 remove empty archive
-end-of-data
+end-of-inline-data

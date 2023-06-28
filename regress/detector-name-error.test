@@ -1,14 +1,14 @@
 description test header detector
 features LIBXML2
 return 0
-file mame-detector.db mamedb-detector.db mamedb-detector.db
+file mame-detector.db mamedb-detector.db
 file roms/1-8.zip 1-8-header-called-04.zip 1-8-header.zip
 no-hashes roms 1-8.zip
 detector-hashes skip-some-bytes 20070429 roms 1-8.zip
 detector-hashes skip-some-bytes 20070429 roms 1-8
-args -D mame-detector.db -Fvc 1-8
-stdout-data
+arguments -D mame-detector.db -Fvc 1-8
+stdout
 In game 1-8:
 rom  08.rom        size       8  crc 3656897d: wrong name (04.rom)
 rename '04.rom' to '08.rom'
-end-of-data
+end-of-inline-data

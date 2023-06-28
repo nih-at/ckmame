@@ -1,10 +1,10 @@
 description test single-rom game (no parent), file is in ROM set w/detector
 features LIBXML2
 return 0
-file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
-args -D mamedb-skipped.db -Fvc skipped
-file roms/skipped-2.zip 2-8c-ok.zip 2-8c-ok.zip
-file-new roms/skipped.zip 1-8-ok.zip
+file mamedb-skipped.db mamedb-skipped.db
+arguments -D mamedb-skipped.db -Fvc skipped
+file roms/skipped-2.zip 2-8c-ok.zip
+file roms/skipped.zip {} 1-8-ok.zip
 no-hashes roms skipped-2.zip 0c.rom
 detector-hashes skip-some-bytes 20070429 roms skipped.zip
 detector-hashes skip-some-bytes 20070429 roms skipped
@@ -12,8 +12,8 @@ detector-hashes skip-some-bytes 20070429 roms skipped-2.zip 08.rom
 detector-hashes skip-some-bytes 20070429 roms skipped-2 08.rom
 no-hashes roms skipped.zip 08.rom
 no-hashes roms skipped-2.zip 08.rom
-stdout-data
+stdout
 In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'roms/skipped-2.zip/08.rom'
 add 'roms/skipped-2.zip/08.rom' as '08.rom'
-end-of-data
+end-of-inline-data

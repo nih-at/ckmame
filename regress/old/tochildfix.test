@@ -1,0 +1,18 @@
+description move file from parent to clone (via needed)
+return 0
+args -Fvc parent-4 clone-8
+file roms/parent-4.zip 2-48-ok.zip 1-4-ok.zip
+file-new roms/clone-8.zip 1-8-ok.zip
+stdout-data
+In game parent-4:
+game parent-4                                : correct
+file 08.rom        size       8  crc 3656897d: needed elsewhere
+save needed file '08.rom'
+In game clone-8:
+rom  04.rom        size       4  crc d87f7e0c: correct
+rom  08.rom        size       8  crc 3656897d: is in 'saved/3656897d-000.zip/08.rom'
+add 'saved/3656897d-000.zip/08.rom' as '08.rom'
+In archive saved/3656897d-000.zip:
+delete used file '08.rom'
+remove empty archive
+end-of-data

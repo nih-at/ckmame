@@ -1,13 +1,13 @@
 description test game with 0 byte rom and weird CRC, too big file exists
 return 0
-args -Fvc zero
+arguments -Fvc zero
 file roms/zero.zip zero-long.zip zero-ok.zip
-file-new unknown/zero.zip zero-long.zip
+file unknown/zero.zip {} zero-long.zip
 no-hashes unknown zero.zip
-stdout-data
+stdout
 In game zero:
 game zero                                    : not a single file found
-file zero          size       4  crc 9be3e0a3: unknown
+file zero 
 move unknown file 'zero'
 create empty file 'zero'
-end-of-data
+end-of-inline-data

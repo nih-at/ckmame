@@ -1,6 +1,6 @@
 description list all configured sets using dumpgame
 return 0
-args --list-sets
+arguments --list-sets
 program dumpgame
 file-data .ckmamerc
 [global]
@@ -9,10 +9,10 @@ sets = [ "standard set 1", "standard set 2" ]
 verbose = true
 ["non-standard set 2"]
 report-missing = false
-end-of-data
-stdout-data
+end-of-inline-data
+stdout
 non-standard set 1
 non-standard set 2
 standard set 1
 standard set 2
-end-of-data
+end-of-inline-data

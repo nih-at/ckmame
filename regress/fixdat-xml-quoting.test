@@ -1,9 +1,9 @@
 description test all games, no files found, create fixdat with XML entities
 features LIBXML2
 return 0
-args -Fvc -D ../mamedb-xml-quoting.db --create-fixdat
-file-new "fixdat_ckmame test db <&> (1).dat" fixdat-xml-quoting.fixdat
-stdout-data
+arguments -Fvc -D ../mamedb-xml-quoting.db --create-fixdat
+file "fixdat_ckmame {} test
+stdout
 In game 2&4c<>;:
 game 2&4c<>;                                 : not a single file found
-end-of-data
+end-of-inline-data

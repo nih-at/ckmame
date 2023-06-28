@@ -1,0 +1,8 @@
+description dumpgame: test --brief
+return 0
+args --brief parent-4
+program dumpgame
+stdout-data
+Name:		parent-4
+Description:	one four byte file, has clone
+end-of-data

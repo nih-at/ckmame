@@ -1,8 +1,8 @@
 description test single-rom game (no parent), rom has wrong name, don't fix
 return 0
-args -c 1-4
-file roms/1-4.zip 1-4-misnamed.zip 1-4-misnamed.zip
-stdout-data
+arguments -c 1-4
+file roms/1-4.zip 1-4-misnamed.zip
+stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: wrong name (04)
-end-of-data
+end-of-inline-data

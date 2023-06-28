@@ -1,0 +1,12 @@
+description test single-rom game with bad dump; with --report-no-good-dump configuration
+return 0
+args nogood-2
+file roms/nogood-2.zip 1-8-ok.zip
+file-data .ckmamerc
+[global]
+report-no-good-dump = true
+end-of-data
+stdout-data
+In game nogood-2:
+rom  04.rom        size       4  no good dump: missing
+end-of-data

@@ -1,0 +1,11 @@
+description test single-rom game with disk, disk missing
+variants zip
+return 0
+args -D ../mamedb-disk-many.db -Fvc disk
+file roms/disk.zip 1-4-ok.zip 1-4-ok.zip
+no-hashes roms disk.zip 04.rom
+stdout-data
+In game disk:
+rom  04.rom        size       4  crc d87f7e0c: correct
+disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
+end-of-data

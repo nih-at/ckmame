@@ -1,0 +1,10 @@
+description test header detector - accept file without header
+features LIBXML2
+return 0
+file mamedb-skipped.db mamedb-skipped.db mamedb-skipped.db
+args -D mamedb-skipped.db -Fvc skipped
+file roms/skipped.zip 1-8-skip-ok.zip 1-8-skip-ok.zip
+stdout-data
+In game skipped:
+game skipped                                 : correct
+end-of-data

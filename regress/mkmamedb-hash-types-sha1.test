@@ -1,6 +1,6 @@
 description test mkmamedb --hash-types sha1
 return 0
 program mkmamedb
-args -F cm --hash-types sha1 -o output.dat roms
+arguments -F cm --hash-types sha1 -o output.dat roms
 file output.dat mamedb-small-sha1-only.dat
 file roms/1-4.zip 1-4-ok.zip

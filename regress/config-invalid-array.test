@@ -3,7 +3,7 @@ return 1
 file-data .ckmamerc
 [global]
 dat-directories = "something"
-end-of-data
-stderr-data
+end-of-inline-data
+stderr
 .ckmamerc:global.dat-directories: expected array or table
-end-of-data
+end-of-inline-data

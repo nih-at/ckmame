@@ -1,7 +1,7 @@
 description test mkmamedb --hash-types crc
 return 0
 program mkmamedb
-args -F cm --hash-types crc -o output.dat roms
+arguments -F cm --hash-types crc -o output.dat roms
 no-hashes roms 1-4.zip 04.rom md5,sha1
 file output.dat mamedb-small-crc-only.dat
 file roms/1-4.zip 1-4-ok.zip

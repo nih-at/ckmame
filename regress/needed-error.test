@@ -1,18 +1,18 @@
 description zip contains file needed elsewhere, creating saved archive fails
 return 0
-args -Fvc 1-4
+arguments -Fvc 1-4
 file roms/1-4.zip 1-8-ok.zip 2-48-ok.zip
-file roms/2-48.zip 1-4-ok.zip 1-4-ok.zip
-mkdir 0555 saved
-stdout-data
+file roms/2-48.zip 1-4-ok.zip
+mkdir saved
+stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/2-48.zip/04.rom'
-file 08.rom        size       8  crc 3656897d: needed elsewhere
+file 08.rom 
 save needed file '08.rom'
 add 'roms/2-48.zip/04.rom' as '04.rom'
-end-of-data
-stderr-data
+end-of-inline-data
+stderr
 can't open rom directory database for 'saved': unable to open database file: no database
 <zip> saved/3656897d-000.zip: error closing zip: Failure to create temporary file: Permission denied
 <dir> cannot create 'saved/3656897d-000/.added': Permission denied
-end-of-data
+end-of-inline-data

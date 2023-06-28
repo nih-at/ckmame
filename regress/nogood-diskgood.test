@@ -1,12 +1,12 @@
 description test single-rom game with bad dump but good disk
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -Fv --report-detailed diskgood-romnogood
-file roms/diskgood-romnogood/108-5.chd 108-5.chd 108-5.chd
-file roms/nogood.zip 1-4-ok.zip 1-4-ok.zip
+arguments -D ../mamedb-disk-many.db -Fv --report-detailed diskgood-romnogood
+file roms/diskgood-romnogood/108-5.chd 108-5.chd
+file roms/nogood.zip 1-4-ok.zip
 not-in-ckmamedb roms nogood.zip
-stdout-data
+stdout
 In game diskgood-romnogood:
 rom  04.rom        size       4  no good dump: missing
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
-end-of-data
+end-of-inline-data

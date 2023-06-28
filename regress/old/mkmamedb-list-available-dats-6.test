@@ -1,0 +1,24 @@
+description test mkmamedb --list-available-dats
+return 0
+program mkmamedb
+args --list-available-dats
+file dats/mamedb-disk.dat mamedb-disk.dat
+touch 1643902216 dats/mamedb-disk.dat
+file dats/mamedb.rc mamedb.rc
+touch 1643902216 dats/mamedb.rc
+file dats/mamedb.xml mamedb-mess.xml
+touch 1643902216 dats/mamedb.xml
+file-new dats/.mkmamedb.db mkmamedb-datdb-9.dump
+file-data .ckmamerc
+[global]
+dat-directories = [ "dats" ]
+end-of-data
+stdout-data
+Test
+aes
+game-with-disk
+end-of-data
+stderr-data
+dats/mamedb.rc:7: warning: RomCenter plugins not supported,
+dats/mamedb.rc:7: warning: DAT won't work as expected.
+end-of-data

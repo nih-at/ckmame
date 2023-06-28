@@ -1,12 +1,12 @@
 description dumpgame: test --rom-db
 return 0
-args --rom-db ../mamedb-disk.db *
+arguments --rom-db ../mamedb-disk.db *
 program dumpgame
-stdout-data
+stdout
 Name:		disk
 Description:	1-8 with disk
 ROMs:
 		file 08.rom        size       8 crc 3656897d status  in game
 Disks:
 		disk 108-5        md5 bf5c9c39eb49bcf5a55a06dbb4deccb3 sha1 7570a907e20a51cbf6193ec6779b82d1967bb609 status  in game
-end-of-data
+end-of-inline-data

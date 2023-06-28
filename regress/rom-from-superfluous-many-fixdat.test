@@ -2,41 +2,41 @@ description test all games, some files in superfluous, fix
 features LIBXML2
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -Fvc --report-detailed --create-fixdat
-file-del roms/1-4-ok.zip 1-4-ok.zip
-file-del roms/1-8-ok.zip 1-8-ok.zip
-file-del roms/1-a-ok.zip 1-a-ok.zip
-file-del roms/2-44-ok.zip 2-44-ok.zip
-file-del roms/2-48-ok.zip 2-48-ok.zip
-file-del roms/2-4a-ok.zip 2-4a-ok.zip
-file-del roms/zero-4-ok.zip zero-4-ok.zip
-file-del roms/zero-ok.zip zero-ok.zip
-file-del roms/baddump-ok.zip baddump.zip
-file-del roms/baddump-separate.zip baddump.zip
-file-new roms/1-4.zip 1-4-ok.zip
-file-new roms/1-8.zip 1-8-ok.zip
-file-new roms/2-44.zip 2-44-ok.zip
-file-new roms/2-48.zip 2-48-ok.zip
-file-new roms/2-4a.zip 2-4a-ok.zip
-file-new roms/baddump.zip baddump.zip
-file-new roms/clone-8.zip 1-8-ok.zip
-file-new roms/deadbeefchild.zip 1-4-ok.zip
-file-new roms/dir-in-rom-name.zip 1-4-path.zip
-file-new roms/disk-2.zip 1-4-ok.zip
-file-new roms/disk-nogood.zip 1-4-ok.zip
-file-new roms/disk-nogood2.zip 1-8-ok.zip
-file-new roms/disk.zip 1-4-ok.zip
-file-new roms/nogood-2.zip 1-8-ok.zip
-file-new roms/parent-4.zip 1-4-ok.zip
-file-new roms/zero-4.zip zero-4-ok.zip
-file-new roms/zero.zip zero-ok.zip
-file-new "fixdat_ckmame test db (1).dat" rom-from-superfluous-many-fixdat.fixdat
-file roms/disk/108-5.chd 108-5.chd 108-5.chd
-file roms/disk-nogood/108-nogood.chd 108-5.chd 108-5.chd
-file roms/diskgood-romnogood/108-5.chd 108-5.chd 108-5.chd
-file-new roms/disk-same/108-5.chd 108-5.chd
+arguments -D ../mamedb-disk-many.db -Fvc --report-detailed --create-fixdat
+file roms/1-4-ok.zip 1-4-ok.zip {}
+file roms/1-8-ok.zip 1-8-ok.zip {}
+file roms/1-a-ok.zip 1-a-ok.zip {}
+file roms/2-44-ok.zip 2-44-ok.zip {}
+file roms/2-48-ok.zip 2-48-ok.zip {}
+file roms/2-4a-ok.zip 2-4a-ok.zip {}
+file roms/zero-4-ok.zip zero-4-ok.zip {}
+file roms/zero-ok.zip zero-ok.zip {}
+file roms/baddump-ok.zip baddump.zip {}
+file roms/baddump-separate.zip baddump.zip {}
+file roms/1-4.zip {} 1-4-ok.zip
+file roms/1-8.zip {} 1-8-ok.zip
+file roms/2-44.zip {} 2-44-ok.zip
+file roms/2-48.zip {} 2-48-ok.zip
+file roms/2-4a.zip {} 2-4a-ok.zip
+file roms/baddump.zip {} baddump.zip
+file roms/clone-8.zip {} 1-8-ok.zip
+file roms/deadbeefchild.zip {} 1-4-ok.zip
+file roms/dir-in-rom-name.zip {} 1-4-path.zip
+file roms/disk-2.zip {} 1-4-ok.zip
+file roms/disk-nogood.zip {} 1-4-ok.zip
+file roms/disk-nogood2.zip {} 1-8-ok.zip
+file roms/disk.zip {} 1-4-ok.zip
+file roms/nogood-2.zip {} 1-8-ok.zip
+file roms/parent-4.zip {} 1-4-ok.zip
+file roms/zero-4.zip {} zero-4-ok.zip
+file roms/zero.zip {} zero-ok.zip
+file "fixdat_ckmame {} test
+file roms/disk/108-5.chd 108-5.chd
+file roms/disk-nogood/108-nogood.chd 108-5.chd
+file roms/diskgood-romnogood/108-5.chd 108-5.chd
+file roms/disk-same/108-5.chd {} 108-5.chd
 no-hashes roms baddump.zip bad.rom
-stdout-data
+stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
 add 'roms/1-4-ok.zip/04.rom' as '04.rom'
@@ -169,20 +169,20 @@ In archive roms/1-a-ok.zip:
 delete used file '0a.rom'
 remove empty archive
 In archive roms/2-44-ok.zip:
-file 04-2.rom      size       4  crc d87f7e0c: not used
-file 04.rom        size       4  crc d87f7e0c: not used
+file 04-2.rom 
+file 04.rom 
 delete unused file '04-2.rom'
 delete unused file '04.rom'
 remove empty archive
 In archive roms/2-48-ok.zip:
-file 04.rom        size       4  crc d87f7e0c: not used
-file 08.rom        size       8  crc 3656897d: not used
+file 04.rom 
+file 08.rom 
 delete unused file '04.rom'
 delete unused file '08.rom'
 remove empty archive
 In archive roms/2-4a-ok.zip:
-file 04.rom        size       4  crc d87f7e0c: not used
-file 0a.rom        size      10  crc 0b4a4cde: not used
+file 04.rom 
+file 0a.rom 
 delete unused file '04.rom'
 delete unused file '0a.rom'
 remove empty archive
@@ -190,17 +190,17 @@ In archive roms/baddump-ok.zip:
 delete used file 'bad.rom'
 remove empty archive
 In archive roms/baddump-separate.zip:
-file bad.rom       size       3  crc 148c7b71: not used
+file bad.rom 
 delete unused file 'bad.rom'
 remove empty archive
 In archive roms/zero-4-ok.zip:
-file 04.rom        size       4  crc d87f7e0c: not used
-file zero          size       0  crc 00000000: not used
+file 04.rom 
+file zero 
 delete unused file '04.rom'
 delete unused file 'zero'
 remove empty archive
 In archive roms/zero-ok.zip:
-file zero          size       0  crc 00000000: not used
+file zero 
 delete unused file 'zero'
 remove empty archive
-end-of-data
+end-of-inline-data

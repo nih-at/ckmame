@@ -1,18 +1,18 @@
 description test 2 single-rom game with no good dump disks, name matching disk exists
 variants zip
 return 0
-args -D ../mamedb-disk-many.db -Fvj -e extras --report-detailed disk-nogood disk-nogood2
-file roms/disk-nogood.zip 1-4-ok.zip 1-4-ok.zip
-file extras/108-nogood.chd 12-1.chd 12-1.chd
+arguments -D ../mamedb-disk-many.db -Fvj -e extras --report-detailed disk-nogood disk-nogood2
+file roms/disk-nogood.zip 1-4-ok.zip
+file extras/108-nogood.chd 12-1.chd
 no-hashes roms disk-nogood.zip 04.rom
-stdout-data
+stdout
 In game disk-nogood:
 rom  04.rom        size       4  crc d87f7e0c: correct
-end-of-data
+end-of-inline-data
 # file name alone shouldn't be enough
-stdout-data
+stdout
 disk 108-nogood    no good dump              : missing
 In game disk-nogood2:
 rom  08.rom        size       8  crc 3656897d: missing
 disk 208-7         no good dump              : missing
-end-of-data
+end-of-inline-data
