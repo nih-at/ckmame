@@ -109,7 +109,6 @@ set(XFAIL_TESTS
   file-no-crc-wrong-name-other-set.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
-  torrentzip-cache.test
   unknown-rename-failed.test
 )
 

@@ -71,7 +71,7 @@ bool ArchiveZip::ensure_zip() {
 
     if (where == FILE_ROMSET && configuration.use_torrentzip) {
         if (zip_get_archive_flag(za, ZIP_AFL_IS_TORRENTZIP, ZIP_FL_UNCHANGED) == 0) {
-            cache_changed = true;
+            modified = true;
         }
         if (zip_set_archive_flag(za, ZIP_AFL_WANT_TORRENTZIP, 1) < 0) {
             output.error("can't torrentzip '%s'", name.c_str());
@@ -198,16 +198,50 @@ void ArchiveZip::commit_cleanup() {
 
     ensure_zip();
 
-    for (uint64_t i = 0; i < files.size(); i++) {
-	struct zip_stat st;
+    if (zip_get_archive_flag(za, ZIP_AFL_IS_TORRENTZIP, 0) == 1) {
+        auto names = std::unordered_map<std::string, size_t>{};
+        auto sorted_files = std::vector<File>{};
 
-	if (zip_stat_index(za, i, 0, &st) < 0) {
-	    output.set_error_archive(name);
-	    output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
-	    continue;
-	}
+        auto index = size_t{0};
+        for (const auto& file: files) {
+            names[file.name] = index;
+            index += 1;
+        }
 
-        files[i].mtime = st.mtime;
+        for (uint64_t i = 0; i < files.size(); i++) {
+            struct zip_stat st;
+
+            if (zip_stat_index(za, i, 0, &st) < 0) {
+                    output.set_error_archive(name);
+                    output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
+                    continue;
+            }
+
+            auto it = names.find(st.name);
+            if (it == names.end()) {
+                    output.set_error_archive(name);
+                    output.archive_error("unexpected name %s in archive", st.name);
+                    continue;
+            }
+            sorted_files.push_back(files[names[st.name]]);
+
+            sorted_files[i].mtime = st.mtime;
+        }
+
+        files = sorted_files;
+    }
+    else {
+        for (uint64_t i = 0; i < files.size(); i++) {
+            struct zip_stat st;
+
+            if (zip_stat_index(za, i, 0, &st) < 0) {
+                    output.set_error_archive(name);
+                    output.archive_error("cannot stat file %" PRIu64 ": %s", i, zip_strerror(za));
+                    continue;
+            }
+
+            files[i].mtime = st.mtime;
+        }
     }
 }
 
