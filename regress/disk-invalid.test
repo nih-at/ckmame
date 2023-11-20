@@ -1,5 +1,5 @@
 description test single-rom game with disk, file in place of disk is not a disk
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-disk-many.db -Fvc disk
 file roms/disk.zip 1-4-ok.zip

@@ -1,5 +1,5 @@
 description two games that use the same disk but under different names
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-disk-many.db -vc disk diskchild
 file roms/disk.zip 1-4-ok.zip

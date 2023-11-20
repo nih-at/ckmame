@@ -1,5 +1,5 @@
 description uncompressed ROM set, loose top-level files in extra dir
-variants dir
+#variants dir
 return 0
 arguments -Fvc -e search 1-4
 file search/loose 04.rom

@@ -1,5 +1,5 @@
 description test game with disk, move wrong but needed disk to needed
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-disk-many.db -Fvc disk
 file roms/disk.zip 1-4-ok.zip

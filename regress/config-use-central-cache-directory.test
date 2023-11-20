@@ -1,5 +1,5 @@
 description test single-rom game (no parent), file is in search dir from config, keep, use central cache
-variants zip
+#variants zip
 return 0
 setenv HOME ./home
 arguments -F 1-4

@@ -1,5 +1,5 @@
 description test single-rom game (no parent) as 7zip
-variants zip
+#variants zip
 features LIBARCHIVE
 return 0
 arguments -Fvcj 2-48

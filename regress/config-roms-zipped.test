@@ -1,5 +1,5 @@
 description test all games, no files found, unzipped per config
-variants zip
+#variants zip
 return 0
 arguments -v 1-4
 file-data .ckmamerc

@@ -1,5 +1,5 @@
 description read sets list from file
-variants zip
+#variants zip
 return 0
 arguments --list-sets
 file-data .ckmamerc

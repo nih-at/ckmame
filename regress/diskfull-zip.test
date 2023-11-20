@@ -1,5 +1,5 @@
 description test copying file from extra, failing (disk full) and cleaning up extra
-variants zip
+#variants zip
 return 0
 setenv FWRITE_MAX_WRITE 5
 preload fwrite.so

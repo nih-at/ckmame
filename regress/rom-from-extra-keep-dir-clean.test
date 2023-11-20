@@ -1,5 +1,5 @@
 description test single-rom game (no parent), file is in search dir
-variants dir
+#variants dir
 return 0
 arguments -Fvcj -e search 1-4
 file search/foo.zip pathtest1.zip pathtest1a.zip

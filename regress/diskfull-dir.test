@@ -1,5 +1,5 @@
 description test copying file from extra, failing (directory permissions) and (not) cleaning up extra
-variants dir
+#variants dir
 return 0
 arguments -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
 file extra/wrongname.zip 2-48-ok.zip

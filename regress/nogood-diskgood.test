@@ -1,5 +1,5 @@
 description test single-rom game with bad dump but good disk
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-disk-many.db -Fv --report-detailed diskgood-romnogood
 file roms/diskgood-romnogood/108-5.chd 108-5.chd

@@ -1,5 +1,5 @@
 description test single-rom game (no parent), correct partial ckmame db exists, game removed, other games not checked
-variants dir
+#variants dir
 return 0
 arguments -jFvc 1-4
 ckmamedb-before roms ckmamedb-1-4-ok.dump

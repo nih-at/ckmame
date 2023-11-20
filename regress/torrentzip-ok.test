@@ -1,5 +1,5 @@
 description test single-rom game (no parent), zip is correct, torrentzip it
-variants zip
+#variants zip
 return 0
 arguments -Fvc --use-torrentzip 1-4
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.tzip

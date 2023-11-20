@@ -1,5 +1,5 @@
 description test all games, some files in superfluous, fix
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-disk-many.db -Fv --report-detailed
 file roms/1-4-ok.zip 1-4-ok.zip {}

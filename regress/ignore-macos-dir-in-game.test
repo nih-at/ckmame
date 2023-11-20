@@ -1,5 +1,5 @@
 description ignore macOS resource fork files
-variants dir
+#variants dir
 return 0
 arguments -D ../mamedb-lost-parent-ok.db -vFc
 file roms/clone-8.zip 2-8c-macos.zip 1-8-macos.zip

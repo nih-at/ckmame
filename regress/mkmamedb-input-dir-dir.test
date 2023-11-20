@@ -1,5 +1,5 @@
 description test mkmamedb database creation from input directory (dir)
-variants dir
+#variants dir
 return 0
 program mkmamedb
 arguments -o mamedb-test.db extra

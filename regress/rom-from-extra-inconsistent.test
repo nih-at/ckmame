@@ -1,5 +1,5 @@
 description test single-rom game (no parent), extra zip is inconsistent
-variants zip
+#variants zip
 return 0
 arguments -Fjvc -e extradir 1-4
 file extradir/1-4-super.zip 1-4-inconsistent.zip {}

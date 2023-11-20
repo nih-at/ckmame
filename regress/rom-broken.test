@@ -1,5 +1,5 @@
 description test game (no parent), zip is partially broken
-variants zip
+#variants zip
 return 0
 arguments -Fvc 2-48
 file roms/2-48.zip 2-48-broken.zip

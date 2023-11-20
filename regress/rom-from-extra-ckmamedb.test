@@ -1,5 +1,5 @@
 description test modifying archive that hasn't changed from ckmamedb
-variants zip
+#variants zip
 return 0
 arguments -Fvcj -e extradir 2-48
 file extradir/2-48.zip 2-48-ok.zip {}

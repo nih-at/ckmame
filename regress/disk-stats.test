@@ -1,5 +1,5 @@
 description test single-rom game with bad dump but good disk
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-disk-many.db -cv --report-summary 2-48 1-8 disk disk-2
 file roms/2-48.zip 1-4-ok.zip

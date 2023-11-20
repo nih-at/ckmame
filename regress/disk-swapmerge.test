@@ -1,5 +1,5 @@
 description test two games where child has parents merged disk under its name
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-disk-many.db -Fvc disk diskchild
 file roms/disk.zip 1-4-ok.zip

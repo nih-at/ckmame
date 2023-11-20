@@ -1,5 +1,5 @@
 description test single-rom game (no parent), extra zip contains file, can't copy
-variants zip
+#variants zip
 return 0
 preload fwrite.so
 setenv RENAME_FAILS roms/1-4.zip

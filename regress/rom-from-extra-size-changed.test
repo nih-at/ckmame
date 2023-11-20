@@ -1,5 +1,5 @@
 description test single-rom game (no parent), file is in search dir, but content has changed compared to .ckmamedb
-variants dir
+#variants dir
 return 0
 arguments -Fvc -e search 1-4
 file search/1-4.zip 1-4-ok.zip

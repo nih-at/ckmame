@@ -1,5 +1,5 @@
 description ckmame.db is created in extra dirs
-variants dir
+#variants dir
 return 0
 arguments -D ../mamedb-small.db -e extra
 file extra/1-4.zip 1-4-ok.zip

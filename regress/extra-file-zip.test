@@ -1,5 +1,5 @@
 description test single-rom game (no parent), zip is correct, extra file exists (zip)
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-small.db -Fvc
 file roms/1-4.zip 1-4-ok.zip

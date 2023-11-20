@@ -1,5 +1,5 @@
 description test two games with swapped disks
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-disk-many.db -Fvc disk disk-2
 file roms/disk.zip 1-4-ok.zip

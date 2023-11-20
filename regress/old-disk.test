@@ -1,5 +1,5 @@
 description test game w/ disk, disk is in old
-variants zip
+#variants zip
 return 0
 arguments -D ../mamedb-disk-many.db -Fvc -O ../mamedb-disk.db disk
 file roms/disk.zip 1-4-ok.zip

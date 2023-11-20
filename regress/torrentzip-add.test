@@ -1,5 +1,5 @@
 description test single-rom game (no parent), add missing rom, torrentzip it
-variants zip
+#variants zip
 return 0
 arguments -Fjvc -e extra --use-torrentzip 1-4
 file roms/1-4.zip {} 1-4-ok.tzip
