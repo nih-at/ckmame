@@ -14,13 +14,9 @@ zip.zip = zipcmp -pv
 db.ckmamedb = compare-ckmamedb
 db.ckmamedb-unzipped = compare-ckmamedb -u
 
-[copiers]
-.zip = our-unzip
+#[copiers]
+#.zip = our-unzip
 # our-unzip ../1-4-ok.zip roms/1-4
 
 [comparator-preprocessors]
 db.dump = dbdump
-
-[variants]
-zip =
-dir = VariantDir

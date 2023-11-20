@@ -4,7 +4,7 @@ arguments -D ../mamedb-baddump.db -Fvc -je extra
 file roms/baddump.zip baddump.zip
 file extra/baddump.zip baddump.zip {}
 file roms/.ckmame.db {} <inline.ckmamedb>
-hashes baddump.zip bad.rom archive
+hashes baddump.zip bad.rom cheap
 end-of-inline-data
 stdout
 In game baddump:

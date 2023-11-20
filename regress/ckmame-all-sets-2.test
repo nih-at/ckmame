@@ -6,8 +6,6 @@ file roms1/1-4.zip {} 1-4-ok.zip
 file roms2/1-8.zip {} 1-8-ok.zip
 file extra/1-4.zip 1-4-ok.zip {}
 file extra2/1-8.zip 1-8-ok.zip {}
-file extra/.ckmame.db {} <empty.ckmamedb>
-file extra2/.ckmame.db {} <empty.ckmamedb>
 file roms1/.ckmame.db {} <empty.ckmamedb>
 file roms2/.ckmame.db {} <empty.ckmamedb>
 file .ckmamerc <inline>

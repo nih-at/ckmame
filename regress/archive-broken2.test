@@ -1,7 +1,8 @@
 description test game (no parent), zip is incomplete, looked-at zip is broken
-variants zip
+#variants zip
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/2-48.zip CMakeLists.txt
 stdout
 In game 1-4:

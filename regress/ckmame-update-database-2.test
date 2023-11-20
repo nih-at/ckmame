@@ -2,10 +2,9 @@ description updata database - no change
 return 0
 arguments --update-database 1-4
 file dats/mame.dat mamedb-baddump.dat
-touch 1644506227 dats/mame.dat
+set-modification-time dats/mame.dat 1644506227
 file output.db mame.db
 file dats/.mkmamedb.db {} mkmamedb-datdb-7.dump
-ckmamedb-after dats ckmamedb-empty.dump
 file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]

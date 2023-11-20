@@ -1,10 +1,12 @@
 description test game (no parent), zip is invalid, good files exist
-variants zip
+#variants zip
 return 0
 arguments -Fvc 2-48
+file mame.db mame.db
 file roms/2-48.zip CMakeLists.txt 2-48-ok.zip
 file roms/good-2-48.zip 2-48-ok.zip {}
 file roms/2-48.zip-000.broken {} CMakeLists.txt
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/good-2-48.zip/04.rom'

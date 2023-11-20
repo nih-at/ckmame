@@ -1,3 +1,4 @@
 description test nothing to do, just check if ckmame runs
 return 0
+file mame.db mame.db
 arguments --no-report-missing

@@ -1,13 +1,15 @@
 description test config on command line overrides the one in local directory
 return 0
-setenv HOME ./home
+environment-set HOME ./home
 arguments --config .alternate-ckmamerc -F 1-4 1-8
+file mame.db mame.db
 file roms-commandline/1-4.zip 1-4-ok.zip
-file-data .ckmamerc
+file roms-commandline/.ckmame.db {} <empty.ckmamedb>
+file .ckmamerc <inline>
 [global]
 rom-directory = "roms-local"
 end-of-inline-data
-file-data .alternate-ckmamerc
+file .alternate-ckmamerc <inline>
 [global]
 rom-directory = "roms-commandline"
 end-of-inline-data

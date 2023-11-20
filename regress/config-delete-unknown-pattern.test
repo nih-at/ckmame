@@ -4,8 +4,10 @@ arguments -F 1-4 1-8
 file roms/1-8.zip 2-8u-ok.zip 1-8-ok.zip
 file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
 file unknown/1-4.zip garbage.zip garbage2.zip
-no-hashes unknown 1-4.zip
-file-data .ckmamerc
+file unknown/.ckmame.db <inline.ckmamedb>
+hashes 1-4.zip 04.rom cheap
+end-of-inline-data
+file .ckmamerc <inline>
 [global]
 delete-unknown-pattern = "*.rom"
 end-of-inline-data

@@ -2,8 +2,9 @@ description test all games, no files found, create fixdat based on config settin
 features LIBXML2
 return 0
 arguments -F -D ../mamedb-merge-parent.db
-file "fixdat_ckmame {} test
-file-data .ckmamerc
+file mame.db mame.db
+file fixdat_ckmame {} test
+file .ckmamerc <inline>
 [global]
 create-fixdat = true
 end-of-inline-data

@@ -125,7 +125,7 @@ class CkmameDBComparator:
         self.process_stdin()
         self.read_ckmamedb(filename)
         self.read_directory()
-        compare = nihtest.CompareArrays.CompareArrays(self.got_dump, self.expected_db.dump())
+        compare = nihtest.CompareArrays.CompareArrays(self.expected_db.dump(), self.got_dump)
         diffs = compare.get_diff()
         if len(diffs) > 0:
             print(os.linesep.join(diffs))
@@ -149,7 +149,7 @@ class CkmameDBComparator:
         file = arguments[1]
         hashes = {"crc", "md5", "sha1"}
         for spec in arguments[2].split(","):
-            if spec == "archive":
+            if spec == "cheap":
                 hashes = {"crc"} # TODO: {} for unzipped
             elif spec == "none":
                 hashes = {}
@@ -159,6 +159,8 @@ class CkmameDBComparator:
                 hashes.add(spec)
             elif spec == "-crc" or spec == "-md5" or spec == "-sha1":
                 hashes.remove(spec[1:])
+            else:
+                print(f"invalid hash spec '{spec}'")
         self.hash_exceptions[f"{archive}/{file}"] = hashes
 
     def read_ckmamedb(self, filename):

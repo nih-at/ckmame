@@ -1,9 +1,12 @@
 description test single-rom game (no parent), file is in search dir, keep
 return 0
 arguments -F -e search 1-4
+file mame.db mame.db
 file search/14.zip 1-4-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip
-file-data .ckmamerc
+file roms/.ckmame.db {} <empty.ckmamedb>
+file search/.ckmame.db {} <empty.ckmamedb>
+file .ckmamerc <inline>
 [global]
 move-from-extra = false
 end-of-inline-data

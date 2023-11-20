@@ -1,9 +1,11 @@
 description test romdir on command line overrides the one in local directory
 return 0
-setenv HOME ./home
+environment-set HOME ./home
 arguments --rom-directory roms-commandline -F 1-4 1-8
+file mame.db mame.db
 file roms-commandline/1-4.zip 1-4-ok.zip
-file-data .ckmamerc
+file roms-commandline/.ckmame.db {} <empty.ckmamedb>
+file .ckmamerc <inline>
 [global]
 rom-directory = "roms-local"
 end-of-inline-data

@@ -1,5 +1,5 @@
 description list all configured sets, mix zipped/unzipped
-variants zip
+#variants zip
 return 0
 arguments --all-sets -v -F 1-4 1-8
 file mame.db mame.db
@@ -9,9 +9,12 @@ file roms4/1-4/04.rom {} 04.rom
 file extra/1-4.zip 1-4-ok.zip
 file extra2/1-8.zip 1-8-ok.zip
 file extra3/04.rom 04.rom
-ckmamedb-type extra dir
-ckmamedb-type extra3 dir
-ckmamedb-type roms4 dir
+file extra/.ckmame.db {} <empty.ckmamedb-unzipped>
+file extra2/.ckmame.db {} <empty.ckmamedb>
+file extra3/.ckmame.db {} <empty.ckmamedb-unzipped>
+file roms1/.ckmame.db {} <empty.ckmamedb>
+file roms3/.ckmame.db {} <empty.ckmamedb>
+file roms4/.ckmame.db {} <empty.ckmamedb-unzipped>
 file .ckmamerc <inline>
 [global]
 report-correct = true
