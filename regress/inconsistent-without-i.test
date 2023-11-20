@@ -2,6 +2,7 @@ description test single-rom game (no parent), zip is inconsistent, without -i
 #variants zip
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip 1-4-inconsistent.zip
 stdout
 In game 1-4:

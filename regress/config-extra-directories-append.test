@@ -1,6 +1,7 @@
 description test single-rom game (no parent), file is in search dir from config, keep
 return 0
 arguments --set "Test" -F 2-48
+file mame.db mame.db
 file extra/18.zip 1-8-ok.zip
 file search/14.zip 1-4-ok.zip
 file roms/2-48.zip {} 2-48-ok.zip

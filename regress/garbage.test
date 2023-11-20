@@ -1,6 +1,7 @@
 description test single-rom game (no parent), zip contains garbage, fix
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
 file unknown/1-4.zip {} garbage.zip
 no-hashes unknown 1-4.zip garbage

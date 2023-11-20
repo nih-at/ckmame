@@ -1,6 +1,7 @@
 description test rom with two identical files, only one present
 return 0
 arguments -Fvc 2-44
+file mame.db mame.db
 file roms/2-44.zip 1-4-ok.zip 2-44-ok.zip
 stdout
 In game 2-44:

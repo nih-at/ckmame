@@ -2,6 +2,7 @@ description test single-rom game (no parent), move-from-extra specific to extra-
 return 0
 setenv HOME ./home
 arguments -F 2-48
+file mame.db mame.db
 file search/1-4.zip 1-4-ok.zip
 file extra/1-8.zip 1-8-ok.zip {}
 file roms/2-48.zip {} 2-48-ok.zip

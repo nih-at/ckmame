@@ -1,6 +1,7 @@
 description test single-rom game (no parent), file is in different game
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip {} 1-4-ok.zip
 file roms/parent-4.zip 1-4-ok.zip
 stdout

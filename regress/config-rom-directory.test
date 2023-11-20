@@ -1,6 +1,7 @@
 description test all games, no files found, use rom-db from config
 return 0
 arguments 1-4
+file mame.db mame.db
 file roms-local/1-4.zip 1-4-ok.zip
 file-data .ckmamerc
 [global]

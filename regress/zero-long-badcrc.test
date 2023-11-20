@@ -1,6 +1,7 @@
 description test game with 0 byte rom and weird CRC, too big file exists
 return 0
 arguments -Fvc zero
+file mame.db mame.db
 file roms/zero.zip zero-long.zip zero-ok.zip
 file unknown/zero.zip {} zero-long.zip
 no-hashes unknown zero.zip

@@ -1,6 +1,7 @@
 description test single-rom game with bad dump; with --report-no-good-dump configuration
 return 0
 arguments nogood-2
+file mame.db mame.db
 file roms/nogood-2.zip 1-8-ok.zip
 file-data .ckmamerc
 [global]

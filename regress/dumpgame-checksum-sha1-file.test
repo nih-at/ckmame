@@ -1,6 +1,7 @@
 description dumpgame: test --checksum SHA1 for file
 return 0
 arguments --checksum 111bb8b7549e3386a996845405b02164f17c7b37
+file mame.db mame.db
 program dumpgame
 stdout
 In game 1-8:

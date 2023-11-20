@@ -1,6 +1,7 @@
 description test 1-rom game, only wrong roms in zip
 return 0
 arguments -Fvc 1-8a
+file mame.db mame.db
 file roms/1-8a.zip 1-8-ok.zip {}
 file saved/3656897d-000.zip {} 1-8-ok.zip
 stdout

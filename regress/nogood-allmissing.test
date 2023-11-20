@@ -1,6 +1,7 @@
 description test single-rom game with bad dump; with --report-detail, so output expected
 return 0
 arguments --report-detailed nogood
+file mame.db mame.db
 stdout
 In game nogood:
 rom  04.rom        size       4  no good dump: missing

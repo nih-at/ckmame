@@ -1,6 +1,7 @@
 description test incomplete game based on config
 return 0
 arguments -F 2-48
+file mame.db mame.db
 file roms/2-48.zip 1-4-ok.zip
 file-data .ckmamerc
 [global]

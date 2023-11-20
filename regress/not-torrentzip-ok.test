@@ -2,6 +2,7 @@ description test single-rom game (no parent), zip is correct, not converted to t
 #variants zip
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip 1-4-ok.zip 1-4-ok.not_tzip
 stdout
 In game 1-4:

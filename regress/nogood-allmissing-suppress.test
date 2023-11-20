@@ -1,3 +1,4 @@
 description test single-rom game with bad dump, no output expected
 return 0
 arguments -Fv nogood
+file mame.db mame.db

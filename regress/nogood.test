@@ -2,6 +2,7 @@ description test single-rom game with bad dump
 return 0
 # TODO: -c reports game as correct
 arguments -cFv nogood
+file mame.db mame.db
 file roms/nogood.zip 1-4-ok.zip
 no-hashes roms nogood.zip
 stdout

@@ -2,6 +2,7 @@ description test single-rom game (no parent), file is in search dir, keep
 #variants dir
 return 0
 arguments -Fvc -e search 1-4
+file mame.db mame.db
 file search/foo.zip pathtest1.zip
 file search/bar.zip pathtest2.zip
 file roms/1-4.zip {} 1-4-ok.zip

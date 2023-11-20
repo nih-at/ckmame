@@ -1,6 +1,7 @@
 description dumpgame: test single game
 return 0
 arguments parent-4
+file mame.db mame.db
 program dumpgame
 stdout
 Name:		parent-4

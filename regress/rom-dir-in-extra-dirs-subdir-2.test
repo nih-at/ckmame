@@ -1,6 +1,7 @@
 description extra dir is substring of ROM dir, but not parent directory
 return 0
 arguments -R extradir -e extra 1-4
+file mame.db mame.db
 file extra/foo.zip 1-4-foo.zip
 file extradir/1-8.zip 1-8-ok.zip
 ckmamedb-after extradir ckmamedb-empty.dump

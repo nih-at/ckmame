@@ -1,6 +1,7 @@
 description saved contains file from other game, is not removed
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip 1-4-ok.zip
 file saved/3656897d-000.zip 1-8-ok.zip
 stdout

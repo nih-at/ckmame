@@ -1,6 +1,7 @@
 description dumpgame: test --checksum MD5 for file
 return 0
 arguments --checksum d41d8cd98f00b204e9800998ecf8427e
+file mame.db mame.db
 program dumpgame
 stdout
 In game zero:

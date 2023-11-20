@@ -1,6 +1,7 @@
 description test many games, report status
 return 0
 arguments -vc --report-summary
+file mame.db mame.db
 # ulimit -n 12
 file roms/1-4.zip 1-4-ok.zip
 file roms/1-8.zip 1-8-ok.zip

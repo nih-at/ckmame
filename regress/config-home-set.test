@@ -2,6 +2,7 @@ description test config in home directory is used, set overrides
 return 0
 setenv HOME ./home
 arguments --set "Test" -F 1-4 1-8
+file mame.db mame.db
 file roms-set/1-4.zip 1-4-ok.zip
 file-data home/.config/ckmame/ckmamerc
 [global]

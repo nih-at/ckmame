@@ -2,6 +2,7 @@ description test ckmamedb migration from version 2
 return 0
 #variants zip
 arguments -Fvc -je extra 1-4
+file mame.db mame.db
 file extra/1-8.zip 1-8-ok.zip
 ckmamedb-before extra ckmamedb-1-8-ok-v2.dump 2 ckmamedb-v2.sql
 stdout

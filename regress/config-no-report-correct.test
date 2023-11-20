@@ -1,6 +1,7 @@
 description test config in local directory is used, do not report correct roms
 return 0
 arguments -F 1-4 1-8
+file mame.db mame.db
 file roms/1-4.zip 1-4-ok.zip
 file-data .ckmamerc
 [global]

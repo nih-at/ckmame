@@ -2,6 +2,7 @@ description test single-rom game (no parent), superfluous zip is inconsistent
 #variants zip
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4-super.zip 1-4-inconsistent.zip {}
 file roms/1-4.zip {} 1-4-ok.zip
 stdout

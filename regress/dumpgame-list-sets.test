@@ -1,6 +1,7 @@
 description list all configured sets using dumpgame
 return 0
 arguments --list-sets
+file mame.db mame.db
 program dumpgame
 file-data .ckmamerc
 [global]

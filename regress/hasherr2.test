@@ -1,6 +1,7 @@
 description test single-rom game (no parent), zip is wrong
 return 0
 arguments -Fvc deadbeef
+file mame.db mame.db
 file roms/deadbeef.zip deadfish.zip {}
 file unknown/deadbeef.zip {} deadfish.zip
 stdout

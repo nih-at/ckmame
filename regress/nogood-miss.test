@@ -1,6 +1,7 @@
 description test single-rom game with bad dump
 return 0
 arguments -Fv --report-detailed nogood-2
+file mame.db mame.db
 file roms/nogood-2.zip 1-8-ok.zip
 stdout
 In game nogood-2:

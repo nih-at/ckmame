@@ -1,6 +1,7 @@
 description test 2 rom game, zip is correct, one rom is in old, keep it
 return 0
 arguments -F 2-4a
+file mame.db mame.db
 file roms/2-4a.zip 2-4a-ok.zip
 file-data .ckmamerc
 [global]

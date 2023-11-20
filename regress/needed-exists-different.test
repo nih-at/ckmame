@@ -1,6 +1,7 @@
 description check, zip contains file needed elsewhere, fix, different saved already exists
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip deadbeef.zip {}
 file saved/deadbeef-000.zip deadpork.zip {}
 file saved/deadbeef-001.zip {} deadbeef.zip

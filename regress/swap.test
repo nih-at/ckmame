@@ -1,6 +1,7 @@
 description test single-rom game (no parent), rom has wrong name
 return 0
 arguments -Fvc 2-48
+file mame.db mame.db
 file roms/2-48.zip 2-84.zip 2-48-ok.zip
 stdout
 In game 2-48:

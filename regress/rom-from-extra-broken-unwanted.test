@@ -2,6 +2,7 @@ description test single-rom game (no parent), extra zip contains unknown broken
 #variants zip
 return 0
 arguments -Fjvc -e extra 2-48
+file mame.db mame.db
 file extra/1-4-crcerror.zip 1-4-crcerror.zip
 file extra/1-8-ok.zip 1-8-ok.zip {}
 file roms/2-48.zip {} 1-8-ok.zip

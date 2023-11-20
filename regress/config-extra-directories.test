@@ -1,6 +1,7 @@
 description test single-rom game (no parent), file is in search dir from config, keep
 return 0
 arguments -F 1-4
+file mame.db mame.db
 file search/14.zip 1-4-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip
 file-data .ckmamerc

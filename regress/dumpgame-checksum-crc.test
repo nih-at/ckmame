@@ -1,6 +1,7 @@
 description dumpgame: test --checksum CRC for file
 return 0
 arguments --checksum 12345678
+file mame.db mame.db
 program dumpgame
 stdout
 In game 1-8a:

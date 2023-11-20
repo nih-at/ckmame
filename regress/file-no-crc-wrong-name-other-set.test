@@ -1,6 +1,7 @@
 description test 1-rom game, file in archive has wrong name in other archive
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-8.zip 1-4-misnamed.zip {}
 file roms/1-4.zip {} 1-4-ok.zip
 stdout

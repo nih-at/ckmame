@@ -1,6 +1,7 @@
 description test that file added to parent is found in child
 return 0
 arguments -Fvc -e extra parent-4 clone-8
+file mame.db mame.db
 file roms/parent-4.zip {} 1-4-ok.zip
 file extra/forparent.zip 1-4-ok.zip
 file roms/clone-8.zip 1-8-ok.zip

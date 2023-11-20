@@ -1,6 +1,7 @@
 description test parent, file used by child, not fixing
 return 0
 arguments -v parent-4
+file mame.db mame.db
 file roms/parent-4.zip 2-48-ok.zip
 stdout
 In game parent-4:

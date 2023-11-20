@@ -1,6 +1,7 @@
 description integrity test parent, file is wrong, correct rom in romset
 return 0
 arguments -Fvc deadbeef
+file mame.db mame.db
 file roms/deadbeef.zip deadpork.zip deadbeef.zip
 file roms/deadclonedbeef.zip deadclonedbeef.zip
 file unknown/deadbeef.zip {} deadpork.zip

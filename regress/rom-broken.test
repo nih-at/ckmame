@@ -2,6 +2,7 @@ description test game (no parent), zip is partially broken
 #variants zip
 return 0
 arguments -Fvc 2-48
+file mame.db mame.db
 file roms/2-48.zip 2-48-broken.zip
 stdout
 In game 2-48:

@@ -1,6 +1,7 @@
 description test single-rom game (no parent), configure unknown-directory
 return 0
 arguments -F 1-8
+file mame.db mame.db
 file roms/1-8.zip 2-8u-ok.zip 1-8-ok.zip
 file extra-or-removed/1-8.zip {} 1-u-ok.zip
 no-hashes extra-or-removed 1-8.zip

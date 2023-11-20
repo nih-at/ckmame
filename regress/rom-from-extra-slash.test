@@ -1,6 +1,7 @@
 description test single-rom game (no parent), file is in search dir, remove
 return 0
 arguments -Fvcj -e search/ 1-4
+file mame.db mame.db
 file search/foo.zip 1-4-ok.zip {}
 file search/ignore.zip 1-u-ok.zip
 file search/ignore2 dummy

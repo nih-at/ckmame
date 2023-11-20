@@ -2,6 +2,7 @@ description test all games, no files found, create fixdat based on config settin
 features LIBXML2
 return 0
 arguments -F -D ../mamedb-merge-parent.db
+file mame.db mame.db
 file "home/fixdat_ckmame {} test
 file-data home/.exist
 to make sure directory exists

@@ -2,6 +2,7 @@ description uncompressed ROM set, loose top-level files in extra dir
 #variants dir
 return 0
 arguments -Fvc -e search 1-4
+file mame.db mame.db
 file search/loose 04.rom
 file search/1-8.zip 1-8-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip

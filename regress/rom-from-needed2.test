@@ -1,6 +1,7 @@
 description integrity test, file is wrong, correct and wrong roms in needed
 return 0
 arguments -Fvc deadbeef
+file mame.db mame.db
 file roms/deadbeef.zip deadpork.zip deadbeef.zip
 file saved/deadbeef-000.zip deadfish.zip {}
 file saved/deadbeef-001.zip deadbeef.zip {}

@@ -4,6 +4,7 @@ return 0
 preload fwrite.so
 setenv RENAME_FAILS roms/1-4.zip
 arguments -Fvje extra -D ../mamedb-small.db
+file mame.db mame.db
 file roms/1-4-wrong-name.zip 1-4-ok.zip {}
 file saved/d87f7e0c-000.zip {} 1-4-ok.zip
 stdout

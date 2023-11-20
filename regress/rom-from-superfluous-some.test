@@ -1,6 +1,7 @@
 description test game, file is in superfluous, fix, superfluous keeps some
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/superfluous.zip 2-48-ok.zip {}
 file roms/1-4.zip {} 1-4-ok.zip
 file saved/3656897d-000.zip {} 1-8-ok.zip

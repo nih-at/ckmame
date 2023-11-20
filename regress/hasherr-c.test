@@ -1,6 +1,7 @@
 description integrity test child, wrong file in child
 return 0
 arguments -Fvc deadbeefchild
+file mame.db mame.db
 file roms/deadbeefchild.zip deadfish4.zip 1-4-ok.zip
 file unknown/deadbeefchild.zip {} deadfish.zip
 stdout

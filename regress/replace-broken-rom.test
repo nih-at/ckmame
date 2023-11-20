@@ -2,6 +2,7 @@ description broken rom replaced with a proper copy
 #variants zip
 return 0
 arguments -Fjvc -e extra 1-4
+file mame.db mame.db
 file roms/1-4.zip 1-4-crcerror.zip 1-4-ok.zip
 file extra/1-4.zip 1-4-ok.zip {}
 stdout

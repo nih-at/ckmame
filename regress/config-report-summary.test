@@ -1,6 +1,7 @@
 description test all games, no files found, report summary
 return 0
 arguments -D ../mamedb-merge-parent.db
+file mame.db mame.db
 file roms/grandparent.zip 1-4-ok.zip
 file roms/parent.zip 1-8-ok.zip
 no-hashes roms grandparent.zip

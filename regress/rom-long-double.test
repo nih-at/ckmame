@@ -1,6 +1,7 @@
 description test single-rom game (no parent), rom is doubled
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip 1-4-dup.zip 1-4-ok.zip
 file unknown/1-4.zip {} 1-4-dup.zip
 no-hashes roms 1-4.zip 04.rom md5

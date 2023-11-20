@@ -2,6 +2,7 @@ description report error for unknown profile in config file
 return 1
 setenv HOME ./home
 arguments --set Test 1-4
+file mame.db mame.db
 file-data .ckmamerc
 [global]
 verbose = false

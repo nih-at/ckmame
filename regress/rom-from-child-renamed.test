@@ -1,6 +1,7 @@
 description file in child needs to be renamed and moved to parent
 return 0
 arguments -Fvc 1-4 parent-4 clone-8
+file mame.db mame.db
 file roms/1-4.zip {} 1-4-ok.zip
 file roms/parent-4.zip {} 1-4-ok.zip
 file roms/clone-8.zip 1-4-misnamed.zip {}

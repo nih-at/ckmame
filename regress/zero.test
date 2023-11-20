@@ -1,8 +1,8 @@
 description test game with 0 byte rom, zip is ok
 return 0
 arguments -Fvc zero
+file mame.db mame.db
 file roms/zero.zip zero-ok.zip
-
 stdout
 In game zero:
 game zero                                    : correct

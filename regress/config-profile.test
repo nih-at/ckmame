@@ -2,6 +2,7 @@ description test profiles and their selection work
 return 0
 setenv HOME ./home
 arguments --set Test -F 1-4 1-8
+file mame.db mame.db
 file roms-local/1-4.zip 1-4-ok.zip
 file-data .ckmamerc
 [global]

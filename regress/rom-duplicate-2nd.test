@@ -1,6 +1,7 @@
 description test game w/ duplicate rom, zip has one copy w/ name of second
 return 0
 arguments -Fvc 2-44
+file mame.db mame.db
 file roms/2-44.zip 1-4-2.zip 2-44-ok.zip
 stdout
 In game 2-44:

@@ -1,6 +1,7 @@
 description test incomplete game, moves files to needed
 return 0
 arguments -FvC --no-report-missing 2-48
+file mame.db mame.db
 file roms/2-48.zip 1-4-ok.zip {}
 file saved/d87f7e0c-000.zip {} 1-4-ok.zip
 stdout

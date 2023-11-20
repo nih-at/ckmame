@@ -1,6 +1,7 @@
 description test game: rom part is needed here, whole rom is needed somewhere else
 return 0
 arguments -Fvc 1-4 1-8
+file mame.db mame.db
 file roms/1-4.zip 1-8-called-04.zip 1-4-ok.zip
 file roms/1-8.zip {} 1-8-ok.zip
 no-hashes roms 1-4.zip 04.rom md5

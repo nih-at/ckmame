@@ -1,6 +1,7 @@
 description zip contains file needed elsewhere, creating saved archive fails
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip 1-8-ok.zip 2-48-ok.zip
 file roms/2-48.zip 1-4-ok.zip
 mkdir saved

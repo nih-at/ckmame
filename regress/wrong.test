@@ -1,6 +1,7 @@
 description test 1-rom game, only wrong roms in zip
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip garbage.zip {}
 file unknown/1-4.zip {} garbage.zip
 no-hashes unknown 1-4.zip garbage

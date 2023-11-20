@@ -1,6 +1,7 @@
 description test single-rom game (no parent), zip contains file needed elsewhere, fix
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
 file saved/3656897d-000.zip {} 1-8-ok.zip
 stdout

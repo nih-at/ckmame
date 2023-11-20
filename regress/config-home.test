@@ -2,6 +2,7 @@ description test config in home directory is used
 return 0
 setenv HOME ./home
 arguments -F 1-4 1-8
+file mame.db mame.db
 file roms-home/1-4.zip 1-4-ok.zip
 file-data home/.config/ckmame/ckmamerc
 [global]

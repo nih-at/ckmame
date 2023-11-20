@@ -1,6 +1,7 @@
 description unused file in parent
 return 0
 arguments -Fvc parent-4
+file mame.db mame.db
 file roms/parent-4.zip 2-48-ok.zip 1-4-ok.zip
 file roms/clone-8.zip 1-8-ok.zip
 stdout

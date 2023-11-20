@@ -1,6 +1,7 @@
 description test single-rom game (no parent), zip is correct, using rom-dir
 return 0
 arguments -Fvc -R roms-commandline 1-4
+file mame.db mame.db
 file roms-commandline/1-4.zip 1-4-ok.zip
 stdout
 In game 1-4:

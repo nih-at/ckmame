@@ -1,5 +1,6 @@
 description test game with bad dump ROM and good ROM in parent
 return 0
 arguments -Fv nogoodclone
+file mame.db mame.db
 file roms/1-8.zip 1-8-ok.zip
 no-hashes roms 1-8.zip

@@ -2,6 +2,7 @@ description test single-rom game (no parent), superfluous zip contains broken
 #variants zip
 return 0
 arguments -Fvc 2-48
+file mame.db mame.db
 file roms/2-48-part-broken.zip 2-48-broken.zip 1-8-broken.zip
 file roms/2-48.zip {} 1-4-ok.zip
 stdout

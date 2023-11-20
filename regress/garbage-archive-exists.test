@@ -1,6 +1,7 @@
 description game contains garbage, garbage location already exists but no conflicts
 return 0
 arguments -Fvc 1-4
+file mame.db mame.db
 file roms/1-4.zip garbage.zip {}
 file unknown/1-4.zip 1-8-ok.zip garbage-1-8-ok.zip
 no-hashes unknown 1-4.zip

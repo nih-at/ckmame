@@ -1,6 +1,7 @@
 description test single-rom game (no parent), configure saved-directory
 return 0
 arguments -F 1-4
+file mame.db mame.db
 file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
 file extra-later/3656897d-000.zip {} 1-8-ok.zip
 file-data .ckmamerc

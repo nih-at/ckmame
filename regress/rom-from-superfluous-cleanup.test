@@ -1,6 +1,7 @@
 description test double-rom game (no parent), cleanup messages for used ok
 return 0
 arguments -Fvc 2-48
+file mame.db mame.db
 file roms/1-4-ok.zip 1-4-ok.zip {}
 file roms/1-8-ok.zip 1-8-ok.zip {}
 file roms/2-48.zip {} 2-48-ok.zip

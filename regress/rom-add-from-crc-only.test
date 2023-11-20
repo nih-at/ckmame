@@ -1,6 +1,7 @@
 description take ROM from correct game that has fewer hash types
 return 0
 arguments -Fvc 2-48
+file mame.db mame.db
 file roms/1-8.zip 1-8-ok.zip
 file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
 stdout
