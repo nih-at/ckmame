@@ -8,7 +8,7 @@ project(ckmame
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 
-option(RUN_REGRESS "Build regression tests" ON)
+option(RUN_REGRESS "Run regression tests" ON)
 
 include(CheckFunctionExists)
 include(CheckIncludeFiles)
