@@ -1,3 +1,7 @@
+### nihtest
+
+- Remove mame.db from tests that don't need it.
+
 ### Implement
 
 - Fix failing tests.
