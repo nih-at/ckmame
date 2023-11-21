@@ -5,6 +5,7 @@
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
 - SHA256 support
 - mia="yes" support
+- speed up fixing 'complete-only' sets: stop checking a game when one entry is missing
 
 ### Write Tests for Config
 
