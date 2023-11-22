@@ -2,7 +2,7 @@ description test all games, no files found, create fixdat
 features LIBXML2
 return 0
 arguments -Fvc -D ../mamedb-merge-parent.db --create-fixdat
-file "fixdat_ckmame {} test
+file fixdat_ckmame {} test
 stdout
 In game grandparent:
 game grandparent                             : not a single file found

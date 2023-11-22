@@ -30,7 +30,7 @@ file roms/nogood-2.zip {} 1-8-ok.zip
 file roms/parent-4.zip {} 1-4-ok.zip
 file roms/zero-4.zip {} zero-4-ok.zip
 file roms/zero.zip {} zero-ok.zip
-file "fixdat_ckmame {} test
+file fixdat_ckmame {} test
 file roms/disk/108-5.chd 108-5.chd
 file roms/disk-nogood/108-nogood.chd 108-5.chd
 file roms/diskgood-romnogood/108-5.chd 108-5.chd
