@@ -4,3 +4,4 @@ program mkmamedb
 arguments --directory-cache -F cm -o output.dat roms
 file output.dat mamedb-small.dat
 file roms/1-4.zip 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>

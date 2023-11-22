@@ -3,6 +3,7 @@ return 0
 arguments --report-no-good-dump nogood-2
 file mame.db mame.db
 file roms/nogood-2.zip 1-8-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game nogood-2:
 rom  04.rom        size       4  no good dump: missing

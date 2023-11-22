@@ -7,6 +7,8 @@ file search/foo/14.zip 1-4-ok.zip
 file search/bar/ignore.zip 1-8-ok.zip
 file search/foo/bar/ignore dummy
 file roms/1-4.zip {} 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file search/.ckmame.db {} <empty.ckmamedb>
 no-hashes search bar/ignore.zip
 stdout
 In game 1-4:

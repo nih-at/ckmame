@@ -6,6 +6,8 @@ file roms/parent.zip 2-4a-ok.zip {}
 file roms/1-8.zip 1-8-ok.zip {}
 file roms/anothercopy.zip 1-4-ok.zip {}
 file unknown/parent.zip {} 1-a-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms clone-8.zip
 no-hashes unknown parent.zip 0a.rom
 stdout

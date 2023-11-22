@@ -3,6 +3,7 @@ return 0
 arguments -Fvc zero-4
 file mame.db mame.db
 file roms/zero-4.zip 1-4-ok.zip zero-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game zero-4:
 rom  zero          size       0  crc 00000000: missing

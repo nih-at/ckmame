@@ -5,6 +5,8 @@ file roms/1-8.zip 2-8u-ok.zip 1-8-ok.zip
 file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
 file unknown/1-4.zip garbage.zip garbage2.zip
 file unknown/.ckmame.db <inline.ckmamedb>
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 hashes 1-4.zip 04.rom cheap
 end-of-inline-data
 file .ckmamerc <inline>

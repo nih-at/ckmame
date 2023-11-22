@@ -9,6 +9,8 @@ file roms/108-2.chd 108-2.chd {}
 file roms/108-5.chd 108-5.chd {}
 file unknown/parent.zip {} 1-c-ok.zip
 file unknown/roms/108-2.chd {} 108-2.chd
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms clone-8.zip
 no-hashes unknown parent.zip 0c.rom
 stdout

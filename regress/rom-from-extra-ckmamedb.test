@@ -5,6 +5,8 @@ arguments -Fvcj -e extradir 2-48
 file mame.db mame.db
 file extradir/2-48.zip 2-48-ok.zip {}
 file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extradir/.ckmame.db {} <empty.ckmamedb>
 ckmamedb-before roms ckmamedb-1-4-as-2-48.dump
 touch 1422359238 roms/2-48.zip
 no-hashes extradir 2-48.zip 04.rom

@@ -4,6 +4,7 @@ arguments -Fvc 1-4 1-8
 file mame.db mame.db
 file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
 file roms/1-8.zip 2-48-ok.zip 1-8-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
 game 1-4                                     : correct

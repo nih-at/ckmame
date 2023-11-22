@@ -5,6 +5,7 @@ arguments -D ../mamedb-disk-many.db -Fvc disk diskchild
 file roms/disk.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-5.chd
 file roms/diskchild/108-5c.chd 108-5.chd {}
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms disk.zip 04.rom
 stdout
 In game disk:

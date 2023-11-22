@@ -2,6 +2,7 @@ description test single-rom game (no parent), superfluous file matches delete-un
 return 0
 arguments -Fvc --delete-unknown-pattern garb* -D ../mamedb-lost-parent-ok.db
 file roms/unknown.zip garbage.zip {}
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game clone-8:
 game clone-8                                 : not a single file found

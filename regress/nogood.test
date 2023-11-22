@@ -4,6 +4,7 @@ return 0
 arguments -cFv nogood
 file mame.db mame.db
 file roms/nogood.zip 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms nogood.zip
 stdout
 In game nogood:

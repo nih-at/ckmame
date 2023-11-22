@@ -4,6 +4,8 @@ arguments -F 1-8
 file mame.db mame.db
 file roms/1-8.zip 2-8u-ok.zip 1-8-ok.zip
 file extra-or-removed/1-8.zip {} 1-u-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extra-or-removed/.ckmame.db {} <empty.ckmamedb>
 no-hashes extra-or-removed 1-8.zip
 file-data .ckmamerc
 [global]

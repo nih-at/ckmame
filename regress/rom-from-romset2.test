@@ -5,6 +5,8 @@ file mame.db mame.db
 file roms/deadbeef.zip deadpork.zip deadbeef.zip
 file roms/deadclonedbeef.zip deadclonedbeef.zip
 file unknown/deadbeef.zip {} deadpork.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game deadbeef:
 rom  deadbeef      size       8  crc deadbeef: is in 'roms/deadclonedbeef.zip/deadclonedbeef'

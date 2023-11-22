@@ -3,6 +3,7 @@ return 0
 arguments -cFv clone-8
 file mame.db mame.db
 file roms/parent-4.zip 2-48-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms parent-4.zip 08.rom
 stdout
 In game clone-8:

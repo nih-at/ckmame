@@ -6,6 +6,8 @@ file mame.db mame.db
 file extra/1-4-crcerror.zip 1-4-crcerror.zip
 file extra/1-8-ok.zip 1-8-ok.zip {}
 file roms/2-48.zip {} 1-8-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extra/.ckmame.db {} <empty.ckmamedb>
 no-hashes extra 1-4-crcerror.zip
 stdout
 In game 2-48:

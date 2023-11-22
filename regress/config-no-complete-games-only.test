@@ -3,6 +3,7 @@ return 0
 arguments -F 2-48
 file mame.db mame.db
 file roms/2-48.zip 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 file-data .ckmamerc
 [global]
 complete-games-only = false

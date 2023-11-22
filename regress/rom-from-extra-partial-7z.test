@@ -6,6 +6,8 @@ arguments -Fvcj -e extradir 2-48
 file mame.db mame.db
 file extradir/2-48.7z 2-8u-ok.7z 1-u-ok.zip
 file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extradir/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: correct

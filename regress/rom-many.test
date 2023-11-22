@@ -5,6 +5,7 @@ arguments -Fvc many
 file mame.db mame.db
 file roms/wrongname.zip many.zip {}
 file roms/many.zip {} many.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms many.zip
 stdout
 In game many:

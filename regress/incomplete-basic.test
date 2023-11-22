@@ -4,6 +4,7 @@ arguments -FvcC 2-48
 file mame.db mame.db
 file roms/2-48.zip 1-4-ok.zip {}
 file saved/d87f7e0c-000.zip {} 1-4-ok.zip
+file saved/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: correct

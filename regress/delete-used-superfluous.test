@@ -3,6 +3,7 @@ return 0
 arguments -Fvc -D ../mamedb-lost-parent-ok.db
 file roms/superfluous.zip 1-4-ok.zip {}
 file roms/clone-8.zip 1-8-ok.zip 2-48-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms clone-8.zip
 stdout
 In game clone-8:

@@ -4,6 +4,8 @@ arguments -Fvc 1-4
 file mame.db mame.db
 file roms/1-4.zip 1-4-end.zip 1-4-ok.zip
 file unknown/1-4.zip {} 1-4-end.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms 1-4.zip 04.rom md5
 no-hashes roms 1-4 04.rom md5
 no-hashes unknown 1-4.zip 04.rom

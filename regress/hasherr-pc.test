@@ -5,6 +5,8 @@ file mame.db mame.db
 file roms/deadbeef.zip deadfish.zip
 file roms/deadbeefchild.zip deadfish4.zip 1-4-ok.zip
 file unknown/deadbeefchild.zip {} deadfish.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game deadbeefchild:
 rom  deadbeef      size       8  crc deadbeef: missing

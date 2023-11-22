@@ -4,6 +4,7 @@ arguments -Fvc 1-4
 file mame.db mame.db
 file roms/14.zip 1-4-ok.zip {}
 file roms/1-4.zip {} 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/14.zip/04.rom'

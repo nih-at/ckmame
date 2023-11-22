@@ -3,6 +3,7 @@ description test single-rom game with disk, disk missing
 return 0
 arguments -D ../mamedb-disk-many.db -Fvc disk
 file roms/disk.zip 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms disk.zip 04.rom
 stdout
 In game disk:

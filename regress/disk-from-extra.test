@@ -6,6 +6,8 @@ mkdir extra
 file roms/disk.zip 1-4-ok.zip
 file extra/new.chd 108-5.chd
 file roms/disk/108-5.chd {} 108-5.chd
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extra/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms disk.zip 04.rom
 stdout
 In game disk:

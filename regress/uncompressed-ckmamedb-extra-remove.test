@@ -3,9 +3,10 @@ description test single-rom game (no parent), correct partial ckmame db exists i
 return 0
 arguments -jFvc -e extra 1-4
 ckmamedb-before extra ckmamedb-1-4-ok.dump
-ckmamedb-after extra ckmamedb-empty.dump
 file extra/1-4.zip 1-4-ok.zip {}
 file roms/1-4.zip {} 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extra/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'extra/1-4/04.rom'

@@ -5,6 +5,9 @@ file mame.db mame.db
 file extra/2-48.zip 1-8-ok.zip {}
 file saved/d87f7e0c-000.zip 1-4-ok.zip {}
 file roms/2-48.zip {} 2-48-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extra/.ckmame.db {} <empty.ckmamedb>
+file saved/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: is in 'saved/d87f7e0c-000.zip/04.rom'

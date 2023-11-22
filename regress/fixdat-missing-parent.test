@@ -4,7 +4,8 @@ return 0
 arguments -Fvc -D ../mamedb-merge-parent.db --create-fixdat
 file roms/parent.zip 1-8-ok.zip
 file roms/child.zip 1-8-ok.zip {}
-file "fixdat_ckmame {} test
+file roms/.ckmame.db {} <empty.ckmamedb>
+file fixdat_ckmame {} test
 no-hashes roms parent.zip
 no-hashes roms child.zip
 stdout

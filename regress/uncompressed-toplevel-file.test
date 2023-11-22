@@ -6,6 +6,8 @@ file mame.db mame.db
 file search/loose 04.rom
 file search/1-8.zip 1-8-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file search/.ckmame.db {} <empty.ckmamedb>
 ckmamedb-before search ckmamedb-1-8-ok.dump
 stdout
 In game 1-4:

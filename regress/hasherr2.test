@@ -4,6 +4,7 @@ arguments -Fvc deadbeef
 file mame.db mame.db
 file roms/deadbeef.zip deadfish.zip {}
 file unknown/deadbeef.zip {} deadfish.zip
+file unknown/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game deadbeef:
 game deadbeef                                : not a single file found

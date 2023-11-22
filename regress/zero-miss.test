@@ -3,6 +3,7 @@ return 0
 arguments -Fvc zero
 file mame.db mame.db
 file roms/zero.zip {} zero-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game zero:
 game zero                                    : not a single file found

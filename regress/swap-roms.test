@@ -3,6 +3,7 @@ return 0
 arguments -D ../mamedb-parent-crcdiff.db -Fv
 file roms/parent.zip 12345678.zip 2-48-ok.zip
 file roms/child.zip 2-48-ok.zip 12345678.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms parent.zip
 no-hashes roms child.zip
 stdout

@@ -6,6 +6,7 @@ file roms/disk.zip 1-8-ok.zip
 file roms/disk/108-5.chd 108-5.chd
 file roms/unknown-game/unknown.chd 108-5.chd {}
 file roms/toplevel.chd 108-5.chd {}
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms disk.zip
 stdout
 In archive roms:

@@ -6,6 +6,7 @@ file roms/disk.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-2.chd 108-5.chd
 file roms/disk-2.zip 1-4-ok.zip
 file roms/disk-2/108-2.chd 108-5.chd 108-2.chd
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms disk.zip 04.rom
 no-hashes roms disk-2.zip 04.rom
 stdout

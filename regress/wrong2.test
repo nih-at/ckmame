@@ -4,6 +4,8 @@ arguments -Fvc 1-8a
 file mame.db mame.db
 file roms/1-8a.zip 1-8-ok.zip {}
 file saved/3656897d-000.zip {} 1-8-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file saved/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-8a:
 game 1-8a                                    : not a single file found

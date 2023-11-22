@@ -3,6 +3,8 @@ return 0
 arguments -D ../mamedb-small.db -Fvc -e extra
 file extra/1-4.zip 1-4-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extra/.ckmame.db {} <empty.ckmamedb>
 ckmamedb-before extra ckmamedb-1-8-ok.dump
 stdout
 In game 1-4:

@@ -4,6 +4,8 @@ arguments -Fvc zero
 file mame.db mame.db
 file roms/zero.zip zero-long.zip zero-ok.zip
 file unknown/zero.zip {} zero-long.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 no-hashes unknown zero.zip
 stdout
 In game zero:

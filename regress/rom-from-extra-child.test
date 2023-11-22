@@ -5,6 +5,8 @@ file mame.db mame.db
 file roms/parent-4.zip {} 1-4-ok.zip
 file extra/forparent.zip 1-4-ok.zip
 file roms/clone-8.zip 1-8-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extra/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game parent-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'extra/forparent.zip/04.rom'

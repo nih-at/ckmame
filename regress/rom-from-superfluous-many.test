@@ -33,6 +33,7 @@ file roms/disk/108-5.chd 108-5.chd
 file roms/disk-nogood/108-nogood.chd 108-5.chd
 file roms/diskgood-romnogood/108-5.chd 108-5.chd
 file roms/disk-same/108-5.chd {} 108-5.chd
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms baddump.zip bad.rom
 stdout
 In game 1-4:

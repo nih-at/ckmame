@@ -6,6 +6,8 @@ arguments -F 1-4
 file mame.db mame.db
 file search/1-4.zip 1-4-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file search/.ckmame.db {} <empty.ckmamedb>
 touch 1419260288 search/1-4.zip
 ckmamedb-after home/.cache/ckmame/@SANDBOX@/search ckmamedb-1-4-ok-with-mtime.dump
 ckmamedb-after search ckmamedb-empty.dump

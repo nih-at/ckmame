@@ -7,6 +7,8 @@ file saved/deadbeef-000.zip deadfish.zip {}
 file saved/deadbeef-001.zip deadbeef.zip {}
 file unknown/deadbeef.zip {} deadpork.zip
 file unknown/deadbeef-000.zip {} deadfish.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game deadbeef:
 rom  deadbeef      size       8  crc deadbeef: is in 'saved/deadbeef-001.zip/deadbeef'

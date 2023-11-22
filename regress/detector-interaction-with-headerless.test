@@ -7,6 +7,8 @@ arguments -D mamedb-skipped.db -Fjvc -e extra skipped
 file roms/skipped.zip {} 1-8-skip-ok.zip
 file extra/short.zip 1-8-skip-ok.zip {}
 file extra/long.zip 1-8-ok.zip {}
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extra/.ckmame.db {} <empty.ckmamedb>
 no-hashes extra long.zip
 stdout
 In game skipped:

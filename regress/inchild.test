@@ -3,6 +3,7 @@ return 0
 arguments -Fvc clone-8
 file mame.db mame.db
 file roms/clone-8.zip 2-48-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game clone-8:
 rom  04.rom        size       4  crc d87f7e0c: should be in cloneof

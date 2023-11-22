@@ -5,6 +5,8 @@ file mamedb-skipped.db mamedb-skipped.db
 arguments -D mamedb-skipped.db -Fvc -e search skipped
 file search/18.zip 1-8-ok.zip
 file roms/skipped.zip {} 1-8-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file search/.ckmame.db {} <empty.ckmamedb>
 no-hashes search 18.zip
 detector-hashes skip-some-bytes 20070429 search 18.zip
 detector-hashes skip-some-bytes 20070429 search 18

@@ -5,6 +5,7 @@ file mamedb-skipped.db mamedb-skipped.db
 arguments -D mamedb-skipped.db -Fvc skipped-child
 file roms/skipped.zip 1-8-ok.zip
 file roms/skipped-child.zip 1-c-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms skipped.zip
 detector-hashes skip-some-bytes 20070429 roms skipped.zip
 detector-hashes skip-some-bytes 20070429 roms skipped

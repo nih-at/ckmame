@@ -4,6 +4,7 @@ return 0
 arguments -D ../mamedb-small.db -jFvc
 ckmamedb-before roms ckmamedb-1-4-ok.dump
 file roms/1-4.zip 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 touch 1047614102 roms/1-4/04.rom
 stdout
 In game 1-4:

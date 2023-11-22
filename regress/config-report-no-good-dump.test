@@ -3,6 +3,7 @@ return 0
 arguments nogood-2
 file mame.db mame.db
 file roms/nogood-2.zip 1-8-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 file-data .ckmamerc
 [global]
 report-no-good-dump = true

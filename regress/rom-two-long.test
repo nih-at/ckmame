@@ -6,6 +6,8 @@ file roms/1-8.zip 1-8-long.zip 1-8-ok.zip
 file roms/2-48.zip 2-48-long.zip 2-48-ok.zip
 file unknown/2-48.zip {} 2-48-long.zip
 file unknown/1-8.zip {} 1-8-long.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms 1-8.zip 08.rom md5
 no-hashes roms 2-48.zip 04.rom md5
 no-hashes roms 2-48.zip 08.rom md5

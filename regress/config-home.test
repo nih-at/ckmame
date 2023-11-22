@@ -4,6 +4,7 @@ setenv HOME ./home
 arguments -F 1-4 1-8
 file mame.db mame.db
 file roms-home/1-4.zip 1-4-ok.zip
+file roms-home/.ckmame.db {} <empty.ckmamedb>
 file-data home/.config/ckmame/ckmamerc
 [global]
 rom-directory = "roms-home"

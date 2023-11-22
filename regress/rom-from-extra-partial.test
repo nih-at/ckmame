@@ -4,6 +4,8 @@ arguments -Fvcj -e extradir 2-48
 file mame.db mame.db
 file extradir/2-48.zip 2-8u-ok.zip 1-u-ok.zip
 file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file extradir/.ckmame.db {} <empty.ckmamedb>
 no-hashes extradir 2-48.zip unknown.rom
 stdout
 In game 2-48:

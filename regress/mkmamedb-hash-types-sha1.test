@@ -4,3 +4,4 @@ program mkmamedb
 arguments -F cm --hash-types sha1 -o output.dat roms
 file output.dat mamedb-small-sha1-only.dat
 file roms/1-4.zip 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>

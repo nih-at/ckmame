@@ -4,6 +4,7 @@ arguments -Fvc deadbeefchild
 file mame.db mame.db
 file roms/deadbeef.zip deadfish.zip
 file roms/deadbeefchild.zip 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game deadbeefchild:
 rom  deadbeef      size       8  crc deadbeef: missing

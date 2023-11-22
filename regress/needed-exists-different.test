@@ -6,6 +6,9 @@ file roms/1-4.zip deadbeef.zip {}
 file saved/deadbeef-000.zip deadpork.zip {}
 file saved/deadbeef-001.zip {} deadbeef.zip
 file unknown/deadbeef-000.zip {} deadpork.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file saved/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

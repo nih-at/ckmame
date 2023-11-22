@@ -5,6 +5,8 @@ arguments -D ../mamedb-small.db -Fvc
 file roms/1-4.zip 1-4-ok.zip
 file roms/plain-file dummy {}
 file unknown/plain-file {} dummy
+file roms/.ckmame.db {} <empty.ckmamedb>
+file unknown/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
 game 1-4                                     : correct
