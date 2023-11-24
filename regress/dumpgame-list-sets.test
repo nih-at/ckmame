@@ -3,7 +3,7 @@ return 0
 arguments --list-sets
 file mame.db mame.db
 program dumpgame
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 sets = [ "standard set 1", "standard set 2" ]
 ["non-standard set 1"]

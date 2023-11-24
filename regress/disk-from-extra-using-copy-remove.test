@@ -2,7 +2,7 @@ description test single-rom game with disk, get missing disk from extra, rename 
 #variants zip
 return 0
 preload fwrite.so
-setenv RENAME_FAILS roms/108-5.chd
+environment-set RENAME_FAILS roms/108-5.chd
 arguments -Fvj -D ../mamedb-disk.db -e extradir
 file extradir/1234.chd 108-5.chd {}
 file roms/disk/108-5.chd {} 108-5.chd

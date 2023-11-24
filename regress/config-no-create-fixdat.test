@@ -1,7 +1,7 @@
 description test all games, no files found, do not create fixdat based on config setting
 return 0
 arguments -F -D ../mamedb-merge-parent.db
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 create-fixdat = false
 end-of-inline-data

@@ -3,9 +3,8 @@ description test single-rom game (no parent), incorrect ckmame db exists, but ar
 return 0
 touch 1419260288 roms/1-4.zip
 arguments -D ../mamedb-small.db -jFvc
-ckmamedb-before roms ckmamedb-1-4-ok-with-mtime.dump
 file roms/1-4.zip 1-4-crcerror.zip
-file roms/.ckmame.db {} <ckmamedb-1-4-ok-with-mtime.dump>
+file roms/.ckmame.db ckmamedb-1-4-ok-with-mtime.dump <ckmamedb-1-4-ok-with-mtime.dump>
 stdout
 In game 1-4:
 game 1-4                                     : correct

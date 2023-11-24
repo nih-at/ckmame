@@ -2,10 +2,10 @@ description use description as name (via config)
 return 0
 program mkmamedb
 file dats/mame.dat mame.dat
-touch 1644506227 dats/mame.dat
+set-modification-time dats/mame.dat 1644506227
 file output.db {} mame-use-name-as-description.dump
 file dats/.mkmamedb.db {} mkmamedb-datdb-5.dump
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]
 rom-db = "output.db"

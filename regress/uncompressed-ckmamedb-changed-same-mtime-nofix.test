@@ -2,10 +2,8 @@ description test single-rom game (no parent), incorrect ckmame db exists, but fi
 #variants dir
 return 0
 arguments -D ../mamedb-small.db -jc
-ckmamedb-before roms ckmamedb-1-4-ok.dump
-ckmamedb-after roms ckmamedb-1-4-ok.dump
 file roms/1-4.zip 1-4-wrong.zip
-file roms/.ckmame.db {} <ckmamedb-1-4-ok.dump>
+file roms/.ckmame.db ckmamedb-1-4-ok.dump ckmamedb-1-4-ok.dump
 touch 1047617702 roms/1-4/04.rom
 touch 1422359238 roms/1-4
 stdout

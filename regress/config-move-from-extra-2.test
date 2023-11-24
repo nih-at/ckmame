@@ -1,6 +1,6 @@
 description test single-rom game (no parent), move-from-extra specific to extra-directory
 return 0
-setenv HOME ./home
+environment-set HOME ./home
 arguments -F 2-48
 file mame.db mame.db
 file search/1-4.zip 1-4-ok.zip
@@ -9,7 +9,7 @@ file roms/2-48.zip {} 2-48-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 file extra/.ckmame.db {} <empty.ckmamedb>
 file search/.ckmame.db {} <empty.ckmamedb>
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 [global.extra-directories]
 "search" = { "move-from-extra" = false }

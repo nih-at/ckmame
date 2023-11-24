@@ -1,5 +1,4 @@
 description test mkmamedb database creation from CMPro file with errors
-return 0
 program mkmamedb
 arguments -o mamedb-test.db mamedb.cmpro-bad
 return 1

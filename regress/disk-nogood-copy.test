@@ -7,12 +7,10 @@ file extras/108-nogood.chd 12-1.chd
 file roms/.ckmame.db {} <empty.ckmamedb>
 file extras/.ckmame.db {} <empty.ckmamedb>
 no-hashes roms disk-nogood.zip 04.rom
+# file name alone shouldn't be enough
 stdout
 In game disk-nogood:
 rom  04.rom        size       4  crc d87f7e0c: correct
-end-of-inline-data
-# file name alone shouldn't be enough
-stdout
 disk 108-nogood    no good dump              : missing
 In game disk-nogood2:
 rom  08.rom        size       8  crc 3656897d: missing

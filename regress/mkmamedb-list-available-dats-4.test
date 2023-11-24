@@ -3,9 +3,9 @@ return 0
 program mkmamedb
 arguments --list-available-dats
 file dats/mamedb.xml mamedb-header-only-2.xml
-touch 1644506227 dats/mamedb.xml
+set-modification-time dats/mamedb.xml 1644506227
 file dats/.mkmamedb.db {} mkmamedb-datdb-4.dump
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]
 end-of-inline-data

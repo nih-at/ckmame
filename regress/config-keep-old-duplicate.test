@@ -4,7 +4,7 @@ arguments -F 2-4a
 file mame.db mame.db
 file roms/2-4a.zip 2-4a-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 old-db = "../makedb-lost-parent-ok.db"
 keep-old-duplicate = true

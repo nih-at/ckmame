@@ -2,7 +2,7 @@ description test mkmamedb database creation, unknown input
 return 1
 program mkmamedb
 arguments unknown.txt
-file-data unknown.txt
+file unknown.txt <inline>
 this is just a text file that is nothing like a dat
 end-of-inline-data
 stderr

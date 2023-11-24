@@ -7,8 +7,7 @@ file search/loose 04.rom
 file search/1-8.zip 1-8-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file search/.ckmame.db {} <empty.ckmamedb>
-ckmamedb-before search ckmamedb-1-8-ok.dump
+file search/.ckmame.db ckmamedb-1-8-ok.dump <empty.ckmamedb>
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'search/loose'

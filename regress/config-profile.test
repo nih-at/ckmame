@@ -1,11 +1,11 @@
 description test profiles and their selection work
 return 0
-setenv HOME ./home
+environment-set HOME ./home
 arguments --set Test -F 1-4 1-8
 file mame.db mame.db
 file roms-local/1-4.zip 1-4-ok.zip
 file roms-local/.ckmame.db {} <empty.ckmamedb>
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 report-correct = true
 report-missing = true

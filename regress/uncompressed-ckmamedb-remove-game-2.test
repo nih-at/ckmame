@@ -2,9 +2,8 @@ description test single-rom game (no parent), correct partial ckmame db exists, 
 #variants dir
 return 0
 arguments -jFvc 1-4
-ckmamedb-before roms ckmamedb-1-4-ok.dump
-ckmamedb-after roms ckmamedb-empty.dump
 file roms/1-8.zip 1-8-ok.zip
+file roms/.ckmame.db ckmamedb-1-4-ok.dump ckmamedb-empty.dump
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

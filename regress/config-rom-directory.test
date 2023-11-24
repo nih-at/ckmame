@@ -4,7 +4,7 @@ arguments 1-4
 file mame.db mame.db
 file roms-local/1-4.zip 1-4-ok.zip
 file roms-local/.ckmame.db {} <empty.ckmamedb>
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 rom-directory = "roms-local"
 end-of-inline-data

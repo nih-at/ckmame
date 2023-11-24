@@ -3,9 +3,9 @@ return 0
 program mkmamedb
 arguments --list-available-dats
 file dats/mamedb-disk.dat mamedb-disk.dat
-touch 1643902216 dats/mamedb-disk.dat
+set-modification-time dats/mamedb-disk.dat 1643902216
 file dats/.mkmamedb.db {} mkmamedb-db.dump
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]
 end-of-inline-data

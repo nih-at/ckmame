@@ -2,9 +2,8 @@ description test double-rom game (no parent), check order of entries
 #variants zip
 return 0
 arguments -D ../mamedb-one-game-two-roms.db -jFvc 2-4c
-ckmamedb-after roms ckmamedb-2-4c-reverse.dump
 file roms/2-4c.zip 2-4c-reverse.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
+file roms/.ckmame.db {} ckmamedb-2-4c-reverse.dump
 touch 1419271683 roms/2-4c.zip
 stdout
 In game 2-4c:

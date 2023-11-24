@@ -1,6 +1,6 @@
 description check config parser for invalid booleans
 return 1
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 report-missing = "something"
 end-of-inline-data

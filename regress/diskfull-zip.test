@@ -1,12 +1,12 @@
 description test copying file from extra, failing (disk full) and cleaning up extra
 #variants zip
 return 0
-setenv FWRITE_MAX_WRITE 5
+environment-set FWRITE_MAX_WRITE 5
 preload fwrite.so
 arguments -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
 ckmamedb-after extra ckmamedb-wrongname-nohash.dump
 file extra/wrongname.zip 2-48-ok.zip
-touch 1422359238 extra/wrongname.zip
+set-modification-time extra/wrongname.zip 1422359238
 stdout
 In game clone-8:
 rom  04.rom        size       4  crc d87f7e0c: is in 'extra/wrongname.zip/04.rom'

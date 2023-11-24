@@ -1,11 +1,11 @@
 description test config in local directory overrides the one in HOME directory
 return 0
-setenv HOME ./home
+environment-set HOME ./home
 arguments -F 1-4 1-8
 file mame.db mame.db
 file roms-local/1-4.zip 1-4-ok.zip
 file roms-local/.ckmame.db {} <empty.ckmamedb>
-file-data home/.config/ckmame/ckmamerc
+file home/.config/ckmame/ckmamerc <inline>
 [global]
 rom-directory = "roms-home"
 end-of-inline-data

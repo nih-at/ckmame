@@ -3,10 +3,10 @@ return 0
 program mkmamedb
 arguments -f
 file dats/mame.dat mamedb-baddump.dat
-touch 1644506227 dats/mame.dat
+set-modification-time dats/mame.dat 1644506227
 file output.db mame.db mamedb-baddump.dump
 file dats/.mkmamedb.db {} mkmamedb-datdb-7.dump
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]
 dats = [ "ckmame test db" ]

@@ -4,7 +4,7 @@ arguments -F 1-4 1-8
 file mame.db mame.db
 file roms/1-4.zip 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 report-correct = false
 verbose = true

@@ -1,7 +1,7 @@
 description config parameter unknown
 return 1
 arguments -F
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 unknown = "defined"
 end-of-inline-data

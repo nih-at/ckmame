@@ -1,7 +1,7 @@
 description test single-rom game (no parent), file is in search dir from config, keep, use central cache
 #variants zip
 return 0
-setenv HOME ./home
+environment-set HOME ./home
 arguments -F 1-4
 file mame.db mame.db
 file search/1-4.zip 1-4-ok.zip

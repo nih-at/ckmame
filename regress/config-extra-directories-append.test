@@ -8,7 +8,7 @@ file roms/2-48.zip {} 2-48-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 file extra/.ckmame.db {} <empty.ckmamedb>
 file search/.ckmame.db {} <empty.ckmamedb>
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 extra-directories = [ "extra" ]
 ["Test"]

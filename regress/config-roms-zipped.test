@@ -3,7 +3,7 @@ description test all games, no files found, unzipped per config
 return 0
 arguments -v 1-4
 file mame.db mame.db
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 roms-zipped = false
 end-of-inline-data

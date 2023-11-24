@@ -6,7 +6,7 @@ file roms/1-4.zip 2-48-ok.zip 1-4-ok.zip
 file extra-later/3656897d-000.zip {} 1-8-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 file extra-later/.ckmame.db {} <empty.ckmamedb>
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 saved-directory = "extra-later"
 end-of-inline-data

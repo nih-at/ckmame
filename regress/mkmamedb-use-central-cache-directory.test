@@ -1,7 +1,7 @@
 description test mkmamedb dat database creation, use central cache directory
 return 0
 program mkmamedb
-setenv HOME ./home
+environment-set HOME ./home
 arguments --list-available-dats
 file dats/mamedb.dat mamedb-header-only.dat
 touch 1644506227 dats/mamedb.dat

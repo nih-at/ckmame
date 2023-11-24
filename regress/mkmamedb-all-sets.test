@@ -3,13 +3,13 @@ return 0
 program mkmamedb
 arguments --all-sets
 file dats/mame.dat mame.dat
-touch 1644506227 dats/mame.dat
+set-modification-time dats/mame.dat 1644506227
 file dats/mamedb.xml mamedb-mess.xml
-touch 1648812916 dats/mamedb.xml
+set-modification-time dats/mamedb.xml 1648812916
 file output.db mame.db
 file output2.db mamedb-mess.dump
 file dats/.mkmamedb.db {} mkmamedb-datdb-8.dump
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]
 ["non-standard set 1"]

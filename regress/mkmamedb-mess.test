@@ -9,4 +9,4 @@ program mkmamedb
 arguments -o mamedb-test.db mamedb.xml
 file mamedb.xml mamedb-mess.xml
 file mamedb-test.db {} mamedb-mess.dump
-touch 1648812916 mamedb.xml
+set-modification-time mamedb.xml 1648812916

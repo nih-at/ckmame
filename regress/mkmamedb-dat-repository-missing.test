@@ -2,7 +2,7 @@ description test mkmamedb dat directories setting wrong
 return 0
 program mkmamedb
 arguments --list-available-dats
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 dat-directories = [ "does not exist" ]
 end-of-inline-data

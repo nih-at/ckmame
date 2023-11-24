@@ -3,7 +3,7 @@ return 0
 program mkmamedb
 arguments --use-description-as-name
 file dats/mame.dat mame.dat
-touch 1644506227 dats/mame.dat
+set-modification-time dats/mame.dat 1644506227
 file output.db {} mame-use-name-as-description.dump
 file dats/.mkmamedb.db {} mkmamedb-datdb-5.dump
 file-data .ckmamerc

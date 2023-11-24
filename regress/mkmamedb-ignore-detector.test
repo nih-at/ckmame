@@ -3,11 +3,11 @@ return 0
 program mkmamedb
 arguments --list-available-dats
 file dats/mamedb-disk.dat mamedb-disk.dat
+set-modification-time dats/mamedb-disk.dat 1643902216
 file dats/somedetector.xml detector.xml
-touch 1643902216 dats/mamedb-disk.dat
-touch 1643903114 dats/somedetector.xml
+set-modification-time dats/somedetector.xml 1643903114
 file dats/.mkmamedb.db {} mkmamedb-db-ignore-detector.dump
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 dat-directories = [ "dats" ]
 end-of-inline-data

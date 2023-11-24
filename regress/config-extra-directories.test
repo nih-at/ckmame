@@ -6,7 +6,7 @@ file search/14.zip 1-4-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 file search/.ckmame.db {} <empty.ckmamedb>
-file-data .ckmamerc
+file .ckmamerc <inline>
 [global]
 extra-directories = [ "search" ]
 end-of-inline-data
