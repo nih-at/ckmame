@@ -4,8 +4,8 @@ return 0
 arguments -D ../mamedb-small.db -jFvc
 file roms/1-4.zip 1-4-wrong.zip
 file roms/.ckmame.db ckmamedb-1-4-ok.dump <ckmamedb-1-4-ok.dump>
-touch 1047617702 roms/1-4/04.rom
-touch 1422359238 roms/1-4
+set-modification-time roms/1-4/04.rom 1047617702
+set-modification-time roms/1-4 1422359238
 stdout
 In game 1-4:
 game 1-4                                     : correct

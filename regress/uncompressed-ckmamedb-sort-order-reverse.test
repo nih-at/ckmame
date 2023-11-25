@@ -4,7 +4,7 @@ return 0
 arguments -D ../mamedb-one-game-two-roms.db -jFvc 2-4c
 file roms/2-4c.zip 2-4c-reverse.zip
 file roms/.ckmame.db {} ckmamedb-2-4c-reverse.dump
-touch 1419271683 roms/2-4c.zip
+set-modification-time roms/2-4c.zip 1419271683
 stdout
 In game 2-4c:
 game 2-4c                                    : correct

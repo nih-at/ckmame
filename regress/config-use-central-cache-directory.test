@@ -8,7 +8,7 @@ file search/1-4.zip 1-4-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 file search/.ckmame.db {} <empty.ckmamedb>
-touch 1419260288 search/1-4.zip
+set-modification-time search/1-4.zip 1419260288
 ckmamedb-after home/.cache/ckmame/@SANDBOX@/search ckmamedb-1-4-ok-with-mtime.dump
 ckmamedb-after search ckmamedb-empty.dump
 file-data .ckmamerc

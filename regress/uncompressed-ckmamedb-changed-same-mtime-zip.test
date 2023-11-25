@@ -1,7 +1,7 @@
 description test single-rom game (no parent), incorrect ckmame db exists, but archive has same mtime
 #variants zip
 return 0
-touch 1419260288 roms/1-4.zip
+set-modification-time roms/1-4.zip 1419260288
 arguments -D ../mamedb-small.db -jFvc
 file roms/1-4.zip 1-4-crcerror.zip
 file roms/.ckmame.db ckmamedb-1-4-ok-with-mtime.dump <ckmamedb-1-4-ok-with-mtime.dump>
