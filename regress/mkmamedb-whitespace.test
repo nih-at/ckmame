@@ -1,0 +1,6 @@
+description game has data with leading/trailing whitespace inside the quotes
+return 0
+program mkmamedb
+args -o mamedb-test.db mamedb.xml
+file mamedb.xml mamedb-whitespace.xml mamedb-whitespace.xml
+file-new mamedb-test.db mamedb-whitespace.dump
