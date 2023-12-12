@@ -233,7 +233,7 @@ bool Parser::file_hash(filetype_t ft, int ht, const std::string& attr) {
     h = &r[ft]->hashes;
 
     if (h->set_from_string(attr) != ht) {
-        output.line_error(lineno, "invalid argument for %s", Hashes::type_name(ht).c_str());
+        output.line_error(lineno, "invalid argument for %s: '%s'", Hashes::type_name(ht).c_str(), attr.c_str());
         error = true;
         return false;
     }

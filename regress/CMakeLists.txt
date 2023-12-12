@@ -44,6 +44,7 @@ set(DBS
   mamedb-one-game-two-roms.db
   mamedb-parent-crcdiff.db
   mamedb-parent-no-common.db
+  mamedb-reversesorted.db
   mamedb-size-empty.db
   mamedb-small.db
   mamedb-two-games.db
@@ -108,6 +109,7 @@ set(XFAIL_TESTS
   file-no-crc-wrong-name-other-set.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
+  unknown-rename-failed.test
 )
 
 if(RUN_REGRESS)

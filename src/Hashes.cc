@@ -361,8 +361,18 @@ std::string Hashes::to_string(int type) const {
 }
 
 
-int Hashes::set_from_string(const std::string &s) {
+int Hashes::set_from_string(const std::string& s) {
     auto str = s;
+
+    /* remove leading & trailing whitespace */
+    auto data_start = str.find_first_not_of(" \t\n\r");
+    if (data_start != std::string::npos) {
+        str = str.substr(data_start);
+    }
+    auto data_end = str.find_last_not_of(" \t\n\r");
+    if (data_end != std::string::npos) {
+        str = str.substr(0, data_end + 1);
+    }
 
     if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
         str = str.substr(2);

@@ -35,6 +35,8 @@
 
 #include "DB.h"
 
+#include <optional>
+
 class DatDB;
 
 typedef std::shared_ptr<DatDB> DatDBPtr;
