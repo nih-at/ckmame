@@ -105,27 +105,30 @@ static void dump_table(sqlite3 *db, const std::string &table_name) {
     int i, ret;
 
     std::string query = "select * from " + table_name;
+    std::string order_by;
     printf(">>> table %s (", table_name.c_str());
     
     {
         auto stmt = DBStatement(db, "pragma table_info(" + table_name + ")");
         
         auto first_col = true;
-        auto first_key = true;
 
         while (stmt.step()) {
-            printf("%s%s", first_col ? "" : ", ", stmt.get_string("name").c_str());
-            first_col = false;
-            
-            if (stmt.get_int("pk") != 0) {
-                query += (first_key ? " order by " : ", ") + stmt.get_string("name");
-                first_key = false;
+            auto column_name = stmt.get_string("name");
+            printf("%s%s", first_col ? "" : ", ", column_name.c_str());
+            if (first_col) {
+                first_col = false;
             }
+            else {
+                order_by += ", ";
+            }
+            order_by += column_name;
         }
     }
 
     printf(")\n");
 
+    query += " order by " + order_by;
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
         throw Exception("can't select rows for table '" + table_name + "': " + sqlite3_errmsg(db));
