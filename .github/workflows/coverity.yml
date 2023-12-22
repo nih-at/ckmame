@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Coverity
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     environment: coverity
 
     env:
@@ -30,8 +30,8 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        sudo apt-get -qq update;
-        sudo apt-get install -y libxml2-dev libsqlite3-0 libzip-dev zipcmp
+        brew update
+        brew reinstall libzip
 
     - name: Configure
       run: |
@@ -40,7 +40,7 @@ jobs:
 
     - name: Download Coverity
       run: |
-        wget --quiet https://scan.coverity.com/download/linux64 --post-data "token=$TOKEN&project=$PROJECT" -O "$COV_TOOLS.tar.gz"
+        wget --quiet https://scan.coverity.com/download/macOS --post-data "token=$TOKEN&project=$PROJECT" -O "$COV_TOOLS.tar.gz"
         mkdir "$COV_TOOLS"
         tar xzf "$COV_TOOLS.tar.gz" --strip 1 -C "$COV_TOOLS"
         ls -l "$COV_TOOLS"
