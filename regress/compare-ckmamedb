@@ -284,9 +284,9 @@ class CkmameDBComparator:
         self.expected_db = db
 
     def hashes(self, archive_name, file_name):
-        key = f"{archive_name}/{file_name}"
-        if key in self.hash_exceptions:
-            return self.hash_exceptions[key]
+        for key in (f"{archive_name}/{file_name}", f"{archive_name}/*"):
+            if key in self.hash_exceptions:
+                return self.hash_exceptions[key]
         else:
             return {"crc", "md5", "sha1"}
 
