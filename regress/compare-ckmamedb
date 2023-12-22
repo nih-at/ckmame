@@ -134,7 +134,7 @@ class CkmameDBComparator:
             if words[0] == "hashes":
                 self.add_hash_exception(words[1:])
             else:
-                # TODO: error
+                print(f"unknown directive '{words[0]}'", file=sys.stderr)
                 sys.exit(2)
 
     def add_hash_exception(self, arguments):
