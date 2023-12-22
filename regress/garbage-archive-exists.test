@@ -11,6 +11,6 @@ end-of-inline-data
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found
-file garbage 
+file garbage       size       8  crc 01888242: unknown
 move unknown file 'garbage'
 end-of-inline-data

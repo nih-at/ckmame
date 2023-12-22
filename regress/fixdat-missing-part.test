@@ -6,7 +6,7 @@ file roms/clone-8.zip 1-4-ok.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
 hashes clone-8.zip 04.rom cheap
 end-of-inline-data
-file fixdat_ckmame {} test
+file "fixdat_ckmame test db (1).dat" {} test
 stdout
 In game clone-8:
 rom  04.rom        size       4  crc d87f7e0c: correct

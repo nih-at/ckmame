@@ -7,6 +7,6 @@ file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found
-file zero 
+file zero          size       0  crc 00000000: not used
 delete unused file 'zero'
 end-of-inline-data

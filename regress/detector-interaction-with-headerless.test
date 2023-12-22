@@ -16,7 +16,7 @@ In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'
 add 'extra/short.zip/08.rom' as '08.rom'
 In archive extra/long.zip:
-file 08.rom 
+file 08.rom        size       8  crc 3656897d: not used
 delete unused file '08.rom'
 remove empty archive
 In archive extra/short.zip:

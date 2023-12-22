@@ -12,10 +12,10 @@ end-of-inline-data
 stdout
 In game 1-4:
 game 1-4                                     : correct
-file garbage 
+file garbage       size       8  crc 01888242: unknown
 delete unknown file 'garbage' (matching delete-unknown-pattern)
 In game 1-8:
 game 1-8                                     : correct
-file 0c.rom 
+file 0c.rom        size      12  crc 0623c932: unknown
 move unknown file '0c.rom'
 end-of-inline-data

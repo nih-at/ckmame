@@ -13,5 +13,5 @@ unknown-directory = "extra-or-removed"
 end-of-inline-data
 stdout
 In game 1-8:
-file unknown.rom 
+file unknown.rom   size       4  crc 9f45e9d1: unknown
 end-of-inline-data

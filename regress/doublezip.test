@@ -10,6 +10,6 @@ end-of-inline-data
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found
-file 1-4-ok.zip 
+file 1-4-ok.zip    size     148  crc ea01b28e: unknown
 move unknown file '1-4-ok.zip'
 end-of-inline-data

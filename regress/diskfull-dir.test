@@ -12,8 +12,8 @@ rom  08.rom        size       8  crc 3656897d: is in 'extra/wrongname.zip/08.rom
 add 'extra/wrongname.zip/04.rom' as '04.rom'
 add 'extra/wrongname.zip/08.rom' as '08.rom'
 In archive extra/wrongname.zip:
-file 04.rom 
-file 08.rom 
+file 04.rom        size       4  crc d87f7e0c: needed elsewhere
+file 08.rom        size       8  crc 3656897d: needed elsewhere
 end-of-inline-data
 stderr
 roms/clone-8: can't create temporary directory: Permission denied

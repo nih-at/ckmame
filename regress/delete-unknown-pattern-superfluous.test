@@ -7,7 +7,7 @@ stdout
 In game clone-8:
 game clone-8                                 : not a single file found
 In archive roms/unknown.zip:
-file garbage 
+file garbage       size       8  crc 01888242: unknown
 delete unknown file 'garbage' (matching delete-unknown-pattern)
 remove empty archive
 end-of-inline-data

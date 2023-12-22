@@ -12,5 +12,5 @@ saved-directory = "extra-later"
 end-of-inline-data
 stdout
 In game 1-4:
-file 08.rom 
+file 08.rom        size       8  crc 3656897d: needed elsewhere
 end-of-inline-data
