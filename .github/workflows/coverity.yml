@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Coverity
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     environment: coverity
 
     env:
@@ -30,8 +30,8 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        brew update
-        brew reinstall libzip
+        sudo apt-get -qq update;
+        sudo apt-get install -y libxml2-dev libsqlite3-0 libzip-dev zipcmp
 
     - name: Configure
       run: |
@@ -40,7 +40,7 @@ jobs:
 
     - name: Download Coverity
       run: |
-        wget --quiet https://scan.coverity.com/download/macOS --post-data "token=$TOKEN&project=$PROJECT" -O "$COV_TOOLS.tar.gz"
+        wget --quiet https://scan.coverity.com/download/linux64 --post-data "token=$TOKEN&project=$PROJECT" -O "$COV_TOOLS.tar.gz"
         mkdir "$COV_TOOLS"
         tar xzf "$COV_TOOLS.tar.gz" --strip 1 -C "$COV_TOOLS"
         ls -l "$COV_TOOLS"
@@ -48,7 +48,7 @@ jobs:
     - name: Build with Coverity
       run: |
         export PATH="$(pwd)/$COV_TOOLS/bin:$PATH"
-        cov-build --dir $COV_RESULTS make -j ${{steps.cpu-cores.outputs.count}}
+        cov-build --dir $COV_RESULTS make -j
         # Filter out private info
         sed -E -i 's/TOKEN=([-_A-Za-z0-9]+)/TOKEN=XXX/g' cov-int/build-log.txt
 
