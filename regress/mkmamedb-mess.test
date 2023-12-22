@@ -3,7 +3,7 @@ description test mkmamedb database creation, using original MESS Software Lists
 # nam1975: loadflag="reload"
 # kotm2: loadflag="continue"
 # kof99: loadflag="fill"
-features LIBXML2
+features HAVE_LIBXML2
 return 0
 program mkmamedb
 arguments -o mamedb-test.db mamedb.xml

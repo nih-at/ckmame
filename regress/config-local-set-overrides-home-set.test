@@ -11,9 +11,9 @@ rom-directory = "roms-home"
 ["Test"]
 rom-directory = "roms-home-set"
 end-of-inline-data
-file-data .ckmamerc
+file .ckmamerc <>
 [global]
-rom-directory = "roms-local"
+rom-directory <> = "roms-local"
 ["Test"]
 rom-directory = "roms-set"
 end-of-inline-data

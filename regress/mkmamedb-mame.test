@@ -8,7 +8,7 @@ description test mkmamedb database creation, using original MAME data
 # puckman: small and ordinary
 # safarir: samples
 # tankbatt: nogooddump rom
-features LIBXML2
+features HAVE_LIBXML2
 return 0
 program mkmamedb
 arguments -o mamedb-test.db mamedb.xml

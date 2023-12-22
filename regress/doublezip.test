@@ -4,8 +4,9 @@ arguments -Fvc 1-4
 file mame.db mame.db
 file roms/1-4.zip 1-4-ok-doublezip.zip {}
 file unknown/1-4.zip {} 1-4-ok-doublezip.zip
-file unknown/.ckmame.db {} <empty.ckmamedb>
-no-hashes unknown 1-4.zip 1-4-ok.zip
+file unknown/.ckmame.db {} <inline.ckmamedb>
+hashes 1-4.zip 1-4-ok.zip cheap
+end-of-inline-data
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

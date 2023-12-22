@@ -1,8 +1,8 @@
-description test single-rom game (no parent), extra zip contains file, can't copy
+description "test single-rom game (no parent), extra zip contains file, can't copy"
 #variants zip
 return 0
 preload fwrite.so
-setenv RENAME_FAILS roms/1-4.zip
+environment-set RENAME_FAILS roms/1-4.zip
 arguments -Fvje extra -D ../mamedb-small.db
 file mame.db mame.db
 file roms/1-4-wrong-name.zip 1-4-ok.zip {}

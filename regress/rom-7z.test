@@ -1,6 +1,6 @@
 description test single-rom game (no parent) as 7zip
 #variants zip
-features LIBARCHIVE
+features HAVE_LIBARCHIVE
 return 0
 arguments -Fvcj 2-48
 file mame.db mame.db

@@ -1,5 +1,5 @@
 description test all games, no files found, create fixdat with XML entities
-features LIBXML2
+features HAVE_LIBXML2
 return 0
 arguments -Fvc -D ../mamedb-xml-quoting.db --create-fixdat
 file fixdat_ckmame {} test

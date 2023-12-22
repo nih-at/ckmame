@@ -2,7 +2,6 @@ description test single-rom game (no parent), incorrect ckmame db exists, file h
 #variants dir
 return 0
 arguments -D ../mamedb-small.db -jFvc
-ckmamedb-before roms
 file unknown/1-4.zip {} 1-4-wrong.zip
 file roms/.ckmame.db ckmamedb-1-4-ok.dump <empty.ckmamedb>
 file unknown/.ckmame.db {} <empty.ckmamedb>

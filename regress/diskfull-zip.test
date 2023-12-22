@@ -4,7 +4,7 @@ return 0
 environment-set FWRITE_MAX_WRITE 5
 preload fwrite.so
 arguments -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
-ckmamedb-after extra ckmamedb-wrongname-nohash.dump
+file extra/.ckmamedb {} ckmamedb-wrongname-nohash.dump
 file extra/wrongname.zip 2-48-ok.zip
 set-modification-time extra/wrongname.zip 1422359238
 stdout

@@ -4,7 +4,6 @@ return 0
 arguments -Fvc 1-4
 file mame.db mame.db
 file roms/2-48.zip CMakeLists.txt
-file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

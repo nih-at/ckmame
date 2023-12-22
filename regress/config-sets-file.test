@@ -11,7 +11,7 @@ verbose = true
 ["non-standard set 2"]
 report-missing = false
 end-of-inline-data
-file-data sets-list
+file sets-list <>
 sets-list-set 1
 sets-list-set 2
 end-of-inline-data

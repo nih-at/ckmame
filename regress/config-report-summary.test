@@ -4,10 +4,10 @@ arguments -D ../mamedb-merge-parent.db
 file mame.db mame.db
 file roms/grandparent.zip 1-4-ok.zip
 file roms/parent.zip 1-8-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms grandparent.zip
-no-hashes roms parent.zip
-file-data .ckmamerc
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes grandparent.zip 04.rom cheap
+hashes parent.zip 08.rom cheap
+file .ckmamerc <>
 [global]
 report-summary = true
 end-of-inline-data

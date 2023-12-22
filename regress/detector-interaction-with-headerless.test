@@ -1,5 +1,5 @@
 description test header detector: which file is used when both versions (w, w/o header) are available
-features LIBXML2
+features HAVE_LIBXML2
 return 0
 file mamedb-skipped.db mamedb-skipped.db
 mkdir extra
@@ -8,8 +8,9 @@ file roms/skipped.zip {} 1-8-skip-ok.zip
 file extra/short.zip 1-8-skip-ok.zip {}
 file extra/long.zip 1-8-ok.zip {}
 file roms/.ckmame.db {} <empty.ckmamedb>
-file extra/.ckmame.db {} <empty.ckmamedb>
-no-hashes extra long.zip
+file extra/.ckmame.db {} <inline.ckmamedb>
+hashes long.zip 08.rom cheap
+end-of-inline-data
 stdout
 In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'

@@ -9,10 +9,9 @@ file roms/1-4.zip {} 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 file search/.ckmame.db {} <empty.ckmamedb>
 set-modification-time search/1-4.zip 1419260288
-ckmamedb-after home/.cache/ckmame/@SANDBOX@/search ckmamedb-1-4-ok-with-mtime.dump
-ckmamedb-after search ckmamedb-empty.dump
-file-data .ckmamerc
-[global]
+file home/.cache/ckmame/@SANDBOX@/search {} ckmamedb-1-4-ok-with-mtime.dump
+file .ckmamerc <>
+[global]n
 [global.extra-directories]
 "search" = { "use-central-cache-directory" = true }
 end-of-inline-data

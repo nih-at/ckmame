@@ -1,9 +1,9 @@
 description test single-rom game (no parent), add missing rom, torrentzip it
-variants zip
+#variants zip
 return 0
-args -D ../mamedb-reversesorted.db -Fjvc -e extra --use-torrentzip 2-48
-file-new roms/2-48.zip 2-48-ok.zip
-file-del extra/2-48.zip 2-48-ok.zip
+arguments -D ../mamedb-reversesorted.db -Fjvc -e extra --use-torrentzip 2-48
+file roms/2-48.zip {} 2-48-ok.zip
+file extra/2-48.zip 2-48-ok.zip {}
 stdout-data
 In game 2-48:
 rom  08.rom        size       8  crc 3656897d: is in 'extra/2-48.zip/08.rom'

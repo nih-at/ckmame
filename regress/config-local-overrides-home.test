@@ -9,7 +9,7 @@ file home/.config/ckmame/ckmamerc <inline>
 [global]
 rom-directory = "roms-home"
 end-of-inline-data
-file-data .ckmamerc
+file .ckmamerc <>
 [global]
 rom-directory = "roms-local"
 end-of-inline-data

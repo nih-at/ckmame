@@ -1,13 +1,14 @@
 description test all games, some files found, create fixdat
-features LIBXML2
+features HAVE_LIBXML2
 return 0
 arguments -Fvc -D ../mamedb-merge-parent.db --create-fixdat
 file roms/parent.zip 1-8-ok.zip
 file roms/child.zip 1-8-ok.zip {}
-file roms/.ckmame.db {} <empty.ckmamedb>
+file roms/.ckmame.db {} <inlinen.ckmamedb>
+hashes parent.zip 08.rom cheap
+hashes child.zip 04.rom cheap
+end-of-inline-data
 file fixdat_ckmame {} test
-no-hashes roms parent.zip
-no-hashes roms child.zip
 stdout
 In game grandparent:
 game grandparent                             : not a single file found

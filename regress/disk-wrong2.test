@@ -6,9 +6,10 @@ file roms/disk.zip 1-4-ok.zip
 file roms/disk/108-5.chd 12-1.chd {}
 file unknown/disk/108-5.chd 108-5.chd
 file unknown/disk/108-5-000.chd {} 12-1.chd
-file roms/.ckmame.db {} <empty.ckmamedb>
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes disk.zip 04.rom cheap
+end-of-inline-data
 file unknown/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms disk.zip 04.rom
 stdout
 In game disk:
 rom  04.rom        size       4  crc d87f7e0c: correct

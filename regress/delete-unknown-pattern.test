@@ -6,8 +6,9 @@ file roms/1-4.zip 1-4-garbage.zip 1-4-ok.zip
 file roms/1-8.zip 2-8c-ok.zip 1-8-ok.zip
 file unknown/1-8.zip 1-c-ok.zip 2-cc-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file unknown/.ckmame.db {} <empty.ckmamedb>
-no-hashes unknown 1-8.zip
+file unknown/.ckmame.db {} <inline.ckmamedb>
+hashes 1-8.zip 08.rom cheap
+end-of-inline-data
 stdout
 In game 1-4:
 game 1-4                                     : correct

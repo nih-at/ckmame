@@ -1,10 +1,8 @@
-description when cleaning up extras and given roms/, don't.
+description "when cleaning up extras and given roms/, don't."
 return 1
 arguments -e roms
 file mame.db mame.db
-ckmamedb-after roms ckmamedb-empty.dump
 file roms/1-4.zip 1-4-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
 stderr
 current ROM directory 'roms' is in extra directory 'roms'
 end-of-inline-data

@@ -5,8 +5,9 @@ arguments -D ../mamedb-disk-many.db -Fvc disk diskgood-romnogood
 file roms/disk.zip 1-4-ok.zip
 file roms/disk/108-5.chd 108-5.chd
 file roms/diskgood-romnogood/108-5.chd {} 108-5.chd
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms disk.zip 04.rom
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes disk.zip 04.rom cheap
+end-of-inline-data
 stdout
 In game disk:
 game disk                                    : correct

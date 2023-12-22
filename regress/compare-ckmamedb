@@ -20,13 +20,6 @@ class Table(enum.Enum):
     FILE = enum.auto()
 
 
-def is_variant(variant):
-    if "NIHTEST_VARIANT" in os.environ:
-        return os.environ["NIHTEST_VARIANT"] == variant
-    else:
-        return False
-
-
 re_atrribute = re.compile("^([^=]+)=(.*)")
 
 status_names = {
@@ -116,8 +109,9 @@ class CkmameDB:
 
 
 class CkmameDBComparator:
-    def __init__(self, filename):
+    def __init__(self, filename, unzipped):
         self.directory = os.path.dirname(filename)
+        self.unzipped = unzipped
         self.got_db = None
         self.got_dump = []
         self.expected_db = None
@@ -217,7 +211,7 @@ class CkmameDBComparator:
 
     def read_directory(self):
         arguments = ["-o", "/dev/stdout", "--runtest"]
-        if is_variant("dir"):
+        if self.unzipped:
             arguments.append("--roms-unzipped")
         arguments.append(self.directory)
         command = nihtest.Command.Command("mkmamedb", arguments)
@@ -306,10 +300,11 @@ def main():
         prog='compare-ckmamedb',
         description="compare .ckmamedb files")
     parser.add_argument('ckmamedb', help='.ckmamedb file')
+    parser.add_argument("-u", "--unzipped", action='store_true', help="ROMs are unzipped in file system")
 
     args = parser.parse_args()
 
-    comparator = CkmameDBComparator(args.ckmamedb)
+    comparator = CkmameDBComparator(args.ckmamedb, args.unzipped)
     return 0
 
 

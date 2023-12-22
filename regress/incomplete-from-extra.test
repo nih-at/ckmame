@@ -1,4 +1,4 @@
-description test incomplete game, doesn't move files from extra to saved
+description "test incomplete game, doesn't move files from extra to saved"
 return 0
 arguments -FvcCje extra 2-48
 file mame.db mame.db

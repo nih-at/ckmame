@@ -1,6 +1,6 @@
 description test single-rom game (no parent), file is in search dir in 7z
 #variants zip
-features LIBARCHIVE
+features HAVE_LIBARCHIVE
 return 0
 arguments -Fvcj -e extradir 2-48
 file mame.db mame.db

@@ -5,8 +5,9 @@ file mame.db mame.db
 file roms/1-4.zip garbage.zip {}
 file unknown/1-4.zip 1-8-ok.zip garbage-1-8-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file unknown/.ckmame.db {} <empty.ckmamedb>
-no-hashes unknown 1-4.zip
+file unknown/.ckmame.db {} <inline.ckmamedb>
+hashes 1-4.zip 04.rom cheap
+end-of-inline-data
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

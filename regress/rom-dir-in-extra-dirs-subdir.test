@@ -1,8 +1,8 @@
-description when cleaning up extras and given roms/, don't, even when subdir.
+description "when cleaning up extras and given roms/, don't, even when subdir."
 return 1
 arguments -R extra/foo -e extra
 file mame.db mame.db
-ckmamedb-after extra ckmamedb-empty.dump
+file extra/.ckmamedb {} ckmamedb-empty.dump
 file extra/foo.zip 1-4-foo.zip
 stderr
 current ROM directory 'extra/foo' is in extra directory 'extra'

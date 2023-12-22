@@ -1,12 +1,13 @@
-description test all games, all files found, don't create fixdat
-features LIBXML2
+description "test all games, all files found, don't create fixdat"
+features HAVE_LIBXML2
 return 0
 arguments -Fvc -D ../mamedb-merge-parent.db --create-fixdat
 file roms/grandparent.zip 1-4-ok.zip
 file roms/parent.zip 1-8-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms grandparent.zip
-no-hashes roms parent.zip
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes grandparent.zip 04.rom cheap
+hashes parent.zip 08.rom cheap
+end-of-inline-data
 stdout
 In game grandparent:
 game grandparent                             : correct

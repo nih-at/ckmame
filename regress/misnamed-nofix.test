@@ -1,4 +1,4 @@
-description test single-rom game (no parent), rom has wrong name, don't fix
+description "test single-rom game (no parent), rom has wrong name, don't fix"
 return 0
 arguments -c 1-4
 file mame.db mame.db

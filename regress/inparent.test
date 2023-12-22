@@ -3,8 +3,9 @@ return 0
 arguments -cFv clone-8
 file mame.db mame.db
 file roms/parent-4.zip 2-48-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms parent-4.zip 08.rom
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes parent-4.zip 08.rom cheap
+end-of-inline-data
 stdout
 In game clone-8:
 game clone-8                                 : not a single file found

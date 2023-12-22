@@ -1,5 +1,5 @@
 description move ROM with header to needed
-features LIBXML2
+features HAVE_LIBXML2
 return 0
 file mamedb-skipped.db mamedb-skipped.db
 arguments -D mamedb-skipped.db -Fvc skipped

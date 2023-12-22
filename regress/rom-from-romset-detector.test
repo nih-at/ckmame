@@ -1,5 +1,5 @@
 description test single-rom game (no parent), file is in ROM set w/detector
-features LIBXML2
+features HAVE_LIBXML2
 return 0
 file mamedb-skipped.db mamedb-skipped.db
 arguments -D mamedb-skipped.db -Fvc skipped
