@@ -9,7 +9,7 @@ default-program = ckmame
 default-stderr-replace = "^[^ :]*: " ""
 
 [comparators]
-zip.zip = zipcmp -pv
+zip.zip = zipcmp -v
 .zip = zipcmp -v
 db.ckmamedb = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb
 db.ckmamedb-unzipped = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb -u
@@ -20,3 +20,4 @@ db.ckmamedb-unzipped = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb
 
 [comparator-preprocessors]
 db.dump = dbdump
+dat.fixdat = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/fixdat-reset-version

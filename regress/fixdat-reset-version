@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+
+re_version = re.compile("<version>[^<]*</version>")
+
+with open(sys.argv[1]) as file:
+    for line in file.readlines():
+         print(re.sub(re_version, "<version>0000-00-00 00:00:00</version>", line), end="")
