@@ -8,7 +8,7 @@ file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game parent-4:
 game parent-4                                : correct
-file 08.rom 
+file 08.rom        size       8  crc 3656897d: needed elsewhere
 save needed file '08.rom'
 In game clone-8:
 rom  04.rom        size       4  crc d87f7e0c: correct
