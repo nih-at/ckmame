@@ -6,6 +6,5 @@ file roms/parent-4.zip 2-48-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game parent-4:
-game parent-4                                : correct
-file 08.rom
+file 08.rom        size       8  crc 3656897d: needed elsewhere
 end-of-inline-data
