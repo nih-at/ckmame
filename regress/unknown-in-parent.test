@@ -11,6 +11,6 @@ end-of-inline-data
 stdout
 In game parent-4:
 game parent-4                                : correct
-file 0c.rom 
+file 0c.rom        size      12  crc 0623c932: unknown
 move unknown file '0c.rom'
 end-of-inline-data
