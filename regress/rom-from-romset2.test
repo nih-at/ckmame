@@ -10,7 +10,7 @@ file unknown/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game deadbeef:
 rom  deadbeef      size       8  crc deadbeef: is in 'roms/deadclonedbeef.zip/deadclonedbeef'
-file deadpork 
+file deadpork      size       8  crc deadbeef: unknown
 move unknown file 'deadpork'
 add 'roms/deadclonedbeef.zip/deadclonedbeef' as 'deadbeef'
 end-of-inline-data

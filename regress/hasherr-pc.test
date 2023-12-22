@@ -11,6 +11,6 @@ stdout
 In game deadbeefchild:
 rom  deadbeef      size       8  crc deadbeef: missing
 rom  04.rom        size       4  crc d87f7e0c: correct
-file deadbeef 
+file deadbeef      size       8  crc deadbeef: unknown
 move unknown file 'deadbeef'
 end-of-inline-data

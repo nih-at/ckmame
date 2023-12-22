@@ -8,6 +8,6 @@ file unknown/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game deadbeef:
 game deadbeef                                : not a single file found
-file deadbeef 
+file deadbeef      size       8  crc deadbeef: unknown
 move unknown file 'deadbeef'
 end-of-inline-data

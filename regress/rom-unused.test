@@ -8,6 +8,6 @@ file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game clone-8:
 game clone-8                                 : correct
-file 04.rom 
+file 04.rom        size       4  crc d87f7e0c: not used
 delete unused file '04.rom'
 end-of-inline-data

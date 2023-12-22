@@ -7,6 +7,6 @@ stdout
 In game 2-4a:
 rom  04.rom        size       4  crc d87f7e0c: duplicate (also in old 'clone-8')
 rom  0a.rom        size      10  crc 0b4a4cde: correct
-file 04.rom 
+file 04.rom        size       4  crc d87f7e0c: duplicate
 delete duplicate file '04.rom'
 end-of-inline-data

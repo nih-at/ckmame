@@ -9,7 +9,7 @@ file unknown/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'unknown/1-4.zip/04.rom'
-file 04.rom 
+file 04.rom        size       4  crc e027b67c: unknown
 move unknown file '04.rom'
 In archive unknown/1-4.zip:
 save needed file '04.rom'

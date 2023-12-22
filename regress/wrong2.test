@@ -9,6 +9,6 @@ file saved/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-8a:
 game 1-8a                                    : not a single file found
-file 08.rom 
+file 08.rom        size       8  crc 3656897d: needed elsewhere
 save needed file '08.rom'
 end-of-inline-data

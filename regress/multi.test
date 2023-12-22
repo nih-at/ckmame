@@ -8,10 +8,10 @@ file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
 game 1-4                                     : correct
-file 08.rom 
+file 08.rom        size       8  crc 3656897d: not used
 delete unused file '08.rom'
 In game 1-8:
 game 1-8                                     : correct
-file 04.rom 
+file 04.rom        size       4  crc d87f7e0c: not used
 delete unused file '04.rom'
 end-of-inline-data
