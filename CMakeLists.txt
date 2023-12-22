@@ -103,10 +103,14 @@ if(MSVC)
 endif(MSVC)
 
 find_program(NIHTEST nihtest)
+find_package (Python COMPONENTS Interpreter)
+set (PYTHONBIN ${Python_EXECUTABLE})
 
-if(RUN_REGRESS AND NOT NIHTEST)
-  message(WARNING "-- nihtest not found, regression testing disabled")
-  set(RUN_REGRESS OFF)
+if(RUN_REGRESS)
+  if (NOT NIHTEST OR NOT Python_Interpreter_FOUND)
+    message(WARNING "-- nihtest or Python interpreter not found, regression testing disabled")
+    set(RUN_REGRESS OFF)
+  endif()
 endif()
 
 # Testing

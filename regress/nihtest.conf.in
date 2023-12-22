@@ -11,8 +11,8 @@ default-stderr-replace = "^[^ :]*: " ""
 [comparators]
 zip.zip = zipcmp -pv
 .zip = zipcmp -v
-db.ckmamedb = compare-ckmamedb
-db.ckmamedb-unzipped = compare-ckmamedb -u
+db.ckmamedb = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb
+db.ckmamedb-unzipped = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb -u
 
 #[copiers]
 #.zip = our-unzip
