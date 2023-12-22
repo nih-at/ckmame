@@ -5,8 +5,9 @@ file mame.db mame.db
 file roms/zero.zip zero-long.zip zero-ok.zip
 file unknown/zero.zip {} zero-long.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file unknown/.ckmame.db {} <empty.ckmamedb>
-no-hashes unknown zero.zip
+file unknown/.ckmame.db {} <inline.ckmamedb>
+hashes zero.zip * cheap
+end-of-inline-data
 stdout
 In game zero:
 game zero                                    : not a single file found
