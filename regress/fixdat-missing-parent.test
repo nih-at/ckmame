@@ -8,7 +8,7 @@ file roms/.ckmame.db {} <inlinen.ckmamedb>
 hashes parent.zip 08.rom cheap
 hashes child.zip 04.rom cheap
 end-of-inline-data
-file "fixdat_ckmame test db (1).dat" {} test
+file "fixdat_ckmame test db (1).dat" {} fixdat-missing-parent.fixdat
 stdout
 In game grandparent:
 game grandparent                             : not a single file found
