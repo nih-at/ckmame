@@ -4,7 +4,7 @@ return 0
 arguments -D ../mamedb-reversesorted.db -Fjvc -e extra --use-torrentzip 2-48
 file roms/2-48.zip {} 2-48-ok.zip
 file extra/2-48.zip 2-48-ok.zip {}
-stdout-data
+stdout
 In game 2-48:
 rom  08.rom        size       8  crc 3656897d: is in 'extra/2-48.zip/08.rom'
 rom  04.rom        size       4  crc d87f7e0c: is in 'extra/2-48.zip/04.rom'
@@ -14,4 +14,4 @@ In archive extra/2-48.zip:
 delete used file '04.rom'
 delete used file '08.rom'
 remove empty archive
-end-of-data
+end-of-inline-data
