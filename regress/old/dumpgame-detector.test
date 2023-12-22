@@ -1,7 +1,0 @@
-description test dumpgame --detector
-return 0
-program dumpgame
-args -D ../mamedb-skipped.db --detector
-stdout-data
-skip-some-bytes (20070429)
-end-of-data

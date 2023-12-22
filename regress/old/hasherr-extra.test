@@ -1,8 +1,0 @@
-description check single-rom game (no parent), extra has wrong
-return 0
-args -Fvc -e extra deadbeef
-file extra/deadbeef.zip deadfish.zip deadfish.zip
-stdout-data
-In game deadbeef:
-game deadbeef                                : not a single file found
-end-of-data

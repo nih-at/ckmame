@@ -1,5 +1,0 @@
-description write list of missing games to file, changed
-return 0
-args --missing-list missing-list --no-report-missing --report-changes
-file missing-list dummy missing-list.txt
-stdout missing: 1 -> 17 (+17/-1)

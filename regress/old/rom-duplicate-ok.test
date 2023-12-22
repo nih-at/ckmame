@@ -1,8 +1,0 @@
-description test game w/ duplicate rom, all is well
-return 0
-args -Fvc 2-44
-file roms/2-44.zip 2-44-ok.zip 2-44-ok.zip
-stdout-data
-In game 2-44:
-game 2-44                                    : correct
-end-of-data

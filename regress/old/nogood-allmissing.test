@@ -1,7 +1,0 @@
-description test single-rom game with bad dump; with --report-detail, so output expected
-return 0
-args --report-detailed nogood
-stdout-data
-In game nogood:
-rom  04.rom        size       4  no good dump: missing
-end-of-data

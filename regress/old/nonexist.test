@@ -1,6 +1,0 @@
-description testing non-existing game
-return 0
-args -Fvc nosuchgame
-stderr-data
-game 'nosuchgame' unknown
-end-of-data

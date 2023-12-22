@@ -1,6 +1,0 @@
-description test mkmamedb database creation from zipped dat, ok
-return 0
-program mkmamedb
-args -o mamedb-test.db mamedb-disk-many.zip
-file mamedb-disk-many.zip mamedb-disk-many.zip mamedb-disk-many.zip
-file-new mamedb-test.db mamedb-ok.dump

@@ -1,3 +1,0 @@
-description test single-rom game with bad dump, no output expected
-return 0
-args -Fv nogood

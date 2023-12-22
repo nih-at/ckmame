@@ -1,8 +1,0 @@
-description test all games, no files found, use rom-db from config
-return 0
-args 1-4
-file roms-local/1-4.zip 1-4-ok.zip
-file-data .ckmamerc
-[global]
-rom-directory = "roms-local"
-end-of-data

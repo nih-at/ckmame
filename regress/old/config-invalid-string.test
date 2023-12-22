@@ -1,9 +1,0 @@
-description check config parser for invalid booleans
-return 1
-file-data .ckmamerc
-[global]
-rom-directory = [ "an", "array" ]
-end-of-data
-stderr-data
-.ckmamerc:global.rom-directory: expected string
-end-of-data

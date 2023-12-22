@@ -1,9 +1,0 @@
-description test dumpgame --summary
-return 0
-program dumpgame
-args -D ../mamedb-disk-many.db --summary
-stdout-data
-Games: 28
-ROMs:  65 (245 bytes)
-Disks: 8
-end-of-data

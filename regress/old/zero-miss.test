@@ -1,9 +1,0 @@
-description test game with 0 byte rom, rom is missing
-return 0
-args -Fvc zero
-file-new roms/zero.zip zero-ok.zip
-stdout-data
-In game zero:
-game zero                                    : not a single file found
-create empty file 'zero'
-end-of-data

@@ -1,8 +1,0 @@
-description test dumpgame --hash-types
-return 0
-program dumpgame
-args -D ../mamedb-disk-many.db --hash-types
-stdout-data
-roms: crc, sha1
-disks: md5, sha1
-end-of-data

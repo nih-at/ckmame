@@ -1,8 +1,0 @@
-description test single-rom game with bad dump; with --report-no-good-dump
-return 0
-args --report-no-good-dump nogood-2
-file roms/nogood-2.zip 1-8-ok.zip
-stdout-data
-In game nogood-2:
-rom  04.rom        size       4  no good dump: missing
-end-of-data

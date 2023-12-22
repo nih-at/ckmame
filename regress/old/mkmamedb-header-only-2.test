@@ -1,6 +1,0 @@
-description test mkmamedb database creation, header only (no games), ok
-return 0
-program mkmamedb
-args mamedb.xml
-file mamedb.xml mamedb-header-only.xml
-file-new mame.db mamedb-empty.dump
