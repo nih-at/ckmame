@@ -4,7 +4,7 @@ arguments -Fvc -D ../mamedb-lost-parent-ok.db
 file roms/superfluous.zip 1-4-ok.zip {}
 file roms/clone-8.zip 1-8-ok.zip 2-48-ok.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
-hashes clone-8.zip 08.rom cheap
+hashes clone-8.zip * cheap
 end-of-inline-data
 stdout
 In game clone-8:

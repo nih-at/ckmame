@@ -5,7 +5,6 @@ file mame.db mame.db
 file search/14.zip 1-4-ok.zip {}
 file roms/1-4.zip {} 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file search/.ckmame.db {} <empty.ckmamedb>
 file .ckmamerc <inline>
 [global]
 move-from-extra = true

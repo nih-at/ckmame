@@ -1,12 +1,12 @@
 description test all games, no files found, report summary
 return 0
-arguments -D ../mamedb-merge-parent.db
-file mame.db mame.db
+file mame.db mamedb-merge-parent.db
 file roms/grandparent.zip 1-4-ok.zip
 file roms/parent.zip 1-8-ok.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
 hashes grandparent.zip 04.rom cheap
 hashes parent.zip 08.rom cheap
+end-of-inline-data
 file .ckmamerc <>
 [global]
 report-summary = true

@@ -11,7 +11,7 @@ file search/.ckmame.db {} <empty.ckmamedb>
 set-modification-time search/1-4.zip 1419260288
 file home/.cache/ckmame/@SANDBOX@/search {} ckmamedb-1-4-ok-with-mtime.dump
 file .ckmamerc <>
-[global]n
+[global]
 [global.extra-directories]
 "search" = { "use-central-cache-directory" = true }
 end-of-inline-data

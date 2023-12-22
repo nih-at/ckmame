@@ -7,7 +7,6 @@ file search/1-4.zip 1-4-ok.zip
 file extra/1-8.zip 1-8-ok.zip {}
 file roms/2-48.zip {} 2-48-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file extra/.ckmame.db {} <empty.ckmamedb>
 file search/.ckmame.db {} <empty.ckmamedb>
 file .ckmamerc <inline>
 [global]

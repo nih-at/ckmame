@@ -3,7 +3,7 @@ features HAVE_LIBXML2
 return 0
 arguments -F -D ../mamedb-merge-parent.db
 file mame.db mame.db
-file home/fixdat_ckmame {} test
+file "home/fixdat_ckmame test db (1).dat" {} fixdat-missing-all.fixdat
 file home/.exist <>
 to make sure directory exists
 end-of-inline-data
