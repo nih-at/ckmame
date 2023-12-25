@@ -7,8 +7,9 @@ file extra/1-4-crcerror.zip 1-4-crcerror.zip
 file extra/1-8-ok.zip 1-8-ok.zip {}
 file roms/2-48.zip {} 1-8-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file extra/.ckmame.db {} <empty.ckmamedb>
-no-hashes extra 1-4-crcerror.zip
+file extra/.ckmame.db {} <inline.ckmamedb>
+hashes 1-4-crcerror.zip * cheap
+end-of-inline-data
 stdout
 In game 2-48:
 rom  04.rom        size       4  crc d87f7e0c: missing

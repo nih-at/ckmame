@@ -2,7 +2,7 @@ description file in extra matches hashes, but not size from romset
 return 0
 arguments -D ../mamedb-1-8-is-4.db -Fje extra
 file extra/1-4.zip 1-4-ok.zip
-file extra/.ckmamedb {} <inline.ckmamedb>
+file extra/.ckmame.db {} <inline.ckmamedb>
 hashes 1-4.zip 04.rom cheap
 end-of-inline-data
 stdout

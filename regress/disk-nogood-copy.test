@@ -4,10 +4,10 @@ return 0
 arguments -D ../mamedb-disk-many.db -Fvj -e extras --report-detailed disk-nogood disk-nogood2
 file roms/disk-nogood.zip 1-4-ok.zip
 file extras/108-nogood.chd 12-1.chd
-file roms/.ckmame.db {} <empty.ckmamedb>
-file extras/.ckmame.db {} <inline.ckmamedb>
+file roms/.ckmame.db {} <inline.ckmamedb>
 hashes disk-nogood.zip 04.rom cheap
 end-of-inline-data
+file extras/.ckmame.db {} <empty.ckmamedb>
 # file name alone shouldn't be enough
 stdout
 In game disk-nogood:

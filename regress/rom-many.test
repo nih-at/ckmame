@@ -5,8 +5,9 @@ arguments -Fvc many
 file mame.db mame.db
 file roms/wrongname.zip many.zip {}
 file roms/many.zip {} many.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms many.zip
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes many.zip * cheap
+end-of-inline-data
 stdout
 In game many:
 rom  00            size       2  crc b84614a0: is in 'roms/wrongname.zip/00'

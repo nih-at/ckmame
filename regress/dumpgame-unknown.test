@@ -2,6 +2,7 @@ description test dumpgame: unknown game given on command line
 return 1
 program dumpgame
 arguments -D mame.db nosuchgame
+file mame.db mame.db
 stderr
 game 'nosuchgame' not found
 end-of-inline-data

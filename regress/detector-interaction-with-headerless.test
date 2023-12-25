@@ -8,9 +8,6 @@ file roms/skipped.zip {} 1-8-skip-ok.zip
 file extra/short.zip 1-8-skip-ok.zip {}
 file extra/long.zip 1-8-ok.zip {}
 file roms/.ckmame.db {} <empty.ckmamedb>
-file extra/.ckmame.db {} <inline.ckmamedb>
-hashes long.zip 08.rom cheap
-end-of-inline-data
 stdout
 In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'extra/short.zip/08.rom'

@@ -6,7 +6,7 @@ file roms/grandparent.zip 1-4-ok.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
 hashes grandparent.zip 04.rom cheap
 end-of-inline-data
-file fixdat_ckmame {} test
+file "fixdat_ckmame test db (1).dat" {} fixdat-missing-child.fixdat
 stdout
 In game grandparent:
 game grandparent                             : correct

@@ -18,10 +18,11 @@ file roms/nogood-2.zip 1-8-ok.zip
 file roms/parent-4.zip 1-4-ok.zip
 file roms/zero-4.zip zero-4-ok.zip
 file roms/zero.zip zero-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms baddump.zip
-no-hashes roms many.zip
-no-hashes roms zero-4.zip zero
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes baddump.zip * cheap
+hashes many.zip * cheap
+hashes zero-4.zip zero cheap
+end-of-inline-data
 stdout
 In game 1-4:
 game 1-4                                     : correct

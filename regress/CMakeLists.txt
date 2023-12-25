@@ -103,8 +103,101 @@ add_custom_target(update-mamedb.dump
   DEPENDS ${DBS}
 )
 
+# TODO: restore variant dir support
+set(VARIANT_DIR_TESTS
+  config-roms-zipped.test # weird? marked as zip, but "roms-zipped = false" in config
+  diskfull-dir.test
+  extra-file-dir.test
+  ignore-macos-dir-in-game.test
+  mkmamedb-input-dir-dir.test
+  rom-from-extra-keep-dir-clean.test
+  rom-from-extra-keep-dir.test
+  rom-from-extra-size-changed.test
+  uncompressed-ckmamedb-add-game.test
+  uncompressed-ckmamedb-changed-new-mtime.test
+  uncompressed-ckmamedb-changed-same-mtime-nofix.test
+  uncompressed-ckmamedb-changed-same-mtime.test
+  uncompressed-ckmamedb-extra-dir.test
+  uncompressed-ckmamedb-extra-remove.test
+  uncompressed-ckmamedb-no-change.test
+  uncompressed-ckmamedb-remove-game-2.test
+  uncompressed-ckmamedb-remove-game-3.test
+  uncompressed-ckmamedb-remove-game.test
+  uncompressed-toplevel-extra.test
+  uncompressed-toplevel-file.test
+  uncompressed-toplevel-roms.test
+)
+
+# TODO: restore support for creating .ckmame.db files from .dump files
+set(DUMP_TO_DB
+  rom-from-extra-ckmamedb.test
+  rom-from-extra-dbcache-cleanup.test
+  uncompressed-ckmamedb-changed-same-mtime-zip.test
+)
+
+# TODO: add detector-hashes keyword support
+set(DETECTOR_HASHES
+  detector-from-extra-cleanup-no-header.test
+  detector-from-extra-cleanup.test
+  detector-from-extra.test
+  detector-name-error.test
+  detector-ok.test
+  rom-from-extra-detector.test
+  rom-from-romset-detector.test
+  rom-from-superfluous-detector.test
+  skip-in-parent.test
+  skip-to-needed.test
+  skip.test
+)
+
+# TODO: fix wrong type column wrong in expected .ckmame.db
+set(CKMAME_DB_DISK_TYPE_WRONG
+  disk-from-extra-remove.test
+  disk-from-extra-using-copy-remove.test
+  disk-from-extra.test # plus difference in extra
+  disk-from-superfluous-all.test
+  disk-from-superfluous.test
+  disk-invalid.test
+  disk-nogood.test
+  disk-ok.test
+  disk-parent-merge-exists.test
+  disk-parent-merge.test
+  disk-stats.test
+  disk-superfluous.test
+  disk-swap.test
+  disk-swapmerge.test
+  disk-to-needed.test
+  disk-toplevel.test
+  disk-toplevel-cleanup.test
+  disk-unrelated-fix.test
+  disk-unrelated.test
+  disk-wrong.test
+  disk-wrong2.test
+  nogood-diskgood.test # also needs "not-in-ckmamedb"
+  rom-from-superfluous-many.test
+  rom-from-superfluous-many-fixdat.test
+  superfluous-cleanup-disk.test
+)
+
+# TODO: fix these
+set(VARIOUS
+  ckmame-all-sets-3.test # ckmame.db comparison differences
+  ckmamedb-migrate-v2.test # unknown directive 'ckmamedb-before'
+  config-use-central-cache-directory.test # @SANDBOX@ expansion
+  disk-nogood-copy.test # ckmame.db comparison difference
+  mkmamedb-list-available-dats-5.test # @SANDBOX@ expansion
+  mkmamedb-use-central-cache-directory.test # @SANDBOX@ expansion
+  needed-error.test # mkdir needs mode support
+  rom-from-extra-broken-unwanted.test # dbdump diff status 0 <> 1
+  rom-from-extra-partial-7z.test # compares 7z to zip, fails
+)
 
 set(XFAIL_TESTS
+  ${VARIANT_DIR_TESTS}
+  ${DUMP_TO_DB}
+  ${DETECTOR_HASHES}
+  ${CKMAME_DB_DISK_TYPE_WRONG}
+  ${VARIOUS}
   extra-file-zip.test
   file-no-crc-wrong-name-other-set.test
   rom-from-extra-loose-directory.test

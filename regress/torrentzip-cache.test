@@ -2,6 +2,7 @@ description test single-rom game (no parent), add missing rom, torrentzip it
 #variants zip
 return 0
 arguments -D ../mamedb-reversesorted.db -Fjvc -e extra --use-torrentzip 2-48
+file roms/.ckmame.db {} <empty.ckmamedb>
 file roms/2-48.zip {} 2-48-ok.zip
 file extra/2-48.zip 2-48-ok.zip {}
 stdout

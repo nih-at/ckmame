@@ -3,5 +3,7 @@ return 0
 arguments -Fv nogoodclone
 file mame.db mame.db
 file roms/1-8.zip 1-8-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms 1-8.zip
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes 1-8.zip * cheap
+end-of-inline-data
+

@@ -7,8 +7,9 @@ file search/ignore.zip 1-u-ok.zip
 file search/ignore2 dummy
 file roms/1-4.zip {} 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-file search/.ckmame.db {} <empty.ckmamedb>
-no-hashes search ignore.zip
+file search/.ckmame.db {} <inline.ckmamedb>
+hashes ignore.zip * cheap
+end-of-inline-data
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo.zip/04.rom'

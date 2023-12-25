@@ -11,7 +11,7 @@ end-of-inline-data
 stdout
 In game zero:
 game zero                                    : not a single file found
-file zero 
+file zero          size       4  crc 9be3e0a3: unknown
 move unknown file 'zero'
 create empty file 'zero'
 end-of-inline-data

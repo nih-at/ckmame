@@ -5,6 +5,7 @@ program mkmamedb
 arguments -o mamedb-test.db extra
 file extra/1-4.zip 1-4-ok.zip
 file extra/plain-file dummy
+file extra/.ckmame.db {} <empty.ckmamedb>
 file mamedb-test.db {} mamedb-small.dump
 stderr
 skipping unknown file 'extra/plain-file'

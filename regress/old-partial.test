@@ -1,6 +1,8 @@
 description test 2 rom game, zip is correct, one rom is in old
 return 0
-arguments -O ../mamedb-lost-parent-ok.db -Fvc 2-4a
+arguments -O old.db -Fvc 2-4a
+file mame.db mame.db
+file old.db mamedb-lost-parent-ok.db
 file roms/2-4a.zip 1-a-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 stdout

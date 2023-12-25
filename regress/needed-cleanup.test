@@ -3,14 +3,14 @@ return 0
 arguments -D ../mamedb-lost-parent-ok.db -Fv
 file roms/clone-8.zip 1-4-ok.zip
 file saved/d87f7e0c-000.zip 1-4-ok.zip {}
-file roms/.ckmame.db {} <empty.ckmamedb>
-file saved/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms clone-8.zip
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes clone-8.zip * cheap
+end-of-inline-data
 stdout
 In game clone-8:
 rom  08.rom        size       8  crc 3656897d: missing
 In archive saved/d87f7e0c-000.zip:
-file 04.rom 
+file 04.rom        size       4  crc d87f7e0c: not used
 delete unused file '04.rom'
 remove empty archive
 end-of-inline-data
