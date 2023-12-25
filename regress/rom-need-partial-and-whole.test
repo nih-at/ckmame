@@ -4,13 +4,14 @@ arguments -Fvc 1-4 1-8
 file mame.db mame.db
 file roms/1-4.zip 1-8-called-04.zip 1-4-ok.zip
 file roms/1-8.zip {} 1-8-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms 1-4.zip 04.rom md5
-no-hashes roms 1-4 04.rom md5
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes 1-4.zip 04.rom -md5
+hashes 1-4 04.rom -md5
+end-of-inline-data
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 0 (8)
-file 04.rom 
+file 04.rom        size       8  crc 3656897d: needed elsewhere
 save needed file '04.rom'
 extract (offset 0, size 4) from '04.rom' to '04.rom'
 In game 1-8:

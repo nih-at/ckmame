@@ -3,8 +3,9 @@ return 0
 # TODO: -c reports game as correct
 arguments -cFv -D ../mamedb-size-empty.db nosize
 file roms/nosize.zip 1-4-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms nosize.zip
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes nosize.zip 04.rom cheap
+end-of-inline-data
 stdout
 In game nosize:
 game nosize                                  : correct
