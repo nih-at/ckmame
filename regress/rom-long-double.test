@@ -4,11 +4,13 @@ arguments -Fvc 1-4
 file mame.db mame.db
 file roms/1-4.zip 1-4-dup.zip 1-4-ok.zip
 file unknown/1-4.zip {} 1-4-dup.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-file unknown/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms 1-4.zip 04.rom md5
-no-hashes roms 1-4 04.rom md5
-no-hashes unknown 1-4.zip 04.rom
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes 1-4.zip 04.rom -md5
+hashes 1-4 04.rom -md5
+end-of-inline-data
+file unknown/.ckmame.db {} <inline.ckmamedb>
+hashes 1-4.zip 04.rom cheap
+end-of-inline-data
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: too long, valid subsection at byte 0 (8)
