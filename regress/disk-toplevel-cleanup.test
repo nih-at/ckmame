@@ -7,7 +7,7 @@ file roms/disk/108-5.chd 108-5.chd
 file roms/unknown-game/unknown.chd 108-5.chd {}
 file roms/toplevel.chd 108-5.chd {}
 file roms/.ckmame.db {} <inline.ckmamedb>
-hashes disk.zip 04.rom cheap
+hashes disk.zip 08.rom cheap
 end-of-inline-data
 stdout
 In archive roms:

@@ -55,6 +55,9 @@ class Archive:
 
     def add_file(self, file):
         file.index = len(self.files)
+        # if one of the files has no CRC, assume the archive is a disk
+        if file.crc == "<null>":
+            self.file_type = 1
         self.files.append(file)
 
     def archive_row(self):
@@ -290,6 +293,7 @@ class CkmameDBComparator:
         else:
             return {"crc", "md5", "sha1"}
 
+
 def destrsvis(str):
     # TODO
     return str
@@ -304,7 +308,7 @@ def main():
 
     args = parser.parse_args()
 
-    comparator = CkmameDBComparator(args.ckmamedb, args.unzipped)
+    CkmameDBComparator(args.ckmamedb, args.unzipped)
     return 0
 
 

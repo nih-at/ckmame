@@ -6,10 +6,10 @@ mkdir extra
 file roms/disk.zip 1-4-ok.zip
 file extra/new.chd 108-5.chd
 file roms/disk/108-5.chd {} 108-5.chd
-file roms/.ckmame.db {} <empty.ckmamedb>
-file extra/.ckmame.db {} <inline.ckmamedb>
+file roms/.ckmame.db {} <inline.ckmamedb>
 hashes disk.zip 04.rom cheap
 end-of-inline-data
+file extra/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game disk:
 rom  04.rom        size       4  crc d87f7e0c: correct

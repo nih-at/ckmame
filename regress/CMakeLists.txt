@@ -150,45 +150,23 @@ set(DETECTOR_HASHES
   skip.test
 )
 
-# TODO: fix wrong type column wrong in expected .ckmame.db
-set(CKMAME_DB_DISK_TYPE_WRONG
-  disk-from-extra-remove.test
-  disk-from-extra-using-copy-remove.test
-  disk-from-extra.test # plus difference in extra
-  disk-from-superfluous-all.test
-  disk-from-superfluous.test
-  disk-invalid.test
-  disk-nogood.test
-  disk-ok.test
-  disk-parent-merge-exists.test
-  disk-parent-merge.test
-  disk-stats.test
-  disk-superfluous.test
-  disk-swap.test
-  disk-swapmerge.test
-  disk-to-needed.test
-  disk-toplevel.test
-  disk-toplevel-cleanup.test
-  disk-unrelated-fix.test
-  disk-unrelated.test
-  disk-wrong.test
-  disk-wrong2.test
-  nogood-diskgood.test # also needs "not-in-ckmamedb"
-  rom-from-superfluous-many.test
-  rom-from-superfluous-many-fixdat.test
-  superfluous-cleanup-disk.test
-)
-
 # TODO: fix these
 set(VARIOUS
-  ckmame-all-sets-3.test # ckmame.db comparison differences
-  ckmamedb-migrate-v2.test # unknown directive 'ckmamedb-before'
+  ckmame-all-sets-3.test # disk in extra ckmame.db comparison difference
+  disk-from-extra.test # disk in extra ckmame.db comparison difference
+  disk-nogood-copy.test # disk in extra ckmame.db comparison difference
+
   config-use-central-cache-directory.test # @SANDBOX@ expansion
-  disk-nogood-copy.test # ckmame.db comparison difference
   mkmamedb-list-available-dats-5.test # @SANDBOX@ expansion
   mkmamedb-use-central-cache-directory.test # @SANDBOX@ expansion
+
   needed-error.test # mkdir needs mode support
+
+  ckmamedb-migrate-v2.test # unknown directive 'ckmamedb-before'
+  nogood-diskgood.test # unknown directive "not-in-ckmamedb"
+
   rom-from-extra-broken-unwanted.test # dbdump diff status 0 <> 1
+
   rom-from-extra-partial-7z.test # compares 7z to zip, fails
 )
 
@@ -196,7 +174,6 @@ set(XFAIL_TESTS
   ${VARIANT_DIR_TESTS}
   ${DUMP_TO_DB}
   ${DETECTOR_HASHES}
-  ${CKMAME_DB_DISK_TYPE_WRONG}
   ${VARIOUS}
   extra-file-zip.test
   file-no-crc-wrong-name-other-set.test
