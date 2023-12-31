@@ -21,3 +21,4 @@ db.ckmamedb-unzipped = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb
 [comparator-preprocessors]
 db.dump = dbdump
 dat.fixdat = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/fixdat-reset-version
+7z.zip = @PROJECT_BINARY_DIR@/regress/compare-archives
