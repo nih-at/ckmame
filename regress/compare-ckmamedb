@@ -405,7 +405,7 @@ class CkmameDBComparator:
                     if attributes["status"] in status_names:
                         file.status = status_names[attributes["status"]]
                     else:
-                        print(f"unknown status {attributes["status"]}")
+                        print(f"unknown status {attributes['status']}")
                 file.mtime = attributes["time"]
                 if "crc" in attributes and "crc" in hashes:
                     file.crc = int(attributes["crc"], 16)
