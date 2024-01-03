@@ -14,6 +14,14 @@ foreach(PROGRAM ${SUPPORT_PROGRAMS})
   target_link_libraries(${PROGRAM} libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
 endforeach()
 
+foreach(PROGRAM unpack)
+  add_executable(${PROGRAM} ${PROGRAM}.c)
+  # for config.h
+  target_include_directories(${PROGRAM} PRIVATE ${PROJECT_BINARY_DIR})
+  # compat.h
+  target_include_directories(${PROGRAM} BEFORE PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src)
+  target_link_libraries(${PROGRAM} libckmame libzip::zip)
+endforeach()
 
 if (LibArchive_FOUND)
   add_executable(compare-archives compare-archives.cc)
