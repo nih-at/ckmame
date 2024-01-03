@@ -3,7 +3,7 @@ description test single-rom game (no parent), incorrect ckmame db exists, but fi
 return 0
 arguments -D ../mamedb-small.db -jFvc
 file roms/1-4.zip 1-4-wrong.zip
-file roms/.ckmame.db ckmamedb-1-4-ok.dump <ckmamedb-1-4-ok.dump>
+file roms/.ckmame.db 1-4-ok.ckmamedb-dump <ckmamedb-1-4-ok.dump>
 set-modification-time roms/1-4/04.rom 1047617702
 set-modification-time roms/1-4 1422359238
 stdout

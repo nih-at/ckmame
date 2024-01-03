@@ -5,10 +5,7 @@ arguments -Fvcj -e extradir 2-48
 file mame.db mame.db
 file extradir/2-48.zip 2-48-ok.zip {}
 file roms/2-48.zip 1-4-ok.zip 2-48-ok.zip
-file roms/.ckmame.db ckmamedb-1-4-as-2-48.dump <inline.ckmamedb>
-hashes 2-48.zip 04.rom cheap
-end-of-inline-data
-file extradir/.ckmame.db {} <empty.ckmamedb>
+file roms/.ckmame.db 1-4-as-2-48.ckmamedb-dump <empty.ckmamedb>
 set-modification-time roms/2-48.zip 1422359238
 stdout
 In game 2-48:

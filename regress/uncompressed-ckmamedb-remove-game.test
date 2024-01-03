@@ -3,7 +3,7 @@ description test single-rom game (no parent), correct partial ckmame db exists, 
 return 0
 arguments -jFvc 1-8
 file roms/1-8.zip 1-8-ok.zip
-file roms/.ckmame.db ckmamedb-1-4-ok.dump ckmamedb-1-4-ok-1-8-ok.dump
+file roms/.ckmame.db 1-4-ok.ckmamedb-dump ckmamedb-1-4-ok-1-8-ok.dump
 set-modification-time roms/1-8.zip 1422359888
 stdout
 In game 1-8:

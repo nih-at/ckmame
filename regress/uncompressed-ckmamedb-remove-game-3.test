@@ -3,7 +3,7 @@ description test single-rom game (no parent), correct partial ckmame db exists, 
 return 0
 arguments -D ../mamedb-two-games.db -jFvc
 file roms/1-8.zip 1-8-ok.zip
-file roms/.ckmame.db ckmamedb-1-4-ok.dump <empty.ckmamedb>
+file roms/.ckmame.db 1-4-ok.ckmamedb-dump <empty.ckmamedb>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

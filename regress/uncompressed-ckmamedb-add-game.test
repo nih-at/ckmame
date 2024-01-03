@@ -4,7 +4,7 @@ return 0
 arguments -jFvc 1-8
 file roms/1-4.zip 1-4-ok.zip
 file roms/1-8.zip 1-8-ok.zip
-file roms/.ckmame.db ckmamedb-1-4-ok.dump <empty.ckmamedb>
+file roms/.ckmame.db 1-4-ok.ckmamedb-dump <empty.ckmamedb>
 set-modification-time roms/1-4.zip 1422359238
 stdout
 In game 1-8:

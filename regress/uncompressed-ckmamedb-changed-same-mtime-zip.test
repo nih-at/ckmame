@@ -4,7 +4,7 @@ return 0
 set-modification-time roms/1-4.zip 1419260288
 arguments -D ../mamedb-small.db -jFvc
 file roms/1-4.zip 1-4-crcerror.zip
-file roms/.ckmame.db ckmamedb-1-4-ok-with-mtime.dump <ckmamedb-1-4-ok-with-mtime.dump>
+file roms/.ckmame.db 1-4-ok-with-mtime.ckmamedb-dump
 stdout
 In game 1-4:
 game 1-4                                     : correct

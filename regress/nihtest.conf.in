@@ -14,11 +14,14 @@ zip.zip = zipcmp -v
 db.ckmamedb = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb
 db.ckmamedb-unzipped = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/compare-ckmamedb -u
 
-#[copiers]
+[copiers]
+db.dump = dbrestore
+db.ckmamedb-dump = dbrestore -t ckmamedb
 #.zip = our-unzip
 # our-unzip ../1-4-ok.zip roms/1-4
 
 [comparator-preprocessors]
 db.dump = dbdump
+db.ckmamedb-dump = dbdump
 dat.fixdat = @PYTHONBIN@ @PROJECT_SOURCE_DIR@/regress/fixdat-reset-version
 7z.zip = @PROJECT_BINARY_DIR@/regress/compare-archives

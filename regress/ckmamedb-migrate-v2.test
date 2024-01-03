@@ -4,7 +4,7 @@ return 0
 arguments -Fvc -je extra 1-4
 file mame.db mame.db
 file extra/1-8.zip 1-8-ok.zip
-ckmamedb-before extra ckmamedb-1-8-ok-v2.dump 2 ckmamedb-v2.sql
+ckmamedb-before extra 1-8-ok-v2.ckmamedb-dump 2 ckmamedb-v2.sql
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

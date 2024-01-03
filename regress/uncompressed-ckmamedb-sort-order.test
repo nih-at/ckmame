@@ -3,7 +3,7 @@ description test double-rom game (no parent), check order of entries (forward)
 return 0
 arguments -D ../mamedb-one-game-two-roms.db -jFvc 2-4c
 file roms/2-4c.zip 2-4c-ok.zip
-file roms/.ckmame.db {} ckmamedb-2-4c-ok.dump
+file roms/.ckmame.db {} 2-4c-ok.ckmamedb-dump
 set-modification-time roms/2-4c.zip 1419271671
 stdout
 In game 2-4c:

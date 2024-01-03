@@ -3,7 +3,7 @@ description test single-rom game (no parent), correct ckmame db exists
 return 0
 arguments -D ../mamedb-small.db -jFvc
 file roms/1-4.zip 1-4-ok.zip
-file roms/.ckmame.db ckmamedb-1-4-ok.dump <empty.ckmamedb>
+file roms/.ckmame.db 1-4-ok.ckmamedb-dump <empty.ckmamedb>
 set-modification-time roms/1-4/04.rom 1047614102
 stdout
 In game 1-4:

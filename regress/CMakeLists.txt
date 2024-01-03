@@ -128,13 +128,6 @@ set(VARIANT_DIR_TESTS
   uncompressed-toplevel-roms.test
 )
 
-# TODO: restore support for creating .ckmame.db files from .dump files
-set(DUMP_TO_DB
-  rom-from-extra-ckmamedb.test
-  rom-from-extra-dbcache-cleanup.test
-  uncompressed-ckmamedb-changed-same-mtime-zip.test
-)
-
 # TODO: add detector-hashes keyword support
 set(DETECTOR_HASHES
   detector-from-extra-cleanup-no-header.test
@@ -172,7 +165,6 @@ set(VARIOUS
 
 set(XFAIL_TESTS
   ${VARIANT_DIR_TESTS}
-  ${DUMP_TO_DB}
   ${DETECTOR_HASHES}
   ${VARIOUS}
   extra-file-zip.test
