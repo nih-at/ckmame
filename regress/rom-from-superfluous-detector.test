@@ -5,10 +5,10 @@ file mamedb-skipped.db mamedb-skipped.db
 arguments -D mamedb-skipped.db -Fvc skipped
 file roms/18.zip 1-8-ok.zip {}
 file roms/skipped.zip {} 1-8-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms skipped.zip
-detector-hashes skip-some-bytes 20070429 roms skipped.zip
-detector-hashes skip-some-bytes 20070429 roms skipped
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes skipped.zip * cheap
+detector-hashes skip-some-bytes 20070429 skipped.zip *
+end-of-inline-data
 stdout
 In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'roms/18.zip/08.rom'

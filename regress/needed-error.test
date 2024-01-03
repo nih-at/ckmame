@@ -5,7 +5,8 @@ file mame.db mame.db
 file roms/1-4.zip 1-8-ok.zip 2-48-ok.zip
 file roms/2-48.zip 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
-mkdir 0555 saved
+mkdir saved
+read-only saved
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/2-48.zip/04.rom'
@@ -15,6 +16,6 @@ add 'roms/2-48.zip/04.rom' as '04.rom'
 end-of-inline-data
 stderr
 can't open rom directory database for 'saved': unable to open database file: no database
-<zip> saved/3656897d-000.zip: error closing zip: Failure to create temporary file: Permission denied
-<dir> cannot create 'saved/3656897d-000/.added': Permission denied
+saved/3656897d-000.zip: error closing zip: Failure to create temporary file: Permission denied
 end-of-inline-data
+#<dir> cannot create 'saved/3656897d-000/.added': Permission denied

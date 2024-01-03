@@ -4,11 +4,10 @@ return 0
 file mame-detector.db mamedb-detector.db
 file extra/1-8-header.zip 1-8-header.zip {}
 file roms/1-8.zip {} 1-8-header.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-file extra/.ckmame.db {} <empty.ckmamedb>
-no-hashes roms 1-8.zip
-detector-hashes skip-some-bytes 20070429 roms 1-8.zip
-detector-hashes skip-some-bytes 20070429 roms 1-8
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes 1-8.zip * cheap
+detector-hashes skip-some-bytes 20070429 1-8.zip *
+end-of-inline-data
 arguments -D mame-detector.db -Fvc -je extra 1-8
 stdout
 In game 1-8:

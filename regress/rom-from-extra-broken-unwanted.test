@@ -9,6 +9,7 @@ file roms/2-48.zip {} 1-8-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 file extra/.ckmame.db {} <inline.ckmamedb>
 hashes 1-4-crcerror.zip * cheap
+status 1-4-crcerror.zip * ok
 end-of-inline-data
 stdout
 In game 2-48:

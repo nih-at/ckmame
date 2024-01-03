@@ -23,13 +23,14 @@ class Table(enum.Enum):
 re_atrribute = re.compile("^([^=]+)=(.*)")
 
 status_names = {
+    "ok": 0,
     "baddump": 1,
     "nodump": 2
 }
 
 
 class File:
-    def __init__(self, name, index=0, mtime="null", status=0, size="-1", crc="<null>", md5="null", sha1="null", detector_id=0):
+    def __init__(self, name, index=0, mtime="null", status=0, size="-1", crc="<null>", md5="<null>", sha1="<null>", detector_id=0):
         self.name = name
         self.index = index
         self.status = status
@@ -40,8 +41,55 @@ class File:
         self.mtime = mtime
         self.detector_id = detector_id
 
+    def __eq__(self, other):
+        return (int(self.index) == int(other.index)
+                and self.name == other.name
+                and self.status == other.status
+                and int(self.size) == int(other.size)
+                and self.crc == other.crc
+                and self.md5 == other.md5
+                and self.sha1 == other.sha1
+                and int(self.detector_id) == int(other.detector_id))
+
+    def __lt__(self, other):
+        if int(self.index) < int(other.index):
+            return True
+        if int(self.index) > int(other.index):
+            return False
+        if self.name < other.name:
+            return True
+        if self.name > other.name:
+            return False
+        if int(self.mtime) < int(other.mtime):
+            return True
+        if int(self.mtime) > int(other.mtime):
+            return False
+        if self.status < other.status:
+            return True
+        if self.status > other.status:
+            return False
+        if int(self.size) < int(other.size):
+            return True
+        if int(self.size) > int(other.size):
+            return False
+        if self.crc < other.crc:
+            return True
+        if self.crc > other.crc:
+            return False
+        if self.md5 < other.md5:
+            return True
+        if self.md5 > other.md5:
+            return False
+        if self.sha1 < other.sha1:
+            return True
+        if self.sha1 > other.sha1:
+            return False
+        if int(self.detector_id) < int(other.detector_id):
+            return True
+        return False
+
     def row(self, archive_id):
-        return f"{archive_id}|{self.index}|{self.name}|{self.mtime}|{self.status}|{self.size}|{self.crc}|<{self.md5}>|<{self.sha1}>|{self.detector_id}"
+        return f"{archive_id}|{self.index}|{self.name}|{self.mtime}|{self.status}|{self.size}|{self.crc}|{self.md5}|{self.sha1}|{self.detector_id}"
 
 
 class Archive:
@@ -51,6 +99,7 @@ class Archive:
         self.mtime = mtime
         self.size = size
         self.files = []
+        self.detector_hashes = []
         self.file_type = file_type
 
     def add_file(self, file):
@@ -60,11 +109,29 @@ class Archive:
             self.file_type = 1
         self.files.append(file)
 
+    def add_detector_hash(self, file):
+        self.detector_hashes.append(file)
+
     def archive_row(self):
         return f"{self.id}|{self.name}|{self.mtime}|{self.size}|{self.file_type}"
 
     def file_rows(self):
-        return map(lambda f: f.row(self.id), self.files)
+        return map(lambda f: f.row(self.id), sorted(self.files + self.detector_hashes))
+
+    def get_detector_hash(self, file_index, detector_id):
+        for file in self.files:
+            if int(file.index) == int(file_index) and int(file.detector_id) == int(detector_id):
+                return file
+        return None
+
+class Detector:
+    def __init__(self, id, name, version):
+        self.id = int(id)
+        self.name = name
+        self.version = version
+
+    def row(self):
+        return f"{self.id}|{self.name}|{self.version}"
 
 
 class CkmameDB:
@@ -72,12 +139,22 @@ class CkmameDB:
         self.archives = {}
         self.archive_names = {}
         self.next_archive_id = 0
+        self.detectors = {}
+        self.detector_names = {}
+        self.next_detector_id = 0
 
     def add_archive(self, archive):
         self.archives[archive.name] = archive
         self.archive_names[archive.id] = archive.name
         if archive.id >= self.next_archive_id:
             self.next_archive_id = archive.id + 1
+
+    def add_detector(self, detector):
+        key = detector.name + "|" + detector.version
+        self.detectors[key] = detector
+        self.detector_names[detector.id] = key
+        if detector.id >= self.next_detector_id:
+            self.next_detector_id = detector.id + 1
 
     def get_archive_by_id(self, id):
         if id in self.archive_names:
@@ -93,16 +170,26 @@ class CkmameDB:
             self.next_archive_id += 1
             return id
 
+    def get_detector_id(self, key):
+        if key in self.detectors:
+            return self.detectors[key].id
+        else:
+            id = self.next_detector_id
+            self.next_detector_id += 1
+            return id
+
     def dump(self):
         lines = []
         archives = sorted(self.archives.values(), key=lambda a: a.id)
+        detectors = sorted(self.detectors.values(), key=lambda d: d.id)
 
         lines.append(table_archive)
         for archive in archives:
             lines.append(archive.archive_row())
 
         lines.append(table_detector)
-        # TODO: add detectors
+        for detector in detectors:
+            lines.append(detector.row())
 
         lines.append(table_file)
         for archive in archives:
@@ -119,6 +206,9 @@ class CkmameDBComparator:
         self.got_dump = []
         self.expected_db = None
         self.hash_exceptions = {}
+        self.detector_hashes = {}
+        self.ignored_archives = {}
+        self.status_overrides = {}
         self.process_stdin()
         self.read_ckmamedb(filename)
         self.read_directory()
@@ -136,6 +226,12 @@ class CkmameDBComparator:
             # TODO: backslash escapes
             if words[0] == "hashes":
                 self.add_hash_exception(words[1:])
+            elif words[0] == "detector-hashes":
+                self.add_detector_hashes(words[1:])
+            elif words[0] == "ignore":
+                self.ignore_archive(words[1:])
+            elif words[0] == "status":
+                self.add_status_override(words[1:])
             else:
                 print(f"unknown directive '{words[0]}'", file=sys.stderr)
                 sys.exit(2)
@@ -159,6 +255,28 @@ class CkmameDBComparator:
             else:
                 print(f"invalid hash spec '{spec}'")
         self.hash_exceptions[f"{archive}/{file}"] = hashes
+
+    def add_detector_hashes(self, arguments):
+        detector_name = arguments[0]
+        detector_version = arguments[1]
+        archive = arguments[2]
+        # TODO: strip .zip for variant unzipped
+        file = arguments[3]
+        key = f"{archive}/{file}"
+        if key not in self.detector_hashes:
+            self.detector_hashes[key] = []
+        self.detector_hashes[key].append(detector_name + "|" + detector_version)
+
+    def add_status_override(self, arguments):
+        archive = arguments[0]
+        file = arguments[1]
+        if arguments[2] in status_names:
+            self.status_overrides[f"{archive}/{file}"] = status_names[arguments[2]]
+        else:
+            raise RuntimeError(f"unknown status name {arguments[2]}")
+
+    def ignore_archive(self, arguments):
+        self.ignored_archives[arguments[0]] = True
 
     def read_ckmamedb(self, filename):
         command = nihtest.Command.Command("dbdump", [filename])
@@ -201,8 +319,7 @@ class CkmameDBComparator:
         db.add_archive(Archive(fields[0], fields[1], fields[2], fields[3], fields[4]))
 
     def process_detector(self, db, fields):
-        0 == 0
-        # TODO
+        db.add_detector(Detector(fields[0], fields[1], fields[2]))
 
     def process_file(self, db, fields):
         archive = db.get_archive_by_id(int(fields[0]))
@@ -228,6 +345,8 @@ class CkmameDBComparator:
         archive = None
         prefix = ""
 
+        detector_ids = {}
+
         for line in command.stdout:
             if line[0] == '#':
                 continue
@@ -237,11 +356,11 @@ class CkmameDBComparator:
                 continue
 
             name = words[0]
+            if name == ".":
+                continue
             if name[0:2] == "./":
                 name = name[2:]
             name = destrsvis(name)
-            if name == ".":
-                continue
 
             attributes = {}
             for attribute in words[1:]:
@@ -253,12 +372,18 @@ class CkmameDBComparator:
                 prefix = name + "/"
                 archive_name = name if name != "" else "."
 
+                if archive_name in self.ignored_archives:
+                    archive = None
+                    continue
+
                 info = os.stat(os.path.join(self.directory, name))
 
                 archive = Archive(self.got_db.get_archive_id(archive_name), archive_name,
-                                  int(info.st_mtime) if name != "" else "<null>",
+                                  int(info.st_mtime) if name != "." else "0",
                                   info.st_size if stat.S_ISREG(info.st_mode) else 0)
                 db.add_archive(archive)
+                got_archive = self.got_db.get_archive_by_id(archive.id)
+
             elif attributes["type"] == "file":
                 if archive is None:
                     continue
@@ -269,20 +394,48 @@ class CkmameDBComparator:
                 hashes = self.hashes(archive_name, name)
 
                 file = File(name)
+
                 if "size" in attributes:
                     file.size = attributes["size"]
                 if "md5" in attributes and "md5" in hashes:
-                    file.md5 = attributes["md5"]
+                    file.md5 = "<" + attributes["md5"] + ">"
                 if "sha1" in attributes and "sha1" in hashes:
-                    file.sha1 = attributes["sha1"]
+                    file.sha1 = "<" + attributes["sha1"] + ">"
                 if "status" in attributes:
                     if attributes["status"] in status_names:
                         file.status = status_names[attributes["status"]]
-                    # TODO: else: error
+                    else:
+                        print(f"unknown status {attributes["status"]}")
                 file.mtime = attributes["time"]
                 if "crc" in attributes and "crc" in hashes:
                     file.crc = int(attributes["crc"], 16)
+                status_override = self.get_status_override(archive_name, name)
+                if status_override is not None:
+                    file.status = status_override
                 archive.add_file(file)
+
+                detector_hashes = self.get_detector_hashes(archive_name, name)
+                for detector_hash in detector_hashes:
+                    if detector_hash not in detector_ids:
+                        detector_id = self.got_db.get_detector_id(detector_hash)
+                        detector_ids[detector_hash] = detector_id
+                        (name, version) = detector_hash.split("|")
+                        db.add_detector(Detector(detector_id, name, version))
+                    else:
+                        detector_id = detector_ids[detector_hash]
+                    detector_file = File("", file.index)
+                    detector_file.detector_id = detector_id
+                    detector_file.status = 0
+                    if got_archive is not None:
+                        got_file = got_archive.get_detector_hash(file.index, detector_id)
+                        if got_file is not None:
+                            detector_file.mtime = got_file.mtime
+                            detector_file.status = got_file.status
+                            detector_file.size = got_file.size
+                            detector_file.crc = got_file.crc
+                            detector_file.md5 = got_file.md5
+                            detector_file.sha1 = got_file.sha1
+                    archive.add_detector_hash(detector_file)
 
         self.expected_db = db
 
@@ -292,6 +445,20 @@ class CkmameDBComparator:
                 return self.hash_exceptions[key]
         else:
             return {"crc", "md5", "sha1"}
+
+    def get_status_override(self, archive_name, file_name):
+        for key in (f"{archive_name}/{file_name}", f"{archive_name}/*"):
+            if key in self.status_overrides:
+                return self.status_overrides[key]
+        else:
+            return None
+
+    def get_detector_hashes(self, archive_name, file_name):
+        for key in (f"{archive_name}/{file_name}", f"{archive_name}/*"):
+            if key in self.detector_hashes:
+                return self.detector_hashes[key]
+        else:
+            return []
 
 
 def destrsvis(str):

@@ -128,45 +128,8 @@ set(VARIANT_DIR_TESTS
   uncompressed-toplevel-roms.test
 )
 
-# TODO: add detector-hashes keyword support
-set(DETECTOR_HASHES
-  detector-from-extra-cleanup-no-header.test
-  detector-from-extra-cleanup.test
-  detector-from-extra.test
-  detector-name-error.test
-  detector-ok.test
-  rom-from-extra-detector.test
-  rom-from-romset-detector.test
-  rom-from-superfluous-detector.test
-  skip-in-parent.test
-  skip-to-needed.test
-  skip.test
-)
-
-# TODO: fix these
-set(VARIOUS
-  ckmame-all-sets-3.test # disk in extra ckmame.db comparison difference
-  disk-from-extra.test # disk in extra ckmame.db comparison difference
-  disk-nogood-copy.test # disk in extra ckmame.db comparison difference
-
-  config-use-central-cache-directory.test # @SANDBOX@ expansion
-  mkmamedb-list-available-dats-5.test # @SANDBOX@ expansion
-  mkmamedb-use-central-cache-directory.test # @SANDBOX@ expansion
-
-  needed-error.test # mkdir needs mode support
-
-  ckmamedb-migrate-v2.test # unknown directive 'ckmamedb-before'
-  nogood-diskgood.test # unknown directive "not-in-ckmamedb"
-
-  rom-from-extra-broken-unwanted.test # dbdump diff status 0 <> 1
-
-  rom-from-extra-partial-7z.test # compares 7z to zip, fails
-)
-
 set(XFAIL_TESTS
   ${VARIANT_DIR_TESTS}
-  ${DETECTOR_HASHES}
-  ${VARIOUS}
   extra-file-zip.test
   file-no-crc-wrong-name-other-set.test
   rom-from-extra-loose-directory.test

@@ -5,7 +5,7 @@ environment-set HOME ./home
 arguments --list-available-dats
 file dats/mamedb.dat mamedb-header-only.dat
 set-modification-time dats/mamedb.dat 1644506227
-file home/.cache/ckmame/@SANDBOX@/dats/.mkmamedb.db {} mkmamedb-datdb-1.dump
+file home/.cache/ckmame@SANDBOX@/dats/.mkmamedb.db {} mkmamedb-datdb-1.dump
 file .ckmamerc <>
 [global]
 [global.dat-directories]

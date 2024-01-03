@@ -4,10 +4,10 @@ return 0
 arguments -Fvc -je extra 1-4
 file mame.db mame.db
 file extra/1-8.zip 1-8-ok.zip
-ckmamedb-before extra 1-8-ok-v2.ckmamedb-dump 2 ckmamedb-v2.sql
+file extra/.ckmame.db 1-8-ok-v2-ckmame.db <empty.ckmamedb>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found
 In archive extra/1-8.zip:
-file 08.rom 
+file 08.rom        size       8  crc 3656897d: needed elsewhere
 end-of-inline-data

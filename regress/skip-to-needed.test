@@ -5,12 +5,12 @@ file mamedb-skipped.db mamedb-skipped.db
 arguments -D mamedb-skipped.db -Fvc skipped
 file roms/skipped.zip 1-c-header.zip {}
 file saved/07e0c072-000.zip {} 1-c-header.zip
-file saved/.ckmame.db {} <empty.ckmamedb>
-detector-hashes skip-some-bytes 20070429 saved 07e0c072-000.zip
-detector-hashes skip-some-bytes 20070429 saved 07e0c072-000
+file saved/.ckmame.db {} <inline.ckmamedb>
+detector-hashes skip-some-bytes 20070429 07e0c072-000.zip *
+end-of-inline-data
 stdout
 In game skipped:
 game skipped                                 : not a single file found
-file 0c.rom 
+file 0c.rom        size      16  crc 07e0c072: needed elsewhere
 save needed file '0c.rom'
 end-of-inline-data

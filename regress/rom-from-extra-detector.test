@@ -1,18 +1,18 @@
-description test single-rom game (no parent), file is in search dir w/detector
+description test single-rom game (no parent), file is in dir w/detector
 features HAVE_LIBXML2
 return 0
 file mamedb-skipped.db mamedb-skipped.db
 arguments -D mamedb-skipped.db -Fvc -e search skipped
 file search/18.zip 1-8-ok.zip
 file roms/skipped.zip {} 1-8-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-file search/.ckmame.db {} <empty.ckmamedb>
-no-hashes search 18.zip
-detector-hashes skip-some-bytes 20070429 search 18.zip
-detector-hashes skip-some-bytes 20070429 search 18
-no-hashes roms skipped.zip
-detector-hashes skip-some-bytes 20070429 roms skipped.zip
-detector-hashes skip-some-bytes 20070429 roms skipped
+file roms/.ckmame.db {} <inline.ckmamedb>
+hashes skipped.zip * cheap
+detector-hashes skip-some-bytes 20070429 skipped.zip *
+end-of-inline-data
+file search/.ckmame.db {} <inline.ckmamedb>
+hashes 18.zip * cheap
+detector-hashes skip-some-bytes 20070429 18.zip *
+end-of-inline-data
 stdout
 In game skipped:
 rom  08.rom        size       4  crc 02404c40: is in 'search/18.zip/08.rom'
