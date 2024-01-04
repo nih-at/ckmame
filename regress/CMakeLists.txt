@@ -115,7 +115,7 @@ add_custom_target(update-mamedb.dump
 set(VARIANT_DIR_TESTS
   config-roms-zipped.test # weird? marked as zip, but "roms-zipped = false" in config
   diskfull-dir.test
-  extra-file-dir.test
+  #extra-file-dir.test # fixed
   ignore-macos-dir-in-game.test
   mkmamedb-input-dir-dir.test
   rom-from-extra-keep-dir-clean.test
