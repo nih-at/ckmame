@@ -1,12 +1,13 @@
 description test single-rom game (no parent), zip is correct, extra file exists (dir)
 #variants dir
 return 0
-arguments -D ../mamedb-small.db -Fvc
-file roms/1-4.zip 1-4-ok.zip
+arguments --roms-unzipped -Fvc
+file mame.db mamedb-small.db
+file roms/1-4 1-4-ok.zip
 file roms/unknown-file unknown-file {}
-file unknown/roms.zip {} unknown-file.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-file unknown/.ckmame.db {} <empty.ckmamedb>
+file unknown/roms {} unknown-file.zip
+file roms/.ckmame.db {} <empty.ckmamedb-unzipped>
+file unknown/.ckmame.db {} <empty.ckmamedb-unzipped>
 stdout
 In game 1-4:
 game 1-4                                     : correct
