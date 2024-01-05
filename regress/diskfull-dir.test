@@ -1,20 +1,22 @@
 description test copying file from extra, failing (directory permissions) and (not) cleaning up extra
 #variants dir
 return 0
-arguments -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
-file extra/wrongname.zip 2-48-ok.zip
+arguments --roms-unzipped -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
+file extra/wrongname 2-48-ok.zip
+file extra/.ckmame.db {} <empty.ckmamedb-unzipped>
 mkdir roms
 mkdir roms/clone-8
+read-only roms/clone-8
 stdout
 In game clone-8:
-rom  04.rom        size       4  crc d87f7e0c: is in 'extra/wrongname.zip/04.rom'
-rom  08.rom        size       8  crc 3656897d: is in 'extra/wrongname.zip/08.rom'
-add 'extra/wrongname.zip/04.rom' as '04.rom'
-add 'extra/wrongname.zip/08.rom' as '08.rom'
-In archive extra/wrongname.zip:
+rom  04.rom        size       4  crc d87f7e0c: is in 'extra/wrongname/04.rom'
+rom  08.rom        size       8  crc 3656897d: is in 'extra/wrongname/08.rom'
+add 'extra/wrongname/04.rom' as '04.rom'
+add 'extra/wrongname/08.rom' as '08.rom'
+In archive extra/wrongname:
 file 04.rom        size       4  crc d87f7e0c: needed elsewhere
 file 08.rom        size       8  crc 3656897d: needed elsewhere
 end-of-inline-data
 stderr
-roms/clone-8: can't create temporary directory: Permission denied
+cannot create 'roms/clone-8/.added': Permission denied
 end-of-inline-data

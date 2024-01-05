@@ -1,13 +1,13 @@
 description uncompressed ROM set, loose top-level files in extra dir
 #variants dir
 return 0
-arguments -Fvc -e search 1-4
+arguments --roms-unzipped -Fvc -e search 1-4
 file mame.db mame.db
 file search/loose 04.rom
-file search/1-8.zip 1-8-ok.zip
-file roms/1-4.zip {} 1-4-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-file search/.ckmame.db 1-8-ok.ckmamedb-dump <empty.ckmamedb>
+file search/1-8 1-8-ok.zip
+file roms/1-4 {} 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb-unzipped>
+file search/.ckmame.db 1-8-ok.ckmamedb-dump <empty.ckmamedb-unzipped>
 stdout
 In game 1-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'search/loose'

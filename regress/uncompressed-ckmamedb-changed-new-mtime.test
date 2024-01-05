@@ -1,14 +1,15 @@
 description test single-rom game (no parent), incorrect ckmame db exists, file has newer mtime
 #variants dir
 return 0
-arguments -D ../mamedb-small.db -jFvc
-file unknown/1-4.zip {} 1-4-wrong.zip
-file roms/.ckmame.db 1-4-ok.ckmamedb-dump <empty.ckmamedb>
-file unknown/.ckmame.db {} <empty.ckmamedb>
+arguments --roms-unzipped -D ../mamedb-small.db -jFvc
+file roms/1-4 1-4-wrong.zip {}
+file unknown/1-4 {} 1-4-wrong.zip
+file roms/.ckmame.db 1-4-ok.ckmamedb-dump {}
+file unknown/.ckmame.db {} <empty.ckmamedb-unzipped>
 set-modification-time roms/1-4/04.rom 1047614103
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found
-file 04.rom 
+file 04.rom        size       4  crc e027b67c: unknown
 move unknown file '04.rom'
 end-of-inline-data

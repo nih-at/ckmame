@@ -2,12 +2,13 @@ description test mkmamedb database creation from input directory (dir)
 #variants dir
 return 0
 program mkmamedb
-arguments -o mamedb-test.db extra
-file extra/1-4.zip 1-4-ok.zip
+arguments --roms-unzipped -o mamedb-test.db extra
+file extra/1-4 1-4-ok.zip
 file extra/plain-file dummy
 file extra/.ckmame.db {} 1-4-ok.ckmamedb-dump
 file mamedb-test.db {} mamedb-small.dump
-set-modification-time extra/1-4.zip 1422359238
+set-modification-time extra/1-4 1422359238
+set-modification-time extra/1-4/04.rom 1047617702
 stderr
 found file 'extra/plain-file' outside of game subdirectory
 end-of-inline-data

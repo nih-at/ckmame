@@ -113,27 +113,8 @@ add_custom_target(update-mamedb.dump
 
 # TODO: restore variant dir support
 set(VARIANT_DIR_TESTS
-  config-roms-zipped.test # weird? marked as zip, but "roms-zipped = false" in config
-  diskfull-dir.test
-  #extra-file-dir.test # fixed
-  ignore-macos-dir-in-game.test
-  mkmamedb-input-dir-dir.test
-  rom-from-extra-keep-dir-clean.test
-  rom-from-extra-keep-dir.test
-  rom-from-extra-size-changed.test
-  uncompressed-ckmamedb-add-game.test
-  uncompressed-ckmamedb-changed-new-mtime.test
-  uncompressed-ckmamedb-changed-same-mtime-nofix.test
-  uncompressed-ckmamedb-changed-same-mtime.test
-  uncompressed-ckmamedb-extra-dir.test
-  uncompressed-ckmamedb-extra-remove.test
-  uncompressed-ckmamedb-no-change.test
-  uncompressed-ckmamedb-remove-game-2.test
-  uncompressed-ckmamedb-remove-game-3.test
-  uncompressed-ckmamedb-remove-game.test
-  uncompressed-toplevel-extra.test
-  uncompressed-toplevel-file.test
-  uncompressed-toplevel-roms.test
+  rom-from-extra-keep-dir-clean.test # needs subdirectory support in unpack
+  rom-from-extra-keep-dir.test # needs subdirectory support in unpack
 )
 
 set(XFAIL_TESTS

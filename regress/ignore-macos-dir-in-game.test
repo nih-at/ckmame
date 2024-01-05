@@ -1,11 +1,11 @@
 description ignore macOS resource fork files
 #variants dir
 return 0
-arguments -D ../mamedb-lost-parent-ok.db -vFc
-file roms/clone-8.zip 2-8c-macos.zip 1-8-macos.zip
-file unknown/clone-8.zip {} 1-c-ok.zip
-file roms/.ckmame.db {} <empty.ckmamedb>
-file unknown/.ckmame.db {} <empty.ckmamedb>
+arguments --roms-unzipped -D ../mamedb-lost-parent-ok.db -vFc
+file roms/clone-8 2-8c-macos.zip 1-8-macos.zip
+file unknown/clone-8 {} 1-c-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb-unzipped>
+file unknown/.ckmame.db {} <empty.ckmamedb-unzipped>
 stdout
 In game clone-8:
 rom  04.rom        size       4  crc d87f7e0c: missing

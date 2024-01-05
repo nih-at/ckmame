@@ -10,7 +10,7 @@ end-of-inline-data
 file roms/1-4/dummy <inline>
 just a file to check that unzipped files are looked at
 end-of-inline-data
-file roms/.ckmame.db <empty.ckmamedb>
+file roms/.ckmame.db {} <empty.ckmamedb-unzipped>
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found
