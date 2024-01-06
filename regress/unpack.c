@@ -161,7 +161,7 @@ int unpack(const char* archive, const char *destination) {
     for (zip_int64_t index = 0; index < count; index++) {
         const char* name = zip_get_name(zip_archive, index, 0);
         if (name[strlen(name) - 1] == '/') {
-            fprintf(stderr, "file name '%s' ends with slash, not supported\n", name);
+            fprintf(stderr, "%s: file name '%s' ends with slash, not supported\n", getprogname(), name);
             return 1;
         }
         if (unpack_file_with_dirs(name, zip_archive, index) != 0) {
@@ -188,7 +188,7 @@ int unpack_file_with_dirs(const char* name, struct zip* zip_archive, zip_int64_t
         int old_dir;
         int ret;
         if (slash - name >= MAXPATHLEN) {
-            fprintf(stderr, "subdirectory path '%.*s' too long\n", (int)(slash - name), name);
+            fprintf(stderr, "%s: subdirectory path '%.*s' too long\n", getprogname(), (int)(slash - name), name);
             return 1;
         }
         strncpy(directory, name, slash - name);
