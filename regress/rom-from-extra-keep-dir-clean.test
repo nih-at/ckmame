@@ -10,8 +10,8 @@ file roms/.ckmame.db {} <empty.ckmamedb-unzipped>
 file search/.ckmame.db {} <empty.ckmamedb-unzipped>
 stdout
 In game 1-4:
-rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo.zip/1-4/04.rom'
-add 'search/foo.zip/1-4/04.rom' as '04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo/1-4/04.rom'
+add 'search/foo/1-4/04.rom' as '04.rom'
 In archive search/bar:
 file ignore/08.rom  size       8  crc 3656897d: needed elsewhere
 In archive search/foo:

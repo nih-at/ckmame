@@ -1,6 +1,7 @@
 ### nihtest
 
 - Remove mame.db from tests that don't need it.
+- Add support for running tests as both zip & dir variant.
 
 ### Implement
 

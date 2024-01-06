@@ -44,10 +44,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 1024
+#endif
+
 int enter_destination(const char* destination);
 int leave_destination(int dirfd);
 int unpack(const char* archive, const char *destination);
 int unpack_file(const char* name, struct zip* zip_archive, zip_int64_t index);
+int unpack_file_with_dirs(const char* name, struct zip* zip_archive, zip_int64_t index);
 
 const char *usage = "usage: %s [-hV] archive destination\n";
 
@@ -155,11 +160,11 @@ int unpack(const char* archive, const char *destination) {
     zip_int64_t count = zip_get_num_entries(zip_archive, 0);
     for (zip_int64_t index = 0; index < count; index++) {
         const char* name = zip_get_name(zip_archive, index, 0);
-        if (strchr(name, '/') != NULL) {
-            fprintf(stderr, "%s: skipping entry with directory '%s', currently unsupported\n", getprogname(), name);
-            continue;
+        if (name[strlen(name) - 1] == '/') {
+            fprintf(stderr, "file name '%s' ends with slash, not supported\n", name);
+            return 1;
         }
-        if (unpack_file(name, zip_archive, index) != 0) {
+        if (unpack_file_with_dirs(name, zip_archive, index) != 0) {
             (void)zip_discard(zip_archive);
             (void)leave_destination(old_dir);
             return 1;
@@ -174,6 +179,32 @@ int unpack(const char* archive, const char *destination) {
         return 1;
     }
     return 0;
+}
+
+int unpack_file_with_dirs(const char* name, struct zip* zip_archive, zip_int64_t index) {
+    char *slash;
+    if ((slash = strchr(name, '/')) != NULL) {
+        char directory[MAXPATHLEN];
+        int old_dir;
+        int ret;
+        if (slash - name >= MAXPATHLEN) {
+            fprintf(stderr, "subdirectory path '%.*s' too long\n", (int)(slash - name), name);
+            return 1;
+        }
+        strncpy(directory, name, slash - name);
+        directory[slash - name] = '\0';
+        if ((old_dir = enter_destination(directory)) < 0) {
+            return 1;
+        }
+        ret = unpack_file_with_dirs(slash + 1, zip_archive, index);
+        if (leave_destination(old_dir) != 0) {
+            ret |= 1;
+        }
+        return ret;
+    }
+    else {
+        return unpack_file(name, zip_archive, index);
+    }
 }
 
 int unpack_file(const char* name, struct zip* zip_archive, zip_int64_t index) {

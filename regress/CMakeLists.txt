@@ -111,14 +111,7 @@ add_custom_target(update-mamedb.dump
   DEPENDS ${DBS}
 )
 
-# TODO: restore variant dir support
-set(VARIANT_DIR_TESTS
-  rom-from-extra-keep-dir-clean.test # needs subdirectory support in unpack
-  rom-from-extra-keep-dir.test # needs subdirectory support in unpack
-)
-
 set(XFAIL_TESTS
-  ${VARIANT_DIR_TESTS}
   extra-file-zip.test
   file-no-crc-wrong-name-other-set.test
   rom-from-extra-loose-directory.test
