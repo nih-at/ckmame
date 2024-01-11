@@ -30,13 +30,13 @@ if (LibArchive_FOUND)
 endif()
 
 if (NOT WIN32)
-add_library(fwrite MODULE fwrite.c)
-target_link_libraries(fwrite ${CMAKE_DL_LIBS})
+  add_library(fwrite MODULE fwrite.c)
+  target_link_libraries(fwrite ${CMAKE_DL_LIBS})
 endif()
 
 add_custom_target(cleanup
   COMMAND ${CMAKE_COMMAND} -DDIR=${CMAKE_CURRENT_BINARY_DIR} -P ${CMAKE_CURRENT_SOURCE_DIR}/cleanup.cmake
-  )
+)
 
 set(DBS
   mame.db
@@ -57,14 +57,14 @@ set(DBS
   mamedb-small.db
   mamedb-two-games.db
   mamedb-xml-quoting.db
-  )
+)
 
 set(XML_DBS
   mamedb-detector.db
 )
 
 set(CUSTOM_DBS
-    mamedb-skipped.db
+  mamedb-skipped.db
 )
 
 foreach(db ${DBS})
@@ -73,7 +73,7 @@ foreach(db ${DBS})
     COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/${main}.dat"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${main}.dat"
     COMMENT "Generating ${db}"
-    )
+  )
 endforeach()
 
 foreach(db ${XML_DBS})
@@ -82,20 +82,20 @@ foreach(db ${XML_DBS})
     COMMAND mkmamedb -o "${db}" "${CMAKE_CURRENT_SOURCE_DIR}/${main}.xml"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${main}.xml"
     COMMENT "Generating ${db}"
-    )
+  )
 endforeach()
 
 add_custom_command(OUTPUT mamedb-skipped.db
-    COMMAND mkmamedb -o mamedb-skipped.db --detector "${CMAKE_CURRENT_SOURCE_DIR}/detector.xml" "${CMAKE_CURRENT_SOURCE_DIR}/mamedb-skipped.dat"
-    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/mamedb-skipped.dat" "${CMAKE_CURRENT_SOURCE_DIR}/detector.xml"
-    COMMENT "Generating mamedb-skipped.db"
+  COMMAND mkmamedb -o mamedb-skipped.db --detector "${CMAKE_CURRENT_SOURCE_DIR}/detector.xml" "${CMAKE_CURRENT_SOURCE_DIR}/mamedb-skipped.dat"
+  DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/mamedb-skipped.dat" "${CMAKE_CURRENT_SOURCE_DIR}/detector.xml"
+  COMMENT "Generating mamedb-skipped.db"
 )
 
 add_custom_target(testinput
   ALL
   VERBATIM
   DEPENDS ${DBS} ${XML_DBS} ${CUSTOM_DBS}
-  )
+)
 
 add_custom_target(update-mamedb.dump
   COMMAND dbdump ${CMAKE_CURRENT_BINARY_DIR}/mame.db > ${CMAKE_CURRENT_SOURCE_DIR}/mamedb-ok.dump
