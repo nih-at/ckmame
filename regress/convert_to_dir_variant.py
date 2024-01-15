@@ -17,7 +17,7 @@ def create_zip_version(name):
                 if line.startswith('<dir>'):
                     continue
                 if line.startswith('<zip>'):
-                    line = line[6:]
+                    line = line[5:]
                 output_file.write(line)
 
 
@@ -36,7 +36,7 @@ def create_dir_version(name):
                 if line.startswith('<zip>'):
                     continue
                 if line.startswith('<dir>'):
-                    line = line[6:]
+                    line = line[5:]
                 elif line in ('stdout\n', 'stderr\n'):
                     inline_data = True
                 elif line == 'end-of-inline-data\n':
