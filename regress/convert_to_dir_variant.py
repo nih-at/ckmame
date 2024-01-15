@@ -48,7 +48,7 @@ def create_dir_version(name):
                         continue
                     line = re.sub(r'^(file \S*).zip', r'\1', line)
                     line = re.sub(r'^(hashes \S*).zip', r'\1', line)
-                    line = re.sub(r'^(arguments )', r'\1 --roms-unzipped ',
+                    line = re.sub(r'^(arguments )', r'\1--roms-unzipped ',
                                   line)
                     line = re.sub(r'(\.ckmamedb)>', r'\1-unzipped>', line)
                 output_file.write(line)
