@@ -91,10 +91,34 @@ add_custom_command(OUTPUT mamedb-skipped.db
   COMMENT "Generating mamedb-skipped.db"
 )
 
+# handle generated test cases
+file(GLOB VTEST_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.vtest)
+foreach(VTEST_PATH IN LISTS VTEST_FILES)
+  get_filename_component(VTEST_FILE ${VTEST_PATH} NAME)
+
+  # create .dir.test files
+  string(REGEX REPLACE ".vtest$" ".dir.test" DIR_TEST ${VTEST_FILE})
+  list(APPEND GENERATED_TESTS ${DIR_TEST})
+  add_custom_command(OUTPUT "${DIR_TEST}"
+    COMMAND ${PYTHONBIN} ${CMAKE_CURRENT_SOURCE_DIR}/convert_to_dir_variant.py --dir "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}"
+    COMMENT "Generating ${DIR_TEST}"
+  )
+
+  # create .zip.test files
+  string(REGEX REPLACE ".vtest$" ".zip.test" ZIP_TEST ${VTEST_FILE})
+  list(APPEND GENERATED_TESTS ${ZIP_TEST})
+  add_custom_command(OUTPUT "${ZIP_TEST}"
+    COMMAND ${PYTHONBIN} ${CMAKE_CURRENT_SOURCE_DIR}/convert_to_dir_variant.py --zip "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${VTEST_FILE}"
+    COMMENT "Generating ${ZIP_TEST}"
+  )
+endforeach()
+
 add_custom_target(testinput
   ALL
   VERBATIM
-  DEPENDS ${DBS} ${XML_DBS} ${CUSTOM_DBS}
+  DEPENDS ${DBS} ${XML_DBS} ${CUSTOM_DBS} ${GENERATED_TESTS}
 )
 
 add_custom_target(update-mamedb.dump
@@ -113,15 +137,16 @@ add_custom_target(update-mamedb.dump
 
 set(XFAIL_TESTS
   extra-file-zip.test
-  file-no-crc-wrong-name-other-set.test
+  file-no-crc-wrong-name-other-set.dir.test
+  file-no-crc-wrong-name-other-set.zip.test
   rom-from-extra-loose-directory.test
   rom-from-extra-loose-toplevel.test
   unknown-rename-failed.test
 )
 
 if(RUN_REGRESS)
-  file(GLOB EXTRA_TESTS ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
-  foreach(FULL_CASE IN LISTS EXTRA_TESTS)
+  file(GLOB TEST_CASES ${CMAKE_CURRENT_SOURCE_DIR}/*.test)
+  foreach(FULL_CASE IN LISTS TEST_CASES GENERATED_TESTS)
     get_filename_component(CASE ${FULL_CASE} NAME)
     add_test(NAME ${CASE} COMMAND ${NIHTEST} -v ${CASE})
     # TODO: add --bin-sub-directory $<CONFIG>
