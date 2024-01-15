@@ -38,7 +38,7 @@ def create_dir_version(name):
                     line = line[6:]
                 elif line in ('stdout\n', 'stderr\n'):
                     inline_data = True
-                elif line in ('end-of-inline-data\n'):
+                elif line == 'end-of-inline-data\n':
                     inline_data = False
                 elif inline_data:
                     line = re.sub(r'\.zip([:/])', r'\1', line)
