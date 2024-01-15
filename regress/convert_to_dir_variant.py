@@ -25,6 +25,7 @@ def create_dir_version(name):
     """Create dir version of test case."""
     with open(name, 'r', encoding='utf-8') as input_file:
         inline_data = False
+        arguments_found = False
         last_slash = name.rfind('/')
         if last_slash != -1:
             name = name[last_slash+1:]
@@ -51,7 +52,11 @@ def create_dir_version(name):
                     line = re.sub(r'^(arguments )', r'\1--roms-unzipped ',
                                   line)
                     line = re.sub(r'(\.ckmamedb)>', r'\1-unzipped>', line)
+                if line.startswith('arguments '):
+                    arguments_found = True
                 output_file.write(line)
+            if not arguments_found:
+                output_file.write("arguments --roms-unzipped\n")
 
 
 parser = argparse.ArgumentParser(description='Create a dir- and/or zip-variant test from '
