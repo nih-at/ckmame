@@ -64,8 +64,8 @@ bool Archive::commit() {
                     }
 
                     if (is_writable()) {
-                        files.erase(files.begin() + static_cast<ssize_t>(index));
-                        changes.erase(changes.begin() + static_cast<ssize_t>(index));
+                        files.erase(files.begin() + index);
+                        changes.erase(changes.begin() + index);
                         index--;
                     }
 		break;
@@ -329,8 +329,8 @@ bool Archive::rollback() {
                 break;
                 
             case Change::ADDED:
-                files.erase(files.begin() + static_cast<ssize_t>(i));
-                changes.erase(changes.begin() + static_cast<ssize_t>(i));
+                files.erase(files.begin() + i);
+                changes.erase(changes.begin() + i);
                 i--;
                 break;
 
