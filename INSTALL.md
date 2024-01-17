@@ -1,7 +1,5 @@
 ckmame is written in C++17 and uses [cmake](https://cmake.org) to build.
 
-For running the tests, you need to have [perl](https://www.perl.org).
-
 To use ckmame, you need
 - [zlib](http://www.zlib.net/) (at least version 1.1.2)
 - [libzip](https://libzip.org/) (at least version 1.8.0)
@@ -9,7 +7,7 @@ To use ckmame, you need
 - optionally [libxml2](http://xmlsoft.org/) (for M.A.M.E. -listxml and detectors)
 - optionally [libarchive](https://www.libarchive.org/) (for reading from 7z archives)
 
-For running the test suite, you also need to install [perl](https://www.perl.org/).
+For running the tests, you need to have [nihtest](https://nih.at/nihtest/) and [Python](https://python.org).
 
 The basic usage is
 ```sh
