@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!-- This is an automatically generated file.  Do not edit.
-   Copyright (c) 2003-2022 Dieter Baron and Thomas Klausner.
+   Copyright (c) 2003-2023 Dieter Baron and Thomas Klausner.
    All rights reserved.
   
    Redistribution and use in source and binary forms, with or without
@@ -68,6 +68,8 @@
       <var class="Ar">file</var>]
       [<code class="Fl">-</code><code class="Fl">-copy-from-extra</code>]
       [<code class="Fl">-</code><code class="Fl">-create-fixdat</code>]
+      [<code class="Fl">-</code><code class="Fl">-delete-unknown-pattern</code>
+      <var class="Ar">pattern</var>]
       [<code class="Fl">-</code><code class="Fl">-extra-directory</code>
       <var class="Ar">dir</var>]
       [<code class="Fl">-</code><code class="Fl">-fix</code>]
@@ -83,6 +85,7 @@
       [<code class="Fl">-</code><code class="Fl">-move-from-extra</code>]
       [<code class="Fl">-</code><code class="Fl">-no-complete-games-only</code>]
       [<code class="Fl">-</code><code class="Fl">-no-create-fixdat</code>]
+      [<code class="Fl">-</code><code class="Fl">-no-report-changes</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-correct</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-detailed</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-fixable</code>]
@@ -92,6 +95,7 @@
       [<code class="Fl">-</code><code class="Fl">-old-db</code>
       <var class="Ar">dbfile</var>]
       [<code class="Fl">-</code><code class="Fl">-only-if-database-updated</code>]
+      [<code class="Fl">-</code><code class="Fl">-report-changes</code>]
       [<code class="Fl">-</code><code class="Fl">-report-correct</code>]
       [<code class="Fl">-</code><code class="Fl">-report-detailed</code>]
       [<code class="Fl">-</code><code class="Fl">-report-fixable</code>]
@@ -110,6 +114,7 @@
       [<code class="Fl">-</code><code class="Fl">-unknown-directory</code>
       <var class="Ar">dir</var>]
       [<code class="Fl">-</code><code class="Fl">-update-database</code>]
+      [<code class="Fl">-</code><code class="Fl">-use-torrentzip</code>]
       [<code class="Fl">-</code><code class="Fl">-verbose</code>]
       [<code class="Fl">-</code><code class="Fl">-version</code>]
       [<var class="Ar">game ...</var>]</td>
@@ -185,6 +190,11 @@ Supported options:
     <var class="Ar">dbfile</var></dt>
   <dd>Use <var class="Ar">dbfile</var> instead of the default
       <span class="Pa">mame.db</span> as the database.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-delete-unknown-pattern</code>
+    <var class="Ar">pattern</var></dt>
+  <dd>When moving files to the <span class="Pa">unknown</span> directory, skip
+      files matching <var class="Ar">pattern</var> and just delete them
+    instead.</dd>
   <dt><a class="permalink" href="#e"><code class="Fl" id="e">-e</code></a>,
     <code class="Fl">-</code><code class="Fl">-extra-directory</code>
     <var class="Ar">dir</var></dt>
@@ -217,6 +227,8 @@ Supported options:
   <dd>Keep partial games in ROM set (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-create-fixdat</code></dt>
   <dd>Do not create a fixdat for the missing ROM sets (default).</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-no-report-changes</code></dt>
+  <dd>Don't report a summary of changes while fixing a ROM set (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-correct</code></dt>
   <dd>Don't report status of ROMs that are correct (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-detailed</code></dt>
@@ -244,6 +256,8 @@ Supported options:
     <var class="Ar">dir</var></dt>
   <dd>Look for the ROM set in the directory <var class="Ar">dir</var> instead of
       the default <span class="Pa">roms</span>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-report-changes</code></dt>
+  <dd>Report a summary of changes while fixing a ROM set.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-detailed</code></dt>
   <dd>Report status of every ROM that is checked.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-fixable</code></dt>
@@ -274,7 +288,7 @@ Supported options:
   <dd>Read the list of games to check from <var class="Ar">file</var>.
       <var class="Ar">file</var> should contain one line per game.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-roms-unzipped</code></dt>
-  <dd>Instead of looking for ROMs in the ZIP archive
+  <dd>Instead of looking for ROMs in the zip archive
       <span class="Pa">roms/games.zip</span>, look for them in the directory
       <span class="Pa">roms/games/</span> in the file system.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-unknown-directory</code>
@@ -284,6 +298,9 @@ Supported options:
       (efault: &#x201C;<span class="Pa">unknown ).</span>&#x201D;</dd>
   <dt><code class="Fl">-</code><code class="Fl">-update-database</code></dt>
   <dd>Update the database before checking the ROMs.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-use-torrentzip</code></dt>
+  <dd>When the ROM set is zipped, write the zip archives in torrentzip
+    format.</dd>
   <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
     <code class="Fl">-</code><code class="Fl">-version</code></dt>
   <dd>Display version number.</dd>
@@ -366,7 +383,7 @@ Most messages should be straightforward. Two need special explanations:
 </div>
 <table class="foot">
   <tr>
-    <td class="foot-date">May 4, 2022</td>
+    <td class="foot-date">June 16, 2023</td>
     <td class="foot-os">NiH</td>
   </tr>
 </table>

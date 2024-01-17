@@ -1,5 +1,5 @@
 .\" Automatically generated from an mdoc input file.  Do not edit.
-.\" Copyright (c) 2003-2022 Dieter Baron and Thomas Klausner.
+.\" Copyright (c) 2003-2023 Dieter Baron and Thomas Klausner.
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "CKMAMERC" "5" "April 19, 2022" "NiH" "File Formats Manual"
+.TH "CKMAMERC" "5" "June 16, 2023" "NiH" "File Formats Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -186,6 +186,9 @@ String.
 create-fixdat
 Boolean.
 .TP 22n
+delete-unknown-pattern
+String.
+.TP 22n
 extra-directories
 Either an array of strings, or a table where the keys are directories
 and the values are a table of options.
@@ -224,6 +227,9 @@ on the command line.
 old-db
 String.
 .TP 22n
+report-changes
+Boolean.
+.TP 22n
 report-correct
 Boolean.
 .TP 22n
@@ -250,6 +256,9 @@ String.
 .TP 22n
 unknown-directory
 String.
+.TP 22n
+use-torrentzip
+Boolean.
 .RE
 .PP
 The following variables are only supported by
