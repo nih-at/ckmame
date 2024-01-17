@@ -34,6 +34,7 @@
 #include "Output.h"
 
 #include "globals.h"
+#include "compat.h"
 
 Output::Output() :
     first_header(true),

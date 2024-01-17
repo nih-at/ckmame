@@ -39,6 +39,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Exception.h"
 #include "globals.h"
+#include "compat.h"
 
 Command::Command(std::string name, std::string arguments, std::vector<Commandline::Option> options,
                  std::unordered_set<std::string> used_variables)
