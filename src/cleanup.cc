@@ -33,9 +33,9 @@
 
 #include "cleanup.h"
 #include "globals.h"
+#include "compat.h"
 
 #include <algorithm>
-#include <fnmatch.h>
 
 #include "check.h"
 #include "diagnostics.h"
