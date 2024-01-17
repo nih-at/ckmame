@@ -39,8 +39,6 @@
 #ifndef _GETOPT_LONG_H_
 #define _GETOPT_LONG_H_
 
-#include <unistd.h>
-
 /*
  * Gnu like getopt_long() and BSD4.4 getsubopt()/optreset extensions
  */
