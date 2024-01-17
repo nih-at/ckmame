@@ -33,8 +33,6 @@
 
 #include "ArchiveDir.h"
 
-// fseek
-#include "compat.h"
 
 #include "Dir.h"
 #include "Exception.h"

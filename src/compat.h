@@ -43,10 +43,6 @@
 #include "compat_fnmatch.h"
 #endif
 
-#ifndef HAVE_FSEEKO
-#define fseeko fseek
-#endif
-
 #ifdef HAVE_GETOPT_LONG
 #include <getopt.h>
 #else

@@ -11,7 +11,6 @@
 #cmakedefine HAVE_MD5INIT
 #cmakedefine HAVE_SHA1INIT
 #cmakedefine HAVE_FNMATCH
-#cmakedefine HAVE_FSEEKO
 #cmakedefine HAVE_GETOPT_LONG
 #cmakedefine HAVE_GETPROGNAME
 
