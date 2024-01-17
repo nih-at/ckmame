@@ -153,11 +153,11 @@ if(RUN_REGRESS)
     set_tests_properties(${CASE} PROPERTIES SKIP_RETURN_CODE 77)
     set_tests_properties(${CASE} PROPERTIES ENVIRONMENT "PATH=${path}")
   endforeach()
-endif()
 
-foreach(CASE ${XFAIL_TESTS})
-  set_tests_properties(${CASE} PROPERTIES WILL_FAIL TRUE)
-endforeach()
+  foreach(CASE ${XFAIL_TESTS})
+    set_tests_properties(${CASE} PROPERTIES WILL_FAIL TRUE)
+  endforeach()
+endif()
 
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 
