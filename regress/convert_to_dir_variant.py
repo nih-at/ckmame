@@ -48,6 +48,7 @@ def create_dir_version(name):
                     if re.match(r'^hashes\s.*\scheap$', line):
                         continue
                     line = re.sub(r'^(file \S*).zip', r'\1', line)
+                    line = re.sub(r'^(detector-hashes .*).zip ', r'\1 ', line)
                     line = re.sub(r'^(hashes \S*).zip', r'\1', line)
                     line = re.sub(r'^(arguments )', r'\1--roms-unzipped ',
                                   line)
