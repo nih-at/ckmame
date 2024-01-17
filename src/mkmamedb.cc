@@ -308,7 +308,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	/* that's fine */
     }
 
-    if (configuration.roms_zipped && (za = zip_open(fname.c_str(), 0, nullptr)) != nullptr) {
+    if ((za = zip_open(fname.c_str(), 0, nullptr)) != nullptr) {
 	const char *name;
         auto ok = true;
 
@@ -363,12 +363,6 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	    do {
 		if (ec) {
 		    output.error("cannot stat() file '%s': %s", fname.c_str(), ec.message().c_str());
-		    ok = false;
-		    break;
-		}
-
-		if (!configuration.roms_zipped) {
-		    output.error("argument '%s' is not a directory", fname.c_str());
 		    ok = false;
 		    break;
 		}
