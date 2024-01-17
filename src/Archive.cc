@@ -39,6 +39,9 @@
 #include <utility>
 
 #include "config.h"
+
+#include "compat.h"
+
 #include "ArchiveDir.h"
 #include "ArchiveImages.h"
 #ifdef HAVE_LIBARCHIVE

@@ -8,10 +8,12 @@
 #cmakedefine HAVE_LIBXML2
 #cmakedefine HAVE_TOMLPLUSPLUS
 
-#cmakedefine HAVE_MD5INIT
-#cmakedefine HAVE_SHA1INIT
 #cmakedefine HAVE_FNMATCH
 #cmakedefine HAVE_GETOPT_LONG
 #cmakedefine HAVE_GETPROGNAME
+#cmakedefine HAVE_MD5INIT
+#cmakedefine HAVE_SHA1INIT
+#cmakedefine HAVE_STRCASECMP
+#cmakedefine HAVE__STRICMP
 
 #endif /* HAD_CONFIG_H */

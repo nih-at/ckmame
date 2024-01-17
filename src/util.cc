@@ -43,6 +43,9 @@
 
 #include "CkmameDB.h"
 #include "config.h"
+
+#include "compat.h"
+
 #include "DatDb.h"
 #include "Exception.h"
 #include "globals.h"

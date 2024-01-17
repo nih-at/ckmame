@@ -54,4 +54,13 @@ const char *getprogname(void);
 void setprogname(const char *);
 #endif
 
+#if defined(HAVE_STRCASECMP)
+#include <strings.h>
+#else
+#if defined(HAVE__STRICMP)
+#include <string.h>
+#define strcasecmp _stricmp
+#endif
+#endif
+
 #endif // HAD_COMPAT_H

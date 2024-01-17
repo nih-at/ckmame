@@ -33,9 +33,9 @@
 
 #include "fix.h"
 #include "globals.h"
+#include "compat.h"
 
 #include <cinttypes>
-#include <fnmatch.h>
 
 #include "DeleteList.h"
 #include "fix_util.h"
