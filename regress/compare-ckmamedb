@@ -28,6 +28,42 @@ status_names = {
     "nodump": 2
 }
 
+class Index:
+    def __init__(self):
+        self.next_index = 0
+        self.indices = {}
+        self.names = {}
+
+    def add(self, name, index):
+        if index >= self.next_index:
+            self.next_index = index + 1
+        self.indices[name] = index
+        self.names[index] = name
+
+    def add_files(self, files):
+        for file in files:
+            self.add(file.name, int(file.index))
+
+    def add_archives(self, archives):
+        for archive in archives:
+            self.add(archive.name, archive.id)
+
+    def get_index(self, name):
+        if name in self.indices:
+            return self.indices[name]
+        index = self.next_index
+        self.add(name, index)
+        return index
+
+    def get_existing_index(self, name):
+        if name in self.indices:
+            return self.indices[name]
+        return None
+
+    def get_existing_name(self, index):
+        if index in self.names:
+            return self.names[index]
+        return None
 
 class File:
     def __init__(self, name, index=0, mtime="null", status=0, size="-1", crc="<null>", md5="<null>", sha1="<null>", detector_id=0):
@@ -101,9 +137,10 @@ class Archive:
         self.files = []
         self.detector_hashes = []
         self.file_type = file_type
+        self.file_index = Index()
 
     def add_file(self, file):
-        file.index = len(self.files)
+        file.index = self.file_index.get_index(file.name)
         # if one of the files has no CRC, assume the archive is a disk
         if file.crc == "<null>":
             self.file_type = 1
@@ -137,46 +174,30 @@ class Detector:
 class CkmameDB:
     def __init__(self):
         self.archives = {}
-        self.archive_names = {}
-        self.next_archive_id = 0
+        self.archvie_index = Index()
         self.detectors = {}
-        self.detector_names = {}
-        self.next_detector_id = 0
+        self.detector_index = Index()
 
     def add_archive(self, archive):
         self.archives[archive.name] = archive
-        self.archive_names[archive.id] = archive.name
-        if archive.id >= self.next_archive_id:
-            self.next_archive_id = archive.id + 1
+        self.archvie_index.add(archive.name, archive.id)
 
     def add_detector(self, detector):
         key = detector.name + "|" + detector.version
         self.detectors[key] = detector
-        self.detector_names[detector.id] = key
-        if detector.id >= self.next_detector_id:
-            self.next_detector_id = detector.id + 1
+        self.detector_index.add(key, detector.id)
 
     def get_archive_by_id(self, id):
-        if id in self.archive_names:
-            return self.archives[self.archive_names[id]]
+        if name := self.archvie_index.get_existing_name(id):
+            return self.archives[name]
         else:
             return None
 
     def get_archive_id(self, name):
-        if name in self.archives:
-            return self.archives[name].id
-        else:
-            id = self.next_archive_id
-            self.next_archive_id += 1
-            return id
+        return self.archvie_index.get_index(name)
 
     def get_detector_id(self, key):
-        if key in self.detectors:
-            return self.detectors[key].id
-        else:
-            id = self.next_detector_id
-            self.next_detector_id += 1
-            return id
+        return self.detector_index.get_existing_index(key)
 
     def dump(self):
         lines = []
@@ -342,6 +363,7 @@ class CkmameDBComparator:
             # TODO: error if command.exit_code != 0
 
         db = CkmameDB()
+        db.archvie_index.add_archives(self.got_db.archives.values())
         archive = None
         prefix = ""
 
@@ -383,6 +405,8 @@ class CkmameDBComparator:
                                   info.st_size if stat.S_ISREG(info.st_mode) else 0)
                 db.add_archive(archive)
                 got_archive = self.got_db.get_archive_by_id(archive.id)
+                if got_archive is not None:
+                    archive.file_index.add_files(got_archive.files)
 
             elif attributes["type"] == "file":
                 if archive is None:
