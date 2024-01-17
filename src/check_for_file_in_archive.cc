@@ -154,7 +154,7 @@ find_result_t check_for_file_in_archive(filetype_t filetype, size_t detector_id,
 
         return FIND_MISSING;
     }
-    catch (Exception &ex) {
+    catch (...) {
         return FIND_MISSING;
     }
 }

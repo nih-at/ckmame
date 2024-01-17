@@ -41,7 +41,7 @@ DetectorPtr Detector::parse(const std::string &filename) {
         auto ps = ParserSourceFile(filename);
 
         return Detector::parse(&ps);
-    } catch (std::exception &e) {
+    } catch (...) {
         // TODO: report error
         return nullptr;
     }
