@@ -53,9 +53,6 @@ public:
     [[nodiscard]] std::optional<std::string> find_first(const std::string &name) const;
     [[maybe_unused]] [[nodiscard]] std::optional<std::string> find_last(const std::string &name) const;
 
-    void add_argument(std::string name) {arguments.emplace_back(std::move(name));}
-    void add_option(std::string name, std::string argument) {options.emplace_back(std::move(name), std::move(argument));}
-
     std::vector<OptionValue> options;
     std::vector<std::string> arguments;
 };
@@ -85,7 +82,6 @@ public:
     void add_option(Option option);
 
     std::vector<Option> options;
-    std::string program_name;
     std::string arguments;
     std::string header;
     std::string footer;

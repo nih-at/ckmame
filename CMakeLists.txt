@@ -63,6 +63,8 @@ add_dependencies(distcheck dist)
 check_function_exists(MD5Init HAVE_MD5INIT)
 check_function_exists(SHA1Init HAVE_SHA1INIT)
 check_function_exists(fnmatch HAVE_FNMATCH)
+check_function_exists(getopt_long HAVE_GETOPT_LONG)
+check_function_exists(getprogname HAVE_GETPROGNAME)
 check_symbol_exists(_stricmp string.h HAVE__STRICMP)
 check_symbol_exists(strcasecmp strings.h HAVE_STRCASECMP)
 

@@ -1,5 +1,5 @@
 /*
-  Commandline.cc -- parse command line options and arguments
+  Commandline.h -- parse command line options and arguments
   Copyright (C) 2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
@@ -36,119 +36,101 @@
 #include <algorithm>
 #include <cctype>
 #include <sstream>
-#include <iostream>
 #include <unordered_map>
 #include <utility>
 
+#include "compat.h"
+
+#include "Exception.h"
+
+extern int optind;
+
 Commandline::Commandline(std::vector<Option> options_, std::string arguments_, std::string header_, std::string footer_, std::string version_) : options(std::move(options_)), arguments(std::move(arguments_)), header(std::move(header_)), footer(std::move(footer_)), version(std::move(version_)), options_sorted(false) {
     add_option(Option("help", 'h', "display this help message"));
-    add_option(Option("version", 'V', "display version integer"));
+    add_option(Option("version", 'V', "display version number"));
 }
 
 
 ParsedCommandline Commandline::parse(int argc, char *const *argv) {
-    program_name = argv[0];
-
-    std::unordered_map<char, const Option*> short_options;
-    std::unordered_map<std::string, const Option*> long_options;
-
-    for (const auto& option: options) {
-        if (option.short_name) {
-            short_options[*option.short_name] = &option;
+    std::string short_options;
+    std::vector<struct option> long_options;
+    std::unordered_map<int, size_t> option_indices;
+    int next_index = 256;
+    
+    for (const auto &option : options) {
+//#define DEBUG_OPTIONS
+#ifdef DEBUG_OPTIONS
+        printf("option '%s'", option.name.c_str());
+        if (option.short_name.has_value()) {
+            printf("/'%c'", option.short_name.value());
         }
-        long_options[option.name] = &option;
+        if (option.has_argument()) {
+            printf(", argument '%s'", option.argument_name.c_str());
+        }
+        printf(", description '%s'\n", option.description.c_str());
+#endif
+        int index;
+        if (option.short_name.has_value()) {
+            index = option.short_name.value();
+            short_options += option.short_name.value();
+            if (option.has_argument()) {
+                short_options += ":";
+            }
+        }
+        else {
+            index = next_index++;
+        }
+        
+        option_indices[index] = long_options.size();
+        struct option long_option = {
+            option.name.c_str(), option.has_argument() ? 1 : 0, nullptr, index
+        };
+        long_options.push_back(long_option);
     }
-
+    
+#ifdef DEBUG_OPTIONS
+    printf("short options: '%s'\n", short_options.c_str());
+#endif
+    struct option terminator = { nullptr, 0, nullptr, 0 };
+    long_options.push_back(terminator);
+        
     auto parsed_commandline = ParsedCommandline();
-
-    auto in_options = true;
-
-    for (int index = 1; index < argc; index += 1) {
-        auto argument = std::string(argv[index]);
-
-        if (in_options) {
-            if (argument.size() >=2 && argument[0] == '-' && argument[1] == '-' /* argument.starts_with("--") */) {
-                auto equals = argument.find('=');
-                auto option_name = argument.substr(2, equals == std::string::npos ? equals : equals - 2);
-                auto it = long_options.find(option_name);
-                if (it == long_options.end()) {
-                    usage(false, stderr);
-                    std::cerr << "unknown option '--" << option_name << "'\n";
-                    exit(1);
-                }
-                auto option_argument = std::string{};
-                if (equals != std::string::npos) {
-                    if (it->second->has_argument()) {
-                        parsed_commandline.add_option(option_name, argument.substr(equals + 1));
-                    }
-                    else {
-                        usage(false, stderr);
-                        std::cerr << "option '--" << option_name << "' doesn't take an argument\n";
-                        exit(1);
-                    }
-                }
-                else {
-                    if (it->second->has_argument()) {
-                        if (index == argc - 1) {
-                            usage(false, stderr);
-                            std::cerr << "missing argument for option '--" << option_name << "'\n";
-                            exit(1);
-                        }
-                        index += 1;
-                        parsed_commandline.add_option(option_name, argv[index]);
-                    }
-                    else {
-                        parsed_commandline.add_option(option_name, "");
-                    }
-                }
-            }
-            else if (argument.size() >= 1 && argument[0] == '-' /* argument.starts_with('-') */) {
-                for (size_t position = 1; position < argument.size(); position += 1) {
-                    auto option_name = argument[position];
-                    auto it = short_options.find(option_name);
-                    if (it == short_options.end()) {
-                        usage(false, stderr);
-                        std::cerr << "unknown option '-" << option_name << "'\n";
-                        exit(1);
-                    }
-                    if (it->second->has_argument()) {
-                        position += 1;
-                        if (position < argument.size()) {
-                            parsed_commandline.add_option(it->second->name, argument.substr(position));
-                        }
-                        else {
-                            if (index == argc - 1) {
-                                usage(false, stderr);
-                                std::cerr << "missing argument for option '-" << option_name << "'\n";
-                                exit(1);
-                            }
-                            index += 1;
-                            parsed_commandline.add_option(it->second->name, argv[index]);
-                        }
-                        break;
-                    }
-                    else {
-                        parsed_commandline.add_option(it->second->name, "");
-                    }
-                }
-            }
-            else {
-                in_options = false;
-            }
+    opterr = 0;
+    int c;
+    while ((c = getopt_long(argc, argv, short_options.c_str(), long_options.data(), nullptr)) != EOF) {
+        if (c == '?') {
+	    usage(false, stderr);
+	    fprintf(stderr, "unknown option\n"); // TODO: include unknown option, how to get that information?
+	    exit(1);
         }
-
-        if (!in_options) {
-            parsed_commandline.arguments.emplace_back(argument);
+        if (c == ':') {
+	    usage(false, stderr);
+	    fprintf(stderr, "option missing argument\n"); // TODO: include unknown option, how to get that information?
+	    exit(1);
         }
+        
+        auto it = option_indices.find(c);
+        if (it == option_indices.end()) {
+	    usage(false, stderr);
+	    fprintf(stderr, "unknown option '%c'\n", c);
+	    exit(1);
+        }
+        const auto &option = long_options[it->second];
+        
+        parsed_commandline.options.emplace_back(option.name, option.has_arg ? optarg : "");
+    }
+    
+    for (auto i = optind; i < argc; i++) {
+        parsed_commandline.arguments.emplace_back(argv[i]);
     }
 
     if (parsed_commandline.find_first("help").has_value()) {
-        usage(true);
-        exit(0);
+	usage(true);
+	exit(0);
     }
     if (parsed_commandline.find_first("version").has_value()) {
-        std::cout << version << std::endl;
-        exit(0);
+	fputs(version.c_str(), stdout);
+	exit(0);
     }
 
     return parsed_commandline;
@@ -168,7 +150,7 @@ std::optional<std::string> ParsedCommandline::find_first(const std::string &name
 [[maybe_unused]] std::optional<std::string> ParsedCommandline::find_last(const std::string &name) const {
     for (auto it = options.rbegin(); it != options.rend(); it++) {
         const auto &option = *it;
-
+        
         if (option.name == name) {
             return option.argument;
         }
@@ -199,7 +181,7 @@ void Commandline::usage(bool full, FILE *fout) {
         fprintf(fout, "%s\n\n", header.c_str());
     }
 
-    fprintf(fout, "Usage: %s", program_name.c_str());
+    fprintf(fout, "Usage: %s", getprogname());
     if (!short_options_without_argument.str().empty()) {
         fprintf(fout, " [-%s]", short_options_without_argument.str().c_str());
     }
@@ -256,8 +238,8 @@ void Commandline::add_option(Commandline::Option option) {
 
 void Commandline::sort_options() {
     if (!options_sorted) {
-    std::sort(options.begin(), options.end());
-    options_sorted = true;
+	std::sort(options.begin(), options.end());
+	options_sorted = true;
     }
 }
 
@@ -288,7 +270,7 @@ bool Commandline::Option::operator<(const Option &other) const {
             return compare_char(name[0], other.short_name.value()) < 0;
         }
         else {
-            return std::lexicographical_compare(name.begin(), name.end(), other.name.begin(), other.name.end());
+            return strcasecmp(name.c_str(), other.name.c_str()) < 0;
         }
     }
 }

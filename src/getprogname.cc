@@ -1,9 +1,6 @@
-#ifndef HAD_COMPAT_H
-#define HAD_COMPAT_H
-
 /*
-  compat.h -- prototypes/defines for missing library functions
-  Copyright (C) 2007-2020 Dieter Baron and Thomas Klausner
+  getprogname.c -- getprogname/setprogname replacement
+  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -35,32 +32,23 @@
 */
 
 
-#include "config.h"
-
-#ifdef HAVE_FNMATCH
-#include <fnmatch.h>
-#else
-#include "compat_fnmatch.h"
-#endif
-
-#ifdef HAVE_GETOPT_LONG
-#include <getopt.h>
-#else
-#include "getopt_long.h"
-#endif
-
-#ifndef HAVE_GETPROGNAME
-const char *getprogname(void);
-void setprogname(const char *);
-#endif
-
-#if defined(HAVE_STRCASECMP)
-#include <strings.h>
-#else
-#if defined(HAVE__STRICMP)
 #include <string.h>
-#define strcasecmp _stricmp
-#endif
-#endif
 
-#endif // HAD_COMPAT_H
+#include "compat.h"
+
+static const char *progname;
+
+
+const char *
+getprogname(void) {
+    return progname;
+}
+
+
+void
+setprogname(const char *name) {
+    if ((progname = strrchr(name, '/')) == NULL)
+	progname = name;
+    else
+	progname++;
+}

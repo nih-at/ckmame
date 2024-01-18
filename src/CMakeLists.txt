@@ -1,3 +1,6 @@
+if(NOT HAVE_GETPROGRAME)
+  list(APPEND COMPATIBILITY getprogname.cc)
+endif()
 if(NOT HAVE_MD5INIT)
   list(APPEND COMPATIBILITY md5.cc)
 endif()
