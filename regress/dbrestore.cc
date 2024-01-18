@@ -66,95 +66,61 @@ static int restore_table(sqlite3 *db, FILE *f);
 static void unget_line(const std::string &line);
 static std::vector<std::string> split(const std::string &string, const std::string &separaptor, bool strip_whitespace = false);
 
-
-#define QUERY_COLS_FMT "pragma table_info(%s)"
-
-const char *usage = "usage: %s [-hV] [--db-version VERSION] [--sql SQL_INIT_FILE] [-t db-type] dump-file db-file\n";
-
-char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
-
-char help[] = "\n"
-              "  --db-version VERSION    specify version of database schema\n"
-	      "  -h, --help              display this help message\n"
-              "  --sql SQL_INIT_FILE     use table definitions from this SQL init file\n"
-	      "  -t, --type TYPE         restore database of type TYPE (ckmamedb, mamedb, memdb)\n"
-	      "  -V, --version           display version number\n"
-	      "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
-
-char version_string[] = PACKAGE " " VERSION "\n"
-				"Copyright (C) 2014-2021 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
-
-
-#define OPTIONS "ht:V"
-
-enum {
-    OPT_DB_VERSION = 256,
-    OPT_SQL
+std::vector<Commandline::Option> dbrestore_options = {
+    Commandline::Option("db-version", "version", "specify DB schema version"),
+    Commandline::Option("sql","file", "take SQL schema from FILE"),
+    Commandline::Option("type", 't', "type", "specify type of database: mamedb (default) or ckmamedb)")
 };
 
-struct option options[] = {
-    {"db-version", 1, 0, OPT_DB_VERSION },
-    {"help", 0, 0, 'h'},
-    {"sql", 1, 0, OPT_SQL },
-    {"type", 1, 0, 't'},
-    {"version", 0, 0, 'V'}
-};
-
+#define PROGRAM_NAME "dbrestore"
 
 int main(int argc, char *argv[]) {
-    setprogname(argv[0]);
-
     DBType type = DBTYPE_ROMDB;
     std::string sql_file;
     int db_version = -1;
 
-    opterr = 0;
-    int c;
-    while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
-	switch (c) {
-	case 'h':
-	    fputs(help_head, stdout);
-	    printf(usage, getprogname());
-	    fputs(help, stdout);
-	    exit(0);
-	case 'V':
-	    fputs(version_string, stdout);
-	    exit(0);
+    const char *header = PROGRAM_NAME " by Dieter Baron and Thomas Klausner";
+    const char *footer = "Report bugs to " PACKAGE_BUGREPORT ".";
+    const char *version = "dumpgame (" PACKAGE " " VERSION ")\nCopyright (C) 2021-2024 Dieter Baron and Thomas Klausner\n"
+        PACKAGE " " VERSION "\n"
+        PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
 
-	case 't':
-	    if ((type = db_type(optarg)) == DBTYPE_INVALID) {
-		fprintf(stderr, "%s: unknown db type '%s'\n", getprogname(), optarg);
-		exit(1);
-	    }
-	    break;
-            
-        case OPT_DB_VERSION:
+    auto commandline = Commandline(dbrestore_options, "dump-file db-file", header, footer, version);
+
+    auto arguments = commandline.parse(argc, argv);
+
+    for (const auto& option: arguments.options) {
+        if (option.name == "db-version") {
             try {
                 size_t idx;
-                db_version = std::stoi(optarg, &idx);
-                if (optarg[idx] != '\0') {
+                db_version = std::stoi(option.argument, &idx);
+                if (option.argument[idx] != '\0') {
                     throw std::invalid_argument("");
                 }
             }
             catch (...) {
-                fprintf(stderr, "%s: invalid DB schema version '%s'\n", getprogname(), optarg);
+                fprintf(stderr, "%s: invalid DB schema version '%s'\n", getprogname(), option.argument.c_str());
                 exit(1);
             }
-            break;
-            
-        case OPT_SQL:
-            sql_file = optarg;
-            break;
-	}
+        }
+        else if (option.name == "sql") {
+            sql_file = option.argument;
+        }
+        else if (option.name == "type") {
+            if ((type = db_type(option.argument)) == DBTYPE_INVALID) {
+                fprintf(stderr, "%s: unknown db type '%s'\n", getprogname(), option.argument.c_str());
+                exit(1);
+            }
+        }
     }
 
-    if (optind != argc - 2) {
-	fprintf(stderr, usage, getprogname());
+    if (arguments.arguments.size() != 2) {
+        commandline.usage(false, stderr);
 	exit(1);
     }
 
-    std::string dump_fname = argv[optind];
-    std::string db_fname = argv[optind + 1];
+    std::string dump_fname = arguments.arguments[0];
+    std::string db_fname = arguments.arguments[1];
 
     output.set_error_file(dump_fname);
 

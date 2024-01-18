@@ -43,17 +43,6 @@
 #include "compat_fnmatch.h"
 #endif
 
-#ifdef HAVE_GETOPT_LONG
-#include <getopt.h>
-#else
-#include "getopt_long.h"
-#endif
-
-#ifndef HAVE_GETPROGNAME
-const char *getprogname(void);
-void setprogname(const char *);
-#endif
-
 #if defined(HAVE_STRCASECMP)
 #include <strings.h>
 #else
