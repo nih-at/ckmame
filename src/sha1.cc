@@ -159,7 +159,7 @@ sha_transform(struct sha_ctx *ctx, uint32_t *data) {
     D = ctx->digest[3];
     E = ctx->digest[4];
 
-    /* Heavy mangling, in 4 sub-rounds of 20 interations each. */
+    /* Heavy mangling, in 4 sub-rounds of 20 iterations each. */
     subRound(A, B, C, D, E, f1, K1, data[0]);
     subRound(E, A, B, C, D, f1, K1, data[1]);
     subRound(D, E, A, B, C, f1, K1, data[2]);
@@ -329,7 +329,7 @@ SHA1Final(unsigned char digest[20], SHA1_CTX *ctx) {
     else
 	for (i = words; i < SHA_DATALEN - 2; i++)
 	    data[i] = 0;
-    /* Theres 512 = 2^9 bits in one block */
+    /* There's 512 = 2^9 bits in one block */
     data[SHA_DATALEN - 2] = (ctx->count_h << 9) | (ctx->count_l >> 23);
     data[SHA_DATALEN - 1] = (ctx->count_l << 9) | (ctx->index << 3);
     sha_transform(ctx, data);
