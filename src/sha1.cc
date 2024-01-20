@@ -6,7 +6,7 @@
  * dissemination and usage except those imposed by the laws of your
  * country of residence.
  *
- * Adapted to pike and some cleanup by Niels Möller.
+ * Adapted to pike and some cleanup by Niels MÃ¶ller.
  */
 
 /* Id: sha1.c,v 1.5 2002/05/26 17:46:16 nmav Exp */
