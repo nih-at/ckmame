@@ -33,7 +33,7 @@ effort (for example the reengineering of a great many Capstone chips).
 
 /*
   Adapted for ckmame 2005 by Dieter Baron <dillo@giga.or.at>
-			     Thomas Klausner <tk@giga.or.at>
+			     Thomas Klausner <wiz@gatalith.at>
 */
 
 #include <string.h>
