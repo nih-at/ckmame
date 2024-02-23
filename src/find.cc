@@ -190,6 +190,10 @@ static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector
     for (size_t i = 0; (status != FIND_ERROR && status != FIND_EXISTS) && i < locations.size(); i++) {
 	auto &location = locations[i];
 
+        if (location.rom.hashes.empty()) {
+            continue;
+        }
+
         if (location.game_name == skip_game && skip_file.empty()) {
 	    continue;
         }

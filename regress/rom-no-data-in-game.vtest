@@ -1,11 +1,11 @@
 description test single-rom game with no data at all
 return 0
 arguments -cFv -e extra -D ../mamedb-no-data.db nodata
-file extra/nodata.zip 1-4-ok.zip
-file extra/.ckmame.db {} <inline.ckmamedb>
+file roms/nodata.zip 1-4-ok.zip
+file roms/.ckmame.db {} <inline.ckmamedb>
 hashes nodata.zip * cheap
 end-of-inline-data
 stdout
 In game nodata:
-game nodata                                  : not a single file found
+game nodata                                  : correct
 end-of-inline-data

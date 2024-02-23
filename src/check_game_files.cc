@@ -104,7 +104,7 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             }
         }
         
-        if (rom.where == FILE_INGAME && match->quality == Match::MISSING && rom.hashes.size > 0 && rom.status != Rom::NO_DUMP) {
+        if (rom.where == FILE_INGAME && match->quality == Match::MISSING && rom.hashes.size > 0 && !rom.hashes.empty() && rom.status != Rom::NO_DUMP) {
             /* search for matching file in other games (via db) */
             if (find_in_romset(filetype, detector_id, &rom, nullptr, game->name, "", match) == FIND_EXISTS) {
                 continue;

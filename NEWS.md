@@ -1,3 +1,8 @@
+X.X (Unreleased)
+================
+
+* Don't match any files for ROMs or disks with no hashes.
+
 2.1 (2024-02-23)
 ================
 

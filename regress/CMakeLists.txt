@@ -142,8 +142,6 @@ set(XFAIL_TESTS
   file-no-crc-wrong-name-other-set.zip.test
   rom-from-extra-loose-directory.zip.test
   rom-from-extra-loose-toplevel.zip.test
-  rom-no-data.dir.test
-  rom-no-data.zip.test
   unknown-rename-failed.zip.test
 )
 

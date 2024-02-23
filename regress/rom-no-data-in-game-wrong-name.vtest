@@ -1,11 +1,14 @@
 description test single-rom game with no data at all
 return 0
 arguments -cFv -e extra -D ../mamedb-no-data.db nodata
-file extra/nodata.zip 1-4-ok.zip
-file extra/.ckmame.db {} <inline.ckmamedb>
+file roms/nodata.zip 1-8-ok.zip {}
+file unknown/nodata.zip {} 1-8-ok.zip
+file unknown/.ckmame.db {} <inline.ckmamedb>
 hashes nodata.zip * cheap
 end-of-inline-data
 stdout
 In game nodata:
 game nodata                                  : not a single file found
+file 08.rom        size       8  crc 3656897d: unknown
+move unknown file '08.rom'
 end-of-inline-data
