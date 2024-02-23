@@ -54,52 +54,18 @@ int unpack(const char* archive, const char *destination);
 int unpack_file(const char* name, struct zip* zip_archive, zip_int64_t index);
 int unpack_file_with_dirs(const char* name, struct zip* zip_archive, zip_int64_t index);
 
-const char *usage = "usage: %s [-hV] archive destination\n";
-
-char help_head[] = PACKAGE " by Dieter Baron and Thomas Klausner\n\n";
-
-char help[] = "\n"
-	      "  -h, --help              display this help message\n"
-	      "  -V, --version           display version number\n"
-	      "\nReport bugs to " PACKAGE_BUGREPORT ".\n";
-
-char version_string[] = PACKAGE " " VERSION "\n"
-			"Copyright (C) 2024 Dieter Baron and Thomas Klausner\n" PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n";
-
-
-#define OPTIONS "hV"
-
-struct option options[] = {
-    {"help", 0, 0, 'h'},
-    {"version", 0, 0, 'V'}
-};
-
+const char* program_name;
 
 int main(int argc, char *argv[]) {
-    setprogname(argv[0]);
+    program_name = argv[0];
 
-    opterr = 0;
-    int c;
-    while ((c = getopt_long(argc, argv, OPTIONS, options, 0)) != EOF) {
-	switch (c) {
-	case 'h':
-	    fputs(help_head, stdout);
-	    printf(usage, getprogname());
-	    fputs(help, stdout);
-	    exit(0);
-	case 'V':
-	    fputs(version_string, stdout);
-	    exit(0);
-        }
-    }
-
-    if (optind != argc - 2) {
-	fprintf(stderr, usage, getprogname());
+    if (argc != 3) {
+	fprintf(stderr, "usage: %s archive destination\n", program_name);
 	exit(1);
     }
 
-    const char* destination = argv[optind + 1];
-    int ret = unpack(argv[optind], destination);
+    const char* destination = argv[2];
+    int ret = unpack(argv[1], destination);
 
     if (ret != 0) {
         /* try removing destination if unpacking failed */
@@ -112,16 +78,16 @@ int main(int argc, char *argv[]) {
 int enter_destination(const char* destination) {
     int dirfd;
     if ((dirfd = open(".", O_RDONLY)) < 0) {
-        fprintf(stderr, "%s: cannot open current directory for returning to it: %s\n", getprogname(), strerror(errno));
+        fprintf(stderr, "%s: cannot open current directory for returning to it: %s\n", program_name, strerror(errno));
         return -1;
     }
     if (mkdir(destination, 0777) != 0 && errno != EEXIST) {
-        fprintf(stderr, "%s: cannot create destination '%s': %s\n", getprogname(), destination, strerror(errno));
+        fprintf(stderr, "%s: cannot create destination '%s': %s\n", program_name, destination, strerror(errno));
         (void)close(dirfd);
         return -1;
     }
     if (chdir(destination) != 0) {
-        fprintf(stderr, "%s: cannot change into destination directory '%s': %s\n", getprogname(), destination,
+        fprintf(stderr, "%s: cannot change into destination directory '%s': %s\n", program_name, destination,
                 strerror(errno));
         (void)rmdir(destination);
         (void)close(dirfd);
@@ -133,7 +99,7 @@ int enter_destination(const char* destination) {
 
 int leave_destination(int dirfd) {
     if (fchdir(dirfd) != 0) {
-        fprintf(stderr, "%s: cannot return to previous directory: %s\n", getprogname(), strerror(errno));
+        fprintf(stderr, "%s: cannot return to previous directory: %s\n", program_name, strerror(errno));
         return -1;
     }
     (void)close(dirfd);
@@ -149,7 +115,7 @@ int unpack(const char* archive, const char *destination) {
         zip_error_t error;
         zip_error_init_with_code(&error, err);
         fprintf(stderr, "%s: cannot open zip archive '%s': %s\n",
-                getprogname(), archive, zip_error_strerror(&error));
+                program_name, archive, zip_error_strerror(&error));
         zip_error_fini(&error);
         return 1;
     }
@@ -161,7 +127,7 @@ int unpack(const char* archive, const char *destination) {
     for (zip_int64_t index = 0; index < count; index++) {
         const char* name = zip_get_name(zip_archive, index, 0);
         if (name[strlen(name) - 1] == '/') {
-            fprintf(stderr, "%s: file name '%s' ends with slash, not supported\n", getprogname(), name);
+            fprintf(stderr, "%s: file name '%s' ends with slash, not supported\n", program_name, name);
             return 1;
         }
         if (unpack_file_with_dirs(name, zip_archive, index) != 0) {
@@ -171,7 +137,7 @@ int unpack(const char* archive, const char *destination) {
         }
     }
     if (zip_close(zip_archive) != 0) {
-        fprintf(stderr, "%s: cannot close zip archive '%s': %s\n", getprogname(), archive, zip_strerror(zip_archive));
+        fprintf(stderr, "%s: cannot close zip archive '%s': %s\n", program_name, archive, zip_strerror(zip_archive));
         (void)leave_destination(old_dir);
         return 1;
     }
@@ -188,7 +154,7 @@ int unpack_file_with_dirs(const char* name, struct zip* zip_archive, zip_int64_t
         int old_dir;
         int ret;
         if (slash - name >= MAXPATHLEN) {
-            fprintf(stderr, "%s: subdirectory path '%.*s' too long\n", getprogname(), (int)(slash - name), name);
+            fprintf(stderr, "%s: subdirectory path '%.*s' too long\n", program_name, (int)(slash - name), name);
             return 1;
         }
         strncpy(directory, name, slash - name);
@@ -214,36 +180,36 @@ int unpack_file(const char* name, struct zip* zip_archive, zip_int64_t index) {
     zip_int64_t n;
     size_t n_out;
     if ((zip_entry=zip_fopen_index(zip_archive, index, 0)) == NULL) {
-        fprintf(stderr, "%s: error opening '%s' in archive: %s\n", getprogname(), name, zip_strerror(zip_archive));
+        fprintf(stderr, "%s: error opening '%s' in archive: %s\n", program_name, name, zip_strerror(zip_archive));
         return 1;
     }
     if ((out = fopen(name, "w+x")) == NULL) {
-        fprintf(stderr, "%s: error creating output file '%s': %s\n", getprogname(), name, strerror(errno));
+        fprintf(stderr, "%s: error creating output file '%s': %s\n", program_name, name, strerror(errno));
         (void)zip_fclose(zip_entry);
         return 1;
     }
     while ((n = zip_fread(zip_entry, buf, sizeof(buf))) > 0) {
         if ((n_out = fwrite(buf, 1, n, out)) != n) {
-            fprintf(stderr, "%s: error writing to output file '%s' (%lld != %zd): %s\n", getprogname(), name, (long long)n, n_out, strerror(errno));
+            fprintf(stderr, "%s: error writing to output file '%s' (%lld != %zd): %s\n", program_name, name, (long long)n, n_out, strerror(errno));
             (void)fclose(out);
             (void)zip_fclose(zip_entry);
             return 1;
         }
     }
     if (n != 0) {
-        fprintf(stderr, "%s: error reading from file '%s' in archive: %s\n", getprogname(), name,
+        fprintf(stderr, "%s: error reading from file '%s' in archive: %s\n", program_name, name,
                 zip_file_strerror(zip_entry));
         (void)fclose(out);
         (void)zip_fclose(zip_entry);
         return 1;
     }
     if (fclose(out) != 0) {
-        fprintf(stderr, "%s: error closing output file '%s': %s\n", getprogname(), name, strerror(errno));
+        fprintf(stderr, "%s: error closing output file '%s': %s\n", program_name, name, strerror(errno));
         (void)zip_fclose(zip_entry);
         return 1;
     }
     if (zip_fclose(zip_entry) != 0) {
-        fprintf(stderr, "%s: error closing '%s' in archive: %s\n", getprogname(), name, zip_strerror(zip_archive));
+        fprintf(stderr, "%s: error closing '%s' in archive: %s\n", program_name, name, zip_strerror(zip_archive));
         return 1;
     }
     return 0;

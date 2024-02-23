@@ -39,17 +39,18 @@
 #include <filesystem>
 #include <zip.h>
 
+#include "CkmameCache.h"
 #include "Commandline.h"
 #include "DatRepository.h"
 #include "Exception.h"
-#include "globals.h"
 #include "Parser.h"
 #include "ParserDir.h"
 #include "ParserSourceFile.h"
 #include "ParserSourceZip.h"
+#include "ProgramName.h"
 #include "RomDB.h"
+#include "globals.h"
 #include "update_romdb.h"
-#include "CkmameCache.h"
 
 std::vector<Commandline::Option> mkmamedb_options = {
     Commandline::Option("detector", "xml-file", "use header detector"),
@@ -126,14 +127,14 @@ void MkMameDB::global_setup(const ParsedCommandline &commandline) {
 		fmt = OutputContext::FORMAT_MTREE;
 	    }
 	    else {
-		fprintf(stderr, "%s: unknown output format '%s'\n", getprogname(), option.argument.c_str());
+		fprintf(stderr, "%s: unknown output format '%s'\n", ProgramName::get().c_str(), option.argument.c_str());
 		exit(1);
 	    }
 	}
 	else if (option.name == "hash-types") {
 	    hashtypes = Hashes::types_from_string(option.argument);
 	    if (hashtypes == 0) {
-		fprintf(stderr, "%s: illegal hash types '%s'\n", getprogname(), option.argument.c_str());
+		fprintf(stderr, "%s: illegal hash types '%s'\n", ProgramName::get().c_str(), option.argument.c_str());
 		exit(1);
 	    }
 	}
@@ -174,7 +175,7 @@ void MkMameDB::global_setup(const ParsedCommandline &commandline) {
 	fprintf(stderr,
 		"%s: warning: multiple input files specified, \n\t"
 		"--prog-name and --prog-version are ignored",
-		getprogname());
+		ProgramName::get().c_str());
     }
 }
 
@@ -284,7 +285,7 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 
     }
     catch (const std::exception &exception) {
-        fprintf(stderr, "%s: unexpected error: %s\n", getprogname(), exception.what());
+        fprintf(stderr, "%s: unexpected error: %s\n", ProgramName::get().c_str(), exception.what());
         exit(1);
     }
             
@@ -371,7 +372,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 		    auto ps = std::make_shared<ParserSourceFile>(fname);
 		    ok = Parser::parse(ps, exclude, dat, out, parser_options);
 		} catch (std::exception &exception) {
-		    fprintf(stderr, "%s: can't process %s: %s\n", getprogname(), fname.c_str(), exception.what());
+		    fprintf(stderr, "%s: can't process %s: %s\n", ProgramName::get().c_str(), fname.c_str(), exception.what());
 		    ok = false;
 		}
 	    } while (false);
@@ -391,7 +392,7 @@ static bool process_stdin(const std::unordered_set<std::string> &exclude, const 
         return Parser::parse(ps, exclude, dat, out, parser_options);
     }
     catch (std::exception &exception) {
-        fprintf(stderr, "%s: can't process stdin: %s\n", getprogname(), exception.what());
+        fprintf(stderr, "%s: can't process stdin: %s\n", ProgramName::get().c_str(), exception.what());
         return false;
     }
 }

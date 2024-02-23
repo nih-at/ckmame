@@ -1,6 +1,9 @@
+#ifndef PROGRAMNAME_H
+#define PROGRAMNAME_H
+
 /*
-  getprogname.c -- getprogname/setprogname replacement
-  Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
+  ProgramName.h -- globally store program name
+  Copyright (C) 2024 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -31,24 +34,17 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <string>
 
-#include <string.h>
+class ProgramName {
+public:
+  static void set(const char* name) {program_name = name;}
+  static const std::string& get() {return program_name;}
 
-#include "compat.h"
-
-static const char *progname;
-
-
-const char *
-getprogname(void) {
-    return progname;
-}
+private:
+  static std::string program_name;
+};
 
 
-void
-setprogname(const char *name) {
-    if ((progname = strrchr(name, '/')) == NULL)
-	progname = name;
-    else
-	progname++;
-}
+
+#endif //PROGRAMNAME_H

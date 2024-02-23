@@ -35,9 +35,11 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "config.h"
 
+#include "compat.h"
 #include "Exception.h"
 #include "globals.h"
-#include "compat.h"
+
+#include "ProgramName.h"
 
 Command::Command(std::string name, std::string arguments, std::vector<Commandline::Option> options,
                  std::unordered_set<std::string> used_variables)
@@ -48,7 +50,7 @@ Command::Command(std::string name, std::string arguments, std::vector<Commandlin
 
 
 int Command::run(int argc, char* const* argv) {
-    setprogname(argv[0]);
+    ProgramName::set(argv[0]);
 
     auto command_name = name;
     auto version = std::string(PACKAGE " " VERSION);
@@ -120,7 +122,7 @@ int Command::run(int argc, char* const* argv) {
         }
     }
     catch (std::exception& ex) {
-        fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
+        fprintf(stderr, "%s: %s\n", ProgramName::get().c_str(), ex.what());
         // TODO: handle error
         exit_code = 1;
     }
@@ -134,7 +136,7 @@ int Command::run(int argc, char* const* argv) {
         }
     }
     catch (std::exception& ex) {
-        fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
+        fprintf(stderr, "%s: %s\n", ProgramName::get().c_str(), ex.what());
         // TODO: handle error
         exit_code = 1;
     }
@@ -157,7 +159,7 @@ bool Command::do_for(const std::string& set, const ParsedCommandline& arguments,
     }
     catch (std::exception& ex) {
         cleanup();
-        fprintf(stderr, "%s: %s\n", getprogname(), ex.what());
+        fprintf(stderr, "%s: %s\n", ProgramName::get().c_str(), ex.what());
         return false;
     }
 }

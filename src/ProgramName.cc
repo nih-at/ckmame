@@ -1,9 +1,6 @@
-#ifndef HAD_COMPAT_H
-#define HAD_COMPAT_H
-
 /*
-  compat.h -- prototypes/defines for missing library functions
-  Copyright (C) 2007-2020 Dieter Baron and Thomas Klausner
+  ProgramName.cc -- globally store program name
+  Copyright (C) 2024 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
   The authors can be contacted at <ckmame@nih.at>
@@ -34,22 +31,6 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "ProgramName.h"
 
-#include "config.h"
-
-#ifdef HAVE_FNMATCH
-#include <fnmatch.h>
-#else
-#include "compat_fnmatch.h"
-#endif
-
-#if defined(HAVE_STRCASECMP)
-#include <strings.h>
-#else
-#if defined(HAVE__STRICMP)
-#include <string.h>
-#define strcasecmp _stricmp
-#endif
-#endif
-
-#endif // HAD_COMPAT_H
+std::string ProgramName::program_name;

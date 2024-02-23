@@ -42,23 +42,24 @@
 #include "compat.h"
 #include "config.h"
 
-#include "check_util.h"
-#include "cleanup.h"
 #include "CkmameCache.h"
 #include "CkmameDB.h"
 #include "Commandline.h"
 #include "Configuration.h"
 #include "Exception.h"
 #include "Fixdat.h"
-#include "globals.h"
 #include "MemDB.h"
+#include "ProgramName.h"
 #include "RomDB.h"
-#include "sighandle.h"
 #include "Stats.h"
-#include "superfluous.h"
 #include "Tree.h"
-#include "util.h"
+#include "check_util.h"
+#include "cleanup.h"
+#include "globals.h"
+#include "sighandle.h"
+#include "superfluous.h"
 #include "update_romdb.h"
+#include "util.h"
 
 
 /* to identify roms directory uniquely */
@@ -163,7 +164,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     }
 
     if (!configuration.roms_zipped && db->has_disks() == 1) {
-        fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", getprogname());
+        fprintf(stderr, "%s: unzipped mode is not supported for ROM sets with disks\n", ProgramName::get().c_str());
         return false;
     }
 
@@ -192,7 +193,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
         }
     } catch (Exception &exception) {
         // TODO: handle error
-        fprintf(stderr, "%s: %s\n", getprogname(), exception.what());
+        fprintf(stderr, "%s: %s\n", ProgramName::get().c_str(), exception.what());
         return false;
     }
 

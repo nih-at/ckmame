@@ -33,8 +33,10 @@
 
 #include "Output.h"
 
-#include "globals.h"
 #include "compat.h"
+#include "globals.h"
+
+#include "ProgramName.h"
 
 Output::Output() :
     first_header(true),
@@ -313,7 +315,7 @@ std::string Output::postfix_system() {
 void Output::print_error_v(const char *fmt, va_list va, const std::string &prefix, const std::string &postfix) {
     // Don't print header to stdout for error messages printed to stderr.
     
-    fprintf(stderr, "%s: ", getprogname());
+    fprintf(stderr, "%s: ", ProgramName::get().c_str());
     if (!prefix.empty()) {
 	fprintf(stderr, "%s: ", prefix.c_str());
     }

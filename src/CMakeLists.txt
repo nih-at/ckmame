@@ -1,6 +1,3 @@
-if(NOT HAVE_GETPROGRAME)
-  list(APPEND COMPATIBILITY getprogname.cc)
-endif()
 if(NOT HAVE_MD5INIT)
   list(APPEND COMPATIBILITY md5.cc)
 endif()
@@ -63,6 +60,7 @@ set(COMMON_SOURCES
   ParserSource.cc
   ParserSourceFile.cc
   ParserSourceZip.cc
+  ProgramName.cc
   Result.cc
   Rom.cc
   RomDB.cc

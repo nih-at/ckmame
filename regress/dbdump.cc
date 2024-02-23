@@ -33,6 +33,7 @@
 
 #include "compat.h"
 
+#include <ProgramName.h>
 #include <cstring>
 #include <filesystem>
 #include <sqlite3.h>
@@ -52,10 +53,10 @@ int
 main(int argc, char *argv[]) {
     char *fname;
 
-    setprogname(argv[0]);
+    ProgramName::set(argv[0]);
 
     if (argc != 2) {
-	fprintf(stderr, usage, getprogname());
+	fprintf(stderr, usage, ProgramName::get().c_str());
 	exit(1);
     }
 
