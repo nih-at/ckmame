@@ -1,4 +1,4 @@
-X.X (XXXX-XX-XX)
+2.1 (2024-02-23)
 ================
 
 * Add `--report-changes` to show changes between last and current run.

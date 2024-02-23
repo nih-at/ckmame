@@ -7,7 +7,7 @@ To use ckmame, you need
 - optionally [libxml2](http://xmlsoft.org/) (for M.A.M.E. -listxml and detectors)
 - optionally [libarchive](https://www.libarchive.org/) (for reading from 7z archives)
 
-For running the tests, you need to have [nihtest](https://nih.at/nihtest/) and [Python](https://python.org).
+For running the tests, you need to have [nihtest](https://nih.at/nihtest/) (at least version 1.5) and [Python](https://python.org).
 
 The basic usage is
 ```sh
