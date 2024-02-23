@@ -151,7 +151,6 @@ if(RUN_REGRESS)
     add_test(NAME ${CASE} COMMAND ${NIHTEST} -v ${CASE})
     # TODO: add --bin-sub-directory $<CONFIG>
     set_tests_properties(${CASE} PROPERTIES SKIP_RETURN_CODE 77)
-    set_tests_properties(${CASE} PROPERTIES ENVIRONMENT "PATH=${path}")
   endforeach()
 
   foreach(CASE ${XFAIL_TESTS})
