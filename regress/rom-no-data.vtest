@@ -1,0 +1,10 @@
+description test single-rom game with no data at all
+return 0
+arguments -cFv -e extra -D ../mamedb-no-data.db nodata
+file extra/nodata.zip 1-4-ok.zip
+file roms/.ckmame.db {} <inline.ckmamedb>
+end-of-inline-data
+stdout
+In game nosize:
+game nosize                                  : correct
+end-of-inline-data

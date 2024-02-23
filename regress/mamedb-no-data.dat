@@ -1,0 +1,12 @@
+clrmamepro (
+	name "ckmame test db"
+	version 1
+)
+
+game (
+        name nodata
+        description "no data"
+        manufacturer "synth"
+        year 2024
+	rom ( name 04.rom )
+)
