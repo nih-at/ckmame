@@ -10,6 +10,7 @@
 - SHA256 support
 - mia="yes" support
 - speed up fixing 'complete-only' sets: stop checking a game when one entry is missing
+- fix bug: when ckmame is run without -F (or copying fails), the missing list is updated anyway
 
 ### Write Tests for Config
 
