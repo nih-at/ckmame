@@ -9,7 +9,7 @@
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
 - SHA256 support
 - mia="yes" support
-- speed up fixing 'complete-only' sets: stop checking a game when one entry is missing
+- speed up fixing 'complete-only' sets: stop checking a game when one entry is missing, don't look at file system unless all ROMs have candidates.
 - fix bug: when ckmame is run without -F (or copying fails), the missing list is updated anyway
 
 ### Write Tests for Config
