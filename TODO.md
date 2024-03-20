@@ -105,7 +105,7 @@
     Suggested solution: using `iconv` and `LC_CTYPE`, try transcribing invalid UTF-8 files to UTF-8
     if it fails or no `iconv` or `LC_CTYPE` available, replace invalid characters with `'?'`
 - [cleanup] access db directly in `find_*`
-- [cleanup] specify globally which parts of memdb/lists to fill/maintain
+- [cleanup] specify globally which parts of lists to fill/maintain
 - [cleanup] rom: use flag to specify whether we know the size
 - [bug] `dumpgame`: report real database version for /dat key
 - [bug] check if needed/extra are different
