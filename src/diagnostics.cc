@@ -153,6 +153,15 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 break;
             }
 
+            case GS_PARTIAL:
+                if (configuration.complete_games_only) {
+                    if (ft == TYPE_ROM && configuration.report_missing) {
+                        warn_game(ft, game, "incomplete");
+                    }
+                    return;
+                }
+                break;
+
             case GS_MISSING:
                 if (ft == TYPE_ROM && configuration.report_missing) {
                     warn_game(ft, game, "not a single file found");
@@ -178,6 +187,12 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
         }
 
         switch (match.quality) {
+        case Match::UNCHECKED:
+            if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) || configuration.report_detailed) {
+                warn_game_file(ft, &rom, "not in archive");
+            }
+            break;
+
             case Match::MISSING:
                 if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) || configuration.report_detailed) {
                     warn_game_file(ft, &rom, "missing");

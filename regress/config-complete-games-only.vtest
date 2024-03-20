@@ -11,5 +11,5 @@ complete-games-only = true
 end-of-inline-data
 stdout
 In game 2-48:
-rom  08.rom        size       8  crc 3656897d: missing
+game 2-48                                    : incomplete
 end-of-inline-data

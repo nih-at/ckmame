@@ -239,6 +239,7 @@ static int fix_files(Game *game, filetype_t filetype, Archive *archive, Result *
 
 	switch (match->quality) {
             case Match::MISSING:
+            case Match::UNCHECKED:
                 if (game_file.hashes.size == 0) {
                     /* create missing empty file */
 		    output.message_verbose("create empty file '%s'", game_file.filename(filetype).c_str());
@@ -356,6 +357,7 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
         switch (match->quality) {
             case Match::MISSING:
             case Match::OLD:
+            case Match::UNCHECKED:
                 /* nothing to do */
                 break;
 
@@ -391,13 +393,13 @@ static int clear_incomplete(Game *game, filetype_t filetype, Archive *archive, R
 
             case Match::OK_AND_OLD:
                 if (configuration.keep_old_duplicate) {
-                    save_needed(archive, i, game->name); /* TODO: handle error */
+                    save_needed(archive, match->index, game->name); /* TODO: handle error */
                 }
 
             case Match::NAME_ERROR:
             case Match::OK:
             case Match::IN_ZIP:
-                save_needed(archive, i, game->name); /* TODO: handle error */
+                save_needed(archive, match->index, game->name); /* TODO: handle error */
                 break;
         }
     }

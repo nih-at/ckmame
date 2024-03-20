@@ -1,0 +1,13 @@
+description test incomplete game, moves files to needed
+return 0
+arguments -FvcC --report-detailed 2-48
+file mame.db mame.db
+file roms/2-48.zip 1-8-ok.zip {}
+file saved/3656897d-000.zip {} 1-8-ok.zip
+file saved/.ckmame.db {} <empty.ckmamedb>
+stdout
+In game 2-48:
+rom  04.rom        size       4  crc d87f7e0c: missing
+rom  08.rom        size       8  crc 3656897d: correct
+save needed file '08.rom'
+end-of-inline-data

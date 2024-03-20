@@ -43,6 +43,7 @@ class Match {
 public:
     enum Quality {
         MISSING, /* ROM is missing */
+        UNCHECKED, /* complete only and previous ROM is missing */
         NO_HASH,  /* disk and file have no common checksums */
         LONG,    /* long ROM with valid subsection */
         NAME_ERROR, /* wrong name */

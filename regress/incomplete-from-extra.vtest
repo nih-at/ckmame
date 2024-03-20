@@ -1,6 +1,6 @@
 description "test incomplete game, doesn't move files from extra to saved"
 return 0
-arguments -FvcCje extra 2-48
+arguments -FvcCj --report-detailed -e extra 2-48
 file mame.db mame.db
 file extra/.ckmame.db {} <empty.ckmamedb>
 file extra/2-48.zip 1-4-ok.zip
