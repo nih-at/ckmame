@@ -50,7 +50,9 @@ class CkmameCache {
 
     CkmameDBPtr get_db_for_archive(const std::string &name);
     std::string get_directory_name_for_archive(const std::string &name);
-    void register_directory(const std::string &directory);
+    void register_directory(const std::string &directory, where_t where);
+
+    std::vector<CkmameDB::FindResult> find_file(filetype_t filetype, size_t detector_id, const FileData& rom);
 
     void used(Archive *a, size_t idx);
 
@@ -66,10 +68,13 @@ class CkmameCache {
     class CacheDirectory {
       public:
 	std::string name;
+        where_t where;
 	std::shared_ptr<CkmameDB> db;
-	bool initialized;
+	bool initialized = false;
 
-	explicit CacheDirectory(std::string name_): name(std::move(name_)), initialized(false) { }
+	explicit CacheDirectory(std::string name_, where_t where): name(std::move(name_)), where(where) { }
+
+        void initialize();
     };
 
     bool close_all();

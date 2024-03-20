@@ -92,7 +92,7 @@ Archive::Archive(ArchiveContentsPtr contents_) :
 
 Archive::Archive(ArchiveType type, const std::string &name_, filetype_t ft, where_t where_, int flags_) : Archive(std::make_shared<ArchiveContents>(type, name_, ft, where_, flags_)) { }
 
-ArchivePtr Archive::open(const ArchiveContentsPtr& contents) {
+ArchivePtr Archive::open(const ArchiveContentsPtr& contents, int flags) {
     ArchivePtr archive;
     
     if (contents->open_archive.expired()) {
@@ -128,7 +128,8 @@ ArchivePtr Archive::open(const ArchiveContentsPtr& contents) {
         //printf("# already open %s\n", archive->name.c_str());
         archive = contents->open_archive.lock();
     }
-    
+
+    contents->flags |= flags & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK);
     return archive;
 }
 
@@ -333,7 +334,7 @@ ArchivePtr Archive::open(const std::string &name, filetype_t filetype, where_t w
     auto contents = ArchiveContents::by_name(filetype, archive_name);
 
     if (contents) {
-        return open(contents);
+        return open(contents, flags);
     }
 
     ArchivePtr archive;

@@ -53,4 +53,15 @@ public:
     bool operator==(const ArchiveLocation &other) const { return name == other.name && filetype == other.filetype; }
 };
 
+
+namespace std {
+template <>
+struct hash<ArchiveLocation> {
+    std::size_t operator()(const ArchiveLocation &k) const {
+        return std::hash<int>()(k.filetype) ^ std::hash<std::string>()(k.name);
+    }
+};
+}
+
+
 #endif // HAD_ARCHIVE_LOCATION_H

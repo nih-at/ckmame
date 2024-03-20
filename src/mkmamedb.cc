@@ -354,7 +354,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	std::error_code ec;
 	if (std::filesystem::is_directory(fname, ec)) {
             if (cache_directory) {
-		ckmame_cache->register_directory(fname);
+		ckmame_cache->register_directory(fname, FILE_ROMSET);
             }
 
             auto ctx = ParserDir(nullptr, exclude, dat, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);

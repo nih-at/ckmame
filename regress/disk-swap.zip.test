@@ -13,22 +13,16 @@ end-of-inline-data
 stdout
 In game disk:
 rom  04.rom        size       4  crc d87f7e0c: correct
-disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: missing
+disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/disk-2/108-2.chd'
 image 108-5.chd   : needed elsewhere
 save needed file '108-5.chd'
+add 'roms/disk-2/108-2.chd' as '108-5.chd'
 In game disk-2:
 rom  04.rom        size       4  crc d87f7e0c: correct
 disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: is in 'saved/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000/108-5.chd'
-image 108-2.chd   : needed elsewhere
-save needed file '108-2.chd'
+image 108-2.chd   : not used
+delete unused file '108-2.chd'
 add 'saved/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000/108-5.chd' as '108-2.chd'
-In game disk:
-rom  04.rom        size       4  crc d87f7e0c: correct
-disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'saved/7570a907e20a51cbf6193ec6779b82d1967bb609-000/108-2.chd'
-add 'saved/7570a907e20a51cbf6193ec6779b82d1967bb609-000/108-2.chd' as '108-5.chd'
-In archive saved/7570a907e20a51cbf6193ec6779b82d1967bb609-000:
-delete used file '108-2.chd'
-remove empty archive
 In archive saved/9fffa910f0ca90f61e1ab3fab0d1da225be992ae-000:
 delete used file '108-5.chd'
 remove empty archive

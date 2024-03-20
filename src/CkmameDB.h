@@ -42,6 +42,7 @@
 #include "DB.h"
 #include "DetectorCollection.h"
 #include "File.h"
+#include "FileLocation.h"
 
 class ArchiveContents;
 class CkmameDB;
@@ -50,6 +51,16 @@ typedef std::shared_ptr<CkmameDB> CkmameDBPtr;
 
 class CkmameDB : public DB {
 public:
+  class FindResult {
+    public:
+      FindResult(std::string name, size_t index, size_t detector_id, where_t where): name(std::move(name)), index(index), detector_id(detector_id), where(where) {}
+
+      std::string name;
+      size_t index;
+      size_t detector_id;
+      where_t where;
+  };
+
     enum Statement {
         DELETE_ARCHIVE,
         DELETE_FILE,
@@ -64,9 +75,12 @@ public:
         QUERY_FILE,
         QUERY_HAS_ARCHIVES
     };
-    
-    explicit CkmameDB(const std::string& directory);
-    CkmameDB(const std::string& dbname, std::string directory); // used in dbrestore
+    enum ParameterizedStatement {
+        QUERY_FIND_FILE
+    };
+
+    explicit CkmameDB(const std::string& directory, where_t where);
+    CkmameDB(const std::string& dbname, std::string directory, where_t where); // used in dbrestore
     ~CkmameDB() override = default;
 
     static const DBFormat format;
@@ -80,6 +94,9 @@ public:
     std::vector<ArchiveLocation> list_archives();
     int read_files(int archive_id, std::vector<File> *files);
     void write_archive(ArchiveContents *archive);
+
+    void find_file(filetype_t filetype, size_t detector_id, const FileData& file, std::vector<FindResult> &results);
+    void refresh();
     
     void seterr();
     
@@ -88,11 +105,14 @@ protected:
     
 private:
     static std::unordered_map<Statement, std::string> queries;
+    static std::unordered_map<ParameterizedStatement, std::string> parameterized_queries;
 
     std::string directory;
+    where_t where;
     DetectorCollection detector_ids;
     
     DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
+    DBStatement *get_statement(ParameterizedStatement name, const Hashes &hashes, bool have_size) { return get_statement_internal(name, hashes, have_size); }
 
     std::string name_in_db(const std::string &name);
     void delete_files(int id);
@@ -100,6 +120,9 @@ private:
     
     size_t get_detector_id(size_t global_id);
     size_t get_global_detector_id(size_t id);
+
+    void refresh_unzipped();
+    void refresh_zipped();
 };
 
 #endif // HAD_DBH_CACHE_H

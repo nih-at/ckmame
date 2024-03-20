@@ -8,19 +8,13 @@ file roms/clone-8.zip 1-4-misnamed.zip {}
 file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game 1-4:
-game 1-4                                     : not a single file found
-In game parent-4:
-game parent-4                                : not a single file found
-In game clone-8:
-game clone-8                                 : not a single file found
-save needed file '04'
-In game 1-4:
-rom  04.rom        size       4  crc d87f7e0c: is in 'saved/d87f7e0c-000.zip/04'
-add 'saved/d87f7e0c-000.zip/04' as '04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/clone-8.zip/04'
+add 'roms/clone-8.zip/04' as '04.rom'
 In game parent-4:
 rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
 add 'roms/1-4.zip/04.rom' as '04.rom'
-In archive saved/d87f7e0c-000.zip:
-delete used file '04'
-remove empty archive
+In game clone-8:
+game clone-8                                 : not a single file found
+file 04            size       4  crc d87f7e0c: not used
+delete unused file '04'
 end-of-inline-data

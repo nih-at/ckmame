@@ -109,10 +109,11 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
             if (find_in_romset(filetype, detector_id, &rom, nullptr, game->name, "", match) == FIND_EXISTS) {
                 continue;
             }
-            
+
             /* search in needed, superfluous and update sets */
             ckmame_cache->ensure_needed_maps();
 	    ckmame_cache->ensure_extra_maps();
+
             if (find_in_archives(filetype, detector_id, &rom, match, false) == FIND_EXISTS) {
                 continue;
             }

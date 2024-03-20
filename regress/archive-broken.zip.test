@@ -21,5 +21,6 @@ remove empty archive
 end-of-inline-data
 stderr
 error opening zip archive 'roms/2-48.zip': Not a zip archive
-error opening zip archive 'roms/2-48.zip': Not a zip archive
+error creating zip archive 'roms/2-48.zip': Not a zip archive
+error creating zip archive 'roms/2-48.zip': Not a zip archive
 end-of-inline-data

@@ -109,16 +109,11 @@ void check_archive_files(filetype_t filetype, const GameArchives &archives, cons
                 else {
                     Match match;
 		    ckmame_cache->ensure_needed_maps();
-                    if (find_in_archives(filetype, detector_id, &file, &match, false) != FIND_EXISTS) {
+                    if (find_in_archives(filetype, detector_id, &file, &match, true) != FIND_EXISTS) {
                         result->archive_files[filetype][i] = FS_NEEDED;
                     }
                     else {
-                        if (match.where == FILE_NEEDED) {
-                            result->archive_files[filetype][i] = FS_SUPERFLUOUS;
-                        }
-                        else {
-                            result->archive_files[filetype][i] = FS_NEEDED;
-                        }
+                        result->archive_files[filetype][i] = FS_SUPERFLUOUS;
                     }
                 }
                 break;

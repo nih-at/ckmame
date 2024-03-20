@@ -711,3 +711,11 @@ size_t RomDB::get_detector_id_for_dat(size_t dat_no) const {
     // TODO: Fix once we support multiple detectors in one DB.
     return detectors.begin()->first;
 }
+
+bool RomDB::game_exists(const std::string &name) {
+    auto stmt = get_statement(QUERY_GAME_ID);
+
+    stmt->set_string("name", name);
+
+    return stmt->step();
+}

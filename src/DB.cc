@@ -278,7 +278,7 @@ DBStatement *DB::get_statement_internal(StatementID statement_id) {
         // printf("#DEBUG expanding %x '%s' to ", statement_id.flags, sql_query.c_str());
         auto start = sql_query.find("@SIZE@");
         if (start != std::string::npos) {
-            sql_query.replace(start, 6, statement_id.has_size() ? "and size = :size" : "");
+            sql_query.replace(start, 6, statement_id.has_size() ? "and f.size = :size" : "");
         }
         start = sql_query.find("@HASH@");
         if (start != std::string::npos) {

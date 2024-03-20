@@ -64,7 +64,7 @@ bool ArchiveZip::ensure_zip() {
     if ((za = zip_open(name.c_str(), zip_flags, &err)) == nullptr) {
 	zip_error_t error;
 	zip_error_init_with_code(&error, err);
-        output.error("error %s zip archive '%s': %s", (contents->flags & ZIP_CREATE ? "creating" : "opening"), name.c_str(), zip_error_strerror(&error));
+        output.error("error %s zip archive '%s': %s", (contents->flags & ARCHIVE_FL_CREATE ? "creating" : "opening"), name.c_str(), zip_error_strerror(&error));
 	zip_error_fini(&error);
 	return false;
     }

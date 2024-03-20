@@ -180,16 +180,16 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     ckmame_cache = std::make_shared<CkmameCache>();
 
     try {
-        ckmame_cache->register_directory(configuration.rom_directory);
-        ckmame_cache->register_directory(configuration.saved_directory);
-        ckmame_cache->register_directory(configuration.unknown_directory);
+        ckmame_cache->register_directory(configuration.rom_directory, FILE_ROMSET);
+        ckmame_cache->register_directory(configuration.saved_directory, FILE_NEEDED);
+        ckmame_cache->register_directory(configuration.unknown_directory, FILE_EXTRA);
         for (const auto &name : configuration.extra_directories) {
             if (contains_romdir(name)) {
                 /* TODO: improve error message: also if extra is in ROM directory. */
                 output.error("current ROM directory '%s' is in extra directory '%s'", configuration.rom_directory.c_str(), name.c_str());
                 return false;
             }
-            ckmame_cache->register_directory(name);
+            ckmame_cache->register_directory(name, FILE_EXTRA);
         }
     } catch (Exception &exception) {
         // TODO: handle error

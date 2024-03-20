@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
             
             switch (type) {
                 case DBTYPE_CKMAMEDB:
-                    db = std::make_unique<CkmameDB>(db_fname, ".");
+                    db = std::make_unique<CkmameDB>(db_fname, ".", FILE_NOWHERE);
                     break;
 
                 case DBTYPE_MEMDB:

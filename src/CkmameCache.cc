@@ -36,11 +36,12 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 #include <filesystem>
 
-#include "globals.h"
-#include "util.h"
-#include "Exception.h"
 #include "Dir.h"
+#include "Exception.h"
+#include "RomDB.h"
+#include "globals.h"
 #include "sighandle.h"
+#include "util.h"
 
 CkmameCachePtr ckmame_cache;
 
@@ -98,35 +99,44 @@ std::string CkmameCache::get_directory_name_for_archive(const std::string &name)
 const CkmameCache::CacheDirectory* CkmameCache::get_directory_for_archive(const std::string &name) {
     for (auto &directory : cache_directories) {
 	if (name.compare(0, directory.name.length(), directory.name) == 0 && (name.length() == directory.name.length() || name[directory.name.length()] == '/')) {
-	    if (!directory.initialized) {
-		directory.initialized = true;
-		if (!configuration.fix_romset) {
-		    std::error_code ec;
-		    if (!std::filesystem::exists(directory.name, ec)) {
-			return nullptr; /* we won't write any files, so DB would remain empty */
-		    }
-		}
-		if (!ensure_dir(directory.name, false)) {
-		    return nullptr;
-		}
-
-		try {
-		    directory.db = std::make_shared<CkmameDB>(directory.name);
-		}
-		catch (std::exception &e) {
-		    output.error_database("can't open rom directory database for '%s': %s", directory.name.c_str(), e.what());
-		    return nullptr;
-		}
-	    }
-	    return &directory;
+            directory.initialize();
+            if (directory.db) {
+                return &directory;
+            }
+            else {
+                return nullptr;
+            }
 	}
     }
 
     return nullptr;
 }
 
+void CkmameCache::CacheDirectory::initialize() {
+    if (initialized) {
+        return;
+    }
+    initialized = true;
+    if (!configuration.fix_romset) {
+        std::error_code ec;
+        if (!std::filesystem::exists(name, ec)) {
+            return; /* we won't write any files, so DB would remain empty */
+        }
+    }
+    if (!ensure_dir(name, false)) {
+        return;
+    }
 
-void CkmameCache::register_directory(const std::string &directory_name) {
+    try {
+        db = std::make_shared<CkmameDB>(name, where);
+    }
+    catch (std::exception& e) {
+        db = {};
+        output.error_database("can't open rom directory database for '%s': %s", name.c_str(), e.what());
+    }
+}
+
+void CkmameCache::register_directory(const std::string &directory_name, where_t where) {
     std::string name;
 
     if (directory_name.empty()) {
@@ -154,13 +164,22 @@ void CkmameCache::register_directory(const std::string &directory_name) {
 	}
     }
 
-    cache_directories.emplace_back(name);
+    // TODO: check that same directory isn't registerd with different where.
+
+    cache_directories.emplace_back(name, where);
 }
 
 
 void CkmameCache::ensure_extra_maps() {
     if (extra_map_done) {
 	return;
+    }
+
+    // TODO: this is a hack, to be replaced when we rework the delete lists.
+    // Get superfluous files in ROM directory into ckmamedb.
+    cache_directories[0].initialize();
+    if (cache_directories[0].db) {
+        cache_directories[0].db->refresh();
     }
 
     /* Opening the archives will register them in the map. */
@@ -343,6 +362,18 @@ void CkmameCache::used(Archive *a, size_t index) {
 	needed_delete_list->entries.push_back(fl);
 	break;
 
+    case FILE_ROMSET: {
+        if (a->name == configuration.rom_directory) {
+            superfluous_delete_list->entries.push_back(fl);
+            break;
+        }
+        auto name = a->name.substr(configuration.rom_directory.size() + 1);
+        if (!db->game_exists(name)) {
+            superfluous_delete_list->entries.push_back(fl);
+        }
+        break;
+    }
+
     case FILE_SUPERFLUOUS:
 	superfluous_delete_list->entries.push_back(fl);
 	break;
@@ -359,4 +390,17 @@ void CkmameCache::used(Archive *a, size_t index) {
     default:
 	break;
     }
+}
+std::vector<CkmameDB::FindResult> CkmameCache::find_file(filetype_t filetype, size_t detector_id, const FileData& rom) {
+    auto results = std::vector<CkmameDB::FindResult>();
+
+    for (auto& cache_directory: cache_directories) {
+        cache_directory.initialize();
+        if (cache_directory.db) {
+            cache_directory.db->find_file(filetype, detector_id, rom, results);
+        }
+    }
+
+//    printf("searching for file '%s', got %lu results\n", rom.name.c_str(), results.size());
+    return results;
 }

@@ -164,8 +164,10 @@ static void cleanup_archive(filetype_t filetype, Archive *a, Result *result, int
 	    if (flags & CLEANUP_NEEDED) {
 		/* TODO: handle error (how?) */
 		if (save_needed(a, i, "")) {
-		    /* save_needed delays deletes in archives with where != FILE_ROM */
-		    a->file_delete(i);
+                    if (a->where != FILE_ROMSET) {
+                        /* save_needed delays deletes in archives with where != FILE_ROM */
+                        a->file_delete(i);
+                    }
 		}
 	    }
 	    break;

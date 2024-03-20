@@ -1,12 +1,13 @@
-description test 2-rom game (1 in parent), both roms in parent - BROKEN
+description test 2-rom game (1 in parent), both roms in parent
 return 0
 arguments -cFv clone-8
 file mame.db mame.db
 file roms/parent-4.zip 2-48-ok.zip
-file roms/.ckmame.db {} <inline.ckmamedb>
-hashes parent-4.zip 08.rom cheap
-end-of-inline-data
+file roms/clone-8.zip {} 1-8-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 In game clone-8:
-game clone-8                                 : not a single file found
+rom  04.rom        size       4  crc d87f7e0c: correct
+rom  08.rom        size       8  crc 3656897d: is in 'roms/parent-4.zip/08.rom'
+add 'roms/parent-4.zip/08.rom' as '08.rom'
 end-of-inline-data

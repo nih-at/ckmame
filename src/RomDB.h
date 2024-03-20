@@ -99,6 +99,7 @@ public:
     bool has_detector() const { return !detectors.empty(); }
     DetectorPtr get_detector(size_t id);
     size_t get_detector_id_for_dat(size_t dat_no) const;
+    [[nodiscard]] bool game_exists(const std::string &name);
     
     std::vector<DatEntry> read_dat();
     std::vector<RomLocation> read_file_by_hash(filetype_t ft, const Hashes &hashes);

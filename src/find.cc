@@ -99,20 +99,16 @@ find_result_t find_in_archives(filetype_t filetype, size_t detector_id, const Fi
 
 
 static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_id, const FileData *rom, Match *m, bool needed_only) {
-    auto results = memdb->find(filetype, rom); // TODO: catch error, return FIND_ERROR
-    
-    for (auto result : results) {
-        if (result.detector_id != 0 && result.detector_id != detector_id) {
+    auto results = ckmame_cache->find_file(filetype, detector_id, *rom);
+
+    for (const auto& result : results) {
+        if (needed_only && result.where != FILE_NEEDED) {
             continue;
         }
-
-        auto a = Archive::by_id(result.archive_id);
-        if (!a) {
+        auto a= Archive::open(result.name, filetype, result.where, 0);
+        if (!a || result.index >= a->files.size()) {
             return FIND_ERROR;
         }
-	if (needed_only && a->where != FILE_NEEDED) {
-	    continue;
-	}
 
         auto &file = a->files[result.index];
 
@@ -128,7 +124,7 @@ static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_i
 	if (m) {
             m->archive = a;
             m->index = result.index;
-            m->where = result.location;
+            m->where = result.where;
 	    m->quality = Match::COPIED;
 	}
 

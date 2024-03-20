@@ -99,7 +99,7 @@ void Archive::update_cache() {
     if (!cache_changed) {
         return;
     }
-    
+
     if (contents->cache_db == nullptr && ckmame_cache) {
         contents->cache_db = ckmame_cache->get_db_for_archive(name);
     }

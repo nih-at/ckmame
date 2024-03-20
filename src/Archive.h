@@ -152,7 +152,7 @@ public:
     static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
     static ArchivePtr open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags);
     
-    static ArchivePtr open(const ArchiveContentsPtr& contents);
+    static ArchivePtr open(const ArchiveContentsPtr& contents, int flags = 0);
 
     static bool read_only_mode;
 
