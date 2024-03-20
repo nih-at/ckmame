@@ -42,8 +42,6 @@ static find_result_t check_match_old(filetype_t filetype, size_t detector_id, co
 static find_result_t check_match_romset(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *wanted_file, const FileData *candidate, Match *match);
 static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector_id, const FileData *wanted_file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match, find_result_t (*)(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *wanted_file, const FileData *candidate, Match *match));
 
-static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_id, const FileData *r, Match *m, bool needed_only);
-
 static bool compute_all_detector_hashes(DeleteListPtr list);
 
 bool compute_all_detector_hashes(bool needed_only) { // returns true if new hashes were computed
@@ -86,44 +84,47 @@ static bool compute_all_detector_hashes(DeleteListPtr list) {
 
 
 find_result_t find_in_archives(filetype_t filetype, size_t detector_id, const FileData *rom, Match *m, bool needed_only) {
-    auto result = find_in_archives_xxx(filetype, detector_id, rom, m, needed_only);
-    if (result == FIND_UNKNOWN) {
+    auto candidates = find_candidates_in_archives(filetype, detector_id, rom, needed_only);
+
+    return check_archive_candidates(candidates, filetype, rom, m, needed_only);
+}
+
+std::vector<CkmameDB::FindResult> find_candidates_in_archives(filetype_t filetype, size_t detector_id, const FileData *rom, bool needed_only) {
+    auto candidates = ckmame_cache->find_file(filetype, detector_id, *rom);
+    if (candidates.empty()) {
         if (compute_all_detector_hashes(needed_only)) {
-            result = find_in_archives_xxx(filetype, detector_id, rom, m, needed_only);
+            candidates = ckmame_cache->find_file(filetype, detector_id, *rom);
         }
     }
-    
-    return result;
+    return candidates;
 }
 
 
-static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_id, const FileData *rom, Match *m, bool needed_only) {
-    auto results = ckmame_cache->find_file(filetype, detector_id, *rom);
-
-    for (const auto& result : results) {
-        if (needed_only && result.where != FILE_NEEDED) {
+find_result_t check_archive_candidates(const std::vector<CkmameDB::FindResult>& candidates, filetype_t filetype, const FileData *rom, Match *match, bool needed_only) {
+        for (const auto& candidate : candidates) {
+        if (needed_only && candidate.where != FILE_NEEDED) {
             continue;
         }
-        auto a= Archive::open(result.name, filetype, result.where, 0);
-        if (!a || result.index >= a->files.size()) {
+        auto a= Archive::open(candidate.name, filetype, candidate.where, 0);
+        if (!a || candidate.index >= a->files.size()) {
             return FIND_ERROR;
         }
 
-        auto &file = a->files[result.index];
+        auto &file = a->files[candidate.index];
 
-        if (result.detector_id == 0 && !file.hashes.has_all_types(rom->hashes)) {
-            a->file_ensure_hashes(result.index, rom->hashes.get_types() | db->hashtypes(filetype));
+        if (candidate.detector_id == 0 && !file.hashes.has_all_types(rom->hashes)) {
+            a->file_ensure_hashes(candidate.index, rom->hashes.get_types() | db->hashtypes(filetype));
 	}
 
-	if (file.broken || file.get_hashes(result.detector_id).compare(rom->hashes) != Hashes::MATCH) {
+	if (file.broken || file.get_hashes(candidate.detector_id).compare(rom->hashes) != Hashes::MATCH) {
 	    continue;
 	}
 
-	if (m) {
-            m->archive = a;
-            m->index = result.index;
-            m->where = result.where;
-	    m->quality = Match::COPIED;
+	if (match) {
+            match->archive = a;
+            match->index = candidate.index;
+            match->where = candidate.where;
+            match->quality = Match::COPIED;
 	}
 
 	return FIND_EXISTS;

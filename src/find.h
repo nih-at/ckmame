@@ -42,6 +42,8 @@ enum find_result { FIND_ERROR = -1, FIND_UNKNOWN, FIND_MISSING, FIND_EXISTS };
 
 typedef enum find_result find_result_t;
 
+std::vector<CkmameDB::FindResult> find_candidates_in_archives(filetype_t filetype, size_t detector_id, const FileData *rom, bool needed_only);
+find_result_t check_archive_candidates(const std::vector<CkmameDB::FindResult>& candidates, filetype_t filetype, const FileData *rom, Match *match, bool needed_only);
 
 find_result_t find_in_archives(filetype_t filetype, size_t detector_id, const FileData *r, Match *m, bool needed_only);
 find_result_t find_in_old(filetype_t filetype, const FileData *file, Archive *archive, Match *match);
