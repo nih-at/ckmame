@@ -39,7 +39,6 @@
 
 #include "CkmameDB.h"
 #include "Exception.h"
-#include "MemDB.h"
 #include "CkmameCache.h"
 #include "globals.h"
 
@@ -58,11 +57,6 @@ bool Archive::commit() {
 
             switch (change.status) {
                 case Change::DELETED:
-                    if (is_indexed()) {
-                        /* TODO: handle error (how?) */
-                        memdb->delete_file(contents.get(), index, is_writable());
-                    }
-
                     if (is_writable()) {
                         files.erase(files.begin() + index);
                         changes.erase(changes.begin() + index);
@@ -71,10 +65,6 @@ bool Archive::commit() {
 		break;
 
                 case Change::ADDED:
-                    if (is_indexed()) {
-                        /* TODO: handle error (how?) */
-                        memdb->insert_file(contents.get(), index);
-                    }
                     change.status = Change::EXISTS;
                     break;
 

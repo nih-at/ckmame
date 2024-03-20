@@ -53,7 +53,6 @@
 #include "Exception.h"
 #include "file_util.h"
 #include "globals.h"
-#include "MemDB.h"
 #include "RomDB.h"
 #include "CkmameCache.h"
 
@@ -578,10 +577,6 @@ void ArchiveContents::enter_in_maps(const ArchiveContentsPtr &contents) {
     if (!(contents->flags & ARCHIVE_FL_NOCACHE)) {
         contents->id = ++next_id;
         archive_by_id[contents->id] = contents;
-        
-        if (IS_EXTERNAL(contents->where)) {
-            memdb->insert_archive(contents.get());
-        }
     }
 
     archive_by_name[TypeAndName(contents->filetype, contents->name)] = contents;
@@ -680,11 +675,7 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
         return false;
     }
 
-    auto ok = Detector::compute_hashes(data, &file, detectors);
-    if (ok) {
-	memdb->update_file(contents.get(), index);
-    }
-    return ok;
+    return Detector::compute_hashes(data, &file, detectors);
 }
 
 

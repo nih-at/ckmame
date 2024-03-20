@@ -35,7 +35,6 @@
 
 #include "check_util.h"
 #include "DeleteList.h"
-#include "MemDB.h"
 #include "RomDB.h"
 #include "CkmameCache.h"
 
@@ -114,7 +113,6 @@ static find_result_t find_in_archives_xxx(filetype_t filetype, size_t detector_i
 
         if (result.detector_id == 0 && !file.hashes.has_all_types(rom->hashes)) {
             a->file_ensure_hashes(result.index, rom->hashes.get_types() | db->hashtypes(filetype));
-            memdb->update_file(a->contents.get(), result.index);
 	}
 
 	if (file.broken || file.get_hashes(result.detector_id).compare(rom->hashes) != Hashes::MATCH) {

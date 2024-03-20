@@ -156,14 +156,11 @@ DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(nullp
     auto needs_init = false;
     
     if (mode & DBH_TRUNCATE) {
-	/* do not delete special cases (like memdb) */
-	if (name[0] != ':') {
-            std::error_code error;
-            std::filesystem::remove(name, error);
-            if (error) {
-                throw Exception("can't truncate: %s", error.message().c_str());
-            }
-	}
+        std::error_code error;
+        std::filesystem::remove(name, error);
+        if (error) {
+            throw Exception("can't truncate: %s", error.message().c_str());
+        }
 	needs_init = true;
     }
 

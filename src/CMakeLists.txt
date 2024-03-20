@@ -47,7 +47,6 @@ set(COMMON_SOURCES
   Hashes.cc
   hashes_update.cc
   Match.cc
-  MemDB.cc
   OutputContext.cc
   OutputContextCm.cc
   OutputContextDb.cc

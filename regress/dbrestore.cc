@@ -45,7 +45,6 @@
 #include "CkmameDB.h"
 #include "DB.h"
 #include "Exception.h"
-#include "MemDB.h"
 #include "RomDB.h"
 #include "SharedFile.h"
 #include "util.h"
@@ -54,7 +53,6 @@
 enum DBType {
     DBTYPE_INVALID = -1,
     DBTYPE_CKMAMEDB,
-    DBTYPE_MEMDB,
     DBTYPE_ROMDB
 };
 
@@ -161,10 +159,6 @@ int main(int argc, char *argv[]) {
                     db = std::make_unique<CkmameDB>(db_fname, ".", FILE_NOWHERE);
                     break;
 
-                case DBTYPE_MEMDB:
-                    db = std::make_unique<MemDB>(db_fname);
-                    break;
-
                 case DBTYPE_ROMDB:
                     db = std::make_unique<RomDB>(db_fname, DBH_TRUNCATE | DBH_WRITE | DBH_CREATE);
                     break;
@@ -216,7 +210,6 @@ static int column_type(const std::string &name) {
 static const std::unordered_map<std::string, DBType> db_types = {
     { "ckmamedb", DBTYPE_CKMAMEDB },
     { "mamedb", DBTYPE_ROMDB },
-    { "memdb", DBTYPE_MEMDB }
 };
 
 static DBType db_type(const std::string &name) {
@@ -233,9 +226,6 @@ static int db_format(DBType type) {
     switch (type) {
         case DBTYPE_CKMAMEDB:
             return CkmameDB::format.id;
-
-        case DBTYPE_MEMDB:
-            return MemDB::format.id;
 
         case DBTYPE_ROMDB:
             return RomDB::format.id;

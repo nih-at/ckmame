@@ -48,7 +48,6 @@
 #include "Configuration.h"
 #include "Exception.h"
 #include "Fixdat.h"
-#include "MemDB.h"
 #include "ProgramName.h"
 #include "RomDB.h"
 #include "Stats.h"
@@ -268,8 +267,6 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
             }
         }
     }
-
-    MemDB::ensure();
 
     if (!ckmame_cache->superfluous_delete_list) {
         ckmame_cache->superfluous_delete_list = std::make_shared<DeleteList>();
