@@ -62,7 +62,7 @@ bool ParserDir::parse() {
                     auto dir_empty = true;
                     
                     {
-                        auto images = Archive::open(filepath, TYPE_DISK, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                        auto images = Archive::open(filepath, TYPE_DISK, FILE_NOWHERE, 0);
                     
                         if (images && !images->is_empty()) {
                             dir_empty = false;
@@ -74,7 +74,7 @@ bool ParserDir::parse() {
                     {
                         // TODO: Remove this ugly hack.
                         configuration.roms_zipped = false;
-                        auto files = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                        auto files = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, 0);
                         configuration.roms_zipped = true;
 
                         if (files && !files->is_empty()) {
@@ -86,7 +86,7 @@ bool ParserDir::parse() {
                                     continue;
                                 }
                                 else if (is_ziplike(file.name)) {
-                                    auto a = Archive::open(filepath / file.name, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                                    auto a = Archive::open(filepath / file.name, TYPE_ROM, FILE_NOWHERE, 0);
                                     if (a) {
                                         auto name = a->name;
                                         if (!runtest) {
@@ -113,7 +113,7 @@ bool ParserDir::parse() {
                     switch (name_type(filepath)) {
                         case NAME_ZIP: {
                             /* TODO: handle errors */
-                            auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                            auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, 0);
                             if (a) {
                                 auto name = a->name;
                                 if (!runtest) {
@@ -169,7 +169,7 @@ bool ParserDir::parse() {
             while ((filepath = dir.next()) != "") {
                 if (std::filesystem::is_directory(filepath)) {
                     /* TODO: handle errors */
-                    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, ARCHIVE_FL_NOCACHE);
+                    auto a = Archive::open(filepath, TYPE_ROM, FILE_NOWHERE, 0);
                     if (a) {
                         start_game(a->name, directory_name);
                         parse_archive(TYPE_ROM, a.get());

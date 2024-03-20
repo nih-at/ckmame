@@ -62,9 +62,7 @@
 
 bool Archive::read_only_mode = false;
 
-uint64_t ArchiveContents::next_id = 0;
-std::unordered_map<ArchiveContents::TypeAndName, std::weak_ptr<ArchiveContents>> ArchiveContents::archive_by_name;
-std::unordered_map<uint64_t, ArchiveContentsPtr> ArchiveContents::archive_by_id;
+std::unordered_map<ArchiveContents::TypeAndName, ArchiveContentsPtr> ArchiveContents::archive_by_name;
 
 ArchiveContents::ArchiveContents(ArchiveType type_, std::string name_, filetype_t filetype_, where_t where_, int flags_, std::string filename_extension_) :
     id(0),
@@ -130,16 +128,6 @@ ArchivePtr Archive::open(const ArchiveContentsPtr& contents, int flags) {
 
     contents->flags |= flags & (ARCHIVE_FL_MASK | ARCHIVE_FL_HASHTYPES_MASK);
     return archive;
-}
-
-ArchivePtr Archive::by_id(uint64_t id) {
-    auto contents = ArchiveContents::by_id(id);
-    
-    if (!contents) {
-        return nullptr;
-    }
-    
-    return open(contents);
 }
 
 
@@ -574,39 +562,23 @@ bool ArchiveContents::read_infos_from_cachedb(std::vector<File> *cached_files) {
 }
 
 void ArchiveContents::enter_in_maps(const ArchiveContentsPtr &contents) {
-    if (!(contents->flags & ARCHIVE_FL_NOCACHE)) {
-        contents->id = ++next_id;
-        archive_by_id[contents->id] = contents;
-    }
-
     archive_by_name[TypeAndName(contents->filetype, contents->name)] = contents;
 }
 
-ArchiveContentsPtr ArchiveContents::by_id(uint64_t id) {
-    auto it = archive_by_id.find(id);
+
+ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::string &name) {
+    auto it = archive_by_name.find(TypeAndName(filetype, name));
     
-    if (it == archive_by_id.end()) {
+    if (it == archive_by_name.end()) {
         return nullptr;
     }
     
     return it->second;
 }
 
-ArchiveContentsPtr ArchiveContents::by_name(filetype_t filetype, const std::string &name) {
-    auto it = archive_by_name.find(TypeAndName(filetype, name));
-    
-    if (it == archive_by_name.end() || it->second.expired()) {
-        return nullptr;
-    }
-    
-    return it->second.lock();
-}
-
 
 void ArchiveContents::clear_cache() {
     archive_by_name.clear();
-    archive_by_id.clear();
-    next_id = 0;
 }
 
 

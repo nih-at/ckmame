@@ -56,7 +56,6 @@ typedef std::shared_ptr<Archive> ArchivePtr;
 typedef std::shared_ptr<ArchiveContents> ArchiveContentsPtr;
 
 #define ARCHIVE_FL_CREATE 0x00100
-#define ARCHIVE_FL_NOCACHE 0x00800
 #define ARCHIVE_FL_RDONLY 0x01000
 #define ARCHIVE_FL_TOP_LEVEL_ONLY 0x02000
 
@@ -98,7 +97,6 @@ public:
     [[nodiscard]] int is_cache_up_to_date() const;
 
     static void enter_in_maps(const ArchiveContentsPtr& contents);
-    static ArchiveContentsPtr by_id(uint64_t id);
     static ArchiveContentsPtr by_name(filetype_t filetype, const std::string &name);
     static void clear_cache();
 
@@ -113,10 +111,7 @@ public:
     };
     
 private:
-    static uint64_t next_id;
-    static std::unordered_map<TypeAndName, std::weak_ptr<ArchiveContents>> archive_by_name;
-    static std::unordered_map<uint64_t, ArchiveContentsPtr> archive_by_id;
-
+    static std::unordered_map<TypeAndName, ArchiveContentsPtr> archive_by_name;
 };
 
 namespace std {
@@ -146,9 +141,7 @@ public:
         ZipSourcePtr source;
         std::string file;
     };
-    
-    static ArchivePtr by_id(uint64_t id);
-    
+
     static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
     static ArchivePtr open_toplevel(const std::string &name, filetype_t filetype, where_t where, int flags);
     
@@ -184,7 +177,6 @@ public:
     [[nodiscard]] bool is_empty() const;
     [[nodiscard]] bool is_file_deleted(uint64_t index) const { return changes[index].status == Change::DELETED; }
     [[nodiscard]] bool is_writable() const { return (contents->flags & ARCHIVE_FL_RDONLY) == 0; }
-    [[nodiscard]] bool is_indexed() const { return (contents->flags & ARCHIVE_FL_NOCACHE) == 0 && IS_EXTERNAL(where); }
     virtual bool check() { return true; } // This is done as part of the constructor, remove?
     virtual bool close_xxx() { return true; }
     virtual bool commit_xxx() = 0;
