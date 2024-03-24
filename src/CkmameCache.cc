@@ -38,9 +38,9 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Dir.h"
 #include "Exception.h"
+#include "Progress.h"
 #include "RomDB.h"
 #include "globals.h"
-#include "sighandle.h"
 #include "util.h"
 
 CkmameCachePtr ckmame_cache;
@@ -190,9 +190,8 @@ void CkmameCache::ensure_extra_maps() {
 	switch ((name_type(file))) {
 	case NAME_IMAGES:
 	case NAME_ZIP: {
-            if (siginfo_caught) {
-                print_info("currently scanning '" + file + "'");
-            }
+            Progress::set_message("currently scanning '" + file + "'");
+
 	    auto a = Archive::open(file, entry.filetype, FILE_SUPERFLUOUS, 0);
 	    // TODO: loose: add loose files in directory
 	    break;
@@ -204,9 +203,8 @@ void CkmameCache::ensure_extra_maps() {
 	}
     }
 
-    if (siginfo_caught) {
-        print_info("currently scanning '" + configuration.rom_directory + "'");
-    }
+    Progress::set_message("currently scanning '" + configuration.rom_directory + "'");
+
     auto filetype = configuration.roms_zipped ? TYPE_DISK : TYPE_ROM;
     auto a = Archive::open_toplevel(configuration.rom_directory, filetype, FILE_SUPERFLUOUS, 0);
 
@@ -275,9 +273,7 @@ bool CkmameCache::enter_dir_in_map_and_list_unzipped(const DeleteListPtr &list, 
 		continue;
 	    }
 	    if (std::filesystem::is_directory(filepath)) {
-                if (siginfo_caught) {
-                    print_info("currently scanning '" + filepath.string() + "'");
-                }
+                Progress::set_message("currently scanning '" + filepath.string() + "'");
 		auto a = Archive::open(filepath, TYPE_ROM, where, 0);
 		if (a) {
 		    list->add(a.get());
@@ -286,9 +282,7 @@ bool CkmameCache::enter_dir_in_map_and_list_unzipped(const DeleteListPtr &list, 
 	    }
 	}
 
-        if (siginfo_caught) {
-            print_info("currently scanning '" + directory_name + "'");
-        }
+        Progress::set_message("currently scanning '" + directory_name + "'");
 	auto a = Archive::open_toplevel(directory_name, TYPE_ROM, where, 0);
 	if (a) {
 	    list->add(a.get());
@@ -311,10 +305,8 @@ bool CkmameCache::enter_dir_in_map_and_list_zipped(const DeleteListPtr &list, co
 	    enter_file_in_map_and_list(list, filepath, where);
 	}
 
-        if (siginfo_caught) {
-            print_info("currently scanning '" + dir_name + "'");
-        }
-	auto a = Archive::open_toplevel(dir_name, TYPE_DISK, where, 0);
+        Progress::set_message("currently scanning '" + dir_name + "'");
+        auto a = Archive::open_toplevel(dir_name, TYPE_DISK, where, 0);
 	if (a) {
 	    list->add(a.get());
 	}
@@ -333,9 +325,7 @@ bool CkmameCache::enter_file_in_map_and_list(const DeleteListPtr &list, const st
     switch ((nt = name_type(name))) {
     case NAME_IMAGES:
     case NAME_ZIP: {
-        if (siginfo_caught) {
-            print_info("currently scanning '" + name + "'");
-        }
+        Progress::set_message("currently scanning '" + name + "'");
 	auto a = Archive::open(name, nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
 	if (a) {
 	    list->add(a.get());

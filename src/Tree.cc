@@ -40,7 +40,7 @@
 #include "Fixdat.h"
 #include "globals.h"
 #include "RomDB.h"
-#include "sighandle.h"
+#include "Progress.h"
 #include "warn.h"
 #include "CkmameCache.h"
 
@@ -117,9 +117,7 @@ void Tree::traverse() {
 void Tree::traverse_internal(GameArchives *ancestor_archives) {
     GameArchives archives[] = { GameArchives(), ancestor_archives[0], ancestor_archives[1] };
     
-    if (siginfo_caught) {
-        print_info("currently checking " + name);
-    }
+    Progress::set_message("currently checking " + name);
 
     auto flags = check ? ARCHIVE_FL_CREATE : 0;
     

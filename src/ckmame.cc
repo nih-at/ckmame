@@ -49,13 +49,13 @@
 #include "Exception.h"
 #include "Fixdat.h"
 #include "ProgramName.h"
+#include "Progress.h"
 #include "RomDB.h"
 #include "Stats.h"
 #include "Tree.h"
 #include "check_util.h"
 #include "cleanup.h"
 #include "globals.h"
-#include "sighandle.h"
 #include "superfluous.h"
 #include "update_romdb.h"
 #include "util.h"
@@ -68,7 +68,8 @@ std::filesystem::path rom_dir_normalized;
 std::vector<Commandline::Option> ckmame_options = {
     Commandline::Option("fix", 'F', "fix ROM set"),
     Commandline::Option("game-list", 'T', "file", "read games to check from file"),
-    Commandline::Option("only-if-database-updated", 'U', "if dats didn't change, exit; otherwise update database and run")
+    Commandline::Option("only-if-database-updated", 'U', "if dats didn't change, exit; otherwise update database and run"),
+    Commandline::Option("trace", "trace actions, useful for profiling")
 };
 
 std::unordered_set<std::string> ckmame_used_variables = {
@@ -121,6 +122,9 @@ void CkMame::global_setup(const ParsedCommandline &commandline) {
         }
         else if (option.name == "only-if-database-updated") {
             only_if_updated = true;
+        }
+        else if (option.name == "trace") {
+            Progress::trace = true;
         }
     }
 
@@ -277,9 +281,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
         ckmame_cache->ensure_extra_maps();
     }
 
-#ifdef SIGINFO
-    signal(SIGINFO, sighandle);
-#endif
+    Progress::enable();
 
     check_tree.traverse();
     check_tree.traverse(); /* handle rechecks */

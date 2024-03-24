@@ -60,11 +60,11 @@ set(COMMON_SOURCES
   ParserSourceFile.cc
   ParserSourceZip.cc
   ProgramName.cc
+  Progress.cc
   Result.cc
   Rom.cc
   RomDB.cc
   SharedFile.cc
-  sighandle.cc
   Stats.cc
   superfluous.cc
   TomlSchema.cc

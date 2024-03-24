@@ -40,7 +40,7 @@
 #include "Dir.h"
 #include "Exception.h"
 #include "fix.h"
-#include "sighandle.h"
+#include "Progress.h"
 #include "util.h"
 
 const std::string CkmameDB::db_name = ".ckmame.db";
@@ -445,17 +445,13 @@ void CkmameDB::refresh_unzipped() {
                 continue;
             }
             if (std::filesystem::is_directory(filepath)) {
-                if (siginfo_caught) {
-                    print_info("currently scanning '" + filepath.string() + "'");
-                }
+                Progress::set_message("currently scanning '" + filepath.string() + "'");
                 auto a = Archive::open(filepath, TYPE_ROM, where, 0);
                 a->close();
             }
         }
 
-        if (siginfo_caught) {
-            print_info("currently scanning '" + directory + "'");
-        }
+        Progress::set_message("currently scanning '" + directory + "'");
         auto a = Archive::open_toplevel(directory, TYPE_ROM, where, 0);
         if (a) {
             a->close();
@@ -475,9 +471,7 @@ void CkmameDB::refresh_zipped() {
             switch ((nt = name_type(filepath))) {
             case NAME_IMAGES:
             case NAME_ZIP: {
-                if (siginfo_caught) {
-                    print_info("currently scanning '" + filepath.string() + "'");
-                }
+                Progress::set_message("currently scanning '" + filepath.string() + "'");
                 auto a = Archive::open(filepath, nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
                 if (a) {
                     a->close();
@@ -492,9 +486,7 @@ void CkmameDB::refresh_zipped() {
             }
         }
 
-        if (siginfo_caught) {
-            print_info("currently scanning '" + directory + "'");
-        }
+        Progress::set_message("currently scanning '" + directory + "'");
         auto a = Archive::open_toplevel(directory, TYPE_DISK, where, 0);
         if (a) {
             a->close();

@@ -48,13 +48,14 @@
 #include "ArchiveLibarchive.h"
 #endif
 #include "ArchiveZip.h"
-#include "Detector.h"
+#include "CkmameCache.h"
 #include "CkmameDB.h"
+#include "Detector.h"
 #include "Exception.h"
+#include "Progress.h"
+#include "RomDB.h"
 #include "file_util.h"
 #include "globals.h"
-#include "RomDB.h"
-#include "CkmameCache.h"
 
 #define BUFSIZE 8192
 
@@ -469,6 +470,7 @@ Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length,
 
             hu.update(buf, n);
             length -= n;
+            Progress::update();
         }
 
         hu.end();
