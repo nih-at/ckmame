@@ -61,6 +61,7 @@ void Progress::sig_handler(int signal) {
 }
 void Progress::print_message() {
     if (current_message.empty()) {
+        std::cout << "no progress available" << std::endl;
         return;
     }
 

@@ -59,16 +59,16 @@ bool ArchiveImages::read_infos_xxx() {
     if (!configuration.roms_zipped) {
         return true;
     }
-    
+
     try {
         Dir dir(name, (contents->flags & ARCHIVE_FL_TOP_LEVEL_ONLY) == 0);
         std::filesystem::path filepath;
-        
+
         while ((filepath = dir.next()) != "") {
             if (name == filepath || name_type(filepath) == NAME_IGNORE || filepath.extension() != ".chd" || !std::filesystem::is_regular_file(filepath)) {
                 continue;
             }
-            
+
             files.emplace_back();
             auto &f = files[files.size() - 1];
             auto filename = filepath.string();
@@ -77,7 +77,7 @@ bool ArchiveImages::read_infos_xxx() {
 
             try {
                 struct stat sb;
-                
+
                 if (stat(filepath.c_str(), &sb) != 0) {
                     throw Exception("%s", strerror(errno));
                 }
@@ -87,7 +87,7 @@ bool ArchiveImages::read_infos_xxx() {
                 f.mtime = sb.st_mtime;
 
                 Chd chd(filepath);
-                
+
                 f.hashes.size = chd.size();
                 f.hashes.set_hashes(chd.hashes);
             }
@@ -100,6 +100,6 @@ bool ArchiveImages::read_infos_xxx() {
     catch (...) {
         return false;
     }
-    
+
     return true;
 }

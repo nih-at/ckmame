@@ -38,12 +38,11 @@
 
 #include "Detector.h"
 #include "Exception.h"
+#include "Progress.h"
 #include "util.h"
 #include "zip_util.h"
 #include "globals.h"
 
-
-#define BUFSIZE 8192
 
 ArchiveZip::~ArchiveZip() {
     try {
@@ -127,6 +126,8 @@ bool ArchiveZip::commit_xxx() {
     for (size_t index = 0; index < files.size(); index++) {
         auto &file = files[index];
         auto &change = changes[index];
+
+        Progress::update();
 
         if (change.status == Change::DELETED) {
             if (zip_delete(za, index) < 0) {
@@ -274,6 +275,7 @@ bool ArchiveZip::read_infos_xxx() {
     auto n = static_cast<zip_uint64_t>(zip_get_num_entries(za, 0));
 
     for (zip_uint64_t i = 0; i < n; i++) {
+        Progress::update();
 	if (zip_stat_index(za, i, 0, &zsb) == -1) {
 	    output.archive_error("error stat()ing index %" PRIu64 ": %s", i, zip_strerror(za));
 	    continue;

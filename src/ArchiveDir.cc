@@ -36,6 +36,7 @@
 
 #include "Dir.h"
 #include "Exception.h"
+#include "Progress.h"
 #include "file_util.h"
 #include "fix_util.h"
 #include "util.h"
@@ -52,9 +53,9 @@
 
 bool ArchiveDir::commit_xxx() {
     output.set_error_archive(name);
-    
+
     std::filesystem::path added_directory;
-    
+
     try {
         added_directory = make_unique_path(std::filesystem::path(name) / ".added");
     }
@@ -64,12 +65,12 @@ bool ArchiveDir::commit_xxx() {
     }
 
     std::unordered_map<std::string, std::string> added_names;
-    
+
     try {
         for (size_t index = 0; index < files.size(); index++) {
             auto &file = files[index];
             auto &change = changes[index];
-            
+
             if (!change.file.empty()) {
                 if (!ensure_dir(added_directory, false)) {
                     throw Exception();
@@ -96,12 +97,12 @@ bool ArchiveDir::commit_xxx() {
     }
 
     Commit commit(this);
-        
+
     try {
         for (size_t index = 0; index < files.size(); index++) {
             auto &file = files[index];
             auto &change = changes[index];
-            
+
             if (change.status == Change::DELETED) {
                 commit.delete_file(get_original_filename(index));
             }
@@ -126,13 +127,13 @@ bool ArchiveDir::commit_xxx() {
         std::error_code ec;
         std::filesystem::remove(name, ec);
     }
-    
+
     return true;
 }
 
 void ArchiveDir::commit_cleanup() {
     auto path = std::filesystem::path(name);
-    
+
     for (auto &file : files) {
         file.mtime = get_mtime(path / file.filename());
     }
@@ -147,11 +148,12 @@ void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &des
     }
 
     uint8_t buffer[BUFSIZ];
-            
+
     source->open();
 
     uint64_t n;
     while ((n = source->read(buffer, sizeof(buffer))) > 0) {
+        Progress::update();
         if (fwrite(buffer, 1, n, fout.get()) != n) {
             output.archive_error("can't write '%s': %s", destination.c_str(), strerror(errno));
             source->close();
@@ -165,7 +167,7 @@ void ArchiveDir::copy_source(ZipSource *source, const std::filesystem::path &des
 
 void ArchiveDir::Commit::delete_file(const std::filesystem::path &file) {
     auto destination = make_unique_path(deleted_directory / file.filename());
-    
+
     ensure_dir(deleted_directory, false);
     rename(get_filename(file), destination);
 }
@@ -188,10 +190,10 @@ void ArchiveDir::Commit::rename(const std::filesystem::path &source, const std::
 
 void ArchiveDir::Commit::undo() {
     std::error_code ec;
-    
+
     for (auto it = undos.rbegin(); it != undos.rend(); it++) {
         auto &operation = *it;
-        
+
         switch (operation.type) {
             case Operation::DELETE:
                 std::filesystem::remove(operation.new_name, ec);
@@ -201,7 +203,7 @@ void ArchiveDir::Commit::undo() {
                 break;
         }
     }
-    
+
     std::filesystem::remove(deleted_directory, ec);
 }
 
@@ -217,11 +219,11 @@ void ArchiveDir::Commit::done() {
 
 std::filesystem::path ArchiveDir::Commit::get_filename(const std::filesystem::path &filename) {
     auto it = renamed_files.find(filename);
-    
+
     if (it != renamed_files.end()) {
         return it->second;
     }
-    
+
     return filename;
 }
 
@@ -257,7 +259,7 @@ bool ArchiveDir::read_infos_xxx() {
 
              files.emplace_back();
              auto &f = files[files.size() - 1];
-             
+
              f.name = filepath.string().substr(name.size() + 1);
              f.hashes.size = std::filesystem::file_size(filepath);
              // auto ftime = std::filesystem::last_write_time(filepath);
@@ -308,7 +310,7 @@ ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optiona
     zip_error_t error;
     zip_error_init(&error);
     zip_source_t *source = zip_source_file_create(filename.c_str(), start, length.has_value() ? static_cast<int64_t>(length.value()) : -1, &error);
-    
+
     if (source == nullptr) {
         throw Exception("can't open '%s': %s", filename.c_str(), zip_error_strerror(&error));
     }
@@ -318,11 +320,11 @@ ZipSourcePtr ArchiveDir::get_source(uint64_t index, uint64_t start, std::optiona
 
 time_t ArchiveDir::get_mtime(const std::string &file) {
     struct stat st{};
-    
+
     if (stat(file.c_str(), &st) < 0) {
         return 0;
     }
-    
+
     return st.st_mtime;
 }
 
