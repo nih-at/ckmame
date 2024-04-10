@@ -68,4 +68,6 @@ bool Match::quality_is_usable(Match::Quality quality) {
     case OLD:
         return true;
     }
+
+    return false; // TODO: throw?
 }

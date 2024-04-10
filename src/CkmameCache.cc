@@ -404,7 +404,7 @@ bool CkmameCache::compute_all_detector_hashes(bool needed_only, const std::unord
     auto got_new_hashes = false;
 
     for (auto& cache_directory : cache_directories) {
-        if (!cache_directory.db || needed_only && cache_directory.where != FILE_NEEDED) {
+        if (!cache_directory.db || (needed_only && cache_directory.where != FILE_NEEDED)) {
             continue;
         }
         if (cache_directory.db->compute_detector_hashes(detectors)) {
