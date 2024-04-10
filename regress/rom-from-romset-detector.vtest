@@ -6,11 +6,10 @@ arguments -D mamedb-skipped.db -Fvc skipped
 file roms/skipped-2.zip 2-8c-ok.zip
 file roms/skipped.zip {} 1-8-ok.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
-hashes skipped-2.zip 0c.rom cheap
+hashes skipped.zip * cheap
+hashes skipped-2.zip * cheap
 detector-hashes skip-some-bytes 20070429 skipped.zip *
-detector-hashes skip-some-bytes 20070429 skipped-2.zip 08.rom
-hashes skipped.zip 08.rom cheap
-hashes skipped-2.zip 08.rom cheap
+detector-hashes skip-some-bytes 20070429 skipped-2.zip *
 end-of-inline-data
 stdout
 In game skipped:

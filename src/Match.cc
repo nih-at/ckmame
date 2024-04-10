@@ -52,3 +52,20 @@ std::string Match::game() const {
         return archive->name;
     }
 }
+bool Match::quality_is_usable(Match::Quality quality) {
+    switch (quality) {
+    case MISSING:
+    case UNCHECKED:
+    case NO_HASH:
+        return false;
+
+    case LONG:
+    case NAME_ERROR:
+    case COPIED:
+    case IN_ZIP:
+    case OK:
+    case OK_AND_OLD:
+    case OLD:
+        return true;
+    }
+}

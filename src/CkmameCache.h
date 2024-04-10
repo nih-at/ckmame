@@ -53,6 +53,7 @@ class CkmameCache {
     void register_directory(const std::string &directory, where_t where);
 
     std::vector<CkmameDB::FindResult> find_file(filetype_t filetype, size_t detector_id, const FileData& rom);
+    bool compute_all_detector_hashes(bool needed_only, const std::unordered_map<size_t, DetectorPtr>& detectors);
 
     void used(Archive *a, size_t idx);
 

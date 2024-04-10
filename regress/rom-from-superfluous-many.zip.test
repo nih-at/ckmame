@@ -34,6 +34,7 @@ file roms/disk-nogood/108-nogood.chd 108-5.chd
 file roms/diskgood-romnogood/108-5.chd 108-5.chd
 file roms/disk-same/108-5.chd {} 108-5.chd
 file roms/.ckmame.db {} <inline.ckmamedb>
+hashes 1-8.zip 08.rom cheap
 hashes baddump.zip bad.rom cheap
 end-of-inline-data
 stdout
@@ -49,19 +50,19 @@ rom  08.rom        size       8  crc 3656897d: correct
 In game 1-8a:
 rom  08.rom        size       8  crc 12345678: missing
 In game 2-44:
-rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
-rom  04-2.rom      size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
-add 'roms/1-4.zip/04.rom' as '04.rom'
-add 'roms/1-4.zip/04.rom' as '04-2.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
+rom  04-2.rom      size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04-2.rom'
 In game 2-48:
-rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
-rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
-add 'roms/1-4.zip/04.rom' as '04.rom'
-add 'roms/1-8.zip/08.rom' as '08.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
+rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8-ok.zip/08.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
+add 'roms/1-8-ok.zip/08.rom' as '08.rom'
 In game 2-4a:
-rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
 rom  0a.rom        size      10  crc 0b4a4cde: is in 'roms/1-a-ok.zip/0a.rom'
-add 'roms/1-4.zip/04.rom' as '04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
 add 'roms/1-a-ok.zip/0a.rom' as '0a.rom'
 In game baddump:
 rom  bad.rom       size       3  bad dump    : is in 'roms/baddump-ok.zip/bad.rom'
@@ -70,34 +71,34 @@ In game deadbeef:
 rom  deadbeef      size       8  crc deadbeef: missing
 In game deadbeefchild:
 rom  deadbeef      size       8  crc deadbeef: missing
-rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
-add 'roms/1-4.zip/04.rom' as '04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
 In game deadclonedbeef:
 rom  deadclonedbeef  size       8  crc deadbeef: missing
 In game dir-in-rom-name:
-rom  some/path/to/file.rom  size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
-add 'roms/1-4.zip/04.rom' as 'some/path/to/file.rom'
+rom  some/path/to/file.rom  size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
+add 'roms/1-4-ok.zip/04.rom' as 'some/path/to/file.rom'
 In game disk:
-rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: correct
-add 'roms/1-4.zip/04.rom' as '04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
 In game diskchild:
 rom  04.rom        size       4  crc d87f7e0c: correct
 disk 108-5c        sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: best bad dump
 In game disk-2:
-rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
 disk 108-2         sha1 9fffa910f0ca90f61e1ab3fab0d1da225be992ae: missing
-add 'roms/1-4.zip/04.rom' as '04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
 In game disk-3:
 disk 512v5         sha1 cf37d50e886519c332dcfe84440f1f085b98c634: missing
 In game disk-nogood:
-rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
 disk 108-nogood    no good dump              : exists
-add 'roms/1-4.zip/04.rom' as '04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
 In game disk-nogood2:
-rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
+rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8-ok.zip/08.rom'
 disk 208-7         no good dump              : missing
-add 'roms/1-8.zip/08.rom' as '08.rom'
+add 'roms/1-8-ok.zip/08.rom' as '08.rom'
 In game disk-same:
 rom  16.rom        size      16  crc 12345678: missing
 disk 108-5         sha1 7570a907e20a51cbf6193ec6779b82d1967bb609: is in 'roms/disk/108-5.chd'
@@ -142,23 +143,23 @@ In game nogood:
 rom  04.rom        size       4  no good dump: missing
 In game nogood-2:
 rom  04.rom        size       4  no good dump: missing
-rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
-add 'roms/1-8.zip/08.rom' as '08.rom'
+rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8-ok.zip/08.rom'
+add 'roms/1-8-ok.zip/08.rom' as '08.rom'
 In game parent-4:
-rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
-add 'roms/1-4.zip/04.rom' as '04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
 In game clone-8:
 rom  04.rom        size       4  crc d87f7e0c: correct
-rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8.zip/08.rom'
-add 'roms/1-8.zip/08.rom' as '08.rom'
+rom  08.rom        size       8  crc 3656897d: is in 'roms/1-8-ok.zip/08.rom'
+add 'roms/1-8-ok.zip/08.rom' as '08.rom'
 In game zero:
 rom  zero          size       0  crc 00000000: missing
 create empty file 'zero'
 In game zero-4:
 rom  zero          size       0  crc 00000000: missing
-rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4.zip/04.rom'
+rom  04.rom        size       4  crc d87f7e0c: is in 'roms/1-4-ok.zip/04.rom'
 create empty file 'zero'
-add 'roms/1-4.zip/04.rom' as '04.rom'
+add 'roms/1-4-ok.zip/04.rom' as '04.rom'
 In archive roms/1-4-ok.zip:
 delete used file '04.rom'
 remove empty archive

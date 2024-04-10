@@ -62,15 +62,20 @@ public:
     ArchivePtr archive;
     uint64_t index;
 
+    std::vector<CkmameDB::FindResult> candidates;
+
     /* for where == old */
     std::string old_game;
     std::string old_file;
 
     uint64_t offset; /* offset of correct part if quality == LONG */
-    
-    std::string game() const;
-    bool source_is_old() const { return where == FILE_OLD; }
-    std::string file() const;
+
+    [[nodiscard]] bool could_be_fixable() const {return quality_is_usable(quality) || !candidates.empty();}
+    [[nodiscard]] std::string game() const;
+    [[nodiscard]] bool source_is_old() const { return where == FILE_OLD; }
+    [[nodiscard]] std::string file() const;
+
+    static bool quality_is_usable(Quality quality);
 };
 
 #endif // HAD_MATCH_H

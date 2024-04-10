@@ -394,3 +394,23 @@ std::vector<CkmameDB::FindResult> CkmameCache::find_file(filetype_t filetype, si
 //    printf("searching for file '%s', got %lu results\n", rom.name.c_str(), results.size());
     return results;
 }
+
+
+bool CkmameCache::compute_all_detector_hashes(bool needed_only, const std::unordered_map<size_t, DetectorPtr>& detectors) {
+    if (detectors.empty()) {
+        return false;
+    }
+
+    auto got_new_hashes = false;
+
+    for (auto& cache_directory : cache_directories) {
+        if (!cache_directory.db || needed_only && cache_directory.where != FILE_NEEDED) {
+            continue;
+        }
+        if (cache_directory.db->compute_detector_hashes(detectors)) {
+            got_new_hashes = true;
+        }
+    }
+
+    return got_new_hashes;
+}

@@ -189,7 +189,7 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
         switch (match.quality) {
         case Match::UNCHECKED:
             if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) || configuration.report_detailed) {
-                warn_game_file(ft, &rom, "not in archive");
+                warn_game_file(ft, &rom, "not checked");
             }
             break;
 

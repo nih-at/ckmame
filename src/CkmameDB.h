@@ -40,6 +40,7 @@
 
 #include "ArchiveLocation.h"
 #include "DB.h"
+#include "Detector.h"
 #include "DetectorCollection.h"
 #include "File.h"
 #include "FileLocation.h"
@@ -96,6 +97,7 @@ public:
     void write_archive(ArchiveContents *archive);
 
     void find_file(filetype_t filetype, size_t detector_id, const FileData& file, std::vector<FindResult> &results);
+    bool compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr>& detectors);
     void refresh();
     
     void seterr();

@@ -42,46 +42,6 @@ static find_result_t check_match_old(filetype_t filetype, size_t detector_id, co
 static find_result_t check_match_romset(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *wanted_file, const FileData *candidate, Match *match);
 static find_result_t find_in_db(RomDB *rdb, filetype_t filetype, size_t detector_id, const FileData *wanted_file, Archive *archive, const std::string &skip_game, const std::string &skip_file, Match *match, find_result_t (*)(filetype_t filetype, size_t detector_id, const std::string &game_name, const FileData *wanted_file, const FileData *candidate, Match *match));
 
-static bool compute_all_detector_hashes(DeleteListPtr list);
-
-bool compute_all_detector_hashes(bool needed_only) { // returns true if new hashes were computed
-    if (db->detectors.empty()) {
-        return false;
-    }
-    
-    auto got_new_hashes = false;
-    
-    if (compute_all_detector_hashes(ckmame_cache->needed_delete_list)) {
-        got_new_hashes = true;
-    }
-
-    if (!needed_only) {
-        if (compute_all_detector_hashes(ckmame_cache->superfluous_delete_list)) {
-            got_new_hashes = true;
-        }
-        if (compute_all_detector_hashes(ckmame_cache->extra_delete_list)) {
-            got_new_hashes = true;
-        }
-    }
-    
-    return got_new_hashes;
-}
-
-static bool compute_all_detector_hashes(DeleteListPtr list) {
-    auto got_new_hashes = false;
-    for (const auto &entry : list->archives) {
-        auto contents = ArchiveContents::by_name(entry.filetype, entry.name);
-        if (contents == nullptr || contents->has_all_detector_hashes(db->detectors)) {
-            continue;
-        }
-        auto archive = Archive::open(contents);
-        if (archive->compute_detector_hashes(db->detectors)) {
-            got_new_hashes = true;
-        }
-    }
-    return got_new_hashes;
-}
-
 
 find_result_t find_in_archives(filetype_t filetype, size_t detector_id, const FileData *rom, Match *m, bool needed_only) {
     auto candidates = find_candidates_in_archives(filetype, detector_id, rom, needed_only);
@@ -92,7 +52,7 @@ find_result_t find_in_archives(filetype_t filetype, size_t detector_id, const Fi
 std::vector<CkmameDB::FindResult> find_candidates_in_archives(filetype_t filetype, size_t detector_id, const FileData *rom, bool needed_only) {
     auto candidates = ckmame_cache->find_file(filetype, detector_id, *rom);
     if (candidates.empty()) {
-        if (compute_all_detector_hashes(needed_only)) {
+        if (ckmame_cache->compute_all_detector_hashes(needed_only, db->detectors)) {
             candidates = ckmame_cache->find_file(filetype, detector_id, *rom);
         }
     }

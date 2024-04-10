@@ -107,25 +107,37 @@ void check_game_files(Game *game, filetype_t filetype, GameArchives *archives, R
         }
 
         if (rom.where == FILE_INGAME && match->quality == Match::MISSING && rom.hashes.size > 0 && !rom.hashes.empty() && rom.status != Rom::NO_DUMP) {
-            if (configuration.complete_games_only && missing_roms) {
+            if (configuration.complete_games_only) {
                 match->quality = Match::UNCHECKED;
-                continue;
-            }
-
-            /* search for matching file in other games (via db) */
-            if (find_in_romset(filetype, detector_id, &rom, nullptr, game->name, "", match) == FIND_EXISTS) {
-                continue;
+                if (missing_roms) {
+                    continue;
+                }
             }
 
             /* search in needed, superfluous and update sets */
             ckmame_cache->ensure_needed_maps();
 	    ckmame_cache->ensure_extra_maps();
 
-            if (find_in_archives(filetype, detector_id, &rom, match, false) == FIND_EXISTS) {
-                continue;
+            match->candidates = find_candidates_in_archives(filetype, detector_id, &rom, false);
+            if (match->candidates.empty()) {
+                match->quality = Match::MISSING;
+                missing_roms = true;
             }
+        }
+    }
 
-            missing_roms = true;
+    if (!configuration.complete_games_only || !missing_roms) {
+        for (size_t i = 0; i < game->files[filetype].size(); i++) {
+            const auto& rom = game->files[filetype][i];
+            auto& match = res->game_files[filetype][i];
+
+            if (!match.candidates.empty()) {
+                if (check_archive_candidates(match.candidates, filetype, &rom, &match, false) != FIND_EXISTS) {
+                    if (configuration.complete_games_only) {
+                        break;
+                    }
+                }
+            }
         }
     }
     

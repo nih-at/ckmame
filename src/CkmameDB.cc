@@ -118,7 +118,7 @@ std::unordered_map<CkmameDB::Statement, std::string> CkmameDB::queries = {
 };
 
 std::unordered_map<CkmameDB::ParameterizedStatement, std::string> CkmameDB::parameterized_queries = {
-    { QUERY_FIND_FILE, "select archive.name as archive_name, file_idx, detector_id from archive, file f where archive.file_type = :file_type and archive.archive_id = f.archive_id and (f.detector_id = 0 or f.detector_id = :detector_id) @SIZE@ @HASH@" }
+    { QUERY_FIND_FILE, "select archive.name as archive_name, file_idx, detector_id from archive, file f where archive.file_type = :file_type and archive.archive_id = f.archive_id and (f.detector_id = 0 or f.detector_id = :detector_id) @SIZE@ @HASH@ order by archive_name" }
 };
 
 CkmameDB::CkmameDB(const std::string& directory, where_t where) : CkmameDB(make_db_file_name(directory, db_name, configuration.extra_directory_use_central_cache_directory(directory)), directory, where) {
@@ -494,4 +494,25 @@ void CkmameDB::refresh_zipped() {
     }
     catch (...) {
     }
+}
+
+bool CkmameDB::compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr>& detectors) {
+    if (detectors.empty()) {
+        return false;
+    }
+
+    auto got_new_hashes = false;
+
+    for (const auto& location: list_archives()) {
+        auto contents = ArchiveContents::by_name(location.filetype, directory + "/" + location.name);
+        if (contents == nullptr || contents->has_all_detector_hashes(detectors)) {
+            continue;
+        }
+        auto archive = Archive::open(contents);
+        if (archive->compute_detector_hashes(detectors)) {
+            got_new_hashes = true;
+        }
+    }
+
+    return got_new_hashes;
 }

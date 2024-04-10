@@ -29,8 +29,8 @@ status_names = {
 }
 
 class Index:
-    def __init__(self):
-        self.next_index = 0
+    def __init__(self, start_index = 0):
+        self.next_index = start_index
         self.indices = {}
         self.names = {}
 
@@ -66,7 +66,7 @@ class Index:
         return None
 
 class File:
-    def __init__(self, name, index=0, mtime="null", status=0, size="-1", crc="<null>", md5="<null>", sha1="<null>", detector_id=0):
+    def __init__(self, name, index=0, mtime="<null>", status=0, size="-1", crc="<null>", md5="<null>", sha1="<null>", detector_id=0):
         self.name = name
         self.index = index
         self.status = status
@@ -174,13 +174,13 @@ class Detector:
 class CkmameDB:
     def __init__(self):
         self.archives = {}
-        self.archvie_index = Index()
+        self.archive_index = Index()
         self.detectors = {}
-        self.detector_index = Index()
+        self.detector_index = Index(1)
 
     def add_archive(self, archive):
         self.archives[archive.name] = archive
-        self.archvie_index.add(archive.name, archive.id)
+        self.archive_index.add(archive.name, archive.id)
 
     def add_detector(self, detector):
         key = detector.name + "|" + detector.version
@@ -188,16 +188,16 @@ class CkmameDB:
         self.detector_index.add(key, detector.id)
 
     def get_archive_by_id(self, id):
-        if name := self.archvie_index.get_existing_name(id):
+        if name := self.archive_index.get_existing_name(id):
             return self.archives[name]
         else:
             return None
 
     def get_archive_id(self, name):
-        return self.archvie_index.get_index(name)
+        return self.archive_index.get_index(name)
 
     def get_detector_id(self, key):
-        return self.detector_index.get_existing_index(key)
+        return self.detector_index.get_index(key)
 
     def dump(self):
         lines = []
@@ -363,7 +363,7 @@ class CkmameDBComparator:
             # TODO: error if command.exit_code != 0
 
         db = CkmameDB()
-        db.archvie_index.add_archives(self.got_db.archives.values())
+        db.archive_index.add_archives(self.got_db.archives.values())
         archive = None
         prefix = ""
 
@@ -447,7 +447,7 @@ class CkmameDBComparator:
                         db.add_detector(Detector(detector_id, name, version))
                     else:
                         detector_id = detector_ids[detector_hash]
-                    detector_file = File("", file.index)
+                    detector_file = File("", file.index, size="<???>", crc="<???>", md5="<???>", sha1="<???>")
                     detector_file.detector_id = detector_id
                     detector_file.status = 0
                     if got_archive is not None:
