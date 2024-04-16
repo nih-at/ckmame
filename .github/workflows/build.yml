@@ -11,7 +11,7 @@ jobs:
         os: [macos-latest] #, ubuntu-latest (libzip too old), windows-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: install dependencies (macOS)
         if: ${{ runner.os == 'macOS' }}
