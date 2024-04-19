@@ -38,6 +38,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -125,6 +126,11 @@ struct hash<ArchiveContents::TypeAndName> {
 
 class Archive {
 public:
+    enum CacheChange {
+        NONE,
+        HASHES_ONLY,
+        FILES
+    };
     class Change {
     public:
         enum Status {
@@ -140,6 +146,7 @@ public:
         std::string source_name;
         ZipSourcePtr source;
         std::string file;
+        std::unordered_set<size_t> updated_hashes;
     };
 
     static ArchivePtr open(const std::string &name, filetype_t filetype, where_t where, int flags);
@@ -190,6 +197,8 @@ public:
     virtual std::string get_full_filename(uint64_t index) { return ""; }
     virtual std::string get_original_filename(uint64_t index) { return ""; }
 
+    void set_cache_changed(CacheChange new_changed);
+
     ArchiveContentsPtr contents;
     std::vector<File> &files;
     std::string &name;
@@ -197,7 +206,7 @@ public:
     const where_t where;
     std::vector<Change> changes;
 
-    bool cache_changed;
+    CacheChange cache_changed{NONE};
     bool modified;
     
 protected:

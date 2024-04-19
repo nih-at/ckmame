@@ -330,6 +330,7 @@ bool ArchiveLibarchive::read_infos_xxx() {
         r.name = archive_entry_pathname_utf8(entry);
         r.broken = false;
         files.push_back(r);
+        changes.emplace_back();
 
         header_read = true;
         file_ensure_hashes(current_index, Hashes::TYPE_ALL);

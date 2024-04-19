@@ -231,13 +231,22 @@ bool Detector::Test::execute(const std::vector<uint8_t> &data) const {
 }
 
 
-bool Detector::compute_hashes(const std::vector<uint8_t> &data, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors) {
+bool Detector::compute_hashes(const std::vector<uint8_t> &data, File *file, const std::unordered_map<size_t, DetectorPtr> &detectors, std::unordered_set<size_t>* changed) {
     if (file->get_size(0) > MAX_DETECTOR_FILE_SIZE) {
         return false;
     }
     
-    for (const auto &pair : detectors) {
-        file->detector_hashes[pair.first] = pair.second->execute(data);
+    for (const auto &[id, detector] : detectors) {
+        auto it = file->detector_hashes.find(id);
+
+        if (it != file->detector_hashes.end() && !it->second.empty()) {
+            continue;
+        }
+
+        file->detector_hashes[id] = detector->execute(data);
+        if (changed) {
+            changed->insert(id);
+        }
     }
     
     return true;

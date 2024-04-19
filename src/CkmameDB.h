@@ -74,7 +74,8 @@ public:
         QUERY_ARCHIVE_ID,
         QUERY_ARCHIVE_LAST_CHANGE,
         QUERY_FILE,
-        QUERY_HAS_ARCHIVES
+        QUERY_HAS_ARCHIVES,
+        UPDATE_FILE_HASHES
     };
     enum ParameterizedStatement {
         QUERY_FIND_FILE
@@ -95,6 +96,8 @@ public:
     std::vector<ArchiveLocation> list_archives();
     int read_files(int archive_id, std::vector<File> *files);
     void write_archive(ArchiveContents *archive);
+    void update_file_hashes(int archive_id, size_t file_id, const Hashes& hashes);
+    void insert_file_detector_hashes(int archive_id, size_t file_id, size_t detector_id, const Hashes& hashes);
 
     void find_file(filetype_t filetype, size_t detector_id, const FileData& file, std::vector<FindResult> &results);
     bool compute_detector_hashes(const std::unordered_map<size_t, DetectorPtr>& detectors);

@@ -46,7 +46,7 @@ bool Archive::commit() {
     if (modified) {
         output.set_error_archive(name);
 
-        cache_changed = true;
+        set_cache_changed(FILES);
 
         if (!commit_xxx()) {
             return false;
@@ -86,7 +86,7 @@ bool Archive::commit() {
 }
 
 void Archive::update_cache() {
-    if (!cache_changed) {
+    if (cache_changed == NONE) {
         return;
     }
 
@@ -109,14 +109,38 @@ void Archive::update_cache() {
         }
         else {
             get_last_update();
-            
-            try {
-                contents->cache_db->write_archive(contents.get());
+
+            // TODO: check if size/mtime changed
+
+            if (contents->cache_id != 0 && cache_changed == HASHES_ONLY) {
+                for (size_t i = 0; i < changes.size(); i++) {
+                    auto& change = changes[i];
+                    const auto& file = files[i];
+
+                    if (change.updated_hashes.empty()) {
+                        continue;
+                    }
+
+                    for (auto detector_id: change.updated_hashes) {
+                        if (detector_id == 0) {
+                            contents->cache_db->update_file_hashes(contents->cache_id, i, file.hashes);
+                        }
+                        else {
+                            contents->cache_db->insert_file_detector_hashes(contents->cache_id, i, detector_id, file.get_hashes(detector_id));
+                        }
+                    }
+                    change.updated_hashes.clear();
+                }
             }
-            catch (Exception &exception) {
-                contents->cache_db->seterr();
-                output.error_database("%s: error writing to %s", name.c_str(), CkmameDB::db_name.c_str());
-                contents->cache_id = 0;
+            else {
+                try {
+                    contents->cache_db->write_archive(contents.get());
+                }
+                catch (Exception& exception) {
+                    contents->cache_db->seterr();
+                    output.error_database("%s: error writing to %s", name.c_str(), CkmameDB::db_name.c_str());
+                    contents->cache_id = 0;
+                }
             }
         }
     }
@@ -124,7 +148,7 @@ void Archive::update_cache() {
         contents->cache_id = 0;
     }
 
-    cache_changed = false;
+    set_cache_changed(NONE);
 }
 
 
@@ -260,7 +284,7 @@ bool Archive::file_rename(uint64_t index, const std::string &filename) {
 	return false;
     }
     if (changes[index].status != Change::EXISTS) {
-	output.archive_error("cannot copy broken/added/deleted file");
+	output.archive_error("cannot rename broken/added/deleted file");
 	return false;
     }
 

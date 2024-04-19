@@ -248,7 +248,7 @@ void ArchiveZip::commit_cleanup() {
 
 
 void ArchiveZip::get_last_update() {
-    if (cache_changed) {
+    if (cache_changed != NONE) {
         close_xxx();
     }
     struct stat st;

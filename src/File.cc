@@ -37,7 +37,7 @@
 Hashes File::empty_hashes;
 
 bool File::has_all_hashes(size_t detector, int requested_types) const {
-    return hashes.has_all_types(requested_types) && get_hashes(detector).has_all_types(requested_types);
+    return get_hashes(detector).has_all_types(requested_types);
 }
 
 

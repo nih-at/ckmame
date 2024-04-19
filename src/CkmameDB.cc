@@ -114,7 +114,8 @@ std::unordered_map<CkmameDB::Statement, std::string> CkmameDB::queries = {
     { QUERY_ARCHIVE_ID, "select archive_id from archive where name = :name and file_type = :file_type" },
     { QUERY_ARCHIVE_LAST_CHANGE, "select mtime, size from archive where archive_id = :archive_id" },
     { QUERY_FILE, "select file_idx, detector_id, name, mtime, status, size, crc, md5, sha1 from file where archive_id = :archive_id order by file_idx, detector_id" },
-    { QUERY_HAS_ARCHIVES, "select archive_id from archive limit 1" }
+    { QUERY_HAS_ARCHIVES, "select archive_id from archive limit 1" },
+    { UPDATE_FILE_HASHES, "update file set crc = :crc, md5 = :md5, sha1 = :sha1 where archive_id = :archive_id and file_idx = :file_idx and detector_id = 0" }
 };
 
 std::unordered_map<CkmameDB::ParameterizedStatement, std::string> CkmameDB::parameterized_queries = {
@@ -515,4 +516,31 @@ bool CkmameDB::compute_detector_hashes(const std::unordered_map<size_t, Detector
     }
 
     return got_new_hashes;
+}
+
+void CkmameDB::update_file_hashes(int archive_id, size_t file_id, const Hashes& hashes) {
+    auto stmt = get_statement(UPDATE_FILE_HASHES);
+
+    stmt->set_int("archive_id", archive_id);
+    stmt->set_int("file_idx", static_cast<int>(file_id));
+    stmt->set_hashes(hashes, true);
+
+    stmt->execute();
+}
+
+void CkmameDB::insert_file_detector_hashes(int archive_id, size_t file_id, size_t detector_id, const Hashes& hashes) {
+    auto local_detector_id = get_detector_id(detector_id);
+
+    auto stmt = get_statement(INSERT_FILE);
+
+    stmt->set_int("archive_id", archive_id);
+    stmt->set_int("file_idx", static_cast<int>(file_id));
+    stmt->set_uint64("detector_id", local_detector_id);
+    stmt->set_string("name", "", true);
+    stmt->set_int64("mtime", 0);
+    stmt->set_int("status", 0);
+    stmt->set_uint64("size", hashes.size);
+    stmt->set_hashes(hashes, true);
+
+    stmt->execute();
 }

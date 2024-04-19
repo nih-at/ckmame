@@ -83,7 +83,7 @@ Archive::Archive(ArchiveContentsPtr contents_) :
     name(contents->name),
     filetype(contents->filetype),
     where(contents->where),
-    cache_changed(false),
+    cache_changed(NONE),
     modified(false) {
         changes.resize(files.size());
     }
@@ -197,6 +197,7 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
 	    f->open();
 	} catch (Exception &e) {
 	    output.error("%s: %s: can't open: %s", name.c_str(), file.name.c_str(), e.what());
+            set_cache_changed(FILES);
 	    file.broken = true;
 	    return false;
 	}
@@ -207,11 +208,13 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
 
 	case READ_ERROR:
 	    output.error("%s: %s: can't compute hashes: %s", name.c_str(), file.name.c_str(), strerror(errno));
+            set_cache_changed(FILES);
 	    file.broken = true;
 	    return false;
 
 	case CRC_ERROR:
 	    output.error("%s: %s: CRC error: %08x != %08x", name.c_str(), file.name.c_str(), hashes.crc, file.hashes.crc);
+            set_cache_changed(FILES);
 	    file.broken = true;
 	    return false;
 	}
@@ -223,7 +226,8 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
 	    return false;
 	}
     }
-    cache_changed = true;
+    set_cache_changed(HASHES_ONLY);
+    changes[idx].updated_hashes.insert(detector_id);
 
     return true;
 }
@@ -388,8 +392,8 @@ ArchivePtr Archive::open_toplevel(const std::string &name, filetype_t filetype, 
 bool Archive::read_infos() {
     std::vector<File> files_cache;
 
-    cache_changed = false;
-    
+    set_cache_changed(NONE);
+
     contents->read_infos_from_cachedb(&files_cache);
 
     if (contents->cache_id > 0) {
@@ -398,7 +402,7 @@ bool Archive::read_infos() {
                 return false;
                 
             case 0:
-                cache_changed = true;
+                set_cache_changed(FILES);
 		break;
 
 	    case 1:
@@ -413,12 +417,12 @@ bool Archive::read_infos() {
     }
 
     if (!read_infos_xxx()) {
-        cache_changed = true;
+        set_cache_changed(FILES);
 	return false;
     }
 
-    merge_files(files_cache);
     changes.resize(files.size());
+    merge_files(files_cache);
 
     return true;
 }
@@ -493,6 +497,8 @@ Archive::GetHashesStatus Archive::get_hashes(ZipSource *source, uint64_t length,
 
 
 void Archive::merge_files(const std::vector<File> &files_cache) {
+    set_cache_changed(NONE);
+
     for (uint64_t i = 0; i < files.size(); i++) {
         auto &file = files[i];
         
@@ -500,31 +506,37 @@ void Archive::merge_files(const std::vector<File> &files_cache) {
         auto it = std::find_if(files_cache.cbegin(), files_cache.cend(), [&file](const File &file_cache){ return file.name == file_cache.name; });
         if (it != files_cache.cend()) {
             if (file.mtime == (*it).mtime && file.compare_size_hashes(*it)) {
+                if ((file.hashes.get_types() & ~(it->hashes.get_types())) == 0) {
+                    changes[i].updated_hashes.clear();
+                }
+                else {
+                    changes[i].updated_hashes.insert(0);
+                }
                 file.hashes.merge((*it).hashes);
                 file.detector_hashes = it->detector_hashes;
             }
             else {
-                cache_changed = true;
+                set_cache_changed(FILES);
             }
         }
         else {
-            cache_changed = true;
+            set_cache_changed(FILES);
         }
         
         if (want_crc() && !file.hashes.has_type(Hashes::TYPE_CRC)) {
             if (!file_ensure_hashes(i, Hashes::TYPE_ALL)) {
                 file.broken = true;
                 if (it == files_cache.cend() || !(*it).broken) {
-                    cache_changed = true;
+                    set_cache_changed(FILES);
                 }
                 continue;
             }
-            cache_changed = true;
+            set_cache_changed(HASHES_ONLY);
         }
     }
     
     if (files.size() != files_cache.size()) {
-        cache_changed = true;
+        set_cache_changed(FILES);
     }
 }
 
@@ -619,7 +631,7 @@ bool Archive::compute_detector_hashes(const std::unordered_map<size_t, DetectorP
     }
     
     if (got_new_hashes) {
-        cache_changed = true;
+        set_cache_changed(HASHES_ONLY);
     }
     return got_new_hashes;
 }
@@ -649,7 +661,7 @@ bool Archive::compute_detector_hashes(size_t index, const std::unordered_map<siz
         return false;
     }
 
-    return Detector::compute_hashes(data, &file, detectors);
+    return Detector::compute_hashes(data, &file, db->detectors, &changes[index].updated_hashes);
 }
 
 
@@ -689,4 +701,11 @@ bool Archive::compare_size_hashes(size_t index, size_t detector_id, const FileDa
     }
     
     return ok;
+}
+
+void Archive::set_cache_changed(Archive::CacheChange new_changed) {
+    if (new_changed == HASHES_ONLY && cache_changed == FILES) {
+        return;
+    }
+    cache_changed = new_changed;
 }
