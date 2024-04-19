@@ -109,7 +109,7 @@ else()
 endif()
 
 find_program(NIHTEST nihtest)
-set(NIHTEST_REQUIRED_VERSION "1.5")
+set(NIHTEST_REQUIRED_VERSION "1.7")
 
 if(RUN_REGRESS)
   if (NOT NIHTEST OR NOT PYTHONBIN)

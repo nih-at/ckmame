@@ -6,6 +6,7 @@ import re
 
 def create_zip_version(name):
     """Create zip version of test case."""
+    file_name = name
     with open(name, 'r', encoding='utf-8') as input_file:
         last_slash = name.rfind('/')
         if last_slash != -1:
@@ -13,6 +14,7 @@ def create_zip_version(name):
         last_dot = name.rfind('.')
         output_name = name[:last_dot] + '.zip.test'
         with open(output_name, 'w', encoding='utf-8') as output_file:
+            print(f"test-case-source {file_name}", file=output_file)
             for line in input_file.readlines():
                 if line.startswith('<dir>'):
                     continue
