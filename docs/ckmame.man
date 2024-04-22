@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "CKMAME" "1" "June 16, 2023" "NiH" "General Commands Manual"
+.TH "CKMAME" "1" "April 22, 2024" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -36,7 +36,7 @@
 .SH "SYNOPSIS"
 .HP 7n
 \fBckmame\fR
-[\fB\-CcFhjoVv\fR]
+[\fB\-CcFhjUVv\fR]
 [\fB\-D\fR\ \fIdbfile\fR]
 [\fB\-e\fR\ \fIdir\fR]
 [\fB\-O\fR\ \fIdbfile\fR]
@@ -262,12 +262,6 @@ Assume that the files in the database
 exist in some other location (e.g., on an offline disk or backup
 medium).
 .TP 32n
-\fB\-o\fR, \fB\-\fR\fB\-only-if-database-updated\fR
-Only run
-\fBckmame\fR
-if the database was updated (implies
-\fB\-\fR\fB\-update-database\fR).
-.TP 32n
 \fB\-R\fR, \fB\-\fR\fB\-rom-directory\fR \fIdir\fR
 Look for the ROM set in the directory
 \fIdir\fR
@@ -296,6 +290,13 @@ or
 \fB\-\fR\fB\-report-summary\fR
 Print summary of ROM set status at the end of the output.
 .TP 32n
+\fB\-\fR\fB\-roms-unzipped\fR
+Instead of looking for ROMs in the zip archive
+\fIroms/games.zip\fR,
+look for them in the directory
+\fIroms/games/\fR
+in the file system.
+.TP 32n
 \fB\-\fR\fB\-save-directory\fR \fIdir\fR
 When a ROM file is encountered that does not belong to the set that is
 currently checked, but is needed by a different set, move it this
@@ -319,12 +320,11 @@ Read the list of games to check from
 \fIfile\fR
 should contain one line per game.
 .TP 32n
-\fB\-\fR\fB\-roms-unzipped\fR
-Instead of looking for ROMs in the zip archive
-\fIroms/games.zip\fR,
-look for them in the directory
-\fIroms/games/\fR
-in the file system.
+\fB\-U\fR, \fB\-\fR\fB\-only-if-database-updated\fR
+Only run
+\fBckmame\fR
+if the database was updated (implies
+\fB\-\fR\fB\-update-database\fR).
 .TP 32n
 \fB\-\fR\fB\-unknown-directory\fR \fIdir\fR
 When a file is encountered that does not belong to the set that is

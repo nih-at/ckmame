@@ -54,7 +54,7 @@
 <table class="Nm">
   <tr>
     <td><code class="Nm">ckmame</code></td>
-    <td>[<code class="Fl">-CcFhjoVv</code>] [<code class="Fl">-D</code>
+    <td>[<code class="Fl">-CcFhjUVv</code>] [<code class="Fl">-D</code>
       <var class="Ar">dbfile</var>] [<code class="Fl">-e</code>
       <var class="Ar">dir</var>] [<code class="Fl">-O</code>
       <var class="Ar">dbfile</var>] [<code class="Fl">-R</code>
@@ -246,11 +246,6 @@ Supported options:
     <var class="Ar">dbfile</var></dt>
   <dd>Assume that the files in the database <var class="Ar">dbfile</var> exist
       in some other location (e.g., on an offline disk or backup medium).</dd>
-  <dt><a class="permalink" href="#o"><code class="Fl" id="o">-o</code></a>,
-    <code class="Fl">-</code><code class="Fl">-only-if-database-updated</code></dt>
-  <dd>Only run <code class="Nm">ckmame</code> if the database was updated
-      (implies
-      <code class="Fl">-</code><code class="Fl">-update-database</code>).</dd>
   <dt><a class="permalink" href="#R"><code class="Fl" id="R">-R</code></a>,
     <code class="Fl">-</code><code class="Fl">-rom-directory</code>
     <var class="Ar">dir</var></dt>
@@ -271,6 +266,10 @@ Supported options:
       <code class="Fl">-</code><code class="Fl">-report-missing</code>.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-summary</code></dt>
   <dd>Print summary of ROM set status at the end of the output.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-roms-unzipped</code></dt>
+  <dd>Instead of looking for ROMs in the zip archive
+      <span class="Pa">roms/games.zip</span>, look for them in the directory
+      <span class="Pa">roms/games/</span> in the file system.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-save-directory</code>
     <var class="Ar">dir</var></dt>
   <dd>When a ROM file is encountered that does not belong to the set that is
@@ -287,10 +286,11 @@ Supported options:
     <var class="Ar">file</var></dt>
   <dd>Read the list of games to check from <var class="Ar">file</var>.
       <var class="Ar">file</var> should contain one line per game.</dd>
-  <dt><code class="Fl">-</code><code class="Fl">-roms-unzipped</code></dt>
-  <dd>Instead of looking for ROMs in the zip archive
-      <span class="Pa">roms/games.zip</span>, look for them in the directory
-      <span class="Pa">roms/games/</span> in the file system.</dd>
+  <dt><a class="permalink" href="#U"><code class="Fl" id="U">-U</code></a>,
+    <code class="Fl">-</code><code class="Fl">-only-if-database-updated</code></dt>
+  <dd>Only run <code class="Nm">ckmame</code> if the database was updated
+      (implies
+      <code class="Fl">-</code><code class="Fl">-update-database</code>).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-unknown-directory</code>
     <var class="Ar">dir</var></dt>
   <dd>When a file is encountered that does not belong to the set that is
@@ -383,7 +383,7 @@ Most messages should be straightforward. Two need special explanations:
 </div>
 <table class="foot">
   <tr>
-    <td class="foot-date">June 16, 2023</td>
+    <td class="foot-date">April 22, 2024</td>
     <td class="foot-os">NiH</td>
   </tr>
 </table>
