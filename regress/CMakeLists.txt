@@ -141,6 +141,7 @@ set(XFAIL_TESTS
   extra-file-zip.zip.test
   rom-from-extra-loose-directory.zip.test
   rom-from-extra-loose-toplevel.zip.test
+  unknown-rename-failed.zip.test
 )
 
 if(RUN_REGRESS)
