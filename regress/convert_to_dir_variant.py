@@ -34,6 +34,7 @@ def create_dir_version(name):
         last_dot = name.rfind('.')
         output_name = name[:last_dot] + '.dir.test'
         with open(output_name, 'w', encoding='utf-8') as output_file:
+            print(f"test-case-source {file_name}", file=output_file)
             for line in input_file.readlines():
                 if line.startswith('<zip>'):
                     continue

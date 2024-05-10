@@ -1,0 +1,10 @@
+>>> table archive (archive_id, name, mtime, size, file_type)
+1|foo|1713798939|0|0
+2|foo/1-4-ok.zip|1713798939|114|0
+3|foo/1-8-ok.zip|1713798939|118|0
+>>> table detector (detector_id, name, version)
+>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)
+1|0|1-4-ok.zip|1713798939|0|114|3115463364|<5bd44f22846e2cbc1d083f92a09c05e3>|<08b049ab557572bbc88f8b48013ba47769a5dc83>|0
+1|1|1-8-ok.zip|1713798939|0|118|280145408|<f5e54d7841349f381951fb57aec8de7a>|<dfcfd730dd8378cbaf1245b24538e4533db2defa>|0
+2|0|04.rom|1047614102|0|4|3632233996|<098f6bcd4621d373cade4e832627b4f6>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>|0
+3|0|08.rom|1047649018|0|8|911640957|<095ca6fcc1279865662b553147eb8f6d>|<111bb8b7549e3386a996845405b02164f17c7b37>|0

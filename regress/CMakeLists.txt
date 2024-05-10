@@ -137,12 +137,10 @@ add_custom_target(update-mamedb.dump
 )
 
 set(XFAIL_TESTS
+  ckmamedb-keep-unzipped.zip.test
   extra-file-zip.zip.test
-  file-no-crc-wrong-name-other-set.dir.test
-  file-no-crc-wrong-name-other-set.zip.test
   rom-from-extra-loose-directory.zip.test
   rom-from-extra-loose-toplevel.zip.test
-  unknown-rename-failed.zip.test
 )
 
 if(RUN_REGRESS)

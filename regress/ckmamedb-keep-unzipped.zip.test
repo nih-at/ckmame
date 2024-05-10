@@ -1,0 +1,15 @@
+description extra dir CkmameDB contains information for unzipped, which is not deleted by run with zipped.
+return 0
+arguments -Fvcj -e search 1-4
+file mame.db mame.db
+file search/foo/1-8-ok.zip 1-8-ok.zip
+file search/foo/1-4-ok.zip 1-4-ok.zip {}
+file roms/1-4.zip {} 1-4-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
+file search/.ckmame.db ckmamedb-search-dir.dump ckmamedb-search-dir-zip.dump
+stdout
+In game 1-4:
+rom  04.rom        size       4  crc d87f7e0c: is in 'search/foo/1-4-ok.zip/04.rom'
+add 'search/foo/1-4-ok.zip/04.rom'
+delete used file '04.rom'
+end-of-inline-data
