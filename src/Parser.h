@@ -94,6 +94,7 @@ class Parser {
     bool file_hash(filetype_t ft, int ht, const std::string& attr);
     bool file_ignore(filetype_t ft);
     bool file_merge(filetype_t ft, const std::string& attr);
+    bool file_missing(filetype_t ft, bool attr);
     bool file_mtime(filetype_t ft, time_t mtime);
     bool file_name(filetype_t ft, const std::string& attr);
     bool file_size(filetype_t ft, const std::string& attr);

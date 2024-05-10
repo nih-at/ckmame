@@ -39,9 +39,11 @@ const ParserXml::Arguments ParserXml::arguments_rom(TYPE_ROM);
 const ParserXml::Arguments ParserXml::arguments_rom_crc(TYPE_ROM, Hashes::TYPE_CRC);
 const ParserXml::Arguments ParserXml::arguments_rom_md5(TYPE_ROM, Hashes::TYPE_MD5);
 const ParserXml::Arguments ParserXml::arguments_rom_sha1(TYPE_ROM, Hashes::TYPE_SHA1);
+const ParserXml::Arguments ParserXml::arguments_rom_sha256(TYPE_ROM, Hashes::TYPE_SHA256);
 const ParserXml::Arguments ParserXml::arguments_disk(TYPE_DISK);
 const ParserXml::Arguments ParserXml::arguments_disk_md5(TYPE_DISK, Hashes::TYPE_MD5);
 const ParserXml::Arguments ParserXml::arguments_disk_sha1(TYPE_DISK, Hashes::TYPE_SHA1);
+const ParserXml::Arguments ParserXml::arguments_disk_sha256(TYPE_DISK, Hashes::TYPE_SHA1);
 
 void ParserXml::line_number_callback(void *context, size_t line_number){
     static_cast<ParserXml *>(context)->lineno = line_number;
@@ -85,6 +87,14 @@ XmlProcessor::CallbackStatus ParserXml::parse_file_merge(void *ctx, const void *
     return status(parser->file_merge(arguments->file_type, value));
 }
 
+
+XmlProcessor::CallbackStatus ParserXml::parse_file_mia(void *ctx, const void *args, const std::string &value) {
+    auto parser = static_cast<ParserXml*>(ctx);
+    auto arguments = static_cast<const Arguments*>(args);
+
+    // TODO: warning/error if value != yes/no
+    return status(parser->file_missing(arguments->file_type, value == "yes"));
+}
 
 XmlProcessor::CallbackStatus ParserXml::parse_file_name(void *ctx, const void *args, const std::string &value) {
     auto parser = static_cast<ParserXml *>(ctx);
@@ -239,8 +249,10 @@ const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attrib
 const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attributes_disk = {
     { "md5", XmlProcessor::Attribute(parse_file_hash, &arguments_disk_md5) },
     { "merge", XmlProcessor::Attribute(parse_file_merge, &arguments_disk) },
+    { "mia", XmlProcessor::Attribute(parse_file_mia, &arguments_disk) },
     { "name", XmlProcessor::Attribute(parse_file_name, &arguments_disk) },
     { "sha1", XmlProcessor::Attribute(parse_file_hash, &arguments_disk_sha1)},
+    { "sha256", XmlProcessor::Attribute(parse_file_hash, &arguments_disk_sha256)},
     { "status", XmlProcessor::Attribute(parse_file_status, &arguments_disk) }
 };
 
@@ -254,8 +266,10 @@ const std::unordered_map<std::string, XmlProcessor::Attribute> ParserXml::attrib
     { "loadflag", XmlProcessor::Attribute(parse_file_loadflag, &arguments_rom) },
     { "md5", XmlProcessor::Attribute(parse_file_hash, &arguments_rom_md5) },
     { "merge", XmlProcessor::Attribute(parse_file_merge, &arguments_rom) },
+    { "mia", XmlProcessor::Attribute(parse_file_mia, &arguments_rom) },
     { "name", XmlProcessor::Attribute(parse_file_name, &arguments_rom) },
     { "sha1", XmlProcessor::Attribute(parse_file_hash, &arguments_rom_sha1) },
+    { "sha256", XmlProcessor::Attribute(parse_file_hash, &arguments_rom_sha256) },
     { "size", XmlProcessor::Attribute(parse_file_size, &arguments_rom) },
     { "status", XmlProcessor::Attribute(parse_file_status, &arguments_rom) }
 };

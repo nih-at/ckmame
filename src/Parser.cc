@@ -266,6 +266,15 @@ bool Parser::file_merge(filetype_t ft, const std::string& attr) {
 }
 
 
+bool Parser::file_missing(filetype_t ft, bool attr){
+    CHECK_STATE(PARSE_IN_FILE);
+
+    r[ft]->missing = attr;
+
+    return true;
+}
+
+
 bool Parser::file_mtime(filetype_t ft, time_t mtime) {
     CHECK_STATE(PARSE_IN_FILE);
 

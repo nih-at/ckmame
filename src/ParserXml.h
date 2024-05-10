@@ -62,9 +62,11 @@ public:
     static const Arguments arguments_rom_crc;
     static const Arguments arguments_rom_md5;
     static const Arguments arguments_rom_sha1;
+    static const Arguments arguments_rom_sha256;
     static const Arguments arguments_disk;
     static const Arguments arguments_disk_md5;
     static const Arguments arguments_disk_sha1;
+    static const Arguments arguments_disk_sha256;
 
     static const std::unordered_map<std::string, XmlProcessor::Entity> entities;
     static const std::unordered_map<std::string, XmlProcessor::Attribute> attributes_clrmamepro;
@@ -79,6 +81,7 @@ public:
     static XmlProcessor::CallbackStatus parse_file_hash(void *ctx, const void *args, const std::string &value);
     static XmlProcessor::CallbackStatus parse_file_loadflag(void *ctx, const void *args, const std::string &value);
     static XmlProcessor::CallbackStatus parse_file_merge(void *ctx, const void *args, const std::string &value);
+    static XmlProcessor::CallbackStatus parse_file_mia(void *ctx, const void *args, const std::string &value);
     static XmlProcessor::CallbackStatus parse_file_name(void *ctx, const void *args, const std::string &value);
     static XmlProcessor::CallbackStatus parse_file_start(void *ctx, const void *args);
     static XmlProcessor::CallbackStatus parse_file_status(void *ctx, const void *args, const std::string &value);
