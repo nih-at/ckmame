@@ -98,7 +98,7 @@ MkMameDB::MkMameDB() : Command("mkmamedb", "[rominfo-file ...]", mkmamedb_option
 void MkMameDB::global_setup(const ParsedCommandline &commandline) {
     cache_directory = true;
 
-    hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1;
+    hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1 | Hashes::TYPE_SHA256;
 
     for (const auto &option : commandline.options) {
 	if (option.name == "detector") {

@@ -50,6 +50,7 @@ public:
     std::string merge;
     Status status;
     where_t where;
+    bool missing{false};
 
     const std::string &merged_name() const { return merge.empty() ? name : merge; }
     bool compare_merged(const FileData &other) const;

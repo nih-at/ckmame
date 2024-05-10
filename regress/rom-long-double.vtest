@@ -5,8 +5,8 @@ file mame.db mame.db
 file roms/1-4.zip 1-4-dup.zip 1-4-ok.zip
 file unknown/1-4.zip {} 1-4-dup.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
-hashes 1-4.zip 04.rom -md5
-hashes 1-4 04.rom -md5
+hashes 1-4.zip 04.rom -md5,-sha256
+hashes 1-4 04.rom -md5,-sha256
 end-of-inline-data
 file unknown/.ckmame.db {} <inline.ckmamedb>
 hashes 1-4.zip 04.rom cheap

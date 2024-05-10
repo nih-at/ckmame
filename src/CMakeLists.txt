@@ -4,6 +4,9 @@ endif()
 if(NOT HAVE_SHA1INIT)
   list(APPEND COMPATIBILITY sha1.cc)
 endif()
+if(NOT HAVE_SHA256INIT)
+  list(APPEND COMPATIBILITY sha256.cc)
+endif()
 
 set(COMMON_SOURCES
   Archive.cc

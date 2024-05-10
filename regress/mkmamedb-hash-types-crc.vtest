@@ -5,5 +5,5 @@ arguments -F cm --hash-types crc -o output.dat roms
 file output.dat mamedb-small-crc-only.dat
 file roms/1-4.zip 1-4-ok.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
-<zip>hashes 1-4.zip 04.rom -md5,-sha1
+<zip>hashes 1-4.zip 04.rom cheap
 end-of-inline-data

@@ -47,7 +47,7 @@ const std::string CkmameDB::db_name = ".ckmame.db";
 
 const DB::DBFormat CkmameDB::format = {
     0x02,
-    4,
+    5,
     "create table archive (\n\
     archive_id integer primary key autoincrement,\n\
     name text not null,\n\
@@ -72,6 +72,7 @@ create table file (\n\
     crc integer,\n\
     md5 binary,\n\
     sha1 binary,\n\
+    sha256 binary,\n\
     detector_id integer not null default 0\n\
 );\n\
 create index file_archive_id on file (archive_id);\n\
@@ -79,7 +80,9 @@ create index file_idx on file (file_idx);\n\
 create index file_size on file (size);\n\
 create index file_crc on file (crc);\n\
 create index file_md5 on file (md5);\n\
-create index file_sha1 on file (sha1);\n",
+create index file_sha1 on file (sha1);\n\
+create index file_sha256 on file (sha256);",
+
     {
         { MigrationVersions(2, 3), "\
     create table detector (\n\
@@ -97,7 +100,12 @@ create index file_sha1 on file (sha1);\n",
         { MigrationVersions(3, 4), "\
 alter table archive add column file_type integer not null default " + std::to_string(TYPE_ROM) + ";\n\
 update archive set file_type=" + std::to_string(TYPE_DISK) + " where exists(select * from file f where f.archive_id = archive.archive_id and f.crc is null);\
+    " },
+        { MigrationVersions(4, 5), "\
+alter table file add column sha256 binary;\n\
+create index file_sha256 on file (sha256);\n\
     " }
+
     }
 };
 
@@ -108,14 +116,14 @@ std::unordered_map<CkmameDB::Statement, std::string> CkmameDB::queries = {
     { INSERT_ARCHIVE, "insert into archive (name, file_type, mtime, size) values (:name, :file_type, :mtime, :size)" },
     { INSERT_ARCHIVE_ID, "insert into archive (name, archive_id, file_type, mtime, size) values (:name, :archive_id, :file_type, :mtime, :size)" },
     { INSERT_DETECTOR, "insert into detector (detector_id, name, version) values (:detector_id, :name, :version)" },
-    { INSERT_FILE, "insert into file (archive_id, file_idx, detector_id, name, mtime, status, size, crc, md5, sha1) values (:archive_id, :file_idx, :detector_id, :name, :mtime, :status, :size, :crc, :md5, :sha1)" },
+    { INSERT_FILE, "insert into file (archive_id, file_idx, detector_id, name, mtime, status, size, crc, md5, sha1, sha256) values (:archive_id, :file_idx, :detector_id, :name, :mtime, :status, :size, :crc, :md5, :sha1, :sha256)" },
     { LIST_ARCHIVES, "select name, file_type from archive" },
     { LIST_DETECTORS, "select detector_id, name, version from detector" },
     { QUERY_ARCHIVE_ID, "select archive_id from archive where name = :name and file_type = :file_type" },
     { QUERY_ARCHIVE_LAST_CHANGE, "select mtime, size from archive where archive_id = :archive_id" },
-    { QUERY_FILE, "select file_idx, detector_id, name, mtime, status, size, crc, md5, sha1 from file where archive_id = :archive_id order by file_idx, detector_id" },
+    { QUERY_FILE, "select file_idx, detector_id, name, mtime, status, size, crc, md5, sha1, sha256 from file where archive_id = :archive_id order by file_idx, detector_id" },
     { QUERY_HAS_ARCHIVES, "select archive_id from archive limit 1" },
-    { UPDATE_FILE_HASHES, "update file set crc = :crc, md5 = :md5, sha1 = :sha1 where archive_id = :archive_id and file_idx = :file_idx and detector_id = 0" }
+    { UPDATE_FILE_HASHES, "update file set crc = :crc, md5 = :md5, sha1 = :sha1, sha256 = :sha256 where archive_id = :archive_id and file_idx = :file_idx and detector_id = 0" }
 };
 
 std::unordered_map<CkmameDB::ParameterizedStatement, std::string> CkmameDB::parameterized_queries = {

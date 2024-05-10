@@ -7,12 +7,12 @@ file roms/2-48.zip 2-48-long.zip 2-48-ok.zip
 file unknown/2-48.zip {} 2-48-long.zip
 file unknown/1-8.zip {} 1-8-long.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
-hashes 1-8.zip 08.rom -md5
-hashes 2-48.zip 04.rom -md5
-hashes 2-48.zip 08.rom -md5
-hashes 1-8 08.rom -md5
-hashes 2-48 04.rom -md5
-hashes 2-48 08.rom -md5
+hashes 1-8.zip 08.rom -md5,-sha256
+hashes 2-48.zip 04.rom -md5,-sha256
+hashes 2-48.zip 08.rom -md5,-sha256
+hashes 1-8 08.rom -md5,-sha256
+hashes 2-48 04.rom -md5,-sha256
+hashes 2-48 08.rom -md5,-sha256
 end-of-inline-data
 file unknown/.ckmame.db {} <inline.ckmamedb>
 hashes 1-8.zip 08.rom cheap

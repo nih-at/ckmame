@@ -162,6 +162,7 @@ void OutputContextMtree::write_files(const std::string &dirname, const std::vect
         if (file.is_size_known()) {
             fprintf(f.get(), " size=%" PRIu64, file.hashes.size);
         }
+        cond_print_hash(f, " sha256=", Hashes::TYPE_SHA256, &file.hashes, "");
         cond_print_hash(f, " sha1=", Hashes::TYPE_SHA1, &file.hashes, "");
         cond_print_hash(f, " md5=", Hashes::TYPE_MD5, &file.hashes, "");
         cond_print_string(f, " status=", file.status_name(), "");

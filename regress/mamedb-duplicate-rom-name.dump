@@ -1,8 +1,8 @@
 >>> table dat (dat_idx, name, description, author, version)
 0|ckmame test db|<null>|<null>|1
->>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1)
-1|0|0|04.rom|<null>|0|0|4|305419896|<null>|<null>
-1|0|1|04 (1).rom|<null>|0|0|4|2427178479|<null>|<null>
+>>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)
+1|0|0|04.rom|<null>|0|0|4|305419896|<null>|<null>|<null>|0
+1|0|1|04 (1).rom|<null>|0|0|4|2427178479|<null>|<null>|<null>|0
 >>> table game (game_id, name, parent, description, dat_idx)
 1|doubleroms|<null>|game with two roms of same name|0
 >>> table rule (rule_idx, start_offset, end_offset, operation)

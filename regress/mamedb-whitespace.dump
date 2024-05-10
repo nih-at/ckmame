@@ -1,8 +1,8 @@
 >>> table dat (dat_idx, name, description, author, version)
 0|M.A.M.E.|<null>|<null>|1
->>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1)
-1|0|0|parent-1|<null>|0|0|8|305419896|<null>|<1234567890123456789012345678901234567890>
-1|0|1|parent-2|<null>|0|0|8|2427178479|<null>|<2345678901234567890123456789012345678901>
+>>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)
+1|0|0|parent-1|<null>|0|0|8|305419896|<null>|<1234567890123456789012345678901234567890>|<null>|0
+1|0|1|parent-2|<null>|0|0|8|2427178479|<null>|<2345678901234567890123456789012345678901>|<null>|0
 >>> table game (game_id, name, parent, description, dat_idx)
 1|parent|<null>|Parent|0
 >>> table rule (rule_idx, start_offset, end_offset, operation)

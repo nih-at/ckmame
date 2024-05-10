@@ -51,6 +51,7 @@ public:
     void reset();
 
     std::vector<uint8_t> get_blob(const std::string &name);
+    bool get_bool(const std::string& name);
     Hashes get_hashes();
     int get_int(const std::string &name);
     int get_int(const std::string &name, int default_value);
@@ -61,6 +62,7 @@ public:
     uint64_t get_uint64(const std::string &name) { return static_cast<uint64_t>(get_int64(name)); }
     uint64_t get_uint64(const std::string &name, uint64_t default_value) { return static_cast<uint64_t>(get_int64(name, static_cast<int64_t>(default_value))); }
 
+    void set_bool(const std::string& name, bool value);
     void set_blob(const std::string &name, const std::vector<uint8_t> &data);
     void set_hashes(const Hashes &hashes, bool set_null);
     void set_int(const std::string &name, int value);

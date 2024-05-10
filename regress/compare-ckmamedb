@@ -11,7 +11,7 @@ import nihtest.CompareArrays
 
 table_archive = ">>> table archive (archive_id, name, mtime, size, file_type)"
 table_detector = ">>> table detector (detector_id, name, version)"
-table_file = ">>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)"
+table_file = ">>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, sha256, detector_id)"
 
 
 class Table(enum.Enum):
@@ -20,7 +20,7 @@ class Table(enum.Enum):
     FILE = enum.auto()
 
 
-re_atrribute = re.compile("^([^=]+)=(.*)")
+re_attribute = re.compile("^([^=]+)=(.*)")
 
 status_names = {
     "ok": 0,
@@ -66,7 +66,7 @@ class Index:
         return None
 
 class File:
-    def __init__(self, name, index=0, mtime="<null>", status=0, size="-1", crc="<null>", md5="<null>", sha1="<null>", detector_id=0):
+    def __init__(self, name, index=0, mtime="<null>", status=0, size="-1", crc="<null>", md5="<null>", sha1="<null>", sha256="<null>", detector_id=0):
         self.name = name
         self.index = index
         self.status = status
@@ -74,6 +74,7 @@ class File:
         self.crc = crc
         self.md5 = md5
         self.sha1 = sha1
+        self.sha256 = sha256
         self.mtime = mtime
         self.detector_id = detector_id
 
@@ -85,6 +86,7 @@ class File:
                 and self.crc == other.crc
                 and self.md5 == other.md5
                 and self.sha1 == other.sha1
+                and self.sha256 == other.sha256
                 and int(self.detector_id) == int(other.detector_id))
 
     def __lt__(self, other):
@@ -120,12 +122,16 @@ class File:
             return True
         if self.sha1 > other.sha1:
             return False
+        if self.sha256 < other.sha256:
+            return True
+        if self.sha256 > other.sha256:
+            return False
         if int(self.detector_id) < int(other.detector_id):
             return True
         return False
 
     def row(self, archive_id):
-        return f"{archive_id}|{self.index}|{self.name}|{self.mtime}|{self.status}|{self.size}|{self.crc}|{self.md5}|{self.sha1}|{self.detector_id}"
+        return f"{archive_id}|{self.index}|{self.name}|{self.mtime}|{self.status}|{self.size}|{self.crc}|{self.md5}|{self.sha1}|{self.sha256}|{self.detector_id}"
 
 
 class Archive:
@@ -261,17 +267,17 @@ class CkmameDBComparator:
         archive = arguments[0]
         # TODO: strip .zip for variant unzipped
         file = arguments[1]
-        hashes = {"crc", "md5", "sha1"}
+        hashes = {"crc", "md5", "sha1", "sha256"}
         for spec in arguments[2].split(","):
             if spec == "cheap":
                 hashes = {"crc"} # TODO: {} for unzipped
             elif spec == "none":
                 hashes = {}
             elif spec == "all":
-                hashes = {"crc", "md5", "sha1"}
-            elif spec == "crc" or spec == "md5" or spec == "sha1":
+                hashes = {"crc", "md5", "sha1", "sha256"}
+            elif spec == "crc" or spec == "md5" or spec == "sha1" or spec == "sha256":
                 hashes.add(spec)
-            elif spec == "-crc" or spec == "-md5" or spec == "-sha1":
+            elif spec == "-crc" or spec == "-md5" or spec == "-sha1" or spec == "-sha256":
                 hashes.remove(spec[1:])
             else:
                 print(f"invalid hash spec '{spec}'")
@@ -348,7 +354,7 @@ class CkmameDBComparator:
             # TODO error
             0 == 0
         else:
-            archive.files.append(File(fields[2], fields[1], fields[3], fields[4], fields[5], fields[6], fields[7], fields[8], fields[9]))
+            archive.files.append(File(fields[2], fields[1], fields[3], fields[4], fields[5], fields[6], fields[7], fields[8], fields[9], fields[10]))
 
     def read_directory(self):
         arguments = ["-o", "/dev/stdout", "--runtest"]
@@ -386,7 +392,7 @@ class CkmameDBComparator:
 
             attributes = {}
             for attribute in words[1:]:
-                match = re.match(re_atrribute, attribute)
+                match = re.match(re_attribute, attribute)
                 # TODO: error if not matched
                 attributes[match.group(1)] = match.group(2)
 
@@ -425,6 +431,8 @@ class CkmameDBComparator:
                     file.md5 = "<" + attributes["md5"] + ">"
                 if "sha1" in attributes and "sha1" in hashes:
                     file.sha1 = "<" + attributes["sha1"] + ">"
+                if "sha256" in attributes and "sha256" in hashes:
+                    file.sha256 = "<" + attributes["sha256"] + ">"
                 if "status" in attributes:
                     if attributes["status"] in status_names:
                         file.status = status_names[attributes["status"]]
@@ -447,7 +455,7 @@ class CkmameDBComparator:
                         db.add_detector(Detector(detector_id, name, version))
                     else:
                         detector_id = detector_ids[detector_hash]
-                    detector_file = File("", file.index, size="<???>", crc="<???>", md5="<???>", sha1="<???>")
+                    detector_file = File("", file.index, size="<???>", crc="<???>", md5="<???>", sha1="<???>", sha256="<???>")
                     detector_file.detector_id = detector_id
                     detector_file.status = 0
                     if got_archive is not None:
@@ -459,6 +467,7 @@ class CkmameDBComparator:
                             detector_file.crc = got_file.crc
                             detector_file.md5 = got_file.md5
                             detector_file.sha1 = got_file.sha1
+                            detector_file.sha256 = got_file.sha256
                     archive.add_detector_hash(detector_file)
 
         self.expected_db = db
@@ -468,7 +477,7 @@ class CkmameDBComparator:
             if key in self.hash_exceptions:
                 return self.hash_exceptions[key]
         else:
-            return {"crc", "md5", "sha1"}
+            return {"crc", "md5", "sha1", "sha256"}
 
     def get_status_override(self, archive_name, file_name):
         for key in (f"{archive_name}/{file_name}", f"{archive_name}/*"):

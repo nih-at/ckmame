@@ -62,14 +62,16 @@ public:
         TYPE_CRC = 1,
         TYPE_MD5 = 2,
         TYPE_SHA1 = 4,
-        TYPE_MAX = 4,
-        TYPE_ALL = 7
+        TYPE_SHA256 = 8,
+        TYPE_MAX = 8,
+        TYPE_ALL = 15
     };
     enum {
         SIZE_CRC = 4,
         SIZE_MD5 = 16,
         SIZE_SHA1 = 20,
-        MAX_SIZE = 20
+        SIZE_SHA256 = 32,
+        MAX_SIZE = 32
     };
     enum Compare {
         NOCOMMON = -1,
@@ -81,7 +83,8 @@ public:
     uint32_t crc;
     std::vector<uint8_t> md5;
     std::vector<uint8_t> sha1;
-    
+    std::vector<uint8_t> sha256;
+
     Hashes() : size(SIZE_UNKNOWN), crc(0), types(0) { }
 
     static const Hashes zero;
@@ -107,6 +110,8 @@ public:
     void set_md5(const uint8_t *data, bool ignore_zero = false);
     void set_sha1(const std::vector<uint8_t> &data, bool ignore_zero = false);
     void set_sha1(const uint8_t *data, bool ignore_zero = false);
+    void set_sha256(const std::vector<uint8_t> &data, bool ignore_zero = false);
+    void set_sha256(const uint8_t *data, bool ignore_zero = false);
     int set_from_string(const std::string &s);
 
     static int types_from_string(const std::string &s);
@@ -114,7 +119,7 @@ public:
     static size_t hash_size(int type);
 
 private:
-    Hashes(size_t size, int types, uint32_t crc, std::vector<uint8_t> md5, std::vector<uint8_t> sha1);
+    Hashes(size_t size, int types, uint32_t crc, std::vector<uint8_t> md5, std::vector<uint8_t> sha1, std::vector<uint8_t> sha256);
     static std::unordered_map<std::string, int> name_to_type;
     static std::unordered_map<int, std::string> type_to_name;
     

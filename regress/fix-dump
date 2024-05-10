@@ -1,0 +1,39 @@
+#!/usr/bin/env perl
+
+use strict;
+
+
+for my $file (@ARGV) {
+    process($file);
+}
+
+
+sub process {
+    my $file = shift;
+
+    my @lines;
+    my $in_files = 0;
+    my $fh;
+    open($fh, "<", $file) or die "can't read $file: $!";
+    while (my $line = <$fh>) {
+        chomp $line;
+        if ($line =~ m/^>>> table file.*sha256/) {
+            return;
+        }
+        if ($line =~ m/^>>> table file.*merge.*sha1/) {
+            $line = ">>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)";
+            $in_files = 1;
+        }
+        elsif ($line =~ m/^>>> table /) {
+            $in_files = 0;
+        }
+        elsif ($in_files) {
+            $line .= "|<null>|0";
+        }
+        push @lines, $line . "\n";
+    }
+    close($fh);
+    open($fh, ">", $file) or die "can't write $file: $!";
+    print $fh join("", @lines);
+    close($fh);
+}

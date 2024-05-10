@@ -90,6 +90,13 @@ bool DBStatement::step() {
 // MARK: - Getting Values
 
 
+bool DBStatement::get_bool(const std::string &name) {
+    auto index = get_column_index(name);
+
+    return sqlite3_column_int(stmt, index);
+}
+
+
 std::vector<uint8_t> DBStatement::get_blob(const std::string &name) {
     auto index = get_column_index(name);
 
@@ -125,6 +132,10 @@ Hashes DBStatement::get_hashes() {
 
             case Hashes::TYPE_SHA1:
                 hashes.set_sha1(static_cast<const uint8_t *>(sqlite3_column_blob(stmt, index)));
+                break;
+
+            case Hashes::TYPE_SHA256:
+                hashes.set_sha256(static_cast<const uint8_t *>(sqlite3_column_blob(stmt, index)));
                 break;
         }
     }
@@ -185,6 +196,15 @@ std::string DBStatement::get_string(const std::string &name) {
 // MARK: - Setting Values
 
 
+void DBStatement::set_bool(const std::string &name, bool value) {
+    auto index = get_parameter_index(name);
+
+    if (sqlite3_bind_int(stmt, index, value ? 1 : 0) != SQLITE_OK) {
+        throw Exception("can't bind parameter '" + name + "'");
+    }
+}
+
+
 void DBStatement::set_blob(const std::string &name, const std::vector<uint8_t> &value) {
     auto index = get_parameter_index(name);
 
@@ -225,6 +245,11 @@ void DBStatement::set_hashes(const Hashes &hashes, bool set_null) {
                 case Hashes::TYPE_SHA1:
                     ret = sqlite3_bind_blob(stmt, index, hashes.sha1.data(), static_cast<int>(Hashes::SIZE_SHA1), SQLITE_STATIC);
                     break;
+
+                case Hashes::TYPE_SHA256:
+                    ret = sqlite3_bind_blob(stmt, index, hashes.sha256.data(), static_cast<int>(Hashes::SIZE_SHA256), SQLITE_STATIC);
+                    break;
+
             }
         }
         else if (set_null) {

@@ -4,7 +4,8 @@ return 0
 arguments -Fvc -je extra 1-4
 file mame.db mame.db
 file extra/1-8.zip 1-8-ok.zip
-file extra/.ckmame.db 1-8-ok-v2-ckmame.db <empty.ckmamedb>
+set-modification-time extra/1-8.zip 1715349226
+file extra/.ckmame.db 1-8-ok-v2-ckmame.db 1-8-ok-v2-migrated.ckmamedb-dump
 stdout
 In game 1-4:
 game 1-4                                     : not a single file found

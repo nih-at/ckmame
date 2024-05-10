@@ -1,11 +1,11 @@
 >>> table dat (dat_idx, name, description, author, version)
 0|Test|Test v2.56|<null>|20201210
->>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1)
-1|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-2|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>
-2|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
-3|0|0|04.rom|<null>|0|1|4|3632233996|<null>|<null>
-3|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>
+>>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)
+1|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>|<null>|0
+2|0|0|04.rom|<null>|0|0|4|3632233996|<null>|<null>|<null>|0
+2|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>|<null>|0
+3|0|0|04.rom|<null>|0|1|4|3632233996|<null>|<null>|<null>|0
+3|0|1|08.rom|<null>|0|0|8|911640957|<null>|<null>|<null>|0
 >>> table game (game_id, name, parent, description, dat_idx)
 1|4|<null>|Only 4 bytes|0
 2|2-48|<null>|4 and 8 bytes|0

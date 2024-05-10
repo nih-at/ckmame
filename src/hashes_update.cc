@@ -47,6 +47,13 @@ extern "C" {
 #else
 #include "sha1_own.h"
 #endif
+#ifdef HAVE_SHA256INIT
+extern "C" {
+#include <sha256.h>
+}
+#else
+#include "sha256_own.h"
+#endif
 
 #include <climits>
 #include <cstdlib>
@@ -61,6 +68,7 @@ public:
     uint32_t crc;
     MD5_CTX md5;
     SHA1_CTX sha1;
+    SHA256_CTX sha256;
 };
 
 Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
@@ -74,6 +82,9 @@ Hashes::Update::Update(Hashes *hashes_) : hashes(hashes_) {
     }
     if (hashes->has_type(TYPE_SHA1)) {
         SHA1Init(&contexts->sha1);
+    }
+    if (hashes->has_type(TYPE_SHA256)) {
+        SHA256Init(&contexts->sha256);
     }
 }
 
@@ -96,6 +107,9 @@ void Hashes::Update::update(const void *data, size_t length) {
         if (hashes->has_type(TYPE_SHA1)) {
             SHA1Update(&contexts->sha1, static_cast<const uint8_t *>(data), n);
         }
+        if (hashes->has_type(TYPE_SHA256)) {
+            SHA256Update(&contexts->sha256, static_cast<const uint8_t *>(data), n);
+        }
 
         i += n;
     }
@@ -111,5 +125,8 @@ void Hashes::Update::end() {
     }
     if (hashes->has_type(TYPE_SHA1)) {
         SHA1Final(hashes->sha1.data(), &contexts->sha1);
+    }
+    if (hashes->has_type(TYPE_SHA256)) {
+        SHA256Final(hashes->sha256.data(), &contexts->sha256);
     }
 }

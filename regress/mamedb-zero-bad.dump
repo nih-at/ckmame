@@ -1,10 +1,10 @@
 >>> table dat (dat_idx, name, description, author, version)
 0|ckmame test db|<null>|<null>|1
->>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1)
-1|0|0|zero|<null>|0|0|0|0|<null>|<null>
-2|0|0|zero|<null>|0|0|0|0|<d41d8cd98f00b204e9800998ecf8427e>|<null>
-3|0|0|zero|<null>|0|0|0|0|<null>|<da39a3ee5e6b4b0d3255bfef95601890afd80709>
-4|0|0|zero|<null>|0|0|0|0|<null>|<null>
+>>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)
+1|0|0|zero|<null>|0|0|0|0|<null>|<null>|<null>|0
+2|0|0|zero|<null>|0|0|0|0|<d41d8cd98f00b204e9800998ecf8427e>|<null>|<null>|0
+3|0|0|zero|<null>|0|0|0|0|<null>|<da39a3ee5e6b4b0d3255bfef95601890afd80709>|<null>|0
+4|0|0|zero|<null>|0|0|0|0|<null>|<null>|<null>|0
 >>> table game (game_id, name, parent, description, dat_idx)
 1|zerobadcrc|<null>|game with 0 byte rom, impossible CRC|0
 2|zerobadmd5|<null>|game with 0 byte rom, invalid md5|0

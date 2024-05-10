@@ -41,7 +41,7 @@ std::unique_ptr<RomDB> old_db;
 
 const DB::DBFormat RomDB::format = {
     0x0,
-    3,
+    4,
     "\
 create table dat (\n\
     dat_idx integer primary key,\n\
@@ -54,7 +54,7 @@ create table dat (\n\
 create table game (\n\
     game_id integer primary key autoincrement,\n\
     name text not null,\n\
-        parent text,\n\
+    parent text,\n\
     description text,\n\
     dat_idx integer not null\n\
 );\n\
@@ -72,6 +72,8 @@ create table file (\n\
     crc integer,\n\
     md5 binary,\n\
     sha1 binary,\n\
+    sha256 binary,\n\
+    missing integer not null,\n\
     primary key (game_id, file_type, file_idx)\n\
 );\n\
 create index file_game_type on file (game_id, file_type);\n\
@@ -94,7 +96,13 @@ create table test (\n\
     result integer not null,\n\
     primary key (rule_idx, test_idx)\n\
 );\n",
-    {}
+    {
+        {MigrationVersions(3, 4), "\
+alter table file add column sha256 binary;\n\
+alter table file add column missing integer not null default 0;\n\
+"}
+    }
+
 };
 
 const std::string RomDB::init2_sql = "\
@@ -110,7 +118,7 @@ std::unordered_map<int, std::string> RomDB::queries = {
     {  DELETE_GAME, "delete from game where game_id = :game_id" },
     {  INSERT_DAT_DETECTOR, "insert into dat (dat_idx, name, author, version) values (-1, :name, :author, :version)" },
     {  INSERT_DAT, "insert into dat (dat_idx, name, description, version) values (:dat_idx, :name, :description, :version)" },
-    {  INSERT_FILE, "insert into file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1) values (:game_id, :file_type, :file_idx, :name, :merge, :status, :location, :size, :crc, :md5, :sha1)" },
+    {  INSERT_FILE, "insert into file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing) values (:game_id, :file_type, :file_idx, :name, :merge, :status, :location, :size, :crc, :md5, :sha1, :sha256, :missing)" },
     {  INSERT_GAME, "insert into game (name, description, dat_idx, parent) values (:name, :description, :dat_idx, :parent)" },
     {  INSERT_RULE, "insert into rule (rule_idx, start_offset, end_offset, operation) values (:rule_idx, :start_offset, :end_offset, :operation)" },
     {  INSERT_TEST, "insert into test (rule_idx, test_idx, type, offset, size, mask, value, result) values (:rule_idx, :test_idx, :type, :offset, :size, :mask, :value, :result)" },
@@ -118,13 +126,14 @@ std::unordered_map<int, std::string> RomDB::queries = {
     {  QUERY_DAT_DETECTOR, "select name, author, version from dat where dat_idx = -1" },
     {  QUERY_DAT, "select name, description, version from dat where dat_idx >= 0 order by dat_idx" },
     {  QUERY_FILE_FBN, "select g.name, f.file_idx from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.name = :name" },
-    {  QUERY_FILE, "select name, merge, status, location, size, crc, md5, sha1 from file where game_id = :game_id and file_type = :file_type order by file_idx" },
+    {  QUERY_FILE, "select name, merge, status, location, size, crc, md5, sha1, sha256, missing from file where game_id = :game_id and file_type = :file_type order by file_idx" },
     {  QUERY_GAME_ID, "select game_id from game where name = :name" },
     {  QUERY_GAME, "select game_id, description, dat_idx, parent from game where name = :name" },
     {  QUERY_HAS_DISKS, "select file_idx from file where file_type = 1 limit 1" },
     {  QUERY_HASH_TYPE_CRC, "select name from file where file_type = :file_type and crc not null limit 1" },
     {  QUERY_HASH_TYPE_MD5, "select name from file where file_type = :file_type and md5 not null limit 1" },
     {  QUERY_HASH_TYPE_SHA1, "select name from file where file_type = :file_type and sha1 not null limit 1" },
+    {  QUERY_HASH_TYPE_SHA256, "select name from file where file_type = :file_type and sha256 not null limit 1" },
     {  QUERY_LIST_DISK, "select distinct name from file where file_type = 1 order by name" },
     {  QUERY_LIST_GAME, "select name from game order by name" },
     {  QUERY_PARENT_BY_NAME, "select parent from game where name = :name" },
@@ -138,11 +147,11 @@ std::unordered_map<int, std::string> RomDB::queries = {
 };
 
 std::unordered_map<int, std::string> RomDB::parameterized_queries = {
-   {  QUERY_FILE_FBH, "select g.name as game_name, g.dat_idx, f.file_idx, f.name, f.size, f.crc, f.md5, f.sha1 from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.status <> :status @HASH@" },
+   {  QUERY_FILE_FBH, "select g.name as game_name, g.dat_idx, f.file_idx, f.name, f.size, f.crc, f.md5, f.sha1, f.sha256 from game g, file f where f.game_id = g.game_id and f.file_type = :file_type and f.status <> :status @HASH@" },
 
 };
 
-const RomDB::Statement RomDB::query_hash_type[] = { QUERY_HASH_TYPE_CRC, QUERY_HASH_TYPE_MD5, QUERY_HASH_TYPE_SHA1 };
+const RomDB::Statement RomDB::query_hash_type[] = { QUERY_HASH_TYPE_CRC, QUERY_HASH_TYPE_MD5, QUERY_HASH_TYPE_SHA1, QUERY_HASH_TYPE_SHA256 };
 
 
 void RomDB::init2() {
@@ -438,6 +447,7 @@ void RomDB::read_files(Game *game, filetype_t ft) {
         rom.merge = stmt->get_string("merge");
         rom.status = static_cast<Rom::Status>(stmt->get_int("status"));
         rom.where = static_cast<where_t>(stmt->get_int("location"));
+        rom.missing = stmt->get_bool("missing");
         rom.hashes = stmt->get_hashes();
         rom.hashes.size = stmt->get_uint64("size", Hashes::SIZE_UNKNOWN);
 
@@ -654,6 +664,7 @@ void RomDB::write_files(Game *game, filetype_t ft) {
         stmt->set_string("merge", rom.merge);
         stmt->set_int("status", rom.status);
         stmt->set_int("location", rom.where);
+        stmt->set_bool("missing", rom.missing);
         stmt->set_uint64("size", rom.hashes.size, Hashes::SIZE_UNKNOWN);
         stmt->set_hashes(rom.hashes, true);
         

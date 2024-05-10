@@ -11,6 +11,7 @@
 #cmakedefine HAVE_FNMATCH
 #cmakedefine HAVE_MD5INIT
 #cmakedefine HAVE_SHA1INIT
+#cmakedefine HAVE_SHA256INIT
 #cmakedefine HAVE_STRCASECMP
 #cmakedefine HAVE__STRICMP
 

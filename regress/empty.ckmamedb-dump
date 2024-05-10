@@ -1,3 +1,3 @@
 >>> table archive (archive_id, name, mtime, size, file_type)
 >>> table detector (detector_id, name, version)
->>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, detector_id)
+>>> table file (archive_id, file_idx, name, mtime, status, size, crc, md5, sha1, sha256, detector_id)
