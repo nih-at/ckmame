@@ -97,7 +97,9 @@ std::unordered_set<std::string> ckmame_used_variables = {
     "unknown_directory",
     "update_database",
     "use_torrentzip",
-    "verbose"
+    "verbose",
+    "warn_file_known",
+    "warn_file_unknown"
 };
 
 static bool contains_romdir(const std::string &ame);

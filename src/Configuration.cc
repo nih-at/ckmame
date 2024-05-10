@@ -122,7 +122,9 @@ TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
     { "use-description-as-name",  TomlSchema::boolean() },
     { "use-temp-directory",  TomlSchema::boolean() },
     { "use-torrentzip",  TomlSchema::boolean() },
-    { "verbose",  TomlSchema::boolean() }
+    { "verbose",  TomlSchema::boolean() },
+    { "warn-file-known",  TomlSchema::boolean() },
+    { "warn-file-unknown",  TomlSchema::boolean() }
 }, {});
 
 
@@ -172,7 +174,9 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("use-description-as-name", "use description as name of games in ROM database"),
     Commandline::Option("use-temp-directory", 't', "create output in temporary directory, move when done"),
     Commandline::Option("use-torrentzip", "use TORRENTZIP format for zip archives in ROM set"),
-    Commandline::Option("verbose", 'v', "print fixes made")
+    Commandline::Option("verbose", 'v', "print fixes made"),
+    Commandline::Option("warn-file-known", "report status of extra files that are known (default)"),
+    Commandline::Option("warn-file-unknown", "report status of extra files that are unknown (default)")
 };
 
 
@@ -189,6 +193,8 @@ std::unordered_map<std::string, std::string> Configuration::option_to_variable =
     { "no-report-summary", "report_summary" },
     { "no-report-no-good-dump", "report_no_good_dump" },
     { "no-update-database", "update_database" },
+    { "no-warn-file-known", "warn-file-known"},
+    { "no-warn-file-unknown", "warn-file-unknown"},
     { "roms-unzipped", "roms_zipped" }
 };
 
@@ -440,6 +446,12 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         else if (option.name == "no-update-database") {
             update_database = false;
         }
+        else if (option.name == "no-warn-file-known") {
+            warn_file_known = false;
+        }
+        else if (option.name == "no-warn-file-unknown") {
+            warn_file_unknown = false;
+        }
         else if (option.name == "old-db") {
             old_db = option.argument;
         }
@@ -493,6 +505,12 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         }
         else if (option.name == "verbose") {
             verbose = true;
+        }
+        else if (option.name == "warn-file-known") {
+            warn_file_known = true;
+        }
+        else if (option.name == "warn-file-unknown") {
+            warn_file_unknown = true;
         }
     }
 }
@@ -559,6 +577,8 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_bool(table, "use-temp-directory", use_temp_directory);
     set_bool(table, "use-torrentzip", use_torrentzip);
     set_bool(table, "verbose", verbose);
+    set_bool(table, "warn-file-known", warn_file_known);
+    set_bool(table, "warn-file-unknown", warn_file_unknown);
 }
 
 
