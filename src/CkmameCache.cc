@@ -190,10 +190,10 @@ void CkmameCache::ensure_extra_maps() {
 	switch ((name_type(file))) {
 	case NAME_IMAGES:
 	case NAME_ZIP: {
-            Progress::set_message("currently scanning '" + file + "'");
-
+            Progress::push_message("scanning '" + file + "'");
 	    auto a = Archive::open(file, entry.filetype, FILE_SUPERFLUOUS, 0);
 	    // TODO: loose: add loose files in directory
+            Progress::pop_message();
 	    break;
 	}
 
@@ -203,11 +203,12 @@ void CkmameCache::ensure_extra_maps() {
 	}
     }
 
-    Progress::set_message("currently scanning '" + configuration.rom_directory + "'");
+    Progress::push_message("scanning '" + configuration.rom_directory + "'");
 
     auto filetype = configuration.roms_zipped ? TYPE_DISK : TYPE_ROM;
     auto a = Archive::open_toplevel(configuration.rom_directory, filetype, FILE_SUPERFLUOUS, 0);
 
+    Progress::pop_message();
 
     for (const auto &directory : configuration.extra_directories) {
 	enter_dir_in_map_and_list(extra_delete_list, directory, FILE_EXTRA);
@@ -273,20 +274,22 @@ bool CkmameCache::enter_dir_in_map_and_list_unzipped(const DeleteListPtr &list, 
 		continue;
 	    }
 	    if (std::filesystem::is_directory(filepath)) {
-                Progress::set_message("currently scanning '" + filepath.string() + "'");
+                Progress::push_message("scanning '" + filepath.string() + "'");
 		auto a = Archive::open(filepath, TYPE_ROM, where, 0);
 		if (a) {
 		    list->add(a.get());
 		    a->close();
 		}
+                Progress::pop_message();
 	    }
 	}
 
-        Progress::set_message("currently scanning '" + directory_name + "'");
+        Progress::push_message("scanning '" + directory_name + "'");
 	auto a = Archive::open_toplevel(directory_name, TYPE_ROM, where, 0);
 	if (a) {
 	    list->add(a.get());
 	}
+        Progress::pop_message();
     }
     catch (...) {
 	return false;
@@ -305,11 +308,12 @@ bool CkmameCache::enter_dir_in_map_and_list_zipped(const DeleteListPtr &list, co
 	    enter_file_in_map_and_list(list, filepath, where);
 	}
 
-        Progress::set_message("currently scanning '" + dir_name + "'");
+        Progress::push_message("scanning '" + dir_name + "'");
         auto a = Archive::open_toplevel(dir_name, TYPE_DISK, where, 0);
 	if (a) {
 	    list->add(a.get());
 	}
+        Progress::pop_message();
     }
     catch (...) {
 	return false;
@@ -325,12 +329,13 @@ bool CkmameCache::enter_file_in_map_and_list(const DeleteListPtr &list, const st
     switch ((nt = name_type(name))) {
     case NAME_IMAGES:
     case NAME_ZIP: {
-        Progress::set_message("currently scanning '" + name + "'");
+        Progress::push_message("scanning '" + name + "'");
 	auto a = Archive::open(name, nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
 	if (a) {
 	    list->add(a.get());
 	    a->close();
 	}
+        Progress::pop_message();
 	break;
     }
 

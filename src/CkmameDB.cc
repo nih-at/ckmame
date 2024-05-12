@@ -434,6 +434,7 @@ void CkmameDB::find_file(filetype_t filetype, size_t detector_id, const FileData
 }
 
 void CkmameDB::refresh() {
+    auto progress = Progress::Message("refreshing directory '" + directory + "'");
     if (configuration.roms_zipped) {
         refresh_zipped();
     }
@@ -454,17 +455,19 @@ void CkmameDB::refresh_unzipped() {
                 continue;
             }
             if (std::filesystem::is_directory(filepath)) {
-                Progress::set_message("currently scanning '" + filepath.string() + "'");
+                Progress::push_message("scanning directory '" + filepath.string() + "'");
                 auto a = Archive::open(filepath, TYPE_ROM, where, 0);
                 a->close();
+                Progress::pop_message();
             }
         }
 
-        Progress::set_message("currently scanning '" + directory + "'");
+        Progress::push_message("scanning loose files in '" + directory + "'");
         auto a = Archive::open_toplevel(directory, TYPE_ROM, where, 0);
         if (a) {
             a->close();
         }
+        Progress::pop_message();
     }
     catch (...) {}
 }
@@ -480,11 +483,12 @@ void CkmameDB::refresh_zipped() {
             switch ((nt = name_type(filepath))) {
             case NAME_IMAGES:
             case NAME_ZIP: {
-                Progress::set_message("currently scanning '" + filepath.string() + "'");
+                Progress::push_message("scanning archive '" + filepath.string() + "'");
                 auto a = Archive::open(filepath, nt == NAME_ZIP ? TYPE_ROM : TYPE_DISK, where, 0);
                 if (a) {
                     a->close();
                 }
+                Progress::pop_message();
                 break;
             }
 
@@ -495,11 +499,12 @@ void CkmameDB::refresh_zipped() {
             }
         }
 
-        Progress::set_message("currently scanning '" + directory + "'");
+        Progress::push_message("scanning loose files in '" + directory + "'");
         auto a = Archive::open_toplevel(directory, TYPE_DISK, where, 0);
         if (a) {
             a->close();
         }
+        Progress::pop_message();
     }
     catch (...) {
     }

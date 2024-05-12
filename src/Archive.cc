@@ -185,6 +185,8 @@ bool Archive::file_ensure_hashes(uint64_t idx, size_t detector_id, int hashtypes
         return false;
     }
 
+    auto progress = Progress::Message("computing hashes for " + name + "/" + file.name);
+
     if (detector_id == 0) {
 	Hashes hashes;
 	hashes.add_types(Hashes::TYPE_ALL);

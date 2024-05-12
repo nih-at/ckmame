@@ -40,16 +40,27 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "globals.h"
 #include "ProgramName.h"
 
-std::string Progress::current_message;
+std::vector<std::string> Progress::messages;
 volatile bool Progress::siginfo_caught = false;
 bool Progress::trace = false;
 
-void Progress::set_message(std::string message) {
-    current_message = std::move(message);
+void Progress::push_message(std::string message) {
+    messages.emplace_back(std::move(message));
 
     if (trace || siginfo_caught) {
-        print_message();
+        print_message(true);
     }
+}
+
+void Progress::pop_message() {
+    if (messages.empty()) {
+        // TODO: warning?
+        return;
+    }
+    if (trace){
+        print_message(false);
+    }
+    messages.pop_back();
 }
 
 void Progress::sig_handler(int signal) {
@@ -59,22 +70,31 @@ void Progress::sig_handler(int signal) {
     }
 #endif
 }
-void Progress::print_message() {
-    if (current_message.empty()) {
-        std::cout << "no progress available" << std::endl;
+void Progress::print_message(bool starting) {
+    if (!trace && !starting) {
         return;
     }
 
     if (trace) {
+        if (messages.empty()) {
+            return;
+        }
         // C++ 20:
         // std::cout << std::format("%Y-%m-%d %H:%M:%S ", std::chrono::system_clock::now());
         auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        std::cout << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S ");
+        std::cout << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S ") << (starting ? "start " : "done ");
     }
     else {
         std::cout << ProgramName::get() << ": ";
+        if (messages.empty()) {
+            std::cout << "no progress available" << std::endl;
+            return;
+        }
+        else {
+            std::cout << "currently ";
+        }
     }
-    std::cout << current_message;
+    std::cout << messages.back();
     if (!configuration.set.empty()) {
         std::cout << " in set " << configuration.set;
     }

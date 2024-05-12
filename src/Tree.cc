@@ -117,7 +117,7 @@ void Tree::traverse() {
 void Tree::traverse_internal(GameArchives *ancestor_archives) {
     GameArchives archives[] = { GameArchives(), ancestor_archives[0], ancestor_archives[1] };
     
-    Progress::set_message("currently checking " + name);
+    Progress::push_message("checking " + name);
 
     auto flags = check ? ARCHIVE_FL_CREATE : 0;
     
@@ -137,6 +137,8 @@ void Tree::traverse_internal(GameArchives *ancestor_archives) {
     if (check && !checked) {
         process(archives);
     }
+
+    Progress::pop_message();
 
     for (const auto &it : children) {
         it.second->traverse_internal(archives);

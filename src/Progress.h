@@ -39,20 +39,26 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class Progress {
   public:
-    static void set_message(std::string message);
-    static void update() { if (siginfo_caught) {print_message();}}
+    class Message {
+      public:
+        explicit Message(std::string message) {Progress::push_message(std::move(message));}
+        ~Message() {Progress::pop_message();}
+    };
     static void enable();
+    static void push_message(std::string message);
+    static void pop_message();
+    static void update() { if (siginfo_caught) {print_message(true);}}
 
     static bool trace;
 
   private:
-    static void print_message();
+    static void print_message(bool starting);
 
     static void sig_handler(int sig);
 
     static volatile bool siginfo_caught;
 
-    static std::string current_message;
+    static std::vector<std::string> messages;
 };
 
 #endif // PROGRESS_H
