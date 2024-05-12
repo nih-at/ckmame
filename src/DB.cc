@@ -124,10 +124,20 @@ void DB::migrate(const DBFormat &format, int from_version, int to_version) {
             throw Exception("can't migrate from version %d to %d", from_version, to_version);
         }
     }
-    
+
+    // TODO: upgrade existing db to read/write?
+    if (sqlite3_db_readonly(db, filename.c_str())) {
+        sqlite3_close(db);
+        if (sqlite3_open_v2(filename.c_str(), &db, SQLITE_OPEN_READWRITE, nullptr) != SQLITE_OK) {
+            throw Exception("%s", sqlite3_errmsg(db));
+        }
+    }
+
     for (auto &step : migration_steps) {
         upgrade(format.id, step.version, step.statement);
     }
+
+    // TODO: downgrade to read only if it was read only?
 }
 
 
@@ -152,12 +162,12 @@ std::string DB::error() const {
 }
 
 
-DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(nullptr) {
+DB::DB(const DB::DBFormat &format, std::string filename_, int mode) : db(nullptr), filename(std::move(filename_)) {
     auto needs_init = false;
     
     if (mode & DBH_TRUNCATE) {
         std::error_code error;
-        std::filesystem::remove(name, error);
+        std::filesystem::remove(filename, error);
         if (error) {
             throw Exception("can't truncate: %s", error.message().c_str());
         }
@@ -175,13 +185,13 @@ DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(nullp
 
     if (mode & DBH_CREATE) {
 	sql3_flags |= SQLITE_OPEN_CREATE;
-        if (name[0] == ':' || !std::filesystem::exists(name)) {
+        if (filename[0] == ':' || !std::filesystem::exists(filename)) {
 	    needs_init = true;
 	}
     }
     
     try {
-        open(format, name, sql3_flags, needs_init);
+        open(format, sql3_flags, needs_init);
     }
     catch (Exception &e) {
         close();
@@ -190,10 +200,12 @@ DB::DB(const DB::DBFormat &format, const std::string &name, int mode) : db(nullp
 }
 
 
-void DB::open(const DBFormat &format, const std::string &name, int sql3_flags, bool needs_init) {
-    if (sqlite3_open_v2(name.c_str(), &db, sql3_flags, nullptr) != SQLITE_OK) {
+void DB::open(const DBFormat &format, int sql3_flags, bool needs_init) {
+    if (sqlite3_open_v2(filename.c_str(), &db, sql3_flags, nullptr) != SQLITE_OK) {
         throw Exception("%s", sqlite3_errmsg(db));
     }
+
+    auto db_readonly = sqlite3_db_readonly(db, filename.c_str());
 
     if (sqlite3_exec(db, PRAGMAS, nullptr, nullptr, nullptr) != SQLITE_OK) {
         throw Exception("can't set options: %s", sqlite3_errmsg(db));

@@ -114,7 +114,7 @@ public:
         std::unordered_map<MigrationVersions, std::string> migrations;
     };
 
-    DB(const DBFormat &format, const std::string &name, int mode);
+    DB(const DBFormat &format, std::string filename, int mode);
     virtual ~DB();
     
     sqlite3 *db;
@@ -148,11 +148,12 @@ private:
     
     [[nodiscard]] int get_version(const DBFormat &format) const;
     void check_version(const DBFormat &format);
-    void open(const DBFormat &format, const std::string &name, int sql3_flags, bool needs_init);
+    void open(const DBFormat &format, int sql3_flags, bool needs_init);
     void close();
     void migrate(const DBFormat &format, int from_version, int to_version);
     void upgrade(int format, int version, const std::string &statement) const;
 
+    std::string filename;
     std::unordered_map<StatementID, std::shared_ptr<DBStatement>> statements;
 };
 
