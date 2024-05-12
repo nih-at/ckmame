@@ -205,8 +205,6 @@ void DB::open(const DBFormat &format, int sql3_flags, bool needs_init) {
         throw Exception("%s", sqlite3_errmsg(db));
     }
 
-    auto db_readonly = sqlite3_db_readonly(db, filename.c_str());
-
     if (sqlite3_exec(db, PRAGMAS, nullptr, nullptr, nullptr) != SQLITE_OK) {
         throw Exception("can't set options: %s", sqlite3_errmsg(db));
     }
