@@ -1,0 +1,6 @@
+description test mkmamedb database creation, ok
+return 0
+program mkmamedb
+arguments mamedb.dat
+file mamedb.dat mamedb-sha256.dat
+file mame.db {} mamedb-sha256.dump

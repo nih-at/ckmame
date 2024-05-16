@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<datafile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://datomatic.no-intro.org/stuff https://datomatic.no-intro.org/stuff/schema_nointro_datfile_v3.xsd">
+	<header>
+		<id>100000</id>
+		<name>Nointro-MIA-test</name>
+		<description>Nointro Test for SHA256 tag</description>
+		<version>20240518-151515</version>
+		<author>ckmame</author>
+		<clrmamepro forcenodump="required"/>
+	</header>
+	<game name="1-4" id="0001">
+		<description>single file</description>
+		<rom name="04.rom" size="4" crc="d87f7e0c" md5="098f6bcd4621d373cade4e832627b4f6" sha1="a94a8fe5ccb19ba61c4c0873d391e987982fbbd3" sha256="9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08" />
+	</game>
+</datafile>
