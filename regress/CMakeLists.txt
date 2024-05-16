@@ -49,6 +49,7 @@ set(DBS
   mamedb-file-no-crc.db
   mamedb-lost-parent-ok.db
   mamedb-merge-parent.db
+  mamedb-mia.db
   mamedb-no-data.db
   mamedb-one-game-two-roms.db
   mamedb-parent-crcdiff.db

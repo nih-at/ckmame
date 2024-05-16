@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<datafile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://datomatic.no-intro.org/stuff https://datomatic.no-intro.org/stuff/schema_nointro_datfile_v3.xsd">
+	<header>
+		<id>100000</id>
+		<name>Nointro-MIA-test</name>
+		<description>Nointro Test for MIA tag</description>
+		<version>20240518-151515</version>
+		<author>ckmame</author>
+		<clrmamepro forcenodump="required"/>
+	</header>
+	<game name="1-mia" id="0001">
+		<description>single file, MIA</description>
+		<rom name="04.rom" size="4" crc="d87f7e0c" md5="098f6bcd4621d373cade4e832627b4f6" sha1="a94a8fe5ccb19ba61c4c0873d391e987982fbbd3" mia="yes" />
+	</game>
+	<game name="2-1mia" id="0002">
+		<description>two files, one MIA</description>
+		<rom name="04.rom" size="4" crc="d87f7e0c" md5="098f6bcd4621d373cade4e832627b4f6" sha1="a94a8fe5ccb19ba61c4c0873d391e987982fbbd3" mia="yes" />
+		<rom name="08.rom" size="8" crc="3656897d" md5="095ca6fcc1279865662b553147eb8f6d" sha1="111bb8b7549e3386a996845405b02164f17c7b37" />
+	</game>
+	<game name="2-2mia" id="0003">
+		<description>two files, both MIA</description>
+		<rom name="04.rom" size="4" crc="d87f7e0c" md5="098f6bcd4621d373cade4e832627b4f6" sha1="a94a8fe5ccb19ba61c4c0873d391e987982fbbd3" mia="yes" />
+		<rom name="0c.rom" size="12" crc="0623c932" md5="b60c52bf4849067f0b57c8bd30985466" sha1="2f2d205d5451d3256cf1c693982b40101e9989bf" mia="yes"/>
+	</game>
+</datafile>
