@@ -58,7 +58,7 @@ public:
     std::string filename(filetype_t filetype) const;
     bool is_mergable(const Rom &other) const;
     
-    std::string status_name(bool verbose = false) const { return status_name(status); }
+    std::string status_name(bool verbose = false) const { return status_name(status, verbose); }
     static std::string status_name(Status status, bool verbose = false);
 };
 

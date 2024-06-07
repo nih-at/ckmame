@@ -76,7 +76,7 @@ std::string Dumpgame::format_checksums(const Hashes *hashes) {
 
 
 void Dumpgame::print_diskline(Rom *disk) {
-    auto message = "\t\tdisk " + pad_string(disk->name, 12) + format_checksums(&disk->hashes) + " status " + disk->status_name(true) + " in " + where_name[disk->where];
+    auto message = "\t\tdisk " + disk->name + " " + format_checksums(&disk->hashes) + " status " + disk->status_name(true) + " in " + where_name[disk->where];
     if (!disk->merge.empty() && disk->name != disk->merge) {
         message += " (" + disk->merge + ")";
     }
@@ -85,15 +85,19 @@ void Dumpgame::print_diskline(Rom *disk) {
 
 
 void Dumpgame::print_romline(Rom *rom) {
-    auto message = "\t\tfile " + pad_string(rom->name, 12) + "  size ";
+    auto message = "\t\tfile " + rom->name + "  size ";
     if (rom->is_size_known()) {
-        message += pad_string_left(std::to_string(rom->hashes.size), 7);
+        message += std::to_string(rom->hashes.size);
     }
     else {
         message += "unknown";
     }
     message += format_checksums(&rom->hashes);
-    message += " status " + rom->status_name(true) + " in " + where_name[rom->where];
+    message += " status " + rom->status_name(true);
+    if (rom->mia) {
+        message += " mia";
+    }
+    message += std::string(" in ") + where_name[rom->where];
     if (!rom->merge.empty() && rom->name != rom->merge) {
         message += " (" + rom->merge + ")";
     }

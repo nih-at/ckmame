@@ -584,11 +584,11 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_string(table, "old-db", old_db);
     set_bool(table, "report-changes", report_changes);
     set_bool(table, "report-correct", report_correct);
-    set_bool(table, "report-correct", report_correct_mia);
+    set_bool(table, "report-correct-mia", report_correct_mia);
     set_bool(table, "report-detailed", report_detailed);
     set_bool(table, "report-fixable", report_fixable);
     set_bool(table, "report-missing", report_missing);
-    set_bool(table, "report-missing", report_missing_mia);
+    set_bool(table, "report-missing-mia", report_missing_mia);
     set_bool(table, "report-summary", report_summary);
     set_bool(table, "report-no-good-dump", report_no_good_dump);
     set_string(table, "rom-directory", rom_directory);
