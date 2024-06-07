@@ -59,7 +59,7 @@ void Fixdat::write(const Game *game, const Result *result) {
     if (failed) {
 	return;
     }
-    if (result->game != GS_MISSING && result->game != GS_PARTIAL) {
+    if (result->game != GS_MISSING && result->game != GS_MISSING_MIA && result->game != GS_PARTIAL) {
 	return;
     }
 
