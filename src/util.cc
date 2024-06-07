@@ -33,6 +33,7 @@
 
 #include "util.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cinttypes>
 #include <cstdio>
@@ -54,15 +55,26 @@
 
 #define BIN2HEX(n) ((n) >= 10 ? (n) + 'a' - 10 : (n) + '0')
 
+static bool ichar_equals(char a, char b)
+{
+    return std::tolower(static_cast<unsigned char>(a)) ==
+           std::tolower(static_cast<unsigned char>(b));
+}
+
+bool iequals(const std::string& a, const std::string& b)
+{
+    return a.size() == b.size() &&
+           std::equal(a.begin(), a.end(), b.begin(), ichar_equals);
+}
 
 std::string bin2hex(const std::vector<uint8_t> &bin) {
     auto hex = std::string(bin.size() * 2, '\0');
-    
+
     for (size_t i = 0; i < bin.size(); i++) {
         hex[i * 2] = BIN2HEX(bin[i] >> 4);
         hex[i * 2 + 1] = BIN2HEX(bin[i] & 0xf);
     }
-    
+
     return hex;
 }
 
@@ -74,17 +86,17 @@ std::vector<uint8_t> hex2bin(const std::string &hex) {
     if (hex.size() % 2 != 0) {
         throw Exception("hex string with odd number of digits");
     }
-    
+
     if (hex.find_first_not_of("0123456789AaBbCcDdEeFf") != std::string::npos) {
         throw Exception("hex string with invalid digit");
     }
-    
+
     auto bin = std::vector<uint8_t>(hex.size() / 2);
-    
+
     for (size_t i = 0; i < bin.size(); i++) {
         bin[i] = static_cast<uint8_t>(HEX2BIN(hex[i * 2]) << 4 | HEX2BIN(hex[i * 2 + 1]));
     }
-    
+
     return bin;
 }
 
@@ -106,7 +118,7 @@ name_type_t name_type(const std::string &name) {
     if (filename == CkmameDB::db_name || filename == DatDB::db_name || filename == ".DS_Store" || filename.string().substr(0, 2) == "._") {
         return NAME_IGNORE;
     }
-    
+
     if (configuration.roms_zipped && is_ziplike(name)) {
 	return NAME_ZIP;
     }
@@ -156,17 +168,17 @@ std::filesystem::path home_directory() {
 
 bool is_ziplike(const std::string &fname) {
     auto extension = std::filesystem::path(fname).extension();
-    
-    if (strcasecmp(extension.c_str(), ".zip") == 0) {
+
+    if (iequals(extension, ".zip")) {
         return true;
     }
-    
+
 #ifdef HAVE_LIBARCHIVE
-    if (strcasecmp(extension.c_str(), ".7z") == 0) {
+    if (iequals(extension, ".7z")) {
         return true;
     }
 #endif
-    
+
     return false;
 }
 
@@ -223,11 +235,11 @@ std::string string_format_v(const char *format, va_list ap) {
 
 std::string string_lower(const std::string &s) {
     auto l = std::string(s.size(), ' ');
-    
+
     for (size_t i = 0; i < s.size(); i++) {
         l[i] = static_cast<char>(tolower(s[i]));
     }
-    
+
     return l;
 }
 
@@ -235,13 +247,13 @@ std::string string_lower(const std::string &s) {
 
 std::string slurp(const std::string &filename) {
     auto f = std::ifstream(filename, std::ios::in | std::ios::binary);
-        
+
     const auto size = std::filesystem::file_size(filename);
-        
+
     std::string text(size, '\0');
-        
+
     f.read(text.data(), static_cast<std::streamsize>(size));
-        
+
     return text;
 }
 

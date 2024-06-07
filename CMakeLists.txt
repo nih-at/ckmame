@@ -64,8 +64,6 @@ check_function_exists(MD5Init HAVE_MD5INIT)
 check_function_exists(SHA1Init HAVE_SHA1INIT)
 check_function_exists(SHA256Init HAVE_SHA256INIT)
 check_function_exists(fnmatch HAVE_FNMATCH)
-check_symbol_exists(_stricmp string.h HAVE__STRICMP)
-check_symbol_exists(strcasecmp strings.h HAVE_STRCASECMP)
 
 if(NOT ZLIB_FOUND)
   message(ERROR "-- zlib library not found (required)")

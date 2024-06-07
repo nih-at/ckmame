@@ -55,6 +55,7 @@ name_type_t name_type(const std::string &name);
 void diff_lines(const std::vector<std::string>& old_lines, const std::vector<std::string>& new_lines, size_t& added, size_t& removed);
 bool ensure_dir(const std::filesystem::path& name, bool strip_filename); // TODO: replace with ensure_directory
 void ensure_directory(const std::filesystem::path& name, bool strip_filename = false);
+bool iequals(const std::string& a, const std::string& b);
 bool is_ziplike(const std::string &fname);
 std::filesystem::path home_directory();
 std::string human_number(uint64_t value);
