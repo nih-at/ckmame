@@ -3,6 +3,7 @@ X.X (Unreleased)
 
 * Don't match any files for ROMs or disks with no hashes.
 * When only keeping complete games, minimize searching when a ROM is missing.
+* Add support for SHA256 and mia flag for ROMs and disks.
 
 2.1 (2024-02-23)
 ================
