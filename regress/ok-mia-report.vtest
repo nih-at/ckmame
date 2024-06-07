@@ -1,0 +1,11 @@
+description test single-rom game (no parent), zip is correct, ROM is mia
+return 0
+arguments -Fv --report-correct-mia 1-mia
+file mame.db mamedb-mia.db
+file roms/1-mia.zip 1-4-ok.zip
+file roms/.ckmame.db {} <inline.ckmamedb>
+end-of-inline-data
+stdout
+In game 1-mia:
+game 1-mia                                   : correct (mia)
+end-of-inline-data

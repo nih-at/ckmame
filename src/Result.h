@@ -42,7 +42,9 @@
 
 enum GameStatus {
     GS_MISSING, /* not a single own ROM found */
+    GS_MISSING_MIA, /* not a single own ROM found, all own ROMs marked as mia in ROM database */
     GS_CORRECT, /* all ROMs correct */
+    GS_CORRECT_MIA, /* all ROMs correct, at least one marked mia in ROM database */
     GS_FIXABLE, /* only fixable errors */
     GS_PARTIAL, /* some ROMs missing */
     GS_OLD      /* all ROMs in old */

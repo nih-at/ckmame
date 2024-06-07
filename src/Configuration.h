@@ -104,9 +104,11 @@ public:
     std::string old_db;
     bool report_changes; /* report changes to complete or missing lists */
     bool report_correct; /* report ROMs that are correct */
+    bool report_correct_mia; /* report ROMs that are correct but marked as mia in ROM db. */
     bool report_detailed; /* one line for each ROM */
     bool report_fixable; /* report ROMs that are not correct but can be fixed */
-    bool report_missing; /* report missing ROMs with good dumps, one line per game if no own ROM found */
+    bool report_missing; /* report missing ROMs with good dumps that are not marked as mia in ROM db, one line per game if no own ROM found */
+    bool report_missing_mia; /* report missing ROMs that are marked as mia in ROM db. */
     bool report_no_good_dump; /* report ROMs that are not correct and can not be fixed */
     bool report_summary; /* print statistics about ROM set at end of run */
     std::string rom_db;

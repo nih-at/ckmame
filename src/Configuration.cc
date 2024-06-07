@@ -105,9 +105,11 @@ TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
     { "profiles", TomlSchema::array(TomlSchema::string()) },
     { "report-changes",  TomlSchema::boolean() },
     { "report-correct",  TomlSchema::boolean() },
+    { "report-correct-mia",  TomlSchema::boolean() },
     { "report-detailed",  TomlSchema::boolean() },
     { "report-fixable",  TomlSchema::boolean() },
     { "report-missing",  TomlSchema::boolean() },
+    { "report-missing-mia",  TomlSchema::boolean() },
     { "report-no-good-dump",  TomlSchema::boolean() },
     { "report-summary",  TomlSchema::boolean() },
     { "rom-directory", TomlSchema::string() },
@@ -150,18 +152,22 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("no-create-fixdat", "don't create fixdat (default)"),
     Commandline::Option("no-report-changes", "don't report changes to correct and missing lists (default)"),
     Commandline::Option("no-report-correct", "don't report status of ROMs that are correct (default)"),
+    Commandline::Option("no-report-correct-mia", "don't report status of ROMs that are correct but marked as mia in ROM database (default)"),
     Commandline::Option("no-report-detailed", "don't report status of every ROM (default)"),
     Commandline::Option("no-report-fixable", "don't report status of ROMs that can be fixed"),
-    Commandline::Option("no-report-missing", "don't report status of ROMs that are missing"),
+    Commandline::Option("no-report-missing", "don't report status of ROMs that are missing and not marked as mia in ROM database"),
+    Commandline::Option("no-report-missing-mia", "don't report status of ROMs that are missing and marked as mia in ROM database (default)"),
     Commandline::Option("no-report-no-good-dump", "don't report status of ROMs for which no good dump exists (default)"),
     Commandline::Option("no-report-summary", "don't print summary of ROM set status (default)"),
     Commandline::Option("no-update-database", "don't update ROM database (default)"),
     Commandline::Option("old-db", 'O', "dbfile", "use database dbfile for old ROMs"),
     Commandline::Option("report-changes", "report changes to correct and missing lists"),
-    Commandline::Option("report-correct", 'c', "report status of ROMs that are correct"),
+    Commandline::Option("report-correct", 'c', "report status of ROMs that are correct but marked as mia in ROM database"),
+    Commandline::Option("report-correct-mia", "report status of ROMs that are correct"),
     Commandline::Option("report-detailed", "report status of every ROM"),
     Commandline::Option("report-fixable", "report status of ROMs that can be fixed (default)"),
-    Commandline::Option("report-missing", "report status of ROMs that are missing (default)"),
+    Commandline::Option("report-missing", "report status of ROMs that are missing and not marked as mia in ROM database (default)"),
+    Commandline::Option("report-missing-mia", "report status of ROMs that are missing and marked as mia in ROM database"),
     Commandline::Option("report-no-good-dump", "don't suppress reporting status of ROMs for which no good dump exists"),
     Commandline::Option("report-summary", "print summary of ROM set status"),
     Commandline::Option("rom-db", 'D', "dbfile", "use ROM database dbfile"),
@@ -187,9 +193,11 @@ std::unordered_map<std::string, std::string> Configuration::option_to_variable =
     { "no-create-fixdat", "create_fixdat" },
     { "no-report-changes", "report_changes" },
     { "no-report-correct", "report_correct" },
+    { "no-report-correct-mia", "report_correct_mia" },
     { "no-report-detailed", "report_detailed" },
     { "no-report-fixable", "report_fixable" },
     { "no-report-missing", "report_missing" },
+    { "no-report-missing-mia", "report_missing_mia" },
     { "no-report-summary", "report_summary" },
     { "no-report-no-good-dump", "report_no_good_dump" },
     { "no-update-database", "update_database" },
@@ -250,10 +258,12 @@ void Configuration::reset() {
     move_from_extra = false;
     old_db = RomDB::default_old_name();
     report_correct = false;
+    report_correct_mia = false;
     report_changes = false;
     report_detailed = false;
     report_fixable = true;
     report_missing = true;
+    report_missing_mia = false;
     report_no_good_dump = false;
     report_summary = false;
     rom_db = RomDB::default_name();
@@ -428,6 +438,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         else if (option.name == "no-report-correct") {
             report_correct = false;
         }
+        else if (option.name == "no-report-correct-mia") {
+            report_correct_mia = false;
+        }
         else if (option.name == "no-report-detailed") {
             report_detailed = false;
         }
@@ -436,6 +449,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         }
         else if (option.name == "no-report-missing") {
             report_missing = false;
+        }
+        else if (option.name == "no-report-missing-mia") {
+            report_missing_mia = false;
         }
         else if (option.name == "no-report-summary") {
             report_summary = false;
@@ -461,6 +477,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         else if (option.name == "report-correct") {
             report_correct = true;
         }
+        else if (option.name == "report-correct-mia") {
+            report_correct_mia = true;
+        }
         else if (option.name == "report-detailed") {
             report_detailed = true;
         }
@@ -469,6 +488,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         }
         else if (option.name == "report-missing") {
             report_missing = true;
+        }
+        else if (option.name == "report-missing-mia") {
+            report_missing_mia = true;
         }
         else if (option.name == "report-summary") {
             report_summary = true;
@@ -562,9 +584,11 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_string(table, "old-db", old_db);
     set_bool(table, "report-changes", report_changes);
     set_bool(table, "report-correct", report_correct);
+    set_bool(table, "report-correct", report_correct_mia);
     set_bool(table, "report-detailed", report_detailed);
     set_bool(table, "report-fixable", report_fixable);
     set_bool(table, "report-missing", report_missing);
+    set_bool(table, "report-missing", report_missing_mia);
     set_bool(table, "report-summary", report_summary);
     set_bool(table, "report-no-good-dump", report_no_good_dump);
     set_string(table, "rom-directory", rom_directory);

@@ -55,6 +55,7 @@ class Dumpgame : public Command {
         DISKS,
         GAMES,
         HASH_TYPES,
+        MIA,
         SUMMARY
     };
     bool brief_mode;

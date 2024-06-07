@@ -50,7 +50,11 @@
 #define DBH_TRUNCATE 0x40                               /* delete database if it exists */
 #define DBH_NEW (DBH_CREATE | DBH_TRUNCATE | DBH_WRITE) /* create new writable empty database */
 
-enum dbh_list { DBH_KEY_LIST_DISK, DBH_KEY_LIST_GAME };
+enum dbh_list {
+    DBH_KEY_LIST_DISK,
+    DBH_KEY_LIST_GAME,
+    DBH_KEY_LIST_MIA,
+};
 
 // This should be a private nested class of DB, but C++ hash support is utterly stupid and doesn't support that.
 class MigrationVersions {

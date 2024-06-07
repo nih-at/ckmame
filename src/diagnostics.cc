@@ -113,8 +113,14 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
     if (!configuration.report_detailed) {
         switch (result.game) {
             case GS_CORRECT:
-                if (ft == TYPE_ROM && configuration.report_correct) {
-                    warn_game(ft, game, "correct");
+            case GS_CORRECT_MIA:
+                if (ft == TYPE_ROM) {
+                    if (configuration.report_correct) {
+                        warn_game(ft, game, "correct");
+                    }
+                    else if (result.game == GS_CORRECT_MIA && configuration.report_correct_mia) {
+                        warn_game(ft, game, "correct (mia)");
+                    }
                 }
                 return;
 
@@ -168,6 +174,12 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
                 }
                 return;
 
+            case GS_MISSING_MIA:
+                if (ft == TYPE_ROM && configuration.report_missing_mia) {
+                    warn_game(ft, game, "not a single file found (all mia)");
+                }
+                return;
+
             default:
                 break;
         }
@@ -194,8 +206,15 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
             break;
 
             case Match::MISSING:
-                if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) || configuration.report_detailed) {
-                    warn_game_file(ft, &rom, "missing");
+                if (rom.mia) {
+                    if (configuration.report_missing_mia || configuration.report_detailed) {
+                        warn_game_file(ft, &rom, "missing (mia)");
+                    }
+                }
+                else {
+                    if ((configuration.report_missing && (rom.status == Rom::OK || configuration.report_no_good_dump)) || configuration.report_detailed) {
+                        warn_game_file(ft, &rom, "missing");
+                    }
                 }
                 break;
 
@@ -215,7 +234,10 @@ diagnostics_game(filetype_t ft, const Game *game, const Result &result) {
 
             case Match::OK:
                 if (rom.status == Rom::OK) {
-                    if (configuration.report_correct || configuration.report_detailed) {
+                    if (rom.mia && configuration.report_correct_mia) {
+                        warn_game_file(ft, &rom, "correct (mia)");
+                    }
+                    else if (configuration.report_correct || configuration.report_detailed) {
                         warn_game_file(ft, &rom, "correct");
                     }
                 }

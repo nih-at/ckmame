@@ -54,6 +54,7 @@ std::vector<Commandline::Option> dumpgame_options = {
     Commandline::Option("disks", "list disks"),
     Commandline::Option("games", "list games"),
     Commandline::Option("hash-types", "show which hash types are used"),
+    Commandline::Option("mia", "list games with ROMs marked as mia"),
     Commandline::Option("summary", "print summary of ROM set")};
 
 std::unordered_set<std::string> dumpgame_used_variables = {"rom_db"};
@@ -168,6 +169,9 @@ void Dumpgame::global_setup(const ParsedCommandline &commandline) {
         else if (option.name == "games") {
             specials.insert(GAMES);
         }
+        else if (option.name == "missing") {
+            specials.insert(MIA);
+        }
         else if (option.name == "summary") {
             specials.insert(SUMMARY);
         }
@@ -218,6 +222,10 @@ bool Dumpgame::execute(const std::vector<std::string> &arguments_) {
 
             case HASH_TYPES:
                 dump_hash_types();
+                break;
+
+            case MIA:
+                dump_list(DBH_KEY_LIST_MIA);
                 break;
 
             case SUMMARY:

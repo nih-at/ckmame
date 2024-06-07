@@ -269,7 +269,7 @@ bool Parser::file_merge(filetype_t ft, const std::string& attr) {
 bool Parser::file_missing(filetype_t ft, bool attr){
     CHECK_STATE(PARSE_IN_FILE);
 
-    r[ft]->missing = attr;
+    r[ft]->mia = attr;
 
     return true;
 }

@@ -136,6 +136,7 @@ std::unordered_map<int, std::string> RomDB::queries = {
     {  QUERY_HASH_TYPE_SHA256, "select name from file where file_type = :file_type and sha256 not null limit 1" },
     {  QUERY_LIST_DISK, "select distinct name from file where file_type = 1 order by name" },
     {  QUERY_LIST_GAME, "select name from game order by name" },
+    {  QUERY_LIST_MIA, "select game.name as name from game, file where file.game_id = game.game_id and file.missing group by game.name order by game.name" },
     {  QUERY_PARENT_BY_NAME, "select parent from game where name = :name" },
     {  QUERY_PARENT, "select parent from game where game_id = :game_id" },
     {  QUERY_RULE, "select rule_idx, start_offset, end_offset, operation from rule order by rule_idx" },
@@ -447,7 +448,7 @@ void RomDB::read_files(Game *game, filetype_t ft) {
         rom.merge = stmt->get_string("merge");
         rom.status = static_cast<Rom::Status>(stmt->get_int("status"));
         rom.where = static_cast<where_t>(stmt->get_int("location"));
-        rom.missing = stmt->get_bool("missing");
+        rom.mia = stmt->get_bool("missing");
         rom.hashes = stmt->get_hashes();
         rom.hashes.size = stmt->get_uint64("size", Hashes::SIZE_UNKNOWN);
 
@@ -459,7 +460,8 @@ void RomDB::read_files(Game *game, filetype_t ft) {
 std::vector<std::string> RomDB::read_list(enum dbh_list type) {
     static const std::unordered_map<enum dbh_list, Statement> query_list = {
         { DBH_KEY_LIST_DISK, QUERY_LIST_DISK },
-        { DBH_KEY_LIST_GAME, QUERY_LIST_GAME }
+        { DBH_KEY_LIST_GAME, QUERY_LIST_GAME },
+        { DBH_KEY_LIST_MIA, QUERY_LIST_MIA }
     };
     
     auto it = query_list.find(type);
@@ -664,7 +666,7 @@ void RomDB::write_files(Game *game, filetype_t ft) {
         stmt->set_string("merge", rom.merge);
         stmt->set_int("status", rom.status);
         stmt->set_int("location", rom.where);
-        stmt->set_bool("missing", rom.missing);
+        stmt->set_bool("missing", rom.mia);
         stmt->set_uint64("size", rom.hashes.size, Hashes::SIZE_UNKNOWN);
         stmt->set_hashes(rom.hashes, true);
         

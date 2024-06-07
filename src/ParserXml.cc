@@ -43,7 +43,7 @@ const ParserXml::Arguments ParserXml::arguments_rom_sha256(TYPE_ROM, Hashes::TYP
 const ParserXml::Arguments ParserXml::arguments_disk(TYPE_DISK);
 const ParserXml::Arguments ParserXml::arguments_disk_md5(TYPE_DISK, Hashes::TYPE_MD5);
 const ParserXml::Arguments ParserXml::arguments_disk_sha1(TYPE_DISK, Hashes::TYPE_SHA1);
-const ParserXml::Arguments ParserXml::arguments_disk_sha256(TYPE_DISK, Hashes::TYPE_SHA1);
+const ParserXml::Arguments ParserXml::arguments_disk_sha256(TYPE_DISK, Hashes::TYPE_SHA256);
 
 void ParserXml::line_number_callback(void *context, size_t line_number){
     static_cast<ParserXml *>(context)->lineno = line_number;

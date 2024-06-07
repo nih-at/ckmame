@@ -1,0 +1,6 @@
+description test single-rom game (no parent), zip is missing, ROM is mia
+return 0
+arguments -Fv 1-mia
+file mame.db mamedb-mia.db
+stdout
+end-of-inline-data

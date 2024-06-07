@@ -42,6 +42,7 @@ void Stats::add_game(GameStatus status) {
     switch (status) {
         case GS_OLD:
         case GS_CORRECT:
+        case GS_CORRECT_MIA:
         case GS_FIXABLE:
             games_good++;
             break;
@@ -51,6 +52,7 @@ void Stats::add_game(GameStatus status) {
             break;
             
         case GS_MISSING:
+        case GS_MISSING_MIA:
             break;
     }
     

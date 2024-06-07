@@ -251,7 +251,9 @@ void update_game_status(const Game *game, Result *result) {
     bool all_dead, all_own_dead, all_correct, all_fixable;
 
     all_own_dead = all_dead = all_correct = all_fixable = true;
+    auto all_missing_mia = true;
     auto has_own = false;
+    auto has_mia = false;
 
     for (size_t ft = 0; ft < TYPE_MAX; ft++) {
         auto filetype = static_cast<filetype_t>(ft);
@@ -263,8 +265,14 @@ void update_game_status(const Game *game, Result *result) {
             if (rom.where == FILE_INGAME) {
                 has_own = true;
             }
+            if (rom.mia) {
+                has_mia = true;
+            }
             if (match->quality == Match::MISSING) {
                 all_fixable = false;
+                if (!rom.mia) {
+                    all_missing_mia = false;
+                }
             }
             else {
                 all_dead = false;
@@ -279,10 +287,20 @@ void update_game_status(const Game *game, Result *result) {
     }
         
     if (all_correct) {
-        result->game = GS_CORRECT;
+        if (has_mia) {
+            result->game = GS_CORRECT_MIA;
+        }
+        else {
+            result->game = GS_CORRECT;
+        }
     }
     else if (all_dead || (has_own && all_own_dead)) {
-	result->game = GS_MISSING;
+        if (all_missing_mia) {
+            result->game = GS_MISSING_MIA;
+        }
+        else {
+            result->game = GS_MISSING;
+        }
     }
     else if (all_fixable) {
 	result->game = GS_FIXABLE;

@@ -66,6 +66,7 @@ public:
         QUERY_HASH_TYPE_SHA256,
         QUERY_LIST_DISK,
         QUERY_LIST_GAME,
+        QUERY_LIST_MIA,
         QUERY_PARENT_BY_NAME,
         QUERY_PARENT,
         QUERY_RULE,

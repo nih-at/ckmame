@@ -1,0 +1,8 @@
+description test single-rom game (no parent), zip is correct, ROM is mia
+return 0
+arguments -Fv --report-missing-mia 1-mia
+file mame.db mamedb-mia.db
+stdout
+In game 1-mia:
+game 1-mia                                   : not a single file found (all mia)
+end-of-inline-data
