@@ -173,7 +173,7 @@ void Dumpgame::global_setup(const ParsedCommandline &commandline) {
         else if (option.name == "games") {
             specials.insert(GAMES);
         }
-        else if (option.name == "missing") {
+        else if (option.name == "mia") {
             specials.insert(MIA);
         }
         else if (option.name == "summary") {
