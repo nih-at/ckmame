@@ -1,3 +1,5 @@
+- every run for a set `foo` creates `saved/foo` and `unknown/foo` - remove them if empty
+
 ### nihtest
 
 - Remove mame.db from tests that don't need it.
