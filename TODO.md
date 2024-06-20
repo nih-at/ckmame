@@ -1,11 +1,11 @@
 - every run for a set `foo` creates `saved/foo` and `unknown/foo` - remove them if empty
 
-### nihtest
+# nihtest
 
 - Remove mame.db from tests that don't need it.
 - Only use mame.db files from inside the test directory.
 
-### Implement
+# Implement
 
 - Fix failing tests.
 - Variables in config file (e.g. for collection root directory).
@@ -14,13 +14,13 @@
 - mia="yes" support
 - fix bug: when ckmame is run without -F (or copying fails), the missing list is updated anyway
 
-### Write Tests for Config
+# Write Tests for Config
 
 - stats not reset between sets (move `stats` into `CkmameCache`)
 - test if "$set" works for keys in 'dats', 'dat-directories', and 'extra-directories'
 
 
-## other
+# Other
 
 - Move `delete_unknown_pattern` to `DatOptions`.
 
@@ -70,13 +70,9 @@
 
 * `mkmamedb`: analyze speed, make it faster
 
-* some runs use roms from `extra`, but then mark them as "not used", find out why
-
-* instead of looking in cloneof for roms, move all extra roms to `needed`
-
 * clean up archives in `.ckmame.db` for manually removed dirs/zips
 
-* unsorted
+# Unsorted
 
 - `mkmamedb` doesn't handle chds (ignores for zipped, includes in games as rom for unzipped)
 ! [feature] reorder cleanup step when renaming files to remove the copies
@@ -188,11 +184,3 @@ other features:
 - fix Xcode warnings
 - [test] fix preload on OS X
 - [feature] if `.ckmame.db` can't be opened, move aside and create new
-
-### Improve Detector support
-
-- define unique id for each detector (e. g. checksum over all fields)
-- in mame.db, store which dat uses which detector
-- split ckmamedb file table in (archive_id, file_number, name) and (archive_id, file_number, detector_uuid, size, hashes)
-- when entering archives in map, compute hashes for all needed detectors
-- when searching in ckmamedb, pass in which detector to use (or none)
