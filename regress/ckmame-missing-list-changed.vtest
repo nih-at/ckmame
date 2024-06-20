@@ -1,8 +1,11 @@
 description write list of missing games to file, changed
 return 0
-arguments --missing-list missing-list --no-report-missing --report-changes
+arguments -F --missing-list missing-list --no-report-missing --report-changes
 file mame.db mame.db
 file missing-list dummy missing-list.txt
+file roms/zero.zip {} zero-ok.zip
+file roms/zero-4.zip {} zero-ok.zip
+file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
 missing: 1 -> 17 (+17/-1)
 end-of-inline-data

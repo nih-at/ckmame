@@ -354,7 +354,7 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
                 write_lines(configuration.complete_list, new_complete);
             }
         }
-        if (!configuration.missing_list.empty()) {
+        if (!configuration.missing_list.empty() && configuration.fix_romset) {
             if (new_missing.empty()) {
                 std::filesystem::remove(configuration.missing_list, ec);
                 // TODO: throw all errors except ENOENT, if anyone can figure out how that's done in C++

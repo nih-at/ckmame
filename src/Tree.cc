@@ -192,7 +192,7 @@ void Tree::process(GameArchives *archives) {
 	    ret = fix_game(game.get(), archives[0], &res);
 	}
 
-        if (ret == 0 && (res.game == GS_CORRECT || res.game == GS_OLD || res.game == GS_FIXABLE)) {
+        if (ret == 0 && (res.game == GS_CORRECT || res.game == GS_CORRECT_MIA|| res.game == GS_OLD || res.game == GS_FIXABLE)) {
             ckmame_cache->complete_games.insert(game->name);
         }
 
