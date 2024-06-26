@@ -10,9 +10,6 @@
 - Fix failing tests.
 - Variables in config file (e.g. for collection root directory).
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
-- SHA256 support
-- mia="yes" support
-- fix bug: when ckmame is run without -F (or copying fails), the missing list is updated anyway
 
 # Write Tests for Config
 
