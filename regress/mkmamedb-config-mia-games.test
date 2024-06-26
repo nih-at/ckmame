@@ -1,11 +1,12 @@
 description test mkmamedb database creation, ok
 return 0
 program mkmamedb
-arguments mamedb.dat
+arguments --set Set mamedb.dat
 file .ckmamerc <inline>
 [global]
 delete-unknown-pattern = "04*"
 mia-games = "mia-games"
+["Set"]
 end-of-inline-data
 file mia-games <inline>
 2-4c
