@@ -34,7 +34,6 @@
 #include "CkMame.h"
 
 #include <algorithm>
-#include <csignal>
 #include <cstring>
 #include <filesystem>
 #include <string>
@@ -53,7 +52,6 @@
 #include "RomDB.h"
 #include "Stats.h"
 #include "Tree.h"
-#include "check_util.h"
 #include "cleanup.h"
 #include "globals.h"
 #include "superfluous.h"
