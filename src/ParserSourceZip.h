@@ -2,7 +2,7 @@
 #define HAD_PARSER_SOURCE_ZIP_H
 
 /*
-  ParserSourceFile.h -- reading parser input data from zip archive
+  ParserSourceZip.h -- reading parser input data from zip archive
   Copyright (C) 2008-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

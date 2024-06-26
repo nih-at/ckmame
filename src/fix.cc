@@ -1,5 +1,5 @@
 /*
-  fix.c -- fix ROM sets
+  fix.cc -- fix ROM sets
   Copyright (C) 1999-2015 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

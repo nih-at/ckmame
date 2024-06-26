@@ -1,5 +1,5 @@
 /*
-TomlSchema.h -- Schema for checking values in TOML files.
+TomlSchema.cc -- Schema for checking values in TOML files.
 Copyright (C) 2022 Dieter Baron and Thomas Klausner
 
 This file is part of ckmame, a program to superfluous rom sets for MAME.

@@ -1,5 +1,5 @@
 /*
-  detector_execute.c -- match file against detector and compute size/hashes
+  detector_execute.cc -- match file against detector and compute size/hashes
   Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

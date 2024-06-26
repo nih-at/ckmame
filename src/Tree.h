@@ -2,7 +2,7 @@
 #define HAD_TREE_H
 
 /*
-  tree.h -- traverse tree of games to check
+  Tree.h -- traverse tree of games to check
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

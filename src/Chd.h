@@ -1,7 +1,7 @@
 #ifndef HAD_CHD_H
 
 /*
-  chd.h -- accessing chd files
+  Chd.h -- accessing chd files
   Copyright (C) 2004-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

@@ -1,5 +1,5 @@
 /*
- archive_dir.c -- implementation of archive from directory
+ ArchiveDir.cc -- implementation of archive from directory
  Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
  This file is part of ckmame, a program to check rom sets for MAME.

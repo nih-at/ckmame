@@ -1,5 +1,5 @@
 /*
- dbh_cache.c -- files in dirs sqlite3 data base
+ CkmameDB.cc -- files in dirs sqlite3 data base
  Copyright (C) 2014-2015 Dieter Baron and Thomas Klausner
 
  This file is part of ckmame, a program to check rom sets for MAME.

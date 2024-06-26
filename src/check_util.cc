@@ -1,5 +1,5 @@
 /*
-  check_util.c -- utility functions needed only by ckmame itself
+  check_util.cc -- utility functions needed only by ckmame itself
   Copyright (C) 1999-2015 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

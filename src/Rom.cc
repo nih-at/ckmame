@@ -1,4 +1,3 @@
-
 /*
   ROM.cc -- information about one ROM
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner

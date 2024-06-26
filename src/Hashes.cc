@@ -1,5 +1,5 @@
 /*
-  hashes.c -- utility functions for hash handling
+  Hashes.cc -- utility functions for hash handling
   Copyright (C) 2004-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

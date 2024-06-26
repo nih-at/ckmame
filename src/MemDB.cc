@@ -1,5 +1,5 @@
 /*
-  memdb.c -- in-memory sqlite3 db
+  MemDB.cc -- in-memory sqlite3 db
   Copyright (C) 2007-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

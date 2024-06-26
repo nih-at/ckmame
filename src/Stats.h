@@ -2,7 +2,7 @@
 #define _HAD_STATS_H
 
 /*
- stats.h -- store stats of the ROM set
+ Stats.h -- store stats of the ROM set
  Copyright (C) 2018-2020 Dieter Baron and Thomas Klausner
 
  This file is part of ckmame, a program to check rom sets for MAME.

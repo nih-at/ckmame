@@ -1,5 +1,5 @@
 /*
-  output-db.c -- write games to DB
+  OutputContextDb.cc -- write games to DB
   Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

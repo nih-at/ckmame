@@ -1,5 +1,5 @@
 /*
-  sighandle.c -- signal handling
+  sighandle.cc -- signal handling
   Copyright (C) 2008-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

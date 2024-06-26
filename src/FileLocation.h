@@ -2,7 +2,7 @@
 #define HAD_FILE_LOCATION_H
 
 /*
-  file_location.h -- location of a file
+  FileLocation.h -- location of a file
   Copyright (C) 2005-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

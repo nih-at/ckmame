@@ -1,5 +1,5 @@
 /*
-  output.c -- output game info
+  OutputContext.cc -- output game info
   Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

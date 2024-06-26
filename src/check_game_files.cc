@@ -1,5 +1,5 @@
 /*
-  check_files.c -- match files against ROMs
+  check_game_files.c -- match files against ROMs
   Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

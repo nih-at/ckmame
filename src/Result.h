@@ -2,7 +2,7 @@
 #define HAD_RESULT_H
 
 /*
-  result.h -- result of game check
+  Result.h -- result of game check
   Copyright (C) 2006-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

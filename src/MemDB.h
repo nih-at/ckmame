@@ -2,7 +2,7 @@
 #define HAD_MEMDB_H
 
 /*
-  memdb.h -- in-memory sqlite3 db
+  MemDB.h -- in-memory sqlite3 db
   Copyright (C) 2007-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

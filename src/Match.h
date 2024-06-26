@@ -2,7 +2,7 @@
 #define HAD_MATCH_H
 
 /*
-  match.h -- matching files with ROMs
+  Match.h -- matching files with ROMs
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

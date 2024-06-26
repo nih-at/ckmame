@@ -1,5 +1,5 @@
 /*
-  output-cm.c -- write games to clrmamepro dat files
+  OutputContextCm.cc -- write games to clrmamepro dat files
   Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

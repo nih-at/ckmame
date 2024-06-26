@@ -1,5 +1,5 @@
 /*
-  ArchiveImages.h -- archive for directory of disk images
+  ArchiveImages.cc -- archive for directory of disk images
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

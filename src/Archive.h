@@ -2,7 +2,7 @@
 #define HAD_ARCHIVE_H
 
 /*
-  archive.h -- information about an archive
+  Archive.h -- information about an archive
   Copyright (C) 1999-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

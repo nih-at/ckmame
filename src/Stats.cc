@@ -1,5 +1,5 @@
 /*
- stats.c -- store stats of the ROM set
+ Stats.cc -- store stats of the ROM set
  Copyright (C) 2018 Dieter Baron and Thomas Klausner
  
  This file is part of ckmame, a program to check rom sets for MAME.

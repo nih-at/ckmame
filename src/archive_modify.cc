@@ -1,5 +1,5 @@
 /*
-  archive_modify.c -- functions to modify an archive
+  archive_modify.cc -- functions to modify an archive
   Copyright (C) 1999-2015 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

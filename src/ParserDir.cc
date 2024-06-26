@@ -1,5 +1,5 @@
 /*
-  parse-dir.c -- read info from zip archives
+  ParserDir.cc -- read info from zip archives
   Copyright (C) 2006-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

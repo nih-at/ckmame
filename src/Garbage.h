@@ -2,7 +2,7 @@
 #define HAD_GARBAGE_H
 
 /*
-  garbage.h -- move files to garbage directory
+  Garbage.h -- move files to garbage directory
   Copyright (C) 2006-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

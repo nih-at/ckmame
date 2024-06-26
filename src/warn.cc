@@ -1,5 +1,5 @@
 /*
-  warn.h -- emit warning
+  warn.cc -- emit warning
   Copyright (C) 1999-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

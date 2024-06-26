@@ -2,7 +2,7 @@
 #define HAD_FILE_H
 
 /*
-  file.h -- information about one file
+  File.h -- information about one file
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

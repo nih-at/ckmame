@@ -1,7 +1,7 @@
 #ifndef HAD_DBH_CACHE_H
 #define HAD_DBH_CACHE_H
 /*
- dbh_cache.h -- files in dirs sqlite3 database
+ CkmameDB.h -- files in dirs sqlite3 database
  Copyright (C) 2014-2021 Dieter Baron and Thomas Klausner
 
  This file is part of ckmame, a program to check rom sets for MAME.

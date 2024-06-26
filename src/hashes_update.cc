@@ -1,5 +1,5 @@
 /*
-  hashes_update.c -- compute hashes
+  hashes_update.cc -- compute hashes
   Copyright (C) 2004-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

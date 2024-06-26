@@ -1,5 +1,5 @@
 /*
-  romdb.c -- mame.db sqlite3 data base
+  RomDB.cc -- mame.db sqlite3 data base
   Copyright (C) 2013-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.
