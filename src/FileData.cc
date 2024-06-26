@@ -1,5 +1,5 @@
 /*
-  file.c -- initialize / finalize file structure
+  FileData.cc -- initialize / finalize file structure
   Copyright (C) 2004-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

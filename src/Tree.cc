@@ -1,5 +1,5 @@
 /*
-  tree.c -- traverse tree of games to check
+  Tree.cc -- traverse tree of games to check
   Copyright (C) 1999-2015 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

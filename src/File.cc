@@ -1,4 +1,3 @@
-
 /*
   File.cc -- information about one file on disk
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner

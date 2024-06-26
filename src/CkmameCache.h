@@ -2,7 +2,7 @@
 #define CKMAME_CKMAME_CACHE_H
 
 /*
-CkMameCache.h -- collection of CkmameDBs.
+CkmameCache.h -- collection of CkmameDBs.
 Copyright (C) 1999-2022 Dieter Baron and Thomas Klausner
 
 This file is part of ckmame, a program to check rom sets for MAME.

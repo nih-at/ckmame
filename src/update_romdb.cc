@@ -1,5 +1,5 @@
 /*
-  udpdate_romdb.cc -- make sure RomDB is up to date
+  update_romdb.cc -- make sure RomDB is up to date
   Copyright (C) 2022 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

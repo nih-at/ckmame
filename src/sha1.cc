@@ -1,4 +1,5 @@
-/* sha.c - Implementation of the Secure Hash Algorithm
+/*
+ * sha1.cc - Implementation of the Secure Hash Algorithm
  *
  * Copyright (C) 1995, A.M. Kuchling
  *

@@ -2,7 +2,7 @@
 #define HAD_DELETE_LIST_H
 
 /*
-  delete_list.h -- list of files to delete
+  DeleteList.h -- list of files to delete
   Copyright (C) 2005-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

@@ -1,5 +1,5 @@
 /*
-  globals.c -- definition of global variables
+  globals.cc -- definition of global variables
   Copyright (C) 2013-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

@@ -2,7 +2,7 @@
 #define HAD_GAME_H
 
 /*
-  game.h -- information about one game
+  Game.h -- information about one game
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

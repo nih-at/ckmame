@@ -1,5 +1,5 @@
 /*
-  ckmame.c -- main routine for ckmame
+  ckmame.cc -- main routine for ckmame
   Copyright (C) 1999-2018 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

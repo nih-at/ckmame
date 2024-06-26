@@ -1,5 +1,5 @@
 /*
-  find.c -- find ROM in ROM set or archives
+  find.cc -- find ROM in ROM set or archives
   Copyright (C) 2005-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

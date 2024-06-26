@@ -2,7 +2,7 @@
 #define HAD_PARSER_SOURCE_H
 
 /*
-  parser_source.h -- reading parser input data from various sources
+  ParserSource.h -- reading parser input data from various sources
   Copyright (C) 2008-2020 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

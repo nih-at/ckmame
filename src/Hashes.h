@@ -2,7 +2,7 @@
 #define HAD_HASHES_H
 
 /*
-  hashes.h -- hash related functions
+  Hashes.h -- hash related functions
   Copyright (C) 2004-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

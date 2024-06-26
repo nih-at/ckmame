@@ -2,7 +2,7 @@
 #define HAD_DB_STATEMENT_H
 
 /*
- dbh.h -- mame.db sqlite3 data base
+ DBStatement.h -- mame.db sqlite3 data base
  Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
  
  This file is part of ckmame, a program to check rom sets for MAME.

@@ -2,7 +2,7 @@
 #define HAD_DETECTOR_H
 
 /*
-  detector.h -- clrmamepro XML header skip detector
+  Detector.h -- clrmamepro XML header skip detector
   Copyright (C) 2007-2021 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

@@ -1,5 +1,5 @@
 /*
-  chd.c -- accessing chd files
+  Chd.cc -- accessing chd files
   Copyright (C) 2004-2014 Dieter Baron and Thomas Klausner
 
   This file is part of ckmame, a program to check rom sets for MAME.

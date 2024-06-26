@@ -1,7 +1,6 @@
 #ifndef HAD_ROM_H
 #define HAD_ROM_H
 
-
 /*
   Rom.h -- information about one ROM
   Copyright (C) 1999-2021 Dieter Baron and Thomas Klausner
