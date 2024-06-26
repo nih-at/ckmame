@@ -147,7 +147,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("fixdat-directory", "directory", "create fixdats in directory"),
     Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
     Commandline::Option("list-sets", "list all known sets"),
-    Commandline::Option("mia-games", "file", "write list of missing games to file"),
+    Commandline::Option("mia-games", "file", "read list of MIA games from file"),
     Commandline::Option("missing-list", "file", "write list of missing games to file"),
     Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
     Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
