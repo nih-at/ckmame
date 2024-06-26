@@ -1,5 +1,3 @@
-- every run for a set `foo` creates `saved/foo` and `unknown/foo` - remove them if empty
-
 # nihtest
 
 - Remove mame.db from tests that don't need it.
@@ -10,12 +8,12 @@
 - Fix failing tests.
 - Variables in config file (e.g. for collection root directory).
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
+- every run for a set `foo` creates `saved/foo` and `unknown/foo` - remove them if empty
 
 # Write Tests for Config
 
 - stats not reset between sets (move `stats` into `CkmameCache`)
 - test if "$set" works for keys in 'dats', 'dat-directories', and 'extra-directories'
-
 
 # Other
 
@@ -29,13 +27,9 @@
 
 - `mkmamedb`: When a game is in two dat files (identical name and ROMs), skip it from second (with warning).
 
-- Add test for `mkmamedb -F cm`.
-
 - Make `SIGINFO` handler more responsive.
 
 - handle multiple writers to ckmamedb
-
-- search loose files in zipped mode.
 
 - exceptions and error messages:
     - who creates which part of the error messages
@@ -63,11 +57,11 @@
 
 # Later
 
-* use CkmameDB as old db
+- use CkmameDB as old db
 
-* `mkmamedb`: analyze speed, make it faster
+- `mkmamedb`: analyze speed, make it faster
 
-* clean up archives in `.ckmame.db` for manually removed dirs/zips
+- clean up archives in `.ckmame.db` for manually removed dirs/zips
 
 # Unsorted
 
@@ -87,8 +81,6 @@
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
 + [feature] get needed files directly from parent (`inparent.test`)
 + [feature] inconsistent zip in ROM set: copy files to new zip
-+ [feature] config file (provides defaults overridable on command line)
-+ [feature] needed cleanup (automatically?)
 + [feature] `mkmamedb`: mark ROMs without checksums as `nogooddump`
 + [bug] `mkmamedb -F dat`:
   - write `&` unquoted (perhaps other meta characters as well)
@@ -104,14 +96,11 @@
 - [cleanup] access db directly in `find_*`
 - [cleanup] specify globally which parts of lists to fill/maintain
 - [cleanup] rom: use flag to specify whether we know the size
-- [bug] `dumpgame`: report real database version for /dat key
 - [bug] check if needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
 - [bug] diagnostics (fix?): don't process disks if checking samples
-- [feature] add hash-types option to `dumpgame`
 - [feature] `mkmamedb`: split to original CM dat files + detector XML on export
-- [feature] when file for nogooddump rom exists, check if needed elsewhere
 - [feature] database consistency checks during `mkmamedb`
   - are all roms of one set included in one other set
   - are two sets the same, just different name
@@ -122,7 +111,7 @@
 - [cleanup] handle archive refreshing in `archive.c`
 - [cleanup] rename: file is part of zip archive, rom is part of game
 
-other features:
+## other features
 - fixdat: if only checking child, ROM missing in parent is not in fixdat
 - parse: add state checking to `parse-cm.c`
 - parse: check for duplicate attributes
@@ -131,13 +120,13 @@ other features:
 - `mkmamedb`: no error message for missing newline in last line
 - `mkmamedb`: warn about sets without parent that use "merge" (`mamedb-merge-no-parent.dump`)
 - complete raine support (multiple archive names: `archive ( name "64th_street" name "64street" ))`
-- option to check if no good dumps are needed elsewhere
 
-* code cleanups:
-  - make `parse_cm` table driven
-  - fix all TODOs
+## code cleanups
+- make `parse_cm` table driven
+- fix all TODOs
 
-* tests:
+## tests
+- Add test for `mkmamedb -F cm`.
 - extend at least following tests to use md5/sha1 as well:
   - `delete-used-superfluous.test`
   - `needed-cleanup.test`
@@ -166,9 +155,9 @@ other features:
   - broken input
 - test using roms from two different 'old' roms
 
-* cachedb
+## CacheDB
 
-** maybe:
+### maybe
 - [feature] move database out of the way if it's an older version
 - [test] unzipped: take ROM from top-level file in roms
 - [test] run unzipped-`ckmamedb`-* for zip as well
@@ -176,7 +165,7 @@ other features:
 - [feature] compute all hashes when called with `-i`
 - [test] unzipped, dir with name ending in `.zip`
 
-** later
+### later
 - [feature] save detector hashes to cachedb
 - fix Xcode warnings
 - [test] fix preload on OS X
