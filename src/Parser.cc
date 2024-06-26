@@ -86,7 +86,7 @@ std::string Parser::state_name(parser_state_t state) {
 }
 
 ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                         const DatEntry* dat, OutputContext* output_context, Options options) {
+                         const DatEntry* dat, OutputContext* output_context, const Options& options) {
     size_t length = 0;
     for (const auto& pair : format_start) {
         length = std::max(pair.first.length(), length);
@@ -112,19 +112,19 @@ ParserPtr Parser::create(const ParserSourcePtr& source, const std::unordered_set
         return {};
 
     case CLRMAMEPRO:
-        return std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output_context, std::move(options)));
+        return std::shared_ptr<Parser>(new ParserCm(source, exclude, dat, output_context, options));
     case ROMCENTER:
-        return std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output_context, std::move(options)));
+        return std::shared_ptr<Parser>(new ParserRc(source, exclude, dat, output_context, options));
     case XML:
-        return std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output_context, std::move(options)));
+        return std::shared_ptr<Parser>(new ParserXml(source, exclude, dat, output_context, options));
     }
 
     return {};
 }
 
 bool Parser::parse(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude, const DatEntry* dat,
-                   OutputContext* out, Options options) {
-    auto parser = create(source, exclude, dat, out, std::move(options));
+                   OutputContext* out, const Options& options) {
+    auto parser = create(source, exclude, dat, out, options);
 
     if (!parser) {
         output.file_error("unknown dat format");
@@ -516,8 +516,8 @@ bool Parser::prog_version(const std::string& attr) {
 
 
 Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry* dat,
-               OutputContext* output_context_, Options options)
-    : options(std::move(options)),
+               OutputContext* output_context_, const Options& options)
+    : options(options),
       lineno(0),
       header_only(false),
       ignore(std::move(exclude)),
@@ -525,6 +525,7 @@ Parser::Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, 
       ps(std::move(source)),
       flags(0),
       header_set(false),
+      error(false),
       state(PARSE_IN_HEADER) {
     dat_default.merge(dat, nullptr);
     for (auto& i : r) {
@@ -610,15 +611,15 @@ void Parser::rom_end(filetype_t ft) {
             }
             else {
                 std::string name;
-                size_t n = 1;
+                size_t i = 1;
                 while (true) {
                     auto path = std::filesystem::path(r[ft]->name);
-                    name = path.stem().string() + " (" + std::to_string(n) + ")" + path.extension().string();
+                    name = path.stem().string() + " (" + std::to_string(i) + ")" + path.extension().string();
                     if (std::none_of(g->files[ft].begin(), g->files[ft].end(),
                                      [&name](const Rom& rom) { return name == rom.name; })) {
                         break;
                     }
-                    n += 1;
+                    i += 1;
                 }
                 output.line_error(lineno, "warning: two different ROMs with same name '%s', renamed to '%s'",
                                   r[ft]->name.c_str(), name.c_str());
@@ -640,5 +641,23 @@ void Parser::rom_end(filetype_t ft) {
         if (!r[ft]->merge.empty() && r[ft]->merge == r[ft]->name) {
             r[ft]->merge = "";
         }
+    }
+}
+
+Parser::Options::Options(std::optional<std::string> dat_name, bool use_configuration) {
+    if (!use_configuration) {
+        return;
+    }
+
+    if (dat_name) {
+        game_name_suffix = configuration.dat_game_name_suffix(*dat_name);
+        use_description_as_name = configuration.dat_use_description_as_name(*dat_name);
+    }
+    else {
+        use_description_as_name = configuration.use_description_as_name;
+    }
+    if (!configuration.mia_games.empty()) {
+        auto list = slurp_lines(configuration.mia_games);
+        mia_games.insert(list.begin(), list.end());
     }
 }

@@ -51,7 +51,6 @@
 #include "RomDB.h"
 #include "globals.h"
 #include "update_romdb.h"
-#include "util.h"
 
 std::vector<Commandline::Option> mkmamedb_options = {
     Commandline::Option("detector", "xml-file", "use header detector"),
@@ -78,12 +77,8 @@ std::unordered_set<std::string> mkmamedb_used_variables = {
 
 #define DEFAULT_FILE_PATTERNS "*.dat"
 
-static bool process_file(const std::string &fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags);
-static bool process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out);
-
 static int hashtypes;
 static bool cache_directory;
-static Parser::Options parser_options;
 
 int main(int argc, char **argv) {
     auto command = MkMameDB();
@@ -92,8 +87,7 @@ int main(int argc, char **argv) {
 }
 
 
-MkMameDB::MkMameDB() : Command("mkmamedb", "[rominfo-file ...]", mkmamedb_options, mkmamedb_used_variables), flags(0), fmt(OutputContext::FORMAT_DB), force(false), runtest(false), list_available_dats(false), list_dats(false) {
-}
+MkMameDB::MkMameDB() : Command("mkmamedb", "[rominfo-file ...]", mkmamedb_options, mkmamedb_used_variables) {}
 
 
 void MkMameDB::global_setup(const ParsedCommandline &commandline) {
@@ -181,25 +175,18 @@ void MkMameDB::global_setup(const ParsedCommandline &commandline) {
 }
 
 bool MkMameDB::execute(const std::vector<std::string> &arguments) {
-    parser_options.use_description_as_name = configuration.use_description_as_name;
-
-    if (!configuration.mia_games.empty()) {
-        auto list = slurp_lines(configuration.mia_games);
-        parser_options.mia_games.insert(list.begin(), list.end());
-    }
-
     if (list_available_dats) {
 	// TODO: store in set, output in cleanup() so every dat is listed only once
 	auto repository = DatRepository(configuration.dat_directories);
 
-	for (const auto &dat : repository.list_dats()) {
-	    output.message(dat);
+	for (const auto & dat_name : repository.list_dats()) {
+	    output.message(dat_name);
 	}
 	return true;
     }
     if (list_dats) {
-	for (const auto &dat : configuration.dats) {
-	    output.message(dat);
+	for (const auto & dat_name : configuration.dats) {
+	    output.message(dat_name);
 	}
 	return true;
     }
@@ -207,7 +194,6 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
     if (runtest) {
 	fmt = OutputContext::FORMAT_MTREE;
 	flags |= OUTPUT_FL_RUNTEST;
-	parser_options.full_archive_names = true;
 	cache_directory = false;
 	if (dbname.empty()) {
 	    // TODO: make this work on Windows
@@ -239,6 +225,10 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 	dbname = configuration.rom_db;
     }
 
+    parser_options = Parser::Options({});
+    if (runtest) {
+        parser_options.full_archive_names = true;
+    }
     auto ok = true;
 
     try {
@@ -264,7 +254,7 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 
 	for (auto name : arguments) {
 	    if (name == "-") {
-		if (!process_stdin(exclude, &dat, out.get())) {
+		if (!process_stdin(out.get())) {
 		    out->error_occurred();
 		    ok = false;
 		}
@@ -278,7 +268,7 @@ bool MkMameDB::execute(const std::vector<std::string> &arguments) {
 		    name.resize(last + 1);
 		}
 
-		if (!process_file(name, exclude, &dat, file_patterns, skip_files, out.get(), flags)) {
+		if (!process_file(name, out.get())) {
 		    out->error_occurred();
 		    ok = false;
 		}
@@ -304,12 +294,12 @@ bool MkMameDB::global_cleanup() {
 }
 
 
-static bool process_file(const std::string &fname, const std::unordered_set<std::string> &exclude, const DatEntry *dat, const std::vector<std::string> &file_patterns, const std::unordered_set<std::string> &files_skip, OutputContext *out, int flags) {
+bool MkMameDB::process_file(const std::string &fname, OutputContext *out) {
     struct zip *za;
 
     try {
 	auto mdb = std::make_unique<RomDB>(fname, DBH_READ);
-	return mdb->export_db(exclude, dat, out);
+	return mdb->export_db(exclude, &dat, out);
     }
     catch (std::exception &e) {
 	/* that's fine */
@@ -322,7 +312,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 	for (uint64_t i = 0; i < static_cast<uint64_t>(zip_get_num_entries(za, 0)); i++) {
 	    name = zip_get_name(za, i, 0);
 
-            if (files_skip.find(name) != files_skip.end()) {
+            if (skip_files.find(name) != skip_files.end()) {
                 continue;
             }
             auto skip = true;
@@ -338,7 +328,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
             try {
                 auto ps = std::make_shared<ParserSourceZip>(fname, za, name);
                 
-                if (!Parser::parse(ps, exclude, dat, out, parser_options)) {
+                if (!Parser::parse(ps, exclude, &dat, out, parser_options)) {
                     ok = false;
                 }
             }
@@ -363,7 +353,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 		ckmame_cache->register_directory(fname, FILE_ROMSET);
             }
 
-            auto ctx = ParserDir(nullptr, exclude, dat, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
+            auto ctx = ParserDir(nullptr, exclude, &dat, out, parser_options, fname, hashtypes, flags & OUTPUT_FL_RUNTEST);
             ok = ctx.parse();
 	}
 	else {
@@ -376,7 +366,7 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 
 		try {
 		    auto ps = std::make_shared<ParserSourceFile>(fname);
-		    ok = Parser::parse(ps, exclude, dat, out, parser_options);
+		    ok = Parser::parse(ps, exclude, &dat, out, parser_options);
 		} catch (std::exception &exception) {
 		    fprintf(stderr, "%s: can't process %s: %s\n", ProgramName::get().c_str(), fname.c_str(), exception.what());
 		    ok = false;
@@ -391,11 +381,11 @@ static bool process_file(const std::string &fname, const std::unordered_set<std:
 }
 
 
-static bool process_stdin(const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *out) {
+bool MkMameDB::process_stdin(OutputContext *out) {
     try {
         auto ps = std::make_shared<ParserSourceFile>("");
 
-        return Parser::parse(ps, exclude, dat, out, parser_options);
+        return Parser::parse(ps, exclude, &dat, out, parser_options);
     }
     catch (std::exception &exception) {
         fprintf(stderr, "%s: can't process stdin: %s\n", ProgramName::get().c_str(), exception.what());

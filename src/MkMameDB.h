@@ -36,6 +36,7 @@
 
 #include "Command.h"
 #include "OutputContext.h"
+#include "Parser.h"
 
 class MkMameDB : public Command {
   public:
@@ -46,19 +47,23 @@ class MkMameDB : public Command {
     bool global_cleanup() override;
 
   private:
+    bool process_file(const std::string &fname, OutputContext *out);
+    bool process_stdin(OutputContext *out);
+
+    Parser::Options parser_options{{}};
     std::string dbname, dbname_real;
     std::unordered_set<std::string> exclude;
     std::vector<std::string> file_patterns;
     std::unordered_set<std::string> skip_files;
     DatEntry dat;
-    int flags;
-    OutputContext::Format fmt;
+    int flags{0};
+    OutputContext::Format fmt{OutputContext::FORMAT_DB};
     std::string detector_name;
-    bool force;
-    bool runtest;
+    bool force{false};
+    bool runtest{false};
 
-    bool list_available_dats;
-    bool list_dats;
+    bool list_available_dats{false};
+    bool list_dats{false};
 };
 
 #endif // MKMAMEDB_H

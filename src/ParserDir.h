@@ -34,12 +34,14 @@
   IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <utility>
+
 #include "Archive.h"
 #include "Parser.h"
 
 class ParserDir : public Parser {
 public:
-    ParserDir(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, Options options, const std::string &dname, int hashtypes_, bool runtest_ = false) : Parser(source, exclude, dat, output, std::move(options)), directory_name(dname), hashtypes(hashtypes_), runtest(runtest_) { }
+    ParserDir(ParserSourcePtr source, const std::unordered_set<std::string> &exclude, const DatEntry *dat, OutputContext *output, const Options& options, std::string dname, int hashtypes_, bool runtest_ = false) : Parser(std::move(source), exclude, dat, output, options), directory_name(std::move(dname)), hashtypes(hashtypes_), runtest(runtest_) { }
     ~ParserDir() override = default;
     
     bool parse() override;

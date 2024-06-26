@@ -60,21 +60,21 @@ class Parser {
   public:
     class Options {
       public:
-        Options() : full_archive_names(false), use_description_as_name(false) {}
+        Options(std::optional<std::string> dat_name, bool use_configuration = true);
 
-        bool full_archive_names;
+        bool full_archive_names = false;
         std::string game_name_suffix;
-        bool use_description_as_name;
+        bool use_description_as_name = false;
         std::unordered_set<std::string> mia_games;
     };
 
     static ParserPtr create(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                            const DatEntry* dat, OutputContext* output, Options options);
+                            const DatEntry* dat, OutputContext* output, const Options& options);
 
     static bool parse(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,
-                      const DatEntry* dat, OutputContext* output, Options options);
+                      const DatEntry* dat, OutputContext* output, const Options& options);
 
-    Options options;
+    const Options& options;
 
     /* TODO: move out of context */
     size_t lineno; /* current line number in input file */
@@ -112,7 +112,7 @@ class Parser {
     bool prog_version(const std::string& attr);
 
     Parser(ParserSourcePtr source, std::unordered_set<std::string> exclude, const DatEntry* dat, OutputContext* output_,
-           Options options);
+           const Options& options);
     virtual ~Parser() = default;
 
   protected:

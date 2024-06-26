@@ -37,14 +37,15 @@
 #include "Parser.h"
 
 #include <unordered_set>
+#include <utility>
 
 class ParserCm : public Parser {
   public:
     bool parse() override;
 
     ParserCm(ParserSourcePtr source, const std::unordered_set<std::string>& exclude, const DatEntry* dat,
-             OutputContext* output, Options options)
-        : Parser(source, exclude, dat, output, std::move(options)), ignoring_line(false) {}
+             OutputContext* output, const Options& options)
+        : Parser(std::move(source), exclude, dat, output, options), ignoring_line(false) {}
     ~ParserCm() override = default;
 
   private:
@@ -52,7 +53,7 @@ class ParserCm : public Parser {
 
     class Tokenizer {
       public:
-        explicit Tokenizer(const std::string& s) : string(s), position(0) {}
+        explicit Tokenizer(std::string s) : string(std::move(s)), position(0) {}
 
         std::string get();
 
