@@ -8,7 +8,6 @@
 - Fix failing tests.
 - Variables in config file (e.g. for collection root directory).
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
-- every run for a set `foo` creates `saved/foo` and `unknown/foo` - remove them if empty
 
 # Write Tests for Config
 
