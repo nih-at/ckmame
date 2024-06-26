@@ -1,4 +1,4 @@
-ckmame is written in C++17 and uses [cmake](https://cmake.org) to build.
+ckmame is written in C++20 and uses [cmake](https://cmake.org) to build.
 
 To use ckmame, you need
 - [zlib](http://www.zlib.net/) (at least version 1.1.2)

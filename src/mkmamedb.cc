@@ -51,6 +51,7 @@
 #include "RomDB.h"
 #include "globals.h"
 #include "update_romdb.h"
+#include "util.h"
 
 std::vector<Commandline::Option> mkmamedb_options = {
     Commandline::Option("detector", "xml-file", "use header detector"),
@@ -61,6 +62,7 @@ std::vector<Commandline::Option> mkmamedb_options = {
     Commandline::Option("hash-types", 'C', "types", "specify hash types to compute (default: all)"),
     Commandline::Option("list-available-dats", "list all dats found in dat-directories"),
     Commandline::Option("list-dats", "list dats used by current set"),
+    Commandline::Option("mia-games", "file", "mark games listed in file as mia"),
     Commandline::Option("no-directory-cache", "don't create cache of scanned input directory"),
     Commandline::Option("only-files", "pattern", "only use zip members matching shell glob pattern"),
     Commandline::Option("output", 'o', "dbfile", "write to database dbfile (default: mame.db)"),
@@ -101,19 +103,19 @@ void MkMameDB::global_setup(const ParsedCommandline &commandline) {
     hashtypes = Hashes::TYPE_CRC | Hashes::TYPE_MD5 | Hashes::TYPE_SHA1 | Hashes::TYPE_SHA256;
 
     for (const auto &option : commandline.options) {
-	if (option.name == "detector") {
+        if (option.name == "detector") {
 	    detector_name = option.argument;
 	}
-	else if (option.name == "directory-cache") {
+        else if (option.name == "directory-cache") {
 	    cache_directory = true;
 	}
-	else if (option.name == "exclude") {
+        else if (option.name == "exclude") {
 	    exclude.insert(option.argument);
 	}
-	else if (option.name == "force") {
+        else if (option.name == "force") {
 	    force = true;
 	}
-	else if (option.name == "format") {
+        else if (option.name == "format") {
 	    if (option.argument == "cm") {
 		fmt = OutputContext::FORMAT_CM;
 	    }
@@ -131,41 +133,45 @@ void MkMameDB::global_setup(const ParsedCommandline &commandline) {
 		exit(1);
 	    }
 	}
-	else if (option.name == "hash-types") {
+        else if (option.name == "hash-types") {
 	    hashtypes = Hashes::types_from_string(option.argument);
 	    if (hashtypes == 0) {
 		fprintf(stderr, "%s: illegal hash types '%s'\n", ProgramName::get().c_str(), option.argument.c_str());
 		exit(1);
 	    }
 	}
-	else if (option.name == "list-available-dats") {
+        else if (option.name == "list-available-dats") {
 	    list_available_dats = true;
 	}
-	else if (option.name == "list-dats") {
+        else if (option.name == "list-dats") {
 	    list_dats = true;
 	}
-	else if (option.name == "no-directory-cache") {
+        else if (option.name == "mia-games") {
+            auto list = slurp_lines(option.argument);
+            parser_options.mia_games.insert(list.begin(), list.end());
+        }
+        else if (option.name == "no-directory-cache") {
 	    cache_directory = false;
 	}
-	else if (option.name == "only-files") {
+        else if (option.name == "only-files") {
 	    file_patterns.push_back(option.argument);
 	}
-	else if (option.name == "output") {
+        else if (option.name == "output") {
 	    dbname = option.argument;
 	}
-	else if (option.name == "prog-description") {
+        else if (option.name == "prog-description") {
 	    dat.description = option.argument;
 	}
-	else if (option.name == "prog-name") {
+        else if (option.name == "prog-name") {
 	    dat.name = option.argument;
 	}
-	else if (option.name == "prog-version") {
+        else if (option.name == "prog-version") {
 	    dat.version = option.argument;
 	}
-	else if (option.name == "runtest") {
+        else if (option.name == "runtest") {
 	    runtest = true;
 	}
-	else if (option.name == "skip-files") {
+        else if (option.name == "skip-files") {
 	    skip_files.insert(option.argument);
 	}
     }

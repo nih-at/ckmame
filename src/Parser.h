@@ -65,6 +65,7 @@ class Parser {
         bool full_archive_names;
         std::string game_name_suffix;
         bool use_description_as_name;
+        std::unordered_set<std::string> mia_games;
     };
 
     static ParserPtr create(const ParserSourcePtr& source, const std::unordered_set<std::string>& exclude,

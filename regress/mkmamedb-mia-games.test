@@ -1,0 +1,13 @@
+description test mkmamedb database creation, ok
+return 0
+program mkmamedb
+arguments --mia-games mia-games mamedb.dat
+file .ckmamerc <inline>
+[global]
+delete-unknown-pattern = "04*"
+end-of-inline-data
+file mia-games <inline>
+2-4c
+end-of-inline-data
+file mamedb.dat mamedb-one-game-two-roms.dat
+file mame.db {} mamedb-mia-games.dump

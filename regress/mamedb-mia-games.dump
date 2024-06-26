@@ -1,0 +1,9 @@
+>>> table dat (dat_idx, name, description, author, version)
+0|ckmame test db|<null>|<null>|1
+>>> table file (game_id, file_type, file_idx, name, merge, status, location, size, crc, md5, sha1, sha256, missing)
+1|0|0|04.rom|<null>|0|0|4|3632233996|<098f6bcd4621d373cade4e832627b4f6>|<a94a8fe5ccb19ba61c4c0873d391e987982fbbd3>|<null>|0
+1|0|1|0c.rom|<null>|0|0|12|103008562|<b60c52bf4849067f0b57c8bd30985466>|<2f2d205d5451d3256cf1c693982b40101e9989bf>|<null>|1
+>>> table game (game_id, name, parent, description, dat_idx)
+1|2-4c|<null>|<null>|0
+>>> table rule (rule_idx, start_offset, end_offset, operation)
+>>> table test (rule_idx, test_idx, type, offset, size, mask, value, result)

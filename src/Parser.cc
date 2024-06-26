@@ -225,7 +225,7 @@ bool Parser::file_hash(filetype_t ft, int ht, const std::string& attr) {
         return true;
     }
 
-    if (attr == "") {
+    if (attr.empty()) {
         /* some dat files have empty strings for hashes, skip them */
         return true;
     }
@@ -374,6 +374,17 @@ bool Parser::game_end() {
 
         if (g->cloneof[0] == g->name) {
             g->cloneof[0] = "";
+        }
+
+        if (options.mia_games.contains(g->name)) {
+            // TODO: disks
+            for (auto& rom: g->files[TYPE_ROM]) {
+                if (!configuration.delete_unknown_pattern.empty() &&
+                    fnmatch(configuration.delete_unknown_pattern.c_str(), rom.name.c_str(), 0) == 0) {
+                    continue;
+                }
+                rom.mia = true;
+            }
         }
 
         ok = output_context->game(g, g->name == original_game_name ? "" : original_game_name);
