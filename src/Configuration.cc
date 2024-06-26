@@ -642,9 +642,12 @@ void Configuration::set_bool_optional(const toml::table &table, const std::strin
 
 void Configuration::set_string(const toml::table &table, const std::string &name, std::string &variable) {
     auto value = table[name].value<std::string>();
-    if (value.has_value()) {
-        if (!set.empty() || value.value().find("$set") == std::string::npos) {
-            variable = replace_variables(value.value());
+    if (value) {
+        if ((*value).find("$set") == std::string::npos) {
+            variable = *value;
+        }
+        else if (!set.empty()) {
+            variable = replace_variables(*value);
         }
     }
 }
@@ -652,9 +655,12 @@ void Configuration::set_string(const toml::table &table, const std::string &name
 
 void Configuration::set_string_optional(const toml::table &table, const std::string &name, std::optional<std::string> &variable){
     auto value = table[name].value<std::string>();
-    if (value.has_value()) {
-        if (!set.empty() || value.value().find("$set") == std::string::npos) {
-            variable = replace_variables(value.value());
+    if (value) {
+        if ((*value).find("$set") == std::string::npos) {
+            variable = *value;
+        }
+        else if (!set.empty()) {
+            variable = replace_variables(*value);
         }
     }
 }
