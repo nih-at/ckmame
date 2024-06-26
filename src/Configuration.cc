@@ -99,6 +99,7 @@ TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
     { "extra-directories-append", extra_directories_schema},
     { "fixdat-directory",  TomlSchema::string() },
     { "keep-old-duplicate",  TomlSchema::boolean() },
+    { "mia-games", TomlSchema::string() },
     { "missing-list", TomlSchema::string() },
     { "move-from-extra",  TomlSchema::boolean() },
     { "old-db", TomlSchema::string() },
@@ -146,6 +147,7 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("fixdat-directory", "directory", "create fixdats in directory"),
     Commandline::Option("keep-old-duplicate", "keep files in ROM set that are also in old ROMs"),
     Commandline::Option("list-sets", "list all known sets"),
+    Commandline::Option("mia-games", "file", "write list of missing games to file"),
     Commandline::Option("missing-list", "file", "write list of missing games to file"),
     Commandline::Option("move-from-extra", 'j', "remove used files from extra directories"),
     Commandline::Option("no-complete-games-only", "keep partial games in ROM set (default)"),
@@ -254,6 +256,7 @@ void Configuration::reset() {
     create_fixdat = false;
     delete_unknown_pattern = "";
     keep_old_duplicate = false;
+    mia_games = "";
     missing_list = "";
     move_from_extra = false;
     old_db = RomDB::default_old_name();
@@ -420,6 +423,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         else if (option.name == "keep-old-duplicate") {
             keep_old_duplicate = true;
         }
+        else if (option.name == "mia-games") {
+            mia_games = option.argument;
+        }
         else if (option.name == "missing-list") {
             missing_list = option.argument;
         }
@@ -579,6 +585,7 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     merge_extra_directories(table, "extra-directories-append", true);
     set_string(table, "fixdat-directory", fixdat_directory);
     set_bool(table, "keep-old-duplicate", keep_old_duplicate);
+    set_string(table, "mia-games", mia_games);
     set_string(table, "missing-list", missing_list);
     set_bool(table, "move-from-extra", move_from_extra);
     set_string(table, "old-db", old_db);

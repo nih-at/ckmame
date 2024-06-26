@@ -62,7 +62,6 @@ std::vector<Commandline::Option> mkmamedb_options = {
     Commandline::Option("hash-types", 'C', "types", "specify hash types to compute (default: all)"),
     Commandline::Option("list-available-dats", "list all dats found in dat-directories"),
     Commandline::Option("list-dats", "list dats used by current set"),
-    Commandline::Option("mia-games", "file", "mark games listed in file as mia"),
     Commandline::Option("no-directory-cache", "don't create cache of scanned input directory"),
     Commandline::Option("only-files", "pattern", "only use zip members matching shell glob pattern"),
     Commandline::Option("output", 'o', "dbfile", "write to database dbfile (default: mame.db)"),
@@ -74,7 +73,7 @@ std::vector<Commandline::Option> mkmamedb_options = {
 };
 
 std::unordered_set<std::string> mkmamedb_used_variables = {
-    "dats", "dat_directories", "roms_zipped", "use_description_as_name", "use_temp_directory"
+    "dats", "dat_directories", "mia_games", "roms_zipped", "use_description_as_name", "use_temp_directory"
 };
 
 #define DEFAULT_FILE_PATTERNS "*.dat"
@@ -146,10 +145,6 @@ void MkMameDB::global_setup(const ParsedCommandline &commandline) {
         else if (option.name == "list-dats") {
 	    list_dats = true;
 	}
-        else if (option.name == "mia-games") {
-            auto list = slurp_lines(option.argument);
-            parser_options.mia_games.insert(list.begin(), list.end());
-        }
         else if (option.name == "no-directory-cache") {
 	    cache_directory = false;
 	}
@@ -187,6 +182,11 @@ void MkMameDB::global_setup(const ParsedCommandline &commandline) {
 
 bool MkMameDB::execute(const std::vector<std::string> &arguments) {
     parser_options.use_description_as_name = configuration.use_description_as_name;
+
+    if (!configuration.mia_games.empty()) {
+        auto list = slurp_lines(configuration.mia_games);
+        parser_options.mia_games.insert(list.begin(), list.end());
+    }
 
     if (list_available_dats) {
 	// TODO: store in set, output in cleanup() so every dat is listed only once

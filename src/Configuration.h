@@ -99,6 +99,7 @@ public:
     std::vector<std::string> extra_directories;
     std::string fixdat_directory;
     bool keep_old_duplicate;
+    std::string mia_games;
     std::string missing_list;
     bool move_from_extra; // remove files taken from extra directories, otherwise copy them and don't change extra directory.
     std::string old_db;
