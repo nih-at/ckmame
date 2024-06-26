@@ -69,6 +69,7 @@ set(COMMON_SOURCES
   RomDB.cc
   SharedFile.cc
   Stats.cc
+  StatusDB.cc
   superfluous.cc
   TomlSchema.cc
   Tree.cc
