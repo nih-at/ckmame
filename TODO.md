@@ -1,12 +1,6 @@
-# nihtest
-
-- Remove mame.db from tests that don't need it.
-- Only use mame.db files from inside the test directory.
-
 # Implement
 
 - Fix failing tests.
-- Variables in config file (e.g. for collection root directory).
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
 
 # Write Tests for Config
@@ -16,35 +10,42 @@
 
 # Other
 
-- Move `delete_unknown_pattern` to `DatOptions`.
-
 - status update: SIGINFO support in Archive::commit, via libzip progress callback
-
 - search loose files in zipped mode: Add option in ArchiveDir to ignore zip files, but keep in .ckmame.db.
-
 - speedup idea: when opening archives (in extra dirs) only compute hashes if we need them
-
 - `mkmamedb`: When a game is in two dat files (identical name and ROMs), skip it from second (with warning).
-
-- Make `SIGINFO` handler more responsive.
-
 - handle multiple writers to ckmamedb
+- rar read support
+- add option to keep ROMs with detector applied
+- bug: when creating a fixdat and re-checks happen, games end up in the fixdat multiple times
+- fixdat-missing-all: two copies of the same file (romof) in fixdat; depends on order of games in datfile
+- when committing to garbage fails because source archive is broken, move source archive out of the way.
 
+# Later
+
+- use CkmameDB as old db
+- `mkmamedb`: analyze speed, make it faster
+- clean up archives in `.ckmame.db` for manually removed dirs/zips
+- Variables in config file (e.g. for collection root directory).
+
+## Other Features
+- fixdat: if only checking child, ROM missing in parent is not in fixdat
+- parse: add state checking to `parse-cm.c`
+- parse: check for duplicate attributes
+- `mkmamedb`: handle rom without crc
+- `mkmamedb`: handle `size 0 crc -`
+- `mkmamedb`: no error message for missing newline in last line
+- `mkmamedb`: warn about sets without parent that use "merge" (`mamedb-merge-no-parent.dump`)
+- complete raine support (multiple archive names: `archive ( name "64th_street" name "64street" ))`
+
+## Code Cleanups
+- make `parse_cm` table driven
+- fix all TODOs
+- Move `delete_unknown_pattern` to `DatOptions`.
 - exceptions and error messages:
     - who creates which part of the error messages
     - catch exceptions in main and print errors (done in ckmame and mkmamedb).
     - clean up Exceptions without text
-
-- When checking single game, search for its ROMs everywhere and report any matches.
-
-- rar read support
-
-- add option to keep ROMs with detector applied
-
-- bug: when creating a fixdat and re-checks happen, games end up in the fixdat multiple times
-
-- fixdat-missing-all: two copies of the same file (romof) in fixdat; depends on order of games in datfile
-
 - C++ cleanups:
   - move lineno into ParserSource
   - add tests for all tokens in all parser backends:
@@ -52,15 +53,53 @@
     - rc
     - xml
 
-- when committing to garbage fails because source archive is broken, move source archive out of the way.
+## Tests
+- Remove mame.db from tests that don't need it.
+- Only use mame.db files from inside the test directory.
+- Add test for `mkmamedb -F cm`.
+- extend at least following tests to use md5/sha1 as well:
+  - `delete-used-superfluous.test`
+  - `needed-cleanup.test`
+  - `punused.test`
+  - `rom-broken-replace.test`
+  - `rom-from-extra-child.test`
+  - `rom-unused.test`
+  - `swap-roms-2.test`
+  - `rom-many.test`
+  - `swap-roms.test`
+- case differences (game name / archive / rom / file in archive)
+- extra cleanup done when all games checked
+- is superfluous file that needs detector cleaned up correctly?
+- detector
+  - header field
+  - write to db
+  - use on matching file
+  - use on non-matching file
+  - rule operations
+  - [test] is superfluous file that needs detector cleaned up correctly?
+- `dumpgame`
+- `mkmamedb` tests
+  - mtree output format
+  - `/prog` from command line
+  - `/prog` from file
+  - broken input
+- test using roms from two different 'old' roms
 
-# Later
+## CacheDB
 
-- use CkmameDB as old db
+### maybe
+- [feature] move database out of the way if it's an older version
+- [test] unzipped: take ROM from top-level file in roms
+- [test] run unzipped-`ckmamedb`-* for zip as well
+- [cleanup] rename `dbh_cache` to `cachedb`
+- [feature] compute all hashes when called with `-i`
+- [test] unzipped, dir with name ending in `.zip`
 
-- `mkmamedb`: analyze speed, make it faster
-
-- clean up archives in `.ckmame.db` for manually removed dirs/zips
+### later
+- [feature] save detector hashes to cachedb
+- fix Xcode warnings
+- [test] fix preload on OS X
+- [feature] if `.ckmame.db` can't be opened, move aside and create new
 
 # Unsorted
 
@@ -109,63 +148,3 @@
 - [cleanup] refactor fixing code (one function per operation)
 - [cleanup] handle archive refreshing in `archive.c`
 - [cleanup] rename: file is part of zip archive, rom is part of game
-
-## other features
-- fixdat: if only checking child, ROM missing in parent is not in fixdat
-- parse: add state checking to `parse-cm.c`
-- parse: check for duplicate attributes
-- `mkmamedb`: handle rom without crc
-- `mkmamedb`: handle `size 0 crc -`
-- `mkmamedb`: no error message for missing newline in last line
-- `mkmamedb`: warn about sets without parent that use "merge" (`mamedb-merge-no-parent.dump`)
-- complete raine support (multiple archive names: `archive ( name "64th_street" name "64street" ))`
-
-## code cleanups
-- make `parse_cm` table driven
-- fix all TODOs
-
-## tests
-- Add test for `mkmamedb -F cm`.
-- extend at least following tests to use md5/sha1 as well:
-  - `delete-used-superfluous.test`
-  - `needed-cleanup.test`
-  - `punused.test`
-  - `rom-broken-replace.test`
-  - `rom-from-extra-child.test`
-  - `rom-unused.test`
-  - `swap-roms-2.test`
-  - `rom-many.test`
-  - `swap-roms.test`
-- case differences (game name / archive / rom / file in archive)
-- extra cleanup done when all games checked
-- is superfluous file that needs detector cleaned up correctly?
-- detector
-  - header field
-  - write to db
-  - use on matching file
-  - use on non-matching file
-  - rule operations
-  - [test] is superfluous file that needs detector cleaned up correctly?
-- `dumpgame`
-- `mkmamedb` tests
-  - mtree output format
-  - `/prog` from command line
-  - `/prog` from file
-  - broken input
-- test using roms from two different 'old' roms
-
-## CacheDB
-
-### maybe
-- [feature] move database out of the way if it's an older version
-- [test] unzipped: take ROM from top-level file in roms
-- [test] run unzipped-`ckmamedb`-* for zip as well
-- [cleanup] rename `dbh_cache` to `cachedb`
-- [feature] compute all hashes when called with `-i`
-- [test] unzipped, dir with name ending in `.zip`
-
-### later
-- [feature] save detector hashes to cachedb
-- fix Xcode warnings
-- [test] fix preload on OS X
-- [feature] if `.ckmame.db` can't be opened, move aside and create new
