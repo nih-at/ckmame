@@ -1,15 +1,7 @@
-# Implement
+# TODO
 
 - Fix failing tests.
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
-
-# Write Tests for Config
-
-- stats not reset between sets (move `stats` into `CkmameCache`)
-- test if "$set" works for keys in 'dats', 'dat-directories', and 'extra-directories'
-
-# Other
-
 - status update: SIGINFO support in Archive::commit, via libzip progress callback
 - search loose files in zipped mode: Add option in ArchiveDir to ignore zip files, but keep in .ckmame.db.
 - speedup idea: when opening archives (in extra dirs) only compute hashes if we need them
@@ -18,8 +10,7 @@
 - rar read support
 - add option to keep ROMs with detector applied
 - bug: when creating a fixdat and re-checks happen, games end up in the fixdat multiple times
-- fixdat-missing-all: two copies of the same file (romof) in fixdat; depends on order of games in datfile
-- when committing to garbage fails because source archive is broken, move source archive out of the way.
+- when committing to unknown fails because source archive is broken, move source archive out of the way.
 
 # Later
 
@@ -32,10 +23,8 @@
 - fixdat: if only checking child, ROM missing in parent is not in fixdat
 - parse: add state checking to `parse-cm.c`
 - parse: check for duplicate attributes
-- `mkmamedb`: handle rom without crc
 - `mkmamedb`: handle `size 0 crc -`
 - `mkmamedb`: no error message for missing newline in last line
-- `mkmamedb`: warn about sets without parent that use "merge" (`mamedb-merge-no-parent.dump`)
 - complete raine support (multiple archive names: `archive ( name "64th_street" name "64street" ))`
 
 ## Code Cleanups
@@ -101,7 +90,7 @@
 - [test] fix preload on OS X
 - [feature] if `.ckmame.db` can't be opened, move aside and create new
 
-# Unsorted
+# Unsorted/Old
 
 - `mkmamedb` doesn't handle chds (ignores for zipped, includes in games as rom for unzipped)
 ! [feature] reorder cleanup step when renaming files to remove the copies
@@ -115,9 +104,7 @@
   image new/file.chd: not used
   ```
 + [feature] `mkmamedb`: parser for mtree files
-+ [feature] server mode: tell location/mamedb of ROM sets, serves files needed by remote `ckmame` client
 + [bug] check/fix database error reporting (pass on sqlite3 errors)
-+ [feature] get needed files directly from parent (`inparent.test`)
 + [feature] inconsistent zip in ROM set: copy files to new zip
 + [feature] `mkmamedb`: mark ROMs without checksums as `nogooddump`
 + [bug] `mkmamedb -F dat`:
@@ -133,7 +120,6 @@
     if it fails or no `iconv` or `LC_CTYPE` available, replace invalid characters with `'?'`
 - [cleanup] access db directly in `find_*`
 - [cleanup] specify globally which parts of lists to fill/maintain
-- [cleanup] rom: use flag to specify whether we know the size
 - [bug] check if needed/extra are different
 - [bug] DB export: pass all dat entries to output backend
 - [bug] DB export: export detector
