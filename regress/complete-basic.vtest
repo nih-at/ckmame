@@ -1,0 +1,9 @@
+description test complete game
+return 0
+arguments -FvcC 2-48
+file mame.db mame.db
+file roms/2-48.zip 2-48-ok.zip
+stdout
+In game 2-48:
+game 2-48                                    : correct
+end-of-inline-data
