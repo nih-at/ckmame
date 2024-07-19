@@ -132,7 +132,7 @@ int fix_game(Game *game, const GameArchives archives, Result *result) {
             }
         }
 
-        if (!configuration.complete_games_only || result->game == GS_CORRECT || result->game == GS_FIXABLE) {
+        if (!configuration.complete_games_only || result->game == GS_CORRECT || result->game == GS_CORRECT_MIA || result->game == GS_FIXABLE) {
             ret |= fix_files(game, filetype, archive, result, garbage.get());
         }
         else {
