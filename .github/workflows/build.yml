@@ -43,4 +43,4 @@ jobs:
       - name: test
         working-directory: ${{runner.workspace}}/build
         run: |
-          ctest --output-on-failure -v -C Release
+          ctest --output-on-failure -V -C Release
