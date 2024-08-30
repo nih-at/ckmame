@@ -41,7 +41,7 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         working-directory: ${{runner.workspace}}/build
         run: |
-          cmake -DPYTHONBIN=/usr/bin/python3 ${{github.workspace}}
+          cmake -DPYTHONBIN=/Library/Frameworks/Python.framework/Versions/Current/bin/python ${{github.workspace}}
 
       - name: build
         working-directory: ${{runner.workspace}}/build
