@@ -18,6 +18,7 @@ jobs:
         run: |
           brew update
           brew reinstall libzip
+          brew install libarchive
 
       - name: install dependencies (Linux)
         if: ${{ runner.os == 'Linux' }}
@@ -25,9 +26,10 @@ jobs:
           sudo apt-get -qq update;
           sudo apt-get install -y libxml2-dev libsqlite3-0 libzip-dev zipcmp
 
-      - name: prepare build directory
+      - name: prepare build directory and install nihtest
         run: |
           cmake -E make_directory ${{runner.workspace}}/build
+          pip install nihtest
 
       - name: configure (Unix)
         if: ${{ runner.os != 'Windows' }}
