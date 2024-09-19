@@ -1,7 +1,7 @@
 description test single-rom game (no parent), missing file is at top-level in extra dir
 #variants dir
 return 0
-arguments --roms-unzipped -D ../mamedb-small.db -jFvc -e extra
+arguments --no-status-db --roms-unzipped -D ../mamedb-small.db -jFvc -e extra
 file roms/1-4 {} 1-4-ok.zip
 file extra/04.rom 04.rom {}
 file roms/.ckmame.db {} <empty.ckmamedb-unzipped>

@@ -1,6 +1,6 @@
 description remove files from dbcache in extra dir that are not there any longer
 return 0
-arguments -D ../mamedb-small.db -Fvc -e extra
+arguments --no-status-db -D ../mamedb-small.db -Fvc -e extra
 file extra/1-4.zip 1-4-ok.zip
 file roms/1-4.zip {} 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>

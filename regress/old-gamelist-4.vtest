@@ -1,6 +1,6 @@
 description test 2 rom game, one rom is in old, one is here
 return 0
-arguments -D ../mamedb-lost-parent-ok.db -O ../mamedb-small.db -Fvc --missing-list missing-list
+arguments --no-status-db -D ../mamedb-lost-parent-ok.db -O ../mamedb-small.db -Fvc --missing-list missing-list
 file roms/clone-8.zip 1-8-ok.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
 hashes clone-8.zip 08.rom cheap

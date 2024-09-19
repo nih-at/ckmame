@@ -1,6 +1,6 @@
 description test all games, no files found, use rom-db from config
 return 0
-arguments -F
+arguments --no-status-db -F
 file .ckmamerc <inline>
 [global]
 rom-db = "../mamedb-merge-parent.db"

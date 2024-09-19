@@ -1,7 +1,7 @@
 description ignore macOS resource fork files
 #variants dir
 return 0
-arguments --roms-unzipped -D ../mamedb-lost-parent-ok.db -vFc
+arguments --no-status-db --roms-unzipped -D ../mamedb-lost-parent-ok.db -vFc
 file roms/clone-8 2-8c-macos.zip 1-8-macos.zip
 file unknown/clone-8 {} 1-c-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb-unzipped>

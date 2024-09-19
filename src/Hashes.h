@@ -102,6 +102,7 @@ public:
     bool is_zero(int type) const;
     std::string to_string(int type) const;
     bool empty() const { return types == 0; }
+    std::vector<uint8_t> get_best() const;
 
     void merge(const Hashes &other);
     void set_hashes(const Hashes &other);

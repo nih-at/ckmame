@@ -1,7 +1,7 @@
 description test single-rom game (no parent), zip is correct, extra file exists (dir)
 #variants dir
 return 0
-arguments --roms-unzipped -Fvc
+arguments --no-status-db --roms-unzipped -Fvc
 file mame.db mamedb-small.db
 file roms/1-4 1-4-ok.zip
 file roms/unknown-file unknown-file {}

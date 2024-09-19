@@ -34,12 +34,11 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "StatusDB.h"
 #include "Exception.h"
 
-const std::string StatusDB::db_name = ".ckmame-status.db";
+std::shared_ptr<StatusDB> status_db;
 
-const DB::DBFormat StatusDB::format = {
-    0x3,
-    1,
-    "\
+const DB::DBFormat StatusDB::format = {0x3,
+                                       1,
+                                       "\
 create table run (\n\
     run_id integer primary key autoincrement,\n\
     date integer not null\n\
@@ -50,28 +49,33 @@ create table dat (\n\
     version text\n\
 );\n\
 create table game (\n\
-    run_id integer not null\n\
-    dat_id integer not null\n\
-    name text not null\n\
-    checksum binary not null\n\
+    run_id integer not null,\n\
+    dat_id integer not null,\n\
+    name text not null,\n\
+    checksum binary not null,\n\
     status integer not null\n\
 );",
-    {}
-};
+                                       {}};
 
 std::unordered_map<int, std::string> StatusDB::queries = {
-    { CLEANUP_DAT, "delete from dat where dat_id not in (select distinct(dat_id) from file)"},
-    { CLEANUP_GAME, "delete from game where run_id not in (select run_id from run)" },
-    { DELETE_RUN, "delete from run where date < :date and run_id not in (select run_id from run order by date descending limit :count"},
-    { FIND_DAT, "select dat_id from dat where name = :name and version = :version" },
-    { INSERT_DAT, "inesrt into dat (name, version) values (:name, :version)" },
-    { INSERT_GAME, "insert into game (run_id, dat_id, name, checksum, status) values (:run_id, :dat_id, :name, :checksum, :status" },
-    { INSERT_RUN, "insert into run (date) values (:date)" },
-    { LIST_RUNS, "select run_id, date from run order by date descending" },
-    { QUERY_GAME, "select dat_id, name, checksum, status from game where run_id = :run_id" },
-    { QUERY_GAME_BY_STATUS, "select name from game where run_id = :run, status = :status order by name"},
-    { QUERY_GAME_STATI, "select name, status from game where run_id = :run order by name"},
-    { QUERY_RUN_STATUS_COUNTS, "select status, count(*) as status_count from game where run_id = :run_id group by status" },
+    {CLEANUP_DAT, "delete from dat where dat_id not in (select distinct(dat_id) from file)"},
+    {CLEANUP_GAME, "delete from game where run_id not in (select run_id from run)"},
+    {DELETE_RUN_BOTH, "delete from run where date < :date and run_id not in (select run_id from run order by date "
+                      "desc limit :count)"},
+    {DELETE_RUN_COUNT,
+     "delete from run where run_id not in (select run_id from run order by date desc limit :count)"},
+    {DELETE_RUN_DATE, "delete from run where date < :date"},
+    {FIND_DAT, "select dat_id from dat where name = :name and version = :version"},
+    {INSERT_DAT, "inesrt into dat (name, version) values (:name, :version)"},
+    {INSERT_GAME,
+     "insert into game (run_id, dat_id, name, checksum, status) values (:run_id, :dat_id, :name, :checksum, :status"},
+    {INSERT_RUN, "insert into run (date) values (:date)"},
+    {LIST_RUNS, "select run_id, date from run order by date descending"},
+    {QUERY_GAME, "select dat_id, name, checksum, status from game where run_id = :run_id"},
+    {QUERY_GAME_BY_STATUS, "select name from game where run_id = :run, status = :status order by name"},
+    {QUERY_GAME_STATI, "select name, status from game where run_id = :run order by name"},
+    {QUERY_RUN_STATUS_COUNTS,
+     "select status, count(*) as status_count from game where run_id = :run_id group by status"},
 };
 
 std::string StatusDB::get_query(int name, bool parameterized) const {
@@ -87,11 +91,29 @@ std::string StatusDB::get_query(int name, bool parameterized) const {
     }
 }
 
-void StatusDB::delete_runs(time_t oldest, int count) {
-    auto stmt = get_statement(DELETE_RUN);
+void StatusDB::delete_runs(std::optional<int> days, std::optional<int> count) {
+    DBStatement* stmt{};
 
-    stmt->set_int64("oldest", static_cast<int64_t>(oldest));
-    stmt->set_int("count", count);
+    if (days) {
+        if (count) {
+            stmt = get_statement(DELETE_RUN_BOTH);
+        }
+
+        stmt = get_statement(DELETE_RUN_DATE);
+    }
+    else if (count) {
+        stmt = get_statement(DELETE_RUN_COUNT);
+    }
+    else {
+        return;
+    }
+
+    if (days) {
+        stmt->set_int64("oldest", static_cast<int64_t>(time(nullptr) - *days * 24 * 60 * 60));
+    }
+    if (count >= 0) {
+        stmt->set_int("count", *count);
+    }
 
     if (!stmt->step()) {
         return;
@@ -106,15 +128,15 @@ void StatusDB::delete_runs(time_t oldest, int count) {
     stmt->step();
 }
 
-std::vector<StatusDB::Game> StatusDB::get_games(int64_t run_id) {
+std::vector<StatusDB::GameInfo> StatusDB::get_games(int64_t run_id) {
     auto stmt = get_statement(QUERY_GAME);
 
     stmt->set_int64("run_id", run_id);
 
-    std::vector<Game> games;
+    std::vector<GameInfo> games;
 
     while (stmt->step()) {
-        Game game;
+        GameInfo game;
 
         game.dat_id = stmt->get_int("dat_id");
         game.name = stmt->get_string("name");
@@ -159,39 +181,41 @@ std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatu
     return games;
 }
 
-std::vector<StatusDB::Status> StatusDB::get_game_stati(int64_t run_id) {
+std::unordered_map<GameStatus, std::vector<std::string>> StatusDB::get_run_status_names(int64_t run_id) {
     auto stmt = get_statement(QUERY_GAME_STATI);
 
     stmt->set_int64("run_id", run_id);
 
-    std::vector<Status> stati;
+    std::unordered_map<GameStatus, std::vector<std::string>> names;
 
     while (stmt->step()) {
-        Status status;
+        auto status = static_cast<GameStatus>(stmt->get_int("status"));
 
-        status.name = stmt->get_string("name");
-        status.status = static_cast<GameStatus>(stmt->get_int("status"));
+        if (names.find(status) == names.end()) {
+            names[status] = std::vector<std::string>();
+        }
 
-        stati.push_back(status);
+        names[status].push_back(stmt->get_string("name"));
     }
 
-    return stati;
+    return names;
 }
 
-std::vector<StatusDB::StatusCount> StatusDB::get_run_status_counts(int64_t run_id) {
+std::unordered_map<GameStatus, uint64_t> StatusDB::get_run_status_counts(int64_t run_id) {
     auto stmt = get_statement(QUERY_RUN_STATUS_COUNTS);
 
     stmt->set_int64("run_id", run_id);
 
-    std::vector<StatusCount> counts;
+    std::unordered_map<GameStatus, uint64_t> counts;
 
     while (stmt->step()) {
-        StatusCount count;
+        auto status = static_cast<GameStatus>(stmt->get_int("status"));
 
-        count.status = static_cast<GameStatus>(stmt->get_int("status"));
-        count.count = stmt->get_int("status_count");
+        if (counts.find(status) == counts.end()) {
+            counts[status] = 0;
+        }
 
-        counts.push_back(count);
+        counts[status] += stmt->get_int("status_count");
     }
 
     return counts;
@@ -221,12 +245,18 @@ int64_t StatusDB::insert_dat(const DatEntry& dat) {
 }
 
 
-void StatusDB::insert_game(int64_t run_id, const StatusDB::Game& game) {
+void StatusDB::insert_game(int64_t run_id, const Game& game, GameStatus status) {
     auto stmt = get_statement(INSERT_GAME);
 
+    std::vector<uint8_t> checksum;
+
+    compute_combined_checksum(game, checksum);
+
     stmt->set_int64("run_id", run_id);
+    stmt->set_uint64("dat_id", game.dat_no);
     stmt->set_string("name", game.name);
-    stmt->set_int("status", static_cast<int>(game.status));
+    stmt->set_blob("checksum", checksum);
+    stmt->set_int("status", static_cast<int>(status));
 
     if (!stmt->step()) {
         throw Exception("can't insert game");
@@ -243,5 +273,29 @@ int64_t StatusDB::insert_run(time_t date) {
     }
     else {
         throw Exception("can't insert run");
+    }
+}
+
+void StatusDB::compute_combined_checksum(const Game& game, std::vector<uint8_t>& checksum) {
+    if (game.files[TYPE_ROM].size() == 1 && game.files[TYPE_DISK].empty()) {
+        checksum = game.files[TYPE_ROM][0].hashes.get_best();
+    }
+    else if (game.files[TYPE_ROM].empty() && game.files[TYPE_DISK].size() == 1) {
+        checksum = game.files[TYPE_DISK][0].hashes.get_best();
+    }
+    else {
+        checksum.clear();
+
+        for (int type = TYPE_ROM; type < TYPE_MAX; type += 1) {
+            for (const auto& file : game.files[type]) {
+                auto file_checksum = file.hashes.get_best();
+                if (checksum.size() < file_checksum.size()) {
+                    checksum.resize(file_checksum.size());
+                }
+                for (size_t i = 0; i < file_checksum.size(); i++) {
+                    checksum[i] = checksum[i] ^ file_checksum[i];
+                }
+            }
+        }
     }
 }

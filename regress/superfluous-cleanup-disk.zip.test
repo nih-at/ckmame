@@ -1,7 +1,7 @@
 description test cleanup of superfluous files
 #variants zip
 return 0
-arguments -O ../mamedb-disk.db -D ../mamedb-lost-parent-ok.db -Fv
+arguments --no-status-db -O ../mamedb-disk.db -D ../mamedb-lost-parent-ok.db -Fv
 file roms/clone-8.zip 1-4-ok.zip
 file roms/parent.zip 2-4c-ok.zip {}
 file roms/1-8.zip 1-8-ok.zip {}

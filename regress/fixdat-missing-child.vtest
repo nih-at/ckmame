@@ -1,7 +1,7 @@
 description test all games, some files found, create fixdat
 features HAVE_LIBXML2
 return 0
-arguments -Fvc -D ../mamedb-merge-parent.db --create-fixdat
+arguments --no-status-db -Fvc -D ../mamedb-merge-parent.db --create-fixdat
 file roms/grandparent.zip 1-4-ok.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
 hashes grandparent.zip 04.rom cheap

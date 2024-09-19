@@ -1,6 +1,6 @@
 description test single-rom game with bad dump
 return 0
-arguments -D ../mamedb-baddump.db -Fvc -je extra
+arguments --no-status-db -D ../mamedb-baddump.db -Fvc -je extra
 file roms/baddump.zip baddump.zip
 file extra/baddump.zip baddump.zip {}
 file roms/.ckmame.db {} <inline.ckmamedb>

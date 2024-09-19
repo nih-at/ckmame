@@ -1,7 +1,7 @@
 description test single-rom game (no parent), correct partial ckmame db exists, game removed, check all games
 #variants dir
 return 0
-arguments --roms-unzipped -D ../mamedb-two-games.db -jFvc
+arguments --no-status-db --roms-unzipped -D ../mamedb-two-games.db -jFvc
 file roms/1-8 1-8-ok.zip
 file roms/.ckmame.db 1-4-ok.ckmamedb-dump <empty.ckmamedb-unzipped>
 stdout

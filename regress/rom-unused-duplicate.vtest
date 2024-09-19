@@ -1,6 +1,6 @@
 description test single-rom game (no parent), game exists, extra file known
 return 0
-arguments -D ../mamedb-small.db -jFcv
+arguments --no-status-db -D ../mamedb-small.db -jFcv
 file roms/1-4.zip 2-44-ok.zip 1-4-ok.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 stdout

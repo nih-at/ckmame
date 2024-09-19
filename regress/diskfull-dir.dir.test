@@ -1,7 +1,7 @@
 description test copying file from extra, failing (directory permissions) and (not) cleaning up extra
 #variants dir
 return 0
-arguments --roms-unzipped -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
+arguments --no-status-db --roms-unzipped -Fjvc -D ../mamedb-lost-parent-ok.db -e extra
 file extra/wrongname 2-48-ok.zip
 file extra/.ckmame.db {} <empty.ckmamedb-unzipped>
 mkdir roms

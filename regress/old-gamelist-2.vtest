@@ -1,6 +1,6 @@
 description test 2 rom game (no parent), zip is correct, game is in old, create missing list
 return 0
-arguments -O ../mamedb-small.db -D ../mamedb-two-games.db -Fvc --missing-list missing-list
+arguments --no-status-db -O ../mamedb-small.db -D ../mamedb-two-games.db -Fvc --missing-list missing-list
 file missing-list {} gamelist-1-8
 stdout
 In game 1-4:

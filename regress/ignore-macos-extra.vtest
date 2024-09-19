@@ -1,6 +1,6 @@
 description ignore macOS resource fork files
 return 0
-arguments -D ../mamedb-lost-parent-ok.db -vFj -e extra
+arguments --no-status-db -D ../mamedb-lost-parent-ok.db -vFj -e extra
 file extra/._clone-8.zip CMakeLists.txt
 file extra/.DS_Store CMakeLists.txt
 stdout

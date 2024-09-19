@@ -1,6 +1,6 @@
 description clean up extra dirs
 return 0
-arguments -D ../mamedb-lost-parent-ok.db -Fjv -e extra
+arguments --no-status-db -D ../mamedb-lost-parent-ok.db -Fjv -e extra
 file roms/clone-8.zip 1-8-ok.zip 2-48-ok.zip
 file extra/2-48.zip 2-48-ok.zip {}
 file extra/2-4c.zip 2-4c-ok.zip 1-c-ok.zip

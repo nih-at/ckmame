@@ -47,39 +47,45 @@ class TomlSchema {
   public:
     class Type {
       public:
+        virtual ~Type() {};
+
 	[[nodiscard]] virtual bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const = 0;
     };
 
     typedef std::shared_ptr<Type> TypePtr;
 
+    class Constant: public Type {
+      public:
+        explicit Constant(std::string value): value(std::move(value)) {}
+	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
+
+      private:
+        std::string value;
+    };
+
     class Boolean : public Type {
       public:
-        virtual ~Boolean() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
     };
     
     class Integer : public Type {
       public:
-        virtual ~Integer() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
     };
 
     class Number : public Type {
       public:
-        virtual ~Number() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
     };
 
     class String : public Type {
       public:
-        virtual ~String() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
     };
     
     class Array : public Type {
       public:
 	explicit Array(TypePtr elements) : elements(std::move(elements)) { }
-        virtual ~Array() { }
 	[[nodiscard]] bool validate(const toml::node& node, TomlSchema& schema, const std::string& path, bool quiet) const override;
 	
       private:
@@ -111,6 +117,7 @@ class TomlSchema {
     explicit TomlSchema(TypePtr root_type) : root_type(std::move(root_type)), warned(false) { }
 
     static TypePtr boolean() { return TypePtr(new Boolean()); }
+    static TypePtr constant(std::string value) {return TypePtr(new Constant(std::move(value))); }
     static TypePtr integer() { return TypePtr(new Integer()); }
     static TypePtr number() { return TypePtr(new Number()); }
     static TypePtr string() { return TypePtr(new String()); }

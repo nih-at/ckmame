@@ -51,6 +51,7 @@
 #include "Progress.h"
 #include "RomDB.h"
 #include "Stats.h"
+#include "StatusDB.h"
 #include "Tree.h"
 #include "cleanup.h"
 #include "globals.h"
@@ -94,6 +95,9 @@ std::unordered_set<std::string> ckmame_used_variables = {
     "rom_directory",
     "roms_zipped",
     "saved_directory",
+    "status_db",
+    "status_db_keep_days",
+    "status_db_keep_runs",
     "unknown_directory",
     "update_database",
     "use_torrentzip",
@@ -284,6 +288,9 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
     }
 
     Progress::enable();
+    if (checking_all_games && configuration.fix_romset && configuration.status_db != "none") {
+        status_db = std::make_shared<StatusDB>(configuration.status_db, DBH_WRITE|DBH_CREATE);
+    }
 
     check_tree.traverse();
     check_tree.traverse(); /* handle rechecks */
@@ -379,6 +386,10 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
                 output.message(stats);
             }
         }
+    }
+
+    if (status_db) {
+        status_db->delete_runs(configuration.status_db_keep_days, configuration.status_db_keep_runs);
     }
 
     return true;

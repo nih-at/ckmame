@@ -1,7 +1,7 @@
 description test single-rom game (no parent), incorrect ckmame db exists, but file has same mtime
 #variants dir
 return 0
-arguments --roms-unzipped -D ../mamedb-small.db -jFvc
+arguments --no-status-db --roms-unzipped -D ../mamedb-small.db -jFvc
 file roms/1-4 1-4-wrong.zip
 file roms/.ckmame.db 1-4-ok.ckmamedb-dump 1-4-ok.ckmamedb-dump
 set-modification-time roms/1-4 1422359238

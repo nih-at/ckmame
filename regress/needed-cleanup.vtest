@@ -1,6 +1,6 @@
 description test cleanup of saved files that are not needed
 return 0
-arguments -D ../mamedb-lost-parent-ok.db -Fv
+arguments --no-status-db -D ../mamedb-lost-parent-ok.db -Fv
 file roms/clone-8.zip 1-4-ok.zip
 file saved/d87f7e0c-000.zip 1-4-ok.zip {}
 file roms/.ckmame.db {} <inline.ckmamedb>

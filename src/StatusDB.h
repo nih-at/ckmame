@@ -36,6 +36,7 @@
 
 #include "DB.h"
 #include "DatEntry.h"
+#include "Game.h"
 #include "Result.h"
 
 class StatusDB: public DB {
@@ -43,7 +44,9 @@ class StatusDB: public DB {
     enum Statement {
         CLEANUP_DAT,
         CLEANUP_GAME,
-        DELETE_RUN,
+        DELETE_RUN_BOTH,
+        DELETE_RUN_COUNT,
+        DELETE_RUN_DATE,
         FIND_DAT,
         INSERT_DAT,
         INSERT_GAME,
@@ -61,7 +64,7 @@ class StatusDB: public DB {
         time_t date{};
     };
 
-    class Game {
+    class GameInfo {
       public:
         int64_t dat_id{};
         std::string name;
@@ -69,32 +72,21 @@ class StatusDB: public DB {
         GameStatus status;
     };
 
-    class Status {
-      public:
-        std::string name;
-        GameStatus status;
-    };
-
-    class StatusCount {
-      public:
-        GameStatus status;
-        int count;
-    };
+    static std::string default_name() { return ".ckmame-status.db"; }
 
     static const DBFormat format;
-    static const std::string db_name;
 
     StatusDB(const std::string &name, int mode) : DB(format, name, mode) {}
     ~StatusDB() override = default;
 
-    void delete_runs(time_t oldest, int count);
+    void delete_runs(std::optional<int> keep_days, std::optional<int> keep_runs);
     [[nodiscard]] std::vector<Run> list_runs();
-    [[nodiscard]] std::vector<Game> get_games(int64_t run_id);
+    [[nodiscard]] std::vector<GameInfo> get_games(int64_t run_id);
     [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status);
-    [[nodiscard]] std::vector<Status> get_game_stati(int64_t run_id);
-    [[nodiscard]] std::vector<StatusCount> get_run_status_counts(int64_t run_id);
+    [[nodiscard]] std::unordered_map<GameStatus, std::vector<std::string>> get_run_status_names(int64_t run_id);
+    [[nodiscard]] std::unordered_map<GameStatus, uint64_t> get_run_status_counts(int64_t run_id);
     [[nodiscard]] int64_t insert_dat(const DatEntry& dat);
-    void insert_game(int64_t run_id, const Game& game);
+    void insert_game(int64_t run_id, const Game& game, GameStatus status);
     [[nodiscard]] int64_t insert_run(time_t date);
 
   protected:
@@ -105,7 +97,10 @@ class StatusDB: public DB {
 
     DBStatement *get_statement(Statement name) { return get_statement_internal(name); }
 
+    static void compute_combined_checksum(const Game& game, std::vector<uint8_t>& checksum);
+
 };
 
+extern std::shared_ptr<StatusDB> status_db;
 
 #endif // HAD_STATUS_DB_H

@@ -472,3 +472,21 @@ std::string Hashes::type_name(int type) {
 
     return it->second;
 }
+
+std::vector<uint8_t> Hashes::get_best() const {
+    if (types & TYPE_SHA256) {
+        return sha256;
+    }
+    else if (types & TYPE_SHA1) {
+        return sha1;
+    }
+    else if (types & TYPE_MD5) {
+        return md5;
+    }
+    else if (types & TYPE_CRC) {
+        return {static_cast<uint8_t>(crc>>24), static_cast<uint8_t>((crc >> 16) & 0xff), static_cast<uint8_t>((crc >> 8) & 0xff), static_cast<uint8_t>(crc & 0xff)};
+    }
+    else {
+        return {};
+    }
+}

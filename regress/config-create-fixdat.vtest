@@ -1,7 +1,7 @@
 description test all games, no files found, create fixdat based on config setting
 features HAVE_LIBXML2
 return 0
-arguments -F -D ../mamedb-merge-parent.db
+arguments --no-status-db -F -D ../mamedb-merge-parent.db
 file mame.db mame.db
 file "fixdat_ckmame test db (1).dat" {} fixdat-missing-all.fixdat
 file .ckmamerc <inline>

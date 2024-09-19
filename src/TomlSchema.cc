@@ -165,3 +165,14 @@ bool TomlSchema::Alternatives::validate(const toml::node& node, TomlSchema& sche
     }
     return false;
 }
+
+bool TomlSchema::Constant::validate(const toml::node& node, TomlSchema& schema, const std::string& path,
+                                    bool quiet) const {
+    auto toml_value = node.value<std::string>();
+
+    if (!toml_value || toml_value != value) {
+        schema.print(path, "expected '" + value + "'", quiet);
+        return false;
+    }
+    return true;
+}

@@ -1,7 +1,7 @@
 description test single-rom game with disk, missing disk in fixdat
 #variants zip
 return 0
-arguments -Fvj -D ../mamedb-disk.db --create-fixdat
+arguments --no-status-db -Fvj -D ../mamedb-disk.db --create-fixdat
 file "fixdat_game-with-disk (1).dat" {} disk-fixdat.fixdat
 stdout
 In game disk:

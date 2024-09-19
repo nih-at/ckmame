@@ -40,6 +40,7 @@
 
 #include "Exception.h"
 #include "RomDB.h"
+#include "StatusDB.h"
 #include "util.h"
 
 bool Configuration::read_config_file(std::vector<toml::table> &config_tables, const std::string &file_name, bool optional) {
@@ -119,6 +120,9 @@ TomlSchema::TypePtr Configuration::section_schema = TomlSchema::table({
     { "saved-directory", TomlSchema::string() },
     { "sets", TomlSchema::array(TomlSchema::string()) },
     { "sets-file", TomlSchema::string() },
+    { "status-db", TomlSchema::string() },
+    { "status-db-keep-days", TomlSchema::alternatives({TomlSchema::integer(),TomlSchema::constant("all")}, "integer or 'all'") },
+    { "status-db-keep-runs", TomlSchema::alternatives({TomlSchema::integer(),TomlSchema::constant("all")}, "integer or 'all'") },
     { "unknown-directory", TomlSchema::string() },
     { "update-database",  TomlSchema::boolean() },
     { "use-central-cache-directory", TomlSchema::boolean() },
@@ -177,6 +181,10 @@ std::vector<Commandline::Option> Configuration::commandline_options = {
     Commandline::Option("roms-unzipped", "ROMs are files on disk, not contained in zip archives"),
     Commandline::Option("saved-directory", "directory", "save needed ROMs in directory (default: 'saved')"),
     Commandline::Option("set", "pattern", "check ROM sets matching pattern"),
+    Commandline::Option("no-status-db", "don't save status in dbfile"),
+    Commandline::Option("status-db", "dbfile", "save status in dbfile (default: '.ckmame-status.db')"),
+    Commandline::Option("status-db-keep-days", "n", "remove runs older than n days from status db, 'all' for no time limit (default: 'all')"),
+    Commandline::Option("status-db-keep-runs", "n", "keep only n most recent runs in status db, 'all' for no run limit (default: 2)"),
     Commandline::Option("unknown-directory", "directory", "save unknown files in directory (default: 'unknown')"),
     Commandline::Option("update-database", "update ROM database if dat files changed"),
     Commandline::Option("use-description-as-name", "use description as name of games in ROM database"),
@@ -202,6 +210,7 @@ std::unordered_map<std::string, std::string> Configuration::option_to_variable =
     { "no-report-missing-mia", "report_missing_mia" },
     { "no-report-summary", "report_summary" },
     { "no-report-no-good-dump", "report_no_good_dump" },
+    { "no-status-db", "status_db" },
     { "no-update-database", "update_database" },
     { "no-warn-file-known", "warn-file-known"},
     { "no-warn-file-unknown", "warn-file-unknown"},
@@ -276,6 +285,8 @@ void Configuration::reset() {
     if (!set.empty()) {
         saved_directory += "/" + set;
     }
+    status_db = StatusDB::default_name();
+    status_db_keep_runs = 2;
     unknown_directory = "unknown";
     update_database = false;
     use_central_cache_directory = false;
@@ -465,6 +476,9 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         else if (option.name == "no-report-no-good-dump") {
             report_no_good_dump = false;
         }
+        else if (option.name == "no-status-db") {
+            status_db = "none";
+        }
         else if (option.name == "no-update-database") {
             update_database = false;
         }
@@ -515,6 +529,25 @@ void Configuration::prepare(const std::string &current_set, const ParsedCommandl
         }
         else if (option.name == "saved-directory") {
             saved_directory = option.argument;
+        }
+        else if (option.name == "status-db") {
+            status_db = option.argument;
+        }
+        else if (option.name == "status-db-keep-days") {
+            if (option.argument == "all") {
+                status_db_keep_days = {};
+            }
+            else {
+                status_db_keep_days = atoi(option.argument.c_str()); // TODO: better conversion with error checking.
+            }
+        }
+        else if (option.name == "status-db-keep-runs") {
+            if (option.argument == "all") {
+                status_db_keep_runs = {};
+            }
+            else {
+                status_db_keep_runs = atoi(option.argument.c_str()); // TODO: better conversion with error checking.
+            }
         }
         else if (option.name == "unknown-directory") {
             unknown_directory = option.argument;
@@ -601,6 +634,9 @@ void Configuration::merge_config_table(const toml::table *table_pointer) {
     set_string(table, "rom-directory", rom_directory);
     set_bool(table, "roms-zipped", roms_zipped);
     set_string(table, "saved-directory", saved_directory);
+    set_string(table, "status-db", status_db);
+    set_integer_or_all(table, "status-db-keep-days", status_db_keep_days);
+    set_integer_or_all(table, "status-db-keep-runs", status_db_keep_runs);
     set_string(table, "unknown-directory", unknown_directory);
     set_bool(table, "update-database", update_database);
     set_bool(table, "use-central-cache-directory", use_central_cache_directory);
@@ -639,6 +675,32 @@ void Configuration::set_bool_optional(const toml::table &table, const std::strin
     }
 }
 
+void Configuration::set_integer(const toml::table &table, const std::string &name, int &variable) {
+    auto value = table[name].value<int>();
+    if (value) {
+        variable = *value;
+    }
+}
+
+void Configuration::set_integer_optional(const toml::table &table, const std::string &name, std::optional<int> &variable) {
+    auto value = table[name].value<int>();
+    if (value) {
+        variable = *value;
+    }
+}
+
+void Configuration::set_integer_or_all(const toml::table &table, const std::string &name, std::optional<int> &variable) {
+    auto string_value = table[name].value<std::string>();
+    if (string_value && string_value == "all") {
+        variable = {};
+    }
+    else {
+        auto value = table[name].value<int>();
+        if (value) {
+            variable = *value;
+        }
+    }
+}
 
 void Configuration::set_string(const toml::table &table, const std::string &name, std::string &variable) {
     auto value = table[name].value<std::string>();

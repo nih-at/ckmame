@@ -116,6 +116,9 @@ public:
     std::string rom_directory;
     bool roms_zipped;
     std::string saved_directory;
+    std::string status_db;
+    std::optional<int> status_db_keep_days;
+    std::optional<int> status_db_keep_runs;
     std::string unknown_directory;
     bool update_database;
     bool use_central_cache_directory; // create CkmameDB and DatDB in $HOME/.cache/ckmame
@@ -164,6 +167,9 @@ private:
     void reset();
     static void set_bool(const toml::table &table, const std::string &name, bool &variable);
     static void set_bool_optional(const toml::table &table, const std::string &name, std::optional<bool>& variable);
+    static void set_integer(const toml::table &table, const std::string &name, int& variable);
+    static void set_integer_optional(const toml::table &table, const std::string &name, std::optional<int>& variable);
+    static void set_integer_or_all(const toml::table &table, const std::string &name, std::optional<int>& variable);
     void set_string(const toml::table &table, const std::string &name, std::string &variable);
     void set_string_optional(const toml::table &table, const std::string &name, std::optional<std::string>& variable);
     void set_string_vector(const toml::table &table, const std::string &name, std::vector<std::string> &variable, bool append);

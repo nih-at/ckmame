@@ -1,6 +1,6 @@
 description write list of missing games to file, changed
 return 0
-arguments -F --missing-list missing-list --no-report-missing --report-changes
+arguments --no-status-db -F --missing-list missing-list --no-report-missing --report-changes
 file mame.db mame.db
 file missing-list dummy missing-list.txt
 file roms/zero.zip {} zero-ok.zip

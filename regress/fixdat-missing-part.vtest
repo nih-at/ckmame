@@ -1,7 +1,7 @@
 description test all games, one rom missing, create fixdat
 features HAVE_LIBXML2
 return 0
-arguments -Fvc -D ../mamedb-lost-parent-ok.db --create-fixdat
+arguments --no-status-db -Fvc -D ../mamedb-lost-parent-ok.db --create-fixdat
 file roms/clone-8.zip 1-4-ok.zip
 file roms/.ckmame.db {} <inline.ckmamedb>
 hashes clone-8.zip 04.rom cheap

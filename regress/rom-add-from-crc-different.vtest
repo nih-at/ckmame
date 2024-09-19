@@ -1,6 +1,6 @@
 description take ROM from correct game that has fewer hash types, mismatch on new hash types
 return 0
-arguments -D ../mamedb-deadbeefish.db -Fvc
+arguments --no-status-db -D ../mamedb-deadbeefish.db -Fvc
 file roms/deadbeef.zip deadbeef.zip
 file roms/.ckmame.db {} <empty.ckmamedb>
 stdout
