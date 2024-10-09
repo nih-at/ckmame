@@ -36,9 +36,12 @@
 
 #include "Configuration.h"
 #include "Output.h"
+#include "StatusDBRun.h"
 
 extern Configuration configuration;
 
 extern Output output;
+
+extern StatusDBRun status_run;
 
 #endif // HAD_GLOBALS_H

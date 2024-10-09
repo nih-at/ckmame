@@ -70,6 +70,7 @@ set(COMMON_SOURCES
   SharedFile.cc
   Stats.cc
   StatusDB.cc
+  StatusDBRun.cc
   superfluous.cc
   TomlSchema.cc
   Tree.cc

@@ -85,14 +85,23 @@ class StatusDB: public DB {
     [[nodiscard]] std::vector<std::string> get_games_by_status(int64_t run_id, GameStatus status);
     [[nodiscard]] std::unordered_map<GameStatus, std::vector<std::string>> get_run_status_names(int64_t run_id);
     [[nodiscard]] std::unordered_map<GameStatus, uint64_t> get_run_status_counts(int64_t run_id);
-    [[nodiscard]] int64_t insert_dat(const DatEntry& dat);
-    void insert_game(int64_t run_id, const Game& game, GameStatus status);
+    [[nodiscard]] int64_t find_dat(const DatEntry& dat);
+    void insert_game(int64_t run_id, const Game& game, int64_t dat_id, GameStatus status);
     [[nodiscard]] int64_t insert_run(time_t date);
+  [[nodiscard]] int64_t insert_dat(const DatEntry& dat);
+
 
   protected:
     [[nodiscard]] std::string get_query(int name, bool parameterized) const override;
 
   private:
+    class DatInfo {
+    public:
+      explicit DatInfo(const DatEntry& dat): name(dat.name), version(dat.version) {}
+      std::string name;
+      std::string version;
+    };
+
     static std::unordered_map<int, std::string> queries;
 
     DBStatement *get_statement(Statement name) { return get_statement_internal(name); }

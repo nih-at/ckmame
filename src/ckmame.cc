@@ -289,7 +289,9 @@ bool CkMame::execute(const std::vector<std::string> &arguments) {
 
     Progress::enable();
     if (checking_all_games && configuration.fix_romset && configuration.status_db != "none") {
+        ensure_dir(std::filesystem::path(configuration.status_db), true);
         status_db = std::make_shared<StatusDB>(configuration.status_db, DBH_WRITE|DBH_CREATE);
+        status_run = StatusDBRun(status_db, db.get());
     }
 
     check_tree.traverse();

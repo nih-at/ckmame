@@ -35,14 +35,15 @@
 
 #include "check.h"
 #include "check_util.h"
+#include "CkmameCache.h"
 #include "diagnostics.h"
 #include "fix.h"
 #include "Fixdat.h"
 #include "globals.h"
-#include "RomDB.h"
 #include "Progress.h"
+#include "RomDB.h"
+#include "StatusDB.h"
 #include "warn.h"
-#include "CkmameCache.h"
 
 
 Tree check_tree;
@@ -195,6 +196,8 @@ void Tree::process(GameArchives *archives) {
         if (ret == 0 && (res.game == GS_CORRECT || res.game == GS_CORRECT_MIA|| res.game == GS_OLD || res.game == GS_FIXABLE)) {
             ckmame_cache->complete_games.insert(game->name);
         }
+
+        status_run.insert_game_status(*game.get(), res.game);
 
 	/* TODO: includes too much when rechecking */
 	if (configuration.create_fixdat) {

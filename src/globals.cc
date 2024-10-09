@@ -36,3 +36,5 @@
 Configuration configuration;
 
 Output output;
+
+StatusDBRun status_run;

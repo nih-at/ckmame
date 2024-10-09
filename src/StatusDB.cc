@@ -66,9 +66,9 @@ std::unordered_map<int, std::string> StatusDB::queries = {
      "delete from run where run_id not in (select run_id from run order by date desc limit :count)"},
     {DELETE_RUN_DATE, "delete from run where date < :date"},
     {FIND_DAT, "select dat_id from dat where name = :name and version = :version"},
-    {INSERT_DAT, "inesrt into dat (name, version) values (:name, :version)"},
+    {INSERT_DAT, "insert into dat (name, version) values (:name, :version)"},
     {INSERT_GAME,
-     "insert into game (run_id, dat_id, name, checksum, status) values (:run_id, :dat_id, :name, :checksum, :status"},
+     "insert into game (run_id, dat_id, name, checksum, status) values (:run_id, :dat_id, :name, :checksum, :status)"},
     {INSERT_RUN, "insert into run (date) values (:date)"},
     {LIST_RUNS, "select run_id, date from run order by date descending"},
     {QUERY_GAME, "select dat_id, name, checksum, status from game where run_id = :run_id"},
@@ -201,6 +201,19 @@ std::unordered_map<GameStatus, std::vector<std::string>> StatusDB::get_run_statu
     return names;
 }
 
+int64_t StatusDB::find_dat(const DatEntry& dat) {
+    auto stmt = get_statement(FIND_DAT);
+    stmt->set_string("name", dat.name);
+    stmt->set_string("version", dat.version);
+
+    while (stmt->step()) {
+        return stmt->get_int("dat_id");
+    }
+
+    return -1;
+}
+
+
 std::unordered_map<GameStatus, uint64_t> StatusDB::get_run_status_counts(int64_t run_id) {
     auto stmt = get_statement(QUERY_RUN_STATUS_COUNTS);
 
@@ -222,30 +235,17 @@ std::unordered_map<GameStatus, uint64_t> StatusDB::get_run_status_counts(int64_t
 }
 
 int64_t StatusDB::insert_dat(const DatEntry& dat) {
-    auto stmt = get_statement(FIND_DAT);
+    auto stmt = get_statement(INSERT_DAT);
 
     stmt->set_string("name", dat.name);
     stmt->set_string("version", dat.version);
 
-    if (stmt->step()) {
-        return stmt->get_int64("dat_id");
-    }
-
-    stmt = get_statement(INSERT_DAT);
-
-    stmt->set_string("name", dat.name);
-    stmt->set_string("version", dat.version);
-
-    if (stmt->step()) {
-        return stmt->get_rowid();
-    }
-    else {
-        throw Exception("can't insert dat"); // TODO: details
-    }
+    stmt->execute();
+    return stmt->get_rowid();
 }
 
 
-void StatusDB::insert_game(int64_t run_id, const Game& game, GameStatus status) {
+void StatusDB::insert_game(int64_t run_id, const Game& game, int64_t dat_id, GameStatus status) {
     auto stmt = get_statement(INSERT_GAME);
 
     std::vector<uint8_t> checksum;
@@ -253,14 +253,12 @@ void StatusDB::insert_game(int64_t run_id, const Game& game, GameStatus status) 
     compute_combined_checksum(game, checksum);
 
     stmt->set_int64("run_id", run_id);
-    stmt->set_uint64("dat_id", game.dat_no);
+    stmt->set_uint64("dat_id", dat_id);
     stmt->set_string("name", game.name);
     stmt->set_blob("checksum", checksum);
     stmt->set_int("status", static_cast<int>(status));
 
-    if (!stmt->step()) {
-        throw Exception("can't insert game");
-    }
+    stmt->execute();
 }
 
 int64_t StatusDB::insert_run(time_t date) {
@@ -268,12 +266,8 @@ int64_t StatusDB::insert_run(time_t date) {
 
     stmt->set_int64("date", static_cast<int64_t>(date));
 
-    if (stmt->step()) {
-        return stmt->get_rowid();
-    }
-    else {
-        throw Exception("can't insert run");
-    }
+    stmt->execute();
+    return stmt->get_rowid();
 }
 
 void StatusDB::compute_combined_checksum(const Game& game, std::vector<uint8_t>& checksum) {
