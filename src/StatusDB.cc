@@ -70,7 +70,7 @@ std::unordered_map<int, std::string> StatusDB::queries = {
     {INSERT_GAME,
      "insert into game (run_id, dat_id, name, checksum, status) values (:run_id, :dat_id, :name, :checksum, :status)"},
     {INSERT_RUN, "insert into run (date) values (:date)"},
-    {LIST_RUNS, "select run_id, date from run order by date descending"},
+    {LIST_RUNS, "select run_id, date from run order by date asc"},
     {QUERY_GAME, "select dat_id, name, checksum, status from game where run_id = :run_id"},
     {QUERY_GAME_BY_STATUS, "select name from game where run_id = :run, status = :status order by name"},
     {QUERY_GAME_STATI, "select name, status from game where run_id = :run order by name"},
@@ -150,7 +150,7 @@ std::vector<StatusDB::GameInfo> StatusDB::get_games(int64_t run_id) {
 }
 
 std::vector<StatusDB::Run> StatusDB::list_runs() {
-    auto stmt = get_statement(QUERY_GAME);
+    auto stmt = get_statement(LIST_RUNS);
 
     std::vector<Run> runs;
 

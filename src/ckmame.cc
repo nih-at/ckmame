@@ -81,6 +81,7 @@ std::unordered_set<std::string> ckmame_used_variables = {
     "keep_old_duplicate",
     "missing_list",
     "move_from_extra",
+    "no_status_db",
     "old_db",
     "report_changes",
     "report_correct",

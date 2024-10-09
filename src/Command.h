@@ -42,6 +42,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class Command {
   public:
     Command(std::string name, std::string arguments, std::vector<Commandline::Option> options, std::unordered_set<std::string> used_variables);
+    virtual ~Command() = default;
 
     int run(int argc, char *const *argv);
 

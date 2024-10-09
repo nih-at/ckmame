@@ -109,7 +109,7 @@ if (HAVE_LIBARCHIVE)
   target_link_libraries(libckmame PRIVATE LibArchive::LibArchive)
 endif()
 
-foreach(PROGRAM ckmame dumpgame mkmamedb)
+foreach(PROGRAM ckmame ckstatus dumpgame mkmamedb)
   add_executable(${PROGRAM} ${PROGRAM}.cc)
   target_link_libraries(${PROGRAM} PRIVATE libckmame ZLIB::ZLIB libzip::zip SQLite::SQLite3)
   # for config.h
