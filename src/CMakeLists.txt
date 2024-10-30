@@ -45,6 +45,7 @@ set(COMMON_SOURCES
   fix.cc
   fix_util.cc
   Fixdat.cc
+  Game.cc
   Garbage.cc
   globals.cc
   Hashes.cc

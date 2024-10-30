@@ -2,12 +2,12 @@
 
 ## StatusDB
 
-- Requirements
-  - dillo: what happend during last run (game i got are renamed, added, removed)
-  - wiz: current state of set (what's missing that's not mia, got games with mia roms; list and counts)
+- document
+- test
 
 ## Other
 
+- Fix rom in extra not found if in roms/.ckmame.db but not in roms/ (ckmamedb-file-removed.vtest)
 - Fix failing tests.
 - Empty directory in ArchiveDir is not cleaned up, which makes removing empty archive fail.
 - status update: SIGINFO support in Archive::commit, via libzip progress callback

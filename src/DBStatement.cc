@@ -39,7 +39,7 @@
 
 DBStatement::DBStatement(sqlite3 *db_, const std::string &sql_query) : db(db_) {
     if (sqlite3_prepare_v2(db, sql_query.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
-        throw Exception("can't create SQL statement '" + sql_query + "'"); // TODO: include sqlite error
+        throw Exception("can't create SQL statement '" + sql_query + "': " + sqlite3_errmsg(db));
     }
 
     auto num_columns = sqlite3_column_count(stmt);

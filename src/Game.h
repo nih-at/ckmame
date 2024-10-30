@@ -50,6 +50,8 @@ public:
     std::vector<Rom> files[TYPE_MAX];
     
     Game() : id(UINT64_MAX), dat_no(0) { }
+
+    bool is_mia() const;
 };
 
 typedef std::shared_ptr<Game> GamePtr;

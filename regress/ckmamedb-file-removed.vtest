@@ -1,0 +1,12 @@
+description ckmamedb not up-to-date, a file was removed from the file system
+return 0
+arguments --no-status-db -D ../mamedb-two-games.db -Fvc -e extra
+file extra/1-9.zip 1-8-ok.zip
+file roms/.ckmame.db 1-8-ok.ckmamedb-dump <empty.ckmamedb>
+stdout
+In game 1-4:
+game 1-4                                     : not a single file found
+In game 1-8:
+rom  00.rom        size       8  crc d87f7e0c: is in 'extra/1-9.zip/08.rom'
+add 'extra/1-9.zip/08.rom' as '08.rom'
+end-of-inline-data

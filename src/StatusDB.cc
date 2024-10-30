@@ -58,7 +58,7 @@ create table game (\n\
                                        {}};
 
 std::unordered_map<int, std::string> StatusDB::queries = {
-    {CLEANUP_DAT, "delete from dat where dat_id not in (select distinct(dat_id) from file)"},
+    {CLEANUP_DAT, "delete from dat where dat_id not in (select distinct(dat_id) from game)"},
     {CLEANUP_GAME, "delete from game where run_id not in (select run_id from run)"},
     {DELETE_RUN_BOTH, "delete from run where date < :date and run_id not in (select run_id from run order by date "
                       "desc limit :count)"},
@@ -70,9 +70,11 @@ std::unordered_map<int, std::string> StatusDB::queries = {
     {INSERT_GAME,
      "insert into game (run_id, dat_id, name, checksum, status) values (:run_id, :dat_id, :name, :checksum, :status)"},
     {INSERT_RUN, "insert into run (date) values (:date)"},
+    {LATEST_RUN_ID, "select run_id from run order by date desc limit 2"},
     {LIST_RUNS, "select run_id, date from run order by date asc"},
     {QUERY_GAME, "select dat_id, name, checksum, status from game where run_id = :run_id"},
-    {QUERY_GAME_BY_STATUS, "select name from game where run_id = :run, status = :status order by name"},
+    {QUERY_GAME_BY_STATUS, "select name from game where run_id = :run_id and status = :status order by name"},
+    {QUERY_GAME_BY_STATUS2, "select name from game where run_id = :run_id and status in (:status1, :status2) order by name"},
     {QUERY_GAME_STATI, "select name, status from game where run_id = :run order by name"},
     {QUERY_RUN_STATUS_COUNTS,
      "select status, count(*) as status_count from game where run_id = :run_id group by status"},
@@ -111,21 +113,17 @@ void StatusDB::delete_runs(std::optional<int> days, std::optional<int> count) {
     if (days) {
         stmt->set_int64("oldest", static_cast<int64_t>(time(nullptr) - *days * 24 * 60 * 60));
     }
-    if (count >= 0) {
+    if (count) {
         stmt->set_int("count", *count);
     }
 
-    if (!stmt->step()) {
-        return;
-    }
+    stmt->execute();
 
     stmt = get_statement(CLEANUP_GAME);
-    if (!stmt->step()) {
-        return;
-    }
+    stmt->execute();
 
     stmt = get_statement(CLEANUP_DAT);
-    stmt->step();
+    stmt->execute();
 }
 
 std::vector<StatusDB::GameInfo> StatusDB::get_games(int64_t run_id) {
@@ -149,6 +147,21 @@ std::vector<StatusDB::GameInfo> StatusDB::get_games(int64_t run_id) {
     return games;
 }
 
+std::optional<int> StatusDB::latest_run_id(bool second) {
+    auto stmt = get_statement(LATEST_RUN_ID);
+
+    if (!stmt->step()) {
+        return {};
+    }
+    if (second && !stmt->step()) {
+        return {};
+    }
+
+    return stmt->get_int("run_id");
+}
+
+
+
 std::vector<StatusDB::Run> StatusDB::list_runs() {
     auto stmt = get_statement(LIST_RUNS);
 
@@ -171,6 +184,22 @@ std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatu
 
     stmt->set_int64("run_id", run_id);
     stmt->set_int("status", status);
+
+    std::vector<std::string> games;
+
+    while (stmt->step()) {
+        games.push_back(stmt->get_string("name"));
+    }
+
+    return games;
+}
+
+std::vector<std::string> StatusDB::get_games_by_status(int64_t run_id, GameStatus status1, GameStatus status2) {
+    auto stmt = get_statement(QUERY_GAME_BY_STATUS2);
+
+    stmt->set_int64("run_id", run_id);
+    stmt->set_int("status1", status1);
+    stmt->set_int("status2", status2);
 
     std::vector<std::string> games;
 
@@ -247,6 +276,15 @@ int64_t StatusDB::insert_dat(const DatEntry& dat) {
 
 void StatusDB::insert_game(int64_t run_id, const Game& game, int64_t dat_id, GameStatus status) {
     auto stmt = get_statement(INSERT_GAME);
+
+    if (status == GS_FIXABLE) {
+        if (game.is_mia()) {
+            status = GS_CORRECT_MIA;
+        }
+        else {
+            status = GS_CORRECT;
+        }
+    }
 
     std::vector<uint8_t> checksum;
 

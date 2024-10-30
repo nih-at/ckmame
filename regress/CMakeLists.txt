@@ -139,6 +139,8 @@ add_custom_target(update-mamedb.dump
 
 set(XFAIL_TESTS
   ckmamedb-keep-unzipped.zip.test
+  ckmamedb-file-removed.dir.test
+  ckmamedb-file-removed.zip.test
   extra-file-zip.zip.test
   rom-from-extra-loose-directory.zip.test
   rom-from-extra-loose-toplevel.zip.test

@@ -37,6 +37,22 @@
 #include <set>
 
 #include "Command.h"
+#include "Result.h"
+#include "StatusDB.h"
+
+namespace std {
+template <>
+struct hash<std::vector<uint8_t>> {
+  std::size_t operator()(const std::vector<unsigned char>& vec) const {
+    std::size_t hash = 0;
+    for (auto& byte : vec) {
+      hash ^= std::hash<uint8_t>{}(byte) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+    }
+    return hash;
+  }
+};
+}
+
 
 class CkStatus : public Command {
   public:
@@ -48,12 +64,55 @@ class CkStatus : public Command {
 
   private:
     enum Special {
+        ALL_MISSING,
+        CHANGES,
+        CORRECT,
+        CORRECT_MIA,
+        MISSING,
         RUNS
     };
 
-    std::set<Special> specials;
+    class RunDiff {
+      public:
+        RunDiff(int run_id1, int run_id2): run_id1(run_id1), run_id2(run_id2) {}
 
+        void compute();
+
+      private:
+        class GameChecksum {
+          public:
+            std::string name;
+            std::vector<uint8_t> checksum;
+
+            bool operator<(const GameChecksum &other) const {return name < other.name ;}
+        };
+
+        class GameDiff {
+          public:
+            std::optional<StatusDB::GameInfo> old_info;
+            std::optional<StatusDB::GameInfo> new_info;
+        };
+
+        static bool is_complete(GameStatus status) {return status == GS_CORRECT || status == GS_CORRECT_MIA;}
+        void insert_run(bool old);
+
+        int run_id1;
+        int run_id2;
+        std::vector<GameChecksum> games;
+        std::unordered_map<std::vector<uint8_t>, GameDiff> diffs;
+    };
+
+    std::set<Special> specials;
+    std::optional<int> run_id;
+    std::optional<int> run_id2;
+
+    int get_run_id();
+    int get_run_id2();
+    void list_games(GameStatus status);
+    void list_games(GameStatus status1, GameStatus status2);
+    void list_games(const std::vector<std::string> &games);
     void list_runs();
+    void print_changes();
 };
 
 #endif // CKSTATUS_H
