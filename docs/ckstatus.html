@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<!-- This is an automatically generated file.  Do not edit.
+   Copyright (c) 2024 Dieter Baron and Thomas Klausner.
+   All rights reserved.
+  
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+   3. The name of the author may not be used to endorse or promote
+      products derived from this software without specific prior
+      written permission.
+  
+   THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+   EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+   USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+ -->
+<head>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="../nih-man.css" type="text/css" media="all"/>
+  <title>CKSTATUS(1)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">CKSTATUS(1)</td>
+    <td class="head-vol">General Commands Manual</td>
+    <td class="head-rtitle">CKSTATUS(1)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<code class="Nm">ckstatus</code> &#x2014;
+<div class="Nd">report on <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>
+  runs</div>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<table class="Nm">
+  <tr>
+    <td><code class="Nm">ckstatus</code></td>
+    <td>[<code class="Fl">-</code><code class="Fl">-all-missing</code>]
+      [<code class="Fl">-</code><code class="Fl">-all-sets</code>]
+      [<code class="Fl">-</code><code class="Fl">-changes</code>]
+      [<code class="Fl">-</code><code class="Fl">-config</code>
+      <var class="Ar">file</var>]
+      [<code class="Fl">-</code><code class="Fl">-correct</code>]
+      [<code class="Fl">-</code><code class="Fl">-correct-mia</code>]
+      [<code class="Fl">-h</code>,
+      <code class="Fl">-</code><code class="Fl">-help</code>]
+      [<code class="Fl">-</code><code class="Fl">-list-sets</code>]
+      [<code class="Fl">-</code><code class="Fl">-missing</code>]
+      [<code class="Fl">-</code><code class="Fl">-runs</code>]
+      [<code class="Fl">-</code><code class="Fl">-set</code>
+      <var class="Ar">pattern</var>]
+      [<code class="Fl">-</code><code class="Fl">-status-db</code>
+      <var class="Ar">dbfile</var>] [<code class="Fl">-V</code>,
+      <code class="Fl">-</code><code class="Fl">-version</code>]</td>
+  </tr>
+</table>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<code class="Nm">ckstatus</code> is a program to report on the results and/or
+  changes of <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a> runs on a ROM set.
+  The data is read from the <span class="Pa">.ckmame-status.db</span> file in
+  the current directory, or the place configured in the config file, either for
+  the default or the selected set(s). It compares the output of different runs,
+  i.e. starts of <a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1.)</a>
+<section class="Ss">
+<h2 class="Ss" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h2>
+Supported options:
+<dl class="Bl-tag">
+  <dt><code class="Fl">-</code><code class="Fl">-all-missing</code></dt>
+  <dd>List all missing ROMs.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-all-sets</code></dt>
+  <dd>Report on all configured sets.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-changes</code></dt>
+  <dd>List the changes in between two runs. By default, the newest two runs are
+      compared.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-config</code>
+    <var class="Ar">file</var></dt>
+  <dd>Read the configuration from <var class="Ar">file</var>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-correct</code></dt>
+  <dd>List all correct ROMs.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-correct-mia</code></dt>
+  <dd>List all correct ROMs that are MIA according to the database.</dd>
+  <dt><a class="permalink" href="#h"><code class="Fl" id="h">-h</code></a>,
+    <code class="Fl">-</code><code class="Fl">-help</code></dt>
+  <dd>Show a short help.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-list-sets</code></dt>
+  <dd>List all configured sets, for the
+      <code class="Fl">-</code><code class="Fl">-set</code> option.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-missing</code></dt>
+  <dd>List all missing ROMs except those that are MIA according to the
+    database.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-runs</code></dt>
+  <dd>List all available runs.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-set</code>
+    <var class="Ar">pattern</var></dt>
+  <dd>Report on all sets matching <var class="Ar">pattern</var>.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-status-db</code>
+    <var class="Ar">dbfile</var></dt>
+  <dd>Use <var class="Ar">dbfile</var> instead of the default
+      <span class="Pa">.ckmame-status.db</span>.</dd>
+  <dt><a class="permalink" href="#V"><code class="Fl" id="V">-V</code></a>,
+    <code class="Fl">-</code><code class="Fl">-version</code></dt>
+  <dd>Report the version of <code class="Nm">ckstatus</code>.</dd>
+</dl>
+</section>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+By default, the run information is read from
+  <span class="Pa">.ckmame-status.db</span>.
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<a class="Xr" href="http://pubs.opengroup.org/onlinepubs/9699919799/functions/ckmame.html">ckmame(1)</a>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<code class="Nm">ckstatus</code> was written by <span class="An">Dieter
+  Baron</span> &lt;<a class="Mt" href="mailto:dillo@nih.at">dillo@nih.at</a>&gt;
+  and <span class="An">Thomas Klausner</span>
+  &lt;<a class="Mt" href="mailto:wiz@gatalith.at">wiz@gatalith.at</a>&gt;.
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">November 4, 2024</td>
+    <td class="foot-os">NiH</td>
+  </tr>
+</table>
+</body>
+</html>

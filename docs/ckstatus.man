@@ -1,0 +1,126 @@
+.\" Automatically generated from an mdoc input file.  Do not edit.
+.\" Copyright (c) 2024 Dieter Baron and Thomas Klausner.
+.\" All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above
+.\"    copyright notice, this list of conditions and the following
+.\"    disclaimer in the documentation and/or other materials provided
+.\"    with the distribution.
+.\" 3. The name of the author may not be used to endorse or promote
+.\"    products derived from this software without specific prior
+.\"    written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THOMAS KLAUSNER ``AS IS'' AND ANY
+.\" EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+.\" CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+.\" USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+.\" ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+.\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+.\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.TH "CKSTATUS" "1" "November 4, 2024" "NiH" "General Commands Manual"
+.nh
+.if n .ad l
+.SH "NAME"
+\fBckstatus\fR
+\- report on
+ckmame(1)
+runs
+.SH "SYNOPSIS"
+.HP 9n
+\fBckstatus\fR
+[\fB\-\fR\fB\-all-missing\fR]
+[\fB\-\fR\fB\-all-sets\fR]
+[\fB\-\fR\fB\-changes\fR]
+[\fB\-\fR\fB\-config\fR\ \fIfile\fR]
+[\fB\-\fR\fB\-correct\fR]
+[\fB\-\fR\fB\-correct-mia\fR]
+[\fB\-h\fR,\ \fB\-\fR\fB\-help\fR]
+[\fB\-\fR\fB\-list-sets\fR]
+[\fB\-\fR\fB\-missing\fR]
+[\fB\-\fR\fB\-runs\fR]
+[\fB\-\fR\fB\-set\fR\ \fIpattern\fR]
+[\fB\-\fR\fB\-status-db\fR\ \fIdbfile\fR]
+[\fB\-V\fR,\ \fB\-\fR\fB\-version\fR]
+.SH "DESCRIPTION"
+\fBckstatus\fR
+is a program to report on the results and/or changes of
+ckmame(1)
+runs on a ROM set.
+The data is read from the
+\fI.ckmame-status.db\fR
+file in the current directory, or the place configured in the config
+file, either for the default or the selected set(s).
+It compares the output of different runs, i.e. starts of
+ckmame(1.)
+.SS "OPTIONS"
+Supported options:
+.TP 22n
+\fB\-\fR\fB\-all-missing\fR
+List all missing ROMs.
+.TP 22n
+\fB\-\fR\fB\-all-sets\fR
+Report on all configured sets.
+.TP 22n
+\fB\-\fR\fB\-changes\fR
+List the changes in between two runs.
+By default, the newest two runs are compared.
+.TP 22n
+\fB\-\fR\fB\-config\fR \fIfile\fR
+Read the configuration from
+\fIfile\fR.
+.TP 22n
+\fB\-\fR\fB\-correct\fR
+List all correct ROMs.
+.TP 22n
+\fB\-\fR\fB\-correct-mia\fR
+List all correct ROMs that are MIA according to the database.
+.TP 22n
+\fB\-h\fR, \fB\-\fR\fB\-help\fR
+Show a short help.
+.TP 22n
+\fB\-\fR\fB\-list-sets\fR
+List all configured sets, for the
+\fB\-\fR\fB\-set\fR
+option.
+.TP 22n
+\fB\-\fR\fB\-missing\fR
+List all missing ROMs except those that are MIA according to the
+database.
+.TP 22n
+\fB\-\fR\fB\-runs\fR
+List all available runs.
+.TP 22n
+\fB\-\fR\fB\-set\fR \fIpattern\fR
+Report on all sets matching
+\fIpattern\fR.
+.TP 22n
+\fB\-\fR\fB\-status-db\fR \fIdbfile\fR
+Use
+\fIdbfile\fR
+instead of the default
+\fI.ckmame-status.db\fR.
+.TP 22n
+\fB\-V\fR, \fB\-\fR\fB\-version\fR
+Report the version of
+\fBckstatus\fR.
+.SH "FILES"
+By default, the run information is read from
+\fI.ckmame-status.db\fR.
+.SH "SEE ALSO"
+ckmame(1)
+.SH "AUTHORS"
+\fBckstatus\fR
+was written by
+Dieter Baron <\fIdillo@nih.at\fR>
+and
+Thomas Klausner <\fIwiz@gatalith.at\fR>.
