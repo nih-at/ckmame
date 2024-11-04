@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "CKMAME" "1" "April 22, 2024" "NiH" "General Commands Manual"
+.TH "CKMAME" "1" "June 7, 2024" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -62,18 +62,22 @@
 [\fB\-\fR\fB\-no-create-fixdat\fR]
 [\fB\-\fR\fB\-no-report-changes\fR]
 [\fB\-\fR\fB\-no-report-correct\fR]
+[\fB\-\fR\fB\-no-report-correct-mia\fR]
 [\fB\-\fR\fB\-no-report-detailed\fR]
 [\fB\-\fR\fB\-no-report-fixable\fR]
 [\fB\-\fR\fB\-no-report-missing\fR]
+[\fB\-\fR\fB\-no-report-missing-mia\fR]
 [\fB\-\fR\fB\-no-report-no-good-dump\fR]
 [\fB\-\fR\fB\-no-report-summary\fR]
 [\fB\-\fR\fB\-old-db\fR\ \fIdbfile\fR]
 [\fB\-\fR\fB\-only-if-database-updated\fR]
 [\fB\-\fR\fB\-report-changes\fR]
 [\fB\-\fR\fB\-report-correct\fR]
+[\fB\-\fR\fB\-report-correct-mia\fR]
 [\fB\-\fR\fB\-report-detailed\fR]
 [\fB\-\fR\fB\-report-fixable\fR]
 [\fB\-\fR\fB\-report-missing\fR]
+[\fB\-\fR\fB\-report-missing-mia\fR]
 [\fB\-\fR\fB\-report-no-good-dump\fR]
 [\fB\-\fR\fB\-report-summary\fR]
 [\fB\-\fR\fB\-rom-db\fR\ \fIdbfile\fR]
@@ -241,6 +245,9 @@ Don't report a summary of changes while fixing a ROM set (default).
 \fB\-\fR\fB\-no-report-correct\fR
 Don't report status of ROMs that are correct (default).
 .TP 32n
+\fB\-\fR\fB\-no-report-correct-mia\fR
+Don't report status of ROMs that are correct but marked as mia in ROM database (default).
+.TP 32n
 \fB\-\fR\fB\-no-report-detailed\fR
 Don't report status of every ROM (default).
 .TP 32n
@@ -249,6 +256,9 @@ Don't report status of ROMs that can be fixed.
 .TP 32n
 \fB\-\fR\fB\-no-report-missing\fR
 Don't report status of ROMs that are missing.
+.TP 32n
+\fB\-\fR\fB\-no-report-missing-mia\fR
+Don't report status of ROMs that are missing and marked as mia in ROM database (default).
 .TP 32n
 \fB\-\fR\fB\-no-report-no-good-dump\fR
 Don't report status of ROMs for which no good dump exists (default).
@@ -271,6 +281,9 @@ instead of the default
 \fB\-\fR\fB\-report-changes\fR
 Report a summary of changes while fixing a ROM set.
 .TP 32n
+\fB\-\fR\fB\-report-correct-mia\fR
+Report status of ROMs that are correct but marked as mia in ROM database.
+.TP 32n
 \fB\-\fR\fB\-report-detailed\fR
 Report status of every ROM that is checked.
 .TP 32n
@@ -279,6 +292,9 @@ Report status of ROMs that can be fixed (default).
 .TP 32n
 \fB\-\fR\fB\-report-missing\fR
 Report status of ROMs that are missing (default).
+.TP 32n
+\fB\-\fR\fB\-report-missing-mia\fR
+Report status of ROMs that are missing and marked as mia in ROM database.
 .TP 32n
 \fB\-\fR\fB\-report-no-good-dump\fR
 Don't suppress reporting status of ROMs for which no good dump exists.

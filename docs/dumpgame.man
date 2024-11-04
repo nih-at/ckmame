@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "DUMPGAME" "1" "March 21, 2022" "NiH" "General Commands Manual"
+.TH "DUMPGAME" "1" "June 7, 2024" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -59,6 +59,7 @@
 [\fB\-\fR\fB\-hash-types\fR]
 [\fB\-\fR\fB\-help\fR]
 [\fB\-\fR\fB\-list-sets\fR]
+[\fB\-\fR\fB\-mia\fR]
 [\fB\-\fR\fB\-set\fR\ \fIpattern\fR]
 [\fB\-\fR\fB\-summary\fR]
 [\fB\-\fR\fB\-version\fR]
@@ -112,6 +113,9 @@ Display a short help message.
 .TP 29n
 \fB\-\fR\fB\-list-sets\fR
 List all configured sets.
+.TP 29n
+\fB\-\fR\fB\-mia\fR
+List names of games containing ROMs that are marked as mia in the database.
 .TP 29n
 \fB\-\fR\fB\-set\fR \fIpattern\fR
 Run

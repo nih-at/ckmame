@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "MKMAMEDB" "1" "March 25, 2022" "NiH" "General Commands Manual"
+.TH "MKMAMEDB" "1" "June 26, 2024" "NiH" "General Commands Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -51,6 +51,7 @@
 [\fB\-\fR\fB\-list\-available\-dats\fR]
 [\fB\-\fR\fB\-list\-dats\fR]
 [\fB\-\fR\fB\-list\-sets\fR]
+[\fB\-\fR\fB\-mia\-games\fR]
 [\fB\-\fR\fB\-no\-directory\-cache\fR]
 [\fB\-\fR\fB\-only\-files\fR\ \fIpattern\fR]
 [\fB\-\fR\fB\-output\fR\ \fIdbfile\fR]
@@ -218,6 +219,12 @@ List dats configured for the selected set.
 .TP 32n
 \fB\-\fR\fB\-list\-sets\fR
 List all configured sets.
+.TP 32n
+\fB\-\fR\fB\-mia\-games\fR \fIfile\fR
+Mark ROMs from games listed in
+\fIfile\fR
+as mia, except if their name matches
+\(lqdelete-unknown-pattern\(rq.
 .TP 32n
 \fB\-\fR\fB\-only\-files\fR \fIpattern\fR
 When reading files from the file system as input,

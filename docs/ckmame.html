@@ -87,9 +87,11 @@
       [<code class="Fl">-</code><code class="Fl">-no-create-fixdat</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-changes</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-correct</code>]
+      [<code class="Fl">-</code><code class="Fl">-no-report-correct-mia</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-detailed</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-fixable</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-missing</code>]
+      [<code class="Fl">-</code><code class="Fl">-no-report-missing-mia</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-no-good-dump</code>]
       [<code class="Fl">-</code><code class="Fl">-no-report-summary</code>]
       [<code class="Fl">-</code><code class="Fl">-old-db</code>
@@ -97,9 +99,11 @@
       [<code class="Fl">-</code><code class="Fl">-only-if-database-updated</code>]
       [<code class="Fl">-</code><code class="Fl">-report-changes</code>]
       [<code class="Fl">-</code><code class="Fl">-report-correct</code>]
+      [<code class="Fl">-</code><code class="Fl">-report-correct-mia</code>]
       [<code class="Fl">-</code><code class="Fl">-report-detailed</code>]
       [<code class="Fl">-</code><code class="Fl">-report-fixable</code>]
       [<code class="Fl">-</code><code class="Fl">-report-missing</code>]
+      [<code class="Fl">-</code><code class="Fl">-report-missing-mia</code>]
       [<code class="Fl">-</code><code class="Fl">-report-no-good-dump</code>]
       [<code class="Fl">-</code><code class="Fl">-report-summary</code>]
       [<code class="Fl">-</code><code class="Fl">-rom-db</code>
@@ -231,12 +235,18 @@ Supported options:
   <dd>Don't report a summary of changes while fixing a ROM set (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-correct</code></dt>
   <dd>Don't report status of ROMs that are correct (default).</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-no-report-correct-mia</code></dt>
+  <dd>Don't report status of ROMs that are correct but marked as mia in ROM
+      database (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-detailed</code></dt>
   <dd>Don't report status of every ROM (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-fixable</code></dt>
   <dd>Don't report status of ROMs that can be fixed.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-missing</code></dt>
   <dd>Don't report status of ROMs that are missing.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-no-report-missing-mia</code></dt>
+  <dd>Don't report status of ROMs that are missing and marked as mia in ROM
+      database (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-no-good-dump</code></dt>
   <dd>Don't report status of ROMs for which no good dump exists (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-no-report-summary</code></dt>
@@ -253,12 +263,18 @@ Supported options:
       the default <span class="Pa">roms</span>.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-changes</code></dt>
   <dd>Report a summary of changes while fixing a ROM set.</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-report-correct-mia</code></dt>
+  <dd>Report status of ROMs that are correct but marked as mia in ROM
+    database.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-detailed</code></dt>
   <dd>Report status of every ROM that is checked.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-fixable</code></dt>
   <dd>Report status of ROMs that can be fixed (default).</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-missing</code></dt>
   <dd>Report status of ROMs that are missing (default).</dd>
+  <dt><code class="Fl">-</code><code class="Fl">-report-missing-mia</code></dt>
+  <dd>Report status of ROMs that are missing and marked as mia in ROM
+    database.</dd>
   <dt><code class="Fl">-</code><code class="Fl">-report-no-good-dump</code></dt>
   <dd>Don't suppress reporting status of ROMs for which no good dump exists.
       Status of such ROMs is reported according to
@@ -383,7 +399,7 @@ Most messages should be straightforward. Two need special explanations:
 </div>
 <table class="foot">
   <tr>
-    <td class="foot-date">April 22, 2024</td>
+    <td class="foot-date">June 7, 2024</td>
     <td class="foot-os">NiH</td>
   </tr>
 </table>

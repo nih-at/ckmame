@@ -27,7 +27,7 @@
 .\" OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 .\" OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 .\" SUCH DAMAGE.
-.TH "CKMAMERC" "5" "June 16, 2023" "NiH" "File Formats Manual"
+.TH "CKMAMERC" "5" "June 26, 2024" "NiH" "File Formats Manual"
 .nh
 .if n .ad l
 .SH "NAME"
@@ -212,6 +212,9 @@ String.
 .TP 22n
 keep-old-duplicates
 Boolean.
+.TP 22n
+mia-games
+String.
 .TP 22n
 missing-list
 String.
