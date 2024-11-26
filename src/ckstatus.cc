@@ -52,7 +52,8 @@ std::vector<Commandline::Option> ckstatus_options = {
     Commandline::Option("correct-mia", "list correct games marked MIA"),
     Commandline::Option("missing", "list missing games not marked MIA"),
     //  Commandline::Option("run", "RUN", "use information from run RUN (default: latest)"),
-    Commandline::Option("runs", "list runs")};
+    Commandline::Option("runs", "list runs"), Commandline::Option("summary", "print summary")};
+
 
 std::unordered_set<std::string> ckstatus_used_variables = {"status_db"};
 
@@ -85,12 +86,15 @@ void CkStatus::global_setup(const ParsedCommandline& commandline) {
         else if (option.name == "runs") {
             specials.insert(RUNS);
         }
+        else if (option.name == "summary") {
+            specials.insert(SUMMARY);
+        }
+    }
+
+    if (specials.empty()) {
+        specials.insert(SUMMARY);
     }
 }
-
-
-bool CkStatus::global_cleanup() { return true; }
-
 
 bool CkStatus::execute(const std::vector<std::string>& arguments) {
     if (configuration.status_db == "none") {
@@ -98,7 +102,7 @@ bool CkStatus::execute(const std::vector<std::string>& arguments) {
     }
 
     try {
-        status_db = std::make_shared<StatusDB>(configuration.status_db, DBH_WRITE | DBH_CREATE);
+        status_db = std::make_shared<StatusDB>(configuration.status_db, DBH_READ);
     }
     catch (const std::exception& e) {
         throw Exception("Error opening status database: " + std::string(e.what()));
@@ -125,32 +129,47 @@ bool CkStatus::execute(const std::vector<std::string>& arguments) {
         case MISSING:
             list_games(GS_MISSING);
             break;
+
         case RUNS:
             list_runs();
             break;
+
+        case SUMMARY:
+            list_summary();
         }
     }
     return true;
 }
 
-int CkStatus::get_run_id() {
-    if (!run_id) {
-        run_id = status_db->latest_run_id(false);
-        if (!run_id) {
-            throw Exception("No runs.");
-        }
-    }
-    return *run_id;
+bool CkStatus::cleanup() {
+    status_db = nullptr;
+
+    return true;
 }
 
-int CkStatus::get_run_id2() {
-    if (!run_id2) {
-        run_id2 = status_db->latest_run_id(true);
-        if (!run_id2) {
-            throw Exception("Only one run.");
-        }
+int CkStatus::get_run_id() {
+    if (run_id) {
+        return *run_id;
     }
-    return *run_id2;
+
+    auto actual_run_id = status_db->latest_run_id(false);
+    if (!actual_run_id) {
+        throw Exception("No runs.");
+    }
+    return *actual_run_id;
+}
+
+
+int CkStatus::get_run_id2() {
+    if (run_id2) {
+        return *run_id2;
+    }
+
+    auto actual_run_id2 = status_db->latest_run_id(true);
+    if (!actual_run_id2) {
+        throw Exception("Only one run.");
+    }
+    return *actual_run_id2;
 }
 
 
@@ -176,6 +195,47 @@ void CkStatus::list_runs() {
         output.message("%" PRId64 ": %s", run.run_id, date_string);
     }
 }
+
+void CkStatus::list_summary() {
+    auto counts = status_db->get_run_status_counts(get_run_id());
+
+    uint64_t total = 0;
+    uint64_t complete = 0;
+    uint64_t mia = 0;
+
+    for (const auto [status, count] : counts) {
+        total += count;
+        switch (status) {
+        case GS_MISSING:
+        case GS_PARTIAL:
+            break;
+        case GS_CORRECT:
+        case GS_CORRECT_MIA:
+        case GS_OLD:
+        case GS_FIXABLE:
+            complete += count;
+            break;
+        case GS_MISSING_MIA:
+            mia += count;
+            break;
+        }
+    }
+
+    auto missing = std::string{};
+    auto best = std::string{};
+    if (mia > 0) {
+        best = " (best: " + std::to_string(mia) + ")";
+    }
+
+    if (complete == 0) {
+        missing = "all";
+    }
+    else {
+        missing = std::to_string(total - complete) + " / " + std::to_string(total);
+    }
+    output.message(missing + " missing" + best);
+}
+
 
 void CkStatus::print_changes() {
     auto diffs = RunDiff(get_run_id(), get_run_id2());

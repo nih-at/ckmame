@@ -60,7 +60,7 @@ class CkStatus : public Command {
 
     void global_setup(const ParsedCommandline &commandline) override;
     bool execute(const std::vector<std::string> &arguments) override;
-    bool global_cleanup() override;
+    bool cleanup() override;
 
   private:
     enum Special {
@@ -69,7 +69,8 @@ class CkStatus : public Command {
         CORRECT,
         CORRECT_MIA,
         MISSING,
-        RUNS
+        RUNS,
+        SUMMARY
     };
 
     class RunDiff {
@@ -112,6 +113,7 @@ class CkStatus : public Command {
     void list_games(GameStatus status1, GameStatus status2);
     void list_games(const std::vector<std::string> &games);
     void list_runs();
+    void list_summary();
     void print_changes();
 };
 
